@@ -45,11 +45,11 @@ if ($#out<0)
 `install -m 755 src/mixxx $BASE/bin`;
 
 # Copy doc files
-`install -m 755 -d $BASE/share/doc/mixxx-1.1`;
-`install -m 644 README $BASE/share/doc/mixxx-1.1`;
-`install -m 644 LICENCE $BASE/share/doc/mixxx-1.1`;
-`install -m 644 COPYING $BASE/share/doc/mixxx-1.1`;
-`install -m 644 Configuration.txt $BASE/share/doc/mixxx-1.1`;
+`install -m 755 -d $BASE/share/doc/mixxx-1.2`;
+`install -m 644 README $BASE/share/doc/mixxx-1.2`;
+`install -m 644 LICENCE $BASE/share/doc/mixxx-1.2`;
+`install -m 644 COPYING $BASE/share/doc/mixxx-1.2`;
+`install -m 644 Configuration.txt $BASE/share/doc/mixxx-1.2`;
 
 printf("Install finished\n");
 
