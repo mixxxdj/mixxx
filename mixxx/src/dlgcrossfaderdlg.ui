@@ -21,25 +21,6 @@
     <property name="caption">
         <string>Form1</string>
     </property>
-    <widget class="QSlider">
-        <property name="name">
-            <cstring>SliderCrossfader</cstring>
-        </property>
-        <property name="geometry">
-            <rect>
-                <x>135</x>
-                <y>5</y>
-                <width>466</width>
-                <height>31</height>
-            </rect>
-        </property>
-        <property name="backgroundOrigin">
-            <enum>WindowOrigin</enum>
-        </property>
-        <property name="orientation">
-            <enum>Horizontal</enum>
-        </property>
-    </widget>
     <widget class="QRadioButton">
         <property name="name">
             <cstring>ButtonLeftChannel</cstring>
@@ -82,6 +63,28 @@
         </property>
         <property name="checked">
             <bool>true</bool>
+        </property>
+    </widget>
+    <widget class="QSlider">
+        <property name="name">
+            <cstring>SliderCrossfader</cstring>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>135</x>
+                <y>5</y>
+                <width>466</width>
+                <height>31</height>
+            </rect>
+        </property>
+        <property name="backgroundOrigin">
+            <enum>WindowOrigin</enum>
+        </property>
+        <property name="maxValue">
+            <number>127</number>
+        </property>
+        <property name="orientation">
+            <enum>Horizontal</enum>
         </property>
     </widget>
 </widget>

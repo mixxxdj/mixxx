@@ -68,7 +68,7 @@ MixxxView::MixxxView(QWidget *parent, MixxxDoc *doc) : QWidget(parent)
 	
 	    while ((fi=it.current()))
         {
-	        qDebug(fi->fileName());
+	        //qDebug(fi->fileName());
             playlist->ListPlaylist->insertItem(new QListViewItem(playlist->ListPlaylist,fi->baseName(),fi->filePath()));
 	     /*
          playlist->TableList->setItem(i,0,new QTableItem(playlist->TableList,QTableItem::Never,
