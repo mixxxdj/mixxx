@@ -42,7 +42,7 @@
 #include "images/b.xpm"
 #include "controlnull.h"
 #include "midiobjectnull.h"
-#include "soundbuffer.h"
+#include "readerbuffer.h"
 #include "controlengine.h"
 #include "controlenginequeue.h"
 #include "controlpotmeter.h"

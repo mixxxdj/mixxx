@@ -1,5 +1,5 @@
 /***************************************************************************
-                          soundbuffer.cpp  -  description
+                          readerbuffer.cpp  -  description
                              -------------------
     begin                : Thu Feb 6 2003
     copyright            : (C) 2003 by Tue & Ken Haste Andersen
@@ -15,12 +15,12 @@
  *                                                                         *
  ***************************************************************************/
 
-#include "soundbuffer.h"
-#include "soundbufferevent.h"
+#include "readerbuffer.h"
+#include "readerbufferevent.h"
 #include "visual/signalvertexbuffer.h"
 #include <qapplication.h>
 
-SoundBuffer::SoundBuffer(QMutex *_enginelock, int _chunkSize, int _chunkNo, int windowSize, int _stepSize)
+ReaderBuffer::ReaderBuffer(QMutex *_enginelock, int _chunkSize, int _chunkNo, int windowSize, int _stepSize)
 {
     enginelock = _enginelock;
 
@@ -60,7 +60,7 @@ SoundBuffer::SoundBuffer(QMutex *_enginelock, int _chunkSize, int _chunkNo, int 
     signalVertexBuffer = 0;
 }
 
-SoundBuffer::~SoundBuffer()
+ReaderBuffer::~ReaderBuffer()
 {
     delete [] temp;
     delete [] read_buffer;
@@ -68,7 +68,7 @@ SoundBuffer::~SoundBuffer()
     delete preprocess;
 }
 
-void SoundBuffer::setSoundSource(SoundSource *_file)
+void ReaderBuffer::setSoundSource(SoundSource *_file)
 {
     file = _file;
 
@@ -81,7 +81,7 @@ void SoundBuffer::setSoundSource(SoundSource *_file)
     bufferpos_end = 0;
 }
 
-void SoundBuffer::setSignalVertexBuffer(SignalVertexBuffer *_signalVertexBuffer)
+void ReaderBuffer::setSignalVertexBuffer(SignalVertexBuffer *_signalVertexBuffer)
 {
     signalVertexBuffer = _signalVertexBuffer;
 }
@@ -89,7 +89,7 @@ void SoundBuffer::setSignalVertexBuffer(SignalVertexBuffer *_signalVertexBuffer)
 /*
   Read a new chunk into the readbuffer:
 */
-void SoundBuffer::getchunk(CSAMPLE rate)
+void ReaderBuffer::getchunk(CSAMPLE rate)
 {
     //qDebug("Reading..., bufferpos_start %i",bufferpos_start);
 
@@ -166,10 +166,10 @@ void SoundBuffer::getchunk(CSAMPLE rate)
 
     // Update vertex buffer by sending an event containing indexes of where to update.
     if (signalVertexBuffer != 0)
-        QApplication::postEvent(signalVertexBuffer, new SoundBufferEvent(bufIdx, READCHUNKSIZE));
+        QApplication::postEvent(signalVertexBuffer, new ReaderBufferEvent(bufIdx, READCHUNKSIZE));
 }
 
-long int SoundBuffer::seek(long int new_playpos)
+long int ReaderBuffer::seek(long int new_playpos)
 {
     enginelock->lock();
     filepos_start = new_playpos;
@@ -191,13 +191,13 @@ long int SoundBuffer::seek(long int new_playpos)
 }
 
 // Get a pointer to the chunk at index chunkIdx
-CSAMPLE *SoundBuffer::getChunkPtr(int chunkIdx)
+CSAMPLE *ReaderBuffer::getChunkPtr(int chunkIdx)
 {
     return &read_buffer[chunkSize*chunkIdx];
 }
 
 // Get a pointer to a window centered around the sample at windowIdx*windowSize
-CSAMPLE *SoundBuffer::getWindowPtr(int windowIdx)
+CSAMPLE *ReaderBuffer::getWindowPtr(int windowIdx)
 {
     // Start position of window
     int windowPos = (windowIdx*stepSize-window->getSize()/2+READBUFFERSIZE)%READBUFFERSIZE;
@@ -224,7 +224,7 @@ CSAMPLE *SoundBuffer::getWindowPtr(int windowIdx)
     return windowedSamples;    
 }
 
-int SoundBuffer::getRate()
+int ReaderBuffer::getRate()
 {
     // Sample rate of file with two channels
     if (file)
@@ -233,7 +233,7 @@ int SoundBuffer::getRate()
         return 88200; // HACKKKK!!!!!
 }
 
-int SoundBuffer::getChunkSize()
+int ReaderBuffer::getChunkSize()
 {
     return chunkSize;
 }

@@ -1,5 +1,5 @@
 /***************************************************************************
-                          soundbufferevent.h  -  description
+                          readerbufferevent.cpp  -  description
                              -------------------
     begin                : Mon Mar 3 2003
     copyright            : (C) 2003 by Tue & Ken Haste Andersen
@@ -15,25 +15,22 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef SOUNDBUFFEREVENT_H
-#define SOUNDBUFFEREVENT_H
+#include "readerbufferevent.h"
 
-#include <qevent.h>
-
-/**
-  *@author Tue & Ken Haste Andersen
-  */
-
-class SoundBufferEvent : public QCustomEvent
+ReaderBufferEvent::ReaderBufferEvent(int pos, int len) : QCustomEvent(10002), position(pos), length(len)
 {
-public: 
-    SoundBufferEvent(int pos, int len);
-    ~SoundBufferEvent();
-    int pos() const;
-    int len() const;
-private:
-    int position;
-    int length;
-};
+}
 
-#endif
+ReaderBufferEvent::~ReaderBufferEvent()
+{
+}
+
+int ReaderBufferEvent::pos() const
+{
+    return position;
+}
+
+int ReaderBufferEvent::len() const
+{
+    return length;
+}

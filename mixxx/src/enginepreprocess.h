@@ -24,7 +24,7 @@
 
 class EngineSpectralFwd;
 class WindowKaiser;
-class SoundBuffer;
+class ReaderBuffer;
 
 /**
   * Pre-processing of audio buffers before playback and handling by EngineBuffer::process()
@@ -35,7 +35,7 @@ class SoundBuffer;
 class EnginePreProcess : public EngineObject
 {
 public:
-    EnginePreProcess(SoundBuffer *_soundbuffer, int _specNo, WindowKaiser *window);
+    EnginePreProcess(ReaderBuffer *_readerbuffer, int _specNo, WindowKaiser *window);
     ~EnginePreProcess();
     void notify(double) {};
     void update(int specFrom, int specTo);
@@ -43,7 +43,7 @@ public:
 private:
     void process(int idx);
 
-    SoundBuffer *soundbuffer;
+    ReaderBuffer *readerbuffer;
     int specNo;
     QPtrList<EngineSpectralFwd> specList;
     CSAMPLE *hfc;    

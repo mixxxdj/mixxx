@@ -1,5 +1,5 @@
 /***************************************************************************
-                          soundbuffer.h  -  description
+                          readerbuffer.h  -  description
                              -------------------
     begin                : Thu Feb 6 2003
     copyright            : (C) 2003 by Tue & Ken Haste Andersen
@@ -15,8 +15,8 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef SOUNDBUFFER_H
-#define SOUNDBUFFER_H
+#ifndef READERBUFFER_H
+#define READERBUFFER_H
 
 #include "defs.h"
 #include "monitor.h"
@@ -32,10 +32,10 @@ class SignalVertexBuffer;
   *@author Tue & Ken Haste Andersen
   */
 
-class SoundBuffer {
+class ReaderBuffer {
 public: 
-    SoundBuffer(QMutex *_enginelock, int _chunkSize, int _chunkNo, int windowSize, int _stepSize);
-    ~SoundBuffer();
+    ReaderBuffer(QMutex *_enginelock, int _chunkSize, int _chunkNo, int windowSize, int _stepSize);
+    ~ReaderBuffer();
     void setSoundSource(SoundSource *_file);
     void setSignalVertexBuffer(SignalVertexBuffer *_signalVertexBuffer);
     void getchunk(CSAMPLE rate);
