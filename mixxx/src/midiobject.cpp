@@ -187,7 +187,7 @@ void MidiObject::run()
         do
 		{
             int no = read(handle,&buffer[0],1);
-            //qDebug("midi: %i",(short int)buffer[0]);
+//            qDebug("midi: %i",(short int)buffer[0]);
             if (no != 1)
                 qWarning("Warning: midiobject recieved %i bytes.", no);
         } while (buffer[0] & 128 != 128); // Continue until we receive a status byte (bit 7 is set)

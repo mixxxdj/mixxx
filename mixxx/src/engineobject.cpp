@@ -21,9 +21,11 @@
 int EngineObject::SRATE = 0;
 int EngineObject::NYQUIST = 0;
 CSAMPLE EngineObject::norm = 0.;
+MixxxView *EngineObject::view = 0;
 
 EngineObject::EngineObject()
 {
+    //view = v;
 }
 
 EngineObject::~EngineObject()

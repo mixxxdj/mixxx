@@ -3,7 +3,7 @@
 /*----------------------------------------------------------------
   A pregaincontrol is ... a pregain.
   ----------------------------------------------------------------*/
-EngineClipping::EngineClipping(QRadioButton *BulbClipping)
+EngineClipping::EngineClipping(WBulb *BulbClipping)
 {
     bulb_clipping = BulbClipping;
     buffer = new CSAMPLE[MAX_BUFFER_LEN];
@@ -17,7 +17,7 @@ EngineClipping::~EngineClipping()
 CSAMPLE *EngineClipping::process(const CSAMPLE *source, const int buffer_size)
 {
     static const int lightswitch = 10;
-    static const FLOAT_TYPE max_amp = 32676;
+    static const FLOAT_TYPE max_amp = 32676.;
     static const FLOAT_TYPE clip = 0.8*max_amp;
 
     int samples_clipped = 0; 
@@ -32,8 +32,13 @@ CSAMPLE *EngineClipping::process(const CSAMPLE *source, const int buffer_size)
         } else
             buffer[i] = source[i];
     }
-    if ((samples_clipped > lightswitch) && (!bulb_clipping->isChecked()))
-        bulb_clipping->setChecked(true);
+    if (samples_clipped > lightswitch)
+    {
+        if (!bulb_clipping->isChecked())
+            bulb_clipping->setChecked(true);
+    }
+    else if (bulb_clipping->isChecked())
+        bulb_clipping->setChecked(false);
 
     return buffer;
 }

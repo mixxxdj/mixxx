@@ -17,7 +17,10 @@
 
 #include "controlnull.h"
 
-ControlNull::ControlNull(){
+ControlNull::ControlNull()
+{
 }
-ControlNull::~ControlNull(){
+
+ControlNull::~ControlNull()
+{
 }

@@ -20,9 +20,8 @@
 
 #include <qthread.h>
 #include <qwaitcondition.h>
-#include <qpushbutton.h>
 #include <qslider.h>
-#include "qknob.h"
+#include "wknob.h"
 #include <qstring.h>
 #include <qlcdnumber.h>
 
@@ -90,5 +89,6 @@ private:
    SAMPLE *temp;
    unsigned  chunk_size;
    CSAMPLE *buffer; // Buffer used in the process()
+   FLOAT_TYPE lastwrite;
 };
 #endif

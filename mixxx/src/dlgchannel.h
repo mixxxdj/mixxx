@@ -30,6 +30,7 @@ class DlgChannel : public DlgChannelDlg  {
 public: 
 	DlgChannel(QWidget *parent=0, const char *name=0);
 	~DlgChannel();
+    void layoutMirror();
 };
 
 #endif

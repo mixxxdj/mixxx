@@ -17,10 +17,12 @@
 
 #include "enginebuffer.h"
 #include <qlabel.h>
+#include "wplaybutton.h"
 #include "configobject.h"
 
 EngineBuffer::EngineBuffer(DlgPlaycontrol *_playcontrol, const char *group, const char *filename)
 {
+  lastwrite = 0.;
   playcontrol = _playcontrol;
 
   ConfigObject::ConfigKey k1(group, "play");
@@ -168,47 +170,60 @@ void EngineBuffer::run() {
   Called when the playbutten is pressed
 */
 void EngineBuffer::slotUpdatePlay(valueType) {
-    if (PlayButton->getPosition()==down) {
-	qDebug("Entered seeking mode");
-	rate.write(0);
-	start_seek = wheel->getPosition();
+    if (PlayButton->getPosition()==down)
+    {
+        qDebug("Entered seeking mode");
+        rate.write(0);
+        start_seek = wheel->getPosition();
     }
-    else if (PlayButton->getPosition()==up) {
-	seek((FLOAT_TYPE)(end_seek()-start_seek)/128);
-	qDebug("Ended seeking");
+    else if (PlayButton->getPosition()==up)
+    {
+        seek((FLOAT_TYPE)(end_seek()-start_seek)/128);
+        qDebug("Ended seeking");
     }
     slotUpdateRate(rateSlider->getValue());
 }
 
 int EngineBuffer::end_seek() {
     int _end_seek = wheel->getPosition();
-    if (abs(start_seek - _end_seek) > 2) {
-	// A seek has occured. Find new filepos:
-	if ((wheel->direction==1) &&(_end_seek < start_seek))
-	    _end_seek += 128;
-	else
-	    if ((wheel->direction==-1) && (_end_seek > start_seek))
-		_end_seek -= 128;
-    } 
+    if (abs(start_seek - _end_seek) > 2)
+    {
+        // A seek has occured. Find new filepos:
+        if ((wheel->direction==1) &&(_end_seek < start_seek))
+            _end_seek += 128;
+        else
+            if ((wheel->direction==-1) && (_end_seek > start_seek))
+                _end_seek -= 128;
+    }
     return _end_seek;
 }
+
 /*
   Called when the wheel is turned or the rate slider is moved:
 */
 void EngineBuffer::slotUpdateRate(FLOAT_TYPE)
 {
+    qDebug("1: Rate value: %f, wheel value: %f",rate.read(),wheel->getValue());
+
     if (PlayButton->getValue()==on)
-        rate.write(rateSlider->getValue() + 4*wheel->getValue());
+    {
+        qDebug("slotUpdateRate 1");
+        rate.write(rateSlider->getValue() + 4.*wheel->getValue());
+    }
     else if (PlayButton->getPosition()==down)
     {
-	// No rate while seeking:
-        rate.write(0);
-	emit position((int)(100*(FLOAT_TYPE)(end_seek()-start_seek)/128));
-    }
+	    // No rate while seeking:
+        rate.write(0.);
+	    emit position((int)(100.*(FLOAT_TYPE)(end_seek()-start_seek)/128.));
+        qDebug("pos emitted: %i",(int)(100.*(FLOAT_TYPE)(end_seek()-start_seek)/128.));
+	}
     else
-        rate.write(4*wheel->getValue());
-    
-    //qDebug("Rate value: %f, wheel value: %f",rate.read(),wheel->getValue());
+    {
+        qDebug("slotUpdateRate 3");
+        rate.write(4.*wheel->getValue());
+    }
+
+    qDebug("2: Rate value: %f, wheel value: %f",rate.read(),wheel->getValue());
 }
 
 /*
@@ -306,59 +321,58 @@ bool even(long n)
 // -------- ------------------------------------------------------
 void EngineBuffer::checkread()
 {
-  if ((lastread_file.read() - playpos_file.read()) < READAHEAD)
-    buffersReadAhead->wakeAll();
-  else {
-      if (lastread_file.read() - playpos_file.read() < 0.1*READAHEAD)
-    	qDebug("Warning: reader is (close to) lacking behind player!");
-  }
+    if ((lastread_file.read() - playpos_file.read()) < READAHEAD)
+        buffersReadAhead->wakeAll();
+    else
+        if (lastread_file.read() - playpos_file.read() < 0.1*READAHEAD)
+            qDebug("Warning: reader is (close to) lacking behind player!");
 }
-
 
 void EngineBuffer::writepos()
 {
-  static FLOAT_TYPE lastwrite = 0.;
-  FLOAT_TYPE newwrite = playpos_file.read()/file->length();
-  if (floor(fabs(newwrite-lastwrite)*100) >= 1) {
-      emit position((int)(100*newwrite));
-      lastwrite = newwrite;
-  }
+    FLOAT_TYPE newwrite = playpos_file.read()/file->length();
+    if (floor(fabs(newwrite-lastwrite)*100.) >= 1.)
+    {
+        //emit position((int)(100*newwrite));  // ***********
+        lastwrite = newwrite;
+    }
 }
 
 CSAMPLE *EngineBuffer::process(const CSAMPLE *, const int buf_size)
 {
     if (rate.read()==0. || pause)
     {
-	  for (int i=0; i<buf_size; i++)
-	      buffer[i]=0.;
-    }   else {
-          long prev;
-	double myRate=rate.read();
-	double myPlaypos_buffer = playpos_buffer.read();
+        for (int i=0; i<buf_size; i++)
+            buffer[i]=0.;
+    } else {
+        long prev;
+        double myRate=rate.read();
+        double myPlaypos_buffer = playpos_buffer.read();
         double myPlaypos_file = playpos_file.read();
 
-	for (int i=0; i<buf_size; i+=2)
+        for (int i=0; i<buf_size; i+=2)
         {
             if (myPlaypos_file < file->length())
             {
-		prev = (long)floor(myPlaypos_buffer)%read_buffer_size;
-		if (!even(prev)) prev--;
+                prev = (long)floor(myPlaypos_buffer)%read_buffer_size;
+                if (!even(prev))
+                    prev--;
                 long next = (prev+2)%read_buffer_size;
-		FLOAT_TYPE frac = myPlaypos_buffer - floor(myPlaypos_buffer);
-                buffer[i  ] = read_buffer[prev  ] +frac*(read_buffer[next  ]-read_buffer[prev  ]);
-		buffer[i+1] = read_buffer[prev+1] +frac*(read_buffer[next+1]-read_buffer[prev+1]);
-                double rate_add = 2*myRate;
-		myPlaypos_buffer +=rate_add;
-                myPlaypos_file += rate_add;
+                FLOAT_TYPE frac = myPlaypos_buffer - floor(myPlaypos_buffer);
+                buffer[i  ] = read_buffer[prev  ] + frac*(read_buffer[next  ]-read_buffer[prev  ]);
+                buffer[i+1] = read_buffer[prev+1] + frac*(read_buffer[next+1]-read_buffer[prev+1]);
+                double rate_add = 2.*myRate;
+                myPlaypos_buffer += rate_add;
+                myPlaypos_file   += rate_add;
             } else {
                 buffer[i  ] = 0.;
-		buffer[i+1] = 0.;
+                buffer[i+1] = 0.;
             }
         }
-	
-	playpos_buffer.write(myPlaypos_buffer);
-	playpos_file.write(myPlaypos_file);
-	
+
+        playpos_buffer.write(myPlaypos_buffer);
+        playpos_file.write(myPlaypos_file);
+
         checkread();
 
         // Check the wheel:

@@ -23,12 +23,15 @@
 #include <qpushbutton.h>
 #include <qtable.h>
 #include <qlistview.h>
-#include "qknob.h"
+#include <qiconset.h>
 
+#include "wknob.h"
 #include "mixxx.h"
 #include "filesave.xpm"
 #include "fileopen.xpm"
 #include "filenew.xpm"
+#include "images/a.xpm"
+#include "images/b.xpm"
 #include "controlnull.h"
 #include "configmapping.h"
 
@@ -64,11 +67,13 @@ MixxxApp::MixxxApp()
   initView();
 
   qDebug("Init playlist");
-  playSelectMenu = new QPopupMenu(this);
-  playSelectMenu->insertItem("Channel 1",this, SLOT(slotChangePlay_1()));
-  playSelectMenu->insertItem("Channel 2",this, SLOT(slotChangePlay_2()));
 
-  // Connect play list table selection with "play new file"
+  // Construct popup menu used to select playback channel on track selection
+  playSelectMenu = new QPopupMenu(this);
+  playSelectMenu->insertItem(QIconSet(a_xpm), "Player A",this, SLOT(slotChangePlay_1()));
+  playSelectMenu->insertItem(QIconSet(b_xpm), "Player B",this, SLOT(slotChangePlay_2()));
+
+  // Connect play list table selection with "select channel" popup menu
   connect(view->playlist->ListPlaylist, SIGNAL(pressed(QListViewItem *, const QPoint &, int)),
           this,                         SLOT(slotSelectPlay(QListViewItem *, const QPoint &, int)));
 
@@ -83,6 +88,9 @@ MixxxApp::MixxxApp()
   control = new ControlNull();
   control->midi = midi;
   control->config = config;
+
+  // Instantiate a EngineObject to ensure static references are updated
+  //engine = new EngineObject(view);
 
   qDebug("Init buffer 1...");
   buffer1 = new EngineBuffer(view->playcontrol1, "[Channel1]", view->playlist->ListPlaylist->firstChild()->text(1));
@@ -130,6 +138,7 @@ MixxxApp::~MixxxApp()
     delete channel2;
     delete master;
     delete playSelectMenu;
+    //delete engine;
 }
 
 /** initializes all QActions of the application */

@@ -30,6 +30,7 @@
 #include "dlgplaylist.h"
 #include "dlgmaster.h"
 #include "dlgcrossfader.h"
+#include "dlgsplit.h"
 
 /**
  * This class provides an incomplete base for your application view. 
@@ -46,6 +47,7 @@ class MixxxView : public QWidget
 	DlgPlaylist *playlist;
     DlgMaster *master;
     DlgCrossfader *crossfader;
+    DlgSplit *split;
 
   protected slots:
     void slotDocumentChanged();

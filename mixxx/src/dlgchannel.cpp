@@ -16,6 +16,7 @@
  ***************************************************************************/
 
 #include "dlgchannel.h"
+#include <qgroupbox.h>
 
 DlgChannel::DlgChannel(QWidget *parent, const char *name ) : DlgChannelDlg(parent,name)
 {
@@ -23,4 +24,12 @@ DlgChannel::DlgChannel(QWidget *parent, const char *name ) : DlgChannelDlg(paren
 
 DlgChannel::~DlgChannel()
 {
+}
+
+void DlgChannel::layoutMirror()
+{
+    // Mirror volume and knobs positions
+    QPoint knobpos = GroupBoxKnobs->pos();
+    GroupBoxKnobs->move(GroupBoxVolume->pos());
+    GroupBoxVolume->move(knobpos);
 }

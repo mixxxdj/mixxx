@@ -27,8 +27,8 @@ DEFINES += __OSSMIDI__
 # End of options
 #
 
-SOURCES	+= configobject.cpp configmapping.cpp fakemonitor.cpp controllogpotmeter.cpp controlobject.cpp controlnull.cpp controlpotmeter.cpp controlpushbutton.cpp controlrotary.cpp dlgchannel.cpp dlgplaycontrol.cpp dlgplaylist.cpp dlgmaster.cpp dlgcrossfader.cpp enginebuffer.cpp engineclipping.cpp enginefilterblock.cpp enginefilterrbj.cpp enginefilteriir.cpp engineobject.cpp enginepregain.cpp enginevolume.cpp main.cpp midiobject.cpp mixxx.cpp mixxxdoc.cpp mixxxview.cpp player.cpp qknob.cpp soundsource.cpp soundsourceheavymp3.cpp soundsourcemp3.cpp soundsourceaflibfile.cpp monitor.cpp enginechannel.cpp enginemaster.cpp
-HEADERS	+= configobject.h configmapping.h fakemonitor.h controllogpotmeter.h controlobject.h controlnull.h controlpotmeter.h controlpushbutton.h controlrotary.h defs.h dlgchannel.h dlgplaycontrol.h dlgplaylist.h dlgmaster.h dlgcrossfader.h enginebuffer.h engineclipping.h enginefilterblock.h enginefilterrbj.h enginefilteriir.h engineobject.h enginepregain.h enginevolume.h midiobject.h mixxx.h mixxxdoc.h mixxxview.h player.h qknob.h soundsource.h soundsourceheavymp3.h soundsourcemp3.h soundsourceaflibfile.h monitor.h enginechannel.h enginemaster.h
+SOURCES	+= configobject.cpp configmapping.cpp fakemonitor.cpp controllogpotmeter.cpp controlobject.cpp controlnull.cpp controlpotmeter.cpp controlpushbutton.cpp controlrotary.cpp dlgchannel.cpp dlgplaycontrol.cpp dlgplaylist.cpp dlgmaster.cpp dlgcrossfader.cpp dlgsplit.cpp enginebuffer.cpp engineclipping.cpp enginefilterblock.cpp enginefilterrbj.cpp enginefilteriir.cpp engineobject.cpp enginepregain.cpp enginevolume.cpp main.cpp midiobject.cpp mixxx.cpp mixxxdoc.cpp mixxxview.cpp player.cpp soundsource.cpp soundsourceheavymp3.cpp soundsourcemp3.cpp soundsourceaflibfile.cpp monitor.cpp enginechannel.cpp enginemaster.cpp wknob.cpp wbulb.cpp wplaybutton.cpp
+HEADERS	+= configobject.h configmapping.h fakemonitor.h controllogpotmeter.h controlobject.h controlnull.h controlpotmeter.h controlpushbutton.h controlrotary.h defs.h dlgchannel.h dlgplaycontrol.h dlgplaylist.h dlgmaster.h dlgcrossfader.h dlgsplit.h enginebuffer.h engineclipping.h enginefilterblock.h enginefilterrbj.h enginefilteriir.h engineobject.h enginepregain.h enginevolume.h midiobject.h mixxx.h mixxxdoc.h mixxxview.h player.h soundsource.h soundsourceheavymp3.h soundsourcemp3.h soundsourceaflibfile.h monitor.h enginechannel.h enginemaster.h wknob.h wbulb.h wplaybutton.h
 
 unix {
   UI_DIR = .ui
@@ -50,8 +50,8 @@ win32 {
 #QMAKE_CXXFLAGS_DEBUG += -pg
 #QMAKE_LFLAGS_DEBUG += -pg
 
-FORMS	= dlgchanneldlg.ui dlgplaycontroldlg.ui dlgplaylistdlg.ui dlgmasterdlg.ui dlgcrossfaderdlg.ui 
-IMAGES	= filesave.xpm 
+FORMS	= dlgchanneldlg.ui dlgplaycontroldlg.ui dlgplaylistdlg.ui dlgmasterdlg.ui dlgcrossfaderdlg.ui dlgsplitdlg.ui
+IMAGES	= filesave.xpm
 TEMPLATE	=app
 CONFIG	+= qt warn_on thread debug
 DBFILE	= mixxx.db
