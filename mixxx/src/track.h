@@ -17,6 +17,7 @@
 #include <qptrlist.h>
 #include <qobject.h>
 #include "trackplaylist.h"
+#include "trackplaylistlist.h"
 
 class TrackImporter;
 class TrackInfoObject;
@@ -48,7 +49,9 @@ public:
     void writeXML(QString location);
     /** Get pointer to TrackCollection */
     TrackCollection *getTrackCollection();
-
+    /** Force an update of menu and tree view */
+    void updatePlaylistViews();
+    
 public slots:
     /** Decode playlist drops to WTrackTable, and loads corresponding playlist */
     void slotDrop(QDropEvent *e);
@@ -91,17 +94,18 @@ signals:
     void newTrackPlayer1(TrackInfoObject *);
     /** A new track has been loaded in player 2 */
     void newTrackPlayer2(TrackInfoObject *);
-
+    /** Signal to update playlists menu */
+    void updateMenu(const TrackPlaylistList &qPlaylists);
+    /** Signal to set active playlist */
+    void activePlaylist(TrackPlaylist *);
 private:
-    /** Update tree view with playlist info */
-    void updateTreeView();
     /** Returns pointer to playlist by the given name */
     TrackPlaylist *getPlaylist(QString qName);
 
     /** Pointer to the Importer class */
     TrackImporter *m_pTrackImporter;
     /** List of pointers to TrackPlaylists */
-    QPtrList<TrackPlaylist> m_qPlaylists;
+    TrackPlaylistList m_qPlaylists;
     /** Current active playlist */
     TrackPlaylist *m_pActivePlaylist;
     /** Pointer to playlist for which a popup menu is currently displayed */

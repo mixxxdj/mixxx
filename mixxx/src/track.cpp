@@ -50,7 +50,7 @@ Track::Track(QString location, MixxxView *pView, EngineBuffer *pBuffer1, EngineB
         m_qPlaylists.append(new TrackPlaylist(m_pTrackCollection));
 
     // Update tree view
-    updateTreeView();
+    updatePlaylistViews();
 
     // Insert the first playlist in the list
     m_pActivePlaylist = m_qPlaylists.at(0);
@@ -59,7 +59,7 @@ Track::Track(QString location, MixxxView *pView, EngineBuffer *pBuffer1, EngineB
     // Connect mouse events from the tree view
     connect(m_pView->m_pTreeView, SIGNAL(playlistPopup(QString)), this, SLOT(slotPlaylistPopup(QString)));
     connect(m_pView->m_pTreeView, SIGNAL(activatePlaylist(QString)), this, SLOT(slotActivatePlaylist(QString)));
-    
+    connect(this, SIGNAL(activePlaylist(TrackPlaylist *)), m_pView->m_pTreeView, SLOT(slotHighlightPlaylist(TrackPlaylist *)));
     // Connect drop events to table
     connect(m_pView->m_pTrackTable, SIGNAL(dropped(QDropEvent *)), this, SLOT(slotDrop(QDropEvent *)));
 
@@ -186,7 +186,7 @@ TrackCollection *Track::getTrackCollection()
 
 void Track::slotDrop(QDropEvent *e)
 {
-    qDebug("track drop");
+    //qDebug("track drop");
 
     QString name;
     QCString type("playlist");
@@ -218,6 +218,7 @@ void Track::slotActivatePlaylist(QString name)
         m_pActivePlaylist = pNewlist;
         m_pActivePlaylist->activate(m_pView->m_pTrackTable);
     }
+    emit(activePlaylist(pNewlist));
 }
 
 void Track::slotNewPlaylist()
@@ -228,7 +229,7 @@ void Track::slotNewPlaylist()
         ++i;
 
     m_qPlaylists.append(new TrackPlaylist(m_pTrackCollection, QString("Default %1").arg(i)));
-    updateTreeView();
+    updatePlaylistViews();
 }
 
 void Track::slotDeletePlaylist(QString qName)
@@ -262,7 +263,7 @@ void Track::slotDeletePlaylist(QString qName)
         slotActivatePlaylist(m_qPlaylists.at(0)->getListName());
     }
 
-    updateTreeView();
+    updatePlaylistViews();
 }
 
 void Track::slotDeletePlaylist()
@@ -283,8 +284,8 @@ void Track::slotImportPlaylist()
     if (pTempPlaylist != 0)
     {
         m_qPlaylists.append(pTempPlaylist);
-        updateTreeView();
     }
+    updatePlaylistViews();
 }
 
 TrackPlaylist *Track::getPlaylist(QString qName)
@@ -299,11 +300,6 @@ TrackPlaylist *Track::getPlaylist(QString qName)
     return 0;
 }
 
-void Track::updateTreeView()
-{
-    if (m_pView->m_pTreeView)
-        m_pView->m_pTreeView->updatePlaylists(&m_qPlaylists);
-}
 
 void Track::slotPlaylistPopup(QString qName)
 {
@@ -448,3 +444,18 @@ void Track::slotEndOfTrackPlayer2(double)
     m_pEndOfTrackCh2->setValueFromApp(0.);
 }
 
+void Track::updatePlaylistViews()
+{
+    // Sort list
+    m_qPlaylists.sort();
+
+    // Update tree view
+    if (m_pView->m_pTreeView)
+        m_pView->m_pTreeView->updatePlaylists(&m_qPlaylists);
+
+    // Update menu
+    emit(updateMenu(m_qPlaylists));
+    
+    // Set active
+    emit(activePlaylist(m_pActivePlaylist));
+}

@@ -57,7 +57,8 @@ public:
     static QString fullPath(QListViewItem* item);
 public slots:
     void slotUpdateDir(const QString &);
-
+    void slotHighlightPlaylist(TrackPlaylist *);
+    
 signals:
     void folderSelected(const QString &);
     void playlistPopup(QString);
@@ -67,7 +68,7 @@ protected slots:
     void slotFolderSelected(QListViewItem *);
     void openFolder();
     void slotRenameItem();
-
+   
 protected:
     void contentsDragEnterEvent(QDragEnterEvent *e);
     void contentsDragMoveEvent(QDragMoveEvent *e);

@@ -357,3 +357,17 @@ void WTreeView::slotUpdateDir( const QString &s )
     
     m_pRootDir = new WTreeItemDir(this, s);
 }
+
+void WTreeView::slotHighlightPlaylist(TrackPlaylist *p)
+{
+    qDebug("highlight");
+    
+    // Find playlist and highlight
+    QListViewItem *it = m_pRootPlaylist->firstChild();
+    while (it)
+    {
+        if (it->text(1)==p->getListName())
+            it->setSelected(true);    
+        it = it->nextSibling();
+    }
+}

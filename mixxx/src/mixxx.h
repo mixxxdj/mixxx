@@ -48,6 +48,7 @@
 #include "midiobject.h"
 #include "controlobject.h"
 #include "dlgpreferences.h"
+#include "trackplaylist.h"
 
 class WVisual;
 class Track;
@@ -128,6 +129,8 @@ class MixxxApp : public QMainWindow
     QPopupMenu *fileMenu;
     /** edit_menu contains all items of the menubar entry "Edit" */
     QPopupMenu *editMenu;
+    /** playlist menu */
+    QPopupMenu *playlistsMenu;
     /** options_menu contains all items of the menubar entry "Options" */
     QPopupMenu *optionsMenu;
     /** view_menu contains all items of the menubar entry "View" */
@@ -148,6 +151,11 @@ class MixxxApp : public QMainWindow
     QAction *editCopy;
     QAction *editPaste;
 
+    QAction *playlistsNew;
+    QAction *playlistsImport;
+    QAction **playlistsList;
+    int m_iNoPlaylists;
+    
     QAction *optionsBeatMark;
     QAction *optionsFullScreen;
     QAction *optionsPreferences;
