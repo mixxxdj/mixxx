@@ -19,10 +19,11 @@
 #define ENGINEPREPROCESS_H
 
 #include "engineobject.h"
-#include "enginespectralfwd.h"
 #include "defs.h"
 #include <qptrlist.h>
 
+class EngineSpectralFwd;
+class WindowKaiser;
 class SoundBuffer;
 
 /**
@@ -34,15 +35,17 @@ class SoundBuffer;
 class EnginePreProcess : public EngineObject  {
     Q_OBJECT
 public:
-    EnginePreProcess(SoundBuffer *_soundbuffer, int _specNo, int windowSize);
+    EnginePreProcess(SoundBuffer *_soundbuffer, int _specNo, WindowKaiser *window);
     ~EnginePreProcess();
     void update(int specFrom, int specTo);
     CSAMPLE *process(const CSAMPLE *, const int);
 private:
+    void process(int idx);
+
     SoundBuffer *soundbuffer;
     int specNo;
     QPtrList<EngineSpectralFwd> specList;
-    
+    CSAMPLE *hfc;    
 };
 
 #endif

@@ -15,6 +15,8 @@
 #include <sfftw.h>
 #include <srfftw.h>
 
+class WindowKaiser;
+
 /**
   * Performs FFT on a buffer of samples. Upon instantiazion it is possible
   * to select if the output should contain polar or rectangular corrdinates,
@@ -32,14 +34,16 @@ public:
          * is true the phase is calculated, otherwise if Power and Phase are false,
          * the rectangular corrdinates are calculated. The returned array is in
          * a format specified by the FFTW library. */
-    EngineSpectralFwd(bool Power, bool Phase, int Length);
+    EngineSpectralFwd(bool Power, bool Phase, WindowKaiser *window);
     /** Destructor */
     ~EngineSpectralFwd();
     /** Performs an fft opeation on the samples pointed to by p */
     CSAMPLE *process(const CSAMPLE *p, const int);
+    /** Return the High Frequency Content (HFC) of the spectrum */
+    CSAMPLE getHFC();
     /** Calculates the magnitude of the FFT at the bin at index. This function
-         * only returns a valid result if both Power and Phase was set to false
-         * upon initialization. */
+      * only returns a valid result if both Power and Phase was set to false
+      * upon initialization. */
     CSAMPLE power(int index);
     /** Calculates the phase of the FFT at the bin at index. This function
          * only returns a valid result if both Power and Phase was set to false
@@ -56,6 +60,7 @@ protected:
     /** Internal variables to determine if power and phase should be calculated
          * upon a call to tick(). */
     bool   power_calc, phase_calc;
+    CSAMPLE wndNorm;
 };
 
 #endif
