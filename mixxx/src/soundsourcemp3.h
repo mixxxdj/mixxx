@@ -56,7 +56,10 @@ private:
     int bitrate;
     int framecount;
     int currentframe;
-    mad_timer_t pos;              /* current play position. */
+    /** Number of channels in file */
+    int m_iChannels;
+    /** current play position. */
+    mad_timer_t pos;
     mad_timer_t filelength;
     mad_stream Stream;
     mad_frame Frame;

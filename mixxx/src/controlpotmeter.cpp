@@ -52,7 +52,7 @@ void ControlPotmeter::setRange(double dMinValue, double dMaxValue)
     m_dMaxValue = dMaxValue;
     m_dValueRange = m_dMaxValue-m_dMinValue;
     m_dValue = m_dMinValue + 0.5*m_dValueRange;
-//    qDebug("min %f, max %f, range %f, val %f",m_dMinValue, m_dMaxValue, m_dValueRange, m_dValue);
+    //qDebug("%p, min %f, max %f, range %f, val %f",this, m_dMinValue, m_dMaxValue, m_dValueRange, m_dValue);
     updateFromApp();
 }
 
@@ -73,6 +73,22 @@ void ControlPotmeter::setValueFromApp(double dValue)
         m_dValue = dValue;
 
     updateFromApp();
+}
+
+void ControlPotmeter::setValueFromEngine(double dValue)
+{
+/*
+    if (dValue>m_dMaxValue)
+        m_dValue = m_dMaxValue;
+    else if (dValue<m_dMinValue)
+        m_dValue = m_dMinValue;
+    else
+*/
+        m_dValue = dValue;
+
+    //if (dValue!=0.)
+    //    qDebug("%p: %f,%f, range %f-%f",this,dValue,m_dValue,m_dMinValue, m_dMaxValue);
+    updateFromEngine();
 }
 
 void ControlPotmeter::setValueFromMidi(MidiCategory, int v)

@@ -100,12 +100,12 @@ MixxxView::MixxxView(QWidget *parent, bool bVisualsWaveform, QString qSkinPath) 
             {
                 if (WWidget::selectNodeInt(node, "Channel")==1 && m_pNumberPosCh1==0)
                 {
-                    m_pNumberPosCh1 = new WNumberPos(this);
+                    m_pNumberPosCh1 = new WNumberPos("[Channel1]", this);
                     m_pNumberPosCh1->setup(node);
                 }
                 else if (WWidget::selectNodeInt(node, "Channel")==2 && m_pNumberPosCh2==0)
                 {
-                    m_pNumberPosCh2 = new WNumberPos(this);
+                    m_pNumberPosCh2 = new WNumberPos("[Channel2]", this);
                     m_pNumberPosCh2->setup(node);
                 }
             }

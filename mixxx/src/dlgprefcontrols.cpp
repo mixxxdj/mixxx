@@ -156,6 +156,7 @@ void DlgPrefControls::slotUpdate()
 
 void DlgPrefControls::slotSetRateRange(int pos)
 {
+    qDebug("RATE:");
     float range = (float)(pos)/10.;
     if (pos==0)
         range = 0.08f;

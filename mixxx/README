@@ -18,7 +18,9 @@ New since 1.0.1:
   available
 - Configurable keyboard shortcuts
 - Beat estimation, visual beat marks, bpm display
+- Tempo syncronization button
 - Absolute position/remaining time display
+- Tooltips added
 
 * REQUIREMENTS *********************************************
 Mixxx is depends on the following libraries:

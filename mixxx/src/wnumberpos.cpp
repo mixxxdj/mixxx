@@ -11,12 +11,14 @@
 //
 #include "wnumberpos.h"
 #include <math.h>
+#include "controlobject.h"
 
-WNumberPos::WNumberPos(QWidget *parent, const char *name) : WNumber(parent, name)
+WNumberPos::WNumberPos(const char *group, QWidget *parent, const char *name) : WNumber(parent, name)
 {
     m_iDuration = 0;
     m_qsText = "Pos: ";
     m_bRemain = false;
+    m_pRateControl = ControlObject::getControl(ConfigKey(QString(group), QString("rate")));
 }
 
 WNumberPos::~WNumberPos()
@@ -32,14 +34,25 @@ void WNumberPos::setValue(double dValue)
 {
     double v = dValue*((float)m_iDuration/127.);
     if (m_bRemain)
-        v = (float)m_iDuration-v;
+        v = ((float)m_iDuration-v)*(1.-m_pRateControl->getValue());
 
-    int min1 = v/600.;
-    int min2 = (int)(v/60.)%10;
-    int sec1 = ((int)v%60)/10;
-    int sec2 = (int)v%10;
-    int msec1 = (int)((v-floor(v))*10.);
-    int msec2 = (int)((v-floor(v))*100.)%10;
+    int min1=0,min2=0,sec1=0,sec2=0,msec1=0,msec2=0;
+    if (v>0.)
+    {
+        min1 = (int)(floor(v/600.))%10;
+        min2 = (int)(floor(v/60.))%10;
+        sec1 = (int)(floor(v/10.))%6;
+        sec2 = (int)(floor(v))%10;
+        msec1 = (int)floor((v-floor(v))*10.);
+        msec2 = (int)(floor((v-floor(v))*100.))%10;
+    }
+
+/*
+    if (v<30. && v>0.)
+        m_pLabel->setPaletteForegroundColor(QColor(255,0,0));
+    else
+        m_pLabel->setPaletteForegroundColor(m_qFgColor);
+*/
 
     m_pLabel->setText(QString(m_qsText).append("%1%2:%3%4:%5%6").arg(min1,1,10).arg(min2,1,10).arg(sec1,1,10).arg(sec2,1,10).arg(msec1,1,10).arg(msec2,1,10));
 }
