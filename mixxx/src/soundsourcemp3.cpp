@@ -96,9 +96,6 @@ SoundSourceMp3::SoundSourceMp3(QString qFilename) : SoundSource(qFilename)
     mad_frame_init(&Frame);
     mad_synth_init(&Synth);
 
-    // Set number of channels
-    m_iChannels = Synth.pcm.channels;
-
     // Set the type field:
     type = "mp3 file.";
 
@@ -151,7 +148,7 @@ inline long unsigned SoundSourceMp3::length()
     return (long unsigned) 2*mad_timer_count(filelength, MAD_UNITS_44100_HZ);
 }
 
-/*	
+/*
   read <size> samples into <destination>, and return the number of
   samples actually read.
 */
@@ -232,8 +229,8 @@ unsigned SoundSourceMp3::read(unsigned long samples_wanted, const SAMPLE* _desti
         rest = no;
     else
         rest = -1;
-  
-//    qDebug("decoded %i samples in %i frames, rest: %i.", Total_samples_decoded, frames, rest);
+
+    //qDebug("decoded %i samples in %i frames, rest: %i, chan %i", Total_samples_decoded, frames, rest, MAD_NCHANNELS(&Frame.header));
     return Total_samples_decoded;
 }
 

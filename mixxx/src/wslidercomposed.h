@@ -35,6 +35,7 @@ public:
     void setup(QDomNode node);
     void setPixmaps(bool bHorizontal, const QString &filenameSlider, const QString &filenameHandle);
     void mouseMoveEvent(QMouseEvent *e);
+    void mouseReleaseEvent(QMouseEvent *e);
     void mousePressEvent(QMouseEvent *e);
     void paintEvent(QPaintEvent *);
 public slots:
@@ -51,6 +52,8 @@ private:
     int m_iHandleLength;
     /** True if it's a horizontal slider */
     bool m_bHorizontal;
+    /** Is true if events is emitted while the slider is dragged */
+    bool m_bEventWhileDrag;
     /** Pointer to double buffer */
     QPixmap *m_pDoubleBuffer;
     /** Pointer to pixmap of the slider */

@@ -961,6 +961,7 @@
   <Slider>playpos-slider.png</Slider>
   <Pos>144,375</Pos>
   <Horizontal>true</Horizontal>
+  <EventWhileDrag>no</EventWhileDrag>
   <Connection>
    <ConfigKey>[Channel1],playposition</ConfigKey>
    <EmitOnDownPress>false</EmitOnDownPress>
@@ -973,6 +974,7 @@
   <Slider>playpos-slider.png</Slider>
   <Pos>623,375</Pos>
   <Horizontal>true</Horizontal>
+  <EventWhileDrag>no</EventWhileDrag>
   <Connection>
    <ConfigKey>[Channel2],playposition</ConfigKey>
    <EmitOnDownPress>false</EmitOnDownPress>
