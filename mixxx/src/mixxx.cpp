@@ -195,6 +195,7 @@ MixxxApp::MixxxApp(QApplication *a, QStringList files)
 #ifdef __LINUX__
     powermate1 = new PowerMateLinux();
     powermate2 = new PowerMateLinux();
+
 #endif
 #ifdef __WIN__
     powermate1 = new PowerMateWin();

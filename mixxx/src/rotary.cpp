@@ -1,8 +1,8 @@
 /***************************************************************************
-                          powermate.cpp  -  description
+                          rotary.cpp  -  description
                              -------------------
-    begin                : Tue Apr 29 2003
-    copyright            : (C) 2003 by Tue & Ken Haste Andersen
+    begin                : Tue Sep 21 2004
+    copyright            : (C) 2004 by Tue Haste Andersen
     email                : haste@diku.dk
  ***************************************************************************/
 
@@ -15,106 +15,98 @@
  *                                                                         *
  ***************************************************************************/
 
-#include "powermate.h"
+#include "rotary.h"
 #include "controlobject.h"
-#include "controleventmidi.h"
 #include "qapplication.h"
 #include "midiobject.h"
 #include "mathstuff.h"
 
-PowerMate::PowerMate()
+Rotary::Rotary()
 {
     m_pControlObjectRotary = 0;
     m_pControlObjectButton = 0;
 
-    m_bSendKnobEvent = false;
-    m_fMagnitude=0.;
+    m_iFilterLength = kiRotaryFilterMaxLen;
 
-    m_pKnobIntegral = new int[kiPowermateKnobIntegralMaxLen];
-    for (int i=0; i<kiPowermateKnobIntegralMaxLen; i++)
-        m_pKnobIntegral[i] = 0;
-    m_iKnobIntegralLength = kiPowermateKnobIntegralMaxLen;
-
-    m_pRequestLed = new QSemaphore(5);
+    m_pFilter = new double[m_iFilterLength];
+    for (int i=0; i<m_iFilterLength; ++i)
+        m_pFilter[i] = 0.;
 }
 
-PowerMate::~PowerMate()
+Rotary::~Rotary()
 {
     if (running())
     {
         terminate();
         wait();
     }
-    delete [] m_pKnobIntegral;
-    delete m_pRequestLed;
+    delete [] m_pFilter;
 }
 
-void PowerMate::selectMapping(QString mapping)
+void Rotary::selectMapping(QString mapping)
 {
-    if (mapping==kqPowerMateMappingP1Phase)
+    if (mapping==kqRotaryMappingP1Phase)
     {
         m_pControlObjectRotary = ControlObject::getControl(ConfigKey("[Channel1]","wheel"));
         m_pControlObjectButton = ControlObject::getControl(ConfigKey("[Channel1]","play"));
-        m_iKnobIntegralLength = kiPowermateKnobIntegralMaxLen;
+        m_iFilterLength = kiRotaryFilterMaxLen;
     }
-    else if (mapping==kqPowerMateMappingP2Phase)
+    else if (mapping==kqRotaryMappingP2Phase)
     {
         m_pControlObjectRotary = ControlObject::getControl(ConfigKey("[Channel2]","wheel"));
         m_pControlObjectRotary = ControlObject::getControl(ConfigKey("[Channel2]","play"));
-        m_iKnobIntegralLength = kiPowermateKnobIntegralMaxLen;
+        m_iFilterLength = kiRotaryFilterMaxLen;
     }
-    else if (mapping==kqPowerMateMappingP1Scratch)
+    else if (mapping==kqRotaryMappingP1Scratch)
     {
         m_pControlObjectRotary = ControlObject::getControl(ConfigKey("[Channel1]","scratch"));
         m_pControlObjectButton = ControlObject::getControl(ConfigKey("[Channel1]","play"));
-        m_iKnobIntegralLength = 5;
+        m_iFilterLength = 5;
     }
-    else if (mapping==kqPowerMateMappingP2Scratch)
+    else if (mapping==kqRotaryMappingP2Scratch)
     {
         m_pControlObjectRotary = ControlObject::getControl(ConfigKey("[Channel2]","scratch"));
         m_pControlObjectRotary = ControlObject::getControl(ConfigKey("[Channel2]","play"));
-        m_iKnobIntegralLength = 5;
+        m_iFilterLength = 5;
     }
 }
 
-void PowerMate::led()
+void Rotary::run()
 {
-    m_pRequestLed->tryAccess(1);
+    while (1)
+        getNextEvent();
 }
 
-void PowerMate::knob_event()
+void Rotary::sendRotaryEvent(double dValue)
 {
     // Move everything one step backwards in integral buffer
-    m_fMagnitude = 0.;
+    double dMagnitude = 0.;
     bool bStop = true;
-    for (int i=0; i<m_iKnobIntegralLength-1; i++)
+    for (int i=0; i<m_iFilterLength-1; i++)
     {
-        m_pKnobIntegral[i]=m_pKnobIntegral[i+1];
-        m_fMagnitude += m_pKnobIntegral[i];
-        if (m_pKnobIntegral[i]!=0)
+        m_pFilter[i]=m_pFilter[i+1];
+        dMagnitude += m_pFilter[i];
+        if (m_pFilter[i]!=0)
             bStop = false;
     }
-    m_pKnobIntegral[m_iKnobIntegralLength-1] = m_iKnobVal;
-    m_fMagnitude += m_pKnobIntegral[m_iKnobIntegralLength-1];
+    m_pFilter[m_iFilterLength-1] = dValue;
+    dMagnitude += m_pFilter[m_iFilterLength-1];
 
-    m_fMagnitude = 25.*m_fMagnitude/m_iKnobIntegralLength;
-//     qDebug("mag %f",m_fMagnitude);
-
+/*
     // Range check
     if (m_fMagnitude>63)
         m_fMagnitude = 63;
     else if (m_fMagnitude<-64)
         m_fMagnitude = -64;
+*/
+//     qDebug("val %f, mag %f", (float)dValue, (float)dMagnitude);
 
-    // Post event
     if (m_pControlObjectRotary)
-        m_pControlObjectRotary->queueFromThread((m_fMagnitude)/127.);
-
-    if (bStop && m_fMagnitude==0)
-        m_bSendKnobEvent = false;
-
-    // Reset knob value
-    m_iKnobVal = 0;
+        m_pControlObjectRotary->queueFromThread(dMagnitude);
 }
 
-
+void Rotary::sendButtonEvent()
+{
+    if (m_pControlObjectButton)
+        m_pControlObjectButton->queueFromMidi(NOTE_ON, 1);
+}
