@@ -50,8 +50,13 @@ SoundSourceHeavymp3::SoundSourceHeavymp3(const char *filename) {
       mad_synth_frame(&Synth,&Frame);
       // Check if we need to enlarge the buffer:
       if (curr_sample+2*Synth.pcm.length > buffer.size()) {
-	  buffer.resize(buffer.size() + 1000000); // add ten more megs
-	  qDebug("decoded %li samples...", curr_sample);
+	  try {
+	      buffer.resize(buffer.size() + 1000000); // add ten more megs
+	      qDebug("decoded %li samples...", curr_sample);
+	  }
+	  catch (...) {
+	      qDebug("Could not allocate more memory.");
+	  }
       }
       // Transfer to buffer:
       for (int i=0;i<Synth.pcm.length;i++) {

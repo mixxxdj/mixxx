@@ -6,11 +6,12 @@
 EngineClipping::EngineClipping(QRadioButton *BulbClipping)
 {
     bulb_clipping = BulbClipping;
-	buffer = new CSAMPLE[MAX_BUFFER_LEN];
+    buffer = new CSAMPLE[MAX_BUFFER_LEN];
 }
 
 EngineClipping::~EngineClipping()
 {
+    delete []buffer;
 }
 
 CSAMPLE *EngineClipping::process(const CSAMPLE *source, const int buffer_size)
