@@ -1,5 +1,5 @@
 # Generated automatically from Makefile.in by configure.
-# KDE tags expanded automatically by am_edit - $Revision: 9 $ 
+# KDE tags expanded automatically by am_edit - $Revision: 10 $ 
 # Makefile.in generated automatically by automake 1.4-p5 from Makefile.am
 
 # Copyright (C) 1994, 1995-8, 1999, 2001 Free Software Foundation, Inc.
