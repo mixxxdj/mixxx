@@ -108,7 +108,7 @@ CSAMPLE EngineSpectralFwd::getPSF()
     for (int i=0; i<l_half; ++i)
     {
         float w = kfEqualLoudness[(int)((float)(i*kiEqualLoudnessLen)/(float)l_half)];
-        psf += w * powf(spectrum[i],(1./3.));
+        psf += w * sqrtf(spectrum[i]);
     }
     return psf;
 }
