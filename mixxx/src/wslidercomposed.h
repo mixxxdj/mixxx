@@ -39,6 +39,7 @@ public:
 public slots:
     void setValue(float);
 private:
+    void reset();
     void unsetPixmaps();
 
     /** Internal storage of slider position in pixels */
