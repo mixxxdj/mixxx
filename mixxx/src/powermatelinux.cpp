@@ -101,18 +101,14 @@ void PowerMateLinux::run()
             led_write(255, 0, 0, 0, 1);
 
             // Sleep
-            waittime->tv_sec  = 0;
-            waittime->tv_usec = 1;
-            select(0,0,0,0,waittime);
+            msleep(1);
    
             led_write(0, 0, 0, 0, 0);
         }
         else
         {
             // Sleep
-            waittime->tv_sec  = 0;
-            waittime->tv_usec = 50;
-            select(0,0,0,0,waittime);
+            msleep(5);
         }
     }
 }

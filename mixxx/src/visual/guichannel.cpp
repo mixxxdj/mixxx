@@ -80,15 +80,15 @@ SignalVertexBuffer *GUIChannel::add(ReaderExtract *readerExtract)
     // Construct a new container
     GUIContainer *c = new GUIContainer(readerExtract, playpos);
 
-    qDebug("pos %i,%i",posx,30*(list.count()));
+//    qDebug("pos %i,%i",posx,30*(list.count()));
     // Base y pos dependent on number of containers
-    c->setBasepos(posx,30*(list.count()),0);
+    c->setBasepos(posx,20+10*(list.count()),0);
 
     // Zoom y pos dependent on channel
     if (channelNo==0)
         c->setZoompos(zoomposx,20,0);
     else
-        c->setZoompos(zoomposx,20,10);
+        c->setZoompos(zoomposx,-10,0);
 
     // Append container to list
     list.append(c);

@@ -142,7 +142,7 @@ void MidiObjectOSS::run()
                 midicontrol = buffer[1];
                 midivalue = buffer[2];
 
-                qDebug("MidiObjectOSS: midi ch: %i, ctrl: %i, val: %i",midichannel,midicontrol,midivalue);
+//                qDebug("MidiObjectOSS: midi ch: %i, ctrl: %i, val: %i",midichannel,midicontrol,midivalue);
                 send(midicategory, midichannel, midicontrol, midivalue);
             }
         }

@@ -28,7 +28,7 @@ MixxxVisual::MixxxVisual(QApplication *app, QWidget *parent, const char *name) :
 
     installEventFilter(this);
     time.start();
-    startTimer(50);
+    startTimer(25);
 
     list.setAutoDelete(true);
 }

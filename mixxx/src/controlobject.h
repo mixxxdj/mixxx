@@ -39,6 +39,8 @@ public:
   ControlObject();
   ControlObject(ConfigKey key);
   ~ControlObject();
+  /** Connect two control objects, so dest = src */
+  bool connect(ConfigKey src, ConfigKey dest);
   
   QString *print();
   static void setConfig(ConfigObject<ConfigValueMidi> *_config);
@@ -49,12 +51,12 @@ public:
 public slots:
   virtual void slotSetPosition(int) = 0;
   virtual void slotSetPositionMidi(MidiCategory c, int v) = 0;
+  /** Set the value of the object. Called from event handler when receiving ControlEventEngine. */
+  void setValue(FLOAT_TYPE);
 signals:
   void updateGUI(int);
   void valueChanged(FLOAT_TYPE);
 protected:
-  /** Set the value of the object. Called from event handler when receiving ControlEventEngine. */
-  void setValue(FLOAT_TYPE);
   /** Forces the gui to be updated with the value of the controller */
   virtual void forceGUIUpdate() = 0;  
   void emitValueChanged(FLOAT_TYPE);

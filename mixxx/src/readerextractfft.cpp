@@ -20,7 +20,7 @@
 #include "windowkaiser.h"
 #include "configobject.h"
 
-ReaderExtractFFT::ReaderExtractFFT(ReaderExtract *input, int _frameSize, int _frameStep) : ReaderExtract(input)
+ReaderExtractFFT::ReaderExtractFFT(ReaderExtract *input, int _frameSize, int _frameStep) : ReaderExtract(input, "fft")
 {
     // These values are relative this buffer. Input buffer can have another number of channels and thus a different
     // buffer size than this class.

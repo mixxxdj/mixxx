@@ -18,6 +18,8 @@
 #ifndef READEREXTRACT_H
 #define READEREXTRACT_H
 
+#include <qstring.h>
+
 class GUIChannel;
 
 /**
@@ -27,7 +29,7 @@ class GUIChannel;
 class ReaderExtract
 {
 public: 
-    ReaderExtract(ReaderExtract *_input);
+    ReaderExtract(ReaderExtract *_input, QString qsVisualSignalType);
 
     virtual ~ReaderExtract();
     /** Reset the buffer. This may be used when loading a new track and when seeking */
@@ -45,9 +47,13 @@ public:
     virtual void *processChunk(const int idx, const int start_idx, const int end_idx, bool backwards) = 0;
     /** Add visual to GUI Channel */
     virtual void addVisual(GUIChannel *guichannel);
+    /** Get associated visual signal type */
+    QString getVisualDataType();
 protected:
     /** Pointer to input object */
     ReaderExtract *input;
+    /** Holds visual signal type */
+    QString m_qsVisualDataType;
 };
 
 #endif

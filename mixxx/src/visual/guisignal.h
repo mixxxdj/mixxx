@@ -18,7 +18,7 @@
 #ifndef GUISIGNAL_H
 #define GUISIGNAL_H
 #include "visualobject.h"
-#include "visualsignal.h"
+#include "visualdata.h"
 #include "visualbox.h"
 #include "signalvertexbuffer.h"
 
@@ -38,7 +38,7 @@ class GUISignal : public VisualObject
 {
   Q_OBJECT
 public:
-  GUISignal(SignalVertexBuffer *buffer, FastVertexArray * vertex, const char *group);
+  GUISignal(SignalVertexBuffer *buffer, FastVertexArray * vertex, const char *group, QString qsVisualDataType);
   ~GUISignal();
 public:
   /** Returns unique id of signal */
@@ -94,8 +94,7 @@ private:
 
   VisualBox *box, *playPosMarker;
 
-  VisualSignal preSignal,fishEyeSignal,postSignal;
-  VisualSignal signal;
+  VisualData *preSignal, *fishEyeSignal, *postSignal, *signal;
   SignalVertexBuffer *buffer;
   Material *boxMaterial, *boxWireMaterial;
 

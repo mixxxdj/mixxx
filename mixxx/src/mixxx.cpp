@@ -93,9 +93,6 @@
 
 #ifdef __VISUALS__
   #include "mixxxvisual.h"
-  #include "visual/visualsignal.h"
-  #include "visual/guisignal.h"
-  #include "visual/guicontainer.h"
 #endif
 
 MixxxApp::MixxxApp(QApplication *a)
@@ -292,6 +289,10 @@ MixxxApp::MixxxApp(QApplication *a)
     }
     */
 
+//    if (!control->connect(ConfigKey("[Channel1]","rate"), ConfigKey("","FishEyeSignalFraction")))
+//       qDebug("connect error");    
+
+    
     // Starting channels:
     channel1 = new EngineChannel(view->channel1, "[Channel1]");
     channel2 = new EngineChannel(view->channel2, "[Channel2]");

@@ -26,7 +26,7 @@
 #include "visual/guichannel.h"
 #endif
 
-ReaderExtractWave::ReaderExtractWave(QMutex *_enginelock) : ReaderExtract(0)
+ReaderExtractWave::ReaderExtractWave(QMutex *_enginelock) : ReaderExtract(0, "signal")
 {
     enginelock = _enginelock;
     guichannel = 0;

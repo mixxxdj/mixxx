@@ -20,8 +20,9 @@
 #include "visual/guichannel.h"
 #endif
 
-ReaderExtract::ReaderExtract(ReaderExtract *_input)
+ReaderExtract::ReaderExtract(ReaderExtract *_input, QString qsVisualDataType)
 {
+    m_qsVisualDataType = qsVisualDataType;
     input = _input;
 }
 
@@ -36,4 +37,7 @@ void ReaderExtract::addVisual(GUIChannel *guichannel)
 #endif
 }
 
-
+QString ReaderExtract::getVisualDataType()
+{
+    return m_qsVisualDataType;
+}

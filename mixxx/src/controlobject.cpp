@@ -50,6 +50,36 @@ ControlObject::~ControlObject()
     list.remove(this);
 }
 
+bool ControlObject::connect(ConfigKey src, ConfigKey dest)
+{
+
+    // Find src object
+    ControlObject *pSrc = 0;
+    for (pSrc=list.first(); pSrc; pSrc=list.next())
+    {
+        qDebug("(%s,%s) (%s,%s)",pSrc->cfgOption->key->group.latin1(),src.group.latin1(),pSrc->cfgOption->key->item.latin1(),src.item.latin1());
+        if ((pSrc->cfgOption->key->group == src.group) && (pSrc->cfgOption->key->item == src.item))
+            break;
+    }
+    if (pSrc==0)
+        return false;
+        
+    // Find dest object
+    ControlObject *pDest = 0;
+    for (pDest=list.first(); pDest; pDest=list.next())
+    {
+        if ((pDest->cfgOption->key->group == dest.group) && (pDest->cfgOption->key->item == dest.item))
+            break;
+    }
+    if (pDest==0)
+        return false;
+
+    QApplication::connect(pSrc, SIGNAL(valueChanged(FLOAT_TYPE)), pDest, SLOT(setValue(FLOAT_TYPE)));
+
+    return true;
+}
+
+
 QString *ControlObject::print()
 {
     QString *s = new QString(cfgOption->key->group.ascii());
@@ -76,8 +106,8 @@ void ControlObject::setControlEngine(int _controlEngineNo)
 
 void ControlObject::setWidget(QWidget *widget)
 {
-    connect(widget, SIGNAL(valueChanged(int)), this,   SLOT(slotSetPosition(int)));
-    connect(this,   SIGNAL(updateGUI(int)),    widget, SLOT(setValue(int)));
+    QApplication::connect(widget, SIGNAL(valueChanged(int)), this,   SLOT(slotSetPosition(int)));
+    QApplication::connect(this,   SIGNAL(updateGUI(int)),    widget, SLOT(setValue(int)));
 
     forceGUIUpdate();
 }
@@ -124,7 +154,7 @@ void ControlObject::emitValueChanged(FLOAT_TYPE value)
 /** Called when a midi event is received from MidiObject */
 void ControlObject::midi(MidiCategory category, char channel, char control, char value)
 {
-    //qDebug("Received midi message: ch %i no %i val %i",(int)channel,(int)midicontrol,(int)midivalue);
+//    qDebug("Received midi message: ch %i no %i val %i",(int)channel,(int)control,(int)value);
 
     // Check the potmeters:
     ControlObject *c;
