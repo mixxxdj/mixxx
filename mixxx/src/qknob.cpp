@@ -16,7 +16,9 @@
  ***************************************************************************/
 
 #include "qknob.h"
+
 #include <qrect.h>
+#include <qpixmap.h>
 
 #include "qknob/knob0.xpm"
 #include "qknob/knob1.xpm"
@@ -126,19 +128,17 @@ QKnob::~QKnob()
 }
 
 void QKnob::repaintScreen(const QRect *cr)
-{
-	if (cr != 0)
-	{
-		if (repaintRect != 0)
-			delete repaintRect;
-		repaintRect = new QRect(cr->topLeft(),cr->bottomRight());
-    }
+{	
+    if (cr != 0)
+        repaintRect = new QRect(cr->topLeft(),cr->size());
+    else
+        repaintRect = new QRect(0,0,width(),height());
 
-	QRect src(repaintRect->topLeft(),repaintRect->bottomRight());
+//    qDebug("topleft: (%i,%i), size (%i,%i)",repaintRect->topLeft().x(), repaintRect->topLeft().y(),
+//                                            repaintRect->size().width(), repaintRect->size().height());
+
 	int range = (maxValue()-minValue());
 	int val = value()*32/range;
-
-	qDebug("Value: %i (%p)",val,cr);
 
 	QPixmap *b = button00;
 	switch (val)
@@ -177,5 +177,8 @@ void QKnob::repaintScreen(const QRect *cr)
 		case 13: b = button29; break;
 		case 14: b = button30; break;
 	}
-	bitBlt(this,repaintRect->topLeft(),b,src);
+	
+    bitBlt(this,repaintRect->topLeft(),b,QRect(repaintRect->topLeft(),repaintRect->size()));
+
+    delete repaintRect;
 }
