@@ -57,9 +57,7 @@ win32 {
     }
     contains(WINPA, WMME) {
         message("Compiling with PortAudio/WMME drivers")
-        SOURCES += $$PORTAUDIO_DIR/pa_win_wmme/pa_win_wmme.c $$PORTAUDIO_DIR/pa_common/pa_lib.c
-        LIBS += winmm.lib
-        INCLUDEPATH += $$PORTAUDIO_DIR/pa_win_wmme
+        LIBS += winmm.lib PAStaticWMME.lib
     }
 }
 
@@ -71,7 +69,7 @@ win32 {
     INCLUDEPATH += $$RTAUDIO_DIR
     HEADERS += playerrtaudio.h $$RTAUDIO_DIR/RtAudio.h $$RTAUDIO_DIR/RtError.h
     SOURCES += playerrtaudio.cpp $$RTAUDIO_DIR/RtAudio.cpp
-    LIBS += dsound.lib 
+    LIBS += dsound.lib
 }
 
 # RTAudio (Linux ALSA)
