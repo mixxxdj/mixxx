@@ -30,7 +30,7 @@ class EngineObject : public QObject  {
 public: 
   EngineObject();
   ~EngineObject();
-  virtual CSAMPLE *process(CSAMPLE *, int) = 0;
+  virtual CSAMPLE *process(const CSAMPLE *, const int) = 0;
 };
 
 #endif

@@ -37,7 +37,7 @@ EngineFilterLBH::~EngineFilterLBH()
 	delete low;
 }
 
-CSAMPLE *EngineFilterLBH::process(CSAMPLE *source, int buf_size)
+CSAMPLE *EngineFilterLBH::process(const CSAMPLE *source, const int buf_size)
 {
     CSAMPLE *p0 = low->process(source,buf_size);
     CSAMPLE *p1 = band->process(source,buf_size);

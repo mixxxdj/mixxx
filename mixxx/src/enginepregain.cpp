@@ -11,17 +11,20 @@ EnginePregain::EnginePregain(int potmeter_midi, MidiObject* midi)
   buffer = new CSAMPLE[MAX_BUFFER_LEN];
 }
 
-EnginePregain::~EnginePregain() {
+EnginePregain::~EnginePregain()
+{
     delete pregainpot;
     delete [] buffer;
 }
 
-void EnginePregain::slotUpdate(FLOAT newvalue) {
-  pregain = newvalue;
+void EnginePregain::slotUpdate(FLOAT newvalue)
+{
+    pregain = newvalue;
 }
 
-CSAMPLE *EnginePregain::process(CSAMPLE *source, int buffer_size) {
-  for (int i=0; i<buffer_size; i++)
-    buffer[i] = source[i]*pregain;
-  return buffer;
+CSAMPLE *EnginePregain::process(const CSAMPLE *source, const int buffer_size)
+{
+    for (int i=0; i<buffer_size; i++)
+        buffer[i] = source[i]*pregain;
+    return buffer;
 }

@@ -48,7 +48,7 @@ public:
   ~EngineBuffer();
   void newtrack(const char *);
   void start();
-  CSAMPLE *process(CSAMPLE *, int);
+  CSAMPLE *process(const CSAMPLE *, const int);
 public slots:
    void slotUpdatePlay(valueType);
    void slotUpdateRate(FLOAT);

@@ -15,7 +15,7 @@ private:
   FLOAT pregain;
   EnginePregain(int, MidiObject*);
   ~EnginePregain();
-  CSAMPLE *process(CSAMPLE*, int);
+  CSAMPLE *process(const CSAMPLE*, const int);
  public slots:
   void slotUpdate(FLOAT);
 

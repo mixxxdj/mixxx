@@ -36,7 +36,7 @@ public:
 	EngineFilterRBJ(int potmeter_midi, int button_midi,
 				 	int button_bit, MidiObject *midi);
 	~EngineFilterRBJ();
-	CSAMPLE *process(CSAMPLE *source, int buf_size);
+	CSAMPLE *process(const CSAMPLE *source, const int buf_size);
 
 	ControlPotmeter* filterpot;
 public slots:

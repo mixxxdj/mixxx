@@ -249,7 +249,8 @@ void EngineBuffer::seek(FLOAT change) {
   play_pos = new_play_pos;
 }
 
-bool even(long n) {
+bool even(long n)
+{
   if ((n/2) != (n+1)/2)
     return false;
   else
@@ -262,7 +263,8 @@ bool even(long n) {
 // Input:   -
 // Output:  -
 // -------- ------------------------------------------------------
-void EngineBuffer::checkread() {
+void EngineBuffer::checkread()
+{
   //static int sem_value; // place to store the value of the semaphore for read
   static int pending_time = 0;
 
@@ -306,14 +308,16 @@ void EngineBuffer::checkread() {
   Helper function which returns the distance in the readbuffer between
   _start and end.
 */
-long EngineBuffer::distance(const long _start, const long end) {
+long EngineBuffer::distance(const long _start, const long end)
+{
   long start = _start;
   if (start > end)
     start -= read_buffer_size;
   return end-start;
 }
 
-void EngineBuffer::writepos() {
+void EngineBuffer::writepos()
+{
   static FLOAT lastwrite = 0.;
   FLOAT newwrite = play_pos/file->length();
   if (floor(fabs(newwrite-lastwrite)*100) >= 1) {
@@ -322,21 +326,24 @@ void EngineBuffer::writepos() {
   }
 }
 
- FLOAT EngineBuffer::min(const FLOAT a, const FLOAT b) {
+FLOAT EngineBuffer::min(const FLOAT a, const FLOAT b)
+{
   if (a > b)
     return b;
   else
     return a;
 }
 
-FLOAT EngineBuffer::max(const FLOAT a, const FLOAT b) {
+FLOAT EngineBuffer::max(const FLOAT a, const FLOAT b)
+{
   if (a > b)
     return a;
   else
     return b;
 }
 
-CSAMPLE *EngineBuffer::process(CSAMPLE *, int buf_size) {
+CSAMPLE *EngineBuffer::process(const CSAMPLE *, const int buf_size)
+{
   long prev;
   for (int i=0; i<buf_size; i+=2) {
     prev = (long)floor(play_pos)%read_buffer_size;
@@ -357,5 +364,3 @@ CSAMPLE *EngineBuffer::process(CSAMPLE *, int buf_size) {
 
   return buffer;
 }
-
-
