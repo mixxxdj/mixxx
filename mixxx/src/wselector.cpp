@@ -23,10 +23,12 @@
 // Static member variable definition
 QPixmap *WSelector::sliderA = 0;
 QPixmap *WSelector::sliderB = 0;
+int WSelector::instantiateNo = 0;
 
 WSelector::WSelector(QWidget *parent, const char *name ) : QSlider(parent,name)
 {
-    if (sliderA == 0)
+    instantiateNo++;
+    if (instantiateNo==1)
     {
         sliderA = new QPixmap(slider_a_xpm);
         sliderB = new QPixmap(slider_b_xpm);
@@ -39,8 +41,12 @@ WSelector::WSelector(QWidget *parent, const char *name ) : QSlider(parent,name)
 
 WSelector::~WSelector()
 {
-    delete sliderA;
-    delete sliderB;
+    instantiateNo--;
+    if (instantiateNo==0)
+    {
+        delete sliderA;
+        delete sliderB;
+    }
 }
 
 void WSelector::drawButton(QPainter *p)

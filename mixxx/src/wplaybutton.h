@@ -43,6 +43,7 @@ private slots:
     void emitValueChanged(bool);
 private:
     static QPixmap *buttonUpOn, *buttonUpOff, *buttonDownOn, *buttonDownOff;
+    static int instantiateNo;
 };
 
 #endif

@@ -23,10 +23,12 @@
 // Static member variable definition
 QPixmap *WPFLButton::buttonUp    = 0;
 QPixmap *WPFLButton::buttonDown  = 0;
+int WPFLButton::instantiateNo = 0;
 
 WPFLButton::WPFLButton(QWidget *parent, const char *name ) : QCheckBox(parent,name)
 {
-    if (buttonUp == 0)
+    instantiateNo++;
+    if (instantiateNo==1)
     {
         buttonUp    = new QPixmap(pfl_off_xpm);
         buttonDown  = new QPixmap(pfl_on_xpm);
@@ -40,8 +42,12 @@ WPFLButton::WPFLButton(QWidget *parent, const char *name ) : QCheckBox(parent,na
 
 WPFLButton::~WPFLButton()
 {
-    delete buttonUp;
-    delete buttonDown;
+    instantiateNo--;
+    if (instantiateNo==0)
+    {
+        delete buttonUp;
+        delete buttonDown;
+    }
 }
 
 void WPFLButton::setValue(int v)

@@ -34,7 +34,7 @@ protected:
     void drawButton (QPainter *);
 private:
     static QPixmap *sliderA, *sliderB;
-
+    static int instantiateNo;
 };
 
 #endif

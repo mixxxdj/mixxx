@@ -21,11 +21,14 @@
 
 // Static member variable definition
 QPixmap **WKnob::pix = 0;
+int WKnob::instantiateNo = 0;
 
 WKnob::WKnob(QWidget *parent, const char *name ) : QDial(0,127,1,64,parent,name)
 {
+    instantiateNo++;
+    
     // Convert xpm's to pixmaps
-    if (pix == 0)
+    if (instantiateNo==1)
     {
         pix = new QPixmap*[32];
         for (int i=0; i<32; i++)
@@ -36,6 +39,14 @@ WKnob::WKnob(QWidget *parent, const char *name ) : QDial(0,127,1,64,parent,name)
 
 WKnob::~WKnob()
 {
+    instantiateNo--;
+    
+    if (instantiateNo==0)
+    {
+        for (int i=0; i<32; i++)
+            delete pix[i];
+        delete [] pix;
+    }
 }
 
 QPixmap *WKnob::getKnob()

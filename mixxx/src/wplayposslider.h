@@ -42,6 +42,7 @@ protected:
 private:
     static QPixmap *slider, *marker;
     int value, pix_length, poss;
+    static int instantiateNo;
 };
 
 #endif

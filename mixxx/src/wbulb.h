@@ -37,6 +37,7 @@ protected:
     void mousePressEvent(QMouseEvent *e);
 private:
     static QPixmap *bulbOn, *bulbOff;
+    static int instantiateNo;
 };
 
 #endif
