@@ -24,7 +24,7 @@
 #include <qslider.h>
 #include <qdial.h>
 #include <qstring.h>
-
+#include <qlcdnumber.h>
 #include <pthread.h>
 #include <semaphore.h>
 
@@ -40,7 +40,7 @@
 #include "midiobject.h"
 /**
   *@author Tue and Ken Haste Andersen
-  */
+*/
 
 class EngineBuffer : public EngineObject, public QThread  {
  Q_OBJECT
@@ -52,6 +52,8 @@ public:
 public slots:
    void slotUpdatePlay(valueType);
    void slotUpdateRate(FLOAT);
+signals:
+   void position(int);   
 private:
   void run();
   void stop();
