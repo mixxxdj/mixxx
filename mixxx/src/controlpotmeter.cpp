@@ -69,6 +69,7 @@ void ControlPotmeter::midiEvent(int newpos) {
    Input:   The (new) position.
    Output:  The value is updated.
    -------- ------------------------------------------------------ */
+#define min(a,b)            (((a) < (b)) ? (a) : (b))
 void ControlPotmeter::slotSetPosition(int _newpos) {
   char newpos =(char)_newpos;
 

@@ -11,6 +11,8 @@ MidiObject::MidiObject() {
   no_potmeters = 0;
   no_buttons = 0;
 
+
+#ifdef __PORTMIDI__
   // Open midi device for input
   Pm_Initialize();
 
@@ -29,6 +31,32 @@ MidiObject::MidiObject() {
       
   // Start the midi thread:
   start();
+#else
+  // Open midi device for input
+  int card = snd_defaults_rawmidi_card();
+  int device = snd_defaults_rawmidi_device();
+  int err;
+  if ((err = snd_rawmidi_open(&handle, card, device, SND_RAWMIDI_OPEN_INPUT)) != 0) {
+      qDebug("Open of midi failed: %s.", snd_strerror(err));
+  }  else {
+      // Allocate buffer
+      buffer = new char[4096];
+      if (buffer == 0) {
+          qDebug("Midi: Error allocating buffer");
+          return;
+      }
+
+      // Set number of bytes received, before snd_rawmidi_read is woken up.
+      snd_rawmidi_params_t params;
+      params.channel = SND_RAWMIDI_CHANNEL_INPUT;
+      params.size    = 4096;
+      params.min     = 1;
+      err = snd_rawmidi_channel_params(handle,&params);
+      
+      // Start the midi thread:
+      start();
+  }
+#endif
 
 };
 
@@ -38,11 +66,15 @@ MidiObject::MidiObject() {
    Output:  -
    -------- ------------------------------------------------------ */
 MidiObject::~MidiObject() {
+#ifdef __PORTMIDI__
   // Close device
   Pm_Close(midi);
-
+#else
+  // Close device
+  snd_rawmidi_close(handle);
   // Deallocate buffer
   delete [] buffer;
+#endif
 };
 
 /* -------- ------------------------------------------------------
@@ -98,15 +130,17 @@ void MidiObject::removepotmeter(ControlPotmeter* potmeter) {
    Output:  -
    -------- ------------------------------------------------------ */
 void MidiObject::run() {
+#ifdef __PORTMIDI__
   int stop = 0;
   PmError err;
   char channel, midicontrol, midivalue;
- /* while(stop == 0) {
+
+  while(stop == 0) {
     err = Pm_Poll(midi);
     if (err == TRUE) {
           if (Pm_Read(midi, buffer, 1) > 0) {
                   midicontrol = Pm_MessageData1(buffer[0].message);
-				  midivalue = Pm_MessageData2(buffer[0].message);
+		  midivalue = Pm_MessageData2(buffer[0].message);
             } else {
                 qDebug("Error in Pm_Read: %s\n", Pm_GetErrorText(err));
                 break;
@@ -115,10 +149,32 @@ void MidiObject::run() {
             qDebug("Error in Pm_Poll: %s\n", Pm_GetErrorText(err));
             break;
         }
+#else
+    /*
+      First read until we get at -79 event:
+    */
+    do {
+      int no = snd_rawmidi_read(handle,&buffer[0],1);
+      if (no != 1)
+          qWarning("Warning: midiobject recieved %i bytes.", no);
+    } while (buffer[0] != -79);
+    /*
+      and then get the following 2 bytes:
+    */
+    for (int i=1; i<3; i++) {
+      int no = snd_rawmidi_read(handle,&buffer[i],1);
+      if (no != 1)
+          qWarning("Warning: midiobject recieved %i bytes.", no);
+    }
+    
+    char channel = buffer[0];
+    char midicontrol = buffer[1];
+    char midivalue = buffer[2];
+#endif    
 
      qDebug("Received midi message: %i %i %i",(int)channel, 
              (int)midicontrol,(int)midivalue);
-    
+
     // Check the potmeters:
     for (int i=0; i<no_potmeters; i++) 
       if (potmeters[i]->midino == midicontrol) {
@@ -130,7 +186,7 @@ void MidiObject::run() {
       }
     
     // Check the buttons:
-    for (i=0; i<no_buttons; i++) 
+    for (int i=0; i<no_buttons; i++) 
       if (buttons[i]->midino == midicontrol) {
 	// Now that we've found a button on the right gate, we try to
 	// see if the button is really changed:
@@ -143,5 +199,9 @@ void MidiObject::run() {
 	  break;
 	}
       }
-  }*/
+#ifdef __PORTMIDI__
+  }
+#endif
 };
+
+

@@ -14,9 +14,9 @@ unix:LIBS += -lasound
 #win32:LIBS += ??
 
 # PortMidi
-DEFINES += __PORTMIDI__
-unix:LIBS += -lportmidi -lporttime
-win32:LIBS +=
+#DEFINES += __PORTMIDI__
+#unix:LIBS += -lportmidi -lporttime
+#win32:LIBS +=
 
 #
 # End of options

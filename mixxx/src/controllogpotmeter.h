@@ -25,6 +25,7 @@ class ControlPotmeter;
 #include "midiobject.h"
 #include "controlpotmeter.h"
 #include <algorithm>
+#include "defs.h"
 
 /**
  *@author Tue and Ken Haste Andersen

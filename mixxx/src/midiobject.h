@@ -6,13 +6,14 @@
 
 #ifdef __PORTMIDI__
   #include "portmidi.h"
+#else
+  #include <sys/asoundlib.h>
 #endif
 
 #include <vector>
-#include "defs.h"
 #include <qthread.h>
 #include <qobject.h>
-//#include <sched.h>
+#include "defs.h"
 #include "controlpushbutton.h"
 #include "controlpotmeter.h"
 
@@ -28,8 +29,13 @@ public:
   void addpotmeter(ControlPotmeter* newpotmeter);
   void removepotmeter(ControlPotmeter* potmeter);
  protected:
+#ifdef __PORTMIDI__
   PmEvent buffer[2];
   PmStream *midi;
+#else
+  snd_rawmidi_t *handle;
+  char *buffer;
+#endif
   void run();
   int fd, count, size, no_potmeters, no_buttons;
   std::vector<ControlPushButton*> buttons;
@@ -37,3 +43,5 @@ public:
 };
 
 #endif
+
+
