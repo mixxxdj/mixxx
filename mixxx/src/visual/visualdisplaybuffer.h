@@ -1,5 +1,5 @@
 /***************************************************************************
-                          visualdata.h  -  description
+                          visualdisplaybuffer.h  -  description
                              -------------------
     copyright            : (C) 2002 by Tue and Ken Haste Andersen and Kenny 
                                        Erleben
@@ -15,31 +15,52 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef VISUALDATA_H
-#define VISUALDATA_H
+#ifndef VISUALDISPLAYBUFFER_H
+#define VISUALDISPLAYBUFFER_H
 
+#include <qgl.h>
 #include "visualobject.h"
-#include "signalvertexbuffer.h"
-
-class FastVertexArray;
+#include "visualbuffer.h"
 
 /**
  * Visual Data.
  */
-class VisualData : public VisualObject
+class VisualDisplayBuffer : public VisualObject
 {
 public:
-    VisualData(GLfloat *,FastVertexArray *);
-    ~VisualData();
+    /**
+     * Initialize Vertex Array.
+     *
+     * Developers Note: It seems that there is
+     * a upper limit on the size of data that can
+     * be within a fence. Measurements show that
+     * around 200000 bytes the drawing looks akward???
+     *
+     * @param vertices            The number of vertices
+     * @param bufferCount         The number of wanted buffers
+     */
+    VisualDisplayBuffer(VisualBuffer *pVisualBuffer);
+    ~VisualDisplayBuffer();
     void draw(GLenum mode);
-    virtual void draw() = 0;
-
+    void draw();
+    /** Set Signal Origo. */
     void setOrigo(float ox, float oy,float oz);
+    float getOrigoX();
+    float getOrigoY();
+    float getOrigoZ();
     void setLength(float length);
+    float getLength();
     void setHeight(float height);
+    float getHeight();
+    void setDepth(float depth);
+    float getDepth();
     void setRotation(float angle, float rx,float ry,float rz);
-    void setVertexArray(bufInfo i);
+    void setBuffer(bufInfo i);
+
 protected:
+    /** Pointer to associated VisualBuffer */
+    VisualBuffer *m_pVisualBuffer;
+
     float ox,oy,oz;   ///< Origio of visual signal (from where signal propagates from).
     float angle;      ///< Rotation angle in radians.
     float rx,ry,rz;   ///< Rotation Axe.
@@ -48,9 +69,10 @@ protected:
 
     float length;     ///< Signal Length.
     float height;     ///< Signal Heigth.
+    float depth;
 
-    FastVertexArray *vertex;
-    GLfloat *buffer;
+
+private:
 };
 
 #endif

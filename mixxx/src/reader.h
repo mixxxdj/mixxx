@@ -29,7 +29,7 @@ class ReaderExtractWave;
 class ReaderExtractBeat;              
 class SoundSource;
 class EngineBuffer;
-class GUIChannel;
+class VisualChannel;
 
 /**
   * The Reader class is a thread taking care of reading and buffering waveform data from external sources.
@@ -46,7 +46,7 @@ public:
     Reader(EngineBuffer *_enginebuffer, Monitor *_rate, QMutex *_pause);
     ~Reader();
 
-    void addVisual(GUIChannel *guichannel);
+    void addVisual(VisualChannel *pVisualChannel);
     /** Request new track to be loaded. This method is thread safe, but may block */
     void requestNewTrack(QString name);
     /** Request seek. This method is thread safe, but may block */
@@ -121,8 +121,8 @@ private:
     int file_srate;
     /** Local copy of file length */
     int file_length;
-    /** Pointer to GUIChannel */
-    GUIChannel *guichannel;
+    /** Pointer to VisualChannel */
+    VisualChannel *m_pVisualChannel;
 };
 
 #endif

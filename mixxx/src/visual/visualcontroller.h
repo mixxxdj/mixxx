@@ -19,7 +19,6 @@
 #define VISUALCONTROLLER_H
 
 #include <list>
-#include <qapplication.h>
 #include <qgl.h>
 
 /**
@@ -41,7 +40,7 @@ typedef std::list<VisualObject *>::iterator ObjectsIterator;
 class VisualController
 {
 public: 
-  VisualController(QApplication *_app);
+  VisualController();
 
 private:
   void setupBackfaceCulling();
@@ -65,7 +64,6 @@ public:
   GLsizei width,height;
 
 private:
-  QApplication *app;
   Objects objects;
   static int idCount;
   Light mylight;

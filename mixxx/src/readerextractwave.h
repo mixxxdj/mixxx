@@ -45,7 +45,7 @@ class ReaderExtractWave : ReaderExtract {
 public: 
     ReaderExtractWave(Reader *pReader);
     ~ReaderExtractWave();
-    void addVisual(GUIChannel *_guichannel);
+    void addVisual(VisualChannel *pVisualChannel);
     void reset();
     void *getBasePtr();
     int getRate();
@@ -71,8 +71,6 @@ private:
     SAMPLE *temp;
     /** Buffer start and end position */
     int bufferpos_start, bufferpos_end;
-    /** Pointer to GUIChannel associated with this buffer */
-    GUIChannel *guichannel;
     /** Pointer to the sound source */
     SoundSource *file;
     int stepSize;

@@ -22,10 +22,6 @@
     #include <unistd.h>
 #endif
 
-#ifdef __VISUALS__
-#include "visual/guichannel.h"
-#endif
-
 ReaderExtractBeat::ReaderExtractBeat(ReaderExtract *input, int frameSize, int frameStep, int _histSize) : ReaderExtract(input, "mark")
 {
     frameNo = input->getBufferSize(); ///frameStep;
@@ -67,6 +63,7 @@ ReaderExtractBeat::ReaderExtractBeat(ReaderExtract *input, int frameSize, int fr
         
     hfc = (CSAMPLE *)input->getBasePtr();
     
+    confidence = 0.;
     
 #ifdef __GNUPLOT__
     // Initialize gnuplot interface
@@ -103,6 +100,7 @@ void ReaderExtractBeat::softreset()
         beatBuffer[i] = 0;
         bpmBuffer[i] = -1.;
     }
+    confidence = 0.;
 }
 
 void *ReaderExtractBeat::getBasePtr()
@@ -309,15 +307,7 @@ void *ReaderExtractBeat::processChunk(const int _idx, const int start_idx, const
             for (i=0; i<histSize; i++)
                 beatIntVector[i] = 0.;
 
-            // Current interval in seconds
-            CSAMPLE interval;
-            if ((*it2)>(*it))
-                interval = (CSAMPLE)(((*it)+frameNo)-(*it2))/(CSAMPLE)input->getRate();
-            else
-                interval = (CSAMPLE)((*it)-(*it2))/(CSAMPLE)input->getRate();
-//            qDebug("interval %f, (range %f-%f), peak count %i",interval,histMinInterval,histMaxInterval,peaks.count());
-
-            // Current interval to last marked beat
+            // Interval between current peak (it) and last marked beat
             CSAMPLE cur  = (CSAMPLE)(*it)/(CSAMPLE)getRate();
             CSAMPLE last = (CSAMPLE)beatBufferLastIdx/(CSAMPLE)getRate();
             CSAMPLE markedbeatinterval;
@@ -329,6 +319,14 @@ void *ReaderExtractBeat::processChunk(const int _idx, const int start_idx, const
             // Interval corresponding to max in histogram
             CSAMPLE bestinterval = ((CSAMPLE)histMaxIdx*histInterval)+histMinInterval;
                         
+            // Interval in seconds between current beat (it) and a previous peak (it2)
+            CSAMPLE interval;
+            if ((*it2)>(*it))
+                interval = (CSAMPLE)(((*it)+frameNo)-(*it2))/(CSAMPLE)input->getRate();
+            else
+                interval = (CSAMPLE)((*it)-(*it2))/(CSAMPLE)input->getRate();
+//            qDebug("interval %f, (range %f-%f), peak count %i",interval,histMinInterval,histMaxInterval,peaks.count());
+
             while(interval>0. && interval<=histMaxInterval && it2!=it)
             {
                 //qDebug("val: %i, i %i, (*it) %i, it %p",i-(*it2),i,(*it2), it2);
@@ -348,7 +346,7 @@ void *ReaderExtractBeat::processChunk(const int _idx, const int start_idx, const
                     }
                     
                     // beatIntVector is updated
-                    if (abs(interval-markedbeatinterval)<0.1)
+                    if (abs(interval-markedbeatinterval)<(beatPrecision*(1.-confidence)))
                         beatIntVector[center] = hfc[(*it)]*hfc[(*it2)]*2.;
                     else
                         beatIntVector[center] = hfc[(*it)]*hfc[(*it2)];
@@ -430,6 +428,7 @@ void *ReaderExtractBeat::processChunk(const int _idx, const int start_idx, const
             delete [] y;
 #endif
 */
+
                 // Search for max in a small range around maxidx in beatIntVector
                 int beatIntMaxIdx = -1;
                 for (i=max(0,histMaxIdx-RANGE); i<min(histSize,histMaxIdx+RANGE); i++)
@@ -437,7 +436,7 @@ void *ReaderExtractBeat::processChunk(const int _idx, const int start_idx, const
                         beatIntMaxIdx = i;
                 
                 // Set beat point if no greater value is found in beatIntVector before the index beatIntMaxIdx
-                bool beat = 1;
+                CSAMPLE beat = 1;
                 if (beatIntMaxIdx>-1)
                 {
                     for (int i=0; i<max(0,histMaxIdx-RANGE); i++)
@@ -460,12 +459,15 @@ void *ReaderExtractBeat::processChunk(const int _idx, const int start_idx, const
                             dist = cur+((CSAMPLE)getBufferSize()/(CSAMPLE)getRate())-last;
                         else
                             dist = cur-last;
-                            
+                                                        
 //                        qDebug("dist %f, interval %f",dist,histint);
                         // Check if the distance to last marked beat is ok
-                        if (dist >= histint*(1.-beatPrecision) && dist < histint*(1.+beatPrecision))
+                        if (dist >= histint*(1.-(beatPrecision*(1.-confidence))) && dist < histint*(1.+(beatPrecision*(1.-confidence))))
                         {                            
-                            qDebug("Set beat mark at peak, dist %f",dist);
+                            // Update confidence
+                            updateConfidence((*it),beatBufferLastIdx);
+                            
+                            qDebug("Set beat mark at peak, dist %f\t\tConfidence %f",dist,confidence);
                             beatBuffer[(*it)] = beat;
                             beatBufferLastIdx = (*it);
                             beatset=true;
@@ -512,11 +514,12 @@ void *ReaderExtractBeat::processChunk(const int _idx, const int start_idx, const
         }    
     }
 
+
     // If no peaks was found, check if distance to last marked beat and force a beat mark
     if (!beatset && histMaxIdx>-1)
     {
         // Find ideal distance in seconds between beat marks
-        CSAMPLE histint = (((CSAMPLE)histMaxIdx*histInterval)+histMinInterval)/**(1.+(beatPrecision/3.))*/;
+        CSAMPLE histint = (((CSAMPLE)histMaxIdx*histInterval)+histMinInterval); //(1.+(beatPrecision/3.));
         CSAMPLE cur  = (CSAMPLE)(frameTo)/(CSAMPLE)getRate();
         CSAMPLE last = (CSAMPLE)beatBufferLastIdx/(CSAMPLE)getRate();
         CSAMPLE dist;
@@ -529,12 +532,53 @@ void *ReaderExtractBeat::processChunk(const int _idx, const int start_idx, const
         if (histint<dist)
         {
             int i = (int)((last+histint)*getRate())%frameNo;
+
+            // Update confidence
+            updateConfidence(i,beatBufferLastIdx);
+
             beatBuffer[i] = 1;
             beatBufferLastIdx = i;
-            qDebug("Force beat mark at no peak, dist %f",histint);
+            qDebug("Force beat mark at no peak, dist %f\tConfidence %f",histint,confidence);
         }
     }
-                        
+
+/*
+    // If no peaks was found, check distance to last marked beat and check that no big peak is in between here and
+    // last marked peak, then force a beat mark
+    if (!beatset && histMaxIdx>-1)
+    {
+        // Find ideal distance in seconds between beat marks
+        CSAMPLE histint = (((CSAMPLE)histMaxIdx*histInterval)+histMinInterval); //(1.+(beatPrecision/3.));
+        CSAMPLE cur  = (CSAMPLE)(frameTo)/(CSAMPLE)getRate();
+        CSAMPLE last = (CSAMPLE)beatBufferLastIdx/(CSAMPLE)getRate();
+        CSAMPLE dist;
+        if (last>cur)
+            dist = cur+((CSAMPLE)getBufferSize()/(CSAMPLE)getRate())-last;
+        else
+            dist = cur-last;
+
+        // If interval to last marked beat is less than the current block, then mark a beat.
+        if (histint<dist)
+        {
+            int i = (int)((last+histint)*getRate());
+            int jend = last*getRate();
+            while (jend>i)
+                i+=frameNo;                
+            float maxhfc = 0.;
+            for (int j=i-1; j<jend; j--)
+                if (maxhfc<hfc[j%frameNo])
+                    maxhfc=hfc[j%frameNo];
+
+            if (hfc[i]>=maxhfc)
+            {
+                beatBuffer[i] = 1;
+                beatBufferLastIdx = i;
+                qDebug("Force beat mark at no peak, dist %f",histint);
+            }
+        }
+    }
+*/
+                                                
     // Down-write histogram
     for (i=0; i<histSize; i++)
         hist[i] *= histDownWrite;
@@ -625,7 +669,26 @@ bool ReaderExtractBeat::circularValidIndex(int idx, int start, int end, int len)
     return false;
 }
 
+void ReaderExtractBeat::updateConfidence(int curBeatIdx, int lastBeatIdx)
+{
+    confidence = 0.9;
+    return;
+    
+    int i=curBeatIdx-1;
+    while (i<lastBeatIdx)
+        i+=frameNo;
 
+    CSAMPLE max = 0.;
+    for (i; i>lastBeatIdx; --i)
+        if (hfc[i%frameNo]>max)
+            max = hfc[i%frameNo];
+
+    confidence = confidence*0.95+(0.05*((log(hfc[curBeatIdx%frameNo]/max))+1.));
+    if (confidence>1.)
+        confidence = 1.;
+    if (confidence<0.)
+        confidence = 0.;
+}
 
 
 

@@ -17,23 +17,25 @@
 
 #include "readerextract.h"
 #ifdef __VISUALS__
-#include "visual/guichannel.h"
+#include "visual/visualchannel.h"
 #endif
 
 ReaderExtract::ReaderExtract(ReaderExtract *_input, QString qsVisualDataType)
 {
     m_qsVisualDataType = qsVisualDataType;
     input = _input;
+    m_pVisualChannel = 0;
 }
 
 ReaderExtract::~ReaderExtract()
 {
 }
 
-void ReaderExtract::addVisual(GUIChannel *guichannel)
+void ReaderExtract::addVisual(VisualChannel *pVisualChannel)
 {
 #ifdef __VISUALS__
-    guichannel->add(this);
+    m_pVisualChannel = pVisualChannel;
+    m_pVisualChannel->add(this);
 #endif
 }
 

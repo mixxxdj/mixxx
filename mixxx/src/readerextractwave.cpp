@@ -23,14 +23,12 @@
 #include "readerevent.h"
 #include <qapplication.h>
 #ifdef __VISUALS__
-#include "visual/signalvertexbuffer.h"
-#include "visual/guichannel.h"
+#include "visual/visualchannel.h"
 #endif
 
 ReaderExtractWave::ReaderExtractWave(Reader *pReader) : ReaderExtract(0, "signal")
 {
     m_pReader = pReader;
-    guichannel = 0;
     
     // Allocate temporary buffer
     temp = new SAMPLE[READCHUNKSIZE*2]; 
@@ -75,17 +73,14 @@ ReaderExtractWave::~ReaderExtractWave()
 #endif
 }
 
-void ReaderExtractWave::addVisual(GUIChannel *_guichannel)
+void ReaderExtractWave::addVisual(VisualChannel *pVisualChannel)
 {
-    guichannel = _guichannel;
-#ifdef __VISUALS__
-    guichannel->add(this);
-#endif
+    ReaderExtract::addVisual(pVisualChannel);
 
 #ifdef EXTRACT
-//    readerfft->addVisual(guichannel);
-//    readerhfc->addVisual(guichannel);
-    readerbeat->addVisual(guichannel);
+//    readerfft->addVisual(m_pVisualChannel);
+//    readerhfc->addVisual(m_pVisualChannel);
+//    readerbeat->addVisual(m_pVisualChannel);
 #endif
 }
 
@@ -114,8 +109,8 @@ void ReaderExtractWave::reset()
 
 #ifdef __VISUALS__
     // Update vertex buffer by sending an event containing indexes of where to update.
-    if (guichannel != 0)
-        QApplication::postEvent(guichannel, new ReaderEvent(0, READBUFFERSIZE));
+    if (m_pVisualChannel != 0)
+        QApplication::postEvent(m_pVisualChannel, new ReaderEvent(0, READBUFFERSIZE));
 #endif
 }
 
@@ -265,8 +260,8 @@ void ReaderExtractWave::getchunk(CSAMPLE rate)
 
 #ifdef __VISUALS__
     // Update vertex buffer by sending an event containing indexes of where to update.
-    if (guichannel != 0)
-        QApplication::postEvent(guichannel, new ReaderEvent(bufIdx, READCHUNKSIZE));
+    if (m_pVisualChannel != 0)
+        QApplication::postEvent(m_pVisualChannel, new ReaderEvent(bufIdx, READCHUNKSIZE));
 #endif
 }
 

@@ -1,5 +1,5 @@
 /***************************************************************************
-                          guichannel.h  -  description
+                          visualchannel.h  -  description
                              -------------------
     copyright            : (C) 2003 by Tue and Ken Haste Andersen and Kenny
                                        Erleben
@@ -15,50 +15,49 @@
  *                                                                         *
  ***************************************************************************/
  
-#ifndef GUICHANNEL_H
-#define GUICHANNEL_H
+#ifndef VISUALCHANNEL_H
+#define VISUALCHANNEL_H
 
 #include <qobject.h>
 #include <qptrlist.h>
 #include <qobject.h>
 #include <qevent.h>
 
-class GUIContainer;
-class Reader;
 class ReaderExtract;
 class VisualController;
-class SignalVertexBuffer;
+class VisualBuffer;
+class VisualDisplay;
 class ControlPotmeter;
 
 /**
- * A GUI Channel
- * This class keeps track of the GUIContainers associated with one channel
- *
- *
+ * A Visual Channel
+ * This class keeps track of the visual classes associated with one channel
  */
-class GUIChannel : public QObject
+class VisualChannel : public QObject
 {
 public:
-    GUIChannel(Reader *_reader, ControlPotmeter *_playpos, VisualController *_controller);
-    ~GUIChannel();
+    VisualChannel(ControlPotmeter *pPlaypos, VisualController *pVisualController);
+    ~VisualChannel();
     bool eventFilter(QObject *o, QEvent *e);
     /** Zoom/unzoom the signal of id */
     void zoom(int id);
-    SignalVertexBuffer *add(ReaderExtract *readerExtract);
+    /** Add a ReaderExtract buffer to object, and construct a corresponding display */
+    void add(ReaderExtract *pReaderExtract);
     void move(int msec);
     void setPosX(int x);
     void setZoomPosX(int x);    
 private:
-    Reader                  *reader;
-    VisualController        *controller;
-    ControlPotmeter         *playpos;
-    /** List of containers associated with this channel */
-    QPtrList<GUIContainer>  list;
+    VisualController        *m_pVisualController;
+    ControlPotmeter         *m_pPlaypos;
+    /** List of buffers associated with this channel */
+    QPtrList<VisualBuffer>  m_qlListBuffer;
+    /** List of displays associated with this channel */
+    QPtrList<VisualDisplay>  m_qlListDisplay;
     /** channel number */
-    int channelNo;
+    int m_iChannelNo;
     /** Total number of channels */
-    static int channelTotal;
+    static int siChannelTotal;
     /** X position of this channel */
-    int                     posx, zoomposx;
+    int m_iPosX, m_iZoomPosX;
 };
 #endif

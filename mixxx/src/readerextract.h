@@ -20,7 +20,7 @@
 
 #include <qstring.h>
 
-class GUIChannel;
+class VisualChannel;
 
 /**
   * Abstract class for feature extraction. Each ReaderExtract object sets up its own buffer
@@ -50,12 +50,14 @@ public:
       * at the update boundaries of the buffer. Returns a pointer to the newly processed chunk */
     virtual void *processChunk(const int idx, const int start_idx, const int end_idx, bool backwards) = 0;
     /** Add visual to GUI Channel */
-    virtual void addVisual(GUIChannel *guichannel);
+    virtual void addVisual(VisualChannel *pVisualChannel);
     /** Get associated visual signal type */
     QString getVisualDataType();
 protected:
     /** Pointer to input object */
     ReaderExtract *input;
+    /** Pointer to associated VisualChannel */
+    VisualChannel *m_pVisualChannel;
     /** Holds visual signal type */
     QString m_qsVisualDataType;
 };

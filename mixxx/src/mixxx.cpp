@@ -93,7 +93,7 @@
 #endif
 
 #ifdef __VISUALS__
-  #include "mixxxvisual.h"
+  #include "wvisual.h"
 #endif
 
 MixxxApp::MixxxApp(QApplication *a)
@@ -263,8 +263,8 @@ MixxxApp::MixxxApp(QApplication *a)
 #endif
 
     // Init buffers/readers
-    buffer1 = new EngineBuffer(this, optionsBeatMark, powermate1, view->playcontrol1, "[Channel1]");
-    buffer2 = new EngineBuffer(this, optionsBeatMark, powermate2, view->playcontrol2, "[Channel2]");
+    buffer1 = new EngineBuffer(this, optionsBeatMark, powermate1, view->playcontrol1, "[Channel1]",visual1);
+    buffer2 = new EngineBuffer(this, optionsBeatMark, powermate2, view->playcontrol2, "[Channel2]",visual2);
 
     // Initialize tracklist:
     m_pTracks = new TrackList(config->getValueString(ConfigKey("[Playlist]","Directory")), view->tracklist->tableTracks,
@@ -509,10 +509,28 @@ void MixxxApp::initView()
   setCentralWidget(view);
 
   // Set visual vidget here
-  visual = 0;
+  visual1 = 0;
+  visual2 = 0;
 #ifdef __VISUALS__
-  visual = new MixxxVisual(app);
-  visual->show();
+  visual1 = new WVisual(this);
+  if (visual1->isValid())
+  {
+      visual2 = new WVisual(this,"",visual1);
+
+      visual1->move(40,120);
+      visual1->setFixedSize(190,50);
+      visual2->move(405,120);
+      visual2->setFixedSize(190,50);
+      
+      visual1->show();
+      visual2->show();
+
+  }
+  else
+  {
+      delete visual1; 
+      visual1 = 0;
+  }
 #endif
 }
 
@@ -634,9 +652,3 @@ void MixxxApp::slotHelpAbout()
     QMessageBox::about(this,tr("About..."),
                       tr("Mixxx\nVersion " VERSION "\nBy Tue and Ken Haste Andersen\nReleased under the GNU General Public Licence version 2") );
 }
-
-MixxxVisual *MixxxApp::getVisual()
-{
-    return visual;
-}
-
