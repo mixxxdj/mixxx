@@ -58,6 +58,7 @@
 #include "dlgplaycontrol.h"
 #include "dlgcrossfader.h"
 #include "dlgsplit.h"
+#include "powermate.h"
 
 #ifdef __UNIX__
 #include "powermatelinux.h"
@@ -231,20 +232,24 @@ MixxxApp::MixxxApp(QApplication *a)
     powermate1 = new PowerMateLinux(control);
     powermate2 = new PowerMateLinux(control);
 #endif
-    if (powermate1->opendev())
-        qDebug("Found PowerMate 1");
-    else
-    {
-        delete powermate1;
-        powermate1 = 0;
+    if (powermate1==0) {
+        if (powermate1->opendev())
+            qDebug("Found PowerMate 1");
+        else
+        {
+            delete powermate1;
+            powermate1 = 0;
+        }
     }
 
-    if (powermate2->opendev())
-        qDebug("Found PowerMate 2");
-    else
-    {
-        delete powermate2;
-        powermate2 = 0;
+    if (powermate2==0) {
+        if (powermate2->opendev())
+            qDebug("Found PowerMate 2");
+        else
+        {
+            delete powermate2;
+           powermate2 = 0;
+        }
     }
   
     // Initialize player device

@@ -305,6 +305,7 @@ void TrackList::UpdateTracklist()
 	// Update the scores for all the tracks:
 	UpdateScores();
 }
+
 void TrackList::slotUpdateTracklist( QString sDir )
 {
 //    qDebug("dir: %s",sDir.latin1());
