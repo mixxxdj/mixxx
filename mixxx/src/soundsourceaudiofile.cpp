@@ -23,10 +23,10 @@ SoundSourceAudioFile::SoundSourceAudioFile( QString sFilename )
     if (fh == AF_NULL_FILEHANDLE) {
         qDebug("libaudiofile: Error opening file.");
         filelength = 0;
-    } else
-        filelength = 2*afGetFrameCount(fh,AF_DEFAULT_TRACK);
-
-    channels = afGetChannels(fh, AF_DEFAULT_TRACK);
+        channels = 2;
+    }
+    else
+        channels = afGetChannels(fh, AF_DEFAULT_TRACK);
 
     // Buffer only used when opening a non-stereo file
     if (channels!=2)
@@ -34,6 +34,8 @@ SoundSourceAudioFile::SoundSourceAudioFile( QString sFilename )
     else
         buffer = 0;
         
+    filelength = channels*afGetFrameCount(fh,AF_DEFAULT_TRACK);
+
     SRATE = (int)afGetRate(fh,AF_DEFAULT_TRACK);
     type = "wav file.";
 //    qDebug("length: %i",filelength);
