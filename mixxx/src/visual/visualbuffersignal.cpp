@@ -40,11 +40,11 @@ void VisualBufferSignal::update(int iPos, int iLen)
     for (float i=0; i<=temp-m_fResampleFactor; i+=m_fResampleFactor)
     {
         GLfloat fVal = 0;
-        for (int j=(int)i; j<(int)(i+m_fResampleFactor); j++)
+        for (int j=(int)i; j<(int)(i+m_fResampleFactor); j+=32)
             fVal += pSource[j]*(1./32768.);
         
         *pDest++;
-        *pDest++ = fVal/m_fResampleFactor;
+        *pDest++ = 32.*fVal/m_fResampleFactor;
         *pDest++;
     }
 
@@ -56,11 +56,11 @@ void VisualBufferSignal::update(int iPos, int iLen)
         for (int i=0; i<=iLen-temp; ++i)
         {
             GLfloat fVal = 0;
-            for (int j=(int)i; j<(int)(i+m_fResampleFactor); j++)
+            for (int j=(int)i; j<(int)(i+m_fResampleFactor); j+=32)
                 fVal += pSource[j]*(1./32768.);
 
             *pDest++;
-            *pDest++ = fVal/m_fResampleFactor;
+            *pDest++ = 32.*fVal/m_fResampleFactor;
             *pDest++;
         }
     }
