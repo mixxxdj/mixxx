@@ -96,7 +96,7 @@ void EngineFilterBlock::process(const CSAMPLE *pIn, const CSAMPLE *pOut, const i
         high->process(pIn, pOut, iBufferSize);
         
         for (int i=0; i<iBufferSize; ++i)
-            pOutput[i] = fLow*m_pTemp1[i] + fHigh*pOutput[i] + fMid*(pIn[i]-m_pTemp1[i]-pOutput[i]);
+            pOutput[i] = fLow*m_pTemp1[i] + fHigh*m_pTemp2[i] + fMid*(pIn[i]-m_pTemp1[i]-pOutput[i]);
     }
     else
     {
