@@ -50,7 +50,7 @@ public:
     VisualBuffer(ReaderExtract *pReaderExtract, ControlPotmeter *pPlaypos);
     virtual ~VisualBuffer();
     /** Update and resample signal vertex buffer */
-    virtual void update(int iPos, int iLen) = 0;
+    virtual void update(int iPos) = 0;
     /** Draw the buffer */
     virtual void draw(GLfloat *p, int iLen) = 0;
 

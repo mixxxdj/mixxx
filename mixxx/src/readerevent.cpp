@@ -17,7 +17,7 @@
 
 #include "readerevent.h"
 
-ReaderEvent::ReaderEvent(int pos, int len) : QCustomEvent(10002), position(pos), length(len)
+ReaderEvent::ReaderEvent(int pos) : QCustomEvent(10002), position(pos)
 {
 }
 
@@ -28,9 +28,4 @@ ReaderEvent::~ReaderEvent()
 int ReaderEvent::pos() const
 {
     return position;
-}
-
-int ReaderEvent::len() const
-{
-    return length;
 }

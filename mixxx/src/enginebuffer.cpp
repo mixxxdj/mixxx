@@ -39,9 +39,7 @@ EngineBuffer::EngineBuffer(PowerMate *_powermate, const char *_group, WVisual *p
 {
     group = _group;
     powermate = _powermate;
-
-    setNewPlaypos(0.);
-    
+        
     // Play button
     ControlPushButton *p = new ControlPushButton(ConfigKey(group, "play"));
     playButton = new ControlEngine(p);
@@ -98,6 +96,8 @@ EngineBuffer::EngineBuffer(PowerMate *_powermate, const char *_group, WVisual *p
 //    filechanged = new ControlEngine(controlfilechanged);
 //    filechanged->setNotify(this,(EngineMethod)&EngineBuffer::newtrack);
 
+    setNewPlaypos(0.);
+
     reader = new Reader(this, &rate_exchange, &pause);
     read_buffer_prt = reader->getBufferWavePtr();
     file_length_old = -1;
@@ -150,6 +150,9 @@ void EngineBuffer::setNewPlaypos(double newpos)
 {
     filepos_play = newpos;
     bufferpos_play = 0.;
+
+    // Update bufferposSlider
+    bufferposSlider->set((CSAMPLE)bufferpos_play);
 
     // Ensures that the playpos slider gets updated in next process call
     playposUpdateCounter = 1000000;
@@ -372,95 +375,76 @@ CSAMPLE *EngineBuffer::process(const CSAMPLE *, const int buf_size)
         {
             for (int i=0; i<buf_size; i++)
                 buffer[i]=0.;
-
-            pause.unlock();
-            //app->unlock();
-            return buffer;
         }
         else
         {
             // Check if we are at the boundaries of the file
-            if ((filepos_play<0. && backwards==true) ||
-                (filepos_play>file_length_old && backwards==false))
+            if ((filepos_play<0. && backwards==true) || (filepos_play>file_length_old && backwards==false))
             {
                 for (int i=0; i<buf_size; i++)
                     buffer[i] = 0.;
-
-                pause.unlock();
-                //app->unlock();
-                return buffer;
             }
-
-            // Perform scaling of Reader buffer into buffer
-            CSAMPLE *output = scale->scale(bufferpos_play, buf_size);
-            int i;
-            for (i=0; i<buf_size; i++)
-                buffer[i] = output[i];
-            double idx = scale->getNewPlaypos();
-
-            // If a beat occours in current buffer mark it by led or in audio
-            // This code currently only works in forward playback.
-            ReaderExtractBeat *readerbeat = reader->getBeatPtr();
-            if (readerbeat!=0)
+            else
             {
-                // Check if we need to set samples from a previos beat mark
-                if (audioBeatMark->get()==1. && m_iBeatMarkSamplesLeft>0)
-                {
-                    int to = min(m_iBeatMarkSamplesLeft, idx-bufferpos_play);
-                    for (int j=0; j<to; j++)
-                        buffer[j] = 30000.;
-                    m_iBeatMarkSamplesLeft = max(0,m_iBeatMarkSamplesLeft-to);
-                }
-                
-                float *beatBuffer = (float *)readerbeat->getBasePtr();
-                int chunkSizeDiff = READBUFFERSIZE/readerbeat->getBufferSize();
-                for (i=floor(bufferpos_play); i<=floor(idx); i++)
-                {
-                    if (((i%chunkSizeDiff)==0) && (beatBuffer[i/chunkSizeDiff]==1))
-                    {
-                        // Audio beat mark
-                        if (audioBeatMark->get()==1.)
-                        {
-                            int from = i-bufferpos_play;
-                            int to = min(i-bufferpos_play+audioBeatMarkLen, idx-bufferpos_play);
-                            for (int j=from; j<to; j++)
-                                buffer[j] = 30000.;
-                            m_iBeatMarkSamplesLeft = max(0,audioBeatMarkLen-(to-from));
+                // Perform scaling of Reader buffer into buffer
+                CSAMPLE *output = scale->scale(bufferpos_play, buf_size);
+                int i;
+                for (i=0; i<buf_size; i++)
+                    buffer[i] = output[i];
+                double idx = scale->getNewPlaypos();
 
-                        //    qDebug("mark %i: %i-%i", i2/chunkSizeDiff, (int)max(0,i-bufferpos_play),(int)min(i-bufferpos_play+audioBeatMarkLen, idx));
-                        }
+                // If a beat occours in current buffer mark it by led or in audio
+                // This code currently only works in forward playback.
+                ReaderExtractBeat *readerbeat = reader->getBeatPtr();
+                if (readerbeat!=0)
+                {
+                    // Check if we need to set samples from a previos beat mark
+                    if (audioBeatMark->get()==1. && m_iBeatMarkSamplesLeft>0)
+                    {
+                        int to = min(m_iBeatMarkSamplesLeft, idx-bufferpos_play);
+                        for (int j=0; j<to; j++)
+                            buffer[j] = 30000.;
+                        m_iBeatMarkSamplesLeft = max(0,m_iBeatMarkSamplesLeft-to);
+                    }
+                    
+                    float *beatBuffer = (float *)readerbeat->getBasePtr();
+                    int chunkSizeDiff = READBUFFERSIZE/readerbeat->getBufferSize();
+                    for (i=floor(bufferpos_play); i<=floor(idx); i++)
+                    {
+                        if (((i%chunkSizeDiff)==0) && (beatBuffer[i/chunkSizeDiff]==1))
+                        {
+                            // Audio beat mark
+                            if (audioBeatMark->get()==1.)
+                            {
+                                int from = i-bufferpos_play;
+                                int to = min(i-bufferpos_play+audioBeatMarkLen, idx-bufferpos_play);
+                                for (int j=from; j<to; j++)
+                                    buffer[j] = 30000.;
+                                m_iBeatMarkSamplesLeft = max(0,audioBeatMarkLen-(to-from));
+
+                            //    qDebug("mark %i: %i-%i", i2/chunkSizeDiff, (int)max(0,i-bufferpos_play),(int)min(i-bufferpos_play+audioBeatMarkLen, idx));
+                            }
 #ifdef __UNIX__
-                        // PowerMate led      
-                        if (powermate!=0)
-                            powermate->led();
+                            // PowerMate led      
+                            if (powermate!=0)
+                                powermate->led();
 #endif
+                        }
                     }
                 }
+
+                // Ensure valid range of idx
+                if (idx>READBUFFERSIZE)
+                    idx -= (double)READBUFFERSIZE;
+                else if (idx<0)
+                    idx += (double)READBUFFERSIZE;
+        
+                // Write file playpos
+                filepos_play += rate*(double)(buf_size);;
+
+                // Write buffer playpos
+                bufferpos_play = idx;
             }
-
-            // Ensure valid range of idx
-            if (idx>READBUFFERSIZE)
-                idx -= (double)READBUFFERSIZE;
-            else if (idx<0)
-                idx += (double)READBUFFERSIZE;
-//if (idx<bufferpos_play)
-//    qDebug("idx: %f, bufferpos_play %f, diff: %f",idx,bufferpos_play,bufferpos_play-idx);
-        
-            // Write file playpos
-            filepos_play += rate*(double)(buf_size);;
-
-            // Write buffer playpos
-            bufferpos_play = idx;
-            
-            //qDebug("bufferpos_play %f,\t filepos_play %f", bufferpos_play, filepos_play);
-
-        
-            // Try to write playpos for exchange with other threads
-            //filepos_play_exchange.write(filepos_play);
-        
-            // Update visual rate and playpos
-            //visualPlaypos.tryWrite(flREADCHUNKSIZE*(READCHUNK_NO/2-2)oor(idx));
-            //visualRate = rate;
         }
 
         //
@@ -468,19 +452,17 @@ CSAMPLE *EngineBuffer::process(const CSAMPLE *, const int buf_size)
         //
         if (readerinfo)
         {
-            //qDebug("check len %i, end %i, play %f, size %i",file_length_old, filepos_end, filepos_play, READCHUNKSIZE*(READCHUNK_NO/2-2));
-/*
-            if (controlreader...)
-            {
-                buffersReadAhead->wakeAll();
-            }
-            else
-*/
+//            qDebug("checking");
             if (!backwards && filepos_end< file_length_old && (filepos_end - filepos_play < READCHUNKSIZE*(READCHUNK_NO/2-1)))
+            {
+//                qDebug("wake fwd");
                 reader->wake();
+            }
             else if (backwards && filepos_start>0. && (filepos_play - filepos_start < READCHUNKSIZE*(READCHUNK_NO/2-1)))
+            {
+//                qDebug("wake back");
                 reader->wake();
-
+            }
             //
             // Check if end or start of file, and playmode, write new rate, playpos and do wakeall
             // if playmode is next file: set next in playlistcontrol
@@ -497,6 +479,7 @@ CSAMPLE *EngineBuffer::process(const CSAMPLE *, const int buf_size)
             // Update bufferposSlider
             bufferposSlider->set((CSAMPLE)bufferpos_play);
         }
+
         pause.unlock();
 
     }

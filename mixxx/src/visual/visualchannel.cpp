@@ -57,7 +57,7 @@ bool VisualChannel::eventFilter(QObject *o, QEvent *e)
         ReaderEvent *re = (ReaderEvent *)e;
         VisualBuffer *b;
         for (b = m_qlListBuffer.first(); b; b = m_qlListBuffer.next())
-            b->update(re->pos(), re->len());
+            b->update(re->pos());
     }
     else
     {

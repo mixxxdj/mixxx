@@ -27,13 +27,11 @@
 class ReaderEvent : public QCustomEvent
 {
 public: 
-    ReaderEvent(int pos, int len);
+    ReaderEvent(int pos);
     ~ReaderEvent();
     int pos() const;
-    int len() const;
 private:
     int position;
-    int length;
 };
 
 #endif
