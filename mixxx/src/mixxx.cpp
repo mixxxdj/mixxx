@@ -397,7 +397,8 @@ MixxxApp::MixxxApp(QApplication *a, QStringList files, QSplashScreen *pSplash)
     initMenuBar();
 
     // Check direct rendering
-    view->checkDirectRendering();
+    if (bVisualsWaveform)
+        view->checkDirectRendering();
 }
 
 MixxxApp::~MixxxApp()

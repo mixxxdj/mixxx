@@ -33,7 +33,7 @@ EngineBufferScale::~EngineBufferScale()
     delete [] buffer;
 }
 
-void EngineBufferScale::setQuality(int)
+void EngineBufferScale::setPitchIndpTimeStretch(bool)
 {
 }
 
@@ -46,3 +46,6 @@ double EngineBufferScale::getNewPlaypos()
     return new_playpos;
 }
 
+void EngineBufferScale::clear()
+{
+}

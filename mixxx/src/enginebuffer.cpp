@@ -27,6 +27,7 @@
 #include "readerextractbeat.h"
 #include "readerextractwave.h"
 #include "enginebufferscalesrc.h"
+#include "enginebufferscalest.h"
 #include "powermate.h"
 #include "wvisualwaveform.h"
 #include "visual/visualchannel.h"
@@ -177,6 +178,7 @@ EngineBuffer::EngineBuffer(PowerMate *_powermate, const char *_group)
 
     m_bCuePreview = false;
 
+    scale = 0;
     setNewPlaypos(0.);
 
     reader = new Reader(this, &pause);
@@ -193,15 +195,13 @@ EngineBuffer::EngineBuffer(PowerMate *_powermate, const char *_group)
     m_pWaveBuffer = (float *)reader->getWavePtr()->getBasePtr();
 
     // Construct scaling object
-    scale = new EngineBufferScaleSRC(reader->getWavePtr());
+    //scale = new EngineBufferScaleSRC(reader->getWavePtr());
+    scale = new EngineBufferScaleST(reader->getWavePtr());
 
     oldEvent = 0.;
 
     // Used in update of playpos slider
     m_iSamplesCalculated = 0;
-
-    // Only for QT 3.3:
-    //reader->start(QThread::LowPriority);
 
     reader->start();
 }
@@ -238,10 +238,10 @@ double EngineBuffer::getAbsPlaypos()
     return m_dAbsPlaypos;
 }
 
-void EngineBuffer::setQuality(int q)
+void EngineBuffer::setPitchIndpTimeStretch(bool b)
 {
-    // Change sound interpolation quality
-    scale->setQuality(q);
+    // Change sound scale mode
+    scale->setPitchIndpTimeStretch(b);
 }
 
 void EngineBuffer::setVisual(WVisualWaveform *pVisualWaveform)
@@ -337,6 +337,10 @@ void EngineBuffer::setNewPlaypos(double newpos)
     m_iSamplesCalculated = 1000000;
 
     m_iBeatMarkSamplesLeft = 0;
+
+    // The right place to do this?
+    if (scale)
+        scale->clear();
 }
 
 const char *EngineBuffer::getGroup()
@@ -381,9 +385,9 @@ void EngineBuffer::slotControlSeek(double change, bool bBeatSync)
         new_playpos = 0.;
 
     // Check if we have reliable beat information. If that is the case, perform beat syncronized seek
-    if (bBeatSync && m_dBeatFirst)
+    if (bBeatSync && m_dBeatFirst>=0.)
     {
-        qDebug("sync");
+        qDebug("sync, beat first %f",m_dBeatFirst);
 
         // Copy current buffer to temporary playback buffer
         // Store file index for start position of temporary buffer
@@ -417,6 +421,7 @@ void EngineBuffer::slotControlSeek(double change, bool bBeatSync)
     // Seek reader
     //qDebug("seek %f",new_playpos);
     reader->requestSeek(new_playpos);
+        
     m_dSeekFilePos = new_playpos;
 
     setNewPlaypos(new_playpos);
@@ -843,13 +848,18 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBuff
             }
             else
             {
-                // Perform scaling of Reader buffer into buffer. Even if we are in the process of doing a beat
-                // syncronious seek, we do scaling of the playpos buffer here, to advance the playpos correctly.
-                CSAMPLE *output = scale->scale(bufferpos_play, iBufferSize);
-                double idx = scale->getNewPlaypos();
-// qDebug("idx %f, buffer pos %f, play %f", idx, bufferpos_play, filepos_play);
-                // If we are doing a beat syncronious seek...
-                if (m_bSeekBeat)
+                double idx;
+                CSAMPLE *output;
+                if (!m_bSeekBeat)
+                {
+                    // Perform scaling of Reader buffer into buffer. Even if we are in the process of doing a beat
+                    // syncronious seek, we do scaling of the playpos buffer here, to advance the playpos correctly.
+                    output = scale->scale(bufferpos_play, iBufferSize);
+                    idx = scale->getNewPlaypos();
+                    // qDebug("idx %f, buffer pos %f, play %f", idx, bufferpos_play, filepos_play);
+                    // If we are doing a beat syncronious seek...
+                }
+                else
                 {
                     // Check if the crossfade is finished
                     if (m_bSeekCrossfade && m_dSeekCrossfadeEndFilePos<filepos_play)
@@ -857,6 +867,9 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBuff
                         m_bSeekBeat = false;
 
                         qDebug("seek & crossfading done, play %f, cross end %f",filepos_play, m_dSeekCrossfadeEndFilePos);
+                        
+                        output = scale->scale(bufferpos_play, iBufferSize);
+                        idx = scale->getNewPlaypos();
 
                     }
                     else
@@ -894,6 +907,9 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBuff
                         }
                         // Perform scaling of the temporary buffer into buffer
                         output = scale->scale(dTempCurBufferPlayPos, iBufferSize, m_pTempSeekBuffer, 100000);
+                        
+                        // "Correctly" advance playpos
+                        idx = bufferpos_play + (scale->getNewPlaypos()-dTempCurBufferPlayPos);
                     }
 
 

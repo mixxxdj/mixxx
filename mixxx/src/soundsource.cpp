@@ -44,7 +44,7 @@ int SoundSource::getSrate()
     return SRATE;
 }
 
-QPtrList<long unsigned int> *SoundSource::getCuePoints()
+QValueList<long> *SoundSource::getCuePoints()
 {
     return 0;
 }

@@ -161,7 +161,7 @@ void WOverview::setData(QMemArray<char> *pWaveformSummary, QValueList<int> *pSeg
                 for (int j=idxStart; j<idxEnd; j+=3)
                 {
                     fMin += m_pWaveformSummary->at(j);
-                   fMax += m_pWaveformSummary->at(j+1);
+                fMax += m_pWaveformSummary->at(j+1);
                 }
                 fMin /= ((idxEnd-idxStart)/2.);
                 fMax /= ((idxEnd-idxStart)/2.);
@@ -183,6 +183,7 @@ void WOverview::setData(QMemArray<char> *pWaveformSummary, QValueList<int> *pSeg
         paint.setPen(QColor("#FF9900"));
         if (m_pSegmentation)
         {
+            qDebug("size %i",m_pSegmentation->size());
             for (unsigned int i=0; i<m_pSegmentation->size(); ++i)
                 paint.drawLine((int)(((*m_pSegmentation->at(i))/(float)m_iDuration)*width()), 0,
                                (int)(((*m_pSegmentation->at(i))/(float)m_iDuration)*width()), height());

@@ -373,6 +373,8 @@ unsigned SoundSourceMp3::read(unsigned long samples_wanted, const SAMPLE* _desti
 
 int SoundSourceMp3::ParseHeader(TrackInfoObject *Track)
 {
+    qDebug("mp3 parse header %s",Track->getLocation().latin1());
+    
     QString location = Track->getLocation();
 
     Track->setType("mp3");
@@ -481,7 +483,10 @@ int SoundSourceMp3::ParseHeader(TrackInfoObject *Track)
         }
         if (constantbitrate && frames>1)
         {
+//             qDebug("track len %i, this.frame %i, buffer %i, frames %i",Track->getLength(), Stream.this_frame,Stream.buffer,frames);
+            
             mad_timer_multiply(&dur, Track->getLength()/((Stream.this_frame-Stream.buffer)/frames));
+            qDebug("mp3 dur %i, bitrate %i",dur.seconds, Header.bitrate/1000);
             Track->setDuration(dur.seconds);
             Track->setBitrate(Header.bitrate/1000);
         }
@@ -559,7 +564,7 @@ int SoundSourceMp3::findFrame(int pos)
     }
 }
 
-inline signed int SoundSourceMp3::madScale (mad_fixed_t sample)
+inline signed int SoundSourceMp3::madScale(mad_fixed_t sample)
 {
     sample += (1L << (MAD_F_FRACBITS - 16));
 

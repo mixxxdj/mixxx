@@ -467,8 +467,9 @@ void PlayerALSA::setDefaults()
     while (*it)
     {
 	m_pConfig->set(ConfigKey("[Soundcard]", "Samplerate"), ConfigValue((*it)));
-        if (*it >= 44100)
+        if ((*it).toInt() >= 44100)
 	    break;
+	++it;
     }
 
     // Set currently used latency in config database

@@ -96,10 +96,10 @@ EngineMaster::~EngineMaster()
     delete [] m_pMaster;
 }
 
-void EngineMaster::setQuality(int q)
+void EngineMaster::setPitchIndpTimeStretch(bool b)
 {
-    buffer1->setQuality(q);
-    buffer2->setQuality(q);
+    buffer1->setPitchIndpTimeStretch(b);
+    buffer2->setPitchIndpTimeStretch(b);
 }
 
 void EngineMaster::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBufferSize)

@@ -164,8 +164,8 @@ INCLUDEPATH += $$KISSFFT_DIR
 
 # Audio scaling
 INCLUDEPATH += ../lib/libsamplerate
-SOURCES += enginebufferscalesrc.cpp ../lib/libsamplerate/samplerate.c ../lib/libsamplerate/src_linear.c ../lib/libsamplerate/src_sinc.c ../lib/libsamplerate/src_zoh.c
-HEADERS += enginebufferscalesrc.h ../lib/libsamplerate/samplerate.h ../lib/libsamplerate/config.h ../lib/libsamplerate/common.h ../lib/libsamplerate/float_cast.h ../lib/libsamplerate/fastest_coeffs.h ../lib/libsamplerate/high_qual_coeffs.h ../lib/libsamplerate/mid_qual_coeffs.h
+SOURCES += enginebufferscalest.cpp enginebufferscalesrc.cpp ../lib/libsamplerate/samplerate.c ../lib/libsamplerate/src_linear.c ../lib/libsamplerate/src_sinc.c ../lib/libsamplerate/src_zoh.c
+HEADERS += enginebufferscalest.h enginebufferscalesrc.h ../lib/libsamplerate/samplerate.h ../lib/libsamplerate/config.h ../lib/libsamplerate/common.h ../lib/libsamplerate/float_cast.h ../lib/libsamplerate/fastest_coeffs.h ../lib/libsamplerate/high_qual_coeffs.h ../lib/libsamplerate/mid_qual_coeffs.h
 
 # Debug plotting through gplot API
 #unix:DEFINES += __GNUPLOT__
@@ -309,7 +309,7 @@ DEFINES += SETTINGS_FILE=$$SETTINGS_FILE TRACK_FILE=$$TRACK_FILE
 unix:TEMPLATE = app
 win32:TEMPLATE = vcapp
 CONFIG += qt thread warn_off release
-DEFINES += QT_NO_CHECK
+#DEFINES += QT_NO_CHECK
 #CONFIG += qt thread warn_on debug
 DBFILE = mixxx.db
 LANGUAGE = C++

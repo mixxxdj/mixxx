@@ -31,7 +31,7 @@ public:
     unsigned read(unsigned long size, const SAMPLE*);
     inline long unsigned length();
     static int ParseHeader( TrackInfoObject * );
-    QPtrList<long unsigned int> *getCuePoints();
+    QValueList<long> *getCuePoints();
 
 private:
     int channels;

@@ -18,6 +18,7 @@
 #include "dlgprefsound.h"
 #include "playerproxy.h"
 #include <qcombobox.h>
+#include <qcheckbox.h>
 #include <qpushbutton.h>
 #include <qslider.h>
 #include <qlabel.h>
@@ -37,11 +38,18 @@ DlgPrefSound::DlgPrefSound(QWidget *parent, PlayerProxy *_player,
     connect(SliderLatency,                SIGNAL(valueChanged(int)), this, SLOT(slotLatency()));
 
     // Set default sound quality as stored in config file if not already set
-    if (config->getValueString(ConfigKey("[Soundcard]","SoundQuality")).length() == 0)
-        config->set(ConfigKey("[Soundcard]","SoundQuality"),ConfigValue(4));
+//    if (config->getValueString(ConfigKey("[Soundcard]","SoundQuality")).length() == 0)
+//        config->set(ConfigKey("[Soundcard]","SoundQuality"),ConfigValue(4));
 
     // Sound quality slider updates
-    SliderSoundQuality->setValue(2+4-config->getValueString(ConfigKey("[Soundcard]","SoundQuality")).toInt());
+//    SliderSoundQuality->setValue(2+4-config->getValueString(ConfigKey("[Soundcard]","SoundQuality")).toInt());
+    
+    // Set default value for scale mode check box
+    int iPitchIndpTimeStretch = config->getValueString(ConfigKey("[Soundcard]","PitchIndpTimeStretch")).toInt();
+    if (iPitchIndpTimeStretch)
+        checkBoxPitchIndp->setChecked(true);
+    else
+        checkBoxPitchIndp->setChecked(false);
 
     // Apply changes whenever apply signal is emitted
     connect(ComboBoxSoundcardMasterLeft,  SIGNAL(activated(int)),    this, SLOT(slotApply()));
@@ -50,10 +58,11 @@ DlgPrefSound::DlgPrefSound(QWidget *parent, PlayerProxy *_player,
     connect(ComboBoxSoundcardHeadRight,   SIGNAL(activated(int)),    this, SLOT(slotApply()));
     connect(ComboBoxSamplerates,          SIGNAL(activated(int)),    this, SLOT(slotApply()));
     connect(ComboBoxSoundApi,             SIGNAL(activated(int)),    this, SLOT(slotApplyApi()));
+    connect(checkBoxPitchIndp,            SIGNAL(stateChanged(int)), this, SLOT(slotApply()));
     connect(SliderLatency,                SIGNAL(sliderPressed()),   this, SLOT(slotLatencySliderClick()));
     connect(SliderLatency,                SIGNAL(sliderReleased()),  this, SLOT(slotLatencySliderRelease()));
     connect(SliderLatency,                SIGNAL(valueChanged(int)), this, SLOT(slotLatencySliderChange(int)));
-    connect(SliderSoundQuality,           SIGNAL(valueChanged(int)), this, SLOT(slotApply()));
+//    connect(SliderSoundQuality,           SIGNAL(valueChanged(int)), this, SLOT(slotApply()));
 
     // Connect timer to latency query slot
     connect(&m_qTimer, SIGNAL(timeout()), this, SLOT(slotQueryLatency()));
@@ -196,8 +205,14 @@ void DlgPrefSound::slotApply()
     config->set(ConfigKey("[Soundcard]","Samplerate"), ConfigValue(temp));
     //config->set(ConfigKey("[Soundcard]","Bits"), ConfigValue(ComboBoxBits->currentText()));
     config->set(ConfigKey("[Soundcard]","Latency"), ConfigValue(getSliderLatencyMsec(SliderLatency->value())));
-    config->set(ConfigKey("[Soundcard]","SoundQuality"), ConfigValue(2+4-SliderSoundQuality->value()));
- 
+//    config->set(ConfigKey("[Soundcard]","SoundQuality"), ConfigValue(2+4-SliderSoundQuality->value()));
+    
+    if (checkBoxPitchIndp->isChecked())
+        config->set(ConfigKey("[Soundcard]","PitchIndpTimeStretch"), ConfigValue(1));
+    else
+        config->set(ConfigKey("[Soundcard]","PitchIndpTimeStretch"), ConfigValue(0));
+     
+        
     qDebug("request msec %i", getSliderLatencyMsec(SliderLatency->value()));
     
     // Close devices, and open using config data
