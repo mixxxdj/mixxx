@@ -537,6 +537,7 @@ void EngineBuffer::slotControlBeatSync(double)
 
 CSAMPLE *EngineBuffer::process(const CSAMPLE *, const int buf_size)
 {
+	Q_ASSERT( scale->getNewPlaypos() == 0 );
     // pause can be locked if the reader is currently loading a new track.
     if (m_pTrackEnd->get()==0 && pause.tryLock())
     {
@@ -714,6 +715,7 @@ CSAMPLE *EngineBuffer::process(const CSAMPLE *, const int buf_size)
                     float *beatBuffer = (float *)readerbeat->getBasePtr();
                     int chunkSizeDiff = READBUFFERSIZE/readerbeat->getBufferSize();
 //                    qDebug("from %i-%i",(int)floor(bufferpos_play),(int)floor(idx));
+					Q_ASSERT( floor(bufferpos_play) <= floor(idx) );
                     for (i=(int)floor(bufferpos_play); i<=(int)floor(idx); i++)
                     {
                         if (((i%chunkSizeDiff)==0) && (beatBuffer[i/chunkSizeDiff]>0.))
