@@ -72,7 +72,7 @@ unix {
 #  QMAKE_CXXFLAGS += -rcd -tpp6 -xiMK # icc pentium III
 #  QMAKE_CXXFLAGS += -rcd -tpp7 -xiMKW # icc pentium IV 
 #  QMAKE_CXXFLAGS += -prof_use #-genx # icc profiling
-  CONFIG_PATH = \"/usr/share/mixxx\"
+  !macx:CONFIG_PATH = \"/usr/share/mixxx\"
 }
 
 win32 {
@@ -84,12 +84,13 @@ win32 {
   QMAKE_CXXFLAGS += -GX
   QMAKE_LFLAGS += /NODEFAULTLIB:libcd /NODEFAULTLIB:libcmtd 
   #/NODEFAULTLIB:msvcrt.lib 
-  CONFIG_PATH = \"c:\\mixxx\"
+  CONFIG_PATH = \"./config/\"
 }
 
 macx {
   DEFINES += __MACX__
   LIBS += /usr/local/lib/libaudiofile.a -lz -framework Carbon -framework QuickTime
+  CONFIG_PATH = \"./config/\" 
 }
 
 # gcc Profiling
