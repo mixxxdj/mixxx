@@ -32,11 +32,11 @@ void MessageOutput( QtMsgType type, const char *msg )
                 break;
             case QtWarningMsg:
                 fprintf( stderr, "Warning: %s\n", msg );
-				QMessageBox::warning(0, "Mixxx", msg);
+                QMessageBox::warning(0, "Mixxx", msg);
                 break;
             case QtFatalMsg:
                 fprintf( stderr, "Fatal: %s\n", msg );
-				QMessageBox::warning(0, "Mixxx", msg);
+                QMessageBox::warning(0, "Mixxx", msg);
                 abort();                        // dump core on purpose
     }
 }
@@ -61,9 +61,9 @@ int main(int argc, char *argv[])
     
   MixxxApp *mixxx=new MixxxApp(&a);
   a.setMainWidget(mixxx);
-  mixxx->resize( 641+70, 450);
+  mixxx->resize( 641+70, 450+20);
   mixxx->setFixedWidth(641+70);
-  mixxx->setFixedHeight(450);
+  mixxx->setFixedHeight(450+20);
   //mixxx->setIcon(QPixmap());
 
   mixxx->show();

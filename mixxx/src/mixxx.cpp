@@ -291,7 +291,7 @@ void MixxxApp::engineStart()
     channel2 = new EngineChannel(view->channel2, "[Channel2]");
 
     //qDebug("Init master...");
-    master = new EngineMaster(view->master, view->crossfader, buffer1, buffer2, channel1, channel2, "[Master]");
+    master = new EngineMaster(view->master, view->crossfader, view->channel1, view->channel2, buffer1, buffer2, channel1, channel2, "[Master]");
 
     /** Connect signals from option menu, selecting processing of left and right channel, to
         EngineMaster */

@@ -40,9 +40,10 @@ private:
     ControlPotmeter *crossfader, *head_mix;
     EngineClipping *clipping, *head_clipping;
     CSAMPLE *out, *tmp, *tmp2, *tmp3;
-    bool left, right;
+    bool left, right, head1, head2;
 public:
     EngineMaster(DlgMaster *master_dlg, DlgCrossfader *crossfader_dlg,
+                 DlgChannel *channel1_dlg, DlgChannel *channel2_dlg,
                  EngineBuffer *buffer1, EngineBuffer *buffer2,
                  EngineChannel *, EngineChannel *,
                  const char *group);
@@ -51,6 +52,8 @@ public:
 public slots:
     void slotChannelLeft(bool toggle);
     void slotChannelRight(bool toggle);
+    void slotChannelHead1(int toggle);
+    void slotChannelHead2(int toggle);
 };
 
 #endif

@@ -365,6 +365,22 @@
             </property>
         </widget>
     </widget>
+    <widget class="QCheckBox">
+        <property name="name">
+            <cstring>CheckBoxHead</cstring>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>5</x>
+                <y>230</y>
+                <width>66</width>
+                <height>11</height>
+            </rect>
+        </property>
+        <property name="text">
+            <string>Head</string>
+        </property>
+    </widget>
 </widget>
 <customwidgets>
     <customwidget>
