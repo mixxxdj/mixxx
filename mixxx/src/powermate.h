@@ -20,11 +20,9 @@
 
 #include <qthread.h>
 #include <qsemaphore.h>
-#include <qvaluelist.h>
 
 /**
-  * Linux code for handling the PowerMate. This is implemented as a separate thread.
-  * The code is heavily inspired by the powermate-1.0 package.
+  * Virtual class for handling the PowerMate. This is implemented as a separate thread.
   *
   *@author Tue & Ken Haste Andersen
   */
@@ -33,62 +31,46 @@ class ControlObject;
 
   
 // Parameters used to interface the PowerMate with the MIDI code
-const int POWERMATE_MIDI_CHANNEL=16;
-const int POWERMATE_MIDI_DIAL_CTRL = 0;
-const int POWERMATE_MIDI_BTN_CTRL = 1;
+const int kiPowermateMidiChannel=16;
+const int kiPowermateMidiDial = 0;
+const int kiPowermateMidiBtn = 1;
 
-const int NUM_VALID_PREFIXES = 2;
-static const char *valid_prefix[NUM_VALID_PREFIXES] =
-{
-    "Griffin PowerMate",
-    "Griffin SoundKnob"
-};
-const int INPUT_BUFFER_SIZE = 32;
-const int NUM_EVENT_DEVICES = 16;
-
-const int KNOB_INTEGRAL_LEN = 40;
+const int kiPowermateBufferSize = 32;
+const int kiPowermateKnobIntegralLen = 40;
 
 class PowerMate : public QThread
 {
 public: 
-    PowerMate(ControlObject *_control);
+    PowerMate(ControlObject *pControl);
     ~PowerMate();
-    bool opendev();
     void led();
+    /** Open a PowerMate device */
+    virtual bool opendev() = 0;
+    /** Close the device */
+    virtual void closedev() = 0;
 protected:
-    void run();
-private:
-    int find(int mode);
-    int opendev(int _id, int mode);
-    void closedev();
-    void led_write(int static_brightness, int speed, int table, int asleep, int awake);
-    void process_event(struct input_event *ev);
-
-    /** This method is called every 50ms during an active period of the knob. The method sends
+    /** Main thread loop */ 
+    virtual void run() = 0;
+    /** Change the led */
+    virtual void led_write(int static_brightness, int speed, int table, int asleep, int awake) = 0;
+    /** This method should be called every 50ms during an active period of the knob. The method sends
       * knob events out, which has been interpolated and fitted to a certain function */
     void knob_event();
-    /** File handle of current open /dev/input/event device */
-    int fd;
-    /** ID of event interface */
-    int id;
+
     /** Instantiate number. Used in the calculation of MIDI controller id's */
-    int instno;
+    int m_iInstNo;
     /** Pointer to ControlObject */
-    ControlObject *control;
+    ControlObject *m_pControl;
     /** Variable used to indicate weather a knob event should be sent or not */
-    bool sendKnobEvent;
+    bool m_bSendKnobEvent;
     /** Amplitude of knob */
-    float magnitude;
-    /** State of knob. true = fade in, false=fade out */
-    bool fadeIn;
+    float m_fMagnitude;
     /** Current value got from knob */
-    int knobval;
-    /** List of open devices */
-    static QValueList <int> openDevs;
-    /** Size of knob integral buffer */
-    int *knob_integral;
-    /** Semaphore used to control led */
-    QSemaphore *requestLed;
+    int m_iKnobVal;
+    /** Pointer to knob integral buffer */
+    int *m_pKnobIntegral;
+    /** Pointer to semaphore used to control led */
+    QSemaphore *m_pRequestLed;
 };
 
 #endif

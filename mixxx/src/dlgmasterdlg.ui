@@ -68,7 +68,6 @@
         </property>
         <property name="font">
             <font>
-                <family>Helvetica</family>
                 <pointsize>9</pointsize>
             </font>
         </property>
@@ -100,7 +99,6 @@
         </property>
         <property name="font">
             <font>
-                <family>Helvetica</family>
                 <pointsize>9</pointsize>
             </font>
         </property>
@@ -132,7 +130,6 @@
         </property>
         <property name="font">
             <font>
-                <family>Helvetica</family>
                 <pointsize>9</pointsize>
             </font>
         </property>
@@ -180,7 +177,6 @@
         </property>
         <property name="font">
             <font>
-                <family>Helvetica</family>
                 <pointsize>9</pointsize>
             </font>
         </property>

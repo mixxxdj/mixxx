@@ -93,7 +93,7 @@ void MixxxVisual::initializeGL()
 {
     controller->init();
     backplane = new VisualBackplane();
-    controller->add(backplane);
+//    controller->add(backplane);
 
     picking.init(controller);
 }

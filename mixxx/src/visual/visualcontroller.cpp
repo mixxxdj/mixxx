@@ -17,6 +17,7 @@
 
 #include "visualcontroller.h"
 #include "visualobject.h"
+#include "light.h"
 
 int VisualController::idCount = 0;
 
@@ -46,6 +47,28 @@ VisualController::VisualController(QApplication *_app)
     aspect=(GLdouble)width/(GLdouble)height;
   else
     aspect=1.0;
+
+/*
+    mylight.ambient[0]  = 1.f;
+    mylight.ambient[1]  = 1.f;
+    mylight.ambient[2]  = 1.f;
+    mylight.ambient[3]  = 1.f;
+
+    mylight.diffuse[0]  = 1.f;
+    mylight.diffuse[1]  = 1.f;
+    mylight.diffuse[2]  = 1.f;
+    mylight.diffuse[3]  = 1.f;
+
+    mylight.specular[0] = 1.f;
+    mylight.specular[1] = 1.f;
+    mylight.specular[2] = 1.f;
+    mylight.specular[3] = 1.f;
+
+    mylight.position[0] = 100.0f;
+    mylight.position[1] = 100.0f;
+    mylight.position[2] = 180.0f;
+    mylight.position[3] = 1.0f;    
+*/
 };
 
 
@@ -66,11 +89,11 @@ void VisualController::setupBackfaceCulling()
 void VisualController::setupZBuffer()
 {
 //  glDisable(GL_DEPTH_TEST);
-    glClearDepth(1.0);
+    //glClearDepth(1.0);
     glEnable(GL_DEPTH_TEST);
-    glDepthMask(true);
-    glDepthFunc(GL_LESS);
-    glDepthRange(0,1);
+    //glDepthMask(true);
+    //glDepthFunc(GL_LESS);
+    //glDepthRange(0, 1);
 };
 
 /**
@@ -80,8 +103,8 @@ void VisualController::setupBlending()
 {
     glEnable(GL_BLEND);
     //--- Transparency fog effects???? primitves should be sorted from nearst to farest
-    //glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    glBlendFunc(GL_ONE,GL_ONE); //To powefull
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE);
+//    glBlendFunc(GL_ONE,GL_ONE); //To powefull
     //glBlendFunc(GL_ONE_MINUS_SRC_ALPHA,GL_ONE);
     //glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 };
@@ -92,7 +115,7 @@ void VisualController::setupBlending()
 void VisualController::init()
 {
     //glClearColor(0.4f,0.4f,0.4f,0.0f);
-    glClearColor(0.f,0.f,0.f,0.0f);
+    glClearColor(0.0f,0.f,0.0f,0.0f);
 
     setupBackfaceCulling();
     setupZBuffer();
@@ -118,11 +141,14 @@ void VisualController::init()
     gluPerspective(fov,aspect,znear,zfar);
     glViewport(x,y,width,height);
 
+    mylight.enable();
+
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
     gluLookAt(eyex,eyey,eyez,
               centerx,centery,centerz,
               upx,upy,upz);
+
 };
 
 /**

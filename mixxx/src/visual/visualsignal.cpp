@@ -61,7 +61,7 @@ void VisualSignal::draw(GLenum mode)
  */
 void VisualSignal::draw()
 {
-    glDisable(GL_BLEND);
+//    glDisable(GL_BLEND);
     //--- matrix mode must be  GL_MODEL
     glPushMatrix();
     glTranslatef(ox,oy,oz);
@@ -94,7 +94,7 @@ void VisualSignal::draw()
   
     //--- Clean up after us
     glPopMatrix();
-    glEnable(GL_BLEND);
+//    glEnable(GL_BLEND);
 };
 
 /**

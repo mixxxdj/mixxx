@@ -21,7 +21,8 @@
 /**
  * Default constructor.
  */
-Material::Material(){
+Material::Material()
+{
   ambient[0]  = 0.0f;
   ambient[1]  = 0.0f;
   ambient[2]  = 0.0f;
@@ -44,6 +45,10 @@ Material::Material(){
   emission[3] = 1.0f;
 
   shininess  = 0;
+
+  if (!glIsEnabled(GL_COLOR_MATERIAL))
+      glEnable(GL_COLOR_MATERIAL);
+  
 };
 
 /**
@@ -58,9 +63,11 @@ Material::~Material()
  * This method should be invoked when you want to use the material. The method makes sure to tell openGL all the parameters that the data members of this class specifies.
  */
 void Material::use(){
+//  glColor3f(diffuse[0],diffuse[1],diffuse[2]);
+//  glColor3f(0.,0.,1.);
   glMaterialfv(GL_FRONT_AND_BACK,GL_AMBIENT,ambient);
   glMaterialfv(GL_FRONT_AND_BACK,GL_DIFFUSE,diffuse);
   glMaterialfv(GL_FRONT_AND_BACK,GL_SPECULAR,specular);
-  glMaterialfv(GL_FRONT_AND_BACK,GL_EMISSION,emission);
+//  glMaterialfv(GL_FRONT_AND_BACK,GL_EMISSION,emission);
   glMaterialfv(GL_FRONT_AND_BACK,GL_SHININESS,&shininess);
 };
