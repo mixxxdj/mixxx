@@ -33,7 +33,6 @@ SoundSourceAudioFile::SoundSourceAudioFile( QString sFilename )
         buffer = new SAMPLE[MAX_BUFFER_LEN];
     else
         buffer = 0;
-        
     filelength = channels*afGetFrameCount(fh,AF_DEFAULT_TRACK);
 
     SRATE = (int)afGetRate(fh,AF_DEFAULT_TRACK);
@@ -70,7 +69,7 @@ unsigned SoundSourceAudioFile::read(unsigned long size, const SAMPLE* destinatio
         for (int i=0; i<readNo; i+=channels)
         {
             for (int j=0; j<2; j++)
-                dest[(i*max(channels,2))+j] = buffer[(i*channels)+j];
+                dest[(i*max(channels,2))+j] = buffer[(i*channels)+max(j,channels-1)];
         }
         return readNo*2;
     }
