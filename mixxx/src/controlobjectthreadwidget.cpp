@@ -52,8 +52,8 @@ void ControlObjectThreadWidget::setWidget(QWidget *widget, bool emitOnDownPress,
 
 void ControlObjectThreadWidget::setWidgetOnOff(QWidget *widget)
 {
-//    QApplication::connect(this,   SIGNAL(valueChanged(double)),    widget, SLOT(setOnOff(double)));
-//    emit(valueChanged(m_dValue);
+    QApplication::connect(this,   SIGNAL(valueChanged(double)),    widget, SLOT(setOnOff(double)));
+    emit(valueChanged(m_dValue));
 }
 
 void ControlObjectThreadWidget::updateControlObject()
