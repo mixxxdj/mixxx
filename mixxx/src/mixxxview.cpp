@@ -31,7 +31,7 @@ MixxxView::MixxxView(QWidget *parent, MixxxDoc *doc) : QWidget(parent)
     channel1 = new DlgChannel(this);
     channel2 = new DlgChannel(this); channel2->layoutMirror();
     playlist = new DlgPlaylist(this);
-    playlist->ListPlaylist->setColumnWidth(0,645);
+    playlist->ListPlaylist->setColumnWidth(0,625);
     master = new DlgMaster(this);
     crossfader = new DlgCrossfader(this);
     split = new DlgSplit(this);
@@ -55,7 +55,7 @@ MixxxView::MixxxView(QWidget *parent, MixxxDoc *doc) : QWidget(parent)
     mainGrid->setColStretch( 2,  16);
     mainGrid->setColStretch( 3,  73);
     mainGrid->setColStretch( 4, 242);
-    mainGrid->setColStretch( 5,  80);
+    mainGrid->setColStretch( 5, 100);
 
     mainGrid->setRowStretch( 0, 230);
     mainGrid->setRowStretch( 1,  43);

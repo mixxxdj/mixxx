@@ -25,14 +25,36 @@
     <property name="caption">
         <string>Form1</string>
     </property>
+    <widget class="Line">
+        <property name="name">
+            <cstring>Line1</cstring>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>-6</x>
+                <y>0</y>
+                <width>16</width>
+                <height>446</height>
+            </rect>
+        </property>
+        <property name="frameShape">
+            <enum>VLine</enum>
+        </property>
+        <property name="frameShadow">
+            <enum>Sunken</enum>
+        </property>
+        <property name="orientation">
+            <enum>Vertical</enum>
+        </property>
+    </widget>
     <widget class="QLabel">
         <property name="name">
             <cstring>TextLabel1</cstring>
         </property>
         <property name="geometry">
             <rect>
-                <x>6</x>
-                <y>66</y>
+                <x>24</x>
+                <y>62</y>
                 <width>44</width>
                 <height>18</height>
             </rect>
@@ -57,14 +79,30 @@
             <set>AlignCenter</set>
         </property>
     </widget>
+    <widget class="WKnob">
+        <property name="name">
+            <cstring>KnobVolume</cstring>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>30</x>
+                <y>33</y>
+                <width>32</width>
+                <height>32</height>
+            </rect>
+        </property>
+        <property name="backgroundOrigin">
+            <enum>WindowOrigin</enum>
+        </property>
+    </widget>
     <widget class="QLabel">
         <property name="name">
             <cstring>TextLabel1_2_2</cstring>
         </property>
         <property name="geometry">
             <rect>
-                <x>9</x>
-                <y>17</y>
+                <x>26</x>
+                <y>16</y>
                 <width>38</width>
                 <height>16</height>
             </rect>
@@ -95,49 +133,43 @@
         </property>
         <property name="geometry">
             <rect>
-                <x>20</x>
+                <x>37</x>
                 <y>2</y>
                 <width>16</width>
                 <height>16</height>
             </rect>
         </property>
     </widget>
-    <widget class="Line">
+    <widget class="QLabel">
         <property name="name">
-            <cstring>Line1</cstring>
+            <cstring>TextLabel1_2</cstring>
         </property>
         <property name="geometry">
             <rect>
-                <x>-6</x>
-                <y>0</y>
-                <width>16</width>
-                <height>446</height>
+                <x>24</x>
+                <y>191</y>
+                <width>45</width>
+                <height>18</height>
             </rect>
         </property>
-        <property name="frameShape" stdset="0">
-            <enum>VLine</enum>
+        <property name="paletteForegroundColor">
+            <color>
+                <red>80</red>
+                <green>80</green>
+                <blue>80</blue>
+            </color>
         </property>
-        <property name="frameShadow">
-            <enum>Sunken</enum>
+        <property name="font">
+            <font>
+                <family>Application</family>
+                <pointsize>8</pointsize>
+            </font>
         </property>
-        <property name="orientation">
-            <enum>Vertical</enum>
+        <property name="text">
+            <string>M/H MIX</string>
         </property>
-    </widget>
-    <widget class="WKnob">
-        <property name="name">
-            <cstring>KnobVolume</cstring>
-        </property>
-        <property name="geometry">
-            <rect>
-                <x>12</x>
-                <y>37</y>
-                <width>32</width>
-                <height>32</height>
-            </rect>
-        </property>
-        <property name="backgroundOrigin">
-            <enum>WindowOrigin</enum>
+        <property name="alignment">
+            <set>AlignCenter</set>
         </property>
     </widget>
     <widget class="QLabel">
@@ -146,8 +178,8 @@
         </property>
         <property name="geometry">
             <rect>
-                <x>10</x>
-                <y>152</y>
+                <x>23</x>
+                <y>142</y>
                 <width>52</width>
                 <height>18</height>
             </rect>
@@ -174,12 +206,12 @@
     </widget>
     <widget class="WKnob">
         <property name="name">
-            <cstring>KnobHeadLR</cstring>
+            <cstring>KnobHeadVol</cstring>
         </property>
         <property name="geometry">
             <rect>
-                <x>17</x>
-                <y>176</y>
+                <x>30</x>
+                <y>112</y>
                 <width>32</width>
                 <height>32</height>
             </rect>
@@ -188,46 +220,14 @@
             <enum>WindowOrigin</enum>
         </property>
     </widget>
-    <widget class="QLabel">
-        <property name="name">
-            <cstring>TextLabel1_2</cstring>
-        </property>
-        <property name="geometry">
-            <rect>
-                <x>11</x>
-                <y>215</y>
-                <width>48</width>
-                <height>18</height>
-            </rect>
-        </property>
-        <property name="paletteForegroundColor">
-            <color>
-                <red>80</red>
-                <green>80</green>
-                <blue>80</blue>
-            </color>
-        </property>
-        <property name="font">
-            <font>
-                <family>Application</family>
-                <pointsize>8</pointsize>
-            </font>
-        </property>
-        <property name="text">
-            <string>M/H MIX</string>
-        </property>
-        <property name="alignment">
-            <set>AlignCenter</set>
-        </property>
-    </widget>
     <widget class="WKnob">
         <property name="name">
-            <cstring>KnobHeadVol</cstring>
+            <cstring>KnobHeadLR</cstring>
         </property>
         <property name="geometry">
             <rect>
-                <x>16</x>
-                <y>112</y>
+                <x>30</x>
+                <y>161</y>
                 <width>32</width>
                 <height>32</height>
             </rect>
