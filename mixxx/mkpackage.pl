@@ -74,7 +74,7 @@ if ($arch =~ /i586/)
 {
     # Copy mixxx binary to $BASE/bin
     `install src/mixxx $BASEMISC`;
-#    `install src/mixxx-without-jack $BASEMISC`;
+    `install src/mixxx-with-jack $BASEMISC`;
 
     # Copy install script
     `install install.pl $BASE`;
