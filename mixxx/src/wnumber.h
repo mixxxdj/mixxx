@@ -35,8 +35,11 @@ public:
     void move(int, int);
     void setFixedSize(int, int);
     void setNumDigits(int);
+    void setAlignment(int);
+
 public slots:
     void setValue(double dValue);
+
 protected:
     /** Multiplication factor */
      QLabel *m_pLabel;
