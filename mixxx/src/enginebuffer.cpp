@@ -642,7 +642,7 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBuff
         if (playButton->get()==1. || fwdButton->get()==1. || backButton->get()==1.)
             rate=wheel->get()+(1.+rateSlider->get()*m_pRateDir->get())*baserate;
         else
-            rate=wheel->get()*baserate*20.;
+            rate=wheel->get()*baserate*10.;
 
 /*
         //

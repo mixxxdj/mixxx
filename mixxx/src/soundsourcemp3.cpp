@@ -41,7 +41,6 @@ SoundSourceMp3::SoundSourceMp3(QString qFilename) : SoundSource(qFilename)
     /*
       Decode all the headers, and fill in stats:
     */
-//    int len = 0;
     mad_header Header;
     filelength = mad_timer_zero;
     bitrate = 0;
