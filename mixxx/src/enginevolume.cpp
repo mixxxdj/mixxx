@@ -23,7 +23,7 @@
   ----------------------------------------------------------------*/
 EngineVolume::EngineVolume(ConfigKey key)
 {
-    ControlLogpotmeter *p = new ControlLogpotmeter(key, 5.0);
+    ControlLogpotmeter *p = new ControlLogpotmeter(key, 1.0);
     potmeterVolume = new ControlEngine(p);
 
     buffer = new CSAMPLE[MAX_BUFFER_LEN];

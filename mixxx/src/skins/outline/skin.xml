@@ -51,14 +51,14 @@
    <EmitOnDownPress>true</EmitOnDownPress>
    <ButtonState>LeftButton</ButtonState>
    <UseSetFromApp>false</UseSetFromApp>
-   <Inc>0.01</Inc>
+   <Inc>0.001</Inc>
   </Connection>
   <Connection>
    <ConfigKey>[Channel1],rate</ConfigKey>
    <EmitOnDownPress>true</EmitOnDownPress>
    <ButtonState>RightButton</ButtonState>
    <UseSetFromApp>false</UseSetFromApp>
-   <Inc>0.001</Inc>
+   <Inc>0.0001</Inc>
   </Connection>
  </PushButtonInc>
 
@@ -75,14 +75,14 @@
    <EmitOnDownPress>true</EmitOnDownPress>
    <ButtonState>LeftButton</ButtonState>
    <UseSetFromApp>false</UseSetFromApp>
-   <Inc>0.01</Inc>
+   <Inc>0.001</Inc>
   </Connection>
   <Connection>
    <ConfigKey>[Channel2],rate</ConfigKey>
    <EmitOnDownPress>true</EmitOnDownPress>
    <ButtonState>RightButton</ButtonState>
    <UseSetFromApp>false</UseSetFromApp>
-   <Inc>0.001</Inc>
+   <Inc>0.0001</Inc>
   </Connection>
  </PushButtonInc>
 
@@ -99,14 +99,14 @@
    <EmitOnDownPress>true</EmitOnDownPress>
    <ButtonState>LeftButton</ButtonState>
    <UseSetFromApp>false</UseSetFromApp>
-   <Inc>-0.01</Inc>
+   <Inc>-0.001</Inc>
   </Connection>
   <Connection>
    <ConfigKey>[Channel1],rate</ConfigKey>
    <EmitOnDownPress>true</EmitOnDownPress>
    <ButtonState>RightButton</ButtonState>
    <UseSetFromApp>false</UseSetFromApp>
-   <Inc>-0.001</Inc>
+   <Inc>-0.0001</Inc>
   </Connection>
  </PushButtonInc>
 
@@ -123,14 +123,14 @@
    <EmitOnDownPress>true</EmitOnDownPress>
    <ButtonState>LeftButton</ButtonState>
    <UseSetFromApp>false</UseSetFromApp>
-   <Inc>-0.01</Inc>
+   <Inc>-0.001</Inc>
   </Connection>
   <Connection>
    <ConfigKey>[Channel2],rate</ConfigKey>
    <EmitOnDownPress>true</EmitOnDownPress>
    <ButtonState>RightButton</ButtonState>
    <UseSetFromApp>false</UseSetFromApp>
-   <Inc>-0.001</Inc>
+   <Inc>-0.0001</Inc>
   </Connection>
  </PushButtonInc>
 
@@ -152,6 +152,16 @@
    <EmitOnDownPress>false</EmitOnDownPress>
    <ButtonState>LeftButton</ButtonState>
   </Connection>
+  <Connection>
+   <ConfigKey>[Channel1],rate_temp_up_small</ConfigKey>
+   <EmitOnDownPress>true</EmitOnDownPress>
+   <ButtonState>RightButton</ButtonState>
+  </Connection>
+  <Connection>
+   <ConfigKey>[Channel1],rate_temp_up_small</ConfigKey>
+   <EmitOnDownPress>false</EmitOnDownPress>
+   <ButtonState>RightButton</ButtonState>
+  </Connection>
  </PushButton>
 
  <PushButton>
@@ -171,6 +181,16 @@
    <ConfigKey>[Channel1],rate_temp_down</ConfigKey>
    <EmitOnDownPress>false</EmitOnDownPress>
    <ButtonState>LeftButton</ButtonState>
+  </Connection>
+  <Connection>
+   <ConfigKey>[Channel1],rate_temp_down_small</ConfigKey>
+   <EmitOnDownPress>true</EmitOnDownPress>
+   <ButtonState>RightButton</ButtonState>
+  </Connection>
+  <Connection>
+   <ConfigKey>[Channel1],rate_temp_down_small</ConfigKey>
+   <EmitOnDownPress>false</EmitOnDownPress>
+   <ButtonState>RightButton</ButtonState>
   </Connection>
  </PushButton>
 
@@ -192,6 +212,16 @@
    <EmitOnDownPress>false</EmitOnDownPress>
    <ButtonState>LeftButton</ButtonState>
   </Connection>
+  <Connection>
+   <ConfigKey>[Channel2],rate_temp_up_small</ConfigKey>
+   <EmitOnDownPress>true</EmitOnDownPress>
+   <ButtonState>RightButton</ButtonState>
+  </Connection>
+  <Connection>
+   <ConfigKey>[Channel2],rate_temp_up_small</ConfigKey>
+   <EmitOnDownPress>false</EmitOnDownPress>
+   <ButtonState>RightButton</ButtonState>
+  </Connection>
  </PushButton>
 
  <PushButton>
@@ -211,6 +241,16 @@
    <ConfigKey>[Channel2],rate_temp_down</ConfigKey>
    <EmitOnDownPress>false</EmitOnDownPress>
    <ButtonState>LeftButton</ButtonState>
+  </Connection>
+  <Connection>
+   <ConfigKey>[Channel2],rate_temp_down_small</ConfigKey>
+   <EmitOnDownPress>true</EmitOnDownPress>
+   <ButtonState>RightButton</ButtonState>
+  </Connection>
+  <Connection>
+   <ConfigKey>[Channel2],rate_temp_down_small</ConfigKey>
+   <EmitOnDownPress>false</EmitOnDownPress>
+   <ButtonState>RightButton</ButtonState>
   </Connection>
  </PushButton>
 

@@ -2,8 +2,8 @@
                           enginemaster.cpp  -  description
                              -------------------
     begin                : Sun Apr 28 2002
-    copyright            : (C) 2002 by 
-    email                : 
+    copyright            : (C) 2002 by
+    email                :
  ***************************************************************************/
 
 /***************************************************************************
@@ -51,7 +51,7 @@ EngineMaster::EngineMaster(EngineBuffer *_buffer1, EngineBuffer *_buffer2,
             
     // Master volume
     volume = new EngineVolume(ConfigKey(group,"volume"));
-    
+
     // Clipping
     clipping = new EngineClipping(group);
 
@@ -60,7 +60,7 @@ EngineMaster::EngineMaster(EngineBuffer *_buffer1, EngineBuffer *_buffer2,
 
     // Headphone volume
     head_volume = new EngineVolume(ConfigKey(group, "headVolume"));
-   
+
     // Headphone mix (left/right)
     p = new ControlPotmeter(ConfigKey(group, "headMix"),-1.,1.);
     head_mix = new ControlEngine(p);
@@ -73,12 +73,12 @@ EngineMaster::EngineMaster(EngineBuffer *_buffer1, EngineBuffer *_buffer2,
 
     flanger1 = flanger->getButtonCh1();
     flanger2 = flanger->getButtonCh2();
-        
+
     out = new CSAMPLE[MAX_BUFFER_LEN];
 }
 
 EngineMaster::~EngineMaster()
-{ 
+{
     delete crossfader;
     delete m_pBalance;
     delete head_mix;
@@ -105,13 +105,13 @@ CSAMPLE *EngineMaster::process(const CSAMPLE *, const int buffer_size)
             sampMaster1 = flanger->process(temp_2, buffer_size);
         else
             sampMaster1 = temp_2;
-    } 
+    }
 
     if (master2)
     {
         CSAMPLE *temp_1 = buffer2->process(0, buffer_size);
         CSAMPLE *temp_2 = channel2->process(temp_1,buffer_size);
-        if (flanger1->get()==0. && flanger2->get()==1.) 
+        if (flanger1->get()==0. && flanger2->get()==1.)
             sampMaster2 = flanger->process(temp_2, buffer_size);
         else
             sampMaster2 = temp_2;
@@ -120,12 +120,22 @@ CSAMPLE *EngineMaster::process(const CSAMPLE *, const int buffer_size)
     //
     // Output channel:
     //
-    
+
     // Crossfader
-    FLOAT_TYPE cf_val = crossfader->get();;
+    FLOAT_TYPE cf_val = crossfader->get();
     FLOAT_TYPE c1_gain, c2_gain;
-    c2_gain = 0.5*(cf_val+1.);
-    c1_gain = 0.5*(-cf_val+1.);
+    //c2_gain = 0.5*(cf_val+1.);
+    //c1_gain = 0.5*(-cf_val+1.);
+    if (cf_val>0)
+    {
+        c2_gain = 1.;
+        c1_gain = 1.-cf_val;
+    }
+    else
+    {
+        c1_gain = 1.;
+        c2_gain = 1.+cf_val;
+    }
 
     if (master1 && pfl1->get()==0. && master2 && pfl2->get()==0.)
         for (int i=0; i<buffer_size; i++)
