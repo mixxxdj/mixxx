@@ -46,7 +46,7 @@ public slots:
 private slots:
 	void slotChangePlay_1(); // For recieving signals from the pulldown menu
 	void slotChangePlay_2();
-	void slotRightClick( int, int, const QPoint & );
+	void slotClick( int, int, int, const QPoint & );
     
 private:
 	TrackInfoObject *FileExistsInList( const QString );

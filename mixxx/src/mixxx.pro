@@ -202,7 +202,7 @@ macx {
   INCLUDEPATH += $$MACLIBPATH/include
   LIBS += -lz -framework Carbon -framework QuickTime
   CONFIG_PATH = \"./Contents/Resources/config/\" 
-  SETTINGS_DIR = "/.mixxx"
+  SETTINGS_DIR = \"/.mixxx\"
 }
 
 FORMS	= dlgchanneldlg.ui dlgplaycontroldlg.ui dlgplaylistdlg.ui dlgmasterdlg.ui dlgcrossfaderdlg.ui dlgsplitdlg.ui dlgprefsounddlg.ui dlgprefmididlg.ui dlgprefplaylistdlg.ui dlgflangerdlg.ui dlgtracklistdlg.ui #dlgvumeterdlg.ui

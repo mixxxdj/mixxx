@@ -56,7 +56,7 @@ ControlObject::~ControlObject()
 
 bool ControlObject::connect(ConfigKey src, ConfigKey dest)
 {
-
+qDebug("unfinished");
     // Find src object
     ControlObject *pSrc = 0;
     for (pSrc=list.first(); pSrc; pSrc=list.next())

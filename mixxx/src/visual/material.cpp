@@ -46,9 +46,6 @@ Material::Material()
 
   shininess  = 0;
 
-  if (!glIsEnabled(GL_COLOR_MATERIAL))
-      glEnable(GL_COLOR_MATERIAL);
-  
 };
 
 /**

@@ -50,8 +50,8 @@ TrackList::TrackList( const QString sDirectory, WTrackTable *ptableTracks,
     playSelectMenu->insertItem(QIconSet(b_xpm), "Player B",this, SLOT(slotChangePlay_2()));
 
     // Connect the right click to the slot where the menu is shown:
-	connect( m_ptableTracks, SIGNAL( contextMenuRequested( int, int, const QPoint &) ),
-		                     SLOT( slotRightClick( int, int, const QPoint &) ) );
+	connect( m_ptableTracks, SIGNAL( pressed( int, int, int, const QPoint &) ),
+		                     SLOT( slotClick( int, int, int, const QPoint &) ) );
 }
 
 TrackList::~TrackList()
@@ -340,11 +340,11 @@ void TrackList::slotChangePlay_2()
 /*
 	Slot connected to popup menu activated when a track is clicked:
 */
-void TrackList::slotRightClick( int iRow, int iCol, const QPoint &pos )
+void TrackList::slotClick( int iRow, int iCol, int iButton, const QPoint &pos )
 {
     qDebug("popup menu");
 	// Display popup menu
-    playSelectMenu->popup(pos);
+    playSelectMenu->popup(m_ptableTracks->mapToGlobal(pos));
 }
 
 
