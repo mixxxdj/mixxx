@@ -33,12 +33,15 @@ public:
   ~EngineObject();
   virtual CSAMPLE *process(const CSAMPLE *, const int) = 0;
 
-protected:
-  void set_srate(int srate);
-
+  static QString NAME;
   static int SRATE;
+  static int BITS;
+  static int BUFFERSIZE;
   static int NYQUIST;
   static CSAMPLE norm;
+protected:
+  void setParams(QString name, int srate, int bits, int bufferSize);
+
 private:
   static MixxxView *view;
 };

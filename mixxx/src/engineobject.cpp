@@ -18,7 +18,10 @@
 #include "engineobject.h"
 
 // Static member variable definition
+QString EngineObject::NAME = 0;
 int EngineObject::SRATE = 0;
+int EngineObject::BITS = 0;
+int EngineObject::BUFFERSIZE = 0;
 int EngineObject::NYQUIST = 0;
 CSAMPLE EngineObject::norm = 0.;
 MixxxView *EngineObject::view = 0;
@@ -32,9 +35,13 @@ EngineObject::~EngineObject()
 {
 }
 
-void EngineObject::set_srate(int srate)
+void EngineObject::setParams(QString name, int srate, int bits, int bufferSize)
 {
-    SRATE   = srate;
+    NAME       = name;
+    SRATE      = srate;
+    BITS       = bits;
+    BUFFERSIZE = bufferSize;
+
     NYQUIST = SRATE/2;
     norm    = (2.*acos(-1.0))/SRATE;
 }

@@ -39,6 +39,12 @@ Player::~Player()
     deallocate();
 }
 
+bool Player::reopen(QString name, int srate, int bits, int bufferSize)
+{
+    close();
+    return open(name,srate,bits,bufferSize);
+}
+
 void Player::allocate()
 {
 	// Allocate buffers
@@ -82,7 +88,7 @@ int Player::prepareBuffer() {
   // Resample; the linear interpolation is done in readfile:
   p1 = reader->process(0, buffer_size);
 
-  for (int i=0; i<engines->size(); i++)
+  for (unsigned int i=0; i<engines->size(); i++)
   {
       p2 = (*engines)[i]->process(p1, buffer_size);
       p1=p2;
@@ -99,3 +105,4 @@ QPtrList<Player::Info> *Player::getInfo()
 {
     return &devices;
 }
+

@@ -27,16 +27,19 @@
 
 class PlayerPortAudio : public Player  {
 public: 
-	PlayerPortAudio(int size, std::vector<EngineObject *> *);
-	~PlayerPortAudio();
-	/** No descriptions */
-	void stop();
-	void start(EngineObject *_reader);
-
-    /** No descriptions */
-	void wait();
-	CSAMPLE *process(const CSAMPLE *, const int);
-
+    PlayerPortAudio(int size, std::vector<EngineObject *> *);
+    ~PlayerPortAudio();
+    /** Open device */
+    bool open(QString name, int srate, int bits, int bufferSize);
+    /** Close device */
+    void close();
+    /** Stop playback */
+    void stop();
+    /** Start playback */
+    void start(EngineObject *_reader);
+    /** Wait for playback to finish */
+    void wait();
+    CSAMPLE *process(const CSAMPLE *, const int);
 protected:
 	PortAudioStream *stream;
 };

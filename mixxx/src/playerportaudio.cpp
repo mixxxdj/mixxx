@@ -19,8 +19,7 @@
 
 PlayerPortAudio::PlayerPortAudio(int size, std::vector<EngineObject *> *engines) : Player(size, engines)
 {
-    PaError err;
-    err = Pa_Initialize();
+    PaError err = Pa_Initialize();
     if( err != paNoError ) qFatal("PortAudio initialization error");
 
     // Fill out devices list with info about available devices
@@ -54,44 +53,82 @@ PlayerPortAudio::PlayerPortAudio(int size, std::vector<EngineObject *> *engines)
     // Ensure stereo is supported
     const PaDeviceInfo *info = Pa_GetDeviceInfo(id);
     if (info->maxOutputChannels < NO_CHANNELS)
-    	qFatal("Not enough channels available on default output device: %i",info->maxOutputChannels);
+        qFatal("Not enough channels available on default output device: %i",info->maxOutputChannels);
 
     // Set sample rate to 44100 if possible, otherwise highest possible
-    int temp = 0;
+    int temp_sr = 0;
     for (int i=0; i<=info->numSampleRates; i++)
         if (info->sampleRates[i] == 44100.)
-	    temp = 44100;
-    if (temp == 0)
-    	temp = (int)info->sampleRates[info->numSampleRates-1];
-    set_srate(temp);
-    qDebug("Using %iHz as output sample rate",SRATE);
+        temp_sr = 44100;
+    if (temp_sr == 0)
+        temp_sr = (int)info->sampleRates[info->numSampleRates-1];
 
-    err = Pa_OpenStream(&stream,
-                        paNoDevice,     // default input device
-                        0,              // no input
-                        paInt16,      
-                        NULL,
-                        id, 		// default output device
-                        NO_CHANNELS,              // stereo output
-                        paInt16,    
-                        NULL,
-                        (double)SRATE,
-                        size/NO_CHANNELS, 	// frames per buffer per channel
-                        0,              // number of buffers, if zero then use default minimum
-                        paClipOff,      // we won't output out of range samples so don't bother clipping them
-                        paCallback,
-                        this );
-
-    if( err != paNoError ) qFatal("PortAudio open stream error: %s",Pa_GetErrorText(err) );
-
-    buffer_size = size;
-    qDebug("Using PortAudio. Buffer size : %i samples.",buffer_size);
-    allocate();
+    if (!open(QString(info->name),temp_sr,16,size))
+        qFatal("PortAudio Error opening device");
 }
 
 PlayerPortAudio::~PlayerPortAudio()
 {
 	Pa_Terminate();
+}
+
+bool PlayerPortAudio::open(QString name, int srate, int bits, int bufferSize)
+{
+    // Extract bit information
+    PaSampleFormat format;
+    switch (bits)
+    {
+        case 8:  format = paInt8; break;
+        case 16: format = paInt16; break;
+        case 24: format = paInt24; break;
+        case 32: format = paInt32; break;
+        default: qFatal("Sample format not supported (%i bits)",bits);
+    }
+
+    // Extract device information
+    unsigned int id;
+    for (id=0; id<devices.count(); id++)
+        if (name == devices.at(id)->name)
+            break;
+
+    PaError err = Pa_OpenStream(&stream,
+                        paNoDevice,         // default input device
+                        0,                  // no input
+                        format,
+                        NULL,
+                        id,                 // default output device
+                        NO_CHANNELS,        // stereo output
+                        format,
+                        NULL,
+                        (double)srate,
+                        bufferSize/NO_CHANNELS,   // frames per buffer per channel
+                        0,                  // number of buffers, if zero then use default minimum
+                        paClipOff,          // we won't output out of range samples so don't bother clipping them
+                        paCallback,
+                        this );
+
+    if( err != paNoError )
+    {
+        qDebug("PortAudio open stream error: %s", Pa_GetErrorText(err));
+        return false;
+    }
+
+    // Fill in active config information
+    setParams(QString(Pa_GetDeviceInfo(id)->name), srate, 16, bufferSize);
+    buffer_size = bufferSize;
+
+    allocate();
+
+    return true;
+}
+
+void PlayerPortAudio::close()
+{
+	PaError err = Pa_CloseStream( stream );
+	if( err != paNoError )
+        qFatal("PortAudio close stream error: %s", Pa_GetErrorText(err));
+
+    deallocate();
 }
 
 void PlayerPortAudio::start(EngineObject *_reader)
@@ -110,9 +147,6 @@ void PlayerPortAudio::wait()
 void PlayerPortAudio::stop()
 {
 	PaError err = Pa_StopStream( stream );
-	if( err != paNoError ) exit(-1);
-
-	err = Pa_CloseStream( stream );
 	if( err != paNoError ) exit(-1);
 }
 

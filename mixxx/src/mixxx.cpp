@@ -80,9 +80,6 @@ MixxxApp::MixxxApp()
   connect(view->playlist->ListPlaylist, SIGNAL(pressed(QListViewItem *, const QPoint &, int)),
           this,                         SLOT(slotSelectPlay(QListViewItem *, const QPoint &, int)));
 
-  //viewToolBar->setOn(false);
-  //viewStatusBar->setOn(true);
-
   // Initialize midi:
   qDebug("Init midi...");
   midi = new MidiObject(config);
@@ -92,9 +89,28 @@ MixxxApp::MixxxApp()
   control->midi = midi;
   control->config = config;
 
-  // Instantiate a EngineObject to ensure static references are updated
-  //engine = new EngineObject(view);
+  // Initialize player with a desired buffer size
+  qDebug("Init player...");
+#ifdef __ALSA__
+  player = new PlayerALSA(BUFFER_SIZE, &engines);
+#else
+  player = new PlayerPortAudio(BUFFER_SIZE, &engines);
+#endif
 
+  engineStart();
+}
+
+MixxxApp::~MixxxApp()
+{
+    engineStop();
+    delete player;
+    delete control;
+    delete midi;
+    delete playSelectMenu;
+}
+
+void MixxxApp::engineStart()
+{
   qDebug("Init buffer 1... %s", view->playlist->ListPlaylist->firstChild()->text(1).ascii());
   buffer1 = new EngineBuffer(view->playcontrol1, "[Channel1]", view->playlist->ListPlaylist->firstChild()->text(1));
 
@@ -114,14 +130,6 @@ MixxxApp::MixxxApp()
   master->slotChannelLeft(optionsLeft->isOn());
   master->slotChannelRight(optionsRight->isOn());
 
-  // Initialize player with a desired buffer size
-  qDebug("Init player...");
-#ifdef __ALSA__
-  player = new PlayerALSA(BUFFER_SIZE, &engines);
-#else
-  player = new PlayerPortAudio(BUFFER_SIZE, &engines);
-#endif
-
   qDebug("Starting buffers...");
   buffer1->start();
   buffer2->start();
@@ -131,17 +139,14 @@ MixxxApp::MixxxApp()
   player->start(master);
 }
 
-MixxxApp::~MixxxApp()
+void MixxxApp::engineStop()
 {
-	player->stop();
-	delete player;
+    player->stop();
     delete buffer1;
     delete buffer2;
     delete channel1;
     delete channel2;
     delete master;
-    delete playSelectMenu;
-    //delete engine;
 }
 
 /** initializes all QActions of the application */
@@ -515,58 +520,120 @@ void MixxxApp::slotOptionsPreferences()
         Player::Info *p = pInfo->first();
 
         // Fill dialog with info
+        int j=0;
         while (p != 0)
         {
             // Name of device
             pDlg->ComboBoxSoundcard->insertItem(p->name);
-
-            // Sample rates
-            for (unsigned int i=0; i<p->sampleRates.size(); i++)
-                pDlg->ComboBoxSamplerates->insertItem(QString("%1 Hz").arg(p->sampleRates[i]));
-
-            // Bits
-            for (unsigned int i=0; i<p->bits.size(); i++)
-                pDlg->ComboBoxBits->insertItem(QString("%1").arg(p->bits[i]));
+            if (p->name == player->NAME)
+            {
+                pDlg->ComboBoxSoundcard->setCurrentItem(j);
+                slotOptionsPreferencesUpdateDeviceOptions();
+            }
 
             // Get next device
             p = pInfo->next();
+            j++;
         }
 
         // Connect buttons
-        //connect(pDlg->PushButtonOK,     SIGNAL(pressed()), this, SLOT(slotOptionsSetPreferences()));
-        connect(pDlg->PushButtonCancel, SIGNAL(pressed()), this, SLOT(slotOptionsCancelPreferences()));
+        connect(pDlg->PushButtonOK,      SIGNAL(clicked()),      this, SLOT(slotOptionsSetPreferences()));
+        connect(pDlg->PushButtonCancel,  SIGNAL(clicked()),      this, SLOT(slotOptionsClosePreferences()));
+        connect(pDlg->ComboBoxSoundcard, SIGNAL(activated(int)), this, SLOT(slotOptionsPreferencesUpdateDeviceOptions()));
 
         // Show dialog
         pDlg->show();
     }
 }
 
-void MixxxApp::slotOptionsSetPreferences()
+void MixxxApp::slotOptionsPreferencesUpdateDeviceOptions()
 {
-    // Show warning dialog box
-    switch( QMessageBox::information( this, "Mixxx",
-        "To change the settings the program has to\n"
-        "be restarted?",
-        "Save changes and &exit", "Save and continue", "&Cancel",
-        0,      // Enter == button 0
-        2 ) ) { // Escape == button 2
-    case 0: // Ok clicked or Alt+O pressed or Enter pressed.
-        break;
-    case 1: // "Save and continue" pressed
-        break;
-    case 2: // Cancel clicked or Alt+C pressed or Escape pressed
-        slotOptionsCancelPreferences();
-        return;
+    QPtrList<Player::Info> *pInfo = player->getInfo();
+    Player::Info *p = pInfo->first();
+
+    while (p != 0)
+    {
+        if (pDlg->ComboBoxSoundcard->currentText() == p->name)
+        {
+            // Sample rates
+            pDlg->ComboBoxSamplerates->clear();
+            for (unsigned int i=0; i<p->sampleRates.size(); i++)
+            {
+                pDlg->ComboBoxSamplerates->insertItem(QString("%1 Hz").arg(p->sampleRates[i]));
+                if (p->sampleRates[i]==player->SRATE)
+                    pDlg->ComboBoxSamplerates->setCurrentItem(i);
+            }
+
+            // Bits
+            pDlg->ComboBoxBits->clear();
+            for (unsigned int i=0; i<p->bits.size(); i++)
+            {
+                pDlg->ComboBoxBits->insertItem(QString("%1").arg(p->bits[i]));
+                if (p->bits[i]==player->BITS)
+                    pDlg->ComboBoxBits->setCurrentItem(i);
+            }
+        }
+
+        // Get next device
+        p = pInfo->next();
     }
-    // Perform changes
-    player->stop();
-
-
-    slotOptionsCancelPreferences();
-
 }
 
-void MixxxApp::slotOptionsCancelPreferences()
+void MixxxApp::slotOptionsSetPreferences()
+{
+/*
+    // Show warning dialog box
+    switch( QMessageBox::information( this, "Mixxx",
+        "For the changes to take effect,\nthe sound will stop.",
+        "&OK", "&Cancel",
+        0, 2))  // Enter == button 0, Escape == button 2
+    {
+    case 0: // Ok clicked or Alt+O pressed or Enter pressed.
+        break;
+    case 1: // Cancel clicked or Alt+C pressed or Escape pressed
+        slotOptionsClosePreferences();
+        return;
+    }
+*/
+
+    // Find parameters
+    QString name;
+    int srate, bits, bufferSize;
+    QPtrList<Player::Info> *pInfo = player->getInfo();
+    Player::Info *p = pInfo->first();
+    while (p != 0)
+    {
+        if (pDlg->ComboBoxSoundcard->currentText() == p->name)
+        {
+            name = p->name;
+
+            // Sample rates
+            pDlg->ComboBoxSamplerates->clear();
+            for (unsigned int i=0; i<p->sampleRates.size(); i++)
+                if (p->sampleRates[i]==player->SRATE)
+                    srate = player->SRATE;
+
+            // Bits
+            pDlg->ComboBoxBits->clear();
+            for (unsigned int i=0; i<p->bits.size(); i++)
+                if (p->bits[i]==player->BITS)
+                    bits = player->BITS;
+        }
+
+        // Get next device
+        p = pInfo->next();
+    }
+    bufferSize = BUFFER_SIZE;
+
+    // Perform changes
+    player->stop();
+    player->reopen(name,srate,bits,bufferSize);
+    player->start(master);
+
+    slotOptionsClosePreferences();
+}
+
+void MixxxApp::slotOptionsClosePreferences()
 {
     delete pDlg;
     pDlg = 0;
@@ -577,19 +644,6 @@ void MixxxApp::slotHelpAbout()
   QMessageBox::about(this,tr("About..."),
                       tr("Mixxx\nVersion " VERSION "\n(c) 2002 by Tue and Ken Haste Andersen") );
 }
-
-/*
-void MixxxApp::slotChangePlay(int row,int col,int button, const QPoint &)
-{
-  // stop playback and deallocate buffer
-  player->stop();
-
-  // Tell the buffer to get a new file:
-  //buffer1->newtrack(view->playlist->TableList->item(row,1)->text());
-  // Start buffer and playback
-  player->start(master);
-}
-*/
 
 void MixxxApp::slotChangePlay_1()
 {
