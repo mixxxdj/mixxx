@@ -19,13 +19,14 @@
 #define ENGINECHANNEL_H
 
 #include "engineobject.h"
-#include "engineclipping.h"
-#include "enginepregain.h"
-#include "enginevolume.h"
-#include "enginefilterblock.h"
-#include "engineflanger.h"
-#include "dlgchannel.h"
-#include "midiobject.h"
+
+class DlgChannel;
+class ControlEngine;
+class EnginePregain;
+class EngineFilterBlock;
+class EngineClipping;
+class EngineVolume;
+class EngineFlanger;
 
 /**
   *@author 
@@ -35,13 +36,17 @@ class EngineChannel : public EngineObject  {
 public:
     EngineChannel(DlgChannel *, const char *group);
     ~EngineChannel();
+    void notify(double) {};
+    ControlEngine *getPFL();
     CSAMPLE *process(const CSAMPLE *, const int);
- private:
-    EnginePregain* pregain;
-    EngineFilterBlock* filter;
-    EngineClipping* clipping;
-    EngineVolume* volume;
-    EngineFlanger* flanger;
+
+private:
+    EnginePregain *pregain;
+    EngineFilterBlock *filter;
+    EngineClipping *clipping;
+    EngineVolume *volume;
+    EngineFlanger *flanger;
+    ControlEngine *pfl;
 };
 
 #endif

@@ -16,26 +16,23 @@
  ***************************************************************************/
 
 #include "controlpushbutton.h"
+#include "controlengine.h"
 
 /* -------- ------------------------------------------------------
-   Purpose: Creates a new push-button. 
+   Purpose: Creates a new simulated latching push-button. 
    Input:   key - Key for the configuration file
-            kindtype - A button can be either be latching, momenteneous and simulated_latching.
-	    _led - A led which is connected to the button.
+            _led - A led which is connected to the button.
    -------- ------------------------------------------------------ */
-ControlPushButton::ControlPushButton(ConfigKey key, buttonType kindtype, WBulb* _led) : ControlObject(key)
+ControlPushButton::ControlPushButton(ConfigKey key, WBulb* _led) : ControlObject(key)
 {
-    kind = kindtype;
-    position = up;
-    value = off;
+    value = 0.;
     led = _led;
     if (led!=0)
-	if (value==on)
-	    led->setChecked(true);
-	else
-	    led->setChecked(false);
-	
-    //midimask = (int)pow(2,midibit);
+        if (value==1.)
+            led->setChecked(true);
+        else
+            led->setChecked(false);
+
 };
 
 ControlPushButton::~ControlPushButton()
@@ -43,89 +40,68 @@ ControlPushButton::~ControlPushButton()
     //ControlObject();
 };
 
-void ControlPushButton::slotSetPosition(int newpos)
-{
-    if (newpos == 0)
-        slotSetPosition(up);
-    else
-        slotSetPosition(down);
-}
-
 /* -------- ------------------------------------------------------
    Purpose: Set the position of the button, and change the
             value correspondingly.
    Input:   The (new) position.
    Output:  The value is updated.
    -------- ------------------------------------------------------ */
-void ControlPushButton::slotSetPosition(positionType newpos)
+void ControlPushButton::slotSetPosition(int newpos)
 {
-    switch (kind)
-    {
-    case latching:
-        if (newpos==up)
-            value = off;
-        else
-            value = on;
-    case momentaneous:
-        if (newpos==up)
-            value = off;
-        else
-            value = on;
-    case simulated_latching:
-        if (newpos==down && position==up)
-            value=invert(value);
-    }
-    position = newpos;
+    value = (FLOAT_TYPE)newpos;
 
     // Control LED:
     if (led != 0)
-	if (value==on)
-	    led->setChecked(true);
-	else
-	    led->setChecked(false);
+        if (value==1.)
+            led->setChecked(true);
+        else
+            led->setChecked(false);
 
-    emit valueChanged(value);
+    emitValueChanged(value);
 };
 
-void ControlPushButton::pressed() {
-    slotSetPosition(down);
+void ControlPushButton::slotClicked()
+{
+    if (value==1.)
+        slotSetPosition(0);
+    else
+        slotSetPosition(1);
 }
 
-void ControlPushButton::released() {
-    slotSetPosition(up);
-}
-
-valueType ControlPushButton::getValue() {
-    return value;
-};
-
-positionType ControlPushButton::getPosition() {
-    return position;
-}
-
-char* ControlPushButton::printValue() {
-    if (value == on)
+char *ControlPushButton::printValue()
+{
+    if (value == 1.)
         return "on";
     else
         return "off";
 }
 
-void ControlPushButton::setValue(valueType newvalue){
-    value = newvalue;  
+void ControlPushButton::setValue(int newvalue)
+{
+    value = (FLOAT_TYPE)newvalue;  
 
-  // Control LED:
+    // Control LED:
     if (led != 0)
-	if (value==on)
-	    led->setChecked(true);
-	else
-	    led->setChecked(false);
+        if (value==1.)
+            led->setChecked(true);
+        else
+            led->setChecked(false);
     
-    emit valueChanged(value);
+    emit(updateGUI(newvalue));
 };
 
-valueType ControlPushButton::invert(valueType value) {
-    if (value==on)
-        return off;
-    else
-        return on;
-};
+void ControlPushButton::setWidget(QWidget *_widget)
+{
+    widget = _widget;
+    connect(widget, SIGNAL(clicked()), this, SLOT(slotClicked()));
+    connect(this, SIGNAL(updateGUI(int)), widget, SLOT(setValue(int)));
+
+    forceGUIUpdate();
+}
+
+void ControlPushButton::forceGUIUpdate()
+{
+    emit(updateGUI((int)value));
+}
+
+

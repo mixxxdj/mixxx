@@ -15,7 +15,7 @@
  ***************************************************************************/
 
 #include "controlttrotary.h"
-
+#include "controlengine.h"
 
 /* -------- ------------------------------------------------------
    Purpose: Creates a new rotary encoder
@@ -31,11 +31,18 @@ ControlTTRotary::ControlTTRotary(ConfigKey key) : ControlObject(key)
     //timer.start(100,false);
 }
 
+void ControlTTRotary::setValue(int v)
+{
+    value = ((float)v-64.)/200.;
+    emit(updateGUI(v));
+}
+
 void ControlTTRotary::slotSetPosition(int v)
 {
     value = ((float)v-64.)/200.;
-    qDebug("%f",value);
-    emit(valueChanged(value));
+//    qDebug("%f",value);
+
+    emitValueChanged(value);
 /*    if (v==0)
         received--;
     else
@@ -48,12 +55,14 @@ FLOAT_TYPE ControlTTRotary::getValue()
     return value;
 }
 
+/*
 void ControlTTRotary::slotSetValue(int newvalue)
 {
-    value = ((FLOAT_TYPE)newvalue-49.)/100.;
-    emit(valueChanged(value));
+    value = ((FLOAT_TYPE)newvalue-64.)/200.;
+    emitValueChanged(value);
 }
-
+*/
+/*
 void ControlTTRotary::slotTimer()
 {
     FLOAT_TYPE newv = (FLOAT_TYPE)received/1000.;
@@ -63,8 +72,14 @@ void ControlTTRotary::slotTimer()
     {
         value = newv;
 
-        emit(valueChanged(value));
+        emitValueChanged(value);
         //updateGUI();
     }
     //qDebug("rotary: %f",value);
+}
+*/
+
+void ControlTTRotary::forceGUIUpdate()
+{
+    emit(updateGUI((int)(value*200)+64));
 }

@@ -1,7 +1,8 @@
 /***************************************************************************
                           guichannel.h  -  description
                              -------------------
-    copyright            : (C) 2003 by Tue and Ken Haste Andersen
+    copyright            : (C) 2003 by Tue and Ken Haste Andersen and Kenny
+                                       Erleben
     email                :
  ***************************************************************************/
 
@@ -26,7 +27,6 @@ class GUIContainer;
 class EngineBuffer;
 class SoundBuffer;
 class VisualController;
-class FastVertexArray;
 class SignalVertexBuffer;
 
 /**
@@ -38,7 +38,7 @@ class SignalVertexBuffer;
 class GUIChannel : public QObject
 {
 public:
-    GUIChannel(FastVertexArray *_vertex, EngineBuffer *_engineBuffer, VisualController *_controller);
+    GUIChannel(EngineBuffer *_engineBuffer, VisualController *_controller);
     ~GUIChannel();
     bool eventFilter(QObject *o, QEvent *e);
     SignalVertexBuffer *add(SoundBuffer *soundBuffer);
@@ -46,7 +46,6 @@ public:
     void setPosX(int x);
     void setZoomPosX(int x);    
 private:
-    FastVertexArray         *vertex;
     EngineBuffer            *engineBuffer;
     VisualController        *controller;
     QPtrList<GUIContainer>  list;

@@ -16,6 +16,7 @@
  ***************************************************************************/
 
 #include "controlpotmeter.h"
+#include "controlengine.h"
 
 /* -------- ------------------------------------------------------
    Purpose: Creates a new potmeter
@@ -26,17 +27,13 @@
                      potmeter is changed.
             midicontroller - pointer to the midi controller.
    -------- ------------------------------------------------------ */
-ControlPotmeter::ControlPotmeter() : ControlObject()
-{
-}
-               
 ControlPotmeter::ControlPotmeter(ConfigKey key, FLOAT_TYPE _minvalue, FLOAT_TYPE _maxvalue) : ControlObject(key)
 {
-  position = middlePosition;
+//  position = middlePosition;
   minvalue = _minvalue;
   maxvalue = _maxvalue;
   valuerange = maxvalue-minvalue;
-  value = minvalue + 0.5*(maxvalue-minvalue);
+  value = minvalue + 0.5*valuerange;
 }
 
 ControlPotmeter::~ControlPotmeter()
@@ -49,9 +46,10 @@ ControlPotmeter::~ControlPotmeter()
    Input:   The (new) position.
    Output:  The value is updated.
    -------- ------------------------------------------------------ */
-#define min(a,b)            (((a) < (b)) ? (a) : (b))
-void ControlPotmeter::slotSetPosition(int _newpos)
+void ControlPotmeter::slotSetPosition(int newpos)
 {
+    value = minvalue + ((FLOAT_TYPE)newpos/127.)*valuerange;
+/*
   char newpos =(char)_newpos;
 
   // Ensure that the position is within bounds:
@@ -60,28 +58,22 @@ void ControlPotmeter::slotSetPosition(int _newpos)
   // Calculate the value linearly:
   value = (FLOAT_TYPE)(valuerange/positionrange)*(FLOAT_TYPE)(newpos-minPosition)+minvalue;
   //qDebug("Controlpotmeter: changed %s to %g.",name,value);
-
-  emit valueChanged(value);
+*/
+    emitValueChanged(value);
 }
 
-char ControlPotmeter::getPosition()
+void ControlPotmeter::forceGUIUpdate()
 {
-  return position;
+    emit(updateGUI((int)(127.*(value-minvalue)/valuerange)));
 }
 
-void ControlPotmeter::setValue(FLOAT_TYPE newvalue)
+void ControlPotmeter::setValue(int newpos)
 {
-  value = newvalue;
-  emit valueChanged(value);
+    value = minvalue + ((FLOAT_TYPE)newpos/127.)*valuerange;;
+    emit(updateGUI(newpos));
 }
 
 FLOAT_TYPE ControlPotmeter::getValue()
 {
-  return value;
+    return value;
 }
-
-
-
-
-
-

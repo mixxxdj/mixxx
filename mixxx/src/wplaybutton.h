@@ -27,14 +27,20 @@
   *@author Tue & Ken Haste Andersen
   */
 
-class WPlayButton : public QPushButton  {
+class WPlayButton : public QPushButton
+{
     Q_OBJECT
 public: 
     WPlayButton(QWidget *parent=0, const char *name=0);
     ~WPlayButton();
-    ControlPushButton *controlButton;
+public slots:
+    void setValue(int);
+signals:
+    void valueChanged(int);
 protected:
     void drawButton (QPainter *);
+private slots:
+    void emitValueChanged(bool);
 private:
     static QPixmap *buttonUpOn, *buttonUpOff, *buttonDownOn, *buttonDownOff;
 };

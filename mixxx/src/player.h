@@ -30,11 +30,14 @@
 #include <qptrlist.h>
 #include <qstring.h>
 
+class ControlEngineQueue;
+
 class Player : public EngineObject
 {
 public:
-    Player(ConfigObject<ConfigValue> *_config);
-    ~Player();      // Deallocate
+    Player(ConfigObject<ConfigValue> *_config, ControlEngineQueue *queue);
+    virtual ~Player();      // Deallocate
+    void notify(double) {};
     bool open(bool useDefault);
     virtual void close() = 0;
     virtual void start() {}; // Start audio stream
@@ -79,6 +82,10 @@ protected:
 
     /** Indicates where in the out_buffer the current synthesized frame is placed. */
     int bufferIdx;
+
+    /** Pointer to ControlEngineQueue taking care of syncing control parameters
+        from GUI (main) thread to player thread */
+    ControlEngineQueue *queue;
 };
 
 #endif

@@ -27,7 +27,7 @@ EngineClipping::EngineClipping(WBulb *BulbClipping)
 
 EngineClipping::~EngineClipping()
 {
-    delete []buffer;
+    delete [] buffer;
 }
 
 CSAMPLE *EngineClipping::process(const CSAMPLE *source, const int buffer_size)
@@ -38,8 +38,8 @@ CSAMPLE *EngineClipping::process(const CSAMPLE *source, const int buffer_size)
 
     int samples_clipped = 0; 
     for (int i=0; i<buffer_size; i++) {
-    	CSAMPLE tmp = source[i];
-	    if ((tmp>clip) || (tmp<-clip)) {
+        CSAMPLE tmp = source[i];
+        if ((tmp>clip) || (tmp<-clip)) {
             FLOAT_TYPE sign = 1;
             if (tmp<0) sign = -1;
             buffer[i] = sign*(max_amp - ((max_amp-clip)*(max_amp-clip))/

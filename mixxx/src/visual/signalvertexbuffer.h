@@ -1,5 +1,5 @@
 /***************************************************************************
-                          vertexbuffer.h  -  description
+                          signalvertexbuffer.h  -  description
                              -------------------
     copyright            : (C) 2002 by Tue and Ken Haste Andersen and Kenny 
                                        Erleben
@@ -18,6 +18,9 @@
 #ifndef SIGNALVERTEXBUFFER_H
 #define SIGNALVERTEXBUFFER_H
 
+/** Display rate in Hz. This relates to the display resolution */
+const int DISPLAYRATE = 200;
+
 /**
  * A Signal Vertex Array Buffer.
  * This class is capable of preprosseing a
@@ -33,8 +36,6 @@
 
 #include "../defs.h"
 #include <qobject.h>
-#include <qevent.h>
-#include <qdatetime.h>
 #include <qgl.h>
 
 class EngineBuffer;
@@ -50,11 +51,10 @@ typedef struct
 class SignalVertexBuffer : public QObject
 {
 public:
-    SignalVertexBuffer(int len, int resampleFactor, EngineBuffer *engineBuffer, FastVertexArray *vertex);
+    SignalVertexBuffer(EngineBuffer *engineBuffer, FastVertexArray *vertex);
     virtual ~SignalVertexBuffer();
-    bool eventFilter(QObject *o, QEvent *e);
 
-    void updateBuffer(float *source, int pos1, int len1, int pos2, int len2);
+    void update();
     bufInfo getVertexArray();
     int getBufferLength();
     int getDisplayLength();
@@ -63,10 +63,6 @@ public:
     GLfloat *buffer;
 
 private:
-    /** Playpos */
-    int playpos;       
-    /** Time counting from the last time playpos was set */
-    QTime time;
     /** The total number of samples in the buffer. */
     int len;
     /** Resample factor. An even integer determining the factor to reduce the incomming signal with */

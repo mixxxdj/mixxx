@@ -22,6 +22,7 @@
 #include "visualsignal.h"
 #include "../defs.h"
 #include "../enginebuffer.h"
+#include "../soundbuffer.h"
 
 // Static members:
 Light GUIContainer::mylight;
@@ -30,14 +31,26 @@ Material GUIContainer::dblue, GUIContainer::lblue, GUIContainer::purple, GUICont
 /**
  * Default Consructor.
  */
-GUIContainer::GUIContainer(FastVertexArray *vertex, EngineBuffer *engineBuffer)
+GUIContainer::GUIContainer(EngineBuffer *engineBuffer)
 {
     setupScene();
     atBasepos = true;
     movement = false;
 
+    SoundBuffer *soundBuffer = engineBuffer->getSoundBuffer();
+    
+    // Calculate resampling factor
+    CSAMPLE signalRate = (CSAMPLE)soundBuffer->getRate();
+    CSAMPLE factor = DISPLAYRATE/signalRate;
+
+    // Chunk size used in vertex buffer
+    int chunkSize = (int)(soundBuffer->getChunkSize()*factor);
+    
+    vertex = new FastVertexArray();
+    vertex->init(chunkSize, READCHUNK_NO);
+
     // Create objects
-    buffer = new SignalVertexBuffer(READBUFFERSIZE, 42, engineBuffer, vertex);
+    buffer = new SignalVertexBuffer(engineBuffer, vertex);
     signal = new GUISignal(buffer,vertex,engineBuffer->getGroup());
     
     signal->setBoxMaterial(&dblue);
@@ -153,7 +166,10 @@ void GUIContainer::move(int msec)
     }
 }
 
-
+void GUIContainer::update()
+{
+    buffer->update();
+}
 
 
 void GUIContainer::setupScene()
@@ -163,7 +179,7 @@ void GUIContainer::setupScene()
     mylight.ambient[2]  = 1.f;
     mylight.ambient[3]  = 1.f;
     
-	mylight.diffuse[0]  = 1.f;
+    mylight.diffuse[0]  = 1.f;
     mylight.diffuse[1]  = 1.f;
     mylight.diffuse[2]  = 1.f;
     mylight.diffuse[3]  = 1.f;
@@ -185,67 +201,67 @@ void GUIContainer::setupScene()
     dblue.ambient[2] = 0.0f;
     dblue.ambient[3] = 1.0f;
     
-	dblue.diffuse[0] = 0./255.;
+    dblue.diffuse[0] = 0./255.;
     dblue.diffuse[1] = 0./255.;
     dblue.diffuse[2] = 255./255.;
     dblue.diffuse[3] = 0.1f;
     
-	dblue.specular[0] = 0.4f;
+    dblue.specular[0] = 0.4f;
     dblue.specular[1] = 0.4f;
     dblue.specular[2] = 0.4f;
     dblue.specular[3] = 1.0f;
     
-	dblue.shininess = 128;
+    dblue.shininess = 128;
 
     lblue.ambient[0] = 0.0f;
     lblue.ambient[1] = 0.0f;
     lblue.ambient[2] = 0.0f;
     lblue.ambient[3] = 1.0f;
     
-	lblue.diffuse[0] = 10./255.;
+    lblue.diffuse[0] = 10./255.;
     lblue.diffuse[1] = 20./255.;
     lblue.diffuse[2] = 130./255.;
     lblue.diffuse[3] = 1.0f;
     
-	lblue.specular[0] = 0.0f;
+    lblue.specular[0] = 0.0f;
     lblue.specular[1] = 0.0f;
     lblue.specular[2] = 0.01f;
     lblue.specular[3] = 1.0f;
     
-	lblue.shininess = 0;
+    lblue.shininess = 0;
 
     purple.ambient[0] = 62./255.f;
     purple.ambient[1] = 0.0f;
     purple.ambient[2] = 62./255.f;
     purple.ambient[3] = 1.0f;
     
-	purple.diffuse[0] = 62./255.;
+    purple.diffuse[0] = 62./255.;
     purple.diffuse[1] = 0./255.;
     purple.diffuse[2] = 62./255.;
     purple.diffuse[3] = 0.f;
     
-	purple.specular[0] = 62./255.f;
+    purple.specular[0] = 62./255.f;
     purple.specular[1] = 0.0f;
     purple.specular[2] = 62./255.;
     purple.specular[3] = 1.0f;
     
-	purple.shininess = 128;
+    purple.shininess = 128;
     
-	lgreen.ambient[0] = 0.0;
+    lgreen.ambient[0] = 0.0;
     lgreen.ambient[1] = 0.0;
     lgreen.ambient[2] = 0.0;
     lgreen.ambient[3] = 1.0f;
     
-	lgreen.diffuse[0] = 90./255.;
+    lgreen.diffuse[0] = 90./255.;
     lgreen.diffuse[1] = 255./255.;
     lgreen.diffuse[2] = 90./255.;
     lgreen.diffuse[3] = 1.0f;
     
-	lgreen.specular[0] = 0.3f;
+    lgreen.specular[0] = 0.3f;
     lgreen.specular[1] = 0.3f;
     lgreen.specular[2] = 0.3f;
     lgreen.specular[3] = 1.0f;
     
-	lgreen.shininess = 128;
+    lgreen.shininess = 128;
 };
 

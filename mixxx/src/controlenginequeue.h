@@ -1,8 +1,8 @@
 /***************************************************************************
-                          controlnull.cpp  -  description
+                          controlenginequeue.h  -  description
                              -------------------
-    begin                : Sat Jun 15 2002
-    copyright            : (C) 2002 by Tue & Ken Haste Andersen
+    begin                : Wed Feb 26 2003
+    copyright            : (C) 2003 by Tue & Ken Haste Andersen
     email                : haste@diku.dk
  ***************************************************************************/
 
@@ -15,17 +15,36 @@
  *                                                                         *
  ***************************************************************************/
 
-#include "controlnull.h"
+#ifndef CONTROLENGINEQUEUE_H
+#define CONTROLENGINEQUEUE_H
 
-ControlNull::ControlNull() //: ControlObject(key)
-{
-}
+#include <qptrqueue.h>
+#include <qptrlist.h>
+#include <qmutex.h>
 
-ControlNull::~ControlNull()
-{
-}
+class ControlEngine;
 
-void ControlNull::slotSetPosition(int)
+/**
+  *@author Tue & Ken Haste Andersen
+  */
+
+struct ControlEngineQueueItem
 {
-    qDebug("Do not call this method!");
+    int no;
+    double value;
 };
+
+class ControlEngineQueue
+{
+public: 
+    ControlEngineQueue(QPtrList<ControlEngine> *_list);
+    ~ControlEngineQueue();
+    void add(ControlEngineQueueItem *item);
+    void sync();
+private:
+    QPtrQueue<ControlEngineQueueItem> queue;
+    QPtrList<ControlEngine> *list;
+    QMutex mutex;
+};
+
+#endif

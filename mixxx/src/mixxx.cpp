@@ -28,6 +28,7 @@
 #include <qslider.h>
 #include <qlabel.h>
 #include <qdir.h>
+#include <qptrlist.h>
 
 #include "wknob.h"
 #include "wslider.h"
@@ -41,6 +42,8 @@
 #include "controlnull.h"
 #include "midiobjectnull.h"
 #include "soundbuffer.h"
+#include "controlengine.h"
+#include "controlenginequeue.h"
 
 #ifdef __ALSA__
   #include "playeralsa.h"
@@ -199,22 +202,22 @@ MixxxApp::MixxxApp(QApplication *a)
       }
   }
 
-  // Instantiate a ControlObject, and set the static midi and config pointer
+  // Instantiate a ControlObject, and set the static config pointer
   control = new ControlNull();
-  control->midi = midi;
-  control->config = midiconfig;
+  control->setConfig(midiconfig);
 
-  //        if (visual>0)
+  // Configure ControlEngine object, and get ControlEngineQueue for input to the player object
+  ControlEngine *controlengine = new ControlEngine(control);
+  ControlEngineQueue *queue = new ControlEngineQueue(controlengine->getList());
 
-  // Initialize master player
-  //
-  //qDebug("Init master");
-
+  // Set static ControlEngineQueue pointer of ControlObject
+  control->setControlEngineQueue(queue);
+  
   // Initialize device
 #ifdef __ALSA__
   player = new PlayerALSA(BUFFER_SIZE, &engines, config->getValueString(ConfigKey("[Soundcard]","DeviceMaster")));
 #else
-  player = new PlayerPortAudio(config);
+  player = new PlayerPortAudio(config,queue);
 #endif
 
   // Open device using config data, if that fails, use default values. If that fails too, the
@@ -256,8 +259,8 @@ bool MixxxApp::eventFilter(QObject *o, QEvent *e)
         // Gain app lock
         //app->lock();
 
-        view->playcontrol1->SliderPosition->setValue((int)buffer1->playposSliderNew);
-        view->playcontrol2->SliderPosition->setValue((int)buffer2->playposSliderNew);
+        //view->playcontrol1->SliderPosition->setValue((int)buffer1->playposSliderNew);
+        //view->playcontrol2->SliderPosition->setValue((int)buffer2->playposSliderNew);
 
         // Force GUI update
         //app->flush();
@@ -276,24 +279,25 @@ bool MixxxApp::eventFilter(QObject *o, QEvent *e)
 
 void MixxxApp::engineStart()
 {
+    qDebug("starting engine...");
     if (view->playlist->ListPlaylist->firstChild() != 0)
     {
         //qDebug("Init buffer 1... %s", view->playlist->ListPlaylist->firstChild()->text(1).ascii());
-        buffer1 = new EngineBuffer(app, this, view->playcontrol1, "[Channel1]",
+        buffer1 = new EngineBuffer(this, view->playcontrol1, "[Channel1]",
                                    view->playlist->ListPlaylist->firstChild()->text(1));
 
         if (view->playlist->ListPlaylist->firstChild()->nextSibling() != 0)
         {
             //qDebug("Init buffer 2... %s", view->playlist->ListPlaylist->firstChild()->nextSibling()->text(1).ascii());
-            buffer2 = new EngineBuffer(app, this, view->playcontrol2, "[Channel2]",
+            buffer2 = new EngineBuffer(this, view->playcontrol2, "[Channel2]",
                                        view->playlist->ListPlaylist->firstChild()->nextSibling()->text(1));
         } else
-            buffer2 = new EngineBuffer(app, this, view->playcontrol2, "[Channel2]", 0);
+            buffer2 = new EngineBuffer(this, view->playcontrol2, "[Channel2]", 0);
     }
     else
     {
-        buffer1 = new EngineBuffer(app, this, view->playcontrol1, "[Channel1]", 0);
-        buffer2 = new EngineBuffer(app, this, view->playcontrol2, "[Channel2]", 0);
+        buffer1 = new EngineBuffer(this, view->playcontrol1, "[Channel1]", 0);
+        buffer2 = new EngineBuffer(this, view->playcontrol2, "[Channel2]", 0);
     }
 
     // Starting channels:
@@ -309,10 +313,10 @@ void MixxxApp::engineStart()
 
     /** Connect signals from option menu, selecting processing of channel 1 & 2, to
         EngineMaster */
-    connect(optionsLeft, SIGNAL(toggled(bool)), master, SLOT(slotChannelMaster1(bool)));
-    connect(optionsRight, SIGNAL(toggled(bool)), master, SLOT(slotChannelMaster2(bool)));
-    master->slotChannelMaster1(optionsLeft->isOn());
-    master->slotChannelMaster2(optionsRight->isOn());
+//    connect(optionsLeft, SIGNAL(toggled(bool)), master, SLOT(slotChannelMaster1(bool)));
+//    connect(optionsRight, SIGNAL(toggled(bool)), master, SLOT(slotChannelMaster2(bool)));
+//    master->slotChannelMaster1(optionsLeft->isOn());
+//    master->slotChannelMaster2(optionsRight->isOn());
 
     //qDebug("Starting buffers...");
     buffer1->start();
@@ -521,8 +525,8 @@ void MixxxApp::initView()
   // Set visual vidget here
   visual = 0;
 #ifdef __VISUALS__
-  visual = new MixxxVisual();
-  visual->show();
+//  visual = new MixxxVisual();
+//  visual->show();
 #endif
 }
 

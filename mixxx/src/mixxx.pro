@@ -68,8 +68,8 @@ DEFINES += __VISUALS__
 # End of options
 #
 
-SOURCES	+= configobject.cpp fakemonitor.cpp controllogpotmeter.cpp controlobject.cpp controlnull.cpp controlpotmeter.cpp controlpushbutton.cpp controlrotary.cpp controlttrotary.cpp dlgchannel.cpp dlgplaycontrol.cpp dlgplaylist.cpp dlgmaster.cpp dlgcrossfader.cpp dlgsplit.cpp dlgpreferences.cpp dlgflanger.cpp enginebuffer.cpp engineclipping.cpp enginefilterblock.cpp enginefilteriir.cpp engineobject.cpp enginepregain.cpp enginevolume.cpp main.cpp midiobject.cpp midiobjectnull.cpp mixxx.cpp mixxxdoc.cpp mixxxview.cpp player.cpp soundsource.cpp soundsourcemp3.cpp monitor.cpp enginechannel.cpp enginemaster.cpp wknob.cpp wbulb.cpp wplaybutton.cpp wwheel.cpp wslider.cpp wpflbutton.cpp wplayposslider.cpp enginedelay.cpp engineflanger.cpp enginepreprocess.cpp enginespectralfwd.cpp enginespectralback.cpp mathstuff.cpp soundbuffer.cpp rtthread.cpp windowkaiser.cpp probabilityvector.cpp
-HEADERS	+= configobject.h fakemonitor.h controllogpotmeter.h controlobject.h controlnull.h controlpotmeter.h controlpushbutton.h controlrotary.h controlttrotary.h defs.h dlgchannel.h dlgplaycontrol.h dlgplaylist.h dlgmaster.h dlgcrossfader.h dlgsplit.h dlgpreferences.h dlgflanger.h enginebuffer.h engineclipping.h enginefilterblock.h enginefilteriir.h engineobject.h enginepregain.h enginevolume.h midiobject.h midiobjectnull.h mixxx.h mixxxdoc.h mixxxview.h player.h soundsource.h soundsourcemp3.h monitor.h enginechannel.h enginemaster.h wknob.h wbulb.h wplaybutton.h wwheel.h wslider.h wpflbutton.h wplayposslider.h enginedelay.h engineflanger.h enginepreprocess.h enginespectralfwd.h enginespectralback.h mathstuff.h soundbuffer.h rtthread.h windowkaiser.h probabilityvector.h
+SOURCES	+= configobject.cpp fakemonitor.cpp controlengine.cpp controlenginequeue.cpp controleventengine.cpp controleventmidi.cpp controllogpotmeter.cpp controlobject.cpp controlnull.cpp controlpotmeter.cpp controlpushbutton.cpp controlrotary.cpp controlttrotary.cpp dlgchannel.cpp dlgplaycontrol.cpp dlgplaylist.cpp dlgmaster.cpp dlgcrossfader.cpp dlgsplit.cpp dlgpreferences.cpp dlgflanger.cpp enginebuffer.cpp engineclipping.cpp enginefilterblock.cpp enginefilteriir.cpp engineobject.cpp enginepregain.cpp enginevolume.cpp main.cpp midiobject.cpp midiobjectnull.cpp mixxx.cpp mixxxdoc.cpp mixxxview.cpp player.cpp soundsource.cpp soundsourcemp3.cpp monitor.cpp enginechannel.cpp enginemaster.cpp wknob.cpp wbulb.cpp wplaybutton.cpp wpushbutton.cpp wwheel.cpp wslider.cpp wpflbutton.cpp wplayposslider.cpp enginedelay.cpp engineflanger.cpp enginepreprocess.cpp enginespectralfwd.cpp enginespectralback.cpp mathstuff.cpp soundbuffer.cpp rtthread.cpp windowkaiser.cpp probabilityvector.cpp
+HEADERS	+= configobject.h fakemonitor.h controlengine.h controlenginequeue.h controleventengine.h controleventmidi.h controllogpotmeter.h controlobject.h controlnull.h controlpotmeter.h controlpushbutton.h controlrotary.h controlttrotary.h defs.h dlgchannel.h dlgplaycontrol.h dlgplaylist.h dlgmaster.h dlgcrossfader.h dlgsplit.h dlgpreferences.h dlgflanger.h enginebuffer.h engineclipping.h enginefilterblock.h enginefilteriir.h engineobject.h enginepregain.h enginevolume.h midiobject.h midiobjectnull.h mixxx.h mixxxdoc.h mixxxview.h player.h soundsource.h soundsourcemp3.h monitor.h enginechannel.h enginemaster.h wknob.h wbulb.h wplaybutton.h wpushbutton.h wwheel.h wslider.h wpflbutton.h wplayposslider.h enginedelay.h engineflanger.h enginepreprocess.h enginespectralfwd.h enginespectralback.h mathstuff.h soundbuffer.h rtthread.h windowkaiser.h probabilityvector.h
 
 unix {
   DEFINES += __UNIX__
@@ -85,7 +85,7 @@ unix {
 #  Intel Compiler optimization flags
 #  QMAKE_CXXFLAGS += -rcd -tpp6 -xiMK # icc pentium III
 #  QMAKE_CXXFLAGS += -rcd -tpp7 -xiMKW # icc pentium IV 
-#  QMAKE_CXXFLAGS += -prof_use #-genx # icc profiling
+#  QMAKE_CXXFLAGS += -prof_gen #-prof_use -prof_gen # icc profiling
   !macx:CONFIG_PATH = \"/usr/share/mixxx\"
 }
 
@@ -110,6 +110,10 @@ macx {
 # gcc Profiling
 #unix:QMAKE_CXXFLAGS_DEBUG += -pg
 #unix:QMAKE_LFLAGS_DEBUG += -pg
+
+# icc Profiling
+unix:QMAKE_CXXFLAGS_DEBUG += -qp -g
+unix:QMAKE_LFLAGS_DEBUG += -qp -g
 
 DEFINES += CONFIG_PATH=$$CONFIG_PATH
 FORMS	= dlgchanneldlg.ui dlgplaycontroldlg.ui dlgplaylistdlg.ui dlgmasterdlg.ui dlgcrossfaderdlg.ui dlgsplitdlg.ui dlgpreferencesdlg.ui dlgflangerdlg.ui

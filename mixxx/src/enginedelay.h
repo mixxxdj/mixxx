@@ -17,30 +17,24 @@
 #ifndef ENGINEDELAY_H
 #define ENGINEDELAY_H
 
-#include <qobject.h>
-
 #include "engineobject.h"
-#include "controlpotmeter.h"
-#include "wknob.h"
+
+class ControlEngine;
+class WKnob;
 
 const int max_delay = 20000; 
 
-class EngineDelay : public EngineObject {
-  Q_OBJECT
+class EngineDelay : public EngineObject
+{
 public:
-  EngineDelay(WKnob *);
+  EngineDelay(WKnob *, const char *group);
   ~EngineDelay();
+    void notify(double) {};
   CSAMPLE *process(const CSAMPLE *, const int);
-  ControlPotmeter *potmeter;
-
-public slots:
-  void slotUpdate(FLOAT_TYPE);
-
 private:
+  ControlEngine *potmeter;
   CSAMPLE *process_buffer, *delay_buffer;
-  int  delay;
-  int delay_pos;
-
+  int delay, delay_pos;
 };
 
 #endif

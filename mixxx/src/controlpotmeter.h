@@ -31,18 +31,17 @@ class ControlPotmeter : public ControlObject
 {
   Q_OBJECT
 public:
-  ControlPotmeter();
   ControlPotmeter(ConfigKey key, FLOAT_TYPE=0.0, FLOAT_TYPE=1.0);
   ~ControlPotmeter();
   FLOAT_TYPE getValue();
-  char getPosition();
-  void setValue(FLOAT_TYPE newvalue);
+//  char getPosition();
+  void setValue(int newpos);
 public slots:
   void slotSetPosition(int);
 
 protected:
-  char position;     // position of the controller.
-  FLOAT_TYPE value;  // The actual value of the controller
+  void forceGUIUpdate();
+//  char position;     // position of the controller.
 #define maxPosition 127
 #define minPosition 0
 #define middlePosition ((maxPosition-minPosition)/2)

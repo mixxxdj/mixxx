@@ -40,8 +40,8 @@ WKnob::~WKnob()
 
 QPixmap *WKnob::getKnob()
 {
-	int range = (maxValue()-minValue());
-	int val = value()*32/range;
+    int range = (maxValue()-minValue());
+    int val = value()*32/range;
     if (val==32)
         val=15;
     else if (val==0)
@@ -59,7 +59,7 @@ void WKnob::repaintScreen(const QRect *cr)
 
 void WKnob::repaintScreen(const QRect *cr, QPixmap *p)
 {
-	QRect *repaintRect;
+    QRect *repaintRect;
     if (cr != 0)
         repaintRect = new QRect(cr->topLeft(),cr->size());
     else
@@ -67,7 +67,7 @@ void WKnob::repaintScreen(const QRect *cr, QPixmap *p)
 
 //    qDebug("topleft: (%i,%i), size (%i,%i)",repaintRect->topLeft().x(), repaintRect->topLeft().y(),
 //                                            repaintRect->size().width(), repaintRect->size().height());
-	
+
     bitBlt(this,repaintRect->topLeft(),p,QRect(repaintRect->topLeft(),repaintRect->size()));
 
     delete repaintRect;

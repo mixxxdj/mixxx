@@ -17,26 +17,21 @@
 #ifndef ENGINEVOLUME_H
 #define ENGINEVOLUME_H
 
-#include <qobject.h>
-
 #include "engineobject.h"
-#include "midiobject.h"
-#include "controllogpotmeter.h"
+#include <qwidget.h>
+#include "configobject.h"
+
+class ControlEngine;
 
 class EngineVolume : public EngineObject {
-  Q_OBJECT
 public:
-  EngineVolume(const ConfigKey);
+  EngineVolume(QWidget *knob, ConfigKey key);
   ~EngineVolume();
   CSAMPLE *process(const CSAMPLE*, const int);
-
-  ControlLogpotmeter* potmeter;
-public slots:
-  void slotUpdate(FLOAT_TYPE);
-
+    void notify(double) {};
 private:
   CSAMPLE *buffer;
-  FLOAT_TYPE volume;
+  ControlEngine *potmeterVolume;
 };
 
 #endif

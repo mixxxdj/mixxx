@@ -1,7 +1,7 @@
 /***************************************************************************
-                          controlnull.cpp  -  description
+                          wpushbutton.cpp  -  description
                              -------------------
-    begin                : Sat Jun 15 2002
+    begin                : Fri Jun 21 2002
     copyright            : (C) 2002 by Tue & Ken Haste Andersen
     email                : haste@diku.dk
  ***************************************************************************/
@@ -15,17 +15,32 @@
  *                                                                         *
  ***************************************************************************/
 
-#include "controlnull.h"
+#include "wpushbutton.h"
 
-ControlNull::ControlNull() //: ControlObject(key)
+WPushButton::WPushButton(QWidget *parent, const char *name ) : QPushButton(parent,name)
+{
+    setToggleButton(true);
+
+    connect(this,SIGNAL(toggled(bool)),this,SLOT(emitValueChanged(bool)));
+}
+
+WPushButton::~WPushButton()
 {
 }
 
-ControlNull::~ControlNull()
+void WPushButton::setValue(int v)
 {
+    if (v==0)
+        setOn(false);
+    else
+        setOn(true);
 }
 
-void ControlNull::slotSetPosition(int)
+void WPushButton::emitValueChanged(bool v)
 {
-    qDebug("Do not call this method!");
-};
+    if (v)
+        emit(valueChanged(1));
+    else
+        emit(valueChanged(0));
+}
+

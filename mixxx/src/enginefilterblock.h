@@ -21,9 +21,9 @@
 #include "engineobject.h"
 #include "enginefilterrbj.h"
 #include "enginefilteriir.h"
-#include "midiobject.h"
-#include "controllogpotmeter.h"
-#include "wknob.h"
+
+class WKnob;
+class ControlEngine;
 
 /**
   * Parallel processing of LP, BP and HP filters, and final mixing
@@ -32,21 +32,16 @@
   */
 
 class EngineFilterBlock : public EngineObject  {
-	Q_OBJECT
 public:
-	EngineFilterBlock(WKnob *, WKnob *, WKnob *, const char *group);
-	~EngineFilterBlock();
-	CSAMPLE *process(const CSAMPLE *source, const int buf_size);
-public slots:
-    void slotUpdateLow(FLOAT_TYPE);
-    void slotUpdateMid(FLOAT_TYPE);
-    void slotUpdateHigh(FLOAT_TYPE);
+    EngineFilterBlock(WKnob *, WKnob *, WKnob *, const char *group);
+    ~EngineFilterBlock();
+    void notify(double) {};
+    CSAMPLE *process(const CSAMPLE *source, const int buf_size);
 private:
-	EngineObject *low, *high;
-    CSAMPLE gainLow, gainMid, gainHigh;
-    ControlPotmeter *filterpotLow, *filterpotMid, *filterpotHigh;
+    EngineObject *low, *high;
+    ControlEngine *filterpotLow, *filterpotMid, *filterpotHigh;
 
-	CSAMPLE *buffer;
+    CSAMPLE *buffer;
 };
 
 #endif

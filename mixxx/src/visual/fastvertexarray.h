@@ -59,15 +59,16 @@ public:
    * @param vertices            The number of vertices
    * @param bufferCount         The number of wanted buffers
    */
-  void init(int vertices,int bufferCount);
+  void init(int vertices,int _bufferCount);
   
-  GLfloat *getStartPtr(int no);
+  GLfloat *getStartPtr();
 
   /**
    * Draw Vertex Array.
    */
   void draw(GLfloat *p, int _vlen);
-
+  int getSize();
+  int getChunkSize();
 
 private:
 
@@ -98,15 +99,13 @@ private:
   void validate();
 
 private:
-
-  bool nv_fence;    // Nvidia fence support
-  static int usedBufCount; ///< Count of buffers already in use
+  bool nv_fence;            // Nvidia fence support
   int verticesPerBuffer;
   int bufferCount;
   
 public:
 
-  GLfloat *pointer; ///<  A pointer to the "entire" vertex array.
+  GLfloat *pointer; ///<  A pointer to the vertex array.
 
 };
 #endif

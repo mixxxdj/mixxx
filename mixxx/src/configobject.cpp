@@ -91,8 +91,8 @@ template <class ValueType> bool ConfigObject<ValueType>::Parse()
         // Parse the file
         int group = 0;
         QString groupStr, line;
- 		QTextStream text(&configfile);
-		while (!text.eof())
+        QTextStream text(&configfile);
+        while (!text.eof())
         {
             line = text.readLine().stripWhiteSpace();
 

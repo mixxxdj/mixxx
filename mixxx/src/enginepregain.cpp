@@ -15,34 +15,30 @@
  ***************************************************************************/
 
 #include "enginepregain.h"
+#include "controllogpotmeter.h"
+#include "controlengine.h"
+#include "wknob.h"
 
 /*----------------------------------------------------------------
   A pregaincontrol is ... a pregain.
   ----------------------------------------------------------------*/
-EnginePregain::EnginePregain(const char *group)
+EnginePregain::EnginePregain(WKnob *knob, const char *group)
 {
-    potmeter = new ControlLogpotmeter(ConfigKey(group, "pregain"), 5.0);
-    pregain = 1.0;
+    ControlLogpotmeter *p = new ControlLogpotmeter(ConfigKey(group, "pregain"), 5.0);
+    p->setWidget(knob);
+    potmeterPregain = new ControlEngine(p);
     buffer = new CSAMPLE[MAX_BUFFER_LEN];
-
-    connect(potmeter, SIGNAL(valueChanged(FLOAT_TYPE)), this, SLOT(slotUpdate(FLOAT_TYPE)));
 }
 
 EnginePregain::~EnginePregain()
 {
-    delete potmeter;
+    delete potmeterPregain;
     delete [] buffer;
-}
-
-void EnginePregain::slotUpdate(FLOAT_TYPE newvalue)
-{
-    pregain = newvalue;
-    //qDebug("Pregain: %f",pregain);
 }
 
 CSAMPLE *EnginePregain::process(const CSAMPLE *source, const int buffer_size)
 {
     for (int i=0; i<buffer_size; i++)
-        buffer[i] = source[i]*pregain;
+        buffer[i] = source[i]*potmeterPregain->get();
     return buffer;
 }

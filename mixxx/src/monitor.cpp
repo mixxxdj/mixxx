@@ -34,19 +34,26 @@ Monitor::~Monitor()
 double Monitor::read()
 {
     double temp;
-    mutex.lock();
-    temp = value;
-    mutex.unlock();
+    if (mutex.tryLock())
+    {
+        temp = value;
+        mutex.unlock();
+    }
+    else
+        temp = -1.;
     return temp;
 }
 
 void Monitor::write(double v)
 {
-    mutex.lock();
-    value = v;
-    mutex.unlock();
+    if (mutex.tryLock())
+    {
+        value = v;
+        mutex.unlock();
+    }
 }
 
+/*
 void Monitor::add(double v)
 {
     mutex.lock();
@@ -60,3 +67,4 @@ void Monitor::sub(double v)
     value -= v;
     mutex.unlock();
 }
+*/

@@ -27,7 +27,6 @@
 #include "visual/picking.h"
 #include "visual/visualbackplane.h"
 
-class FastVertexArray;
 class EngineBuffer;
 class GUIChannel;
 
@@ -60,9 +59,6 @@ protected:
     int screenx;
     int screeny;
     int selObjIdx;
-
-    /** Vertex buffer */
-    FastVertexArray *vertex;
 
     /** Backplane */
     VisualBackplane *backplane;

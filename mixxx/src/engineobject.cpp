@@ -30,7 +30,7 @@ EngineObject::~EngineObject()
 
 void EngineObject::setPlaySrate(int srate)
 {
-    PLAY_SRATE      = srate;
+    PLAY_SRATE = srate;
 }
 
 int EngineObject::getPlaySrate()

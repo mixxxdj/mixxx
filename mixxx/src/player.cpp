@@ -16,7 +16,7 @@
  ***************************************************************************/
 
 #include "player.h"
-
+#include "controlenginequeue.h"
 
 // Static member variable definition
 SAMPLE *Player::out_buffer = 0;
@@ -29,9 +29,10 @@ int Player::MasterBufferSize = 0;
    Input:   Size of the output buffer in samples
    Output:  Pointer to internal synthesis data structure.
    -------- ------------------------------------------------------ */
-Player::Player(ConfigObject<ConfigValue> *_config)
+Player::Player(ConfigObject<ConfigValue> *_config, ControlEngineQueue *_queue)
 {
     config = _config;
+    queue = _queue;
     allocate();
 
 //    qDebug("Player: init...");
@@ -146,9 +147,12 @@ void Player::setReader(EngineObject *_reader)
 int Player::prepareBuffer()
 {
   // ----------------------------------------------------
-  // Do the processing.
+  // Do the processing.                         
   // ----------------------------------------------------
 
+  // First, sync control parameters with changes from GUI thread
+  queue->sync();
+  
   CSAMPLE *p1;
 
   // Resample; the linear interpolation is done in readfile:

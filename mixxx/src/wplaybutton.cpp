@@ -37,9 +37,11 @@ WPlayButton::WPlayButton(QWidget *parent, const char *name ) : QPushButton(paren
         buttonDownOn  = new QPixmap(playbutton_down_on_xpm);
         buttonDownOff = new QPixmap(playbutton_down_off_xpm);
     }
-    controlButton = 0;
-    
+    setToggleButton(true);
+
     setBackgroundMode(NoBackground);
+
+    connect(this,SIGNAL(toggled(bool)),this,SLOT(emitValueChanged(bool)));
 }
 
 WPlayButton::~WPlayButton()
@@ -50,15 +52,36 @@ WPlayButton::~WPlayButton()
     delete buttonDownOff;
 }
 
+void WPlayButton::setValue(int v)
+{
+    if (v==0)
+        setOn(false);
+    else
+        setOn(true);
+}
+
+void WPlayButton::emitValueChanged(bool v)
+{
+    if (v)
+        emit(valueChanged(1));
+    else
+        emit(valueChanged(0));
+}
+
 void WPlayButton::drawButton(QPainter *p)
 {
     if (isDown())
-        if ((controlButton==0) | (controlButton->getValue()==off))
-            p->drawPixmap(0,0,*buttonDownOff);
-        else
+    {
+        if (isOn())
             p->drawPixmap(0,0,*buttonDownOn);
-    else if ((controlButton==0) | (controlButton->getValue()==off))
-        p->drawPixmap(0,0,*buttonUpOff);
+        else
+            p->drawPixmap(0,0,*buttonDownOff);
+    }
     else
-        p->drawPixmap(0,0,*buttonUpOn);
+    {
+        if (isOn())
+            p->drawPixmap(0,0,*buttonUpOn);
+        else
+            p->drawPixmap(0,0,*buttonUpOff);
+    }
 }

@@ -16,23 +16,30 @@
  ***************************************************************************/
 
 #include "controllogpotmeter.h"
+#include "controlengine.h"
 
 /* -------- ------------------------------------------------------
    Purpose: Creates a new logarithmic potmeter, where the value is
             given by: value = a*10^(b*midibyte) - 1. The lower value
-	    is 0, for midibyte=64 the value is 1 and the upper 
-	    value is set by maxvalue.
+            is 0, for midibyte=64 the value is 1 and the upper 
+            value is set by maxvalue.
    Input:   n - name
-	    midino - number of the midi controller.
-	    midicontroller - pointer to the midi controller.
+            midino - number of the midi controller.
+            midicontroller - pointer to the midi controller.
    -------- ------------------------------------------------------ */
 ControlLogpotmeter::ControlLogpotmeter(ConfigKey key, FLOAT_TYPE _maxvalue) : ControlPotmeter(key)
 {
-    a = 1;
-    b = log10(2)/middlePosition;
-    b2 = log10((_maxvalue+1)/2)/middlePosition;
-    a2 = 2*pow(10, -middlePosition*b);
-    //qDebug("%g %g",a,b);
+    a = 1.;
+    b = log10(2.)/middlePosition;
+    b2 = log10((_maxvalue+1.)/2.)/middlePosition;
+    a2 = 2.*pow(10., -middlePosition*b);
+
+    minvalue = 0.;
+    maxvalue = _maxvalue;
+    valuerange = maxvalue-minvalue;
+        
+    value = 1.;
+//    qDebug("%g %g",a,b);
 }
 
 /* -------- ------------------------------------------------------
@@ -42,8 +49,15 @@ ControlLogpotmeter::ControlLogpotmeter(ConfigKey key, FLOAT_TYPE _maxvalue) : Co
    Output:  The value is updated.
    -------- ------------------------------------------------------ */
 #define min(a,b)            (((a) < (b)) ? (a) : (b))
-void ControlLogpotmeter::slotSetPosition(int _newpos)
+void ControlLogpotmeter::slotSetPosition(int newpos)
 {
+  // Calculate the value linearly:
+  if (newpos <= middlePosition)
+      value = a*pow(10., b*(FLOAT_TYPE)newpos) - 1.;
+  else
+      value = a2*pow(10., b2*(FLOAT_TYPE)newpos) - 2.;
+
+/*
   char newpos =(char)_newpos;
 
   // Ensure that the position is within bounds:
@@ -55,8 +69,9 @@ void ControlLogpotmeter::slotSetPosition(int _newpos)
       value = a2*pow(10, b2*(FLOAT_TYPE)newpos) - 2;
 
   //qDebug("Logpotmeter, midi:%i value:%g", _newpos, value);
+*/
 
-  emit valueChanged(value);
+  emitValueChanged(value);
 }
 
 
