@@ -129,6 +129,11 @@ ReaderExtractBeat *Reader::getBeatPtr()
     return readerwave->getExtractBeat();
 }
 
+ReaderExtractWave *Reader::getWavePtr()
+{
+    return readerwave;
+}    
+
 long int Reader::getFileposStart()
 {
     return readerwave->filepos_start;

@@ -29,6 +29,7 @@ class DlgPlaycontrol;
 class ControlEngine;
 class ControlObject;
 class Reader;
+class EngineBufferScale;
 
 /**
   *@author Tue and Ken Haste Andersen
@@ -106,8 +107,7 @@ private:
     int playposUpdateCounter;
     /** Used to store if an event has happen in last iteration of event based playback */
     double oldEvent;
-
-
-
+    /** Object used to perform waveform scaling (sample rate conversion) */
+    EngineBufferScale *scale;
 };
 #endif

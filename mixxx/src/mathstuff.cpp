@@ -188,3 +188,12 @@ double qip(CSAMPLE x, unsigned int n)
     return h;
 }
 
+bool even(long n)
+{
+//    if ((n/2) != (n+1)/2)
+    if (n%2 != 0)
+        return false;
+    else
+        return true;
+}
+
