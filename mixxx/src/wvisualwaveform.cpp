@@ -121,6 +121,7 @@ bool WVisualWaveform::eventFilter(QObject *o, QEvent *e)
             m_iStartPosX = m->x();
             emit(valueChangedLeftDown(64.));
         }
+/*
         else if (m->button()==Qt::RightButton)
         {
             // Toggle fish eye mode on each channel associated
@@ -128,6 +129,7 @@ bool WVisualWaveform::eventFilter(QObject *o, QEvent *e)
             for (c=m_qlList.first(); c; c=m_qlList.next())
                 c->toggleFishEyeMode();
         }
+*/
     }
     else if (e->type() == QEvent::MouseMove)
     {

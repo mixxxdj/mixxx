@@ -24,6 +24,10 @@
   *@author Tue & Ken Haste Andersen
   */
 
+// Sample rate in Hertz at which the sound buffer is resampled
+const int kiVisualResampleRate = 1000;
+const float kfWaveshapeFactor = 0.99;
+
 class VisualBufferSignal : public VisualBuffer  {
 public:
     VisualBufferSignal(ReaderExtract *pReaderExtract, EngineBuffer *pEngineBuffer, const char *group);
@@ -34,7 +38,9 @@ public:
 private:
     /** Used in low pass filtering */
     float m_fLastPositive, m_fLastNegative;
-
+    /** Buffer used when drawing around start and end of buffer */
+    GLfloat m_fWrapBuffer[12];
+    
 };
 
 #endif

@@ -17,12 +17,31 @@
 
 #include "visualbuffersignal.h"
 #include "../readerextract.h"
+#include "../mathstuff.h"
 
 VisualBufferSignal::VisualBufferSignal(ReaderExtract *pReaderExtract, EngineBuffer *pEngineBuffer, const char *group) : VisualBuffer(pReaderExtract, pEngineBuffer, group)
 {
 //    qDebug("signal: resampleFactor %f, displayRate %f, displayFactor %f, readerExtractFactor %f", m_fResampleFactor, m_fDisplayRate,m_fDisplayFactor, m_fReaderExtractFactor);
     m_fLastNegative = 0.;
     m_fLastPositive = 0.;
+    
+    // Ensure a horizontal line is visible
+    for (int i=0; i<m_iLen; i+=2)
+        m_pBuffer[i*3+1]=0.05;
+
+    // Initialize wrap buffer    
+    m_fWrapBuffer[ 0] = -2;
+    m_fWrapBuffer[ 1] = 0;
+    m_fWrapBuffer[ 2] = 0;
+    m_fWrapBuffer[ 3] = -1;
+    m_fWrapBuffer[ 4] = 0;
+    m_fWrapBuffer[ 5] = 0; 
+    m_fWrapBuffer[ 6] = 0;
+    m_fWrapBuffer[ 7] = 0;
+    m_fWrapBuffer[ 8] = 0;
+    m_fWrapBuffer[ 9] = 1;
+    m_fWrapBuffer[10] = 0;
+    m_fWrapBuffer[11] = 0; 
 }
 
 VisualBufferSignal::~VisualBufferSignal()
@@ -31,64 +50,80 @@ VisualBufferSignal::~VisualBufferSignal()
 
 void VisualBufferSignal::update(int iPos, int iLen)
 {
-//    qDebug("signal upd pos %i, len %i, total len %i",iPos,iLen,m_iSourceLen);
-    
-    CSAMPLE *pSource = &m_pSource[iPos];
-    GLfloat *pDest = &m_pBuffer[(int)(iPos/m_fResampleFactor)*3];
-
-    float temp = min(iLen, m_iSourceLen-iPos-1);
-    
-    //bool bEven = true;
-    for (float i=0; i<=temp-m_fResampleFactor; i+=m_fResampleFactor)
+    int iStart = (int)floorf((float)iPos/m_fResampleFactor);
+    int iEnd   = min((int)ceilf((float)(iPos+iLen)/m_fResampleFactor), m_iLen-1);
+  
+    Q_ASSERT(iStart>=0);
+    Q_ASSERT(iStart<m_iLen);
+    Q_ASSERT(iEnd>=0);
+    Q_ASSERT(iEnd<m_iLen);
+      
+    float fPositive = 0.;
+    float fNegative = 0.;
+    if (even(iStart))
     {
-        GLfloat fVal = 0;
-        for (int j=(int)i; j<(int)(i+m_fResampleFactor); j+=32)
-            fVal += pSource[j];
-        
-/*
-        if (fVal>=0.)
-            m_fLastPositive = 0.75*m_fLastPositive+0.25*fVal;
-        if (fVal<=0.)
-            m_fLastNegative = 0.75*m_fLastNegative+0.25*fVal;
-        
-        if (bEven)
+        fPositive = m_pBuffer[((iStart-2+m_iLen)%m_iLen)*3+1]*32768.;
+        fNegative = m_pBuffer[((iStart-1+m_iLen)%m_iLen)*3+1]*32768.;
+    }    
+    else
+    {
+        fNegative = m_pBuffer[((iStart-2+m_iLen)%m_iLen)*3+1]*32768.;
+        fPositive = m_pBuffer[((iStart-1+m_iLen)%m_iLen)*3+1]*32768.;
+    }    
+    
+    for (int i=iStart; i<=iEnd; ++i)
+    {
+        int iVisualResampleFactor = m_pReaderExtract->getRate()/kiVisualResampleRate;
+        for (int j=i*(int)m_fResampleFactor; j<(i+1)*(int)m_fResampleFactor; j+=iVisualResampleFactor)
         {
-            fVal = m_fLastPositive;
-            bEven = false;
+            if (m_pSource[j]>=0)
+            {
+                if (m_pSource[j]>kfWaveshapeFactor*fPositive)
+                    fPositive = m_pSource[j];
+                else
+                    fPositive = kfWaveshapeFactor*fPositive;
+            }
+            if (m_pSource[j]<=0)
+            {
+                if (m_pSource[j]<kfWaveshapeFactor*fNegative)
+                    fNegative = m_pSource[j];
+                else
+                    fNegative = kfWaveshapeFactor*fNegative;
+            }
         }
+        if (even(i))
+            m_pBuffer[i*3+1] = max(fPositive/32768.,0.05);
         else
-        {
-            fVal = m_fLastNegative; 
-            bEven = true;
-        }
-*/            
-        *pDest++;
-        *pDest++ = 32.*(1./32768.)*fVal/m_fResampleFactor;
-        *pDest++;
-        
+            m_pBuffer[i*3+1] = fNegative/32768.;          
     }
-
-    if (temp<iLen)
+    
+    // If updating start or end of buffer, update wrap buffer correspondingly
+    if (iEnd>=m_iLen-1)
     {
-//        qDebug("upd2: %i-%i, len: %i",0,iLen-temp, m_iSourceLen);
-        pSource = &m_pSource[0];
-        pDest = &m_pBuffer[0];
-        for (int i=0; i<=iLen-temp; ++i)
-        {
-            GLfloat fVal = 0;
-            for (int j=(int)i; j<(int)(i+m_fResampleFactor); j+=32)
-                fVal += pSource[j];
-
-            *pDest++;
-            *pDest++ = 32.*(1./32768.)*fVal/m_fResampleFactor;
-            *pDest++;
-        }
+        m_fWrapBuffer[ 1] = m_pBuffer[((m_iLen-2)*3)+1];
+        m_fWrapBuffer[ 4] = m_pBuffer[((m_iLen-1)*3)+1];
+    }    
+    if (iStart<2)
+    {    
+        m_fWrapBuffer[ 7] = m_pBuffer[1];
+        m_fWrapBuffer[10] = m_pBuffer[4];
     }
 }
 
 void VisualBufferSignal::draw(GLfloat *p, int iLen, float)
 {
-    glVertexPointer(3, GL_FLOAT, 0, p);
     glEnableClientState(GL_VERTEX_ARRAY);
-    glDrawArrays(GL_LINE_STRIP,0,iLen);
+    
+    // If we draw from start of array, remember to draw two triangles using the coordinates from end of buffer
+    if (p==m_pBuffer || p== m_pBuffer+sizeof(float)*3)
+    {
+        glVertexPointer(3, GL_FLOAT, 0, &m_fWrapBuffer);
+        glDrawArrays(GL_TRIANGLE_STRIP,0,4);
+    }
+    
+//     for (int i=0; i<4; ++i)
+//         qDebug("i %i, idx %f, p %f", i, m_fWrapBuffer[i*3], m_fWrapBuffer[(i*3)+1]);
+    
+    glVertexPointer(3, GL_FLOAT, 0, p);
+    glDrawArrays(GL_TRIANGLE_STRIP,0,iLen);
 }

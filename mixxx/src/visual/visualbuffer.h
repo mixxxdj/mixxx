@@ -19,7 +19,7 @@
 #define VISUALBUFFER_H
 
 /** Display rate in Hz. This relates to the display resolution */
-const int MAXDISPLAYRATE = 500;
+const int MAXDISPLAYRATE = 100;
 
 /**
   * A Signal Vertex Array Buffer.
@@ -106,6 +106,8 @@ protected:
     Material m_materialFg, m_materialBg;
     /** Buffer and absulute play position, read from EngineBuffer */
     double m_dBufferPlaypos, m_dAbsPlaypos;
+    
+    
 };
 #endif
 
