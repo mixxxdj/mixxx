@@ -41,6 +41,8 @@ public:
     /** Creates a new track given information from the xml file. */
     TrackInfoObject(const QDomNode &);
     ~TrackInfoObject();
+    /** Returns true if the object contains valid information */    
+    bool isValid();
     int parse();
     /** Checks if the file given in m_sFilename really exists on the disc, and
         updates the m_bExists flag accordingly. Returns true if the file
@@ -183,6 +185,8 @@ private:
     QMutex m_qMutex;
     /** Corresponding WOverview widget */
     WOverview *m_pOverviewWidget;
+    /** True if object contains valid information */
+    bool m_bIsValid;
 };
 
 #endif

@@ -37,7 +37,7 @@ SoundSourceMp3::SoundSourceMp3(QString qFilename) : SoundSource(qFilename)
     mad_stream_init(&Stream);
     mad_stream_options(&Stream, MAD_OPTION_IGNORECRC);
     mad_stream_buffer(&Stream, (unsigned char *) inputbuf, inputbuf_len);
-
+    
     /*
       Decode all the headers, and fill in stats:
     */
@@ -80,7 +80,6 @@ SoundSourceMp3::SoundSourceMp3(QString qFilename) : SoundSource(qFilename)
         bitrate += Header.bitrate;
         SRATE = Header.samplerate;
         m_iChannels = MAD_NCHANNELS(&Header);
-
     }
     //qDebug("channels %i",m_iChannels);
 
@@ -373,8 +372,6 @@ unsigned SoundSourceMp3::read(unsigned long samples_wanted, const SAMPLE* _desti
 
 int SoundSourceMp3::ParseHeader(TrackInfoObject *Track)
 {
-    qDebug("mp3 parse header %s",Track->getLocation().latin1());
-    
     QString location = Track->getLocation();
 
     Track->setType("mp3");
@@ -425,6 +422,12 @@ int SoundSourceMp3::ParseHeader(TrackInfoObject *Track)
         qDebug("MAD: Open of %s failed.", location.latin1());
         return ERR;
     }
+    
+    // On MP3 files that are not small (larger than 60000 bytes, seek to position 50000 to avoid
+    // Meta data stored in ID3 tags
+    if (file.size()>60000)
+        file.at(50000);  
+    
     char *inputbuf = new char[READLENGTH];
     unsigned int tmp = file.readBlock(inputbuf, READLENGTH);
     if (tmp != READLENGTH) {
@@ -460,18 +463,20 @@ int SoundSourceMp3::ParseHeader(TrackInfoObject *Track)
     else
     {
         // Check if file has constant bit rate by examining the rest of the buffer
-        unsigned long bitrate;
-        int i=0;
+        unsigned long bitrate=0;
         bool constantbitrate = true;
         int frames = 0;
-        while ((Stream.bufend - Stream.this_frame) > 0)
+        while ((Stream.bufend - Stream.this_frame)>0)
         {
+            
             if (mad_header_decode (&Header, &Stream) == -1)
             {
                 if (!MAD_RECOVERABLE (Stream.error))
                     break;
+                else
+                    continue;
             }
-            if (i==0)
+            if (frames==0)
             {
                 bitrate = Header.bitrate;
                 dur = Header.duration;
@@ -483,10 +488,7 @@ int SoundSourceMp3::ParseHeader(TrackInfoObject *Track)
         }
         if (constantbitrate && frames>1)
         {
-//             qDebug("track len %i, this.frame %i, buffer %i, frames %i",Track->getLength(), Stream.this_frame,Stream.buffer,frames);
-            
             mad_timer_multiply(&dur, Track->getLength()/((Stream.this_frame-Stream.buffer)/frames));
-            qDebug("mp3 dur %i, bitrate %i",dur.seconds, Header.bitrate/1000);
             Track->setDuration(dur.seconds);
             Track->setBitrate(Header.bitrate/1000);
         }

@@ -137,7 +137,7 @@ TrackInfoObject *TrackCollection::getTrack(QString location)
         {
             TrackInfoObject *pTrack = new TrackInfoObject(file.dirPath(), file.fileName());
             // Add track to the collection
-            if (pTrack->parse() == OK)
+            if (pTrack->isValid())
             {
                 addTrack(pTrack);
                 //qDebug("Found new track: %s", pTrack->getFilename().latin1());
