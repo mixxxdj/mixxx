@@ -38,6 +38,8 @@ public:
     EngineMaster(EngineBuffer *buffer1, EngineBuffer *buffer2,
                  EngineChannel *, EngineChannel *, EngineFlanger *, const char *group);
     ~EngineMaster();
+    /** Reconfigures the EngineBufferScaleSRC objects with the sound quality written in the config database */
+    void setQuality(int);
     void notify(double) {};
     CSAMPLE *process(const CSAMPLE *, const int);
 private:

@@ -27,6 +27,7 @@
 #include "reader.h"
 #include "readerextractbeat.h"
 #include "enginebufferscalelinear.h"
+#include "enginebufferscalesrc.h"
 #include "powermate.h"
 #include "wvisualwaveform.h"
 #include "visual/visualchannel.h"
@@ -190,7 +191,7 @@ EngineBuffer::EngineBuffer(PowerMate *_powermate, const char *_group)
     buffer = new CSAMPLE[MAX_BUFFER_LEN];
 
     // Construct scaling object
-    scale = new EngineBufferScaleLinear(reader->getWavePtr());
+    scale = new EngineBufferScaleSRC(reader->getWavePtr());
 
     oldEvent = 0.;
     temp_rate = 0.;
@@ -212,6 +213,12 @@ EngineBuffer::~EngineBuffer()
     delete bufferposSlider;
     delete m_pTrackEnd;
     delete reader;
+}
+
+void EngineBuffer::setQuality(int q)
+{
+    // Change sound interpolation quality
+    scale->setQuality(q);
 }
 
 void EngineBuffer::setVisual(WVisualWaveform *pVisualWaveform)
@@ -646,9 +653,11 @@ CSAMPLE *EngineBuffer::process(const CSAMPLE *, const int buf_size)
         // If the rate has changed, write it to the rate_exchange monitor
         if (rate != rate_old)
         {
-            rate_exchange.tryWrite(rate);
+            // The rate returned by the scale object can be different from the wanted rate!
             rate_old = rate;
-            scale->setRate(rate);
+            rate = scale->setRate(rate);
+            rate_old = rate;
+            rate_exchange.tryWrite(rate);
         }
 
         bool at_start = false;
@@ -744,15 +753,16 @@ CSAMPLE *EngineBuffer::process(const CSAMPLE *, const int buf_size)
                 }
 
                 // Ensure valid range of idx
-                if (idx>READBUFFERSIZE)
+                double oldidx = idx;
+                while (idx>READBUFFERSIZE)
                     idx -= (double)READBUFFERSIZE;
-                else if (idx<0)
+                while (idx<0)
                     idx += (double)READBUFFERSIZE;
 
                 // Write buffer playpos
                 bufferpos_play = idx;
 
-                //qDebug("bufferpos_play %f",idx);
+                //qDebug("bufferpos_play %f, old %f",idx,oldidx);
             }
         }
 

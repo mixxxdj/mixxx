@@ -44,6 +44,9 @@ DlgPrefSound::DlgPrefSound(QWidget *parent, Player *_player,
     connect(SliderLatencyMaster,      SIGNAL(valueChanged(int)), this, SLOT(slotLatencyMaster()));
     connect(SliderLatencyHead,        SIGNAL(valueChanged(int)), this, SLOT(slotLatencyHead()));
 
+    // Sound quality slider updates
+    SliderSoundQuality->setValue(config->getValueString(ConfigKey("[Soundcard]","SoundQuality")).toInt());
+
     // Apply changes whenever apply signal is emitted
     connect(ComboBoxSoundcardMaster,  SIGNAL(activated(int)),    this, SLOT(slotApply()));
     connect(ComboBoxSoundcardHead,    SIGNAL(activated(int)),    this, SLOT(slotApply()));
@@ -51,6 +54,8 @@ DlgPrefSound::DlgPrefSound(QWidget *parent, Player *_player,
     connect(ComboBoxChannelsHead,     SIGNAL(activated(int)),    this, SLOT(slotApply()));
     connect(SliderLatencyMaster,      SIGNAL(valueChanged(int)), this, SLOT(slotApply()));
     connect(SliderLatencyHead,        SIGNAL(valueChanged(int)), this, SLOT(slotApply()));
+    connect(SliderSoundQuality,       SIGNAL(valueChanged(int)), this, SLOT(slotApply()));
+    connect(SliderSoundQuality,       SIGNAL(valueChanged(int)), this, SLOT(slotApply()));
 }
 
 DlgPrefSound::~DlgPrefSound()
@@ -234,7 +239,7 @@ void DlgPrefSound::slotLatencyHead()
     // Enable/disable latency slider
     if (ComboBoxSoundcardHead->currentText() == "None" ||
         ComboBoxSoundcardHead->currentText() == ComboBoxSoundcardMaster->currentText())
-    {    
+    {
         SliderLatencyHead->setDisabled(true);
         TextLabelLatency->setDisabled(true);
         TextLabelLatencyHead->setDisabled(true);
@@ -249,7 +254,7 @@ void DlgPrefSound::slotLatencyHead()
         TextLabelLatencyLow->setEnabled(true);
         TextLabelLatencyHigh->setEnabled(true);
     }
-    
+
     // Update text label
     TextLabelLatencyHead->setText(QString("%1 ms").arg(getSliderLatencyMsec(SliderLatencyHead->value())));
 }
@@ -285,6 +290,7 @@ void DlgPrefSound::slotApply()
     config->set(ConfigKey("[Soundcard]","ChannelHeadphone"), ConfigValue(ComboBoxChannelsHead->currentText().left(1).toInt()));
     config->set(ConfigKey("[Soundcard]","LatencyMaster"), ConfigValue(getSliderLatencyMsec(SliderLatencyMaster->value())));
     config->set(ConfigKey("[Soundcard]","LatencyHeadphone"), ConfigValue(getSliderLatencyMsec(SliderLatencyHead->value())));
+    config->set(ConfigKey("[Soundcard]","SoundQuality"), ConfigValue(4-SliderSoundQuality->value()));
 
     // Close devices, and open using config data
     player->close();
@@ -292,7 +298,7 @@ void DlgPrefSound::slotApply()
         QMessageBox::warning(0, "Configuration error","Problem opening audio device");
     else
         player->start();
-    
+
     // Save preferences
     config->Save();
 }

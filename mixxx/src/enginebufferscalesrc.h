@@ -30,8 +30,9 @@ class EngineBufferScaleSRC : public EngineBufferScale  {
 public: 
     EngineBufferScaleSRC(ReaderExtractWave *wave);
     ~EngineBufferScaleSRC();
+    void setQuality(int);
     CSAMPLE *scale(double playpos, int buf_size);
-    void setRate(double rate);
+    double setRate(double rate);
 private:
     SRC_STATE *converter;
     SRC_DATA *data;
@@ -39,8 +40,6 @@ private:
     bool backwards;
     /** Buffer used to reverse output from SRC library when playback direction is backwards */
     CSAMPLE *buffer_back;
-    /** Pointer to wave buffer */
-    float *wave_buffer;
 };
 
 #endif
