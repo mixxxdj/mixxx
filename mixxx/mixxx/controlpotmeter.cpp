@@ -79,7 +79,7 @@ void ControlPotmeter::slotSetPosition(int _newpos) {
   // Calculate the value linearly:
   value = (valuerange/positionrange)*
     ((maxPosition-newpos)-minPosition)+minvalue;
-  qDebug("Controlpotmeter: changed %s to %g.",name,value);
+  //qDebug("Controlpotmeter: changed %s to %g.",name,value);
 
   emit valueChanged(value);
 }

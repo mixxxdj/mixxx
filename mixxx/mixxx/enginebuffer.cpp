@@ -101,6 +101,8 @@ EngineBuffer::~EngineBuffer(){
   delete [] readbuffer;
   delete buffers_read_ahead;
   delete PlayButton;
+  delete wheel;
+  delete rateSlider;
 }
 
 void EngineBuffer::start() {
@@ -165,7 +167,7 @@ void EngineBuffer::slotUpdateRate(FLOAT r) {
 	  rate = 0;
       else
 	  rate = 4*wheel->getValue();
-  qDebug("Rate value: %f",rate);
+  //qDebug("Rate value: %f",rate);
 }
 
 void EngineBuffer::getchunk() {
