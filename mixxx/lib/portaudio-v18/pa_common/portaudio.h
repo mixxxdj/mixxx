@@ -7,7 +7,7 @@ extern "C"
 #endif /* __cplusplus */
 
 /*
- * $Id: portaudio.h 285 2003-03-18 07:21:58Z tuehaste $
+ * $Id: portaudio.h 329 2003-05-07 12:22:30Z tuehaste $
  * PortAudio Portable Real-Time Audio Library
  * PortAudio API Header File
  * Latest version available at: http://www.audiomulch.com/portaudio/

@@ -350,6 +350,8 @@ CSAMPLE *EngineBuffer::process(const CSAMPLE *, const int buf_size)
                 
             // If a beat occours in current buffer mark it by led or in audio
             ReaderExtractBeat *readerbeat = reader->getBeatPtr();
+            if (readerbeat!=0)
+            {
             bool *beatBuffer = (bool *)readerbeat->getBasePtr();
             int chunkSizeDiff = READBUFFERSIZE/readerbeat->getBufferSize();
 
@@ -381,7 +383,8 @@ CSAMPLE *EngineBuffer::process(const CSAMPLE *, const int buf_size)
 #endif
                 }
             }
-            
+	    }
+
             // Ensure valid range of idx
             if (idx>READBUFFERSIZE)
                 idx -= (double)READBUFFERSIZE;

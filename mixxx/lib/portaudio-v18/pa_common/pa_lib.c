@@ -1,5 +1,5 @@
 /*
- * $Id: pa_lib.c 285 2003-03-18 07:21:58Z tuehaste $
+ * $Id: pa_lib.c 329 2003-05-07 12:22:30Z tuehaste $
  * Portable Audio I/O Library
  * Host Independant Layer
  *
@@ -635,7 +635,7 @@ long Pa_CallConvertInt16( internalPortAudioStream   *past,
     {
         /* May already be in native format so just write directly to native buffer. */
         outputBuffer = (past->past_OutputSampleFormat == paInt16) ?
-                       nativeOutputBuffer : past->past_OutputBuffer;
+                       (void*)nativeOutputBuffer : past->past_OutputBuffer;
     }
     /*
      AddTraceMessage("Pa_CallConvertInt16: inputBuffer = ", (int) inputBuffer );

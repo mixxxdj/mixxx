@@ -1,5 +1,5 @@
 /*
- * $Id: pa_dsound.c 285 2003-03-18 07:21:58Z tuehaste $
+ * $Id: pa_dsound.c 329 2003-05-07 12:22:30Z tuehaste $
  * PortAudio Portable Real-Time Audio Library
  * Latest Version at: http://www.softsynth.com/portaudio/
  * DirectSound Implementation

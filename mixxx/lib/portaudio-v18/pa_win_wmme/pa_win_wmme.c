@@ -1,5 +1,5 @@
 /*
- * $Id: pa_win_wmme.c 285 2003-03-18 07:21:58Z tuehaste $
+ * $Id: pa_win_wmme.c 329 2003-05-07 12:22:30Z tuehaste $
  * pa_win_wmme.c
  * Implementation of PortAudio for Windows MultiMedia Extensions (WMME)
  *
@@ -9,7 +9,7 @@
  * Authors: Ross Bencina and Phil Burk
  * Copyright (c) 1999-2000 Ross Bencina and Phil Burk
  *
- * Permission is hereby granted, free of charge, to any person obtainingF
+ * Permission is hereby granted, free of charge, to any person obtaining
  * a copy of this software and associated documentation files
  * (the "Software"), to deal in the Software without restriction,
  * including without limitation the rights to use, copy, modify, merge,

@@ -104,6 +104,10 @@ void ReaderExtractWave::reset()
     readerhfc->reset();
     readerbeat->reset();
 #endif
+
+    // Update vertex buffer by sending an event containing indexes of where to update.
+    if (guichannel != 0)
+        QApplication::postEvent(guichannel, new ReaderEvent(0, READBUFFERSIZE));
 }
 
 void *ReaderExtractWave::getBasePtr()
