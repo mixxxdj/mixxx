@@ -44,7 +44,7 @@ public:
       * the player thread. */
     //void setNotify(EngineObject *, EngineMethod);
 	/** Returns the value of the object */
-    double get();
+    inline double get();
     /** The value is changed by the engine, and the corresponding ControlObject is updated */
     void set(double v);
     /** Setting the value from an external controller. This happen when a ControlObject has
