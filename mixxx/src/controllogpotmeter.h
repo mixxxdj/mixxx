@@ -42,7 +42,7 @@ protected:
     // 1 and some bigger value.
     bool m_bTwoState;
     
-    double a,b,a2,b2;
+    double m_fB1, m_fB2;
 };
 
 #endif
