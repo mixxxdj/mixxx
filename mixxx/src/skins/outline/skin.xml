@@ -903,31 +903,31 @@
   <Align>right</Align>
  </Text>
 
- <Number>
+ <NumberBpm>
   <Tooltip>Tempo display (Beat Per Minute)</Tooltip>
+  <Channel>1</Channel>
   <Pos>144,355</Pos>
   <Size>100,20</Size>
-  <Text>BPM: </Text>
   <NumberOfDigits>6</NumberOfDigits>
   <BgColor>#ffffff</BgColor>
   <FgColor>#606060</FgColor>
   <Connection>
    <ConfigKey>[Channel1],bpm</ConfigKey>
   </Connection>
- </Number>
+ </NumberBpm>
 
- <Number>
+ <NumberBpm>
   <Tooltip>Tempo display (Beat Per Minute)</Tooltip>
+  <Channel>2</Channel>
   <Pos>623,355</Pos>
   <Size>100,20</Size>
-  <Text>BPM: </Text>
   <NumberOfDigits>6</NumberOfDigits>
   <BgColor>#ffffff</BgColor>
   <FgColor>#606060</FgColor>
   <Connection>
    <ConfigKey>[Channel2],bpm</ConfigKey>
   </Connection>
- </Number>
+ </NumberBpm>
 
  <NumberPos>
   <Tooltip>Play position/remaining time</Tooltip>

@@ -35,6 +35,7 @@
 #include "wvumeter.h"
 #include "wnumber.h"
 #include "wnumberpos.h"
+#include "wnumberbpm.h"
 #ifdef __VISUALS__
   #include "wvisualwaveform.h"
   #include "wvisualsimple.h"
@@ -95,6 +96,19 @@ MixxxView::MixxxView(QWidget *parent, bool bVisualsWaveform, QString qSkinPath) 
             {
                 WNumber *p = new WNumber(this);
                 p->setup(node);
+            }
+            else if (node.nodeName()=="NumberBpm")
+            {
+                if (WWidget::selectNodeInt(node, "Channel")==1)
+                {
+                    WNumberBpm *p = new WNumberBpm("[Channel1]", this);
+                    p->setup(node);
+                }
+                else if (WWidget::selectNodeInt(node, "Channel")==2)
+                {
+                    WNumberBpm *p = new WNumberBpm("[Channel2]", this);
+                    p->setup(node);
+                }
             }
             else if (node.nodeName()=="NumberPos")
             {
