@@ -31,35 +31,23 @@ typedef CSAMPLE FLOAT_TYPE;       // Float type, used for non sample data
 const int BUFFER_SIZE  = 2048;  // Buffer size used both for input and output as default
                                             
 /** size of the chunk that's read in every read. */
-const unsigned int READCHUNKSIZE = 40960;
+const unsigned int READCHUNKSIZE = 40960; //40960;
 /** Number of readchunks. Should minimum be set to 5. In theory this should minimum be four, but
   * since it is possible that the sound sources return more samples than request, 5 is on the
   * safe side */
-const int READCHUNK_NO = 8;
+const int READCHUNK_NO = 5;
 const unsigned int READBUFFERSIZE = READCHUNKSIZE*READCHUNK_NO;
-/** Window size used in EnginePreProcess */
-const int WINDOWSIZE = 1024; //4608; //512;
+/** Window size used in ReaderExtract objects */
+const int WINDOWSIZE = 2048; //4608; //512;
 /** Step size used in block based processing (EnginePreProcess and others) */
-const int STEPSIZE = 512; //WINDOWSIZE/2;
+const int STEPSIZE = 1024; //WINDOWSIZE/2;
 
 /** Maximum buffer length to each EObject::process call */
-const int MAX_BUFFER_LEN = 400000;
+const int MAX_BUFFER_LEN = 80000;
 
 // Various fixed constants
 // static CSAMPLE pi     = acos(-1.0); // Conflicts with macx headers
 static CSAMPLE two_pi = (2.*acos(-1.0));
-
-// Defs for the ports and their midi control values:
-const short ADC0 = 0x00;
-const short ADC1 = 0x08;
-const short ADC2 = 0x10;
-const short ADC3 = 24  ;
-const short ADC4 = 32  ;
-const short ADC5 = 40  ;
-const short ADC6 = 0x30;
-const short ADC7 = 0x38;
-const short PORT_B = 1;
-const short PORT_D = 3;
 
 // Ensure that CSAMPLE x stays above the intel cpu denormalization range,
 // otherwise sets x equal to 0.
