@@ -22,7 +22,8 @@
 #include <sndfile.h>
 class TrackInfoObject;
 
-class SoundSourceSndFile : public SoundSource {
+class SoundSourceSndFile : public SoundSource 
+{
 public:
     SoundSourceSndFile(QString qFilename);
     ~SoundSourceSndFile();
@@ -30,9 +31,9 @@ public:
     unsigned read(unsigned long size, const SAMPLE*);
     inline long unsigned length();
     static int ParseHeader( TrackInfoObject * );
+    QPtrList<long unsigned int> *getCuePoints();
 
 private:
-
     int channels;
     SNDFILE *fh;
     SF_INFO *info;

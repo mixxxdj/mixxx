@@ -134,3 +134,61 @@ inline long unsigned SoundSourceSndFile::length()
     return filelength;
 }
 
+QPtrList<long unsigned int> *SoundSourceSndFile::getCuePoints()
+{
+    // Ensure that the file ends with ".wav"
+    if (!m_qFilename.endsWith(".wav"))
+        return 0;
+        
+    // Open file
+    FILE *fh  = fopen(m_qFilename.latin1(),"r");
+
+    // Check the file magic header bytes
+    char str[4];
+    fread(&str, sizeof(char), 4, fh);
+    if (!strncmp(str, "RIFF", 4)==0)
+        return 0;
+    long no;
+    fread(&no, sizeof(long), 1, fh);
+    fread(&str, sizeof(char), 4, fh);
+    if (!strncmp(str, "WAVE", 4)==0)
+        return 0;
+
+    // Skip to the "cue " section, ignoring everything else
+    while (1)
+    {
+        if (feof(fh))
+            return 0;
+        
+        fread(&str, sizeof(char), 4, fh);
+        fread(&no, sizeof(long), 1, fh);
+        if (strncmp(str, "cue ", 4)==0)
+            break;    
+        else if (strncmp(str, "data", 4)==0)
+            return 0;
+        else
+            fseek(fh, no,SEEK_CUR);
+    }    
+
+    // Read number of cue points
+    fread(&no, sizeof(long), 1, fh);
+    if (no<1)
+        return 0;
+    
+    // Read each cue point
+    for (int i=0; i<no; ++i)
+    {
+        if (feof(fh))
+            return 0;
+    
+        // Seek to actual cue point data
+        fseek(fh, 5*4,SEEK_CUR);
+        
+        long cuepoint;
+        fread(&cuepoint, sizeof(long), 1, fh);
+    
+        qDebug("cue point %i",cuepoint);
+    }
+        
+    return 0;
+}

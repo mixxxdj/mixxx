@@ -44,6 +44,11 @@ int SoundSource::getSrate()
     return SRATE;
 }
 
+QPtrList<long unsigned int> *SoundSource::getCuePoints()
+{
+    return 0;
+}
+
 QString SoundSource::getFilename()
 {
     return m_qFilename;
