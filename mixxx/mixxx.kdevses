@@ -1,44 +1,11 @@
-<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE KDevPrjSession ><KDevPrjSession>
+<?xml version = '1.0' encoding = 'UTF-8'?>
+<!DOCTYPE KDevPrjSession>
+<KDevPrjSession>
  <Mainframe MaximizeMode="0" />
- <DocsAndViews NumberOfDocuments="13" >
-  <Doc0 CursorPosLine="0" Type="KWriteDoc" NumberOfViews="1" CursorPosCol="24" FileName="/home/haste/cvs/mixxx/mixxx/mixxx.h" >
-   <View0 Top="0" Width="752" Attach="0" Height="372" Left="0" Focus="0" Type="KWriteView" MinMaxMode="0" />
+ <DocsAndViews NumberOfDocuments="1" >
+  <Doc0 CursorPosLine="0" Type="KWriteDoc" NumberOfViews="1" CursorPosCol="60" FileName="/home/haste/cvs/mixxx/mixxx/mixxx.cpp" >
+   <View0 Top="686" Width="94" Attach="0" Height="29" Left="921" Focus="1" Type="KWriteView" MinMaxMode="0" />
   </Doc0>
-  <Doc1 CursorPosLine="0" Type="KWriteDoc" NumberOfViews="1" CursorPosCol="60" FileName="/home/haste/cvs/mixxx/mixxx/mixxx.cpp" >
-   <View0 Top="0" Width="94" Attach="0" Height="1" Left="0" Focus="0" Type="KWriteView" MinMaxMode="0" />
-  </Doc1>
-  <Doc2 CursorPosLine="0" Type="KWriteDoc" NumberOfViews="1" CursorPosCol="56" FileName="/home/haste/cvs/mixxx/mixxx/defs.h" >
-   <View0 Top="0" Width="752" Attach="0" Height="371" Left="0" Focus="0" Type="KWriteView" MinMaxMode="0" />
-  </Doc2>
-  <Doc3 CursorPosLine="0" Type="KWriteDoc" NumberOfViews="1" CursorPosCol="0" FileName="/home/haste/cvs/mixxx/mixxx/player.cpp" >
-   <View0 Top="0" Width="752" Attach="0" Height="371" Left="0" Focus="0" Type="KWriteView" MinMaxMode="0" />
-  </Doc3>
-  <Doc4 CursorPosLine="0" Type="KWriteDoc" NumberOfViews="1" CursorPosCol="58" FileName="/home/haste/cvs/mixxx/mixxx/player.h" >
-   <View0 Top="0" Width="752" Attach="0" Height="371" Left="0" Focus="0" Type="KWriteView" MinMaxMode="0" />
-  </Doc4>
-  <Doc5 CursorPosLine="0" Type="KWriteDoc" NumberOfViews="1" CursorPosCol="40" FileName="/home/haste/cvs/mixxx/mixxx/enginefilterlbh.cpp" >
-   <View0 Top="0" Width="752" Attach="0" Height="371" Left="0" Focus="0" Type="KWriteView" MinMaxMode="0" />
-  </Doc5>
-  <Doc6 CursorPosLine="0" Type="KWriteDoc" NumberOfViews="1" CursorPosCol="50" FileName="/home/haste/cvs/mixxx/mixxx/enginefilterlbh.h" >
-   <View0 Top="0" Width="752" Attach="0" Height="371" Left="0" Focus="0" Type="KWriteView" MinMaxMode="0" />
-  </Doc6>
-  <Doc7 CursorPosLine="0" Type="KWriteDoc" NumberOfViews="1" CursorPosCol="0" FileName="/home/haste/cvs/mixxx/mixxx/engineiirfilter.h" >
-   <View0 Top="0" Width="752" Attach="0" Height="371" Left="0" Focus="0" Type="KWriteView" MinMaxMode="0" />
-  </Doc7>
-  <Doc8 CursorPosLine="0" Type="KWriteDoc" NumberOfViews="1" CursorPosCol="0" FileName="/home/haste/cvs/mixxx/mixxx/enginefilterrbj.h" >
-   <View0 Top="0" Width="752" Attach="0" Height="371" Left="0" Focus="0" Type="KWriteView" MinMaxMode="0" />
-  </Doc8>
-  <Doc9 CursorPosLine="0" Type="KWriteDoc" NumberOfViews="1" CursorPosCol="0" FileName="/home/haste/cvs/mixxx/mixxx/enginebuffer.h" >
-   <View0 Top="0" Width="752" Attach="0" Height="371" Left="0" Focus="0" Type="KWriteView" MinMaxMode="0" />
-  </Doc9>
-  <Doc10 CursorPosLine="0" Type="KWriteDoc" NumberOfViews="1" CursorPosCol="0" FileName="/home/haste/cvs/mixxx/mixxx/dlgchannel.cpp" >
-   <View0 Top="0" Width="752" Attach="0" Height="371" Left="0" Focus="0" Type="KWriteView" MinMaxMode="0" />
-  </Doc10>
-  <Doc11 CursorPosLine="0" Type="KWriteDoc" NumberOfViews="1" CursorPosCol="0" FileName="/home/haste/cvs/mixxx/mixxx/dlgchannel.h" >
-   <View0 Top="0" Width="752" Attach="0" Height="371" Left="0" Focus="1" Type="KWriteView" MinMaxMode="0" />
-  </Doc11>
-  <Doc12 Type="CDocBrowser" NumberOfViews="1" FileName="file:/usr/lib/qt2/doc/html/qtable.html" >
-   <View Top="0" Width="752" Attach="0" Height="340" Left="0" Focus="0" Type="KHTMLView" MinMaxMode="0" />
-  </Doc12>
  </DocsAndViews>
+ <LastCompileConfig>(Default)</LastCompileConfig>
 </KDevPrjSession>
