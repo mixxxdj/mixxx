@@ -12,7 +12,6 @@ const int SAMPLE_SIZE = 2;      // Number of bytes used to store 1 sample
 typedef float CSAMPLE;          // CSAMPLE defines the CSAMPLE type used for
                                 // intermidiate calculations
 typedef CSAMPLE FLOAT_TYPE;       // Float type, used for non sample data
-static int SRATE       = 44100; // Sample rate
 const int BUFFER_SIZE  = 1024;  // Buffer size used both for input and output
 const int READAHEAD = 200000;     // how many samples to read ahead.
 const int READCHUNKSIZE = 1500000; // size of the chunk that's read in every read.
@@ -26,8 +25,6 @@ const int NO_CHANNELS  = 2;     // 2 for stereo
 const int MAX_BUFFER_LEN = 100000;
 
 // Various fixed constants
-static int NYQUIST    = SRATE/2;
-static CSAMPLE norm   = (2.*acos(-1.0))/SRATE;
 static CSAMPLE pi     = acos(-1.0);
 static CSAMPLE two_pi = (2.*acos(-1.0));
 static CSAMPLE ln_2   = 0.69314718055994530942;

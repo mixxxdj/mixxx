@@ -39,6 +39,7 @@ public:
 	/** Main loop of player. Executed in a separate thread by QT */
 	void run();
 	void rt_priority();
+	CSAMPLE *process(const CSAMPLE *, const int);
 protected:
 	snd_pcm_t *handle;  // ALSA handle
 	snd_pcm_channel_params_t *params;

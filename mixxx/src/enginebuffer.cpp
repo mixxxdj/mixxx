@@ -353,7 +353,7 @@ CSAMPLE *EngineBuffer::process(const CSAMPLE *, const int buf_size)
         checkread();
 
         // Check the wheel:
-        wheel->updatecounter(buf_size);
+        wheel->updatecounter(buf_size,EngineObject::SRATE);
 
         // Write position to the gui:
         writepos();
