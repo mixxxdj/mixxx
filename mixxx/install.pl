@@ -28,8 +28,10 @@ if ($#out<0)
 `install -m 755 -d $BASE/share/mixxx/skins/outline`;
 `install -m 755 -d $BASE/share/mixxx/skins/traditional`;
 `install -m 755 -d $BASE/share/mixxx/skins/outlineClose`;
+`install -m 755 -d $BASE/share/mixxx/skins/outlineSmall`;
 `install -m 644 src/skins/outline/* $BASE/share/mixxx/skins/outline`;
 `install -m 644 src/skins/outlineClose/* $BASE/share/mixxx/skins/outlineClose`;
+`install -m 644 src/skins/outlineSmall/* $BASE/share/mixxx/skins/outlineSmall`;
 `install -m 644 src/skins/traditional/* $BASE/share/mixxx/skins/traditional`;
 
 # Copy midi config files
@@ -43,19 +45,15 @@ if ($#out<0)
 # Copy mixxx binary to $BASE/bin
 `install -m 755 -d $BASE/bin`;
 `install -m 755 src/mixxx $BASE/bin`;
-`install -m 755 src/mixxx-without-jack $BASE/bin`;
 
 # Copy doc files
-`install -m 755 -d $BASE/share/doc/mixxx-1.2`;
-`install -m 644 README $BASE/share/doc/mixxx-1.2`;
-`install -m 644 LICENCE $BASE/share/doc/mixxx-1.2`;
-`install -m 644 COPYING $BASE/share/doc/mixxx-1.2`;
-`install -m 644 Configuration.txt $BASE/share/doc/mixxx-1.2`;
+`install -m 755 -d $BASE/share/doc/mixxx-1.3`;
+`install -m 644 README $BASE/share/doc/mixxx-1.3`;
+`install -m 644 LICENSE $BASE/share/doc/mixxx-1.3`;
+`install -m 644 COPYING $BASE/share/doc/mixxx-1.3`;
+`install -m 644 Mixxx-Manual.pdf $BASE/share/doc/mixxx-1.3`;
 
 printf("Install finished\n");
 printf("\n");
 printf("Start Mixxx by writing mixxx at the command prompt.\n");
-printf("If you do not have Jack installed this will probably fail\n");
-printf("but you can then use the command mixxx-without-jack to\n");
-printf("start Mixxx without Jack support.\n");
 printf("\n");
