@@ -99,6 +99,7 @@ WTreeList::WTreeList(QWidget * parent, const char*name)
 	//setMouseTracking(false);
 	m_sPlaylistdir = "";
 	mousePressed = false;
+	setFocusPolicy(QWidget::NoFocus);
 	}
 //Destroys the WTreeList
 WTreeList::~WTreeList(){
@@ -124,6 +125,7 @@ void WTreeList::setup(QDomNode node){
 	this->header()->setLabel( 0, tr( "Name" ) );
     this->clear();
 	this->setFrameStyle(QFrame::NoFrame);
+
 	this->setAcceptDrops( TRUE );
 	viewport()->setAcceptDrops( TRUE );
 	
