@@ -46,6 +46,11 @@ const int TRACK_END_MODE_NEXT = 1;
 const int TRACK_END_MODE_LOOP = 2;
 const int TRACK_END_MODE_PING = 3;
 
+// Maximum number of samples used to ramp to or from zero when playback is 
+// stopped or started.
+const int kiRampLength = 50;
+
+
 class EngineBuffer : public EngineObject
 {
     Q_OBJECT
@@ -108,6 +113,9 @@ public slots:
     void slotControlFastFwdBack(double);
 
 private:
+    /** Called from process() when an empty buffer, possible ramped to zero is needed */
+    void rampOut(int buf_size);
+
     /** Pointer to other EngineBuffer */
     EngineBuffer *m_pOtherEngineBuffer;
     /** Pointer to reader */
@@ -168,5 +176,10 @@ private:
     PowerMate *powermate;
     /** Number of samples left in audio beat mark from last call to process */
     int m_iBeatMarkSamplesLeft;
+    /** Holds the last sample value of the previous buffer. This is used when ramping to
+      * zero in case of an immediate stop of the playback */
+    float m_fLastSampleValue;
+    /** Is true if the previous buffer was silent due to pausing */
+    bool m_bLastBufferPaused;
 };
 #endif

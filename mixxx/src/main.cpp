@@ -43,15 +43,12 @@ void MessageOutput( QtMsgType type, const char *msg )
                 fprintf( stderr, "Debug: %s\n", msg );
                 break;
             case QtWarningMsg:
-                a->lock();
-                QMessageBox::warning(0, "Mixxx", msg);
-                a->unlock();
+                fprintf( stderr, "Warning: %s\n", msg);
                 break;
             case QtFatalMsg:
                 fprintf( stderr, "Fatal: %s\n", msg );
                 QMessageBox::warning(0, "Mixxx", msg);
                 exit(-1);
-                //abort();                        // dump core on purpose
     }
 }
 
