@@ -138,15 +138,15 @@ unsigned SoundSourceMp3::read(unsigned long samples_wanted, const SAMPLE* _desti
         {
             if(MAD_RECOVERABLE(Stream.error))
             {
-                qDebug("MAD: Recoverable frame level error (%s)",
-                       mad_stream_errorstr(&Stream));
+                //qDebug("MAD: Recoverable frame level error (%s)",
+                //       mad_stream_errorstr(&Stream));
                 continue;
             } else if(Stream.error==MAD_ERROR_BUFLEN) {
-                qDebug("MAD: buflen error");
+                //qDebug("MAD: buflen error");
                 break;
             } else {
-                qDebug("MAD: Unrecoverable frame level error (%s).",
-                mad_stream_errorstr(&Stream));
+                //qDebug("MAD: Unrecoverable frame level error (%s).",
+                //mad_stream_errorstr(&Stream));
                 break;
             }
         }

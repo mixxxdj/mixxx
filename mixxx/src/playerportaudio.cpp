@@ -166,7 +166,7 @@ bool PlayerPortAudio::open(QString name, int srate, int bits, int bufferSize, in
          srate = *devices.at(i)->sampleRates.at(j);
     }
     bufferSize = max(*devices.at(i)->latency.at(j),bufferSize);
-    qDebug("PortAudio: Latency %i samples",bufferSize);
+    //qDebug("PortAudio: Latency %i samples",bufferSize);
 
     // Determine which callback function to use
     PortAudioCallback *callbackFunc;
@@ -207,7 +207,7 @@ bool PlayerPortAudio::open(QString name, int srate, int bits, int bufferSize, in
         return false;
     }
 
-    qDebug("Number of channels: %i",chNo);
+    //qDebug("Number of channels: %i",chNo);
     
     // Fill in active config information
     setParams(QString(Pa_GetDeviceInfo(id)->name), srate, 16, bufferSize, chMaster, chHead);

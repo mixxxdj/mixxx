@@ -64,7 +64,7 @@ unix {
   SOURCES += soundsourceaudiofile.cpp
   HEADERS += soundsourceaudiofile.h
   LIBS += -lmad -lid3tag -laudiofile
-  QMAKE_CXXFLAGS += -O -dD
+  QMAKE_CXXFLAGS += -dD
   CONFIG_PATH = \"/usr/share/mixxx\"
 }
 

@@ -57,8 +57,10 @@ private:
     Player *player, *playerSlave;
     ConfigObject<ConfigValue> *config;
     ConfigObject<ConfigValueMidi> *midiconfig;
-
-
+    /** Transform a slider value to latency value in msec */
+    int getSliderLatencyMsec(int);
+    /** Transform latency value in msec to slider value */
+    int getSliderLatencyVal(int);
     void initMidiConfigList();
 };
 

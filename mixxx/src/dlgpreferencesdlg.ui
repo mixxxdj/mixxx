@@ -430,22 +430,6 @@
         </widget>
         <widget class="QLabel">
             <property name="name">
-                <cstring>TextLabel1_4_2</cstring>
-            </property>
-            <property name="geometry">
-                <rect>
-                    <x>15</x>
-                    <y>101</y>
-                    <width>200</width>
-                    <height>16</height>
-                </rect>
-            </property>
-            <property name="text">
-                <string>Headphone output</string>
-            </property>
-        </widget>
-        <widget class="QLabel">
-            <property name="name">
                 <cstring>TextLabel8_2_2</cstring>
             </property>
             <property name="geometry">
@@ -508,78 +492,20 @@
                 <string>Low</string>
             </property>
         </widget>
-        <widget class="QSlider">
+        <widget class="QLabel">
             <property name="name">
-                <cstring>SliderLatencyMaster</cstring>
+                <cstring>TextLabel1_4_2</cstring>
             </property>
             <property name="geometry">
                 <rect>
                     <x>15</x>
-                    <y>40</y>
-                    <width>315</width>
-                    <height>29</height>
+                    <y>101</y>
+                    <width>200</width>
+                    <height>16</height>
                 </rect>
             </property>
-            <property name="minValue">
-                <number>0</number>
-            </property>
-            <property name="maxValue">
-                <number>99</number>
-            </property>
-            <property name="lineStep">
-                <number>1</number>
-            </property>
-            <property name="pageStep">
-                <number>1</number>
-            </property>
-            <property name="value">
-                <number>50</number>
-            </property>
-            <property name="orientation">
-                <enum>Horizontal</enum>
-            </property>
-            <property name="tickmarks">
-                <enum>Right</enum>
-            </property>
-            <property name="tickInterval">
-                <number>50</number>
-            </property>
-        </widget>
-        <widget class="QSlider">
-            <property name="name">
-                <cstring>SliderLatencyHead</cstring>
-            </property>
-            <property name="geometry">
-                <rect>
-                    <x>15</x>
-                    <y>120</y>
-                    <width>315</width>
-                    <height>29</height>
-                </rect>
-            </property>
-            <property name="minValue">
-                <number>0</number>
-            </property>
-            <property name="maxValue">
-                <number>99</number>
-            </property>
-            <property name="lineStep">
-                <number>1</number>
-            </property>
-            <property name="pageStep">
-                <number>1</number>
-            </property>
-            <property name="value">
-                <number>50</number>
-            </property>
-            <property name="orientation">
-                <enum>Horizontal</enum>
-            </property>
-            <property name="tickmarks">
-                <enum>Right</enum>
-            </property>
-            <property name="tickInterval">
-                <number>50</number>
+            <property name="text">
+                <string>Headphone output</string>
             </property>
         </widget>
         <widget class="QLabel">
@@ -595,7 +521,7 @@
                 </rect>
             </property>
             <property name="text">
-                <string>50 ms</string>
+                <string>256 ms</string>
             </property>
             <property name="alignment">
                 <set>AlignVCenter|AlignRight</set>
@@ -608,16 +534,90 @@
             <property name="geometry">
                 <rect>
                     <x>275</x>
-                    <y>106</y>
+                    <y>105</y>
                     <width>65</width>
                     <height>14</height>
                 </rect>
             </property>
             <property name="text">
-                <string>50 ms</string>
+                <string>256 ms</string>
             </property>
             <property name="alignment">
                 <set>AlignVCenter|AlignRight</set>
+            </property>
+        </widget>
+        <widget class="QSlider">
+            <property name="name">
+                <cstring>SliderLatencyMaster</cstring>
+            </property>
+            <property name="geometry">
+                <rect>
+                    <x>15</x>
+                    <y>40</y>
+                    <width>315</width>
+                    <height>29</height>
+                </rect>
+            </property>
+            <property name="minValue">
+                <number>2</number>
+            </property>
+            <property name="maxValue">
+                <number>32</number>
+            </property>
+            <property name="lineStep">
+                <number>1</number>
+            </property>
+            <property name="pageStep">
+                <number>1</number>
+            </property>
+            <property name="value">
+                <number>28</number>
+            </property>
+            <property name="orientation">
+                <enum>Horizontal</enum>
+            </property>
+            <property name="tickmarks">
+                <enum>Right</enum>
+            </property>
+            <property name="tickInterval">
+                <number>5</number>
+            </property>
+        </widget>
+        <widget class="QSlider">
+            <property name="name">
+                <cstring>SliderLatencyHead</cstring>
+            </property>
+            <property name="geometry">
+                <rect>
+                    <x>15</x>
+                    <y>120</y>
+                    <width>315</width>
+                    <height>29</height>
+                </rect>
+            </property>
+            <property name="minValue">
+                <number>2</number>
+            </property>
+            <property name="maxValue">
+                <number>32</number>
+            </property>
+            <property name="lineStep">
+                <number>1</number>
+            </property>
+            <property name="pageStep">
+                <number>1</number>
+            </property>
+            <property name="value">
+                <number>28</number>
+            </property>
+            <property name="orientation">
+                <enum>Horizontal</enum>
+            </property>
+            <property name="tickmarks">
+                <enum>Right</enum>
+            </property>
+            <property name="tickInterval">
+                <number>5</number>
             </property>
         </widget>
     </widget>
