@@ -467,5 +467,5 @@ void MixxxApp::slotOptionsPreferences()
 void MixxxApp::slotHelpAbout()
 {
     QMessageBox::about(this,tr("About..."),
-                      tr("Mixxx\nVersion " VERSION "\nhttp://mixxx.sourceforge.net/\n\nDesign and programming: Tue Haste Andersen and Ken Haste Andersen.\nGraphics: Ludek Horácek.\nOgg vorbis support: Svein Magne Bang.\nImage scripts: Lukas Zapletal.\n\nThanks to all DJ's and musicians giving feedback.\n\nReleased under the GNU General Public Licence version 2") );
+                      tr("Mixxx\nVersion " VERSION "\nhttp://mixxx.sourceforge.net/\n\nDesign and programming: Tue Haste Andersen and Ken Haste Andersen.\nGraphics: Ludek Horácek.\nOgg vorbis support: Svein Magne Bang.\nOther contributions: Lukas Zapletal.\n\nThanks to all DJ's and musicians giving feedback.\n\nReleased under the GNU General Public Licence version 2") );
 }

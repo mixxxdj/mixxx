@@ -59,13 +59,14 @@ void VisualBufferMarks::draw(GLfloat *p, int iLen)
 {
     for (int i=0; i<iLen*3; i+=3)
     {
-        if (p[i+1]==1)
+        if (p[i+1]>=1)
         {
+	    const float kfWidth = 0.5;
             glBegin(GL_POLYGON);
-            glVertex3f(p[i]-1,-1.,0.);
-            glVertex3f(p[i]+1,-1.,0.);
-            glVertex3f(p[i]+1, 1.,0.);
-            glVertex3f(p[i]-1, 1.,0.);
+            glVertex3f(p[i]-kfWidth,-1.,0.);
+            glVertex3f(p[i]+kfWidth,-1.,0.);
+            glVertex3f(p[i]+kfWidth, 1.,0.);
+            glVertex3f(p[i]-kfWidth, 1.,0.);
             glEnd();
         }
     }

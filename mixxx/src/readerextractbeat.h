@@ -28,7 +28,7 @@ extern "C" {
 }
 #endif
 
-// #define FILEOUTPUT
+//#define FILEOUTPUT
 
 #ifdef FILEOUTPUT
     #include <qfile.h>
@@ -37,18 +37,24 @@ extern "C" {
 class PeakList;
 class ProbabilityVector;
 
-/** Absolute feature threshold. Currently not used */
-const CSAMPLE threshold = 5.;
 /** Minimum acceptable BPM */
 const CSAMPLE histMinBPM = 60.f;
 /** Maximum acceptable BPM */
 const CSAMPLE histMaxBPM = 200.f;
 /** Down write factor of the histogram, between 0 and 1. */
-const CSAMPLE histDownWrite = 0.9999f;
-/** Width of gauss/2 used in histogram updates */
-const int gaussWidth = 8; 
-/** Slack allowed in beat positioning given in seconds times two, ie. 0.05 = 0.1 total slack. */
-const CSAMPLE kfBeatRange = 0.05f;
+const float kfHistDownWrite = 0.99f;
+/** Range around predicted beat position in which it is allowed to place a beat
+  * (given in seconds times two, ie. 0.05 = 0.1 seconds total range). */
+const float kfBeatRange = 0.05;
+/** Range the predicted beat position in which is allowed to place a beat
+  * when forcing a beat. The search is done for the nearest maximum placed
+  * ahead of the predicted position in this range */
+const float kfBeatRangeForce = 0.05;
+/** Confidence threashold. When confidence value goes below this value, try
+  * to resyncronize beat marks, and set confidence to zero on success */
+const float kfBeatConfThreshold = -0.1;
+/** Filter coefficient for confidence measure */
+const float kfBeatConfFilter = 0.995;
 
 /**
   * Extracts beat information based on peaks in the HFC and a beat probability vector.
@@ -85,6 +91,8 @@ private:
         
     /** Buffer indicating if a beat has occoured or not. */
     float *beatBuffer;
+    /** Buffer holding the interpolated beat position for the beats marked in beatBuffer */
+    float *beatCorr;
     /** Last updated index of beatBuffer containing a beat */
     int beatBufferLastIdx;
     /** Buffer holding bpm values */
@@ -109,13 +117,12 @@ private:
 
 #ifdef __GNUPLOT__
     /** Pointer to gnuplot interface */
-    plot_t *gnuplot_hist;
     plot_t *gnuplot_bpm;
     plot_t *gnuplot_hfc;    
 #endif
 
 #ifdef FILEOUTPUT
-    QFile textbpm, textconf, texthist, textbeat, texthfc;   
+    QFile textbpm, textconf, textbeat, texthfc;   
 #endif
 };
 

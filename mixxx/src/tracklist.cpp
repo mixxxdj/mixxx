@@ -241,9 +241,11 @@ void TrackList::WriteXML()
     // First transfer information from the comment field from the table to the Track:
     for (unsigned int iRow=0; iRow<m_pTableTracks->numRows(); iRow++)
     {
-        //qDebug("Comment: %s", m_pTableTracks->item(iRow, COL_COMMENT)->text());
-        m_lTracks.at( m_pTableTracks->item(iRow, COL_INDEX)->text().toUInt() )->m_sComment =
-            m_pTableTracks->item(iRow, COL_COMMENT)->text();
+        if (m_pTableTracks->item(iRow, COL_INDEX))
+        {
+            m_lTracks.at( m_pTableTracks->item(iRow, COL_INDEX)->text().toUInt() )->m_sComment =
+                m_pTableTracks->item(iRow, COL_COMMENT)->text();
+        }
     }
 
 	// Create the xml document:

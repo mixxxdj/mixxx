@@ -44,7 +44,7 @@ const unsigned int READBUFFERSIZE = READCHUNKSIZE*READCHUNK_NO;
 /** Window size used in ReaderExtract objects */
 const int WINDOWSIZE = 2048;
 /** Step size used in block based processing (ReaderExtract classes) */
-const int STEPSIZE = 256; //WINDOWSIZE/2; //WINDOWSIZE/STEPSIZE must result in an integer value 
+const int STEPSIZE = 1024; //WINDOWSIZE/2; //WINDOWSIZE/STEPSIZE must result in an integer value 
 
 /** Maximum buffer length to each EngineObject::process call */
 const int MAX_BUFFER_LEN = 80000;
