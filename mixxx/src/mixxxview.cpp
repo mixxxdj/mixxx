@@ -19,64 +19,191 @@
 
 #include <qtable.h>
 #include <qdir.h>
-#include "dlgtracklist.h"
-#include "dlgflanger.h"
-#include "dlgmaster.h"
-#include "dlgchannel.h"
-#include "dlgplaycontrol.h"
-#include "dlgcrossfader.h"
-#include "dlgsplit.h"
-#include "wtracktable.h"
+#include <qpixmap.h>
+
 #include "controlobject.h"
-#include "wbulb.h"
+#include "wtracktable.h"
+#include "wwidget.h"
 #include "wknob.h"
-#include "wpflbutton.h"
-#include "wplaybutton.h"
-#include "wplayposslider.h"
 #include "wpushbutton.h"
 #include "wslider.h"
-#include "wtracktable.h"
-#include "wvumeter.h"
-#include "wwheel.h"
+#include "wslidercomposed.h"
+#include "wdisplay.h"
+#ifdef __VISUALS__
+  #include "wvisual.h"
+#endif
 
 MixxxView::MixxxView(QWidget *parent) : QWidget(parent)
 {
-    // Sub widgets
-    playcontrol1 = new DlgPlaycontrol(this);
-    playcontrol2 = new DlgPlaycontrol(this); playcontrol2->layoutMirror();
-    channel1 = new DlgChannel(this);
-    channel2 = new DlgChannel(this); channel2->layoutMirror();
-    master = new DlgMaster(this);
-    crossfader = new DlgCrossfader(this);
-    split = new DlgSplit(this);
-    flanger = new DlgFlanger(this);
-    tracklist = new DlgTracklist(this);
+    // Path to image files
+    path = QDir::currentDirPath().append("/images/");
+    qDebug("Image path %s",path.latin1());
 
-    // Layout management
-    mainGrid = new QGridLayout(this,6,3); // A layout on a widget
-    mainGrid->addWidget(playcontrol1,0,0);
-    mainGrid->addWidget(channel1,0,1);
-    mainGrid->addWidget(split,0,2);
-    mainGrid->addWidget(channel2,0,3);
-    mainGrid->addWidget(playcontrol2,0,4);
-    mainGrid->addMultiCellWidget(master,0,1,5,5);
-    mainGrid->addMultiCellWidget(flanger,2,2,5,5);
-    mainGrid->addMultiCellWidget(crossfader,1,1,0,4);
-    mainGrid->addMultiCellWidget(tracklist,2,2,0,4);
+    //
+    // Construct main widget
+    //
+    main = new QWidget(this);
+    main->setFixedSize(1024,768);
+    QPixmap background(getPath("main.png"));
+    main->setPaletteBackgroundPixmap(background);
+    main->move(0,0);
 
-    //let the ratio between the widths of columns 0 and 1 be 2:3.
-    mainGrid->setColStretch( 0, 240);
-    mainGrid->setColStretch( 1,  70);
-    mainGrid->setColStretch( 2,  16);
-    mainGrid->setColStretch( 3,  70);
-    mainGrid->setColStretch( 4, 240);
-    mainGrid->setColStretch( 5,  90);
+    m_pTrackTable = new WTrackTable(main);
+    m_pTrackTable->move(76,490);
+    m_pTrackTable->setFixedSize(850, 200);
 
-    mainGrid->setRowStretch( 0, 265);
-    mainGrid->setRowStretch( 1,  43);
-    mainGrid->setRowStretch( 2, 215);
+    // Set visual vidget here
+    m_pVisualCh1 = 0;
+    m_pVisualCh2 = 0;
+#ifdef __VISUALS__
+    m_pVisualCh1 = new WVisual(main);
+    if (m_pVisualCh1->isValid())
+    {
+        m_pVisualCh2 = new WVisual(main,"",m_pVisualCh1);
+
+        m_pVisualCh1->move(77,100);
+        m_pVisualCh1->setFixedSize(303,120);
+        m_pVisualCh2->move(644,100);
+        m_pVisualCh2->setFixedSize(303,120);
+
+        m_pVisualCh1->show();
+        m_pVisualCh2->show();
+    }
+    else
+    {
+        delete m_pVisualCh1;
+        m_pVisualCh1 = 0;
+    }
+#endif
+
+    m_pTextCh1 = new QLabel(main);
+    m_pTextCh1->setPaletteBackgroundColor(QColor(0,0,0));
+    m_pTextCh1->setPaletteForegroundColor(QColor(0,254,0));
+    m_pTextCh1->move(77,27);
+    m_pTextCh1->setFixedSize(303, 70);
+    
+    m_pTextCh2 = new QLabel(main);
+    m_pTextCh2->setPaletteBackgroundColor(QColor(0,0,0));
+    m_pTextCh2->setPaletteForegroundColor(QColor(0,254,0));
+    m_pTextCh2->move(644,27);
+    m_pTextCh2->setFixedSize(303, 70);
+    
+/*    
+    playcontrol1 = new DlgPlaycontrol(main);
+    playcontrol1->move(76,26);
+    playcontrol2 = new DlgPlaycontrol(main); playcontrol2->layoutMirror();
+    playcontrol2->move(643,26);
+*/
+    m_pSliderCrossfader = new WSliderComposed(main);
+    m_pSliderCrossfader->setPixmaps(true, getPath("sliders/cross.png"), getPath("sliders/knob3.png"));
+    m_pSliderCrossfader->move(408,417);
+    m_pSliderCrossfader->setFixedSize(208,37);
+    
+    m_pSliderVolumeCh1 = new WSliderComposed(main);
+    m_pSliderVolumeCh1->setPixmaps(false, getPath("sliders/volleft.png"), getPath("sliders/knob1.png"));
+    m_pSliderVolumeCh1->move(408,36);
+    m_pSliderVolumeCh1->setFixedSize(27,207);
+
+    m_pSliderVolumeCh2 = new WSliderComposed(main);
+    m_pSliderVolumeCh2->setPixmaps(false, getPath("sliders/volright.png"), getPath("sliders/knob1.png"));
+    m_pSliderVolumeCh2->move(589,36);
+    m_pSliderVolumeCh2->setFixedSize(27,207);
+
+    m_pSliderRateCh1 = new WSliderComposed(main);
+    m_pSliderRateCh1->setPixmaps(false, getPath("sliders/pitchleft.png"), getPath("sliders/knob1.png"));
+    m_pSliderRateCh1->move(73,255);
+    m_pSliderRateCh1->setFixedSize(27,207);
+
+    m_pSliderRateCh2 = new WSliderComposed(main);
+    m_pSliderRateCh2->setPixmaps(false, getPath("sliders/pitchright.png"), getPath("sliders/knob1.png"));
+    m_pSliderRateCh2->move(924,255);
+    m_pSliderRateCh2->setFixedSize(27,207);
+
+    m_pPlayCh1 = new WPushButton(main);
+    m_pPlayCh1->setStates(2);
+    m_pPlayCh1->setPixmap(0, false, getPath("buttons/play0.png"));
+    m_pPlayCh1->setPixmap(0, true,  getPath("buttons/play1.png"));
+    m_pPlayCh1->setPixmap(1, false, getPath("buttons/play3.png"));
+    m_pPlayCh1->setPixmap(1, true,  getPath("buttons/play4.png"));
+    m_pPlayCh1->setFixedSize(80,28);
+    m_pPlayCh1->move(266,267);
+
+    m_pPlayCh2 = new WPushButton(main);
+    m_pPlayCh2->setStates(2);
+    m_pPlayCh2->setPixmap(0, false, getPath("buttons/play0.png"));
+    m_pPlayCh2->setPixmap(0, true,  getPath("buttons/play1.png"));
+    m_pPlayCh2->setPixmap(1, false, getPath("buttons/play3.png"));
+    m_pPlayCh2->setPixmap(1, true,  getPath("buttons/play4.png"));
+    m_pPlayCh2->setFixedSize(80,28);
+    m_pPlayCh2->move(678,267);
+
+    m_pSliderPlayposCh1 = new WSliderComposed(main);
+    m_pSliderPlayposCh1->setPixmaps(true, getPath("sliders/playposslider.png"), getPath("sliders/playposmarker.png"));
+    m_pSliderPlayposCh1->setFixedSize(303,6);
+    m_pSliderPlayposCh1->move(77,223);
+
+    m_pSliderPlayposCh2 = new WSliderComposed(main);
+    m_pSliderPlayposCh2->setPixmaps(true, getPath("sliders/playposslider.png"), getPath("sliders/playposmarker.png"));
+    m_pSliderPlayposCh2->setFixedSize(303,6);
+    m_pSliderPlayposCh2->move(644,223);
+
+    m_pVUmeterCh1 = new WDisplay(main);
+    m_pVUmeterCh1->setPositions(33);
+    for (int i=0; i<10; ++i)
+        m_pVUmeterCh1->setPixmap(i, getPath(QString("vu-left/vu0%1.png").arg(i).latin1()));
+    for (int i=10; i<33; ++i)
+        m_pVUmeterCh1->setPixmap(i, getPath(QString("vu-left/vu%1.png").arg(i).latin1()));
+    m_pVUmeterCh1->setFixedSize(15,105);
+    m_pVUmeterCh1->move(485,99);
+
+    m_pVUmeterCh2 = new WDisplay(main);
+    m_pVUmeterCh2->setPositions(33);
+    for (int i=0; i<10; ++i)
+        m_pVUmeterCh2->setPixmap(i, getPath(QString("vu-right/vu0%1.png").arg(i).latin1()));
+    for (int i=10; i<33; ++i)
+        m_pVUmeterCh2->setPixmap(i, getPath(QString("vu-right/vu%1.png").arg(i).latin1()));
+    m_pVUmeterCh2->setFixedSize(15,105);
+    m_pVUmeterCh2->move(524,99);
+
+    m_pVolume = new WKnob(main);
+    m_pVolume->setPositions(10);
+    for (int i=0; i<10; ++i)
+        m_pVolume->setPixmap(i, getPath(QString("knobs/knob%1.png").arg(i).latin1()));
+    m_pVolume->setFixedSize(34,34);
+    m_pVolume->move( 462,348);
+    
+    m_pHeadCueCh1 = new WPushButton(main);
+    m_pHeadCueCh1->setStates(2);
+    m_pHeadCueCh1->setPixmap(0, false, getPath("buttons/cuec0.png"));
+    m_pHeadCueCh1->setPixmap(0, true,  getPath("buttons/cuec0.png"));
+    m_pHeadCueCh1->setPixmap(1, false, getPath("buttons/cuec3.png"));
+    m_pHeadCueCh1->setPixmap(1, true,  getPath("buttons/cuec3.png"));
+    m_pHeadCueCh1->setFixedSize(34,13);
+    m_pHeadCueCh1->move(477,218);
+
+    m_pHeadCueCh2 = new WPushButton(main);
+    m_pHeadCueCh2->setStates(2);
+    m_pHeadCueCh2->setPixmap(0, false, getPath("buttons/cuec0.png"));
+    m_pHeadCueCh2->setPixmap(0, true,  getPath("buttons/cuec0.png"));
+    m_pHeadCueCh2->setPixmap(1, false, getPath("buttons/cuec3.png"));
+    m_pHeadCueCh2->setPixmap(1, true,  getPath("buttons/cuec3.png"));
+    m_pHeadCueCh2->setFixedSize(34,13);
+    m_pHeadCueCh2->move(513,218);
+
+    m_pCueCh1 = new WPushButton(main);
+    m_pCueCh1->setStates(1);
+    m_pCueCh1->setPixmap(0, false, getPath("buttons/cue0.png"));
+    m_pCueCh1->setPixmap(0, true,  getPath("buttons/cue3.png"));
+    m_pCueCh1->setFixedSize(55,28);
+    m_pCueCh1->move(137,267);
+
+    m_pCueCh2 = new WPushButton(main);
+    m_pCueCh2->setStates(1);
+    m_pCueCh2->setPixmap(0, false, getPath("buttons/cue0.png"));
+    m_pCueCh2->setPixmap(0, true,  getPath("buttons/cue3.png"));
+    m_pCueCh2->setFixedSize(55,28);
+    m_pCueCh2->move(832,267);
 }
-
 
 MixxxView::~MixxxView()
 {
@@ -85,25 +212,43 @@ MixxxView::~MixxxView()
 void MixxxView::assignWidgets(ControlObject *p)
 {
     // EngineBuffer
-    p->setWidget(playcontrol1->PushButtonPlay, ConfigKey("[Channel1]","play"));
-    p->setWidget(playcontrol2->PushButtonPlay, ConfigKey("[Channel2]","play"));
-    p->setWidget(playcontrol1->PushButtonCueSet,ConfigKey("[Channel1]", "cue_set"));
-    p->setWidget(playcontrol2->PushButtonCueSet,ConfigKey("[Channel2]", "cue_set"));
-    p->setWidget(playcontrol1->PushButtonCueGoto, ConfigKey("[Channel1]", "cue_goto"));
-    p->setWidget(playcontrol2->PushButtonCueGoto, ConfigKey("[Channel2]", "cue_goto"));
-    p->setWidget(playcontrol1->SliderRate, ConfigKey("[Channel1]", "rate"));
-    p->setWidget(playcontrol2->SliderRate, ConfigKey("[Channel2]", "rate"));
-    p->setWidget(playcontrol1->WheelPlaycontrol, ConfigKey("[Channel1]", "wheel"));
-    p->setWidget(playcontrol2->WheelPlaycontrol, ConfigKey("[Channel2]", "wheel"));
-    p->setWidget(playcontrol1->SliderPosition, ConfigKey("[Channel1]", "playposition"));
-    p->setWidget(playcontrol2->SliderPosition, ConfigKey("[Channel2]", "playposition"));
+
+//    p->setWidget(playcontrol1->PushButtonCueSet,ConfigKey("[Channel1]", "cue_set"));
+//    p->setWidget(playcontrol2->PushButtonCueSet,ConfigKey("[Channel2]", "cue_set"));
+//    p->setWidget(playcontrol1->PushButtonCueGoto, ConfigKey("[Channel1]", "cue_goto"));
+//    p->setWidget(playcontrol2->PushButtonCueGoto, ConfigKey("[Channel2]", "cue_goto"));
+
+//    p->setWidget(playcontrol1->BPM, ConfigKey("[Channel1]", "bpm"));
+//    p->setWidget(playcontrol2->BPM, ConfigKey("[Channel2]", "bpm"));
+    p->setWidget(m_pVisualCh1, ConfigKey("[Channel1]", "wheel"), true, Qt::LeftButton);
+    p->setWidget(m_pVisualCh2, ConfigKey("[Channel2]", "wheel"), true, Qt::LeftButton);
+
+    p->setWidget(m_pSliderRateCh1, ConfigKey("[Channel1]", "rate"), false);
+    p->setWidget(m_pSliderRateCh2, ConfigKey("[Channel2]", "rate"), false);
+    
+    p->setWidget(m_pPlayCh1, ConfigKey("[Channel1]","play"), true, Qt::LeftButton);
+    p->setWidget(m_pPlayCh2, ConfigKey("[Channel2]","play"), true, Qt::LeftButton);
+    p->setWidget(m_pPlayCh1, ConfigKey("[Channel1]","cue_set"), true, Qt::RightButton);
+    p->setWidget(m_pPlayCh2, ConfigKey("[Channel2]","cue_set"), true, Qt::RightButton);
+
+    p->setWidget(m_pCueCh1, ConfigKey("[Channel1]","cue_preview"), true, Qt::LeftButton);
+    p->setWidget(m_pCueCh2, ConfigKey("[Channel2]","cue_preview"), true, Qt::LeftButton);
+    p->setWidget(m_pCueCh1, ConfigKey("[Channel1]","cue_preview"), false, Qt::LeftButton);
+    p->setWidget(m_pCueCh2, ConfigKey("[Channel2]","cue_preview"), false, Qt::LeftButton);
+    p->setWidget(m_pCueCh1, ConfigKey("[Channel1]","cue_goto"), true, Qt::RightButton);
+    p->setWidget(m_pCueCh2, ConfigKey("[Channel2]","cue_goto"), true, Qt::RightButton);
+
+    p->setWidget(m_pSliderPlayposCh1, ConfigKey("[Channel1]", "playposition"), false);
+    p->setWidget(m_pSliderPlayposCh2, ConfigKey("[Channel2]", "playposition"), false);
+
 
     // EngineMaster
-    p->setWidget(channel1->CheckBoxPFL, ConfigKey("[Channel1]", "pfl"));
-    p->setWidget(channel2->CheckBoxPFL, ConfigKey("[Channel2]", "pfl"));
-    p->setWidget(channel1->SliderVolume, ConfigKey("[Channel1]", "volume"));
-    p->setWidget(channel2->SliderVolume, ConfigKey("[Channel2]", "volume"));
+    p->setWidget(m_pHeadCueCh1, ConfigKey("[Channel1]", "pfl"));
+    p->setWidget(m_pHeadCueCh2, ConfigKey("[Channel2]", "pfl"));
 
+    p->setWidget(m_pSliderVolumeCh1, ConfigKey("[Channel1]", "volume"), false);
+    p->setWidget(m_pSliderVolumeCh2, ConfigKey("[Channel2]", "volume"), false);
+/*
     // EnginePregain
     p->setWidget(channel1->DialGain, ConfigKey("[Channel1]", "pregain"));
     p->setWidget(channel2->DialGain, ConfigKey("[Channel2]", "pregain"));
@@ -120,10 +265,13 @@ void MixxxView::assignWidgets(ControlObject *p)
     p->setWidget(channel1->BulbClipping, ConfigKey("[Channel1]", "clipLed"));
     p->setWidget(channel2->BulbClipping, ConfigKey("[Channel2]", "clipLed"));
 
-    // EngineVUmeter
-    p->setWidget(channel1->vumeter, ConfigKey("[Channel1]", "VUmeter"));
-    p->setWidget(channel2->vumeter, ConfigKey("[Channel2]", "VUmeter"));
+*/
 
+    // EngineVUmeter
+    p->setWidget(m_pVUmeterCh1, ConfigKey("[Channel1]", "VUmeter"));
+    p->setWidget(m_pVUmeterCh2, ConfigKey("[Channel2]", "VUmeter"));
+
+/*
     // EngineFlanger
     p->setWidget(flanger->DialDepth, ConfigKey("[Flanger]", "lfoDepth"));
     p->setWidget(flanger->DialDepth, ConfigKey("[Flanger]", "lfoDepth"));
@@ -132,12 +280,21 @@ void MixxxView::assignWidgets(ControlObject *p)
     p->setWidget(flanger->PushButtonChB, ConfigKey("[Flanger]", "ch2"));
 
     // EngineMaster
-    p->setWidget(crossfader->SliderCrossfader, ConfigKey("[Master]", "crossfader"));
+*/
+    p->setWidget(m_pSliderCrossfader, ConfigKey("[Master]", "crossfader"), false);
+/*
     p->setWidget(master->KnobVolume, ConfigKey("[Master]", "volume"));
     p->setWidget(master->BulbClipping, ConfigKey("[Master]", "clipLed"));
     p->setWidget(master->vumeter, ConfigKey("[Master]", "VUmeter"));
     p->setWidget(master->KnobHeadVol, ConfigKey("[Master]", "headVolume"));
     p->setWidget(master->KnobHeadLR, ConfigKey("[Master]", "headMix"));
-    
+*/    
                                                                    
-}                                                                 
+}
+
+const char *MixxxView::getPath(QString location)
+{
+    return location.prepend(path).latin1();
+}
+
+                                                                 

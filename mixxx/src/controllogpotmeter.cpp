@@ -48,7 +48,7 @@ ControlLogpotmeter::ControlLogpotmeter(ConfigKey key, FLOAT_TYPE _maxvalue) : Co
    Output:  The value is updated.
    -------- ------------------------------------------------------ */
 #define min(a,b)            (((a) < (b)) ? (a) : (b))
-void ControlLogpotmeter::slotSetPosition(int newpos)
+void ControlLogpotmeter::slotSetPositionExtern(float newpos)
 {
   // Calculate the value linearly:
   if (newpos <= middlePosition)

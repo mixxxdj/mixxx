@@ -46,7 +46,7 @@ public:
     void setAccelUp(const QKeySequence key) {};
     void setAccelDown(const QKeySequence key) {};
 public slots:
-    void slotSetPosition(int pos);
+    void slotSetPositionExtern(float pos);
     void slotSetPositionMidi(MidiCategory c, int v);
 protected:
     void forceGUIUpdate();

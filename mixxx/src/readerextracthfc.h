@@ -49,7 +49,7 @@ private:
     CSAMPLE *hfc, *dhfc;
     QPtrList<EngineSpectralFwd> *specList;
 
-    //QFile textout;    
+//    QFile textout;    
 };
 
 #endif

@@ -34,8 +34,8 @@ ReaderExtractHFC::ReaderExtractHFC(ReaderExtract *input, int frameSize, int fram
     
     specList = (QPtrList<EngineSpectralFwd> *)input->getBasePtr();
 
-    //textout.setName("hfc.txt");
-    //textout.open( IO_WriteOnly );
+//    textout.setName("hfc.txt");
+//    textout.open( IO_WriteOnly );
 }
 
 ReaderExtractHFC::~ReaderExtractHFC()
@@ -75,9 +75,13 @@ int ReaderExtractHFC::getBufferSize()
 
 void *ReaderExtractHFC::processChunk(const int _idx, const int start_idx, const int _end_idx, bool)
 {
+//    QTextStream stream( &textout );
+
     int end_idx = _end_idx;
     int idx = _idx;
     int frameFrom, frameTo;
+    /** From and to frame used when calculating the DHFC */
+    int frameFromDHFC, frameToDHFC;
 
     // Adjust range (circular buffer)
     if (start_idx>=_end_idx)
@@ -87,42 +91,71 @@ void *ReaderExtractHFC::processChunk(const int _idx, const int start_idx, const 
 
     // From frame...
     if (idx>start_idx)
+    {
         frameFrom = ((((idx%READCHUNK_NO)*framePerChunk)-framePerFrameSize+1)+frameNo)%frameNo;
+        frameFromDHFC = (frameFrom-1+frameNo)%frameNo;
+    }
     else
+    {
         frameFrom = (idx%READCHUNK_NO)*framePerChunk;
-
+        frameFromDHFC = frameFrom;
+    }
+        
     // To frame...
     if (idx<end_idx-1)
+    {
         frameTo = ((idx+1)%READCHUNK_NO)*framePerChunk;
+        frameToDHFC = frameTo;
+    }
     else
+    {
         frameTo = (((((idx+1)%READCHUNK_NO)*framePerChunk)-framePerFrameSize)+frameNo)%frameNo;
-
+        frameToDHFC = (frameTo-1+frameNo)%frameNo;
+    }
+    
+//    qDebug("hfc %i-%i",frameFrom,frameTo);
+        
     // Get HFC
+//    int j = 0;
     if (frameTo>frameFrom)
+    {
         for (int i=frameFrom; i<=frameTo; i++)
+        {
             hfc[i] = specList->at(i)->getHFC();
+//            stream << hfc[i] << "\n";
+//            j++;
+        }
+//        qDebug("HFC vals 1 : %i",j);
+    }
     else
     {
         int i;
         for (i=frameFrom; i<frameNo; i++)
+        {
             hfc[i] = specList->at(i)->getHFC();
+//            stream << hfc[i] << "\n";
+//            j++;
+        }
         for (i=0; i<=frameTo; i++)
+        {
             hfc[i] = specList->at(i)->getHFC();
+//            stream << hfc[i] << "\n";
+//            j++;
+        }
+//        qDebug("HFC vals 2 : %i",j);
     }
 
+//    stream << "\n";
+//    textout.flush();
+
     // Get DHFC, first derivative and HFC, rectified
-    dhfc[(idx*framePerChunk)%frameNo] = hfc[(idx*framePerChunk)%frameNo];
-    if (frameTo>frameFrom)
-        for (int i=frameFrom+1; i<=frameTo; i++)
-            dhfc[i] = max(0.,hfc[i]-hfc[i-1]);
-    else
-    {
-        int i;
-        for (i=frameFrom+1; i<frameNo; i++)
-            dhfc[i] = max(0.,hfc[i]-hfc[i-1]);
-        for (i=1; i<=frameTo; i++)
-            dhfc[i] = max(0.,hfc[i]-hfc[i-1]);
-    }
-    
-    return (void *)&dhfc[idx];
+    //dhfc[(idx*framePerChunk)%frameNo] = hfc[(idx*framePerChunk)%frameNo];
+
+    while (frameTo>frameToDHFC)
+        frameToDHFC+=frameNo;
+
+    for (int i=frameFromDHFC; i<=frameToDHFC; i++)
+        dhfc[i%frameNo] = max(0.,hfc[(i+1)%frameNo]-hfc[i%frameNo]);
+        
+    return (void *)&dhfc[frameFromDHFC];
 }

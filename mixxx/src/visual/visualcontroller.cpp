@@ -26,12 +26,12 @@ int VisualController::idCount = 0;
  */
  VisualController::VisualController()
 {
-  fov   = 55.0;
+  fov   = 60.0;
   znear = 10.0;
   zfar  = 1000.0;
   eyex  = 0.;
   eyey  = 0.0;
-  eyez  = 100.0;
+  eyez  = 120.0;
   centerx=centery=centerz=0;
   upx=0;
   upy=1;

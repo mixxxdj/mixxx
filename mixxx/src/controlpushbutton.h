@@ -20,7 +20,6 @@
 
 #include "controlobject.h"
 #include "defs.h"
-#include "wbulb.h"
 #include <qaction.h>
 
 /**
@@ -31,21 +30,19 @@ class ControlPushButton : public ControlObject
 {
     Q_OBJECT
 public:
-    // LED??????????
-    ControlPushButton(ConfigKey key, WBulb *led = 0);
+    ControlPushButton(ConfigKey key);
     ~ControlPushButton();
     char *print();
     char *printValue();
     int getPosition();
-    void setValue(int);
-    void setWidget(QWidget *widget);
+//    void setWidget(QWidget *widget);
     void setAccelUp(const QKeySequence key);
     void setAccelDown(const QKeySequence key);
     /** Associates a QAction to the ControlPushButton. This can be used to associate a menu item
       * with the control */
     void setAction(QAction *action);
 public slots:
-    void slotSetPosition(int);
+    void slotSetPositionExtern(float);
     void slotSetPositionMidi(MidiCategory c, int v);
     void slotSetPositionOff();
 private slots:
@@ -62,7 +59,6 @@ protected:
     void forceGUIUpdate();
 //    char *name;            // The name of the button
 //    buttonType kind;       // Determine whether the button is latching or not.
-    WBulb *led;
 };
 
 #endif

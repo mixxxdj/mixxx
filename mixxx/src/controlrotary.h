@@ -35,7 +35,7 @@ public:
     void setAccelUp(const QKeySequence key) {};
     void setAccelDown(const QKeySequence key) {};
 public slots:
-    void slotSetPosition(int);
+    void slotSetPositionExtern(float);
     void slotSetPositionMidi(MidiCategory, int);
     void slotSetValue(int newvalue);
 protected:

@@ -46,6 +46,12 @@ public:
     /** Add a VisualChannel */
     VisualChannel *add(ControlPotmeter *pPlaypos);
 
+public slots:
+    void setValue(float) {};
+signals:
+    void valueChangedLeftDown(float);
+    void valueChangedRightDown(float);
+
 protected:
     void initializeGL();
     void resizeGL(int, int);
@@ -58,6 +64,9 @@ protected:
     int m_iScreenX;
     int m_iScreenY;
     int m_iSelObjIdx;
+
+    /** Used in mouse event handler */
+    int m_iStartPosX;
 
     /** Backplane */
     VisualBackplane *m_pVisualBackplane;

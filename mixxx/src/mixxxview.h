@@ -19,21 +19,21 @@
 #define MIXXXVIEW_H
 
 #include <qwidget.h>
-#include <qlayout.h>
-#include <qlistview.h>
+#include <qlabel.h>
 
-class DlgPlaycontrol;
-class DlgChannel;
-class DlgMaster;
-class DlgCrossfader;
-class DlgSplit;
-class DlgFlanger;
-class DlgTracklist;
 class ControlObject;
+class WSlider;
+class WSliderComposed;
+class WPushButton;
+class WTrackTable;
+class WDisplay;
+class WKnob;
+class WVisual;
 
 /**
  * This class provides an incomplete base for your application view. 
  */
+
 
 class MixxxView : public QWidget
 {
@@ -43,17 +43,26 @@ public:
     ~MixxxView();
     /** Setup connections between widgets and ControlObjects */
     void assignWidgets(ControlObject *p);
-    
-    DlgPlaycontrol *playcontrol1, *playcontrol2;
-    DlgChannel *channel1, *channel2;
-    DlgMaster *master;
-    DlgCrossfader *crossfader;
-    DlgSplit *split;
-    DlgFlanger *flanger;
-    DlgTracklist *tracklist;
+
+    WTrackTable *m_pTrackTable;
+    QLabel *m_pTextCh1, *m_pTextCh2;
+    /** Pointer to WVisual widgets */
+    WVisual *m_pVisualCh1, *m_pVisualCh2;
 
 private:
-    QGridLayout *mainGrid;
+    const char *getPath(QString location);
+
+    QWidget *main;
+    WSliderComposed *m_pSliderCrossfader;
+    WSliderComposed *m_pSliderVolumeCh1, *m_pSliderVolumeCh2;
+    WSliderComposed *m_pSliderRateCh1, *m_pSliderRateCh2;
+    WSliderComposed *m_pSliderPlayposCh1, *m_pSliderPlayposCh2;
+    WPushButton *m_pPlayCh1, *m_pPlayCh2;
+    WDisplay *m_pVUmeterCh1, *m_pVUmeterCh2;
+    WKnob *m_pVolume;
+    WPushButton *m_pHeadCueCh1, *m_pHeadCueCh2;
+    WPushButton *m_pCueCh1, *m_pCueCh2;
+    QString path;
 };
 
 #endif

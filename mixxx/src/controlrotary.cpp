@@ -53,11 +53,11 @@ void ControlRotary::slotSetPositionMidi(MidiCategory, int _newpos)
 {
     qDebug("rot");
     //int newpos = graycodetable[(int)(unsigned char)_newpos];
-    slotSetPosition(_newpos);
+    slotSetPositionExtern(_newpos);
     //emit updateGUI(newpos);
 }
 
-void ControlRotary::slotSetPosition(int)
+void ControlRotary::slotSetPositionExtern(float)
 {
 /*
     // get position from gray code

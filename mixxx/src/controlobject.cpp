@@ -55,7 +55,7 @@ ControlObject::~ControlObject()
     list.remove(this);
 }
 
-bool ControlObject::connect(ConfigKey src, ConfigKey dest)
+bool ControlObject::connectControls(ConfigKey src, ConfigKey dest)
 {
 qDebug("unfinished");
     // Find src object
@@ -103,7 +103,7 @@ void ControlObject::setControlEngine(ControlEngine *pControlEngine)
     m_pControlEngine = pControlEngine;
 }
 
-void ControlObject::setWidget(QWidget *widget, ConfigKey key)
+void ControlObject::setWidget(QWidget *widget, ConfigKey key, bool emitOnDownPress, Qt::ButtonState state)
 {
     // Loop through the list of ConfigObjects to find one matching
     // key, and associate the found object with the widget.
@@ -112,16 +112,34 @@ void ControlObject::setWidget(QWidget *widget, ConfigKey key)
     {
         if (c->cfgOption->key->group == key.group && c->cfgOption->key->item == key.item)
         {
-            c->setWidget(widget);
+            c->setWidget(widget, emitOnDownPress, state);
             break;
         }
     }
 }
 
-void ControlObject::setWidget(QWidget *widget)
+void ControlObject::setWidget(QWidget *widget, bool emitOnDownPress, Qt::ButtonState state)
 {
-    QApplication::connect(widget, SIGNAL(valueChanged(int)), this,   SLOT(slotSetPosition(int)));
-    QApplication::connect(this,   SIGNAL(updateGUI(int)),    widget, SLOT(setValue(int)));
+    if (emitOnDownPress)
+    {
+        if (state == Qt::NoButton)
+            QApplication::connect(widget, SIGNAL(valueChangedDown(float)), this,   SLOT(slotSetPositionExtern(float)));
+        else if (state == Qt::LeftButton)
+            QApplication::connect(widget, SIGNAL(valueChangedLeftDown(float)), this,   SLOT(slotSetPositionExtern(float)));
+        else if (state == Qt::RightButton)
+            QApplication::connect(widget, SIGNAL(valueChangedRightDown(float)), this,   SLOT(slotSetPositionExtern(float)));
+    }
+    else
+    {
+        if (state == Qt::NoButton)
+            QApplication::connect(widget, SIGNAL(valueChangedUp(float)), this,   SLOT(slotSetPositionExtern(float)));
+        else if (state == Qt::LeftButton)
+            QApplication::connect(widget, SIGNAL(valueChangedLeftUp(float)), this,   SLOT(slotSetPositionExtern(float)));
+        else if (state == Qt::RightButton)
+            QApplication::connect(widget, SIGNAL(valueChangedRightUp(float)), this,   SLOT(slotSetPositionExtern(float)));
+    }
+    
+    QApplication::connect(this,   SIGNAL(updateGUI(float)),    widget, SLOT(setValue(float)));
 
     forceGUIUpdate();
 }
@@ -204,32 +222,6 @@ bool ControlObject::eventFilter(QObject *o, QEvent *e)
 
     return TRUE;
 }
-
-/*
-void ControlObject::setAccelUp(const QKeySequence key)
-{
-    qDebug("Cannot call setAccelUp for %s", print());
-}
-
-void ControlObject::setAccelDown(const QKeySequence key)
-{
-    qDebug("Cannot call setAccelDown for %s", print());
-}
-
-void ControlObject::forceGUIUpdate()
-{
-}
-
-void ControlObject::slotSetPosition(int dummy)
-{
-    qDebug("Cannot call slotSetPosition() for %s", print());
-}
-    
-void ControlObject::slotSetPositionMidi(MidiCategory c, int v)
-{
-    qDebug("Cannot call slotSetPositionMidi() for %s", print());
-}
-*/
 
 void ControlObject::sync()
 {

@@ -8,7 +8,6 @@
 #include <qpopupmenu.h>
 #include <qpoint.h>
 #include <qtextcodec.h>
-#include <qlabel.h>
 
 #include "tracklist.h"
 #include "trackinfoobject.h"
@@ -24,20 +23,19 @@
 #include "images/a.xpm"
 #include "images/b.xpm"
 #include "enginebuffer.h"
-#include "dlgplaycontrol.h"
 #include "reader.h"
 #include "wtracktable.h"
 #include "wtracktableitem.h"
 
 
 TrackList::TrackList( const QString sDirectory, WTrackTable *ptableTracks,
-                      DlgPlaycontrol *playcontrol1, DlgPlaycontrol *playcontrol2,
+                      QLabel *text1, QLabel *text2,
                       EngineBuffer *buffer1, EngineBuffer *buffer2)
 {
     m_sDirectory = sDirectory;
     m_ptableTracks = ptableTracks;
-    m_pPlaycontrol1 = playcontrol1;
-    m_pPlaycontrol2 = playcontrol2;
+    m_pText1 = text1;
+    m_pText2 = text2;
     m_pBuffer1 = buffer1;
     m_pBuffer2 = buffer2;
 
@@ -52,6 +50,7 @@ TrackList::TrackList( const QString sDirectory, WTrackTable *ptableTracks,
     // Connect the right click to the slot where the menu is shown:
 	connect( m_ptableTracks, SIGNAL( pressed( int, int, int, const QPoint &) ),
 		                     SLOT( slotClick( int, int, int, const QPoint &) ) );
+
 }
 
 TrackList::~TrackList()
@@ -283,39 +282,38 @@ int TrackList::ParseHeader( TrackInfoObject *Track )
 }
 
 /*
-	Returns the TrackInfoObject which has the filename sFilename.
+    Returns the TrackInfoObject which has the filename sFilename.
 */
 TrackInfoObject *TrackList::FileExistsInList( const QString sFilename )
-{	
-	TrackInfoObject *Track;
-	Track = m_lTracks.first();
-	while ((Track) && (Track->m_sFilename != sFilename) )
-		Track = m_lTracks.next();
+{
+    TrackInfoObject *Track;
+    Track = m_lTracks.first();
+    while ((Track) && (Track->m_sFilename != sFilename) )
+        Track = m_lTracks.next();
 
-	return Track;
+    return Track;
 }
 
 /*
-	These two slots basically just routes information further, but adds
-	track information.
+    These two slots basically just routes information further, but adds
+    track information.
 */
 void TrackList::slotChangePlay_1()
 {
     qDebug("Select track 1");
-    TrackInfoObject *track = m_lTracks.at( 
-		m_ptableTracks->text( m_ptableTracks->currentRow(), COL_INDEX ).toInt() );
+    TrackInfoObject *track = m_lTracks.at(m_ptableTracks->text(m_ptableTracks->currentRow(), COL_INDEX ).toInt());
         
-	// Update score:
-	track->m_iTimesPlayed++;
-	if (track->m_iTimesPlayed > m_iMaxTimesPlayed)
-		m_iMaxTimesPlayed = track->m_iTimesPlayed;
-	UpdateScores();
+    // Update score:
+    track->m_iTimesPlayed++;
+    if (track->m_iTimesPlayed > m_iMaxTimesPlayed)
+        m_iMaxTimesPlayed = track->m_iTimesPlayed;
+    UpdateScores();
 
-	// Request a new track from the reader:
+    // Request a new track from the reader:
     m_pBuffer1->getReader()->requestNewTrack( track->Location() );
-	
+
     // Write info
-    m_pPlaycontrol1->textLabelTrack->setText( track->getInfo() );
+    m_pText1->setText( track->getInfo() );
 }
 
 void TrackList::slotChangePlay_2()
@@ -333,8 +331,7 @@ void TrackList::slotChangePlay_2()
     m_pBuffer2->getReader()->requestNewTrack( track->Location() );
     
     // Write info
-    m_pPlaycontrol2->textLabelTrack->
-        setText( track->getInfo() );
+    m_pText2->setText( track->getInfo() );
 }
 
 /*

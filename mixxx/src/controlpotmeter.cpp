@@ -46,7 +46,7 @@ ControlPotmeter::~ControlPotmeter()
    Input:   The (new) position.
    Output:  The value is updated.
    -------- ------------------------------------------------------ */
-void ControlPotmeter::slotSetPosition(int newpos)
+void ControlPotmeter::slotSetPositionExtern(float newpos)
 {
     value = minvalue + ((FLOAT_TYPE)newpos/127.)*valuerange;
 /*
@@ -66,7 +66,7 @@ void ControlPotmeter::slotSetPositionMidi(MidiCategory c, int v)
 {
     //qDebug("thread id: %p",pthread_self());
 
-    slotSetPosition(v);
+    slotSetPositionExtern(v);
     emit(updateGUI(v));
 }
 

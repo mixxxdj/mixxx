@@ -21,18 +21,10 @@
 /* -------- ------------------------------------------------------
    Purpose: Creates a new simulated latching push-button. 
    Input:   key - Key for the configuration file
-            _led - A led which is connected to the button.
    -------- ------------------------------------------------------ */
-ControlPushButton::ControlPushButton(ConfigKey key, WBulb* _led) : ControlObject(key)
+ControlPushButton::ControlPushButton(ConfigKey key) : ControlObject(key)
 {
     value = 0.;
-    led = _led;
-    if (led!=0)
-        if (value==1.)
-            led->setChecked(true);
-        else
-            led->setChecked(false);
-
 };
 
 ControlPushButton::~ControlPushButton()
@@ -46,16 +38,9 @@ ControlPushButton::~ControlPushButton()
    Input:   The (new) position.
    Output:  The value is updated.
    -------- ------------------------------------------------------ */
-void ControlPushButton::slotSetPosition(int newpos)
+void ControlPushButton::slotSetPositionExtern(float newpos)
 {
     value = (FLOAT_TYPE)newpos;
-
-    // Control LED:
-    if (led != 0)
-        if (value==1.)
-            led->setChecked(true);
-        else
-            led->setChecked(false);
 
     emitValueChanged(value);
 };
@@ -111,20 +96,7 @@ char *ControlPushButton::printValue()
         return "off";
 }
 
-void ControlPushButton::setValue(int newvalue)
-{
-    value = (FLOAT_TYPE)newvalue;  
-
-    // Control LED:
-    if (led != 0)
-        if (value==1.)
-            led->setChecked(true);
-        else
-            led->setChecked(false);
-    
-    emit(updateGUI(newvalue));
-};
-
+/*
 void ControlPushButton::setWidget(QWidget *widget)
 {
     QApplication::connect(widget, SIGNAL(clicked()), this, SLOT(slotClicked()));
@@ -132,6 +104,7 @@ void ControlPushButton::setWidget(QWidget *widget)
 
     forceGUIUpdate();
 }
+*/
 
 void ControlPushButton::setAccelUp(const QKeySequence key)
 {

@@ -33,7 +33,7 @@ class ControlLogpotmeter : public ControlPotmeter
 public:
     ControlLogpotmeter(ConfigKey key, FLOAT_TYPE=5);
 public slots:
-    void slotSetPosition(int);
+    void slotSetPositionExtern(float);
 protected:
     void forceGUIUpdate();
 

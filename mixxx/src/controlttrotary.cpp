@@ -37,7 +37,7 @@ void ControlTTRotary::setValue(int v)
     emit(updateGUI(v));
 }
 
-void ControlTTRotary::slotSetPosition(int v)
+void ControlTTRotary::slotSetPositionExtern(float v)
 {
     // Non-linear scaling
     float value = ((((float)v-64.)*((float)v-64.))/64.)/100.;
@@ -61,7 +61,7 @@ void ControlTTRotary::slotSetPositionMidi(MidiCategory, int v)
 {
     //qDebug("thread id: %p",pthread_self());
 
-    slotSetPosition(v);
+    slotSetPositionExtern(v);
     emit(updateGUI(v));
 }
 

@@ -147,6 +147,9 @@ void ReaderExtractFFT::processFrame(int idx)
         for (int i=0; i<frameSize; i++)
             windowedSamples[i] = ((readbufferPtr[(inputFramePos+(i*2))%inputBufferSize] +
                                    readbufferPtr[(inputFramePos+(i*2)+1)%inputBufferSize])/2.)*windowPtr[i]; // To optimize put % outside loop
+
+//    qDebug("windowing %i-%i",inputFramePos, (inputFramePos+inputFrameSize)%inputBufferSize);
+
     
 //    // Write wave to text file
 //    for (int i=0; i<frameSize; i++)
@@ -155,7 +158,7 @@ void ReaderExtractFFT::processFrame(int idx)
 
     // Perform FFT
     CSAMPLE *tmp = specList.at(idx%frameNo)->process(windowedSamples,0);
-
+//    qDebug("frame %i",idx%frameNo);
 //    // Write FFT to text file
 //    for (int i=0; i<frameSize/2; i++)
 //        stream << tmp[i] << " ";

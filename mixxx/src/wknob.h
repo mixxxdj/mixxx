@@ -18,28 +18,39 @@
 #ifndef WKNOB_H
 #define WKNOB_H
 
-#include <qwidget.h>
-#include <qdial.h>
+#include "wwidget.h"
 #include <qpixmap.h>
-#include <qrect.h>
-
+#include <qstring.h>
 
 /**
   *@author Tue & Ken Haste Andersen
   */
 
-class WKnob : public QDial  {
+class WKnob : public WWidget  {
    Q_OBJECT
 public: 
     WKnob(QWidget *parent=0, const char *name=0);
     ~WKnob();
-protected:
-    void repaintScreen(const QRect *cr=0);
-    void repaintScreen(const QRect *cr, QPixmap *p);
-    QPixmap *getKnob();
+    void setPositions(int iNoPos);
+    void setPixmap(int iPos, const QString &filename);
+    
 private:
-    static QPixmap **pix;
-    static int instantiateNo;
+    /** Set position number to zero and deallocate pixmaps */
+    void resetPositions();
+    void mouseMoveEvent(QMouseEvent *e);
+    void mousePressEvent(QMouseEvent *e);
+    void mouseReleaseEvent(QMouseEvent *e);
+    void paintEvent(QPaintEvent *);
+
+    /** Current position */
+    int m_iPos;
+    /** Number of positions associated with this knob */
+    int m_iNoPos;
+    /** Array of associated pixmaps */
+    QPixmap **m_pPixmaps;
+    /** Values used when pressing mouse */
+    float m_fOldValue, m_fStartValue;
+    
 };
 
 #endif

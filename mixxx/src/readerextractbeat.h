@@ -28,12 +28,14 @@ extern "C" {
 }
 #endif
 
+//#include <qfile.h>
+
 /** Absolute feature threshold. Currently not used */
 const CSAMPLE threshold = 5.;
 /** Minimum acceptable BPM */
 const CSAMPLE histMinBPM = 60.f;
 /** Maximum acceptable BPM */
-const CSAMPLE histMaxBPM = 240.f;
+const CSAMPLE histMaxBPM = 200.f;
 /** Down write factor of the histogram, between 0 and 1. */
 const CSAMPLE histDownWrite = 0.9999f;
 /** Width of gauss/2 used in histogram updates */
@@ -78,10 +80,6 @@ private:
     /** Sorted list of peak indexes in HFC */
     typedef QValueList<int> Tpeaks;
     Tpeaks peaks;
-    /** Array containing indexes into peaks list. Each element in the array corresponds to the
-      * start of a chunk in the peak list. If the index is -1 no peaks are stored in the list
-      * for the given chunk */
-    Tpeaks::iterator *peakIt;    
     /** Pointer to histogram */
     CSAMPLE *hist;
     /** Pointer to beat interval vector */
@@ -105,7 +103,9 @@ private:
     plot_t *gnuplot_beat;
     plot_t *gnuplot_bpm;
     plot_t *gnuplot_hfc;    
-#endif    
+#endif
+
+//    QFile textout;   
 };
 
 #endif

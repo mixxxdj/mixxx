@@ -5,11 +5,11 @@
 #include <qptrlist.h>
 #include "trackinfoobject.h"
 #include <qtable.h>
+#include <qlabel.h>
 
 class QString;
 class QPopupMenu;
 class QPoint;
-class DlgPlaycontrol;
 class EngineBuffer;
 class WTrackTable;
 
@@ -32,40 +32,40 @@ class WTrackTable;
 
 class TrackList : public QObject
 {
-	Q_OBJECT
+    Q_OBJECT
 public:
-	TrackList( const QString, WTrackTable *, DlgPlaycontrol *, DlgPlaycontrol *,
+    TrackList( const QString, WTrackTable *, QLabel *, QLabel *,
                EngineBuffer *, EngineBuffer * );
-	~TrackList();
-	void WriteXML( );
+    ~TrackList();
+    void WriteXML( );
 
 public slots:
     /** Can be called to update the whole tracklist with a new directory */
     void slotUpdateTracklist( QString );
 
 private slots:
-	void slotChangePlay_1(); // For recieving signals from the pulldown menu
-	void slotChangePlay_2();
-	void slotClick( int, int, int, const QPoint & );
+    void slotChangePlay_1(); // For recieving signals from the pulldown menu
+    void slotChangePlay_2();
+    void slotClick( int, int, int, const QPoint & );
     
 private:
-	TrackInfoObject *FileExistsInList( const QString );
-	void ReadXML ();
-	bool AddFiles(const char *);
-	void UpdateScores();
+    TrackInfoObject *FileExistsInList( const QString );
+    void ReadXML ();
+    bool AddFiles(const char *);
+    void UpdateScores();
     void UpdateTracklist();
     int ParseHeader( TrackInfoObject *Track );
 
-	QString m_sDirectory; // the directory where the music files are stored
-	QPtrList<TrackInfoObject> m_lTracks; // list of all tracks
-	WTrackTable *m_ptableTracks;
-	QPopupMenu *playSelectMenu;
+    QString m_sDirectory; // the directory where the music files are stored
+    QPtrList<TrackInfoObject> m_lTracks; // list of all tracks
+    WTrackTable *m_ptableTracks;
+    QPopupMenu *playSelectMenu;
     /** Pointers to the play controls */
-    DlgPlaycontrol *m_pPlaycontrol1, *m_pPlaycontrol2;
+    QLabel *m_pText1, *m_pText2;
     /** Points to the two play buffers */
     EngineBuffer *m_pBuffer1, *m_pBuffer2;
     
-	int m_iMaxTimesPlayed;
+    int m_iMaxTimesPlayed;
 };
 
 #endif

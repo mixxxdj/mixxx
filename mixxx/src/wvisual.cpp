@@ -26,11 +26,18 @@ WVisual::WVisual(QWidget *pParent, const char *pName, const QGLWidget *pShareWid
     m_qtTime.start();
     startTimer(25);
 
-    m_qlList.setAutoDelete(true);
+    m_qlList.setAutoDelete(false);
 }
 
 WVisual::~WVisual()
 {
+    // Stop timer
+    killTimers();
+
+    // Delete associated VisualChannels
+    while (m_qlList.remove());
+
+    // Finally delete the VisualController
     delete m_pVisualController;
 }
 
@@ -40,6 +47,28 @@ bool WVisual::eventFilter(QObject *o, QEvent *e)
     if (e->type() == QEvent::MouseButtonPress)
     {
         QMouseEvent *m = (QMouseEvent *)e;
+
+        // Store current x position of mouse pointer
+        m_iStartPosX = m->x();
+        emit(valueChangedLeftDown(64.));
+    }
+    else if (e->type() == QEvent::MouseMove)
+    {
+        QMouseEvent *m = (QMouseEvent *)e;
+        int v = 64.+m->x()-m_iStartPosX;
+        if (v<0)
+            v = 0;
+        else if
+            (v>127) v= 127;
+        emit(valueChangedLeftDown((float)v));
+    }
+    else if (e->type() == QEvent::MouseButtonRelease)
+    {
+        QMouseEvent *m = (QMouseEvent *)e;
+        emit(valueChangedLeftDown(64.));
+    }
+
+/*
         int id = m_Picking.pick(m->x(),m->y());
         qDebug("pick id %i",id);
         
@@ -47,6 +76,8 @@ bool WVisual::eventFilter(QObject *o, QEvent *e)
         for (c = m_qlList.first(); c; c = m_qlList.next())
             c->zoom(id);
     }
+*/
+
     else
     {
         // standard event processing
@@ -62,7 +93,7 @@ VisualChannel *WVisual::add(ControlPotmeter *pPlaypos)
     // Position coding... hack
     if (m_qlList.isEmpty())
     {
-        c->setPosX(-180);
+        c->setPosX(-176);
         c->setZoomPosX(50);
     }
     else    

@@ -59,15 +59,15 @@ public:
     ControlObject(ConfigKey key);
     ~ControlObject();
     /** Connect two control objects dest and src, so each time src is updated, so is dest */
-    bool connect(ConfigKey src, ConfigKey dest);
+    bool connectControls(ConfigKey src, ConfigKey dest);
     /** Returns a pointer to a QString containing the ConfigKey */
     QString *print();
     /** Sets the config object */
     static void setConfig(ConfigObject<ConfigValueMidi> *_config);
     /** Associates a QWidget with the ControlObject identified by a given ConfigKey */
-    static void setWidget(QWidget *widget, ConfigKey key);
+    static void setWidget(QWidget *widget, ConfigKey key, bool emitOnDownPress=true, Qt::ButtonState state=Qt::NoButton);
     /** Associates a QWidget with the ControlObject */
-    void setWidget(QWidget *widget);
+    void setWidget(QWidget *widget, bool emitOnDownPress=true, Qt::ButtonState state=Qt::NoButton);
     /** Used to set the corresponding ControlEngine number of this ControlObject */
     void setControlEngine(ControlEngine *pControlEngine);
     /** Return the value of the ControlObject */
@@ -85,7 +85,7 @@ public:
     static void sync();
 public slots:
     /** Slot used to update the value */
-    virtual void slotSetPosition(int) = 0;
+    virtual void slotSetPositionExtern(float) = 0;
     /** Slot used to update the value from a MIDI event */
     virtual void slotSetPositionMidi(MidiCategory c, int v) = 0;
     /** Set the value of the object. Called from event handler when receiving ControlEventEngine. */
@@ -93,7 +93,7 @@ public slots:
 
 signals:
     /** Signal sent when the widget has to be updated with a given value */
-    void updateGUI(int);
+    void updateGUI(float);
     /** Signal sent when the ControlObject value has changed */
     void valueChanged(FLOAT_TYPE);
 
