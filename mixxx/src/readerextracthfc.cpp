@@ -20,7 +20,7 @@
 #include "readerevent.h"
 #include "windowkaiser.h"
 
-ReaderExtractHFC::ReaderExtractHFC(ReaderExtract *input, int _frameSize, int _frameStep) : ReaderExtract(input, "hfc")
+ReaderExtractHFC::ReaderExtractHFC(ReaderExtract *input, EngineBuffer *pEngineBuffer, int _frameSize, int _frameStep) : ReaderExtract(input, pEngineBuffer, "hfc")
 {
     frameSize = _frameSize;
     frameStep = _frameStep;

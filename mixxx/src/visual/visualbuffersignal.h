@@ -26,7 +26,7 @@
 
 class VisualBufferSignal : public VisualBuffer  {
 public:
-    VisualBufferSignal(ReaderExtract *pReaderExtract, const char *group);
+    VisualBufferSignal(ReaderExtract *pReaderExtract, EngineBuffer *pEngineBuffer, const char *group);
     ~VisualBufferSignal();
     virtual void update(int iPos, int iLen);
     virtual void draw(GLfloat *p, int iLen, float);

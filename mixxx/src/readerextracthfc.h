@@ -34,7 +34,7 @@ class WindowKaiser;
 class ReaderExtractHFC : public ReaderExtract
 {
 public: 
-    ReaderExtractHFC(ReaderExtract *input, int frameSize, int frameStep);
+    ReaderExtractHFC(ReaderExtract *input, EngineBuffer *pEngineBuffer, int frameSize, int frameStep);
     ~ReaderExtractHFC();
     void reset();
     void newSource(TrackInfoObject *);

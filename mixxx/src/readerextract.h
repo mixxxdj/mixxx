@@ -24,6 +24,7 @@
 
 class VisualChannel;
 class TrackInfoObject;
+class EngineBuffer;
 
 /**
   * Abstract class for feature extraction. Each ReaderExtract object sets up its own buffer
@@ -36,7 +37,7 @@ class TrackInfoObject;
 class ReaderExtract
 {
 public:
-    ReaderExtract(ReaderExtract *_input, QString qsVisualSignalType);
+    ReaderExtract(ReaderExtract *_input, EngineBuffer *pEngineBuffer, QString qsVisualSignalType);
 
     virtual ~ReaderExtract();
     /** Called when a new sound source is loaded */
@@ -61,6 +62,8 @@ public:
 protected:
     /** Pointer to input object */
     ReaderExtract *input;
+    /** Pointer to EngineBuffer object */
+    EngineBuffer *m_pEngineBuffer;
     /** Pointer to associated VisualBuffer */
     VisualBuffer *m_pVisualBuffer;
     /** Holds visual signal type */

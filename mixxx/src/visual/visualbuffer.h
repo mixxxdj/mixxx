@@ -35,10 +35,10 @@ const int MAXDISPLAYRATE = 500;
 #include <qobject.h>
 #include <qgl.h>
 #include "material.h"
-#include <qdatetime.h>
 
 class ReaderExtract;
 class ControlObject;
+class EngineBuffer;
 
 typedef struct
 {
@@ -51,7 +51,7 @@ class VisualBuffer : public QObject
 {
     Q_OBJECT
 public:
-    VisualBuffer(ReaderExtract *pReaderExtract, const char *group);
+    VisualBuffer(ReaderExtract *pReaderExtract, EngineBuffer *pEngineBuffer, const char *group);
     virtual ~VisualBuffer();
     bool eventFilter(QObject *o, QEvent *e);
     /** Update and resample signal vertex buffer */
@@ -66,9 +66,6 @@ public:
     void setColorFg(float r, float g, float b);
     void setColorBg(float r, float g, float b);
 
-public slots:
-    void slotPlayposUpdate(double);
-    
 protected:
     /** Memory Allocation Routine.
       *  @param size    The size (#floats) of the vertex array
@@ -79,15 +76,6 @@ protected:
       * This is used to validate the error state of openGL.
       */
     void validate();
-    /** Calculates current playpos based on last time the control object representing
-      * the playpos was updated, and the current playback rate */
-    double getCorrectedPlaypos();
-
-    /** Time object used in calculating corrected play position */
-    QTime m_qTime;
-    
-    /** Pointer to ControlPotmeter holding buffer play position in ReaderExtractWave */
-    ControlObject *m_pPlaypos;
     /** Pointer to rate control object */
     ControlObject *m_pRate;
     /** Pointer to the actual buffer, an openGL vertex array */
@@ -112,8 +100,12 @@ protected:
     int m_iDisplayLen;
     /** Pounter to ReaderExtract */
     ReaderExtract *m_pReaderExtract;
+    /** Pointer to EngineBuffer */
+    EngineBuffer *m_pEngineBuffer;
     /** Material */
     Material m_materialFg, m_materialBg;
+    /** Buffer and absulute play position, read from EngineBuffer */
+    double m_dBufferPlaypos, m_dAbsPlaypos;
 };
 #endif
 

@@ -22,20 +22,19 @@
 #include "../defs.h"
 #include "../engineobject.h"
 #include "player.h"
+#include "../enginebuffer.h"
 
 /**
  * Default Constructor.
  */
-VisualBuffer::VisualBuffer(ReaderExtract *pReaderExtract, const char *group)
+VisualBuffer::VisualBuffer(ReaderExtract *pReaderExtract, EngineBuffer *pEngineBuffer, const char *group)
 {
-    m_pPlaypos = ControlObject::getControl(ConfigKey(group, "bufferplayposition"));
-    m_pRate = ControlObject::getControl(ConfigKey(group, "rateEngine"));
     m_pReaderExtract = pReaderExtract;
-    Q_ASSERT(m_pReaderExtract);
+    m_pEngineBuffer = pEngineBuffer;
     
-    // Setup timer for use in corrected playpos calculation
-    m_qTime.start();
-    connect(m_pPlaypos, SIGNAL(signalUpdateApp(double)), this, SLOT(slotPlayposUpdate(double)));
+    m_pRate = ControlObject::getControl(ConfigKey(group, "rateEngine"));
+    
+    Q_ASSERT(m_pReaderExtract);
     
     // Get length and pointer to buffer in ReaderExtract
     m_pSource = (CSAMPLE *)m_pReaderExtract->getBasePtr();
@@ -144,8 +143,14 @@ void VisualBuffer::validate()
  */
 bufInfo VisualBuffer::getVertexArray()
 {
+    // Update abs and buffer playpos
+    m_pEngineBuffer->lockPlayposVars();
+    m_dAbsPlaypos = m_pEngineBuffer->getAbsPlaypos();
+    m_dBufferPlaypos = m_pEngineBuffer->getBufferPlaypos();
+    m_pEngineBuffer->unlockPlayposVars();
+    
     // Convert playpos (minus latency) to DISPLAYRATE
-    float fPos = ((((m_pPlaypos->getValue()-Player::getBufferSize())/m_fReaderExtractFactor)/m_fResampleFactor)-(float)m_iDisplayLen/2.f);
+    float fPos = ((((m_dBufferPlaypos-Player::getBufferSize())/m_fReaderExtractFactor)/m_fResampleFactor)-(float)m_iDisplayLen/2.f);
     
     //qDebug("pos %f, corrected %f", m_pPlaypos->getValue(), getCorrectedPlaypos());
         
@@ -235,12 +240,3 @@ void VisualBuffer::setColorBg(float r, float g, float b)
     m_materialBg.shininess = 128;
 }
 
-void VisualBuffer::slotPlayposUpdate(double)
-{
-    m_qTime.restart();
-}
-
-double VisualBuffer::getCorrectedPlaypos()
-{
-    return m_pPlaypos->getValue()+2.*(((double)m_qTime.elapsed()/1000.)*m_pRate->getValue()*(double)EngineObject::getPlaySrate());
-}

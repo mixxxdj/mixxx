@@ -46,7 +46,7 @@ VisualChannel::~VisualChannel()
     siChannelTotal--;
 }
 
-VisualBuffer *VisualChannel::add(ReaderExtract *pReaderExtract)
+VisualBuffer *VisualChannel::add(ReaderExtract *pReaderExtract, EngineBuffer *pEngineBuffer)
 {
     VisualBuffer *b = 0;
 
@@ -54,17 +54,17 @@ VisualBuffer *VisualChannel::add(ReaderExtract *pReaderExtract)
     if (pReaderExtract->getVisualDataType()=="signal")
     {
         // Construct a new buffer
-        b = new VisualBufferSignal(pReaderExtract, group);
+        b = new VisualBufferSignal(pReaderExtract, pEngineBuffer, group);
     }
     else if (pReaderExtract->getVisualDataType()=="hfc")
     {
         // Construct a new buffer
-        b = new VisualBufferSignalHFC(pReaderExtract, group);
+        b = new VisualBufferSignalHFC(pReaderExtract, pEngineBuffer, group);
     }
     else if (pReaderExtract->getVisualDataType()=="marks")
     {
         // Construct a new buffer
-        b = new VisualBufferMarks(pReaderExtract, group);
+        b = new VisualBufferMarks(pReaderExtract, pEngineBuffer, group);
         b->setColorFg(m_fColorBeatR, m_fColorBeatG, m_fColorBeatB);
         b->setColorBg(m_fColorBackR, m_fColorBackG, m_fColorBackB);
     }

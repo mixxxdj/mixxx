@@ -28,7 +28,7 @@
     #include <unistd.h>
 #endif
 
-ReaderExtractBeat::ReaderExtractBeat(ReaderExtract *input, int frameSize, int frameStep, int _histSize) : ReaderExtract(input, "marks")
+ReaderExtractBeat::ReaderExtractBeat(ReaderExtract *input, EngineBuffer *pEngineBuffer, int frameSize, int frameStep, int _histSize) : ReaderExtract(input, pEngineBuffer, "marks")
 {
     frameNo = input->getBufferSize(); ///frameStep;
     framePerChunk = frameNo/READCHUNK_NO;

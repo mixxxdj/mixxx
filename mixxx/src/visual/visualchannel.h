@@ -29,6 +29,7 @@
 class ReaderExtract;
 class VisualController;
 class ControlPotmeter;
+class EngineBuffer;
 
 /**
  * A Visual Channel
@@ -41,7 +42,7 @@ public:
     ~VisualChannel();
     /** Add a ReaderExtract buffer to object, and construct a corresponding display. A
       * pointer to the constructed VisualBuffer is returned */
-    VisualBuffer *add(ReaderExtract *pReaderExtract);
+    VisualBuffer *add(ReaderExtract *pReaderExtract, EngineBuffer *pEngineBuffer);
     void setColorSignal(float r, float g, float b);
     void setColorHfc(float r, float g, float b);
     void setColorMarker(float r, float g, float b);

@@ -28,7 +28,7 @@
 class VisualBufferMarks : public VisualBuffer  {
     Q_OBJECT
 public:
-    VisualBufferMarks(ReaderExtract *pReaderExtract, const char *group);
+    VisualBufferMarks(ReaderExtract *pReaderExtract, EngineBuffer *pEngineBuffer, const char *group);
     ~VisualBufferMarks();
     void update(int iPos, int iLen);
     void draw(GLfloat *p, int iLen, float xscale);
@@ -39,8 +39,6 @@ protected slots:
 private:
     /** Pointer to cue point position */
     ControlObject *m_pCuePoint;
-    /** Pointer to absolute play position */
-    ControlObject *m_pAbsPlaypos;
     /** Index in visual buffer where cue point is set. Is -1 if the cue point
      *  is currently not visible */
     int m_iCuePosition;
