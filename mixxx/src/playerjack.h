@@ -29,11 +29,14 @@ class PlayerJack : public Player  {
 public:
     PlayerJack(ConfigObject<ConfigValue> *config, ControlObject *pControl);
     ~PlayerJack();
+    bool initialize();
     bool open();
     void close();
     void setDefaults();
     QStringList getInterfaces();
     QStringList getSampleRates();
+    static QString getSoundApi();
+    QString getSoundApiName() { return getSoundApi(); };
     /** Satisfy virtual declaration in EngineObject */
     CSAMPLE *process(const CSAMPLE *, const int) { return 0; };
     /** Process samples. Called from jack callback */
@@ -45,16 +48,7 @@ public:
     /** Used to reinitialize when shut down by Jack server */
     void callbackShutdown();
 
-
 protected:
-    /** Get default device name */
-    QString getDefaultDevice();
-    /** Get id of device with name name */
-    int getDeviceID(QString name);
-    /** Open device */
-    bool open(QString nameMaster, QString nameHead, int srate, int bits, int bufferSizeMaster, int bufferSizeHead, int _chMaster, int _chHead);
-    int minLatency(int SRATE);
-
     /** Pointer to client info */
     jack_client_t *client;
     /** Null terminated array of port names */

@@ -16,7 +16,7 @@
  ***************************************************************************/
 
 #include "dlgprefsound.h"
-#include "player.h"
+#include "playerproxy.h"
 #include <qcombobox.h>
 #include <qpushbutton.h>
 #include <qslider.h>
@@ -24,7 +24,7 @@
 #include <qmessagebox.h>
 #include <qthread.h>
 
-DlgPrefSound::DlgPrefSound(QWidget *parent, Player *_player,
+DlgPrefSound::DlgPrefSound(QWidget *parent, PlayerProxy *_player,
                            ConfigObject<ConfigValue> *_config) : DlgPrefSoundDlg(parent,"")
 {
     player = _player;
@@ -48,6 +48,7 @@ DlgPrefSound::DlgPrefSound(QWidget *parent, Player *_player,
     connect(ComboBoxSoundcardHeadLeft,    SIGNAL(activated(int)),    this, SLOT(slotApply()));
     connect(ComboBoxSoundcardHeadRight,   SIGNAL(activated(int)),    this, SLOT(slotApply()));
     connect(ComboBoxSamplerates,          SIGNAL(activated(int)),    this, SLOT(slotApply()));
+    connect(ComboBoxSoundApi,             SIGNAL(activated(int)),    this, SLOT(slotApplyApi()));
     connect(SliderLatency,                SIGNAL(valueChanged(int)), this, SLOT(slotApply()));
     connect(SliderSoundQuality,           SIGNAL(valueChanged(int)), this, SLOT(slotApply()));
     connect(SliderSoundQuality,           SIGNAL(valueChanged(int)), this, SLOT(slotApply()));
@@ -135,6 +136,21 @@ void DlgPrefSound::slotUpdate()
 
     // Latency
     SliderLatency->setValue(getSliderLatencyVal(config->getValueString(ConfigKey("[Soundcard]","Latency")).toInt()));
+
+    // API's
+    ComboBoxSoundApi->clear();
+    ComboBoxSoundApi->insertItem("None");
+    QStringList api = player->getSoundApiList();
+    it = api.begin();
+    j = 1;
+    while ((*it)!=0)
+    {
+        ComboBoxSoundApi->insertItem((*it));
+        if ((*it)==config->getValueString(ConfigKey("[Soundcard]","SoundApi")))
+            ComboBoxSoundApi->setCurrentItem(j);
+        ++j;
+        ++it;
+    }
 }
 
 void DlgPrefSound::slotLatency()
@@ -179,10 +195,25 @@ void DlgPrefSound::slotApply()
     player->close();
 
     if (!player->open())
-        QMessageBox::warning(0, "Configuration error","Problem opening audio device");
+        QMessageBox::warning(0, "Configuration error","Audio device could not be opened");
 
     // Configuration values might have changed after the opening of the player,
     // so ensure the form is updated...
     slotUpdate();
 }
+
+void DlgPrefSound::slotApplyApi()
+{
+    config->set(ConfigKey("[Soundcard]","SoundApi"), ConfigValue(ComboBoxSoundApi->currentText()));
+    if (!player->setSoundApi(ComboBoxSoundApi->currentText()))
+    {
+        QMessageBox::warning(0, "Configuration problem","Sound API could not be initialized");
+        config->set(ConfigKey("[Soundcard]","SoundApi"), ConfigValue("None"));
+    }
+    else if (!player->open())
+        QMessageBox::warning(0, "Configuration error","Audio device could not be opened");
+
+    slotUpdate();
+}
+
 

@@ -22,7 +22,7 @@
 #include "dlgprefsounddlg.h"
 #include "configobject.h"
 
-class Player;
+class PlayerProxy;
 
 /**
   *@author Tue & Ken Haste Andersen
@@ -30,15 +30,15 @@ class Player;
 
 class DlgPrefSound : public DlgPrefSoundDlg  {
     Q_OBJECT
-public: 
-    DlgPrefSound(QWidget *parent, Player *_player,
-                           ConfigObject<ConfigValue> *_config);
+public:
+    DlgPrefSound(QWidget *parent, PlayerProxy *_player, ConfigObject<ConfigValue> *_config);
     ~DlgPrefSound();
 public slots:
     /** Update widget */
     void slotUpdate();
     void slotLatency();
     void slotApply();
+    void slotApplyApi();
 signals:
     void apply();
 private:
@@ -47,7 +47,7 @@ private:
     /** Transform latency value in msec to slider value */
     int getSliderLatencyVal(int);
     /** Pointer to player device */
-    Player *player;
+    PlayerProxy *player;
     /** Pointer to config object */
     ConfigObject<ConfigValue> *config;
 };

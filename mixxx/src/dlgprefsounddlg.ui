@@ -9,7 +9,7 @@
             <x>0</x>
             <y>0</y>
             <width>600</width>
-            <height>504</height>
+            <height>507</height>
         </rect>
     </property>
     <property name="caption">
@@ -408,26 +408,6 @@
             </property>
         </widget>
     </widget>
-    <widget class="QComboBox">
-        <property name="name">
-            <cstring>ComboBoxSoundAPI</cstring>
-        </property>
-        <property name="enabled">
-            <bool>true</bool>
-        </property>
-        <property name="geometry">
-            <rect>
-                <x>164</x>
-                <y>181</y>
-                <width>195</width>
-                <height>22</height>
-            </rect>
-        </property>
-        <property name="font">
-            <font>
-            </font>
-        </property>
-    </widget>
     <widget class="QLabel">
         <property name="name">
             <cstring>TextLabel3_2</cstring>
@@ -599,6 +579,26 @@
                 <string>Slow CPU</string>
             </property>
         </widget>
+    </widget>
+    <widget class="QComboBox">
+        <property name="name">
+            <cstring>ComboBoxSoundApi</cstring>
+        </property>
+        <property name="enabled">
+            <bool>true</bool>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>164</x>
+                <y>181</y>
+                <width>195</width>
+                <height>22</height>
+            </rect>
+        </property>
+        <property name="font">
+            <font>
+            </font>
+        </property>
     </widget>
 </widget>
 <layoutdefaults spacing="6" margin="11"/>

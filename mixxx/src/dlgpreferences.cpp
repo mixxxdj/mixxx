@@ -24,7 +24,7 @@
 #include "tracklist.h"
 
 DlgPreferences::DlgPreferences(MixxxApp *mixxx, MixxxView *view,
-                               MidiObject *midi, Player *player,
+                               MidiObject *midi, PlayerProxy *player,
                                TrackList *tracklist, ConfigObject<ConfigValue> *_config,
                                ConfigObject<ConfigValueMidi> *midiconfig,
                                ControlObject *pControl) : QTabDialog(mixxx, "")

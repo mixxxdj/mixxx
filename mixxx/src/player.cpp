@@ -19,6 +19,8 @@
 #include "enginemaster.h"
 #include "controlobject.h"
 
+EngineMaster *Player::m_pMaster = 0;
+
 /* -------- ------------------------------------------------------
    Purpose: Initializes the audio hardware.
    Input:   Size of the output buffer in samples
@@ -28,7 +30,6 @@ Player::Player(ConfigObject<ConfigValue> *pConfig, ControlObject *pControl)
 {
     m_pConfig = pConfig;
     m_pControl = pControl;
-    m_pMaster = 0;
 
 //    qDebug("Player: init...");
 }
@@ -73,4 +74,3 @@ CSAMPLE *Player::prepareBuffer(int iBufferSize)
     // as input so...
     return m_pMaster->process(0, iBufferSize*2);
 }
-
