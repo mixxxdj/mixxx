@@ -36,7 +36,6 @@ VisualBufferSignal::VisualBufferSignal(ReaderExtract *pReaderExtract, ControlPot
     // Allocate buffer in video memory
     m_pBuffer = allocate(3*m_iLen);
 
-
     // Reset buffer
     GLfloat *p = m_pBuffer;
     for (int i=0; i<m_iLen; i++)
@@ -51,10 +50,9 @@ VisualBufferSignal::~VisualBufferSignal()
 {
 }
 
-void VisualBufferSignal::update(int iPos, int iLen)
+void VisualBufferSignal::update(int iPos)
 {
     int iCpos = (int)((CSAMPLE)iPos/(CSAMPLE)m_fPositionFactor);
-    int iClen = (int)((CSAMPLE)iLen/(CSAMPLE)m_fPositionFactor);
 
     CSAMPLE *pSource = &m_pSource[iCpos];
     GLfloat *pDest = &m_pBuffer[(int)(iCpos/m_fResampleFactor)*3];
@@ -63,9 +61,8 @@ void VisualBufferSignal::update(int iPos, int iLen)
     {
         GLfloat fVal = 0;
         for (int j=i; j<i+m_fResampleFactor; j++)
-        {
             fVal += pSource[j]*(1./32768.);
-        }
+
         *pDest++;
         *pDest++ = fVal/m_fResampleFactor;
         *pDest++;

@@ -110,7 +110,8 @@ void ReaderExtractWave::reset()
 #ifdef __VISUALS__
     // Update vertex buffer by sending an event containing indexes of where to update.
     if (m_pVisualChannel != 0)
-        QApplication::postEvent(m_pVisualChannel, new ReaderEvent(0, READBUFFERSIZE));
+        for (int i=0; i<READBUFFERSIZE; i+=READCHUNKSIZE)
+            QApplication::postEvent(m_pVisualChannel, new ReaderEvent(i));
 #endif
 }
 
@@ -260,7 +261,7 @@ void ReaderExtractWave::getchunk(CSAMPLE rate)
 #ifdef __VISUALS__
     // Update vertex buffer by sending an event containing indexes of where to update.
     if (m_pVisualChannel != 0)
-        QApplication::postEvent(m_pVisualChannel, new ReaderEvent(bufIdx, READCHUNKSIZE));
+        QApplication::postEvent(m_pVisualChannel, new ReaderEvent(bufIdx));
 #endif
 }
 
@@ -287,6 +288,13 @@ long int ReaderExtractWave::seek(long int new_playpos)
     readerfft->reset();
     readerhfc->reset();
     readerbeat->softreset(); // Only make a soft reset on beat estimation (keep histogram)
+#endif
+
+#ifdef __VISUALS__
+    // Update vertex buffer by sending an event containing indexes of where to update.
+    if (m_pVisualChannel != 0)
+        for (int i=0; i<READBUFFERSIZE; i+=READCHUNKSIZE)
+            QApplication::postEvent(m_pVisualChannel, new ReaderEvent(i));
 #endif
 
     return seekpos;
