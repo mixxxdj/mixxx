@@ -41,6 +41,10 @@ void MessageOutput( QtMsgType type, const char *msg )
     }
 }
 
+#include <stdio.h>
+#include <math.h>
+#include "portaudio.h"
+
 int main(int argc, char *argv[])
 {
   qInstallMsgHandler( MessageOutput );
@@ -65,5 +69,4 @@ int main(int argc, char *argv[])
   mixxx->show();
   return a.exec();
 }
-
 

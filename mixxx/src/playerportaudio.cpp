@@ -28,9 +28,11 @@ PlayerPortAudio::PlayerPortAudio(int size, std::vector<EngineObject *> *engines,
 
     // Fill out devices list with info about available devices
     int no = Pa_CountDevices();
+
     const PaDeviceInfo *devInfo;
     for (int i=0; i<no; i++)
     {
+		//	qWarning("dev");
 		// Add the device if it is an output device:
         devInfo = Pa_GetDeviceInfo(i);
 		if (devInfo->maxOutputChannels != 0)
@@ -82,7 +84,7 @@ PlayerPortAudio::PlayerPortAudio(int size, std::vector<EngineObject *> *engines,
     // Ensure stereo is supported
     if (devInfo->maxOutputChannels < NO_CHANNELS)
         qFatal("PortAudio: Not enough channels available on default output device: %i",devInfo->maxOutputChannels);
-
+    
     // Set sample rate to 44100 if possible, otherwise highest possible
     /*int temp_sr = 0;
     {for (int i=0; i<=devInfo->numSampleRates; i++)
@@ -101,9 +103,49 @@ PlayerPortAudio::~PlayerPortAudio()
     Pa_Terminate();
 }
 
+#define NUM_SECONDS   (1)
+#define SAMPLE_RATE   (44100)
+#define FRAMES_PER_BUFFER  (512)
+#ifndef M_PI
+#define M_PI  (3.14159265)
+#endif
+#define TABLE_SIZE   (200)
+typedef struct {
+	float sine[TABLE_SIZE];
+	int left_phase;
+	int right_phase;
+}paTestData;
+/* This routine will be called by the PortAudio engine when audio is needed.
+** It may called at interrupt level on some machines so don't do anything
+** that could mess up the system like calling malloc() or free().
+*/
+static int patestCallback(   void *inputBuffer, void *outputBuffer,
+                             unsigned long framesPerBuffer,
+                             PaTimestamp outTime, void *userData )
+{
+	paTestData *data = (paTestData*)userData;
+	float *out = (float*)outputBuffer;
+	unsigned long i;
+	int finished = 0;
+	(void) outTime; /* Prevent unused variable warnings. */
+	(void) inputBuffer;
+	for( i=0; i<framesPerBuffer; i++ )
+	{
+		*out++ = data->sine[data->left_phase];		/* left */
+		*out++ = data->sine[data->right_phase];		/* right */
+		data->left_phase += 1;
+		if( data->left_phase >= TABLE_SIZE ) data->left_phase -= TABLE_SIZE;
+		data->right_phase += 3; /* higher pitch so we can distinguish left and right. */
+		if( data->right_phase >= TABLE_SIZE ) data->right_phase -= TABLE_SIZE;
+	}
+	return finished;
+}
+
 bool PlayerPortAudio::open(QString name, int srate, int bits, int bufferSize)
 {
-    // Extract bit information
+    
+	
+	// Extract bit information
     PaSampleFormat format = 0;
     switch (bits)
     {
@@ -137,7 +179,7 @@ bool PlayerPortAudio::open(QString name, int srate, int bits, int bufferSize)
                         0,                  // number of buffers, if zero then use default minimum
                         paClipOff,          // we won't output out of range samples so don't bother clipping them
                         paCallback,
-                        this );*/
+                        this );
 
         if (err == paNoError)
             break;

@@ -27,7 +27,8 @@
 #include "soundsource.h"
 //#include "id3tag.h"
 #include <sys/types.h>
-#include <sys/stat.h>
+#include <qfile.h>
+//#include <sys/stat.h>
 //#include <unistd.h>
 
 /**
@@ -47,7 +48,7 @@ class SoundSourceMp3 : public SoundSource {
     mad_frame Frame;
     mad_synth Synth;
     unsigned inputbuf_len;
-    unsigned char *inputbuf;
+    char *inputbuf;
  public:
     SoundSourceMp3(const char *);
     ~SoundSourceMp3();

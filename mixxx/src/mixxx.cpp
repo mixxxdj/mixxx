@@ -85,10 +85,9 @@ MixxxApp::MixxxApp(QApplication *a)
   if (config->getValueString(ConfigKey("[Midi]","Configdir")).length() == 0)
       config->set(ConfigKey("[Midi]","Configdir"),ConfigValue(CONFIG_PATH));
 
-  // If the diretory does not end with a "/" add one
+  // If the directory does not end with a "/", add one
   if (!config->getValueString(ConfigKey("[Midi]","Configdir")).endsWith("/"))
       config->set(ConfigKey("[Midi]","Configdir"),ConfigValue(config->getValueString(ConfigKey("[Midi]","Configdir")).append("/")));
-
 
   // Get list of available midi configurations, and read the default configuration. If no default
   // is given, use the first configuration found in the config directory.
@@ -174,7 +173,7 @@ MixxxApp::MixxxApp(QApplication *a)
 #else
   player = new PlayerPortAudio(BUFFER_SIZE, &engines, config->getValueString(ConfigKey("[Soundcard]","Device")));
 #endif
-  qWarning("Init player finished...");
+  //qWarning("Init player finished...");
 
   // Ensure the correct configuration is chosen and stored in the config object
   config->set(ConfigKey("[Soundcard]","Device"),ConfigValue(player->NAME));

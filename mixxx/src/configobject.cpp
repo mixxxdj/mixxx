@@ -80,8 +80,8 @@ QString ConfigObject<ValueType>::getValueString(ConfigKey k)
 template <class ValueType> bool ConfigObject<ValueType>::Parse()
 {
     // Open file for reading
-    FILE *handle = fopen(filename.ascii(),"r");
-    if (handle == 0)
+ 	QFile configfile(filename);
+	if (!configfile.open(IO_ReadOnly))
     {
         qDebug("Could not open file %s, don't worry.",filename.ascii());
         return false;
@@ -91,9 +91,10 @@ template <class ValueType> bool ConfigObject<ValueType>::Parse()
         // Parse the file
         int group = 0;
         QString groupStr, line;
-        while (!QTextIStream(handle).atEnd())
+ 		QTextStream text(&configfile);
+		while (!text.eof())
         {
-            line = QTextIStream(handle).readLine().stripWhiteSpace();
+            line = text.readLine().stripWhiteSpace();
 
             if (line.length() != 0)
                 if (line.startsWith("[") & line.endsWith("]"))
@@ -114,7 +115,7 @@ template <class ValueType> bool ConfigObject<ValueType>::Parse()
                     set(k, m);
                 }
         }
-        fclose(handle);
+        configfile.close();
     }
     return true;
 }
