@@ -48,19 +48,34 @@ bool WVisual::eventFilter(QObject *o, QEvent *e)
     {
         QMouseEvent *m = (QMouseEvent *)e;
 
-        // Store current x position of mouse pointer
-        m_iStartPosX = m->x();
-        emit(valueChangedLeftDown(64.));
+        m_iStartPosX == -1;
+        if (m->button()==Qt::LeftButton)
+        {
+            // Store current x position of mouse pointer
+            m_iStartPosX = m->x();
+            emit(valueChangedLeftDown(64.));
+        }
+        else if (m->button()==Qt::RightButton)
+        {
+            // Toggle fish eye mode on each channel associated
+            VisualChannel *c;
+            for (c=m_qlList.first(); c; c=m_qlList.next())
+                c->toggleFishEyeMode();
+        }
     }
     else if (e->type() == QEvent::MouseMove)
     {
-        QMouseEvent *m = (QMouseEvent *)e;
-        int v = 64+m->x()-m_iStartPosX;
-        if (v<0)
-            v = 0;
-        else if (v>127)
-            v= 127;
-        emit(valueChangedLeftDown((double)v));
+        // Only process mouse move if it was initiated by a left click
+        if (m_iStartPosX!=-1)
+        {
+            QMouseEvent *m = (QMouseEvent *)e;
+            int v = 64+m->x()-m_iStartPosX;
+            if (v<0)
+                v = 0;
+            else if (v>127)
+                v= 127;
+            emit(valueChangedLeftDown((double)v));
+        }
     }
     else if (e->type() == QEvent::MouseButtonRelease)
     {

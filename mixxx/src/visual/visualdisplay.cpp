@@ -24,7 +24,7 @@
 Material VisualDisplay::dblue, VisualDisplay::lblue, VisualDisplay::purple, VisualDisplay::lgreen;
 int VisualDisplay::idCount = 0;
 
-VisualDisplay::VisualDisplay(VisualBuffer *pVisualBuffer, const char *group)
+VisualDisplay::VisualDisplay(VisualBuffer *pVisualBuffer, const char *group, bool drawBox)
 {
     qDebug("buffer %p",pVisualBuffer);
     m_pVisualBuffer = pVisualBuffer;
@@ -56,8 +56,10 @@ VisualDisplay::VisualDisplay(VisualBuffer *pVisualBuffer, const char *group)
     preSignal     = new VisualDisplayBuffer(m_pVisualBuffer);
     postSignal    = new VisualDisplayBuffer(m_pVisualBuffer);
     signal        = new VisualDisplayBuffer(m_pVisualBuffer);
+
     box = new VisualBox(id);
-        
+    m_bDrawBox = drawBox;
+                        
 //    setBoxWireMaterial(&lblue);
 
     if (QString(group)=="marks")
@@ -80,7 +82,7 @@ VisualDisplay::VisualDisplay(VisualBuffer *pVisualBuffer, const char *group)
         playPosMarker->setMaterial(&purple);
     }
 
-    setFishEyeMode(false);
+    fishEyeMode = true;
 
     doLayout();
 
@@ -165,14 +167,22 @@ void VisualDisplay::draw(GLenum mode)
     box->setDrawMode(GL_POLYGON);
     box->draw(mode);
 */
-//    if (playPosMarkerMaterial)
 
-    if (playPosMarker)
+    if (playPosMarker && m_bDrawBox)
     {
-//        playPosMarker->setMaterial(&purple);
         playPosMarker->setDrawMode(GL_POLYGON);
         playPosMarker->draw(mode);
     }
+
+    // Only draw box in fish eye mode
+    if (fishEyeMode && m_bDrawBox)
+    {
+        box->setMaterial(&dblue);
+        box->setDrawMode(GL_POLYGON);
+        box->draw(mode);
+    }
+//    if (playPosMarkerMaterial)
+
 }
 
 void VisualDisplay::draw()
@@ -262,9 +272,9 @@ void VisualDisplay::move(int msec)
     }
 }
 
-void VisualDisplay::setFishEyeMode(bool value)
+void VisualDisplay::toggleFishEyeMode()
 {
-    fishEyeMode = value;
+    fishEyeMode = !fishEyeMode;
 }
 
 void VisualDisplay::setFishEyeLengthScale(FLOAT_TYPE scale)
@@ -286,19 +296,19 @@ void VisualDisplay::setSignalScale(float scale)
 
 void VisualDisplay::setupScene()
 {
-    dblue.ambient[0] = 0.f;
-    dblue.ambient[1] = 0.f;
-    dblue.ambient[2] = 62/255.f;
+    dblue.ambient[0] = 100./255.f;
+    dblue.ambient[1] = 100./255.f;
+    dblue.ambient[2] = 100./255.f;
     dblue.ambient[3] = 0.5f;
 
-    dblue.diffuse[0] = 0.f;
-    dblue.diffuse[1] = 0.f;
-    dblue.diffuse[2] = 62/255.f;
+    dblue.diffuse[0] = 100./255.f;
+    dblue.diffuse[1] = 100./255.f;
+    dblue.diffuse[2] = 100./255.f;
     dblue.diffuse[3] = 0.5f;
 
-    dblue.specular[0] = 0.f;
-    dblue.specular[1] = 0.0f;
-    dblue.specular[2] = 62/255.f;
+    dblue.specular[0] = 100./255.f;
+    dblue.specular[1] = 100./255.f;
+    dblue.specular[2] = 100./255.f;
     dblue.specular[3] = 0.5f;
 
     dblue.shininess = 128;
@@ -391,7 +401,7 @@ void VisualDisplay::doLayout()
         postSignal->setRotation(angle,rx,ry,rz);
 
 
-        box->setOrigo(ox2,oy2,oz2);
+        box->setOrigo(ox2,oy2,oz2-5);
         box->setLength(fishEyeLength);
         box->setHeight(signalScale*height);
         box->setDepth(depth);

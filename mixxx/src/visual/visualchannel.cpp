@@ -69,9 +69,13 @@ VisualBuffer *VisualChannel::add(ReaderExtract *pReaderExtract)
         b = new VisualBufferMarks(pReaderExtract, m_pPlaypos);
     }
     
-    // And a corresponding display
+    // And a corresponding display. If the display is the first, also draw box
     // ADD GROUP INFO *****************
-    VisualDisplay *d = new VisualDisplay(b, pReaderExtract->getVisualDataType());
+    VisualDisplay *d;
+    if (m_qlListDisplay.isEmpty())
+        d = new VisualDisplay(b, pReaderExtract->getVisualDataType(),true);
+    else
+        d = new VisualDisplay(b, pReaderExtract->getVisualDataType(),false);
 
     //
     // Setup position of display
@@ -113,5 +117,12 @@ void VisualChannel::setPosX(int x)
 void VisualChannel::setZoomPosX(int x)
 {
     m_iZoomPosX = x;
+}
+
+void VisualChannel::toggleFishEyeMode()
+{
+    VisualDisplay *d;
+    for ( d = m_qlListDisplay.first(); d; d = m_qlListDisplay.next() )
+        d->toggleFishEyeMode();
 }
 

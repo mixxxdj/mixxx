@@ -43,7 +43,7 @@ public:
     /**
       * Default Consructor.
       */
-    VisualDisplay(VisualBuffer *pVisualBuffer, const char *group);
+    VisualDisplay(VisualBuffer *pVisualBuffer, const char *group, bool drawBox=false);
     ~VisualDisplay();
     /** Returns unique id of signal */
     int getId();
@@ -66,12 +66,10 @@ public:
     
 public slots:
     /**
-      * Set Fish Eye Mode.
+      * Toggles Fish Eye Mode between on and off.
       *
-      * @param value   Boolean value indicating what ever
-      *                fish eye mode is on or off.
       */
-    void setFishEyeMode(bool value);
+    void toggleFishEyeMode();
     /**
       * Set Fish Eye Scale.
       *
@@ -141,6 +139,8 @@ protected:
     bool                atBasepos;
     /** True if the container is currently moving */
     bool                movement;
+    /** True if box has to be drawn in fish eye mode */
+    bool m_bDrawBox;
  
 };
 #endif
