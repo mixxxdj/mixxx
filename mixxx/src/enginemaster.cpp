@@ -116,14 +116,19 @@ CSAMPLE *EngineMaster::process(const CSAMPLE *, const int buffer_size)
     FLOAT_TYPE c1_gain, c2_gain;
     c2_gain = 0.5*(cf_val+1.);
     c1_gain = 0.5*(-cf_val+1.);
-    for (int i=0; i<buffer_size; i++)
-    {
-        out[i] = 0.;
-        if (master1 && !head1)
-            out[i] += sampMaster1[i]*c1_gain;
-        if (master2 && !head2)
-            out[i] += sampMaster2[i]*c2_gain;
-    }
+
+    if (master1 && !head1 && master2 && !head2)
+        for (int i=0; i<buffer_size; i++)
+            out[i] = sampMaster1[i]*c1_gain + sampMaster2[i]*c2_gain;
+    else if (master1 && !head1)
+        for (int i=0; i<buffer_size; i++)
+            out[i] = sampMaster1[i]*c1_gain;
+    else if (master2 && !head2)
+        for (int i=0; i<buffer_size; i++)
+            out[i] = sampMaster2[i]*c2_gain;
+    else
+        for (int i=0; i<buffer_size; i++)
+            out[i] = 0.;
 
     // Master volume
     tmp = volume->process(out, buffer_size);
@@ -141,14 +146,18 @@ CSAMPLE *EngineMaster::process(const CSAMPLE *, const int buffer_size)
         c1_gain = 0.5*(-cf_val+1.);
         c2_gain = 0.5*(cf_val+1.);
 
-        for (int i=0; i<buffer_size; i++)
-        {
-            out[i] = tmp2[i  ]*c1_gain;
-            if (master1 && head1)
-                out[i] += sampMaster1[i]*c2_gain;
-            if (master2 && head2)
-                out[i] += sampMaster2[i]*c2_gain;
-        }
+        if (master1 && head1 && master2 && head2)
+            for (int i=0; i<buffer_size; i++)
+                out[i] = tmp2[i]*c1_gain + sampMaster1[i]*c2_gain + sampMaster2[i]*c2_gain;
+        else if (master1 && head1)
+            for (int i=0; i<buffer_size; i++)
+                out[i] += tmp2[i]*c1_gain + sampMaster1[i]*c2_gain;
+        else if (master2 && head2)
+            for (int i=0; i<buffer_size; i++)
+                out[i] += tmp2[i]*c1_gain + sampMaster2[i]*c2_gain;
+        else
+            for (int i=0; i<buffer_size; i++)
+                out[i] += tmp2[i]*c1_gain;
 
         // Master volume
         tmp = head_volume->process(out, buffer_size);

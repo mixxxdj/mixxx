@@ -41,11 +41,6 @@ MidiObjectPortMidi::MidiObjectPortMidi(ConfigObject<ConfigValueMidi> *c, QApplic
         }
     }
     if (validDevice)
-	qDebug("Valid: %s",device.latin1());
-    else
-        qDebug("Invalid.");
-qDebug("%s",devices.first().latin1());
-    if (validDevice)
         devOpen(device);
     else
         if (devices.count()==0)
@@ -76,7 +71,6 @@ void MidiObjectPortMidi::devOpen(QString device)
             break;
         }
     }
-    qDebug("Name: %s, id: %i",device.latin1(),id);
 
     // Open device
     PmError err = Pm_OpenInput(&midi, id, NULL, 100, NULL, NULL, NULL);
@@ -116,7 +110,7 @@ void MidiObjectPortMidi::run()
                 midicontrol = Pm_MessageData1(buffer[0].message);
                 midivalue = Pm_MessageData2(buffer[0].message);
 
-                qDebug("midi ch: %i, ctrl: %i, val: %i",0,midicontrol,midivalue);
+//                qDebug("midi ch: %i, ctrl: %i, val: %i",0,midicontrol,midivalue);
                 send(0,midicontrol,midivalue);
             } else {
                 qDebug("Error in Pm_Read: %s\n", Pm_GetErrorText(err));
