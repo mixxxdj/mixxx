@@ -393,7 +393,7 @@ int SoundSourceMp3::ParseHeader(TrackInfoObject *Track)
                 Track->m_iDuration = dur.toInt();
             */
         }
-        id3_file_close(fh);
+        //id3_file_close(fh);
     }
     else
         return ERR;
@@ -502,7 +502,7 @@ void SoundSourceMp3::getField(id3_tag *tag, const char *frameid, QString *str)
 
         // Unicode handling
         id3_utf16_t *framestr = id3_ucs4_utf16duplicate(id3_field_getstrings(&frame->fields[1], 0));
-        int strlen = 0; while (field[strlen]!=0) strlen++;
+        int strlen = 0; while (framestr[strlen]!=0) strlen++;
         if (strlen>0)
             str->setUnicodeCodes((ushort *)framestr,strlen);
         delete [] framestr;
