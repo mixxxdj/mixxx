@@ -2,10 +2,8 @@
 #define TRACKLIST_H
 
 #include <qobject.h>
-#include <qdom.h>
 
 class QString;
-//class QDomDocument;
 class TrackInfoObject;
 class QPtrList;
 
@@ -15,16 +13,15 @@ class TrackList : public QObject
 public:
 	TrackList( const QString );
 	~TrackList();
-	void WriteXML();
+	void WriteXML( );
 
 private:
 	TrackInfoObject *FileExistsInList( const QString );
 	void ReadXML ();
-	void AddFiles(const char *);
+	bool AddFiles(const char *);
 
-	QString sDirectory;
-	QDomDocument domXML;
-	QPtrList<TrackInfoObject> lTracks; 
+	QString m_sDirectory; // the directory where the music files are stored
+	QPtrList<TrackInfoObject> m_lTracks; // list of all tracks
 };
 
 #endif

@@ -21,6 +21,11 @@
 #include <qtextcodec.h>
 #include <qtranslator.h>
 #include <qmessagebox.h> 
+#include <qfile.h>
+#include <qtextstream.h>
+#include <stdio.h>
+#include <math.h>
+#include "portaudio.h"
 
 #include "mixxx.h"
     
@@ -42,13 +47,37 @@ void MessageOutput( QtMsgType type, const char *msg )
     }
 }
 
-#include <stdio.h>
-#include <math.h>
-#include "portaudio.h"
+QFile Logfile; // global logfile variable
+
+void MessageToLogfile( QtMsgType type, const char *msg )
+{
+	QTextStream Log( &Logfile );
+	switch ( type ) {
+	case QtDebugMsg:
+		Log << "Debug: " << msg << "\n";
+		break;
+	case QtWarningMsg:
+		Log << "Warning: " << msg << "\n";
+		break;
+	case QtFatalMsg:
+		fprintf( stderr, "Fatal: %s\n", msg );
+		QMessageBox::warning(0, "Mixxx", msg);
+		exit(-1);
+    }
+}
+
 
 int main(int argc, char *argv[])
 {
+#ifdef Q_WS_WIN
+  // For windows write all debug messages to a logfile:
+  Logfile.setName( "c:/mixxx.log" );
+  Logfile.open( IO_WriteOnly );
+  qInstallMsgHandler( MessageToLogfile );
+#else
+  // For others, write to the console:
   qInstallMsgHandler( MessageOutput );
+#endif
   QApplication a(argc, argv);
 //  a.setFont(QFont("helvetica", 10));
   QTranslator tor( 0 );
