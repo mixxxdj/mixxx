@@ -18,22 +18,23 @@
 #include "controlpushbutton.h"
 
 /* -------- ------------------------------------------------------
-   Purpose: Creates a new push-button. Note that the button has
-            to be registered separately by the midi controller
-	    using a call to midi::addbutton.
-   Input:   n - name
-            kindtype - latching, momentaneous or simulated_latching
-	    midino - number of the midi key.
-	    midibit - the bit number of the button.
-	    master - pointer to the control to which the button is
-	            attached. This control is acknowledged when the
-		    button is changed.
+   Purpose: Creates a new push-button. 
+   Input:   key - Key for the configuration file
+            kindtype - A button can be either be latching, momenteneous and simulated_latching.
+	    _led - A led which is connected to the button.
    -------- ------------------------------------------------------ */
-ControlPushButton::ControlPushButton(ConfigKey key, buttonType kindtype) : ControlObject(key)
+ControlPushButton::ControlPushButton(ConfigKey key, buttonType kindtype, WBulb* _led = 0) : ControlObject(key)
 {
     kind = kindtype;
     position = up;
     value = off;
+    led = _led;
+    if (led!=0)
+	if (value==on)
+	    led->setChecked(true);
+	else
+	    led->setChecked(false);
+	
     //midimask = (int)pow(2,midibit);
 };
 
@@ -75,6 +76,14 @@ void ControlPushButton::slotSetPosition(positionType newpos)
             value=invert(value);
     }
     position = newpos;
+
+    // Control LED:
+    if (led != 0)
+	if (value==on)
+	    led->setChecked(true);
+	else
+	    led->setChecked(false);
+
     emit valueChanged(value);
 };
 
@@ -102,7 +111,15 @@ char* ControlPushButton::printValue() {
 }
 
 void ControlPushButton::setValue(valueType newvalue){
-    value = newvalue;
+    value = newvalue;  
+
+  // Control LED:
+    if (led != 0)
+	if (value==on)
+	    led->setChecked(true);
+	else
+	    led->setChecked(false);
+    
     emit valueChanged(value);
 };
 
