@@ -32,10 +32,10 @@
 #include <qstring.h>
 #include <qstringlist.h>
 
-#include <qregexp.h>
-
 typedef float CSAMPLE; // defines the CSAMPLE type used for intermediate calculations
 #endif
+
+#include <qregexp.h>
 
 #include <qthread.h>
 
