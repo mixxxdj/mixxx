@@ -16,9 +16,8 @@
  ***************************************************************************/
 
 #include "enginebuffer.h"
-#include "soundsourcenull.h"
 
-EngineBuffer::EngineBuffer(DlgPlaycontrol *playcontrol, DlgChannel *channel, MidiObject *midi, const char *filename)
+EngineBuffer::EngineBuffer(DlgPlaycontrol *playcontrol, DlgChannel *channel, MidiObject *midi, char *filename)
 {
   PlayButton = new ControlPushButton("playbutton", simulated_latching, PORT_B, 0, midi);
   PlayButton->setValue(on);
@@ -32,6 +31,30 @@ EngineBuffer::EngineBuffer(DlgPlaycontrol *playcontrol, DlgChannel *channel, Mid
   connect(channel->SliderRate, SIGNAL(valueChanged(int)), rateSlider, SLOT(slotSetPosition(int)));
   connect(rateSlider, SIGNAL(valueChanged(FLOAT)), this, SLOT(slotUpdateRate(FLOAT)));
 
+  wheel = new ControlRotary("wheel", PORT_D, midi);
+  //connect(playcontrol->DialPlaycontrol, SIGNAL(valueChanged(int)), wheel, SLOT(slotSetPosition(int)));
+  connect(wheel, SIGNAL(valueChanged(FLOAT)), this, SLOT(slotUpdateRate(FLOAT)));
+  /*
+    Open the file:
+  */
+  int i=strlen(filename)-1;
+  while ((filename[i] != '.') && (i>0))
+    i--;
+  if (i == 0) {
+    qFatal("Wrong filename: %s.",filename);
+    std::exit(-1);
+  }
+  char ending[80];
+  strcpy(ending,&filename[i]);
+  if (!strcmp(ending,".wav"))
+    file = new AFlibfile(filename);
+  else if (!strcmp(ending,".mp3") || (!strcmp(ending,".MP3")))
+	file = new mp3file(filename);
+
+  if (file==0) {
+    qFatal("Error opening %s", filename);
+    std::exit(-1);
+  }
   // Allocate temporary buffer
   read_buffer_size = READBUFFERSIZE;
   chunk_size = READCHUNKSIZE;
@@ -39,41 +62,26 @@ EngineBuffer::EngineBuffer(DlgPlaycontrol *playcontrol, DlgChannel *channel, Mid
   // note that the temp buffer is made extra large.
   readbuffer = new CSAMPLE[read_buffer_size];
 
-  // No file is loaded
-  file = new AFlibfile(filename);
-
-    // Initialize position in read buffer:
-	filepos = 0;
-	frontpos = 0;
-	play_pos = 0;
-	direction = 1;
-
-  //file = new AFlibfile("test.wav");
-  getchunk();
+  // Initialize position in read buffer:
+  filepos = 0;
+  frontpos = 0;
+  play_pos = 0;
+  direction = 1;
 
   // Allocate semaphore
   buffers_read_ahead = new sem_t;
 
-	// Semaphore for stopping thread
-	requestStop = new QSemaphore(1);
+  // ...and read one chunk to get started:
+  getchunk();
+
 }
 
-EngineBuffer::~EngineBuffer()
-{
-	qDebug("dealloc buffer");
-	if (running())
-	{
-		qDebug("Stopping buffer");
-		stop();
-	}
-	qDebug("buffer waiting...");
-
-	qDebug("buffer actual dealloc");
-	if (file != 0) delete file;
-	delete [] temp;
-	delete [] readbuffer;
-	delete buffers_read_ahead;
-	delete PlayButton;
+EngineBuffer::~EngineBuffer(){
+  delete [] temp;
+  delete [] readbuffer;
+  delete buffers_read_ahead;
+  delete file;
+  delete PlayButton;
 }
 
 void EngineBuffer::start()
@@ -83,41 +91,60 @@ void EngineBuffer::start()
 	qDebug("started!");
 }
 
-void EngineBuffer::stop()
-{
-	sem_post(buffers_read_ahead);
-	requestStop->operator++(1);
-	wait();
-	requestStop->operator--(1);
-}
-
 void EngineBuffer::run()
 {
-	while(requestStop->available())
-	{
-		// Wait for playback if in buffer is filled.
-		sem_wait(buffers_read_ahead);
+  //pthread_setcancelstate(PTHREAD_CANCEL_ENABLE,0);
 
-		// Check if the semaphore is too large:
-		int sem_value;
-		sem_getvalue(buffers_read_ahead, &sem_value);
-		if (sem_value == 0)
-			getchunk();
-	}
+	qDebug(".");
+  while(true)
+  {
+//	qDebug(".");
+    // Wait for playback if in buffer is filled.
+    sem_wait(buffers_read_ahead);
+    // Check if the semaphore is too large:
+    int sem_value;
+    sem_getvalue(buffers_read_ahead, &sem_value);
+    if (sem_value != 0)
+	;
+    else
+      // Read a new chunk:
+      getchunk();
+  }
 };
 
+
 void EngineBuffer::slotUpdatePlay(valueType newvalue) {
-  qDebug("playbutton touched");
+  static int start_seek;
+  if (PlayButton->getPosition()==down) {
+    qDebug("Entered seeking mode");
+    rate = 0;
+    start_seek = wheel->getPosition();
+  }
+  else if (PlayButton->getPosition()==up) {
+    int end_seek = wheel->getPosition();
+    if (abs(start_seek - end_seek) > 2) {
+      // A seek has occured. Find new filepos:
+      if ((wheel->direction==1) &&(end_seek < start_seek))
+	end_seek += 128;
+      else
+	if ((wheel->direction==-1) && (end_seek > start_seek))
+	  end_seek -= 128;
+      //cout << "Seeking " << (FLOAT)((end_seek-start_seek)/128.) 
+      //   << ".";
+      file->seek((long)(end_seek-start_seek)/128);
+    }
+    qDebug("Ended seeking");
+  }
   slotUpdateRate(rateSlider->getValue());
 }
 
 void EngineBuffer::slotUpdateRate(FLOAT r)
 {
-	if (PlayButton->getValue()==on)
-		rate = r;
-	else
-		rate = 0.;
-	qDebug("Rate value: %f",rate);
+  if (PlayButton->getValue()==on)
+    rate = rateSlider->getValue() + 4*wheel->getValue();
+  else
+    rate = 0.;
+  qDebug("Rate value: %f",rate);
 }
 
 void EngineBuffer::getchunk() {
@@ -135,10 +162,7 @@ void EngineBuffer::getchunk() {
     //afSeekFrame(fh, AF_DEFAULT_TRACK, (AFframecount) (filepos/channels));
   } else*/
   // Read a chunk
-
-	unsigned samples_read = file->read(chunk_size, temp);
-
-	qDebug("reqest: %i, read: %i",chunk_size,samples_read);
+  unsigned samples_read = file->read(chunk_size, temp);
   //samples_read = chunk_size;
   /*if (samples_read != chunk_size) {
      cout << "Read from file failed: " << samples_read << ":" << chunk_size  <<
@@ -148,7 +172,8 @@ void EngineBuffer::getchunk() {
   // Convert from SAMPLE to CSAMPLE. Should possibly be optimized
   // using assembler code from music-dsp archive.
   filepos += samples_read;
-  unsigned new_frontpos = (frontpos-chunk_size+read_buffer_size)%read_buffer_size;
+  unsigned new_frontpos =
+ (frontpos-chunk_size+read_buffer_size)%read_buffer_size;
   for (unsigned j=0; j<samples_read; j++) {
     readbuffer[new_frontpos] = temp[j];
     new_frontpos ++;
@@ -277,7 +302,7 @@ void EngineBuffer::process(CSAMPLE *, CSAMPLE *buffer, int buf_size) {
     if (!even(prev)) prev--;
     long next = (prev+2)%read_buffer_size;
     FLOAT frac = play_pos - floor(play_pos);
-    buffer[i ] = readbuffer[prev  ] +frac*(readbuffer[next  ]-readbuffer[prev  ]);
+    buffer[i  ] = readbuffer[prev  ] +frac*(readbuffer[next  ]-readbuffer[prev  ]);
     buffer[i+1] = readbuffer[prev+1] +frac*(readbuffer[next+1]-readbuffer[prev+1]);
     play_pos += 2.*rate;
     play_pos = max(0.,min(file->length(), play_pos));
@@ -286,5 +311,5 @@ void EngineBuffer::process(CSAMPLE *, CSAMPLE *buffer, int buf_size) {
   checkread();
   writepos();
   // Check the wheel:
-  //rate->checkwheelpos(BUFFER_SIZE);
+  wheel->updatecounter(buf_size);
 }
