@@ -230,6 +230,8 @@ void EngineBuffer::slotPosition(int newvalue) {
   Moves the playpos forward change%
 */
 void EngineBuffer::seek(FLOAT change) {
+  double saved_rate = rate;
+  rate = 0;
   double new_play_pos = play_pos + change*file->length();
   if (new_play_pos > file->length()) new_play_pos = file->length();
   if (new_play_pos < 0) new_play_pos = 0;
@@ -242,6 +244,7 @@ void EngineBuffer::seek(FLOAT change) {
   getchunk();
   qDebug("done seeking.");
   play_pos = new_play_pos;
+  rate = saved_rate;
 }
 
 bool even(long n)
