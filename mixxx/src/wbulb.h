@@ -32,12 +32,19 @@ class WBulb : public QRadioButton  {
 public: 
     WBulb(QWidget *parent=0, const char *name=0);
     ~WBulb();
+public slots:
+    void setValue(int);
+signals:
+    void valueChanged(int);
+    void valueOn();
 protected:
     void drawButton (QPainter *);
     void mousePressEvent(QMouseEvent *e);
 private:
     static QPixmap *bulbOn, *bulbOff;
     static int instantiateNo;
+private slots:
+	    void emitValueChanged(bool);
 };
 
 #endif

@@ -54,7 +54,7 @@ EngineMaster::EngineMaster(DlgMaster *master_dlg, DlgCrossfader *crossfader_dlg,
     volume = new EngineVolume(master_dlg->KnobVolume,ConfigKey(group,"volume"));
 
     // Clipping
-    clipping = new EngineClipping(master_dlg->BulbClipping);
+    clipping = new EngineClipping(master_dlg->BulbClipping, group);
     
     // Headphone volume
     head_volume = new EngineVolume(master_dlg->KnobHeadVol,ConfigKey(group, "headvolume"));
@@ -65,7 +65,7 @@ EngineMaster::EngineMaster(DlgMaster *master_dlg, DlgCrossfader *crossfader_dlg,
     head_mix = new ControlEngine(p);
 
     // Headphone Clipping
-    head_clipping = new EngineClipping(0);
+    head_clipping = new EngineClipping(0,"");
 
     pfl1 = channel1->getPFL();
     pfl2 = channel2->getPFL();
