@@ -335,8 +335,7 @@ contains( FOUND, true) {
 			MESSAGE += $${SKIP_LINK_MESSAGE}
 			}
 			else {
-				VAR = $$find( LIBS, $${OBJECT} )
-				!isEmpty( VAR ) {
+				contains( LIBS, $${OBJECT} ) {
 					MESSAGE += $${STATIC_MESSAGE}
 					}
 				}
