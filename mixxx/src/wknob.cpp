@@ -74,7 +74,7 @@ void WKnob::resetPositions()
             if (m_pPixmaps[i])
                 WPixmapStore::deletePixmap(m_pPixmaps[i]);
 
-        WPixmapStore::deletePixmap(m_pPixmaps);
+        //WPixmapStore::deletePixmap(m_pPixmaps);
         m_pPixmaps = 0;
     }
 }
