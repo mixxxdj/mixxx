@@ -23,7 +23,7 @@
 #include <porttime.h>
 
 #include <stdlib.h>
-#include <unistd.h>
+// #include <unistd.h>
 
 /**
   *@author Tue & Ken Haste Andersen

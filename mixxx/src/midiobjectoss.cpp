@@ -91,6 +91,20 @@ void MidiObjectOSS::devClose()
     openDevice = QString("");
 }
 
+void MidiObjectOSS::stop()
+{
+	MidiObject::stop();
+
+    // Raise signal to stop abort blocking read in main thread loop
+    if (thread_pid != 0)
+    {
+        signal(SIGINT,&abortRead);
+        kill(thread_pid,SIGINT);
+    }
+    wait();
+    thread_pid = 0;
+}
+
 void MidiObjectOSS::run()
 {
     thread_pid = getpid();

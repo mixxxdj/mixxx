@@ -12,7 +12,7 @@ ControlRotary::ControlRotary(ConfigKey key, ControlPushButton *playbutton) : Con
 {
     play = playbutton;
     direction = 1; // arbitrary
-    gettimeofday(&oldtime,0);
+//    gettimeofday(&oldtime,0);
     value = 0;
     counter = 0.;
     emit valueChanged(value);
@@ -36,6 +36,7 @@ void ControlRotary::slotSetPositionMidi(int _newpos)
 
 void ControlRotary::slotSetPosition(int newpos)
 {
+/*
     // get position from gray code
     newpos = graycodetable[(int)(unsigned char)newpos];
 
@@ -77,6 +78,7 @@ void ControlRotary::slotSetPosition(int newpos)
             emit valueChanged(value);
         }
     }
+*/
 }
 
 void ControlRotary::updatecounter(int samples, int SRATE)
@@ -112,3 +114,4 @@ void ControlRotary::slotSetValue(int newvalue)
 
     setValue(((FLOAT_TYPE)newvalue-49.)/d);
 }
+

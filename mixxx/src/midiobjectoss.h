@@ -33,6 +33,8 @@ public:
 protected:
     void run();
     void stop();
+    int thread_pid;
+
 
     int     handle;
     char    *buffer;

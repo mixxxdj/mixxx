@@ -5,7 +5,7 @@
 #include <stdlib.h>
 
 #include <vector>
-#include <unistd.h>
+// #include <unistd.h>
 #include <fcntl.h>
 #include <stdio.h>
 #include <signal.h>
@@ -39,7 +39,6 @@ protected:
     void send(char channel, char midicontrol, char midivalue);
 
     bool requestStop;
-    int thread_pid;
 
     static ConfigObject<ConfigValueMidi> *config;
     int                           fd, count, size, no;

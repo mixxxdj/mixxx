@@ -165,7 +165,7 @@ bool PlayerPortAudio::open(QString name, int srate, int bits, int bufferSize, in
 
     // Try to open device 5 times before giving up!
     PaError err = 0;
-    for (int i=0; i<5; i++)
+    {for (int i=0; i<5; i++)
     {
       err = Pa_OpenStream(&stream,
                         paNoDevice,         // no input device
@@ -185,7 +185,7 @@ bool PlayerPortAudio::open(QString name, int srate, int bits, int bufferSize, in
 
         if (err == paNoError)
             break;
-    }
+    }}
     if( err != paNoError )
     {
         qFatal("PortAudio: Open stream error: %s", Pa_GetErrorText(err));
