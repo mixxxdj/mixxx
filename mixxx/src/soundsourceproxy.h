@@ -37,6 +37,7 @@ public:
     long unsigned length();
     static int ParseHeader(TrackInfoObject *p);
     int getSrate();
+    QPtrList<long unsigned int> *getCuePoints();
     /** Returns filename */
     QString getFilename();
 
