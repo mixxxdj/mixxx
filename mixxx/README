@@ -16,16 +16,9 @@ directory for a copy of the licence.
 
 
 * NEWS *****************************************************
-New since 1.3.2:
-- Compiles on gcc 3.4
-- Beat phase syncronization, by Torben Hohn
-- Reduced flicker in waveform visualizations
-- Bug fix in socket communication (for Prokyon3 control)
-- Improved thread syncronization
-- Improved PowerMate configuration
-- Support for additional mice on Linux
-- Preliminary ALSA support. Look in README.ALSA for details.
-  
+New since 1.4:
+- Fixed error in latency calculation
+
 * INSTALL/USE **********************************************
 Please see manual, included in this directory, 
 Mixxx-Manual.pdf.

@@ -220,7 +220,7 @@ void DlgPrefSound::slotApply()
 
 void DlgPrefSound::slotQueryLatency()
 {
-    int iLatencyMsec = (int)ceil(1000.*((float)Player::getBufferSize()/(float)EngineObject::getPlaySrate()));
+    int iLatencyMsec = (int)ceil(1000.*((float)Player::getBufferSize()/((float)EngineObject::getPlaySrate()*2.)));
     qDebug("got latency msec %i, buffer size %i",iLatencyMsec,Player::getBufferSize());
     
     // Only correct latency slider if it's more than two milliseconds off the actual value.
