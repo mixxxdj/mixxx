@@ -35,7 +35,7 @@ public:
     WVUmeter(QWidget *parent=0, const char *name=0);
     ~WVUmeter();
 signals:
-    valueChanged(int);
+    void valueChanged(int);
 public slots:
     void setValue(int);
 

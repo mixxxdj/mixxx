@@ -1,9 +1,9 @@
 /***************************************************************************
-                          visualdatasignal.h  -  description
+                          visualbuffersignal.h  -  description
                              -------------------
-    copyright            : (C) 2002 by Tue and Ken Haste Andersen and Kenny 
-                                       Erleben
-    email                :
+    begin                : Fri Jun 13 2003
+    copyright            : (C) 2003 by Tue & Ken Haste Andersen
+    email                : haste@diku.dk
  ***************************************************************************/
 
 /***************************************************************************
@@ -15,24 +15,21 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef VISUALDATASIGNAL_H
-#define VISUALDATASIGNAL_H
+#ifndef VISUALBUFFERSIGNAL_H
+#define VISUALBUFFERSIGNAL_H
 
-#include "visualdata.h"
-#include "signalvertexbuffer.h"
-
-class FastVertexArray;
+#include "visualbuffer.h"
 
 /**
- * A Visual Signal.
- */
-class VisualDataSignal : public VisualData
-{
-public:
-  VisualDataSignal(GLfloat *,FastVertexArray *);
-  ~VisualDataSignal();
-  void draw();
+  *@author Tue & Ken Haste Andersen
+  */
+
+class VisualBufferSignal : public VisualBuffer  {
+public: 
+    VisualBufferSignal(ReaderExtract *pReaderExtract, ControlPotmeter *pPlaypos);
+    ~VisualBufferSignal();
+    void update(int iPos, int iLen);
+    void draw(GLfloat *p, int iLen);
 };
 
 #endif
-

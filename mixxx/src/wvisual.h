@@ -1,5 +1,5 @@
 /***************************************************************************
-                          mixxxvisual.h  -  description
+                          wvisual.h  -  description
                              -------------------
     begin                : Thu Oct 10 2002
     copyright            : (C) 2002 by Tue & Ken Haste Andersen
@@ -15,24 +15,20 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef MIXXXVISUAL_H
-#define MIXXXVISUAL_H
+#ifndef WVISUAL_H
+#define WVISUAL_H
 
 #include <qgl.h>
 #include <qptrlist.h>
 #include <qevent.h>
 #include <qdatetime.h>
-#include <qapplication.h>
 
 #include "visual/visualcontroller.h"
 #include "visual/picking.h"
 #include "visual/visualbackplane.h"
 
-class Reader;
-class GUIChannel;
+class VisualChannel;
 class ControlPotmeter;
-
-const int RESAMPLE_FACTOR = 32;
 
 #include "defs.h"
 
@@ -40,33 +36,34 @@ const int RESAMPLE_FACTOR = 32;
   *@author Tue & Ken Haste Andersen
   */
 
-class MixxxVisual : public QGLWidget
+class WVisual : public QGLWidget
 {
     Q_OBJECT
 public: 
-    MixxxVisual(QApplication *app, QWidget *parent=0, const char *name=0);
-    ~MixxxVisual();
+    WVisual(QWidget *pParent=0, const char *pName=0, const QGLWidget * pShareWidget = 0);
+    ~WVisual();
     bool eventFilter(QObject *o, QEvent *e);
-    /** Add a GUIChannel */
-    GUIChannel *add(Reader *reader, ControlPotmeter *playpos);
+    /** Add a VisualChannel */
+    VisualChannel *add(ControlPotmeter *pPlaypos);
+
 protected:
     void initializeGL();
     void resizeGL(int, int);
     void paintGL();
     void timerEvent(QTimerEvent *);
 
-    VisualController *controller;
-    Picking picking;
+    VisualController *m_pVisualController;
+    Picking m_Picking;
 
-    int screenx;
-    int screeny;
-    int selObjIdx;
+    int m_iScreenX;
+    int m_iScreenY;
+    int m_iSelObjIdx;
 
     /** Backplane */
-    VisualBackplane *backplane;
+    VisualBackplane *m_pVisualBackplane;
 
-    QPtrList <GUIChannel> list;
-    QTime time;
+    QPtrList <VisualChannel> m_qlList;
+    QTime m_qtTime;
 };
 
 #endif

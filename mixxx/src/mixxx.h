@@ -50,7 +50,7 @@
 #include "controlobject.h"
 #include "dlgpreferences.h"
 
-class MixxxVisual;
+class WVisual;
 class TrackList;
 class TrackInfoObject;
 class PowerMate;
@@ -80,8 +80,6 @@ class MixxxApp : public QMainWindow
     void initView();
     /** overloaded for Message box on last window exit */
     bool queryExit();
-    /** Get pointer to the MixxxVisual object */
-    MixxxVisual *getVisual();
   public slots:
 
     /** generate a new document in the actual view */
@@ -127,8 +125,8 @@ class MixxxApp : public QMainWindow
      */
     MixxxDoc *doc;
 
-    /** Pointer to MixxxVisual widget */
-    MixxxVisual *visual;
+    /** Pointer to WVisual widgets */
+    WVisual *visual1, *visual2;
     
     QApplication *app;
     EngineObject *engine;

@@ -23,29 +23,31 @@
  */
 Material::Material()
 {
-  ambient[0]  = 0.0f;
-  ambient[1]  = 0.0f;
-  ambient[2]  = 0.0f;
-  ambient[3]  = 0.0f;
+    ambient[0]  = 0.0f;
+    ambient[1]  = 0.0f;
+    ambient[2]  = 0.0f;
+    ambient[3]  = 0.0f;
 
-  diffuse[0]  = 0.0f;
-  diffuse[1]  = 0.0f;
-  diffuse[2]  = 0.0f;
-  diffuse[3]  = 1.0f;
+    diffuse[0]  = 0.0f;
+    diffuse[1]  = 0.0f;
+    diffuse[2]  = 0.0f;
+    diffuse[3]  = 1.0f;
   
-  specular[0] = 0.0f;
-  specular[1] = 0.0f;
-  specular[2] = 0.0f;
-  specular[3] = 1.0f;
+    specular[0] = 0.0f;
+    specular[1] = 0.0f;
+    specular[2] = 0.0f;
+    specular[3] = 1.0f;
 
-  emission[0] = 0.0f;
-  emission[1] = 0.0f;
+    emission[0] = 0.0f;
+    emission[1] = 0.0f;
 
-  emission[2] = 0.0f;
-  emission[3] = 1.0f;
+    emission[2] = 0.0f;
+    emission[3] = 1.0f;
 
-  shininess  = 0;
+    shininess  = 0;
 
+    if (!glIsEnabled(GL_COLOR_MATERIAL))
+        glEnable(GL_COLOR_MATERIAL);
 };
 
 /**

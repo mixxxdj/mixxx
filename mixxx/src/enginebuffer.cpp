@@ -41,13 +41,13 @@
 #include "enginebufferscalelinear.h"
 #include "powermate.h"
 
-class GUIChannel;
+class VisualChannel;
 #ifdef __VISUALS__
-  #include "mixxxvisual.h"
-  #include "visual/guichannel.h"
+  #include "wvisual.h"
+  #include "visual/visualchannel.h"
 #endif
 
-EngineBuffer::EngineBuffer(MixxxApp *_mixxx, QAction *actionAudioBeatMark, PowerMate *_powermate, DlgPlaycontrol *_playcontrol, const char *_group)
+EngineBuffer::EngineBuffer(MixxxApp *_mixxx, QAction *actionAudioBeatMark, PowerMate *_powermate, DlgPlaycontrol *_playcontrol, const char *_group, WVisual *pVisual)
 {
     mixxx = _mixxx;
     playcontrol = _playcontrol;
@@ -122,12 +122,14 @@ EngineBuffer::EngineBuffer(MixxxApp *_mixxx, QAction *actionAudioBeatMark, Power
 
     
     // Try setting up visuals
-    GUIChannel *guichannel = 0;
+    VisualChannel *pVisualChannel = 0;
 #ifdef __VISUALS__
-    if (mixxx->getVisual())
+    if (pVisual)
+    {
         // Add buffer as a visual channel
-        guichannel = mixxx->getVisual()->add(reader, controlbufferpos);
-    reader->addVisual(guichannel);
+        pVisualChannel = pVisual->add(controlbufferpos);
+        reader->addVisual(pVisualChannel);
+    }
 #endif
                                                             
     // Allocate buffer for processing:

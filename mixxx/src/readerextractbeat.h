@@ -39,7 +39,7 @@ const CSAMPLE histDownWrite = 0.9999f;
 /** Width of gauss/2 used in histogram updates */
 const int gaussWidth = 8; 
 /** Slack allowed in beat positioning. */
-const CSAMPLE beatPrecision = 0.1;
+const CSAMPLE beatPrecision = 0.5;
 
 /**
   * Extracts beat information based on peaks in the HFC and a beat probability vector.
@@ -66,7 +66,9 @@ public:
     void *processChunk(const int idx, const int start_idx, const int end_idx, bool backwards);
 private:
     bool circularValidIndex(int idx, int start, int end, int len);
-
+    /** Updates the confidence variable. */
+    void updateConfidence(int curBeatIdx, int lastBeatIdx);
+    
     /** Buffer indicating if a beat has occoured or not. */
     float *beatBuffer;
     /** Last updated index of beatBuffer containing a beat */
@@ -94,6 +96,8 @@ private:
     int framePerChunk, framePerFrameSize;
     /** Pointer to HFC array */
     CSAMPLE *hfc;
+    /** Confidence measure */
+    CSAMPLE confidence;
 
 #ifdef __GNUPLOT__
     /** Pointer to gnuplot interface */

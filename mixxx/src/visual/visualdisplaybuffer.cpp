@@ -1,5 +1,5 @@
 /***************************************************************************
-                          visualsignal.cpp  -  description
+                          visualdisplaybuffer.cpp  -  description
                              -------------------
     copyright            : (C) 2002 by Tue and Ken Haste Andersen and Kenny 
                                        Erleben
@@ -15,17 +15,11 @@
  *                                                                         *
  ***************************************************************************/
 
-#include "visualsignal.h"
-#include "fastvertexarray.h"
+#include "visualdisplaybuffer.h"
 
-
-/**
- * Default Constructor
- */
-VisualSignal::VisualSignal(GLfloat *_buffer, FastVertexArray *_vertex)
+VisualDisplayBuffer::VisualDisplayBuffer(VisualBuffer *pVisualBuffer)
 {
-    buffer = _buffer;
-    vertex = _vertex;
+    m_pVisualBuffer = pVisualBuffer;
     
     ox = oy = oz = 0;
     angle = 0;
@@ -34,32 +28,18 @@ VisualSignal::VisualSignal(GLfloat *_buffer, FastVertexArray *_vertex)
     bufferInfo.len1 = 0;
     bufferInfo.len2 = 0;
     length = 0;
-};
+}
 
-/**
- * Deconstructor.
- */
-VisualSignal::~VisualSignal()
+VisualDisplayBuffer::~VisualDisplayBuffer()
 {
-};
+}
 
-/**
- * Specialized Drawing Method.
- *
- * @param mode    The rendering mode.
- */
-void VisualSignal::draw(GLenum mode)
+void VisualDisplayBuffer::draw(GLenum mode)
 {
     VisualObject::draw(mode);
-};
+}
 
-/**
- * Draw Visual Signal.
- * Note that the update method should have been invoked
- * before to this method. If not the signal will not
- * change!!!
- */
-void VisualSignal::draw()
+void VisualDisplayBuffer::draw()
 {
 //    glDisable(GL_BLEND);
     //--- matrix mode must be  GL_MODEL
@@ -80,7 +60,7 @@ void VisualSignal::draw()
     if (bufferInfo.len1>0)
     {
         glTranslatef(-bufferInfo.p1[0],0,0);
-        vertex->draw(bufferInfo.p1,bufferInfo.len1);
+        m_pVisualBuffer->draw(bufferInfo.p1,bufferInfo.len1);
     }
 
     if (bufferInfo.len2>0)
@@ -89,58 +69,79 @@ void VisualSignal::draw()
            glTranslatef(-bufferInfo.p2[0],0,0);
         else
             glTranslatef(bufferInfo.p1[0]+bufferInfo.len1,0,0);
-        vertex->draw(bufferInfo.p2, bufferInfo.len2);
+        m_pVisualBuffer->draw(bufferInfo.p2, bufferInfo.len2);
     }
-  
+
     //--- Clean up after us
     glPopMatrix();
 //    glEnable(GL_BLEND);
-};
 
-/**
- * Set Signal Origo.
- */
-void VisualSignal::setOrigo(float ox, float oy,float oz)
+}
+
+void VisualDisplayBuffer::setOrigo(float _ox, float _oy,float _oz)
 {
-    this->ox = ox;
-    this->oy = oy;
-    this->oz = oz;
-};
+    ox = _ox;
+    oy = _oy;
+    oz = _oz;
+}
 
-/**
-
- *
- */
-void VisualSignal::setLength(float length)
+float VisualDisplayBuffer::getOrigoX()
 {
-    this->length = length;
-};
+    return ox;
+}
 
-/**
- *
- */
-void VisualSignal::setHeight(float height)
+float VisualDisplayBuffer::getOrigoY()
 {
-    this->height = height;
-};
+    return oy;
+}
 
-/**
- *
- */
-void VisualSignal::setRotation(float angle, float rx,float ry,float rz)
+float VisualDisplayBuffer::getOrigoZ()
+{
+    return oz;
+}
+
+void VisualDisplayBuffer::setLength(float _length)
+{
+    length = _length;
+}
+
+float VisualDisplayBuffer::getLength()
+{
+    return length;
+}
+
+void VisualDisplayBuffer::setHeight(float _height)
+{
+    height = _height;
+}
+
+float VisualDisplayBuffer::getHeight()
+{
+    return height;
+}
+
+void VisualDisplayBuffer::setDepth(float _depth)
+{
+    depth = _depth;
+}
+
+float VisualDisplayBuffer::getDepth()
+{
+    return depth;
+}
+
+void VisualDisplayBuffer::setRotation(float angle, float rx,float ry,float rz)
 {
     this->angle = angle;
     this->rx = rx;
     this->ry = ry;
     this->rz = rz;
-};
+}
 
-/**
- *
- */
-void VisualSignal::setVertexArray(bufInfo i)
+void VisualDisplayBuffer::setBuffer(bufInfo i)
 {
     bufferInfo = i;
     // std::cout << "len1 " << bufferInfo.len1 << ", len2 " << bufferInfo.len2 << "\n";
-};
+}
+
 

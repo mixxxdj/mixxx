@@ -31,6 +31,7 @@ class ControlObject;
 class Reader;
 class EngineBufferScale;
 class PowerMate;
+class WVisual;
 
 /**
   *@author Tue and Ken Haste Andersen
@@ -43,7 +44,7 @@ const int audioBeatMarkLen = 40;
 class EngineBuffer : public EngineObject
 {
 public:
-    EngineBuffer(MixxxApp *_mixxx, QAction *actionAudioBeatMark, PowerMate *, DlgPlaycontrol *_playcontrol, const char *_group);
+    EngineBuffer(MixxxApp *_mixxx, QAction *actionAudioBeatMark, PowerMate *, DlgPlaycontrol *_playcontrol, const char *_group, WVisual *pVisual);
     ~EngineBuffer();
     /** Returns pointer to Reader object. Used in MixxxApp. */
     Reader *getReader();

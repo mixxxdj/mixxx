@@ -19,6 +19,11 @@
 #include "material.h"
 #include <qgl.h>
 
+VisualObject::VisualObject()
+{
+    material = 0;
+}
+
 /**
  * Specialized Drawing Method.
  *
@@ -39,7 +44,7 @@ void VisualObject::draw(GLenum mode)
  * @param material   A pointer to the material you want
  *                   to use on the object.
  */
-void VisualObject::setMaterial(Material *material)
+void VisualObject::setMaterial(Material *_material)
 {
-    this->material = material;
+    material = _material;
 };

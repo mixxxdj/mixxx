@@ -24,16 +24,14 @@ int VisualController::idCount = 0;
 /**
  *
  */
-VisualController::VisualController(QApplication *_app)
+ VisualController::VisualController()
 {
-  app = _app;
-
   fov   = 55.0;
   znear = 10.0;
   zfar  = 1000.0;
   eyex  = 0.;
   eyey  = 0.0;
-  eyez  = 70.0;
+  eyez  = 100.0;
   centerx=centery=centerz=0;
   upx=0;
   upy=1;
@@ -113,6 +111,7 @@ void VisualController::init()
 {
     //glClearColor(0.4f,0.4f,0.4f,0.0f);
     glClearColor(0.0f,0.f,0.0f,0.0f);
+//    glClearColor(202.0/255.f,213.0/255.f,192.0/255.0f,0.0f);
 //    glClearColor(1.0f,1.f,1.0f,0.1f);
 
     setupBackfaceCulling();

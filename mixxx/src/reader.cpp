@@ -30,7 +30,7 @@
   #include "soundsourcesndfile.h"
 #endif
 #ifdef __VISUALS__
-  #include "visual/guichannel.h"
+  #include "visual/visualchannel.h"
 #endif
 
 Reader::Reader(EngineBuffer *_enginebuffer, Monitor *_rate, QMutex *_pause)
@@ -38,7 +38,7 @@ Reader::Reader(EngineBuffer *_enginebuffer, Monitor *_rate, QMutex *_pause)
     enginebuffer = _enginebuffer;
     rate = _rate;
     pause = _pause;
-    guichannel = 0;
+    m_pVisualChannel = 0;
     
     // Allocate reader extract objects
     readerwave = new ReaderExtractWave(this);
@@ -65,11 +65,11 @@ Reader::~Reader()
     delete readAhead;
 }
 
-void Reader::addVisual(GUIChannel *_guichannel)
+void Reader::addVisual(VisualChannel *pVisualChannel)
 {
 #ifdef __VISUALS__
-    readerwave->addVisual(_guichannel);
-    guichannel = _guichannel;
+    m_pVisualChannel = pVisualChannel;
+    readerwave->addVisual(m_pVisualChannel);
 #endif
 }
 

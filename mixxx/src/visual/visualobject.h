@@ -43,6 +43,7 @@ class Material;
 class VisualObject : public QObject
 {
 public:
+  VisualObject();
   virtual void draw(GLenum mode);
   virtual void draw()=0;
   void setMaterial(Material *material);
