@@ -87,7 +87,7 @@ class MixxxApp : public QMainWindow
     /** Reopen player and midi devices */
     void reopen();
     /** Update file list */
-    void updatePlayList();
+    void updateTracklist( QString );
     /** overloaded for Message box on last window exit */
     bool queryExit();
     /** Get pointer to the MixxxVisual object */
@@ -131,17 +131,11 @@ class MixxxApp : public QMainWindow
     void slotHelpAbout();
     /** Change of file to play */
     //void slotChangePlay(int,int,int, const QPoint &);
-    void slotChangePlay_1( TrackInfoObject * );
-    void slotChangePlay_2( TrackInfoObject * );
-    void slotSelectPlay(QListViewItem *item, const QPoint &pos, int);
-  private slots:
-    void slotSetTitle( TrackInfoObject *, DlgPlaycontrol * );
   protected:
     bool eventFilter(QObject *, QEvent *);
   private:
     void engineStart();
     void engineStop();
-    void addFiles(const char *path);
 
     /** view is the main widget which represents your working area. The View
      * class should handle all events of the view widget.  It is kept empty so
@@ -172,9 +166,6 @@ class MixxxApp : public QMainWindow
     ConfigObject<ConfigValueMidi> *midiconfig;
     /** Pointer to track list object */
     TrackList *m_pTracks;
-    /** Popup menu used to select player when a track has been selected */
-    QPopupMenu *playSelectMenu;
-    QString selection;
 
     /** file_menu contains all items of the menubar entry "File" */
     QPopupMenu *fileMenu;

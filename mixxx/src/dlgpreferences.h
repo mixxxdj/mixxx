@@ -66,6 +66,7 @@ private:
     /** Transform latency value in msec to slider value */
     int getSliderLatencyVal(int);
     void initMidiConfigList();
+
 };
 
 #endif

@@ -120,30 +120,6 @@ MixxxApp::MixxxApp(QApplication *a)
   initDoc();
   initView();
 
-  //qWarning("Init playlist");
-  PlaylistKey = ConfigKey("[Playlist]","Directory");
-  QDir d( config->getValueString(PlaylistKey ));
-  if ((config->getValueString(PlaylistKey ).length()<1) | (!d.exists())) {
-      QFileDialog* fd = new QFileDialog( this, "Choose directory with music files", TRUE );
-      fd->setCaption(QString("Choose directory with music files"));
-      fd->setMode( QFileDialog::Directory );
-      if ( fd->exec() == QDialog::Accepted ) {
-          config->set(PlaylistKey, fd->selectedFile());
-          config->Save();
-      }
-  }
-  addFiles(config->getValueString(PlaylistKey).latin1());
-
-
-  // Construct popup menu used to select playback channel on track selection
-  /*playSelectMenu = new QPopupMenu(this);
-  playSelectMenu->insertItem(QIconSet(a_xpm), "Player A",this, SLOT(slotChangePlay_1()));
-  playSelectMenu->insertItem(QIconSet(b_xpm), "Player B",this, SLOT(slotChangePlay_2()));
-  */
-  // Connect play list table selection with "select channel" popup menu
-  connect(view->playlist->ListPlaylist, SIGNAL(pressed(QListViewItem *, const QPoint &, int)),
-          this,                         SLOT(slotSelectPlay(QListViewItem *, const QPoint &, int)));
-
   // Instantiate a ControlObject
   control = new ControlNull();
 
@@ -227,7 +203,7 @@ MixxxApp::MixxxApp(QApplication *a)
 
   // Set static ControlEngineQueue pointer of ControlObject
   control->setControlEngineQueue(queue);
-  
+
   // Initialize device
 #ifdef __ALSA__
   player = new PlayerALSA(BUFFER_SIZE, &engines, config->getValueString(ConfigKey("[Soundcard]","DeviceMaster")));
@@ -255,6 +231,18 @@ MixxxApp::MixxxApp(QApplication *a)
   //connect(dlg_flanger->PushButtonChA, SIGNAL(valueOn()), flanger_b, SLOT(slotSetPositionOff()));
   //connect(dlg_flanger->PushButtonChB, SIGNAL(valueOn()), flanger_a, SLOT(slotSetPositionOff()));
 
+  // Prepare the tracklist:
+  PlaylistKey = ConfigKey("[Playlist]","Directory");
+  QDir d( config->getValueString(PlaylistKey ));
+  if ((config->getValueString(PlaylistKey ).length()<1) | (!d.exists())) {
+      QFileDialog* fd = new QFileDialog( this, "Choose directory with music files", TRUE );
+      fd->setCaption(QString("Choose directory with music files"));
+      fd->setMode( QFileDialog::Directory );
+      if ( fd->exec() == QDialog::Accepted ) {
+          config->set(PlaylistKey, fd->selectedFile());
+          config->Save();
+      }
+  }
   
   // Start engine
   engineStart();
@@ -262,11 +250,11 @@ MixxxApp::MixxxApp(QApplication *a)
 
 MixxxApp::~MixxxApp()
 {
+    qDebug("Destroying MixxxApp");
     engineStop();
     delete player;
     delete control;
     delete midi;
-    delete playSelectMenu;
     delete config;
     delete midiconfig;
     delete m_pTracks;
@@ -307,14 +295,9 @@ void MixxxApp::engineStart()
     buffer1 = new EngineBuffer(this, optionsBeatMark, view->playcontrol1, "[Channel1]");
     buffer2 = new EngineBuffer(this, optionsBeatMark, view->playcontrol2, "[Channel2]");
 
-    // Experimental new tracklist:
-  m_pTracks = new TrackList(config->getValueString(PlaylistKey), view->tracklist->tableTracks,
-                            view->playcontrol1, view->playcontrol2, buffer1, buffer2);
-  
- /* connect( m_pTracks, SIGNAL( signalChangePlay_1( TrackInfoObject * ) ),
-                      SLOT( slotChangePlay_1( TrackInfoObject * ) ) );
-  connect( m_pTracks, SIGNAL( signalChangePlay_2( TrackInfoObject * ) ),
-                      SLOT( slotChangePlay_2( TrackInfoObject * ) ) );   */
+    // Initialize tracklist:
+    m_pTracks = new TrackList(config->getValueString(PlaylistKey), view->tracklist->tableTracks,
+                              view->playcontrol1, view->playcontrol2, buffer1, buffer2);
 
     // Set track information in reader
     /*
@@ -780,80 +763,6 @@ void MixxxApp::slotHelpAbout()
                       tr("Mixxx\nVersion " VERSION "\nBy Tue and Ken Haste Andersen\nReleased under the GNU General Public Licence version 2") );
 }
 
-void MixxxApp::slotChangePlay_1( TrackInfoObject *track )
-{
-    buffer1->getReader()->requestNewTrack( track->Location() );
-    slotSetTitle( track, view->playcontrol1 );
-}
-
-void MixxxApp::slotChangePlay_2( TrackInfoObject *track )
-{
-    buffer2->getReader()->requestNewTrack( track->Location() );
-    slotSetTitle( track, view->playcontrol1);
-
-}
-
-void MixxxApp::slotSetTitle( TrackInfoObject *track, DlgPlaycontrol *dlg)
-{
-    //
-    // Update info panel in playcontrol dialog
-    //
-    dlg->textLabelTrack->setText( track->m_sArtist + "\n" +track->m_sTitle + "\n" );
-}
-
-
-void MixxxApp::slotSelectPlay(QListViewItem *item, const QPoint &pos, int)
-{
-    if (item!=0)
-    {
-        // Store the current selected track
-        selection = item->text(1);
-
-        // Display popup menu
-        playSelectMenu->popup(pos);
-    }
-}
-
-void MixxxApp::addFiles(const char *path)
-{
-    QDir dir(path);
-    if (!dir.exists())
-        qWarning( "Cannot find the directory %s.",path);
-    else
-    {
-        // First run though all directories:
-        dir.setFilter(QDir::Dirs);
-        const QFileInfoList dir_list = *dir.entryInfoList();
-        QFileInfoListIterator dir_it(dir_list);
-        QFileInfo *d;
-        dir_it += 2; // Traverse past "." and ".."
-        while ((d=dir_it.current()))
-        {
-            addFiles(d->filePath());
-            ++dir_it;
-        }
-
-        // ... and then all the files:
-        dir.setFilter(QDir::Files);
-        dir.setNameFilter("*.wav *.Wav *.WAV *.mp3 *.Mp3 *.MP3");
-        const QFileInfoList *list = dir.entryInfoList();
-        QFileInfoListIterator it(*list);        // create list iterator
-        QFileInfo *fi;                          // pointer for traversing
-
-        while ((fi=it.current()))
-        {
-            view->playlist->ListPlaylist->insertItem(new QListViewItem(view->playlist->ListPlaylist,
-            fi->fileName(),fi->filePath()));
-            ++it;   // goto next list element
-        }
-    }
-}
-
-void MixxxApp::updatePlayList()
-{
-    view->playlist->ListPlaylist->clear();
-    addFiles(config->getValueString(ConfigKey("[Playlist]","Directory")).latin1());
-}
 
 void MixxxApp::reopen()
 {
@@ -873,6 +782,11 @@ void MixxxApp::reopen()
 
     // Open MIDI device
     midi->devOpen(config->getValueString(ConfigKey("[Midi]","Device")));
+}
+
+void MixxxApp::updateTracklist( QString sDir )
+{
+    m_pTracks->slotUpdateTracklist(sDir);
 }
 
 MixxxVisual *MixxxApp::getVisual()

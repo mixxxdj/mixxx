@@ -30,80 +30,14 @@ TrackList::TrackList( const QString sDirectory, QTable *ptableTracks,
                       DlgPlaycontrol *playcontrol1, DlgPlaycontrol *playcontrol2,
                       EngineBuffer *buffer1, EngineBuffer *buffer2)
 {
-    m_sDirectory = sDirectory;
     m_ptableTracks = ptableTracks;
     m_pPlaycontrol1 = playcontrol1;
     m_pPlaycontrol2 = playcontrol2;
     m_pBuffer1 = buffer1;
     m_pBuffer2 = buffer2;
 
-	// Initialize xml file:
-	QFile opmlFile( m_sDirectory + "/tracklist.xml" );
-	
-	if ( !opmlFile.exists() )
-		WriteXML();
-
-	/*
-    if ( !opmlFile.open( IO_ReadOnly ) ) 
-        QMessageBox::critical( 0,
-                tr( "Critical Error" ),
-                tr( "Cannot open file %1" ).arg( m_sDirectory + "/tracklist.xml" ) );
-        return;
-    } 
-	*/
-
-	QDomDocument domXML( "Mixxx_Track_List" );
-    if ( !domXML.setContent( &opmlFile ) ) {
-        QMessageBox::critical( 0,
-                tr( "Critical Error" ),
-                tr( "Parsing error for file %1" ).arg( m_sDirectory + "/tracklist.xml" ) );
-        opmlFile.close();
-        return;
-    }
-    opmlFile.close();
-
-    // Get all the tracks written in the xml file:
-    QDomElement elementRoot = domXML.documentElement();
-    QDomNode node = elementRoot.firstChild();
-    while ( !node.isNull() ) {
-        if ( node.isElement() && node.nodeName() == "Track" ) {
-			// Create a new track:
-			TrackInfoObject *Track;
-			Track = new TrackInfoObject( node );
-			// Append it to the list of tracks:
-			m_lTracks.append( Track );
-			qDebug( "Read track from xml file: %s", Track->m_sFilename.latin1() );
-        }
-        node = node.nextSibling();
-    }
-
-	// Run through all the files and add the new ones to the xml file:
-	if (AddFiles( m_sDirectory ))
-		WriteXML();
-
-	// Put information from all the tracks into the table:
-	int iRow=0;
-	m_ptableTracks->hideRow( ROW_INDEX ); // Hide the index row
-	m_ptableTracks->setNumRows( m_lTracks.count() );
-	for (TrackInfoObject *Track = m_lTracks.first(); Track; Track = m_lTracks.next() )
-	{
-		m_ptableTracks->setText( iRow, ROW_TITLE, Track->m_sTitle );
-		m_ptableTracks->setText( iRow, ROW_ARTIST, Track->m_sArtist );
-		m_ptableTracks->setText( iRow, ROW_TYPE, Track->m_sType );
-		m_ptableTracks->setText( iRow, ROW_DURATION, Track->Duration() );
-		m_ptableTracks->setText( iRow, ROW_BITRATE, Track->m_sBitrate );
-		m_ptableTracks->setText( iRow, ROW_INDEX, QString("%1").arg(iRow) );
-		iRow ++;
-	}
-
-	// Find the track which has been played the most times:
-	m_iMaxTimesPlayed = 1;
-	for (unsigned int i=0; i<m_lTracks.count(); i++)
-		if ( m_lTracks.at(i)->m_iTimesPlayed > m_iMaxTimesPlayed)
-			m_iMaxTimesPlayed = m_lTracks.at(i)->m_iTimesPlayed;
-
-	// Update the scores for all the tracks:
-	UpdateScores();
+    // Update the track list by reading the xml file, and adding new files:
+    slotUpdateTracklist( sDirectory );
 
 	// Construct popup menu used to select playback channel on track selection
 	playSelectMenu = new QPopupMenu( );
@@ -111,10 +45,8 @@ TrackList::TrackList( const QString sDirectory, QTable *ptableTracks,
 	playSelectMenu->insertItem(QIconSet(b_xpm), "Player B",this, SLOT(slotChangePlay_2()));
 
     // Connect the right click to the slot where the menu is shown:
-	if (connect( m_ptableTracks, SIGNAL( contextMenuRequested( int, int, const QPoint &) ),
-		         this,           SLOT( slotRightClick( int, int, const QPoint &) ) ) )
-		qDebug("Connected context menu on tracklist.");
-
+	connect( m_ptableTracks, SIGNAL( contextMenuRequested( int, int, const QPoint &) ),
+		                     SLOT( slotRightClick( int, int, const QPoint &) ) );
 }
 
 TrackList::~TrackList()
@@ -134,8 +66,8 @@ void TrackList::UpdateScores()
 {
 	for (unsigned int iRow=0; iRow<m_lTracks.count(); iRow++)
 	{
-		TrackInfoObject *track = m_lTracks.at( m_ptableTracks->text( iRow, ROW_INDEX ).toInt() );
-		m_ptableTracks->setText( iRow, ROW_SCORE, 
+		TrackInfoObject *track = m_lTracks.at( m_ptableTracks->text( iRow, COL_INDEX ).toInt() );
+		m_ptableTracks->setText( iRow, COL_SCORE, 
 		QString("%1").arg( (int) ( 99*track->m_iTimesPlayed/m_iMaxTimesPlayed ), 2 ) );
 	}
 }
@@ -145,13 +77,13 @@ void TrackList::UpdateScores()
 */
 void TrackList::WriteXML()
 {
+    qDebug("Writing tracklist.xml");
 	// Create the xml document:
 	QDomDocument domXML( "Mixxx_Track_List" );
 	QDomElement elementRoot = domXML.createElement( "Mixxx_Track_List" );
 	domXML.appendChild( elementRoot );
 
 	// Insert all the tracks:
-
 	for (TrackInfoObject *Track = m_lTracks.first(); Track; Track = m_lTracks.next() )
 	{
 		QDomElement elementNew = domXML.createElement("Track");
@@ -258,7 +190,7 @@ void TrackList::slotChangePlay_1()
 {
     qDebug("Select track 1");
     TrackInfoObject *track = m_lTracks.at( 
-		m_ptableTracks->text( m_ptableTracks->currentRow(), ROW_INDEX ).toInt() );
+		m_ptableTracks->text( m_ptableTracks->currentRow(), COL_INDEX ).toInt() );
         
 	// Update score:
 	track->m_iTimesPlayed++;
@@ -277,7 +209,7 @@ void TrackList::slotChangePlay_1()
 void TrackList::slotChangePlay_2()
 {
 	TrackInfoObject *track = m_lTracks.at(		
-		m_ptableTracks->text( m_ptableTracks->currentRow(), ROW_INDEX ).toInt() );
+		m_ptableTracks->text( m_ptableTracks->currentRow(), COL_INDEX ).toInt() );
         
 	// Update score:
 	track->m_iTimesPlayed++;
@@ -301,5 +233,72 @@ void TrackList::slotRightClick( int iRow, int iCol, const QPoint &pos )
     qDebug("popup menu");
 	// Display popup menu
     playSelectMenu->popup(pos);
+}
+
+void TrackList::slotUpdateTracklist( QString sDir )
+{
+    m_sDirectory = sDir;
+
+    // Initialize xml file:
+	QFile opmlFile( m_sDirectory + "/tracklist.xml" );
+	
+	if ( !opmlFile.exists() )
+		WriteXML();
+
+	QDomDocument domXML( "Mixxx_Track_List" );
+    if ( !domXML.setContent( &opmlFile ) ) {
+        QMessageBox::critical( 0,
+                tr( "Critical Error" ),
+                tr( "Parsing error for file %1" ).arg( m_sDirectory + "/tracklist.xml" ) );
+        opmlFile.close();
+        return;
+    }
+    opmlFile.close();
+
+    // Get all the tracks written in the xml file:
+    QDomElement elementRoot = domXML.documentElement();
+    QDomNode node = elementRoot.firstChild();
+    while ( !node.isNull() ) {
+        if ( node.isElement() && node.nodeName() == "Track" ) {
+			// Create a new track:
+			TrackInfoObject *Track;
+			Track = new TrackInfoObject( node );
+			// Append it to the list of tracks:
+            if (!FileExistsInList( Track->m_sFilename ) )
+            {
+			    m_lTracks.append( Track );
+			    qDebug( "Read track from xml file: %s", Track->m_sFilename.latin1() );
+            }
+        }
+        node = node.nextSibling();
+    }
+
+    // Run through all the files and add the new ones to the xml file:
+	if (AddFiles( m_sDirectory ))
+		WriteXML();
+
+	// Put information from all the tracks into the table:
+	int iRow=0;
+	m_ptableTracks->hideColumn( COL_INDEX ); // Hide the index row
+	m_ptableTracks->setNumRows( m_lTracks.count() );
+	for (TrackInfoObject *Track = m_lTracks.first(); Track; Track = m_lTracks.next() )
+	{
+		m_ptableTracks->setText( iRow, COL_TITLE, Track->m_sTitle );
+		m_ptableTracks->setText( iRow, COL_ARTIST, Track->m_sArtist );
+		m_ptableTracks->setText( iRow, COL_TYPE, Track->m_sType );
+		m_ptableTracks->setText( iRow, COL_DURATION, Track->Duration() );
+		m_ptableTracks->setText( iRow, COL_BITRATE, Track->m_sBitrate );
+		m_ptableTracks->setText( iRow, COL_INDEX, QString("%1").arg(iRow) );
+		iRow ++;
+	}
+
+	// Find the track which has been played the most times:
+	m_iMaxTimesPlayed = 1;
+	for (unsigned int i=0; i<m_lTracks.count(); i++)
+		if ( m_lTracks.at(i)->m_iTimesPlayed > m_iMaxTimesPlayed)
+			m_iMaxTimesPlayed = m_lTracks.at(i)->m_iTimesPlayed;
+
+	// Update the scores for all the tracks:
+	UpdateScores();
 }
 
