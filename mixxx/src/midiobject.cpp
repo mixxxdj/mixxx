@@ -5,7 +5,7 @@
 #include <algorithm>
 
 // Static member variable definition
-ConfigMIDI *MidiObject::config = 0;
+ConfigObject<ConfigValueMidi> *MidiObject::config = 0;
 
 /* -------- ------------------------------------------------------
    Purpose: Initialize midi, and start parsing loop
@@ -13,7 +13,7 @@ ConfigMIDI *MidiObject::config = 0;
             card and device.
    Output:  -
    -------- ------------------------------------------------------ */
-MidiObject::MidiObject(ConfigMIDI *c, QApplication *a)
+MidiObject::MidiObject(ConfigObject<ConfigValueMidi> *c, QApplication *a)
 {
     app = a;
     config = c;

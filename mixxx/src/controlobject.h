@@ -19,7 +19,7 @@
 #define CONTROLOBJECT_H
 
 #include <qobject.h>
-#include "configmidi.h"
+#include "configobject.h"
 
 class MidiObject;
 
@@ -32,13 +32,13 @@ class ControlObject : public QObject
   Q_OBJECT
 public:
   ControlObject();
-  ControlObject(ConfigObject::ConfigKey *key);
+  ControlObject(ConfigKey *key);
   ~ControlObject();
   QString *print();
 
-  ConfigMIDI::ConfigOption *cfgOption;
+  ConfigOption<ConfigValueMidi> *cfgOption;
 
-  static ConfigMIDI *config;
+  static ConfigObject<ConfigValueMidi> *config;
   static MidiObject *midi;
 public slots:
   virtual void slotSetPosition(int) = 0;
@@ -48,3 +48,4 @@ signals:
 };
 
 #endif
+

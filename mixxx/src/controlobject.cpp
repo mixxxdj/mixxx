@@ -19,17 +19,17 @@
 #include "midiobject.h"
 
 // Static member variable definition
-ConfigMIDI *ControlObject::config = 0;
+ConfigObject<ConfigValueMidi> *ControlObject::config = 0;
 MidiObject *ControlObject::midi = 0;
 
 ControlObject::ControlObject()
 {
 }
 
-ControlObject::ControlObject(ConfigObject::ConfigKey *key)
+ControlObject::ControlObject(ConfigKey *key)
 {
     // Retreive configuration option object
-    cfgOption = config->get(key);
+    cfgOption = config->get(*key);
 
     // Register the control in the midi object:
     midi->add(this);
@@ -44,7 +44,7 @@ QString *ControlObject::print()
 {
     QString *s = new QString(cfgOption->key->group.ascii());
     s->append(" ");
-    s->append(cfgOption->key->control.ascii());
+    s->append(cfgOption->key->item.ascii());
     return s;
 }
 

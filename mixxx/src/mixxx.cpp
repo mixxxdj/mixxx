@@ -76,25 +76,27 @@ MixxxApp::MixxxApp(QApplication *a)
   pDlg = 0;
 
   // Read the config file:
-  ConfigObject *config = new ConfigObject('.mixxx'); 
+  config = new ConfigObject<ConfigValue>("mixxx.cfg"); 
 
   // Read the midi configuration:
-  ConfigMIDI *midiconfig = new ConfigMIDI(config->get('Midi','Configfile'));
+  QString midifile = config->getValueString(ConfigKey("[Midi]","Configfile"));
+  midiconfig = new ConfigObject<ConfigValueMidi>(midifile);
 
   initDoc();
 
   initView();
 
   qDebug("Init playlist");
-  songpath = "music/";
-  QDir d( "music" );
+  PlaylistKey = ConfigKey("[Playlist]","Directory");
+  QDir d( config->getValueString(PlaylistKey ));
   if ( !d.exists() ) {
       QFileDialog* fd = new QFileDialog( this, "Choose directory with music files", TRUE );
       fd->setMode( QFileDialog::Directory );
-      if ( fd->exec() == QDialog::Accepted )
-	  songpath = fd->selectedFile();
+      if ( fd->exec() == QDialog::Accepted ) {
+	 config->set(PlaylistKey, fd->selectedFile());
+      }
   }
-  addFiles(songpath.latin1());
+  addFiles(config->getValueString(PlaylistKey).latin1());
 
   // Construct popup menu used to select playback channel on track selection
   playSelectMenu = new QPopupMenu(this);
@@ -120,7 +122,7 @@ MixxxApp::MixxxApp(QApplication *a)
   // Instantiate a ControlObject, and set the static midi and config pointer
   control = new ControlNull();
   control->midi = midi;
-  control->config = config;
+  control->config = midiconfig;
 
   // Initialize player with a desired buffer size
   qDebug("Init player...");
@@ -595,7 +597,7 @@ void MixxxApp::slotOptionsPreferences()
             Player::Info *p = pInfo->at(j);
             // Name of device
             pDlg->ComboBoxSoundcard->insertItem(p->name);
-            if (p->name == player->NAME)
+            if (p->name == config->getValueString(ConfigKey("[Soundcard]","Device")))
             {
                 pDlg->ComboBoxSoundcard->setCurrentItem(j);
                 slotOptionsPreferencesUpdateDeviceOptions();
@@ -603,15 +605,12 @@ void MixxxApp::slotOptionsPreferences()
         }
 
         // Midi configuration
-        QStringList *list = configMap->getConfigurations();
-        QStringList::Iterator it = list->begin();
-        for (; it != list->end(); ++it)
-            pDlg->ComboBoxMidiconf->insertItem(*it);
+        pDlg->LineEditMidiconf->setText(config->getValueString(ConfigKey("[Midi]","Configfile")));
 
         // Midi device
         QStringList *mididev = midi->getDeviceList();
         int j=0;
-        for (it = mididev->begin(); it != mididev->end(); ++it )
+        for (QStringList::Iterator it = mididev->begin(); it != mididev->end(); ++it )
         {
             pDlg->ComboBoxMididevice->insertItem(*it);
             if ((*it) == (*midi->getOpenDevice()))
@@ -620,7 +619,7 @@ void MixxxApp::slotOptionsPreferences()
         }
 
         // Song path
-        pDlg->LineEditSongfiles->setText(songpath);
+        pDlg->LineEditSongfiles->setText(config->getValueString(PlaylistKey));
 
         // Connect buttons
         connect(pDlg->PushButtonOK,      SIGNAL(clicked()),      this, SLOT(slotOptionsSetPreferences()));
@@ -667,50 +666,41 @@ void MixxxApp::slotOptionsPreferencesUpdateDeviceOptions()
 
 void MixxxApp::slotOptionsSetPreferences()
 {
-/*
-    // Show warning dialog box
-    switch( QMessageBox::information( this, "Mixxx",
-        "For the changes to take effect,\nthe sound will stop.",
-        "&OK", "&Cancel",
-        0, 2))  // Enter == button 0, Escape == button 2
-    {
-    case 0: // Ok clicked or Alt+O pressed or Enter pressed.
-        break;
-    case 1: // Cancel clicked or Alt+C pressed or Escape pressed
-        slotOptionsClosePreferences();
-        return;
-    }
-*/
-
     // Get parameters from dialog
-    QString name = pDlg->ComboBoxSoundcard->currentText();
+    config->set(ConfigKey("[Soundcard]","Device"), pDlg->ComboBoxSoundcard->currentText());
 
     QString temp = pDlg->ComboBoxSamplerates->currentText();
     temp.truncate(temp.length()-3);
-    int srate = temp.toInt();
+    config->set(ConfigKey("[Soundcard]","Samplerate"), temp);
 
-    temp = pDlg->ComboBoxBits->currentText();
-    temp.truncate(temp.length()-3);
-    int bits = temp.toInt();
+    config->set(ConfigKey("[Soundcard]","Bits"),pDlg->ComboBoxBits->currentText());
+
+    config->Save();
 
     int bufferSize = BUFFER_SIZE;
 
     // Perform changes to sound card setup
     player->stop();
-    player->reopen(name,srate,bits,bufferSize);
+    player->reopen(config->getValueString(ConfigKey("[Soundcard]","Device")),
+		   config->getValueString(ConfigKey("[Soundcard]","Samplerate")).toInt(),
+		   config->getValueString(ConfigKey("[Soundcard]","Bits")).toInt(),
+		   bufferSize);
     player->start(master);
 
     // Perform changes to MIDI configuration
-    configMap->setConfiguration(pDlg->ComboBoxMidiconf->currentText());
+    config->set(ConfigKey("[Midi]","Configfile"),pDlg->LineEditMidiconf->text());
+    delete midiconfig;
+    midiconfig = new ConfigObject<ConfigValueMidi>( config->getValueString(ConfigKey("[Midi]","Configfile")) );
 
     // Change MIDI device
+    config->set(ConfigKey("[Midi]","Device"), pDlg->ComboBoxMididevice->currentText());
     midi->reopen(pDlg->ComboBoxMididevice->currentText());
 
     // Update playlist if path has changed
-    if (pDlg->LineEditSongfiles->text() != songpath)
+    if (pDlg->LineEditSongfiles->text() != config->getValueString(PlaylistKey))
     {
-        songpath = pDlg->LineEditSongfiles->text().latin1();
-        addFiles(songpath.latin1());
+	config->set(ConfigKey("[Playlist]","Directory"), pDlg->LineEditSongfiles->text());
+        addFiles(config->getValueString(PlaylistKey).latin1());
     }
 
     // Close dialog

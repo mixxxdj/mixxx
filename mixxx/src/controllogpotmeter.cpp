@@ -26,7 +26,7 @@
 	    midino - number of the midi controller.
 	    midicontroller - pointer to the midi controller.
    -------- ------------------------------------------------------ */
-ControlLogpotmeter::ControlLogpotmeter(ConfigObject::ConfigKey *_key, FLOAT_TYPE _maxvalue) : ControlPotmeter(_key)
+ControlLogpotmeter::ControlLogpotmeter(ConfigKey *_key, FLOAT_TYPE _maxvalue) : ControlPotmeter(_key)
 {
     a = 1;
     b = log10(2)/middlePosition;
