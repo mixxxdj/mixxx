@@ -55,7 +55,7 @@
 #include "dlgcrossfader.h"
 #include "dlgsplit.h"
 #include "powermate.h"
-// #include "enginevumeter.h"
+#include "enginevumeter.h"
 
 #ifdef __UNIX__
 #include "powermatelinux.h"
@@ -288,7 +288,7 @@ MixxxApp::MixxxApp(QApplication *a)
     flanger = new EngineFlanger(view->flanger, "[Flanger]");
 
     // Starting vumeter:
-    // vumeter = new EngineVUmeter(view->vumeter, "[VUmeter]");
+    vumeter = new EngineVUmeter(view->vumeter, "[VUmeter]");
 
     // Starting the master (mixing of the channels and effects):
     master = new EngineMaster(view->master, view->crossfader,
@@ -317,7 +317,7 @@ MixxxApp::~MixxxApp()
     delete midiconfig;
     delete m_pTracks;
     delete flanger;
-    // delete vumeter;
+    delete vumeter;
 
 #ifdef __UNIX__
     if (powermate1!=0)
