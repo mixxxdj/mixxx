@@ -440,10 +440,7 @@ void MixxxApp::initMenuBar()
   optionsMenu=new QPopupMenu();
   optionsMenu->setCheckable(true);
 //  optionsBeatMark->addTo(optionsMenu);
-  // Fullscreen on mac doesn't work for some reason...
-#ifndef __MACX__
   optionsFullScreen->addTo(optionsMenu);
-#endif
   optionsPreferences->addTo(optionsMenu);
 
   ///////////////////////////////////////////////////////////////////
