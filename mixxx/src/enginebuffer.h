@@ -217,6 +217,9 @@ private:
     float *m_pWaveBuffer;
     /** Variables used to calculate safe beat info. Automatically updated during process() */
     double m_dBeatFirst, m_dBeatInterval;
+    /** Old playback rate. Stored in this variable while a temp pitch change buttons is in effect. It does not work to just decrease the pitch slider by the 
+      * value it has been increased with when the temp button was pressed, because there is a fixed limit on the range of the pitch slider */
+    double m_dOldRate;
 
 };
 #endif

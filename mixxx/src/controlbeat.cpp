@@ -67,5 +67,7 @@ void ControlBeat::setValue(double)
             temp += buffer[i];
         temp /= filterLength;
         m_dValue = temp;
+    
+        emit(valueChanged(m_dValue));    
     }
 }

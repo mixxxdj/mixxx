@@ -29,7 +29,7 @@
   */
 
 /** Minimum allowed Beat per minute (BPM) */
-const int minBPM = 10;
+const int minBPM = 30;
 /** Maximum allowed bpm */
 const int maxBPM = 240;
 /** Maximum allowed interval between beats in milli seconds (calculated from minBPM) */

@@ -468,7 +468,7 @@ void EngineBuffer::slotSetBpm(double bpm)
         CSAMPLE *bpmBuffer = beat->getBpmPtr();
         double filebpm = bpmBuffer[(int)(bufferpos_play*(beat->getBufferSize()/READCHUNKSIZE))];
 
-//        qDebug("user %f, file %f, change %f",bpm, filebpm, bpm/filebpm);
+        qDebug("user %f, file %f, change %f",bpm, filebpm, bpm/filebpm);
 
         // Change rate to match new bpm
         rateSlider->set(bpm/filebpm-1.);
@@ -509,12 +509,13 @@ void EngineBuffer::slotControlRateTempDown(double)
     if (buttonRateTempDown->get()==1. && !m_bTempPress)
     {
         m_bTempPress = true;
+        m_dOldRate = rateSlider->get();
         rateSlider->sub(m_dTemp);
     }
     else if (buttonRateTempDown->get()==0.)
     {
         m_bTempPress = false;
-        rateSlider->add(m_dTemp);
+        rateSlider->set(m_dOldRate);
     }
 }
 
@@ -524,12 +525,13 @@ void EngineBuffer::slotControlRateTempDownSmall(double)
     if (buttonRateTempDownSmall->get()==1. && !m_bTempPress)
     {
         m_bTempPress = true;
+        m_dOldRate = rateSlider->get();
         rateSlider->sub(m_dTempSmall);
     }
     else if (buttonRateTempDownSmall->get()==0.)
     {
         m_bTempPress = false;
-        rateSlider->add(m_dTempSmall);
+        rateSlider->set(m_dOldRate);
     }
 }
 
@@ -539,12 +541,13 @@ void EngineBuffer::slotControlRateTempUp(double)
     if (buttonRateTempUp->get()==1. && !m_bTempPress)
     {
         m_bTempPress = true;
+        m_dOldRate = rateSlider->get();
         rateSlider->add(m_dTemp);
     }
     else if (buttonRateTempUp->get()==0.)
     {
         m_bTempPress = false;
-        rateSlider->sub(m_dTemp);
+        rateSlider->set(m_dOldRate);
     }
 }
 
@@ -554,12 +557,13 @@ void EngineBuffer::slotControlRateTempUpSmall(double)
     if (buttonRateTempUpSmall->get()==1. && !m_bTempPress)
     {
         m_bTempPress = true;
+        m_dOldRate = rateSlider->get();
         rateSlider->add(m_dTempSmall);
     }
     else if (buttonRateTempUpSmall->get()==0.)
     {
         m_bTempPress = false;
-        rateSlider->sub(m_dTempSmall);
+        rateSlider->set(m_dOldRate);
     }
 }
 
