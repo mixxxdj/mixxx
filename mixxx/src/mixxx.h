@@ -136,6 +136,8 @@ class MixxxApp : public QMainWindow
     QPopupMenu *fileMenu;
     /** edit_menu contains all items of the menubar entry "Edit" */
     QPopupMenu *editMenu;
+    /** options_menu contains all items of the menubar entry "Options" */
+    QPopupMenu *optionsMenu;
     /** view_menu contains all items of the menubar entry "View" */
     QPopupMenu *viewMenu;
     /** view_menu contains all items of the menubar entry "Help" */
@@ -155,6 +157,9 @@ class MixxxApp : public QMainWindow
     QAction *editCut;
     QAction *editCopy;
     QAction *editPaste;
+
+    QAction *optionsLeft;
+    QAction *optionsRight;
 
 //    QAction *viewToolBar;
     QAction *viewStatusBar;
