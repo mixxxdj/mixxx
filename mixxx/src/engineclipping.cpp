@@ -32,13 +32,17 @@ CSAMPLE *EngineClipping::process(const CSAMPLE *source, const int buffer_size)
         } else
             buffer[i] = source[i];
     }
-    if (samples_clipped > lightswitch)
+
+    if (bulb_clipping>0)
     {
-        if (!bulb_clipping->isChecked())
-            bulb_clipping->setChecked(true);
+        if (samples_clipped > lightswitch)
+        {
+            if (!bulb_clipping->isChecked())
+                bulb_clipping->setChecked(true);
+        }
+        else if (bulb_clipping->isChecked())
+            bulb_clipping->setChecked(false);
     }
-    else if (bulb_clipping->isChecked())
-        bulb_clipping->setChecked(false);
 
     return buffer;
 }

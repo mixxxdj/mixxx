@@ -114,9 +114,8 @@ class MixxxApp : public QMainWindow
     /** Preference dialog */
     void slotOptionsPreferences();
     /** Update QComboBox values when devices are changed */
-    void slotOptionsPreferencesUpdateDeviceOptions();
-    /** Set default preferences */
-    void slotOptionsDefaultPreferences();
+    void slotOptionsPreferencesUpdateMasterDeviceOptions();
+    void slotOptionsPreferencesUpdateHeadDeviceOptions();
     /** Apply preferences */
     void slotOptionsApplyPreferences();
     /** Set preferences from dialog */
@@ -155,7 +154,7 @@ class MixxxApp : public QMainWindow
     EngineBuffer *buffer1, *buffer2;
     EngineChannel *channel1, *channel2;
     EngineMaster *master;
-    Player *player;
+    Player *player, *playerSlave;
     MidiObject *midi;
     ControlObject *control;
     std::vector<EngineObject *> engines;

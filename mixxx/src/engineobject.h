@@ -33,14 +33,17 @@ public:
   ~EngineObject();
   virtual CSAMPLE *process(const CSAMPLE *, const int) = 0;
 
-  static QString NAME;
+  static QString NAME_MASTER;
+  static QString NAME_HEAD;
   static int SRATE;
   static int BITS;
   static int BUFFERSIZE;
+  static int CH_MASTER;
+  static int CH_HEAD;
   static int NYQUIST;
   static CSAMPLE norm;
 protected:
-  void setParams(QString name, int srate, int bits, int bufferSize);
+  void setParams(QString name, int srate, int bits, int bufferSize, int chMaster, int chHead);
   static FLOAT_TYPE BASERATE;
 
 private:

@@ -18,7 +18,6 @@ const int READCHUNKSIZE = 1500000; // size of the chunk that's read in every rea
 const int READBUFFERSIZE = 3*READCHUNKSIZE; // size of read buffer must be at least three
                                             // times READCHUNKSIZE (one extra is needed in case of
                                             // "stop" is pressed.
-const int NO_CHANNELS  = 2;     // 2 for stereo
 
 /** Maximum buffer length to each EObject::process call */
 const int MAX_BUFFER_LEN = 10000;

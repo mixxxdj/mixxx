@@ -36,10 +36,10 @@ class EngineMaster : public EngineObject  {
 private:
     EngineBuffer *buffer1, *buffer2;
     EngineChannel *channel1, *channel2;
-    EngineVolume *volume;
-    ControlPotmeter *crossfader;
-    EngineClipping *clipping;
-    CSAMPLE *out, *out2;
+    EngineVolume *volume, *head_volume;
+    ControlPotmeter *crossfader, *head_mix;
+    EngineClipping *clipping, *head_clipping;
+    CSAMPLE *out, *tmp, *tmp2, *tmp3;
     bool left, right;
 public:
     EngineMaster(DlgMaster *master_dlg, DlgCrossfader *crossfader_dlg,

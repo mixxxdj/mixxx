@@ -27,10 +27,10 @@
 
 class PlayerPortAudio : public Player  {
 public: 
-    PlayerPortAudio(int size, std::vector<EngineObject *> *, QString device);
+    PlayerPortAudio(int size, std::vector<EngineObject *> *, QString device, int chMaster, int chHead);
     ~PlayerPortAudio();
     /** Open device */
-    bool open(QString name, int srate, int bits, int bufferSize);
+    bool open(QString name, int srate, int bits, int bufferSize, int chMaster, int chHead);
     /** Close device */
     void close();
     /** Stop playback */
@@ -39,14 +39,17 @@ public:
     void start(EngineObject *_reader);
     /** Wait for playback to finish */
     void wait();
+    int minLatency(int SRATE);
     CSAMPLE *process(const CSAMPLE *, const int);
 protected:
-	PortAudioStream *stream;
+    PortAudioStream *stream;
 };
 
 
 int paCallback(void *inputBuffer, void *outputBuffer,
                       unsigned long framesPerBuffer,
                       PaTimestamp outTime, void *_player);
-
+int paCallbackSlave(void *inputBuffer, void *outputBuffer,
+                      unsigned long framesPerBuffer,
+                      PaTimestamp outTime, void *_player);
 #endif

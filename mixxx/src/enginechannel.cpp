@@ -35,7 +35,7 @@ EngineChannel::EngineChannel(DlgChannel *dlg, const char *group)
   clipping = new EngineClipping(dlg->BulbClipping);
 
   // Volume control:
-  volume = new EngineVolume(group);
+  volume = new EngineVolume(ConfigKey(group,"volume"));
   connect(dlg->SliderVolume, SIGNAL(valueChanged(int)), volume->potmeter, SLOT(slotSetPosition(int)));
   connect(volume->potmeter, SIGNAL(updateGUI(int)), dlg->SliderVolume, SLOT(setValue(int)));
 
