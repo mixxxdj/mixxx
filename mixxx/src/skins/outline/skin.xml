@@ -46,7 +46,7 @@
    <Pressed>sync-on-Ch1.png</Pressed>
    <Unpressed>sync-off-Ch1.png</Unpressed>
   </State>
-  <Pos>51,180</Pos>
+  <Pos>72,180</Pos>
   <Connection>
    <ConfigKey>[Channel1],beatsync</ConfigKey>
    <EmitOnDownPress>true</EmitOnDownPress>
@@ -61,7 +61,7 @@
    <Pressed>sync-on-Ch2.png</Pressed>
    <Unpressed>sync-off-Ch2.png</Unpressed>
   </State>
-  <Pos>938,180</Pos>
+  <Pos>959,180</Pos>
   <Connection>
    <ConfigKey>[Channel2],beatsync</ConfigKey>
    <EmitOnDownPress>true</EmitOnDownPress>

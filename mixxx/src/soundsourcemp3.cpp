@@ -55,7 +55,7 @@ SoundSourceMp3::SoundSourceMp3(QString qFilename) : SoundSource(qFilename)
                 break;
            /* if (Stream.ERR == MAD_ERR_LOSTSYNC)
             {
-                // ignore LOSTSYNC due to ID3 tags 
+                // ignore LOSTSYNC due to ID3 tags
                 int tagsize = id3_tag_query (Stream.this_frame,
                                 Stream.bufend - Stream.this_frame);
                 if (tagsize > 0)
@@ -95,6 +95,9 @@ SoundSourceMp3::SoundSourceMp3(QString qFilename) : SoundSource(qFilename)
     mad_stream_buffer(&Stream, (unsigned char *) inputbuf, inputbuf_len);
     mad_frame_init(&Frame);
     mad_synth_init(&Synth);
+
+    // Set number of channels
+    m_iChannels = Synth.pcm.channels;
 
     // Set the type field:
     type = "mp3 file.";

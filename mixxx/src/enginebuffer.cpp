@@ -440,16 +440,24 @@ void EngineBuffer::slotControlBeatSync(double)
     float fThisBpm  = bpmControl->get();
     float fRateScale;
 
-    // Test if this buffers bpm is the double of the other one, and find rate scale:
-    if ( abs(fThisBpm*2-fOtherBpm) < abs(fThisBpm-fOtherBpm))
-        fRateScale = fOtherBpm/(2*fThisBpm) * (1+m_pOtherEngineBuffer->getRate());
-    else if ( abs(fThisBpm-2*fOtherBpm) < abs(fThisBpm-fOtherBpm))
-        fRateScale = 2*fOtherBpm/fThisBpm * (1+m_pOtherEngineBuffer->getRate());
-    else
-        fRateScale = fOtherBpm/fThisBpm * (1+m_pOtherEngineBuffer->getRate());
+    if (fOtherBpm>0. && fThisBpm>0.)
+    {
+        // Test if this buffers bpm is the double of the other one, and find rate scale:
+        if ( abs(fThisBpm*2.-fOtherBpm) < abs(fThisBpm-fOtherBpm))
+            fRateScale = fOtherBpm/(2*fThisBpm) * (1.+m_pOtherEngineBuffer->getRate());
+        else if ( abs(fThisBpm-2.*fOtherBpm) < abs(fThisBpm-fOtherBpm))
+            fRateScale = 2.*fOtherBpm/fThisBpm * (1.+m_pOtherEngineBuffer->getRate());
+        else
+            fRateScale = fOtherBpm/fThisBpm * (1.+m_pOtherEngineBuffer->getRate());
 
-    // Adjust the rate:
-    rateSlider->set(fRateScale-1);
+        qDebug("sync scale %f",fRateScale);
+
+        // Ensure the rate is within resonable boundaries
+        if (fRateScale<2. || fRateScale>0.5)
+            // Adjust the rate:
+            rateSlider->set(fRateScale-1.);
+    }
+
 
 /*
     // Search for distance from playpos to beat mark of both buffers

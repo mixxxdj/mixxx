@@ -42,6 +42,8 @@ protected:
      QLabel *m_pLabel;
     QString m_qsText;
     int m_iNoDigits;
+    /** Foreground and background colors */
+    QColor m_qFgColor, m_qBgColor;
 };
 
 #endif

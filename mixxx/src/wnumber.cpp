@@ -38,11 +38,10 @@ void WNumber::setup(QDomNode node)
     setNumDigits(selectNodeInt(node, "NumberOfDigits"));
 
     // Colors
-    QColor c;
-    c.setNamedColor(WWidget::selectNodeQString(node, "BgColor"));
-    m_pLabel->setPaletteBackgroundColor(c);
-    c.setNamedColor(WWidget::selectNodeQString(node, "FgColor"));
-    m_pLabel->setPaletteForegroundColor(c);
+    m_qBgColor.setNamedColor(WWidget::selectNodeQString(node, "BgColor"));
+    m_pLabel->setPaletteBackgroundColor(m_qBgColor);
+    m_qFgColor.setNamedColor(WWidget::selectNodeQString(node, "FgColor"));
+    m_pLabel->setPaletteForegroundColor(m_qFgColor);
 
     // Text
     if (!selectNode(node, "Text").isNull())

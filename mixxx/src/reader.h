@@ -25,12 +25,12 @@
 #include <qptrlist.h>
 #include "defs.h"
 #include "monitor.h"
+#include "trackinfoobject.h"
 
 class ReaderExtractWave;
 class ReaderExtractBeat;              
 class EngineBuffer;
 class VisualChannel;
-class TrackInfoObject;
 
 /**
   * The Reader class is a thread taking care of reading and buffering waveform data from external sources.
