@@ -54,6 +54,7 @@ class MixxxVisual;
 class TrackList;
 class TrackInfoObject;
 class PowerMate;
+class EngineVUmeter;
 
 /**
   * This Class is the base class for Mixxx. It sets up the main
@@ -136,6 +137,7 @@ class MixxxApp : public QMainWindow
     EngineChannel *channel1, *channel2;
     EngineMaster *master;
     EngineFlanger *flanger;
+    EngineVUmeter *vumeter;
     Player *player;
     MidiObject *midi;
     ControlObject *control;

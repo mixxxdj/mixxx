@@ -67,16 +67,16 @@ public:
     /** Used to set a keyboard accelarator (up) for the ControlObject. Up and down directions are provided,
       * even though some ControlObjects does not distinguish between the two (ControlPushButton for
       * instance */
-    virtual void setAccelUp(const QKeySequence key) = 0;
+    void setAccelUp(const QKeySequence key);
     /** Used to set a keyboard accelarator (down) for the ControlObject */
-    virtual void setAccelDown(const QKeySequence key) = 0;
+    void setAccelDown(const QKeySequence key);
     /** Sets up parent widget. Used when setting up keyboard accelerators */
     static void setParentWidget(QWidget *pParentWidget);
 public slots:
     /** Slot used to update the value */
-    virtual void slotSetPosition(int) = 0;
+    void slotSetPosition(int);
     /** Slot used to update the value from a MIDI event */
-    virtual void slotSetPositionMidi(MidiCategory c, int v) = 0;
+    void slotSetPositionMidi(MidiCategory c, int v);
     /** Set the value of the object. Called from event handler when receiving ControlEventEngine. */
     void setValue(FLOAT_TYPE);
 
@@ -88,7 +88,7 @@ signals:
 
 protected:
     /** Forces the gui to be updated with the value of the controller */
-    virtual void forceGUIUpdate() = 0;  
+    void forceGUIUpdate();
     /** Method emit a valueChanged signal and puts the new value in the ControlEngineQueue */
     void emitValueChanged(FLOAT_TYPE);
     /** Return pointer to parent widget */

@@ -21,6 +21,7 @@
 #include "enginechannel.h"
 #include "engineclipping.h"
 #include "engineflanger.h"
+#include "enginevumeter.h"
 #include "dlgmaster.h"
 #include "dlgcrossfader.h"
 #include "wslider.h"
@@ -33,13 +34,15 @@
 EngineMaster::EngineMaster(DlgMaster *master_dlg, DlgCrossfader *crossfader_dlg,
                            EngineBuffer *_buffer1, EngineBuffer *_buffer2,
                            EngineChannel *_channel1, EngineChannel *_channel2,
-                           EngineFlanger *_flanger, const char *group)
+                           EngineFlanger *_flanger, EngineVUmeter *_vumeter,
+                           const char *group)
 {
     buffer1 = _buffer1;
     buffer2 = _buffer2;
     channel1 = _channel1;
     channel2 = _channel2;
     flanger = _flanger;
+    vumeter = _vumeter;
 
     // Defaults
     master1 = true;
@@ -143,6 +146,9 @@ CSAMPLE *EngineMaster::process(const CSAMPLE *, const int buffer_size)
 
     // Clipping
     tmp2 = clipping->process(tmp, buffer_size);
+
+    // Update VU meter (it does not return anything):
+    vumeter->process(tmp2, buffer_size);
 
     //
     // Headphone channel:

@@ -21,8 +21,6 @@
 #include "engineobject.h"
 #include <qapplication.h>
 
-
-
 QPtrList<ControlEngine> *ControlEngine::list = new QPtrList<ControlEngine>;
 
 ControlEngine::ControlEngine(ControlObject *_controlObject)
