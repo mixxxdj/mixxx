@@ -11,7 +11,7 @@
         <rect>
             <x>0</x>
             <y>0</y>
-            <width>512</width>
+            <width>508</width>
             <height>210</height>
         </rect>
     </property>
@@ -30,8 +30,8 @@
             <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>510</width>
-                <height>210</height>
+                <width>445</width>
+                <height>135</height>
             </rect>
         </property>
         <property stdset="1">
@@ -41,6 +41,10 @@
         <property stdset="1">
             <name>frameShadow</name>
             <enum>Sunken</enum>
+        </property>
+        <property stdset="1">
+            <name>vScrollBarMode</name>
+            <enum>Auto</enum>
         </property>
         <property stdset="1">
             <name>numRows</name>

@@ -115,7 +115,6 @@ void EngineBuffer::stop()
 }
 
 void EngineBuffer::run() {
-  qDebug("..");
   while(requestStop->available()) {
     // Wait for playback if in buffer is filled.
     sem_wait(buffers_read_ahead);

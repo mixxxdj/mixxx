@@ -132,6 +132,7 @@ long mp3file::seek(long filepos) {
     mad_stream_buffer(&Stream, inputbuf+ftable[i], mp3filelength-ftable[i]);*/
 
   int i = max((long)0,filepos/2304-9);
+  qDebug("%i %i",i,2304*(filepos/2304-1));
   Stream.this_frame = inputbuf + ftable[i];
   for (i=0; i<8; i++)
     mad_frame_decode(&Frame, &Stream);
