@@ -91,14 +91,14 @@ void Rotary::sendRotaryEvent(double dValue)
         if (m_pFilter[i]!=0)
             bStop = false;
     }
-    m_pFilter[m_iFilterLength-1] = dValue/m_dCalibration;
+    m_pFilter[m_iFilterLength-1] = dValue;
     dMagnitude += m_pFilter[m_iFilterLength-1];
     dMagnitude /= (double)m_iFilterLength;
 
     if (m_qCalibrationMutex.tryLock())
     {
         if (m_pControlObjectRotary)
-            m_pControlObjectRotary->queueFromThread(dMagnitude);
+            m_pControlObjectRotary->queueFromThread(dMagnitude/m_dCalibration);
         m_qCalibrationMutex.unlock();
     }
     else
@@ -134,7 +134,7 @@ double Rotary::calibrateEnd()
 
     m_dCalibration /= (double)m_iCalibrationCount;
 
-    qDebug("Calibration %f",m_dCalibration);
+//    qDebug("Calibration %f, count %i",m_dCalibration,m_iCalibrationCount);
 
     return m_dCalibration;
 }
