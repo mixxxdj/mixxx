@@ -13,6 +13,9 @@
 #include "trackcollection.h"
 #include "xmlparse.h"
 #include "trackinfoobject.h"
+#include <qfileinfo.h>
+#include "defs.h"
+
 
 TrackCollection::TrackCollection()
 {
@@ -103,5 +106,26 @@ TrackInfoObject *TrackCollection::getTrack(QString location)
     if (it && (*it)->getLocation()==location)
         return (*it);
     else
-        return 0;
+    {
+        // We didn't find the track in the collection, so add a new entry
+        QFileInfo file(location);
+        if (file.exists())
+        {
+            TrackInfoObject *pTrack = new TrackInfoObject(file.dirPath(), file.fileName());
+
+            // Add track to the collection
+            if (pTrack->parse() == OK)
+            {
+                addTrack(pTrack);
+                qDebug("Found new track: %s", pTrack->getFilename().latin1());
+                return pTrack;
+            }
+            else
+            {
+                qWarning("Could not parse %s", file.fileName().latin1());
+                delete pTrack;
+            }
+        }
+    }
+    return 0;
 }

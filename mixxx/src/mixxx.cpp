@@ -46,6 +46,8 @@
 #include "joystick.h"
 #include "enginevumeter.h"
 #include "track.h"
+#include "trackcollection.h"
+#include "trackinfoobject.h"
 
 #ifdef __LINUX__
 #include "powermatelinux.h"
@@ -362,12 +364,20 @@ MixxxApp::MixxxApp(QApplication *a, QStringList files)
 
 
     // Load tracks in files (command line arguments) into player 1 and 2:
-/*
     if (files.count()>1)
-        m_pTrack->loadTrack1((*files.at(1)));
+    {
+        // Get TrackInfoObject from TrackCollection
+        TrackInfoObject *pTrack = m_pTrack->getTrackCollection()->getTrack((*files.at(1)));
+        if (pTrack)
+            m_pTrack->slotLoadPlayer1(pTrack);
+    }
     if (files.count()>2)
-        m_pTrack->loadTrack2((*files.at(2)));
-*/
+    {
+        // Get TrackInfoObject from TrackCollection
+        TrackInfoObject *pTrack = m_pTrack->getTrackCollection()->getTrack((*files.at(2)));
+        if (pTrack)
+            m_pTrack->slotLoadPlayer2(pTrack);
+    }
 }
 
 MixxxApp::~MixxxApp()
