@@ -248,7 +248,7 @@ static void PaConvert_Float32_Int32_Clip(
 	{
         int samp;
         float fs = *sourceBuffer;
-        CLIP( fs, -1.0, 0.999999 );
+        CLIP( fs, -1.0f, 0.999999f );
         samp = (int) (*sourceBuffer * 0x7FFFFFFF);
         *targetBuffer = samp;
         sourceBuffer += sourceStride;

@@ -134,9 +134,9 @@ void Player::deallocate()
     delete [] out_buffer;
 }
 
-void Player::setReader(EngineObject *_reader)
+void Player::setMaster(EngineObject *_master)
 {
-    reader = _reader;
+    master = _master;
 }
 
 /* -------- ------------------------------------------------------
@@ -158,7 +158,7 @@ int Player::prepareBuffer()
   CSAMPLE *p1;
 
   // Resample; the linear interpolation is done in readfile:
-  p1 = reader->process(0, MasterBufferSize);
+  p1 = master->process(0, MasterBufferSize);
 
   // Convert the signal back to SAMPLE and write to the sound cards buffer:
   if (bufferIdx>HeadPerMasterBuffer*3)

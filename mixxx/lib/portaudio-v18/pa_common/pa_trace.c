@@ -1,7 +1,5 @@
-#ifndef PA_TRACE_H
-#define PA_TRACE_H
 /*
- * $Id: pa_trace.h 285 2003-03-18 07:21:58Z tuehaste $
+ * $Id: pa_trace.c 329 2003-05-07 12:22:30Z tuehaste $
  * Portable Audio I/O Library Trace Facility
  * Store trace information in real-time for later printing.
  *
@@ -32,36 +30,54 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-
-#define TRACE_REALTIME_EVENTS     (0)   /* Keep log of various real-time events. */
-#define MAX_TRACE_RECORDS      (2048)
-
-#ifdef __cplusplus
-extern "C"
-{
-#endif /* __cplusplus */
-
-
-    /************************************************************************************/
-    /****************** Prototypes ******************************************************/
-    /************************************************************************************/
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include "pa_trace.h"
 
 #if TRACE_REALTIME_EVENTS
 
-    void DumpTraceMessages();
-    void ResetTraceMessages();
-    void AddTraceMessage( char *msg, int data );
+static char *traceTextArray[MAX_TRACE_RECORDS];
+static int traceIntArray[MAX_TRACE_RECORDS];
+static int traceIndex = 0;
+static int traceBlock = 0;
 
-#else
+/*********************************************************************/
+void ResetTraceMessages()
+{
+    traceIndex = 0;
+}
 
-#define AddTraceMessage(msg,data) /* noop */
-#define ResetTraceMessages() /* noop */
-#define DumpTraceMessages() /* noop */
+/*********************************************************************/
+void DumpTraceMessages()
+{
+    int i;
+    int numDump = (traceIndex < MAX_TRACE_RECORDS) ? traceIndex : MAX_TRACE_RECORDS;
+
+    printf("DumpTraceMessages: traceIndex = %d\n", traceIndex );
+    for( i=0; i<numDump; i++ )
+    {
+        printf("%3d: %s = 0x%08X\n",
+               i, traceTextArray[i], traceIntArray[i] );
+    }
+    ResetTraceMessages();
+    fflush(stdout);
+}
+
+/*********************************************************************/
+void AddTraceMessage( char *msg, int data )
+{
+    if( (traceIndex == MAX_TRACE_RECORDS) && (traceBlock == 0) )
+    {
+        traceBlock = 1;
+        /*  DumpTraceMessages(); */
+    }
+    else if( traceIndex < MAX_TRACE_RECORDS )
+    {
+        traceTextArray[traceIndex] = msg;
+        traceIntArray[traceIndex] = data;
+        traceIndex++;
+    }
+}
 
 #endif
-
-#ifdef __cplusplus
-}
-#endif /* __cplusplus */
-
-#endif /* PA_TRACE_H */

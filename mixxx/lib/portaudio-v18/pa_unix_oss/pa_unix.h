@@ -54,7 +54,7 @@ PaDriverInfo;
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <malloc.h>
+//#include <malloc.h>
 #include <memory.h>
 #include <math.h>
 #include <sys/ioctl.h>
@@ -78,7 +78,7 @@ PaDriverInfo;
 #define BAD_DEVICE_ID (-1)
 
 #define MIN_LATENCY_MSEC   (2)
-#define MIN_TIMEOUT_MSEC   (2)
+#define MIN_TIMEOUT_MSEC   (100)
 #define MAX_TIMEOUT_MSEC   (1000)
 
 /************************************************* Definitions ********/
@@ -87,9 +87,6 @@ PaDriverInfo;
 #else
  #define DEVICE_NAME_BASE            "/dev/audio"
 #endif
-
-/* What is a pthread_t anyway? Here is a guess at a value that will never happen in real life. */ 
-#define INVALID_THREAD              (-1)
 
 #define MAX_CHARS_DEVNAME           (32)
 #define MAX_SAMPLE_RATES            (10)
@@ -109,12 +106,14 @@ typedef struct PaHostSoundControl
     int              pahsc_InputHandle;
     int              pahsc_AudioPriority;          /* priority of background audio thread */
     pthread_t        pahsc_AudioThread;            /* background audio thread */
-    pid_t            pahsc_AudioThreadPID;         /* background audio thread */
+    int              pahsc_IsAudioThreadValid;     /* Is pahsc_AudioThread valid?*/    pid_t            pahsc_AudioThreadPID;         /* background audio thread */
     pthread_t        pahsc_WatchDogThread;         /* highest priority thread that protects system */
-    int              pahsc_WatchDogRun;           /* Ask WatchDog to stop. */
+    int              pahsc_IsWatchDogThreadValid;  /* Is pahsc_WatchDogThread valid?*/
+    int              pahsc_WatchDogRun;            /* Ask WatchDog to stop. */
     pthread_t        pahsc_CanaryThread;           /* low priority thread that detects abuse by audio */
+    int              pahsc_IsCanaryThreadValid;    /* Is pahsc_CanaryThread valid?*/
     struct timeval   pahsc_CanaryTime;
-    int              pahsc_CanaryRun;             /* Ask Canary to stop. */
+    int              pahsc_CanaryRun;              /* Ask Canary to stop. */
     short           *pahsc_NativeInputBuffer;
     short           *pahsc_NativeOutputBuffer;
     unsigned int     pahsc_BytesPerInputBuffer;    /* native buffer size in bytes */

@@ -307,7 +307,7 @@ MixxxApp::MixxxApp(QApplication *a)
 
     // Start audio
     //qDebug("Starting player...");
-    player->setReader(master);
+    player->setMaster(master);
     player->start();
 }
 

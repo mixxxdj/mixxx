@@ -1,28 +1,50 @@
 #
-# Options (select one audio driver and one midi driver)
+# Options, and path to libraries
 #
 
-# PortAudio (Working good. Linux OSS, Windows, MacOS X)
+# On Windows, select between WMME, DIRECTSOUND and ASIO.
+# If ASIO is used, ensure that the path to the ASIO SDK 2 is set correctly below
+WINPA += WMME
+
+# Use this define if the visual subsystem should be included
+DEFINES += __VISUALS__
+
+# Path to ASIO SDK
+ASIOSDK_DIR   = ../winlib/asiosdk2
+
+#
+# End of options
+#
+
+# PortAudio 
 SOURCES += playerportaudio.cpp
 HEADERS += playerportaudio.h
 DEFINES += __PORTAUDIO__
-unix:!macx:SOURCES += ../lib/portaudio-v18/ringbuffer.c ../lib/portaudio-v18/pa_lib.c ../lib/portaudio-v18/pa_convert.c ../lib/portaudio-v18/pa_unix.c ../lib/portaudio-v18/pa_unix_oss.c
-unix:!macx:HEADERS += ../lib/portaudio-v18/ringbuffer.h ../lib/portaudio-v18/portaudio.h ../lib/portaudio-v18/pa_host.h ../lib/portaudio-v18/pa_unix.h
-macx:SOURCES += ../lib/portaudio-v18/ringbuffer.c ../lib/portaudio-v18/pa_lib.c ../lib/portaudio-v18/pa_mac_core.c ../lib/portaudio-v18/pa_convert.c
-macx:HEADERS += ../lib/portaudio-v18/ringbuffer.h ../lib/portaudio-v18/portaudio.h ../lib/portaudio-v18/pa_host.h
+PORTAUDIO_DIR = ../lib/portaudio-v18
+SOURCES += $$PORTAUDIO_DIR/pa_common/pa_lib.c $$PORTAUDIO_DIR/pa_common/pa_convert.c
+HEADERS += $$PORTAUDIO_DIR/pa_common/portaudio.h $$PORTAUDIO_DIR/pa_common/pa_host.h
+INCLUDEPATH += $$PORTAUDIO_DIR/pa_common
+unix:!macx:SOURCES += $$PORTAUDIO_DIR/pablio/ringbuffer.c $$PORTAUDIO_DIR/pa_unix_oss/pa_unix.c $$PORTAUDIO_DIR/pa_unix_oss/pa_unix_oss.c
+unix:!macx:HEADERS += $$PORTAUDIO_DIR/pablio/ringbuffer.h $$PORTAUDIO_DIR/pa_unix_oss/pa_unix.h
+unix:!macx:INCLUDEPATH += $$PORTAUDIO_DIR/pa_unix_oss
+macx:SOURCES += $$PORTAUDIO_DIR/pablio/ringbuffer.c $$PORTAUDIO_DIR/pa_mac_core/pa_mac_core.c
 macx:LIBS += -framework CoreAudio -framework AudioToolbox
-macx:INCLUDEPATH += ../lib/portaudio-v18
-
-# Portaudio WMME for Windows
-win32:SOURCES += ../lib/portaudio-v18/pa_lib.c ../lib/portaudio-v18/dsound_wrapper.c ../lib/portaudio-v18/pa_dsound.c
-win32:HEADERS += ../lib/portaudio-v18/portaudio.h ../lib/portaudio-v18/pa_host.h
-win32:LIBS += dsound.lib
-
-# Portaudio ASIO for Windows
-#win32:SOURCES += ../lib/portaudio/pa_common/pa_lib.c  ../lib/portaudio/pa_asio/pa_asio.cpp ../winlib/asiosdk2/common/asio.cpp ../winlib/asiosdk2/host/asiodrivers.cpp ../winlib/asiosdk2/host/pc/asiolist.cpp
-#win32:HEADERS += ../lib/portaudio/pa_common/portaudio.h ../lib/portaudio/pa_common/pa_host.h ../lib/portaudio/pa_common/pa_trace.h ../winlib/asiosdk2/common/asio.h ../winlib/asiosdk2/host/asiodrivers.h ../winlib/asiosdk2/host/pc/asiolist.h
-#win32:INCLUDEPATH += ../winlib/asiosdk2/common ../winlib/asiosdk2/host ../winlib/asiosdk2/host/pc
-#win32:LIBS += winmm.lib
+macx:INCLUDEPATH += $$PORTAUDIO_DIR/pa_mac_core $$PORTAUDIO_DIR/pablio 
+win32 {
+    contains(WINPA, DIRECTSOUND)
+    {
+        SOURCES += $$PORTAUDIO_DIR/pa_win_ds/dsound_wrapper.c $$PORTAUDIO_DIR/pa_win_ds/pa_dsound.c
+        LIBS += dsound.lib
+        INCLUDEPATH += $$PORTAUDIO_DIR/pa_win_ds
+    }
+    contains(WINPA, ASIO)
+    {
+        SOURCES += $$PORTAUDIO_DIR/pa_asio/pa_asio.cpp $$ASIOSDK_DIR/common/asio.cpp $$ASIOSDK_DIR/host/asiodrivers.cpp $$ASIOSDK_DIR/host/pc/asiolist.cpp
+        HEADERS += $$ASIOSDK_DIR/common/asio.h $$ASIOSDK_DIR/host/asiodrivers.h $$ASIOSDK_DIR/host/pc/asiolist.h
+        INCLUDEPATH += $$PORTAUDIO_DIR/pa_asio $$ASIOSDK_DIR/common $$ASIOSDK_DIR/host $$ASIOSDK_DIR/host/p c
+        LIBS += winmm.lib
+    }
+}
 
 # OSS Midi (Working good, Linux specific)
 unix:!macx:SOURCES += midiobjectoss.cpp
@@ -59,10 +81,12 @@ macx:LIBS    += -framework CoreMIDI -framework CoreFoundation
 #DEFINES  += __ALSAMIDI__
 
 # Visuals (Alpha)
-SOURCES += mixxxvisual.cpp visual/visualbackplane.cpp visual/texture.cpp visual/guicontainer.cpp visual/signalvertexbuffer.cpp visual/visualbox.cpp visual/visualcontroller.cpp visual/guichannel.cpp visual/guisignal.cpp visual/light.cpp visual/material.cpp visual/picking.cpp visual/pickable.cpp visual/visualsignal.cpp visual/visualobject.cpp visual/fastvertexarray.cpp
-HEADERS += mixxxvisual.h visual/visualbackplane.h  visual/texture.h visual/guicontainer.h visual/signalvertexbuffer.h visual/visualbox.h visual/visualcontroller.h visual/guichannel.h visual/guisignal.h visual/light.h visual/material.h visual/picking.h visual/pickable.h visual/visualsignal.h visual/visualobject.h visual/fastvertexarray.h
-CONFIG += opengl
-DEFINES += __VISUALS__
+contains(DEFINES, __VISUALS__)
+{
+    SOURCES += mixxxvisual.cpp visual/visualbackplane.cpp visual/texture.cpp visual/guicontainer.cpp visual/signalvertexbuffer.cpp visual/visualbox.cpp visual/visualcontroller.cpp visual/guichannel.cpp visual/guisignal.cpp visual/light.cpp visual/material.cpp visual/picking.cpp visual/pickable.cpp visual/visualsignal.cpp visual/visualobject.cpp visual/fastvertexarray.cpp
+    HEADERS += mixxxvisual.h visual/visualbackplane.h  visual/texture.h visual/guicontainer.h visual/signalvertexbuffer.h visual/visualbox.h visual/visualcontroller.h visual/guichannel.h visual/guisignal.h visual/light.h visual/material.h visual/picking.h visual/pickable.h visual/visualsignal.h visual/visualobject.h visual/fastvertexarray.h
+    CONFIG += opengl
+}
 
 # Use NVSDK when building visuals (not tested recently)
 #DEFINES += __NVSDK__
@@ -71,11 +95,6 @@ DEFINES += __VISUALS__
 #unix:INCLUDEPATH +=/usr/local/nvsdk/OpenGL/include/glh
 #unix:DEFINES += UNIX
 #unix:LIBS += -L/usr/local/nvsdk/OpenGL/lib/ -lnv_memory
-
-
-#
-# End of options
-#
 
 SOURCES	+= configobject.cpp fakemonitor.cpp controlengine.cpp controlenginequeue.cpp controleventengine.cpp controleventmidi.cpp controllogpotmeter.cpp controlobject.cpp controlnull.cpp controlpotmeter.cpp controlpushbutton.cpp controlrotary.cpp controlttrotary.cpp controlbeat.cpp dlgchannel.cpp dlgplaycontrol.cpp dlgplaylist.cpp dlgmaster.cpp dlgcrossfader.cpp dlgsplit.cpp dlgpreferences.cpp dlgprefsound.cpp dlgprefmidi.cpp dlgprefplaylist.cpp dlgflanger.cpp enginebuffer.cpp enginebufferscale.cpp enginebufferscalelinear.cpp engineclipping.cpp enginefilterblock.cpp enginefilteriir.cpp engineobject.cpp enginepregain.cpp enginevolume.cpp main.cpp midiobject.cpp midiobjectnull.cpp mixxx.cpp mixxxdoc.cpp mixxxview.cpp player.cpp soundsource.cpp soundsourcemp3.cpp monitor.cpp enginechannel.cpp enginemaster.cpp wknob.cpp wbulb.cpp wplaybutton.cpp wpushbutton.cpp wwheel.cpp wslider.cpp wpflbutton.cpp wplayposslider.cpp wtracktable.cpp wtracktableitem.cpp enginedelay.cpp engineflanger.cpp enginespectralfwd.cpp enginespectralback.cpp mathstuff.cpp readerextract.cpp readerextractwave.cpp readerextractfft.cpp readerextracthfc.cpp readerextractbeat.cpp readerevent.cpp rtthread.cpp windowkaiser.cpp probabilityvector.cpp reader.cpp tracklist.cpp trackinfoobject.cpp dlgtracklist.cpp
 HEADERS	+= configobject.h fakemonitor.h controlengine.h controlenginequeue.h controleventengine.h controleventmidi.h controllogpotmeter.h controlobject.h controlnull.h controlpotmeter.h controlpushbutton.h controlrotary.h controlttrotary.h controlbeat.h defs.h dlgchannel.h dlgplaycontrol.h dlgplaylist.h dlgmaster.h dlgcrossfader.h dlgsplit.h dlgpreferences.h dlgprefsound.h dlgprefmidi.h dlgprefplaylist.h dlgflanger.h enginebuffer.h enginebufferscale.h enginebufferscalelinear.h engineclipping.h enginefilterblock.h enginefilteriir.h engineobject.h enginepregain.h enginevolume.h midiobject.h midiobjectnull.h mixxx.h mixxxdoc.h mixxxview.h player.h soundsource.h soundsourcemp3.h monitor.h enginechannel.h enginemaster.h wknob.h wbulb.h wplaybutton.h wpushbutton.h wwheel.h wslider.h wpflbutton.h wplayposslider.h wtracktable.h wtracktableitem.h enginedelay.h engineflanger.h enginespectralfwd.h enginespectralback.h mathstuff.h readerextract.h readerextractwave.h readerextractfft.h readerextracthfc.h readerextractbeat.h readerevent.h rtthread.h windowkaiser.h probabilityvector.h reader.h  tracklist.h trackinfoobject.h dlgtracklist.h

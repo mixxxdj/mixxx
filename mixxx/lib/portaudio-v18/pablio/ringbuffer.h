@@ -6,7 +6,7 @@ extern "C"
 #endif /* __cplusplus */
 
 /*
- * $Id: ringbuffer.h 285 2003-03-18 07:21:58Z tuehaste $
+ * $Id: ringbuffer.h 329 2003-05-07 12:22:30Z tuehaste $
  * ringbuffer.h
  * Ring Buffer utility..
  *
@@ -49,8 +49,9 @@ extern "C"
 typedef struct
 {
     long   bufferSize; /* Number of bytes in FIFO. Power of 2. Set by RingBuffer_Init. */
-    long   writeIndex; /* Index of next writable byte. Set by RingBuffer_AdvanceWriteIndex. */
-    long   readIndex;  /* Index of next readable byte. Set by RingBuffer_AdvanceReadIndex. */
+/* These are declared volatile because they are written by a different thread than the reader. */
+    volatile long   writeIndex; /* Index of next writable byte. Set by RingBuffer_AdvanceWriteIndex. */
+    volatile long   readIndex;  /* Index of next readable byte. Set by RingBuffer_AdvanceReadIndex. */
     long   bigMask;    /* Used for wrapping indices with extra bit to distinguish full/empty. */
     long   smallMask;  /* Used for fitting indices to buffer. */
     char *buffer;
@@ -87,7 +88,7 @@ long RingBuffer_AdvanceWriteIndex( RingBuffer *rbuf, long numBytes );
 /* Get address of region(s) from which we can read data.
 ** If the region is contiguous, size2 will be zero.
 ** If non-contiguous, size2 will be the size of second region.
-** Returns room available to be written or numBytes, whichever is smaller.
+** Returns room available to be read or numBytes, whichever is smaller.
 */
 long RingBuffer_GetReadRegions( RingBuffer *rbuf, long numBytes,
                                 void **dataPtr1, long *sizePtr1,
