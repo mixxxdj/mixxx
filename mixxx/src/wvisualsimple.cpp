@@ -82,6 +82,10 @@ void WVisualSimple::setup(QDomNode node)
     colorMarker.setNamedColor(selectNodeQString(node, "MarkerColor"));
 }
 
+void WVisualSimple::slotNewTrack()
+{
+}
+
 void WVisualSimple::mouseMoveEvent(QMouseEvent *e)
 {
     // Only process mouse move if it was initiated by a left click

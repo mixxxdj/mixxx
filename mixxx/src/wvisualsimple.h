@@ -45,7 +45,8 @@ signals:
 
 public slots:
     void setValue(double) {};
-
+    void slotNewTrack();
+    
 protected:
     int m_iStartPosX, m_iValue;
     QPoint m_qMarkerPos1, m_qMarkerPos2, m_qMousePos;

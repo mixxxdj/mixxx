@@ -316,13 +316,15 @@ void PlayerPortAudio::setDefaults()
     while (*it)
     {
         m_pConfig->set(ConfigKey("[Soundcard]","Samplerate"),ConfigValue((*it)));
-
-        if ((*it)>=44100)
+        if ((*it).toInt()>=44100)
             break;
+        ++it;
     }
 
+    
     // Set currently used latency in config database
     int msec = (int)(1000.*(2.*1024.)/(2.*(float)(*it).toInt()));
+    
     m_pConfig->set(ConfigKey("[Soundcard]","Latency"), ConfigValue(msec));
 }
 
@@ -350,7 +352,7 @@ QStringList PlayerPortAudio::getInterfaces()
 QStringList PlayerPortAudio::getSampleRates()
 {
 
-    // Returns the list of supported sample rates of the currently opened device.
+    // Returns a sorted list of supported sample rates of the currently opened device.
     // If no device is open, return the list of sample rates supported by the
     // default device
     PaDeviceID id = m_devId;
@@ -358,24 +360,33 @@ QStringList PlayerPortAudio::getSampleRates()
         id = Pa_GetDefaultOutputDeviceID();
 
     const PaDeviceInfo *devInfo = Pa_GetDeviceInfo(id);
-    QStringList result;
 
+    QValueList<int> srlist;
+    
     // Sample rates
     if (devInfo && devInfo->numSampleRates > 0)
     {
         for (int j=0; j<devInfo->numSampleRates; j++)
-            result.append(QString("%1").arg((int)devInfo->sampleRates[j]));
+            srlist.append((int)devInfo->sampleRates[j]);
     }
     else
     {
         // If we're just given a range of samplerates, then just
         // assume some standard rates:
-        result.append(QString("%1").arg(11025));
-        result.append(QString("%1").arg(22050));
-        result.append(QString("%1").arg(44100));
-        result.append(QString("%1").arg(48000));
+        srlist.append(11025);
+        srlist.append(22050);
+        srlist.append(44100);
+        srlist.append(48000);
     }
 
+    // Sort list
+    qHeapSort(srlist);
+    
+    // Convert srlist to stringlist
+    QStringList result;
+    for (int i=0; i<srlist.count(); ++i)
+        result.append(QString("%1").arg((*srlist.at(i))));    
+    
     return result;
 }
 

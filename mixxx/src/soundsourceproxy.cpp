@@ -85,7 +85,7 @@ int SoundSourceProxy::getSrate()
     return m_pSoundSource->getSrate();
 }
 
-QPtrList<long unsigned int> *SoundSourceProxy::getCuePoints()
+QValueList<long> *SoundSourceProxy::getCuePoints()
 {
     return m_pSoundSource->getCuePoints();
 }

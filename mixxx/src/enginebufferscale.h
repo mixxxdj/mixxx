@@ -30,12 +30,14 @@ class EngineBufferScale {
 public:
     EngineBufferScale(ReaderExtractWave *_wave);
     virtual ~EngineBufferScale();
-    virtual void setQuality(int);
+    virtual void setPitchIndpTimeStretch(bool b);
     virtual void setFastMode(bool bMode);
     /** Set scaling rate */
     virtual double setRate(double _rate) = 0;
     /** Get new playpos after call to scale() */
     double getNewPlaypos();
+    /** Called from EngineBuffer when seeking, to ensure the buffers are flushed */
+    virtual void clear();
     virtual CSAMPLE *scale(double playpos, int buf_size, float *pBase=0, int iBaseLength=0) = 0;
 protected:
     /** Pointer to ReaderExtractWave object */

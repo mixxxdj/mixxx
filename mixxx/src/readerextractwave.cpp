@@ -64,11 +64,10 @@ ReaderExtractWave::~ReaderExtractWave()
     delete [] read_buffer;
     if (file)
         delete file;
+
 #ifdef EXTRACT
     delete readerbeat;
-#ifndef __WIN__
     delete readerhfc;
-#endif
 #endif
 }
 

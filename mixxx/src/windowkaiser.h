@@ -24,7 +24,8 @@
   *@author Tue & Ken Haste Andersen
   */
 
-class WindowKaiser {
+class WindowKaiser 
+{
 public: 
     WindowKaiser(int _size, CSAMPLE beta);
     ~WindowKaiser();

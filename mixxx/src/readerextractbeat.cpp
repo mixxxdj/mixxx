@@ -75,15 +75,10 @@ ReaderExtractBeat::~ReaderExtractBeat()
     // Seg faults sometimes when deleting this object?!
     return;
 
-    qDebug("del 1");
     closeSource();
-    qDebug("del 2");
     delete bpv;
-    qDebug("del 3");
     delete [] beatBuffer;
-    qDebug("del 4");
     delete [] bpmBuffer;
-    qDebug("del 5");
 }
 
 void ReaderExtractBeat::newSource(TrackInfoObject *pTrack)
@@ -312,7 +307,6 @@ void *ReaderExtractBeat::processChunk(const int _idx, const int start_idx, const
     PeakList::iterator it = peaks->getFirstInRange(frameFrom, frameTo+frameAdd-frameFrom);
     i= frameFrom;
 
-    qDebug("frameTo %i",frameTo);
     //qDebug("%i, %i",(*it), (peaks->begin()==peaks->end()));
     
     // Check if peak list is empty (may not be necessary)

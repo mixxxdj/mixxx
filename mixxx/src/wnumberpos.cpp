@@ -29,6 +29,7 @@ WNumberPos::~WNumberPos()
 
 void WNumberPos::setDuration(int iDuration)
 {
+    qDebug("duration set %i",iDuration);
     m_iDuration = iDuration;
 }
 
@@ -38,6 +39,8 @@ void WNumberPos::setValue(double dValue)
     if (m_bRemain)
         v = ((float)m_iDuration-v);
 
+        qDebug("v %f, value %f, duration %i",v,dValue,m_iDuration);
+        
     int min1=0,min2=0,sec1=0,sec2=0,msec1=0,msec2=0;
     if (v>0.)
     {

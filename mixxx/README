@@ -20,7 +20,7 @@ New since 1.4.2:
 - Splash screen
 - Support for manual beat marks
 - Waveform displays
-
+- Pitch independent time stretch using SoundTouch
 
 * INSTALL/USE **********************************************
 Please see manual, included in this directory, 

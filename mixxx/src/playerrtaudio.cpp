@@ -255,8 +255,10 @@ void PlayerRtAudio::setDefaults()
     {
         m_pConfig->set(ConfigKey("[Soundcard]","Samplerate"),ConfigValue((*it)));
 
-        if ((*it)>=44100)
+        if ((*it).toInt()>=44100)
             break;
+        
+        ++it;
     }
 
     // Set currently used latency in config database
@@ -295,9 +297,7 @@ QStringList PlayerRtAudio::getInterfaces()
 }
 
 QStringList PlayerRtAudio::getSampleRates()
-{
-    QStringList result;
-
+{    
     // Returns the list of supported sample rates of the currently opened device.
     // If no device is open, return the list of sample rates supported by the
     // default device
@@ -316,12 +316,22 @@ QStringList PlayerRtAudio::getSampleRates()
     }
 
     // Sample rates
+    QValueList<int> srlist;
+    
     if (info.sampleRates.size() > 0)
     {
         for (unsigned int j=0; j<info.sampleRates.size(); ++j)
-            result.append(QString("%1").arg(info.sampleRates[j]));
+            srlist.append(info.sampleRates[j]);
     }
 
+    // Sort list
+    qHeapSort(srlist);
+    
+    // Convert srlist to stringlist
+    QStringList result;
+    for (int i=0; i<srlist.count(); ++i)
+        result.append(QString("%1").arg((*srlist.at(i))));    
+    
     return result;
 }
 

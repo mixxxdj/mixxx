@@ -40,7 +40,7 @@ public:
                  EngineChannel *, EngineChannel *, EngineFlanger *, const char *group);
     ~EngineMaster();
     /** Reconfigures the EngineBufferScaleSRC objects with the sound quality written in the config database */
-    void setQuality(int);
+    void setPitchIndpTimeStretch(bool b);
     void process(const CSAMPLE *pIn, const CSAMPLE *pOut, const int iBufferSize);
 private:
     EngineBuffer *buffer1, *buffer2;

@@ -51,9 +51,6 @@ ReaderExtractHFC::ReaderExtractHFC(ReaderExtract *input, EngineBuffer *pEngineBu
 
 ReaderExtractHFC::~ReaderExtractHFC()
 {
-    // Segfault unless...
-    return;
-
     delete [] hfc;
     delete [] dhfc;
     delete [] windowedSamples;

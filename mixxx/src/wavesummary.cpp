@@ -66,7 +66,7 @@ void WaveSummary::run()
         {
             // Generate summary
             SoundSourceProxy *pSoundSource = new SoundSourceProxy(pTrackInfoObject->getLocation());
-
+            
             // Objects for extrating HFC values
             float *pSpectralBuffer = new float[2048];
             WindowKaiser *pWindow = new WindowKaiser(2048, 6.5);
@@ -78,7 +78,7 @@ void WaveSummary::run()
                 --iBlockSize;
 
             // Read and store summary
-            SAMPLE pBuffer[iBlockSize];
+            SAMPLE *pBuffer = new SAMPLE[iBlockSize];
             QMemArray<char> *pData = new QMemArray<char>(300);
             for (unsigned int i=0; i<pData->size(); ++i)
                 pData->at(i) = 0;
@@ -106,7 +106,7 @@ void WaveSummary::run()
                 pData->at(no+1) = min(iMax/((iBlockSize/5)*256),127);
 
                 // Find HFC value
-                for (int i=0; i<2048; ++i)
+                for (int i=0; i<min(2048, iBlockSize); ++i)
                     pSpectralBuffer[i] = pBuffer[i];
                 pSpectral->process(pSpectralBuffer, 0, 2048);
 
@@ -127,46 +127,59 @@ void WaveSummary::run()
                 r=pSoundSource->read(iBlockSize, pBuffer);
             }
 
-            // Find segmentation points
             QValueList<int> *segpoints = new QValueList<int>;
-            for (int i=5; i<298; i=i+3)
+            
+            // Check if segmentation points are stored in sound file...
+            QValueList<long> *pSegFile = pSoundSource->getCuePoints();
+            if (pSegFile)
             {
-                // Find peaks and depths
-                if ((pData->at(i)>pData->at(i-3) && pData->at(i)>pData->at(i+3))) // ||
-                    //(pData->at(i)<pData->at(i-3) && pData->at(i)<pData->at(i+3)))
-                    segpoints->append(i);
+                qDebug("Found %i points in file",pSegFile->count());
+                for (unsigned int i=0; i<pSegFile->count(); ++i)
+                    segpoints->append((int)(300.*(float)(*pSegFile->at(i))/(float)pTrackInfoObject->getLength()));
             }
-
-            // Prune segmentation point list
-            char threshold = 0;
-            while (segpoints->size()>10 && threshold<100)
+            else
             {
-                threshold += 10;
-
-                QValueList<int>::iterator it = segpoints->begin();
-                while (it!=segpoints->end())
+                // Find segmentation points
+                for (int i=5; i<298; i=i+3)
                 {
-                    int i = (*it);
-                    if (abs(pData->at(i)-pData->at(i-3))<threshold && abs(pData->at(i)-pData->at(i+3))<threshold)
+                    // Find peaks and depths
+                    if ((pData->at(i)>pData->at(i-3) && pData->at(i)>pData->at(i+3))) // ||
+                        //(pData->at(i)<pData->at(i-3) && pData->at(i)<pData->at(i+3)))
+                        segpoints->append(i);
+                }
+    
+                // Prune segmentation point list
+                char threshold = 0;
+                while (segpoints->size()>10 && threshold<100)
+                {
+                    threshold += 10;
+    
+                    QValueList<int>::iterator it = segpoints->begin();
+                    while (it!=segpoints->end())
                     {
-                        it =segpoints->remove(it);
-                        if (segpoints->size()<=10)
-                            break;
+                        int i = (*it);
+                        if (abs(pData->at(i)-pData->at(i-3))<threshold && abs(pData->at(i)-pData->at(i+3))<threshold)
+                        {
+                            it =segpoints->remove(it);
+                            if (segpoints->size()<=10)
+                                break;
+                        }
+                        else
+                            ++it;
                     }
-                    else
-                        ++it;
                 }
             }
-
+            
             // Store summary in TrackInfoObject
             QApplication::postEvent(pTrackInfoObject, new WaveSummaryEvent(pData, segpoints));
 
             qDebug("segpoints %i", segpoints->size());
 
-            delete pSoundSource;
+            delete [] pBuffer;
             delete pSpectral;
             delete pWindow;
             delete [] pSpectralBuffer;
+            delete pSoundSource;
 
 //         qDebug("generate successful for %s",pTrackInfoObject->getFilename().latin1());
 

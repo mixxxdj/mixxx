@@ -134,7 +134,7 @@ inline long unsigned SoundSourceSndFile::length()
     return filelength;
 }
 
-QPtrList<long unsigned int> *SoundSourceSndFile::getCuePoints()
+QValueList<long> *SoundSourceSndFile::getCuePoints()
 {
     // Ensure that the file ends with ".wav"
     if (!m_qFilename.endsWith(".wav"))
@@ -175,6 +175,9 @@ QPtrList<long unsigned int> *SoundSourceSndFile::getCuePoints()
     if (no<1)
         return 0;
     
+    // Allocate cue point list
+    QValueList<long> *pCueList = new QValueList<long>;    
+        
     // Read each cue point
     for (int i=0; i<no; ++i)
     {
@@ -187,8 +190,8 @@ QPtrList<long unsigned int> *SoundSourceSndFile::getCuePoints()
         long cuepoint;
         fread(&cuepoint, sizeof(long), 1, fh);
     
-        qDebug("cue point %i",cuepoint);
+        pCueList->append(cuepoint);
     }
         
-    return 0;
+    return pCueList;
 }

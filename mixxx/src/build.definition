@@ -191,6 +191,18 @@ include( check.qbas )
 #----------------------------------------------------------------------
 
 
+# SOUNDTOUCH ----------------------------------------------------------
+OBJECT = libSoundTouch.a
+TYPE = lib
+PACKAGE = libSoundTouch
+DESCRIPTION = SoundTouch library
+TIP_MESSAGE = "libSoundTouch is needed for the Mixxx playback engine!"
+LINK_LIBS = -lSoundTouch
+OPTIONS =   exit_on_failure      marked_static
+#----------------------------------------------------------------------
+# Check routines         (DON'T TOUCH!)
+include( check.qbas )
+#----------------------------------------------------------------------
 
 
 #   ALSA HEADERS ------------------------------------------------------

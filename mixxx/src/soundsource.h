@@ -20,7 +20,7 @@
 
 #include "defs.h"
 #include <qstring.h>
-#include <qptrlist.h>
+#include <qvaluelist.h>
 
 class TrackInfoObject;
 
@@ -42,7 +42,7 @@ public:
     static int ParseHeader(TrackInfoObject *);
     virtual int getSrate();
     /** Return a list of cue points stored in the file */
-    virtual QPtrList<long unsigned int> *getCuePoints();
+    virtual QValueList<long> *getCuePoints();
     /** Returns filename */
     virtual QString getFilename();
 
