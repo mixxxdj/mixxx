@@ -187,6 +187,8 @@ void Reader::newtrack()
     enginelock.lock();
     file_srate = 44100;
     file_length = 0;
+    f_dCuePoint = 0;
+
     if (filename != 0)
     {
         // Check if filename is valid

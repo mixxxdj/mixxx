@@ -62,6 +62,18 @@ EngineBuffer::EngineBuffer(MixxxApp *_mixxx, QAction *actionAudioBeatMark, Power
     playButton = new ControlEngine(p);
     playButton->set(0);
 
+    // Cue set button:
+    ControlPushButton *p1 = new ControlPushButton(ConfigKey(group, "cue_set"));
+    p1->setWidget(playcontrol->PushButtonCueSet);
+    buttonCueSet = new ControlEngine(p1);
+    buttonCueSet->setNotify(this, (EngineMethod)&EngineBuffer::CueSet);
+
+    // Cue goto button:
+    ControlPushButton *p11 = new ControlPushButton(ConfigKey(group, "cue_goto"));
+    p11->setWidget(playcontrol->PushButtonCueGoto);
+    buttonCueGoto = new ControlEngine(p11);
+    buttonCueGoto->setNotify(this, (EngineMethod)&EngineBuffer::CueGoto);
+
     // Playback rate slider
     ControlPotmeter *p2 = new ControlPotmeter(ConfigKey(group, "rate"), 0.9f, 1.1f);
     p2->setWidget(playcontrol->SliderRate);
@@ -186,6 +198,21 @@ void EngineBuffer::seek(double change)
 //    filepos_play_exchange.write(filepos_play);
 //    file->seek((long unsigned)filepos_play);
 //    visualPlaypos.tryWrite(
+}
+
+// Set the cue point at the current play position:
+void EngineBuffer::CueSet()
+{
+    reader->f_dCuePoint = filepos_play;
+}
+
+// Goto the cue point:
+void EngineBuffer::CueGoto()
+{
+    // request a seek:
+    reader->requestSeek(reader->f_dCuePoint);
+
+    m_iBeatMarkSamplesLeft = 0;
 }
 
 /*

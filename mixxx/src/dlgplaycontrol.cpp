@@ -51,4 +51,10 @@ void DlgPlaycontrol::layoutMirror()
     // Move heading and relabel
     TextHeading->move(5,TextHeading->pos().y());
     TextHeading->setText(QString("PLAYER B"));
+
+    // Move cue buttons:
+    pos = PushButtonCueSet->pos();
+    PushButtonCueSet->move(70, pos.y());
+    pos = PushButtonCueGoto->pos();
+    PushButtonCueGoto->move(140, pos.y());
 }
