@@ -287,7 +287,7 @@ void Reader::seek()
     }
     seekqueuemutex.unlock();
 
-    qDebug("seek %f",new_playpos);
+//    qDebug("seek %f",new_playpos);
     
     // Return if queue was empty
     if (new_playpos==-1.)
