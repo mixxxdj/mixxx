@@ -49,6 +49,8 @@ private:
     /** Fills the string str with the content of the id3tag frame of frameid.
       * If the frame does not exist or is empty the string is left untouched. */
     static void getField(id3_tag *tag, const char *frameid, QString str);
+    /** Scale the mad sample to be in 16 bit range. */
+    inline signed int madScale (mad_fixed_t sample);
 
     FILE *file;
     int bitrate;
