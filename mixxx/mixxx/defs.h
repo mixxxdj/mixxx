@@ -11,14 +11,14 @@ typedef double CSAMPLE;          // CSAMPLE defines the CSAMPLE type used for
                                 // intermidiate calculations
 typedef CSAMPLE FLOAT;            // Float type, used for non sample data
 static int SRATE       = 44100; // Sample rate
-const int BUFFER_SIZE  = 1024;  // Buffer size used both for input and output
+const int BUFFER_SIZE  = 512;  // Buffer size used both for input and output
 const int READAHEAD = 150;      // how many buffers to read ahead.
 const int READCHUNKSIZE = 1500000; // size of the chunk that's read in every read.
 const int READBUFFERSIZE = 2*READCHUNKSIZE; // size of read buffer.
 const int NO_CHANNELS  = 2;     // 2 for stereo
 
 /** Maximum buffer length to each EObject::process call */
-const int MAX_BUFFER_LEN = 10000;
+const int MAX_BUFFER_LEN = 100000;
 
 // Various fixed constants
 static int NYQUIST    = SRATE/2;
