@@ -107,10 +107,10 @@ MixxxApp::MixxxApp()
 
 MixxxApp::~MixxxApp()
 {
-//	buffer->stop();
-	delete buffer;
 	player->stop();
 	delete player;
+
+	delete buffer;
 }
 
 /** initializes all QActions of the application */
@@ -372,6 +372,7 @@ void MixxxApp::slotFilePrint()
 void MixxxApp::slotFileQuit()
 {
   statusBar()->message(tr("Exiting application..."));
+
   ///////////////////////////////////////////////////////////////////
   // exits the Application
   if(doc->isModified())

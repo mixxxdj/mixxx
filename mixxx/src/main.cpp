@@ -23,12 +23,8 @@
 
 #include "mixxx.h"
 
-#include "soundsourceheavymp3.h"
-
 int main(int argc, char *argv[])
 {
-	SoundSource *file;
-  file = new SoundSourceHeavymp3("music/Billie Holiday - As Time Goes By.mp3");
   QApplication a(argc, argv);
   a.setFont(QFont("helvetica", 12));
   QTranslator tor( 0 );

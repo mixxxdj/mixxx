@@ -19,8 +19,8 @@
 #define ENGINEBUFFER_H
 
 #include <qthread.h>
+#include <qwaitcondition.h>
 #include <qpushbutton.h>
-#include <qmultilineedit.h>
 #include <qslider.h>
 #include "qknob.h"
 #include <qstring.h>
@@ -28,6 +28,7 @@
 //#include <semaphore.h>
 
 #include "defs.h"
+#include "monitor.h"
 #include "engineobject.h"
 #include "soundsource.h"
 #include "controlpushbutton.h"
@@ -44,7 +45,7 @@
 class EngineBuffer : public EngineObject, public QThread  {
  Q_OBJECT
 public:
-  double rate;
+  Monitor rate;
   EngineBuffer(DlgPlaycontrol *, DlgChannel *, MidiObject *, const char *);
   ~EngineBuffer();
   void newtrack(const char *);
@@ -59,14 +60,15 @@ signals:
 private:
   void run();
   void stop();
-
   QSemaphore *requestStop;
-  QSemaphore *buffersReadAhead;
-//  sem_t *buffers_read_ahead;
-  unsigned long int read_buffer_size;
-  unsigned long int frontpos;
-  double play_pos;
-  CSAMPLE *readbuffer;
+  QWaitCondition *buffersReadAhead;
+
+  Monitor lastread_file; // The last read sample in the file.
+  Monitor playpos_file; // The current sample to play in the file.
+  Monitor playpos_buffer; // The corresponding sample in the buffer.
+  CSAMPLE *read_buffer; // The buffer where the samples are read into
+  unsigned long int read_buffer_size; // Length of buffer.
+
   void getchunk();
   void seek(FLOAT_TYPE);
   void checkread();
@@ -79,8 +81,6 @@ private:
   unsigned  chunk_size;
   unsigned long int filepos;
   FLOAT_TYPE filelength;
-  int direction;
-  long distance(const long, const long);
-  CSAMPLE *buffer;
+  CSAMPLE *buffer; // Buffer using in the processing.
 };
 #endif

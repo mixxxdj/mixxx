@@ -14,9 +14,11 @@ typedef double CSAMPLE;          // CSAMPLE defines the CSAMPLE type used for
 typedef CSAMPLE FLOAT_TYPE;       // Float type, used for non sample data
 static int SRATE       = 44100; // Sample rate
 const int BUFFER_SIZE  = 128;  // Buffer size used both for input and output
-const int READAHEAD = 150000;     // how many samples to read ahead.
-const int READCHUNKSIZE = 1500000; // size of the chunk that's read in every read.
-const int READBUFFERSIZE = 2*READCHUNKSIZE; // size of read buffer.
+const int READAHEAD = 15000;     // how many samples to read ahead.
+const int READCHUNKSIZE = 150000; // size of the chunk that's read in every read.
+const int READBUFFERSIZE = 3*READCHUNKSIZE; // size of read buffer must be at least three
+                                            // times READCHUNKSIZE (one extra is needed in case of
+                                            // "stop" is pressed.
 const int NO_CHANNELS  = 2;     // 2 for stereo
 
 /** Maximum buffer length to each EObject::process call */

@@ -47,7 +47,6 @@ protected:
 	int index;    // Current playback frame in input buffer
 	EngineBuffer* reader;
 	unsigned long int play_pos;
-	QMultiLineEdit *messages;
 };
 
 #endif
