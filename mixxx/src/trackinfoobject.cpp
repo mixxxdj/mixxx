@@ -187,12 +187,14 @@ void TrackInfoObject::insertInTrackTableRow(WTrackTable *pTableTrack, int iRow, 
     pTableTrack->setItem(iRow, COL_BPM, m_pTableItemBpm);
     pTableTrack->setItem(iRow, COL_BITRATE, m_pTableItemBitrate);
     pTableTrack->setItem(iRow, COL_INDEX, m_pTableItemIndex);
+    qDebug("bpm %p",m_pTableItemBpm);
 
     m_pTableTrack = pTableTrack;
 }
 
 void TrackInfoObject::removeFromTrackTable()
 {
+	qDebug("remove");
     if (m_pTableTrack)
     {
         m_pTableTrack->clearCell(m_pTableItemScore->row(),m_pTableItemScore->col());
@@ -324,6 +326,7 @@ void TrackInfoObject::setBpm(float f)
 
     if (m_pTableItemBpm)
     {
+	    qDebug("update cell");
         m_pTableItemBpm->setText(getBpmStr());
         m_pTableItemBpm->table()->updateCell(m_pTableItemBpm->row(), m_pTableItemBpm->col());
     }

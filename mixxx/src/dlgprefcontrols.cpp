@@ -52,14 +52,18 @@ DlgPrefControls::DlgPrefControls(QWidget *parent, ControlObject *pControl, Mixxx
         m_pConfig->set(ConfigKey("[Controls]","PositionDisplay"),ConfigValue(0));
     if (m_pConfig->getValueString(ConfigKey("[Controls]","PositionDisplay")).toInt() == 1)
     {
-        pView->m_pNumberPosCh1->setRemain(true);
-        pView->m_pNumberPosCh2->setRemain(true);
+        if (pView->m_pNumberPosCh1)
+            pView->m_pNumberPosCh1->setRemain(true);
+        if (pView->m_pNumberPosCh2)
+            pView->m_pNumberPosCh2->setRemain(true);
         ComboBoxPosition->setCurrentItem(1);
     }
     else
     {
-        pView->m_pNumberPosCh1->setRemain(false);
-        pView->m_pNumberPosCh2->setRemain(false);
+        if (pView->m_pNumberPosCh1)
+            pView->m_pNumberPosCh1->setRemain(false);
+        if (pView->m_pNumberPosCh2)
+            pView->m_pNumberPosCh2->setRemain(false);
         ComboBoxPosition->setCurrentItem(0);
     }
     connect(ComboBoxPosition,   SIGNAL(activated(int)), this, SLOT(slotSetPositionDisplay(int)));
@@ -265,13 +269,17 @@ void DlgPrefControls::slotSetPositionDisplay(int)
 
     if (ComboBoxPosition->currentItem()==1)
     {
-        m_pView->m_pNumberPosCh1->setRemain(true);
-        m_pView->m_pNumberPosCh2->setRemain(true);
+        if (m_pView->m_pNumberPosCh1)
+            m_pView->m_pNumberPosCh1->setRemain(true);
+        if (m_pView->m_pNumberPosCh2)
+            m_pView->m_pNumberPosCh2->setRemain(true);
     }
     else
     {
-        m_pView->m_pNumberPosCh1->setRemain(false);
-        m_pView->m_pNumberPosCh2->setRemain(false);
+        if (m_pView->m_pNumberPosCh1)
+            m_pView->m_pNumberPosCh1->setRemain(false);
+        if (m_pView->m_pNumberPosCh2)
+            m_pView->m_pNumberPosCh2->setRemain(false);
     }
 }
 

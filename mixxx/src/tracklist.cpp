@@ -309,7 +309,8 @@ void TrackList::loadTrack1(QString name)
     {
         TrackInfoObject *t = new TrackInfoObject("",name);
         m_pBuffer1->getReader()->requestNewTrack(t);
-        m_pText1->setText(t->getInfo());
+        if (m_pText1)
+            m_pText1->setText(t->getInfo());
     }
 }
 void TrackList::loadTrack2(QString name)
@@ -318,7 +319,8 @@ void TrackList::loadTrack2(QString name)
     {
         TrackInfoObject *t = new TrackInfoObject("",name);
         m_pBuffer2->getReader()->requestNewTrack(t);
-        m_pText2->setText(t->getInfo());
+        if (m_pText2)
+            m_pText2->setText(t->getInfo());
     }
 }
 
@@ -773,27 +775,28 @@ void TrackList::slotChangePlay_1(int idx)
         m_pBuffer1->getReader()->requestNewTrack( track );
 
         // Write info
-        m_pText1->setText( track->getInfo() );
+        if (m_pText1)
+            m_pText1->setText( track->getInfo() );
     	break;
 	}
   }
 }
 //Refreshes the Tree of the Playlist Repository
 void TrackList::refreshPlaylist(){
-	
+
 	wTree->setPlaylist(wTree->m_sPlaylistdir);
 }
 void TrackList::slotChangePlay_2(int idx)
 {
     if (idx==-1)
-      idx =  m_pTableTracks->text(m_pTableTracks->currentRow(), COL_INDEX ).toInt();  
-	
+      idx =  m_pTableTracks->text(m_pTableTracks->currentRow(), COL_INDEX ).toInt();
+
 	//m_iCurTrackIdxCh2 = m_pTableTracks->text(m_pTableTracks->currentRow(), COL_INDEX).toInt();
-    if(m_lPlaylist.count() != 0) 
+    if(m_lPlaylist.count() != 0)
 	for (TrackInfoObject *track = m_lTracks.first(); track; track = m_lTracks.next())
     {
-    
-        
+
+
     if (track && track->m_iIndex == idx)
     {
         m_pTrack2 = track;
@@ -801,7 +804,7 @@ void TrackList::slotChangePlay_2(int idx)
 
         //Set the current Track index so that slotEndOfTrack knows which track to play next
 		m_iCurTrackIdxCh2 = track->m_iIndex;
-		
+
 		// Update score:
         track->incTimesPlayed();
         if (track->getTimesPlayed() > m_iMaxTimesPlayed)
@@ -810,14 +813,15 @@ void TrackList::slotChangePlay_2(int idx)
         m_iCurTrackIdxCh2 = idx;
         // Request a new track from the reader:
         m_pBuffer2->getReader()->requestNewTrack( track );
-    
+
         // Write info
-        m_pText2->setText( track->getInfo() );
+        if (m_pText2)
+            m_pText2->setText( track->getInfo() );
     	return;
 	}
   }
 }
-//Deletes a Track from the Table 
+//Deletes a Track from the Table
 void TrackList::slotDeleteTrack(int idx)
 {
 	TrackInfoObject *Track;
