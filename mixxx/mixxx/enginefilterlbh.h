@@ -20,7 +20,7 @@
 
 #include "engineobject.h"
 #include "engineiirfilter.h"
-#include "dlgchannel.h"
+#include "qknob.h"
 
 /**
   * Parallel processing of LP, BP and HP filters, and final mixing
@@ -31,7 +31,7 @@
 class EngineFilterLBH : public EngineObject  {
 	Q_OBJECT
 public:
-	EngineFilterLBH(DlgChannel *, MidiObject *midi);
+	EngineFilterLBH(QKnob *, QKnob *, QKnob *, MidiObject *midi);
 	~EngineFilterLBH();
 	CSAMPLE *process(CSAMPLE *source, int buf_size);
 private:

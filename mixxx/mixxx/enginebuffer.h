@@ -25,7 +25,6 @@
 #include <qknob.h>
 #include <qstring.h>
 #include <qlcdnumber.h>
-#include <pthread.h>
 #include <semaphore.h>
 
 #include "defs.h"

@@ -1,4 +1,3 @@
-# KDE tags expanded automatically by am_edit - $Revision: 37 $ 
 # Makefile.in generated automatically by automake 1.4-p5 from Makefile.am
 
 # Copyright (C) 1994, 1995-8, 1999, 2001 Free Software Foundation, Inc.
@@ -21,10 +20,6 @@ top_srcdir = @top_srcdir@
 VPATH = @srcdir@
 prefix = @prefix@
 exec_prefix = @exec_prefix@
-#>- 
-bindir = @bindir@
-#>+ 3
-DEPDIR = .deps
 
 bindir = @bindir@
 sbindir = @sbindir@
@@ -229,15 +224,10 @@ DISTFILES = $(DIST_COMMON) $(SOURCES) $(HEADERS) $(TEXINFOS) $(EXTRA_DIST)
 
 TAR = tar
 GZIP_ENV = --best
-#>- all: all-redirect
-#>+ 1
-all: docs-am  all-redirect
+all: all-redirect
 .SUFFIXES:
 $(srcdir)/Makefile.in: Makefile.am $(top_srcdir)/configure.in $(ACLOCAL_M4) 
-#>- 	cd $(top_srcdir) && $(AUTOMAKE) --gnu mixxx/docs/Makefile
-#>+ 2
 	cd $(top_srcdir) && $(AUTOMAKE) --gnu mixxx/docs/Makefile
-	cd $(top_srcdir) && perl admin/am_edit mixxx/docs/Makefile.in
 
 Makefile: $(srcdir)/Makefile.in  $(top_builddir)/config.status $(BUILT_SOURCES)
 	cd $(top_builddir) \
@@ -405,9 +395,7 @@ mostlyclean: mostlyclean-recursive
 
 clean-am:  clean-tags clean-generic mostlyclean-am
 
-#>- clean: clean-recursive
-#>+ 1
-clean: kde-rpo-clean  clean-recursive
+clean: clean-recursive
 
 distclean-am:  distclean-tags distclean-generic clean-am
 	-rm -f libtool
@@ -440,32 +428,3 @@ maintainer-clean-generic clean mostlyclean distclean maintainer-clean
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
 .NOEXPORT:
-
-#>+ 2
-docs-am:
-
-#>+ 5
-force-reedit:
-		cd $(top_srcdir) && $(AUTOMAKE) --gnu mixxx/docs/Makefile
-	cd $(top_srcdir) && perl admin/am_edit mixxx/docs/Makefile.in
-
-
-#>+ 2
-final:
-	$(MAKE) all-am
-#>+ 2
-final-install:
-	$(MAKE) install-am
-#>+ 2
-no-final:
-	$(MAKE) all-am
-#>+ 2
-no-final-install:
-	$(MAKE) install-am
-#>+ 3
-cvs-clean:
-	$(MAKE) -f $(top_srcdir)/admin/Makefile.common cvs-clean
-
-#>+ 3
-kde-rpo-clean:
-	-rm -f *.rpo

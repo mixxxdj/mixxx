@@ -116,9 +116,9 @@ void EngineBuffer::newtrack(const char* filename) {
 }
 
 void EngineBuffer::start() {
-	qDebug("starting EngineBuffer...");
-	QThread::start();
-	qDebug("started!");
+    qDebug("starting EngineBuffer...");
+    QThread::start();
+    qDebug("started!");
 }
 
 void EngineBuffer::stop()
@@ -208,7 +208,7 @@ void EngineBuffer::getchunk() {
   // using assembler code from music-dsp archive.
   filepos += samples_read;
   unsigned new_frontpos = (frontpos-chunk_size+read_buffer_size)%read_buffer_size;
-  //qDebug("Reading into position %d",new_frontpos);
+  //qDebug("Reading into position %d %f",new_frontpos, play_pos);
   for (unsigned j=0; j<samples_read; j++) {
     readbuffer[new_frontpos] = temp[j];
     new_frontpos ++;
@@ -260,12 +260,12 @@ void EngineBuffer::checkread() {
   bool send_request = false;
 
   if ((distance((long)floor(play_pos)%read_buffer_size, frontpos)
-      < READAHEAD*BUFFER_SIZE) && (filepos != (unsigned long) file->length())) {
+      < READAHEAD) && (filepos != (unsigned long) file->length())) {
     direction = 1;
     send_request = true;
   } else
     if ((distance(frontpos, (long)floor(play_pos)%read_buffer_size)
-	< READAHEAD*BUFFER_SIZE) && (filepos > read_buffer_size)){
+	< READAHEAD) && (filepos > read_buffer_size)){
       direction = -1;
       send_request = true;
     }
@@ -284,7 +284,7 @@ void EngineBuffer::checkread() {
     else {
       pending_time ++;
       //std::cout << pending_time << "\n";
-      if (pending_time == 0.9*READAHEAD)
+      if (pending_time == 0.9*READAHEAD/BUFFER_SIZE)
 	qDebug("Warning: reader is (close to) lacking behind player!");
     }
   }

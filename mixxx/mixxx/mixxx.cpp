@@ -66,21 +66,12 @@ MixxxApp::MixxxApp()
   connect(pregain->pregainpot, SIGNAL(recievedMidi(int)), view->channel->DialGain, SLOT(setValue(int)));
   engines.push_back(pregain);
 
-
-  //EngineHMLfilter *filters = new EngineHMLfilter(ADC4, ADC5, ADC6, midi, bessel_highpass_15000, 
-  //						 bessel_lowpass_60);
-  
-  //EngineIIRfilter *highpass = new EngineIIRfilter(ADC6,PORT_B, 4, midi,bessel_highpass);
-  //EngineIIRfilter *lowpass = new EngineIIRfilter(ADC4,PORT_B, 4, midi,bessel_lowpass);
-  //connect(view->channel->DialFilterHigh, SIGNAL(valueChanged(int)), highpass->filterpot, SLOT(slotSetPosition(int)));
-  //connect(view->channel->DialFilterLow,  SIGNAL(valueChanged(int)), lowpass->filterpot,  SLOT(slotSetPosition(int)));
-  //engines.push_back(highpass);
-  //engines.push_back(lowpass);
-  
-  EngineFilterLBH *lbh_filter = new EngineFilterLBH(view->channel,midi);
+  EngineFilterLBH *lbh_filter = new EngineFilterLBH(view->channel->DialFilterLow,
+						    view->channel->DialFilterMiddle,
+						    view->channel->DialFilterHigh ,midi);
   engines.push_back(lbh_filter);
 
-  EngineClipping *clipping = new EngineClipping(view->channel);
+  EngineClipping *clipping = new EngineClipping(view->channel->BulbClipping);
   engines.push_back(clipping);
 
   // Initialize player with a desired buffer size
@@ -465,3 +456,5 @@ void MixxxApp::slotChangePlay(int row,int col,int button, const QPoint &)
   // Start buffer and playback
   player->start(buffer);
 }
+
+

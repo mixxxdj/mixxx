@@ -33,9 +33,9 @@ class ControlPotmeter;
 class ControlLogpotmeter : public ControlPotmeter  {
   Q_OBJECT
  protected:
-  FLOAT a,b;
+  FLOAT a,b,a2,b2;
  public:
-  ControlLogpotmeter(char*, int, MidiObject *, FLOAT=-0.9);
+  ControlLogpotmeter(char*, int, MidiObject *, FLOAT=5);
  public slots:
   void slotSetPosition(int);
 };
