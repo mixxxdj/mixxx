@@ -58,8 +58,6 @@ MidiObjectPortMidi::~MidiObjectPortMidi()
 
 void MidiObjectPortMidi::devOpen(QString device)
 {
-    // Open midi device for input
-
     // Find input device with device name
     PmDeviceID id = -1;
     for (int i=0; i<Pm_CountDevices(); i++)

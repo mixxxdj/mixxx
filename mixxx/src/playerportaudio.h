@@ -36,7 +36,7 @@ public:
     /** Stop playback */
     void stop();
     /** Start playback */
-    void start(EngineObject *_reader);
+    void start();
     /** Wait for playback to finish */
     void wait();
     int minLatency(int SRATE);

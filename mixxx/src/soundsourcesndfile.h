@@ -1,14 +1,14 @@
-#ifndef SOUNDSOURCEWAVE_H
-#define SOUNDSOURCEWAVE_H
+#ifndef SOUNDSOURCESNDFILE_H
+#define SOUNDSOURCESNDFILE_H
 
 #include "soundsource.h"
 #include <stdio.h>
 #include <sndfile.h>
 
-class SoundSourceWave : public SoundSource {
+class SoundSourceSndFile : public SoundSource {
  public:
-  SoundSourceWave(const char*);
-  ~SoundSourceWave();
+  SoundSourceSndFile(const char*);
+  ~SoundSourceSndFile();
   long seek(long);
   unsigned read(unsigned long size, const SAMPLE*);
   long unsigned length();

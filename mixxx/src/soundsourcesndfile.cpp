@@ -1,8 +1,8 @@
-#include "soundsourcewave.h"
+#include "SoundSourcesndfile.h"
 /*
   Class for reading files using libsndfile
 */
-SoundSourceWave::SoundSourceWave(const char* filename)
+SoundSourceSndFile::SoundSourceSndFile(const char* filename)
 {
     info = new SF_INFO;
     fh = sf_open(filename,SFM_READ,info);
@@ -26,14 +26,14 @@ SoundSourceWave::SoundSourceWave(const char* filename)
     type = "wav file.";
 }
 
-SoundSourceWave::~SoundSourceWave()
+SoundSourceSndFile::~SoundSourceSndFile()
 {
     if (filelength > 0)
         sf_close(fh);
     delete info;
 };
 
-long SoundSourceWave::seek(long filepos)
+long SoundSourceSndFile::seek(long filepos)
 {
     if (filelength > 0)
         if (sf_seek(fh, (sf_count_t)filepos, SEEK_SET) == -1)
@@ -46,10 +46,10 @@ long SoundSourceWave::seek(long filepos)
   read <size> samples into <destination>, and return the number of
   samples actually read.
 */
-unsigned SoundSourceWave::read(unsigned long size, const SAMPLE* destination)
+unsigned SoundSourceSndFile::read(unsigned long size, const SAMPLE* destination)
 {
     if (filelength > 0)
-        return sf_read_short(fh,(SAMPLE *)destination, size/channels)*channels;
+        return sf_read_short(fh,(SAMPLE *)destination, size);
     else
     {
         for (unsigned int i=0; i<size; i++)
@@ -61,7 +61,7 @@ unsigned SoundSourceWave::read(unsigned long size, const SAMPLE* destination)
 /*
   Return the length of the file in samples.
 */
-inline long unsigned SoundSourceWave::length()
+inline long unsigned SoundSourceSndFile::length()
 {
     return filelength;
 }

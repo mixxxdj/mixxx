@@ -6,7 +6,12 @@
 SOURCES += playerportaudio.cpp
 HEADERS += playerportaudio.h
 DEFINES += __PORTAUDIO__
-unix:LIBS += -lportaudio
+# For unix, choose between static or dynamic linking of PortAudio. If you
+# want dynamic use only the LIBS line, else use the two first lines.
+# PortAudio files needs to be placed in ../lib for the static to work.
+#unix:LIBS += -lportaudio
+unix:SOURCES += ../lib/pa_lib.c ../lib/pa_convert.c ../lib/pa_unix_oss.c
+unix:HEADERS += ../lib/portaudio.h ../lib/pa_host.h
 win32:SOURCES += ../lib/pa_lib.c ../lib/dsound_wrapper.c ../lib/pa_dsound.c
 win32:HEADERS += ../lib/portaudio.h ../lib/pa_host.h
 win32:LIBS += winmm.lib /DXSDK/lib/dsound.lib
@@ -56,8 +61,8 @@ unix {
   UI_DIR = .ui
   MOC_DIR = .moc
   OBJECTS_DIR = .obj
-  SOURCES += soundsourceaflibfile.cpp
-  HEADERS += soundsourceaflibfile.h
+  SOURCES += soundsourceaudiofile.cpp
+  HEADERS += soundsourceaudiofile.h
   LIBS += -lmad -lid3tag -laudiofile
   QMAKE_CXXFLAGS += -O -dD
   CONFIG_PATH = \"/usr/share/mixxx\"
@@ -66,8 +71,8 @@ unix {
 win32 {
   DEFINES += __WIN__
   INCLUDEPATH += ../lib .
-  SOURCES += soundsourcewave.cpp
-  HEADERS += soundsourcewave.h
+  SOURCES += soundsourcesndfile.cpp
+  HEADERS += soundsourcesndfile.h
   LIBS += ../lib/libmad.lib ../lib/libsndfile.lib
   QMAKE_CXXFLAGS += -GX
   QMAKE_LFLAGS += /NODEFAULTLIB:libcd /NODEFAULTLIB:libcmtd /NODEFAULTLIB:msvcrt.lib /NODEFAULTLIB:library

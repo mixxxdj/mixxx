@@ -27,17 +27,18 @@
 #include <vector>
 #include <qvaluelist.h>
 #include <qptrlist.h>
+#include <qstring.h>
 
 class Player : public EngineObject {
 public:
     Player(int, std::vector<EngineObject *> *, QString device);
     ~Player();      // Deallocate
     bool reopen(QString name, int srate, int bits, int bufferSize, int chMaster, int chHead);
-    virtual void start(EngineObject *); // Start audio stream
+    virtual void start() {}; // Start audio stream
     virtual void stop() = 0;           // Stops audio stream
     virtual void wait() = 0;           // Wait for audio stream to finish
     virtual int minLatency(int SRATE) = 0; // Given a sample rate, return the minimum latency for that card
-    
+    void setReader(EngineObject *);
     typedef struct
     {
         int             id;

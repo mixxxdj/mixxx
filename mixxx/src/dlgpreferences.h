@@ -18,18 +18,48 @@
 #ifndef DLGPREFERENCES_H
 #define DLGPREFERENCES_H
 
+#include "dlgpreferencesdlg.h"
 #include <qwidget.h>
-#include <dlgpreferencesdlg.h>
+#include "midiobject.h"
+#include "player.h"
+#include "configobject.h"
+#include <qstringlist.h>
 
 /**
   *@author Tue & Ken Haste Andersen
   */
 
-class DlgPreferences : public DlgPreferencesDlg  {
-   Q_OBJECT
+class DlgPreferences : public DlgPreferencesDlg
+{
+    Q_OBJECT
 public: 
-	DlgPreferences(QWidget *parent=0, const char *name=0);
-	~DlgPreferences();
+    DlgPreferences(QWidget *p, const char *name,
+                   MidiObject *_midi, Player *_player, Player *_playerSlave,
+                   ConfigObject<ConfigValue> *_config,
+                   ConfigObject<ConfigValueMidi> *_midiconfig);
+    ~DlgPreferences();
+
+public slots:
+    /** Update QComboBox values when devices are changed */
+    void slotMasterDevice();
+    void slotHeadDevice();
+    void slotMasterDeviceOptions();
+    void slotHeadDeviceOptions();
+    void slotLatencyMaster();
+    void slotLatencyHead();
+    /** Apply preferences */
+    void slotApply();
+    /** Set preferences from dialog */
+    void slotSetPreferences();
+private:
+    QWidget *mixxx;
+    MidiObject *midi;
+    Player *player, *playerSlave;
+    ConfigObject<ConfigValue> *config;
+    ConfigObject<ConfigValueMidi> *midiconfig;
+
+
+    void initMidiConfigList();
 };
 
 #endif

@@ -2,14 +2,14 @@
 
 SoundSourceMp3::SoundSourceMp3(const char* filename)
 {
-	QFile file(filename);
-	if (!file.open(IO_ReadOnly))
-		qFatal("MAD: Open of %s failed.", filename);
+    QFile file(filename);
+    if (!file.open(IO_ReadOnly))
+        qFatal("MAD: Open of %s failed.", filename);
 
     // Read the whole file into inputbuf:
     inputbuf_len = file.size();
     inputbuf = new char[inputbuf_len];
-	int tmp = file.readBlock(inputbuf, inputbuf_len);
+    unsigned int tmp = file.readBlock(inputbuf, inputbuf_len);
     if (tmp != inputbuf_len)
         qFatal("MAD: Error reading mp3-file: %s\nRead only %d bytes, but wanted %d bytes.",filename,tmp,inputbuf_len);
 

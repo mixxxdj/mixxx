@@ -81,7 +81,10 @@ class MixxxApp : public QMainWindow
     void initDoc();
     /** setup the mainview*/
     void initView();
-
+    /** Reopen player and midi devices */
+    void reopen();
+    /** Update file list */
+    void updatePlayList();
     /** overloaded for Message box on last window exit */
     bool queryExit();
 
@@ -114,20 +117,10 @@ class MixxxApp : public QMainWindow
     void slotViewStatusBar(bool toggle);
     /** Preference dialog */
     void slotOptionsPreferences();
-    /** Update QComboBox values when devices are changed */
-    void slotOptionsPreferencesUpdateMasterDevice();
-    void slotOptionsPreferencesUpdateHeadDevice();
-    void slotOptionsPreferencesUpdateMasterDeviceOptions();
-    void slotOptionsPreferencesUpdateHeadDeviceOptions();
-
-    /** Apply preferences */
-    void slotOptionsApplyPreferences();
-    /** Set preferences from dialog */
-    void slotOptionsSetPreferences();
-    /** Browse for playlist directory */
-    void slotBrowsePlaylistDir();
     /** Cancel preferences from dialog */
     void slotOptionsClosePreferences();
+    /** Browse for playlist directory */
+    void slotBrowsePlaylistDir();
     /** shows an about dlg*/
     void slotHelpAbout();
 
@@ -166,10 +159,6 @@ class MixxxApp : public QMainWindow
     ConfigKey PlaylistKey;
     ConfigObject<ConfigValue> *config;
     ConfigObject<ConfigValueMidi> *midiconfig;
-    /** List of available midi configurations */
-    QStringList midiConfigList;
-    /** Name of active midi configuration */
-    //QString midiConfigActive;
 
     /** Popup menu used to select player when a track has been selected */
     QPopupMenu *playSelectMenu;

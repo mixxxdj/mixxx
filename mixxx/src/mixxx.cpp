@@ -25,6 +25,8 @@
 #include <qmessagebox.h>
 #include <signal.h>
 #include <qlineedit.h>
+#include <qslider.h>
+#include <qlabel.h>
 #include <qdir.h>
 
 #include "wknob.h"
@@ -42,7 +44,7 @@
   #include "playeralsa.h"
 #endif
 
-#ifdef __ALSA__
+#ifdef __ALSAMIDI__
   #include "midiobjectalsa.h"
 #endif
 
@@ -87,49 +89,7 @@ MixxxApp::MixxxApp(QApplication *a)
   // Read the config file
   config = new ConfigObject<ConfigValue>(QDir::homeDirPath().append("/.mixxx/mixxx.cfg"));
 
-  // Get directory where MIDI configurations are stored. If no is given, set to CONFIG_PATH
-  if (config->getValueString(ConfigKey("[Midi]","Configdir")).length() == 0)
-      config->set(ConfigKey("[Midi]","Configdir"),ConfigValue(CONFIG_PATH));
-
-  // If the directory does not end with a "/", add one
-  if (!config->getValueString(ConfigKey("[Midi]","Configdir")).endsWith("/"))
-      config->set(ConfigKey("[Midi]","Configdir"),ConfigValue(config->getValueString(ConfigKey("[Midi]","Configdir")).append("/")));
-
-  // Get list of available midi configurations, and read the default configuration. If no default
-  // is given, use the first configuration found in the config directory.
-  midiconfig = 0;
-  QDir dir(config->getValueString(ConfigKey("[Midi]","Configdir")));
-  dir.setFilter(QDir::Files);
-  dir.setNameFilter("*.midi.cfg *.MIDI.CFG");
-  const QFileInfoList *list = dir.entryInfoList();
-  if (list!=0)
-  {
-      QFileInfoListIterator it(*list);        // create list iterator
-      QFileInfo *fi;                          // pointer for traversing
-      while ((fi=it.current()))
-      {
-          midiConfigList.append(fi->fileName());
-          if (fi->fileName() == config->getValueString(ConfigKey("[Midi]","Configfile")))
-              midiconfig = new ConfigObject<ConfigValueMidi>(config->getValueString(ConfigKey("[Midi]","Configdir")).append(config->getValueString(ConfigKey("[Midi]","Configfile"))));
-          ++it;   // goto next list element
-      }
-  }
-  if (midiconfig == 0)
-  {
-      if (midiConfigList.empty())
-      {
-          midiconfig = new ConfigObject<ConfigValueMidi>(QString(""));
-          config->set(ConfigKey("[Midi]","Configfile"), ConfigValue(""));
-      }
-      else
-      {
-          midiconfig = new ConfigObject<ConfigValueMidi>(config->getValueString(ConfigKey("[Midi]","Configdir")).append((*midiConfigList.at(0)).latin1()));
-          config->set(ConfigKey("[Midi]","Configfile"), ConfigValue((*midiConfigList.at(0)).latin1()));
-      }
-  }
-
   initDoc();
-
   initView();
 
   //qWarning("Init playlist");
@@ -175,6 +135,35 @@ MixxxApp::MixxxApp(QApplication *a)
   // Store default midi device
   config->set(ConfigKey("[Midi]","Device"), ConfigValue(midi->getOpenDevice()->latin1()));
 
+  // Get directory where MIDI configurations are stored. If no is given, set to CONFIG_PATH
+  if (config->getValueString(ConfigKey("[Midi]","Configdir")).length() == 0)
+      config->set(ConfigKey("[Midi]","Configdir"),ConfigValue(CONFIG_PATH));
+
+  // If the directory does not end with a "/", add one
+  if (!config->getValueString(ConfigKey("[Midi]","Configdir")).endsWith("/"))
+      config->set(ConfigKey("[Midi]","Configdir"),ConfigValue(config->getValueString(ConfigKey("[Midi]","Configdir")).append("/")));
+
+  // Get list of available midi configurations, and read the default configuration. If no default
+  // is given, use the first configuration found in the config directory.
+  QStringList *midiConfigList = midi->getConfigList(config->getValueString(ConfigKey("[Midi]","Configdir")));
+  midiconfig = 0;
+  for (QStringList::Iterator it = midiConfigList->begin(); it != midiConfigList->end(); ++it )
+      if (*it == config->getValueString(ConfigKey("[Midi]","Configfile")))
+          midiconfig = new ConfigObject<ConfigValueMidi>(config->getValueString(ConfigKey("[Midi]","Configdir")).append(config->getValueString(ConfigKey("[Midi]","Configfile"))));
+  if (midiconfig == 0)
+  {
+      if (midiConfigList->empty())
+      {
+          midiconfig = new ConfigObject<ConfigValueMidi>("");
+          config->set(ConfigKey("[Midi]","Configfile"), ConfigValue(""));
+      }
+      else
+      {
+          midiconfig = new ConfigObject<ConfigValueMidi>(config->getValueString(ConfigKey("[Midi]","Configdir")).append((*midiConfigList->at(0)).latin1()));
+          config->set(ConfigKey("[Midi]","Configfile"), ConfigValue((*midiConfigList->at(0)).latin1()));
+      }
+  }
+
   // Instantiate a ControlObject, and set the static midi and config pointer
   control = new ControlNull();
   control->midi = midi;
@@ -183,7 +172,7 @@ MixxxApp::MixxxApp(QApplication *a)
   //
   // Initialize master player
   //
-  qDebug("Init player...");
+  qDebug("Init master");
 
   // Open device to retreive default values
 #ifdef __ALSA__
@@ -206,31 +195,38 @@ MixxxApp::MixxxApp(QApplication *a)
       bits = player->BITS;
   if (chMaster == 0)
       chMaster =1;
+
+  // Calculate buffer size from latency in msec and sample rate
+  int bufferSize = (int)((float)config->getValueString(ConfigKey("[Soundcard]","LatencyMaster")).toInt()*((float)srate/1000.));
+  if (bufferSize == 0)
+      bufferSize = BUFFER_SIZE;
+  qDebug("bufferSize: %i",bufferSize);
+
   player->reopen(config->getValueString(ConfigKey("[Soundcard]","DeviceMaster")),
-                 srate,bits,BUFFER_SIZE,
-                 chMaster,
+                 srate,bits,bufferSize,chMaster,
                  config->getValueString(ConfigKey("[Soundcard]","ChannelHeadphone")).toInt());
   config->set(ConfigKey("[Soundcard]","Samplerate"),ConfigValue(player->SRATE));
   config->set(ConfigKey("[Soundcard]","Bits"),ConfigValue(player->BITS));
   config->set(ConfigKey("[Soundcard]","ChannelMaster"),ConfigValue(player->CH_MASTER));
+  config->set(ConfigKey("[Soundcard]","LatencyMaster"),ConfigValue(bufferSize/((float)srate/1000.)));
+
+  
   if (player->CH_HEAD>0)
       config->set(ConfigKey("[Soundcard]","ChannelHeadphone"),ConfigValue(player->CH_HEAD));
 
   //
   // Initialize slave (headphone) player if necessary
   //
-  if (config->getValueString(ConfigKey("[Soundcard]","DeviceHeadphone")).length()>0)
+  QString devHead = config->getValueString(ConfigKey("[Soundcard]","DeviceHeadphone"));
+  if (devHead.length()>0 && devHead != "None")
   {
-      qDebug("Init headphone channel");
+      qDebug("Init headphone");
       int channel = config->getValueString(ConfigKey("[Soundcard]","ChannelHeadphone")).toInt();
 #ifdef __ALSA__
 #else
-      playerSlave = new PlayerPortAudio(BUFFER_SIZE, &engines,
-                                        config->getValueString(ConfigKey("[Soundcard]","DeviceHeadphone")),
-                                        0,channel);                                              
+      playerSlave = new PlayerPortAudio(BUFFER_SIZE, &engines, devHead, 0, channel);                                              
 #endif
   }
-
 
   // Install event handler to update playpos slider and force screen update.
   // This method is used to avoid emitting signals (and QApplication::lock())
@@ -325,9 +321,13 @@ void MixxxApp::engineStart()
 
     // Start audio
     //qDebug("Starting player...");
-    player->start(master);
+    player->setReader(master);
+    player->start();
     if (playerSlave!=0)
-        playerSlave->start(master);
+    {
+        playerSlave->setReader(master);
+        playerSlave->start();
+    }
 }
 
 void MixxxApp::engineStop()
@@ -704,302 +704,9 @@ void MixxxApp::slotViewStatusBar(bool toggle)
 void MixxxApp::slotOptionsPreferences()
 {
     if (pDlg==0)
-    {
-        pDlg = new DlgPreferences(this);
-
-        // Fill dialog with info
-        slotOptionsPreferencesUpdateMasterDevice();
-        slotOptionsPreferencesUpdateHeadDevice();
-
-        // Midi configuration
-        int j=0;
-        if (midiConfigList.count()>0)
-        {
-            for (QStringList::Iterator it = midiConfigList.begin(); it != midiConfigList.end(); ++it )
-            {
-                // Insert the file name into the list, with ending (.midi.cfg) stripped
-                pDlg->ComboBoxMidiconf->insertItem((*it).left((*it).length()-9));
-
-                if ((*it) == config->getValueString(ConfigKey("[Midi]","Configfile")))
-                    pDlg->ComboBoxMididevice->setCurrentItem(j);
-                j++;
-            }
-        }
-
-        // Midi device
-        QStringList *mididev = midi->getDeviceList();
-        j=0;
-        for (QStringList::Iterator it = mididev->begin(); it != mididev->end(); ++it )
-        {
-            pDlg->ComboBoxMididevice->insertItem(*it);
-            if ((*it) == (*midi->getOpenDevice()))
-                pDlg->ComboBoxMididevice->setCurrentItem(j);
-            j++;
-        }
-
-        // Song path
-        pDlg->LineEditSongfiles->setText(config->getValueString(PlaylistKey));
-
-        // Connect buttons
-        connect(pDlg->PushButtonOK,             SIGNAL(clicked()),      this, SLOT(slotOptionsSetPreferences()));
-        connect(pDlg->PushButtonApply,          SIGNAL(clicked()),      this, SLOT(slotOptionsApplyPreferences()));
-        connect(pDlg->PushButtonCancel,         SIGNAL(clicked()),      this, SLOT(slotOptionsClosePreferences()));
-        connect(pDlg->ComboBoxSoundcardMaster,  SIGNAL(activated(int)), this, SLOT(slotOptionsPreferencesUpdateHeadDevice()));
-        connect(pDlg->ComboBoxSoundcardMaster,  SIGNAL(activated(int)), this, SLOT(slotOptionsPreferencesUpdateMasterDeviceOptions()));
-        connect(pDlg->ComboBoxSoundcardMaster,  SIGNAL(activated(int)), this, SLOT(slotOptionsPreferencesUpdateHeadDeviceOptions()));
-        connect(pDlg->ComboBoxSoundcardHead,    SIGNAL(activated(int)), this, SLOT(slotOptionsPreferencesUpdateMasterDevice()));
-        connect(pDlg->ComboBoxSoundcardHead,    SIGNAL(activated(int)), this, SLOT(slotOptionsPreferencesUpdateHeadDeviceOptions()));
-        connect(pDlg->ComboBoxSoundcardHead,    SIGNAL(activated(int)), this, SLOT(slotOptionsPreferencesUpdateMasterDeviceOptions()));
-        connect(pDlg->PushButtonBrowsePlaylist, SIGNAL(clicked()),      this, SLOT(slotBrowsePlaylistDir()));
-
-        // Show dialog
-        pDlg->show();
-    }
+        pDlg = new DlgPreferences(this,"",midi,player,playerSlave,config,midiconfig);
 }
 
-void MixxxApp::slotOptionsPreferencesUpdateMasterDevice()
-{
-    // Master sound card info
-    pDlg->ComboBoxSoundcardMaster->clear();
-    
-    QPtrList<Player::Info> *pInfo = player->getInfo();
-    for (unsigned int j=0; j<pInfo->count(); j++)
-    {
-        Player::Info *p = pInfo->at(j);
-
-        // Name of device.
-        pDlg->ComboBoxSoundcardMaster->insertItem(p->name);
-
-        // If it's the first device, it becomes the default, if no device has been
-        // selected previously. Thus update its properties
-        slotOptionsPreferencesUpdateMasterDeviceOptions();
-
-        if (p->name == config->getValueString(ConfigKey("[Soundcard]","DeviceMaster")) &&
-            !(p->noChannels==2 && p->name==pDlg->ComboBoxSoundcardHead->currentText()))
-        {
-            pDlg->ComboBoxSoundcardMaster->setCurrentItem(j);
-            slotOptionsPreferencesUpdateMasterDeviceOptions();
-        }
-    }
-}
-
-void MixxxApp::slotOptionsPreferencesUpdateHeadDevice()
-{
-    // Headphone sound card info
-    pDlg->ComboBoxSoundcardHead->clear();
-
-    // First device, "None"
-    pDlg->ComboBoxSoundcardHead->insertItem("None");
-    slotOptionsPreferencesUpdateHeadDeviceOptions();
-
-    QPtrList<Player::Info> *pInfo = player->getInfo();
-    for (unsigned int j=0; j<pInfo->count(); j++)
-    {
-        Player::Info *p = pInfo->at(j);
-
-        // Name of device. On macx playback can only happen on one device at a time
-#ifdef __MACX__
-        if (p->noChannels>=4 && p->name==pDlg->ComboBoxSoundcardMaster->currentText())
-#endif
-            pDlg->ComboBoxSoundcardHead->insertItem(p->name);
-
-
-        if (p->name == config->getValueString(ConfigKey("[Soundcard]","DeviceHeadphone")) &&
-            !(p->noChannels==2 && p->name==pDlg->ComboBoxSoundcardMaster->currentText()))
-        {
-            pDlg->ComboBoxSoundcardHead->setCurrentItem(j+1);
-            slotOptionsPreferencesUpdateHeadDeviceOptions();
-        }
-    }
-}
-
-void MixxxApp::slotOptionsPreferencesUpdateMasterDeviceOptions()
-{
-    QPtrList<Player::Info> *pInfo = player->getInfo();
-    Player::Info *p = pInfo->first();
-
-    while (p != 0)
-    {
-        if (pDlg->ComboBoxSoundcardMaster->currentText() == p->name)
-        {
-            // Master channels
-            pDlg->ComboBoxChannelsMaster->clear();
-            int j=0;
-            for (int i=1; i<=p->noChannels; i+=2)
-            {
-                QString ch(QString("%1-%2").arg(i).arg(i+1));
-                if (!(pDlg->ComboBoxSoundcardMaster->currentText() == pDlg->ComboBoxSoundcardHead->currentText() &&
-                      ch == pDlg->ComboBoxChannelsHead->currentText()))
-                {
-                    pDlg->ComboBoxChannelsMaster->insertItem(ch);
-                    if (i==player->CH_MASTER)
-                        pDlg->ComboBoxChannelsMaster->setCurrentItem(j);
-                    j++;
-                }
-            }
-            
-            // Sample rates
-            pDlg->ComboBoxSamplerates->clear();
-            {for (unsigned int i=0; i<p->sampleRates.size(); i++)
-            {
-                pDlg->ComboBoxSamplerates->insertItem(QString("%1 Hz").arg(p->sampleRates[i]));
-                if (p->sampleRates[i]==player->SRATE)
-                    pDlg->ComboBoxSamplerates->setCurrentItem(i);
-            }}
-
-            // Bits
-            pDlg->ComboBoxBits->clear();
-//            for (unsigned int i=0; i<p->bits.size(); i++)
-//            {
-//                pDlg->ComboBoxBits->insertItem(QString("%1").arg(p->bits[i]));
-//                if (p->bits[i]==player->BITS)
-//                    pDlg->ComboBoxBits->setCurrentItem(i);
-//            }
-            pDlg->ComboBoxBits->insertItem(QString("16"));
-        }
-        // Get next device
-        p = pInfo->next();
-    }
-}
-
-void MixxxApp::slotOptionsPreferencesUpdateHeadDeviceOptions()
-{
-    // Ensure sample rate list is contains all rates the master device supports
-    slotOptionsPreferencesUpdateMasterDeviceOptions();
-
-    QPtrList<Player::Info> *pInfo = player->getInfo();
-    Player::Info *p = pInfo->first();
-
-    // Clear headphone channels
-    pDlg->ComboBoxChannelsHead->clear();
-
-    while (p != 0)
-    {
-        if (pDlg->ComboBoxSoundcardHead->currentText() == p->name)
-        {
-            // Headphone channels
-            int j=0;
-            for (int i=1; i<=p->noChannels; i+=2)
-            {
-                QString ch(QString("%1-%2").arg(i).arg(i+1));
-                if (!(pDlg->ComboBoxSoundcardHead->currentText() == pDlg->ComboBoxSoundcardMaster->currentText() &&
-                      ch == pDlg->ComboBoxChannelsMaster->currentText()))
-                {
-                    pDlg->ComboBoxChannelsHead->insertItem(ch);
-                    if (i==player->CH_HEAD)
-                        pDlg->ComboBoxChannelsHead->setCurrentItem(j);
-                    j++;
-                }
-            }
-
-            // Limit sample rates to those provided by both cards. If no head card is selected, do nothing
-            if (pDlg->ComboBoxSoundcardHead->currentText() != "None")
-            {
-                {for (int i=0; i<pDlg->ComboBoxSamplerates->count(); i++)
-                {
-                    QString srateStr = pDlg->ComboBoxSamplerates->text(i);
-                    int srate = srateStr.left(srateStr.length()-3).toInt();
-
-                    bool foundSrate = false;
-                    for (unsigned int j=0; j<p->sampleRates.size(); j++)
-                    {
-                        if (p->sampleRates[j] == srate)
-                            foundSrate = true;
-                    }
-                    if (!foundSrate)
-                        pDlg->ComboBoxSamplerates->removeItem(i);
-                }}
-            }
-        }
-
-        // Get next device
-        p = pInfo->next();
-    }                    
-}
-
-void MixxxApp::slotOptionsApplyPreferences()
-{
-    // Get parameters from dialog
-    config->set(ConfigKey("[Soundcard]","DeviceMaster"), pDlg->ComboBoxSoundcardMaster->currentText());
-    config->set(ConfigKey("[Soundcard]","DeviceHeadphone"), pDlg->ComboBoxSoundcardHead->currentText());
-    QString temp = pDlg->ComboBoxSamplerates->currentText();
-    temp.truncate(temp.length()-3);
-    config->set(ConfigKey("[Soundcard]","Samplerate"), temp);
-    config->set(ConfigKey("[Soundcard]","Bits"),pDlg->ComboBoxBits->currentText());
-    config->set(ConfigKey("[Soundcard]","ChannelMaster"),pDlg->ComboBoxChannelsMaster->currentText().left(1));
-    config->set(ConfigKey("[Soundcard]","ChannelHeadphone"),pDlg->ComboBoxChannelsHead->currentText().left(1));
-    
-    int bufferSize = BUFFER_SIZE;
-
-    // Stop playback
-    if (playerSlave != 0)
-        playerSlave->stop();
-    player->stop();
-
-    // Perform changes to master sound card setup
-    player->reopen(config->getValueString(ConfigKey("[Soundcard]","DeviceMaster")),
-           config->getValueString(ConfigKey("[Soundcard]","Samplerate")).toInt(),
-           config->getValueString(ConfigKey("[Soundcard]","Bits")).toInt(),
-           bufferSize,
-           config->getValueString(ConfigKey("[Soundcard]","ChannelMaster")).toInt(),
-           config->getValueString(ConfigKey("[Soundcard]","ChannelHeadphone")).toInt());
-    player->start(master);
-
-    // And the headphone card
-    if (config->getValueString(ConfigKey("[Soundcard]","DeviceHeadphone")) != "None")
-    {
-        if (config->getValueString(ConfigKey("[Soundcard]","DeviceHeadphone")) != config->getValueString(ConfigKey("[Soundcard]","DeviceMaster")))
-            if (playerSlave != 0)
-                playerSlave->reopen(config->getValueString(ConfigKey("[Soundcard]","DeviceHeadphone")),
-                                    config->getValueString(ConfigKey("[Soundcard]","Samplerate")).toInt(),
-                                    config->getValueString(ConfigKey("[Soundcard]","Bits")).toInt(),
-                                    bufferSize,
-                                    0,
-                                    config->getValueString(ConfigKey("[Soundcard]","ChannelHeadphone")).toInt());
-            else
-                playerSlave = new PlayerPortAudio(BUFFER_SIZE, &engines,
-                                                  config->getValueString(ConfigKey("[Soundcard]","DeviceHeadphone")),
-                                                  0,
-                                                  config->getValueString(ConfigKey("[Soundcard]","ChannelHeadphone")).toInt());
-    }
-    else if (playerSlave != 0)
-    {
-        delete playerSlave;
-        playerSlave = 0;
-    }
-    
-    // Close MIDI
-    midi->devClose();
-
-    // Change MIDI configuration
-    config->set(ConfigKey("[Midi]","Configfile"),pDlg->ComboBoxMidiconf->currentText().append(".midi.cfg"));
-    //midiconfig->clear(); // (is currently not implemented correctly)
-    midiconfig->reopen(config->getValueString(ConfigKey("[Midi]","Configdir")).append(config->getValueString(ConfigKey("[Midi]","Configfile"))));
-
-    // Open MIDI device
-    config->set(ConfigKey("[Midi]","Device"), pDlg->ComboBoxMididevice->currentText());
-    midi->devOpen(pDlg->ComboBoxMididevice->currentText());
-
-    // Update playlist if path has changed
-    if (pDlg->LineEditSongfiles->text() != config->getValueString(PlaylistKey))
-    {
-        config->set(ConfigKey("[Playlist]","Directory"), pDlg->LineEditSongfiles->text());
-        view->playlist->ListPlaylist->clear();
-        addFiles(config->getValueString(PlaylistKey).latin1());
-    }
-}
-
-
-void MixxxApp::slotOptionsSetPreferences()
-{
-    slotOptionsApplyPreferences();
-
-    // Save the preferences
-    config->Save();
-
-    // Close dialog
-    slotOptionsClosePreferences();
-}
 
 void MixxxApp::slotBrowsePlaylistDir()
 {
@@ -1081,3 +788,62 @@ void MixxxApp::addFiles(const char *path)
     }
 }
 
+void MixxxApp::updatePlayList()
+{
+    view->playlist->ListPlaylist->clear();
+    addFiles(config->getValueString(ConfigKey("[Playlist]","Directory")).latin1());
+}
+
+void MixxxApp::reopen()
+{
+    // Calculate buffer size based on sample rate and latency in msecs
+    int bufferSize = (int)((float)config->getValueString(ConfigKey("[Soundcard]","LatencyMaster")).toInt()*((float)config->getValueString(ConfigKey("[Soundcard]","Samplerate")).toInt()/1000.));
+    qDebug("bufferSize: %i",bufferSize);
+
+    // Stop playback
+    if (playerSlave != 0)
+        playerSlave->stop();
+    player->stop();
+
+    // Perform changes to master sound card setup
+    player->reopen(config->getValueString(ConfigKey("[Soundcard]","DeviceMaster")),
+           config->getValueString(ConfigKey("[Soundcard]","Samplerate")).toInt(),
+           config->getValueString(ConfigKey("[Soundcard]","Bits")).toInt(),
+           bufferSize,
+           config->getValueString(ConfigKey("[Soundcard]","ChannelMaster")).toInt(),
+           config->getValueString(ConfigKey("[Soundcard]","ChannelHeadphone")).toInt());
+    player->start();
+
+    // And the headphone card
+    if (config->getValueString(ConfigKey("[Soundcard]","DeviceHeadphone")) != "None")
+    {
+        if (config->getValueString(ConfigKey("[Soundcard]","DeviceHeadphone")) != config->getValueString(ConfigKey("[Soundcard]","DeviceMaster")))
+            if (playerSlave != 0)
+                playerSlave->reopen(config->getValueString(ConfigKey("[Soundcard]","DeviceHeadphone")),
+                                    config->getValueString(ConfigKey("[Soundcard]","Samplerate")).toInt(),
+                                    config->getValueString(ConfigKey("[Soundcard]","Bits")).toInt(),
+                                    bufferSize,
+                                    0,
+                                    config->getValueString(ConfigKey("[Soundcard]","ChannelHeadphone")).toInt());
+            else
+                playerSlave = new PlayerPortAudio(BUFFER_SIZE, 0,
+                                                  config->getValueString(ConfigKey("[Soundcard]","DeviceHeadphone")),
+                                                  0,
+                                                  config->getValueString(ConfigKey("[Soundcard]","ChannelHeadphone")).toInt());
+    }
+    else if (playerSlave != 0)
+    {
+        delete playerSlave;
+        playerSlave = 0;
+    }
+
+    // Close MIDI
+    midi->devClose();
+
+    // Change MIDI configuration
+    //midiconfig->clear(); // (is currently not implemented correctly)
+    midiconfig->reopen(config->getValueString(ConfigKey("[Midi]","Configdir")).append(config->getValueString(ConfigKey("[Midi]","Configfile"))));
+
+    // Open MIDI device
+    midi->devOpen(config->getValueString(ConfigKey("[Midi]","Device")));
+}

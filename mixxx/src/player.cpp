@@ -63,12 +63,7 @@ void Player::deallocate()
     delete [] out_buffer;
 }
 
-/* -------- ------------------------------------------------------
-   Purpose: Start the audio stream
-   Input:   Internal synth datastructure
-   Output:
-   -------- ------------------------------------------------------ */
-void Player::start(EngineObject *_reader)
+void Player::setReader(EngineObject *_reader)
 {
     reader = _reader;
 }
@@ -90,11 +85,14 @@ int Player::prepareBuffer()
   // Resample; the linear interpolation is done in readfile:
   p1 = reader->process(0, BUFFERSIZE);
 
-  {for (unsigned int i=0; i<engines->size(); i++)
+  if (engines != 0)
   {
-      p2 = (*engines)[i]->process(p1, BUFFERSIZE);
-      p1=p2;
-  }}
+      for (unsigned int i=0; i<engines->size(); i++)
+      {
+          p2 = (*engines)[i]->process(p1, BUFFERSIZE);
+          p1=p2;
+      }
+  }
 
   // Convert the signal back to SAMPLE and write to the sound cards buffer:
   if (bufferIdx>20)

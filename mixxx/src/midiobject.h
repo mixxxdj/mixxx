@@ -31,9 +31,11 @@ public:
     void remove(ControlObject* c);
     /** Returns a list of available devices */
     QStringList *getDeviceList();
-
     /** Returns the name of the current open device */
     QString *getOpenDevice();
+    /** Returns a list of available configurations. Takes as input the directory path
+      * containing the configuration files */
+    QStringList *getConfigList(QString path);
 protected:
     void run() {};
     void stop();
@@ -47,9 +49,10 @@ protected:
 
     /** List of available midi devices */
     QStringList devices;
-
     /** Name of current open device */
     QString openDevice;
+    /** List of available midi configurations. Initialized upon call to getConfigList() */
+    QStringList configs;
 
     QApplication *app;
     QWidget *mixxx;
