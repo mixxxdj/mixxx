@@ -794,9 +794,14 @@
   <Tooltip>Channel highpass filter</Tooltip>
   <NumberStates>41</NumberStates>
   <Path>knobl%1.png</Path>
+  <DisabledPath>knobg%1.png</DisabledPath>
   <Pos>62,587</Pos>
   <Connection>
    <ConfigKey>[Channel1],filterHigh</ConfigKey>
+  </Connection>
+  <Connection>
+   <ConfigKey>[Channel1],filterHighKill</ConfigKey>
+   <OnOff>true</OnOff>
   </Connection>
  </Knob>
 
@@ -804,9 +809,14 @@
   <Tooltip>Channel bandpass filter</Tooltip>
   <NumberStates>41</NumberStates>
   <Path>knobl%1.png</Path>
+  <DisabledPath>knobg%1.png</DisabledPath>
   <Pos>62,642</Pos>
   <Connection>
    <ConfigKey>[Channel1],filterMid</ConfigKey>
+  </Connection>
+  <Connection>
+   <ConfigKey>[Channel1],filterMidKill</ConfigKey>
+   <OnOff>true</OnOff>
   </Connection>
  </Knob>
 
@@ -814,9 +824,14 @@
   <Tooltip>Channel lowpass filter</Tooltip>
   <NumberStates>41</NumberStates>
   <Path>knobl%1.png</Path>
+  <DisabledPath>knobg%1.png</DisabledPath>
   <Pos>62,698</Pos>
   <Connection>
    <ConfigKey>[Channel1],filterLow</ConfigKey>
+  </Connection>
+  <Connection>
+   <ConfigKey>[Channel1],filterLowKill</ConfigKey>
+   <OnOff>true</OnOff>
   </Connection>
  </Knob>
 
@@ -834,9 +849,14 @@
   <Tooltip>Channel highpass filter</Tooltip>
   <NumberStates>41</NumberStates>
   <Path>knobr%1.png</Path>
+  <DisabledPath>knobg%1.png</DisabledPath>
   <Pos>948,586</Pos>
   <Connection>
    <ConfigKey>[Channel2],filterHigh</ConfigKey>
+  </Connection>
+  <Connection>
+   <ConfigKey>[Channel2],filterHighKill</ConfigKey>
+   <OnOff>true</OnOff>
   </Connection>
  </Knob>
 
@@ -844,9 +864,14 @@
   <Tooltip>Channel bandpass filter</Tooltip>
   <NumberStates>41</NumberStates>
   <Path>knobr%1.png</Path>
+  <DisabledPath>knobg%1.png</DisabledPath>
   <Pos>948,641</Pos>
   <Connection>
    <ConfigKey>[Channel2],filterMid</ConfigKey>
+  </Connection>
+  <Connection>
+   <ConfigKey>[Channel2],filterMidKill</ConfigKey>
+   <OnOff>true</OnOff>
   </Connection>
  </Knob>
 
@@ -854,9 +879,14 @@
   <Tooltip>Channel lowpass filter</Tooltip>
   <NumberStates>41</NumberStates>
   <Path>knobr%1.png</Path>
+  <DisabledPath>knobg%1.png</DisabledPath>
   <Pos>948,697</Pos>
   <Connection>
    <ConfigKey>[Channel2],filterLow</ConfigKey>
+  </Connection>
+  <Connection>
+   <ConfigKey>[Channel2],filterLowKill</ConfigKey>
+   <OnOff>true</OnOff>
   </Connection>
  </Knob>
 

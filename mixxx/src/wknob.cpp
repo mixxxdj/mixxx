@@ -23,6 +23,7 @@ WKnob::WKnob(QWidget *parent, const char *name) : WWidget(parent,name)
     m_pPixmaps = 0;
     m_pPixmapBack = 0;
     m_pPixmapBuffer = 0;
+    m_bDisabledLoaded = false;
     setPositions(0);
     setBackgroundMode(NoBackground);
 }
@@ -39,19 +40,30 @@ void WKnob::setup(QDomNode node)
     // Set background pixmap if available
     if (!selectNode(node, "BackPath").isNull())
         setPixmapBackground(getPath(selectNodeQString(node, "BackPath")));
-    
-    // Number of states
-    setPositions(selectNodeInt(node, "NumberStates"));
+
+    // Number of states. Depends if disabled pics are defined as well
+    if (!selectNode(node, "DisabledPath").isNull())
+        setPositions(selectNodeInt(node, "NumberStates"),true);
+    else
+        setPositions(selectNodeInt(node, "NumberStates"),false);
 
     // Load knob  pixmaps
     QString path = selectNodeQString(node, "Path");
     for (int i=0; i<m_iNoPos; ++i)
-    {
         setPixmap(i, getPath(path.arg(i)));
+
+    // See if disabled images is defined, and load them...
+    if (!selectNode(node, "DisabledPath").isNull())
+    {
+        path = selectNodeQString(node, "DisabledPath");
+        for (int i=0; i<m_iNoPos; ++i)
+            setPixmap(i+m_iNoPos, getPath(path.arg(i)));
+        m_bDisabledLoaded = true;
     }
+
 }
 
-void WKnob::setPositions(int iNoPos)
+void WKnob::setPositions(int iNoPos, bool bIncludingDisabled)
 {
     m_iNoPos = iNoPos;
     m_iPos = 0;
@@ -60,8 +72,12 @@ void WKnob::setPositions(int iNoPos)
 
     if (m_iNoPos>0)
     {
-        m_pPixmaps = new QPixmap*[m_iNoPos];
-        for (int i=0; i<m_iNoPos; i++)
+        int pics = m_iNoPos;
+        if (bIncludingDisabled)
+            pics *= 2;
+
+        m_pPixmaps = new QPixmap*[pics];
+        for (int i=0; i<pics; i++)
             m_pPixmaps[i] = 0;
     }
 }
@@ -141,6 +157,10 @@ void WKnob::paintEvent(QPaintEvent *)
         else if (idx<0)
             idx = 0;
 
+        // Disabled pixmaps are placed ahead of normal pixmaps in the buffer. Use them
+        // if the widget is disabled and the disabled pixmaps are loaded.
+        if (m_bOff && m_bDisabledLoaded)
+            idx += m_iNoPos;
 
         // If m_pPixmapBuffer is defined, use double buffering when painting,
         // otherwise paint the button directly to the screen.

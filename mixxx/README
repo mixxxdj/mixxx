@@ -19,11 +19,12 @@ New since 1.1:
 - Sound card API structure updated. Now a normal stereo 
   soundcard can be used to hear both master and headphone
   output
-- Jack (compile time) support added
+- Jack support added
 - Multiple playlist interface
 - Pitch display
+- State of currently "killed" frequency bands visible on 
+  knobs 
 
-:
 * REQUIREMENTS *********************************************
 Mixxx is depends on the following libraries:
 QT >= 3.1 

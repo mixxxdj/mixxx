@@ -25,6 +25,7 @@ QString WWidget::m_qPath;
 WWidget::WWidget(QWidget *parent, const char *name, WFlags flags) : QWidget(parent,name, flags|WStaticContents|WRepaintNoErase|WResizeNoErase)
 {
     m_fValue = 0.;
+    m_bOff = false;
     connect(this, SIGNAL(valueChangedLeftDown(double)), this, SLOT(slotReEmitValueDown(double)));
     connect(this, SIGNAL(valueChangedRightDown(double)), this, SLOT(slotReEmitValueDown(double)));
     connect(this, SIGNAL(valueChangedLeftUp(double)), this, SLOT(slotReEmitValueUp(double)));
@@ -61,22 +62,28 @@ void WWidget::setup(QDomNode node)
         configKey.group = key.left(key.find(","));
         configKey.item = key.mid(key.find(",")+1);
 
-        // Get properties from XML, or use defaults
-        bool bEmitOnDownPress = true;
-        if (selectNodeQString(con, "EmitOnDownPress").contains("false",false))
-            bEmitOnDownPress = false;
-
-        Qt::ButtonState state = Qt::NoButton;
-        if (!selectNode(con, "ButtonState").isNull())
+        if (!selectNode(con, "OnOff").isNull() && selectNodeQString(con, "OnOff")=="true")
         {
-            if (selectNodeQString(con, "ButtonState").contains("LeftButton"))
-                state = Qt::LeftButton;
-            else if (selectNodeQString(con, "ButtonState").contains("RightButton"))
-                state = Qt::RightButton;
+            ControlObject::setWidgetOnOff(this, configKey);
         }
+        else
+        {
+            // Get properties from XML, or use defaults
+            bool bEmitOnDownPress = true;
+            if (selectNodeQString(con, "EmitOnDownPress").contains("false",false))
+                bEmitOnDownPress = false;
 
-        ControlObject::setWidget(this, configKey, bEmitOnDownPress, state);
+            Qt::ButtonState state = Qt::NoButton;
+            if (!selectNode(con, "ButtonState").isNull())
+            {
+                if (selectNodeQString(con, "ButtonState").contains("LeftButton"))
+                    state = Qt::LeftButton;
+                else if (selectNodeQString(con, "ButtonState").contains("RightButton"))
+                    state = Qt::RightButton;
+            }
 
+            ControlObject::setWidget(this, configKey, bEmitOnDownPress, state);
+        }
         con = con.nextSibling();
     }
 }
@@ -85,6 +92,16 @@ void WWidget::setValue(double fValue)
 {
     m_fValue = fValue;
     update();
+}
+
+void WWidget::setOnOff(double d)
+{
+    if (d==0.)
+        m_bOff = false;
+    else
+        m_bOff = true;
+
+    repaint();
 }
 
 void WWidget::slotReEmitValueDown(double fValue)
