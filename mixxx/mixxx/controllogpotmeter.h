@@ -35,7 +35,7 @@ class ControlLogpotmeter : public ControlPotmeter  {
  protected:
   FLOAT a,b;
  public:
-  ControlLogpotmeter(char*, int, MidiObject *, FLOAT=-0.1);
+  ControlLogpotmeter(char*, int, MidiObject *, FLOAT=-0.9);
  public slots:
   void slotSetPosition(int);
 };

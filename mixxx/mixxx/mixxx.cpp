@@ -62,6 +62,13 @@ MixxxApp::MixxxApp()
   EnginePregain *pregain = new EnginePregain(ADC7, midi);
   engines.push_back(pregain);
 
+  //EngineHMLfilter *filters = new EngineHMLfilter(ADC4, ADC5, ADC6, midi, bessel_highpass_15000, 
+//						 bessel_lowpass_60);
+  EngineIIRfilter *highpass = new EngineIIRfilter(ADC6,PORT_B, 4, midi,bessel_highpass);
+  EngineIIRfilter *lowpass = new EngineIIRfilter(ADC4,PORT_B, 4, midi,bessel_lowpass);
+  engines.push_back(highpass);
+  engines.push_back(lowpass);
+
   // Initialize player with a desired buffer size
   qDebug("Init player...");
   player = new PlayerALSA(BUFFER_SIZE, &engines);
