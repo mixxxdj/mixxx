@@ -38,7 +38,7 @@ SoundSourceMp3::SoundSourceMp3(QString qFilename) : SoundSource(qFilename)
     mad_stream_buffer(&Stream, (unsigned char *) inputbuf, inputbuf_len);
 
     /*
-      Decode all the headers, and fi    ll in stats:
+      Decode all the headers, and fill in stats:
     */
 //    int len = 0;
     mad_header Header;
@@ -501,8 +501,7 @@ void SoundSourceMp3::getField(id3_tag *tag, const char *frameid, QString *str)
 */
 
         // Unicode handling
-        id3_ucs4_t const *field = id3_field_getstrings(&frame->fields[1],0);
-        id3_utf16_t *framestr = id3_ucs4_utf16duplicate(field);
+        id3_utf16_t *framestr = id3_ucs4_utf16duplicate(id3_field_getstrings(&frame->fields[1], 0));
         int strlen = 0; while (field[strlen]!=0) strlen++;
         if (strlen>0)
             str->setUnicodeCodes((ushort *)framestr,strlen);
