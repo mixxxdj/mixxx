@@ -3,7 +3,7 @@
 <KDevPrjSession>
  <LastCompileConfig>(Default)</LastCompileConfig>
  <Mainframe MaximizeMode="1" />
- <DocsAndViews NumberOfDocuments="5" >
+ <DocsAndViews NumberOfDocuments="7" >
   <Doc0 CursorPosLine="23" Type="KWriteDoc" NumberOfViews="1" CursorPosCol="18" FileName="/home/haste/cvs/mixxx/src/defs.h" >
    <View0 Top="24" Width="400" Attach="1" Height="300" Left="3" Focus="0" Type="KWriteView" MinMaxMode="0" />
   </Doc0>
@@ -11,13 +11,19 @@
    <View0 Top="46" Width="758" Attach="1" Height="430" Left="25" Focus="0" Type="KWriteView" MinMaxMode="0" />
   </Doc1>
   <Doc2 CursorPosLine="37" Type="KWriteDoc" NumberOfViews="1" CursorPosCol="0" FileName="/home/haste/cvs/mixxx/src/mixxxview.h" >
-   <View0 Top="90" Width="758" Attach="1" Height="414" Left="69" Focus="0" Type="KWriteView" MinMaxMode="0" />
+   <View0 Top="68" Width="758" Attach="1" Height="430" Left="47" Focus="0" Type="KWriteView" MinMaxMode="0" />
   </Doc2>
-  <Doc3 CursorPosLine="45" Type="KWriteDoc" NumberOfViews="1" CursorPosCol="44" FileName="/home/haste/cvs/mixxx/src/mixxxview.cpp" >
-   <View0 Top="88" Width="764" Attach="1" Height="441" Left="88" Focus="1" Type="KWriteView" MinMaxMode="2" />
+  <Doc3 CursorPosLine="55" Type="KWriteDoc" NumberOfViews="1" CursorPosCol="34" FileName="/home/haste/cvs/mixxx/src/mixxxview.cpp" >
+   <View0 Top="112" Width="758" Attach="1" Height="414" Left="91" Focus="0" Type="KWriteView" MinMaxMode="0" />
   </Doc3>
-  <Doc4 Type="CDocBrowser" NumberOfViews="1" FileName="/usr/qt/3/doc/html/qgridlayout.html#addWidget" >
-   <View Top="222" Width="124" Attach="1" Height="115" Left="201" Focus="0" Type="KHTMLView" MinMaxMode="0" />
+  <Doc4 CursorPosLine="33" Type="KWriteDoc" NumberOfViews="1" CursorPosCol="47" FileName="/home/haste/cvs/mixxx/src/main.cpp" >
+   <View0 Top="112" Width="758" Attach="1" Height="414" Left="91" Focus="0" Type="KWriteView" MinMaxMode="0" />
   </Doc4>
+  <Doc5 CursorPosLine="54" Type="KWriteDoc" NumberOfViews="1" CursorPosCol="0" FileName="/home/haste/cvs/mixxx/src/mixxx.h" >
+   <View0 Top="134" Width="758" Attach="1" Height="592" Left="113" Focus="0" Type="KWriteView" MinMaxMode="0" />
+  </Doc5>
+  <Doc6 CursorPosLine="248" Type="KWriteDoc" NumberOfViews="1" CursorPosCol="55" FileName="/home/haste/cvs/mixxx/src/mixxx.cpp" >
+   <View0 Top="132" Width="764" Attach="1" Height="619" Left="132" Focus="1" Type="KWriteView" MinMaxMode="2" />
+  </Doc6>
  </DocsAndViews>
 </KDevPrjSession>

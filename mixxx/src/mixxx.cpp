@@ -49,7 +49,7 @@ MixxxApp::MixxxApp()
   initActions();
   initMenuBar();
   initToolBar();
-  initStatusBar();
+  //initStatusBar();
 
   initDoc();
   initView();
@@ -59,7 +59,7 @@ MixxxApp::MixxxApp()
           this,                         SLOT(slotChangePlay(QViewListItem &)));
 
   //viewToolBar->setOn(false);
-  viewStatusBar->setOn(true);
+  //viewStatusBar->setOn(true);
 
   // Initialize midi:
   qDebug("Init midi...");
@@ -173,11 +173,12 @@ void MixxxApp::initActions(){
   connect(viewToolBar, SIGNAL(toggled(bool)), this, SLOT(slotViewToolBar(bool)));
 */
 
+/*
   viewStatusBar = new QAction(tr("Statusbar"), tr("&Statusbar"), 0, this, 0, true);
   viewStatusBar->setStatusTip(tr("Enables/disables the statusbar"));
   viewStatusBar->setWhatsThis(tr("Statusbar\n\nEnables/disables the statusbar"));
   connect(viewStatusBar, SIGNAL(toggled(bool)), this, SLOT(slotViewStatusBar(bool)));
-
+*/
   helpAboutApp = new QAction(tr("About"), tr("&About..."), 0, this);
   helpAboutApp->setStatusTip(tr("About the application"));
   helpAboutApp->setWhatsThis(tr("About\n\nAbout the application"));
@@ -216,7 +217,7 @@ void MixxxApp::initMenuBar()
   viewMenu=new QPopupMenu();
   viewMenu->setCheckable(true);
   //viewToolBar->addTo(viewMenu);
-  viewStatusBar->addTo(viewMenu);
+  //viewStatusBar->addTo(viewMenu);
   ///////////////////////////////////////////////////////////////////
   // EDIT YOUR APPLICATION SPECIFIC MENUENTRIES HERE
 
