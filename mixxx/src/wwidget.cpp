@@ -46,10 +46,8 @@ void WWidget::setup(QDomNode node)
     int y = pos.mid(pos.find(",")+1).toInt();
     move(x,y);
 
-    // Set tooltip (if it exists):
+    // Get tooltip
     QString strTooltip = selectNodeQString(node, "Tooltip");
-    if (strTooltip != "") 
-        QToolTip::add( this, strTooltip );
 
     // For each connection
     QDomNode con = selectNode(node, "Connection");
@@ -83,9 +81,21 @@ void WWidget::setup(QDomNode node)
             }
 
             ControlObject::setWidget(this, configKey, bEmitOnDownPress, state);
-        }
+
+			// Add keyboard shortcut info to tooltip string
+			ControlObject *p = ControlObject::getControl(configKey);
+			ASSERT(p!=0);
+	
+			if (!p->getKbdConfigStr().isEmpty())
+				strTooltip += QString(" (%1)").arg(p->getKbdConfigStr());
+		}
         con = con.nextSibling();
     }
+
+    // Set tooltip if it exists
+	if (strTooltip != "") 
+        QToolTip::add( this, strTooltip );
+
 }
 
 void WWidget::setValue(double fValue)

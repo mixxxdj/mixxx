@@ -78,6 +78,7 @@ void TrackPlaylist::addTrack(TrackInfoObject *pTrack)
 
     m_qList.append(pTrack);
 
+	qDebug("insert in table");
     // If this playlist is active, update WTableTrack
     if (m_pTable)
         pTrack->insertInTrackTableRow(m_pTable, m_pTable->numRows());
@@ -86,6 +87,7 @@ void TrackPlaylist::addTrack(TrackInfoObject *pTrack)
 
 void TrackPlaylist::addTrack(QString qLocation)
 {
+	qDebug("Add track %s",qLocation.latin1());
     TrackInfoObject *pTrack = m_pTrackCollection->getTrack(qLocation);
 
     if (pTrack)
@@ -203,8 +205,14 @@ void TrackPlaylist::addPath(QString qPath)
             ++dir_it;
         }
 
-        // And then add all the files
-        dir.setFilter(QDir::Files);
+        //
+		// And then add all the files
+		//
+
+		// Resize the table
+	    //m_pTable->setNumRows(m_pTable->numRows()+dir.count());
+		
+		dir.setFilter(QDir::Files);
         dir.setNameFilter("*.wav *.Wav *.WAV *.mp3 *.Mp3 *.MP3 *.ogg *.Ogg *.OGG");
         const QFileInfoList *list = dir.entryInfoList();
         QFileInfoListIterator it(*list);        // create list iterator
@@ -216,7 +224,10 @@ void TrackPlaylist::addPath(QString qPath)
             addTrack(fi->filePath());
             ++it;   // goto next list element
         }
-    }
+
+		// Set the size of table to the actual number of items
+		//m_pTable->setNumRows(m_qList.count());
+	}
 }
 
 void TrackPlaylist::slotRemoveTrack(TrackInfoObject *pTrack)

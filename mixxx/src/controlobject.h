@@ -64,6 +64,8 @@ public:
     static void setMidiConfig(ConfigObject<ConfigValueMidi> *pMidiConfig);
     /** Sets the keyboard config object */
     static void setKbdConfig(ConfigObject<ConfigValueKbd> *pKbdConfig);
+	/** Return a string of the keyboard shortcut associated with this ControlObject. For use in widget tooltips. */
+	QString getKbdConfigStr();
     /** Associates a QWidget with the ControlObject identified by a given ConfigKey */
     static void setWidget(QWidget *widget, ConfigKey key, bool emitOnDownPress=true, Qt::ButtonState state=Qt::NoButton);
     /** Associates a QWidget with the ControlObject. */

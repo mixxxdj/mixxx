@@ -97,6 +97,11 @@ void ControlObject::setKbdConfig(ConfigObject<ConfigValueKbd> *pKbdConfig)
     m_pKbdConfig = pKbdConfig;
 }
 
+QString ControlObject::getKbdConfigStr()
+{
+    return m_pKbdConfigOption->val->m_qKey;
+}
+
 void ControlObject::setControlEngine(ControlEngine *pControlEngine)
 {
     m_pControlEngine = pControlEngine;

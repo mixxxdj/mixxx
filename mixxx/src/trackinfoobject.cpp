@@ -31,7 +31,7 @@
 #include "wtracktableitem.h"
 #include "xmlparse.h"
 
-int TrackInfoObject::siMaxTimesPlayed = 0;
+int TrackInfoObject::siMaxTimesPlayed = 1;
 
 TrackInfoObject::TrackInfoObject(const QString sPath, const QString sFile) : m_sFilename(sFile), m_sFilepath(sPath)
 {
@@ -169,8 +169,12 @@ void TrackInfoObject::insertInTrackTableRow(WTrackTable *pTableTrack, int iRow)
     if (pTableTrack->numRows()<iRow+1)
         pTableTrack->setNumRows(iRow+1);
 
+qDebug("update scores");
+
     // Update the score
     updateScore();
+
+qDebug("making items");
 
     // Construct elements to insert into the table, if they are not already allocated
     if (!m_pTableItemScore)
@@ -190,7 +194,7 @@ void TrackInfoObject::insertInTrackTableRow(WTrackTable *pTableTrack, int iRow)
     if (!m_pTableItemBitrate)
         m_pTableItemBitrate = new WTrackTableItem(this, pTableTrack,QTableItem::Never, getBitrateStr(), typeNumber);
 
-    //qDebug("inserting.. %p",pTableTrack->item(iRow, COL_SCORE));
+    qDebug("inserting.. %p",pTableTrack->item(iRow, COL_SCORE));
 
     // Insert the elements into the table
     pTableTrack->setItem(iRow, COL_SCORE, m_pTableItemScore);
@@ -501,6 +505,7 @@ QString TrackInfoObject::getScoreStr()
 
 void TrackInfoObject::updateScore()
 {
+	ASSERT(siMaxTimesPlayed!=0);
     m_iScore = 99*m_iTimesPlayed/siMaxTimesPlayed;
 
     if (m_pTableItemScore)
