@@ -25,6 +25,7 @@ class ControlObject;
 class WSlider;
 class WSliderComposed;
 class WPushButton;
+class WPushButtonInc;
 class WTrackTable;
 class WDisplay;
 class WKnob;
@@ -51,6 +52,8 @@ public:
     /** Pointer to WVisual widgets */
     WVisual *m_pVisualCh1, *m_pVisualCh2;
     WSliderComposed *m_pSliderRateCh1, *m_pSliderRateCh2;
+    WPushButtonInc *m_pButtonRateUpCh1, *m_pButtonRateUpCh2;
+    WPushButtonInc *m_pButtonRateDownCh1, *m_pButtonRateDownCh2;
 
 private:
     const QString getPath(QString location);

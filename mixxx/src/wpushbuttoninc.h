@@ -1,8 +1,8 @@
 /***************************************************************************
-                          wpushbutton.h  -  description
+                          wpushbuttoninc.h  -  description
                              -------------------
-    begin                : Fri Jun 21 2002
-    copyright            : (C) 2002 by Tue & Ken Haste Andersen
+    begin                : Mon Jul 7 2003
+    copyright            : (C) 2003 by Tue & Ken Haste Andersen
     email                : haste@diku.dk
  ***************************************************************************/
 
@@ -15,47 +15,33 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef WPUSHBUTTON_H
-#define WPUSHBUTTON_H
+#ifndef WPUSHBUTTONINC_H
+#define WPUSHBUTTONINC_H
 
-#include "wwidget.h"
-#include <qpainter.h>
-#include <qpixmap.h>
-#include <qstring.h>
+#include <qwidget.h>
+#include <wpushbutton.h>
 
 /**
+  * A one state WPushButton which connects to a ControlPotmeter by
+  * incrementing or decrementing it's value when clicked.
+  *
   *@author Tue & Ken Haste Andersen
   */
 
-class WPushButton : public WWidget
-{
-    Q_OBJECT
+class WPushButtonInc : public WPushButton  {
+   Q_OBJECT
 public: 
-    WPushButton(QWidget *parent=0, const char *name=0);
-    ~WPushButton();
-    /** Sets the number of states associated with this button, and removes associated
-      * pixmaps. */
-    void setStates(int iStatesW);
-    /** Associates a pixmap of a given state with the widget */
-    void setPixmap(int iState, bool bPressed, const QString &filename);
-    /** Paints the widget */
-    void paintEvent(QPaintEvent *);
+    WPushButtonInc(QWidget *parent=0, const char *name=0);
+    ~WPushButtonInc();
+    /** Sets the increment value when left and right clicking */
+    void setInc(double dValueIncLeft, double dValueIncRight);
     /** Mouse pressed */
     void mousePressEvent(QMouseEvent *e);
     /** Mouse released */
     void mouseReleaseEvent(QMouseEvent *e);
-public slots:
-    void setValue(double);
-protected:
-    /** True, if the button is currently pressed */
-    bool m_bPressed;
 private:
-    /** Number of states associated with this button */
-    int m_iNoStates;
-    /** Array of associated pixmaps */
-    QPixmap **m_pPixmaps;
-    /** Current state */
-    int m_iState;
+    /** Increments sent out when left and right clicking */
+    double m_dValueIncLeft, m_dValueIncRight;
 };
 
 #endif

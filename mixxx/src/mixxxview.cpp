@@ -26,6 +26,7 @@
 #include "wwidget.h"
 #include "wknob.h"
 #include "wpushbutton.h"
+#include "wpushbuttoninc.h"
 #include "wslider.h"
 #include "wslidercomposed.h"
 #include "wdisplay.h"
@@ -128,6 +129,34 @@ MixxxView::MixxxView(QWidget *parent, bool bVisuals) : QWidget(parent, "Mixxx")
     m_pSliderRateCh2->move(924,255);
     m_pSliderRateCh2->setFixedSize(27,207);
 
+    m_pButtonRateUpCh1 = new WPushButtonInc(main);
+    m_pButtonRateUpCh1->setPixmap(0, false, getPath("buttons/up0.png"));
+    m_pButtonRateUpCh1->setPixmap(0, true, getPath("buttons/up3.png"));
+    m_pButtonRateUpCh1->setFixedSize(28,88);
+    m_pButtonRateUpCh1->move(104,246);
+    m_pButtonRateUpCh1->setInc(0.03,0.01);
+    
+    m_pButtonRateDownCh1 = new WPushButtonInc(main);
+    m_pButtonRateDownCh1->setPixmap(0, false, getPath("buttons/down0.png"));
+    m_pButtonRateDownCh1->setPixmap(0, true, getPath("buttons/down3.png"));
+    m_pButtonRateDownCh1->setFixedSize(28,88);
+    m_pButtonRateDownCh1->move(104,383);
+    m_pButtonRateDownCh1->setInc(-0.03,-0.01);
+
+    m_pButtonRateUpCh2 = new WPushButtonInc(main);
+    m_pButtonRateUpCh2->setPixmap(0, false, getPath("buttons/up0.png"));
+    m_pButtonRateUpCh2->setPixmap(0, true, getPath("buttons/up3.png"));
+    m_pButtonRateUpCh2->setFixedSize(28,88);
+    m_pButtonRateUpCh2->move(892,246);
+    m_pButtonRateUpCh2->setInc(0.03,0.01);
+
+    m_pButtonRateDownCh2 = new WPushButtonInc(main);
+    m_pButtonRateDownCh2->setPixmap(0, false, getPath("buttons/down0.png"));
+    m_pButtonRateDownCh2->setPixmap(0, true, getPath("buttons/down3.png"));
+    m_pButtonRateDownCh2->setFixedSize(28,88);
+    m_pButtonRateDownCh2->move(892,383);
+    m_pButtonRateDownCh2->setInc(-0.03,-0.01);
+   
     m_pPlayCh1 = new WPushButton(main);
     m_pPlayCh1->setStates(2);
     m_pPlayCh1->setPixmap(0, false, getPath("buttons/play0.png"));
@@ -282,6 +311,15 @@ void MixxxView::assignWidgets(ControlObject *p)
     p->setWidget(m_pSliderRateCh1, ConfigKey("[Channel1]", "rate"), false);
     p->setWidget(m_pSliderRateCh2, ConfigKey("[Channel2]", "rate"), false);
     
+    p->setWidget(m_pButtonRateUpCh1, ConfigKey("[Channel1]", "rate"), true, Qt::LeftButton, false);
+    p->setWidget(m_pButtonRateUpCh1, ConfigKey("[Channel1]", "rate"), true, Qt::RightButton, false);
+    p->setWidget(m_pButtonRateDownCh1, ConfigKey("[Channel1]", "rate"), true, Qt::LeftButton, false);
+    p->setWidget(m_pButtonRateDownCh1, ConfigKey("[Channel1]", "rate"), true, Qt::RightButton, false);
+    p->setWidget(m_pButtonRateUpCh2, ConfigKey("[Channel2]", "rate"), true, Qt::LeftButton, false);
+    p->setWidget(m_pButtonRateUpCh2, ConfigKey("[Channel2]", "rate"), true, Qt::RightButton, false);
+    p->setWidget(m_pButtonRateDownCh2, ConfigKey("[Channel2]", "rate"), true, Qt::LeftButton, false);
+    p->setWidget(m_pButtonRateDownCh2, ConfigKey("[Channel2]", "rate"), true, Qt::RightButton, false);
+
     p->setWidget(m_pPlayCh1, ConfigKey("[Channel1]","play"), true, Qt::LeftButton);
     p->setWidget(m_pPlayCh2, ConfigKey("[Channel2]","play"), true, Qt::LeftButton);
     p->setWidget(m_pPlayCh1, ConfigKey("[Channel1]","cue_set"), true, Qt::RightButton);

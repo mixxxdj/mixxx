@@ -44,7 +44,8 @@ public:
 
 public slots:
     void setValueFromWidget(double dValue);
-
+    void setValueFromApp(double dValue);
+    
 protected:
     void updateWidget();
     void setValueFromMidi(MidiCategory c, int v);
