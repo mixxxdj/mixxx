@@ -108,12 +108,12 @@ macx {
 }
 
 # gcc Profiling
-#unix:QMAKE_CXXFLAGS_DEBUG += -pg
-#unix:QMAKE_LFLAGS_DEBUG += -pg
+unix:QMAKE_CXXFLAGS_DEBUG += -pg
+unix:QMAKE_LFLAGS_DEBUG += -pg
 
 # icc Profiling
-unix:QMAKE_CXXFLAGS_DEBUG += -qp -g
-unix:QMAKE_LFLAGS_DEBUG += -qp -g
+#unix:QMAKE_CXXFLAGS_DEBUG += -qp -g
+#unix:QMAKE_LFLAGS_DEBUG += -qp -g
 
 DEFINES += CONFIG_PATH=$$CONFIG_PATH
 FORMS	= dlgchanneldlg.ui dlgplaycontroldlg.ui dlgplaylistdlg.ui dlgmasterdlg.ui dlgcrossfaderdlg.ui dlgsplitdlg.ui dlgpreferencesdlg.ui dlgflangerdlg.ui

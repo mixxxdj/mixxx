@@ -191,7 +191,7 @@ CSAMPLE *SoundBuffer::getWindowPtr(int windowIdx)
         {
             for (int i=windowPos; i<chunkNo*chunkSize; i++)
                 windowedSamples[i-windowPos] = read_buffer[i];
-            for (int i=0; i<(windowPos+window->getSize())%READBUFFERSIZE; i++)
+            for (unsigned int i=0; i<(windowPos+window->getSize())%READBUFFERSIZE; i++)
                 windowedSamples[i-windowPos] = read_buffer[i];
         }
     }

@@ -40,7 +40,7 @@ void ControlEngineQueue::sync()
     // If possible lock mutex and process queue
     if (mutex.tryLock())
     {
-        for (int i=0; i<queue.count(); i++)
+        for (unsigned int i=0; i<queue.count(); i++)
         {
             ControlEngineQueueItem *item = queue.dequeue();
 
