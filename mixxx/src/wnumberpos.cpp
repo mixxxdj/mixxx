@@ -36,7 +36,7 @@ void WNumberPos::setValue(double dValue)
 {
     double v = dValue*((float)m_iDuration/127.);
     if (m_bRemain)
-        v = ((float)m_iDuration-v)*(1.-m_pRateControl->get()*m_pRateDirControl->get());
+        v = ((float)m_iDuration-v);
 
     int min1=0,min2=0,sec1=0,sec2=0,msec1=0,msec2=0;
     if (v>0.)
