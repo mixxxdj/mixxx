@@ -1,8 +1,8 @@
 /***************************************************************************
-                          dlgpreferences.h  -  description
+                          dlgprefplaylist.h  -  description
                              -------------------
-    begin                : Sun Jun 30 2002
-    copyright            : (C) 2002 by Tue & Ken Haste Andersen
+    begin                : Thu Apr 17 2003
+    copyright            : (C) 2003 by Tue & Ken Haste Andersen
     email                : haste@diku.dk
  ***************************************************************************/
 
@@ -15,42 +15,34 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef DLGPREFERENCES_H
-#define DLGPREFERENCES_H
+#ifndef DLGPREFPLAYLIST_H
+#define DLGPREFPLAYLIST_H
 
-#include "dlgpreferencesdlg.h"
-#include <qtabdialog.h>
-#include <qevent.h>
+#include <qwidget.h>
+#include "dlgprefplaylistdlg.h"
 #include "configobject.h"
-
-class MixxxApp;
-class MidiObject;
-class Player;
-class TrackList;
-class DlgPrefSound;
-class DlgPrefMidi;
-class DlgPrefPlaylist;
 
 /**
   *@author Tue & Ken Haste Andersen
   */
 
-class DlgPreferences : public QTabDialog
-{
+class DlgPrefPlaylist : public DlgPrefPlaylistDlg  {
     Q_OBJECT
 public: 
-    DlgPreferences(MixxxApp *mixxx, 
-                   MidiObject *midi, Player *player,
-                   TrackList *tracklist, ConfigObject<ConfigValue> *config, ConfigObject<ConfigValueMidi> *midiconfig);
-    ~DlgPreferences();
+    DlgPrefPlaylist(QWidget *parent, ConfigObject<ConfigValue> *_config);
+    ~DlgPrefPlaylist();
+public slots:
+    /** Update widget */
+    void slotUpdate();
+    /** Dialog to browse for music file directory */
+    void slotBrowseDir();
+    /** Apply changes to widget */
+    void slotApply();
 signals:
-    void closeDlg();
-protected:
-    bool eventFilter(QObject *, QEvent *);
+    void apply(QString);
 private:
-    DlgPrefSound *wsound;
-    DlgPrefMidi *wmidi;
-    DlgPrefPlaylist *wplaylist;
+    /** Pointer to config object */
+    ConfigObject<ConfigValue> *config;
 };
 
 #endif

@@ -95,163 +95,217 @@
 
 MixxxApp::MixxxApp(QApplication *a)
 {
-  qDebug("Starting up...");
-  setCaption(tr("Mixxx " VERSION));
+    qDebug("Starting up...");
+    setCaption(tr("Mixxx " VERSION));
 
-  app = a;
+    app = a;
 
-  // Ensure that a directory named ~/.mixxx exists
-  QDir().mkdir(QDir::homeDirPath().append("/.mixxx"));
+    // Ensure that a directory named ~/.mixxx exists
+    QDir().mkdir(QDir::homeDirPath().append("/.mixxx"));
 
-  ///////////////////////////////////////////////////////////////////
-  // call inits to invoke all other construction parts
-  initActions();
-  initMenuBar();
-  initToolBar();
-  //initStatusBar();
+    // Call inits to invoke all other construction parts
+    initActions();
+    initMenuBar();
+    initToolBar();
+    //initStatusBar();
 
-  // Reset pointer to preference dialog and players
-  pDlg = 0;
-  player = 0;
+    // Reset pointer to players
+    player = 0;
+    m_pTracks = 0;
+    prefDlg = 0;
 
-  // Read the config file
-  config = new ConfigObject<ConfigValue>(QDir::homeDirPath().append("/.mixxx/mixxx.cfg"));
+    // Read the config file
+    config = new ConfigObject<ConfigValue>(QDir::homeDirPath().append("/.mixxx/mixxx.cfg"));
 
-  initDoc();
-  initView();
+    initDoc();
+    initView();
 
-  // Instantiate a ControlObject
-  control = new ControlNull();
+    // Instantiate a ControlObject
+    control = new ControlNull();
 
-  // Open midi
-  //qDebug("Init midi...");
-  midi = 0;
+    // Open midi
+    //qDebug("Init midi...");
+    midi = 0;
 #ifdef __ALSA__
-  midi = new MidiObjectALSA(midiconfig,app,config->getValueString(ConfigKey("[Midi]","Device")));
+    midi = new MidiObjectALSA(midiconfig,app,config->getValueString(ConfigKey("[Midi]","Device")));
 #endif
 #ifdef __PORTMIDI__
-  midi = new MidiObjectPortMidi(midiconfig,app,control,config->getValueString(ConfigKey("[Midi]","Device")));
+    midi = new MidiObjectPortMidi(midiconfig,app,control,config->getValueString(ConfigKey("[Midi]","Device")));
 #endif
 #ifdef __COREMIDI__
-  midi = new MidiObjectCoreMidi(midiconfig,app,control,config->getValueString(ConfigKey("[Midi]","Device")));
+    midi = new MidiObjectCoreMidi(midiconfig,app,control,config->getValueString(ConfigKey("[Midi]","Device")));
 #endif
 #ifdef __OSSMIDI__
-  midi = new MidiObjectOSS(midiconfig,app,control,config->getValueString(ConfigKey("[Midi]","Device")));
+    midi = new MidiObjectOSS(midiconfig,app,control,config->getValueString(ConfigKey("[Midi]","Device")));
 #endif
 #ifdef __WINMIDI__
-  midi = new MidiObjectWin(midiconfig,app,control,config->getValueString(ConfigKey("[Midi]","Device")));
+    midi = new MidiObjectWin(midiconfig,app,control,config->getValueString(ConfigKey("[Midi]","Device")));
 #endif
     
-  if (midi == 0)
-      midi = new MidiObjectNull(midiconfig,app,control,config->getValueString(ConfigKey("[Midi]","Device")));
+    if (midi == 0)
+        midi = new MidiObjectNull(midiconfig,app,control,config->getValueString(ConfigKey("[Midi]","Device")));
 
-  // Store default midi device
-  config->set(ConfigKey("[Midi]","Device"), ConfigValue(midi->getOpenDevice()->latin1()));
+    // Store default midi device
+    config->set(ConfigKey("[Midi]","Device"), ConfigValue(midi->getOpenDevice()->latin1()));
 
-  // On unix, get directory where MIDI configurations are stored. If no is given, set to CONFIG_PATH
+    // On unix, get directory where MIDI configurations are stored. If no is given, set to CONFIG_PATH
 #ifdef __UNIX__
 #ifndef __MACX__
-  if (config->getValueString(ConfigKey("[Midi]","Configdir")).length() == 0)
-      config->set(ConfigKey("[Midi]","Configdir"),ConfigValue(CONFIG_PATH));
+    if (config->getValueString(ConfigKey("[Midi]","Configdir")).length() == 0)
+        config->set(ConfigKey("[Midi]","Configdir"),ConfigValue(CONFIG_PATH));
 #endif
 #endif
 
   // On Mac and Windows, always set the config dir relative to the application dir
 #ifdef __WIN__
-  config->set(ConfigKey("[Midi]","Configdir"),ConfigValue(QDir::currentDirPath().append(QString("/").append(CONFIG_PATH))));
+    config->set(ConfigKey("[Midi]","Configdir"),ConfigValue(QDir::currentDirPath().append(QString("/").append(CONFIG_PATH))));
 #endif
 #ifdef __MACX__
-  CFURLRef pluginRef = CFBundleCopyBundleURL(CFBundleGetMainBundle());
-  CFStringRef macPath = CFURLCopyFileSystemPath(pluginRef, kCFURLPOSIXPathStyle);
-  const char *pathPtr = CFStringGetCStringPtr(macPath, CFStringGetSystemEncoding());
-  qDebug("Path = %s",pathPtr);
+    CFURLRef pluginRef = CFBundleCopyBundleURL(CFBundleGetMainBundle());
+    CFStringRef macPath = CFURLCopyFileSystemPath(pluginRef, kCFURLPOSIXPathStyle);
+    const char *pathPtr = CFStringGetCStringPtr(macPath, CFStringGetSystemEncoding());
+    qDebug("Path = %s",pathPtr);
   
-  config->set(ConfigKey("[Midi]","Configdir"),ConfigValue(QString(pathPtr).append(QString("/").append(CONFIG_PATH))));
+    config->set(ConfigKey("[Midi]","Configdir"),ConfigValue(QString(pathPtr).append(QString("/").append(CONFIG_PATH))));
 #endif
 
-  // If the directory does not end with a "/", add one
-  if (!config->getValueString(ConfigKey("[Midi]","Configdir")).endsWith("/"))
-      config->set(ConfigKey("[Midi]","Configdir"),ConfigValue(config->getValueString(ConfigKey("[Midi]","Configdir")).append("/")));
+    // If the directory does not end with a "/", add one
+    if (!config->getValueString(ConfigKey("[Midi]","Configdir")).endsWith("/"))
+        config->set(ConfigKey("[Midi]","Configdir"),ConfigValue(config->getValueString(ConfigKey("[Midi]","Configdir")).append("/")));
 
-  // Get list of available midi configurations, and read the default configuration. If no default
-  // is given, use the first configuration found in the config directory.
-  QStringList *midiConfigList = midi->getConfigList(config->getValueString(ConfigKey("[Midi]","Configdir")));
-  midiconfig = 0;
-  for (QStringList::Iterator it = midiConfigList->begin(); it != midiConfigList->end(); ++it )
-      if (*it == config->getValueString(ConfigKey("[Midi]","Configfile")))
-          midiconfig = new ConfigObject<ConfigValueMidi>(config->getValueString(ConfigKey("[Midi]","Configdir")).append(config->getValueString(ConfigKey("[Midi]","Configfile"))));
-  if (midiconfig == 0)
-  {
-      if (midiConfigList->empty())
-      {
-          midiconfig = new ConfigObject<ConfigValueMidi>("");
-          config->set(ConfigKey("[Midi]","Configfile"), ConfigValue(""));
-      }
-      else
-      {
-          midiconfig = new ConfigObject<ConfigValueMidi>(config->getValueString(ConfigKey("[Midi]","Configdir")).append((*midiConfigList->at(0)).latin1()));
-          config->set(ConfigKey("[Midi]","Configfile"), ConfigValue((*midiConfigList->at(0)).latin1()));
-      }
-  }
+    // Get list of available midi configurations, and read the default configuration. If no default
+    // is given, use the first configuration found in the config directory.
+    QStringList *midiConfigList = midi->getConfigList(config->getValueString(ConfigKey("[Midi]","Configdir")));
+    midiconfig = 0;
+    for (QStringList::Iterator it = midiConfigList->begin(); it != midiConfigList->end(); ++it )
+        if (*it == config->getValueString(ConfigKey("[Midi]","Configfile")))
+            midiconfig = new ConfigObject<ConfigValueMidi>(config->getValueString(ConfigKey("[Midi]","Configdir")).append(config->getValueString(ConfigKey("[Midi]","Configfile"))));
+    if (midiconfig == 0)
+    {
+        if (midiConfigList->empty())
+        {
+            midiconfig = new ConfigObject<ConfigValueMidi>("");
+            config->set(ConfigKey("[Midi]","Configfile"), ConfigValue(""));
+        }
+        else
+        {
+            midiconfig = new ConfigObject<ConfigValueMidi>(config->getValueString(ConfigKey("[Midi]","Configdir")).append((*midiConfigList->at(0)).latin1()));
+            config->set(ConfigKey("[Midi]","Configfile"), ConfigValue((*midiConfigList->at(0)).latin1()));
+        }
+    }
 
-  // Set the static config pointer for the ControlObject
-  control->setConfig(midiconfig);
+    // Set the static config pointer for the ControlObject
+    control->setConfig(midiconfig);
 
-  // Configure ControlEngine object, and get ControlEngineQueue for input to the player object
-  ControlEngine *controlengine = new ControlEngine(control);
-  ControlEngineQueue *queue = new ControlEngineQueue(controlengine->getList());
+    // Configure ControlEngine object, and get ControlEngineQueue for input to the player object
+    ControlEngine *controlengine = new ControlEngine(control);
+    ControlEngineQueue *queue = new ControlEngineQueue(controlengine->getList());
 
-  // Set static ControlEngineQueue pointer of ControlObject
-  control->setControlEngineQueue(queue);
+    // Set static ControlEngineQueue pointer of ControlObject
+    control->setControlEngineQueue(queue);
 
-  // Initialize device
+          
+    // Install event handler
+    //installEventFilter(this);
+
+    // Ensure that only one of the flanger buttons are pushed at a time.
+    //connect(dlg_flanger->PushButtonChA, SIGNAL(valueOn()), flanger_b, SLOT(slotSetPositionOff()));
+    //connect(dlg_flanger->PushButtonChB, SIGNAL(valueOn()), flanger_a, SLOT(slotSetPositionOff()));
+
+    // Prepare the tracklist:
+    QDir d(config->getValueString(ConfigKey("[Playlist]","Directory")));
+    if ((config->getValueString(ConfigKey("[Playlist]","Directory")).length()<1) | (!d.exists()))
+    {
+        QFileDialog* fd = new QFileDialog(this, QString::null, true);
+        fd->setCaption(QString("Choose directory with music files"));
+        fd->setMode( QFileDialog::Directory );
+        if ( fd->exec() == QDialog::Accepted )
+        {
+            config->set(ConfigKey("[Playlist]","Directory"), fd->selectedFile());
+            config->Save();
+        }
+    }
+  
+    // Initialize player device
 #ifdef __ALSA__
-  player = new PlayerALSA(BUFFER_SIZE, &engines, config->getValueString(ConfigKey("[Soundcard]","DeviceMaster")));
+    player = new PlayerALSA(BUFFER_SIZE, &engines, config->getValueString(ConfigKey("[Soundcard]","DeviceMaster")));
 #else
-  player = new PlayerPortAudio(config,queue,app);
+    player = new PlayerPortAudio(config,queue,app);
 #endif
 
-  // Open device using config data, if that fails, use default values. If that fails too, the
-  // preference panel should be opened.
-  if (!player->open(false))
-      if (!player->open(true))
-          pDlg = new DlgPreferences(this,"",midi,player,0,config,midiconfig);
+    // Init buffers/readers
+    buffer1 = new EngineBuffer(this, optionsBeatMark, view->playcontrol1, "[Channel1]");
+    buffer2 = new EngineBuffer(this, optionsBeatMark, view->playcontrol2, "[Channel2]");
 
-  // Install event handler to update playpos slider and force screen update.
-  // This method is used to avoid emitting signals (and QApplication::lock())
-  // in the player thread. This ensures that the player will not lock because
-  // of a (temporary) stalled GUI thread.
-  //installEventFilter(this);
+    // Initialize tracklist:
+    m_pTracks = new TrackList(config->getValueString(ConfigKey("[Playlist]","Directory")), view->tracklist->tableTracks,
+                              view->playcontrol1, view->playcontrol2, buffer1, buffer2);
 
-  // Save main configuration file .... well, maybe only in the pref panel!!
-  //config->Save();
+    // Initialize preference dialog
+    prefDlg = new DlgPreferences(this,midi,player,m_pTracks, config, midiconfig);
+    prefDlg->setHidden(true);
+
+    // Try open player device using config data, if that fails, use default values. If that fails too, the
+    // preference panel should be opened.
+    if (!player->open(false))
+        if (!player->open(true))
+            prefDlg->setHidden(false);
 
 
-  // Ensure that only one of the flanger buttons are pushed at a time.
-  //connect(dlg_flanger->PushButtonChA, SIGNAL(valueOn()), flanger_b, SLOT(slotSetPositionOff()));
-  //connect(dlg_flanger->PushButtonChB, SIGNAL(valueOn()), flanger_a, SLOT(slotSetPositionOff()));
 
-  // Prepare the tracklist:
-  PlaylistKey = ConfigKey("[Playlist]","Directory");
-  QDir d( config->getValueString(PlaylistKey ));
-  if ((config->getValueString(PlaylistKey ).length()<1) | (!d.exists())) {
-      QFileDialog* fd = new QFileDialog( this, "Choose directory with music files", TRUE );
-      fd->setCaption(QString("Choose directory with music files"));
-      fd->setMode( QFileDialog::Directory );
-      if ( fd->exec() == QDialog::Accepted ) {
-          config->set(PlaylistKey, fd->selectedFile());
-          config->Save();
-      }
-  }
-  
-  // Start engine
-  engineStart();
+    // Set track information in reader
+    /*
+    if (view->playlist->ListPlaylist->firstChild() != 0)
+    {
+        buffer1->getReader()->requestNewTrack(view->playlist->ListPlaylist->firstChild()->text(1));
+        slotSetTitle(view->playlist->ListPlaylist->firstChild()->text(1), view->playcontrol1);
+
+        if (view->playlist->ListPlaylist->firstChild()->nextSibling() != 0)
+        {
+            buffer2->getReader()->requestNewTrack(view->playlist->ListPlaylist->firstChild()->nextSibling()->text(1));
+            slotSetTitle(view->playlist->ListPlaylist->firstChild()->nextSibling()->text(1), view->playcontrol2);
+        }
+    }
+    */
+
+    // Starting channels:
+    channel1 = new EngineChannel(view->channel1, "[Channel1]");
+    channel2 = new EngineChannel(view->channel2, "[Channel2]");
+
+    // Starting effects:
+    flanger = new EngineFlanger(view->flanger, "[Flanger]");
+
+    //qDebug("Init master...");
+    master = new EngineMaster(view->master, view->crossfader,
+                              buffer1, buffer2, channel1, channel2,flanger, "[Master]");
+
+    /** Connect signals from option menu, selecting processing of channel 1 & 2, to
+        EngineMaster */
+//    connect(optionsLeft, SIGNAL(toggled(bool)), master, SLOT(slotChannelMaster1(bool)));
+//    connect(optionsRight, SIGNAL(toggled(bool)), master, SLOT(slotChannelMaster2(bool)));
+//    master->slotChannelMaster1(optionsLeft->isOn());
+//    master->slotChannelMaster2(optionsRight->isOn());
+
+    //qDebug("Starting buffers...");
+//    buffer1->start();
+//    buffer2->start();
+
+    // Start audio
+    //qDebug("Starting player...");
+    player->setReader(master);
+    player->start();
 }
 
 MixxxApp::~MixxxApp()
 {
     qDebug("Destroying MixxxApp");
-    engineStop();
+    player->stop();
+    delete buffer1;
+    delete buffer2;
+    delete channel1;
+    delete channel2;
+    delete master;
+    delete prefDlg;
     delete player;
     delete control;
     delete midi;
@@ -285,71 +339,6 @@ bool MixxxApp::eventFilter(QObject *o, QEvent *e)
         return QWidget::eventFilter(o,e);
     }
     return TRUE;
-}
-
-void MixxxApp::engineStart()
-{
-    qDebug("starting engine...");
-
-    // Init buffers/readers
-    buffer1 = new EngineBuffer(this, optionsBeatMark, view->playcontrol1, "[Channel1]");
-    buffer2 = new EngineBuffer(this, optionsBeatMark, view->playcontrol2, "[Channel2]");
-
-    // Initialize tracklist:
-    m_pTracks = new TrackList(config->getValueString(PlaylistKey), view->tracklist->tableTracks,
-                              view->playcontrol1, view->playcontrol2, buffer1, buffer2);
-
-    // Set track information in reader
-    /*
-    if (view->playlist->ListPlaylist->firstChild() != 0)
-    {
-        buffer1->getReader()->requestNewTrack(view->playlist->ListPlaylist->firstChild()->text(1));
-        slotSetTitle(view->playlist->ListPlaylist->firstChild()->text(1), view->playcontrol1);
-
-        if (view->playlist->ListPlaylist->firstChild()->nextSibling() != 0)
-        {
-            buffer2->getReader()->requestNewTrack(view->playlist->ListPlaylist->firstChild()->nextSibling()->text(1));
-            slotSetTitle(view->playlist->ListPlaylist->firstChild()->nextSibling()->text(1), view->playcontrol2);
-        }
-    }
-    */
-    
-    // Starting channels:
-    channel1 = new EngineChannel(view->channel1, "[Channel1]");
-    channel2 = new EngineChannel(view->channel2, "[Channel2]");
-
-    // Starting effects:
-    flanger = new EngineFlanger(view->flanger, "[Flanger]");
-
-    //qDebug("Init master...");
-    master = new EngineMaster(view->master, view->crossfader, 
-                              buffer1, buffer2, channel1, channel2,flanger, "[Master]");
-
-    /** Connect signals from option menu, selecting processing of channel 1 & 2, to
-        EngineMaster */
-//    connect(optionsLeft, SIGNAL(toggled(bool)), master, SLOT(slotChannelMaster1(bool)));
-//    connect(optionsRight, SIGNAL(toggled(bool)), master, SLOT(slotChannelMaster2(bool)));
-//    master->slotChannelMaster1(optionsLeft->isOn());
-//    master->slotChannelMaster2(optionsRight->isOn());
-
-    //qDebug("Starting buffers...");
-//    buffer1->start();
-//    buffer2->start();
-
-    // Start audio
-    //qDebug("Starting player...");
-    player->setReader(master);
-    player->start();
-}
-
-void MixxxApp::engineStop()
-{
-    player->stop();
-    delete buffer1;
-    delete buffer2;
-    delete channel1;
-    delete channel2;
-    delete master;
 }
 
 /** initializes all QActions of the application */
@@ -735,11 +724,10 @@ void MixxxApp::slotOptionsBeatMark(bool toggle)
 
 void MixxxApp::slotOptionsPreferences()
 {
-    if (pDlg==0)
-        pDlg = new DlgPreferences(this,"",midi,player,0,config,midiconfig);
+        prefDlg->setHidden(false);
 }
 
-
+/*
 void MixxxApp::slotBrowsePlaylistDir()
 {
     QFileDialog* fd = new QFileDialog( this, QString::null, TRUE );
@@ -747,15 +735,15 @@ void MixxxApp::slotBrowsePlaylistDir()
     fd->setCaption("Choose directory with music files");
     if ( fd->exec() == QDialog::Accepted )
     {
-        pDlg->LineEditSongfiles->setText( fd->selectedFile() );
+//        prefDlg->LineEditSongfiles->setText( fd->selectedFile() );
     }
 }
 
 void MixxxApp::slotOptionsClosePreferences()
 {
-    delete pDlg;
-    pDlg = 0;
+    prefDlg->setHidden(true);
 }
+*/
 
 void MixxxApp::slotHelpAbout()
 {
@@ -766,27 +754,7 @@ void MixxxApp::slotHelpAbout()
 
 void MixxxApp::reopen()
 {
-    // Close devices, and open using config data.
-    player->close();
-    if (!player->open(false))
-        QMessageBox::warning(0, "Configuration error","Problem opening audio device");
-    else
-        player->start();
             
-    // Close MIDI
-    midi->devClose();
-
-    // Change MIDI configuration
-    //midiconfig->clear(); // (is currently not implemented correctly)
-    midiconfig->reopen(config->getValueString(ConfigKey("[Midi]","Configdir")).append(config->getValueString(ConfigKey("[Midi]","Configfile"))));
-
-    // Open MIDI device
-    midi->devOpen(config->getValueString(ConfigKey("[Midi]","Device")));
-}
-
-void MixxxApp::updateTracklist( QString sDir )
-{
-    m_pTracks->slotUpdateTracklist(sDir);
 }
 
 MixxxVisual *MixxxApp::getVisual()

@@ -1,8 +1,8 @@
 /***************************************************************************
-                          dlgpreferences.h  -  description
+                          dlgprefmidi.h  -  description
                              -------------------
-    begin                : Sun Jun 30 2002
-    copyright            : (C) 2002 by Tue & Ken Haste Andersen
+    begin                : Thu Apr 17 2003
+    copyright            : (C) 2003 by Tue & Ken Haste Andersen
     email                : haste@diku.dk
  ***************************************************************************/
 
@@ -15,42 +15,34 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef DLGPREFERENCES_H
-#define DLGPREFERENCES_H
+#ifndef DLGPREFMIDI_H
+#define DLGPREFMIDI_H
 
-#include "dlgpreferencesdlg.h"
-#include <qtabdialog.h>
-#include <qevent.h>
+#include <qwidget.h>
+#include "dlgprefmididlg.h"
 #include "configobject.h"
 
-class MixxxApp;
 class MidiObject;
-class Player;
-class TrackList;
-class DlgPrefSound;
-class DlgPrefMidi;
-class DlgPrefPlaylist;
 
 /**
   *@author Tue & Ken Haste Andersen
   */
 
-class DlgPreferences : public QTabDialog
-{
+class DlgPrefMidi : public DlgPrefMidiDlg  {
     Q_OBJECT
 public: 
-    DlgPreferences(MixxxApp *mixxx, 
-                   MidiObject *midi, Player *player,
-                   TrackList *tracklist, ConfigObject<ConfigValue> *config, ConfigObject<ConfigValueMidi> *midiconfig);
-    ~DlgPreferences();
+    DlgPrefMidi(QWidget *parent, MidiObject *_midi, ConfigObject<ConfigValue> *_config,
+                ConfigObject<ConfigValueMidi> *_midiconfig);
+    ~DlgPrefMidi();
+public slots:
+    void slotUpdate();
+    void slotApply();
 signals:
-    void closeDlg();
-protected:
-    bool eventFilter(QObject *, QEvent *);
+    void apply();
 private:
-    DlgPrefSound *wsound;
-    DlgPrefMidi *wmidi;
-    DlgPrefPlaylist *wplaylist;
+    MidiObject *midi;
+    ConfigObject<ConfigValue> *config;
+    ConfigObject<ConfigValueMidi> *midiconfig;
 };
 
 #endif
