@@ -574,7 +574,7 @@ bool TrackList::AddFiles(const char *path, QDomDocument * docXML)
 		
 		
 		
-			int iTrackNumber = getTrackCount(docXML);
+			int iTrackNumber = getTrackCount(docXML)+1;
 		// Check if the file exists in the list:
             TrackInfoObject *Track;
 			Track = FileExistsInList( m_fileInfo.fileName(),docXML, -1 ); 
