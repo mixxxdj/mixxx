@@ -35,7 +35,9 @@ public:
     void drag(QWidget *viewport);
 signals:
     void playlistPopup();
-    TrackPlaylist *m_pPlaylist;
+
+private:
+	TrackPlaylist *m_pPlaylist;
 };
 
 #endif

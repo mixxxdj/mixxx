@@ -138,6 +138,16 @@ bool PlayerPortAudio::open()
 
     iFramesPerBuffer = iLatency/m_iNumberOfBuffers;
 
+    // Ensure the chosen configuration is valid
+    if (m_iNumberOfBuffers<Pa_GetMinNumBuffers(iFramesPerBuffer,iSrate))
+    {
+        m_iNumberOfBuffers = Pa_GetMinNumBuffers(iFramesPerBuffer,iSrate);
+        iFramesPerBuffer = iLatency/m_iNumberOfBuffers;
+    
+        // Check again. If still no match the requested latency cannot be satisfied
+        if (m_iNumberOfBuffers<Pa_GetMinNumBuffers(iFramesPerBuffer,iSrate))
+            m_iNumberOfBuffers = Pa_GetMinNumBuffers(iFramesPerBuffer,iSrate);
+    }
 
     // Callback function to use
     PortAudioCallback *callback = paCallback;

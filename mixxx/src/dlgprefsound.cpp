@@ -221,8 +221,9 @@ void DlgPrefSound::slotApply()
 void DlgPrefSound::slotQueryLatency()
 {
     int iLatencyMsec = (int)(1000.*((float)Player::getBufferSize()/(float)EngineObject::getPlaySrate()));
-    qDebug("got latency msec %i",iLatencyMsec);
-    //if (abs(iLatencyMsec-config->getValueString(ConfigKey("[Soundcard]","Latency")).toInt())>1)
+    qDebug("got latency msec %i, buffer size %i",iLatencyMsec,Player::getBufferSize());
+    
+	//if (abs(iLatencyMsec-config->getValueString(ConfigKey("[Soundcard]","Latency")).toInt())>1)
     {
         config->set(ConfigKey("[Soundcard]","Latency"), ConfigValue(iLatencyMsec));
         slotUpdate();

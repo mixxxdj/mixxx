@@ -1,5 +1,5 @@
 /*
- * $Id: pa_dsound.c 479 2003-08-13 11:03:25Z tuehaste $
+ * $Id: pa_dsound.c 722 2004-05-04 04:05:06Z tuehaste $
  * PortAudio Portable Real-Time Audio Library
  * Latest Version at: http://www.softsynth.com/portaudio/
  * DirectSound Implementation
@@ -61,11 +61,11 @@
 #define PA_WIN_9X_LATENCY     (500)
 #define PA_WIN_NT_LATENCY     (600)
 #else
-#define PA_WIN_9X_LATENCY     (140)
-#define PA_WIN_NT_LATENCY     (280)
+#define PA_WIN_9X_LATENCY     (20)
+#define PA_WIN_NT_LATENCY     (20)
 #endif
 
-#define PA_WIN_WDM_LATENCY       (120)
+#define PA_WIN_WDM_LATENCY       (20)
 
 /* Trigger an underflow for testing purposes. Should normally be (0). */
 #define PA_SIMULATE_UNDERFLOW (0)
