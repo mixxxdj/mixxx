@@ -36,8 +36,8 @@ public:
     ~EngineFilterBlock();
     void process(const CSAMPLE *pIn, const CSAMPLE *pOut, const int iBufferSize);
 private:
-    CSAMPLE *m_pTemp1, *m_pTemp2;
-    EngineObject *low, *high;
+    CSAMPLE *m_pTemp1, *m_pTemp2, *m_pTemp3;
+    EngineObject *low, *band, *high;
     ControlEngine *filterpotLow, *filterpotMid, *filterpotHigh;
     ControlEngine *filterKillLow, *filterKillMid, *filterKillHigh;
 };

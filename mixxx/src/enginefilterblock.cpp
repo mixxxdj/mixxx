@@ -27,8 +27,10 @@ EngineFilterBlock::EngineFilterBlock(const char *group)
     ControlPushButton *pb;
 
     low = new EngineFilterIIR(bessel_lowpass);
+    band = new EngineFilterIIR(bessel_bandpass);
     high = new EngineFilterIIR(bessel_highpass);
-/*
+
+    /*
     lowrbj = new EngineFilterRBJ();
     lowrbj->calc_filter_coeffs(6, 100., 44100., 0.3, 0., true);
     midrbj = new EngineFilterRBJ();
@@ -59,11 +61,13 @@ EngineFilterBlock::EngineFilterBlock(const char *group)
     
     m_pTemp1 = new CSAMPLE[MAX_BUFFER_LEN];
     m_pTemp2 = new CSAMPLE[MAX_BUFFER_LEN];
+    m_pTemp3 = new CSAMPLE[MAX_BUFFER_LEN];
 }
 
 EngineFilterBlock::~EngineFilterBlock()
 {
     delete high;
+    delete band;
     delete low;
     delete filterpotLow;
     delete filterKillLow;
@@ -79,13 +83,14 @@ void EngineFilterBlock::process(const CSAMPLE *pIn, const CSAMPLE *pOut, const i
     CSAMPLE fLow=0.f, fMid=0.f, fHigh=0.f;
 
     if (filterKillLow->get()==0.)
-        fLow = filterpotLow->get();
+        fLow = filterpotLow->get()*0.7;
     if (filterKillMid->get()==0.)
-        fMid = filterpotMid->get();
+        fMid = filterpotMid->get()*1.1;
     if (filterKillHigh->get()==0.)
-        fHigh = filterpotHigh->get();
+        fHigh = filterpotHigh->get()*1.2;
 
-    if (fLow == 1. && fMid == 1. && fHigh == 1.)
+    
+/*    if (fLow == 1. && fMid == 1. && fHigh == 1.)
     {
         if (pIn!=pOut)
             memcpy(pOutput, pIn, sizeof(CSAMPLE) * iBufferSize);
@@ -93,18 +98,20 @@ void EngineFilterBlock::process(const CSAMPLE *pIn, const CSAMPLE *pOut, const i
     else if (pIn!=pOut)
     {
         low->process(pIn, m_pTemp1, iBufferSize);
+	band->process(pIn, m_pTemp2, iBufferSize);
         high->process(pIn, pOut, iBufferSize);
         
         for (int i=0; i<iBufferSize; ++i)
-            pOutput[i] = fLow*m_pTemp1[i] + fHigh*m_pTemp2[i] + fMid*(pIn[i]-m_pTemp1[i]-pOutput[i]);
+            pOutput[i] = 0.5*(fLow*m_pTemp1[i] + fHigh*pOut[i] + fMid*(pIn[i]-m_pTemp1[i]-pOut[i]);
     }
     else
-    {
-        low->process(pIn, m_pTemp1, iBufferSize);
-        high->process(pIn, m_pTemp2, iBufferSize);
+*/
+
+    low->process(pIn, m_pTemp1, iBufferSize);
+    band->process(pIn, m_pTemp2, iBufferSize);
+    high->process(pIn, m_pTemp3, iBufferSize);
         
-        for (int i=0; i<iBufferSize; ++i)
-            pOutput[i] = fLow*m_pTemp1[i] + fHigh*m_pTemp2[i] + fMid*(pIn[i]-m_pTemp1[i]-m_pTemp2[i]);
-    }
+    for (int i=0; i<iBufferSize; ++i)
+        pOutput[i] = 0.5*(fLow*m_pTemp1[i] + fMid*m_pTemp2[i] + fHigh*m_pTemp3[i]);
 }
 
