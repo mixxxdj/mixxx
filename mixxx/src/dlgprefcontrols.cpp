@@ -56,6 +56,7 @@ DlgPrefControls::~DlgPrefControls()
 
 void DlgPrefControls::slotUpdate()
 {
+    ComboBoxRateRange->clear();
     ComboBoxRateRange->insertItem("10% (Technics SL1210)");
     ComboBoxRateRange->insertItem("20%");
     ComboBoxRateRange->insertItem("30%");
@@ -65,8 +66,10 @@ void DlgPrefControls::slotUpdate()
     ComboBoxRateRange->insertItem("70%");
     ComboBoxRateRange->insertItem("80%");
     ComboBoxRateRange->insertItem("90%");
-    ComboBoxRateRange->setCurrentItem((int)(10.*(1.-m_pControlRate1->getMin()))-1);
+    float idx = 10.*(1.-m_pControlRate1->getMin())-1.;
+    ComboBoxRateRange->setCurrentItem((int)idx);
 
+    ComboBoxRateDir->clear();
     ComboBoxRateDir->insertItem("Up increase speed");
     ComboBoxRateDir->insertItem("Down increase speed (Technics SL1210)");
     ComboBoxRateDir->setCurrentItem(m_pWidgetRate1->getReverse());
@@ -86,7 +89,8 @@ void DlgPrefControls::slotSetRateRange(int pos)
 void DlgPrefControls::slotApply()
 {
     // Write rate range to config file
-    m_pConfig->set(ConfigKey("[Controls]","RateRange"), ConfigValue((int)(10.*(1.-m_pControlRate1->getMin()))-1));
+    float idx = 10.*(1.-m_pControlRate1->getMin())-1.;
+    m_pConfig->set(ConfigKey("[Controls]","RateRange"), ConfigValue((int)idx));
 
     // Write rate direction to config file
     m_pConfig->set(ConfigKey("[Controls]","RateDir"), ConfigValue(m_pWidgetRate1->getReverse()));
@@ -96,7 +100,7 @@ void DlgPrefControls::slotApply()
 }
 
 
-
+                                                                                                 
 
 
 
