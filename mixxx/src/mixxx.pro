@@ -144,7 +144,9 @@ count(LINLIBPATH, 1) {
 }
 win32:SOURCES += soundsourcesndfile.cpp
 win32:HEADERS += soundsourcesndfile.h
-win32:LIBS += libsndfile.lib
+win32:LIBS += LibSndFile.lib
+#DEBUG VERSION
+#win32:LIBS += LibSndFileDbg.lib
 macx:LIBS += $$MACLIBPATH/lib/libaudiofile.a
 
 
