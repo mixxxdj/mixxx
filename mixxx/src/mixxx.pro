@@ -5,16 +5,18 @@
 # ALSA
 SOURCES += playeralsa.cpp
 DEFINES += __ALSA__
-LIBS += -lasound
+unix:LIBS += -lasound
 
 # PortAudio
 #SOURCES += playerportaudio.cpp
 #DEFINES += __PORTAUDIO__
-#LIBS += -lportaudio
+#unix:LIBS += -lportaudio
+#win32:LIBS += ??
 
 # PortMidi
 DEFINES += __PORTMIDI__
-LIBS += -Llibportmidi.a
+unix:LIBS += -Llibportmidi.a -Llibporttime.a
+win32:LIBS +=
 
 #
 # End of options
