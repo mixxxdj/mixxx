@@ -13,7 +13,7 @@ SoundSourceAFlibfile::SoundSourceAFlibfile(const char* filename) {
       filelength = 2*afGetFrameCount(fh,AF_DEFAULT_TRACK);
 
   channels = 2;
-  type = "wav-file.";
+  type = "wav file.";
 }
 
 SoundSourceAFlibfile::~SoundSourceAFlibfile() {

@@ -309,7 +309,7 @@ void MixxxApp::initMenuBar()
 
   ///////////////////////////////////////////////////////////////////
   // menuBar entry fileMenu
-  fileMenu=new QPopupMenu();
+/*fileMenu=new QPopupMenu();
   fileNew->addTo(fileMenu);
   fileOpen->addTo(fileMenu);
   fileClose->addTo(fileMenu);
@@ -319,14 +319,14 @@ void MixxxApp::initMenuBar()
   fileMenu->insertSeparator();
   filePrint->addTo(fileMenu);
   fileMenu->insertSeparator();
-  fileQuit->addTo(fileMenu);
+  fileQuit->addTo(fileMenu);*/
 
   ///////////////////////////////////////////////////////////////////
   // menuBar entry editMenu
-  editMenu=new QPopupMenu();
+/*editMenu=new QPopupMenu();
   editCut->addTo(editMenu);
   editCopy->addTo(editMenu);
-  editPaste->addTo(editMenu);
+  editPaste->addTo(editMenu);*/
 
   ///////////////////////////////////////////////////////////////////
   // menuBar entry optionsMenu
@@ -353,8 +353,8 @@ void MixxxApp::initMenuBar()
 
   ///////////////////////////////////////////////////////////////////
   // MENUBAR CONFIGURATION
-  menuBar()->insertItem(tr("&File"), fileMenu);
-  menuBar()->insertItem(tr("&Edit"), editMenu);
+  //menuBar()->insertItem(tr("&File"), fileMenu);
+  //menuBar()->insertItem(tr("&Edit"), editMenu);
   menuBar()->insertItem(tr("&Options"), optionsMenu);
   //menuBar()->insertItem(tr("&View"), viewMenu);
   menuBar()->insertSeparator();
