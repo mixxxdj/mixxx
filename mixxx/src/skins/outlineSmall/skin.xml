@@ -1019,7 +1019,7 @@
   <Tooltip>Overview display of waveform</Tooltip>
   <Channel>1</Channel>
   <Pos>113,98</Pos>
-  <Size>452,30</Size>
+  <Size>452,100</Size>
   <BgColor>#f0f0f0</BgColor>
   <SignalColor>#00ff00</SignalColor>
   <MarkerColor>#0000ff</MarkerColor>

@@ -164,6 +164,10 @@ int SoundSourceOggVorbis::ParseHeader( TrackInfoObject *Track )
     Track->setDuration((int)ov_time_total(&vf, -1));
     Track->setBitrate(ov_bitrate(&vf, -1)/1000);
 
+    vorbis_info *vi=ov_info(&vf,-1);
+    Track->setSampleRate(vi->rate);
+    Track->setChannels(vi->channels);
+    
     ov_clear(&vf);
     return OK;
 }

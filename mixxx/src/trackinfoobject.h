@@ -89,6 +89,14 @@ public:
     float getBeatFirst();
     /** Retruns the length of the file in bytes */
     int getLength();
+    /** Set sample rate */
+    void setSampleRate(int iSampleRate);
+    /** Get sample rate */
+    int getSampleRate();
+    /** Set number of channels */
+    void setChannels(int iChannels);
+    /** Get number of channels */
+    int getChannels();
     /** Output a formatted string with all the info */
     QString getInfo();
     /** Set duration in seconds */
@@ -120,11 +128,11 @@ public:
     /** Set id */
     void setId(int iId);
     /** Set pointer to waveform summary */
-    void setWaveSummary(QMemArray<char> *pWave, QValueList<int> *pSegmentation);
+    void setWaveSummary(QMemArray<char> *pWave, QValueList<long> *pSegmentation);
     /** Returns a pointer to waveform summary */
     QMemArray<char> *getWaveSummary();
     /** Returns a pointer to segmentation summary */
-    QValueList<int> *getSegmentationSummary();
+    QValueList<long> *getSegmentationSummary();
     /** Return the next track as listed in WTrackTable */
     TrackInfoObject *getNext();
     /** Set corresponding overview widget */
@@ -154,6 +162,10 @@ private:
     int m_iDuration;
     /** Length of track in bytes */
     int m_iLength;
+    /** Sample rate */
+    int m_iSampleRate;
+    /** Number of channels */
+    int m_iChannels;
     /** Bitrate */
     int m_iBitrate;
     /** Number of times the track has been played */
@@ -171,7 +183,7 @@ private:
     /** Pointer to summary wave info */
     QMemArray<char> *m_pWave;
     /** Pointer to summary segmentation */
-    QValueList<int> *m_pSegmentation;
+    QValueList<long> *m_pSegmentation;
     /** WTrackTableItems are representations of the values actually shown in the WTrackTable */
     WTrackTableItem *m_pTableItemScore, *m_pTableItemTitle, *m_pTableItemArtist, *m_pTableItemComment, *m_pTableItemType,
                     *m_pTableItemDuration, *m_pTableItemBpm, *m_pTableItemBitrate;

@@ -68,18 +68,21 @@ void WaveSummary::run()
             SoundSourceProxy *pSoundSource = new SoundSourceProxy(pTrackInfoObject->getLocation());
             
             // Objects for extrating HFC values
-            float *pSpectralBuffer = new float[2048];
-            WindowKaiser *pWindow = new WindowKaiser(2048, 6.5);
+            const int kiBlockSizeMax = 2048;
+            float *pSpectralBuffer = new float[kiBlockSizeMax];
+            WindowKaiser *pWindow = new WindowKaiser(kiBlockSizeMax, 6.5);
             EngineSpectralFwd *pSpectral = new EngineSpectralFwd(true, false, pWindow);
 
-            // Block size depends of file size, we want ~100 blocks
-            int iBlockSize = pSoundSource->length()/100;
+            const int kiBlocks = 150;
+            
+            // Block size depends of file size, we want ~kiBlocks blocks
+            int iBlockSize = pSoundSource->length()/kiBlocks;
             if (!even(iBlockSize))
                 --iBlockSize;
 
             // Read and store summary
             SAMPLE *pBuffer = new SAMPLE[iBlockSize];
-            QMemArray<char> *pData = new QMemArray<char>(300);
+            QMemArray<char> *pData = new QMemArray<char>(kiBlocks*3);
             for (unsigned int i=0; i<pData->size(); ++i)
                 pData->at(i) = 0;
 
@@ -88,7 +91,7 @@ void WaveSummary::run()
 
 //         qDebug("len %i req %i, got %i",pSoundSource->length(), iBlockSize, r);
             int no=0;
-            while (r==iBlockSize && no<298)
+            while (r==iBlockSize && no<kiBlocks*3-2)
             {
                 // Find min and max in buffer
                 int iMin=0, iMax=0;
@@ -100,22 +103,40 @@ void WaveSummary::run()
                         iMax += pBuffer[j];
                 }
 
-            // Store result
-//             qDebug("short int min %i, max %i",iMin,iMax);
-                pData->at(no) = max(iMin/((iBlockSize/5)*256),-127);
-                pData->at(no+1) = min(iMax/((iBlockSize/5)*256),127);
+                // Scale to range used in visual display
+                iMin = max(iMin/((iBlockSize/5)*256),-127);
+                iMax = min(iMax/((iBlockSize/5)*256),127);
 
+/*
+                // Low pass min and max
+                for (int k=no-3; k>=(max(no-9,0)); k-=3)
+                {    
+                    iMin += pData->at(k);
+                    iMax += pData->at(k+1);
+                }
+                iMin /= 4;
+                iMax /= 4;
+*/
+                
+                // Store min & max
+                pData->at(no) = iMin;
+                pData->at(no+1) = iMax;
+                
                 // Find HFC value
-                for (int i=0; i<min(2048, iBlockSize); ++i)
+                for (int i=0; i<min(kiBlockSizeMax, iBlockSize); ++i)
                     pSpectralBuffer[i] = pBuffer[i];
-                pSpectral->process(pSpectralBuffer, 0, 2048);
-
+                pSpectral->process(pSpectralBuffer, 0, kiBlockSizeMax);
+                float fHfc = pSpectral->getHFC();
+                
                 // Low pass filter HFC
-                int lp = (short int)(min(pSpectral->getHFC(),70000)*(256./70000.)-128);
-                for (int k=no+1; k>(max(no-9,0)); --k)
+                const int kiFilterLen = 5;
+                int lp = (short int)(min(fHfc,100000)*(256./100000.)-128);
+/*
+                for (int k=no-3+2; k>=(max(no+2-((kiFilterLen)*3),2)); k-=3)
                     lp += pData->at(k);
-                lp /= 4;
-
+                lp /= kiFilterLen;
+*/
+                
                 // Store HFC
                 pData->at(no+2) = max(min(lp,127),-127);
                 //qDebug("hfc extract %f, store %i",pSpectral->getPSF(), pData->at(no+2));
@@ -127,62 +148,91 @@ void WaveSummary::run()
                 r=pSoundSource->read(iBlockSize, pBuffer);
             }
 
-            QValueList<int> *segpoints = new QValueList<int>;
+            QValueList<long> *pSegPoints;
             
-            // Check if segmentation points are stored in sound file...
-            QValueList<long> *pSegFile = pSoundSource->getCuePoints();
-            if (pSegFile)
+            // Get segmentation points stored in sound file...
+            pSegPoints = pSoundSource->getCuePoints();
+            
+            long liSampleDuration = pTrackInfoObject->getDuration()*pTrackInfoObject->getSampleRate()*pTrackInfoObject->getChannels();
+            
+            // If no points are stored in the file, generate some...
+            if (!pSegPoints)
             {
-                qDebug("Found %i points in file",pSegFile->count());
-                for (unsigned int i=0; i<pSegFile->count(); ++i)
-                    segpoints->append((int)(300.*(float)(*pSegFile->at(i))/(float)pTrackInfoObject->getLength()));
-            }
-            else
-            {
+                pSegPoints = new QValueList<long>;
+                
                 // Find segmentation points
-                for (int i=5; i<298; i=i+3)
+                for (int i=3; i<kiBlocks*3; i=i+3)
                 {
                     // Find peaks and depths
-                    if ((pData->at(i)>pData->at(i-3) && pData->at(i)>pData->at(i+3))) // ||
-                        //(pData->at(i)<pData->at(i-3) && pData->at(i)<pData->at(i+3)))
-                        segpoints->append(i);
+                    if (abs(pData->at(i)-pData->at(i-3))>1 || abs(pData->at(i+1)-pData->at(i-2))>1)
+                        pSegPoints->append(i);
                 }
-    
-                // Prune segmentation point list
-                char threshold = 0;
-                while (segpoints->size()>10 && threshold<100)
+                
+                // Prune by removing segment points that are less than 3 index points in distance
+                // (remove the one with lowest dA)
+                QValueList<long>::iterator it = pSegPoints->begin();
+                QValueList<long>::iterator it2 = it;
+                ++it2;
+                while (it2!=pSegPoints->end())
                 {
-                    threshold += 10;
+                    int i1 = (*it);
+                    int i2 = (*it2);
+                    
+                    if (i2-i1<18)
+                    {
+                        int d1 = max(abs(pData->at(i1)-pData->at(i1-3)),abs(pData->at(i1)-pData->at(i1+3)));
+                        int d2 = max(abs(pData->at(i2)-pData->at(i2-3)),abs(pData->at(i2)-pData->at(i2+3)));
+   
+                        if (d1>d2)
+                            it2 = pSegPoints->remove(it2);
+                        else
+                        {
+                            it = pSegPoints->remove(it);
+                            it2++;
+                        }
+                    }
+                    else
+                    {
+                        ++it;
+                        ++it2;
+                    }
+                }
+                                
+                // Prune segmentation point list by selecting max in derivative of amplitude.
+                int iThreshold = 1;
+                while (pSegPoints->size()>10)
+                {
+                    iThreshold += 1;
     
-                    QValueList<int>::iterator it = segpoints->begin();
-                    while (it!=segpoints->end())
+                    QValueList<long>::iterator it = pSegPoints->begin();
+                    while (it!=pSegPoints->end())
                     {
                         int i = (*it);
-                        if (abs(pData->at(i)-pData->at(i-3))<threshold && abs(pData->at(i)-pData->at(i+3))<threshold)
+                        if (max(abs(pData->at(i)-pData->at(i-3)),abs(pData->at(i)-pData->at(i+3)))<iThreshold)
+                        //if (max(abs(pData->at(i+2)-pData->at(i-3+2)),abs(pData->at(i+2)-pData->at(i+3+2)))<iThreshold)
                         {
-                            it =segpoints->remove(it);
-                            if (segpoints->size()<=10)
-                                break;
+                            it = pSegPoints->remove(it);
+                            //if (pSegPoints->size()<=10)
+                            //    break;
                         }
                         else
                             ++it;
                     }
                 }
             }
+
+            // Transform segmentation points to sample values
+            for (unsigned int i=0; i<pSegPoints->size(); ++i)
+                (*pSegPoints)[i] = (*pSegPoints->at(i))*(liSampleDuration/(kiBlocks*3));
             
             // Store summary in TrackInfoObject
-            QApplication::postEvent(pTrackInfoObject, new WaveSummaryEvent(pData, segpoints));
-
-            qDebug("segpoints %i", segpoints->size());
-
+            QApplication::postEvent(pTrackInfoObject, new WaveSummaryEvent(pData, pSegPoints));
+            
             delete [] pBuffer;
             delete pSpectral;
             delete pWindow;
             delete [] pSpectralBuffer;
             delete pSoundSource;
-
-//         qDebug("generate successful for %s",pTrackInfoObject->getFilename().latin1());
-
         }
     }
 }

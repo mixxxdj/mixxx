@@ -105,6 +105,8 @@ int SoundSourceAudioFile::ParseHeader(TrackInfoObject *Track)
     Track->setType(location.section(".",-1).lower());
     Track->setDuration((int)(afGetFrameCount(fh, AF_DEFAULT_TRACK)/afGetRate(fh, AF_DEFAULT_TRACK)));
     Track->setBitrate((int)((Track->getLength()/(Track->getDuration()*afGetRate(fh, AF_DEFAULT_TRACK))*afGetRate(fh, AF_DEFAULT_TRACK)*8.)/1000.));
+    Track->setSampleRate((int)afGetRate(fh,AF_DEFAULT_TRACK));
+    Track->setChannels((int)afGetChannels(fh, AF_DEFAULT_TRACK));
     afCloseFile(fh);
     return OK;
 }
