@@ -45,7 +45,7 @@ DlgPrefSound::DlgPrefSound(QWidget *parent, Player *_player,
     connect(SliderLatencyHead,        SIGNAL(valueChanged(int)), this, SLOT(slotLatencyHead()));
 
     // Sound quality slider updates
-    SliderSoundQuality->setValue(config->getValueString(ConfigKey("[Soundcard]","SoundQuality")).toInt());
+    SliderSoundQuality->setValue(4-config->getValueString(ConfigKey("[Soundcard]","SoundQuality")).toInt());
 
     // Apply changes whenever apply signal is emitted
     connect(ComboBoxSoundcardMaster,  SIGNAL(activated(int)),    this, SLOT(slotApply()));

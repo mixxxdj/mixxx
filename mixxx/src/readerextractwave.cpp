@@ -415,20 +415,6 @@ long int ReaderExtractWave::seek(long int new_playpos)
         // Update vertex buffer by sending an event containing indexes of where to update.
         if (m_pVisualBuffer != 0)
             QApplication::postEvent(m_pVisualBuffer, new ReaderEvent(0,READBUFFERSIZE));
-
-        // Refresh buffers in both directions (before and after playpos)
-        for (i=0; i<READCHUNK_NO/2-1; ++i)
-        {
-        }
-        /*
-            getchunk(0.);
-            getchunk(-1.);
-            getchunk(0.);
-            getchunk(-1.);
-            getchunk(0.);
-            getchunk(-1.);
-        */
-
     }
     else
         seekpos = 0;

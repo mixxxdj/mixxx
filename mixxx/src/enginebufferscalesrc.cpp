@@ -53,7 +53,7 @@ void EngineBufferScaleSRC::setQuality(int q)
     }
     src_delete(converter);
     int error;
-    src_new(q, 2, &error);
+       src_new(q, 2, &error);
     if (error!=0)
         qDebug("EngineBufferScaleSRC: %s",src_strerror(error));
 }
@@ -74,14 +74,16 @@ double EngineBufferScaleSRC::setRate(double _rate)
     }
 
     // Ensure valid range of rate
-    if (rate>12.)
+    if (rate==0.)
+        return 0.;
+    else if (rate>12.)
         rate = 12.;
+    else if (rate<1./12.)
+        rate = 1./12.;
 
     src_set_ratio(converter, rate);
 
-    if (rate==0.)
-        return 0.;
-    else if (backwards)
+    if (backwards)
         return -(1./rate);
     else
         return (1./rate);
@@ -94,7 +96,7 @@ CSAMPLE *EngineBufferScaleSRC::scale(double playpos, int buf_size)
     // Invert wavebuffer is backwards playback
     if (backwards)
     {
-        int no = buf_size*(1./rate);
+        int no = buf_size*(1./rate)+1;
         if (!even(no))
             no++;
 
@@ -121,24 +123,25 @@ CSAMPLE *EngineBufferScaleSRC::scale(double playpos, int buf_size)
     // Perform conversion
     int error = src_process(converter, data);
     if (error!=0)
-        qDebug("EngineBufferScaleSRC: %s rate: %f",src_strerror(error),rate);
+        qDebug("EngineBufferScaleSRC: %s",src_strerror(error));
 
     consumed += data->input_frames_used;
 
     // Check if wave_buffer is wrapped
     if (data->output_frames_gen*2 < buf_size)
     {
-        if (backwards)
-            qDebug("EngineBufferScaleSRC: Error");
-        data->data_in = &wavebuffer[0];
-        data->data_out = &buffer[data->output_frames_gen*2];
-        data->input_frames = READBUFFERSIZE/2;
-        data->output_frames = (buf_size-data->output_frames_gen*2)/2;
+        if (!backwards)
+        {
+            data->data_in = &wavebuffer[0];
+            data->data_out = &buffer[data->output_frames_gen*2];
+            data->input_frames = READBUFFERSIZE/2;
+            data->output_frames = (buf_size-data->output_frames_gen*2)/2;
+        }
 
         // Perform conversion
         int error = src_process(converter, data);
         if (error!=0)
-            qDebug("EngineBufferScaleSRC: %s rate: %f",src_strerror(error),rate);
+            qDebug("EngineBufferScaleSRC: %s",src_strerror(error));
 
         consumed += data->input_frames_used;
     }

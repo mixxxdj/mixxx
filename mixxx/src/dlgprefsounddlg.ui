@@ -9,7 +9,7 @@
             <x>0</x>
             <y>0</y>
             <width>600</width>
-            <height>486</height>
+            <height>489</height>
         </rect>
     </property>
     <property name="caption">
@@ -343,72 +343,6 @@
         </widget>
         <widget class="QLabel">
             <property name="name">
-                <cstring>TextLabelLatencyMaster</cstring>
-            </property>
-            <property name="geometry">
-                <rect>
-                    <x>275</x>
-                    <y>25</y>
-                    <width>65</width>
-                    <height>14</height>
-                </rect>
-            </property>
-            <property name="font">
-                <font>
-                </font>
-            </property>
-            <property name="text">
-                <string>256 ms</string>
-            </property>
-            <property name="alignment">
-                <set>AlignVCenter|AlignRight</set>
-            </property>
-        </widget>
-        <widget class="QLabel">
-            <property name="name">
-                <cstring>TextLabel8_2</cstring>
-            </property>
-            <property name="geometry">
-                <rect>
-                    <x>310</x>
-                    <y>70</y>
-                    <width>36</width>
-                    <height>20</height>
-                </rect>
-            </property>
-            <property name="font">
-                <font>
-                </font>
-            </property>
-            <property name="text">
-                <string>High</string>
-            </property>
-        </widget>
-        <widget class="QLabel">
-            <property name="name">
-                <cstring>TextLabelLatencyHead</cstring>
-            </property>
-            <property name="geometry">
-                <rect>
-                    <x>275</x>
-                    <y>105</y>
-                    <width>65</width>
-                    <height>14</height>
-                </rect>
-            </property>
-            <property name="font">
-                <font>
-                </font>
-            </property>
-            <property name="text">
-                <string>256 ms</string>
-            </property>
-            <property name="alignment">
-                <set>AlignVCenter|AlignRight</set>
-            </property>
-        </widget>
-        <widget class="QLabel">
-            <property name="name">
                 <cstring>TextLabelLatency</cstring>
             </property>
             <property name="geometry">
@@ -447,26 +381,6 @@
                 <string>Low</string>
             </property>
         </widget>
-        <widget class="QLabel">
-            <property name="name">
-                <cstring>TextLabelLatencyHigh</cstring>
-            </property>
-            <property name="geometry">
-                <rect>
-                    <x>310</x>
-                    <y>149</y>
-                    <width>36</width>
-                    <height>18</height>
-                </rect>
-            </property>
-            <property name="font">
-                <font>
-                </font>
-            </property>
-            <property name="text">
-                <string>High</string>
-            </property>
-        </widget>
         <widget class="QSlider">
             <property name="name">
                 <cstring>SliderLatencyMaster</cstring>
@@ -475,7 +389,7 @@
                 <rect>
                     <x>15</x>
                     <y>40</y>
-                    <width>315</width>
+                    <width>320</width>
                     <height>29</height>
                 </rect>
             </property>
@@ -512,7 +426,7 @@
                 <rect>
                     <x>15</x>
                     <y>120</y>
-                    <width>315</width>
+                    <width>320</width>
                     <height>29</height>
                 </rect>
             </property>
@@ -541,6 +455,92 @@
                 <number>5</number>
             </property>
         </widget>
+        <widget class="QLabel">
+            <property name="name">
+                <cstring>TextLabel8_2</cstring>
+            </property>
+            <property name="geometry">
+                <rect>
+                    <x>310</x>
+                    <y>70</y>
+                    <width>36</width>
+                    <height>20</height>
+                </rect>
+            </property>
+            <property name="font">
+                <font>
+                </font>
+            </property>
+            <property name="text">
+                <string>High</string>
+            </property>
+        </widget>
+        <widget class="QLabel">
+            <property name="name">
+                <cstring>TextLabelLatencyHigh</cstring>
+            </property>
+            <property name="geometry">
+                <rect>
+                    <x>310</x>
+                    <y>149</y>
+                    <width>36</width>
+                    <height>18</height>
+                </rect>
+            </property>
+            <property name="font">
+                <font>
+                </font>
+            </property>
+            <property name="text">
+                <string>High</string>
+            </property>
+        </widget>
+        <widget class="QLabel">
+            <property name="name">
+                <cstring>TextLabelLatencyHead</cstring>
+            </property>
+            <property name="geometry">
+                <rect>
+                    <x>270</x>
+                    <y>105</y>
+                    <width>65</width>
+                    <height>14</height>
+                </rect>
+            </property>
+            <property name="font">
+                <font>
+                </font>
+            </property>
+            <property name="text">
+                <string>256 ms</string>
+            </property>
+            <property name="alignment">
+                <set>AlignVCenter|AlignRight</set>
+            </property>
+        </widget>
+        <widget class="QLabel">
+            <property name="name">
+                <cstring>TextLabelLatencyMaster</cstring>
+            </property>
+            <property name="geometry">
+                <rect>
+                    <x>270</x>
+                    <y>25</y>
+                    <width>65</width>
+                    <height>14</height>
+                </rect>
+            </property>
+            <property name="font">
+                <font>
+                </font>
+            </property>
+            <property name="text">
+                <string>256 ms</string>
+            </property>
+            <property name="alignment">
+                <set>AlignVCenter|AlignRight</set>
+            </property>
+        </widget>
     </widget>
     <widget class="QGroupBox">
         <property name="name">
@@ -564,52 +564,6 @@
         <property name="title">
             <string>Sound quality</string>
         </property>
-        <widget class="QLabel">
-            <property name="name">
-                <cstring>TextLabel8_2_3</cstring>
-            </property>
-            <property name="geometry">
-                <rect>
-                    <x>261</x>
-                    <y>48</y>
-                    <width>79</width>
-                    <height>20</height>
-                </rect>
-            </property>
-            <property name="font">
-                <font>
-                </font>
-            </property>
-            <property name="text">
-                <string>High quality</string>
-            </property>
-            <property name="alignment">
-                <set>AlignVCenter|AlignRight</set>
-            </property>
-        </widget>
-        <widget class="QLabel">
-            <property name="name">
-                <cstring>TextLabelLatencyMaster_3</cstring>
-            </property>
-            <property name="geometry">
-                <rect>
-                    <x>275</x>
-                    <y>69</y>
-                    <width>65</width>
-                    <height>14</height>
-                </rect>
-            </property>
-            <property name="font">
-                <font>
-                </font>
-            </property>
-            <property name="text">
-                <string>Fast CPU</string>
-            </property>
-            <property name="alignment">
-                <set>AlignVCenter|AlignRight</set>
-            </property>
-        </widget>
         <widget class="QLabel">
             <property name="name">
                 <cstring>TextLabel8_4</cstring>
@@ -658,7 +612,7 @@
                 <rect>
                     <x>15</x>
                     <y>15</y>
-                    <width>315</width>
+                    <width>320</width>
                     <height>29</height>
                 </rect>
             </property>
@@ -685,6 +639,52 @@
             </property>
             <property name="tickInterval">
                 <number>1</number>
+            </property>
+        </widget>
+        <widget class="QLabel">
+            <property name="name">
+                <cstring>TextLabel8_2_3</cstring>
+            </property>
+            <property name="geometry">
+                <rect>
+                    <x>256</x>
+                    <y>48</y>
+                    <width>79</width>
+                    <height>20</height>
+                </rect>
+            </property>
+            <property name="font">
+                <font>
+                </font>
+            </property>
+            <property name="text">
+                <string>High quality</string>
+            </property>
+            <property name="alignment">
+                <set>AlignVCenter|AlignRight</set>
+            </property>
+        </widget>
+        <widget class="QLabel">
+            <property name="name">
+                <cstring>TextLabelLatencyMaster_3</cstring>
+            </property>
+            <property name="geometry">
+                <rect>
+                    <x>270</x>
+                    <y>69</y>
+                    <width>65</width>
+                    <height>14</height>
+                </rect>
+            </property>
+            <property name="font">
+                <font>
+                </font>
+            </property>
+            <property name="text">
+                <string>Fast CPU</string>
+            </property>
+            <property name="alignment">
+                <set>AlignVCenter|AlignRight</set>
             </property>
         </widget>
     </widget>
