@@ -60,11 +60,18 @@ ConfigObject *ConfigMapping::setConfiguration(const char *str)
         }
         else if (group>0)
         {
-            int no, mask;
-            QTextIStream(handle) >> no >> mask;
+            int no, mask, ch;
+            QString s2;
+            QTextIStream(handle) >> no >> mask >> s2 >> ch;
+            if (!s2.endsWith("h"))
+                ch = 0;
+
+            //qDebug("no: %i, mask: %i, str: %s, ch: %i",no,mask,s2.ascii(),ch);
             ConfigObject::ConfigKey k(groupStr, s);
-            ConfigObject::ConfigValue m(no, mask);
+            ConfigObject::ConfigValue m(no, mask, ch);
             cfg->set(&k, &m);
+
+
         }
     }
     return cfg;

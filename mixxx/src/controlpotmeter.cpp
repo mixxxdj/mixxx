@@ -53,6 +53,7 @@ ControlPotmeter::~ControlPotmeter()
 void ControlPotmeter::slotSetPosition(int _newpos)
 {
   char newpos =(char)_newpos;
+    qDebug("got %i",newpos);
 
   // Ensure that the position is within bounds:
   position = max(minPosition, min(newpos, maxPosition));

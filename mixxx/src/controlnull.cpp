@@ -1,9 +1,9 @@
 /***************************************************************************
-                          controlobject.h  -  description
+                          controlnull.cpp  -  description
                              -------------------
-    begin                : Wed Feb 20 2002
-    copyright            : (C) 2002 by Tue and Ken Haste Andersen
-    email                : 
+    begin                : Sat Jun 15 2002
+    copyright            : (C) 2002 by Tue & Ken Haste Andersen
+    email                : haste@diku.dk
  ***************************************************************************/
 
 /***************************************************************************
@@ -15,36 +15,9 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef CONTROLOBJECT_H
-#define CONTROLOBJECT_H
+#include "controlnull.h"
 
-#include <qobject.h>
-#include "configobject.h"
-//#include "midiobject.h"
-class MidiObject;
-
-/**
-  *@author Tue and Ken Haste Andersen
-  */
-
-class ControlObject : public QObject
-{
-  Q_OBJECT
-public:
-  ControlObject();
-  ControlObject(ConfigObject::ConfigKey *key);
-  ~ControlObject();
-  QString *print();
-
-  ConfigObject::ConfigOption *cfgOption;
-
-  static ConfigObject *config;
-  static MidiObject *midi;
-public slots:
-  virtual void slotSetPosition(int) = 0;
-  void slotSetPositionMidi(int);
-signals:
-  void updateGUI(int);
-};
-
-#endif
+ControlNull::ControlNull(){
+}
+ControlNull::~ControlNull(){
+}

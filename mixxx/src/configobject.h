@@ -20,6 +20,8 @@
 
 #include <qstring.h>
 #include <qptrlist.h>
+#include <qvaluelist.h>
+#include "defs.h"
 
 /**
   * List element of configuration values as stored in a specific configuration file
@@ -36,11 +38,17 @@ public:
 
     class ConfigValue {
      public:
-      ConfigValue(int no, int mask) { midino = no; midimask = mask; };
-      int   midino, midimask;
+      ConfigValue(int no, int mask, int channel) { midino = no; midimask = mask; midichannel = channel; };
+      int   midino, midimask, midichannel;
     };
 
+    bool midiChannelInUse(int ch);
 private:
+    int midiChannels[MAX_MIDI_CHANNELS];
+    int midiChannelsNo;
+
+    void addMidiChannel(int ch);
+
     class ConfigOption {
      public:
       ConfigOption(ConfigKey *_key, ConfigValue *_val) { key = _key ; val = _val; };
