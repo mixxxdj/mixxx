@@ -21,6 +21,7 @@ New since 0.9.2:
 - Better sound card support for MacOS X
 - Automatic beat synchronization
 - Better playlist interface with playlists in XML format 
+- Added support for ogg vorbis
 
 
 * REQUIREMENTS *********************************************
@@ -29,6 +30,7 @@ QT >= 3
 libMAD
 libAudioFile
 FFTW
+vorbisfile
 
 The Windows version uses libsndfile instead of libAudioFile.
 
