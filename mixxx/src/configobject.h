@@ -64,6 +64,7 @@ public:
     {
         QString channelMark;
         QString type;
+
         QTextIStream(&_value) >> type >> midino >> channelMark >> midichannel;
         if (type.contains("Key",false))
             miditype = KEY;
@@ -83,6 +84,7 @@ public:
             midino = -1;
 //        qDebug("miditype: %s, midino: %i, midichannel: %i",type.latin1(),midino,midichannel);
     };
+
     ConfigValueMidi(MidiType _miditype, int _midino, int _midichannel)
     {
         //qDebug("--2");

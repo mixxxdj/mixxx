@@ -5,13 +5,26 @@ Each group starts with a line like:
 [Master]
 or
 [Channel1]
-etc.
+or
+[Channel2]
 
 For each group follows a number of lines, one for each control, eg.:
 
-crossfader <midi no> [<bit mask>] [ch <channel no>]
+crossfader <midi no> <Key/Ctrl> [ch <channel no>]
 
-ch indicates a channel number, between 1 and 16, if omitted channel 1 is 
-assumed. 
+Either a Key event or a Ctrl event is mapped. Take a look at, for instance,
+the Midi-Keyboard.midi.cfg file, which maps many midi keyboard keys to buttons
+in Mixxx, and uses the Modulation wheel for crossfading.
 
-That's it!
+"ch" indicates a channel number, between 1 and 16, if omitted channel 1 is 
+assumed.
+
+Channel 17 is used for the PowerMate controller:
+Ctrl 1: Knob of first attached PowerMate
+Key 2: Key press on first attached PowerMate
+Ctrl 3: Kbob of second attached PowerMate
+Key 4: Key press on second attached PowerMate
+
+Channel 19 is used for Joysticks.
+
+Send mail to mixxx-devel@lists.sourceforge.net for further help.

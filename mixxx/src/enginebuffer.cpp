@@ -41,7 +41,7 @@ EngineBuffer::EngineBuffer(PowerMate *_powermate, const char *_group)
     powermate = _powermate;
 
     // Play button
-    ControlPushButton *p = new ControlPushButton(ConfigKey(group, "play"));
+    ControlPushButton *p = new ControlPushButton(ConfigKey(group, "play"), true);
     playButton = new ControlEngine(p);
     connect(playButton, SIGNAL(valueChanged(double)), this, SLOT(slotControlPlay(double)));
     playButton->set(0);

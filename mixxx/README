@@ -23,6 +23,7 @@ New since 1.0:
 - Rate button factors adjusted
 - File name parsing, bug fix
 - Startup on some Windows XP machines fixed
+- Added example MIDI config file for standard MIDI keyboard
 
 * REQUIREMENTS *********************************************
 Mixxx is depends on the following libraries:

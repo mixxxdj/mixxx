@@ -22,18 +22,19 @@
    Purpose: Creates a new simulated latching push-button. 
    Input:   key - Key for the configuration file
    -------- ------------------------------------------------------ */
-ControlPushButton::ControlPushButton(ConfigKey key) : ControlObject(key)
+ControlPushButton::ControlPushButton(ConfigKey key, bool bMidiSimulateLatching) : ControlObject(key)
 {
+    m_bMidiSimulateLatching = bMidiSimulateLatching;
 }
 
 ControlPushButton::~ControlPushButton()
 {
 }
 
-void ControlPushButton::setValueFromMidi(MidiCategory c, int)
+void ControlPushButton::setValueFromMidi(MidiCategory c, int v)
 {
     // Only react on NOTE_ON midi events
-    if (c==NOTE_ON)
+    if (m_bMidiSimulateLatching==false || (c==NOTE_ON && v>0))
     {
         if (m_dValue==0.)
             m_dValue = 1;

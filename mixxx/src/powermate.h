@@ -32,8 +32,8 @@ class ControlObject;
   
 // Parameters used to interface the PowerMate with the MIDI code
 const int kiPowermateMidiChannel=16;
-const int kiPowermateMidiDial = 0;
-const int kiPowermateMidiBtn = 1;
+const int kiPowermateMidiDial = 1;
+const int kiPowermateMidiBtn = 2;
 
 const int kiPowermateBufferSize = 32;
 const int kiPowermateKnobIntegralLen = 25;
