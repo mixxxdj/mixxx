@@ -80,7 +80,7 @@ MixxxApp::MixxxApp()
   //player = new PlayerPortAudio(BUFFER_SIZE);
 
   qDebug("Init engine...");
-  buffer = new EngineBuffer(view->playcontrol, view->channel, midi, "test.mp3");
+  buffer = new EngineBuffer(view->playcontrol, view->channel, midi, "test.wav");
   buffer->start();
 
   // Start audio

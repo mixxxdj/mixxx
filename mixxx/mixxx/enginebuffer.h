@@ -38,6 +38,7 @@
 #include "dlgchannel.h"
 #include "dlgmessages.h"
 #include "midiobject.h"
+#include "soundsourceheavymp3.h"
 /**
   *@author Tue and Ken Haste Andersen
 */
