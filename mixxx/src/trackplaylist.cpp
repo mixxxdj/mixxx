@@ -85,18 +85,6 @@ void TrackPlaylist::addTrack(QString qLocation)
 
     if (pTrack)
         addTrack(pTrack);
-
-/*
-    else if (!pTrack->exists())
-    {
-        // If it exists in the list already, it might not have been found in the
-        // first place because it has been moved:
-        pTrack->setFilepath(fi->dirPath());
-        pTrack->checkFileExists();
-        if (pTrack->exists())
-            qDebug("Refound %s", pTrack->getFilename().latin1());
-    }
-*/
 }
 
 void TrackPlaylist::activate(WTrackTable *pTable)

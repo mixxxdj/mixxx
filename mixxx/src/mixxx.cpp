@@ -525,7 +525,9 @@ void MixxxApp::slotFileOpen()
                                              "Audio (*.wav *.ogg *.mp3)",
                                              this,
                                              "Open file");
-    //m_pTrack->loadTrack1(s);
+    TrackInfoObject *pTrack = m_pTrack->getTrackCollection()->getTrack(s);
+    if (pTrack)
+    	m_pTrack->slotLoadPlayer1(pTrack);
 }
 
 void MixxxApp::slotFileQuit()
