@@ -299,7 +299,7 @@ int PlayerPortAudio::getDeviceID(QString name)
 {
     for (int i=0; i<(int)devices.count(); i++)
         if (name == devices.at(i)->name)
-            return i;
+            return devices.at(i)->id;
     return -1;
 }
 

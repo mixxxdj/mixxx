@@ -11,10 +11,10 @@ unix:!macx:HEADERS += ../lib/portaudio-v18/portaudio.h ../lib/portaudio-v18/pa_h
 win32:SOURCES += ../lib/portaudio-v18/pa_lib.c ../lib/portaudio-v18/dsound_wrapper.c ../lib/portaudio-v18/pa_dsound.c
 win32:HEADERS += ../lib/portaudio-v18/portaudio.h ../lib/portaudio-v18/pa_host.h
 win32:LIBS += dsound.lib
-macx:SOURCES += ../lib/portaudio-v18/pa_lib.c ../lib/portaudio-v18/pa_mac_core.c ../lib/portaudio-v18/pa_convert.c
-macx:HEADERS += ../lib/portaudio-v18/portaudio.h ../lib/portaudio-v18/pa_host.h
-macx:LIBS += -framework CoreAudio
-macx:INCLUDEPATH += ../lib/portaudio-v18
+macx:SOURCES += ../lib/portaudio-v18mac/ringbuffer.c ../lib/portaudio-v18mac/pa_lib.c ../lib/portaudio-v18mac/pa_mac_core.c ../lib/portaudio-v18mac/pa_convert.c
+macx:HEADERS += ../lib/portaudio-v18mac/ringbuffer.h ../lib/portaudio-v18mac/portaudio.h ../lib/portaudio-v18mac/pa_host.h
+macx:LIBS += -framework CoreAudio -framework AudioToolbox
+macx:INCLUDEPATH += ../lib/portaudio-v18mac
 
 
 # OSS Midi (Working good, Linux specific)
@@ -65,7 +65,8 @@ unix {
   OBJECTS_DIR = .obj
   SOURCES += soundsourceaudiofile.cpp
   HEADERS += soundsourceaudiofile.h
-  LIBS += /usr/local/lib/libmad.a /usr/lib/libaudiofile.a # -lmad -laudiofile
+  LIBS += /usr/local/lib/libmad.a 
+  !macx:LIBS += /usr/lib/libaudiofile.a
   INCLUDEPATH += .
 #  Intel Compiler optimization flags
 #  QMAKE_CXXFLAGS += -rcd -tpp6 -xiMK # icc pentium III
@@ -88,7 +89,7 @@ win32 {
 
 macx {
   DEFINES += __MACX__
-  LIBS += -lz -framework Carbon -framework QuickTime
+  LIBS += /usr/local/lib/libaudiofile.a -lz -framework Carbon -framework QuickTime
 }
 
 # gcc Profiling
