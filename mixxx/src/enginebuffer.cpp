@@ -235,7 +235,7 @@ float EngineBuffer::getDistanceNextBeatMark()
     float *p = (float *)reader->getBeatPtr()->getBasePtr();
     int size = reader->getBeatPtr()->getBufferSize();
 
-    int pos = bufferpos_play*size/READBUFFERSIZE;
+    int pos = (int)(bufferpos_play*size/READBUFFERSIZE);
 
     qDebug("s1 %i s2 %i",size,READBUFFERSIZE);
 
@@ -326,7 +326,7 @@ void EngineBuffer::slotControlSeek(double change)
 
     // Find new playpos
     double new_playpos = round(change*file_length_old);
-    if (!even(new_playpos))
+    if (!even((int)new_playpos))
         new_playpos--;
     if (new_playpos > file_length_old)
         new_playpos = file_length_old;
@@ -347,7 +347,7 @@ void EngineBuffer::slotControlSeek(double change)
 void EngineBuffer::slotControlCueSet(double)
 {
     double cue = round(filepos_play);
-    if (!even(cue))
+    if (!even((int)cue))
         cue--;
     reader->f_dCuePoint = cue;
 }
@@ -374,7 +374,7 @@ void EngineBuffer::slotControlCueGoto(double pos)
     }
 }
 
-void EngineBuffer::slotControlCuePreview(double d)
+void EngineBuffer::slotControlCuePreview(double)
 {
     // Set cue point if play is not pressed
     if (playButton->get()==0.)
@@ -501,9 +501,9 @@ void EngineBuffer::slotControlBeatSync(double)
     if (fOtherBpm>0. && fThisBpm>0.)
     {
         // Test if this buffers bpm is the double of the other one, and find rate scale:
-        if ( abs(fThisBpm*2.-fOtherBpm) < abs(fThisBpm-fOtherBpm))
+        if ( fabs(fThisBpm*2.-fOtherBpm) < fabs(fThisBpm-fOtherBpm))
             fRateScale = fOtherBpm/(2*fThisBpm) * (1.+m_pOtherEngineBuffer->getRate());
-        else if ( abs(fThisBpm-2.*fOtherBpm) < abs(fThisBpm-fOtherBpm))
+        else if ( fabs(fThisBpm-2.*fOtherBpm) < fabs(fThisBpm-fOtherBpm))
             fRateScale = 2.*fOtherBpm/fThisBpm * (1.+m_pOtherEngineBuffer->getRate());
         else
             fRateScale = fOtherBpm/fThisBpm * (1.+m_pOtherEngineBuffer->getRate());
@@ -546,7 +546,7 @@ CSAMPLE *EngineBuffer::process(const CSAMPLE *, const int buf_size)
             file_srate_old = reader->getFileSrate();
             filepos_start = reader->getFileposStart();
             filepos_end = reader->getFileposEnd();
-            reader->setFileposPlay(filepos_play);
+            reader->setFileposPlay((int)filepos_play);
 
             reader->unlock();
             readerinfo = true;
@@ -754,7 +754,6 @@ CSAMPLE *EngineBuffer::process(const CSAMPLE *, const int buf_size)
                 }
 
                 // Ensure valid range of idx
-                double oldidx = idx;
                 while (idx>READBUFFERSIZE)
                     idx -= (double)READBUFFERSIZE;
                 while (idx<0)
@@ -780,7 +779,7 @@ CSAMPLE *EngineBuffer::process(const CSAMPLE *, const int buf_size)
                 //qDebug("wake fwd play %f, end %i",filepos_play, filepos_end);
                 reader->wake();
             }
-            else if (/*backwards && filepos_start>READCHUNKSIZE*(READCHUNK_NO/2-1) &&*/ abs(filepos_play-filepos_start)<READCHUNKSIZE*(READCHUNK_NO/2-1))
+            else if (/*backwards && filepos_start>READCHUNKSIZE*(READCHUNK_NO/2-1) &&*/ fabs(filepos_play-filepos_start)<READCHUNKSIZE*(READCHUNK_NO/2-1))
             {
                 //qDebug("wake back");
                 reader->wake();

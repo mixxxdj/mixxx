@@ -337,8 +337,8 @@ void ReaderExtractWave::getchunk(CSAMPLE rate)
     {
         //qDebug("d1 filepos %i-%i",filepos_start,filepos_end);
         int i;
-        for (i=0; i<min(READCHUNKSIZE,-filepos_start); ++i)
-            temp[i] = 0.;
+        for (i=0; i<min((signed int)READCHUNKSIZE,-filepos_start); ++i)
+            temp[i] = 0;
         //qDebug("i %i",i);
         chunksize += filepos_start;
         k = -filepos_start;
@@ -349,8 +349,8 @@ void ReaderExtractWave::getchunk(CSAMPLE rate)
         //qDebug("d2 filepos %i-%i",filepos_start,filepos_end);
         i = file->read(chunksize, &temp[k]);
         //qDebug("read %i",i);
-        for (int j=i+k; j<READCHUNKSIZE; ++j)
-            temp[j] = 0.;
+        for (unsigned int j=i+k; j<READCHUNKSIZE; ++j)
+            temp[j] = 0;
     }
 
     // Seek to end of the samples read in buffer, if we are reading backwards. This is to ensure, that the correct samples
@@ -364,7 +364,7 @@ void ReaderExtractWave::getchunk(CSAMPLE rate)
     // Copy samples to read_buffer
     i=0;
     //qDebug("bufIdx %i",bufIdx);
-    for (int j=bufIdx; j<bufIdx+READCHUNKSIZE; j++)
+    for (unsigned int j=bufIdx; j<bufIdx+READCHUNKSIZE; j++)
         read_buffer[j] = (CSAMPLE)temp[i++];
 
     // Update vertex buffer by sending an event containing indexes of where to update.

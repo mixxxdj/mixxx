@@ -39,7 +39,7 @@
 #include "wvisualwaveform.h"
 #include "wvisualsimple.h"
 
-MixxxView::MixxxView(QWidget *parent, bool bVisualsWaveform, QString qSkinPath, ConfigObject<ConfigValue> *pConfig) : QWidget(parent, "Mixxx")
+MixxxView::MixxxView(QWidget *parent, bool bVisualsWaveform, QString qSkinPath, ConfigObject<ConfigValue> *) : QWidget(parent, "Mixxx")
 {
     // Path to image files
     WWidget::setPixmapPath(qSkinPath.append("/"));

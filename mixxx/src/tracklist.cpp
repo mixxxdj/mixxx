@@ -235,7 +235,7 @@ void TrackList::writeXML()
 {
     qDebug("Writing %stracklist.xml, %d tracks", m_sDirectory.latin1(),m_pTableTracks->numRows());
     // First transfer information from the comment field from the table to the Track:
-    for (unsigned int iRow=0; iRow<m_pTableTracks->numRows(); iRow++)
+    for (int iRow=0; iRow<m_pTableTracks->numRows(); iRow++)
     {
         if (m_pTableTracks->item(iRow, COL_INDEX))
         {
@@ -437,7 +437,7 @@ void TrackList::loadTrack2(QString name)
 /*
     Slot connected to popup menu activated when a track is clicked:
 */
-void TrackList::slotClick( int iRow, int iCol, int iButton, const QPoint &pos )
+void TrackList::slotClick(int, int, int, const QPoint &pos )
 {
     // Display popup menu if mouse pointer is placed outside comment row
     if (pos.x()<m_pTableTracks->columnPos(COL_COMMENT) ||

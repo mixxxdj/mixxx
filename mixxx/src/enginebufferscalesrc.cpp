@@ -99,7 +99,7 @@ CSAMPLE *EngineBufferScaleSRC::scale(double playpos, int buf_size)
     // Invert wavebuffer is backwards playback
     if (backwards)
     {
-        int no = buf_size*(1./rate)+4; // Read some extra samples
+        int no = (int)(buf_size*(1./rate)+4); // Read some extra samples
         if (!even(no))
             no++;
 

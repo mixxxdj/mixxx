@@ -29,7 +29,7 @@ EngineDelay::EngineDelay(const char *group)
 
     delay_pos = 0;
 
-    ControlPotmeter *p = new ControlPotmeter(ConfigKey(group, "delay"), 0, max_delay);
+    new ControlPotmeter(ConfigKey(group, "delay"), 0, max_delay);
 }
 
 EngineDelay::~EngineDelay()

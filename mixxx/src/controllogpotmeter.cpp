@@ -72,7 +72,7 @@ void ControlLogpotmeter::setValueFromWidget(double dValue)
             m_dValue = pow(10., m_fB2*(dValue - middlePosition));
     }
 
-    qDebug("Midi: %f Value : %f", dValue, m_dValue);
+//    qDebug("Midi: %f Value : %f", dValue, m_dValue);
 
     updateFromWidget();
 }

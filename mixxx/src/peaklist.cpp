@@ -19,7 +19,7 @@
 #include "peaklist.h"
 
 #include <stdio.h>
-#include <fstream.h>
+//#include <fstream.h>
 #include <string>
 #include <iostream>
 
@@ -35,7 +35,7 @@ PeakList::~PeakList()
 
 void PeakList::update(int idx, int len)
 {
-    iterator it, itStart;
+    iterator it;
 
     //
     // Delete peaks in range
@@ -174,7 +174,6 @@ PeakList::iterator PeakList::getLastInRange(int idx, int len)
     return it;
 
 
-    /*
     // Find last peak in list which is bigger than or equal to idx+len
     iterator it = end();
     --it;

@@ -40,7 +40,7 @@ void ProbabilityVector::setBpm(float fBpm, float fBpmConfidence)
 {
     // Find hist position from fBpm and insert fBpmConfidence.
     m_fCurrMaxInterval = (1./fBpm)*60.;
-    m_iCurrMaxBin = (m_fCurrMaxInterval-m_fMinInterval)/m_fSecPerBin;
+    m_iCurrMaxBin = (int)((m_fCurrMaxInterval-m_fMinInterval)/m_fSecPerBin);
     m_pHist[m_iCurrMaxBin] = fBpmConfidence;
 }
 

@@ -211,7 +211,7 @@ long SoundSourceMp3::seek(long filepos)
 
         // Synthesize the the samples from the frame which should be discard to reach the requested position
         SAMPLE *temp = new SAMPLE[READCHUNKSIZE];
-        int r = read(filepos-cur->pos, temp);
+        //int r = read(filepos-cur->pos, temp);
         //qDebug("try read %i, got %i...frame pos %i, filepos %i",filepos-cur->pos,r,cur->pos,filepos);
         //qDebug("ok");
         delete [] temp;
@@ -512,7 +512,7 @@ void SoundSourceMp3::getField(id3_tag *tag, const char *frameid, QString *str)
 int SoundSourceMp3::findFrame(int pos)
 {
     // Guess position of frame in m_qSeekList based on average frame size
-    MadSeekFrameType *temp = m_qSeekList.at(min(m_qSeekList.count()-1, pos/m_iAvgFrameSize));
+    MadSeekFrameType *temp = m_qSeekList.at(min(m_qSeekList.count()-1, (unsigned int)(pos/m_iAvgFrameSize)));
 
 /*
     if (temp!=0)

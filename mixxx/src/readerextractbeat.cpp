@@ -418,7 +418,7 @@ void *ReaderExtractBeat::processChunk(const int _idx, const int start_idx, const
 
                         // Search from current sample and hist interval back in time for the largest peak
                         int from = (idx-(int)(bpv->getCurrMaxInterval()*input->getRate())+frameNo)%frameNo;
-                        PeakList::iterator itmax = peaks->getMaxInRange(from, bpv->getCurrMaxInterval()*input->getRate());
+                        PeakList::iterator itmax = peaks->getMaxInRange(from, (int)bpv->getCurrMaxInterval()*input->getRate());
 
                         //qDebug("curr block %i-%i, search from %i-%i, max at %i",frameFrom,frameTo+frameAdd,from,idx, (*itmax).i);
 
@@ -426,11 +426,9 @@ void *ReaderExtractBeat::processChunk(const int _idx, const int start_idx, const
                         // bpv interval back in time
                         if (itmax != peaks->end())
                         {
-                            int oldfrom = from;
-
                             // Find maximum peak between itmax and hist interval back in time
                             int from = ((*itmax).i-1-(int)(bpv->getCurrMaxInterval()*input->getRate())+frameNo)%frameNo;
-                            PeakList::iterator itmax2 = peaks->getMaxInRange(from, bpv->getCurrMaxInterval()*input->getRate());
+                            PeakList::iterator itmax2 = peaks->getMaxInRange(from, (int)bpv->getCurrMaxInterval()*input->getRate());
                             //qDebug("max found %i, from %i-%i, len %i",(*itmax).i,oldfrom,from, (int)(bpv->getCurrMaxInterval()*input->getRate()));
 
 //                            if (itmax2!=peaks->end())

@@ -85,7 +85,7 @@ void WVisualSimple::mousePressEvent(QMouseEvent *e)
     }
 }
 
-void WVisualSimple::mouseReleaseEvent(QMouseEvent *e)
+void WVisualSimple::mouseReleaseEvent(QMouseEvent *)
 {
     m_iValue = 64;
     emit(valueChangedLeftDown((double)m_iValue));
