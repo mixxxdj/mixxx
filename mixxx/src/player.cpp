@@ -152,7 +152,7 @@ int Player::prepareBuffer()
 
   
   // First, sync control parameters with changes from GUI thread
-  m_pControl->sync();
+  m_pControl->syncControlEngineObjects();
   
   CSAMPLE *p1;
 

@@ -19,7 +19,7 @@
 
 ControlBeat::ControlBeat(ConfigKey key) : ControlObject(key)
 {
-    value = -1.;
+    m_dValue = -1.;
     time.start();
 
     // Filter buffer
@@ -30,47 +30,45 @@ ControlBeat::ControlBeat(ConfigKey key) : ControlObject(key)
 
 ControlBeat::~ControlBeat()
 {
+    delete [] buffer;
 }
 
-void ControlBeat::slotSetPositionExtern(float pos)
+void ControlBeat::setValueFromWidget(double dValue)
+{
+    setValue(dValue);
+
+    updateFromWidget();
+}
+
+void ControlBeat::setValueFromMidi(MidiCategory, int v)
+{
+    setValue((double)v);
+
+    updateFromMidi();
+}
+
+void ControlBeat::setValue(double dValue)
 {
     int elapsed = time.elapsed();
     time.restart();
 
-    
-    if (elapsed<=maxInterval)    
+    if (elapsed<=maxInterval)
     {
         // Move back in filter one sample
         int i;
         for (i=1; i<filterLength; i++)
             buffer[i-1] = buffer[i];
-            
+
         buffer[filterLength-1] = 1000.*(60./elapsed);
         if (buffer[filterLength-1]>maxBPM)
             buffer[filterLength-1] = maxBPM;
-            
-        value = 0.;
+
+        double temp = 0.;
         for (i=0; i<filterLength; i++)
-            value += buffer[i];
-        value /= filterLength;
+            temp += buffer[i];
+        temp /= filterLength;
+        m_dValue = temp;
     }
     else
-        value = 0.;
-    qDebug("ControlBeat: %f",value);
-
-    emitValueChanged(value);
+        m_dValue = 0.;
 }
-
-void ControlBeat::slotSetPositionMidi(MidiCategory, int v)
-{
-    //qDebug("thread id: %p",pthread_self());
-
-    slotSetPositionExtern(v);
-    emit(updateGUI(v));
-}
-
-
-void ControlBeat::forceGUIUpdate()
-{
-}
-    

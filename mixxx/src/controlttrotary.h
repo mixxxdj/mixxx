@@ -19,8 +19,6 @@
 
 #include "configobject.h"
 #include "controlobject.h"
-#include "defs.h"
-//#include <qtimer.h>
 
 /** Turn Table rotary controller class. The turntable rotary sends midi events: 0 when turning
   * backwards, and 1 when turning forward. This class keeps track of it's speed, using a timer
@@ -30,22 +28,13 @@ class ControlTTRotary : public ControlObject
     Q_OBJECT
 public:
     ControlTTRotary(ConfigKey key);
-    FLOAT_TYPE getValue();
-    void setValue(int);
     void setAccelUp(const QKeySequence) {};
     void setAccelDown(const QKeySequence) {};
 public slots:
-    void slotSetPositionExtern(float);
-    void slotSetPositionMidi(MidiCategory c, int v);
-//    void slotSetValue(int newvalue);
+    void setValueFromWidget(double);
 protected:
-    void forceGUIUpdate();
-private:
-    /** Decreases/increases received since last timer event */
-    int received;    
-//    QTimer timer;
-private slots:
-//    void slotTimer();
+    void setValueFromMidi(MidiCategory c, int v);
+    void updateWidget();
 };
 
 #endif

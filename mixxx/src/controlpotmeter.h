@@ -20,7 +20,6 @@
 
 #include "configobject.h"
 #include "controlobject.h"
-#include "defs.h"
 #include <algorithm>
 
 /**
@@ -31,30 +30,32 @@ class ControlPotmeter : public ControlObject
 {
   Q_OBJECT
 public:
-    ControlPotmeter(ConfigKey key, FLOAT_TYPE=0.0, FLOAT_TYPE=1.0);
+    ControlPotmeter(ConfigKey key, double dMinValue=0.0, double dMaxValue=1.0);
     ~ControlPotmeter();
-    FLOAT_TYPE getValue();
-
     /** Returns the minimum allowed value */
-    float getMin();
+    double getMin();
     /** Returns the maximum allowed value */
-    float getMax();
+    double getMax();
     /** Sets the minimum and maximum allowed value. The control value is reset when calling
       * this method */
-    void setRange(float fMin, float fMax);
-    void setValue(int newpos);
+    void setRange(double dMinValue, double dMaxValue);
     void setAccelUp(const QKeySequence) {};
     void setAccelDown(const QKeySequence) {};
+
 public slots:
-    void slotSetPositionExtern(float);
-    void slotSetPositionMidi(MidiCategory c, int v);
+    void setValueFromWidget(double dValue);
+
 protected:
-    void forceGUIUpdate();
+    void updateWidget();
+    void setValueFromMidi(MidiCategory c, int v);
+    
+    double m_dMaxValue, m_dMinValue, m_dValueRange;
+
 #define maxPosition 127
 #define minPosition 0
 #define middlePosition ((maxPosition-minPosition)/2)
 #define positionrange (maxPosition-minPosition)
-    FLOAT_TYPE maxvalue, minvalue, valuerange;
+
 };
 
 #endif

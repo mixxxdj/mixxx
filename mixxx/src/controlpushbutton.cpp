@@ -24,47 +24,24 @@
    -------- ------------------------------------------------------ */
 ControlPushButton::ControlPushButton(ConfigKey key) : ControlObject(key)
 {
-    value = 0.;
-};
+}
 
 ControlPushButton::~ControlPushButton()
 {
-    //ControlObject();
-};
+}
 
-/* -------- ------------------------------------------------------
-   Purpose: Set the position of the button, and change the
-            value correspondingly.
-   Input:   The (new) position.
-   Output:  The value is updated.
-   -------- ------------------------------------------------------ */
-void ControlPushButton::slotSetPositionExtern(float newpos)
-{
-    value = (FLOAT_TYPE)newpos;
-
-    emitValueChanged(value);
-};
-
-void ControlPushButton::slotSetPositionMidi(MidiCategory c, int)
+void ControlPushButton::setValueFromMidi(MidiCategory c, int)
 {
     // Only react on NOTE_ON midi events
     if (c==NOTE_ON)
     {
-        if (value==0)
-            slotSetPositionExtern(1);
+        if (m_dValue==0.)
+            m_dValue = 1;
         else
-            slotSetPositionExtern(0);
+            m_dValue = 0;
 
-        emit(updateGUI((int)value));
+        updateFromMidi();
     }
-}
-
-char *ControlPushButton::printValue()
-{
-    if (value == 1.)
-        return "on";
-    else
-        return "off";
 }
 
 void ControlPushButton::setAccelUp(const QKeySequence key)
@@ -93,20 +70,17 @@ void ControlPushButton::setAction(QAction *action)
     QApplication::connect(this, SIGNAL(updateGUI(int)), this, SLOT(slotUpdateAction(int)));
     QApplication::connect(this, SIGNAL(updateAction(bool)), action, SLOT(setOn(bool)));
 
-    forceGUIUpdate();
+//    forceGUIUpdate();
 }
 
 void ControlPushButton::slotUpdateAction(int v)
 {
+/*
     if (v==1)
         emit(updateAction(true));
     else
         emit(updateAction(false));
-}
-
-void ControlPushButton::forceGUIUpdate()
-{
-    emit(updateGUI((int)value));
+*/
 }
 
 

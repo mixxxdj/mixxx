@@ -38,7 +38,7 @@ public:
     void paintEvent(QPaintEvent *);
     int getReverse();
 public slots:
-    void setValue(float);
+    void setValue(double);
     // Reverse the values output. 0 means up/right increases value, 1 down/left increases value.
     void slotSetReverse(int iReverse);
 private:

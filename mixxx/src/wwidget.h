@@ -36,19 +36,19 @@ public:
     WWidget(QWidget *parent=0, const char *name=0, WFlags flags=0);
     ~WWidget();
 public slots:
-    virtual void setValue(float fValue);
+    virtual void setValue(double fValue);
 signals:
-    void valueChangedDown(float);
-    void valueChangedUp(float);
-    void valueChangedLeftDown(float);
-    void valueChangedLeftUp(float);
-    void valueChangedRightDown(float);
-    void valueChangedRightUp(float);
+    void valueChangedDown(double);
+    void valueChangedUp(double);
+    void valueChangedLeftDown(double);
+    void valueChangedLeftUp(double);
+    void valueChangedRightDown(double);
+    void valueChangedRightUp(double);
 protected:
-    float m_fValue;
+    double m_fValue;
 private slots:
-    void slotReEmitValueDown(float);
-    void slotReEmitValueUp(float);
+    void slotReEmitValueDown(double);
+    void slotReEmitValueUp(double);
 };
 
 #endif

@@ -60,7 +60,7 @@ bool WVisual::eventFilter(QObject *o, QEvent *e)
             v = 0;
         else if
             (v>127) v= 127;
-        emit(valueChangedLeftDown((float)v));
+        emit(valueChangedLeftDown((double)v));
     }
     else if (e->type() == QEvent::MouseButtonRelease)
     {

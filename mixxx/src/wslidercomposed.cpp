@@ -94,7 +94,7 @@ void WSliderComposed::mouseMoveEvent(QMouseEvent *e)
         m_iPos = m_iHandleLength/2;
 
     // value ranges from 0 to 127
-    m_fValue = (float)m_iPos*(128./(float)(m_iSliderLength));
+    m_fValue = (double)m_iPos*(128./(double)(m_iSliderLength));
     if ((!m_bHorizontal && !m_bReverse) || (m_bHorizontal && m_bReverse))
         m_fValue = 127.-m_fValue;
 
@@ -151,7 +151,7 @@ int WSliderComposed::getReverse()
         return 0;
 }
 
-void WSliderComposed::setValue(float fValue)
+void WSliderComposed::setValue(double fValue)
 {
     // Set value without emitting a valueChanged signal, and force display update
     m_fValue = fValue;
@@ -159,7 +159,7 @@ void WSliderComposed::setValue(float fValue)
     // Calculate handle position
     if ((!m_bHorizontal && !m_bReverse) || (m_bHorizontal && m_bReverse))
         fValue = 127-fValue;
-    m_iPos = (int)((fValue/128.)*(float)(m_iSliderLength-m_iHandleLength))+m_iHandleLength/2;
+    m_iPos = (int)((fValue/128.)*(double)(m_iSliderLength-m_iHandleLength))+m_iHandleLength/2;
 
     repaint();
 }

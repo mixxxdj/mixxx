@@ -53,7 +53,7 @@ void WPushButton::setPixmap(int iState, bool bPressed, const QString &filename)
     m_pPixmaps[pixIdx] = new QPixmap(filename);
 }
 
-void WPushButton::setValue(float v)
+void WPushButton::setValue(double v)
 {
     m_iState = (int)v;
 
@@ -90,9 +90,9 @@ void WPushButton::mousePressEvent(QMouseEvent *e)
     }
     
     if (e->button()==Qt::LeftButton)
-        emit(valueChangedLeftDown((float)m_iState));
+        emit(valueChangedLeftDown((double)m_iState));
     else if (e->button()==Qt::RightButton)
-        emit(valueChangedRightDown((float)m_iState));
+        emit(valueChangedRightDown((double)m_iState));
 
     update();
 }
@@ -112,9 +112,9 @@ void WPushButton::mouseReleaseEvent(QMouseEvent *e)
 
 
     if (e->button()==Qt::LeftButton)
-        emit(valueChangedLeftUp((float)m_iState));
+        emit(valueChangedLeftUp((double)m_iState));
     else if (e->button()==Qt::RightButton)
-        emit(valueChangedRightUp((float)m_iState));
+        emit(valueChangedRightUp((double)m_iState));
 
     update();
 }

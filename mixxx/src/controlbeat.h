@@ -21,7 +21,6 @@
 #include "controlobject.h"
 #include "configobject.h"
 #include <qdatetime.h>
-#include "defs.h"
 
 /**
   * Takes impulses as input, and convert it to a BPM measure.
@@ -46,11 +45,12 @@ public:
     void setAccelUp(const QKeySequence key) {};
     void setAccelDown(const QKeySequence key) {};
 public slots:
-    void slotSetPositionExtern(float pos);
-    void slotSetPositionMidi(MidiCategory c, int v);
+    void setValueFromWidget(double dValue);
 protected:
-    void forceGUIUpdate();
+    void setValueFromMidi(MidiCategory c, int v);
 private:
+    void setValue(double dValue);
+
     QTime time;
     CSAMPLE *buffer;
 };

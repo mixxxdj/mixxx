@@ -49,9 +49,9 @@ TrackList::TrackList( const QString sDirectory, WTrackTable *ptableTracks,
     ControlObject *c = (ControlObject *)m_pEndOfTrackModeCh1;
     ControlPushButton *p;
     p = (ControlPushButton *)c->getControl(ConfigKey("[Channel1]","EndOfTrack"));
-    connect(p, SIGNAL(valueChanged(FLOAT_TYPE)), this, SLOT(slotEndOfTrackCh1(FLOAT_TYPE)));
+//    connect(p, SIGNAL(valueChanged(FLOAT_TYPE)), this, SLOT(slotEndOfTrackCh1(FLOAT_TYPE)));
     p = (ControlPushButton *)c->getControl(ConfigKey("[Channel2]","EndOfTrack"));
-    connect(p, SIGNAL(valueChanged(FLOAT_TYPE)), this, SLOT(slotEndOfTrackCh2(FLOAT_TYPE)));    
+//    connect(p, SIGNAL(valueChanged(FLOAT_TYPE)), this, SLOT(slotEndOfTrackCh2(FLOAT_TYPE)));    
     
     // Update the track list by reading the xml file, and adding new files:
     UpdateTracklist();
