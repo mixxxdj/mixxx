@@ -39,8 +39,8 @@ The binary linux version is distributed as an RPM file, and
 the Machitosh and Windows versions, installs by extracting 
 the downloaded file to a folder.
 
-The files in /usr/share/mixxx is 
-Definition files for various MIDI based controllers are 
+The files in /usr/share/mixxx are definition files for 
+various MIDI based controllers are 
 placed in /usr/share/mixxx on Linux, and in subfolder of the 
 application called config on Windows and MacOS X. You can 
 change the placement of the default place to look for MIDI
@@ -63,6 +63,7 @@ either place your definition files in /usr/share/mixxx
 (on linux) or in another directory of own choice. The 
 program searches for midi config files in the directory 
 listed in mixxx.cfg under [Midi] Configdir.
+
 
 * DEVELOPMENT **********************************************
 If you are interested in joining the development team of
