@@ -88,8 +88,8 @@ void EngineBufferCue::slotControlCueGoto(double pos)
 void EngineBufferCue::slotControlCuePreview(double)
 {
     // Set cue point if play is not pressed
-    if (playButton->get()==0.)
-        slotControlCueSet();
+    //if (playButton->get()==0.)
+    //    slotControlCueSet();
 
     if (buttonCuePreview->get()==0.)
     {
