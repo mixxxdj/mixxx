@@ -16,6 +16,7 @@
  ***************************************************************************/
 
 #include "playeralsa.h"
+#include "controlobject.h"
 
 #ifndef PLAYERTEST
 #include "rtthread.h"
@@ -590,6 +591,7 @@ int PlayerALSA::set_hwparams()
 
 #ifndef PLAYERTEST
     setPlaySrate(rrate);
+    m_pControlObjectSampleRate->queueFromThread((double)rrate);
 #endif
 
     /* set the buffer time */

@@ -113,6 +113,10 @@ void ControlPotmeter::incValue(double keypos)
             m_dValue = m_dMaxValue;
         else
             m_dValue += m_dStep;
+        emit(valueChanged(m_dValue));
+        
+        // incValue will be activated by assosiated _up or _down ControlObject, and thus it is safe to update all proxies.
+        updateProxies(0);
     }
 }
 
@@ -124,6 +128,10 @@ void ControlPotmeter::decValue(double keypos)
             m_dValue = m_dMinValue;
         else
             m_dValue -= m_dStep;
+        emit(valueChanged(m_dValue));
+        
+        // incValue will be activated by assosiated _up or _down ControlObject, and thus it is safe to update all proxies.
+        updateProxies(0);
     }
 }
 

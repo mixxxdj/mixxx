@@ -81,12 +81,13 @@ bool ControlObject::updateProxies(ControlObjectThread *pProxyNoUpdate)
 {
     ControlObjectThread *obj;
     bool bUpdateSuccess = true;
-//     qDebug("Key %s,%s",m_Key.group.latin1(), m_Key.item.latin1());
+    qDebug("Key %s,%s",m_Key.group.latin1(), m_Key.item.latin1());
     for (obj = m_qProxyList.first(); obj; obj = m_qProxyList.next())
     {
         if (obj!=pProxyNoUpdate)
         {
-            //const char *thisname = this->getKey().item.latin1();
+            const char *thisname = this->getKey().item.latin1();
+	    qDebug("upd %s",thisname);
             bUpdateSuccess = obj->setExtern(m_dValue);
         }
     }

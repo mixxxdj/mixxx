@@ -16,6 +16,7 @@
  ***************************************************************************/
 
 #include "playerrtaudio.h"
+#include "controlobject.h"
 
 /** Maximum frame size used with RtAudio. Used to determine no of buffers
   * when setting latency */
@@ -182,6 +183,7 @@ bool PlayerRtAudio::open()
 
         // Update SRATE in EngineObject
         setPlaySrate(iSrate);
+        m_pControlObjectSampleRate->queueFromThread((double)iSrate);
 
         // Start playback
         m_pRtAudio->startStream();

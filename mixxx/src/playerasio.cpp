@@ -17,6 +17,7 @@
 
 #include "playerasio.h"
 #include "playerproxy.h"
+#include "controlobject.h"
 #include <assert.h>
 
 #define MAX_DRIVER_NAME_LENGTH 32
@@ -143,7 +144,7 @@ bool PlayerAsio::open() {
 
     // Update SRATE in EngineObject
     setPlaySrate(sampleRate);
-
+    m_pControlObjectSampleRate->queueFromThread((double)sampleRate);
 
 
 	if(ASIOCanSampleRate(sampleRate) != ASE_OK)

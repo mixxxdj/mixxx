@@ -16,6 +16,7 @@
  ***************************************************************************/
 
 #include "playerportaudio.h"
+#include "controlobject.h"
 
 PlayerPortAudio::PlayerPortAudio(ConfigObject<ConfigValue> *config) : Player(config)
 {
@@ -252,7 +253,8 @@ bool PlayerPortAudio::open()
 
     // Update SRATE in EngineObject
     setPlaySrate(iSrate);
-
+    m_pControlObjectSampleRate->queueFromThread((double)iSrate);
+    
     // Start stream
     err = Pa_StartStream(m_pStream);
     if (err != paNoError)
