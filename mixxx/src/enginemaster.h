@@ -32,21 +32,25 @@
   */
 
 class EngineMaster : public EngineObject  {
+  Q_OBJECT
 private:
     EngineBuffer *buffer1, *buffer2;
     EngineChannel *channel1, *channel2;
     EnginePregain *volume;
     ControlPotmeter *crossfader;
     EngineClipping *clipping;
-    QRadioButton *rightchannel, *leftchannel;
     CSAMPLE *out, *out2;
-public: 
+    bool left, right;
+public:
     EngineMaster(DlgMaster *master_dlg, DlgCrossfader *crossfader_dlg,
                  EngineBuffer *buffer1, EngineBuffer *buffer2,
                  EngineChannel *, EngineChannel *,
                  int midiCrossfader, int midiVolume, MidiObject *midi);
     ~EngineMaster();
     CSAMPLE *process(const CSAMPLE *, const int);
+public slots:
+    void slotChannelLeft(bool toggle);
+    void slotChannelRight(bool toggle);
 };
 
 #endif

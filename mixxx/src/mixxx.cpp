@@ -79,6 +79,13 @@ MixxxApp::MixxxApp()
   qDebug("Init master...");
   master = new EngineMaster(view->master, view->crossfader, buffer1, buffer2, channel1, channel2, 0, 0, midi);
 
+  /** Connect signals from option menu, selecting processing of left and right channel, to
+      EngineMaster */
+  connect(optionsLeft, SIGNAL(toggled(bool)), master, SLOT(slotChannelLeft(bool)));
+  connect(optionsRight, SIGNAL(toggled(bool)), master, SLOT(slotChannelRight(bool)));
+  master->slotChannelLeft(optionsLeft->isOn());
+  master->slotChannelRight(optionsRight->isOn());
+
   // Initialize player with a desired buffer size
   qDebug("Init player...");
 #ifdef __ALSA__
@@ -166,6 +173,11 @@ void MixxxApp::initActions(){
   editPaste->setWhatsThis(tr("Paste\n\nPastes the clipboard contents to actual position"));
   connect(editPaste, SIGNAL(activated()), this, SLOT(slotEditPaste()));
 
+  optionsLeft = new QAction(tr("Left channel"), tr("&Left channel"), QAccel::stringToKey(tr("Ctrl+L")), this, 0, true);
+  optionsLeft->setOn(true);
+  optionsRight = new QAction(tr("Right channel"), tr("&Right channel"), QAccel::stringToKey(tr("Ctrl+R")), this, 0, true);
+  optionsRight->setOn(true);
+
 /*
   viewToolBar = new QAction(tr("Toolbar"), tr("Tool&bar"), 0, this, 0, true);
   viewToolBar->setStatusTip(tr("Enables/disables the toolbar"));
@@ -213,6 +225,14 @@ void MixxxApp::initMenuBar()
   editPaste->addTo(editMenu);
 
   ///////////////////////////////////////////////////////////////////
+  // menuBar entry optionsMenu
+  optionsMenu=new QPopupMenu();
+  optionsMenu->setCheckable(true);
+  optionsLeft->addTo(optionsMenu);
+  optionsRight->addTo(optionsMenu);
+
+
+  ///////////////////////////////////////////////////////////////////
   // menuBar entry viewMenu
   viewMenu=new QPopupMenu();
   viewMenu->setCheckable(true);
@@ -230,7 +250,8 @@ void MixxxApp::initMenuBar()
   // MENUBAR CONFIGURATION
   menuBar()->insertItem(tr("&File"), fileMenu);
   menuBar()->insertItem(tr("&Edit"), editMenu);
-  menuBar()->insertItem(tr("&View"), viewMenu);
+  menuBar()->insertItem(tr("&Options"), optionsMenu);
+  //menuBar()->insertItem(tr("&View"), viewMenu);
   menuBar()->insertSeparator();
   menuBar()->insertItem(tr("&Help"), helpMenu);
 
@@ -412,7 +433,6 @@ void MixxxApp::slotEditPaste()
 
   statusBar()->message(tr("Ready."));
 }
-
 
 void MixxxApp::slotViewToolBar(bool toggle)
 {

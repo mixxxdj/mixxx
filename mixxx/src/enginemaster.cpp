@@ -39,31 +39,32 @@ EngineMaster::EngineMaster(DlgMaster *master_dlg, DlgCrossfader *crossfader_dlg,
     // Clipping:
     clipping = new EngineClipping(master_dlg->BulbClipping);
 
-    leftchannel = crossfader_dlg->ButtonLeftChannel;
-    rightchannel = crossfader_dlg->ButtonRightChannel;
-
     out = new CSAMPLE[MAX_BUFFER_LEN];
     out2 = new CSAMPLE[MAX_BUFFER_LEN];
 }
 
-EngineMaster::~EngineMaster(){
+EngineMaster::~EngineMaster()
+{
     delete crossfader;
     delete volume;
+    delete clipping;
     delete out;
     delete out2;
 }
 
 CSAMPLE *EngineMaster::process(const CSAMPLE *, const int buffer_size) {
-    CSAMPLE *left, *right;
+    CSAMPLE *sampLeft, *sampRight;
 
-    if (leftchannel->isChecked()) {
-	CSAMPLE *temp_1 = buffer1->process(0, buffer_size);
-	left = channel1->process(temp_1,buffer_size);
+    if (left)
+    {
+        CSAMPLE *temp_1 = buffer1->process(0, buffer_size);
+	    sampLeft = channel1->process(temp_1,buffer_size);
     } 
 
-    if (rightchannel->isChecked()) {
-	CSAMPLE *temp_2 = buffer2->process(0, buffer_size);
-	right = channel2->process(temp_2,buffer_size);
+    if (right)
+    {
+        CSAMPLE *temp_2 = buffer2->process(0, buffer_size);
+        sampRight = channel2->process(temp_2,buffer_size);
     }
 
     // Crossfader:
@@ -73,12 +74,13 @@ CSAMPLE *EngineMaster::process(const CSAMPLE *, const int buffer_size) {
     c1_gain = 0.5*(-cf_val+1.);
     //qDebug("c1_gain: %f, c2_gain: %f",c1_gain,c2_gain);
 
-    for (int i=0; i<buffer_size; i++) {
-	out[i] = 0;
-	if (leftchannel->isChecked())
-	    out[i] += left[i]*c1_gain;
-        if (rightchannel->isChecked())
-	    out[i] += right[i]*c2_gain;
+    for (int i=0; i<buffer_size; i++)
+    {
+        out[i] = 0;
+        if (left)
+            out[i] += sampLeft[i]*c1_gain;
+        if (right)
+            out[i] += sampRight[i]*c2_gain;
     }
 
     // Master volume:
@@ -90,5 +92,13 @@ CSAMPLE *EngineMaster::process(const CSAMPLE *, const int buffer_size) {
     return out;
 }
 
+void EngineMaster::slotChannelLeft(bool toggle)
+{
+    left = toggle;
+}
 
+void EngineMaster::slotChannelRight(bool toggle)
+{
+    right = toggle;
+}
 
