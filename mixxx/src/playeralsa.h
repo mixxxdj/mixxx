@@ -49,12 +49,6 @@ typedef float CSAMPLE; // defines the CSAMPLE type used for intermediate calcula
  * XXX: Mmapped output doesn't seem to work with the plug plugin...
  */
 
-#ifdef S16_OUTPUT
-typedef short int OSAMPLE;
-#else
-typedef float OSAMPLE;
-#endif
-
 #ifndef PLAYERTEST
 class PlayerALSA : public Player, public QThread {
 public:
@@ -81,19 +75,20 @@ public:
 
 protected:
 /** ALSA parameters */
-    snd_pcm_t * handle;
+    snd_pcm_t *handle;
     snd_pcm_hw_params_t *hwparams;
     snd_pcm_sw_params_t *swparams;
 
     snd_pcm_uframes_t buffer_size;
     snd_pcm_uframes_t period_size;
     unsigned int period_no;
+    bool isformatfloat;
 
     /** True if devices are open */
     bool isopen;
     /** Channels used for each output from Mixxx. Set to -1 when not in use */
+    int max_channels;
     int masterleft, masterright, headleft, headright;
-    OSAMPLE *output;
 
 #ifdef PLAYERTEST
     CSAMPLE *prepareBuffer(int nframes);
@@ -107,12 +102,7 @@ protected:
 
 private:
     static const snd_pcm_access_t alsa_access = SND_PCM_ACCESS_RW_INTERLEAVED;
-#ifdef S16_OUTPUT
-    static const snd_pcm_format_t alsa_format = SND_PCM_FORMAT_S16;
-#else
-    static const snd_pcm_format_t alsa_format = SND_PCM_FORMAT_FLOAT;
-#endif
-    int alsa_channels;
+    static const int alsa_channels = 4;
     static const int default_latency = 200;
 };
 #endif
