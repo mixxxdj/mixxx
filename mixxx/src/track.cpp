@@ -57,7 +57,6 @@ Track::Track(QString location, MixxxView *pView, EngineBuffer *pBuffer1, EngineB
     m_pActivePlaylist->activate(m_pView->m_pTrackTable);
 
     // Connect mouse events from the tree view
-    connect(m_pView->m_pTreeView, SIGNAL(playlistPopup(QString)), this, SLOT(slotPlaylistPopup(QString)));
     connect(m_pView->m_pTreeView, SIGNAL(activatePlaylist(QString)), this, SLOT(slotActivatePlaylist(QString)));
     connect(this, SIGNAL(activePlaylist(TrackPlaylist *)), m_pView->m_pTreeView, SLOT(slotHighlightPlaylist(TrackPlaylist *)));
     // Connect drop events to table
@@ -79,6 +78,8 @@ Track::Track(QString location, MixxxView *pView, EngineBuffer *pBuffer1, EngineB
     // Get play buttons
     m_pPlayButtonCh1 = ControlObject::getControl(ConfigKey("[Channel1]","play"));
     m_pPlayButtonCh2 = ControlObject::getControl(ConfigKey("[Channel2]","play"));
+
+    TrackPlaylist::setTrack(this);
 }
 
 Track::~Track()
@@ -228,7 +229,13 @@ void Track::slotNewPlaylist()
     while (getPlaylist(QString("Default %1").arg(i)))
         ++i;
 
-    m_qPlaylists.append(new TrackPlaylist(m_pTrackCollection, QString("Default %1").arg(i)));
+    TrackPlaylist *p = new TrackPlaylist(m_pTrackCollection, QString("Default %1").arg(i));    
+    m_qPlaylists.append(p);
+    
+    // Make the new playlist active
+    slotActivatePlaylist(p->getListName());
+    
+    // Update list views
     updatePlaylistViews();
 }
 
@@ -266,11 +273,6 @@ void Track::slotDeletePlaylist(QString qName)
     updatePlaylistViews();
 }
 
-void Track::slotDeletePlaylist()
-{
-    slotDeletePlaylist(m_pActivePopupPlaylist->getListName());
-}
-
 void Track::slotImportPlaylist()
 {
     // Find valid name for new playlist
@@ -298,27 +300,6 @@ TrackPlaylist *Track::getPlaylist(QString qName)
         it = m_qPlaylists.next();
     }
     return 0;
-}
-
-
-void Track::slotPlaylistPopup(QString qName)
-{
-    QPopupMenu *menu = new QPopupMenu();
-
-    m_pActivePopupPlaylist = getPlaylist(qName);
-
-    // If this entry is actually a playlist, make it possible to delete it
-    if (m_pActivePopupPlaylist)
-    {    
-        menu->insertItem("Rename", m_pView->m_pTreeView, SLOT(slotRenameItem()));
-        menu->insertItem("Delete", this, SLOT(slotDeletePlaylist()));
-    }
-    else
-    {
-        menu->insertItem("New", this, SLOT(slotNewPlaylist()));
-        menu->insertItem("Import", this, SLOT(slotImportPlaylist()));
-    }
-    menu->exec(QCursor::pos());
 }
 
 void Track::slotTrackPopup(TrackInfoObject *pTrackInfoObject, int)

@@ -18,7 +18,9 @@
 #include <qcstring.h>
 #include <qdir.h>
 #include "trackplaylist.h"
+#include "track.h"
 
+Track *TrackPlaylist::spTrack = 0;
 
 TrackPlaylist::TrackPlaylist(TrackCollection *pTrackCollection, QString qName)
 {
@@ -56,6 +58,11 @@ TrackPlaylist::~TrackPlaylist()
 {
 }
 
+void TrackPlaylist::setTrack(Track *pTrack)
+{
+    spTrack = pTrack;
+}
+
 void TrackPlaylist::writeXML(QDomDocument &doc, QDomElement &header)
 {
     XmlParse::addElement(doc, header, "Name", m_qName);
@@ -78,7 +85,7 @@ void TrackPlaylist::addTrack(TrackInfoObject *pTrack)
 
     m_qList.append(pTrack);
 
-	//qDebug("insert in table");
+    //qDebug("insert in table");
     // If this playlist is active, update WTableTrack
     if (m_pTable)
         pTrack->insertInTrackTableRow(m_pTable, m_pTable->numRows());
@@ -87,7 +94,7 @@ void TrackPlaylist::addTrack(TrackInfoObject *pTrack)
 
 void TrackPlaylist::addTrack(QString qLocation)
 {
-	//qDebug("Add track %s",qLocation.latin1());
+    //qDebug("Add track %s",qLocation.latin1());
     TrackInfoObject *pTrack = m_pTrackCollection->getTrack(qLocation);
 
     if (pTrack)
@@ -146,12 +153,14 @@ QString TrackPlaylist::getListName()
 void TrackPlaylist::setListName(QString name)
 {
     m_qName = name;
+
+    // Update views
+    if (spTrack)
+        spTrack->updatePlaylistViews();
 }
 
 void TrackPlaylist::slotDrop(QDropEvent *e)
 {
-    //qDebug("playlist drop");
-
     // Check if this drag is a playlist subtype
     QString s;
     QCString type("playlist");
@@ -163,7 +172,6 @@ void TrackPlaylist::slotDrop(QDropEvent *e)
 
     if (!QUriDrag::canDecode(e))
     {
-        //qDebug("TrackPlaylist: Could not decode drag object.");
         e->ignore();
         return;
     }
@@ -171,7 +179,7 @@ void TrackPlaylist::slotDrop(QDropEvent *e)
     e->accept();
     QStrList lst;
     QUriDrag::decode(e, lst);
-
+    
     // For each drop element...
     for (uint i=0; i<lst.count(); ++i )
         addPath(QUriDrag::uriToLocalFile(lst.at(i)));

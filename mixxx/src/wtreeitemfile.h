@@ -17,14 +17,19 @@
 /**
 @author Tue Haste Andersen
 */
-class WTreeItemFile : public WTreeItem
+class WTreeItemFile : public QObject, WTreeItem
 {
+    Q_OBJECT
 public:
     WTreeItemFile(WTreeItem *parent, const QString &s1, const QString &s2 );
     ~WTreeItemFile();
 
     QString type() { return "WTreeItemFile"; };
     void popupMenu();
+
+private slots:
+    void slotLoadPlayer1();
+    void slotLoadPlayer2();
 };
 
 #endif

@@ -14,8 +14,10 @@
 #include "xmlparse.h"
 #include "wtreeitemdir.h"
 #include "wtreeitemplaylist.h"
+#include "wtreeitemplaylistroot.h"
 #include "wtreeitem.h"
 #include "trackplaylist.h"
+#include <qdragobject.h>
 
 static const int autoopenTime = 750;
 
@@ -47,6 +49,10 @@ WTreeView::WTreeView(QString qRootPath, QWidget *parent, const char *name, bool 
     setAcceptDrops(false);
     //viewport()->setAcceptDrops(true);
     addColumn("Name", -1);
+    setSelectionMode(QListView::Extended);
+    setResizeMode(QListView::AllColumns);
+    header()->hide();
+    
     //setColumnWidthMode(1, QListView::Maximum);
     //setTreeStepSize(20);
     setFrameStyle(QFrame::NoFrame);
@@ -58,7 +64,7 @@ WTreeView::WTreeView(QString qRootPath, QWidget *parent, const char *name, bool 
     slotUpdateDir(qRootPath);
 
     // Insert root playlist
-    m_pRootPlaylist = new WTreeItem(this, "Playlists");
+    m_pRootPlaylist = new WTreeItemPlaylistRoot(this, "Playlists");
     m_pRootPlaylist->setOpen(true); // be interesting
 }
 
@@ -136,17 +142,6 @@ void WTreeView::openFolder()
     }
 }
 
-void WTreeView::slotRenameItem()
-{
-    //qDebug("rename %p",m_pClickedItem);
-    if (m_pClickedItem)
-    {
-        //qDebug("start");
-        m_pClickedItem->startRename(0);
-    }
-    m_pClickedItem = 0;
-}
-
 void WTreeView::updatePlaylists(QPtrList<TrackPlaylist> *pList)
 {
     // Clear current lists
@@ -160,7 +155,7 @@ void WTreeView::updatePlaylists(QPtrList<TrackPlaylist> *pList)
 
 void WTreeView::contentsDragEnterEvent( QDragEnterEvent *e )
 {
-    if ( !QUriDrag::canDecode(e) )
+    if (!QUriDrag::canDecode(e))
     {
         e->ignore();
         return;
@@ -168,8 +163,8 @@ void WTreeView::contentsDragEnterEvent( QDragEnterEvent *e )
 
     oldCurrent = currentItem();
 
-    QListViewItem *i = itemAt( contentsToViewport(e->pos()) );
-    if ( i )
+    QListViewItem *i = itemAt(contentsToViewport(e->pos()));
+    if (i)
     {
         dropItem = i;
         autoopen_timer->start( autoopenTime );
@@ -305,16 +300,15 @@ void WTreeView::contentsMousePressEvent( QMouseEvent* e )
 
     QListView::contentsMousePressEvent(e);
     QPoint p( contentsToViewport( e->pos() ) );
+    
     WTreeItem *i = (WTreeItem *)itemAt( p );
     if ( i )
     {
         m_pClickedItem = i;
-        
+     
         // If the user right clicked, bring up a popup menu
         if (e->button()==Qt::RightButton)
-        {
-            emit(playlistPopup(i->text(0)));
-        }
+            m_pClickedItem->popupMenu();
         else
         {
             // if the user clicked into the root decoration of the item, don't try to start a drag!
@@ -334,9 +328,31 @@ void WTreeView::contentsMouseMoveEvent( QMouseEvent* e )
     if ( mousePressed && ( presspos - e->pos() ).manhattanLength() > QApplication::startDragDistance() )
     {
         mousePressed = FALSE;
-        WTreeItem *item = (WTreeItem *)itemAt( contentsToViewport(presspos) );
-        if (item)
-            item->drag(viewport());
+
+        // The item the mouse is over decides if we are dragging a playlist or
+        // file/dirs...
+        WTreeItem *item = (WTreeItem *)itemAt(contentsToViewport(presspos));
+        if (item && item->type()=="WTreeItemPlaylist")
+        {
+            QTextDrag *td = new QTextDrag(item->drag(), viewport());
+            const QCString type("Playlist");
+            td->setSubtype(type);
+            td->dragCopy();
+        }
+        else
+        {
+            QStrList lst;
+            item = (WTreeItem *)m_pRootDir;
+            while (item)
+            {
+                if (item->isSelected())
+                    lst.append(item->drag());
+                item = (WTreeItem *)item->itemBelow();
+            }
+            QUriDrag *ud = new QUriDrag(viewport());
+            ud->setUris(lst);
+            ud->dragCopy();
+        }
     }
     mouseMoved = true;
 }
@@ -364,14 +380,16 @@ void WTreeView::slotUpdateDir( const QString &s )
 
 void WTreeView::slotHighlightPlaylist(TrackPlaylist *p)
 {
-    qDebug("highlight");
-    
     // Find playlist and highlight
     QListViewItem *it = m_pRootPlaylist->firstChild();
     while (it)
     {
-        if (it->text(1)==p->getListName())
-            it->setSelected(true);    
+        if (it->text(0)==p->getListName())
+        {
+            ensureItemVisible(it);
+            setCurrentItem(it);    
+            break;
+        }
         it = it->nextSibling();
     }
 }
