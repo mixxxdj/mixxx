@@ -22,11 +22,11 @@
 #include "defs.h"
 #include "monitor.h"
 #include "soundsource.h"
-#include "windowkaiser.h"
 #include <qevent.h>
 #include <qmutex.h>
 
 class SignalVertexBuffer;
+class ReaderExtractFFT;
 
 /**
   *@author Tue & Ken Haste Andersen
@@ -34,21 +34,18 @@ class SignalVertexBuffer;
 
 class ReaderExtractWave : ReaderExtract {
 public: 
-    ReaderExtractWave(QMutex *_enginelock, int _chunkSize, int _chunkNo, int windowSize, int _stepSize);
+    ReaderExtractWave(QMutex *_enginelock);
     ~ReaderExtractWave();
     void reset();
-    int getChunkSize();
     void *getChunkPtr(const int idx);
     int getRate();
-    void *processChunk(const int);
+    void *processChunk(const int, const int, const int);
     void setSoundSource(SoundSource *_file);
     void setSignalVertexBuffer(SignalVertexBuffer *_signalVertexBuffer);
     /** Read a new chunk into the readbuffer: */
     void getchunk(CSAMPLE rate);
     /** Seek to a new play position. Returns positon actually seeked to */
     long int seek(long int new_playpos);
-    /** Get a pointer to a window centered around the sample at windowIdx*windowSize */
-    CSAMPLE *getWindowPtr(int windowIdx);
 
     /** The first read sample in the file, currently in read_buffer. This should only be
       * accessed while holding the enginelock from the reader class. */
@@ -65,9 +62,6 @@ private:
     int bufferpos_start, bufferpos_end;
     /** Pointer to SignalVertexBuffer associated with this buffer */
     SignalVertexBuffer *signalVertexBuffer;
-    /** Pointer to window and windowed samples of signal */
-    WindowKaiser *window;
-    CSAMPLE *windowedSamples;
     /** Pointer to the sound source */
     SoundSource *file;
     int stepSize;
@@ -75,6 +69,8 @@ private:
     int windowNo;
     /** The buffer where the samples are read into */
     CSAMPLE *read_buffer;
+    /** Pointer to FFT extractor */
+    ReaderExtractFFT *readerfft;
 };
 
 #endif

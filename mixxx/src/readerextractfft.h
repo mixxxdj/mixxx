@@ -34,17 +34,33 @@ class WindowKaiser;
 class ReaderExtractFFT : public ReaderExtract
 {
 public:
-    ReaderExtractFFT(ReaderExtract *input, int _specNo, WindowKaiser *window);
+    ReaderExtractFFT(ReaderExtract *input, int _frameSize, int _frameStep);
     ~ReaderExtractFFT();
-    void *processChunk(const int idx);
-
-
-//    void notify(double) {};
-//    void update(int specFrom, int specTo);
+    void reset();
+    void *getChunkPtr(const int idx);
+    int getRate();
+    void *processChunk(const int idx, const int start_idx, const int end_idx);
 private:
-    int specNo;
+    void processFrame(int idx);
+
+    /** Pointer to window and windowed samples of signal */
+    WindowKaiser *window;
+    /** Pointer to samples containing one windowed frame of samples */
+    CSAMPLE *windowedSamples;
+    /** Pointer to array containing window */
+    CSAMPLE *windowPtr;
+    /** Pointer to read_buffer from ReaderExtractWave */
+    CSAMPLE *readbufferPtr;
+    /** Frame size */
+    int frameSize;
+    /** Number of frames */
+    int frameNo;
+    /** Step size */
+    int frameStep;
+    /** Frames per chunk */
+    int framePerChunk;
+    /** List of pointers to spectrums */
     QPtrList<EngineSpectralFwd> specList;
-    CSAMPLE *hfc;    
 };
 
 #endif

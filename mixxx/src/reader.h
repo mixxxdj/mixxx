@@ -82,6 +82,7 @@ private:
     QMutex *pause;
       
     ReaderExtractWave *readerwave;
+    
     EngineBuffer *enginebuffer;
     
     QMutex requestStop;

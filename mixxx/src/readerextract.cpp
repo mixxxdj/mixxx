@@ -17,9 +17,6 @@
 
 #include "readerextract.h"
 
-int ReaderExtract::waverate = 0;
-int ReaderExtract::chunkNo = 0;
-
 ReaderExtract::ReaderExtract(ReaderExtract *_input)
 {
     input = _input;

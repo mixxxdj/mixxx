@@ -31,21 +31,14 @@ public:
 
     /** Reset the buffer. This may be used when loading a new track and when seeking */
     virtual void reset() = 0;
-    /** Get the chunk size */
-    virtual int getChunkSize() = 0;
     /** Get pointer to a given chunk */
     virtual void *getChunkPtr(const int) = 0;
     /** Get sample rate of buffer. This relates to the sample rate of the waveform */
     virtual int getRate() = 0;
-    /** Process a given chunk. Returns a pointer to the newly processed chunk */
-    virtual void *processChunk(const int) = 0;
+    /** Process a given chunk at chunk idx i. start_idx and end_idx gives the indexes of the the chunks
+      * at the update boundaries of the buffer. Returns a pointer to the newly processed chunk */
+    virtual void *processChunk(const int idx, const int start_idx, const int end_idx) = 0;
 protected:
-    /** Sample rate of wave signal. Set in ReaderExtractWave */
-    static int waverate;
-    /** Number of chunks */
-    static int chunkNo;
-    /** Chunk size */
-    int chunkSize;
     /** Pointer to input object */
     ReaderExtract *input;
 };

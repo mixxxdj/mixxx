@@ -16,26 +16,14 @@
  ***************************************************************************/
 
 #include "readerextractwave.h"
+#include "readerextractfft.h"
 #include "readerevent.h"
 #include "visual/signalvertexbuffer.h"
 #include <qapplication.h>
 
-ReaderExtractWave::ReaderExtractWave(QMutex *_enginelock, int _chunkSize, int _chunkNo, int windowSize, int _stepSize) : ReaderExtract(0)
+ReaderExtractWave::ReaderExtractWave(QMutex *_enginelock) : ReaderExtract(0)
 {
     enginelock = _enginelock;
-
-    // Setup variables for block based analysis
-    chunkSize = _chunkSize;
-    chunkNo = _chunkNo;
-    stepSize = _stepSize;
-    windowPerChunk = chunkSize/stepSize;
-    windowNo = chunkNo*windowPerChunk;
-    
-    // Allocate and calculate window
-    window = new WindowKaiser(windowSize, 6.5);
-
-    // Allocate memory for windowed portion of signal
-    windowedSamples = new CSAMPLE[windowSize];
 
     // Allocate temporary buffer
     temp = new SAMPLE[READCHUNKSIZE*2]; 
@@ -54,13 +42,16 @@ ReaderExtractWave::ReaderExtractWave(QMutex *_enginelock, int _chunkSize, int _c
     bufferpos_end = 0;
 
     signalVertexBuffer = 0;
+
+    // Initialize extractor objects
+    readerfft  = new ReaderExtractFFT((ReaderExtract *)this, WINDOWSIZE, STEPSIZE);
+
 }
 
 ReaderExtractWave::~ReaderExtractWave()
 {
     delete [] temp;
     delete [] read_buffer;
-    delete [] window;
 }
 
 void ReaderExtractWave::reset()
@@ -80,14 +71,9 @@ void ReaderExtractWave::reset()
         read_buffer[i] = 0.;
 }
 
-int ReaderExtractWave::getChunkSize()
-{
-    return chunkSize;
-}
-
 void *ReaderExtractWave::getChunkPtr(const int chunkIdx)
 {
-    return (void *)(&read_buffer[chunkSize*chunkIdx]);
+    return (void *)(&read_buffer[READCHUNKSIZE*chunkIdx]);
 }
 
 int ReaderExtractWave::getRate()
@@ -99,7 +85,7 @@ int ReaderExtractWave::getRate()
         return 88200; // HACKKKK!!!!!
 }
 
-void *ReaderExtractWave::processChunk(const int)
+void *ReaderExtractWave::processChunk(const int, const int, const int)
 {
     return 0;
 }
@@ -159,7 +145,7 @@ void ReaderExtractWave::getchunk(CSAMPLE rate)
         bufIdx = bufferpos_start;
 
         // Do pre-processing.
-        //preprocess->update((bufferpos_start/stepSize+1)%windowNo, (preEnd/stepSize-1+windowNo)%windowNo);
+        readerfft->processChunk(bufferpos_start/READCHUNKSIZE, bufferpos_start/READCHUNKSIZE, bufferpos_end/READCHUNKSIZE);
     }
     else
     {
@@ -177,7 +163,7 @@ void ReaderExtractWave::getchunk(CSAMPLE rate)
         }
 
         // Do pre-processing...
-        //preprocess->update((preStart/stepSize+1)%windowNo, (bufferpos_end/stepSize-1+windowNo)%windowNo);
+        readerfft->processChunk(bufIdx/READCHUNKSIZE, bufferpos_start/READCHUNKSIZE, bufferpos_end/READCHUNKSIZE);
     }
     filepos_start = filepos_start_new;
     filepos_end = filepos_end_new;
@@ -222,32 +208,3 @@ long int ReaderExtractWave::seek(long int new_playpos)
 
     return seekpos;
 }
-
-CSAMPLE *ReaderExtractWave::getWindowPtr(int windowIdx)
-{
-    // Start position of window
-    int windowPos = (windowIdx*stepSize-window->getSize()/2+READBUFFERSIZE)%READBUFFERSIZE;
-
-//    qDebug("windowIdx %i, windowPos %i, bufferpos_end %i, bufferpos_start %i",windowIdx,windowPos,bufferpos_end, bufferpos_start);
-/*    if (windowPos+window->getSize()>=bufferpos_end || windowPos<bufferpos_start)
-    {
-        return 0;
-    }
-    else
-*/
-    {
-        if (windowPos+window->getSize() < chunkNo*chunkSize)
-            for (int i=windowPos; i<windowPos+window->getSize(); i++)
-                windowedSamples[i-windowPos] = read_buffer[i];
-        else
-        {
-            for (int i=windowPos; i<chunkNo*chunkSize; i++)
-                windowedSamples[i-windowPos] = read_buffer[i];
-            for (unsigned int i=0; i<(windowPos+window->getSize())%READBUFFERSIZE; i++)
-                windowedSamples[i-windowPos] = read_buffer[i];
-        }
-    }
-    return windowedSamples;    
-}
-
-

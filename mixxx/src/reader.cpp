@@ -35,9 +35,9 @@ Reader::Reader(EngineBuffer *_enginebuffer, Monitor *_rate, QMutex *_pause)
     rate = _rate;
     pause = _pause;
     
-    // Allocate sound buffer
-    readerwave = new ReaderExtractWave(&enginelock, READCHUNKSIZE, READCHUNK_NO, WINDOWSIZE, STEPSIZE);
-
+    // Allocate reader extract objects
+    readerwave = new ReaderExtractWave(&enginelock);
+    
     // Allocate semaphore
     readAhead = new QWaitCondition();
 
@@ -232,6 +232,9 @@ void Reader::run()
         // Read a new chunk:
         readerwave->getchunk(rate->read());
 
+
+
+        
         // Send user event to main thread, indicating that the visual sample buffers should be updated
 //        if (guichannel>0)
 //            QApplication::postEvent(guichannel,new QEvent((QEvent::Type)1001));
