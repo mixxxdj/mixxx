@@ -30,8 +30,7 @@ DlgPlaycontrol::~DlgPlaycontrol()
 void DlgPlaycontrol::layoutMirror()
 {
     // Mirror volume and knobs positions
-    QPoint playpos = PushButtonPlay->pos();
-    playpos.setX(playpos.x()+34); // Diff in width between playbutton and rate control
-    PushButtonPlay->move(GroupBoxRate->pos());
-    GroupBoxRate->move(playpos);
+    QPoint pos = PushButtonPlay->pos();
+    PushButtonPlay->move(5,pos.y());
+    GroupBoxRate->move(177,pos.y());
 }
