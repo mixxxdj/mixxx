@@ -64,10 +64,8 @@ void WOverview::setup(QDomNode node)
     m_pScreenBuffer = new QPixmap(this->size());
     m_pScreenBuffer->fill(this->backgroundColor());
 
-/*
-    colorSignal.setNamedColor(selectNodeQString(node, "SignalColor"));
-    colorMarker.setNamedColor(selectNodeQString(node, "MarkerColor"));
-*/
+//    colorSignal.setNamedColor(selectNodeQString(node, "SignalColor"));
+    m_qColorMarker.setNamedColor(selectNodeQString(node, "MarkerColor"));
 }
 
 void WOverview::setValue(double fValue)
@@ -75,7 +73,7 @@ void WOverview::setValue(double fValue)
     if (!m_bDrag)
     {
         // Calculate handle position
-        m_iPos = (int)((fValue/127.)*(double)width());
+        m_iPos = (int)((fValue/127.)*((double)width()-2.));
         update();
     }
 }
@@ -85,7 +83,7 @@ void WOverview::setVirtualPos(double fValue)
     if (!m_bDrag)
     {
         // Calculate virtual position
-        m_iVirtualPos = (int)((fValue/127.)*(double)width());
+        m_iVirtualPos = (int)((fValue/127.)*((double)width()-2.));
         update();
     }
 }
@@ -198,8 +196,8 @@ void WOverview::mouseMoveEvent(QMouseEvent *e)
 {
     m_iPos = e->x()-m_iStartMousePos;
 
-    if (m_iPos>width()-1)
-        m_iPos = width()-1;
+    if (m_iPos>width()-2)
+        m_iPos = width()-2;
     else if (m_iPos<0)
         m_iPos = 0;
 
@@ -213,7 +211,7 @@ void WOverview::mouseReleaseEvent(QMouseEvent *e)
     mouseMoveEvent(e);
 
     // value ranges from 0 to 127
-    float fValue = (double)m_iPos*(127./(double)width());
+    float fValue = (double)m_iPos*(127./(double)(width()-2));
 
     if (e->button()==Qt::RightButton)
         emit(valueChangedRightUp(fValue));
@@ -243,10 +241,10 @@ void WOverview::paintEvent(QPaintEvent *)
     if (m_pWaveformSummary)
     {
         // Draw play position
-        paint.setPen(QColor("#0000FF"));
+        paint.setPen(m_qColorMarker);
         paint.drawLine(m_iPos,   0, m_iPos,   height());
         paint.drawLine(m_iPos+1, 0, m_iPos+1, height());
-        paint.drawLine(m_iPos-1, 0, m_iPos-1, height());
+        //paint.drawLine(m_iPos-1, 0, m_iPos-1, height());
 
         // Draw virtual pos pointer
         if (m_iVirtualPos>=0)

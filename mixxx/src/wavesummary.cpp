@@ -92,8 +92,6 @@ void WaveSummary::run()
                 iHopSize--;
             int iBlockSize = iHopSize;
                 
-// qDebug("block size %i",iBlockSize);
-
 //          qDebug("len %i samples %i ch %i srate %i",liSamplesPerSecond, liLengthSeconds,pTrackInfoObject->getChannels(),pTrackInfoObject->getSampleRate());
             
             // Allocate and reset buffer used to store summary data: max and min amplitude for block, and HFC value
@@ -102,7 +100,7 @@ void WaveSummary::run()
             for (i=0; i<pData->size(); ++i)
                 pData->at(i) = 0;
 
-            SAMPLE *pBuffer = new SAMPLE[iBlockSize];
+            SAMPLE *pBuffer = new SAMPLE[iBlockSize*2];
             long int pos = 0;
             
             for (i=0; i<pData->size()-2; i+=3)
