@@ -3,7 +3,7 @@
                              -------------------
     begin                : Sat Nov 15 2003
     copyright            : (C) 2003 by Tue Haste Andersen
-    email                : 
+    email                :
  ***************************************************************************/
 
 /***************************************************************************
@@ -17,17 +17,43 @@
 
 #include "playerjack.h"
 
-PlayerJack::PlayerJack(ConfigObject<ConfigValue> *config, ControlObject *pControl) : Player(config,pControl)
+PlayerJack::PlayerJack(ConfigObject<ConfigValue> *config, ControlObject *pControl) : Player(config,pControl), mLibJack("libjack.so")
 {
     ports = 0;
     m_iBufferSize = 1024;
     m_bOpen = false;
 
-    jack_set_error_function(jackError);
+/*
+    //mLibJack = new QLibrary("jack");
+    if (!mLibJack.load())
+        qDebug("lib path %s",mLibJack.library().latin1());
+
+    //if (mLibJack.isLoaded())
+    {
+        jack_set_error_function = (jack_set_error_function_t) mLibJack.resolve("jack_set_error_function");
+        jack_port_unregister = (jack_port_unregister_t) mLibJack.resolve("jack_port_unregister");
+        jack_client_close = (jack_client_close_t) mLibJack.resolve("jack_client_close");
+        jack_client_new = (jack_client_new_t) mLibJack.resolve("jack_client_new");
+        jack_set_process_callback = (jack_set_process_callback_t) mLibJack.resolve("jack_set_process_callback");
+        jack_set_sample_rate_callback = (jack_set_sample_rate_callback_t) mLibJack.resolve("jack_set_sample_rate_callback");
+        jack_on_shutdown =(jack_on_shutdown_t) mLibJack.resolve("jack_on_shutdown");
+        jack_port_register =(jack_port_register_t) mLibJack.resolve("jack_port_register");
+        jack_activate =(jack_activate_t) mLibJack.resolve("jack_activate");
+        jack_connect =(jack_connect_t) mLibJack.resolve("jack_connect");
+        jack_port_name =(jack_port_name_t) mLibJack.resolve("jack_port_name");
+        jack_deactivate =(jack_deactivate_t) mLibJack.resolve("jack_deactivate");
+        jack_get_ports =(jack_get_ports_t) mLibJack.resolve("jack_get_ports");
+        jack_get_sample_rate =(jack_get_sample_rate_t) mLibJack.resolve("jack_get_sample_rate");
+        jack_port_get_buffer =(jack_port_get_buffer_t) mLibJack.resolve("jack_port_get_buffer");
+    }
+*/
 }
 
 PlayerJack::~PlayerJack()
 {
+//    if (!mLibJack.isLoaded())
+//        return;
+
     close();
 
     if (client)
@@ -46,6 +72,37 @@ PlayerJack::~PlayerJack()
 
 bool PlayerJack::initialize()
 {
+    // Verify that library is loaded, and all function pointers has been retreived
+    /*
+    if (!mLibJack.isLoaded())
+    {
+        qDebug("lib not loaded");
+        return false;
+    }
+    else
+    if (!jack_set_error_function |
+            !jack_port_unregister |
+            !jack_client_close |
+            !jack_client_new |
+            !jack_set_process_callback |
+            !jack_set_sample_rate_callback |
+            !jack_on_shutdown |
+            !jack_port_register |
+            !jack_activate |
+            !jack_connect |
+            !jack_port_name |
+            !jack_deactivate |
+            !jack_get_ports |
+            !jack_get_sample_rate |
+            !jack_port_get_buffer)
+    {
+        qDebug("API function pointer error");
+        return false;
+    }
+    */
+
+    jack_set_error_function(jackError);
+
     if ((client = jack_client_new("Mixxx")) == 0)
         return false;
 
@@ -117,7 +174,7 @@ bool PlayerJack::open()
     }
 
     m_bOpen = true;
-    
+
     // FIX ME: RETURN FALSE IF NO DEVICES WERE OPENED!!!
 
     return true;
@@ -238,7 +295,7 @@ void PlayerJack::callbackShutdown()
     client = 0;
 
     //exit(-1);
-    
+
 /*
     if ((client = jack_client_new("Mixxx")) == 0)
     {

@@ -19,17 +19,27 @@
 #define VISUALBUFFERMARKS_H
 
 #include "visualbuffer.h"
+#include "controlobject.h"
 
 /**
   *@author Tue & Ken Haste Andersen
   */
 
 class VisualBufferMarks : public VisualBuffer  {
-public: 
-    VisualBufferMarks(ReaderExtract *pReaderExtract, ControlPotmeter *pPlaypos);
+public:
+    VisualBufferMarks(ReaderExtract *pReaderExtract, ControlPotmeter *pPlaypos, const char *group);
     ~VisualBufferMarks();
     void update(int iPos, int iLen);
     void draw(GLfloat *p, int iLen, float xscale);
+
+private:
+    /** Pointer to cue point position */
+    ControlObject *m_pCuePoint;
+    /** Pointer to absolute play position */
+    ControlObject *m_pAbsPlaypos;
+    /** Index in visual buffer where cue point is set. Is -1 if the cue point
+     *  is currently not visible */
+    int m_iCuePosition;
 };
 
 #endif

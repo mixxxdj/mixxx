@@ -33,7 +33,7 @@ ReaderExtractBeat::ReaderExtractBeat(ReaderExtract *input, int frameSize, int fr
     frameNo = input->getBufferSize(); ///frameStep;
     framePerChunk = frameNo/READCHUNK_NO;
     framePerFrameSize = frameSize/frameStep;
-    
+
     // Initialize beat and bpm buffer
     beatBuffer = new float[getBufferSize()];
     beatCorr = new float[getBufferSize()];

@@ -114,11 +114,3 @@ void MixxxSocketClient::slotEndOfFileCh2(double)
 {
     ts << "player2 finished" << endl;
 }
-
-
-
-
-
-
-
-

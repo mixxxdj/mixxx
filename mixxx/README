@@ -17,6 +17,7 @@ at least G4 CPU).
 New since 1.2.1:
 - Bug fixes in build system
 - Socket interface
+- Cue point visualization
 
 * REQUIREMENTS *********************************************
 Mixxx is depends on the following libraries:
