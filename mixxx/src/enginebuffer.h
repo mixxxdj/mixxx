@@ -56,9 +56,18 @@ public:
     void setVisual(WVisualWaveform *pVisualWaveform);
     /** Returns pointer to Reader object. Used in MixxxApp. */
     Reader *getReader();
+    /** Returns current bpm value (not thread-safe) */
+    float getBpm();
+    /** Return the current rate (not thread-safe) */
+    float getRate();
+    /** Return the distance to the next beat mark from curr. play pos (not thread-safe) */
+    float getDistanceNextBeatMark();
     /** Reset buffer playpos and set file playpos. This must only be called while holding the
       * pause mutex */
     void setNewPlaypos(double);
+    /** Sets pointer to other engine buffer/channel */
+    void setOtherEngineBuffer(EngineBuffer *);
+    
     CSAMPLE *process(const CSAMPLE *, const int);
 
     CSAMPLE *update_visual();
@@ -84,9 +93,12 @@ public slots:
     void slotControlRateTempDownSmall(double);
     void slotControlRateTempUp(double);
     void slotControlRateTempUpSmall(double);
+    void slotControlBeatSync(double);
 //    void bpmChange(double);
 
 private:
+    /** Pointer to other EngineBuffer */
+    EngineBuffer *m_pOtherEngineBuffer;
     /** Pointer to reader */
     Reader *reader;
     /** Buffer used in the process() */
@@ -116,6 +128,7 @@ private:
     ControlEngine *buttonCueSet, *buttonCueGoto, *buttonCuePreview, *m_pRateDir;
     ControlEngine *buttonRateTempDown, *buttonRateTempDownSmall, *buttonRateTempUp, *buttonRateTempUpSmall;
     ControlEngine *buttonRatePermDown, *buttonRatePermDownSmall, *buttonRatePermUp, *buttonRatePermUpSmall;
+    ControlEngine *buttonBeatSync;
     /** Control used to signal when at end of file */
     ControlEngine *m_pTrackEnd, *m_pTrackEndMode;
     /** Control used to input desired playback BPM */

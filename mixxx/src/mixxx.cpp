@@ -280,6 +280,8 @@ MixxxApp::MixxxApp(QApplication *a, QStringList files)
     // Init buffers/readers
     buffer1 = new EngineBuffer(powermate1, "[Channel1]");
     buffer2 = new EngineBuffer(powermate2, "[Channel2]");
+    buffer1->setOtherEngineBuffer(buffer2);
+    buffer2->setOtherEngineBuffer(buffer1);
 
     // Starting channels:
     channel1 = new EngineChannel("[Channel1]");

@@ -45,6 +45,21 @@
    <Pressed>rateup-on-Ch1.png</Pressed>
    <Unpressed>rateup-off-Ch1.png</Unpressed>
   </State>
+  <Pos>51,170</Pos>
+  <Connection>
+   <ConfigKey>[Channel1],beatsync</ConfigKey>
+   <EmitOnDownPress>true</EmitOnDownPress>
+   <ButtonState>LeftButton</ButtonState>
+  </Connection>
+ </PushButton>
+
+ <PushButton>
+  <NumberStates>1</NumberStates>
+  <State>
+   <Number>0</Number>
+   <Pressed>rateup-on-Ch1.png</Pressed>
+   <Unpressed>rateup-off-Ch1.png</Unpressed>
+  </State>
   <Pos>51,328</Pos>
   <Connection>
    <ConfigKey>[Channel1],rate_perm_up</ConfigKey>
