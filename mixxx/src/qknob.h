@@ -20,14 +20,14 @@
 
 #include <qwidget.h>
 #include <qdial.h>
-#include <qpixmap.h>
 
 /**
   *@author Tue and Ken Haste Andersen
   */
 
-class QKnob : public QDial  {
-   Q_OBJECT
+class QKnob : public QDial
+{
+    Q_OBJECT
 public: 
 	QKnob(QWidget *parent=0, const char *name=0);
 	~QKnob();
