@@ -461,12 +461,12 @@ CSAMPLE *EngineBuffer::process(const CSAMPLE *, const int buf_size)
         if (readerinfo)
         {
 //            qDebug("checking");
-            if (!backwards && filepos_end< file_length_old && (filepos_end - filepos_play < READCHUNKSIZE*(READCHUNK_NO/2-1)))
+            if (!backwards && /*filepos_end<file_length_old &&*/ (filepos_end - filepos_play < READCHUNKSIZE*(READCHUNK_NO/2-1)))
             {
 //                qDebug("wake fwd");
                 reader->wake();
             }
-            else if (backwards && filepos_start>0. && (filepos_play - filepos_start < READCHUNKSIZE*(READCHUNK_NO/2-1)))
+            else if (backwards && /*filepos_start>0. &&*/ (filepos_play - filepos_start < READCHUNKSIZE*(READCHUNK_NO/2-1)))
             {
 //                qDebug("wake back");
                 reader->wake();
@@ -491,9 +491,8 @@ CSAMPLE *EngineBuffer::process(const CSAMPLE *, const int buf_size)
         // If playbutton is pressed, check if we are at start or end of track. change trackend status
         // if that is the case
         if (playButton->get()==1. && m_pTrackEnd->get()==0. &&
-            ((filepos_play<=0. && backwards==true) || (filepos_play>=file_length_old && backwards==false)))
+            ((filepos_play<=0. && backwards==true) || ((int)filepos_play>=file_length_old && backwards==false)))
         {
-            qDebug("EngineBuffer: End of track");   
             m_pTrackEnd->set(1.);
         }
 

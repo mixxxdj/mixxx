@@ -163,6 +163,9 @@ void ReaderExtractWave::setSoundSource(SoundSource *_file)
 
 void ReaderExtractWave::getchunk(CSAMPLE rate)
 {
+    if (!file)
+        return;
+
     // Determine playback direction
     bool backwards;
     if (rate < 0.)
@@ -217,8 +220,10 @@ void ReaderExtractWave::getchunk(CSAMPLE rate)
     filepos_start = (long int)filepos_start_new;
     filepos_end = (long int)filepos_end_new;
 
-    // Read samples
-    file->read(READCHUNKSIZE, temp);
+    // Read samples (reset samples not read, but requested)
+    int i = file->read(READCHUNKSIZE, temp);
+    for (int j=i; i<READCHUNKSIZE; ++i)
+        temp[j] = 0.;
 
     // Seek to end of the samples read in buffer, if we are reading backwards. This is to ensure, that the correct samples
     // are read, if we next time are going forward.
@@ -226,7 +231,7 @@ void ReaderExtractWave::getchunk(CSAMPLE rate)
         file->seek((long int)filepos_end);
 
     // Copy samples to read_buffer
-    int i=0;
+    i=0;
     for (unsigned int j=bufIdx; j<bufIdx+READCHUNKSIZE; j++)
         read_buffer[j] = (CSAMPLE)temp[i++];
 
