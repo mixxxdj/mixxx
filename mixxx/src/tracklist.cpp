@@ -70,12 +70,12 @@ TrackList::TrackList( const QString sDirectory, WTrackTable *pTableTracks,
 
 TrackList::~TrackList()
 {
-	// Write out the xml file:
-	WriteXML();
+    // Write out the xml file:
+    WriteXML();
 
-	// Delete all the tracks:
-	for (unsigned int i=0; i<m_lTracks.count(); i++)
-		delete m_lTracks.at(i);
+    // Delete all the tracks:
+    for (unsigned int i=0; i<m_lTracks.count(); i++)
+        delete m_lTracks.at(i);
 }
 
 void TrackList::UpdateTracklist()
