@@ -137,7 +137,7 @@ unix {
   OBJECTS_DIR = .obj
   SOURCES += soundsourceaudiofile.cpp
   HEADERS += soundsourceaudiofile.h
-  LIBS += -lmad -lid3tag #/usr/local/lib/libmad.a  -lvorbisfile -lvorbis
+  LIBS += -lmad -lid3tag -lvorbisfile -lvorbis
   !macx:LIBS += -laudiofile #/usr/lib/libaudiofile.a
   LIBS += -lsrfftw -lsfftw
   INCLUDEPATH += . 

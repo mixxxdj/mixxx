@@ -41,7 +41,7 @@ Reader::Reader(EngineBuffer *_enginebuffer, Monitor *_rate, QMutex *_pause)
     guichannel = 0;
     
     // Allocate reader extract objects
-    readerwave = new ReaderExtractWave(&enginelock);
+    readerwave = new ReaderExtractWave(this);
 
     // Allocate semaphore
     readAhead = new QWaitCondition();
@@ -72,15 +72,6 @@ void Reader::addVisual(GUIChannel *_guichannel)
     guichannel = _guichannel;
 #endif
 }
-/*
-void Reader::setupVisuals(GUIChannel *guichannel)
-{
-#ifdef __VISUALS__
-    // ReaderExtract should notify the vertexbuffer
-    readerwave->setSignalVertexBuffer(guichannel->add((ReaderExtract *)readerwave));
-#endif
-}
-*/
 
 void Reader::requestNewTrack(QString name)
 {
@@ -146,6 +137,21 @@ long int Reader::getFileposStart()
 long int Reader::getFileposEnd()
 {
     return readerwave->filepos_end;
+}
+
+bool Reader::tryLock()
+{
+    return enginelock.tryLock();
+}
+
+void Reader::lock()
+{
+    enginelock.lock();
+}
+
+void Reader::unlock()
+{
+    enginelock.unlock();
 }
 
 void Reader::newtrack()

@@ -32,6 +32,9 @@ ReaderExtractHFC::ReaderExtractHFC(ReaderExtract *input, int frameSize, int fram
     }
     
     specList = (QPtrList<EngineSpectralFwd> *)input->getBasePtr();
+
+    //textout.setName("hfc.txt");
+    //textout.open( IO_WriteOnly );
 }
 
 ReaderExtractHFC::~ReaderExtractHFC()
@@ -71,6 +74,9 @@ int ReaderExtractHFC::getBufferSize()
 
 void *ReaderExtractHFC::processChunk(const int idx, const int start_idx, const int end_idx, bool)
 {
+//    QTextStream stream( &textout );
+
+
     int i;
     for (i=idx*framePerChunk; i<(idx+1)*framePerChunk; i++)
     {
@@ -85,7 +91,12 @@ void *ReaderExtractHFC::processChunk(const int idx, const int start_idx, const i
         int i2 = i%frameNo;
         dhfc[i2] = hfc[i2]-hfc[i2-i];
 //        qDebug("dhfc(%i) %f",i2,dhfc[i2]);
+
+        // Write HFC to text file
+        //stream << i << " , " << hfc[i2] << " , " << dhfc[i2] << "\n";
     }    
-        
+
+//    textout.flush();
+    
     return (void *)&dhfc[idx];
 }

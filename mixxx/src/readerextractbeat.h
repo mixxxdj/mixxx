@@ -36,7 +36,9 @@ const CSAMPLE histDownWrite = 0.99999f;
 const int gaussWidth = 8; // Width of gauss/2
 
 /**
-  *@author Tue & Ken Haste Andersen
+  * Extracts beat information based on peaks in the HFC and a beat probability vector.
+  *
+  *@author Tue Haste Andersen
   */
 
 class ReaderExtractBeat : public ReaderExtract

@@ -15,6 +15,7 @@
  *                                                                         *
  ***************************************************************************/
 
+#include "reader.h"
 #include "readerextractwave.h"
 #include "readerextractfft.h"
 #include "readerextracthfc.h"
@@ -26,9 +27,9 @@
 #include "visual/guichannel.h"
 #endif
 
-ReaderExtractWave::ReaderExtractWave(QMutex *_enginelock) : ReaderExtract(0, "signal")
+ReaderExtractWave::ReaderExtractWave(Reader *pReader) : ReaderExtract(0, "signal")
 {
-    enginelock = _enginelock;
+    m_pReader = pReader;
     guichannel = 0;
     
     // Allocate temporary buffer
@@ -40,10 +41,10 @@ ReaderExtractWave::ReaderExtractWave(QMutex *_enginelock) : ReaderExtract(0, "si
         read_buffer[i] = 0.;
 
     // Initialize position in read buffer
-    enginelock->lock();
+    m_pReader->lock();
     filepos_start = 0;
     filepos_end = 0;
-    enginelock->unlock();
+    m_pReader->unlock();
     bufferpos_start = 0;
     bufferpos_end = 0;
 
@@ -74,7 +75,10 @@ ReaderExtractWave::~ReaderExtractWave()
 void ReaderExtractWave::addVisual(GUIChannel *_guichannel)
 {
     guichannel = _guichannel;
+#ifdef __VISUALS__
     guichannel->add(this);
+#endif
+
 #ifdef EXTRACT
 //    readerfft->addVisual(guichannel);
     readerhfc->addVisual(guichannel);
@@ -84,13 +88,13 @@ void ReaderExtractWave::addVisual(GUIChannel *_guichannel)
 
 void ReaderExtractWave::reset()
 {
-    enginelock->lock();
+    m_pReader->lock();
     filepos_start = 0;
     filepos_end = 0;
 
     file->seek(0);
 
-    enginelock->unlock();
+    m_pReader->unlock();
 
     bufferpos_start = 0;
     bufferpos_end = 0;
@@ -149,10 +153,10 @@ void ReaderExtractWave::setSoundSource(SoundSource *_file)
     file = _file;
 
     // Initialize position in read buffer
-    enginelock->lock();
+    m_pReader->lock();
     filepos_start = 0;
     filepos_end = 0;
-    enginelock->unlock();
+    m_pReader->unlock();
     bufferpos_start = 0;
     bufferpos_end = 0;
     reset();
@@ -175,7 +179,7 @@ void ReaderExtractWave::getchunk(CSAMPLE rate)
     double filepos_start_new, filepos_end_new;
     int bufIdx;
 
-    enginelock->lock();
+    m_pReader->lock();
 
     int chunkCurr, chunkStart, chunkEnd;
     
@@ -241,7 +245,7 @@ void ReaderExtractWave::getchunk(CSAMPLE rate)
     readerhfc->processChunk(chunkCurr, chunkStart, chunkEnd, backwards);
     readerbeat->processChunk(chunkCurr, chunkStart, chunkEnd, backwards);
 #endif
-    enginelock->unlock();
+    m_pReader->unlock();
 
     // Update vertex buffer by sending an event containing indexes of where to update.
     if (guichannel != 0)
@@ -250,7 +254,7 @@ void ReaderExtractWave::getchunk(CSAMPLE rate)
 
 long int ReaderExtractWave::seek(long int new_playpos)
 {
-    enginelock->lock();
+    m_pReader->lock();
     filepos_start = new_playpos;
     filepos_end = new_playpos;
 
@@ -258,7 +262,7 @@ long int ReaderExtractWave::seek(long int new_playpos)
 
     qDebug("seek: %i, %i",new_playpos, seekpos);
     
-    enginelock->unlock();
+    m_pReader->unlock();
 
     bufferpos_start = 0;
     bufferpos_end = 0;
