@@ -1,5 +1,5 @@
 /* XPM */
-static char *iconsmall[] = {
+static const char *iconsmall[] = {
 /* columns rows colors chars-per-pixel */
 "16 16 131 2",
 "   c #D30000",

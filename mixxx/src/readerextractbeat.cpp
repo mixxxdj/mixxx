@@ -473,7 +473,7 @@ void *ReaderExtractBeat::processChunk(const int _idx, const int start_idx, const
                         qDebug("force peak at %i, beatint %f, conf %f, bpv %f, interval %f",beatidx,beatint,confidence,bpv->getCurrMaxInterval(), interval);
 */
 
-                        beatBuffer[beatidx] = 0.001; // 3
+                        beatBuffer[beatidx] = 0.001f; // 3
                         beatBufferLastIdx = beatidx;
 
                         if (beatidx<updateFrom)
