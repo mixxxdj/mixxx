@@ -434,7 +434,7 @@ void EngineBuffer::slotSetBpm(double bpm)
         CSAMPLE *bpmBuffer = beat->getBpmPtr();
         double filebpm = bpmBuffer[(int)(bufferpos_play*(beat->getBufferSize()/READCHUNKSIZE))];
 
-        qDebug("user %f, file %f, change %f",bpm, filebpm, bpm/filebpm);
+//        qDebug("user %f, file %f, change %f",bpm, filebpm, bpm/filebpm);
 
         // Change rate to match new bpm
         rateSlider->set(bpm/filebpm-1.);
