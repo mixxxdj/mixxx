@@ -1,5 +1,6 @@
 #include "soundsourceheavymp3.h"
-
+#include <iostream>
+#include <cstdlib>
 SoundSourceHeavymp3::SoundSourceHeavymp3(const char *filename) {
   // Open the file:
   file = fopen(filename,"r");
@@ -9,12 +10,14 @@ SoundSourceHeavymp3::SoundSourceHeavymp3(const char *filename) {
   // Read in the whole file into inputbuf:
   struct stat filestat;
   stat(filename, &filestat);
-  long mp3filelength = filestat.st_size;
+  unsigned int mp3filelength = filestat.st_size;
   inputbuf_len = mp3filelength;
   inputbuf = new unsigned char[inputbuf_len];
-  if (fread(inputbuf,1,mp3filelength,file) != mp3filelength)
-    qFatal("Error reading mp3-file.");
+  if (fread(inputbuf,1,mp3filelength,file) != mp3filelength) {
+    qFatal("Error reading mp3-file %d %d",ftell(file), feof(file));
+  }
   fclose(file);
+
 
   mad_stream Stream;
   mad_frame Frame;

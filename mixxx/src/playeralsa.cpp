@@ -65,12 +65,12 @@ PlayerALSA::PlayerALSA(int size, vector<EngineObject *> *engines) : Player(size,
     // The buffer size has possible been changed by the driver. The size returned
     // by the driver is given in number of bytes, and BUFFER_SIZE indicates the
     // same size in samples
-    if ((BUFFER_SIZE = setup->buf.block.frag_size/SAMPLE_SIZE) == 0) {
+    if ((buffer_size = setup->buf.block.frag_size/SAMPLE_SIZE) == 0) {
       qFatal("Driver returned zero buffer size.");
       std::exit(-1);
     }
 
-    qDebug("Using ALSA. Buffer size : %i samples.",BUFFER_SIZE/2);
+    qDebug("Using ALSA. Buffer size : %i samples.", buffer_size/2);
 	allocate();
 
 	// Allocate semaphore to stop playback
@@ -143,7 +143,7 @@ void PlayerALSA::run()
 
 	// Loop the synthesis, and pass the buffers to ALSA
 	int res = 0;
-	int BUFFER_SIZE_BYTES = BUFFER_SIZE*SAMPLE_SIZE;
+	int BUFFER_SIZE_BYTES = buffer_size*SAMPLE_SIZE;
 	//std::cout << "Starting playback thread\n" << flush;
 	while ((res == 0) && (requestStop->available()))
 	{

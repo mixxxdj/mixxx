@@ -39,10 +39,9 @@ PlayerPortAudio::PlayerPortAudio(int size, std::vector<EngineObject *> *engines)
                         paCallback,
                         this );
     if( err != paNoError ) qFatal("PortAudio open stream error: %s",Pa_GetErrorText(err) );
-    err = Pa_StartStream( stream );
-    if( err != paNoError ) qFatal("PortAudio start stream error: %s", Pa_GetErrorText(err));
 
-    qDebug("Using PortAudio. Buffer size : %i samples.",BUFFER_SIZE/2);
+	buffer_size = 2048;
+    qDebug("Using PortAudio. Buffer size : %i samples.",buffer_size/2);
 	allocate();
 }
 
@@ -54,9 +53,8 @@ PlayerPortAudio::~PlayerPortAudio()
 void PlayerPortAudio::start(EngineBuffer *_reader)
 {
 	Player::start(_reader);
-
-	PaError err = Pa_StartStream(stream);
-	if (err != paNoError) exit(-1);
+    PaError err = Pa_StartStream( stream );
+    if( err != paNoError ) qFatal("PortAudio start stream error: %s", Pa_GetErrorText(err));
 }
 
 void PlayerPortAudio::wait()
@@ -72,10 +70,6 @@ void PlayerPortAudio::stop()
 	if( err != paNoError ) exit(-1);
 }
 
-
-
-
-
 /* -------- ------------------------------------------------------
    Purpose: Wrapper function to call processing loop function,
             implemented as a method in a class. Used in PortAudio,
@@ -90,7 +84,9 @@ static int paCallback(void *inputBuffer, void *outputBuffer,
     Player *player = (Player *)_player;
     SAMPLE *out = (SAMPLE*)outputBuffer;
     player->prepareBuffer();
-    for (int i=0; i<BUFFER_SIZE; i++)
+    for (int i=0; i<framesPerBuffer; i+=2) {
         *out++=player->out_buffer[i];
+		*out++=player->out_buffer[i+1];
+	}
     return 0;
 }
