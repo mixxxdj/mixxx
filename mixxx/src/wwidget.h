@@ -49,6 +49,7 @@ public:
     static const QString getPath(QString location);
 public slots:
     virtual void setValue(double fValue);
+    void setOnOff(double);
 private slots:
     void slotReEmitValueDown(double);
     void slotReEmitValueUp(double);
@@ -62,6 +63,8 @@ signals:
 protected:
     /** Value/state of widget */
     double m_fValue;
+    /** Is true if widget is off */
+    bool m_bOff;
 
 private:
     /** Variable containing the path to the pixmaps */

@@ -155,6 +155,28 @@ void ControlObject::setWidget(QWidget *widget, bool emitOnDownPress, Qt::ButtonS
     updateWidget();
 }
 
+void ControlObject::setWidgetOnOff(QWidget *widget, ConfigKey key)
+{
+    // Loop through the list of ConfigObjects to find one matching
+    // key, and associate the found object with the widget.
+    ControlObject *c;
+    for (c=list.first(); c; c=list.next())
+    {
+        if (c->m_pMidiConfigOption->key->group == key.group && c->m_pMidiConfigOption->key->item == key.item)
+        {
+            c->setWidgetOnOff(widget);
+            return;
+        }
+    }
+    qDebug("woops, %s",key.item.latin1());
+}
+
+void ControlObject::setWidgetOnOff(QWidget *widget)
+{
+    QApplication::connect(this,   SIGNAL(signalUpdateWidget(double)),    widget, SLOT(setOnOff(double)));
+    updateWidget();
+}
+
 void ControlObject::updateFromMidi()
 {
     updateEngine();

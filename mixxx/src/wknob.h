@@ -28,11 +28,11 @@
 
 class WKnob : public WWidget  {
    Q_OBJECT
-public: 
+public:
     WKnob(QWidget *parent=0, const char *name=0);
     ~WKnob();
     void setup(QDomNode node);
-    void setPositions(int iNoPos);
+    void setPositions(int iNoPos, bool bIncludingDisabled=false);
     void setPixmap(int iPos, const QString &filename);
     /** Associates a background pixmap with the widget. This is only needed if the knob
       * pixmaps contains alpha channel values. */
@@ -59,6 +59,8 @@ private:
     QPixmap *m_pPixmapBuffer;
     /** Values used when pressing mouse */
     double m_dStartValue;
+    /** True if disabled pixmaps is loaded */
+    bool m_bDisabledLoaded;
     
 };
 

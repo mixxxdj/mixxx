@@ -68,6 +68,14 @@ public:
     static void setWidget(QWidget *widget, ConfigKey key, bool emitOnDownPress=true, Qt::ButtonState state=Qt::NoButton);
     /** Associates a QWidget with the ControlObject. */
     void setWidget(QWidget *widget, bool emitOnDownPress=true, Qt::ButtonState state=Qt::NoButton);
+    /** Associates a the enabled/disabled state of a widget with the state of a ControlObject
+      * identified by a given ConfigKey */
+    static void setWidgetOnOff(QWidget *widget, ConfigKey key);
+    /** Associates a the enabled/disabled state of a widget with the state of a ControlObject. */
+    void setWidgetOnOff(QWidget *widget);
+
+
+
     /** Used to set a pointer to the corresponding ControlEngine of this ControlObject */
     void setControlEngine(ControlEngine *pControlEngine);
     /** Return the value of the ControlObject */

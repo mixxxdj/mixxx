@@ -158,14 +158,16 @@ TrackList::~TrackList()
 	}
     **/
     
-	WriteXML();
-	for(unsigned int i=0; i<m_lPlaylist.count(); i++)
-		delete m_lPlaylist.at(i);
+    WriteXML();
+    unsigned int i;
+    for (i=0; i<m_lPlaylist.count(); i++)
+        delete m_lPlaylist.at(i);
     
     // Delete all the tracks:
     for (i=0; i<m_lTracks.count(); i++)
         delete m_lTracks.at(i);
 }
+
 //Loads the Main Collection into m_lTracks
 void TrackList::loadCollection()
 {
@@ -212,7 +214,8 @@ void TrackList::loadCollection()
 void TrackList::UpdateTracklistFromPls(){
 	int iRow = 0;
 	TrackInfoObject *Track;
-	for(int i=0; i<m_lPlaylist.count();i++){
+        int i;
+	for(i=0; i<m_lPlaylist.count();i++){
 	   Track = m_lPlaylist.at(i);
 		iRow = m_pTableTracks->numRows();
 		m_pTableTracks->insertRows(iRow, 1);	
@@ -261,13 +264,14 @@ void TrackList::UpdateTracklist(QDomDocument * domXML)
 	
 	
 	TrackInfoObject *Track;
-	for(int i=iRowTracks; i<m_lPlaylist.count();i++){
+        int i;
+	for(i=iRowTracks; i<m_lPlaylist.count();i++){
 	Track = m_lPlaylist.at(i);	
 		qDebug("Working on Track: %d",Track->m_iIndex);
 	bool trackExistsinTable = false;
 	
 	if(iRow !=0)
-	for(unsigned int i = 0; i< iRow;i++){	 
+	for(i = 0; i< iRow;i++){	 
 		int idx = m_pTableTracks->text(i, COL_INDEX).toInt();
 		if(Track->m_iIndex == idx){
 		trackExistsinTable = true;
