@@ -32,6 +32,7 @@
 #include "playeralsa.h"
 #include "playerportaudio.h"
 #include "enginepregain.h"
+#include "enginefilterrbj.h"
 
 MixxxApp::MixxxApp()
 {
@@ -74,6 +75,11 @@ MixxxApp::MixxxApp()
   engines.push_back(highpass);
   engines.push_back(lowpass);
   */
+
+  EngineIIRfilter *lowpass = new EngineIIRfilter(ADC4,PORT_B, 4, midi,bessel_lowpass);
+  connect(view->channel->DialFilterLow,  SIGNAL(valueChanged(int)), lowpass->filterpot,  SLOT(slotSetPosition(int)));
+  engines.push_back(lowpass);
+
   // Initialize player with a desired buffer size
   qDebug("Init player...");
   player = new PlayerALSA(BUFFER_SIZE, &engines);
