@@ -175,15 +175,17 @@ void EngineBuffer::slotUpdatePlay(valueType) {
   slotUpdateRate(rateSlider->getValue());
 }
 
-void EngineBuffer::slotUpdateRate(FLOAT_TYPE) {
-  if (PlayButton->getValue()==on)
-      rate.write(rateSlider->getValue() + 4*wheel->getValue());
-  else
-      if (PlayButton->getPosition()==down)
-	  rate.write(0);
-      else
-	  rate.write(4*wheel->getValue());
-  //qDebug("Rate value: %f",rate);
+void EngineBuffer::slotUpdateRate(FLOAT_TYPE)
+{
+    if (PlayButton->getValue()==on)
+        rate.write(rateSlider->getValue() + 4*wheel->getValue());
+    else
+        if (PlayButton->getPosition()==down)
+            rate.write(0);
+        else
+            rate.write(4*wheel->getValue());
+
+    //qDebug("Rate value: %f",rate.read());
 }
 
 /*
@@ -218,6 +220,7 @@ void EngineBuffer::getchunk() {
   lastread_file.add((double)samples_read);
   qDebug("Done reading.");
 }
+
 /*
   This is called when the positionslider is released:
 */
@@ -227,7 +230,8 @@ void EngineBuffer::slotPosition(int newvalue) {
 /*
   Moves the playpos forward change%
 */
-void EngineBuffer::seek(FLOAT_TYPE change) {
+void EngineBuffer::seek(FLOAT_TYPE change)
+{
   double saved_rate = rate.read();
   rate.write(0);
   double new_playpos = playpos_file.read() + change*file->length();
@@ -245,10 +249,10 @@ void EngineBuffer::seek(FLOAT_TYPE change) {
 
 bool even(long n)
 {
-  if ((n/2) != (n+1)/2)
-    return false;
-  else
-    return true;
+    if ((n/2) != (n+1)/2)
+        return false;
+    else
+        return true;
 }
 
 // -------- ------------------------------------------------------
@@ -304,13 +308,14 @@ CSAMPLE *EngineBuffer::process(const CSAMPLE *, const int buf_size)
 	            buffer[i+1] = 0.;
             }
         }
-    checkread();
 
-    // Check the wheel:
-    wheel->updatecounter(buf_size);
+        checkread();
 
-    // Write position to the gui:
-    writepos();
+        // Check the wheel:
+        wheel->updatecounter(buf_size);
+
+        // Write position to the gui:
+        writepos();
     }
 
     return buffer;

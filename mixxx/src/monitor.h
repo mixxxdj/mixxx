@@ -33,8 +33,8 @@ public:
     void write(double);
     void add(double);
 private:
-    double value;
     QMutex mutex;
+    double value;
 };
 
 #endif
