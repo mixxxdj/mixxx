@@ -101,7 +101,7 @@ void MidiObjectWin::run()
 void MidiObjectWin::handleMidi(char channel, char midicontrol, char midivalue)
 {
 //  qDebug("midi ch: %i, ctrl: %i, val: %i",channel,midicontrol,midivalue);
-    send(channel&15, midicontrol, midivalue);
+    send((MidiCategory)(channel & 240), channel&15, midicontrol, midivalue);
 }
 
 // C/C++ wrapper function

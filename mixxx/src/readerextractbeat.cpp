@@ -313,7 +313,8 @@ void *ReaderExtractBeat::processChunk(const int idx, const int start_idx, const 
             
             // Find maximum in histogram
             int maxidx = -1;
-            for (int i=1; i<histSize-1; i++)
+            int i;
+            for (i=1; i<histSize-1; i++)
                 if (hist[i]>hist[i-1] && hist[i]>hist[i+1])
                     if ((maxidx>-1 && hist[i]>hist[maxidx]) || maxidx==-1)
                         maxidx = i;
@@ -366,7 +367,7 @@ void *ReaderExtractBeat::processChunk(const int idx, const int start_idx, const 
             
             // Find maximum in histogram
             maxidx = -1;
-            for (int i=1; i<histSize-1; i++)
+            for (i=1; i<histSize-1; i++)
                 if (hist[i]>hist[i-1] && hist[i]>hist[i+1])
                     if ((maxidx>-1 && hist[i]>hist[maxidx]) || maxidx==-1)
                         maxidx = i;
@@ -395,7 +396,8 @@ void *ReaderExtractBeat::processChunk(const int idx, const int start_idx, const 
             {
                 // Multiply everything in a small range around maxidx with a constant
                 const int RANGE = 5;
-                for (int i=max(0,maxidx-RANGE); i<min(histSize,maxidx+RANGE); i++)
+                int i;
+                for (i=max(0,maxidx-RANGE); i<min(histSize,maxidx+RANGE); i++)
                     beatIntVector[i] *= 1.5;
 /*                                    
 #ifdef __GNUPLOT__
@@ -425,7 +427,7 @@ void *ReaderExtractBeat::processChunk(const int idx, const int start_idx, const 
 */
                 // Search for max in a small range around maxidx in beatIntVector
                 int beatIntMaxIdx = -1;
-                for (int i=max(0,maxidx-RANGE); i<min(histSize,maxidx+RANGE); i++)
+                for (i=max(0,maxidx-RANGE); i<min(histSize,maxidx+RANGE); i++)
                     if ((beatIntMaxIdx>-1 && beatIntVector[i]>beatIntVector[beatIntMaxIdx]) || (beatIntVector[i]>0.))
                         beatIntMaxIdx = i;
                 

@@ -8,13 +8,21 @@ HEADERS += playerportaudio.h
 DEFINES += __PORTAUDIO__
 unix:!macx:SOURCES += ../lib/portaudio-v18/ringbuffer.c ../lib/portaudio-v18/pa_lib.c ../lib/portaudio-v18/pa_convert.c ../lib/portaudio-v18/pa_unix.c ../lib/portaudio-v18/pa_unix_oss.c
 unix:!macx:HEADERS += ../lib/portaudio-v18/ringbuffer.h ../lib/portaudio-v18/portaudio.h ../lib/portaudio-v18/pa_host.h ../lib/portaudio-v18/pa_unix.h
-win32:SOURCES += ../lib/portaudio-v18/pa_lib.c ../lib/portaudio-v18/dsound_wrapper.c ../lib/portaudio-v18/pa_dsound.c
-win32:HEADERS += ../lib/portaudio-v18/portaudio.h ../lib/portaudio-v18/pa_host.h
-win32:LIBS += dsound.lib
 macx:SOURCES += ../lib/portaudio-v18/ringbuffer.c ../lib/portaudio-v18/pa_lib.c ../lib/portaudio-v18/pa_mac_core.c ../lib/portaudio-v18/pa_convert.c
 macx:HEADERS += ../lib/portaudio-v18/ringbuffer.h ../lib/portaudio-v18/portaudio.h ../lib/portaudio-v18/pa_host.h
 macx:LIBS += -framework CoreAudio -framework AudioToolbox
 macx:INCLUDEPATH += ../lib/portaudio-v18
+
+# Portaudio WMME for Windows
+win32:SOURCES += ../lib/portaudio-v18/pa_lib.c ../lib/portaudio-v18/dsound_wrapper.c ../lib/portaudio-v18/pa_dsound.c
+win32:HEADERS += ../lib/portaudio-v18/portaudio.h ../lib/portaudio-v18/pa_host.h
+win32:LIBS += dsound.lib
+
+# Portaudio ASIO for Windows
+#win32:SOURCES += ../lib/portaudio/pa_common/pa_lib.c  ../lib/portaudio/pa_asio/pa_asio.cpp ../winlib/asiosdk2/common/asio.cpp ../winlib/asiosdk2/host/asiodrivers.cpp ../winlib/asiosdk2/host/pc/asiolist.cpp
+#win32:HEADERS += ../lib/portaudio/pa_common/portaudio.h ../lib/portaudio/pa_common/pa_host.h ../lib/portaudio/pa_common/pa_trace.h ../winlib/asiosdk2/common/asio.h ../winlib/asiosdk2/host/asiodrivers.h ../winlib/asiosdk2/host/pc/asiolist.h
+#win32:INCLUDEPATH += ../winlib/asiosdk2/common ../winlib/asiosdk2/host ../winlib/asiosdk2/host/pc
+#win32:LIBS += winmm.lib
 
 # OSS Midi (Working good, Linux specific)
 unix:!macx:SOURCES += midiobjectoss.cpp
@@ -50,19 +58,20 @@ macx:LIBS    += -framework CoreMIDI -framework CoreFoundation
 #HEADERS += midiobjectalsa.h
 #DEFINES  += __ALSAMIDI__
 
-# Visuals
+# Visuals (Alpha)
 SOURCES += mixxxvisual.cpp visual/visualbackplane.cpp visual/texture.cpp visual/guicontainer.cpp visual/signalvertexbuffer.cpp visual/visualbox.cpp visual/visualcontroller.cpp visual/guichannel.cpp visual/guisignal.cpp visual/light.cpp visual/material.cpp visual/picking.cpp visual/pickable.cpp visual/visualsignal.cpp visual/visualobject.cpp visual/fastvertexarray.cpp
 HEADERS += mixxxvisual.h visual/visualbackplane.h  visual/texture.h visual/guicontainer.h visual/signalvertexbuffer.h visual/visualbox.h visual/visualcontroller.h visual/guichannel.h visual/guisignal.h visual/light.h visual/material.h visual/picking.h visual/pickable.h visual/visualsignal.h visual/visualobject.h visual/fastvertexarray.h
 CONFIG += opengl
 DEFINES += __VISUALS__
 
-# Use NVSDK when building
+# Use NVSDK when building visuals (not tested recently)
 #DEFINES += __NVSDK__
 #win32:INCLUDEPATH += c:/Progra~1/NVIDIA~1/NVSDK/OpenGL/include/glh
 #win32:LIBS += c:/Progra~1/NVIDIA~1/NVSDK/OpenGL/lib/debug/glut32.lib
 #unix:INCLUDEPATH +=/usr/local/nvsdk/OpenGL/include/glh
 #unix:DEFINES += UNIX
 #unix:LIBS += -L/usr/local/nvsdk/OpenGL/lib/ -lnv_memory
+
 
 #
 # End of options
@@ -112,10 +121,10 @@ unix {
 
 win32 {
   DEFINES += __WIN__
-  INCLUDEPATH += ../winlib ../lib/portaudio-v18 .
+  INCLUDEPATH += ../winlib ../winlib/id3lib ../lib/portaudio-v18 .
   SOURCES += soundsourcesndfile.cpp
   HEADERS += soundsourcesndfile.h ../winlib/fftw.h ../winlib/rfftw.h
-  LIBS += ../winlib/libmad.lib ../winlib/libsndfile.lib ../winlib/rfftw2st.lib ../winlib/fftw2st.lib
+  LIBS += ../winlib/libmad.lib ../winlib/libid3tag.lib ../winlib/libsndfile.lib ../winlib/rfftw2st.lib ../winlib/fftw2st.lib
   QMAKE_CXXFLAGS += -GX
   QMAKE_LFLAGS += /NODEFAULTLIB:libcd /NODEFAULTLIB:libcmtd 
   #/NODEFAULTLIB:msvcrt.lib 
