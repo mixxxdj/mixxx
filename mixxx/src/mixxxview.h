@@ -29,7 +29,7 @@ class WSlider;
 class WSliderComposed;
 class WPushButton;
 class WTrackTable;
-class WTreeList;
+class WTreeView;
 class WDisplay;
 class WKnob;
 class WVisual;
@@ -55,7 +55,7 @@ public:
     bool activeWaveform();
 
     WTrackTable *m_pTrackTable;
-    WTreeList *m_pTreeList;
+    WTreeView *m_pTreeView;
 
     QLabel *m_pTextCh1, *m_pTextCh2;
     /** Pointer to WVisual widgets */

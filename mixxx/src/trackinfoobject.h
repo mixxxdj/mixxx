@@ -1,7 +1,25 @@
+/***************************************************************************
+                          trackinfoobject.h  -  description
+                             -------------------
+    begin                : 10 02 2003
+    copyright            : (C) 2003 by Tue & Ken Haste Andersen, Ingo Kossyk
+    email                : haste@diku.dk, kossyki@cs.tu-berlin.de
+ ***************************************************************************/
+
+/***************************************************************************
+ *                                                                         *
+ *   This program is free software; you can redistribute it and/or modify  *
+ *   it under the terms of the GNU General Public License as published by  *
+ *   the Free Software Foundation; either version 2 of the License, or     *
+ *   (at your option) any later version.                                   *
+ *                                                                         *
+ ***************************************************************************/
+
 #ifndef TRACKINFOOBJECT_H
 #define TRACKINFOOBJECT_H
 
 #include <qobject.h>
+
 class QString;
 class QDomElement;
 class QDomDocument;
@@ -15,7 +33,7 @@ class TrackInfoObject : public QObject
     Q_OBJECT
 public:
     /** Initialize a new track with the filename. */
-    TrackInfoObject(const QString, const QString);
+    TrackInfoObject(const QString sPath, const QString sFile);
     /** Creates a new track given information from the xml file. */
     TrackInfoObject(const QDomNode &);
     ~TrackInfoObject();
@@ -29,10 +47,8 @@ public:
     /** Utility function to get a the text of an element in a node from an xml file: */
     static QString selectNodeStr( const QDomNode &, const QString );
 
-    /** Utility function to add a node: */
-    static void addElement( QDomDocument &, QDomElement &, QString, QString );
     /** Insert at the values in a WTrackTable at a given row */
-    void insertInTrackTableRow(WTrackTable *pTableTrack, int iRow, int iTrackNo);
+    void insertInTrackTableRow(WTrackTable *pTableTrack, int iRow);
     /** Reset pointers to table cells */
     void removeFromTrackTable();
     /** Returns the duration in seconds */
@@ -93,10 +109,10 @@ public:
     QString getScoreStr();
     /** Sets the score */
     void setScore(int);
-   
-    /** Index ?? */
-    int m_iIndex;
-
+    /** Get id */
+    int getId();
+    /** Set id */
+    void setId(int iId);
 
 private:
     /** Method for parsing information from knowing only the file name.
@@ -130,9 +146,12 @@ private:
     float m_fBpmConfidence;
     /** Score. Reflects the relative number of times the track has been played */
     float m_iScore;
+    /** Id. Unique ID of track */
+    int m_iId;
+
     /** WTrackTableItems are representations of the values actually shown in the WTrackTable */
     WTrackTableItem *m_pTableItemScore, *m_pTableItemTitle, *m_pTableItemArtist, *m_pTableItemComment, *m_pTableItemType,
-                    *m_pTableItemDuration, *m_pTableItemBpm, *m_pTableItemBitrate, *m_pTableItemIndex;
+                    *m_pTableItemDuration, *m_pTableItemBpm, *m_pTableItemBitrate;
     /** Pointer to WTrackTable where the current item was inserted last */
     WTrackTable *m_pTableTrack;
 };

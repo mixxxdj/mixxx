@@ -248,7 +248,7 @@ void TrackList::UpdateTracklistFromPls(){
 
 		if (Track->exists())
         {
-			Track->insertInTrackTableRow(m_pTableTracks , iRow , Track->m_iIndex);
+			Track->insertInTrackTableRow(m_pTableTracks , iRow); // , Track->m_iIndex);
 
 	    }
 
@@ -311,7 +311,7 @@ void TrackList::UpdateTracklist(QDomDocument * domXML)
 	
 		if (Track->exists())
         {
-			Track->insertInTrackTableRow(m_pTableTracks , iRow, Track->m_iIndex);
+			Track->insertInTrackTableRow(m_pTableTracks , iRow); //, Track->m_iIndex);
 	       	iRow ++;
 	    }
 		
@@ -457,7 +457,7 @@ void TrackList::UpdateScores()
 				//track2->setScore((int) ( 99*track->getTimesPlayed()/m_iMaxTimesPlayed ));
 				}
 		}
-        
+
 	}*/
 }
 
@@ -484,7 +484,7 @@ void TrackList::WriteXML()
     {
        
         opmlFile.close();
-        
+
         //WriteXML();
     }
     
@@ -1095,7 +1095,7 @@ void TrackList::slotSavePls()
 	QDomDocument domXML("Mixxx_Track_List");
 	//qDebug("PlaylistID is: %s", currentPlaylist.latin1());
 	if (!opmlFile.exists()){
-        
+
 	qDebug("Could not open the default playlist file!");
 	
 		}
@@ -1362,7 +1362,7 @@ void TrackList::slotFindTrack()
           case 0: // The user clicked the Add Track button or pressed Enter
                   //add track
                   //qDebug("Adding : %s", tempFileName.latin1());
-		  		  
+
 		          slotUpdateTracklist(tempFilePath+"/"+tempFileName);
 		          wTree->mousePressed=false;
 		  return;
@@ -1370,8 +1370,8 @@ void TrackList::slotFindTrack()
                   // exit
                   wTree->mousePressed=false;
 		  return;
-               }//hctiws 
-	
+               }//hctiws
+
 		   }
 	   }  
   wTree->mousePressed=false;
@@ -1383,8 +1383,8 @@ void TrackList::refreshTrackTableContents(int iCount){
 	m_pTableTracks->sortColumn(COL_INDEX,TRUE,TRUE);
 	
 	m_pTableTracks->setNumRows(m_pTableTracks->numRows() - iCount);
-	
-	
+
+
 }
 //Adds items to collection and to the Tracktable or loads the playlist the
 //user droped / double clicked. - MAIN TRACKLIST
@@ -1393,12 +1393,12 @@ void TrackList::slotUpdateTracklist( QString sDir )
 //    qDebug("dir: %s",sDir.latin1());
 	//if(m_lTracks.count() != 0)
 	qDebug("Updating Tracklist: %s", sDir.latin1());
-    
+
 		// Initialize xml file:
     QFile opmlFile(wTree->m_sPlaylistdir);
-	
-	
-	
+
+
+
     QDomDocument domXML("Mixxx_Track_List");
     if (!domXML.setContent( &opmlFile))
     {
@@ -1410,26 +1410,26 @@ void TrackList::slotUpdateTracklist( QString sDir )
         //WriteXML();
     }
     opmlFile.close();
-  
-	
+
+
     // Set the new directory:
     m_sDirectory = sDir;
 	if(sDir.endsWith(".xml")){
  	/**while (m_lTracks.count() != 0)
     {
       m_lTracks.removeFirst(); //Delete All old Tracks
-    }	**/	
-	while (m_lPlaylist.count() != 0)
-	{
-		m_lPlaylist.removeFirst();
+    }	**/
+	    while (m_lPlaylist.count() != 0)
+    	{
+		    m_lPlaylist.removeFirst();
+    	}
+	    // Delete contents of tabletrack
+        m_pTableTracks->setNumRows(0);
+	    loadPlaylist( sDir , &domXML);
+        UpdateTracklistFromPls();
+	    return;
 	}
-	// Delete contents of tabletrack
-    m_pTableTracks->setNumRows(0);
-	loadPlaylist( sDir , &domXML);
-    UpdateTracklistFromPls();
-	return;
-	}else
+    else
 	// Make the newlist:
-    UpdateTracklist(&domXML);
-	
-		}
+        UpdateTracklist(&domXML);
+}

@@ -384,7 +384,6 @@ void ReaderExtractWave::getchunk(CSAMPLE rate)
 long int ReaderExtractWave::seek(long int new_playpos)
 {
     long int seekpos;
-    bool reset = false;
 
     if (file!=0)
     {

@@ -1044,14 +1044,14 @@
   <Size>745,255</Size>
  </Splitter>
 
- <TreeList>
+ <TreeView>
   <InSplitter>Yes</InSplitter>
   <FgColor>#000000</FgColor>
   <BgColor>#ffffff</BgColor>
   <ColWidthName>20</ColWidthName>
   <ColWidthType>20</ColWidthType>
   <ColWidthFullPath>180</ColWidthFullPath>
- </TreeList>
+ </TreeView>
 
  <TrackTable>
   <InSplitter>Yes</InSplitter>

@@ -18,12 +18,24 @@
 #ifndef WTRACKTABLE_H
 #define WTRACKTABLE_H
 
-#include "tracklist.h"
-
 #include <qwidget.h>
 #include <qtable.h>
 #include <qdom.h>
 #include <qevent.h>
+
+// Defines for the rows in the table.
+const int COL_SCORE = 0;
+const int COL_TITLE = 1;
+const int COL_ARTIST = 2;
+const int COL_COMMENT = 3;
+const int COL_TYPE = 4;
+const int COL_DURATION = 5;
+const int COL_BITRATE = 6;
+const int COL_BPM = 7;
+const int COL_INDEX = 8;
+
+const int ROW_NO = 9;
+
 /**
   *@author Tue & Ken Haste Andersen
   */
@@ -32,26 +44,21 @@ class QDragMoveEvent;
 class QDragLeaveEvent;
 class QDropEvent;
 class QTable;
-class TrackList;
 class QWidget;
-	
-class WTrackTable : public QTable  {
+class TrackInfoObject;
+
+class WTrackTable : public QTable
+{
     Q_OBJECT
-public: 
+public:
     WTrackTable(QWidget *parent=0, const char *name=0);
     ~WTrackTable();
     void setup(QDomNode node);
     void sortColumn(int col, bool ascending, bool);
-	TrackList * trList;
-	void setTrackList(TrackList* list);
+protected slots:
+    void slotMousePressed(int row, int col, int button, const QPoint &);
 signals:
-    void applyDir(QString );
-	
-//    void paintFocus(QPainter *p, const QRect &cr);
-
-protected slots:    
-	void contentsDropEvent( QDropEvent * );
-	void contentsMouseReleaseEvent( QMouseEvent * );
+    void mousePressed(TrackInfoObject *pTrackInfoObject, int button);
 };
 
 #endif

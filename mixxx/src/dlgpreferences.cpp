@@ -21,11 +21,11 @@
 #include "dlgprefplaylist.h"
 #include "dlgprefcontrols.h"
 #include "mixxx.h"
-#include "tracklist.h"
+#include "track.h"
 
 DlgPreferences::DlgPreferences(MixxxApp *mixxx, MixxxView *view,
                                MidiObject *midi, PlayerProxy *player,
-                               TrackList *tracklist, ConfigObject<ConfigValue> *_config,
+                               Track *, ConfigObject<ConfigValue> *_config,
                                ConfigObject<ConfigValueMidi> *midiconfig,
                                ControlObject *pControl) : QTabDialog(mixxx, "")
 {    
@@ -62,12 +62,13 @@ DlgPreferences::DlgPreferences(MixxxApp *mixxx, MixxxView *view,
     connect(this,        SIGNAL(aboutToShow()),          wplaylist, SLOT(slotUpdate()));
     connect(this,        SIGNAL(aboutToShow()),          wcontrols, SLOT(slotUpdate()));
 //    connect(this,        SIGNAL(closeDlg()),             wsound,    SLOT(slotApply()));
-//    connect(this,        SIGNAL(closeDlg()),             wmidi,     SLOT(slotApply()));
+    connect(this,        SIGNAL(closeDlg()),             wmidi,     SLOT(slotApply()));
 //    connect(this,        SIGNAL(closeDlg()),             wplaylist, SLOT(slotApply()));
 //    connect(this,        SIGNAL(closeDlg()),             wcontrols, SLOT(slotApply()));
     connect(this,        SIGNAL(closeDlg()),             this, SLOT(slotApply()));
-    if (tracklist->wTree)
-        connect(wplaylist,   SIGNAL(apply(QString,QString)),         tracklist->wTree, SLOT(slotSetDirs(QString,QString)));
+
+//    if (tracklist->wTree)
+//        connect(wplaylist,   SIGNAL(apply(QString,QString)),         tracklist->wTree, SLOT(slotSetDirs(QString,QString)));
 }
 
 DlgPreferences::~DlgPreferences()

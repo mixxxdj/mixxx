@@ -42,10 +42,10 @@
 #include "controlpotmeter.h"
 #include "reader.h"
 #include "enginebuffer.h"
-#include "tracklist.h"
 #include "powermate.h"
 #include "joystick.h"
 #include "enginevumeter.h"
+#include "track.h"
 
 #ifdef __LINUX__
 #include "powermatelinux.h"
@@ -92,7 +92,7 @@ MixxxApp::MixxxApp(QApplication *a, QStringList files)
 
     // Reset pointer to players
     player = 0;
-    m_pTracks = 0;
+    m_pTrack = 0;
     prefDlg = 0;
 
     // Read the config file from home directory
@@ -198,36 +198,6 @@ MixxxApp::MixxxApp(QApplication *a, QStringList files)
     // Configure ControlEngine object
     m_pControlEngine = new ControlEngine(control);
 
-    // Prepare the tracklist:
-    QDir d(config->getValueString(ConfigKey("[Playlist]","Directory")));
-    if ((config->getValueString(ConfigKey("[Playlist]","Directory")).length()<1) | (!d.exists()))
-    {
-        QFileDialog* fd = new QFileDialog(this, QString::null, true);
-        fd->setCaption(QString("Choose directory with music files"));
-        fd->setMode( QFileDialog::Directory );
-        if ( fd->exec() == QDialog::Accepted )
-        {
-            config->set(ConfigKey("[Playlist]","Directory"), fd->selectedFile());
-            config->Save();
-        }
-    }
-    QFile b(config->getValueString(ConfigKey("[Playlist]","Listpath")));
-    if ((config->getValueString(ConfigKey("[Playlist]","Listpath")).length()<1) | (!b.exists()))
-    {
-        QFileDialog* fd = new QFileDialog(this, QString::null, true);
-        fd->setCaption(QString("Choose a filename to save global playlist"));
-        fd->setMode( QFileDialog::AnyFile );
-        if ( fd->exec() == QDialog::Accepted && fd->selectedFile().endsWith(".xml"))
-        {
-            config->set(ConfigKey("[Playlist]","Listpath"), fd->selectedFile());
-            config->Save();
-        }
-        else
-        {
-            qWarning("Global Playlist file has to be a xml File ! (end with .xml)");
-        }
-    }
-
     // Try initializing PowerMates
     powermate1 = 0;
     powermate2 = 0;
@@ -318,6 +288,20 @@ MixxxApp::MixxxApp(QApplication *a, QStringList files)
     else
         qFatal("Skin directory does not exist: %s",qSkinPath.latin1());
 
+    // Get Music dir
+    QDir dir(config->getValueString(ConfigKey("[Playlist]","Directory")));
+    if ((config->getValueString(ConfigKey("[Playlist]","Directory")).length()<1) | (!dir.exists()))
+    {
+        QFileDialog* fd = new QFileDialog(this, QString::null, true);
+        fd->setCaption(QString("Choose directory with music files"));
+        fd->setMode( QFileDialog::Directory );
+        if ( fd->exec() == QDialog::Accepted )
+        {
+            config->set(ConfigKey("[Playlist]","Directory"), fd->selectedFile());
+            config->Save();
+        }
+    }
+
     // Initialize widgets
     bool bVisualsWaveform = true;
     if (config->getValueString(ConfigKey("[Controls]","Visuals")).toInt()==1)
@@ -350,20 +334,23 @@ MixxxApp::MixxxApp(QApplication *a, QStringList files)
         }
     }
 
-    // Initialize tracklist:
-    m_pTracks = new TrackList(config->getValueString(ConfigKey("[Playlist]","Directory")),
-                              config->getValueString(ConfigKey("[Playlist]","Listpath")),
-                              view->m_pTrackTable, view->m_pTreeList,
-                              view->m_pTextCh1, view->m_pTextCh2,
-                              view->m_pNumberPosCh1, view->m_pNumberPosCh2,
-                              buffer1, buffer2);
+    // Verify path for xml track file.
+    QFile trackfile(config->getValueString(ConfigKey("[Playlist]","Listfile")));
+    if ((config->getValueString(ConfigKey("[Playlist]","Listfile")).length()<1) | (!trackfile.exists()))
+    {
+        config->set(ConfigKey("[Playlist]","Listfile"), QDir::homeDirPath().append("/").append(TRACK_FILE));
+        config->Save();
+    }
+
+    // Initialize track object:
+    m_pTrack = new Track(config->getValueString(ConfigKey("[Playlist]","Listfile")), view, buffer1, buffer2);
 
     // Setup state of End of track controls from config database
     ControlObject::getControl(ConfigKey("[Channel1]","TrackEndMode"))->setValueFromApp(config->getValueString(ConfigKey("[Controls]","TrackEndModeCh1")).toDouble());
     ControlObject::getControl(ConfigKey("[Channel2]","TrackEndMode"))->setValueFromApp(config->getValueString(ConfigKey("[Controls]","TrackEndModeCh2")).toDouble());
 
     // Initialize preference dialog
-    prefDlg = new DlgPreferences(this, view, midi, player, m_pTracks, config, midiconfig, control);
+    prefDlg = new DlgPreferences(this, view, midi, player, m_pTrack, config, midiconfig, control);
     prefDlg->setHidden(true);
 
     // Try open player device If that fails, the preference panel is opened.
@@ -375,10 +362,12 @@ MixxxApp::MixxxApp(QApplication *a, QStringList files)
 
 
     // Load tracks in files (command line arguments) into player 1 and 2:
+/*
     if (files.count()>1)
-        m_pTracks->loadTrack1((*files.at(1)));
+        m_pTrack->loadTrack1((*files.at(1)));
     if (files.count()>2)
-        m_pTracks->loadTrack2((*files.at(2)));
+        m_pTrack->loadTrack2((*files.at(2)));
+*/
 }
 
 MixxxApp::~MixxxApp()
@@ -413,8 +402,11 @@ MixxxApp::~MixxxApp()
 //    qDebug("delete midiconfig");
     delete midiconfig;
 
+    qDebug("Write track xml");
+    m_pTrack->writeXML(config->getValueString(ConfigKey("[Playlist]","Listfile")));
+
     qDebug("delete tracks");
-    delete m_pTracks;
+    delete m_pTrack;
     qDebug("delete view");
     delete view;
 
@@ -523,7 +515,7 @@ void MixxxApp::slotFileOpen()
                                              "Audio (*.wav *.ogg *.mp3)",
                                              this,
                                              "Open file");
-    m_pTracks->loadTrack1(s);
+    //m_pTrack->loadTrack1(s);
 }
 
 void MixxxApp::slotFileQuit()
