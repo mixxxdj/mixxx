@@ -128,7 +128,7 @@ void EngineBuffer::newtrack(const char* filename)
 
 #ifndef Q_WS_WIN
         if (!strcmp(ending,".wav"))
-            file = new SoundSourceAFlibfile(filename);
+            file = new SoundSourceWave(filename);
         else
 #endif
         if (!strcmp(ending,".mp3") || (!strcmp(ending,".MP3")))
@@ -139,7 +139,7 @@ void EngineBuffer::newtrack(const char* filename)
     } 
 #ifndef Q_WS_WIN
 	else
-        file = new SoundSourceAFlibfile("/dev/null");
+        file = new SoundSourceWave("/dev/null");
 #endif
 
     // Initialize position in read buffer:
