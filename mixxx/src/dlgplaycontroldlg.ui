@@ -8,14 +8,14 @@
         <rect>
             <x>0</x>
             <y>0</y>
-            <width>220</width>
-            <height>200</height>
+            <width>210</width>
+            <height>189</height>
         </rect>
     </property>
     <property name="sizePolicy">
         <sizepolicy>
-            <hsizetype>1</hsizetype>
-            <vsizetype>1</vsizetype>
+            <hsizetype>5</hsizetype>
+            <vsizetype>5</vsizetype>
             <horstretch>0</horstretch>
             <verstretch>0</verstretch>
         </sizepolicy>
@@ -25,18 +25,37 @@
     </property>
     <widget class="QLabel">
         <property name="name">
-            <cstring>TextLabel1</cstring>
+            <cstring>textLabelTrack</cstring>
         </property>
         <property name="geometry">
             <rect>
                 <x>5</x>
-                <y>75</y>
-                <width>29</width>
-                <height>16</height>
+                <y>5</y>
+                <width>200</width>
+                <height>45</height>
             </rect>
         </property>
         <property name="text">
-            <string>Rate</string>
+            <string></string>
+        </property>
+        <property name="alignment">
+            <set>WordBreak|AlignVCenter</set>
+        </property>
+    </widget>
+    <widget class="QSlider">
+        <property name="name">
+            <cstring>SliderPosition</cstring>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>180</x>
+                <y>100</y>
+                <width>24</width>
+                <height>84</height>
+            </rect>
+        </property>
+        <property name="orientation">
+            <enum>Vertical</enum>
         </property>
     </widget>
     <widget class="QSlider">
@@ -45,7 +64,7 @@
         </property>
         <property name="geometry">
             <rect>
-                <x>10</x>
+                <x>5</x>
                 <y>100</y>
                 <width>24</width>
                 <height>84</height>
@@ -58,15 +77,31 @@
             <enum>Vertical</enum>
         </property>
     </widget>
+    <widget class="QLabel">
+        <property name="name">
+            <cstring>TextLabel1</cstring>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>5</x>
+                <y>80</y>
+                <width>29</width>
+                <height>16</height>
+            </rect>
+        </property>
+        <property name="text">
+            <string>Rate</string>
+        </property>
+    </widget>
     <widget class="QPushButton">
         <property name="name">
             <cstring>PushButtonPlay</cstring>
         </property>
         <property name="geometry">
             <rect>
-                <x>60</x>
+                <x>55</x>
                 <y>160</y>
-                <width>84</width>
+                <width>100</width>
                 <height>22</height>
             </rect>
         </property>
@@ -80,8 +115,8 @@
         </property>
         <property name="geometry">
             <rect>
-                <x>180</x>
-                <y>65</y>
+                <x>170</x>
+                <y>60</y>
                 <width>35</width>
                 <height>23</height>
             </rect>
@@ -96,52 +131,17 @@
             <number>2</number>
         </property>
     </widget>
-    <widget class="QSlider">
-        <property name="name">
-            <cstring>SliderPosition</cstring>
-        </property>
-        <property name="geometry">
-            <rect>
-                <x>185</x>
-                <y>100</y>
-                <width>24</width>
-                <height>84</height>
-            </rect>
-        </property>
-        <property name="orientation">
-            <enum>Vertical</enum>
-        </property>
-    </widget>
     <widget class="QDial">
         <property name="name">
             <cstring>DialPlaycontrol</cstring>
         </property>
         <property name="geometry">
             <rect>
-                <x>60</x>
+                <x>55</x>
                 <y>55</y>
                 <width>100</width>
                 <height>100</height>
             </rect>
-        </property>
-    </widget>
-    <widget class="QLabel">
-        <property name="name">
-            <cstring>textLabelTrack</cstring>
-        </property>
-        <property name="geometry">
-            <rect>
-                <x>15</x>
-                <y>5</y>
-                <width>200</width>
-                <height>45</height>
-            </rect>
-        </property>
-        <property name="text">
-            <string></string>
-        </property>
-        <property name="alignment">
-            <set>WordBreak|AlignVCenter</set>
         </property>
     </widget>
 </widget>

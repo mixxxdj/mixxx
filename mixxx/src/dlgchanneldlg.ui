@@ -9,7 +9,7 @@
             <x>0</x>
             <y>0</y>
             <width>124</width>
-            <height>345</height>
+            <height>339</height>
         </rect>
     </property>
     <property name="sizePolicy">
@@ -32,24 +32,24 @@
         </property>
         <property name="geometry">
             <rect>
-                <x>55</x>
-                <y>15</y>
-                <width>50</width>
+                <x>15</x>
+                <y>0</y>
+                <width>20</width>
                 <height>26</height>
             </rect>
         </property>
         <property name="text">
-            <string>Clip</string>
+            <string> </string>
         </property>
     </widget>
     <widget class="QKnob">
         <property name="name">
-            <cstring>DialFilterMiddle</cstring>
+            <cstring>DialGain</cstring>
         </property>
         <property name="geometry">
             <rect>
-                <x>15</x>
-                <y>95</y>
+                <x>5</x>
+                <y>20</y>
                 <width>32</width>
                 <height>32</height>
             </rect>
@@ -61,8 +61,21 @@
         </property>
         <property name="geometry">
             <rect>
-                <x>15</x>
-                <y>55</y>
+                <x>5</x>
+                <y>60</y>
+                <width>32</width>
+                <height>32</height>
+            </rect>
+        </property>
+    </widget>
+    <widget class="QKnob">
+        <property name="name">
+            <cstring>DialFilterMiddle</cstring>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>5</x>
+                <y>100</y>
                 <width>32</width>
                 <height>32</height>
             </rect>
@@ -74,21 +87,8 @@
         </property>
         <property name="geometry">
             <rect>
-                <x>15</x>
-                <y>135</y>
-                <width>32</width>
-                <height>32</height>
-            </rect>
-        </property>
-    </widget>
-    <widget class="QKnob">
-        <property name="name">
-            <cstring>DialGain</cstring>
-        </property>
-        <property name="geometry">
-            <rect>
-                <x>15</x>
-                <y>15</y>
+                <x>5</x>
+                <y>140</y>
                 <width>32</width>
                 <height>32</height>
             </rect>
@@ -100,10 +100,10 @@
         </property>
         <property name="geometry">
             <rect>
-                <x>15</x>
+                <x>5</x>
                 <y>180</y>
-                <width>45</width>
-                <height>150</height>
+                <width>34</width>
+                <height>155</height>
             </rect>
         </property>
         <property name="minValue">

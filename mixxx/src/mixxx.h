@@ -141,7 +141,7 @@ class MixxxApp : public QMainWindow
     /** view_menu contains all items of the menubar entry "Help" */
     QPopupMenu *helpMenu;
     /** the main toolbar */
-    QToolBar *fileToolbar;
+//    QToolBar *fileToolbar;
     /** actions for the application initialized in initActions() and used to en/disable them
       * according to your needs during the program */
     QAction *fileNew;
@@ -156,7 +156,7 @@ class MixxxApp : public QMainWindow
     QAction *editCopy;
     QAction *editPaste;
 
-    QAction *viewToolBar;
+//    QAction *viewToolBar;
     QAction *viewStatusBar;
 
     QAction *helpAboutApp;

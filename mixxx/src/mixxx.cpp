@@ -60,7 +60,7 @@ MixxxApp::MixxxApp()
   connect(view->playlist->TableList, SIGNAL(clicked(int,int,int,const QPoint &)),
           this,                      SLOT(slotChangePlay(int,int,int, const QPoint &)));
 
-  viewToolBar->setOn(false);
+  //viewToolBar->setOn(false);
   viewStatusBar->setOn(true);
 
   // Initialize midi:
@@ -171,10 +171,12 @@ void MixxxApp::initActions(){
   editPaste->setWhatsThis(tr("Paste\n\nPastes the clipboard contents to actual position"));
   connect(editPaste, SIGNAL(activated()), this, SLOT(slotEditPaste()));
 
+/*
   viewToolBar = new QAction(tr("Toolbar"), tr("Tool&bar"), 0, this, 0, true);
   viewToolBar->setStatusTip(tr("Enables/disables the toolbar"));
   viewToolBar->setWhatsThis(tr("Toolbar\n\nEnables/disables the toolbar"));
   connect(viewToolBar, SIGNAL(toggled(bool)), this, SLOT(slotViewToolBar(bool)));
+*/
 
   viewStatusBar = new QAction(tr("Statusbar"), tr("&Statusbar"), 0, this, 0, true);
   viewStatusBar->setStatusTip(tr("Enables/disables the statusbar"));
@@ -218,7 +220,7 @@ void MixxxApp::initMenuBar()
   // menuBar entry viewMenu
   viewMenu=new QPopupMenu();
   viewMenu->setCheckable(true);
-  viewToolBar->addTo(viewMenu);
+  //viewToolBar->addTo(viewMenu);
   viewStatusBar->addTo(viewMenu);
   ///////////////////////////////////////////////////////////////////
   // EDIT YOUR APPLICATION SPECIFIC MENUENTRIES HERE
@@ -242,13 +244,14 @@ void MixxxApp::initToolBar()
 {
   ///////////////////////////////////////////////////////////////////
   // TOOLBAR
+/*
   fileToolbar = new QToolBar(this, "file operations");
   fileNew->addTo(fileToolbar);
   fileOpen->addTo(fileToolbar);
   fileSave->addTo(fileToolbar);
   fileToolbar->addSeparator();
   QWhatsThis::whatsThisButton(fileToolbar);
-
+*/
 }
 
 void MixxxApp::initStatusBar()
@@ -423,11 +426,11 @@ void MixxxApp::slotViewToolBar(bool toggle)
 
   if (toggle== false)
   {
-    fileToolbar->hide();
+//    fileToolbar->hide();
   }
   else
   {
-    fileToolbar->show();
+//    fileToolbar->show();
   };
 
   statusBar()->message(tr("Ready."));

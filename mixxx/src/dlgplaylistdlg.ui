@@ -1,59 +1,1673 @@
-<!DOCTYPE UI><UI>
+<!DOCTYPE UI><UI version="3.0" stdsetdef="1">
 <class>DlgPlaylistDlg</class>
-<widget>
-    <class>QWidget</class>
-    <property stdset="1">
-        <name>name</name>
+<widget class="QWidget">
+    <property name="name">
         <cstring>DlgPlaylistDlg</cstring>
     </property>
-    <property stdset="1">
-        <name>geometry</name>
+    <property name="geometry">
         <rect>
             <x>0</x>
             <y>0</y>
-            <width>508</width>
-            <height>210</height>
+            <width>420</width>
+            <height>100</height>
         </rect>
     </property>
-    <property stdset="1">
-        <name>caption</name>
+    <property name="caption">
         <string>Form1</string>
     </property>
-    <widget>
-        <class>QTable</class>
-        <property stdset="1">
-            <name>name</name>
+    <widget class="QTable">
+        <column>
+            <property name="text">
+                <string>Title</string>
+            </property>
+            <property name="pixmap">
+                <pixmap></pixmap>
+            </property>
+        </column>
+        <column>
+            <property name="text">
+                <string></string>
+            </property>
+            <property name="pixmap">
+                <pixmap></pixmap>
+            </property>
+        </column>
+        <row>
+            <property name="text">
+                <string></string>
+            </property>
+            <property name="pixmap">
+                <pixmap></pixmap>
+            </property>
+        </row>
+        <row>
+            <property name="text">
+                <string></string>
+            </property>
+            <property name="pixmap">
+                <pixmap></pixmap>
+            </property>
+        </row>
+        <row>
+            <property name="text">
+                <string></string>
+            </property>
+            <property name="pixmap">
+                <pixmap></pixmap>
+            </property>
+        </row>
+        <row>
+            <property name="text">
+                <string></string>
+            </property>
+            <property name="pixmap">
+                <pixmap></pixmap>
+            </property>
+        </row>
+        <row>
+            <property name="text">
+                <string></string>
+            </property>
+            <property name="pixmap">
+                <pixmap></pixmap>
+            </property>
+        </row>
+        <row>
+            <property name="text">
+                <string></string>
+            </property>
+            <property name="pixmap">
+                <pixmap></pixmap>
+            </property>
+        </row>
+        <row>
+            <property name="text">
+                <string></string>
+            </property>
+            <property name="pixmap">
+                <pixmap></pixmap>
+            </property>
+        </row>
+        <row>
+            <property name="text">
+                <string></string>
+            </property>
+            <property name="pixmap">
+                <pixmap></pixmap>
+            </property>
+        </row>
+        <row>
+            <property name="text">
+                <string></string>
+            </property>
+            <property name="pixmap">
+                <pixmap></pixmap>
+            </property>
+        </row>
+        <row>
+            <property name="text">
+                <string></string>
+            </property>
+            <property name="pixmap">
+                <pixmap></pixmap>
+            </property>
+        </row>
+        <row>
+            <property name="text">
+                <string></string>
+            </property>
+            <property name="pixmap">
+                <pixmap></pixmap>
+            </property>
+        </row>
+        <row>
+            <property name="text">
+                <string></string>
+            </property>
+            <property name="pixmap">
+                <pixmap></pixmap>
+            </property>
+        </row>
+        <row>
+            <property name="text">
+                <string></string>
+            </property>
+            <property name="pixmap">
+                <pixmap></pixmap>
+            </property>
+        </row>
+        <row>
+            <property name="text">
+                <string></string>
+            </property>
+            <property name="pixmap">
+                <pixmap></pixmap>
+            </property>
+        </row>
+        <row>
+            <property name="text">
+                <string></string>
+            </property>
+            <property name="pixmap">
+                <pixmap></pixmap>
+            </property>
+        </row>
+        <row>
+            <property name="text">
+                <string></string>
+            </property>
+            <property name="pixmap">
+                <pixmap></pixmap>
+            </property>
+        </row>
+        <row>
+            <property name="text">
+                <string></string>
+            </property>
+            <property name="pixmap">
+                <pixmap></pixmap>
+            </property>
+        </row>
+        <row>
+            <property name="text">
+                <string></string>
+            </property>
+            <property name="pixmap">
+                <pixmap></pixmap>
+            </property>
+        </row>
+        <row>
+            <property name="text">
+                <string></string>
+            </property>
+            <property name="pixmap">
+                <pixmap></pixmap>
+            </property>
+        </row>
+        <row>
+            <property name="text">
+                <string></string>
+            </property>
+            <property name="pixmap">
+                <pixmap></pixmap>
+            </property>
+        </row>
+        <row>
+            <property name="text">
+                <string></string>
+            </property>
+            <property name="pixmap">
+                <pixmap></pixmap>
+            </property>
+        </row>
+        <row>
+            <property name="text">
+                <string></string>
+            </property>
+            <property name="pixmap">
+                <pixmap></pixmap>
+            </property>
+        </row>
+        <row>
+            <property name="text">
+                <string></string>
+            </property>
+            <property name="pixmap">
+                <pixmap></pixmap>
+            </property>
+        </row>
+        <row>
+            <property name="text">
+                <string></string>
+            </property>
+            <property name="pixmap">
+                <pixmap></pixmap>
+            </property>
+        </row>
+        <row>
+            <property name="text">
+                <string></string>
+            </property>
+            <property name="pixmap">
+                <pixmap></pixmap>
+            </property>
+        </row>
+        <row>
+            <property name="text">
+                <string></string>
+            </property>
+            <property name="pixmap">
+                <pixmap></pixmap>
+            </property>
+        </row>
+        <row>
+            <property name="text">
+                <string></string>
+            </property>
+            <property name="pixmap">
+                <pixmap></pixmap>
+            </property>
+        </row>
+        <row>
+            <property name="text">
+                <string></string>
+            </property>
+            <property name="pixmap">
+                <pixmap></pixmap>
+            </property>
+        </row>
+        <row>
+            <property name="text">
+                <string></string>
+            </property>
+            <property name="pixmap">
+                <pixmap></pixmap>
+            </property>
+        </row>
+        <row>
+            <property name="text">
+                <string></string>
+            </property>
+            <property name="pixmap">
+                <pixmap></pixmap>
+            </property>
+        </row>
+        <row>
+            <property name="text">
+                <string></string>
+            </property>
+            <property name="pixmap">
+                <pixmap></pixmap>
+            </property>
+        </row>
+        <row>
+            <property name="text">
+                <string></string>
+            </property>
+            <property name="pixmap">
+                <pixmap></pixmap>
+            </property>
+        </row>
+        <row>
+            <property name="text">
+                <string></string>
+            </property>
+            <property name="pixmap">
+                <pixmap></pixmap>
+            </property>
+        </row>
+        <row>
+            <property name="text">
+                <string></string>
+            </property>
+            <property name="pixmap">
+                <pixmap></pixmap>
+            </property>
+        </row>
+        <row>
+            <property name="text">
+                <string></string>
+            </property>
+            <property name="pixmap">
+                <pixmap></pixmap>
+            </property>
+        </row>
+        <row>
+            <property name="text">
+                <string></string>
+            </property>
+            <property name="pixmap">
+                <pixmap></pixmap>
+            </property>
+        </row>
+        <row>
+            <property name="text">
+                <string></string>
+            </property>
+            <property name="pixmap">
+                <pixmap></pixmap>
+            </property>
+        </row>
+        <row>
+            <property name="text">
+                <string></string>
+            </property>
+            <property name="pixmap">
+                <pixmap></pixmap>
+            </property>
+        </row>
+        <row>
+            <property name="text">
+                <string></string>
+            </property>
+            <property name="pixmap">
+                <pixmap></pixmap>
+            </property>
+        </row>
+        <row>
+            <property name="text">
+                <string></string>
+            </property>
+            <property name="pixmap">
+                <pixmap></pixmap>
+            </property>
+        </row>
+        <row>
+            <property name="text">
+                <string></string>
+            </property>
+            <property name="pixmap">
+                <pixmap></pixmap>
+            </property>
+        </row>
+        <row>
+            <property name="text">
+                <string></string>
+            </property>
+            <property name="pixmap">
+                <pixmap></pixmap>
+            </property>
+        </row>
+        <row>
+            <property name="text">
+                <string></string>
+            </property>
+            <property name="pixmap">
+                <pixmap></pixmap>
+            </property>
+        </row>
+        <row>
+            <property name="text">
+                <string></string>
+            </property>
+            <property name="pixmap">
+                <pixmap></pixmap>
+            </property>
+        </row>
+        <row>
+            <property name="text">
+                <string></string>
+            </property>
+            <property name="pixmap">
+                <pixmap></pixmap>
+            </property>
+        </row>
+        <row>
+            <property name="text">
+                <string></string>
+            </property>
+            <property name="pixmap">
+                <pixmap></pixmap>
+            </property>
+        </row>
+        <row>
+            <property name="text">
+                <string></string>
+            </property>
+            <property name="pixmap">
+                <pixmap></pixmap>
+            </property>
+        </row>
+        <row>
+            <property name="text">
+                <string></string>
+            </property>
+            <property name="pixmap">
+                <pixmap></pixmap>
+            </property>
+        </row>
+        <row>
+            <property name="text">
+                <string></string>
+            </property>
+            <property name="pixmap">
+                <pixmap></pixmap>
+            </property>
+        </row>
+        <row>
+            <property name="text">
+                <string></string>
+            </property>
+            <property name="pixmap">
+                <pixmap></pixmap>
+            </property>
+        </row>
+        <row>
+            <property name="text">
+                <string></string>
+            </property>
+            <property name="pixmap">
+                <pixmap></pixmap>
+            </property>
+        </row>
+        <row>
+            <property name="text">
+                <string></string>
+            </property>
+            <property name="pixmap">
+                <pixmap></pixmap>
+            </property>
+        </row>
+        <row>
+            <property name="text">
+                <string></string>
+            </property>
+            <property name="pixmap">
+                <pixmap></pixmap>
+            </property>
+        </row>
+        <row>
+            <property name="text">
+                <string></string>
+            </property>
+            <property name="pixmap">
+                <pixmap></pixmap>
+            </property>
+        </row>
+        <row>
+            <property name="text">
+                <string></string>
+            </property>
+            <property name="pixmap">
+                <pixmap></pixmap>
+            </property>
+        </row>
+        <row>
+            <property name="text">
+                <string></string>
+            </property>
+            <property name="pixmap">
+                <pixmap></pixmap>
+            </property>
+        </row>
+        <row>
+            <property name="text">
+                <string></string>
+            </property>
+            <property name="pixmap">
+                <pixmap></pixmap>
+            </property>
+        </row>
+        <row>
+            <property name="text">
+                <string></string>
+            </property>
+            <property name="pixmap">
+                <pixmap></pixmap>
+            </property>
+        </row>
+        <row>
+            <property name="text">
+                <string></string>
+            </property>
+            <property name="pixmap">
+                <pixmap></pixmap>
+            </property>
+        </row>
+        <row>
+            <property name="text">
+                <string></string>
+            </property>
+            <property name="pixmap">
+                <pixmap></pixmap>
+            </property>
+        </row>
+        <row>
+            <property name="text">
+                <string></string>
+            </property>
+            <property name="pixmap">
+                <pixmap></pixmap>
+            </property>
+        </row>
+        <row>
+            <property name="text">
+                <string></string>
+            </property>
+            <property name="pixmap">
+                <pixmap></pixmap>
+            </property>
+        </row>
+        <row>
+            <property name="text">
+                <string></string>
+            </property>
+            <property name="pixmap">
+                <pixmap></pixmap>
+            </property>
+        </row>
+        <row>
+            <property name="text">
+                <string></string>
+            </property>
+            <property name="pixmap">
+                <pixmap></pixmap>
+            </property>
+        </row>
+        <row>
+            <property name="text">
+                <string></string>
+            </property>
+            <property name="pixmap">
+                <pixmap></pixmap>
+            </property>
+        </row>
+        <row>
+            <property name="text">
+                <string></string>
+            </property>
+            <property name="pixmap">
+                <pixmap></pixmap>
+            </property>
+        </row>
+        <row>
+            <property name="text">
+                <string></string>
+            </property>
+            <property name="pixmap">
+                <pixmap></pixmap>
+            </property>
+        </row>
+        <row>
+            <property name="text">
+                <string></string>
+            </property>
+            <property name="pixmap">
+                <pixmap></pixmap>
+            </property>
+        </row>
+        <row>
+            <property name="text">
+                <string></string>
+            </property>
+            <property name="pixmap">
+                <pixmap></pixmap>
+            </property>
+        </row>
+        <row>
+            <property name="text">
+                <string></string>
+            </property>
+            <property name="pixmap">
+                <pixmap></pixmap>
+            </property>
+        </row>
+        <row>
+            <property name="text">
+                <string></string>
+            </property>
+            <property name="pixmap">
+                <pixmap></pixmap>
+            </property>
+        </row>
+        <row>
+            <property name="text">
+                <string></string>
+            </property>
+            <property name="pixmap">
+                <pixmap></pixmap>
+            </property>
+        </row>
+        <row>
+            <property name="text">
+                <string></string>
+            </property>
+            <property name="pixmap">
+                <pixmap></pixmap>
+            </property>
+        </row>
+        <row>
+            <property name="text">
+                <string></string>
+            </property>
+            <property name="pixmap">
+                <pixmap></pixmap>
+            </property>
+        </row>
+        <row>
+            <property name="text">
+                <string></string>
+            </property>
+            <property name="pixmap">
+                <pixmap></pixmap>
+            </property>
+        </row>
+        <row>
+            <property name="text">
+                <string></string>
+            </property>
+            <property name="pixmap">
+                <pixmap></pixmap>
+            </property>
+        </row>
+        <row>
+            <property name="text">
+                <string></string>
+            </property>
+            <property name="pixmap">
+                <pixmap></pixmap>
+            </property>
+        </row>
+        <row>
+            <property name="text">
+                <string></string>
+            </property>
+            <property name="pixmap">
+                <pixmap></pixmap>
+            </property>
+        </row>
+        <row>
+            <property name="text">
+                <string></string>
+            </property>
+            <property name="pixmap">
+                <pixmap></pixmap>
+            </property>
+        </row>
+        <row>
+            <property name="text">
+                <string></string>
+            </property>
+            <property name="pixmap">
+                <pixmap></pixmap>
+            </property>
+        </row>
+        <row>
+            <property name="text">
+                <string></string>
+            </property>
+            <property name="pixmap">
+                <pixmap></pixmap>
+            </property>
+        </row>
+        <row>
+            <property name="text">
+                <string></string>
+            </property>
+            <property name="pixmap">
+                <pixmap></pixmap>
+            </property>
+        </row>
+        <row>
+            <property name="text">
+                <string></string>
+            </property>
+            <property name="pixmap">
+                <pixmap></pixmap>
+            </property>
+        </row>
+        <row>
+            <property name="text">
+                <string></string>
+            </property>
+            <property name="pixmap">
+                <pixmap></pixmap>
+            </property>
+        </row>
+        <row>
+            <property name="text">
+                <string></string>
+            </property>
+            <property name="pixmap">
+                <pixmap></pixmap>
+            </property>
+        </row>
+        <row>
+            <property name="text">
+                <string></string>
+            </property>
+            <property name="pixmap">
+                <pixmap></pixmap>
+            </property>
+        </row>
+        <row>
+            <property name="text">
+                <string></string>
+            </property>
+            <property name="pixmap">
+                <pixmap></pixmap>
+            </property>
+        </row>
+        <row>
+            <property name="text">
+                <string></string>
+            </property>
+            <property name="pixmap">
+                <pixmap></pixmap>
+            </property>
+        </row>
+        <row>
+            <property name="text">
+                <string></string>
+            </property>
+            <property name="pixmap">
+                <pixmap></pixmap>
+            </property>
+        </row>
+        <row>
+            <property name="text">
+                <string></string>
+            </property>
+            <property name="pixmap">
+                <pixmap></pixmap>
+            </property>
+        </row>
+        <row>
+            <property name="text">
+                <string></string>
+            </property>
+            <property name="pixmap">
+                <pixmap></pixmap>
+            </property>
+        </row>
+        <row>
+            <property name="text">
+                <string></string>
+            </property>
+            <property name="pixmap">
+                <pixmap></pixmap>
+            </property>
+        </row>
+        <row>
+            <property name="text">
+                <string></string>
+            </property>
+            <property name="pixmap">
+                <pixmap></pixmap>
+            </property>
+        </row>
+        <row>
+            <property name="text">
+                <string></string>
+            </property>
+            <property name="pixmap">
+                <pixmap></pixmap>
+            </property>
+        </row>
+        <row>
+            <property name="text">
+                <string></string>
+            </property>
+            <property name="pixmap">
+                <pixmap></pixmap>
+            </property>
+        </row>
+        <row>
+            <property name="text">
+                <string></string>
+            </property>
+            <property name="pixmap">
+                <pixmap></pixmap>
+            </property>
+        </row>
+        <row>
+            <property name="text">
+                <string></string>
+            </property>
+            <property name="pixmap">
+                <pixmap></pixmap>
+            </property>
+        </row>
+        <row>
+            <property name="text">
+                <string></string>
+            </property>
+            <property name="pixmap">
+                <pixmap></pixmap>
+            </property>
+        </row>
+        <row>
+            <property name="text">
+                <string></string>
+            </property>
+            <property name="pixmap">
+                <pixmap></pixmap>
+            </property>
+        </row>
+        <row>
+            <property name="text">
+                <string></string>
+            </property>
+            <property name="pixmap">
+                <pixmap></pixmap>
+            </property>
+        </row>
+        <row>
+            <property name="text">
+                <string></string>
+            </property>
+            <property name="pixmap">
+                <pixmap></pixmap>
+            </property>
+        </row>
+        <row>
+            <property name="text">
+                <string></string>
+            </property>
+            <property name="pixmap">
+                <pixmap></pixmap>
+            </property>
+        </row>
+        <row>
+            <property name="text">
+                <string></string>
+            </property>
+            <property name="pixmap">
+                <pixmap></pixmap>
+            </property>
+        </row>
+        <row>
+            <property name="text">
+                <string></string>
+            </property>
+            <property name="pixmap">
+                <pixmap></pixmap>
+            </property>
+        </row>
+        <row>
+            <property name="text">
+                <string></string>
+            </property>
+            <property name="pixmap">
+                <pixmap></pixmap>
+            </property>
+        </row>
+        <row>
+            <property name="text">
+                <string></string>
+            </property>
+            <property name="pixmap">
+                <pixmap></pixmap>
+            </property>
+        </row>
+        <row>
+            <property name="text">
+                <string></string>
+            </property>
+            <property name="pixmap">
+                <pixmap></pixmap>
+            </property>
+        </row>
+        <row>
+            <property name="text">
+                <string></string>
+            </property>
+            <property name="pixmap">
+                <pixmap></pixmap>
+            </property>
+        </row>
+        <row>
+            <property name="text">
+                <string></string>
+            </property>
+            <property name="pixmap">
+                <pixmap></pixmap>
+            </property>
+        </row>
+        <row>
+            <property name="text">
+                <string></string>
+            </property>
+            <property name="pixmap">
+                <pixmap></pixmap>
+            </property>
+        </row>
+        <row>
+            <property name="text">
+                <string></string>
+            </property>
+            <property name="pixmap">
+                <pixmap></pixmap>
+            </property>
+        </row>
+        <row>
+            <property name="text">
+                <string></string>
+            </property>
+            <property name="pixmap">
+                <pixmap></pixmap>
+            </property>
+        </row>
+        <row>
+            <property name="text">
+                <string></string>
+            </property>
+            <property name="pixmap">
+                <pixmap></pixmap>
+            </property>
+        </row>
+        <row>
+            <property name="text">
+                <string></string>
+            </property>
+            <property name="pixmap">
+                <pixmap></pixmap>
+            </property>
+        </row>
+        <row>
+            <property name="text">
+                <string></string>
+            </property>
+            <property name="pixmap">
+                <pixmap></pixmap>
+            </property>
+        </row>
+        <row>
+            <property name="text">
+                <string></string>
+            </property>
+            <property name="pixmap">
+                <pixmap></pixmap>
+            </property>
+        </row>
+        <row>
+            <property name="text">
+                <string></string>
+            </property>
+            <property name="pixmap">
+                <pixmap></pixmap>
+            </property>
+        </row>
+        <row>
+            <property name="text">
+                <string></string>
+            </property>
+            <property name="pixmap">
+                <pixmap></pixmap>
+            </property>
+        </row>
+        <row>
+            <property name="text">
+                <string></string>
+            </property>
+            <property name="pixmap">
+                <pixmap></pixmap>
+            </property>
+        </row>
+        <row>
+            <property name="text">
+                <string></string>
+            </property>
+            <property name="pixmap">
+                <pixmap></pixmap>
+            </property>
+        </row>
+        <row>
+            <property name="text">
+                <string></string>
+            </property>
+            <property name="pixmap">
+                <pixmap></pixmap>
+            </property>
+        </row>
+        <row>
+            <property name="text">
+                <string></string>
+            </property>
+            <property name="pixmap">
+                <pixmap></pixmap>
+            </property>
+        </row>
+        <row>
+            <property name="text">
+                <string></string>
+            </property>
+            <property name="pixmap">
+                <pixmap></pixmap>
+            </property>
+        </row>
+        <row>
+            <property name="text">
+                <string></string>
+            </property>
+            <property name="pixmap">
+                <pixmap></pixmap>
+            </property>
+        </row>
+        <row>
+            <property name="text">
+                <string></string>
+            </property>
+            <property name="pixmap">
+                <pixmap></pixmap>
+            </property>
+        </row>
+        <row>
+            <property name="text">
+                <string></string>
+            </property>
+            <property name="pixmap">
+                <pixmap></pixmap>
+            </property>
+        </row>
+        <row>
+            <property name="text">
+                <string></string>
+            </property>
+            <property name="pixmap">
+                <pixmap></pixmap>
+            </property>
+        </row>
+        <row>
+            <property name="text">
+                <string></string>
+            </property>
+            <property name="pixmap">
+                <pixmap></pixmap>
+            </property>
+        </row>
+        <row>
+            <property name="text">
+                <string></string>
+            </property>
+            <property name="pixmap">
+                <pixmap></pixmap>
+            </property>
+        </row>
+        <row>
+            <property name="text">
+                <string></string>
+            </property>
+            <property name="pixmap">
+                <pixmap></pixmap>
+            </property>
+        </row>
+        <row>
+            <property name="text">
+                <string></string>
+            </property>
+            <property name="pixmap">
+                <pixmap></pixmap>
+            </property>
+        </row>
+        <row>
+            <property name="text">
+                <string></string>
+            </property>
+            <property name="pixmap">
+                <pixmap></pixmap>
+            </property>
+        </row>
+        <row>
+            <property name="text">
+                <string></string>
+            </property>
+            <property name="pixmap">
+                <pixmap></pixmap>
+            </property>
+        </row>
+        <row>
+            <property name="text">
+                <string></string>
+            </property>
+            <property name="pixmap">
+                <pixmap></pixmap>
+            </property>
+        </row>
+        <row>
+            <property name="text">
+                <string></string>
+            </property>
+            <property name="pixmap">
+                <pixmap></pixmap>
+            </property>
+        </row>
+        <row>
+            <property name="text">
+                <string></string>
+            </property>
+            <property name="pixmap">
+                <pixmap></pixmap>
+            </property>
+        </row>
+        <row>
+            <property name="text">
+                <string></string>
+            </property>
+            <property name="pixmap">
+                <pixmap></pixmap>
+            </property>
+        </row>
+        <row>
+            <property name="text">
+                <string></string>
+            </property>
+            <property name="pixmap">
+                <pixmap></pixmap>
+            </property>
+        </row>
+        <row>
+            <property name="text">
+                <string></string>
+            </property>
+            <property name="pixmap">
+                <pixmap></pixmap>
+            </property>
+        </row>
+        <row>
+            <property name="text">
+                <string></string>
+            </property>
+            <property name="pixmap">
+                <pixmap></pixmap>
+            </property>
+        </row>
+        <row>
+            <property name="text">
+                <string></string>
+            </property>
+            <property name="pixmap">
+                <pixmap></pixmap>
+            </property>
+        </row>
+        <row>
+            <property name="text">
+                <string></string>
+            </property>
+            <property name="pixmap">
+                <pixmap></pixmap>
+            </property>
+        </row>
+        <row>
+            <property name="text">
+                <string></string>
+            </property>
+            <property name="pixmap">
+                <pixmap></pixmap>
+            </property>
+        </row>
+        <row>
+            <property name="text">
+                <string></string>
+            </property>
+            <property name="pixmap">
+                <pixmap></pixmap>
+            </property>
+        </row>
+        <row>
+            <property name="text">
+                <string></string>
+            </property>
+            <property name="pixmap">
+                <pixmap></pixmap>
+            </property>
+        </row>
+        <row>
+            <property name="text">
+                <string></string>
+            </property>
+            <property name="pixmap">
+                <pixmap></pixmap>
+            </property>
+        </row>
+        <row>
+            <property name="text">
+                <string></string>
+            </property>
+            <property name="pixmap">
+                <pixmap></pixmap>
+            </property>
+        </row>
+        <row>
+            <property name="text">
+                <string></string>
+            </property>
+            <property name="pixmap">
+                <pixmap></pixmap>
+            </property>
+        </row>
+        <row>
+            <property name="text">
+                <string></string>
+            </property>
+            <property name="pixmap">
+                <pixmap></pixmap>
+            </property>
+        </row>
+        <row>
+            <property name="text">
+                <string></string>
+            </property>
+            <property name="pixmap">
+                <pixmap></pixmap>
+            </property>
+        </row>
+        <row>
+            <property name="text">
+                <string></string>
+            </property>
+            <property name="pixmap">
+                <pixmap></pixmap>
+            </property>
+        </row>
+        <row>
+            <property name="text">
+                <string></string>
+            </property>
+            <property name="pixmap">
+                <pixmap></pixmap>
+            </property>
+        </row>
+        <row>
+            <property name="text">
+                <string></string>
+            </property>
+            <property name="pixmap">
+                <pixmap></pixmap>
+            </property>
+        </row>
+        <row>
+            <property name="text">
+                <string></string>
+            </property>
+            <property name="pixmap">
+                <pixmap></pixmap>
+            </property>
+        </row>
+        <row>
+            <property name="text">
+                <string></string>
+            </property>
+            <property name="pixmap">
+                <pixmap></pixmap>
+            </property>
+        </row>
+        <row>
+            <property name="text">
+                <string></string>
+            </property>
+            <property name="pixmap">
+                <pixmap></pixmap>
+            </property>
+        </row>
+        <row>
+            <property name="text">
+                <string></string>
+            </property>
+            <property name="pixmap">
+                <pixmap></pixmap>
+            </property>
+        </row>
+        <row>
+            <property name="text">
+                <string></string>
+            </property>
+            <property name="pixmap">
+                <pixmap></pixmap>
+            </property>
+        </row>
+        <row>
+            <property name="text">
+                <string></string>
+            </property>
+            <property name="pixmap">
+                <pixmap></pixmap>
+            </property>
+        </row>
+        <row>
+            <property name="text">
+                <string></string>
+            </property>
+            <property name="pixmap">
+                <pixmap></pixmap>
+            </property>
+        </row>
+        <row>
+            <property name="text">
+                <string></string>
+            </property>
+            <property name="pixmap">
+                <pixmap></pixmap>
+            </property>
+        </row>
+        <row>
+            <property name="text">
+                <string></string>
+            </property>
+            <property name="pixmap">
+                <pixmap></pixmap>
+            </property>
+        </row>
+        <row>
+            <property name="text">
+                <string></string>
+            </property>
+            <property name="pixmap">
+                <pixmap></pixmap>
+            </property>
+        </row>
+        <row>
+            <property name="text">
+                <string></string>
+            </property>
+            <property name="pixmap">
+                <pixmap></pixmap>
+            </property>
+        </row>
+        <row>
+            <property name="text">
+                <string></string>
+            </property>
+            <property name="pixmap">
+                <pixmap></pixmap>
+            </property>
+        </row>
+        <row>
+            <property name="text">
+                <string></string>
+            </property>
+            <property name="pixmap">
+                <pixmap></pixmap>
+            </property>
+        </row>
+        <row>
+            <property name="text">
+                <string></string>
+            </property>
+            <property name="pixmap">
+                <pixmap></pixmap>
+            </property>
+        </row>
+        <row>
+            <property name="text">
+                <string></string>
+            </property>
+            <property name="pixmap">
+                <pixmap></pixmap>
+            </property>
+        </row>
+        <row>
+            <property name="text">
+                <string></string>
+            </property>
+            <property name="pixmap">
+                <pixmap></pixmap>
+            </property>
+        </row>
+        <row>
+            <property name="text">
+                <string></string>
+            </property>
+            <property name="pixmap">
+                <pixmap></pixmap>
+            </property>
+        </row>
+        <row>
+            <property name="text">
+                <string></string>
+            </property>
+            <property name="pixmap">
+                <pixmap></pixmap>
+            </property>
+        </row>
+        <row>
+            <property name="text">
+                <string></string>
+            </property>
+            <property name="pixmap">
+                <pixmap></pixmap>
+            </property>
+        </row>
+        <row>
+            <property name="text">
+                <string></string>
+            </property>
+            <property name="pixmap">
+                <pixmap></pixmap>
+            </property>
+        </row>
+        <row>
+            <property name="text">
+                <string></string>
+            </property>
+            <property name="pixmap">
+                <pixmap></pixmap>
+            </property>
+        </row>
+        <row>
+            <property name="text">
+                <string></string>
+            </property>
+            <property name="pixmap">
+                <pixmap></pixmap>
+            </property>
+        </row>
+        <row>
+            <property name="text">
+                <string></string>
+            </property>
+            <property name="pixmap">
+                <pixmap></pixmap>
+            </property>
+        </row>
+        <row>
+            <property name="text">
+                <string></string>
+            </property>
+            <property name="pixmap">
+                <pixmap></pixmap>
+            </property>
+        </row>
+        <row>
+            <property name="text">
+                <string></string>
+            </property>
+            <property name="pixmap">
+                <pixmap></pixmap>
+            </property>
+        </row>
+        <row>
+            <property name="text">
+                <string></string>
+            </property>
+            <property name="pixmap">
+                <pixmap></pixmap>
+            </property>
+        </row>
+        <row>
+            <property name="text">
+                <string></string>
+            </property>
+            <property name="pixmap">
+                <pixmap></pixmap>
+            </property>
+        </row>
+        <row>
+            <property name="text">
+                <string></string>
+            </property>
+            <property name="pixmap">
+                <pixmap></pixmap>
+            </property>
+        </row>
+        <row>
+            <property name="text">
+                <string></string>
+            </property>
+            <property name="pixmap">
+                <pixmap></pixmap>
+            </property>
+        </row>
+        <row>
+            <property name="text">
+                <string></string>
+            </property>
+            <property name="pixmap">
+                <pixmap></pixmap>
+            </property>
+        </row>
+        <row>
+            <property name="text">
+                <string></string>
+            </property>
+            <property name="pixmap">
+                <pixmap></pixmap>
+            </property>
+        </row>
+        <row>
+            <property name="text">
+                <string></string>
+            </property>
+            <property name="pixmap">
+                <pixmap></pixmap>
+            </property>
+        </row>
+        <row>
+            <property name="text">
+                <string></string>
+            </property>
+            <property name="pixmap">
+                <pixmap></pixmap>
+            </property>
+        </row>
+        <row>
+            <property name="text">
+                <string></string>
+            </property>
+            <property name="pixmap">
+                <pixmap></pixmap>
+            </property>
+        </row>
+        <row>
+            <property name="text">
+                <string></string>
+            </property>
+            <property name="pixmap">
+                <pixmap></pixmap>
+            </property>
+        </row>
+        <row>
+            <property name="text">
+                <string></string>
+            </property>
+            <property name="pixmap">
+                <pixmap></pixmap>
+            </property>
+        </row>
+        <row>
+            <property name="text">
+                <string></string>
+            </property>
+            <property name="pixmap">
+                <pixmap></pixmap>
+            </property>
+        </row>
+        <row>
+            <property name="text">
+                <string></string>
+            </property>
+            <property name="pixmap">
+                <pixmap></pixmap>
+            </property>
+        </row>
+        <row>
+            <property name="text">
+                <string></string>
+            </property>
+            <property name="pixmap">
+                <pixmap></pixmap>
+            </property>
+        </row>
+        <row>
+            <property name="text">
+                <string></string>
+            </property>
+            <property name="pixmap">
+                <pixmap></pixmap>
+            </property>
+        </row>
+        <row>
+            <property name="text">
+                <string></string>
+            </property>
+            <property name="pixmap">
+                <pixmap></pixmap>
+            </property>
+        </row>
+        <row>
+            <property name="text">
+                <string></string>
+            </property>
+            <property name="pixmap">
+                <pixmap></pixmap>
+            </property>
+        </row>
+        <row>
+            <property name="text">
+                <string></string>
+            </property>
+            <property name="pixmap">
+                <pixmap></pixmap>
+            </property>
+        </row>
+        <row>
+            <property name="text">
+                <string></string>
+            </property>
+            <property name="pixmap">
+                <pixmap></pixmap>
+            </property>
+        </row>
+        <row>
+            <property name="text">
+                <string></string>
+            </property>
+            <property name="pixmap">
+                <pixmap></pixmap>
+            </property>
+        </row>
+        <row>
+            <property name="text">
+                <string></string>
+            </property>
+            <property name="pixmap">
+                <pixmap></pixmap>
+            </property>
+        </row>
+        <row>
+            <property name="text">
+                <string></string>
+            </property>
+            <property name="pixmap">
+                <pixmap></pixmap>
+            </property>
+        </row>
+        <property name="name">
             <cstring>TableList</cstring>
         </property>
-        <property stdset="1">
-            <name>geometry</name>
+        <property name="geometry">
             <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>445</width>
-                <height>135</height>
+                <width>420</width>
+                <height>100</height>
             </rect>
         </property>
-        <property stdset="1">
-            <name>frameShape</name>
+        <property name="frameShape">
             <enum>NoFrame</enum>
         </property>
-        <property stdset="1">
-            <name>frameShadow</name>
+        <property name="frameShadow">
             <enum>Sunken</enum>
         </property>
-        <property stdset="1">
-            <name>vScrollBarMode</name>
+        <property name="vScrollBarMode">
             <enum>Auto</enum>
         </property>
-        <property stdset="1">
-            <name>numRows</name>
+        <property name="hScrollBarMode">
+            <enum>AlwaysOff</enum>
+        </property>
+        <property name="numRows">
             <number>200</number>
         </property>
-        <property stdset="1">
-            <name>numCols</name>
+        <property name="numCols">
             <number>2</number>
+        </property>
+        <property name="rowMovingEnabled">
+            <bool>false</bool>
+        </property>
+        <property name="sorting">
+            <bool>true</bool>
         </property>
     </widget>
 </widget>
+<layoutdefaults spacing="6" margin="11"/>
 </UI>
