@@ -623,6 +623,7 @@ void MixxxApp::slotOptionsPreferences()
 
         // Connect buttons
         connect(pDlg->PushButtonOK,      SIGNAL(clicked()),      this, SLOT(slotOptionsSetPreferences()));
+        connect(pDlg->PushButtonApply,   SIGNAL(clicked()),      this, SLOT(slotOptionsApplyPreferences()));
         connect(pDlg->PushButtonCancel,  SIGNAL(clicked()),      this, SLOT(slotOptionsClosePreferences()));
         connect(pDlg->ComboBoxSoundcard, SIGNAL(activated(int)), this, SLOT(slotOptionsPreferencesUpdateDeviceOptions()));
 	connect(pDlg->PushButtonBrowsePlaylist, SIGNAL(clicked()),this,SLOT(slotBrowsePlaylistDir()));
@@ -665,7 +666,19 @@ void MixxxApp::slotOptionsPreferencesUpdateDeviceOptions()
     }
 }
 
-void MixxxApp::slotOptionsSetPreferences()
+void MixxxApp::slotOptionsDefaultPreferences()
+{
+    //config->set(ConfigKey("[Soundcard]","Device"), p->name);
+    config->set(ConfigKey("[Soundcard]","Samplerate"), ConfigValue("44100"));
+    config->set(ConfigKey("[Soundcard]","Bits"), ConfigValue("16"));
+
+    config->set(ConfigKey("[Midi]","Configfile"), ConfigValue("midicontrol.cfg"));
+    //config->set(ConfigKey("[Midi]","Device"), midi->getDeviceList().begin());
+ 
+    config->set(ConfigKey("[Playlist]","Directory"), ConfigValue("music"));    
+}
+
+void MixxxApp::slotOptionsApplyPreferences()
 {
     // Get parameters from dialog
     config->set(ConfigKey("[Soundcard]","Device"), pDlg->ComboBoxSoundcard->currentText());
@@ -702,6 +715,12 @@ void MixxxApp::slotOptionsSetPreferences()
 	view->playlist->ListPlaylist->clear();
         addFiles(config->getValueString(PlaylistKey).latin1());
     }
+}
+
+
+void MixxxApp::slotOptionsSetPreferences()
+{
+    slotOptionsApplyPreferences();
 
     // Save the preferences
     config->Save();

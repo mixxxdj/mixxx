@@ -75,7 +75,7 @@ PlayerPortAudio::~PlayerPortAudio()
 bool PlayerPortAudio::open(QString name, int srate, int bits, int bufferSize)
 {
     // Extract bit information
-    PaSampleFormat format;
+    PaSampleFormat format = 0;
     switch (bits)
     {
         case 8:  format = paInt8; break;
@@ -92,7 +92,7 @@ bool PlayerPortAudio::open(QString name, int srate, int bits, int bufferSize)
             break;
 
     // Try to open device 5 times before giving up!
-    PaError err;
+    PaError err = 0;
     for (int i=0; i<5; i++)
     {
         err = Pa_OpenStream(&stream,

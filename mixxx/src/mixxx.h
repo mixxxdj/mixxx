@@ -114,6 +114,10 @@ class MixxxApp : public QMainWindow
     void slotOptionsPreferences();
     /** Update QComboBox values when devices are changed */
     void slotOptionsPreferencesUpdateDeviceOptions();
+    /** Set default preferences */
+    void slotOptionsDefaultPreferences();
+    /** Apply preferences */
+    void slotOptionsApplyPreferences();
     /** Set preferences from dialog */
     void slotOptionsSetPreferences();
     /** Browse for playlist directory */

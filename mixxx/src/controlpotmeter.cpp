@@ -79,3 +79,9 @@ FLOAT_TYPE ControlPotmeter::getValue()
 {
   return value;
 }
+
+
+
+
+
+
