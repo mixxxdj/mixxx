@@ -48,44 +48,48 @@ EngineFlanger::EngineFlanger(DlgFlanger *_dlg, const char *group)
     connect(pushbuttonChannelB, SIGNAL(valueChanged(valueType)), this, SLOT(slotUpdateChannelSelectB(valueType)));
     channel_A = channel_B = off;
 
-    // Reset:
-    delay_pos = 0;
-    time = 0;
-}
-
 EngineFlanger::~EngineFlanger()
 {
     delete potmeterDepth;
     delete potmeterDelay;
     delete potmeterLFOperiod;
+    delete pushbuttonChannelA;
+    delete pushbuttonChannelB;
     delete [] process_buffer;
     delete [] delay_buffer;
 }
 
-void EngineFlanger::slotUpdateDepth(FLOAT_TYPE newvalue) {
+void EngineFlanger::slotUpdateDepth(FLOAT_TYPE newvalue) 
+{
     depth = newvalue;
 }
 
-void EngineFlanger::slotUpdateDelay(FLOAT_TYPE newvalue) {
+void EngineFlanger::slotUpdateDelay(FLOAT_TYPE newvalue) 
+{
     average_delay_length = (int)newvalue;
     LFOamplitude = (int)(0.9*average_delay_length);
 }
 
-void EngineFlanger::slotUpdateLFOperiod(FLOAT_TYPE newvalue) {
+void EngineFlanger::slotUpdateLFOperiod(FLOAT_TYPE newvalue) 
+{
     LFOperiod = (int) newvalue;
 }
 
-void EngineFlanger::slotUpdateChannelSelectA(valueType newvalue) {
+void EngineFlanger::slotUpdateChannelSelectA(valueType newvalue) 
+{
     channel_A = newvalue;
-    if (channel_A)  {
+    if (channel_A)  
+    {
 	channel_B = off;
 	pushbuttonChannelB->setValue(off);
     } 
 }
 
-void EngineFlanger::slotUpdateChannelSelectB(valueType newvalue) {
+void EngineFlanger::slotUpdateChannelSelectB(valueType newvalue) 
+{
     channel_B = newvalue;
-    if (channel_B) {
+    if (channel_B) 
+    {
 	channel_A = off;
 	pushbuttonChannelA->setValue(off);
     }
@@ -96,7 +100,8 @@ CSAMPLE *EngineFlanger::process(const CSAMPLE *source, const int buffer_size)
     CSAMPLE delayed_sample,prev,next;
     FLOAT_TYPE frac;
 
-    for (int i=0; i<buffer_size; i++) {
+    for (int i=0; i<buffer_size; i++) 
+    {
 	// put sample into delay buffer:
 	delay_buffer[delay_pos] = source[i];
 	delay_pos++;

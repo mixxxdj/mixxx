@@ -22,6 +22,14 @@
 #include "mixxxview.h"
 #include "defs.h"
 
+#ifdef __MACX__
+  #include <mach/mach_init.h>
+  #include <mach/task_policy.h>
+  #include <mach/thread_act.h>
+  #include <mach/thread_policy.h>
+  #include <sys/sysctl.h>
+#endif
+
 /**
   *@author Tue and Ken Haste Andersen
   */
@@ -45,7 +53,10 @@ public:
 protected:
   void setParams(QString name, int srate, int bits, int bufferSize, int chMaster, int chHead);
   static FLOAT_TYPE BASERATE;
-
+#ifdef __MACX__
+  int get_bus_speed();
+#endif
+  void rtThread();
 private:
   static MixxxView *view;
 };

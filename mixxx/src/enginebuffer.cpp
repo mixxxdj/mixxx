@@ -129,9 +129,9 @@ void EngineBuffer::newtrack(const char* filename)
                 file = new SoundSourceWave(filename);
             else if (finfo.extension(false).upper() == "MP3")
                 file = new SoundSourceMp3(filename);
-        } else
-            file = new SoundSourceWave("/dev/null");
-    }
+        }
+    } else
+        file = new SoundSourceWave("/dev/null");
     if (file==0)
         qFatal("Error opening %s", filename);
 
@@ -218,10 +218,6 @@ void EngineBuffer::stop()
 
 void EngineBuffer::run()
 {
-#ifdef __MACX__
-    rtThread();
-#endif
-
     while(requestStop->available())
     {
         // Wait for playback if in buffer is filled.

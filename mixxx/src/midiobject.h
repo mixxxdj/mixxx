@@ -14,6 +14,7 @@
 #include <qstringlist.h>
 #include <qstring.h>
 #include <qapplication.h>
+#include <qwidget.h>
 #include "defs.h"
 #include "configobject.h"
 
@@ -21,10 +22,10 @@ class ControlObject;
 
 class MidiObject : public QThread {
 public:
-    MidiObject(ConfigObject<ConfigValueMidi> *c, QApplication *app, QString device);
+    MidiObject(ConfigObject<ConfigValueMidi> *c, QApplication *app, QWidget *mixxx, QString device);
     ~MidiObject();
     void reopen(QString device);
-    void devOpen(QString device) {};
+    void devOpen(QString) {};
     void devClose() {};
     void add(ControlObject* c);
     void remove(ControlObject* c);
@@ -51,6 +52,7 @@ protected:
     QString openDevice;
 
     QApplication *app;
+    QWidget *mixxx;
 };
 
 void abortRead(int);

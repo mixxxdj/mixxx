@@ -156,13 +156,13 @@ MixxxApp::MixxxApp(QApplication *a)
   midi = new MidiObjectALSA(midiconfig,app,config->getValueString(ConfigKey("[Midi]","Device")));
 #endif
 #ifdef __PORTMIDI__
-  midi = new MidiObjectPortMidi(midiconfig,app,config->getValueString(ConfigKey("[Midi]","Device")));
+  midi = new MidiObjectPortMidi(midiconfig,app,this,config->getValueString(ConfigKey("[Midi]","Device")));
 #endif
 #ifdef __OSSMIDI__
-  midi = new MidiObjectOSS(midiconfig,app,config->getValueString(ConfigKey("[Midi]","Device")));
+  midi = new MidiObjectOSS(midiconfig,app,this,config->getValueString(ConfigKey("[Midi]","Device")));
 #endif
   if (midi == 0)
-      midi = new MidiObject(midiconfig,app,config->getValueString(ConfigKey("[Midi]","Device")));
+      midi = new MidiObject(midiconfig,app,this,config->getValueString(ConfigKey("[Midi]","Device")));
 
   // Store default midi device
   config->set(ConfigKey("[Midi]","Device"), ConfigValue(midi->getOpenDevice()->latin1()));
