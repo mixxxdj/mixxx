@@ -65,7 +65,7 @@ unix {
   OBJECTS_DIR = .obj
   SOURCES += soundsourceaudiofile.cpp
   HEADERS += soundsourceaudiofile.h
-  LIBS += -laudiofile -lmad #/usr/local/lib/libmad.a # -lmad
+  LIBS += /usr/local/lib/libmad.a /usr/lib/libaudiofile.a # -lmad -laudiofile
   INCLUDEPATH += .
 #  Intel Compiler optimization flags
 #  QMAKE_CXXFLAGS += -rcd -tpp6 -xiMK # icc pentium III
@@ -92,14 +92,14 @@ macx {
 }
 
 # gcc Profiling
-unix:QMAKE_CXXFLAGS_DEBUG += -pg
-unix:QMAKE_LFLAGS_DEBUG += -pg
+#unix:QMAKE_CXXFLAGS_DEBUG += -pg
+#unix:QMAKE_LFLAGS_DEBUG += -pg
 
 DEFINES += CONFIG_PATH=$$CONFIG_PATH
 FORMS	= dlgchanneldlg.ui dlgplaycontroldlg.ui dlgplaylistdlg.ui dlgmasterdlg.ui dlgcrossfaderdlg.ui dlgsplitdlg.ui dlgpreferencesdlg.ui dlgflangerdlg.ui
 IMAGES	= filesave.xpm
 unix:TEMPLATE         = app
 win32:TEMPLATE       = vcapp
-CONFIG	+= qt warn_on thread debug 
+CONFIG	+= qt warn_off thread release 
 DBFILE	= mixxx.db
 LANGUAGE	= C++
