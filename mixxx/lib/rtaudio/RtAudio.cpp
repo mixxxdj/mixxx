@@ -5493,10 +5493,10 @@ void RtApiDs :: probeDeviceInfo(RtApiDevice *info)
       if ( (unsigned int) info->sampleRates[i] > out_caps.dwMaxSecondarySampleRate )
         info->sampleRates.erase( info->sampleRates.begin() + i );
     }
-    while ( info->sampleRates.size() > 0 &&
-            ((unsigned int) info->sampleRates[0] < out_caps.dwMinSecondarySampleRate) ) {
-      info->sampleRates.erase( info->sampleRates.begin() );
-    }
+//    while ( info->sampleRates.size() > 0 &&
+//            ((unsigned int) info->sampleRates[0] < out_caps.dwMinSecondarySampleRate) ) {
+//      info->sampleRates.erase( info->sampleRates.begin() );
+//    }
   }
 
   // Get format information.
