@@ -47,7 +47,8 @@ EngineBuffer::EngineBuffer(DlgPlaycontrol *_playcontrol, const char *group, cons
   connect(playcontrol->SliderPlaycontrol, SIGNAL(sliderReleased()), this, SLOT(slotCenterWheel()));
 
   connect(wheel, SIGNAL(valueChanged(FLOAT_TYPE)), this, SLOT(slotUpdateRate(FLOAT_TYPE)));
-//  connect(wheel, SIGNAL(updateGUI(int)), playcontrol->SliderPlaycontrol, SLOT(setValue(int)));
+  //connect(wheel, SIGNAL(updateGUI(int)), playcontrol->SliderPlaycontrol, SLOT(setValue(int)));
+  connect(wheel, SIGNAL(updateGUI(int)), wheel, SLOT(slotSetPositionMidi(int)));
 
   connect(this, SIGNAL(position(int)), playcontrol->LCDposition, SLOT(display(int)));
 
@@ -207,7 +208,7 @@ void EngineBuffer::slotUpdateRate(FLOAT_TYPE)
     else
         rate.write(4*wheel->getValue());
     
-    qDebug("Rate value: %f, wheel value: %f",rate.read(),wheel->getValue());
+    //qDebug("Rate value: %f, wheel value: %f",rate.read(),wheel->getValue());
 }
 
 /*
@@ -328,10 +329,10 @@ CSAMPLE *EngineBuffer::process(const CSAMPLE *, const int buf_size)
 {
     if (rate.read()==0. || pause)
     {
-	for (int i=0; i<buf_size; i++)
-	    buffer[i]=0.;
-    } else {
-        long prev;
+	  for (int i=0; i<buf_size; i++)
+	      buffer[i]=0.;
+    }   else {
+          long prev;
 	double myRate=rate.read();
 	double myPlaypos_buffer = playpos_buffer.read();
         double myPlaypos_file = playpos_file.read();
@@ -380,6 +381,6 @@ void EngineBuffer::slotCenterWheel()
 void EngineBuffer::slotSetWheel(int val)
 {
     FLOAT_TYPE temp = ((FLOAT_TYPE)val-49.)/400.;
-    qDebug("temp %f",temp);
+    //qDebug("temp %f",temp);
     wheel->setValue(temp);
 }

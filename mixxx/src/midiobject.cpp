@@ -216,7 +216,7 @@ void MidiObject::run()
             if (no != 1)
                 qWarning("Warning: midiobject recieved %i bytes.", no);
         }
-        channel = buffer[0] & 15; // The channel is store in the lower 4 bits of the status byte received
+        channel = buffer[0] & 15; // The channel is stored in the lower 4 bits of the status byte received
         midicontrol = buffer[1];
         midivalue = buffer[2];
 #endif
@@ -232,14 +232,12 @@ void MidiObject::run()
             if (controlList[i]->cfgOption->val->midino == midicontrol &
                 controlList[i]->cfgOption->val->midichannel == channel)
             {
-		//qDebug("gotit");
                 // Check for possible bit mask
                 int midimask = controlList[i]->cfgOption->val->midimask;
                 if (midimask > 0)
                     controlList[i]->slotSetPosition((int)(midimask & midivalue));
                 else
                     controlList[i]->slotSetPositionMidi((int)midivalue); // 127-midivalue
-
                 break;
             }
         }

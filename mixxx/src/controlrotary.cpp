@@ -26,9 +26,8 @@ void ControlRotary::slotSetPositionMidi(int _newpos)
 {
   // get position from gray code
   int newpos = graycodetable[(int)(unsigned char)_newpos]; 
-
-    slotSetPosition(newpos);
-    emit updateGUI(newpos);
+  slotSetPosition(newpos);
+  //emit updateGUI(newpos);
 }
 
 void ControlRotary::slotSetPosition(int newpos)
