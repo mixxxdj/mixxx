@@ -33,6 +33,8 @@ EngineFlanger::EngineFlanger(const char *group)
     // Init. buffers:
     process_buffer = new CSAMPLE[MAX_BUFFER_LEN];
     delay_buffer = new CSAMPLE[max_delay+1];
+    for (int i=0; i<max_delay+1; ++i)
+        delay_buffer[i] = 0.;
 
     // Init. potmeters
     ControlPotmeter *p = new ControlPotmeter(ConfigKey(group, "lfoDepth"), 0., 1.);

@@ -134,7 +134,7 @@ PeakList::iterator PeakList::getFirstInRange(int idx, int len, bool returnElemen
     // If range is not wrapped...
     if (idx+len<m_iIdxSize)
     {
-***        while ((*it).i<idx && it!=end())
+        while (it!=end() && (*it).i<idx)
             ++it;
 
         if (!returnElementAfterRange && it!=end() && (*it).i>idx+len)
