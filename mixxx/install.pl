@@ -27,9 +27,9 @@ if ($#out<0)
 # Copy skins to $BASE/share/mixxx
 `install -m 755 -d $BASE/share/mixxx/skins/outline`;
 `install -m 755 -d $BASE/share/mixxx/skins/traditional`;
-`install -m 755 -d $BASE/share/mixxx/skins/close_outline`;
+`install -m 755 -d $BASE/share/mixxx/skins/outlineClose`;
 `install -m 644 src/skins/outline/* $BASE/share/mixxx/skins/outline`;
-`install -m 644 src/skins/close_outline/* $BASE/share/mixxx/skins/close_outline`;
+`install -m 644 src/skins/outlineClose/* $BASE/share/mixxx/skins/outlineClose`;
 `install -m 644 src/skins/traditional/* $BASE/share/mixxx/skins/traditional`;
 
 # Copy midi config files
@@ -45,9 +45,11 @@ if ($#out<0)
 `install -m 755 src/mixxx $BASE/bin`;
 
 # Copy doc files
-`install -m 755 -d $BASE/share/doc/mixxx-1.0`;
-`install -m 644 README $BASE/share/doc/mixxx-1.0`;
-`install -m 644 LICENCE $BASE/share/doc/mixxx-1.0`;
+`install -m 755 -d $BASE/share/doc/mixxx-1.1`;
+`install -m 644 README $BASE/share/doc/mixxx-1.1`;
+`install -m 644 LICENCE $BASE/share/doc/mixxx-1.1`;
+`install -m 644 COPYING $BASE/share/doc/mixxx-1.1`;
+`install -m 644 Configuration.txt $BASE/share/doc/mixxx-1.1`;
 
 printf("Install finished\n");
 
