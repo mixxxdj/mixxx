@@ -1201,9 +1201,10 @@ SectionEnd
 Section "Start Menu Shortcuts" SecStartMenu
 
   CreateDirectory "$SMPROGRAMS\Mixxx"
-  CreateShortCut "$SMPROGRAMS\Mixxx\Uninstall.lnk" "$INSTDIR\uninstall.exe" "" "$INSTDIR\uninstall.exe" 0
   SetOutPath $INSTDIR
   CreateShortCut "$SMPROGRAMS\Mixxx\Mixxx.lnk" "$INSTDIR\mixxx.exe" "" "$INSTDIR\mixxx.exe" 0
+  CreateShortCut "$SMPROGRAMS\Mixxx\Manual.lnk" "$INSTDIR\Mixxx-Manual.pdf" "" "$INSTDIR\Mixxx-Manual.pdf" 0
+  CreateShortCut "$SMPROGRAMS\Mixxx\Uninstall.lnk" "$INSTDIR\uninstall.exe" "" "$INSTDIR\uninstall.exe" 0
   
 SectionEnd
 
@@ -1245,6 +1246,10 @@ Section "Uninstall"
   Delete $INSTDIR\mixxx.exe
   Delete $INSTDIR\libsndfile.dll
   Delete $INSTDIR\uninstall.exe
+  Delete $INSTDIR\Mixxx-Manual.pdf
+  Delete $INSTDIR\LICENSE
+  Delete $INSTDIR\README
+  Delete $INSTDIR\COPYING
 
   ; Remove skins, keyboard, midi defs
   Delete $INSTDIR\skins\outline\*.*
