@@ -4,11 +4,11 @@
  <LastCompileConfig>(Default)</LastCompileConfig>
  <Mainframe MaximizeMode="1" />
  <DocsAndViews NumberOfDocuments="2" >
-  <Doc0 CursorPosLine="44" Type="KWriteDoc" NumberOfViews="1" CursorPosCol="0" FileName="/home/ken/mixxx/src/enginebuffer.h" >
-   <View0 Top="0" Width="805" Attach="1" Height="431" Left="0" Focus="0" Type="KWriteView" MinMaxMode="0" />
+  <Doc0 CursorPosLine="54" Type="KWriteDoc" NumberOfViews="1" CursorPosCol="0" FileName="/home/haste/cvs/mixxx/src/mixxx.h" >
+   <View0 Top="0" Width="754" Attach="1" Height="582" Left="0" Focus="0" Type="KWriteView" MinMaxMode="0" />
   </Doc0>
-  <Doc1 CursorPosLine="235" Type="KWriteDoc" NumberOfViews="1" CursorPosCol="0" FileName="/home/ken/mixxx/src/enginebuffer.cpp" >
-   <View0 Top="0" Width="805" Attach="1" Height="431" Left="0" Focus="1" Type="KWriteView" MinMaxMode="0" />
+  <Doc1 CursorPosLine="41" Type="KWriteDoc" NumberOfViews="1" CursorPosCol="0" FileName="/home/haste/cvs/mixxx/src/mixxx.cpp" >
+   <View0 Top="0" Width="754" Attach="1" Height="582" Left="0" Focus="1" Type="KWriteView" MinMaxMode="0" />
   </Doc1>
  </DocsAndViews>
 </KDevPrjSession>
