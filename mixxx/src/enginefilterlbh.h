@@ -20,6 +20,7 @@
 
 #include "engineobject.h"
 #include "engineiirfilter.h"
+#include "enginefilterrbj.h"
 #include "qknob.h"
 
 /**
@@ -35,7 +36,8 @@ public:
 	~EngineFilterLBH();
 	CSAMPLE *process(const CSAMPLE *source, const int buf_size);
 private:
-	EngineIIRfilter *low, *band, *high;
+	//EngineFilterRBJ *low;
+    EngineIIRfilter *low, *band, *high;
 	CSAMPLE *buffer;
 };
 
