@@ -49,6 +49,8 @@ class SoundSourceMp3 : public SoundSource {
     mad_synth Synth;
     unsigned inputbuf_len;
     char *inputbuf;
+    /** Start index in Synth buffer of samples left over from previous call to read */
+    int rest;
  public:
     SoundSourceMp3(const char *);
     ~SoundSourceMp3();

@@ -108,13 +108,13 @@ QString *MidiObject::getOpenDevice()
    -------- ------------------------------------------------------ */
 void MidiObject::send(char channel, char midicontrol, char midivalue)
 {
-    qDebug("Received midi message: ch %i no %i val %i",(int)channel,(int)midicontrol,(int)midivalue);
+    //qDebug("Received midi message: ch %i no %i val %i",(int)channel,(int)midicontrol,(int)midivalue);
 
     // Check the potmeters:
     for (int i=0; i<no; i++)
     {
-//        qDebug("(%i) checking: no %i ch %i [%p]", i, controlList[i]->cfgOption->val->midino, 
-//                       controlList[i]->cfgOption->val->midichannel,controlList[i]->cfgOption->val);
+        //qDebug("(%i) checking: no %i ch %i [%p]", i, controlList[i]->cfgOption->val->midino, 
+        //               controlList[i]->cfgOption->val->midichannel);
         //cout << "value: " << controlList[i]->cfgOption->val->value << "\n";
         if ((controlList[i]->cfgOption->val->midino == midicontrol) &
             (controlList[i]->cfgOption->val->midichannel == channel))

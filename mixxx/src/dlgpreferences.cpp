@@ -48,7 +48,7 @@ DlgPreferences::DlgPreferences(QWidget *p, const char *name,
     slotHeadDevice();
 
     // Midi configurations
-    QStringList *midiConfigList = midi->getConfigList(config->getValueString(ConfigKey("[Midi]","Configfile")));
+    QStringList *midiConfigList = midi->getConfigList(config->getValueString(ConfigKey("[Midi]","Configdir")));
     int j=0;
     if (midiConfigList->count()>0)
     {
