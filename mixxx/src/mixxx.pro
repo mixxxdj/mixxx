@@ -175,8 +175,8 @@ unix:!macx {
 #    QMAKE_CXXFLAGS += -prof_use # use profiling
     QMAKE_CXXFLAGS += -w1 #-Wall
     # icc Profiling
-    QMAKE_CXXFLAGS_DEBUG += -qp -g
-    QMAKE_LFLAGS_DEBUG += -qp -g
+#    QMAKE_CXXFLAGS_DEBUG += -qp -g
+#    QMAKE_LFLAGS_DEBUG += -qp -g
   }
 
   DEFINES += UNIX_SHARE_PATH=\"/usr/share/mixxx\"

@@ -68,8 +68,10 @@ VisualBuffer *VisualChannel::add(ReaderExtract *pReaderExtract)
     {
         // Construct a new buffer
         b = new VisualBufferMarks(pReaderExtract, m_pPlaypos);
+        b->setColorFg(m_fColorBeatR, m_fColorBeatG, m_fColorBeatB);
+        b->setColorBg(m_fColorBackR, m_fColorBackG, m_fColorBackB);
     }
-    
+
     // And a corresponding display. If the display is the first, also draw box
     // ADD GROUP INFO *****************
     VisualDisplay *d;
@@ -149,6 +151,13 @@ void VisualChannel::setColorSignal(float r, float g, float b)
     m_fColorSignalR = r;
     m_fColorSignalG = g;
     m_fColorSignalB = b;
+}
+
+void VisualChannel::setColorBack(float r, float g, float b)
+{
+    m_fColorBackR = r;
+    m_fColorBackG = g;
+    m_fColorBackB = b;
 }
 
 void VisualChannel::setColorMarker(float r, float g, float b)

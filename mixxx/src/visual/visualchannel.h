@@ -51,6 +51,7 @@ public:
     void setHeight(float h);
     void setColorSignal(float r, float g, float b);
     void setColorMarker(float r, float g, float b);
+    void setColorBack(float r, float g, float b);
     void setColorBeat(float r, float g, float b);
     void setColorFisheye(float r, float g, float b);
     
@@ -77,7 +78,8 @@ private:
     float m_fColorSignalR, m_fColorSignalG, m_fColorSignalB;
     float m_fColorMarkerR, m_fColorMarkerG, m_fColorMarkerB;
     float m_fColorBeatR, m_fColorBeatG, m_fColorBeatB;
+    float m_fColorBackR, m_fColorBackG, m_fColorBackB;
     float m_fColorFisheyeR, m_fColorFisheyeG, m_fColorFisheyeB;
-    
+
 };
 #endif

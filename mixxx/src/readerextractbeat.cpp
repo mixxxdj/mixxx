@@ -370,7 +370,7 @@ void *ReaderExtractBeat::processChunk(const int _idx, const int start_idx, const
                     updateConfidence((*it).i, beatBufferLastIdx);
 
                     //qDebug("set beat at %i, conf %f, bpv %f, int %f",(*it).i,confidence, bpv->getCurrMaxInterval(), beatint*input->getRate());
-                    beatBuffer[(*it).i] = 1.;
+                    markBeat((*it).i);
                     beatCorr[(*it).i] = (*it).corr;
                     beatBufferLastIdx = (*it).i;
                 }
@@ -443,11 +443,11 @@ void *ReaderExtractBeat::processChunk(const int _idx, const int start_idx, const
                             // If it exists ensure that it's less than itmax
                             if (itmax2==peaks->end() || hfc[(*itmax2).i] < hfc[(*itmax).i])
                             {
-                                beatBuffer[(*itmax).i] = 2; //(*itmax).corr; //2.;
+                                confidence = 0.;
+                                markBeat((*itmax).i);
                                 beatBufferLastIdx = (*itmax).i;
                                 beatCorr[(*itmax).i] = (*itmax).corr;
 
-                                confidence = 0.;
                                 //qDebug("resync at %i, cur %i, conf %f",(*itmax).i,idx,confidence);
 
                                 if ((*itmax).i<updateFrom)
@@ -490,7 +490,7 @@ void *ReaderExtractBeat::processChunk(const int _idx, const int start_idx, const
                             interval = (float)(beatidx-beatBufferLastIdx);
                         //qDebug("force peak at %i, beatint %f, conf %f, bpv %f, interval %f",beatidx,beatint,confidence,bpv->getCurrMaxInterval(), interval);
 
-                        beatBuffer[beatidx] = 3; //0.001f; // 3
+                        markBeat(beatidx);
                         beatBufferLastIdx = beatidx;
 
                         if (beatidx<updateFrom)
@@ -585,3 +585,16 @@ void ReaderExtractBeat::updateConfidence(int curBeatIdx, int lastBeatIdx)
     textconf.flush();
 #endif
 }
+
+void ReaderExtractBeat::markBeat(int i)
+{
+    // Color is defined from confidence (between -0.2 and 0.3)
+    float v = (0.2+max(-0.2,min(confidence,0.3)))/0.5;
+
+    if (v==0.)
+        beatBuffer[i] = 0.0001;
+    else
+        beatBuffer[i] = v;
+}
+
+

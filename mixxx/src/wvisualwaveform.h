@@ -81,7 +81,7 @@ protected:
     QTime m_qtTime;
 
     /** Colors */
-    QColor colorBeat, colorSignal, colorMarker, colorFisheye;
+    QColor colorBeat, colorSignal, colorMarker, colorFisheye, colorBack;
 };
 
 #endif

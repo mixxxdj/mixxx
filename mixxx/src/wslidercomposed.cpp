@@ -26,6 +26,7 @@ WSliderComposed::WSliderComposed(QWidget *parent, const char *name ) : WWidget(p
     m_pSlider = 0;
     m_pHandle = 0;
     m_pDoubleBuffer = 0;
+    m_bHorizontal = false;
 
     // Set default values
     m_iSliderLength=0;

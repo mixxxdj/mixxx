@@ -55,14 +55,9 @@ WVisualWaveform::~WVisualWaveform()
 
 void WVisualWaveform::setup(QDomNode node)
 {
-    // Background color
-    if (!WWidget::selectNode(node, "BgColor").isNull())
-    {
-        QColor c;
-        c.setNamedColor(WWidget::selectNodeQString(node, "BgColor"));
-            m_pVisualController->setBackgroundColor(c);
-    }
-
+    // Colors
+    colorBack.setNamedColor(WWidget::selectNodeQString(node, "BgColor"));
+    m_pVisualController->setBackgroundColor(colorBack);
     colorSignal.setNamedColor(WWidget::selectNodeQString(node, "SignalColor"));
     colorMarker.setNamedColor(WWidget::selectNodeQString(node, "MarkerColor"));
     colorBeat.setNamedColor(WWidget::selectNodeQString(node, "BeatColor"));
@@ -153,21 +148,22 @@ VisualChannel *WVisualWaveform::add(ControlPotmeter *pPlaypos, const char *group
         c->setLength(width());
         c->setHeight(height());
         c->setZoomPosX(50);
+        c->setColorBack((float)colorBack.red()/255., (float)colorBack.green()/255., (float)colorBack.blue()/255.);
         c->setColorSignal((float)colorSignal.red()/255., (float)colorSignal.green()/255., (float)colorSignal.blue()/255.);
         c->setColorMarker((float)colorMarker.red()/255., (float)colorMarker.green()/255., (float)colorMarker.blue()/255.);
         c->setColorBeat((float)colorBeat.red()/255., (float)colorBeat.green()/255., (float)colorBeat.blue()/255.);
         c->setColorFisheye((float)colorFisheye.red()/255., (float)colorFisheye.green()/255., (float)colorFisheye.blue()/255.);
     }
-    else    
+    else
     {
         c->setPosX(50);
         c->setZoomPosX(50);
     }
-        
+
     m_qlList.append(c);
     return c;
 }
-    
+
 void WVisualWaveform::initializeGL()
 {
     m_pVisualController->init();

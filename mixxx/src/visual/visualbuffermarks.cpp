@@ -64,7 +64,7 @@ void VisualBufferMarks::draw(GLfloat *p, int iLen, float xscale)
 
     for (int i=0; i<iLen*3; i+=3)
     {
-        if (p[i+1]>0.)
+        if (p[i+1]!=0.)
         {
 /*
             glBegin(GL_POLYGON);
@@ -74,6 +74,18 @@ void VisualBufferMarks::draw(GLfloat *p, int iLen, float xscale)
             glVertex3f(p[i]-kfWidth,1.,0.);
             glEnd();
 */
+            // Color is defined from confidence (between -0.2 and 0.3)
+            //float v = 1.-(0.1+max(-0.2,min(p[i+1],0.3)))/0.5;
+
+            //qDebug("v %f, c %f",p[i+1], v);
+
+            // Interpolate ambient of fg and bg using the value at p[i+1]
+            float a[4];
+            a[0] = m_materialBg.ambient[0]-(m_materialBg.ambient[0]-m_materialFg.ambient[0])*p[i+1];
+            a[1] = m_materialBg.ambient[1]-(m_materialBg.ambient[1]-m_materialFg.ambient[1])*p[i+1];
+            a[2] = m_materialBg.ambient[2]-(m_materialBg.ambient[2]-m_materialFg.ambient[2])*p[i+1];
+            a[3] = m_materialBg.ambient[3]-(m_materialBg.ambient[3]-m_materialFg.ambient[3])*p[i+1];
+            glMaterialfv(GL_FRONT_AND_BACK,GL_AMBIENT,a);
 
             glBegin(GL_POLYGON);
             glVertex3f(p[i]-kfWidth,-1.  ,0.);
@@ -87,6 +99,7 @@ void VisualBufferMarks::draw(GLfloat *p, int iLen, float xscale)
             glVertex3f(p[i]+kfWidth, 1.0 ,0.);
             glVertex3f(p[i]-kfWidth, 1.0 ,0.);
             glEnd();
+
         }
     }
 }
