@@ -53,7 +53,7 @@ EngineBuffer::EngineBuffer(DlgPlaycontrol *playcontrol, DlgChannel *channel, Mid
   if (!strcmp(ending,".wav"))
     file = new AFlibfile(filename);
   else if (!strcmp(ending,".mp3") || (!strcmp(ending,".MP3")))
-	file = new mp3file(filename);
+	file = new SoundSourceHeavymp3(filename);
 
   if (file==0) {
     qFatal("Error opening %s", filename);

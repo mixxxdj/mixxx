@@ -164,8 +164,10 @@ unsigned mp3file::read(unsigned long samples_wanted, const SAMPLE* _destination)
 		       mad_stream_errorstr(&Stream));
 	      continue;
 	  } else
-	      if(Stream.error==MAD_ERROR_BUFLEN)
+	      if(Stream.error==MAD_ERROR_BUFLEN) {
+		  qWarning("Mad error buflen");
 		  continue;
+	      }
 	      else {
 		  qWarning("Unrecoverable frame level error (%s).",
 			   mad_stream_errorstr(&Stream));
