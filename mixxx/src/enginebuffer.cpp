@@ -98,6 +98,10 @@ EngineBuffer::EngineBuffer(PowerMate *_powermate, const char *_group)
     ControlPotmeter *p2 = new ControlPotmeter(ConfigKey(group, "rate"), 0.9f, 1.1f);
     rateSlider = new ControlEngine(p2);
 
+    // Rate display
+    ControlObject *p5 = new ControlObject(ConfigKey(group, "rateDisplay"));
+    ControlObject::connectControls(ConfigKey(group, "rate"), ConfigKey(group, "rateDisplay"));
+
     // Permanent rate-change buttons
     p = new ControlPushButton(ConfigKey(group,"rate_perm_down"));
     buttonRatePermDown = new ControlEngine(p);
@@ -140,7 +144,7 @@ EngineBuffer::EngineBuffer(PowerMate *_powermate, const char *_group)
     bufferposSlider = new ControlEngine(controlbufferpos);
 
     // m_pTrackEnd is used to signal when at end of file during playback
-    ControlObject *p5 = new ControlObject(ConfigKey(group, "TrackEnd"));
+    p5 = new ControlObject(ConfigKey(group, "TrackEnd"));
     m_pTrackEnd = new ControlEngine(p5);
 
     // Direction of rate slider

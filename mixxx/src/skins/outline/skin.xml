@@ -957,6 +957,32 @@
   </Connection>
  </NumberPos>
 
+ <NumberRate>
+  <Tooltip>Playback rate factor</Tooltip>
+  <Channel>1</Channel>
+  <Pos>51,271</Pos>
+  <Size>60,20</Size>
+  <NumberOfDigits>3</NumberOfDigits>
+  <BgColor>#ffffff</BgColor>
+  <FgColor>#606060</FgColor>
+  <Connection>
+   <ConfigKey>[Channel1],rateDisplay</ConfigKey>
+  </Connection>
+ </NumberRate>
+
+ <NumberRate>
+  <Tooltip>Playback rate factor</Tooltip>
+  <Channel>2</Channel>
+  <Pos>938,271</Pos>
+  <Size>60,20</Size>
+  <NumberOfDigits>3</NumberOfDigits>
+  <BgColor>#ffffff</BgColor>
+  <FgColor>#606060</FgColor>
+  <Connection>
+   <ConfigKey>[Channel2],rateDisplay</ConfigKey>
+  </Connection>
+ </NumberRate>
+
  <SliderComposed>
   <Tooltip>Play position - Use mouse to seek</Tooltip>
   <Handle>playpos-marker1.png</Handle>

@@ -23,6 +23,7 @@ WNumber::WNumber(QWidget *parent, const char *name ) : WWidget(parent,name)
 {
     m_pLabel = new QLabel(parent);
     m_qsText = "";
+    m_dConstFactor = 0.;
 }
 
 WNumber::~WNumber()
@@ -59,6 +60,13 @@ void WNumber::setup(QDomNode node)
         if (selectNodeQString(node, "Alignment")=="right")
             m_pLabel->setAlignment(Qt::AlignRight|Qt::AlignVCenter);
     }
+
+    // Constant factor
+    if (!selectNode(node, "ConstFactor").isNull())
+    {
+        m_dConstFactor = selectNodeQString(node, "ConstFactor").toDouble();
+        setValue(0.);
+    }
 }
 
 void WNumber::setFixedSize(int x,int y)
@@ -80,10 +88,11 @@ void WNumber::setNumDigits(int n)
 
 void WNumber::setValue(double dValue)
 {
-    int d1 = (int)floor((dValue-floor(dValue))*10.);
-    int d2 = (int)floor((dValue-floor(dValue))*100.)%10;
+    double v = dValue+m_dConstFactor;
+    int d1 = (int)floor((v-floor(v))*10.);
+    int d2 = (int)floor((v-floor(v))*100.)%10;
 
-    m_pLabel->setText(QString(m_qsText).append("%1.%2%3").arg((int)dValue,3,10).arg(d1,1,10).arg(d2,1,10));
+    m_pLabel->setText(QString(m_qsText).append("%1.%2%3").arg((int)v,3,10).arg(d1,1,10).arg(d2,1,10));
 }
 
 void WNumber::setAlignment(int i)
@@ -91,3 +100,7 @@ void WNumber::setAlignment(int i)
     m_pLabel->setAlignment(i);
 }
 
+void WNumber::setConstFactor(double c)
+{
+    m_dConstFactor = c;
+}
