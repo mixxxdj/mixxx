@@ -150,14 +150,12 @@ DlgPrefControls::DlgPrefControls(QWidget *parent, ControlObject *pControl, Mixxx
     // Set default value in config file, if not present
     if (m_pConfig->getValueString(ConfigKey("[Controls]","Tooltips")).length() == 0)
         m_pConfig->set(ConfigKey("[Controls]","Tooltips"), ConfigValue(1));
-    else
-        QToolTip::setGloballyEnabled(false);
 
     // Update combo box
     ComboBoxTooltips->setCurrentItem((m_pConfig->getValueString(ConfigKey("[Controls]","Tooltips")).toInt()+1)%2);
 
     connect(ComboBoxTooltips,   SIGNAL(activated(int)), this, SLOT(slotSetTooltips(int)));
-
+    slotSetTooltips(0);
 }
 
 DlgPrefControls::~DlgPrefControls()
