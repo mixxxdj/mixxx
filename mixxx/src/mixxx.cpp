@@ -38,9 +38,6 @@
   #include "playerportaudio.h"
 #endif
 
-#include "enginepregain.h"
-#include "enginefilterlbh.h"
-
 MixxxApp::MixxxApp()
 {
   qDebug("Start");

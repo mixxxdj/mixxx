@@ -21,7 +21,7 @@
 #include "engineobject.h"
 #include "engineclipping.h"
 #include "enginepregain.h"
-#include "enginefilterlbh.h"
+#include "enginefilterblock.h"
 #include "controllogpotmeter.h"
 #include "dlgchannel.h"
 #include "midiobject.h"
@@ -38,7 +38,7 @@ public:
     CSAMPLE *process(const CSAMPLE *, const int);
 private:
     EnginePregain* pregain;
-    EngineFilterLBH* filter;
+    EngineFilterBlock* filter;
     EngineClipping* clipping;
     EnginePregain* volume;
 };

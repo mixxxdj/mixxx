@@ -23,8 +23,8 @@ unix:LIBS += -lasound
 # End of options
 #
 
-SOURCES	+= controllogpotmeter.cpp controlobject.cpp controlpotmeter.cpp controlpushbutton.cpp controlrotary.cpp dlgchannel.cpp dlgplaycontrol.cpp dlgplaylist.cpp dlgmaster.cpp enginebuffer.cpp engineclipping.cpp enginefilterlbh.cpp enginefilterrbj.cpp engineiirfilter.cpp engineobject.cpp enginepregain.cpp main.cpp midiobject.cpp mixxx.cpp mixxxdoc.cpp mixxxview.cpp player.cpp qknob.cpp soundsource.cpp soundsourceheavymp3.cpp monitor.cpp enginechannel.cpp enginemaster.cpp
-HEADERS	+= controllogpotmeter.h controlobject.h controlpotmeter.h controlpushbutton.h controlrotary.h defs.h dlgchannel.h dlgplaycontrol.h dlgplaylist.h dlgmaster.h enginebuffer.h engineclipping.h enginefilterlbh.h enginefilterrbj.h engineiirfilter.h engineobject.h enginepregain.h midiobject.h mixxx.h mixxxdoc.h mixxxview.h player.h qknob.h soundsource.h soundsourceheavymp3.h monitor.h enginechannel.h enginemaster.h
+SOURCES	+= controllogpotmeter.cpp controlobject.cpp controlpotmeter.cpp controlpushbutton.cpp controlrotary.cpp dlgchannel.cpp dlgplaycontrol.cpp dlgplaylist.cpp dlgmaster.cpp enginebuffer.cpp engineclipping.cpp enginefilterblock.cpp enginefilterrbj.cpp enginefilteriir.cpp engineobject.cpp enginepregain.cpp main.cpp midiobject.cpp mixxx.cpp mixxxdoc.cpp mixxxview.cpp player.cpp qknob.cpp soundsource.cpp soundsourceheavymp3.cpp monitor.cpp enginechannel.cpp enginemaster.cpp
+HEADERS	+= controllogpotmeter.h controlobject.h controlpotmeter.h controlpushbutton.h controlrotary.h defs.h dlgchannel.h dlgplaycontrol.h dlgplaylist.h dlgmaster.h enginebuffer.h engineclipping.h enginefilterblock.h enginefilterrbj.h enginefilteriir.h engineobject.h enginepregain.h midiobject.h mixxx.h mixxxdoc.h mixxxview.h player.h qknob.h soundsource.h soundsourceheavymp3.h monitor.h enginechannel.h enginemaster.h
 unix {
   UI_DIR = .ui
   MOC_DIR = .moc
@@ -42,7 +42,7 @@ win32 {
 FORMS	= dlgchanneldlg.ui dlgplaycontroldlg.ui dlgplaylistdlg.ui dlgmasterdlg.ui
 IMAGES	= filesave.xpm 
 TEMPLATE = app
-CONFIG	+= qt warn_on thread debug
+CONFIG	+= qt warn_on thread release # debug
 DBFILE	= mixxx.db
 LANGUAGE	= C++
 

@@ -27,9 +27,9 @@ EngineChannel::EngineChannel(DlgChannel *dlg, MidiObject *midi, int midiPregain,
   connect(pregain->pregainpot, SIGNAL(recievedMidi(int)), dlg->DialGain, SLOT(setValue(int)));
 
   // Filters:
-  filter = new EngineFilterLBH(dlg->DialFilterLow, midiLow,
-						    dlg->DialFilterMiddle, midiBand,
-						    dlg->DialFilterHigh , midiHigh, midi);
+  filter = new EngineFilterBlock(dlg->DialFilterLow, midiLow,
+                                 dlg->DialFilterMiddle, midiBand,
+                                 dlg->DialFilterHigh , midiHigh, midi);
 
   // Clipping:
   clipping = new EngineClipping(dlg->BulbClipping);

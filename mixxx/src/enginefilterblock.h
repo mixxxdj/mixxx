@@ -1,5 +1,5 @@
 /***************************************************************************
-                          enginefilterlbh.h  -  description
+                          enginefilterblock.h  -  description
                              -------------------
     begin                : Thu Apr 4 2002
     copyright            : (C) 2002 by Tue and Ken Haste Andersen
@@ -15,12 +15,14 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef ENGINEFILTERLBH_H
-#define ENGINEFILTERLBH_H
+#ifndef ENGINEFILTERBLOCK_H
+#define ENGINEFILTERBLOCK_H
 
 #include "engineobject.h"
-#include "engineiirfilter.h"
 #include "enginefilterrbj.h"
+#include "enginefilteriir.h"
+#include "midiobject.h"
+#include "controllogpotmeter.h"
 #include "qknob.h"
 
 /**
@@ -29,15 +31,21 @@
   *@author Tue and Ken Haste Andersen
   */
 
-class EngineFilterLBH : public EngineObject  {
+class EngineFilterBlock : public EngineObject  {
 	Q_OBJECT
 public:
-	EngineFilterLBH(QKnob *, int, QKnob *, int, QKnob *, int, MidiObject *midi);
-	~EngineFilterLBH();
+	EngineFilterBlock(QKnob *, int, QKnob *, int, QKnob *, int, MidiObject *midi);
+	~EngineFilterBlock();
 	CSAMPLE *process(const CSAMPLE *source, const int buf_size);
+public slots:
+    void slotUpdateLow(FLOAT_TYPE);
+    void slotUpdateMid(FLOAT_TYPE);
+    void slotUpdateHigh(FLOAT_TYPE);
 private:
-	//EngineFilterRBJ *low;
-    EngineIIRfilter *low, *band, *high;
+	EngineObject *low, *high;
+    CSAMPLE gainLow, gainMid, gainHigh;
+    ControlPotmeter *filterpotLow, *filterpotMid, *filterpotHigh;
+
 	CSAMPLE *buffer;
 };
 
