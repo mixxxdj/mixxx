@@ -1,4 +1,4 @@
-Mixxx - version 1.0.
+Mixxx - version 1.0.1.
 
 * HOMEPAGE *************************************************
 http://mixxx.sourceforge.net
@@ -13,21 +13,9 @@ Mac OS 10.2.
 
 
 * NEWS *****************************************************
-New since 0.9.2:
-- Waveform displays 
-- Support for PowerMate controllers on Linux
-- Support for joysticks on Linux
-- Better MIDI key support
-- Better playlist interface with playlists in XML format 
-- Added support for Ogg Vorbis
-- Cue buttons
-- New GUI
-- Pitch bend buttons
-- Fwd/back buttons
-- Reverse play button
-- Fixes in wavefile and MP3 playback
-- Skin support
-- Loop and next-track play modes
+New since 1.0:
+- Corrected rate configuration values, and added 8% option
+- Added temporary rate change buttons
 
 * REQUIREMENTS *********************************************
 Mixxx is depends on the following libraries:
