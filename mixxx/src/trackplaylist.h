@@ -50,6 +50,8 @@ public:
     void setListName(QString name);
     /** Add recursively the tracks in path to the collection, and then to this list */
     void addPath(QString qPath);
+    /** Updates the score field in the WTrackTable */
+    void updateScores();
 
 public slots:
     /** Decode drop event and calls addPath */

@@ -107,8 +107,8 @@ public:
     void setFilepath(QString);
     /** Returns the score as string */
     QString getScoreStr();
-    /** Sets the score */
-    void setScore(int);
+    /** Updates the score */
+    void updateScore();
     /** Get id */
     int getId();
     /** Set id */
@@ -157,6 +157,9 @@ private:
                     *m_pTableItemDuration, *m_pTableItemBpm, *m_pTableItemBitrate;
     /** Pointer to WTrackTable where the current item was inserted last */
     WTrackTable *m_pTableTrack;
+
+    /** Maximum number of times any one track have been played */
+    static int siMaxTimesPlayed;
 };
 
 #endif
