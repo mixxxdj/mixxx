@@ -53,6 +53,7 @@ if ($#out<0)
 # Copy mixxx binary to $BASE/bin
 `install -m 755 -d $BASE/bin`;
 `install -m 755 src/mixxx $BASE/bin`;
+`install -m 755 src/mixxx-with-jack $BASE/bin`;
 
 # Copy doc files
 `install -m 755 -d $BASE/share/doc/mixxx-$version`;
@@ -63,5 +64,6 @@ if ($#out<0)
 
 printf("Install finished\n");
 printf("\n");
-printf("Start Mixxx by writing mixxx at the command prompt.\n");
+printf("Start Mixxx by writing mixxx at the command prompt. If you have 
+printf("the Jack sound server installed you can start Mixxx with mixxx-with-jack\n");
 printf("\n");
