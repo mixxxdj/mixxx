@@ -33,24 +33,28 @@ class Player : public EngineObject {
 public:
     Player(int, std::vector<EngineObject *> *);
 	~Player();      // Deallocate
+    bool reopen(QString name, int srate, int bits, int bufferSize);
 	virtual void start(EngineObject *); // Start audio stream
 	virtual void stop() = 0;           // Stops audio stream
 	virtual void wait() = 0;           // Wait for audio stream to finish
 
     typedef struct
     {
-        QString     name;
-        QValueList<int>  sampleRates;
-        QValueList<int>  bits;
-        QValueList<int>  bufferSizes;
+        QString         name;
+        QValueList<int> sampleRates;
+        QValueList<int> bits;
+        QValueList<int> bufferSizes;
     } Info;
 
     QPtrList<Info> *getInfo();
-	SAMPLE *out_buffer;
+
+    SAMPLE *out_buffer;
 	int prepareBuffer(); // Calculates one buffer of sound
 	int buffer_size;
 
 protected:
+    virtual bool open(QString name, int srate, int bits, int bufferSize) = 0;
+    virtual void close() = 0;
 	void allocate();
 	void deallocate();
 
@@ -58,7 +62,7 @@ protected:
 	CSAMPLE *process_buffer,*tmp1, *tmp2;
 	int index;    // Current playback frame in input buffer
 	EngineObject* reader;
-    QPtrList<Info> devices;
+    QPtrList<Info>  devices;
 };
 
 #endif

@@ -111,10 +111,12 @@ class MixxxApp : public QMainWindow
     void slotViewStatusBar(bool toggle);
     /** Preference dialog */
     void slotOptionsPreferences();
+    /** Update QComboBox values when devices are changed */
+    void slotOptionsPreferencesUpdateDeviceOptions();
     /** Set preferences from dialog */
     void slotOptionsSetPreferences();
     /** Cancel preferences from dialog */
-    void slotOptionsCancelPreferences();
+    void slotOptionsClosePreferences();
     /** shows an about dlg*/
     void slotHelpAbout();
 
@@ -125,6 +127,9 @@ class MixxxApp : public QMainWindow
     void slotSelectPlay(QListViewItem *item, const QPoint &pos, int);
 
   private:
+
+    void engineStart();
+    void engineStop();
 
     /** view is the main widget which represents your working area. The View
      * class should handle all events of the view widget.  It is kept empty so
