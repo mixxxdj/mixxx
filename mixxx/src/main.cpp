@@ -31,8 +31,8 @@ void MessageOutput( QtMsgType type, const char *msg )
                 fprintf( stderr, "Debug: %s\n", msg );
                 break;
             case QtWarningMsg:
-                fprintf( stderr, "Warning: %s\n", msg );
-                //QMessageBox::warning(0, "Mixxx", msg);
+                //fprintf( stderr, "Warning: %s\n", msg );
+                QMessageBox::warning(0, "Mixxx", msg);
                 break;
             case QtFatalMsg:
                 fprintf( stderr, "Fatal: %s\n", msg );
