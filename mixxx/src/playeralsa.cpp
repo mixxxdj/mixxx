@@ -182,4 +182,3 @@ CSAMPLE *PlayerALSA::process(const CSAMPLE *, const int)
 {
 	return 0;
 }
-

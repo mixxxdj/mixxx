@@ -25,6 +25,7 @@
 Player::Player(int size, std::vector<EngineObject*> *_engines)
 {
     engines = _engines;
+
     qDebug("Player: init...");
 }
 
@@ -35,7 +36,7 @@ Player::Player(int size, std::vector<EngineObject*> *_engines)
    -------- ------------------------------------------------------ */
 Player::~Player()
 {
-	deallocate();
+    deallocate();
 }
 
 void Player::allocate()
@@ -92,4 +93,9 @@ int Player::prepareBuffer() {
     out_buffer[i] = (SAMPLE)p1[i];
 
   return 0; // Hack. Should only return 0 when not at end of file
+}
+
+QPtrList<Player::Info> *Player::getInfo()
+{
+    return &devices;
 }

@@ -15,7 +15,7 @@ SoundSourceMp3::SoundSourceMp3(const char* filename)
     inputbuf_len = filestat.st_size;
     inputbuf = new unsigned char[inputbuf_len];
     if (fread(inputbuf,1, inputbuf_len,file) != inputbuf_len)
-	qFatal("Error reading mp3-file.");
+        qFatal("Error reading mp3-file.");
 
     // Transfer it to the mad stream-buffer:
     mad_stream_init(&Stream);
@@ -89,17 +89,19 @@ long SoundSourceMp3::seek(long filepos)
 {
     int newpos = inputbuf_len* ((float)filepos/(float)length());
     qDebug("Seek to %d %d %d", filepos, inputbuf_len, newpos);
+
     // Go to an approximate position:
     mad_stream_buffer(&Stream, inputbuf+newpos, inputbuf_len-newpos);
     mad_synth_mute(&Synth);
     mad_frame_mute(&Frame);
+
     // Decode a few (possible wrong) buffers:
     int no = 0;
     int succesfull = 0;
     while ((no<10) && (succesfull<2)) {
-    if (!mad_frame_decode(&Frame, &Stream))
-        succesfull ++;
-    no ++;
+        if (!mad_frame_decode(&Frame, &Stream))
+            succesfull ++;
+        no ++;
     }
 
     // Discard the first synth:

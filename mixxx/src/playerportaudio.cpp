@@ -23,6 +23,31 @@ PlayerPortAudio::PlayerPortAudio(int size, std::vector<EngineObject *> *engines)
     err = Pa_Initialize();
     if( err != paNoError ) qFatal("PortAudio initialization error");
 
+    // Fill out devices list with info about available devices
+    int no = Pa_CountDevices();
+    const PaDeviceInfo *devInfo;
+    for (int i=0; i<no; i++)
+    {
+        // Add new PlayerInfo object to devices list
+        Player::Info *p = new Player::Info;
+        devices.append(p);
+        devInfo = Pa_GetDeviceInfo(i);
+
+        // Name
+        p->name = QString(devInfo->name);
+
+        // Sample rates
+        for (int i=0; i<devInfo->numSampleRates; i++)
+            p->sampleRates.append((int)devInfo->sampleRates[i]);
+
+        // Bits
+        if (devInfo->nativeSampleFormats & paInt8)        p->bits.append(8);
+        if (devInfo->nativeSampleFormats & paInt16)       p->bits.append(16);
+        //if (devInfo->nativeSampleFormats & paPackedInt24) p->bits.append(24);
+        if (devInfo->nativeSampleFormats & paInt24)       p->bits.append(24);
+        if (devInfo->nativeSampleFormats & paInt32)       p->bits.append(32);
+    }
+
     // Get device id of playback device
     PaDeviceID id = Pa_GetDefaultOutputDeviceID();
 
@@ -72,8 +97,10 @@ PlayerPortAudio::~PlayerPortAudio()
 void PlayerPortAudio::start(EngineObject *_reader)
 {
     Player::start(_reader);
+
     PaError err = Pa_StartStream( stream );
-    if( err != paNoError ) qFatal("PortAudio start stream error: %s", Pa_GetErrorText(err));
+    if( err != paNoError )
+        qFatal("PortAudio start stream error: %s", Pa_GetErrorText(err));
 }
 
 void PlayerPortAudio::wait()
@@ -101,14 +128,14 @@ CSAMPLE *PlayerPortAudio::process(const CSAMPLE *, const int)
    Input:   .
    Output:  -
    -------- ------------------------------------------------------ */
-static int paCallback(void *inputBuffer, void *outputBuffer,
+static int paCallback(void *, void *outputBuffer,
                       unsigned long framesPerBuffer,
-                      PaTimestamp outTime, void *_player)
+                      PaTimestamp, void *_player)
 {
     Player *player = (Player *)_player;
     SAMPLE *out = (SAMPLE*)outputBuffer;
     player->prepareBuffer();
-    for (int i=0; i<framesPerBuffer*NO_CHANNELS; i++) 
+    for (unsigned int i=0; i<framesPerBuffer*NO_CHANNELS; i++)
         *out++=player->out_buffer[i];
     return 0;
 }
