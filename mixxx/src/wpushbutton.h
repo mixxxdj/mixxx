@@ -36,8 +36,11 @@ public:
     /** Sets the number of states associated with this button, and removes associated
       * pixmaps. */
     void setStates(int iStatesW);
-    /** Associates a pixmap of a given state with the widget */
+    /** Associates a pixmap of a given state of the button with the widget */
     void setPixmap(int iState, bool bPressed, const QString &filename);
+    /** Associates a background pixmap with the widget. This is only needed if the button
+      * pixmaps contains alpha channel values. */
+    void setPixmapBackground(const QString &filename);
     /** Paints the widget */
     void paintEvent(QPaintEvent *);
     /** Mouse pressed */
@@ -54,6 +57,10 @@ private:
     int m_iNoStates;
     /** Array of associated pixmaps */
     QPixmap **m_pPixmaps;
+    /** Associated background pixmap */
+    QPixmap *m_pPixmapBack;
+    /** Double buffer. Used when background pixmap is set */
+    QPixmap *m_pPixmapBuffer;
     /** Current state */
     int m_iState;
 };
