@@ -312,8 +312,8 @@ SOURCES += track.cpp trackcollection.cpp trackplaylist.cpp xmlparse.cpp wtreevie
 HEADERS += track.h trackcollection.h trackplaylist.h xmlparse.h wtreeview.h wtreeitem.h wtreeitemfile.h wtreeitemdir.h wtreeitemplaylist.h
 
 # Socket
-SOURCES += mixxxsocketserver.cpp mixxxsocketclient.cpp
-HEADERS += mixxxsocketserver.h mixxxsocketclient.h
+SOURCES += mixxxsocketserver.cpp mixxxsocketclient.cpp #mixxxsocketcli.cpp
+HEADERS += mixxxsocketserver.h mixxxsocketclient.h #mixxxsocket.cli.h
 
 IMAGES += icon.png
 DEFINES += SETTINGS_FILE=$$SETTINGS_FILE TRACK_FILE=$$TRACK_FILE

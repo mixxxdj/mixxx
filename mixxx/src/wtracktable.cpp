@@ -48,8 +48,9 @@ WTrackTable::WTrackTable(QWidget *parent, const char *name) : QTable(0, ROW_NO, 
     setFrameStyle(QFrame::NoFrame);
 
     //Accept Drops
-    viewport()->setAcceptDrops(TRUE);
-    setAcceptDrops(TRUE);
+    viewport()->setAcceptDrops(true);
+    setAcceptDrops(true);
+    setDragEnabled(true);
 
     // Font size
     QFont f("Helvetica");
@@ -135,7 +136,7 @@ void WTrackTable::sortColumn(int col, bool ascending, bool)
 
 void WTrackTable::slotMousePressed(int row, int col, int button, const QPoint &)
 {
-    if (col!=COL_COMMENT)
+    if (col!=COL_COMMENT && button==Qt::RightButton)
     {
         WTrackTableItem *p = (WTrackTableItem *)item(row,col);
         TrackInfoObject *pTrackInfoObject = p->getTrackInfoObject();
@@ -143,3 +144,13 @@ void WTrackTable::slotMousePressed(int row, int col, int button, const QPoint &)
     }
 }
 
+QDragObject *WTrackTable::dragObject()
+{
+    WTrackTableItem *p = (WTrackTableItem *)item(currentRow(),currentColumn());
+    TrackInfoObject *pTrackInfoObject = p->getTrackInfoObject();
+
+    QUriDrag *ud = new QUriDrag(this);
+    ud->setFileNames(QStringList(pTrackInfoObject->getLocation()));
+
+    return ud;
+}
