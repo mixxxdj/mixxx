@@ -261,11 +261,11 @@ unix {
    readme.path = $${PREFIX}/share/doc/mixxx-1.3
    readme.files = ../README
    licence.path = $${PREFIX}/share/doc/mixxx-1.3
-   licence.files = ../LICENCE
+   licence.files = ../LICENSE
    copying.path = $${PREFIX}/share/doc/mixxx-1.3
    copying.files = ../COPYING
-   keymap.path = $${PREFIX}/share/doc/mixxx-1.3
-   keymap.files = ../keymap.rtf
+   manual.path = $${PREFIX}/share/doc/mixxx-1.3
+   manual.files = ../Mixxx-Manual.pdf
 
 
     # binary...
@@ -273,7 +273,7 @@ unix {
    target.path = $${PREFIX}/bin
 
     # finally adding what we wanna install...
-   INSTALLS += skino skinoc skinos skint midi keyb readme licence copying keymap target
+   INSTALLS += skino skinoc skinos skint midi keyb readme licence copying manual target
 }
 
 
