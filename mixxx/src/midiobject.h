@@ -5,7 +5,7 @@
 #include <stdlib.h>
 
 #ifdef __PORTMIDI__
-  #include <portmidi.h>
+  #include "portmidi.h"
 #endif
 
 #include <vector>
