@@ -3,9 +3,9 @@
 
 #include <qobject.h>
 #include <qptrlist.h>
+#include "trackinfoobject.h"
 
 class QString;
-class TrackInfoObject;
 
 class TrackList : public QObject
 {
