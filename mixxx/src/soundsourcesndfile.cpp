@@ -89,7 +89,7 @@ int SoundSourceSndFile::ParseHeader( TrackInfoObject *Track )
     }
 
     Track->m_sType = "wav";
-    Track->m_sBitrate = QString("%1").arg((int)(info.samplerate*8./1000.));
+    Track->m_sBitrate = QString("%1").arg((int)(info.samplerate*32./1000.));
     Track->m_iDuration = Track->m_iLength/(4*info.samplerate);
 
     sf_close( fh );
