@@ -24,6 +24,7 @@
 #include <qlabel.h>
 #include <qmessagebox.h>
 #include <qthread.h>
+#include "controlobject.h"
 
 DlgPrefSound::DlgPrefSound(QWidget *parent, PlayerProxy *_player,
                            ConfigObject<ConfigValue> *_config) : DlgPrefSoundDlg(parent,"")
@@ -31,7 +32,22 @@ DlgPrefSound::DlgPrefSound(QWidget *parent, PlayerProxy *_player,
     m_bLatencySliderDrag = false;
     player = _player;
     config = _config;
-
+    
+    // Headphone mute
+    m_pControlObjectHeadphoneMute = ControlObject::getControl(ConfigKey("[Master]","HeadphoneMute"));
+    if (config->getValueString(ConfigKey("[Soundcard]","HeadphoneMute")).length() == 0)
+        config->set(ConfigKey("[Soundcard]","HeadphoneMute"),ConfigValue(1));
+    if (config->getValueString(ConfigKey("[Soundcard]","HeadphoneMute")).toInt()==1)
+    {
+        checkBoxHeadphoneMute->setChecked(true);
+        m_pControlObjectHeadphoneMute->queueFromThread(1.);
+    }
+    else
+    {
+        checkBoxHeadphoneMute->setChecked(false);
+        m_pControlObjectHeadphoneMute->queueFromThread(0.);
+    }
+     
     // Update of latency label, when latency slider is updated
     connect(SliderLatency,                SIGNAL(sliderMoved(int)),  this, SLOT(slotLatency()));
     connect(SliderLatency,                SIGNAL(sliderReleased()),  this, SLOT(slotLatency()));
@@ -59,6 +75,7 @@ DlgPrefSound::DlgPrefSound(QWidget *parent, PlayerProxy *_player,
     connect(ComboBoxSamplerates,          SIGNAL(activated(int)),    this, SLOT(slotApply()));
     connect(ComboBoxSoundApi,             SIGNAL(activated(int)),    this, SLOT(slotApplyApi()));
     connect(checkBoxPitchIndp,            SIGNAL(stateChanged(int)), this, SLOT(slotApply()));
+    connect(checkBoxHeadphoneMute,        SIGNAL(stateChanged(int)), this, SLOT(slotHeadphoneMute(int)));
     connect(SliderLatency,                SIGNAL(sliderPressed()),   this, SLOT(slotLatencySliderClick()));
     connect(SliderLatency,                SIGNAL(sliderReleased()),  this, SLOT(slotLatencySliderRelease()));
     connect(SliderLatency,                SIGNAL(valueChanged(int)), this, SLOT(slotLatencySliderChange(int)));
@@ -280,3 +297,8 @@ void DlgPrefSound::slotLatencySliderChange(int)
         slotApply();
 }
 
+void DlgPrefSound::slotHeadphoneMute(int state)
+{
+    config->set(ConfigKey("[Soundcard]","HeadphoneMute"),ConfigValue(state));
+    m_pControlObjectHeadphoneMute->queueFromThread(state);
+}

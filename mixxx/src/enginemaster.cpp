@@ -66,6 +66,9 @@ EngineMaster::EngineMaster(EngineBuffer *_buffer1, EngineBuffer *_buffer2,
     // Headphone Clipping
     head_clipping = new EngineClipping("");
 
+    // Mute on active headphone
+    m_pControlObjectHeadphoneMute = new ControlObject(ConfigKey(group,"HeadphoneMute"));
+    
     pfl1 = channel1->getPFL();
     pfl2 = channel2->getPFL();
 
@@ -91,6 +94,7 @@ EngineMaster::~EngineMaster()
     delete head_volume;
     delete clipping;
     delete head_clipping;
+    delete m_pControlObjectHeadphoneMute;
     delete [] m_pTemp1;
     delete [] m_pTemp2;
     delete [] m_pHead;
@@ -145,13 +149,14 @@ void EngineMaster::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBuff
         c2_gain = 1.+cf_val;
     }
 
-    if (master1 && pfl1->get()==0. && master2 && pfl2->get()==0.)
+    if (master1 && (m_pControlObjectHeadphoneMute->get()==0. || pfl1->get()==0.) && 
+        master2 && (m_pControlObjectHeadphoneMute->get()==0. || pfl2->get()==0.))
         for (int i=0; i<iBufferSize; ++i)
             m_pMaster[i] = m_pTemp1[i]*c1_gain + m_pTemp2[i]*c2_gain;
-    else if (master1 && pfl1->get()==0.)
+    else if (master1 && (m_pControlObjectHeadphoneMute->get()==0. || pfl1->get()==0.))
         for (int i=0; i<iBufferSize; ++i)
             m_pMaster[i] = m_pTemp1[i]*c1_gain;
-    else if (master2 && pfl2->get()==0.)
+    else if (master2 && (m_pControlObjectHeadphoneMute->get()==0. || pfl2->get()==0.))
         for (int i=0; i<iBufferSize; ++i)
             m_pMaster[i] = m_pTemp2[i]*c2_gain;
     else
