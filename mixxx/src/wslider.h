@@ -37,17 +37,22 @@ public slots:
 signals:
     void valueChanged(int);
 private:
+    void setDefaultValue();
+
     /** Internal representation of slider value */
     int value;
+
+    /** Internal storage of slider position in pixels */
+    int pos;
 
     /** Used internally to represent state of slider (size and orientation) */
     int size_state;
 
-    /** Length of whole slider in pixels */
+    /** Length of slider in pixels */
     int slider_length;
 
-    /** Length of slider minus length of handle in pixels */
-    int slider_range;
+    /** Length of handle in pixels */
+    int handle_length;
 
     /** Pixmaps used to draw slider */
     static QPixmap *smallv, *smallv_h, *midv, *midv_h, *largeh, *largeh_h;

@@ -36,7 +36,7 @@ protected:
     void drawButton (QPainter *);
     void mousePressEvent(QMouseEvent *e);
 private:
-    QPixmap *bulbOn, *bulbOff;
+    static QPixmap *bulbOn, *bulbOff;
 };
 
 #endif

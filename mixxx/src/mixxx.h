@@ -47,6 +47,8 @@
 #include "player.h"
 #include "midiobject.h"
 #include "controlobject.h"
+#include "dlgpreferences.h"
+
 
 /**
   * This Class is the base class for your application. It sets up the main
@@ -107,7 +109,12 @@ class MixxxApp : public QMainWindow
     void slotViewToolBar(bool toggle);
     /** toggle the statusbar*/
     void slotViewStatusBar(bool toggle);
-
+    /** Preference dialog */
+    void slotOptionsPreferences();
+    /** Set preferences from dialog */
+    void slotOptionsSetPreferences();
+    /** Cancel preferences from dialog */
+    void slotOptionsCancelPreferences();
     /** shows an about dlg*/
     void slotHelpAbout();
 
@@ -170,6 +177,10 @@ class MixxxApp : public QMainWindow
 
     QAction *optionsLeft;
     QAction *optionsRight;
+
+    QAction *optionsPreferences;
+    /** Pointer to preference dialog */
+    DlgPreferences *pDlg;
 
 //    QAction *viewToolBar;
     QAction *viewStatusBar;

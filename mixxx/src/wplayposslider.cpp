@@ -22,13 +22,21 @@
 #include "images/playposslider.xpm"
 #include "images/playposmarker.xpm"
 
+// Static member variable definition
+QPixmap *WPlayposSlider::slider = 0;
+QPixmap *WPlayposSlider::marker = 0;
+
 WPlayposSlider::WPlayposSlider(QWidget *parent, const char *name ) : QWidget(parent,name)
 {
-    slider = new QPixmap(playposslider_xpm);
-    marker = new QPixmap(playposmarker_xpm);
+    if (slider==0)
+    {
+        slider = new QPixmap(playposslider_xpm);
+        marker = new QPixmap(playposmarker_xpm);
+    }
 
     value = 0;
-    pix_length = 194; // Length of slider in pixels
+    pos = 2;
+    pix_length = 192; // Length of slider in pixels: len (202) - border(4) - marker len (6)
 }
 
 WPlayposSlider::~WPlayposSlider()
@@ -39,18 +47,11 @@ WPlayposSlider::~WPlayposSlider()
 
 void WPlayposSlider::mouseMoveEvent(QMouseEvent *e)
 {
-    int x = e->x();
-    if (x>199)
-        x = 199;
-    else if (x<=0)
-        x = 0;
-
-    // x is mouse position, in range from 0 to 199
-    int value = (int)((CSAMPLE)x*100./200.);
-    //qDebug("x: %i, value: %i",x,value);
-
-    // Emit valueChanged signal
-    emit(valueChanged(value));
+    pos = e->x()-3; // X pos - half marker len
+    if (pos>194)
+        pos = 194;
+    else if (pos<2)
+        pos = 2;
 
     // Update display
     update();
@@ -62,18 +63,27 @@ void WPlayposSlider::mousePressEvent(QMouseEvent *e)
     mouseMoveEvent(e);
 }
 
+void WPlayposSlider::mouseReleaseEvent(QMouseEvent *e)
+{
+    mouseMoveEvent(e);
+
+    // Calculate and emit new value
+    int value = (int)((CSAMPLE)(pos-2)*100./(CSAMPLE)pix_length);
+    emit(valueChanged(value));
+}
+
 void WPlayposSlider::setValue(int v)
 {
-    // Set value without emitting a valueChanged signal, and force display update
+    // Set value without emitting a valueChanged signal, and update display
     value = v;
+    pos = (int)((CSAMPLE)value*((CSAMPLE)pix_length/100.))+2;
+
     update();
 }
 
-void WPlayposSlider::paintEvent(QPaintEvent *e)
+void WPlayposSlider::paintEvent(QPaintEvent *)
 {
     QPainter paint(this);
-
-    int pos = (int)((CSAMPLE)value*((CSAMPLE)pix_length/100.))+2;
 
     paint.drawPixmap(0,0,*slider);
     paint.drawPixmap(pos,2,*marker);

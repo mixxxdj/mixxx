@@ -32,6 +32,7 @@ public:
 	~WPlayposSlider();
     void mouseMoveEvent(QMouseEvent *e);
     void mousePressEvent(QMouseEvent *e);
+    void mouseReleaseEvent(QMouseEvent *e);
 public slots:
     void setValue(int);
 signals:
@@ -39,8 +40,8 @@ signals:
 protected:
     void paintEvent(QPaintEvent *e);
 private:
-    QPixmap *slider, *marker;
-    int value, pix_length;
+    static QPixmap *slider, *marker;
+    int value, pix_length, pos;
 };
 
 #endif

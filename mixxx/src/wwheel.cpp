@@ -70,7 +70,7 @@ void WWheel::mouseReleaseEvent(QMouseEvent *)
     update();
 }
 
-void WWheel::paintEvent(QPaintEvent *e)
+void WWheel::paintEvent(QPaintEvent *)
 {
     QPainter p(this);
     p.drawPixmap(0,0,*pix[value]);

@@ -20,6 +20,9 @@
 #include <qtable.h>
 #include <qlistview.h>
 #include <qiconset.h>
+#include <qptrlist.h>
+#include <qcombobox.h>
+#include <qmessagebox.h>
 
 #include "wknob.h"
 #include "wslider.h"
@@ -51,6 +54,9 @@ MixxxApp::MixxxApp()
   initMenuBar();
   initToolBar();
   //initStatusBar();
+
+  // Reset pointer to preference dialog
+  pDlg = 0;
 
   // Initialize first available configuration
   ConfigMapping *configMap = new ConfigMapping();
@@ -202,6 +208,11 @@ void MixxxApp::initActions(){
   optionsRight = new QAction(tr("Right channel"), tr("&Right channel"), QAccel::stringToKey(tr("Ctrl+R")), this, 0, true);
   optionsRight->setOn(true);
 
+  optionsPreferences = new QAction(tr("Preferences"), tr("&Preferences..."), 0, this);
+  optionsPreferences->setStatusTip(tr("Preferences"));
+  optionsPreferences->setWhatsThis(tr("Preferences\nPlayback and MIDI preferences"));
+  connect(optionsPreferences, SIGNAL(activated()), this, SLOT(slotOptionsPreferences()));
+
 /*
   viewToolBar = new QAction(tr("Toolbar"), tr("Tool&bar"), 0, this, 0, true);
   viewToolBar->setStatusTip(tr("Enables/disables the toolbar"));
@@ -254,7 +265,8 @@ void MixxxApp::initMenuBar()
   optionsMenu->setCheckable(true);
   optionsLeft->addTo(optionsMenu);
   optionsRight->addTo(optionsMenu);
-
+  optionsMenu->insertSeparator();
+  optionsPreferences->addTo(optionsMenu);
 
   ///////////////////////////////////////////////////////////////////
   // menuBar entry viewMenu
@@ -492,6 +504,72 @@ void MixxxApp::slotViewStatusBar(bool toggle)
   }
 
   statusBar()->message(tr("Ready."));
+}
+
+void MixxxApp::slotOptionsPreferences()
+{
+    if (pDlg==0)
+    {
+        pDlg = new DlgPreferences(this);
+        QPtrList<Player::Info> *pInfo = player->getInfo();
+        Player::Info *p = pInfo->first();
+
+        // Fill dialog with info
+        while (p != 0)
+        {
+            // Name of device
+            pDlg->ComboBoxSoundcard->insertItem(p->name);
+
+            // Sample rates
+            for (unsigned int i=0; i<p->sampleRates.size(); i++)
+                pDlg->ComboBoxSamplerates->insertItem(QString("%1 Hz").arg(p->sampleRates[i]));
+
+            // Bits
+            for (unsigned int i=0; i<p->bits.size(); i++)
+                pDlg->ComboBoxBits->insertItem(QString("%1").arg(p->bits[i]));
+
+            // Get next device
+            p = pInfo->next();
+        }
+
+        // Connect buttons
+        //connect(pDlg->PushButtonOK,     SIGNAL(pressed()), this, SLOT(slotOptionsSetPreferences()));
+        connect(pDlg->PushButtonCancel, SIGNAL(pressed()), this, SLOT(slotOptionsCancelPreferences()));
+
+        // Show dialog
+        pDlg->show();
+    }
+}
+
+void MixxxApp::slotOptionsSetPreferences()
+{
+    // Show warning dialog box
+    switch( QMessageBox::information( this, "Mixxx",
+        "To change the settings the program has to\n"
+        "be restarted?",
+        "Save changes and &exit", "Save and continue", "&Cancel",
+        0,      // Enter == button 0
+        2 ) ) { // Escape == button 2
+    case 0: // Ok clicked or Alt+O pressed or Enter pressed.
+        break;
+    case 1: // "Save and continue" pressed
+        break;
+    case 2: // Cancel clicked or Alt+C pressed or Escape pressed
+        slotOptionsCancelPreferences();
+        return;
+    }
+    // Perform changes
+    player->stop();
+
+
+    slotOptionsCancelPreferences();
+
+}
+
+void MixxxApp::slotOptionsCancelPreferences()
+{
+    delete pDlg;
+    pDlg = 0;
 }
 
 void MixxxApp::slotHelpAbout()

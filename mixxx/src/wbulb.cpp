@@ -22,10 +22,17 @@
 #include "images/bulb_on.xpm"
 #include "images/bulb_off.xpm"
 
+// Static member variable definition
+QPixmap *WBulb::bulbOn = 0;
+QPixmap *WBulb::bulbOff = 0;
+
 WBulb::WBulb(QWidget *parent, const char *name ) : QRadioButton(parent,name)
 {
-    bulbOn  = new QPixmap(bulb_on_xpm);
-    bulbOff = new QPixmap(bulb_off_xpm);
+    if (bulbOn == 0)
+    {
+        bulbOn  = new QPixmap(bulb_on_xpm);
+        bulbOff = new QPixmap(bulb_off_xpm);
+    }
 }
 
 WBulb::~WBulb()
@@ -42,6 +49,6 @@ void WBulb::drawButton(QPainter *p)
         p->drawPixmap(0,0,*bulbOff);
 }
 
-void WBulb::mousePressEvent(QMouseEvent *e)
+void WBulb::mousePressEvent(QMouseEvent *)
 {
 }
