@@ -26,7 +26,14 @@ SoundSourceAudioFile::SoundSourceAudioFile( QString sFilename )
     } else
         filelength = 2*afGetFrameCount(fh,AF_DEFAULT_TRACK);
 
-    channels = 2;
+    channels = afGetChannels(fh, AF_DEFAULT_TRACK);
+
+    // Buffer only used when opening a non-stereo file
+    if (channels!=2)
+        buffer = new SAMPLE[MAX_BUFFER_LEN];
+    else
+        buffer = 0;
+        
     SRATE = (int)afGetRate(fh,AF_DEFAULT_TRACK);
     type = "wav file.";
 //    qDebug("length: %i",filelength);
@@ -35,6 +42,8 @@ SoundSourceAudioFile::SoundSourceAudioFile( QString sFilename )
 SoundSourceAudioFile::~SoundSourceAudioFile()
 {
     afCloseFile(fh);
+    if (buffer)
+        delete [] buffer;
 };
 
 long SoundSourceAudioFile::seek(long filepos)
@@ -49,7 +58,19 @@ long SoundSourceAudioFile::seek(long filepos)
 */
 unsigned SoundSourceAudioFile::read(unsigned long size, const SAMPLE* destination)
 {
-    return afReadFrames(fh,AF_DEFAULT_TRACK, (SAMPLE *)destination,size/channels)*channels;
+    if (channels==2)
+        return afReadFrames(fh,AF_DEFAULT_TRACK, (SAMPLE *)destination, size/channels)*channels;
+    else
+    {
+        // If the file is not in stereo, make the returned buffer.
+        int readNo = afReadFrames(fh,AF_DEFAULT_TRACK, buffer, size/2);
+        for (int i=0; i<readNo; i+=channels)
+        {
+            for (int j=0; j<2; j++)
+                (SAMPLE *)destination[(i*max(channels,2))+j] = buffer[(i*channels)+j];
+        }
+        return readNo*2;
+    }
 }
 
 int SoundSourceAudioFile::ParseHeader(TrackInfoObject *Track)

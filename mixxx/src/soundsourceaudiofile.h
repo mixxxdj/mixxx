@@ -27,17 +27,18 @@ class TrackInfoObject;
   * Class for reading files using libaudiofile
   */
 class SoundSourceAudioFile : public SoundSource {
- public:
+public:
   SoundSourceAudioFile( QString );
   ~SoundSourceAudioFile();
   long seek(long);
   unsigned read(unsigned long size, const SAMPLE*);
   inline long unsigned length();
   static int ParseHeader( TrackInfoObject * );
- private:
+private:
   int channels;
   AFfilehandle fh;
   unsigned long filelength;
+  SAMPLE *buffer;
 };
 
 #endif
