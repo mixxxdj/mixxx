@@ -1,0 +1,33 @@
+Usage:  ./configure  option1="value1;value2..." ...
+
+Options:
+
+-h, --h, --help		stamp this message
+--includedir		adds a path for dependency checking (max allowed = 5)
+--includelib		adds a library for compiling
+--prefix		define the install directory prefix
+--cflags		adds cflags to the project
+--cxxflags		adds cxxflags to the project
+--lflags		adds lflags to the project
+--static-linking-path	define the path to link statically libs
+--enable-debug		enable debug mode
+
+INVALID OPTIONS ARE SKIPPED!
+
+Examples:
+
+$ ./configure     --includedir="/usr/share/libx;/home/liby"
+
+adds two paths to check dependencies: /usr/share/libx  and /home/liby.
+
+$ ./configure     --cflags="-arch=i686;-mcpu=pentium3"
+
+adds -arch=i686 and -mcpu=pentium3 as cflags to the Makefile.
+
+$ ./configure     --prefix="/home/user/program"
+
+it will be used /home/user/program as prefix.
+
+$ ./configure     --includelib="/home/user/libx.so;/home/user/liby.a"
+
+adds two libs to be linked: /home/user/libx.so and /home/user/liby.a.

@@ -1,7 +1,7 @@
 
 #************************************************************************
 # Qmake deps script
-# version 0.2
+# version 0.4
 # Copyright (c) 2003 Gianluca Romanin ( J_Zar )  <jayorama@users.sourceforge.net>
 #************************************************************************
 
@@ -109,13 +109,6 @@ exists( $${OPTIONAL_BASE0}/$${OBJ_TO_TEST}* ) {
 # if not found check with user-added paths
 # This code is not much sharp... Dirty hack...
 contains( FOUND, false) {
-		!isEmpty( PATH0 ) {
-			exists( $$PATH0/$${OBJ_TO_TEST}* ){
-			MESSAGE += yes"
-			message( $${MESSAGE} )
-			FOUND = true
-			}
-		}
 		!isEmpty( PATH1 ) {
 			exists( $$PATH1/$${OBJ_TO_TEST}* ){
 			MESSAGE += yes"
@@ -139,6 +132,13 @@ contains( FOUND, false) {
 		}
 		!isEmpty( PATH4 ) {
 			exists( $$PATH4/$${OBJ_TO_TEST}* ){
+			MESSAGE += yes"
+			message( $${MESSAGE} )
+			FOUND = true
+			}
+		}
+		!isEmpty( PATH5 ) {
+			exists( $$PATH5/$${OBJ_TO_TEST}* ){
 			MESSAGE += yes"
 			message( $${MESSAGE} )
 			FOUND = true

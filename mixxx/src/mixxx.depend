@@ -1,7 +1,7 @@
 
 #************************************************************************
 # Qmake deps script
-# version 0.2
+# version 0.4
 # Copyright (c) 2003 Gianluca Romanin ( J_Zar )  <jayorama@users.sourceforge.net>
 #************************************************************************
 
@@ -67,33 +67,13 @@
 #
 # end of (BBLOCK)
 
-
-# platform definition
-unix:!macx {
-
-# ************************************************* HEADER
 # --------------------------------------------------
-# Basical paths  (TOUCH!)
-LIB_BASE0 = /usr/lib
-LIB_BASE1 = /usr/local/lib
-LIB_BASE2 = /opt/lib
-BIN_BASE0 = /usr/bin
-BIN_BASE1 = /usr/local/bin
-OPTIONAL_BASE0 = /usr/include
-OPTIONAL_BASE1 = /usr/local/include
-OPTIONAL_BASE2 = $(QTDIR)
+# Header         (DON'T TOUCH!)
+include( header.depend )
 # --------------------------------------------------
 
-# --------------------------------------------------
-# Include paths added by configure script     (DON'T TOUCH!)
-message("-------------------------------------------")
-!include ( configure.def ) {
-	message( "Using path defaults ...." )
-} else {
-	message( "Using added paths too  ...." )
-}
-message("-------------------------------------------")
-# --------------------------------------------------
+
+
 
 
 # static linking means excluding tests (except for Jack)
@@ -106,8 +86,8 @@ message("-------------------------------------------")
 # These fileds have to be filled by the programmer   (TOUCH!)
 OBJ_TO_TEST = lib/libqt-mt
 OBJ_TYPE = other
-EXIT_IF_NOT_FOUND = false
-TIP_MESSAGE_IF_NOT_FOUND =
+EXIT_IF_NOT_FOUND = true
+TIP_MESSAGE_IF_NOT_FOUND = "Your QT system has been build without '-thread' option! Mixxx needs QT threads!"
 LINK_IF_FOUND = false
 LIBS_TO_LINK =
 DEFINES_TO_ADD =
@@ -155,7 +135,7 @@ include( check.depend )
 OBJ_TO_TEST = libmad
 OBJ_TYPE = lib
 EXIT_IF_NOT_FOUND = true
-TIP_MESSAGE_IF_NOT_FOUND =
+TIP_MESSAGE_IF_NOT_FOUND = "The Mad decoder is needed for mp3 playback!"
 LINK_IF_FOUND = true
 LIBS_TO_LINK = -lmad
 DEFINES_TO_ADD =
@@ -179,7 +159,7 @@ include( check.depend )
 OBJ_TO_TEST = libid3
 OBJ_TYPE = lib
 EXIT_IF_NOT_FOUND = true
-TIP_MESSAGE_IF_NOT_FOUND =
+TIP_MESSAGE_IF_NOT_FOUND = "Id3tag library needed!"
 LINK_IF_FOUND = true
 LIBS_TO_LINK = -lid3tag
 DEFINES_TO_ADD =
@@ -203,7 +183,7 @@ include( check.depend )
 OBJ_TO_TEST = libaudiofile
 OBJ_TYPE = lib
 EXIT_IF_NOT_FOUND = true
-TIP_MESSAGE_IF_NOT_FOUND =
+TIP_MESSAGE_IF_NOT_FOUND = "AudioFile is needed for the Mixxx playback engine!"
 LINK_IF_FOUND = true
 LIBS_TO_LINK = -laudiofile
 DEFINES_TO_ADD =
@@ -227,9 +207,57 @@ include( check.depend )
 OBJ_TO_TEST = libvorbis
 OBJ_TYPE = lib
 EXIT_IF_NOT_FOUND = true
-TIP_MESSAGE_IF_NOT_FOUND =
+TIP_MESSAGE_IF_NOT_FOUND = "Vorbis library is needed for ogg playback!"
 LINK_IF_FOUND = true
 LIBS_TO_LINK = -lvorbisfile -lvorbis -logg
+DEFINES_TO_ADD =
+SOURCES_TO_ADD =
+HEADERS_TO_ADD =
+CONFIG_TO_ADD =
+LIBS_TO_UNLINK =
+DEFINES_TO_SUBTRACT =
+SOURCES_TO_SUBTRACT =
+HEADERS_TO_SUBTRACT =
+CONFIG_TO_SUBTRACT =
+# --------------------------------------------------
+# Check routines         (DON'T TOUCH!)
+include( check.depend )
+# --------------------------------------------------
+
+
+
+#   FFTW HEADERS (s)-----------------------------------------------
+# These fileds have to be filled by the programmer   (TOUCH!)
+OBJ_TO_TEST = sfftw.h
+OBJ_TYPE = other
+EXIT_IF_NOT_FOUND = true
+TIP_MESSAGE_IF_NOT_FOUND = "FFTW 2 headers needed for the Mixxx playback engine!"
+LINK_IF_FOUND = false
+LIBS_TO_LINK =
+DEFINES_TO_ADD =
+SOURCES_TO_ADD =
+HEADERS_TO_ADD =
+CONFIG_TO_ADD =
+LIBS_TO_UNLINK =
+DEFINES_TO_SUBTRACT =
+SOURCES_TO_SUBTRACT =
+HEADERS_TO_SUBTRACT =
+CONFIG_TO_SUBTRACT =
+# --------------------------------------------------
+# Check routines         (DON'T TOUCH!)
+include( check.depend )
+# --------------------------------------------------
+
+
+
+#   FFTW HEADERS (sr)-----------------------------------------------
+# These fileds have to be filled by the programmer   (TOUCH!)
+OBJ_TO_TEST = srfftw.h
+OBJ_TYPE = other
+EXIT_IF_NOT_FOUND = true
+TIP_MESSAGE_IF_NOT_FOUND = "FFTW 2 headers needed for the Mixxx playback engine!"
+LINK_IF_FOUND = false
+LIBS_TO_LINK =
 DEFINES_TO_ADD =
 SOURCES_TO_ADD =
 HEADERS_TO_ADD =
@@ -251,7 +279,7 @@ include( check.depend )
 OBJ_TO_TEST = libsfftw
 OBJ_TYPE = lib
 EXIT_IF_NOT_FOUND = true
-TIP_MESSAGE_IF_NOT_FOUND =
+TIP_MESSAGE_IF_NOT_FOUND = "FFTW 2 package is needed for the Mixxx playback engine!"
 LINK_IF_FOUND = true
 LIBS_TO_LINK = -lsrfftw -lsfftw
 DEFINES_TO_ADD =
@@ -292,8 +320,57 @@ CONFIG_TO_SUBTRACT =
 include( check.depend )
 # --------------------------------------------------
 
-# end LINLIBPATH code skip
+# end LINLIBPATH code check
 }
+
+
+#   ALSA HEADERS -----------------------------------------------
+# These fileds have to be filled by the programmer   (TOUCH!)
+OBJ_TO_TEST = alsa/asoundlib.h
+OBJ_TYPE = other
+EXIT_IF_NOT_FOUND = false
+TIP_MESSAGE_IF_NOT_FOUND =
+LINK_IF_FOUND = false
+LIBS_TO_LINK =
+DEFINES_TO_ADD =
+SOURCES_TO_ADD =
+HEADERS_TO_ADD =
+CONFIG_TO_ADD =
+LIBS_TO_UNLINK =
+DEFINES_TO_SUBTRACT =
+SOURCES_TO_SUBTRACT =
+HEADERS_TO_SUBTRACT =
+CONFIG_TO_SUBTRACT =
+# --------------------------------------------------
+# Check routines         (DON'T TOUCH!)
+include( check.depend )
+# --------------------------------------------------
+
+
+
+#   ALSA LIBRARY -----------------------------------------------
+# These fileds have to be filled by the programmer   (TOUCH!)
+OBJ_TO_TEST = libasound
+OBJ_TYPE = lib
+EXIT_IF_NOT_FOUND = false
+TIP_MESSAGE_IF_NOT_FOUND =
+LINK_IF_FOUND = false # true
+LIBS_TO_LINK = -lasound
+DEFINES_TO_ADD = # __ALSA__  __ALSAMIDI__
+SOURCES_TO_ADD = # playeralsa.cpp  midiobjectalsa.cpp
+HEADERS_TO_ADD = # playeralsa.h  midiobjectalsa.h
+CONFIG_TO_ADD =
+LIBS_TO_UNLINK =
+DEFINES_TO_SUBTRACT =
+SOURCES_TO_SUBTRACT =
+HEADERS_TO_SUBTRACT =
+CONFIG_TO_SUBTRACT =
+# --------------------------------------------------
+# Check routines         (DON'T TOUCH!)
+include( check.depend )
+# --------------------------------------------------
+
+
 
 #   PKG-CONFIG -----------------------------------------------
 # These fileds have to be filled by the programmer   (TOUCH!)
@@ -319,17 +396,17 @@ include( check.depend )
 
 
 
-#   JACK -----------------------------------------------
+#   JACK HEADERS -----------------------------------------------
 # These fileds have to be filled by the programmer   (TOUCH!)
-OBJ_TO_TEST = libjack
-OBJ_TYPE = lib
+OBJ_TO_TEST = jack/jack.h
+OBJ_TYPE = other
 EXIT_IF_NOT_FOUND = false
-TIP_MESSAGE_IF_NOT_FOUND =
-LINK_IF_FOUND = true
-LIBS_TO_LINK = `pkg-config --silence-errors --cflags --libs jack`
-DEFINES_TO_ADD = __JACK__
-SOURCES_TO_ADD = playerjack.cpp
-HEADERS_TO_ADD = playerjack.h
+TIP_MESSAGE_IF_NOT_FOUND = "Jack headers needed to compile with Jack support!"
+LINK_IF_FOUND = false
+LIBS_TO_LINK =
+DEFINES_TO_ADD =
+SOURCES_TO_ADD =
+HEADERS_TO_ADD =
 CONFIG_TO_ADD =
 LIBS_TO_UNLINK =
 DEFINES_TO_SUBTRACT =
@@ -338,18 +415,38 @@ HEADERS_TO_SUBTRACT =
 CONFIG_TO_SUBTRACT =
 # --------------------------------------------------
 # Check routines         (DON'T TOUCH!)
-#include( check.depend )
+include( check.depend )
 # --------------------------------------------------
 
 
 
-# ************************************************* FOOTER
-# End of transmissions!  End messages before qmake processes Makefile ...           (TOUCH!)
-message("-------------------------------------------")
-message(" Check all done...")
-message("-------------------------------------------")
-message(" Generating Makefile...")
-message("-------------------------------------------")
-message(" Next is: make && make install ")
+#   JACK -----------------------------------------------
+# These fileds have to be filled by the programmer   (TOUCH!)
+OBJ_TO_TEST = libjack
+OBJ_TYPE = lib
+EXIT_IF_NOT_FOUND = false
+TIP_MESSAGE_IF_NOT_FOUND =
+LINK_IF_FOUND = false #true
+LIBS_TO_LINK = `pkg-config --silence-errors --cflags --libs jack`
+DEFINES_TO_ADD = #__JACK__
+SOURCES_TO_ADD = #playerjack.cpp
+HEADERS_TO_ADD = #playerjack.h
+CONFIG_TO_ADD =
+LIBS_TO_UNLINK =
+DEFINES_TO_SUBTRACT =
+SOURCES_TO_SUBTRACT =
+HEADERS_TO_SUBTRACT =
+CONFIG_TO_SUBTRACT =
+# --------------------------------------------------
+# Check routines         (DON'T TOUCH!)
+include( check.depend )
+# --------------------------------------------------
 
-}
+
+
+
+
+# --------------------------------------------------
+# Footer         (DON'T TOUCH!)
+include( footer.depend )
+# --------------------------------------------------

@@ -453,7 +453,7 @@ void MixxxApp::initActions()
     optionsBeatMark->setWhatsThis(tr("Audio Beat Marks\nMark beats by audio clicks"));
     connect(optionsBeatMark, SIGNAL(toggled(bool)), this, SLOT(slotOptionsBeatMark(bool)));
 
-    optionsFullScreen = new QAction(tr("Full Screen"), tr("&Full Screen"), QAccel::stringToKey(tr("Escape")), this, 0, this);
+    optionsFullScreen = new QAction(tr("Full Screen"), tr("&Full Screen"), QAccel::stringToKey(tr("Esc")), this, 0, this);
     optionsFullScreen->setOn(false);
     optionsFullScreen->setStatusTip(tr("Full Screen"));
     optionsFullScreen->setWhatsThis(tr("Display Mixxx using the full screen"));
