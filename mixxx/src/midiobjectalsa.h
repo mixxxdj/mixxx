@@ -27,7 +27,7 @@
 
 class MidiObjectALSA : public MidiObject  {
 public: 
-    MidiObjectALSA(ConfigObject *c);
+    MidiObjectALSA(ConfigObject *c, QApplication *app);
     ~MidiObjectALSA();
 protected:
     void run();

@@ -13,11 +13,12 @@ ConfigObject *MidiObject::config = 0;
             card and device.
    Output:  -
    -------- ------------------------------------------------------ */
-MidiObject::MidiObject(ConfigObject *c)
+MidiObject::MidiObject(ConfigObject *c, QApplication *a)
 {
+    app = a;
     config = c;
     no = 0;
-    requestStop = new QSemaphore(1);
+    requestStop = false;
 };
 
 /* -------- ------------------------------------------------------
@@ -27,7 +28,6 @@ MidiObject::MidiObject(ConfigObject *c)
    -------- ------------------------------------------------------ */
 MidiObject::~MidiObject()
 {
-    delete requestStop;
 };
 
 void MidiObject::reopen(QString device)
@@ -47,7 +47,7 @@ void MidiObject::add(ControlObject* c)
 {
     controlList.push_back(c);
     no++;
-    qDebug("Registered midi control %s (%p).", c->print()->ascii(),c);
+    //qDebug("Registered midi control %s (%p).", c->print()->ascii(),c);
 }
 
 void MidiObject::remove(ControlObject* c)
@@ -75,9 +75,7 @@ QString *MidiObject::getOpenDevice()
 
 void MidiObject::stop()
 {
-    qDebug("sem 1");
-    requestStop->operator++(1);
-    qDebug("sem 2");
+    requestStop = true;
 }
 
 /* -------- ------------------------------------------------------
@@ -102,6 +100,10 @@ void MidiObject::send(char channel, char midicontrol, char midivalue)
                 controlList[i]->slotSetPosition((int)(midimask & midivalue));
             else
                 controlList[i]->slotSetPositionMidi((int)midivalue); // 127-midivalue
+
+            // Force GUI update
+            app->flush();
+
             break;
         }
     }

@@ -20,6 +20,7 @@
 
 #include <qthread.h>
 #include <qwaitcondition.h>
+#include <qapplication.h>
 
 #include "defs.h"
 #include "monitor.h"
@@ -42,7 +43,7 @@
 class EngineBuffer : public EngineObject, public QThread  {
  Q_OBJECT
 public:
-  EngineBuffer(DlgPlaycontrol *, const char *group, const char *filename);
+  EngineBuffer(QApplication *app, DlgPlaycontrol *, const char *group, const char *filename);
   ~EngineBuffer();
   void newtrack(const char *);
   void start();
@@ -54,6 +55,7 @@ public slots:
 signals:
    void position(int);   
 private:
+   QApplication *app;
    bool pause;
    int start_seek;
    Monitor rate;

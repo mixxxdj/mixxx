@@ -29,11 +29,13 @@ EngineMaster::EngineMaster(DlgMaster *master_dlg, DlgCrossfader *crossfader_dlg,
     channel1 = _channel1;
     channel2 = _channel2;
 
+    // Crossfader
     ConfigObject::ConfigKey k(group, "crossfader");
     crossfader = new ControlPotmeter(&k,-1.,1.);
     connect(crossfader_dlg->SliderCrossfader, SIGNAL(valueChanged(int)), crossfader, SLOT(slotSetPosition(int)));
     connect(crossfader, SIGNAL(updateGUI(int)), crossfader_dlg->SliderCrossfader, SLOT(setValue(int)));
 
+    // Master volume
     volume = new EngineVolume(group);
     connect(master_dlg->KnobVolume, SIGNAL(valueChanged(int)), volume->potmeter, SLOT(slotSetPosition(int)));
     connect(volume->potmeter, SIGNAL(updateGUI(int)), master_dlg->KnobVolume, SLOT(setValue(int)));

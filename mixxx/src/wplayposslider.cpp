@@ -78,7 +78,7 @@ void WPlayposSlider::setValue(int v)
     value = v;
     pos = (int)((CSAMPLE)value*((CSAMPLE)pix_length/100.))+2;
 
-    update();
+    repaint();
 }
 
 void WPlayposSlider::paintEvent(QPaintEvent *)

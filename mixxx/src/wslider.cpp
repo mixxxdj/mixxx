@@ -70,8 +70,8 @@ void WSlider::mouseMoveEvent(QMouseEvent *e)
 
     // value ranges from 0 to 127
     value = (int)((FLOAT_TYPE)pos*(128./(FLOAT_TYPE)(slider_length)));
-    if (size_state == 2) // Volume slider
-        value = 127-value;
+    if (size_state==2)
+        value = 127.-value;
 
     //qDebug("WSlider value: %i",value);
 
@@ -137,17 +137,26 @@ void WSlider::setValue(int v)
 {
     // Set value without emitting a valueChanged signal, and force display update
     value = v;
-    if (size_state==2) // Volume slider
-        value = 127-value;
 
     // Calculate handle position
-    pos = (int)(((FLOAT_TYPE)value/128.)*(FLOAT_TYPE)(slider_length-handle_length))+handle_length/2;
-
+    if (size_state==2)
+        v = 127.-v;
+    pos = (int)(((FLOAT_TYPE)(v)/128.)*(FLOAT_TYPE)(slider_length-handle_length))+handle_length/2;
     if (size_state==0)
         pos=0;
+    repaint();
+    emit(valueChanged(value));
+}
+
+void WSlider::slotSetPosition(int p)
+{
+    pos = p;
+    value = (int)((FLOAT_TYPE)p*(128./100.));
 
     repaint();
+    emit(valueChanged(value));
 }
+
 
 void WSlider::setDefaultValue()
 {
