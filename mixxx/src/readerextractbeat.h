@@ -28,7 +28,14 @@ extern "C" {
 }
 #endif
 
-#include <qfile.h>
+// #define FILEOUTPUT
+
+#ifdef FILEOUTPUT
+    #include <qfile.h>
+#endif
+
+class PeakList;
+class ProbabilityVector;
 
 /** Absolute feature threshold. Currently not used */
 const CSAMPLE threshold = 5.;
@@ -40,8 +47,8 @@ const CSAMPLE histMaxBPM = 200.f;
 const CSAMPLE histDownWrite = 0.9999f;
 /** Width of gauss/2 used in histogram updates */
 const int gaussWidth = 8; 
-/** Slack allowed in beat positioning. */
-const CSAMPLE beatPrecision = 0.5;
+/** Slack allowed in beat positioning given in seconds times two, ie. 0.05 = 0.1 total slack. */
+const CSAMPLE kfBeatRange = 0.05;
 
 /**
   * Extracts beat information based on peaks in the HFC and a beat probability vector.
@@ -69,35 +76,29 @@ public:
     int getBufferSize();
     void *processChunk(const int idx, const int start_idx, const int end_idx, bool backwards);
 private:
-    bool circularValidIndex(int idx, int start, int end, int len);
     /** Updates the confidence variable. */
     void updateConfidence(int curBeatIdx, int lastBeatIdx);
-    
+    /** HFC peak list */
+    PeakList *peaks;
+    /** Beat probability vector histogram */
+    ProbabilityVector *bpv;
+        
     /** Buffer indicating if a beat has occoured or not. */
     float *beatBuffer;
     /** Last updated index of beatBuffer containing a beat */
     int beatBufferLastIdx;
     /** Buffer holding bpm values */
     CSAMPLE *bpmBuffer;
-    /** Sorted list of peak indexes in HFC */
-    typedef struct {
-        int i;
-        float corr;
-    } Tpeak;
-    typedef QValueList<Tpeak> Lpeaks;
-    Lpeaks peaks;
     /** Pointer to histogram */
-    CSAMPLE *hist;
-    /** Pointer to beat interval vector */
-//    CSAMPLE *beatIntVector;
+    //CSAMPLE *hist;
     /** Size of histogram */
-    int histSize;
+    //int histSize;
     /** Histogram interval size, and min and max interval in seconds */
-    CSAMPLE histInterval, histMinInterval, histMaxInterval;
+    //CSAMPLE histInterval, histMinInterval, histMaxInterval;
     /** Index of maximum histogram value */
-    int histMaxIdx;
+    //int histMaxIdx;
     /** Correction (second order interpolation) relative to histMaxIdx */
-    float histMaxCorr;
+    //float histMaxCorr;
     /** Total number of frames */
     int frameNo;
     int framePerChunk, framePerFrameSize;
@@ -109,12 +110,13 @@ private:
 #ifdef __GNUPLOT__
     /** Pointer to gnuplot interface */
     plot_t *gnuplot_hist;
-    plot_t *gnuplot_beat;
     plot_t *gnuplot_bpm;
     plot_t *gnuplot_hfc;    
 #endif
 
+#ifdef FILEOUTPUT
     QFile textbpm, textconf, texthist, textbeat, texthfc;   
+#endif
 };
 
 #endif

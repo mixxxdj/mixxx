@@ -18,32 +18,41 @@
 #ifndef PROBABILITYVECTOR_H
 #define PROBABILITYVECTOR_H
 
-#include "defs.h"
+/** Width of gauss/2 used in histogram updates */
+const int kiGaussWidth = 8;
 
 /**
   *@author Tue & Ken Haste Andersen
   */
 
+
 class ProbabilityVector {
 public: 
-    ProbabilityVector(int size, int min);
+    /** Constructs the histogram with intervals ranging from fMinInterval to
+      * fMaxInterval seconds, using iBins number of bins */
+    ProbabilityVector(float fMinInterval, float fMaxInterval, int iBins);
     ~ProbabilityVector();
-    void add(int dt, CSAMPLE weight);
-    int maxIdx();
-    void down();
+    /** Add an interval to the histogram with a given value*/
+    void add(float fInterval, float fValue);
+    /** Returns the current maximum interval of the histogram in seconds */
+    float getCurrMaxInterval();
+    /** Down write the histogram with the given factor, ie. newval = oldval*fFactor */
+    void downWrite(float fFactor);
+    /** Reset the probability vector */
+    void reset();
 private:
-    /** Size of histogram */
-    int size;
-    /** Minimum index value considered when updating histogram in add() */
-    int min;
+    /** Number of bins in histogram */
+    int m_iBins;
+    /** Number of seconds covered by each bin */
+    float m_fSecPerBin;
+    /** Minimum and maximum interval in seconds considered in the histogram */
+    float m_fMinInterval, m_fMaxInterval;
     /** Pointer to histogram */
-    CSAMPLE *hist;
-    /** Maximum value of the histogram */
-    CSAMPLE maxval;
-    /** Index of the maximum value in the histogram */
-    int maxvalIdx;
-
-    
+    float *m_pHist;
+    /** Current maximum interval of the histogram in seconds */
+    float m_fCurrMaxInterval;
+    /** Current bin corresponding to m_fCurrMaxInterval */
+    int m_iCurrMaxBin;
 };
 
 #endif
