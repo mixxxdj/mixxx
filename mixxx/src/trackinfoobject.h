@@ -9,7 +9,7 @@ class QDomNode;
 
 class TrackInfoObject : public QObject
 {
-	Q_OBJECT
+    Q_OBJECT
 public:
 	TrackInfoObject( const QString, const QString );
 	TrackInfoObject( const QDomNode & );
@@ -32,6 +32,7 @@ public:
 	QString m_sArtist;
 	QString m_sTitle;
 	QString m_sType;
+    QString m_sComment;
 	int m_iDuration;
 	int m_iLength;
 	QString m_sBitrate;

@@ -18,6 +18,7 @@
 #include "readerextractbeat.h"
 #include "visual/visualbuffer.h"
 #include "readerevent.h"
+#include "mathstuff.h"
 
 #ifdef __GNUPLOT__
     // For sleep:
@@ -124,6 +125,10 @@ void ReaderExtractBeat::newsource(QString qFilename)
     textconf.close();
     textconf.setName(QString(qFilename).append(".conf"));
     textconf.open(IO_WriteOnly);
+
+    texthfc.close();
+    texthfc.setName(QString(qFilename).append(".hfc"));
+    texthfc.open(IO_WriteOnly);
 }
 
 
@@ -157,6 +162,8 @@ void *ReaderExtractBeat::processChunk(const int _idx, const int start_idx, const
     QTextStream streambpm(&textbpm);
     QTextStream streamhist(&texthist);
     QTextStream streambeat(&textbeat);
+    QTextStream streamhfc(&texthfc);
+
 
     int end_idx = _end_idx;
     int idx = _idx;
@@ -187,7 +194,7 @@ void *ReaderExtractBeat::processChunk(const int _idx, const int start_idx, const
 //    idx = idx%READCHUNK_NO;
 //    end_idx = end_idx%READCHUNK_NO;
 
-    qDebug("from %i-%i",frameFrom,frameTo);
+//    qDebug("from %i-%i",frameFrom,frameTo);
                                 
     // Delete beat markings in beat buffer covered by chunk idx
     int i;
@@ -218,12 +225,12 @@ void *ReaderExtractBeat::processChunk(const int _idx, const int start_idx, const
         if (hfc[i%frameNo]>hfc[(i-1+frameNo)%frameNo] && hfc[i%frameNo]>hfc[(i+1)%frameNo])
         {
             Tpeak p;
-            p.i = i+frameNo;
-            while (p.i>frameNo)
-                p.i -= frameNo;
+            p.i = i%frameNo;
+//            while (p.i>frameNo)
+//                p.i -= frameNo;
 
             // Perform second order interpolation of current hfc peak
-            CSAMPLE t=0, t1=0, t2=0;
+            CSAMPLE t=0., t1=0., t2=0.;
 //            qDebug("%i %i %i %i",p.i%frameNo,(p.i+1)%frameNo,(p.i-1+frameNo)%frameNo,frameNo);
             t  = hfc[i%frameNo];
             t1 = hfc[(i-1+frameNo)%frameNo];
@@ -343,6 +350,7 @@ void *ReaderExtractBeat::processChunk(const int _idx, const int start_idx, const
                 // If interval is larger than histMinInterval, update the histogram
                 if (interval>=histMinInterval)
                 {
+/*
                     // Histogram is updated with a gauss function centered at the found interval
                     int center  = (interval-histMinInterval)/histInterval;
                     int j_start = -min(gaussWidth, center);
@@ -374,11 +382,49 @@ void *ReaderExtractBeat::processChunk(const int _idx, const int start_idx, const
                     }
                     else
                         histMaxCorr = 0.;
+
+*/
+                    // Histogram is updated with a gauss function centered at the found interval
+                    CSAMPLE center  = (interval-histMinInterval)/histInterval;
+                    CSAMPLE j_start = -min(gaussWidth, center);
+                    CSAMPLE j_end   = min(gaussWidth, (histSize-1)-center);
+
+                    // Set hysterisisFactor. If the gauss is within histMaxIdx, use a large hysterisisFactor
+                    float hysterisisFactor = 1.;
+                    if (center>(CSAMPLE)(histMaxIdx-gaussWidth) && center<(CSAMPLE)(histMaxIdx+gaussWidth))
+                        hysterisisFactor = 1.2;
+
+                    for (CSAMPLE j=j_start; j<j_end; j++)
+                    {
+                        int idx = round((center+j));
+                        hist[idx] += exp((-0.5*j*j)/(0.5*(CSAMPLE)gaussWidth))*hfc[(*it).i]*hfc[(*it2).i]*hysterisisFactor;
+                        if (hist[idx]>hist[histMaxIdx])
+                        {
+                             histMaxIdx = idx;
+
+                             // Determine histMaxCorr
+                             if (histMaxIdx>1 && histMaxIdx<histSize-2)
+                             {
+                                 float t  = hist[histMaxIdx];
+                                 float t1 = hist[histMaxIdx-1];
+                                 float t2 = hist[histMaxIdx+1];
+
+                                 if ((t1-2.0*t+t2) != 0.)
+                                     histMaxCorr = (0.5*(t1-t2))/(t1-2.*t+t2);
+                                 else
+                                     histMaxCorr = 0.;
+                            }
+                            else
+                                histMaxCorr = 0.;
+                        }
+                    }
+
+
                 }
 
                 // Determine if (it2) is within histMaxIdx distance from current peak, and if it is 2.0
                 // times larger than the current peak.
-                if ((interval<((CSAMPLE)histMaxIdx*histInterval)+histMinInterval) && hfc[(*it2).i]>hfc[(*it).i]*2.0)
+                if ((interval<((CSAMPLE)histMaxIdx*histInterval)+histMinInterval) && hfc[(*it2).i]>hfc[(*it).i])
                     maxPeakInHistMaxInterval = true;
 
                 // Get next previous peak and calculate its distance (interval) to current peak
@@ -402,14 +448,23 @@ void *ReaderExtractBeat::processChunk(const int _idx, const int start_idx, const
             else
                 beatint = (*it).i-beatBufferLastIdx;
 
-            if (!maxPeakInHistMaxInterval &&
+//            qDebug("int %i, min %i, max %i",beatint, histMaxIdx+(int)(histMinInterval/histInterval)-gaussWidth,
+//                                                   histMaxIdx+(int)(histMinInterval/histInterval)+gaussWidth);
+
+            if (
                 beatint>(histMaxIdx+(int)(histMinInterval/histInterval)-gaussWidth) &&
                 beatint<(histMaxIdx+(int)(histMinInterval/histInterval)+gaussWidth))
             {
-                updateConfidence((*it).i, beatBufferLastIdx);
-                qDebug("set peak at %i, conf %f",(*it).i,confidence);
-                beatBuffer[(*it).i] = 1.;
-                beatBufferLastIdx = (*it).i;
+                if (!maxPeakInHistMaxInterval)
+                {
+
+                    updateConfidence((*it).i, beatBufferLastIdx);
+                    qDebug("set peak at %i, conf %f",(*it).i,confidence);
+                    beatBuffer[(*it).i] = 1.;
+                    beatBufferLastIdx = (*it).i;
+                }
+                //else
+                //    qDebug("maxPeakInHistMaxInterval");
             }
             ++it;
         }
@@ -421,9 +476,8 @@ void *ReaderExtractBeat::processChunk(const int _idx, const int start_idx, const
 
             if (histMaxIdx>-1)
             {
-                //
-                // If it is time to set a beat, do so
-                // Interval in samples between current peak (it) and a previous beat mark
+                // Check if it's time to set a beat, ie. the interval to last beat (beatint)
+                // is greater than or equal to the current max histogram interval
                 int idx = i%frameNo;
                 int beatint;
                 if (beatBufferLastIdx>idx)
@@ -431,13 +485,92 @@ void *ReaderExtractBeat::processChunk(const int _idx, const int start_idx, const
                 else
                     beatint = idx-beatBufferLastIdx;
 
-/*
-                if (beatint >= histMaxIdx+(int)(histMinInterval/histInterval)+gaussWidth)
+//                qDebug("beatint %i, histint %i",beatint,histMaxIdx+(int)(histMinInterval/histInterval));                
+                if (beatint >= histMaxIdx+(int)(histMinInterval/histInterval))
                 {
-                    qDebug("force peak at %i, conf %f",i,beatBufferLastIdx,confidence);
-                    updateConfidence(idx, beatBufferLastIdx);
-                    beatBuffer[idx] = 1.;
-                    beatBufferLastIdx = idx;
+                    // Try search for a beat a little into the future to see if it's there
+                    // ****************
+
+                    
+//                    qDebug("conf %f",confidence);
+                    if (confidence<=0.)
+                    {
+                        // Find max peak in histogram between from current index and back to max interval histogram
+                        int from = (idx-(histMaxIdx+(int)(histMinInterval/histInterval))+frameNo)%frameNo;
+                        if (from>idx)
+                            from = max(from,frameFrom);
+                        else
+                            from = min(from,frameFrom);
+                        int add = 0;
+                        int to = idx-2;
+                        if (to<0)
+                            to+=frameNo;
+                        if (from>to)
+                            add = frameNo;
+                        int maxidx = -1;
+                        CSAMPLE maxval = 0.;
+                        for (int i=from; i<to+add-2; ++i)
+                        {
+                            if (hfc[(i+1+frameNo)%frameNo]>maxval && hfc[(i+1+frameNo)%frameNo]>hfc[i%frameNo] && hfc[(i+1+frameNo)%frameNo]>hfc[(i+2+frameNo)%frameNo])
+                            {
+                                maxidx = (i+1+frameNo)%frameNo;
+                                maxval = hfc[(i+1+frameNo)%frameNo];
+                            }
+                        }
+//                        qDebug("maxidx: %i",maxidx);
+                        
+                        if (maxidx>-1)
+                        {
+                            // Check if a peak exists between maxidx and hist interval backwards in time
+                            from = (maxidx-(histMaxIdx+(int)(histMinInterval/histInterval))+frameNo)%frameNo;
+                            add = 0;
+                            to = maxidx;
+                            if (to<0)
+                                to+=frameNo;
+                            if (from>to)
+                                add = frameNo;
+
+                            bool valid = true;
+                            for (int i=from; i<to+add; ++i)
+                            {
+                                if (hfc[(i+frameNo)%frameNo]>2.*hfc[maxidx]) // && hfc[(i+1+frameNo)%frameNo]>hfc[i%frameNo] && hfc[(i+1+frameNo)%frameNo]>hfc[(i+2+frameNo)%frameNo])
+                                {
+                                    valid = false;
+                                }
+                            }
+
+
+                            if (valid)
+                            {
+                                beatBuffer[maxidx] = 2.;    
+                                beatBufferLastIdx = maxidx;
+                                updateConfidence(maxidx, beatBufferLastIdx);
+                                qDebug("resync at %i, cur %i, conf %f",maxidx,idx,confidence);
+
+/*
+                                confidence = 0.;
+                                QTextStream streamconf(&textconf);
+                                streamconf << confidence << "\n";
+                                textconf.flush();
+*/
+                            }
+                        }
+                    }
+                    else
+                    {
+
+                        // If the confidence is high (>0) force a beat mark right away, otherwise, search
+                        // for something which could be a valid peak
+                        qDebug("force peak at %i, conf %f",idx,confidence);
+                        updateConfidence(idx, beatBufferLastIdx);
+                        beatBuffer[idx] = 3.;
+                        beatBufferLastIdx = idx;
+                    }
+                    
+                }
+/*
+                else if (beatint >= histMaxIdx+(int)(histMinInterval/histInterval)+gaussWidth)
+                {
                 }
 */
             }
@@ -495,7 +628,11 @@ void *ReaderExtractBeat::processChunk(const int _idx, const int start_idx, const
 
     // Write beat mark to text fil
     for (i=frameFrom; i<=frameTo+frameAdd; i++)
+    {
         streambeat << beatBuffer[i%frameNo] << "\n";
+        streamhfc << hfc[i%frameNo] << "\n";
+    }
+    texthfc.flush();
     textbeat.flush();
 
 #ifdef __GNUPLOT__
@@ -544,6 +681,7 @@ void ReaderExtractBeat::updateConfidence(int curBeatIdx, int lastBeatIdx)
 {
     QTextStream streamconf(&textconf);
 
+/*
     CSAMPLE min = 0.4f;
     if (confidence>=0.7)
         min = 0.71f;
@@ -566,14 +704,31 @@ void ReaderExtractBeat::updateConfidence(int curBeatIdx, int lastBeatIdx)
         confidence = min;
     if (confidence>0.9)
         confidence = 0.9f;
+*/
 
+    // Find max in HFC between lastBeatIdx and curBeatIdx-1
+    CSAMPLE max = 0.00001f;
+    int i1 = lastBeatIdx;
+    int i2 = curBeatIdx-1;
+    if (i1>i2)
+        i2+=frameNo;        
+    for (int i=i1; i<i2; ++i)
+        if (hfc[i%frameNo]>max)
+            max = hfc[i%frameNo];
     
+    // Update confidence
+    CSAMPLE tmp = hfc[curBeatIdx%frameNo]/max;
+    if (tmp<=0.)
+        tmp = 0.00001f;
+    confidence = confidence*0.99+(0.01*(log(tmp)));
+
+
     streamconf << confidence << "\n";
     textconf.flush();
 
 
 //    confidence=0.9;    
-    //qDebug("confidence :%f, beat %f, max %f, tmp %f",confidence,hfc[curBeatIdx%frameNo], max, tmp);
+//    qDebSg("confidence :%f, beat %f, max %f, tmp %f",confidence,hfc[curBeatIdx%frameNo], max, tmp);
 }
 
 

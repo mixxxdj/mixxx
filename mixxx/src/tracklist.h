@@ -18,10 +18,11 @@ class ControlObject;
 const int COL_SCORE = 0;
 const int COL_TITLE = 1;
 const int COL_ARTIST = 2;
-const int COL_TYPE = 3;
-const int COL_DURATION = 4;
-const int COL_BITRATE = 5;
-const int COL_INDEX = 6;
+const int COL_COMMENT = 3;
+const int COL_TYPE = 4;
+const int COL_DURATION = 5;
+const int COL_BITRATE = 6;
+const int COL_INDEX = 7;
 
 
 
@@ -29,7 +30,7 @@ const int COL_INDEX = 6;
 // bugfixed, this number should be increased. If TRACKLIST_VERSION is larger
 // than the version written in the current tracklist, the list will be
 // re-parsed.
-const int TRACKLIST_VERSION = 5;
+const int TRACKLIST_VERSION = 6;
 
 class TrackList : public QObject
 {

@@ -16,33 +16,29 @@
  ***************************************************************************/
 
 #include "wtracktable.h"
-
+#include "tracklist.h"
 #include <qfont.h>
 #include <qcolor.h>
 
-WTrackTable::WTrackTable(QWidget *parent, const char *name) : QTable(10, 7, parent, name)
+WTrackTable::WTrackTable(QWidget *parent, const char *name) : QTable(10, 8, parent, name)
 {
     setSorting(true);  
     setSelectionMode(QTable::SingleRow);
     setFocusStyle(QTable::FollowStyle);
     
-    horizontalHeader()->setLabel( 0, tr( "**" ) );
-    horizontalHeader()->setLabel( 1, tr( "Title" ) );
-    horizontalHeader()->setLabel( 2, tr( "Artist" ) );
-    horizontalHeader()->setLabel( 3, tr( "Type" ) );
-    horizontalHeader()->setLabel( 4, tr( "Duration" ) );
-    horizontalHeader()->setLabel( 5, tr( "Bitrate" ) );
-    horizontalHeader()->setLabel( 6, tr( "Index" ) );
+    horizontalHeader()->setLabel(COL_SCORE, tr( "**" ) );
+    horizontalHeader()->setLabel(COL_TITLE, tr( "Title" ) );
+    horizontalHeader()->setLabel(COL_ARTIST, tr( "Artist" ) );
+    horizontalHeader()->setLabel(COL_COMMENT, tr( "Comment" ) );
+    horizontalHeader()->setLabel(COL_TYPE, tr( "Type" ) );
+    horizontalHeader()->setLabel(COL_DURATION, tr( "Duration" ) );
+    horizontalHeader()->setLabel(COL_BITRATE, tr( "Bitrate" ) );
+    horizontalHeader()->setLabel(COL_INDEX, tr( "Index" ) );
 
-    // Setup background color
-//    setPaletteForegroundColor(QColor(0,0,0)); //168,181,164));
-    setEraseColor(QColor(0,0,0)); //168,181,164));
-//    setBackgroundMode(Qt::PaletteDark);
+    // Setup table properties
     setShowGrid(false);
-   
-    // Set colors
-    setPaletteBackgroundColor(QColor(0,0,0));
-    setPaletteForegroundColor(QColor(0,0,0));
+    setFrameStyle(QFrame::NoFrame);
+    setPaletteBackgroundColor(QColor(148,171,194));
 
     // Font size
     QFont f("Helvetica");
@@ -55,13 +51,14 @@ WTrackTable::WTrackTable(QWidget *parent, const char *name) : QTable(10, 7, pare
     
     // Setup tracklist collum widths
     setLeftMargin(0);
-    setColumnWidth(0,20);
-    setColumnWidth(1,240);
-    setColumnWidth(2,220);
-    setColumnWidth(3,30);
-    setColumnWidth(4,50);
-    setColumnWidth(5,50);
-    hideColumn(6);
+    setColumnWidth(COL_SCORE,20);
+    setColumnWidth(COL_TITLE,240);
+    setColumnWidth(COL_ARTIST,220);
+    setColumnWidth(COL_COMMENT,246);
+    setColumnWidth(COL_TYPE,30);
+    setColumnWidth(COL_DURATION,50);
+    setColumnWidth(COL_BITRATE,50);
+    hideColumn(COL_INDEX);
 }
 
 WTrackTable::~WTrackTable()

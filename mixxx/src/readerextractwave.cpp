@@ -55,7 +55,7 @@ ReaderExtractWave::ReaderExtractWave(Reader *pReader) : ReaderExtract(0, "signal
 #ifdef EXTRACT
     readerfft  = new ReaderExtractFFT((ReaderExtract *)this, WINDOWSIZE, STEPSIZE);
     readerhfc  = new ReaderExtractHFC((ReaderExtract *)readerfft, WINDOWSIZE, STEPSIZE);
-    readerbeat = new ReaderExtractBeat((ReaderExtract *)readerhfc, WINDOWSIZE, STEPSIZE, 200);
+    readerbeat = new ReaderExtractBeat((ReaderExtract *)readerhfc, WINDOWSIZE, STEPSIZE, 100);
 #endif
 }
 

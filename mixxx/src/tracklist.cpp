@@ -41,7 +41,7 @@ TrackList::TrackList( const QString sDirectory, WTrackTable *ptableTracks,
     m_pBuffer2 = buffer2;
 
     m_iCurTrackIdxCh1 = -1;
-    m_iCurTrackIdxCh2 = -1;
+    m_iCurTrackIdxCh2 = -1;                  
 
     // Get ControlObject for determining end of track mode, and set default value to STOP.
     m_pEndOfTrackModeCh1 = ControlObject::getControl(ConfigKey("[Channel1]","TrackEndMode"));
@@ -137,12 +137,13 @@ void TrackList::UpdateTracklist()
 
 	// Put information from all the tracks into the table:
 	int iRow=0;
-	m_ptableTracks->hideColumn( COL_INDEX ); // Hide the index row
+//	m_ptableTracks->hideColumn( COL_INDEX ); // Hide the index row
 	m_ptableTracks->setNumRows( m_lTracks.count() );
 	for (TrackInfoObject *Track = m_lTracks.first(); Track; Track = m_lTracks.next() )
 	{
         m_ptableTracks->setItem(iRow, COL_TITLE, new WTrackTableItem(m_ptableTracks,QTableItem::Never, Track->m_sTitle));
 		m_ptableTracks->setItem(iRow, COL_ARTIST, new WTrackTableItem(m_ptableTracks,QTableItem::Never, Track->m_sArtist));
+		m_ptableTracks->setItem(iRow, COL_COMMENT, new WTrackTableItem(m_ptableTracks,QTableItem::WhenCurrent, Track->m_sComment));
 		m_ptableTracks->setItem(iRow, COL_TYPE, new WTrackTableItem(m_ptableTracks,QTableItem::Never, Track->m_sType));
 		m_ptableTracks->setItem(iRow, COL_DURATION, new WTrackTableItem(m_ptableTracks,QTableItem::Never, Track->Duration()));
 		m_ptableTracks->setItem(iRow, COL_BITRATE, new WTrackTableItem(m_ptableTracks,QTableItem::Never, Track->m_sBitrate));

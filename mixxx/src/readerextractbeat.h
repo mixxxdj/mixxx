@@ -114,7 +114,7 @@ private:
     plot_t *gnuplot_hfc;    
 #endif
 
-    QFile textbpm, textconf, texthist, textbeat;   
+    QFile textbpm, textconf, texthist, textbeat, texthfc;   
 };
 
 #endif

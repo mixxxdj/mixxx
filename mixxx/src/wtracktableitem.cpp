@@ -33,11 +33,11 @@ void WTrackTableItem::paint(QPainter *p, const QColorGroup &cg, const QRect &cr,
     QColorGroup g( cg );
     // last row is the sum row - we want to make it more visible by
     // using a red background
-    g.setColor( QColorGroup::Text, QColor(0,200,0));
+    g.setColor( QColorGroup::Text, QColor(0,0,0));
     if ((row()/2)*2 == row())
-        g.setColor( QColorGroup::Base, QColor(0,0,0));
+        g.setColor( QColorGroup::Base, QColor(148,171,194));
     else
-        g.setColor( QColorGroup::Base, QColor(0,0,0));
+        g.setColor( QColorGroup::Base, QColor(154,178,196));
 
     QTableItem::paint( p, g, cr, selected);
 }
