@@ -19,7 +19,7 @@
 #include <qmessagebox.h>
 #include <qapplication.h>
 
-PlayerJack::PlayerJack(ConfigObject<ConfigValue> *config, ControlObject *pControl) : Player(config,pControl), mLibJack("libjack.so")
+PlayerJack::PlayerJack(ConfigObject<ConfigValue> *config, ControlObject *pControl) : Player(config,pControl) //, mLibJack("libjack.so")
 {
     ports = 0;
     m_iBufferSize = 1024;
@@ -304,12 +304,9 @@ void PlayerJack::callbackSetBufferSize(int iBufferSize)
 
 void PlayerJack::callbackShutdown()
 {
-    jack_deactivate(client);
-    client = 0;
-    m_bOpen = false;
     m_pConfig->set(ConfigKey("[Soundcard]","SoundApi"), ConfigValue("None"));
 
-    qWarning("Jack connection was killed.\n\nThis is probably due to a high CPU load. Try reducing\nthe sound quality and/or disable the waveform displays.");
+    qWarning("Jack connection was killed.\n\nThis *could* be due to a high CPU load. Try reducing\nthe sound quality and/or disable the waveform displays.");
 }
 
 void jackError(const char *desc)

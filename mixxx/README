@@ -66,6 +66,9 @@ cd src
 make
 make install
 
+To compile with support for the Jack sound server, use
+./configure --enable-features=Jack
+
 *Mac and Windows:
 Extract the downloaded file to a folder and start the
 installation by double-clicking on the program.

@@ -119,12 +119,12 @@ bool PlayerProxy::setSoundApi(QString name)
     m_pPlayer = 0;
 
 #ifdef __PORTAUDIO__
-    if (!m_pPlayer && name == PlayerPortAudio::getSoundApi())
+    if (name == PlayerPortAudio::getSoundApi())
         m_pPlayer = new PlayerPortAudio(m_pConfig, m_pControl);
 #endif
 
 #ifdef __JACK__
-    if (!m_pPlayer && name == PlayerJack::getSoundApi())
+    if (name == PlayerJack::getSoundApi())
         m_pPlayer = new PlayerJack(m_pConfig, m_pControl);
 #endif
 
