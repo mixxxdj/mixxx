@@ -119,6 +119,16 @@ void WTrackTable::setup(QDomNode node)
         WTrackTableItem::setRowColors(r1, r2);
     }
 
+    // BPM confidence colors
+    if (!WWidget::selectNode(node, "BgColorBpmConfidenceLow").isNull())
+    {
+        QColor c1;
+        c1.setNamedColor(WWidget::selectNodeQString(node, "BgColorBpmConfidenceLow"));
+        QColor c2;
+        c2.setNamedColor(WWidget::selectNodeQString(node, "BgColorBpmConfidenceHigh"));
+        WTrackTableItem::setBpmConfidenceColors(c1, c2);
+    }
+    
     // Setup column widths
     setLeftMargin(0);
     hideColumn(COL_INDEX);

@@ -1057,6 +1057,8 @@
   <BgColor>#ffffff</BgColor>
   <BgColorRowEven>#ffffff</BgColorRowEven>
   <BgColorRowUneven>#ffffff</BgColorRowUneven>
+  <BgColorBpmConfidenceLow>#ffffff</BgColorBpmConfidenceLow>
+  <BgColorBpmConfidenceHigh>#9EFF75</BgColorBpmConfidenceHigh>
   <ColWidthScore>20</ColWidthScore>
   <ColWidthTitle>190</ColWidthTitle>
   <ColWidthArtist>180</ColWidthArtist>
