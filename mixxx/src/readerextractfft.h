@@ -39,6 +39,8 @@ public:
     void reset();
     void *getBasePtr();
     int getRate();
+    int getChannels();
+    int getBufferSize();
     void *processChunk(const int idx, const int start_idx, const int end_idx);
 private:
     void processFrame(int idx);

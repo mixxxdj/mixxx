@@ -42,7 +42,7 @@ private:
     CSAMPLE maxval;
     /** Index of the maximum value in the histogram */
     int maxvalIdx;
-    
+
     
 };
 

@@ -35,7 +35,9 @@ int round(CSAMPLE x);
 CSAMPLE arctan2(CSAMPLE y, CSAMPLE x);
 CSAMPLE wndKaiser(CSAMPLE *wnd, int size, CSAMPLE beta);
 //void wndDwnd(CSAMPLE *wnd, CSAMPLE *dwnd, int size);
-
+/** Compute pow(x,n) for positive integer n through repeated
+  * squarings */
+double qip(CSAMPLE x, unsigned int n);
 static CSAMPLE pi     = acos(-1.0);
 
 #endif

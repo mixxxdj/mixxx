@@ -1,5 +1,5 @@
 /***************************************************************************
-                          readerextracthfc.h  -  description
+                          readerextractbeat.h  -  description
                              -------------------
     begin                : Tue Mar 18 2003
     copyright            : (C) 2003 by Tue & Ken Haste Andersen
@@ -15,23 +15,28 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef READEREXTRACTHFC_H
-#define READEREXTRACTHFC_H
+#ifndef READEREXTRACTBEAT_H
+#define READEREXTRACTBEAT_H
 
 #include "readerextract.h"
 #include "defs.h"
-#include <qptrlist.h>
+#include <qvaluelist.h>
 
-class EngineSpectralFwd;
+
+const CSAMPLE threshold = 5.;
+const CSAMPLE histMinBPM = 60.;
+const CSAMPLE histMaxBPM = 240.;
+const int gaussWidth = 8; // Width of gauss/2
+
 /**
   *@author Tue & Ken Haste Andersen
   */
 
-class ReaderExtractHFC : public ReaderExtract
+class ReaderExtractBeat : public ReaderExtract
 {
 public: 
-    ReaderExtractHFC(ReaderExtract *input, int frameSize, int frameStep);
-    ~ReaderExtractHFC();
+    ReaderExtractBeat(ReaderExtract *input, int frameSize, int frameStep, int _histSize);
+    ~ReaderExtractBeat();
     void reset();
     void *getBasePtr();
     int getRate();
@@ -39,11 +44,23 @@ public:
     int getBufferSize();
     void *processChunk(const int idx, const int start_idx, const int end_idx);
 private:
+    /** Sorted list of peak indexes in HFC */
+    typedef QValueList<int> Tpeaks;
+    Tpeaks peaks;
+    /** Array containing indexes into peaks list. Each element in the array corresponds to the
+      * start of a chunk in the peak list. If the index is -1 no peaks are stored in the list
+      * for the given chunk */
+    Tpeaks::iterator *peakIt;    
+    /** Pointer to histogram */
+    CSAMPLE *hist;
+    /** Size of histogram */
+    int histSize;
+    /** Histogram interval size, and min and max interval in seconds*/
+    CSAMPLE histInterval, histMinInterval, histMaxInterval;
     int frameNo;
     int framePerChunk;
-    /** Array of hfc and first derivative of hfc */
-    CSAMPLE *hfc, *dhfc;
-    QPtrList<EngineSpectralFwd> *specList;
+    /** Pointer to HFC array */
+    CSAMPLE *hfc;
 };
 
 #endif

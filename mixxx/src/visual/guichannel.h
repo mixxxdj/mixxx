@@ -24,7 +24,7 @@
 #include <qevent.h>
 
 class GUIContainer;
-class EngineBuffer;
+class Reader;
 class VisualController;
 class SignalVertexBuffer;
 
@@ -37,7 +37,7 @@ class SignalVertexBuffer;
 class GUIChannel : public QObject
 {
 public:
-    GUIChannel(EngineBuffer *_engineBuffer, VisualController *_controller);
+    GUIChannel(Reader *_reader, VisualController *_controller);
     ~GUIChannel();
     bool eventFilter(QObject *o, QEvent *e);
     SignalVertexBuffer *add();
@@ -45,7 +45,7 @@ public:
     void setPosX(int x);
     void setZoomPosX(int x);    
 private:
-    EngineBuffer            *engineBuffer;
+    Reader                  *reader;
     VisualController        *controller;
     QPtrList<GUIContainer>  list;
     int                     posx, zoomposx;

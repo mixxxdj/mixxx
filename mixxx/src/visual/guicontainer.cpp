@@ -21,8 +21,8 @@
 #include "guisignal.h"
 #include "visualsignal.h"
 #include "../defs.h"
-#include "../enginebuffer.h"
-#include "../soundbuffer.h"
+#include "../reader.h"
+#include "../readerextract.h"
 
 // Static members:
 Light GUIContainer::mylight;
@@ -31,27 +31,29 @@ Material GUIContainer::dblue, GUIContainer::lblue, GUIContainer::purple, GUICont
 /**
  * Default Consructor.
  */
-GUIContainer::GUIContainer(EngineBuffer *engineBuffer)
+GUIContainer::GUIContainer(Reader *reader)
 {
     setupScene();
     atBasepos = true;
     movement = false;
 
-    SoundBuffer *soundBuffer = engineBuffer->getSoundBuffer();
+    //**********************
+    ReaderExtract *readerExtract; // = reader->getSoundBuffer();
     
     // Calculate resampling factor
-    CSAMPLE signalRate = (CSAMPLE)soundBuffer->getRate();
+    CSAMPLE signalRate = (CSAMPLE)readerExtract->getRate();
     CSAMPLE factor = DISPLAYRATE/signalRate;
 
-    // Chunk size used in vertex buffer
-    int chunkSize = (int)(soundBuffer->getChunkSize()*factor);
+    // Chunk size used in vertex buffer****************
+    int chunkSize; // = (int)(soundBuffer->getChunkSize()*factor);
     
     vertex = new FastVertexArray();
     vertex->init(chunkSize, READCHUNK_NO);
 
     // Create objects
-    buffer = new SignalVertexBuffer(engineBuffer, vertex);
-    signal = new GUISignal(buffer,vertex,engineBuffer->getGroup());
+    buffer = new SignalVertexBuffer(reader, vertex);
+    //***********************
+    signal = new GUISignal(buffer,vertex,"" /*engineBuffer->getGroup()*/);
     
     signal->setBoxMaterial(&dblue);
     signal->setBoxWireMaterial(&lblue);

@@ -38,8 +38,8 @@ const int DISPLAYRATE = 20;
 #include <qobject.h>
 #include <qgl.h>
 
-class EngineBuffer;
-class SoundBuffer;
+class Reader;
+class ReaderExtract;
 class FastVertexArray;
 
 typedef struct
@@ -51,7 +51,7 @@ typedef struct
 class SignalVertexBuffer : public QObject
 {
 public:
-    SignalVertexBuffer(EngineBuffer *engineBuffer, FastVertexArray *vertex);
+    SignalVertexBuffer(Reader *_reader, FastVertexArray *vertex);
     virtual ~SignalVertexBuffer();
     bool eventFilter(QObject *o, QEvent *e);
     
@@ -71,10 +71,10 @@ private:
     int resampleFactor;
     /** Number of samples to display (used in getVertexArray) */             
     int displayLen;
-    /** Pointer to EngineBuffer */
-    EngineBuffer *enginebuffer;
-    /** Pounter to SoundBuffer */
-    SoundBuffer *soundbuffer;
+    /** Pointer to Reader */
+    Reader *reader;
+    /** Pounter to ReaderExtract */
+    ReaderExtract *readerExtract;
     /** Pointer to CFastVertexArray */
     FastVertexArray *vertex;
 };

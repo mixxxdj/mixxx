@@ -28,8 +28,13 @@
 #ifdef __WIN__
   #include "soundsourcesndfile.h"
 #endif
+#include "mixxx.h"
+#ifdef __VISUALS__
+  #include "mixxxvisual.h"
+  #include "visual/guichannel.h"
+#endif
 
-Reader::Reader(EngineBuffer *_enginebuffer, Monitor *_rate, QMutex *_pause)
+Reader::Reader(EngineBuffer *_enginebuffer, MixxxApp *mixxx, Monitor *_rate, QMutex *_pause)
 {
     enginebuffer = _enginebuffer;
     rate = _rate;
@@ -45,6 +50,19 @@ Reader::Reader(EngineBuffer *_enginebuffer, Monitor *_rate, QMutex *_pause)
     file = 0;
     file_srate = 44100;
     file_length = 0;
+
+    // If visual subsystem is present...
+    guichannel = 0;
+#ifdef __VISUALS__
+    if (mixxx->getVisual())
+    {
+        // Add buffer as a visual channel
+        guichannel = mixxx->getVisual()->add(this);
+
+        // Soundbuffer should be updating the vertexbuffer
+        //soundbuffer->setSignalVertexBuffer(guichannel->add());
+    }
+#endif
 }
 
 Reader::~Reader()

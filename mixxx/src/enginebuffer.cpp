@@ -71,20 +71,8 @@ EngineBuffer::EngineBuffer(MixxxApp *_mixxx, DlgPlaycontrol *_playcontrol, const
     // Control file changed
 //    filechanged = new ControlEngine(controlfilechanged);
 //    filechanged->setNotify(this,(void (EngineObject::*)(double))newtrack);
-
-    // If visual subsystem is present...
-    guichannel = 0;
-/*
-    if (mixxx->getVisual())
-    {
-        // Add buffer as a visual channel
-        guichannel = mixxx->getVisual()->add(this);
-
-        // Soundbuffer should be updating the vertexbuffer
-        soundbuffer->setSignalVertexBuffer(guichannel->add());
-    }
-*/   
-    reader = new Reader(this, &rate_exchange, &pause);
+   
+    reader = new Reader(this, mixxx, &rate_exchange, &pause);
     read_buffer_prt = reader->getBufferWavePtr();
     file_length_old = -1;
     file_srate_old = 0;
@@ -267,6 +255,8 @@ CSAMPLE *EngineBuffer::process(const CSAMPLE *, const int buf_size)
                 idx -= (double)READBUFFERSIZE;
             else if (idx<0)
                 idx += (double)READBUFFERSIZE;
+//if (idx<bufferpos_play)
+//    qDebug("idx: %f, bufferpos_play %f, diff: %f",idx,bufferpos_play,bufferpos_play-idx);
             bufferpos_play = idx;
         
             // Write file playpos

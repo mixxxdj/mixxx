@@ -28,6 +28,7 @@
 class SignalVertexBuffer;
 class ReaderExtractFFT;
 class ReaderExtractHFC;
+class ReaderExtractBeat;
 
 /**
   *@author Tue & Ken Haste Andersen
@@ -40,6 +41,8 @@ public:
     void reset();
     void *getBasePtr();
     int getRate();
+    int getChannels();
+    int getBufferSize();
     void *processChunk(const int, const int, const int);
     void setSoundSource(SoundSource *_file);
     void setSignalVertexBuffer(SignalVertexBuffer *_signalVertexBuffer);
@@ -73,6 +76,7 @@ private:
     /** Pointer to FFT extractor */
     ReaderExtractFFT *readerfft;
     ReaderExtractHFC *readerhfc;
+    ReaderExtractBeat *readerbeat;
 };
 
 #endif
