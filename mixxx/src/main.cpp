@@ -53,18 +53,18 @@ QFile Logfile; // global logfile variable
 
 void MessageToLogfile( QtMsgType type, const char *msg )
 {
-	QTextStream Log( &Logfile );
-	switch ( type ) {
-	case QtDebugMsg:
-		Log << "Debug: " << msg << "\n";
-		break;
-	case QtWarningMsg:
-		Log << "Warning: " << msg << "\n";
-		break;
-	case QtFatalMsg:
-		fprintf( stderr, "Fatal: %s\n", msg );
-		QMessageBox::warning(0, "Mixxx", msg);
-		exit(-1);
+    QTextStream Log( &Logfile );
+    switch ( type ) {
+    case QtDebugMsg:
+        Log << "Debug: " << msg << "\n";
+        break;
+    case QtWarningMsg:
+        Log << "Warning: " << msg << "\n";
+        break;
+    case QtFatalMsg:
+        fprintf( stderr, "Fatal: %s\n", msg );
+        QMessageBox::warning(0, "Mixxx", msg);
+        exit(-1);
     }
     Logfile.flush();
 }
@@ -73,39 +73,42 @@ void MessageToLogfile( QtMsgType type, const char *msg )
 int main(int argc, char *argv[])
 {
 #ifdef Q_WS_WIN
-  // For windows write all debug messages to a logfile:
-  Logfile.setName( "c:/mixxx.log" );
-  Logfile.open( IO_WriteOnly );
-  qInstallMsgHandler( MessageToLogfile );
+    // For windows write all debug messages to a logfile:
+    Logfile.setName( "c:/mixxx.log" );
+    Logfile.open( IO_WriteOnly );
+    qInstallMsgHandler( MessageToLogfile );
 #else
-  // For others, write to the console:
-  qInstallMsgHandler( MessageOutput );
+    // For others, write to the console:
+    qInstallMsgHandler( MessageOutput );
 #endif
 
-  // Ensure image data is initialized
-  //qInitImages_mixxx();
-  
-  QApplication a(argc, argv);
+    QApplication a(argc, argv);
 //  a.setFont(QFont("helvetica", 10));
-  QTranslator tor( 0 );
-  // set the location where your .qm files are in load() below as the last parameter instead of "."
-  // for development, use "/" to use the english original as
-  // .qm files are stored in the base project directory.
-  tor.load( QString("mixxx.") + QTextCodec::locale(), "." );
-  a.installTranslator( &tor ); 
-  /* uncomment the following line, if you want a Windows 95 look*/
-  // a.setStyle(WindowsStyle);
-    
-  MixxxApp *mixxx=new MixxxApp(&a);
-  a.setMainWidget(mixxx);
-  mixxx->resize( 1024, 768);
-  mixxx->setFixedWidth(1024);
-  mixxx->setFixedHeight(768);
-  //mixxx->setIcon(QPixmap());
+    QTranslator tor( 0 );
+    // set the location where your .qm files are in load() below as the last parameter instead of "."
+    // for development, use "/" to use the english original as
+    // .qm files are stored in the base project directory.
+    tor.load( QString("mixxx.") + QTextCodec::locale(), "." );
+    a.installTranslator( &tor ); 
+    /* uncomment the following line, if you want a Windows 95 look*/
+    // a.setStyle(WindowsStyle);
 
-  mixxx->show();
-  int result = a.exec();
-  delete mixxx;
-  return result;
+    // Check if one of the command line arguments is "--no-visuals"
+    bool bVisuals = true;
+    for (int i=0; i<argc; ++i)
+        if(QString("--no-visuals")==argv[i])
+            bVisuals = false;
+    
+    MixxxApp *mixxx=new MixxxApp(&a, bVisuals);
+    a.setMainWidget(mixxx);
+    mixxx->resize( 1024, 768);
+    mixxx->setFixedWidth(1024);
+    mixxx->setFixedHeight(768);
+    //mixxx->setIcon(QPixmap());
+
+    mixxx->show();
+    int result = a.exec();
+    delete mixxx;
+    return result;
 }
 

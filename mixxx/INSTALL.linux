@@ -1,4 +1,4 @@
-To install from source on linux you need QT 3, libmad, and libsndfile.
+To install from source on linux you need the libraries mentioned in the README file.
 
 Compile and install using the following commands:
 cd src

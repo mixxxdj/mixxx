@@ -43,23 +43,23 @@ EngineBuffer::EngineBuffer(PowerMate *_powermate, const char *_group, WVisual *p
     // Play button
     ControlPushButton *p = new ControlPushButton(ConfigKey(group, "play"));
     playButton = new ControlEngine(p);
-	connect(playButton, SIGNAL(valueChanged(double)), this, SLOT(slotControlPlay(double)));
+    connect(playButton, SIGNAL(valueChanged(double)), this, SLOT(slotControlPlay(double)));
     playButton->set(0);
 
     // Cue set button:
     p = new ControlPushButton(ConfigKey(group, "cue_set"));
     buttonCueSet = new ControlEngine(p);
-	connect(buttonCueSet, SIGNAL(valueChanged(double)), this, SLOT(slotControlCueSet(double)));
+    connect(buttonCueSet, SIGNAL(valueChanged(double)), this, SLOT(slotControlCueSet(double)));
 
     // Cue goto button:
     p = new ControlPushButton(ConfigKey(group, "cue_goto"));
     buttonCueGoto = new ControlEngine(p);
-	connect(buttonCueGoto, SIGNAL(valueChanged(double)), this, SLOT(slotControlCueGoto(double)));
+    connect(buttonCueGoto, SIGNAL(valueChanged(double)), this, SLOT(slotControlCueGoto(double)));
 
     // Cue preview button:
     p = new ControlPushButton(ConfigKey(group, "cue_preview"));
     buttonCuePreview = new ControlEngine(p);
-	connect(buttonCuePreview, SIGNAL(valueChanged(double)), this, SLOT(slotControlCuePreview(double)));
+    connect(buttonCuePreview, SIGNAL(valueChanged(double)), this, SLOT(slotControlCuePreview(double)));
 
     // Playback rate slider
     ControlPotmeter *p2 = new ControlPotmeter(ConfigKey(group, "rate"), 0.9f, 1.1f);
@@ -106,7 +106,6 @@ EngineBuffer::EngineBuffer(PowerMate *_powermate, const char *_group, WVisual *p
 
     m_iBeatMarkSamplesLeft = 0;
 
-    
     // Try setting up visuals
     VisualChannel *pVisualChannel = 0;
 #ifdef __VISUALS__

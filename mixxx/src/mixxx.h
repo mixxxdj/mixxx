@@ -65,16 +65,14 @@ class MixxxApp : public QMainWindow
   Q_OBJECT
   
   public:
-    /** construtor */
-    MixxxApp(QApplication *app);
+    /** Construtor. Tries to open visuals if bVisuals is true. */
+    MixxxApp(QApplication *app, bool bVisuals);
     /** destructor */
     ~MixxxApp();
     /** initializes all QActions of the application */
     void initActions();
     /** initMenuBar creates the menu_bar and inserts the menuitems */
     void initMenuBar();
-    /** setup the mainview*/
-    void initView();
     /** overloaded for Message box on last window exit */
     bool queryExit();
   public slots:
