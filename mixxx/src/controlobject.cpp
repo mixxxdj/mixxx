@@ -107,7 +107,10 @@ void ControlObject::emitValueChanged(FLOAT_TYPE value)
         item->no = controlEngineNo;
         item->value = value;
         if (queue)
+        {
             queue->add(item);
+//            qDebug("no %i, add %f",item->no,value);
+        }
     }
     //qDebug("val %f",value);
 

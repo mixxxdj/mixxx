@@ -40,16 +40,19 @@ void ControlEngineQueue::sync()
     // If possible lock mutex and process queue
     if (mutex.tryLock())
     {
-        for (unsigned int i=0; i<queue.count(); i++)
-        {
-            ControlEngineQueueItem *item = queue.dequeue();
+        //qDebug("queue len %i",queue.count());
 
-//            qDebug("item %i, value %f",item->no, item->value);
+        ControlEngineQueueItem *item = queue.dequeue();
+        while (item!=0)
+        {
+//            qDebug("item %i, value %f, count %i",item->no, item->value, queue.count());
             list->at(item->no)->setExtern(item->value);
-            queue.remove();
+            //queue.remove();
             
             //delete item
             delete item;
+
+            item = queue.dequeue();
         }
         
         // Unlock mutex

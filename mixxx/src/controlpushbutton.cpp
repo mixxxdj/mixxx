@@ -73,13 +73,12 @@ void ControlPushButton::slotSetPositionMidi(MidiCategory c, int)
     // Only react on NOTE_ON midi events
     if (c==NOTE_ON)
     {
-        qDebug("value : %f",value);
         if (value==0)
             slotSetPosition(1);
         else
             slotSetPosition(0);
 
-        qDebug("value : %f",value);
+//        qDebug("value : %f",value);
             
         emit(updateGUI((int)value));
     }

@@ -91,7 +91,7 @@ void PowerMate::run()
     timeval *waittime = new timeval;
     while (1)
     {
-	r = read(fd, ibuffer, sizeof(struct input_event) * INPUT_BUFFER_SIZE);
+        r = read(fd, ibuffer, sizeof(struct input_event) * INPUT_BUFFER_SIZE);
         if(r > 0)
         {
             events = r / sizeof(struct input_event);
@@ -117,11 +117,11 @@ void PowerMate::run()
             waittime->tv_sec  = 0;
             waittime->tv_usec = 1;
             select(0,0,0,0,waittime);
-	   
-	    led_write(0, 0, 0, 0, 0);
-	}
-	else
-	{
+   
+            led_write(0, 0, 0, 0, 0);
+        }
+        else
+        {
             // Sleep
             waittime->tv_sec  = 0;
             waittime->tv_usec = 50;
