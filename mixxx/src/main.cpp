@@ -26,11 +26,6 @@
 #include <stdio.h>
 #include <math.h>
 #include "portaudio.h"
-<<<<<<< main.cpp
-=======
-#include "iconsmall.xpm"
->>>>>>> 1.37
-
 #include "mixxx.h"
 
 void qInitImages_mixxx();
