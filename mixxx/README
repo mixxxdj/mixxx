@@ -1,4 +1,4 @@
-Mixxx - version 1.3.
+Mixxx - version 1.3.1
 
 * HOMEPAGE *************************************************
 http://mixxx.sourceforge.net
@@ -16,6 +16,10 @@ directory for a copy of the licence.
 
 
 * NEWS *****************************************************
+New since 1.3:
+- Filters fixed. Works better than ever.
+- Small updates to waveform displays
+
 New since 1.2.1:
 - Playlist import of pls and m3u files
 - Small skin fitting 800x600 screen
