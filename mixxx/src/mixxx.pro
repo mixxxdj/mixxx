@@ -7,7 +7,7 @@ SOURCES += playerportaudio.cpp
 HEADERS += playerportaudio.h
 DEFINES += __PORTAUDIO__
 unix:LIBS += -lportaudio
-win32:LIBS += ../lib/PAstaticDSD.lib dsound.lib
+win32:LIBS += ../lib/PAstaticWMMED.lib winmm.lib
 
 # OSS Midi (Working good, Linux specific)
 #SOURCES += midiobjectoss.cpp
@@ -33,11 +33,6 @@ win32:LIBS += ../lib/portmidi.lib ../lib/porttime.lib
 #DEFINES  += __ALSAMIDI__
 
 #
-# Config file path, default: /usr/share/mixxx
-#
-#CONFIG_PATH = "/usr/share/mixxx\"
-
-#
 # End of options
 #
 
@@ -52,6 +47,7 @@ unix {
   LIBS += -lmad -laudiofile -lid3tag
   QMAKE_CXXFLAGS += -O -dD
   SOURCES += soundsourceaflibfile.cpp
+  CONFIG_PATH = \"/usr/share/mixxx\"
 }
 
 win32 {
@@ -65,13 +61,14 @@ win32 {
   #../lib/libid3tag.lib ../lib/libz.lib
   QMAKE_CXXFLAGS += -GX
   QMAKE_LFLAGS += /NODEFAULTLIB:libcd /NODEFAULTLIB:libcmtd /NODEFAULTLIB:msvcrt.lib
+  CONFIG_PATH = \"d:\\mixxx\"
 }
 
 # Profiling
 #QMAKE_CXXFLAGS_DEBUG += -pg
 #QMAKE_LFLAGS_DEBUG += -pg
 
-DEFINES += CONFIG_PATH=\"/usr/share/mixxx\"
+DEFINES += CONFIG_PATH=$$CONFIG_PATH
 FORMS	= dlgchanneldlg.ui dlgplaycontroldlg.ui dlgplaylistdlg.ui dlgmasterdlg.ui dlgcrossfaderdlg.ui dlgsplitdlg.ui dlgpreferencesdlg.ui
 IMAGES	= filesave.xpm
 TEMPLATE	=app

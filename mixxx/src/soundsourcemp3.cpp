@@ -2,23 +2,35 @@
 
 SoundSourceMp3::SoundSourceMp3(const char* filename)
 {
+	QFile file(filename);
+	if (!file.open(IO_ReadOnly))
+		qFatal("MAD: Open of %s failed.", filename);
+
+    // Read the whole file into inputbuf:
+    inputbuf_len = file.size();
+    inputbuf = new char[inputbuf_len];
+	int tmp = file.readBlock(inputbuf, inputbuf_len);
+    if (tmp != inputbuf_len)
+        qFatal("MAD: Error reading mp3-file: %s\nRead only %d bytes, but wanted %d bytes.",filename,tmp,inputbuf_len);
+
+/*
+
     file = fopen(filename,"r");
     if (!file)
-    {
         qFatal("MAD: Open of %s failed.", filename);
-    }
 
     // Read the whole file into inputbuf:
     struct stat filestat;
     stat(filename, &filestat);
     inputbuf_len = filestat.st_size;
     inputbuf = new unsigned char[inputbuf_len];
-    if (fread(inputbuf,1, inputbuf_len,file) != inputbuf_len)
-        qFatal("MAD: Error reading mp3-file.");
-
+	size_t tmp = fread(inputbuf,1,(size_t) inputbuf_len ,file);
+    if (tmp != inputbuf_len)
+        qFatal("MAD: Error reading mp3-file: %s\nRead only %d bytes, but wanted %d bytes.%d.%d",filename,tmp,inputbuf_len,feof(file),ferror(file));
+*/	
     // Transfer it to the mad stream-buffer:
     mad_stream_init(&Stream);
-    mad_stream_buffer(&Stream, inputbuf, inputbuf_len);
+    mad_stream_buffer(&Stream, (unsigned char *) inputbuf, inputbuf_len);
 
     /*
       Decode all the headers, and fill in stats:
@@ -75,7 +87,7 @@ SoundSourceMp3::SoundSourceMp3(const char* filename)
     // Re-init buffer:
     mad_stream_finish(&Stream);
     mad_stream_init(&Stream);
-    mad_stream_buffer(&Stream, inputbuf, inputbuf_len);
+    mad_stream_buffer(&Stream, (unsigned char *) inputbuf, inputbuf_len);
     mad_frame_init(&Frame);
     mad_synth_init(&Synth);
 
@@ -98,7 +110,7 @@ long SoundSourceMp3::seek(long filepos)
     //qDebug("Seek to %d %d %d", filepos, inputbuf_len, newpos);
 
     // Go to an approximate position:
-    mad_stream_buffer(&Stream, inputbuf+newpos, inputbuf_len-newpos);
+    mad_stream_buffer(&Stream, (unsigned char *) (inputbuf+newpos), inputbuf_len-newpos);
     mad_synth_mute(&Synth);
     mad_frame_mute(&Frame);
 
@@ -142,14 +154,14 @@ unsigned SoundSourceMp3::read(unsigned long samples_wanted, const SAMPLE* _desti
         {
             if(MAD_RECOVERABLE(Stream.error))
             {
-                qWarning("MAD: Recoverable frame level error (%s)",
+                qDebug("MAD: Recoverable frame level error (%s)",
                        mad_stream_errorstr(&Stream));
                 continue;
             } else if(Stream.error==MAD_ERROR_BUFLEN) {
-                qWarning("MAD: buflen error");
+                qDebug("MAD: buflen error");
                 break;
             } else {
-                qWarning("MAD: Unrecoverable frame level error (%s).",
+                qDebug("MAD: Unrecoverable frame level error (%s).",
                 mad_stream_errorstr(&Stream));
                 break;
             }
