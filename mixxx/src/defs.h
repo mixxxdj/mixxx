@@ -26,7 +26,6 @@ const int WINDOWSIZE = 512;
 /* Step size used in block based processing (EnginePreProcess and others) */
 const int STEPSIZE = WINDOWSIZE/2;
 
-
 /** Maximum buffer length to each EObject::process call */
 const int MAX_BUFFER_LEN = 400000;
 

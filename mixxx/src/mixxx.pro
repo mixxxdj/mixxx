@@ -16,7 +16,6 @@ macx:HEADERS += ../lib/portaudio-v18mac/ringbuffer.h ../lib/portaudio-v18mac/por
 macx:LIBS += -framework CoreAudio -framework AudioToolbox
 macx:INCLUDEPATH += ../lib/portaudio-v18mac
 
-
 # OSS Midi (Working good, Linux specific)
 unix:!macx:SOURCES += midiobjectoss.cpp
 unix:!macx:HEADERS += midiobjectoss.h
@@ -50,6 +49,20 @@ macx:LIBS    += -framework CoreMIDI -framework CoreFoundation
 #SOURCES += midiobjectalsa.cpp
 #HEADERS += midiobjectalsa.h
 #DEFINES  += __ALSAMIDI__
+
+# Visuals
+# SOURCES += mixxxvisual.cpp visual/visualbackplane.cpp visual/texture.cpp visual/guicontainer.cpp visual/buffer.cpp visual/box.cpp visual/controller.cpp visual/guisignal.cpp visual/light.cpp visual/material.cpp visual/pick.cpp visual/pickable.cpp visual/signal.cpp visual/visual.cpp visual/fastvertexarray.cpp
+# HEADERS += mixxxvisual.h visual/visualbackplane.h  visual/texture.h visual/guicontainer.h visual/buffer.h visual/box.h visual/controller.h visual/guisignal.h visual/light.h visual/material.h visual/pick.h visual/pickable.h visual/signal.h visual/visual.h visual/fastvertexarray.h
+# CONFIG += opengl
+# DEFINES += __VISUALS__
+
+# Use NVSDK when building
+#DEFINES += __NVSDK__
+#win32:INCLUDEPATH += c:/Progra~1/NVIDIA~1/NVSDK/OpenGL/include/glh
+#win32:LIBS += c:/Progra~1/NVIDIA~1/NVSDK/OpenGL/lib/debug/glut32.lib
+#unix:INCLUDEPATH +=/usr/local/nvsdk/OpenGL/include/glh
+#unix:DEFINES += UNIX
+#unix:LIBS += -L/usr/local/nvsdk/OpenGL/lib/ -lnv_memory
 
 #
 # End of options

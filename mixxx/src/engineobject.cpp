@@ -17,8 +17,6 @@
 
 #include "engineobject.h"
 
-
-
 // Static member variable definition
 //QString EngineObject::NAME_MASTER = 0;
 //QString EngineObject::NAME_HEAD = 0;

@@ -31,6 +31,8 @@
 #include <qevent.h>
 #include "soundsourcemp3.h"
 #include "rtthread.h"
+#include "soundbuffer.h"
+
 #ifdef __UNIX__
   #include "soundsourceaudiofile.h"
 #endif
@@ -43,7 +45,6 @@ EngineBuffer::EngineBuffer(QApplication *a, QWidget *m, DlgPlaycontrol *_playcon
   app = a;
   mixxx = m;
   group = _group;
-  
   playposSliderLast = 0.;
   playcontrol = _playcontrol;
   start_seek = -1;
@@ -92,7 +93,6 @@ EngineBuffer::EngineBuffer(QApplication *a, QWidget *m, DlgPlaycontrol *_playcon
   // Semaphore controlling access to getchunk
   readChunkLock = new QSemaphore(1);
 
-
   // Open the track:
   file = 0;
   newtrack(filename);
@@ -124,6 +124,11 @@ EngineBuffer::~EngineBuffer()
 const char *EngineBuffer::getGroup()
 {
     return group;
+}
+
+SoundBuffer *EngineBuffer::getSoundBuffer()
+{
+    return soundbuffer;
 }
 
 void EngineBuffer::newtrack(const char* filename)
@@ -164,7 +169,6 @@ void EngineBuffer::newtrack(const char* filename)
 
     if (file==0)
         qFatal("Error opening %s", filename);
-
 
     visualPlaypos = 0;
     visualRate = 0.;
@@ -291,7 +295,6 @@ void EngineBuffer::slotUpdateRate(FLOAT_TYPE)
     
 }
 
-
 /*
   This is called when the positionslider is released:
 */
@@ -330,8 +333,6 @@ void EngineBuffer::seek(FLOAT_TYPE change)
     pause = false;
 
     visualPlaypos = (int)bufferpos_play.read()%READBUFFERSIZE;
-
-
 }
 
 inline bool even(long n)
