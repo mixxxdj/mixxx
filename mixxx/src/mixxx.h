@@ -116,6 +116,8 @@ class MixxxApp : public QMainWindow
     void slotOptionsPreferencesUpdateDeviceOptions();
     /** Set preferences from dialog */
     void slotOptionsSetPreferences();
+    /** Browse for playlist directory */
+    void slotBrowsePlaylistDir();
     /** Cancel preferences from dialog */
     void slotOptionsClosePreferences();
     /** shows an about dlg*/
