@@ -25,17 +25,22 @@
     read()
     length()
 */
-SoundSource::SoundSource() {}
-SoundSource::~SoundSource() {}
+SoundSource::SoundSource()
+{
+}
+
+SoundSource::~SoundSource()
+{
+}
+
 /*
   Class for reading files using libaudiofile
 */
 AFlibfile::AFlibfile(const char* filename) {
   fh = afOpenFile(filename,"r",0);
-  if (fh == AF_NULL_FILEHANDLE) {
-    cout << "Error opening file.\n";
-    exit(1);
-  }
+  if (fh == AF_NULL_FILEHANDLE)
+    qFatal("Error opening file.");
+
   channels = 2;
   filelength = 2*afGetFrameCount(fh,AF_DEFAULT_TRACK);
 }
@@ -60,7 +65,7 @@ unsigned AFlibfile::read(unsigned long size, const SAMPLE* destination) {
   Return the length of the file in samples.
 */
 long unsigned AFlibfile::length() {
-  return filelength;
+	return filelength;
 }
 
 /*

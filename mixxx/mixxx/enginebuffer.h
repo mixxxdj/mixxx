@@ -23,6 +23,7 @@
 #include <qmultilineedit.h>
 #include <qslider.h>
 #include <qstring.h>
+#include <qfileinfo.h>
 
 #include <pthread.h>
 #include <semaphore.h>
@@ -36,12 +37,33 @@
 #include "dlgchannel.h"
 #include "dlgmessages.h"
 #include "midiobject.h"
+
 /**
   *@author Tue and Ken Haste Andersen
   */
 
 class EngineBuffer : public EngineObject, public QThread  {
- Q_OBJECT
+  Q_OBJECT
+public:
+  EngineBuffer(DlgPlaycontrol *, DlgChannel *, MidiObject *, const char *);
+  ~EngineBuffer();
+  void start();
+  void process(CSAMPLE *, CSAMPLE *, int);
+public slots:
+  void slotUpdatePlay(valueType);
+  void slotUpdateRate(FLOAT);
+protected:
+  void stop();
+  void getchunk();
+  void seek(FLOAT);
+  void checkread();
+  void writepos();
+
+  sem_t *buffers_read_ahead;
+  unsigned long int read_buffer_size;
+  unsigned long int frontpos;
+  double play_pos;
+  CSAMPLE *readbuffer;
 private:
   void run();
 
@@ -59,22 +81,6 @@ private:
   long distance(const long, const long);
   FLOAT min(const FLOAT, const FLOAT);
   FLOAT max(const FLOAT, const FLOAT);
-public:
-  EngineBuffer(DlgPlaycontrol *, DlgChannel *, MidiObject *, char *);
-  ~EngineBuffer();
-  void start();
-  void process(CSAMPLE *, CSAMPLE *, int);
-  sem_t *buffers_read_ahead;
-  unsigned long int read_buffer_size;
-  unsigned long int frontpos;
-  double play_pos;
-  CSAMPLE *readbuffer;
-  void getchunk();
-  void seek(FLOAT);
-  void checkread();
-  void writepos();
-public slots:
-   void slotUpdatePlay(valueType);
-   void slotUpdateRate(FLOAT);
+  QSemaphore *requestStop;
 };
 #endif

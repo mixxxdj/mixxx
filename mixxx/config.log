@@ -227,8 +227,8 @@ configure:3800: checking for shmat
 configure:3828: gcc -o conftest -O2       conftest.c  1>&5
 configure:3892: checking for res_init
 configure:3920: gcc -o conftest -O2       conftest.c  1>&5
-/tmp/ccI33Bcs.o: In function `main':
-/tmp/ccI33Bcs.o(.text+0x7): undefined reference to `res_init'
+/tmp/ccnIZEcZ.o: In function `main':
+/tmp/ccnIZEcZ.o(.text+0x7): undefined reference to `res_init'
 collect2: ld returned 1 exit status
 configure: failed program was:
 #line 3897 "configure"

@@ -43,7 +43,7 @@ MixxxView::MixxxView(QWidget *parent, MixxxDoc *doc) : QWidget(parent)
 	mainGrid->setRowStretch( 0, 310);
 	mainGrid->setRowStretch( 1, 210);
 
-	// Add lines to table
+	// Add filenames in ./music/ to table
 	QDir d("music");
 	d.setFilter(QDir::Files);
     if (!d.exists())
@@ -58,11 +58,16 @@ MixxxView::MixxxView(QWidget *parent, MixxxDoc *doc) : QWidget(parent)
         while ((fi=it.current()) && (i<playlist->TableList->numRows())) {             // for each file...
 			playlist->TableList->setItem(i,0,new QTableItem(playlist->TableList,QTableItem::Never,
 															fi->baseName()));
+			playlist->TableList->setItem(i,1,new QTableItem(playlist->TableList,QTableItem::Never,
+															fi->filePath()));
+
             ++it;                               // goto next list element
 			i++;
         }
 
     }
+
+
 }
 
 MixxxView::~MixxxView()

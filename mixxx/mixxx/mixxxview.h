@@ -44,7 +44,6 @@ class MixxxView : public QWidget
 
   protected slots:
     void slotDocumentChanged();
-
   private:
 	//QHBoxLayout *hMainBox;
 	QGridLayout *mainGrid;

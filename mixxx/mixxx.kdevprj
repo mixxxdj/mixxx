@@ -29,7 +29,7 @@ author=Tue and Ken Haste Andersen
 configure_args=--enable-mt
 email=
 kdevprj_version=1.3
-lfv_open_groups=
+lfv_open_groups=User Interface
 make_options=\s-j1
 makefiles=Makefile.am,mixxx/Makefile.am,mixxx/docs/Makefile.am,mixxx/docs/en/Makefile.am
 modifyMakefiles=true
@@ -93,7 +93,7 @@ install_location=
 type=DATA
 
 [mixxx/Makefile.am]
-files=mixxx/main.cpp,mixxx/mixxx.cpp,mixxx/mixxx.h,mixxx/mixxxdoc.cpp,mixxx/mixxxdoc.h,mixxx/mixxxview.cpp,mixxx/mixxxview.h,mixxx/lo32-app-mixxx.png,mixxx/lo16-app-mixxx.png,mixxx/filenew.xpm,mixxx/filesave.xpm,mixxx/fileopen.xpm,mixxx/dlgchanneldlg.ui,mixxx/dlgmessagesdlg.ui,mixxx/dlgplaycontroldlg.ui,mixxx/dlgchannel.cpp,mixxx/dlgchannel.h,mixxx/dlgmessages.cpp,mixxx/dlgmessages.h,mixxx/dlgplaycontrol.cpp,mixxx/dlgplaycontrol.h,mixxx/soundsource.cpp,mixxx/soundsource.h,mixxx/defs.h,mixxx/controlobject.cpp,mixxx/controlobject.h,mixxx/engineobject.cpp,mixxx/engineobject.h,mixxx/controlpushbutton.cpp,mixxx/controlpushbutton.h,mixxx/enginebuffer.cpp,mixxx/enginebuffer.h,mixxx/player.cpp,mixxx/player.h,mixxx/controlpotmeter.cpp,mixxx/controlpotmeter.h,mixxx/playeralsa.cpp,mixxx/playeralsa.h,mixxx/playerportaudio.cpp,mixxx/playerportaudio.h,mixxx/midiobject.h,mixxx/midiobject.cpp,mixxx/engineIIRfilter.cpp,mixxx/engineIIRfilter.h,mixxx/enginepregain.cpp,mixxx/enginepregain.h,mixxx/dlgplaylistdlg.ui,mixxx/dlgplaylist.h,mixxx/dlgplaylist.cpp
+files=mixxx/main.cpp,mixxx/mixxx.cpp,mixxx/mixxx.h,mixxx/mixxxdoc.cpp,mixxx/mixxxdoc.h,mixxx/mixxxview.cpp,mixxx/mixxxview.h,mixxx/lo32-app-mixxx.png,mixxx/lo16-app-mixxx.png,mixxx/filenew.xpm,mixxx/filesave.xpm,mixxx/fileopen.xpm,mixxx/dlgchanneldlg.ui,mixxx/dlgmessagesdlg.ui,mixxx/dlgplaycontroldlg.ui,mixxx/dlgchannel.cpp,mixxx/dlgchannel.h,mixxx/dlgmessages.cpp,mixxx/dlgmessages.h,mixxx/dlgplaycontrol.cpp,mixxx/dlgplaycontrol.h,mixxx/soundsource.cpp,mixxx/soundsource.h,mixxx/defs.h,mixxx/controlobject.cpp,mixxx/controlobject.h,mixxx/engineobject.cpp,mixxx/engineobject.h,mixxx/controlpushbutton.cpp,mixxx/controlpushbutton.h,mixxx/enginebuffer.cpp,mixxx/enginebuffer.h,mixxx/player.cpp,mixxx/player.h,mixxx/controlpotmeter.cpp,mixxx/controlpotmeter.h,mixxx/playeralsa.cpp,mixxx/playeralsa.h,mixxx/playerportaudio.cpp,mixxx/playerportaudio.h,mixxx/midiobject.h,mixxx/midiobject.cpp,mixxx/engineIIRfilter.cpp,mixxx/engineIIRfilter.h,mixxx/enginepregain.cpp,mixxx/enginepregain.h,mixxx/dlgplaylistdlg.ui,mixxx/dlgplaylist.h,mixxx/dlgplaylist.cpp,mixxx/soundsourcenull.cpp,mixxx/soundsourcenull.h
 sub_dirs=docs
 type=prog_main
 
@@ -437,6 +437,18 @@ install_location=
 type=SOURCE
 
 [mixxx/soundsource.h]
+dist=true
+install=false
+install_location=
+type=HEADER
+
+[mixxx/soundsourcenull.cpp]
+dist=true
+install=false
+install_location=
+type=SOURCE
+
+[mixxx/soundsourcenull.h]
 dist=true
 install=false
 install_location=

@@ -11,7 +11,7 @@
         <rect>
             <x>0</x>
             <y>0</y>
-            <width>516</width>
+            <width>512</width>
             <height>210</height>
         </rect>
     </property>
@@ -48,7 +48,7 @@
         </property>
         <property stdset="1">
             <name>numCols</name>
-            <number>1</number>
+            <number>2</number>
         </property>
     </widget>
 </widget>

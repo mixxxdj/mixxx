@@ -45,19 +45,25 @@ public:
 };
 
 class AFlibfile : public SoundSource {
- private:
-  int channels;
-  AFfilehandle fh;
-  long filelength, mp3filelength;
  public:
   AFlibfile(const char*);
   ~AFlibfile();
   long seek(long);
   unsigned read(unsigned long size, const SAMPLE*);
   long unsigned length();
+ private:
+  int channels;
+  AFfilehandle fh;
+  long filelength, mp3filelength;
 };
 
 class mp3file : public SoundSource {
+ public:
+  mp3file(const char*);
+  ~mp3file();
+  long seek(long);
+  unsigned read(unsigned long size, const SAMPLE*);
+  long unsigned length();
  private:
   FILE *file;
   unsigned inputbuf_len;
@@ -68,12 +74,6 @@ class mp3file : public SoundSource {
   mad_frame Frame;
   mad_synth Synth;
   vector<long> ftable,sampletable;
- public:
-  mp3file(const char*);
-  ~mp3file();
-  long seek(long);
-  unsigned read(unsigned long size, const SAMPLE*);
-  long unsigned length();
 };
 
 
