@@ -75,6 +75,8 @@ void MessageToLogfile( QtMsgType type, const char *msg )
 
 int main(int argc, char *argv[])
 {
+  // Check if an instance of Mixxx is already running
+
 #ifdef Q_WS_WIN
   // For windows write all debug messages to a logfile:
   Logfile.setName( "mixxx.log" );

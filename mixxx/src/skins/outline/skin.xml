@@ -891,7 +891,7 @@
  </Knob>
 
  <Visual>
-  <Tooltip>Drag with mouse to control sound playback</Tooltip>
+	 <Tooltip>Drag with mouse to control sound playback. Drop tracks from external file manager here</Tooltip>
   <Channel>1</Channel>
   <Pos>139,50</Pos>
   <Size>747,148</Size>
@@ -904,7 +904,7 @@
  </Visual>
 
  <Visual>
-  <Tooltip>Drag with mouse to control sound playback</Tooltip>
+  <Tooltip>Drag with mouse to control sound playback. Drop tracks from external file manager here</Tooltip>
   <Channel>2</Channel>
   <Pos>139,200</Pos>
   <Size>747,148</Size>

@@ -98,7 +98,7 @@ void WVisualWaveform::setup(QDomNode node)
     y = size.mid(size.find(",")+1).toInt();
     setFixedSize(x,y);
 
-    
+
 }
 
 bool WVisualWaveform::eventFilter(QObject *o, QEvent *e)

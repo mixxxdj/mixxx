@@ -22,6 +22,7 @@
 
 WVisualSimple::WVisualSimple(QWidget *pParent, const char *pName) : WWidget(pParent, pName)
 {
+    setAcceptDrops(true);
     m_iValue = 64;
 }
 
