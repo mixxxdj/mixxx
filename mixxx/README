@@ -34,11 +34,11 @@ Mixxx is depends on the following libraries:
 QT >= 3.1 
 libmad
 libid3tag
-libAudioFile
+libAudioFile (Linux and MacOS X only)
+libSndFile (Windows only)
 vorbisfile
 FFTW 2
-
-The Windows version uses libsndfile instead of libAudioFile.
+pkg-config (Linux only)
 
 
 * INSTALL **************************************************
