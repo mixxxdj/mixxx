@@ -21,23 +21,23 @@ unix:LIBS += -lportaudio
 win32:LIBS += ../lib/PAstaticDSD.lib dsound.lib
 
 # PortMidi
-#SOURCES += midiobjectportmidi.cpp
-#HEADERS += midiobjectportmidi.h
-#DEFINES += __PORTMIDI__
-#unix:LIBS += -lportmidi -lporttime
-#win32:LIBS += ../lib/portmidi.lib ../lib/porttime.lib ../lib/libmad.lib
+SOURCES += midiobjectportmidi.cpp
+HEADERS += midiobjectportmidi.h
+DEFINES += __PORTMIDI__
+unix:LIBS += -lportmidi -lporttime
+win32:LIBS += ../lib/portmidi.lib ../lib/porttime.lib ../lib/libmad.lib
 
 # OSS Midi
-SOURCES += midiobjectoss.cpp
-HEADERS += midiobjectoss.h
-DEFINES += __OSSMIDI__
+#SOURCES += midiobjectoss.cpp
+#HEADERS += midiobjectoss.h
+#DEFINES += __OSSMIDI__
 
 #
 # End of options
 #
 
-SOURCES	+= configobject.cpp fakemonitor.cpp controllogpotmeter.cpp controlobject.cpp controlnull.cpp controlpotmeter.cpp controlpushbutton.cpp controlrotary.cpp dlgchannel.cpp dlgplaycontrol.cpp dlgplaylist.cpp dlgmaster.cpp dlgcrossfader.cpp dlgsplit.cpp dlgpreferences.cpp enginebuffer.cpp engineclipping.cpp enginefilterblock.cpp enginefilterrbj.cpp enginefilteriir.cpp engineobject.cpp enginepregain.cpp enginevolume.cpp main.cpp midiobject.cpp mixxx.cpp mixxxdoc.cpp mixxxview.cpp player.cpp soundsource.cpp soundsourceheavymp3.cpp soundsourcemp3.cpp soundsourceaflibfile.cpp monitor.cpp enginechannel.cpp enginemaster.cpp wknob.cpp wbulb.cpp wplaybutton.cpp wwheel.cpp wslider.cpp wplayposslider.cpp
-HEADERS	+= configobject.h fakemonitor.h controllogpotmeter.h controlobject.h controlnull.h controlpotmeter.h controlpushbutton.h controlrotary.h defs.h dlgchannel.h dlgplaycontrol.h dlgplaylist.h dlgmaster.h dlgcrossfader.h dlgsplit.h dlgpreferences.h enginebuffer.h engineclipping.h enginefilterblock.h enginefilterrbj.h enginefilteriir.h engineobject.h enginepregain.h enginevolume.h midiobject.h mixxx.h mixxxdoc.h mixxxview.h player.h soundsource.h soundsourceheavymp3.h soundsourcemp3.h soundsourceaflibfile.h monitor.h enginechannel.h enginemaster.h wknob.h wbulb.h wplaybutton.h wwheel.h wslider.h wplayposslider.h
+SOURCES	+= configobject.cpp fakemonitor.cpp controllogpotmeter.cpp controlobject.cpp controlnull.cpp controlpotmeter.cpp controlpushbutton.cpp controlrotary.cpp dlgchannel.cpp dlgplaycontrol.cpp dlgplaylist.cpp dlgmaster.cpp dlgcrossfader.cpp dlgsplit.cpp dlgpreferences.cpp enginebuffer.cpp engineclipping.cpp enginefilterblock.cpp enginefilterrbj.cpp enginefilteriir.cpp engineobject.cpp enginepregain.cpp enginevolume.cpp main.cpp midiobject.cpp mixxx.cpp mixxxdoc.cpp mixxxview.cpp player.cpp soundsource.cpp soundsourcemp3.cpp soundsourceaflibfile.cpp monitor.cpp enginechannel.cpp enginemaster.cpp wknob.cpp wbulb.cpp wplaybutton.cpp wwheel.cpp wslider.cpp wplayposslider.cpp
+HEADERS	+= configobject.h fakemonitor.h controllogpotmeter.h controlobject.h controlnull.h controlpotmeter.h controlpushbutton.h controlrotary.h defs.h dlgchannel.h dlgplaycontrol.h dlgplaylist.h dlgmaster.h dlgcrossfader.h dlgsplit.h dlgpreferences.h enginebuffer.h engineclipping.h enginefilterblock.h enginefilterrbj.h enginefilteriir.h engineobject.h enginepregain.h enginevolume.h midiobject.h mixxx.h mixxxdoc.h mixxxview.h player.h soundsource.h soundsourcemp3.h soundsourceaflibfile.h monitor.h enginechannel.h enginemaster.h wknob.h wbulb.h wplaybutton.h wwheel.h wslider.h wplayposslider.h
 
 unix {
   UI_DIR = .ui
@@ -46,8 +46,10 @@ unix {
   LIBS	+= -lmad -laudiofile -lid3tag
   QMAKE_CXXFLAGS += -O
 }
+
 win32 {
   INCLUDEPATH += ../portmidi/
+  INCLUDEPATH += ../mad-0.14.2b/libid3tag
   INCLUDEPATH += ../mad-0.14.2b
   INCLUDEPATH += ../portaudio/pa_common
   INCLUDEPATH += .

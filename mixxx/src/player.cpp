@@ -95,8 +95,8 @@ int Player::prepareBuffer() {
   }
 
   // Convert the signal back to SAMPLE and write to the sound cards buffer:
-  for (int i=0; i<buffer_size; i++)
-    out_buffer[i] = (SAMPLE)p1[i];
+  {for (int i=0; i<buffer_size; i++)
+	  out_buffer[i] = (SAMPLE)p1[i];}
 
   return 0; // Hack. Should only return 0 when not at end of file
 }

@@ -57,9 +57,9 @@ PlayerPortAudio::PlayerPortAudio(int size, std::vector<EngineObject *> *engines)
 
     // Set sample rate to 44100 if possible, otherwise highest possible
     int temp_sr = 0;
-    for (int i=0; i<=devInfo->numSampleRates; i++)
+    {for (int i=0; i<=devInfo->numSampleRates; i++)
         if (devInfo->sampleRates[i] == 44100.)
-        temp_sr = 44100;
+			temp_sr = 44100;}
     if (temp_sr == 0)
         temp_sr = (int)devInfo->sampleRates[devInfo->numSampleRates-1];
 

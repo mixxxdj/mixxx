@@ -36,11 +36,11 @@ CSAMPLE *EngineFilterIIR::process(const CSAMPLE *source, const int buf_size) {
   }
 
   // Check for denormals
-  for (int i=0; i<9; i++)
+  {for (int i=0; i<9; i++)
   {
      xv[i] = zap_denormal(xv[i]);
      yv[i] = zap_denormal(yv[i]);
-  }
+  }}
 
   return buffer;
 }

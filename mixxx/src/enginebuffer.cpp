@@ -138,8 +138,11 @@ void EngineBuffer::newtrack(const char* filename)
 
         if (file==0)
             qFatal("Error opening %s", filename);
-    } else
+    } 
+#ifndef Q_WS_WIN
+	else
         file = new SoundSourceAFlibfile("/dev/null");
+#endif
 
     // Initialize position in read buffer:
     lastread_file.write(0.);
