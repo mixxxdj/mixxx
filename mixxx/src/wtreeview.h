@@ -47,7 +47,7 @@ class WTreeView : public QListView
 {
     Q_OBJECT
 public:
-    WTreeView(QString qRootPath, QWidget *parent=0, const char *name=0, bool sdo=FALSE);
+    WTreeView(QString qRootPath, QWidget *parent=0, const char *name=0, bool sdo=false);
     ~WTreeView();
     /** Setup object based on XML description */
     void setup(QDomNode node);
