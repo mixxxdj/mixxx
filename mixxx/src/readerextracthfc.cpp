@@ -143,7 +143,7 @@ void *ReaderExtractHFC::processChunk(const int _idx, const int start_idx, const 
     // Get DHFC, first derivative and HFC, rectified
     //dhfc[(idx*framePerChunk)%frameNo] = hfc[(idx*framePerChunk)%frameNo];
 
-    while (frameTo>frameToDHFC)
+    while (frameToDHFC<frameFromDHFC)
         frameToDHFC+=frameNo;
 
     for (int i=frameFromDHFC; i<=frameToDHFC; i++)
