@@ -148,7 +148,8 @@ CSAMPLE *EngineMaster::process(const CSAMPLE *, const int buffer_size)
     tmp2 = clipping->process(tmp, buffer_size);
 
     // Update VU meter (it does not return anything):
-    vumeter->process(tmp2, buffer_size);
+    if (vumeter!=0)
+        vumeter->process(tmp2, buffer_size);
 
     //
     // Headphone channel:

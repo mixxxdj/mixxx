@@ -36,7 +36,7 @@ CSAMPLE *EngineVUmeter::process(const CSAMPLE *source, const int buffer_size)
 {
     // Calculate the rms volume
     FLOAT_TYPE fRMSvolume = 0;
-    for (int i=0; i<buffer_size; i++);
+    for (int i=0; i<buffer_size; i++)
     {
         fRMSvolume += source[i]*source[i];
     }

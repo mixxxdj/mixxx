@@ -288,7 +288,8 @@ MixxxApp::MixxxApp(QApplication *a)
     flanger = new EngineFlanger(view->flanger, "[Flanger]");
 
     // Starting vumeter:
-    vumeter = new EngineVUmeter(view->vumeter, "[VUmeter]");
+    vumeter = 0;
+    //vumeter = new EngineVUmeter(view->vumeter, "[VUmeter]");
 
     // Starting the master (mixing of the channels and effects):
     master = new EngineMaster(view->master, view->crossfader,
