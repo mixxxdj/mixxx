@@ -32,10 +32,14 @@ public:
 
     void okRename(int col);
     void popupMenu();
-    void drag(QWidget *viewport);
+    QString drag();
 signals:
     void playlistPopup();
 
+private slots:
+    void slotRename();
+    void slotDelete();
+    
 private:
 	TrackPlaylist *m_pPlaylist;
 };

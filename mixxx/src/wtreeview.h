@@ -67,7 +67,6 @@ signals:
 protected slots:
     void slotFolderSelected(QListViewItem *);
     void openFolder();
-    void slotRenameItem();
    
 protected:
     void contentsDragEnterEvent(QDragEnterEvent *e);

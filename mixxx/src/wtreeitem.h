@@ -15,6 +15,7 @@
 #include <qlistview.h>
 #include <qwidget.h>
 #include <qobject.h>
+class Track;
 
 /**
 @author Tue Haste Andersen
@@ -31,8 +32,12 @@ public:
 
     virtual QString type() { return "WTreeItem"; };
 
-    void popupMenu();
-    virtual void drag(QWidget *viewport);
+    virtual void popupMenu() {};
+    virtual QString drag();
+    static void setTrack(Track *pTrack);
+    
+protected:
+    static Track *spTrack;
 };
 
 #endif

@@ -50,6 +50,7 @@
 #include "trackinfoobject.h"
 #include "mixxxsocketserver.h"
 #include "mixxxmenuplaylists.h"
+#include "wtreeitem.h"
 
 #ifdef __LINUX__
 #include "powermatelinux.h"
@@ -345,7 +346,8 @@ MixxxApp::MixxxApp(QApplication *a, QStringList files)
 
     // Initialize track object:
     m_pTrack = new Track(config->getValueString(ConfigKey("[Playlist]","Listfile")), view, buffer1, buffer2);
-
+    WTreeItem::setTrack(m_pTrack);
+    
     // Set up drag and drop to player visuals
     if (view->m_pVisualCh1)
         connect(view->m_pVisualCh1, SIGNAL(trackDropped(QString)), m_pTrack, SLOT(slotLoadPlayer1(QString)));

@@ -15,6 +15,8 @@
 #include <qdragobject.h>
 #include <qcstring.h>
 #include "trackplaylist.h"
+#include "track.h"
+#include <qcursor.h>
 
 WTreeItemPlaylist::WTreeItemPlaylist(WTreeItem *parent, TrackPlaylist *pPlaylist) : WTreeItem(parent)
 {
@@ -36,20 +38,30 @@ WTreeItemPlaylist::~WTreeItemPlaylist()
 
 void WTreeItemPlaylist::popupMenu()
 {
+    QPopupMenu *menu = new QPopupMenu();
+    menu->insertItem("Rename", this, SLOT(slotRename()));
+    menu->insertItem("Delete", this, SLOT(slotDelete()));
+    menu->exec(QCursor::pos());
 }
 
-void WTreeItemPlaylist::drag(QWidget *viewport)
+QString WTreeItemPlaylist::drag()
 {
-    QString s = text(0);
-    QTextDrag *td = new QTextDrag(s, viewport);
-    const QCString type("Playlist");
-    td->setSubtype(type);
-    td->dragCopy();
+    return name();
 }
 
 QString WTreeItemPlaylist::name()
 {
     return text(0);
+}
+
+void WTreeItemPlaylist::slotRename()
+{
+    startRename(0);
+}
+
+void WTreeItemPlaylist::slotDelete()
+{
+    spTrack->slotDeletePlaylist(text(0));
 }
 
 void WTreeItemPlaylist::okRename(int col)

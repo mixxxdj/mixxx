@@ -61,12 +61,8 @@ public slots:
     void slotNewPlaylist();
     /** Delete a playlist */
     void slotDeletePlaylist(QString qName);
-    /** Delete a playlist */
-    void slotDeletePlaylist();
     /** Import a Playlist from a different format */
     void slotImportPlaylist();
-    /** Bring up playlist popup menu */
-    void slotPlaylistPopup(QString qName);
     /** Bring up track popup menu */
     void slotTrackPopup(TrackInfoObject *pTrackInfoObject, int button);
     /** Load the given track in player 1 */

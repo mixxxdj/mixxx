@@ -13,6 +13,8 @@
 #include "wtreeitem.h"
 #include "wtreeview.h"
 
+Track *WTreeItem::spTrack = 0;
+
 WTreeItem::WTreeItem(QListView *parent) : QListViewItem(parent)
 {
 }
@@ -37,17 +39,14 @@ WTreeItem::~WTreeItem()
 {
 }
 
-void WTreeItem::popupMenu()
+QString WTreeItem::drag()
 {
+    return QUriDrag::localFileToUri(WTreeView::fullPath(this));
 }
 
-void WTreeItem::drag(QWidget *viewport)
+void WTreeItem::setTrack(Track *pTrack)
 {
-    QString source = WTreeView::fullPath(this);
-    QStrList lst;
-    lst.append(QUriDrag::localFileToUri(source));
-    QUriDrag* ud = new QUriDrag(viewport);
-    ud->setUris(lst);
-    ud->dragCopy();
+    spTrack = pTrack;
 }
+
 

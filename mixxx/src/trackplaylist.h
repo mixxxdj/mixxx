@@ -20,6 +20,7 @@
 #include "trackinfoobject.h"
 class TrackCollection;
 class WTrackTable;
+class Track;
 
 /**
 @author Tue Haste Andersen
@@ -34,6 +35,8 @@ public:
     TrackPlaylist(TrackCollection *pTrackCollectionm, QDomNode node);
     /** Destruct the playlist */
     ~TrackPlaylist();
+    /** Set pointer to Track object */
+    static void setTrack(Track *pTrack);
     /** Write database content to XML file */
     void writeXML(QDomDocument &doc, QDomElement &header);
     /** Add a track to the playlist */
@@ -68,6 +71,8 @@ private:
     QString m_qName;
     /** Pointer to WTrackTable. This is 0 if the playlist is not displayed in a table */
     WTrackTable *m_pTable;
+    /** Static pointer to Track */
+    static Track *spTrack;
 };
 
 #endif
