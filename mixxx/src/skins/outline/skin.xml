@@ -9,7 +9,7 @@
   <Tooltip>Crossfader</Tooltip>
   <Handle>crosshandle-on-.png</Handle>
   <Slider>crossslider-off-.png</Slider>
-  <Pos>400,462</Pos>
+  <Pos>400,314</Pos>
   <Horizontal>true</Horizontal>
   <Connection>
    <ConfigKey>[Master],crossfader</ConfigKey>
@@ -309,7 +309,7 @@
   <Tooltip>Master VuMeter</Tooltip>
   <PathVu>vumeter-on-.png</PathVu>
   <PathBack>vumeter-off-.png</PathBack>
-  <Pos>663,404</Pos>
+  <Pos>663,256</Pos>
   <Horizontal>true</Horizontal>
   <Connection>
    <ConfigKey>[Master],VuMeter</ConfigKey>
@@ -354,7 +354,7 @@
    <Pressed>endoftrack-loop-ch1.png</Pressed>
    <Unpressed>endoftrack-loop-ch1.png</Unpressed>
   </State>
-  <Pos>408,356</Pos>
+  <Pos>408,208</Pos>
   <Connection>
    <ConfigKey>[Channel1],TrackEndMode</ConfigKey>
   </Connection>
@@ -378,7 +378,7 @@
    <Pressed>endoftrack-loop-ch2.png</Pressed>
    <Unpressed>endoftrack-loop-ch2.png</Unpressed>
   </State>
-  <Pos>586,356</Pos>
+  <Pos>586,208</Pos>
   <Connection>
    <ConfigKey>[Channel2],TrackEndMode</ConfigKey>
   </Connection>
@@ -714,7 +714,7 @@
   <Tooltip>Master volume</Tooltip>
   <NumberStates>41</NumberStates>
   <Path>knobm%1.png</Path>
-  <Pos>842,459</Pos>
+  <Pos>842,311</Pos>
   <Connection>
    <ConfigKey>[Master],volume</ConfigKey>
   </Connection>
@@ -724,7 +724,7 @@
   <Tooltip>Master balance</Tooltip>
   <NumberStates>41</NumberStates>
   <Path>knobm%1.png</Path>
-  <Pos>791,459</Pos>
+  <Pos>791,311</Pos>
   <Connection>
    <ConfigKey>[Master],balance</ConfigKey>
   </Connection>
@@ -734,7 +734,7 @@
   <Tooltip>Headphone volume</Tooltip>
   <NumberStates>41</NumberStates>
   <Path>knobm%1.png</Path>
-  <Pos>198,459</Pos>
+  <Pos>198,311</Pos>
   <Connection>
    <ConfigKey>[Master],headVolume</ConfigKey>
   </Connection>
@@ -744,7 +744,7 @@
   <Tooltip>Mix between headphone and main</Tooltip>
   <NumberStates>41</NumberStates>
   <Path>knobm%1.png</Path>
-  <Pos>146,459</Pos>
+  <Pos>146,311</Pos>
   <Connection>
    <ConfigKey>[Master],headMix</ConfigKey>
   </Connection>
@@ -754,7 +754,7 @@
   <Tooltip>Flanger depth</Tooltip>
   <NumberStates>41</NumberStates>
   <Path>knobm%1.png</Path>
-  <Pos>146,403</Pos>
+  <Pos>146,255</Pos>
   <Connection>
    <ConfigKey>[Flanger],lfoDepth</ConfigKey>
   </Connection>
@@ -764,7 +764,7 @@
   <Tooltip>Flanger delay</Tooltip>
   <NumberStates>41</NumberStates>
   <Path>knobm%1.png</Path>
-  <Pos>198,403</Pos>
+  <Pos>198,255</Pos>
   <Connection>
    <ConfigKey>[Flanger],lfoDelay</ConfigKey>
   </Connection>
@@ -774,7 +774,7 @@
   <Tooltip>Flanger LFO period</Tooltip>
   <NumberStates>41</NumberStates>
   <Path>knobm%1.png</Path>
-  <Pos>250,403</Pos>
+  <Pos>250,255</Pos>
   <Connection>
    <ConfigKey>[Flanger],lfoPeriod</ConfigKey>
   </Connection>
@@ -891,10 +891,10 @@
  </Knob>
 
  <Visual>
-	 <Tooltip>Drag with mouse to control sound playback. Drop tracks from external file manager here</Tooltip>
+  <Tooltip>Drag with mouse to control sound playback. Drop tracks from external file manager here</Tooltip>
   <Channel>1</Channel>
   <Pos>139,50</Pos>
-  <Size>747,148</Size>
+  <Size>747,74</Size>
   <BgColor>#ffffff</BgColor>
   <SignalColor>#00ff00</SignalColor>
   <BeatColor>#0000f0</BeatColor>
@@ -906,8 +906,8 @@
  <Visual>
   <Tooltip>Drag with mouse to control sound playback. Drop tracks from external file manager here</Tooltip>
   <Channel>2</Channel>
-  <Pos>139,200</Pos>
-  <Size>747,148</Size>
+  <Pos>139,126</Pos>
+  <Size>747,74</Size>
   <BgColor>#ffffff</BgColor>
   <SignalColor>#00ff00</SignalColor>
   <BeatColor>#f00000</BeatColor>
@@ -936,7 +936,7 @@
  <NumberBpm>
   <Tooltip>Tempo display (Beat Per Minute)</Tooltip>
   <Channel>1</Channel>
-  <Pos>144,355</Pos>
+  <Pos>144,207</Pos>
   <Size>100,20</Size>
   <NumberOfDigits>6</NumberOfDigits>
   <BgColor>#ffffff</BgColor>
@@ -949,7 +949,7 @@
  <NumberBpm>
   <Tooltip>Tempo display (Beat Per Minute)</Tooltip>
   <Channel>2</Channel>
-  <Pos>623,355</Pos>
+  <Pos>623,207</Pos>
   <Size>100,20</Size>
   <NumberOfDigits>6</NumberOfDigits>
   <BgColor>#ffffff</BgColor>
@@ -962,7 +962,7 @@
  <NumberPos>
   <Tooltip>Play position/remaining time</Tooltip>
   <Channel>1</Channel>
-  <Pos>281,355</Pos>
+  <Pos>281,207</Pos>
   <Size>120,20</Size>
   <Alignment>right</Alignment>
   <NumberOfDigits>6</NumberOfDigits>
@@ -976,7 +976,7 @@
  <NumberPos>
   <Tooltip>Play position/remaining time</Tooltip>
   <Channel>2</Channel>
-  <Pos>760,355</Pos>
+  <Pos>760,207</Pos>
   <Size>120,20</Size>
   <Alignment>right</Alignment>
   <NumberOfDigits>6</NumberOfDigits>
@@ -1017,7 +1017,7 @@
   <Tooltip>Play position - Use mouse to seek</Tooltip>
   <Handle>playpos-marker1.png</Handle>
   <Slider>playpos-slider.png</Slider>
-  <Pos>144,375</Pos>
+  <Pos>144,227</Pos>
   <Horizontal>true</Horizontal>
   <EventWhileDrag>no</EventWhileDrag>
   <Connection>
@@ -1030,7 +1030,7 @@
   <Tooltip>Play position - Use mouse to seek</Tooltip>
   <Handle>playpos-marker2.png</Handle>
   <Slider>playpos-slider.png</Slider>
-  <Pos>623,375</Pos>
+  <Pos>623,227</Pos>
   <Horizontal>true</Horizontal>
   <EventWhileDrag>no</EventWhileDrag>
   <Connection>
@@ -1040,15 +1040,15 @@
  </SliderComposed>
  
  <Splitter>
-  <Pos>139,512</Pos>
-  <Size>745,255</Size>
+  <Pos>139,364</Pos>
+  <Size>745,403</Size>
  </Splitter>
 
  <TreeView>
   <InSplitter>Yes</InSplitter>
   <FgColor>#000000</FgColor>
   <BgColor>#ffffff</BgColor>
-  <Size>250,255</Size>
+  <Size>250,403</Size>
  </TreeView>
 
  <TrackTable>
@@ -1065,7 +1065,7 @@
   <ColWidthDuration>50</ColWidthDuration>
   <ColWidthBpm>40</ColWidthBpm>
   <ColWidthBitrate>50</ColWidthBitrate>
-  <Size>726,255</Size>
+  <Size>726,403</Size>
  </TrackTable>
 
 </skin>

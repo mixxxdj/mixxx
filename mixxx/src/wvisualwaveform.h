@@ -72,19 +72,12 @@ protected:
     VisualController *m_pVisualController;
     Picking m_Picking;
 
-    int m_iScreenX;
-    int m_iScreenY;
-    int m_iSelObjIdx;
-
     /** Used in mouse event handler */
     int m_iStartPosX;
-
     /** Backplane */
     VisualBackplane *m_pVisualBackplane;
 
     QPtrList <VisualChannel> m_qlList;
-    QTime m_qtTime;
-
     /** Colors */
     QColor colorBeat, colorSignal, colorHfc, colorMarker, colorFisheye, colorBack;
 };

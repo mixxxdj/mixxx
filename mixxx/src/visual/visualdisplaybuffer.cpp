@@ -48,7 +48,7 @@ void VisualDisplayBuffer::draw()
     float angle=0;
     if(angle!=0)
         glRotatef(angle,rx,ry,rz);
-    float yscale = height/4.;
+    float yscale = height;
 
     //std::cout << "len1 " << bufferInfo.len1 << ", len2 " << bufferInfo.len2  << "\n";
     //qDebug("LENGTH: %i",bufferInfo.len1+bufferInfo.len2);

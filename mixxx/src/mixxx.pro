@@ -311,6 +311,10 @@ HEADERS += mixxxkeyboard.h configobject.h fakemonitor.h controlengine.h controle
 SOURCES += track.cpp trackcollection.cpp trackplaylist.cpp xmlparse.cpp wtreeview.cpp wtreeitem.cpp wtreeitemfile.cpp wtreeitemdir.cpp wtreeitemplaylist.cpp
 HEADERS += track.h trackcollection.h trackplaylist.h xmlparse.h wtreeview.h wtreeitem.h wtreeitemfile.h wtreeitemdir.h wtreeitemplaylist.h
 
+# Track importer
+SOURCES += trackimporter.cpp parser.cpp parserpls.cpp parserm3u.cpp
+HEADERS += trackimporter.h parser.h parserpls.h parserm3u.h
+
 # Socket
 SOURCES += mixxxsocketserver.cpp mixxxsocketclient.cpp #mixxxsocketcli.cpp
 HEADERS += mixxxsocketserver.h mixxxsocketclient.h #mixxxsocket.cli.h
@@ -319,8 +323,8 @@ IMAGES += icon.png
 DEFINES += SETTINGS_FILE=$$SETTINGS_FILE TRACK_FILE=$$TRACK_FILE
 unix:TEMPLATE = app
 win32:TEMPLATE = vcapp
-#CONFIG += qt thread warn_off release
-#DEFINES += QT_NO_CHECK
-CONFIG += qt thread warn_on debug
+CONFIG += qt thread warn_off release
+DEFINES += QT_NO_CHECK
+#CONFIG += qt thread warn_on debug
 DBFILE = mixxx.db
 LANGUAGE = C++

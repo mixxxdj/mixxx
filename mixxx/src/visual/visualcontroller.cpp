@@ -27,25 +27,28 @@ int VisualController::idCount = 0;
 VisualController::VisualController()
 {
     fov   = 60.0;
-    znear = 10.0;
+    znear = 1.;
     zfar  = 1000.0;
     eyex  = 0.;
     eyey  = 0.0;
-    eyez  = 120.0;
+    eyez  = 15.0;
     centerx=centery=centerz=0;
     upx=0;
     upy=1;
     upz=0;
 
-    x = 100;
-    y = 100;
-    width = 800;
-    height = 600;
+    x = 0;
+    y = 0;
+    width = 100;
+    height = 100;
+    /*
     if(height>0)
         aspect=(GLdouble)width/(GLdouble)height;
     else
         aspect=1.0;
-
+    */
+    aspect = 1.0;
+    
     bg_r = 0.;
     bg_g = 0.;
     bg_b = 0.;
@@ -170,11 +173,11 @@ void VisualController::resize(GLsizei _width,GLsizei _height)
 {
     width = _width;
     height = _height;
-    
-    if(height>0)
-        aspect=(GLdouble)width/(GLdouble)height;
-    else
-        aspect=1.0;
+        
+    //if(height>0)
+    //    aspect=(GLdouble)width/(GLdouble)height;
+    //else
+    //    aspect=1.0;
 
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();

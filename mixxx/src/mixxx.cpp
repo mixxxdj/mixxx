@@ -278,12 +278,12 @@ MixxxApp::MixxxApp(QApplication *a, QStringList files)
     qSkinPath.append("skins/");
     if (QDir(qSkinPath).exists())
     {
-        // Is the skin listed in the config database there? If not, use default (outline) skin
+        // Is the skin listed in the config database there? If not, use default (outlineSmall) skin
         if ((config->getValueString(ConfigKey("[Config]","Skin")).length()>0 && QDir(QString(qSkinPath).append(config->getValueString(ConfigKey("[Config]","Skin")))).exists()))
             qSkinPath.append(config->getValueString(ConfigKey("[Config]","Skin")));
         else
         {
-            config->set(ConfigKey("[Config]","Skin"), ConfigValue("outline"));
+            config->set(ConfigKey("[Config]","Skin"), ConfigValue("outlineSmall"));
             config->Save();
             qSkinPath.append(config->getValueString(ConfigKey("[Config]","Skin")));
         }
@@ -577,6 +577,7 @@ void MixxxApp::slotHelpAbout()
                          "<tr><td>Ogg vorbis support:</td><td>Svein Magne Bang</td></tr>"
                          "<tr><td>Beat tracking:</td><td>Tue Haste Andersen</td></tr>"
                          "<tr><td></td><td>Kristoffer Jensen</td></tr>"
+                         "<tr><td>Playlist import:</td><td>Ingo Kossyk</td></tr>"
                          "<tr><td>Other contributions:</td><td>Lukas Zapletal</td></tr>"
                          "<tr><td></td><td>Jeremie Zimmermann</td></tr>"
                          "<tr><td></td><td>Gianluca Romanin</td></tr>"

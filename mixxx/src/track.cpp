@@ -27,6 +27,7 @@
 #include "reader.h"
 #include "controlobject.h"
 #include "configobject.h"
+#include "trackimporter.h"
 
 Track::Track(QString location, MixxxView *pView, EngineBuffer *pBuffer1, EngineBuffer *pBuffer2)
 {
@@ -39,6 +40,7 @@ Track::Track(QString location, MixxxView *pView, EngineBuffer *pBuffer1, EngineB
     m_pTrackPlayer2 = 0;
 
     m_pTrackCollection = new TrackCollection();
+    m_pTrackImporter = new TrackImporter(m_pView,m_pTrackCollection);
 
     // Read the XML file
     readXML(location);
@@ -268,6 +270,23 @@ void Track::slotDeletePlaylist()
     slotDeletePlaylist(m_pActivePopupPlaylist->getListName());
 }
 
+void Track::slotImportPlaylist()
+{
+    // Find valid name for new playlist
+    int i = 1;
+    while (getPlaylist(QString("Imported %1").arg(i)))
+        ++i;
+
+    QString sPlsname(QString("Imported %1").arg(i));
+    TrackPlaylist * pTempPlaylist = m_pTrackImporter->importPlaylist(sPlsname);
+
+    if (pTempPlaylist != 0)
+    {
+        m_qPlaylists.append(pTempPlaylist);
+        updateTreeView();
+    }
+}
+
 TrackPlaylist *Track::getPlaylist(QString qName)
 {
     TrackPlaylist *it = m_qPlaylists.first();
@@ -299,7 +318,10 @@ void Track::slotPlaylistPopup(QString qName)
         menu->insertItem("Delete", this, SLOT(slotDeletePlaylist()));
     }
     else
+    {
         menu->insertItem("New", this, SLOT(slotNewPlaylist()));
+        menu->insertItem("Import", this, SLOT(slotImportPlaylist()));
+    }
     menu->exec(QCursor::pos());
 }
 
