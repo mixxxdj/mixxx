@@ -18,76 +18,42 @@
 #ifndef PLAYER_H
 #define PLAYER_H
 
-#include <qobject.h>
-#include "defs.h"
-#include <stdlib.h>
-#include <iostream>
-#include "engineobject.h"
-#include "controlobject.h"
 #include "configobject.h"
-#include <vector>
-#include <qvaluelist.h>
-#include <qptrlist.h>
 #include <qstring.h>
-#include <qapplication.h>
+#include "engineobject.h"
 
 class EngineMaster;
+class ControlObject;
 
 class Player : public EngineObject
 {
 public:
-    Player(ConfigObject<ConfigValue> *_config, ControlObject *pControl, QApplication *_app);
-    virtual ~Player();      // Deallocate
-    void notify(double) {};
-    bool open(bool useDefault);
+    Player(ConfigObject<ConfigValue> *pConfig, ControlObject *pControl);
+    virtual ~Player();
+    /** Set EngineMaster object */
+    void setMaster(EngineMaster *pMaster);
+    /** Open devices according to config database, and start audio stream.
+      * Returns true on success. */
+    virtual bool open();
+    /** Close devices, and stop audio stream */
     virtual void close() = 0;
-    virtual void start() {}; // Start audio stream
-    virtual void stop() = 0;           // Stops audio stream
-    virtual void wait() = 0;           // Wait for audio stream to finish
-    virtual int minLatency(int SRATE) = 0; // Given a sample rate, return the minimum latency for that card
-    void setMaster(EngineMaster *);
-    typedef struct
-    {
-        int             id;
-        QString         name;
-        QValueList<int> sampleRates;
-        QValueList<int> bits;
-        QValueList<int> latency;
-        int             noChannels;
-    } Info;
-    
-    QPtrList<Info> *getInfo();
+    /** Store default configuration in config database */
+    virtual void setDefaults() = 0;
+    /** Return list of interfaces */
+    virtual QStringList getInterfaces() = 0;
+    /** Return list of sample rates */
+    virtual QStringList getSampleRates() = 0;
 
-    static SAMPLE       *out_buffer, *out_buffer_offset;
-    int prepareBuffer(); // Calculates one buffer of sound
-    /** MasterBufferSize is set when the master device is opened. If a head device is later opened
-      * HeadPerMasterBuffer is calculated, which equals HeadBufferSize/MasterBufferSize. When the
-      * master buffer is synthesized hereafter, a buffer three times MasterBufferSize*HeadPerMasterBuffer
-      * is used. The buffer is read by the head device using its own block size */
-    static int          MasterBufferSize;
-    static int          HeadPerMasterBuffer;
-    /** Varaiables containing data already in config database, like the buffer size varaiables.
-        Cached here for efficiency reasons */
-    int                 chMaster, chHead;
-    
 protected:
-    void allocate();
-    void deallocate();
-    virtual QString getDefaultDevice() = 0;
-    virtual bool open(QString nameMaster, QString nameHead, int srate, int bits, int bufferSizeMaster, int bufferSizeHead, int _chMaster, int _chHead) = 0;
+    /** Prepares one buffer of sound by calling the engine */
+    CSAMPLE *prepareBuffer(int iBufferSize);
 
-    /** Configuration data */
-    ConfigObject<ConfigValue> *config;
-    EngineMaster        *master;
-    QPtrList<Info>      devices;
-
-    /** Indicates where in the out_buffer the current synthesized frame is placed. */
-    int bufferIdx;
-
+    /** Pointer to config database */
+    ConfigObject<ConfigValue> *m_pConfig;
+    /** Pointer to EngineMaster object */
+    EngineMaster *m_pMaster;
     /** Pointer to ControlObject used in syncronization between ControlObject and ControlEngines */
     ControlObject *m_pControl;
-    /** Pointer to qapp */
-    QApplication *app;
 };
 
 #endif

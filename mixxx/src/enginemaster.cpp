@@ -162,7 +162,7 @@ CSAMPLE *EngineMaster::process(const CSAMPLE *, const int buffer_size)
     // Process the flanger on master if flanger is enabled on both channels
     if (flanger1->get()==1. && flanger2->get()==1.)
         tmp = flanger->process(tmp, buffer_size);
-    
+
     // Clipping
     tmp2 = clipping->process(tmp, buffer_size);
 
@@ -173,70 +173,62 @@ CSAMPLE *EngineMaster::process(const CSAMPLE *, const int buffer_size)
     //
     // Headphone channel:
     //
-//    if (CH_HEAD>0)
+
+    // Head phone left/right mix
+    cf_val = head_mix->get();
+    float chead_gain = 0.5*(-cf_val+1.);
+    float cmaster_gain = 0.5*(cf_val+1.);
+
+    //qDebug("head val %f, head %f, master %f",cf_val,chead_gain,cmaster_gain);
+
+    if (master1 && pfl1->get()==1. && master2 && pfl2->get()==1.)
     {
-        // Head phone left/right mix
-        cf_val = head_mix->get();
-        c1_gain = 0.5*(-cf_val+1.);
-        c2_gain = 0.5*(cf_val+1.);
-
-        if (master1 && pfl1->get()==1. && master2 && pfl2->get()==1.)
-            for (int i=0; i<buffer_size; i++)
-                out[i] = tmp2[i]*c1_gain + sampMaster1[i]*c2_gain + sampMaster2[i]*c2_gain;
-        else if (master1 && pfl1->get()==1.)
-            for (int i=0; i<buffer_size; i++)
-                out[i] += tmp2[i]*c1_gain + sampMaster1[i]*c2_gain;
-        else if (master2 && pfl2->get()==1.)
-            for (int i=0; i<buffer_size; i++)
-                out[i] += tmp2[i]*c1_gain + sampMaster2[i]*c2_gain;
-        else
-            for (int i=0; i<buffer_size; i++)
-                out[i] += tmp2[i]*c1_gain;
-
-        // Master volume
-        tmp = head_volume->process(out, buffer_size);
-
-        // Clipping
-        tmp3 = head_clipping->process(tmp, buffer_size);
+        //qDebug("both");
+        for (int i=0; i<buffer_size; i++)
+            out[i] = tmp2[i]*cmaster_gain + sampMaster1[i]*chead_gain + sampMaster2[i]*chead_gain;
     }
-
-    // Interleave samples
-/*
-    if (CH_HEAD==0)
+    else if (master1 && pfl1->get()==1.)
     {
-        int j=0;
-        for (int i=0; i<buffer_size; i+=2)
-        {
-            out[j  ] = tmp2[i  ];
-            out[j+1] = tmp2[i+1];
-            out[j+2] = 0.;
-            out[j+3] = 0.;
-            j+=4;
-        }
+        //qDebug("ch 1");
+        for (int i=0; i<buffer_size; i++)
+            out[i] = tmp2[i]*cmaster_gain + sampMaster1[i]*chead_gain;
+    }
+    else if (master2 && pfl2->get()==1.)
+    {
+        //qDebug("ch 2");
+        for (int i=0; i<buffer_size; i++)
+            out[i] = tmp2[i]*cmaster_gain + sampMaster2[i]*chead_gain;
     }
     else
-*/
     {
-        int j=0;
+        //qDebug("none");
+        for (int i=0; i<buffer_size; i++)
+            out[i] = tmp2[i]*cmaster_gain;
+    }
 
-        // Balance values
-        float balright = 1.;
-        float balleft = 1.;
-        float bal = m_pBalance->get();
-        if (bal>0.)
-            balleft -= bal;
-        else if (bal<0.)
-            balright += bal;
-        
-        for (int i=0; i<buffer_size; i+=2)
-        {
-            // Interleave the output and the headphone channels, and perform balancing on main out
-            out[j  ] = tmp2[i  ]*balleft;
-            out[j+1] = tmp2[i+1]*balright;
-            out[j+2] = tmp3[i  ];
-            out[j+3] = tmp3[i+1];
-            j+=4;
-        }
-    }   
+    // Head volume and clipping
+    tmp = head_volume->process(out, buffer_size);
+    tmp3 = head_clipping->process(tmp, buffer_size);
+
+    int j=0;
+
+    // Balance values
+    float balright = 1.;
+    float balleft = 1.;
+    float bal = m_pBalance->get();
+    if (bal>0.)
+        balleft -= bal;
+    else if (bal<0.)
+        balright += bal;
+
+    for (int i=0; i<buffer_size; i+=2)
+    {
+        // Interleave the output and the headphone channels, and perform balancing on main out
+        out[j  ] = tmp2[i  ]*balleft;
+        out[j+1] = tmp2[i+1]*balright;
+        out[j+2] = tmp3[i  ];
+        out[j+3] = tmp3[i+1];
+        j+=4;
+    }
     return out;
 }

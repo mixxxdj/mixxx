@@ -29,8 +29,8 @@ class EngineObject;
   */
 
 class EngineObject : public QObject {
-	Q_OBJECT
-public: 
+    Q_OBJECT
+public:
     EngineObject();
     virtual ~EngineObject();
     virtual CSAMPLE *process(const CSAMPLE *, const int) = 0;

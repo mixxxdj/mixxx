@@ -30,22 +30,12 @@ DlgPrefSound::DlgPrefSound(QWidget *parent, Player *_player,
     player = _player;
     config = _config;
 
-    // Update device options when a new device is selected
-    connect(ComboBoxSoundcardMaster,  SIGNAL(activated(int)),    this, SLOT(slotMasterDeviceOptions()));
-    connect(ComboBoxSoundcardHead,    SIGNAL(activated(int)),    this, SLOT(slotHeadDeviceOptions()));
-
-    // The latency slider for head might need updating if head device equals master device
-    connect(ComboBoxSoundcardHead,    SIGNAL(activated(int)),    this, SLOT(slotLatencyHead()));
-
     // Latency slider updates
-    connect(SliderLatencyMaster,      SIGNAL(sliderMoved(int)),  this, SLOT(slotLatencyMaster()));
-    connect(SliderLatencyHead,        SIGNAL(sliderMoved(int)),  this, SLOT(slotLatencyHead()));
-    connect(SliderLatencyMaster,      SIGNAL(sliderReleased()),  this, SLOT(slotLatencyMaster()));
-    connect(SliderLatencyHead,        SIGNAL(sliderReleased()),  this, SLOT(slotLatencyHead()));
-    connect(SliderLatencyMaster,      SIGNAL(valueChanged(int)), this, SLOT(slotLatencyMaster()));
-    connect(SliderLatencyHead,        SIGNAL(valueChanged(int)), this, SLOT(slotLatencyHead()));
+    connect(SliderLatency,                SIGNAL(sliderMoved(int)),  this, SLOT(slotLatency()));
+    connect(SliderLatency,                SIGNAL(sliderReleased()),  this, SLOT(slotLatency()));
+    connect(SliderLatency,                SIGNAL(valueChanged(int)), this, SLOT(slotLatency()));
 
-    // Set default sound quality as stored in config file
+    // Set default sound quality as stored in config file if not already set
     if (config->getValueString(ConfigKey("[Soundcard]","SoundQuality")).length() == 0)
         config->set(ConfigKey("[Soundcard]","SoundQuality"),ConfigValue(4));
 
@@ -53,14 +43,14 @@ DlgPrefSound::DlgPrefSound(QWidget *parent, Player *_player,
     SliderSoundQuality->setValue(4-config->getValueString(ConfigKey("[Soundcard]","SoundQuality")).toInt());
 
     // Apply changes whenever apply signal is emitted
-    connect(ComboBoxSoundcardMaster,  SIGNAL(activated(int)),    this, SLOT(slotApply()));
-    connect(ComboBoxSoundcardHead,    SIGNAL(activated(int)),    this, SLOT(slotApply()));
-    connect(ComboBoxChannelsMaster,   SIGNAL(activated(int)),    this, SLOT(slotApply()));
-    connect(ComboBoxChannelsHead,     SIGNAL(activated(int)),    this, SLOT(slotApply()));
-    connect(SliderLatencyMaster,      SIGNAL(valueChanged(int)), this, SLOT(slotApply()));
-    connect(SliderLatencyHead,        SIGNAL(valueChanged(int)), this, SLOT(slotApply()));
-    connect(SliderSoundQuality,       SIGNAL(valueChanged(int)), this, SLOT(slotApply()));
-    connect(SliderSoundQuality,       SIGNAL(valueChanged(int)), this, SLOT(slotApply()));
+    connect(ComboBoxSoundcardMasterLeft,  SIGNAL(activated(int)),    this, SLOT(slotApply()));
+    connect(ComboBoxSoundcardMasterRight, SIGNAL(activated(int)),    this, SLOT(slotApply()));
+    connect(ComboBoxSoundcardHeadLeft,    SIGNAL(activated(int)),    this, SLOT(slotApply()));
+    connect(ComboBoxSoundcardHeadRight,   SIGNAL(activated(int)),    this, SLOT(slotApply()));
+    connect(ComboBoxSamplerates,          SIGNAL(activated(int)),    this, SLOT(slotApply()));
+    connect(SliderLatency,                SIGNAL(valueChanged(int)), this, SLOT(slotApply()));
+    connect(SliderSoundQuality,           SIGNAL(valueChanged(int)), this, SLOT(slotApply()));
+    connect(SliderSoundQuality,           SIGNAL(valueChanged(int)), this, SLOT(slotApply()));
 }
 
 DlgPrefSound::~DlgPrefSound()
@@ -69,199 +59,87 @@ DlgPrefSound::~DlgPrefSound()
 
 void DlgPrefSound::slotUpdate()
 {
-    slotMasterDevice();
-    slotHeadDevice();
-}
-    
-void DlgPrefSound::slotMasterDevice()
-{
-    // Master sound card info
-    ComboBoxSoundcardMaster->clear();
+    QStringList interfaces = player->getInterfaces();
+    QStringList::iterator it;
+    int j;
 
-    QPtrList<Player::Info> *pInfo = player->getInfo();
-    for (unsigned int j=0; j<pInfo->count(); j++)
+    // Master left sound card info
+    ComboBoxSoundcardMasterLeft->clear();
+    ComboBoxSoundcardMasterLeft->insertItem("None");
+    it = interfaces.begin();
+    j = 1;
+    while ((*it)!=0)
     {
-        Player::Info *p = pInfo->at(j);
+        ComboBoxSoundcardMasterLeft->insertItem((*it));
+        if ((*it)==config->getValueString(ConfigKey("[Soundcard]","DeviceMasterLeft")))
+            ComboBoxSoundcardMasterLeft->setCurrentItem(j);
+        ++j;
+        ++it;
+    }
 
-        // Name of device.
-        ComboBoxSoundcardMaster->insertItem(p->name);
+    // Master right sound card info
+    ComboBoxSoundcardMasterRight->clear();
+    ComboBoxSoundcardMasterRight->insertItem("None");
+    it = interfaces.begin();
+    j = 1;
+    while ((*it)!=0)
+    {
+        ComboBoxSoundcardMasterRight->insertItem((*it));
+        if ((*it)==config->getValueString(ConfigKey("[Soundcard]","DeviceMasterRight")))
+            ComboBoxSoundcardMasterRight->setCurrentItem(j);
+        ++j;
+        ++it;
+    }
 
-        // If it's the first device, it becomes the default, if no device has been
-        // selected previously. Thus update its properties
-        slotMasterDeviceOptions();
+    // Head left sound card info
+    ComboBoxSoundcardHeadLeft->clear();
+    ComboBoxSoundcardHeadLeft->insertItem("None");
+    it = interfaces.begin();
+    j = 1;
+    while ((*it)!=0)
+    {
+        ComboBoxSoundcardHeadLeft->insertItem((*it));
+        if ((*it)==config->getValueString(ConfigKey("[Soundcard]","DeviceHeadLeft")))
+            ComboBoxSoundcardHeadLeft->setCurrentItem(j);
+        ++j;
+        ++it;
+    }
 
-        if (p->name == config->getValueString(ConfigKey("[Soundcard]","DeviceMaster")) &&
-            !(p->noChannels==2 && p->name==ComboBoxSoundcardHead->currentText()))
-        {
-            ComboBoxSoundcardMaster->setCurrentItem(j);
-            slotMasterDeviceOptions();
-        }
+    // Head right sound card info
+    ComboBoxSoundcardHeadRight->clear();
+    ComboBoxSoundcardHeadRight->insertItem("None");
+    it = interfaces.begin();
+    j = 1;
+    while ((*it)!=0)
+    {
+        ComboBoxSoundcardHeadRight->insertItem((*it));
+        if ((*it)==config->getValueString(ConfigKey("[Soundcard]","DeviceHeadRight")))
+            ComboBoxSoundcardHeadRight->setCurrentItem(j);
+        ++j;
+        ++it;
+    }
+
+    // Sample rate
+    ComboBoxSamplerates->clear();
+    QStringList srates = player->getSampleRates();
+    it = srates.begin();
+    j = 0;
+    while ((*it)!=0)
+    {
+        ComboBoxSamplerates->insertItem((*it));
+        if ((*it)==config->getValueString(ConfigKey("[Soundcard]","Samplerate")))
+            ComboBoxSamplerates->setCurrentItem(j);
+        ++j;
+        ++it;
     }
 
     // Latency
-    SliderLatencyMaster->setValue(getSliderLatencyVal(config->getValueString(ConfigKey("[Soundcard]","LatencyMaster")).toInt()));
-    slotLatencyMaster();
+    SliderLatency->setValue(getSliderLatencyVal(config->getValueString(ConfigKey("[Soundcard]","Latency")).toInt()));
 }
 
-void DlgPrefSound::slotHeadDevice()
+void DlgPrefSound::slotLatency()
 {
-    // Headphone sound card info
-    ComboBoxSoundcardHead->clear();
-
-    // First device, "None"
-    ComboBoxSoundcardHead->insertItem("None");
-    slotHeadDeviceOptions();
-
-    QPtrList<Player::Info> *pInfo = player->getInfo();
-    for (unsigned int j=0; j<pInfo->count(); j++)
-    {
-        Player::Info *p = pInfo->at(j);
-
-        // Name of device. On macx playback can only happen on one device at a time
-#ifdef __MACX__
-        if (p->noChannels>=4 && p->name==ComboBoxSoundcardMaster->currentText())
-#endif
-            ComboBoxSoundcardHead->insertItem(p->name);
-
-
-        if (p->name == config->getValueString(ConfigKey("[Soundcard]","DeviceHeadphone")) &&
-            !(p->noChannels==2 && p->name==ComboBoxSoundcardMaster->currentText()))
-        {
-            ComboBoxSoundcardHead->setCurrentItem(j+1);
-            slotHeadDeviceOptions();
-        }
-    }
-
-    int latency = config->getValueString(ConfigKey("[Soundcard]","LatencyHeadphone")).toInt();
-    SliderLatencyHead->setValue(getSliderLatencyVal(latency));
-    slotLatencyHead();
-}
-
-void DlgPrefSound::slotMasterDeviceOptions()
-{
-    QPtrList<Player::Info> *pInfo = player->getInfo();
-    Player::Info *p = pInfo->first();
-
-    while (p != 0)
-    {
-        if (ComboBoxSoundcardMaster->currentText() == p->name)
-        {
-            // Master channels
-            ComboBoxChannelsMaster->clear();
-            int j=0;
-            for (int i=1; i<=p->noChannels; i+=2)
-            {
-                QString ch(QString("%1-%2").arg(i).arg(i+1));
-                ComboBoxChannelsMaster->insertItem(ch);
-                if (i==player->chMaster)
-                    ComboBoxChannelsMaster->setCurrentItem(j);
-                j++;
-            }
-
-            // Sample rates
-            ComboBoxSamplerates->clear();
-            {for (unsigned int i=0; i<p->sampleRates.size(); i++)
-            {
-                ComboBoxSamplerates->insertItem(QString("%1 Hz").arg(p->sampleRates[i]));
-                if (p->sampleRates[i]==player->getPlaySrate())
-                    ComboBoxSamplerates->setCurrentItem(i);
-            }}
-
-            // Bits - Allow only 16 bits
-            ComboBoxBits->clear();
-//            for (unsigned int i=0; i<p->bits.size(); i++)
-//            {
-//                ComboBoxBits->insertItem(QString("%1").arg(p->bits[i]));
-//                if (p->bits[i]==player->BITS)
-//                    ComboBoxBits->setCurrentItem(i);
-//            }
-            ComboBoxBits->insertItem(QString("16"));
-        }
-        // Get next device
-        p = pInfo->next();
-    }
-}
-
-void DlgPrefSound::slotHeadDeviceOptions()
-{
-    // Ensure sample rate list is contains all rates the master device supports
-    slotMasterDeviceOptions();
-
-    QPtrList<Player::Info> *pInfo = player->getInfo();
-    Player::Info *p = pInfo->first();
-
-    // Clear headphone channels
-    ComboBoxChannelsHead->clear();
-
-    while (p != 0)
-    {
-        if (ComboBoxSoundcardHead->currentText() == p->name)
-        {
-            // Headphone channels
-            int j=0;
-            for (int i=1; i<=p->noChannels; i+=2)
-            {
-                QString ch(QString("%1-%2").arg(i).arg(i+1));
-
-                ComboBoxChannelsHead->insertItem(ch);
-                if (i==player->chHead)
-                    ComboBoxChannelsHead->setCurrentItem(j);
-                j++;
-            }
-
-            // Limit sample rates to those provided by both cards. If no head card is selected, do nothing
-            if (ComboBoxSoundcardHead->currentText() != "None")
-            {
-                {for (int i=0; i<ComboBoxSamplerates->count(); i++)
-                {
-                    QString srateStr = ComboBoxSamplerates->text(i);
-                    int srate = srateStr.left(srateStr.length()-3).toInt();
-
-                    bool foundSrate = false;
-                    for (unsigned int j=0; j<p->sampleRates.size(); j++)
-                    {
-                        if (p->sampleRates[j] == srate)
-                            foundSrate = true;
-                    }
-                    if (!foundSrate)
-                        ComboBoxSamplerates->removeItem(i);
-                }}
-            }
-        }
-
-        // Get next device
-        p = pInfo->next();
-    }
-}
-
-void DlgPrefSound::slotLatencyMaster()
-{
-    TextLabelLatencyMaster->setText(QString("%1 ms").arg(getSliderLatencyMsec(SliderLatencyMaster->value())));
-}
-
-void DlgPrefSound::slotLatencyHead()
-{
-    // Enable/disable latency slider
-    if (ComboBoxSoundcardHead->currentText() == "None" ||
-        ComboBoxSoundcardHead->currentText() == ComboBoxSoundcardMaster->currentText())
-    {
-        SliderLatencyHead->setDisabled(true);
-        TextLabelLatency->setDisabled(true);
-        TextLabelLatencyHead->setDisabled(true);
-        TextLabelLatencyLow->setDisabled(true);
-        TextLabelLatencyHigh->setDisabled(true);
-    }
-    else
-    {
-        SliderLatencyHead->setEnabled(true);
-        TextLabelLatency->setEnabled(true);
-        TextLabelLatencyHead->setEnabled(true);
-        TextLabelLatencyLow->setEnabled(true);
-        TextLabelLatencyHigh->setEnabled(true);
-    }
-
-    // Update text label
-    TextLabelLatencyHead->setText(QString("%1 ms").arg(getSliderLatencyMsec(SliderLatencyHead->value())));
+    TextLabelLatency->setText(QString("%1 ms").arg(getSliderLatencyMsec(SliderLatency->value())));
 }
 
 int DlgPrefSound::getSliderLatencyMsec(int val)
@@ -285,25 +163,26 @@ int DlgPrefSound::getSliderLatencyVal(int val)
 void DlgPrefSound::slotApply()
 {
     // Update the config object with parameters from dialog
-    config->set(ConfigKey("[Soundcard]","DeviceMaster"), ConfigValue(ComboBoxSoundcardMaster->currentText()));
-    config->set(ConfigKey("[Soundcard]","DeviceHeadphone"), ConfigValue(ComboBoxSoundcardHead->currentText()));
+    config->set(ConfigKey("[Soundcard]","DeviceMasterLeft"), ConfigValue(ComboBoxSoundcardMasterLeft->currentText()));
+    config->set(ConfigKey("[Soundcard]","DeviceMasterRight"), ConfigValue(ComboBoxSoundcardMasterRight->currentText()));
+    config->set(ConfigKey("[Soundcard]","DeviceHeadLeft"), ConfigValue(ComboBoxSoundcardHeadLeft->currentText()));
+    config->set(ConfigKey("[Soundcard]","DeviceHeadRight"), ConfigValue(ComboBoxSoundcardHeadRight->currentText()));
+
     QString temp = ComboBoxSamplerates->currentText();
-    temp.truncate(temp.length()-3);
+    //temp.truncate(temp.length()-3);
     config->set(ConfigKey("[Soundcard]","Samplerate"), ConfigValue(temp));
-    config->set(ConfigKey("[Soundcard]","Bits"), ConfigValue(ComboBoxBits->currentText()));
-    config->set(ConfigKey("[Soundcard]","ChannelMaster"), ConfigValue(ComboBoxChannelsMaster->currentText().left(1).toInt()));
-    config->set(ConfigKey("[Soundcard]","ChannelHeadphone"), ConfigValue(ComboBoxChannelsHead->currentText().left(1).toInt()));
-    config->set(ConfigKey("[Soundcard]","LatencyMaster"), ConfigValue(getSliderLatencyMsec(SliderLatencyMaster->value())));
-    config->set(ConfigKey("[Soundcard]","LatencyHeadphone"), ConfigValue(getSliderLatencyMsec(SliderLatencyHead->value())));
+    //config->set(ConfigKey("[Soundcard]","Bits"), ConfigValue(ComboBoxBits->currentText()));
+    config->set(ConfigKey("[Soundcard]","Latency"), ConfigValue(getSliderLatencyMsec(SliderLatency->value())));
     config->set(ConfigKey("[Soundcard]","SoundQuality"), ConfigValue(4-SliderSoundQuality->value()));
 
     // Close devices, and open using config data
-    player->stop();
     player->close();
-    
-    if (!player->open(false))
+
+    if (!player->open())
         QMessageBox::warning(0, "Configuration error","Problem opening audio device");
-    else
-        player->start();
+
+    // Configuration values might have changed after the opening of the player,
+    // so ensure the form is updated...
+    slotUpdate();
 }
 

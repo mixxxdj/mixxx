@@ -70,6 +70,14 @@
   #include "playerportaudio.h"
 #endif
 
+#ifdef __PORTAUDIO19__
+  #include "playerportaudio19.h"
+#endif
+
+#ifdef __JACK__
+  #include "playerjack.h"
+#endif
+
 #ifdef __PORTMIDI__
   #include "midiobjectportmidi.h"
 #endif
@@ -273,8 +281,15 @@ MixxxApp::MixxxApp(QApplication *a, QStringList files)
     // Initialize player device
 #ifdef __ALSA__
     player = new PlayerALSA(BUFFER_SIZE, &engines, config->getValueString(ConfigKey("[Soundcard]","DeviceMaster")));
-#else
-    player = new PlayerPortAudio(config,control,app);
+#endif
+#ifdef __PORTAUDIO__
+    player = new PlayerPortAudio(config,control);
+#endif
+#ifdef __PORTAUDIO19__
+    player = new PlayerPortAudio19(config,control);
+#endif
+#ifdef __JACK__
+    player = new PlayerJack(config,control);
 #endif
 
     // Init buffers/readers
@@ -361,14 +376,12 @@ MixxxApp::MixxxApp(QApplication *a, QStringList files)
     // Try open player device using config data, if that fails, use default values. If that fails too, the
     // preference panel should be opened.
     player->setMaster(master);
-    if (!player->open(false))
-        if (!player->open(true))
+    if (!player->open())
+    {
+        player->setDefaults();
+        if (!player->open())
             prefDlg->setHidden(false);
-
-
-    // Start audio
-    //qDebug("Starting player...");
-    player->start();
+    }
 
     setFocusPolicy(QWidget::StrongFocus);
 

@@ -16,12 +16,6 @@
  ***************************************************************************/
 
 #include "dlgpreferences.h"
-#ifdef __ALSA__
-  #include "playeralsa.h"
-#endif
-#ifdef __PORTAUDIO__
-  #include "playerportaudio.h"
-#endif
 #include "dlgprefsound.h"
 #include "dlgprefmidi.h"
 #include "dlgprefplaylist.h"

@@ -669,7 +669,7 @@ static PaError Pa_AudioThreadProc( internalPortAudioStream   *past )
                     pahsc->pahsc_BytesPerOutputBuffer);
                 if( bytes_written < 0 )
                 {
-                    ERR_RPT(("PortAudio: write interrupted!"));
+                    //ERR_RPT(("PortAudio: write interrupted!"));
                     break;
                 }
 

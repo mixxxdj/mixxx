@@ -20,48 +20,47 @@
 
 #include "player.h"
 #include <portaudio.h>
-#include <qapplication.h>
 
 /**
   *@author Tue and Ken Haste Andersen
   */
 
+/** Maximum frame size used with PortAudio. Used to determine no of buffers
+  * when setting latency */
+const int kiMaxFrameSize = 2048;
+
 class PlayerPortAudio : public Player  {
-public: 
-    PlayerPortAudio(ConfigObject<ConfigValue> *config, ControlObject *pControl, QApplication *app);
+public:
+    PlayerPortAudio(ConfigObject<ConfigValue> *config, ControlObject *pControl);
     ~PlayerPortAudio();
-    /** Close device */
+    bool open();
     void close();
-    /** Stop playback */
-    void stop();
-    /** Start playback */
-    void start();
-    /** Wait for playback to finish */
-    void wait();
-    int minLatency(int SRATE);
-    CSAMPLE *process(const CSAMPLE *, const int);
+    void setDefaults();
+    QStringList getInterfaces();
+    QStringList getSampleRates();
+    /** Satisfy virtual declaration in EngineObject */
+    CSAMPLE *process(const CSAMPLE *, const int) { return 0; };
+    /** Process samples. Called from PortAudio callback */
+    int callbackProcess(int iBufferSize, float *out);
+
 protected:
-    /** Open a device stream */
-    bool open(int id, PortAudioStream **stream, int srate, PaSampleFormat format, int chNo, int bufferSize, int bufferNo, PortAudioCallback *callback);
-    /** Get default device name */
-    QString getDefaultDevice();
-    /** Get id of device with name name */
-    int getDeviceID(QString name);
-    /** Open device */
-    bool open(QString nameMaster, QString nameHead, int srate, int bits, int bufferSizeMaster, int bufferSizeHead, int _chMaster, int _chHead);
-    /** PortAudio streams */
-    PortAudioStream *streamMaster, *streamHead;
-    /** true if streamHead is active */
-    bool headActive;
-    /** True if master device has been successfully opened */
-    bool opendev;
+    /** Get id of device with a given name. Returns -1 if device is not found */
+    PaDeviceID getDeviceID(QString name);
+    /** Get channel number of device with a given name. Returns -1 if device is no found */
+    int getChannelNo(QString name);
+
+    /** PortAudio stream */
+    PortAudioStream *m_pStream;
+    /** Id of currently open device. -1 if no device is open */
+    PaDeviceID m_devId;
+    /** Number of open channels */
+    int m_iChannels;
+    /** Channels used for each output from Mixxx. Set to -1 when not in use */
+    int m_iMasterLeftCh, m_iMasterRigthCh, m_iHeadLeftCh, m_iHeadRightCh;
 };
 
 
 int paCallback(void *inputBuffer, void *outputBuffer,
-                      unsigned long framesPerBuffer,
-                      PaTimestamp outTime, void *_player);
-int paCallbackSlave(void *inputBuffer, void *outputBuffer,
                       unsigned long framesPerBuffer,
                       PaTimestamp outTime, void *_player);
 #endif
