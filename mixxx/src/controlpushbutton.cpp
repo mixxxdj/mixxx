@@ -73,14 +73,8 @@ void ControlPushButton::setAction(QAction *action)
 //    forceGUIUpdate();
 }
 
-void ControlPushButton::slotUpdateAction(int v)
+void ControlPushButton::slotUpdateAction(int)
 {
-/*
-    if (v==1)
-        emit(updateAction(true));
-    else
-        emit(updateAction(false));
-*/
 }
 
 

@@ -47,14 +47,14 @@
 #include "joystick.h"
 #include "enginevumeter.h"
 
-#ifdef __UNIX__
+#ifdef __LINUX__
 #include "powermatelinux.h"
 #endif
 #ifdef __WIN__
 #include "powermatewin.h"
 #endif
 
-#ifdef __UNIX__
+#ifdef __LINUX__
 #include "joysticklinux.h"
 #endif
 
@@ -193,10 +193,6 @@ MixxxApp::MixxxApp(QApplication *a, bool bVisuals)
 
     // Configure ControlEngine object
     ControlEngine *m_pControlEngine = new ControlEngine(control);
-
-    // Ensure that only one of the flanger buttons are pushed at a time.
-    //connect(dlg_flanger->PushButtonChA, SIGNAL(valueOn()), flanger_b, SLOT(slotSetPositionOff()));
-    //connect(dlg_flanger->PushButtonChB, SIGNAL(valueOn()), flanger_a, SLOT(slotSetPositionOff()));
 
     // Prepare the tracklist:
     QDir d(config->getValueString(ConfigKey("[Playlist]","Directory")));
@@ -441,7 +437,10 @@ void MixxxApp::initMenuBar()
   optionsMenu=new QPopupMenu();
   optionsMenu->setCheckable(true);
 //  optionsBeatMark->addTo(optionsMenu);
+  // Fullscreen on mac doesn't work for some reason...
+#ifndef __MACX__
   optionsFullScreen->addTo(optionsMenu);
+#endif
   optionsPreferences->addTo(optionsMenu);
 
   ///////////////////////////////////////////////////////////////////
