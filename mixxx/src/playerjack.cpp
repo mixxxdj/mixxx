@@ -116,7 +116,7 @@ bool PlayerJack::initialize()
     output_master_right = jack_port_register(client, "Master right", JACK_DEFAULT_AUDIO_TYPE, JackPortIsOutput, 0);
     output_head_left    = jack_port_register(client, "Head left", JACK_DEFAULT_AUDIO_TYPE, JackPortIsOutput, 0);
     output_head_right   = jack_port_register(client, "Head right", JACK_DEFAULT_AUDIO_TYPE, JackPortIsOutput, 0);
-
+        
     return true;
 }
 
@@ -140,6 +140,8 @@ bool PlayerJack::open()
         qDebug("connecting %s to master left",name.latin1());
         if (jack_connect(client, jack_port_name(output_master_left), name.latin1()))
             m_pConfig->set(ConfigKey("[Soundcard]","DeviceMasterLeft"),ConfigValue("None"));
+        else
+            m_iBufferSize = jack_port_get_total_latency(client, output_master_left);
     }
 
     name = m_pConfig->getValueString(ConfigKey("[Soundcard]","DeviceMasterRight"));
@@ -148,6 +150,8 @@ bool PlayerJack::open()
         qDebug("connecting %s to master right",name.latin1());
         if (jack_connect(client, jack_port_name(output_master_right), name.latin1()))
             m_pConfig->set(ConfigKey("[Soundcard]","DeviceMasterRight"),ConfigValue("None"));
+        else
+            m_iBufferSize = jack_port_get_total_latency(client, output_master_right);
     }
 
     name = m_pConfig->getValueString(ConfigKey("[Soundcard]","DeviceHeadLeft"));
@@ -156,6 +160,8 @@ bool PlayerJack::open()
         qDebug("connecting %s to head left",name.latin1());
         if (jack_connect(client, jack_port_name(output_head_left), name.latin1()))
             m_pConfig->set(ConfigKey("[Soundcard]","DeviceHeadLeft"),ConfigValue("None"));
+        else
+            m_iBufferSize = jack_port_get_total_latency(client, output_head_left);
     }
 
     name = m_pConfig->getValueString(ConfigKey("[Soundcard]","DeviceHeadRight"));
@@ -164,6 +170,8 @@ bool PlayerJack::open()
         qDebug("connecting %s to head right",name.latin1());
         if (jack_connect(client, jack_port_name(output_head_right), name.latin1()))
             m_pConfig->set(ConfigKey("[Soundcard]","DeviceHeadRight"),ConfigValue("None"));
+        else
+            m_iBufferSize = jack_port_get_total_latency(client, output_head_right);
     }
 
     // Update the config database with the used sample rate
@@ -306,7 +314,7 @@ void PlayerJack::callbackShutdown()
 {
     m_pConfig->set(ConfigKey("[Soundcard]","SoundApi"), ConfigValue("None"));
 
-    qWarning("Jack connection was killed.\n\nThis *could* be due to a high CPU load. Try reducing\nthe sound quality and/or disable the waveform displays.");
+    qWarning("Jack connection was killed.\n\nThis could be due to a high CPU load. Try increasing the latency\nwhen starting the Jack sound server.");
 }
 
 void jackError(const char *desc)

@@ -126,7 +126,8 @@ void ReaderExtractBeat::closeSource()
 void ReaderExtractBeat::reset()
 {
     peaks->clear();
-    for (int i=0; i<getBufferSize(); i++)
+    int s = getBufferSize();
+    for (int i=0; i<s; i++)
     {
         beatBuffer[i] = 0.;
         beatCorr[i] = 0.;
@@ -566,9 +567,11 @@ void ReaderExtractBeat::updateConfidence(int curBeatIdx, int lastBeatIdx)
     if (i1>i2)
         i2+=frameNo;
     for (int i=i1; i<i2; ++i)
-        if (hfc[i%frameNo]>max && hfc[(i-1+frameNo)%frameNo]<hfc[i%frameNo] && hfc[(i+1)%frameNo]<hfc[i%frameNo])
-            max = hfc[i%frameNo];
-
+    {
+        float hfc_i = hfc[i%frameNo];
+        if (hfc_i>max && hfc[(i-1+frameNo)%frameNo]<hfc_i && hfc[(i+1)%frameNo]<hfc_i)
+            max = hfc_i;
+    }
 //    qDebug("hfc last %f, cur %f, max %f",hfc[lastBeatIdx], hfc[curBeatIdx], max);
     // Update confidence
     CSAMPLE tmp = hfc[curBeatIdx%frameNo]/max;

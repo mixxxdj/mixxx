@@ -133,8 +133,6 @@ void EngineMaster::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBuff
     // Crossfader
     FLOAT_TYPE cf_val = crossfader->get();
     FLOAT_TYPE c1_gain, c2_gain;
-    //c2_gain = 0.5*(cf_val+1.);
-    //c1_gain = 0.5*(-cf_val+1.);
     if (cf_val>0)
     {
         c2_gain = 1.;
@@ -234,3 +232,4 @@ void EngineMaster::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBuff
         j+=4;
     }
 }
+
