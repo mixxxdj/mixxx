@@ -82,8 +82,8 @@ public slots:
     void slotEndOfTrackCh1(double);
     /** Slot used when playback reaches end of track */
     void slotEndOfTrackCh2(double);
-    bool AddFiles(const char *, QDomDocument * docXML, QPtrList<TrackInfoObject> * tempTracks);
-	void WriteXML(QPtrList<TrackInfoObject> * tempTracks);
+    bool AddFiles(const char *, QDomDocument * docXML);
+	void WriteXML();
     int getTrackCount(QDomDocument * docXML);
 private slots:
     /** Loads new track for channel 1. Idx refers to index in m_lTracks. If not given it loads the
@@ -107,12 +107,14 @@ signals:
     void signalNewTrack2(TrackInfoObject *);
 
 private:
-    TrackInfoObject *FileExistsInList(const QString, QDomDocument * docXML);
+    TrackInfoObject *FileExistsInList(const QString, QDomDocument * docXML, int Index);
     void ReadXML();
     void UpdateScores();
     void UpdateTracklist(QDomDocument * domXML);
+    void UpdateTracklistFromPls();
     void loadPlaylist( QString , QDomDocument * domXML);
-	int ParseHeader(TrackInfoObject *Track);
+	void loadCollection();
+    int ParseHeader(TrackInfoObject *Track);
 
     /** Index of current track in channel 1 and 2 */
     int m_iCurTrackIdxCh1, m_iCurTrackIdxCh2;
@@ -128,6 +130,7 @@ private:
     /** Points to the two play buffers */
     EngineBuffer *m_pBuffer1, *m_pBuffer2;
     QPtrList<TrackInfoObject> m_lTracks;
+	QPtrList<TrackInfoObject> m_lPlaylist;
 	/** Pointer to absolute position widgets */
     WNumberPos *m_pNumberPos1;
 	WNumberPos *m_pNumberPos2;

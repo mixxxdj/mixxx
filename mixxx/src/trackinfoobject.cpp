@@ -103,7 +103,7 @@ QString TrackInfoObject::selectNodeStr( const QDomNode &nodeHeader, const QStrin
 
 TrackInfoObject::~TrackInfoObject()
 {
-    removeFromTrackTable();
+    //removeFromTrackTable();
 
 }
 
@@ -156,23 +156,23 @@ void TrackInfoObject::insertInTrackTableRow(WTrackTable *pTableTrack, int iRow, 
     //removeFromTrackTable();
 
     // Construct elements to insert into the table, if they are not already allocated
-//    if (!m_pTableItemScore)
+    if (!m_pTableItemScore)
         m_pTableItemScore = new WTrackTableItem(pTableTrack,QTableItem::Never, getScoreStr(), typeNumber);
-//    if (!m_pTableItemTitle)
+    if (!m_pTableItemTitle)
         m_pTableItemTitle = new WTrackTableItem(pTableTrack,QTableItem::Never, m_sTitle, typeText);
-//    if (!m_pTableItemArtist)
+    if (!m_pTableItemArtist)
         m_pTableItemArtist = new WTrackTableItem(pTableTrack,QTableItem::Never, m_sArtist, typeText);
-//    if (!m_pTableItemComment)
+    if (!m_pTableItemComment)
         m_pTableItemComment = new WTrackTableItem(pTableTrack,QTableItem::WhenCurrent, m_sComment, typeText);
-//    if (!m_pTableItemType)
+    if (!m_pTableItemType)
         m_pTableItemType = new WTrackTableItem(pTableTrack,QTableItem::Never, m_sType, typeText);
-//    if (!m_pTableItemDuration)
+    if (!m_pTableItemDuration)
         m_pTableItemDuration = new WTrackTableItem(pTableTrack,QTableItem::Never, getDurationStr(), typeDuration);
-//    if (!m_pTableItemBpm)
+    if (!m_pTableItemBpm)
         m_pTableItemBpm = new WTrackTableItem(pTableTrack,QTableItem::Never, getBpmStr(), typeNumber);
-//    if (!m_pTableItemBitrate)
+    if (!m_pTableItemBitrate)
         m_pTableItemBitrate = new WTrackTableItem(pTableTrack,QTableItem::Never, getBitrateStr(), typeNumber);
-//    if (!m_pTableItemIndex)
+    if (!m_pTableItemIndex)
         m_pTableItemIndex = new WTrackTableItem(pTableTrack,QTableItem::Never, QString("%1").arg(m_iIndex), typeNumber);
 
     qDebug("inserting.. %p",pTableTrack->item(iRow, COL_SCORE));
@@ -195,17 +195,65 @@ void TrackInfoObject::removeFromTrackTable()
 {
     if (m_pTableTrack)
     {
-        m_pTableTrack->takeItem(m_pTableItemScore);
-        m_pTableTrack->takeItem(m_pTableItemTitle);
-        m_pTableTrack->takeItem(m_pTableItemArtist);
-        m_pTableTrack->takeItem(m_pTableItemComment);
-        m_pTableTrack->takeItem(m_pTableItemType);
-        m_pTableTrack->takeItem(m_pTableItemDuration);
-        m_pTableTrack->takeItem(m_pTableItemBpm);
-        m_pTableTrack->takeItem(m_pTableItemBitrate);
-        m_pTableTrack->takeItem(m_pTableItemIndex);
-    }
-    m_pTableTrack = 0;
+        m_pTableTrack->clearCell(m_pTableItemScore->row(),m_pTableItemScore->col());
+		m_pTableTrack->clearCell(m_pTableItemTitle->row(),m_pTableItemTitle->col());
+		m_pTableTrack->clearCell(m_pTableItemArtist->row(),m_pTableItemArtist->col());
+		m_pTableTrack->clearCell(m_pTableItemComment->row(),m_pTableItemComment->col());
+		m_pTableTrack->clearCell(m_pTableItemType->row(),m_pTableItemType->col());
+		m_pTableTrack->clearCell(m_pTableItemDuration->row(),m_pTableItemDuration->col());
+		m_pTableTrack->clearCell(m_pTableItemBpm->row(),m_pTableItemBpm->col());
+		m_pTableTrack->clearCell(m_pTableItemBitrate->row(),m_pTableItemBitrate->col());
+		m_pTableTrack->clearCell(m_pTableItemIndex->row(),m_pTableItemIndex->col());
+		/*qDebug("Score1");
+		if (m_pTableItemScore)
+		m_pTableTrack->takeItem(m_pTableItemScore);
+        qDebug("Score2");
+		if (m_pTableItemTitle)
+		m_pTableTrack->takeItem(m_pTableItemTitle);
+        qDebug("Score3");
+		if (m_pTableItemArtist)
+		m_pTableTrack->takeItem(m_pTableItemArtist);
+        qDebug("Score4");
+		if (m_pTableItemComment)
+		m_pTableTrack->takeItem(m_pTableItemComment);
+        qDebug("Score5");
+		if (m_pTableItemType)
+		m_pTableTrack->takeItem(m_pTableItemType);
+        qDebug("Score6");
+		if (m_pTableItemDuration)
+		m_pTableTrack->takeItem(m_pTableItemDuration);
+        qDebug("Score7");
+		if (m_pTableItemBpm)
+		m_pTableTrack->takeItem(m_pTableItemBpm);
+        qDebug("Score8");
+		if (m_pTableItemBitrate)
+		m_pTableTrack->takeItem(m_pTableItemBitrate);
+        qDebug("Score9");
+		if (m_pTableItemIndex)
+		m_pTableTrack->takeItem(m_pTableItemIndex);
+		//m_pTableTrack->takeItem(this);**/
+        m_pTableItemScore = 0;
+        m_pTableItemTitle = 0;
+        m_pTableItemArtist = 0;
+        m_pTableItemComment = 0;
+        m_pTableItemType = 0;
+        m_pTableItemDuration = 0;
+        m_pTableItemBpm = 0;
+        m_pTableItemBitrate = 0;
+        m_pTableItemIndex = 0;
+		m_pTableTrack = 0;
+		/**delete(m_pTableItemScore);
+		delete(m_pTableItemTitle);
+		delete(m_pTableItemArtist);
+		delete(m_pTableItemComment);
+		delete(m_pTableItemType);
+		delete(m_pTableItemDuration);
+		delete(m_pTableItemBpm);
+		delete(m_pTableItemBitrate);
+		delete(m_pTableItemIndex);**/
+		
+		}
+    
 }
 
 int TrackInfoObject::parse()
