@@ -39,12 +39,12 @@ const unsigned int READCHUNKSIZE = 20480; //40960;
 /** Number of readchunks. Should minimum be set to 5. In theory this should minimum be four, but
   * since it is possible that the sound sources return more samples than request, 5 is on the
   * safe side */
-const int READCHUNK_NO = 10;
+const int READCHUNK_NO = 8;
 const unsigned int READBUFFERSIZE = READCHUNKSIZE*READCHUNK_NO;
 /** Window size used in ReaderExtract objects */
 const int WINDOWSIZE = 2048;
 /** Step size used in block based processing (ReaderExtract classes) */
-const int STEPSIZE = 512; //WINDOWSIZE/2; //WINDOWSIZE/STEPSIZE must result in an integer value 
+const int STEPSIZE = 256; //WINDOWSIZE/2; //WINDOWSIZE/STEPSIZE must result in an integer value 
 
 /** Maximum buffer length to each EngineObject::process call */
 const int MAX_BUFFER_LEN = 80000;
