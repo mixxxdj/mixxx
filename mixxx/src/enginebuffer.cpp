@@ -105,11 +105,11 @@ void EngineBuffer::newtrack(const char* filename) {
   strcpy(ending,&filename[i]);
 #ifndef Q_WS_WIN
   if (!strcmp(ending,".wav"))
-    file = new AFlibfile(filename);
+    file = new SoundSourceAFlibfile(filename);
   else 
 #endif
   if (!strcmp(ending,".mp3") || (!strcmp(ending,".MP3")))
-	file = new SoundSourceHeavymp3(filename);
+	file = new SoundSourceMp3(filename);
 
   if (file==0) {
     qFatal("Error opening %s", filename);

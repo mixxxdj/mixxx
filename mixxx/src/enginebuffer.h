@@ -29,7 +29,6 @@
 #include "defs.h"
 #include "monitor.h"
 #include "engineobject.h"
-#include "soundsource.h"
 #include "controlpushbutton.h"
 #include "controlpotmeter.h"
 #include "controlrotary.h"
@@ -37,6 +36,8 @@
 #include "dlgchannel.h"
 #include "midiobject.h"
 #include "soundsourceheavymp3.h"
+#include "soundsourcemp3.h"
+#include "soundsourceaflibfile.h"
 /**
   *@author Tue and Ken Haste Andersen
 */

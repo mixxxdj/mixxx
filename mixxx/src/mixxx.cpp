@@ -80,18 +80,18 @@ MixxxApp::MixxxApp()
 
   // Initialize player with a desired buffer size
   qDebug("Init player...");
-
 #ifdef __ALSA__
   player = new PlayerALSA(BUFFER_SIZE, &engines);
 #else
   player = new PlayerPortAudio(BUFFER_SIZE, &engines);
 #endif
 
+  qDebug("Starting buffers...");
   buffer1->start();
   buffer2->start();
 
   // Start audio
-  qDebug("Start player...");
+  qDebug("Starting player...");
   player->start(master);
 }
 
