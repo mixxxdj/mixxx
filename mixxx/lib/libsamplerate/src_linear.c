@@ -56,21 +56,36 @@ linear_process (SRC_PRIVATE *psrc, SRC_DATA *data)
 	linear->out_count = data->output_frames * linear->channels ;
 	linear->in_used = linear->out_gen = 0 ;
 
-	/* Special case for when last_ratio has not been set. */
-	if (psrc->last_ratio < (1.0 / SRC_MAX_RATIO))
-		psrc->last_ratio = data->src_ratio ;
-
 	src_ratio = psrc->last_ratio ;
 	input_index = psrc->last_position ;
 
-	/* Main processing loop. */
-	while (linear->out_gen < linear->out_count)
+	/* Calculate samples before first sample in input array. */
+	while (input_index > 0.0 && input_index < 1.0 && linear->out_gen < linear->out_count)
 	{
 		if (linear->in_used + input_index > linear->in_count)
 			break ;
 
+		if (fabs (psrc->last_ratio - data->src_ratio) > SRC_MIN_RATIO_DIFF)
+			src_ratio = psrc->last_ratio + linear->out_gen * (data->src_ratio - psrc->last_ratio) / (linear->out_count - 1) ;
+
+		for (ch = 0 ; ch < linear->channels ; ch++)
+		{	data->data_out [linear->out_gen] = linear->last_value [ch] + input_index *
+										(data->data_in [ch] - linear->last_value [ch]) ;
+			linear->out_gen ++ ;
+			} ;
+
+		/* Figure out the next index. */
+		input_index += 1.0 / src_ratio ;
+		} ;
+
+	/* Main processing loop. */
+	while (linear->out_gen < linear->out_count)
+	{
 		linear->in_used += linear->channels * lrint (floor (input_index)) ;
 		input_index -= floor (input_index) ;
+
+		if (linear->in_used + input_index > linear->in_count)
+			break ;
 
 		if (fabs (psrc->last_ratio - data->src_ratio) > SRC_MIN_RATIO_DIFF)
 			src_ratio = psrc->last_ratio + linear->out_gen * (data->src_ratio - psrc->last_ratio) / (linear->out_count - 1) ;
@@ -85,15 +100,21 @@ linear_process (SRC_PRIVATE *psrc, SRC_DATA *data)
 		input_index += 1.0 / src_ratio ;
 		} ;
 
-	if (input_index > linear->in_count - linear->in_used)
+/*-	if (input_index > linear->in_count - linear->in_used)
 	{	input_index -= linear->in_count - linear->in_used ;
 		linear->in_used = linear->in_count ;
+		puts ("XXXXXXXXXX") ; /+*-exit (1) ;-*+/
 		} ;	
+-*/
 
 	psrc->last_position = input_index ;
 
 	for (ch = 0 ; ch < linear->channels ; ch++)
-		linear->last_value [ch] = data->data_in [linear->in_used - linear->channels + ch] ;
+	{	linear->last_value [ch] = data->data_in [linear->in_used - linear->channels + ch] ;
+
+/*-		data->data_out [0 + ch] = -0.9 ;
+		data->data_out [linear->out_gen - linear->channels + ch] = 0.9 ; -*/
+		} ;
 
 	/* Save current ratio rather then target ratio. */
 	psrc->last_ratio = src_ratio ;

@@ -16,6 +16,11 @@
 ** Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
 */
 
+/*
+** API documentation is available here:
+**     http://www.mega-nerd.com/SRC/api.html
+*/
+
 #ifndef SAMPLERATE_H
 #define SAMPLERATE_H
 
@@ -23,7 +28,7 @@
 extern "C" {
 #endif	/* __cplusplus */
 
-typedef void SRC_STATE ;
+typedef struct SRC_STATE_tag SRC_STATE ;
 
 typedef struct
 {	float	*data_in, *data_out ;

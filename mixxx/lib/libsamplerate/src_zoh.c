@@ -41,7 +41,6 @@ typedef struct
 
 /*----------------------------------------------------------------------------------------
 */
-#define PROC(x) printf ("%3d => in : %5ld    out : %5ld    used : %5ld    gen : %5ld\n", (x), zoh->in_count, zoh->out_count, zoh->in_used, zoh->out_gen) ;
 
 int
 zoh_process (SRC_PRIVATE *psrc, SRC_DATA *data)
@@ -58,22 +57,33 @@ zoh_process (SRC_PRIVATE *psrc, SRC_DATA *data)
 	zoh->out_count = data->output_frames * zoh->channels ;
 	zoh->in_used = zoh->out_gen = 0 ;
 
-	/* Special case for when last_ratio has not been set. */
-	if (psrc->last_ratio < (1.0 / SRC_MAX_RATIO))
-		psrc->last_ratio = data->src_ratio ;
-
 	src_ratio = psrc->last_ratio ;
 	input_index = psrc->last_position ;
 
-	/* Main processing loop. */
-	while (zoh->out_gen < zoh->out_count)
+	/* Calculate samples before first sample in input array. */
+	while (input_index > 0.0 && input_index < 1.0 && zoh->out_gen < zoh->out_count)
 	{
-		if (zoh->in_used + input_index > zoh->in_count)
+		if (zoh->in_used + input_index >= zoh->in_count)
 			break ;
+
+		if (fabs (psrc->last_ratio - data->src_ratio) > SRC_MIN_RATIO_DIFF)
+			src_ratio = psrc->last_ratio + zoh->out_gen * (data->src_ratio - psrc->last_ratio) / (zoh->out_count - 1) ;
+
+		for (ch = 0 ; ch < zoh->channels ; ch++)
+		{	data->data_out [zoh->out_gen] = zoh->last_value [ch] ;
+			zoh->out_gen ++ ;
+			} ;
+
+		/* Figure out the next index. */
+		input_index += 1.0 / src_ratio ;
+		} ;
 
 		zoh->in_used += zoh->channels * lrint (floor (input_index)) ;
 		input_index -= floor (input_index) ;
 
+	/* Main processing loop. */
+	while (zoh->out_gen < zoh->out_count && zoh->in_used + input_index < zoh->in_count)
+	{
 		if (fabs (psrc->last_ratio - data->src_ratio) > SRC_MIN_RATIO_DIFF)
 			src_ratio = psrc->last_ratio + zoh->out_gen * (data->src_ratio - psrc->last_ratio) / (zoh->out_count - 1) ;
 
@@ -84,27 +94,16 @@ zoh_process (SRC_PRIVATE *psrc, SRC_DATA *data)
 
 		/* Figure out the next index. */
 		input_index += 1.0 / src_ratio ;
-		} ;
 
-	if (0 && ENABLE_DEBUG)
-	{	printf ("A in: %5ld   out: %5ld   used: %5ld   gen: %5ld\n", zoh->in_count, 
-			zoh->out_count, zoh->in_used, zoh->out_gen) ;
-		} ;
-
-	if (input_index > zoh->in_count - zoh->in_used)
-	{	input_index -= zoh->in_count - zoh->in_used ;
-		zoh->in_used = zoh->in_count ;
+		zoh->in_used += zoh->channels * lrint (floor (input_index)) ;
+		input_index -= floor (input_index) ;
 		} ;	
-
-	if (0 & ENABLE_DEBUG)
-	{	printf ("B in: %5ld   out: %5ld   used: %5ld   gen: %5ld\n", zoh->in_count, 
-			zoh->out_count, zoh->in_used, zoh->out_gen) ;
-		} ;
 
 	psrc->last_position = input_index ;
 
-	for (ch = 0 ; ch < zoh->channels ; ch++)
-		zoh->last_value [ch] = data->data_in [zoh->in_used - zoh->channels + ch] ;
+	if (zoh->in_used > 0)
+		for (ch = 0 ; ch < zoh->channels ; ch++)
+			zoh->last_value [ch] = data->data_in [zoh->in_used - zoh->channels + ch] ;
 
 	/* Save current ratio rather then target ratio. */
 	psrc->last_ratio = src_ratio ;
