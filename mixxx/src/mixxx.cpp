@@ -532,5 +532,22 @@ void MixxxApp::slotOptionsPreferences()
 void MixxxApp::slotHelpAbout()
 {
     QMessageBox::about(this,tr("About..."),
-                      tr("Mixxx\nVersion " VERSION "\nhttp://mixxx.sourceforge.net/\n\nDesign and programming:\tTue Haste Andersen\n\t\t\tKen Haste Andersen\nGraphics:\t\tLudek Horácek - Traditional skin\n\t\t\tTue Haste Andersen - Outline skin\nOgg vorbis support:\tSvein Magne Bang\nOther contributions:\tLukas Zapletal\n\nThanks to all DJ's and musicians giving feedback.\n\nReleased under the GNU General Public Licence version 2.") );
+                      tr("<qt>"
+                         "<table cellspacing=0 cellpadding=0>"
+                         "<tr><td>Mixxx</td></tr>"
+                         "<tr><td>Version " VERSION "</td></tr>"
+                         "<tr><td><a href=\"http://mixxx.sourceforge.net/\">http://mixxx.sourceforge.net/</a></td></tr>"
+                         "</table><br><br>"
+                         "<table cellspacing=0 cellpadding=0>"
+                         "<tr><td>Design and programming:</td><td>Tue Haste Andersen</td></tr>"
+                         "<tr><td></td><td>Ken Haste Andersen</td></tr>"
+                         "<tr><td>Skins:</td><td>Ludek Horácek (Traditional)</td></tr>"
+                         "<tr><td></td><td>Tue Haste Andersen (Outline)</td></tr>"
+                         "<tr><td>Ogg vorbis support:</td><td>Svein Magne Bang</td></tr>"
+                         "<tr><td>Other contributions:</td><td>Lukas Zapletal</td></tr>"
+                         "</table><br><br>"
+                         "<table cellspacing=0 cellpadding=0>"
+                         "<tr><td>Thanks to all DJ's and musicians giving feedback.</td></tr>"
+                         "<tr><td>Released under the GNU General Public Licence version 2.</td></tr>"
+                         "</table></qt>") );
 }
