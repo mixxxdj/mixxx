@@ -24,9 +24,7 @@
 #include <qaction.h>
 #include <qmenubar.h>
 #include <qpopupmenu.h>
-#include <qtoolbar.h>
 #include <qtoolbutton.h>
-#include <qstatusbar.h>
 #include <qwhatsthis.h>
 #include <qstring.h>
 #include <qstringlist.h>
@@ -55,11 +53,12 @@
 class MixxxVisual;
 class TrackList;
 class TrackInfoObject;
+class PowerMate;
 
 /**
   * This Class is the base class for Mixxx. It sets up the main
-  * window and providing a menubar, toolbar
-  * and statusbar. For the main view, an instance of class MixxxView is
+  * window and providing a menubar.
+  * For the main view, an instance of class MixxxView is
   * created which creates your view.
   */
 class MixxxApp : public QMainWindow
@@ -75,17 +74,10 @@ class MixxxApp : public QMainWindow
     void initActions();
     /** initMenuBar creates the menu_bar and inserts the menuitems */
     void initMenuBar();
-    /** this creates the toolbars. Change the toobar look and add new toolbars in this
-     * function */
-    void initToolBar();
-    /** setup the statusbar */
-    void initStatusBar();
     /** setup the document*/
     void initDoc();
     /** setup the mainview*/
     void initView();
-    /** Reopen player and midi devices */
-    void reopen();
     /** overloaded for Message box on last window exit */
     bool queryExit();
     /** Get pointer to the MixxxVisual object */
@@ -113,18 +105,10 @@ class MixxxApp : public QMainWindow
     void slotEditCopy();
     /** paste the clipboard into the document*/
     void slotEditPaste();
-    /** toggle the toolbar */
-    void slotViewToolBar(bool toggle);
-    /** toggle the statusbar*/
-    void slotViewStatusBar(bool toggle);
     /** toggle audio beat marks */
     void slotOptionsBeatMark(bool toggle);
     /** Preference dialog */
     void slotOptionsPreferences();
-    /** Cancel preferences from dialog *
-//    void slotOptionsClosePreferences();
-    /** Browse for playlist directory */
-//    void slotBrowsePlaylistDir();
     /** shows an about dlg*/
     void slotHelpAbout();
     /** Change of file to play */
@@ -160,7 +144,8 @@ class MixxxApp : public QMainWindow
     ConfigObject<ConfigValueMidi> *midiconfig;
     /** Pointer to track list object */
     TrackList *m_pTracks;
-
+    /** Pointer to PowerMate object */
+    PowerMate *powermate;
     /** file_menu contains all items of the menubar entry "File" */
     QPopupMenu *fileMenu;
     /** edit_menu contains all items of the menubar entry "Edit" */
@@ -171,8 +156,6 @@ class MixxxApp : public QMainWindow
     QPopupMenu *viewMenu;
     /** view_menu contains all items of the menubar entry "Help" */
     QPopupMenu *helpMenu;
-    /** the main toolbar */
-//    QToolBar *fileToolbar;
     /** actions for the application initialized in initActions() and used to en/disable them
       * according to your needs during the program */
     QAction *fileNew;
@@ -194,9 +177,6 @@ class MixxxApp : public QMainWindow
     QAction *optionsPreferences;
     /** Pointer to preference dialog */
     DlgPreferences *prefDlg;
-
-//    QAction *viewToolBar;
-    QAction *viewStatusBar;
 
     QAction *helpAboutApp;
 };

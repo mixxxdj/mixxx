@@ -27,7 +27,7 @@ MidiObjectOSS::MidiObjectOSS(ConfigObject<ConfigValueMidi> *c, QApplication *a, 
     buffer = new char[4096];
     if (buffer == 0)
     {
-        qDebug("Error allocating MIDI buffer");
+        qDebug("MidiObjectOSS: Error allocating MIDI buffer");
         return;
     }
 
@@ -35,7 +35,7 @@ MidiObjectOSS::MidiObjectOSS(ConfigObject<ConfigValueMidi> *c, QApplication *a, 
     bool device_valid = false; // Is true if device is a valid device name
     QDir dir("/dev");
     if (!dir.exists())
-        qWarning( "Cannot find /dev directory.");
+        qWarning( "MidiObjectOSS: Cannot find /dev directory.");
     else
     {
         // Search for /dev/midi* devices
@@ -59,7 +59,7 @@ MidiObjectOSS::MidiObjectOSS(ConfigObject<ConfigValueMidi> *c, QApplication *a, 
         devOpen(device);
     else
         if (devices.count()==0)
-            qWarning("OSSMidi: No MIDI devices available.");
+            qWarning("MidiObjectOSS: No MIDI devices available.");
         else
             devOpen(devices.first());
 }
@@ -77,7 +77,7 @@ void MidiObjectOSS::devOpen(QString device)
     handle = open(device.latin1(),0);
     if (handle == -1)
     {
-        qDebug("Open of MIDI device %s failed.",device.ascii());
+        qDebug("MidiObjectOSS: Open of MIDI device %s failed.",device.ascii());
         return;
     }
     openDevice = device;
@@ -117,31 +117,33 @@ void MidiObjectOSS::run()
             int no = read(handle,&buffer[0],1);
             //qDebug("midi: %i",(short int)buffer[0]);
             if (no != 1)
-                qWarning("Warning: midiobject recieved %i bytes.", no);
+                qWarning("MidiObjectOSS: midiobject recieved %i bytes.", no);
         } while ((buffer[0] & 128) != 128 & requestStop==false); // Continue until we receive a status byte (bit 7 is set)
 
         if (requestStop==false)
         {
             // and then get the following 2 bytes:
-            char channel;
+            MidiCategory midicategory;
+            char midichannel;
             char midicontrol;
             char midivalue;
             for (int i=1; i<3; i++)
             {
                 int no = read(handle,&buffer[i],1);
                 if (no != 1)
-                    qWarning("Warning: midiobject recieved %i bytes.", no);
+                    qWarning("MidiObjectOSS: midiobject recieved %i bytes.", no);
                 if (requestStop==true)
                     break;
             }
             if (requestStop==false)
             {
-                channel = buffer[0] & 15; // The channel is stored in the lower 4 bits of the status byte received
+                midicategory = (MidiCategory)(buffer[0] & 0xF0);
+                midichannel = buffer[0] & 0x0F; // The channel is stored in the lower 4 bits of the status byte received
                 midicontrol = buffer[1];
                 midivalue = buffer[2];
 
-                qDebug("midi ch: %i, ctrl: %i, val: %i",channel,midicontrol,midivalue);
-                send(channel, midicontrol, midivalue);
+                qDebug("MidiObjectOSS: midi ch: %i, ctrl: %i, val: %i",midichannel,midicontrol,midivalue);
+                send(midicategory, midichannel, midicontrol, midivalue);
             }
         }
     }

@@ -32,6 +32,7 @@ public:
     void setValue(FLOAT_TYPE) {};
 public slots:
     void slotSetPosition(int);
+    void slotSetPositionMidi(MidiCategory c, int v);
 protected:
     void forceGUIUpdate() {};
 };
