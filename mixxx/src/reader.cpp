@@ -22,10 +22,10 @@
 #include "rtthread.h"
 #include "visual/visualchannel.h"
 
-Reader::Reader(EngineBuffer *_enginebuffer, Monitor *_rate, QMutex *_pause)
+Reader::Reader(EngineBuffer *_enginebuffer, QMutex *_pause)
 {
     enginebuffer = _enginebuffer;
-    rate = _rate;
+    m_dRate = 0.;
     pause = _pause;
     m_pVisualChannel = 0;
 
@@ -128,6 +128,11 @@ void Reader::setFileposPlay(long int pos)
     readerwave->filepos_play = pos;
 }
 
+void Reader::setRate(double dRate)
+{
+    m_dRate = dRate;
+}
+
 bool Reader::tryLock()
 {
     return enginelock.tryLock();
@@ -160,7 +165,10 @@ void Reader::newtrack()
 
     // Exit if no track info was in queue
     if (pTrack==0)
-        return;
+    {
+        pause->unlock();
+	return;
+    }
 
     readerwave->newSource(pTrack);
 
@@ -203,11 +211,7 @@ void Reader::run()
             seek();
 
         // Read a new chunk:
-        double temp;
-        if (rate->tryRead(&temp))
-            rate_old = temp;
-        //qDebug("Get chunk %f",rate_old);
-        readerwave->getchunk(rate_old);
+        readerwave->getchunk(m_dRate);
     }
     //qDebug("reader stopping");
 }
@@ -247,6 +251,4 @@ void Reader::seek()
     wake();
 
 }
-
-
 

@@ -193,7 +193,7 @@ EngineBuffer::EngineBuffer(PowerMate *_powermate, const char *_group)
 
     setNewPlaypos(0.);
 
-    reader = new Reader(this, &rate_exchange, &pause);
+    reader = new Reader(this, &pause);
     read_buffer_prt = reader->getBufferWavePtr();
     file_length_old = -1;
     file_srate_old = 0;
@@ -604,6 +604,7 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBuff
             filepos_start = reader->getFileposStart();
             filepos_end = reader->getFileposEnd();
             reader->setFileposPlay((int)filepos_play);
+            reader->setRate(rate_old);
 
             reader->unlock();
             readerinfo = true;
@@ -711,14 +712,13 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBuff
 
 
 
-        // If the rate has changed, write it to the rate_exchange monitor
+        // If the rate has changed, set it in the scale object
         if (rate != rate_old)
         {
             // The rate returned by the scale object can be different from the wanted rate!
             rate_old = rate;
             rate = scale->setRate(rate);
             rate_old = rate;
-            rate_exchange.tryWrite(rate);
         }
 
         bool at_start = false;
@@ -857,7 +857,7 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBuff
             else if (filepos_play>filepos_end || filepos_play<filepos_start)
             {
                 reader->requestSeek(filepos_play);
-                //reader->wake();
+                reader->wake();
             }
 
 
@@ -929,7 +929,6 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBuff
         }
 
         pause.unlock();
-
     }
     else
     {

@@ -44,7 +44,7 @@ class VisualChannel;
 class Reader: public QThread
 {
 public: 
-    Reader(EngineBuffer *_enginebuffer, Monitor *_rate, QMutex *_pause);
+    Reader(EngineBuffer *_enginebuffer, QMutex *_pause);
     ~Reader();
 
     void addVisual(VisualChannel *pVisualChannel);
@@ -82,6 +82,9 @@ public:
     /** Set the file play position. This method must only be called when holding the enginelock
       * mutex */
     void setFileposPlay(long int);
+    /** Set rate. This method must only be called when holding the enginelock
+      * mutex */
+    void setRate(double dRate);
     /** Cue point */
     double f_dCuePoint;
 
@@ -98,8 +101,8 @@ private:
       * filepos_end from ReaderBuffer. These variables are shared between the reader and the
       * player (engine) thread */
     QMutex enginelock;
-    /** Pointer to rate monitor allocated and written in EngineBuffer. */
-    Monitor *rate;
+    /** Rate. Updated from EngineBuffer. */
+    double m_dRate;
     /** Pointer to mutex allocated in EngineBuffer, controlling rendering in EngineBuffer::process.
       * While holding this mutex, the EngineBuffer::process will silence, not reading the sound buffer */
     QMutex *pause;
