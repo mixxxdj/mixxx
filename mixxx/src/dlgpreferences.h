@@ -57,6 +57,7 @@ private:
     DlgPrefMidi *wmidi;
     DlgPrefPlaylist *wplaylist;
     DlgPrefControls *wcontrols;
+    ConfigObject<ConfigValue> *config;
 };
 
 #endif

@@ -73,6 +73,9 @@ MidiObjectOSS::~MidiObjectOSS()
 
 void MidiObjectOSS::devOpen(QString device)
 {
+    if (device.isNull())
+        return;
+
     // Open midi device
     handle = open(device.latin1(),0);
     if (handle == -1)

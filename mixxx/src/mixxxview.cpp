@@ -43,7 +43,7 @@ MixxxView::MixxxView(QWidget *parent, bool bVisualsWaveform, QString qSkinPath) 
 {
     // Path to image files
     WWidget::setPixmapPath(qSkinPath.append("/"));
-    qDebug("skin %s",qSkinPath.latin1());
+    //qDebug("skin %s",qSkinPath.latin1());
 
     // Read XML file
     QDomDocument skin("skin");
@@ -248,7 +248,7 @@ MixxxView::MixxxView(QWidget *parent, bool bVisualsWaveform, QString qSkinPath) 
             }
             else if (node.nodeName()=="TrackTable")
             {
-                qDebug("Constructing TrackTable");
+                //qDebug("Constructing TrackTable");
                 m_pTrackTable = new WTrackTable(this);
                 m_pTrackTable->setup(node);
             }

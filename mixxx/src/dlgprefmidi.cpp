@@ -77,8 +77,5 @@ void DlgPrefMidi::slotApply()
 
     // Open MIDI device
     midi->devOpen(config->getValueString(ConfigKey("[Midi]","Device")));
-
-    // Save preferences
-    config->Save();
 }
 

@@ -31,11 +31,12 @@
 
 DlgPreferences::DlgPreferences(MixxxApp *mixxx, MixxxView *view,
                                MidiObject *midi, Player *player,
-                               TrackList *tracklist, ConfigObject<ConfigValue> *config,
+                               TrackList *tracklist, ConfigObject<ConfigValue> *_config,
                                ConfigObject<ConfigValueMidi> *midiconfig,
                                ControlObject *pControl) : QTabDialog(mixxx, "")
 {    
     setCaption("Preferences");
+    config = _config;
     
     // Construct widgets for use in tabs
     wsound = new DlgPrefSound(this, player, config);
@@ -78,7 +79,10 @@ bool DlgPreferences::eventFilter(QObject *o, QEvent *e)
 {
     // Send a close signal if dialog is closing
     if (e->type() == QEvent::Hide)
+    {
         emit(closeDlg());
+        config->Save();
+    }
 
     // Standard event processing
     return QWidget::eventFilter(o,e);

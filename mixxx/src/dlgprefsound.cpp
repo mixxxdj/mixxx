@@ -22,6 +22,7 @@
 #include <qslider.h>
 #include <qlabel.h>
 #include <qmessagebox.h>
+#include <qthread.h>
 
 DlgPrefSound::DlgPrefSound(QWidget *parent, Player *_player,
                            ConfigObject<ConfigValue> *_config) : DlgPrefSoundDlg(parent,"")
@@ -294,12 +295,13 @@ void DlgPrefSound::slotApply()
 
     // Close devices, and open using config data
     player->close();
+
+    // Make a small pause
+    for (int i=0; i<1000; i++);
+
     if (!player->open(false))
         QMessageBox::warning(0, "Configuration error","Problem opening audio device");
     else
         player->start();
-
-    // Save preferences
-    config->Save();
 }
 
