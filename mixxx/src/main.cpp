@@ -26,7 +26,10 @@
 #include <stdio.h>
 #include <math.h>
 #include "portaudio.h"
+<<<<<<< main.cpp
+=======
 #include "iconsmall.xpm"
+>>>>>>> 1.37
 
 #include "mixxx.h"
 
@@ -102,12 +105,6 @@ int main(int argc, char *argv[])
     
     MixxxApp *mixxx=new MixxxApp(&a, bVisuals);
     a.setMainWidget(mixxx);
-/*    
-    mixxx->resize( 1024, 768);
-    mixxx->setFixedWidth(1024);
-    mixxx->setFixedHeight(768);
-*/
-    mixxx->setIcon(QPixmap(iconsmall));
 
     mixxx->show();
     int result = a.exec();
