@@ -99,7 +99,7 @@ contains(DEFINES, STATIC) {
 } else {
     unix:!macx:LIBS += -lmad -lid3tag
 }
-win32:LIBS += libmad.lib libid3tag.lib
+win32:LIBS += libmad-release.lib libid3tag-release.lib
 macx:LIBS += $$MACLIBPATH/lib/libmad.a $$MACLIBPATH/lib/libid3tag.a
 
 # MP3 vbrheadersdk from Xing Technology
@@ -126,7 +126,7 @@ contains(DEFINES, STATIC) {
 } else {
     unix:!macx:LIBS += -lvorbisfile -lvorbis -logg
 }
-win32:LIBS += vorbisfile_static_d.lib vorbis_static_d.lib ogg_static_d.lib
+win32:LIBS += vorbisfile_static.lib vorbis_static.lib ogg_static.lib
 macx:LIBS += $$MACLIBPATH/lib/libvorbis.a $$MACLIBPATH/lib/libvorbisfile.a $$MACLIBPATH/lib/libogg.a
 
 # PowerMate
@@ -150,7 +150,7 @@ contains(DEFINES, STATIC) {
 } else {
     unix:!macx:LIBS += -lsrfftw -lsfftw
 }
-win32:LIBS += rfftw2st.lib fftw2st.lib
+win32:LIBS += rfftw2st-release.lib fftw2st-release.lib
 macx:LIBS += $$MACLIBPATH/lib/librfftw.a $$MACLIBPATH/lib/libfftw.a
 
 # Audio scaling
@@ -210,7 +210,7 @@ win32 {
   DEFINES += __WIN__
   INCLUDEPATH += $$WINLIBPATH ../lib .
   QMAKE_CXXFLAGS += -GX
-  QMAKE_LFLAGS += /libpath:$$WINLIBPATH /NODEFAULTLIB:libcd /NODEFAULTLIB:libcmtd /NODEFAULTLIB:libc /NODEFAULTLIB:msvcrt #/NODEFAULTLIB:library
+  QMAKE_LFLAGS += /VERBOSE:LIB /libpath:$$WINLIBPATH /NODEFAULTLIB:library /NODEFAULTLIB:libcd /NODEFAULTLIB:libcmt /NODEFAULTLIB:libc  
   SETTINGS_FILE = \"mixxx.cfg\"
   RC_FILE = mixxx.rc
 }
