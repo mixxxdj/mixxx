@@ -78,8 +78,8 @@ public slots:
     void slotEndOfTrackCh1(double);
     /** Slot used when playback reaches end of track */
     void slotEndOfTrackCh2(double);
-    bool AddFiles(const char *, QDomDocument * docXML, bool parseRoot=false);
-	void WriteXML();
+    bool AddFiles(const char *, QDomDocument * docXML);
+	void WriteXML(QPtrList<TrackInfoObject> * tempTracks);
     int getTrackCount(QDomDocument * docXML);
 private slots:
     /** Loads new track for channel 1. Idx refers to index in m_lTracks. If not given it loads the
@@ -92,11 +92,12 @@ private slots:
 	void slotTreeClick(QListViewItem *, const QPoint &, int);
     void slotDeleteTrack(int idx=-1);
     void slotDeletePlaylist();
-    void slotBrowseDir();
+    void slotSavePlsAs();
+    void slotSavePls();
 	void refreshPlaylist();
 	void slotClearPlaylist();
 	void slotFindTrack();
-
+    
 private:
     TrackInfoObject *FileExistsInList(const QString, QDomDocument * docXML);
     void ReadXML();
@@ -125,7 +126,7 @@ private:
 	
     QString m_sDirectory; 
 	int m_iMaxTimesPlayed;
-
+     
     /** Pointer to ControlObject signalling end of track */
     ControlObject *m_pEndOfTrackCh1, *m_pEndOfTrackCh2;
     /** Pointer to ControlObject dertermining end of track mode */
