@@ -75,7 +75,7 @@ void PowerMateLinux::run()
     struct input_event buffer[kiPowermateBufferSize];
     int iR, iEvents, i;
 
-    timeval *waittime = new timeval;
+    //timeval *waittime = new timeval;
     while (1)
     {
         iR = read(m_iFd, buffer, sizeof(struct input_event) * kiPowermateBufferSize);

@@ -56,11 +56,6 @@ void ControlEngine::setNotify(EngineObject *_notifyobj, EngineMethod _notifymeth
 }
 */
 
-double ControlEngine::get()
-{
-    return value;
-}
-
 void ControlEngine::set(double v)
 {
     value = v;

@@ -75,7 +75,7 @@ void ControlPotmeter::setValueFromApp(double dValue)
     updateFromApp();
 }
 
-void ControlPotmeter::setValueFromMidi(MidiCategory c, int v)
+void ControlPotmeter::setValueFromMidi(MidiCategory, int v)
 {
     m_dValue = m_dMinValue + ((double)v/127.)*m_dValueRange;
     updateFromMidi();
