@@ -147,7 +147,6 @@ void ReaderExtractWave::newSource(TrackInfoObject *pTrack)
 void ReaderExtractWave::addVisual(VisualChannel *pVisualChannel)
 {
     ReaderExtract::addVisual(pVisualChannel);
-
 #ifdef EXTRACT
 //    readerfft->addVisual(pVisualChannel);
 //    readerhfc->addVisual(pVisualChannel);

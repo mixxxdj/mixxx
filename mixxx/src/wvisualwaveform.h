@@ -47,6 +47,8 @@ class WVisualWaveform : public QGLWidget
 public:
     WVisualWaveform(QWidget *pParent=0, const char *pName=0, const QGLWidget *pShareWidget = 0);
     ~WVisualWaveform();
+    /** Returns true if direct rendering is enabled */
+    bool directRendering();
     void dragEnterEvent(QDragEnterEvent *event);
     void dropEvent(QDropEvent *event);
     void setup(QDomNode node);
@@ -84,7 +86,7 @@ protected:
     QTime m_qtTime;
 
     /** Colors */
-    QColor colorBeat, colorSignal, colorMarker, colorFisheye, colorBack;
+    QColor colorBeat, colorSignal, colorHfc, colorMarker, colorFisheye, colorBack;
 };
 
 #endif

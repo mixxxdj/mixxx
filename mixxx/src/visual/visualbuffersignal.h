@@ -25,11 +25,11 @@
   */
 
 class VisualBufferSignal : public VisualBuffer  {
-public: 
+public:
     VisualBufferSignal(ReaderExtract *pReaderExtract, ControlPotmeter *pPlaypos);
     ~VisualBufferSignal();
-    void update(int iPos, int iLen);
-    void draw(GLfloat *p, int iLen, float);
+    virtual void update(int iPos, int iLen);
+    virtual void draw(GLfloat *p, int iLen, float);
 };
 
 #endif

@@ -19,7 +19,7 @@ WINPA = DIRECTSOUND
 
 # Use this definition on Linux if Mixxx should be statically linked with libmad,
 # libid3tag, fftw, ogg, vorbis and audiofile
-#unix:LINLIBPATH = ../../mixxx-linlib
+unix:LINLIBPATH = ../../mixxx-linlib
 
 # Include for unix dependencies. (19/12/2003, J_Zar)
 include( mixxx.depend )
@@ -114,8 +114,8 @@ macx:LIBS    += -framework CoreMIDI -framework CoreFoundation
 #DEFINES  += __ALSAMIDI__
 
 # Visuals
-SOURCES += wvisualsimple.cpp wvisualwaveform.cpp visual/visualbackplane.cpp visual/texture.cpp visual/visualbox.cpp visual/visualbuffer.cpp visual/visualbuffersignal.cpp visual/visualbuffermarks.cpp visual/visualchannel.cpp visual/visualcontroller.cpp visual/visualdisplay.cpp visual/visualdisplaybuffer.cpp visual/light.cpp visual/material.cpp visual/picking.cpp visual/pickable.cpp visual/visualobject.cpp
-HEADERS += wvisualsimple.h wvisualwaveform.h visual/visualbackplane.h  visual/texture.h visual/visualbox.h visual/visualbuffer.h visual/visualbuffersignal.h visual/visualbuffermarks.h visual/visualchannel.h visual/visualcontroller.h visual/visualdisplay.h visual/visualdisplaybuffer.h visual/light.h visual/material.h visual/picking.h visual/pickable.h visual/visualobject.h
+SOURCES += wvisualsimple.cpp wvisualwaveform.cpp visual/visualbackplane.cpp visual/texture.cpp visual/visualbox.cpp visual/visualbuffer.cpp visual/visualbuffersignal.cpp visual/visualbuffersignalhfc.cpp visual/visualbuffermarks.cpp visual/visualchannel.cpp visual/visualcontroller.cpp visual/visualdisplay.cpp visual/visualdisplaybuffer.cpp visual/light.cpp visual/material.cpp visual/picking.cpp visual/pickable.cpp visual/visualobject.cpp
+HEADERS += wvisualsimple.h wvisualwaveform.h visual/visualbackplane.h  visual/texture.h visual/visualbox.h visual/visualbuffer.h visual/visualbuffersignal.h visual/visualbuffersignalhfc.h visual/visualbuffermarks.h visual/visualchannel.h visual/visualcontroller.h visual/visualdisplay.h visual/visualdisplaybuffer.h visual/light.h visual/material.h visual/picking.h visual/pickable.h visual/visualobject.h
 CONFIG += opengl
 
 # MP3

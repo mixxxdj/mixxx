@@ -20,6 +20,7 @@
 #include "../readerextract.h"
 #include "visualcontroller.h"
 #include "visualbuffersignal.h"
+#include "visualbuffersignalhfc.h"
 #include "visualbuffermarks.h"
 #include "visualdisplay.h"
 
@@ -34,7 +35,7 @@ VisualChannel::VisualChannel(ControlPotmeter *pPlaypos, VisualController *pVisua
     m_iChannelNo = siChannelTotal;
     siChannelTotal++;
     group = (char *)_group;
-    
+
     m_pPlaypos = pPlaypos;
     m_pVisualController = pVisualController;
     m_qlListBuffer.setAutoDelete(true);
@@ -64,6 +65,11 @@ VisualBuffer *VisualChannel::add(ReaderExtract *pReaderExtract)
         // Construct a new buffer
         b = new VisualBufferSignal(pReaderExtract, m_pPlaypos);
     }
+    else if (pReaderExtract->getVisualDataType()=="hfc")
+    {
+        // Construct a new buffer
+        b = new VisualBufferSignalHFC(pReaderExtract, m_pPlaypos);
+    }
     else if (pReaderExtract->getVisualDataType()=="marks")
     {
         // Construct a new buffer
@@ -89,10 +95,11 @@ VisualBuffer *VisualChannel::add(ReaderExtract *pReaderExtract)
     d->setLength(length);
     d->setHeight(height);
     d->setColorSignal(m_fColorSignalR, m_fColorSignalG, m_fColorSignalB);
+    d->setColorHfc(m_fColorHfcR, m_fColorHfcG, m_fColorHfcB);
     d->setColorMarker(m_fColorMarkerR, m_fColorMarkerG, m_fColorMarkerB);
     d->setColorBeat(m_fColorBeatR, m_fColorBeatG, m_fColorBeatB);
     d->setColorFisheye(m_fColorFisheyeR, m_fColorFisheyeG, m_fColorFisheyeB);
-    
+
     // Zoom y pos dependent on channel
     if (m_iChannelNo==0)
         d->setZoompos(m_iZoomPosX,20,0);
@@ -151,6 +158,13 @@ void VisualChannel::setColorSignal(float r, float g, float b)
     m_fColorSignalR = r;
     m_fColorSignalG = g;
     m_fColorSignalB = b;
+}
+
+void VisualChannel::setColorHfc(float r, float g, float b)
+{
+    m_fColorHfcR = r;
+    m_fColorHfcG = g;
+    m_fColorHfcB = b;
 }
 
 void VisualChannel::setColorBack(float r, float g, float b)

@@ -55,6 +55,11 @@ WVisualWaveform::~WVisualWaveform()
     delete m_pVisualController;
 }
 
+bool WVisualWaveform::directRendering()
+{
+    return format().directRendering();
+}
+
 void WVisualWaveform::dragEnterEvent(QDragEnterEvent *event)
 {
     event->accept(QUriDrag::canDecode(event));
@@ -82,6 +87,7 @@ void WVisualWaveform::setup(QDomNode node)
     colorBack.setNamedColor(WWidget::selectNodeQString(node, "BgColor"));
     m_pVisualController->setBackgroundColor(colorBack);
     colorSignal.setNamedColor(WWidget::selectNodeQString(node, "SignalColor"));
+    colorHfc.setNamedColor(WWidget::selectNodeQString(node, "HfcColor"));
     colorMarker.setNamedColor(WWidget::selectNodeQString(node, "MarkerColor"));
     colorBeat.setNamedColor(WWidget::selectNodeQString(node, "BeatColor"));
     colorFisheye.setNamedColor(WWidget::selectNodeQString(node, "FisheyeColor"));
@@ -173,6 +179,7 @@ VisualChannel *WVisualWaveform::add(ControlPotmeter *pPlaypos, const char *group
         c->setZoomPosX(50);
         c->setColorBack((float)colorBack.red()/255., (float)colorBack.green()/255., (float)colorBack.blue()/255.);
         c->setColorSignal((float)colorSignal.red()/255., (float)colorSignal.green()/255., (float)colorSignal.blue()/255.);
+        c->setColorHfc((float)colorHfc.red()/255., (float)colorHfc.green()/255., (float)colorHfc.blue()/255.);
         c->setColorMarker((float)colorMarker.red()/255., (float)colorMarker.green()/255., (float)colorMarker.blue()/255.);
         c->setColorBeat((float)colorBeat.red()/255., (float)colorBeat.green()/255., (float)colorBeat.blue()/255.);
         c->setColorFisheye((float)colorFisheye.red()/255., (float)colorFisheye.green()/255., (float)colorFisheye.blue()/255.);
