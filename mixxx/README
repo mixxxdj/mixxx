@@ -21,6 +21,7 @@ New since 1.0.1:
 - Tempo syncronization button
 - Absolute position/remaining time display
 - Tooltips added
+- User interface bug fixes
 
 * REQUIREMENTS *********************************************
 Mixxx is depends on the following libraries:
