@@ -13,21 +13,6 @@ SoundSourceMp3::SoundSourceMp3(const char* filename)
     if (tmp != inputbuf_len)
         qFatal("MAD: Error reading mp3-file: %s\nRead only %d bytes, but wanted %d bytes.",filename,tmp,inputbuf_len);
 
-/*
-
-    file = fopen(filename,"r");
-    if (!file)
-        qFatal("MAD: Open of %s failed.", filename);
-
-    // Read the whole file into inputbuf:
-    struct stat filestat;
-    stat(filename, &filestat);
-    inputbuf_len = filestat.st_size;
-    inputbuf = new unsigned char[inputbuf_len];
-	size_t tmp = fread(inputbuf,1,(size_t) inputbuf_len ,file);
-    if (tmp != inputbuf_len)
-        qFatal("MAD: Error reading mp3-file: %s\nRead only %d bytes, but wanted %d bytes.%d.%d",filename,tmp,inputbuf_len,feof(file),ferror(file));
-*/	
     // Transfer it to the mad stream-buffer:
     mad_stream_init(&Stream);
     mad_stream_buffer(&Stream, (unsigned char *) inputbuf, inputbuf_len);
@@ -101,7 +86,6 @@ SoundSourceMp3::~SoundSourceMp3()
     mad_frame_finish(&Frame);
     mad_synth_finish(&Synth);
     delete [] inputbuf;
-    fclose(file);
 }
 
 long SoundSourceMp3::seek(long filepos)

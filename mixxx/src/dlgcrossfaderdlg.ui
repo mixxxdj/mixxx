@@ -58,6 +58,38 @@
             </size>
         </property>
     </widget>
+    <widget class="QPushButton">
+        <property name="name">
+            <cstring>PushButtonHeadLeft</cstring>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>95</x>
+                <y>5</y>
+                <width>30</width>
+                <height>30</height>
+            </rect>
+        </property>
+        <property name="text">
+            <string>L</string>
+        </property>
+    </widget>
+    <widget class="QPushButton">
+        <property name="name">
+            <cstring>PushButtonHeadRight</cstring>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>545</x>
+                <y>5</y>
+                <width>30</width>
+                <height>30</height>
+            </rect>
+        </property>
+        <property name="text">
+            <string>R</string>
+        </property>
+    </widget>
 </widget>
 <customwidgets>
     <customwidget>

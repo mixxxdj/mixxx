@@ -17,6 +17,10 @@
 
 #include "player.h"
 
+// Static member variable definition
+SAMPLE *Player::out_buffer = 0;
+SAMPLE *Player::out_buffer_offset = 0;
+
 /* -------- ------------------------------------------------------
    Purpose: Initializes the audio hardware.
    Input:   Size of the output buffer in samples
@@ -39,26 +43,23 @@ Player::~Player()
     deallocate();
 }
 
-bool Player::reopen(QString name, int srate, int bits, int bufferSize)
+bool Player::reopen(QString name, int srate, int bits, int bufferSize, int chMaster, int chHead)
 {
     close();
-    return open(name,srate,bits,bufferSize);
+    return open(name,srate,bits,bufferSize,chMaster,chHead);
 }
 
 void Player::allocate()
 {
-    // Allocate buffers
-    out_buffer = new SAMPLE[BUFFER_SIZE];
-    process_buffer = new CSAMPLE[BUFFER_SIZE];
-    tmp1 = new CSAMPLE[BUFFER_SIZE];
-    tmp2 = new CSAMPLE[BUFFER_SIZE];
+    // Allocate buffer
+    out_buffer = new SAMPLE[MAX_BUFFER_LEN*10];
+    out_buffer_offset = out_buffer;
+    
+    bufferIdx = 0;
 }
 
 void Player::deallocate()
 {
-    delete [] tmp2;
-    delete [] tmp1;
-    delete [] process_buffer;
     delete [] out_buffer;
 }
 
@@ -87,19 +88,24 @@ int Player::prepareBuffer()
   CSAMPLE *p1, *p2;
 
   // Resample; the linear interpolation is done in readfile:
-  p1 = reader->process(0, buffer_size);
+  p1 = reader->process(0, BUFFERSIZE);
 
   {for (unsigned int i=0; i<engines->size(); i++)
   {
-      p2 = (*engines)[i]->process(p1, buffer_size);
+      p2 = (*engines)[i]->process(p1, BUFFERSIZE);
       p1=p2;
   }}
 
   // Convert the signal back to SAMPLE and write to the sound cards buffer:
-  for (int i=0; i<buffer_size; i++)
-      out_buffer[i] = (SAMPLE)p1[i];
+  if (bufferIdx>20)
+      bufferIdx = 0;
+  else
+      bufferIdx++;
+  out_buffer_offset = out_buffer + (BUFFERSIZE*2*bufferIdx);
+  for (int i=0; i<BUFFERSIZE*2; i++)
+      out_buffer_offset[i] = (SAMPLE)p1[i];
 
-  return 0; // Hack. Should only return 0 when not at end of file
+  return 0;
 }
 
 QPtrList<Player::Info> *Player::getInfo()

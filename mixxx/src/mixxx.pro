@@ -10,16 +10,16 @@ unix:LIBS += -lportaudio
 win32:LIBS += ../lib/PAstaticWMMED.lib winmm.lib
 
 # OSS Midi (Working good, Linux specific)
-#SOURCES += midiobjectoss.cpp
-#HEADERS += midiobjectoss.h
-#DEFINES += __OSSMIDI__
+SOURCES += midiobjectoss.cpp
+HEADERS += midiobjectoss.h
+DEFINES += __OSSMIDI__
 
 # PortMidi (Alpha - only available on Windows)
-SOURCES += midiobjectportmidi.cpp
-HEADERS += midiobjectportmidi.h
-DEFINES += __PORTMIDI__
-unix:LIBS += -lportmidi -lporttime
-win32:LIBS += ../lib/portmidi.lib ../lib/porttime.lib
+#SOURCES += midiobjectportmidi.cpp
+#HEADERS += midiobjectportmidi.h
+#DEFINES += __PORTMIDI__
+#unix:LIBS += -lportmidi -lporttime
+#win32:LIBS += ../lib/portmidi.lib ../lib/porttime.lib
 
 # ALSA PCM (Not currently working, Linux specific)
 #SOURCES += playeralsa.cpp
@@ -72,6 +72,6 @@ DEFINES += CONFIG_PATH=$$CONFIG_PATH
 FORMS	= dlgchanneldlg.ui dlgplaycontroldlg.ui dlgplaylistdlg.ui dlgmasterdlg.ui dlgcrossfaderdlg.ui dlgsplitdlg.ui dlgpreferencesdlg.ui
 IMAGES	= filesave.xpm
 TEMPLATE	=app
-CONFIG	+= qt warn_on thread release 
+CONFIG	+= qt warn_on thread debug 
 DBFILE	= mixxx.db
 LANGUAGE	= C++

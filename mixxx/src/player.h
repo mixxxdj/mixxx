@@ -28,41 +28,45 @@
 #include <qvaluelist.h>
 #include <qptrlist.h>
 
-
 class Player : public EngineObject {
 public:
     Player(int, std::vector<EngineObject *> *, QString device);
     ~Player();      // Deallocate
-    bool reopen(QString name, int srate, int bits, int bufferSize);
+    bool reopen(QString name, int srate, int bits, int bufferSize, int chMaster, int chHead);
     virtual void start(EngineObject *); // Start audio stream
     virtual void stop() = 0;           // Stops audio stream
     virtual void wait() = 0;           // Wait for audio stream to finish
+    virtual int minLatency(int SRATE) = 0; // Given a sample rate, return the minimum latency for that card
     
     typedef struct
     {
         QString         name;
         QValueList<int> sampleRates;
         QValueList<int> bits;
-        QValueList<int> bufferSizes;
+        QValueList<int> latency;
+        int             noChannels;
     } Info;
     
     QPtrList<Info> *getInfo();
+
     
-    SAMPLE *out_buffer;
+    static SAMPLE *out_buffer, *out_buffer_offset;
     int prepareBuffer(); // Calculates one buffer of sound
     int buffer_size;
     
 protected:
-    virtual bool open(QString name, int srate, int bits, int bufferSize) = 0;
+    virtual bool open(QString name, int srate, int bits, int bufferSize, int chMaster, int chHead) = 0;
     virtual void close() = 0;
     void allocate();
     void deallocate();
     
     std::vector<EngineObject *> *engines;
-    CSAMPLE *process_buffer,*tmp1, *tmp2;
+    //CSAMPLE *process_buffer,*tmp1, *tmp2;
     int index;    // Current playback frame in input buffer
     EngineObject* reader;
     QPtrList<Info>  devices;
+
+    int bufferIdx;
 };
 
 #endif

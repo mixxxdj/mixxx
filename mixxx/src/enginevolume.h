@@ -10,7 +10,7 @@
 class EngineVolume : public EngineObject {
   Q_OBJECT
 public:
-  EngineVolume(const char *group);
+  EngineVolume(const ConfigKey);
   ~EngineVolume();
   CSAMPLE *process(const CSAMPLE*, const int);
 

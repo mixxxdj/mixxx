@@ -3,9 +3,9 @@
 /*----------------------------------------------------------------
   Volume effect.
   ----------------------------------------------------------------*/
-EngineVolume::EngineVolume(const char *group)
+EngineVolume::EngineVolume(const ConfigKey key)
 {
-    potmeter = new ControlLogpotmeter(ConfigKey(group, "volume"), 5.0);
+    potmeter = new ControlLogpotmeter(key, 5.0);
     volume = 1.0;
     buffer = new CSAMPLE[MAX_BUFFER_LEN];
 

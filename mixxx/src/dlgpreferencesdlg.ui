@@ -8,65 +8,30 @@
         <rect>
             <x>0</x>
             <y>0</y>
-            <width>365</width>
-            <height>363</height>
+            <width>371</width>
+            <height>402</height>
         </rect>
     </property>
     <property name="caption">
         <string>Preferences</string>
     </property>
-    <widget class="QPushButton">
-        <property name="name">
-            <cstring>PushButtonCancel</cstring>
-        </property>
-        <property name="geometry">
-            <rect>
-                <x>270</x>
-                <y>328</y>
-                <width>84</width>
-                <height>22</height>
-            </rect>
-        </property>
-        <property name="text">
-            <string>Cancel</string>
-        </property>
-    </widget>
     <widget class="QLabel">
         <property name="name">
-            <cstring>TextLabel5</cstring>
+            <cstring>TextLabel1_2</cstring>
         </property>
         <property name="enabled">
             <bool>true</bool>
         </property>
         <property name="geometry">
             <rect>
-                <x>9</x>
-                <y>194</y>
-                <width>128</width>
+                <x>11</x>
+                <y>55</y>
+                <width>130</width>
                 <height>19</height>
             </rect>
         </property>
         <property name="text">
-            <string>Midi Device</string>
-        </property>
-    </widget>
-    <widget class="QLabel">
-        <property name="name">
-            <cstring>TextLabel6</cstring>
-        </property>
-        <property name="enabled">
-            <bool>true</bool>
-        </property>
-        <property name="geometry">
-            <rect>
-                <x>9</x>
-                <y>159</y>
-                <width>128</width>
-                <height>19</height>
-            </rect>
-        </property>
-        <property name="text">
-            <string>Midi Configuration</string>
+            <string>Headphone output</string>
         </property>
     </widget>
     <widget class="QLabel">
@@ -85,45 +50,83 @@
             </rect>
         </property>
         <property name="text">
-            <string>Sound card</string>
+            <string>Master output</string>
         </property>
     </widget>
-    <widget class="QPushButton">
+    <widget class="QLabel">
         <property name="name">
-            <cstring>PushButtonApply</cstring>
+            <cstring>TextLabel5</cstring>
         </property>
         <property name="enabled">
             <bool>true</bool>
         </property>
         <property name="geometry">
             <rect>
-                <x>184</x>
-                <y>328</y>
-                <width>79</width>
-                <height>22</height>
+                <x>9</x>
+                <y>229</y>
+                <width>128</width>
+                <height>19</height>
             </rect>
         </property>
         <property name="text">
-            <string>Apply</string>
+            <string>Midi Device</string>
         </property>
     </widget>
-    <widget class="QPushButton">
+    <widget class="QLabel">
         <property name="name">
-            <cstring>PushButtonOK</cstring>
+            <cstring>TextLabel6</cstring>
         </property>
         <property name="enabled">
             <bool>true</bool>
         </property>
         <property name="geometry">
             <rect>
-                <x>101</x>
-                <y>328</y>
-                <width>77</width>
-                <height>22</height>
+                <x>9</x>
+                <y>194</y>
+                <width>128</width>
+                <height>19</height>
             </rect>
         </property>
         <property name="text">
-            <string>OK</string>
+            <string>Midi Configuration</string>
+        </property>
+    </widget>
+    <widget class="QLabel">
+        <property name="name">
+            <cstring>TextLabel2</cstring>
+        </property>
+        <property name="enabled">
+            <bool>true</bool>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>11</x>
+                <y>90</y>
+                <width>130</width>
+                <height>20</height>
+            </rect>
+        </property>
+        <property name="text">
+            <string>Sample rate</string>
+        </property>
+    </widget>
+    <widget class="QLabel">
+        <property name="name">
+            <cstring>TextLabel3</cstring>
+        </property>
+        <property name="enabled">
+            <bool>true</bool>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>11</x>
+                <y>125</y>
+                <width>128</width>
+                <height>19</height>
+            </rect>
+        </property>
+        <property name="text">
+            <string>Number of bits</string>
         </property>
     </widget>
     <widget class="QLabel">
@@ -136,7 +139,7 @@
         <property name="geometry">
             <rect>
                 <x>10</x>
-                <y>124</y>
+                <y>159</y>
                 <width>128</width>
                 <height>21</height>
             </rect>
@@ -155,29 +158,10 @@
         <property name="geometry">
             <rect>
                 <x>145</x>
-                <y>85</y>
+                <y>120</y>
                 <width>86</width>
                 <height>22</height>
             </rect>
-        </property>
-    </widget>
-    <widget class="QLabel">
-        <property name="name">
-            <cstring>TextLabel2</cstring>
-        </property>
-        <property name="enabled">
-            <bool>true</bool>
-        </property>
-        <property name="geometry">
-            <rect>
-                <x>11</x>
-                <y>55</y>
-                <width>130</width>
-                <height>20</height>
-            </rect>
-        </property>
-        <property name="text">
-            <string>Sample rate</string>
         </property>
     </widget>
     <widget class="QComboBox">
@@ -190,34 +174,15 @@
         <property name="geometry">
             <rect>
                 <x>145</x>
-                <y>50</y>
+                <y>85</y>
                 <width>86</width>
                 <height>22</height>
             </rect>
         </property>
     </widget>
-    <widget class="QLabel">
-        <property name="name">
-            <cstring>TextLabel3</cstring>
-        </property>
-        <property name="enabled">
-            <bool>true</bool>
-        </property>
-        <property name="geometry">
-            <rect>
-                <x>11</x>
-                <y>90</y>
-                <width>128</width>
-                <height>19</height>
-            </rect>
-        </property>
-        <property name="text">
-            <string>Number of bits</string>
-        </property>
-    </widget>
     <widget class="QComboBox">
         <property name="name">
-            <cstring>ComboBoxSoundcard</cstring>
+            <cstring>ComboBoxSoundcardMaster</cstring>
         </property>
         <property name="enabled">
             <bool>true</bool>
@@ -226,7 +191,93 @@
             <rect>
                 <x>145</x>
                 <y>15</y>
-                <width>211</width>
+                <width>135</width>
+                <height>22</height>
+            </rect>
+        </property>
+    </widget>
+    <widget class="QLabel">
+        <property name="name">
+            <cstring>TextLabel1_3</cstring>
+        </property>
+        <property name="enabled">
+            <bool>true</bool>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>285</x>
+                <y>20</y>
+                <width>25</width>
+                <height>19</height>
+            </rect>
+        </property>
+        <property name="text">
+            <string>Ch</string>
+        </property>
+    </widget>
+    <widget class="QComboBox">
+        <property name="name">
+            <cstring>ComboBoxChannelsMaster</cstring>
+        </property>
+        <property name="enabled">
+            <bool>true</bool>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>306</x>
+                <y>15</y>
+                <width>55</width>
+                <height>22</height>
+            </rect>
+        </property>
+    </widget>
+    <widget class="QComboBox">
+        <property name="name">
+            <cstring>ComboBoxSoundcardHead</cstring>
+        </property>
+        <property name="enabled">
+            <bool>true</bool>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>145</x>
+                <y>50</y>
+                <width>135</width>
+                <height>22</height>
+            </rect>
+        </property>
+    </widget>
+    <widget class="QLabel">
+        <property name="name">
+            <cstring>TextLabel1_3_2</cstring>
+        </property>
+        <property name="enabled">
+            <bool>true</bool>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>285</x>
+                <y>55</y>
+                <width>25</width>
+                <height>19</height>
+            </rect>
+        </property>
+        <property name="text">
+            <string>Ch</string>
+        </property>
+    </widget>
+    <widget class="QComboBox">
+        <property name="name">
+            <cstring>ComboBoxChannelsHead</cstring>
+        </property>
+        <property name="enabled">
+            <bool>true</bool>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>306</x>
+                <y>50</y>
+                <width>55</width>
                 <height>22</height>
             </rect>
         </property>
@@ -237,8 +288,8 @@
         </property>
         <property name="geometry">
             <rect>
-                <x>338</x>
-                <y>120</y>
+                <x>343</x>
+                <y>155</y>
                 <width>19</width>
                 <height>22</height>
             </rect>
@@ -247,15 +298,28 @@
             <string>...</string>
         </property>
     </widget>
+    <widget class="QLineEdit">
+        <property name="name">
+            <cstring>LineEditSongfiles</cstring>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>145</x>
+                <y>155</y>
+                <width>188</width>
+                <height>22</height>
+            </rect>
+        </property>
+    </widget>
     <widget class="QComboBox">
         <property name="name">
             <cstring>ComboBoxMidiconf</cstring>
         </property>
         <property name="geometry">
             <rect>
-                <x>145</x>
-                <y>155</y>
-                <width>211</width>
+                <x>146</x>
+                <y>190</y>
+                <width>215</width>
                 <height>22</height>
             </rect>
         </property>
@@ -269,22 +333,9 @@
         </property>
         <property name="geometry">
             <rect>
-                <x>145</x>
-                <y>189</y>
-                <width>211</width>
-                <height>22</height>
-            </rect>
-        </property>
-    </widget>
-    <widget class="QLineEdit">
-        <property name="name">
-            <cstring>LineEditSongfiles</cstring>
-        </property>
-        <property name="geometry">
-            <rect>
-                <x>145</x>
-                <y>120</y>
-                <width>188</width>
+                <x>146</x>
+                <y>224</y>
+                <width>215</width>
                 <height>22</height>
             </rect>
         </property>
@@ -299,8 +350,8 @@
         <property name="geometry">
             <rect>
                 <x>10</x>
-                <y>218</y>
-                <width>345</width>
+                <y>258</y>
+                <width>350</width>
                 <height>96</height>
             </rect>
         </property>
@@ -309,18 +360,18 @@
         </property>
         <widget class="QLabel">
             <property name="name">
-                <cstring>TextLabel8</cstring>
+                <cstring>TextLabel8_2</cstring>
             </property>
             <property name="geometry">
                 <rect>
-                    <x>15</x>
+                    <x>310</x>
                     <y>70</y>
                     <width>30</width>
                     <height>16</height>
                 </rect>
             </property>
             <property name="text">
-                <string>Low</string>
+                <string>High</string>
             </property>
         </widget>
         <widget class="QLabel">
@@ -341,18 +392,18 @@
         </widget>
         <widget class="QLabel">
             <property name="name">
-                <cstring>TextLabel8_2</cstring>
+                <cstring>TextLabel8</cstring>
             </property>
             <property name="geometry">
                 <rect>
-                    <x>310</x>
+                    <x>15</x>
                     <y>70</y>
                     <width>30</width>
                     <height>16</height>
                 </rect>
             </property>
             <property name="text">
-                <string>High</string>
+                <string>Low</string>
             </property>
         </widget>
         <widget class="QSlider">
@@ -377,6 +428,60 @@
                 <number>10</number>
             </property>
         </widget>
+    </widget>
+    <widget class="QPushButton">
+        <property name="name">
+            <cstring>PushButtonCancel</cstring>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>275</x>
+                <y>365</y>
+                <width>85</width>
+                <height>22</height>
+            </rect>
+        </property>
+        <property name="text">
+            <string>Cancel</string>
+        </property>
+    </widget>
+    <widget class="QPushButton">
+        <property name="name">
+            <cstring>PushButtonApply</cstring>
+        </property>
+        <property name="enabled">
+            <bool>true</bool>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>180</x>
+                <y>365</y>
+                <width>85</width>
+                <height>22</height>
+            </rect>
+        </property>
+        <property name="text">
+            <string>Apply</string>
+        </property>
+    </widget>
+    <widget class="QPushButton">
+        <property name="name">
+            <cstring>PushButtonOK</cstring>
+        </property>
+        <property name="enabled">
+            <bool>true</bool>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>85</x>
+                <y>365</y>
+                <width>85</width>
+                <height>22</height>
+            </rect>
+        </property>
+        <property name="text">
+            <string>OK</string>
+        </property>
     </widget>
 </widget>
 <layoutdefaults spacing="6" margin="11"/>

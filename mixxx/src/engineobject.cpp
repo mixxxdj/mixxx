@@ -18,10 +18,13 @@
 #include "engineobject.h"
 
 // Static member variable definition
-QString EngineObject::NAME = 0;
+QString EngineObject::NAME_MASTER = 0;
+QString EngineObject::NAME_HEAD = 0;
 int EngineObject::SRATE = 0;
 int EngineObject::BITS = 0;
 int EngineObject::BUFFERSIZE = 0;
+int EngineObject::CH_MASTER = 0;
+int EngineObject::CH_HEAD = 0;
 int EngineObject::NYQUIST = 0;
 CSAMPLE EngineObject::norm = 0.;
 FLOAT_TYPE EngineObject::BASERATE = 1.0;
@@ -36,9 +39,17 @@ EngineObject::~EngineObject()
 {
 }
 
-void EngineObject::setParams(QString name, int srate, int bits, int bufferSize)
+void EngineObject::setParams(QString name, int srate, int bits, int bufferSize, int chMaster, int chHead)
 {
-    NAME       = name;
+    if (chMaster>0)
+    {
+        NAME_MASTER = name;
+        CH_MASTER   = chMaster;
+        CH_HEAD     = chHead;
+    } else {
+        NAME_HEAD   = name;
+        CH_HEAD     = chHead;
+    }
     SRATE      = srate;
     BITS       = bits;
     BUFFERSIZE = bufferSize;
