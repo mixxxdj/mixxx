@@ -25,7 +25,7 @@
 #include <qknob.h>
 #include <qstring.h>
 #include <qlcdnumber.h>
-#include <semaphore.h>
+//#include <semaphore.h>
 
 #include "defs.h"
 #include "engineobject.h"
@@ -60,7 +60,8 @@ private:
   void stop();
 
   QSemaphore *requestStop;
-  sem_t *buffers_read_ahead;
+  QSemaphore *buffersReadAhead;
+//  sem_t *buffers_read_ahead;
   unsigned long int read_buffer_size;
   unsigned long int frontpos;
   double play_pos;

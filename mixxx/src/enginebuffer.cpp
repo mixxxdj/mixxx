@@ -49,8 +49,9 @@ EngineBuffer::EngineBuffer(DlgPlaycontrol *playcontrol, DlgChannel *channel, Mid
   readbuffer = new CSAMPLE[read_buffer_size];
 
   // Allocate semaphore
-  buffers_read_ahead = new sem_t;
-  sem_init(buffers_read_ahead, 0, 1);
+  //buffers_read_ahead = new sem_t;
+  //sem_init(buffers_read_ahead, 0, 1);
+  buffersReadAhead = new QSemaphore(1);
 
   // Semaphore for stopping thread
   requestStop = new QSemaphore(1);
@@ -75,7 +76,11 @@ EngineBuffer::~EngineBuffer(){
   if (file != 0) delete file;
   delete [] temp;
   delete [] readbuffer;
-  delete buffers_read_ahead;
+//  delete buffers_read_ahead;
+
+  delete buffersReadAhead;
+  delete requestStop;
+
   delete PlayButton;
   delete wheel;
   delete rateSlider;
@@ -123,7 +128,9 @@ void EngineBuffer::start() {
 
 void EngineBuffer::stop()
 {
-  sem_post(buffers_read_ahead);
+  //sem_post(buffers_read_ahead);
+  buffersReadAhead->operator--(1);
+
   requestStop->operator++(1);
   wait();
   requestStop->operator--(1);
@@ -132,10 +139,12 @@ void EngineBuffer::stop()
 void EngineBuffer::run() {
   while(requestStop->available()) {
     // Wait for playback if in buffer is filled.
-    sem_wait(buffers_read_ahead);
+    //sem_wait(buffers_read_ahead);
+    buffersReadAhead->operator++(1);
+
     // Check if the semaphore is too large:
-    int sem_value;
-    sem_getvalue(buffers_read_ahead, &sem_value);
+    int sem_value = buffersReadAhead->available();
+    //sem_getvalue(buffers_read_ahead, &sem_value);
     if (sem_value != 0)
       qDebug("Reader is requesting %d reads at once.", sem_value+1);
     else
@@ -254,7 +263,7 @@ bool even(long n) {
 // Output:  -
 // -------- ------------------------------------------------------
 void EngineBuffer::checkread() {
-  static int sem_value; // place to store the value of the semaphore for read
+  //static int sem_value; // place to store the value of the semaphore for read
   static int pending_time = 0;
 
   bool send_request = false;
@@ -273,12 +282,15 @@ void EngineBuffer::checkread() {
   if (send_request) {
     // check if we still have a request pending:
     //std::cout << (long)play_pos << ", " << frontpos << ", " << filepos << "\n";
-    sem_getvalue(buffers_read_ahead, &sem_value);
-    if (sem_value == 0) {
+    //sem_getvalue(buffers_read_ahead, &sem_value);
+    if (buffersReadAhead->available()) {
 	  //qDebug("Frontpos: %i Playpos: %i),frontpos,play_pos);
       //std::cout << frontpos << "," <<play_pos<<","<<(long)floor(play_pos)%read_buffer_size<<"\n";
       //cout << filepos << "," << filelength << "\n";
-      sem_post(buffers_read_ahead);
+
+      //sem_post(buffers_read_ahead);
+      buffersReadAhead->operator--(1);
+
       pending_time = 0;
     }
     else {
