@@ -41,7 +41,7 @@ protected:
     void paintEvent(QPaintEvent *e);
 private:
     static QPixmap *slider, *marker;
-    int value, pix_length, pos;
+    int value, pix_length, poss;
 };
 
 #endif

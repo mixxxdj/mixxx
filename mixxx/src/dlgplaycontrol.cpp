@@ -17,7 +17,10 @@
 
 #include "dlgplaycontrol.h"
 #include "wplaybutton.h"
+#include "wplayposslider.h"
+#include "wwheel.h"
 #include <qgroupbox.h>
+#include <qlabel.h>
 
 DlgPlaycontrol::DlgPlaycontrol(QWidget *parent, const char *name ) : DlgPlaycontrolDlg(parent,name)
 {
@@ -29,8 +32,23 @@ DlgPlaycontrol::~DlgPlaycontrol()
 
 void DlgPlaycontrol::layoutMirror()
 {
-    // Mirror volume and knobs positions
-    QPoint pos = PushButtonPlay->pos();
+    // Move rate slider
+    QPoint pos = GroupBoxRate->pos();
+    GroupBoxRate->move(208,pos.y());
+
+    // Move playbutton
+    pos = PushButtonPlay->pos();
     PushButtonPlay->move(5,pos.y());
-    GroupBoxRate->move(177,pos.y());
+
+    // Move playpos slider, display and wheel
+    pos = SliderPosition->pos();
+    SliderPosition->move(5,pos.y());
+    pos = textLabelTrack->pos();
+    textLabelTrack->move(5,pos.y());
+    pos = WheelPlaycontrol->pos();
+    WheelPlaycontrol->move(5,pos.y());
+
+    // Move heading and relabel
+    TextHeading->move(5,TextHeading->pos().y());
+    TextHeading->setText(QString("PLAYER B"));
 }

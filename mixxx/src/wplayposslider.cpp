@@ -35,7 +35,7 @@ WPlayposSlider::WPlayposSlider(QWidget *parent, const char *name ) : QWidget(par
     }
 
     value = 0;
-    pos = 2;
+    poss = 2;
     pix_length = 192; // Length of slider in pixels: len (202) - border(4) - marker len (6)
 }
 
@@ -47,11 +47,11 @@ WPlayposSlider::~WPlayposSlider()
 
 void WPlayposSlider::mouseMoveEvent(QMouseEvent *e)
 {
-    pos = e->x()-3; // X pos - half marker len
-    if (pos>194)
-        pos = 194;
-    else if (pos<2)
-        pos = 2;
+    poss = e->x()-3; // X pos - half marker len
+    if (poss>194)
+        poss = 194;
+    else if (poss<2)
+        poss = 2;
 
     // Update display
     update();
@@ -68,7 +68,7 @@ void WPlayposSlider::mouseReleaseEvent(QMouseEvent *e)
     mouseMoveEvent(e);
 
     // Calculate and emit new value
-    int value = (int)((CSAMPLE)(pos-2)*100./(CSAMPLE)pix_length);
+    int value = (int)((CSAMPLE)(poss-2)*100./(CSAMPLE)pix_length);
     emit(valueChanged(value));
 }
 
@@ -76,7 +76,7 @@ void WPlayposSlider::setValue(int v)
 {
     // Set value without emitting a valueChanged signal, and update display
     value = v;
-    pos = (int)((CSAMPLE)value*((CSAMPLE)pix_length/100.))+2;
+    poss = (int)((CSAMPLE)value*((CSAMPLE)pix_length/100.))+2;
 
     repaint();
 }
@@ -86,5 +86,5 @@ void WPlayposSlider::paintEvent(QPaintEvent *)
     QPainter paint(this);
 
     paint.drawPixmap(0,0,*slider);
-    paint.drawPixmap(pos,2,*marker);
+    paint.drawPixmap(poss,2,*marker);
 }
