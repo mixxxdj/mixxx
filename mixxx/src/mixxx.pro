@@ -108,8 +108,8 @@ macx {
 }
 
 # gcc Profiling
-unix:QMAKE_CXXFLAGS_DEBUG += -pg
-unix:QMAKE_LFLAGS_DEBUG += -pg
+#unix:QMAKE_CXXFLAGS_DEBUG += -pg
+#unix:QMAKE_LFLAGS_DEBUG += -pg
 
 # icc Profiling
 #unix:QMAKE_CXXFLAGS_DEBUG += -qp -g
