@@ -1,6 +1,6 @@
 #include "qstring.h"
 #include "qdom.h"
-#include <qfile.h>
+#include <qfileinfo.h>
 
 #include "trackinfoobject.h"
 
@@ -27,37 +27,39 @@ m_sFilepath(sPath), m_sFilename(sFile)
 */
 TrackInfoObject::TrackInfoObject( const QDomNode &nodeHeader )
 {
-	// Read information:
-	QDomNode node = nodeHeader.firstChild();
+	m_sFilename = SelectNode( nodeHeader, "Filename").toElement().text();
 
-	m_sFilename = node.toElement().text();
-	node = node.nextSibling();
+	m_sFilepath = SelectNode( nodeHeader, "Filepath").toElement().text();
 
-	m_sFilepath = node.toElement().text();
-	node = node.nextSibling();
+	m_sTitle = SelectNode( nodeHeader, "Title").toElement().text();
 
-	m_sTitle = node.toElement().text();
-	node = node.nextSibling();
+	m_sArtist = SelectNode( nodeHeader, "Artist").toElement().text();
 
-	m_sArtist = node.toElement().text();
-	node = node.nextSibling();
-
-	m_sType = node.toElement().text();
-	node = node.nextSibling();
+	m_sType = SelectNode( nodeHeader, "Type").toElement().text();
 	
-	m_iDuration = node.toElement().text().toInt();
-	node = node.nextSibling();
+	m_iDuration = SelectNode( nodeHeader, "Duration").toElement().text().toInt();
 
-	m_sBitrate = node.toElement().text();
-	node = node.nextSibling();
+	m_sBitrate = SelectNode( nodeHeader, "Bitrate").toElement().text();
 
-	m_iLength = node.toElement().text().toInt();
-    node = node.nextSibling();
+	m_iLength = SelectNode( nodeHeader, "Length").toElement().text().toInt();
 
-	m_iTimesPlayed = node.toElement().text().toInt();
+	m_iTimesPlayed = SelectNode( nodeHeader, "TimesPlayed").toElement().text().toInt();
 
 	// Check that the actual file exists:
 	CheckFileExists();
+}
+
+QDomNode TrackInfoObject::SelectNode( const QDomNode &nodeHeader, const QString sNode )
+{
+	QDomNode node = nodeHeader.firstChild();
+
+	while ( !node.isNull() )
+	{
+		if (node.nodeName() == sNode)
+			return node;
+		node = node.nextSibling();
+	}
+	return node;
 }
 
 TrackInfoObject::~TrackInfoObject()
@@ -124,10 +126,12 @@ void TrackInfoObject::Parse()
 	}
 
 	// Find the length:
-	m_iLength = QFile( m_sFilepath + '/' + m_sFilename ).size();
+	m_iLength = QFileInfo( m_sFilepath + '/' + m_sFilename ).size();
 }
 
 QString TrackInfoObject::Duration()
 {
 	return QString("%1:%2").arg( (int) (m_iDuration/60), 2 ).arg( m_iDuration%60, 2);
 }
+
+
