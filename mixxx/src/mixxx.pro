@@ -202,8 +202,8 @@ contains(DEFINES, STATIC) {
 #  QMAKE_CFLAGS   += -march=pentium3 -O3 -pipe
 
 # gcc Profiling
-#  QMAKE_CXXFLAGS_DEBUG += -pg
-#  QMAKE_LFLAGS_DEBUG += -pg
+  QMAKE_CXXFLAGS_DEBUG += -pg
+  QMAKE_LFLAGS_DEBUG += -pg
 }
 
 win32 {
