@@ -326,7 +326,6 @@ void Track::slotLoadPlayer1(TrackInfoObject *pTrackInfoObject)
         m_pTrackPlayer1->setOverviewWidget(0);
 
     m_pTrackPlayer1 = pTrackInfoObject;
-    emit(newTrackPlayer1(m_pTrackPlayer1));
 
     // Update score:
     m_pTrackPlayer1->incTimesPlayed();
@@ -350,6 +349,8 @@ void Track::slotLoadPlayer1(TrackInfoObject *pTrackInfoObject)
     // Write info to text display
     if (m_pView->m_pTextCh1)
         m_pView->m_pTextCh1->setText(m_pTrackPlayer1->getInfo());
+
+    emit(newTrackPlayer1(m_pTrackPlayer1));
 }
 
 void Track::slotLoadPlayer2(TrackInfoObject *pTrackInfoObject)
@@ -358,7 +359,6 @@ void Track::slotLoadPlayer2(TrackInfoObject *pTrackInfoObject)
         m_pTrackPlayer2->setOverviewWidget(0);
 
     m_pTrackPlayer2 = pTrackInfoObject;
-    emit(newTrackPlayer2(m_pTrackPlayer2));
 
     // Update score:
     m_pTrackPlayer2->incTimesPlayed();
@@ -382,6 +382,8 @@ void Track::slotLoadPlayer2(TrackInfoObject *pTrackInfoObject)
     // Write info to text display
     if (m_pView->m_pTextCh2)
         m_pView->m_pTextCh2->setText(m_pTrackPlayer2->getInfo());
+
+    emit(newTrackPlayer2(m_pTrackPlayer2));
 }
 
 void Track::slotLoadPlayer1()
@@ -413,8 +415,11 @@ void Track::slotRemoveFromPlaylist()
     m_pActivePlaylist->slotRemoveTrack(m_pActivePopupTrack);
 }
 
-void Track::slotEndOfTrackPlayer1(double)
+void Track::slotEndOfTrackPlayer1(double val)
 {
+    if (val==0.)
+        return;
+        
     switch ((int)m_pEndOfTrackModeCh1->get())
     {
     case TRACK_END_MODE_NEXT:
@@ -431,8 +436,11 @@ void Track::slotEndOfTrackPlayer1(double)
     m_pEndOfTrackCh1->slotSet(0.);
 }
 
-void Track::slotEndOfTrackPlayer2(double)
+void Track::slotEndOfTrackPlayer2(double val)
 {
+    if (val==0.)
+        return;
+    
     switch ((int)m_pEndOfTrackModeCh2->get())
     {
     case TRACK_END_MODE_NEXT:

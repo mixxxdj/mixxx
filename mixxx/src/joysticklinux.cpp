@@ -64,7 +64,6 @@ void JoystickLinux::closedev()
 
 void JoystickLinux::run()
 {
-
     while (1)
     {
         // read eventdata from joystick
@@ -93,16 +92,15 @@ void JoystickLinux::run()
 
             case JS_EVENT_AXIS:
                 // convert axis value into a short value
-               value = (int) (((((double) joystickEvent.value) + SHRT_MAX) / USHRT_MAX)*127.0);
+                value = (int) (((((double) joystickEvent.value) + SHRT_MAX) / USHRT_MAX)*127.0);
 
                 // send midi data (only if value has changed since last event)
                 if (axisvalue[joystickEvent.number] != value)
                 {
                     axisvalue[joystickEvent.number] = value;
-                    m_pControl->queueFromThread(value);
+                    m_pControl->queueFromMidi(CTRL_CHANGE, value);
                 }
                 break;
-
         }
     }
 }

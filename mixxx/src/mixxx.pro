@@ -164,8 +164,15 @@ INCLUDEPATH += $$KISSFFT_DIR
 
 # Audio scaling
 INCLUDEPATH += ../lib/libsamplerate
-SOURCES += enginebufferscalest.cpp enginebufferscalesrc.cpp ../lib/libsamplerate/samplerate.c ../lib/libsamplerate/src_linear.c ../lib/libsamplerate/src_sinc.c ../lib/libsamplerate/src_zoh.c
-HEADERS += enginebufferscalest.h enginebufferscalesrc.h ../lib/libsamplerate/samplerate.h ../lib/libsamplerate/config.h ../lib/libsamplerate/common.h ../lib/libsamplerate/float_cast.h ../lib/libsamplerate/fastest_coeffs.h ../lib/libsamplerate/high_qual_coeffs.h ../lib/libsamplerate/mid_qual_coeffs.h
+SOURCES += enginebufferscalesrc.cpp ../lib/libsamplerate/samplerate.c ../lib/libsamplerate/src_linear.c ../lib/libsamplerate/src_sinc.c ../lib/libsamplerate/src_zoh.c
+HEADERS += enginebufferscalesrc.h ../lib/libsamplerate/samplerate.h ../lib/libsamplerate/config.h ../lib/libsamplerate/common.h ../lib/libsamplerate/float_cast.h ../lib/libsamplerate/fastest_coeffs.h ../lib/libsamplerate/high_qual_coeffs.h ../lib/libsamplerate/mid_qual_coeffs.h
+
+# SoundTouch scaling
+INCLUDEPATH += ../lib/soundtouch
+SOURCES += enginebufferscalest.cpp ../lib/soundtouch/SoundTouch.cpp ../lib/soundtouch/TDStretch.cpp ../lib/soundtouch/RateTransposer.cpp ../lib/soundtouch/AAFilter.cpp ../lib/soundtouch/FIFOSampleBuffer.cpp ../lib/soundtouch/FIRFilter.cpp
+HEADERS += enginebufferscalest.h ../lib/soundtouch/TDStretch.h ../lib/soundtouch/RateTransposer.h ../lib/soundtouch/cpu_detect.h ../lib/soundtouch/STTypes.h ../lib/soundtouch/SoundTouch.h ../lib/soundtouch/FIFOSamplePipe.h ../lib/soundtouch/FIFOSampleBuffer.h ../lib/soundtouch/AAFilter.h ../lib/soundtouch/FIRFilter.h ../lib/soundtouch/config.h
+unix:!macx:SOURCES += ../lib/soundtouch/cpu_detect_x86_gcc.cpp ../lib/soundtouch/mmx_gcc.cpp
+win32:SOURCES += ../lib/soundtouch/cpu_detect_x86_win.cpp ../lib/soundtouch/mmx_win.cpp sse_win.cpp ../lib/soundtouch/3dnow_win.cpp
 
 # Debug plotting through gplot API
 #unix:DEFINES += __GNUPLOT__
@@ -297,8 +304,8 @@ SOURCES += mixxxsocketserver.cpp mixxxsocketclient.cpp #mixxxsocketcli.cpp
 HEADERS += mixxxsocketserver.h mixxxsocketclient.h #mixxxsocket.cli.h
 
 # Waveform summary
-SOURCES += wavesummary.cpp wavesummaryevent.cpp soundsourceproxy.cpp woverview.cpp
-HEADERS += wavesummary.h wavesummaryevent.h soundsourceproxy.h woverview.h
+SOURCES += wavesummary.cpp wavesummaryevent.cpp wavesegmentation.cpp soundsourceproxy.cpp woverview.cpp
+HEADERS += wavesummary.h wavesummaryevent.h wavesegmentation.h soundsourceproxy.h woverview.h
 
 # Beat seek
 SOURCES += enginebeatseek.cpp

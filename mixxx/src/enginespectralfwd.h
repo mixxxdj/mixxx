@@ -62,7 +62,7 @@ protected:
     /** Kiss config */
     kiss_fftr_cfg kisscfg;
     /** Internal buffers */
-    kiss_fft_scalar *spectrum;
+    kiss_fft_scalar *spectrum, *spectrumOld;
     kiss_fft_cpx *tmp;
     /** Length of the fft, and half the length of the fft */
     int    l, l_half; //l2
