@@ -32,10 +32,10 @@ class ControlObject;
 const int kiPowermateBufferSize = 32;
 const int kiPowermateKnobIntegralMaxLen = 25;
 
-static const char *kqPowerMateMappingP1Phase =   "Player 1, phase adjustment";
-static const char *kqPowerMateMappingP1Scratch = "Player 1, scratch";
-static const char *kqPowerMateMappingP2Phase =   "Player 2, phase adjustment";
-static const char *kqPowerMateMappingP2Scratch = "Player 2, scratch";
+static QString kqPowerMateMappingP1Phase =   "Player 1, phase adjustment";
+static QString kqPowerMateMappingP1Scratch = "Player 1, scratch";
+static QString kqPowerMateMappingP2Phase =   "Player 2, phase adjustment";
+static QString kqPowerMateMappingP2Scratch = "Player 2, scratch";
 
 class PowerMate : public QThread
 {

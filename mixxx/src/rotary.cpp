@@ -20,6 +20,7 @@
 #include "qapplication.h"
 #include "midiobject.h"
 #include "mathstuff.h"
+#include <qdatetime.h>
 
 Rotary::Rotary()
 {
@@ -110,3 +111,24 @@ void Rotary::sendButtonEvent()
     if (m_pControlObjectButton)
         m_pControlObjectButton->queueFromMidi(NOTE_ON, 1);
 }
+
+void Rotary::calibrateStart()
+{
+    // Start time
+    m_pCalibrationTime = new QTime();
+    m_pCalibrationTime->start();
+
+
+}
+
+double Rotary::calibrateEnd()
+{
+    int msec = m_pCalibrationTime->elapsed();
+    return 0.;
+}
+
+void Rotary::setCalibration(double c)
+{
+    m_dCalibration = c;
+}
+

@@ -225,7 +225,7 @@
                 <x>6</x>
                 <y>184</y>
                 <width>349</width>
-                <height>144</height>
+                <height>175</height>
             </rect>
         </property>
         <property name="title">
@@ -365,26 +365,6 @@
         </widget>
         <widget class="QComboBox">
             <property name="name">
-                <cstring>ComboBoxMouseDevice2</cstring>
-            </property>
-            <property name="enabled">
-                <bool>true</bool>
-            </property>
-            <property name="geometry">
-                <rect>
-                    <x>135</x>
-                    <y>82</y>
-                    <width>117</width>
-                    <height>22</height>
-                </rect>
-            </property>
-            <property name="font">
-                <font>
-                </font>
-            </property>
-        </widget>
-        <widget class="QComboBox">
-            <property name="name">
                 <cstring>ComboBoxMouseFunction1</cstring>
             </property>
             <property name="enabled">
@@ -433,6 +413,42 @@
             </property>
             <property name="text">
                 <string>Calibrate</string>
+            </property>
+        </widget>
+        <widget class="QPushButton">
+            <property name="name">
+                <cstring>pushButtonMouseHelp</cstring>
+            </property>
+            <property name="geometry">
+                <rect>
+                    <x>259</x>
+                    <y>145</y>
+                    <width>80</width>
+                    <height>20</height>
+                </rect>
+            </property>
+            <property name="text">
+                <string>Help</string>
+            </property>
+        </widget>
+        <widget class="QComboBox">
+            <property name="name">
+                <cstring>ComboBoxMouseDevice2</cstring>
+            </property>
+            <property name="enabled">
+                <bool>true</bool>
+            </property>
+            <property name="geometry">
+                <rect>
+                    <x>135</x>
+                    <y>82</y>
+                    <width>117</width>
+                    <height>22</height>
+                </rect>
+            </property>
+            <property name="font">
+                <font>
+                </font>
             </property>
         </widget>
     </widget>

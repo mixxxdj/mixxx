@@ -27,7 +27,7 @@
   */
 
 const int kiPowermateNumValidPrefixes = 2;
-static const char *pPowermateValidPrefix[kiPowermateNumValidPrefixes] =
+static QString kqPowermateValidPrefix[kiPowermateNumValidPrefixes] =
 {
     "Griffin PowerMate",
     "Griffin SoundKnob"

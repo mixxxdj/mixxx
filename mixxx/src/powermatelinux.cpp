@@ -129,7 +129,7 @@ int PowerMateLinux::opendev(int iId)
     }
     // it's the correct device if the prefix matches what we expect it to be:
     for(i=0; i<kiPowermateNumValidPrefixes; i++)
-        if(!strncasecmp(rgcName, pPowermateValidPrefix[i], strlen(pPowermateValidPrefix[i])))
+        if (kqPowermateValidPrefix[i]==rgcName)
         {
             m_iId = iId;
             m_iInstNo = sqlOpenDevs.count();
