@@ -895,7 +895,7 @@ void TrackList::slotDeleteTrack(int idx)
 	refreshTrackTableContents(1);
 	
 	qDebug("Removed playlist item at: %d", count);
-	
+	refreshPlaylist();
 	/**
 	if (Track)
 	{
@@ -1165,7 +1165,8 @@ void TrackList::slotClearPlaylist()
 	// Delete contents of tabletrack
     m_pTableTracks->setNumRows(0);	
 	m_pTableTracks->clearSelection(TRUE);
-}
+    refreshPlaylist();
+	}
 //Display the popupmenu for the TREELIST
 // MAIN TRACKLIST 
 void TrackList::slotTreeClick(QListViewItem * item, const QPoint & pos, int a)
@@ -1175,7 +1176,7 @@ void TrackList::slotTreeClick(QListViewItem * item, const QPoint & pos, int a)
         QPoint globalPos = wTree->mapToGlobal(pos);
         globalPos -= QPoint(wTree->contentsX(), wTree->contentsY());
         treeSelectMenu->popup(globalPos);
-    
+    	refreshPlaylist();
 	
 	
 }
