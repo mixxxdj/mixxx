@@ -107,7 +107,7 @@ MixxxApp::MixxxApp(QApplication *a)
     app = a;
 
     // Ensure that a directory named ~/.mixxx exists
-    QDir().mkdir(QDir::homeDirPath().append("/.mixxx"));
+    QDir().mkdir(QDir::homeDirPath().append("/").append(SETTINGS_DIR));
 
     // Call inits to invoke all other construction parts
     initActions();
@@ -119,7 +119,10 @@ MixxxApp::MixxxApp(QApplication *a)
     prefDlg = 0;
 
     // Read the config file
-    config = new ConfigObject<ConfigValue>(QDir::homeDirPath().append("/.mixxx/mixxx.cfg"));
+    config = new ConfigObject<ConfigValue>(QDir::homeDirPath()
+        .append("/").append(SETTINGS_DIR).append("/mixxx.cfg"));
+    qDebug(QDir::homeDirPath()
+        .append("/").append(SETTINGS_DIR).append("/mixxx.cfg"));
 
     initDoc();
     initView();

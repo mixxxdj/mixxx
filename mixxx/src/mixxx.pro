@@ -157,6 +157,7 @@ unix {
 #  QMAKE_CFLAGS   += -march=pentium3 -O3 -pipe
 
   !macx:CONFIG_PATH = \"/usr/share/mixxx\"
+  SETTINGS_DIR = "/.mixxx"
 }
 
 win32 {
@@ -168,12 +169,14 @@ win32 {
   QMAKE_CXXFLAGS += -GX
   QMAKE_LFLAGS += /libpath:..\winlib /NODEFAULTLIB:libcd /NODEFAULTLIB:libcmtd /NODEFAULTLIB:libc /NODEFAULTLIB:msvcrt #/NODEFAULTLIB:library
   CONFIG_PATH = \"config\"
+  SETTINGS_DIR = \"Mixxx\"
 }
 
 macx {
   DEFINES += __MACX__
   LIBS += /usr/local/lib/libaudiofile.a -lz -framework Carbon -framework QuickTime
   CONFIG_PATH = \"./Contents/Resources/config/\" 
+  SETTINGS_DIR = "/.mixxx"
 }
 
 # gcc Profiling
@@ -185,7 +188,8 @@ macx {
 #unix:QMAKE_LFLAGS_DEBUG += -qp -g
 
 
-DEFINES += CONFIG_PATH=$$CONFIG_PATH
+DEFINES += CONFIG_PATH=$$CONFIG_PATH 
+DEFINES += SETTINGS_DIR=$$SETTINGS_DIR
 FORMS	= dlgchanneldlg.ui dlgplaycontroldlg.ui dlgplaylistdlg.ui dlgmasterdlg.ui dlgcrossfaderdlg.ui dlgsplitdlg.ui dlgprefsounddlg.ui dlgprefmididlg.ui dlgprefplaylistdlg.ui dlgflangerdlg.ui dlgtracklistdlg.ui
 unix:TEMPLATE         = app
 win32:TEMPLATE       = vcapp
