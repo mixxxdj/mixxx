@@ -271,13 +271,11 @@ void VisualDisplay::toggleFishEyeMode()
 
 void VisualDisplay::setFishEyeLengthScale(double scale)
 {
-    qDebug("scale %f",scale);
     fishEyeLengthScale = 1.+scale;
 }
 
 void VisualDisplay::setFishEyeSignalFraction(double fraction)
 {
-    qDebug("fraction %f",fraction);
     fishEyeSignalFraction = fraction;
 }
 
@@ -288,13 +286,7 @@ void VisualDisplay::setSignalScaleHeight(double scale)
 
 void VisualDisplay::setSignalScaleLength(double scale)
 {
-    signalScaleLength = 1.+((1.-scale));
-
-    // Limits to avoid unreasonable behaviour
-    if (signalScaleLength<0.3)
-        signalScaleLength = 0.3;
-    else if (signalScaleLength>1.7)
-        signalScaleLength = 1.7;
+    signalScaleLength = 1./scale;
 //    qDebug("scale input %f, actual %f",scale, signalScaleLength);
 }
 
@@ -438,7 +430,7 @@ void VisualDisplay::doLayout()
         box->setRotation(angle,rx,ry,rz);
     }
 
-    float plength = curLength/100.;
+    float plength = 2.;
     float pheight = height*1.2;
     float pdepth = depth*1.05;
 

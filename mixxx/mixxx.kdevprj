@@ -28,7 +28,7 @@ cflags=
 cppflags=
 cxxflags=\s-O0
 ldadd=
-ldflags=\s \s
+ldflags=\s      \s
 libtool_dir=
 path_to_bin_program=./src
 
@@ -36,8 +36,10 @@ path_to_bin_program=./src
 AMChanged=false
 author=Tue & Ken Haste Andersen
 configure_args=\s--build=i386-linux --host=i386-linux --target=i386-linux\s
+debug_args=--no-visuals
 dir_where_make_will_be_called=./src/
 email=haste@diku.dk
+execute_args=--no-visuals
 kdevprj_version=1.3
 lfv_open_groups=GNU,User Interface
 make_options=\s-j1

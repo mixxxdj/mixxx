@@ -55,16 +55,17 @@ void VisualBufferMarks::update(int iPos, int iLen)
     }
 }
 
-void VisualBufferMarks::draw(GLfloat *p, int iLen)
+void VisualBufferMarks::draw(GLfloat *p, int iLen, float xscale)
 {
 //    glDrawArrays(GL_LINE_STRIP,0,iLen);
 
+    // Ensures constant width of beat marks regardles for scaling
+    float kfWidth = 1.5*(1./xscale);
 
     for (int i=0; i<iLen*3; i+=3)
     {
         if (p[i+1]>0.)
         {
-            const float kfWidth = 0.5;
 /*
             float array[12];
             array[ 0] = p[i]+p[i+1]-kfWidth;

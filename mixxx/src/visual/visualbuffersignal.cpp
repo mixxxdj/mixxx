@@ -66,7 +66,7 @@ void VisualBufferSignal::update(int iPos, int iLen)
     }
 }
 
-void VisualBufferSignal::draw(GLfloat *p, int iLen)
+void VisualBufferSignal::draw(GLfloat *p, int iLen, float)
 {
     glVertexPointer(3, GL_FLOAT, 0, p);
     glEnableClientState(GL_VERTEX_ARRAY);
