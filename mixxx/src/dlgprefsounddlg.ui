@@ -1,4 +1,4 @@
-<!DOCTYPE UI><UI version="3.2" stdsetdef="1">
+<!DOCTYPE UI><UI version="3.1" stdsetdef="1">
 <class>DlgPrefSoundDlg</class>
 <widget class="QWidget">
     <property name="name">
@@ -473,29 +473,6 @@
             <string>Sample rate</string>
         </property>
     </widget>
-    <widget class="QComboBox">
-        <property name="name">
-            <cstring>ComboBoxChannelsHead</cstring>
-        </property>
-        <property name="enabled">
-            <bool>true</bool>
-        </property>
-        <property name="geometry">
-            <rect>
-                <x>294</x>
-                <y>41</y>
-                <width>60</width>
-                <height>22</height>
-            </rect>
-        </property>
-        <property name="font">
-            <font>
-            </font>
-        </property>
-        <property name="toolTip" stdset="0">
-            <string>Channels (only valid on multichannel soundcards)</string>
-        </property>
-    </widget>
     <widget class="QLabel">
         <property name="name">
             <cstring>TextLabel1_2</cstring>
@@ -695,6 +672,29 @@
         </property>
         <property name="text">
             <string>No of bits</string>
+        </property>
+    </widget>
+    <widget class="QComboBox">
+        <property name="name">
+            <cstring>ComboBoxChannelsHead</cstring>
+        </property>
+        <property name="enabled">
+            <bool>true</bool>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>294</x>
+                <y>41</y>
+                <width>60</width>
+                <height>22</height>
+            </rect>
+        </property>
+        <property name="font">
+            <font>
+            </font>
+        </property>
+        <property name="toolTip" stdset="0">
+            <string>Channels (only valid on multichannel soundcards)</string>
         </property>
     </widget>
 </widget>
