@@ -79,10 +79,7 @@ bool DlgPreferences::eventFilter(QObject *o, QEvent *e)
 {
     // Send a close signal if dialog is closing
     if (e->type() == QEvent::Hide)
-    {
         emit(closeDlg());
-        config->Save();
-    }
 
     // Standard event processing
     return QWidget::eventFilter(o,e);

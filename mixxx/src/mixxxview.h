@@ -21,6 +21,8 @@
 #include <qwidget.h>
 #include <qlabel.h>
 #include <qstring.h>
+#include "configobject.h"
+#include <qptrlist.h>
 
 class ControlObject;
 class WSlider;
@@ -34,7 +36,7 @@ class WNumberPos;
 class QDomNode;
 
 /**
- * This class provides an incomplete base for your application view. 
+ * This class provides an incomplete base for your application view.
  */
 
 
@@ -43,7 +45,7 @@ class MixxxView : public QWidget
     Q_OBJECT
 public:
     /** Construtor. Tries to open visuals if bVisuals is true. */
-    MixxxView(QWidget *parent, bool bVisualsWaveform, QString qSkinPath);
+    MixxxView(QWidget *parent, bool bVisualsWaveform, QString qSkinPath, ConfigObject<ConfigValue> *pConfig);
     ~MixxxView();
 
     /** Return true if WVisualWaveform has been instantiated. */
@@ -60,13 +62,11 @@ public:
     /** Allow dynamic zoom on visuals */
     bool m_bZoom;
 
-protected:
-    //void keyPressEvent(QKeyEvent *e);
-
 private:
     // True if m_pVisualChX is instantiated as WVisualWaveform
     bool m_bVisualWaveform;
     bool compareConfigKeys(QDomNode node, QString key);
+    QPtrList<QObject> m_qWidgetList;
 };
 
 #endif

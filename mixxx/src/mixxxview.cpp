@@ -39,10 +39,13 @@
 #include "wvisualwaveform.h"
 #include "wvisualsimple.h"
 
-MixxxView::MixxxView(QWidget *parent, bool bVisualsWaveform, QString qSkinPath) : QWidget(parent, "Mixxx")
+MixxxView::MixxxView(QWidget *parent, bool bVisualsWaveform, QString qSkinPath, ConfigObject<ConfigValue> *pConfig) : QWidget(parent, "Mixxx")
 {
     // Path to image files
     WWidget::setPixmapPath(qSkinPath.append("/"));
+
+    m_qWidgetList.setAutoDelete(true);
+
     //qDebug("skin %s",qSkinPath.latin1());
 
     // Read XML file
@@ -84,16 +87,19 @@ MixxxView::MixxxView(QWidget *parent, bool bVisualsWaveform, QString qSkinPath) 
             {
                 WPushButton *p = new WPushButton(this);
                 p->setup(node);
+                m_qWidgetList.append(p);
             }
             else if (node.nodeName()=="Knob")
             {
                 WKnob *p = new WKnob(this);
                 p->setup(node);
+                m_qWidgetList.append(p);
             }
             else if (node.nodeName()=="Number")
             {
                 WNumber *p = new WNumber(this);
                 p->setup(node);
+                m_qWidgetList.append(p);
             }
             else if (node.nodeName()=="NumberBpm")
             {
@@ -101,11 +107,13 @@ MixxxView::MixxxView(QWidget *parent, bool bVisualsWaveform, QString qSkinPath) 
                 {
                     WNumberBpm *p = new WNumberBpm("[Channel1]", this);
                     p->setup(node);
+                    m_qWidgetList.append(p);
                 }
                 else if (WWidget::selectNodeInt(node, "Channel")==2)
                 {
                     WNumberBpm *p = new WNumberBpm("[Channel2]", this);
                     p->setup(node);
+                    m_qWidgetList.append(p);
                 }
             }
             else if (node.nodeName()=="NumberPos")
@@ -114,17 +122,20 @@ MixxxView::MixxxView(QWidget *parent, bool bVisualsWaveform, QString qSkinPath) 
                 {
                     m_pNumberPosCh1 = new WNumberPos("[Channel1]", this);
                     m_pNumberPosCh1->setup(node);
+                    m_qWidgetList.append(m_pNumberPosCh1);
                 }
                 else if (WWidget::selectNodeInt(node, "Channel")==2 && m_pNumberPosCh2==0)
                 {
                     m_pNumberPosCh2 = new WNumberPos("[Channel2]", this);
                     m_pNumberPosCh2->setup(node);
+                    m_qWidgetList.append(m_pNumberPosCh2);
                 }
             }
             else if (node.nodeName()=="Display")
             {
                 WDisplay *p = new WDisplay(this);
                 p->setup(node);
+                m_qWidgetList.append(p);
             }
             else if (node.nodeName()=="Background")
             {
@@ -139,6 +150,7 @@ MixxxView::MixxxView(QWidget *parent, bool bVisualsWaveform, QString qSkinPath) 
             {
                 WSliderComposed *p = new WSliderComposed(this);
                 p->setup(node);
+                m_qWidgetList.append(p);
 
                 // If rate slider...
                 if (compareConfigKeys(node, "[Channel1],rate"))
@@ -149,6 +161,7 @@ MixxxView::MixxxView(QWidget *parent, bool bVisualsWaveform, QString qSkinPath) 
             else if (node.nodeName()=="VuMeter")
             {
                 WVuMeter *p = new WVuMeter(this);
+                m_qWidgetList.append(p);
                 p->setup(node);
             }
             else if (node.nodeName()=="Visual")
@@ -161,6 +174,7 @@ MixxxView::MixxxView(QWidget *parent, bool bVisualsWaveform, QString qSkinPath) 
                         if (((WVisualWaveform *)m_pVisualCh1)->isValid())
                         {
                             ((WVisualWaveform *)m_pVisualCh1)->setup(node);
+                            m_qWidgetList.append(m_pVisualCh1);
                             m_bVisualWaveform = true;
                         }
                         else
@@ -173,9 +187,10 @@ MixxxView::MixxxView(QWidget *parent, bool bVisualsWaveform, QString qSkinPath) 
                     {
                         m_pVisualCh1 = new WVisualSimple(this, 0);
                         ((WVisualSimple *)m_pVisualCh1)->setup(node);
+                        m_qWidgetList.append(m_pVisualCh1);
                     }
                     ControlObject::setWidget((QWidget *)m_pVisualCh1, ConfigKey("[Channel1]", "wheel"), true, Qt::LeftButton);
-                }        
+                }
                 else if (WWidget::selectNodeInt(node, "Channel")==2 && m_pVisualCh1!=0 && m_pVisualCh2==0)
                 {
                     if (bVisualsWaveform)
@@ -185,6 +200,7 @@ MixxxView::MixxxView(QWidget *parent, bool bVisualsWaveform, QString qSkinPath) 
                         {
                             ((WVisualWaveform *)m_pVisualCh2)->setup(node);
                             m_bVisualWaveform = true;
+                            m_qWidgetList.append(m_pVisualCh2);
                         }
                         else
                         {
@@ -196,6 +212,7 @@ MixxxView::MixxxView(QWidget *parent, bool bVisualsWaveform, QString qSkinPath) 
                     {
                         m_pVisualCh2 = new WVisualSimple(this, 0);
                         ((WVisualSimple *)m_pVisualCh2)->setup(node);
+                        m_qWidgetList.append(m_pVisualCh2);
                     }
                     ControlObject::setWidget((QWidget *)m_pVisualCh2, ConfigKey("[Channel2]", "wheel"), true, Qt::LeftButton);
                 }
@@ -206,6 +223,7 @@ MixxxView::MixxxView(QWidget *parent, bool bVisualsWaveform, QString qSkinPath) 
             else if (node.nodeName()=="Text")
             {
                 QLabel *p = new QLabel(this);
+                m_qWidgetList.append(p);
 
                 // Set position
                 QString pos = WWidget::selectNodeQString(node, "Pos");
@@ -226,7 +244,7 @@ MixxxView::MixxxView(QWidget *parent, bool bVisualsWaveform, QString qSkinPath) 
                     c.setNamedColor(WWidget::selectNodeQString(node, "BgColor"));
                     p->setPaletteBackgroundColor(c);
                 }
-                
+
                 // Foreground color
                 if (!WWidget::selectNode(node, "FgColor").isNull())
                 {
@@ -238,7 +256,7 @@ MixxxView::MixxxView(QWidget *parent, bool bVisualsWaveform, QString qSkinPath) 
                 // Alignment
                 if (!WWidget::selectNode(node, "Align").isNull() && WWidget::selectNodeQString(node, "Align")=="right")
                     p->setAlignment(Qt::AlignRight);
-                
+
                 // Associate pointers
                 if (WWidget::selectNodeInt(node, "Channel")==1)
                     m_pTextCh1 = p;
@@ -251,6 +269,7 @@ MixxxView::MixxxView(QWidget *parent, bool bVisualsWaveform, QString qSkinPath) 
                 //qDebug("Constructing TrackTable");
                 m_pTrackTable = new WTrackTable(this);
                 m_pTrackTable->setup(node);
+                m_qWidgetList.append(m_pTrackTable);
             }
 
         }
@@ -266,6 +285,7 @@ MixxxView::MixxxView(QWidget *parent, bool bVisualsWaveform, QString qSkinPath) 
 
 MixxxView::~MixxxView()
 {
+    m_qWidgetList.clear();
 }
 
 bool MixxxView::activeWaveform()

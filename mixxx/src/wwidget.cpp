@@ -55,9 +55,9 @@ void WWidget::setup(QDomNode node)
     while (!con.isNull())
     {
         // Get ConfigKey
-        ConfigKey configKey;
         QString key = selectNodeQString(con, "ConfigKey");
 
+        ConfigKey configKey;
         configKey.group = key.left(key.find(","));
         configKey.item = key.mid(key.find(",")+1);
 
@@ -78,7 +78,7 @@ void WWidget::setup(QDomNode node)
         ControlObject::setWidget(this, configKey, bEmitOnDownPress, state);
 
         con = con.nextSibling();
-    }     
+    }
 }
 
 void WWidget::setValue(double fValue)

@@ -315,7 +315,7 @@ MixxxApp::MixxxApp(QApplication *a, QStringList files)
     bool bVisualsWaveform = true;
     if (config->getValueString(ConfigKey("[Controls]","Visuals")).toInt()==1)
         bVisualsWaveform = false;
-    view=new MixxxView(this, bVisualsWaveform, qSkinPath);
+    view=new MixxxView(this, bVisualsWaveform, qSkinPath, config);
     if (bVisualsWaveform && !view->activeWaveform())
     {
         config->set(ConfigKey("[Controls]","Visuals"), ConfigValue(1));
@@ -350,6 +350,10 @@ MixxxApp::MixxxApp(QApplication *a, QStringList files)
                               view->m_pNumberPosCh1, view->m_pNumberPosCh2,
                               buffer1, buffer2);
 
+    // Setup state of End of track controls from config database
+    ControlObject::getControl(ConfigKey("[Channel1]","TrackEndMode"))->setValueFromApp(config->getValueString(ConfigKey("[Controls]","TrackEndModeCh1")).toDouble());
+    ControlObject::getControl(ConfigKey("[Channel2]","TrackEndMode"))->setValueFromApp(config->getValueString(ConfigKey("[Controls]","TrackEndModeCh2")).toDouble());
+
     // Initialize preference dialog
     prefDlg = new DlgPreferences(this, view, midi, player, m_pTracks, config, midiconfig, control);
     prefDlg->setHidden(true);
@@ -378,20 +382,45 @@ MixxxApp::MixxxApp(QApplication *a, QStringList files)
 MixxxApp::~MixxxApp()
 {
 //    qDebug("Destroying MixxxApp");
+
+    // Save state of End of track controls in config database
+    config->set(ConfigKey("[Controls]","TrackEndModeCh1"), ConfigValue(ControlObject::getControl(ConfigKey("[Channel1]","TrackEndMode"))->getValue()));
+    config->set(ConfigKey("[Controls]","TrackEndModeCh2"), ConfigValue(ControlObject::getControl(ConfigKey("[Channel2]","TrackEndMode"))->getValue()));
+
+    qDebug("close player");
     player->close();
+    qDebug("delete player");
     delete player;
+    qDebug("delete master");
     delete master;
+    qDebug("delete channel1");
     delete channel1;
+    qDebug("delete channel2");
     delete channel2;
+    qDebug("delete flanger");
+    delete flanger;
+    qDebug("delete buffer1");
     delete buffer1;
+    qDebug("delete buffer2");
     delete buffer2;
+    qDebug("delete prefDlg");
     delete prefDlg;
 //    delete m_pControlEngine;
+    qDebug("delete midi");
     delete midi;
-    delete config;
+    qDebug("delete midiconfig");
     delete midiconfig;
+
+    qDebug("delete tracks");
     delete m_pTracks;
-    delete flanger;
+    qDebug("delete view");
+    delete view;
+
+    qDebug("save config");
+    config->Save();
+    qDebug("delete config");
+    delete config;
+
 
 #ifdef __UNIX__
     if (powermate1!=0)

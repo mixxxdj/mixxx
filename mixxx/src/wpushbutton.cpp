@@ -34,16 +34,13 @@ WPushButton::~WPushButton()
 
 void WPushButton::setup(QDomNode node)
 {
-    // Setup position
-    WWidget::setup(node);
+    // Number of states
+    setStates(selectNodeInt(node, "NumberStates"));
 
     // Set background pixmap if available
     if (!selectNode(node, "BackPath").isNull())
         setPixmapBackground(getPath(selectNodeQString(node, "BackPath")));
 
-    // Number of states
-    setStates(selectNodeInt(node, "NumberStates"));
-    
     // Load pixmaps for associated states
     QDomNode state = selectNode(node, "State");
     while (!state.isNull())
@@ -55,18 +52,21 @@ void WPushButton::setup(QDomNode node)
         }
         state = state.nextSibling();
     }
+
+    // Setup position
+    WWidget::setup(node);
 }
 
 void WPushButton::setStates(int iStates)
 {
     m_iNoStates = iStates;
-    m_iState = 0;
+    m_fValue = 0.;
     m_bPressed = false;
-    
+
     // If pixmap array is already allocated, delete it
     if (m_pPixmaps)
         delete [] m_pPixmaps;
-    
+
     if (iStates>0)
     {
         m_pPixmaps = new QPixmap*[2*m_iNoStates];
@@ -99,11 +99,11 @@ void WPushButton::setPixmapBackground(const QString &filename)
 
 void WPushButton::setValue(double v)
 {
-    m_iState = (int)v;
+    m_fValue = v;
 
     if (m_iNoStates==1)
     {
-        if (m_iState==1)
+        if (m_fValue==1.)
             m_bPressed = true;
         else
             m_bPressed = false;
@@ -116,7 +116,7 @@ void WPushButton::paintEvent(QPaintEvent *)
 {
     if (m_iNoStates>0)
     {
-        int idx = ((m_iState%m_iNoStates)*2)+m_bPressed;
+        int idx = (((int)m_fValue%m_iNoStates)*2)+m_bPressed;
         if (m_pPixmaps[idx])
         {
 
@@ -129,7 +129,7 @@ void WPushButton::paintEvent(QPaintEvent *)
 
                 // Paint button on buffer
                 bitBlt(m_pPixmapBuffer, 0, 0, m_pPixmaps[idx]);
-                
+
                 // Paint buffer to screen
                 bitBlt(this, 0, 0, m_pPixmapBuffer);
             }
@@ -146,21 +146,21 @@ void WPushButton::mousePressEvent(QMouseEvent *e)
     // Calculate new state if it is a one state button
     if (m_iNoStates==1)
     {
-        if (m_iState==0)
-            m_iState = 1;
+        if (m_fValue==0.)
+            m_fValue = 1.;
         else
-            m_iState = 0;
+            m_fValue = 0.;
     }
     // Update state on left press if it is a n-state button
     else if (e->button()==Qt::LeftButton)
     {
-        m_iState = (m_iState+1)%m_iNoStates;
+        m_fValue = (int)(m_fValue+1.)%m_iNoStates;
     }
 
     if (e->button()==Qt::LeftButton)
-        emit(valueChangedLeftDown((double)m_iState));
+        emit(valueChangedLeftDown((double)m_fValue));
     else if (e->button()==Qt::RightButton)
-        emit(valueChangedRightDown((double)m_iState));
+        emit(valueChangedRightDown((double)m_fValue));
 
     update();
 }
@@ -172,17 +172,17 @@ void WPushButton::mouseReleaseEvent(QMouseEvent *e)
     // Update state if it is a one state button.
     if (m_iNoStates==1) // && e->button()==Qt::LeftButton)
     {
-        if (m_iState==0)
-            m_iState = 1;
+        if (m_fValue==0.)
+            m_fValue = 1.;
         else
-            m_iState = 0;
+            m_fValue = 0.;
     }
 
 
     if (e->button()==Qt::LeftButton)
-        emit(valueChangedLeftUp((double)m_iState));
+        emit(valueChangedLeftUp((double)m_fValue));
     else if (e->button()==Qt::RightButton)
-        emit(valueChangedRightUp((double)m_iState));
+        emit(valueChangedRightUp((double)m_fValue));
 
     update();
 }

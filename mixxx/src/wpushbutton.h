@@ -62,8 +62,6 @@ private:
     QPixmap *m_pPixmapBack;
     /** Double buffer. Used when background pixmap is set */
     QPixmap *m_pPixmapBuffer;
-    /** Current state */
-    int m_iState;
 };
 
 #endif
