@@ -254,35 +254,41 @@ void ReaderExtractWave::getchunk(CSAMPLE rate)
 
 long int ReaderExtractWave::seek(long int new_playpos)
 {
-    m_pReader->lock();
-    filepos_start = new_playpos;
-    filepos_end = new_playpos;
-
-    long int seekpos = file->seek((long int)filepos_start);
-
-    //qDebug("seek: %i, %i",new_playpos, seekpos);
+    long int seekpos;
     
-    m_pReader->unlock();
+    if (file!=0)
+    {
+        m_pReader->lock();
+        filepos_start = new_playpos;
+        filepos_end = new_playpos;
 
-    bufferpos_start = 0;
-    bufferpos_end = 0;
+        seekpos = file->seek((long int)filepos_start);
 
-    for (unsigned int i=0; i<READBUFFERSIZE; i++)
-        read_buffer[i] = 0.;
+        //qDebug("seek: %i, %i",new_playpos, seekpos);
+    
+        m_pReader->unlock();
+
+        bufferpos_start = 0;
+        bufferpos_end = 0;
+
+        for (unsigned int i=0; i<READBUFFERSIZE; i++)
+            read_buffer[i] = 0.;
 
 #ifdef __VISUALS__
-    // Update vertex buffer by sending an event containing indexes of where to update.
-    if (m_pVisualBuffer != 0)
-        QApplication::postEvent(m_pVisualBuffer, new ReaderEvent(0,READBUFFERSIZE));
+        // Update vertex buffer by sending an event containing indexes of where to update.
+        if (m_pVisualBuffer != 0)
+            QApplication::postEvent(m_pVisualBuffer, new ReaderEvent(0,READBUFFERSIZE));
 #endif
 
 #ifdef EXTRACT
-    // Reset extract objects
-    readerfft->reset();
-    readerhfc->reset();
-    readerbeat->softreset(); // Only make a soft reset on beat estimation (keep histogram)
+        // Reset extract objects
+        readerfft->reset();
+        readerhfc->reset();
+        readerbeat->softreset(); // Only make a soft reset on beat estimation (keep histogram)
 #endif
-
+    }
+    else
+        seekpos = 0;
 
     return seekpos;
 }
