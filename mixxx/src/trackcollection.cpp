@@ -102,20 +102,22 @@ TrackInfoObject *TrackCollection::getTrack(QString location)
             break;
         ++it;
     }
-
+qDebug("not in collection");
     if (it && (*it)->getLocation()==location)
         return (*it);
     else
-    {
+	{
         // We didn't find the track in the collection, so add a new entry
         QFileInfo file(location);
         if (file.exists())
         {
+qDebug("exists");
             TrackInfoObject *pTrack = new TrackInfoObject(file.dirPath(), file.fileName());
-
+qDebug("new TIO");
             // Add track to the collection
             if (pTrack->parse() == OK)
             {
+qDebug("parse ok");
                 addTrack(pTrack);
                 qDebug("Found new track: %s", pTrack->getFilename().latin1());
                 return pTrack;
