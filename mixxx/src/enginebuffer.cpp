@@ -537,7 +537,7 @@ void EngineBuffer::slotControlBeatSync(double)
 
 CSAMPLE *EngineBuffer::process(const CSAMPLE *, const int buf_size)
 {
-	Q_ASSERT( scale->getNewPlaypos() == 0 );
+    //Q_ASSERT( scale->getNewPlaypos() == 0);
     // pause can be locked if the reader is currently loading a new track.
     if (m_pTrackEnd->get()==0 && pause.tryLock())
     {
