@@ -417,23 +417,21 @@ void TrackList::slotChangePlay_2(int idx)
 
 void TrackList::loadTrack1(QString name)
 {
-/*
     if (QFile(name).exists())
     {
-        m_pBuffer1->getReader()->requestNewTrack(name);
-        m_pText1->setText(name);
+        TrackInfoObject *t = new TrackInfoObject("",name);
+        m_pBuffer1->getReader()->requestNewTrack(t);
+        m_pText1->setText(t->getInfo());
     }
-*/
 }
 void TrackList::loadTrack2(QString name)
 {
-/*
     if (QFile(name).exists())
     {
-        m_pBuffer2->getReader()->requestNewTrack(name);
-        m_pText2->setText(name);
+        TrackInfoObject *t = new TrackInfoObject("",name);
+        m_pBuffer2->getReader()->requestNewTrack(t);
+        m_pText2->setText(t->getInfo());
     }
-*/
 }
 
 /*
