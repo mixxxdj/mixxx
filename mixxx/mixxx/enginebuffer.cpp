@@ -84,7 +84,7 @@ EngineBuffer::~EngineBuffer(){
 
 void EngineBuffer::newtrack(const char* filename) {
   // If we are already playing a file, then get rid of it:
-   if (file != 0) delete file;
+  if (file != 0) delete file;
   /*
     Open the file:
   */
@@ -143,7 +143,9 @@ void EngineBuffer::run() {
       getchunk();
   }
 };
-
+/*
+  Called when the playbutten is pressed
+*/
 void EngineBuffer::slotUpdatePlay(valueType newvalue) {
   static int start_seek;
   if (PlayButton->getPosition()==down) {
@@ -179,7 +181,9 @@ void EngineBuffer::slotUpdateRate(FLOAT r) {
 	  rate = 4*wheel->getValue();
   //qDebug("Rate value: %f",rate);
 }
-
+/*
+  Read a new chunk into the readbuffer:
+*/
 void EngineBuffer::getchunk() {
   // Save direction if player changes it's mind while we're processing.
   //int saved_direction = direction;
@@ -187,36 +191,30 @@ void EngineBuffer::getchunk() {
   // update frontpos so that we wont be called while reading:
   frontpos = (frontpos+chunk_size)%read_buffer_size;
   qDebug("Reading...");
-  //std::cout << "Starting reading chunk " << saved_direction << ".\n";
   // For a read backwards, we have to change the position in the file:
   /*if (direction == -1) {
     filepos -= (read_buffer_size + chunk_size);
     file->seek(filepos);
     //afSeekFrame(fh, AF_DEFAULT_TRACK, (AFframecount) (filepos/channels));
   } else*/
+
   // Read a chunk
   unsigned samples_read = file->read(chunk_size, temp);
-  //samples_read = chunk_size;
-  /*if (samples_read != chunk_size) {
-     cout << "Read from file failed: " << samples_read << ":" << chunk_size  <<
- "\n" << flush;
-    //exit(-1);
-    }*/
+
+  if (samples_read != chunk_size)
+      qDebug("Didn't get as many samples as we asked for: %d:%d", chunk_size, samples_read);
+
   // Convert from SAMPLE to CSAMPLE. Should possibly be optimized
   // using assembler code from music-dsp archive.
   filepos += samples_read;
   unsigned new_frontpos = (frontpos-chunk_size+read_buffer_size)%read_buffer_size;
+  //qDebug("Reading into position %d",new_frontpos);
   for (unsigned j=0; j<samples_read; j++) {
     readbuffer[new_frontpos] = temp[j];
     new_frontpos ++;
     if (new_frontpos > read_buffer_size) new_frontpos = 0;
   }
-
-  frontpos = new_frontpos;
   qDebug("Done reading.");
-//  statuswin->print(2,20,"          ");
-  //cout << "New filepos " << filepos << ":" << frontpos << "\n" << flush;
-  // std::cout << "Finished read.\n" << flush;
 }
 /*
   This is called when the positionslider is released:
@@ -232,10 +230,11 @@ void EngineBuffer::seek(FLOAT change) {
   if (new_play_pos > file->length()) new_play_pos = file->length();
   if (new_play_pos < 0) new_play_pos = 0;
   filepos = (long unsigned)new_play_pos;
-  frontpos = 0;
-  cout << change << " ";
   qDebug("Seeking %g to %g",change, new_play_pos/file->length());
   file->seek(filepos);
+  frontpos = chunk_size*(((int)floor(play_pos/chunk_size))%2);
+  qDebug("%d",frontpos);
+  getchunk();
   getchunk();
   qDebug("done seeking.");
   play_pos = new_play_pos;
@@ -339,7 +338,6 @@ CSAMPLE *EngineBuffer::process(CSAMPLE *, int buf_size) {
   }
 
   checkread();
-  writepos();
   // Check the wheel:
   wheel->updatecounter(buf_size);
   // Write position to the gui: 
