@@ -1,0 +1,86 @@
+
+ALSA support in Mixxx
+---------------------
+
+Pre-requisites: A working ALSA setup - check the ALSA website[1] for
+documentation and the Wiki[2] is also very helpful.
+
+The ALSA support in Mixxx has been designed with a multichannel soundcard in
+mind. However the flexibility of ALSA's plugin architecture allows other
+audio hardware configurations to work with Mixxx.
+
+
+1) multichannel card (4.0, 5.1, etc)
+Test that the separate front and rear channels work using aplay, eg.
+
+$ aplay -Dfront test.wav
+$ aplay -Drear test.wav
+
+or use James Courtier-Dutton's speaker-test utility[3].
+
+By default, Mixxx uses the two plugins: the plug plugin to convert sampling
+rate, format, etc and the surround40 plugin to pipe the audio stream to the
+correct channels. If the above tests work then Mixxx should work once you
+have placed the following stanza in your ~/.asoundrc file.
+
+pcm.mixxx {
+  type	         plug
+  slave.pcm	 "surround40:0"
+  slave.channels 4
+}
+
+
+2) single stereo card
+One possible way to use a stereo card for mixing is to combine the master
+channels to the left output and the headphone (pre-listen) channels to the
+right output.
+
+pcm.mixxx {
+  type	         route
+  slave.pcm	 "hw:0"
+  slave.channels 2
+  ttable.0.0	 0.5
+  ttable.1.0	 0.5
+  ttable.2.1	 0.5
+  ttable.3.1	 0.5
+}
+
+
+3) 2 or more stereo cards
+Tie together two sound cards using the multi plugin. The output from the
+first card (hw:0) is the master output and the second card (hw:1) serves as
+the headphone output.
+
+pcm.mixxxmulti {
+        type multi
+        slaves.a.pcm "hw:0"
+        slaves.a.channels 2
+        slaves.b.pcm "hw:1"
+        slaves.b.channels 2
+        bindings.0.slave a
+        bindings.0.channel 0
+        bindings.1.slave a
+        bindings.1.channel 1
+        bindings.2.slave b
+        bindings.2.channel 0
+        bindings.3.slave b
+        bindings.3.channel 1
+}
+
+pcm.mixxx {
+        type route
+        slave.pcm "mixxxmulti"
+        ttable.0.0 1
+        ttable.1.1 1
+        ttable.2.2 1
+        ttable.3.3 1
+}
+
+
+NB why doesn't the plug plugin work in place of the route plugin in the last
+two configurations?
+
+[1] http://www.alsa-project.org
+[2] http://alsa.opensrc.org/
+[3] http://www.superbug.demon.co.uk/speaker-test/
+
