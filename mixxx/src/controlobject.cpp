@@ -221,12 +221,13 @@ void ControlObject::setValueFromWidget(double dValue)
 void ControlObject::setValueFromKeyboard()
 {
     qDebug("Value received from keyboard. Currently not implemented");
+    updateFromKeyboard();
 }
 
 void ControlObject::setValueFromApp(double dValue)
 {
     m_dValue = dValue;
-    updateFromEngine();
+    updateFromApp();
 }
 
 double ControlObject::getValue()
