@@ -1,11 +1,19 @@
-/****************************************************************************
-** Form interface generated from reading ui file 'qfileview-test.ui'
-**
-** Created: Mon Okt 6 18:19:08 2003
-**      by: The User Interface Compiler ($Id: wtreelist.h 585 2003-11-21 08:50:54Z tuehaste $)
-**
-** WARNING! All changes made in this file will be lost!
-****************************************************************************/
+/***************************************************************************
+                          wtreelist.h  -  description
+                             -------------------
+    begin                : 10 02 2003
+    copyright            : (C) 2003 by Ingo Kossyk
+    email                : kossyki@cs.tu-berlin.de
+ ***************************************************************************/
+
+/***************************************************************************
+ *                                                                         *
+ *   This program is free software; you can redistribute it and/or modify  *
+ *   it under the terms of the GNU General Public License as published by  *
+ *   the Free Software Foundation; either version 2 of the License, or     *
+ *   (at your option) any later version.                                   *
+ *                                                                         *
+ ***************************************************************************/
 
 #include "wwidget.h"
 #include <qapplication.h>
@@ -83,7 +91,9 @@ class WTreeList : public QListView
 	WTreeList( QWidget *parent = 0, const char *name=0);
 	~WTreeList();
 	void setRoot(QString sRoot);
+	WTreeItem * getRoot();
 	void setPlaylist(QString sPlaylist);
+	WTreeItem * getPlsRoot();
 	void setup(QDomNode node);
 	QString m_sPlaylistdir;
 	bool mousePressed;

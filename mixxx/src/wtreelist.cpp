@@ -1,11 +1,19 @@
-/****************************************************************************
-** Form implementation generated from reading ui file 'qfileview-test.ui'
-**
-** Created: Mon Okt 6 19:56:06 2003
-**      by: The User Interface Compiler ($Id: wtreelist.cpp 585 2003-11-21 08:50:54Z tuehaste $)
-**
-** WARNING! All changes made in this file will be lost!
-****************************************************************************/
+/***************************************************************************
+                          wtreelist.cpp  -  description
+                             -------------------
+    begin                : 10 02 2003
+    copyright            : (C) 2003 by Ingo Kossyk
+    email                : kossyki@cs.tu-berlin.de
+ ***************************************************************************/
+
+/***************************************************************************
+ *                                                                         *
+ *   This program is free software; you can redistribute it and/or modify  *
+ *   it under the terms of the GNU General Public License as published by  *
+ *   the Free Software Foundation; either version 2 of the License, or     *
+ *   (at your option) any later version.                                   *
+ *                                                                         *
+ ***************************************************************************/
 
 #include "wtreelist.h"
 
@@ -270,6 +278,18 @@ void WTreeList::setRoot(QString sRoot)
 	
 	}
 	
+}
+//returns Playlist Root Item
+WTreeItem * WTreeList::getPlsRoot()
+{
+ 	setCurrentItem(findItem("Playlists",0));
+	return (WTreeItem *)currentItem();
+	}
+//Returns Directory Root Item
+WTreeItem * WTreeList::getRoot()
+{
+	setCurrentItem(findItem("Archive",0));
+	return (WTreeItem *)currentItem();
 }
 //If the Playlist item is being opened get all playlists
 bool WTreeList::populatePlaylists(QListViewItem * listItem)
