@@ -22,6 +22,11 @@
 #include "defs.h"
 #include <qvaluelist.h>
 
+#ifdef __GNUPLOT__
+extern "C" {
+    #include "gplot.h"
+}
+#endif
 
 const CSAMPLE threshold = 5.;
 
@@ -70,6 +75,11 @@ private:
     int framePerChunk;
     /** Pointer to HFC array */
     CSAMPLE *hfc;
+
+#ifdef __GNUPLOT__
+    /** Pointer to gnuplot interface */
+    plot_t *gnuplot;
+#endif    
 };
 
 #endif
