@@ -35,6 +35,7 @@ SoundSourceMp3::SoundSourceMp3(QString qFilename) : SoundSource(qFilename)
 
     // Transfer it to the mad stream-buffer:
     mad_stream_init(&Stream);
+    mad_stream_options(&Stream, MAD_OPTION_IGNORECRC);
     mad_stream_buffer(&Stream, (unsigned char *) inputbuf, inputbuf_len);
 
     /*
@@ -137,6 +138,7 @@ long SoundSourceMp3::seek(long filepos)
         // Re-init buffer:
         mad_stream_finish(&Stream);
         mad_stream_init(&Stream);
+        mad_stream_options(&Stream, MAD_OPTION_IGNORECRC);
         mad_stream_buffer(&Stream, (unsigned char *) inputbuf, inputbuf_len);
         mad_frame_init(Frame);
         mad_synth_init(&Synth);
@@ -170,6 +172,7 @@ long SoundSourceMp3::seek(long filepos)
             // Re-init buffer:
             mad_stream_finish(&Stream);
             mad_stream_init(&Stream);
+            mad_stream_options(&Stream, MAD_OPTION_IGNORECRC);
             mad_stream_buffer(&Stream, (unsigned char *) inputbuf, inputbuf_len);
             mad_frame_init(Frame);
             mad_synth_init(&Synth);
@@ -189,7 +192,8 @@ long SoundSourceMp3::seek(long filepos)
             // Start from the new frame
             mad_stream_finish(&Stream);
             mad_stream_init(&Stream);
-            //qDebug("mp3 restore %p",cur->m_pStreamPos);
+            mad_stream_options(&Stream, MAD_OPTION_IGNORECRC);
+	    //qDebug("mp3 restore %p",cur->m_pStreamPos);
             mad_stream_buffer(&Stream, (const unsigned char*)cur->m_pStreamPos, inputbuf_len-(long int)(cur->m_pStreamPos-(unsigned char*)inputbuf));
             mad_synth_mute(&Synth);
             mad_frame_mute(Frame);
@@ -426,6 +430,7 @@ int SoundSourceMp3::ParseHeader(TrackInfoObject *Track)
     mad_stream Stream;
     mad_header Header;
     mad_stream_init(&Stream);
+    mad_stream_options(&Stream, MAD_OPTION_IGNORECRC);
     mad_stream_buffer(&Stream, (unsigned char *) inputbuf, READLENGTH);
 
     // Check for Xing header
