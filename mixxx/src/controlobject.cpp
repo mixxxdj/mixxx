@@ -22,7 +22,6 @@
 #include "controleventengine.h"
 #include "midiobject.h"
 
-#include <pthread.h>
 
 // Static member variable definition
 ConfigObject<ConfigValueMidi> *ControlObject::config = 0;

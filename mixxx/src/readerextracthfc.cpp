@@ -67,7 +67,7 @@ void *ReaderExtractHFC::processChunk(const int idx, const int start_idx, const i
     }
 
     dhfc[(idx*framePerChunk)%frameNo] = hfc[(idx*framePerChunk)%frameNo];
-    for (int i=idx*framePerChunk+1; i<(idx+1)*framePerChunk; i++)
+    for (i=idx*framePerChunk+1; i<(idx+1)*framePerChunk; i++)
     {
         int i2 = i%frameNo;
         dhfc[i2] = hfc[i2]-hfc[i2-i];

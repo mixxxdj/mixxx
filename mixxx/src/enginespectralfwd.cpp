@@ -91,10 +91,10 @@ CSAMPLE *EngineSpectralFwd::process(const CSAMPLE *p, const int)
                 spectrum[l-i] = arctan2(tmp[l-i],tmp[i]);
             r = spectrum;
         }
-        return r;
+        return (CSAMPLE *) r;
     }
     else
-        return tmp;
+        return (CSAMPLE *) tmp;
 }
 
 CSAMPLE EngineSpectralFwd::getHFC()
