@@ -97,7 +97,7 @@ void MidiObjectOSS::run()
             //qDebug("midi: %i",(short int)buffer[0]);
             if (no != 1)
                 qWarning("Warning: midiobject recieved %i bytes.", no);
-        } while (buffer[0] & 128 != 128 & requestStop==false); // Continue until we receive a status byte (bit 7 is set)
+        } while ((buffer[0] & 128) != 128 & requestStop==false); // Continue until we receive a status byte (bit 7 is set)
 
         if (requestStop==false)
         {
