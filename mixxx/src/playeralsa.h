@@ -21,6 +21,8 @@
 #include "player.h"
 #include <sys/asoundlib.h>
 #include <sched.h>
+#include <sys/time.h>
+#include <sys/resource.h>
 #include "engineobject.h"
 
 /**
