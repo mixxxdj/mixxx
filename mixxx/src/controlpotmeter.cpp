@@ -55,7 +55,7 @@ void ControlPotmeter::slotSetPosition(int _newpos)
   char newpos =(char)_newpos;
 
   // Ensure that the position is within bounds:
-  position = (char)max(minPosition, (FLOAT_TYPE)min(newpos, maxPosition));
+  position = (char)max(minPosition, min(newpos, maxPosition));
   // Calculate the value linearly:
   value = (FLOAT_TYPE)(valuerange/positionrange)*(FLOAT_TYPE)(newpos-minPosition)+minvalue;
   //qDebug("Controlpotmeter: changed %s to %g.",name,value);

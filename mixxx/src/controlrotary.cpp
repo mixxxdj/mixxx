@@ -22,16 +22,21 @@ ControlRotary::ControlRotary(ConfigObject::ConfigKey *key) : ControlPotmeter(key
 	    real position from the gray code.
    Input:   the gray code.
    -------- ------------------------------------------------------ */
+// This member is not properly overloading the one in controlobject. Therefore it is 
+// never called, and the graycode translation has been moved to slotSetPositionMidi.
 void ControlRotary::slotSetPositionMidi(int _newpos)
 {
   // get position from gray code
   int newpos = graycodetable[(int)(unsigned char)_newpos]; 
   slotSetPosition(newpos);
+  qDebug("wheel");
   //emit updateGUI(newpos);
 }
 
 void ControlRotary::slotSetPosition(int newpos)
 {
+  newpos = graycodetable[(int)(unsigned char)newpos]; 
+
   if ((newpos != -128) && (newpos != position))
   {
     short change = newpos-position; 
