@@ -20,6 +20,7 @@
 
 #include "mouse.h"
 #include <qvaluelist.h>
+#include <sys/select.h>
 
 /**
   * Linux code for handling Mouse
@@ -45,6 +46,8 @@ protected:
     /** File handle of current open /dev/input/event device */
     int m_iFd;
     fd_set fdset;
+    /** True if the last value sent was not a zero */
+    bool m_bSending;
 };
 
 #endif

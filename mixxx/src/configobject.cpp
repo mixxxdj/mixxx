@@ -240,7 +240,7 @@ template <class ValueType> bool ConfigObject<ValueType>::Parse()
                     QTextIStream(&line) >> key;
                     QString val = line.right(line.length() - key.length()); // finds the value string
                     val = val.stripWhiteSpace();
-                    qDebug("control: %s, value: %s",key.ascii(), val.ascii());
+                    //qDebug("control: %s, value: %s",key.ascii(), val.ascii());
                     ConfigKey k(groupStr, key);
                     ValueType m(val);
                     set(k, m);

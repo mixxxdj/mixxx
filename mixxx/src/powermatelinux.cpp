@@ -108,7 +108,7 @@ int PowerMateLinux::opendev(int iId)
             // Add id to list of open devices
             sqlOpenDevs.append(iId);
 
-            qDebug("pm id %i",iId);
+//             qDebug("pm id %i",iId);
 
             return iFd;
         }
@@ -139,7 +139,7 @@ void PowerMateLinux::getNextEvent()
                 if (ev.code == REL_DIAL)
                 {
                     int v = ev.value;
-                    sendRotaryEvent((double)v/10.);
+                    sendRotaryEvent((double)v*10.);
                 }
                 break;
             case EV_KEY:

@@ -29,7 +29,7 @@
 
 class ControlObject;
 
-const int kiRotaryFilterMaxLen = 25;
+const int kiRotaryFilterMaxLen = 50;
 static QString kqRotaryMappingP1Phase =   "Player 1, phase adjustment";
 static QString kqRotaryMappingP1Scratch = "Player 1, scratch";
 static QString kqRotaryMappingP2Phase =   "Player 2, phase adjustment";
@@ -67,6 +67,8 @@ protected:
     ControlObject *m_pControlObjectRotary, *m_pControlObjectButton;
     /** Length of filter */
     int m_iFilterLength;
+    /** Update position in filter */
+    int m_iFilterPos;
     /** Pointer to rotary filter buffer */
     double *m_pFilter;
     /** Calibration value */
