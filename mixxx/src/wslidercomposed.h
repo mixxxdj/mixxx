@@ -32,6 +32,7 @@ class WSliderComposed : public WWidget  {
 public: 
     WSliderComposed(QWidget *parent=0, const char *name=0);
     ~WSliderComposed();
+    void setup(QDomNode node);
     void setPixmaps(bool bHorizontal, const QString &filenameSlider, const QString &filenameHandle);
     void mouseMoveEvent(QMouseEvent *e);
     void mousePressEvent(QMouseEvent *e);

@@ -181,9 +181,9 @@ void ReaderExtractWave::getchunk(CSAMPLE rate)
     m_pReader->lock();
 
     int chunkCurr, chunkStart, chunkEnd;
-    
+
     if (backwards)
-    {        
+    {
         filepos_start_new = max(0.,filepos_start-(double)READCHUNKSIZE);
         bufferpos_start = (bufferpos_start-READCHUNKSIZE+READBUFFERSIZE)%READBUFFERSIZE;
         file->seek((long int)filepos_start_new);
@@ -195,7 +195,7 @@ void ReaderExtractWave::getchunk(CSAMPLE rate)
             filepos_end_new = filepos_end-(double)READCHUNKSIZE;
             bufferpos_end   = bufferpos_start; //(bufferpos_end-READCHUNKSIZE+READBUFFERSIZE)%READBUFFERSIZE;
         }
-        
+
         bufIdx = bufferpos_start;
 
         chunkCurr = bufferpos_start/READCHUNKSIZE;
@@ -214,16 +214,17 @@ void ReaderExtractWave::getchunk(CSAMPLE rate)
         }
         chunkCurr = bufIdx/READCHUNKSIZE;
     }
+
     chunkStart = bufferpos_start/READCHUNKSIZE;
     chunkEnd   = bufferpos_end/READCHUNKSIZE;
-    
+
     filepos_start = (long int)filepos_start_new;
     filepos_end = (long int)filepos_end_new;
 
     // Read samples (reset samples not read, but requested)
     int i = file->read(READCHUNKSIZE, temp);
     int j;
-    for (j=i; i<READCHUNKSIZE; ++i)
+    for (j=i; j<READCHUNKSIZE; ++j)
         temp[j] = 0.;
 
     // Seek to end of the samples read in buffer, if we are reading backwards. This is to ensure, that the correct samples
@@ -255,7 +256,7 @@ void ReaderExtractWave::getchunk(CSAMPLE rate)
 long int ReaderExtractWave::seek(long int new_playpos)
 {
     long int seekpos;
-    
+
     if (file!=0)
     {
         m_pReader->lock();

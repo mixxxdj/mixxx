@@ -29,6 +29,21 @@ WDisplay::~WDisplay()
     resetPositions();
 }
 
+void WDisplay::setup(QDomNode node)
+{
+    WWidget::setup(node);
+
+    // Number of states
+    setPositions(selectNodeInt(node, "NumberStates"));
+
+    // Load knob  pixmaps
+    QString path = selectNodeQString(node, "Path");
+    for (int i=0; i<m_iNoPos; ++i)
+    {
+        setPixmap(i, getPath(path.arg(i)));
+    }
+}
+
 void WDisplay::setPositions(int iNoPos)
 {
     m_iNoPos = iNoPos;
@@ -56,19 +71,22 @@ void WDisplay::resetPositions()
         m_pPixmaps = 0;
     }
 }
-
+                   
 void WDisplay::setPixmap(int iPos, const QString &filename)
 {
     m_pPixmaps[iPos] = new QPixmap(filename);
+    qDebug("%s",filename.latin1());
     if (!m_pPixmaps[iPos])
         qDebug("WDisplay: Error loading pixmap %s",filename.latin1());
+    else
+        setFixedSize(m_pPixmaps[iPos]->size());
 }
 
 void WDisplay::paintEvent(QPaintEvent *)
 {
     if (m_pPixmaps>0)
     {
-        int idx = (int)(m_fValue*33./128.);
+        int idx = (int)(m_fValue*(float)(m_iNoPos)/128.);
         // Range check
         if (idx>(m_iNoPos-1))
             idx = m_iNoPos-1;

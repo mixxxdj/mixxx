@@ -21,11 +21,15 @@
 #include "controlpotmeter.h"
 #include "mixxxview.h"
 #include "wslidercomposed.h"
+#include <qdir.h>
 
 DlgPrefControls::DlgPrefControls(QWidget *parent, ControlObject *pControl, MixxxView *pView, ConfigObject<ConfigValue> *pConfig) : DlgPrefControlsDlg(parent,"")
 {
     m_pConfig = pConfig;
     
+    //
+    // Rate slider configuration
+    //
     m_pControlRate1 = (ControlPotmeter *)pControl->getControl(ConfigKey("[Channel1]","rate"));
     m_pControlRate2 = (ControlPotmeter *)pControl->getControl(ConfigKey("[Channel2]","rate"));    
 
@@ -48,6 +52,36 @@ DlgPrefControls::DlgPrefControls(QWidget *parent, ControlObject *pControl, Mixxx
     connect(ComboBoxRateRange, SIGNAL(activated(int)), this, SLOT(slotSetRateRange(int)));
     connect(ComboBoxRateDir,   SIGNAL(activated(int)), m_pWidgetRate1, SLOT(slotSetReverse(int)));
     connect(ComboBoxRateDir,   SIGNAL(activated(int)), m_pWidgetRate2, SLOT(slotSetReverse(int)));
+
+    //
+    // Skin configurations
+    //
+    ComboBoxSkinconf->clear();
+
+    QString qSkinPath(pConfig->getValueString(ConfigKey("[Config]","Path")));
+    QDir dir(qSkinPath.append("skins/"));
+    dir.setFilter(QDir::Dirs);
+    const QFileInfoList *list = dir.entryInfoList();
+    if (list!=0)
+    {
+        QFileInfoListIterator it(*list);        // create list iterator
+        QFileInfo *fi;                          // pointer for traversing
+        int j=0;
+        while ((fi=it.current()))
+        {
+            if (fi->fileName()!="." && fi->fileName()!="..")
+            {
+                ComboBoxSkinconf->insertItem(fi->fileName());
+                if (fi->fileName() == pConfig->getValueString(ConfigKey("[Config]","Skin")))
+                    ComboBoxSkinconf->setCurrentItem(j);
+                ++j;
+            }
+            ++it;
+        }
+    }
+
+    connect(ComboBoxSkinconf, SIGNAL(activated(int)), this, SLOT(slotSetSkin(int)));
+    
 }
 
 DlgPrefControls::~DlgPrefControls()
@@ -84,6 +118,12 @@ void DlgPrefControls::slotSetRateRange(int pos)
         
     m_pControlRate1->setRange(1.-(range*dir), 1.+range);
     m_pControlRate2->setRange(1.-(range*dir), 1.+range);
+}
+
+void DlgPrefControls::slotSetSkin(int)
+{
+    m_pConfig->set(ConfigKey("[Config]","Skin"), ComboBoxSkinconf->currentText());
+    textLabel->setText("Restart Mixxx before the new skin will be loaded.");
 }
 
 void DlgPrefControls::slotApply()

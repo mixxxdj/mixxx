@@ -19,6 +19,7 @@
 #define WTRACKTABLEITEM_H
 
 #include <qtable.h>
+#include <qcolor.h>
 
 /**
   *@author Tue & Ken Haste Andersen
@@ -36,7 +37,10 @@ private:
 public: 
     WTrackTableItem(QTable *table, EditType et, const QString &text, enumType eType);
     ~WTrackTableItem();
+    static void setRowColors(QColor r1, QColor r2);
     void paint(QPainter *p, const QColorGroup &cg, const QRect &cr, bool selected);
+private:
+    static QColor kqRowColor1, kqRowColor2;
     QString key() const;
 };           
 

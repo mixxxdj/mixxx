@@ -39,7 +39,7 @@ EngineChannel::EngineChannel(const char *group)
     volume = new EngineVolume(ConfigKey(group,"volume"));
 
     // VU meter:
-    vumeter = new EngineVUmeter(group);
+    vumeter = new EngineVuMeter(group);
 
     // PFL button
     ControlPushButton *p = new ControlPushButton(ConfigKey(group, "pfl" ));

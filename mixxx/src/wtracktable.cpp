@@ -16,6 +16,8 @@
  ***************************************************************************/
 
 #include "wtracktable.h"
+#include "wtracktableitem.h"
+#include "wwidget.h"
 #include "tracklist.h"
 #include <qfont.h>
 #include <qcolor.h>
@@ -38,7 +40,7 @@ WTrackTable::WTrackTable(QWidget *parent, const char *name) : QTable(10, 8, pare
     // Setup table properties
     setShowGrid(false);
     setFrameStyle(QFrame::NoFrame);
-    setPaletteBackgroundColor(QColor(148,171,194));
+    //setPaletteBackgroundColor(QColor(148,171,194));
 
     // Font size
     QFont f("Helvetica");
@@ -64,6 +66,50 @@ WTrackTable::WTrackTable(QWidget *parent, const char *name) : QTable(10, 8, pare
 WTrackTable::~WTrackTable()
 {
 }
+
+void WTrackTable::setup(QDomNode node)
+{
+    // Position
+    QString pos = WWidget::selectNodeQString(node, "Pos");
+    int x = pos.left(pos.find(",")).toInt();
+    int y = pos.mid(pos.find(",")+1).toInt();
+    move(x,y);
+
+    // Size
+    QString size = WWidget::selectNodeQString(node, "Size");
+    x = size.left(size.find(",")).toInt();
+    y = size.mid(size.find(",")+1).toInt();
+    setFixedSize(x,y);
+
+    // Background color
+    if (!WWidget::selectNode(node, "BgColor").isNull())
+    {
+        QColor c;
+        c.setNamedColor(WWidget::selectNodeQString(node, "BgColor"));
+        setPaletteBackgroundColor(c);
+    }
+
+    // Foreground color
+    if (!WWidget::selectNode(node, "FgColor").isNull())
+    {
+        QColor c;
+        c.setNamedColor(WWidget::selectNodeQString(node, "FgColor"));
+        setPaletteForegroundColor(c);
+    }
+
+    // Row colors
+    if (!WWidget::selectNode(node, "BgColorRowEven").isNull())
+    {
+        QColor r1;
+        r1.setNamedColor(WWidget::selectNodeQString(node, "BgColorRowEven"));
+        QColor r2;
+        r2.setNamedColor(WWidget::selectNodeQString(node, "BgColorRowUneven"));
+        WTrackTableItem::setRowColors(r1, r2);
+    }
+
+
+}
+
 
 void WTrackTable::sortColumn(int col, bool ascending, bool)
 {

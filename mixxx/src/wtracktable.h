@@ -20,6 +20,7 @@
 
 #include <qwidget.h>
 #include <qtable.h>
+#include <qdom.h>
 
 /**
   *@author Tue & Ken Haste Andersen
@@ -30,6 +31,7 @@ class WTrackTable : public QTable  {
 public: 
     WTrackTable(QWidget *parent=0, const char *name=0);
     ~WTrackTable();
+    void setup(QDomNode node);
     void sortColumn(int col, bool ascending, bool);
 };
 

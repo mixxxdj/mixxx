@@ -56,7 +56,7 @@ EngineMaster::EngineMaster(EngineBuffer *_buffer1, EngineBuffer *_buffer2,
     clipping = new EngineClipping(group);
 
     // VU meter:
-    vumeter = new EngineVUmeter(group);
+    vumeter = new EngineVuMeter(group);
 
     // Headphone volume
     head_volume = new EngineVolume(ConfigKey(group, "headVolume"));

@@ -24,49 +24,31 @@ int VisualController::idCount = 0;
 /**
  *
  */
- VisualController::VisualController()
+VisualController::VisualController(QColor qBackground)
 {
-  fov   = 60.0;
-  znear = 10.0;
-  zfar  = 1000.0;
-  eyex  = 0.;
-  eyey  = 0.0;
-  eyez  = 120.0;
-  centerx=centery=centerz=0;
-  upx=0;
-  upy=1;
-  upz=0;
+    fov   = 60.0;
+    znear = 10.0;
+    zfar  = 1000.0;
+    eyex  = 0.;
+    eyey  = 0.0;
+    eyez  = 120.0;
+    centerx=centery=centerz=0;
+    upx=0;
+    upy=1;
+    upz=0;
 
-  x = 100;
-  y = 100;
-  width = 800;
-  height = 600;
-  if(height>0)
-    aspect=(GLdouble)width/(GLdouble)height;
-  else
-    aspect=1.0;
+    x = 100;
+    y = 100;
+    width = 800;
+    height = 600;
+    if(height>0)
+        aspect=(GLdouble)width/(GLdouble)height;
+    else
+        aspect=1.0;
 
-/*
-    mylight.ambient[0]  = 1.f;
-    mylight.ambient[1]  = 1.f;
-    mylight.ambient[2]  = 1.f;
-    mylight.ambient[3]  = 1.f;
-
-    mylight.diffuse[0]  = 1.f;
-    mylight.diffuse[1]  = 1.f;
-    mylight.diffuse[2]  = 1.f;
-    mylight.diffuse[3]  = 1.f;
-
-    mylight.specular[0] = 1.f;
-    mylight.specular[1] = 1.f;
-    mylight.specular[2] = 1.f;
-    mylight.specular[3] = 1.f;
-
-    mylight.position[0] = 100.0f;
-    mylight.position[1] = 100.0f;
-    mylight.position[2] = 180.0f;
-    mylight.position[3] = 1.0f;    
-*/
+    bg_r = qBackground.red()/255.;
+    bg_g = qBackground.green()/255.;
+    bg_b = qBackground.blue()/255.;
 };
 
 
@@ -101,7 +83,7 @@ void VisualController::setupBlending()
 {
     glEnable(GL_BLEND);
     //--- Transparency fog effects???? primitves should be sorted from nearst to farest
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE);
+//    glBlendFunc(GL_SRC_ALPHA, GL_ONE);
 };
 
 /**
@@ -110,9 +92,9 @@ void VisualController::setupBlending()
 void VisualController::init()
 {
     //glClearColor(0.4f,0.4f,0.4f,0.0f);
-    glClearColor(0.0f,0.f,0.0f,0.0f);
+//    glClearColor(0.0f,0.f,0.0f,0.0f);
 //    glClearColor(202.0/255.f,213.0/255.f,192.0/255.0f,0.0f);
-//    glClearColor(1.0f,1.f,1.0f,0.1f);
+    glClearColor(bg_r, bg_g, bg_b, 0.f);
 
     setupBackfaceCulling();
     setupZBuffer();

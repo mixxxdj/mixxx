@@ -18,9 +18,9 @@
 #include "wvisual.h"
 #include "visual/visualchannel.h"
 
-WVisual::WVisual(QWidget *pParent, const char *pName, const QGLWidget *pShareWidget) : QGLWidget(pParent,pName,pShareWidget)
+WVisual::WVisual(QWidget *pParent, const char *pName, const QGLWidget *pShareWidget, QColor qBackground) : QGLWidget(pParent,pName,pShareWidget)
 {
-    m_pVisualController = new VisualController();
+    m_pVisualController = new VisualController(qBackground);
 
     installEventFilter(this);
     m_qtTime.start();

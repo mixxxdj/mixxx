@@ -20,6 +20,7 @@
 
 #include <list>
 #include <qgl.h>
+#include <qcolor.h>
 
 /**
  * Forward Declaration.
@@ -40,7 +41,7 @@ typedef std::list<VisualObject *>::iterator ObjectsIterator;
 class VisualController
 {
 public: 
-  VisualController();
+  VisualController(QColor qBackground);
 
 private:
   void setupBackfaceCulling();
@@ -67,6 +68,9 @@ private:
   Objects objects;
   static int idCount;
   Light mylight;
+
+  /** Background color */
+  float bg_r, bg_g, bg_b;
 
 };
 #endif

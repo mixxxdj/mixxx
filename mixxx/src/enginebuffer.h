@@ -50,8 +50,10 @@ class EngineBuffer : public EngineObject
 {
 	Q_OBJECT
 public:
-    EngineBuffer(PowerMate *, const char *_group, WVisual *pVisual);
+    EngineBuffer(PowerMate *, const char *_group);
     ~EngineBuffer();
+    /** Pointer to visual widget */
+    void setVisual(WVisual *pVisual);
     /** Returns pointer to Reader object. Used in MixxxApp. */
     Reader *getReader();
     /** Reset buffer playpos and set file playpos. This must only be called while holding the

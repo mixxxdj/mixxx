@@ -24,14 +24,14 @@
 
 class ControlEngine;
 
-class EngineVUmeter : public EngineObject {
+class EngineVuMeter : public EngineObject {
 public:
-    EngineVUmeter(const char *);
-    ~EngineVUmeter();
+    EngineVuMeter(const char *);
+    ~EngineVuMeter();
     CSAMPLE *process(const CSAMPLE*, const int);
 
 private:
-    ControlEngine *m_ctrlVUmeter;
+    ControlEngine *m_ctrlVuMeter;
     FLOAT_TYPE m_fRMSvolume;
     FLOAT_TYPE m_iSamplesCalculated;
 };

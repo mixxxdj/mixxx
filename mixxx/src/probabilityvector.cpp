@@ -45,34 +45,36 @@ void ProbabilityVector::add(float fInterval, float fValue)
         float fStart  = -min(kiGaussWidth, fCenter);
         float fEnd    =  min(kiGaussWidth, (float)(m_iBins-1)-fCenter);
 
-        // Set hysterisisFactor. If the gauss is within histMaxIdx, use a large hysterisisFactor
-        float fHysterisisFactor = 1.;
-        if ((int)fCenter>m_iCurrMaxBin-kiGaussWidth && (int)fCenter<m_iCurrMaxBin+kiGaussWidth)
-            fHysterisisFactor = kfHysterisis;
-
         for (float j=fStart; j<fEnd; j++)
         {
             int idx = round((fCenter+j));
-            m_pHist[idx] += exp((-0.5*j*j)/(0.5*(CSAMPLE)kiGaussWidth))*fValue*fHysterisisFactor;
+            m_pHist[idx] += exp((-0.5*j*j)/(0.5*(CSAMPLE)kiGaussWidth))*fValue; //*fHysterisisFactor;
             if (m_pHist[idx]>m_pHist[m_iCurrMaxBin])
             {
                 m_iCurrMaxBin = idx;
 
-                // Interpolate maximum
-                float fCorr = 0.;
-                if (m_iCurrMaxBin>1 && m_iCurrMaxBin<m_iBins-2)
+                // Only use the newly found max if the distance to the last max is small, or it is 
+                // bigger than the old max times the hysterisis factor
+                if (m_iLastMaxBin<0 || abs(m_iLastMaxBin-m_iCurrMaxBin)<kiGaussWidth || m_pHist[m_iCurrMaxBin]>m_pHist[m_iLastMaxBin]*kfHysterisis)
                 {
-                    float t  = m_pHist[m_iCurrMaxBin];
-                    float t1 = m_pHist[m_iCurrMaxBin-1];
-                    float t2 = m_pHist[m_iCurrMaxBin+1];
+                    m_iLastMaxBin = m_iCurrMaxBin;
+                
+                    // Interpolate maximum
+                    float fCorr = 0.;
+                    if (m_iCurrMaxBin>1 && m_iCurrMaxBin<m_iBins-2)
+                    {
+                        float t  = m_pHist[m_iCurrMaxBin];
+                        float t1 = m_pHist[m_iCurrMaxBin-1];
+                        float t2 = m_pHist[m_iCurrMaxBin+1];
 
-                    if ((t1-2.0*t+t2) != 0.)
-                        fCorr = (0.5*(t1-t2))/(t1-2.*t+t2);
-                }
+                        if ((t1-2.0*t+t2) != 0.)
+                            fCorr = (0.5*(t1-t2))/(t1-2.*t+t2);
+                    }
 
-                // Interval in seconds
-                m_fCurrMaxInterval = ((float)m_iCurrMaxBin+fCorr)*m_fSecPerBin+m_fMinInterval;
+                    // Interval in seconds
+                    m_fCurrMaxInterval = ((float)m_iCurrMaxBin+fCorr)*m_fSecPerBin+m_fMinInterval;
 //                qDebug("hist idx %i, int %f, corr %f, bpm %f",m_iCurrMaxBin, m_fCurrMaxInterval,fCorr, 60./m_fCurrMaxInterval);
+                }
             }
         }
     }
@@ -110,11 +112,11 @@ void ProbabilityVector::downWrite(float fFactor)
     {
         m_pHist[i] = fFactor*m_pHist[i];
 #ifdef FILEOUTPUT
-        streamhist << m_pHist[i] << " ";
+//        streamhist << m_pHist[i] << " ";
 #endif
     }
 #ifdef FILEOUTPUT
-    streamhist << "\n";        
+//    streamhist << "\n";        
 #endif
 }
 
@@ -124,6 +126,7 @@ void ProbabilityVector::reset()
         m_pHist[i] = 0;
 
     m_iCurrMaxBin = -1;
+    m_iLastMaxBin = -1;
     m_fCurrMaxInterval = 0.;
 }
 

@@ -20,6 +20,7 @@
 
 #include <qwidget.h>
 #include <qlabel.h>
+#include <qstring.h>
 
 class ControlObject;
 class WSlider;
@@ -31,6 +32,7 @@ class WDisplay;
 class WKnob;
 class WVisual;
 class WNumber;
+class QDomNode;
 
 /**
  * This class provides an incomplete base for your application view. 
@@ -42,7 +44,7 @@ class MixxxView : public QWidget
     Q_OBJECT
 public:
     /** Construtor. Tries to open visuals if bVisuals is true. */
-    MixxxView(QWidget *parent, bool bVisuals);
+    MixxxView(QWidget *parent, bool bVisuals, QString qSkinPath);
     ~MixxxView();
     /** Setup connections between widgets and ControlObjects */
     void assignWidgets(ControlObject *p);
@@ -52,11 +54,9 @@ public:
     /** Pointer to WVisual widgets */
     WVisual *m_pVisualCh1, *m_pVisualCh2;
     WSliderComposed *m_pSliderRateCh1, *m_pSliderRateCh2;
-    WPushButtonInc *m_pButtonRateUpCh1, *m_pButtonRateUpCh2;
-    WPushButtonInc *m_pButtonRateDownCh1, *m_pButtonRateDownCh2;
 
 private:
-    const QString getPath(QString location);
+    bool compareConfigKeys(QDomNode node, QString key);
 
     QWidget *main;
     WSliderComposed *m_pSliderCrossfader;
@@ -74,7 +74,9 @@ private:
     WPushButton *m_pCueCh1, *m_pCueCh2;
     WNumber *m_pBpmCh1, *m_pBpmCh2;
     WPushButton *m_pEndOfTrackModeCh1, *m_pEndOfTrackModeCh2;
-    
+    WPushButtonInc *m_pButtonRateUpCh1, *m_pButtonRateUpCh2;
+    WPushButtonInc *m_pButtonRateDownCh1, *m_pButtonRateDownCh2;
+
     QString path;
 };
 

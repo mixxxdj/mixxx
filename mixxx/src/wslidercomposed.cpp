@@ -40,6 +40,22 @@ WSliderComposed::~WSliderComposed()
     unsetPixmaps();
 }
 
+void WSliderComposed::setup(QDomNode node)
+{
+    // Setup position
+    WWidget::setup(node);
+    
+    // Setup pixmaps
+    QString pathSlider = getPath(selectNodeQString(node, "Slider"));
+    QString pathHandle = getPath(selectNodeQString(node, "Handle"));
+    QString pathHorizontal = selectNodeQString(node, "Horizontal");
+    bool h = false;
+    if (pathHorizontal.contains("true",false))
+        h = true;
+    setPixmaps(h, pathSlider, pathHandle);
+}
+
+
 void WSliderComposed::setPixmaps(bool bHorizontal, const QString &filenameSlider, const QString &filenameHandle)
 {
     m_bHorizontal = bHorizontal;
@@ -63,6 +79,10 @@ void WSliderComposed::setPixmaps(bool bHorizontal, const QString &filenameSlider
         m_iHandleLength = m_pHandle->height();
     }
 
+    // Set size of widget, using size of slider pixmap
+    if (m_pSlider)
+        setFixedSize(m_pSlider->size());
+    
     setValue(m_fValue);
 
     repaint();

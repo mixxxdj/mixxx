@@ -10,17 +10,17 @@
 */
 TrackInfoObject::TrackInfoObject( const QString sPath, const QString sFile ) : m_sFilename(sFile), m_sFilepath(sPath)
 {
-	m_sArtist = "";
-	m_sTitle = "";
-	m_sType= "";
+    m_sArtist = "";
+    m_sTitle = "";
+    m_sType= "";
     m_sComment = "";
-	m_iDuration = 0;
-	m_iLength = 0;
-	m_sBitrate = "";
-	m_iTimesPlayed = 0;
+    m_iDuration = 0;
+    m_iLength = 0;
+    m_sBitrate = "";
+    m_iTimesPlayed = 0;
 
-	// Check that the file exists:
-	CheckFileExists();
+    // Check that the file exists:
+    CheckFileExists();
 }
 
 /*
@@ -28,41 +28,32 @@ TrackInfoObject::TrackInfoObject( const QString sPath, const QString sFile ) : m
 */
 TrackInfoObject::TrackInfoObject( const QDomNode &nodeHeader )
 {
-	m_sFilename = SelectNode( nodeHeader, "Filename").toElement().text();
-
-	m_sFilepath = SelectNode( nodeHeader, "Filepath").toElement().text();
-
-	m_sTitle = SelectNode( nodeHeader, "Title").toElement().text();
-
-	m_sArtist = SelectNode( nodeHeader, "Artist").toElement().text();
-
-	m_sType = SelectNode( nodeHeader, "Type").toElement().text();
-
+    m_sFilename = SelectNode( nodeHeader, "Filename").toElement().text();
+    m_sFilepath = SelectNode( nodeHeader, "Filepath").toElement().text();
+    m_sTitle = SelectNode( nodeHeader, "Title").toElement().text();
+    m_sArtist = SelectNode( nodeHeader, "Artist").toElement().text();
+    m_sType = SelectNode( nodeHeader, "Type").toElement().text();
     m_sComment = SelectNode( nodeHeader, "Comment").toElement().text();
-
     m_iDuration = SelectNode( nodeHeader, "Duration").toElement().text().toInt();
+    m_sBitrate = SelectNode( nodeHeader, "Bitrate").toElement().text();
+    m_iLength = SelectNode( nodeHeader, "Length").toElement().text().toInt();
+    m_iTimesPlayed = SelectNode( nodeHeader, "TimesPlayed").toElement().text().toInt();
 
-	m_sBitrate = SelectNode( nodeHeader, "Bitrate").toElement().text();
-
-	m_iLength = SelectNode( nodeHeader, "Length").toElement().text().toInt();
-
-	m_iTimesPlayed = SelectNode( nodeHeader, "TimesPlayed").toElement().text().toInt();
-
-	// Check that the actual file exists:
-	CheckFileExists();
+    // Check that the actual file exists:
+    CheckFileExists();
 }
 
 QDomNode TrackInfoObject::SelectNode( const QDomNode &nodeHeader, const QString sNode )
 {
-	QDomNode node = nodeHeader.firstChild();
+    QDomNode node = nodeHeader.firstChild();
 
-	while ( !node.isNull() )
-	{
-		if (node.nodeName() == sNode)
-			return node;
-		node = node.nextSibling();
-	}
-	return node;
+    while ( !node.isNull() )
+    {
+        if (node.nodeName() == sNode)
+            return node;
+        node = node.nextSibling();
+    }
+    return node;
 }
 
 TrackInfoObject::~TrackInfoObject()
@@ -76,12 +67,12 @@ TrackInfoObject::~TrackInfoObject()
 */
 void TrackInfoObject::CheckFileExists()
 {
-	QFile fileTrack( m_sFilepath+"/"+m_sFilename );
-	if (fileTrack.exists() )
-		m_bExist = true;
-	else
+    QFile fileTrack( m_sFilepath+"/"+m_sFilename );
+    if (fileTrack.exists() )
+        m_bExist = true;
+    else
     {
-		m_bExist = false;
+        m_bExist = false;
         qDebug("The track %s was not found", (m_sFilepath+"/"+m_sFilename).latin1());
     }
 }

@@ -27,9 +27,8 @@
 
 /** Width of gauss/2 used in histogram updates */
 const int kiGaussWidth = 8;
-/** Hysterisis factor. The weight of an interval lying within a small range around the
-  * histogram maximum is multiplied with this factor when added to the histogram */
-const float kfHysterisis = 1.2;
+/** Hysterisis factor. */
+const float kfHysterisis = 1.2f;
 
 /**
   *@author Tue & Ken Haste Andersen
@@ -65,6 +64,8 @@ private:
     float m_fCurrMaxInterval;
     /** Current bin corresponding to m_fCurrMaxInterval */
     int m_iCurrMaxBin;
+    /** Bin corresponding to last max interval */
+    int m_iLastMaxBin;
 
 #ifdef FILEOUTPUT
     QFile texthist;

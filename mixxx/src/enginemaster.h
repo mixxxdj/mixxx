@@ -26,7 +26,7 @@ class EngineVolume;
 class EngineChannel;
 class EngineClipping;
 class EngineFlanger;
-class EngineVUmeter;
+class EngineVuMeter;
 
 /**
   *@author 
@@ -46,7 +46,7 @@ private:
     EngineVolume *volume, *head_volume; 
     EngineClipping *clipping, *head_clipping;
     EngineFlanger *flanger;
-    EngineVUmeter *vumeter;
+    EngineVuMeter *vumeter;
 
     ControlEngine *crossfader, *head_mix, *pfl1, *pfl2, *flanger1, *flanger2, *m_pBalance;
     CSAMPLE *out, *tmp, *tmp2, *tmp3, *tmp4;

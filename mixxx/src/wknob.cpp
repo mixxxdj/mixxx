@@ -31,6 +31,26 @@ WKnob::~WKnob()
     resetPositions();
 }
 
+void WKnob::setup(QDomNode node)
+{
+    qDebug("knob setup");
+    WWidget::setup(node);
+
+    // Set background pixmap if available
+    if (!selectNode(node, "BackPath").isNull())
+        setPixmapBackground(getPath(selectNodeQString(node, "BackPath")));
+    
+    // Number of states
+    setPositions(selectNodeInt(node, "NumberStates"));
+
+    // Load knob  pixmaps
+    QString path = selectNodeQString(node, "Path");
+    for (int i=0; i<m_iNoPos; ++i)
+    {
+        setPixmap(i, getPath(path.arg(i)));
+    }
+}
+
 void WKnob::setPositions(int iNoPos)
 {
     m_iNoPos = iNoPos;
@@ -64,6 +84,7 @@ void WKnob::setPixmap(int iPos, const QString &filename)
     m_pPixmaps[iPos] = new QPixmap(filename);
     if (!m_pPixmaps[iPos])
         qDebug("WKnob: Error loading pixmap %s",filename.latin1());
+    setFixedSize(m_pPixmaps[iPos]->size());
 }
 
 void WKnob::setPixmapBackground(const QString &filename)
