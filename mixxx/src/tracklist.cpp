@@ -30,6 +30,7 @@ TrackList::TrackList( const QString sDirectory, QTable *ptableTracks,
                       DlgPlaycontrol *playcontrol1, DlgPlaycontrol *playcontrol2,
                       EngineBuffer *buffer1, EngineBuffer *buffer2)
 {
+    m_sDirectory = sDirectory;
     m_ptableTracks = ptableTracks;
     m_pPlaycontrol1 = playcontrol1;
     m_pPlaycontrol2 = playcontrol2;
@@ -37,7 +38,7 @@ TrackList::TrackList( const QString sDirectory, QTable *ptableTracks,
     m_pBuffer2 = buffer2;
 
     // Update the track list by reading the xml file, and adding new files:
-    slotUpdateTracklist( sDirectory );
+    UpdateTracklist();
 
 	// Construct popup menu used to select playback channel on track selection
 	playSelectMenu = new QPopupMenu( );
@@ -235,10 +236,8 @@ void TrackList::slotRightClick( int iRow, int iCol, const QPoint &pos )
     playSelectMenu->popup(pos);
 }
 
-void TrackList::slotUpdateTracklist( QString sDir )
+void TrackList::UpdateTracklist()
 {
-    m_sDirectory = sDir;
-
     // Initialize xml file:
 	QFile opmlFile( m_sDirectory + "/tracklist.xml" );
 	
@@ -300,5 +299,23 @@ void TrackList::slotUpdateTracklist( QString sDir )
 
 	// Update the scores for all the tracks:
 	UpdateScores();
+}
+void TrackList::slotUpdateTracklist( QString sDir )
+{
+    // Save the "old" xml file:
+    WriteXML();
+
+    // Delete all "old" tracks:
+    while (m_lTracks.count() != 0)
+    {
+        delete m_lTracks.first();
+        m_lTracks.removeFirst();
+    }
+
+    // Set the new directory:
+    m_sDirectory = sDir;
+
+    // Make the newlist:
+    UpdateTracklist();
 }
 
