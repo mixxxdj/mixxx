@@ -27,7 +27,6 @@
 #include "wtracktable.h"
 #include "wtracktableitem.h"
 #include "controlobject.h"
-#include "controlpotmeter.h"
 
 TrackList::TrackList( const QString sDirectory, WTrackTable *ptableTracks,
                       QLabel *text1, QLabel *text2,
@@ -44,13 +43,13 @@ TrackList::TrackList( const QString sDirectory, WTrackTable *ptableTracks,
     m_iCurTrackIdxCh2 = -1;
 
     // Construct controlpotmeter for determining end of track mode, and set default value to STOP.
-    m_pEndOfTrackModeCh1 = new ControlPotmeter(ConfigKey("[Channel1]","EndOfTrackMode"), 1., 4.);
-    m_pEndOfTrackModeCh2 = new ControlPotmeter(ConfigKey("[Channel2]","EndOfTrackMode"), 1., 4.);   
+    m_pEndOfTrackModeCh1 = new ControlObject(ConfigKey("[Channel1]","EndOfTrackMode"));
+    m_pEndOfTrackModeCh2 = new ControlObject(ConfigKey("[Channel2]","EndOfTrackMode"));   
     m_pEndOfTrackModeCh1->setValueFromApp((double)END_OF_TRACK_MODE_STOP);
     m_pEndOfTrackModeCh2->setValueFromApp((double)END_OF_TRACK_MODE_STOP);
 
     // Get pointers to ControlObjects for play buttons
-    ControlObject *c = (ControlObject *)m_pEndOfTrackModeCh1;
+    ControlObject *c = m_pEndOfTrackModeCh1;
     m_pPlayCh1 = c->getControl(ConfigKey("[Channel1]","play"));
     m_pPlayCh2 = c->getControl(ConfigKey("[Channel2]","play"));
 
@@ -166,6 +165,7 @@ void TrackList::UpdateTracklist()
 
 void TrackList::slotEndOfTrackCh1(double)
 {
+    qDebug("end %f",m_pEndOfTrackModeCh1->getValue());
     switch ((int)m_pEndOfTrackModeCh1->getValue())
     {
     case END_OF_TRACK_MODE_STOP:

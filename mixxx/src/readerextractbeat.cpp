@@ -349,7 +349,7 @@ void *ReaderExtractBeat::processChunk(const int _idx, const int start_idx, const
                     // Set hysterisisFactor. If the gauss is within histMaxIdx, use a large hysterisisFactor
                     float hysterisisFactor = 1.;
                     if (center>histMaxIdx-gaussWidth && center<histMaxIdx+gaussWidth)
-                        hysterisisFactor = 1.5;
+                        hysterisisFactor = 1.2;
 
                     for (int j=j_start; j<j_end; j++)
                     {
@@ -481,7 +481,6 @@ void *ReaderExtractBeat::processChunk(const int _idx, const int start_idx, const
         streambpm << bpm << "\n";
     }
     textbpm.flush();
-    qDebug("bpm %f",bpm);
     
     // Down-write histogram
     for (i=0; i<histSize; i++)

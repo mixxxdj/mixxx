@@ -13,7 +13,6 @@ class QPoint;
 class EngineBuffer;
 class WTrackTable;
 class ControlObject;
-class ControlPotmeter;
 
 // Defines for the rows in the table.
 const int COL_SCORE = 0;
@@ -25,10 +24,10 @@ const int COL_BITRATE = 5;
 const int COL_INDEX = 6;
 
 // End of track mode constants
-const int END_OF_TRACK_MODE_STOP = 1;
-const int END_OF_TRACK_MODE_NEXT = 2;
-const int END_OF_TRACK_MODE_LOOP = 3;
-const int END_OF_TRACK_MODE_PING = 4;
+const int END_OF_TRACK_MODE_STOP = 0;
+const int END_OF_TRACK_MODE_NEXT = 1;
+const int END_OF_TRACK_MODE_LOOP = 2;
+const int END_OF_TRACK_MODE_PING = 3;
 
 
 // This define sets the version of the tracklist. If any code is changed or
@@ -88,7 +87,7 @@ private:
     int m_iMaxTimesPlayed;
 
     /** Pointer to ControlObject dertermining end of track mode */
-    ControlPotmeter *m_pEndOfTrackModeCh1, *m_pEndOfTrackModeCh2;
+    ControlObject *m_pEndOfTrackModeCh1, *m_pEndOfTrackModeCh2;
     /** Pointer to ControlObjects for play buttons */
     ControlObject *m_pPlayCh1, *m_pPlayCh2;
     

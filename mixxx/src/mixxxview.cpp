@@ -224,6 +224,32 @@ MixxxView::MixxxView(QWidget *parent, bool bVisuals) : QWidget(parent, "Mixxx")
     m_pBpmCh2->move(900,40);
     m_pBpmCh2->setNumDigits(6);
     
+    m_pEndOfTrackModeCh1 = new WPushButton(main);
+    m_pEndOfTrackModeCh1->setStates(4);
+    m_pEndOfTrackModeCh1->setPixmap(0, false, getPath("buttons/endoftrackmode-stop.png"));
+    m_pEndOfTrackModeCh1->setPixmap(0, true,  getPath("buttons/endoftrackmode-stop.png"));
+    m_pEndOfTrackModeCh1->setPixmap(1, false, getPath("buttons/endoftrackmode-next.png"));
+    m_pEndOfTrackModeCh1->setPixmap(1, true,  getPath("buttons/endoftrackmode-next.png"));
+    m_pEndOfTrackModeCh1->setPixmap(2, false, getPath("buttons/endoftrackmode-loop.png"));
+    m_pEndOfTrackModeCh1->setPixmap(2, true,  getPath("buttons/endoftrackmode-loop.png"));
+    m_pEndOfTrackModeCh1->setPixmap(3, false, getPath("buttons/endoftrackmode-ping.png"));
+    m_pEndOfTrackModeCh1->setPixmap(3, true,  getPath("buttons/endoftrackmode-ping.png"));
+    m_pEndOfTrackModeCh1->setFixedSize(30,10);
+    m_pEndOfTrackModeCh1->move(330,70);
+
+    m_pEndOfTrackModeCh2 = new WPushButton(main);
+    m_pEndOfTrackModeCh2->setStates(4);
+    m_pEndOfTrackModeCh2->setPixmap(0, false, getPath("buttons/endoftrackmode-stop.png"));
+    m_pEndOfTrackModeCh2->setPixmap(0, true,  getPath("buttons/endoftrackmode-stop.png"));
+    m_pEndOfTrackModeCh2->setPixmap(1, false, getPath("buttons/endoftrackmode-next.png"));
+    m_pEndOfTrackModeCh2->setPixmap(1, true,  getPath("buttons/endoftrackmode-next.png"));
+    m_pEndOfTrackModeCh2->setPixmap(2, false, getPath("buttons/endoftrackmode-loop.png"));
+    m_pEndOfTrackModeCh2->setPixmap(2, true,  getPath("buttons/endoftrackmode-loop.png"));
+    m_pEndOfTrackModeCh2->setPixmap(3, false, getPath("buttons/endoftrackmode-ping.png"));
+    m_pEndOfTrackModeCh2->setPixmap(3, true,  getPath("buttons/endoftrackmode-ping.png"));
+    m_pEndOfTrackModeCh2->setFixedSize(30,10);
+    m_pEndOfTrackModeCh2->move(900,70);
+
 #ifdef __WIN__
     // QPixmap fix needed on Windows 9x
     QPixmap::setDefaultOptimization(QPixmap::NormalOptim);
@@ -271,7 +297,9 @@ void MixxxView::assignWidgets(ControlObject *p)
     p->setWidget(m_pSliderPlayposCh1, ConfigKey("[Channel1]", "playposition"), false);
     p->setWidget(m_pSliderPlayposCh2, ConfigKey("[Channel2]", "playposition"), false);
 
-
+    p->setWidget(m_pEndOfTrackModeCh1, ConfigKey("[Channel1]", "EndOfTrackMode"), false);
+    p->setWidget(m_pEndOfTrackModeCh2, ConfigKey("[Channel2]", "EndOfTrackMode"), false);
+    
     // EngineMaster
     p->setWidget(m_pHeadCueCh1, ConfigKey("[Channel1]", "pfl"));
     p->setWidget(m_pHeadCueCh2, ConfigKey("[Channel2]", "pfl"));
