@@ -61,7 +61,7 @@ EngineBuffer::EngineBuffer(DlgPlaycontrol *_playcontrol, const char *group, cons
   connect(wheel, SIGNAL(updateGUI(int)), wheel, SLOT(slotSetPositionMidi(int)));
 
   // ????
-i //connect(wheel, SIGNAL(updateGUI(int)), playcontrol->SliderPlaycontrol, SLOT(setValue(int)));
+  //connect(wheel, SIGNAL(updateGUI(int)), playcontrol->SliderPlaycontrol, SLOT(setValue(int)));
   //connect(wheel, SIGNAL(updateGUI(int)), wheel, SLOT(slotSetPositionMidi(int)));
 
   // Connect playbutton signal to wheel state slot, to notify the wheel of the playback state
