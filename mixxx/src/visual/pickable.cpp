@@ -19,16 +19,12 @@
 #include "material.h"
 #include <qgl.h>
 
-
-int PickableObject::next = 1;   ///< Next free avaible index.
-
-
 /**
  * Default Constructor.
  */
-PickableObject::PickableObject()
+PickableObject::PickableObject(int _id)
 {
-    index = next++;
+    id = _id;
 };
 
 /**
@@ -41,19 +37,19 @@ void PickableObject::draw(GLenum mode)
     if(material)
         material->use();
     if(mode == GL_SELECT)
-        glLoadName(index);
+        glLoadName(id);
     draw();    
 };
 
 
 /**
- * Retrive Unique Index.
+ * Retrive Unique ID.
  *
- * @return    The value of the index.
+ * @return    The value of the id.
  */
-int PickableObject::getIndex()
+int PickableObject::getId()
 {
-    return index;
+    return id;
 };
 
 

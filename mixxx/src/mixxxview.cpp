@@ -27,6 +27,7 @@
 #include "dlgplaycontrol.h"
 #include "dlgcrossfader.h"
 #include "dlgsplit.h"
+#include "wtracktable.h"
 
 MixxxView::MixxxView(QWidget *parent, MixxxDoc *doc) : QWidget(parent)
 {
@@ -71,8 +72,6 @@ MixxxView::MixxxView(QWidget *parent, MixxxDoc *doc) : QWidget(parent)
     mainGrid->setRowStretch( 0, 265);
     mainGrid->setRowStretch( 1,  43);
     mainGrid->setRowStretch( 2, 215);
-
-    
 }
 
 

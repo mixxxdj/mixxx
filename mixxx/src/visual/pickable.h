@@ -35,14 +35,12 @@
 class PickableObject : public VisualObject
 {
 public:
-  PickableObject();
+  PickableObject(int _id);
   virtual void draw(GLenum mode);
   virtual void draw()=0;
-  int getIndex();
-
+  int getId();
 private:
-  int index;        ///< The index of the object.
-  static int next;  ///< Next free avaible index.
+  int id;
 };
 #endif
 

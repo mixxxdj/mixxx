@@ -39,7 +39,9 @@ GUIContainer::GUIContainer(ReaderExtract *readerExtract, ControlPotmeter *playpo
 
     // Calculate resampling factor
     CSAMPLE signalRate = (CSAMPLE)readerExtract->getRate();
-    CSAMPLE factor = DISPLAYRATE/signalRate;
+    CSAMPLE factor = 1.;
+    if (DISPLAYRATE<signalRate)
+        factor = DISPLAYRATE/signalRate;
 
     // Chunk size used in vertex buffer****************
     int chunkSize = factor*readerExtract->getBufferSize()/READCHUNK_NO; // = (int)(soundBuffer->getChunkSize()*factor);
@@ -62,6 +64,11 @@ GUIContainer::GUIContainer(ReaderExtract *readerExtract, ControlPotmeter *playpo
 
 GUIContainer::~GUIContainer()
 {
+}
+
+int GUIContainer::getId()
+{
+    return signal->getId();
 }
 
 GUISignal *GUIContainer::getSignal()

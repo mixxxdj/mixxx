@@ -24,7 +24,7 @@
 #include "guisignal.h"
 #include "signalvertexbuffer.h"
 
-QPtrList<GUIContainer> GUIChannel::list;
+int GUIChannel::channelTotal = 0;
 
 /**
  * Default Consructor.
@@ -32,6 +32,9 @@ QPtrList<GUIContainer> GUIChannel::list;
 
 GUIChannel::GUIChannel(Reader *_reader, ControlPotmeter *_playpos, VisualController *_controller)
 {
+    channelNo = channelTotal;
+    channelTotal++;
+
     reader = _reader;
     playpos = _playpos;
     controller = _controller;
@@ -42,6 +45,7 @@ GUIChannel::GUIChannel(Reader *_reader, ControlPotmeter *_playpos, VisualControl
 
 GUIChannel::~GUIChannel()
 {
+    channelTotal--;
 }
 
 bool GUIChannel::eventFilter(QObject *o, QEvent *e)
@@ -63,30 +67,37 @@ bool GUIChannel::eventFilter(QObject *o, QEvent *e)
     return TRUE;
 }
 
+void GUIChannel::zoom(int id)
+{
+    GUIContainer *c;
+    for (c = list.first(); c; c = list.next())
+        if (id==c->getId())
+            c->zoom();
+}
 
 SignalVertexBuffer *GUIChannel::add(ReaderExtract *readerExtract)
 {
     // Construct a new container
     GUIContainer *c = new GUIContainer(readerExtract, playpos);
 
-    if (list.isEmpty())
-    {
-        c->setBasepos(posx,32,0);
-        c->setZoompos(zoomposx,20,0);
-    }
-    else
-    {
-        c->setBasepos(posx,32,0);
-        c->setZoompos(zoomposx,-10,0);
-    }
+    qDebug("pos %i,%i",posx,30*(list.count()));
+    // Base y pos dependent on number of containers
+    c->setBasepos(posx,30*(list.count()),0);
 
-    // Add GUISignal to controller
-    controller->add(c->getSignal());
+    // Zoom y pos dependent on channel
+    if (channelNo==0)
+        c->setZoompos(zoomposx,20,0);
+    else
+        c->setZoompos(zoomposx,-10,0);
 
     // Append container to list
     list.append(c);
 
-    c->zoom();
+    // Add GUISignal to controller
+    controller->add(c->getSignal());
+
+    if (list.count()==1)
+        c->zoom();
     
     return c->getBuffer();
 }

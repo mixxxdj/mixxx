@@ -51,7 +51,7 @@ void ReaderExtractHFC::reset()
 
 void *ReaderExtractHFC::getBasePtr()
 {
-    return hfc;
+    return dhfc;
 }
 
 int ReaderExtractHFC::getRate()
@@ -76,6 +76,7 @@ void *ReaderExtractHFC::processChunk(const int idx, const int start_idx, const i
     {
         int i2 = i%frameNo;
         hfc[i2] = specList->at(i2)->getHFC();
+//        qDebug("hfc(%i) %f",i2,hfc[i2]);
     }
 
     dhfc[(idx*framePerChunk)%frameNo] = hfc[(idx*framePerChunk)%frameNo];
@@ -83,7 +84,7 @@ void *ReaderExtractHFC::processChunk(const int idx, const int start_idx, const i
     {
         int i2 = i%frameNo;
         dhfc[i2] = hfc[i2]-hfc[i2-i];
-//        qDebug("hfc(%i) %f",i2,dhfc[i2]);
+//        qDebug("dhfc(%i) %f",i2,dhfc[i2]);
     }    
         
     return (void *)&dhfc[idx];

@@ -45,15 +45,11 @@ bool MixxxVisual::eventFilter(QObject *o, QEvent *e)
     {
         QMouseEvent *m = (QMouseEvent *)e;
         int id = picking.pick(m->x(),m->y());
-
-        qDebug("picked %i",id);
-/*
-        GUIContainer *c = getContainer(id);
-        if (c!=0)
-            c->zoom();
-
-            *********
-*/
+//        qDebug("pick id %i",id);
+        
+        GUIChannel *c;
+        for (c = list.first(); c; c = list.next())
+            c->zoom(id);
     }
     else
     {

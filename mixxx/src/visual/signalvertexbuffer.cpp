@@ -62,27 +62,33 @@ SignalVertexBuffer::~SignalVertexBuffer()
  */ 
 void SignalVertexBuffer::update(int pos, int len)
 {
-//    soundbuffer->lockBuffer();
 //   qDebug("SignalVertexBuffer::update: pos %i, len %i",pos,len); 
-    CSAMPLE *source = &((CSAMPLE *)readerExtract->getBasePtr())[pos];
+    int buffersize = readerExtract->getBufferSize();
+    
+    // Get pos and len for this ReaderExtract buffer
+    CSAMPLE convertFactor = (CSAMPLE)READBUFFERSIZE/(CSAMPLE)buffersize;
+    int cpos = (int)((CSAMPLE)pos/(CSAMPLE)convertFactor);
+    int clen = (int)((CSAMPLE)len/(CSAMPLE)convertFactor);
+//    qDebug("pos %i, cpos %i",pos,cpos);
+        
+    CSAMPLE *source = &((CSAMPLE *)readerExtract->getBasePtr())[cpos];
 
-    GLfloat resampleFactor = (GLfloat)READCHUNKSIZE/(GLfloat)vertex->getChunkSize();
-    GLfloat *dest = &buffer[(int)(pos/resampleFactor)*3];
+    GLfloat resampleFactor = ((GLfloat)buffersize/(GLfloat)(vertex->getChunkSize()*READCHUNK_NO));
+    GLfloat *dest = &buffer[(int)(cpos/resampleFactor)*3];
 
-    for (int i=0; i<READCHUNKSIZE; i+=resampleFactor)
+    for (int i=0; i<readerExtract->getBufferSize()/READCHUNK_NO; i+=resampleFactor)
     {
         GLfloat val = 0;
         for (int j=i; j<i+resampleFactor; j++)
         {
             val += source[j]*(1./32768.);
         }
-//            qDebug("val: %f, resamplefactor: %f",val/resampleFactor,resampleFactor);
+//        if (resampleFactor ==1.)
+//            qDebug("idx: %i, val: %f, resamplefactor: %f",i,val/resampleFactor,resampleFactor);
         *dest++;
         *dest++ = val/resampleFactor;
         *dest++;
     }
-    
-//    soundbuffer->unlockBuffer();
 }
 
 /**
