@@ -90,6 +90,11 @@ MixxxView::MixxxView(QWidget *parent, bool bVisuals, QString qSkinPath) : QWidge
                 WKnob *p = new WKnob(this);
                 p->setup(node);
             }
+            else if (node.nodeName()=="Number")
+            {
+                WNumber *p = new WNumber(this);
+                p->setup(node);
+            }
             else if (node.nodeName()=="Display")
             {
                 WDisplay *p = new WDisplay(this);
@@ -192,6 +197,10 @@ MixxxView::MixxxView(QWidget *parent, bool bVisuals, QString qSkinPath) : QWidge
                     p->setPaletteForegroundColor(c);
                 }
 
+                // Alignment
+                if (!WWidget::selectNode(node, "Align").isNull() && WWidget::selectNodeQString(node, "Align")=="right")
+                    p->setAlignment(Qt::AlignRight);
+                
                 // Associate pointers
                 if (WWidget::selectNodeInt(node, "Channel")==1)
                     m_pTextCh1 = p;

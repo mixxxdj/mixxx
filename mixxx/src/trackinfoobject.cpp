@@ -111,18 +111,18 @@ void TrackInfoObject::AddElement( QDomDocument &doc, QDomElement &header,
 */
 void TrackInfoObject::Parse()
 {
-	if (m_sFilename.find('-') != -1)
-	{
-		m_sArtist = m_sFilename.section('-',0,0); // Get the first part
-		m_sTitle = m_sFilename.section('-',1,1); // Get the second part
-		m_sTitle = m_sTitle.section('.',0,-2); // Remove the ending
-		m_sType = m_sFilename.section('.',-1); // Get the ending
-	} 
-	else 
-	{
-		m_sTitle = m_sFilename.section('.',0,-2); // Remove the ending;
-		m_sType = m_sFilename.section('.',-1); // Get the ending
-	}
+    if (m_sFilename.find('-') != -1)
+    {
+        m_sArtist = m_sFilename.section('-',0,0); // Get the first part
+        m_sTitle = m_sFilename.section('-',1,1); // Get the second part
+        m_sTitle = m_sTitle.section('.',0,-2); // Remove the ending
+        m_sType = m_sFilename.section('.',-1); // Get the ending
+    } 
+    else 
+    {
+        m_sTitle = m_sFilename.section('.',0,-2); // Remove the ending;
+        m_sType = m_sFilename.section('.',-1); // Get the ending
+    }
 
     // Sort out obvíously wrong parsings:
     if ((m_sArtist.length() < 3) || (m_sTitle < 3))
@@ -131,8 +131,8 @@ void TrackInfoObject::Parse()
         m_sArtist = ' ';
     }
 
-	// Find the length:
-	m_iLength = QFileInfo( m_sFilepath + '/' + m_sFilename ).size();
+    // Find the length:
+    m_iLength = QFileInfo( m_sFilepath + '/' + m_sFilename ).size();
 
     // Add no comment
     m_sComment = QString("");

@@ -8,7 +8,7 @@
  <SliderComposed>
   <Handle>crosshandle-on-.png</Handle>
   <Slider>crossslider-off-.png</Slider>
-  <Pos>390,462</Pos>
+  <Pos>400,462</Pos>
   <Horizontal>true</Horizontal>
   <Connection>
    <ConfigKey>[Master],crossfader</ConfigKey>
@@ -146,8 +146,8 @@
  </SliderComposed>
 
  <SliderComposed>
-  <Handle>ratehandle-on-Ch2.png</Handle>
-  <Slider>rateslider-off-Ch2.png</Slider>
+  <Handle>volhandle-on-Ch2.png</Handle>
+  <Slider>volslider-off-Ch2.png</Slider>
   <Pos>896,517</Pos>
   <Horizontal>false</Horizontal>
   <Connection>
@@ -482,18 +482,65 @@
  <Text>
   <Channel>1</Channel>
   <Pos>139,0</Pos>
-  <Size>300,50</Size>
-  <FgColor>#000000</FgColor>
+  <Size>373,50</Size>
+  <FgColor>#606060</FgColor>
   <BgColor>#ffffff</BgColor>
  </Text>
 
  <Text>
   <Channel>2</Channel>
-  <Pos>512,0</Pos>
-  <Size>300,50</Size>
-  <FgColor>#000000</FgColor>
+  <Pos>513,0</Pos>
+  <Size>373,50</Size>
+  <FgColor>#606060</FgColor>
   <BgColor>#ffffff</BgColor>
+  <Align>right</Align>
  </Text>
+
+ <Number>
+  <Pos>144,350</Pos>
+  <Size>100,20</Size>
+  <Text>BPM: </Text>
+  <NumberOfDigits>6</NumberOfDigits>
+  <BgColor>#ffffff</BgColor>
+  <FgColor>#606060</FgColor>
+  <Connection>
+   <ConfigKey>[Channel1],bpm</ConfigKey>
+  </Connection>
+ </Number>
+
+ <Number>
+  <Pos>623,350</Pos>
+  <Size>100,20</Size>
+  <Text>BPM: </Text>
+  <NumberOfDigits>6</NumberOfDigits>
+  <BgColor>#ffffff</BgColor>
+  <FgColor>#606060</FgColor>
+  <Connection>
+   <ConfigKey>[Channel2],bpm</ConfigKey>
+  </Connection>
+ </Number>
+
+ <SliderComposed>
+  <Handle>playpos-marker1.png</Handle>
+  <Slider>playpos-slider.png</Slider>
+  <Pos>144,375</Pos>
+  <Horizontal>true</Horizontal>
+  <Connection>
+   <ConfigKey>[Channel1],playposition</ConfigKey>
+   <EmitOnDownPress>false</EmitOnDownPress>
+  </Connection>
+ </SliderComposed>
+
+ <SliderComposed>
+  <Handle>playpos-marker2.png</Handle>
+  <Slider>playpos-slider.png</Slider>
+  <Pos>623,375</Pos>
+  <Horizontal>true</Horizontal>
+  <Connection>
+   <ConfigKey>[Channel2],playposition</ConfigKey>
+   <EmitOnDownPress>false</EmitOnDownPress>
+  </Connection>
+ </SliderComposed>
 
  <TrackTable>
   <Pos>139,512</Pos>

@@ -18,8 +18,9 @@
 #ifndef WNUMBER_H
 #define WNUMBER_H
 
-#include <qlcdnumber.h>
 #include "wwidget.h"
+#include <qlabel.h>
+
 /**
   *@author Tue & Ken Haste Andersen
   */
@@ -29,13 +30,16 @@ class WNumber : public WWidget  {
 public: 
     WNumber(QWidget *parent=0, const char *name=0);
     ~WNumber();
+    void setup(QDomNode node);
     void move(int, int);
     void setFixedSize(int, int);
     void setNumDigits(int);
 public slots:
     void setValue(double dValue);
 private:
-    QLCDNumber *m_pLCD;
+    QLabel *m_pLabel;
+    QString m_qsText;
+    int m_iNoDigits;
 };
 
 #endif
