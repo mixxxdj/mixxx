@@ -58,7 +58,7 @@ DlgPreferences::DlgPreferences(MixxxApp *mixxx, MixxxView *view,
     connect(this,        SIGNAL(aboutToShow()),          wmidi,     SLOT(slotUpdate()));
     connect(this,        SIGNAL(aboutToShow()),          wplaylist, SLOT(slotUpdate()));
     connect(this,        SIGNAL(aboutToShow()),          wcontrols, SLOT(slotUpdate()));
-    connect(this,        SIGNAL(closeDlg()),             wsound,    SLOT(slotApply()));
+//    connect(this,        SIGNAL(closeDlg()),             wsound,    SLOT(slotApply()));
     connect(this,        SIGNAL(closeDlg()),             wmidi,     SLOT(slotApply()));
     connect(this,        SIGNAL(closeDlg()),             wplaylist, SLOT(slotApply()));
     connect(this,        SIGNAL(closeDlg()),             wcontrols, SLOT(slotApply()));
