@@ -103,7 +103,7 @@ class MixxxApp : public QMainWindow
     void slotEditCopy();
     /** paste the clipboard into the document*/
     void slotEditPaste();
-    /** toggle the toolbar*/
+    /** toggle the toolbar */
     void slotViewToolBar(bool toggle);
     /** toggle the statusbar*/
     void slotViewStatusBar(bool toggle);
@@ -112,8 +112,10 @@ class MixxxApp : public QMainWindow
     void slotHelpAbout();
 
 	/** Change of file to play */
-	void slotChangePlay(int,int,int, const QPoint &);
-    void slotChangePlay(QListViewItem *item);
+	//void slotChangePlay(int,int,int, const QPoint &);
+    void slotChangePlay_1();
+    void slotChangePlay_2();
+    void slotSelectPlay(QListViewItem *item, const QPoint &pos, int);
 
   private:
 
@@ -134,6 +136,10 @@ class MixxxApp : public QMainWindow
     MidiObject *midi;
     ControlObject *control;
 	std::vector<EngineObject *> engines;
+
+    /** Popup menu used to select player when a track has been selected */
+    QPopupMenu *playSelectMenu;
+    QString selection;
 
     /** file_menu contains all items of the menubar entry "File" */
     QPopupMenu *fileMenu;

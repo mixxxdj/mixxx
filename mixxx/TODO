@@ -1,6 +1,5 @@
 - GUI controls: wheel, new knob gfx
 - Reverse volume sliders
-- Change tracks, QPopupMenu
 - Tune bandwidth parameter of EngineFilterRBJ
 
 Future options:
