@@ -37,6 +37,7 @@
 #include "wnumber.h"
 #include "wnumberpos.h"
 #include "wnumberbpm.h"
+#include "wnumberrate.h"
 #include "wvisualwaveform.h"
 #include "wvisualsimple.h"
 
@@ -130,6 +131,21 @@ MixxxView::MixxxView(QWidget *parent, bool bVisualsWaveform, QString qSkinPath, 
                     m_pNumberPosCh2 = new WNumberPos("[Channel2]", this);
                     m_pNumberPosCh2->setup(node);
                     m_qWidgetList.append(m_pNumberPosCh2);
+                }
+            }
+            else if (node.nodeName()=="NumberRate")
+            {
+                if (WWidget::selectNodeInt(node, "Channel")==1)
+                {
+                    WNumberRate *p = new WNumberRate("[Channel1]", this);
+                    p->setup(node);
+                    m_qWidgetList.append(p);
+                }
+                else if (WWidget::selectNodeInt(node, "Channel")==2)
+                {
+                    WNumberRate *p = new WNumberRate("[Channel2]", this);
+                    p->setup(node);
+                    m_qWidgetList.append(p);
                 }
             }
             else if (node.nodeName()=="Display")

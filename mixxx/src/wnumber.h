@@ -36,6 +36,7 @@ public:
     void setFixedSize(int, int);
     void setNumDigits(int);
     void setAlignment(int);
+    void setConstFactor(double);
 
 public slots:
     void setValue(double dValue);
@@ -47,6 +48,8 @@ protected:
     int m_iNoDigits;
     /** Foreground and background colors */
     QColor m_qFgColor, m_qBgColor;
+    /** Constant factor added to value */
+    double m_dConstFactor;
 };
 
 #endif
