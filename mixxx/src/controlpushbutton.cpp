@@ -57,7 +57,7 @@ void ControlPushButton::setAccelUp(const QKeySequence key)
         m_pAccel->setEnabled(true);
     }
     else    
-        qWarning("Error setting up keybard accelerator: Parent widget is not set in ControlObject");
+        qWarning("Error setting up keyboard accelerator: Parent widget is not set in ControlObject");
 }
 
 void ControlPushButton::setAccelDown(const QKeySequence key)
