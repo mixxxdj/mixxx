@@ -142,6 +142,8 @@ template <class ValueType> void ConfigObject<ValueType>::reopen(QString file)
 
 template <class ValueType> void ConfigObject<ValueType>::Save()
 {
+    return;
+    
     QFile file(filename);
     if (!file.open(IO_WriteOnly| IO_Translate))
     {
@@ -151,19 +153,22 @@ template <class ValueType> void ConfigObject<ValueType>::Save()
     else
     {
         QTextStream stream(&file);
-        
+
         ConfigOption<ValueType> *it;
-        QString grp = 0;
+        QString grp = "";
         for (it = list.first(); it; it = list.next())
         {
+            //qDebug("group: %s, item %s, val %s",it->key->group.latin1(), it->key->item.latin1(),it->val->value.latin1());
             if (it->key->group != grp)
             {
                 grp = it->key->group;
-                stream << "\n" << it->key->group.ascii() << "\n";
+                stream << "\n" << it->key->group << "\n";
             }
-            stream << it->key->item.ascii() << " " << it->val->value.ascii() << "\n";
+            stream << it->key->item << " " << it->val->value << "\n";
         }
         file.close();
+        if (file.status()!=IO_Ok)
+            qDebug("Error while writing configuration file.");
     }
 }
 

@@ -288,13 +288,10 @@ void DlgPrefControls::slotApply()
         m_pConfig->set(ConfigKey("[Controls]","RateDir"), ConfigValue(0));
     else
         m_pConfig->set(ConfigKey("[Controls]","RateDir"), ConfigValue(1));
-
-    // Save preferences
-    m_pConfig->Save();
 }
 
 
-                                                                                                 
+
 
 
 

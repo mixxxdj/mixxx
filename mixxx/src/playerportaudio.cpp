@@ -99,11 +99,11 @@ bool PlayerPortAudio::open(QString nameMaster, QString nameHead, int srate, int 
 {
     chMaster = _chMaster;
     chHead   = _chHead;
-    
+
     // Adjust bufferSize and number of buffers
     int bufferNo     = 2;
     MasterBufferSize = bufferSizeMaster/bufferNo;
-    
+
     // Extract bit information
     PaSampleFormat format = 16;
     switch (bits)
@@ -125,7 +125,7 @@ bool PlayerPortAudio::open(QString nameMaster, QString nameHead, int srate, int 
         if (chMaster == chHead)
             return false;
     }
-    
+
     // Get id's of devices
     int masterID = getDeviceID(nameMaster);
     if (masterID == -1) return false;
@@ -151,7 +151,7 @@ bool PlayerPortAudio::open(QString nameMaster, QString nameHead, int srate, int 
         chNoMaster = max(_chMaster,_chHead)+1;
         HeadPerMasterBuffer = 1;
     }
-    
+
     // Open master device stream
     if (!open(masterID,&streamMaster,srate,format,chNoMaster,MasterBufferSize/chNoMaster,bufferNo,paCallback))
         return false;
@@ -169,14 +169,16 @@ bool PlayerPortAudio::open(QString nameMaster, QString nameHead, int srate, int 
         }
 
     opendev = true;
-    
+
     return true;
 }
 
 bool PlayerPortAudio::open(int id, PortAudioStream **stream, int srate, PaSampleFormat format, int chNo, int bufferSize, int bufferNo, PortAudioCallback *callback)
 {
+
     // Try to open device 5 times before giving up!
-//    qDebug("Device id: %i",id);
+    //qDebug("id %i, sr %i, format %i, ch %i, bufsize %i, bufno %i",id,srate, format, chNo, bufferSize, bufferNo);
+
     PaError err = 0;
     {for (int i=0; i<5; i++)
     {

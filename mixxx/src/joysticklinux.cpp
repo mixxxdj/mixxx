@@ -27,13 +27,13 @@ JoystickLinux::~JoystickLinux(){
 }
 
 
-int JoystickLinux::opendev(){
-
+int JoystickLinux::opendev()
+{
     char joydevice[50];  // device name
     int joystick_no;
 
     joystick_no=0;
-  
+
     sprintf(joydevice, "/dev/js%i", joystick_no);
 
     // open joystick device
