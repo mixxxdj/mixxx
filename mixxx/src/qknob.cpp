@@ -51,7 +51,7 @@
 #include "qknob/knob30.xpm"
 #include "qknob/knob31.xpm"
 
-QKnob::QKnob(QWidget *parent, const char *name ) : QDial(parent,name)
+QKnob::QKnob(QWidget *parent, const char *name ) : QDial(0,127,1,64,parent,name)
 {
 	button00 = new QPixmap(knob0_xpm);
 	button01 = new QPixmap(knob1_xpm);
@@ -138,44 +138,44 @@ void QKnob::repaintScreen(const QRect *cr=0)
 	int range = (maxValue()-minValue());
 	int val = value()*32/range;
 
-	//qDebug("Value: %i (%p)",val,cr);
+	qDebug("Value: %i (%p)",val,cr);
 
 	QPixmap *b = button00;
 	switch (val)
 	{
-		case 15: b = button00; break;
-		case 16: b = button01; break;
-		case 17: b = button02; break;
-		case 18: b = button03; break;
-		case 19: b = button04; break;
-		case 20: b = button05; break;
-		case 21: b = button06; break;
-		case 22: b = button07; break;
-		case 23: b = button08; break;
-		case 24: b = button09; break;
-		case 25: b = button10; break;
-		case 26: b = button11; break;
-		case 27: b = button12; break;
-		case 28: b = button13; break;
-		case 29: b = button14; break;
-		case 30: b = button15; break;
-		case 31: b = button16; break;
-		case 32: b = button16; break;
+		case 15: b = button31; break;
+		case 16: b = button00; break;
+		case 17: b = button01; break;
+		case 18: b = button02; break;
+		case 19: b = button03; break;
+		case 20: b = button04; break;
+		case 21: b = button05; break;
+		case 22: b = button06; break;
+		case 23: b = button07; break;
+		case 24: b = button08; break;
+		case 25: b = button09; break;
+		case 26: b = button10; break;
+		case 27: b = button11; break;
+		case 28: b = button12; break;
+		case 29: b = button13; break;
+		case 30: b = button14; break;
+		case 31: b = button15; break;
+		case 32: b = button15; break;
 		case  0: b = button17; break;
-		case  1: b = button18; break;
-		case  2: b = button19; break;
-		case  3: b = button20; break;
-		case  4: b = button21; break;
-		case  5: b = button22; break;
-		case  6: b = button23; break;
-		case  7: b = button24; break;
-		case  8: b = button25; break;
-		case  9: b = button26; break;
-		case 10: b = button27; break;
-		case 11: b = button28; break;
-		case 12: b = button29; break;
-		case 13: b = button30; break;
-		case 14: b = button31; break;
+		case  1: b = button17; break;
+		case  2: b = button18; break;
+		case  3: b = button19; break;
+		case  4: b = button20; break;
+		case  5: b = button21; break;
+		case  6: b = button22; break;
+		case  7: b = button23; break;
+		case  8: b = button24; break;
+		case  9: b = button25; break;
+		case 10: b = button26; break;
+		case 11: b = button27; break;
+		case 12: b = button28; break;
+		case 13: b = button29; break;
+		case 14: b = button30; break;
 	}
 	bitBlt(this,repaintRect->topLeft(),b,src);
 }
