@@ -2,8 +2,8 @@
                           trackinfoobject.cpp  -  description
                              -------------------
     begin                : 10 02 2003
-    copyright            : (C) 2003 by Tue & Ken Haste Andersen, Ingo Kossyk
-    email                : haste@diku.dk, kossyki@cs.tu-berlin.de
+    copyright            : (C) 2003 by Tue & Ken Haste Andersen
+    email                : haste@diku.dk
  ***************************************************************************/
 
 /***************************************************************************
@@ -509,3 +509,15 @@ void TrackInfoObject::setId(int iId)
 {
     m_iId = iId;
 }
+
+TrackInfoObject *TrackInfoObject::getNext()
+{
+    if (m_pTableTrack)
+    {
+        WTrackTableItem *p = (WTrackTableItem *)m_pTableTrack->item(m_pTableItemArtist->row()+1,0);
+        if (p)
+            return p->getTrackInfoObject();
+    }
+    return 0;
+}
+

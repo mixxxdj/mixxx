@@ -2,8 +2,8 @@
                           trackinfoobject.h  -  description
                              -------------------
     begin                : 10 02 2003
-    copyright            : (C) 2003 by Tue & Ken Haste Andersen, Ingo Kossyk
-    email                : haste@diku.dk, kossyki@cs.tu-berlin.de
+    copyright            : (C) 2003 by Tue & Ken Haste Andersen
+    email                : haste@diku.dk
  ***************************************************************************/
 
 /***************************************************************************
@@ -113,6 +113,9 @@ public:
     int getId();
     /** Set id */
     void setId(int iId);
+    /** Return the next track as listed in WTrackTable */
+    TrackInfoObject *getNext();
+
 
 private:
     /** Method for parsing information from knowing only the file name.

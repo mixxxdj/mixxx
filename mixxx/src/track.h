@@ -24,6 +24,7 @@ class EngineBuffer;
 class MixxxView;
 class WTrackTable;
 class WTreeList;
+class ControlObject;
 
 // This define sets the version of the tracklist. If any code is changed or
 // bugfixed, this number should be increased. If TRACK_VERSION is larger
@@ -64,6 +65,10 @@ public slots:
     void slotLoadPlayer1(TrackInfoObject *pTrackInfoObject);
     /** Load the given track in player 2 */
     void slotLoadPlayer2(TrackInfoObject *pTrackInfoObject);
+    /** Slot used when playback reaches end of track */
+    void slotEndOfTrackPlayer1(double);
+    /** Slot used when playback reaches end of track */
+    void slotEndOfTrackPlayer2(double);
 
 private slots:
     /** Load the active track in player 1 */
@@ -98,6 +103,11 @@ private:
     EngineBuffer *m_pBuffer1, *m_pBuffer2;
     /** Pointer to TrackInfoObject's of current loaded tracks */
     TrackInfoObject *m_pTrackPlayer1, *m_pTrackPlayer2;
+    /** Pointer to ControlObject signalling end of track */
+    ControlObject *m_pEndOfTrackCh1, *m_pEndOfTrackCh2;
+    /** Pointer to ControlObject dertermining end of track mode */
+    ControlObject *m_pEndOfTrackModeCh1, *m_pEndOfTrackModeCh2;
+
 };
 
 #endif
