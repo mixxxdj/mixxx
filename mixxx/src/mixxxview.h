@@ -25,13 +25,14 @@
 
 // application specific includes
 #include "mixxxdoc.h"
-#include "dlgplaycontrol.h"
-#include "dlgchannel.h"
-#include "dlgplaylist.h"
-#include "dlgmaster.h"
-#include "dlgcrossfader.h"
-#include "dlgsplit.h"
-#include "dlgflanger.h"
+class DlgPlaycontrol;
+class DlgChannel;
+class DlgPlaylist;
+class DlgMaster;
+class DlgCrossfader;
+class DlgSplit;
+class DlgFlanger;
+class DlgTracklist;
 
 /**
  * This class provides an incomplete base for your application view. 
@@ -50,6 +51,7 @@ class MixxxView : public QWidget
     DlgCrossfader *crossfader;
     DlgSplit *split;
     DlgFlanger *flanger;
+	DlgTracklist *tracklist;
 
   protected slots:
     void slotDocumentChanged();

@@ -19,15 +19,17 @@ public:
 
 	bool m_bExist; // Flag which determines if the file exist or not.
 	QString m_sFilename;
-private:
-	void AddElement( QDomDocument &, QDomElement &, QString, QString );
-	void CheckFileExists();
-
+	QString m_sFilepath;
 	QString m_sArtist;
 	QString m_sTitle;
 	QString m_sType;
 	QString m_sDuration;
-    int m_iDurationSeconds;
+	QString m_sBitrate;
+	int m_iTimesPlayed;
+
+private:
+	void AddElement( QDomDocument &, QDomElement &, QString, QString );
+	void CheckFileExists();
 
 };
 
