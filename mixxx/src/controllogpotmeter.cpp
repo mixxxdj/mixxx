@@ -62,7 +62,7 @@ void ControlLogpotmeter::setValueFromWidget(double dValue)
     // Calculate the value linearly:
     if (!m_bTwoState)
     {
-        m_dValue = pow(10, m_fB1*dValue) - 1;
+        m_dValue = pow(10., (double)(m_fB1*dValue)) - 1;
     }
     else
     {

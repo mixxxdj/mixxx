@@ -30,11 +30,11 @@ WindowKaiser::WindowKaiser(int _size, CSAMPLE beta)
     CSAMPLE t = besseli(beta);
     for (int k=0; k<size; k++)
     {
-        window[k] = besseli(2.*beta/m*sqrt(k*(m-k)))/t;
+        window[k] = besseli(2.f*beta/m*sqrt((float)(k*(m-k))))/t;
         afactor += window[k];
     }
 
-    afactor = 2./afactor;
+    afactor = 2.f/afactor;
 }
 
 WindowKaiser::~WindowKaiser()
