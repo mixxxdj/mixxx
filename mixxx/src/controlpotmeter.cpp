@@ -59,6 +59,7 @@ void ControlPotmeter::setRange(double dMinValue, double dMaxValue)
 void ControlPotmeter::setValueFromWidget(double dValue)
 {
     m_dValue = m_dMinValue + (dValue/127.)*m_dValueRange;
+
     updateFromWidget();
 }
 

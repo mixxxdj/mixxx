@@ -58,7 +58,7 @@ ControlObject::~ControlObject()
 
 bool ControlObject::connectControls(ConfigKey src, ConfigKey dest)
 {
-qDebug("unfinished");
+    qDebug("unfinished");
 /*
     // Find src object
     ControlObject *pSrc = 0;
