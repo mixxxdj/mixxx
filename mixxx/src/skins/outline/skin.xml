@@ -1009,19 +1009,22 @@
   </Connection>
  </SliderComposed>
  
- <TreeList>
+ <Splitter>
   <Pos>139,512</Pos>
-  <Size>200,255</Size>
+  <Size>745,255</Size>
+ </Splitter>
+
+ <TreeList>
+  <InSplitter>Yes</InSplitter>
   <FgColor>#000000</FgColor>
   <BgColor>#ffffff</BgColor>
   <ColWidthName>20</ColWidthName>
   <ColWidthType>20</ColWidthType>
   <ColWidthFullPath>180</ColWidthFullPath>
-  </TreeList>
- 
+ </TreeList>
+
  <TrackTable>
-  <Pos>340,512</Pos>
-  <Size>545,255</Size>
+  <InSplitter>Yes</InSplitter>
   <FgColor>#000000</FgColor>
   <BgColor>#ffffff</BgColor>
   <BgColorRowEven>#ffffff</BgColorRowEven>

@@ -35,6 +35,7 @@ class WKnob;
 class WVisual;
 class WNumberPos;
 class QDomNode;
+class QSplitter;
 
 /**
  * This class provides an incomplete base for your application view.
@@ -55,7 +56,7 @@ public:
     WTrackTable *m_pTrackTable;
     WTreeList *m_pTreeList;
 
-	QLabel *m_pTextCh1, *m_pTextCh2;
+    QLabel *m_pTextCh1, *m_pTextCh2;
     /** Pointer to WVisual widgets */
     QObject *m_pVisualCh1, *m_pVisualCh2;
     /** Pointer to absolute file position widgets */
@@ -64,6 +65,8 @@ public:
     WSliderComposed *m_pSliderRateCh1, *m_pSliderRateCh2;
     /** Allow dynamic zoom on visuals */
     bool m_bZoom;
+    /** Pointer to splitter widget. May be used to split tree and track list */
+    QSplitter *m_pSplitter;
 
 private:
     // True if m_pVisualChX is instantiated as WVisualWaveform

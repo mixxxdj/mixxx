@@ -80,18 +80,24 @@ void WTrackTable::setTrackList(TrackList* list){
 void WTrackTable::setup(QDomNode node)
 {
     // Position
-    QString pos = WWidget::selectNodeQString(node, "Pos");
-    int x = pos.left(pos.find(",")).toInt();
-    int y = pos.mid(pos.find(",")+1).toInt();
-    move(x,y);
+    if (!WWidget::selectNode(node, "Pos").isNull())
+    {
+        QString pos = WWidget::selectNodeQString(node, "Pos");
+        int x = pos.left(pos.find(",")).toInt();
+        int y = pos.mid(pos.find(",")+1).toInt();
+        move(x,y);
+    }
 
     // Size
-    QString size = WWidget::selectNodeQString(node, "Size");
-    x = size.left(size.find(",")).toInt();
-    y = size.mid(size.find(",")+1).toInt();
-    setFixedSize(x,y);
-	resizeContents(x,y);
-	
+    if (!WWidget::selectNode(node, "Size").isNull())
+    {
+        QString size = WWidget::selectNodeQString(node, "Size");
+        int x = size.left(size.find(",")).toInt();
+        int y = size.mid(size.find(",")+1).toInt();
+        setFixedSize(x,y);
+        resizeContents(x,y);
+    }
+
     // Background color
     if (!WWidget::selectNode(node, "BgColor").isNull())
     {
