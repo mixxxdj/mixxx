@@ -72,10 +72,20 @@ PlayerALSA::PlayerALSA(int size) : Player(size)
 
     qDebug("Using ALSA. Buffer size : %i samples.",BUFFER_SIZE/2);
 	allocate();
+
+	// Allocate semaphore to stop playback
+	requestStop = new QSemaphore(1);
 }
 
 PlayerALSA::~PlayerALSA()
 {
+	qDebug("dealloc buffer");
+	if (running())
+	{
+		qDebug("Stopping buffer");
+		stop();
+	}
+
 	// Close audio device
 	snd_pcm_close(handle);
 
@@ -102,10 +112,17 @@ void PlayerALSA::start(EngineBuffer *_reader)
 
 void PlayerALSA::stop()
 {
+	qDebug("Request stop");
+	requestStop->operator++(1);
+	qDebug("Waiting for thread to stop: %i",requestStop->total());
+	wait();
+	requestStop->operator--(1);
+
+	qDebug("drain audio");
+
 	// Stop audio
 	snd_pcm_playback_drain(handle);
 
-	QThread::wait();
 	// Terminate synth thread
 	//pthread_cancel(p_thread);
 
@@ -128,14 +145,14 @@ void PlayerALSA::run()
 	int res = 0;
 	int BUFFER_SIZE_BYTES = BUFFER_SIZE*SAMPLE_SIZE;
 	//std::cout << "Starting playback thread\n" << flush;
-	while (res == 0) {
+	while ((res == 0) && (requestStop->available()))
+	{
 		res = prepareBuffer();
 		if ((res == 0) && (snd_pcm_write(handle,out_buffer,BUFFER_SIZE_BYTES)
-						   != BUFFER_SIZE_BYTES)) {
+						   != BUFFER_SIZE_BYTES))
 			qFatal("Error writing samples to hardware %i",res);
-			std::exit(-1);
-		}   	
 	}
+	qDebug("Leaving thread");
 }
 
 void PlayerALSA::rt_priority()

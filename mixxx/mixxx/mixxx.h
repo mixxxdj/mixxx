@@ -34,6 +34,7 @@
 #include <qfiledialog.h>
 #include <qprinter.h>
 #include <qpainter.h>
+#include <qpoint.h>
 
 // application specific includes
 #include "mixxxview.h"
@@ -103,6 +104,9 @@ class MixxxApp : public QMainWindow
 
     /** shows an about dlg*/
     void slotHelpAbout();
+
+	/** Change of file to play */
+	void slotChangePlay(int,int,int, const QPoint &);
 
 
   private:

@@ -20,13 +20,14 @@
 #endif
 
 #include <qaccel.h>
+#include <qpushbutton.h>
+#include <qtable.h>
+
 #include "mixxx.h"
 #include "filesave.xpm"
 #include "fileopen.xpm"
 #include "filenew.xpm"
 #include "controlpushbutton.h"
-#include <qpushbutton.h>
-#include <semaphore.h>
 #include "playeralsa.h"
 #include "playerportaudio.h"
 
@@ -44,6 +45,11 @@ MixxxApp::MixxxApp()
   initDoc();
   initView();
 
+  // Connect play list table selection with "play new file"
+  connect(view->playlist->TableList, SIGNAL(clicked(int,int,int,const QPoint &)),
+          this,                      SLOT(slotChangePlay(int,int,int, const QPoint &)));
+
+
   viewToolBar->setOn(true);
   viewStatusBar->setOn(true);
 
@@ -55,10 +61,7 @@ MixxxApp::MixxxApp()
   midi = new MidiObject();
 
   qDebug("Init engine...");
-  buffer = new EngineBuffer(view->playcontrol, view->channel, /*view->messages,*/
-			    midi, "test.wav");
-  qDebug("Engine inited");
-
+  buffer = new EngineBuffer(view->playcontrol, view->channel, midi, "test.wav");
   buffer->start();
 
   // Start audio
@@ -418,3 +421,17 @@ void MixxxApp::slotHelpAbout()
                       tr("Mixxx\nVersion " VERSION "\n(c) 2002 by Tue and Ken Haste Andersen") );
 }
 
+void MixxxApp::slotChangePlay(int row,int col,int button, const QPoint &)
+{
+	// stop playback and deallocate buffer
+	player->stop();
+	delete buffer;
+	
+	// Allocate buffer using new filename
+    buffer = new EngineBuffer(view->playcontrol, view->channel, midi,
+							  view->playlist->TableList->item(row,1)->text());
+
+	// Start buffer and playback
+	buffer->start();
+	player->start(buffer);
+}
