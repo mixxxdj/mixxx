@@ -45,7 +45,7 @@ CGUISignal::CGUISignal(CSignalVertexBuffer *_buffer, CFastVertexArray *vertex, c
  */
 void CGUISignal::setPlayPosMarkerMaterial(CMaterial * material)
 {
-	playPosMarkerMaterial = material;
+    playPosMarkerMaterial = material;
 };
 
 
@@ -54,7 +54,7 @@ void CGUISignal::setPlayPosMarkerMaterial(CMaterial * material)
  */
 void CGUISignal::setBoxMaterial(CMaterial * material)
 {
-	boxMaterial = material;
+    boxMaterial = material;
 };
 
 void CGUISignal::setBoxWireMaterial(CMaterial * material)
@@ -65,17 +65,19 @@ void CGUISignal::setBoxWireMaterial(CMaterial * material)
 /**
  *
  */
-void CGUISignal::setSignalMaterial(CMaterial * material){
-  preSignal.setMaterial(material);
-  postSignal.setMaterial(material);
-  signal.setMaterial(material);
+void CGUISignal::setSignalMaterial(CMaterial * material)
+{
+    preSignal.setMaterial(material);
+    postSignal.setMaterial(material);
+    signal.setMaterial(material);
 };
 
 /**
  *
  */
-void CGUISignal::setFishEyeSignalMaterial(CMaterial * material){
-  fishEyeSignal.setMaterial(material);
+void CGUISignal::setFishEyeSignalMaterial(CMaterial * material)
+{
+    fishEyeSignal.setMaterial(material);
 };
 
 /**
@@ -86,96 +88,95 @@ void CGUISignal::setFishEyeSignalMaterial(CMaterial * material){
  *
  * @param mode     The render mode.
  */
-void CGUISignal::draw(GLenum mode){
+void CGUISignal::draw(GLenum mode)
+{
+    doLayout();
 
-  doLayout();
-
-  bufInfo b = buffer->getVertexArray();
+    bufInfo b = buffer->getVertexArray();
 
   
-  if(fishEyeMode)
-  {
-	  int nfish =     (b.len1+b.len2)*fishEyeSignalFraction;
-	  int noutside = ((b.len1+b.len2)-nfish)/2;
-//	  int n = ((b.len1+b.len2)/3)+1;
-    bufInfo i1, i2, i3;
+    if(fishEyeMode)
+    {
+        int nfish =     (b.len1+b.len2)*fishEyeSignalFraction;
+        int noutside = ((b.len1+b.len2)-nfish)/2;
+//      int n = ((b.len1+b.len2)/3)+1;
+        bufInfo i1, i2, i3;
 
-    i1.p1 = b.p1;
-    i1.p2 = b.p2;
-    i1.len1 = max(0,min(b.len1, noutside));
-    i1.len2 = noutside-i1.len1;
-    //std::cout << "i1: len1: " << i1.len1 << ", len2: " << i1.len2 << "\n";
+        i1.p1 = b.p1;
+        i1.p2 = b.p2;
+        i1.len1 = max(0,min(b.len1, noutside));
+        i1.len2 = noutside-i1.len1;
+        //std::cout << "i1: len1: " << i1.len1 << ", len2: " << i1.len2 << "\n";
 
-    i2.p1 = i1.p1+noutside*3;
-    i2.p2 = i1.p2+(i1.len2*3);
-    i2.len1 = max(0,min(b.len1-noutside,nfish));
-    i2.len2 = nfish-i2.len1;
-    //std::cout << "i2: len1: " << i2.len1 << ", len2: " << i2.len2 << "\n";
+        i2.p1 = i1.p1+noutside*3;
+        i2.p2 = i1.p2+(i1.len2*3);
+        i2.len1 = max(0,min(b.len1-noutside,nfish));
+        i2.len2 = nfish-i2.len1;
+        //std::cout << "i2: len1: " << i2.len1 << ", len2: " << i2.len2 << "\n";
 
-    i3.p1 = i2.p1+nfish*3;
-    i3.p2 = i2.p2+(i2.len2*3);
-    i3.len1 = max(0,min(b.len1-nfish-noutside,noutside));
-    i3.len2 = noutside-i3.len1;
-    //std::cout << "i3: len1: " << i3.len1 << ", len2: " << i3.len2 << "\n";
+        i3.p1 = i2.p1+nfish*3;
+        i3.p2 = i2.p2+(i2.len2*3);
+        i3.len1 = max(0,min(b.len1-nfish-noutside,noutside));
+        i3.len2 = noutside-i3.len1;
+        //std::cout << "i3: len1: " << i3.len1 << ", len2: " << i3.len2 << "\n";
 
-    preSignal.setVertexArray(i1);
-    fishEyeSignal.setVertexArray(i2);
-    postSignal.setVertexArray(i3);
+        preSignal.setVertexArray(i1);
+        fishEyeSignal.setVertexArray(i2);
+        postSignal.setVertexArray(i3);
 
-    preSignal.draw(mode);
-    postSignal.draw(mode);
-    fishEyeSignal.draw(mode);
-  }
-  else
-  {
-    signal.setVertexArray(b);
-    signal.draw(mode);
-  }
+        preSignal.draw(mode);
+        postSignal.draw(mode);
+        fishEyeSignal.draw(mode);
+    }
+    else
+    {
+        signal.setVertexArray(b);
+        signal.draw(mode);
+    }
 
-  if (boxWireMaterial)
-	  box.setMaterial(boxWireMaterial);
-  box.setDrawMode(GL_LINE_LOOP);
-  box.draw(mode);
+    if (boxWireMaterial)
+        box.setMaterial(boxWireMaterial);
+    box.setDrawMode(GL_LINE_LOOP);
+    box.draw(mode);
 
-  if (boxMaterial)
-	  box.setMaterial(boxMaterial);
-  box.setDrawMode(GL_POLYGON);
-  box.draw(mode);
-
-
-  if (playPosMarkerMaterial)
-	  playPosMarker.setMaterial(playPosMarkerMaterial);
-  playPosMarker.setDrawMode(GL_POLYGON);
-  playPosMarker.draw(mode);
+    if (boxMaterial)
+        box.setMaterial(boxMaterial);
+    box.setDrawMode(GL_POLYGON);
+    box.draw(mode);
 
 
-
+    if (playPosMarkerMaterial)
+        playPosMarker.setMaterial(playPosMarkerMaterial);
+    playPosMarker.setDrawMode(GL_POLYGON);
+    playPosMarker.draw(mode);
 }
 
 /**
  * The Drawing Method.
  * Currently there is no need for any drawing.
  */
-void CGUISignal::draw(){};
-
+void CGUISignal::draw()
+{
+};
 
 /**
  * Set Origo.
  */
-void CGUISignal::setOrigo(float ox, float oy,float oz){
-  this->ox = ox;
-  this->oy = oy;
-  this->oz = oz;
+void CGUISignal::setOrigo(float ox, float oy,float oz)
+{
+    this->ox = ox;
+    this->oy = oy;
+    this->oz = oz;
 };
 
 float CGUISignal::getOrigoX()
 {
-	return ox;
+    return ox;
 }
 
 float CGUISignal::getOrigoY()
 {
-	return oy;
+    return oy;
 }
 
 float CGUISignal::getOrigoZ()
@@ -245,7 +246,7 @@ void CGUISignal::setHeight(float height)
 
 float CGUISignal::getHeight()
 {
-	return height;
+    return height;
 }
 
 /**
@@ -258,7 +259,7 @@ void CGUISignal::setDepth(float depth)
 
 float CGUISignal::getDepth()
 {
-	return depth;
+    return depth;
 }
 
 
@@ -307,7 +308,9 @@ void CGUISignal::doLayout()
     box.setDepth(depth);
     box.setRotation(angle,rx,ry,rz);
 
-  }else{
+  }
+  else
+  {
 
     signal.setOrigo(ox,oy,oz);
     signal.setLength(length);

@@ -65,5 +65,5 @@ void EnginePreProcess::process(int idx)
 {
     specList.at(idx)->process(soundbuffer->getWindowPtr(idx),0);
     hfc[idx] = specList.at(idx)->getHFC();    
-    qDebug("hfc: %f",hfc[idx]);
+    //qDebug("hfc: %f",hfc[idx]);
 }

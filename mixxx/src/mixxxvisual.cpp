@@ -42,12 +42,12 @@ bool MixxxVisual::eventFilter(QObject *o, QEvent *e)
     if (e->type() == QEvent::MouseButtonPress)
     {
         QMouseEvent *m = (QMouseEvent *)e;
-		int id = picking.pick(m->x(),m->y());
-		if (id==1) id=1;
-		if (id==2) id=1;
-		if (id==3) id=2;
-		if (id==4) id=2;
-		GUIContainer *c = getContainer(id);
+        int id = picking.pick(m->x(),m->y());
+        if (id==1) id=1;
+        if (id==2) id=1;
+        if (id==3) id=2;
+        if (id==4) id=2;
+        GUIContainer *c = getContainer(id);
         if (c!=0)
             c->zoom();
     }
