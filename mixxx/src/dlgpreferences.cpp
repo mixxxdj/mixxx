@@ -62,7 +62,7 @@ DlgPreferences::DlgPreferences(MixxxApp *mixxx, MixxxView *view,
     connect(this,        SIGNAL(closeDlg()),             wmidi,     SLOT(slotApply()));
     connect(this,        SIGNAL(closeDlg()),             wplaylist, SLOT(slotApply()));
     connect(this,        SIGNAL(closeDlg()),             wcontrols, SLOT(slotApply()));
-    connect(wplaylist,   SIGNAL(apply(QString)),         tracklist, SLOT(slotUpdateTracklist(QString)));
+    connect(wplaylist,   SIGNAL(apply(QString,QString)),         tracklist->wTree, SLOT(slotSetDirs(QString,QString)));
 }
 
 DlgPreferences::~DlgPreferences()
@@ -78,4 +78,3 @@ bool DlgPreferences::eventFilter(QObject *o, QEvent *e)
     // Standard event processing
     return QWidget::eventFilter(o,e);
 }
-

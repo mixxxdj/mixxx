@@ -23,6 +23,7 @@
 #include <qtooltip.h>
 #include <qevent.h>
 
+#include "wtreelist.h"
 #include "configobject.h"
 #include "controlobject.h"
 #include "wtracktable.h"
@@ -271,6 +272,13 @@ MixxxView::MixxxView(QWidget *parent, bool bVisualsWaveform, QString qSkinPath, 
                 m_pTrackTable->setup(node);
                 m_qWidgetList.append(m_pTrackTable);
             }
+			else if (node.nodeName()=="TreeList")
+			{
+				qDebug("Constructing TreeList");
+				m_pTreeList = new WTreeList(this,tr("TreeList"));
+				m_pTreeList->setup(node);
+				//Here the TreeList view should be instantiated
+			}
 
         }
         node = node.nextSibling();
@@ -309,4 +317,3 @@ bool MixxxView::compareConfigKeys(QDomNode node, QString key)
     }
     return false;    
 }
-

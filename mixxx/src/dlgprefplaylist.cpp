@@ -26,7 +26,9 @@ DlgPrefPlaylist::DlgPrefPlaylist(QWidget *parent, ConfigObject<ConfigValue> *_co
 
     // Connection
     connect(PushButtonBrowsePlaylist, SIGNAL(clicked()),       this,      SLOT(slotBrowseDir()));
-    connect(LineEditSongfiles,        SIGNAL(returnPressed()), this,      SLOT(slotApply()));
+    connect(PushButtonBrowsePlaydir, SIGNAL(clicked()),        this,      SLOT(slotBrowsePlaydir()));
+	connect(LineEditSongfiles,        SIGNAL(returnPressed()), this,      SLOT(slotApply()));
+	connect(LineEditPlaylistfiles,    SIGNAL(returnPressed()), this,      SLOT(slotApply()));
 }
 
 DlgPrefPlaylist::~DlgPrefPlaylist()
@@ -37,6 +39,7 @@ void DlgPrefPlaylist::slotUpdate()
 {
     // Song path
     LineEditSongfiles->setText(config->getValueString(ConfigKey("[Playlist]","Directory")));
+	LineEditPlaylistfiles->setText(config->getValueString(ConfigKey("[Playlist]","Listpath")));
 }
 
 void DlgPrefPlaylist::slotBrowseDir()
@@ -50,10 +53,21 @@ void DlgPrefPlaylist::slotBrowseDir()
         slotApply();
     }
 }
-
+void DlgPrefPlaylist::slotBrowsePlaydir()
+{
+    QFileDialog* fd = new QFileDialog(config->getValueString(ConfigKey("[Playlist]","Listpath")),QString::null, this, QString::null, TRUE );
+    fd->setMode( QFileDialog::AnyFile);
+    fd->setCaption("Choose directory with Playlist files");
+    if ( fd->exec() == QDialog::Accepted )
+    {
+        LineEditPlaylistfiles->setText( fd->selectedFile() );
+        slotApply();
+    }
+}
 void DlgPrefPlaylist::slotApply()
 {
-    // Update playlist if path has changed
+    
+	// Update playlist if path has changed
     if (LineEditSongfiles->text() != config->getValueString(ConfigKey("[Playlist]","Directory")))
     {
         // Check for valid directory and put up a dialog if invalid!!!
@@ -64,7 +78,17 @@ void DlgPrefPlaylist::slotApply()
         config->Save();
 
         // Emit apply signal
-        emit(apply(LineEditSongfiles->text()));
+        emit(apply(LineEditSongfiles->text(),LineEditPlaylistfiles->text()));
+    }else  if (LineEditPlaylistfiles->text() != config->getValueString(ConfigKey("[Playlist]","Listpath")))
+    {
+        // Check for valid directory and put up a dialog if invalid!!!
+
+        config->set(ConfigKey("[Playlist]","Listpath"), LineEditPlaylistfiles->text());
+
+        // Save preferences
+        config->Save();
+
+        // Emit apply signal
+        emit(apply(LineEditSongfiles->text(),LineEditPlaylistfiles->text()));
     }
 }
-

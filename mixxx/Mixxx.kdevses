@@ -1,58 +1,7 @@
-<?xml version = '1.0' encoding = 'UTF-8'?>
+<?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE KDevPrjSession>
 <KDevPrjSession>
- <DocsAndViews NumberOfDocuments="10" >
-  <Doc0 NumberOfViews="1" URL="file:/home/haste/cvs/mixxx/src/player.h" >
-   <View0 line="61" Type="???" >
-    <AdditionalSettings/>
-   </View0>
-  </Doc0>
-  <Doc1 NumberOfViews="1" URL="file:/home/haste/cvs/mixxx/src/player.cpp" >
-   <View0 line="44" Type="???" >
-    <AdditionalSettings/>
-   </View0>
-  </Doc1>
-  <Doc2 NumberOfViews="1" URL="file:/home/haste/cvs/mixxx/src/playerjack.cpp" >
-   <View0 line="70" Type="???" >
-    <AdditionalSettings/>
-   </View0>
-  </Doc2>
-  <Doc3 NumberOfViews="1" URL="file:/home/haste/cvs/mixxx/src/playerjack.h" >
-   <View0 line="40" Type="???" >
-    <AdditionalSettings/>
-   </View0>
-  </Doc3>
-  <Doc4 NumberOfViews="1" URL="file:/home/haste/cvs/mixxx/src/dlgprefsound.h" >
-   <View0 line="45" Type="???" >
-    <AdditionalSettings/>
-   </View0>
-  </Doc4>
-  <Doc5 NumberOfViews="1" URL="file:/home/haste/cvs/mixxx/src/dlgprefsound.cpp" >
-   <View0 line="0" Type="???" >
-    <AdditionalSettings/>
-   </View0>
-  </Doc5>
-  <Doc6 NumberOfViews="1" URL="file:/home/haste/cvs/mixxx/src/playerportaudio.h" >
-   <View0 line="46" Type="???" >
-    <AdditionalSettings/>
-   </View0>
-  </Doc6>
-  <Doc7 NumberOfViews="1" URL="file:/home/haste/cvs/mixxx/src/playerportaudio.cpp" >
-   <View0 line="62" Type="???" >
-    <AdditionalSettings/>
-   </View0>
-  </Doc7>
-  <Doc8 NumberOfViews="1" URL="file:/home/haste/cvs/mixxx/src/mixxx.h" >
-   <View0 line="65" Type="???" >
-    <AdditionalSettings/>
-   </View0>
-  </Doc8>
-  <Doc9 NumberOfViews="1" URL="file:/home/haste/cvs/mixxx/src/mixxx.cpp" >
-   <View0 line="258" Type="???" >
-    <AdditionalSettings/>
-   </View0>
-  </Doc9>
- </DocsAndViews>
+ <DocsAndViews NumberOfDocuments="0" />
  <pluginList>
   <kdevbookmarks>
    <bookmarks/>
