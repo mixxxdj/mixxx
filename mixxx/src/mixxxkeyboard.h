@@ -40,7 +40,7 @@ private:
     /** List containing keys which is currently pressed */
     QValueList<int> m_qActiveKeyList;
     /** Pointer to control object */
-    ControlObject *m_pControl
+    ControlObject *m_pControl;
 };
 
 #endif
