@@ -70,22 +70,6 @@ win32 {
     }
 }
 
-# DEPRECATED!     ( 19/12/2003, J_Zar)
-# unix {
-#     # Check if we can link against libjack:
-#     system(ld -ljack 2> /dev/null):HAS_JACK=FALSE
-#     count(HAS_JACK,1) {
-#         DEFINES += __JACK__
-#         SOURCES += playerjack.cpp
-#         HEADERS += playerjack.h
-#         LIBS += -ljack
-#         message("Compiling with Jack support")
-#     }
-#     isEmpty(HAS_JACK) {
-#         message("Did not find Jack libraries.")
-#     }
-# }
-
 # OSS Midi (Working good, Linux specific)
 unix:!macx:SOURCES += midiobjectoss.cpp
 unix:!macx:HEADERS += midiobjectoss.h
@@ -121,9 +105,6 @@ CONFIG += opengl
 # MP3
 count(LINLIBPATH, 1) {
     unix:!macx:LIBS += $$LINLIBPATH/libs/libmad.a $$LINLIBPATH/libs/libid3tag.a
-# DEPRECATED!     ( 19/12/2003, J_Zar)
-# } else {
-#     unix:!macx:LIBS += -lmad -lid3tag
 }
 win32:LIBS += libmad-release.lib libid3tag-release.lib
 macx:LIBS += $$MACLIBPATH/lib/libmad.a $$MACLIBPATH/lib/libid3tag.a
@@ -138,9 +119,6 @@ unix:SOURCES += soundsourceaudiofile.cpp
 unix:HEADERS += soundsourceaudiofile.h
 count(LINLIBPATH, 1) {
     unix:!macx:LIBS += $$LINLIBPATH/libs/libaudiofile.a
-# DEPRECATED!     ( 19/12/2003, J_Zar)
-# } else {
-#     unix:!macx:LIBS += -laudiofile
 }
 win32:SOURCES += soundsourcesndfile.cpp
 win32:HEADERS += soundsourcesndfile.h
@@ -151,9 +129,6 @@ macx:LIBS += $$MACLIBPATH/lib/libaudiofile.a
 # Ogg Vorbis
 count(LINLIBPATH, 1) {
     unix:!macx:LIBS += $$LINLIBPATH/libs/libvorbisfile.a $$LINLIBPATH/libs/libvorbis.a $$LINLIBPATH/libs/libogg.a
-# DEPRECATED!     ( 19/12/2003, J_Zar)
-# } else {
-#     unix:!macx:LIBS += -lvorbisfile -lvorbis -logg
 }
 win32:LIBS += vorbisfile_static.lib vorbis_static.lib ogg_static.lib
 macx:LIBS += $$MACLIBPATH/lib/libvorbis.a $$MACLIBPATH/lib/libvorbisfile.a $$MACLIBPATH/lib/libogg.a
@@ -177,9 +152,6 @@ unix:!macx:HEADERS += joysticklinux.h
 # FFT
  count(LINLIBPATH, 1) {
      unix:!macx:LIBS += $$LINLIBPATH/libs/libsrfftw.a $$LINLIBPATH/libs/libsfftw.a
-# DEPRECATED!     ( 19/12/2003, J_Zar)
-#  } else {
-#     unix:!macx:LIBS += -lsrfftw -lsfftw
 }
 win32:LIBS += rfftw2st-release.lib fftw2st-release.lib
 macx:LIBS += $$MACLIBPATH/lib/librfftw.a $$MACLIBPATH/lib/libfftw.a
@@ -200,14 +172,14 @@ unix:!macx {
   COMPILER = $$system(echo $QMAKESPEC)
   contains(COMPILER, linux-icc) {
     message("Using Intel compiler")
-    QMAKE_CXXFLAGS += -rcd -tpp6 -xiMK # icc pentium III
+#    QMAKE_CXXFLAGS += -rcd -tpp6 -xiMK # icc pentium III
 #    QMAKE_CXXFLAGS += -rcd -tpp7 -xiMKW # icc pentium IV
 #    QMAKE_CXXFLAGS += -prof_gen # generete profiling
 #    QMAKE_CXXFLAGS += -prof_use # use profiling
     QMAKE_CXXFLAGS += -w1 #-Wall
     # icc Profiling
-#    QMAKE_CXXFLAGS_DEBUG += -qp -g
-#    QMAKE_LFLAGS_DEBUG += -qp -g
+    QMAKE_CXXFLAGS_DEBUG += -qp -g
+    QMAKE_LFLAGS_DEBUG += -qp -g
   }
 
   # if PREFIX is defined by the user, we use it! ( 19/12/2003, J_Zar)
@@ -236,12 +208,12 @@ count(LINLIBPATH,1) {
 }
 
 # GCC Compiler optimization flags
-  QMAKE_CXXFLAGS += -march=pentium3 -O3 -pipe
-  QMAKE_CFLAGS   += -march=pentium3 -O3 -pipe
+  QMAKE_CXXFLAGS += -pg -march=pentium3 -O3 -pipe
+  QMAKE_CFLAGS   += -pg -march=pentium3 -O3 -pipe
 
 # gcc Profiling
-#  QMAKE_CXXFLAGS_DEBUG += -pg
-#  QMAKE_LFLAGS_DEBUG += -pg
+  QMAKE_CXXFLAGS_DEBUG += -pg
+  QMAKE_LFLAGS_DEBUG += -pg
 }
 
 win32 {
