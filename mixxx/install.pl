@@ -43,6 +43,7 @@ if ($#out<0)
 # Copy mixxx binary to $BASE/bin
 `install -m 755 -d $BASE/bin`;
 `install -m 755 src/mixxx $BASE/bin`;
+`install -m 755 src/mixxx-without-jack $BASE/bin`;
 
 # Copy doc files
 `install -m 755 -d $BASE/share/doc/mixxx-1.2`;
@@ -52,4 +53,9 @@ if ($#out<0)
 `install -m 644 Configuration.txt $BASE/share/doc/mixxx-1.2`;
 
 printf("Install finished\n");
-
+printf("\n");
+printf("Start Mixxx by writing mixxx at the command prompt.\n");
+printf("If you do not have Jack installed this will probably fail\n");
+printf("but you can then use the command mixxx-without-jack to\n");
+printf("start Mixxx without Jack support.\n");
+printf("\n");
