@@ -20,17 +20,19 @@
 /* -------- ------------------------------------------------------
    Purpose: Creates a new logarithmic potmeter, where the value is
             given by: value = a*10^(b*midibyte) - 1. The lower value
-	    is set by _minvalue, and for midibyte=64, the value
-	    is 1.
+	    is 0, for midibyte=64 the value is 1 and the upper 
+	    value is set by maxvalue.
    Input:   n - name
 	    midino - number of the midi controller.
 	    midicontroller - pointer to the midi controller.
    -------- ------------------------------------------------------ */
 ControlLogpotmeter::ControlLogpotmeter(char* n, int _midino, MidiObject *_midi,
-				       FLOAT _minvalue=-0.9) : ControlPotmeter(n,_midino,_midi) {
-  a = _minvalue+1;
-  b = -2*log10(a)/(FLOAT)maxPosition;
-  qDebug("%g %g",a,b);
+				       FLOAT _maxvalue=5) : ControlPotmeter(n,_midino,_midi) {
+    a = 1;
+    b = log10(2)/middlePosition;
+    b2 = log10((_maxvalue+1)/2)/middlePosition;
+    a2 = 2*pow(10, -middlePosition*b);
+    //qDebug("%g %g",a,b);
 }
 
 /* -------- ------------------------------------------------------
@@ -49,8 +51,14 @@ void ControlLogpotmeter::slotSetPosition(int _newpos)
   // Ensure that the position is within bounds:
   position = std::max(minPosition,std::min(newpos, maxPosition));
   // Calculate the value linearly:
-  value = a*pow(10, b*(FLOAT)newpos) - 1;
+  if (newpos <= middlePosition)
+      value = a*pow(10, b*(FLOAT)newpos) - 1;
+  else
+      value = a2*pow(10, b2*(FLOAT)newpos) - 1;
+
   qDebug("Logpotmeter, midi:%i value:%g", _newpos, value);
 
   emit valueChanged(value);
 }
+
+

@@ -24,7 +24,7 @@ ldadd=-laudiofile -lmad -lpthread -lasound -lportaudio $(LIB_QT)
 ldflags=
 
 [General]
-AMChanged=false
+AMChanged=true
 author=Tue and Ken Haste Andersen
 configure_args=--enable-mt
 email=

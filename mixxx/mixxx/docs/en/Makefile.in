@@ -1,4 +1,3 @@
-# KDE tags expanded automatically by am_edit - $Revision: 37 $ 
 # Makefile.in generated automatically by automake 1.4-p5 from Makefile.am
 
 # Copyright (C) 1994, 1995-8, 1999, 2001 Free Software Foundation, Inc.
@@ -21,10 +20,6 @@ top_srcdir = @top_srcdir@
 VPATH = @srcdir@
 prefix = @prefix@
 exec_prefix = @exec_prefix@
-#>- 
-bindir = @bindir@
-#>+ 3
-DEPDIR = .deps
 
 bindir = @bindir@
 sbindir = @sbindir@
@@ -225,24 +220,14 @@ CONFIG_CLEAN_FILES =
 DIST_COMMON =  Makefile.am Makefile.in
 
 
-#>- DISTFILES = $(DIST_COMMON) $(SOURCES) $(HEADERS) $(TEXINFOS) $(EXTRA_DIST)
-#>+ 4
-KDE_DIST=index.sgml 
-
-DISTFILES= $(DIST_COMMON) $(SOURCES) $(HEADERS) $(TEXINFOS) $(EXTRA_DIST) $(KDE_DIST)
-
+DISTFILES = $(DIST_COMMON) $(SOURCES) $(HEADERS) $(TEXINFOS) $(EXTRA_DIST)
 
 TAR = tar
 GZIP_ENV = --best
-#>- all: all-redirect
-#>+ 1
-all: docs-am  all-redirect
+all: all-redirect
 .SUFFIXES:
 $(srcdir)/Makefile.in: Makefile.am $(top_srcdir)/configure.in $(ACLOCAL_M4) 
-#>- 	cd $(top_srcdir) && $(AUTOMAKE) --gnu mixxx/docs/en/Makefile
-#>+ 2
 	cd $(top_srcdir) && $(AUTOMAKE) --gnu mixxx/docs/en/Makefile
-	cd $(top_srcdir) && perl admin/am_edit mixxx/docs/en/Makefile.in
 
 Makefile: $(srcdir)/Makefile.in  $(top_builddir)/config.status $(BUILT_SOURCES)
 	cd $(top_builddir) \
@@ -313,9 +298,7 @@ mostlyclean: mostlyclean-am
 
 clean-am:  clean-generic mostlyclean-am
 
-#>- clean: clean-am
-#>+ 1
-clean: kde-rpo-clean  clean-am
+clean: clean-am
 
 distclean-am:  distclean-generic clean-am
 	-rm -f libtool
@@ -337,103 +320,32 @@ maintainer-clean-generic clean mostlyclean distclean maintainer-clean
 
 
 install-data-local:
-#>- 	$(mkinstalldirs) $(prefix)/doc/mixxx/
-#>+ 1
-	$(mkinstalldirs) $(DESTDIR)$(prefix)/doc/mixxx/
-#>- 	$(INSTALL_DATA) $(srcdir)/index.html $(prefix)/doc/mixxx/index.html
-#>+ 1
-	$(INSTALL_DATA) $(srcdir)/index.html $(DESTDIR)$(prefix)/doc/mixxx/index.html
-#>- 	$(mkinstalldirs) $(prefix)/doc/mixxx/
-#>+ 1
-	$(mkinstalldirs) $(DESTDIR)$(prefix)/doc/mixxx/
-#>- 	$(INSTALL_DATA) $(srcdir)/index-1.html $(prefix)/doc/mixxx/index-1.html
-#>+ 1
-	$(INSTALL_DATA) $(srcdir)/index-1.html $(DESTDIR)$(prefix)/doc/mixxx/index-1.html
-#>- 	$(mkinstalldirs) $(prefix)/doc/mixxx/
-#>+ 1
-	$(mkinstalldirs) $(DESTDIR)$(prefix)/doc/mixxx/
-#>- 	$(INSTALL_DATA) $(srcdir)/index-2.html $(prefix)/doc/mixxx/index-2.html
-#>+ 1
-	$(INSTALL_DATA) $(srcdir)/index-2.html $(DESTDIR)$(prefix)/doc/mixxx/index-2.html
-#>- 	$(mkinstalldirs) $(prefix)/doc/mixxx/
-#>+ 1
-	$(mkinstalldirs) $(DESTDIR)$(prefix)/doc/mixxx/
-#>- 	$(INSTALL_DATA) $(srcdir)/index-3.html $(prefix)/doc/mixxx/index-3.html
-#>+ 1
-	$(INSTALL_DATA) $(srcdir)/index-3.html $(DESTDIR)$(prefix)/doc/mixxx/index-3.html
-#>- 	$(mkinstalldirs) $(prefix)/doc/mixxx/
-#>+ 1
-	$(mkinstalldirs) $(DESTDIR)$(prefix)/doc/mixxx/
-#>- 	$(INSTALL_DATA) $(srcdir)/index-4.html $(prefix)/doc/mixxx/index-4.html
-#>+ 1
-	$(INSTALL_DATA) $(srcdir)/index-4.html $(DESTDIR)$(prefix)/doc/mixxx/index-4.html
-#>- 	$(mkinstalldirs) $(prefix)/doc/mixxx/
-#>+ 1
-	$(mkinstalldirs) $(DESTDIR)$(prefix)/doc/mixxx/
-#>- 	$(INSTALL_DATA) $(srcdir)/index-5.html $(prefix)/doc/mixxx/index-5.html
-#>+ 1
-	$(INSTALL_DATA) $(srcdir)/index-5.html $(DESTDIR)$(prefix)/doc/mixxx/index-5.html
-#>- 	$(mkinstalldirs) $(prefix)/doc/mixxx/
-#>+ 1
-	$(mkinstalldirs) $(DESTDIR)$(prefix)/doc/mixxx/
-#>- 	$(INSTALL_DATA) $(srcdir)/index-6.html $(prefix)/doc/mixxx/index-6.html
-#>+ 1
-	$(INSTALL_DATA) $(srcdir)/index-6.html $(DESTDIR)$(prefix)/doc/mixxx/index-6.html
+	$(mkinstalldirs) $(prefix)/doc/mixxx/
+	$(INSTALL_DATA) $(srcdir)/index.html $(prefix)/doc/mixxx/index.html
+	$(mkinstalldirs) $(prefix)/doc/mixxx/
+	$(INSTALL_DATA) $(srcdir)/index-1.html $(prefix)/doc/mixxx/index-1.html
+	$(mkinstalldirs) $(prefix)/doc/mixxx/
+	$(INSTALL_DATA) $(srcdir)/index-2.html $(prefix)/doc/mixxx/index-2.html
+	$(mkinstalldirs) $(prefix)/doc/mixxx/
+	$(INSTALL_DATA) $(srcdir)/index-3.html $(prefix)/doc/mixxx/index-3.html
+	$(mkinstalldirs) $(prefix)/doc/mixxx/
+	$(INSTALL_DATA) $(srcdir)/index-4.html $(prefix)/doc/mixxx/index-4.html
+	$(mkinstalldirs) $(prefix)/doc/mixxx/
+	$(INSTALL_DATA) $(srcdir)/index-5.html $(prefix)/doc/mixxx/index-5.html
+	$(mkinstalldirs) $(prefix)/doc/mixxx/
+	$(INSTALL_DATA) $(srcdir)/index-6.html $(prefix)/doc/mixxx/index-6.html
 
 uninstall-local:
-#>- 	-rm -f $(prefix)/doc/mixxx/index.html
-#>+ 1
-	-rm -f $(DESTDIR)$(prefix)/doc/mixxx/index.html
-#>- 	-rm -f $(prefix)/doc/mixxx/index-1.html
-#>+ 1
-	-rm -f $(DESTDIR)$(prefix)/doc/mixxx/index-1.html
-#>- 	-rm -f $(prefix)/doc/mixxx/index-2.html
-#>+ 1
-	-rm -f $(DESTDIR)$(prefix)/doc/mixxx/index-2.html
-#>- 	-rm -f $(prefix)/doc/mixxx/index-3.html
-#>+ 1
-	-rm -f $(DESTDIR)$(prefix)/doc/mixxx/index-3.html
-#>- 	-rm -f $(prefix)/doc/mixxx/index-4.html
-#>+ 1
-	-rm -f $(DESTDIR)$(prefix)/doc/mixxx/index-4.html
-#>- 	-rm -f $(prefix)/doc/mixxx/index-5.html
-#>+ 1
-	-rm -f $(DESTDIR)$(prefix)/doc/mixxx/index-5.html
-#>- 	-rm -f $(prefix)/doc/mixxx/index-6.html
-#>+ 1
-	-rm -f $(DESTDIR)$(prefix)/doc/mixxx/index-6.html
+	-rm -f $(prefix)/doc/mixxx/index.html
+	-rm -f $(prefix)/doc/mixxx/index-1.html
+	-rm -f $(prefix)/doc/mixxx/index-2.html
+	-rm -f $(prefix)/doc/mixxx/index-3.html
+	-rm -f $(prefix)/doc/mixxx/index-4.html
+	-rm -f $(prefix)/doc/mixxx/index-5.html
+	-rm -f $(prefix)/doc/mixxx/index-6.html
 
 ####### kdevelop will overwrite this part!!! (end)############
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
 .NOEXPORT:
-
-#>+ 2
-docs-am:
-
-#>+ 5
-force-reedit:
-		cd $(top_srcdir) && $(AUTOMAKE) --gnu mixxx/docs/en/Makefile
-	cd $(top_srcdir) && perl admin/am_edit mixxx/docs/en/Makefile.in
-
-
-#>+ 2
-final:
-	$(MAKE) all-am
-#>+ 2
-final-install:
-	$(MAKE) install-am
-#>+ 2
-no-final:
-	$(MAKE) all-am
-#>+ 2
-no-final-install:
-	$(MAKE) install-am
-#>+ 3
-cvs-clean:
-	$(MAKE) -f $(top_srcdir)/admin/Makefile.common cvs-clean
-
-#>+ 3
-kde-rpo-clean:
-	-rm -f *.rpo

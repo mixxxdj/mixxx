@@ -5,7 +5,7 @@
 
 #include "engineobject.h"
 #include "midiobject.h"
-#include "controlpotmeter.h"
+#include "controllogpotmeter.h"
 
 class EnginePregain : public EngineObject {
   Q_OBJECT
