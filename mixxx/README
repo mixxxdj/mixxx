@@ -49,6 +49,10 @@ tar -xvzf mixxx-1.x-i586.tar.gz
 cd mixxx-1.x
 ./install.pl
 
+You will need to have QT installed already, but the other 
+libs mentioned above is included in this binary version
+(statically linked).
+
 This will install the program in /usr/bin with midi configs
 and skins in /usr/share/mixxx. The placement of the skin,
 keyboard and midi configs can be changed in the users 

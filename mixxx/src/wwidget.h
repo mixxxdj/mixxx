@@ -20,7 +20,6 @@
 
 #include <qwidget.h>
 #include <qdom.h>
-#include "configobject.h"
 
 /**
   * Abstract class used in widgets connected to ControlObjects. Derived
@@ -61,6 +60,7 @@ signals:
     void valueChangedRightDown(double);
     void valueChangedRightUp(double);
 protected:
+    /** Value/state of widget */
     double m_fValue;
 
 private:

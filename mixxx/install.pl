@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 
-# Perl script for installing Mixxx on Linux. Set $BASE to dir where you
-# want Mixxx installed
+#
+# Perl script for installing Mixxx on Linux.
 # 
 # August 2003, Tue Haste Andersen <haste@diku.dk>
 #
