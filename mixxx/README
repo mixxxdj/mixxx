@@ -30,7 +30,7 @@ New since 0.9.2:
 - Loop and next-track play modes
 
 * REQUIREMENTS *********************************************
-Mixxx is based on the following libraries:
+Mixxx is depends on the following libraries:
 QT >= 3 
 libMAD
 libAudioFile
@@ -43,37 +43,49 @@ The Windows version uses libsndfile instead of libAudioFile.
 * INSTALL **************************************************
 You can either install Mixxx from binary, or from source.
 
-The binary linux version is distributed as an RPM file, and
-the Machitosh and Windows versions, installs by extracting 
-the downloaded file to a folder.
+*Linux:
+The linux version is distributed as package files (RPM),
+built for various distributions. To compile and install from 
+source use the following commands:
+cd src
+qmake mixxx.pro
+make
+cd ..
+./install.pl
+This will install the program in /usr/bin with midi configs
+and skins in /usr/share/mixxx. The placement of the skin and
+midi configs can be changed in the users ~/.mixxx.cfg file
+created after the first startup of the program. 
 
-The files in /usr/share/mixxx are definition files for 
-various MIDI based controllers are 
-placed in /usr/share/mixxx on Linux, and in subfolder of the 
-application called config on Windows and MacOS X. You can 
-change the placement of the default place to look for MIDI
-config files, by editing the variable CONFIG_PATH in 
-mixxx.pro when compiling from source. 
-
+*Mac and Windows:
+Extract the downloaded file to a folder and start the
+installation by double-clicking on the program.
+The midi configs and skins are placed in the application
+directory (application bundle on mac). A configuration
+file mixxx.cfg is written to the users home directory
+containing the Mixxx preferences as set in the preference
+panel.
 
 * RUN THE PROGRAM ******************************************
 Run the program by double clicking on the Mixxx application
-icon or typing mixxx at the prompt. Mixxx uses text based 
-configuration files. The first time it is started it 
-will create a directory, .mixxx in your home directory 
-containing the main configuration file mixxx.cfg. Most of 
-the options written to this file can be changed in the 
-preference dialog.
+icon or typing mixxx at the prompt (Linux).
 
 Mixxx can use any midi controller for input. More info 
-on the file format can be found on the home page. You can
-either place your definition files in /usr/share/mixxx
-(on linux) or in another directory of own choice. The 
-program searches for midi config files in the directory 
-listed in mixxx.cfg under [Midi] Configdir.
+on the file format can be found on the home page. Also
+you can make your own skins for Mixxx. Take a look at the
+skin.xml file for each of the two skins provided if you want
+to make your own.
 
+If you have any problems starting Mixxx, eg. after changeing
+options in the preference panel, you can reset the Mixxx
+configuration by deleting your mixxx.cfg file (.mixxx.cfg on
+Linux).
 
 * DEVELOPMENT **********************************************
 If you are interested in joining the development team of
-Mixxx you are most welcome.
+Mixxx you are most welcome. Also we are interested in
+hearing about how you use Mixxx, what features you would 
+like, if you have used any special midi controllers,
+designed your own skin etc.
+
 Send mail to mixxx-devel@lists.sourceforge.net.
