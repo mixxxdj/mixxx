@@ -138,6 +138,10 @@ void EngineBuffer::newtrack(const char* filename) {
   }
   char ending[80];
   strcpy(ending,&filename[i]);
+
+  playcontrol->textLabelTrack->setText("Opening file...");
+  playcontrol->repaint();
+  app->flush();
 #ifndef Q_WS_WIN
   if (!strcmp(ending,".wav"))
     file = new SoundSourceAFlibfile(filename);
@@ -149,16 +153,22 @@ void EngineBuffer::newtrack(const char* filename) {
   if (file==0) {
     qFatal("Error opening %s", filename);
   }
-  // Write to playcontrol:
-  QString title = QString("TITLE :") + filename;
-  playcontrol->textLabelTrack->setText(title);
-
   // Initialize position in read buffer:
   lastread_file.write(0.);
   playpos_file.write(0.);
   playpos_buffer.write(0.);
   // ...and read one chunk to get started:
   getchunk();
+
+  // Write to playcontrol:
+  QString title = QString("Title :") + filename + "\n\n";
+  int seconds = file->length()/(2*SRATE);
+  QString tmp;
+  tmp.sprintf("Length : %02d:%02d\n\n", seconds/60, seconds - 60*(seconds/60));
+  title += tmp;
+  title += "Type  : " + file->type;
+
+  playcontrol->textLabelTrack->setText(title);
 
   pause = false;
 }
@@ -237,7 +247,7 @@ void EngineBuffer::slotUpdateRate(FLOAT_TYPE)
         rate.write(0.);
     }
     else
-        rate.write(8*wheel->getValue());
+        rate.write(3*wheel->getValue());
     
     //qDebug("Rate value: %f, wheel value: %f",rate.read(),wheel->getValue());
     
@@ -373,7 +383,7 @@ CSAMPLE *EngineBuffer::process(const CSAMPLE *, const int buf_size)
             buffer[i]=0.;
     } else {
         long prev;
-        double myRate=rate.read();
+        double myRate=rate.read()*BASERATE;
         double myPlaypos_buffer = playpos_buffer.read();
         double myPlaypos_file = playpos_file.read();
 
@@ -396,23 +406,22 @@ CSAMPLE *EngineBuffer::process(const CSAMPLE *, const int buf_size)
                 buffer[i+1] = 0.;
             }
         }
-
         playpos_buffer.write(myPlaypos_buffer);
         playpos_file.write(myPlaypos_file);
-
-
     }
     
     if (!pause)
     {
         checkread();
-    
         // Check the wheel:
         wheel->updatecounter(buf_size,EngineObject::SRATE);
-
         // Write position to the gui:
         writepos();
     }
     
     return buffer;
 }
+
+
+
+
