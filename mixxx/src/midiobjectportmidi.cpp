@@ -17,7 +17,7 @@
 
 #include "midiobjectportmidi.h"
 
-MidiObjectPortMidi::MidiObjectPortMidi(ConfigObject *c, QApplication *a) : MidiObject(c,a)
+MidiObjectPortMidi::MidiObjectPortMidi(ConfigMIDI *c, QApplication *a) : MidiObject(c,a)
 {
     // Open midi device for input
     Pm_Initialize();

@@ -27,6 +27,7 @@ ConfigMapping::ConfigMapping()
 
 ConfigMapping::~ConfigMapping()
 {
+    delete cfg;
 }
 
 QStringList *ConfigMapping::getConfigurations()
@@ -81,3 +82,6 @@ ConfigObject *ConfigMapping::setConfiguration(const char *str)
     }
     return cfg;
 }
+
+
+

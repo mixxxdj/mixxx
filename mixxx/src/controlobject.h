@@ -19,8 +19,8 @@
 #define CONTROLOBJECT_H
 
 #include <qobject.h>
-#include "configobject.h"
-//#include "midiobject.h"
+#include "configmidi.h"
+
 class MidiObject;
 
 /**
@@ -36,9 +36,9 @@ public:
   ~ControlObject();
   QString *print();
 
-  ConfigObject::ConfigOption *cfgOption;
+  ConfigMIDI::ConfigOption *cfgOption;
 
-  static ConfigObject *config;
+  static ConfigMIDI *config;
   static MidiObject *midi;
 public slots:
   virtual void slotSetPosition(int) = 0;

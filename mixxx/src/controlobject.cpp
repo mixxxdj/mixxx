@@ -19,7 +19,7 @@
 #include "midiobject.h"
 
 // Static member variable definition
-ConfigObject *ControlObject::config = 0;
+ConfigMIDI *ControlObject::config = 0;
 MidiObject *ControlObject::midi = 0;
 
 ControlObject::ControlObject()
