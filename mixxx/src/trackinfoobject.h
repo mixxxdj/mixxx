@@ -133,6 +133,8 @@ private:
     /** WTrackTableItems are representations of the values actually shown in the WTrackTable */
     WTrackTableItem *m_pTableItemScore, *m_pTableItemTitle, *m_pTableItemArtist, *m_pTableItemComment, *m_pTableItemType,
                     *m_pTableItemDuration, *m_pTableItemBpm, *m_pTableItemBitrate, *m_pTableItemIndex;
+    /** Pointer to WTrackTable where the current item was inserted last */
+    WTrackTable *m_pTableTrack;
 };
 
 #endif

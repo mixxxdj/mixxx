@@ -39,6 +39,8 @@ TrackInfoObject::TrackInfoObject(const QString sPath, const QString sFile) : m_s
     m_pTableItemBitrate = 0;
     m_pTableItemIndex = 0;
 
+    m_pTableTrack = 0;
+
     // Check that the file exists:
     checkFileExists();
 
@@ -61,6 +63,7 @@ TrackInfoObject::TrackInfoObject(const QDomNode &nodeHeader)
     m_fBpmConfidence = selectNodeStr( nodeHeader, "BpmConfidence").toFloat();
     m_iScore = 0;
     m_iIndex = 0;
+    m_pTableTrack = 0;
 
     m_pTableItemScore = 0;
     m_pTableItemTitle = 0;
@@ -100,6 +103,7 @@ QString TrackInfoObject::selectNodeStr( const QDomNode &nodeHeader, const QStrin
 
 TrackInfoObject::~TrackInfoObject()
 {
+    removeFromTrackTable();
 
 }
 
@@ -147,25 +151,31 @@ void TrackInfoObject::addElement(QDomDocument &doc, QDomElement &header, QString
 
 void TrackInfoObject::insertInTrackTableRow(WTrackTable *pTableTrack, int iRow, int iTrackNo)
 {
+    m_iIndex = iTrackNo;
+
+    //removeFromTrackTable();
+
     // Construct elements to insert into the table, if they are not already allocated
-    if (!m_pTableItemScore)
+//    if (!m_pTableItemScore)
         m_pTableItemScore = new WTrackTableItem(pTableTrack,QTableItem::Never, getScoreStr(), typeNumber);
-    if (!m_pTableItemTitle)
+//    if (!m_pTableItemTitle)
         m_pTableItemTitle = new WTrackTableItem(pTableTrack,QTableItem::Never, m_sTitle, typeText);
-    if (!m_pTableItemArtist)
+//    if (!m_pTableItemArtist)
         m_pTableItemArtist = new WTrackTableItem(pTableTrack,QTableItem::Never, m_sArtist, typeText);
-    if (!m_pTableItemComment)
+//    if (!m_pTableItemComment)
         m_pTableItemComment = new WTrackTableItem(pTableTrack,QTableItem::WhenCurrent, m_sComment, typeText);
-    if (!m_pTableItemType)
+//    if (!m_pTableItemType)
         m_pTableItemType = new WTrackTableItem(pTableTrack,QTableItem::Never, m_sType, typeText);
-    if (!m_pTableItemDuration)
+//    if (!m_pTableItemDuration)
         m_pTableItemDuration = new WTrackTableItem(pTableTrack,QTableItem::Never, getDurationStr(), typeDuration);
-    if (!m_pTableItemBpm)
+//    if (!m_pTableItemBpm)
         m_pTableItemBpm = new WTrackTableItem(pTableTrack,QTableItem::Never, getBpmStr(), typeNumber);
-    if (!m_pTableItemBitrate)
+//    if (!m_pTableItemBitrate)
         m_pTableItemBitrate = new WTrackTableItem(pTableTrack,QTableItem::Never, getBitrateStr(), typeNumber);
-    if (!m_pTableItemIndex)
-        m_pTableItemIndex = new WTrackTableItem(pTableTrack,QTableItem::Never, QString("%1").arg(iTrackNo), typeText);
+//    if (!m_pTableItemIndex)
+        m_pTableItemIndex = new WTrackTableItem(pTableTrack,QTableItem::Never, QString("%1").arg(iTrackNo), typeNumber);
+
+    qDebug("inserting.. %p",pTableTrack->item(iRow, COL_SCORE));
 
     // Insert the elements into the table
     pTableTrack->setItem(iRow, COL_SCORE, m_pTableItemScore);
@@ -177,19 +187,25 @@ void TrackInfoObject::insertInTrackTableRow(WTrackTable *pTableTrack, int iRow, 
     pTableTrack->setItem(iRow, COL_BPM, m_pTableItemBpm);
     pTableTrack->setItem(iRow, COL_BITRATE, m_pTableItemBitrate);
     pTableTrack->setItem(iRow, COL_INDEX, m_pTableItemIndex);
+
+    m_pTableTrack = pTableTrack;
 }
 
 void TrackInfoObject::removeFromTrackTable()
 {
-    m_pTableItemScore = 0;
-    m_pTableItemTitle = 0;
-    m_pTableItemArtist = 0;
-    m_pTableItemComment = 0;
-    m_pTableItemType = 0;
-    m_pTableItemDuration = 0;
-    m_pTableItemBpm = 0;
-    m_pTableItemBitrate = 0;
-    m_pTableItemIndex = 0;
+    if (m_pTableTrack)
+    {
+        m_pTableTrack->takeItem(m_pTableItemScore);
+        m_pTableTrack->takeItem(m_pTableItemTitle);
+        m_pTableTrack->takeItem(m_pTableItemArtist);
+        m_pTableTrack->takeItem(m_pTableItemComment);
+        m_pTableTrack->takeItem(m_pTableItemType);
+        m_pTableTrack->takeItem(m_pTableItemDuration);
+        m_pTableTrack->takeItem(m_pTableItemBpm);
+        m_pTableTrack->takeItem(m_pTableItemBitrate);
+        m_pTableTrack->takeItem(m_pTableItemIndex);
+    }
+    m_pTableTrack = 0;
 }
 
 int TrackInfoObject::parse()
