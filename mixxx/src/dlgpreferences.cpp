@@ -58,7 +58,7 @@ DlgPreferences::DlgPreferences(QWidget *p, const char *name,
             ComboBoxMidiconf->insertItem((*it).left((*it).length()-9));
 
             if ((*it) == config->getValueString(ConfigKey("[Midi]","Configfile")))
-                ComboBoxMididevice->setCurrentItem(j);
+                ComboBoxMidiconf->setCurrentItem(j);
             j++;
         }
     }
@@ -330,6 +330,9 @@ void DlgPreferences::slotApply()
         config->set(ConfigKey("[Playlist]","Directory"), LineEditSongfiles->text());
         ((MixxxApp *)mixxx)->updatePlayList();
     }
+
+    // Save preferences
+    config->Save();
 }
 
 void DlgPreferences::slotSetPreferences()
