@@ -216,6 +216,11 @@ MixxxView::MixxxView(QWidget *parent, ControlObject *control, bool bVisualsWavef
                             m_pVisualCh1->installEventFilter(m_pKeyboard);
                             m_qWidgetList.append(m_pVisualCh1);
                             m_bVisualWaveform = true;
+
+                            if (!((WVisualWaveform *)m_pVisualCh1)->directRendering())
+                                QMessageBox::warning(0, "OpenGL Direct Rendering",
+                                                     "Direct redering is not enabled on your machine.\n\nThis means that the waveform displays will be very\nslow and take a lot of CPU time. Either update your\nconfiguration to enable direct rendering, or disable\nthe waveform displays in the control panel by\nselecting \"Simple\" under waveform displays.");
+
                         }
                         else
                         {

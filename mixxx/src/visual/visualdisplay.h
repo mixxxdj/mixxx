@@ -67,10 +67,11 @@ public:
     void move(int msec);
 
     void setColorSignal(float r, float g, float b);
+    void setColorHfc(float r, float g, float b);
     void setColorBeat(float r, float g, float b);
     void setColorMarker(float r, float g, float b);
     void setColorFisheye(float r, float g, float b);
-    
+
 public slots:
     /**
       * Toggles Fish Eye Mode between on and off.
@@ -124,11 +125,11 @@ protected:
 
     VisualDisplayBuffer *preSignal, *fishEyeSignal, *postSignal, *signal;
     VisualBuffer *m_pVisualBuffer;
-  
+
     ControlPotmeter *controlScaleLength;
 
     /** Materials */
-    Material m_materialSignal, m_materialMarker, m_materialBeat, m_materialFisheye;
+    Material m_materialSignal, m_materialHfc, m_materialMarker, m_materialBeat, m_materialFisheye;
 
     /** Unique id of signal */
     int id;
@@ -147,7 +148,7 @@ protected:
     bool                movement;
     /** True if box has to be drawn in fish eye mode */
     bool m_bDrawBox;
- 
+
 };
 #endif
 

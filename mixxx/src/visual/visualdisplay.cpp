@@ -1,7 +1,7 @@
 /***************************************************************************
                           visualdisplay.cpp  -  description
                              -------------------
-    copyright            : (C) 2002 by Tue and Ken Haste Andersen and Kenny 
+    copyright            : (C) 2002 by Tue and Ken Haste Andersen and Kenny
                                        Erleben
     email                :
  ***************************************************************************/
@@ -56,7 +56,7 @@ VisualDisplay::VisualDisplay(VisualBuffer *pVisualBuffer, const char *type, cons
 
     box = new VisualBox(id);
     m_bDrawBox = drawBox;
-                        
+
 //    setBoxWireMaterial(&m_materialBeat);
 
     if (QString(type)=="marks")
@@ -68,7 +68,7 @@ VisualDisplay::VisualDisplay(VisualBuffer *pVisualBuffer, const char *type, cons
         box->setMaterial(&m_materialBeat);
         playPosMarker = 0;
     }
-    else
+    else if (QString(type)=="signal")
     {
         fishEyeSignal->setMaterial(&m_materialSignal);
         preSignal->setMaterial(&m_materialSignal);
@@ -78,6 +78,17 @@ VisualDisplay::VisualDisplay(VisualBuffer *pVisualBuffer, const char *type, cons
         playPosMarker = new VisualBox(id);
         playPosMarker->setMaterial(&m_materialMarker);
     }
+    else if (QString(type)=="hfc")
+    {
+        qDebug("hfc");
+        fishEyeSignal->setMaterial(&m_materialHfc);
+        preSignal->setMaterial(&m_materialHfc);
+        postSignal->setMaterial(&m_materialHfc);
+        signal->setMaterial(&m_materialHfc);
+        box->setMaterial(&m_materialHfc);
+        playPosMarker = 0;
+    }
+    qDebug("type %s", type);
 
     doLayout();
 
@@ -289,7 +300,7 @@ void VisualDisplay::setSignalScaleHeight(double scale)
 
 void VisualDisplay::setSignalScaleLength(double scale)
 {
-    
+
 
     signalScaleLength = 1./(1.+(ControlObject::getControl(ConfigKey("[Channel1]","rate_dir"))->getValue()*scale));
 //    qDebug("scale input %f, actual %f",scale, signalScaleLength);
@@ -313,6 +324,26 @@ void VisualDisplay::setColorSignal(float r, float g, float b)
     m_materialSignal.specular[3] = 1.0f;
 
     m_materialSignal.shininess = 128;
+}
+
+void VisualDisplay::setColorHfc(float r, float g, float b)
+{
+    m_materialHfc.ambient[0] = r;
+    m_materialHfc.ambient[1] = g;
+    m_materialHfc.ambient[2] = b;
+    m_materialHfc.ambient[3] = 1.0f;
+
+    m_materialHfc.diffuse[0] = r;
+    m_materialHfc.diffuse[1] = g;
+    m_materialHfc.diffuse[2] = b;
+    m_materialHfc.diffuse[3] = 1.0f;
+
+    m_materialHfc.specular[0] = r;
+    m_materialHfc.specular[1] = g;
+    m_materialHfc.specular[2] = b;
+    m_materialHfc.specular[3] = 1.0f;
+
+    m_materialHfc.shininess = 128;
 }
 
 void VisualDisplay::setColorBeat(float r, float g, float b)
@@ -385,7 +416,7 @@ void VisualDisplay::doLayout()
     // Set length, position and offset of signal to be displayed
     float curLength = length*signalScaleLength*1.5;
     float curOx = ox+(length-curLength)/2;
-    
+
     if(fishEyeMode)
     {
         float fishEyeLength = fishEyeLengthScale*length;

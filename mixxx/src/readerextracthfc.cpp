@@ -17,8 +17,9 @@
 
 #include "readerextracthfc.h"
 #include "enginespectralfwd.h"
+#include "readerevent.h"
 
-ReaderExtractHFC::ReaderExtractHFC(ReaderExtract *input, int frameSize, int frameStep) : ReaderExtract(input, "signal")
+ReaderExtractHFC::ReaderExtractHFC(ReaderExtract *input, int frameSize, int frameStep) : ReaderExtract(input, "hfc")
 {
     frameNo = input->getBufferSize(); ///frameStep;
     framePerChunk = frameNo/READCHUNK_NO;
@@ -149,5 +150,9 @@ void *ReaderExtractHFC::processChunk(const int _idx, const int start_idx, const 
     for (int i=frameFromDHFC; i<=frameToDHFC; i++)
         dhfc[i%frameNo] = max(0.,hfc[(i+1)%frameNo]-hfc[i%frameNo]);
         
+    // Update vertex buffer by sending an event containing indexes of where to update.
+    if (m_pVisualBuffer != 0)
+        QApplication::postEvent(m_pVisualBuffer, new ReaderEvent(frameFromDHFC, frameToDHFC));
+
     return (void *)&dhfc[frameFromDHFC];
 }

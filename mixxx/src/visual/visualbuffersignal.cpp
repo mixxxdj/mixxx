@@ -42,7 +42,7 @@ void VisualBufferSignal::update(int iPos, int iLen)
         GLfloat fVal = 0;
         for (int j=(int)i; j<(int)(i+m_fResampleFactor); j+=32)
             fVal += pSource[j]*(1./32768.);
-        
+
         *pDest++;
         *pDest++ = 32.*fVal/m_fResampleFactor;
         *pDest++;
