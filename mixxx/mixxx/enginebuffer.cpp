@@ -84,34 +84,28 @@ EngineBuffer::~EngineBuffer(){
   delete PlayButton;
 }
 
-void EngineBuffer::start()
-{
+void EngineBuffer::start() {
 	qDebug("starting EngineBuffer...");
 	QThread::start();
 	qDebug("started!");
 }
 
-void EngineBuffer::run()
-{
+void EngineBuffer::run() {
   //pthread_setcancelstate(PTHREAD_CANCEL_ENABLE,0);
-
-	qDebug(".");
-  while(true)
-  {
-//	qDebug(".");
+  qDebug("..");
+  while(true) {
     // Wait for playback if in buffer is filled.
     sem_wait(buffers_read_ahead);
     // Check if the semaphore is too large:
     int sem_value;
     sem_getvalue(buffers_read_ahead, &sem_value);
     if (sem_value != 0)
-	;
+      ;
     else
       // Read a new chunk:
       getchunk();
   }
 };
-
 
 void EngineBuffer::slotUpdatePlay(valueType newvalue) {
   static int start_seek;

@@ -25,22 +25,17 @@
     read()
     length()
 */
-SoundSource::SoundSource()
-{
-}
-
-SoundSource::~SoundSource()
-{
-}
-
+SoundSource::SoundSource() {}
+SoundSource::~SoundSource() {}
 /*
   Class for reading files using libaudiofile
 */
 AFlibfile::AFlibfile(const char* filename) {
   fh = afOpenFile(filename,"r",0);
-  if (fh == AF_NULL_FILEHANDLE)
-    qFatal("Error opening file.");
-
+  if (fh == AF_NULL_FILEHANDLE) {
+    cout << "Error opening file.\n";
+    exit(1);
+  }
   channels = 2;
   filelength = 2*afGetFrameCount(fh,AF_DEFAULT_TRACK);
 }
@@ -65,7 +60,7 @@ unsigned AFlibfile::read(unsigned long size, const SAMPLE* destination) {
   Return the length of the file in samples.
 */
 long unsigned AFlibfile::length() {
-	return filelength;
+  return filelength;
 }
 
 /*
@@ -84,9 +79,9 @@ mp3file::mp3file(const char* filename) {
   mp3filelength = filestat.st_size;
   inputbuf_len = mp3filelength;
   inputbuf = new unsigned char[inputbuf_len];
-	if (fread(inputbuf,1,mp3filelength,file) != mp3filelength)
-	  cout << "Error reading mp3-file.\n" << flush;
-	// Transfer it to the mad stream-buffer:
+  if (fread(inputbuf,1,mp3filelength,file) != mp3filelength)
+    cout << "Error reading mp3-file.\n" << flush;
+  // Transfer it to the mad stream-buffer:
   mad_stream_init(&Stream);
   mad_stream_buffer(&Stream, inputbuf, mp3filelength);
   /*
@@ -100,23 +95,18 @@ mp3file::mp3file(const char* filename) {
     ftable.push_back((long)(Stream.this_frame - Stream.buffer));
     sampletable.push_back(total_bytes/2);
     bitrate = Header.bitrate/1000;
-    total_bytes +=
- (Stream.next_frame-Stream.this_frame)*SRATE*8*4/(bitrate*1000);
-    cout <<
- ftable[ftable.size()-1]<<":"<<sampletable[ftable.size()-1]<<":"<<bitrate << "..
- ";
+    total_bytes += 4608; //(Stream.next_frame-Stream.this_frame-4)*SRATE*8*4/(bitrate*1000);
+    //cout << ftable[ftable.size()-1]<<":"<<sampletable[ftable.size()-1]<<":"<<bitrate << "..\n";
   }
-  total_bytes +=
-    (mp3filelength -
- (Stream.this_frame-Stream.buffer))*SRATE*8*4/(bitrate*1000);
-  // Calc the length of the file:
+  total_bytes += 4608; //(mp3filelength - (Stream.this_frame-Stream.buffer))*SRATE*8*4/(bitrate*1000);
+  // Calc. the length of the file:
   filelength = total_bytes/2; // filelength is measured in samples.
   mad_header_finish(&Header);
   // Re-init buffer:
   mad_stream_finish(&Stream);
   mad_stream_init(&Stream);
   mad_stream_buffer(&Stream, inputbuf, mp3filelength);
-  cout << filelength << ":" << bitrate <<"\n";
+  qDebug("Opened file with length %i and bitrate %i.", filelength, bitrate);
 }
 
 mp3file::~mp3file() {
@@ -131,43 +121,51 @@ mp3file::~mp3file() {
    found.
 */
 long mp3file::seek(long filepos) {
-  int i;
-  for (i=0; (i<ftable.size()) && (sampletable[i]<filepos); i++);
-  // Re-init buffer:
-  mad_stream_finish(&Stream);
-  mad_stream_init(&Stream);
-  mad_stream_buffer(&Stream, inputbuf+ftable[i], mp3filelength-ftable[i]);
-  cout << ftable[i] << "\n";
-  return sampletable[i];
+  /*int i;
+    for (i=0; (i<ftable.size()) && (sampletable[i]<filepos); i++);
+    // Re-init buffer:
+    mad_stream_finish(&Stream);
+    mad_stream_init(&Stream);
+    mad_stream_buffer(&Stream, inputbuf+ftable[i], mp3filelength-ftable[i]);*/
+
+  int i = max((long)0,filepos/2304-9);
+  Stream.this_frame = inputbuf + ftable[i];
+  for (i=0; i<8; i++)
+    mad_frame_decode(&Frame, &Stream);
+  //cout << ftable[i] << "\n";
+  return 2304*(filepos/2304-1);
+
+  /*
+    mad_stream_finish(&Stream);
+    mad_stream_init(&Stream);
+    mad_stream_buffer(&Stream, inputbuf, mp3filelength);
+    long total_bytes = 0;
+    for (int i = 0; i<filepos/2304; i++)
+    mad_frame_decode(&Frame, &Stream);
+    cout << (Stream.this_frame-inputbuf);
+    return (long)(floor(filepos/2304)*2304);*/
 }
 
 /*
   Read <samples_wanted> samples into the buffer <destination>.
 */
-unsigned mp3file::read(unsigned long samples_wanted, const SAMPLE* _destination)
- {
+unsigned mp3file::read(unsigned long samples_wanted, const SAMPLE* _destination) {
   SAMPLE *destination = (SAMPLE*)_destination;
   unsigned Total_samples_decoded = 0;
-
   while (Total_samples_decoded < samples_wanted) {
-    cout << Total_samples_decoded << ",";
     if(mad_frame_decode(&Frame,&Stream))
-      if(MAD_RECOVERABLE(Stream.error))
-	{
-	  fprintf(stderr,"Recoverable frame level error (%s)\n",
-	    mad_stream_errorstr(&Stream));
-	  fflush(stderr);
-	  continue;
-	}
-      else
+      if(MAD_RECOVERABLE(Stream.error))	{
+	qWarning("Recoverable frame level error (%s)",
+		 mad_stream_errorstr(&Stream));
+	continue;
+      } else
 	if(Stream.error==MAD_ERROR_BUFLEN)
 	  continue;
-	else
-	  {
-	    fprintf(stderr,"Unrecoverable frame level error (%s).\n",
-		    mad_stream_errorstr(&Stream));
-	    break;
-	  }
+	else {
+	  qWarning("Unrecoverable frame level error (%s).",
+		   mad_stream_errorstr(&Stream));
+	  break;
+	}
     /* Once decoded the frame is synthesized to PCM samples. No errors
      * are reported by mad_synth_frame();
      */
@@ -178,24 +176,22 @@ unsigned mp3file::read(unsigned long samples_wanted, const SAMPLE* _destination)
      * are temporarily stored in a buffer that is flushed when
      * full.
      */
-    for(int i=0;i<Synth.pcm.length;i++)
-      {
-	unsigned short	Sample;
-	/* Left channel */
+    for (int i=0;i<Synth.pcm.length;i++) {
+      unsigned short	Sample;
+      /* Left channel */
+      Sample=(SAMPLE)(Synth.pcm.samples[0][i]>>(MAD_F_FRACBITS-15));
+      *(destination++) = Sample;
+      /* Right channel. If the decoded stream is monophonic then
+       * the right output channel is the same as the left one.
+       */
+      if(MAD_NCHANNELS(&Frame.header)==2)
 	Sample=(SAMPLE)(Synth.pcm.samples[0][i]>>(MAD_F_FRACBITS-15));
-	*(destination++) = Sample;
-	/* Right channel. If the decoded stream is monophonic then
-	 * the right output channel is the same as the left one.
-	 */
-	if(MAD_NCHANNELS(&Frame.header)==2)
-	  Sample=(SAMPLE)(Synth.pcm.samples[0][i]>>(MAD_F_FRACBITS-15));
-	*(destination++) = Sample;
-      }
+      *(destination++) = Sample;
+    }
     Total_samples_decoded += 2*Synth.pcm.length;
   }
-
-  cout << "decoded " << Total_samples_decoded << "\n" << flush;
-
+  
+  qDebug("decoded %i samples.", Total_samples_decoded);
   return Total_samples_decoded;
 }
 

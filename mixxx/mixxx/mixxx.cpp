@@ -44,7 +44,7 @@ MixxxApp::MixxxApp()
 
   initDoc();
   initView();
-
+  qDebug("Init playlist");
   // Connect play list table selection with "play new file"
   connect(view->playlist->TableList, SIGNAL(clicked(int,int,int,const QPoint &)),
           this,                      SLOT(slotChangePlay(int,int,int, const QPoint &)));
@@ -62,7 +62,7 @@ MixxxApp::MixxxApp()
   midi = new MidiObject();
 
   qDebug("Init engine...");
-  buffer = new EngineBuffer(view->playcontrol, view->channel, midi, "test.wav");
+  buffer = new EngineBuffer(view->playcontrol, view->channel, midi, "test.mp3");
   buffer->start();
 
   // Start audio
