@@ -71,6 +71,16 @@ win32 {
     LIBS += dsound.lib 
 }
 
+# RTAudio (Linux ALSA)
+#unix:!macx {
+#    DEFINES += __RTAUDIO__ __LINUX_ALSA__
+#    RTAUDIO_DIR = ../lib/rtaudio
+#    INCLUDEPATH += $$RTAUDIO_DIR
+#    HEADERS += playerrtaudio.h $$RTAUDIO_DIR/RtAudio.h $$RTAUDIO_DIR/RtError.h
+#    SOURCES += playerrtaudio.cpp $$RTAUDIO_DIR/RtAudio.cpp
+#    LIBS += -lasound 
+#}
+
 # OSS Midi (Working good, Linux specific)
 unix:!macx:SOURCES += midiobjectoss.cpp
 unix:!macx:HEADERS += midiobjectoss.h
@@ -284,8 +294,8 @@ IMAGES += icon.png
 DEFINES += SETTINGS_FILE=$$SETTINGS_FILE TRACK_FILE=$$TRACK_FILE
 unix:TEMPLATE = app
 win32:TEMPLATE = vcapp
-CONFIG += qt thread warn_off release
-DEFINES += QT_NO_CHECK
-#CONFIG += qt thread warn_on debug
+#CONFIG += qt thread warn_off release
+#DEFINES += QT_NO_CHECK
+CONFIG += qt thread warn_on debug
 DBFILE = mixxx.db
 LANGUAGE = C++
