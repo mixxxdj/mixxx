@@ -53,3 +53,10 @@ void Monitor::add(double v)
     value += v;
     mutex.unlock();
 }
+
+void Monitor::sub(double v)
+{
+    mutex.lock();
+    value -= v;
+    mutex.unlock();
+}

@@ -34,7 +34,8 @@
 #include "dlgchannel.h"
 #include "midiobject.h"
 #include "soundsource.h"
-#include "soundbuffer.h"
+
+class SoundBuffer;
 
 /**
   *@author Tue and Ken Haste Andersen
@@ -49,7 +50,8 @@ public:
     CSAMPLE *update_visual();
     CSAMPLE *process(const CSAMPLE *, const int);
     const char *getGroup();
-
+    SoundBuffer *getSoundBuffer();
+    
     /** Playpos slider values */
     FLOAT_TYPE playposSliderLast, playposSliderNew;
     /** Buffer used in the process() */
@@ -57,7 +59,6 @@ public:
 
     int visualPlaypos;
     float visualRate;
- 
 public slots:
    void slotUpdatePlay(valueType);
    void slotUpdateRate(FLOAT_TYPE);

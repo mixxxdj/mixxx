@@ -140,9 +140,6 @@ void SoundBuffer::getchunk(CSAMPLE rate)
     for (unsigned int j=bufIdx; j<bufIdx+READCHUNKSIZE; j++)
         read_buffer[j] = (CSAMPLE)temp[i++];
 
-
-
-        
     // Update variables used to copy the buffer to a vertex buffer for 3D visualization
     visualPos1 = bufIdx;
     visualLen1 = READCHUNKSIZE;

@@ -69,6 +69,13 @@
   #include "midiobjectwin.h"
 #endif
 
+#ifdef __VISUALS__
+  #include "mixxxvisual.h"
+  #include "visual/signal.h"
+  #include "visual/guisignal.h"
+  #include "visual/guicontainer.h"
+#endif
+
 MixxxApp::MixxxApp(QApplication *a)
 {
   qDebug("Starting up...");
@@ -270,7 +277,7 @@ void MixxxApp::engineStart()
 {
     if (view->playlist->ListPlaylist->firstChild() != 0)
     {
-        //qDebug("Init buffer 1... %s", view->playlist->ListPlaylist->firstChild()->text(1).ascii());
+		//qDebug("Init buffer 1... %s", view->playlist->ListPlaylist->firstChild()->text(1).ascii());
         buffer1 = new EngineBuffer(app, this, view->playcontrol1, "[Channel1]",
                                    view->playlist->ListPlaylist->firstChild()->text(1));
 
@@ -285,6 +292,31 @@ void MixxxApp::engineStart()
         buffer1 = new EngineBuffer(app, this, view->playcontrol1, "[Channel1]", 0);
         buffer2 = new EngineBuffer(app, this, view->playcontrol2, "[Channel2]", 0);
     }
+
+	// Setup visuals
+#ifdef __VISUALS__
+    if (visual>0)
+	{
+		CGUISignal *signal;
+		GUIContainer *container;
+
+		container = visual->add(buffer1);
+		buffer1->setVisual(container->getBuffer());
+		signal = container->getSignal();
+        signal->setFishEyeLengthScale(0.5);
+		signal->setFishEyeSignalFraction(0.04);
+        container->setBasepos(-50,32,0);
+        container->setZoompos(-50,20,0);
+
+		container = visual->add(buffer2);
+		buffer2->setVisual(container->getBuffer());
+		signal = container->getSignal();
+        signal->setFishEyeLengthScale(0.5);
+		signal->setFishEyeSignalFraction(0.04);
+		container->setBasepos(25,32,0);
+        container->setZoompos(-50,-10,0);
+	}
+#endif
 
     // Starting channels:
     channel1 = new EngineChannel(view->channel1, "[Channel1]");
@@ -510,6 +542,10 @@ void MixxxApp::initView()
 
   // Set visual vidget here
   visual = 0;
+#ifdef __VISUALS__
+  visual = new MixxxVisual();
+  visual->show();
+#endif
 }
 
 bool MixxxApp::queryExit()

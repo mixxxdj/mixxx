@@ -32,6 +32,7 @@ public:
     double read();
     void write(double);
     void add(double);
+    void sub(double);
 private:
     QMutex mutex;
     double value;
