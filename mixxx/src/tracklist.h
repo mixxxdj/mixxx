@@ -31,10 +31,8 @@ public:
 	~TrackList();
 	void WriteXML( );
 
-	TrackInfoObject *m_ptrackCurrent; // pointer to the currently selected track
-
 public slots:
-    /** Can be called to update the whole tracklist */
+    /** Can be called to update the whole tracklist with a new directory */
     void slotUpdateTracklist( QString );
 
 private slots:
@@ -47,6 +45,7 @@ private:
 	void ReadXML ();
 	bool AddFiles(const char *);
 	void UpdateScores();
+    void UpdateTracklist();
 
 	QString m_sDirectory; // the directory where the music files are stored
 	QPtrList<TrackInfoObject> m_lTracks; // list of all tracks
