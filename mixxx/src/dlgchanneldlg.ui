@@ -113,19 +113,6 @@
                 </size>
             </property>
         </widget>
-        <widget class="WKnob">
-            <property name="name">
-                <cstring>DialFlangerDepth</cstring>
-            </property>
-            <property name="geometry">
-                <rect>
-                    <x>-1</x>
-                    <y>7</y>
-                    <width>32</width>
-                    <height>32</height>
-                </rect>
-            </property>
-        </widget>
     </widget>
     <widget class="QGroupBox">
         <property name="name">
