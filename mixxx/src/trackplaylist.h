@@ -55,7 +55,7 @@ public slots:
     /** Decode drop event and calls addPath */
     void slotDrop(QDropEvent *e);
     /** Remove a track from the playlist */
-    void slotRemoveTrack(int iRow);
+    void slotRemoveTrack(TrackInfoObject *pTrack);
 
 private:
     /** List of pointers to TrackInfoObjects */

@@ -118,8 +118,7 @@ QString TrackInfoObject::selectNodeStr( const QDomNode &nodeHeader, const QStrin
 
 TrackInfoObject::~TrackInfoObject()
 {
-    //removeFromTrackTable();
-
+    removeFromTrackTable();
 }
 
 void TrackInfoObject::checkFileExists()

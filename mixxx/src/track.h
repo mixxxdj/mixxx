@@ -71,11 +71,12 @@ public slots:
     void slotEndOfTrackPlayer2(double);
 
 private slots:
-    /** Load the active track in player 1 */
+    /** Load the active popup track in player 1 */
     void slotLoadPlayer1();
-    /** Load the active track in player 1 */
+    /** Load the active popup track in player 1 */
     void slotLoadPlayer2();
-
+    /** Remove active popup track from active playlist */
+    void slotRemoveFromPlaylist();
 signals:
     /** A new track has been loaded in player 1 */
     void newTrackPlayer1(TrackInfoObject *);
