@@ -57,8 +57,8 @@ MixxxView::MixxxView(QWidget *parent, MixxxDoc *doc) : QWidget(parent)
     mainGrid->addMultiCellWidget(flanger,2,2,5,5);
     mainGrid->addMultiCellWidget(crossfader,1,1,0,4);
     mainGrid->addMultiCellWidget(playlist,2,2,0,4);
-	mainGrid->addMultiCellWidget(tracklist,2,2,0,4);
-	tracklist->hide();
+    mainGrid->addMultiCellWidget(tracklist,2,2,0,4);
+    playlist->hide();
 
     //let the ratio between the widths of columns 0 and 1 be 2:3.
     mainGrid->setColStretch( 0, 240);

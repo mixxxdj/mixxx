@@ -198,14 +198,14 @@ void Reader::newtrack()
     }
     else
 #ifdef __UNIX__
-        file = new SoundSourceAudioFile("/dev/null");
+        file = new SoundSourceAudioFile( QString("/dev/null") );
 #endif
 #ifdef __WIN__
-        file = new SoundSourceSndFile("/dev/null");
+        file = new SoundSourceSndFile( QString("/dev/null") );
 #endif
     enginelock.unlock();
     if (file==0)
-        qFatal("Error opening %s", *filename);
+        qFatal("Error opening %s", filename);
 
 //    visualPlaypos.tryWrite(0.);
  //   visualRate = 0.;

@@ -34,14 +34,16 @@
 /**
   *@author Tue and Ken Haste Andersen
   */
-
+class TrackInfoObject;
+  
 class SoundSourceMp3 : public SoundSource {
 public:
-    SoundSourceMp3(const char *);
+    SoundSourceMp3( QString );
     ~SoundSourceMp3();
     long seek(long);
     unsigned read(unsigned long size, const SAMPLE*);
     inline long unsigned length();
+    
 private:
     FILE *file;
     int bitrate;

@@ -53,6 +53,8 @@
 #include "dlgpreferences.h"
 
 class MixxxVisual;
+class TrackList;
+class TrackInfoObject;
 
 /**
   * This Class is the base class for Mixxx. It sets up the main
@@ -127,14 +129,13 @@ class MixxxApp : public QMainWindow
     void slotBrowsePlaylistDir();
     /** shows an about dlg*/
     void slotHelpAbout();
-
     /** Change of file to play */
     //void slotChangePlay(int,int,int, const QPoint &);
-    void slotChangePlay_1();
-    void slotChangePlay_2();
+    void slotChangePlay_1( TrackInfoObject * );
+    void slotChangePlay_2( TrackInfoObject * );
     void slotSelectPlay(QListViewItem *item, const QPoint &pos, int);
   private slots:
-    void slotSetTitle(QString filename, DlgPlaycontrol *dlg);
+    void slotSetTitle( TrackInfoObject *, DlgPlaycontrol * );
   protected:
     bool eventFilter(QObject *, QEvent *);
   private:
@@ -169,7 +170,8 @@ class MixxxApp : public QMainWindow
     ConfigKey PlaylistKey;
     ConfigObject<ConfigValue> *config;
     ConfigObject<ConfigValueMidi> *midiconfig;
-
+    /** Pointer to track list object */
+    TrackList *m_pTracks;
     /** Popup menu used to select player when a track has been selected */
     QPopupMenu *playSelectMenu;
     QString selection;

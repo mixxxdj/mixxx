@@ -9,6 +9,8 @@
 class QString;
 class QPopupMenu;
 class QPoint;
+class DlgPlayControl;
+class EngineBuffer;
 
 // Defines for the rows in the table. Should be made as simple
 // private consts, but it won't compile.
@@ -24,12 +26,18 @@ class TrackList : public QObject
 {
 	Q_OBJECT
 public:
-	TrackList( const QString, QTable * );
+	TrackList( const QString, const QTable *, const DlgPlayControl *, const DlgPlayControl *,
+               const EngineBuffer *, const EngineBuffer * );
 	~TrackList();
 	void WriteXML( );
 
 	TrackInfoObject *m_ptrackCurrent; // pointer to the currently selected track
 
+private slots:
+	void slotChangePlay_1(); // For recieving signals from the pulldown menu
+	void slotChangePlay_2();
+	void slotRightClick( int, int, const QPoint & );
+    
 private:
 	TrackInfoObject *FileExistsInList( const QString );
 	void ReadXML ();
@@ -40,12 +48,12 @@ private:
 	QPtrList<TrackInfoObject> m_lTracks; // list of all tracks
 	QTable *m_ptableTracks;
 	QPopupMenu *playSelectMenu;
+    /** Pointers to the play controls */
+    DlgPlayControl *m_pPlaycontrol1, *m_pPlaycontrol2;
+    /** Points to the two play buffers */
+    EngineBuffer *m_pBuffer1, *m_pBuffer2;
+    
 	int m_iMaxTimesPlayed;
-
-public slots:
-	void slotChangePlay_1(); // For recieving signals from the pulldown menu
-	void slotChangePlay_2();
-	void slotRightClick( int, int, int, const QPoint & );
 
 signals:
 	void signalChangePlay_1( TrackInfoObject * ); // for sending information to mixxx

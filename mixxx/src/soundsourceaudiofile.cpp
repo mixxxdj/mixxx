@@ -17,9 +17,9 @@
 #include "soundsourceaudiofile.h"
 #include "trackinfoobject.h"
 
-SoundSourceAudioFile::SoundSourceAudioFile(const char* filename)
+SoundSourceAudioFile::SoundSourceAudioFile( QString sFilename ) 
 {
-    fh = afOpenFile(filename,"r",0);
+    fh = afOpenFile( sFilename.latin1() ,"r",0);
     if (fh == AF_NULL_FILEHANDLE) {
         qDebug("libaudiofile: Error opening file.");
         filelength = 0;
@@ -65,7 +65,7 @@ void SoundSourceAudioFile::ParseHeader(TrackInfoObject *Track)
     Track->m_sType = "wav";
     Track->m_sBitrate = QString("%1").arg(Track->m_iLength/(afGetRate(fh, AF_DEFAULT_TRACK)));
     Track->m_iDuration = Track->m_iLength/(4*afGetRate(fh, AF_DEFAULT_TRACK));
-
+    qDebug("Parsed header: bitrate %s", Track->m_sBitrate);
     afCloseFile(fh);
 }
 

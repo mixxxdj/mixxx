@@ -28,7 +28,7 @@ class TrackInfoObject;
   */
 class SoundSourceAudioFile : public SoundSource {
  public:
-  SoundSourceAudioFile(const char*);
+  SoundSourceAudioFile( QString );
   ~SoundSourceAudioFile();
   long seek(long);
   unsigned read(unsigned long size, const SAMPLE*);
