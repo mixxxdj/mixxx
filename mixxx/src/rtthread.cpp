@@ -52,9 +52,9 @@ void rtThread()
     //ttcpolicy.period=833333;
     ttcpolicy.period=(get_bus_speed() / 120);
     //ttcpolicy.computation=1000;
-    ttcpolicy.computation=(get_bus_speed() / (30));
+    ttcpolicy.computation=(get_bus_speed() / (80));
     //ttcpolicy.constraint=1500;
-    ttcpolicy.constraint=(get_bus_speed() / (15));
+    ttcpolicy.constraint=(get_bus_speed() / (1));
     ttcpolicy.preemptible=1;
     theError = thread_policy_set(mach_thread_self(),
                THREAD_TIME_CONSTRAINT_POLICY, (int *)&ttcpolicy,
@@ -64,6 +64,7 @@ void rtThread()
 #endif
 #ifdef __UNIX__
 #ifndef __MACX__
+/*
     // Try to set realtime priority on the current executing thread. This should be used in time-critical
     // producer threads.
     struct sched_param schp;
@@ -73,10 +74,11 @@ void rtThread()
     schp.sched_priority = ((sched_get_priority_max(SCHED_RR) - 11)); //sched_get_priority_min(SCHED_RR)) / 2)-1;
     if (sched_setscheduler(0, SCHED_RR, &schp) != 0)
     qWarning("Not possible to give audio producer thread high prioriy.");
+*/
 #endif
 #endif
 #ifdef __WIN__
-    HANDLE h = GetCurrentThread();
-    SetThreadPriority(h,THREAD_PRIORITY_BELOW_NORMAL);
+//    HANDLE h = GetCurrentThread();
+//    SetThreadPriority(h,THREAD_PRIORITY_BELOW_NORMAL);
 #endif
 }

@@ -74,14 +74,14 @@
    <EmitOnDownPress>true</EmitOnDownPress>
    <ButtonState>LeftButton</ButtonState>
    <UseSetFromApp>false</UseSetFromApp>
-   <Inc>0.03</Inc>
+   <Inc>0.01</Inc>
   </Connection>
   <Connection>
    <ConfigKey>[Channel1],rate</ConfigKey>
    <EmitOnDownPress>true</EmitOnDownPress>
    <ButtonState>RightButton</ButtonState>
    <UseSetFromApp>false</UseSetFromApp>
-   <Inc>0.01</Inc>
+   <Inc>0.001</Inc>
   </Connection>
  </PushButtonInc>
 
@@ -99,14 +99,14 @@
    <EmitOnDownPress>true</EmitOnDownPress>
    <ButtonState>LeftButton</ButtonState>
    <UseSetFromApp>false</UseSetFromApp>
-   <Inc>0.03</Inc>
+   <Inc>0.01</Inc>
   </Connection>
   <Connection>
    <ConfigKey>[Channel2],rate</ConfigKey>
    <EmitOnDownPress>true</EmitOnDownPress>
    <ButtonState>RightButton</ButtonState>
    <UseSetFromApp>false</UseSetFromApp>
-   <Inc>0.01</Inc>
+   <Inc>0.001</Inc>
   </Connection>
  </PushButtonInc>
 
@@ -124,14 +124,14 @@
    <EmitOnDownPress>true</EmitOnDownPress>
    <ButtonState>LeftButton</ButtonState>
    <UseSetFromApp>false</UseSetFromApp>
-   <Inc>-0.03</Inc>
+   <Inc>-0.01</Inc>
   </Connection>
   <Connection>
    <ConfigKey>[Channel1],rate</ConfigKey>
    <EmitOnDownPress>true</EmitOnDownPress>
    <ButtonState>RightButton</ButtonState>
    <UseSetFromApp>false</UseSetFromApp>
-   <Inc>-0.01</Inc>
+   <Inc>-0.001</Inc>
   </Connection>
  </PushButtonInc>
 
@@ -149,14 +149,14 @@
    <EmitOnDownPress>true</EmitOnDownPress>
    <ButtonState>LeftButton</ButtonState>
    <UseSetFromApp>false</UseSetFromApp>
-   <Inc>-0.03</Inc>
+   <Inc>-0.01</Inc>
   </Connection>
   <Connection>
    <ConfigKey>[Channel2],rate</ConfigKey>
    <EmitOnDownPress>true</EmitOnDownPress>
    <ButtonState>RightButton</ButtonState>
    <UseSetFromApp>false</UseSetFromApp>
-   <Inc>-0.01</Inc>
+   <Inc>-0.001</Inc>
   </Connection>
  </PushButtonInc>
 
