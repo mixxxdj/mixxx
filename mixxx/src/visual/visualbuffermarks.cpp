@@ -25,6 +25,7 @@ VisualBufferMarks::VisualBufferMarks(ReaderExtract *pReaderExtract, ControlPotme
     m_pCuePoint = ControlObject::getControl(ConfigKey(group, "cue_point"));
     m_pAbsPlaypos = ControlObject::getControl(ConfigKey(group, "absplayposition"));
 //    qDebug("marks: resampleFactor %f, displayRate %f, displayFactor %f, readerExtractFactor %f", m_fResampleFactor, m_fDisplayRate,m_fDisplayFactor, m_fReaderExtractFactor);
+    m_iCuePosition = -1;
 }
 
 VisualBufferMarks::~VisualBufferMarks()
@@ -62,7 +63,7 @@ void VisualBufferMarks::update(int iPos, int iLen)
     // currently not in the visible buffer
     m_iCuePosition = -1;
 
-    if (((fabs(m_pCuePoint->getValue()-m_pAbsPlaypos->getValue())/m_fReaderExtractFactor)/m_fResampleFactor)<(float)m_iDisplayLen/2.f)
+    if (m_pCuePoint->getValue()>=0 && ((fabs(m_pCuePoint->getValue()-m_pAbsPlaypos->getValue())/m_fReaderExtractFactor)/m_fResampleFactor)<(float)m_iDisplayLen/2.f)
     {
         //qDebug("cue %f, play %f",m_pCuePoint->getValue(),m_pAbsPlaypos->getValue());
         float fCuediff = m_pAbsPlaypos->getValue()-m_pCuePoint->getValue();
@@ -72,7 +73,6 @@ void VisualBufferMarks::update(int iPos, int iLen)
             fCuePos += (float)m_iLen;
         m_iCuePosition = (int)fCuePos;
     }
-    else
 }
 
 void VisualBufferMarks::draw(GLfloat *p, int iLen, float xscale)

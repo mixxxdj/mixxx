@@ -94,7 +94,7 @@ EngineBuffer::EngineBuffer(PowerMate *_powermate, const char *_group)
     // Cue point
     ControlObject *p5 = new ControlObject(ConfigKey(group, "cue_point"));
     cuePoint = new ControlEngine(p5);
-    
+	    
     // Cue preview button:
     p = new ControlPushButton(ConfigKey(group, "cue_preview"));
     buttonCuePreview = new ControlEngine(p);
