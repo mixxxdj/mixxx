@@ -3,9 +3,12 @@
 <KDevPrjSession>
  <LastCompileConfig>(Default)</LastCompileConfig>
  <Mainframe MaximizeMode="1" />
- <DocsAndViews NumberOfDocuments="1" >
-  <Doc0 CursorPosLine="184" Type="KWriteDoc" NumberOfViews="1" CursorPosCol="21" FileName="/home/haste/cvs/mixxx/src/tracklist.cpp" >
-   <View0 Top="0" Width="769" Attach="1" Height="638" Left="0" Focus="1" Type="KWriteView" MinMaxMode="0" />
+ <DocsAndViews NumberOfDocuments="2" >
+  <Doc0 CursorPosLine="185" Type="KWriteDoc" NumberOfViews="1" CursorPosCol="13" FileName="/home/haste/cvs/mixxx/src/tracklist.cpp" >
+   <View0 Top="0" Width="767" Attach="1" Height="606" Left="0" Focus="0" Type="KWriteView" MinMaxMode="0" />
   </Doc0>
+  <Doc1 CursorPosLine="469" Type="KWriteDoc" NumberOfViews="1" CursorPosCol="218" FileName="/home/haste/cvs/mixxx/src/mixxx.cpp" >
+   <View0 Top="0" Width="767" Attach="1" Height="606" Left="0" Focus="1" Type="KWriteView" MinMaxMode="0" />
+  </Doc1>
  </DocsAndViews>
 </KDevPrjSession>
