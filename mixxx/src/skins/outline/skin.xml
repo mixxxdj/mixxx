@@ -818,8 +818,8 @@
   <Size>747,148</Size>
   <BgColor>#ffffff</BgColor>
   <SignalColor>#00ff00</SignalColor>
-  <BeatColor>#0000ff</BeatColor>
-  <MarkerColor>#ff0000</MarkerColor>
+  <BeatColor>#0000f0</BeatColor>
+  <MarkerColor>#0000ff</MarkerColor>
   <FisheyeColor>#ffffff</FisheyeColor>
   <Zoom>true</Zoom>
  </Visual>
@@ -830,7 +830,7 @@
   <Size>747,148</Size>
   <BgColor>#ffffff</BgColor>
   <SignalColor>#00ff00</SignalColor>
-  <BeatColor>#0000ff</BeatColor>
+  <BeatColor>#f00000</BeatColor>
   <MarkerColor>#ff0000</MarkerColor>
   <FisheyeColor>#ffffff</FisheyeColor>
   <Zoom>true</Zoom>
