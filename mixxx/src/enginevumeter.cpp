@@ -15,7 +15,6 @@
  ***************************************************************************/
 
 #include "enginevumeter.h"
-#include "wvumeter.h"
 #include "controlengine.h"
 #include "controlpotmeter.h"
 
