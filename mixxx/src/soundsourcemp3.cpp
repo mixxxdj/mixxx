@@ -154,7 +154,7 @@ inline long unsigned SoundSourceMp3::length()
 */
 unsigned SoundSourceMp3::read(unsigned long samples_wanted, const SAMPLE* _destination)
 {
-    SAMPLE *destination = (SAMPLE*)_destination;
+    SAMPLE *destination = (SAMPLE *)_destination;
     unsigned Total_samples_decoded = 0;
     int frames = 0;
 
@@ -163,12 +163,15 @@ unsigned SoundSourceMp3::read(unsigned long samples_wanted, const SAMPLE* _desti
     {
         for (int i=rest; i<Synth.pcm.length; i++)
         {
-            *(destination++) = (SAMPLE)((Synth.pcm.samples[0][i]>>(MAD_F_FRACBITS-14)));
+            // Left channel
+            *(destination++) = madScale(Synth.pcm.samples[0][i]);
 
             /* Right channel. If the decoded stream is monophonic then
              * the right output channel is the same as the left one. */
             if (MAD_NCHANNELS(&Frame.header)==2)
-                *(destination++) = (SAMPLE)((Synth.pcm.samples[1][i]>>(MAD_F_FRACBITS-14)));
+                *(destination++) = madScale(Synth.pcm.samples[1][i]);
+            else
+                *(destination++) = madScale(Synth.pcm.samples[0][i]);
         }
         Total_samples_decoded += 2*(Synth.pcm.length-rest);
     }
@@ -202,21 +205,19 @@ unsigned SoundSourceMp3::read(unsigned long samples_wanted, const SAMPLE* _desti
          * point number to the consumer format (16 bit). Integer samples
          * are temporarily stored in a buffer that is flushed when
          * full.
-         *
-         * the code (MAD_F_FRACBITS-14) used to be (MAD_F_FRACBITS-15). However,
-         * this is not enough to avoid out of range when converting to 16 bit
-         * (at least on a P3).
          */
         no = min(Synth.pcm.length,(samples_wanted-Total_samples_decoded)/2);
         for (int i=0;i<no;i++)
         {
-             /* Left channel */
-            *(destination++) = (SAMPLE)((Synth.pcm.samples[0][i]>>(MAD_F_FRACBITS-14)));
+            // Left channel
+            *(destination++) = madScale(Synth.pcm.samples[0][i]);
 
             /* Right channel. If the decoded stream is monophonic then
              * the right output channel is the same as the left one. */
             if (MAD_NCHANNELS(&Frame.header)==2)
-                *(destination++) = (SAMPLE)((Synth.pcm.samples[1][i]>>(MAD_F_FRACBITS-14)));
+                *(destination++) = madScale(Synth.pcm.samples[1][i]);
+            else
+                *(destination++) = madScale(Synth.pcm.samples[0][i]);
         }
         Total_samples_decoded += 2*no;
 
@@ -360,3 +361,14 @@ void SoundSourceMp3::getField(id3_tag *tag, const char *frameid, QString str)
     }
 }
 
+inline signed int SoundSourceMp3::madScale (mad_fixed_t sample)
+{
+    sample += (1L << (MAD_F_FRACBITS - 16));
+
+    if (sample >= MAD_F_ONE)
+        sample = MAD_F_ONE - 1;
+    else if (sample < -MAD_F_ONE)
+        sample = -MAD_F_ONE;
+
+    return sample >> (MAD_F_FRACBITS + 1 - 16);
+}
