@@ -69,7 +69,10 @@ EngineMaster::EngineMaster(DlgMaster *master_dlg, DlgCrossfader *crossfader_dlg,
 
     pfl1 = channel1->getPFL();
     pfl2 = channel2->getPFL();
-    
+
+    flanger1 = flanger->getButtonA();
+    flanger2 = flanger->getButtonB();
+        
     out = new CSAMPLE[MAX_BUFFER_LEN];
 }
 
@@ -96,9 +99,9 @@ CSAMPLE *EngineMaster::process(const CSAMPLE *, const int buffer_size)
     {
         CSAMPLE *temp_1 = buffer1->process(0, buffer_size);
         CSAMPLE *temp_2 = channel1->process(temp_1,buffer_size);
-//        if (flanger->channel_A) 
-//            sampMaster1 = flanger->process(temp_2, buffer_size);
-//        else
+        if (flanger1->get()==1.)
+            sampMaster1 = flanger->process(temp_2, buffer_size);
+        else
             sampMaster1 = temp_2;
     } 
 
@@ -106,9 +109,9 @@ CSAMPLE *EngineMaster::process(const CSAMPLE *, const int buffer_size)
     {
         CSAMPLE *temp_1 = buffer2->process(0, buffer_size);
         CSAMPLE *temp_2 = channel2->process(temp_1,buffer_size);
-//        if (flanger->channel_B) 
-//            sampMaster2 = flanger->process(temp_2, buffer_size);
-//        else
+        if (flanger1->get()==0. && flanger2->get()==1.) 
+            sampMaster2 = flanger->process(temp_2, buffer_size);
+        else
             sampMaster2 = temp_2;
     }
 

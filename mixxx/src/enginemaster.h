@@ -48,7 +48,7 @@ private:
     EngineClipping *clipping, *head_clipping;
     EngineFlanger *flanger;
 
-    ControlEngine *crossfader, *head_mix, *pfl1, *pfl2;
+    ControlEngine *crossfader, *head_mix, *pfl1, *pfl2, *flanger1, *flanger2;
     CSAMPLE *out, *tmp, *tmp2, *tmp3;
     bool master1, master2;
 };

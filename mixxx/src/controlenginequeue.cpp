@@ -47,7 +47,9 @@ void ControlEngineQueue::sync()
             qDebug("item %i, value %f",item->no, item->value);
             list->at(item->no)->setExtern(item->value);
             queue.remove();
-            //delete item; this shouldn't be necessary when set to autodelete...
+            
+            //delete item
+            delete item;
         }
         
         // Unlock mutex

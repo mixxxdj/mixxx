@@ -60,6 +60,11 @@ void ControlPushButton::slotSetPosition(int newpos)
     emitValueChanged(value);
 };
 
+void ControlPushButton::slotSetPositionOff()
+{
+    slotSetPosition(0);
+}
+
 void ControlPushButton::slotClicked()
 {
     if (value==1.)

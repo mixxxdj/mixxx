@@ -39,6 +39,7 @@ public:
     void setWidget(QWidget *_widget);
 public slots:
     void slotSetPosition(int);
+    void slotSetPositionOff();
 private slots:
     void slotClicked();
 signals:
