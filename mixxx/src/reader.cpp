@@ -124,9 +124,9 @@ int Reader::getFileSrate()
     return file_srate;
 }
 
-ReaderExtractWave *Reader::getSoundBuffer()
+ReaderExtractBeat *Reader::getBeatPtr()
 {
-    return readerwave;
+    return readerwave->getExtractBeat();
 }
 
 long int Reader::getFileposStart()

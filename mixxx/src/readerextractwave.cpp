@@ -49,7 +49,7 @@ ReaderExtractWave::ReaderExtractWave(QMutex *_enginelock) : ReaderExtract(0)
     // Initialize extractor objects
     readerfft  = new ReaderExtractFFT((ReaderExtract *)this, WINDOWSIZE, STEPSIZE);
     readerhfc  = new ReaderExtractHFC((ReaderExtract *)readerfft, WINDOWSIZE, STEPSIZE);
-    readerbeat = new ReaderExtractBeat((ReaderExtract *)readerhfc, WINDOWSIZE, STEPSIZE, 100);
+    readerbeat = new ReaderExtractBeat((ReaderExtract *)readerhfc, WINDOWSIZE, STEPSIZE, 500);
 }
 
 ReaderExtractWave::~ReaderExtractWave()
@@ -99,6 +99,11 @@ int ReaderExtractWave::getBufferSize()
     return READBUFFERSIZE;
 }
 
+ReaderExtractBeat *ReaderExtractWave::getExtractBeat()
+{
+    return readerbeat;
+}
+    
 void *ReaderExtractWave::processChunk(const int, const int, const int)
 {
     return 0;
@@ -182,13 +187,6 @@ void ReaderExtractWave::getchunk(CSAMPLE rate)
     chunkStart = bufferpos_start/READCHUNKSIZE;
     chunkEnd   = bufferpos_end/READCHUNKSIZE;
     
-    // Do pre-processing...
-    //qDebug("curr %i, start %i, end %i",chunkCurr,chunkStart,chunkEnd);
-    readerfft->processChunk(chunkCurr, chunkStart, chunkEnd);
-    readerhfc->processChunk(chunkCurr, chunkStart, chunkEnd);
-    readerbeat->processChunk(chunkCurr, chunkStart, chunkEnd);
-
-
     filepos_start = filepos_start_new;
     filepos_end = filepos_end_new;
 
@@ -200,12 +198,34 @@ void ReaderExtractWave::getchunk(CSAMPLE rate)
     if (backwards)
         file->seek((long int)filepos_end);
 
-    enginelock->unlock();
-
     // Copy samples to read_buffer
     int i=0;
     for (unsigned int j=bufIdx; j<bufIdx+READCHUNKSIZE; j++)
         read_buffer[j] = (CSAMPLE)temp[i++];
+
+    // Do pre-processing...
+    //qDebug("curr %i, start %i, end %i",chunkCurr,chunkStart,chunkEnd);
+    readerfft->processChunk(chunkCurr, chunkStart, chunkEnd);
+    readerhfc->processChunk(chunkCurr, chunkStart, chunkEnd);
+    readerbeat->processChunk(chunkCurr, chunkStart, chunkEnd);
+
+
+    // Mark beats in read_buffer
+    bool *beatBuffer = (bool *)readerbeat->getBasePtr();
+    int from = chunkCurr    *(readerbeat->getBufferSize()/READCHUNK_NO);
+    int to   = (chunkCurr+1)*(readerbeat->getBufferSize()/READCHUNK_NO)-1;
+    int chunkSizeDiff = READBUFFERSIZE/readerbeat->getBufferSize();
+//    qDebug("wave %i-%i",from,to);
+    //qDebug("chunkSizeDiff: %i",chunkSizeDiff);
+    for (int i=from; i<to; i++)
+        if (beatBuffer[i%readerbeat->getBufferSize()])
+        {
+            for (int j=i*chunkSizeDiff; j<i*chunkSizeDiff+40; j++)
+                read_buffer[j%READBUFFERSIZE] = 30000.;
+//            qDebug("beat %i, size %i",i,readerbeat->getBufferSize());
+        }
+
+    enginelock->unlock();
 
     // Update vertex buffer by sending an event containing indexes of where to update.
     if (signalVertexBuffer != 0)

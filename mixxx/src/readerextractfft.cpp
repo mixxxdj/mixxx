@@ -75,7 +75,7 @@ int ReaderExtractFFT::getChannels()
 
 int ReaderExtractFFT::getBufferSize()
 {
-    return input->getBufferSize()/input->getChannels();
+    return frameNo; //input->getBufferSize()/input->getChannels();
 }
 
 void *ReaderExtractFFT::processChunk(const int idx, const int start_idx, const int end_idx)

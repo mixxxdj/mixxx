@@ -1,8 +1,8 @@
 /***************************************************************************
-                          midiobjectnull.h  -  description
+                          controlbeat.h  -  description
                              -------------------
-    begin                : Thu Jul 4 2002
-    copyright            : (C) 2002 by Tue & Ken Haste Andersen
+    begin                : Mon Apr 7 2003
+    copyright            : (C) 2003 by Tue & Ken Haste Andersen
     email                : haste@diku.dk
  ***************************************************************************/
 
@@ -15,21 +15,36 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef MIDIOBJECTNULL_H
-#define MIDIOBJECTNULL_H
+#ifndef CONTROLBEAT_H
+#define CONTROLBEAT_H
 
-#include "midiobject.h"
+#include "controlobject.h"
+#include "configobject.h"
+#include <qdatetime.h>
+#include "defs.h"
 
 /**
+  * Takes impulses as input, and convert it to a BPM measure.
+  *
   *@author Tue & Ken Haste Andersen
   */
 
-class MidiObjectNull : public MidiObject  {
+/** Minimum allowed Beat per minute (BPM) */
+const int minBPM = 60;
+/** Maximum allowed interval between beats in milli seconds (calculated from minBPM) */
+const int maxInterval = 6000/minBPM;
+  
+class ControlBeat : public ControlObject
+{
 public: 
-    MidiObjectNull(ConfigObject<ConfigValueMidi> *c, QApplication *app, ControlObject *control, QString device);
-    ~MidiObjectNull();
-    void devOpen(QString device);
-    void devClose();
+    ControlBeat(ConfigKey key);
+    ~ControlBeat();
+public slots:
+    void slotSetPosition(int pos);
+protected:
+    void forceGUIUpdate();
+private:
+    QTime time;
 };
 
 #endif

@@ -17,7 +17,7 @@
 
 #include "midiobjectcoremidi.h"
 
-MidiObjectCoreMidi::MidiObjectCoreMidi(ConfigObject<ConfigValueMidi> *c, QApplication *a, QWidget *m, QString device) : MidiObject(c, a, m, device)
+MidiObjectCoreMidi::MidiObjectCoreMidi(ConfigObject<ConfigValueMidi> *c, QApplication *a, ControlObject *control, QString device) : MidiObject(c, a, control, device)
 {
     // Initialize CoreMidi
     MIDIClientCreate(CFSTR("Mixxx"), 0, 0, &midiClient);

@@ -133,6 +133,9 @@ MixxxApp::MixxxApp(QApplication *a)
   connect(view->playlist->ListPlaylist, SIGNAL(pressed(QListViewItem *, const QPoint &, int)),
           this,                         SLOT(slotSelectPlay(QListViewItem *, const QPoint &, int)));
 
+  // Instantiate a ControlObject
+  control = new ControlNull();
+
   // Open midi
   //qDebug("Init midi...");
   midi = 0;
@@ -140,20 +143,20 @@ MixxxApp::MixxxApp(QApplication *a)
   midi = new MidiObjectALSA(midiconfig,app,config->getValueString(ConfigKey("[Midi]","Device")));
 #endif
 #ifdef __PORTMIDI__
-  midi = new MidiObjectPortMidi(midiconfig,app,this,config->getValueString(ConfigKey("[Midi]","Device")));
+  midi = new MidiObjectPortMidi(midiconfig,app,control,config->getValueString(ConfigKey("[Midi]","Device")));
 #endif
 #ifdef __COREMIDI__
-  midi = new MidiObjectCoreMidi(midiconfig,app,this,config->getValueString(ConfigKey("[Midi]","Device")));
+  midi = new MidiObjectCoreMidi(midiconfig,app,control,config->getValueString(ConfigKey("[Midi]","Device")));
 #endif
 #ifdef __OSSMIDI__
-  midi = new MidiObjectOSS(midiconfig,app,this,config->getValueString(ConfigKey("[Midi]","Device")));
+  midi = new MidiObjectOSS(midiconfig,app,control,config->getValueString(ConfigKey("[Midi]","Device")));
 #endif
 #ifdef __WINMIDI__
-  midi = new MidiObjectWin(midiconfig,app,this,config->getValueString(ConfigKey("[Midi]","Device")));
+  midi = new MidiObjectWin(midiconfig,app,control,config->getValueString(ConfigKey("[Midi]","Device")));
 #endif
     
   if (midi == 0)
-      midi = new MidiObjectNull(midiconfig,app,this,config->getValueString(ConfigKey("[Midi]","Device")));
+      midi = new MidiObjectNull(midiconfig,app,control,config->getValueString(ConfigKey("[Midi]","Device")));
 
   // Store default midi device
   config->set(ConfigKey("[Midi]","Device"), ConfigValue(midi->getOpenDevice()->latin1()));
@@ -204,8 +207,7 @@ MixxxApp::MixxxApp(QApplication *a)
       }
   }
 
-  // Instantiate a ControlObject, and set the static config pointer
-  control = new ControlNull();
+  // Set the static config pointer for the ControlObject
   control->setConfig(midiconfig);
 
   // Configure ControlEngine object, and get ControlEngineQueue for input to the player object

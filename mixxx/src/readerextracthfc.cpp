@@ -20,7 +20,7 @@
 
 ReaderExtractHFC::ReaderExtractHFC(ReaderExtract *input, int frameSize, int frameStep) : ReaderExtract(input)
 {
-    frameNo = input->getBufferSize()/frameStep;
+    frameNo = input->getBufferSize(); ///frameStep;
     framePerChunk = frameNo/READCHUNK_NO;
    
     hfc = new CSAMPLE[frameNo];

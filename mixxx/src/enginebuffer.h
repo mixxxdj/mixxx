@@ -55,7 +55,8 @@ public:
     float visualRate;
 private:
     void seek(double);
-
+//    void bpmChange(double);
+    
     MixxxApp *mixxx;
     QApplication *app;
 
@@ -85,7 +86,7 @@ private:
     /** Pointer to DlgPlaycontrol dialog. Used when updating file info window */
     DlgPlaycontrol *playcontrol;
    
-    ControlEngine *playButton, *rateSlider, *wheel, *playposSlider;
+    ControlEngine *playButton, *rateSlider, *wheel, *playposSlider, *beatControl;
     const char *group;
 
     CSAMPLE *read_buffer_prt;

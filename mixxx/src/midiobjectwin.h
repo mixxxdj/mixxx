@@ -28,7 +28,7 @@
 
 class MidiObjectWin : public MidiObject  {
 public: 
-    MidiObjectWin(ConfigObject<ConfigValueMidi> *c, QApplication *app, QWidget *mixxx, QString device);
+    MidiObjectWin(ConfigObject<ConfigValueMidi> *c, QApplication *app, ControlObject *control, QString device);
     ~MidiObjectWin();
     void devOpen(QString device);
     void devClose();

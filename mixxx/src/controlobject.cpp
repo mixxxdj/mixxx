@@ -32,6 +32,7 @@ QPtrList<ControlObject> ControlObject::list;
 ControlObject::ControlObject()
 {
     value = 0.;
+    installEventFilter(this);
 }
 
 ControlObject::ControlObject(ConfigKey key)
