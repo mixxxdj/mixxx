@@ -82,6 +82,7 @@ SoundSourceMp3::SoundSourceMp3(QString qFilename) : SoundSource(qFilename)
         m_iChannels = MAD_NCHANNELS(&Header);
 
     }
+    //qDebug("channels %i",m_iChannels);
 
     // Find average frame size
     m_iAvgFrameSize = length()/currentframe;
@@ -162,7 +163,7 @@ long SoundSourceMp3::seek(long filepos)
 
         //qDebug("list length %i, list pos %i",m_qSeekList.count(), k);
 
-        if (framePos==0 || framePos>filepos || m_qSeekList.at()<4)
+        if (framePos==0 || framePos>filepos || m_qSeekList.at()<5)
         {
             qDebug("Problem finding good seek frame (wanted %i, got %i), starting from 0",filepos,framePos);
 
@@ -178,7 +179,8 @@ long SoundSourceMp3::seek(long filepos)
         {
 //            qDebug("frame pos %i",cur->pos);
 
-            // Start three frame before wanted frame to get in sync...
+            // Start four frame before wanted frame to get in sync...
+            m_qSeekList.prev();
             m_qSeekList.prev();
             m_qSeekList.prev();
             cur = m_qSeekList.prev();
@@ -194,11 +196,13 @@ long SoundSourceMp3::seek(long filepos)
             // Decode the three frames before
             mad_frame_decode(Frame,&Stream);
             mad_frame_decode(Frame,&Stream);
-            if(mad_frame_decode(Frame,&Stream)) qDebug("******decode error 3*************");
+            mad_frame_decode(Frame,&Stream);
+            if(mad_frame_decode(Frame,&Stream)) qDebug("MP3 decode warning");
             mad_synth_frame(&Synth, Frame);
 
             // Set current position
             rest = -1;
+            m_qSeekList.next();
             m_qSeekList.next();
             m_qSeekList.next();
             cur = m_qSeekList.next();
@@ -261,7 +265,7 @@ long SoundSourceMp3::seek(long filepos)
 
 inline long unsigned SoundSourceMp3::length()
 {
-    return (long unsigned) m_iChannels*mad_timer_count(filelength, MAD_UNITS_44100_HZ);
+    return (long unsigned) 2*mad_timer_count(filelength, MAD_UNITS_44100_HZ);
 }
 
 /*
@@ -290,7 +294,7 @@ unsigned SoundSourceMp3::read(unsigned long samples_wanted, const SAMPLE* _desti
             else
                 *(destination++) = madScale(Synth.pcm.samples[0][i]);
         }
-        Total_samples_decoded += min(m_iChannels,2)*(Synth.pcm.length-rest);
+        Total_samples_decoded += 2*(Synth.pcm.length-rest);
     }
 
     //qDebug("Decoding");
@@ -303,13 +307,13 @@ unsigned SoundSourceMp3::read(unsigned long samples_wanted, const SAMPLE* _desti
         {
             if(MAD_RECOVERABLE(Stream.error))
             {
-                qDebug("MAD: Recoverable frame level ERR (%s)",mad_stream_errorstr(&Stream));
+                //qDebug("MAD: Recoverable frame level ERR (%s)",mad_stream_errorstr(&Stream));
                 continue;
             } else if(Stream.error==MAD_ERROR_BUFLEN) {
-                qDebug("MAD: buflen ERR");
+                //qDebug("MAD: buflen ERR");
                 break;
             } else {
-                qDebug("MAD: Unrecoverable frame level ERR (%s).",mad_stream_errorstr(&Stream));
+                //qDebug("MAD: Unrecoverable frame level ERR (%s).",mad_stream_errorstr(&Stream));
                 break;
             }
         }
