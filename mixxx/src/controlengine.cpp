@@ -21,8 +21,6 @@
 #include "engineobject.h"
 #include <qapplication.h>
 
-QPtrList<ControlEngine> *ControlEngine::list = new QPtrList<ControlEngine>;
-
 ControlEngine::ControlEngine(ControlObject *_controlObject)
 {
     controlObject = _controlObject;
@@ -30,18 +28,19 @@ ControlEngine::ControlEngine(ControlObject *_controlObject)
     notifyobj = 0;
     
     // Insert this object into the static list of controlEngines
-    list->append(this);
+//    list->append(this);
     
     // Update associated controlObject with the number of this controlEngine in the static list
-    controlObject->setControlEngine(list->count()-1);
+    controlObject->setControlEngine(this);
 
     value = controlObject->getValue();
 }
-
+/*
 QPtrList<ControlEngine> *ControlEngine::getList()
 {
     return list;
 }
+*/
 
 ControlEngine::~ControlEngine()
 {
@@ -69,8 +68,6 @@ void ControlEngine::set(double v)
 
 void ControlEngine::setExtern(double v)
 {
-//    qDebug("controlengine got %p\t%f",this,(float)v);
-    
     value = v;
     if (notifyobj!=0)
         (notifyobj->*notifymethod)(v);

@@ -16,7 +16,6 @@
  ***************************************************************************/
 
 #include "player.h"
-#include "controlenginequeue.h"
 
 // Static member variable definition
 SAMPLE *Player::out_buffer = 0;
@@ -29,10 +28,10 @@ int Player::MasterBufferSize = 0;
    Input:   Size of the output buffer in samples
    Output:  Pointer to internal synthesis data structure.
    -------- ------------------------------------------------------ */
-Player::Player(ConfigObject<ConfigValue> *_config, ControlEngineQueue *_queue, QApplication *_app)
+Player::Player(ConfigObject<ConfigValue> *_config, ControlObject *pControl, QApplication *_app)
 {
     config = _config;
-    queue = _queue;
+    m_pControl = pControl;
     app = _app;
     allocate();
 
@@ -153,7 +152,7 @@ int Player::prepareBuffer()
 
   
   // First, sync control parameters with changes from GUI thread
-  queue->sync();
+  m_pControl->sync();
   
   CSAMPLE *p1;
 

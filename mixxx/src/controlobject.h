@@ -23,22 +23,30 @@
 #include <qevent.h>
 #include <qptrlist.h>
 #include <qaccel.h>
+#include <qptrqueue.h>
+#include <qmutex.h>
 #include "configobject.h"
 #include "defs.h"
 #include "midiobject.h"
 
 class ControlEngine;
-class ControlEngineQueue;
+
+struct ControlQueueEngineItem
+{
+    ControlEngine *ptr;
+    double value;
+};
+
 
 /**
   * ControlObjects is used as a way to share controller values between controllers, GUI and
   * the sound engine. Whenever the value is changed by either a connected widget or a ControlEventMidi
   * the emitValueChanged method is called which syncronizes the new value with the player thread
-  * using the semaphore protected ControlEngineQueue.
+  * using the semaphore protected queue.
   *
-  * The player thread has a corresponding ControlEngine object for each ControlObject identified
-  * using a unque integer. Whenever a ControlEngine object is changed by the player thread, a
-  * ControlEventEngine is sent to the corresponding ControlObject.
+  * The player thread has a corresponding ControlEngine object for each ControlObject. The 
+  * ControlEngine object updates the ControlObject by queueing the values, and sending them as an
+  * event to the ControlObject.
   *
   *@author Tue and Ken Haste Andersen
   */
@@ -56,10 +64,8 @@ public:
     QString *print();
     /** Sets the config object */
     static void setConfig(ConfigObject<ConfigValueMidi> *_config);
-    /** Sets the ControlEngineQueue */
-    static void setControlEngineQueue(ControlEngineQueue *_queue);
     /** Used to set the corresponding ControlEngine number of this ControlObject */
-    void setControlEngine(int _controlEngineNo);
+    void setControlEngine(ControlEngine *pControlEngine);
     /** Associates a QWidget with the ControlObject */
     void setWidget(QWidget *widget);
     /** Return the value of the ControlObject */
@@ -72,6 +78,9 @@ public:
     virtual void setAccelDown(const QKeySequence key) = 0;
     /** Sets up parent widget. Used when setting up keyboard accelerators */
     static void setParentWidget(QWidget *pParentWidget);
+    /** Syncronizes queue with ControlEngine objects. Non blocking. Should be called from player
+      * thread. */
+    static void sync();
 public slots:
     /** Slot used to update the value */
     virtual void slotSetPosition(int) = 0;
@@ -89,7 +98,7 @@ signals:
 protected:
     /** Forces the gui to be updated with the value of the controller */
     virtual void forceGUIUpdate() = 0;
-    /** Method emit a valueChanged signal and puts the new value in the ControlEngineQueue */
+    /** Method emit a valueChanged signal and puts the new value in the queue */
     void emitValueChanged(FLOAT_TYPE);
     /** Return pointer to parent widget */
     QWidget *getParentWidget();
@@ -97,12 +106,12 @@ protected:
     FLOAT_TYPE value;
     /** Pointer to MIDI config */
     static ConfigObject<ConfigValueMidi> *config;
-    /** Pointer to ControlEngineQueue used in syncronizing the value with the Player thread */
-    static ControlEngineQueue *queue;
+    /** Queue used in syncronizing the value with the Player thread */
+    static QPtrQueue<ControlQueueEngineItem> queue;
     /** Pointer to config option */
     ConfigOption<ConfigValueMidi> *cfgOption;
-    /** Internal number of associated ControlEngine object */
-    int controlEngineNo;
+    /** Pointer to associated ControlEngine object */
+    ControlEngine *m_pControlEngine;
     /** Keyboard accelerator */
     QAccel *m_pAccel;
 
@@ -117,6 +126,9 @@ private:
     static QWidget *spParentWidget;
     /** List of ControlObject instantiations */
     static QPtrList<ControlObject> list;
+    /** Mutex protecting access to the queue */
+    static QMutex queueMutex;
+
 };
 
 
