@@ -66,12 +66,15 @@ TrackList::TrackList( const QString sDirectory,const QString sPlaylistdir ,WTrac
     m_pTrack2 = 0;
 
     wTree = pTree;
-    wTree->m_sPlaylistdir = sPlaylistdir;
-    wTree->setRoot(m_sDirectory);
-    wTree->setPlaylist(wTree->m_sPlaylistdir);
-	
+    if (wTree)
+    {
+        wTree->m_sPlaylistdir = sPlaylistdir;
+        wTree->setRoot(m_sDirectory);
+        wTree->setPlaylist(wTree->m_sPlaylistdir);
+    }
+
 	//m_lTracks.setAutoDelete( TRUE ); // the list owns the objects
-    
+
 	// Get ControlObject for determining end of track mode, and set default value to STOP.
     m_pEndOfTrackModeCh1 = ControlObject::getControl(ConfigKey("[Channel1]","TrackEndMode"));
     m_pEndOfTrackModeCh2 = ControlObject::getControl(ConfigKey("[Channel2]","TrackEndMode"));
@@ -84,11 +87,11 @@ TrackList::TrackList( const QString sDirectory,const QString sPlaylistdir ,WTrac
     m_pEndOfTrackCh1 = ControlObject::getControl(ConfigKey("[Channel1]","TrackEnd"));
     m_pEndOfTrackCh2 = ControlObject::getControl(ConfigKey("[Channel2]","TrackEnd"));
     connect(m_pEndOfTrackCh1, SIGNAL(signalUpdateApp(double)), this, SLOT(slotEndOfTrackCh1(double)));
-    connect(m_pEndOfTrackCh2, SIGNAL(signalUpdateApp(double)), this, SLOT(slotEndOfTrackCh2(double)));    
-    
+    connect(m_pEndOfTrackCh2, SIGNAL(signalUpdateApp(double)), this, SLOT(slotEndOfTrackCh2(double)));
+
     // Set default playlist
 	currentPlaylist = "default.xml";
-	
+
 	treeSelectMenu = new QPopupMenu();
 	treeSelectMenu->insertItem("Delete Playlist",this,SLOT(slotDeletePlaylist()));
 	treeSelectMenu->insertItem("Search for Trackname",this,SLOT(slotFindTrack()));
@@ -108,24 +111,29 @@ TrackList::TrackList( const QString sDirectory,const QString sPlaylistdir ,WTrac
 	playSelectMenu->insertSeparator(2);
 	playSelectMenu->insertSeparator(5);
 	// Connect the right click to the slot where the menu is shown:
-    connect(m_pTableTracks, SIGNAL(pressed(int, int, int, const QPoint &)),
-                            SLOT(slotClick(int, int, int, const QPoint &)));
-	connect(wTree, SIGNAL(rightButtonPressed ( QListViewItem *, const QPoint &, int )),
-                   SLOT(slotTreeClick(QListViewItem *, const QPoint &, int)));
-				   
-	//connect applyDir signal with the UpdateTracklist slot, as described in wTreeList
-	connect(m_pTableTracks, SIGNAL(applyDir(QString )), this, SLOT(slotUpdateTracklist( QString  )));
-	connect(wTree, SIGNAL(loadPls(QString)), this, SLOT(slotUpdateTracklistFake( QString) ) );
-	//WriteXML();
+    if (m_pTableTracks)
+        connect(m_pTableTracks, SIGNAL(pressed(int, int, int, const QPoint &)),
+                                SLOT(slotClick(int, int, int, const QPoint &)));
+    if (wTree)
+        connect(wTree, SIGNAL(rightButtonPressed ( QListViewItem *, const QPoint &, int )),
+                       SLOT(slotTreeClick(QListViewItem *, const QPoint &, int)));
+
+    //connect applyDir signal with the UpdateTracklist slot, as described in wTreeList
+    if (m_pTableTracks)
+        connect(m_pTableTracks, SIGNAL(applyDir(QString )), this, SLOT(slotUpdateTracklist( QString  )));
+    if (wTree)
+        connect(wTree, SIGNAL(loadPls(QString)), this, SLOT(slotUpdateTracklistFake( QString) ) );
+
+    //WriteXML();
 	qDebug("Loading Collection");
 	loadCollection();
-	
+
 }
 
 TrackList::~TrackList()
 {
     qDebug("destroying tracklist");
-	 /**	
+	 /**
 	// Initialize xml file:
     QFile opmlFile(wTree->m_sPlaylistdir);
 	QDomDocument domXML("Mixxx_Track_List");
@@ -139,14 +147,14 @@ TrackList::~TrackList()
         //WriteXML();
     }
     opmlFile.close();
-	
+
     // Get the version information:
     QDomElement elementRoot = domXML.documentElement();
-  
-	
+
+
     // Get all the Playlists written in the xml file:
     QDomNode node = elementRoot.firstChild();
-   
+
 	// Only write out the xml file if the current playlist is still contained in it(wasnt deleted beforehand but is still flagged aktive):
 	while ( !node.isNull() )
     {
@@ -157,12 +165,12 @@ TrackList::~TrackList()
 		 node = node.nextSibling();
 	}
     **/
-    
+
     WriteXML();
     unsigned int i;
     for (i=0; i<m_lPlaylist.count(); i++)
         delete m_lPlaylist.at(i);
-    
+
     // Delete all the tracks:
     for (i=0; i<m_lTracks.count(); i++)
         delete m_lTracks.at(i);
@@ -171,44 +179,47 @@ TrackList::~TrackList()
 //Loads the Main Collection into m_lTracks
 void TrackList::loadCollection()
 {
-	QFile opmlFile(wTree->m_sPlaylistdir);
+    if (!wTree)
+        return;
+
+    QFile opmlFile(wTree->m_sPlaylistdir);
 	QDomDocument domXML("Mixxx_Track_List");
 	//qDebug("PlaylistID is: %s", currentPlaylist.latin1());
 	if (!opmlFile.exists()){
-        
+
 	qDebug("Could not open the default playlist file!");
 	return;
 		}
     if (!domXML.setContent( &opmlFile))
     {
-       
+
         opmlFile.close();
-        
+
         //WriteXML();
     }
-    
+
 	opmlFile.close();
-	
+
 	// Get the version information:
     QDomElement elementRoot = domXML.documentElement();
-    
+
     // Get all the Playlists written in the xml file:
     QDomNode node = elementRoot.firstChild();
-    
+
 	while ( !node.isNull() )
     {
         if( node.isElement() && node.nodeName() == "Track")
 		{
 		 TrackInfoObject *Track = new TrackInfoObject(node);
-		
+
 		if(Track->exists()){
 		   Track->m_iIndex = WWidget::selectNodeQString(node, "Index").toInt();
-			m_lTracks.append(Track);
-		   }		
+            m_lTracks.append(Track);
+		   }
 		}
 	        node= node.nextSibling();
 		}
-		
+
 }
 //Loads a Playlist into the TrackTable
 void TrackList::UpdateTracklistFromPls(){
@@ -218,14 +229,14 @@ void TrackList::UpdateTracklistFromPls(){
 	for(i=0; i<m_lPlaylist.count();i++){
 	   Track = m_lPlaylist.at(i);
 		iRow = m_pTableTracks->numRows();
-		m_pTableTracks->insertRows(iRow, 1);	
-	    
+		m_pTableTracks->insertRows(iRow, 1);
+
 		if (Track->exists())
         {
 			Track->insertInTrackTableRow(m_pTableTracks , iRow , Track->m_iIndex);
-	       	
+
 	    }
-		
+
 	}
 	// Find the track which has been played the most times:
 	m_iMaxTimesPlayed = 1;
@@ -430,7 +441,10 @@ void TrackList::UpdateScores()
 void TrackList::WriteXML()
 {
 	bool newFile = false;
-	
+
+    if (!wTree)
+        return;
+
 	QFile opmlFile(wTree->m_sPlaylistdir);
 	QDomDocument domXML("Mixxx_Track_List");
 	//qDebug("PlaylistID is: %s", currentPlaylist.latin1());

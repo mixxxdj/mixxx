@@ -80,6 +80,8 @@ class MixxxApp : public QMainWindow
     bool queryExit();
   public slots:
 
+    /** Opens a file in player 1 */
+    void slotFileOpen();
     /** exits the application */
     void slotFileQuit();
     /** toggle audio beat marks */

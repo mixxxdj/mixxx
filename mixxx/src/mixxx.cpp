@@ -190,7 +190,7 @@ MixxxApp::MixxxApp(QApplication *a, QStringList files)
 
     // Read keyboard configuration and set kdbConfig object in WWidget
     kbdconfig = new ConfigObject<ConfigValueKbd>(QString(qConfigPath).append("keyboard/").append("Standard.kbd.cfg"));
-    
+
     // Set the static config pointer for the ControlObject
     control->setKbdConfig(kbdconfig);
 
@@ -198,7 +198,7 @@ MixxxApp::MixxxApp(QApplication *a, QStringList files)
     // Configure ControlEngine object
     m_pControlEngine = new ControlEngine(control);
 
-   	// Prepare the tracklist:
+    // Prepare the tracklist:
     QDir d(config->getValueString(ConfigKey("[Playlist]","Directory")));
     if ((config->getValueString(ConfigKey("[Playlist]","Directory")).length()<1) | (!d.exists()))
     {
@@ -211,7 +211,7 @@ MixxxApp::MixxxApp(QApplication *a, QStringList files)
             config->Save();
         }
     }
-	QFile b(config->getValueString(ConfigKey("[Playlist]","Listpath")));
+    QFile b(config->getValueString(ConfigKey("[Playlist]","Listpath")));
     if ((config->getValueString(ConfigKey("[Playlist]","Listpath")).length()<1) | (!b.exists()))
     {
         QFileDialog* fd = new QFileDialog(this, QString::null, true);
@@ -221,10 +221,13 @@ MixxxApp::MixxxApp(QApplication *a, QStringList files)
         {
             config->set(ConfigKey("[Playlist]","Listpath"), fd->selectedFile());
             config->Save();
-        }else{
-			qWarning("Global Playlist file has to be a xml File ! (end with .xml)");
-		}
+        }
+        else
+        {
+            qWarning("Global Playlist file has to be a xml File ! (end with .xml)");
+        }
     }
+
     // Try initializing PowerMates
     powermate1 = 0;
     powermate2 = 0;
@@ -432,100 +435,98 @@ MixxxApp::~MixxxApp()
 /** initializes all QActions of the application */
 void MixxxApp::initActions()
 {
-  fileQuit = new QAction(tr("Exit"), tr("E&xit"), QAccel::stringToKey(tr("Ctrl+Q")), this);
-  fileQuit->setStatusTip(tr("Quits the application"));
-  fileQuit->setWhatsThis(tr("Exit\n\nQuits the application"));
-  connect(fileQuit, SIGNAL(activated()), this, SLOT(slotFileQuit()));
+    fileOpen = new QAction(tr("Open..."), tr("&Open"), QAccel::stringToKey(tr("Ctrl+O")), this);
+    fileOpen->setStatusTip(tr("Opens a file in player 1"));
+    fileOpen->setWhatsThis(tr("Open\n\nOpens a file in player 1"));
+    connect(fileOpen, SIGNAL(activated()), this, SLOT(slotFileOpen()));
 
-  optionsBeatMark = new QAction(tr("Audio Beat Marks"), tr("&Audio Beat Marks"), 0, this, 0, true);
-  optionsBeatMark->setOn(false);
-  optionsBeatMark->setStatusTip(tr("Audio Beat Marks"));
-  optionsBeatMark->setWhatsThis(tr("Audio Beat Marks\nMark beats by audio clicks"));
-  connect(optionsBeatMark, SIGNAL(toggled(bool)), this, SLOT(slotOptionsBeatMark(bool)));
+    fileQuit = new QAction(tr("Exit"), tr("E&xit"), QAccel::stringToKey(tr("Ctrl+Q")), this);
+    fileQuit->setStatusTip(tr("Quits the application"));
+    fileQuit->setWhatsThis(tr("Exit\n\nQuits the application"));
+    connect(fileQuit, SIGNAL(activated()), this, SLOT(slotFileQuit()));
 
-  optionsFullScreen = new QAction(tr("Full Screen"), tr("&Full Screen"), QAccel::stringToKey(tr("Escape")), this, 0, this);
-  optionsFullScreen->setOn(false);
-  optionsFullScreen->setStatusTip(tr("Full Screen"));
-  optionsFullScreen->setWhatsThis(tr("Display Mixxx using the full screen"));
-  connect(optionsFullScreen, SIGNAL(toggled(bool)), this, SLOT(slotOptionsFullScreen(bool)));
+    optionsBeatMark = new QAction(tr("Audio Beat Marks"), tr("&Audio Beat Marks"), 0, this, 0, true);
+    optionsBeatMark->setOn(false);
+    optionsBeatMark->setStatusTip(tr("Audio Beat Marks"));
+    optionsBeatMark->setWhatsThis(tr("Audio Beat Marks\nMark beats by audio clicks"));
+    connect(optionsBeatMark, SIGNAL(toggled(bool)), this, SLOT(slotOptionsBeatMark(bool)));
 
-  optionsPreferences = new QAction(tr("Preferences"), tr("&Preferences..."), QAccel::stringToKey(tr("Ctrl+P")), this);
-  optionsPreferences->setStatusTip(tr("Preferences"));
-  optionsPreferences->setWhatsThis(tr("Preferences\nPlayback and MIDI preferences"));
-  connect(optionsPreferences, SIGNAL(activated()), this, SLOT(slotOptionsPreferences()));
+    optionsFullScreen = new QAction(tr("Full Screen"), tr("&Full Screen"), QAccel::stringToKey(tr("Escape")), this, 0, this);
+    optionsFullScreen->setOn(false);
+    optionsFullScreen->setStatusTip(tr("Full Screen"));
+    optionsFullScreen->setWhatsThis(tr("Display Mixxx using the full screen"));
+    connect(optionsFullScreen, SIGNAL(toggled(bool)), this, SLOT(slotOptionsFullScreen(bool)));
 
-  helpAboutApp = new QAction(tr("About"), tr("&About..."), 0, this);
-  helpAboutApp->setStatusTip(tr("About the application"));
-  helpAboutApp->setWhatsThis(tr("About\n\nAbout the application"));
-  connect(helpAboutApp, SIGNAL(activated()), this, SLOT(slotHelpAbout()));
+    optionsPreferences = new QAction(tr("Preferences"), tr("&Preferences..."), QAccel::stringToKey(tr("Ctrl+P")), this);
+    optionsPreferences->setStatusTip(tr("Preferences"));
+    optionsPreferences->setWhatsThis(tr("Preferences\nPlayback and MIDI preferences"));
+    connect(optionsPreferences, SIGNAL(activated()), this, SLOT(slotOptionsPreferences()));
 
+    helpAboutApp = new QAction(tr("About"), tr("&About..."), 0, this);
+    helpAboutApp->setStatusTip(tr("About the application"));
+    helpAboutApp->setWhatsThis(tr("About\n\nAbout the application"));
+    connect(helpAboutApp, SIGNAL(activated()), this, SLOT(slotHelpAbout()));
 }
 
 void MixxxApp::initMenuBar()
 {
-  ///////////////////////////////////////////////////////////////////
-  // MENUBAR
+    // MENUBAR
 
-  ///////////////////////////////////////////////////////////////////
-  // menuBar entry fileMenu
-  fileMenu=new QPopupMenu();
-  fileQuit->addTo(fileMenu);
+    // menuBar entry fileMenu
+    fileMenu=new QPopupMenu();
+    fileOpen->addTo(fileMenu);
+    fileQuit->addTo(fileMenu);
 
-  ///////////////////////////////////////////////////////////////////
-  // menuBar entry optionsMenu
-  optionsMenu=new QPopupMenu();
-  optionsMenu->setCheckable(true);
-//  optionsBeatMark->addTo(optionsMenu);
-  optionsFullScreen->addTo(optionsMenu);
-  optionsPreferences->addTo(optionsMenu);
+    // menuBar entry optionsMenu
+    optionsMenu=new QPopupMenu();
+    optionsMenu->setCheckable(true);
+    //  optionsBeatMark->addTo(optionsMenu);
+    optionsFullScreen->addTo(optionsMenu);
+    optionsPreferences->addTo(optionsMenu);
 
-  ///////////////////////////////////////////////////////////////////
-  // menuBar entry viewMenu
-  viewMenu=new QPopupMenu();
-  viewMenu->setCheckable(true);
+    // menuBar entry viewMenu
+    viewMenu=new QPopupMenu();
+    viewMenu->setCheckable(true);
 
-  ///////////////////////////////////////////////////////////////////
-  // EDIT YOUR APPLICATION SPECIFIC MENUENTRIES HERE
+    // menuBar entry helpMenu
+    helpMenu=new QPopupMenu();
+    helpAboutApp->addTo(helpMenu);
 
-  ///////////////////////////////////////////////////////////////////
-  // menuBar entry helpMenu
-  helpMenu=new QPopupMenu();
-  helpAboutApp->addTo(helpMenu);
-
-  ///////////////////////////////////////////////////////////////////
-  // MENUBAR CONFIGURATION
-  menuBar()->insertItem(tr("&File"), fileMenu);
-  //menuBar()->insertItem(tr("&Edit"), editMenu);
-  menuBar()->insertItem(tr("&Options"), optionsMenu);
-  //menuBar()->insertItem(tr("&View"), viewMenu);
-  menuBar()->insertSeparator();
-  menuBar()->insertItem(tr("&Help"), helpMenu);
-
+    // MENUBAR CONFIGURATION
+    menuBar()->insertItem(tr("&File"), fileMenu);
+    //menuBar()->insertItem(tr("&Edit"), editMenu);
+    menuBar()->insertItem(tr("&Options"), optionsMenu);
+    //menuBar()->insertItem(tr("&View"), viewMenu);
+    menuBar()->insertSeparator();
+    menuBar()->insertItem(tr("&Help"), helpMenu);
 }
 
 bool MixxxApp::queryExit()
 {
-  int exit=QMessageBox::information(this, tr("Quit..."),
-                                    tr("Do your really want to quit?"),
-                                    QMessageBox::Ok, QMessageBox::Cancel);
+    int exit=QMessageBox::information(this, tr("Quit..."),
+                                      tr("Do your really want to quit?"),
+                                      QMessageBox::Ok, QMessageBox::Cancel);
 
-  if (exit==1)
-  {
+    if (exit==1)
+    {
+    }
+    else
+    {
+    };
 
-  }
-  else
-  {
-
-  };
-
-  return (exit==1);
+    return (exit==1);
 }
 
-/////////////////////////////////////////////////////////////////////
-// SLOT IMPLEMENTATION
-/////////////////////////////////////////////////////////////////////
-
-
+void MixxxApp::slotFileOpen()
+{
+    QFileDialog* fd = new QFileDialog(this, QString::null, true);
+    fd->setCaption(QString("Choose a music file"));
+    fd->setMode(QFileDialog::ExistingFile);
+    if (fd->exec() == QDialog::Accepted)
+    {
+        m_pTracks->loadTrack1(fd->selectedFile());
+    }
+}
 
 void MixxxApp::slotFileQuit()
 {
