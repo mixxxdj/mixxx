@@ -1,4 +1,4 @@
-<!DOCTYPE UI><UI version="3.0" stdsetdef="1">
+<!DOCTYPE UI><UI version="3.1" stdsetdef="1">
 <class>DlgPlaylistDlg</class>
 <widget class="QWidget">
     <property name="name">
@@ -33,7 +33,7 @@
             <property name="clickable">
                 <bool>true</bool>
             </property>
-            <property name="resizeable">
+            <property name="resizable">
                 <bool>false</bool>
             </property>
         </column>
@@ -44,7 +44,7 @@
             <property name="clickable">
                 <bool>true</bool>
             </property>
-            <property name="resizeable">
+            <property name="resizable">
                 <bool>true</bool>
             </property>
         </column>
@@ -55,7 +55,7 @@
             <rect>
                 <x>3</x>
                 <y>0</y>
-                <width>625</width>
+                <width>630</width>
                 <height>200</height>
             </rect>
         </property>

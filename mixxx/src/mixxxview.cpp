@@ -50,16 +50,16 @@ MixxxView::MixxxView(QWidget *parent, MixxxDoc *doc) : QWidget(parent)
     mainGrid->addMultiCellWidget(playlist,2,2,0,4);
 
     //let the ratio between the widths of columns 0 and 1 be 2:3.
-    mainGrid->setColStretch( 0, 242);
-    mainGrid->setColStretch( 1,  73);
+    mainGrid->setColStretch( 0, 240);
+    mainGrid->setColStretch( 1,  70);
     mainGrid->setColStretch( 2,  16);
-    mainGrid->setColStretch( 3,  73);
-    mainGrid->setColStretch( 4, 242);
-    mainGrid->setColStretch( 5, 100);
+    mainGrid->setColStretch( 3,  70);
+    mainGrid->setColStretch( 4, 240);
+    mainGrid->setColStretch( 5,  90);
 
-    mainGrid->setRowStretch( 0, 230);
+    mainGrid->setRowStretch( 0, 265);
     mainGrid->setRowStretch( 1,  43);
-    mainGrid->setRowStretch( 2, 200);
+    mainGrid->setRowStretch( 2, 215);
 }
 
 
