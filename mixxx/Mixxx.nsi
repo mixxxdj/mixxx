@@ -61,7 +61,6 @@ Section "Mixxx (required)" SecMixxx
   File "src\midi\MidiTech-MidiControl.midi.cfg"
   File "src\midi\Mixman DM2 for Mixxx.dm2"
   File "src\midi\Mixman DM2.midi.cfg"
-  File "src\midi\Powermate.midi.cfg"
 
   SetOutPath $INSTDIR\keyboard
   File "src\keyboard\Standard.kbd.cfg"

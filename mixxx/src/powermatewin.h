@@ -45,6 +45,7 @@ protected:
     void run();
     void led_write(int iStaticBrightness, int iSpeed, int iTable, int iAsleep, int iAwake);
     HANDLE GetDeviceViaInterface(GUID* pGuid, DWORD instance);
+	void process_event(char *pEv);
 
     /** File handle of current open /dev/input/event device */
     HANDLE m_hFd;

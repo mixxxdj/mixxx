@@ -45,8 +45,10 @@ Reader::~Reader()
     if (running())
         stop();
 
+#ifndef __WIN__
     delete readerwave;
     delete readAhead;
+#endif
 }
 
 void Reader::addVisual(VisualChannel *pVisualChannel)
