@@ -25,7 +25,7 @@
 #include "defs.h"
 #include "monitor.h"
 
-class ReaderBuffer;
+class ReaderExtractWave;
 class SoundSource;
 class EngineBuffer;
 
@@ -49,7 +49,7 @@ public:
       * not thread safe and should be called before the reader thread is started */
     CSAMPLE *getBufferWavePtr();
     /** Should this really be possible??? */
-    ReaderBuffer *getSoundBuffer();
+    ReaderExtractWave *getSoundBuffer();
 
     /** Mutex controlling access to file_srate, file_length along with filepos_start and
       * filepos_end from ReaderBuffer. These variables are shared between the reader and the
@@ -81,7 +81,7 @@ private:
       * While holding this mutex, the EngineBuffer::process will silence, not reading the sound buffer */
     QMutex *pause;
       
-    ReaderBuffer *readerbuffer;
+    ReaderExtractWave *readerwave;
     EngineBuffer *enginebuffer;
     
     QMutex requestStop;

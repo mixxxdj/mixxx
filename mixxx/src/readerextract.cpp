@@ -1,7 +1,7 @@
 /***************************************************************************
-                          readerbufferevent.cpp  -  description
+                          readerextract.cpp  -  description
                              -------------------
-    begin                : Mon Mar 3 2003
+    begin                : Tue Mar 18 2003
     copyright            : (C) 2003 by Tue & Ken Haste Andersen
     email                : haste@diku.dk
  ***************************************************************************/
@@ -15,22 +15,16 @@
  *                                                                         *
  ***************************************************************************/
 
-#include "readerbufferevent.h"
+#include "readerextract.h"
 
-ReaderBufferEvent::ReaderBufferEvent(int pos, int len) : QCustomEvent(10002), position(pos), length(len)
+int ReaderExtract::waverate = 0;
+int ReaderExtract::chunkNo = 0;
+
+ReaderExtract::ReaderExtract(ReaderExtract *_input)
 {
+    input = _input;
 }
 
-ReaderBufferEvent::~ReaderBufferEvent()
+ReaderExtract::~ReaderExtract()
 {
-}
-
-int ReaderBufferEvent::pos() const
-{
-    return position;
-}
-
-int ReaderBufferEvent::len() const
-{
-    return length;
 }
