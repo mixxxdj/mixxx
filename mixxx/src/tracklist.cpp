@@ -60,12 +60,15 @@ TrackList::TrackList( const QString sDirectory,const QString sPlaylistdir ,WTrac
     m_pNumberPos1 = pNumberPos1;
     m_pNumberPos2 = pNumberPos2;
     
-	m_iCurTrackIdxCh1 = -1;
+    m_iCurTrackIdxCh1 = -1;
     m_iCurTrackIdxCh2 = -1;                  
-	wTree = pTree;
+    m_pTrack1 = 0;
+    m_pTrack2 = 0;
+
+    wTree = pTree;
     wTree->m_sPlaylistdir = sPlaylistdir;
-	wTree->setRoot(m_sDirectory);
-	wTree->setPlaylist(wTree->m_sPlaylistdir);
+    wTree->setRoot(m_sDirectory);
+    wTree->setPlaylist(wTree->m_sPlaylistdir);
 	
 	//m_lTracks.setAutoDelete( TRUE ); // the list owns the objects
     
@@ -241,6 +244,17 @@ void TrackList::loadTrack2(QString name)
         m_pText2->setText(t->getInfo());
     }
 }
+
+TrackInfoObject *TrackList::getTrackInfo1()
+{
+    return m_pTrack1;
+}
+
+TrackInfoObject *TrackList::getTrackInfo2()
+{
+    return m_pTrack2;
+}
+
 void TrackList::slotEndOfTrackCh1(double)
 {
     switch ((int)m_pEndOfTrackModeCh1->getValue())
@@ -616,7 +630,7 @@ TrackInfoObject *TrackList::FileExistsInList( const QString sFilename,QDomDocume
 void TrackList::slotChangePlay_1(int idx)
 {
     if (idx==-1)
-       idx =  m_pTableTracks->text(m_pTableTracks->currentRow(), COL_INDEX ).toInt();
+        idx =  m_pTableTracks->text(m_pTableTracks->currentRow(), COL_INDEX ).toInt();
 	
 	//(m_iCurTrackIdxCh1 = m_pTableTracks->text(m_pTableTracks->currentRow(), COL_INDEX ).toInt();
     
@@ -625,6 +639,8 @@ void TrackList::slotChangePlay_1(int idx)
     //qDebug("Working on : %s",track->getFilename().latin1());
     if (track && track->m_iIndex == idx)
     {
+        m_pTrack1 = track;
+
         // Update score:
         track->incTimesPlayed();
         if (track->getTimesPlayed() > m_iMaxTimesPlayed)
@@ -657,6 +673,8 @@ void TrackList::slotChangePlay_2(int idx)
         
     if (track && track->m_iIndex == idx)
     {
+        m_pTrack2 = track;
+
         // Update score:
         track->incTimesPlayed();
         if (track->getTimesPlayed() > m_iMaxTimesPlayed)
