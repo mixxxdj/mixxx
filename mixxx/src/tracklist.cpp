@@ -24,17 +24,21 @@
 #include "reader.h"
 #include "wtracktable.h"
 #include "wtracktableitem.h"
+#include "wnumberpos.h"
 #include "controlobject.h"
 #include "enginebuffer.h"
 
 TrackList::TrackList( const QString sDirectory, WTrackTable *pTableTracks,
                       QLabel *text1, QLabel *text2,
+                      WNumberPos *pNumberPos1, WNumberPos *pNumberPos2,
                       EngineBuffer *buffer1, EngineBuffer *buffer2)
 {
     m_sDirectory = sDirectory;
     m_pTableTracks = pTableTracks;
     m_pText1 = text1;
     m_pText2 = text2;
+    m_pNumberPos1 = pNumberPos1;
+    m_pNumberPos2 = pNumberPos2;
     m_pBuffer1 = buffer1;
     m_pBuffer2 = buffer2;
 
@@ -314,7 +318,6 @@ bool TrackList::AddFiles(const char *path)
         {
 	    if (!d->filePath().endsWith(".") && !d->filePath().endsWith(".."))
             {
-		qDebug("dir %s",d->filePath().latin1());
                 if (AddFiles(d->filePath()))
                     bFoundFiles = true;
 	    }
@@ -436,6 +439,9 @@ void TrackList::slotChangePlay_1(int idx)
 
         // Write info
         m_pText1->setText( track->getInfo() );
+
+        // Set duration in playpos widget
+        m_pNumberPos1->setDuration(track->m_iDuration);
     }
 }
 
@@ -458,6 +464,9 @@ void TrackList::slotChangePlay_2(int idx)
 
         // Write info
         m_pText2->setText( track->getInfo() );
+
+        // Set duration in playpos widget
+        m_pNumberPos2->setDuration(track->m_iDuration);
     }
 }
 

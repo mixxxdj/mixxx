@@ -342,8 +342,11 @@ MixxxApp::MixxxApp(QApplication *a, QStringList files)
     }
 
     // Initialize tracklist:
-    m_pTracks = new TrackList(config->getValueString(ConfigKey("[Playlist]","Directory")), view->m_pTrackTable,
-                              view->m_pTextCh1, view->m_pTextCh2, buffer1, buffer2);
+    m_pTracks = new TrackList(config->getValueString(ConfigKey("[Playlist]","Directory")),
+                              view->m_pTrackTable,
+                              view->m_pTextCh1, view->m_pTextCh2,
+                              view->m_pNumberPosCh1, view->m_pNumberPosCh2,
+                              buffer1, buffer2);
 
     // Initialize preference dialog
     prefDlg = new DlgPreferences(this, view, midi, player, m_pTracks, config, midiconfig, control);

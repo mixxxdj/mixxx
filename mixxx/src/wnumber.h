@@ -20,6 +20,7 @@
 
 #include "wwidget.h"
 #include <qlabel.h>
+#include <qevent.h>
 
 /**
   *@author Tue & Ken Haste Andersen
@@ -27,7 +28,7 @@
 
 class WNumber : public WWidget  {
     Q_OBJECT
-public: 
+public:
     WNumber(QWidget *parent=0, const char *name=0);
     ~WNumber();
     void setup(QDomNode node);
@@ -36,8 +37,9 @@ public:
     void setNumDigits(int);
 public slots:
     void setValue(double dValue);
-private:
-    QLabel *m_pLabel;
+protected:
+    /** Multiplication factor */
+     QLabel *m_pLabel;
     QString m_qsText;
     int m_iNoDigits;
 };

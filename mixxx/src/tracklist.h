@@ -13,6 +13,7 @@ class QPoint;
 class EngineBuffer;
 class WTrackTable;
 class ControlObject;
+class WNumberPos;
 
 // Defines for the rows in the table.
 const int COL_SCORE = 0;
@@ -36,7 +37,7 @@ class TrackList : public QObject
 {
     Q_OBJECT
 public:
-    TrackList(const QString, WTrackTable *, QLabel *, QLabel *,
+    TrackList(const QString, WTrackTable *, QLabel *, QLabel *, WNumberPos *, WNumberPos *,
               EngineBuffer *, EngineBuffer *);
     ~TrackList();
     void WriteXML( );
@@ -81,6 +82,8 @@ private:
     QPopupMenu *playSelectMenu;
     /** Pointers to the play controls */
     QLabel *m_pText1, *m_pText2;
+    /** Pointer to absolute position widgets */
+    WNumberPos *m_pNumberPos1, *m_pNumberPos2;
     /** Points to the two play buffers */
     EngineBuffer *m_pBuffer1, *m_pBuffer2;
 

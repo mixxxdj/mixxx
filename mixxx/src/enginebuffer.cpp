@@ -178,7 +178,7 @@ EngineBuffer::EngineBuffer(PowerMate *_powermate, const char *_group)
 
     // Construct scaling object
     scale = new EngineBufferScaleLinear(reader->getWavePtr());
-    
+
     oldEvent = 0.;
     temp_rate = 0.;
 
@@ -638,7 +638,10 @@ CSAMPLE *EngineBuffer::process(const CSAMPLE *, const int buf_size)
             m_iSamplesCalculated += buf_size;
             if (m_iSamplesCalculated > (44100/UPDATE_RATE) )
             {
-                playposSlider->set(filepos_play/file_length_old);
+                if (file_length_old!=0.)
+                    playposSlider->set(filepos_play/file_length_old);
+                else
+                    playposSlider->set(0.);
                 m_iSamplesCalculated = 0;
             }
 

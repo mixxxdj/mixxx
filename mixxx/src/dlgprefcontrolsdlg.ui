@@ -9,7 +9,7 @@
             <x>0</x>
             <y>0</y>
             <width>459</width>
-            <height>428</height>
+            <height>431</height>
         </rect>
     </property>
     <property name="caption">
@@ -182,13 +182,53 @@
         <property name="geometry">
             <rect>
                 <x>10</x>
-                <y>161</y>
+                <y>201</y>
                 <width>341</width>
                 <height>70</height>
             </rect>
         </property>
         <property name="text">
             <string></string>
+        </property>
+    </widget>
+    <widget class="QLabel">
+        <property name="name">
+            <cstring>TextLabel6_2_2_3</cstring>
+        </property>
+        <property name="enabled">
+            <bool>true</bool>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>9</x>
+                <y>130</y>
+                <width>170</width>
+                <height>19</height>
+            </rect>
+        </property>
+        <property name="font">
+            <font>
+            </font>
+        </property>
+        <property name="text">
+            <string>Position display</string>
+        </property>
+    </widget>
+    <widget class="QComboBox">
+        <property name="name">
+            <cstring>ComboBoxPosition</cstring>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>189</x>
+                <y>126</y>
+                <width>170</width>
+                <height>22</height>
+            </rect>
+        </property>
+        <property name="font">
+            <font>
+            </font>
         </property>
     </widget>
 </widget>
