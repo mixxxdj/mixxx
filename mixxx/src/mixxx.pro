@@ -15,7 +15,7 @@ unix:LIBS += -lasound
 
 # PortMidi
 DEFINES += __PORTMIDI__
-unix:LIBS += -Llibportmidi.a -Llibporttime.a
+unix:LIBS += -lportmidi -lporttime
 win32:LIBS +=
 
 #
