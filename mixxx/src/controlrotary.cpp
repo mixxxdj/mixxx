@@ -24,17 +24,18 @@ ControlRotary::ControlRotary(ConfigKey *key, ControlPushButton *playbutton) : Co
    Input:   the gray code.
    -------- ------------------------------------------------------ */
 // This member is not properly overloading the one in controlobject. Therefore it is 
-// never called, and the graycode translation has been moved to slotSetPositionMidi.
+// never called, and the graycode translation has been moved to slotSetPosition.
 void ControlRotary::slotSetPositionMidi(int _newpos)
 {
-  // get position from gray code
-  int newpos = graycodetable[(int)(unsigned char)_newpos]; 
-  slotSetPosition(newpos);
+    qDebug("rot");
+  //int newpos = graycodetable[(int)(unsigned char)_newpos]; 
+  slotSetPosition(_newpos);
   //emit updateGUI(newpos);
 }
 
 void ControlRotary::slotSetPosition(int newpos)
 {
+  // get position from gray code
   newpos = graycodetable[(int)(unsigned char)newpos]; 
 
   if ((newpos != -128) && (newpos != position))

@@ -58,8 +58,9 @@ EngineBuffer::EngineBuffer(QApplication *a, QWidget *m, DlgPlaycontrol *_playcon
   wheel = new ControlRotary(&k3, PlayButton);
   connect(playcontrol->WheelPlaycontrol, SIGNAL(valueChanged(int)), wheel, SLOT(slotSetValue(int)));
   connect(wheel, SIGNAL(valueChanged(FLOAT_TYPE)), this, SLOT(slotUpdateRate(FLOAT_TYPE)));
-  connect(wheel, SIGNAL(updateGUI(int)), playcontrol->WheelPlaycontrol, SLOT(setValue(int)));
-  connect(wheel, SIGNAL(updateGUI(int)), wheel, SLOT(slotSetPositionMidi(int)));
+  // Don't connect this, it results in an infinite loop:
+//  connect(wheel, SIGNAL(updateGUI(int)), playcontrol->WheelPlaycontrol, SLOT(setValue(int)));
+  connect(wheel, SIGNAL(updateGUI(int)), wheel, SLOT(slotSetPosition(int)));
 
   // Slider to show and change song position
   connect(playcontrol->SliderPosition, SIGNAL(valueChanged(int)), this, SLOT(slotPosition(int)));
