@@ -50,7 +50,7 @@ MixxxView::MixxxView(QWidget *parent) : QWidget(parent)
 
     m_pTrackTable = new WTrackTable(main);
     m_pTrackTable->move(76,490);
-    m_pTrackTable->setFixedSize(850, 200);
+    m_pTrackTable->setFixedSize(870, 250);
 
     // Set visual vidget here
     m_pVisualCh1 = 0;

@@ -346,16 +346,17 @@ void MixxxApp::initActions()
   fileQuit->setWhatsThis(tr("Exit\n\nQuits the application"));
   connect(fileQuit, SIGNAL(activated()), this, SLOT(slotFileQuit()));
 
-  optionsLeft = new QAction(tr("Left channel"), tr("&Left channel"), QAccel::stringToKey(tr("Ctrl+L")), this, 0, true);
-  optionsLeft->setOn(true);
-  optionsRight = new QAction(tr("Right channel"), tr("&Right channel"), QAccel::stringToKey(tr("Ctrl+R")), this, 0, true);
-  optionsRight->setOn(true);
-
   optionsBeatMark = new QAction(tr("Audio Beat Marks"), tr("&Audio Beat Marks"), 0, this, 0, true);
   optionsBeatMark->setOn(false);
   optionsBeatMark->setStatusTip(tr("Audio Beat Marks"));
   optionsBeatMark->setWhatsThis(tr("Audio Beat Marks\nMark beats by audio clicks"));
   connect(optionsBeatMark, SIGNAL(toggled(bool)), this, SLOT(slotOptionsBeatMark(bool)));
+
+  optionsFullScreen = new QAction(tr("Full Screen"), tr("&Full Screen"), QAccel::stringToKey(tr("Ctrl+F")), this, 0, this);
+  optionsFullScreen->setOn(false);
+  optionsFullScreen->setStatusTip(tr("Full Screen"));
+  optionsFullScreen->setWhatsThis(tr("Display Mixxx using the full screen"));
+  connect(optionsFullScreen, SIGNAL(toggled(bool)), this, SLOT(slotOptionsFullScreen(bool)));
 
   optionsPreferences = new QAction(tr("Preferences"), tr("&Preferences..."), 0, this);
   optionsPreferences->setStatusTip(tr("Preferences"));
@@ -383,10 +384,8 @@ void MixxxApp::initMenuBar()
   // menuBar entry optionsMenu
   optionsMenu=new QPopupMenu();
   optionsMenu->setCheckable(true);
-  optionsLeft->addTo(optionsMenu);
-  optionsRight->addTo(optionsMenu);
-  optionsMenu->insertSeparator();
   optionsBeatMark->addTo(optionsMenu);
+  optionsFullScreen->addTo(optionsMenu);
   optionsPreferences->addTo(optionsMenu);
 
   ///////////////////////////////////////////////////////////////////
@@ -452,6 +451,20 @@ void MixxxApp::slotFileQuit()
 void MixxxApp::slotOptionsBeatMark(bool)
 {
 // BEAT MARK STUFF
+}
+
+void MixxxApp::slotOptionsFullScreen(bool toggle)
+{
+    if (toggle)
+    {
+        menuBar()->hide();
+        showFullScreen();
+    }
+    else
+    {
+        menuBar()->show();
+        showNormal();
+    }
 }
 
 void MixxxApp::slotOptionsPreferences()

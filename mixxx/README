@@ -7,7 +7,7 @@ http://mixxx.sourceforge.net
 * ABOUT ****************************************************
 Mixxx is software for DJ'ing, using custom or 
 commercial MIDI controllers. You can use wave based
-audio files or MP3 files as audio input.
+audio files, Ogg Vorbis and MP3 files as audio input.
 This release works on Linux (OSS Sound Drivers), Windows and 
 Mac OS 10.2.
 
@@ -15,14 +15,19 @@ Mac OS 10.2.
 * NEWS *****************************************************
 New since 0.9.2:
 - Improved Stability 
-- OpenGL Visualization
+- Waveform displays 
 - Support for PowerMate controllers
 - Better MIDI key support
 - Better sound card support for MacOS X
 - Automatic beat synchronization
 - Better playlist interface with playlists in XML format 
 - Added support for ogg vorbis
-
+- Cue buttons
+- New GUI
+- Pitch bend buttons
+- Fwd/back buttons
+- Fixes in wavefile and MP3 playback
+- Thread bug fix
 
 * REQUIREMENTS *********************************************
 Mixxx is based on the following libraries:
@@ -70,6 +75,5 @@ listed in mixxx.cfg under [Midi] Configdir.
 
 * DEVELOPMENT **********************************************
 If you are interested in joining the development team of
-Mixxx you are most welcome. Especially we search for persons
-to work on the artistic side of the graphical interface.
+Mixxx you are most welcome.
 Send mail to mixxx-devel@lists.sourceforge.net.

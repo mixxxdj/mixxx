@@ -38,6 +38,6 @@ void WTrackTableItem::paint(QPainter *p, const QColorGroup &cg, const QRect &cr,
         g.setColor( QColorGroup::Base, QColor(0,0,0));
     else
         g.setColor( QColorGroup::Base, QColor(0,0,0));
-    
-    QTableItem::paint( p, g, cr, selected );
+
+    QTableItem::paint( p, g, cr, selected);
 }
