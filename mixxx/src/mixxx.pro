@@ -161,10 +161,9 @@ win32 {
   INCLUDEPATH += ../winlib ../winlib/id3lib ../lib/portaudio-v18 ../lib . 
   SOURCES += soundsourcesndfile.cpp
   HEADERS += soundsourcesndfile.h ../winlib/fftw.h ../winlib/rfftw.h
-  LIBS += ../winlib/libmad.lib ../winlib/libid3tag.lib ../winlib/libsndfile.lib ../winlib/rfftw2st.lib ../winlib/fftw2st.lib ../winlib/vorbisfile_static_d.lib ../winlib/vorbis_static_d.lib ../winlib/ogg_static_d.lib
+  LIBS += ../winlib/libmad.lib ../winlib/libid3tag.lib ../winlib/rfftw2st.lib ../winlib/fftw2st.lib ../winlib/libsndfile.lib ../winlib/vorbisfile_static_d.lib ../winlib/vorbis_static_d.lib ../winlib/ogg_static_d.lib
   QMAKE_CXXFLAGS += -GX
-  QMAKE_LFLAGS += /NODEFAULTLIB:libcd /NODEFAULTLIB:libcmtd /NODEFAULTLIB:libc /NODEFAULTLIB:msvcrt
-  #/NODEFAULTLIB:msvcrt.lib 
+  QMAKE_LFLAGS += /NODEFAULTLIB:libcd /NODEFAULTLIB:libcmtd /NODEFAULTLIB:libc #/NODEFAULTLIB:msvcrt /NODEFAULTLIB:library
   CONFIG_PATH = \"config\"
 }
 
