@@ -109,7 +109,7 @@ void TrackInfoObject::checkFileExists()
     else
     {
         m_bExists = false;
-        qDebug("The track %s was not found", getDurationStr().latin1());
+        qDebug("The track %s was not found", getLocation().latin1());
     }
 }
 
