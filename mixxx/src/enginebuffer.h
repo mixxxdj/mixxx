@@ -19,6 +19,7 @@
 #define ENGINEBUFFER_H
 
 #include <qapplication.h>
+#include <qmutex.h>
 #include "defs.h"
 #include "engineobject.h"
 #include "monitor.h"
@@ -90,6 +91,17 @@ public:
     /** Notify used to call seek when playpos slider changes */
     Monitor visualPlaypos;
     float visualRate;
+    
+    /** Lock abs and buffer playpos vars, so that they can be accessed through 
+      * getBufferPlaypos() and getAbsPlaypos() from another thread */
+    void lockPlayposVars();
+    /** Unlocks abs and buffer playpos vars, so that they can be accessed 
+      * internally in this object */
+    void unlockPlayposVars();
+    /** Returns the buffer playpos. lockPlayposVars() must be called in advance */    
+    double getBufferPlaypos();
+    /** Returns the abs playpos. lockPlayposVars() must be called in advance */    
+    double getAbsPlaypos();
 
 
 public slots:
@@ -140,11 +152,18 @@ private:
     /** Is true if a rate temp button is pressed */
     double m_bTempPress;
 
-    ControlEngine *playButton, *rateSlider, *wheel, *playposSlider, *bufferposSlider, *absPlaypos, *audioBeatMark;
+    ControlEngine *playButton, *rateSlider, *wheel, *playposSlider, *audioBeatMark;
     ControlEngine *buttonCueSet, *buttonCueGoto, *buttonCuePreview, *m_pRateDir;
     ControlEngine *buttonRateTempDown, *buttonRateTempDownSmall, *buttonRateTempUp, *buttonRateTempUpSmall;
     ControlEngine *buttonRatePermDown, *buttonRatePermDownSmall, *buttonRatePermUp, *buttonRatePermUpSmall;
     ControlEngine *buttonBeatSync, *cuePoint, *rateEngine;
+    //ControlEngine *bufferposSlider;
+    
+    /** Mutex used in sharing buffer and abs playpos */
+    QMutex m_qPlayposMutex;
+    /** Buffer and absolute playpos shared among threads */
+    double m_dBufferPlaypos, m_dAbsPlaypos;
+    
     /** Control used to signal when at end of file */
     ControlEngine *m_pTrackEnd, *m_pTrackEndMode;
     /** Control used to input desired playback BPM */

@@ -33,7 +33,7 @@
 #endif
 #include <qfileinfo.h>
 
-ReaderExtractWave::ReaderExtractWave(Reader *pReader) : ReaderExtract(0, "signal")
+ReaderExtractWave::ReaderExtractWave(Reader *pReader, EngineBuffer *pEngineBuffer) : ReaderExtract(0, pEngineBuffer, "signal")
 {
     m_pReader = pReader;
 
@@ -60,8 +60,8 @@ ReaderExtractWave::ReaderExtractWave(Reader *pReader) : ReaderExtract(0, "signal
     readerhfc = 0;
     readerbeat = 0;
 #ifdef EXTRACT
-    readerhfc  = new ReaderExtractHFC((ReaderExtract *)this, WINDOWSIZE, STEPSIZE);
-    readerbeat = new ReaderExtractBeat((ReaderExtract *)readerhfc, WINDOWSIZE, STEPSIZE, 100);
+    readerhfc  = new ReaderExtractHFC((ReaderExtract *)this, m_pEngineBuffer, WINDOWSIZE, STEPSIZE);
+    readerbeat = new ReaderExtractBeat((ReaderExtract *)readerhfc, m_pEngineBuffer, WINDOWSIZE, STEPSIZE, 100);
 #endif
 }
 

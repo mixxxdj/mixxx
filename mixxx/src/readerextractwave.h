@@ -40,7 +40,7 @@ class Reader;
 
 class ReaderExtractWave : ReaderExtract {
 public:
-    ReaderExtractWave(Reader *pReader);
+    ReaderExtractWave(Reader *pReader, EngineBuffer *pEngineBuffer);
     ~ReaderExtractWave();
     void newSource(TrackInfoObject *);
     void reset();

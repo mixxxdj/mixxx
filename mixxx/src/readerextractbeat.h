@@ -67,7 +67,7 @@ const float kfBeatConfFilter = 0.995f;
 class ReaderExtractBeat : public ReaderExtract
 {
 public:
-    ReaderExtractBeat(ReaderExtract *input, int frameSize, int frameStep, int _histSize);
+    ReaderExtractBeat(ReaderExtract *input, EngineBuffer *pEngineBuffer, int frameSize, int frameStep, int _histSize);
     ~ReaderExtractBeat();
     void requestNewTrack(TrackInfoObject *pTrack);
     /** Reset buffer without cleaning the histogram (BPM value) */

@@ -30,7 +30,7 @@ Reader::Reader(EngineBuffer *_enginebuffer, QMutex *_pause)
     m_pVisualChannel = 0;
 
     // Allocate reader extract objects
-    readerwave = new ReaderExtractWave(this);
+    readerwave = new ReaderExtractWave(this, enginebuffer);
 
     // Allocate semaphore
     readAhead = new QWaitCondition();

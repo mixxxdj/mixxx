@@ -49,6 +49,9 @@ EngineBuffer::EngineBuffer(PowerMate *_powermate, const char *_group)
 
     m_bTempPress = false;
 
+    m_dAbsPlaypos = 0.;
+    m_dBufferPlaypos = 0.;
+    
     // Play button
     ControlPushButton *p = new ControlPushButton(ConfigKey(group, "play"), true);
     playButton = new ControlEngine(p);
@@ -151,14 +154,10 @@ EngineBuffer::EngineBuffer(PowerMate *_powermate, const char *_group)
     ControlPotmeter *controlplaypos = new ControlPotmeter(ConfigKey(group, "playposition"), 0., 1.);
     playposSlider = new ControlEngine(controlplaypos);
     connect(playposSlider, SIGNAL(valueChanged(double)), this, SLOT(slotControlSeek(double)));
-
-    // Potmeter used to communicate bufferpos_play to GUI thread
-    ControlPotmeter *controlbufferpos = new ControlPotmeter(ConfigKey(group, "bufferplayposition"), 0., READBUFFERSIZE);
-    bufferposSlider = new ControlEngine(controlbufferpos);
-
+    
     // Control used to communicate absolute playpos to GUI thread
-    ControlObject *controlabsplaypos = new ControlObject(ConfigKey(group, "absplayposition"));
-    absPlaypos = new ControlEngine(controlabsplaypos);
+    //ControlObject *controlabsplaypos = new ControlObject(ConfigKey(group, "absplayposition"));
+    //absPlaypos = new ControlEngine(controlabsplaypos);
 
     // m_pTrackEnd is used to signal when at end of file during playback
     p5 = new ControlObject(ConfigKey(group, "TrackEnd"));
@@ -227,10 +226,28 @@ EngineBuffer::~EngineBuffer()
     delete wheel;
     delete rateSlider;
     delete scale;
-    delete bufferposSlider;
-    delete absPlaypos;
     delete m_pTrackEnd;
     delete reader;
+}
+
+void EngineBuffer::lockPlayposVars()
+{
+    m_qPlayposMutex.lock();
+}
+
+void EngineBuffer::unlockPlayposVars()
+{
+    m_qPlayposMutex.unlock();
+}
+
+double EngineBuffer::getBufferPlaypos()
+{
+    return m_dBufferPlaypos;
+}
+
+double EngineBuffer::getAbsPlaypos()
+{
+    return m_dAbsPlaypos;
 }
 
 void EngineBuffer::setQuality(int q)
@@ -296,9 +313,13 @@ void EngineBuffer::setNewPlaypos(double newpos)
     bufferpos_play = 0.;
 
     // Update bufferposSlider
-    bufferposSlider->set((CSAMPLE)bufferpos_play);
-    absPlaypos->set(filepos_play);
-
+    if (m_qPlayposMutex.tryLock())
+    {
+        m_dBufferPlaypos = bufferpos_play;
+        m_dAbsPlaypos = filepos_play;
+        m_qPlayposMutex.unlock();
+    }
+    
     // Ensures that the playpos slider gets updated in next process call
     m_iSamplesCalculated = 1000000;
 
@@ -871,7 +892,7 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBuff
 
             // Update playpos slider and bpm display if necessary
             m_iSamplesCalculated += iBufferSize;
-            if (m_iSamplesCalculated > (44100/UPDATE_RATE))
+            if (m_iSamplesCalculated > (getPlaySrate()/UPDATE_RATE))
             {
                 if (file_length_old!=0.)
                 {
@@ -885,11 +906,16 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBuff
                 
                 m_iSamplesCalculated = 0;
                 
-                // Update bufferposSlider
-                bufferposSlider->set((CSAMPLE)bufferpos_play);
-                absPlaypos->set(filepos_play);
             }
-
+                
+            // Update buffer and abs position. These variables are not in the ControlObject
+            // framework because they need very frequent updates.
+            if (m_qPlayposMutex.tryLock())
+            {
+                m_dBufferPlaypos = bufferpos_play;
+                m_dAbsPlaypos = filepos_play;
+                m_qPlayposMutex.unlock();
+            }
         }
 
         //qDebug("filepos_play %f, len %i, back %i, play %f",filepos_play,file_length_old, backwards, playButton->get());
