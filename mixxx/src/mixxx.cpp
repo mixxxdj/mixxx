@@ -319,7 +319,7 @@ MixxxApp::MixxxApp(QApplication *a, QStringList files)
     bool bVisualsWaveform = true;
     if (config->getValueString(ConfigKey("[Controls]","Visuals")).toInt()==1)
         bVisualsWaveform = false;
-    view=new MixxxView(this, bVisualsWaveform, qSkinPath, config);
+    view=new MixxxView(this, control, bVisualsWaveform, qSkinPath, config);
     if (bVisualsWaveform && !view->activeWaveform())
     {
         config->set(ConfigKey("[Controls]","Visuals"), ConfigValue(1));
@@ -367,7 +367,9 @@ MixxxApp::MixxxApp(QApplication *a, QStringList files)
     if (!player->open())
         prefDlg->setHidden(false);
 
-    setFocusPolicy(QWidget::StrongFocus);
+    //setFocusPolicy(QWidget::StrongFocus);
+    //grabKeyboard();
+
 
     // Load tracks in files (command line arguments) into player 1 and 2:
     if (files.count()>1)
@@ -427,21 +429,6 @@ MixxxApp::~MixxxApp()
 #endif
 }
 
-void MixxxApp::keyPressEvent(QKeyEvent *e)
-{
-    if (!control->kbdPress(QKeySequence(e->key()), false))
-        e->ignore();
-}
-
-void MixxxApp::keyReleaseEvent(QKeyEvent *e)
-{
-    if (!e->isAutoRepeat())
-    {
-        if (!control->kbdPress(QKeySequence(e->key()), true))
-            e->ignore();
-    }
-}
-
 /** initializes all QActions of the application */
 void MixxxApp::initActions()
 {
@@ -462,7 +449,7 @@ void MixxxApp::initActions()
   optionsFullScreen->setWhatsThis(tr("Display Mixxx using the full screen"));
   connect(optionsFullScreen, SIGNAL(toggled(bool)), this, SLOT(slotOptionsFullScreen(bool)));
 
-  optionsPreferences = new QAction(tr("Preferences"), tr("&Preferences..."), QAccel::stringToKey(tr("Ctrl+P")), this);
+  optionsPreferences = new QAction(tr("Preferences"), tr("&Preferences..."), QAccel::stringToKey(tr("9")), this);
   optionsPreferences->setStatusTip(tr("Preferences"));
   optionsPreferences->setWhatsThis(tr("Preferences\nPlayback and MIDI preferences"));
   connect(optionsPreferences, SIGNAL(activated()), this, SLOT(slotOptionsPreferences()));
