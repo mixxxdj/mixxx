@@ -39,6 +39,7 @@ private:
     EngineObject *low, *high;
     EngineFilterRBJ *lowrbj, *midrbj, *highrbj;
     ControlEngine *filterpotLow, *filterpotMid, *filterpotHigh;
+    ControlEngine *filterKillLow, *filterKillMid, *filterKillHigh;
 
     CSAMPLE *buffer;
 };

@@ -84,7 +84,7 @@ unsigned SoundSourceAudioFile::read(unsigned long size, const SAMPLE* destinatio
 int SoundSourceAudioFile::ParseHeader(TrackInfoObject *Track)
 {
     QString location = Track->getLocation();
-    AFfilehandle fh = afOpenFile(location.ascii() , "r", 0);
+    AFfilehandle fh = afOpenFile(location.latin1() , "r", 0);
     if (fh == AF_NULL_FILEHANDLE)
     {
         qDebug("libaudiofile: Error opening file.");

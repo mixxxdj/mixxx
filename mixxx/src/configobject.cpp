@@ -142,8 +142,6 @@ template <class ValueType> void ConfigObject<ValueType>::reopen(QString file)
 
 template <class ValueType> void ConfigObject<ValueType>::Save()
 {
-    return;
-    
     QFile file(filename);
     if (!file.open(IO_WriteOnly| IO_Translate))
     {

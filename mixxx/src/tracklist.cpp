@@ -317,30 +317,29 @@ bool TrackList::addFiles(const char *path)
             //qDebug("filename %s",fi->fileName().latin1());
 
             // Check if the file exists in the list:
-            TrackInfoObject *Track = fileExistsInList(fi->fileName());
-            if (!Track)
+            TrackInfoObject *pTrack = fileExistsInList(fi->fileName());
+            if (!pTrack)
             {
-                Track = new TrackInfoObject( dir.absPath(), fi->fileName() );
+                pTrack = new TrackInfoObject( dir.absPath(), fi->fileName() );
 
                 // Append the track to the list of tracks:
-                if (Track->parse() == OK)
+                if (pTrack->parse() == OK)
                 {
-                    m_lTracks.append(Track);
-                    qDebug( "Found new track: %s", Track->getFilename().latin1() );
+                    m_lTracks.append(pTrack);
+                    qDebug( "Found new track: %s", pTrack->getFilename().latin1() );
                     bFoundFiles = true;
                 }
                 else
                     qWarning("Could not parse %s", fi->fileName().latin1());
             }
-            else
-            // If it exists in the list already, it might not have been found in the
-            // first place because it has been moved:
-            if (!Track->exists())
+            else if (!pTrack->exists())
             {
-                Track->setFilepath(fi->dirPath());
-                Track->checkFileExists();
-                if (Track->exists())
-                    qDebug("Refound %s", Track->getFilename().latin1());
+                // If it exists in the list already, it might not have been found in the
+                // first place because it has been moved:
+                pTrack->setFilepath(fi->dirPath());
+                pTrack->checkFileExists();
+                if (pTrack->exists())
+                    qDebug("Refound %s", pTrack->getFilename().latin1());
             }
             ++it;   // goto next list element
         }
@@ -356,8 +355,9 @@ TrackInfoObject *TrackList::fileExistsInList(const QString sFilename)
     TrackInfoObject *pTrack;
     pTrack = m_lTracks.first();
     while ((pTrack) && (pTrack->getFilename() != sFilename))
+    {
         pTrack = m_lTracks.next();
-
+    }
     return pTrack;
 }
 

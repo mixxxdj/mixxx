@@ -492,17 +492,18 @@ void SoundSourceMp3::getField(id3_tag *tag, const char *frameid, QString *str)
     id3_frame *frame = id3_tag_findframe(tag, frameid, 0);
     if (frame)
     {
-        /*
+/*
         // Latin1 handling
         union id3_field const *field = &frame->fields[1];
         const char *s = id3_ucs4_latin1duplicate(id3_field_getstrings(field, 0));
         str = s;
         delete [] s;
-        */
-        
-        // Unicode handling.
-        id3_utf16_t *framestr = id3_ucs4_utf16duplicate(id3_field_getstrings(&frame->fields[1], 0));
-        int strlen = 0; while (framestr[strlen]!=0) strlen++;
+*/
+
+        // Unicode handling
+        id3_ucs4_t const *field = id3_field_getstrings(&frame->fields[1],0);
+        id3_utf16_t *framestr = id3_ucs4_utf16duplicate(field);
+        int strlen = 0; while (field[strlen]!=0) strlen++;
         if (strlen>0)
             str->setUnicodeCodes((ushort *)framestr,strlen);
         delete [] framestr;
