@@ -190,7 +190,7 @@ void DlgPreferences::slotMasterDeviceOptions()
             {for (unsigned int i=0; i<p->sampleRates.size(); i++)
             {
                 ComboBoxSamplerates->insertItem(QString("%1 Hz").arg(p->sampleRates[i]));
-                if (p->sampleRates[i]==player->SRATE)
+                if (p->sampleRates[i]==player->getPlaySrate())
                     ComboBoxSamplerates->setCurrentItem(i);
             }}
 

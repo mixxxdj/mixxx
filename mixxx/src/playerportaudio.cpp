@@ -208,7 +208,7 @@ bool PlayerPortAudio::open(int id, PortAudioStream **stream, int srate, PaSample
     }
 
     // Update SRATE and BASERATE in EngineObject
-    setSrate(srate);
+    setPlaySrate(srate);
 
     return true;
 }

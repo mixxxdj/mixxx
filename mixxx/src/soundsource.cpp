@@ -33,3 +33,8 @@ SoundSource::~SoundSource()
 {
 }
 
+int SoundSource::getSrate()
+{
+    return SRATE;
+}
+

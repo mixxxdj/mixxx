@@ -99,5 +99,8 @@ private:
    const char *group;
 
    CSAMPLE *read_buffer_prt;
+
+   /** Rate factor between player and sound source sample rates */
+   FLOAT_TYPE BASERATE;
 };
 #endif

@@ -36,10 +36,15 @@
   */
 
 class SoundSourceMp3 : public SoundSource {
- private:
+public:
+    SoundSourceMp3(const char *);
+    ~SoundSourceMp3();
+    long seek(long);
+    unsigned read(unsigned long size, const SAMPLE*);
+    inline long unsigned length();
+private:
     FILE *file;
     int bitrate;
-    int freq;
     int framecount;
     int currentframe;
     mad_timer_t pos;              /* current play position. */
@@ -51,12 +56,6 @@ class SoundSourceMp3 : public SoundSource {
     char *inputbuf;
     /** Start index in Synth buffer of samples left over from previous call to read */
     int rest;
- public:
-    SoundSourceMp3(const char *);
-    ~SoundSourceMp3();
-    long seek(long);
-    unsigned read(unsigned long size, const SAMPLE*);
-    inline long unsigned length();
 };
 
 

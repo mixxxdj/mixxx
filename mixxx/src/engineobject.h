@@ -32,12 +32,13 @@ public:
   EngineObject();
   ~EngineObject();
   virtual CSAMPLE *process(const CSAMPLE *, const int) = 0;
-
-  static int SRATE;
+  int  getPlaySrate();
+  
 protected:
-  void setSrate(int srate);
-  static FLOAT_TYPE BASERATE;
+  void setPlaySrate(int srate);
+
 private:
+  static int PLAY_SRATE;
 };
 
 #endif

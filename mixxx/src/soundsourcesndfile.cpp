@@ -38,6 +38,7 @@ SoundSourceSndFile::SoundSourceSndFile(const char* filename)
         return;
     }        
     channels = 2;
+    SRATE =  info->samplerate;
     
     type = "wav file.";
 }
