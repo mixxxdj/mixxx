@@ -253,6 +253,107 @@
  </PushButton>
 
  <PushButton>
+  <NumberStates>1</NumberStates>
+  <State>
+   <Number>0</Number>
+   <Pressed>vpred4.png</Pressed>
+   <Unpressed>vpred0.png</Unpressed>
+  </State>
+  <Pos>266,305</Pos>
+  <Connection>
+   <ConfigKey>[Channel1],fwd</ConfigKey>
+   <EmitOnDownPress>true</EmitOnDownPress>
+   <ButtonState>LeftButton</ButtonState>
+  </Connection>
+  <Connection>
+   <ConfigKey>[Channel1],fwd</ConfigKey>
+   <EmitOnDownPress>false</EmitOnDownPress>
+   <ButtonState>LeftButton</ButtonState>
+  </Connection>
+  <Connection>
+   <ConfigKey>[Channel1],end</ConfigKey>
+   <EmitOnDownPress>true</EmitOnDownPress>
+   <ButtonState>RightButton</ButtonState>
+  </Connection>
+ </PushButton>
+
+ <PushButton>
+  <NumberStates>1</NumberStates>
+  <State>
+   <Number>0</Number>
+   <Pressed>zpet4.png</Pressed>
+   <Unpressed>zpet0.png</Unpressed>
+  </State>
+  <Pos>137,305</Pos>
+  <Connection>
+   <ConfigKey>[Channel1],back</ConfigKey>
+   <EmitOnDownPress>true</EmitOnDownPress>
+   <ButtonState>LeftButton</ButtonState>
+  </Connection>
+  <Connection>
+   <ConfigKey>[Channel1],back</ConfigKey>
+   <EmitOnDownPress>false</EmitOnDownPress>
+   <ButtonState>LeftButton</ButtonState>
+  </Connection>
+  <Connection>
+   <ConfigKey>[Channel1],start</ConfigKey>
+   <EmitOnDownPress>true</EmitOnDownPress>
+   <ButtonState>RightButton</ButtonState>
+  </Connection>
+ </PushButton>
+
+ <PushButton>
+  <NumberStates>1</NumberStates>
+  <State>
+   <Number>0</Number>
+   <Pressed>vpred4.png</Pressed>
+   <Unpressed>vpred0.png</Unpressed>
+  </State>
+  <Pos>833,305</Pos>
+  <Connection>
+   <ConfigKey>[Channel2],fwd</ConfigKey>
+   <EmitOnDownPress>true</EmitOnDownPress>
+   <ButtonState>LeftButton</ButtonState>
+  </Connection>
+  <Connection>
+   <ConfigKey>[Channel2],fwd</ConfigKey>
+   <EmitOnDownPress>false</EmitOnDownPress>
+   <ButtonState>LeftButton</ButtonState>
+  </Connection>
+  <Connection>
+   <ConfigKey>[Channel2],end</ConfigKey>
+   <EmitOnDownPress>true</EmitOnDownPress>
+   <ButtonState>RightButton</ButtonState>
+  </Connection>
+ </PushButton>
+
+ <PushButton>
+  <NumberStates>1</NumberStates>
+  <State>
+   <Number>0</Number>
+   <Pressed>zpet4.png</Pressed>
+   <Unpressed>zpet0.png</Unpressed>
+  </State>
+  <Pos>703,305</Pos>
+  <Connection>
+   <ConfigKey>[Channel2],back</ConfigKey>
+   <EmitOnDownPress>true</EmitOnDownPress>
+   <ButtonState>LeftButton</ButtonState>
+  </Connection>
+  <Connection>
+   <ConfigKey>[Channel2],back</ConfigKey>
+   <EmitOnDownPress>false</EmitOnDownPress>
+   <ButtonState>LeftButton</ButtonState>
+  </Connection>
+  <Connection>
+   <ConfigKey>[Channel2],start</ConfigKey>
+   <EmitOnDownPress>true</EmitOnDownPress>
+   <ButtonState>RightButton</ButtonState>
+  </Connection>
+ </PushButton>
+
+
+ <PushButton>
   <BackPath>cueback1.png</BackPath>
   <NumberStates>1</NumberStates>
   <State>

@@ -423,6 +423,7 @@
    <ButtonState>RightButton</ButtonState>
   </Connection>
  </PushButton>
+
  <PushButton>
   <NumberStates>2</NumberStates>
   <State>
