@@ -50,7 +50,7 @@ MixxxView::MixxxView(QWidget *parent, MixxxDoc *doc) : QWidget(parent)
     //let the ratio between the widths of columns 0 and 1 be 2:3.
     mainGrid->setColStretch( 0, 242);
     mainGrid->setColStretch( 1,  73);
-    mainGrid->setColStretch( 2,  36);
+    mainGrid->setColStretch( 2,  16);
     mainGrid->setColStretch( 3,  73);
     mainGrid->setColStretch( 4, 242);
     mainGrid->setColStretch( 5,  45);

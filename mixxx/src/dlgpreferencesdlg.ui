@@ -31,25 +31,6 @@
             </rect>
         </property>
     </widget>
-    <widget class="QLabel">
-        <property name="name">
-            <cstring>TextLabel1</cstring>
-        </property>
-        <property name="enabled">
-            <bool>true</bool>
-        </property>
-        <property name="geometry">
-            <rect>
-                <x>10</x>
-                <y>85</y>
-                <width>65</width>
-                <height>14</height>
-            </rect>
-        </property>
-        <property name="text">
-            <string>Sound card</string>
-        </property>
-    </widget>
     <widget class="QComboBox">
         <property name="name">
             <cstring>ComboBoxSamplerates</cstring>
@@ -64,25 +45,6 @@
                 <width>85</width>
                 <height>22</height>
             </rect>
-        </property>
-    </widget>
-    <widget class="QLabel">
-        <property name="name">
-            <cstring>TextLabel2</cstring>
-        </property>
-        <property name="enabled">
-            <bool>true</bool>
-        </property>
-        <property name="geometry">
-            <rect>
-                <x>10</x>
-                <y>120</y>
-                <width>70</width>
-                <height>16</height>
-            </rect>
-        </property>
-        <property name="text">
-            <string>Sample rate</string>
         </property>
     </widget>
     <widget class="QComboBox">
@@ -101,25 +63,6 @@
             </rect>
         </property>
     </widget>
-    <widget class="QLabel">
-        <property name="name">
-            <cstring>TextLabel6</cstring>
-        </property>
-        <property name="enabled">
-            <bool>true</bool>
-        </property>
-        <property name="geometry">
-            <rect>
-                <x>10</x>
-                <y>15</y>
-                <width>106</width>
-                <height>16</height>
-            </rect>
-        </property>
-        <property name="text">
-            <string>Midi Configuration</string>
-        </property>
-    </widget>
     <widget class="QComboBox">
         <property name="name">
             <cstring>ComboBoxMididevice</cstring>
@@ -136,6 +79,70 @@
             </rect>
         </property>
     </widget>
+    <widget class="QPushButton">
+        <property name="name">
+            <cstring>PushButtonCancel</cstring>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>270</x>
+                <y>328</y>
+                <width>84</width>
+                <height>22</height>
+            </rect>
+        </property>
+        <property name="text">
+            <string>Cancel</string>
+        </property>
+    </widget>
+    <widget class="QComboBox">
+        <property name="name">
+            <cstring>ComboBoxBits</cstring>
+        </property>
+        <property name="enabled">
+            <bool>true</bool>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>145</x>
+                <y>150</y>
+                <width>85</width>
+                <height>22</height>
+            </rect>
+        </property>
+    </widget>
+    <widget class="QLineEdit">
+        <property name="name">
+            <cstring>LineEditSongfiles</cstring>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>145</x>
+                <y>185</y>
+                <width>210</width>
+                <height>22</height>
+            </rect>
+        </property>
+    </widget>
+    <widget class="QLabel">
+        <property name="name">
+            <cstring>TextLabel6</cstring>
+        </property>
+        <property name="enabled">
+            <bool>true</bool>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>10</x>
+                <y>15</y>
+                <width>128</width>
+                <height>19</height>
+            </rect>
+        </property>
+        <property name="text">
+            <string>Midi Configuration</string>
+        </property>
+    </widget>
     <widget class="QLabel">
         <property name="name">
             <cstring>TextLabel5</cstring>
@@ -147,12 +154,50 @@
             <rect>
                 <x>10</x>
                 <y>50</y>
-                <width>72</width>
-                <height>16</height>
+                <width>128</width>
+                <height>19</height>
             </rect>
         </property>
         <property name="text">
             <string>Midi Device</string>
+        </property>
+    </widget>
+    <widget class="QLabel">
+        <property name="name">
+            <cstring>TextLabel1</cstring>
+        </property>
+        <property name="enabled">
+            <bool>true</bool>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>10</x>
+                <y>85</y>
+                <width>130</width>
+                <height>19</height>
+            </rect>
+        </property>
+        <property name="text">
+            <string>Sound card</string>
+        </property>
+    </widget>
+    <widget class="QLabel">
+        <property name="name">
+            <cstring>TextLabel2</cstring>
+        </property>
+        <property name="enabled">
+            <bool>true</bool>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>10</x>
+                <y>120</y>
+                <width>131</width>
+                <height>20</height>
+            </rect>
+        </property>
+        <property name="text">
+            <string>Sample rate</string>
         </property>
     </widget>
     <widget class="QLabel">
@@ -166,12 +211,31 @@
             <rect>
                 <x>10</x>
                 <y>155</y>
-                <width>84</width>
-                <height>16</height>
+                <width>128</width>
+                <height>19</height>
             </rect>
         </property>
         <property name="text">
             <string>Number of bits</string>
+        </property>
+    </widget>
+    <widget class="QLabel">
+        <property name="name">
+            <cstring>TextLabel3_2</cstring>
+        </property>
+        <property name="enabled">
+            <bool>true</bool>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>11</x>
+                <y>189</y>
+                <width>128</width>
+                <height>21</height>
+            </rect>
+        </property>
+        <property name="text">
+            <string>Song files</string>
         </property>
     </widget>
     <widget class="QGroupBox">
@@ -186,11 +250,11 @@
                 <x>10</x>
                 <y>218</y>
                 <width>345</width>
-                <height>95</height>
+                <height>96</height>
             </rect>
         </property>
         <property name="title">
-            <string>Latency</string>
+            <string>Latency (not yet implemented)</string>
         </property>
         <widget class="QLabel">
             <property name="name">
@@ -265,22 +329,6 @@
     </widget>
     <widget class="QPushButton">
         <property name="name">
-            <cstring>PushButtonCancel</cstring>
-        </property>
-        <property name="geometry">
-            <rect>
-                <x>270</x>
-                <y>328</y>
-                <width>84</width>
-                <height>22</height>
-            </rect>
-        </property>
-        <property name="text">
-            <string>Cancel</string>
-        </property>
-    </widget>
-    <widget class="QPushButton">
-        <property name="name">
             <cstring>PushButtonOK</cstring>
         </property>
         <property name="enabled">
@@ -296,54 +344,6 @@
         </property>
         <property name="text">
             <string>OK</string>
-        </property>
-    </widget>
-    <widget class="QLabel">
-        <property name="name">
-            <cstring>TextLabel3_2</cstring>
-        </property>
-        <property name="enabled">
-            <bool>true</bool>
-        </property>
-        <property name="geometry">
-            <rect>
-                <x>11</x>
-                <y>189</y>
-                <width>84</width>
-                <height>16</height>
-            </rect>
-        </property>
-        <property name="text">
-            <string>Song files</string>
-        </property>
-    </widget>
-    <widget class="QComboBox">
-        <property name="name">
-            <cstring>ComboBoxBits</cstring>
-        </property>
-        <property name="enabled">
-            <bool>true</bool>
-        </property>
-        <property name="geometry">
-            <rect>
-                <x>145</x>
-                <y>150</y>
-                <width>85</width>
-                <height>22</height>
-            </rect>
-        </property>
-    </widget>
-    <widget class="QLineEdit">
-        <property name="name">
-            <cstring>LineEditSongfiles</cstring>
-        </property>
-        <property name="geometry">
-            <rect>
-                <x>145</x>
-                <y>185</y>
-                <width>210</width>
-                <height>22</height>
-            </rect>
         </property>
     </widget>
 </widget>

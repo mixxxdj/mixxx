@@ -39,7 +39,6 @@ EngineBuffer::EngineBuffer(QApplication *a, QWidget *m, DlgPlaycontrol *_playcon
   // Play button
   ConfigObject::ConfigKey k1(group, "play");
   PlayButton = new ControlPushButton(&k1, simulated_latching);
-  PlayButton->setValue(on);
   playcontrol->PushButtonPlay->controlButton = PlayButton;
   connect(playcontrol->PushButtonPlay, SIGNAL(pressed()), PlayButton, SLOT(pressed()));
   connect(playcontrol->PushButtonPlay, SIGNAL(released()), PlayButton, SLOT(released()));
@@ -80,6 +79,7 @@ EngineBuffer::EngineBuffer(QApplication *a, QWidget *m, DlgPlaycontrol *_playcon
   // Open the track:
   file = 0;
   newtrack(filename);
+  PlayButton->setValue(off); // stop the first track from playing.
 
   // Allocate buffer for processing:
   buffer = new CSAMPLE[MAX_BUFFER_LEN];
@@ -150,8 +150,18 @@ void EngineBuffer::newtrack(const char* filename)
 
     if (file != 0)
     {
-        // Write to playcontrol:
-        QString title = QString("Title :") + filename + "\n\n";
+        /*
+	  Write to playcontrol:
+	*/
+	QString title = filename;
+	// Prune path from filename:
+	title = title.section('/',-1);
+	//title = title.section('\\',-1);
+	// Prune last ending from filename:
+	title = title.section('.',0,-2);
+	// Finish the title string:
+        title = QString("Title : ") + title + "\n\n";
+	
         int seconds = file->length()/(2*SRATE);
         QString tmp;
         tmp.sprintf("Length : %02d:%02d\n\n", seconds/60, seconds - 60*(seconds/60));

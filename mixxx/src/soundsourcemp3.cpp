@@ -79,9 +79,7 @@ SoundSourceMp3::SoundSourceMp3(const char* filename)
     mad_synth_init(&Synth);
 
     // Set the type field:
-    QString tmp;
-    tmp.sprintf("mp3-file.");
-    type = tmp;
+    type = "mp3 file.";
 }
 
 SoundSourceMp3::~SoundSourceMp3()

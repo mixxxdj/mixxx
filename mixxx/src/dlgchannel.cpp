@@ -33,3 +33,6 @@ void DlgChannel::layoutMirror()
     GroupBoxKnobs->move(GroupBoxVolume->pos());
     GroupBoxVolume->move(knobpos);
 }
+
+
+
