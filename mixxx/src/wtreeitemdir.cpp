@@ -86,10 +86,13 @@ void WTreeItemDir::setOpen(bool o)
                 }
                 else if ( fi->isDir() )
                     (void)new WTreeItemDir( this, fi->fileName() );
-                else if ( !showDirsOnly ) {
-                    WTreeItemFile *item
-                        = new WTreeItemFile( this, fi->fileName(),
-                                             fi->isFile()?"File":"Special" );
+                else if (!showDirsOnly &&
+                         (fi->fileName().endsWith(".mp3", false) ||
+                          fi->fileName().endsWith(".ogg", false) ||
+                          fi->fileName().endsWith(".wav", false)))
+                {
+                    WTreeItemFile *item = new WTreeItemFile(this, fi->fileName(),
+                                                            fi->isFile()?"File":"Special" );
 //                    item->setPixmap( fileNormal );
                 }
             }
