@@ -18,7 +18,7 @@ class WindowKaiser;
 
 // Table for equal loudness contour used in PSF calculation
 static const int kiEqualLoudnessLen = 15;
-static const float kfEqualLoudness[kiEqualLoudnessLen] = {0.0000f, 0.9934f, 0.9501f, 0.8812f, 
+static const float kfEqualLoudness[kiEqualLoudnessLen] = {1.5000f, 0.9934f, 0.9501f, 0.8812f, 
                                                           0.7975f, 0.7218f, 0.6385f, 0.5637f, 
                                                           0.4976f, 0.4393f, 0.3878f, 0.3615f,
                                                           0.3405f, 0.3207f, 0.3020f};

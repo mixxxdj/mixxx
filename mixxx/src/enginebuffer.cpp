@@ -274,17 +274,42 @@ float EngineBuffer::getDistanceNextBeatMark()
     int size = reader->getBeatPtr()->getBufferSize();
 
     int pos = (int)(bufferpos_play*size/READBUFFERSIZE);
+    //int pos = (int)(bufferpos_play/size);
 
-    qDebug("s1 %i s2 %i",size,READBUFFERSIZE);
+    //qDebug("s1 %i s2 %i",size,READBUFFERSIZE);
 
     int i;
     bool found = false;
-    for (i=0; i<10 && !found; ++i)
-        if (p[(pos+i)%size]>0)
+    
+    for (i=0; i>(pos-size) && !found; --i) 
+    {
+        //qDebug("p[%i] = %f ",(pos+i)%size,p[(pos+i)%size]);
+        if (p[(pos-i)%size] > 0.0) 
+        {
             found = true;
+            qDebug("p[%i] = %f ",(pos+i)%size,p[(pos+i)%size]);
+        }
+    }
 
-    if (found)
-        return (float)(i%size)*(float)READBUFFERSIZE/(float)size;
+    /*
+    for (i=0; i<(size-pos) && !found; ++i) {
+
+        //qDebug("p[%i] = %f ",(pos+i)%size,p[(pos+i)%size]);
+        if (p[(pos+i)%size] > 0.0) {
+            qDebug("found: p[%i] = %f ",(pos+i)%size,p[(pos+i)%size]);
+            found = true;
+        }
+    }
+    if( !found )
+    */
+
+    if (found) 
+    {
+        //qDebug("found" );
+
+        return ((float)i)*(float)READBUFFERSIZE/(float)size;
+        //return ((float)i)*(float)size;
+    }
     else
         return 0.f;
 }
@@ -581,21 +606,26 @@ void EngineBuffer::slotControlBeatSync(double)
             rateSlider->set(fRateScale-1.);
     }
 
+    adjustPhase();
+}
 
-/*
+void EngineBuffer::adjustPhase()
+{
     // Search for distance from playpos to beat mark of both buffers
-    float fThisDistance = 2.; //getDistanceNextBeatMark();
-    float fOtherDistance = 20.; //m_pOtherEngineBuffer->getDistanceNextBeatMark();
+    float fThisDistance = getDistanceNextBeatMark();
+    float fOtherDistance = m_pOtherEngineBuffer->getDistanceNextBeatMark();
 
-    qDebug("this %f, other %f",fThisDistance, fOtherDistance);
+    qDebug("this %f, other %f diff %f",fThisDistance, fOtherDistance, fOtherDistance-fThisDistance);
 
-    filepos_play += fOtherDistance-fThisDistance;
+    //filepos_play += fOtherDistance-fThisDistance;
     bufferpos_play = bufferpos_play+fOtherDistance-fThisDistance;
-    if (bufferpos_play>(double)READBUFFERSIZE)
+    if (bufferpos_play>(double)READBUFFERSIZE) 
+    {
+        qDebug( "grrrr...." );
         bufferpos_play -= (double)READBUFFERSIZE;
+    }
 
-    qDebug("buffer pos %f, file pos %f",bufferpos_play,filepos_play);
-*/
+    //qDebug("buffer pos %f, file pos %f",bufferpos_play,filepos_play);
 }
 
 void EngineBuffer::slotControlFastFwdBack(double v)
@@ -688,7 +718,7 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBuff
             nextBeatPos = (i%readerbeat->getBufferSize())*(READBUFFERSIZE/readerbeat->getBufferSize());
         else
             // No next beat was found
-            nextBeatPos = bufferpos_play+buf_size;
+            nextBeatPos = bufferpos_play+readerbeat->getBufferSize();
 
         double event = beatEventControl->get();
         if (event > 0.)
@@ -800,7 +830,7 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBuff
                     //Q_ASSERT( (int)floor(bufferpos_play) <= (int)floor(idx) );
                     for (i=(int)floor(bufferpos_play); i<=(int)floor(idx); i++)
                     {
-                        if (((i%chunkSizeDiff)==0) && (beatBuffer[i/chunkSizeDiff]>0.))
+                        if (((i%chunkSizeDiff)==0) && (beatBuffer[i/chunkSizeDiff]>0.0))
                         {
 //                            qDebug("%i: %f",i/chunkSizeDiff,beatBuffer[i/chunkSizeDiff]);
 
