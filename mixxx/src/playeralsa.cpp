@@ -16,7 +16,10 @@
  ***************************************************************************/
 
 #include "playeralsa.h"
-#include <qvalidator.h>
+
+#ifndef PLAYERTEST
+#include "rtthread.h"
+#endif
 
 // Tutorials /home/peter/pad-alsa-audio.html /home/peter/alsa090_howto.html
 // Docs      /usr/share/doc/alsa-lib-1.0.4/doxygen/html/index.html
@@ -47,8 +50,6 @@ PlayerALSA::PlayerALSA()
     {
 	qFatal("Couldn't allocate memory for sw params: %s\n", snd_strerror(err));
     }
-
-    ahandler = 0;
 
     isopen = false;
     masterleft = masterright = -1;
@@ -93,13 +94,11 @@ bool PlayerALSA::open()
     masterleft = masterright = -1;
     headleft = headright = -1;
 
-    qDebug("Alsa opening...2");
-//#ifndef PLAYERTEST
-// XXX: use pre-determined output until fixed
-#if 1
+#ifndef PLAYERTEST
     int temp;
+
     QRegExp rx("(\\S+) \\(ch (\\d+)\\)");
-    // XXX: crashing somewhere near here!
+
     // master left
     qDebug("Alsa opening...2.5");
     name = m_pConfig->getValueString(ConfigKey("[Soundcard]", "DeviceMasterLeft"));
@@ -108,7 +107,7 @@ bool PlayerALSA::open()
     {
 	if (rx.search(name) < 0)
 	{
-	    qWarning("can't find device name or channel number in (%s)",name.latin1());
+	    qWarning("can't find device name or channel number in (%s)", name.latin1());
 	}
 	devname = rx.cap(1);
 	temp = rx.cap(2).toInt();
@@ -117,7 +116,7 @@ bool PlayerALSA::open()
 	    masterleft = temp - 1;
 	}
     }
-    qDebug("Alsa opening...ML");
+    qDebug("Alsa opening...ML %d", masterleft);
 
     // master right
     name = m_pConfig->getValueString(ConfigKey("[Soundcard]", "DeviceMasterRight"));
@@ -125,7 +124,7 @@ bool PlayerALSA::open()
     {
 	if (rx.search(name) < 0)
 	{
-	    qWarning("can't find device name or channel number in (%s)",name.latin1());
+	    qWarning("can't find device name or channel number in (%s)", name.latin1());
 	}
 	devtmp = rx.cap(1);
 	if (devname != devtmp)
@@ -138,7 +137,7 @@ bool PlayerALSA::open()
 	    masterright = temp - 1;
 	}
     }
-    qDebug("Alsa opening...MR");
+    qDebug("Alsa opening...MR %d", masterright);
 
     // head left
     name = m_pConfig->getValueString(ConfigKey("[Soundcard]", "DeviceHeadLeft"));
@@ -146,7 +145,7 @@ bool PlayerALSA::open()
     {
 	if (rx.search(name) < 0)
 	{
-	    qWarning("can't find device name or channel number in (%s)",name.latin1());
+	    qWarning("can't find device name or channel number in (%s)", name.latin1());
 	}
 	devtmp = rx.cap(1);
 	if (devname != devtmp)
@@ -159,7 +158,7 @@ bool PlayerALSA::open()
 	    headleft = temp - 1;
 	}
     }
-    qDebug("Alsa opening...HL");
+    qDebug("Alsa opening...HL %d", headleft);
 
     // head right
     name = m_pConfig->getValueString(ConfigKey("[Soundcard]", "DeviceHeadRight"));
@@ -167,7 +166,7 @@ bool PlayerALSA::open()
     {
 	if (rx.search(name) < 0)
 	{
-	    qWarning("can't find device name or channel number in (%s)",name.latin1());
+	    qWarning("can't find device name or channel number in (%s)", name.latin1());
 	}
 	devtmp = rx.cap(1);
 	if (devname != devtmp)
@@ -180,7 +179,7 @@ bool PlayerALSA::open()
 	    headright = temp - 1;
 	}
     }
-    qDebug("Alsa opening...MR");
+    qDebug("Alsa opening...HR %d", headright);
     // Check if any of the devices in the config database needs to be set to "None"
     if (masterleft < 0)
 	m_pConfig->set(ConfigKey("[Soundcard]", "DeviceMasterLeft"), ConfigValue("None"));
@@ -231,10 +230,9 @@ bool PlayerALSA::open()
     output = new OSAMPLE[buffer_size * alsa_channels];
 
     twrite = true;
-    
-    m_iBufferSize = buffer_size;
 
     QThread::start();
+
     return true;
 }
 
@@ -270,7 +268,10 @@ void PlayerALSA::run()
     OSAMPLE *optr;
     int err, ctr;
     
-    
+#ifndef PLAYERTEST
+    rtThread();
+#endif
+
     while (twrite)
     {
 	sptr = prepareBuffer((int) period_size);
@@ -374,9 +375,7 @@ void PlayerALSA::close()
     twrite = false;
     qDebug("Alsa waiting for thread for close");
     QThread::wait();
-    // XXX: what should the shutdown routine be?
-    // Stop audio
-    //	snd_pcm_drain(handle);
+
     snd_pcm_drop(handle);
     snd_pcm_close(handle);
     if (output)
@@ -384,9 +383,7 @@ void PlayerALSA::close()
 	delete output;
         output = 0;
     }
-    // XXX: this segfaults!
-    // snd_async_del_handler(ahandler);
-    //	ahandler = 0;
+
     isopen = false;
 }
 
@@ -418,13 +415,15 @@ void PlayerALSA::setDefaults()
     // Set default sample rate
     QStringList srates = getSampleRates();
     it = srates.begin();
-    if (*it)
+    while (*it)
     {
 	m_pConfig->set(ConfigKey("[Soundcard]", "Samplerate"), ConfigValue((*it)));
-
-	// Set currently used latency in config database
-	m_pConfig->set(ConfigKey("[Soundcard]", "Latency"), ConfigValue(default_latency));
+        if (*it >= 44100)
+	    break;
     }
+
+    // Set currently used latency in config database
+    m_pConfig->set(ConfigKey("[Soundcard]", "Latency"), ConfigValue(default_latency));
 #endif
 }
 
@@ -432,8 +431,6 @@ QStringList PlayerALSA::getInterfaces()
 {
     qDebug("Alsa getinter");
     QStringList result;
-//   result.append("plug:front:0 (ch 1)");
-//   result.append("plug:front:0 (ch 2)");
     
     //
     // Print out card and device names to std out. Nothing else is done here yet.
@@ -579,6 +576,7 @@ int PlayerALSA::set_hwparams()
 	qWarning("Unable to get buffer size for playback: %s\n", snd_strerror(err));
 	return err;
     }
+    qWarning("Buffer %dus (size: %d)", (int) buffer_time, buffer_size);
 
     // XXX: maybe using set_periods (and its ilk) is a better option
     /* set the period size */
@@ -587,8 +585,6 @@ int PlayerALSA::set_hwparams()
     for (period_no = 4; period_no > 1; period_no--)
     {
 	period_time = buffer_time / period_no;
-//      period_time = (unsigned int) (buffer_size/(rrate*4e-6));
-//      period_time = buffer_time/4;
 	qWarning("Period %dus (no: %d)", (int) period_time, period_no);
 
 	err = snd_pcm_hw_params_set_period_time_near(handle, hwparams, &period_time, &dir);
@@ -597,7 +593,7 @@ int PlayerALSA::set_hwparams()
 	    qWarning("Unable to set period time %i for playback: %s\n", period_time, snd_strerror(err));
 	    return err;
 	}
-//      qWarning("-> %dus\n", (int) period_time);
+        qWarning("-> %dus", (int) period_time);
 	err = snd_pcm_hw_params_get_period_size(hwparams, &period_size, &dir);
 	if (err < 0)
 	{
@@ -622,7 +618,7 @@ int PlayerALSA::set_hwparams()
 	     (int) buffer_size, (int) (buffer_size / (rrate * 1e-6)),
 	     (int) period_size, (int) (period_size / (rrate * 1e-6)));
 
-    m_iBufferSize = buffer_size*period_size; // send back latency value
+    m_iBufferSize = buffer_size; // send back latency value
     return 0;
 }
 
