@@ -37,7 +37,7 @@ protected:
 
 
     int     handle;
-    char    *buffer;
+    unsigned char    *buffer;
 };
 
 #endif
