@@ -54,6 +54,9 @@ DlgPrefMidi::DlgPrefMidi(QWidget *parent, MidiObject *pMidi, ConfigObject<Config
     connect(m_pTimer, SIGNAL(timeout()), this, SLOT(slotUpdateProgressBar()));
     connect(m_pProgressDialog, SIGNAL(canceled()), this, SLOT(slotCancelCalibrate()));
 
+#ifndef __LINUX__
+	groupBoxMice->setEnabled(false);
+#endif
 
 
     connect(ComboBoxMouseDevice1, SIGNAL(activated(int)), this, SLOT(slotApply()));
