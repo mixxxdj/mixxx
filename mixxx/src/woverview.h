@@ -51,6 +51,7 @@ protected:
     int m_iPos, m_iVirtualPos, m_iStartMousePos;
     /** Pointer to screen buffer */
     QPixmap *m_pScreenBuffer;
+    QColor m_qColorMarker;
 };
 
 #endif

@@ -22,7 +22,7 @@
 #include "enginebufferscale.h"
 #include "SoundTouch.h"
 
-#define MAXBUFFERBLOCKS 100
+#define MAXBUFFERBLOCKS 1000
 #define ReadAheadSize 1000
 
 using namespace soundtouch;
