@@ -24,7 +24,7 @@
 #include "enginepregain.h"
 #include "enginevolume.h"
 #include "enginefilterblock.h"
-#include "engineflanger.h"
+#include "enginevumeter.h"
 #include "dlgchannel.h"
 
 EngineChannel::EngineChannel(DlgChannel *dlg, const char *group)
@@ -42,6 +42,9 @@ EngineChannel::EngineChannel(DlgChannel *dlg, const char *group)
 
     // Volume control:
     volume = new EngineVolume(dlg->SliderVolume,ConfigKey(group,"volume"));
+
+    // VU meter:
+    vumeter = new EngineVUmeter(dlg->vumeter, group);
 
     // PFL button
     ControlPushButton *p = new ControlPushButton(ConfigKey(group, "pfl" ));
@@ -68,6 +71,7 @@ CSAMPLE *EngineChannel::process(const CSAMPLE* source, const int buffer_size)
     CSAMPLE *temp2 = clipping->process(temp, buffer_size);
     temp = filter->process(temp2, buffer_size); 
     temp2 = volume->process(temp, buffer_size);
+    vumeter->process(temp2, buffer_size);
 
     return temp2;
 }

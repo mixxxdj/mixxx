@@ -34,7 +34,7 @@
 EngineMaster::EngineMaster(DlgMaster *master_dlg, DlgCrossfader *crossfader_dlg,
                            EngineBuffer *_buffer1, EngineBuffer *_buffer2,
                            EngineChannel *_channel1, EngineChannel *_channel2,
-                           EngineFlanger *_flanger, EngineVUmeter *_vumeter,
+                           EngineFlanger *_flanger,
                            const char *group)
 {
     buffer1 = _buffer1;
@@ -42,7 +42,6 @@ EngineMaster::EngineMaster(DlgMaster *master_dlg, DlgCrossfader *crossfader_dlg,
     channel1 = _channel1;
     channel2 = _channel2;
     flanger = _flanger;
-    vumeter = _vumeter;
 
     // Defaults
     master1 = true;
@@ -58,7 +57,10 @@ EngineMaster::EngineMaster(DlgMaster *master_dlg, DlgCrossfader *crossfader_dlg,
 
     // Clipping
     clipping = new EngineClipping(master_dlg->BulbClipping, group);
-    
+
+    // VU meter:
+    vumeter = new EngineVUmeter(master_dlg->vumeter, group);
+
     // Headphone volume
     head_volume = new EngineVolume(master_dlg->KnobHeadVol,ConfigKey(group, "headvolume"));
    

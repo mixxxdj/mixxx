@@ -15,34 +15,47 @@
  ***************************************************************************/
 
 #include "enginevumeter.h"
-#include "dlgvumeter.h"
+#include "wvumeter.h"
 #include "controlengine.h"
-#include "controlvumeter.h"
+#include "controlpotmeter.h"
 
-EngineVUmeter::EngineVUmeter(DlgVUmeter *dlgVUmeter, const char *group)
+EngineVUmeter::EngineVUmeter(WVUmeter *wVUmeter, const char *group)
 {
-    ControlVUmeter *ctrlVUmeter = new ControlVUmeter(ConfigKey(group, "VUmeter"), dlgVUmeter);
-    ctrlVUmeter->setWidget(dlgVUmeter);
-    leds = new ControlEngine(ctrlVUmeter);
-    leds->set(0.);
+    // The VUmeter widget is controlled via a controlpotmeter, which means
+    // that it should react on the setValue(int) signal.
+    ControlPotmeter *ctrlVUmeter = new ControlPotmeter(ConfigKey(group, "VUmeter"), 0., 1.);
+    ctrlVUmeter->setWidget(wVUmeter);
+    m_ctrlVUmeter = new ControlEngine(ctrlVUmeter);
+    m_ctrlVUmeter->set(0);
+
+    // Initialize the calculation:
+    m_iSamplesCalculated = 0;
+    m_fRMSvolume = 0;
 }
 
 EngineVUmeter::~EngineVUmeter()
 {
-    delete leds;
+    delete m_ctrlVUmeter;
 }
 
 CSAMPLE *EngineVUmeter::process(const CSAMPLE *source, const int buffer_size)
 {
-    // Calculate the rms volume
-    FLOAT_TYPE fRMSvolume = 0;
+    // Calculate the summed absolute volume
     for (int i=0; i<buffer_size; i++)
     {
-        fRMSvolume += source[i]*source[i];
+        m_fRMSvolume += abs(source[i]);
     }
-    fRMSvolume = sqrt(fRMSvolume/buffer_size);
+    m_iSamplesCalculated += buffer_size;
 
-    leds->set(fRMSvolume);
+    // Are we ready to update the VU meter?:
+    if (m_iSamplesCalculated > (44100/UPDATE_RATE) )
+    {
+        m_fRMSvolume = log10(m_fRMSvolume/(m_iSamplesCalculated*1000)+1);
+        m_ctrlVUmeter->set( min(1.0, max(0.0, m_fRMSvolume)) ); 
+        // Reset calculation:
+        m_iSamplesCalculated = 0;
+        m_fRMSvolume = 0;
+    }
 
     return 0;
 }

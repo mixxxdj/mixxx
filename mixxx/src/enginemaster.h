@@ -37,8 +37,7 @@ class EngineMaster : public EngineObject
 public:
     EngineMaster(DlgMaster *master_dlg, DlgCrossfader *crossfader_dlg,
                  EngineBuffer *buffer1, EngineBuffer *buffer2,
-                 EngineChannel *, EngineChannel *, EngineFlanger *,
-                 EngineVUmeter *, const char *group);
+                 EngineChannel *, EngineChannel *, EngineFlanger *, const char *group);
     ~EngineMaster();
     void notify(double) {};
     CSAMPLE *process(const CSAMPLE *, const int);

@@ -374,7 +374,7 @@ CSAMPLE *EngineBuffer::process(const CSAMPLE *, const int buf_size)
                 int chunkSizeDiff = READBUFFERSIZE/readerbeat->getBufferSize();
                 for (i=floor(bufferpos_play); i<=floor(idx); i++)
                 {
-                    if (i%chunkSizeDiff==0 & beatBuffer[i/chunkSizeDiff]==1)
+                    if (((i%chunkSizeDiff)==0) && (beatBuffer[i/chunkSizeDiff]==1))
                     {
                         // Audio beat mark
                         if (audioBeatMark->get()==1.)

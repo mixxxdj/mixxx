@@ -35,6 +35,7 @@
 #include "wplayposslider.h"
 #include "wpushbutton.h"
 #include "wtracktable.h"
+#include "wvumeter.h"
 #include "mixxx.h"
 #include "images/a.xpm"
 #include "images/b.xpm"
@@ -287,13 +288,9 @@ MixxxApp::MixxxApp(QApplication *a)
     // Starting effects:
     flanger = new EngineFlanger(view->flanger, "[Flanger]");
 
-    // Starting vumeter:
-    vumeter = 0;
-    //vumeter = new EngineVUmeter(view->vumeter, "[VUmeter]");
-
     // Starting the master (mixing of the channels and effects):
     master = new EngineMaster(view->master, view->crossfader,
-                              buffer1, buffer2, channel1, channel2,flanger,vumeter, "[Master]");
+                              buffer1, buffer2, channel1, channel2,flanger, "[Master]");
 
     // Start audio
     //qDebug("Starting player...");
@@ -318,7 +315,6 @@ MixxxApp::~MixxxApp()
     delete midiconfig;
     delete m_pTracks;
     delete flanger;
-    delete vumeter;
 
 #ifdef __UNIX__
     if (powermate1!=0)
