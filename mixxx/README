@@ -50,7 +50,7 @@ you just need to unpack the file and run the install script:
 
 tar -xvzf mixxx-1.x-i586.tar.gz
 cd mixxx-1.x
-./install.pl
+make install
 
 You will need to have QT installed already, but the other 
 libs mentioned above is included in this binary version
@@ -64,10 +64,9 @@ first startup of the program.
 
 To compile and install from source use the following commands:
 cd src
-qmake mixxx.pro
+./configure
 make
-cd ..
-./install.pl
+make install
 
 *Mac and Windows:
 Extract the downloaded file to a folder and start the

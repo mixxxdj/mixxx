@@ -56,7 +56,7 @@ EngineBuffer::EngineBuffer(PowerMate *_powermate, const char *_group)
     p = new ControlPushButton(ConfigKey(group, "reverse"));
     reverseButton = new ControlEngine(p);
     reverseButton->set(0);
-    
+
     // Fwd button
     p = new ControlPushButton(ConfigKey(group, "fwd"));
     fwdButton = new ControlEngine(p);
@@ -564,7 +564,7 @@ CSAMPLE *EngineBuffer::process(const CSAMPLE *, const int buf_size)
             readerinfo = true;
         }
 
-//        qDebug("filepos_play %f,\tstart %i,\tend %i\t info %i",filepos_play, filepos_start, filepos_end, readerinfo);
+        //qDebug("filepos_play %f,\tstart %i,\tend %i\t info %i, len %i",filepos_play, filepos_start, filepos_end, readerinfo,file_length_old);
 
 
 
@@ -685,7 +685,8 @@ CSAMPLE *EngineBuffer::process(const CSAMPLE *, const int buf_size)
             backwards = true;
 
         //qDebug("rate: %f, playpos: %f",rate,playButton->get());
-        if (rate==0.)
+
+        if ((rate==0.) || (filepos_play==0. && backwards) || (filepos_play==(float)file_length_old && !backwards))
         {
             for (int i=0; i<buf_size; i++)
                 buffer[i]=0.;
@@ -788,20 +789,25 @@ CSAMPLE *EngineBuffer::process(const CSAMPLE *, const int buf_size)
         //
         if (readerinfo && filepos_end>0)
         {
+            //qDebug("play %f,\tstart %i,\tend %i\t info %i, len %i, %f<%f",filepos_play, filepos_start, filepos_end, readerinfo,file_length_old,fabs(filepos_play-filepos_start),(float)(READCHUNKSIZE*(READCHUNK_NO/2-1)));
 //            qDebug("checking");
             // Part of this if condition is commented out to ensure that more block is
             // loaded at the end of an file to fill the buffer with zeros
-            if (/*!backwards && *//*filepos_end<file_length_old &&*/ (filepos_end - filepos_play < READCHUNKSIZE*(READCHUNK_NO/2-1)))
+            if ((filepos_end - filepos_play < READCHUNKSIZE*(READCHUNK_NO/2-1)))
             {
                 //qDebug("wake fwd play %f, end %i",filepos_play, filepos_end);
                 reader->wake();
             }
-            else if (/*backwards && filepos_start>READCHUNKSIZE*(READCHUNK_NO/2-1) &&*/ fabs(filepos_play-filepos_start)<READCHUNKSIZE*(READCHUNK_NO/2-1))
+            else if (fabs(filepos_play-filepos_start)<(float)(READCHUNKSIZE*(READCHUNK_NO/2-1)))
             {
                 //qDebug("wake back");
                 reader->wake();
             }
-
+            else if (filepos_play>filepos_end || filepos_play<filepos_start)
+            {
+                reader->requestSeek(filepos_play);
+                //reader->wake();
+            }
 
 
             //
@@ -829,23 +835,28 @@ CSAMPLE *EngineBuffer::process(const CSAMPLE *, const int buf_size)
             bufferposSlider->set((CSAMPLE)bufferpos_play);
         }
 
+        //qDebug("filepos_play %f, len %i, back %i, play %f",filepos_play,file_length_old, backwards, playButton->get());
         // If playbutton is pressed, check if we are at start or end of track
         if (playButton->get()==1. && m_pTrackEnd->get()==0. &&
             ((filepos_play<=0. && backwards==true) ||
-            ((int)filepos_play>=file_length_old && backwards==false)))
+             ((int)filepos_play>=file_length_old && backwards==false)))
         {
             // If end of track mode is set to next, signal EndOfTrack to TrackList,
             // otherwise start looping, pingpong or stop the track
             int m = (int)m_pTrackEndMode->get();
+            qDebug("end mode %i",m);
             switch (m)
             {
             case TRACK_END_MODE_STOP:
+                qDebug("stop");
                 playButton->set(0.);
                 break;
             case TRACK_END_MODE_NEXT:
+                qDebug("next");
                 m_pTrackEnd->set(1.);
                 break;
             case TRACK_END_MODE_LOOP:
+                qDebug("loop");
                 slotControlSeek(0.);
                 break;
 /*
