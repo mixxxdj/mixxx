@@ -107,5 +107,7 @@ private:
     EngineBufferScale *scale;
     /** Pointer to PowerMate object */
     PowerMate *powermate;
+    /** Number of samples left in audio beat mark from last call to process */
+    int m_iBeatMarkSamplesLeft;
 };
 #endif

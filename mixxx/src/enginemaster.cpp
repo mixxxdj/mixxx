@@ -21,7 +21,7 @@
 #include "enginechannel.h"
 #include "engineclipping.h"
 #include "engineflanger.h"
-#include "enginevumeter.h"
+// #include "enginevumeter.h"
 #include "dlgmaster.h"
 #include "dlgcrossfader.h"
 #include "wslider.h"
@@ -148,7 +148,7 @@ CSAMPLE *EngineMaster::process(const CSAMPLE *, const int buffer_size)
     tmp2 = clipping->process(tmp, buffer_size);
 
     // Update VU meter (it does not return anything):
-    vumeter->process(tmp2, buffer_size);
+    //vumeter->process(tmp2, buffer_size);
 
     //
     // Headphone channel:

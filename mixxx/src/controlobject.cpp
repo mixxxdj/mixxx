@@ -204,6 +204,7 @@ bool ControlObject::eventFilter(QObject *o, QEvent *e)
     return TRUE;
 }
 
+/*
 void ControlObject::setAccelUp(const QKeySequence key)
 {
     qDebug("Cannot call setAccelUp for %s", print());
@@ -228,4 +229,4 @@ void ControlObject::slotSetPositionMidi(MidiCategory c, int v)
 {
     qDebug("Cannot call slotSetPositionMidi() for %s", print());
 }
- 
+*/ 

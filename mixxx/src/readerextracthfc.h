@@ -44,7 +44,7 @@ public:
     void *processChunk(const int idx, const int start_idx, const int end_idx, bool);
 private:
     int frameNo;
-    int framePerChunk;
+    int framePerChunk, framePerFrameSize;
     /** Array of hfc and first derivative of hfc */
     CSAMPLE *hfc, *dhfc;
     QPtrList<EngineSpectralFwd> *specList;

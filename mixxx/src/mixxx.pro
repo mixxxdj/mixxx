@@ -159,11 +159,11 @@ unix:!macx {
   COMPILER = $$system(echo $QMAKESPEC)
   contains(COMPILER, linux-icc) {
     message("Using Intel compiler")
-    QMAKE_CXXFLAGS += -rcd -tpp6 -xiMK # icc pentium III
+#    QMAKE_CXXFLAGS += -rcd -tpp6 -xiMK # icc pentium III
 #    QMAKE_CXXFLAGS += -rcd -tpp7 -xiMKW # icc pentium IV
 #    QMAKE_CXXFLAGS += -prof_gen # generete profiling
 #    QMAKE_CXXFLAGS += -prof_use # use profiling
-    QMAKE_CXXFLAGS += -Wall
+#    QMAKE_CXXFLAGS += -Wall
 
     # icc Profiling
     #QMAKE_CXXFLAGS_DEBUG += -qp -g
@@ -205,10 +205,10 @@ macx {
   SETTINGS_DIR = "/.mixxx"
 }
 
-FORMS	= dlgchanneldlg.ui dlgplaycontroldlg.ui dlgplaylistdlg.ui dlgmasterdlg.ui dlgcrossfaderdlg.ui dlgsplitdlg.ui dlgprefsounddlg.ui dlgprefmididlg.ui dlgprefplaylistdlg.ui dlgflangerdlg.ui dlgtracklistdlg.ui dlgvumeterdlg.ui
+FORMS	= dlgchanneldlg.ui dlgplaycontroldlg.ui dlgplaylistdlg.ui dlgmasterdlg.ui dlgcrossfaderdlg.ui dlgsplitdlg.ui dlgprefsounddlg.ui dlgprefmididlg.ui dlgprefplaylistdlg.ui dlgflangerdlg.ui dlgtracklistdlg.ui #dlgvumeterdlg.ui
 
-SOURCES	+= configobject.cpp fakemonitor.cpp controlengine.cpp controlenginequeue.cpp controleventengine.cpp controleventmidi.cpp controllogpotmeter.cpp controlobject.cpp controlnull.cpp controlpotmeter.cpp controlpushbutton.cpp controlrotary.cpp controlttrotary.cpp controlbeat.cpp dlgchannel.cpp dlgplaycontrol.cpp dlgplaylist.cpp dlgmaster.cpp dlgcrossfader.cpp dlgsplit.cpp dlgpreferences.cpp dlgprefsound.cpp dlgprefmidi.cpp dlgprefplaylist.cpp dlgflanger.cpp enginebuffer.cpp enginebufferscale.cpp enginebufferscalelinear.cpp engineclipping.cpp enginefilterblock.cpp enginefilteriir.cpp engineobject.cpp enginepregain.cpp enginevolume.cpp main.cpp midiobject.cpp midiobjectnull.cpp mixxx.cpp mixxxdoc.cpp mixxxview.cpp player.cpp soundsource.cpp soundsourcemp3.cpp soundsourceoggvorbis.cpp monitor.cpp enginechannel.cpp enginemaster.cpp wknob.cpp wbulb.cpp wplaybutton.cpp wpushbutton.cpp wwheel.cpp wslider.cpp wpflbutton.cpp wplayposslider.cpp wtracktable.cpp wtracktableitem.cpp enginedelay.cpp engineflanger.cpp enginespectralfwd.cpp enginespectralback.cpp mathstuff.cpp readerextract.cpp readerextractwave.cpp readerextractfft.cpp readerextracthfc.cpp readerextractbeat.cpp readerevent.cpp rtthread.cpp windowkaiser.cpp probabilityvector.cpp reader.cpp tracklist.cpp trackinfoobject.cpp dlgtracklist.cpp controlvumeter.cpp enginevumeter.cpp dlgvumeter.cpp
-HEADERS	+= configobject.h fakemonitor.h controlengine.h controlenginequeue.h controleventengine.h controleventmidi.h controllogpotmeter.h controlobject.h controlnull.h controlpotmeter.h controlpushbutton.h controlrotary.h controlttrotary.h controlbeat.h defs.h dlgchannel.h dlgplaycontrol.h dlgplaylist.h dlgmaster.h dlgcrossfader.h dlgsplit.h dlgpreferences.h dlgprefsound.h dlgprefmidi.h dlgprefplaylist.h dlgflanger.h enginebuffer.h enginebufferscale.h enginebufferscalelinear.h engineclipping.h enginefilterblock.h enginefilteriir.h engineobject.h enginepregain.h enginevolume.h midiobject.h midiobjectnull.h mixxx.h mixxxdoc.h mixxxview.h player.h soundsource.h soundsourcemp3.h soundsourceoggvorbis.h monitor.h enginechannel.h enginemaster.h wknob.h wbulb.h wplaybutton.h wpushbutton.h wwheel.h wslider.h wpflbutton.h wplayposslider.h wtracktable.h wtracktableitem.h enginedelay.h engineflanger.h enginespectralfwd.h enginespectralback.h mathstuff.h readerextract.h readerextractwave.h readerextractfft.h readerextracthfc.h readerextractbeat.h readerevent.h rtthread.h windowkaiser.h probabilityvector.h reader.h  tracklist.h trackinfoobject.h dlgtracklist.h  controlvumeter.h enginevumeter.h dlgvumeter.h
+SOURCES	+= configobject.cpp fakemonitor.cpp controlengine.cpp controlenginequeue.cpp controleventengine.cpp controleventmidi.cpp controllogpotmeter.cpp controlobject.cpp controlnull.cpp controlpotmeter.cpp controlpushbutton.cpp controlrotary.cpp controlttrotary.cpp controlbeat.cpp dlgchannel.cpp dlgplaycontrol.cpp dlgplaylist.cpp dlgmaster.cpp dlgcrossfader.cpp dlgsplit.cpp dlgpreferences.cpp dlgprefsound.cpp dlgprefmidi.cpp dlgprefplaylist.cpp dlgflanger.cpp enginebuffer.cpp enginebufferscale.cpp enginebufferscalelinear.cpp engineclipping.cpp enginefilterblock.cpp enginefilteriir.cpp engineobject.cpp enginepregain.cpp enginevolume.cpp main.cpp midiobject.cpp midiobjectnull.cpp mixxx.cpp mixxxdoc.cpp mixxxview.cpp player.cpp soundsource.cpp soundsourcemp3.cpp soundsourceoggvorbis.cpp monitor.cpp enginechannel.cpp enginemaster.cpp wknob.cpp wbulb.cpp wplaybutton.cpp wpushbutton.cpp wwheel.cpp wslider.cpp wpflbutton.cpp wplayposslider.cpp wtracktable.cpp wtracktableitem.cpp enginedelay.cpp engineflanger.cpp enginespectralfwd.cpp enginespectralback.cpp mathstuff.cpp readerextract.cpp readerextractwave.cpp readerextractfft.cpp readerextracthfc.cpp readerextractbeat.cpp readerevent.cpp rtthread.cpp windowkaiser.cpp probabilityvector.cpp reader.cpp tracklist.cpp trackinfoobject.cpp dlgtracklist.cpp # controlvumeter.cpp enginevumeter.cpp dlgvumeter.cpp
+HEADERS	+= configobject.h fakemonitor.h controlengine.h controlenginequeue.h controleventengine.h controleventmidi.h controllogpotmeter.h controlobject.h controlnull.h controlpotmeter.h controlpushbutton.h controlrotary.h controlttrotary.h controlbeat.h defs.h dlgchannel.h dlgplaycontrol.h dlgplaylist.h dlgmaster.h dlgcrossfader.h dlgsplit.h dlgpreferences.h dlgprefsound.h dlgprefmidi.h dlgprefplaylist.h dlgflanger.h enginebuffer.h enginebufferscale.h enginebufferscalelinear.h engineclipping.h enginefilterblock.h enginefilteriir.h engineobject.h enginepregain.h enginevolume.h midiobject.h midiobjectnull.h mixxx.h mixxxdoc.h mixxxview.h player.h soundsource.h soundsourcemp3.h soundsourceoggvorbis.h monitor.h enginechannel.h enginemaster.h wknob.h wbulb.h wplaybutton.h wpushbutton.h wwheel.h wslider.h wpflbutton.h wplayposslider.h wtracktable.h wtracktableitem.h enginedelay.h engineflanger.h enginespectralfwd.h enginespectralback.h mathstuff.h readerextract.h readerextractwave.h readerextractfft.h readerextracthfc.h readerextractbeat.h readerevent.h rtthread.h windowkaiser.h probabilityvector.h reader.h  tracklist.h trackinfoobject.h dlgtracklist.h  # controlvumeter.h enginevumeter.h dlgvumeter.h
 #SOURCES += wslidervol.cpp
 #HEADERS += wslidervol.h images/slidervoltest/lp1.h images/slidervoltest/lp2.h
 
@@ -216,7 +216,7 @@ DEFINES += CONFIG_PATH=$$CONFIG_PATH
 DEFINES += SETTINGS_DIR=$$SETTINGS_DIR
 unix:TEMPLATE         = app
 win32:TEMPLATE       = vcapp
-CONFIG	+= qt warn_off thread release 
+CONFIG	+= qt warn_on thread debug 
 DBFILE	= mixxx.db
 LANGUAGE	= C++
 UI_DIR = .ui

@@ -27,7 +27,7 @@
 #include "dlgplaycontrol.h"
 #include "dlgcrossfader.h"
 #include "dlgsplit.h"
-#include "dlgvumeter.h"
+// #include "dlgvumeter.h"
 #include "wtracktable.h"
 
 MixxxView::MixxxView(QWidget *parent, MixxxDoc *doc) : QWidget(parent)
@@ -47,7 +47,7 @@ MixxxView::MixxxView(QWidget *parent, MixxxDoc *doc) : QWidget(parent)
     split = new DlgSplit(this);
     flanger = new DlgFlanger(this);
     tracklist = new DlgTracklist(this);
-    vumeter = new DlgVUmeter(this);
+//    vumeter = new DlgVUmeter(this);
 
     // Layout management
     mainGrid = new QGridLayout(this,7,3); // A layout on a widget
@@ -61,7 +61,7 @@ MixxxView::MixxxView(QWidget *parent, MixxxDoc *doc) : QWidget(parent)
     mainGrid->addMultiCellWidget(crossfader,1,1,0,4);
     mainGrid->addMultiCellWidget(playlist,2,2,0,4);
     mainGrid->addMultiCellWidget(tracklist,2,2,0,4);
-    mainGrid->addMultiCellWidget(vumeter,0,2,6,6);
+//    mainGrid->addMultiCellWidget(vumeter,0,2,6,6);
     playlist->hide();
 
     //let the ratio between the widths of columns 0 and 1 be 2:3.

@@ -28,15 +28,23 @@ extern "C" {
 }
 #endif
 
+/** Absolute feature threshold. Currently not used */
 const CSAMPLE threshold = 5.;
-
-const CSAMPLE histMinBPM = 70.f;
-const CSAMPLE histMaxBPM = 140.f;
-const CSAMPLE histDownWrite = 0.99999f;
-const int gaussWidth = 8; // Width of gauss/2
+/** Minimum acceptable BPM */
+const CSAMPLE histMinBPM = 60.f;
+/** Maximum acceptable BPM */
+const CSAMPLE histMaxBPM = 240.f;
+/** Down write factor of the histogram, between 0 and 1. */
+const CSAMPLE histDownWrite = 0.9999f;
+/** Width of gauss/2 used in histogram updates */
+const int gaussWidth = 8; 
+/** Slack allowed in beat positioning. */
+const CSAMPLE beatPrecision = 0.1;
 
 /**
   * Extracts beat information based on peaks in the HFC and a beat probability vector.
+  * Based on algorithm in work by Kristoffer Jensen and Tue Haste Andersen. More info
+  * comming at http://www.diku.dk/musinf/
   *
   *@author Tue Haste Andersen
   */
@@ -46,7 +54,10 @@ class ReaderExtractBeat : public ReaderExtract
 public: 
     ReaderExtractBeat(ReaderExtract *input, int frameSize, int frameStep, int _histSize);
     ~ReaderExtractBeat();
+    /** Reset all buffers */
     void reset();
+    /** Reset buffers except histogram (BPM value) */
+    void softreset();
     void *getBasePtr();
     CSAMPLE *getBpmPtr();
     int getRate();
@@ -77,8 +88,10 @@ private:
     int histSize;
     /** Histogram interval size, and min and max interval in seconds*/
     CSAMPLE histInterval, histMinInterval, histMaxInterval;
+    /** Index of maximum histogram value */
+    int histMaxIdx;
     int frameNo;
-    int framePerChunk;
+    int framePerChunk, framePerFrameSize;
     /** Pointer to HFC array */
     CSAMPLE *hfc;
 

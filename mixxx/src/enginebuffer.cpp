@@ -106,7 +106,9 @@ EngineBuffer::EngineBuffer(MixxxApp *_mixxx, QAction *actionAudioBeatMark, Power
     file_srate_old = 0;
     rate_old = 0;
 
+    m_iBeatMarkSamplesLeft = 0;
 
+    
     // Try setting up visuals
     GUIChannel *guichannel = 0;
 #ifdef __VISUALS__
@@ -151,6 +153,8 @@ void EngineBuffer::setNewPlaypos(double newpos)
 
     // Ensures that the playpos slider gets updated in next process call
     playposUpdateCounter = 1000000;
+
+    m_iBeatMarkSamplesLeft = 0;
 }
 
 const char *EngineBuffer::getGroup()
@@ -178,6 +182,7 @@ void EngineBuffer::seek(double change)
     // Seek reader
     reader->requestSeek(new_playpos);
 
+    m_iBeatMarkSamplesLeft = 0;
 //    filepos_play_exchange.write(filepos_play);
 //    file->seek((long unsigned)filepos_play);
 //    visualPlaypos.tryWrite(
@@ -350,43 +355,46 @@ CSAMPLE *EngineBuffer::process(const CSAMPLE *, const int buf_size)
             for (i=0; i<buf_size; i++)
                 buffer[i] = output[i];
             double idx = scale->getNewPlaypos();
-                
+
             // If a beat occours in current buffer mark it by led or in audio
+            // This code currently only works in forward playback.
             ReaderExtractBeat *readerbeat = reader->getBeatPtr();
             if (readerbeat!=0)
             {
-            bool *beatBuffer = (bool *)readerbeat->getBasePtr();
-            int chunkSizeDiff = READBUFFERSIZE/readerbeat->getBufferSize();
-
-            int from = (int)((bufferpos_play-audioBeatMarkLen)/chunkSizeDiff);
-            int to   = (int)(idx                              /chunkSizeDiff);
-            for (i=from; i<=to; i++)
-            {
-                if (beatBuffer[i%readerbeat->getBufferSize()])
+                // Check if we need to set samples from a previos beat mark
+                if (audioBeatMark->get()==1. && m_iBeatMarkSamplesLeft>0)
                 {
-                    if (audioBeatMark->get()==1.)
+                    int to = min(m_iBeatMarkSamplesLeft, idx-bufferpos_play);
+                    for (int j=0; j<to; j++)
+                        buffer[j] = 30000.;
+                    m_iBeatMarkSamplesLeft = max(0,m_iBeatMarkSamplesLeft-to);
+                }
+                
+                bool *beatBuffer = (bool *)readerbeat->getBasePtr();
+                int chunkSizeDiff = READBUFFERSIZE/readerbeat->getBufferSize();
+                for (i=floor(bufferpos_play); i<=floor(idx); i++)
+                {
+                    if (i%chunkSizeDiff==0 & beatBuffer[i/chunkSizeDiff])
                     {
-
-
-                        int j_start = i*chunkSizeDiff;
-                        int j_end   = j_start+audioBeatMarkLen;
-//                        qDebug("%i-%i, buffer: %f-%f",j_start,j_end,bufferpos_play,idx);
-                        if (j_start > bufferpos_play-audioBeatMarkLen)
+                        // Audio beat mark
+                        if (audioBeatMark->get()==1.)
                         {
-                            j_start = (int)max(0,j_start-bufferpos_play);
-                            j_end = (int)min(j_end-bufferpos_play,buf_size);
-//                            qDebug("j_start %i, j_end %i",j_start,j_end);
-                            for (int j=j_start; j<j_end; j++)
+                            int from = i-bufferpos_play;
+                            int to = min(i-bufferpos_play+audioBeatMarkLen, idx-bufferpos_play);
+                            for (int j=from; j<to; j++)
                                 buffer[j] = 30000.;
+                            m_iBeatMarkSamplesLeft = max(0,audioBeatMarkLen-(to-from));
+
+                        //    qDebug("mark %i: %i-%i", i2/chunkSizeDiff, (int)max(0,i-bufferpos_play),(int)min(i-bufferpos_play+audioBeatMarkLen, idx));
                         }
-                    }
 #ifdef __UNIX__
-                    if (powermate!=0)
-                        powermate->led();
+                        // PowerMate led      
+                        if (powermate!=0)
+                            powermate->led();
 #endif
+                    }
                 }
             }
-	    }
 
             // Ensure valid range of idx
             if (idx>READBUFFERSIZE)

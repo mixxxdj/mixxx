@@ -30,6 +30,7 @@ ReaderExtractBeat::ReaderExtractBeat(ReaderExtract *input, int frameSize, int fr
 {
     frameNo = input->getBufferSize(); ///frameStep;
     framePerChunk = frameNo/READCHUNK_NO;
+    framePerFrameSize = frameSize/frameStep;
     
     // Initialize histogram
     histSize = _histSize;
@@ -52,10 +53,11 @@ ReaderExtractBeat::ReaderExtractBeat(ReaderExtract *input, int frameSize, int fr
     beatBufferLastIdx = 0;
     
     // These should be updated whenever a new track is loaded
-    histMinInterval = 60./histMaxBPM;
-    histMaxInterval = 60./histMinBPM;              
-    histInterval = (histMaxInterval-histMinInterval)/(CSAMPLE)(histSize-1.);
-
+    histMinInterval = 60.f/histMaxBPM;
+    histMaxInterval = 60.f/histMinBPM;              
+    histInterval = (histMaxInterval-histMinInterval)/(CSAMPLE)(histSize-1.f);
+    histMaxIdx = -1;
+    
     qDebug("min %f, max %f, interval %f",histMinInterval, histMaxInterval, histInterval);
                 
     // Initialize peak chunk array
@@ -64,8 +66,8 @@ ReaderExtractBeat::ReaderExtractBeat(ReaderExtract *input, int frameSize, int fr
         peakIt[i] = 0;
         
     hfc = (CSAMPLE *)input->getBasePtr();
-
-
+    
+    
 #ifdef __GNUPLOT__
     // Initialize gnuplot interface
     gnuplot_hfc = openPlot("HFC");
@@ -83,18 +85,24 @@ ReaderExtractBeat::~ReaderExtractBeat()
 
 void ReaderExtractBeat::reset()
 {
+    softreset();
+    
+    for (int i=0; i<histSize; i++)
+        hist[i]=0.;
+    
+}
+
+void ReaderExtractBeat::softreset()
+{
     peaks.clear();
     int i;
     for (i=0; i<READCHUNK_NO; i++)
-        peakIt[i] = 0;    
+        peakIt[i] = 0;
     for (i=0; i<getBufferSize(); i++)
     {
         beatBuffer[i] = false;
         bpmBuffer[i] = -1.;
     }
-    for (i=0; i<histSize; i++)
-        hist[i]=0.;
-    
 }
 
 void *ReaderExtractBeat::getBasePtr()
@@ -122,52 +130,56 @@ int ReaderExtractBeat::getBufferSize()
     return input->getBufferSize();
 }
 
-void *ReaderExtractBeat::processChunk(const int idx, const int start_idx, const int end_idx, bool backwards)
+void *ReaderExtractBeat::processChunk(const int _idx, const int start_idx, const int _end_idx, bool)
 {
-    // Determine peak search range
-    int chunkStart, chunkEnd;
-    int chunkAdd = 0;
-    if (backwards)
-    {
-        chunkStart = idx*framePerChunk+1;
-        chunkEnd = (idx+1)*framePerChunk;
-    }
-    else
-    {
-        chunkStart = idx*framePerChunk-1;
-        chunkEnd = (idx+1)*framePerChunk-2;
-    }
-    if (chunkStart<0)
-        chunkStart += frameNo;
-    if (chunkStart>chunkEnd)
-    {
-//        chunkEnd += frameNo;
-        chunkAdd = frameNo;
-    }
+    int end_idx = _end_idx;
+    int idx = _idx;
+    int frameFrom, frameTo;
 
-//    qDebug("chunk %i-%i, frameNo: %i, framePerChunk %i",chunkStart,chunkEnd,frameNo,framePerChunk);
-    
+    // Adjust range (circular buffer)
+    if (start_idx>=_end_idx)
+        end_idx += READCHUNK_NO;
+    if (start_idx>_idx)
+        idx += READCHUNK_NO;
+
+    // From frame...
+    if (idx>start_idx)
+        frameFrom = ((((idx%READCHUNK_NO)*framePerChunk)-framePerFrameSize+1)+frameNo)%frameNo;
+    else
+        frameFrom = (idx%READCHUNK_NO)*framePerChunk;
+
+    // To frame...
+    if (idx<end_idx-1)
+        frameTo = ((idx+1)%READCHUNK_NO)*framePerChunk;
+    else
+        frameTo = (((((idx+1)%READCHUNK_NO)*framePerChunk)-framePerFrameSize)+frameNo)%frameNo;
+
+    int frameAdd = 0;
+    if (frameFrom>frameTo)
+        frameAdd = frameNo;
+
+    idx = idx%READCHUNK_NO;
+    end_idx = end_idx%READCHUNK_NO;
+                
     // Delete beat markings in beat buffer covered by chunk idx
     int i;
-    for (i=chunkStart; i<=chunkEnd+chunkAdd; i++)
+    //qDebug("Deleting beat marks %i-%i (bufsize: %i)",frameFrom,frameTo+frameAdd,getBufferSize());
+    for (i=frameFrom; i<=frameTo+frameAdd; i++)
         beatBuffer[i%frameNo] = false;
 
     // Delete peaks in range covered by chunk idx, from the peak list
     Tpeaks::iterator it = peakIt[idx];
-//    qDebug("removing (idx %i) from %i to %i",idx, chunkStart, chunkEnd);
-
-
-
-    while (it!=0 && circularValidIndex((*it), chunkStart, chunkEnd, frameNo))
+    while (it!=0 && circularValidIndex((*it), frameFrom, frameTo, frameNo))
     {
 //        qDebug("removing %i",(*it));
         it = peaks.remove(it);
         if (it==peaks.end())
             it = 0;
     }
+//    qDebug("removed (idx %i) from %i to %i",idx, frameFrom, frameTo);
     peakIt[idx] = 0;
 
-//    qDebug("idx: %i, start_idx: %i, end_idx: %i, frameStart: %i, frameEnd: %i",idx, start_idx, end_idx, frameStart, frameEnd);
+//    qDebug("idx: %i, start_idx: %i, end_idx: %i, frameFrom: %i, frameTo: %i",idx, start_idx, end_idx, frameFrom, frameTo);
 
     // If position in peak list is not given from previous step,
     // find position in peaks list to insert new elements at
@@ -188,7 +200,7 @@ void *ReaderExtractBeat::processChunk(const int idx, const int start_idx, const 
 
     // Add new peaks to the peak list
     bool foundPeak = false;                   
-    for (i=chunkEnd+chunkAdd; i>=chunkStart; i--)
+    for (i=frameTo+frameAdd; i>=frameFrom; i--)
     {
         if (hfc[i%frameNo]>hfc[(i-1)%frameNo] && hfc[i%frameNo]>hfc[(i+1)%frameNo] /*&& hfc[i%frameNo]>threshold*/)
         {
@@ -227,15 +239,14 @@ void *ReaderExtractBeat::processChunk(const int idx, const int start_idx, const 
     setLineType(gnuplot_hfc,"lines");
     plotData(hfc,getBufferSize(),gnuplot_hfc,plotFloats);
 
-/*
     // Mark current region
     setLineType(gnuplot_hfc,"impulses");
     float y = 1000000000;
-    float x = chunkStart%frameNo;
+    float x = frameFrom%frameNo;
     replotxy(&x, &y, 1, gnuplot_hfc);
-    x = chunkEnd%frameNo;
+    x = frameTo%frameNo;
     replotxy(&x,   &y, 1, gnuplot_hfc);
-*/
+
     // Peaks
     setLineType(gnuplot_hfc,"points");
     CSAMPLE *px = new CSAMPLE[getBufferSize()];
@@ -272,19 +283,20 @@ void *ReaderExtractBeat::processChunk(const int idx, const int start_idx, const 
 //    sleep(1);
 #endif
 
-
-
     // If any peaks was found, update peakIt iterator array
     if (foundPeak)
         peakIt[idx] = it;
-    
+
+    // Will be true if beats was set in the current buffer
+    bool beatset = false;
+        
     // Perform updates to histogram if peaks was found
     if (foundPeak)
     {
 //        qDebug("(*it): %i",(*it));
 
         int count = 0;
-        while (circularValidIndex((*it), chunkStart, chunkEnd, frameNo))
+        while (circularValidIndex((*it), frameFrom, frameTo, frameNo))
         {
 //            qDebug("peak %i",(*it));
             // Consider distance to previous peaks in the range between histMinBPM and histMaxBPM
@@ -314,15 +326,8 @@ void *ReaderExtractBeat::processChunk(const int idx, const int start_idx, const 
             else
                 markedbeatinterval = cur-last;
             
-            
-            // Find maximum in histogram
-            int maxidx = -1;
-            int i;
-            for (i=1; i<histSize-1; i++)
-                if (hist[i]>hist[i-1] && hist[i]>hist[i+1])
-                    if ((maxidx>-1 && hist[i]>hist[maxidx]) || maxidx==-1)
-                        maxidx = i;
-            CSAMPLE bestinterval = ((CSAMPLE)maxidx*histInterval)+histMinInterval;
+            // Interval corresponding to max in histogram
+            CSAMPLE bestinterval = ((CSAMPLE)histMaxIdx*histInterval)+histMinInterval;
                         
             while(interval>0. && interval<=histMaxInterval && it2!=it)
             {
@@ -336,8 +341,12 @@ void *ReaderExtractBeat::processChunk(const int idx, const int start_idx, const 
                     int j_start = -min(gaussWidth, center);
                     int j_end   =  min(gaussWidth, (histSize-1)-center);
                     for (int j=j_start; j<j_end; j++)
+                    {
                         hist[center+j] += exp((-0.5*j*j)/(0.5*gaussWidth))*hfc[(*it)]*hfc[(*it2)];
-
+                        if (hist[center+j]>hist[histMaxIdx])
+                            histMaxIdx = center+j;
+                    }
+                    
                     // beatIntVector is updated
                     if (abs(interval-markedbeatinterval)<0.1)
                         beatIntVector[center] = hfc[(*it)]*hfc[(*it2)]*2.;
@@ -369,39 +378,28 @@ void *ReaderExtractBeat::processChunk(const int idx, const int start_idx, const 
             // If a beat is found, update beatBuffer and bpmBuffer
             //
             
-            // Find maximum in histogram
-            maxidx = -1;
-            for (i=1; i<histSize-1; i++)
-                if (hist[i]>hist[i-1] && hist[i]>hist[i+1])
-                    if ((maxidx>-1 && hist[i]>hist[maxidx]) || maxidx==-1)
-                        maxidx = i;
-
 //            qDebug("best interval %f (in hfc plot)",(((CSAMPLE)maxidx*histInterval)+histMinInterval)*86.);
                         
             // Update bpmBuffer
-            if (maxidx>-1)
+            if (histMaxIdx>-1)
             {
-                CSAMPLE bpm = 60./(((CSAMPLE)maxidx*histInterval)+histMinInterval);
+                CSAMPLE bpm = 60./(((CSAMPLE)histMaxIdx*histInterval)+histMinInterval);
                 Tpeaks::iterator it3 = it;
                 ++it3;
                 int start;
                 if (count==0)
-                    start = chunkStart;
+                    start = frameFrom;
                 else
                     start = (*it);
                 for (int i=start; i<(*it3); i++)
                     bpmBuffer[i] = bpm;
 //                qDebug("update from %i - %i",(*it),(*(it3)));
-            }
 
-
-            // Check if maximum interval is max in beatIntVector
-            if (maxidx>-1)
-            {
+                // Check if maximum interval is max in beatIntVector
                 // Multiply everything in a small range around maxidx with a constant
                 const int RANGE = 5;
                 int i;
-                for (i=max(0,maxidx-RANGE); i<min(histSize,maxidx+RANGE); i++)
+                for (i=max(0,histMaxIdx-RANGE); i<min(histSize,histMaxIdx+RANGE); i++)
                     beatIntVector[i] *= 1.5;
 /*                                    
 #ifdef __GNUPLOT__
@@ -411,8 +409,8 @@ void *ReaderExtractBeat::processChunk(const int idx, const int start_idx, const 
             setLineType(gnuplot_beat,"lines");
             plotData(beatIntVector,histSize,gnuplot_beat,plotFloats);
 
-            int i1=max(0,maxidx-5);
-            int i2=min(maxidx+5,histSize);
+            int i1=max(0,histMaxIdx-5);
+            int i2=min(histMaxIdx+5,histSize);
             float *x = new float[i2-i1];
             float *y = new float[i2-i1];
             for (int i=0; i<i2-i1; i++)
@@ -431,7 +429,7 @@ void *ReaderExtractBeat::processChunk(const int idx, const int start_idx, const 
 */
                 // Search for max in a small range around maxidx in beatIntVector
                 int beatIntMaxIdx = -1;
-                for (i=max(0,maxidx-RANGE); i<min(histSize,maxidx+RANGE); i++)
+                for (i=max(0,histMaxIdx-RANGE); i<min(histSize,histMaxIdx+RANGE); i++)
                     if ((beatIntMaxIdx>-1 && beatIntVector[i]>beatIntVector[beatIntMaxIdx]) || (beatIntVector[i]>0.))
                         beatIntMaxIdx = i;
                 
@@ -439,18 +437,19 @@ void *ReaderExtractBeat::processChunk(const int idx, const int start_idx, const 
                 bool beat = true;
                 if (beatIntMaxIdx>-1)
                 {
-                    for (int i=0; i<max(0,maxidx-RANGE); i++)
+                    for (int i=0; i<max(0,histMaxIdx-RANGE); i++)
                     {
                         if (beatIntVector[i]>beatIntVector[beatIntMaxIdx])
                         {
                             beat = false;
                             break;
                         }
-                    }                                                 
+                    }
+                                                                     
                     if (beat)
                     {
                         // Mark beat if long enough distance to last beat
-                        CSAMPLE histint = (((CSAMPLE)maxidx*histInterval)+histMinInterval)*0.9;
+                        CSAMPLE histint = (((CSAMPLE)histMaxIdx*histInterval)+histMinInterval);
                         CSAMPLE cur  = (CSAMPLE)(*it)/(CSAMPLE)getRate();
                         CSAMPLE last = (CSAMPLE)beatBufferLastIdx/(CSAMPLE)getRate();
                         CSAMPLE dist;
@@ -461,31 +460,14 @@ void *ReaderExtractBeat::processChunk(const int idx, const int start_idx, const 
                             
 //                        qDebug("dist %f, interval %f",dist,histint);
                         // Check if the distance to last marked beat is ok
-                        if (dist > histint)
+                        if (dist >= histint*(1.-beatPrecision) && dist < histint*(1.+beatPrecision))
                         {                            
+                            qDebug("Set beat mark at peak, dist %f",dist);
                             beatBuffer[(*it)] = beat;
                             beatBufferLastIdx = (*it);
+                            beatset=true;
                         }
                     }
-                    else
-                    {
-                        // Force a beat mark if too long distance to last beat
-                        CSAMPLE histint = (((CSAMPLE)maxidx*histInterval)+histMinInterval)*1.1;
-                        CSAMPLE cur  = (CSAMPLE)(*it)/(CSAMPLE)getRate();
-                        CSAMPLE last = (CSAMPLE)beatBufferLastIdx/(CSAMPLE)getRate();
-                        CSAMPLE dist;
-                        if (last>cur)
-                            dist = cur+((CSAMPLE)getBufferSize()/(CSAMPLE)getRate())-last;
-                        else
-                            dist = cur-last;
-
-                        if (dist>histint)
-                        {
-                            beatBuffer[(*it)] = beat;
-                            beatBufferLastIdx = (*it);
-                        }
-                    }
-                    
                 }
             }
 
@@ -527,22 +509,33 @@ void *ReaderExtractBeat::processChunk(const int idx, const int start_idx, const 
         }    
     }
 
+    // If no peaks was found, check if distance to last marked beat and force a beat mark
+    if (!beatset && histMaxIdx>-1)
+    {
+        // Find ideal distance in seconds between beat marks
+        CSAMPLE histint = (((CSAMPLE)histMaxIdx*histInterval)+histMinInterval)/**(1.+(beatPrecision/3.))*/;
+        CSAMPLE cur  = (CSAMPLE)(frameTo)/(CSAMPLE)getRate();
+        CSAMPLE last = (CSAMPLE)beatBufferLastIdx/(CSAMPLE)getRate();
+        CSAMPLE dist;
+        if (last>cur)
+            dist = cur+((CSAMPLE)getBufferSize()/(CSAMPLE)getRate())-last;
+        else                     
+            dist = cur-last;
+
+        // If interval to last marked beat is less than the current block, then mark a beat.
+        if (histint<dist)
+        {
+            int i = (int)((last+histint)*getRate())%frameNo;
+            beatBuffer[i] = true;
+            beatBufferLastIdx = i;
+            qDebug("Force beat mark at no peak, dist %f",histint);
+        }
+    }
+                        
     // Down-write histogram
     for (i=0; i<histSize; i++)
         hist[i] *= histDownWrite;
     
-    // Find maximum
-    int maxidx = -1;
-    for (i=1; i<histSize-1; i++)
-    {
-        if (hist[i]>hist[i-1] && hist[i]>hist[i+1])
-            if ((maxidx>-1 && hist[i]>hist[maxidx]) || maxidx==-1)
-                maxidx = i;
-    }
-    //std::cout << "\n";        
-
-
-
 #ifdef __GNUPLOT__
     //
     // Plot Histogram
@@ -551,8 +544,8 @@ void *ReaderExtractBeat::processChunk(const int idx, const int start_idx, const 
     plotData(hist, histSize, gnuplot_hist, plotFloats);
 
     setLineType(gnuplot_hist,"points");
-    float _maxidx = (float)maxidx;
-    replotxy(&_maxidx, &hist[maxidx], 1, gnuplot_hist);
+    float _maxidx = (float)histMaxIdx;
+    replotxy(&_maxidx, &hist[histMaxIdx], 1, gnuplot_hist);
 
     //savePlot(gnuplot_hist, "hist.png", "png");
 #endif
@@ -562,20 +555,20 @@ void *ReaderExtractBeat::processChunk(const int idx, const int start_idx, const 
     // Update remaining part of bpmBuffer
     CSAMPLE bpm = 60./(((CSAMPLE)maxidx*histInterval)+histMinInterval);
     Tpeaks::iterator it3 = peaks.end(); --it3;
-    for (int i=(*it3); i<chunkEnd; i++)
+    for (int i=(*it3); i<frameTo; i++)
         bpmBuffer[i] = bpm;
 */
 
         // Print beat buffer
 /*
         std::cout << "idx: " << idx << "\n";
-        for (int i=chunkStart; i<chunkEnd; i++)
+        for (int i=frameFrom; i<frameTo; i++)
             if (beatBuffer[i%getBufferSize()])
                 std::cout << "(" << i << "," << beatBuffer[i%getBufferSize()] << ") ";
         std::cout << "\n";
 */        
 /*        
-        while (beatIdx < chunkStart && beatIdx<getBufferSize())
+        while (beatIdx < frameFrom && beatIdx<getBufferSize())
             beatIdx += interval;
         if (beatIdx>=getBufferSize())
         {
@@ -583,20 +576,20 @@ void *ReaderExtractBeat::processChunk(const int idx, const int start_idx, const 
             while (beatIdx
 
             beatIdx += interval;
-            
+
 
 
         beatIdx = (beatIdx+getBufferSize())%get
 
 
-        /READCHUNK_NO))-(getBufferSize()/READCHUNK_NO);
+        /READCHUNK_NO))-(get// Width of gauss/2BufferSize()/READCHUNK_NO);
 
         while (beatIdx<0)
             beatIdx += interval;
-        beatIdx += chunkStart;
-        if (chunkEnd<chunkStart)
-            chunkEnd += getBufferSize();
-        while (beatIdx < chunkEnd)
+        beatIdx += frameFrom;
+        if (frameTo<frameFrom)
+            frameTo += getBufferSize();
+        while (beatIdx < frameTo)
         {
             beatBuffer[beatIdx%getBufferSize()] = true;
             beatIdx += interval;
