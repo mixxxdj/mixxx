@@ -24,7 +24,7 @@ MidiObjectOSS::MidiObjectOSS(ConfigObject<ConfigValueMidi> *c, QApplication *a, 
     thread_pid = 0;
 
     // Allocate buffer
-    buffer = new char[4096];
+    buffer = new unsigned char[4096];
     if (buffer == 0)
     {
         qDebug("MidiObjectOSS: Error allocating MIDI buffer");
@@ -118,7 +118,7 @@ void MidiObjectOSS::run()
         do
         {
             int no = read(handle,&buffer[0],1);
-            //qDebug("midi: %i",(short int)buffer[0]);
+//            qDebug("midi: %i",(short int)buffer[0]);
             if (no != 1)
                 qDebug("MidiObjectOSS: midiobject recieved %i bytes.", no);
         } while ((buffer[0] & 128) != 128 & requestStop==false); // Continue until we receive a status byte (bit 7 is set)
@@ -127,19 +127,28 @@ void MidiObjectOSS::run()
         {
             // and then get the following 2 bytes:
             MidiCategory midicategory;
-            char midichannel;
-            char midicontrol;
-            char midivalue;
-            for (int i=1; i<3; i++)
+            unsigned char midichannel;
+            unsigned char midicontrol;
+            unsigned char midivalue;
+	    int i;
+            for (i=1; i<3; i++)
             {
                 int no = read(handle,&buffer[i],1);
                 if (no != 1)
                     qDebug("MidiObjectOSS: midiobject recieved %i bytes.", no);
                 if (requestStop==true)
                     break;
+                if ((buffer[i] & 0xF0)>127)
+	            {
+                    // Somehow the sequence got mixed up, since we now receive a start
+                    // of a midi command. Restart reading the command
+                    buffer[0] = buffer[i];
+                    i=0;
+                }
             }
-            if (requestStop==false)
+            if (requestStop==false && i==3)
             {
+//		    qDebug("midi oss received %i, %i, %i",buffer[0], buffer[1], buffer[2]);
                 midicategory = (MidiCategory)(buffer[0] & 0xF0);
                 midichannel = buffer[0] & 0x0F; // The channel is stored in the lower 4 bits of the status byte received
                 midicontrol = buffer[1];
