@@ -28,6 +28,6 @@ MixxxSocketServer::~MixxxSocketServer()
 
 void MixxxSocketServer::newConnection(int socket)
 {
-    MixxxSocketClient *s = new MixxxSocketClient(m_pTrack, socket, this);
+    new MixxxSocketClient(m_pTrack, socket, this);
 }
 

@@ -21,7 +21,7 @@
 /*----------------------------------------------------------------
   A pregaincontrol is ... a pregain.
   ----------------------------------------------------------------*/
-EngineClipping::EngineClipping(const char *group)
+EngineClipping::EngineClipping(const char *)
 {
 }
 

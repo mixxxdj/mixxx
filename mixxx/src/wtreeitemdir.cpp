@@ -80,8 +80,8 @@ void WTreeItemDir::setOpen(bool o)
                 if ( fi->fileName() == "." || fi->fileName() == ".." )
                     ; // nothing
                 else if ( fi->isSymLink() && !showDirsOnly ) {
-                    WTreeItemFile *item = new WTreeItemFile( this, fi->fileName(),
-                                                     "Symbolic Link" );
+//                     WTreeItemFile *item = new WTreeItemFile( this, fi->fileName(),
+//                                                      "Symbolic Link" );
 //                    item->setPixmap( fileNormal );
                 }
                 else if ( fi->isDir() )
@@ -94,8 +94,8 @@ void WTreeItemDir::setOpen(bool o)
                           fi->fileName().endsWith(".OGG") ||
                           fi->fileName().endsWith(".WAV")))
                 {
-                    WTreeItemFile *item = new WTreeItemFile(this, fi->fileName(),
-                                                            fi->isFile()?"File":"Special" );
+//                     WTreeItemFile *item = new WTreeItemFile(this, fi->fileName(),
+//                                                             fi->isFile()?"File":"Special" );
 //                    item->setPixmap( fileNormal );
                 }
             }

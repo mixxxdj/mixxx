@@ -25,7 +25,6 @@
 #include <qevent.h>
 
 class SignalVertexBuffer;
-class ReaderExtractFFT;
 class ReaderExtractHFC;
 class ReaderExtractBeat;
 class Reader;
@@ -81,7 +80,6 @@ private:
     /** The buffer where the samples are read into */
     CSAMPLE *read_buffer;
     /** Pointer to FFT extractor */
-    ReaderExtractFFT *readerfft;
     ReaderExtractHFC *readerhfc;
     ReaderExtractBeat *readerbeat;
 };

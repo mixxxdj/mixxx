@@ -28,9 +28,11 @@ VisualBuffer::VisualBuffer(ReaderExtract *pReaderExtract, ControlPotmeter *pPlay
 {
     m_pPlaypos = pPlaypos;
     m_pReaderExtract = pReaderExtract;
-
+    Q_ASSERT(m_pReaderExtract);
+    
     // Get length and pointer to buffer in ReaderExtract
     m_pSource = (CSAMPLE *)m_pReaderExtract->getBasePtr();
+    Q_ASSERT(m_pSource);
     m_iSourceLen = m_pReaderExtract->getBufferSize();
 
     // Set resample factor and display rate and display factor

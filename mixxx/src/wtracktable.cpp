@@ -137,7 +137,7 @@ void WTrackTable::sortColumn(int col, bool ascending, bool)
     QTable::sortColumn(col,ascending,true);
 }
 
-void WTrackTable::slotMousePressed(int row, int col, int button, const QPoint &p)
+void WTrackTable::slotMousePressed(int row, int col, int button, const QPoint &)
 {
 //    QTable::slotMousePressed(row, col, button, p);
     

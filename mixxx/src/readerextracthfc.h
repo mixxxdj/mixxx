@@ -23,6 +23,8 @@
 #include <qptrlist.h>
 
 class EngineSpectralFwd;
+class WindowKaiser;
+
 /**
   * Calculates the High Frequency Content as used in ReaderExtractBeat.
   *
@@ -42,11 +44,22 @@ public:
     int getBufferSize();
     void *processChunk(const int idx, const int start_idx, const int end_idx, bool);
 private:
+    void processFftFrame(int idx);
+    
     int frameNo;
     int framePerChunk, framePerFrameSize;
+    int frameSize, frameStep;
+    /** Pointer to window and windowed samples of signal */
+    WindowKaiser *window;
+    /** Pointer to samples containing one windowed frame of samples */
+    CSAMPLE *windowedSamples;
+    /** Pointer to array containing window */
+    CSAMPLE *windowPtr;
+    /** Pointer to read_buffer from ReaderExtractWave */
+    CSAMPLE *readbufferPtr;
     /** Array of hfc and first derivative of hfc */
     CSAMPLE *hfc, *dhfc;
-    QPtrList<EngineSpectralFwd> *specList;
+    EngineSpectralFwd *m_pEngineSpectralFwd;
 };
 
 #endif
