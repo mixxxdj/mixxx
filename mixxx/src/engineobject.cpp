@@ -17,6 +17,13 @@
 
 #include "engineobject.h"
 
+#ifdef __WIN__
+#include "windows.h"
+//using namespace System;
+//using namespace System::Threading; 
+#endif
+
+
 // Static member variable definition
 QString EngineObject::NAME_MASTER = 0;
 QString EngineObject::NAME_HEAD = 0;
@@ -75,9 +82,11 @@ int EngineObject::get_bus_speed()
     retval = sysctl(mib, miblen, &busspeed, &len, NULL, 0);
     return busspeed;
 }
+#endif
 
 void EngineObject::rtThread()
 {
+#ifdef __MACX__
     struct thread_time_constraint_policy ttcpolicy;
     kern_return_t theError;
     /* This is in AbsoluteTime units, which are equal to
@@ -96,6 +105,21 @@ void EngineObject::rtThread()
                THREAD_TIME_CONSTRAINT_POLICY_COUNT);
     if (theError != KERN_SUCCESS)
         fprintf(stderr, "Can't do thread_policy_set\n");
-}
 #endif
+#ifdef __UNIX__
+    // Try to set realtime priority on the current executing thread. This should be used in time-critical
+    // producer threads.
+    struct sched_param schp;
+    memset(&schp, 0, sizeof(schp));
 
+    // Choose a priority just one step lower than the PortAudio thread
+    schp.sched_priority = ((sched_get_priority_max(SCHED_RR) - 11)); //sched_get_priority_min(SCHED_RR)) / 2)-1;
+    if (sched_setscheduler(0, SCHED_RR, &schp) != 0)
+    qWarning("Not possible to give audio producer thread high prioriy.");
+
+#endif
+#ifdef __WIN__
+    HANDLE h = GetCurrentThread();
+    SetThreadPriority(h,THREAD_PRIORITY_BELOW_NORMAL);
+#endif
+}

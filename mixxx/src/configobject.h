@@ -62,6 +62,10 @@ class ConfigValueMidi : public ConfigValue
                              // while musicians operates on midi channels 1-16.
         else
             midichannel = 0; // Default to 0 (channel 1)
+
+        // If empty string, default midino should be below 0.
+        if (_value.length()==0)
+            midino = -1;
         //qDebug("--1, midino: %i, midimask: %i, midichannel: %i",midino,midimask,midichannel);
     };
     ConfigValueMidi(int _midino, int _midimask, int _midichannel)

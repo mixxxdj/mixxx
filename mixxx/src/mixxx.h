@@ -41,8 +41,8 @@
 
 // application specific includes
 #include "defs.h"
-#include "mixxxview.h"
 #include "mixxxdoc.h"
+#include "mixxxview.h"
 #include "enginebuffer.h"
 #include "enginechannel.h"
 #include "enginemaster.h"
@@ -52,9 +52,10 @@
 #include "controlobject.h"
 #include "dlgpreferences.h"
 
+class MixxxVisual;
 
 /**
-  * This Class is the base class for your application. It sets up the main
+  * This Class is the base class for Mixxx. It sets up the main
   * window and providing a menubar, toolbar
   * and statusbar. For the main view, an instance of class MixxxView is
   * created which creates your view.
@@ -147,6 +148,9 @@ class MixxxApp : public QMainWindow
      */
     MixxxDoc *doc;
 
+    /** Pointer to MixxxVisual widget */
+    MixxxVisual *visual;
+    
     QApplication *app;
     EngineObject *engine;
     EngineBuffer *buffer1, *buffer2;

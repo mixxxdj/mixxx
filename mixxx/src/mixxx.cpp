@@ -136,6 +136,7 @@ MixxxApp::MixxxApp(QApplication *a)
 #ifdef __WINMIDI__
   midi = new MidiObjectWin(midiconfig,app,this,config->getValueString(ConfigKey("[Midi]","Device")));
 #endif
+    
   if (midi == 0)
       midi = new MidiObjectNull(midiconfig,app,this,config->getValueString(ConfigKey("[Midi]","Device")));
 
@@ -176,7 +177,8 @@ MixxxApp::MixxxApp(QApplication *a)
   control->midi = midi;
   control->config = midiconfig;
 
-  //
+  //        if (visual>0)
+
   // Initialize master player
   //
   qDebug("Init master");
@@ -276,26 +278,28 @@ bool MixxxApp::eventFilter(QObject *o, QEvent *e)
         // Release app lock
         //app->unlock();
 
-        return TRUE;
-    } else {
-        // standard event processing
+    }
+    else
+    {
+        // Standard event processing
         return QWidget::eventFilter(o,e);
     }
+    return TRUE;
 }
 
 void MixxxApp::engineStart()
 {
     if (view->playlist->ListPlaylist->firstChild() != 0)
     {
-        //qDebug("Init buffer 1... %s", view->playlist->ListPlaylist->firstChild()->text(1).ascii());
+		//qDebug("Init buffer 1... %s", view->playlist->ListPlaylist->firstChild()->text(1).ascii());
         buffer1 = new EngineBuffer(app, this, view->playcontrol1, "[Channel1]",
-				   view->playlist->ListPlaylist->firstChild()->text(1));
+                                   view->playlist->ListPlaylist->firstChild()->text(1));
 
         if (view->playlist->ListPlaylist->firstChild()->nextSibling() != 0)
         {
             //qDebug("Init buffer 2... %s", view->playlist->ListPlaylist->firstChild()->nextSibling()->text(1).ascii());
             buffer2 = new EngineBuffer(app, this, view->playcontrol2, "[Channel2]",
-				       view->playlist->ListPlaylist->firstChild()->nextSibling()->text(1));
+                                       view->playlist->ListPlaylist->firstChild()->nextSibling()->text(1));
         } else
             buffer2 = new EngineBuffer(app, this, view->playcontrol2, "[Channel2]", 0);
     } else {
@@ -529,6 +533,9 @@ void MixxxApp::initView()
   // set the main widget here
   view=new MixxxView(this, doc);
   setCentralWidget(view);
+
+  // Set visual vidget here
+  visual = 0;
 }
 
 bool MixxxApp::queryExit()

@@ -11,7 +11,7 @@ class SoundSourceSndFile : public SoundSource {
   ~SoundSourceSndFile();
   long seek(long);
   unsigned read(unsigned long size, const SAMPLE*);
-  long unsigned length();
+  inline long unsigned length();
  private:
   int channels;
   SNDFILE *fh;

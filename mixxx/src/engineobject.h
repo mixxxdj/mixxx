@@ -29,6 +29,12 @@
   #include <mach/thread_policy.h>
   #include <sys/sysctl.h>
 #endif
+#ifdef __UNIX__
+  #include <sched.h>
+  #include <sys/time.h>
+  #include <sys/resource.h>
+#endif
+
 
 /**
   *@author Tue and Ken Haste Andersen
@@ -55,8 +61,8 @@ protected:
   static FLOAT_TYPE BASERATE;
 #ifdef __MACX__
   int get_bus_speed();
-  void rtThread();
 #endif
+  void rtThread();
 private:
   static MixxxView *view;
 };
