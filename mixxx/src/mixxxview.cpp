@@ -132,6 +132,7 @@ MixxxView::MixxxView(QWidget *parent, bool bVisuals) : QWidget(parent, "Mixxx")
     m_pButtonRateUpCh1 = new WPushButtonInc(main);
     m_pButtonRateUpCh1->setPixmap(0, false, getPath("buttons/up0.png"));
     m_pButtonRateUpCh1->setPixmap(0, true, getPath("buttons/up3.png"));
+    m_pButtonRateUpCh1->setPixmapBackground(getPath("buttons/upback1.png"));
     m_pButtonRateUpCh1->setFixedSize(28,88);
     m_pButtonRateUpCh1->move(104,246);
     m_pButtonRateUpCh1->setInc(0.03,0.01);
@@ -139,13 +140,15 @@ MixxxView::MixxxView(QWidget *parent, bool bVisuals) : QWidget(parent, "Mixxx")
     m_pButtonRateDownCh1 = new WPushButtonInc(main);
     m_pButtonRateDownCh1->setPixmap(0, false, getPath("buttons/down0.png"));
     m_pButtonRateDownCh1->setPixmap(0, true, getPath("buttons/down3.png"));
-    m_pButtonRateDownCh1->setFixedSize(28,88);
+    m_pButtonRateDownCh1->setPixmapBackground(getPath("buttons/downback1.png"));
+    m_pButtonRateDownCh1->setFixedSize(28,87);
     m_pButtonRateDownCh1->move(104,383);
     m_pButtonRateDownCh1->setInc(-0.03,-0.01);
 
     m_pButtonRateUpCh2 = new WPushButtonInc(main);
     m_pButtonRateUpCh2->setPixmap(0, false, getPath("buttons/up0.png"));
     m_pButtonRateUpCh2->setPixmap(0, true, getPath("buttons/up3.png"));
+    m_pButtonRateUpCh2->setPixmapBackground(getPath("buttons/upback1.png"));
     m_pButtonRateUpCh2->setFixedSize(28,88);
     m_pButtonRateUpCh2->move(892,246);
     m_pButtonRateUpCh2->setInc(0.03,0.01);
@@ -153,7 +156,8 @@ MixxxView::MixxxView(QWidget *parent, bool bVisuals) : QWidget(parent, "Mixxx")
     m_pButtonRateDownCh2 = new WPushButtonInc(main);
     m_pButtonRateDownCh2->setPixmap(0, false, getPath("buttons/down0.png"));
     m_pButtonRateDownCh2->setPixmap(0, true, getPath("buttons/down3.png"));
-    m_pButtonRateDownCh2->setFixedSize(28,88);
+    m_pButtonRateDownCh2->setPixmapBackground(getPath("buttons/downback1.png"));
+    m_pButtonRateDownCh2->setFixedSize(28,87);
     m_pButtonRateDownCh2->move(892,383);
     m_pButtonRateDownCh2->setInc(-0.03,-0.01);
    
@@ -163,6 +167,7 @@ MixxxView::MixxxView(QWidget *parent, bool bVisuals) : QWidget(parent, "Mixxx")
     m_pPlayCh1->setPixmap(0, true,  getPath("buttons/play1.png"));
     m_pPlayCh1->setPixmap(1, false, getPath("buttons/play3.png"));
     m_pPlayCh1->setPixmap(1, true,  getPath("buttons/play4.png"));
+    m_pPlayCh1->setPixmapBackground(getPath("buttons/playback1.png"));
     m_pPlayCh1->setFixedSize(80,28);
     m_pPlayCh1->move(266,267);
 
@@ -172,6 +177,7 @@ MixxxView::MixxxView(QWidget *parent, bool bVisuals) : QWidget(parent, "Mixxx")
     m_pPlayCh2->setPixmap(0, true,  getPath("buttons/play1.png"));
     m_pPlayCh2->setPixmap(1, false, getPath("buttons/play3.png"));
     m_pPlayCh2->setPixmap(1, true,  getPath("buttons/play4.png"));
+    m_pPlayCh2->setPixmapBackground(getPath("buttons/playback2.png"));
     m_pPlayCh2->setFixedSize(80,28);
     m_pPlayCh2->move(678,267);
 
@@ -217,6 +223,7 @@ MixxxView::MixxxView(QWidget *parent, bool bVisuals) : QWidget(parent, "Mixxx")
     m_pHeadCueCh1->setPixmap(0, true,  getPath("buttons/cuec0.png"));
     m_pHeadCueCh1->setPixmap(1, false, getPath("buttons/cuec3.png"));
     m_pHeadCueCh1->setPixmap(1, true,  getPath("buttons/cuec3.png"));
+    m_pHeadCueCh1->setPixmapBackground(getPath("buttons/cuecback1.png"));
     m_pHeadCueCh1->setFixedSize(34,13);
     m_pHeadCueCh1->move(477,218);
 
@@ -226,6 +233,7 @@ MixxxView::MixxxView(QWidget *parent, bool bVisuals) : QWidget(parent, "Mixxx")
     m_pHeadCueCh2->setPixmap(0, true,  getPath("buttons/cuec0.png"));
     m_pHeadCueCh2->setPixmap(1, false, getPath("buttons/cuec3.png"));
     m_pHeadCueCh2->setPixmap(1, true,  getPath("buttons/cuec3.png"));
+    m_pHeadCueCh2->setPixmapBackground(getPath("buttons/cuecback2.png"));
     m_pHeadCueCh2->setFixedSize(34,13);
     m_pHeadCueCh2->move(513,218);
 
@@ -233,6 +241,7 @@ MixxxView::MixxxView(QWidget *parent, bool bVisuals) : QWidget(parent, "Mixxx")
     m_pCueCh1->setStates(1);
     m_pCueCh1->setPixmap(0, false, getPath("buttons/cue0.png"));
     m_pCueCh1->setPixmap(0, true,  getPath("buttons/cue3.png"));
+    m_pCueCh1->setPixmapBackground(getPath("buttons/cueback1.png"));
     m_pCueCh1->setFixedSize(55,28);
     m_pCueCh1->move(137,267);
 
@@ -240,6 +249,7 @@ MixxxView::MixxxView(QWidget *parent, bool bVisuals) : QWidget(parent, "Mixxx")
     m_pCueCh2->setStates(1);
     m_pCueCh2->setPixmap(0, false, getPath("buttons/cue0.png"));
     m_pCueCh2->setPixmap(0, true,  getPath("buttons/cue3.png"));
+    m_pCueCh2->setPixmapBackground(getPath("buttons/cueback2.png"));
     m_pCueCh2->setFixedSize(55,28);
     m_pCueCh2->move(832,267);
 
@@ -276,6 +286,7 @@ MixxxView::MixxxView(QWidget *parent, bool bVisuals) : QWidget(parent, "Mixxx")
     m_pEndOfTrackModeCh2->setPixmap(2, true,  getPath("buttons/endoftrackmode-loop.png"));
     m_pEndOfTrackModeCh2->setPixmap(3, false, getPath("buttons/endoftrackmode-ping.png"));
     m_pEndOfTrackModeCh2->setPixmap(3, true,  getPath("buttons/endoftrackmode-ping.png"));
+    m_pHeadCueCh1->setPixmapBackground(getPath("buttons/cuecback1.png"));
     m_pEndOfTrackModeCh2->setFixedSize(30,10);
     m_pEndOfTrackModeCh2->move(900,70);
 
