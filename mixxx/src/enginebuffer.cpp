@@ -304,7 +304,7 @@ CSAMPLE *EngineBuffer::process(const CSAMPLE *, const int buf_size)
 //        qDebug("bpmrate %f, filebpm %f, midibpm %f",bpmrate,filebpm,bpmControl->get());
         }
                                         
-        double baserate = 20*bpmrate*((double)file_srate_old/(double)getPlaySrate());
+        double baserate = bpmrate*((double)file_srate_old/(double)getPlaySrate());
         double rate;
         if (playButton->get()==1.)
             rate=wheel->get()+rateSlider->get()*baserate;
