@@ -87,7 +87,6 @@ if ($arch =~ /i586/)
 `install README $BASE`;
 `install LICENSE $BASE`;
 `install COPYING $BASE`;
-`install Configuration.txt $BASE`;
 
 $path = `pwd`;
 chdir $BASE or die "Can't change to package dir!\n";
