@@ -22,9 +22,10 @@
    Input:   Size of the output buffer in samples
    Output:  Pointer to internal synthesis data structure.
    -------- ------------------------------------------------------ */
-Player::Player(int size)
+Player::Player(int size, vector<EngineObject*> *_engines)
 {
-	qDebug("Player: init...");
+    engines = _engines;
+    qDebug("Player: init...");
 }
 
 /* -------- ------------------------------------------------------
@@ -80,6 +81,9 @@ int Player::prepareBuffer() {
 
   // Resample; the linear interpolation is done in readfile:
   reader->process(0, process_buffer, BUFFER_SIZE);
+
+  //for (int i=0; i<engines->size(); i++)
+  //    engines[i]->process(process_buffer, process_buffer, BUFFER_SIZE);
 
   // Convert the signal back to SAMPLE and write to the sound cards buffer:
   for (int i=0; i<BUFFER_SIZE; i++)

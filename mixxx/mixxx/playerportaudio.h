@@ -27,7 +27,7 @@
 
  class PlayerPortAudio : public Player  {
 public: 
-	PlayerPortAudio(int size);
+	PlayerPortAudio(int size, vector<EngineObject *> *);
 	~PlayerPortAudio();
 	/** No descriptions */
 	void stop();

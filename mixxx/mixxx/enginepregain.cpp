@@ -5,8 +5,7 @@
   ----------------------------------------------------------------*/
 EnginePregain::EnginePregain(int potmeter_midi, MidiObject* midi)
 {
-  // ERROR IN THE FOLLOWING LINE *******************
-  //pregainpot = new ControlPotmeter("pregainpot", potmeter_midi, this, midi, 5., 0.25);
+  pregainpot = new ControlPotmeter("pregainpot", potmeter_midi, midi, 5., 0.25);
   connect(pregainpot, SIGNAL(valueChanged(FLOAT)), this, SLOT(slotUpdate(FLOAT)));
   pregain = 1.0;
 }

@@ -17,7 +17,7 @@
 
 #include "playerportaudio.h"
 
-PlayerPortAudio::PlayerPortAudio(int size) : Player(size)
+PlayerPortAudio::PlayerPortAudio(int size, vector<EngineObject *> *engines) : Player(size, engines)
 {
     PaError err;
     err = Pa_Initialize();
