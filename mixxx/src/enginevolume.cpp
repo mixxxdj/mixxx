@@ -32,8 +32,6 @@ EngineVolume::EngineVolume(ConfigKey key, double maxval)
 EngineVolume::~EngineVolume()
 {
     delete potmeter;
-    delete buttonDown;
-    delete buttonUp;
     delete [] buffer;
 }
 
