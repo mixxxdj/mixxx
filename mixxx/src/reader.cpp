@@ -20,6 +20,7 @@
 #include <qfileinfo.h>
 #include "enginebuffer.h"
 #include "readerextractwave.h"
+#include "rtthread.h"
 #include "soundsource.h"
 #include "soundsourcemp3.h"
 #include "soundsourceoggvorbis.h"
@@ -236,6 +237,7 @@ void Reader::newtrack()
 void Reader::run()
 {
     //qDebug("Reader running...");
+    rtThread();
 
     double rate_old = 0.;
 

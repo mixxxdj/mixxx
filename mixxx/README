@@ -81,7 +81,10 @@ options in the preference panel, you can reset the Mixxx
 configuration by deleting your mixxx.cfg file (.mixxx.cfg on
 Linux). If the program runs very slow, you can disable the
 waveform displays. This is done by running Mixxx from the
-command line using the option --disable-visuals.
+command line using the option --disable-visuals. If you hear
+cracks in the sound or the program stops for small periods
+this is often because your computer is not fast enough. Try
+increasing the latency.
 
 * DEVELOPMENT **********************************************
 If you are interested in joining the development team of
