@@ -27,12 +27,14 @@ WSliderComposed::WSliderComposed(QWidget *parent, const char *name ) : WWidget(p
     m_pHandle = 0;
     m_pDoubleBuffer = 0;
     m_bHorizontal = false;
+    m_bEventWhileDrag = true;
 
     // Set default values
     m_iSliderLength=0;
     m_iHandleLength=0;
 
     m_fValue = 63.;
+
 }
 
 WSliderComposed::~WSliderComposed()
@@ -44,7 +46,7 @@ void WSliderComposed::setup(QDomNode node)
 {
     // Setup position
     WWidget::setup(node);
-    
+
     // Setup pixmaps
     QString pathSlider = getPath(selectNodeQString(node, "Slider"));
     QString pathHandle = getPath(selectNodeQString(node, "Handle"));
@@ -53,6 +55,10 @@ void WSliderComposed::setup(QDomNode node)
     if (pathHorizontal.contains("true",false))
         h = true;
     setPixmaps(h, pathSlider, pathHandle);
+
+    if (!selectNode(node, "EventWhileDrag").isNull())
+        if (selectNodeQString(node, "EventWhileDrag").contains("no"))
+            m_bEventWhileDrag = false;
 }
 
 
@@ -119,15 +125,30 @@ void WSliderComposed::mouseMoveEvent(QMouseEvent *e)
         m_fValue = 127.-m_fValue;
 
     // Emit valueChanged signal
-    if (e->button()==Qt::RightButton)
-        emit(valueChangedRightUp(m_fValue));
-    else
-        emit(valueChangedLeftUp(m_fValue));
+    if (m_bEventWhileDrag)
+    {
+        if (e->button()==Qt::RightButton)
+            emit(valueChangedRightUp(m_fValue));
+        else
+            emit(valueChangedLeftUp(m_fValue));
+    }
 
     // Update display
     update();
 }
 
+void WSliderComposed::mouseReleaseEvent(QMouseEvent *e)
+{
+    if (!m_bEventWhileDrag)
+    {
+        mouseMoveEvent(e);
+
+        if (e->button()==Qt::RightButton)
+            emit(valueChangedRightUp(m_fValue));
+        else
+            emit(valueChangedLeftUp(m_fValue));
+    }
+}
 
 void WSliderComposed::mousePressEvent(QMouseEvent *e)
 {
