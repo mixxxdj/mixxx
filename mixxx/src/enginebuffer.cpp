@@ -26,7 +26,6 @@
 #include "controlbeat.h"
 #include "reader.h"
 #include "readerextractbeat.h"
-#include "enginebufferscalelinear.h"
 #include "enginebufferscalesrc.h"
 #include "powermate.h"
 #include "wvisualwaveform.h"
@@ -360,14 +359,18 @@ void EngineBuffer::slotControlCueGoto(double)
 {
     // Set cue point if play is not pressed
     if (playButton->get()==0.)
+    {
         slotControlCueSet();
 
-    // Seek to cue point
-    reader->requestSeek(reader->f_dCuePoint);
-    m_iBeatMarkSamplesLeft = 0;
-
-    // Start playing
-    playButton->set(1.);
+        // Start playing
+        playButton->set(1.);
+    }
+    else
+    {
+        // Seek to cue point
+        reader->requestSeek(reader->f_dCuePoint);
+        m_iBeatMarkSamplesLeft = 0;
+    }
 }
 
 void EngineBuffer::slotControlCuePreview(double d)
