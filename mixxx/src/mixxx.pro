@@ -2,6 +2,12 @@
 # Options, and path to libraries
 #
 
+# Use this define to set audio API:
+# __PORTAUDIO__: Use PortAudio. Available on all platforms. Library included in
+#                distribution
+# __JACK__:      Use jack audio server. Only on Linux (and maybe MacOS X).
+DEFINES += __PORTAUDIO__
+
 # On Windows, select between WMME, DIRECTSOUND and ASIO.
 # If ASIO is used, ensure that the path to the ASIO SDK 2 is set correctly below
 WINPA = DIRECTSOUND
@@ -23,10 +29,10 @@ ASIOSDK_DIR   = $$WINLIBPATH/asiosdk2
 # End of options
 #
 
-# PortAudio 
+# PortAudio
+contains(DEFINES, __PORTAUDIO__) {
 SOURCES += playerportaudio.cpp
 HEADERS += playerportaudio.h
-DEFINES += __PORTAUDIO__
 PORTAUDIO_DIR = ../lib/portaudio-v18
 SOURCES += $$PORTAUDIO_DIR/pa_common/pa_lib.c $$PORTAUDIO_DIR/pa_common/pa_convert.c
 HEADERS += $$PORTAUDIO_DIR/pa_common/portaudio.h $$PORTAUDIO_DIR/pa_common/pa_host.h
@@ -54,6 +60,13 @@ win32 {
     contains(WINPA, WMME) {
         error("TO use WMME drivers add appropriate files to the mixxx.pro file first")
     }
+}
+}
+
+contains(DEFINES, __JACK__) {
+  SOURCES += playerjack.cpp
+  HEADERS += playerjack.h
+  LIBS += -ljack
 }
 
 # OSS Midi (Working good, Linux specific)

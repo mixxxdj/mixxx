@@ -52,13 +52,11 @@ void EngineBufferScaleSRC::setQuality(int q)
         q = 4;
     }
     
-/*
- * src_delete(converter);
+    src_delete(converter);
     int error;
        src_new(q, 2, &error);
     if (error!=0)
         qDebug("EngineBufferScaleSRC: %s",src_strerror(error));
-*/
 }
 
 double EngineBufferScaleSRC::setRate(double _rate)

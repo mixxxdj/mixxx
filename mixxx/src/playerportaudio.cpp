@@ -20,77 +20,19 @@
 int bufferIdxSlave = 0;
 
 
-PlayerPortAudio::PlayerPortAudio(ConfigObject<ConfigValue> *config, ControlObject *pControl, QApplication *app) : Player(config,pControl,app)
+PlayerPortAudio::PlayerPortAudio(ConfigObject<ConfigValue> *config, ControlObject *pControl) : Player(config,pControl)
 {
-    opendev = false;
-    
+    m_devId = -1;
+    m_iChannels = -1;
+    m_iMasterLeftCh = -1;
+    m_iMasterRigthCh = -1;
+    m_iHeadLeftCh = -1;
+    m_iHeadRightCh = -1;
+    m_pStream = 0;
+
     PaError err = Pa_Initialize();
     if (err!=paNoError)
         qFatal("PortAudio: Initialization error");
-    
-    const PaDeviceInfo *devInfo;
-
-    streamMaster = 0;
-    streamHead = 0;
-
-    //
-    // Fill out devices list with info about available devices if list is empty
-    //
-    if (devices.isEmpty())
-    {
-        int no = Pa_CountDevices();
-        for (int i=0; i<no; i++)
-        {
-            devInfo = Pa_GetDeviceInfo(i);
-
-            // Add the device if it is an output device:
-            if (devInfo!=0 && devInfo->maxOutputChannels > 0)
-            {
-                //qWarning("PortAudio: Name: %s, ID: %i, MaxOutput %i",devInfo->name,i,devInfo->maxOutputChannels);
-
-                // Add new PlayerInfo object to devices list
-                Player::Info *p = new Player::Info;
-                devices.append(p);
-
-                // ID & Name
-                p->name = QString(devInfo->name);
-                p->id = i;
-
-                // Sample rates and latency
-                if (devInfo->numSampleRates > 0)
-                {
-                    for (int j=0; j<devInfo->numSampleRates; j++)
-                    {
-                        p->sampleRates.append((int)devInfo->sampleRates[j]);
-
-                        // Get minimum latency for sample rate
-                        p->latency.append(minLatency((int)devInfo->sampleRates[j]));
-                        //qDebug("SRATE: %i, Latency: %i",(int)devInfo->sampleRates[j],minLatency((int)devInfo->sampleRates[j]));
-                    }
-                }
-                else
-                {
-                    // If we're just given a range of samplerates, then just
-                    // assume some standard rates:
-                    p->sampleRates.append(11025); p->latency.append(minLatency(11025));
-                    p->sampleRates.append(22050); p->latency.append(minLatency(22050));
-                    p->sampleRates.append(44100); p->latency.append(minLatency(44100));
-                    p->sampleRates.append(48000); p->latency.append(minLatency(48000));
-                    p->sampleRates.append(96000); p->latency.append(minLatency(96000));
-                }
-                                                                                                                                
-                // Bits
-                if (devInfo->nativeSampleFormats & paInt8)        p->bits.append(8);
-                if (devInfo->nativeSampleFormats & paInt16)       p->bits.append(16);
-                //if (devInfo->nativeSampleFormats & paPackedInt24) p->bits.append(24);
-                if (devInfo->nativeSampleFormats & paInt24)       p->bits.append(24);
-                if (devInfo->nativeSampleFormats & paInt32)       p->bits.append(32);
-
-                // Number of available channels
-                p->noChannels = devInfo->maxOutputChannels;
-            }
-        }
-    }
 }
 
 PlayerPortAudio::~PlayerPortAudio()
@@ -98,223 +40,384 @@ PlayerPortAudio::~PlayerPortAudio()
     Pa_Terminate();
 }
 
-bool PlayerPortAudio::open(QString nameMaster, QString nameHead, int srate, int bits, int bufferSizeMaster, int bufferSizeHead, int _chMaster, int _chHead)
+bool PlayerPortAudio::open()
 {
-    chMaster = _chMaster;
-    chHead   = _chHead;
+    Player::open();
 
-    // Adjust bufferSize and number of buffers
-    int bufferNo     = 2;
-    MasterBufferSize = bufferSizeMaster/bufferNo;
+    // Find out which device to open. Select the first one listed as either Master Left,
+    // Master Right, Head Left, Head Right. If other devices are requested for opening
+    // than the one selected here, set them to "None" in the config database
+    PaDeviceID id = -1;
+    PaDeviceID temp = -1;
+    QString name;
+    /** Maximum number of channels needed */
+    int iChannelMax = -1;
 
-    // Extract bit information
-    PaSampleFormat format = 16;
-    switch (bits)
+    m_iMasterLeftCh = -1;
+    m_iMasterRigthCh = -1;
+    m_iHeadLeftCh = -1;
+    m_iHeadRightCh = -1;
+
+    // Master left
+    name = m_pConfig->getValueString(ConfigKey("[Soundcard]","DeviceMasterLeft"));
+    temp = getDeviceID(name);
+    if (temp>=0)
     {
-        case 0:  format = paInt16; break;
-        case 8:  format = paInt8; break;
-        case 16: format = paInt16; break;
-        case 24: format = paInt24; break;
-        case 32: format = paInt32; break;
-        default: qWarning("PortAudio: Sample format not supported (%i bits)", bits); return false;
+        if (getChannelNo(name)>=0)
+        {
+            id = temp;
+            iChannelMax = getChannelNo(name);
+            m_iMasterLeftCh = getChannelNo(name)-1;
+        }
     }
 
-    // Determine if a separate device for headphone channel is requested
-    if (nameHead.length()>0 && nameHead != "None" && nameHead != nameMaster)
-        headActive = true;
+    // Master right
+    name = m_pConfig->getValueString(ConfigKey("[Soundcard]","DeviceMasterRight"));
+    temp = getDeviceID(name);
+    if (getChannelNo(name)>=0 && ((id==-1 && temp>=0) || (temp!=-1 && id==temp)))
+    {
+        id = temp;
+        iChannelMax = max(iChannelMax, getChannelNo(name));
+        m_iMasterRigthCh = getChannelNo(name)-1;
+    }
+
+    // Head left
+    name = m_pConfig->getValueString(ConfigKey("[Soundcard]","DeviceHeadLeft"));
+    temp = getDeviceID(name);
+    if (getChannelNo(name)>=0 && ((id==-1 && temp>=0) || (temp!=-1 && id==temp)))
+    {
+        id = temp;
+        iChannelMax = max(iChannelMax, getChannelNo(name));
+        m_iHeadLeftCh = getChannelNo(name)-1;
+    }
+
+    // Head right
+    name = m_pConfig->getValueString(ConfigKey("[Soundcard]","DeviceHeadRight"));
+    temp = getDeviceID(name);
+    if (getChannelNo(name)>=0 && ((id==-1 && temp>=0) || (temp!=-1 && id==temp)))
+    {
+        id = temp;
+        iChannelMax = max(iChannelMax, getChannelNo(name));
+        m_iHeadRightCh = getChannelNo(name)-1;
+    }
+
+    // Check if any of the devices in the config database needs to be set to "None"
+    if (m_iMasterLeftCh<0)
+        m_pConfig->set(ConfigKey("[Soundcard]","DeviceMasterLeft"),ConfigValue("None"));
+    if (m_iMasterRigthCh<0)
+        m_pConfig->set(ConfigKey("[Soundcard]","DeviceMasterRight"),ConfigValue("None"));
+    if (m_iHeadLeftCh<0)
+        m_pConfig->set(ConfigKey("[Soundcard]","DeviceHeadLeft"),ConfigValue("None"));
+    if (m_iHeadRightCh<0)
+        m_pConfig->set(ConfigKey("[Soundcard]","DeviceHeadRight"),ConfigValue("None"));
+
+    // Number of channels to open
+    int iChannels = iChannelMax;
+
+    // Sample rate
+    int iSrate = m_pConfig->getValueString(ConfigKey("[Soundcard]","Samplerate")).toInt();
+
+    // Setup latency
+    int iNumberOfBuffers;
+    int iFramesPerBuffer;
+    int iLatency = iSrate*(m_pConfig->getValueString(ConfigKey("[Soundcard]","Latency")).toFloat()/1000.);
+
+    if (iLatency/kiMaxFrameSize<2)
+        iNumberOfBuffers = 2;
     else
-    {
-        headActive = false;
-        if (chMaster == chHead)
-            return false;
-    }
+        iNumberOfBuffers = iLatency/kiMaxFrameSize;
 
-    // Get id's of devices
-    int masterID = getDeviceID(nameMaster);
-    if (masterID == -1) return false;
-    int headID;
-    if (headActive)
-    {
-        headID = getDeviceID(nameHead);
-        if (headID==-1) return false;
-    }
+    iFramesPerBuffer = iLatency/iNumberOfBuffers;
 
-    // Number of channels to open and buffersize
-    bufferIdx = 0;
-    int chNoMaster, chNoHead;
-    if (headActive)
-    {
-        chNoMaster = chMaster+1;
-        chNoHead   = chHead+1;
-        bufferIdxSlave = 2;
-        HeadPerMasterBuffer = (int)floor((float)(bufferSizeHead/2.)/(float)MasterBufferSize);
-    }
-    else
-    {
-        chNoMaster = max(_chMaster,_chHead)+1;
-        HeadPerMasterBuffer = 1;
-    }
 
-    // Open master device stream
-    if (!open(masterID,&streamMaster,srate,format,chNoMaster,MasterBufferSize/chNoMaster,bufferNo,paCallback))
+    // Callback function to use
+    PortAudioCallback *callback = paCallback;
+
+    qDebug("id %i, sr %i, ch %i, bufsize %i, bufno %i", id, iSrate, iChannels, iFramesPerBuffer, iNumberOfBuffers);
+
+    if (id<0)
         return false;
 
-    // Open head device stream
-    if (headActive)
-        if (!open(headID,&streamHead,srate,format,chNoHead,HeadPerMasterBuffer*MasterBufferSize/chNoHead,bufferNo,paCallbackSlave))
-        {
-            // Head device was unsuccessful, so close master properly
-            opendev = true;
-            headActive = false;
-            close();
+    PaError err = paNoError;
 
-            return false;
-        }
-
-    opendev = true;
-
-    return true;
-}
-
-bool PlayerPortAudio::open(int id, PortAudioStream **stream, int srate, PaSampleFormat format, int chNo, int bufferSize, int bufferNo, PortAudioCallback *callback)
-{
-
-    // Try to open device 5 times before giving up!
-    //qDebug("id %i, sr %i, format %i, ch %i, bufsize %i, bufno %i",id,srate, format, chNo, bufferSize, bufferNo);
-
-    PaError err = 0;
-    {for (int i=0; i<5; i++)
-    {
-      err = Pa_OpenStream(stream,
-                        paNoDevice,         // no input device
-                        0,                  // no input
-                        format,
-                        NULL,
-                        id,                 // output device
-                        chNo,
-                        format,
-                        NULL,
-                        (double)srate,
-                        bufferSize,         // frames per buffer per channel
-                        bufferNo,           // number of buffers, if zero then use default minimum
+    // Try open device using iChannelMax
+    err = Pa_OpenStream(&m_pStream, paNoDevice, 0, paFloat32, 0,
+                        id,                 // Id of output device
+                        iChannels,          // Number of output channels
+                        paFloat32,          // Output sample format
+                        0,                  // Extra info. Not used.
+                        iSrate,             // Sample rate
+                        iFramesPerBuffer,   // Frames per buffer
+                        iNumberOfBuffers,   // Number of buffers
                         paClipOff,          // we won't output out of range samples so don't bother clipping them
-                        callback,
-                        this);
+                        callback,           // Callback function
+                        this);              // Pointer passed to the callback function
+    if (err == paNoError)
+        m_iChannels = iChannels;
+    else
+    {
+        // Try open device using maximum supported channels by soundcard
+        iChannels = Pa_GetDeviceInfo(id)->maxOutputChannels;
+        err = Pa_OpenStream(&m_pStream, paNoDevice, 0, paFloat32, 0,
+                        id,                 // Id of output device
+                        iChannels,          // Number of output channels
+                        paFloat32,          // Output sample format
+                        0,                  // Extra info. Not used.
+                        iSrate,             // Sample rate
+                        iFramesPerBuffer,   // Frames per buffer
+                        iNumberOfBuffers,   // Number of buffers
+                        paClipOff,          // we won't output out of range samples so don't bother clipping them
+                        callback,           // Callback function
+                        this);              // Pointer passed to the callback function
+        if (err==paNoError)
+            m_iChannels = iChannels;
+    }
 
-        if (err == paNoError)
-            break;
-    }}
+    if( err != paNoError )
+    {
+        // Try open device using only two channels
+        err = Pa_OpenStream(&m_pStream, paNoDevice, 0, paFloat32, 0,
+                        id,                 // Id of output device
+                        2,                  // Number of output channels
+                        paFloat32,          // Output sample format
+                        0,                  // Extra info. Not used.
+                        iSrate,             // Sample rate
+                        iFramesPerBuffer,   // Frames per buffer
+                        iNumberOfBuffers,   // Number of buffers
+                        paClipOff,          // we won't output out of range samples so don't bother clipping them
+                        callback,           // Callback function
+                        this);              // Pointer passed to the callback function
+        if (err==paNoError)
+        {
+            m_iChannels = 2;
+
+            // Update channel variables and config database
+            if (m_iMasterLeftCh>1)
+            {
+                m_iMasterLeftCh = -1;
+                m_pConfig->set(ConfigKey("[Soundcard]","DeviceMasterLeft"),ConfigValue("None"));
+            }
+            if (m_iMasterRigthCh>1)
+            {
+                m_iMasterRigthCh = -1;
+                m_pConfig->set(ConfigKey("[Soundcard]","DeviceMasterRight"),ConfigValue("None"));
+            }
+            if (m_iHeadLeftCh>1)
+            {
+                m_iHeadLeftCh = -1;
+                m_pConfig->set(ConfigKey("[Soundcard]","DeviceHeadLeft"),ConfigValue("None"));
+            }
+            if (m_iHeadRightCh>1)
+            {
+                m_iHeadRightCh = -1;
+                m_pConfig->set(ConfigKey("[Soundcard]","DeviceHeadRight"),ConfigValue("None"));
+            }
+
+        }
+    }
+
     if( err != paNoError )
     {
         qWarning("PortAudio: Open stream error: %s", Pa_GetErrorText(err));
         err = Pa_GetHostError();
-        qWarning("PortAudio: Open stream error: %s", Pa_GetErrorText(err));
+
+        m_devId = -1;
+        m_iChannels = -1;
+
         return false;
     }
 
+    m_devId = id;
+
     // Update SRATE in EngineObject
-    setPlaySrate(srate);
+    setPlaySrate(iSrate);
+
+    // Start stream
+    err = Pa_StartStream(m_pStream);
+    if (err != paNoError)
+        qWarning("PortAudio: Start stream error: %s", Pa_GetErrorText(err));
 
     return true;
 }
 
-
-    
-
 void PlayerPortAudio::close()
 {
+    m_devId = -1;
+    m_iChannels = 0;
+    m_iMasterLeftCh = -1;
+    m_iMasterRigthCh = -1;
+    m_iHeadLeftCh = -1;
+    m_iHeadRightCh = -1;
+
+    // Stop stream
+    if (m_pStream)
+    {
+        PaError err = Pa_StopStream(m_pStream);
+        if( err != paNoError )
+            qWarning("PortAudio: Stop stream error: %s,", Pa_GetErrorText(err));
+    }
+
     // Close stream
-    if (opendev)
-    {
-        PaError err = Pa_CloseStream(streamMaster);
-        if( err != paNoError )
-            qWarning("PortAudio: Close master stream error: %s", Pa_GetErrorText(err));
-        streamMaster = 0;
+    PaError err = Pa_CloseStream(m_pStream);
+    if( err != paNoError )
+        qWarning("PortAudio: Close stream error: %s", Pa_GetErrorText(err));
+    m_pStream = 0;
+}
 
-        if (headActive)
+void PlayerPortAudio::setDefaults()
+{
+    // Get list of interfaces
+    QStringList interfaces = getInterfaces();
+
+    // Set first interfaces to master left
+    QStringList::iterator it = interfaces.begin();
+    if (*it)
+    {
+        m_pConfig->set(ConfigKey("[Soundcard]","DeviceMasterLeft"),ConfigValue((*it)));
+    }
+    else
+        m_pConfig->set(ConfigKey("[Soundcard]","DeviceMasterLeft"),ConfigValue("None"));
+
+    // Set second interface to master right
+    ++it;
+    if (*it)
+        m_pConfig->set(ConfigKey("[Soundcard]","DeviceMasterRight"),ConfigValue((*it)));
+    else
+        m_pConfig->set(ConfigKey("[Soundcard]","DeviceMasterRight"),ConfigValue("None"));
+
+    // Set head left and right to none
+    m_pConfig->set(ConfigKey("[Soundcard]","DeviceHeadLeft"),ConfigValue("None"));
+    m_pConfig->set(ConfigKey("[Soundcard]","DeviceHeadRight"),ConfigValue("None"));
+
+    // Set default sample rate
+    QStringList srates = getSampleRates();
+    it = srates.begin();
+    while (*it)
+    {
+        m_pConfig->set(ConfigKey("[Soundcard]","Samplerate"),ConfigValue((*it)));
+
+        if ((*it)>=44100)
+            break;
+    }
+
+    // Set currently used latency in config database
+    int msec = 1000*(2*1024)/(*it).toInt();
+    m_pConfig->set(ConfigKey("[Soundcard]","Latency"), ConfigValue(msec));
+}
+
+QStringList PlayerPortAudio::getInterfaces()
+{
+    QStringList result;
+
+    int no = Pa_CountDevices();
+    for (int i=0; i<no; i++)
+    {
+        const PaDeviceInfo *devInfo = Pa_GetDeviceInfo(i);
+
+        // Add the device if it is an output device:
+        if (devInfo!=0 && devInfo->maxOutputChannels > 0)
         {
-            err = Pa_CloseStream(streamHead);
-            if( err != paNoError )
-                qWarning("PortAudio: Close headphone stream error: %s", Pa_GetErrorText(err));
-            streamHead = 0;
+            for (int j=1; j<=devInfo->maxOutputChannels; ++j)
+                result.append(QString("%1 (channel %2)").arg(devInfo->name).arg(j));
         }
-        opendev = false;
     }
+
+    return result;
 }
 
-void PlayerPortAudio::start()
+QStringList PlayerPortAudio::getSampleRates()
 {
-    Player::start();
 
-    if (opendev)
+    // Returns the list of supported sample rates of the currently opened device.
+    // If no device is open, return the list of sample rates supported by the
+    // default device
+    PaDeviceID id = m_devId;
+    if (id<0)
+        id = Pa_GetDefaultOutputDeviceID();
+
+    const PaDeviceInfo *devInfo = Pa_GetDeviceInfo(id);
+    QStringList result;
+
+    // Sample rates
+    if (devInfo->numSampleRates > 0)
     {
-        PaError err = Pa_StartStream(streamMaster);
-        if (err != paNoError)
-            qWarning("PortAudio: Start master stream error: %s", Pa_GetErrorText(err));
-        if (headActive)
+        for (int j=0; j<devInfo->numSampleRates; j++)
+            result.append(QString("%1").arg((int)devInfo->sampleRates[j]));
+    }
+    else
+    {
+        // If we're just given a range of samplerates, then just
+        // assume some standard rates:
+        result.append(QString("%1").arg(11025));
+        result.append(QString("%1").arg(22050));
+        result.append(QString("%1").arg(44100));
+        result.append(QString("%1").arg(48000));
+    }
+
+    return result;
+}
+
+PaDeviceID PlayerPortAudio::getDeviceID(QString name)
+{
+    int no = Pa_CountDevices();
+    for (int i=0; i<no; i++)
+    {
+        const PaDeviceInfo *devInfo = Pa_GetDeviceInfo(i);
+
+        // Add the device if it is an output device:
+        if (devInfo!=0 && devInfo->maxOutputChannels > 0)
         {
-            err = Pa_StartStream(streamHead);
-            if (err != paNoError)
-                qWarning("PortAudio: Start headphone stream error: %s", Pa_GetErrorText(err));
+            for (int j=1; j<=devInfo->maxOutputChannels; ++j)
+                if (QString("%1 (channel %2)").arg(devInfo->name).arg(j) == name)
+                    return i;
         }
     }
+    return -1;
 }
 
-void PlayerPortAudio::wait()
+PaDeviceID PlayerPortAudio::getChannelNo(QString name)
 {
-}
-
-void PlayerPortAudio::stop()
-{
-    if (streamMaster)
+    int no = Pa_CountDevices();
+    for (int i=0; i<no; i++)
     {
-        PaError err = Pa_StopStream(streamMaster);
-        if( err != paNoError )
-            qWarning("PortAudio: Stop master stream error: %s,", Pa_GetErrorText(err));
+        const PaDeviceInfo *devInfo = Pa_GetDeviceInfo(i);
+
+        // Add the device if it is an output device:
+        if (devInfo!=0 && devInfo->maxOutputChannels > 0)
+        {
+            for (int j=1; j<=devInfo->maxOutputChannels; ++j)
+                if (QString("%1 (channel %2)").arg(devInfo->name).arg(j) == name)
+                    return j;
+        }
+    }
+    return -1;
+}
+
+int PlayerPortAudio::callbackProcess(int iBufferSize, float *out)
+{
+    float *tmp = prepareBuffer(iBufferSize);
+    float *output = out;
+    int i;
+
+    // Reset sample for each open channel
+    for (i=0; i<iBufferSize*m_iChannels; i++)
+        output[i] = 0.;
+
+    // Copy to output buffer
+    for (i=0; i<iBufferSize; i++)
+    {
+        if (m_iMasterLeftCh>=0)  output[m_iMasterLeftCh]  += tmp[(i*4)  ]/32768.;
+        if (m_iMasterRigthCh>=0) output[m_iMasterRigthCh] += tmp[(i*4)+1]/32768.;
+        if (m_iHeadLeftCh>=0)    output[m_iHeadLeftCh]    += tmp[(i*4)+2]/32768.;
+        if (m_iHeadRightCh>=0)   output[m_iHeadRightCh]   += tmp[(i*4)+3]/32768.;
+
+        for (int j=0; j<m_iChannels; ++j)
+            *output++;
     }
 
-    if (headActive && streamHead)
-    {
-        PaError err = Pa_StopStream(streamHead);
-        if (err != paNoError)
-            qWarning("PortAudio: Stop headphone stream error: %s", Pa_GetErrorText(err));
-    }
-}
-
-int PlayerPortAudio::minLatency(int SRATE)
-{
-    // Initial minimum parameters
-    int l = 16384;
-
-    for (int buffersize=1; buffersize<16384; buffersize++)
-    {
-        int bufno = Pa_GetMinNumBuffers(buffersize, SRATE);
-        if (bufno*buffersize<l)
-            l = bufno*buffersize;
-    }
-    return l;
-}
-
-CSAMPLE *PlayerPortAudio::process(const CSAMPLE *, const int)
-{
     return 0;
 }
 
-QString PlayerPortAudio::getDefaultDevice()
-{
-    // Return default device name
-    PaDeviceID id = Pa_GetDefaultOutputDeviceID();
-    const PaDeviceInfo *devInfo = Pa_GetDeviceInfo(id);
-    return QString(devInfo->name);
-}
-
-int PlayerPortAudio::getDeviceID(QString name)
-{
-    for (int i=0; i<(int)devices.count(); i++)
-        if (name == devices.at(i)->name)
-            return devices.at(i)->id;
-    return -1;
-}
 
 /* -------- ------------------------------------------------------
    Purpose: Wrapper function to call processing loop function,
@@ -325,62 +428,7 @@ int PlayerPortAudio::getDeviceID(QString name)
    -------- ------------------------------------------------------ */
 int paCallback(void *, void *outputBuffer,
                       unsigned long framesPerBuffer,
-                      PaTimestamp, void *_player)
+                      PaTimestamp, void *pPlayer)
 {
-    // player->BUFFERSIZE = framesPerBuffer*no_of_channels
-
-    Player *player = (Player *)_player;
-    SAMPLE *out = (SAMPLE*)outputBuffer;
-    player->prepareBuffer();
-    SAMPLE *buffer = player->out_buffer_offset;
-
-//    qDebug("Master %i, MasterBufferSize %i",framesPerBuffer,player->MasterBufferSize);
-
-    int openChNo = max(player->chHead,player->chMaster);
-
-    for (int i=0; i<(long)framesPerBuffer; i++)
-    {
-        for (int j=0; j<=openChNo; j+=2)
-        {
-            if (j+1==player->chMaster)
-            {
-                *out++=buffer[(i*4)  ];
-                *out++=buffer[(i*4)+1];
-            }
-            else if (j+1==player->chHead)
-            {
-                *out++=buffer[(i*4)+2];
-                *out++=buffer[(i*4)+3];
-            }
-            else
-            {
-                *out++=0;
-                *out++=0;
-            }
-        }    
-    }
-
-    return 0;
+    return ((PlayerPortAudio *)pPlayer)->callbackProcess(framesPerBuffer, (float *)outputBuffer);
 }
-
-int paCallbackSlave(void *, void *outputBuffer,
-                    unsigned long framesPerBuffer,
-                    PaTimestamp, void *_player)
-{
-    PlayerPortAudio *player = (PlayerPortAudio *)_player;
-    SAMPLE *out = (SAMPLE*)outputBuffer;
-    SAMPLE *buffer = player->out_buffer + (2*player->MasterBufferSize*player->HeadPerMasterBuffer*bufferIdxSlave);
-    for (int i=0; i<(long)framesPerBuffer; i++)
-    {
-        *out++=buffer[(i*4)+2];
-        *out++=buffer[(i*4)+3];
-    }
-
-    if (bufferIdxSlave>3)
-        bufferIdxSlave = 0;
-    else
-        bufferIdxSlave++;
-
-    return 0;
-}
-

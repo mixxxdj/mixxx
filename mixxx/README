@@ -8,27 +8,18 @@ http://mixxx.sourceforge.net
 Mixxx is software for DJ'ing, using custom or 
 commercial MIDI controllers. You can use wave based
 audio files, Ogg Vorbis and MP3 files as audio input.
-This release works on Linux (OSS Sound Drivers), Windows and 
-MacOS X (Recent version of MacOS X and at least G4 CPU).
+This release works on Linux (OSS Sound Drivers, Jack sound
+server), Windows and MacOS X (Recent version of MacOS X and 
+at least G4 CPU).
 
 
 * NEWS *****************************************************
-New since 1.0.1:
-- Added support for mouse interaction when OpenGL is not
-  available
-- Configurable keyboard shortcuts
-- Beat estimation, visual beat marks, bpm display
-- Improved sound quality
-- Tempo syncronization button
-- Absolute position/remaining time display
-- Tooltips
-- Various user interface bug fixes
-- Up and down push button controls for all sliders and knobs
-- Temporary and permanent rate change buttons configurable
-- Improved refresh of waveform displays
-- Kill buttons (keyboard/midi assignable) for low, mid, and
-  high filter
-
+New since 1.1:
+- Fix in calling sound interpolation methods
+- Sound card API structure updated. Now a normal stereo 
+  soundcard can be used to hear both master and headphone
+  output
+- Jack (compile time) support added
 
 * REQUIREMENTS *********************************************
 Mixxx is depends on the following libraries:
@@ -110,7 +101,7 @@ Configuration.txt file in this directory.
 If you are interested in joining the development team of
 Mixxx you are most welcome. Especially we are looking for
 people to help with adding support for various sound api's, 
-eg. ALSA, ASIO, Jack, Arts etc. Also we are interested in
+eg. ALSA, ASIO, Arts etc. Also we are interested in
 hearing about how you use Mixxx, what features you would 
 like, if you have used any special midi controllers,
 designed your own skin etc.

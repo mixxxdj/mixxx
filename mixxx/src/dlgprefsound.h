@@ -37,13 +37,7 @@ public:
 public slots:
     /** Update widget */
     void slotUpdate();
-    /** Update QComboBox values when devices are changed */
-    void slotMasterDevice();
-    void slotHeadDevice();
-    void slotMasterDeviceOptions();
-    void slotHeadDeviceOptions();
-    void slotLatencyMaster();
-    void slotLatencyHead();
+    void slotLatency();
     void slotApply();
 signals:
     void apply();
