@@ -126,13 +126,14 @@ SOURCES += ../lib/vbrheadersdk/dxhead.c
 HEADERS += ../lib/vbrheadersdk/dxhead.h
 
 # Wave files
-unix:SOURCES += soundsourceaudiofile.cpp
-unix:HEADERS += soundsourceaudiofile.h
 win32:SOURCES += soundsourcesndfile.cpp
 win32:HEADERS += soundsourcesndfile.h
+win32:DEFINES += __SNDFILE__
 win32:LIBS += libsndfile.lib
+macx:SOURCES += soundsourceaudiofile.cpp
+macx:HEADERS += soundsourceaudiofile.h
+macx:DEFINES += __AUDIOFILE__
 macx:LIBS += $$MACLIBPATH/lib/libaudiofile.a
-
 
 # Ogg Vorbis
 win32:LIBS += vorbisfile_static.lib vorbis_static.lib ogg_static.lib

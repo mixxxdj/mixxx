@@ -86,15 +86,18 @@ include( check.qbas )
 
 
 #   AUDIOFILE ---------------------------------------------------------
-OBJECT = libaudiofile.a
-TYPE = lib
-DESCRIPTION = Audiofile
-TIP_MESSAGE = "AudioFile is needed for the Mixxx playback engine!"
-LINK_LIBS = -laudiofile
-OPTIONS =    exit_on_failure      marked_static
+#OBJECT = libaudiofile.a
+#TYPE = lib
+#DESCRIPTION = Audiofile
+#TIP_MESSAGE = "AudioFile is needed for the Mixxx playback engine!"
+#LINK_LIBS = -laudiofile
+#ADD_DEFINES = __AUDIOFILE__
+#ADD_SOURCES = soundsourceaudiofile.cpp
+#ADD_HEADERS = soundsourceaudiofile.h
+#OPTIONS =    exit_on_failure      marked_static
 #----------------------------------------------------------------------
 # Check routines         (DON'T TOUCH!)
-include( check.qbas )
+#include( check.qbas )
 #----------------------------------------------------------------------
 
 
@@ -164,9 +167,12 @@ include( check.qbas )
 OBJECT = libsndfile.a
 TYPE = lib
 DESCRIPTION = Sndfile library
-TIP_MESSAGE =
+TIP_MESSAGE = "libsndfile is needed for the Mixxx playback engine!"
 LINK_LIBS = -lsndfile
-OPTIONS =   skip_link
+ADD_DEFINES = __SNDFILE__
+ADD_SOURCES = soundsourcesndfile.cpp
+ADD_HEADERS = soundsourcesndfile.h
+OPTIONS =   exit_on_failure      marked_static
 #----------------------------------------------------------------------
 # Check routines         (DON'T TOUCH!)
 include( check.qbas )
