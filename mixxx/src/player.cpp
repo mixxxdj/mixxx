@@ -20,6 +20,7 @@
 #include "controlobject.h"
 
 short int Player::m_iBufferSize = 0;
+short int Player::m_iChannels = 0;
 EngineMaster *Player::m_pMaster = 0;
 
 /* -------- ------------------------------------------------------
@@ -46,7 +47,7 @@ Player::~Player()
 
 short int Player::getBufferSize()
 {
-    return m_iBufferSize;
+    return m_iBufferSize/m_iChannels;
 }
 
 void Player::setMaster(EngineMaster *pMaster)

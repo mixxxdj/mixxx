@@ -99,7 +99,7 @@ bufInfo VisualBuffer::getVertexArray()
     m_pEngineBuffer->unlockPlayposVars();
 
     // Convert playpos (minus latency) to DISPLAYRATE
-    float fPos = ((((m_dBufferPlaypos-Player::getBufferSize()/2)/m_fReaderExtractFactor)/m_fResampleFactor)-(float)m_iDisplayLen/2.f);
+    float fPos = ((((m_dBufferPlaypos-Player::getBufferSize())/m_fReaderExtractFactor)/m_fResampleFactor)-(float)m_iDisplayLen/2.f);
 
     //qDebug("pos %f, corrected %f", m_pPlaypos->getValue(), getCorrectedPlaypos());
 

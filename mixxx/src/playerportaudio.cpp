@@ -130,7 +130,7 @@ bool PlayerPortAudio::open()
 
     // Setup latency
     int iFramesPerBuffer;
-    int iLatency = (int)((float)iSrate*2.*(m_pConfig->getValueString(ConfigKey("[Soundcard]","Latency")).toFloat()/1000.));
+    int iLatency = (int)((float)iSrate*iChannels*(m_pConfig->getValueString(ConfigKey("[Soundcard]","Latency")).toFloat()/1000.));
 
     // Apply simple rule to determine number of buffers
     if (iLatency/kiMaxFrameSize<2)
@@ -386,7 +386,7 @@ QStringList PlayerPortAudio::getSampleRates()
     
     // Convert srlist to stringlist
     QStringList result;
-    for (int i=0; i<srlist.count(); ++i)
+    for (unsigned int i=0; i<srlist.count(); ++i)
         result.append(QString("%1").arg((*srlist.at(i))));    
     
     return result;

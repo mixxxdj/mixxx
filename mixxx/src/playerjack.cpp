@@ -134,7 +134,8 @@ bool PlayerJack::open()
 
     // Connect to the ports
     QString name;
-
+    m_iChannels = 0;
+    
     name = m_pConfig->getValueString(ConfigKey("[Soundcard]","DeviceMasterLeft"));
     if (name != "None")
     {
@@ -142,7 +143,10 @@ bool PlayerJack::open()
         if (jack_connect(client, jack_port_name(output_master_left), name.latin1()))
             m_pConfig->set(ConfigKey("[Soundcard]","DeviceMasterLeft"),ConfigValue("None"));
         else
+        {
             m_iBufferSize = jack_port_get_total_latency(client, output_master_left);
+            m_iChannels++;
+        }
     }
 
     name = m_pConfig->getValueString(ConfigKey("[Soundcard]","DeviceMasterRight"));
@@ -152,7 +156,10 @@ bool PlayerJack::open()
         if (jack_connect(client, jack_port_name(output_master_right), name.latin1()))
             m_pConfig->set(ConfigKey("[Soundcard]","DeviceMasterRight"),ConfigValue("None"));
         else
+        {
             m_iBufferSize = jack_port_get_total_latency(client, output_master_right);
+            m_iChannels++;
+        }
     }
 
     name = m_pConfig->getValueString(ConfigKey("[Soundcard]","DeviceHeadLeft"));
@@ -162,7 +169,10 @@ bool PlayerJack::open()
         if (jack_connect(client, jack_port_name(output_head_left), name.latin1()))
             m_pConfig->set(ConfigKey("[Soundcard]","DeviceHeadLeft"),ConfigValue("None"));
         else
+        {
             m_iBufferSize = jack_port_get_total_latency(client, output_head_left);
+            m_iChannels++;
+        }
     }
 
     name = m_pConfig->getValueString(ConfigKey("[Soundcard]","DeviceHeadRight"));
@@ -172,7 +182,10 @@ bool PlayerJack::open()
         if (jack_connect(client, jack_port_name(output_head_right), name.latin1()))
             m_pConfig->set(ConfigKey("[Soundcard]","DeviceHeadRight"),ConfigValue("None"));
         else
+        {    
             m_iBufferSize = jack_port_get_total_latency(client, output_head_right);
+            m_iChannels++;
+        }
     }
 
     // Update the config database with the used sample rate
@@ -183,7 +196,7 @@ bool PlayerJack::open()
         m_pConfig->set(ConfigKey("[Soundcard]","Samplerate"),ConfigValue((*it)));
 
         // Set currently used latency in config database
-        int msec = (int)(1000.*(float)m_iBufferSize/((float)(*it).toInt()*2.));
+        int msec = (int)(1000.*(float)m_iBufferSize/((float)(*it).toInt()*4));
         m_pConfig->set(ConfigKey("[Soundcard]","Latency"), ConfigValue(msec));
     }
 
@@ -232,7 +245,7 @@ void PlayerJack::setDefaults()
         m_pConfig->set(ConfigKey("[Soundcard]","Samplerate"),ConfigValue((*it)));
 
         // Set currently used latency in config database
-        int msec = 1000*m_iBufferSize/(*it).toInt();
+        int msec = 1000*m_iBufferSize/(4*(*it).toInt());
         m_pConfig->set(ConfigKey("[Soundcard]","Latency"), ConfigValue(msec));
     }
 }

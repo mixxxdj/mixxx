@@ -161,6 +161,7 @@ bool PlayerAsio::open() {
     if(createBuffers()) {
         m_started = true;
         if (ASIOStart() == ASE_OK) {
+           m_iChannels = m_outputChannels;
            qDebug("ASIO Driver Started");
            return true;
         }

@@ -64,6 +64,8 @@ protected:
     CSAMPLE *m_pBuffer;
     /** Current buffer size in use. */
     static short int m_iBufferSize;
+    /** Current number of channels in use */
+    static short int m_iChannels;
     /** Pointer to object holding sample rate */
     ControlObject *m_pControlObjectSampleRate;
 };
