@@ -24,6 +24,7 @@
 #include <qtimer.h>
 
 class PlayerProxy;
+class ControlObject;
 
 /**
   *@author Tue & Ken Haste Andersen
@@ -46,6 +47,7 @@ private slots:
     void slotLatencySliderClick();
     void slotLatencySliderRelease();
     void slotLatencySliderChange(int);
+    void slotHeadphoneMute(int);
 signals:
     void apply();
 private:
@@ -60,6 +62,8 @@ private:
     PlayerProxy *player;
     /** Pointer to config object */
     ConfigObject<ConfigValue> *config;
+    /** Pointer to headphone mute control object */
+    ControlObject *m_pControlObjectHeadphoneMute;
     /** True if the mouse is currently dragging the latency slider */
     bool m_bLatencySliderDrag; 
 };

@@ -289,26 +289,6 @@
         </property>
         <widget class="QLabel">
             <property name="name">
-                <cstring>TextLabel8_2</cstring>
-            </property>
-            <property name="geometry">
-                <rect>
-                    <x>305</x>
-                    <y>65</y>
-                    <width>36</width>
-                    <height>20</height>
-                </rect>
-            </property>
-            <property name="font">
-                <font>
-                </font>
-            </property>
-            <property name="text">
-                <string>High</string>
-            </property>
-        </widget>
-        <widget class="QLabel">
-            <property name="name">
                 <cstring>TextLabel8</cstring>
             </property>
             <property name="geometry">
@@ -409,11 +389,31 @@
         </widget>
         <widget class="QLabel">
             <property name="name">
+                <cstring>TextLabel8_2</cstring>
+            </property>
+            <property name="geometry">
+                <rect>
+                    <x>301</x>
+                    <y>65</y>
+                    <width>36</width>
+                    <height>20</height>
+                </rect>
+            </property>
+            <property name="font">
+                <font>
+                </font>
+            </property>
+            <property name="text">
+                <string>High</string>
+            </property>
+        </widget>
+        <widget class="QLabel">
+            <property name="name">
                 <cstring>TextLabelLatencyMaster_3_2</cstring>
             </property>
             <property name="geometry">
                 <rect>
-                    <x>265</x>
+                    <x>264</x>
                     <y>84</y>
                     <width>65</width>
                     <height>14</height>
@@ -451,22 +451,6 @@
             </font>
         </property>
     </widget>
-    <widget class="QCheckBox">
-        <property name="name">
-            <cstring>checkBoxPitchIndp</cstring>
-        </property>
-        <property name="geometry">
-            <rect>
-                <x>11</x>
-                <y>213</y>
-                <width>344</width>
-                <height>22</height>
-            </rect>
-        </property>
-        <property name="text">
-            <string>Pitch independent time stretch</string>
-        </property>
-    </widget>
     <widget class="QLabel">
         <property name="name">
             <cstring>textLabelSoundScaling</cstring>
@@ -484,6 +468,41 @@
         </property>
         <property name="alignment">
             <set>WordBreak|AlignTop</set>
+        </property>
+    </widget>
+    <widget class="QCheckBox">
+        <property name="name">
+            <cstring>checkBoxPitchIndp</cstring>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>11</x>
+                <y>213</y>
+                <width>344</width>
+                <height>22</height>
+            </rect>
+        </property>
+        <property name="text">
+            <string>Pitch independent time stretch</string>
+        </property>
+    </widget>
+    <widget class="QCheckBox">
+        <property name="name">
+            <cstring>checkBoxHeadphoneMute</cstring>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>11</x>
+                <y>291</y>
+                <width>329</width>
+                <height>28</height>
+            </rect>
+        </property>
+        <property name="text">
+            <string>Headphone button mute master out</string>
+        </property>
+        <property name="checked">
+            <bool>true</bool>
         </property>
     </widget>
 </widget>

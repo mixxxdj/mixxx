@@ -47,7 +47,10 @@ Player::~Player()
 
 short int Player::getBufferSize()
 {
-    return m_iBufferSize/m_iChannels;
+    if (m_iChannels>0)
+        return m_iBufferSize/m_iChannels;
+    else
+        return m_iBufferSize;
 }
 
 void Player::setMaster(EngineMaster *pMaster)
