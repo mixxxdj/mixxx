@@ -34,10 +34,10 @@ class ControlPotmeter : public ControlObject  {
   char position;  // position of the controller.
   char* name;        // The name of the controller
   FLOAT value;    // The actual value of the controller
-  char static const maxPosition = 127;
-  char static const minPosition  = 0;
-  char static const middlePosition = (maxPosition-minPosition)/2;
-  char static const positionrange = maxPosition-minPosition;
+  static char const maxPosition = 127;
+  static char const minPosition  = 0;
+  static char const middlePosition = (maxPosition-minPosition)/2;
+  static char const positionrange = maxPosition-minPosition;
   FLOAT maxvalue, minvalue, valuerange;
   MidiObject *midi;
  public:

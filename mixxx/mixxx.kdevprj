@@ -5,9 +5,9 @@ cflags=
 cppflags=
 cxxflags=\s-O0 -g3 -Wall
 ldadd=
-ldflags=\s\s
+ldflags=\s \s
 libtool_dir=
-path_to_bin_program=.
+path_to_bin_program=./src
 
 [General]
 AMChanged=false

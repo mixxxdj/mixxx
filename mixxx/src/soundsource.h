@@ -54,7 +54,7 @@ class AFlibfile : public SoundSource {
  private:
   int channels;
   AFfilehandle fh;
-  long filelength, mp3filelength;
+  unsigned long filelength, mp3filelength;
 };
 
 class mp3file : public SoundSource {

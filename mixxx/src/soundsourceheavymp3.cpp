@@ -51,7 +51,7 @@ SoundSourceHeavymp3::SoundSourceHeavymp3(const char *filename) {
       // Check if we need to enlarge the buffer:
       if (curr_sample+2*Synth.pcm.length > buffer.size()) {
 	  buffer.resize(buffer.size() + 1000000); // add ten more megs
-	  qDebug("decoded %i samples...", curr_sample);
+	  qDebug("decoded %li samples...", curr_sample);
       }
       // Transfer to buffer:
       for (int i=0;i<Synth.pcm.length;i++) {
@@ -68,7 +68,7 @@ SoundSourceHeavymp3::SoundSourceHeavymp3(const char *filename) {
       }
   }
   buffer.resize(curr_sample);
-  qDebug("decoded %i samples.", curr_sample);
+  qDebug("decoded %li samples.", curr_sample);
   position = 0;
   delete inputbuf;
  }
@@ -82,9 +82,9 @@ long SoundSourceHeavymp3::seek(long pos) {
 
 unsigned SoundSourceHeavymp3::read(unsigned long size, const SAMPLE* _destination) {
     SAMPLE *destination = (SAMPLE*) _destination;
-    for (int i=0; i<size; i++)
-	destination[i] = buffer[position++];
-   return size;
+    for (unsigned int i=0; i<size; i++)
+        destination[i] = buffer[position++];
+    return size;
 }
 
 long unsigned SoundSourceHeavymp3::length() {

@@ -444,12 +444,6 @@ void MixxxApp::slotChangePlay(int row,int col,int button, const QPoint &)
 {
   // stop playback and deallocate buffer
   player->stop();
-  //delete buffer;
-  
-  // Allocate buffer using new filename
-  //buffer = new EngineBuffer(view->playcontrol, view->channel, midi,
-  //							view->playlist->TableList->item(row,1)->text());
-  //buffer->start();
 
   // Tell the buffer to get a new file:
   buffer->newtrack(view->playlist->TableList->item(row,1)->text());

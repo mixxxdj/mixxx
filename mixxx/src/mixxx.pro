@@ -7,7 +7,7 @@ unix {
 }
 FORMS	= dlgchanneldlg.ui dlgplaycontroldlg.ui dlgplaylistdlg.ui 
 TEMPLATE	=app
-CONFIG	+= qt warn_on thread release
+CONFIG	+= qt warn_on thread debug 
 LIBS	+= -lportaudio -lmad -lasound -laudiofile
 DBFILE	= mixxx.db
 LANGUAGE	= C++
