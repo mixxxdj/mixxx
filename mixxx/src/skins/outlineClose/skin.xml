@@ -1024,22 +1024,22 @@
  </Knob>
 
  <Knob>
-  <Tooltip>Headphone volume</Tooltip>
+  <Tooltip>Mix between headphone and main</Tooltip>
   <NumberStates>41</NumberStates>
   <Path>knobm%1.png</Path>
   <Pos>655,715</Pos>
   <Connection>
-   <ConfigKey>[Master],headVolume</ConfigKey>
+   <ConfigKey>[Master],headMix</ConfigKey>
   </Connection>
  </Knob>
 
  <Knob>
-  <Tooltip>Mix between headphone and main</Tooltip>
+  <Tooltip>Headphone volume</Tooltip>
   <NumberStates>41</NumberStates>
   <Path>knobm%1.png</Path>
   <Pos>705,715</Pos>
   <Connection>
-   <ConfigKey>[Master],headMix</ConfigKey>
+   <ConfigKey>[Master],headVolume</ConfigKey>
   </Connection>
  </Knob>
 
