@@ -565,7 +565,7 @@ install_location=
 type=SOURCE
 
 [src/Makefile.am]
-files=src/playerportaudio.h,src/soundsourcemp3.cpp,src/dlgcrossfaderdlg.ui,src/mixxx.cpp,src/mixxx.pro,src/controlpotmeter.cpp,src/dlgplaycontroldlg.ui,src/fakemonitor.h,src/enginefilteriir.h,src/enginefilterrbj.h,src/enginepregain.cpp,src/enginemaster.cpp,src/dlgplaylist.cpp,src/dlgcrossfader.h,src/midiobject.cpp,src/controlrotary.cpp,src/dlgchannel.h,src/engineclipping.cpp,src/fakemonitor.cpp,src/controlrotary.h,src/controlpotmeter.h,src/controlobject.cpp,src/filenew.xpm,src/controlobject.h,src/main.cpp,src/filesave.xpm,src/dlgmaster.cpp,src/engineclipping.h,src/mixxxdoc.h,src/dlgplaylist.h,src/mixxx.h,src/mixxxdoc.cpp,src/defs.h,src/engineobject.cpp,src/monitor.cpp,src/dlgplaycontrol.h,src/mixxxview.h,src/playerportaudio.cpp,src/soundsourcemp3.h,src/dlgchannel.cpp,src/controllogpotmeter.h,src/dlgplaylistdlg.ui,src/playeralsa.h,src/controlpushbutton.cpp,src/soundsource.cpp,src/dlgcrossfader.cpp,src/enginefilterblock.cpp,src/enginefilteriir.cpp,src/enginemaster.h,src/mixxx.db,src/enginefilterblock.h,src/player.h,src/controlpushbutton.h,src/playeralsa.cpp,src/enginechannel.h,src/enginechannel.cpp,src/mixxxview.cpp,src/fileopen.xpm,src/enginepregain.h,src/dlgmaster.h,src/enginebuffer.h,src/dlgplaycontrol.cpp,src/controllogpotmeter.cpp,src/dlgchanneldlg.ui,src/dlgmasterdlg.ui,src/engineobject.h,src/enginebuffer.cpp,src/midiobject.h,src/enginefilterrbj.cpp,src/monitor.h,src/soundsource.h,src/player.cpp,src/configmapping.cpp,src/configmapping.h,src/configobject.cpp,src/configobject.h,src/enginevolume.cpp,src/enginevolume.h,src/controlnull.cpp,src/controlnull.h,src/wplaybutton.cpp,src/wplaybutton.h,src/wknob.cpp,src/wknob.h,src/wknobbulb.cpp,src/wknobbulb.h,src/wbulb.cpp,src/wbulb.h,src/dlgsplit.cpp,src/dlgsplit.h,src/dlgchannelleft.cpp,src/dlgchannelleft.h,src/dlgchannelright.cpp,src/dlgchannelright.h,src/dlgsplitdlg.ui,src/mixxxstyle.cpp,src/mixxxstyle.h,src/wwheel.cpp,src/wwheel.h,src/wslider.cpp,src/wslider.h,src/wplayposslider.cpp,src/wplayposslider.h,src/dlgpreferences.cpp,src/dlgpreferences.h,src/midiobjectoss.cpp,src/midiobjectoss.h,src/midiobjectportmidi.cpp,src/midiobjectportmidi.h,src/midiobjectalsa.cpp,src/midiobjectalsa.h,src/enginedelay.cpp,src/enginedelay.h,src/wlatencyslider.cpp,src/wlatencyslider.h,src/dlgflangerdlg.ui,src/wpflbutton.cpp,src/wpflbutton.h,src/wselector.cpp,src/wselector.h,src/engineflanger.cpp,src/engineflanger.h,src/controlttrotary.cpp,src/controlttrotary.h,src/dlgflanger.cpp,src/dlgflanger.h,src/dlgplaylisteditordlg.ui,src/midiobjectnull.cpp,src/midiobjectnull.h,src/soundsourceaudiofile.cpp,src/soundsourceaudiofile.h,src/soundsourcesndfile.cpp,src/soundsourcesndfile.h,src/enginespectralback.h,src/enginespectralback.cpp,src/enginespectralfwd.cpp,src/enginespectralfwd.h,src/windowkaiser.cpp,src/windowkaiser.h,src/mathstuff.h,src/mathstuff.cpp,src/midiobjectcoremidi.cpp,src/midiobjectcoremidi.h,src/midiobjectwin.cpp,src/midiobjectwin.h,src/mixxxvisual.cpp,src/mixxxvisual.h,src/probabilityvector.cpp,src/probabilityvector.h,src/rtthread.cpp,src/rtthread.h,src/controlengine.cpp,src/controlengine.h,src/controleventengine.cpp,src/controleventengine.h,src/controleventmidi.cpp,src/controleventmidi.h,src/reader.cpp,src/reader.h,src/wpushbutton.cpp,src/wpushbutton.h,src/readerbufferevent.cpp,src/readerbufferevent.h,src/readerextract.cpp,src/readerextract.h,src/readerextractwave.cpp,src/readerextractwave.h,src/readerextractfft.cpp,src/readerextractfft.h,src/readerevent.cpp,src/readerevent.h,src/readerextracthfc.cpp,src/readerextracthfc.h,src/readerextractbeat.cpp,src/readerextractbeat.h,src/controlbeat.cpp,src/controlbeat.h,src/trackinfoobject.cpp,src/trackinfoobject.h,src/tracklist.cpp,src/tracklist.h,src/enginescale.cpp,src/enginescale.h,src/enginescalesrc.cpp,src/enginescalesrc.h,src/enginebufferscale.cpp,src/enginebufferscale.h,src/enginebufferscalesrc.cpp,src/enginebufferscalesrc.h,src/enginebufferscalelinear.cpp,src/enginebufferscalelinear.h,src/dlgtracklistdlg.ui,src/dlgtracklist.h,src/dlgtracklist.cpp,src/dlgprefsound.cpp,src/dlgprefsound.h,src/dlgprefmidi.cpp,src/dlgprefmidi.h,src/dlgprefplaylist.cpp,src/dlgprefplaylist.h,src/dlgprefmididlg.ui,src/dlgprefplaylistdlg.ui,src/dlgprefsounddlg.ui,src/powermate.cpp,src/powermate.h,src/tracktable.cpp,src/tracktable.h,src/wtracktable.cpp,src/wtracktable.h,src/wtracktableitem.cpp,src/wtracktableitem.h,src/wslidervol.cpp,src/wslidervol.h,src/powermatelinux.cpp,src/powermatelinux.h,src/soundsourceoggvorbis.cpp,src/soundsourceoggvorbis.h,src/dlgvumeter.cpp,src/dlgvumeter.h,src/dlgvumeterdlg.ui,src/enginevumeter.cpp,src/enginevumeter.h,src/visualbuffersignal.cpp,src/visualbuffersignal.h,src/wvisual.h,src/wvisual.cpp,src/wvumeter.cpp,src/wvumeter.h,src/wbpmnumber.cpp,src/wbpmnumber.h,src/glthread.cpp,src/glthread.h,src/glwidget.cpp,src/glwidget.h,src/wwidget.cpp,src/wwidget.h,src/mixxxwidget.cpp,src/mixxxwidget.h,src/mixxxcontrols.cpp,src/mixxxcontrols.h
+files=src/playerportaudio.h,src/soundsourcemp3.cpp,src/dlgcrossfaderdlg.ui,src/mixxx.cpp,src/mixxx.pro,src/controlpotmeter.cpp,src/dlgplaycontroldlg.ui,src/fakemonitor.h,src/enginefilteriir.h,src/enginefilterrbj.h,src/enginepregain.cpp,src/enginemaster.cpp,src/dlgplaylist.cpp,src/dlgcrossfader.h,src/midiobject.cpp,src/controlrotary.cpp,src/dlgchannel.h,src/engineclipping.cpp,src/fakemonitor.cpp,src/controlrotary.h,src/controlpotmeter.h,src/controlobject.cpp,src/filenew.xpm,src/controlobject.h,src/main.cpp,src/filesave.xpm,src/dlgmaster.cpp,src/engineclipping.h,src/mixxxdoc.h,src/dlgplaylist.h,src/mixxx.h,src/mixxxdoc.cpp,src/defs.h,src/engineobject.cpp,src/monitor.cpp,src/dlgplaycontrol.h,src/mixxxview.h,src/playerportaudio.cpp,src/soundsourcemp3.h,src/dlgchannel.cpp,src/controllogpotmeter.h,src/dlgplaylistdlg.ui,src/playeralsa.h,src/controlpushbutton.cpp,src/soundsource.cpp,src/dlgcrossfader.cpp,src/enginefilterblock.cpp,src/enginefilteriir.cpp,src/enginemaster.h,src/mixxx.db,src/enginefilterblock.h,src/player.h,src/controlpushbutton.h,src/playeralsa.cpp,src/enginechannel.h,src/enginechannel.cpp,src/mixxxview.cpp,src/fileopen.xpm,src/enginepregain.h,src/dlgmaster.h,src/enginebuffer.h,src/dlgplaycontrol.cpp,src/controllogpotmeter.cpp,src/dlgchanneldlg.ui,src/dlgmasterdlg.ui,src/engineobject.h,src/enginebuffer.cpp,src/midiobject.h,src/enginefilterrbj.cpp,src/monitor.h,src/soundsource.h,src/player.cpp,src/configmapping.cpp,src/configmapping.h,src/configobject.cpp,src/configobject.h,src/enginevolume.cpp,src/enginevolume.h,src/controlnull.cpp,src/controlnull.h,src/wknob.cpp,src/wknob.h,src/dlgsplit.cpp,src/dlgsplit.h,src/dlgchannelleft.cpp,src/dlgchannelleft.h,src/dlgchannelright.cpp,src/dlgchannelright.h,src/dlgsplitdlg.ui,src/mixxxstyle.cpp,src/mixxxstyle.h,src/wslider.cpp,src/wslider.h,src/dlgpreferences.cpp,src/dlgpreferences.h,src/midiobjectoss.cpp,src/midiobjectoss.h,src/midiobjectportmidi.cpp,src/midiobjectportmidi.h,src/midiobjectalsa.cpp,src/midiobjectalsa.h,src/enginedelay.cpp,src/enginedelay.h,src/wlatencyslider.cpp,src/wlatencyslider.h,src/dlgflangerdlg.ui,src/engineflanger.cpp,src/engineflanger.h,src/controlttrotary.cpp,src/controlttrotary.h,src/dlgflanger.cpp,src/dlgflanger.h,src/dlgplaylisteditordlg.ui,src/midiobjectnull.cpp,src/midiobjectnull.h,src/soundsourceaudiofile.cpp,src/soundsourceaudiofile.h,src/soundsourcesndfile.cpp,src/soundsourcesndfile.h,src/enginespectralback.h,src/enginespectralback.cpp,src/enginespectralfwd.cpp,src/enginespectralfwd.h,src/windowkaiser.cpp,src/windowkaiser.h,src/mathstuff.h,src/mathstuff.cpp,src/midiobjectcoremidi.cpp,src/midiobjectcoremidi.h,src/midiobjectwin.cpp,src/midiobjectwin.h,src/mixxxvisual.cpp,src/mixxxvisual.h,src/probabilityvector.cpp,src/probabilityvector.h,src/rtthread.cpp,src/rtthread.h,src/controlengine.cpp,src/controlengine.h,src/controleventengine.cpp,src/controleventengine.h,src/controleventmidi.cpp,src/controleventmidi.h,src/reader.cpp,src/reader.h,src/wpushbutton.cpp,src/wpushbutton.h,src/readerbufferevent.cpp,src/readerbufferevent.h,src/readerextract.cpp,src/readerextract.h,src/readerextractwave.cpp,src/readerextractwave.h,src/readerextractfft.cpp,src/readerextractfft.h,src/readerevent.cpp,src/readerevent.h,src/readerextracthfc.cpp,src/readerextracthfc.h,src/readerextractbeat.cpp,src/readerextractbeat.h,src/controlbeat.cpp,src/controlbeat.h,src/trackinfoobject.cpp,src/trackinfoobject.h,src/tracklist.cpp,src/tracklist.h,src/enginescale.cpp,src/enginescale.h,src/enginescalesrc.cpp,src/enginescalesrc.h,src/enginebufferscale.cpp,src/enginebufferscale.h,src/enginebufferscalesrc.cpp,src/enginebufferscalesrc.h,src/enginebufferscalelinear.cpp,src/enginebufferscalelinear.h,src/dlgtracklistdlg.ui,src/dlgtracklist.h,src/dlgtracklist.cpp,src/dlgprefsound.cpp,src/dlgprefsound.h,src/dlgprefmidi.cpp,src/dlgprefmidi.h,src/dlgprefplaylist.cpp,src/dlgprefplaylist.h,src/dlgprefmididlg.ui,src/dlgprefplaylistdlg.ui,src/dlgprefsounddlg.ui,src/powermate.cpp,src/powermate.h,src/tracktable.cpp,src/tracktable.h,src/wtracktable.cpp,src/wtracktable.h,src/wtracktableitem.cpp,src/wtracktableitem.h,src/wslidervol.cpp,src/wslidervol.h,src/powermatelinux.cpp,src/powermatelinux.h,src/soundsourceoggvorbis.cpp,src/soundsourceoggvorbis.h,src/dlgvumeter.cpp,src/dlgvumeter.h,src/dlgvumeterdlg.ui,src/enginevumeter.cpp,src/enginevumeter.h,src/visualbuffersignal.cpp,src/visualbuffersignal.h,src/wvisual.h,src/wvisual.cpp,src/wbpmnumber.cpp,src/wbpmnumber.h,src/glthread.cpp,src/glthread.h,src/glwidget.cpp,src/glwidget.h,src/wwidget.cpp,src/wwidget.h,src/mixxxwidget.cpp,src/mixxxwidget.h,src/mixxxcontrols.cpp,src/mixxxcontrols.h,src/wdisplay.cpp,src/wdisplay.h,src/wslidercomposed.h,src/wslidercomposed.cpp
 sub_dirs=music,qknob,images,visual
 type=prog_main
 
@@ -2343,13 +2343,13 @@ install=false
 install_location=
 type=HEADER
 
-[src/wbulb.cpp]
+[src/wdisplay.cpp]
 dist=true
 install=false
 install_location=
 type=SOURCE
 
-[src/wbulb.h]
+[src/wdisplay.h]
 dist=true
 install=false
 install_location=
@@ -2379,18 +2379,6 @@ install=false
 install_location=
 type=HEADER
 
-[src/wknobbulb.cpp]
-dist=true
-install=false
-install_location=
-type=SOURCE
-
-[src/wknobbulb.h]
-dist=true
-install=false
-install_location=
-type=HEADER
-
 [src/wlatencyslider.cpp]
 dist=true
 install=false
@@ -2398,42 +2386,6 @@ install_location=
 type=SOURCE
 
 [src/wlatencyslider.h]
-dist=true
-install=false
-install_location=
-type=HEADER
-
-[src/wpflbutton.cpp]
-dist=true
-install=false
-install_location=
-type=SOURCE
-
-[src/wpflbutton.h]
-dist=true
-install=false
-install_location=
-type=HEADER
-
-[src/wplaybutton.cpp]
-dist=true
-install=false
-install_location=
-type=SOURCE
-
-[src/wplaybutton.h]
-dist=true
-install=false
-install_location=
-type=HEADER
-
-[src/wplayposslider.cpp]
-dist=true
-install=false
-install_location=
-type=SOURCE
-
-[src/wplayposslider.h]
 dist=true
 install=false
 install_location=
@@ -2451,18 +2403,6 @@ install=false
 install_location=
 type=HEADER
 
-[src/wselector.cpp]
-dist=true
-install=false
-install_location=
-type=SOURCE
-
-[src/wselector.h]
-dist=true
-install=false
-install_location=
-type=HEADER
-
 [src/wslider.cpp]
 dist=true
 install=false
@@ -2470,6 +2410,18 @@ install_location=
 type=SOURCE
 
 [src/wslider.h]
+dist=true
+install=false
+install_location=
+type=HEADER
+
+[src/wslidercomposed.cpp]
+dist=true
+install=false
+install_location=
+type=SOURCE
+
+[src/wslidercomposed.h]
 dist=true
 install=false
 install_location=
@@ -2518,30 +2470,6 @@ install_location=
 type=SOURCE
 
 [src/wvisual.h]
-dist=true
-install=false
-install_location=
-type=HEADER
-
-[src/wvumeter.cpp]
-dist=true
-install=false
-install_location=
-type=SOURCE
-
-[src/wvumeter.h]
-dist=true
-install=false
-install_location=
-type=HEADER
-
-[src/wwheel.cpp]
-dist=true
-install=false
-install_location=
-type=SOURCE
-
-[src/wwheel.h]
 dist=true
 install=false
 install_location=

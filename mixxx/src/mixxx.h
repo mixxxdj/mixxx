@@ -83,6 +83,8 @@ class MixxxApp : public QMainWindow
     void slotFileQuit();
     /** toggle audio beat marks */
     void slotOptionsBeatMark(bool toggle);
+    /** toogle full screen mode */
+    void slotOptionsFullScreen(bool toggle);
     /** Preference dialog */
     void slotOptionsPreferences();
     /** shows an about dlg*/
@@ -139,10 +141,8 @@ class MixxxApp : public QMainWindow
     QAction *editCopy;
     QAction *editPaste;
 
-    QAction *optionsLeft;
-    QAction *optionsRight;
     QAction *optionsBeatMark;
-
+    QAction *optionsFullScreen;
     QAction *optionsPreferences;
     /** Pointer to preference dialog */
     DlgPreferences *prefDlg;
