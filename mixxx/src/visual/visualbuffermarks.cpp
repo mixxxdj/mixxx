@@ -90,14 +90,14 @@ void VisualBufferMarks::draw(GLfloat *p, int iLen, float xscale)
             glBegin(GL_POLYGON);
             glVertex3f(p[i]-kfWidth,-1.  ,0.);
             glVertex3f(p[i]+kfWidth,-1.  ,0.);
-            glVertex3f(p[i]+kfWidth,-0.8,0.);
-            glVertex3f(p[i]-kfWidth,-0.8,0.);
+            glVertex3f(p[i]+kfWidth,-0.8f,0.);
+            glVertex3f(p[i]-kfWidth,-0.8f,0.);
             glEnd();
             glBegin(GL_POLYGON);
-            glVertex3f(p[i]-kfWidth, 0.8 ,0.);
-            glVertex3f(p[i]+kfWidth, 0.8 ,0.);
-            glVertex3f(p[i]+kfWidth, 1.0 ,0.);
-            glVertex3f(p[i]-kfWidth, 1.0 ,0.);
+            glVertex3f(p[i]-kfWidth, 0.8f,0.);
+            glVertex3f(p[i]+kfWidth, 0.8f,0.);
+            glVertex3f(p[i]+kfWidth, 1.0f,0.);
+            glVertex3f(p[i]-kfWidth, 1.0f,0.);
             glEnd();
 
         }
