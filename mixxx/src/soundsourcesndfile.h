@@ -24,7 +24,7 @@ class TrackInfoObject;
 
 class SoundSourceSndFile : public SoundSource {
 public:
-    SoundSourceSndFile( QString );
+    SoundSourceSndFile(QString qFilename);
     ~SoundSourceSndFile();
     long seek(long);
     unsigned read(unsigned long size, const SAMPLE*);

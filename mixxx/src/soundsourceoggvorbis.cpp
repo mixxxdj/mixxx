@@ -25,25 +25,28 @@
   Class for reading Ogg Vorbis 
 */
 
-SoundSourceOggVorbis::SoundSourceOggVorbis(const char* filename)
+SoundSourceOggVorbis::SoundSourceOggVorbis(QString qFilename) : SoundSource(qFilename)
 {
   
-    vorbisfile =  fopen(filename, "r");
-    if (!vorbisfile) {
-        qWarning("oggvorbis: file cannot be opened.\n");
+    vorbisfile =  fopen(qFilename.latin1(), "r");
+    if (!vorbisfile)
+    {
+        qWarning("oggvorbis: cannot open %f", qFilename.latin1());
         return;
     }
 
     // Apparently this is needed to make windows happy:
-    #ifdef __WIN__
-        _setmode( _fileno( vorbisfile ), _O_BINARY );
-    #endif
+#ifdef __WIN__
+    _setmode(_fileno(vorbisfile), _O_BINARY);
+#endif
 
-    if(ov_open(vorbisfile, &vf, NULL, 0) < 0) {
-       qDebug("oggvorbis: Input does not appear to be an Ogg bitstream.\n");
-       filelength = 0;
-       return;
-    } else
+    if(ov_open(vorbisfile, &vf, NULL, 0) < 0)
+    {
+        qDebug("oggvorbis: Input does not appear to be an Ogg bitstream.");
+        filelength = 0;
+        return;
+    }
+    else
     {
 
       // extract metadata
@@ -53,7 +56,7 @@ SoundSourceOggVorbis::SoundSourceOggVorbis(const char* filename)
       SRATE = vi->rate;
 
       if(channels > 2){
-        qDebug("oggvorbis: No support for more than 2 channels!\n");
+        qDebug("oggvorbis: No support for more than 2 channels!");
         return;
       }
         
@@ -155,8 +158,10 @@ int SoundSourceOggVorbis::ParseHeader( TrackInfoObject *Track )
 
     comment = ov_comment(&vf, -1);
 
-    Track->m_sTitle = vorbis_comment_query(comment, "title", 0);
-    Track->m_sArtist = vorbis_comment_query(comment, "artist", 0);
+    if (QString(vorbis_comment_query(comment, "title", 0)).length()!=0)
+        Track->m_sTitle = vorbis_comment_query(comment, "title", 0);
+    if (QString(vorbis_comment_query(comment, "artist", 0)).length()!=0)
+        Track->m_sArtist = vorbis_comment_query(comment, "artist", 0);
     Track->m_sType = "ogg";
     Track->m_iDuration = (long) ov_time_total(&vf, -1);
     Track->m_sBitrate.setNum(ov_bitrate(&vf, -1)/1000);

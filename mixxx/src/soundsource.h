@@ -32,18 +32,22 @@ class TrackInfoObject;
 */
 class SoundSource {
 public:
-    SoundSource();
+    SoundSource(QString qFilename);
     virtual ~SoundSource();
     virtual long seek(long) = 0;
     virtual unsigned read(unsigned long size, const SAMPLE*) = 0;
     virtual long unsigned length() = 0;
     static int ParseHeader( TrackInfoObject * );
     int getSrate();
-  
+    /** Returns filename */
+    QString getFilename();
+    
     QString type;
 protected:
     /** Sample rate of the file */
     int SRATE;
+    /** File name */
+    QString m_qFilename;
 };
 
 #endif

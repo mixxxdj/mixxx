@@ -35,8 +35,6 @@
 #include "wpushbutton.h"
 #include "wtracktable.h"
 #include "mixxx.h"
-#include "images/a.xpm"
-#include "images/b.xpm"
 #include "controlnull.h"
 #include "midiobjectnull.h"
 #include "readerextractwave.h"
@@ -106,7 +104,7 @@ MixxxApp::MixxxApp(QApplication *a, bool bVisuals)
     control = new ControlNull();
     control->setParentWidget(this);
 
-    // set the main widget here
+    // Set the main widget here
     view=new MixxxView(this,bVisuals);
     setCentralWidget(view);
 
@@ -189,10 +187,7 @@ MixxxApp::MixxxApp(QApplication *a, bool bVisuals)
     control->setConfig(midiconfig);
 
     // Configure ControlEngine object
-    ControlEngine *controlengine = new ControlEngine(control);
-
-    // Install event handler
-    //installEventFilter(this);
+    ControlEngine *m_pControlEngine = new ControlEngine(control);
 
     // Ensure that only one of the flanger buttons are pushed at a time.
     //connect(dlg_flanger->PushButtonChA, SIGNAL(valueOn()), flanger_b, SLOT(slotSetPositionOff()));
@@ -261,7 +256,7 @@ MixxxApp::MixxxApp(QApplication *a, bool bVisuals)
                               view->m_pTextCh1, view->m_pTextCh2, buffer1, buffer2);
 
     // Initialize preference dialog
-    prefDlg = new DlgPreferences(this,midi,player,m_pTracks, config, midiconfig);
+    prefDlg = new DlgPreferences(this, view, midi, player, m_pTracks, config, midiconfig, control);
     prefDlg->setHidden(true);
 
     // Try open player device using config data, if that fails, use default values. If that fails too, the
@@ -269,7 +264,7 @@ MixxxApp::MixxxApp(QApplication *a, bool bVisuals)
     if (!player->open(false))
         if (!player->open(true))
             prefDlg->setHidden(false);
-    
+
     // Starting channels:
     channel1 = new EngineChannel("[Channel1]");
     channel2 = new EngineChannel("[Channel2]");
@@ -300,7 +295,7 @@ MixxxApp::~MixxxApp()
     delete master;
     delete prefDlg;
     delete player;
-    delete control;
+//    delete m_pControlEngine;
     delete midi;
     delete config;
     delete midiconfig;
@@ -362,7 +357,7 @@ void MixxxApp::initActions()
   optionsFullScreen->setWhatsThis(tr("Display Mixxx using the full screen"));
   connect(optionsFullScreen, SIGNAL(toggled(bool)), this, SLOT(slotOptionsFullScreen(bool)));
 
-  optionsPreferences = new QAction(tr("Preferences"), tr("&Preferences..."), 0, this);
+  optionsPreferences = new QAction(tr("Preferences"), tr("&Preferences..."), QAccel::stringToKey(tr("Ctrl+P")), this);
   optionsPreferences->setStatusTip(tr("Preferences"));
   optionsPreferences->setWhatsThis(tr("Preferences\nPlayback and MIDI preferences"));
   connect(optionsPreferences, SIGNAL(activated()), this, SLOT(slotOptionsPreferences()));

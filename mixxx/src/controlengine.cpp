@@ -44,7 +44,8 @@ QPtrList<ControlEngine> *ControlEngine::getList()
 
 ControlEngine::~ControlEngine()
 {
-    delete controlObject;
+    if (controlObject)
+        delete controlObject;
 }
 
 /*

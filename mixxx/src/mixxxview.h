@@ -49,6 +49,7 @@ public:
     QLabel *m_pTextCh1, *m_pTextCh2;
     /** Pointer to WVisual widgets */
     WVisual *m_pVisualCh1, *m_pVisualCh2;
+    WSliderComposed *m_pSliderRateCh1, *m_pSliderRateCh2;
 
 private:
     const QString getPath(QString location);
@@ -56,7 +57,6 @@ private:
     QWidget *main;
     WSliderComposed *m_pSliderCrossfader;
     WSliderComposed *m_pSliderVolumeCh1, *m_pSliderVolumeCh2;
-    WSliderComposed *m_pSliderRateCh1, *m_pSliderRateCh2;
     WSliderComposed *m_pSliderPlayposCh1, *m_pSliderPlayposCh2;
     WPushButton *m_pPlayCh1, *m_pPlayCh2;
     WDisplay *m_pVUmeterCh1, *m_pVUmeterCh2;

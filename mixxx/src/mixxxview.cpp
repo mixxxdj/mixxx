@@ -33,7 +33,7 @@
   #include "wvisual.h"
 #endif
 
-MixxxView::MixxxView(QWidget *parent, bool bVisuals) : QWidget(parent)
+MixxxView::MixxxView(QWidget *parent, bool bVisuals) : QWidget(parent, "Mixxx")
 {
     // Path to image files
     path = QDir::currentDirPath().append("/images/");
@@ -47,7 +47,7 @@ MixxxView::MixxxView(QWidget *parent, bool bVisuals) : QWidget(parent)
     //
     // Construct main widget
     //
-    main = new QWidget(this);
+    main = this;
     main->setFixedSize(1024,768);
     QPixmap background(getPath("main.png"));
     main->setPaletteBackgroundPixmap(background);
@@ -213,7 +213,7 @@ MixxxView::MixxxView(QWidget *parent, bool bVisuals) : QWidget(parent)
     m_pCueCh2->setFixedSize(55,28);
     m_pCueCh2->move(832,267);
 
-#ifdef __WIN__	
+#ifdef __WIN__
     // QPixmap fix needed on Windows 9x
     QPixmap::setDefaultOptimization(QPixmap::NormalOptim);
 #endif

@@ -17,9 +17,9 @@
 #include "soundsourceaudiofile.h"
 #include "trackinfoobject.h"
 
-SoundSourceAudioFile::SoundSourceAudioFile( QString sFilename ) 
+SoundSourceAudioFile::SoundSourceAudioFile(QString qFilename) : SoundSource(qFilename) 
 {
-    fh = afOpenFile( sFilename.latin1() ,"r",0);
+    fh = afOpenFile( qFilename.latin1() ,"r",0);
     if (fh == AF_NULL_FILEHANDLE) {
         qDebug("libaudiofile: Error opening file.");
         filelength = 0;

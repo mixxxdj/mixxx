@@ -41,7 +41,6 @@ public:
   void init(VisualController * controller);
 
 private:
-  void processHits(GLint hits, GLuint buffer[]);
   GLuint inFront(GLint hits, GLuint buffer[]);
 
 public:

@@ -29,9 +29,10 @@
   which is used for parsing header information, like trackname,length etc. The
   return type is int: 0 for OK, -1 for an error.
 */
-SoundSource::SoundSource()
+SoundSource::SoundSource(QString qFilename)
 {
-    SRATE = 0;
+    m_qFilename = qFilename;
+    SRATE = 0;    
 }
 
 SoundSource::~SoundSource()
@@ -43,3 +44,7 @@ int SoundSource::getSrate()
     return SRATE;
 }
 
+QString SoundSource::getFilename()
+{
+    return m_qFilename;
+}

@@ -182,7 +182,7 @@ void TrackList::WriteXML()
 
     if ( !opmlFile.open( IO_WriteOnly) ) {
         QMessageBox::critical( 0,
-                tr( "Critical Error" ),
+                tr( "Error" ),
                 tr( "Cannot open file %1" ).arg( m_sDirectory + "/tracklist.xml" ) );
         return;
     }

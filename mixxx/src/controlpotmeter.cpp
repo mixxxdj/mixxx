@@ -29,11 +29,7 @@
    -------- ------------------------------------------------------ */
 ControlPotmeter::ControlPotmeter(ConfigKey key, FLOAT_TYPE _minvalue, FLOAT_TYPE _maxvalue) : ControlObject(key)
 {
-//  position = middlePosition;
-    minvalue = _minvalue;
-    maxvalue = _maxvalue;
-    valuerange = maxvalue-minvalue;
-    value = minvalue + 0.5*valuerange;
+    setRange(_minvalue,_maxvalue);
 }
 
 ControlPotmeter::~ControlPotmeter()
@@ -49,23 +45,12 @@ ControlPotmeter::~ControlPotmeter()
 void ControlPotmeter::slotSetPositionExtern(float newpos)
 {
     value = minvalue + ((FLOAT_TYPE)newpos/127.)*valuerange;
-/*
-  char newpos =(char)_newpos;
 
-  // Ensure that the position is within bounds:
-  position = (char)max(minPosition, min(newpos, maxPosition));
-
-  // Calculate the value linearly:
-  value = (FLOAT_TYPE)(valuerange/positionrange)*(FLOAT_TYPE)(newpos-minPosition)+minvalue;
-  //qDebug("Controlpotmeter: changed %s to %g.",name,value);
-*/
     emitValueChanged(value);
 }
 
 void ControlPotmeter::slotSetPositionMidi(MidiCategory c, int v)
 {
-    //qDebug("thread id: %p",pthread_self());
-
     slotSetPositionExtern(v);
     emit(updateGUI(v));
 }
@@ -85,3 +70,24 @@ FLOAT_TYPE ControlPotmeter::getValue()
 {
     return value;
 }
+
+float ControlPotmeter::getMin()
+{
+    return minvalue;
+}
+
+float ControlPotmeter::getMax()
+{
+    return maxvalue;
+}
+
+void ControlPotmeter::setRange(float fMin, float fMax)
+{
+    minvalue = fMin;
+    maxvalue = fMax;
+    valuerange = maxvalue-minvalue;
+    value = minvalue + 0.5*valuerange;
+    emitValueChanged(value);
+    forceGUIUpdate();
+}
+

@@ -32,8 +32,8 @@ public:
     void updatecounter(int, int SRATE);
     short direction;
     void setValue(int);
-    void setAccelUp(const QKeySequence key) {};
-    void setAccelDown(const QKeySequence key) {};
+    void setAccelUp(const QKeySequence) {};
+    void setAccelDown(const QKeySequence) {};
 public slots:
     void slotSetPositionExtern(float);
     void slotSetPositionMidi(MidiCategory, int);

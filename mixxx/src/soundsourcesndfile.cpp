@@ -20,13 +20,13 @@
 /*
   Class for reading files using libsndfile
 */
-SoundSourceSndFile::SoundSourceSndFile( QString sFilename )
+SoundSourceSndFile::SoundSourceSndFile(QString qFilename) : SoundSource(qFilename)
 {
     info = new SF_INFO;
-    fh = sf_open( sFilename.latin1(), SFM_READ, info );
+    fh = sf_open( qFilename.latin1(), SFM_READ, info );
     if (fh == 0 || !sf_format_check(info))
     {
-        qDebug("libsndfile: ERR opening file.");
+        qDebug("libsndfile: Error opening file %s",qFilename.latin1());
         filelength = 0;
         return;
     } else

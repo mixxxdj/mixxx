@@ -110,7 +110,7 @@ void WKnob::paintEvent(QPaintEvent *)
 {
     if (m_pPixmaps>0)
     {
-        int idx = (int)((m_fValue-64.)*((m_iNoPos-1.)/127.))+(m_iNoPos/2.);
+        int idx = (int)(((m_fValue-64.)*((m_iNoPos-1.)/127.))+(m_iNoPos/2.));
 
         // Range check
         if (idx>(m_iNoPos-1))

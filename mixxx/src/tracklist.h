@@ -13,22 +13,20 @@ class QPoint;
 class EngineBuffer;
 class WTrackTable;
 
-// Defines for the rows in the table. Should be made as simple
-// private consts, but it won't compile.
-#define COL_SCORE 0
-#define COL_TITLE 1
-#define COL_ARTIST 2
-#define COL_TYPE 3
-#define COL_DURATION 4
-#define COL_BITRATE 5
-#define COL_INDEX 6
+// Defines for the rows in the table.
+const int COL_SCORE = 0;
+const int COL_TITLE = 1;
+const int COL_ARTIST = 2;
+const int COL_TYPE = 3;
+const int COL_DURATION = 4;
+const int COL_BITRATE = 5;
+const int COL_INDEX = 6;
 
 // This define sets the version of the tracklist. If any code is changed or
 // bugfixed, this number should be increased. If TRACKLIST_VERSION is larger
 // than the version written in the current tracklist, the list will be
 // re-parsed.
-// - And yes, it should be a const member, but I don't know how to do that.
-#define TRACKLIST_VERSION 4
+const int TRACKLIST_VERSION = 5;
 
 class TrackList : public QObject
 {

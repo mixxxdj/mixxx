@@ -24,12 +24,15 @@
 #include "configobject.h"
 
 class MixxxApp;
+class MixxxView;
 class MidiObject;
 class Player;
 class TrackList;
 class DlgPrefSound;
 class DlgPrefMidi;
 class DlgPrefPlaylist;
+class DlgPrefControls;
+class ControlObject;
 
 /**
   *@author Tue & Ken Haste Andersen
@@ -39,9 +42,11 @@ class DlgPreferences : public QTabDialog
 {
     Q_OBJECT
 public: 
-    DlgPreferences(MixxxApp *mixxx, 
+    DlgPreferences(MixxxApp *mixxx, MixxxView *view,
                    MidiObject *midi, Player *player,
-                   TrackList *tracklist, ConfigObject<ConfigValue> *config, ConfigObject<ConfigValueMidi> *midiconfig);
+                   TrackList *tracklist, ConfigObject<ConfigValue> *config,
+                   ConfigObject<ConfigValueMidi> *midiconfig,
+                   ControlObject *pControl);
     ~DlgPreferences();
 signals:
     void closeDlg();
@@ -51,6 +56,7 @@ private:
     DlgPrefSound *wsound;
     DlgPrefMidi *wmidi;
     DlgPrefPlaylist *wplaylist;
+    DlgPrefControls *wcontrols;
 };
 
 #endif

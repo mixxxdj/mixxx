@@ -26,6 +26,7 @@ int VisualDisplay::idCount = 0;
 
 VisualDisplay::VisualDisplay(VisualBuffer *pVisualBuffer, const char *group)
 {
+    qDebug("buffer %p",pVisualBuffer);
     m_pVisualBuffer = pVisualBuffer;
 
     setupScene();
@@ -116,7 +117,7 @@ void VisualDisplay::draw(GLenum mode)
     {
         // TOTAL LENGTH SHOULD EQUAL b.len1+b.len2 but seems to give b-1!!!!
     
-        int nfish =     (b.len1+b.len2)*fishEyeSignalFraction;
+        int nfish = (int)((b.len1+b.len2)*fishEyeSignalFraction);
         int noutside = ((b.len1+b.len2)-nfish)/2;
 //      int n = ((b.len1+b.len2)/3)+1;
         bufInfo i1, i2, i3;

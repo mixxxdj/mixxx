@@ -30,25 +30,45 @@ VisualBufferSignal::~VisualBufferSignal()
 
 void VisualBufferSignal::update(int iPos, int iLen)
 {
-    int iCpos = (int)(CSAMPLE)iPos;
+//    qDebug("signal upd pos %i, len %i, total len %i",iPos,iLen,m_iSourceLen);
+    
+    CSAMPLE *pSource = &m_pSource[iPos];
+    GLfloat *pDest = &m_pBuffer[(int)(iPos/m_fResampleFactor)*3];
 
-    CSAMPLE *pSource = &m_pSource[iCpos];
-    GLfloat *pDest = &m_pBuffer[(int)(iCpos/m_fResampleFactor)*3];
-
-    for (int i=0; i<m_iSourceLen/READCHUNK_NO; i+=m_fResampleFactor)
+    float temp = min(iLen, m_iSourceLen-iPos-1);
+//    qDebug("upd1: %i-%f, temp: %f",iPos,iPos+temp, temp);
+    for (float i=0; i<=temp-m_fResampleFactor; i+=m_fResampleFactor)
     {
         GLfloat fVal = 0;
-        for (int j=i; j<i+m_fResampleFactor; j++)
+        for (int j=(int)i; j<(int)(i+m_fResampleFactor); j++)
             fVal += pSource[j]*(1./32768.);
-
+        
         *pDest++;
         *pDest++ = fVal/m_fResampleFactor;
         *pDest++;
+    }
+
+    if (temp<iLen)
+    {
+//        qDebug("upd2: %i-%i, len: %i",0,iLen-temp, m_iSourceLen);
+        pSource = &m_pSource[0];
+        pDest = &m_pBuffer[0];
+        for (int i=0; i<=iLen-temp; ++i)
+        {
+            GLfloat fVal = 0;
+            for (int j=(int)i; j<(int)(i+m_fResampleFactor); j++)
+                fVal += pSource[j]*(1./32768.);
+
+            *pDest++;
+            *pDest++ = fVal/m_fResampleFactor;
+            *pDest++;
+        }
     }
 }
 
 void VisualBufferSignal::draw(GLfloat *p, int iLen)
 {
+//    qDebug("draw %p",this);
     glVertexPointer(3, GL_FLOAT, 0, p);
     glEnableClientState(GL_VERTEX_ARRAY);
     glDrawArrays(GL_LINE_STRIP,0,iLen);

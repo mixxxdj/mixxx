@@ -20,18 +20,18 @@ extern "C" {
 #include <dxhead.h>
 }
 
-SoundSourceMp3::SoundSourceMp3( QString sFilename )
+SoundSourceMp3::SoundSourceMp3(QString qFilename) : SoundSource(qFilename)
 {
-    QFile file( sFilename.latin1() );
+    QFile file( qFilename.latin1() );
     if (!file.open(IO_ReadOnly))
-        qFatal("MAD: Open of %s failed.", sFilename.latin1());
+        qFatal("MAD: Open of %s failed.", qFilename.latin1());
 
     // Read the whole file into inputbuf:
     inputbuf_len = file.size();
     inputbuf = new char[inputbuf_len];
     unsigned int tmp = file.readBlock(inputbuf, inputbuf_len);
     if (tmp != inputbuf_len)
-        qFatal("MAD: ERR reading mp3-file: %s\nRead only %d bytes, but wanted %d bytes.",sFilename.latin1() ,tmp,inputbuf_len);
+        qFatal("MAD: ERR reading mp3-file: %s\nRead only %d bytes, but wanted %d bytes.",qFilename.latin1() ,tmp,inputbuf_len);
 
     // Transfer it to the mad stream-buffer:
     mad_stream_init(&Stream);

@@ -50,7 +50,7 @@ VisualBuffer::VisualBuffer(ReaderExtract *pReaderExtract, ControlPotmeter *pPlay
     m_fReaderExtractFactor = READBUFFERSIZE/m_iSourceLen;
     
     // Length of this buffer
-    m_iLen = (float)m_iSourceLen/m_fResampleFactor;
+    m_iLen = (int)((float)m_iSourceLen/m_fResampleFactor);
 
     // Number of samples from this buffer to display
     m_iDisplayLen = m_iLen-(2*m_iLen/READCHUNK_NO);
@@ -106,11 +106,10 @@ GLfloat *VisualBuffer::allocate(int iSize)
     //--- VIDEO      [0 - 0.25)      [0 - 0.25)      (0.75 -  1]
     //---
     //---
-    float fPriority = 1.0f;
-    float fReadFrequency = 0;
-    float fWriteFrequency = 0;
-
-    float fMegabytes = (iSize * sizeof(GL_FLOAT)/1000000.f);
+//    float fPriority = 1.0f;
+//    float fReadFrequency = 0;
+//    float fWriteFrequency = 0;
+//    float fMegabytes = (iSize * sizeof(GL_FLOAT)/1000000.f);
 
     GLfloat *pArray = new GLfloat[iSize];
 
@@ -137,7 +136,7 @@ void VisualBuffer::validate()
 bufInfo VisualBuffer::getVertexArray()
 {
     // Conversion to DISPLAYRATE
-    int iPos = ((m_pPlaypos->getValue()/m_fReaderExtractFactor)/m_fResampleFactor)-m_iDisplayLen/2;
+    int iPos = (int)(((m_pPlaypos->getValue()/m_fReaderExtractFactor)/m_fResampleFactor)-m_iDisplayLen/2);
     while (iPos<0)
         iPos += m_iLen;
 

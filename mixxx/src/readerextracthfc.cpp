@@ -34,8 +34,6 @@ ReaderExtractHFC::ReaderExtractHFC(ReaderExtract *input, int frameSize, int fram
     
     specList = (QPtrList<EngineSpectralFwd> *)input->getBasePtr();
 
-//    textout.setName("hfc.txt");
-//    textout.open( IO_WriteOnly );
 }
 
 ReaderExtractHFC::~ReaderExtractHFC()
@@ -52,6 +50,14 @@ void ReaderExtractHFC::reset()
         dhfc[i] = 0.;
     }
 }
+
+void ReaderExtractHFC::newsource(QString qFilename)
+{
+    texthfc.close();
+    texthfc.setName(QString(qFilename).append(".hfc"));
+    texthfc.open(IO_WriteOnly);
+}
+
 
 void *ReaderExtractHFC::getBasePtr()
 {
@@ -75,7 +81,7 @@ int ReaderExtractHFC::getBufferSize()
 
 void *ReaderExtractHFC::processChunk(const int _idx, const int start_idx, const int _end_idx, bool)
 {
-//    QTextStream stream( &textout );
+    QTextStream stream(&texthfc);
 
     int end_idx = _end_idx;
     int idx = _idx;
@@ -116,14 +122,12 @@ void *ReaderExtractHFC::processChunk(const int _idx, const int start_idx, const 
 //    qDebug("hfc %i-%i",frameFrom,frameTo);
         
     // Get HFC
-//    int j = 0;
     if (frameTo>frameFrom)
     {
         for (int i=frameFrom; i<=frameTo; i++)
         {
             hfc[i] = specList->at(i)->getHFC();
-//            stream << hfc[i] << "\n";
-//            j++;
+            stream << hfc[i] << "\n";
         }
 //        qDebug("HFC vals 1 : %i",j);
     }
@@ -133,20 +137,17 @@ void *ReaderExtractHFC::processChunk(const int _idx, const int start_idx, const 
         for (i=frameFrom; i<frameNo; i++)
         {
             hfc[i] = specList->at(i)->getHFC();
-//            stream << hfc[i] << "\n";
-//            j++;
+            stream << hfc[i] << "\n";
         }
         for (i=0; i<=frameTo; i++)
         {
             hfc[i] = specList->at(i)->getHFC();
-//            stream << hfc[i] << "\n";
-//            j++;
+            stream << hfc[i] << "\n";
         }
 //        qDebug("HFC vals 2 : %i",j);
     }
 
-//    stream << "\n";
-//    textout.flush();
+    texthfc.flush();
 
     // Get DHFC, first derivative and HFC, rectified
     //dhfc[(idx*framePerChunk)%frameNo] = hfc[(idx*framePerChunk)%frameNo];
