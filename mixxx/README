@@ -15,15 +15,17 @@ at least G4 CPU).
 
 * NEWS *****************************************************
 New since 1.1:
-- Fix in calling sound interpolation methods
 - Sound card API structure updated. Now a normal stereo 
   soundcard can be used to hear both master and headphone
   output
 - Jack support added
-- Multiple playlist interface
+- ASIO support added
+- Improved playlist interface
 - Pitch display
 - State of currently "killed" frequency bands visible on 
   knobs 
+- Fix in calling sound interpolation methods
+- Adjust tempo by beat tapping
 
 * REQUIREMENTS *********************************************
 Mixxx is depends on the following libraries:
@@ -81,11 +83,10 @@ icon or typing mixxx at the prompt (Linux). On linux it is
 important to run the program as root (eg. by using the
 sudo command) to avoid cracks in the sound output.
 
-Mixxx can use any midi controller for input. More info 
-on the file format can be found on the home page. Also
-you can make your own skins for Mixxx. Take a look at the
-skin.xml file for each of the two skins provided if you want
-to make your own.
+Mixxx can use any midi controller for input. Also you can 
+make your own skins for Mixxx. Take a look at the skin.xml 
+file for each of the two skins provided if you want to make 
+your own.
 
 If you have any problems starting Mixxx, eg. after changeing
 options in the preference panel, you can reset the Mixxx
@@ -105,7 +106,7 @@ Configuration.txt file in this directory.
 If you are interested in joining the development team of
 Mixxx you are most welcome. Especially we are looking for
 people to help with adding support for various sound api's, 
-eg. ALSA, ASIO, Arts etc. Also we are interested in
+eg. native ALSA and Arts etc. Also we are interested in
 hearing about how you use Mixxx, what features you would 
 like, if you have used any special midi controllers,
 designed your own skin etc.

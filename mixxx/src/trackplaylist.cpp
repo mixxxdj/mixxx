@@ -121,11 +121,6 @@ void TrackPlaylist::addTrack(QString qLocation)
 */
 }
 
-void TrackPlaylist::removeTrack(TrackInfoObject *pTrack)
-{
-    m_qList.remove(pTrack);
-}
-
 void TrackPlaylist::activate(WTrackTable *pTable)
 {
     m_pTable = pTable;
@@ -150,14 +145,15 @@ void TrackPlaylist::deactivate()
 
     if (m_pTable)
     {
+        m_pTable->setNumRows(0);
+
         QPtrList<TrackInfoObject>::iterator it = m_qList.begin();
         while (it!=m_qList.end())
         {
-            qDebug("remove");
+//            qDebug("remove");
             (*it)->removeFromTrackTable();
             ++it;
         }
-        m_pTable->setNumRows(0);
     }
 
     m_pTable = 0;
@@ -246,8 +242,9 @@ void TrackPlaylist::addPath(QString qPath)
     }
 }
 
-void TrackPlaylist::slotDeleteTrack(int iRow)
+void TrackPlaylist::slotRemoveTrack(int iRow)
 {
+//    m_qList.remove(pTrack);
 }
 
 
