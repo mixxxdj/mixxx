@@ -2,28 +2,26 @@
 /* src/config.h.in.  Generated from configure.ac by autoheader.  */
 
 /* Set to 1 if the compile is GNU GCC. */
-#define COMPILER_IS_GCC 1
+#ifdef __WIN__
 
-/* Set to 1 to enable debugging. */
-#define ENABLE_DEBUG 0
+#define COMPILER_IS_GCC 0
+
+/* Set to 1 if compiling for Win32 */
+#define OS_IS_WIN32 1
+#endif
+
+#ifdef __UNIX__
+
+#define COMPILER_IS_GCC 1
 
 /* Major version of GCC or 3 otherwise. */
 #define GCC_MAJOR_VERSION 3
 
-/* Define to 1 if you have the `calloc' function. */
-#define HAVE_CALLOC 1
-
 /* Define to 1 if you have the <dlfcn.h> header file. */
 #define HAVE_DLFCN_H 1
 
-/* Define to 1 if you have the `free' function. */
-#define HAVE_FREE 1
-
 /* Define to 1 if you have the <inttypes.h> header file. */
 #define HAVE_INTTYPES_H 1
-
-/* Define to 1 if you have the `efence' library (-lefence). */
-/* #undef HAVE_LIBEFENCE */
 
 /* Define to 1 if you have the `fftw' library (-lfftw). */
 #define HAVE_LIBFFTW 1
@@ -40,11 +38,35 @@
 /* Define if you have C99's lrintf function. */
 #define HAVE_LRINTF 1
 
-/* Define to 1 if you have the `malloc' function. */
-#define HAVE_MALLOC 1
-
 /* Define to 1 if you have the `memcpy' function. */
 #define HAVE_MEMCPY 1
+
+/* Define to 1 if you have the <stdint.h> header file. */
+#define HAVE_STDINT_H 1
+
+/* Set to 1 if compiling for Win32 */
+#define OS_IS_WIN32 0
+
+#endif
+
+
+//------------------------------------
+
+/* Set to 1 to enable debugging. */
+#define ENABLE_DEBUG 0
+
+/* Define to 1 if you have the `calloc' function. */
+#define HAVE_CALLOC 1
+
+
+/* Define to 1 if you have the `free' function. */
+#define HAVE_FREE 1
+
+/* Define to 1 if you have the `efence' library (-lefence). */
+/* #undef HAVE_LIBEFENCE */
+
+/* Define to 1 if you have the `malloc' function. */
+#define HAVE_MALLOC 1
 
 /* Define to 1 if you have the `memmove' function. */
 #define HAVE_MEMMOVE 1
@@ -54,9 +76,6 @@
 
 /* Set to 1 if you have libsndfile. */
 #define HAVE_SNDFILE 0
-
-/* Define to 1 if you have the <stdint.h> header file. */
-#define HAVE_STDINT_H 1
 
 /* Define to 1 if you have the <stdlib.h> header file. */
 #define HAVE_STDLIB_H 1
@@ -76,8 +95,6 @@
 /* Define to 1 if you have the <unistd.h> header file. */
 #define HAVE_UNISTD_H 1
 
-/* Set to 1 if compiling for Win32 */
-#define OS_IS_WIN32 0
 
 /* Name of package */
 #define PACKAGE "libsamplerate"

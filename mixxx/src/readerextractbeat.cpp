@@ -65,14 +65,15 @@ ReaderExtractBeat::~ReaderExtractBeat()
 void ReaderExtractBeat::reset()
 {
     peaks.clear();
-    for (int i=0; i<READCHUNK_NO; i++)
+    int i;
+    for (i=0; i<READCHUNK_NO; i++)
         peakIt[i] = 0;    
-    for (int i=0; i<getBufferSize(); i++)
+    for (i=0; i<getBufferSize(); i++)
     {
         beatBuffer[i] = false;
         bpmBuffer[i] = -1.;
     }
-    for (int i=0; i<histSize; i++)
+    for (i=0; i<histSize; i++)
         hist[i]=0.;
     
 }
@@ -303,7 +304,7 @@ void *ReaderExtractBeat::processChunk(const int idx, const int start_idx, const 
     }
 
     // Down-write histogram
-    for (int i=0; i<histSize; i++)
+    for (i=0; i<histSize; i++)
         hist[i] *= 0.9999;
     
     // Find and print maximum

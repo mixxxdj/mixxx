@@ -69,7 +69,9 @@ EngineBuffer::EngineBuffer(MixxxApp *_mixxx, QAction *actionAudioBeatMark, DlgPl
     p2 = new ControlPotmeter(ConfigKey(group, "playposition"), 0., 1.);
     p2->setWidget(playcontrol->SliderPosition);
     playposSlider = new ControlEngine(p2);
+#ifdef __UNIX__
     playposSlider->setNotify(this,(void (EngineObject::*)(double))seek);
+#endif
 
     // BPM control
     ControlBeat *p4 = new ControlBeat(ConfigKey(group, "bpm"));
@@ -165,7 +167,6 @@ void EngineBuffer::seek(double change)
 void EngineBuffer::bpmChange(double bpm)
 {
     CSAMPLE filebpm = bpmbuffer[];
-
 
     baserate = baserate*(bpm/reader->->getBPM());
 }

@@ -41,7 +41,8 @@ void ControlBeat::slotSetPosition(int pos)
     if (elapsed<=maxInterval)    
     {
         // Move back in filter one sample
-        for (int i=1; i<filterLength; i++)
+        int i;
+		for (i=1; i<filterLength; i++)
             buffer[i-1] = buffer[i];
             
         buffer[filterLength-1] = 1000.*(60./elapsed);
@@ -49,7 +50,7 @@ void ControlBeat::slotSetPosition(int pos)
             buffer[filterLength-1] = maxBPM;
             
         value = 0.;
-        for (int i=0; i<filterLength; i++)
+        for (i=0; i<filterLength; i++)
             value += buffer[i];
         value /= filterLength;
     }
