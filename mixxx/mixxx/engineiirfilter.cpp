@@ -7,11 +7,13 @@ EngineIIRfilter::EngineIIRfilter(int potmeter_midi, int button_midi,
   //				     button_bit, midi);
   //connect(killbutton, SIGNAL(valueChanged(valueType)), this, SLOT(slotUpdate()));
 
-  filterpot = new ControlPotmeter("filterpot", potmeter_midi, midi,0,2);
+  filterpot = new ControlPotmeter("filterpot", potmeter_midi, midi,0,3);
   connect(filterpot, SIGNAL(valueChanged(FLOAT)), this, SLOT(slotUpdate()));
   coefs = _coefs;
   buffer = new CSAMPLE[MAX_BUFFER_LEN];
   gain = 1;
+  // Reset the yv's:
+  for (int i=0; i<8; i++) yv[i]=0;
 }
 
 EngineIIRfilter::~EngineIIRfilter() {
@@ -38,7 +40,7 @@ CSAMPLE *EngineIIRfilter::process(CSAMPLE *source, int buf_size) {
 	+ (coefs[11] * yv[6]) + ( coefs[12] * yv[7]);
     
     //qDebug("%f %f",source[i],gain*yv[8]);
-    buffer[i] = gain*yv[8];  //(gain-1)*yv[8];
+    buffer[i] = gain*yv[8];
   }
   return buffer;
 }
@@ -50,6 +52,6 @@ void EngineIIRfilter::slotUpdate() {
   //  gain = 0;
   //else
   gain = filterpot->getValue();
-  qDebug("IIRfilter gain: %f",gain);
+  //qDebug("IIRfilter gain: %f",gain);
 }
 

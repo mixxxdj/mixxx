@@ -11,7 +11,7 @@
         <rect>
             <x>0</x>
             <y>0</y>
-            <width>146</width>
+            <width>138</width>
             <height>310</height>
         </rect>
     </property>
@@ -82,30 +82,6 @@
             <property stdset="1">
                 <name>tickmarks</name>
                 <enum>Both</enum>
-            </property>
-        </widget>
-        <widget>
-            <class>QSlider</class>
-            <property stdset="1">
-                <name>name</name>
-                <cstring>SliderPosition</cstring>
-            </property>
-            <property stdset="1">
-                <name>geometry</name>
-                <rect>
-                    <x>120</x>
-                    <y>190</y>
-                    <width>16</width>
-                    <height>110</height>
-                </rect>
-            </property>
-            <property stdset="1">
-                <name>tracking</name>
-                <bool>false</bool>
-            </property>
-            <property stdset="1">
-                <name>orientation</name>
-                <enum>Vertical</enum>
             </property>
         </widget>
         <widget>
@@ -278,6 +254,54 @@
                     <width>32</width>
                     <height>32</height>
                 </rect>
+            </property>
+        </widget>
+        <widget>
+            <class>QRadioButton</class>
+            <property stdset="1">
+                <name>name</name>
+                <cstring>BulbClipping</cstring>
+            </property>
+            <property stdset="1">
+                <name>enabled</name>
+                <bool>true</bool>
+            </property>
+            <property stdset="1">
+                <name>geometry</name>
+                <rect>
+                    <x>50</x>
+                    <y>240</y>
+                    <width>50</width>
+                    <height>26</height>
+                </rect>
+            </property>
+            <property stdset="1">
+                <name>text</name>
+                <string>Clip</string>
+            </property>
+        </widget>
+        <widget>
+            <class>QSlider</class>
+            <property stdset="1">
+                <name>name</name>
+                <cstring>SliderPosition</cstring>
+            </property>
+            <property stdset="1">
+                <name>geometry</name>
+                <rect>
+                    <x>115</x>
+                    <y>185</y>
+                    <width>16</width>
+                    <height>110</height>
+                </rect>
+            </property>
+            <property stdset="1">
+                <name>tracking</name>
+                <bool>false</bool>
+            </property>
+            <property stdset="1">
+                <name>orientation</name>
+                <enum>Vertical</enum>
             </property>
         </widget>
     </widget>

@@ -20,7 +20,7 @@
 
 #include "engineobject.h"
 #include "engineiirfilter.h"
-#include "mixxxview.h"
+#include "dlgchannel.h"
 
 /**
   * Parallel processing of LP, BP and HP filters, and final mixing
@@ -31,7 +31,7 @@
 class EngineFilterLBH : public EngineObject  {
 	Q_OBJECT
 public:
-	EngineFilterLBH(MixxxView *view, MidiObject *midi);
+	EngineFilterLBH(DlgChannel *, MidiObject *midi);
 	~EngineFilterLBH();
 	CSAMPLE *process(CSAMPLE *source, int buf_size);
 private:
