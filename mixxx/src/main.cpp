@@ -29,7 +29,7 @@
 #include "portaudio.h"
 #include "mixxx.h"
 #include "qpixmap.h"
-// #include "qsplashscreen.h"
+#include "qsplashscreen.h"
 
 
 QApplication *a;
@@ -92,12 +92,10 @@ int main(int argc, char *argv[])
     a = new QApplication(argc, argv);
 
     // Show splash
-/*
-    QPixmap pixmap("splash.jpg");
-    QSplashScreen *splash = new QSplashScreen(pixmap);
-    splash->show();
-    splash->message("Loading...");
-*/
+    QPixmap pixmap("splash.png");
+    QSplashScreen *pSplash = new QSplashScreen(pixmap);
+    pSplash->show();
+    pSplash->message("Loading...",Qt::AlignLeft|Qt::AlignBottom);
 
     QTranslator tor( 0 );
     // set the location where your .qm files are in load() below as the last parameter instead of "."
@@ -117,12 +115,14 @@ int main(int argc, char *argv[])
     for (int i=0; i<argc; ++i)
         files += argv[i];
 
-    MixxxApp *mixxx=new MixxxApp(a, files);
+    MixxxApp *mixxx=new MixxxApp(a, files, pSplash);
     a->setMainWidget(mixxx);
 
     mixxx->show();
-//    splash->finish(mixxx);
-//    delete splash;
+    
+    pSplash->finish(mixxx);
+    delete pSplash;
+
     int result = a->exec();
     delete mixxx;
     return result;

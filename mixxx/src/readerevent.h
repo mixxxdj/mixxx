@@ -26,14 +26,18 @@
 
 class ReaderEvent : public QCustomEvent
 {
-public: 
-    ReaderEvent(int pos, int len);
+public:
+    ReaderEvent(int bpos, int blen, int flen, int srate);
     ~ReaderEvent();
-    int pos() const;
-    int len() const;
+    int bufferPos() const;
+    int bufferLen() const;
+    int fileLen() const;
+    int srate() const;
 private:
-    int position;
-    int length;
+    int bufferPosition;
+    int bufferLength;
+    int fileLength;
+    int sampleRate;
 };
 
 #endif

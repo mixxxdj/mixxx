@@ -57,7 +57,7 @@ void WTrackTableItem::paint(QPainter *p, const QColorGroup &cg, const QRect &cr,
     // last row is the sum row - we want to make it more visible by
     // using a red#9EFF75 background
     //g.setColor( QColorGroup::Text, QColor(0,0,0));
-    
+
     // Set row color
     if ((row()/2)*2 == row())
         g.setColor( QColorGroup::Base, kqRowColor1);
@@ -68,15 +68,15 @@ void WTrackTableItem::paint(QPainter *p, const QColorGroup &cg, const QRect &cr,
     if (col()==COL_BPM)
     {
         float scale = max(0., min(1., m_pTrackInfoObject->getBpmConfidence()/(float)1e10));
-        
+
         QColor conf;
-        conf.setRgb(kqBpmConfidenceColor1.red()+scale*(kqBpmConfidenceColor2.red()-kqBpmConfidenceColor1.red()),
-                    kqBpmConfidenceColor1.green()+scale*(kqBpmConfidenceColor2.green()-kqBpmConfidenceColor1.green()),
-                    kqBpmConfidenceColor1.blue()+scale*(kqBpmConfidenceColor2.blue()-kqBpmConfidenceColor1.blue()));
-        
+        conf.setRgb((int)(kqBpmConfidenceColor1.red()+scale*(kqBpmConfidenceColor2.red()-kqBpmConfidenceColor1.red())),
+                    (int)(kqBpmConfidenceColor1.green()+scale*(kqBpmConfidenceColor2.green()-kqBpmConfidenceColor1.green())),
+                    (int)(kqBpmConfidenceColor1.blue()+scale*(kqBpmConfidenceColor2.blue()-kqBpmConfidenceColor1.blue())));
+
         g.setColor(QColorGroup::Base, conf);
     }
-        
+
     QTableItem::paint( p, g, cr, selected);
 }
 /*
@@ -86,7 +86,7 @@ QString WTrackTableItem::key() const
 {
     static QString sResult;
     switch (m_eType) {
-    case typeText: 
+    case typeText:
         sResult = text();
         break;
     case typeNumber: case typeDuration:
@@ -117,7 +117,7 @@ int WTrackTableItem::alignment() const
 {
    static int a;
     switch (m_eType) {
-    case typeText: 
+    case typeText:
        a = Qt::AlignLeft;
         break;
     case typeNumber: case typeDuration:

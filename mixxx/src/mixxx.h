@@ -3,7 +3,7 @@
                              -------------------
     begin                : Mon Feb 18 09:48:17 CET 2002
     copyright            : (C) 2002 by Tue and Ken Haste Andersen
-    email                : 
+    email                :
  ***************************************************************************/
 
 /***************************************************************************
@@ -56,6 +56,8 @@ class TrackInfoObject;
 class PowerMate;
 class Joystick;
 class PlayerProxy;
+class WaveSummary;
+class QSplashScreen;
 
 /**
   * This Class is the base class for Mixxx. It sets up the main
@@ -69,7 +71,7 @@ class MixxxApp : public QMainWindow
 
   public:
     /** Construtor. files is a list of command line arguments */
-    MixxxApp(QApplication *app, QStringList files);
+    MixxxApp(QApplication *app, QStringList files, QSplashScreen *pSplash);
     /** destructor */
     ~MixxxApp();
     /** initializes all QActions of the application */
@@ -101,6 +103,8 @@ class MixxxApp : public QMainWindow
      * changing the view class.
      */
     MixxxView *view;
+    /** Pointer to waveform summary generator */
+    WaveSummary *m_pWaveSummary;
 
     QApplication *app;
     EngineObject *engine;
@@ -152,7 +156,7 @@ class MixxxApp : public QMainWindow
     QAction *playlistsImport;
     QAction **playlistsList;
     int m_iNoPlaylists;
-    
+
     QAction *optionsBeatMark;
     QAction *optionsFullScreen;
     QAction *optionsPreferences;
@@ -161,5 +165,5 @@ class MixxxApp : public QMainWindow
 
     QAction *helpAboutApp;
 };
-#endif 
+#endif
 

@@ -74,6 +74,7 @@
     <display>
       <staticmembers>false</staticmembers>
       <demanglenames>true</demanglenames>
+      <outputradix>10</outputradix>
     </display>
   </kdevdebugger>
   <kdevfilecreate>
@@ -103,6 +104,7 @@
       <dontact>false</dontact>
       <makebin/>
       <envvars/>
+      <prio>0</prio>
     </make>
   </kdevtrollproject>
   <cppsupportpart>
@@ -124,7 +126,9 @@
       <argumentsHintDelay>400</argumentsHintDelay>
       <headerCompletionDelay>250</headerCompletionDelay>
     </codecompletion>
-    <references/>
+    <references>
+      <pcs>Qt</pcs>
+    </references>
   </kdevcppsupport>
   <kdevcvs>
     <cvsoptions>-f</cvsoptions>

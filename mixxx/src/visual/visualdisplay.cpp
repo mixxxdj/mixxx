@@ -217,8 +217,6 @@ void VisualDisplay::setSignalScaleHeight(double scale)
 
 void VisualDisplay::setSignalScaleLength(double scale)
 {
-
-
     signalScaleLength = 1./(1.+(m_pControlRateDir->get()*m_pControlRateRange->get()*scale));
     //qDebug("scale input %f, actual %f",scale, signalScaleLength);
 }

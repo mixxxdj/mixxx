@@ -46,6 +46,14 @@ VisualChannel::~VisualChannel()
     siChannelTotal--;
 }
 
+void VisualChannel::setupBuffer()
+{
+    // Call each channel associated
+//    VisualBuffer *b;
+//    for (b=m_qlListBuffer.first(); b; b=m_qlListBuffer.next())
+//        b->slotSetupBuffer();
+}
+
 VisualBuffer *VisualChannel::add(ReaderExtract *pReaderExtract, EngineBuffer *pEngineBuffer)
 {
     VisualBuffer *b = 0;
@@ -70,7 +78,7 @@ VisualBuffer *VisualChannel::add(ReaderExtract *pReaderExtract, EngineBuffer *pE
     }
 
     Q_ASSERT(b);
-    
+
     // And a corresponding display. If the display is the first, also draw box
     // ADD GROUP INFO *****************
     VisualDisplay *d;

@@ -27,6 +27,7 @@ class MixxxView;
 class WTrackTable;
 class WTreeList;
 class ControlObjectThreadMain;
+class WaveSummary;
 
 // This define sets the version of the tracklist. If any code is changed or
 // bugfixed, this number should be increased. If TRACK_VERSION is larger
@@ -41,7 +42,7 @@ class Track : public QObject
 {
     Q_OBJECT
 public:
-    Track(QString location, MixxxView *pView, EngineBuffer *pBuffer1, EngineBuffer *pBuffer2);
+    Track(QString location, MixxxView *pView, EngineBuffer *pBuffer1, EngineBuffer *pBuffer2, WaveSummary *pWaveSummary);
     ~Track();
     /** Read xml file */
     void readXML(QString location);
@@ -51,7 +52,7 @@ public:
     TrackCollection *getTrackCollection();
     /** Force an update of menu and tree view */
     void updatePlaylistViews();
-    
+
 public slots:
     /** Decode playlist drops to WTrackTable, and loads corresponding playlist */
     void slotDrop(QDropEvent *e);
@@ -122,6 +123,8 @@ private:
     ControlObjectThreadMain *m_pEndOfTrackModeCh1, *m_pEndOfTrackModeCh2;
     /** Pointer to ControlObject for play buttons */
     ControlObjectThreadMain *m_pPlayButtonCh1, *m_pPlayButtonCh2;
+    /** Pointer to waveform summary generator */
+    WaveSummary *m_pWaveSummary;
 };
 
 #endif

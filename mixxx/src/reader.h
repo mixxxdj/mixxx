@@ -28,7 +28,7 @@
 #include "trackinfoobject.h"
 
 class ReaderExtractWave;
-class ReaderExtractBeat;              
+class ReaderExtractBeat;
 class EngineBuffer;
 class VisualChannel;
 
@@ -43,7 +43,7 @@ class VisualChannel;
 
 class Reader: public QThread
 {
-public: 
+public:
     Reader(EngineBuffer *_enginebuffer, QMutex *_pause);
     ~Reader();
 
@@ -85,6 +85,13 @@ public:
     /** Set rate. This method must only be called when holding the enginelock
       * mutex */
     void setRate(double dRate);
+    /** Get beat first. This method must only be called when holding the enginelock
+      * mutex */
+    double getBeatFirst();
+    /** Get beat interval in samples. This method must only be called when holding the enginelock
+      * mutex */
+    double getBeatInterval();
+
 
 private:
     /** Main loop of the thread */

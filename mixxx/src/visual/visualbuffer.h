@@ -65,15 +65,12 @@ public:
     void setColorFg(float r, float g, float b);
     void setColorBg(float r, float g, float b);
 
+public slots:
+    /** Update resample factor based on information from ReaderExtract object */
+    void slotSetupBuffer(int bufferlen, int srate);
+
 protected:
-    /** Memory Allocation Routine.
-      *  @param size    The size (#floats) of the vertex array
-      *  @return        A pointer to the allocated vertex array.
-      */
-    GLfloat *allocate(int iSize);
-    /** Auxiliary Method.
-      * This is used to validate the error state of openGL.
-      */
+    /** This is used to validate the error state of openGL. */
     void validate();
     /** Pointer to the actual buffer, an openGL vertex array */
     GLfloat *m_pBuffer;
@@ -85,11 +82,6 @@ protected:
     int m_iSourceLen;
     /** Resample factor determining the factor to reduce the incomming signal with */
     CSAMPLE m_fResampleFactor;
-    /** Display rate. Rate at which this buffer represents. The x axis values of this buffer correspond to samples
-      * at MAXDISPLAYRATE positions */
-    CSAMPLE m_fDisplayRate;
-    /** Factor between this buffers sample rate, and MAXDISPLAYRATE */
-    CSAMPLE m_fDisplayFactor;
     /** Factor used in convesion of position and length between ReaderExtractWave and
       * the associated ReaderExtract position and length*/
     CSAMPLE m_fReaderExtractFactor;

@@ -55,7 +55,7 @@ void ProbabilityVector::add(float fInterval, float fValue)
 
         for (float j=fStart; j<fEnd; j++)
         {
-            int idx = round((fCenter+j));
+            int idx = (int)round((fCenter+j));
             m_pHist[idx] += exp((-0.5*j*j)/(0.5*(CSAMPLE)kiGaussWidth))*fValue; //*fHysterisisFactor;
             if (m_pHist[idx]>m_pHist[m_iCurrMaxBin])
             {

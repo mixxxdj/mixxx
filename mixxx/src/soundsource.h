@@ -30,7 +30,7 @@ class TrackInfoObject;
 /*
   Base class for sound sources.
 */
-class SoundSource 
+class SoundSource
 {
 public:
     SoundSource(QString qFilename);
@@ -38,7 +38,7 @@ public:
     virtual long seek(long) = 0;
     virtual unsigned read(unsigned long size, const SAMPLE*) = 0;
     virtual long unsigned length() = 0;
-    static int ParseHeader( TrackInfoObject * );
+    static int ParseHeader(TrackInfoObject *);
     virtual int getSrate();
     /** Returns filename */
     virtual QString getFilename();

@@ -3,7 +3,7 @@
                              -------------------
     begin                : Mon Feb 18 09:48:17 CET 2002
     copyright            : (C) 2002 by Tue and Ken Haste Andersen
-    email                : 
+    email                :
  ***************************************************************************/
 
 /***************************************************************************
@@ -34,6 +34,7 @@ class WTreeView;
 class WDisplay;
 class WKnob;
 class WVisual;
+class WOverview;
 class WNumberPos;
 class QDomNode;
 class QSplitter;
@@ -71,6 +72,8 @@ public:
     bool m_bZoom;
     /** Pointer to splitter widget. May be used to split tree and track list */
     QSplitter *m_pSplitter;
+    /** Pointer to overview displays */
+    WOverview *m_pOverviewCh1, *m_pOverviewCh2;
 
 private:
     // True if m_pVisualChX is instantiated as WVisualWaveform

@@ -51,7 +51,7 @@ public:
     int getChannels();
     int getBufferSize();
     ReaderExtractBeat *getExtractBeat();
-    void *processChunk(const int, const int, const int, bool);
+    void *processChunk(const int, const int, const int, bool, const long signed int);
     /** Read a new chunk into the readbuffer: */
     void getchunk(CSAMPLE rate);
     /** Seek to a new play position. Returns positon actually seeked to */
@@ -81,6 +81,7 @@ private:
     CSAMPLE *read_buffer;
     /** Pointer to FFT extractor */
     ReaderExtractHFC *readerhfc;
+    /** Pointer to beat extractor */
     ReaderExtractBeat *readerbeat;
 };
 

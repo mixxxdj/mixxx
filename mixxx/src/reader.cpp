@@ -19,6 +19,7 @@
 
 #include "enginebuffer.h"
 #include "readerextractwave.h"
+#include "readerextractbeat.h"
 #include "rtthread.h"
 #include "visual/visualchannel.h"
 
@@ -135,6 +136,16 @@ void Reader::setRate(double dRate)
     m_dRate = dRate;
 }
 
+double Reader::getBeatFirst()
+{
+    return getBeatPtr()->getFirstBeat();
+}
+
+double Reader::getBeatInterval()
+{
+    return getBeatPtr()->getBeatInterval()*readerwave->getRate()*2.;
+}
+
 bool Reader::tryLock()
 {
     return enginelock.tryLock();
@@ -169,7 +180,7 @@ void Reader::newtrack()
     if (pTrack==0)
     {
         pause->unlock();
-    return;
+        return;
     }
 
     readerwave->newSource(pTrack);
@@ -211,6 +222,8 @@ void Reader::run()
         if (!requeststate)
             seek();
 
+// qDebug("read");
+
         // Read a new chunk:
         readerwave->getchunk(m_dRate);
     }
@@ -246,10 +259,19 @@ void Reader::seek()
         return;
 
     // Set playpos
-    enginebuffer->setNewPlaypos(new_playpos);
+//    enginebuffer->setNewPlaypos(new_playpos);
 
     new_playpos = readerwave->seek((long int)new_playpos);
-    wake();
 
+/*
+    // Perform seek
+    new_playpos = readerwave->seek((long int)new_playpos);
+
+    // Read a new chunk:
+    readerwave->getchunk(m_dRate);
+
+    // Set playpos
+    enginebuffer->setNewPlaypos(new_playpos);
+*/
 }
 

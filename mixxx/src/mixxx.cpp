@@ -29,6 +29,7 @@
 #include <qlabel.h>
 #include <qdir.h>
 #include <qptrlist.h>
+#include <qsplashscreen.h>
 
 #include "wknob.h"
 #include "wslider.h"
@@ -50,6 +51,7 @@
 #include "mixxxsocketserver.h"
 #include "mixxxmenuplaylists.h"
 #include "wtreeitem.h"
+#include "wavesummary.h"
 
 #ifdef __LINUX__
 #include "powermatelinux.h"
@@ -84,7 +86,7 @@
 
 #include "playerproxy.h"
 
-MixxxApp::MixxxApp(QApplication *a, QStringList files)
+MixxxApp::MixxxApp(QApplication *a, QStringList files, QSplashScreen *pSplash)
 {
     app = a;
 
@@ -138,6 +140,7 @@ MixxxApp::MixxxApp(QApplication *a, QStringList files)
         qConfigPath.append("/");
     config->set(ConfigKey("[Config]","Path"), ConfigValue(qConfigPath));
 
+    pSplash->message("Initializing control devices...",Qt::AlignLeft|Qt::AlignBottom);
 
 
     // Open midi
@@ -243,6 +246,8 @@ MixxxApp::MixxxApp(QApplication *a, QStringList files)
         }
     }
 
+    pSplash->message("Setting up sound engine...",Qt::AlignLeft|Qt::AlignBottom);
+    
     // Init buffers/readers
     buffer1 = new EngineBuffer(powermate1, "[Channel1]");
     buffer2 = new EngineBuffer(powermate2, "[Channel2]");
@@ -263,6 +268,8 @@ MixxxApp::MixxxApp(QApplication *a, QStringList files)
     Player::setMaster(master);
     player = new PlayerProxy(config);
 
+    pSplash->message("Loading skin...",Qt::AlignLeft|Qt::AlignBottom);
+    
     // Find path of skin
     QString qSkinPath(qConfigPath);
     qSkinPath.append("skins/");
@@ -335,8 +342,13 @@ MixxxApp::MixxxApp(QApplication *a, QStringList files)
         config->Save();
     }
 
+    // Initialize wavefrom summary generation
+    m_pWaveSummary = new WaveSummary();
+
+    pSplash->message("Loading song database...",Qt::AlignLeft|Qt::AlignBottom);
+
     // Initialize track object:
-    m_pTrack = new Track(config->getValueString(ConfigKey("[Playlist]","Listfile")), view, buffer1, buffer2);
+    m_pTrack = new Track(config->getValueString(ConfigKey("[Playlist]","Listfile")), view, buffer1, buffer2, m_pWaveSummary);
     WTreeItem::setTrack(m_pTrack);
 
     // Set up drag and drop to player visuals
@@ -344,6 +356,13 @@ MixxxApp::MixxxApp(QApplication *a, QStringList files)
         connect(view->m_pVisualCh1, SIGNAL(trackDropped(QString)), m_pTrack, SLOT(slotLoadPlayer1(QString)));
     if (view->m_pVisualCh2)
         connect(view->m_pVisualCh2, SIGNAL(trackDropped(QString)), m_pTrack, SLOT(slotLoadPlayer2(QString)));
+
+    // Ensure that visual receive updates when new tracks are loaded
+    if (view->m_pVisualCh1)
+        connect(m_pTrack, SIGNAL(newTrackPlayer1(TrackInfoObject *)), view->m_pVisualCh1, SLOT(slotNewTrack()));
+    if (view->m_pVisualCh2)
+        connect(m_pTrack, SIGNAL(newTrackPlayer2(TrackInfoObject *)), view->m_pVisualCh2, SLOT(slotNewTrack()));
+
 
 
     // Setup state of End of track controls from config database
@@ -598,8 +617,8 @@ void MixxxApp::slotHelpAbout()
                          "<tr><td>Beat tracking:</td><td>Tue Haste Andersen</td></tr>"
                          "<tr><td></td><td>Kristoffer Jensen</td></tr>"
                          "<tr><td>Playlist import:</td><td>Ingo Kossyk</td></tr>"
-			 "<tr><td>Beat phase sync:</td><td>Torben Hohn</td></tr>"
-			 "<tr><td>ALSA support:</td><td>Peter Chang</td></tr>"
+             "<tr><td>Beat phase sync:</td><td>Torben Hohn</td></tr>"
+             "<tr><td>ALSA support:</td><td>Peter Chang</td></tr>"
                          "<tr><td>Other contributions:</td><td>Lukas Zapletal</td></tr>"
                          "<tr><td></td><td>Jeremie Zimmermann</td></tr>"
                          "<tr><td></td><td>Gianluca Romanin</td></tr>"

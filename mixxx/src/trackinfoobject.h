@@ -19,6 +19,9 @@
 #define TRACKINFOOBJECT_H
 
 #include <qobject.h>
+#include <qmemarray.h>
+#include <qvaluelist.h>
+#include <qmutex.h>
 
 class QString;
 class QDomElement;
@@ -26,6 +29,7 @@ class QDomDocument;
 class QDomNode;
 class WTrackTable;
 class WTrackTableItem;
+class WOverview;
 
 
 class TrackInfoObject : public QObject
@@ -43,11 +47,6 @@ public:
         exists */
     bool checkFileExists();
     void writeToXML( QDomDocument &, QDomElement & );
-    /** Utility function to get a node from an xml file: */
-    static QDomNode selectNode( const QDomNode &, const QString );
-    /** Utility function to get a the text of an element in a node from an xml file: */
-    static QString selectNodeStr( const QDomNode &, const QString );
-
     /** Insert at the values in a WTrackTable at a given row */
     void insertInTrackTableRow(WTrackTable *pTableTrack, int iRow);
     /** Reset pointers to table cells */
@@ -82,6 +81,10 @@ public:
     QString getBitrateStr();
     /** Sets the bitrate */
     void setBitrate(int);
+    /** Sets first beat pos */
+    void setBeatFirst(float);
+    /** Get first beat pos */
+    float getBeatFirst();
     /** Retruns the length of the file in bytes */
     int getLength();
     /** Output a formatted string with all the info */
@@ -114,10 +117,19 @@ public:
     int getId();
     /** Set id */
     void setId(int iId);
+    /** Set pointer to waveform summary */
+    void setWaveSummary(QMemArray<char> *pWave, QValueList<int> *pSegmentation);
+    /** Returns a pointer to waveform summary */
+    QMemArray<char> *getWaveSummary();
+    /** Returns a pointer to segmentation summary */
+    QValueList<int> *getSegmentationSummary();
     /** Return the next track as listed in WTrackTable */
     TrackInfoObject *getNext();
+    /** Set corresponding overview widget */
+    void setOverviewWidget(WOverview *p);
 
-
+protected:
+    bool eventFilter(QObject *o, QEvent *e);
 private:
     /** Method for parsing information from knowing only the file name.
         It assumes that the filename is written like: "artist - trackname.xxx" */
@@ -148,11 +160,16 @@ private:
     float m_fBpm;
     /** Confidence measure of BPM */
     float m_fBpmConfidence;
+    /** Position of first beat in song */
+    float m_fBeatFirst;
     /** Score. Reflects the relative number of times the track has been played */
-    float m_iScore;
+    int m_iScore;
     /** Id. Unique ID of track */
     int m_iId;
-
+    /** Pointer to summary wave info */
+    QMemArray<char> *m_pWave;
+    /** Pointer to summary segmentation */
+    QValueList<int> *m_pSegmentation;
     /** WTrackTableItems are representations of the values actually shown in the WTrackTable */
     WTrackTableItem *m_pTableItemScore, *m_pTableItemTitle, *m_pTableItemArtist, *m_pTableItemComment, *m_pTableItemType,
                     *m_pTableItemDuration, *m_pTableItemBpm, *m_pTableItemBitrate;
@@ -161,6 +178,11 @@ private:
 
     /** Maximum number of times any one track have been played */
     static int siMaxTimesPlayed;
+
+    /** Mutex protecting access to object */
+    QMutex m_qMutex;
+    /** Corresponding WOverview widget */
+    WOverview *m_pOverviewWidget;
 };
 
 #endif

@@ -33,7 +33,7 @@ class WindowKaiser;
 
 class ReaderExtractHFC : public ReaderExtract
 {
-public: 
+public:
     ReaderExtractHFC(ReaderExtract *input, EngineBuffer *pEngineBuffer, int frameSize, int frameStep);
     ~ReaderExtractHFC();
     void reset();
@@ -42,10 +42,10 @@ public:
     int getRate();
     int getChannels();
     int getBufferSize();
-    void *processChunk(const int idx, const int start_idx, const int end_idx, bool);
+    void *processChunk(const int idx, const int start_idx, const int end_idx, bool, const long signed int);
 private:
     void processFftFrame(int idx);
-    
+
     int frameNo;
     int framePerChunk, framePerFrameSize;
     int frameSize, frameStep;
