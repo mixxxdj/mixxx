@@ -74,8 +74,6 @@ public:
 
     CSAMPLE *update_visual();
     const char *getGroup();
-    /** Get the relative playpos in a buffer sampled at Srate hz*/
-    int getPlaypos(int Srate);
     /** Set rate change when temp rate button is pressed */
     static void setTemp(double v);
     /** Set rate change when temp rate small button is pressed */
@@ -138,11 +136,11 @@ private:
     /** Is true if a rate temp button is pressed */
     double m_bTempPress;
 
-    ControlEngine *playButton, *rateSlider, *wheel, *playposSlider, *bufferposSlider, *audioBeatMark;
+    ControlEngine *playButton, *rateSlider, *wheel, *playposSlider, *bufferposSlider, *absPlaypos, *audioBeatMark;
     ControlEngine *buttonCueSet, *buttonCueGoto, *buttonCuePreview, *m_pRateDir;
     ControlEngine *buttonRateTempDown, *buttonRateTempDownSmall, *buttonRateTempUp, *buttonRateTempUpSmall;
     ControlEngine *buttonRatePermDown, *buttonRatePermDownSmall, *buttonRatePermUp, *buttonRatePermUpSmall;
-    ControlEngine *buttonBeatSync;
+    ControlEngine *buttonBeatSync, *cuePoint;
     /** Control used to signal when at end of file */
     ControlEngine *m_pTrackEnd, *m_pTrackEndMode;
     /** Control used to input desired playback BPM */

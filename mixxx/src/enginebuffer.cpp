@@ -91,6 +91,10 @@ EngineBuffer::EngineBuffer(PowerMate *_powermate, const char *_group)
     buttonCueGoto = new ControlEngine(p);
     connect(buttonCueGoto, SIGNAL(valueChanged(double)), this, SLOT(slotControlCueGoto(double)));
 
+    // Cue point
+    ControlObject *p5 = new ControlObject(ConfigKey(group, "cue_point"));
+    cuePoint = new ControlEngine(p5);
+    
     // Cue preview button:
     p = new ControlPushButton(ConfigKey(group, "cue_preview"));
     buttonCuePreview = new ControlEngine(p);
@@ -101,7 +105,7 @@ EngineBuffer::EngineBuffer(PowerMate *_powermate, const char *_group)
     rateSlider = new ControlEngine(p2);
 
     // Rate display
-    ControlObject *p5 = new ControlObject(ConfigKey(group, "rateDisplay"));
+    p5 = new ControlObject(ConfigKey(group, "rateDisplay"));
     ControlObject::connectControls(ConfigKey(group, "rate"), ConfigKey(group, "rateDisplay"));
 
     // Permanent rate-change buttons
@@ -144,6 +148,10 @@ EngineBuffer::EngineBuffer(PowerMate *_powermate, const char *_group)
     // Potmeter used to communicate bufferpos_play to GUI thread
     ControlPotmeter *controlbufferpos = new ControlPotmeter(ConfigKey(group, "bufferplayposition"), 0., READBUFFERSIZE);
     bufferposSlider = new ControlEngine(controlbufferpos);
+
+    // Control used to communicate absolute playpos to GUI thread
+    ControlObject *controlabsplaypos = new ControlObject(ConfigKey(group, "absplayposition"));
+    absPlaypos = new ControlEngine(controlabsplaypos);
 
     // m_pTrackEnd is used to signal when at end of file during playback
     p5 = new ControlObject(ConfigKey(group, "TrackEnd"));
@@ -214,6 +222,7 @@ EngineBuffer::~EngineBuffer()
     delete [] buffer;
     delete scale;
     delete bufferposSlider;
+    delete absPlaypos;
     delete m_pTrackEnd;
     delete reader;
 }
@@ -282,6 +291,7 @@ void EngineBuffer::setNewPlaypos(double newpos)
 
     // Update bufferposSlider
     bufferposSlider->set((CSAMPLE)bufferpos_play);
+    absPlaypos->set(filepos_play);
 
     // Ensures that the playpos slider gets updated in next process call
     m_iSamplesCalculated = 1000000;
@@ -297,11 +307,6 @@ const char *EngineBuffer::getGroup()
 float EngineBuffer::getRate()
 {
     return rateSlider->get();
-}
-
-int EngineBuffer::getPlaypos(int) // int Srate
-{
-    return 0; //(int)((CSAMPLE)visualPlaypos.read()/(2.*(CSAMPLE)file_srate/(CSAMPLE)Srate));
 }
 
 void EngineBuffer::setTemp(double v)
@@ -356,6 +361,7 @@ void EngineBuffer::slotControlCueSet(double)
     if (!even((int)cue))
         cue--;
     reader->f_dCuePoint = cue;
+    cuePoint->set(cue);
 }
 
 // Goto the cue point:
@@ -859,6 +865,7 @@ CSAMPLE *EngineBuffer::process(const CSAMPLE *, const int buf_size)
 
             // Update bufferposSlider
             bufferposSlider->set((CSAMPLE)bufferpos_play);
+            absPlaypos->set(filepos_play);
         }
 
         //qDebug("filepos_play %f, len %i, back %i, play %f",filepos_play,file_length_old, backwards, playButton->get());

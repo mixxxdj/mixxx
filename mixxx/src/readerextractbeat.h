@@ -110,7 +110,6 @@ private:
     /** Pointer to TrackInfoObject of open file */
     TrackInfoObject *m_pTrack;
 
-
 #ifdef __GNUPLOT__
     /** Pointer to gnuplot interface */
     plot_t *gnuplot_bpm;

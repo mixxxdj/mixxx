@@ -37,7 +37,7 @@
 ReaderExtractWave::ReaderExtractWave(Reader *pReader) : ReaderExtract(0, "signal")
 {
     m_pReader = pReader;
-    
+
     // Allocate temporary buffer
     temp = new SAMPLE[READCHUNKSIZE*2];
 
@@ -217,7 +217,7 @@ ReaderExtractBeat *ReaderExtractWave::getExtractBeat()
 {
     return readerbeat;
 }
-    
+
 void *ReaderExtractWave::processChunk(const int, const int, const int, bool)
 {
     return 0;
@@ -378,6 +378,18 @@ void ReaderExtractWave::getchunk(CSAMPLE rate)
     readerhfc->processChunk(chunkCurr, chunkStart, chunkEnd, backwards);
     readerbeat->processChunk(chunkCurr, chunkStart, chunkEnd, backwards);
 #endif
+
+    // This is really a hack. To display a cue point the value in the beat vector is set below zero.
+    // A seperate buffer should be used for cue points in the future.
+/*
+    if (m_pReader->f_dCuePoint>filepos_start && m_pReader->f_dCuePoint<filepos_end)
+    {
+        int idx = (float)readerbeat->getBufferSize()/(float)(filepos_end-filepos_start)*m_pReader->f_dCuePoint;
+        CSAMPLE *p = (CSAMPLE *)readerbeat->getBasePtr();
+        p[idx] = -1.;
+    }
+*/
+
     m_pReader->unlock();
 }
 

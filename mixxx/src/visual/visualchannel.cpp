@@ -67,7 +67,7 @@ VisualBuffer *VisualChannel::add(ReaderExtract *pReaderExtract)
     else if (pReaderExtract->getVisualDataType()=="marks")
     {
         // Construct a new buffer
-        b = new VisualBufferMarks(pReaderExtract, m_pPlaypos);
+        b = new VisualBufferMarks(pReaderExtract, m_pPlaypos, group);
         b->setColorFg(m_fColorBeatR, m_fColorBeatG, m_fColorBeatB);
         b->setColorBg(m_fColorBackR, m_fColorBackG, m_fColorBackB);
     }

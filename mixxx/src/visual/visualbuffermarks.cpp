@@ -17,20 +17,24 @@
 
 #include "visualbuffermarks.h"
 #include "../readerextract.h"
+#include "../controlpotmeter.h"
+#include "../controlobject.h"
 
-VisualBufferMarks::VisualBufferMarks(ReaderExtract *pReaderExtract, ControlPotmeter *pPlaypos) : VisualBuffer(pReaderExtract, pPlaypos)
+VisualBufferMarks::VisualBufferMarks(ReaderExtract *pReaderExtract, ControlPotmeter *pPlaypos, const char *group) : VisualBuffer(pReaderExtract, pPlaypos)
 {
+    m_pCuePoint = ControlObject::getControl(ConfigKey(group, "cue_point"));
+    m_pAbsPlaypos = ControlObject::getControl(ConfigKey(group, "absplayposition"));
 //    qDebug("marks: resampleFactor %f, displayRate %f, displayFactor %f, readerExtractFactor %f", m_fResampleFactor, m_fDisplayRate,m_fDisplayFactor, m_fReaderExtractFactor);
 }
 
 VisualBufferMarks::~VisualBufferMarks()
 {
 }
-                                                                                   
+
 void VisualBufferMarks::update(int iPos, int iLen)
 {
 //    qDebug("mark upd pos %i, len %i",iPos,iLen);
-    
+
     CSAMPLE *pSource = &m_pSource[iPos];
     GLfloat *pDest = &m_pBuffer[iPos*3];
 
@@ -53,6 +57,22 @@ void VisualBufferMarks::update(int iPos, int iLen)
             *pDest++;
         }
     }
+
+    // Find index in buffer where cue point should be displayed. Is set to -1 if cue point is
+    // currently not in the visible buffer
+    m_iCuePosition = -1;
+
+    if (((fabs(m_pCuePoint->getValue()-m_pAbsPlaypos->getValue())/m_fReaderExtractFactor)/m_fResampleFactor)<(float)m_iDisplayLen/2.f)
+    {
+        //qDebug("cue %f, play %f",m_pCuePoint->getValue(),m_pAbsPlaypos->getValue());
+        float fCuediff = m_pAbsPlaypos->getValue()-m_pCuePoint->getValue();
+        float fCuePos = m_pPlaypos->getValue()-fCuediff;
+        fCuePos = (fCuePos/m_fReaderExtractFactor)/m_fResampleFactor;
+        while (fCuePos<0)
+            fCuePos += (float)m_iLen;
+        m_iCuePosition = (int)fCuePos;
+    }
+    else
 }
 
 void VisualBufferMarks::draw(GLfloat *p, int iLen, float xscale)
@@ -60,20 +80,34 @@ void VisualBufferMarks::draw(GLfloat *p, int iLen, float xscale)
 //    glDrawArrays(GL_LINE_STRIP,0,iLen);
 
     // Ensures constant width of beat marks regardles for scaling
-    float kfWidth = 1.*(1./xscale);
+    float kfWidthBeat = 1.*(1./xscale);
+    float kfWidthCue =  5.*(1./xscale);
 
     for (int i=0; i<iLen*3; i+=3)
     {
-        if (p[i+1]!=0.)
+        if (m_iCuePosition!=-1 && p[i]==m_iCuePosition)
         {
-/*
+            // Cue point
+            float a[4];
+            a[0] = m_materialFg.ambient[0];
+            a[1] = m_materialFg.ambient[1];
+            a[2] = m_materialFg.ambient[2];
+            a[3] = m_materialFg.ambient[3];
+            glMaterialfv(GL_FRONT_AND_BACK,GL_AMBIENT,a);
+
             glBegin(GL_POLYGON);
-            glVertex3f(p[i]-kfWidth,-1.  ,0.);
-            glVertex3f(p[i]+kfWidth,-1.  ,0.);
-            glVertex3f(p[i]+kfWidth,1.,0.);
-            glVertex3f(p[i]-kfWidth,1.,0.);
+            glVertex3f(p[i], 0.8f,0.);
+            glVertex3f(p[i]+kfWidthCue, 1.0f,0.);
+            glVertex3f(p[i]-kfWidthCue, 1.0f,0.);
             glEnd();
-*/
+            glBegin(GL_POLYGON);
+            glVertex3f(p[i]-kfWidthCue,-1.  ,0.);
+            glVertex3f(p[i]+kfWidthCue,-1.  ,0.);
+            glVertex3f(p[i], -0.8f,0.);
+            glEnd();
+        }
+        else if (p[i+1]!=0.)
+        {
             // Color is defined from confidence (between -0.2 and 0.3)
             //float v = 1.-(0.1+max(-0.2,min(p[i+1],0.3)))/0.5;
 
@@ -88,16 +122,16 @@ void VisualBufferMarks::draw(GLfloat *p, int iLen, float xscale)
             glMaterialfv(GL_FRONT_AND_BACK,GL_AMBIENT,a);
 
             glBegin(GL_POLYGON);
-            glVertex3f(p[i]-kfWidth,-1.  ,0.);
-            glVertex3f(p[i]+kfWidth,-1.  ,0.);
-            glVertex3f(p[i]+kfWidth,-0.8f,0.);
-            glVertex3f(p[i]-kfWidth,-0.8f,0.);
+            glVertex3f(p[i]-kfWidthBeat,-1.  ,0.);
+            glVertex3f(p[i]+kfWidthBeat,-1.  ,0.);
+            glVertex3f(p[i]+kfWidthBeat,-0.8f,0.);
+            glVertex3f(p[i]-kfWidthBeat,-0.8f,0.);
             glEnd();
             glBegin(GL_POLYGON);
-            glVertex3f(p[i]-kfWidth, 0.8f,0.);
-            glVertex3f(p[i]+kfWidth, 0.8f,0.);
-            glVertex3f(p[i]+kfWidth, 1.0f,0.);
-            glVertex3f(p[i]-kfWidth, 1.0f,0.);
+            glVertex3f(p[i]-kfWidthBeat, 0.8f,0.);
+            glVertex3f(p[i]+kfWidthBeat, 0.8f,0.);
+            glVertex3f(p[i]+kfWidthBeat, 1.0f,0.);
+            glVertex3f(p[i]-kfWidthBeat, 1.0f,0.);
             glEnd();
 
         }
