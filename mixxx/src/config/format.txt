@@ -8,4 +8,8 @@ For each group follows a number of lines, one for each control, eg.:
 
 crossfader <midi no> [<bit mask>] [ch <channel no>]
 
+ch indicates a channel number, between 1 and 16, if omitted channel 1 is 
+assumed. 
+i
+
 That's it!

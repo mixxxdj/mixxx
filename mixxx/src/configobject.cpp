@@ -20,35 +20,10 @@
 ConfigObject::ConfigObject()
 {
     list.setAutoDelete(TRUE);
-
-    // Number of midi channels in use
-    midiChannelsNo = 0;
 }
 
 ConfigObject::~ConfigObject()
 {
-}
-
-void ConfigObject::addMidiChannel(int ch)
-{
-    if (midiChannelsNo<MAX_MIDI_CHANNELS)
-    {
-        if (!midiChannelInUse(ch))
-        {
-            midiChannels[midiChannelsNo]=ch;
-            midiChannelsNo++;
-        }
-    } else
-        qDebug("Maximum number of midi channels buffer reached. Implement deallocation!");
-}
-
-bool ConfigObject::midiChannelInUse(int ch)
-{
-    for (int i=0; i<midiChannelsNo; i++)
-        if (midiChannels[i] == ch)
-            return true;
-
-    return false;
 }
 
 ConfigObject::ConfigOption *ConfigObject::set(ConfigKey *k, ConfigValue *v)
@@ -61,7 +36,6 @@ ConfigObject::ConfigOption *ConfigObject::set(ConfigKey *k, ConfigValue *v)
             it->val->midino = v->midino;      // Should be done smarter using object copying
             it->val->midimask = v->midimask;
             it->val->midichannel = v->midichannel;
-            addMidiChannel(v->midichannel);
             return it;
         }
 
@@ -69,7 +43,6 @@ ConfigObject::ConfigOption *ConfigObject::set(ConfigKey *k, ConfigValue *v)
     ConfigObject::ConfigKey *key = new ConfigObject::ConfigKey(k->group, k->control);
     it = new ConfigObject::ConfigOption(key, new ConfigObject::ConfigValue(v->midino, v->midimask, v->midichannel));
     list.append(it);
-    addMidiChannel(v->midichannel);
     return it;
 }
 
@@ -80,9 +53,9 @@ ConfigObject::ConfigOption *ConfigObject::get(ConfigKey *k)
         if (it->key->group == k->group & it->key->control == k->control)
             return it;
 
-    // If key is not found, insert into list with null value
+    // If key is not found, insert into list with null values
     ConfigObject::ConfigKey *key = new ConfigObject::ConfigKey(k->group, k->control);
-    it = new ConfigObject::ConfigOption(key, new ConfigObject::ConfigValue(0,0,0));
+    it = new ConfigObject::ConfigOption(key, new ConfigObject::ConfigValue(-1,-1,-1));
     list.append(it);
     return it;
 }
