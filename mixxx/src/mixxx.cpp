@@ -78,17 +78,14 @@ MixxxApp::MixxxApp()
   channel1 = new EngineChannel(view->channel1, midi, ADC7, ADC6, ADC5, ADC4, 0);
   channel2 = new EngineChannel(view->channel2, midi, 0, 0, 0, 0, 0);
 
+  qDebug("Init master...");
   master = new EngineMaster(view->master, buffer1, buffer2, channel1, channel2, 0, 0, midi);
 
   // Initialize player with a desired buffer size
   qDebug("Init player...");
 
-#ifndef Q_WS_WIN
-  #ifdef __ALSA__
-    player = new PlayerALSA(BUFFER_SIZE, &engines);
-  #else
-    player = new PlayerPortAudio(BUFFER_SIZE, &engines);
-  #endif
+#ifdef __ALSA__
+  player = new PlayerALSA(BUFFER_SIZE, &engines);
 #else
   player = new PlayerPortAudio(BUFFER_SIZE, &engines);
 #endif

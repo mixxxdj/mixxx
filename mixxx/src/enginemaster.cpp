@@ -30,6 +30,8 @@ EngineMaster::EngineMaster(DlgMaster *master, EngineBuffer *_buffer1, EngineBuff
     connect(crossfader, SIGNAL(recievedMidi(int)), master->SliderCrossfader, SLOT(setValue(int)));
 
     volume = new EnginePregain(midiVolume, midi);
+    connect(master->KnobVolume, SIGNAL(valueChanged(int)), volume, SLOT(slotSetPosition(int)));
+    connect(volume, SIGNAL(recievedMidi(int)), master->KnobVolume, SLOT(setValue(int)));
 }
 
 EngineMaster::~EngineMaster(){
@@ -43,7 +45,7 @@ CSAMPLE *EngineMaster::process(const CSAMPLE *, const int buffer_size) {
     CSAMPLE *temp_3 = channel1->process(temp_1,buffer_size);
     CSAMPLE *temp_4 = channel2->process(temp_2,buffer_size);
 
-	// Crossfader:
+    // Crossfader:
     FLOAT_TYPE cf_val = crossfader->getValue();
     FLOAT_TYPE c1_gain, c2_gain;
     c2_gain = 0.5*(cf_val+1.);
@@ -53,8 +55,13 @@ CSAMPLE *EngineMaster::process(const CSAMPLE *, const int buffer_size) {
     for (int i=0; i<buffer_size; i++)
         temp_1[i] = temp_3[i]*c1_gain + temp_4[i]*c2_gain;
 
-	// Master volume:
-	temp_2 = volume->process(temp_1, buffer_size);
+    // Master volume:
+    temp_3 = volume->process(temp_1, buffer_size);
 
-    return temp_2;
+    return temp_3;
 }
+
+
+
+
+

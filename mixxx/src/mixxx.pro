@@ -2,22 +2,22 @@
 # Options (comment out what's not wanted)
 #
 # ALSA
-#SOURCES += playeralsa.cpp
-#HEADERS += playeralsa.h
-#DEFINES += __ALSA__
-#unix:LIBS += -lasound
+SOURCES += playeralsa.cpp
+HEADERS += playeralsa.h
+DEFINES += __ALSA__
+unix:LIBS += -lasound
 
 # PortAudio
-SOURCES += playerportaudio.cpp
-HEADERS += playerportaudio.h
-DEFINES += __PORTAUDIO__
-unix:LIBS += -lportaudio
-win32:LIBS += ../lib/PAstaticDSD.lib dsound.lib 
+#SOURCES += playerportaudio.cpp
+#HEADERS += playerportaudio.h
+#DEFINES += __PORTAUDIO__
+#unix:LIBS += -lportaudio
+#win32:LIBS += ../lib/PAstaticDSD.lib dsound.lib 
 
 # PortMidi
-DEFINES += __PORTMIDI__
-unix:LIBS += -lportmidi -lporttime
-win32:LIBS += ../lib/portmidi.lib ../lib/porttime.lib ../lib/libmad.lib
+#DEFINES += __PORTMIDI__
+#unix:LIBS += -lportmidi -lporttime
+#win32:LIBS += ../lib/portmidi.lib ../lib/porttime.lib ../lib/libmad.lib
 
 #
 # End of options
