@@ -9,6 +9,7 @@ unix {
 win32 {
   INCLUDEPATH += ../portmidi/
   INCLUDEPATH += ../mad-0.14.2b
+  INCLUDEPATH += ../portaudio/pa_common
   INCLUDEPATH += .
   LIBS += winmm.lib ../lib/portmidi.lib ../lib/PAstaticDSD.lib dsound.lib ../lib/porttime.lib ../lib/libmad.lib
 }
