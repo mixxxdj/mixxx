@@ -46,6 +46,8 @@ public slots:
     void slotMouseCalibrate2();
     void slotMouseHelp();
     void slotUpdateProgressBar();
+    void slotCancelCalibrate();
+
 signals:
     void apply();
 private:
