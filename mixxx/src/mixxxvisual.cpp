@@ -20,20 +20,21 @@
 #include "visual/signalvertexbuffer.h"
 #include "visual/guisignal.h"
 #include "visual/guicontainer.h"
+#include "visual/guichannel.h"
 
 MixxxVisual::MixxxVisual(QWidget *parent, const char *name) : QGLWidget(parent,name)
 {
-    idCount = 0;
+//    idCount = 0;
     installEventFilter(this);
     time.start();
     startTimer(0);
+
+    list.setAutoDelete(true);
 }
 
 MixxxVisual::~MixxxVisual()
 {
     delete vertex;
-
-    // Delete list
 }
 
 bool MixxxVisual::eventFilter(QObject *o, QEvent *e)
@@ -47,9 +48,13 @@ bool MixxxVisual::eventFilter(QObject *o, QEvent *e)
         if (id==2) id=1;
         if (id==3) id=2;
         if (id==4) id=2;
+/*
         GUIContainer *c = getContainer(id);
         if (c!=0)
             c->zoom();
+
+            *********
+*/
     }
     else
     {
@@ -59,28 +64,29 @@ bool MixxxVisual::eventFilter(QObject *o, QEvent *e)
     return TRUE;
 }
 
-GUIContainer *MixxxVisual::add(EngineBuffer *engineBuffer)
+GUIChannel *MixxxVisual::add(EngineBuffer *engineBuffer)
 {
-    GUIContainer *c= new GUIContainer(vertex, engineBuffer);
+    GUIChannel *c = new GUIChannel(vertex,engineBuffer,&controller);
 
-    // Add GUISignal to controller
-    controller.add(c->getSignal());
-
-    // Add container to container list
-    ContainerEntry *e = new ContainerEntry();
-    e->container = c;
-    ++idCount; e->id = idCount;
-
-    list.append(e);
-
+    // Position coding... hack
+    if (list.isEmpty())
+    {
+        c->setPosX(-50);
+        c->setZoomPosX(-50);
+    }
+    else    
+    {
+        c->setPosX(25);
+        c->setZoomPosX(-50);
+    }
+        
+    //buffer1->getSoundBuffer()->setVisual(container->getBuffer());
+    
+    list.append(c);
     return c;
 }
 
-int MixxxVisual::remove(int id)
-{
-    return 0;
-}
-
+/*
 GUIContainer *MixxxVisual::getContainer(int id)
 {
     ContainerEntry *e;
@@ -89,7 +95,7 @@ GUIContainer *MixxxVisual::getContainer(int id)
             return e->container;
     return 0;
 }
-
+*/
     
 void MixxxVisual::initializeGL()
 {
@@ -97,7 +103,9 @@ void MixxxVisual::initializeGL()
     backplane = new VisualBackplane();
     controller.add(backplane);
     vertex = new FastVertexArray();
-    vertex->init(READCHUNKSIZE/RESAMPLE_FACTOR,READCHUNK_NO*2); // Allocate room for a lot of vertices
+
+    // Allocate room for a lot of vertices
+    vertex->init(READCHUNKSIZE/RESAMPLE_FACTOR,READCHUNK_NO*2); 
 
     picking.init(&controller);
 }
@@ -109,10 +117,10 @@ void MixxxVisual::paintGL()
     int msec = time.elapsed();
     time.restart();
 
-    // Update position of each component
-    ContainerEntry *e;
-    for (e = list.first(); e; e = list.next() )
-        e->container->move(msec);
+    // Update position of each channel
+    GUIChannel *c;
+    for (c = list.first(); c; c = list.next())
+        c->move(msec);
 
     // Display stuff
     controller.display();

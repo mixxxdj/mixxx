@@ -32,6 +32,11 @@
 #include "soundsourcemp3.h"
 #include "rtthread.h"
 #include "soundbuffer.h"
+#include "mixxxvisual.h"
+#include "visual/guichannel.h"
+#include "visual/signalvertexbuffer.h"
+#include "mixxx.h"
+
 
 #ifdef __UNIX__
   #include "soundsourceaudiofile.h"
@@ -40,7 +45,7 @@
   #include "soundsourcesndfile.h"
 #endif
 
-EngineBuffer::EngineBuffer(QApplication *a, QWidget *m, DlgPlaycontrol *_playcontrol, const char *_group, const char *filename)
+EngineBuffer::EngineBuffer(QApplication *a, MixxxApp *m, DlgPlaycontrol *_playcontrol, const char *_group, const char *filename)
 {
   app = a;
   mixxx = m;
@@ -79,9 +84,15 @@ EngineBuffer::EngineBuffer(QApplication *a, QWidget *m, DlgPlaycontrol *_playcon
   bufferpos_play.write(0.);
   filepos_play.write(0.);
 
+  // Add buffer as a visual channel
+  GUIChannel *guichannel = mixxx->getVisual()->add(this);
+
   // Allocate sound buffer
   soundbuffer = new SoundBuffer(READCHUNKSIZE, READCHUNK_NO, WINDOWSIZE, STEPSIZE);
 
+  // Add sound buffer to visual channel
+  soundbuffer->setVisual(guichannel->add(soundbuffer));
+  
   read_buffer_prt = soundbuffer->getChunkPtr(0);
                               
   // Semaphore for stopping thread
@@ -100,6 +111,7 @@ EngineBuffer::EngineBuffer(QApplication *a, QWidget *m, DlgPlaycontrol *_playcon
 
   // Allocate buffer for processing:
   buffer = new CSAMPLE[MAX_BUFFER_LEN];
+
 }
 
 EngineBuffer::~EngineBuffer()

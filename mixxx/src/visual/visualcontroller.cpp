@@ -23,6 +23,8 @@
 #include <GL/gl.h>
 #include <GL/glu.h>
 
+int VisualController::idCount = 0;
+
 /**
  *
  */
@@ -173,9 +175,13 @@ void VisualController::resize(GLsizei _width,GLsizei _height)
     glViewport(0,0,width,height);
 };
   
-void VisualController::add(VisualObject * obj)
+int VisualController::add(VisualObject * obj)
 {
     objects.push_back(obj);
+    int id=idCount;
+    idCount++;
+
+    return id;
 };
 
 

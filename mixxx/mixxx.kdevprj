@@ -1605,7 +1605,7 @@ install_location=
 type=HEADER
 
 [src/visual/Makefile.am]
-files=src/visual/box.cpp,src/visual/box.h,src/visual/buffer.cpp,src/visual/buffer.h,src/visual/controller.cpp,src/visual/controller.h,src/visual/fastvertexarray.cpp,src/visual/fastvertexarray.h,src/visual/guicontainer.cpp,src/visual/guicontainer.h,src/visual/guisignal.cpp,src/visual/guisignal.h,src/visual/light.cpp,src/visual/light.h,src/visual/material.cpp,src/visual/visualbackplane.h,src/visual/visualbackplane.cpp,src/visual/visual.h,src/visual/visual.cpp,src/visual/texture.h,src/visual/texture.cpp,src/visual/signal.h,src/visual/signal.cpp,src/visual/pickable.h,src/visual/pickable.cpp,src/visual/pick.h,src/visual/pick.cpp,src/visual/material.h,src/visual/picking.cpp,src/visual/picking.h,src/visual/signalvertexbuffer.cpp,src/visual/signalvertexbuffer.h,src/visual/visualsignal.h,src/visual/visualsignal.cpp,src/visual/visualobject.h,src/visual/visualobject.cpp,src/visual/visualcontroller.h,src/visual/visualcontroller.cpp,src/visual/visualbox.h,src/visual/visualbox.cpp
+files=src/visual/box.cpp,src/visual/box.h,src/visual/buffer.cpp,src/visual/buffer.h,src/visual/controller.cpp,src/visual/controller.h,src/visual/fastvertexarray.cpp,src/visual/fastvertexarray.h,src/visual/guicontainer.cpp,src/visual/guicontainer.h,src/visual/guisignal.cpp,src/visual/guisignal.h,src/visual/light.cpp,src/visual/light.h,src/visual/material.cpp,src/visual/visualbackplane.h,src/visual/visualbackplane.cpp,src/visual/visual.h,src/visual/visual.cpp,src/visual/texture.h,src/visual/texture.cpp,src/visual/signal.h,src/visual/signal.cpp,src/visual/pickable.h,src/visual/pickable.cpp,src/visual/pick.h,src/visual/pick.cpp,src/visual/material.h,src/visual/picking.cpp,src/visual/picking.h,src/visual/signalvertexbuffer.cpp,src/visual/signalvertexbuffer.h,src/visual/visualsignal.h,src/visual/visualsignal.cpp,src/visual/visualobject.h,src/visual/visualobject.cpp,src/visual/visualcontroller.h,src/visual/visualcontroller.cpp,src/visual/visualbox.h,src/visual/visualbox.cpp,src/visual/guichannel.cpp,src/visual/guichannel.h
 sharedlib_LDFLAGS=-version-info 0:0:0
 sharedlib_rootname=visual
 sub_dirs=
@@ -1654,6 +1654,18 @@ install_location=
 type=SOURCE
 
 [src/visual/fastvertexarray.h]
+dist=true
+install=false
+install_location=
+type=HEADER
+
+[src/visual/guichannel.cpp]
+dist=true
+install=false
+install_location=
+type=SOURCE
+
+[src/visual/guichannel.h]
 dist=true
 install=false
 install_location=

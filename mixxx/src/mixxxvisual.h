@@ -29,7 +29,7 @@
 
 class FastVertexArray;
 class EngineBuffer;
-class GUIContainer;
+class GUIChannel;
 
 const int RESAMPLE_FACTOR = 32;
 
@@ -45,22 +45,16 @@ class MixxxVisual : public QGLWidget
 public: 
     MixxxVisual(QWidget *parent=0, const char *name=0);
     ~MixxxVisual();
-
     bool eventFilter(QObject *o, QEvent *e);
-
-    /** Add a visual, and return a unique id */
-    GUIContainer *add(EngineBuffer *engineBuffer);
-    /** Removes a visual based on its unique id. Returns 0 on success */
-    int remove(int id);
+    /** Add a GUIChannel */
+    GUIChannel *add(EngineBuffer *engineBuffer);
 protected:
-    GUIContainer *getContainer(int id);
     void initializeGL();
     void resizeGL(int, int);
     void paintGL();
     void timerEvent(QTimerEvent *);
 
     VisualController controller;
-
     Picking picking;
 
     int screenx;
@@ -70,15 +64,10 @@ protected:
     /** Vertex buffer */
     FastVertexArray *vertex;
 
+    /** Backplane */
     VisualBackplane *backplane;
 
-    typedef struct {
-        int          id;
-        GUIContainer *container;
-    } ContainerEntry;
-
-    int idCount;
-    QPtrList <ContainerEntry> list;
+    QPtrList <GUIChannel> list;
     QTime time;
 };
 
