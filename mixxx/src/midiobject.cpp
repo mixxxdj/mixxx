@@ -88,7 +88,6 @@ QStringList *MidiObject::getConfigList(QString path)
         QFileInfo *fi;                          // pointer for traversing
         while ((fi=it.current()))
         {
-qDebug("..");
             configs.append(fi->fileName());
             ++it;   // goto next list element
         }

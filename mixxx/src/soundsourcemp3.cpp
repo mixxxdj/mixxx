@@ -20,7 +20,7 @@ SoundSourceMp3::SoundSourceMp3(const char* filename)
     /*
       Decode all the headers, and fill in stats:
     */
-    int len = 0;
+//    int len = 0;
     mad_header Header;
     filelength = mad_timer_zero;
     bitrate = 0;
