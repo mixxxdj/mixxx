@@ -23,6 +23,7 @@ Definition of Class Global constants
 static int* FILE_T_FOLDER = (int*)1;
 static int* FILE_T_MP3 =(int*)2;
 static int* FILE_T_OGG = (int*)3;
+static int* FILE_T_WAV = (int*)4;
 static int* FILE_T_PLAYLIST = (int*)0;
 /*********************************+
 	Functions and Constructor for class WTreeItem which is
@@ -372,17 +373,23 @@ bool WTreeList::populateTree(QString dirPath, QListViewItem * listItem)
 			QStringList lst( QStringList::split( "/", currentObject->filePath() ) );
 			QStringList::Iterator lstIt = lst.end();
 				--lstIt;
-				if((*lstIt).endsWith(".mp3")){ //Is it a mp3 file ?
+				if((*lstIt).endsWith(".mp3",false)){ //Is it a mp3 file ?
 					WTreeItem * tempItem = new WTreeItem(listItem, FILE_T_MP3);//Create the child	
 					tempItem->setText(2,tr(currentObject->filePath()));//Set pathname for child
 					tempItem->filePath = (* new QString(tr(currentObject->filePath())));
 					tempItem->setText(1,tr("MP3 file"));
 					tempItem->setText(0,(*lstIt));
-				}else if((*lstIt).endsWith(".ogg")){ //Is it an ogg file ?
+				}else if((*lstIt).endsWith(".ogg",false)){ //Is it an ogg file ?
 					WTreeItem * tempItem = new WTreeItem(listItem, FILE_T_OGG);//Create the child	
 					tempItem->setText(2,tr(currentObject->filePath()));//Set pathname for child
 					tempItem->filePath = (* new QString(tr(currentObject->filePath())));
 					tempItem->setText(1,tr("OGG file"));
+					tempItem->setText(0,(*lstIt));
+				else if((*lstIt).endsWith(".wav",false)){
+					WTreeItem * tempItem = new WTreeItem(listItem, FILE_T_WAV);//Create the child	
+					tempItem->setText(2,tr(currentObject->filePath()));//Set pathname for child
+					tempItem->filePath = (* new QString(tr(currentObject->filePath())));
+					tempItem->setText(1,tr("WAV file"));
 					tempItem->setText(0,(*lstIt));
 				}else if(currentObject->isDir()){
 					WTreeItem * tempItem = new WTreeItem(listItem, FILE_T_FOLDER);//Create the child	
@@ -390,7 +397,7 @@ bool WTreeList::populateTree(QString dirPath, QListViewItem * listItem)
 					tempItem->filePath = (* new QString(tr(currentObject->filePath())));
 					tempItem->setText(1,tr("Folder"));
 					tempItem->setText(0,(*lstIt));
-				}										
+				}											
 			++workingDir_it;
 		  }
 		}
