@@ -114,6 +114,19 @@ include( check.qbas )
 
 
 
+#   VORBISFILE --------------------------------------------------------
+OBJECT = libvorbisfile.a
+TYPE = lib
+DESCRIPTION = Vorbisfile library
+TIP_MESSAGE = Vorbisfile library is needed for ogg playback!"
+LINK_LIBS = -lvorbisfile
+ADD_DEFINES =
+OPTIONS =   exit_on_failure   marked_static
+#----------------------------------------------------------------------
+# Check routines         (DON'T TOUCH!)
+include( check.qbas )
+#----------------------------------------------------------------------
+
 
 #   OGG/VORBIS --------------------------------------------------------
 OBJECT = libvorbis.a
@@ -145,20 +158,6 @@ include( check.qbas )
 #----------------------------------------------------------------------
 
 
-
-
-#   VORBISFILE --------------------------------------------------------
-OBJECT = libvorbisfile.a
-TYPE = lib
-DESCRIPTION = Vorbisfile library
-TIP_MESSAGE = Vorbisfile library is needed for ogg playback!"
-LINK_LIBS = -lvorbisfile
-ADD_DEFINES = 
-OPTIONS =   exit_on_failure   marked_static
-#----------------------------------------------------------------------
-# Check routines         (DON'T TOUCH!)
-include( check.qbas )
-#----------------------------------------------------------------------
 
 
 #   SNDFILE -----------------------------------------------------------
