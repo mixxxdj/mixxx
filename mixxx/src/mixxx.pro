@@ -4,7 +4,7 @@
 
 # On Windows, select between WMME, DIRECTSOUND and ASIO.
 # If ASIO is used, ensure that the path to the ASIO SDK 2 is set correctly below
-WINPA += WMME
+WINPA = DIRECTSOUND
 
 # Use this define if the visual subsystem should be included
 DEFINES += __VISUALS__
@@ -31,18 +31,21 @@ macx:SOURCES += $$PORTAUDIO_DIR/pablio/ringbuffer.c $$PORTAUDIO_DIR/pa_mac_core/
 macx:LIBS += -framework CoreAudio -framework AudioToolbox
 macx:INCLUDEPATH += $$PORTAUDIO_DIR/pa_mac_core $$PORTAUDIO_DIR/pablio 
 win32 {
-    contains(WINPA, DIRECTSOUND)
-    {
+    contains(WINPA, DIRECTSOUND) {
+        message("Compiling Mixxx using DirectSound drivers")
         SOURCES += $$PORTAUDIO_DIR/pa_win_ds/dsound_wrapper.c $$PORTAUDIO_DIR/pa_win_ds/pa_dsound.c
         LIBS += dsound.lib
         INCLUDEPATH += $$PORTAUDIO_DIR/pa_win_ds
     }
-    contains(WINPA, ASIO)
-    {
+    contains(WINPA, ASIO) {
+        message("Compiling Mixxx using ASIO drivers")
         SOURCES += $$PORTAUDIO_DIR/pa_asio/pa_asio.cpp $$ASIOSDK_DIR/common/asio.cpp $$ASIOSDK_DIR/host/asiodrivers.cpp $$ASIOSDK_DIR/host/pc/asiolist.cpp
         HEADERS += $$ASIOSDK_DIR/common/asio.h $$ASIOSDK_DIR/host/asiodrivers.h $$ASIOSDK_DIR/host/pc/asiolist.h
-        INCLUDEPATH += $$PORTAUDIO_DIR/pa_asio $$ASIOSDK_DIR/common $$ASIOSDK_DIR/host $$ASIOSDK_DIR/host/p c
+        INCLUDEPATH += $$PORTAUDIO_DIR/pa_asio $$ASIOSDK_DIR/common $$ASIOSDK_DIR/host $$ASIOSDK_DIR/host/pc
         LIBS += winmm.lib
+    }
+    contains(WINPA, WMME) {
+        error("TO use WMME drivers add appropriate files to the mixxx.pro file first")
     }
 }
 
@@ -81,8 +84,8 @@ macx:LIBS    += -framework CoreMIDI -framework CoreFoundation
 #DEFINES  += __ALSAMIDI__
 
 # Visuals (Alpha)
-contains(DEFINES, __VISUALS__)
-{
+contains(DEFINES, __VISUALS__) {
+    message("Compiling with visual subsystem")
     SOURCES += mixxxvisual.cpp visual/visualbackplane.cpp visual/texture.cpp visual/guicontainer.cpp visual/signalvertexbuffer.cpp visual/visualbox.cpp visual/visualcontroller.cpp visual/guichannel.cpp visual/guisignal.cpp visual/light.cpp visual/material.cpp visual/picking.cpp visual/pickable.cpp visual/visualsignal.cpp visual/visualobject.cpp visual/fastvertexarray.cpp
     HEADERS += mixxxvisual.h visual/visualbackplane.h  visual/texture.h visual/guicontainer.h visual/signalvertexbuffer.h visual/visualbox.h visual/visualcontroller.h visual/guichannel.h visual/guisignal.h visual/light.h visual/material.h visual/picking.h visual/pickable.h visual/visualsignal.h visual/visualobject.h visual/fastvertexarray.h
     CONFIG += opengl
@@ -145,7 +148,7 @@ win32 {
   HEADERS += soundsourcesndfile.h ../winlib/fftw.h ../winlib/rfftw.h
   LIBS += ../winlib/libmad.lib ../winlib/libid3tag.lib ../winlib/libsndfile.lib ../winlib/rfftw2st.lib ../winlib/fftw2st.lib
   QMAKE_CXXFLAGS += -GX
-  QMAKE_LFLAGS += /NODEFAULTLIB:libcd /NODEFAULTLIB:libcmtd 
+  QMAKE_LFLAGS += /NODEFAULTLIB:libcd /NODEFAULTLIB:libcmtd /NODEFAULTLIB:libc 
   #/NODEFAULTLIB:msvcrt.lib 
   CONFIG_PATH = \"config\"
 }

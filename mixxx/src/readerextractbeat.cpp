@@ -22,6 +22,10 @@
     #include <unistd.h>
 #endif
 
+#ifdef __VISUALS__
+#include "visual/guichannel.h"
+#endif
+
 ReaderExtractBeat::ReaderExtractBeat(ReaderExtract *input, int frameSize, int frameStep, int _histSize) : ReaderExtract(input)
 {
     frameNo = input->getBufferSize(); ///frameStep;
