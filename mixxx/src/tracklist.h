@@ -66,6 +66,10 @@ public:
     void loadTrack1(QString name);
     /** Loads the given track in player 2 */
     void loadTrack2(QString name);
+    /** Returns pointer to current TrackInfoObject used in player 1 */
+    TrackInfoObject *getTrackInfo1();
+    /** Returns pointer to current TrackInfoObject used in player 2 */
+    TrackInfoObject *getTrackInfo2();
 
 public slots:
     /** Can be called to update the Directory the Root Item of Treelist points to */
@@ -98,6 +102,10 @@ private slots:
 	void slotClearPlaylist();
 	void slotFindTrack();
     
+signals:
+    void signalNewTrack1(TrackInfoObject *);
+    void signalNewTrack2(TrackInfoObject *);
+
 private:
     TrackInfoObject *FileExistsInList(const QString, QDomDocument * docXML);
     void ReadXML();
@@ -109,8 +117,8 @@ private:
     /** Index of current track in channel 1 and 2 */
     int m_iCurTrackIdxCh1, m_iCurTrackIdxCh2;
     
-    /** The directory where the music files are stored */
-   
+    /** Pointer to TrackInfoObject's of current loaded tracks */
+    TrackInfoObject *m_pTrack1, *m_pTrack2;
   
     WTrackTable *m_pTableTracks;
     QPopupMenu *playSelectMenu;
