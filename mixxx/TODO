@@ -1,10 +1,7 @@
-- Stability of EngineBuffer when changing absolute position
-- MP3/report out of memory
 - GUI controls: wheel, new knob gfx
 - Reverse volume sliders
 - Proper exit
 - Change tracks
-- Decode MP3's
 - Tune bandwidth parameter of EngineFilterRBJ
 
 Future options:
