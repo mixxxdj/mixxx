@@ -19,13 +19,9 @@
 #define MOUSEWIN_H
 
 #include "mouse.h"
-#include <objbase.h>
-#include <winioctl.h>
 
-#define IOCTL_POWERMATE_SET_LED_BRIGHTNESS CTL_CODE(FILE_DEVICE_UNKNOWN,0x807,METHOD_BUFFERED,FILE_ANY_ACCESS)
-#define IOCTL_POWERMATE_PULSE_DURING_SLEEP CTL_CODE(FILE_DEVICE_UNKNOWN,0x808,METHOD_BUFFERED,FILE_ANY_ACCESS)
-#define IOCTL_POWERMATE_PULSE_ALWAYS CTL_CODE(FILE_DEVICE_UNKNOWN,0x809,METHOD_BUFFERED,FILE_ANY_ACCESS)
-#define IOCTL_POWERMATE_PULSE_SPEED CTL_CODE(FILE_DEVICE_UNKNOWN,0x80A,METHOD_BUFFERED,FILE_ANY_ACCESS)
+#define DIRECTINPUT_VERSION 0x0800
+#include <dinput.h>
 
 /**
   * Windows code for handling additional mice.
@@ -40,16 +36,13 @@ public:
     ~MouseWin();
     bool opendev(QString name);
     void closedev();
-    void getNextEvent() {};
-protected:
-    void run();
-    void led_write(int iStaticBrightness, int iSpeed, int iTable, int iAsleep, int iAwake);
-    HANDLE GetDeviceViaInterface(GUID* pGuid, DWORD instance);
+    void getNextEvent();
 
-    /** File handle of current open /dev/input/event device */
-    HANDLE m_hFd;
-    /** ID of event interface */
-    int m_iId;
+protected:
+	/** Pointer to DirectInput object */
+	LPDIRECTINPUT8 g_lpDI;
+    /** Pointer to mouse device */
+	LPDIRECTINPUTDEVICE g_pMouse; 
 };
 
 #endif
