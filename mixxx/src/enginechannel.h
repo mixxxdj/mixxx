@@ -22,7 +22,6 @@
 #include "engineclipping.h"
 #include "enginepregain.h"
 #include "enginefilterblock.h"
-#include "controllogpotmeter.h"
 #include "dlgchannel.h"
 #include "midiobject.h"
 

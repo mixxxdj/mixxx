@@ -17,6 +17,7 @@
 
 #include "enginechannel.h"
 #include "qslider.h"
+#include "controllogpotmeter.h"
 
 EngineChannel::EngineChannel(DlgChannel *dlg, MidiObject *midi, int midiPregain, int midiLow,
                              int midiBand, int midiHigh, int midiVolume)
@@ -25,6 +26,7 @@ EngineChannel::EngineChannel(DlgChannel *dlg, MidiObject *midi, int midiPregain,
   pregain = new EnginePregain(midiPregain, midi);
   connect(dlg->DialGain, SIGNAL(valueChanged(int)), pregain->pregainpot, SLOT(slotSetPosition(int)));
   connect(pregain->pregainpot, SIGNAL(recievedMidi(int)), dlg->DialGain, SLOT(setValue(int)));
+  connect(pregain->pregainpot, SIGNAL(valueChanged(FLOAT_TYPE)), pregain, SLOT(slotUpdate(FLOAT_TYPE)));
 
   // Filters:
   filter = new EngineFilterBlock(dlg->DialFilterLow, midiLow,
@@ -38,6 +40,7 @@ EngineChannel::EngineChannel(DlgChannel *dlg, MidiObject *midi, int midiPregain,
   volume = new EnginePregain(midiVolume, midi);
   connect(dlg->SliderVolume, SIGNAL(valueChanged(int)), volume->pregainpot, SLOT(slotSetPosition(int)));
   connect(volume->pregainpot, SIGNAL(recievedMidi(int)), dlg->SliderVolume, SLOT(setValue(int)));
+  connect(volume->pregainpot, SIGNAL(valueChanged(FLOAT_TYPE)), volume, SLOT(slotUpdate(FLOAT_TYPE)));
 }
 
 EngineChannel::~EngineChannel(){
@@ -53,5 +56,5 @@ CSAMPLE *EngineChannel::process(const CSAMPLE* source, const int buffer_size) {
   temp = clipping->process(temp2, buffer_size);
   temp2 = volume->process(temp, buffer_size);
 
-  return temp;
+  return temp2;
 }

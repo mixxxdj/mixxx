@@ -9,18 +9,18 @@
 
 class EnginePregain : public EngineObject {
   Q_OBJECT
-private:
- public:
-  ControlPotmeter* pregainpot;
-  FLOAT_TYPE pregain;
+public:
   EnginePregain(int, MidiObject*);
   ~EnginePregain();
   CSAMPLE *process(const CSAMPLE*, const int);
- public slots:
+
+  ControlLogpotmeter* pregainpot;
+public slots:
   void slotUpdate(FLOAT_TYPE);
 
- private:
+private:
   CSAMPLE *buffer;
+  FLOAT_TYPE pregain;
 };
 
 #endif

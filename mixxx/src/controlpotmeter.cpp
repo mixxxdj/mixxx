@@ -99,5 +99,7 @@ FLOAT_TYPE ControlPotmeter::getValue()
 }
 
 char ControlPotmeter::getmidino()
-{ return midino; }
+{
+    return midino;
+}
 

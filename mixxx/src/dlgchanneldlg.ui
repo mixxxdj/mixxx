@@ -55,34 +55,6 @@
             </rect>
         </property>
     </widget>
-    <widget class="QSlider">
-        <property name="name">
-            <cstring>SliderVolume</cstring>
-        </property>
-        <property name="geometry">
-            <rect>
-                <x>5</x>
-                <y>180</y>
-                <width>34</width>
-                <height>155</height>
-            </rect>
-        </property>
-        <property name="minValue">
-            <number>0</number>
-        </property>
-        <property name="maxValue">
-            <number>0</number>
-        </property>
-        <property name="lineStep">
-            <number>1</number>
-        </property>
-        <property name="orientation">
-            <enum>Vertical</enum>
-        </property>
-        <property name="tickmarks">
-            <enum>Both</enum>
-        </property>
-    </widget>
     <widget class="QKnob">
         <property name="name">
             <cstring>DialGain</cstring>
@@ -120,6 +92,22 @@
                 <width>32</width>
                 <height>32</height>
             </rect>
+        </property>
+    </widget>
+    <widget class="QSlider">
+        <property name="name">
+            <cstring>SliderVolume</cstring>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>5</x>
+                <y>180</y>
+                <width>31</width>
+                <height>151</height>
+            </rect>
+        </property>
+        <property name="orientation">
+            <enum>Vertical</enum>
         </property>
     </widget>
 </widget>

@@ -19,6 +19,7 @@ EnginePregain::~EnginePregain()
 void EnginePregain::slotUpdate(FLOAT_TYPE newvalue)
 {
     pregain = newvalue;
+    qDebug("Pregain: %f",pregain);
 }
 
 CSAMPLE *EnginePregain::process(const CSAMPLE *source, const int buffer_size)
