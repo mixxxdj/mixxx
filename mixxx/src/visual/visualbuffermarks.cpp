@@ -29,11 +29,12 @@ VisualBufferMarks::~VisualBufferMarks()
                                                                                    
 void VisualBufferMarks::update(int iPos, int iLen)
 {
+    qDebug("pos %i-%i",iPos,(iPos+iLen)%m_iSourceLen);
     CSAMPLE *pSource = &m_pSource[iPos];
     GLfloat *pDest = &m_pBuffer[iPos*3];
 
-    int temp = min(iLen, m_iSourceLen-iPos);
-    for (int i=0; i<temp; ++i)
+    int temp = min(iLen, m_iSourceLen-iPos-1);
+    for (int i=0; i<=temp; ++i)
     {
         *pDest++;
         *pDest++ = pSource[i];
@@ -44,7 +45,7 @@ void VisualBufferMarks::update(int iPos, int iLen)
     {
         pSource = &m_pSource[0];
         pDest = &m_pBuffer[0];
-        for (int i=0; i<iLen-temp; ++i)
+        for (int i=0; i<=iLen-temp; ++i)
         {
             *pDest++;
             *pDest++ = pSource[i];
