@@ -481,8 +481,8 @@
 
  <Text>
   <Channel>1</Channel>
-  <Pos>139,0</Pos>
-  <Size>373,50</Size>
+  <Pos>144,0</Pos>
+  <Size>368,50</Size>
   <FgColor>#606060</FgColor>
   <BgColor>#ffffff</BgColor>
  </Text>
@@ -490,7 +490,7 @@
  <Text>
   <Channel>2</Channel>
   <Pos>513,0</Pos>
-  <Size>373,50</Size>
+  <Size>368,50</Size>
   <FgColor>#606060</FgColor>
   <BgColor>#ffffff</BgColor>
   <Align>right</Align>

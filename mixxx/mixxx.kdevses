@@ -5,34 +5,34 @@
  <Mainframe MaximizeMode="1" />
  <DocsAndViews NumberOfDocuments="10" >
   <Doc0 CursorPosLine="321" Type="KWriteDoc" NumberOfViews="1" CursorPosCol="4" FileName="/home/haste/cvs/mixxx/src/mixxx.cpp" >
-   <View0 Top="0" Width="949" Attach="1" Height="862" Left="0" Focus="0" Type="KWriteView" MinMaxMode="0" />
+   <View0 Top="0" Width="949" Attach="1" Height="593" Left="0" Focus="0" Type="KWriteView" MinMaxMode="0" />
   </Doc0>
   <Doc1 CursorPosLine="84" Type="KWriteDoc" NumberOfViews="1" CursorPosCol="25" FileName="/home/haste/cvs/mixxx/src/mixxx.h" >
    <View0 Top="0" Width="98" Attach="1" Height="28" Left="0" Focus="0" Type="KWriteView" MinMaxMode="0" />
   </Doc1>
   <Doc2 CursorPosLine="32" Type="KWriteDoc" NumberOfViews="1" CursorPosCol="0" FileName="/home/haste/cvs/mixxx/src/controlobject.cpp" >
-   <View0 Top="0" Width="949" Attach="1" Height="862" Left="0" Focus="0" Type="KWriteView" MinMaxMode="0" />
+   <View0 Top="0" Width="949" Attach="1" Height="593" Left="0" Focus="0" Type="KWriteView" MinMaxMode="0" />
   </Doc2>
   <Doc3 CursorPosLine="299" Type="KWriteDoc" NumberOfViews="1" CursorPosCol="0" FileName="/home/haste/cvs/mixxx/src/tracklist.cpp" >
-   <View0 Top="0" Width="949" Attach="1" Height="862" Left="0" Focus="0" Type="KWriteView" MinMaxMode="0" />
+   <View0 Top="0" Width="949" Attach="1" Height="593" Left="0" Focus="0" Type="KWriteView" MinMaxMode="0" />
   </Doc3>
   <Doc4 CursorPosLine="115" Type="KWriteDoc" NumberOfViews="1" CursorPosCol="46" FileName="/home/haste/cvs/mixxx/src/trackinfoobject.cpp" >
-   <View0 Top="0" Width="949" Attach="1" Height="862" Left="0" Focus="0" Type="KWriteView" MinMaxMode="0" />
+   <View0 Top="0" Width="949" Attach="1" Height="593" Left="0" Focus="0" Type="KWriteView" MinMaxMode="0" />
   </Doc4>
   <Doc5 CursorPosLine="189" Type="KWriteDoc" NumberOfViews="1" CursorPosCol="0" FileName="/home/haste/cvs/mixxx/src/mixxxview.cpp" >
    <View0 Top="0" Width="949" Attach="1" Height="593" Left="0" Focus="0" Type="KWriteView" MinMaxMode="0" />
   </Doc5>
-  <Doc6 CursorPosLine="35" Type="KWriteDoc" NumberOfViews="1" CursorPosCol="57" FileName="/home/haste/cvs/mixxx/src/wnumber.h" >
-   <View0 Top="0" Width="949" Attach="1" Height="593" Left="0" Focus="0" Type="KWriteView" MinMaxMode="0" />
+  <Doc6 CursorPosLine="40" Type="KWriteDoc" NumberOfViews="1" CursorPosCol="17" FileName="/home/haste/cvs/mixxx/src/wnumber.h" >
+   <View0 Top="0" Width="757" Attach="1" Height="606" Left="0" Focus="0" Type="KWriteView" MinMaxMode="0" />
   </Doc6>
-  <Doc7 CursorPosLine="50" Type="KWriteDoc" NumberOfViews="1" CursorPosCol="43" FileName="/home/haste/cvs/mixxx/src/wnumber.cpp" >
-   <View0 Top="0" Width="949" Attach="1" Height="593" Left="0" Focus="0" Type="KWriteView" MinMaxMode="0" />
+  <Doc7 CursorPosLine="51" Type="KWriteDoc" NumberOfViews="1" CursorPosCol="31" FileName="/home/haste/cvs/mixxx/src/wnumber.cpp" >
+   <View0 Top="0" Width="757" Attach="1" Height="606" Left="0" Focus="0" Type="KWriteView" MinMaxMode="0" />
   </Doc7>
-  <Doc8 CursorPosLine="52" Type="KWriteDoc" NumberOfViews="1" CursorPosCol="0" FileName="/home/haste/cvs/mixxx/src/wknob.cpp" >
-   <View0 Top="0" Width="949" Attach="1" Height="862" Left="0" Focus="0" Type="KWriteView" MinMaxMode="0" />
+  <Doc8 CursorPosLine="52" Type="KWriteDoc" NumberOfViews="1" CursorPosCol="45" FileName="/home/haste/cvs/mixxx/src/wknob.cpp" >
+   <View0 Top="0" Width="757" Attach="1" Height="606" Left="0" Focus="0" Type="KWriteView" MinMaxMode="0" />
   </Doc8>
-  <Doc9 CursorPosLine="306" Type="KWriteDoc" NumberOfViews="1" CursorPosCol="29" FileName="/home/haste/cvs/mixxx/src/enginebuffer.cpp" >
-   <View0 Top="0" Width="949" Attach="1" Height="593" Left="0" Focus="1" Type="KWriteView" MinMaxMode="0" />
+  <Doc9 CursorPosLine="109" Type="KWriteDoc" NumberOfViews="1" CursorPosCol="33" FileName="/home/haste/cvs/mixxx/src/main.cpp" >
+   <View0 Top="0" Width="757" Attach="1" Height="606" Left="0" Focus="1" Type="KWriteView" MinMaxMode="0" />
   </Doc9>
  </DocsAndViews>
 </KDevPrjSession>
