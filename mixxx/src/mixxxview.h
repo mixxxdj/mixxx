@@ -46,9 +46,7 @@ public:
     /** Construtor. Tries to open visuals if bVisuals is true. */
     MixxxView(QWidget *parent, bool bVisuals, QString qSkinPath);
     ~MixxxView();
-    /** Setup connections between widgets and ControlObjects */
-    void assignWidgets(ControlObject *p);
-    
+        
     WTrackTable *m_pTrackTable;
     QLabel *m_pTextCh1, *m_pTextCh2;
     /** Pointer to WVisual widgets */
@@ -57,27 +55,6 @@ public:
 
 private:
     bool compareConfigKeys(QDomNode node, QString key);
-
-    QWidget *main;
-    WSliderComposed *m_pSliderCrossfader;
-    WSliderComposed *m_pSliderVolumeCh1, *m_pSliderVolumeCh2;
-    WSliderComposed *m_pSliderPlayposCh1, *m_pSliderPlayposCh2;
-    WPushButton *m_pPlayCh1, *m_pPlayCh2;
-    WDisplay *m_pVUmeterCh1, *m_pVUmeterCh2;
-    WKnob *m_pVolume, *m_pBalance;
-    WKnob *m_pHeadVolume, *m_pHeadMix;
-    WKnob *m_pGainCh1, *m_pGainCh2;
-    WKnob *m_pFilterLowCh1, *m_pFilterLowCh2;
-    WKnob *m_pFilterMidCh1, *m_pFilterMidCh2;
-    WKnob *m_pFilterHighCh1, *m_pFilterHighCh2;
-    WPushButton *m_pHeadCueCh1, *m_pHeadCueCh2;
-    WPushButton *m_pCueCh1, *m_pCueCh2;
-    WNumber *m_pBpmCh1, *m_pBpmCh2;
-    WPushButton *m_pEndOfTrackModeCh1, *m_pEndOfTrackModeCh2;
-    WPushButtonInc *m_pButtonRateUpCh1, *m_pButtonRateUpCh2;
-    WPushButtonInc *m_pButtonRateDownCh1, *m_pButtonRateDownCh2;
-
-    QString path;
 };
 
 #endif

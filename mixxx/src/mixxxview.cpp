@@ -40,9 +40,7 @@
 MixxxView::MixxxView(QWidget *parent, bool bVisuals, QString qSkinPath) : QWidget(parent, "Mixxx")
 {
     // Path to image files
-    path = qSkinPath.append("/");
-    qDebug("Skin path %s",path.latin1());
-    WWidget::setPixmapPath(path);
+    WWidget::setPixmapPath(qSkinPath.append("/"));
     
     // Read XML file
     QDomDocument skin("skin");
@@ -128,7 +126,10 @@ MixxxView::MixxxView(QWidget *parent, bool bVisuals, QString qSkinPath) : QWidge
                     {
                         m_pVisualCh1 = new WVisual(this, 0, 0);
                         if (m_pVisualCh1->isValid())
+                        {
                             m_pVisualCh1->setup(node);
+                            ControlObject::setWidget(m_pVisualCh1, ConfigKey("[Channel1]", "wheel"), true, Qt::LeftButton);
+                        }
                         else
                         {
                             delete m_pVisualCh1;
@@ -140,7 +141,10 @@ MixxxView::MixxxView(QWidget *parent, bool bVisuals, QString qSkinPath) : QWidge
                         // Background color
                         m_pVisualCh2 = new WVisual(this, "", m_pVisualCh1);
                         if (m_pVisualCh2->isValid())
+                        {
                             m_pVisualCh2->setup(node);
+                            ControlObject::setWidget(m_pVisualCh2, ConfigKey("[Channel2]", "wheel"), true, Qt::LeftButton);
+                        }
                         else
                         {
                             delete m_pVisualCh2;
@@ -202,35 +206,6 @@ MixxxView::MixxxView(QWidget *parent, bool bVisuals, QString qSkinPath) : QWidge
 
 /*
     main = this;
-        
-    m_pSliderPlayposCh1 = new WSliderComposed(main);
-    m_pSliderPlayposCh1->setPixmaps(true, WWidget::getPath("sliders/playposslider.png"), WWidget::getPath("sliders/playposmarker.png"));
-    m_pSliderPlayposCh1->setFixedSize(303,6);
-    m_pSliderPlayposCh1->move(77,223);
-
-    m_pSliderPlayposCh2 = new WSliderComposed(main);
-    m_pSliderPlayposCh2->setPixmaps(true, WWidget::getPath("sliders/playposslider.png"), WWidget::getPath("sliders/playposmarker.png"));
-    m_pSliderPlayposCh2->setFixedSize(303,6);
-    m_pSliderPlayposCh2->move(644,223);
-
-    m_pVUmeterCh1 = new WDisplay(main);
-    m_pVUmeterCh1->setPositions(33);
-    int i;
-    for (i=0; i<10; ++i)
-        m_pVUmeterCh1->setPixmap(i, WWidget::getPath(QString("vu-left/vu0%1.png").arg(i).latin1()));
-    for (i=10; i<33; ++i)
-        m_pVUmeterCh1->setPixmap(i, WWidget::getPath(QString("vu-left/vu%1.png").arg(i).latin1()));
-    m_pVUmeterCh1->setFixedSize(15,105);
-    m_pVUmeterCh1->move(485,99);
-
-    m_pVUmeterCh2 = new WDisplay(main);
-    m_pVUmeterCh2->setPositions(33);
-    for (i=0; i<10; ++i)
-        m_pVUmeterCh2->setPixmap(i, WWidget::getPath(QString("vu-right/vu0%1.png").arg(i).latin1()));
-    for (i=10; i<33; ++i)
-        m_pVUmeterCh2->setPixmap(i, WWidget::getPath(QString("vu-right/vu%1.png").arg(i).latin1()));
-    m_pVUmeterCh2->setFixedSize(15,105);
-    m_pVUmeterCh2->move(524,99);
 
     m_pBpmCh1 = new WNumber(main);
     m_pBpmCh1->setFixedSize(40,15);
@@ -242,116 +217,9 @@ MixxxView::MixxxView(QWidget *parent, bool bVisuals, QString qSkinPath) : QWidge
     m_pBpmCh2->move(900,40);
     m_pBpmCh2->setNumDigits(6);
 
-    m_pEndOfTrackModeCh1 = new WPushButton(main);
-    m_pEndOfTrackModeCh1->setStates(4);
-    m_pEndOfTrackModeCh1->setPixmap(0, false, WWidget::getPath("buttons/endoftrackmode-stop.png"));
-    m_pEndOfTrackModeCh1->setPixmap(0, true,  WWidget::getPath("buttons/endoftrackmode-stop.png"));
-    m_pEndOfTrackModeCh1->setPixmap(1, false, WWidget::getPath("buttons/endoftrackmode-next.png"));
-    m_pEndOfTrackModeCh1->setPixmap(1, true,  WWidget::getPath("buttons/endoftrackmode-next.png"));
-    m_pEndOfTrackModeCh1->setPixmap(2, false, WWidget::getPath("buttons/endoftrackmode-loop.png"));
-    m_pEndOfTrackModeCh1->setPixmap(2, true,  WWidget::getPath("buttons/endoftrackmode-loop.png"));
-    m_pEndOfTrackModeCh1->setPixmap(3, false, WWidget::getPath("buttons/endoftrackmode-ping.png"));
-    m_pEndOfTrackModeCh1->setPixmap(3, true,  WWidget::getPath("buttons/endoftrackmode-ping.png"));
-    m_pEndOfTrackModeCh1->setFixedSize(30,10);
-    m_pEndOfTrackModeCh1->move(330,70);
-
-    m_pEndOfTrackModeCh2 = new WPushButton(main);
-    m_pEndOfTrackModeCh2->setStates(4);
-    m_pEndOfTrackModeCh2->setPixmap(0, false, WWidget::getPath("buttons/endoftrackmode-stop.png"));
-    m_pEndOfTrackModeCh2->setPixmap(0, true,  WWidget::getPath("buttons/endoftrackmode-stop.png"));
-    m_pEndOfTrackModeCh2->setPixmap(1, false, WWidget::getPath("buttons/endoftrackmode-next.png"));
-    m_pEndOfTrackModeCh2->setPixmap(1, true,  WWidget::getPath("buttons/endoftrackmode-next.png"));
-    m_pEndOfTrackModeCh2->setPixmap(2, false, WWidget::getPath("buttons/endoftrackmode-loop.png"));
-    m_pEndOfTrackModeCh2->setPixmap(2, true,  WWidget::getPath("buttons/endoftrackmode-loop.png"));
-    m_pEndOfTrackModeCh2->setPixmap(3, false, WWidget::getPath("buttons/endoftrackmode-ping.png"));
-    m_pEndOfTrackModeCh2->setPixmap(3, true,  WWidget::getPath("buttons/endoftrackmode-ping.png"));
-    m_pHeadCueCh1->setPixmapBackground(WWidget::getPath("buttons/cuecback1.png"));
-    m_pEndOfTrackModeCh2->setFixedSize(30,10);
-    m_pEndOfTrackModeCh2->move(900,70);
-
-#ifdef __WIN__
-    // QPixmap fix needed on Windows 9x
-    QPixmap::setDefaultOptimization(QPixmap::NormalOptim);
-#endif
-*/
-}
-
-MixxxView::~MixxxView()
-{
-}
-
-void MixxxView::assignWidgets(ControlObject *p)
-{
-    // EngineBuffer
-
-//    p->setWidget(playcontrol1->PushButtonCueSet,ConfigKey("[Channel1]", "cue_set"));
-//    p->setWidget(playcontrol2->PushButtonCueSet,ConfigKey("[Channel2]", "cue_set"));
-//    p->setWidget(playcontrol1->PushButtonCueGoto, ConfigKey("[Channel1]", "cue_goto"));
-//    p->setWidget(playcontrol2->PushButtonCueGoto, ConfigKey("[Channel2]", "cue_goto"));
-
     p->setWidget(m_pBpmCh1, ConfigKey("[Channel1]", "bpm"));
     p->setWidget(m_pBpmCh2, ConfigKey("[Channel2]", "bpm"));
 
-    if (m_pVisualCh1)
-    {
-        p->setWidget(m_pVisualCh1, ConfigKey("[Channel1]", "wheel"), true, Qt::LeftButton);
-        p->setWidget(m_pVisualCh2, ConfigKey("[Channel2]", "wheel"), true, Qt::LeftButton);
-    }
-
-    p->setWidget(m_pSliderRateCh1, ConfigKey("[Channel1]", "rate"), false);
-    p->setWidget(m_pSliderRateCh2, ConfigKey("[Channel2]", "rate"), false);
-
-    p->setWidget(m_pButtonRateUpCh1, ConfigKey("[Channel1]", "rate"), true, Qt::LeftButton, false);
-    p->setWidget(m_pButtonRateUpCh1, ConfigKey("[Channel1]", "rate"), true, Qt::RightButton, false);
-    p->setWidget(m_pButtonRateDownCh1, ConfigKey("[Channel1]", "rate"), true, Qt::LeftButton, false);
-    p->setWidget(m_pButtonRateDownCh1, ConfigKey("[Channel1]", "rate"), true, Qt::RightButton, false);
-    p->setWidget(m_pButtonRateUpCh2, ConfigKey("[Channel2]", "rate"), true, Qt::LeftButton, false);
-    p->setWidget(m_pButtonRateUpCh2, ConfigKey("[Channel2]", "rate"), true, Qt::RightButton, false);
-    p->setWidget(m_pButtonRateDownCh2, ConfigKey("[Channel2]", "rate"), true, Qt::LeftButton, false);
-    p->setWidget(m_pButtonRateDownCh2, ConfigKey("[Channel2]", "rate"), true, Qt::RightButton, false);
-
-    p->setWidget(m_pPlayCh1, ConfigKey("[Channel1]","play"), true, Qt::LeftButton);
-    p->setWidget(m_pPlayCh2, ConfigKey("[Channel2]","play"), true, Qt::LeftButton);
-    p->setWidget(m_pPlayCh1, ConfigKey("[Channel1]","cue_set"), true, Qt::RightButton);
-    p->setWidget(m_pPlayCh2, ConfigKey("[Channel2]","cue_set"), true, Qt::RightButton);
-
-    p->setWidget(m_pCueCh1, ConfigKey("[Channel1]","cue_preview"), true, Qt::LeftButton);
-    p->setWidget(m_pCueCh2, ConfigKey("[Channel2]","cue_preview"), true, Qt::LeftButton);
-    p->setWidget(m_pCueCh1, ConfigKey("[Channel1]","cue_preview"), false, Qt::LeftButton);
-    p->setWidget(m_pCueCh2, ConfigKey("[Channel2]","cue_preview"), false, Qt::LeftButton);
-    p->setWidget(m_pCueCh1, ConfigKey("[Channel1]","cue_goto"), true, Qt::RightButton);
-    p->setWidget(m_pCueCh2, ConfigKey("[Channel2]","cue_goto"), true, Qt::RightButton);
-
-    p->setWidget(m_pSliderPlayposCh1, ConfigKey("[Channel1]", "playposition"), false);
-    p->setWidget(m_pSliderPlayposCh2, ConfigKey("[Channel2]", "playposition"), false);
-
-    p->setWidget(m_pEndOfTrackModeCh1, ConfigKey("[Channel1]", "TrackEndMode"), false);
-    p->setWidget(m_pEndOfTrackModeCh2, ConfigKey("[Channel2]", "TrackEndMode"), false);
-                                            
-    // EngineMaster
-    p->setWidget(m_pHeadCueCh1, ConfigKey("[Channel1]", "pfl"));
-    p->setWidget(m_pHeadCueCh2, ConfigKey("[Channel2]", "pfl"));
-
-    p->setWidget(m_pSliderVolumeCh1, ConfigKey("[Channel1]", "volume"), false);
-    p->setWidget(m_pSliderVolumeCh2, ConfigKey("[Channel2]", "volume"), false);
-
-    // EnginePregain
-    p->setWidget(m_pGainCh1, ConfigKey("[Channel1]", "pregain"));
-    p->setWidget(m_pGainCh2, ConfigKey("[Channel2]", "pregain"));
-
-    // EngineFilterBlock
-    p->setWidget(m_pFilterLowCh1, ConfigKey("[Channel1]", "filterLow"));
-    p->setWidget(m_pFilterLowCh2, ConfigKey("[Channel2]", "filterLow"));
-    p->setWidget(m_pFilterMidCh1, ConfigKey("[Channel1]", "filterMid"));
-    p->setWidget(m_pFilterMidCh2, ConfigKey("[Channel2]", "filterMid"));
-    p->setWidget(m_pFilterHighCh1, ConfigKey("[Channel1]", "filterHigh"));
-    p->setWidget(m_pFilterHighCh2, ConfigKey("[Channel2]", "filterHigh"));
-
-    // Vu meter
-    p->setWidget(m_pVUmeterCh1, ConfigKey("[Channel1]", "VUmeter"));
-    p->setWidget(m_pVUmeterCh2, ConfigKey("[Channel2]", "VUmeter"));
-
-/*
     // EngineFlanger
     p->setWidget(flanger->DialDepth, ConfigKey("[Flanger]", "lfoDepth"));
     p->setWidget(flanger->DialDepth, ConfigKey("[Flanger]", "lfoDepth"));
@@ -360,21 +228,16 @@ void MixxxView::assignWidgets(ControlObject *p)
     p->setWidget(flanger->PushButtonChB, ConfigKey("[Flanger]", "ch2"));
 
 */
-    // EngineMaster
-    p->setWidget(m_pSliderCrossfader, ConfigKey("[Master]", "crossfader"), false);
-    p->setWidget(m_pVolume, ConfigKey("[Master]", "volume"));
-    p->setWidget(m_pBalance, ConfigKey("[Master]", "balance"));
-    p->setWidget(m_pHeadVolume, ConfigKey("[Master]", "headVolume"));
-    p->setWidget(m_pHeadMix, ConfigKey("[Master]", "headMix"));
+
+#ifdef __WIN__
+    // QPixmap fix needed on Windows 9x
+    QPixmap::setDefaultOptimization(QPixmap::NormalOptim);
+#endif
 }
 
-/*
-const QString MixxxView::WWidget::getPath(QString location)
+MixxxView::~MixxxView()
 {
-    QString l(location);
-    return l.prepend(path);
 }
-*/
 
 bool MixxxView::compareConfigKeys(QDomNode node, QString key)
 {

@@ -85,7 +85,7 @@ EngineBuffer::EngineBuffer(PowerMate *_powermate, const char *_group)
     // TrackEndMode determines what to do at the end of a track
     p5 = new ControlObject(ConfigKey(group,"TrackEndMode"));
     m_pTrackEndMode = new ControlEngine(p5);
-    m_pTrackEndMode->set((double)TRACK_END_MODE_NEXT);
+    m_pTrackEndMode->set((double)TRACK_END_MODE_STOP);
     
     // BPM control
     ControlBeat *p4 = new ControlBeat(ConfigKey(group, "bpm"));
