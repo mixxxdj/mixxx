@@ -21,6 +21,10 @@ const unsigned int READCHUNKSIZE = 23040;
   * safe side */
 const int READCHUNK_NO = 8;
 const unsigned int READBUFFERSIZE = READCHUNKSIZE*READCHUNK_NO;
+/* Window size used in EnginePreProcess */
+const int WINDOWSIZE = 512;
+/* Step size used in block based processing (EnginePreProcess and others) */
+const int STEPSIZE = WINDOWSIZE/2;
 
 
 /** Maximum buffer length to each EObject::process call */
