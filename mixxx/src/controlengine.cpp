@@ -71,6 +71,8 @@ void ControlEngine::set(double v)
 
 void ControlEngine::setExtern(double v)
 {
+//    qDebug("controlengine got %p\t%f",this,(float)v);
+    
     value = v;
     if (notifyobj!=0)
         (notifyobj->*notifymethod)(v);

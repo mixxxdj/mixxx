@@ -26,7 +26,6 @@ MixxxVisual::MixxxVisual(QApplication *app, QWidget *parent, const char *name) :
 {
     controller = new VisualController(app);
 
-//    idCount = 0;
     installEventFilter(this);
     time.start();
     startTimer(50);

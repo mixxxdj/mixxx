@@ -164,7 +164,7 @@ int EngineBuffer::getPlaypos(int Srate)
 
 void EngineBuffer::seek(double change)
 {
-    qDebug("seeking... %f",change);
+//    qDebug("seeking... %f",change);
 
     // Find new playpos
     double new_playpos = change*file_length_old;
