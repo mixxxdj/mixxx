@@ -33,7 +33,6 @@ class DlgCrossfader;
 class DlgSplit;
 class DlgFlanger;
 class DlgTracklist;
-class DlgVUmeter;
 
 /**
  * This class provides an incomplete base for your application view. 
@@ -53,7 +52,6 @@ class MixxxView : public QWidget
     DlgSplit *split;
     DlgFlanger *flanger;
     DlgTracklist *tracklist;
-    DlgVUmeter *vumeter;
 
   protected slots:
     void slotDocumentChanged();

@@ -27,6 +27,7 @@ class EngineFilterBlock;
 class EngineClipping;
 class EngineVolume;
 class EngineFlanger;
+class EngineVUmeter;
 
 /**
   *@author 
@@ -45,7 +46,7 @@ private:
     EngineFilterBlock *filter;
     EngineClipping *clipping;
     EngineVolume *volume;
-    EngineFlanger *flanger;
+    EngineVUmeter *vumeter;
     ControlEngine *pfl;
 };
 

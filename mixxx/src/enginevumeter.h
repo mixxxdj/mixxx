@@ -19,18 +19,23 @@
 
 #include "engineobject.h"
 
-class DlgVUmeter;
+// Rate at which the vumeter is updated (using a sample rate of 44100 Hz):
+#define UPDATE_RATE 5
+
+class WVUmeter;
 class ControlEngine;
 
 class EngineVUmeter : public EngineObject {
 public:
-    EngineVUmeter(DlgVUmeter *, const char *);
+    EngineVUmeter(WVUmeter *, const char *);
     ~EngineVUmeter();
     void notify(double) {};
     CSAMPLE *process(const CSAMPLE*, const int);
 
 private:
-    ControlEngine *leds;
+    ControlEngine *m_ctrlVUmeter;
+    FLOAT_TYPE m_fRMSvolume;
+    FLOAT_TYPE m_iSamplesCalculated;
 };
 
 #endif

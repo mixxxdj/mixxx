@@ -167,22 +167,6 @@
     </widget>
     <widget class="WKnob">
         <property name="name">
-            <cstring>KnobVolume</cstring>
-        </property>
-        <property name="geometry">
-            <rect>
-                <x>30</x>
-                <y>33</y>
-                <width>32</width>
-                <height>32</height>
-            </rect>
-        </property>
-        <property name="backgroundOrigin">
-            <enum>WindowOrigin</enum>
-        </property>
-    </widget>
-    <widget class="WKnob">
-        <property name="name">
             <cstring>KnobHeadLR</cstring>
         </property>
         <property name="geometry">
@@ -232,25 +216,37 @@
             <enum>Vertical</enum>
         </property>
     </widget>
+    <widget class="WKnob">
+        <property name="name">
+            <cstring>KnobVolume</cstring>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>30</x>
+                <y>33</y>
+                <width>32</width>
+                <height>32</height>
+            </rect>
+        </property>
+        <property name="backgroundOrigin">
+            <enum>WindowOrigin</enum>
+        </property>
+    </widget>
+    <widget class="WVUmeter">
+        <property name="name">
+            <cstring>vumeter</cstring>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>0</x>
+                <y>80</y>
+                <width>80</width>
+                <height>20</height>
+            </rect>
+        </property>
+    </widget>
 </widget>
 <customwidgets>
-    <customwidget>
-        <class>WKnob</class>
-        <header location="global">wknob.h</header>
-        <sizehint>
-            <width>32</width>
-            <height>32</height>
-        </sizehint>
-        <container>0</container>
-        <sizepolicy>
-            <hordata>0</hordata>
-            <verdata>0</verdata>
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-        </sizepolicy>
-        <pixmap>image0</pixmap>
-        <property type="String">property</property>
-    </customwidget>
     <customwidget>
         <class>WBulb</class>
         <header location="local">wbulb.h</header>
@@ -265,22 +261,59 @@
             <horstretch>0</horstretch>
             <verstretch>0</verstretch>
         </sizepolicy>
+        <pixmap>image0</pixmap>
+    </customwidget>
+    <customwidget>
+        <class>WKnob</class>
+        <header location="global">wknob.h</header>
+        <sizehint>
+            <width>32</width>
+            <height>32</height>
+        </sizehint>
+        <container>0</container>
+        <sizepolicy>
+            <hordata>0</hordata>
+            <verdata>0</verdata>
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+        </sizepolicy>
         <pixmap>image1</pixmap>
+        <property type="String">property</property>
+    </customwidget>
+    <customwidget>
+        <class>WVUmeter</class>
+        <header location="local">wvumeter.h</header>
+        <sizehint>
+            <width>-1</width>
+            <height>-1</height>
+        </sizehint>
+        <container>0</container>
+        <sizepolicy>
+            <hordata>5</hordata>
+            <verdata>5</verdata>
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+        </sizepolicy>
+        <pixmap>image2</pixmap>
     </customwidget>
 </customwidgets>
 <images>
     <image name="image0">
-        <data format="XPM.GZ" length="1875">789c7dd4cb72a2401480e1bd4f41c9ce9a3263bca0959a8531114942627653959a453770d0844b7b8b3153f3ee43f7398d284893cd97fe41ae7dd5327ecf5da375d5d86cd976e919de82ad8d96bf8be3c3db9f5f7f1bcdeeb591fdf5fa46a7f9a3d17c303cc3ec42077e82e444b297d346f6a1a7f88a1c58c84fc93e5c5b1dc55b640fba8a3b649f6207a9f705cdbe222702f25172901f7945cc36c967a48e5da44587f234078a09119073e49066ef24adfcc84f481d33a48e634d4bf18548b1d0c4591f39a2782139cc6753a49e0d35878a5322209792a3fc7a3f907adf8848f15873a43843320b191069d644729add4bb2fc91bd23f59dfc26d2f5b6917adfb524cff7bd27d29bb3950cf2b3da4802f06c933c203d0bf945cc36f543f93019c7e1f9c77fb68b4dc08185e162f9fe114531f0a0a249c04fd350acd69b6d1645214fce9b00e2548edde7feebf01dc921203869c6e0fbaab99ddcedef97531545f6acd0048eef63c41e268fabc55447c1b1b185d0d1d36e979d3946e308f2c64bc4314a433928128c9ac011e252e405d8b8226f4a5194a8c604511da9e6d9545f44220a517a16c5427dcb42d445aefafc456dc4d58a212e46f2bccb4d39c2e6a53aa23b404d6da41a60b5916a383b8b4eef25c77b5817b1583d0b8755457471a09e459bcf6b22179ffbcc6617234eef469b27a586a23839beabe503e18943e19dbf10f1c23bdf8e5e2b22c167a7dfa05d3a2776f60d6683dbf39308bc8a3561c69d444709b8556b02ae2de0384eb628c566616df977d3f80f874f2aac</data>
+        <data format="XPM.GZ" length="1760">789c55d4c952db401006e0bb9f42c5dca8d48fe56dec4ae560ccbedaec90ca41d682170c186cb355de3d3dd3dd234273f027fd6acd56da588f6efac7d1fa46e575912cc669948e9297683d5bce661fbffffcfaaaacc5ad88fe6d1cd5d67e54d660a33432d5c295f78a1d5bf18e735c7a2ca6f29eb06b966de05c2bf36f62cda76c57de5376dd8a8762bd9f39d70b57de3376c38a4f9c1ba517622aef25bb69c523b1dedf766e96f9841dee3fa89bec9cddb2e28673ab9cefa958e66bfc7c6cb86f32b1aec7235bd70f1d76bbb09ccfd91dcb46d3b95de65fd961fe2d76c817ea36db880bf18573a77cfe9e9d50c279e0d7332986968dd8392de7bb2bd6f9bcb3c3f89ec4ba9f2f6c7d9ff1e3c9caf549c4daafcd0efdea62ed77c30ee3df62eb7e197fdef272bcb762edffcc0ee7af2ad6f356732ecae7fb627d7e8f1dc6f721d6f17db243ffb958fb77d961fcfb623d7f9bec707e2fc57a1e7bec701e0fd8d6b6d8c7ecb69e878158f7ff8eddd1fd3d642754ded7eca1151f89a9bcafd81995f719bbb039fb5c4c7f7c9eb860906088942a438e42af6b06f718614c35f199a9af07dc97194acc7ce2114f78c61c2f78a52b532c5c4a324bacf086777ce0135d6ca247b5856d4ae59c4141891dec62cf67f67180431ce198522794926f06654ed1f799397519e00ce794eae1c275e2ef1a65b44b179794b9a2d435656e2893f1b793ea96329aead17beee88d9ba8d2f313c9ac28d30f6f73a3bea47175698e9a71ef8a51938ceb35f7f5893aadd794bf7b9469f84c5fdea8d5a4cc88bf15b0a193e65cb569cdc6e8c81a2eb0323026a4a84ce213cb6f7b31a55e3b6688d8a4b83589c9fc4c66e55ef8941bd5ffb5fcbea75c26a7ab137f7742bf3ae16cfcfd59f907160ba6c6</data>
     </image>
     <image name="image1">
-        <data format="XPM.GZ" length="1760">789c55d4c952db401006e0bb9f42c5dca8d48fe56dec4ae560ccbedaec90ca41d682170c186cb355de3d3dd3dd234273f027fd6acd56da588f6efac7d1fa46e575912cc669948e9297683d5bce661fbffffcfaaaacc5ad88fe6d1cd5d67e54d660a33432d5c295f78a1d5bf18e735c7a2ca6f29eb06b966de05c2bf36f62cda76c57de5376dd8a8762bd9f39d70b57de3376c38a4f9c1ba517622aef25bb69c523b1dedf766e96f9841dee3fa89bec9cddb2e28673ab9cefa958e66bfc7c6cb86f32b1aec7235bd70f1d76bbb09ccfd91dcb46d3b95de65fd961fe2d76c817ea36db880bf18573a77cfe9e9d50c279e0d7332986968dd8392de7bb2bd6f9bcb3c3f89ec4ba9f2f6c7d9ff1e3c9caf549c4daafcd0efdea62ed77c30ee3df62eb7e197fdef272bcb762edffcc0ee7af2ad6f356732ecae7fb627d7e8f1dc6f721d6f17db243ffb958fb77d961fcfb623d7f9bec707e2fc57a1e7bec701e0fd8d6b6d8c7ecb69e878158f7ff8eddd1fd3d642754ded7eca1151f89a9bcafd81995f719bbb039fb5c4c7f7c9eb860906088942a438e42af6b06f718614c35f199a9af07dc97194acc7ce2114f78c61c2f78a52b532c5c4a324bacf086777ce0135d6ca247b5856d4ae59c4141891dec62cf67f67180431ce198522794926f06654ed1f799397519e00ce794eae1c275e2ef1a65b44b179794b9a2d435656e2893f1b793ea96329aead17beee88d9ba8d2f313c9ac28d30f6f73a3bea47175698e9a71ef8a51938ceb35f7f5893aadd794bf7b9469f84c5fdea8d5a4cc88bf15b0a193e65cb569cdc6e8c81a2eb0323026a4a84ce213cb6f7b31a55e3b6688d8a4b83589c9fc4c66e55ef8941bd5ffb5fcbea75c26a7ab137f7742bf3ae16cfcfd59f907160ba6c6</data>
+        <data format="XPM.GZ" length="1875">789c7dd4cb72a2401480e1bd4f41c9ce9a3263bca0959a8531114942627653959a453770d0844b7b8b3153f3ee43f7398d284893cd97fe41ae7dd5327ecf5da375d5d86cd976e919de82ad8d96bf8be3c3db9f5f7f1bcdeeb591fdf5fa46a7f9a3d17c303cc3ec42077e82e444b297d346f6a1a7f88a1c58c84fc93e5c5b1dc55b640fba8a3b649f6207a9f705cdbe222702f25172901f7945cc36c967a48e5da44587f234078a09119073e49066ef24adfcc84f481d33a48e634d4bf18548b1d0c4591f39a2782139cc6753a49e0d35878a5322209792a3fc7a3f907adf8848f15873a43843320b191069d644729add4bb2fc91bd23f59dfc26d2f5b6917adfb524cff7bd27d29bb3950cf2b3da4802f06c933c203d0bf945cc36f543f93019c7e1f9c77fb68b4dc08185e162f9fe114531f0a0a249c04fd350acd69b6d1645214fce9b00e2548edde7feebf01dc921203869c6e0fbaab99ddcedef97531545f6acd0048eef63c41e268fabc55447c1b1b185d0d1d36e979d3946e308f2c64bc4314a433928128c9ac011e252e405d8b8226f4a5194a8c604511da9e6d9545f44220a517a16c5427dcb42d445aefafc456dc4d58a212e46f2bccb4d39c2e6a53aa23b404d6da41a60b5916a383b8b4eef25c77b5817b1583d0b8755457471a09e459bcf6b22179ffbcc6617234eef469b27a586a23839beabe503e18943e19dbf10f1c23bdf8e5e2b22c167a7dfa05d3a2776f60d6683dbf39308bc8a3561c69d444709b8556b02ae2de0384eb628c566616df977d3f80f874f2aac</data>
+    </image>
+    <image name="image2">
+        <data format="XPM.GZ" length="4430">789cb597496f1d370cc7eff91446780b0a7636cd82a207ef8e1d2fcf8ed7a2076a166fef3def89eda2dfbd1af23f83c20e8af6d02807ffccbf284a22a9f1cf9f164ef6b6173efdfce1e1511e2feb85fa42ee173e354fb3d9cb6fbffffac7878f49b2d0ff8fca85e4e34f1f3e4e1e17ea859d9b79db033f05a048ff294f94937ef44ce72367ca3c72aefa6ae452f96c6451de1bb956de1fb9e9595e94b3613de191d53f7d1f59e7cb2b38b378c25607563b7523ab7f6e95f37ea87e4bb90c6cfeae9525fcc6e28f949ba88bf53ce8b9e7380ac3e2bb022771aa76a79cf443ed5f95d3d8c1ff74648d8776945d9c43ff0c2ec147e01041cf7eae9cc715ceff6160d3530aae2d1e362e07a65c59c2b0fd1f806becef58b98e1bb353619c246697cb912dbe43e53671e65fea9e833187ff2fca4952c44ee3390097c6b4aa5c260de6af1ba711ec7abe89249dd9bd18a7715428cf46b6fbda55f6698cf9dbe014bca45ca749acf9489f95bb60b7fc8cc159acfe48ef2f8dd3ca9813b0c495f2a37291c59171a35cf643e757e0cef4b239b2adbfdc7348cfdafc8be66b9664ade949f33173812d9f09dcc596cfea2fab5d857aca943be7cd2e6b3dbbc855e00d30ecb407aec13a5fd351efdbeb7dbac475967f5c18e711ea55cfcfa5791c6bfff00d18f5ecfdc86aa7b3819358f9169cda7cd6fc73d9a097136597a7c67e3ab0e5a3d77a76799e597cb20876163f693f7345ee503f7abeaeca4bece774609cafe69f93bc82bf66e044f3dd6bff733e17d44b3bb0d9691fec63db9ff60f570f767fa1dce4a847590637d8dfd5c0f01f8f6c7aed2fae1dd79b80bd9d9fccc143bfb81cd8e261bbcfae1faab7fbee823fab6f01b7a6f79a7f795cc4a8ff1d30fa0169bfcdb322b578e4019c25d66f36c039f25deb3f77c16eefcb3218f7c54b60e845cf33cf8bd04174fe05384decbdd1facc8b02f72377ca52e4c6acf99737fd502e95dba2c17a3b23eb7e45fb65919725ce370157b06bff2c8ab248acbed7c0a5ed576864b37f03633eaf8c6cfd70112cf0aff915a60f76bd8f42faa1acfdb4ece576be6a2fabaac67e4e8c25b2fecbcf235b3cfa9e94b50ce7a7ef69d904b6f85ec199e513dd0c6c7a317d27696ae75382b3d4e2d7fba9a2a0b77a3a01e789c5ff02ae10dff6c8f63eea7d55b1a05ff12a5810cfe2c0b81f3d8f2a910af11d837da2fdd3f3c8b6bede4f95f64359f3b5cac4a5567f66cf05fd951a631fd97d8ade5f55f808efc53a38467f3f1dd9ec1b60bc37520d8c78b47f56e5a0976d7092785d5fdfb7aaf219deaf17b0c37baffdbf121fa39f7a30faab68fe567e889fa6e0a15ecfc00ee7affdb8aa035b7c6b60d4231f810bd4b3be7f5513d6b7f8f7c00eefd72b7878efb7c015f87064ebffc6ad2f2dff690e16e47b3db2e9b5beaace4799dd7f0baeecfc24020bde3f7dbf240afead9fdc81c5f29573b0c77d6afe49ec338b4766e0cae6cb048cfa6507f6e8a77a3e92fa06f5b032b2c5a3fd5d42f9a25f6abf16a933e49bbe5fd2d41ef9aedf37d2d635fa83e93bdfe696cffa7ef8c877b97e1fb2f66f1f3ee88c45cfcb274d86fc3e1d18fd43ebd787cf91c2e2df053b67f5780fcec17a9fde0d7a9e821dd6d77ee68bf07963f77103ce61bf0517e0d9c8b6bf3b7009d6f7db97be163d7f367fe5689f832b63d1fee49ba6c5fde9fbe2dbc07a5e93c77f3ffeae676261ff835173c3ed5b3d777cce177cc9577ccd539ef19c6ff8368c3bbee7077ee4a7bfeb83ef73fec6dff9995ff89517798997798557798dd779833ff3e61bbdf056507fe16ddee15ddee34918fb7cc05ff9908fc2ace3377a1f223909ea533e0bea88634e380d3f9d71c68e732edee9af42242557c44424e4a9a6865aeae89c2ee8f207feaff995ae82f59aa634a339ddd02dddd17df0f0408ff4f44e3fa56ff49d9e83ef177aa5455a0aca655aa1d5e0638dd6dfe967b4112c9f6993b6e80b6d07f50eafd02eed85df4e68ff9dfe860e78425fe9908ed437d3319dd0299d057d44f13bfd9c12dea734ec320b6a4779985150191a2b4ba8cef7f188979af7a491563a39970bb9e4895cc9b54c6526f3b77ab9915bb90bfa7b79904779926ff25d9ee5455e65519664f907fe576455d6c2bd9ec9ba6cc867d994ada07e952fb22d3b6ff4b5ecf2baecc944f6e520447e1ef67e2e5f83ef433992633979a36ff8414ee54ca2f06761f8534ac26b28e1134a4aa9424a937fbbdf3664eca6f7bef68d6f7de7cffd85bff457b2ecaffdd4cffc9bfd86194fff3cded7d77fadc7ff45ffe72f1ffe02059d03ad</data>
     </image>
 </images>
 <layoutdefaults spacing="6" margin="11"/>
 <includehints>
     <includehint>wknob.h</includehint>
     <includehint>wknob.h</includehint>
-    <includehint>wknob.h</includehint>
     <includehint>wbulb.h</includehint>
+    <includehint>wknob.h</includehint>
+    <includehint>wvumeter.h</includehint>
 </includehints>
 </UI>

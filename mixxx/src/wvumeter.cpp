@@ -1,9 +1,9 @@
 /***************************************************************************
-                          dlgvumeter  -  description
+                          WVUmeter.cpp  -  description
                              -------------------
-    begin                : Sun Apr 28 2002
-    copyright            : (C) 2002 by 
-    email                : 
+    begin                : Fri Jun 21 2002
+    copyright            : (C) 2002 by Tue & Ken Haste Andersen
+    email                : haste@diku.dk
  ***************************************************************************/
 
 /***************************************************************************
@@ -15,9 +15,22 @@
  *                                                                         *
  ***************************************************************************/
 
-#include "dlgvumeter.h"
+#include "wvumeter.h"
 
-DlgVUmeter::DlgVUmeter(QWidget *parent, const char *name ) : DlgVUmeterDlg(parent,name) {
+WVUmeter::WVUmeter(QWidget *parent, const char *name ) : QProgressBar(parent,name)
+{
+    // Set the number of steps and reset it:
+    setTotalSteps(MAX_STEPS);
+    setPercentageVisible( false );
+    reset();
 }
-DlgVUmeter::~DlgVUmeter(){
+
+WVUmeter::~WVUmeter()
+{
 }
+
+void WVUmeter::setValue(int iValue)
+{
+    setProgress(iValue);
+}
+

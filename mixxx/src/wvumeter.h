@@ -1,9 +1,9 @@
 /***************************************************************************
-                          dlgvumeter.h  -  description
+                          wvumeter.h  -  description
                              -------------------
-    begin                : Sun Apr 28 2002
-    copyright            : (C) 2002 by 
-    email                : 
+    begin                : Fri Jun 21 2002
+    copyright            : (C) 2002 by Tue & Ken Haste Andersen
+    email                : haste@diku.dk
  ***************************************************************************/
 
 /***************************************************************************
@@ -15,21 +15,30 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef DLGVUMETER_H
-#define DLGVUMETER_H
+#ifndef WVUMETER_H
+#define WVUMETER_H
 
 #include <qwidget.h>
-#include <dlgvumeterdlg.h>
+#include <qprogressbar.h>
+#include "defs.h"
 
 /**
-  *@author 
+  *@author Tue & Ken Haste Andersen
   */
 
-class DlgVUmeter : public DlgVUmeterDlg  {
-   Q_OBJECT
+#define MAX_STEPS 127
+
+class WVUmeter : public QProgressBar
+{
+    Q_OBJECT
 public: 
-	DlgVUmeter(QWidget *parent=0, const char *name=0);
-	~DlgVUmeter();
+    WVUmeter(QWidget *parent=0, const char *name=0);
+    ~WVUmeter();
+signals:
+    valueChanged(int);
+public slots:
+    void setValue(int);
+
 };
 
 #endif

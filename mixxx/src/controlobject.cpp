@@ -203,7 +203,6 @@ void ControlObject::setAccelDown(const QKeySequence key)
 
 void ControlObject::forceGUIUpdate()
 {
-    qDebug("Cannot call forceGUIUpdate() for %s", print());
 }
 
 void ControlObject::slotSetPosition(int dummy)
