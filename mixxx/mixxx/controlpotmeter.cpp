@@ -77,8 +77,7 @@ void ControlPotmeter::slotSetPosition(int _newpos) {
   // Ensure that the position is within bounds:
   position = std::max(minPosition,std::min(newpos, maxPosition));
   // Calculate the value linearly:
-  value = (valuerange/positionrange)*
-    ((maxPosition-newpos)-minPosition)+minvalue;
+  value = (valuerange/positionrange)*(newpos-minPosition)+minvalue;
   //qDebug("Controlpotmeter: changed %s to %g.",name,value);
 
   emit valueChanged(value);

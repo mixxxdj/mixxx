@@ -44,6 +44,7 @@
 #include "player.h"
 #include "midiobject.h"
 #include "enginehmlfilter.h"
+#include "engineclipping.h"
 /**
   * This Class is the base class for your application. It sets up the main
   * window and providing a menubar, toolbar

@@ -77,8 +77,11 @@ MixxxApp::MixxxApp()
   //engines.push_back(highpass);
   //engines.push_back(lowpass);
   
-  EngineFilterLBH *lbh_filter = new EngineFilterLBH(view,midi);
+  EngineFilterLBH *lbh_filter = new EngineFilterLBH(view->channel,midi);
   engines.push_back(lbh_filter);
+
+  EngineClipping *clipping = new EngineClipping(view->channel);
+  engines.push_back(clipping);
 
   // Initialize player with a desired buffer size
   qDebug("Init player...");
