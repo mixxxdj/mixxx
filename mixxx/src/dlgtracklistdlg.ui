@@ -298,7 +298,7 @@
         </property>
         <property name="font">
             <font>
-                <pointsize>14</pointsize>
+                <pointsize>9</pointsize>
             </font>
         </property>
     </widget>

@@ -8,7 +8,7 @@
 	Initialize a new track with the filename.
 */
 TrackInfoObject::TrackInfoObject( const QString sPath, const QString sFile ) :
-m_sFilepath(sPath), m_sFilename(sFile)
+m_sFilename(sFile), m_sFilepath(sPath)
 {
 	m_sArtist = "";
 	m_sTitle = "";

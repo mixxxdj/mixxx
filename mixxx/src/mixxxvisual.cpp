@@ -45,6 +45,8 @@ bool MixxxVisual::eventFilter(QObject *o, QEvent *e)
     {
         QMouseEvent *m = (QMouseEvent *)e;
         int id = picking.pick(m->x(),m->y());
+
+        qDebug("picked %i",id);
 /*
         GUIContainer *c = getContainer(id);
         if (c!=0)
@@ -98,7 +100,7 @@ void MixxxVisual::initializeGL()
     backplane = new VisualBackplane();
     controller->add(backplane);
 
-    //picking.init(controller);
+    picking.init(controller);
 }
 
 

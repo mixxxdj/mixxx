@@ -28,8 +28,8 @@ class ReaderExtract
 {
 public: 
     ReaderExtract(ReaderExtract *_input);
-    ~ReaderExtract();
 
+    virtual ~ReaderExtract();
     /** Reset the buffer. This may be used when loading a new track and when seeking */
     virtual void reset() = 0;
     /** Get pointer to start of buffer array, pointer to list or however data are stored */

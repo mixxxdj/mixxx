@@ -75,7 +75,7 @@ EngineBuffer::EngineBuffer(MixxxApp *_mixxx, QAction *actionAudioBeatMark, Power
     controlplaypos->setWidget(playcontrol->SliderPosition);
     playposSlider = new ControlEngine(controlplaypos);
 #ifdef __UNIX__
-    playposSlider->setNotify(this,(void (EngineObject::*)(double))seek);
+//    playposSlider->setNotify(this,(void (EngineObject::*)(double))seek);
 #endif
 
     // Potmeter used to communicate bufferpos_play to GUI thread
