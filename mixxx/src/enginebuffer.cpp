@@ -53,6 +53,7 @@ EngineBuffer::EngineBuffer(QApplication *a, MixxxApp *m, DlgPlaycontrol *_playco
   playposSliderLast = 0.;
   playcontrol = _playcontrol;
   start_seek = -1;
+  BASERATE = 1.;
 
   // Play button
   PlayButton = new ControlPushButton(ConfigKey(group, "play"), simulated_latching);
@@ -88,11 +89,11 @@ EngineBuffer::EngineBuffer(QApplication *a, MixxxApp *m, DlgPlaycontrol *_playco
   GUIChannel *guichannel = mixxx->getVisual()->add(this);
 
   // Allocate sound buffer
-  soundbuffer = new SoundBuffer(READCHUNKSIZE, READCHUNK_NO, WINDOWSIZE, STEPSIZE);
+  soundbuffer = new SoundBuffer(READCHUNKSIZE, READCHUNK_NO, WINDOWSIZE, STEPSIZE, guichannel);
 
-  // Add sound buffer to visual channel
+  // Add wave buffer to visualization
   soundbuffer->setVisual(guichannel->add(soundbuffer));
-  
+
   read_buffer_prt = soundbuffer->getChunkPtr(0);
                               
   // Semaphore for stopping thread
@@ -182,6 +183,9 @@ void EngineBuffer::newtrack(const char* filename)
     if (file==0)
         qFatal("Error opening %s", filename);
 
+    // Set base rate
+    BASERATE = file->getSrate()/(FLOAT_TYPE)getPlaySrate();
+        
     visualPlaypos = 0;
     visualRate = 0.;
 
@@ -206,7 +210,7 @@ void EngineBuffer::newtrack(const char* filename)
         // Finish the title string:
         title = QString("Title : ") + title + "\n\n";
 
-        int seconds = file->length()/(2*SRATE);
+        int seconds = file->length()/(2*file->getSrate());
         QString tmp;
         tmp.sprintf("Length : %02d:%02d\n\n", seconds/60, seconds - 60*(seconds/60));
         title += tmp;

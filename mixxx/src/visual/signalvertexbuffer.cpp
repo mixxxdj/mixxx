@@ -123,7 +123,7 @@ bufInfo SignalVertexBuffer::getVertexArray()
     // Calculate new playpos based on playpos, rate and time since 
     int dt = time.elapsed();
     time.restart();
-    int newPlaypos = playpos + (int)(dt*enginebuffer->visualRate*enginebuffer->SRATE/1000.);
+    int newPlaypos = playpos + (int)(dt*enginebuffer->visualRate*enginebuffer->getPlaySrate()/1000.);
     
     playpos = enginebuffer->visualPlaypos/resampleFactor;
 

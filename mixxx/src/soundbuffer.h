@@ -27,22 +27,24 @@
 #include <qevent.h>
 #include <qobject.h>
 
+class GUIChannel;
+
 /**
   *@author Tue & Ken Haste Andersen
   */
 
 class SoundBuffer {
 public: 
-    SoundBuffer(int _chunkSize, int _chunkNo, int windowSize, int _stepSize);
+    SoundBuffer(int _chunkSize, int _chunkNo, int windowSize, int _stepSize, GUIChannel *guichannel);
     ~SoundBuffer();
     void setSoundSource(SoundSource *_file);
     void getchunk(CSAMPLE rate);
     void reset(double new_playpos);
-    void setVisual(QObject *visualBuffer);
     CSAMPLE *getChunkPtr(int chunkIdx);
     CSAMPLE *getWindowPtr(int windowIdx);
     double getFileposStart();
-    double getFileposEnd();    
+    double getFileposEnd();
+    void setVisual(QObject *_visualBuffer);    
     /** The buffer where the samples are read into */
     CSAMPLE *read_buffer;
 

@@ -67,7 +67,7 @@ SoundSourceMp3::SoundSourceMp3(const char* filename)
         currentframe++;
         mad_timer_add (&filelength, Header.duration);
         bitrate += Header.bitrate;
-        freq = Header.samplerate;
+        SRATE = Header.samplerate;
     }
 
     mad_header_finish (&Header);

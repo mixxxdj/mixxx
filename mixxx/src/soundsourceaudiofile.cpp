@@ -28,6 +28,7 @@ SoundSourceAudioFile::SoundSourceAudioFile(const char* filename)
         filelength = 2*afGetFrameCount(fh,AF_DEFAULT_TRACK);
 
     channels = 2;
+    SRATE = afGetRate(fh,AF_DEFAULT_TRACK);
     type = "wav file.";
 //    qDebug("length: %i",filelength);
 }

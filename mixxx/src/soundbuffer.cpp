@@ -17,7 +17,7 @@
 
 #include "soundbuffer.h"
 
-SoundBuffer::SoundBuffer(int _chunkSize, int _chunkNo, int windowSize, int _stepSize)
+SoundBuffer::SoundBuffer(int _chunkSize, int _chunkNo, int windowSize, int _stepSize, GUIChannel *guichannel)
 {
     // Setup variables for block based analysis
     chunkSize = _chunkSize;
@@ -50,7 +50,6 @@ SoundBuffer::SoundBuffer(int _chunkSize, int _chunkNo, int windowSize, int _step
     filepos_end.write(0.);
     bufferpos_start = 0;
     bufferpos_end = 0;
-
 }
 
 SoundBuffer::~SoundBuffer()
@@ -166,11 +165,6 @@ void SoundBuffer::reset(double new_playpos)
         read_buffer[i] = 0.;
 }
 
-void SoundBuffer::setVisual(QObject *_visualBuffer)
-{
-    visualBuffer = _visualBuffer;
-}
-
 // Get a pointer to the chunk at index chunkIdx
 CSAMPLE *SoundBuffer::getChunkPtr(int chunkIdx)
 {
@@ -213,4 +207,9 @@ double SoundBuffer::getFileposStart()
 double SoundBuffer::getFileposEnd()
 {
     return filepos_end.read();
+}
+
+void SoundBuffer::setVisual(QObject *_visualBuffer)
+{
+    visualBuffer = _visualBuffer;
 }

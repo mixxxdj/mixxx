@@ -3,33 +3,18 @@
 <KDevPrjSession>
  <LastCompileConfig>(Default)</LastCompileConfig>
  <Mainframe MaximizeMode="1" />
- <DocsAndViews NumberOfDocuments="9" >
-  <Doc0 CursorPosLine="71" Type="KWriteDoc" NumberOfViews="1" CursorPosCol="52" FileName="/home/haste/cvs/mixxx/src/mixxxvisual.cpp" >
-   <View0 Top="191" Width="739" Attach="1" Height="607" Left="171" Focus="0" Type="KWriteView" MinMaxMode="0" />
+ <DocsAndViews NumberOfDocuments="4" >
+  <Doc0 CursorPosLine="46" Type="KWriteDoc" NumberOfViews="1" CursorPosCol="41" FileName="/home/haste/cvs/mixxx/src/soundbuffer.h" >
+   <View0 Top="23" Width="400" Attach="1" Height="300" Left="3" Focus="0" Type="KWriteView" MinMaxMode="0" />
   </Doc0>
-  <Doc1 CursorPosLine="43" Type="KWriteDoc" NumberOfViews="1" CursorPosCol="24" FileName="/home/haste/cvs/mixxx/src/visual/guichannel.h" >
-   <View0 Top="170" Width="738" Attach="1" Height="352" Left="150" Focus="0" Type="KWriteView" MinMaxMode="0" />
+  <Doc1 CursorPosLine="52" Type="KWriteDoc" NumberOfViews="1" CursorPosCol="0" FileName="/home/haste/cvs/mixxx/src/soundbuffer.cpp" >
+   <View0 Top="44" Width="739" Attach="1" Height="636" Left="24" Focus="0" Type="KWriteView" MinMaxMode="0" />
   </Doc1>
-  <Doc2 CursorPosLine="24" Type="KWriteDoc" NumberOfViews="1" CursorPosCol="31" FileName="/home/haste/cvs/mixxx/src/visual/guichannel.cpp" >
-   <View0 Top="170" Width="738" Attach="1" Height="607" Left="150" Focus="0" Type="KWriteView" MinMaxMode="0" />
+  <Doc2 CursorPosLine="103" Type="KWriteDoc" NumberOfViews="1" CursorPosCol="57" FileName="/home/haste/cvs/mixxx/src/enginebuffer.h" >
+   <View0 Top="65" Width="738" Attach="1" Height="368" Left="45" Focus="0" Type="KWriteView" MinMaxMode="0" />
   </Doc2>
-  <Doc3 CursorPosLine="77" Type="KWriteDoc" NumberOfViews="1" CursorPosCol="0" FileName="/home/haste/cvs/mixxx/src/visual/signalvertexbuffer.cpp" >
-   <View0 Top="149" Width="738" Attach="1" Height="607" Left="129" Focus="0" Type="KWriteView" MinMaxMode="0" />
+  <Doc3 CursorPosLine="101" Type="KWriteDoc" NumberOfViews="1" CursorPosCol="4" FileName="/home/haste/cvs/mixxx/src/enginebuffer.cpp" >
+   <View0 Top="63" Width="745" Attach="1" Height="633" Left="63" Focus="1" Type="KWriteView" MinMaxMode="2" />
   </Doc3>
-  <Doc4 CursorPosLine="37" Type="KWriteDoc" NumberOfViews="1" CursorPosCol="43" FileName="/home/haste/cvs/mixxx/src/visual/signalvertexbuffer.h" >
-   <View0 Top="170" Width="738" Attach="1" Height="607" Left="150" Focus="0" Type="KWriteView" MinMaxMode="0" />
-  </Doc4>
-  <Doc5 CursorPosLine="297" Type="KWriteDoc" NumberOfViews="1" CursorPosCol="0" FileName="/home/haste/cvs/mixxx/src/mixxx.cpp" >
-   <View0 Top="149" Width="738" Attach="1" Height="607" Left="129" Focus="0" Type="KWriteView" MinMaxMode="0" />
-  </Doc5>
-  <Doc6 CursorPosLine="19" Type="KWriteDoc" NumberOfViews="1" CursorPosCol="22" FileName="/home/haste/cvs/mixxx/src/visual/guicontainer.cpp" >
-   <View0 Top="149" Width="738" Attach="1" Height="607" Left="129" Focus="0" Type="KWriteView" MinMaxMode="0" />
-  </Doc6>
-  <Doc7 CursorPosLine="47" Type="KWriteDoc" NumberOfViews="1" CursorPosCol="0" FileName="/home/haste/cvs/mixxx/src/enginebuffer.h" >
-   <View0 Top="170" Width="738" Attach="1" Height="607" Left="150" Focus="0" Type="KWriteView" MinMaxMode="0" />
-  </Doc7>
-  <Doc8 CursorPosLine="24" Type="KWriteDoc" NumberOfViews="1" CursorPosCol="51" FileName="/home/haste/cvs/mixxx/src/enginebuffer.cpp" >
-   <View0 Top="168" Width="744" Attach="1" Height="633" Left="168" Focus="1" Type="KWriteView" MinMaxMode="2" />
-  </Doc8>
  </DocsAndViews>
 </KDevPrjSession>

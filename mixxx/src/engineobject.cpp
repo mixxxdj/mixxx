@@ -18,15 +18,7 @@
 #include "engineobject.h"
 
 // Static member variable definition
-//QString EngineObject::NAME_MASTER = 0;
-//QString EngineObject::NAME_HEAD = 0;
-int EngineObject::SRATE = 0;
-//int EngineObject::BITS = 0;
-//int EngineObject::BUFFERSIZE = 0;
-//int EngineObject::CH_MASTER = 0;
-//int EngineObject::CH_HEAD = 0;
-FLOAT_TYPE EngineObject::BASERATE = 1.0;
-//MixxxView *EngineObject::view = 0;
+int EngineObject::PLAY_SRATE = 0;
 
 EngineObject::EngineObject()
 {
@@ -36,8 +28,12 @@ EngineObject::~EngineObject()
 {
 }
 
-void EngineObject::setSrate(int srate)
+void EngineObject::setPlaySrate(int srate)
 {
-    SRATE      = srate;
-    BASERATE = 44100.0/FLOAT_TYPE(SRATE); // Set the basic rate.
+    PLAY_SRATE      = srate;
+}
+
+int EngineObject::getPlaySrate()
+{
+    return PLAY_SRATE;
 }
