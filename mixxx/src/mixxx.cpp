@@ -83,7 +83,7 @@
   #include "midiobjectwin.h"
 #endif
 
-MixxxApp::MixxxApp(QApplication *a)
+MixxxApp::MixxxApp(QApplication *a, bool bVisuals)
 {
     qDebug("Starting up...");
     setCaption(tr("Mixxx " VERSION));
@@ -92,10 +92,6 @@ MixxxApp::MixxxApp(QApplication *a)
 
     // Ensure that a directory named ~/.mixxx exists
     QDir().mkdir(QDir::homeDirPath().append("/").append(SETTINGS_DIR));
-
-    // Call inits to invoke all other construction parts
-    initActions();
-    initMenuBar();
 
     // Reset pointer to players
     player = 0;
@@ -110,7 +106,13 @@ MixxxApp::MixxxApp(QApplication *a)
     control = new ControlNull();
     control->setParentWidget(this);
 
-    initView();
+    // set the main widget here
+    view=new MixxxView(this,bVisuals);
+    setCentralWidget(view);
+
+    // Call inits to invoke all other construction parts
+    initActions();
+    initMenuBar();
 
     // Open midi
     //qDebug("Init midi...");
@@ -227,7 +229,6 @@ MixxxApp::MixxxApp(QApplication *a)
     if (powermate1->opendev())
     {
         qDebug("Found PowerMate 1");
-
     }
     else
     {
@@ -413,13 +414,6 @@ void MixxxApp::initMenuBar()
   menuBar()->insertSeparator();
   menuBar()->insertItem(tr("&Help"), helpMenu);
 
-}
-
-void MixxxApp::initView()
-{
-    // set the main widget here
-    view=new MixxxView(this);
-    setCentralWidget(view);
 }
 
 bool MixxxApp::queryExit()

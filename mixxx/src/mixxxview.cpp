@@ -33,17 +33,16 @@
   #include "wvisual.h"
 #endif
 
-MixxxView::MixxxView(QWidget *parent) : QWidget(parent)
+MixxxView::MixxxView(QWidget *parent, bool bVisuals) : QWidget(parent)
 {
     // Path to image files
     path = QDir::currentDirPath().append("/images/");
     qDebug("Image path %s",path.latin1());
 
 #ifdef __WIN__
-	// QPixmap fix needed on Windows 9x
-	QPixmap::setDefaultOptimization(QPixmap::MemoryOptim);
+    // QPixmap fix needed on Windows 9x
+    QPixmap::setDefaultOptimization(QPixmap::MemoryOptim);
 #endif
-
 
     //
     // Construct main widget
@@ -54,33 +53,36 @@ MixxxView::MixxxView(QWidget *parent) : QWidget(parent)
     main->setPaletteBackgroundPixmap(background);
     main->move(0,0);
 
-    m_pTrackTable = new WTrackTable(main);
-    m_pTrackTable->move(76,490);
-    m_pTrackTable->setFixedSize(870, 250);
-
-    // Set visual vidget here
+    // Setup visuals
     m_pVisualCh1 = 0;
     m_pVisualCh2 = 0;
 #ifdef __VISUALS__
-    m_pVisualCh1 = new WVisual(main);
-    if (m_pVisualCh1->isValid())
+    if (bVisuals)
     {
-        m_pVisualCh2 = new WVisual(main,"",m_pVisualCh1);
+        m_pVisualCh1 = new WVisual(main);
+        if (m_pVisualCh1->isValid())
+        {
+            m_pVisualCh2 = new WVisual(main,"",m_pVisualCh1);
 
-        m_pVisualCh1->move(77,100);
-        m_pVisualCh1->setFixedSize(303,120);
-        m_pVisualCh2->move(644,100);
-        m_pVisualCh2->setFixedSize(303,120);
+            m_pVisualCh1->move(77,100);
+            m_pVisualCh1->setFixedSize(303,120);
+            m_pVisualCh2->move(644,100);
+            m_pVisualCh2->setFixedSize(303,120);
 
-        m_pVisualCh1->show();
-        m_pVisualCh2->show();
-    }
-    else
-    {
-        delete m_pVisualCh1;
-        m_pVisualCh1 = 0;
+            m_pVisualCh1->show();
+            m_pVisualCh2->show();
+        }
+        else
+        {
+            delete m_pVisualCh1;
+            m_pVisualCh1 = 0;
+        }
     }
 #endif
+
+    m_pTrackTable = new WTrackTable(main);
+    m_pTrackTable->move(76,490);
+    m_pTrackTable->setFixedSize(870, 250);
 
     m_pTextCh1 = new QLabel(main);
     m_pTextCh1->setPaletteBackgroundColor(QColor(0,0,0));
@@ -156,7 +158,7 @@ MixxxView::MixxxView(QWidget *parent) : QWidget(parent)
     m_pVUmeterCh1 = new WDisplay(main);
     m_pVUmeterCh1->setPositions(33);
     int i;
-	for (i=0; i<10; ++i)
+    for (i=0; i<10; ++i)
         m_pVUmeterCh1->setPixmap(i, getPath(QString("vu-left/vu0%1.png").arg(i).latin1()));
     for (i=10; i<33; ++i)
         m_pVUmeterCh1->setPixmap(i, getPath(QString("vu-left/vu%1.png").arg(i).latin1()));
@@ -212,8 +214,8 @@ MixxxView::MixxxView(QWidget *parent) : QWidget(parent)
     m_pCueCh2->move(832,267);
 
 #ifdef __WIN__	
-	// QPixmap fix needed on Windows 9x
-	QPixmap::setDefaultOptimization(QPixmap::NormalOptim);
+    // QPixmap fix needed on Windows 9x
+    QPixmap::setDefaultOptimization(QPixmap::NormalOptim);
 #endif
 
 }
@@ -233,9 +235,13 @@ void MixxxView::assignWidgets(ControlObject *p)
 
 //    p->setWidget(playcontrol1->BPM, ConfigKey("[Channel1]", "bpm"));
 //    p->setWidget(playcontrol2->BPM, ConfigKey("[Channel2]", "bpm"));
-    p->setWidget(m_pVisualCh1, ConfigKey("[Channel1]", "wheel"), true, Qt::LeftButton);
-    p->setWidget(m_pVisualCh2, ConfigKey("[Channel2]", "wheel"), true, Qt::LeftButton);
 
+    if (m_pVisualCh1)
+    {
+        p->setWidget(m_pVisualCh1, ConfigKey("[Channel1]", "wheel"), true, Qt::LeftButton);
+        p->setWidget(m_pVisualCh2, ConfigKey("[Channel2]", "wheel"), true, Qt::LeftButton);
+    }
+    
     p->setWidget(m_pSliderRateCh1, ConfigKey("[Channel1]", "rate"), false);
     p->setWidget(m_pSliderRateCh2, ConfigKey("[Channel2]", "rate"), false);
     
@@ -307,9 +313,6 @@ void MixxxView::assignWidgets(ControlObject *p)
 
 const QString MixxxView::getPath(QString location)
 {
-	QString l(location);
-	
-	return l.prepend(path);
+    QString l(location);
+    return l.prepend(path);
 }
-
-                                                                 

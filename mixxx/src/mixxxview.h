@@ -39,11 +39,12 @@ class MixxxView : public QWidget
 {
     Q_OBJECT
 public:
-    MixxxView(QWidget *parent=0);
+    /** Construtor. Tries to open visuals if bVisuals is true. */
+    MixxxView(QWidget *parent, bool bVisuals);
     ~MixxxView();
     /** Setup connections between widgets and ControlObjects */
     void assignWidgets(ControlObject *p);
-
+    
     WTrackTable *m_pTrackTable;
     QLabel *m_pTextCh1, *m_pTextCh2;
     /** Pointer to WVisual widgets */
