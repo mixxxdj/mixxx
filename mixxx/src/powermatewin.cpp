@@ -221,9 +221,11 @@ void PowerMateWin::process_event(char *pEv)
     {
         // Send event to GUI thread
         if (pEv[0]==1)
-            QApplication::postEvent(m_pControl,new ControlEventMidi(NOTE_ON, kiPowermateMidiChannel, (char)(m_iInstNo*2+kiPowermateMidiBtn),1));
+			if (m_pControlObjectButton)
+                m_pControlObjectButton->queueFromMidi(NOTE_ON, 1);
         else
-            QApplication::postEvent(m_pControl,new ControlEventMidi(NOTE_OFF, kiPowermateMidiChannel, (char)(m_iInstNo*2+kiPowermateMidiBtn),1));
+			if (m_pControlObjectButton)
+                m_pControlObjectButton->queueFromMidi(NOTE_OFF, 1);
 
 //      qDebug("PowerMate: Button was %s %i", pEv[1]? "pressed":"released",pEv[1]);
     }

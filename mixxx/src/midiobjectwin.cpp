@@ -17,7 +17,7 @@
 
 #include "midiobjectwin.h"
 
-MidiObjectWin::MidiObjectWin(ConfigObject<ConfigValueMidi> *c, QApplication *a, ControlObject *control, QString device) : MidiObject(c, a, control, device)
+MidiObjectWin::MidiObjectWin(ConfigObject<ConfigValueMidi> *c, QString device) : MidiObject(c, device)
 {
     // Fill in list of available devices
     bool device_valid = false; // Is true if device is a valid device name

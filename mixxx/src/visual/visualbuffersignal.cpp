@@ -27,7 +27,7 @@ VisualBufferSignal::VisualBufferSignal(ReaderExtract *pReaderExtract, EngineBuff
     
     // Ensure a horizontal line is visible
     for (int i=0; i<m_iLen; i+=2)
-        m_pBuffer[i*3+1]=0.05;
+        m_pBuffer[i*3+1]=0.05f;
 
     // Initialize wrap buffer    
     m_fWrapBuffer[ 0] = -2;

@@ -116,7 +116,7 @@ QString *MidiObject::getOpenDevice()
 void MidiObject::send(MidiCategory category, char channel, char control, char value)
 {
     MidiType type = MIDI_EMPTY;
-    if (category==NOTE_ON | category==NOTE_OFF)
+    if ((category==NOTE_ON) | (category==NOTE_OFF))
         type = MIDI_KEY;
     else if (category==CTRL_CHANGE)
         type = MIDI_CTRL;

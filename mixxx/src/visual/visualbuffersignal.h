@@ -26,7 +26,7 @@
 
 // Sample rate in Hertz at which the sound buffer is resampled
 const int kiVisualResampleRate = 1000;
-const float kfWaveshapeFactor = 0.99;
+const float kfWaveshapeFactor = 0.99f;
 
 class VisualBufferSignal : public VisualBuffer  {
 public:
