@@ -34,17 +34,17 @@
 #include "dlgchannel.h"
 #include "midiobject.h"
 #include "soundsource.h"
+#include "soundbuffer.h"
 
 /**
   *@author Tue and Ken Haste Andersen
 */
 
-class EngineBuffer : public EngineObject, public QThread  {
+class EngineBuffer : public EngineObject, public QThread {
  Q_OBJECT
 public:
     EngineBuffer(QApplication *app, QWidget *mixxx, DlgPlaycontrol *, const char *group, const char *filename);
     ~EngineBuffer();
-    void setVisual(QObject *visualBuffer);
     void newtrack(const char *);
     CSAMPLE *update_visual();
     CSAMPLE *process(const CSAMPLE *, const int);
@@ -53,11 +53,11 @@ public:
     /** Playpos slider values */
     FLOAT_TYPE playposSliderLast, playposSliderNew;
     /** Buffer used in the process() */
-    CSAMPLE *buffer; 
-    int visualPos1, visualLen1, visualPos2, visualLen2, visualPlaypos;
+    CSAMPLE *buffer;
+
+    int visualPlaypos;
     float visualRate;
-    /** The buffer where the samples are read into */
-    CSAMPLE *read_buffer;
+ 
 public slots:
    void slotUpdatePlay(valueType);
    void slotUpdateRate(FLOAT_TYPE);
@@ -65,33 +65,28 @@ public slots:
 signals:
    void position(int);   
 private:
+
+    void run();
+    void stop();
+    QSemaphore *requestStop;
+    QWaitCondition *buffersReadAhead;
+    QSemaphore *readChunkLock;
+
    QApplication *app;
    QWidget *mixxx;
    bool pause;
    int start_seek;
    Monitor rate;
-   void run();
-   void stop();
-   QSemaphore *requestStop;
-   QSemaphore *readChunkLock;
-   QWaitCondition *buffersReadAhead;
 
-   /** The first read sample in the file, currently in read_buffer. */
-   Monitor filepos_start;
-   /** The last read sample in the file, currently in read_buffer. */
-   Monitor filepos_end;
+   SoundBuffer *soundbuffer;
+   
    /** The current sample to play in the file. */
    Monitor filepos_play; 
    /** Sample in the buffer relative to filepos_play. */
    Monitor bufferpos_play;
-   /** Buffer start and end position */
-   int bufferpos_start, bufferpos_end;
-   /** Pointer to visual vertex buffer */
-   QObject *visualBuffer;
 
    DlgPlaycontrol *playcontrol;
    
-   void getchunk();
    void seek(FLOAT_TYPE);
    void checkread();
    void writepos();
@@ -99,7 +94,8 @@ private:
    ControlPotmeter *rateSlider;
    ControlTTRotary *wheel;
    SoundSource *file;
-   SAMPLE *temp;
    const char *group;
+
+   CSAMPLE *read_buffer_prt;
 };
 #endif

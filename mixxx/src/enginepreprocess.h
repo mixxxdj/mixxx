@@ -19,6 +19,11 @@
 #define ENGINEPREPROCESS_H
 
 #include "engineobject.h"
+#include "enginespectralfwd.h"
+#include "defs.h"
+#include <qptrlist.h>
+
+class SoundBuffer;
 
 /**
   * Pre-processing of audio buffers before playback and handling by EngineBuffer::process()
@@ -27,13 +32,17 @@
   */
 
 class EnginePreProcess : public EngineObject  {
-	Q_OBJECT
+    Q_OBJECT
 public:
-	EnginePreProcess();
-	~EnginePreProcess();
-	CSAMPLE *process(const CSAMPLE *source, const int buf_size);
+    EnginePreProcess(SoundBuffer *_soundbuffer, int _specNo, int windowSize);
+    ~EnginePreProcess();
+    void update(int specFrom, int specTo);
+    CSAMPLE *process(const CSAMPLE *, const int);
 private:
-	CSAMPLE *buffer;
+    SoundBuffer *soundbuffer;
+    int specNo;
+    QPtrList<EngineSpectralFwd> specList;
+    
 };
 
 #endif

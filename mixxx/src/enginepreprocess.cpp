@@ -17,18 +17,39 @@
 
 #include "enginepreprocess.h"
 #include "configobject.h"
+#include "soundbuffer.h"
 
-EnginePreProcess::EnginePreProcess()
+EnginePreProcess::EnginePreProcess(SoundBuffer *_soundbuffer, int _specNo, int windowSize)
 {
-    buffer = new CSAMPLE[MAX_BUFFER_LEN];
+    specNo = _specNo;
+    soundbuffer = _soundbuffer;
+
+    // Allocate list of EngineSpectralFwd objects, corresponding to one object for each
+    // stepsize throughout the readbuffer of EngineBuffer
+    specList.setAutoDelete(TRUE);
+    for (int i=0; i<specNo; i++)
+        specList.append(new EngineSpectralFwd(true,false,windowSize));
 }
 
 EnginePreProcess::~EnginePreProcess()
 {
-    delete [] buffer;
 }
 
-CSAMPLE *EnginePreProcess::process(const CSAMPLE *source, const int buf_size)
+void EnginePreProcess::update(int specFrom, int specTo)
 {
-    return buffer;
+    if (specTo>specFrom)
+        for (int i=specFrom; i<specTo; i++)
+            specList.at(i)->process(soundbuffer->getWindowPtr(i),0);
+    else
+    {
+        for (int i=specFrom; i<specNo; i++)
+            specList.at(i)->process(soundbuffer->getWindowPtr(i),0);
+        for (int i=0; i<specTo; i++)
+            specList.at(i)->process(soundbuffer->getWindowPtr(i),0);
+    }
+}
+
+CSAMPLE *EnginePreProcess::process(const CSAMPLE *, const int)
+{
+    return 0;
 }

@@ -145,9 +145,11 @@ MixxxApp::MixxxApp(QApplication *a)
   config->set(ConfigKey("[Midi]","Device"), ConfigValue(midi->getOpenDevice()->latin1()));
 
   // On unix, get directory where MIDI configurations are stored. If no is given, set to CONFIG_PATH
-#ifdef __UNIX__ && !__MACX__
+#ifdef __UNIX__
+#ifndef __MACX__
   if (config->getValueString(ConfigKey("[Midi]","Configdir")).length() == 0)
       config->set(ConfigKey("[Midi]","Configdir"),ConfigValue(CONFIG_PATH));
+#endif
 #endif
 
   // On Mac and Windows, always set the config dir relative to the application dir

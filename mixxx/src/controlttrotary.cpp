@@ -17,7 +17,8 @@ ControlTTRotary::ControlTTRotary(ConfigKey key) : ControlObject(key)
 
 void ControlTTRotary::slotSetPosition(int v)
 {
-    value = (float)(v-64.)/1000.;
+    value = ((float)v-64.)/200.;
+    qDebug("%f",value);
     emit(valueChanged(value));
 /*    if (v==0)
         received--;
