@@ -15,10 +15,6 @@
 # If ASIO is used, ensure that the path to the ASIO SDK 2 is set correctly below
 WINPA = DIRECTSOUND
 
-# Use this definition on Linux if Mixxx should be statically linked with libmad,
-# libid3tag, ogg, vorbis and audiofile
-#unix:LINLIBPATH = ../../mixxx-linlib
-
 # Include for unix dependencies. (19/12/2003, J_Zar)
 unix:include( main.qbas )
 
@@ -101,9 +97,6 @@ HEADERS += wvisualsimple.h wvisualwaveform.h visual/visualbackplane.h  visual/te
 CONFIG += opengl
 
 # MP3
-count(LINLIBPATH, 1) {
-    unix:!macx:LIBS += $$LINLIBPATH/libs/libmad.a $$LINLIBPATH/libs/libid3tag.a
-}
 win32:LIBS += libmad-release.lib libid3tag-release.lib
 macx:LIBS += $$MACLIBPATH/lib/libmad.a $$MACLIBPATH/lib/libid3tag.a
 
@@ -115,9 +108,6 @@ HEADERS += ../lib/vbrheadersdk/dxhead.h
 # Wave files
 unix:SOURCES += soundsourceaudiofile.cpp
 unix:HEADERS += soundsourceaudiofile.h
-count(LINLIBPATH, 1) {
-    unix:!macx:LIBS += $$LINLIBPATH/libs/libaudiofile.a
-}
 win32:SOURCES += soundsourcesndfile.cpp
 win32:HEADERS += soundsourcesndfile.h
 win32:LIBS += libsndfile.lib
@@ -125,9 +115,6 @@ macx:LIBS += $$MACLIBPATH/lib/libaudiofile.a
 
 
 # Ogg Vorbis
-count(LINLIBPATH, 1) {
-    unix:!macx:LIBS += $$LINLIBPATH/libs/libvorbisfile.a $$LINLIBPATH/libs/libvorbis.a $$LINLIBPATH/libs/libogg.a
-}
 win32:LIBS += vorbisfile_static.lib vorbis_static.lib ogg_static.lib
 macx:LIBS += $$MACLIBPATH/lib/libvorbis.a $$MACLIBPATH/lib/libvorbisfile.a $$MACLIBPATH/lib/libogg.a
 
@@ -196,12 +183,6 @@ unix {
   UI_DIR = .ui
   MOC_DIR = .moc
   OBJECTS_DIR = .obj
-
-# Libs needed for static linking on Linux
-count(LINLIBPATH,1) {
-    unix:message("Using static linking")
-#    unix:LIBS += -ldl -lm -lXrender -lSM /usr/lib/libfontconfig.a -lXft
-}
 
 # GCC Compiler optimization flags
 #  QMAKE_CXXFLAGS += -pg -march=pentium3 -O3 -pipe
