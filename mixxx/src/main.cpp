@@ -26,6 +26,7 @@
 #include <stdio.h>
 #include <math.h>
 #include "portaudio.h"
+#include "icon.xpm"
 
 #include "mixxx.h"
 
@@ -106,7 +107,7 @@ int main(int argc, char *argv[])
     mixxx->setFixedWidth(1024);
     mixxx->setFixedHeight(768);
 */
-    //mixxx->setIcon(QPixmap());
+    mixxx->setIcon(QPixmap(icon));
 
     mixxx->show();
     int result = a.exec();
