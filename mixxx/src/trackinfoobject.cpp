@@ -51,6 +51,9 @@ TrackInfoObject::TrackInfoObject( const QDomNode &nodeHeader )
 	m_sBitrate = node.toElement().text();
 	node = node.nextSibling();
 
+	m_iLength = node.toElement().text().toInt();
+    node = node.nextSibling();
+
 	m_iTimesPlayed = node.toElement().text().toInt();
 
 	// Check that the actual file exists:
@@ -85,8 +88,9 @@ void TrackInfoObject::WriteToXML( QDomDocument &doc, QDomElement &header )
 	AddElement( doc, header, "Title", m_sTitle );
 	AddElement( doc, header, "Artist", m_sArtist );
 	AddElement( doc, header, "Type", m_sType );
-	AddElement( doc, header, "Duration", QString("%1").arg(Duration()) );
+	AddElement( doc, header, "Duration", QString("%1").arg(m_iDuration) );
 	AddElement( doc, header, "Bitrate", m_sBitrate );
+	AddElement( doc, header, "Length", QString("%1").arg(m_iLength) );
 	AddElement( doc, header, "TimesPlayed", QString("%1").arg(m_iTimesPlayed) );
 }
 
