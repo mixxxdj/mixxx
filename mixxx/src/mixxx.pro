@@ -83,7 +83,7 @@ unix {
   LIBS += -lsrfftw -lsfftw
   INCLUDEPATH += .
 #  Intel Compiler optimization flags
-#  QMAKE_CXXFLAGS += -rcd -tpp6 -xiMK # icc pentium III
+  QMAKE_CXXFLAGS += -rcd -tpp6 -xiMK # icc pentium III
 #  QMAKE_CXXFLAGS += -rcd -tpp7 -xiMKW # icc pentium IV 
 #  QMAKE_CXXFLAGS += -prof_gen #-prof_use -prof_gen # icc profiling
   !macx:CONFIG_PATH = \"/usr/share/mixxx\"
@@ -120,6 +120,6 @@ FORMS	= dlgchanneldlg.ui dlgplaycontroldlg.ui dlgplaylistdlg.ui dlgmasterdlg.ui 
 IMAGES	= filesave.xpm
 unix:TEMPLATE         = app
 win32:TEMPLATE       = vcapp
-CONFIG	+= qt warn_on thread debug 
+CONFIG	+= qt warn_on thread release 
 DBFILE	= mixxx.db
 LANGUAGE	= C++

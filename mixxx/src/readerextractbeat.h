@@ -24,8 +24,8 @@
 
 
 const CSAMPLE threshold = 5.;
-const CSAMPLE histMinBPM = 60.;
-const CSAMPLE histMaxBPM = 200.;
+const CSAMPLE histMinBPM = 50.;
+const CSAMPLE histMaxBPM = 230.;
 const int gaussWidth = 8; // Width of gauss/2
 
 /**
