@@ -24,6 +24,7 @@
 #include <qptrlist.h>
 #include "configobject.h"
 #include "defs.h"
+#include "midiobject.h"
 
 class ControlEngine;
 class ControlEngineQueue;
@@ -47,7 +48,7 @@ public:
   FLOAT_TYPE getValue();
 public slots:
   virtual void slotSetPosition(int) = 0;
-  void slotSetPositionMidi(int);
+  virtual void slotSetPositionMidi(MidiCategory c, int v) = 0;
 signals:
   void updateGUI(int);
   void valueChanged(FLOAT_TYPE);
@@ -65,7 +66,7 @@ protected:
   /** Internal number of associated ControlEngine object */
   int controlEngineNo;
 private:
-  void midi(char channel, char control, char value);
+  void midi(MidiCategory category, char channel, char control, char value);
   bool eventFilter(QObject *, QEvent *);
 
   /** List of ControlObject instantiations */

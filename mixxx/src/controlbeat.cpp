@@ -42,7 +42,7 @@ void ControlBeat::slotSetPosition(int pos)
     {
         // Move back in filter one sample
         int i;
-		for (i=1; i<filterLength; i++)
+        for (i=1; i<filterLength; i++)
             buffer[i-1] = buffer[i];
             
         buffer[filterLength-1] = 1000.*(60./elapsed);
@@ -60,6 +60,15 @@ void ControlBeat::slotSetPosition(int pos)
 
     emitValueChanged(value);
 }
+
+void ControlBeat::slotSetPositionMidi(MidiCategory, int v)
+{
+    //qDebug("thread id: %p",pthread_self());
+
+    slotSetPosition(v);
+    emit(updateGUI(v));
+}
+
 
 void ControlBeat::forceGUIUpdate()
 {

@@ -24,6 +24,13 @@
 #include <qfile.h>
 #include <qtextstream.h>
 
+typedef enum {
+    EMPTY            = 0,
+    KEY              = 1,
+    CTRL             = 2
+} MidiType;
+
+
 /*
   Class for the key for a specific configuration element. A key consists of a
   group and an item.
@@ -51,13 +58,21 @@ class ConfigValue
 
 class ConfigValueMidi : public ConfigValue
 {
-  public:
+public:
     ConfigValueMidi() {};
     ConfigValueMidi(QString _value) : ConfigValue(_value)
     {
-        QString s2;
-        QTextIStream(&_value) >> midino >> midimask >> s2 >> midichannel;
-        if (s2.endsWith("h"))
+        QString channelMark;
+        QString type;
+        QTextIStream(&_value) >> type >> midino >> channelMark >> midichannel;
+        if (type.contains("Key",false))
+            miditype = KEY;
+        else if (type.contains("Ctrl",false))
+            miditype = CTRL;
+        else
+            miditype = EMPTY;
+
+        if (channelMark.endsWith("h"))
             midichannel--;   // Internally midi channels are form 0-15,
                              // while musicians operates on midi channels 1-16.
         else
@@ -66,28 +81,38 @@ class ConfigValueMidi : public ConfigValue
         // If empty string, default midino should be below 0.
         if (_value.length()==0)
             midino = -1;
-        //qDebug("--1, midino: %i, midimask: %i, midichannel: %i",midino,midimask,midichannel);
+//        qDebug("miditype: %s, midino: %i, midichannel: %i",type.latin1(),midino,midichannel);
     };
-    ConfigValueMidi(int _midino, int _midimask, int _midichannel)
+    ConfigValueMidi(MidiType _miditype, int _midino, int _midichannel)
     {
         //qDebug("--2");
+        miditype = _miditype;
         midino = _midino;
-        midimask = _midimask;
         midichannel = _midichannel;
-        QTextOStream(&value) << midino << " " << midimask << " ch " << midichannel;
+        QTextOStream(&value) << midino << " ch " << midichannel;
+        if (miditype==KEY)
+            value.prepend("Key ");
+        else if (miditype==CTRL)
+            value.prepend("Ctrl ");
+
         //QTextIStream(&value) << midino << midimask << "ch" << midichannel;
     };
     void valCopy(const ConfigValueMidi v)
     {
         //qDebug("--1, midino: %i, midimask: %i, midichannel: %i",midino,midimask,midichannel);
+        miditype = v.miditype;
         midino = v.midino;
-        midimask = v.midimask;
         midichannel = v.midichannel;
-        QTextOStream(&value) << midino << " " << midimask << " ch " << midichannel;
+        QTextOStream(&value) << midino << " ch " << midichannel;
+        if (miditype==KEY)
+            value.prepend("Key ");
+        else if (miditype==CTRL)
+            value.prepend("Ctrl ");
         //qDebug("--1, midino: %i, midimask: %i, midichannel: %i",midino,midimask,midichannel);
     }
 
-    int   midino, midimask, midichannel;
+    MidiType miditype;
+    int midino, midichannel;
 };
 
 template <class ValueType> class ConfigOption

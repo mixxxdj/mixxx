@@ -19,6 +19,7 @@
 #define CONTROLEVENTMIDI_H
 
 #include <qevent.h>
+#include "midiobject.h"
 
 /**
   *@author Tue & Ken Haste Andersen
@@ -29,12 +30,14 @@
 
 class ControlEventMidi : public QCustomEvent {
 public: 
-    ControlEventMidi(char channel, char control, char value);
+    ControlEventMidi(MidiCategory category, char channel, char control, char value);
     ~ControlEventMidi();
+    MidiCategory category() const;
     char channel() const;
     char control() const;
     char value() const;
 private:
+    MidiCategory mcategory;
     char mchannel, mcontrol, mvalue;
 };
 

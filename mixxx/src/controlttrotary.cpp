@@ -40,7 +40,7 @@ void ControlTTRotary::setValue(int v)
 void ControlTTRotary::slotSetPosition(int v)
 {
     value = ((float)v-64.)/200.;
-//    qDebug("%f",value);
+    qDebug("%f",value);
 
     emitValueChanged(value);
 /*    if (v==0)
@@ -48,6 +48,14 @@ void ControlTTRotary::slotSetPosition(int v)
     else
         received++;
 */
+}
+
+void ControlTTRotary::slotSetPositionMidi(MidiCategory, int v)
+{
+    //qDebug("thread id: %p",pthread_self());
+
+    slotSetPosition(v);
+    emit(updateGUI(v));
 }
 
 FLOAT_TYPE ControlTTRotary::getValue()

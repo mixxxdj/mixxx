@@ -158,7 +158,7 @@ void Reader::newtrack()
         TTrackQueue::iterator it = trackqueue.begin();
         filename = (*it);
         trackqueue.remove(it);
-    }    
+    }
     trackqueuemutex.unlock();
 
     // Exit if no filename was in queue

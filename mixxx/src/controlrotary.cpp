@@ -49,7 +49,7 @@ void ControlRotary::setValue(int v)
    -------- ------------------------------------------------------ */
 // This member is not properly overloading the one in controlobject. Therefore it is 
 // never called, and the graycode translation has been moved to slotSetPosition.
-void ControlRotary::slotSetPositionMidi(int _newpos)
+void ControlRotary::slotSetPositionMidi(MidiCategory, int _newpos)
 {
     qDebug("rot");
     //int newpos = graycodetable[(int)(unsigned char)_newpos];

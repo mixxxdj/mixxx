@@ -17,12 +17,17 @@
 
 #include "controleventmidi.h"
 
-ControlEventMidi::ControlEventMidi(char channel, char control, char value) : QCustomEvent(10001), mchannel(channel), mcontrol(control), mvalue(value)
+ControlEventMidi::ControlEventMidi(MidiCategory category, char channel, char control, char value) : QCustomEvent(10001), mcategory(category), mchannel(channel), mcontrol(control), mvalue(value)
 {
 };
 
 ControlEventMidi::~ControlEventMidi()
 {
+};
+
+MidiCategory ControlEventMidi::category() const
+{
+    return mcategory;
 };
 
 char ControlEventMidi::channel() const

@@ -33,8 +33,20 @@
 #include <qwidget.h>
 #include "defs.h"
 #include "configobject.h"
-
 class ControlObject;
+
+
+// These enums are used in the decoding of the status message into voice categories
+typedef enum {
+    NOTE_OFF         = 0x80,
+    NOTE_ON          = 0x90,
+    AFTERTOUCH       = 0xA0,
+    CTRL_CHANGE      = 0xB0,
+    PROG_CHANGE      = 0xC0,
+    CHANNEL_PRESSURE = 0xD0,
+    PITCH_WHEEL      = 0xE0
+} MidiCategory;
+
 
 class MidiObject : public QThread {
 public:
@@ -55,7 +67,7 @@ public:
 protected:
     void run() {};
     void stop();
-    void send(char channel, char midicontrol, char midivalue);
+    void send(MidiCategory category, char channel, char midicontrol, char midivalue);
 
     bool requestStop;
 

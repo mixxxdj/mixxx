@@ -56,6 +56,8 @@ private:
 
     /** Buffer indicating if a beat has occoured or not. */
     bool *beatBuffer;
+    /** Last updated index of beatBuffer containing a beat */
+    int beatBufferLastIdx;
     /** Buffer holding bpm values */
     CSAMPLE *bpmBuffer;
     /** Sorted list of peak indexes in HFC */

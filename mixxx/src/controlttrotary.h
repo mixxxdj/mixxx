@@ -34,6 +34,7 @@ public:
     void setValue(int);
 public slots:
     void slotSetPosition(int);
+    void slotSetPositionMidi(MidiCategory c, int v);
 //    void slotSetValue(int newvalue);
 protected:
     void forceGUIUpdate();

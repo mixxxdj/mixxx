@@ -45,6 +45,7 @@ ReaderExtractBeat::ReaderExtractBeat(ReaderExtract *input, int frameSize, int fr
         beatBuffer[i] = false;
         bpmBuffer[i] = -1.;
     }
+    beatBufferLastIdx = 0;
     
     // These should be updated whenever a new track is loaded
     histMinInterval = 60./histMaxBPM;
@@ -65,7 +66,7 @@ ReaderExtractBeat::ReaderExtractBeat(ReaderExtract *input, int frameSize, int fr
     // Initialize gnuplot interface
     gnuplot_hfc = openPlot("HFC");
     gnuplot_hist = openPlot("Histogram");
-//    gnuplot_beat = openPlot("BeatIntVector");
+    gnuplot_beat = openPlot("BeatIntVector");
 //    gnuplot_bpm  = openPlot("BPM");
 #endif
 }
@@ -222,6 +223,7 @@ void *ReaderExtractBeat::processChunk(const int idx, const int start_idx, const 
     setLineType(gnuplot_hfc,"lines");
     plotData(hfc,getBufferSize(),gnuplot_hfc,plotFloats);
 
+/*
     // Mark current region
     setLineType(gnuplot_hfc,"impulses");
     float y = 1000000000;
@@ -229,7 +231,7 @@ void *ReaderExtractBeat::processChunk(const int idx, const int start_idx, const 
     replotxy(&x, &y, 1, gnuplot_hfc);
     x = chunkEnd%frameNo;
     replotxy(&x,   &y, 1, gnuplot_hfc);
-
+*/
     // Peaks
     setLineType(gnuplot_hfc,"points");
     CSAMPLE *px = new CSAMPLE[getBufferSize()];
@@ -258,6 +260,8 @@ void *ReaderExtractBeat::processChunk(const int idx, const int start_idx, const 
     }
     replotData(py, getBufferSize(), gnuplot_hfc, plotFloats);
     
+//    savePlot(gnuplot_hfc, "hfc.png", "png");
+
     delete [] px;
     delete [] py;
 
@@ -297,12 +301,30 @@ void *ReaderExtractBeat::processChunk(const int idx, const int start_idx, const 
                 interval = (CSAMPLE)((*it)-(*it2))/(CSAMPLE)input->getRate();
 //            qDebug("interval %f, (range %f-%f), peak count %i",interval,histMinInterval,histMaxInterval,peaks.count());
 
+            // Current interval to last marked beat
+            CSAMPLE cur  = (CSAMPLE)(*it)/(CSAMPLE)getRate();
+            CSAMPLE last = (CSAMPLE)beatBufferLastIdx/(CSAMPLE)getRate();
+            CSAMPLE markedbeatinterval;
+            if (last>cur)
+                markedbeatinterval = cur+((CSAMPLE)getBufferSize()/(CSAMPLE)getRate())-last;
+            else
+                markedbeatinterval = cur-last;
+            
+            
+            // Find maximum in histogram
+            int maxidx = -1;
+            for (int i=1; i<histSize-1; i++)
+                if (hist[i]>hist[i-1] && hist[i]>hist[i+1])
+                    if ((maxidx>-1 && hist[i]>hist[maxidx]) || maxidx==-1)
+                        maxidx = i;
+            CSAMPLE bestinterval = ((CSAMPLE)maxidx*histInterval)+histMinInterval;
                         
             while(interval>0. && interval<=histMaxInterval && it2!=it)
             {
                 //qDebug("val: %i, i %i, (*it) %i, it %p",i-(*it2),i,(*it2), it2);
                 if (interval>=histMinInterval)
                 {
+//                    qDebug("interval %f, ok",interval);
 //                    qDebug("update hist");
                     // Histogram is updated with a gauss function centered at the found interval
                     int center  = (interval-histMinInterval)/histInterval;
@@ -312,9 +334,21 @@ void *ReaderExtractBeat::processChunk(const int idx, const int start_idx, const 
                         hist[center+j] += exp((-0.5*j*j)/(0.5*gaussWidth))*hfc[(*it)]*hfc[(*it2)];
 
                     // beatIntVector is updated
-                    beatIntVector[center] = hfc[(*it)]*hfc[(*it2)];
+                    if (abs(interval-markedbeatinterval)<0.1)
+                        beatIntVector[center] = hfc[(*it)]*hfc[(*it2)]*2.;
+                    else
+                        beatIntVector[center] = hfc[(*it)]*hfc[(*it2)];
                 }
-
+                else
+                {
+                    // The inteval is less than histMinInterval. The histogram is not updated, but the
+                    // beatIntVector shold be so. Everything below histMinInterval goes to index 0 of
+                    // beatIntVector.
+//                    qDebug("interval %f, too small",interval);
+                    if (beatIntVector[1]<hfc[(*it)]*hfc[(*it2)])
+                        beatIntVector[1] = hfc[(*it)]*hfc[(*it2)];
+                }
+                
                 if (it2==peaks.begin())
                     it2 = peaks.end();
                 --it2;
@@ -331,12 +365,14 @@ void *ReaderExtractBeat::processChunk(const int idx, const int start_idx, const 
             //
             
             // Find maximum in histogram
-            int maxidx = -1;
+            maxidx = -1;
             for (int i=1; i<histSize-1; i++)
                 if (hist[i]>hist[i-1] && hist[i]>hist[i+1])
                     if ((maxidx>-1 && hist[i]>hist[maxidx]) || maxidx==-1)
                         maxidx = i;
 
+//            qDebug("best interval %f (in hfc plot)",(((CSAMPLE)maxidx*histInterval)+histMinInterval)*86.);
+                        
             // Update bpmBuffer
             if (maxidx>-1)
             {
@@ -352,7 +388,16 @@ void *ReaderExtractBeat::processChunk(const int idx, const int start_idx, const 
                     bpmBuffer[i] = bpm;
 //                qDebug("update from %i - %i",(*it),(*(it3)));
             }
-/*
+
+
+            // Check if maximum interval is max in beatIntVector
+            if (maxidx>-1)
+            {
+                // Multiply everything in a small range around maxidx with a constant
+                const int RANGE = 5;
+                for (int i=max(0,maxidx-RANGE); i<min(histSize,maxidx+RANGE); i++)
+                    beatIntVector[i] *= 1.5;
+/*                                    
 #ifdef __GNUPLOT__
             //
             // Plot beatIntVector
@@ -378,12 +423,8 @@ void *ReaderExtractBeat::processChunk(const int idx, const int start_idx, const 
             delete [] y;
 #endif
 */
-            // Check if maximum interval is max in beatIntVector
-            if (maxidx>-1)
-            {
                 // Search for max in a small range around maxidx in beatIntVector
                 int beatIntMaxIdx = -1;
-                const int RANGE = 5;
                 for (int i=max(0,maxidx-RANGE); i<min(histSize,maxidx+RANGE); i++)
                     if ((beatIntMaxIdx>-1 && beatIntVector[i]>beatIntVector[beatIntMaxIdx]) || (beatIntVector[i]>0.))
                         beatIntMaxIdx = i;
@@ -392,7 +433,6 @@ void *ReaderExtractBeat::processChunk(const int idx, const int start_idx, const 
                 bool beat = true;
                 if (beatIntMaxIdx>-1)
                 {
-
                     for (int i=0; i<max(0,maxidx-RANGE); i++)
                     {
                         if (beatIntVector[i]>beatIntVector[beatIntMaxIdx])
@@ -400,11 +440,46 @@ void *ReaderExtractBeat::processChunk(const int idx, const int start_idx, const 
                             beat = false;
                             break;
                         }
+                    }                                                 
+                    if (beat)
+                    {
+                        // Mark beat if long enough distance to last beat
+                        CSAMPLE histint = (((CSAMPLE)maxidx*histInterval)+histMinInterval)*0.9;
+                        CSAMPLE cur  = (CSAMPLE)(*it)/(CSAMPLE)getRate();
+                        CSAMPLE last = (CSAMPLE)beatBufferLastIdx/(CSAMPLE)getRate();
+                        CSAMPLE dist;
+                        if (last>cur)
+                            dist = cur+((CSAMPLE)getBufferSize()/(CSAMPLE)getRate())-last;
+                        else
+                            dist = cur-last;
+                            
+                        qDebug("dist %f, interval %f",dist,histint);
+                        // Check if the distance to last marked beat is ok
+                        if (dist > histint)
+                        {                            
+                            beatBuffer[(*it)] = beat;
+                            beatBufferLastIdx = (*it);
+                        }
                     }
-                    beatBuffer[(*it)] = beat;
-//                    if (beat)
-//                        qDebug("beat %i",(*it));
+                    else
+                    {
+                        // Force a beat mark if too long distance to last beat
+                        CSAMPLE histint = (((CSAMPLE)maxidx*histInterval)+histMinInterval)*1.1;
+                        CSAMPLE cur  = (CSAMPLE)(*it)/(CSAMPLE)getRate();
+                        CSAMPLE last = (CSAMPLE)beatBufferLastIdx/(CSAMPLE)getRate();
+                        CSAMPLE dist;
+                        if (last>cur)
+                            dist = cur+((CSAMPLE)getBufferSize()/(CSAMPLE)getRate())-last;
+                        else
+                            dist = cur-last;
 
+                        if (dist>histint)
+                        {
+                            beatBuffer[(*it)] = beat;
+                            beatBufferLastIdx = (*it);
+                        }
+                    }
+                    
                 }
             }
 
@@ -472,6 +547,8 @@ void *ReaderExtractBeat::processChunk(const int idx, const int start_idx, const 
     setLineType(gnuplot_hist,"points");
     float _maxidx = (float)maxidx;
     replotxy(&_maxidx, &hist[maxidx], 1, gnuplot_hist);
+
+    //savePlot(gnuplot_hist, "hist.png", "png");
 #endif
 
             

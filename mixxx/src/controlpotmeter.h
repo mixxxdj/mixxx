@@ -38,7 +38,7 @@ public:
   void setValue(int newpos);
 public slots:
   void slotSetPosition(int);
-
+  void slotSetPositionMidi(MidiCategory c, int v);
 protected:
   void forceGUIUpdate();
 //  char position;     // position of the controller.

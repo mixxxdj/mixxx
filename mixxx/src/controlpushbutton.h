@@ -41,6 +41,7 @@ public:
     void setAction(QAction *action);
 public slots:
     void slotSetPosition(int);
+    void slotSetPositionMidi(MidiCategory c, int v);
     void slotSetPositionOff();
 private slots:
     void slotClicked();

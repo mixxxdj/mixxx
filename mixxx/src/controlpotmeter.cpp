@@ -62,6 +62,14 @@ void ControlPotmeter::slotSetPosition(int newpos)
     emitValueChanged(value);
 }
 
+void ControlPotmeter::slotSetPositionMidi(MidiCategory c, int v)
+{
+    //qDebug("thread id: %p",pthread_self());
+
+    slotSetPosition(v);
+    emit(updateGUI(v));
+}
+
 void ControlPotmeter::forceGUIUpdate()
 {
     emit(updateGUI((int)(127.*(value-minvalue)/valuerange)));

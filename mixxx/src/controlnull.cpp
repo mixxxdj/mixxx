@@ -27,5 +27,11 @@ ControlNull::~ControlNull()
 
 void ControlNull::slotSetPosition(int)
 {
-    qDebug("Do not call this method!");
+    qDebug("ControlNull: Do not call this method!");
 };
+
+void ControlNull::slotSetPositionMidi(MidiCategory, int)
+{
+    qDebug("ControlNull: Do not call this method!");
+}
+

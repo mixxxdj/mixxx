@@ -82,10 +82,14 @@ SOURCES += ../lib/vbrheadersdk/dxhead.c
 HEADERS += ../lib/vbrheadersdk/dxhead.h
 
 # Debug plotting through gplot API
-unix:DEFINES += __GNUPLOT__
+#unix:DEFINES += __GNUPLOT__
 unix:INCLUDEPATH += ../lib/gplot
 unix:SOURCES += ../lib/gplot/gplot3.c
 unix:HEADERS += ../lib/gplot/gplot.h
+
+# PowerMate support on linux
+unix:SOURCES += powermate.cpp
+unix:HEADERS += powermate.h
 
 unix {
   DEFINES += __UNIX__

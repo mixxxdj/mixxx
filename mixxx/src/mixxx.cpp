@@ -49,6 +49,7 @@
 #include "reader.h"
 #include "enginebuffer.h"
 #include "tracklist.h"
+#include "powermate.h"
 #include "dlgtracklist.h"
 #include "dlgflanger.h"
 #include "dlgplaylist.h"
@@ -106,8 +107,6 @@ MixxxApp::MixxxApp(QApplication *a)
     // Call inits to invoke all other construction parts
     initActions();
     initMenuBar();
-    initToolBar();
-    //initStatusBar();
 
     // Reset pointer to players
     player = 0;
@@ -225,6 +224,17 @@ MixxxApp::MixxxApp(QApplication *a)
             config->Save();
         }
     }
+
+    // Try initializing the PowerMate
+#ifdef __UNIX__
+    powermate = new PowerMate(control);
+    if (powermate->opendev())
+    {
+        qDebug("Found PowerMate");
+    }
+    else
+        powermate = 0;
+#endif    
   
     // Initialize player device
 #ifdef __ALSA__
@@ -312,6 +322,11 @@ MixxxApp::~MixxxApp()
     delete config;
     delete midiconfig;
     delete m_pTracks;
+
+#ifdef __UNIX__
+    if (powermate!=0)
+        delete powermate;
+#endif
 }
 
 bool MixxxApp::eventFilter(QObject *o, QEvent *e)
@@ -385,6 +400,7 @@ void MixxxApp::initActions()
   fileQuit->setWhatsThis(tr("Exit\n\nQuits the application"));
   connect(fileQuit, SIGNAL(activated()), this, SLOT(slotFileQuit()));
 
+/*
   editCut = new QAction(tr("Cut"), tr("Cu&t"), QAccel::stringToKey(tr("Ctrl+X")), this);
   editCut->setStatusTip(tr("Cuts the selected section and puts it to the clipboard"));
   editCut->setWhatsThis(tr("Cut\n\nCuts the selected section and puts it to the clipboard"));
@@ -399,6 +415,7 @@ void MixxxApp::initActions()
   editPaste->setStatusTip(tr("Pastes the clipboard contents to actual position"));
   editPaste->setWhatsThis(tr("Paste\n\nPastes the clipboard contents to actual position"));
   connect(editPaste, SIGNAL(activated()), this, SLOT(slotEditPaste()));
+*/
 
   optionsLeft = new QAction(tr("Left channel"), tr("&Left channel"), QAccel::stringToKey(tr("Ctrl+L")), this, 0, true);
   optionsLeft->setOn(true);
@@ -415,18 +432,6 @@ void MixxxApp::initActions()
   optionsPreferences->setStatusTip(tr("Preferences"));
   optionsPreferences->setWhatsThis(tr("Preferences\nPlayback and MIDI preferences"));
   connect(optionsPreferences, SIGNAL(activated()), this, SLOT(slotOptionsPreferences()));
-
-/*
-  viewToolBar = new QAction(tr("Toolbar"), tr("Tool&bar"), 0, this, 0, true);
-  viewToolBar->setStatusTip(tr("Enables/disables the toolbar"));
-  viewToolBar->setWhatsThis(tr("Toolbar\n\nEnables/disables the toolbar"));
-  connect(viewToolBar, SIGNAL(toggled(bool)), this, SLOT(slotViewToolBar(bool)));
-*/
-
-  viewStatusBar = new QAction(tr("Statusbar"), tr("&Statusbar"), 0, this, 0, true);
-  viewStatusBar->setStatusTip(tr("Enables/disables the statusbar"));
-  viewStatusBar->setWhatsThis(tr("Statusbar\n\nEnables/disables the statusbar"));
-  connect(viewStatusBar, SIGNAL(toggled(bool)), this, SLOT(slotViewStatusBar(bool)));
 
   helpAboutApp = new QAction(tr("About"), tr("&About..."), 0, this);
   helpAboutApp->setStatusTip(tr("About the application"));
@@ -477,8 +482,7 @@ void MixxxApp::initMenuBar()
   // menuBar entry viewMenu
   viewMenu=new QPopupMenu();
   viewMenu->setCheckable(true);
-  //viewToolBar->addTo(viewMenu);
-  //viewStatusBar->addTo(viewMenu);
+
   ///////////////////////////////////////////////////////////////////
   // EDIT YOUR APPLICATION SPECIFIC MENUENTRIES HERE
 
@@ -496,27 +500,6 @@ void MixxxApp::initMenuBar()
   menuBar()->insertSeparator();
   menuBar()->insertItem(tr("&Help"), helpMenu);
 
-}
-
-void MixxxApp::initToolBar()
-{
-  ///////////////////////////////////////////////////////////////////
-  // TOOLBAR
-/*
-  fileToolbar = new QToolBar(this, "file operations");
-  fileNew->addTo(fileToolbar);
-  fileOpen->addTo(fileToolbar);
-  fileSave->addTo(fileToolbar);
-  fileToolbar->addSeparator();
-  QWhatsThis::whatsThisButton(fileToolbar);
-*/
-}
-
-void MixxxApp::initStatusBar()
-{
-  ///////////////////////////////////////////////////////////////////
-  //STATUSBAR
-  statusBar()->message(tr("Ready."), 2000);
 }
 
 void MixxxApp::initDoc()
@@ -564,83 +547,55 @@ bool MixxxApp::queryExit()
 
 void MixxxApp::slotFileNew()
 {
-    statusBar()->message(tr("Creating new file..."));
     doc->newDoc();
-    statusBar()->message(tr("Ready."));
 }
 
 void MixxxApp::slotFileOpen()
 {
-    statusBar()->message(tr("Opening file..."));
-
     QString fileName = QFileDialog::getOpenFileName(0,0,this);
     if (!fileName.isEmpty())
     {
         doc->load(fileName);
         setCaption(fileName);
         QString message=tr("Loaded document: ")+fileName;
-        statusBar()->message(message, 2000);
-    }
-    else
-    {
-        statusBar()->message(tr("Opening aborted"), 2000);
     }
 }
 
 
 void MixxxApp::slotFileSave()
 {
-    statusBar()->message(tr("Saving file..."));
     doc->save();
-    statusBar()->message(tr("Ready."));
 }
 
 void MixxxApp::slotFileSaveAs()
 {
-    statusBar()->message(tr("Saving file under new filename..."));
     QString fn = QFileDialog::getSaveFileName(0, 0, this);
     if (!fn.isEmpty())
     {
         doc->saveAs(fn);
     }
-    else
-    {
-        statusBar()->message(tr("Saving aborted"), 2000);
-    }
-
-    statusBar()->message(tr("Ready."));
 }
 
 void MixxxApp::slotFileClose()
 {
-    statusBar()->message(tr("Closing file..."));
-
-    statusBar()->message(tr("Ready."));
 }
 
 void MixxxApp::slotFilePrint()
 {
-    statusBar()->message(tr("Printing..."));
     QPrinter printer;
     if (printer.setup(this))
     {
         QPainter painter;
         painter.begin(&printer);
 
-        ///////////////////////////////////////////////////////////////////
-        // TODO: Define printing by using the QPainter methods here
+        // Define printing by using the QPainter methods here
 
         painter.end();
     };
-
-    statusBar()->message(tr("Ready."));
 }
 
 void MixxxApp::slotFileQuit()
 {
-    statusBar()->message(tr("Exiting application..."));
-
-    ///////////////////////////////////////////////////////////////////
     // exits the Application
     if(doc->isModified())
     {
@@ -656,65 +611,18 @@ void MixxxApp::slotFileQuit()
     {
         qApp->quit();
     };
-
-    statusBar()->message(tr("Ready."));
 }
 
 void MixxxApp::slotEditCut()
 {
-  statusBar()->message(tr("Cutting selection..."));
-
-  statusBar()->message(tr("Ready."));
 }
 
 void MixxxApp::slotEditCopy()
 {
-  statusBar()->message(tr("Copying selection to clipboard..."));
-
-  statusBar()->message(tr("Ready."));
 }
 
 void MixxxApp::slotEditPaste()
 {
-  statusBar()->message(tr("Inserting clipboard contents..."));
-
-  statusBar()->message(tr("Ready."));
-}
-
-void MixxxApp::slotViewToolBar(bool toggle)
-{
-  statusBar()->message(tr("Toggle toolbar..."));
-  ///////////////////////////////////////////////////////////////////
-  // turn Toolbar on or off
-
-  if (toggle== false)
-  {
-//    fileToolbar->hide();
-  }
-  else
-  {
-//    fileToolbar->show();
-  };
-
-  statusBar()->message(tr("Ready."));
-}
-
-void MixxxApp::slotViewStatusBar(bool toggle)
-{
-  statusBar()->message(tr("Toggle statusbar..."));
-  ///////////////////////////////////////////////////////////////////
-  //turn Statusbar on or off
-
-  if (toggle == false)
-  {
-    statusBar()->hide();
-  }
-  else
-  {
-    statusBar()->show();
-  }
-
-  statusBar()->message(tr("Ready."));
 }
 
 void MixxxApp::slotOptionsBeatMark(bool toggle)
@@ -724,37 +632,13 @@ void MixxxApp::slotOptionsBeatMark(bool toggle)
 
 void MixxxApp::slotOptionsPreferences()
 {
-        prefDlg->setHidden(false);
+    prefDlg->setHidden(false);
 }
-
-/*
-void MixxxApp::slotBrowsePlaylistDir()
-{
-    QFileDialog* fd = new QFileDialog( this, QString::null, TRUE );
-    fd->setMode( QFileDialog::Directory );
-    fd->setCaption("Choose directory with music files");
-    if ( fd->exec() == QDialog::Accepted )
-    {
-//        prefDlg->LineEditSongfiles->setText( fd->selectedFile() );
-    }
-}
-
-void MixxxApp::slotOptionsClosePreferences()
-{
-    prefDlg->setHidden(true);
-}
-*/
 
 void MixxxApp::slotHelpAbout()
 {
-  QMessageBox::about(this,tr("About..."),
+    QMessageBox::about(this,tr("About..."),
                       tr("Mixxx\nVersion " VERSION "\nBy Tue and Ken Haste Andersen\nReleased under the GNU General Public Licence version 2") );
-}
-
-
-void MixxxApp::reopen()
-{
-            
 }
 
 MixxxVisual *MixxxApp::getVisual()

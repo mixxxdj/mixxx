@@ -36,7 +36,7 @@ TrackInfoObject::TrackInfoObject( const QDomNode &nodeHeader )
 	m_sArtist = SelectNode( nodeHeader, "Artist").toElement().text();
 
 	m_sType = SelectNode( nodeHeader, "Type").toElement().text();
-	
+
 	m_iDuration = SelectNode( nodeHeader, "Duration").toElement().text().toInt();
 
 	m_sBitrate = SelectNode( nodeHeader, "Bitrate").toElement().text();

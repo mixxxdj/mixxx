@@ -206,9 +206,8 @@ void TrackList::slotChangePlay_1()
 	// Request a new track from the reader:
     m_pBuffer1->getReader()->requestNewTrack( track->Location() );
 	
-	// Write info
-    m_pPlaycontrol1->textLabelTrack->
-        setText( track->getInfo() );
+    // Write info
+    m_pPlaycontrol1->textLabelTrack->setText( track->getInfo() );
 }
 
 void TrackList::slotChangePlay_2()

@@ -48,6 +48,7 @@ public:
     ~ControlBeat();
 public slots:
     void slotSetPosition(int pos);
+    void slotSetPositionMidi(MidiCategory c, int v);
 protected:
     void forceGUIUpdate();
 private:

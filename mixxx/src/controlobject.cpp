@@ -82,14 +82,6 @@ void ControlObject::setWidget(QWidget *widget)
     forceGUIUpdate();
 }
 
-void ControlObject::slotSetPositionMidi(int v)
-{
-    //qDebug("thread id: %p",pthread_self());
-
-    slotSetPosition(v);
-    emit(updateGUI(v));
-}
-
 void ControlObject::setValue(FLOAT_TYPE v)
 {
     //qDebug("thread id: %p",pthread_self());
@@ -127,7 +119,7 @@ void ControlObject::emitValueChanged(FLOAT_TYPE value)
 }
 
 /** Called when a midi event is received from MidiObject */
-void ControlObject::midi(char channel, char control, char value)
+void ControlObject::midi(MidiCategory category, char channel, char control, char value)
 {
     //qDebug("Received midi message: ch %i no %i val %i",(int)channel,(int)midicontrol,(int)midivalue);
 
@@ -138,13 +130,7 @@ void ControlObject::midi(char channel, char control, char value)
         if ((c->cfgOption->val->midino == control) &
             (c->cfgOption->val->midichannel == channel))
         {
-            // Check for possible bit mask
-            int midimask = c->cfgOption->val->midimask;
-
-            if (midimask > 0)
-                c->slotSetPositionMidi((int)(midimask & value));
-            else
-                c->slotSetPositionMidi((int)value); // 127-value
+            c->slotSetPositionMidi(category, (int)value); // 127-value
             break;
         }
     }
@@ -156,7 +142,7 @@ bool ControlObject::eventFilter(QObject *o, QEvent *e)
     if (e->type() == (QEvent::Type)10001)
     {
         ControlEventMidi *cem = (ControlEventMidi *)e;
-        midi(cem->channel(), cem->control(), cem->value());
+        midi(cem->category(), cem->channel(), cem->control(), cem->value());
     }
     // ControlEventEngine
     else if (e->type() == (QEvent::Type)10000)
