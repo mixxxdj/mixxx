@@ -55,7 +55,7 @@ ReaderExtractWave::ReaderExtractWave(Reader *pReader) : ReaderExtract(0, "signal
 #ifdef EXTRACT
     readerfft  = new ReaderExtractFFT((ReaderExtract *)this, WINDOWSIZE, STEPSIZE);
     readerhfc  = new ReaderExtractHFC((ReaderExtract *)readerfft, WINDOWSIZE, STEPSIZE);
-    readerbeat = new ReaderExtractBeat((ReaderExtract *)readerhfc, WINDOWSIZE, STEPSIZE, 100);
+    readerbeat = new ReaderExtractBeat((ReaderExtract *)readerhfc, WINDOWSIZE, STEPSIZE, 400);
 #endif
 }
 
@@ -222,7 +222,8 @@ void ReaderExtractWave::getchunk(CSAMPLE rate)
 
     // Read samples (reset samples not read, but requested)
     int i = file->read(READCHUNKSIZE, temp);
-    for (int j=i; i<READCHUNKSIZE; ++i)
+    int j;
+    for (j=i; i<READCHUNKSIZE; ++i)
         temp[j] = 0.;
 
     // Seek to end of the samples read in buffer, if we are reading backwards. This is to ensure, that the correct samples

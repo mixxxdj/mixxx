@@ -22,8 +22,6 @@
 #include "defs.h"
 #include <qptrlist.h>
 
-#include <qfile.h>
-
 class EngineSpectralFwd;
 /**
   * Calculates the High Frequency Content as used in ReaderExtractBeat.
@@ -49,8 +47,6 @@ private:
     /** Array of hfc and first derivative of hfc */
     CSAMPLE *hfc, *dhfc;
     QPtrList<EngineSpectralFwd> *specList;
-
-    QFile texthfc;    
 };
 
 #endif

@@ -16,43 +16,101 @@
  ***************************************************************************/
 
 #include "probabilityvector.h"
+#include "mathstuff.h"
+#include "qapplication.h"
 
-ProbabilityVector::ProbabilityVector(int _size, int _min)
+ProbabilityVector::ProbabilityVector(float fMinInterval, float fMaxInterval, int iBins)
 {
-    size = _size;
-    min = _min;
-    hist = new CSAMPLE[size];
-    for (int i=0; i<size; i++)
-        hist[i]=0.;
+    m_fMinInterval = fMinInterval;
+    m_fMaxInterval = fMaxInterval;
+    m_iBins = iBins;
+    m_fSecPerBin = (fMaxInterval-fMinInterval)/m_iBins;
+    
+    m_pHist = new float[m_iBins];
 
-    maxval = 0.;
-    maxvalIdx = 0;
+    reset();
 }
 
 ProbabilityVector::~ProbabilityVector()
 {
-    delete [] hist;
+    delete [] m_pHist;
 }
 
-void ProbabilityVector::add(int dt, CSAMPLE weight)
+void ProbabilityVector::add(float fInterval, float fValue)
 {
-    hist[dt-min] += weight;
-
-    // Update maximum info
-    if (hist[dt-min]>maxval)
+    if (fInterval>=m_fMinInterval && fInterval<=m_fMaxInterval)
     {
-        maxval = hist[dt-min];
-        maxvalIdx = dt-min;
+        // Histogram is updated with a gauss function centered at the found interval
+        float fCenter =  (fInterval-m_fMinInterval)/m_fSecPerBin;
+        float fStart  = -min(kiGaussWidth, fCenter);
+        float fEnd    =  min(kiGaussWidth, (float)(m_iBins-1)-fCenter);
+
+        // Set hysterisisFactor. If the gauss is within histMaxIdx, use a large hysterisisFactor
+        float fHysterisisFactor = 1.;
+        if ((int)fCenter>m_iCurrMaxBin-kiGaussWidth && (int)fCenter<m_iCurrMaxBin+kiGaussWidth)
+            fHysterisisFactor = 1.2;
+
+        for (float j=fStart; j<fEnd; j++)
+        {
+            int idx = round((fCenter+j));
+            m_pHist[idx] += exp((-0.5*j*j)/(0.5*(CSAMPLE)kiGaussWidth))*fValue*fHysterisisFactor;
+            if (m_pHist[idx]>m_pHist[m_iCurrMaxBin])
+            {
+                m_iCurrMaxBin = idx;
+
+                // Interpolate maximum
+                float fCorr = 0.;
+                if (m_iCurrMaxBin>1 && m_iCurrMaxBin<m_iBins-2)
+                {
+                    float t  = m_pHist[m_iCurrMaxBin];
+                    float t1 = m_pHist[m_iCurrMaxBin-1];
+                    float t2 = m_pHist[m_iCurrMaxBin+1];
+
+                    if ((t1-2.0*t+t2) != 0.)
+                        fCorr = (0.5*(t1-t2))/(t1-2.*t+t2);
+                }
+
+                // Interval in seconds
+                m_fCurrMaxInterval = ((float)m_iCurrMaxBin+fCorr)*m_fSecPerBin+m_fMinInterval;
+//                qDebug("hist idx %i, int %f, corr %f, bpm %f",m_iCurrMaxBin, m_fCurrMaxInterval,fCorr, 60./m_fCurrMaxInterval);
+            }
+        }
     }
+
+
+/*
+#ifdef __GNUPLOT__
+    //
+    // Plot Histogram
+    //
+    setLineType(gnuplot_hist,"lines");
+    plotData(hist, histSize, gnuplot_hist, plotFloats);
+
+    setLineType(gnuplot_hist,"points");
+    float _maxidx = (float)histMaxIdx+histMaxCorr;
+    replotxy(&_maxidx, &hist[histMaxIdx], 1, gnuplot_hist);
+
+    //savePlot(gnuplot_hist, "hist.png", "png");
+#endif
+*/
 }
 
-int ProbabilityVector::maxIdx()
+float ProbabilityVector::getCurrMaxInterval()
 {
-    return min+maxvalIdx;
+    return m_fCurrMaxInterval;
 }
 
-void ProbabilityVector::down()
+void ProbabilityVector::downWrite(float fFactor)
 {
-    for (int i=0; i<size; i++)
-        hist[i] *= 0.99f;
+    for (int i=0; i<m_iBins; ++i)
+        m_pHist[i] = fFactor*m_pHist[i];
+}
+
+void ProbabilityVector::reset()
+{
+    for (int i=0; i<m_iBins; ++i)
+        m_pHist[i] = 0;
+
+    m_iCurrMaxBin = -1;
+    m_fCurrMaxInterval = 0.;
 }
