@@ -328,9 +328,10 @@ bool TrackList::AddFiles(const char *path)
         while ((fi=it.current()))
         {
             // Check if the file exists in the list:
-            if (!FileExistsInList( fi->fileName() ))
+            TrackInfoObject *Track = FileExistsInList( fi->fileName() ); 
+            if (!Track)
             {
-                TrackInfoObject *Track = new TrackInfoObject( dir.absPath(), fi->fileName() );
+                Track = new TrackInfoObject( dir.absPath(), fi->fileName() );
                 
                 // Append the track to the list of tracks:
                 if (ParseHeader(Track) == OK)
@@ -341,7 +342,17 @@ bool TrackList::AddFiles(const char *path)
                 } 
                 else
                     qWarning("Could not parse %s", fi->fileName().latin1());
+            } 
+            else
+            // If it exists in the list already, it might not have been found in the
+            // first place because it has been moved:
+            if (!Track->m_bExist)
+            {
+                Track->m_sFilepath = fi->dirPath();
+                Track->m_bExist= true;
+                qDebug("Refound %s", Track->m_sFilename.latin1() );
             }
+
             ++it;   // goto next list element
         }
     }
