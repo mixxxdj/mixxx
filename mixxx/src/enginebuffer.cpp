@@ -436,8 +436,8 @@ CSAMPLE *EngineBuffer::process(const CSAMPLE *, const int buf_size)
             visualPlaypos = (int)floor(idx);
             visualRate = rate;
         }
-        pause.unlock();
         checkread(backwards);
+        pause.unlock();
     }
     else
     {
