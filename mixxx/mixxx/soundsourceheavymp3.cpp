@@ -31,7 +31,6 @@ SoundSourceHeavymp3::SoundSourceHeavymp3(const char *filename) {
   qDebug("Decoding mp3 file");
   
   long curr_sample=0;
-
   while (Stream.error!=MAD_ERROR_BUFLEN) {
       if (mad_frame_decode(&Frame,&Stream)) {
 	  if (MAD_RECOVERABLE(Stream.error))	{

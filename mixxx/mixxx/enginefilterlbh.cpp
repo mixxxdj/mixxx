@@ -20,9 +20,9 @@
 
 EngineFilterLBH::EngineFilterLBH(MixxxView *view, MidiObject *midi)
 {
-	low = new EngineIIRfilter(ADC4,PORT_B, 4, midi,bessel_lowpass);
+	low = new EngineIIRfilter(ADC6,PORT_B, 4, midi,bessel_lowpass);
 	connect(view->channel->DialFilterLow,  SIGNAL(valueChanged(int)), low->filterpot,  SLOT(slotSetPosition(int)));
-	band = new EngineIIRfilter(ADC4,PORT_B, 4, midi,bessel_bandpass);
+	band = new EngineIIRfilter(ADC5,PORT_B, 4, midi,bessel_bandpass);
 	connect(view->channel->DialFilterMiddle,  SIGNAL(valueChanged(int)), band->filterpot,  SLOT(slotSetPosition(int)));
 	high = new EngineIIRfilter(ADC4,PORT_B, 4, midi,bessel_highpass);
 	connect(view->channel->DialFilterHigh,  SIGNAL(valueChanged(int)), high->filterpot,  SLOT(slotSetPosition(int)));
@@ -49,3 +49,11 @@ CSAMPLE *EngineFilterLBH::process(CSAMPLE *source, int buf_size)
 
 	return buffer;
 }
+
+
+
+
+
+
+
+

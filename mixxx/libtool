@@ -37,11 +37,11 @@ if test "X${CDPATH+set}" = Xset; then CDPATH=:; export CDPATH; fi
 available_tags=" CXX"
 
 ### BEGIN LIBTOOL CONFIG
-# Libtool was configured as follows, on host sakaki:
+# Libtool was configured as follows, on host akira:
 #
 # AR="" AR_FLAGS="" LTCC="gcc" CC="gcc" \
 # CFLAGS="-O2  " CPPFLAGS="" \
-# MAGIC_CMD="" LD="/usr/i486-suse-linux/bin/ld" LDFLAGS="  " LIBS="" \
+# MAGIC_CMD="" LD="/usr/i486-suse-linux/bin/ld" LDFLAGS="" LIBS="" \
 # LN_S="ln -s" NM="/usr/bin/nm -B" RANLIB="ranlib" STRIP="strip" \
 # AS="" DLLTOOL="" OBJDUMP="" \
 # objext="" exeext="" reload_flag=" -r" \
@@ -5718,11 +5718,11 @@ build_old_libs=`case $build_libtool_libs in yes) echo no;; *) echo yes;; esac`
 # sh-indentation:2
 # End:
 ### BEGIN LIBTOOL TAG CONFIG: CXX
-# Libtool was configured as follows, on host sakaki:
+# Libtool was configured as follows, on host akira:
 #
 # AR="" AR_FLAGS="" LTCC="gcc" CC="c++" \
-# CFLAGS="-O2 -O0 -g3 -Wall -fno-exceptions -fno-check-new" CPPFLAGS="" \
-# MAGIC_CMD="" LD="/usr/i486-suse-linux/bin/ld" LDFLAGS="  " LIBS="" \
+# CFLAGS="-O2 -fno-exceptions -fno-check-new" CPPFLAGS="" \
+# MAGIC_CMD="" LD="/usr/i486-suse-linux/bin/ld" LDFLAGS="" LIBS="" \
 # LN_S="ln -s" NM="/usr/bin/nm -B" RANLIB="ranlib" STRIP="strip" \
 # AS="" DLLTOOL="" OBJDUMP="" \
 # objext="" exeext="" reload_flag=" -r" \
