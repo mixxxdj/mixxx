@@ -6,8 +6,14 @@
 
 #ifdef __PORTMIDI__
   #include "portmidi.h"
-#else
+#endif
+#ifdef __ALSAMIDI__
   #include <sys/asoundlib.h>
+#endif
+#ifdef __OSSMIDI__
+  #include <unistd.h>
+  #include <fcntl.h>
+  #include <stdio.h>
 #endif
 
 #include <vector>
@@ -32,8 +38,13 @@ public:
 #ifdef __PORTMIDI__
   PmEvent buffer[2];
   PmStream *midi;
-#else
+#endif
+#ifdef __ALSAMIDI__
   snd_rawmidi_t *handle;
+  char *buffer;
+#endif
+#ifdef __OSSMIDI__
+  int handle;
   char *buffer;
 #endif
   void run();

@@ -3,7 +3,7 @@
                              -------------------
     begin                : Wed Feb 20 2002
     copyright            : (C) 2002 by Tue and Ken Haste Andersen
-    email                : 
+    email                :
  ***************************************************************************/
 
 /***************************************************************************
@@ -65,13 +65,13 @@ private:
    void stop();
    QSemaphore *requestStop;
    QWaitCondition *buffersReadAhead;
-   
+
    Monitor lastread_file; // The last read sample in the file.
    Monitor playpos_file; // The current sample to play in the file.
    Monitor playpos_buffer; // The corresponding sample in the buffer.
    CSAMPLE *read_buffer; // The buffer where the samples are read into
    unsigned long int read_buffer_size; // Length of buffer.
-   
+
    DlgPlaycontrol *playcontrol;
    
    void getchunk();
