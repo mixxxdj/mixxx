@@ -30,32 +30,35 @@ class MidiObject;
 
 class ControlPotmeter : public ControlObject  {
   Q_OBJECT
- protected:
+public:
+  ControlPotmeter();
+  ControlPotmeter(char* n, short int, MidiObject *, FLOAT_TYPE=0.0, FLOAT_TYPE=1.0);
+  ~ControlPotmeter();
+  void setValue(FLOAT_TYPE newvalue);
+  char* print();
+  char getmidino();
+  FLOAT_TYPE getValue();
+  char getPosition();
+  void midiEvent(int);
+
+  int midino;
+
+public slots:
+  void slotSetPosition(int);
+signals:
+  void valueChanged(FLOAT_TYPE);
+  void recievedMidi(int);
+
+protected:
   char position;  // position of the controller.
   char* name;        // The name of the controller
   FLOAT_TYPE value;    // The actual value of the controller
-#define maxPosition 127 
+#define maxPosition 127
 #define minPosition 0
 #define middlePosition ((maxPosition-minPosition)/2)
 #define positionrange (maxPosition-minPosition)
   FLOAT_TYPE maxvalue, minvalue, valuerange;
   MidiObject *midi;
- public:
-  int midino;
-  ControlPotmeter();
-  ControlPotmeter(char* n, short int, MidiObject *, FLOAT_TYPE=0.0, FLOAT_TYPE=1.0);
-  virtual ~ControlPotmeter();
-  char* print();
-  char getmidino();
-  void setValue(FLOAT_TYPE newvalue);
-  FLOAT_TYPE getValue();
-  char getPosition();
-  virtual void midiEvent(int);
-public slots:
-  virtual void slotSetPosition(int);
-signals:
-  void valueChanged(FLOAT_TYPE);
-  void recievedMidi(int);
 };
 
 #endif

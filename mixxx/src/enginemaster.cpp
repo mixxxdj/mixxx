@@ -30,8 +30,13 @@ EngineMaster::EngineMaster(DlgMaster *master, EngineBuffer *_buffer1, EngineBuff
     connect(crossfader, SIGNAL(recievedMidi(int)), master->SliderCrossfader, SLOT(setValue(int)));
 
     volume = new EnginePregain(midiVolume, midi);
-    connect(master->KnobVolume, SIGNAL(valueChanged(int)), volume, SLOT(slotSetPosition(int)));
-    connect(volume, SIGNAL(recievedMidi(int)), master->KnobVolume, SLOT(setValue(int)));
+    connect(master->KnobVolume, SIGNAL(valueChanged(int)), volume->pregainpot, SLOT(slotSetPosition(int)));
+    connect(volume->pregainpot, SIGNAL(recievedMidi(int)), master->KnobVolume, SLOT(setValue(int)));
+    connect(volume->pregainpot, SIGNAL(valueChanged(FLOAT_TYPE)), volume, SLOT(slotUpdate(FLOAT_TYPE)));
+
+    // Clipping:
+    clipping = new EngineClipping(master->BulbClipping);
+
 }
 
 EngineMaster::~EngineMaster(){
@@ -58,7 +63,10 @@ CSAMPLE *EngineMaster::process(const CSAMPLE *, const int buffer_size) {
     // Master volume:
     temp_3 = volume->process(temp_1, buffer_size);
 
-    return temp_3;
+    // Clipping
+    temp_1 = clipping->process(temp_3, buffer_size);
+
+    return temp_1;
 }
 
 

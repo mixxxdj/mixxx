@@ -55,7 +55,7 @@
     </widget>
     <widget class="QRadioButton">
         <property name="name">
-            <cstring>RadioButtonClipping</cstring>
+            <cstring>BulbClipping</cstring>
         </property>
         <property name="geometry">
             <rect>

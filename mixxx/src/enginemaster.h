@@ -23,6 +23,7 @@
 #include "dlgmaster.h"
 #include "enginepregain.h"
 #include "enginechannel.h"
+#include "engineclipping.h"
 #include "controlpotmeter.h"
 
 /**
@@ -35,6 +36,7 @@ private:
     EngineChannel *channel1, *channel2;
     EnginePregain *volume;
     ControlPotmeter *crossfader;
+    EngineClipping *clipping;
 public: 
 	EngineMaster(DlgMaster *master, EngineBuffer *buffer1, EngineBuffer *buffer2,
                  EngineChannel *, EngineChannel *,
