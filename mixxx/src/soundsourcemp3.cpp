@@ -15,19 +15,20 @@
  ***************************************************************************/
 
 #include "soundsourcemp3.h"
+#include "trackinfoobject.h"
 
-SoundSourceMp3::SoundSourceMp3(const char* filename)
+SoundSourceMp3::SoundSourceMp3( QString sFilename )
 {
-    QFile file(filename);
+    QFile file( sFilename.latin1() );
     if (!file.open(IO_ReadOnly))
-        qFatal("MAD: Open of %s failed.", filename);
+        qFatal("MAD: Open of %s failed.", sFilename );
 
     // Read the whole file into inputbuf:
     inputbuf_len = file.size();
     inputbuf = new char[inputbuf_len];
     unsigned int tmp = file.readBlock(inputbuf, inputbuf_len);
     if (tmp != inputbuf_len)
-        qFatal("MAD: Error reading mp3-file: %s\nRead only %d bytes, but wanted %d bytes.",filename,tmp,inputbuf_len);
+        qFatal("MAD: Error reading mp3-file: %s\nRead only %d bytes, but wanted %d bytes.",sFilename ,tmp,inputbuf_len);
 
     // Transfer it to the mad stream-buffer:
     mad_stream_init(&Stream);

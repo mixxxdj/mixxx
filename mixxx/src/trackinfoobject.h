@@ -17,6 +17,8 @@ public:
 	void WriteToXML( QDomDocument &, QDomElement & );
 	void Parse();
 	QString Duration(); // Returns the duration as a string
+    /** Returns the location of the file, included path */
+    QString Location();
 
 	bool m_bExist; // Flag which determines if the file exist or not.
 	QString m_sFilename;

@@ -134,14 +134,12 @@ MixxxApp::MixxxApp(QApplication *a)
   }
   addFiles(config->getValueString(PlaylistKey).latin1());
 
-  // Experimental new tracklist:
-  TrackList Tracks( config->getValueString(PlaylistKey), view->tracklist->tableTracks );
 
   // Construct popup menu used to select playback channel on track selection
-  playSelectMenu = new QPopupMenu(this);
+  /*playSelectMenu = new QPopupMenu(this);
   playSelectMenu->insertItem(QIconSet(a_xpm), "Player A",this, SLOT(slotChangePlay_1()));
   playSelectMenu->insertItem(QIconSet(b_xpm), "Player B",this, SLOT(slotChangePlay_2()));
-
+  */
   // Connect play list table selection with "select channel" popup menu
   connect(view->playlist->ListPlaylist, SIGNAL(pressed(QListViewItem *, const QPoint &, int)),
           this,                         SLOT(slotSelectPlay(QListViewItem *, const QPoint &, int)));
@@ -247,7 +245,7 @@ MixxxApp::MixxxApp(QApplication *a)
   // This method is used to avoid emitting signals (and QApplication::lock())
   // in the player thread. This ensures that the player will not lock because
   // of a (temporary) stalled GUI thread.
-  installEventFilter(this);
+  //installEventFilter(this);
 
   // Save main configuration file .... well, maybe only in the pref panel!!
   //config->Save();
@@ -271,6 +269,7 @@ MixxxApp::~MixxxApp()
     delete playSelectMenu;
     delete config;
     delete midiconfig;
+    delete m_pTracks;
 }
 
 bool MixxxApp::eventFilter(QObject *o, QEvent *e)
@@ -308,7 +307,17 @@ void MixxxApp::engineStart()
     buffer1 = new EngineBuffer(this, optionsBeatMark, view->playcontrol1, "[Channel1]");
     buffer2 = new EngineBuffer(this, optionsBeatMark, view->playcontrol2, "[Channel2]");
 
+    // Experimental new tracklist:
+  m_pTracks = new TrackList(config->getValueString(PlaylistKey), view->tracklist->tableTracks,
+                            view->playcontrol1, view->playcontrol2, buffer1, buffer2);
+  
+ /* connect( m_pTracks, SIGNAL( signalChangePlay_1( TrackInfoObject * ) ),
+                      SLOT( slotChangePlay_1( TrackInfoObject * ) ) );
+  connect( m_pTracks, SIGNAL( signalChangePlay_2( TrackInfoObject * ) ),
+                      SLOT( slotChangePlay_2( TrackInfoObject * ) ) );   */
+
     // Set track information in reader
+    /*
     if (view->playlist->ListPlaylist->firstChild() != 0)
     {
         buffer1->getReader()->requestNewTrack(view->playlist->ListPlaylist->firstChild()->text(1));
@@ -320,6 +329,7 @@ void MixxxApp::engineStart()
             slotSetTitle(view->playlist->ListPlaylist->firstChild()->nextSibling()->text(1), view->playcontrol2);
         }
     }
+    */
     
     // Starting channels:
     channel1 = new EngineChannel(view->channel1, "[Channel1]");
@@ -770,33 +780,25 @@ void MixxxApp::slotHelpAbout()
                       tr("Mixxx\nVersion " VERSION "\nBy Tue and Ken Haste Andersen\nReleased under the GNU General Public Licence version 2") );
 }
 
-void MixxxApp::slotChangePlay_1( )
+void MixxxApp::slotChangePlay_1( TrackInfoObject *track )
 {
-    buffer1->getReader()->requestNewTrack(selection);
-    slotSetTitle(selection, view->playcontrol1);
+    buffer1->getReader()->requestNewTrack( track->Location() );
+    slotSetTitle( track, view->playcontrol1 );
 }
 
-void MixxxApp::slotChangePlay_2()
+void MixxxApp::slotChangePlay_2( TrackInfoObject *track )
 {
-    buffer2->getReader()->requestNewTrack(selection);
-    slotSetTitle(selection, view->playcontrol2);
+    buffer2->getReader()->requestNewTrack( track->Location() );
+    slotSetTitle( track, view->playcontrol1);
+
 }
 
-void MixxxApp::slotSetTitle(QString filename, DlgPlaycontrol *dlg)
+void MixxxApp::slotSetTitle( TrackInfoObject *track, DlgPlaycontrol *dlg)
 {
     //
     // Update info panel in playcontrol dialog
     //
-    QString title = filename;
-    title = title.section('/',-1);                // Prune path from filename:
-    title = title.section('.',0,-2);              // Prune last ending from filename:
-    title = QString("Title : ") + title + "\n\n"; // Finish the title string:
-//    int seconds = file->length()/(2*file_srate);
-//    QString tmp;
-//    tmp.sprintf("Length : %02d:%02d\n\n", seconds/60, seconds - 60*(seconds/60));
-//    title += tmp;
-//    title += "Type  : " + file->type;
-    dlg->textLabelTrack->setText(title);
+    dlg->textLabelTrack->setText( track->m_sArtist + "\n" +track->m_sTitle + "\n" );
 }
 
 

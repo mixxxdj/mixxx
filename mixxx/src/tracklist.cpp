@@ -21,14 +21,21 @@
 
 #include "images/a.xpm"
 #include "images/b.xpm"
+#include "enginebuffer.h"
+#include "dlgplaycontrol.h"
 
-TrackList::TrackList( const QString sDirectory, QTable *ptableTracks ) 
+TrackList::TrackList( const QString sDirectory, const QTable *ptableTracks,
+                      const DlgPlayControl *playcontrol, const DlgPlayControl *playcontrol2,
+                      const EngineBuffer *buffer1, const EngineBuffer *buffer2)
 {
-	m_sDirectory = sDirectory;
-	m_ptableTracks = ptableTracks;
-	m_ptrackCurrent = 0;
+    m_sDirectory = sDirectory;
+    m_ptableTracks = ptabletracks;
+    m_pPlaycontrol1 = playcontrol1;
+    m_pPlaycontrol2 = playcontrol2;'
+    m_pBuffer1 = buffer1;
+    m_pBuffer2 = buffer2;
 
- 	// Initialize xml file:
+	// Initialize xml file:
 	QFile opmlFile( m_sDirectory + "/tracklist.xml" );
 	
 	if ( !opmlFile.exists() )
@@ -101,10 +108,11 @@ TrackList::TrackList( const QString sDirectory, QTable *ptableTracks )
 	playSelectMenu->insertItem(QIconSet(a_xpm), "Player A",this, SLOT(slotChangePlay_1()));
 	playSelectMenu->insertItem(QIconSet(b_xpm), "Player B",this, SLOT(slotChangePlay_2()));
 
-	// Connect the right click to the slot where the menu is shown:
-	if (connect( m_ptableTracks, SIGNAL( pressed( int, int, int, const QPoint &) ),
-		SLOT( slotRightClick( int, int, int, const QPoint &) ) ) )
+    // Connect the right click to the slot where the menu is shown:
+	if (connect( m_ptableTracks, SIGNAL( contextMenuRequested( int, int, const QPoint &) ),
+		         this,           SLOT( slotRightClick( int, int, const QPoint &) ) ) )
 		qDebug("Connected context menu on tracklist.");
+
 }
 
 TrackList::~TrackList()
@@ -246,35 +254,39 @@ TrackInfoObject *TrackList::FileExistsInList( const QString sFilename )
 */
 void TrackList::slotChangePlay_1()
 {
-	TrackInfoObject *track = m_lTracks.at( 
+    qDebug("Select track 1");
+    TrackInfoObject *track = m_lTracks.at( 
 		m_ptableTracks->text( m_ptableTracks->currentRow(), ROW_INDEX ).toInt() );
-	emit signalChangePlay_1( track );
-
+        
 	// Update score:
 	track->m_iTimesPlayed++;
 	if (track->m_iTimesPlayed > m_iMaxTimesPlayed)
 		m_iMaxTimesPlayed = track->m_iTimesPlayed;
 	UpdateScores();
+
+    emit signalChangePlay_1( track );
 }
 
 void TrackList::slotChangePlay_2()
 {
 	TrackInfoObject *track = m_lTracks.at(		
 		m_ptableTracks->text( m_ptableTracks->currentRow(), ROW_INDEX ).toInt() );
-	emit signalChangePlay_2( track );
-
+        
 	// Update score:
 	track->m_iTimesPlayed++;
 	if (track->m_iTimesPlayed > m_iMaxTimesPlayed)
 		m_iMaxTimesPlayed = track->m_iTimesPlayed;
 	UpdateScores();
+
+    emit signalChangePlay_2( track );
 }
 
 /*
 	Slot connected to popup menu activated when a track is clicked:
 */
-void TrackList::slotRightClick( int iRow, int iCol, int iButton, const QPoint &pos )
+void TrackList::slotRightClick( int iRow, int iCol, const QPoint &pos )
 {
+    qDebug("popup menu");
 	// Display popup menu
     playSelectMenu->popup(pos);
 }

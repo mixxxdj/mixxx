@@ -134,4 +134,9 @@ QString TrackInfoObject::Duration()
 	return QString("%1:%2").arg( (int) (m_iDuration/60), 2 ).arg( m_iDuration%60, 2);
 }
 
+QString TrackInfoObject::Location()
+{
+    return m_sFilepath + "/" + m_sFilename;
+}
+
 

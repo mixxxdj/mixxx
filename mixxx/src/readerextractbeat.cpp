@@ -64,8 +64,8 @@ ReaderExtractBeat::ReaderExtractBeat(ReaderExtract *input, int frameSize, int fr
 #ifdef __GNUPLOT__
     // Initialize gnuplot interface
     gnuplot_hfc = openPlot("HFC");
-//    gnuplot_hist = openPlot("Histogram");
-    gnuplot_beat = openPlot("BeatIntVector");
+    gnuplot_hist = openPlot("Histogram");
+//    gnuplot_beat = openPlot("BeatIntVector");
 //    gnuplot_bpm  = openPlot("BPM");
 #endif
 }
@@ -462,7 +462,7 @@ void *ReaderExtractBeat::processChunk(const int idx, const int start_idx, const 
     //std::cout << "\n";        
 
 
-/*
+
 #ifdef __GNUPLOT__
     //
     // Plot Histogram
@@ -474,7 +474,7 @@ void *ReaderExtractBeat::processChunk(const int idx, const int start_idx, const 
     float _maxidx = (float)maxidx;
     replotxy(&_maxidx, &hist[maxidx], 1, gnuplot_hist);
 #endif
-*/
+
             
     // Update remaining part of bpmBuffer
 /*
