@@ -21,7 +21,7 @@ PlayerPortAudio::PlayerPortAudio(int size, std::vector<EngineObject *> *engines,
 {
     PaError err = Pa_Initialize();
     if( err != paNoError )
-        qFatal("PortAudio initialization error");
+        qFatal("PortAudio: Initialization error");
 
     // Default device ID.
     PaDeviceID id = -1;
@@ -62,23 +62,22 @@ PlayerPortAudio::PlayerPortAudio(int size, std::vector<EngineObject *> *engines,
     // Ensure stereo is supported
     devInfo = Pa_GetDeviceInfo(id);
     if (devInfo->maxOutputChannels < NO_CHANNELS)
-        qFatal("Not enough channels available on default output device: %i",devInfo->maxOutputChannels);
+        qFatal("PortAudio: Not enough channels available on default output device: %i",devInfo->maxOutputChannels);
 
     // Set sample rate to 44100 if possible, otherwise highest possible
     int temp_sr = 0;
-    {for (int i=0; i<=devInfo->numSampleRates; i++)
+    for (int i=0; i<=devInfo->numSampleRates; i++)
         if (devInfo->sampleRates[i] == 44100.)
-            temp_sr = 44100;}
+            temp_sr = 44100;
     if (temp_sr == 0)
         temp_sr = (int)devInfo->sampleRates[devInfo->numSampleRates-1];
-
     if (!open(QString(devInfo->name),temp_sr,16,size))
-        qFatal("PortAudio Error opening device");
+        qFatal("PortAudio: Error opening device");
 }
 
 PlayerPortAudio::~PlayerPortAudio()
 {
-	Pa_Terminate();
+    Pa_Terminate();
 }
 
 bool PlayerPortAudio::open(QString name, int srate, int bits, int bufferSize)
@@ -91,7 +90,7 @@ bool PlayerPortAudio::open(QString name, int srate, int bits, int bufferSize)
         case 16: format = paInt16; break;
         case 24: format = paInt24; break;
         case 32: format = paInt32; break;
-        default: qFatal("Sample format not supported (%i bits)",bits);
+        default: qWarning("PortAudio: Sample format not supported (%i bits)", bits); return false;
     }
 
     // Extract device information
@@ -124,7 +123,7 @@ bool PlayerPortAudio::open(QString name, int srate, int bits, int bufferSize)
     }
     if( err != paNoError )
     {
-        qDebug("PortAudio open stream error: %s", Pa_GetErrorText(err));
+        qDebug("PortAudio: Open stream error: %s", Pa_GetErrorText(err));
         return false;
     }
 
@@ -141,7 +140,7 @@ void PlayerPortAudio::close()
 {
     PaError err = Pa_CloseStream( stream );
     if( err != paNoError )
-        qFatal("PortAudio close stream error: %s", Pa_GetErrorText(err));
+        qFatal("PortAudio: Close stream error: %s", Pa_GetErrorText(err));
 
     deallocate();
 }
@@ -152,7 +151,7 @@ void PlayerPortAudio::start(EngineObject *_reader)
 
     PaError err = Pa_StartStream(stream);
     if (err != paNoError)
-        qFatal("PortAudio start stream error: %s", Pa_GetErrorText(err));
+        qFatal("PortAudio: Start stream error: %s", Pa_GetErrorText(err));
 }
 
 void PlayerPortAudio::wait()
