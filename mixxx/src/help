@@ -10,9 +10,9 @@ Options:
 --includedir		adds a path for dependency checking (max allowed = 5)
 --includelib		adds a library for compiling
 --prefix		define the install directory prefix
---cflags		overwrite default cflags with the user defined
---cxxflags		overwrite default cxxflags with the user defined
---lflags		overwrite default lflags with the user defined
+--cflags		overwrite default cflags with user defined
+--cxxflags		overwrite default cxxflags with user defined
+--lflags		overwrite default lflags with user defined
 --static-linking-path	define the path to link statically libs
 --enable-debug		enable debug mode (only for QT projects!)
 --enable-FEATURE	enable FEATURE 
