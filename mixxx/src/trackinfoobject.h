@@ -39,8 +39,9 @@ public:
     ~TrackInfoObject();
     int parse();
     /** Checks if the file given in m_sFilename really exists on the disc, and
-        updates the m_bExists flag accordingly. */
-    void checkFileExists();
+        updates the m_bExists flag accordingly. Returns true if the file
+        exists */
+    bool checkFileExists();
     void writeToXML( QDomDocument &, QDomElement & );
     /** Utility function to get a node from an xml file: */
     static QDomNode selectNode( const QDomNode &, const QString );

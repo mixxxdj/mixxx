@@ -126,7 +126,7 @@ TrackInfoObject::~TrackInfoObject()
     removeFromTrackTable();
 }
 
-void TrackInfoObject::checkFileExists()
+bool TrackInfoObject::checkFileExists()
 {
     QFile fileTrack(getLocation());
     if (fileTrack.exists())
@@ -136,6 +136,7 @@ void TrackInfoObject::checkFileExists()
         m_bExists = false;
         qDebug("The track %s was not found", getLocation().latin1());
     }
+    return m_bExists;
 }
 
 /*

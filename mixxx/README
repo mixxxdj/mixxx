@@ -27,7 +27,7 @@ New since 1.1:
 - Fix in calling sound interpolation methods
 - Adjust tempo by beat tapping
 - Improved Linux compile and install procedure
-
+- More MP3 decoding improvements
 
 * REQUIREMENTS *********************************************
 Mixxx is depends on the following libraries:

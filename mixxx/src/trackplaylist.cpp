@@ -44,7 +44,7 @@ TrackPlaylist::TrackPlaylist(TrackCollection *pTrackCollection, QDomNode node)
         {
             int id = idnode.toElement().text().toInt();
             TrackInfoObject *pTrack = m_pTrackCollection->getTrack(id);
-            if (pTrack)
+            if (pTrack && pTrack->checkFileExists())
                 addTrack(pTrack);
         }
 
