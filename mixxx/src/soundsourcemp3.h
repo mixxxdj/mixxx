@@ -30,6 +30,7 @@
 #include <qfile.h>
 //#include <sys/stat.h>
 //#include <unistd.h>
+#include <id3tag.h>
 
 /**
   *@author Tue and Ken Haste Andersen
@@ -43,8 +44,13 @@ public:
     long seek(long);
     unsigned read(unsigned long size, const SAMPLE*);
     inline long unsigned length();
+    static void ParseHeader( TrackInfoObject * );
     
 private:
+    /** Fills the string str with the content of the id3tag frame of frameid.
+      * If the frame does not exist or is empty the string is left untouched. */
+    static void getField(id3_tag *tag, const char *frameid, QString str);
+
     FILE *file;
     int bitrate;
     int framecount;

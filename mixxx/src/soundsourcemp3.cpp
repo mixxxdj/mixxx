@@ -229,3 +229,36 @@ unsigned SoundSourceMp3::read(unsigned long samples_wanted, const SAMPLE* _desti
 //    qDebug("decoded %i samples in %i frames, rest: %i.", Total_samples_decoded, frames, rest);
     return Total_samples_decoded;
 }
+
+void SoundSourceMp3::ParseHeader(TrackInfoObject *Track)
+{
+    QString location = Track->m_sFilepath+'/'+Track->m_sFilename;
+
+    Track->m_sType = "mp3";
+
+    id3_file *fh = id3_file_open(location.latin1(), ID3_FILE_MODE_READONLY);
+    if (fh!=0)
+    {
+        id3_tag *tag = id3_file_tag(fh);
+        if (tag!=0)
+        {
+            fillField(tag,"TIT2",Track->m_sTitle);
+            fillField(tag,"TPE1",Track->m_sArtist);
+        }
+        id3_file_close(fh);
+    }
+}
+
+void SoundSourceMp3::getField(id3_tag *tag, const char *frameid, QString str)
+{
+    id3_frame *frame = id3_tag_findframe(tag, frameid, 0);
+    if (frame!=0)
+    {
+        id3_utf16_t *framestr = id3_ucs4_utf16duplicate(id3_field_getstrings(&frame->fields[1],0));
+        int strlen = 0; while (framestr[strlen]!=0) strlen++;
+        if (strlen>0)
+            str.setUnicodeCodes((ushort *)framestr,strlen);
+        delete [] framestr;
+    }
+}
+

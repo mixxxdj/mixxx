@@ -19,6 +19,7 @@
 #ifdef __UNIX__
   #include "soundsourceaudiofile.h"
 #endif
+#include "soundsourcemp3.h"
 
 #include "images/a.xpm"
 #include "images/b.xpm"
@@ -159,6 +160,9 @@ bool TrackList::AddFiles(const char *path)
 #ifdef __UNIX__
 					SoundSourceAudioFile::ParseHeader(Track);
 #endif
+                else if (sType == "mp3")
+                    SoundSourceMp3::ParseHeader(Track);
+                    
 				// Append the track to the list of tracks:
 				m_lTracks.append( Track );
 //				qDebug( "Found new track: %s", Track->m_sFilename.latin1() );
