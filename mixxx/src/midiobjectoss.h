@@ -19,13 +19,15 @@
 #define MIDIOBJECTOSS_H
 
 #include "midiobject.h"
+#include <sys/select.h>
 
 /**
   *@author Tue & Ken Haste Andersen
   */
 
-class MidiObjectOSS : public MidiObject  {
-public: 
+class MidiObjectOSS : public MidiObject
+{
+public:
     MidiObjectOSS(ConfigObject<ConfigValueMidi> *c, QString device);
     ~MidiObjectOSS();
     void devOpen(QString device);
@@ -33,10 +35,10 @@ public:
 protected:
     void run();
     void stop();
-    int thread_pid;
 
     int handle;
     unsigned char *buffer;
+    fd_set fdset;
 };
 
 #endif

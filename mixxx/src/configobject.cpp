@@ -17,6 +17,122 @@
 
 #include "configobject.h"
 
+ConfigKey::ConfigKey()
+{
+}
+
+ConfigKey::ConfigKey(QString g, QString i)
+{
+    group = g;
+    item = i;
+}
+
+ConfigValue::ConfigValue()
+{
+}
+
+ConfigValue::ConfigValue(QString _value)
+{
+    value = _value;
+}
+
+ConfigValue::ConfigValue(int _value)
+{
+    value = QString::number(_value);
+}
+
+void ConfigValue::valCopy(const ConfigValue _value)
+{
+    value = _value.value;
+}
+
+ConfigValueMidi::ConfigValueMidi()
+{
+}
+
+ConfigValueMidi::ConfigValueMidi(QString _value)
+{
+        QString channelMark;
+        QString type;
+
+        QTextIStream(&_value) >> type >> midino >> channelMark >> midichannel;
+        if (type.contains("Key",false))
+            miditype = MIDI_KEY;
+        else if (type.contains("Ctrl",false))
+            miditype = MIDI_CTRL;
+        else
+            miditype = MIDI_EMPTY;
+
+        if (channelMark.endsWith("h"))
+            midichannel--;   // Internally midi channels are form 0-15,
+                             // while musicians operates on midi channels 1-16.
+        else
+            midichannel = 0; // Default to 0 (channel 1)
+
+        // If empty string, default midino should be below 0.
+        if (_value.length()==0)
+            midino = -1;
+//        qDebug("miditype: %s, midino: %i, midichannel: %i",type.latin1(),midino,midichannel);
+
+        // Store string with corrected config value
+        //value="";
+        //QTextOStream(&value) << type << " " << midino << " ch " << midichannel;
+}
+
+ConfigValueMidi::ConfigValueMidi(MidiType _miditype, int _midino, int _midichannel)
+{
+        //qDebug("--2");
+        miditype = _miditype;
+        midino = _midino;
+        midichannel = _midichannel;
+        QTextOStream(&value) << midino << " ch " << midichannel;
+        if (miditype==MIDI_KEY)
+            value.prepend("Key ");
+        else if (miditype==MIDI_CTRL)
+            value.prepend("Ctrl ");
+
+        //QTextIStream(&value) << midino << midimask << "ch" << midichannel;
+}
+
+void ConfigValueMidi::valCopy(const ConfigValueMidi v)
+{
+        //qDebug("--1, midino: %i, midimask: %i, midichannel: %i",midino,midimask,midichannel);
+        miditype = v.miditype;
+        midino = v.midino;
+        midichannel = v.midichannel;
+        QTextOStream(&value) << midino << " ch " << midichannel;
+        if (miditype==MIDI_KEY)
+            value.prepend("Key ");
+        else if (miditype==MIDI_CTRL)
+            value.prepend("Ctrl ");
+        //qDebug("--1, midino: %i, midimask: %i, midichannel: %i",midino,midimask,midichannel);
+}
+
+ConfigValueKbd::ConfigValueKbd()
+{
+}
+
+ConfigValueKbd::ConfigValueKbd(QString _value) : ConfigValue(_value)
+{
+        QString key;
+
+        QTextIStream(&_value) >> key;
+        m_qKey = QKeySequence(key);
+}
+
+ConfigValueKbd::ConfigValueKbd(QKeySequence key)
+{
+        m_qKey = key;
+        QTextOStream(&value) << (const QString)m_qKey;
+//          qDebug("value %s",value.latin1());
+}
+
+void ConfigValueKbd::valCopy(const ConfigValueKbd v)
+{
+        m_qKey = v.m_qKey;
+        QTextOStream(&value) << (const QString &)m_qKey;
+}
+
 template <class ValueType> ConfigObject<ValueType>::ConfigObject(QString file)
 {
     reopen(file);
@@ -77,6 +193,7 @@ ConfigKey *ConfigObject<ValueType>::get(ValueType v)
     ConfigOption<ValueType> *it;
     for (it = list.first(); it; it = list.next())
     {
+//          qDebug("match %s with %s", it->val->value.upper().latin1(), v.value.upper().latin1());
         if (it->val->value.upper() == v.value.upper())
         {
             return it->key;
@@ -123,7 +240,7 @@ template <class ValueType> bool ConfigObject<ValueType>::Parse()
                     QTextIStream(&line) >> key;
                     QString val = line.right(line.length() - key.length()); // finds the value string
                     val = val.stripWhiteSpace();
-                    //qDebug("control: %s, value: %s",key.ascii(), val.ascii());
+                    qDebug("control: %s, value: %s",key.ascii(), val.ascii());
                     ConfigKey k(groupStr, key);
                     ValueType m(val);
                     set(k, m);
