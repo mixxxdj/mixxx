@@ -51,11 +51,11 @@ WPlayButton::~WPlayButton()
 void WPlayButton::drawButton(QPainter *p)
 {
     if (isDown())
-        if (controlButton==0 | controlButton->getValue()==off)
+        if ((controlButton==0) | (controlButton->getValue()==off))
             p->drawPixmap(0,0,*buttonDownOff);
         else
             p->drawPixmap(0,0,*buttonDownOn);
-    else if (controlButton==0 | controlButton->getValue()==off)
+    else if ((controlButton==0) | (controlButton->getValue()==off))
         p->drawPixmap(0,0,*buttonUpOff);
     else
         p->drawPixmap(0,0,*buttonUpOn);

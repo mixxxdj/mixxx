@@ -94,19 +94,19 @@ void WSlider::paintEvent(QPaintEvent *)
 
     // Ensure size_state has been set
     if (size_state == 0)
-        if (minimumWidth()==20 & minimumHeight()==80)
+        if ((minimumWidth()==20) & (minimumHeight()==80))
         {
             size_state = 1;
             slider_length = 80;
             handle_length = 10;
         }
-        else if (minimumWidth()==30 & minimumHeight()==170)
+        else if ((minimumWidth()==30) & (minimumHeight()==170))
         {
             size_state = 2;
             slider_length = 170;
             handle_length = 16;
         }
-        else if (minimumWidth()==400 & minimumHeight()==37)
+        else if ((minimumWidth()==400) & (minimumHeight()==37))
         {
             size_state = 3;
             slider_length = 400;

@@ -1,4 +1,4 @@
-#ifndef Q_WS_WIN
+#ifdef Q_WS_X11
 #include "soundsourceaflibfile.h"
 
 /*
