@@ -64,7 +64,7 @@ void EngineBufferScaleSRC::setQuality(int q)
     else
         m_iQuality = q;
     
-    qDebug("quality %i", m_iQuality);
+    //qDebug("quality %i", m_iQuality);
     
     switch (m_iQuality)
     {
