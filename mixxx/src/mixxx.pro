@@ -2,37 +2,37 @@
 # Options (select one audio driver and one midi driver)
 #
 
-# PortAudio (Working good)
+# PortAudio (Working good. Linux OSS, Windows, MacOS X)
 SOURCES += playerportaudio.cpp
 HEADERS += playerportaudio.h
 DEFINES += __PORTAUDIO__
 # For unix, choose between static or dynamic linking of PortAudio. If you
 # want dynamic use only the LIBS line, else use the two first lines.
 # PortAudio files needs to be placed in ../lib for the static to work.
-#unix:LIBS += -lportaudio
-unix:SOURCES += ../lib/pa_lib.c ../lib/pa_convert.c ../lib/pa_unix_oss.c
-unix:HEADERS += ../lib/portaudio.h ../lib/pa_host.h
+#x11:LIBS += -lportaudio
+x11:SOURCES += ../lib/pa_lib.c ../lib/pa_convert.c ../lib/pa_unix_oss.c
+x11:HEADERS += ../lib/portaudio.h ../lib/pa_host.h
 win32:SOURCES += ../lib/pa_lib.c ../lib/dsound_wrapper.c ../lib/pa_dsound.c
 win32:HEADERS += ../lib/portaudio.h ../lib/pa_host.h
 win32:LIBS += winmm.lib /DXSDK/lib/dsound.lib
+macx:SOURCES += ../../../libs/portaudio_v18/pa_lib.c ../../../libs/portaudio_v18/pa_mac_core.c ../../../libs/portaudio_v18/pa_convert.c
+macx:HEADERS += ../../../libs/portaudio_v18/portaudio.h ../../../libs/portaudio_v18/pa_host.h
+macx:LIBS += -framework CoreAudio
+macx:INCLUDEPATH += ../../../libs/portaudio_v18
 
-# OSS Midi (Working good, Linux specific)
+# OSS Midi (Working good. Linux specific)
 SOURCES += midiobjectoss.cpp
 HEADERS += midiobjectoss.h
 DEFINES += __OSSMIDI__
 
-# PortMidi (Alpha - Linux ALSA, Windows and MacOS X)
+# PortMidi (Alpha - Linux ALSA, Windows)
 #SOURCES += midiobjectportmidi.cpp
 #HEADERS += midiobjectportmidi.h
 #DEFINES += __PORTMIDI__
 #unix:LIBS += -lportmidi -lporttime
-#macx:LIBS -= -lportmidi -lporttime
-#macx:LIBS += -framework Carbon -framework CoreMIDI
-#macx:SOURCES += ../../../portmidi-macosx-1.0/pmdarwin.c ../../../portmidi-macosx-1.0/pmmacosx.c ../../../portmidi-macosx-1.0/pmutil.c ../../../portmidi-macosx-1.0/portmidi.c ../../../portmidi-macosx-1.0/ptdarwin.c
-#macx:HEADERS += ../../../portmidi-macosx-1.0/pminternal.h ../../../portmidi-macosx-1.0/pmmacosx.h ../../../portmidi-macosx-1.0/pmutil.h ../../../portmidi-macosx-1.0/portmidi.h ../../../portmidi-macosx-1.0/porttime.h
 #win32:LIBS += ../lib/pm_dll.lib
 
-# CoreMidi (Mac OS X)
+# CoreMidi (Working good. Mac OS X)
 #SOURCES += midiobjectcoremidi.cpp
 #HEADERS += midiobjectcoremidi.h
 #DEFINES += __COREMIDI__
@@ -81,6 +81,7 @@ win32 {
 
 macx {
   DEFINES += __MACX__
+  LIBS += -lz -framework Carbon -framework QuickTime
 }
 
 # Profiling
@@ -92,6 +93,6 @@ FORMS	= dlgchanneldlg.ui dlgplaycontroldlg.ui dlgplaylistdlg.ui dlgmasterdlg.ui 
 IMAGES	= filesave.xpm
 unix:TEMPLATE         = app
 win32:TEMPLATE       = vcapp
-CONFIG	+= qt warn_off thread debug 
+CONFIG	+= qt warn_on thread debug 
 DBFILE	= mixxx.db
 LANGUAGE	= C++
