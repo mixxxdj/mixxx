@@ -645,7 +645,7 @@ void ReaderExtractBeat::updateConfidence(int curBeatIdx, int lastBeatIdx)
     if (confidence>0.9)
         confidence = 0.9;
 
-    confidence=0.9;    
+//    confidence=0.9;    
     //qDebug("confidence :%f, beat %f, max %f, tmp %f",confidence,hfc[curBeatIdx%frameNo], max, tmp);
 }
 

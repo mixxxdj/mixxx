@@ -35,7 +35,7 @@ public:
     /** Destructor */
     ~EngineSpectralBack();
     /** Performs the IFFT */
-    CSAMPLE *process(CSAMPLE *p, const int buf_len);
+    CSAMPLE *process(const CSAMPLE *p, const int buf_len);
     void notify(double) {};
 protected:
     /** Internal fftw plan */
