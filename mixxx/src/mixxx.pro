@@ -11,10 +11,10 @@ unix:!macx:HEADERS += ../lib/portaudio-v18/portaudio.h ../lib/portaudio-v18/pa_h
 win32:SOURCES += ../lib/portaudio-v18/pa_lib.c ../lib/portaudio-v18/dsound_wrapper.c ../lib/portaudio-v18/pa_dsound.c
 win32:HEADERS += ../lib/portaudio-v18/portaudio.h ../lib/portaudio-v18/pa_host.h
 win32:LIBS += dsound.lib
-macx:SOURCES += ../../../libs/portaudio_v18/pa_lib.c ../../../libs/portaudio_v18/pa_mac_core.c ../../../libs/portaudio_v18/pa_convert.c
-macx:HEADERS += ../../../libs/portaudio_v18/portaudio.h ../../../libs/portaudio_v18/pa_host.h
+macx:SOURCES += ../lib/portaudio-v18/pa_lib.c ../lib/portaudio-v18/pa_mac_core.c ../lib/portaudio-v18/pa_convert.c
+macx:HEADERS += ../lib/portaudio-v18/portaudio.h ../lib/portaudio-v18/pa_host.h
 macx:LIBS += -framework CoreAudio
-macx:INCLUDEPATH += ../../../libs/portaudio_v18
+macx:INCLUDEPATH += ../lib/portaudio-v18
 
 
 # OSS Midi (Working good, Linux specific)
