@@ -27,6 +27,7 @@ TrackInfoObject::TrackInfoObject(const QString sPath, const QString sFile) : m_s
     m_fBpm = 0.;
     m_fBpmConfidence = 0.;
     m_iScore = 0;
+    m_iIndex = 0;
 
     m_pTableItemScore = 0;
     m_pTableItemTitle = 0;
@@ -59,6 +60,7 @@ TrackInfoObject::TrackInfoObject(const QDomNode &nodeHeader)
     m_fBpm = selectNodeStr( nodeHeader, "Bpm").toFloat();
     m_fBpmConfidence = selectNodeStr( nodeHeader, "BpmConfidence").toFloat();
     m_iScore = 0;
+    m_iIndex = 0;
 
     m_pTableItemScore = 0;
     m_pTableItemTitle = 0;

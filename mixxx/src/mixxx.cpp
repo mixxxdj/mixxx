@@ -212,7 +212,7 @@ MixxxApp::MixxxApp(QApplication *a, QStringList files)
     // Configure ControlEngine object
     m_pControlEngine = new ControlEngine(control);
 
-    // Prepare the tracklist:
+   	// Prepare the tracklist:
     QDir d(config->getValueString(ConfigKey("[Playlist]","Directory")));
     if ((config->getValueString(ConfigKey("[Playlist]","Directory")).length()<1) | (!d.exists()))
     {
@@ -225,7 +225,20 @@ MixxxApp::MixxxApp(QApplication *a, QStringList files)
             config->Save();
         }
     }
-
+	QFile b(config->getValueString(ConfigKey("[Playlist]","Listpath")));
+    if ((config->getValueString(ConfigKey("[Playlist]","Listpath")).length()<1) | (!b.exists()))
+    {
+        QFileDialog* fd = new QFileDialog(this, QString::null, true);
+        fd->setCaption(QString("Choose a filename to save global playlist"));
+        fd->setMode( QFileDialog::AnyFile );
+        if ( fd->exec() == QDialog::Accepted && fd->selectedFile().endsWith(".xml"))
+        {
+            config->set(ConfigKey("[Playlist]","Listpath"), fd->selectedFile());
+            config->Save();
+        }else{
+			qWarning("Global Playlist file has to be a xml File ! (end with .xml)");
+		}
+    }
     // Try initializing PowerMates
     powermate1 = 0;
     powermate2 = 0;
@@ -360,7 +373,8 @@ MixxxApp::MixxxApp(QApplication *a, QStringList files)
 
     // Initialize tracklist:
     m_pTracks = new TrackList(config->getValueString(ConfigKey("[Playlist]","Directory")),
-                              view->m_pTrackTable,
+                              config->getValueString(ConfigKey("[Playlist]","Listpath")),
+                              view->m_pTrackTable, view->m_pTreeList,
                               view->m_pTextCh1, view->m_pTextCh2,
                               view->m_pNumberPosCh1, view->m_pNumberPosCh2,
                               buffer1, buffer2);

@@ -980,10 +980,20 @@
    <EmitOnDownPress>false</EmitOnDownPress>
   </Connection>
  </SliderComposed>
-
- <TrackTable>
+ 
+ <TreeList>
   <Pos>139,512</Pos>
-  <Size>747,255</Size>
+  <Size>200,255</Size>
+  <FgColor>#000000</FgColor>
+  <BgColor>#ffffff</BgColor>
+  <ColWidthName>20</ColWidthName>
+  <ColWidthType>20</ColWidthType>
+  <ColWidthFullPath>180</ColWidthFullPath>
+  </TreeList>
+ 
+ <TrackTable>
+  <Pos>340,512</Pos>
+  <Size>545,255</Size>
   <FgColor>#000000</FgColor>
   <BgColor>#ffffff</BgColor>
   <BgColorRowEven>#ffffff</BgColorRowEven>

@@ -20,6 +20,7 @@ New since 1.1:
   soundcard can be used to hear both master and headphone
   output
 - Jack (compile time) support added
+- Multiple playlist interface
 
 * REQUIREMENTS *********************************************
 Mixxx is depends on the following libraries:

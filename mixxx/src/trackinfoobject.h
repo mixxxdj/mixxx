@@ -94,6 +94,10 @@ public:
     /** Sets the score */
     void setScore(int);
 
+    /** Index ?? */
+    int m_iIndex;
+
+
 private:
     /** Method for parsing information from knowing only the file name.
         It assumes that the filename is written like: "artist - trackname.xxx" */
@@ -132,4 +136,3 @@ private:
 };
 
 #endif
-
