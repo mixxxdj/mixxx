@@ -131,7 +131,13 @@ void TrackInfoObject::Parse()
 
 QString TrackInfoObject::Duration()
 {
-	return QString("%1:%2").arg( (int) (m_iDuration/60), 2 ).arg( m_iDuration%60, 2);
+//  Changed to sprintf() to get the right display of seconds
+//  it now writes "3:04" instead of "3: 4"
+
+//	return QString("%1:%2").arg( (int) (m_iDuration/60), 2 ).arg( m_iDuration%60, 2);
+
+    return QString().sprintf("%2d:%02d", (int) (m_iDuration/60), (int) (m_iDuration%60));
+
 }
 
 QString TrackInfoObject::Location()
