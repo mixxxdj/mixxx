@@ -89,7 +89,7 @@ MixxxApp::MixxxApp(QApplication *a)
   qDebug("Init playlist");
   PlaylistKey = ConfigKey("[Playlist]","Directory");
   QDir d( config->getValueString(PlaylistKey ));
-  if ( !d.exists() ) {
+  if (config->getValueString(PlaylistKey ).length()<1 | !d.exists()) {
       QFileDialog* fd = new QFileDialog( this, "Choose directory with music files", TRUE );
       fd->setMode( QFileDialog::Directory );
       if ( fd->exec() == QDialog::Accepted ) {
