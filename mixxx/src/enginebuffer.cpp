@@ -682,10 +682,10 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBuff
         }
         else
         {
-            rate=(wheel->get()+m_pControlScratch->get())*baserate*10.;
+            rate=(wheel->get()+m_pControlScratch->get())*baserate; //*10.;
         }
 
-        //qDebug("rateslider %f, ratedir %f, wheel %f", rateSlider->get(), m_pRateDir->get(), wheel->get());
+        //qDebug("rateslider %f, ratedir %f, wheel %f, scratch %f", rateSlider->get(), m_pRateDir->get(), wheel->get(), m_pControlScratch->get());
 
         //qDebug("rate %f, bpmrate %f, file srate %f, play srate %f, baserate %f",rate, bpmrate, (double)file_srate_old, (double)getPlaySrate(), baserate);
 

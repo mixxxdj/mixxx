@@ -212,18 +212,13 @@ MixxxView::MixxxView(QWidget *parent, ConfigObject<ConfigValueKbd> *kbdconfig, b
                 {
                     if (bVisualsWaveform)
                     {
-                        m_pVisualCh1 = new WVisualWaveform(this, 0, 0);
+                        m_pVisualCh1 = new WVisualWaveform(this, 0, (QGLWidget *)m_pVisualCh2);
                         if (((WVisualWaveform *)m_pVisualCh1)->isValid())
                         {
                             ((WVisualWaveform *)m_pVisualCh1)->setup(node);
                             m_pVisualCh1->installEventFilter(m_pKeyboard);
                             m_qWidgetList.append(m_pVisualCh1);
                             m_bVisualWaveform = true;
-
-                            if (!((WVisualWaveform *)m_pVisualCh1)->directRendering())
-                                QMessageBox::warning(0, "OpenGL Direct Rendering",
-                                                     "Direct redering is not enabled on your machine.\n\nThis means that the waveform displays will be very\nslow and take a lot of CPU time. Either update your\nconfiguration to enable direct rendering, or disable\nthe waveform displays in the control panel by\nselecting \"Simple\" under waveform displays.");
-
                         }
                         else
                         {
@@ -242,7 +237,7 @@ MixxxView::MixxxView(QWidget *parent, ConfigObject<ConfigValueKbd> *kbdconfig, b
                     p->setWidget((QWidget *)m_pVisualCh1, true, Qt::LeftButton);
                     //ControlObject::setWidget((QWidget *)m_pVisualCh1, ConfigKey("[Channel1]", "wheel"), true, Qt::LeftButton);
                 }
-                else if (WWidget::selectNodeInt(node, "Channel")==2 && m_pVisualCh1!=0 && m_pVisualCh2==0)
+                else if (WWidget::selectNodeInt(node, "Channel")==2 && m_pVisualCh2==0)
                 {
                     if (bVisualsWaveform)
                     {
@@ -388,6 +383,15 @@ MixxxView::MixxxView(QWidget *parent, ConfigObject<ConfigValueKbd> *kbdconfig, b
 MixxxView::~MixxxView()
 {
     m_qWidgetList.clear();
+}
+
+void MixxxView::checkDirectRendering()
+{
+    // Check if DirectRendering is enabled and display warning
+    if ((m_pVisualCh1 && !((WVisualWaveform *)m_pVisualCh1)->directRendering()) ||
+	(m_pVisualCh2 && !((WVisualWaveform *)m_pVisualCh2)->directRendering()))
+        QMessageBox::warning(0, "OpenGL Direct Rendering",
+                                "Direct redering is not enabled on your machine.\n\nThis means that the waveform displays will be very\nslow and take a lot of CPU time. Either update your\nconfiguration to enable direct rendering, or disable\nthe waveform displays in the control panel by\nselecting \"Simple\" under waveform displays.");
 }
 
 bool MixxxView::activeWaveform()

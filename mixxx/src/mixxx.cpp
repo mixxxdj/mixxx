@@ -184,6 +184,7 @@ MixxxApp::MixxxApp(QApplication *a, QStringList files)
             config->set(ConfigKey("[Midi]","File"), ConfigValue((*midiConfigList->at(0)).latin1()));
         }
     }
+    midi->setMidiConfig(midiconfig);
 
     // Read keyboard configuration and set kdbConfig object in WWidget
     kbdconfig = new ConfigObject<ConfigValueKbd>(QString(qConfigPath).append("keyboard/").append("Standard.kbd.cfg"));
@@ -375,6 +376,9 @@ MixxxApp::MixxxApp(QApplication *a, QStringList files)
     // Call inits to invoke all other construction parts
     initActions();
     initMenuBar();
+
+    // Check direct rendering
+    view->checkDirectRendering();
 }
 
 MixxxApp::~MixxxApp()
