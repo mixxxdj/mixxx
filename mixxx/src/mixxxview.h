@@ -64,7 +64,12 @@ private:
     WSliderComposed *m_pSliderPlayposCh1, *m_pSliderPlayposCh2;
     WPushButton *m_pPlayCh1, *m_pPlayCh2;
     WDisplay *m_pVUmeterCh1, *m_pVUmeterCh2;
-    WKnob *m_pVolume;
+    WKnob *m_pVolume, *m_pBalance;
+    WKnob *m_pHeadVolume, *m_pHeadMix;
+    WKnob *m_pGainCh1, *m_pGainCh2;
+    WKnob *m_pFilterLowCh1, *m_pFilterLowCh2;
+    WKnob *m_pFilterMidCh1, *m_pFilterMidCh2;
+    WKnob *m_pFilterHighCh1, *m_pFilterHighCh2;
     WPushButton *m_pHeadCueCh1, *m_pHeadCueCh2;
     WPushButton *m_pCueCh1, *m_pCueCh2;
     WNumber *m_pBpmCh1, *m_pBpmCh2;

@@ -33,7 +33,11 @@ public:
     ~WKnob();
     void setPositions(int iNoPos);
     void setPixmap(int iPos, const QString &filename);
-    
+    /** Associates a background pixmap with the widget. This is only needed if the knob
+      * pixmaps contains alpha channel values. */
+    void setPixmapBackground(const QString &filename);
+    /** Resets the widgets value */
+    void reset();
 private:
     /** Set position number to zero and deallocate pixmaps */
     void resetPositions();
@@ -48,8 +52,12 @@ private:
     int m_iNoPos;
     /** Array of associated pixmaps */
     QPixmap **m_pPixmaps;
+    /** Associated background pixmap */
+    QPixmap *m_pPixmapBack;
+    /** Double buffer. Used when background pixmap is set */
+    QPixmap *m_pPixmapBuffer;
     /** Values used when pressing mouse */
-    float m_fOldValue, m_fStartValue;
+    double m_dStartValue;
     
 };
 
