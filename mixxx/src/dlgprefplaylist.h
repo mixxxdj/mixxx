@@ -36,12 +36,10 @@ public slots:
     void slotUpdate();
     /** Dialog to browse for music file directory */
     void slotBrowseDir();
-    /** Dialog to browse for Playlist directory */
-	void slotBrowsePlaydir();
-	/** Apply changes to widget */
+    /** Apply changes to widget */
     void slotApply();
 signals:
-    void apply(QString, QString);
+    void apply(QString);
 private:
     /** Pointer to config object */
     ConfigObject<ConfigValue> *config;

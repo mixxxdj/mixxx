@@ -50,7 +50,7 @@
 #include "dlgpreferences.h"
 
 class WVisual;
-class TrackList;
+class Track;
 class TrackInfoObject;
 class PowerMate;
 class Joystick;
@@ -118,8 +118,8 @@ class MixxxApp : public QMainWindow
     ConfigObject<ConfigValueMidi> *midiconfig;
     /** Pointer to active keyboard configuration */
     ConfigObject<ConfigValueKbd> *kbdconfig;
-    /** Pointer to track list object */
-    TrackList *m_pTracks;
+    /** Pointer to track object */
+    Track *m_pTrack;
     /** Pointer to PowerMate objects */
     PowerMate *powermate1, *powermate2;
     /** Pointer to Joystick object */

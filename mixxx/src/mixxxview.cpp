@@ -24,10 +24,9 @@
 #include <qevent.h>
 #include <qsplitter.h>
 
-#include "wtreelist.h"
-#include "configobject.h"
 #include "controlobject.h"
 #include "wtracktable.h"
+#include "wtreeview.h"
 #include "wwidget.h"
 #include "wknob.h"
 #include "wpushbutton.h"
@@ -43,7 +42,7 @@
 #include "wvisualsimple.h"
 #include "mixxxkeyboard.h"
 
-MixxxView::MixxxView(QWidget *parent, ControlObject *control, bool bVisualsWaveform, QString qSkinPath, ConfigObject<ConfigValue> *) : QWidget(parent, "Mixxx")
+MixxxView::MixxxView(QWidget *parent, ControlObject *control, bool bVisualsWaveform, QString qSkinPath, ConfigObject<ConfigValue> *pConfig) : QWidget(parent, "Mixxx")
 {
     // Path to image files
     WWidget::setPixmapPath(qSkinPath.append("/"));
@@ -76,7 +75,7 @@ MixxxView::MixxxView(QWidget *parent, ControlObject *control, bool bVisualsWavef
 
     // Default values for visuals
     m_pTrackTable = 0;
-    m_pTreeList = 0;
+    m_pTreeView = 0;
     m_pTextCh1 = 0;
     m_pTextCh2 = 0;
     m_pVisualCh1 = 0;
@@ -341,17 +340,17 @@ MixxxView::MixxxView(QWidget *parent, ControlObject *control, bool bVisualsWavef
                 m_pTrackTable->setup(node);
                 m_pTrackTable->installEventFilter(m_pKeyboard);
             }
-            else if (node.nodeName()=="TreeList")
+            else if (node.nodeName()=="TreeView")
             {
                 if (m_pSplitter)
-                    m_pTreeList = new WTreeList(m_pSplitter, tr("TreeList"));
+                    m_pTreeView = new WTreeView(pConfig->getValueString(ConfigKey("[Playlist]","Directory")), m_pSplitter, tr("TreeView"));
                 else
                 {
-                    m_pTreeList = new WTreeList(this, tr("TreeList"));
-                    m_qWidgetList.append(m_pTreeList);
+                    m_pTreeView = new WTreeView(pConfig->getValueString(ConfigKey("[Playlist]","Directory")), this, tr("TreeView"));
+                    m_qWidgetList.append(m_pTreeView);
                 }
-                m_pTreeList->setup(node);
-                m_pTreeList->installEventFilter(m_pKeyboard);
+                m_pTreeView->setup(node);
+                m_pTreeView->installEventFilter(m_pKeyboard);
             }
 
         }

@@ -191,6 +191,7 @@ unix:!macx {
 
   DEFINES += UNIX_SHARE_PATH=\"/usr/share/mixxx\"
   SETTINGS_FILE = \".mixxx.cfg\"
+  TRACK_FILE = \".mixxxtrack.xml\"
   DEFINES += __LINUX__
 }
 
@@ -222,6 +223,7 @@ win32 {
   QMAKE_CXXFLAGS += -GX
   QMAKE_LFLAGS += /VERBOSE:LIB /libpath:$$WINLIBPATH /NODEFAULTLIB:library /NODEFAULTLIB:libcd /NODEFAULTLIB:libcmt /NODEFAULTLIB:libc
   SETTINGS_FILE = \"mixxx.cfg\"
+  TRACK_FILE = \"mixxxtrack.xml\"
   RC_FILE = mixxx.rc
 }
 
@@ -230,6 +232,7 @@ macx {
   INCLUDEPATH += $$MACLIBPATH/include
   LIBS += -lz -framework Carbon -framework QuickTime
   SETTINGS_FILE = \"mixxx.cfg\"
+  TRACK_FILE = \"mixxxtrack.xml\"
   RC_FILE = icon.icns
   QMAKE_CXXFLAGS += -O3 -faltivec -mtune=G4 -mcpu=G4 -mdynamic-no-pic -funroll-loops -ffast-math -fstrict-aliasing
   QMAKE_CFLAGS += -O3 -faltivec -mtune=G4 -mcpu=G4 -mdynamic-no-pic -funroll-loops -ffast-math -fstrict-aliasing
@@ -270,11 +273,15 @@ unix {
 
 FORMS	= dlgprefsounddlg.ui dlgprefmididlg.ui dlgprefplaylistdlg.ui dlgprefcontrolsdlg.ui
 
-SOURCES += mixxxkeyboard.cpp configobject.cpp fakemonitor.cpp controlengine.cpp controleventengine.cpp controleventmidi.cpp controllogpotmeter.cpp controlobject.cpp controlnull.cpp controlpotmeter.cpp controlpushbutton.cpp controlttrotary.cpp controlbeat.cpp dlgpreferences.cpp dlgprefsound.cpp dlgprefmidi.cpp dlgprefplaylist.cpp dlgprefcontrols.cpp enginebuffer.cpp enginebufferscale.cpp enginebufferscalelinear.cpp engineclipping.cpp enginefilterblock.cpp enginefilteriir.cpp engineobject.cpp enginepregain.cpp enginevolume.cpp main.cpp midiobject.cpp midiobjectnull.cpp mixxx.cpp mixxxview.cpp player.cpp playerproxy.cpp soundsource.cpp soundsourcemp3.cpp soundsourceoggvorbis.cpp monitor.cpp enginechannel.cpp enginemaster.cpp wwidget.cpp wpixmapstore.cpp wnumber.cpp wnumberpos.cpp wnumberrate.cpp wnumberbpm.cpp wknob.cpp wdisplay.cpp wvumeter.cpp wpushbutton.cpp wslidercomposed.cpp wslider.cpp wtreelist.cpp wtracktable.cpp wtracktableitem.cpp enginedelay.cpp engineflanger.cpp enginespectralfwd.cpp enginespectralback.cpp mathstuff.cpp readerextract.cpp readerextractwave.cpp readerextractfft.cpp readerextracthfc.cpp readerextractbeat.cpp readerevent.cpp rtthread.cpp windowkaiser.cpp probabilityvector.cpp reader.cpp tracklist.cpp trackinfoobject.cpp enginevumeter.cpp peaklist.cpp
-HEADERS += mixxxkeyboard.h configobject.h fakemonitor.h controlengine.h controleventengine.h controleventmidi.h controllogpotmeter.h controlobject.h controlnull.h controlpotmeter.h controlpushbutton.h controlttrotary.h controlbeat.h defs.h dlgpreferences.h dlgprefsound.h dlgprefmidi.h dlgprefplaylist.h dlgprefcontrols.h enginebuffer.h enginebufferscale.h enginebufferscalelinear.h engineclipping.h enginefilterblock.h enginefilteriir.h engineobject.h enginepregain.h enginevolume.h midiobject.h midiobjectnull.h mixxx.h mixxxview.h player.h playerproxy.h soundsource.h soundsourcemp3.h soundsourceoggvorbis.h monitor.h enginechannel.h enginemaster.h wwidget.h wpixmapstore.h wnumber.h wnumberpos.h wnumberrate.h wnumberbpm.h wknob.h wdisplay.h wvumeter.h wpushbutton.h wslidercomposed.h wslider.h wtreelist.h wtracktable.h wtracktableitem.h enginedelay.h engineflanger.h enginespectralfwd.h enginespectralback.h mathstuff.h readerextract.h readerextractwave.h readerextractfft.h readerextracthfc.h readerextractbeat.h readerevent.h rtthread.h windowkaiser.h probabilityvector.h reader.h  tracklist.h trackinfoobject.h enginevumeter.h peaklist.h
+SOURCES += mixxxkeyboard.cpp configobject.cpp fakemonitor.cpp controlengine.cpp controleventengine.cpp controleventmidi.cpp controllogpotmeter.cpp controlobject.cpp controlnull.cpp controlpotmeter.cpp controlpushbutton.cpp controlttrotary.cpp controlbeat.cpp dlgpreferences.cpp dlgprefsound.cpp dlgprefmidi.cpp dlgprefplaylist.cpp dlgprefcontrols.cpp enginebuffer.cpp enginebufferscale.cpp enginebufferscalelinear.cpp engineclipping.cpp enginefilterblock.cpp enginefilteriir.cpp engineobject.cpp enginepregain.cpp enginevolume.cpp main.cpp midiobject.cpp midiobjectnull.cpp mixxx.cpp mixxxview.cpp player.cpp playerproxy.cpp soundsource.cpp soundsourcemp3.cpp soundsourceoggvorbis.cpp monitor.cpp enginechannel.cpp enginemaster.cpp wwidget.cpp wpixmapstore.cpp wnumber.cpp wnumberpos.cpp wnumberrate.cpp wnumberbpm.cpp wknob.cpp wdisplay.cpp wvumeter.cpp wpushbutton.cpp wslidercomposed.cpp wslider.cpp wtracktable.cpp wtracktableitem.cpp enginedelay.cpp engineflanger.cpp enginespectralfwd.cpp enginespectralback.cpp mathstuff.cpp readerextract.cpp readerextractwave.cpp readerextractfft.cpp readerextracthfc.cpp readerextractbeat.cpp readerevent.cpp rtthread.cpp windowkaiser.cpp probabilityvector.cpp reader.cpp trackinfoobject.cpp enginevumeter.cpp peaklist.cpp
+HEADERS += mixxxkeyboard.h configobject.h fakemonitor.h controlengine.h controleventengine.h controleventmidi.h controllogpotmeter.h controlobject.h controlnull.h controlpotmeter.h controlpushbutton.h controlttrotary.h controlbeat.h defs.h dlgpreferences.h dlgprefsound.h dlgprefmidi.h dlgprefplaylist.h dlgprefcontrols.h enginebuffer.h enginebufferscale.h enginebufferscalelinear.h engineclipping.h enginefilterblock.h enginefilteriir.h engineobject.h enginepregain.h enginevolume.h midiobject.h midiobjectnull.h mixxx.h mixxxview.h player.h playerproxy.h soundsource.h soundsourcemp3.h soundsourceoggvorbis.h monitor.h enginechannel.h enginemaster.h wwidget.h wpixmapstore.h wnumber.h wnumberpos.h wnumberrate.h wnumberbpm.h wknob.h wdisplay.h wvumeter.h wpushbutton.h wslidercomposed.h wslider.h wtracktable.h wtracktableitem.h enginedelay.h engineflanger.h enginespectralfwd.h enginespectralback.h mathstuff.h readerextract.h readerextractwave.h readerextractfft.h readerextracthfc.h readerextractbeat.h readerevent.h rtthread.h windowkaiser.h probabilityvector.h reader.h trackinfoobject.h enginevumeter.h peaklist.h
+
+# New track code:
+SOURCES += track.cpp trackcollection.cpp trackplaylist.cpp xmlparse.cpp wtreeview.cpp wtreeitem.cpp wtreeitemfile.cpp wtreeitemdir.cpp wtreeitemplaylist.cpp
+HEADERS += track.h trackcollection.h trackplaylist.h xmlparse.h wtreeview.h wtreeitem.h wtreeitemfile.h wtreeitemdir.h wtreeitemplaylist.h
 
 IMAGES += icon.png
-DEFINES += SETTINGS_FILE=$$SETTINGS_FILE
+DEFINES += SETTINGS_FILE=$$SETTINGS_FILE TRACK_FILE=$$TRACK_FILE
 unix:TEMPLATE = app
 win32:TEMPLATE = vcapp
 #CONFIG += qt thread warn_off release

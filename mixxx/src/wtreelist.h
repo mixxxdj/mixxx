@@ -42,8 +42,8 @@
 #include <qdragobject.h>
 #include <qmessagebox.h>
 #include <qwidget.h>
-#ifndef TREEDIRVIEW_H
-#define TREEDIRVIEW_H
+#ifndef WTREELIST_H
+#define WTREELIST_H
 
 class QVBoxLayout;
 class QHBoxLayout;
@@ -57,37 +57,12 @@ class QListView;
 class QListViewItem;
 class QDragEnterEvent;
 
-	
-
-class WTreeItem : public QListViewItem
-{
-	//Q_OBJECT
-	
-	public:
-		WTreeItem(QListView * parent=0, int *fileType =(int*) 0);
-		WTreeItem(QListViewItem * parent, int *fileType =(int*) 0);
-		~WTreeItem();
-		QListView * listParent;
-		bool getState();
-		void setState(bool state);
-		QListViewItem * itemAbove();
-		int * getType();
-		void setType(int * fileType);
-		QString filePath;
-	
-	private:
-		bool Expanded;
-		int *Type;
-	
-		
-};
-
 
 class WTreeList : public QListView
 {
 	Q_OBJECT
-	
-	public:
+
+public:
 	WTreeList( QWidget *parent = 0, const char *name=0);
 	~WTreeList();
 	void setRoot(QString sRoot);
@@ -97,25 +72,25 @@ class WTreeList : public QListView
 	void setup(QDomNode node);
 	QString m_sPlaylistdir;
 	bool mousePressed;
-	signals:
+signals:
 		void loadPls(QString);
-	
-	public slots:
+
+public slots:
 		void slotSetDirs(QString,QString);
-	
-	protected slots:
+
+protected slots:
     void slotFolderSelected( QListViewItem * );
-	
-	protected:
+
+protected:
 	void contentsMouseMoveEvent( QMouseEvent *e );
 	void contentsMouseReleaseEvent( QMouseEvent * );
 	void contentsMousePressEvent( QMouseEvent* e );
-	
-	private:
+
+private:
 	bool deleteRoot();
-	
+
 	QPoint presspos;
-	bool populateTree(QString dirPath, QListViewItem * listItem);	
+	bool populateTree(QString dirPath, QListViewItem * listItem);
 	bool populatePlaylists(QListViewItem * listItem);
 	const QFileInfoList * subDirList;
 	QDir * workingDir;

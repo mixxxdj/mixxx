@@ -1,0 +1,254 @@
+//
+// C++ Implementation: trackplaylist
+//
+// Description:
+//
+//
+// Author: Tue Haste Andersen <haste@diku.dk>, (C) 2003
+//
+// Copyright: See COPYING file that comes with this distribution
+//
+//
+
+#include "trackplaylist.h"
+#include "trackinfoobject.h"
+#include "trackcollection.h"
+#include "xmlparse.h"
+#include "wtracktable.h"
+#include <qdragobject.h>
+#include <qfileinfo.h>
+#include <qdir.h>
+#include <qcstring.h>
+#include "defs.h"
+
+TrackPlaylist::TrackPlaylist(TrackCollection *pTrackCollection, QString qName)
+{
+    m_pTrackCollection = pTrackCollection;
+    m_pTable = 0;
+    m_qName = qName;
+}
+
+TrackPlaylist::TrackPlaylist(TrackCollection *pTrackCollection, QDomNode node)
+{
+    m_pTrackCollection = pTrackCollection;
+    m_pTable = 0;
+
+    // Set name of list
+    m_qName = XmlParse::selectNodeQString(node, "Name");
+    qDebug("playlist name %s",m_qName.latin1());
+
+    // For each track...
+    QDomNode idnode = XmlParse::selectNode(node, "List").firstChild();
+    while (!idnode.isNull())
+    {
+        if (idnode.isElement() && idnode.nodeName()=="ID")
+        {
+            int id = idnode.toElement().text().toInt();
+            TrackInfoObject *pTrack = m_pTrackCollection->getTrack(id);
+            if (pTrack)
+                addTrack(pTrack);
+        }
+
+        idnode = idnode.nextSibling();
+    }
+}
+
+TrackPlaylist::~TrackPlaylist()
+{
+}
+
+void TrackPlaylist::writeXML(QDomDocument &doc, QDomElement &header)
+{
+    XmlParse::addElement(doc, header, "Name", m_qName);
+
+    QDomElement root = doc.createElement("List");
+    QPtrList<TrackInfoObject>::iterator it = m_qList.begin();
+    while (it!=m_qList.end())
+    {
+        XmlParse::addElement(doc, root, "ID", QString("%1").arg((*it)->getId()));
+        ++it;
+    }
+    header.appendChild(root);
+}
+
+void TrackPlaylist::addTrack(TrackInfoObject *pTrack)
+{
+    m_qList.append(pTrack);
+
+    // If this playlist is active, update WTableTrack
+    if (m_pTable)
+        pTrack->insertInTrackTableRow(m_pTable, m_pTable->numRows());
+
+}
+
+void TrackPlaylist::addTrack(QString qLocation)
+{
+    TrackInfoObject *pTrack = m_pTrackCollection->getTrack(qLocation);
+    if (!pTrack)
+    {
+        QFileInfo file(qLocation);
+        if (file.exists())
+        {
+            pTrack = new TrackInfoObject(file.dirPath(), file.fileName());
+
+            // Add track to the collection
+            if (pTrack->parse() == OK)
+            {
+                m_pTrackCollection->addTrack(pTrack);
+                qDebug("Found new track: %s", pTrack->getFilename().latin1());
+            }
+            else
+            {
+                qWarning("Could not parse %s", file.fileName().latin1());
+                delete pTrack;
+                pTrack = 0;
+            }
+        }
+    }
+
+    if (pTrack)
+        addTrack(pTrack);
+
+/*
+    else if (!pTrack->exists())
+    {
+        // If it exists in the list already, it might not have been found in the
+        // first place because it has been moved:
+        pTrack->setFilepath(fi->dirPath());
+        pTrack->checkFileExists();
+        if (pTrack->exists())
+            qDebug("Refound %s", pTrack->getFilename().latin1());
+    }
+*/
+}
+
+void TrackPlaylist::removeTrack(TrackInfoObject *pTrack)
+{
+    m_qList.remove(pTrack);
+}
+
+void TrackPlaylist::activate(WTrackTable *pTable)
+{
+    m_pTable = pTable;
+
+    int i=0;
+    QPtrList<TrackInfoObject>::iterator it = m_qList.begin();
+    while (it!=m_qList.end())
+    {
+        qDebug("inserting in row %i",i);
+        (*it)->insertInTrackTableRow(m_pTable, i);
+        ++it;
+        ++i;
+    }
+
+    // Connect drop events to table to this playlist
+    connect(m_pTable, SIGNAL(dropped(QDropEvent *)), this, SLOT(slotDrop(QDropEvent *)));
+}
+
+void TrackPlaylist::deactivate()
+{
+    disconnect(m_pTable, SIGNAL(dropped(QDropEvent *)), this, SLOT(slotDrop(QDropEvent *)));
+
+    if (m_pTable)
+    {
+        QPtrList<TrackInfoObject>::iterator it = m_qList.begin();
+        while (it!=m_qList.end())
+        {
+            qDebug("remove");
+            (*it)->removeFromTrackTable();
+            ++it;
+        }
+        m_pTable->setNumRows(0);
+    }
+
+    m_pTable = 0;
+}
+
+QString TrackPlaylist::getListName()
+{
+    return m_qName;
+}
+
+void TrackPlaylist::setListName(QString name)
+{
+    m_qName = name;
+}
+
+void TrackPlaylist::slotDrop(QDropEvent *e)
+{
+    qDebug("playlist drop");
+
+    // Check if this drag is a playlist subtype
+    QString s;
+    QCString type("playlist");
+    if (QTextDrag::decode(e, s, type))
+    {
+        e->ignore();
+        return;
+    }
+
+    if (!QUriDrag::canDecode(e))
+    {
+        qDebug("TrackPlaylist: Could not decode drag object.");
+        e->ignore();
+        return;
+    }
+
+    e->accept();
+    QStrList lst;
+    QUriDrag::decode(e, lst);
+
+    // For each drop element...
+    for (uint i=0; i<lst.count(); ++i )
+        addPath(QUriDrag::uriToLocalFile(lst.at(i)));
+}
+
+void TrackPlaylist::addPath(QString qPath)
+{
+    qDebug("path %s",qPath.latin1());
+
+    // Is this a file or directory?
+    QDir dir(qPath);
+    if (!dir.exists())
+        addTrack(qPath);
+    else
+    {
+        dir.setFilter(QDir::Dirs);
+
+        // Check if the dir is empty
+        if (dir.entryInfoList()==0)
+            return;
+
+        const QFileInfoList dir_list = *dir.entryInfoList();
+
+        // Call addPath on subdirectories
+        QFileInfoListIterator dir_it(dir_list);
+        QFileInfo *d;
+        while ((d=dir_it.current()))
+        {
+            if (!d->filePath().endsWith(".") && !d->filePath().endsWith(".."))
+                addPath(d->filePath());
+            ++dir_it;
+        }
+
+        // And then add all the files
+        dir.setFilter(QDir::Files);
+        dir.setNameFilter("*.wav *.Wav *.WAV *.mp3 *.Mp3 *.MP3 *.ogg *.Ogg *.OGG");
+        const QFileInfoList *list = dir.entryInfoList();
+        QFileInfoListIterator it(*list);        // create list iterator
+        QFileInfo *fi;                          // pointer for traversing
+
+        while ((fi=it.current()))
+        {
+            qDebug("add %s",fi->filePath().latin1());
+            addTrack(fi->filePath());
+            ++it;   // goto next list element
+        }
+    }
+}
+
+void TrackPlaylist::slotDeleteTrack(int iRow)
+{
+}
+
+

@@ -26,6 +26,7 @@
   */
 
 class QString;
+class TrackInfoObject;
 
 enum enumType { typeText, typeNumber, typeDuration };
 
@@ -35,13 +36,18 @@ class WTrackTableItem : public QTableItem
 private:
     enumType m_eType; // Wether an item is text or a number. Used for sorting.
 public: 
-    WTrackTableItem(QTable *table, EditType et, const QString &text, enumType eType);
+    WTrackTableItem(TrackInfoObject *pTrackInfoObject, QTable *table, EditType et, const QString &text, enumType eType);
     ~WTrackTableItem();
     static void setRowColors(QColor r1, QColor r2);
     void paint(QPainter *p, const QColorGroup &cg, const QRect &cr, bool selected);
+    /** Return pointer to corresponding TrackInfoObject */
+    TrackInfoObject *getTrackInfoObject();
 private:
     static QColor kqRowColor1, kqRowColor2;
     QString key() const;
-};           
+
+    /** Pointer to track info object corresponding to this item */
+    TrackInfoObject *m_pTrackInfoObject;
+};
 
 #endif

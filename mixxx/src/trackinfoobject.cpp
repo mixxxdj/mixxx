@@ -1,3 +1,20 @@
+/***************************************************************************
+                          trackinfoobject.cpp  -  description
+                             -------------------
+    begin                : 10 02 2003
+    copyright            : (C) 2003 by Tue & Ken Haste Andersen, Ingo Kossyk
+    email                : haste@diku.dk, kossyki@cs.tu-berlin.de
+ ***************************************************************************/
+
+/***************************************************************************
+ *                                                                         *
+ *   This program is free software; you can redistribute it and/or modify  *
+ *   it under the terms of the GNU General Public License as published by  *
+ *   the Free Software Foundation; either version 2 of the License, or     *
+ *   (at your option) any later version.                                   *
+ *                                                                         *
+ ***************************************************************************/
+
 #include "qstring.h"
 #include "qdom.h"
 #include <qfileinfo.h>
@@ -12,7 +29,7 @@
 #include "soundsourceoggvorbis.h"
 #include "wtracktable.h"
 #include "wtracktableitem.h"
-#include "tracklist.h"
+#include "xmlparse.h"
 
 TrackInfoObject::TrackInfoObject(const QString sPath, const QString sFile) : m_sFilename(sFile), m_sFilepath(sPath)
 {
@@ -27,7 +44,7 @@ TrackInfoObject::TrackInfoObject(const QString sPath, const QString sFile) : m_s
     m_fBpm = 0.;
     m_fBpmConfidence = 0.;
     m_iScore = 0;
-    m_iIndex = 0;
+    m_iId = 0;
 
     m_pTableItemScore = 0;
     m_pTableItemTitle = 0;
@@ -37,7 +54,6 @@ TrackInfoObject::TrackInfoObject(const QString sPath, const QString sFile) : m_s
     m_pTableItemDuration = 0;
     m_pTableItemBpm = 0;
     m_pTableItemBitrate = 0;
-    m_pTableItemIndex = 0;
 
     m_pTableTrack = 0;
 
@@ -62,7 +78,7 @@ TrackInfoObject::TrackInfoObject(const QDomNode &nodeHeader)
     m_fBpm = selectNodeStr( nodeHeader, "Bpm").toFloat();
     m_fBpmConfidence = selectNodeStr( nodeHeader, "BpmConfidence").toFloat();
     m_iScore = 0;
-    m_iIndex = selectNodeStr( nodeHeader, "Index").toInt();;
+    m_iId = selectNodeStr( nodeHeader, "ID").toInt();
     m_pTableTrack = 0;
 
     m_pTableItemScore = 0;
@@ -73,7 +89,6 @@ TrackInfoObject::TrackInfoObject(const QDomNode &nodeHeader)
     m_pTableItemDuration = 0;
     m_pTableItemBpm = 0;
     m_pTableItemBitrate = 0;
-    m_pTableItemIndex = 0;
 
     // Check that the actual file exists:
     checkFileExists();
@@ -124,56 +139,44 @@ void TrackInfoObject::checkFileExists()
 */
 void TrackInfoObject::writeToXML( QDomDocument &doc, QDomElement &header )
 {
-    addElement( doc, header, "Filename", m_sFilename );
-    addElement( doc, header, "Filepath", m_sFilepath );
-    addElement( doc, header, "Title", m_sTitle );
-    addElement( doc, header, "Artist", m_sArtist );
-    addElement( doc, header, "Type", m_sType );
-    addElement( doc, header, "Comment", m_sComment);
-    addElement( doc, header, "Duration", QString("%1").arg(m_iDuration));
-    addElement( doc, header, "Bitrate", QString("%1").arg(m_iBitrate));
-    addElement( doc, header, "Length", QString("%1").arg(m_iLength) );
-    addElement( doc, header, "TimesPlayed", QString("%1").arg(m_iTimesPlayed) );
-    addElement( doc, header, "Bpm", QString("%1").arg(m_fBpm) );
-    addElement( doc, header, "BpmConfidence", QString("%1").arg(m_fBpmConfidence) );
-    addElement( doc, header, "Index", QString("%1").arg(m_iIndex) );
+    XmlParse::addElement( doc, header, "Filename", m_sFilename );
+    XmlParse::addElement( doc, header, "Filepath", m_sFilepath );
+    XmlParse::addElement( doc, header, "Title", m_sTitle );
+    XmlParse::addElement( doc, header, "Artist", m_sArtist );
+    XmlParse::addElement( doc, header, "Type", m_sType );
+    XmlParse::addElement( doc, header, "Comment", m_sComment);
+    XmlParse::addElement( doc, header, "Duration", QString("%1").arg(m_iDuration));
+    XmlParse::addElement( doc, header, "Bitrate", QString("%1").arg(m_iBitrate));
+    XmlParse::addElement( doc, header, "Length", QString("%1").arg(m_iLength) );
+    XmlParse::addElement( doc, header, "TimesPlayed", QString("%1").arg(m_iTimesPlayed) );
+    XmlParse::addElement( doc, header, "Bpm", QString("%1").arg(m_fBpm) );
+    XmlParse::addElement( doc, header, "BpmConfidence", QString("%1").arg(m_fBpmConfidence) );
+    XmlParse::addElement( doc, header, "Id", QString("%1").arg(m_iId) );
 }
 
-/*
-	Adds another element to the xml file. Only used by WriteToXML.
-*/
-void TrackInfoObject::addElement(QDomDocument &doc, QDomElement &header, QString sElementName, QString sText)
+void TrackInfoObject::insertInTrackTableRow(WTrackTable *pTableTrack, int iRow)
 {
-    QDomElement element = doc.createElement( sElementName );
-    element.appendChild( doc.createTextNode( sText ) );
-    header.appendChild( element );
-}
-
-void TrackInfoObject::insertInTrackTableRow(WTrackTable *pTableTrack, int iRow, int iTrackNo)
-{
-    //m_iIndex = iTrackNo;
-
-    //removeFromTrackTable();
+    // Ensure the row that is requested for insert in the WTrackTable exists
+    if (pTableTrack->numRows()<iRow+1)
+        pTableTrack->setNumRows(iRow+1);
 
     // Construct elements to insert into the table, if they are not already allocated
     if (!m_pTableItemScore)
-        m_pTableItemScore = new WTrackTableItem(pTableTrack,QTableItem::Never, getScoreStr(), typeNumber);
+        m_pTableItemScore = new WTrackTableItem(this, pTableTrack,QTableItem::Never, getScoreStr(), typeNumber);
     if (!m_pTableItemTitle)
-        m_pTableItemTitle = new WTrackTableItem(pTableTrack,QTableItem::Never, m_sTitle, typeText);
+        m_pTableItemTitle = new WTrackTableItem(this, pTableTrack,QTableItem::Never, m_sTitle, typeText);
     if (!m_pTableItemArtist)
-        m_pTableItemArtist = new WTrackTableItem(pTableTrack,QTableItem::Never, m_sArtist, typeText);
+        m_pTableItemArtist = new WTrackTableItem(this, pTableTrack,QTableItem::Never, m_sArtist, typeText);
     if (!m_pTableItemComment)
-        m_pTableItemComment = new WTrackTableItem(pTableTrack,QTableItem::WhenCurrent, m_sComment, typeText);
+        m_pTableItemComment = new WTrackTableItem(this, pTableTrack,QTableItem::WhenCurrent, m_sComment, typeText);
     if (!m_pTableItemType)
-        m_pTableItemType = new WTrackTableItem(pTableTrack,QTableItem::Never, m_sType, typeText);
+        m_pTableItemType = new WTrackTableItem(this, pTableTrack,QTableItem::Never, m_sType, typeText);
     if (!m_pTableItemDuration)
-        m_pTableItemDuration = new WTrackTableItem(pTableTrack,QTableItem::Never, getDurationStr(), typeDuration);
+        m_pTableItemDuration = new WTrackTableItem(this, pTableTrack,QTableItem::Never, getDurationStr(), typeDuration);
     if (!m_pTableItemBpm)
-        m_pTableItemBpm = new WTrackTableItem(pTableTrack,QTableItem::Never, getBpmStr(), typeNumber);
+        m_pTableItemBpm = new WTrackTableItem(this, pTableTrack,QTableItem::Never, getBpmStr(), typeNumber);
     if (!m_pTableItemBitrate)
-        m_pTableItemBitrate = new WTrackTableItem(pTableTrack,QTableItem::Never, getBitrateStr(), typeNumber);
-    if (!m_pTableItemIndex)
-        m_pTableItemIndex = new WTrackTableItem(pTableTrack,QTableItem::Never, QString("%1").arg(m_iIndex), typeNumber);
+        m_pTableItemBitrate = new WTrackTableItem(this, pTableTrack,QTableItem::Never, getBitrateStr(), typeNumber);
 
     qDebug("inserting.. %p",pTableTrack->item(iRow, COL_SCORE));
 
@@ -186,7 +189,6 @@ void TrackInfoObject::insertInTrackTableRow(WTrackTable *pTableTrack, int iRow, 
     pTableTrack->setItem(iRow, COL_DURATION, m_pTableItemDuration);
     pTableTrack->setItem(iRow, COL_BPM, m_pTableItemBpm);
     pTableTrack->setItem(iRow, COL_BITRATE, m_pTableItemBitrate);
-    pTableTrack->setItem(iRow, COL_INDEX, m_pTableItemIndex);
     qDebug("bpm %p",m_pTableItemBpm);
 
     m_pTableTrack = pTableTrack;
@@ -194,18 +196,17 @@ void TrackInfoObject::insertInTrackTableRow(WTrackTable *pTableTrack, int iRow, 
 
 void TrackInfoObject::removeFromTrackTable()
 {
-	qDebug("remove");
+    qDebug("remove");
     if (m_pTableTrack)
     {
         m_pTableTrack->clearCell(m_pTableItemScore->row(),m_pTableItemScore->col());
-		m_pTableTrack->clearCell(m_pTableItemTitle->row(),m_pTableItemTitle->col());
-		m_pTableTrack->clearCell(m_pTableItemArtist->row(),m_pTableItemArtist->col());
-		m_pTableTrack->clearCell(m_pTableItemComment->row(),m_pTableItemComment->col());
-		m_pTableTrack->clearCell(m_pTableItemType->row(),m_pTableItemType->col());
-		m_pTableTrack->clearCell(m_pTableItemDuration->row(),m_pTableItemDuration->col());
-		m_pTableTrack->clearCell(m_pTableItemBpm->row(),m_pTableItemBpm->col());
-		m_pTableTrack->clearCell(m_pTableItemBitrate->row(),m_pTableItemBitrate->col());
-		m_pTableTrack->clearCell(m_pTableItemIndex->row(),m_pTableItemIndex->col());
+        m_pTableTrack->clearCell(m_pTableItemTitle->row(),m_pTableItemTitle->col());
+        m_pTableTrack->clearCell(m_pTableItemArtist->row(),m_pTableItemArtist->col());
+        m_pTableTrack->clearCell(m_pTableItemComment->row(),m_pTableItemComment->col());
+        m_pTableTrack->clearCell(m_pTableItemType->row(),m_pTableItemType->col());
+        m_pTableTrack->clearCell(m_pTableItemDuration->row(),m_pTableItemDuration->col());
+        m_pTableTrack->clearCell(m_pTableItemBpm->row(),m_pTableItemBpm->col());
+        m_pTableTrack->clearCell(m_pTableItemBitrate->row(),m_pTableItemBitrate->col());
 
         m_pTableItemScore = 0;
         m_pTableItemTitle = 0;
@@ -215,12 +216,9 @@ void TrackInfoObject::removeFromTrackTable()
         m_pTableItemDuration = 0;
         m_pTableItemBpm = 0;
         m_pTableItemBitrate = 0;
-        m_pTableItemIndex = 0;
-		m_pTableTrack = 0;
-		
-		
-		}
-    
+
+        m_pTableTrack = 0;
+    }
 }
 
 int TrackInfoObject::parse()
@@ -502,4 +500,14 @@ void TrackInfoObject::setScore(int i)
         m_pTableItemScore->setText(getScoreStr());
         m_pTableItemScore->table()->updateCell(m_pTableItemScore->row(), m_pTableItemScore->col());
     }
+}
+
+int TrackInfoObject::getId()
+{
+    return m_iId;
+}
+
+void TrackInfoObject::setId(int iId)
+{
+    m_iId = iId;
 }

@@ -25,63 +25,7 @@ static int* FILE_T_MP3 =(int*)2;
 static int* FILE_T_OGG = (int*)3;
 static int* FILE_T_WAV = (int*)4;
 static int* FILE_T_PLAYLIST = (int*)0;
-/*********************************+
-	Functions and Constructor for class WTreeItem which is
-	derived from QListViewItem
-**********************************/
-//Constructs a new WTreeList Item as child of RootItem Parent
-WTreeItem::WTreeItem(QListView * parent,int *fileType)
-: QListViewItem(parent),Type(fileType)
-{
-	  
-	this->setState(false);
-	listParent = parent;
-	this->setType(fileType);
-	
-}
-//Alternate Constructor for sibbling items
-WTreeItem::WTreeItem(QListViewItem * parent,int *fileType)
-: QListViewItem(parent)
-{
-	this->setState(false);
-	listParent  = ((WTreeItem*)parent)->listParent;
-	this->setType(fileType);
-	
-}
-//Returns the Type as int
-int * WTreeItem::getType(){
-	return Type;
-}
-//Set Type of the Item (look for the constants in the preclass statements
-void WTreeItem::setType(int * fileType){
-	
-	Type = fileType;
-	
-}
-//Deconstructer for WTreeItem
-WTreeItem::~WTreeItem(){
-	
-}
 
-//Returns the State of the Item
-bool WTreeItem::getState(){
-	
-	return Expanded;
-	
-}	
-//The Item Above 
-QListViewItem * WTreeItem::itemAbove(){
-	
-	return this->parent();
-	
-}
-//Set state of Item
-void WTreeItem::setState(bool state){
-	
-	Expanded = state;
-	
-	
-}
 /*********************************+
 	Functions and Constructor for class WTreeList which is
 	derived from QListView
@@ -89,7 +33,7 @@ void WTreeItem::setState(bool state){
 //Constructs WTreeList object as child of parent
 WTreeList::WTreeList(QWidget * parent, const char*name)
 : QListView( parent, name ){
-	//Connecting double click and return pressed 
+	//Connecting double click and return pressed
 	connect( this, SIGNAL( doubleClicked( QListViewItem * ) ),
              this, SLOT( slotFolderSelected( QListViewItem * ) ) );
     connect( this, SIGNAL( returnPressed(  QListViewItem * ) ),
@@ -139,7 +83,7 @@ void WTreeList::setup(QDomNode node)
 
 	this->setAcceptDrops( TRUE );
 	viewport()->setAcceptDrops( TRUE );
-	
+
 	// Background color
     if (!WWidget::selectNode(node, "BgColor").isNull())
     {
@@ -161,7 +105,7 @@ void WTreeList::setup(QDomNode node)
 	WTreeItem * playListItem = new WTreeItem((QListView*)this);
 	playListItem->setText(0,"Playlists");
 	playListItem->setText(1,"Playlist Repository");
-	playListItem->setText(2,WWidget::selectNodeQString(node,"PlsRootPath"));   
+	playListItem->setText(2,WWidget::selectNodeQString(node,"PlsRootPath"));
     playListItem->filePath =  WWidget::selectNodeQString(node,"PlsRootPath");
 	}
 
@@ -174,7 +118,7 @@ void WTreeList::setup(QDomNode node)
 	rootItem->setText(2,WWidget::selectNodeQString(node,"DirRootPath"));
 	rootItem->filePath =  WWidget::selectNodeQString(node,"DirRootPath");
     }
-	
+
     // Setup column widths
     //setLeftMargin(0);
     //hideColumn(COL_INDEX);
@@ -191,14 +135,14 @@ void WTreeList::contentsMouseMoveEvent( QMouseEvent* e )
         QListViewItem *item = itemAt( contentsToViewport(presspos) );
         if ( item ) {
             if ( QFile::exists(((WTreeItem*)item)->filePath) || ((WTreeItem*)item)->filePath.endsWith(".xml") ) {
-        
+
 				QStrList * source = new QStrList();
 				source->append(&(*QUriDrag::localFileToUri(((WTreeItem*)item)->filePath)));
 				QUriDrag* ud = new QUriDrag(viewport());
                 ud->setUris( (*source) );
                	ud->dragCopy();
-           
-				
+
+
             }
         }
     }
@@ -290,7 +234,7 @@ void WTreeList::setRoot(QString sRoot)
 	newRoot->setText(2, sRoot);
 	
 	}
-	
+
 }
 //returns Playlist Root Item
 WTreeItem * WTreeList::getPlsRoot()

@@ -27,7 +27,7 @@ class MixxxApp;
 class MixxxView;
 class MidiObject;
 class PlayerProxy;
-class TrackList;
+class Track;
 class DlgPrefSound;
 class DlgPrefMidi;
 class DlgPrefPlaylist;
@@ -44,7 +44,7 @@ class DlgPreferences : public QTabDialog
 public: 
     DlgPreferences(MixxxApp *mixxx, MixxxView *view,
                    MidiObject *midi, PlayerProxy *player,
-                   TrackList *tracklist, ConfigObject<ConfigValue> *config,
+                   Track *track, ConfigObject<ConfigValue> *config,
                    ConfigObject<ConfigValueMidi> *midiconfig,
                    ControlObject *pControl);
     ~DlgPreferences();

@@ -1,0 +1,74 @@
+//
+// C++ Interface: trackplaylist
+//
+// Description:
+//
+//
+// Author: Tue Haste Andersen <haste@diku.dk>, (C) 2003
+//
+// Copyright: See COPYING file that comes with this distribution
+//
+//
+#ifndef TRACKPLAYLIST_H
+#define TRACKPLAYLIST_H
+
+#include <qobject.h>
+#include <qstring.h>
+#include <qdom.h>
+#include <qptrlist.h>
+#include <qevent.h>
+
+class TrackInfoObject;
+class TrackCollection;
+class WTrackTable;
+
+/**
+@author Tue Haste Andersen
+*/
+class TrackPlaylist : public QObject
+{
+    Q_OBJECT
+public:
+    /** Construct an empty playlist */
+    TrackPlaylist(TrackCollection *pTrackCollection, QString qName="Default");
+    /** Construct a playlist from the definition at the dom node */
+    TrackPlaylist(TrackCollection *pTrackCollectionm, QDomNode node);
+    /** Destruct the playlist */
+    ~TrackPlaylist();
+    /** Write database content to XML file */
+    void writeXML(QDomDocument &doc, QDomElement &header);
+    /** Add a track to the playlist */
+    void addTrack(TrackInfoObject *pTrack);
+    /** Add a track to the playlist */
+    void addTrack(QString qLocation);
+    /** Remove track from playlist */
+    void removeTrack(TrackInfoObject *pTrack);
+    /** Add all tracks from the playlist to the WTrackTable */
+    void activate(WTrackTable *pTable);
+    /** Remove all tracks from the WTrackTable */
+    void deactivate();
+    /** Get name of list */
+    QString getListName();
+    /** Set name of list */
+    void setListName(QString name);
+    /** Add recursively the tracks in path to the collection, and then to this list */
+    void addPath(QString qPath);
+
+public slots:
+    /** Decode drop event and calls addPath */
+    void slotDrop(QDropEvent *e);
+    /** Delete a track from the playlist */
+    void slotDeleteTrack(int iRow);
+
+private:
+    /** List of pointers to TrackInfoObjects */
+    QPtrList<TrackInfoObject> m_qList;
+    /** Pointer to TrackCollection */
+    TrackCollection *m_pTrackCollection;
+    /** Name of list */
+    QString m_qName;
+    /** Pointer to WTrackTable. This is 0 if the playlist is not displayed in a table */
+    WTrackTable *m_pTable;
+};
+
+#endif

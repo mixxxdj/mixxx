@@ -24,9 +24,10 @@
 QColor WTrackTableItem::kqRowColor1;
 QColor WTrackTableItem::kqRowColor2;
 
-WTrackTableItem::WTrackTableItem(QTable *table, EditType et, const QString &text, enumType eType) : QTableItem(table, et, text)
+WTrackTableItem::WTrackTableItem(TrackInfoObject *pTrackInfoObject, QTable *table, EditType et, const QString &text, enumType eType) : QTableItem(table, et, text)
 {
     m_eType = eType;
+    m_pTrackInfoObject = pTrackInfoObject;
 }
 
 WTrackTableItem::~WTrackTableItem()
@@ -68,5 +69,10 @@ QString WTrackTableItem::key() const
         break;
     }
     return sResult;
+}
+
+TrackInfoObject *WTrackTableItem::getTrackInfoObject()
+{
+    return m_pTrackInfoObject;
 }
 
