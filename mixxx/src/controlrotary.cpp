@@ -34,7 +34,7 @@ void ControlRotary::slotSetPositionMidi(int _newpos)
     //emit updateGUI(newpos);
 }
 
-void ControlRotary::slotSetPosition(int newpos)
+void ControlRotary::slotSetPosition(int)
 {
 /*
     // get position from gray code

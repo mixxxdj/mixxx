@@ -13,7 +13,7 @@ SoundSourceAudioFile::SoundSourceAudioFile(const char* filename)
 
     channels = 2;
     type = "wav file.";
-    qDebug("length: %i",filelength);
+//    qDebug("length: %i",filelength);
 }
 
 SoundSourceAudioFile::~SoundSourceAudioFile()

@@ -12,7 +12,7 @@ typedef short int SAMPLE;       // Data type used in output buffer. S16_LE works
 typedef float CSAMPLE;          // CSAMPLE defines the CSAMPLE type used for
                                 // intermidiate calculations
 typedef CSAMPLE FLOAT_TYPE;       // Float type, used for non sample data
-const int BUFFER_SIZE  = 32;  // Buffer size used both for input and output
+const int BUFFER_SIZE  = 2048;  // Buffer size used both for input and output
                                             
 /** size of the chunk that's read in every read. */
 const unsigned int READCHUNKSIZE = 23040;

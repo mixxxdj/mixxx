@@ -179,14 +179,10 @@ void DlgPreferences::slotMasterDeviceOptions()
             for (int i=1; i<=p->noChannels; i+=2)
             {
                 QString ch(QString("%1-%2").arg(i).arg(i+1));
-//                if (!(ComboBoxSoundcardMaster->currentText() == ComboBoxSoundcardHead->currentText() &&
-//                      ch == ComboBoxChannelsHead->currentText()))
-                {
-                    ComboBoxChannelsMaster->insertItem(ch);
-                    if (i==player->chMaster)
-                        ComboBoxChannelsMaster->setCurrentItem(j);
-                    j++;
-                }
+                ComboBoxChannelsMaster->insertItem(ch);
+                if (i==player->chMaster)
+                    ComboBoxChannelsMaster->setCurrentItem(j);
+                j++;
             }
 
             // Sample rates
