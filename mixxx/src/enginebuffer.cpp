@@ -337,23 +337,30 @@ FLOAT EngineBuffer::max(const FLOAT a, const FLOAT b)
 
 CSAMPLE *EngineBuffer::process(const CSAMPLE *, const int buf_size)
 {
-  long prev;
-  for (int i=0; i<buf_size; i+=2) {
-    prev = (long)floor(play_pos)%read_buffer_size;
-    if (!even(prev)) prev--;
-    long next = (prev+2)%read_buffer_size;
-    FLOAT frac = play_pos - floor(play_pos);
-    buffer[i  ] = readbuffer[prev  ] +frac*(readbuffer[next  ]-readbuffer[prev  ]);
-    buffer[i+1] = readbuffer[prev+1] +frac*(readbuffer[next+1]-readbuffer[prev+1]);
-    play_pos += 2.*rate;
-    play_pos = max(0.,min(file->length(), play_pos));
-  }
+    if (rate==0)
+	for (int i=0; i<buf_size; i+=2)
+	    buffer[i]=buffer[i+1]=0;
+    else {
+	long prev;
+	for (int i=0; i<buf_size; i+=2) {
+	    prev = (long)floor(play_pos)%read_buffer_size;
+	    if (!even(prev)) prev--;
+	    long next = (prev+2)%read_buffer_size;
+	    FLOAT frac = play_pos - floor(play_pos);
+	    buffer[i  ] = readbuffer[prev  ] +frac*(readbuffer[next  ]-readbuffer[prev  ]);
+	    buffer[i+1] = readbuffer[prev+1] +frac*(readbuffer[next+1]-readbuffer[prev+1]);
+	    play_pos += 2.*rate;
+	    play_pos = max(0.,min(file->length(), play_pos));
+	}
+	if (play_pos == file->length())
+	    PlayButton->slotSetPosition(down);
+    }
 
-  checkread();
-  // Check the wheel:
-  wheel->updatecounter(buf_size);
-  // Write position to the gui: 
-  writepos();
+    checkread();
+    // Check the wheel:
+    wheel->updatecounter(buf_size);
+    // Write position to the gui: 
+    writepos();
 
-  return buffer;
+    return buffer;
 }

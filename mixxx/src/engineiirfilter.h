@@ -10,7 +10,7 @@
 
 class EngineIIRfilter : public EngineObject {
  Q_OBJECT
- private:
+ protected:
   ControlPushButton* killbutton;
   const double *coefs;
   static const int NZEROS = 8;
@@ -22,7 +22,7 @@ class EngineIIRfilter : public EngineObject {
   FLOAT gain;
   EngineIIRfilter(int, int , int , MidiObject*, const double *);
   ~EngineIIRfilter();
-  CSAMPLE *process(const CSAMPLE*, const int);
+  virtual CSAMPLE *process(const CSAMPLE*, const int);
  public slots:
   void slotUpdate();
 };

@@ -44,6 +44,7 @@
 class EngineBuffer : public EngineObject, public QThread  {
  Q_OBJECT
 public:
+  double rate;
   EngineBuffer(DlgPlaycontrol *, DlgChannel *, MidiObject *, const char *);
   ~EngineBuffer();
   void newtrack(const char *);
@@ -73,7 +74,6 @@ private:
   ControlPushButton *PlayButton;
   ControlPotmeter *rateSlider;
   ControlRotary *wheel;
-  double rate;
   SoundSource *file;
   SAMPLE *temp;
   unsigned  chunk_size;

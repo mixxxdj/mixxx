@@ -18,7 +18,7 @@
 #include "enginefilterrbj.h"
 
 EngineFilterRBJ::EngineFilterRBJ(int potmeter_midi, int button_midi,
-							 	 int button_bit, MidiObject *midi)
+				 int button_bit, MidiObject *midi)
 {
 	gain = 100.;
 
