@@ -92,6 +92,7 @@ contains(DEFINES, STATIC) {
     unix:!macx:LIBS += /usr/lib/libmad.a /usr/lib/libid3tag.a
 } else {
     unix:!macx:LIBS += -lmad -lid3tag
+    #unix:!macx:LIBS += -lmad ../lib/libid3tag-0.15.0b/.libs/libid3tag.a
 }
 win32:LIBS += libmad-release.lib libid3tag-release.lib
 macx:LIBS += $$MACLIBPATH/lib/libmad.a $$MACLIBPATH/lib/libid3tag.a

@@ -17,11 +17,13 @@
 
 #include "enginefilterblock.h"
 #include "controllogpotmeter.h"
+#include "controlpushbutton.h"
 #include "controlengine.h"
 
 EngineFilterBlock::EngineFilterBlock(const char *group)
 {
     ControlLogpotmeter *p;
+    ControlPushButton *pb;
 
     low = new EngineFilterIIR(bessel_lowpass);
     high = new EngineFilterIIR(bessel_highpass);
@@ -40,12 +42,18 @@ EngineFilterBlock::EngineFilterBlock(const char *group)
 */
     p = new ControlLogpotmeter(ConfigKey(group, "filterLow"), 4.);
     filterpotLow = new ControlEngine(p);
+    pb = new ControlPushButton(ConfigKey(group, "filterLowKill"),  true);
+    filterKillLow = new ControlEngine(pb);
 
     p = new ControlLogpotmeter(ConfigKey(group, "filterMid"), 4.);
     filterpotMid = new ControlEngine(p);
+    pb = new ControlPushButton(ConfigKey(group, "filterMidKill"),  true);
+    filterKillMid = new ControlEngine(pb);
 
     p = new ControlLogpotmeter(ConfigKey(group, "filterHigh"), 4.);
     filterpotHigh = new ControlEngine(p);
+    pb = new ControlPushButton(ConfigKey(group, "filterHighKill"),  true);
+    filterKillHigh = new ControlEngine(pb);
 
     buffer = new CSAMPLE[MAX_BUFFER_LEN];
 }
@@ -55,6 +63,12 @@ EngineFilterBlock::~EngineFilterBlock()
     delete [] buffer;
     delete high;
     delete low;
+    delete filterpotLow;
+    delete filterKillLow;
+    delete filterpotMid;
+    delete filterKillMid;
+    delete filterpotHigh;
+    delete filterKillHigh;
 }
 
 CSAMPLE *EngineFilterBlock::process(const CSAMPLE *source, const int buf_size)
@@ -65,8 +79,15 @@ CSAMPLE *EngineFilterBlock::process(const CSAMPLE *source, const int buf_size)
 //    CSAMPLE *p0 = lowrbj->process(source, buf_size);
 //    CSAMPLE *p1 = highrbj->process(source, buf_size);
 
-    
+    CSAMPLE fLow=0.f, fMid=0.f, fHigh=0.f;
+    if (filterKillLow->get()==0.)
+        fLow = filterpotLow->get();
+    if (filterKillMid->get()==0.)
+        fMid = filterpotMid->get();
+    if (filterKillHigh->get()==0.)
+        fHigh = filterpotHigh->get();
+
     for (int i=0; i<buf_size; i++)
-        buffer[i] = filterpotLow->get()*p0[i] + filterpotHigh->get()*p1[i] + filterpotMid->get()*(source[i]-p0[i]-p1[i]);
+        buffer[i] = fLow*p0[i] + fHigh*p1[i] + fMid*(source[i]-p0[i]-p1[i]);
     return buffer;
 }

@@ -20,12 +20,13 @@
 #include "controleventmidi.h"
 
 
-JoystickLinux::JoystickLinux(ControlObject *pControl) : Joystick(pControl){
+JoystickLinux::JoystickLinux(ControlObject *pControl) : Joystick(pControl)
+{
 }
 
-JoystickLinux::~JoystickLinux(){
+JoystickLinux::~JoystickLinux()
+{
 }
-
 
 int JoystickLinux::opendev()
 {
@@ -37,9 +38,10 @@ int JoystickLinux::opendev()
     sprintf(joydevice, "/dev/js%i", joystick_no);
 
     // open joystick device
-    if ((joystickDevice = open(joydevice, O_RDONLY)) < 0) {
-      qDebug(joydevice);
-      return 0;
+    if ((joystickDevice = open(joydevice, O_RDONLY)) < 0)
+    {
+//        qDebug(joydevice);
+        return 0;
     }
 
     ioctl(joystickDevice, JSIOCGAXES, &joystick.axes);
@@ -55,39 +57,45 @@ int JoystickLinux::opendev()
 
 }
 
-void JoystickLinux::closedev(){
+void JoystickLinux::closedev()
+{
     close(joystickDevice);
 }
 
-void JoystickLinux::run(){
+void JoystickLinux::run()
+{
 
-    while (1) {
+    while (1)
+    {
         // read eventdata from joystick
-        if (read(joystickDevice, &joystickEvent, sizeof(struct js_event)) != sizeof(struct js_event)) {
+        if (read(joystickDevice, &joystickEvent, sizeof(struct js_event)) != sizeof(struct js_event))
+        {
             qDebug("Joystick: error reading from joystick device");
             return;
         }
 
         // switch to right event
-        switch(joystickEvent.type & ~JS_EVENT_INIT) {
-
+        switch(joystickEvent.type & ~JS_EVENT_INIT)
+        {
             case JS_EVENT_BUTTON:
                 // alternate between NOTE_ON and NOTE_OFF on each button event
-                if (buttonvalue[joystickEvent.number] != 0){
-                   QApplication::postEvent(m_pControl,new ControlEventMidi(NOTE_OFF, kiJoystickMidiChannel, joystickEvent.number,1));
-                   buttonvalue[joystickEvent.number] = 0;
+                if (buttonvalue[joystickEvent.number] != 0)
+                {
+                     QApplication::postEvent(m_pControl,new ControlEventMidi(NOTE_OFF, kiJoystickMidiChannel, joystickEvent.number,1));
+                     buttonvalue[joystickEvent.number] = 0;
                 } else {
-                   QApplication::postEvent(m_pControl,new ControlEventMidi(NOTE_ON, kiJoystickMidiChannel, joystickEvent.number,1));
-                   buttonvalue[joystickEvent.number] = 1;
-                }                    
+                     QApplication::postEvent(m_pControl,new ControlEventMidi(NOTE_ON, kiJoystickMidiChannel, joystickEvent.number,1));
+                     buttonvalue[joystickEvent.number] = 1;
+                }
                 break;
-        
+
             case JS_EVENT_AXIS:
                 // convert axis value into a short value
                value = (int) (((((double) joystickEvent.value) + SHRT_MAX) / USHRT_MAX)*127.0);
-  
+
                 // send midi data (only if value has changed since last event)
-                if (axisvalue[joystickEvent.number] != value){
+                if (axisvalue[joystickEvent.number] != value)
+                {
                     axisvalue[joystickEvent.number] = value;
                     QApplication::postEvent(m_pControl,new ControlEventMidi(CTRL_CHANGE, kiJoystickMidiChannel, joystickEvent.number+20, value));
                 }

@@ -30,7 +30,8 @@ New since 1.0.1:
 * REQUIREMENTS *********************************************
 Mixxx is depends on the following libraries:
 QT >= 3.1 
-libMAD
+libmad
+libi3tag
 libAudioFile
 vorbisfile
 FFTW 2
