@@ -35,6 +35,7 @@ unix {
   MOC_DIR = .moc
   OBJECTS_DIR = .obj
   LIBS	+= -lmad -laudiofile -lid3tag
+  QMAKE_CXXFLAGS += -O3
 }
 win32 {
   INCLUDEPATH += ../portmidi/

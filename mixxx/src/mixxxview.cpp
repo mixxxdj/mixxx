@@ -57,26 +57,39 @@ MixxxView::MixxxView(QWidget *parent, MixxxDoc *doc) : QWidget(parent)
     mainGrid->setRowStretch( 2,  40);
 
     // Add filenames in ./music/ to table
-    QDir d("music");
-    d.setFilter(QDir::Files);
-    if (!d.exists())
-	qWarning( "Cannot find the ./music directory" );
+    Addfiles("music/");
+}
+
+void MixxxView::Addfiles(const char *dir_name) {
+    QDir dir(dir_name);
+    if (!dir.exists())
+	qWarning( "Cannot find the directory %s.",dir_name);
     else {
-        const QFileInfoList *list = d.entryInfoList();
-	    QFileInfoListIterator it(*list);        // create list iterator
-	    QFileInfo *fi;                          // pointer for traversing
+	// First run though all directories:
+	dir.setFilter(QDir::Dirs);
+	const QFileInfoList dir_list = *dir.entryInfoList();
+	QFileInfoListIterator dir_it(dir_list);
+	QFileInfo *d;
+	dir_it += 2; // Traverse past "." and ".."
+	while ((d=dir_it.current())) {
+	    qDebug(d->filePath());
+	    Addfiles(d->filePath());
+	    ++dir_it;
+	}
+
+	// ... and then all the files:
+	dir.setFilter(QDir::Files);
+	const QFileInfoList *list = dir.entryInfoList();
+	QFileInfoListIterator it(*list);        // create list iterator
+	QFileInfo *fi;                          // pointer for traversing
 	
-	    while ((fi=it.current()))
-        {
-	        //qDebug(fi->fileName());
-            playlist->ListPlaylist->insertItem(new QListViewItem(playlist->ListPlaylist,fi->baseName(),fi->filePath()));
-	     /*
-         playlist->TableList->setItem(i,0,new QTableItem(playlist->TableList,QTableItem::Never,
-		            					 fi->baseName()));
-	        playlist->TableList->setItem(i,1,new QTableItem(playlist->TableList,QTableItem::Never,
-			  				             fi->filePath()));
-	      */  ++it;                               // goto next list element
-    	}
+	while ((fi=it.current()))
+	{
+	    //qDebug(fi->fileName());
+	    playlist->ListPlaylist->insertItem(new QListViewItem(playlist->ListPlaylist,
+								 fi->fileName(),fi->filePath()));
+	    ++it;   // goto next list element
+	}
     }
 }
 
@@ -89,3 +102,6 @@ void MixxxView::slotDocumentChanged()
   //TODO update the view
 
 }
+
+
+
