@@ -22,19 +22,29 @@ MidiObjectPortMidi::MidiObjectPortMidi(ConfigObject<ConfigValueMidi> *c, QApplic
     // Initialize PortMidi
     Pm_Initialize();
 
+    // For some reason, always start the timer before you start midi
+    //Pt_Start(1, 0, 0); // start a timer with millisecond accuracy
+
     // Fill out list holding valid input device names
     bool validDevice = false;
+    
     for (int i=0; i<Pm_CountDevices(); i++)
     {
         const PmDeviceInfo *info = Pm_GetDeviceInfo(i);
+//        QString n(info->name);
+//        qDebug("Name: %s, input: %i, output: %i",info->name,info->input,info->output);
         if (info->input>0)
         {
-            devices.append(QString(info->name));
-            if (QString(info->name) == device)
+            devices.append(QString("%1").arg(i));
+            if (devices.last() == device)
                 validDevice = true;
         }
     }
-
+    if (validDevice)
+	qDebug("Valid: %s",device.latin1());
+    else
+        qDebug("Invalid.");
+qDebug("%s",devices.first().latin1());
     if (validDevice)
         devOpen(device);
     else
@@ -42,9 +52,6 @@ MidiObjectPortMidi::MidiObjectPortMidi(ConfigObject<ConfigValueMidi> *c, QApplic
             qWarning("PortMidi: No MIDI devices available.");
         else
             devOpen(devices.first());
-    
-    // Start the midi thread:
-    start();
 }
 
 MidiObjectPortMidi::~MidiObjectPortMidi()
@@ -56,27 +63,21 @@ MidiObjectPortMidi::~MidiObjectPortMidi()
 
 void MidiObjectPortMidi::devOpen(QString device)
 {
-   // Open midi device for input
-
-    /*for (i = 0; i < Pm_CountDevices(); i++) {
-        const PmDeviceInfo *info = Pm_GetDeviceInfo(i);
-        printf("%d: %s, %s", i, info->interf, info->name);
-        if (info->input) printf(" (input)");
-        if (info->output) printf(" (output)");
-        printf("\n");
-    }*/
+    // Open midi device for input
 
     // Find input device with device name
     PmDeviceID id = -1;
     for (int i=0; i<Pm_CountDevices(); i++)
     {
-        if (QString(Pm_GetDeviceInfo(i)->name) == device && Pm_GetDeviceInfo(i)->input>0)
+        const PmDeviceInfo *info = Pm_GetDeviceInfo(i);
+        if (QString("%1").arg(i) == device && info->input>0)
         {
             id = i;
             break;
         }
     }
-    
+    qDebug("Name: %s, id: %i",device.latin1(),id);
+
     // Open device
     PmError err = Pm_OpenInput(&midi, id, NULL, 100, NULL, NULL, NULL);
     if (err)
@@ -90,18 +91,22 @@ void MidiObjectPortMidi::devOpen(QString device)
 
 void MidiObjectPortMidi::devClose()
 {
+    // Stop thread
+    //stop();
+    requestStop = true;
+
     // Close device
     Pm_Close(midi);
 }
 
 void MidiObjectPortMidi::run()
 {
-    int stop = 0;
+    requestStop = false;
     PmError err;
     char midicontrol = 0;
     char midivalue = 0;
 
-    while(stop == 0)
+    while(!requestStop)
     {
         err = Pm_Poll(midi);
         if (err == TRUE)
@@ -110,6 +115,9 @@ void MidiObjectPortMidi::run()
             {
                 midicontrol = Pm_MessageData1(buffer[0].message);
                 midivalue = Pm_MessageData2(buffer[0].message);
+
+                qDebug("midi ch: %i, ctrl: %i, val: %i",0,midicontrol,midivalue);
+                send(0,midicontrol,midivalue);
             } else {
                 qDebug("Error in Pm_Read: %s\n", Pm_GetErrorText(err));
                 break;
@@ -120,6 +128,6 @@ void MidiObjectPortMidi::run()
             qDebug("Error in Pm_Poll: %s\n", Pm_GetErrorText(err));
             break;
         }
-        send(0,midicontrol,midivalue);
     }
 }
+

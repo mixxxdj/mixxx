@@ -27,6 +27,9 @@
 #include <qstring.h>
 #include <qlcdnumber.h>
 #include <qevent.h>
+#ifdef __MACX__
+    #include "rtthread.cpp"
+#endif
 
 EngineBuffer::EngineBuffer(QApplication *a, QWidget *m, DlgPlaycontrol *_playcontrol, const char *group, const char *filename)
 {
@@ -193,6 +196,10 @@ void EngineBuffer::stop()
 
 void EngineBuffer::run()
 {
+#ifdef __MACX__
+    rtThread();
+#endif
+
     while(requestStop->available())
     {
         // Wait for playback if in buffer is filled.

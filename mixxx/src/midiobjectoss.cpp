@@ -132,26 +132,3 @@ void MidiObjectOSS::run()
         }
     }
 }
-
-void MidiObjectOSS::stop()
-{
-    MidiObject::stop();
-
-    // Raise signal to stop abort blocking read in main thread loop
-    if (thread_pid != 0)
-    {
-        signal(SIGINT,&abortRead);
-        kill(thread_pid,SIGINT);
-    }
-    wait();
-    thread_pid = 0;
-}
-
-void abortRead(int)
-{
-    // Reinstall default handler
-    signal(SIGINT,SIG_DFL);
-
-    // End thread execution
-    QThread::exit();
-}

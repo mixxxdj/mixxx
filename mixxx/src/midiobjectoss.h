@@ -19,10 +19,6 @@
 #define MIDIOBJECTOSS_H
 
 #include <midiobject.h>
-#include <unistd.h>
-#include <fcntl.h>
-#include <stdio.h>
-#include <signal.h>
 
 /**
   *@author Tue & Ken Haste Andersen
@@ -40,9 +36,6 @@ protected:
 
     int     handle;
     char    *buffer;
-    int     thread_pid;
 };
-
-void abortRead(int);
 
 #endif

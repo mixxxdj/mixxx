@@ -19,7 +19,10 @@ SOURCES += midiobjectportmidi.cpp
 HEADERS += midiobjectportmidi.h
 DEFINES += __PORTMIDI__
 unix:LIBS += -lportmidi -lporttime
-macx:LIBS -= -lporttime
+macx:LIBS -= -lportmidi -lporttime
+macx:LIBS += -framework Carbon -framework CoreMIDI
+macx:SOURCES += ../../../portmidi-macosx-1.0/pmdarwin.c ../../../portmidi-macosx-1.0/pmmacosx.c ../../../portmidi-macosx-1.0/pmutil.c ../../../portmidi-macosx-1.0/portmidi.c ../../../portmidi-macosx-1.0/ptdarwin.c
+macx:HEADERS += ../../../portmidi-macosx-1.0/pminternal.h ../../../portmidi-macosx-1.0/pmmacosx.h ../../../portmidi-macosx-1.0/pmutil.h ../../../portmidi-macosx-1.0/portmidi.h ../../../portmidi-macosx-1.0/porttime.h 
 win32:LIBS += ../lib/portmidi.lib ../lib/porttime.lib
 
 # ALSA PCM (Not currently working, Linux specific)
