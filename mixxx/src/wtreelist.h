@@ -41,7 +41,7 @@
 #include <qmime.h>
 #include <qdragobject.h>
 #include <qmessagebox.h>
-
+#include <qwidget.h>
 #ifndef TREEDIRVIEW_H
 #define TREEDIRVIEW_H
 
