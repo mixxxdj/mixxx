@@ -1,9 +1,9 @@
 /***************************************************************************
-                          wtracktable.cpp  -  description
+                          tracklist.cpp  -  description
                              -------------------
-    begin                : Sun May 4 2003
-    copyright            : (C) 2003 by Tue & Ken Haste Andersen
-    email                : haste@diku.dk
+    begin                : 10 02 2003
+    copyright            : (C) 2003 by Ingo Kossyk & Tue Haste Andersen
+    email                : kossyki@cs.tu-berlin.de & haste@diku.dk
  ***************************************************************************/
 
 /***************************************************************************
@@ -27,25 +27,24 @@
 #include <qstringlist.h>
 #include <qmime.h>
 
+
+
+
 WTrackTable::WTrackTable(QWidget *parent, const char *name) : QTable(0, ROW_NO, parent, name)
 {
-    setSorting(true);
+    setSorting(true);  
     setSelectionMode(QTable::SingleRow);
     setFocusStyle(QTable::FollowStyle);
-
-    // Focus is only handled by MixxxApp
-    setFocusPolicy(QWidget::NoFocus);
-
-
+    
     horizontalHeader()->setLabel(COL_SCORE, tr( "**" ) );
     horizontalHeader()->setLabel(COL_TITLE, tr( "Title" ) );
     horizontalHeader()->setLabel(COL_ARTIST, tr( "Artist" ) );
     horizontalHeader()->setLabel(COL_COMMENT, tr( "Comment" ) );
     horizontalHeader()->setLabel(COL_TYPE, tr( "Type" ) );
     horizontalHeader()->setLabel(COL_DURATION, tr( "Duration" ) );
-    horizontalHeader()->setLabel(COL_BPM, tr( "BPM" ) );
     horizontalHeader()->setLabel(COL_BITRATE, tr( "Bitrate" ) );
-    horizontalHeader()->setLabel(COL_INDEX, tr( "Index" ) );
+    horizontalHeader()->setLabel(COL_BPM, tr( "BPM" ) );
+	horizontalHeader()->setLabel(COL_INDEX, tr( "Index" ) );
 
     // Setup table properties
     setShowGrid(false);
@@ -129,7 +128,7 @@ void WTrackTable::setup(QDomNode node)
     setColumnWidth(COL_TYPE, WWidget::selectNodeInt(node, "ColWidthType"));
     setColumnWidth(COL_DURATION, WWidget::selectNodeInt(node, "ColWidthDuration"));
     setColumnWidth(COL_BPM, WWidget::selectNodeInt(node, "ColWidthBpm"));
-    setColumnWidth(COL_BITRATE, WWidget::selectNodeInt(node, "ColWidthBitrate"));
+	setColumnWidth(COL_BITRATE, WWidget::selectNodeInt(node, "ColWidthBitrate"));
 }
 
 void WTrackTable::contentsMouseReleaseEvent( QMouseEvent * e)

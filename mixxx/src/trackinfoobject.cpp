@@ -62,7 +62,7 @@ TrackInfoObject::TrackInfoObject(const QDomNode &nodeHeader)
     m_fBpm = selectNodeStr( nodeHeader, "Bpm").toFloat();
     m_fBpmConfidence = selectNodeStr( nodeHeader, "BpmConfidence").toFloat();
     m_iScore = 0;
-    m_iIndex = 0;
+    m_iIndex = selectNodeStr( nodeHeader, "Index").toInt();;
     m_pTableTrack = 0;
 
     m_pTableItemScore = 0;
@@ -136,7 +136,7 @@ void TrackInfoObject::writeToXML( QDomDocument &doc, QDomElement &header )
     addElement( doc, header, "TimesPlayed", QString("%1").arg(m_iTimesPlayed) );
     addElement( doc, header, "Bpm", QString("%1").arg(m_fBpm) );
     addElement( doc, header, "BpmConfidence", QString("%1").arg(m_fBpmConfidence) );
-
+    addElement( doc, header, "Index", QString("%1").arg(m_iIndex) );
 }
 
 /*
@@ -151,7 +151,7 @@ void TrackInfoObject::addElement(QDomDocument &doc, QDomElement &header, QString
 
 void TrackInfoObject::insertInTrackTableRow(WTrackTable *pTableTrack, int iRow, int iTrackNo)
 {
-    m_iIndex = iTrackNo;
+    //m_iIndex = iTrackNo;
 
     //removeFromTrackTable();
 
@@ -173,7 +173,7 @@ void TrackInfoObject::insertInTrackTableRow(WTrackTable *pTableTrack, int iRow, 
 //    if (!m_pTableItemBitrate)
         m_pTableItemBitrate = new WTrackTableItem(pTableTrack,QTableItem::Never, getBitrateStr(), typeNumber);
 //    if (!m_pTableItemIndex)
-        m_pTableItemIndex = new WTrackTableItem(pTableTrack,QTableItem::Never, QString("%1").arg(iTrackNo), typeNumber);
+        m_pTableItemIndex = new WTrackTableItem(pTableTrack,QTableItem::Never, QString("%1").arg(m_iIndex), typeNumber);
 
     qDebug("inserting.. %p",pTableTrack->item(iRow, COL_SCORE));
 
@@ -487,6 +487,3 @@ void TrackInfoObject::setScore(int i)
         m_pTableItemScore->table()->updateCell(m_pTableItemScore->row(), m_pTableItemScore->col());
     }
 }
-
-
-
