@@ -18,6 +18,7 @@
 #ifndef READEREXTRACT_H
 #define READEREXTRACT_H
 
+class GUIChannel;
 
 /**
   *@author Tue & Ken Haste Andersen
@@ -42,6 +43,8 @@ public:
     /** Process a given chunk at chunk idx i. start_idx and end_idx gives the indexes of the the chunks
       * at the update boundaries of the buffer. Returns a pointer to the newly processed chunk */
     virtual void *processChunk(const int idx, const int start_idx, const int end_idx, bool backwards) = 0;
+    /** Add visual to GUI Channel */
+    virtual void addVisual(GUIChannel *guichannel);
 protected:
     /** Pointer to input object */
     ReaderExtract *input;

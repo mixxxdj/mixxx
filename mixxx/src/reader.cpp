@@ -28,21 +28,20 @@
 #ifdef __WIN__
   #include "soundsourcesndfile.h"
 #endif
-#include "mixxx.h"
 #ifdef __VISUALS__
-  #include "mixxxvisual.h"
   #include "visual/guichannel.h"
 #endif
 
-Reader::Reader(EngineBuffer *_enginebuffer, MixxxApp *mixxx, Monitor *_rate, QMutex *_pause)
+Reader::Reader(EngineBuffer *_enginebuffer, Monitor *_rate, QMutex *_pause)
 {
     enginebuffer = _enginebuffer;
     rate = _rate;
     pause = _pause;
+    guichannel = 0;
     
     // Allocate reader extract objects
     readerwave = new ReaderExtractWave(&enginelock);
-    
+
     // Allocate semaphore
     readAhead = new QWaitCondition();
 
@@ -50,19 +49,6 @@ Reader::Reader(EngineBuffer *_enginebuffer, MixxxApp *mixxx, Monitor *_rate, QMu
     file = 0;
     file_srate = 44100;
     file_length = 0;
-
-    // If visual subsystem is present...
-    guichannel = 0;
-#ifdef __VISUALS__
-    if (mixxx->getVisual())
-    {
-        // Add buffer as a visual channel
-        guichannel = mixxx->getVisual()->add(this);
-
-        // Soundbuffer should be updating the vertexbuffer
-        //soundbuffer->setSignalVertexBuffer(guichannel->add());
-    }
-#endif
 }
 
 Reader::~Reader()
@@ -77,6 +63,23 @@ Reader::~Reader()
 
     delete readAhead;
 }
+
+void Reader::addVisual(GUIChannel *_guichannel)
+{
+#ifdef __VISUALS__
+    readerwave->addVisual(_guichannel);
+    guichannel = _guichannel;
+#endif
+}
+/*
+void Reader::setupVisuals(GUIChannel *guichannel)
+{
+#ifdef __VISUALS__
+    // ReaderExtract should notify the vertexbuffer
+    readerwave->setSignalVertexBuffer(guichannel->add((ReaderExtract *)readerwave));
+#endif
+}
+*/
 
 void Reader::requestNewTrack(QString name)
 {
@@ -207,11 +210,6 @@ void Reader::newtrack()
     if (file==0)
         qFatal("Error opening %s", filename);
 
-//    visualPlaypos.tryWrite(0.);
- //   visualRate = 0.;
-//    rate_exchange.tryWrite(BASERATE);
-
-
     readerwave->setSoundSource(file);
 
     // ...and read one chunk to get started:
@@ -220,10 +218,6 @@ void Reader::newtrack()
 
     // Reset playpos
     enginebuffer->setNewPlaypos(0.);    
-//    filepos_play = 0.;
-    //filepos_play_exchange.write(0.);
-//    bufferpos_play = 0.;
-//    playposSlider->set(0.);
 
     // Stop pausing process method
     pause->unlock();
@@ -254,13 +248,6 @@ void Reader::run()
         
         // Read a new chunk:
         readerwave->getchunk(rate->read());
-
-
-
-        
-        // Send user event to main thread, indicating that the visual sample buffers should be updated
-//        if (guichannel>0)
-//            QApplication::postEvent(guichannel,new QEvent((QEvent::Type)1001));
     }
     //qDebug("reader stopping");
 }

@@ -44,6 +44,12 @@ PowerMate::PowerMate(ControlObject *_control)
     sendKnobEvent = false;
     fadeIn = false;
     magnitude=0;
+
+    knob_integral = new int[KNOB_INTEGRAL_LEN];
+    for (int i=0; i<KNOB_INTEGRAL_LEN; i++)
+        knob_integral[i] = 0;
+
+    requestLed = new QSemaphore(5);
 }
 
 PowerMate::~PowerMate()
@@ -51,6 +57,8 @@ PowerMate::~PowerMate()
     terminate();
     wait();
     closedev();
+    delete [] knob_integral;
+    delete requestLed;
 }
 
 bool PowerMate::opendev()
@@ -70,12 +78,9 @@ bool PowerMate::opendev()
         return false;
 }
 
-void PowerMate::led(int)
+void PowerMate::led()
 {
-}
-
-void PowerMate::led_oneshot(int)
-{
+    requestLed->tryAccess(1);
 }
 
 void PowerMate::run()
@@ -86,7 +91,7 @@ void PowerMate::run()
     timeval *waittime = new timeval;
     while (1)
     {
-        r = read(fd, ibuffer, sizeof(struct input_event) * INPUT_BUFFER_SIZE);
+	r = read(fd, ibuffer, sizeof(struct input_event) * INPUT_BUFFER_SIZE);
         if(r > 0)
         {
             events = r / sizeof(struct input_event);
@@ -102,10 +107,26 @@ void PowerMate::run()
         if (sendKnobEvent)
             knob_event();
 
-        // Sleep
-        waittime->tv_sec  = 0;
-        waittime->tv_usec = 50;
-        select(0,0,0,0,waittime);
+        // Check if we have to turn on led
+        if (requestLed->available()==0)
+        {
+            (*requestLed)--;
+            led_write(255, 0, 0, 0, 1);
+
+            // Sleep
+            waittime->tv_sec  = 0;
+            waittime->tv_usec = 1;
+            select(0,0,0,0,waittime);
+	   
+	    led_write(0, 0, 0, 0, 0);
+	}
+	else
+	{
+            // Sleep
+            waittime->tv_sec  = 0;
+            waittime->tv_usec = 50;
+            select(0,0,0,0,waittime);
+        }
     }
 }
     
@@ -229,9 +250,9 @@ void PowerMate::process_event(struct input_event *ev)
 void PowerMate::knob_event()
 {
     int direction = sign((float)knobval);
+/*
     knobval *= 20*direction;
 
-    
     // Find state
     if (!fadeIn && knobval!=0)
         fadeIn = true;
@@ -254,9 +275,35 @@ void PowerMate::knob_event()
     //qDebug("knobval: %i, magnitude: %i, fadeIn: %i, midi ctrl: %i, instno: %i",knobval,magnitude,fadeIn,(instno*2),instno);
     QApplication::postEvent(control,new ControlEventMidi(CTRL_CHANGE, POWERMATE_MIDI_CHANNEL, (char)(instno*2+POWERMATE_MIDI_DIAL_CTRL),(char)((int)(magnitude*direction)+64)));
 
-    if (magnitude==0)
-        sendKnobEvent = false;
                                         
+*/
+
+    // Move everything one step backwards in integral buffer
+    magnitude = 0;
+    bool stop = true;
+    for (int i=0; i<KNOB_INTEGRAL_LEN-1; i++)
+    {
+        knob_integral[i]=knob_integral[i+1];
+        magnitude += knob_integral[i];
+        if (knob_integral[i]!=0)
+            stop = false;
+    }
+    knob_integral[KNOB_INTEGRAL_LEN-1] = knobval;
+    magnitude += knob_integral[KNOB_INTEGRAL_LEN-1];
+
+    // Range check
+    if (magnitude>63)
+        magnitude = 63;
+    else if (magnitude<-64)
+        magnitude = -64;
+
+    // Post event
+    //qDebug("knobval: %i, magnitude: %i, fadeIn: %i, midi ctrl: %i, instno: %i",knobval,magnitude,fadeIn,(instno*2),instno);
+    QApplication::postEvent(control,new ControlEventMidi(CTRL_CHANGE, POWERMATE_MIDI_CHANNEL, (char)(instno*2+POWERMATE_MIDI_DIAL_CTRL),(char)((int)(magnitude)+64)));
+
+    if (stop && magnitude==0)
+        sendKnobEvent = false;
+
     // Reset knob value
     knobval = 0;
 }

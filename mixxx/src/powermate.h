@@ -19,6 +19,7 @@
 #define POWERMATE_H
 
 #include <qthread.h>
+#include <qsemaphore.h>
 #include <qvaluelist.h>
 
 /**
@@ -36,9 +37,6 @@ const int POWERMATE_MIDI_CHANNEL=16;
 const int POWERMATE_MIDI_DIAL_CTRL = 0;
 const int POWERMATE_MIDI_BTN_CTRL = 1;
 
-// Time before the controller is reset in 10 of microseconds
-const int RESET_TIME = 5; // 50ms
-
 const int NUM_VALID_PREFIXES = 2;
 static const char *valid_prefix[NUM_VALID_PREFIXES] =
 {
@@ -48,7 +46,7 @@ static const char *valid_prefix[NUM_VALID_PREFIXES] =
 const int INPUT_BUFFER_SIZE = 32;
 const int NUM_EVENT_DEVICES = 16;
 
-
+const int KNOB_INTEGRAL_LEN = 40;
 
 class PowerMate : public QThread
 {
@@ -56,8 +54,7 @@ public:
     PowerMate(ControlObject *_control);
     ~PowerMate();
     bool opendev();
-    void led(int);
-    void led_oneshot(int);
+    void led();
 protected:
     void run();
 private:
@@ -88,6 +85,10 @@ private:
     int knobval;
     /** List of open devices */
     static QValueList <int> openDevs;
+    /** Size of knob integral buffer */
+    int *knob_integral;
+    /** Semaphore used to control led */
+    QSemaphore *requestLed;
 };
 
 #endif

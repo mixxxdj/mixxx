@@ -51,7 +51,7 @@ class MixxxView : public QWidget
     DlgCrossfader *crossfader;
     DlgSplit *split;
     DlgFlanger *flanger;
-	DlgTracklist *tracklist;
+    DlgTracklist *tracklist;
 
   protected slots:
     void slotDocumentChanged();

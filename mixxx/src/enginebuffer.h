@@ -30,6 +30,7 @@ class ControlEngine;
 class ControlObject;
 class Reader;
 class EngineBufferScale;
+class PowerMate;
 
 /**
   *@author Tue and Ken Haste Andersen
@@ -42,7 +43,7 @@ const int audioBeatMarkLen = 40;
 class EngineBuffer : public EngineObject
 {
 public:
-    EngineBuffer(MixxxApp *_mixxx, QAction *actionAudioBeatMark, DlgPlaycontrol *_playcontrol, const char *_group);
+    EngineBuffer(MixxxApp *_mixxx, QAction *actionAudioBeatMark, PowerMate *, DlgPlaycontrol *_playcontrol, const char *_group);
     ~EngineBuffer();
     /** Returns pointer to Reader object. Used in MixxxApp. */
     Reader *getReader();
@@ -82,16 +83,13 @@ private:
     int file_length_old;
     /** Copy of file sample rate*/
     int file_srate_old;
-
-    /** Fileposition used in communication with file reader and main thread */
-    //Monitor filepos_play_exchange;
     /** Mutex controlling weather the process function is in pause mode. This happens
       * during seek and loading of a new track */
     QMutex pause;
     /** Pointer to DlgPlaycontrol dialog. Used when updating file info window */
     DlgPlaycontrol *playcontrol;
-   
-    ControlEngine *playButton, *rateSlider, *wheel, *playposSlider, *audioBeatMark;
+
+    ControlEngine *playButton, *rateSlider, *wheel, *playposSlider, *bufferposSlider, *audioBeatMark;
     /** Control used to input desired playback BPM */
     ControlEngine *bpmControl;
     /** Control used to input beat. If this is used, only one beat is played, until a new beat mark is received from the ControlObject */
@@ -101,13 +99,13 @@ private:
 
     CSAMPLE *read_buffer_prt;
 
-    /** Rate factor between player and sound source sample rates */
-    //FLOAT_TYPE BASERATE;
     /** Counter; when to update playpos slider */
     int playposUpdateCounter;
     /** Used to store if an event has happen in last iteration of event based playback */
     double oldEvent;
     /** Object used to perform waveform scaling (sample rate conversion) */
     EngineBufferScale *scale;
+    /** Pointer to PowerMate object */
+    PowerMate *powermate;
 };
 #endif

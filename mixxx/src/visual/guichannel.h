@@ -25,8 +25,10 @@
 
 class GUIContainer;
 class Reader;
+class ReaderExtract;
 class VisualController;
 class SignalVertexBuffer;
+class ControlPotmeter;
 
 /**
  * A GUI Channel
@@ -37,16 +39,17 @@ class SignalVertexBuffer;
 class GUIChannel : public QObject
 {
 public:
-    GUIChannel(Reader *_reader, VisualController *_controller);
+    GUIChannel(Reader *_reader, ControlPotmeter *_playpos, VisualController *_controller);
     ~GUIChannel();
     bool eventFilter(QObject *o, QEvent *e);
-    SignalVertexBuffer *add();
+    SignalVertexBuffer *add(ReaderExtract *readerExtract);
     void move(int msec);
     void setPosX(int x);
     void setZoomPosX(int x);    
 private:
     Reader                  *reader;
     VisualController        *controller;
+    ControlPotmeter         *playpos;
     QPtrList<GUIContainer>  list;
     int                     posx, zoomposx;
 };

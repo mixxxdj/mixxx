@@ -30,6 +30,7 @@
 
 class Reader;
 class GUIChannel;
+class ControlPotmeter;
 
 const int RESAMPLE_FACTOR = 32;
 
@@ -47,7 +48,7 @@ public:
     ~MixxxVisual();
     bool eventFilter(QObject *o, QEvent *e);
     /** Add a GUIChannel */
-    GUIChannel *add(Reader *reader);
+    GUIChannel *add(Reader *reader, ControlPotmeter *playpos);
 protected:
     void initializeGL();
     void resizeGL(int, int);

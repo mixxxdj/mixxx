@@ -72,14 +72,6 @@ MixxxView::MixxxView(QWidget *parent, MixxxDoc *doc) : QWidget(parent)
     mainGrid->setRowStretch( 1,  43);
     mainGrid->setRowStretch( 2, 215);
 
-    // Setup tracklist collum widths
-    tracklist->tableTracks->setLeftMargin(0);
-    tracklist->tableTracks->setColumnWidth(0,20);
-    tracklist->tableTracks->setColumnWidth(1,240);
-    tracklist->tableTracks->setColumnWidth(2,220);
-    tracklist->tableTracks->setColumnWidth(3,30);
-    tracklist->tableTracks->setColumnWidth(4,50);
-    tracklist->tableTracks->setColumnWidth(5,50);
     
 }
 

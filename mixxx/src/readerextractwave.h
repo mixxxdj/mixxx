@@ -40,6 +40,7 @@ class ReaderExtractWave : ReaderExtract {
 public: 
     ReaderExtractWave(QMutex *_enginelock);
     ~ReaderExtractWave();
+    void addVisual(GUIChannel *_guichannel);
     void reset();
     void *getBasePtr();
     int getRate();
@@ -48,7 +49,6 @@ public:
     ReaderExtractBeat *getExtractBeat();
     void *processChunk(const int, const int, const int, bool);
     void setSoundSource(SoundSource *_file);
-    void setSignalVertexBuffer(SignalVertexBuffer *_signalVertexBuffer);
     /** Read a new chunk into the readbuffer: */
     void getchunk(CSAMPLE rate);
     /** Seek to a new play position. Returns positon actually seeked to */
@@ -67,8 +67,8 @@ private:
     SAMPLE *temp;
     /** Buffer start and end position */
     int bufferpos_start, bufferpos_end;
-    /** Pointer to SignalVertexBuffer associated with this buffer */
-    SignalVertexBuffer *signalVertexBuffer;
+    /** Pointer to GUIChannel associated with this buffer */
+    GUIChannel *guichannel;
     /** Pointer to the sound source */
     SoundSource *file;
     int stepSize;
