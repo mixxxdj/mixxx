@@ -387,7 +387,7 @@ QString PlayerPortAudio::getSoundApi()
     return QString("CoreAudio");
 #endif
 #ifdef __WIN__
-    return QString("DirectSound");
+    return QString("WMME");
 #endif
 }
 

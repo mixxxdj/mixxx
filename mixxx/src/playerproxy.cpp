@@ -23,6 +23,9 @@
 #ifdef __JACK__
     #include "playerjack.h"
 #endif
+#ifdef __RTAUDIO__
+    #include "playerrtaudio.h"
+#endif
 
 Player *PlayerProxy::m_pPlayer = 0;
 
@@ -108,6 +111,9 @@ QStringList PlayerProxy::getSoundApiList()
 #ifdef __JACK__
     result.append(PlayerJack::getSoundApi());
 #endif
+#ifdef __RTAUDIO__
+    result.append(PlayerRtAudio::getSoundApi());
+#endif
 
     return result;
 }
@@ -126,6 +132,11 @@ bool PlayerProxy::setSoundApi(QString name)
 #ifdef __JACK__
     if (name == PlayerJack::getSoundApi())
         m_pPlayer = new PlayerJack(m_pConfig, m_pControl);
+#endif
+
+#ifdef __RTAUDIO__
+    if (name == PlayerRtAudio::getSoundApi())
+        m_pPlayer = new PlayerRtAudio(m_pConfig, m_pControl);
 #endif
 
     // Try initializing the selected API
