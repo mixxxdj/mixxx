@@ -133,13 +133,18 @@ void WTrackTable::setup(QDomNode node)
     setLeftMargin(0);
     hideColumn(COL_INDEX);
     adjustColumn(COL_SCORE);
-    setColumnStretchable(COL_TITLE, true);
-    setColumnStretchable(COL_ARTIST, true);
-    setColumnStretchable(COL_COMMENT, true);
+    //setColumnStretchable(COL_TITLE, true);
+    //setColumnStretchable(COL_ARTIST, true);
+    //setColumnStretchable(COL_COMMENT, true);
     adjustColumn(COL_TYPE);
     adjustColumn(COL_DURATION);
     adjustColumn(COL_BPM);
     adjustColumn(COL_BITRATE);
+    //setColumnStretchable(COL_SCORE,true);
+    setColumnStretchable(COL_TYPE,true);
+    setColumnStretchable(COL_DURATION,true);
+    setColumnStretchable(COL_BPM,true);
+    setColumnStretchable(COL_BITRATE,true);
 }
 
 void WTrackTable::sortColumn(int col, bool ascending, bool)
