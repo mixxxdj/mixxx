@@ -185,6 +185,62 @@
  </VuMeter>
 
  <PushButton>
+  <NumberStates>4</NumberStates>
+  <State>
+   <Number>0</Number>
+   <Pressed>endoftrack-stop-ch1.png</Pressed>
+   <Unpressed>endoftrack-stop-ch1.png</Unpressed>
+  </State>
+  <State>
+   <Number>1</Number>
+   <Pressed>endoftrack-next-ch1.png</Pressed>
+   <Unpressed>endoftrack-next-ch1.png</Unpressed>
+  </State>
+  <State>
+   <Number>2</Number>
+   <Pressed>endoftrack-loop-ch1.png</Pressed>
+   <Unpressed>endoftrack-loop-ch1.png</Unpressed>
+  </State>
+  <State>
+   <Number>3</Number>
+   <Pressed>endoftrack-ping-ch1.png</Pressed>
+   <Unpressed>endoftrack-ping-ch1.png</Unpressed>
+  </State>
+  <Pos>408,356</Pos>
+  <Connection>
+   <ConfigKey>[Channel1],TrackEndMode</ConfigKey>
+  </Connection>
+ </PushButton>
+
+ <PushButton>
+  <NumberStates>4</NumberStates>
+  <State>
+   <Number>0</Number>
+   <Pressed>endoftrack-stop-ch2.png</Pressed>
+   <Unpressed>endoftrack-stop-ch2.png</Unpressed>
+  </State>
+  <State>
+   <Number>1</Number>
+   <Pressed>endoftrack-next-ch2.png</Pressed>
+   <Unpressed>endoftrack-next-ch2.png</Unpressed>
+  </State>
+  <State>
+   <Number>2</Number>
+   <Pressed>endoftrack-loop-ch2.png</Pressed>
+   <Unpressed>endoftrack-loop-ch2.png</Unpressed>
+  </State>
+  <State>
+   <Number>3</Number>
+   <Pressed>endoftrack-ping-ch2.png</Pressed>
+   <Unpressed>endoftrack-ping-ch2.png</Unpressed>
+  </State>
+  <Pos>586,356</Pos>
+  <Connection>
+   <ConfigKey>[Channel2],TrackEndMode</ConfigKey>
+  </Connection>
+ </PushButton>
+
+ <PushButton>
   <NumberStates>2</NumberStates>
   <State>
    <Number>0</Number>
