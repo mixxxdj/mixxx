@@ -39,7 +39,7 @@ unsigned SoundSourceAFlibfile::read(unsigned long size, const SAMPLE* destinatio
 /*
   Return the length of the file in samples.
 */
-long unsigned SoundSourceAFlibfile::length()
+inline long unsigned SoundSourceAFlibfile::length()
 {
     return filelength;
 }
