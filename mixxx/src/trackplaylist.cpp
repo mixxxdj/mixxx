@@ -11,7 +11,6 @@
 //
 
 #include "trackplaylist.h"
-#include "trackinfoobject.h"
 #include "trackcollection.h"
 #include "xmlparse.h"
 #include "wtracktable.h"

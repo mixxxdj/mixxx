@@ -16,10 +16,10 @@
 #include <qdom.h>
 #include <qptrlist.h>
 #include <qobject.h>
+#include "trackplaylist.h"
 
 class TrackInfoObject;
 class TrackCollection;
-class TrackPlaylist;
 class EngineBuffer;
 class MixxxView;
 class WTrackTable;
