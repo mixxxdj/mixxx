@@ -15,9 +15,8 @@
  ***************************************************************************/
 
 #include "soundsourceaudiofile.h"
-/*
-  Class for reading files using libaudiofile
-*/
+#include "trackinfoobject.h"
+
 SoundSourceAudioFile::SoundSourceAudioFile(const char* filename)
 {
     fh = afOpenFile(filename,"r",0);
@@ -51,6 +50,23 @@ long SoundSourceAudioFile::seek(long filepos)
 unsigned SoundSourceAudioFile::read(unsigned long size, const SAMPLE* destination)
 {
     return afReadFrames(fh,AF_DEFAULT_TRACK, (SAMPLE *)destination,size/channels)*channels;
+}
+
+void SoundSourceAudioFile::ParseHeader(TrackInfoObject *Track)
+{
+    QString location = Track->m_sFilepath+'/'+Track->m_sFilename;
+    AFfilehandle fh = afOpenFile(location.ascii() , "r", 0);
+    if (fh == AF_NULL_FILEHANDLE)
+    {
+        qDebug("libaudiofile: Error opening file.");
+        return;
+    }
+
+    Track->m_sType = "wav";
+    Track->m_sBitrate = QString("%1").arg(Track->m_iLength/(afGetRate(fh, AF_DEFAULT_TRACK)));
+    Track->m_iDuration = Track->m_iLength/(4*afGetRate(fh, AF_DEFAULT_TRACK));
+
+    afCloseFile(fh);
 }
 
 /*

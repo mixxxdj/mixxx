@@ -69,7 +69,7 @@ int ReaderExtractHFC::getBufferSize()
     return input->getBufferSize();
 }
 
-void *ReaderExtractHFC::processChunk(const int idx, const int start_idx, const int end_idx)
+void *ReaderExtractHFC::processChunk(const int idx, const int start_idx, const int end_idx, bool)
 {
     int i;
     for (i=idx*framePerChunk; i<(idx+1)*framePerChunk; i++)

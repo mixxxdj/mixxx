@@ -31,7 +31,7 @@ extern "C" {
 const CSAMPLE threshold = 5.;
 
 const CSAMPLE histMinBPM = 60.;
-const CSAMPLE histMaxBPM = 160.;
+const CSAMPLE histMaxBPM = 200.;
 const CSAMPLE histDownWrite = 0.9999;
 const int gaussWidth = 8; // Width of gauss/2
 
@@ -50,8 +50,10 @@ public:
     int getRate();
     int getChannels();
     int getBufferSize();
-    void *processChunk(const int idx, const int start_idx, const int end_idx);
+    void *processChunk(const int idx, const int start_idx, const int end_idx, bool backwards);
 private:
+    bool circularValidIndex(int idx, int start, int end, int len);
+
     /** Buffer indicating if a beat has occoured or not. */
     bool *beatBuffer;
     /** Buffer holding bpm values */
@@ -78,7 +80,10 @@ private:
 
 #ifdef __GNUPLOT__
     /** Pointer to gnuplot interface */
-    plot_t *gnuplot;
+    plot_t *gnuplot_hist;
+    plot_t *gnuplot_beat;
+    plot_t *gnuplot_bpm;
+    plot_t *gnuplot_hfc;    
 #endif    
 };
 

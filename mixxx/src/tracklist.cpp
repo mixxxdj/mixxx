@@ -12,7 +12,13 @@
 
 #include "tracklist.h"
 #include "trackinfoobject.h"
-#include "soundsourcesndfile.h"
+#ifdef __WIN__
+  #include "soundsourcesndfile.h"
+#endif
+#ifdef __UNIX__
+  #include "soundsourceaudiofile.h"
+#endif
+
 #include "images/a.xpm"
 #include "images/b.xpm"
 
@@ -204,8 +210,12 @@ bool TrackList::AddFiles(const char *path)
 				QString sType = fi->fileName().section(".",-1).lower();
 				// Parse it using the sound sources:
 				if (sType == "wav")
+#ifdef __WIN__
 					SoundSourceSndFile::ParseHeader( Track );
-				
+#endif
+#ifdef __UNIX__
+					SoundSourceAudioFile::ParseHeader(Track);
+#endif
 				// Append the track to the list of tracks:
 				m_lTracks.append( Track );
 				qDebug( "Found new track: %s", Track->m_sFilename.latin1() );

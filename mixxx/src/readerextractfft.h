@@ -41,7 +41,7 @@ public:
     int getRate();
     int getChannels();
     int getBufferSize();
-    void *processChunk(const int idx, const int start_idx, const int end_idx);
+    void *processChunk(const int idx, const int start_idx, const int end_idx, bool);
 private:
     void processFrame(int idx);
 

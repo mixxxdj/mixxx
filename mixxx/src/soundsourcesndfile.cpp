@@ -94,6 +94,7 @@ void SoundSourceSndFile::ParseHeader( TrackInfoObject *Track )
 
 	sf_close( fh );
 }
+
 /*
   Return the length of the file in samples.
 */

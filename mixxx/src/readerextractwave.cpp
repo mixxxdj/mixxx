@@ -50,10 +50,10 @@ ReaderExtractWave::ReaderExtractWave(QMutex *_enginelock) : ReaderExtract(0)
     readerfft = 0;
     readerhfc = 0;
     readerbeat = 0;
-#ifdef EXTRACT    
+#ifdef EXTRACT
     readerfft  = new ReaderExtractFFT((ReaderExtract *)this, WINDOWSIZE, STEPSIZE);
     readerhfc  = new ReaderExtractHFC((ReaderExtract *)readerfft, WINDOWSIZE, STEPSIZE);
-    readerbeat = new ReaderExtractBeat((ReaderExtract *)readerhfc, WINDOWSIZE, STEPSIZE, 500);
+    readerbeat = new ReaderExtractBeat((ReaderExtract *)readerhfc, WINDOWSIZE, STEPSIZE, 100);
 #endif
 }
 
@@ -61,6 +61,11 @@ ReaderExtractWave::~ReaderExtractWave()
 {
     delete [] temp;
     delete [] read_buffer;
+#ifdef EXTRACT
+    delete readerbeat;
+    delete readerhfc;
+    delete readerfft;
+#endif
 }
 
 void ReaderExtractWave::reset()
@@ -116,7 +121,7 @@ ReaderExtractBeat *ReaderExtractWave::getExtractBeat()
     return readerbeat;
 }
     
-void *ReaderExtractWave::processChunk(const int, const int, const int)
+void *ReaderExtractWave::processChunk(const int, const int, const int, bool)
 {
     return 0;
 }
@@ -219,9 +224,9 @@ void ReaderExtractWave::getchunk(CSAMPLE rate)
 #ifdef EXTRACT
     // Do pre-processing...
     //qDebug("curr %i, start %i, end %i",chunkCurr,chunkStart,chunkEnd);
-    readerfft->processChunk(chunkCurr, chunkStart, chunkEnd);
-    readerhfc->processChunk(chunkCurr, chunkStart, chunkEnd);
-    readerbeat->processChunk(chunkCurr, chunkStart, chunkEnd);
+    readerfft->processChunk(chunkCurr, chunkStart, chunkEnd, backwards);
+    readerhfc->processChunk(chunkCurr, chunkStart, chunkEnd, backwards);
+    readerbeat->processChunk(chunkCurr, chunkStart, chunkEnd, backwards);
 #endif
     enginelock->unlock();
 
