@@ -139,7 +139,7 @@ unsigned SoundSourceMp3::read(unsigned long samples_wanted, const SAMPLE* _desti
     int frames = 0;
 
     // If samples are left from previous read, then copy them to start of destination
-    if (rest != -1)
+    if (rest > 0)
     {
         for (int i=rest; i<Synth.pcm.length; i++)
         {
@@ -187,7 +187,7 @@ unsigned SoundSourceMp3::read(unsigned long samples_wanted, const SAMPLE* _desti
          * this is not enough to avoid out of range when converting to 16 bit
          * (at least on a P3).
          */
-        no = min(Synth.pcm.length,samples_wanted-Total_samples_decoded);
+        no = min(Synth.pcm.length,(samples_wanted-Total_samples_decoded)/2);
         for (int i=0;i<no;i++)
         {
              /* Left channel */
@@ -199,6 +199,8 @@ unsigned SoundSourceMp3::read(unsigned long samples_wanted, const SAMPLE* _desti
                 *(destination++) = (SAMPLE)((Synth.pcm.samples[1][i]>>(MAD_F_FRACBITS-14)));
         }
         Total_samples_decoded += 2*no;
+
+//        qDebug("decoded: %i, wanted: %i",Total_samples_decoded,samples_wanted);
     }
 
     // If samples are still left in buffer, set rest to the index of the unused samples
@@ -207,6 +209,6 @@ unsigned SoundSourceMp3::read(unsigned long samples_wanted, const SAMPLE* _desti
     else
         rest = -1;
   
-    //qDebug("decoded %i samples in %i frames.", Total_samples_decoded, frames);
+//    qDebug("decoded %i samples in %i frames, rest: %i.", Total_samples_decoded, frames, rest);
     return Total_samples_decoded;
 }

@@ -11,7 +11,7 @@ class SoundSourceAudioFile : public SoundSource {
   ~SoundSourceAudioFile();
   long seek(long);
   unsigned read(unsigned long size, const SAMPLE*);
-  long unsigned length();
+  inline long unsigned length();
  private:
   int channels;
   AFfilehandle fh;

@@ -56,7 +56,7 @@ class SoundSourceMp3 : public SoundSource {
     ~SoundSourceMp3();
     long seek(long);
     unsigned read(unsigned long size, const SAMPLE*);
-    long unsigned length();
+    inline long unsigned length();
 };
 
 

@@ -25,13 +25,13 @@ class ConfigMIDI : public ConfigObject {
     class ConfigValue : public ConfigObject::ConfigValue {
      public:
       ConfigValue(QString _value) : ConfigObject::ConfigValue(_value) {
-	  QString s2;
-	  QTextIStream(&_value) >> midino >> midimask >> s2 >> midichannel;
-	  if (s2.endsWith("h"))
-	      midichannel--;   // Internally midi channels are form 0-15,
-	  // while musicians operates on midi channels 1-16.
-	  else
-	      midichannel = 0; // Default to 0 (channel 1)
+        QString s2;
+        QTextIStream(&_value) >> midino >> midimask >> s2 >> midichannel;
+        if (s2.endsWith("h"))
+            midichannel--;   // Internally midi channels are form 0-15,
+        // while musicians operates on midi channels 1-16.
+        else
+            midichannel = 0; // Default to 0 (channel 1)
       };
       ConfigValue(int _midino, int _midimask, int _midichannel) {
 	  midino = _midino;

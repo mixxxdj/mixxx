@@ -13,11 +13,15 @@ typedef float CSAMPLE;          // CSAMPLE defines the CSAMPLE type used for
                                 // intermidiate calculations
 typedef CSAMPLE FLOAT_TYPE;       // Float type, used for non sample data
 const int BUFFER_SIZE  = 32;  // Buffer size used both for input and output
-const int READAHEAD = 22050; //200000;     // how many samples to read ahead.
-const int READCHUNKSIZE = 48000; //1500000; // size of the chunk that's read in every read.
-const int READBUFFERSIZE = 3*READCHUNKSIZE; // size of read buffer must be at least three
-                                            // times READCHUNKSIZE (one extra is needed in case of
-                                            // "stop" is pressed.
+                                            
+/** size of the chunk that's read in every read. */
+const unsigned int READCHUNKSIZE = 23040;
+/** Number of readchunks. Should minimum be set to 5. In theory this should minimum be four, but
+  * since it is possible that the sound sources return more samples than request, 5 is on the
+  * safe side */
+const int READCHUNK_NO = 8;
+const unsigned int READBUFFERSIZE = READCHUNKSIZE*READCHUNK_NO;
+
 
 /** Maximum buffer length to each EObject::process call */
 const int MAX_BUFFER_LEN = 100000;

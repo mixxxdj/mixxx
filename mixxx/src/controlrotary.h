@@ -23,7 +23,7 @@ private:
     short sign(short);
     //timeval oldtime;
     FLOAT_TYPE counter;
-    static const char graycodetable[256];
+//    static const char graycodetable[256];
     ControlPushButton *play;
 };
 
