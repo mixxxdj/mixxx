@@ -274,7 +274,7 @@ QWidget *ControlObject::getParentWidget()
 
 void ControlObject::midi(MidiCategory category, char channel, char control, char value)
 {
-//    qDebug("Received midi message: ch %i no %i val %i",(int)channel,(int)control,(int)value);
+    qDebug("Received midi message: ch %i no %i val %i",(int)channel,(int)control,(int)value);
 
     // Check the potmeters:
     ControlObject *c;

@@ -326,12 +326,17 @@ MixxxView::MixxxView(QWidget *parent, ControlObject *control, bool bVisualsWavef
                 y = size.mid(size.find(",")+1).toInt();
                 m_pSplitter->setFixedSize(x,y);
 
+                m_pSplitter->setHandleWidth(2);
+
                 m_qWidgetList.append(m_pSplitter);
             }
             else if (node.nodeName()=="TrackTable")
             {
                 if (m_pSplitter)
+                {
                     m_pTrackTable = new WTrackTable(m_pSplitter);
+                    m_pSplitter->setResizeMode(m_pTrackTable, QSplitter::Stretch);
+                }
                 else
                 {
                     m_pTrackTable = new WTrackTable(this);
@@ -343,7 +348,10 @@ MixxxView::MixxxView(QWidget *parent, ControlObject *control, bool bVisualsWavef
             else if (node.nodeName()=="TreeView")
             {
                 if (m_pSplitter)
+                {
                     m_pTreeView = new WTreeView(pConfig->getValueString(ConfigKey("[Playlist]","Directory")), m_pSplitter, tr("TreeView"));
+                    m_pSplitter->setResizeMode(m_pTreeView, QSplitter::Stretch);
+                }
                 else
                 {
                     m_pTreeView = new WTreeView(pConfig->getValueString(ConfigKey("[Playlist]","Directory")), this, tr("TreeView"));

@@ -154,17 +154,17 @@ EngineBuffer::EngineBuffer(PowerMate *_powermate, const char *_group)
     // TrackEndMode determines what to do at the end of a track
     p5 = new ControlObject(ConfigKey(group,"TrackEndMode"));
     m_pTrackEndMode = new ControlEngine(p5);
-    
+
     // BPM control
-    ControlBeat *p4 = new ControlBeat(ConfigKey(group, "bpm"));
+    ControlBeat *p4 = new ControlBeat(ConfigKey(group, "bpm"), true);
     bpmControl = new ControlEngine(p4);
-//    bpmControl->setNotify(this,(EngineMethod)&EngineBuffer::bpmChange);
+    connect(bpmControl, SIGNAL(valueChanged(double)), this, SLOT(slotSetBpm(double)));
 
     // Beat event control
     p2 = new ControlPotmeter(ConfigKey(group, "beatevent"));
     beatEventControl = new ControlEngine(p2);
 
-    // Cue goto button:
+    // Beat sync (scale buffer tempo relative to tempo of other buffer)
     p = new ControlPushButton(ConfigKey(group, "beatsync"));
     buttonBeatSync = new ControlEngine(p);
     connect(buttonBeatSync, SIGNAL(valueChanged(double)), this, SLOT(slotControlBeatSync(double)));
@@ -423,14 +423,21 @@ void EngineBuffer::slotControlEnd(double)
     slotControlSeek(1.);
 }
 
-/*
-void EngineBuffer::bpmChange(double bpm)
+void EngineBuffer::slotSetBpm(double bpm)
 {
-    CSAMPLE filebpm = bpmbuffer[];
+    ReaderExtractBeat *beat = reader->getBeatPtr();
+    if (beat!=0)
+    {
+        // Get file BPM
+        CSAMPLE *bpmBuffer = beat->getBpmPtr();
+        double filebpm = bpmBuffer[(int)(bufferpos_play*(beat->getBufferSize()/READCHUNKSIZE))];
 
-    baserate = baserate*(bpm/reader->->getBPM());
+        qDebug("user %f, file %f, change %f",bpm, filebpm, bpm/filebpm);
+
+        // Change rate to match new bpm
+        rateSlider->set(bpm/filebpm-1.);
+    }
 }
-*/
 
 void EngineBuffer::slotControlRatePermDown(double)
 {
@@ -591,6 +598,7 @@ CSAMPLE *EngineBuffer::process(const CSAMPLE *, const int buf_size)
             rate=wheel->get()+(1.+rateSlider->get()*m_pRateDir->get())*baserate;
         else
             rate=wheel->get()*baserate*20.;
+
 /*
         //
         // Beat event control. Assume forward play
@@ -655,6 +663,8 @@ CSAMPLE *EngineBuffer::process(const CSAMPLE *, const int buf_size)
 
 //        qDebug("NextBeatPos :%i, bufDiff: %i",nextBeatPos,READBUFFERSIZE/readerbeat->getBufferSize());
 */
+
+
 
         // If the rate has changed, write it to the rate_exchange monitor
         if (rate != rate_old)
@@ -801,7 +811,7 @@ CSAMPLE *EngineBuffer::process(const CSAMPLE *, const int buf_size)
 
             // Update playpos slider and bpm display if necessary
             m_iSamplesCalculated += buf_size;
-            if (m_iSamplesCalculated > (44100/UPDATE_RATE) )
+            if (m_iSamplesCalculated > (44100/UPDATE_RATE))
             {
                 if (file_length_old!=0.)
                 {

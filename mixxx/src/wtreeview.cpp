@@ -40,11 +40,12 @@ WTreeView::WTreeView(QString qRootPath, QWidget *parent, const char *name, bool 
     connect(this, SIGNAL(returnPressed(QListViewItem *)), this, SLOT(slotFolderSelected(QListViewItem *)));
 
     // Set properties
-    setAcceptDrops(true);
-    viewport()->setAcceptDrops(true);
-    addColumn("Name");
-    setTreeStepSize(20);
-
+    setAcceptDrops(false);
+    //viewport()->setAcceptDrops(true);
+    addColumn("Name", -1);
+    //setColumnWidthMode(1, QListView::Maximum);
+    //setTreeStepSize(20);
+    setFrameStyle(QFrame::NoFrame);
     connect(autoopen_timer, SIGNAL(timeout()), this, SLOT(openFolder()));
 
     //
@@ -80,22 +81,10 @@ void WTreeView::setup(QDomNode node)
         QString size = XmlParse::selectNodeQString(node, "Size");
         int x = size.left(size.find(",")).toInt();
         int y = size.mid(size.find(",")+1).toInt();
-        setFixedSize(x,y);
+        setBaseSize(x,y);
     }
 
-/*    //Create the columns
-	this->addColumn( tr( "Realtive Name" ) );
-	this->addColumn( tr( "Type") );
-	this->addColumn( tr( "Absolute Name") );
-	//Set label for the TreeList
-	this->header()->setLabel( 0, tr( "Name" ) );
-    this->clear();
-	this->setFrameStyle(QFrame::NoFrame);
-
-	this->setAcceptDrops( TRUE );
-	viewport()->setAcceptDrops( TRUE );
-
-	// Background color
+    // Background color
     if (!XmlParse::selectNode(node, "BgColor").isNull())
     {
         QColor c;
@@ -110,33 +99,6 @@ void WTreeView::setup(QDomNode node)
         c.setNamedColor(XmlParse::selectNodeQString(node, "FgColor"));
         setPaletteForegroundColor(c);
     }
-	 // Playlist repository
-    if (!XmlParse::selectNode(node, "Listpath").isNull())
-    {
-	WTreeItem * playListItem = new WTreeItem((QListView*)this);
-	playListItem->setText(0,"Playlists");
-	playListItem->setText(1,"Playlist Repository");
-	playListItem->setText(2,XmlParse::selectNodeQString(node,"PlsRootPath"));
-    playListItem->filePath =  XmlParse::selectNodeQString(node,"PlsRootPath");
-	}
-
-    // Root Directory
-    if (!XmlParse::selectNode(node, "DirRootPath").isNull())
-    {
-     WTreeItem * rootItem = new WTreeItem((QListView*)this);
-	rootItem->setText(0,"Archive");
-	rootItem->setText(1,"Data Repository");
-	rootItem->setText(2,XmlParse::selectNodeQString(node,"DirRootPath"));
-	rootItem->filePath =  XmlParse::selectNodeQString(node,"DirRootPath");
-    }
-
-    // Setup column widths
-    //setLeftMargin(0);
-    //hideColumn(COL_INDEX);
-    setColumnWidth(0, XmlParse::selectNodeInt(node, "ColWidthName"));
-    setColumnWidth(1, XmlParse::selectNodeInt(node, "ColWidthType"));
-    setColumnWidth(2, XmlParse::selectNodeInt(node, "ColWidthFullPath"));
-*/
 }
 
 void WTreeView::slotFolderSelected( QListViewItem *i )
