@@ -27,7 +27,7 @@
 
 class PlayerPortAudio : public Player  {
 public: 
-    PlayerPortAudio(int size, std::vector<EngineObject *> *);
+    PlayerPortAudio(int size, std::vector<EngineObject *> *, QString device);
     ~PlayerPortAudio();
     /** Open device */
     bool open(QString name, int srate, int bits, int bufferSize);

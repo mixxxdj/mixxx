@@ -24,15 +24,17 @@
   *@author Tue and Ken Haste Andersen
   */
 
-class EngineFilterRBJ : public EngineObject {
+static CSAMPLE ln_2   = (CSAMPLE) 0.6931472;
+
+  class EngineFilterRBJ : public EngineObject {
 public:
-	EngineFilterRBJ(bool low, CSAMPLE frequency, CSAMPLE bandwidth);
-	~EngineFilterRBJ();
-	CSAMPLE *process(const CSAMPLE *source, const int buf_size);
+    EngineFilterRBJ(bool low, CSAMPLE frequency, CSAMPLE bandwidth);
+    ~EngineFilterRBJ();
+    CSAMPLE *process(const CSAMPLE *source, const int buf_size);
 private:
     CSAMPLE c0, c1, c2, c3, c4;
 
-	/** Block boundary values */
+    /** Block boundary values */
     CSAMPLE x1, x2, y1, y2;
 
 	CSAMPLE *buffer;

@@ -1,7 +1,7 @@
 #ifndef DEFS_H
 #define DEFS_H
 
-#define VERSION "0.5.0"
+#define VERSION "0.9.0"
 
 #include <math.h>
 #include <iostream>
@@ -25,7 +25,6 @@ const int MAX_BUFFER_LEN = 10000;
 
 // Various fixed constants
 static CSAMPLE pi     = acos(-1.0);
-static CSAMPLE ln_2   = (CSAMPLE) 0.6931472;
 static CSAMPLE two_pi = (2.*acos(-1.0));
 
 // Defs for the ports and their midi control values:

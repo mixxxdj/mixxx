@@ -17,10 +17,14 @@
 
 #include "playerportaudio.h"
 
-PlayerPortAudio::PlayerPortAudio(int size, std::vector<EngineObject *> *engines) : Player(size, engines)
+PlayerPortAudio::PlayerPortAudio(int size, std::vector<EngineObject *> *engines, QString device) : Player(size, engines, device)
 {
     PaError err = Pa_Initialize();
-    if( err != paNoError ) qFatal("PortAudio initialization error");
+    if( err != paNoError )
+        qFatal("PortAudio initialization error");
+
+    // Default device ID.
+    PaDeviceID id = -1;
 
     // Fill out devices list with info about available devices
     int no = Pa_CountDevices();
@@ -35,6 +39,10 @@ PlayerPortAudio::PlayerPortAudio(int size, std::vector<EngineObject *> *engines)
         // Name
         p->name = QString(devInfo->name);
 
+        // Check for default device
+        if (p->name == device)
+            id = i;
+
         // Sample rates
         for (int j=0; j<devInfo->numSampleRates; j++)
             p->sampleRates.append((int)devInfo->sampleRates[j]);
@@ -47,8 +55,9 @@ PlayerPortAudio::PlayerPortAudio(int size, std::vector<EngineObject *> *engines)
         if (devInfo->nativeSampleFormats & paInt32)       p->bits.append(32);
     }
 
-    // Get device id of playback device
-    PaDeviceID id = Pa_GetDefaultOutputDeviceID();
+    // Get id of default playback device if ID of device was not found in previous loop
+    if (id<0)
+        id = Pa_GetDefaultOutputDeviceID();
 
     // Ensure stereo is supported
     devInfo = Pa_GetDeviceInfo(id);
@@ -59,7 +68,7 @@ PlayerPortAudio::PlayerPortAudio(int size, std::vector<EngineObject *> *engines)
     int temp_sr = 0;
     {for (int i=0; i<=devInfo->numSampleRates; i++)
         if (devInfo->sampleRates[i] == 44100.)
-			temp_sr = 44100;}
+            temp_sr = 44100;}
     if (temp_sr == 0)
         temp_sr = (int)devInfo->sampleRates[devInfo->numSampleRates-1];
 
@@ -130,8 +139,8 @@ bool PlayerPortAudio::open(QString name, int srate, int bits, int bufferSize)
 
 void PlayerPortAudio::close()
 {
-	PaError err = Pa_CloseStream( stream );
-	if( err != paNoError )
+    PaError err = Pa_CloseStream( stream );
+    if( err != paNoError )
         qFatal("PortAudio close stream error: %s", Pa_GetErrorText(err));
 
     deallocate();
@@ -141,8 +150,8 @@ void PlayerPortAudio::start(EngineObject *_reader)
 {
     Player::start(_reader);
 
-    PaError err = Pa_StartStream( stream );
-    if( err != paNoError )
+    PaError err = Pa_StartStream(stream);
+    if (err != paNoError)
         qFatal("PortAudio start stream error: %s", Pa_GetErrorText(err));
 }
 

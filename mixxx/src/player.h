@@ -31,7 +31,7 @@
 
 class Player : public EngineObject {
 public:
-    Player(int, std::vector<EngineObject *> *);
+    Player(int, std::vector<EngineObject *> *, QString device);
     ~Player();      // Deallocate
     bool reopen(QString name, int srate, int bits, int bufferSize);
     virtual void start(EngineObject *); // Start audio stream

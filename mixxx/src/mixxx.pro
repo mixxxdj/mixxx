@@ -1,36 +1,37 @@
 #
-# Options (comment out what's not wanted)
+# Options (select one audio driver and one midi driver)
 #
 
-# ALSA PCM
-#SOURCES += playeralsa.cpp
-#HEADERS += playeralsa.h
-#DEFINES += __ALSA__
-#unix:LIBS += -lasound
-
-# ALSA MIDI
-#SOURCES += midiobjectalsa.cpp
-#HEADERS += midiobjectalsa.h
-#DEFINES  += __ALSAMIDI__
-
-# PortAudio
+# PortAudio (Working good)
 SOURCES += playerportaudio.cpp
 HEADERS += playerportaudio.h
 DEFINES += __PORTAUDIO__
 unix:LIBS += -lportaudio
 win32:LIBS += ../lib/PAstaticDSD.lib dsound.lib
 
-# PortMidi
-SOURCES += midiobjectportmidi.cpp
-HEADERS += midiobjectportmidi.h
-DEFINES += __PORTMIDI__
-unix:LIBS += -lportmidi -lporttime
-win32:LIBS += ../lib/portmidi.lib ../lib/porttime.lib 
+# OSS Midi (Working good, Linux specific)
+SOURCES += midiobjectoss.cpp
+HEADERS += midiobjectoss.h
+DEFINES += __OSSMIDI__
 
-# OSS Midi
-#SOURCES += midiobjectoss.cpp
-#HEADERS += midiobjectoss.h
-#DEFINES += __OSSMIDI__
+# PortMidi (Alpha - only available on Windows)
+#SOURCES += midiobjectportmidi.cpp
+#HEADERS += midiobjectportmidi.h
+#DEFINES += __PORTMIDI__
+#unix:LIBS += -lportmidi -lporttime
+#win32:LIBS += ../lib/portmidi.lib ../lib/porttime.lib
+
+# ALSA PCM (Not currently working, Linux specific)
+SOURCES += playeralsa.cpp
+HEADERS += playeralsa.h
+DEFINES += __ALSA__
+unix:LIBS += -lasound
+
+# ALSA MIDI (Not currently working, Linux specific)
+#SOURCES += midiobjectalsa.cpp
+#HEADERS += midiobjectalsa.h
+#DEFINES  += __ALSAMIDI__
+
 
 #
 # End of options

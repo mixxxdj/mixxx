@@ -19,9 +19,7 @@
 
 template <class ValueType> ConfigObject<ValueType>::ConfigObject(QString file)
 {
-    filename = "config/" + file;
-    list.setAutoDelete(TRUE);
-    Parse();
+    reopen(file);
 }
 
 template <class ValueType> ConfigObject<ValueType>::~ConfigObject()
@@ -53,7 +51,7 @@ ConfigOption<ValueType> *ConfigObject<ValueType>::get(ConfigKey k)
     ConfigOption<ValueType> *it;
     for (it = list.first(); it; it = list.next())
     {
-	//qDebug("%s %s %s %s", it->key->group.ascii(), k->group.ascii(), it->key->item.ascii(), k->item.ascii());
+        //qDebug("%s %s %s %s", it->key->group.ascii(), k->group.ascii(), it->key->item.ascii(), k->item.ascii());
         if (it->key->group == k.group & it->key->item == k.item)
             return it;
     }
@@ -83,50 +81,67 @@ template <class ValueType> void ConfigObject<ValueType>::Parse()
         QString groupStr, line;
         while (!QTextIStream(handle).atEnd())
         {
-	    line = QTextIStream(handle).readLine().stripWhiteSpace();
-	    
-	    if (line.length() != 0) 
-		if (line.startsWith("[") & line.endsWith("]"))
-		{
-		    group++;
-		    groupStr = line;
-		    //qDebug("Group : %s", groupStr.ascii());
-		}
-		else if (group>0)
-		{ 
-		    QString key;
-		    QTextIStream(&line) >> key;
-		    QString val = line.right(line.length() - key.length()); // finds the value string
-		    val = val.stripWhiteSpace();
-		    //qDebug("control: %s, value: %s",key.ascii(), val.ascii());
-		    ConfigKey k(groupStr, key);
-		    ValueType m(val);
-		    set(k, m);
-		}
+            line = QTextIStream(handle).readLine().stripWhiteSpace();
+
+            if (line.length() != 0)
+                if (line.startsWith("[") & line.endsWith("]"))
+                {
+                    group++;
+                    groupStr = line;
+                    //qDebug("Group : %s", groupStr.ascii());
+                }
+                else if (group>0)
+                {
+                    QString key;
+                    QTextIStream(&line) >> key;
+                    QString val = line.right(line.length() - key.length()); // finds the value string
+                    val = val.stripWhiteSpace();
+                    //qDebug("control: %s, value: %s",key.ascii(), val.ascii());
+                    ConfigKey k(groupStr, key);
+                    ValueType m(val);
+                    set(k, m);
+                }
         }
+        fclose(handle);
     }
-    fclose(handle);
 }
 
-template <class ValueType> void ConfigObject<ValueType>::Save() 
+
+template <class ValueType> void ConfigObject<ValueType>::clear()
+{
+    // This shouldn't be done, since objects might have references to
+    // members of list. Instead all member values should be set to some
+    // null value.
+    list.clear();
+}
+
+template <class ValueType> void ConfigObject<ValueType>::reopen(QString file)
+{
+    filename = "config/" + file;
+    list.setAutoDelete(TRUE);
+    Parse();
+}
+
+template <class ValueType> void ConfigObject<ValueType>::Save()
 {
     FILE *handle = fopen(filename.ascii(),"w");
     if (handle == 0)
         qDebug("Could not open file %s",filename.ascii());
-
-    ConfigOption<ValueType> *it;
-    QString grp = 0;
-    for (it = list.first(); it; it = list.next())
+    else
     {
-	if (it->key->group != grp) 
-	{
-	    grp = it->key->group;
-	    fprintf(handle, "\n%s\n", it->key->group.ascii());
-	}
-	fprintf(handle, "%s %s\n", it->key->item.ascii(), it->val->value.ascii());    
+        ConfigOption<ValueType> *it;
+        QString grp = 0;
+        for (it = list.first(); it; it = list.next())
+        {
+            if (it->key->group != grp)
+            {
+                grp = it->key->group;
+                fprintf(handle, "\n%s\n", it->key->group.ascii());
+            }
+            fprintf(handle, "%s %s\n", it->key->item.ascii(), it->val->value.ascii());
+        }
+        fclose(handle);
     }
-
-    fclose(handle);
 }
 
 template class ConfigObject<ConfigValue>;

@@ -78,21 +78,35 @@ MixxxApp::MixxxApp(QApplication *a)
   // Read the config file
   config = new ConfigObject<ConfigValue>("mixxx.cfg"); 
 
-  // Get list of available midi configurations
+  // Get list of available midi configurations, and read the default configuration. If no default
+  // is given, use the first configuration found in the config directory.
   QDir dir("config");
   dir.setFilter(QDir::Files);
   dir.setNameFilter("*.midi.cfg *.MIDI.CFG");
   const QFileInfoList *list = dir.entryInfoList();
   QFileInfoListIterator it(*list);        // create list iterator
   QFileInfo *fi;                          // pointer for traversing
+  midiconfig = 0;
   while ((fi=it.current()))
   {
       midiConfigList.append(fi->fileName());
+      if (fi->fileName() == config->getValueString(ConfigKey("[Midi]","Configfile")))
+          midiconfig = new ConfigObject<ConfigValueMidi>(config->getValueString(ConfigKey("[Midi]","Configfile")));
       ++it;   // goto next list element
   }
-
-  // Read the midi configuration
-  midiconfig = new ConfigObject<ConfigValueMidi>(config->getValueString(ConfigKey("[Midi]","Configfile")));
+  if (midiconfig == 0)
+  {
+      if (midiConfigList.empty())
+      {
+          midiconfig = new ConfigObject<ConfigValueMidi>("");
+          config->set(ConfigKey("[Midi]","Configfile"), ConfigValue(""));
+      }
+      else
+      {
+          midiconfig = new ConfigObject<ConfigValueMidi>((*midiConfigList.at(0)).latin1());
+          config->set(ConfigKey("[Midi]","Configfile"), ConfigValue((*midiConfigList.at(0)).latin1()));
+      }
+  }
 
   initDoc();
 
@@ -119,17 +133,20 @@ MixxxApp::MixxxApp(QApplication *a)
   connect(view->playlist->ListPlaylist, SIGNAL(pressed(QListViewItem *, const QPoint &, int)),
           this,                         SLOT(slotSelectPlay(QListViewItem *, const QPoint &, int)));
 
-  // Initialize midi
+  // Open midi
   qDebug("Init midi...");
 #ifdef __ALSA__
-  midi = new MidiObjectALSA(midiconfig,app);
+  midi = new MidiObjectALSA(midiconfig,app,config->getValueString(ConfigKey("[Midi]","Device")));
 #endif
 #ifdef __PORTMIDI__
-  midi = new MidiObjectPortMidi(midiconfig,app);
+  midi = new MidiObjectPortMidi(midiconfig,app,config->getValueString(ConfigKey("[Midi]","Device")));
 #endif
 #ifdef __OSSMIDI__
-  midi = new MidiObjectOSS(midiconfig,app);
+  midi = new MidiObjectOSS(midiconfig,app,config->getValueString(ConfigKey("[Midi]","Device")));
 #endif
+
+  // Store default midi device
+  config->set(ConfigKey("[Midi]","Device"), ConfigValue(midi->getOpenDevice()->latin1()));
 
   // Instantiate a ControlObject, and set the static midi and config pointer
   control = new ControlNull();
@@ -139,10 +156,19 @@ MixxxApp::MixxxApp(QApplication *a)
   // Initialize player with a desired buffer size
   qDebug("Init player...");
 #ifdef __ALSA__
-  player = new PlayerALSA(BUFFER_SIZE, &engines);
+  player = new PlayerALSA(BUFFER_SIZE, &engines, config->getValueString(ConfigKey("[Soundcard]","Device")));
 #else
-  player = new PlayerPortAudio(BUFFER_SIZE, &engines);
+  player = new PlayerPortAudio(BUFFER_SIZE, &engines, config->getValueString(ConfigKey("[Soundcard]","Device")));
 #endif
+
+  // Ensure the correct configuration is chosen and stored in the config object
+  player->reopen(config->getValueString(ConfigKey("[Soundcard]","Device")),
+                 config->getValueString(ConfigKey("[Soundcard]","Samplerate")).toInt(),
+                 config->getValueString(ConfigKey("[Soundcard]","Bits")).toInt(),
+                 BUFFER_SIZE);
+  config->set(ConfigKey("[Soundcard]","Device"),ConfigValue(player->NAME));
+  config->set(ConfigKey("[Soundcard]","Samplerate"),ConfigValue(player->SRATE));
+  config->set(ConfigKey("[Soundcard]","Bits"),ConfigValue(player->BITS));
 
   // Install event handler to update playpos slider and force screen update.
   // This method is used to avoid emitting signals (and QApplication::lock())
@@ -606,8 +632,14 @@ void MixxxApp::slotOptionsPreferences()
         for (unsigned int j=0; j<pInfo->count(); j++)
         {
             Player::Info *p = pInfo->at(j);
-            // Name of device
+
+            // Name of device.
             pDlg->ComboBoxSoundcard->insertItem(p->name);
+
+            // If it's the first device, it becomes the default, if no device has been
+            // selected previously. Thus update its properties
+            slotOptionsPreferencesUpdateDeviceOptions();
+
             if (p->name == config->getValueString(ConfigKey("[Soundcard]","Device")))
             {
                 pDlg->ComboBoxSoundcard->setCurrentItem(j);
@@ -629,7 +661,6 @@ void MixxxApp::slotOptionsPreferences()
 
         // Midi device
         QStringList *mididev = midi->getDeviceList();
-
         j=0;
         for (QStringList::Iterator it = mididev->begin(); it != mididev->end(); ++it )
         {
@@ -720,14 +751,17 @@ void MixxxApp::slotOptionsApplyPreferences()
            bufferSize);
     player->start(master);
 
-    // Perform changes to MIDI configuration
-    config->set(ConfigKey("[Midi]","Configfile"),pDlg->ComboBoxMidiconf->currentText().append(".midi.cfg"));
-    delete midiconfig;
-    midiconfig = new ConfigObject<ConfigValueMidi>( config->getValueString(ConfigKey("[Midi]","Configfile")) );
+    // Close MIDI
+    midi->devClose();
 
-    // Change MIDI device
+    // Change MIDI configuration
+    config->set(ConfigKey("[Midi]","Configfile"),pDlg->ComboBoxMidiconf->currentText().append(".midi.cfg"));
+    //midiconfig->clear(); // (is currently not implemented correctly)
+    midiconfig->reopen(config->getValueString(ConfigKey("[Midi]","Configfile")));
+
+    // Open MIDI device
     config->set(ConfigKey("[Midi]","Device"), pDlg->ComboBoxMididevice->currentText());
-    midi->reopen(pDlg->ComboBoxMididevice->currentText());
+    midi->devOpen(pDlg->ComboBoxMididevice->currentText());
 
     // Update playlist if path has changed
     if (pDlg->LineEditSongfiles->text() != config->getValueString(PlaylistKey))
