@@ -86,6 +86,8 @@ private:
     
     int m_iMaxTimesPlayed;
 
+    /** Pointer to ControlObject signalling end of track */
+    ControlObject *m_pEndOfTrackCh1, *m_pEndOfTrackCh2;
     /** Pointer to ControlObject dertermining end of track mode */
     ControlObject *m_pEndOfTrackModeCh1, *m_pEndOfTrackModeCh2;
     /** Pointer to ControlObjects for play buttons */

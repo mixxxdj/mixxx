@@ -54,11 +54,10 @@ TrackList::TrackList( const QString sDirectory, WTrackTable *ptableTracks,
     m_pPlayCh2 = c->getControl(ConfigKey("[Channel2]","play"));
 
     // Connect end-of-track signals to this object
-    ControlObject *p;
-    p = c->getControl(ConfigKey("[Channel1]","EndOfTrack"));
-    connect(p, SIGNAL(signalUpdateApp(double)), this, SLOT(slotEndOfTrackCh1(double)));
-    p = c->getControl(ConfigKey("[Channel2]","EndOfTrack"));
-    connect(p, SIGNAL(signalUpdateApp(double)), this, SLOT(slotEndOfTrackCh2(double)));    
+    m_pEndOfTrackCh1 = c->getControl(ConfigKey("[Channel1]","EndOfTrack"));
+    connect(m_pEndOfTrackCh1, SIGNAL(signalUpdateApp(double)), this, SLOT(slotEndOfTrackCh1(double)));
+    m_pEndOfTrackCh2 = c->getControl(ConfigKey("[Channel2]","EndOfTrack"));
+    connect(m_pEndOfTrackCh2, SIGNAL(signalUpdateApp(double)), this, SLOT(slotEndOfTrackCh2(double)));    
     
     // Update the track list by reading the xml file, and adding new files:
     UpdateTracklist();
@@ -165,7 +164,6 @@ void TrackList::UpdateTracklist()
 
 void TrackList::slotEndOfTrackCh1(double)
 {
-    qDebug("end %f",m_pEndOfTrackModeCh1->getValue());
     switch ((int)m_pEndOfTrackModeCh1->getValue())
     {
     case END_OF_TRACK_MODE_STOP:
@@ -186,6 +184,7 @@ void TrackList::slotEndOfTrackCh1(double)
     default:
         qDebug("Invalid EndOfTrack mode value");
     }
+    m_pEndOfTrackCh1->setValueFromApp(0.);
 }
 
 void TrackList::slotEndOfTrackCh2(double)
@@ -210,6 +209,7 @@ void TrackList::slotEndOfTrackCh2(double)
     default:
         qDebug("Invalid EndOfTrack mode value");
     }
+    m_pEndOfTrackCh2->setValueFromApp(0.);
 }
 
 /*
