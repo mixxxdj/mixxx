@@ -665,8 +665,9 @@
   <BgColor>#000000</BgColor>
  </Text>
 
- <Number>
-  <Pos>144,355</Pos>
+ <NumberBpm>
+  <Channel>1</Channel>
+  <Pos>77,27</Pos>
   <Size>100,20</Size>
   <Text>BPM: </Text>
   <NumberOfDigits>6</NumberOfDigits>
@@ -675,10 +676,11 @@
   <Connection>
    <ConfigKey>[Channel1],bpm</ConfigKey>
   </Connection>
- </Number>
+ </NumberBpm>
 
- <Number>
-  <Pos>623,355</Pos>
+ <NumberBpm>
+  <Channel>2</Channel>
+  <Pos>644,27</Pos>
   <Size>100,20</Size>
   <Text>BPM: </Text>
   <NumberOfDigits>6</NumberOfDigits>
@@ -687,11 +689,11 @@
   <Connection>
    <ConfigKey>[Channel2],bpm</ConfigKey>
   </Connection>
- </Number>
+ </NumberBpm>
 
  <NumberPos>
   <Channel>1</Channel>
-  <Pos>320,355</Pos>
+  <Pos>280,27</Pos>
   <Size>85,20</Size>
   <NumberOfDigits>6</NumberOfDigits>
   <FgColor>#00fe00</FgColor>
@@ -703,7 +705,7 @@
 
  <NumberPos>
   <Channel>2</Channel>
-  <Pos>798,355</Pos>
+  <Pos>850,27</Pos>
   <Size>85,20</Size>
   <NumberOfDigits>6</NumberOfDigits>
   <FgColor>#00fe00</FgColor>

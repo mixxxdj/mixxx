@@ -83,7 +83,7 @@ VisualDisplay::VisualDisplay(VisualBuffer *pVisualBuffer, const char *type, cons
 
     QString id("VisualLengthScale-");
     id.append(type);
-    controlScaleLength = new ControlPotmeter(ConfigKey(group,id.latin1()),0.9f,1.1f);
+    controlScaleLength = new ControlPotmeter(ConfigKey(group,id.latin1()),-5.f,5.f);
     connect(controlScaleLength, SIGNAL(signalUpdateApp(double)), this, SLOT(setSignalScaleLength(double)));
 
 }

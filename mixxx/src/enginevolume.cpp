@@ -24,20 +24,22 @@
 EngineVolume::EngineVolume(ConfigKey key, double maxval)
 {
     ControlLogpotmeter *p = new ControlLogpotmeter(key, maxval);
-    potmeterVolume = new ControlEngine(p);
+    potmeter = new ControlEngine(p);
 
     buffer = new CSAMPLE[MAX_BUFFER_LEN];
 }
 
 EngineVolume::~EngineVolume()
 {
-    delete potmeterVolume;
+    delete potmeter;
+    delete buttonDown;
+    delete buttonUp;
     delete [] buffer;
 }
 
 CSAMPLE *EngineVolume::process(const CSAMPLE *source, const int buffer_size)
 {
     for (int i=0; i<buffer_size; i++)
-        buffer[i] = source[i]*potmeterVolume->get();
+        buffer[i] = source[i]*potmeter->get();
     return buffer;
 }

@@ -36,22 +36,26 @@ public:
     double getMin();
     /** Returns the maximum allowed value */
     double getMax();
+    /** Sets the step size of the associated PushButtons */
+    void setStep(double);
     /** Sets the minimum and maximum allowed value. The control value is reset when calling
       * this method */
     void setRange(double dMinValue, double dMaxValue);
-    void setAccelUp(const QKeySequence) {};
-    void setAccelDown(const QKeySequence) {};
 
 public slots:
     void setValueFromWidget(double dValue);
     void setValueFromApp(double dValue);
     void setValueFromEngine(double dValue);
+    /** Increases the value. This method is called from an associated PushButton control */
+    void incValue(double);
+    /** Decreases the value. This method is called from an associated PushButton control */
+    void decValue(double);
 
 protected:
     void updateWidget();
     void setValueFromMidi(MidiCategory c, int v);
     
-    double m_dMaxValue, m_dMinValue, m_dValueRange;
+    double m_dMaxValue, m_dMinValue, m_dValueRange, m_dStep;
 
 #define maxPosition 127
 #define minPosition 0

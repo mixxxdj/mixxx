@@ -133,11 +133,9 @@ void ReaderExtractBeat::reset()
     }
     confidence = -1.;
 
-#ifdef __VISUALS__
     // Update vertex buffer by sending an event containing indexes of where to update.
     if (m_pVisualBuffer != 0)
         QApplication::postEvent(m_pVisualBuffer, new ReaderEvent(0, getBufferSize()));
-#endif
 }
 
 void *ReaderExtractBeat::getBasePtr()
@@ -538,11 +536,9 @@ void *ReaderExtractBeat::processChunk(const int _idx, const int start_idx, const
     textbeat.flush();
 #endif
 
-#ifdef __VISUALS__
     // Update vertex buffer by sending an event containing indexes of where to update.
     if (m_pVisualBuffer != 0)
         QApplication::postEvent(m_pVisualBuffer, new ReaderEvent(updateFrom, frameTo+frameAdd-updateFrom));
-#endif
 
     //qDebug("from %i-%i, update from %i",frameFrom,frameTo,updateFrom);
 

@@ -17,6 +17,7 @@
 
 #include "controlpotmeter.h"
 #include "controlengine.h"
+#include "controlpushbutton.h"
 
 /* -------- ------------------------------------------------------
    Purpose: Creates a new potmeter
@@ -30,6 +31,13 @@
 ControlPotmeter::ControlPotmeter(ConfigKey key, double dMinValue, double dMaxValue) : ControlObject(key)
 {
     setRange(dMinValue,dMaxValue);
+    setStep(m_dValueRange/10.f);
+
+    ControlPushButton *p;
+    p = new ControlPushButton(ConfigKey(key.group, QString(key.item)+"_up"));
+    connect(p, SIGNAL(signalUpdateApp(double)), this, SLOT(incValue(double)));
+    p = new ControlPushButton(ConfigKey(key.group, QString(key.item)+"_down"));
+    connect(p, SIGNAL(signalUpdateApp(double)), this, SLOT(decValue(double)));
 }
 
 ControlPotmeter::~ControlPotmeter()
@@ -44,6 +52,11 @@ double ControlPotmeter::getMin()
 double ControlPotmeter::getMax()
 {
     return m_dMaxValue;
+}
+
+void ControlPotmeter::setStep(double dValue)
+{
+    m_dStep = dValue;
 }
 
 void ControlPotmeter::setRange(double dMinValue, double dMaxValue)
@@ -77,18 +90,21 @@ void ControlPotmeter::setValueFromApp(double dValue)
 
 void ControlPotmeter::setValueFromEngine(double dValue)
 {
-/*
     if (dValue>m_dMaxValue)
+    {
         m_dValue = m_dMaxValue;
+        updateAll();
+    }
     else if (dValue<m_dMinValue)
+    {
         m_dValue = m_dMinValue;
+        updateAll();
+    }
     else
-*/
+    {
         m_dValue = dValue;
-
-    //if (dValue!=0.)
-    //    qDebug("%p: %f,%f, range %f-%f",this,dValue,m_dValue,m_dMinValue, m_dMaxValue);
-    updateFromEngine();
+        updateFromEngine();
+    }
 }
 
 void ControlPotmeter::setValueFromMidi(MidiCategory, int v)
@@ -102,5 +118,30 @@ void ControlPotmeter::updateWidget()
     emit(signalUpdateWidget(127.*(m_dValue-m_dMinValue)/m_dValueRange));
 }
 
+void ControlPotmeter::incValue(double keypos)
+{
+    if (keypos>0)
+    {
+        if (m_dValue+m_dStep>m_dMaxValue)
+            m_dValue = m_dMaxValue;
+        else
+            m_dValue += m_dStep;
+
+        updateAll();
+    }
+}
+
+void ControlPotmeter::decValue(double keypos)
+{
+    if (keypos>0)
+    {
+        if (m_dValue-m_dStep<m_dMinValue)
+            m_dValue = m_dMinValue;
+        else
+            m_dValue -= m_dStep;
+
+        updateAll();
+    }
+}
 
 

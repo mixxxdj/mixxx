@@ -24,13 +24,14 @@ class ControlEngine;
 
 class EngineVolume : public EngineObject {
 public:
-  EngineVolume(ConfigKey key, double maxval=1.);
-  ~EngineVolume();
-  CSAMPLE *process(const CSAMPLE*, const int);
+    EngineVolume(ConfigKey key, double maxval=1.);
+    ~EngineVolume();
+    CSAMPLE *process(const CSAMPLE*, const int);
     void notify(double) {};
+
 private:
-  CSAMPLE *buffer;
-  ControlEngine *potmeterVolume;
+    CSAMPLE *buffer;
+    ControlEngine *potmeter, *buttonDown, *buttonUp;
 };
 
 #endif

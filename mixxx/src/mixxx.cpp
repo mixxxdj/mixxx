@@ -409,8 +409,11 @@ void MixxxApp::keyPressEvent(QKeyEvent *e)
 
 void MixxxApp::keyReleaseEvent(QKeyEvent *e)
 {
-    if (!control->kbdPress(QKeySequence(e->key()), true))
-        e->ignore();
+    if (!e->isAutoRepeat())
+    {
+        if (!control->kbdPress(QKeySequence(e->key()), true))
+            e->ignore();
+    }
 }
 
 /** initializes all QActions of the application */

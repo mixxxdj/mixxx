@@ -46,7 +46,7 @@ private:
     void unsetPixmaps();
 
     /** Internal storage of slider position in pixels */
-    int m_iPos;
+    int m_iPos, m_iStartHandlePos, m_iStartMousePos;
     /** Length of slider in pixels */
     int m_iSliderLength;
     /** Length of handle in pixels */
@@ -61,6 +61,7 @@ private:
     QPixmap *m_pSlider;
     /** Pointer to pixmap of the handle */
     QPixmap *m_pHandle;
+
 };
 
 #endif

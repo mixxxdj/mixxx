@@ -36,6 +36,7 @@ EnginePregain::~EnginePregain()
 
 CSAMPLE *EnginePregain::process(const CSAMPLE *source, const int buffer_size)
 {
+    qDebug("gain %f",potmeterPregain->get());
     for (int i=0; i<buffer_size; i++)
         buffer[i] = source[i]*potmeterPregain->get();
     return buffer;

@@ -114,6 +114,9 @@ void WSliderComposed::mouseMoveEvent(QMouseEvent *e)
     else
         m_iPos = e->y()-m_iHandleLength/2;
 
+    //qDebug("start %i, pos %i",m_iStartPos, m_iPos);
+    m_iPos = m_iStartHandlePos + (m_iPos-m_iStartMousePos);
+
     if (m_iPos>(m_iSliderLength-m_iHandleLength))
         m_iPos = m_iSliderLength-m_iHandleLength;
     else if (m_iPos<0)
@@ -152,10 +155,26 @@ void WSliderComposed::mouseReleaseEvent(QMouseEvent *e)
 
 void WSliderComposed::mousePressEvent(QMouseEvent *e)
 {
-    if (e->button() == Qt::RightButton)
-        reset();
-    else
+    if (!m_bEventWhileDrag)
+    {
+        m_iStartMousePos = 0;
+        m_iStartHandlePos = 0;
         mouseMoveEvent(e);
+    }
+    else
+    {
+        if (e->button() == Qt::RightButton)
+            reset();
+        else
+        {
+            if (m_bHorizontal)
+                m_iStartMousePos = e->x()-m_iHandleLength/2;
+            else
+                m_iStartMousePos = e->y()-m_iHandleLength/2;
+
+            m_iStartHandlePos = m_iPos;
+        }
+    }
 }
 
 void WSliderComposed::paintEvent(QPaintEvent *)
