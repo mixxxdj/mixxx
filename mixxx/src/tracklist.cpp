@@ -320,31 +320,32 @@ void TrackList::slotChangePlay_1()
 
 void TrackList::slotChangePlay_2()
 {
-	TrackInfoObject *track = m_lTracks.at(		
-		m_ptableTracks->text( m_ptableTracks->currentRow(), COL_INDEX ).toInt() );
+    TrackInfoObject *track = m_lTracks.at(		
+        m_ptableTracks->text( m_ptableTracks->currentRow(), COL_INDEX ).toInt() );
         
-	// Update score:
-	track->m_iTimesPlayed++;
-	if (track->m_iTimesPlayed > m_iMaxTimesPlayed)
-		m_iMaxTimesPlayed = track->m_iTimesPlayed;
-	UpdateScores();
+    // Update score:
+    track->m_iTimesPlayed++;
+    if (track->m_iTimesPlayed > m_iMaxTimesPlayed)
+        m_iMaxTimesPlayed = track->m_iTimesPlayed;
+    UpdateScores();
 
-	// Request a new track from the reader:
+    // Request a new track from the reader:
     m_pBuffer2->getReader()->requestNewTrack( track->Location() );
-	
-	// Write info
+    
+    // Write info
     m_pPlaycontrol2->textLabelTrack->
         setText( track->getInfo() );
 }
 
 /*
-	Slot connected to popup menu activated when a track is clicked:
+    Slot connected to popup menu activated when a track is clicked:
 */
 void TrackList::slotClick( int iRow, int iCol, int iButton, const QPoint &pos )
 {
-    qDebug("popup menu");
-	// Display popup menu
-    playSelectMenu->popup(m_ptableTracks->mapToGlobal(pos));
+    // Display popup menu
+    QPoint globalPos = m_ptableTracks->mapToGlobal(pos);
+    globalPos -= QPoint(m_ptableTracks->contentsX(), m_ptableTracks->contentsY());
+    playSelectMenu->popup(globalPos);
 }
 
 
