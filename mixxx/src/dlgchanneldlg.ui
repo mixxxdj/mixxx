@@ -8,8 +8,8 @@
         <rect>
             <x>0</x>
             <y>0</y>
-            <width>70</width>
-            <height>239</height>
+            <width>124</width>
+            <height>231</height>
         </rect>
     </property>
     <property name="sizePolicy">
@@ -42,7 +42,7 @@
                 <x>0</x>
                 <y>0</y>
                 <width>35</width>
-                <height>239</height>
+                <height>230</height>
             </rect>
         </property>
         <property name="frameShape">
@@ -51,122 +51,6 @@
         <property name="title">
             <string></string>
         </property>
-        <widget class="QLabel">
-            <property name="name">
-                <cstring>TextLabel1_2_3</cstring>
-            </property>
-            <property name="geometry">
-                <rect>
-                    <x>7</x>
-                    <y>223</y>
-                    <width>24</width>
-                    <height>18</height>
-                </rect>
-            </property>
-            <property name="paletteForegroundColor">
-                <color>
-                    <red>80</red>
-                    <green>80</green>
-                    <blue>80</blue>
-                </color>
-            </property>
-            <property name="font">
-                <font>
-                    <family>Application</family>
-                    <pointsize>8</pointsize>
-                </font>
-            </property>
-            <property name="text">
-                <string>LOW</string>
-            </property>
-        </widget>
-        <widget class="QLabel">
-            <property name="name">
-                <cstring>TextLabel1_2_5</cstring>
-            </property>
-            <property name="geometry">
-                <rect>
-                    <x>7</x>
-                    <y>121</y>
-                    <width>24</width>
-                    <height>18</height>
-                </rect>
-            </property>
-            <property name="paletteForegroundColor">
-                <color>
-                    <red>80</red>
-                    <green>80</green>
-                    <blue>80</blue>
-                </color>
-            </property>
-            <property name="font">
-                <font>
-                    <family>Application</family>
-                    <pointsize>8</pointsize>
-                </font>
-            </property>
-            <property name="text">
-                <string>HIGH</string>
-            </property>
-        </widget>
-        <widget class="QLabel">
-            <property name="name">
-                <cstring>TextLabel1_2</cstring>
-            </property>
-            <property name="geometry">
-                <rect>
-                    <x>7</x>
-                    <y>72</y>
-                    <width>24</width>
-                    <height>15</height>
-                </rect>
-            </property>
-            <property name="paletteForegroundColor">
-                <color>
-                    <red>80</red>
-                    <green>80</green>
-                    <blue>80</blue>
-                </color>
-            </property>
-            <property name="font">
-                <font>
-                    <family>Application</family>
-                    <pointsize>8</pointsize>
-                </font>
-            </property>
-            <property name="text">
-                <string>GAIN</string>
-            </property>
-        </widget>
-        <widget class="QLabel">
-            <property name="name">
-                <cstring>TextLabel1_2_4</cstring>
-            </property>
-            <property name="geometry">
-                <rect>
-                    <x>10</x>
-                    <y>171</y>
-                    <width>24</width>
-                    <height>18</height>
-                </rect>
-            </property>
-            <property name="paletteForegroundColor">
-                <color>
-                    <red>80</red>
-                    <green>80</green>
-                    <blue>80</blue>
-                </color>
-            </property>
-            <property name="font">
-                <font>
-                    <family>Application</family>
-                    <pointsize>8</pointsize>
-                </font>
-            </property>
-            <property name="text">
-                <string>MID</string>
-            </property>
-        </widget>
         <widget class="WBulb">
             <property name="name">
                 <cstring>BulbClipping</cstring>
@@ -185,58 +69,6 @@
                     <green>181</green>
                     <blue>164</blue>
                 </color>
-            </property>
-        </widget>
-        <widget class="WKnob">
-            <property name="name">
-                <cstring>DialFilterHigh</cstring>
-            </property>
-            <property name="geometry">
-                <rect>
-                    <x>2</x>
-                    <y>91</y>
-                    <width>32</width>
-                    <height>32</height>
-                </rect>
-            </property>
-        </widget>
-        <widget class="WKnob">
-            <property name="name">
-                <cstring>DialFilterMiddle</cstring>
-            </property>
-            <property name="geometry">
-                <rect>
-                    <x>2</x>
-                    <y>141</y>
-                    <width>32</width>
-                    <height>32</height>
-                </rect>
-            </property>
-        </widget>
-        <widget class="WKnob">
-            <property name="name">
-                <cstring>DialGain</cstring>
-            </property>
-            <property name="geometry">
-                <rect>
-                    <x>2</x>
-                    <y>41</y>
-                    <width>32</width>
-                    <height>32</height>
-                </rect>
-            </property>
-        </widget>
-        <widget class="WKnob">
-            <property name="name">
-                <cstring>DialFilterLow</cstring>
-            </property>
-            <property name="geometry">
-                <rect>
-                    <x>2</x>
-                    <y>193</y>
-                    <width>32</width>
-                    <height>32</height>
-                </rect>
             </property>
         </widget>
         <widget class="QLabel">
@@ -268,6 +100,174 @@
                 <string>CLIP</string>
             </property>
         </widget>
+        <widget class="QLabel">
+            <property name="name">
+                <cstring>TextLabel1_2</cstring>
+            </property>
+            <property name="geometry">
+                <rect>
+                    <x>7</x>
+                    <y>71</y>
+                    <width>24</width>
+                    <height>15</height>
+                </rect>
+            </property>
+            <property name="paletteForegroundColor">
+                <color>
+                    <red>80</red>
+                    <green>80</green>
+                    <blue>80</blue>
+                </color>
+            </property>
+            <property name="font">
+                <font>
+                    <family>Application</family>
+                    <pointsize>8</pointsize>
+                </font>
+            </property>
+            <property name="text">
+                <string>GAIN</string>
+            </property>
+        </widget>
+        <widget class="QLabel">
+            <property name="name">
+                <cstring>TextLabel1_2_5</cstring>
+            </property>
+            <property name="geometry">
+                <rect>
+                    <x>7</x>
+                    <y>116</y>
+                    <width>24</width>
+                    <height>18</height>
+                </rect>
+            </property>
+            <property name="paletteForegroundColor">
+                <color>
+                    <red>80</red>
+                    <green>80</green>
+                    <blue>80</blue>
+                </color>
+            </property>
+            <property name="font">
+                <font>
+                    <family>Application</family>
+                    <pointsize>8</pointsize>
+                </font>
+            </property>
+            <property name="text">
+                <string>HIGH</string>
+            </property>
+        </widget>
+        <widget class="WKnob">
+            <property name="name">
+                <cstring>DialFilterHigh</cstring>
+            </property>
+            <property name="geometry">
+                <rect>
+                    <x>2</x>
+                    <y>88</y>
+                    <width>32</width>
+                    <height>32</height>
+                </rect>
+            </property>
+        </widget>
+        <widget class="QLabel">
+            <property name="name">
+                <cstring>TextLabel1_2_4</cstring>
+            </property>
+            <property name="geometry">
+                <rect>
+                    <x>10</x>
+                    <y>164</y>
+                    <width>24</width>
+                    <height>18</height>
+                </rect>
+            </property>
+            <property name="paletteForegroundColor">
+                <color>
+                    <red>80</red>
+                    <green>80</green>
+                    <blue>80</blue>
+                </color>
+            </property>
+            <property name="font">
+                <font>
+                    <family>Application</family>
+                    <pointsize>8</pointsize>
+                </font>
+            </property>
+            <property name="text">
+                <string>MID</string>
+            </property>
+        </widget>
+        <widget class="WKnob">
+            <property name="name">
+                <cstring>DialFilterMiddle</cstring>
+            </property>
+            <property name="geometry">
+                <rect>
+                    <x>2</x>
+                    <y>135</y>
+                    <width>32</width>
+                    <height>32</height>
+                </rect>
+            </property>
+        </widget>
+        <widget class="WKnob">
+            <property name="name">
+                <cstring>DialGain</cstring>
+            </property>
+            <property name="geometry">
+                <rect>
+                    <x>2</x>
+                    <y>41</y>
+                    <width>32</width>
+                    <height>32</height>
+                </rect>
+            </property>
+        </widget>
+        <widget class="QLabel">
+            <property name="name">
+                <cstring>TextLabel1_2_3</cstring>
+            </property>
+            <property name="geometry">
+                <rect>
+                    <x>7</x>
+                    <y>211</y>
+                    <width>24</width>
+                    <height>18</height>
+                </rect>
+            </property>
+            <property name="paletteForegroundColor">
+                <color>
+                    <red>80</red>
+                    <green>80</green>
+                    <blue>80</blue>
+                </color>
+            </property>
+            <property name="font">
+                <font>
+                    <family>Application</family>
+                    <pointsize>8</pointsize>
+                </font>
+            </property>
+            <property name="text">
+                <string>LOW</string>
+            </property>
+        </widget>
+        <widget class="WKnob">
+            <property name="name">
+                <cstring>DialFilterLow</cstring>
+            </property>
+            <property name="geometry">
+                <rect>
+                    <x>2</x>
+                    <y>183</y>
+                    <width>32</width>
+                    <height>32</height>
+                </rect>
+            </property>
+        </widget>
     </widget>
     <widget class="QGroupBox">
         <property name="name">
@@ -275,14 +275,17 @@
         </property>
         <property name="geometry">
             <rect>
-                <x>36</x>
+                <x>35</x>
                 <y>0</y>
-                <width>34</width>
-                <height>239</height>
+                <width>36</width>
+                <height>230</height>
             </rect>
         </property>
         <property name="frameShape">
             <enum>NoFrame</enum>
+        </property>
+        <property name="frameShadow">
+            <enum>Sunken</enum>
         </property>
         <property name="title">
             <string></string>
@@ -294,9 +297,9 @@
             <property name="geometry">
                 <rect>
                     <x>-1</x>
-                    <y>225</y>
-                    <width>38</width>
-                    <height>14</height>
+                    <y>213</y>
+                    <width>40</width>
+                    <height>16</height>
                 </rect>
             </property>
             <property name="paletteForegroundColor">
@@ -316,35 +319,31 @@
                 <string>VOLUME</string>
             </property>
         </widget>
-        <widget class="QSlider">
+        <widget class="WSlider">
             <property name="name">
                 <cstring>SliderVolume</cstring>
             </property>
             <property name="geometry">
                 <rect>
-                    <x>2</x>
-                    <y>42</y>
+                    <x>3</x>
+                    <y>43</y>
                     <width>30</width>
-                    <height>184</height>
+                    <height>170</height>
                 </rect>
             </property>
-            <property name="backgroundOrigin">
-                <enum>ParentOrigin</enum>
+            <property name="sizePolicy">
+                <sizepolicy>
+                    <hsizetype>0</hsizetype>
+                    <vsizetype>0</vsizetype>
+                    <horstretch>0</horstretch>
+                    <verstretch>0</verstretch>
+                </sizepolicy>
             </property>
-            <property name="minValue">
-                <number>0</number>
-            </property>
-            <property name="maxValue">
-                <number>127</number>
-            </property>
-            <property name="lineStep">
-                <number>1</number>
-            </property>
-            <property name="value">
-                <number>127</number>
-            </property>
-            <property name="orientation">
-                <enum>Vertical</enum>
+            <property name="minimumSize">
+                <size>
+                    <width>30</width>
+                    <height>170</height>
+                </size>
             </property>
         </widget>
     </widget>
@@ -383,6 +382,22 @@
         </sizepolicy>
         <pixmap>image1</pixmap>
     </customwidget>
+    <customwidget>
+        <class>WSlider</class>
+        <header location="local">wslider.h</header>
+        <sizehint>
+            <width>-1</width>
+            <height>-1</height>
+        </sizehint>
+        <container>0</container>
+        <sizepolicy>
+            <hordata>5</hordata>
+            <verdata>5</verdata>
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+        </sizepolicy>
+        <pixmap>image2</pixmap>
+    </customwidget>
 </customwidgets>
 <images>
     <image name="image0">
@@ -390,6 +405,9 @@
     </image>
     <image name="image1">
         <data format="XPM.GZ" length="2208">789c4dd5514fdb301007f0773e45c5bda1e996a4491a6bda032db4638c0db6b1759bf69038495b4a5b0a6d814efbee3bdf9dcd3048fcf03fb6639fcbeba3cef8f2a273f4fae061536e66b663a7e57de7a8de2e16cfbf7ebffd737018e71dfa36a6931cbe3a388475c776208ee2348ed85376e19a330ed4560c7be7240afd1fd5da8f6bb16bec1b752a8621db84fe7bb5ef5fa98bc470ff5c6dc5b073eec67e7ed888fdf368c5dda81bb36b75aa3e6187f9e159ed9fbf15778baeccbf575b75254e2375e39cc6699acaf877ea42cde3a725b9647f73ce92e0637196657c1ed8571b31dcaa6bed9fb1cb3ccee4f90be73cc922ed2fc579a6fd0bef5cfa5bb51103f7f7aa709edfc5617f787d4537f43f88c3799cb25ff25bb1c98a8a3d521bf5d2d9a4e17c9fc47e3fe04e6c6ac9e3c4dba46c1097b13a65dbd4ea7ef2f8655a36c6b257e22a514fbd4b7efe8aeba7b4552e06de5f5b877acec4a15e37625f5fc0f55b6721ff491cf2a76affbe8fe2f0bee226d4f38938ece793dadf8fb9d8d73380d8bf3ff0f9347998ef83388ff5bcb93e9a97f1b9deda3cdcef8138ac7f2bf6f50fb5d8d73bf0fd6edbf07c230ecf8fd5fe7e5daafdfa7ea8b59e70280ef7f7a7dadfdf5cedefe748edd7d78ad348efdf4eedefe73bb5dfff4aedebe74aecef234cd446efd399ba56f7c47e7ff1bddae4d27faeaed59fc53dd393fabe1617bede0bb1f1f51da9333158b5d17afe22ae924afa519d8bf1abbaa96a76576c139bb18db8499a9c1d8bdbbc15276afa92fb220d014bacd0628d0db638f17ff7199ce20c6fa8cd2951e32db7052e5f32b8c23b5ce33d3ee006b7b8c3477cc267dce3b14b69a68f033cc1531ce208dfe119bec773fc8017946a2583134a7cc44f78c9992bfc8c5ff02b5e53ea1ba526f2994999ef38c61ff893e639c308634cb04b63a5b4aa56fe4f5026e351729aa987051a8c01f11c80c669e47f19aea1a48c1b670415ade61a2ccd7806ee1de79a1940098dcc062d5430a1d1ae68cc6dc8d4308519dc50cacd4763d1aa76d0620e73daaf5bf9dca7cc8233639ed1e55c1bc212563893cf4a5853ea5e5392a3060fb0a1956e750f8f29b3834797d2dc189ee099f6be1ff679897b1a6b0fc7345a1f067002a730a41db9c3d57f67bac43e8dc58dde927ea8f55de225e31a8c28b7e2fe39fdb60db5f1f7cdc13fdfc4eb0c</data>
+    </image>
+    <image name="image2">
+        <data format="XPM.GZ" length="4350">789c6dd7594f23471007f0f7fd14d6d6db2aaaf58c3db647511eb831b7317794879ac30760cc61c010e5bba7dcf5af5688167664fdb66bbaababbb67cccf1f8dab93c3c68f9fdf5e16b298968d7222cf8d1fd5eb6cf6f1e75f7ffcfded7b9a3656ff9aad46fafdb76fdf078b46d9389a3fd42bf04841699e964933b830b79a7019dd0b96955b895b5a703bcd572e08eea576ff6570ae0eedd477b792103f854b8b2fc6d1163f77237e646e37113f89b6f8307e3bf1785a8b0eedbc696eb7ad9db7e01ee6476ee4ffe0c6fd158c7c69182cde4eec6e87fea50dfbf8176e6ba7d07f96669999cfa325ccaf862bcc97a36dbccf60f178cee11cde706761f16917ae30fe6b7488a7851bf14d7327417f676eb4f756eea41e2f57e6d83e83919f6cba117f04235fd9765b3b0fa36dfc398cf973edc67a6fb951ffe768ab6765ee26b8dff213ef5f4630e2b9e7463ea7ee8ee5ff60ee2618af8eb6fe3238437eb91bf1299cdbfacad3cadd5617f5a11738c7fe4adcb8ffd68d7aeec15e8fc3683b9f62ee2518ef33dafa3f75e3bc957086f86eb4d56f3db8e8e6dd56f01a5cc1bbe65e629673d8ebd18d0efdc9058cf9f2c08df9e630ce037db8719ec37c7a9a7fb708f10267b65e7cef46fb3e9ca3fd23dad6ef0cf67abe99f304f95ec3a8871cbb71be52d8d777e8b6fee412f6f958be3adf5ea817b561afe7d86ded7c67ce13c46fc37ede2766c17a17059cd9f38e466e8c3f8eb6fd700f0b9ef7095c37cd3d37de178f2be76dcf876fa343bd790267f012f67a77cc319f69b4ed872e2ca8e732daeabfe3c6fa9cc235f21f9b8bd4f2a5cd687bfedbfd659ee7ede017b842becf6eb44fa3cbd0df8559b0ffe808ceb0ff37e01afba3652e52cc87a26dbe276ecca7097790ff73b4cdef0616ac4fdf6df1c2d1d67ee8c6f80318eb4bd1180ff529513f0ecf7b694b62f5a002ceccb2662e523c2fb7605f9f0fd8fbbf75e3bc2dcd3e9ebcb9f17ce8c05e8f83685bcf701e44eb2db65e4fd1b65eebe62245be53b8c6f3ffdd8dfd3933fbf884761f5f0edcd88f951bf118bf44bde926dae24fe01ae7af76e3f9169e2f45bb143c0f5fdcf6fea23b18f773eac6f3e63ddac6db75e37df5e8c6fbae65aebcde6d37beaf84f528aa52f03c9dc3359ea79939c627d136deab1befaf75b883ef23e76e3ccfaea36d7dc2f795322b05ebfb0ad738af7db7ad371f99fd7e59b8b13f276e9cdf1318f5e54337e6d78cb67cf761ec170efba1acaa1afd9db92d3f3a36d729ea77efc6f33cbccf2beddfe6478fe6d85e45dbfd851bf1577007f5d877e3bc86f5a9ea3a2d6cffdfc1debe116df5db73a39e37b0e777191dda257c7fa83b6e8a2eaae00eeceb13d6b7d69f325b79b058fd32b170c1a55ebffaac2ccae2b9e6118f79c253bd6ef9ee3fd7587fef79c60f7acf3cc617fcc84ffcac6d8ffcc20b7ee5377ee7257ff027aff1bac66ff0269716cf5b1ab7cd3bbcabb17ddee37d3ee0433ee2633ee1019ff290cff89c2ff89229c48b66f1ac3d5df135df7093134eb9c56dcef4b3c35dee71ce393111dbfa8c784a4205955451cd1d1ad1982634a55bbad3f80eddd38c1ef882e66cf52ab5ff2b8d7ea4277aa6175ad06bb866f446efb4d4df0ffad4fed762ffb7b44e1b9cd2266dd142c75e5ddb3cd0bb3e347a477bd9d5f83ee245e3f7689f0ee830f67d44c77412ee186946033aa5e197fecfe85c7bf7be2fe892aee89a6ea84989f6bfa434f4eff9df52c509b5d0779b32ea684d13ea528f728d1e882ebfce37f6cf077422b4ea5b440ad14af1a15452ab473aee52c65ff39789b64fe955f44eb9937b5d858c5b32d377c0c32a7fee7ecd5fe61aff284ff22c2fb290577993775db1443fb53ef2219f5ff2bf93356d5b970dd9d41eb77820dbb223bbab155ed55ffab2f725ffb1eccb81aed6931cca116ab490633909d10339fd5ffdef795d869ae7923bc27226e772415d5986b51d683663b9d4fcfbb1ff190fe54aaec35aeaa577ee20f24673e94b531249a585fc2b69ebfe3ed7dae91f75ba964b5c03e9d344ba1add93bce0826c3f87f3b2a9fb6f18aeba10ba2f563f25eb1b563771a5d17531e2513c5fba538b3111cd690dd73c7ef6a95f4c8aa99de12fe77da4951de9ffffea730be7fd9fdfbffd0b690edc6c</data>
     </image>
 </images>
 <layoutdefaults spacing="6" margin="11"/>

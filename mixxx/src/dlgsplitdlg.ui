@@ -8,8 +8,8 @@
         <rect>
             <x>0</x>
             <y>0</y>
-            <width>40</width>
-            <height>265</height>
+            <width>124</width>
+            <height>230</height>
         </rect>
     </property>
     <property name="paletteForegroundColor">
@@ -29,28 +29,6 @@
     <property name="caption">
         <string>Form1</string>
     </property>
-    <widget class="Line">
-        <property name="name">
-            <cstring>Line3</cstring>
-        </property>
-        <property name="geometry">
-            <rect>
-                <x>0</x>
-                <y>0</y>
-                <width>40</width>
-                <height>265</height>
-            </rect>
-        </property>
-        <property name="frameShape">
-            <enum>VLine</enum>
-        </property>
-        <property name="frameShadow">
-            <enum>Sunken</enum>
-        </property>
-        <property name="orientation">
-            <enum>Vertical</enum>
-        </property>
-    </widget>
 </widget>
 <layoutdefaults spacing="6" margin="11"/>
 </UI>

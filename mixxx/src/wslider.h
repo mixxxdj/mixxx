@@ -1,7 +1,7 @@
 /***************************************************************************
-                          wplaybutton.h  -  description
+                          wslider.h  -  description
                              -------------------
-    begin                : Fri Jun 21 2002
+    begin                : Tue Jun 25 2002
     copyright            : (C) 2002 by Tue & Ken Haste Andersen
     email                : haste@diku.dk
  ***************************************************************************/
@@ -15,28 +15,42 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef WPLAYBUTTON_H
-#define WPLAYBUTTON_H
+#ifndef WSLIDER_H
+#define WSLIDER_H
 
 #include <qwidget.h>
-#include <qpushbutton.h>
-#include <qpainter.h>
-#include "controlpushbutton.h"
 
 /**
   *@author Tue & Ken Haste Andersen
   */
 
-class WPlayButton : public QPushButton  {
+class WSlider : public QWidget  {
    Q_OBJECT
 public: 
-    WPlayButton(QWidget *parent=0, const char *name=0);
-    ~WPlayButton();
-    ControlPushButton *controlButton;
-protected:
-    void drawButton (QPainter *);
+	WSlider(QWidget *parent=0, const char *name=0);
+	~WSlider();
+    void mouseMoveEvent(QMouseEvent *e);
+    void mousePressEvent(QMouseEvent *e);
+    void paintEvent(QPaintEvent *);
+public slots:
+    void setValue(int);
+signals:
+    void valueChanged(int);
 private:
-    static QPixmap *buttonUpOn, *buttonUpOff, *buttonDownOn, *buttonDownOff;
+    /** Internal representation of slider value */
+    int value;
+
+    /** Used internally to represent state of slider (size and orientation) */
+    int size_state;
+
+    /** Length of whole slider in pixels */
+    int slider_length;
+
+    /** Length of slider minus length of handle in pixels */
+    int slider_range;
+
+    /** Pixmaps used to draw slider */
+    static QPixmap *smallv, *smallv_h, *midv, *midv_h, *largeh, *largeh_h;
 };
 
 #endif

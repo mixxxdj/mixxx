@@ -4,25 +4,27 @@
 #include "configobject.h"
 #include "controlpotmeter.h"
 #include "defs.h"
+#include "controlpushbutton.h"
 #include <sys/timeb.h>
 #include <algorithm>
 
 class ControlRotary : public ControlPotmeter
 {
-  Q_OBJECT
- private:
-  timeb oldtime;
-  FLOAT_TYPE counter;
-  static const char graycodetable[256];
- public:
-  short direction;
-  ControlRotary(ConfigObject::ConfigKey *key);
-  void updatecounter(int, int SRATE);
-  short sign(short);
- public slots:
-  void slotSetPosition(int);
-  void slotSetPositionMidi(int);
-
+    Q_OBJECT
+public:
+    ControlRotary(ConfigObject::ConfigKey *key, ControlPushButton *playbutton);
+    void updatecounter(int, int SRATE);
+    short direction;
+public slots:
+    void slotSetPosition(int);
+    void slotSetPositionMidi(int);
+    void slotSetValue(int newvalue);
+private:
+    short sign(short);
+    timeb oldtime;
+    FLOAT_TYPE counter;
+    static const char graycodetable[256];
+    ControlPushButton *play;
 };
 
 #endif

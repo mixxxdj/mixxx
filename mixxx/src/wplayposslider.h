@@ -1,7 +1,7 @@
 /***************************************************************************
-                          wplaybutton.h  -  description
+                          wplayposslider.h  -  description
                              -------------------
-    begin                : Fri Jun 21 2002
+    begin                : Tue Jun 25 2002
     copyright            : (C) 2002 by Tue & Ken Haste Andersen
     email                : haste@diku.dk
  ***************************************************************************/
@@ -15,28 +15,32 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef WPLAYBUTTON_H
-#define WPLAYBUTTON_H
+#ifndef WPLAYPOSSLIDER_H
+#define WPLAYPOSSLIDER_H
 
 #include <qwidget.h>
-#include <qpushbutton.h>
-#include <qpainter.h>
-#include "controlpushbutton.h"
+#include <qpixmap.h>
 
 /**
   *@author Tue & Ken Haste Andersen
   */
 
-class WPlayButton : public QPushButton  {
+class WPlayposSlider : public QWidget  {
    Q_OBJECT
 public: 
-    WPlayButton(QWidget *parent=0, const char *name=0);
-    ~WPlayButton();
-    ControlPushButton *controlButton;
+	WPlayposSlider(QWidget *parent=0, const char *name=0);
+	~WPlayposSlider();
+    void mouseMoveEvent(QMouseEvent *e);
+    void mousePressEvent(QMouseEvent *e);
+public slots:
+    void setValue(int);
+signals:
+    void valueChanged(int);
 protected:
-    void drawButton (QPainter *);
+    void paintEvent(QPaintEvent *e);
 private:
-    static QPixmap *buttonUpOn, *buttonUpOff, *buttonDownOn, *buttonDownOff;
+    QPixmap *slider, *marker;
+    int value, pix_length;
 };
 
 #endif

@@ -1,7 +1,7 @@
 /***************************************************************************
-                          wplaybutton.h  -  description
+                          wwheel.h  -  description
                              -------------------
-    begin                : Fri Jun 21 2002
+    begin                : Mon Jun 24 2002
     copyright            : (C) 2002 by Tue & Ken Haste Andersen
     email                : haste@diku.dk
  ***************************************************************************/
@@ -15,28 +15,34 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef WPLAYBUTTON_H
-#define WPLAYBUTTON_H
+#ifndef WWHEEL_H
+#define WWHEEL_H
 
 #include <qwidget.h>
-#include <qpushbutton.h>
-#include <qpainter.h>
-#include "controlpushbutton.h"
+#include <qpixmap.h>
+#include <qevent.h>
 
 /**
   *@author Tue & Ken Haste Andersen
   */
 
-class WPlayButton : public QPushButton  {
+class WWheel : public QWidget
+{
    Q_OBJECT
 public: 
-    WPlayButton(QWidget *parent=0, const char *name=0);
-    ~WPlayButton();
-    ControlPushButton *controlButton;
-protected:
-    void drawButton (QPainter *);
+    WWheel(QWidget *parent=0, const char *name=0);
+    ~WWheel();
+    void mouseMoveEvent(QMouseEvent *e);
+    void mousePressEvent(QMouseEvent *e);
+    void mouseReleaseEvent(QMouseEvent *e);
+    void paintEvent(QPaintEvent *);
+public slots:
+    void setValue(int);
+signals:
+    void valueChanged(int);
 private:
-    static QPixmap *buttonUpOn, *buttonUpOff, *buttonDownOn, *buttonDownOff;
+    int value, oldvalue, startval;
+    static QPixmap **pix;
 };
 
 #endif
