@@ -22,6 +22,8 @@ int bufferIdxSlave = 0;
 
 PlayerPortAudio::PlayerPortAudio(ConfigObject<ConfigValue> *config) : Player(config)
 {
+    opendev = false;
+    
     PaError err = Pa_Initialize();
     if (err!=paNoError)
         qFatal("PortAudio: Initialization error");
@@ -93,12 +95,15 @@ PlayerPortAudio::~PlayerPortAudio()
     Pa_Terminate();
 }
 
-bool PlayerPortAudio::open(QString name, int srate, int bits, int bufferSize, int _chMaster, int _chHead)
+bool PlayerPortAudio::open(QString nameMaster, QString nameHead, int srate, int bits, int bufferSizeMaster, int bufferSizeHead, int _chMaster, int _chHead)
 {
+    chMaster = _chMaster;
+    chHead   = _chHead;
+    
     // Adjust bufferSize and number of buffers
-    int bufferNo   = 2;
-    bufferSize = bufferSize/bufferNo;
-
+    int bufferNo     = 2;
+    MasterBufferSize = bufferSizeMaster/bufferNo;
+    
     // Extract bit information
     PaSampleFormat format = 0;
     switch (bits)
@@ -110,54 +115,69 @@ bool PlayerPortAudio::open(QString name, int srate, int bits, int bufferSize, in
         default: qWarning("PortAudio: Sample format not supported (%i bits)", bits); return false;
     }
 
-    // Extract device information
-    int id = -1;
-    int i;
-    for (i=0; i<(int)devices.count(); i++)
-        if (name == devices.at(i)->name && chMaster+chHead <= devices.at(i)->noChannels)
+    // Determine if a separate device for headphone channel is requested
+    if (nameHead.length()>0 && nameHead != "None" && nameHead != nameMaster)
+        headActive = true;
+    else
+    {
+        headActive = false;
+        if (chMaster == chHead)
+            return false;
+    }
+    
+    // Get id's of devices
+    int masterID = getDeviceID(nameMaster);
+    if (masterID == -1) return false;
+    int headID;
+    if (headActive)
+    {
+        headID = getDeviceID(nameHead);
+        if (headID==-1) return false;
+    }
+
+    // Number of channels to open and buffersize
+    int chNoMaster, chNoHead;
+    if (headActive)
+    {
+        chNoMaster = chMaster+1;
+        chNoHead   = chHead+1;
+        bufferIdxSlave = 0;
+        HeadPerMasterBuffer = (int)floor((float)(bufferSizeHead/2.)/(float)MasterBufferSize);
+    }
+    else
+    {
+        chNoMaster = max(_chMaster,_chHead)+1;
+        HeadPerMasterBuffer = 1;
+    }
+    
+    // Open master device stream
+    if (!open(masterID,&streamMaster,srate,format,chNoMaster,MasterBufferSize/chNoMaster,bufferNo,paCallback))
+        return false;
+
+    // Open head device stream
+    if (headActive)
+        if (!open(headID,&streamHead,srate,format,chNoHead,HeadPerMasterBuffer*MasterBufferSize/chNoHead,bufferNo,paCallbackSlave))
         {
-            id = devices.at(i)->id;
-            break;
+            // Head device was unsuccessful, so close master properly
+            opendev = true;
+            headActive = false;
+            close();
+
+            return false;
         }
 
-    // Return if name wasn't found
-    if (id==-1) return false;
-                
-    // Get number of channels to open
-    int chNo = max(_chMaster,_chHead)+1;
+    opendev = true;
     
-    // If this is not the master device, ensure that chosen sample rate matches master device
-    if (_chMaster==0 && srate != config->getValueString(ConfigKey("[Soundcard]","Samplerate")).toInt())
-        return false;
-    
-    //bufferSize = max(*devices.at(i)->latency.at(j),bufferSize);
-    //qDebug("PortAudio: Latency %i samples",bufferSize);
+    return true;
+}
 
-    // Determine which callback function to use
-    PortAudioCallback *callbackFunc;
-    if (_chMaster>0)
-    {
-        callbackFunc = paCallback;
-        MasterBufferSize = bufferSize;
-        chMaster = _chMaster;
-    }
-    if (chHead>0)
-    {
-        if (chMaster==0)
-            callbackFunc = paCallbackSlave;
-        bufferIdxSlave = 0;
-        HeadPerMasterBuffer = bufferSize/MasterBufferSize;
-        qDebug("HeadPerMasterBuffer %i",HeadPerMasterBuffer);
-        chHead = _chHead;
-    }
-
-    qDebug("Open using buffer size %i",bufferSize);
-    
+bool PlayerPortAudio::open(int id, PortAudioStream **stream, int srate, PaSampleFormat format, int chNo, int bufferSize, int bufferNo, PortAudioCallback *callback)
+{
     // Try to open device 5 times before giving up!
     PaError err = 0;
     {for (int i=0; i<5; i++)
     {
-      err = Pa_OpenStream(&stream,
+      err = Pa_OpenStream(stream,
                         paNoDevice,         // no input device
                         0,                  // no input
                         format,
@@ -167,10 +187,10 @@ bool PlayerPortAudio::open(QString name, int srate, int bits, int bufferSize, in
                         format,
                         NULL,
                         (double)srate,
-                        bufferSize/chNo,    // frames per buffer per channel
+                        bufferSize,         // frames per buffer per channel
                         bufferNo,           // number of buffers, if zero then use default minimum
                         paClipOff,          // we won't output out of range samples so don't bother clipping them
-                        callbackFunc,
+                        callback,
                         this);
 
         if (err == paNoError)
@@ -179,30 +199,54 @@ bool PlayerPortAudio::open(QString name, int srate, int bits, int bufferSize, in
     if( err != paNoError )
     {
         qWarning("PortAudio: Open stream error: %s", Pa_GetErrorText(err));
+        err = Pa_GetHostError();
+        qWarning("PortAudio: Open stream error: %s", Pa_GetErrorText(err));
         return false;
     }
 
     // Update SRATE and BASERATE in EngineObject
     setSrate(srate);
-   
+
     return true;
 }
+
+
+    
 
 void PlayerPortAudio::close()
 {
     // Close stream
-    PaError err = Pa_CloseStream( stream );
-    if( err != paNoError )
-        qFatal("PortAudio: Close stream error: %s", Pa_GetErrorText(err));
+    if (opendev)
+    {
+        PaError err = Pa_CloseStream(streamMaster);
+        if( err != paNoError )
+            qWarning("PortAudio: Close master stream error: %s", Pa_GetErrorText(err));
+        if (headActive)
+        {
+            err = Pa_CloseStream(streamHead);
+            if( err != paNoError )
+                qWarning("PortAudio: Close headphone stream error: %s", Pa_GetErrorText(err));
+        }
+        opendev = false;
+    }
 }
 
 void PlayerPortAudio::start()
 {
     Player::start();
 
-    PaError err = Pa_StartStream(stream);
-    if (err != paNoError)
-        qFatal("PortAudio: Start stream error: %s", Pa_GetErrorText(err));
+    if (opendev)
+    {
+        PaError err = Pa_StartStream(streamMaster);
+        if (err != paNoError)
+            qWarning("PortAudio: Start master stream error: %s", Pa_GetErrorText(err));
+        if (headActive)
+        {
+            err = Pa_StartStream(streamHead);
+            if (err != paNoError)
+                qWarning("PortAudio: Start headphone stream error: %s", Pa_GetErrorText(err));
+        }
+    }
 }
 
 void PlayerPortAudio::wait()
@@ -211,9 +255,15 @@ void PlayerPortAudio::wait()
 
 void PlayerPortAudio::stop()
 {
-    PaError err = Pa_StopStream( stream );
+    PaError err = Pa_StopStream(streamMaster);
     if( err != paNoError )
-        exit(-1);
+        qFatal("PortAudio: Stop master stream error: %s,", Pa_GetErrorText(err));
+    if (headActive)
+    {
+        err = Pa_StopStream(streamHead);
+        if (err != paNoError)
+            qWarning("PortAudio: Stop headphone stream error: %s", Pa_GetErrorText(err));
+    }
 }
 
 int PlayerPortAudio::minLatency(int SRATE)
@@ -243,6 +293,14 @@ QString PlayerPortAudio::getDefaultDevice()
     return QString(devInfo->name);
 }
 
+int PlayerPortAudio::getDeviceID(QString name)
+{
+    for (int i=0; i<(int)devices.count(); i++)
+        if (name == devices.at(i)->name)
+            return i;
+    return -1;
+}
+
 /* -------- ------------------------------------------------------
    Purpose: Wrapper function to call processing loop function,
             implemented as a method in a class. Used in PortAudio,
@@ -261,7 +319,7 @@ int paCallback(void *, void *outputBuffer,
     player->prepareBuffer();
     SAMPLE *buffer = player->out_buffer_offset;
 
-    qDebug("oMaster (%i), chMaster %i",framesPerBuffer,player->chMaster);
+    //qDebug("oMaster (%i), chMaster %i",framesPerBuffer,player->chMaster);
 
     int openChNo = max(player->chHead,player->chMaster);
 

@@ -250,7 +250,7 @@ void MixxxApp::engineStart()
 {
     if (view->playlist->ListPlaylist->firstChild() != 0)
     {
-		//qDebug("Init buffer 1... %s", view->playlist->ListPlaylist->firstChild()->text(1).ascii());
+        //qDebug("Init buffer 1... %s", view->playlist->ListPlaylist->firstChild()->text(1).ascii());
         buffer1 = new EngineBuffer(app, this, view->playcontrol1, "[Channel1]",
                                    view->playlist->ListPlaylist->firstChild()->text(1));
 
@@ -274,8 +274,8 @@ void MixxxApp::engineStart()
     flanger = new EngineFlanger(view->flanger, "[Flanger]");
 
     //qDebug("Init master...");
-    master = new EngineMaster(view->master, view->crossfader, view->channel1, view->channel2, 
-			      buffer1, buffer2, channel1, channel2,flanger, "[Master]");
+    master = new EngineMaster(view->master, view->crossfader, view->channel1, view->channel2,
+                              buffer1, buffer2, channel1, channel2,flanger, "[Master]");
 
     /** Connect signals from option menu, selecting processing of channel 1 & 2, to
         EngineMaster */

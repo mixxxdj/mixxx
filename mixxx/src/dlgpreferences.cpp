@@ -83,6 +83,7 @@ DlgPreferences::DlgPreferences(QWidget *p, const char *name,
     connect(PushButtonCancel,         SIGNAL(clicked()),         mixxx,SLOT(slotOptionsClosePreferences()));
     connect(ComboBoxSoundcardMaster,  SIGNAL(activated(int)),    this, SLOT(slotMasterDeviceOptions()));
     connect(ComboBoxSoundcardHead,    SIGNAL(activated(int)),    this, SLOT(slotHeadDeviceOptions()));
+    connect(ComboBoxSoundcardHead,    SIGNAL(activated(int)),    this, SLOT(slotLatencyHead()));
     connect(PushButtonBrowsePlaylist, SIGNAL(clicked()),         mixxx,SLOT(slotBrowsePlaylistDir()));
     connect(SliderLatencyMaster,      SIGNAL(sliderMoved(int)),  this, SLOT(slotLatencyMaster()));
     connect(SliderLatencyHead,        SIGNAL(sliderMoved(int)),  this, SLOT(slotLatencyHead()));
@@ -158,12 +159,7 @@ void DlgPreferences::slotHeadDevice()
         }
     }
 
-    // Latency
-    if (ComboBoxSoundcardHead->currentText() == "None")
-        SliderLatencyHead->setDisabled(true);
-    else
-        SliderLatencyHead->setEnabled(true);
-    int latency = config->getValueString(ConfigKey("[Soundcard]","LatencyHead")).toInt();
+    int latency = config->getValueString(ConfigKey("[Soundcard]","LatencyHeadphone")).toInt();
     SliderLatencyHead->setValue(getSliderLatencyVal(latency));
     slotLatencyHead();
 }
@@ -183,8 +179,8 @@ void DlgPreferences::slotMasterDeviceOptions()
             for (int i=1; i<=p->noChannels; i+=2)
             {
                 QString ch(QString("%1-%2").arg(i).arg(i+1));
-                if (!(ComboBoxSoundcardMaster->currentText() == ComboBoxSoundcardHead->currentText() &&
-                      ch == ComboBoxChannelsHead->currentText()))
+//                if (!(ComboBoxSoundcardMaster->currentText() == ComboBoxSoundcardHead->currentText() &&
+//                      ch == ComboBoxChannelsHead->currentText()))
                 {
                     ComboBoxChannelsMaster->insertItem(ch);
                     if (i==player->chMaster)
@@ -276,6 +272,14 @@ void DlgPreferences::slotLatencyMaster()
 
 void DlgPreferences::slotLatencyHead()
 {
+    // Enable/disable latency slider
+    if (ComboBoxSoundcardHead->currentText() == "None" ||
+        ComboBoxSoundcardHead->currentText() == ComboBoxSoundcardMaster->currentText())
+        SliderLatencyHead->setDisabled(true);
+    else
+        SliderLatencyHead->setEnabled(true);
+
+    // Update text label
     TextLabelLatencyHead->setText(QString("%1 ms").arg(getSliderLatencyMsec(SliderLatencyHead->value())));
 }
 
@@ -306,10 +310,10 @@ void DlgPreferences::slotApply()
     temp.truncate(temp.length()-3);
     config->set(ConfigKey("[Soundcard]","Samplerate"), ConfigValue(temp));
     config->set(ConfigKey("[Soundcard]","Bits"), ConfigValue(ComboBoxBits->currentText()));
-    config->set(ConfigKey("[Soundcard]","ChannelMaster"), ConfigValue(ComboBoxChannelsMaster->currentText().left(1)));
-    config->set(ConfigKey("[Soundcard]","ChannelHeadphone"), ConfigValue(ComboBoxChannelsHead->currentText().left(1)));
+    config->set(ConfigKey("[Soundcard]","ChannelMaster"), ConfigValue(ComboBoxChannelsMaster->currentText().left(1).toInt()));
+    config->set(ConfigKey("[Soundcard]","ChannelHeadphone"), ConfigValue(ComboBoxChannelsHead->currentText().left(1).toInt()));
     config->set(ConfigKey("[Soundcard]","LatencyMaster"), ConfigValue(getSliderLatencyMsec(SliderLatencyMaster->value())));
-    config->set(ConfigKey("[Soundcard]","LatencyHead"), ConfigValue(getSliderLatencyMsec(SliderLatencyHead->value())));
+    config->set(ConfigKey("[Soundcard]","LatencyHeadphone"), ConfigValue(getSliderLatencyMsec(SliderLatencyHead->value())));
     config->set(ConfigKey("[Midi]","Configfile"), ConfigValue(ComboBoxMidiconf->currentText().append(".midi.cfg")));
     config->set(ConfigKey("[Midi]","Device"), ConfigValue(ComboBoxMididevice->currentText()));
 
