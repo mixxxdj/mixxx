@@ -28,7 +28,7 @@
 #include "visual/picking.h"
 #include "visual/visualbackplane.h"
 
-class EngineBuffer;
+class Reader;
 class GUIChannel;
 
 const int RESAMPLE_FACTOR = 32;
@@ -47,7 +47,7 @@ public:
     ~MixxxVisual();
     bool eventFilter(QObject *o, QEvent *e);
     /** Add a GUIChannel */
-    GUIChannel *add(EngineBuffer *engineBuffer);
+    GUIChannel *add(Reader *reader);
 protected:
     void initializeGL();
     void resizeGL(int, int);

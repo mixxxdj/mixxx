@@ -25,7 +25,6 @@
 #include "monitor.h"
 
 class MixxxApp;
-class GUIChannel;
 class DlgPlaycontrol;
 class ControlEngine;
 class ControlObject;
@@ -93,8 +92,6 @@ private:
 
     /** Rate factor between player and sound source sample rates */
     //FLOAT_TYPE BASERATE;
-    /** Pointer to GUIChannel */
-    GUIChannel *guichannel;
     /** Counter; when to update playpos slider */
     int playposUpdateCounter;
 

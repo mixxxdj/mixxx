@@ -22,9 +22,11 @@
 
 ReaderExtractFFT::ReaderExtractFFT(ReaderExtract *input, int _frameSize, int _frameStep) : ReaderExtract(input)
 {
+    // These values are relative this buffer. Input buffer can have another number of channels and thus a different
+    // buffer size than this class.
     frameSize = _frameSize;
     frameStep = _frameStep;
-    frameNo = (READBUFFERSIZE)/frameStep;
+    frameNo = (input->getBufferSize()/input->getChannels())/frameStep;
     framePerChunk = frameNo/READCHUNK_NO;
     
     // Allocate and calculate window
@@ -63,13 +65,23 @@ void *ReaderExtractFFT::getBasePtr()
 
 int ReaderExtractFFT::getRate()
 {
-    return 0;
+    return input->getRate()/frameStep;
+}
+
+int ReaderExtractFFT::getChannels()
+{
+    return 1;
+}
+
+int ReaderExtractFFT::getBufferSize()
+{
+    return input->getBufferSize()/input->getChannels();
 }
 
 void *ReaderExtractFFT::processChunk(const int idx, const int start_idx, const int end_idx)
 {
     int frameFrom  = idx*framePerChunk;
-    int frameTo    = (frameFrom+framePerChunk)%frameNo;
+    int frameTo    = (idx+1)*framePerChunk; //(frameFrom+framePerChunk)%frameNo;
 
 //    qDebug("no %i, from %i ,to %i",frameNo,frameFrom,frameTo);
     
@@ -89,16 +101,22 @@ void *ReaderExtractFFT::processChunk(const int idx, const int start_idx, const i
 
 void ReaderExtractFFT::processFrame(int idx)
 {
+//    qDebug("fft %i",idx);
     //
     // Window samples
     //
-    int framePos = (idx*frameStep-frameSize/2+READBUFFERSIZE)%READBUFFERSIZE;
-    if (framePos+frameSize < READBUFFERSIZE)
-        for (int i=framePos; i<framePos+frameSize; i++)
-            windowedSamples[i-framePos] = readbufferPtr[i];
+    int inputBufferSize = input->getBufferSize();
+    int inputFrameStep = frameStep*input->getChannels();
+    int inputFrameSize = frameSize*input->getChannels();
+
+    int inputFramePos = (idx*inputFrameStep-inputFrameSize/2+inputBufferSize)%inputBufferSize;
+    if (inputFramePos+inputFrameSize < inputBufferSize)
+        for (int i=0; i<frameSize; i++)
+            windowedSamples[i] = (readbufferPtr[inputFramePos+(i*2)]+readbufferPtr[inputFramePos+(i*2)+1])/2.;
     else
         for (int i=0; i<frameSize; i++)
-            windowedSamples[i] = readbufferPtr[(framePos+i)%READBUFFERSIZE]; // To optimize put % outside loop
+            windowedSamples[i] = (readbufferPtr[(inputFramePos+(i*2))%inputBufferSize] +
+                                  readbufferPtr[(inputFramePos+(i*2)+1)%inputBufferSize])/2.; // To optimize put % outside loop
     
     // Perform FFT
     specList.at(idx)->process(windowedSamples,0);

@@ -28,6 +28,8 @@
 class ReaderExtractWave;
 class SoundSource;
 class EngineBuffer;
+class MixxxApp;
+class GUIChannel;
 
 /**
   *@author Tue & Ken Haste Andersen
@@ -36,7 +38,7 @@ class EngineBuffer;
 class Reader: public QThread
 {
 public: 
-    Reader(EngineBuffer *_enginebuffer, Monitor *_rate, QMutex *_pause);
+    Reader(EngineBuffer *_enginebuffer, MixxxApp *mixxx, Monitor *_rate, QMutex *_pause);
     ~Reader();
 
     /** Request new track to be loaded. This method is thread safe, but may block */
@@ -100,6 +102,9 @@ private:
     int file_srate;
     /** Local copy of file length */
     int file_length;
+    /** Pointer to GUIChannel */
+    GUIChannel *guichannel;
+
 };
 
 #endif

@@ -35,6 +35,10 @@ public:
     virtual void *getBasePtr() = 0;
     /** Get sample rate of buffer. This relates to the sample rate of the waveform */
     virtual int getRate() = 0;
+    /** Get number of channels in the buffer. Most ReaderExtract classes average down to one channel */
+    virtual int getChannels() = 0;
+    /** Get buffer size. Dependent on number of channels */
+    virtual int getBufferSize() = 0;
     /** Process a given chunk at chunk idx i. start_idx and end_idx gives the indexes of the the chunks
       * at the update boundaries of the buffer. Returns a pointer to the newly processed chunk */
     virtual void *processChunk(const int idx, const int start_idx, const int end_idx) = 0;

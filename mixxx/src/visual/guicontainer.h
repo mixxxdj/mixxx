@@ -25,7 +25,7 @@
 class FastVertexArray;
 class SignalVertexBuffer;
 class GUISignal;
-class EngineBuffer;
+class Reader;
 
 
 const float baselength = 25.;
@@ -54,7 +54,7 @@ const float zoomdepth = 1.;
 class GUIContainer : public QObject
 {
 public:
-    GUIContainer(EngineBuffer *engineBuffer);
+    GUIContainer(Reader *reader);
     GUIContainer *getContainer(int id);
     GUISignal *getSignal();
     SignalVertexBuffer *getBuffer();

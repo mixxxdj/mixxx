@@ -16,21 +16,22 @@
  ***************************************************************************/
 
 #include "signalvertexbuffer.h"
-#include "../enginebuffer.h"
-#include "../soundbuffer.h"
-#include "../soundbufferevent.h"
+#include "../reader.h"
+#include "../readerextract.h"
+#include "../readerevent.h"
 #include "fastvertexarray.h"
 
 /**
  * Default Constructor.
  */
-SignalVertexBuffer::SignalVertexBuffer(EngineBuffer *_enginebuffer, FastVertexArray *_vertex)
+SignalVertexBuffer::SignalVertexBuffer(Reader *_reader, FastVertexArray *_vertex)
 {
     installEventFilter(this);
 
     vertex = _vertex;
-    enginebuffer = _enginebuffer;
-    soundbuffer = enginebuffer->getSoundBuffer();
+    reader = _reader;
+    //*************************
+    readerExtract;// = reader->getSoundBuffer();
 
     len = vertex->getSize();
     displayLen = len/2; // QUICK AND DIRTY HACK!
@@ -64,9 +65,9 @@ bool SignalVertexBuffer::eventFilter(QObject *o, QEvent *e)
     // If a user events are received, update containers
     if (e->type() == (QEvent::Type)10002)
     {
-        SoundBufferEvent *sbe = (SoundBufferEvent *)e;
+        ReaderEvent *re = (ReaderEvent *)e;
 
-        update(sbe->pos(), sbe->len());
+        update(re->pos(), re->len());
     }
     else
     {
@@ -86,7 +87,7 @@ void SignalVertexBuffer::update(int pos, int len)
 {
 //    soundbuffer->lockBuffer();
     
-    CSAMPLE *source = soundbuffer->read_buffer+pos;
+    CSAMPLE *source = &readerExtract->getBasePtr()[pos];
 
     GLfloat resampleFactor = (GLfloat)READCHUNKSIZE/(GLfloat)vertex->getChunkSize();
     GLfloat *dest = &buffer[(int)(pos/resampleFactor)*3];
@@ -114,7 +115,8 @@ void SignalVertexBuffer::update(int pos, int len)
  */
 bufInfo SignalVertexBuffer::getVertexArray()
 {
-    int playpos = enginebuffer->getPlaypos(DISPLAYRATE);
+    //*******************************
+    int playpos;// = reader->getPlaypos(DISPLAYRATE);
     int pos = playpos-(displayLen/2);
     while (pos<0)
         pos += len;

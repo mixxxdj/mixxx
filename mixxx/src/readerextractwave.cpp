@@ -18,6 +18,7 @@
 #include "readerextractwave.h"
 #include "readerextractfft.h"
 #include "readerextracthfc.h"
+#include "readerextractbeat.h"
 #include "readerevent.h"
 #include "visual/signalvertexbuffer.h"
 #include <qapplication.h>
@@ -43,11 +44,12 @@ ReaderExtractWave::ReaderExtractWave(QMutex *_enginelock) : ReaderExtract(0)
     bufferpos_end = 0;
 
     signalVertexBuffer = 0;
-
+    file = 0;
+    
     // Initialize extractor objects
     readerfft  = new ReaderExtractFFT((ReaderExtract *)this, WINDOWSIZE, STEPSIZE);
     readerhfc  = new ReaderExtractHFC((ReaderExtract *)readerfft, WINDOWSIZE, STEPSIZE);
-
+    readerbeat = new ReaderExtractBeat((ReaderExtract *)readerhfc, WINDOWSIZE, STEPSIZE, 100);
 }
 
 ReaderExtractWave::~ReaderExtractWave()
@@ -80,11 +82,21 @@ void *ReaderExtractWave::getBasePtr()
 
 int ReaderExtractWave::getRate()
 {
-    // Sample rate of file with two channels
     if (file)
-        return file->getSrate()*2;
+        return file->getSrate();
     else
-        return 88200; // HACKKKK!!!!!
+        return 44100; // HACKKKK!!!!!
+}
+
+int ReaderExtractWave::getChannels()
+{
+    // Two channels waveform is hardcoded for the moment!!!
+    return 2;
+}
+
+int ReaderExtractWave::getBufferSize()
+{
+    return READBUFFERSIZE;
 }
 
 void *ReaderExtractWave::processChunk(const int, const int, const int)
@@ -174,6 +186,7 @@ void ReaderExtractWave::getchunk(CSAMPLE rate)
     //qDebug("curr %i, start %i, end %i",chunkCurr,chunkStart,chunkEnd);
     readerfft->processChunk(chunkCurr, chunkStart, chunkEnd);
     readerhfc->processChunk(chunkCurr, chunkStart, chunkEnd);
+    readerbeat->processChunk(chunkCurr, chunkStart, chunkEnd);
 
 
     filepos_start = filepos_start_new;

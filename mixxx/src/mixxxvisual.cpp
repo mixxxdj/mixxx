@@ -60,9 +60,9 @@ bool MixxxVisual::eventFilter(QObject *o, QEvent *e)
     return TRUE;
 }
 
-GUIChannel *MixxxVisual::add(EngineBuffer *engineBuffer)
+GUIChannel *MixxxVisual::add(Reader *reader)
 {
-    GUIChannel *c = new GUIChannel(engineBuffer,controller);
+    GUIChannel *c = new GUIChannel(reader, controller);
 
     // Position coding... hack
     if (list.isEmpty())

@@ -103,9 +103,8 @@ CSAMPLE EngineSpectralFwd::getHFC()
     CSAMPLE hfc = 0;
 
     for (int i=0; i<l_half; ++i)
-        hfc += spectrum[i];
-    hfc *= (two_pi/l_half)*wndNorm;
-
+        hfc += spectrum[i]*(i*i)/(l_half*l_half);
+    //hfc *= (two_pi/l_half)*wndNorm;
     return hfc;
 }
 

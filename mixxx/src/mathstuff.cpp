@@ -175,3 +175,16 @@ void wndDwnd(CSAMPLE *wnd, CSAMPLE *dwnd, int size)
         dwnd[k+1] = (wnd[k+1]-wnd[k])*SRATE;
 }
 */
+
+double qip(CSAMPLE x, unsigned int n)
+{
+    double h = 1.;
+    while (n)
+    {
+        if (n&1) h*=x;
+        x*=x;
+        n >>= 1;
+    }
+    return h;
+}
+

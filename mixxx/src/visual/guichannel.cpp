@@ -17,7 +17,7 @@
 
 #include "guichannel.h"
 #include "../defs.h"
-#include "../enginebuffer.h"
+#include "../reader.h"
 #include "visualcontroller.h"
 #include "guicontainer.h"
 #include "guisignal.h"
@@ -27,9 +27,9 @@
  * Default Consructor.
  */
 
-GUIChannel::GUIChannel(EngineBuffer *_engineBuffer, VisualController *_controller)
+GUIChannel::GUIChannel(Reader *_reader, VisualController *_controller)
 {
-    engineBuffer = _engineBuffer;
+    reader = _reader;
     controller = _controller;
     list.setAutoDelete(true);
 
@@ -63,7 +63,7 @@ bool GUIChannel::eventFilter(QObject *o, QEvent *e)
 SignalVertexBuffer *GUIChannel::add()
 {
     // Construct a new container
-    GUIContainer *c = new GUIContainer(engineBuffer);
+    GUIContainer *c = new GUIContainer(reader);
 
     if (list.isEmpty())
     {

@@ -172,3 +172,4 @@ void WSlider::setState()
             handle_length = 16;
         }
 }
+
