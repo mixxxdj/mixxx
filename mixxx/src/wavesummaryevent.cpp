@@ -17,7 +17,7 @@
 
 #include "wavesummaryevent.h"
 
-WaveSummaryEvent::WaveSummaryEvent(QMemArray<char> *pWave, QValueList<int> *pSegmentation) : QCustomEvent(10001), m_pWave(pWave), m_pSegmentation(pSegmentation)
+WaveSummaryEvent::WaveSummaryEvent(QMemArray<char> *pWave, QValueList<long> *pSegmentation) : QCustomEvent(10001), m_pWave(pWave), m_pSegmentation(pSegmentation)
 {
 }
 
@@ -30,7 +30,7 @@ QMemArray<char> *WaveSummaryEvent::wave() const
     return m_pWave;
 }
 
-QValueList<int> *WaveSummaryEvent::segmentation() const
+QValueList<long> *WaveSummaryEvent::segmentation() const
 {
     return m_pSegmentation;
 }

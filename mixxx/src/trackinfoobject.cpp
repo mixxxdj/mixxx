@@ -46,7 +46,9 @@ TrackInfoObject::TrackInfoObject(const QString sPath, const QString sFile) : m_s
     m_pWave = 0;
     m_pSegmentation = 0;
     m_fBeatFirst = -1.;
-
+    m_iSampleRate = 0;
+    m_iChannels = 0;
+    
     m_pTableItemScore = 0;
     m_pTableItemTitle = 0;
     m_pTableItemArtist = 0;
@@ -79,6 +81,8 @@ TrackInfoObject::TrackInfoObject(const QDomNode &nodeHeader)
     m_sType = XmlParse::selectNodeQString(nodeHeader, "Type");
     m_sComment = XmlParse::selectNodeQString(nodeHeader, "Comment");
     m_iDuration = XmlParse::selectNodeQString(nodeHeader, "Duration").toInt();
+    m_iSampleRate = XmlParse::selectNodeQString(nodeHeader, "SampleRate").toInt();
+    m_iChannels = XmlParse::selectNodeQString(nodeHeader, "Channels").toInt();
     m_iBitrate = XmlParse::selectNodeQString(nodeHeader, "Bitrate").toInt();
     m_iLength = XmlParse::selectNodeQString(nodeHeader, "Length").toInt();
     m_iTimesPlayed = XmlParse::selectNodeQString(nodeHeader, "TimesPlayed").toInt();
@@ -88,7 +92,7 @@ TrackInfoObject::TrackInfoObject(const QDomNode &nodeHeader)
     m_iScore = 0;
     m_iId = XmlParse::selectNodeQString(nodeHeader, "ID").toInt();
     m_pWave = XmlParse::selectNodeCharArray(nodeHeader, QString("WaveSummary"));
-    m_pSegmentation = XmlParse::selectNodeIntList(nodeHeader, QString("SegmentationSummary"));
+    m_pSegmentation = XmlParse::selectNodeLongList(nodeHeader, QString("SegmentationSummary"));
     m_pTableTrack = 0;
 
     m_pTableItemScore = 0;
@@ -163,6 +167,8 @@ void TrackInfoObject::writeToXML( QDomDocument &doc, QDomElement &header )
     XmlParse::addElement( doc, header, "Type", m_sType );
     XmlParse::addElement( doc, header, "Comment", m_sComment);
     XmlParse::addElement( doc, header, "Duration", QString("%1").arg(m_iDuration));
+    XmlParse::addElement( doc, header, "SampleRate", QString("%1").arg(m_iSampleRate));
+    XmlParse::addElement( doc, header, "Channels", QString("%1").arg(m_iChannels));
     XmlParse::addElement( doc, header, "Bitrate", QString("%1").arg(m_iBitrate));
     XmlParse::addElement( doc, header, "Length", QString("%1").arg(m_iLength) );
     XmlParse::addElement( doc, header, "TimesPlayed", QString("%1").arg(m_iTimesPlayed) );
@@ -563,6 +569,40 @@ void TrackInfoObject::setType(QString s)
     }
 }
 
+void TrackInfoObject::setSampleRate(int iSampleRate)
+{
+    m_qMutex.lock();
+    m_iSampleRate = iSampleRate;
+    m_qMutex.unlock();
+    
+}
+
+int TrackInfoObject::getSampleRate()
+{
+    m_qMutex.lock();
+    int iSampleRate = m_iSampleRate;
+    m_qMutex.unlock();
+
+    return iSampleRate;
+}
+
+void TrackInfoObject::setChannels(int iChannels)
+{
+    m_qMutex.lock();
+    m_iChannels = iChannels;
+    m_qMutex.unlock();
+    
+}
+
+int TrackInfoObject::getChannels()
+{
+    m_qMutex.lock();
+    int iChannels = m_iChannels;
+    m_qMutex.unlock();
+
+    return iChannels;
+}
+
 int TrackInfoObject::getLength()
 {
     m_qMutex.lock();
@@ -663,24 +703,23 @@ QMemArray<char> *TrackInfoObject::getWaveSummary()
     return pWaveSummary;
 }
 
-QValueList<int> *TrackInfoObject::getSegmentationSummary()
+QValueList<long> *TrackInfoObject::getSegmentationSummary()
 {
     m_qMutex.lock();
-    QValueList<int> *pSegmentationSummary = m_pSegmentation;
+    QValueList<long> *pSegmentationSummary = m_pSegmentation;
     m_qMutex.unlock();
 
     return pSegmentationSummary;
 }
 
-void TrackInfoObject::setWaveSummary(QMemArray<char> *pWave, QValueList<int> *pSegmentation)
+void TrackInfoObject::setWaveSummary(QMemArray<char> *pWave, QValueList<long> *pSegmentation)
 {
     m_qMutex.lock();
     m_pWave = pWave;
     m_pSegmentation = pSegmentation;
     m_qMutex.unlock();
 
-    if (m_pOverviewWidget)
-        m_pOverviewWidget->setData(pWave, pSegmentation, getDuration());
+    setOverviewWidget(m_pOverviewWidget);
 }
 
 TrackInfoObject *TrackInfoObject::getNext()
@@ -699,5 +738,5 @@ void TrackInfoObject::setOverviewWidget(WOverview *p)
     m_pOverviewWidget = p;
 
     if (m_pOverviewWidget)
-        p->setData(getWaveSummary(), getSegmentationSummary(), getDuration());
+        p->setData(getWaveSummary(), getSegmentationSummary(), getDuration()*getSampleRate()*getChannels());
 }

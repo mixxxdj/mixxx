@@ -496,6 +496,9 @@ int SoundSourceMp3::ParseHeader(TrackInfoObject *Track)
 //            qDebug("MAD: Count frames to get file duration!");
     }
 
+    Track->setSampleRate(Header.samplerate);
+    Track->setChannels(MAD_NCHANNELS(&Header));
+    
     mad_stream_finish(&Stream);
     delete [] inputbuf;
     file.close();

@@ -18,7 +18,7 @@ WOverview::WOverview(QWidget *pParent, const char *pName) : WWidget(pParent, pNa
 {
     m_pWaveformSummary = 0;
     m_pSegmentation = 0;
-    m_iDuration = 0;
+    m_liSampleDuration = 0;
     m_iPos = 0;
     m_iVirtualPos = -1;
     m_bDrag = false;
@@ -90,11 +90,11 @@ void WOverview::setVirtualPos(double fValue)
     }
 }
 
-void WOverview::setData(QMemArray<char> *pWaveformSummary, QValueList<int> *pSegmentation, int iDuration)
+void WOverview::setData(QMemArray<char> *pWaveformSummary, QValueList<long> *pSegmentation, long liSampleDuration)
 {
     m_pWaveformSummary = pWaveformSummary;
     m_pSegmentation = pSegmentation;
-    m_iDuration = iDuration;
+    m_liSampleDuration = liSampleDuration;
 
     if (!pWaveformSummary || !pWaveformSummary->size())
         return;
@@ -105,89 +105,90 @@ void WOverview::setData(QMemArray<char> *pWaveformSummary, QValueList<int> *pSeg
     // Erase background
     paint.eraseRect(rect());
 
-        float yscale = ((float)height()/2.)/128.; //32768.;
-        float xscale = (float)m_pWaveformSummary->size()/width();
+    float yscale = ((float)height()/2.)/128.; //32768.;
+    float xscale = (float)m_pWaveformSummary->size()/width();
 
-        float hfcMax = 0.;
-        for (unsigned int i=2; i<m_pWaveformSummary->size(); i=i+3)
+    float hfcMax = 0.;
+    for (unsigned int i=2; i<m_pWaveformSummary->size(); i=i+3)
+    {
+        if (m_pWaveformSummary->at(i)+128>hfcMax)
+            hfcMax = m_pWaveformSummary->at(i)+128;
+    }
+
+    // Draw waveform using hfc to determine color
+    for (int i=0; i<width(); ++i)
+    {
+        const QColor kqLightColor("#2bff00");
+        const QColor kqDarkColor("#1ba200");
+
+        float fMin = 0.;
+        float fMax = 0.;
+
+        if ((unsigned int)width()>m_pWaveformSummary->size()/3)
         {
-            if (m_pWaveformSummary->at(i)+128>hfcMax)
-                hfcMax = m_pWaveformSummary->at(i)+128;
+            float pos = (float)(m_pWaveformSummary->size()-3)/3.*(float)i/(float)width();
+            int idx = (int)floor(pos);
+            float fraction = pos-(float)idx;
+
+            char v1, v2;
+
+            float hfc = (m_pWaveformSummary->at(idx*3+2)+128.)/hfcMax;
+
+            int r = kqDarkColor.red()  + (int)((kqLightColor.red()-kqDarkColor.red())*hfc);
+            int g = kqDarkColor.green()+ (int)((kqLightColor.green()-kqDarkColor.green())*hfc);
+            int b = kqDarkColor.blue() + (int)((kqLightColor.blue()-kqDarkColor.blue())*hfc);
+            paint.setPen(QColor(r,g,b));
+
+            v1 = m_pWaveformSummary->at(idx*3);
+            v2 = m_pWaveformSummary->at((idx+1)*3);
+            fMin = v1 + (v2-v1)*fraction;
+
+            v1 = m_pWaveformSummary->at(idx*3+1);
+            v2 = m_pWaveformSummary->at((idx+1)*3+1);
+            fMax = v1 + (v2-v1)*fraction;
         }
-
-        // Draw waveform using hfc to determine color
-        for (int i=0; i<width(); ++i)
+        else
         {
-            const QColor kqLightColor("#2bff00");
-            const QColor kqDarkColor("#1ba200");
+            int idxStart = (int)(i*xscale);
+            while (idxStart%3!=0 && idxStart>0)
+                idxStart--;
 
-            float fMin = 0.;
-            float fMax = 0.;
+            int idxEnd = (int)min((i+1)*xscale,m_pWaveformSummary->size());
+            while (idxEnd%3!=0 && idxEnd>0)
+                idxEnd--;
 
-            if ((unsigned int)width()>m_pWaveformSummary->size()/3)
+            for (int j=idxStart; j<idxEnd; j+=3)
             {
-                float pos = (float)(m_pWaveformSummary->size()-3)/3.*(float)i/(float)width();
-                int idx = (int)floor(pos);
-                float fraction = pos-(float)idx;
-
-                char v1, v2;
-
-                float hfc = (m_pWaveformSummary->at(idx*3+2)+128.)/hfcMax;
-//                  qDebug("hfc %f",hfc);
-
-                int r = kqDarkColor.red()  + (int)((kqLightColor.red()-kqDarkColor.red())*hfc);
-                int g = kqDarkColor.green()+ (int)((kqLightColor.green()-kqDarkColor.green())*hfc);
-                int b = kqDarkColor.blue() + (int)((kqLightColor.blue()-kqDarkColor.blue())*hfc);
-                paint.setPen(QColor(r,g,b));
-
-                v1 = m_pWaveformSummary->at(idx*3);
-                v2 = m_pWaveformSummary->at((idx+1)*3);
-                fMin = v1 + (v2-v1)*fraction;
-
-                v1 = m_pWaveformSummary->at(idx*3+1);
-                v2 = m_pWaveformSummary->at((idx+1)*3+1);
-                fMax = v1 + (v2-v1)*fraction;
+                fMin += m_pWaveformSummary->at(j);
+            fMax += m_pWaveformSummary->at(j+1);
             }
-            else
-            {
-                int idxStart = (int)(i*xscale);
-                while (idxStart%3!=0 && idxStart>0)
-                    idxStart--;
+            fMin /= ((idxEnd-idxStart)/2.);
+            fMax /= ((idxEnd-idxStart)/2.);
 
-                int idxEnd = (int)min((i+1)*xscale,m_pWaveformSummary->size());
-                while (idxEnd%3!=0 && idxEnd>0)
-                    idxEnd--;
+            float hfc = (m_pWaveformSummary->at(idxStart+2)+128.)/hfcMax;
+            //qDebug("hfc %f",hfc);
+            int r = kqDarkColor.red()  + (int)((kqLightColor.red()-kqDarkColor.red())*hfc);
+            int g = kqDarkColor.green()+ (int)((kqLightColor.green()-kqDarkColor.green())*hfc);
+            int b = kqDarkColor.blue() + (int)((kqLightColor.blue()-kqDarkColor.blue())*hfc);
+            paint.setPen(QColor(r,g,b));
 
-                for (int j=idxStart; j<idxEnd; j+=3)
-                {
-                    fMin += m_pWaveformSummary->at(j);
-                fMax += m_pWaveformSummary->at(j+1);
-                }
-                fMin /= ((idxEnd-idxStart)/2.);
-                fMax /= ((idxEnd-idxStart)/2.);
+            //qDebug("min %f, max %f", fMin, fMax);
 
-                float hfc = (m_pWaveformSummary->at(idxStart+2)+128.)/hfcMax;
-//                  qDebug("hfc %f",hfc);
-                int r = kqDarkColor.red()  + (int)((kqLightColor.red()-kqDarkColor.red())*hfc);
-                int g = kqDarkColor.green()+ (int)((kqLightColor.green()-kqDarkColor.green())*hfc);
-                int b = kqDarkColor.blue() + (int)((kqLightColor.blue()-kqDarkColor.blue())*hfc);
-                paint.setPen(QColor(r,g,b));
-
-                //qDebug("min %f, max %f", fMin, fMax);
-
-            }
-            paint.drawLine(i, height()/2-(int)(fMin*yscale), i, height()/2-(int)(fMax*yscale));
         }
+        paint.drawLine(i, height()/2-(int)(fMin*yscale), i, height()/2-(int)(fMax*yscale));
+    }
 
-        // Draw segmentation points
-        paint.setPen(QColor("#FF9900"));
-        if (m_pSegmentation)
+    // Draw segmentation points
+    paint.setPen(QColor("#FF9900"));
+    if (m_pSegmentation)
+    {
+        for (unsigned int i=0; i<m_pSegmentation->size(); ++i)
         {
-            qDebug("size %i",m_pSegmentation->size());
-            for (unsigned int i=0; i<m_pSegmentation->size(); ++i)
-                paint.drawLine((int)(((*m_pSegmentation->at(i))/(float)m_iDuration)*width()), 0,
-                               (int)(((*m_pSegmentation->at(i))/(float)m_iDuration)*width()), height());
+            int point = (int)((double)width()*((double)(*m_pSegmentation->at(i))/(double)m_liSampleDuration));
+            qDebug("i %i, seg %li, dur %li, point %i, width %i", i, (*m_pSegmentation->at(i)), m_liSampleDuration, point,width());
+            paint.drawLine(point, 0, point, height());
         }
+    }
 
     paint.end();
 

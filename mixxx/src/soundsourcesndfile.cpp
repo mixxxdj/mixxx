@@ -119,8 +119,10 @@ int SoundSourceSndFile::ParseHeader( TrackInfoObject *Track )
     }
 
     Track->setType(location.section(".",-1).lower());
-    Track->setBitrate( (int)(info.samplerate*32./1000.) );
-    Track->setDuration( info.frames/info.samplerate );
+    Track->setBitrate((int)(info.samplerate*32./1000.));
+    Track->setDuration(info.frames/info.samplerate);
+    Track->setSampleRate(info.samplerate);
+    Track->setChannels(info.channels);
 
     sf_close( fh );
     return OK;
@@ -190,7 +192,7 @@ QValueList<long> *SoundSourceSndFile::getCuePoints()
         long cuepoint;
         fread(&cuepoint, sizeof(long), 1, fh);
     
-        pCueList->append(cuepoint);
+        pCueList->append(cuepoint*channels);
     }
         
     return pCueList;

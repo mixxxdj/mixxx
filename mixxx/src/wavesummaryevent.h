@@ -29,16 +29,17 @@
   *
   */
 
-class WaveSummaryEvent : public QCustomEvent {
+class WaveSummaryEvent : public QCustomEvent 
+{
 public:
-    WaveSummaryEvent(QMemArray<char> *pWave, QValueList<int> *pSegmentation);
+    WaveSummaryEvent(QMemArray<char> *pWave, QValueList<long> *pSegmentation);
     ~WaveSummaryEvent();
     QMemArray<char> *wave() const;
-    QValueList<int> *segmentation() const;
+    QValueList<long> *segmentation() const;
 
 private:
     QMemArray<char> *m_pWave;
-    QValueList<int> *m_pSegmentation;
+    QValueList<long> *m_pSegmentation;
 };
 
 #endif

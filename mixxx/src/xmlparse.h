@@ -31,14 +31,15 @@ public:
     static int selectNodeInt(const QDomNode &nodeHeader, const QString sNode);
     static float selectNodeFloat(const QDomNode &nodeHeader, const QString sNode);
     static QString selectNodeQString(const QDomNode &nodeHeader, const QString sNode);
+    static QMemArray<long> *selectNodeLongArray(const QDomNode &nodeHeader, const QString sNode);
     static QMemArray<char> *selectNodeCharArray(const QDomNode &nodeHeader, const QString sNode);
-    static QValueList<int> *selectNodeIntList(const QDomNode &nodeHeader, const QString sNode);
+    static QValueList<long> *selectNodeLongList(const QDomNode &nodeHeader, const QString sNode);
     /** Add a node. Used to write xml document */
     static QDomElement addElement(QDomDocument &, QDomElement &, QString, QString);
-    /** Add a binary node, char encoding. Used to write xml document */
+    /** Add a binary node, long ints encoded as chars. Used to write xml document */
+    static QDomElement addElement(QDomDocument &, QDomElement &, QString, QValueList<long> *pData);
+    /** Add a binary node of chars. Used to write xml document */
     static QDomElement addElement(QDomDocument &, QDomElement &, QString, QMemArray<char> *pData);
-    /** Add a binary node, int encoding. Used to write xml document */
-    static QDomElement addElement(QDomDocument &, QDomElement &, QString, QValueList<int> *pData);
 };
 
 #endif

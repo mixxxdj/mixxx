@@ -29,7 +29,7 @@ public:
     WOverview(QWidget *pParent=0, const char *pName=0);
     ~WOverview();
     void setup(QDomNode node);
-    void setData(QMemArray<char> *pWaveformSummary, QValueList<int> *pSegmentation, int iDuration);
+    void setData(QMemArray<char> *pWaveformSummary, QValueList<long> *pSegmentation, long liSampleDuration);
     void mouseMoveEvent(QMouseEvent *e);
     void mouseReleaseEvent(QMouseEvent *e);
     void mousePressEvent(QMouseEvent *e);
@@ -42,17 +42,15 @@ protected:
     /** Pointer to array containing waveform summary */
     QMemArray<char> *m_pWaveformSummary;
     /** Pointer to list of segmentation points */
-    QValueList<int> *m_pSegmentation;
-    /** Duration of current track in seconds */
-    int m_iDuration;
+    QValueList<long> *m_pSegmentation;
+    /** Duration of current track in samples */
+    int m_liSampleDuration;
     /** True if slider is dragged. Only used when m_bEventWhileDrag is false */
     bool m_bDrag;
     /** Internal storage of slider position in pixels */
     int m_iPos, m_iVirtualPos, m_iStartMousePos;
     /** Pointer to screen buffer */
     QPixmap *m_pScreenBuffer;
-
-
 };
 
 #endif
