@@ -1,0 +1,3702 @@
+<DM2MIDI version="4">
+<scratch type="scratch_t" i="0">
+<scratch type="parameter_t" i="0">
+<type type="string" i="0">single</type>
+<vchannel type="unsigned7" i="0">0</vchannel>
+<mode type="string" i="0">ctrl</mode>
+<controller type="unsigned7" i="0">1</controller>
+<minvalue type="unsigned7" i="0">0</minvalue>
+<maxvalue type="unsigned7" i="0">127</maxvalue>
+<inc type="bool" i="0">true</inc>
+<multiname type="string" i="0">L scratch</multiname>
+<n_multi type="unsigned7" i="0">0</n_multi>
+</scratch>
+<showlight type="bool" i="0">false</showlight>
+<invert type="bool" i="0">false</invert>
+<mode type="string" i="0">limit</mode>
+<sens type="string" i="0">normal</sens>
+<enable_relevent type="bool" i="0">false</enable_relevent>
+<relevent type="button_t" i="0">
+<type type="string" i="0">single</type>
+<vchannel type="unsigned7" i="0">0</vchannel>
+<mode type="string" i="0">ctrl</mode>
+<controller type="unsigned7" i="0">12</controller>
+<onvalue type="unsigned7" i="0">0</onvalue>
+<offvalue type="unsigned7" i="0">0</offvalue>
+<key type="unsigned7" i="0">42</key>
+<program type="unsigned7" i="0">0</program>
+<midimsg type="string" i="0">start</midimsg>
+<vcfrom type="unsigned7" i="0">0</vcfrom>
+<cto type="unsigned7" i="0">0</cto>
+<eventname type="string" i="0"/>
+<eventtarget type="string" i="0"/>
+<multiname type="string" i="0">L scratch rel</multiname>
+<multimode type="string" i="0">one</multimode>
+<n_multi type="unsigned7" i="0">0</n_multi>
+</relevent>
+<rel_delay type="int" i="0">20</rel_delay>
+</scratch>
+<scratch type="scratch_t" i="1">
+<scratch type="parameter_t" i="0">
+<type type="string" i="0">single</type>
+<vchannel type="unsigned7" i="0">0</vchannel>
+<mode type="string" i="0">ctrl</mode>
+<controller type="unsigned7" i="0">3</controller>
+<minvalue type="unsigned7" i="0">0</minvalue>
+<maxvalue type="unsigned7" i="0">127</maxvalue>
+<inc type="bool" i="0">true</inc>
+<multiname type="string" i="0">R scratch</multiname>
+<n_multi type="unsigned7" i="0">0</n_multi>
+</scratch>
+<showlight type="bool" i="0">false</showlight>
+<invert type="bool" i="0">false</invert>
+<mode type="string" i="0">limit</mode>
+<sens type="string" i="0">normal</sens>
+<enable_relevent type="bool" i="0">false</enable_relevent>
+<relevent type="button_t" i="0">
+<type type="string" i="0">single</type>
+<vchannel type="unsigned7" i="0">0</vchannel>
+<mode type="string" i="0">ctrl</mode>
+<controller type="unsigned7" i="0">13</controller>
+<onvalue type="unsigned7" i="0">0</onvalue>
+<offvalue type="unsigned7" i="0">0</offvalue>
+<key type="unsigned7" i="0">43</key>
+<program type="unsigned7" i="0">0</program>
+<midimsg type="string" i="0">start</midimsg>
+<vcfrom type="unsigned7" i="0">0</vcfrom>
+<cto type="unsigned7" i="0">0</cto>
+<eventname type="string" i="0"/>
+<eventtarget type="string" i="0"/>
+<multiname type="string" i="0">R scratch rel</multiname>
+<multimode type="string" i="0">one</multimode>
+<n_multi type="unsigned7" i="0">0</n_multi>
+</relevent>
+<rel_delay type="int" i="0">20</rel_delay>
+</scratch>
+<warp type="warp_t" i="0">
+<button type="button_t" i="0">
+<type type="string" i="0">single</type>
+<vchannel type="unsigned7" i="0">0</vchannel>
+<mode type="string" i="0">key</mode>
+<controller type="unsigned7" i="0">20</controller>
+<onvalue type="unsigned7" i="0">127</onvalue>
+<offvalue type="unsigned7" i="0">0</offvalue>
+<key type="unsigned7" i="0">52</key>
+<program type="unsigned7" i="0">0</program>
+<midimsg type="string" i="0">start</midimsg>
+<vcfrom type="unsigned7" i="0">0</vcfrom>
+<cto type="unsigned7" i="0">0</cto>
+<eventname type="string" i="0"/>
+<eventtarget type="string" i="0"/>
+<multiname type="string" i="0">warp 1</multiname>
+<multimode type="string" i="0">all</multimode>
+<n_multi type="unsigned7" i="0">2</n_multi>
+<multi type="multievent_t" i="0">
+<name type="string" i="0">warp bank 1</name>
+<button type="button_t" i="0">
+<type type="string" i="0">single</type>
+<vchannel type="unsigned7" i="0">0</vchannel>
+<mode type="string" i="0">event</mode>
+<controller type="unsigned7" i="0">1</controller>
+<onvalue type="unsigned7" i="0">127</onvalue>
+<offvalue type="unsigned7" i="0">0</offvalue>
+<key type="unsigned7" i="0">1</key>
+<program type="unsigned7" i="0">0</program>
+<midimsg type="string" i="0">start</midimsg>
+<vcfrom type="unsigned7" i="0">0</vcfrom>
+<cto type="unsigned7" i="0">0</cto>
+<eventname type="string" i="0">joy X</eventname>
+<eventtarget type="string" i="0">bank 1</eventtarget>
+<multiname type="string" i="0"/>
+<multimode type="string" i="0">one</multimode>
+<n_multi type="unsigned7" i="0">0</n_multi>
+</button>
+</multi>
+<multi type="multievent_t" i="1">
+<name type="string" i="0">warp bank 1</name>
+<button type="button_t" i="0">
+<type type="string" i="0">single</type>
+<vchannel type="unsigned7" i="0">0</vchannel>
+<mode type="string" i="0">event</mode>
+<controller type="unsigned7" i="0">1</controller>
+<onvalue type="unsigned7" i="0">127</onvalue>
+<offvalue type="unsigned7" i="0">0</offvalue>
+<key type="unsigned7" i="0">1</key>
+<program type="unsigned7" i="0">0</program>
+<midimsg type="string" i="0">start</midimsg>
+<vcfrom type="unsigned7" i="0">0</vcfrom>
+<cto type="unsigned7" i="0">0</cto>
+<eventname type="string" i="0">joy Y</eventname>
+<eventtarget type="string" i="0">bank 1</eventtarget>
+<multiname type="string" i="0"/>
+<multimode type="string" i="0">one</multimode>
+<n_multi type="unsigned7" i="0">0</n_multi>
+</button>
+</multi>
+</button>
+<button type="button_t" i="1">
+<type type="string" i="0">multi</type>
+<vchannel type="unsigned7" i="0">0</vchannel>
+<mode type="string" i="0">key</mode>
+<controller type="unsigned7" i="0">21</controller>
+<onvalue type="unsigned7" i="0">127</onvalue>
+<offvalue type="unsigned7" i="0">0</offvalue>
+<key type="unsigned7" i="0">41</key>
+<program type="unsigned7" i="0">0</program>
+<midimsg type="string" i="0">start</midimsg>
+<vcfrom type="unsigned7" i="0">0</vcfrom>
+<cto type="unsigned7" i="0">0</cto>
+<eventname type="string" i="0"/>
+<eventtarget type="string" i="0"/>
+<multiname type="string" i="0">warp 2</multiname>
+<multimode type="string" i="0">all</multimode>
+<n_multi type="unsigned7" i="0">2</n_multi>
+<multi type="multievent_t" i="0">
+<name type="string" i="0">warp bank 2</name>
+<button type="button_t" i="0">
+<type type="string" i="0">single</type>
+<vchannel type="unsigned7" i="0">0</vchannel>
+<mode type="string" i="0">event</mode>
+<controller type="unsigned7" i="0">1</controller>
+<onvalue type="unsigned7" i="0">127</onvalue>
+<offvalue type="unsigned7" i="0">0</offvalue>
+<key type="unsigned7" i="0">1</key>
+<program type="unsigned7" i="0">0</program>
+<midimsg type="string" i="0">start</midimsg>
+<vcfrom type="unsigned7" i="0">0</vcfrom>
+<cto type="unsigned7" i="0">0</cto>
+<eventname type="string" i="0">joy X</eventname>
+<eventtarget type="string" i="0">bank 2</eventtarget>
+<multiname type="string" i="0"/>
+<multimode type="string" i="0">one</multimode>
+<n_multi type="unsigned7" i="0">0</n_multi>
+</button>
+</multi>
+<multi type="multievent_t" i="1">
+<name type="string" i="0">warp bank 2</name>
+<button type="button_t" i="0">
+<type type="string" i="0">single</type>
+<vchannel type="unsigned7" i="0">0</vchannel>
+<mode type="string" i="0">event</mode>
+<controller type="unsigned7" i="0">1</controller>
+<onvalue type="unsigned7" i="0">127</onvalue>
+<offvalue type="unsigned7" i="0">0</offvalue>
+<key type="unsigned7" i="0">1</key>
+<program type="unsigned7" i="0">0</program>
+<midimsg type="string" i="0">start</midimsg>
+<vcfrom type="unsigned7" i="0">0</vcfrom>
+<cto type="unsigned7" i="0">0</cto>
+<eventname type="string" i="0">joy Y</eventname>
+<eventtarget type="string" i="0">bank 2</eventtarget>
+<multiname type="string" i="0"/>
+<multimode type="string" i="0">one</multimode>
+<n_multi type="unsigned7" i="0">0</n_multi>
+</button>
+</multi>
+</button>
+<button type="button_t" i="2">
+<type type="string" i="0">single</type>
+<vchannel type="unsigned7" i="0">0</vchannel>
+<mode type="string" i="0">key</mode>
+<controller type="unsigned7" i="0">22</controller>
+<onvalue type="unsigned7" i="0">127</onvalue>
+<offvalue type="unsigned7" i="0">0</offvalue>
+<key type="unsigned7" i="0">76</key>
+<program type="unsigned7" i="0">0</program>
+<midimsg type="string" i="0">start</midimsg>
+<vcfrom type="unsigned7" i="0">0</vcfrom>
+<cto type="unsigned7" i="0">0</cto>
+<eventname type="string" i="0"/>
+<eventtarget type="string" i="0"/>
+<multiname type="string" i="0">warp 3</multiname>
+<multimode type="string" i="0">all</multimode>
+<n_multi type="unsigned7" i="0">2</n_multi>
+<multi type="multievent_t" i="0">
+<name type="string" i="0">warp bank 3</name>
+<button type="button_t" i="0">
+<type type="string" i="0">single</type>
+<vchannel type="unsigned7" i="0">0</vchannel>
+<mode type="string" i="0">event</mode>
+<controller type="unsigned7" i="0">1</controller>
+<onvalue type="unsigned7" i="0">127</onvalue>
+<offvalue type="unsigned7" i="0">0</offvalue>
+<key type="unsigned7" i="0">1</key>
+<program type="unsigned7" i="0">0</program>
+<midimsg type="string" i="0">start</midimsg>
+<vcfrom type="unsigned7" i="0">0</vcfrom>
+<cto type="unsigned7" i="0">0</cto>
+<eventname type="string" i="0">joy X</eventname>
+<eventtarget type="string" i="0">bank 3</eventtarget>
+<multiname type="string" i="0"/>
+<multimode type="string" i="0">one</multimode>
+<n_multi type="unsigned7" i="0">0</n_multi>
+</button>
+</multi>
+<multi type="multievent_t" i="1">
+<name type="string" i="0">warp bank 3</name>
+<button type="button_t" i="0">
+<type type="string" i="0">single</type>
+<vchannel type="unsigned7" i="0">0</vchannel>
+<mode type="string" i="0">event</mode>
+<controller type="unsigned7" i="0">1</controller>
+<onvalue type="unsigned7" i="0">127</onvalue>
+<offvalue type="unsigned7" i="0">0</offvalue>
+<key type="unsigned7" i="0">1</key>
+<program type="unsigned7" i="0">0</program>
+<midimsg type="string" i="0">start</midimsg>
+<vcfrom type="unsigned7" i="0">0</vcfrom>
+<cto type="unsigned7" i="0">0</cto>
+<eventname type="string" i="0">joy Y</eventname>
+<eventtarget type="string" i="0">bank 3</eventtarget>
+<multiname type="string" i="0"/>
+<multimode type="string" i="0">one</multimode>
+<n_multi type="unsigned7" i="0">0</n_multi>
+</button>
+</multi>
+</button>
+</warp>
+<playrec type="playrec_t" i="0">
+<mode type="string" i="0">playrec</mode>
+<play type="button_t" i="0">
+<type type="string" i="0">single</type>
+<vchannel type="unsigned7" i="0">0</vchannel>
+<mode type="string" i="0">key</mode>
+<controller type="unsigned7" i="0">24</controller>
+<onvalue type="unsigned7" i="0">127</onvalue>
+<offvalue type="unsigned7" i="0">0</offvalue>
+<key type="unsigned7" i="0">44</key>
+<program type="unsigned7" i="0">0</program>
+<midimsg type="string" i="0">start</midimsg>
+<vcfrom type="unsigned7" i="0">0</vcfrom>
+<cto type="unsigned7" i="0">0</cto>
+<eventname type="string" i="0"/>
+<eventtarget type="string" i="0"/>
+<multiname type="string" i="0">playevent</multiname>
+<multimode type="string" i="0">one</multimode>
+<n_multi type="unsigned7" i="0">0</n_multi>
+</play>
+<rec type="button_t" i="0">
+<type type="string" i="0">single</type>
+<vchannel type="unsigned7" i="0">0</vchannel>
+<mode type="string" i="0">key</mode>
+<controller type="unsigned7" i="0">25</controller>
+<onvalue type="unsigned7" i="0">127</onvalue>
+<offvalue type="unsigned7" i="0">0</offvalue>
+<key type="unsigned7" i="0">45</key>
+<program type="unsigned7" i="0">0</program>
+<midimsg type="string" i="0">start</midimsg>
+<vcfrom type="unsigned7" i="0">0</vcfrom>
+<cto type="unsigned7" i="0">0</cto>
+<eventname type="string" i="0"/>
+<eventtarget type="string" i="0"/>
+<multiname type="string" i="0">recevent</multiname>
+<multimode type="string" i="0">one</multimode>
+<n_multi type="unsigned7" i="0">0</n_multi>
+</rec>
+<button type="button_t" i="0">
+<type type="string" i="0">single</type>
+<vchannel type="unsigned7" i="0">0</vchannel>
+<mode type="string" i="0">key</mode>
+<controller type="unsigned7" i="0">23</controller>
+<onvalue type="unsigned7" i="0">127</onvalue>
+<offvalue type="unsigned7" i="0">0</offvalue>
+<key type="unsigned7" i="0">43</key>
+<program type="unsigned7" i="0">0</program>
+<midimsg type="string" i="0">start</midimsg>
+<vcfrom type="unsigned7" i="0">0</vcfrom>
+<cto type="unsigned7" i="0">0</cto>
+<eventname type="string" i="0"/>
+<eventtarget type="string" i="0"/>
+<multiname type="string" i="0">play</multiname>
+<multimode type="string" i="0">one</multimode>
+<n_multi type="unsigned7" i="0">0</n_multi>
+</button>
+<button type="button_t" i="1">
+<type type="string" i="0">single</type>
+<vchannel type="unsigned7" i="0">0</vchannel>
+<mode type="string" i="0">key</mode>
+<controller type="unsigned7" i="0">24</controller>
+<onvalue type="unsigned7" i="0">127</onvalue>
+<offvalue type="unsigned7" i="0">0</offvalue>
+<key type="unsigned7" i="0">44</key>
+<program type="unsigned7" i="0">0</program>
+<midimsg type="string" i="0">start</midimsg>
+<vcfrom type="unsigned7" i="0">0</vcfrom>
+<cto type="unsigned7" i="0">0</cto>
+<eventname type="string" i="0"/>
+<eventtarget type="string" i="0"/>
+<multiname type="string" i="0">stop</multiname>
+<multimode type="string" i="0">one</multimode>
+<n_multi type="unsigned7" i="0">0</n_multi>
+</button>
+<button type="button_t" i="2">
+<type type="string" i="0">single</type>
+<vchannel type="unsigned7" i="0">0</vchannel>
+<mode type="string" i="0">key</mode>
+<controller type="unsigned7" i="0">25</controller>
+<onvalue type="unsigned7" i="0">127</onvalue>
+<offvalue type="unsigned7" i="0">0</offvalue>
+<key type="unsigned7" i="0">45</key>
+<program type="unsigned7" i="0">0</program>
+<midimsg type="string" i="0">start</midimsg>
+<vcfrom type="unsigned7" i="0">0</vcfrom>
+<cto type="unsigned7" i="0">0</cto>
+<eventname type="string" i="0"/>
+<eventtarget type="string" i="0"/>
+<multiname type="string" i="0">rec</multiname>
+<multimode type="string" i="0">one</multimode>
+<n_multi type="unsigned7" i="0">0</n_multi>
+</button>
+</playrec>
+<joy type="joy_t" i="0">
+<axis type="parameter_t" i="0">
+<type type="string" i="0">multi</type>
+<vchannel type="unsigned7" i="0">0</vchannel>
+<mode type="string" i="0">bend</mode>
+<controller type="unsigned7" i="0">7</controller>
+<minvalue type="unsigned7" i="0">0</minvalue>
+<maxvalue type="unsigned7" i="0">127</maxvalue>
+<inc type="bool" i="0">false</inc>
+<multiname type="string" i="0">joy X</multiname>
+<n_multi type="unsigned7" i="0">3</n_multi>
+<multi type="multiparam_t" i="0">
+<name type="string" i="0">bank 1</name>
+<parameter type="parameter_t" i="0">
+<type type="string" i="0">single</type>
+<vchannel type="unsigned7" i="0">0</vchannel>
+<mode type="string" i="0">ctrl</mode>
+<controller type="unsigned7" i="0">7</controller>
+<minvalue type="unsigned7" i="0">0</minvalue>
+<maxvalue type="unsigned7" i="0">127</maxvalue>
+<inc type="bool" i="0">false</inc>
+<multiname type="string" i="0"/>
+<n_multi type="unsigned7" i="0">0</n_multi>
+</parameter>
+</multi>
+<multi type="multiparam_t" i="1">
+<name type="string" i="0">bank 2</name>
+<parameter type="parameter_t" i="0">
+<type type="string" i="0">single</type>
+<vchannel type="unsigned7" i="0">0</vchannel>
+<mode type="string" i="0">ctrl</mode>
+<controller type="unsigned7" i="0">8</controller>
+<minvalue type="unsigned7" i="0">0</minvalue>
+<maxvalue type="unsigned7" i="0">127</maxvalue>
+<inc type="bool" i="0">false</inc>
+<multiname type="string" i="0"/>
+<n_multi type="unsigned7" i="0">0</n_multi>
+</parameter>
+</multi>
+<multi type="multiparam_t" i="2">
+<name type="string" i="0">bank 3</name>
+<parameter type="parameter_t" i="0">
+<type type="string" i="0">single</type>
+<vchannel type="unsigned7" i="0">0</vchannel>
+<mode type="string" i="0">ctrl</mode>
+<controller type="unsigned7" i="0">9</controller>
+<minvalue type="unsigned7" i="0">0</minvalue>
+<maxvalue type="unsigned7" i="0">127</maxvalue>
+<inc type="bool" i="0">false</inc>
+<multiname type="string" i="0"/>
+<n_multi type="unsigned7" i="0">0</n_multi>
+</parameter>
+</multi>
+</axis>
+<axis type="parameter_t" i="1">
+<type type="string" i="0">multi</type>
+<vchannel type="unsigned7" i="0">0</vchannel>
+<mode type="string" i="0">ctrl</mode>
+<controller type="unsigned7" i="0">1</controller>
+<minvalue type="unsigned7" i="0">0</minvalue>
+<maxvalue type="unsigned7" i="0">127</maxvalue>
+<inc type="bool" i="0">false</inc>
+<multiname type="string" i="0">joy Y</multiname>
+<n_multi type="unsigned7" i="0">3</n_multi>
+<multi type="multiparam_t" i="0">
+<name type="string" i="0">bank 1</name>
+<parameter type="parameter_t" i="0">
+<type type="string" i="0">single</type>
+<vchannel type="unsigned7" i="0">0</vchannel>
+<mode type="string" i="0">ctrl</mode>
+<controller type="unsigned7" i="0">1</controller>
+<minvalue type="unsigned7" i="0">0</minvalue>
+<maxvalue type="unsigned7" i="0">127</maxvalue>
+<inc type="bool" i="0">false</inc>
+<multiname type="string" i="0"/>
+<n_multi type="unsigned7" i="0">0</n_multi>
+</parameter>
+</multi>
+<multi type="multiparam_t" i="1">
+<name type="string" i="0">bank 2</name>
+<parameter type="parameter_t" i="0">
+<type type="string" i="0">single</type>
+<vchannel type="unsigned7" i="0">0</vchannel>
+<mode type="string" i="0">ctrl</mode>
+<controller type="unsigned7" i="0">2</controller>
+<minvalue type="unsigned7" i="0">0</minvalue>
+<maxvalue type="unsigned7" i="0">127</maxvalue>
+<inc type="bool" i="0">false</inc>
+<multiname type="string" i="0"/>
+<n_multi type="unsigned7" i="0">0</n_multi>
+</parameter>
+</multi>
+<multi type="multiparam_t" i="2">
+<name type="string" i="0">bank 3</name>
+<parameter type="parameter_t" i="0">
+<type type="string" i="0">single</type>
+<vchannel type="unsigned7" i="0">0</vchannel>
+<mode type="string" i="0">ctrl</mode>
+<controller type="unsigned7" i="0">3</controller>
+<minvalue type="unsigned7" i="0">0</minvalue>
+<maxvalue type="unsigned7" i="0">127</maxvalue>
+<inc type="bool" i="0">false</inc>
+<multiname type="string" i="0"/>
+<n_multi type="unsigned7" i="0">0</n_multi>
+</parameter>
+</multi>
+</axis>
+</joy>
+<fader type="fader_t" i="0">
+<fader type="parameter_t" i="0">
+<type type="string" i="0">single</type>
+<vchannel type="unsigned7" i="0">0</vchannel>
+<mode type="string" i="0">ctrl</mode>
+<controller type="unsigned7" i="0">2</controller>
+<minvalue type="unsigned7" i="0">0</minvalue>
+<maxvalue type="unsigned7" i="0">127</maxvalue>
+<inc type="bool" i="0">false</inc>
+<multiname type="string" i="0">Fader</multiname>
+<n_multi type="unsigned7" i="0">0</n_multi>
+</fader>
+<mode type="string" i="0">trafo</mode>
+<a type="button_t" i="0">
+<type type="string" i="0">single</type>
+<vchannel type="unsigned7" i="0">0</vchannel>
+<mode type="string" i="0">key</mode>
+<controller type="unsigned7" i="0">14</controller>
+<onvalue type="unsigned7" i="0">127</onvalue>
+<offvalue type="unsigned7" i="0">0</offvalue>
+<key type="unsigned7" i="0">38</key>
+<program type="unsigned7" i="0">0</program>
+<midimsg type="string" i="0">start</midimsg>
+<vcfrom type="unsigned7" i="0">0</vcfrom>
+<cto type="unsigned7" i="0">0</cto>
+<eventname type="string" i="0"/>
+<eventtarget type="string" i="0"/>
+<multiname type="string" i="0">fader A</multiname>
+<multimode type="string" i="0">one</multimode>
+<n_multi type="unsigned7" i="0">0</n_multi>
+</a>
+<b type="button_t" i="0">
+<type type="string" i="0">single</type>
+<vchannel type="unsigned7" i="0">0</vchannel>
+<mode type="string" i="0">key</mode>
+<controller type="unsigned7" i="0">15</controller>
+<onvalue type="unsigned7" i="0">127</onvalue>
+<offvalue type="unsigned7" i="0">0</offvalue>
+<key type="unsigned7" i="0">39</key>
+<program type="unsigned7" i="0">0</program>
+<midimsg type="string" i="0">start</midimsg>
+<vcfrom type="unsigned7" i="0">0</vcfrom>
+<cto type="unsigned7" i="0">0</cto>
+<eventname type="string" i="0"/>
+<eventtarget type="string" i="0"/>
+<multiname type="string" i="0">fader B</multiname>
+<multimode type="string" i="0">one</multimode>
+<n_multi type="unsigned7" i="0">0</n_multi>
+</b>
+</fader>
+<tracks type="track_t" i="0">
+<mode type="string" i="0">button</mode>
+<track type="button_t" i="0">
+<type type="string" i="0">single</type>
+<vchannel type="unsigned7" i="0">0</vchannel>
+<mode type="string" i="0">key</mode>
+<controller type="unsigned7" i="0">64</controller>
+<onvalue type="unsigned7" i="0">127</onvalue>
+<offvalue type="unsigned7" i="0">0</offvalue>
+<key type="unsigned7" i="0">54</key>
+<program type="unsigned7" i="0">0</program>
+<midimsg type="string" i="0">start</midimsg>
+<vcfrom type="unsigned7" i="0">0</vcfrom>
+<cto type="unsigned7" i="0">0</cto>
+<eventname type="string" i="0"/>
+<eventtarget type="string" i="0"/>
+<multiname type="string" i="0">L upper-left</multiname>
+<multimode type="string" i="0">one</multimode>
+<n_multi type="unsigned7" i="0">4</n_multi>
+<multi type="multievent_t" i="0">
+<name type="string" i="0">bank 1</name>
+<button type="button_t" i="0">
+<type type="string" i="0">single</type>
+<vchannel type="unsigned7" i="0">0</vchannel>
+<mode type="string" i="0">key</mode>
+<controller type="unsigned7" i="0">64</controller>
+<onvalue type="unsigned7" i="0">127</onvalue>
+<offvalue type="unsigned7" i="0">0</offvalue>
+<key type="unsigned7" i="0">60</key>
+<program type="unsigned7" i="0">0</program>
+<midimsg type="string" i="0">start</midimsg>
+<vcfrom type="unsigned7" i="0">0</vcfrom>
+<cto type="unsigned7" i="0">0</cto>
+<eventname type="string" i="0"/>
+<eventtarget type="string" i="0"/>
+<multiname type="string" i="0"/>
+<multimode type="string" i="0">one</multimode>
+<n_multi type="unsigned7" i="0">0</n_multi>
+</button>
+</multi>
+<multi type="multievent_t" i="1">
+<name type="string" i="0">bank 2</name>
+<button type="button_t" i="0">
+<type type="string" i="0">single</type>
+<vchannel type="unsigned7" i="0">0</vchannel>
+<mode type="string" i="0">key</mode>
+<controller type="unsigned7" i="0">80</controller>
+<onvalue type="unsigned7" i="0">127</onvalue>
+<offvalue type="unsigned7" i="0">0</offvalue>
+<key type="unsigned7" i="0">76</key>
+<program type="unsigned7" i="0">0</program>
+<midimsg type="string" i="0">start</midimsg>
+<vcfrom type="unsigned7" i="0">0</vcfrom>
+<cto type="unsigned7" i="0">0</cto>
+<eventname type="string" i="0"/>
+<eventtarget type="string" i="0"/>
+<multiname type="string" i="0"/>
+<multimode type="string" i="0">one</multimode>
+<n_multi type="unsigned7" i="0">0</n_multi>
+</button>
+</multi>
+<multi type="multievent_t" i="2">
+<name type="string" i="0">bank 3</name>
+<button type="button_t" i="0">
+<type type="string" i="0">single</type>
+<vchannel type="unsigned7" i="0">0</vchannel>
+<mode type="string" i="0">key</mode>
+<controller type="unsigned7" i="0">96</controller>
+<onvalue type="unsigned7" i="0">127</onvalue>
+<offvalue type="unsigned7" i="0">0</offvalue>
+<key type="unsigned7" i="0">92</key>
+<program type="unsigned7" i="0">0</program>
+<midimsg type="string" i="0">start</midimsg>
+<vcfrom type="unsigned7" i="0">0</vcfrom>
+<cto type="unsigned7" i="0">0</cto>
+<eventname type="string" i="0"/>
+<eventtarget type="string" i="0"/>
+<multiname type="string" i="0"/>
+<multimode type="string" i="0">one</multimode>
+<n_multi type="unsigned7" i="0">0</n_multi>
+</button>
+</multi>
+<multi type="multievent_t" i="3">
+<name type="string" i="0">bank 4</name>
+<button type="button_t" i="0">
+<type type="string" i="0">single</type>
+<vchannel type="unsigned7" i="0">0</vchannel>
+<mode type="string" i="0">key</mode>
+<controller type="unsigned7" i="0">112</controller>
+<onvalue type="unsigned7" i="0">127</onvalue>
+<offvalue type="unsigned7" i="0">0</offvalue>
+<key type="unsigned7" i="0">108</key>
+<program type="unsigned7" i="0">0</program>
+<midimsg type="string" i="0">start</midimsg>
+<vcfrom type="unsigned7" i="0">0</vcfrom>
+<cto type="unsigned7" i="0">0</cto>
+<eventname type="string" i="0"/>
+<eventtarget type="string" i="0"/>
+<multiname type="string" i="0"/>
+<multimode type="string" i="0">one</multimode>
+<n_multi type="unsigned7" i="0">0</n_multi>
+</button>
+</multi>
+</track>
+<track type="button_t" i="1">
+<type type="string" i="0">single</type>
+<vchannel type="unsigned7" i="0">0</vchannel>
+<mode type="string" i="0">key</mode>
+<controller type="unsigned7" i="0">65</controller>
+<onvalue type="unsigned7" i="0">127</onvalue>
+<offvalue type="unsigned7" i="0">0</offvalue>
+<key type="unsigned7" i="0">38</key>
+<program type="unsigned7" i="0">0</program>
+<midimsg type="string" i="0">start</midimsg>
+<vcfrom type="unsigned7" i="0">0</vcfrom>
+<cto type="unsigned7" i="0">0</cto>
+<eventname type="string" i="0"/>
+<eventtarget type="string" i="0"/>
+<multiname type="string" i="0">L left</multiname>
+<multimode type="string" i="0">one</multimode>
+<n_multi type="unsigned7" i="0">4</n_multi>
+<multi type="multievent_t" i="0">
+<name type="string" i="0">bank 1</name>
+<button type="button_t" i="0">
+<type type="string" i="0">single</type>
+<vchannel type="unsigned7" i="0">0</vchannel>
+<mode type="string" i="0">key</mode>
+<controller type="unsigned7" i="0">65</controller>
+<onvalue type="unsigned7" i="0">127</onvalue>
+<offvalue type="unsigned7" i="0">0</offvalue>
+<key type="unsigned7" i="0">61</key>
+<program type="unsigned7" i="0">0</program>
+<midimsg type="string" i="0">start</midimsg>
+<vcfrom type="unsigned7" i="0">0</vcfrom>
+<cto type="unsigned7" i="0">0</cto>
+<eventname type="string" i="0"/>
+<eventtarget type="string" i="0"/>
+<multiname type="string" i="0"/>
+<multimode type="string" i="0">one</multimode>
+<n_multi type="unsigned7" i="0">0</n_multi>
+</button>
+</multi>
+<multi type="multievent_t" i="1">
+<name type="string" i="0">bank 2</name>
+<button type="button_t" i="0">
+<type type="string" i="0">single</type>
+<vchannel type="unsigned7" i="0">0</vchannel>
+<mode type="string" i="0">key</mode>
+<controller type="unsigned7" i="0">81</controller>
+<onvalue type="unsigned7" i="0">127</onvalue>
+<offvalue type="unsigned7" i="0">0</offvalue>
+<key type="unsigned7" i="0">77</key>
+<program type="unsigned7" i="0">0</program>
+<midimsg type="string" i="0">start</midimsg>
+<vcfrom type="unsigned7" i="0">0</vcfrom>
+<cto type="unsigned7" i="0">0</cto>
+<eventname type="string" i="0"/>
+<eventtarget type="string" i="0"/>
+<multiname type="string" i="0"/>
+<multimode type="string" i="0">one</multimode>
+<n_multi type="unsigned7" i="0">0</n_multi>
+</button>
+</multi>
+<multi type="multievent_t" i="2">
+<name type="string" i="0">bank 3</name>
+<button type="button_t" i="0">
+<type type="string" i="0">single</type>
+<vchannel type="unsigned7" i="0">0</vchannel>
+<mode type="string" i="0">key</mode>
+<controller type="unsigned7" i="0">97</controller>
+<onvalue type="unsigned7" i="0">127</onvalue>
+<offvalue type="unsigned7" i="0">0</offvalue>
+<key type="unsigned7" i="0">93</key>
+<program type="unsigned7" i="0">0</program>
+<midimsg type="string" i="0">start</midimsg>
+<vcfrom type="unsigned7" i="0">0</vcfrom>
+<cto type="unsigned7" i="0">0</cto>
+<eventname type="string" i="0"/>
+<eventtarget type="string" i="0"/>
+<multiname type="string" i="0"/>
+<multimode type="string" i="0">one</multimode>
+<n_multi type="unsigned7" i="0">0</n_multi>
+</button>
+</multi>
+<multi type="multievent_t" i="3">
+<name type="string" i="0">bank 4</name>
+<button type="button_t" i="0">
+<type type="string" i="0">single</type>
+<vchannel type="unsigned7" i="0">0</vchannel>
+<mode type="string" i="0">key</mode>
+<controller type="unsigned7" i="0">113</controller>
+<onvalue type="unsigned7" i="0">127</onvalue>
+<offvalue type="unsigned7" i="0">0</offvalue>
+<key type="unsigned7" i="0">109</key>
+<program type="unsigned7" i="0">0</program>
+<midimsg type="string" i="0">start</midimsg>
+<vcfrom type="unsigned7" i="0">0</vcfrom>
+<cto type="unsigned7" i="0">0</cto>
+<eventname type="string" i="0"/>
+<eventtarget type="string" i="0"/>
+<multiname type="string" i="0"/>
+<multimode type="string" i="0">one</multimode>
+<n_multi type="unsigned7" i="0">0</n_multi>
+</button>
+</multi>
+</track>
+<track type="button_t" i="2">
+<type type="string" i="0">single</type>
+<vchannel type="unsigned7" i="0">0</vchannel>
+<mode type="string" i="0">key</mode>
+<controller type="unsigned7" i="0">66</controller>
+<onvalue type="unsigned7" i="0">127</onvalue>
+<offvalue type="unsigned7" i="0">0</offvalue>
+<key type="unsigned7" i="0">53</key>
+<program type="unsigned7" i="0">0</program>
+<midimsg type="string" i="0">start</midimsg>
+<vcfrom type="unsigned7" i="0">0</vcfrom>
+<cto type="unsigned7" i="0">0</cto>
+<eventname type="string" i="0"/>
+<eventtarget type="string" i="0"/>
+<multiname type="string" i="0">L lower-left</multiname>
+<multimode type="string" i="0">one</multimode>
+<n_multi type="unsigned7" i="0">4</n_multi>
+<multi type="multievent_t" i="0">
+<name type="string" i="0">bank 1</name>
+<button type="button_t" i="0">
+<type type="string" i="0">single</type>
+<vchannel type="unsigned7" i="0">0</vchannel>
+<mode type="string" i="0">key</mode>
+<controller type="unsigned7" i="0">66</controller>
+<onvalue type="unsigned7" i="0">127</onvalue>
+<offvalue type="unsigned7" i="0">0</offvalue>
+<key type="unsigned7" i="0">62</key>
+<program type="unsigned7" i="0">0</program>
+<midimsg type="string" i="0">start</midimsg>
+<vcfrom type="unsigned7" i="0">0</vcfrom>
+<cto type="unsigned7" i="0">0</cto>
+<eventname type="string" i="0"/>
+<eventtarget type="string" i="0"/>
+<multiname type="string" i="0"/>
+<multimode type="string" i="0">one</multimode>
+<n_multi type="unsigned7" i="0">0</n_multi>
+</button>
+</multi>
+<multi type="multievent_t" i="1">
+<name type="string" i="0">bank 2</name>
+<button type="button_t" i="0">
+<type type="string" i="0">single</type>
+<vchannel type="unsigned7" i="0">0</vchannel>
+<mode type="string" i="0">key</mode>
+<controller type="unsigned7" i="0">82</controller>
+<onvalue type="unsigned7" i="0">127</onvalue>
+<offvalue type="unsigned7" i="0">0</offvalue>
+<key type="unsigned7" i="0">78</key>
+<program type="unsigned7" i="0">0</program>
+<midimsg type="string" i="0">start</midimsg>
+<vcfrom type="unsigned7" i="0">0</vcfrom>
+<cto type="unsigned7" i="0">0</cto>
+<eventname type="string" i="0"/>
+<eventtarget type="string" i="0"/>
+<multiname type="string" i="0"/>
+<multimode type="string" i="0">one</multimode>
+<n_multi type="unsigned7" i="0">0</n_multi>
+</button>
+</multi>
+<multi type="multievent_t" i="2">
+<name type="string" i="0">bank 3</name>
+<button type="button_t" i="0">
+<type type="string" i="0">single</type>
+<vchannel type="unsigned7" i="0">0</vchannel>
+<mode type="string" i="0">key</mode>
+<controller type="unsigned7" i="0">98</controller>
+<onvalue type="unsigned7" i="0">127</onvalue>
+<offvalue type="unsigned7" i="0">0</offvalue>
+<key type="unsigned7" i="0">94</key>
+<program type="unsigned7" i="0">0</program>
+<midimsg type="string" i="0">start</midimsg>
+<vcfrom type="unsigned7" i="0">0</vcfrom>
+<cto type="unsigned7" i="0">0</cto>
+<eventname type="string" i="0"/>
+<eventtarget type="string" i="0"/>
+<multiname type="string" i="0"/>
+<multimode type="string" i="0">one</multimode>
+<n_multi type="unsigned7" i="0">0</n_multi>
+</button>
+</multi>
+<multi type="multievent_t" i="3">
+<name type="string" i="0">bank 4</name>
+<button type="button_t" i="0">
+<type type="string" i="0">single</type>
+<vchannel type="unsigned7" i="0">0</vchannel>
+<mode type="string" i="0">key</mode>
+<controller type="unsigned7" i="0">114</controller>
+<onvalue type="unsigned7" i="0">127</onvalue>
+<offvalue type="unsigned7" i="0">0</offvalue>
+<key type="unsigned7" i="0">110</key>
+<program type="unsigned7" i="0">0</program>
+<midimsg type="string" i="0">start</midimsg>
+<vcfrom type="unsigned7" i="0">0</vcfrom>
+<cto type="unsigned7" i="0">0</cto>
+<eventname type="string" i="0"/>
+<eventtarget type="string" i="0"/>
+<multiname type="string" i="0"/>
+<multimode type="string" i="0">one</multimode>
+<n_multi type="unsigned7" i="0">0</n_multi>
+</button>
+</multi>
+</track>
+<track type="button_t" i="3">
+<type type="string" i="0">single</type>
+<vchannel type="unsigned7" i="0">0</vchannel>
+<mode type="string" i="0">key</mode>
+<controller type="unsigned7" i="0">67</controller>
+<onvalue type="unsigned7" i="0">127</onvalue>
+<offvalue type="unsigned7" i="0">0</offvalue>
+<key type="unsigned7" i="0">43</key>
+<program type="unsigned7" i="0">0</program>
+<midimsg type="string" i="0">start</midimsg>
+<vcfrom type="unsigned7" i="0">0</vcfrom>
+<cto type="unsigned7" i="0">0</cto>
+<eventname type="string" i="0"/>
+<eventtarget type="string" i="0"/>
+<multiname type="string" i="0">L lower</multiname>
+<multimode type="string" i="0">one</multimode>
+<n_multi type="unsigned7" i="0">4</n_multi>
+<multi type="multievent_t" i="0">
+<name type="string" i="0">bank 1</name>
+<button type="button_t" i="0">
+<type type="string" i="0">single</type>
+<vchannel type="unsigned7" i="0">0</vchannel>
+<mode type="string" i="0">key</mode>
+<controller type="unsigned7" i="0">67</controller>
+<onvalue type="unsigned7" i="0">127</onvalue>
+<offvalue type="unsigned7" i="0">0</offvalue>
+<key type="unsigned7" i="0">63</key>
+<program type="unsigned7" i="0">0</program>
+<midimsg type="string" i="0">start</midimsg>
+<vcfrom type="unsigned7" i="0">0</vcfrom>
+<cto type="unsigned7" i="0">0</cto>
+<eventname type="string" i="0"/>
+<eventtarget type="string" i="0"/>
+<multiname type="string" i="0"/>
+<multimode type="string" i="0">one</multimode>
+<n_multi type="unsigned7" i="0">0</n_multi>
+</button>
+</multi>
+<multi type="multievent_t" i="1">
+<name type="string" i="0">bank 2</name>
+<button type="button_t" i="0">
+<type type="string" i="0">single</type>
+<vchannel type="unsigned7" i="0">0</vchannel>
+<mode type="string" i="0">key</mode>
+<controller type="unsigned7" i="0">83</controller>
+<onvalue type="unsigned7" i="0">127</onvalue>
+<offvalue type="unsigned7" i="0">0</offvalue>
+<key type="unsigned7" i="0">79</key>
+<program type="unsigned7" i="0">0</program>
+<midimsg type="string" i="0">start</midimsg>
+<vcfrom type="unsigned7" i="0">0</vcfrom>
+<cto type="unsigned7" i="0">0</cto>
+<eventname type="string" i="0"/>
+<eventtarget type="string" i="0"/>
+<multiname type="string" i="0"/>
+<multimode type="string" i="0">one</multimode>
+<n_multi type="unsigned7" i="0">0</n_multi>
+</button>
+</multi>
+<multi type="multievent_t" i="2">
+<name type="string" i="0">bank 3</name>
+<button type="button_t" i="0">
+<type type="string" i="0">single</type>
+<vchannel type="unsigned7" i="0">0</vchannel>
+<mode type="string" i="0">key</mode>
+<controller type="unsigned7" i="0">99</controller>
+<onvalue type="unsigned7" i="0">127</onvalue>
+<offvalue type="unsigned7" i="0">0</offvalue>
+<key type="unsigned7" i="0">95</key>
+<program type="unsigned7" i="0">0</program>
+<midimsg type="string" i="0">start</midimsg>
+<vcfrom type="unsigned7" i="0">0</vcfrom>
+<cto type="unsigned7" i="0">0</cto>
+<eventname type="string" i="0"/>
+<eventtarget type="string" i="0"/>
+<multiname type="string" i="0"/>
+<multimode type="string" i="0">one</multimode>
+<n_multi type="unsigned7" i="0">0</n_multi>
+</button>
+</multi>
+<multi type="multievent_t" i="3">
+<name type="string" i="0">bank 4</name>
+<button type="button_t" i="0">
+<type type="string" i="0">single</type>
+<vchannel type="unsigned7" i="0">0</vchannel>
+<mode type="string" i="0">key</mode>
+<controller type="unsigned7" i="0">115</controller>
+<onvalue type="unsigned7" i="0">127</onvalue>
+<offvalue type="unsigned7" i="0">0</offvalue>
+<key type="unsigned7" i="0">111</key>
+<program type="unsigned7" i="0">0</program>
+<midimsg type="string" i="0">start</midimsg>
+<vcfrom type="unsigned7" i="0">0</vcfrom>
+<cto type="unsigned7" i="0">0</cto>
+<eventname type="string" i="0"/>
+<eventtarget type="string" i="0"/>
+<multiname type="string" i="0"/>
+<multimode type="string" i="0">one</multimode>
+<n_multi type="unsigned7" i="0">0</n_multi>
+</button>
+</multi>
+</track>
+<track type="button_t" i="4">
+<type type="string" i="0">single</type>
+<vchannel type="unsigned7" i="0">0</vchannel>
+<mode type="string" i="0">key</mode>
+<controller type="unsigned7" i="0">68</controller>
+<onvalue type="unsigned7" i="0">127</onvalue>
+<offvalue type="unsigned7" i="0">0</offvalue>
+<key type="unsigned7" i="0">50</key>
+<program type="unsigned7" i="0">0</program>
+<midimsg type="string" i="0">start</midimsg>
+<vcfrom type="unsigned7" i="0">0</vcfrom>
+<cto type="unsigned7" i="0">0</cto>
+<eventname type="string" i="0"/>
+<eventtarget type="string" i="0"/>
+<multiname type="string" i="0">L lower-right</multiname>
+<multimode type="string" i="0">one</multimode>
+<n_multi type="unsigned7" i="0">4</n_multi>
+<multi type="multievent_t" i="0">
+<name type="string" i="0">bank 1</name>
+<button type="button_t" i="0">
+<type type="string" i="0">single</type>
+<vchannel type="unsigned7" i="0">0</vchannel>
+<mode type="string" i="0">key</mode>
+<controller type="unsigned7" i="0">68</controller>
+<onvalue type="unsigned7" i="0">127</onvalue>
+<offvalue type="unsigned7" i="0">0</offvalue>
+<key type="unsigned7" i="0">64</key>
+<program type="unsigned7" i="0">0</program>
+<midimsg type="string" i="0">start</midimsg>
+<vcfrom type="unsigned7" i="0">0</vcfrom>
+<cto type="unsigned7" i="0">0</cto>
+<eventname type="string" i="0"/>
+<eventtarget type="string" i="0"/>
+<multiname type="string" i="0"/>
+<multimode type="string" i="0">one</multimode>
+<n_multi type="unsigned7" i="0">0</n_multi>
+</button>
+</multi>
+<multi type="multievent_t" i="1">
+<name type="string" i="0">bank 2</name>
+<button type="button_t" i="0">
+<type type="string" i="0">single</type>
+<vchannel type="unsigned7" i="0">0</vchannel>
+<mode type="string" i="0">key</mode>
+<controller type="unsigned7" i="0">84</controller>
+<onvalue type="unsigned7" i="0">127</onvalue>
+<offvalue type="unsigned7" i="0">0</offvalue>
+<key type="unsigned7" i="0">80</key>
+<program type="unsigned7" i="0">0</program>
+<midimsg type="string" i="0">start</midimsg>
+<vcfrom type="unsigned7" i="0">0</vcfrom>
+<cto type="unsigned7" i="0">0</cto>
+<eventname type="string" i="0"/>
+<eventtarget type="string" i="0"/>
+<multiname type="string" i="0"/>
+<multimode type="string" i="0">one</multimode>
+<n_multi type="unsigned7" i="0">0</n_multi>
+</button>
+</multi>
+<multi type="multievent_t" i="2">
+<name type="string" i="0">bank 3</name>
+<button type="button_t" i="0">
+<type type="string" i="0">single</type>
+<vchannel type="unsigned7" i="0">0</vchannel>
+<mode type="string" i="0">key</mode>
+<controller type="unsigned7" i="0">100</controller>
+<onvalue type="unsigned7" i="0">127</onvalue>
+<offvalue type="unsigned7" i="0">0</offvalue>
+<key type="unsigned7" i="0">96</key>
+<program type="unsigned7" i="0">0</program>
+<midimsg type="string" i="0">start</midimsg>
+<vcfrom type="unsigned7" i="0">0</vcfrom>
+<cto type="unsigned7" i="0">0</cto>
+<eventname type="string" i="0"/>
+<eventtarget type="string" i="0"/>
+<multiname type="string" i="0"/>
+<multimode type="string" i="0">one</multimode>
+<n_multi type="unsigned7" i="0">0</n_multi>
+</button>
+</multi>
+<multi type="multievent_t" i="3">
+<name type="string" i="0">bank 4</name>
+<button type="button_t" i="0">
+<type type="string" i="0">single</type>
+<vchannel type="unsigned7" i="0">0</vchannel>
+<mode type="string" i="0">key</mode>
+<controller type="unsigned7" i="0">116</controller>
+<onvalue type="unsigned7" i="0">127</onvalue>
+<offvalue type="unsigned7" i="0">0</offvalue>
+<key type="unsigned7" i="0">112</key>
+<program type="unsigned7" i="0">0</program>
+<midimsg type="string" i="0">start</midimsg>
+<vcfrom type="unsigned7" i="0">0</vcfrom>
+<cto type="unsigned7" i="0">0</cto>
+<eventname type="string" i="0"/>
+<eventtarget type="string" i="0"/>
+<multiname type="string" i="0"/>
+<multimode type="string" i="0">one</multimode>
+<n_multi type="unsigned7" i="0">0</n_multi>
+</button>
+</multi>
+</track>
+<track type="button_t" i="5">
+<type type="string" i="0">single</type>
+<vchannel type="unsigned7" i="0">0</vchannel>
+<mode type="string" i="0">key</mode>
+<controller type="unsigned7" i="0">69</controller>
+<onvalue type="unsigned7" i="0">127</onvalue>
+<offvalue type="unsigned7" i="0">0</offvalue>
+<key type="unsigned7" i="0">36</key>
+<program type="unsigned7" i="0">0</program>
+<midimsg type="string" i="0">start</midimsg>
+<vcfrom type="unsigned7" i="0">0</vcfrom>
+<cto type="unsigned7" i="0">0</cto>
+<eventname type="string" i="0"/>
+<eventtarget type="string" i="0"/>
+<multiname type="string" i="0">L right</multiname>
+<multimode type="string" i="0">one</multimode>
+<n_multi type="unsigned7" i="0">4</n_multi>
+<multi type="multievent_t" i="0">
+<name type="string" i="0">bank 1</name>
+<button type="button_t" i="0">
+<type type="string" i="0">single</type>
+<vchannel type="unsigned7" i="0">0</vchannel>
+<mode type="string" i="0">key</mode>
+<controller type="unsigned7" i="0">69</controller>
+<onvalue type="unsigned7" i="0">127</onvalue>
+<offvalue type="unsigned7" i="0">0</offvalue>
+<key type="unsigned7" i="0">65</key>
+<program type="unsigned7" i="0">0</program>
+<midimsg type="string" i="0">start</midimsg>
+<vcfrom type="unsigned7" i="0">0</vcfrom>
+<cto type="unsigned7" i="0">0</cto>
+<eventname type="string" i="0"/>
+<eventtarget type="string" i="0"/>
+<multiname type="string" i="0"/>
+<multimode type="string" i="0">one</multimode>
+<n_multi type="unsigned7" i="0">0</n_multi>
+</button>
+</multi>
+<multi type="multievent_t" i="1">
+<name type="string" i="0">bank 2</name>
+<button type="button_t" i="0">
+<type type="string" i="0">single</type>
+<vchannel type="unsigned7" i="0">0</vchannel>
+<mode type="string" i="0">key</mode>
+<controller type="unsigned7" i="0">85</controller>
+<onvalue type="unsigned7" i="0">127</onvalue>
+<offvalue type="unsigned7" i="0">0</offvalue>
+<key type="unsigned7" i="0">81</key>
+<program type="unsigned7" i="0">0</program>
+<midimsg type="string" i="0">start</midimsg>
+<vcfrom type="unsigned7" i="0">0</vcfrom>
+<cto type="unsigned7" i="0">0</cto>
+<eventname type="string" i="0"/>
+<eventtarget type="string" i="0"/>
+<multiname type="string" i="0"/>
+<multimode type="string" i="0">one</multimode>
+<n_multi type="unsigned7" i="0">0</n_multi>
+</button>
+</multi>
+<multi type="multievent_t" i="2">
+<name type="string" i="0">bank 3</name>
+<button type="button_t" i="0">
+<type type="string" i="0">single</type>
+<vchannel type="unsigned7" i="0">0</vchannel>
+<mode type="string" i="0">key</mode>
+<controller type="unsigned7" i="0">101</controller>
+<onvalue type="unsigned7" i="0">127</onvalue>
+<offvalue type="unsigned7" i="0">0</offvalue>
+<key type="unsigned7" i="0">97</key>
+<program type="unsigned7" i="0">0</program>
+<midimsg type="string" i="0">start</midimsg>
+<vcfrom type="unsigned7" i="0">0</vcfrom>
+<cto type="unsigned7" i="0">0</cto>
+<eventname type="string" i="0"/>
+<eventtarget type="string" i="0"/>
+<multiname type="string" i="0"/>
+<multimode type="string" i="0">one</multimode>
+<n_multi type="unsigned7" i="0">0</n_multi>
+</button>
+</multi>
+<multi type="multievent_t" i="3">
+<name type="string" i="0">bank 4</name>
+<button type="button_t" i="0">
+<type type="string" i="0">single</type>
+<vchannel type="unsigned7" i="0">0</vchannel>
+<mode type="string" i="0">key</mode>
+<controller type="unsigned7" i="0">117</controller>
+<onvalue type="unsigned7" i="0">127</onvalue>
+<offvalue type="unsigned7" i="0">0</offvalue>
+<key type="unsigned7" i="0">113</key>
+<program type="unsigned7" i="0">0</program>
+<midimsg type="string" i="0">start</midimsg>
+<vcfrom type="unsigned7" i="0">0</vcfrom>
+<cto type="unsigned7" i="0">0</cto>
+<eventname type="string" i="0"/>
+<eventtarget type="string" i="0"/>
+<multiname type="string" i="0"/>
+<multimode type="string" i="0">one</multimode>
+<n_multi type="unsigned7" i="0">0</n_multi>
+</button>
+</multi>
+</track>
+<track type="button_t" i="6">
+<type type="string" i="0">single</type>
+<vchannel type="unsigned7" i="0">0</vchannel>
+<mode type="string" i="0">key</mode>
+<controller type="unsigned7" i="0">70</controller>
+<onvalue type="unsigned7" i="0">127</onvalue>
+<offvalue type="unsigned7" i="0">0</offvalue>
+<key type="unsigned7" i="0">48</key>
+<program type="unsigned7" i="0">0</program>
+<midimsg type="string" i="0">start</midimsg>
+<vcfrom type="unsigned7" i="0">0</vcfrom>
+<cto type="unsigned7" i="0">0</cto>
+<eventname type="string" i="0"/>
+<eventtarget type="string" i="0"/>
+<multiname type="string" i="0">L upper right</multiname>
+<multimode type="string" i="0">one</multimode>
+<n_multi type="unsigned7" i="0">4</n_multi>
+<multi type="multievent_t" i="0">
+<name type="string" i="0">bank 1</name>
+<button type="button_t" i="0">
+<type type="string" i="0">single</type>
+<vchannel type="unsigned7" i="0">0</vchannel>
+<mode type="string" i="0">key</mode>
+<controller type="unsigned7" i="0">70</controller>
+<onvalue type="unsigned7" i="0">127</onvalue>
+<offvalue type="unsigned7" i="0">0</offvalue>
+<key type="unsigned7" i="0">66</key>
+<program type="unsigned7" i="0">0</program>
+<midimsg type="string" i="0">start</midimsg>
+<vcfrom type="unsigned7" i="0">0</vcfrom>
+<cto type="unsigned7" i="0">0</cto>
+<eventname type="string" i="0"/>
+<eventtarget type="string" i="0"/>
+<multiname type="string" i="0"/>
+<multimode type="string" i="0">one</multimode>
+<n_multi type="unsigned7" i="0">0</n_multi>
+</button>
+</multi>
+<multi type="multievent_t" i="1">
+<name type="string" i="0">bank 2</name>
+<button type="button_t" i="0">
+<type type="string" i="0">single</type>
+<vchannel type="unsigned7" i="0">0</vchannel>
+<mode type="string" i="0">key</mode>
+<controller type="unsigned7" i="0">86</controller>
+<onvalue type="unsigned7" i="0">127</onvalue>
+<offvalue type="unsigned7" i="0">0</offvalue>
+<key type="unsigned7" i="0">82</key>
+<program type="unsigned7" i="0">0</program>
+<midimsg type="string" i="0">start</midimsg>
+<vcfrom type="unsigned7" i="0">0</vcfrom>
+<cto type="unsigned7" i="0">0</cto>
+<eventname type="string" i="0"/>
+<eventtarget type="string" i="0"/>
+<multiname type="string" i="0"/>
+<multimode type="string" i="0">one</multimode>
+<n_multi type="unsigned7" i="0">0</n_multi>
+</button>
+</multi>
+<multi type="multievent_t" i="2">
+<name type="string" i="0">bank 3</name>
+<button type="button_t" i="0">
+<type type="string" i="0">single</type>
+<vchannel type="unsigned7" i="0">0</vchannel>
+<mode type="string" i="0">key</mode>
+<controller type="unsigned7" i="0">102</controller>
+<onvalue type="unsigned7" i="0">127</onvalue>
+<offvalue type="unsigned7" i="0">0</offvalue>
+<key type="unsigned7" i="0">98</key>
+<program type="unsigned7" i="0">0</program>
+<midimsg type="string" i="0">start</midimsg>
+<vcfrom type="unsigned7" i="0">0</vcfrom>
+<cto type="unsigned7" i="0">0</cto>
+<eventname type="string" i="0"/>
+<eventtarget type="string" i="0"/>
+<multiname type="string" i="0"/>
+<multimode type="string" i="0">one</multimode>
+<n_multi type="unsigned7" i="0">0</n_multi>
+</button>
+</multi>
+<multi type="multievent_t" i="3">
+<name type="string" i="0">bank 4</name>
+<button type="button_t" i="0">
+<type type="string" i="0">single</type>
+<vchannel type="unsigned7" i="0">0</vchannel>
+<mode type="string" i="0">key</mode>
+<controller type="unsigned7" i="0">118</controller>
+<onvalue type="unsigned7" i="0">127</onvalue>
+<offvalue type="unsigned7" i="0">0</offvalue>
+<key type="unsigned7" i="0">114</key>
+<program type="unsigned7" i="0">0</program>
+<midimsg type="string" i="0">start</midimsg>
+<vcfrom type="unsigned7" i="0">0</vcfrom>
+<cto type="unsigned7" i="0">0</cto>
+<eventname type="string" i="0"/>
+<eventtarget type="string" i="0"/>
+<multiname type="string" i="0"/>
+<multimode type="string" i="0">one</multimode>
+<n_multi type="unsigned7" i="0">0</n_multi>
+</button>
+</multi>
+</track>
+<track type="button_t" i="7">
+<type type="string" i="0">single</type>
+<vchannel type="unsigned7" i="0">0</vchannel>
+<mode type="string" i="0">key</mode>
+<controller type="unsigned7" i="0">71</controller>
+<onvalue type="unsigned7" i="0">127</onvalue>
+<offvalue type="unsigned7" i="0">0</offvalue>
+<key type="unsigned7" i="0">44</key>
+<program type="unsigned7" i="0">0</program>
+<midimsg type="string" i="0">start</midimsg>
+<vcfrom type="unsigned7" i="0">0</vcfrom>
+<cto type="unsigned7" i="0">0</cto>
+<eventname type="string" i="0"/>
+<eventtarget type="string" i="0"/>
+<multiname type="string" i="0">L upper</multiname>
+<multimode type="string" i="0">one</multimode>
+<n_multi type="unsigned7" i="0">4</n_multi>
+<multi type="multievent_t" i="0">
+<name type="string" i="0">bank 1</name>
+<button type="button_t" i="0">
+<type type="string" i="0">single</type>
+<vchannel type="unsigned7" i="0">0</vchannel>
+<mode type="string" i="0">key</mode>
+<controller type="unsigned7" i="0">71</controller>
+<onvalue type="unsigned7" i="0">127</onvalue>
+<offvalue type="unsigned7" i="0">0</offvalue>
+<key type="unsigned7" i="0">67</key>
+<program type="unsigned7" i="0">0</program>
+<midimsg type="string" i="0">start</midimsg>
+<vcfrom type="unsigned7" i="0">0</vcfrom>
+<cto type="unsigned7" i="0">0</cto>
+<eventname type="string" i="0"/>
+<eventtarget type="string" i="0"/>
+<multiname type="string" i="0"/>
+<multimode type="string" i="0">one</multimode>
+<n_multi type="unsigned7" i="0">0</n_multi>
+</button>
+</multi>
+<multi type="multievent_t" i="1">
+<name type="string" i="0">bank 2</name>
+<button type="button_t" i="0">
+<type type="string" i="0">single</type>
+<vchannel type="unsigned7" i="0">0</vchannel>
+<mode type="string" i="0">key</mode>
+<controller type="unsigned7" i="0">87</controller>
+<onvalue type="unsigned7" i="0">127</onvalue>
+<offvalue type="unsigned7" i="0">0</offvalue>
+<key type="unsigned7" i="0">83</key>
+<program type="unsigned7" i="0">0</program>
+<midimsg type="string" i="0">start</midimsg>
+<vcfrom type="unsigned7" i="0">0</vcfrom>
+<cto type="unsigned7" i="0">0</cto>
+<eventname type="string" i="0"/>
+<eventtarget type="string" i="0"/>
+<multiname type="string" i="0"/>
+<multimode type="string" i="0">one</multimode>
+<n_multi type="unsigned7" i="0">0</n_multi>
+</button>
+</multi>
+<multi type="multievent_t" i="2">
+<name type="string" i="0">bank 3</name>
+<button type="button_t" i="0">
+<type type="string" i="0">single</type>
+<vchannel type="unsigned7" i="0">0</vchannel>
+<mode type="string" i="0">key</mode>
+<controller type="unsigned7" i="0">103</controller>
+<onvalue type="unsigned7" i="0">127</onvalue>
+<offvalue type="unsigned7" i="0">0</offvalue>
+<key type="unsigned7" i="0">99</key>
+<program type="unsigned7" i="0">0</program>
+<midimsg type="string" i="0">start</midimsg>
+<vcfrom type="unsigned7" i="0">0</vcfrom>
+<cto type="unsigned7" i="0">0</cto>
+<eventname type="string" i="0"/>
+<eventtarget type="string" i="0"/>
+<multiname type="string" i="0"/>
+<multimode type="string" i="0">one</multimode>
+<n_multi type="unsigned7" i="0">0</n_multi>
+</button>
+</multi>
+<multi type="multievent_t" i="3">
+<name type="string" i="0">bank 4</name>
+<button type="button_t" i="0">
+<type type="string" i="0">single</type>
+<vchannel type="unsigned7" i="0">0</vchannel>
+<mode type="string" i="0">key</mode>
+<controller type="unsigned7" i="0">119</controller>
+<onvalue type="unsigned7" i="0">127</onvalue>
+<offvalue type="unsigned7" i="0">0</offvalue>
+<key type="unsigned7" i="0">115</key>
+<program type="unsigned7" i="0">0</program>
+<midimsg type="string" i="0">start</midimsg>
+<vcfrom type="unsigned7" i="0">0</vcfrom>
+<cto type="unsigned7" i="0">0</cto>
+<eventname type="string" i="0"/>
+<eventtarget type="string" i="0"/>
+<multiname type="string" i="0"/>
+<multimode type="string" i="0">one</multimode>
+<n_multi type="unsigned7" i="0">0</n_multi>
+</button>
+</multi>
+</track>
+<track type="button_t" i="8">
+<type type="string" i="0">single</type>
+<vchannel type="unsigned7" i="0">0</vchannel>
+<mode type="string" i="0">key</mode>
+<controller type="unsigned7" i="0">72</controller>
+<onvalue type="unsigned7" i="0">127</onvalue>
+<offvalue type="unsigned7" i="0">0</offvalue>
+<key type="unsigned7" i="0">78</key>
+<program type="unsigned7" i="0">0</program>
+<midimsg type="string" i="0">start</midimsg>
+<vcfrom type="unsigned7" i="0">0</vcfrom>
+<cto type="unsigned7" i="0">0</cto>
+<eventname type="string" i="0"/>
+<eventtarget type="string" i="0"/>
+<multiname type="string" i="0">R upper-left</multiname>
+<multimode type="string" i="0">one</multimode>
+<n_multi type="unsigned7" i="0">4</n_multi>
+<multi type="multievent_t" i="0">
+<name type="string" i="0">bank 1</name>
+<button type="button_t" i="0">
+<type type="string" i="0">single</type>
+<vchannel type="unsigned7" i="0">0</vchannel>
+<mode type="string" i="0">key</mode>
+<controller type="unsigned7" i="0">72</controller>
+<onvalue type="unsigned7" i="0">127</onvalue>
+<offvalue type="unsigned7" i="0">0</offvalue>
+<key type="unsigned7" i="0">68</key>
+<program type="unsigned7" i="0">0</program>
+<midimsg type="string" i="0">start</midimsg>
+<vcfrom type="unsigned7" i="0">0</vcfrom>
+<cto type="unsigned7" i="0">0</cto>
+<eventname type="string" i="0"/>
+<eventtarget type="string" i="0"/>
+<multiname type="string" i="0"/>
+<multimode type="string" i="0">one</multimode>
+<n_multi type="unsigned7" i="0">0</n_multi>
+</button>
+</multi>
+<multi type="multievent_t" i="1">
+<name type="string" i="0">bank 2</name>
+<button type="button_t" i="0">
+<type type="string" i="0">single</type>
+<vchannel type="unsigned7" i="0">0</vchannel>
+<mode type="string" i="0">key</mode>
+<controller type="unsigned7" i="0">88</controller>
+<onvalue type="unsigned7" i="0">127</onvalue>
+<offvalue type="unsigned7" i="0">0</offvalue>
+<key type="unsigned7" i="0">84</key>
+<program type="unsigned7" i="0">0</program>
+<midimsg type="string" i="0">start</midimsg>
+<vcfrom type="unsigned7" i="0">0</vcfrom>
+<cto type="unsigned7" i="0">0</cto>
+<eventname type="string" i="0"/>
+<eventtarget type="string" i="0"/>
+<multiname type="string" i="0"/>
+<multimode type="string" i="0">one</multimode>
+<n_multi type="unsigned7" i="0">0</n_multi>
+</button>
+</multi>
+<multi type="multievent_t" i="2">
+<name type="string" i="0">bank 3</name>
+<button type="button_t" i="0">
+<type type="string" i="0">single</type>
+<vchannel type="unsigned7" i="0">0</vchannel>
+<mode type="string" i="0">key</mode>
+<controller type="unsigned7" i="0">104</controller>
+<onvalue type="unsigned7" i="0">127</onvalue>
+<offvalue type="unsigned7" i="0">0</offvalue>
+<key type="unsigned7" i="0">100</key>
+<program type="unsigned7" i="0">0</program>
+<midimsg type="string" i="0">start</midimsg>
+<vcfrom type="unsigned7" i="0">0</vcfrom>
+<cto type="unsigned7" i="0">0</cto>
+<eventname type="string" i="0"/>
+<eventtarget type="string" i="0"/>
+<multiname type="string" i="0"/>
+<multimode type="string" i="0">one</multimode>
+<n_multi type="unsigned7" i="0">0</n_multi>
+</button>
+</multi>
+<multi type="multievent_t" i="3">
+<name type="string" i="0">bank 4</name>
+<button type="button_t" i="0">
+<type type="string" i="0">single</type>
+<vchannel type="unsigned7" i="0">0</vchannel>
+<mode type="string" i="0">key</mode>
+<controller type="unsigned7" i="0">120</controller>
+<onvalue type="unsigned7" i="0">127</onvalue>
+<offvalue type="unsigned7" i="0">0</offvalue>
+<key type="unsigned7" i="0">116</key>
+<program type="unsigned7" i="0">0</program>
+<midimsg type="string" i="0">start</midimsg>
+<vcfrom type="unsigned7" i="0">0</vcfrom>
+<cto type="unsigned7" i="0">0</cto>
+<eventname type="string" i="0"/>
+<eventtarget type="string" i="0"/>
+<multiname type="string" i="0"/>
+<multimode type="string" i="0">one</multimode>
+<n_multi type="unsigned7" i="0">0</n_multi>
+</button>
+</multi>
+</track>
+<track type="button_t" i="9">
+<type type="string" i="0">single</type>
+<vchannel type="unsigned7" i="0">0</vchannel>
+<mode type="string" i="0">key</mode>
+<controller type="unsigned7" i="0">73</controller>
+<onvalue type="unsigned7" i="0">127</onvalue>
+<offvalue type="unsigned7" i="0">0</offvalue>
+<key type="unsigned7" i="0">62</key>
+<program type="unsigned7" i="0">0</program>
+<midimsg type="string" i="0">start</midimsg>
+<vcfrom type="unsigned7" i="0">0</vcfrom>
+<cto type="unsigned7" i="0">0</cto>
+<eventname type="string" i="0"/>
+<eventtarget type="string" i="0"/>
+<multiname type="string" i="0">R left</multiname>
+<multimode type="string" i="0">one</multimode>
+<n_multi type="unsigned7" i="0">4</n_multi>
+<multi type="multievent_t" i="0">
+<name type="string" i="0">bank 1</name>
+<button type="button_t" i="0">
+<type type="string" i="0">single</type>
+<vchannel type="unsigned7" i="0">0</vchannel>
+<mode type="string" i="0">key</mode>
+<controller type="unsigned7" i="0">73</controller>
+<onvalue type="unsigned7" i="0">127</onvalue>
+<offvalue type="unsigned7" i="0">0</offvalue>
+<key type="unsigned7" i="0">69</key>
+<program type="unsigned7" i="0">0</program>
+<midimsg type="string" i="0">start</midimsg>
+<vcfrom type="unsigned7" i="0">0</vcfrom>
+<cto type="unsigned7" i="0">0</cto>
+<eventname type="string" i="0"/>
+<eventtarget type="string" i="0"/>
+<multiname type="string" i="0"/>
+<multimode type="string" i="0">one</multimode>
+<n_multi type="unsigned7" i="0">0</n_multi>
+</button>
+</multi>
+<multi type="multievent_t" i="1">
+<name type="string" i="0">bank 2</name>
+<button type="button_t" i="0">
+<type type="string" i="0">single</type>
+<vchannel type="unsigned7" i="0">0</vchannel>
+<mode type="string" i="0">key</mode>
+<controller type="unsigned7" i="0">89</controller>
+<onvalue type="unsigned7" i="0">127</onvalue>
+<offvalue type="unsigned7" i="0">0</offvalue>
+<key type="unsigned7" i="0">85</key>
+<program type="unsigned7" i="0">0</program>
+<midimsg type="string" i="0">start</midimsg>
+<vcfrom type="unsigned7" i="0">0</vcfrom>
+<cto type="unsigned7" i="0">0</cto>
+<eventname type="string" i="0"/>
+<eventtarget type="string" i="0"/>
+<multiname type="string" i="0"/>
+<multimode type="string" i="0">one</multimode>
+<n_multi type="unsigned7" i="0">0</n_multi>
+</button>
+</multi>
+<multi type="multievent_t" i="2">
+<name type="string" i="0">bank 3</name>
+<button type="button_t" i="0">
+<type type="string" i="0">single</type>
+<vchannel type="unsigned7" i="0">0</vchannel>
+<mode type="string" i="0">key</mode>
+<controller type="unsigned7" i="0">105</controller>
+<onvalue type="unsigned7" i="0">127</onvalue>
+<offvalue type="unsigned7" i="0">0</offvalue>
+<key type="unsigned7" i="0">101</key>
+<program type="unsigned7" i="0">0</program>
+<midimsg type="string" i="0">start</midimsg>
+<vcfrom type="unsigned7" i="0">0</vcfrom>
+<cto type="unsigned7" i="0">0</cto>
+<eventname type="string" i="0"/>
+<eventtarget type="string" i="0"/>
+<multiname type="string" i="0"/>
+<multimode type="string" i="0">one</multimode>
+<n_multi type="unsigned7" i="0">0</n_multi>
+</button>
+</multi>
+<multi type="multievent_t" i="3">
+<name type="string" i="0">bank 4</name>
+<button type="button_t" i="0">
+<type type="string" i="0">single</type>
+<vchannel type="unsigned7" i="0">0</vchannel>
+<mode type="string" i="0">key</mode>
+<controller type="unsigned7" i="0">121</controller>
+<onvalue type="unsigned7" i="0">127</onvalue>
+<offvalue type="unsigned7" i="0">0</offvalue>
+<key type="unsigned7" i="0">117</key>
+<program type="unsigned7" i="0">0</program>
+<midimsg type="string" i="0">start</midimsg>
+<vcfrom type="unsigned7" i="0">0</vcfrom>
+<cto type="unsigned7" i="0">0</cto>
+<eventname type="string" i="0"/>
+<eventtarget type="string" i="0"/>
+<multiname type="string" i="0"/>
+<multimode type="string" i="0">one</multimode>
+<n_multi type="unsigned7" i="0">0</n_multi>
+</button>
+</multi>
+</track>
+<track type="button_t" i="10">
+<type type="string" i="0">single</type>
+<vchannel type="unsigned7" i="0">0</vchannel>
+<mode type="string" i="0">key</mode>
+<controller type="unsigned7" i="0">74</controller>
+<onvalue type="unsigned7" i="0">127</onvalue>
+<offvalue type="unsigned7" i="0">0</offvalue>
+<key type="unsigned7" i="0">77</key>
+<program type="unsigned7" i="0">0</program>
+<midimsg type="string" i="0">start</midimsg>
+<vcfrom type="unsigned7" i="0">0</vcfrom>
+<cto type="unsigned7" i="0">0</cto>
+<eventname type="string" i="0"/>
+<eventtarget type="string" i="0"/>
+<multiname type="string" i="0">R lower-left</multiname>
+<multimode type="string" i="0">one</multimode>
+<n_multi type="unsigned7" i="0">4</n_multi>
+<multi type="multievent_t" i="0">
+<name type="string" i="0">bank 1</name>
+<button type="button_t" i="0">
+<type type="string" i="0">single</type>
+<vchannel type="unsigned7" i="0">0</vchannel>
+<mode type="string" i="0">key</mode>
+<controller type="unsigned7" i="0">74</controller>
+<onvalue type="unsigned7" i="0">127</onvalue>
+<offvalue type="unsigned7" i="0">0</offvalue>
+<key type="unsigned7" i="0">70</key>
+<program type="unsigned7" i="0">0</program>
+<midimsg type="string" i="0">start</midimsg>
+<vcfrom type="unsigned7" i="0">0</vcfrom>
+<cto type="unsigned7" i="0">0</cto>
+<eventname type="string" i="0"/>
+<eventtarget type="string" i="0"/>
+<multiname type="string" i="0"/>
+<multimode type="string" i="0">one</multimode>
+<n_multi type="unsigned7" i="0">0</n_multi>
+</button>
+</multi>
+<multi type="multievent_t" i="1">
+<name type="string" i="0">bank 2</name>
+<button type="button_t" i="0">
+<type type="string" i="0">single</type>
+<vchannel type="unsigned7" i="0">0</vchannel>
+<mode type="string" i="0">key</mode>
+<controller type="unsigned7" i="0">90</controller>
+<onvalue type="unsigned7" i="0">127</onvalue>
+<offvalue type="unsigned7" i="0">0</offvalue>
+<key type="unsigned7" i="0">86</key>
+<program type="unsigned7" i="0">0</program>
+<midimsg type="string" i="0">start</midimsg>
+<vcfrom type="unsigned7" i="0">0</vcfrom>
+<cto type="unsigned7" i="0">0</cto>
+<eventname type="string" i="0"/>
+<eventtarget type="string" i="0"/>
+<multiname type="string" i="0"/>
+<multimode type="string" i="0">one</multimode>
+<n_multi type="unsigned7" i="0">0</n_multi>
+</button>
+</multi>
+<multi type="multievent_t" i="2">
+<name type="string" i="0">bank 3</name>
+<button type="button_t" i="0">
+<type type="string" i="0">single</type>
+<vchannel type="unsigned7" i="0">0</vchannel>
+<mode type="string" i="0">key</mode>
+<controller type="unsigned7" i="0">106</controller>
+<onvalue type="unsigned7" i="0">127</onvalue>
+<offvalue type="unsigned7" i="0">0</offvalue>
+<key type="unsigned7" i="0">102</key>
+<program type="unsigned7" i="0">0</program>
+<midimsg type="string" i="0">start</midimsg>
+<vcfrom type="unsigned7" i="0">0</vcfrom>
+<cto type="unsigned7" i="0">0</cto>
+<eventname type="string" i="0"/>
+<eventtarget type="string" i="0"/>
+<multiname type="string" i="0"/>
+<multimode type="string" i="0">one</multimode>
+<n_multi type="unsigned7" i="0">0</n_multi>
+</button>
+</multi>
+<multi type="multievent_t" i="3">
+<name type="string" i="0">bank 4</name>
+<button type="button_t" i="0">
+<type type="string" i="0">single</type>
+<vchannel type="unsigned7" i="0">0</vchannel>
+<mode type="string" i="0">key</mode>
+<controller type="unsigned7" i="0">122</controller>
+<onvalue type="unsigned7" i="0">127</onvalue>
+<offvalue type="unsigned7" i="0">0</offvalue>
+<key type="unsigned7" i="0">118</key>
+<program type="unsigned7" i="0">0</program>
+<midimsg type="string" i="0">start</midimsg>
+<vcfrom type="unsigned7" i="0">0</vcfrom>
+<cto type="unsigned7" i="0">0</cto>
+<eventname type="string" i="0"/>
+<eventtarget type="string" i="0"/>
+<multiname type="string" i="0"/>
+<multimode type="string" i="0">one</multimode>
+<n_multi type="unsigned7" i="0">0</n_multi>
+</button>
+</multi>
+</track>
+<track type="button_t" i="11">
+<type type="string" i="0">single</type>
+<vchannel type="unsigned7" i="0">0</vchannel>
+<mode type="string" i="0">key</mode>
+<controller type="unsigned7" i="0">75</controller>
+<onvalue type="unsigned7" i="0">127</onvalue>
+<offvalue type="unsigned7" i="0">0</offvalue>
+<key type="unsigned7" i="0">67</key>
+<program type="unsigned7" i="0">0</program>
+<midimsg type="string" i="0">start</midimsg>
+<vcfrom type="unsigned7" i="0">0</vcfrom>
+<cto type="unsigned7" i="0">0</cto>
+<eventname type="string" i="0"/>
+<eventtarget type="string" i="0"/>
+<multiname type="string" i="0">R lower</multiname>
+<multimode type="string" i="0">one</multimode>
+<n_multi type="unsigned7" i="0">4</n_multi>
+<multi type="multievent_t" i="0">
+<name type="string" i="0">bank 1</name>
+<button type="button_t" i="0">
+<type type="string" i="0">single</type>
+<vchannel type="unsigned7" i="0">0</vchannel>
+<mode type="string" i="0">key</mode>
+<controller type="unsigned7" i="0">75</controller>
+<onvalue type="unsigned7" i="0">127</onvalue>
+<offvalue type="unsigned7" i="0">0</offvalue>
+<key type="unsigned7" i="0">71</key>
+<program type="unsigned7" i="0">0</program>
+<midimsg type="string" i="0">start</midimsg>
+<vcfrom type="unsigned7" i="0">0</vcfrom>
+<cto type="unsigned7" i="0">0</cto>
+<eventname type="string" i="0"/>
+<eventtarget type="string" i="0"/>
+<multiname type="string" i="0"/>
+<multimode type="string" i="0">one</multimode>
+<n_multi type="unsigned7" i="0">0</n_multi>
+</button>
+</multi>
+<multi type="multievent_t" i="1">
+<name type="string" i="0">bank 2</name>
+<button type="button_t" i="0">
+<type type="string" i="0">single</type>
+<vchannel type="unsigned7" i="0">0</vchannel>
+<mode type="string" i="0">key</mode>
+<controller type="unsigned7" i="0">91</controller>
+<onvalue type="unsigned7" i="0">127</onvalue>
+<offvalue type="unsigned7" i="0">0</offvalue>
+<key type="unsigned7" i="0">87</key>
+<program type="unsigned7" i="0">0</program>
+<midimsg type="string" i="0">start</midimsg>
+<vcfrom type="unsigned7" i="0">0</vcfrom>
+<cto type="unsigned7" i="0">0</cto>
+<eventname type="string" i="0"/>
+<eventtarget type="string" i="0"/>
+<multiname type="string" i="0"/>
+<multimode type="string" i="0">one</multimode>
+<n_multi type="unsigned7" i="0">0</n_multi>
+</button>
+</multi>
+<multi type="multievent_t" i="2">
+<name type="string" i="0">bank 3</name>
+<button type="button_t" i="0">
+<type type="string" i="0">single</type>
+<vchannel type="unsigned7" i="0">0</vchannel>
+<mode type="string" i="0">key</mode>
+<controller type="unsigned7" i="0">107</controller>
+<onvalue type="unsigned7" i="0">127</onvalue>
+<offvalue type="unsigned7" i="0">0</offvalue>
+<key type="unsigned7" i="0">103</key>
+<program type="unsigned7" i="0">0</program>
+<midimsg type="string" i="0">start</midimsg>
+<vcfrom type="unsigned7" i="0">0</vcfrom>
+<cto type="unsigned7" i="0">0</cto>
+<eventname type="string" i="0"/>
+<eventtarget type="string" i="0"/>
+<multiname type="string" i="0"/>
+<multimode type="string" i="0">one</multimode>
+<n_multi type="unsigned7" i="0">0</n_multi>
+</button>
+</multi>
+<multi type="multievent_t" i="3">
+<name type="string" i="0">bank 4</name>
+<button type="button_t" i="0">
+<type type="string" i="0">single</type>
+<vchannel type="unsigned7" i="0">0</vchannel>
+<mode type="string" i="0">key</mode>
+<controller type="unsigned7" i="0">123</controller>
+<onvalue type="unsigned7" i="0">127</onvalue>
+<offvalue type="unsigned7" i="0">0</offvalue>
+<key type="unsigned7" i="0">119</key>
+<program type="unsigned7" i="0">0</program>
+<midimsg type="string" i="0">start</midimsg>
+<vcfrom type="unsigned7" i="0">0</vcfrom>
+<cto type="unsigned7" i="0">0</cto>
+<eventname type="string" i="0"/>
+<eventtarget type="string" i="0"/>
+<multiname type="string" i="0"/>
+<multimode type="string" i="0">one</multimode>
+<n_multi type="unsigned7" i="0">0</n_multi>
+</button>
+</multi>
+</track>
+<track type="button_t" i="12">
+<type type="string" i="0">single</type>
+<vchannel type="unsigned7" i="0">0</vchannel>
+<mode type="string" i="0">key</mode>
+<controller type="unsigned7" i="0">76</controller>
+<onvalue type="unsigned7" i="0">127</onvalue>
+<offvalue type="unsigned7" i="0">0</offvalue>
+<key type="unsigned7" i="0">74</key>
+<program type="unsigned7" i="0">0</program>
+<midimsg type="string" i="0">start</midimsg>
+<vcfrom type="unsigned7" i="0">0</vcfrom>
+<cto type="unsigned7" i="0">0</cto>
+<eventname type="string" i="0"/>
+<eventtarget type="string" i="0"/>
+<multiname type="string" i="0">R lower-right</multiname>
+<multimode type="string" i="0">one</multimode>
+<n_multi type="unsigned7" i="0">4</n_multi>
+<multi type="multievent_t" i="0">
+<name type="string" i="0">bank 1</name>
+<button type="button_t" i="0">
+<type type="string" i="0">single</type>
+<vchannel type="unsigned7" i="0">0</vchannel>
+<mode type="string" i="0">key</mode>
+<controller type="unsigned7" i="0">76</controller>
+<onvalue type="unsigned7" i="0">127</onvalue>
+<offvalue type="unsigned7" i="0">0</offvalue>
+<key type="unsigned7" i="0">72</key>
+<program type="unsigned7" i="0">0</program>
+<midimsg type="string" i="0">start</midimsg>
+<vcfrom type="unsigned7" i="0">0</vcfrom>
+<cto type="unsigned7" i="0">0</cto>
+<eventname type="string" i="0"/>
+<eventtarget type="string" i="0"/>
+<multiname type="string" i="0"/>
+<multimode type="string" i="0">one</multimode>
+<n_multi type="unsigned7" i="0">0</n_multi>
+</button>
+</multi>
+<multi type="multievent_t" i="1">
+<name type="string" i="0">bank 2</name>
+<button type="button_t" i="0">
+<type type="string" i="0">single</type>
+<vchannel type="unsigned7" i="0">0</vchannel>
+<mode type="string" i="0">key</mode>
+<controller type="unsigned7" i="0">92</controller>
+<onvalue type="unsigned7" i="0">127</onvalue>
+<offvalue type="unsigned7" i="0">0</offvalue>
+<key type="unsigned7" i="0">88</key>
+<program type="unsigned7" i="0">0</program>
+<midimsg type="string" i="0">start</midimsg>
+<vcfrom type="unsigned7" i="0">0</vcfrom>
+<cto type="unsigned7" i="0">0</cto>
+<eventname type="string" i="0"/>
+<eventtarget type="string" i="0"/>
+<multiname type="string" i="0"/>
+<multimode type="string" i="0">one</multimode>
+<n_multi type="unsigned7" i="0">0</n_multi>
+</button>
+</multi>
+<multi type="multievent_t" i="2">
+<name type="string" i="0">bank 3</name>
+<button type="button_t" i="0">
+<type type="string" i="0">single</type>
+<vchannel type="unsigned7" i="0">0</vchannel>
+<mode type="string" i="0">key</mode>
+<controller type="unsigned7" i="0">108</controller>
+<onvalue type="unsigned7" i="0">127</onvalue>
+<offvalue type="unsigned7" i="0">0</offvalue>
+<key type="unsigned7" i="0">104</key>
+<program type="unsigned7" i="0">0</program>
+<midimsg type="string" i="0">start</midimsg>
+<vcfrom type="unsigned7" i="0">0</vcfrom>
+<cto type="unsigned7" i="0">0</cto>
+<eventname type="string" i="0"/>
+<eventtarget type="string" i="0"/>
+<multiname type="string" i="0"/>
+<multimode type="string" i="0">one</multimode>
+<n_multi type="unsigned7" i="0">0</n_multi>
+</button>
+</multi>
+<multi type="multievent_t" i="3">
+<name type="string" i="0">bank 4</name>
+<button type="button_t" i="0">
+<type type="string" i="0">single</type>
+<vchannel type="unsigned7" i="0">0</vchannel>
+<mode type="string" i="0">key</mode>
+<controller type="unsigned7" i="0">124</controller>
+<onvalue type="unsigned7" i="0">127</onvalue>
+<offvalue type="unsigned7" i="0">0</offvalue>
+<key type="unsigned7" i="0">120</key>
+<program type="unsigned7" i="0">0</program>
+<midimsg type="string" i="0">start</midimsg>
+<vcfrom type="unsigned7" i="0">0</vcfrom>
+<cto type="unsigned7" i="0">0</cto>
+<eventname type="string" i="0"/>
+<eventtarget type="string" i="0"/>
+<multiname type="string" i="0"/>
+<multimode type="string" i="0">one</multimode>
+<n_multi type="unsigned7" i="0">0</n_multi>
+</button>
+</multi>
+</track>
+<track type="button_t" i="13">
+<type type="string" i="0">single</type>
+<vchannel type="unsigned7" i="0">0</vchannel>
+<mode type="string" i="0">key</mode>
+<controller type="unsigned7" i="0">77</controller>
+<onvalue type="unsigned7" i="0">127</onvalue>
+<offvalue type="unsigned7" i="0">0</offvalue>
+<key type="unsigned7" i="0">60</key>
+<program type="unsigned7" i="0">0</program>
+<midimsg type="string" i="0">start</midimsg>
+<vcfrom type="unsigned7" i="0">0</vcfrom>
+<cto type="unsigned7" i="0">0</cto>
+<eventname type="string" i="0"/>
+<eventtarget type="string" i="0"/>
+<multiname type="string" i="0">R right</multiname>
+<multimode type="string" i="0">one</multimode>
+<n_multi type="unsigned7" i="0">4</n_multi>
+<multi type="multievent_t" i="0">
+<name type="string" i="0">bank 1</name>
+<button type="button_t" i="0">
+<type type="string" i="0">single</type>
+<vchannel type="unsigned7" i="0">0</vchannel>
+<mode type="string" i="0">key</mode>
+<controller type="unsigned7" i="0">77</controller>
+<onvalue type="unsigned7" i="0">127</onvalue>
+<offvalue type="unsigned7" i="0">0</offvalue>
+<key type="unsigned7" i="0">73</key>
+<program type="unsigned7" i="0">0</program>
+<midimsg type="string" i="0">start</midimsg>
+<vcfrom type="unsigned7" i="0">0</vcfrom>
+<cto type="unsigned7" i="0">0</cto>
+<eventname type="string" i="0"/>
+<eventtarget type="string" i="0"/>
+<multiname type="string" i="0"/>
+<multimode type="string" i="0">one</multimode>
+<n_multi type="unsigned7" i="0">0</n_multi>
+</button>
+</multi>
+<multi type="multievent_t" i="1">
+<name type="string" i="0">bank 2</name>
+<button type="button_t" i="0">
+<type type="string" i="0">single</type>
+<vchannel type="unsigned7" i="0">0</vchannel>
+<mode type="string" i="0">key</mode>
+<controller type="unsigned7" i="0">93</controller>
+<onvalue type="unsigned7" i="0">127</onvalue>
+<offvalue type="unsigned7" i="0">0</offvalue>
+<key type="unsigned7" i="0">89</key>
+<program type="unsigned7" i="0">0</program>
+<midimsg type="string" i="0">start</midimsg>
+<vcfrom type="unsigned7" i="0">0</vcfrom>
+<cto type="unsigned7" i="0">0</cto>
+<eventname type="string" i="0"/>
+<eventtarget type="string" i="0"/>
+<multiname type="string" i="0"/>
+<multimode type="string" i="0">one</multimode>
+<n_multi type="unsigned7" i="0">0</n_multi>
+</button>
+</multi>
+<multi type="multievent_t" i="2">
+<name type="string" i="0">bank 3</name>
+<button type="button_t" i="0">
+<type type="string" i="0">single</type>
+<vchannel type="unsigned7" i="0">0</vchannel>
+<mode type="string" i="0">key</mode>
+<controller type="unsigned7" i="0">109</controller>
+<onvalue type="unsigned7" i="0">127</onvalue>
+<offvalue type="unsigned7" i="0">0</offvalue>
+<key type="unsigned7" i="0">105</key>
+<program type="unsigned7" i="0">0</program>
+<midimsg type="string" i="0">start</midimsg>
+<vcfrom type="unsigned7" i="0">0</vcfrom>
+<cto type="unsigned7" i="0">0</cto>
+<eventname type="string" i="0"/>
+<eventtarget type="string" i="0"/>
+<multiname type="string" i="0"/>
+<multimode type="string" i="0">one</multimode>
+<n_multi type="unsigned7" i="0">0</n_multi>
+</button>
+</multi>
+<multi type="multievent_t" i="3">
+<name type="string" i="0">bank 4</name>
+<button type="button_t" i="0">
+<type type="string" i="0">single</type>
+<vchannel type="unsigned7" i="0">0</vchannel>
+<mode type="string" i="0">key</mode>
+<controller type="unsigned7" i="0">125</controller>
+<onvalue type="unsigned7" i="0">127</onvalue>
+<offvalue type="unsigned7" i="0">0</offvalue>
+<key type="unsigned7" i="0">121</key>
+<program type="unsigned7" i="0">0</program>
+<midimsg type="string" i="0">start</midimsg>
+<vcfrom type="unsigned7" i="0">0</vcfrom>
+<cto type="unsigned7" i="0">0</cto>
+<eventname type="string" i="0"/>
+<eventtarget type="string" i="0"/>
+<multiname type="string" i="0"/>
+<multimode type="string" i="0">one</multimode>
+<n_multi type="unsigned7" i="0">0</n_multi>
+</button>
+</multi>
+</track>
+<track type="button_t" i="14">
+<type type="string" i="0">single</type>
+<vchannel type="unsigned7" i="0">0</vchannel>
+<mode type="string" i="0">key</mode>
+<controller type="unsigned7" i="0">78</controller>
+<onvalue type="unsigned7" i="0">127</onvalue>
+<offvalue type="unsigned7" i="0">0</offvalue>
+<key type="unsigned7" i="0">72</key>
+<program type="unsigned7" i="0">0</program>
+<midimsg type="string" i="0">start</midimsg>
+<vcfrom type="unsigned7" i="0">0</vcfrom>
+<cto type="unsigned7" i="0">0</cto>
+<eventname type="string" i="0"/>
+<eventtarget type="string" i="0"/>
+<multiname type="string" i="0">R upper right</multiname>
+<multimode type="string" i="0">one</multimode>
+<n_multi type="unsigned7" i="0">4</n_multi>
+<multi type="multievent_t" i="0">
+<name type="string" i="0">bank 1</name>
+<button type="button_t" i="0">
+<type type="string" i="0">single</type>
+<vchannel type="unsigned7" i="0">0</vchannel>
+<mode type="string" i="0">key</mode>
+<controller type="unsigned7" i="0">78</controller>
+<onvalue type="unsigned7" i="0">127</onvalue>
+<offvalue type="unsigned7" i="0">0</offvalue>
+<key type="unsigned7" i="0">74</key>
+<program type="unsigned7" i="0">0</program>
+<midimsg type="string" i="0">start</midimsg>
+<vcfrom type="unsigned7" i="0">0</vcfrom>
+<cto type="unsigned7" i="0">0</cto>
+<eventname type="string" i="0"/>
+<eventtarget type="string" i="0"/>
+<multiname type="string" i="0"/>
+<multimode type="string" i="0">one</multimode>
+<n_multi type="unsigned7" i="0">0</n_multi>
+</button>
+</multi>
+<multi type="multievent_t" i="1">
+<name type="string" i="0">bank 2</name>
+<button type="button_t" i="0">
+<type type="string" i="0">single</type>
+<vchannel type="unsigned7" i="0">0</vchannel>
+<mode type="string" i="0">key</mode>
+<controller type="unsigned7" i="0">94</controller>
+<onvalue type="unsigned7" i="0">127</onvalue>
+<offvalue type="unsigned7" i="0">0</offvalue>
+<key type="unsigned7" i="0">90</key>
+<program type="unsigned7" i="0">0</program>
+<midimsg type="string" i="0">start</midimsg>
+<vcfrom type="unsigned7" i="0">0</vcfrom>
+<cto type="unsigned7" i="0">0</cto>
+<eventname type="string" i="0"/>
+<eventtarget type="string" i="0"/>
+<multiname type="string" i="0"/>
+<multimode type="string" i="0">one</multimode>
+<n_multi type="unsigned7" i="0">0</n_multi>
+</button>
+</multi>
+<multi type="multievent_t" i="2">
+<name type="string" i="0">bank 3</name>
+<button type="button_t" i="0">
+<type type="string" i="0">single</type>
+<vchannel type="unsigned7" i="0">0</vchannel>
+<mode type="string" i="0">key</mode>
+<controller type="unsigned7" i="0">110</controller>
+<onvalue type="unsigned7" i="0">127</onvalue>
+<offvalue type="unsigned7" i="0">0</offvalue>
+<key type="unsigned7" i="0">106</key>
+<program type="unsigned7" i="0">0</program>
+<midimsg type="string" i="0">start</midimsg>
+<vcfrom type="unsigned7" i="0">0</vcfrom>
+<cto type="unsigned7" i="0">0</cto>
+<eventname type="string" i="0"/>
+<eventtarget type="string" i="0"/>
+<multiname type="string" i="0"/>
+<multimode type="string" i="0">one</multimode>
+<n_multi type="unsigned7" i="0">0</n_multi>
+</button>
+</multi>
+<multi type="multievent_t" i="3">
+<name type="string" i="0">bank 4</name>
+<button type="button_t" i="0">
+<type type="string" i="0">single</type>
+<vchannel type="unsigned7" i="0">0</vchannel>
+<mode type="string" i="0">key</mode>
+<controller type="unsigned7" i="0">126</controller>
+<onvalue type="unsigned7" i="0">127</onvalue>
+<offvalue type="unsigned7" i="0">0</offvalue>
+<key type="unsigned7" i="0">122</key>
+<program type="unsigned7" i="0">0</program>
+<midimsg type="string" i="0">start</midimsg>
+<vcfrom type="unsigned7" i="0">0</vcfrom>
+<cto type="unsigned7" i="0">0</cto>
+<eventname type="string" i="0"/>
+<eventtarget type="string" i="0"/>
+<multiname type="string" i="0"/>
+<multimode type="string" i="0">one</multimode>
+<n_multi type="unsigned7" i="0">0</n_multi>
+</button>
+</multi>
+</track>
+<track type="button_t" i="15">
+<type type="string" i="0">single</type>
+<vchannel type="unsigned7" i="0">0</vchannel>
+<mode type="string" i="0">key</mode>
+<controller type="unsigned7" i="0">79</controller>
+<onvalue type="unsigned7" i="0">127</onvalue>
+<offvalue type="unsigned7" i="0">0</offvalue>
+<key type="unsigned7" i="0">68</key>
+<program type="unsigned7" i="0">0</program>
+<midimsg type="string" i="0">start</midimsg>
+<vcfrom type="unsigned7" i="0">0</vcfrom>
+<cto type="unsigned7" i="0">0</cto>
+<eventname type="string" i="0"/>
+<eventtarget type="string" i="0"/>
+<multiname type="string" i="0">R upper</multiname>
+<multimode type="string" i="0">one</multimode>
+<n_multi type="unsigned7" i="0">4</n_multi>
+<multi type="multievent_t" i="0">
+<name type="string" i="0">bank 1</name>
+<button type="button_t" i="0">
+<type type="string" i="0">single</type>
+<vchannel type="unsigned7" i="0">0</vchannel>
+<mode type="string" i="0">key</mode>
+<controller type="unsigned7" i="0">79</controller>
+<onvalue type="unsigned7" i="0">127</onvalue>
+<offvalue type="unsigned7" i="0">0</offvalue>
+<key type="unsigned7" i="0">75</key>
+<program type="unsigned7" i="0">0</program>
+<midimsg type="string" i="0">start</midimsg>
+<vcfrom type="unsigned7" i="0">0</vcfrom>
+<cto type="unsigned7" i="0">0</cto>
+<eventname type="string" i="0"/>
+<eventtarget type="string" i="0"/>
+<multiname type="string" i="0"/>
+<multimode type="string" i="0">one</multimode>
+<n_multi type="unsigned7" i="0">0</n_multi>
+</button>
+</multi>
+<multi type="multievent_t" i="1">
+<name type="string" i="0">bank 2</name>
+<button type="button_t" i="0">
+<type type="string" i="0">single</type>
+<vchannel type="unsigned7" i="0">0</vchannel>
+<mode type="string" i="0">key</mode>
+<controller type="unsigned7" i="0">95</controller>
+<onvalue type="unsigned7" i="0">127</onvalue>
+<offvalue type="unsigned7" i="0">0</offvalue>
+<key type="unsigned7" i="0">91</key>
+<program type="unsigned7" i="0">0</program>
+<midimsg type="string" i="0">start</midimsg>
+<vcfrom type="unsigned7" i="0">0</vcfrom>
+<cto type="unsigned7" i="0">0</cto>
+<eventname type="string" i="0"/>
+<eventtarget type="string" i="0"/>
+<multiname type="string" i="0"/>
+<multimode type="string" i="0">one</multimode>
+<n_multi type="unsigned7" i="0">0</n_multi>
+</button>
+</multi>
+<multi type="multievent_t" i="2">
+<name type="string" i="0">bank 3</name>
+<button type="button_t" i="0">
+<type type="string" i="0">single</type>
+<vchannel type="unsigned7" i="0">0</vchannel>
+<mode type="string" i="0">key</mode>
+<controller type="unsigned7" i="0">111</controller>
+<onvalue type="unsigned7" i="0">127</onvalue>
+<offvalue type="unsigned7" i="0">0</offvalue>
+<key type="unsigned7" i="0">107</key>
+<program type="unsigned7" i="0">0</program>
+<midimsg type="string" i="0">start</midimsg>
+<vcfrom type="unsigned7" i="0">0</vcfrom>
+<cto type="unsigned7" i="0">0</cto>
+<eventname type="string" i="0"/>
+<eventtarget type="string" i="0"/>
+<multiname type="string" i="0"/>
+<multimode type="string" i="0">one</multimode>
+<n_multi type="unsigned7" i="0">0</n_multi>
+</button>
+</multi>
+<multi type="multievent_t" i="3">
+<name type="string" i="0">bank 4</name>
+<button type="button_t" i="0">
+<type type="string" i="0">single</type>
+<vchannel type="unsigned7" i="0">0</vchannel>
+<mode type="string" i="0">key</mode>
+<controller type="unsigned7" i="0">127</controller>
+<onvalue type="unsigned7" i="0">127</onvalue>
+<offvalue type="unsigned7" i="0">0</offvalue>
+<key type="unsigned7" i="0">123</key>
+<program type="unsigned7" i="0">0</program>
+<midimsg type="string" i="0">start</midimsg>
+<vcfrom type="unsigned7" i="0">0</vcfrom>
+<cto type="unsigned7" i="0">0</cto>
+<eventname type="string" i="0"/>
+<eventtarget type="string" i="0"/>
+<multiname type="string" i="0"/>
+<multimode type="string" i="0">one</multimode>
+<n_multi type="unsigned7" i="0">0</n_multi>
+</button>
+</multi>
+</track>
+<button type="button_t" i="0">
+<type type="string" i="0">single</type>
+<vchannel type="unsigned7" i="0">0</vchannel>
+<mode type="string" i="0">key</mode>
+<controller type="unsigned7" i="0">30</controller>
+<onvalue type="unsigned7" i="0">127</onvalue>
+<offvalue type="unsigned7" i="0">0</offvalue>
+<key type="unsigned7" i="0">47</key>
+<program type="unsigned7" i="0">0</program>
+<midimsg type="string" i="0">start</midimsg>
+<vcfrom type="unsigned7" i="0">0</vcfrom>
+<cto type="unsigned7" i="0">1</cto>
+<eventname type="string" i="0"/>
+<eventtarget type="string" i="0"/>
+<multiname type="string" i="0">L lock</multiname>
+<multimode type="string" i="0">one</multimode>
+<n_multi type="unsigned7" i="0">0</n_multi>
+</button>
+<button type="button_t" i="1">
+<type type="string" i="0">single</type>
+<vchannel type="unsigned7" i="0">0</vchannel>
+<mode type="string" i="0">key</mode>
+<controller type="unsigned7" i="0">31</controller>
+<onvalue type="unsigned7" i="0">127</onvalue>
+<offvalue type="unsigned7" i="0">0</offvalue>
+<key type="unsigned7" i="0">51</key>
+<program type="unsigned7" i="0">0</program>
+<midimsg type="string" i="0">start</midimsg>
+<vcfrom type="unsigned7" i="0">0</vcfrom>
+<cto type="unsigned7" i="0">0</cto>
+<eventname type="string" i="0"/>
+<eventtarget type="string" i="0"/>
+<multiname type="string" i="0">R lock</multiname>
+<multimode type="string" i="0">one</multimode>
+<n_multi type="unsigned7" i="0">0</n_multi>
+</button>
+<button type="button_t" i="2">
+<type type="string" i="0">single</type>
+<vchannel type="unsigned7" i="0">0</vchannel>
+<mode type="string" i="0">key</mode>
+<controller type="unsigned7" i="0">32</controller>
+<onvalue type="unsigned7" i="0">127</onvalue>
+<offvalue type="unsigned7" i="0">0</offvalue>
+<key type="unsigned7" i="0">71</key>
+<program type="unsigned7" i="0">0</program>
+<midimsg type="string" i="0">start</midimsg>
+<vcfrom type="unsigned7" i="0">0</vcfrom>
+<cto type="unsigned7" i="0">0</cto>
+<eventname type="string" i="0"/>
+<eventtarget type="string" i="0"/>
+<multiname type="string" i="0">solo</multiname>
+<multimode type="string" i="0">one</multimode>
+<n_multi type="unsigned7" i="0">0</n_multi>
+</button>
+<light type="bool" i="0">true</light>
+<lightlast type="bool" i="0">false</lightlast>
+</tracks>
+<macro type="macro_t" i="0">
+<mode type="string" i="0">mix</mode>
+<button type="button_t" i="0">
+<type type="string" i="0">multi</type>
+<vchannel type="unsigned7" i="0">0</vchannel>
+<mode type="string" i="0">key</mode>
+<controller type="unsigned7" i="0">26</controller>
+<onvalue type="unsigned7" i="0">127</onvalue>
+<offvalue type="unsigned7" i="0">0</offvalue>
+<key type="unsigned7" i="0">46</key>
+<program type="unsigned7" i="0">0</program>
+<midimsg type="string" i="0">start</midimsg>
+<vcfrom type="unsigned7" i="0">0</vcfrom>
+<cto type="unsigned7" i="0">0</cto>
+<eventname type="string" i="0"/>
+<eventtarget type="string" i="0"/>
+<multiname type="string" i="0">macro 1</multiname>
+<multimode type="string" i="0">all</multimode>
+<n_multi type="unsigned7" i="0">16</n_multi>
+<multi type="multievent_t" i="0">
+<name type="string" i="0">set bank 1</name>
+<button type="button_t" i="0">
+<type type="string" i="0">single</type>
+<vchannel type="unsigned7" i="0">0</vchannel>
+<mode type="string" i="0">event</mode>
+<controller type="unsigned7" i="0">1</controller>
+<onvalue type="unsigned7" i="0">127</onvalue>
+<offvalue type="unsigned7" i="0">0</offvalue>
+<key type="unsigned7" i="0">1</key>
+<program type="unsigned7" i="0">0</program>
+<midimsg type="string" i="0">start</midimsg>
+<vcfrom type="unsigned7" i="0">0</vcfrom>
+<cto type="unsigned7" i="0">0</cto>
+<eventname type="string" i="0"/>
+<eventtarget type="string" i="0"/>
+<multiname type="string" i="0"/>
+<multimode type="string" i="0">one</multimode>
+<n_multi type="unsigned7" i="0">0</n_multi>
+</button>
+</multi>
+<multi type="multievent_t" i="1">
+<name type="string" i="0">set bank 1</name>
+<button type="button_t" i="0">
+<type type="string" i="0">single</type>
+<vchannel type="unsigned7" i="0">0</vchannel>
+<mode type="string" i="0">event</mode>
+<controller type="unsigned7" i="0">1</controller>
+<onvalue type="unsigned7" i="0">127</onvalue>
+<offvalue type="unsigned7" i="0">0</offvalue>
+<key type="unsigned7" i="0">1</key>
+<program type="unsigned7" i="0">0</program>
+<midimsg type="string" i="0">start</midimsg>
+<vcfrom type="unsigned7" i="0">0</vcfrom>
+<cto type="unsigned7" i="0">0</cto>
+<eventname type="string" i="0"/>
+<eventtarget type="string" i="0"/>
+<multiname type="string" i="0"/>
+<multimode type="string" i="0">one</multimode>
+<n_multi type="unsigned7" i="0">0</n_multi>
+</button>
+</multi>
+<multi type="multievent_t" i="2">
+<name type="string" i="0">set bank 1</name>
+<button type="button_t" i="0">
+<type type="string" i="0">single</type>
+<vchannel type="unsigned7" i="0">0</vchannel>
+<mode type="string" i="0">event</mode>
+<controller type="unsigned7" i="0">1</controller>
+<onvalue type="unsigned7" i="0">127</onvalue>
+<offvalue type="unsigned7" i="0">0</offvalue>
+<key type="unsigned7" i="0">1</key>
+<program type="unsigned7" i="0">0</program>
+<midimsg type="string" i="0">start</midimsg>
+<vcfrom type="unsigned7" i="0">0</vcfrom>
+<cto type="unsigned7" i="0">0</cto>
+<eventname type="string" i="0"/>
+<eventtarget type="string" i="0"/>
+<multiname type="string" i="0"/>
+<multimode type="string" i="0">one</multimode>
+<n_multi type="unsigned7" i="0">0</n_multi>
+</button>
+</multi>
+<multi type="multievent_t" i="3">
+<name type="string" i="0">set bank 1</name>
+<button type="button_t" i="0">
+<type type="string" i="0">single</type>
+<vchannel type="unsigned7" i="0">0</vchannel>
+<mode type="string" i="0">event</mode>
+<controller type="unsigned7" i="0">1</controller>
+<onvalue type="unsigned7" i="0">127</onvalue>
+<offvalue type="unsigned7" i="0">0</offvalue>
+<key type="unsigned7" i="0">1</key>
+<program type="unsigned7" i="0">0</program>
+<midimsg type="string" i="0">start</midimsg>
+<vcfrom type="unsigned7" i="0">0</vcfrom>
+<cto type="unsigned7" i="0">0</cto>
+<eventname type="string" i="0"/>
+<eventtarget type="string" i="0"/>
+<multiname type="string" i="0"/>
+<multimode type="string" i="0">one</multimode>
+<n_multi type="unsigned7" i="0">0</n_multi>
+</button>
+</multi>
+<multi type="multievent_t" i="4">
+<name type="string" i="0">set bank 1</name>
+<button type="button_t" i="0">
+<type type="string" i="0">single</type>
+<vchannel type="unsigned7" i="0">0</vchannel>
+<mode type="string" i="0">event</mode>
+<controller type="unsigned7" i="0">1</controller>
+<onvalue type="unsigned7" i="0">127</onvalue>
+<offvalue type="unsigned7" i="0">0</offvalue>
+<key type="unsigned7" i="0">1</key>
+<program type="unsigned7" i="0">0</program>
+<midimsg type="string" i="0">start</midimsg>
+<vcfrom type="unsigned7" i="0">0</vcfrom>
+<cto type="unsigned7" i="0">0</cto>
+<eventname type="string" i="0"/>
+<eventtarget type="string" i="0"/>
+<multiname type="string" i="0"/>
+<multimode type="string" i="0">one</multimode>
+<n_multi type="unsigned7" i="0">0</n_multi>
+</button>
+</multi>
+<multi type="multievent_t" i="5">
+<name type="string" i="0">set bank 1</name>
+<button type="button_t" i="0">
+<type type="string" i="0">single</type>
+<vchannel type="unsigned7" i="0">0</vchannel>
+<mode type="string" i="0">event</mode>
+<controller type="unsigned7" i="0">1</controller>
+<onvalue type="unsigned7" i="0">127</onvalue>
+<offvalue type="unsigned7" i="0">0</offvalue>
+<key type="unsigned7" i="0">1</key>
+<program type="unsigned7" i="0">0</program>
+<midimsg type="string" i="0">start</midimsg>
+<vcfrom type="unsigned7" i="0">0</vcfrom>
+<cto type="unsigned7" i="0">0</cto>
+<eventname type="string" i="0"/>
+<eventtarget type="string" i="0"/>
+<multiname type="string" i="0"/>
+<multimode type="string" i="0">one</multimode>
+<n_multi type="unsigned7" i="0">0</n_multi>
+</button>
+</multi>
+<multi type="multievent_t" i="6">
+<name type="string" i="0">set bank 1</name>
+<button type="button_t" i="0">
+<type type="string" i="0">single</type>
+<vchannel type="unsigned7" i="0">0</vchannel>
+<mode type="string" i="0">event</mode>
+<controller type="unsigned7" i="0">1</controller>
+<onvalue type="unsigned7" i="0">127</onvalue>
+<offvalue type="unsigned7" i="0">0</offvalue>
+<key type="unsigned7" i="0">1</key>
+<program type="unsigned7" i="0">0</program>
+<midimsg type="string" i="0">start</midimsg>
+<vcfrom type="unsigned7" i="0">0</vcfrom>
+<cto type="unsigned7" i="0">0</cto>
+<eventname type="string" i="0"/>
+<eventtarget type="string" i="0"/>
+<multiname type="string" i="0"/>
+<multimode type="string" i="0">one</multimode>
+<n_multi type="unsigned7" i="0">0</n_multi>
+</button>
+</multi>
+<multi type="multievent_t" i="7">
+<name type="string" i="0">set bank 1</name>
+<button type="button_t" i="0">
+<type type="string" i="0">single</type>
+<vchannel type="unsigned7" i="0">0</vchannel>
+<mode type="string" i="0">event</mode>
+<controller type="unsigned7" i="0">1</controller>
+<onvalue type="unsigned7" i="0">127</onvalue>
+<offvalue type="unsigned7" i="0">0</offvalue>
+<key type="unsigned7" i="0">1</key>
+<program type="unsigned7" i="0">0</program>
+<midimsg type="string" i="0">start</midimsg>
+<vcfrom type="unsigned7" i="0">0</vcfrom>
+<cto type="unsigned7" i="0">0</cto>
+<eventname type="string" i="0"/>
+<eventtarget type="string" i="0"/>
+<multiname type="string" i="0"/>
+<multimode type="string" i="0">one</multimode>
+<n_multi type="unsigned7" i="0">0</n_multi>
+</button>
+</multi>
+<multi type="multievent_t" i="8">
+<name type="string" i="0">set bank 1</name>
+<button type="button_t" i="0">
+<type type="string" i="0">single</type>
+<vchannel type="unsigned7" i="0">0</vchannel>
+<mode type="string" i="0">event</mode>
+<controller type="unsigned7" i="0">1</controller>
+<onvalue type="unsigned7" i="0">127</onvalue>
+<offvalue type="unsigned7" i="0">0</offvalue>
+<key type="unsigned7" i="0">1</key>
+<program type="unsigned7" i="0">0</program>
+<midimsg type="string" i="0">start</midimsg>
+<vcfrom type="unsigned7" i="0">0</vcfrom>
+<cto type="unsigned7" i="0">0</cto>
+<eventname type="string" i="0"/>
+<eventtarget type="string" i="0"/>
+<multiname type="string" i="0"/>
+<multimode type="string" i="0">one</multimode>
+<n_multi type="unsigned7" i="0">0</n_multi>
+</button>
+</multi>
+<multi type="multievent_t" i="9">
+<name type="string" i="0">set bank 1</name>
+<button type="button_t" i="0">
+<type type="string" i="0">single</type>
+<vchannel type="unsigned7" i="0">0</vchannel>
+<mode type="string" i="0">event</mode>
+<controller type="unsigned7" i="0">1</controller>
+<onvalue type="unsigned7" i="0">127</onvalue>
+<offvalue type="unsigned7" i="0">0</offvalue>
+<key type="unsigned7" i="0">1</key>
+<program type="unsigned7" i="0">0</program>
+<midimsg type="string" i="0">start</midimsg>
+<vcfrom type="unsigned7" i="0">0</vcfrom>
+<cto type="unsigned7" i="0">0</cto>
+<eventname type="string" i="0"/>
+<eventtarget type="string" i="0"/>
+<multiname type="string" i="0"/>
+<multimode type="string" i="0">one</multimode>
+<n_multi type="unsigned7" i="0">0</n_multi>
+</button>
+</multi>
+<multi type="multievent_t" i="10">
+<name type="string" i="0">set bank 1</name>
+<button type="button_t" i="0">
+<type type="string" i="0">single</type>
+<vchannel type="unsigned7" i="0">0</vchannel>
+<mode type="string" i="0">event</mode>
+<controller type="unsigned7" i="0">1</controller>
+<onvalue type="unsigned7" i="0">127</onvalue>
+<offvalue type="unsigned7" i="0">0</offvalue>
+<key type="unsigned7" i="0">1</key>
+<program type="unsigned7" i="0">0</program>
+<midimsg type="string" i="0">start</midimsg>
+<vcfrom type="unsigned7" i="0">0</vcfrom>
+<cto type="unsigned7" i="0">0</cto>
+<eventname type="string" i="0"/>
+<eventtarget type="string" i="0"/>
+<multiname type="string" i="0"/>
+<multimode type="string" i="0">one</multimode>
+<n_multi type="unsigned7" i="0">0</n_multi>
+</button>
+</multi>
+<multi type="multievent_t" i="11">
+<name type="string" i="0">set bank 1</name>
+<button type="button_t" i="0">
+<type type="string" i="0">single</type>
+<vchannel type="unsigned7" i="0">0</vchannel>
+<mode type="string" i="0">event</mode>
+<controller type="unsigned7" i="0">1</controller>
+<onvalue type="unsigned7" i="0">127</onvalue>
+<offvalue type="unsigned7" i="0">0</offvalue>
+<key type="unsigned7" i="0">1</key>
+<program type="unsigned7" i="0">0</program>
+<midimsg type="string" i="0">start</midimsg>
+<vcfrom type="unsigned7" i="0">0</vcfrom>
+<cto type="unsigned7" i="0">0</cto>
+<eventname type="string" i="0"/>
+<eventtarget type="string" i="0"/>
+<multiname type="string" i="0"/>
+<multimode type="string" i="0">one</multimode>
+<n_multi type="unsigned7" i="0">0</n_multi>
+</button>
+</multi>
+<multi type="multievent_t" i="12">
+<name type="string" i="0">set bank 1</name>
+<button type="button_t" i="0">
+<type type="string" i="0">single</type>
+<vchannel type="unsigned7" i="0">0</vchannel>
+<mode type="string" i="0">event</mode>
+<controller type="unsigned7" i="0">1</controller>
+<onvalue type="unsigned7" i="0">127</onvalue>
+<offvalue type="unsigned7" i="0">0</offvalue>
+<key type="unsigned7" i="0">1</key>
+<program type="unsigned7" i="0">0</program>
+<midimsg type="string" i="0">start</midimsg>
+<vcfrom type="unsigned7" i="0">0</vcfrom>
+<cto type="unsigned7" i="0">0</cto>
+<eventname type="string" i="0"/>
+<eventtarget type="string" i="0"/>
+<multiname type="string" i="0"/>
+<multimode type="string" i="0">one</multimode>
+<n_multi type="unsigned7" i="0">0</n_multi>
+</button>
+</multi>
+<multi type="multievent_t" i="13">
+<name type="string" i="0">set bank 1</name>
+<button type="button_t" i="0">
+<type type="string" i="0">single</type>
+<vchannel type="unsigned7" i="0">0</vchannel>
+<mode type="string" i="0">event</mode>
+<controller type="unsigned7" i="0">1</controller>
+<onvalue type="unsigned7" i="0">127</onvalue>
+<offvalue type="unsigned7" i="0">0</offvalue>
+<key type="unsigned7" i="0">1</key>
+<program type="unsigned7" i="0">0</program>
+<midimsg type="string" i="0">start</midimsg>
+<vcfrom type="unsigned7" i="0">0</vcfrom>
+<cto type="unsigned7" i="0">0</cto>
+<eventname type="string" i="0"/>
+<eventtarget type="string" i="0"/>
+<multiname type="string" i="0"/>
+<multimode type="string" i="0">one</multimode>
+<n_multi type="unsigned7" i="0">0</n_multi>
+</button>
+</multi>
+<multi type="multievent_t" i="14">
+<name type="string" i="0">set bank 1</name>
+<button type="button_t" i="0">
+<type type="string" i="0">single</type>
+<vchannel type="unsigned7" i="0">0</vchannel>
+<mode type="string" i="0">event</mode>
+<controller type="unsigned7" i="0">1</controller>
+<onvalue type="unsigned7" i="0">127</onvalue>
+<offvalue type="unsigned7" i="0">0</offvalue>
+<key type="unsigned7" i="0">1</key>
+<program type="unsigned7" i="0">0</program>
+<midimsg type="string" i="0">start</midimsg>
+<vcfrom type="unsigned7" i="0">0</vcfrom>
+<cto type="unsigned7" i="0">0</cto>
+<eventname type="string" i="0"/>
+<eventtarget type="string" i="0"/>
+<multiname type="string" i="0"/>
+<multimode type="string" i="0">one</multimode>
+<n_multi type="unsigned7" i="0">0</n_multi>
+</button>
+</multi>
+<multi type="multievent_t" i="15">
+<name type="string" i="0">set bank 1</name>
+<button type="button_t" i="0">
+<type type="string" i="0">single</type>
+<vchannel type="unsigned7" i="0">0</vchannel>
+<mode type="string" i="0">event</mode>
+<controller type="unsigned7" i="0">1</controller>
+<onvalue type="unsigned7" i="0">127</onvalue>
+<offvalue type="unsigned7" i="0">0</offvalue>
+<key type="unsigned7" i="0">1</key>
+<program type="unsigned7" i="0">0</program>
+<midimsg type="string" i="0">start</midimsg>
+<vcfrom type="unsigned7" i="0">0</vcfrom>
+<cto type="unsigned7" i="0">0</cto>
+<eventname type="string" i="0"/>
+<eventtarget type="string" i="0"/>
+<multiname type="string" i="0"/>
+<multimode type="string" i="0">one</multimode>
+<n_multi type="unsigned7" i="0">0</n_multi>
+</button>
+</multi>
+</button>
+<button type="button_t" i="1">
+<type type="string" i="0">multi</type>
+<vchannel type="unsigned7" i="0">0</vchannel>
+<mode type="string" i="0">key</mode>
+<controller type="unsigned7" i="0">27</controller>
+<onvalue type="unsigned7" i="0">127</onvalue>
+<offvalue type="unsigned7" i="0">0</offvalue>
+<key type="unsigned7" i="0">47</key>
+<program type="unsigned7" i="0">0</program>
+<midimsg type="string" i="0">start</midimsg>
+<vcfrom type="unsigned7" i="0">0</vcfrom>
+<cto type="unsigned7" i="0">0</cto>
+<eventname type="string" i="0"/>
+<eventtarget type="string" i="0"/>
+<multiname type="string" i="0">macro 2</multiname>
+<multimode type="string" i="0">all</multimode>
+<n_multi type="unsigned7" i="0">16</n_multi>
+<multi type="multievent_t" i="0">
+<name type="string" i="0">set bank 2</name>
+<button type="button_t" i="0">
+<type type="string" i="0">single</type>
+<vchannel type="unsigned7" i="0">0</vchannel>
+<mode type="string" i="0">event</mode>
+<controller type="unsigned7" i="0">1</controller>
+<onvalue type="unsigned7" i="0">127</onvalue>
+<offvalue type="unsigned7" i="0">0</offvalue>
+<key type="unsigned7" i="0">1</key>
+<program type="unsigned7" i="0">0</program>
+<midimsg type="string" i="0">start</midimsg>
+<vcfrom type="unsigned7" i="0">0</vcfrom>
+<cto type="unsigned7" i="0">0</cto>
+<eventname type="string" i="0"/>
+<eventtarget type="string" i="0"/>
+<multiname type="string" i="0"/>
+<multimode type="string" i="0">one</multimode>
+<n_multi type="unsigned7" i="0">0</n_multi>
+</button>
+</multi>
+<multi type="multievent_t" i="1">
+<name type="string" i="0">set bank 2</name>
+<button type="button_t" i="0">
+<type type="string" i="0">single</type>
+<vchannel type="unsigned7" i="0">0</vchannel>
+<mode type="string" i="0">event</mode>
+<controller type="unsigned7" i="0">1</controller>
+<onvalue type="unsigned7" i="0">127</onvalue>
+<offvalue type="unsigned7" i="0">0</offvalue>
+<key type="unsigned7" i="0">1</key>
+<program type="unsigned7" i="0">0</program>
+<midimsg type="string" i="0">start</midimsg>
+<vcfrom type="unsigned7" i="0">0</vcfrom>
+<cto type="unsigned7" i="0">0</cto>
+<eventname type="string" i="0"/>
+<eventtarget type="string" i="0"/>
+<multiname type="string" i="0"/>
+<multimode type="string" i="0">one</multimode>
+<n_multi type="unsigned7" i="0">0</n_multi>
+</button>
+</multi>
+<multi type="multievent_t" i="2">
+<name type="string" i="0">set bank 2</name>
+<button type="button_t" i="0">
+<type type="string" i="0">single</type>
+<vchannel type="unsigned7" i="0">0</vchannel>
+<mode type="string" i="0">event</mode>
+<controller type="unsigned7" i="0">1</controller>
+<onvalue type="unsigned7" i="0">127</onvalue>
+<offvalue type="unsigned7" i="0">0</offvalue>
+<key type="unsigned7" i="0">1</key>
+<program type="unsigned7" i="0">0</program>
+<midimsg type="string" i="0">start</midimsg>
+<vcfrom type="unsigned7" i="0">0</vcfrom>
+<cto type="unsigned7" i="0">0</cto>
+<eventname type="string" i="0"/>
+<eventtarget type="string" i="0"/>
+<multiname type="string" i="0"/>
+<multimode type="string" i="0">one</multimode>
+<n_multi type="unsigned7" i="0">0</n_multi>
+</button>
+</multi>
+<multi type="multievent_t" i="3">
+<name type="string" i="0">set bank 2</name>
+<button type="button_t" i="0">
+<type type="string" i="0">single</type>
+<vchannel type="unsigned7" i="0">0</vchannel>
+<mode type="string" i="0">event</mode>
+<controller type="unsigned7" i="0">1</controller>
+<onvalue type="unsigned7" i="0">127</onvalue>
+<offvalue type="unsigned7" i="0">0</offvalue>
+<key type="unsigned7" i="0">1</key>
+<program type="unsigned7" i="0">0</program>
+<midimsg type="string" i="0">start</midimsg>
+<vcfrom type="unsigned7" i="0">0</vcfrom>
+<cto type="unsigned7" i="0">0</cto>
+<eventname type="string" i="0"/>
+<eventtarget type="string" i="0"/>
+<multiname type="string" i="0"/>
+<multimode type="string" i="0">one</multimode>
+<n_multi type="unsigned7" i="0">0</n_multi>
+</button>
+</multi>
+<multi type="multievent_t" i="4">
+<name type="string" i="0">set bank 2</name>
+<button type="button_t" i="0">
+<type type="string" i="0">single</type>
+<vchannel type="unsigned7" i="0">0</vchannel>
+<mode type="string" i="0">event</mode>
+<controller type="unsigned7" i="0">1</controller>
+<onvalue type="unsigned7" i="0">127</onvalue>
+<offvalue type="unsigned7" i="0">0</offvalue>
+<key type="unsigned7" i="0">1</key>
+<program type="unsigned7" i="0">0</program>
+<midimsg type="string" i="0">start</midimsg>
+<vcfrom type="unsigned7" i="0">0</vcfrom>
+<cto type="unsigned7" i="0">0</cto>
+<eventname type="string" i="0"/>
+<eventtarget type="string" i="0"/>
+<multiname type="string" i="0"/>
+<multimode type="string" i="0">one</multimode>
+<n_multi type="unsigned7" i="0">0</n_multi>
+</button>
+</multi>
+<multi type="multievent_t" i="5">
+<name type="string" i="0">set bank 2</name>
+<button type="button_t" i="0">
+<type type="string" i="0">single</type>
+<vchannel type="unsigned7" i="0">0</vchannel>
+<mode type="string" i="0">event</mode>
+<controller type="unsigned7" i="0">1</controller>
+<onvalue type="unsigned7" i="0">127</onvalue>
+<offvalue type="unsigned7" i="0">0</offvalue>
+<key type="unsigned7" i="0">1</key>
+<program type="unsigned7" i="0">0</program>
+<midimsg type="string" i="0">start</midimsg>
+<vcfrom type="unsigned7" i="0">0</vcfrom>
+<cto type="unsigned7" i="0">0</cto>
+<eventname type="string" i="0"/>
+<eventtarget type="string" i="0"/>
+<multiname type="string" i="0"/>
+<multimode type="string" i="0">one</multimode>
+<n_multi type="unsigned7" i="0">0</n_multi>
+</button>
+</multi>
+<multi type="multievent_t" i="6">
+<name type="string" i="0">set bank 2</name>
+<button type="button_t" i="0">
+<type type="string" i="0">single</type>
+<vchannel type="unsigned7" i="0">0</vchannel>
+<mode type="string" i="0">event</mode>
+<controller type="unsigned7" i="0">1</controller>
+<onvalue type="unsigned7" i="0">127</onvalue>
+<offvalue type="unsigned7" i="0">0</offvalue>
+<key type="unsigned7" i="0">1</key>
+<program type="unsigned7" i="0">0</program>
+<midimsg type="string" i="0">start</midimsg>
+<vcfrom type="unsigned7" i="0">0</vcfrom>
+<cto type="unsigned7" i="0">0</cto>
+<eventname type="string" i="0"/>
+<eventtarget type="string" i="0"/>
+<multiname type="string" i="0"/>
+<multimode type="string" i="0">one</multimode>
+<n_multi type="unsigned7" i="0">0</n_multi>
+</button>
+</multi>
+<multi type="multievent_t" i="7">
+<name type="string" i="0">set bank 2</name>
+<button type="button_t" i="0">
+<type type="string" i="0">single</type>
+<vchannel type="unsigned7" i="0">0</vchannel>
+<mode type="string" i="0">event</mode>
+<controller type="unsigned7" i="0">1</controller>
+<onvalue type="unsigned7" i="0">127</onvalue>
+<offvalue type="unsigned7" i="0">0</offvalue>
+<key type="unsigned7" i="0">1</key>
+<program type="unsigned7" i="0">0</program>
+<midimsg type="string" i="0">start</midimsg>
+<vcfrom type="unsigned7" i="0">0</vcfrom>
+<cto type="unsigned7" i="0">0</cto>
+<eventname type="string" i="0"/>
+<eventtarget type="string" i="0"/>
+<multiname type="string" i="0"/>
+<multimode type="string" i="0">one</multimode>
+<n_multi type="unsigned7" i="0">0</n_multi>
+</button>
+</multi>
+<multi type="multievent_t" i="8">
+<name type="string" i="0">set bank 2</name>
+<button type="button_t" i="0">
+<type type="string" i="0">single</type>
+<vchannel type="unsigned7" i="0">0</vchannel>
+<mode type="string" i="0">event</mode>
+<controller type="unsigned7" i="0">1</controller>
+<onvalue type="unsigned7" i="0">127</onvalue>
+<offvalue type="unsigned7" i="0">0</offvalue>
+<key type="unsigned7" i="0">1</key>
+<program type="unsigned7" i="0">0</program>
+<midimsg type="string" i="0">start</midimsg>
+<vcfrom type="unsigned7" i="0">0</vcfrom>
+<cto type="unsigned7" i="0">0</cto>
+<eventname type="string" i="0"/>
+<eventtarget type="string" i="0"/>
+<multiname type="string" i="0"/>
+<multimode type="string" i="0">one</multimode>
+<n_multi type="unsigned7" i="0">0</n_multi>
+</button>
+</multi>
+<multi type="multievent_t" i="9">
+<name type="string" i="0">set bank 2</name>
+<button type="button_t" i="0">
+<type type="string" i="0">single</type>
+<vchannel type="unsigned7" i="0">0</vchannel>
+<mode type="string" i="0">event</mode>
+<controller type="unsigned7" i="0">1</controller>
+<onvalue type="unsigned7" i="0">127</onvalue>
+<offvalue type="unsigned7" i="0">0</offvalue>
+<key type="unsigned7" i="0">1</key>
+<program type="unsigned7" i="0">0</program>
+<midimsg type="string" i="0">start</midimsg>
+<vcfrom type="unsigned7" i="0">0</vcfrom>
+<cto type="unsigned7" i="0">0</cto>
+<eventname type="string" i="0"/>
+<eventtarget type="string" i="0"/>
+<multiname type="string" i="0"/>
+<multimode type="string" i="0">one</multimode>
+<n_multi type="unsigned7" i="0">0</n_multi>
+</button>
+</multi>
+<multi type="multievent_t" i="10">
+<name type="string" i="0">set bank 2</name>
+<button type="button_t" i="0">
+<type type="string" i="0">single</type>
+<vchannel type="unsigned7" i="0">0</vchannel>
+<mode type="string" i="0">event</mode>
+<controller type="unsigned7" i="0">1</controller>
+<onvalue type="unsigned7" i="0">127</onvalue>
+<offvalue type="unsigned7" i="0">0</offvalue>
+<key type="unsigned7" i="0">1</key>
+<program type="unsigned7" i="0">0</program>
+<midimsg type="string" i="0">start</midimsg>
+<vcfrom type="unsigned7" i="0">0</vcfrom>
+<cto type="unsigned7" i="0">0</cto>
+<eventname type="string" i="0"/>
+<eventtarget type="string" i="0"/>
+<multiname type="string" i="0"/>
+<multimode type="string" i="0">one</multimode>
+<n_multi type="unsigned7" i="0">0</n_multi>
+</button>
+</multi>
+<multi type="multievent_t" i="11">
+<name type="string" i="0">set bank 2</name>
+<button type="button_t" i="0">
+<type type="string" i="0">single</type>
+<vchannel type="unsigned7" i="0">0</vchannel>
+<mode type="string" i="0">event</mode>
+<controller type="unsigned7" i="0">1</controller>
+<onvalue type="unsigned7" i="0">127</onvalue>
+<offvalue type="unsigned7" i="0">0</offvalue>
+<key type="unsigned7" i="0">1</key>
+<program type="unsigned7" i="0">0</program>
+<midimsg type="string" i="0">start</midimsg>
+<vcfrom type="unsigned7" i="0">0</vcfrom>
+<cto type="unsigned7" i="0">0</cto>
+<eventname type="string" i="0"/>
+<eventtarget type="string" i="0"/>
+<multiname type="string" i="0"/>
+<multimode type="string" i="0">one</multimode>
+<n_multi type="unsigned7" i="0">0</n_multi>
+</button>
+</multi>
+<multi type="multievent_t" i="12">
+<name type="string" i="0">set bank 2</name>
+<button type="button_t" i="0">
+<type type="string" i="0">single</type>
+<vchannel type="unsigned7" i="0">0</vchannel>
+<mode type="string" i="0">event</mode>
+<controller type="unsigned7" i="0">1</controller>
+<onvalue type="unsigned7" i="0">127</onvalue>
+<offvalue type="unsigned7" i="0">0</offvalue>
+<key type="unsigned7" i="0">1</key>
+<program type="unsigned7" i="0">0</program>
+<midimsg type="string" i="0">start</midimsg>
+<vcfrom type="unsigned7" i="0">0</vcfrom>
+<cto type="unsigned7" i="0">0</cto>
+<eventname type="string" i="0"/>
+<eventtarget type="string" i="0"/>
+<multiname type="string" i="0"/>
+<multimode type="string" i="0">one</multimode>
+<n_multi type="unsigned7" i="0">0</n_multi>
+</button>
+</multi>
+<multi type="multievent_t" i="13">
+<name type="string" i="0">set bank 2</name>
+<button type="button_t" i="0">
+<type type="string" i="0">single</type>
+<vchannel type="unsigned7" i="0">0</vchannel>
+<mode type="string" i="0">event</mode>
+<controller type="unsigned7" i="0">1</controller>
+<onvalue type="unsigned7" i="0">127</onvalue>
+<offvalue type="unsigned7" i="0">0</offvalue>
+<key type="unsigned7" i="0">1</key>
+<program type="unsigned7" i="0">0</program>
+<midimsg type="string" i="0">start</midimsg>
+<vcfrom type="unsigned7" i="0">0</vcfrom>
+<cto type="unsigned7" i="0">0</cto>
+<eventname type="string" i="0"/>
+<eventtarget type="string" i="0"/>
+<multiname type="string" i="0"/>
+<multimode type="string" i="0">one</multimode>
+<n_multi type="unsigned7" i="0">0</n_multi>
+</button>
+</multi>
+<multi type="multievent_t" i="14">
+<name type="string" i="0">set bank 2</name>
+<button type="button_t" i="0">
+<type type="string" i="0">single</type>
+<vchannel type="unsigned7" i="0">0</vchannel>
+<mode type="string" i="0">event</mode>
+<controller type="unsigned7" i="0">1</controller>
+<onvalue type="unsigned7" i="0">127</onvalue>
+<offvalue type="unsigned7" i="0">0</offvalue>
+<key type="unsigned7" i="0">1</key>
+<program type="unsigned7" i="0">0</program>
+<midimsg type="string" i="0">start</midimsg>
+<vcfrom type="unsigned7" i="0">0</vcfrom>
+<cto type="unsigned7" i="0">0</cto>
+<eventname type="string" i="0"/>
+<eventtarget type="string" i="0"/>
+<multiname type="string" i="0"/>
+<multimode type="string" i="0">one</multimode>
+<n_multi type="unsigned7" i="0">0</n_multi>
+</button>
+</multi>
+<multi type="multievent_t" i="15">
+<name type="string" i="0">set bank 2</name>
+<button type="button_t" i="0">
+<type type="string" i="0">single</type>
+<vchannel type="unsigned7" i="0">0</vchannel>
+<mode type="string" i="0">event</mode>
+<controller type="unsigned7" i="0">1</controller>
+<onvalue type="unsigned7" i="0">127</onvalue>
+<offvalue type="unsigned7" i="0">0</offvalue>
+<key type="unsigned7" i="0">1</key>
+<program type="unsigned7" i="0">0</program>
+<midimsg type="string" i="0">start</midimsg>
+<vcfrom type="unsigned7" i="0">0</vcfrom>
+<cto type="unsigned7" i="0">0</cto>
+<eventname type="string" i="0"/>
+<eventtarget type="string" i="0"/>
+<multiname type="string" i="0"/>
+<multimode type="string" i="0">one</multimode>
+<n_multi type="unsigned7" i="0">0</n_multi>
+</button>
+</multi>
+</button>
+<button type="button_t" i="2">
+<type type="string" i="0">multi</type>
+<vchannel type="unsigned7" i="0">0</vchannel>
+<mode type="string" i="0">key</mode>
+<controller type="unsigned7" i="0">28</controller>
+<onvalue type="unsigned7" i="0">127</onvalue>
+<offvalue type="unsigned7" i="0">0</offvalue>
+<key type="unsigned7" i="0">48</key>
+<program type="unsigned7" i="0">0</program>
+<midimsg type="string" i="0">start</midimsg>
+<vcfrom type="unsigned7" i="0">0</vcfrom>
+<cto type="unsigned7" i="0">0</cto>
+<eventname type="string" i="0"/>
+<eventtarget type="string" i="0"/>
+<multiname type="string" i="0">macro 3</multiname>
+<multimode type="string" i="0">all</multimode>
+<n_multi type="unsigned7" i="0">16</n_multi>
+<multi type="multievent_t" i="0">
+<name type="string" i="0">set bank 3</name>
+<button type="button_t" i="0">
+<type type="string" i="0">single</type>
+<vchannel type="unsigned7" i="0">0</vchannel>
+<mode type="string" i="0">event</mode>
+<controller type="unsigned7" i="0">1</controller>
+<onvalue type="unsigned7" i="0">127</onvalue>
+<offvalue type="unsigned7" i="0">0</offvalue>
+<key type="unsigned7" i="0">1</key>
+<program type="unsigned7" i="0">0</program>
+<midimsg type="string" i="0">start</midimsg>
+<vcfrom type="unsigned7" i="0">0</vcfrom>
+<cto type="unsigned7" i="0">0</cto>
+<eventname type="string" i="0"/>
+<eventtarget type="string" i="0"/>
+<multiname type="string" i="0"/>
+<multimode type="string" i="0">one</multimode>
+<n_multi type="unsigned7" i="0">0</n_multi>
+</button>
+</multi>
+<multi type="multievent_t" i="1">
+<name type="string" i="0">set bank 3</name>
+<button type="button_t" i="0">
+<type type="string" i="0">single</type>
+<vchannel type="unsigned7" i="0">0</vchannel>
+<mode type="string" i="0">event</mode>
+<controller type="unsigned7" i="0">1</controller>
+<onvalue type="unsigned7" i="0">127</onvalue>
+<offvalue type="unsigned7" i="0">0</offvalue>
+<key type="unsigned7" i="0">1</key>
+<program type="unsigned7" i="0">0</program>
+<midimsg type="string" i="0">start</midimsg>
+<vcfrom type="unsigned7" i="0">0</vcfrom>
+<cto type="unsigned7" i="0">0</cto>
+<eventname type="string" i="0"/>
+<eventtarget type="string" i="0"/>
+<multiname type="string" i="0"/>
+<multimode type="string" i="0">one</multimode>
+<n_multi type="unsigned7" i="0">0</n_multi>
+</button>
+</multi>
+<multi type="multievent_t" i="2">
+<name type="string" i="0">set bank 3</name>
+<button type="button_t" i="0">
+<type type="string" i="0">single</type>
+<vchannel type="unsigned7" i="0">0</vchannel>
+<mode type="string" i="0">event</mode>
+<controller type="unsigned7" i="0">1</controller>
+<onvalue type="unsigned7" i="0">127</onvalue>
+<offvalue type="unsigned7" i="0">0</offvalue>
+<key type="unsigned7" i="0">1</key>
+<program type="unsigned7" i="0">0</program>
+<midimsg type="string" i="0">start</midimsg>
+<vcfrom type="unsigned7" i="0">0</vcfrom>
+<cto type="unsigned7" i="0">0</cto>
+<eventname type="string" i="0"/>
+<eventtarget type="string" i="0"/>
+<multiname type="string" i="0"/>
+<multimode type="string" i="0">one</multimode>
+<n_multi type="unsigned7" i="0">0</n_multi>
+</button>
+</multi>
+<multi type="multievent_t" i="3">
+<name type="string" i="0">set bank 3</name>
+<button type="button_t" i="0">
+<type type="string" i="0">single</type>
+<vchannel type="unsigned7" i="0">0</vchannel>
+<mode type="string" i="0">event</mode>
+<controller type="unsigned7" i="0">1</controller>
+<onvalue type="unsigned7" i="0">127</onvalue>
+<offvalue type="unsigned7" i="0">0</offvalue>
+<key type="unsigned7" i="0">1</key>
+<program type="unsigned7" i="0">0</program>
+<midimsg type="string" i="0">start</midimsg>
+<vcfrom type="unsigned7" i="0">0</vcfrom>
+<cto type="unsigned7" i="0">0</cto>
+<eventname type="string" i="0"/>
+<eventtarget type="string" i="0"/>
+<multiname type="string" i="0"/>
+<multimode type="string" i="0">one</multimode>
+<n_multi type="unsigned7" i="0">0</n_multi>
+</button>
+</multi>
+<multi type="multievent_t" i="4">
+<name type="string" i="0">set bank 3</name>
+<button type="button_t" i="0">
+<type type="string" i="0">single</type>
+<vchannel type="unsigned7" i="0">0</vchannel>
+<mode type="string" i="0">event</mode>
+<controller type="unsigned7" i="0">1</controller>
+<onvalue type="unsigned7" i="0">127</onvalue>
+<offvalue type="unsigned7" i="0">0</offvalue>
+<key type="unsigned7" i="0">1</key>
+<program type="unsigned7" i="0">0</program>
+<midimsg type="string" i="0">start</midimsg>
+<vcfrom type="unsigned7" i="0">0</vcfrom>
+<cto type="unsigned7" i="0">0</cto>
+<eventname type="string" i="0"/>
+<eventtarget type="string" i="0"/>
+<multiname type="string" i="0"/>
+<multimode type="string" i="0">one</multimode>
+<n_multi type="unsigned7" i="0">0</n_multi>
+</button>
+</multi>
+<multi type="multievent_t" i="5">
+<name type="string" i="0">set bank 3</name>
+<button type="button_t" i="0">
+<type type="string" i="0">single</type>
+<vchannel type="unsigned7" i="0">0</vchannel>
+<mode type="string" i="0">event</mode>
+<controller type="unsigned7" i="0">1</controller>
+<onvalue type="unsigned7" i="0">127</onvalue>
+<offvalue type="unsigned7" i="0">0</offvalue>
+<key type="unsigned7" i="0">1</key>
+<program type="unsigned7" i="0">0</program>
+<midimsg type="string" i="0">start</midimsg>
+<vcfrom type="unsigned7" i="0">0</vcfrom>
+<cto type="unsigned7" i="0">0</cto>
+<eventname type="string" i="0"/>
+<eventtarget type="string" i="0"/>
+<multiname type="string" i="0"/>
+<multimode type="string" i="0">one</multimode>
+<n_multi type="unsigned7" i="0">0</n_multi>
+</button>
+</multi>
+<multi type="multievent_t" i="6">
+<name type="string" i="0">set bank 3</name>
+<button type="button_t" i="0">
+<type type="string" i="0">single</type>
+<vchannel type="unsigned7" i="0">0</vchannel>
+<mode type="string" i="0">event</mode>
+<controller type="unsigned7" i="0">1</controller>
+<onvalue type="unsigned7" i="0">127</onvalue>
+<offvalue type="unsigned7" i="0">0</offvalue>
+<key type="unsigned7" i="0">1</key>
+<program type="unsigned7" i="0">0</program>
+<midimsg type="string" i="0">start</midimsg>
+<vcfrom type="unsigned7" i="0">0</vcfrom>
+<cto type="unsigned7" i="0">0</cto>
+<eventname type="string" i="0"/>
+<eventtarget type="string" i="0"/>
+<multiname type="string" i="0"/>
+<multimode type="string" i="0">one</multimode>
+<n_multi type="unsigned7" i="0">0</n_multi>
+</button>
+</multi>
+<multi type="multievent_t" i="7">
+<name type="string" i="0">set bank 3</name>
+<button type="button_t" i="0">
+<type type="string" i="0">single</type>
+<vchannel type="unsigned7" i="0">0</vchannel>
+<mode type="string" i="0">event</mode>
+<controller type="unsigned7" i="0">1</controller>
+<onvalue type="unsigned7" i="0">127</onvalue>
+<offvalue type="unsigned7" i="0">0</offvalue>
+<key type="unsigned7" i="0">1</key>
+<program type="unsigned7" i="0">0</program>
+<midimsg type="string" i="0">start</midimsg>
+<vcfrom type="unsigned7" i="0">0</vcfrom>
+<cto type="unsigned7" i="0">0</cto>
+<eventname type="string" i="0"/>
+<eventtarget type="string" i="0"/>
+<multiname type="string" i="0"/>
+<multimode type="string" i="0">one</multimode>
+<n_multi type="unsigned7" i="0">0</n_multi>
+</button>
+</multi>
+<multi type="multievent_t" i="8">
+<name type="string" i="0">set bank 3</name>
+<button type="button_t" i="0">
+<type type="string" i="0">single</type>
+<vchannel type="unsigned7" i="0">0</vchannel>
+<mode type="string" i="0">event</mode>
+<controller type="unsigned7" i="0">1</controller>
+<onvalue type="unsigned7" i="0">127</onvalue>
+<offvalue type="unsigned7" i="0">0</offvalue>
+<key type="unsigned7" i="0">1</key>
+<program type="unsigned7" i="0">0</program>
+<midimsg type="string" i="0">start</midimsg>
+<vcfrom type="unsigned7" i="0">0</vcfrom>
+<cto type="unsigned7" i="0">0</cto>
+<eventname type="string" i="0"/>
+<eventtarget type="string" i="0"/>
+<multiname type="string" i="0"/>
+<multimode type="string" i="0">one</multimode>
+<n_multi type="unsigned7" i="0">0</n_multi>
+</button>
+</multi>
+<multi type="multievent_t" i="9">
+<name type="string" i="0">set bank 3</name>
+<button type="button_t" i="0">
+<type type="string" i="0">single</type>
+<vchannel type="unsigned7" i="0">0</vchannel>
+<mode type="string" i="0">event</mode>
+<controller type="unsigned7" i="0">1</controller>
+<onvalue type="unsigned7" i="0">127</onvalue>
+<offvalue type="unsigned7" i="0">0</offvalue>
+<key type="unsigned7" i="0">1</key>
+<program type="unsigned7" i="0">0</program>
+<midimsg type="string" i="0">start</midimsg>
+<vcfrom type="unsigned7" i="0">0</vcfrom>
+<cto type="unsigned7" i="0">0</cto>
+<eventname type="string" i="0"/>
+<eventtarget type="string" i="0"/>
+<multiname type="string" i="0"/>
+<multimode type="string" i="0">one</multimode>
+<n_multi type="unsigned7" i="0">0</n_multi>
+</button>
+</multi>
+<multi type="multievent_t" i="10">
+<name type="string" i="0">set bank 3</name>
+<button type="button_t" i="0">
+<type type="string" i="0">single</type>
+<vchannel type="unsigned7" i="0">0</vchannel>
+<mode type="string" i="0">event</mode>
+<controller type="unsigned7" i="0">1</controller>
+<onvalue type="unsigned7" i="0">127</onvalue>
+<offvalue type="unsigned7" i="0">0</offvalue>
+<key type="unsigned7" i="0">1</key>
+<program type="unsigned7" i="0">0</program>
+<midimsg type="string" i="0">start</midimsg>
+<vcfrom type="unsigned7" i="0">0</vcfrom>
+<cto type="unsigned7" i="0">0</cto>
+<eventname type="string" i="0"/>
+<eventtarget type="string" i="0"/>
+<multiname type="string" i="0"/>
+<multimode type="string" i="0">one</multimode>
+<n_multi type="unsigned7" i="0">0</n_multi>
+</button>
+</multi>
+<multi type="multievent_t" i="11">
+<name type="string" i="0">set bank 3</name>
+<button type="button_t" i="0">
+<type type="string" i="0">single</type>
+<vchannel type="unsigned7" i="0">0</vchannel>
+<mode type="string" i="0">event</mode>
+<controller type="unsigned7" i="0">1</controller>
+<onvalue type="unsigned7" i="0">127</onvalue>
+<offvalue type="unsigned7" i="0">0</offvalue>
+<key type="unsigned7" i="0">1</key>
+<program type="unsigned7" i="0">0</program>
+<midimsg type="string" i="0">start</midimsg>
+<vcfrom type="unsigned7" i="0">0</vcfrom>
+<cto type="unsigned7" i="0">0</cto>
+<eventname type="string" i="0"/>
+<eventtarget type="string" i="0"/>
+<multiname type="string" i="0"/>
+<multimode type="string" i="0">one</multimode>
+<n_multi type="unsigned7" i="0">0</n_multi>
+</button>
+</multi>
+<multi type="multievent_t" i="12">
+<name type="string" i="0">set bank 3</name>
+<button type="button_t" i="0">
+<type type="string" i="0">single</type>
+<vchannel type="unsigned7" i="0">0</vchannel>
+<mode type="string" i="0">event</mode>
+<controller type="unsigned7" i="0">1</controller>
+<onvalue type="unsigned7" i="0">127</onvalue>
+<offvalue type="unsigned7" i="0">0</offvalue>
+<key type="unsigned7" i="0">1</key>
+<program type="unsigned7" i="0">0</program>
+<midimsg type="string" i="0">start</midimsg>
+<vcfrom type="unsigned7" i="0">0</vcfrom>
+<cto type="unsigned7" i="0">0</cto>
+<eventname type="string" i="0"/>
+<eventtarget type="string" i="0"/>
+<multiname type="string" i="0"/>
+<multimode type="string" i="0">one</multimode>
+<n_multi type="unsigned7" i="0">0</n_multi>
+</button>
+</multi>
+<multi type="multievent_t" i="13">
+<name type="string" i="0">set bank 3</name>
+<button type="button_t" i="0">
+<type type="string" i="0">single</type>
+<vchannel type="unsigned7" i="0">0</vchannel>
+<mode type="string" i="0">event</mode>
+<controller type="unsigned7" i="0">1</controller>
+<onvalue type="unsigned7" i="0">127</onvalue>
+<offvalue type="unsigned7" i="0">0</offvalue>
+<key type="unsigned7" i="0">1</key>
+<program type="unsigned7" i="0">0</program>
+<midimsg type="string" i="0">start</midimsg>
+<vcfrom type="unsigned7" i="0">0</vcfrom>
+<cto type="unsigned7" i="0">0</cto>
+<eventname type="string" i="0"/>
+<eventtarget type="string" i="0"/>
+<multiname type="string" i="0"/>
+<multimode type="string" i="0">one</multimode>
+<n_multi type="unsigned7" i="0">0</n_multi>
+</button>
+</multi>
+<multi type="multievent_t" i="14">
+<name type="string" i="0">set bank 3</name>
+<button type="button_t" i="0">
+<type type="string" i="0">single</type>
+<vchannel type="unsigned7" i="0">0</vchannel>
+<mode type="string" i="0">event</mode>
+<controller type="unsigned7" i="0">1</controller>
+<onvalue type="unsigned7" i="0">127</onvalue>
+<offvalue type="unsigned7" i="0">0</offvalue>
+<key type="unsigned7" i="0">1</key>
+<program type="unsigned7" i="0">0</program>
+<midimsg type="string" i="0">start</midimsg>
+<vcfrom type="unsigned7" i="0">0</vcfrom>
+<cto type="unsigned7" i="0">0</cto>
+<eventname type="string" i="0"/>
+<eventtarget type="string" i="0"/>
+<multiname type="string" i="0"/>
+<multimode type="string" i="0">one</multimode>
+<n_multi type="unsigned7" i="0">0</n_multi>
+</button>
+</multi>
+<multi type="multievent_t" i="15">
+<name type="string" i="0">set bank 3</name>
+<button type="button_t" i="0">
+<type type="string" i="0">single</type>
+<vchannel type="unsigned7" i="0">0</vchannel>
+<mode type="string" i="0">event</mode>
+<controller type="unsigned7" i="0">1</controller>
+<onvalue type="unsigned7" i="0">127</onvalue>
+<offvalue type="unsigned7" i="0">0</offvalue>
+<key type="unsigned7" i="0">1</key>
+<program type="unsigned7" i="0">0</program>
+<midimsg type="string" i="0">start</midimsg>
+<vcfrom type="unsigned7" i="0">0</vcfrom>
+<cto type="unsigned7" i="0">0</cto>
+<eventname type="string" i="0"/>
+<eventtarget type="string" i="0"/>
+<multiname type="string" i="0"/>
+<multimode type="string" i="0">one</multimode>
+<n_multi type="unsigned7" i="0">0</n_multi>
+</button>
+</multi>
+</button>
+<button type="button_t" i="3">
+<type type="string" i="0">multi</type>
+<vchannel type="unsigned7" i="0">0</vchannel>
+<mode type="string" i="0">key</mode>
+<controller type="unsigned7" i="0">29</controller>
+<onvalue type="unsigned7" i="0">127</onvalue>
+<offvalue type="unsigned7" i="0">0</offvalue>
+<key type="unsigned7" i="0">49</key>
+<program type="unsigned7" i="0">0</program>
+<midimsg type="string" i="0">start</midimsg>
+<vcfrom type="unsigned7" i="0">0</vcfrom>
+<cto type="unsigned7" i="0">0</cto>
+<eventname type="string" i="0"/>
+<eventtarget type="string" i="0"/>
+<multiname type="string" i="0">macro 4</multiname>
+<multimode type="string" i="0">all</multimode>
+<n_multi type="unsigned7" i="0">16</n_multi>
+<multi type="multievent_t" i="0">
+<name type="string" i="0">set bank 4</name>
+<button type="button_t" i="0">
+<type type="string" i="0">single</type>
+<vchannel type="unsigned7" i="0">0</vchannel>
+<mode type="string" i="0">event</mode>
+<controller type="unsigned7" i="0">1</controller>
+<onvalue type="unsigned7" i="0">127</onvalue>
+<offvalue type="unsigned7" i="0">0</offvalue>
+<key type="unsigned7" i="0">1</key>
+<program type="unsigned7" i="0">0</program>
+<midimsg type="string" i="0">start</midimsg>
+<vcfrom type="unsigned7" i="0">0</vcfrom>
+<cto type="unsigned7" i="0">0</cto>
+<eventname type="string" i="0"/>
+<eventtarget type="string" i="0"/>
+<multiname type="string" i="0"/>
+<multimode type="string" i="0">one</multimode>
+<n_multi type="unsigned7" i="0">0</n_multi>
+</button>
+</multi>
+<multi type="multievent_t" i="1">
+<name type="string" i="0">set bank 4</name>
+<button type="button_t" i="0">
+<type type="string" i="0">single</type>
+<vchannel type="unsigned7" i="0">0</vchannel>
+<mode type="string" i="0">event</mode>
+<controller type="unsigned7" i="0">1</controller>
+<onvalue type="unsigned7" i="0">127</onvalue>
+<offvalue type="unsigned7" i="0">0</offvalue>
+<key type="unsigned7" i="0">1</key>
+<program type="unsigned7" i="0">0</program>
+<midimsg type="string" i="0">start</midimsg>
+<vcfrom type="unsigned7" i="0">0</vcfrom>
+<cto type="unsigned7" i="0">0</cto>
+<eventname type="string" i="0"/>
+<eventtarget type="string" i="0"/>
+<multiname type="string" i="0"/>
+<multimode type="string" i="0">one</multimode>
+<n_multi type="unsigned7" i="0">0</n_multi>
+</button>
+</multi>
+<multi type="multievent_t" i="2">
+<name type="string" i="0">set bank 4</name>
+<button type="button_t" i="0">
+<type type="string" i="0">single</type>
+<vchannel type="unsigned7" i="0">0</vchannel>
+<mode type="string" i="0">event</mode>
+<controller type="unsigned7" i="0">1</controller>
+<onvalue type="unsigned7" i="0">127</onvalue>
+<offvalue type="unsigned7" i="0">0</offvalue>
+<key type="unsigned7" i="0">1</key>
+<program type="unsigned7" i="0">0</program>
+<midimsg type="string" i="0">start</midimsg>
+<vcfrom type="unsigned7" i="0">0</vcfrom>
+<cto type="unsigned7" i="0">0</cto>
+<eventname type="string" i="0"/>
+<eventtarget type="string" i="0"/>
+<multiname type="string" i="0"/>
+<multimode type="string" i="0">one</multimode>
+<n_multi type="unsigned7" i="0">0</n_multi>
+</button>
+</multi>
+<multi type="multievent_t" i="3">
+<name type="string" i="0">set bank 4</name>
+<button type="button_t" i="0">
+<type type="string" i="0">single</type>
+<vchannel type="unsigned7" i="0">0</vchannel>
+<mode type="string" i="0">event</mode>
+<controller type="unsigned7" i="0">1</controller>
+<onvalue type="unsigned7" i="0">127</onvalue>
+<offvalue type="unsigned7" i="0">0</offvalue>
+<key type="unsigned7" i="0">1</key>
+<program type="unsigned7" i="0">0</program>
+<midimsg type="string" i="0">start</midimsg>
+<vcfrom type="unsigned7" i="0">0</vcfrom>
+<cto type="unsigned7" i="0">0</cto>
+<eventname type="string" i="0"/>
+<eventtarget type="string" i="0"/>
+<multiname type="string" i="0"/>
+<multimode type="string" i="0">one</multimode>
+<n_multi type="unsigned7" i="0">0</n_multi>
+</button>
+</multi>
+<multi type="multievent_t" i="4">
+<name type="string" i="0">set bank 4</name>
+<button type="button_t" i="0">
+<type type="string" i="0">single</type>
+<vchannel type="unsigned7" i="0">0</vchannel>
+<mode type="string" i="0">event</mode>
+<controller type="unsigned7" i="0">1</controller>
+<onvalue type="unsigned7" i="0">127</onvalue>
+<offvalue type="unsigned7" i="0">0</offvalue>
+<key type="unsigned7" i="0">1</key>
+<program type="unsigned7" i="0">0</program>
+<midimsg type="string" i="0">start</midimsg>
+<vcfrom type="unsigned7" i="0">0</vcfrom>
+<cto type="unsigned7" i="0">0</cto>
+<eventname type="string" i="0"/>
+<eventtarget type="string" i="0"/>
+<multiname type="string" i="0"/>
+<multimode type="string" i="0">one</multimode>
+<n_multi type="unsigned7" i="0">0</n_multi>
+</button>
+</multi>
+<multi type="multievent_t" i="5">
+<name type="string" i="0">set bank 4</name>
+<button type="button_t" i="0">
+<type type="string" i="0">single</type>
+<vchannel type="unsigned7" i="0">0</vchannel>
+<mode type="string" i="0">event</mode>
+<controller type="unsigned7" i="0">1</controller>
+<onvalue type="unsigned7" i="0">127</onvalue>
+<offvalue type="unsigned7" i="0">0</offvalue>
+<key type="unsigned7" i="0">1</key>
+<program type="unsigned7" i="0">0</program>
+<midimsg type="string" i="0">start</midimsg>
+<vcfrom type="unsigned7" i="0">0</vcfrom>
+<cto type="unsigned7" i="0">0</cto>
+<eventname type="string" i="0"/>
+<eventtarget type="string" i="0"/>
+<multiname type="string" i="0"/>
+<multimode type="string" i="0">one</multimode>
+<n_multi type="unsigned7" i="0">0</n_multi>
+</button>
+</multi>
+<multi type="multievent_t" i="6">
+<name type="string" i="0">set bank 4</name>
+<button type="button_t" i="0">
+<type type="string" i="0">single</type>
+<vchannel type="unsigned7" i="0">0</vchannel>
+<mode type="string" i="0">event</mode>
+<controller type="unsigned7" i="0">1</controller>
+<onvalue type="unsigned7" i="0">127</onvalue>
+<offvalue type="unsigned7" i="0">0</offvalue>
+<key type="unsigned7" i="0">1</key>
+<program type="unsigned7" i="0">0</program>
+<midimsg type="string" i="0">start</midimsg>
+<vcfrom type="unsigned7" i="0">0</vcfrom>
+<cto type="unsigned7" i="0">0</cto>
+<eventname type="string" i="0"/>
+<eventtarget type="string" i="0"/>
+<multiname type="string" i="0"/>
+<multimode type="string" i="0">one</multimode>
+<n_multi type="unsigned7" i="0">0</n_multi>
+</button>
+</multi>
+<multi type="multievent_t" i="7">
+<name type="string" i="0">set bank 4</name>
+<button type="button_t" i="0">
+<type type="string" i="0">single</type>
+<vchannel type="unsigned7" i="0">0</vchannel>
+<mode type="string" i="0">event</mode>
+<controller type="unsigned7" i="0">1</controller>
+<onvalue type="unsigned7" i="0">127</onvalue>
+<offvalue type="unsigned7" i="0">0</offvalue>
+<key type="unsigned7" i="0">1</key>
+<program type="unsigned7" i="0">0</program>
+<midimsg type="string" i="0">start</midimsg>
+<vcfrom type="unsigned7" i="0">0</vcfrom>
+<cto type="unsigned7" i="0">0</cto>
+<eventname type="string" i="0"/>
+<eventtarget type="string" i="0"/>
+<multiname type="string" i="0"/>
+<multimode type="string" i="0">one</multimode>
+<n_multi type="unsigned7" i="0">0</n_multi>
+</button>
+</multi>
+<multi type="multievent_t" i="8">
+<name type="string" i="0">set bank 4</name>
+<button type="button_t" i="0">
+<type type="string" i="0">single</type>
+<vchannel type="unsigned7" i="0">0</vchannel>
+<mode type="string" i="0">event</mode>
+<controller type="unsigned7" i="0">1</controller>
+<onvalue type="unsigned7" i="0">127</onvalue>
+<offvalue type="unsigned7" i="0">0</offvalue>
+<key type="unsigned7" i="0">1</key>
+<program type="unsigned7" i="0">0</program>
+<midimsg type="string" i="0">start</midimsg>
+<vcfrom type="unsigned7" i="0">0</vcfrom>
+<cto type="unsigned7" i="0">0</cto>
+<eventname type="string" i="0"/>
+<eventtarget type="string" i="0"/>
+<multiname type="string" i="0"/>
+<multimode type="string" i="0">one</multimode>
+<n_multi type="unsigned7" i="0">0</n_multi>
+</button>
+</multi>
+<multi type="multievent_t" i="9">
+<name type="string" i="0">set bank 4</name>
+<button type="button_t" i="0">
+<type type="string" i="0">single</type>
+<vchannel type="unsigned7" i="0">0</vchannel>
+<mode type="string" i="0">event</mode>
+<controller type="unsigned7" i="0">1</controller>
+<onvalue type="unsigned7" i="0">127</onvalue>
+<offvalue type="unsigned7" i="0">0</offvalue>
+<key type="unsigned7" i="0">1</key>
+<program type="unsigned7" i="0">0</program>
+<midimsg type="string" i="0">start</midimsg>
+<vcfrom type="unsigned7" i="0">0</vcfrom>
+<cto type="unsigned7" i="0">0</cto>
+<eventname type="string" i="0"/>
+<eventtarget type="string" i="0"/>
+<multiname type="string" i="0"/>
+<multimode type="string" i="0">one</multimode>
+<n_multi type="unsigned7" i="0">0</n_multi>
+</button>
+</multi>
+<multi type="multievent_t" i="10">
+<name type="string" i="0">set bank 4</name>
+<button type="button_t" i="0">
+<type type="string" i="0">single</type>
+<vchannel type="unsigned7" i="0">0</vchannel>
+<mode type="string" i="0">event</mode>
+<controller type="unsigned7" i="0">1</controller>
+<onvalue type="unsigned7" i="0">127</onvalue>
+<offvalue type="unsigned7" i="0">0</offvalue>
+<key type="unsigned7" i="0">1</key>
+<program type="unsigned7" i="0">0</program>
+<midimsg type="string" i="0">start</midimsg>
+<vcfrom type="unsigned7" i="0">0</vcfrom>
+<cto type="unsigned7" i="0">0</cto>
+<eventname type="string" i="0"/>
+<eventtarget type="string" i="0"/>
+<multiname type="string" i="0"/>
+<multimode type="string" i="0">one</multimode>
+<n_multi type="unsigned7" i="0">0</n_multi>
+</button>
+</multi>
+<multi type="multievent_t" i="11">
+<name type="string" i="0">set bank 4</name>
+<button type="button_t" i="0">
+<type type="string" i="0">single</type>
+<vchannel type="unsigned7" i="0">0</vchannel>
+<mode type="string" i="0">event</mode>
+<controller type="unsigned7" i="0">1</controller>
+<onvalue type="unsigned7" i="0">127</onvalue>
+<offvalue type="unsigned7" i="0">0</offvalue>
+<key type="unsigned7" i="0">1</key>
+<program type="unsigned7" i="0">0</program>
+<midimsg type="string" i="0">start</midimsg>
+<vcfrom type="unsigned7" i="0">0</vcfrom>
+<cto type="unsigned7" i="0">0</cto>
+<eventname type="string" i="0"/>
+<eventtarget type="string" i="0"/>
+<multiname type="string" i="0"/>
+<multimode type="string" i="0">one</multimode>
+<n_multi type="unsigned7" i="0">0</n_multi>
+</button>
+</multi>
+<multi type="multievent_t" i="12">
+<name type="string" i="0">set bank 4</name>
+<button type="button_t" i="0">
+<type type="string" i="0">single</type>
+<vchannel type="unsigned7" i="0">0</vchannel>
+<mode type="string" i="0">event</mode>
+<controller type="unsigned7" i="0">1</controller>
+<onvalue type="unsigned7" i="0">127</onvalue>
+<offvalue type="unsigned7" i="0">0</offvalue>
+<key type="unsigned7" i="0">1</key>
+<program type="unsigned7" i="0">0</program>
+<midimsg type="string" i="0">start</midimsg>
+<vcfrom type="unsigned7" i="0">0</vcfrom>
+<cto type="unsigned7" i="0">0</cto>
+<eventname type="string" i="0"/>
+<eventtarget type="string" i="0"/>
+<multiname type="string" i="0"/>
+<multimode type="string" i="0">one</multimode>
+<n_multi type="unsigned7" i="0">0</n_multi>
+</button>
+</multi>
+<multi type="multievent_t" i="13">
+<name type="string" i="0">set bank 4</name>
+<button type="button_t" i="0">
+<type type="string" i="0">single</type>
+<vchannel type="unsigned7" i="0">0</vchannel>
+<mode type="string" i="0">event</mode>
+<controller type="unsigned7" i="0">1</controller>
+<onvalue type="unsigned7" i="0">127</onvalue>
+<offvalue type="unsigned7" i="0">0</offvalue>
+<key type="unsigned7" i="0">1</key>
+<program type="unsigned7" i="0">0</program>
+<midimsg type="string" i="0">start</midimsg>
+<vcfrom type="unsigned7" i="0">0</vcfrom>
+<cto type="unsigned7" i="0">0</cto>
+<eventname type="string" i="0"/>
+<eventtarget type="string" i="0"/>
+<multiname type="string" i="0"/>
+<multimode type="string" i="0">one</multimode>
+<n_multi type="unsigned7" i="0">0</n_multi>
+</button>
+</multi>
+<multi type="multievent_t" i="14">
+<name type="string" i="0">set bank 4</name>
+<button type="button_t" i="0">
+<type type="string" i="0">single</type>
+<vchannel type="unsigned7" i="0">0</vchannel>
+<mode type="string" i="0">event</mode>
+<controller type="unsigned7" i="0">1</controller>
+<onvalue type="unsigned7" i="0">127</onvalue>
+<offvalue type="unsigned7" i="0">0</offvalue>
+<key type="unsigned7" i="0">1</key>
+<program type="unsigned7" i="0">0</program>
+<midimsg type="string" i="0">start</midimsg>
+<vcfrom type="unsigned7" i="0">0</vcfrom>
+<cto type="unsigned7" i="0">0</cto>
+<eventname type="string" i="0"/>
+<eventtarget type="string" i="0"/>
+<multiname type="string" i="0"/>
+<multimode type="string" i="0">one</multimode>
+<n_multi type="unsigned7" i="0">0</n_multi>
+</button>
+</multi>
+<multi type="multievent_t" i="15">
+<name type="string" i="0">set bank 4</name>
+<button type="button_t" i="0">
+<type type="string" i="0">single</type>
+<vchannel type="unsigned7" i="0">0</vchannel>
+<mode type="string" i="0">event</mode>
+<controller type="unsigned7" i="0">1</controller>
+<onvalue type="unsigned7" i="0">127</onvalue>
+<offvalue type="unsigned7" i="0">0</offvalue>
+<key type="unsigned7" i="0">1</key>
+<program type="unsigned7" i="0">0</program>
+<midimsg type="string" i="0">start</midimsg>
+<vcfrom type="unsigned7" i="0">0</vcfrom>
+<cto type="unsigned7" i="0">0</cto>
+<eventname type="string" i="0"/>
+<eventtarget type="string" i="0"/>
+<multiname type="string" i="0"/>
+<multimode type="string" i="0">one</multimode>
+<n_multi type="unsigned7" i="0">0</n_multi>
+</button>
+</multi>
+</button>
+<macro type="trackmacro_t" i="0">
+<track type="bool" i="0">false</track>
+<track type="bool" i="1">false</track>
+<track type="bool" i="2">false</track>
+<track type="bool" i="3">false</track>
+<track type="bool" i="4">false</track>
+<track type="bool" i="5">false</track>
+<track type="bool" i="6">false</track>
+<track type="bool" i="7">false</track>
+<track type="bool" i="8">false</track>
+<track type="bool" i="9">false</track>
+<track type="bool" i="10">false</track>
+<track type="bool" i="11">false</track>
+<track type="bool" i="12">false</track>
+<track type="bool" i="13">false</track>
+<track type="bool" i="14">false</track>
+<track type="bool" i="15">false</track>
+</macro>
+<macro type="trackmacro_t" i="1">
+<track type="bool" i="0">false</track>
+<track type="bool" i="1">false</track>
+<track type="bool" i="2">false</track>
+<track type="bool" i="3">false</track>
+<track type="bool" i="4">false</track>
+<track type="bool" i="5">false</track>
+<track type="bool" i="6">false</track>
+<track type="bool" i="7">false</track>
+<track type="bool" i="8">false</track>
+<track type="bool" i="9">false</track>
+<track type="bool" i="10">false</track>
+<track type="bool" i="11">false</track>
+<track type="bool" i="12">false</track>
+<track type="bool" i="13">false</track>
+<track type="bool" i="14">false</track>
+<track type="bool" i="15">false</track>
+</macro>
+<macro type="trackmacro_t" i="2">
+<track type="bool" i="0">false</track>
+<track type="bool" i="1">false</track>
+<track type="bool" i="2">false</track>
+<track type="bool" i="3">false</track>
+<track type="bool" i="4">false</track>
+<track type="bool" i="5">false</track>
+<track type="bool" i="6">false</track>
+<track type="bool" i="7">false</track>
+<track type="bool" i="8">false</track>
+<track type="bool" i="9">false</track>
+<track type="bool" i="10">false</track>
+<track type="bool" i="11">false</track>
+<track type="bool" i="12">false</track>
+<track type="bool" i="13">false</track>
+<track type="bool" i="14">false</track>
+<track type="bool" i="15">false</track>
+</macro>
+<macro type="trackmacro_t" i="3">
+<track type="bool" i="0">false</track>
+<track type="bool" i="1">false</track>
+<track type="bool" i="2">false</track>
+<track type="bool" i="3">false</track>
+<track type="bool" i="4">false</track>
+<track type="bool" i="5">false</track>
+<track type="bool" i="6">false</track>
+<track type="bool" i="7">false</track>
+<track type="bool" i="8">false</track>
+<track type="bool" i="9">false</track>
+<track type="bool" i="10">false</track>
+<track type="bool" i="11">false</track>
+<track type="bool" i="12">false</track>
+<track type="bool" i="13">false</track>
+<track type="bool" i="14">false</track>
+<track type="bool" i="15">false</track>
+</macro>
+</macro>
+<vchannel type="vchannel_t" i="0">
+<nchannels type="unsigned7" i="0">1</nchannels>
+<ch type="vch_t" i="0">
+<cto type="unsigned7" i="0">0</cto>
+<name type="string" i="0">Default</name>
+</ch>
+</vchannel>
+<midiin type="midiinmappings_t" i="0">
+<n_map type="unsigned7" i="0">0</n_map>
+<thru_mode type="string" i="0">none</thru_mode>
+</midiin>
+</DM2MIDI>
