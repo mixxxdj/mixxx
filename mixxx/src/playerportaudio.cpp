@@ -50,7 +50,7 @@ PlayerPortAudio::~PlayerPortAudio()
 	Pa_Terminate();
 }
 
-void PlayerPortAudio::start(EngineBuffer *_reader)
+void PlayerPortAudio::start(EngineObject *_reader)
 {
 	Player::start(_reader);
     PaError err = Pa_StartStream( stream );

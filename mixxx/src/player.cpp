@@ -60,11 +60,8 @@ void Player::deallocate()
    Input:   Internal synth datastructure
    Output:
    -------- ------------------------------------------------------ */
-void Player::start(EngineBuffer *_reader) {
+void Player::start(EngineObject *_reader) {
 	reader = _reader;
-
-	// Initialize position in readbuffer:
-	play_pos = 0;
 }
 
 /* -------- ------------------------------------------------------
@@ -80,10 +77,10 @@ int Player::prepareBuffer() {
 
   CSAMPLE *p1, *p2;
 
+  //qDebug("player::prepareBuffer()");
   // Resample; the linear interpolation is done in readfile:
   p1 = reader->process(0, buffer_size);
 
-  if (reader->rate.read() != 0)
   for (unsigned int i=0; i<engines->size(); i++)
   {
       p2 = (*engines)[i]->process(p1, buffer_size);
@@ -92,7 +89,7 @@ int Player::prepareBuffer() {
 
   // Convert the signal back to SAMPLE and write to the sound cards buffer:
   for (int i=0; i<buffer_size; i++)
-    out_buffer[i] = (SAMPLE)(0.5*p1[i]);
+    out_buffer[i] = (SAMPLE)p1[i];
 
   return 0; // Hack. Should only return 0 when not at end of file
 }

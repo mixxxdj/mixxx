@@ -43,6 +43,7 @@
 #include "mixxxdoc.h"
 #include "enginebuffer.h"
 #include "enginechannel.h"
+#include "enginemaster.h"
 #include "player.h"
 #include "midiobject.h"
 /**
@@ -124,8 +125,9 @@ class MixxxApp : public QMainWindow
      * information such as filename and does the serialization of your files.
      */
     MixxxDoc *doc;
-    EngineBuffer *buffer;
-    EngineChannel *channel;
+    EngineBuffer *buffer1, *buffer2;
+    EngineChannel *channel1, *channel2;
+    EngineMaster *master;
     Player *player;
     MidiObject *midi;
 	std::vector<EngineObject *> engines;

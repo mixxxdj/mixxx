@@ -27,6 +27,7 @@
 #include "dlgplaycontrol.h"
 #include "dlgchannel.h"
 #include "dlgplaylist.h"
+#include "dlgmaster.h"
 
 /**
  * This class provides an incomplete base for your application view. 
@@ -38,9 +39,10 @@ class MixxxView : public QWidget
   public:
     MixxxView(QWidget *parent=0, MixxxDoc* doc=0);
     ~MixxxView();
-    DlgPlaycontrol *playcontrol;
-	DlgChannel	*channel;
+    DlgPlaycontrol *playcontrol1, *playcontrol2;
+	DlgChannel	*channel1, *channel2;
 	DlgPlaylist *playlist;
+    DlgMaster *master;
 
   protected slots:
     void slotDocumentChanged();

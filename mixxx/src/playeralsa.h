@@ -21,7 +21,7 @@
 #include "player.h"
 #include <sys/asoundlib.h>
 #include <sched.h>
-#include "enginebuffer.h"
+#include "engineobject.h"
 
 /**
   *@author Tue and Ken Haste Andersen
@@ -31,7 +31,7 @@ class PlayerALSA : public Player, public QThread  {
 public:
 	PlayerALSA(int size, vector<EngineObject *> *);
 	~PlayerALSA();
-	void start(EngineBuffer *);
+	void start(EngineObject *);
 	void stop();
 	void wait();
 	/** Main loop of player. Executed in a separate thread by QT */

@@ -93,7 +93,7 @@ PlayerALSA::~PlayerALSA()
 	delete params;
 }
 
-void PlayerALSA::start(EngineBuffer *_reader)
+void PlayerALSA::start(EngineObject *_reader)
 {
 	Player::start(_reader);
 
