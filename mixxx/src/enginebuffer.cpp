@@ -204,15 +204,16 @@ CSAMPLE *EngineBuffer::process(const CSAMPLE *, const int buf_size)
 
         // Find bpm adjustment factor
         ReaderExtractBeat *beat = reader->getBeatPtr();
-        CSAMPLE *bpmBuffer = beat->getBpmPtr();
-        double filebpm = bpmBuffer[(int)(bufferpos_play*(beat->getBufferSize()/READCHUNKSIZE))];
-        double bpmrate;
-        if (bpmControl->get()>-1. && filebpm>-1.)
-            bpmrate = bpmControl->get()/filebpm;
-        else
-            bpmrate = 1.;
-//        qDebug("bpmrate %f, filebpm %f, midibpm %f",bpmrate,filebpm,bpmControl->get());
-                    
+        double bpmrate = 1.;
+        if (beat!=0)
+        {
+            CSAMPLE *bpmBuffer = beat->getBpmPtr();
+            double filebpm = bpmBuffer[(int)(bufferpos_play*(beat->getBufferSize()/READCHUNKSIZE))];
+            if (bpmControl->get()>-1. && filebpm>-1.)
+                bpmrate = bpmControl->get()/filebpm;
+  //        qDebug("bpmrate %f, filebpm %f, midibpm %f",bpmrate,filebpm,bpmControl->get());
+        }
+                                        
         double baserate =  bpmrate*((double)file_srate_old/(double)getPlaySrate());
         double rate;
         if (playButton->get()==1.)

@@ -115,9 +115,6 @@ void *ReaderExtractBeat::processChunk(const int idx, const int start_idx, const 
         chunkEnd = (idx+1)*framePerChunk-1;
     else
         chunkEnd = (idx+1)*framePerChunk;
-//    int chunkStart = idx*framePerChunk;
-//    int chunkEnd   = (idx+1)*framePerChunk-1;
-
 //    qDebug("chunk %i-%i, max: %i",chunkStart,chunkEnd,frameNo);
     
     // Delete beat markings in beat buffer covered by chunk idx
@@ -198,14 +195,15 @@ void *ReaderExtractBeat::processChunk(const int idx, const int start_idx, const 
         peakIt[idx] = it;
     
     // Print list of peaks    
+/*
     Tpeaks::iterator ii;
     i = 0;
     for (ii=peaks.begin(); ii!=peaks.end(); ++ii)
     {
-//        qDebug("list element %i: %i",i,(*ii));
+        qDebug("list element %i: %i",i,(*ii));
         i++;
     }
-
+*/
         
     // Perform updates to histogram if peaks was found
     if (foundPeak)
@@ -220,10 +218,10 @@ void *ReaderExtractBeat::processChunk(const int idx, const int start_idx, const 
                 it2 = peaks.end();
             --it2;
 
-/*            // Reset beatIntVector
+            // Reset beatIntVector
             for (int i=0; i<histSize; i++)
                 beatIntVector[i] = 0.;
-*/
+
             // Current interval in seconds
             CSAMPLE interval = (CSAMPLE)(i-(*it2))/(CSAMPLE)input->getRate();
             while(interval>0. && interval<=histMaxInterval && it2!=it)
@@ -277,23 +275,25 @@ void *ReaderExtractBeat::processChunk(const int idx, const int start_idx, const 
 //                qDebug("update from %i - %i",(*it),(*(it3)));
             }
                         
-/*
+
             // Check if maximum interval is max in beatIntVector
             if (maxidx>-1)
             {
                 bool beat = true;
-                for (int i=0; i<histSize; i++)
+                for (int i=0; i<maxidx; i++)
+                {
                     if (beatIntVector[i]>beatIntVector[maxidx])
                     {
                         beat = false;
                         break;
                     }
+                }
                 beatBuffer[(*it)] = beat;
 
-//                if (beat)
-//                    qDebug("beat at %f",(CSAMPLE)(*it)/(CSAMPLE)getRate());
+                if (beat)
+                    qDebug("beat at %f",(CSAMPLE)(*it)/(CSAMPLE)getRate());
             }
-*/
+
 
             ++it;
             if (it == peaks.end())
@@ -303,9 +303,10 @@ void *ReaderExtractBeat::processChunk(const int idx, const int start_idx, const 
         }    
     }
 
+
     // Down-write histogram
     for (i=0; i<histSize; i++)
-        hist[i] *= 0.9999;
+        hist[i] *= histDownWrite;
     
     // Find and print maximum
     int maxidx = -1;
@@ -326,6 +327,7 @@ void *ReaderExtractBeat::processChunk(const int idx, const int start_idx, const 
         bpmBuffer[i] = bpm;
 */
 
+/*
     // Fill beat information based on result from histogram
     if (maxidx!=-1)
     {
@@ -365,6 +367,7 @@ void *ReaderExtractBeat::processChunk(const int idx, const int start_idx, const 
 
             beatIdx += interval;
         }
+*/
 
         //qDebug("beat(89) = %i",beatBuffer[89]);
         // Print beat buffer
@@ -402,8 +405,8 @@ void *ReaderExtractBeat::processChunk(const int idx, const int start_idx, const 
             beatBuffer[beatIdx%getBufferSize()] = true;
             beatIdx += interval;
         }
-*/
     }
+*/
 
 
 

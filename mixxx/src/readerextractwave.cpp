@@ -47,9 +47,14 @@ ReaderExtractWave::ReaderExtractWave(QMutex *_enginelock) : ReaderExtract(0)
     file = 0;
     
     // Initialize extractor objects
+    readerfft = 0;
+    readerhfc = 0;
+    readerbeat = 0;
+#ifdef EXTRACT    
     readerfft  = new ReaderExtractFFT((ReaderExtract *)this, WINDOWSIZE, STEPSIZE);
     readerhfc  = new ReaderExtractHFC((ReaderExtract *)readerfft, WINDOWSIZE, STEPSIZE);
     readerbeat = new ReaderExtractBeat((ReaderExtract *)readerhfc, WINDOWSIZE, STEPSIZE, 500);
+#endif
 }
 
 ReaderExtractWave::~ReaderExtractWave()
@@ -74,10 +79,12 @@ void ReaderExtractWave::reset()
     for (unsigned int i=0; i<READBUFFERSIZE; i++)
         read_buffer[i] = 0.;
 
+#ifdef EXTRACT
     // Reset extract objects
     readerfft->reset();
     readerhfc->reset();
     readerbeat->reset();
+#endif
 }
 
 void *ReaderExtractWave::getBasePtr()
@@ -209,12 +216,13 @@ void ReaderExtractWave::getchunk(CSAMPLE rate)
     for (unsigned int j=bufIdx; j<bufIdx+READCHUNKSIZE; j++)
         read_buffer[j] = (CSAMPLE)temp[i++];
 
+#ifdef EXTRACT
     // Do pre-processing...
     //qDebug("curr %i, start %i, end %i",chunkCurr,chunkStart,chunkEnd);
     readerfft->processChunk(chunkCurr, chunkStart, chunkEnd);
     readerhfc->processChunk(chunkCurr, chunkStart, chunkEnd);
     readerbeat->processChunk(chunkCurr, chunkStart, chunkEnd);
-
+#endif
     enginelock->unlock();
 
     // Update vertex buffer by sending an event containing indexes of where to update.
@@ -240,10 +248,12 @@ long int ReaderExtractWave::seek(long int new_playpos)
     for (unsigned int i=0; i<READBUFFERSIZE; i++)
         read_buffer[i] = 0.;
 
+#ifdef EXTRACT
     // Reset extract objects
     readerfft->reset();
     readerhfc->reset();
     readerbeat->reset();
+#endif
 
     return seekpos;
 }
