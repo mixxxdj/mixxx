@@ -236,8 +236,8 @@ count(LINLIBPATH,1) {
 }
 
 # GCC Compiler optimization flags
-#  QMAKE_CXXFLAGS += -march=pentium3 -O3 -pipe
-#  QMAKE_CFLAGS   += -march=pentium3 -O3 -pipe
+  QMAKE_CXXFLAGS += -march=pentium3 -O3 -pipe
+  QMAKE_CFLAGS   += -march=pentium3 -O3 -pipe
 
 # gcc Profiling
 #  QMAKE_CXXFLAGS_DEBUG += -pg

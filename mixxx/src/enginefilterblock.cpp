@@ -57,7 +57,8 @@ EngineFilterBlock::EngineFilterBlock(const char *group)
     pb = new ControlPushButton(ConfigKey(group, "filterHighKill"),  true);
     filterKillHigh = new ControlEngine(pb);
     
-    m_pTemp = new CSAMPLE[MAX_BUFFER_LEN];
+    m_pTemp1 = new CSAMPLE[MAX_BUFFER_LEN];
+    m_pTemp2 = new CSAMPLE[MAX_BUFFER_LEN];
 }
 
 EngineFilterBlock::~EngineFilterBlock()
@@ -84,17 +85,26 @@ void EngineFilterBlock::process(const CSAMPLE *pIn, const CSAMPLE *pOut, const i
     if (filterKillHigh->get()==0.)
         fHigh = filterpotHigh->get();
 
-    if ((fLow == 1.) && (fMid == 1.) && (fHigh == 1.))
+    if (fLow == 1. && fMid == 1. && fHigh == 1.)
     {
         if (pIn!=pOut)
             memcpy(pOutput, pIn, sizeof(CSAMPLE) * iBufferSize);
     }
-    else
+    else if (pIn!=pOut)
     {
-        low->process(pIn, m_pTemp, iBufferSize);
+        low->process(pIn, m_pTemp1, iBufferSize);
         high->process(pIn, pOut, iBufferSize);
         
         for (int i=0; i<iBufferSize; ++i)
-            pOutput[i] = fLow*m_pTemp[i] + fHigh*pOutput[i] + fMid*(pIn[i]-m_pTemp[i]-pOutput[i]);
+            pOutput[i] = fLow*m_pTemp1[i] + fHigh*pOutput[i] + fMid*(pIn[i]-m_pTemp1[i]-pOutput[i]);
+    }
+    else
+    {
+        low->process(pIn, m_pTemp1, iBufferSize);
+        high->process(pIn, m_pTemp2, iBufferSize);
+        
+        for (int i=0; i<iBufferSize; ++i)
+            pOutput[i] = fLow*m_pTemp1[i] + fHigh*pOutput[i] + fMid*(pIn[i]-m_pTemp1[i]-m_pTemp2[i]);
     }
 }
+
