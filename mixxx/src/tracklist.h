@@ -33,7 +33,7 @@ class EngineBuffer;
 class WTrackTable;
 class ControlObject;
 class QDragLeaveEvent;
-	
+
 // Defines for the rows in the table.
 const int COL_SCORE = 0;
 const int COL_TITLE = 1;
@@ -62,9 +62,13 @@ public:
     ~TrackList();
     WTreeList *wTree;
     QString currentPlaylist;
-	 /** Loads the given track in player 1 */
+    /** Loads the given track in player 1. This is used to load a track without using
+      * the playlist. The method is called if a file name was specified on the command
+      * line at program startup */
     void loadTrack1(QString name);
-    /** Loads the given track in player 2 */
+    /** Loads the given track in player 2. This is used to load a track without using
+      * the playlist. The method is called if a file name was specified on the command
+      * line at program startup */
     void loadTrack2(QString name);
     /** Returns pointer to current TrackInfoObject used in player 1 */
     TrackInfoObject *getTrackInfo1();
@@ -88,7 +92,7 @@ public slots:
 private slots:
     /** Loads new track for channel 1. Idx refers to index in m_lTracks. If not given it loads the
       * currently marked track in m_pTableTracks. */
-    void slotChangePlay_1(int idx=-1); 
+    void slotChangePlay_1(int idx=-1);
     /** Loads new track for channel 2. Idx refers to index in m_lTracks. If not given it loads the
       * currently marked track in m_pTableTracks. */
     void slotChangePlay_2(int idx=-1);
@@ -135,7 +139,7 @@ private:
     WNumberPos *m_pNumberPos1;
 	WNumberPos *m_pNumberPos2;
 	
-    QString m_sDirectory; 
+    QString m_sDirectory;
 	int m_iMaxTimesPlayed;
      
     /** Pointer to ControlObject signalling end of track */
