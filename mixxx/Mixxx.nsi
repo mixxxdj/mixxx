@@ -1189,10 +1189,18 @@ Section "Start Menu Shortcuts"
 
   CreateDirectory "$SMPROGRAMS\Mixxx"
   CreateShortCut "$SMPROGRAMS\Mixxx\Uninstall.lnk" "$INSTDIR\uninstall.exe" "" "$INSTDIR\uninstall.exe" 0
+  SetOutPath $INSTDIR
   CreateShortCut "$SMPROGRAMS\Mixxx\Mixxx.lnk" "$INSTDIR\mixxx.exe" "" "$INSTDIR\mixxx.exe" 0
   
 SectionEnd
 
+; Optional section (can be disabled by the user)
+Section "Desktop Shortcut"
+
+  SetOutPath $INSTDIR
+  CreateShortCut "$DESKTOP\Mixxx.lnk" "$INSTDIR\mixxx.exe" "" "$INSTDIR\mixxx.exe" 0
+  
+SectionEnd
 ;--------------------------------
 
 ; Uninstaller
@@ -1226,6 +1234,7 @@ Section "Uninstall"
 
   ; Remove shortcuts, if any
   Delete "$SMPROGRAMS\Mixxx\*.*"
+  Delete "$DESKTOP\Mixxx.lnk"
 
   ; Remove directories used
   RMDir "$SMPROGRAMS\Mixxx"
