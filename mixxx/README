@@ -21,7 +21,9 @@ New since 1.1:
   output
 - Jack (compile time) support added
 - Multiple playlist interface
+- Pitch display
 
+:
 * REQUIREMENTS *********************************************
 Mixxx is depends on the following libraries:
 QT >= 3.1 
