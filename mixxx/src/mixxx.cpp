@@ -625,6 +625,7 @@ void MixxxApp::slotOptionsPreferences()
         connect(pDlg->PushButtonOK,      SIGNAL(clicked()),      this, SLOT(slotOptionsSetPreferences()));
         connect(pDlg->PushButtonCancel,  SIGNAL(clicked()),      this, SLOT(slotOptionsClosePreferences()));
         connect(pDlg->ComboBoxSoundcard, SIGNAL(activated(int)), this, SLOT(slotOptionsPreferencesUpdateDeviceOptions()));
+	connect(pDlg->PushButtonBrowsePlaylist, SIGNAL(clicked()),this,SLOT(slotBrowsePlaylistDir()));
 
         // Show dialog
         pDlg->show();
@@ -700,11 +701,21 @@ void MixxxApp::slotOptionsSetPreferences()
     if (pDlg->LineEditSongfiles->text() != config->getValueString(PlaylistKey))
     {
 	config->set(ConfigKey("[Playlist]","Directory"), pDlg->LineEditSongfiles->text());
+	view->playlist->ListPlaylist->clear();
         addFiles(config->getValueString(PlaylistKey).latin1());
     }
 
     // Close dialog
     slotOptionsClosePreferences();
+}
+
+void MixxxApp::slotBrowsePlaylistDir()
+{
+    QFileDialog* fd = new QFileDialog( this, "Choose directory with music files", TRUE );
+    fd->setMode( QFileDialog::Directory );
+    if ( fd->exec() == QDialog::Accepted ) {
+	pDlg->LineEditSongfiles->setText( fd->selectedFile() );
+    }
 }
 
 void MixxxApp::slotOptionsClosePreferences()
@@ -772,3 +783,4 @@ void MixxxApp::addFiles(const char *path)
         }
     }
 }
+
