@@ -36,7 +36,6 @@ libid3tag
 libAudioFile (Linux and MacOS X only)
 libSndFile (Windows only)
 vorbisfile
-FFTW 2
 pkg-config (Linux only)
 
 
