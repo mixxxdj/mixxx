@@ -149,7 +149,7 @@ void Track::writeXML(QString location)
     // Write playlists
     QDomElement playlistsroot = domXML.createElement("Playlists");
 
-    QPtrListIterator<TrackPlaylist> it = m_qPlaylists.begin();
+    QPtrList<TrackPlaylist>::iterator it = m_qPlaylists.begin();
     while (it!=m_qPlaylists.end())
     {
         QDomElement elementNew = domXML.createElement("Playlist");
@@ -270,7 +270,7 @@ void Track::slotDeletePlaylist()
 
 TrackPlaylist *Track::getPlaylist(QString qName)
 {
-    QPtrListIterator<TrackPlaylist> it = m_qPlaylists.begin();
+    QPtrList<TrackPlaylist>::iterator it = m_qPlaylists.begin();
     while (it!=m_qPlaylists.end())
     {
         if ((*it)->getListName()==qName)
