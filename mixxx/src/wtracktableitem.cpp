@@ -21,6 +21,9 @@
 #include <qrect.h>
 #include <qstring.h>
 
+QColor WTrackTableItem::kqRowColor1;
+QColor WTrackTableItem::kqRowColor2;
+
 WTrackTableItem::WTrackTableItem(QTable *table, EditType et, const QString &text, enumType eType) : QTableItem(table, et, text)
 {
     m_eType = eType;
@@ -30,16 +33,22 @@ WTrackTableItem::~WTrackTableItem()
 {
 }
 
+void WTrackTableItem::setRowColors(QColor r1, QColor r2)
+{
+    kqRowColor1 = r1;
+    kqRowColor2 = r2;
+}
+
 void WTrackTableItem::paint(QPainter *p, const QColorGroup &cg, const QRect &cr, bool selected)
 {
     QColorGroup g( cg );
     // last row is the sum row - we want to make it more visible by
     // using a red background
-    g.setColor( QColorGroup::Text, QColor(0,0,0));
+//    g.setColor( QColorGroup::Text, QColor(0,0,0));
     if ((row()/2)*2 == row())
-        g.setColor( QColorGroup::Base, QColor(148,171,194));
+        g.setColor( QColorGroup::Base, kqRowColor1);
     else
-        g.setColor( QColorGroup::Base, QColor(154,178,196));
+        g.setColor( QColorGroup::Base, kqRowColor2);
 
     QTableItem::paint( p, g, cr, selected);
 }

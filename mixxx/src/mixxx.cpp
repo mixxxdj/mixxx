@@ -88,37 +88,62 @@
 
 MixxxApp::MixxxApp(QApplication *a, bool bVisuals)
 {
-    qDebug("Starting up...");
-    setCaption(tr("Mixxx " VERSION));
-
     app = a;
 
-    // Ensure that a directory named ~/.mixxx exists
-    QDir().mkdir(QDir::homeDirPath().append("/").append(SETTINGS_DIR));
+    qDebug("Starting up...");
+    setCaption(tr("Mixxx " VERSION));
 
     // Reset pointer to players
     player = 0;
     m_pTracks = 0;
     prefDlg = 0;
 
-    // Read the config file
-    config = new ConfigObject<ConfigValue>(QDir::homeDirPath().append("/").append(SETTINGS_DIR).append("/mixxx.cfg"));
-    qDebug(QDir::homeDirPath().append("/").append(SETTINGS_DIR).append("/mixxx.cfg"));
+    // Read the config file from home directory
+    config = new ConfigObject<ConfigValue>(QDir::homeDirPath().append("/").append(SETTINGS_FILE));
 
     // Instantiate a ControlObject, and set static parent widget
     control = new ControlNull();
     control->setParentWidget(this);
 
-    // Set the main widget here
-    view=new MixxxView(this,bVisuals);
-    setCentralWidget(view);
+    //
+    // Find the config path, path where midi configuration files, skins etc. are stored.
+    // On Linux the search order is whats listed in mixxx.cfg, then UNIX_SHARE_PATH
+    // On Windows and Mac it is always (and only) app dir.
+    //
+    QString qConfigPath;
+#ifdef __LINUX__
+    // On Linux, check if the path is stored in the configuration database.
+    if (config->getValueString(ConfigKey("[Config]","Path")).length()>0 && QDir(config->getValueString(ConfigKey("[Config]","Path"))).exists())
+        qConfigPath = config->getValueString(ConfigKey("[Config]","Path"));
+    else
+    {
+        // Set the path according to the compile time define, UNIX_SHARE_PATH
+        qConfigPath = UNIX_SHARE_PATH;
+    }
+#endif
+#ifdef __WIN__
+    // On Windows, set the config dir relative to the application dir
+    LPTSTR *str = new LPTSTR[200];
+    GetModuleFileName(NULL, str, 200);
+    qConfigPath = QFileInfo(str).dirPath();
+#endif
+#ifdef __MACX__
+    // Set the path relative to the bundle directory
+    CFURLRef pluginRef = CFBundleCopyBundleURL(CFBundleGetMainBundle());
+    CFStringRef macPath = CFURLCopyFileSystemPath(pluginRef, kCFURLPOSIXPathStyle);
+    qConfigPath = CFStringGetCStringPtr(macPath, CFStringGetSystemEncoding());
+#endif
+    // If the directory does not end with a "/", add one
+    if (!qConfigPath.endsWith("/"))
+        qConfigPath.append("/");
+    config->set(ConfigKey("[Config]","Path"), ConfigValue(qConfigPath));
+
 
     // Call inits to invoke all other construction parts
     initActions();
     initMenuBar();
 
     // Open midi
-    //qDebug("Init midi...");
     midi = 0;
 #ifdef __ALSA__
     midi = new MidiObjectALSA(midiconfig,app,config->getValueString(ConfigKey("[Midi]","Device")));
@@ -140,51 +165,26 @@ MixxxApp::MixxxApp(QApplication *a, bool bVisuals)
         midi = new MidiObjectNull(midiconfig,app,control,config->getValueString(ConfigKey("[Midi]","Device")));
 
     // Store default midi device
-    config->set(ConfigKey("[Midi]","Device"), ConfigValue(midi->getOpenDevice()->latin1()));
-
-    // On unix, get directory where MIDI configurations are stored. If no is given, set to CONFIG_PATH
-#ifdef __UNIX__
-#ifndef __MACX__
-    if (config->getValueString(ConfigKey("[Midi]","Configdir")).length() == 0)
-        config->set(ConfigKey("[Midi]","Configdir"),ConfigValue(CONFIG_PATH));
-#endif
-#endif
-
-  // On Mac and Windows, always set the config dir relative to the application dir
-#ifdef __WIN__
-    config->set(ConfigKey("[Midi]","Configdir"),ConfigValue(QDir::currentDirPath().append(QString("/").append(CONFIG_PATH))));
-#endif
-#ifdef __MACX__
-    CFURLRef pluginRef = CFBundleCopyBundleURL(CFBundleGetMainBundle());
-    CFStringRef macPath = CFURLCopyFileSystemPath(pluginRef, kCFURLPOSIXPathStyle);
-    const char *pathPtr = CFStringGetCStringPtr(macPath, CFStringGetSystemEncoding());
-    qDebug("Path = %s",pathPtr);
-  
-    config->set(ConfigKey("[Midi]","Configdir"),ConfigValue(QString(pathPtr).append(QString("/").append(CONFIG_PATH))));
-#endif
-
-    // If the directory does not end with a "/", add one
-    if (!config->getValueString(ConfigKey("[Midi]","Configdir")).endsWith("/"))
-        config->set(ConfigKey("[Midi]","Configdir"),ConfigValue(config->getValueString(ConfigKey("[Midi]","Configdir")).append("/")));
-
+    config->set(ConfigKey("[Midi]","Device"), ConfigValue(midi->getOpenDevice()->latin1()));    
+        
     // Get list of available midi configurations, and read the default configuration. If no default
     // is given, use the first configuration found in the config directory.
-    QStringList *midiConfigList = midi->getConfigList(config->getValueString(ConfigKey("[Midi]","Configdir")));
+    QStringList *midiConfigList = midi->getConfigList(QString(qConfigPath).append("midi/"));
     midiconfig = 0;
     for (QStringList::Iterator it = midiConfigList->begin(); it != midiConfigList->end(); ++it )
-        if (*it == config->getValueString(ConfigKey("[Midi]","Configfile")))
-            midiconfig = new ConfigObject<ConfigValueMidi>(config->getValueString(ConfigKey("[Midi]","Configdir")).append(config->getValueString(ConfigKey("[Midi]","Configfile"))));
+        if (*it == config->getValueString(ConfigKey("[Config]","Midifile")))
+            midiconfig = new ConfigObject<ConfigValueMidi>(config->getValueString(ConfigKey("[Config]","Midifile")).append(config->getValueString(ConfigKey("[Midi]","Configfile"))));
     if (midiconfig == 0)
     {
         if (midiConfigList->empty())
         {
             midiconfig = new ConfigObject<ConfigValueMidi>("");
-            config->set(ConfigKey("[Midi]","Configfile"), ConfigValue(""));
+            config->set(ConfigKey("[Config]","Midifile"), ConfigValue(""));
         }
         else
         {
-            midiconfig = new ConfigObject<ConfigValueMidi>(config->getValueString(ConfigKey("[Midi]","Configdir")).append((*midiConfigList->at(0)).latin1()));
-            config->set(ConfigKey("[Midi]","Configfile"), ConfigValue((*midiConfigList->at(0)).latin1()));
+            midiconfig = new ConfigObject<ConfigValueMidi>(QString(qConfigPath).append("midi/").append((*midiConfigList->at(0)).latin1()));
+            config->set(ConfigKey("[Config]","Midifile"), ConfigValue((*midiConfigList->at(0)).latin1()));
         }
     }
 
@@ -272,9 +272,45 @@ MixxxApp::MixxxApp(QApplication *a, bool bVisuals)
 #endif
 
     // Init buffers/readers
-    buffer1 = new EngineBuffer(powermate1, "[Channel1]", view->m_pVisualCh1);
-    buffer2 = new EngineBuffer(powermate2, "[Channel2]", view->m_pVisualCh2);
+    buffer1 = new EngineBuffer(powermate1, "[Channel1]");
+    buffer2 = new EngineBuffer(powermate2, "[Channel2]");
 
+    // Starting channels:
+    channel1 = new EngineChannel("[Channel1]");
+    channel2 = new EngineChannel("[Channel2]");
+
+    // Starting effects:
+    flanger = new EngineFlanger("[Flanger]");
+
+    // Starting the master (mixing of the channels and effects):
+    master = new EngineMaster(buffer1, buffer2, channel1, channel2, flanger, "[Master]");
+
+    // Find path of skin
+    QString qSkinPath(qConfigPath);
+    qSkinPath.append("skins/");
+    if (QDir(qSkinPath).exists())
+    {
+        // Is the skin listed in the config database there? If not, use default (outline) skin
+        if ((config->getValueString(ConfigKey("[Config]","Skin")).length()>0 && QDir(QString(qSkinPath).append(config->getValueString(ConfigKey("[Config]","Skin")))).exists()))
+            qSkinPath.append(config->getValueString(ConfigKey("[Config]","Skin")));
+        else
+        {
+            config->set(ConfigKey("[Config]","Skin"), ConfigValue("outline"));
+            config->Save();
+            qSkinPath.append(config->getValueString(ConfigKey("[Config]","Skin")));
+        }
+    }
+    else
+        qFatal("Skin directory does not exist: %s",qSkinPath.latin1());
+
+    // Initialize widgets
+    view=new MixxxView(this,bVisuals, qSkinPath);
+    setCentralWidget(view);
+
+    // Tell EngineBuffer to notify the visuals
+    buffer1->setVisual(view->m_pVisualCh1);
+    buffer2->setVisual(view->m_pVisualCh2);
+    
     // Initialize tracklist:
     m_pTracks = new TrackList(config->getValueString(ConfigKey("[Playlist]","Directory")), view->m_pTrackTable,
                               view->m_pTextCh1, view->m_pTextCh2, buffer1, buffer2);
@@ -289,18 +325,6 @@ MixxxApp::MixxxApp(QApplication *a, bool bVisuals)
         if (!player->open(true))
             prefDlg->setHidden(false);
 
-    // Starting channels:
-    channel1 = new EngineChannel("[Channel1]");
-    channel2 = new EngineChannel("[Channel2]");
-
-    // Starting effects:
-    flanger = new EngineFlanger("[Flanger]");
-
-    // Starting the master (mixing of the channels and effects):
-    master = new EngineMaster(buffer1, buffer2, channel1, channel2, flanger, "[Master]");
-
-    // Assign widgets to corresponding ControlObjects
-    view->assignWidgets(control);
 
     // Start audio
     //qDebug("Starting player...");
@@ -491,5 +515,5 @@ void MixxxApp::slotOptionsPreferences()
 void MixxxApp::slotHelpAbout()
 {
     QMessageBox::about(this,tr("About..."),
-                      tr("Mixxx\nVersion " VERSION "\nhttp://mixxx.sourceforge.net/\n\nDesign and programming: Tue Haste Andersen and Ken Haste Andersen.\nGraphics: Ludek Horácek.\nOgg vorbis support: Svein Magne Bang.\nOther contributions: Lukas Zapletal.\n\nThanks to all DJ's and musicians giving feedback.\n\nReleased under the GNU General Public Licence version 2") );
+                      tr("Mixxx\nVersion " VERSION "\nhttp://mixxx.sourceforge.net/\n\nDesign and programming: Tue Haste Andersen and Ken Haste Andersen.\nGraphics: Ludek Horácek - Traditional skin\n              Tue Haste Andersen - Outline skin\nOgg vorbis support: Svein Magne Bang.\nOther contributions: Lukas Zapletal.\n\nThanks to all DJ's and musicians giving feedback.\n\nReleased under the GNU General Public Licence version 2") );
 }

@@ -20,8 +20,6 @@
 #include "soundsourcemp3.h"
 #include "soundsourceoggvorbis.h"
 
-#include "images/a.xpm"
-#include "images/b.xpm"
 #include "enginebuffer.h"
 #include "reader.h"
 #include "wtracktable.h"
@@ -62,8 +60,8 @@ TrackList::TrackList( const QString sDirectory, WTrackTable *pTableTracks,
 
     // Construct popup menu used to select playback channel on track selection
     playSelectMenu = new QPopupMenu( );
-    playSelectMenu->insertItem(QIconSet(a_xpm), "Player A",this, SLOT(slotChangePlay_1()));
-    playSelectMenu->insertItem(QIconSet(b_xpm), "Player B",this, SLOT(slotChangePlay_2()));
+    playSelectMenu->insertItem("Player 1",this, SLOT(slotChangePlay_1()));
+    playSelectMenu->insertItem("Player 2",this, SLOT(slotChangePlay_2()));
 
     // Connect the right click to the slot where the menu is shown:
     connect(m_pTableTracks, SIGNAL(pressed(int, int, int, const QPoint &)),
@@ -83,13 +81,14 @@ TrackList::~TrackList()
 void TrackList::UpdateTracklist()
 {
     // Initialize xml file:
-	QFile opmlFile( m_sDirectory + "/tracklist.xml" );
-	
-	if ( !opmlFile.exists() )
-		WriteXML();
+    QFile opmlFile(m_sDirectory + "/tracklist.xml");
 
-	QDomDocument domXML( "Mixxx_Track_List" );
-    if ( !domXML.setContent( &opmlFile ) ) {
+    if (!opmlFile.exists())
+        WriteXML();
+
+    QDomDocument domXML("Mixxx_Track_List");
+    if (!domXML.setContent( &opmlFile))
+    {
         QMessageBox::critical( 0,
                 tr( "Critical Error" ),
                 tr( "Parsing error for file %1" ).arg( m_sDirectory + "/tracklist.xml" ) );
@@ -108,24 +107,26 @@ void TrackList::UpdateTracklist()
 
     // Get all the tracks written in the xml file:
     QDomNode node = elementRoot.firstChild();
-    while ( !node.isNull() ) {
-        if ( node.isElement() && node.nodeName() == "Track" ) {
-			// Create a new track:
-			TrackInfoObject *Track;
-			Track = new TrackInfoObject( node );
-			// Append it to the list of tracks:
-            if (!FileExistsInList( Track->m_sFilename ) )
+    while ( !node.isNull() )
+    {
+        if ( node.isElement() && node.nodeName() == "Track" )
+        {
+            // Create a new track:
+            TrackInfoObject *Track;
+            Track = new TrackInfoObject(node);
+            // Append it to the list of tracks:
+            if (!FileExistsInList(Track->m_sFilename))
             {
                 // Shall we re-parse the header?:
                 if (iVersion < TRACKLIST_VERSION)
                 {
                     qDebug("Reparsed %s", Track->m_sFilename.latin1() );
                     if (ParseHeader( Track ) == OK) 
-			            m_lTracks.append( Track );
+                        m_lTracks.append( Track );
                 }
                 else
                     m_lTracks.append( Track );
-//			    qDebug( "Read track from xml file: %s", Track->m_sFilename.latin1() );
+//               qDebug( "Read track from xml file: %s", Track->m_sFilename.latin1() );
                 
             }
         }
@@ -253,37 +254,43 @@ void TrackList::WriteXML()
         }
     }
 
-	// Create the xml document:
-	QDomDocument domXML( "Mixxx_Track_List" );
-	QDomElement elementRoot = domXML.createElement( "Mixxx_Track_List" );
-	domXML.appendChild( elementRoot );
+    // Create the xml document:
+    QDomDocument domXML( "Mixxx_Track_List" );
+
+    // Ensure UTF16 encoding
+    domXML.appendChild(domXML.createProcessingInstruction("xml","version=\"1.0\" encoding=\"UTF-16\""));
+    
+    // Set the document type
+    QDomElement elementRoot = domXML.createElement( "Mixxx_Track_List" );
+    domXML.appendChild(elementRoot);
 
     // Add version information:
     TrackInfoObject::AddElement( domXML, elementRoot, "Version", QString("%1").arg( TRACKLIST_VERSION ) );
 
-	// Insert all the tracks:
-	for (TrackInfoObject *Track = m_lTracks.first(); Track; Track = m_lTracks.next() )
-	{
-		QDomElement elementNew = domXML.createElement("Track");
+    // Insert all the tracks:
+    for (TrackInfoObject *Track = m_lTracks.first(); Track; Track = m_lTracks.next())
+    {
+        QDomElement elementNew = domXML.createElement("Track");
         // See if we should add information from the comment field:
-		Track->WriteToXML( domXML, elementNew );
-		elementRoot.appendChild( elementNew );
-	}
+        Track->WriteToXML(domXML, elementNew);
+        elementRoot.appendChild(elementNew);
+    }
 
-	// Open the file:
-	QFile opmlFile( m_sDirectory + "/tracklist.xml" );
-
-    if ( !opmlFile.open( IO_WriteOnly) ) {
-        QMessageBox::critical( 0,
-                tr( "Error" ),
-                tr( "Cannot open file %1" ).arg( m_sDirectory + "/tracklist.xml" ) );
+    // Open the file:
+    QFile opmlFile(m_sDirectory + "/tracklist.xml");
+    if (!opmlFile.open(IO_WriteOnly))
+    {
+        QMessageBox::critical(0,
+                tr("Error"),
+                tr("Cannot open file %1").arg(m_sDirectory + "/tracklist.xml"));
         return;
     }
 
-	// Write to the file:
-	QTextStream Xml( &opmlFile );
-	Xml << domXML.toString();
-	opmlFile.close();
+    // Write to the file:
+    QTextStream Xml(&opmlFile);
+    Xml.setEncoding(QTextStream::Unicode);
+    Xml << domXML.toString();
+    opmlFile.close();
 }
 
 /*
@@ -293,21 +300,21 @@ void TrackList::WriteXML()
 bool TrackList::AddFiles(const char *path)
 {    
 	bool bFoundFiles = false;
-	// First run through all directories:
+    // First run through all directories:
     QDir dir(path);
     if (!dir.exists())
         qWarning( "Cannot find the directory %s.",path);
     else
     {
-		dir.setFilter(QDir::Dirs);
+        dir.setFilter(QDir::Dirs);
         const QFileInfoList dir_list = *dir.entryInfoList();
         QFileInfoListIterator dir_it(dir_list);
         QFileInfo *d;
         dir_it += 2; // Traverse past "." and ".."
         while ((d=dir_it.current()))
         {
-            if ( AddFiles(d->filePath()) )
-				bFoundFiles = true;
+            if (AddFiles(d->filePath()))
+                bFoundFiles = true;
             ++dir_it;
         }
 
@@ -320,26 +327,25 @@ bool TrackList::AddFiles(const char *path)
 
         while ((fi=it.current()))
         {
-			// Check if the file exists in the list:
-			if (!FileExistsInList( fi->fileName() ))
-			{
-				TrackInfoObject *Track = 
-					new TrackInfoObject( dir.absPath(), fi->fileName() );
+            // Check if the file exists in the list:
+            if (!FileExistsInList( fi->fileName() ))
+            {
+                TrackInfoObject *Track = new TrackInfoObject( dir.absPath(), fi->fileName() );
                 
-                    // Append the track to the list of tracks:
-                    if (ParseHeader( Track ) == OK) {
-                        m_lTracks.append( Track );
-                        qDebug( "Found new track: %s", Track->m_sFilename.latin1() );
-                        bFoundFiles = true;
-                    } 
-                    else
-                        qWarning("Could not parse %s", fi->fileName().latin1());
-
-			}
+                // Append the track to the list of tracks:
+                if (ParseHeader(Track) == OK)
+                {
+                    m_lTracks.append(Track);
+                    qDebug( "Found new track: %s", Track->m_sFilename.latin1() );
+                    bFoundFiles = true;
+                } 
+                else
+                    qWarning("Could not parse %s", fi->fileName().latin1());
+            }
             ++it;   // goto next list element
         }
-	}
-	return bFoundFiles;
+    }
+    return bFoundFiles;
 }
 
 /*
@@ -349,19 +355,21 @@ bool TrackList::AddFiles(const char *path)
 int TrackList::ParseHeader( TrackInfoObject *Track )
 {
     // Add basic information:
-	Track->Parse(); 
-	// Find the type:
-	QString sType = Track->m_sFilename.section(".",-1).lower();
-	// Parse it using the sound sources:
+    Track->Parse(); 
+
+    // Find the type:
+    QString sType = Track->m_sFilename.section(".",-1).lower();
+
+    // Parse it using the sound sources:
     int iResult = ERR;
-	if (sType == "wav")
+    if (sType == "wav")
 #ifdef __WIN__
-     iResult = SoundSourceSndFile::ParseHeader( Track );
+        iResult = SoundSourceSndFile::ParseHeader(Track);
 #endif
 #ifdef __UNIX__
-    iResult = SoundSourceAudioFile::ParseHeader(Track);
+        iResult = SoundSourceAudioFile::ParseHeader(Track);
 #endif
-     else if (sType == "mp3")
+    else if (sType == "mp3")
         iResult = SoundSourceMp3::ParseHeader(Track);
     else if (sType == "ogg")
         iResult = SoundSourceOggVorbis::ParseHeader(Track);

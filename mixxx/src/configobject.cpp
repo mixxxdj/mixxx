@@ -80,10 +80,10 @@ QString ConfigObject<ValueType>::getValueString(ConfigKey k)
 template <class ValueType> bool ConfigObject<ValueType>::Parse()
 {
     // Open file for reading
- 	QFile configfile(filename);
-	if (filename.length()<1 || !configfile.open(IO_ReadOnly))
+    QFile configfile(filename);
+    if (filename.length()<1 || !configfile.open(IO_ReadOnly))
     {
-        qDebug("Could not open file %s, don't worry.",filename.ascii());
+        qDebug("Creating configuration file: %s",filename.latin1());
         return false;
     }
     else

@@ -33,6 +33,7 @@ class WPushButton : public WWidget
 public: 
     WPushButton(QWidget *parent=0, const char *name=0);
     ~WPushButton();
+    void setup(QDomNode node);
     /** Sets the number of states associated with this button, and removes associated
       * pixmaps. */
     void setStates(int iStatesW);

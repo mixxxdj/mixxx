@@ -19,6 +19,8 @@
 #define WWIDGET_H
 
 #include <qwidget.h>
+#include <qdom.h>
+#include "configobject.h"
 
 /**
   * Abstract class used in widgets connected to ControlObjects. Derived
@@ -35,8 +37,22 @@ class WWidget : public QWidget  {
 public: 
     WWidget(QWidget *parent=0, const char *name=0, WFlags flags=0);
     ~WWidget();
+    /** Sets the path used to find pixmaps */
+    static void setPixmapPath(QString qPath);
+    /** Given an XML DOM node, initialize the widget */
+    void setup(QDomNode node);
+    static QDomNode selectNode(const QDomNode &nodeHeader, const QString sNode);
+    static int selectNodeInt(const QDomNode &nodeHeader, const QString sNode);
+    static float selectNodeFloat(const QDomNode &nodeHeader, const QString sNode);
+    static QString selectNodeQString(const QDomNode &nodeHeader, const QString sNode);
+    
+    /** Given a filename of a pixmap, returns its path */
+    static const QString getPath(QString location);
 public slots:
     virtual void setValue(double fValue);
+private slots:
+    void slotReEmitValueDown(double);
+    void slotReEmitValueUp(double);
 signals:
     void valueChangedDown(double);
     void valueChangedUp(double);
@@ -46,9 +62,15 @@ signals:
     void valueChangedRightUp(double);
 protected:
     double m_fValue;
-private slots:
-    void slotReEmitValueDown(double);
-    void slotReEmitValueUp(double);
+private:
+    /** Variable containing the path to the pixmaps */
+    static QString m_qPath;
+    /** Property used when connecting to ControlObject */
+    bool m_bEmitOnDownPress;
+    /** Property used when connecting to ControlObject */
+    Qt::ButtonState m_qButtonState;
+    /** Property used when connecting to ControlObject */
+    bool m_bUseSetFromApp;
 };
 
 #endif

@@ -31,6 +31,7 @@ class WKnob : public WWidget  {
 public: 
     WKnob(QWidget *parent=0, const char *name=0);
     ~WKnob();
+    void setup(QDomNode node);
     void setPositions(int iNoPos);
     void setPixmap(int iPos, const QString &filename);
     /** Associates a background pixmap with the widget. This is only needed if the knob

@@ -35,7 +35,7 @@ class VisualChannel;
   #include "visual/visualchannel.h"
 #endif
 
-EngineBuffer::EngineBuffer(PowerMate *_powermate, const char *_group, WVisual *pVisual)
+EngineBuffer::EngineBuffer(PowerMate *_powermate, const char *_group)
 {
     group = _group;
     powermate = _powermate;
@@ -85,7 +85,7 @@ EngineBuffer::EngineBuffer(PowerMate *_powermate, const char *_group, WVisual *p
     // TrackEndMode determines what to do at the end of a track
     p5 = new ControlObject(ConfigKey(group,"TrackEndMode"));
     m_pTrackEndMode = new ControlEngine(p5);
-    m_pTrackEndMode->set((double)TRACK_END_MODE_STOP);
+    m_pTrackEndMode->set((double)TRACK_END_MODE_NEXT);
     
     // BPM control
     ControlBeat *p4 = new ControlBeat(ConfigKey(group, "bpm"));
@@ -115,17 +115,6 @@ EngineBuffer::EngineBuffer(PowerMate *_powermate, const char *_group, WVisual *p
 
     m_iBeatMarkSamplesLeft = 0;
 
-    // Try setting up visuals
-    VisualChannel *pVisualChannel = 0;
-#ifdef __VISUALS__
-    if (pVisual)
-    {
-        // Add buffer as a visual channel
-        pVisualChannel = pVisual->add(controlbufferpos);
-        reader->addVisual(pVisualChannel);
-    }
-#endif
-                                                            
     // Allocate buffer for processing:
     buffer = new CSAMPLE[MAX_BUFFER_LEN];
 
@@ -152,6 +141,21 @@ EngineBuffer::~EngineBuffer()
     delete bufferposSlider;
     delete m_pTrackEnd;
 }
+
+void EngineBuffer::setVisual(WVisual *pVisual)
+{
+    VisualChannel *pVisualChannel = 0;
+    // Try setting up visuals
+#ifdef __VISUALS__
+    if (pVisual)
+    {
+        // Add buffer as a visual channel
+        pVisualChannel = pVisual->add((ControlPotmeter *)ControlObject::getControl(ConfigKey(group, "bufferplayposition")));
+        reader->addVisual(pVisualChannel);
+    }
+#endif
+}
+
 
 Reader *EngineBuffer::getReader()
 {
@@ -265,7 +269,7 @@ inline bool even(long n)
 CSAMPLE *EngineBuffer::process(const CSAMPLE *, const int buf_size)
 {    
     // pause can be locked if the reader is currently loading a new track.
-    if (pause.tryLock())
+    if (m_pTrackEnd->get()==0 && pause.tryLock())
     {
         // Try to fetch info from the reader
         bool readerinfo = false;
@@ -280,6 +284,8 @@ CSAMPLE *EngineBuffer::process(const CSAMPLE *, const int buf_size)
             reader->unlock();
             readerinfo = true;
         }
+
+//        qDebug("filepos_play %f,\tstart %i,\tend %i\t info %i",filepos_play, filepos_start, filepos_end, readerinfo);
 
         //
         // Calculate rate
@@ -466,12 +472,12 @@ CSAMPLE *EngineBuffer::process(const CSAMPLE *, const int buf_size)
         if (readerinfo)
         {
 //            qDebug("checking");
-            if (!backwards && /*filepos_end<file_length_old &&*/ (filepos_end - filepos_play < READCHUNKSIZE*(READCHUNK_NO/2-1)))
+            if (!backwards && filepos_end<file_length_old && (filepos_end - filepos_play < READCHUNKSIZE*(READCHUNK_NO/2-1)))
             {
 //                qDebug("wake fwd");
                 reader->wake();
             }
-            else if (backwards && /*filepos_start>0. &&*/ (filepos_play - filepos_start < READCHUNKSIZE*(READCHUNK_NO/2-1)))
+            else if (backwards && filepos_start>0. && (filepos_play - filepos_start < READCHUNKSIZE*(READCHUNK_NO/2-1)))
             {
 //                qDebug("wake back");
                 reader->wake();

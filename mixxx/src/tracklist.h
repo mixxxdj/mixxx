@@ -30,7 +30,7 @@ const int COL_INDEX = 7;
 // bugfixed, this number should be increased. If TRACKLIST_VERSION is larger
 // than the version written in the current tracklist, the list will be
 // re-parsed.
-const int TRACKLIST_VERSION = 6;
+const int TRACKLIST_VERSION = 7;
 
 class TrackList : public QObject
 {

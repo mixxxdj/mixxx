@@ -9,6 +9,9 @@ WINPA = DIRECTSOUND
 # Use this define if the visual subsystem should be included
 DEFINES += __VISUALS__
 
+# Use this define on Linux if Mixxx should be statically linked with QT
+#unix:DEFINES += STATIC
+
 # Path to Macintosh libraries
 macx:MACLIBPATH = ../../mixxx-maclib
 
@@ -65,13 +68,6 @@ win32:SOURCES += midiobjectwin.cpp
 win32:HEADERS += midiobjectwin.h
 win32:DEFINES += __WINMIDI__
 
-# PortMidi (Not really working, Linux ALSA, Windows and MacOS X)
-#SOURCES += midiobjectportmidi.cpp
-#HEADERS += midiobjectportmidi.h
-#DEFINES += __PORTMIDI__
-#unix:LIBS += -lportmidi -lporttime
-#win32:LIBS += ../lib/pm_dll.lib
-
 # CoreMidi (Mac OS X)
 macx:SOURCES += midiobjectcoremidi.cpp
 macx:HEADERS += midiobjectcoremidi.h
@@ -97,16 +93,12 @@ contains(DEFINES, __VISUALS__) {
     CONFIG += opengl
 }
 
-# Use NVSDK when building visuals (not tested recently)
-#DEFINES += __NVSDK__
-#win32:INCLUDEPATH += c:/Progra~1/NVIDIA~1/NVSDK/OpenGL/include/glh
-#win32:LIBS += c:/Progra~1/NVIDIA~1/NVSDK/OpenGL/lib/debug/glut32.lib
-#unix:INCLUDEPATH +=/usr/local/nvsdk/OpenGL/include/glh
-#unix:DEFINES += UNIX
-#unix:LIBS += -L/usr/local/nvsdk/OpenGL/lib/ -lnv_memory
-
 # MP3
-unix:!macx:LIBS += -lmad -lid3tag
+contains(DEFINES, STATIC) {
+    unix:!macx:LIBS += /usr/lib/libmad.a /usr/lib/libid3tag.a
+} else {
+    unix:!macx:LIBS += -lmad -lid3tag
+}
 win32:LIBS += libmad.lib libid3tag.lib
 macx:LIBS += $$MACLIBPATH/lib/libmad.a $$MACLIBPATH/lib/libid3tag.a
 
@@ -118,14 +110,22 @@ HEADERS += ../lib/vbrheadersdk/dxhead.h
 # Wave files
 unix:SOURCES += soundsourceaudiofile.cpp
 unix:HEADERS += soundsourceaudiofile.h
-unix:!macx:LIBS += -laudiofile
+contains(DEFINES, STATIC) {
+    unix:!macx:LIBS += /usr/lib/libaudiofile.a
+} else {
+    unix:!macx:LIBS += -laudiofile
+}
 win32:SOURCES += soundsourcesndfile.cpp
 win32:HEADERS += soundsourcesndfile.h
 win32:LIBS += libsndfile.lib
 macx:LIBS += $$MACLIBPATH/lib/libaudiofile.a
 
 # Ogg Vorbis
-unix:!macx:LIBS += -lvorbisfile -lvorbis
+contains(DEFINES, STATIC) {
+    unix:!macx:LIBS += /usr/lib/libvorbisfile.a /usr/lib/libvorbis.a /usr/lib/libogg.a
+} else {
+    unix:!macx:LIBS += -lvorbisfile -lvorbis -logg
+}
 win32:LIBS += vorbisfile_static_d.lib vorbis_static_d.lib ogg_static_d.lib
 macx:LIBS += $$MACLIBPATH/lib/libvorbis.a $$MACLIBPATH/lib/libvorbisfile.a $$MACLIBPATH/lib/libogg.a
 
@@ -145,7 +145,11 @@ unix:!macx:SOURCES += joysticklinux.cpp
 unix:!macx:HEADERS += joysticklinux.h
 
 # FFT
-unix:!macx:LIBS += -lsrfftw -lsfftw
+contains(DEFINES, STATIC) {
+    unix:!macx:LIBS += /usr/lib/libsrfftw.a /usr/lib/libsfftw.a
+} else {
+    unix:!macx:LIBS += -lsrfftw -lsfftw
+}
 win32:LIBS += rfftw2st.lib fftw2st.lib
 macx:LIBS += $$MACLIBPATH/lib/librfftw.a $$MACLIBPATH/lib/libfftw.a
 
@@ -155,10 +159,10 @@ macx:LIBS += $$MACLIBPATH/lib/librfftw.a $$MACLIBPATH/lib/libfftw.a
 #HEADERS += enginebufferscalesrc.h ../lib/libsamplerate/samplerate.h ../lib/libsamplerate/config.h ../lib/libsamplerate/common.h ../lib/libsamplerate/float_cast.h ../lib/libsamplerate/fastest_coeffs.h ../lib/libsamplerate/high_qual_coeffs.h ../lib/libsamplerate/mid_qual_coeffs.h 
 
 # Debug plotting through gplot API
-unix:DEFINES += __GNUPLOT__
-unix:INCLUDEPATH += ../lib/gplot
-unix:SOURCES += ../lib/gplot/gplot3.c
-unix:HEADERS += ../lib/gplot/gplot.h
+#unix:DEFINES += __GNUPLOT__
+#unix:INCLUDEPATH += ../lib/gplot
+#unix:SOURCES += ../lib/gplot/gplot3.c
+#unix:HEADERS += ../lib/gplot/gplot.h
 
 unix:!macx {
   # If Intel compiler is used, set icc optimization flags
@@ -175,8 +179,8 @@ unix:!macx {
     QMAKE_LFLAGS_DEBUG += -qp -g
   }
 
-  CONFIG_PATH = \"/usr/share/mixxx\"
-  SETTINGS_DIR = \".mixxx\"
+  DEFINES += UNIX_SHARE_PATH=\"/usr/share/mixxx\"
+  SETTINGS_FILE = \".mixxx.cfg\"
   DEFINES += __LINUX__
 }    
 
@@ -187,6 +191,12 @@ unix {
   MOC_DIR = .moc
   OBJECTS_DIR = .obj
   
+# Libs needed for static linking on Linux
+contains(DEFINES, STATIC) {
+    unix:message("Using static linking")
+    unix:LIBS += -ldl -lm -lXrender -lSM /usr/lib/libfontconfig.a -lXft
+}
+
 # GCC Compiler optimization flags
 #  QMAKE_CXXFLAGS += -march=pentium3 -O3 -pipe
 #  QMAKE_CFLAGS   += -march=pentium3 -O3 -pipe
@@ -201,29 +211,27 @@ win32 {
   INCLUDEPATH += $$WINLIBPATH ../lib .
   QMAKE_CXXFLAGS += -GX
   QMAKE_LFLAGS += /libpath:$$WINLIBPATH /NODEFAULTLIB:libcd /NODEFAULTLIB:libcmtd /NODEFAULTLIB:libc /NODEFAULTLIB:msvcrt #/NODEFAULTLIB:library
-  CONFIG_PATH = \"config\"
-  SETTINGS_DIR = \"Mixxx\"
+  SETTINGS_FILE = \"mixxx.cfg\"
 }
 
 macx {
   DEFINES += __MACX__
   INCLUDEPATH += $$MACLIBPATH/include
   LIBS += -lz -framework Carbon -framework QuickTime
-  CONFIG_PATH = \"./Contents/Resources/config/\" 
-  SETTINGS_DIR = \"/.mixxx\"
+#  CONFIG_PATH = \"./Contents/Resources/config/\"
+  SETTINGS_FILE = \"mixxx.cfg\"
 }
 
 FORMS	= dlgprefsounddlg.ui dlgprefmididlg.ui dlgprefplaylistdlg.ui dlgprefcontrolsdlg.ui
 
-SOURCES	+= configobject.cpp fakemonitor.cpp controlengine.cpp controleventengine.cpp controleventmidi.cpp controllogpotmeter.cpp controlobject.cpp controlnull.cpp controlpotmeter.cpp controlpushbutton.cpp controlttrotary.cpp controlbeat.cpp dlgpreferences.cpp dlgprefsound.cpp dlgprefmidi.cpp dlgprefplaylist.cpp dlgprefcontrols.cpp enginebuffer.cpp enginebufferscale.cpp enginebufferscalelinear.cpp engineclipping.cpp enginefilterblock.cpp enginefilteriir.cpp engineobject.cpp enginepregain.cpp enginevolume.cpp main.cpp midiobject.cpp midiobjectnull.cpp mixxx.cpp mixxxview.cpp player.cpp soundsource.cpp soundsourcemp3.cpp soundsourceoggvorbis.cpp monitor.cpp enginechannel.cpp enginemaster.cpp wwidget.cpp wnumber.cpp wknob.cpp wdisplay.cpp wpushbutton.cpp wpushbuttoninc.cpp wslidercomposed.cpp wslider.cpp wtracktable.cpp wtracktableitem.cpp enginedelay.cpp engineflanger.cpp enginespectralfwd.cpp enginespectralback.cpp mathstuff.cpp readerextract.cpp readerextractwave.cpp readerextractfft.cpp readerextracthfc.cpp readerextractbeat.cpp readerevent.cpp rtthread.cpp windowkaiser.cpp probabilityvector.cpp reader.cpp tracklist.cpp trackinfoobject.cpp enginevumeter.cpp peaklist.cpp
-HEADERS	+= configobject.h fakemonitor.h controlengine.h controleventengine.h controleventmidi.h controllogpotmeter.h controlobject.h controlnull.h controlpotmeter.h controlpushbutton.h controlttrotary.h controlbeat.h defs.h dlgpreferences.h dlgprefsound.h dlgprefmidi.h dlgprefplaylist.h dlgprefcontrols.h enginebuffer.h enginebufferscale.h enginebufferscalelinear.h engineclipping.h enginefilterblock.h enginefilteriir.h engineobject.h enginepregain.h enginevolume.h midiobject.h midiobjectnull.h mixxx.h mixxxview.h player.h soundsource.h soundsourcemp3.h soundsourceoggvorbis.h monitor.h enginechannel.h enginemaster.h wwidget.h wnumber.h wknob.h wdisplay.h wpushbutton.h wpushbuttoninc.h wslidercomposed.h wslider.h wtracktable.h wtracktableitem.h enginedelay.h engineflanger.h enginespectralfwd.h enginespectralback.h mathstuff.h readerextract.h readerextractwave.h readerextractfft.h readerextracthfc.h readerextractbeat.h readerevent.h rtthread.h windowkaiser.h probabilityvector.h reader.h  tracklist.h trackinfoobject.h enginevumeter.h peaklist.h
+SOURCES	+= configobject.cpp fakemonitor.cpp controlengine.cpp controleventengine.cpp controleventmidi.cpp controllogpotmeter.cpp controlobject.cpp controlnull.cpp controlpotmeter.cpp controlpushbutton.cpp controlttrotary.cpp controlbeat.cpp dlgpreferences.cpp dlgprefsound.cpp dlgprefmidi.cpp dlgprefplaylist.cpp dlgprefcontrols.cpp enginebuffer.cpp enginebufferscale.cpp enginebufferscalelinear.cpp engineclipping.cpp enginefilterblock.cpp enginefilteriir.cpp engineobject.cpp enginepregain.cpp enginevolume.cpp main.cpp midiobject.cpp midiobjectnull.cpp mixxx.cpp mixxxview.cpp player.cpp soundsource.cpp soundsourcemp3.cpp soundsourceoggvorbis.cpp monitor.cpp enginechannel.cpp enginemaster.cpp wwidget.cpp wnumber.cpp wknob.cpp wdisplay.cpp wvumeter.cpp wpushbutton.cpp wpushbuttoninc.cpp wslidercomposed.cpp wslider.cpp wtracktable.cpp wtracktableitem.cpp enginedelay.cpp engineflanger.cpp enginespectralfwd.cpp enginespectralback.cpp mathstuff.cpp readerextract.cpp readerextractwave.cpp readerextractfft.cpp readerextracthfc.cpp readerextractbeat.cpp readerevent.cpp rtthread.cpp windowkaiser.cpp probabilityvector.cpp reader.cpp tracklist.cpp trackinfoobject.cpp enginevumeter.cpp peaklist.cpp
+HEADERS	+= configobject.h fakemonitor.h controlengine.h controleventengine.h controleventmidi.h controllogpotmeter.h controlobject.h controlnull.h controlpotmeter.h controlpushbutton.h controlttrotary.h controlbeat.h defs.h dlgpreferences.h dlgprefsound.h dlgprefmidi.h dlgprefplaylist.h dlgprefcontrols.h enginebuffer.h enginebufferscale.h enginebufferscalelinear.h engineclipping.h enginefilterblock.h enginefilteriir.h engineobject.h enginepregain.h enginevolume.h midiobject.h midiobjectnull.h mixxx.h mixxxview.h player.h soundsource.h soundsourcemp3.h soundsourceoggvorbis.h monitor.h enginechannel.h enginemaster.h wwidget.h wnumber.h wknob.h wdisplay.h wvumeter.h wpushbutton.h wpushbuttoninc.h wslidercomposed.h wslider.h wtracktable.h wtracktableitem.h enginedelay.h engineflanger.h enginespectralfwd.h enginespectralback.h mathstuff.h readerextract.h readerextractwave.h readerextractfft.h readerextracthfc.h readerextractbeat.h readerevent.h rtthread.h windowkaiser.h probabilityvector.h reader.h  tracklist.h trackinfoobject.h enginevumeter.h peaklist.h
 #SOURCES += wslidervol.cpp
 #HEADERS += wslidervol.h images/slidervoltest/lp1.h images/slidervoltest/lp2.h
 
-DEFINES += CONFIG_PATH=$$CONFIG_PATH 
-DEFINES += SETTINGS_DIR=$$SETTINGS_DIR
+DEFINES += SETTINGS_FILE=$$SETTINGS_FILE
 unix:TEMPLATE = app
 win32:TEMPLATE = vcapp
-CONFIG += qt warn_on thread debug 
+CONFIG += qt warn_on thread debug
 DBFILE = mixxx.db
 LANGUAGE = C++

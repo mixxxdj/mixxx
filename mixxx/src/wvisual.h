@@ -40,7 +40,7 @@ class WVisual : public QGLWidget
 {
     Q_OBJECT
 public: 
-    WVisual(QWidget *pParent=0, const char *pName=0, const QGLWidget * pShareWidget = 0);
+    WVisual(QWidget *pParent=0, const char *pName=0, const QGLWidget *pShareWidget = 0, QColor qBackground = QColor(0,0,0));
     ~WVisual();
     bool eventFilter(QObject *o, QEvent *e);
     /** Add a VisualChannel */

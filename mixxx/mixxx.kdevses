@@ -3,21 +3,33 @@
 <KDevPrjSession>
  <LastCompileConfig>(Default)</LastCompileConfig>
  <Mainframe MaximizeMode="1" />
- <DocsAndViews NumberOfDocuments="5" >
-  <Doc0 CursorPosLine="43" Type="KWriteDoc" NumberOfViews="1" CursorPosCol="25" FileName="/home/haste/cvs/mixxx/src/readerextractbeat.h" >
-   <View0 Top="0" Width="757" Attach="1" Height="606" Left="0" Focus="1" Type="KWriteView" MinMaxMode="0" />
+ <DocsAndViews NumberOfDocuments="9" >
+  <Doc0 CursorPosLine="269" Type="KWriteDoc" NumberOfViews="1" CursorPosCol="27" FileName="/home/haste/cvs/mixxx/src/mixxx.cpp" >
+   <View0 Top="0" Width="524" Attach="1" Height="606" Left="0" Focus="0" Type="KWriteView" MinMaxMode="0" />
   </Doc0>
-  <Doc1 CursorPosLine="516" Type="KWriteDoc" NumberOfViews="1" CursorPosCol="12" FileName="/home/haste/cvs/mixxx/src/readerextractbeat.cpp" >
+  <Doc1 CursorPosLine="69" Type="KWriteDoc" NumberOfViews="1" CursorPosCol="45" FileName="/home/haste/cvs/mixxx/src/mixxx.h" >
    <View0 Top="0" Width="757" Attach="1" Height="606" Left="0" Focus="0" Type="KWriteView" MinMaxMode="0" />
   </Doc1>
-  <Doc2 CursorPosLine="13" Type="KWriteDoc" NumberOfViews="1" CursorPosCol="2" FileName="/home/haste/cvs/mixxx/src/defs.h" >
+  <Doc2 CursorPosLine="189" Type="KWriteDoc" NumberOfViews="1" CursorPosCol="5" FileName="/home/haste/cvs/mixxx/src/mixxx.pro" >
    <View0 Top="0" Width="757" Attach="1" Height="606" Left="0" Focus="0" Type="KWriteView" MinMaxMode="0" />
   </Doc2>
-  <Doc3 CursorPosLine="32" Type="KWriteDoc" NumberOfViews="1" CursorPosCol="0" FileName="/home/haste/cvs/mixxx/src/probabilityvector.h" >
+  <Doc3 CursorPosLine="268" Type="KWriteDoc" NumberOfViews="1" CursorPosCol="30" FileName="/home/haste/cvs/mixxx/src/mixxxview.cpp" >
    <View0 Top="0" Width="757" Attach="1" Height="606" Left="0" Focus="0" Type="KWriteView" MinMaxMode="0" />
   </Doc3>
-  <Doc4 CursorPosLine="50" Type="KWriteDoc" NumberOfViews="1" CursorPosCol="44" FileName="/home/haste/cvs/mixxx/src/probabilityvector.cpp" >
+  <Doc4 CursorPosLine="39" Type="KWriteDoc" NumberOfViews="1" CursorPosCol="23" FileName="/home/haste/cvs/mixxx/src/wknob.h" >
    <View0 Top="0" Width="757" Attach="1" Height="606" Left="0" Focus="0" Type="KWriteView" MinMaxMode="0" />
   </Doc4>
+  <Doc5 CursorPosLine="87" Type="KWriteDoc" NumberOfViews="1" CursorPosCol="0" FileName="/home/haste/cvs/mixxx/src/wknob.cpp" >
+   <View0 Top="0" Width="757" Attach="1" Height="606" Left="0" Focus="0" Type="KWriteView" MinMaxMode="0" />
+  </Doc5>
+  <Doc6 CursorPosLine="48" Type="KWriteDoc" NumberOfViews="1" CursorPosCol="17" FileName="/home/haste/cvs/mixxx/src/wpushbutton.cpp" >
+   <View0 Top="0" Width="757" Attach="1" Height="606" Left="0" Focus="0" Type="KWriteView" MinMaxMode="0" />
+  </Doc6>
+  <Doc7 CursorPosLine="33" Type="KWriteDoc" NumberOfViews="1" CursorPosCol="9" FileName="/home/haste/cvs/mixxx/src/wdisplay.h" >
+   <View0 Top="0" Width="757" Attach="1" Height="606" Left="0" Focus="0" Type="KWriteView" MinMaxMode="0" />
+  </Doc7>
+  <Doc8 CursorPosLine="81" Type="KWriteDoc" NumberOfViews="1" CursorPosCol="26" FileName="/home/haste/cvs/mixxx/src/wdisplay.cpp" >
+   <View0 Top="0" Width="757" Attach="1" Height="606" Left="0" Focus="1" Type="KWriteView" MinMaxMode="0" />
+  </Doc8>
  </DocsAndViews>
 </KDevPrjSession>

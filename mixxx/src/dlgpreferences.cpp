@@ -46,7 +46,7 @@ DlgPreferences::DlgPreferences(MixxxApp *mixxx, MixxxView *view,
     // Add tabs
     addTab(wsound,    "Sound output");
     addTab(wmidi,     "MIDI");
-    addTab(wcontrols, "Controls");
+    addTab(wcontrols, "GUI");
     addTab(wplaylist, "Playlists");    
 
     // Add closebutton

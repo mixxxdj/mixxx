@@ -184,7 +184,7 @@ void Reader::newtrack()
 //    qDebug("filename: %s",filename->latin1());
 
     // Initialize the new sound source
-    enginelock.lock();
+//    enginelock.lock();
     file_srate = 44100;
     file_length = 0;
     f_dCuePoint = 0;
@@ -212,21 +212,19 @@ void Reader::newtrack()
         }
     }
     else
+    {
 #ifdef __UNIX__
         file = new SoundSourceAudioFile( QString("/dev/null") );
 #endif
 #ifdef __WIN__
         file = new SoundSourceSndFile( QString("/dev/null") );
 #endif
-    enginelock.unlock();
+    }
+//    enginelock.unlock();
     if (file==0)
         qFatal("Error opening %s", filename.latin1());
 
     readerwave->setSoundSource(file);
-
-    // ...and read one chunk to get started:
-    readerwave->getchunk(1.);
-
 
     // Reset playpos
     enginebuffer->setNewPlaypos(0.);    
@@ -238,6 +236,8 @@ void Reader::newtrack()
 void Reader::run()
 {
     //qDebug("Reader running...");
+
+    double rate_old = 0.;
 
     while(!requestStop.locked())
     {
@@ -257,9 +257,12 @@ void Reader::run()
         seekqueuemutex.unlock();
         if (!requeststate)
             seek();
-        
+
         // Read a new chunk:
-        readerwave->getchunk(rate->read());
+        double temp = rate->tryRead();
+        if (temp!=-1.)
+            rate_old = temp;
+        readerwave->getchunk(rate_old);
     }
     //qDebug("reader stopping");
 }

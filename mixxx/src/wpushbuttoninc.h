@@ -30,9 +30,10 @@
 
 class WPushButtonInc : public WPushButton  {
    Q_OBJECT
-public: 
+public:
     WPushButtonInc(QWidget *parent=0, const char *name=0);
     ~WPushButtonInc();
+    void setup(QDomNode node);
     /** Sets the increment value when left and right clicking */
     void setInc(double dValueIncLeft, double dValueIncRight);
     /** Mouse pressed */

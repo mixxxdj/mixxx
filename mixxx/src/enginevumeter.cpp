@@ -18,25 +18,25 @@
 #include "controlengine.h"
 #include "controlpotmeter.h"
 
-EngineVUmeter::EngineVUmeter(const char *group)
+EngineVuMeter::EngineVuMeter(const char *group)
 {
     // The VUmeter widget is controlled via a controlpotmeter, which means
     // that it should react on the setValue(int) signal.
-    ControlPotmeter *ctrlVUmeter = new ControlPotmeter(ConfigKey(group, "VUmeter"), 0., 1.);
-    m_ctrlVUmeter = new ControlEngine(ctrlVUmeter);
-    m_ctrlVUmeter->set(0);
+    ControlPotmeter *ctrlVuMeter = new ControlPotmeter(ConfigKey(group, "VuMeter"), 0., 1.);
+    m_ctrlVuMeter = new ControlEngine(ctrlVuMeter);
+    m_ctrlVuMeter->set(0);
 
     // Initialize the calculation:
     m_iSamplesCalculated = 0;
     m_fRMSvolume = 0;
 }
 
-EngineVUmeter::~EngineVUmeter()
+EngineVuMeter::~EngineVuMeter()
 {
-    delete m_ctrlVUmeter;
+    delete m_ctrlVuMeter;
 }
 
-CSAMPLE *EngineVUmeter::process(const CSAMPLE *source, const int buffer_size)
+CSAMPLE *EngineVuMeter::process(const CSAMPLE *source, const int buffer_size)
 {
     // Calculate the summed absolute volume
     for (int i=0; i<buffer_size; i++)
@@ -49,7 +49,7 @@ CSAMPLE *EngineVUmeter::process(const CSAMPLE *source, const int buffer_size)
     if (m_iSamplesCalculated > (44100/UPDATE_RATE) )
     {
         m_fRMSvolume = log10(m_fRMSvolume/(m_iSamplesCalculated*1000)+1);
-        m_ctrlVUmeter->set( min(1.0, max(0.0, m_fRMSvolume)) ); 
+        m_ctrlVuMeter->set( min(1.0, max(0.0, m_fRMSvolume)) ); 
         // Reset calculation:
         m_iSamplesCalculated = 0;
         m_fRMSvolume = 0;

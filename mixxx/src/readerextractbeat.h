@@ -28,7 +28,7 @@ extern "C" {
 }
 #endif
 
-//#define FILEOUTPUT
+// #define FILEOUTPUT
 
 #ifdef FILEOUTPUT
     #include <qfile.h>
@@ -45,16 +45,16 @@ const CSAMPLE histMaxBPM = 200.f;
 const float kfHistDownWrite = 0.99f;
 /** Range around predicted beat position in which it is allowed to place a beat
   * (given in seconds times two, ie. 0.05 = 0.1 seconds total range). */
-const float kfBeatRange = 0.05;
+const float kfBeatRange = 0.05f;
 /** Range the predicted beat position in which is allowed to place a beat
   * when forcing a beat. The search is done for the nearest maximum placed
   * ahead of the predicted position in this range */
-const float kfBeatRangeForce = 0.05;
+const float kfBeatRangeForce = 0.05f;
 /** Confidence threashold. When confidence value goes below this value, try
   * to resyncronize beat marks, and set confidence to zero on success */
-const float kfBeatConfThreshold = -0.1;
+const float kfBeatConfThreshold = -0.1f;
 /** Filter coefficient for confidence measure */
-const float kfBeatConfFilter = 0.995;
+const float kfBeatConfFilter = 0.995f;
 
 /**
   * Extracts beat information based on peaks in the HFC and a beat probability vector.

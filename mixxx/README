@@ -16,7 +16,7 @@ Mac OS 10.2.
 New since 0.9.2:
 - Improved Stability 
 - Waveform displays 
-- Support for PowerMate controllers
+- Support for PowerMate controllers on Windows and Linux
 - Better MIDI key support
 - Better sound card support for MacOS X
 - Beat estimation 
@@ -27,6 +27,7 @@ New since 0.9.2:
 - Pitch bend buttons
 - Fwd/back buttons
 - Fixes in wavefile and MP3 playback
+- Skin support
 
 * REQUIREMENTS *********************************************
 Mixxx is based on the following libraries:

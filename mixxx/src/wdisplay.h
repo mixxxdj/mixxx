@@ -31,6 +31,7 @@ class WDisplay : public WWidget  {
 public: 
     WDisplay(QWidget *parent=0, const char *name=0);
     ~WDisplay();
+    void setup(QDomNode node);
     void setPositions(int iNoPos);
     void setPixmap(int iPos, const QString &filename);
     

@@ -31,6 +31,31 @@ WPushButton::~WPushButton()
 {
 }
 
+void WPushButton::setup(QDomNode node)
+{
+    // Setup position
+    WWidget::setup(node);
+
+    // Set background pixmap if available
+    if (!selectNode(node, "BackPath").isNull())
+        setPixmapBackground(getPath(selectNodeQString(node, "BackPath")));
+
+    // Number of states
+    setStates(selectNodeInt(node, "NumberStates"));
+    
+    // Load pixmaps for associated states
+    QDomNode state = selectNode(node, "State");
+    while (!state.isNull())
+    {
+        if (state.isElement() && state.nodeName() == "State")
+        {
+            setPixmap(selectNodeInt(state, "Number"), true, getPath(selectNodeQString(state, "Pressed")));
+            setPixmap(selectNodeInt(state, "Number"), false, getPath(selectNodeQString(state, "Unpressed")));
+        }
+        state = state.nextSibling();
+    }
+}
+
 void WPushButton::setStates(int iStates)
 {
     m_iNoStates = iStates;
@@ -51,12 +76,13 @@ void WPushButton::setStates(int iStates)
 
 void WPushButton::setPixmap(int iState, bool bPressed, const QString &filename)
 {
-
     int pixIdx = (iState*2)+bPressed;
     m_pPixmaps[pixIdx] = new QPixmap(filename);
     if (!m_pPixmaps[pixIdx])
         qDebug("WPushButton: Error loading pixmap: %s",filename.latin1());
 
+    // Set size of widget equal to pixmap size
+    setFixedSize(m_pPixmaps[pixIdx]->size());
 }
 
 void WPushButton::setPixmapBackground(const QString &filename)

@@ -2,7 +2,7 @@
                           mixxxview.cpp  -  description
                              -------------------
     begin                : Mon Feb 18 09:48:17 CET 2002
-    copyright            : (C) 2002 by Tue and Ken Haste Andersen
+    copyright            : (C) 2002 by Tue and Ken .Haste Andersen
     email                : 
  ***************************************************************************/
 
@@ -31,166 +31,231 @@
 #include "wslider.h"
 #include "wslidercomposed.h"
 #include "wdisplay.h"
+#include "wvumeter.h"
 #include "wnumber.h"
 #ifdef __VISUALS__
   #include "wvisual.h"
 #endif
 
-MixxxView::MixxxView(QWidget *parent, bool bVisuals) : QWidget(parent, "Mixxx")
+MixxxView::MixxxView(QWidget *parent, bool bVisuals, QString qSkinPath) : QWidget(parent, "Mixxx")
 {
     // Path to image files
-    path = QDir::currentDirPath().append("/images/");
-    qDebug("Image path %s",path.latin1());
+    path = qSkinPath.append("/");
+    qDebug("Skin path %s",path.latin1());
+    WWidget::setPixmapPath(path);
+    
+    // Read XML file
+    QDomDocument skin("skin");
+    QFile file(WWidget::getPath("skin.xml"));
+    if (!file.open(IO_ReadOnly))
+    {
+        qFatal("Could not open skin definition file: %s",file.name().latin1());
+    }
+    if (!skin.setContent(&file))
+    {
+        qFatal("Error parsing skin definition file: %s",file.name().latin1());
+    }
+    file.close();
+    QDomElement docElem = skin.documentElement();
 
 #ifdef __WIN__
     // QPixmap fix needed on Windows 9x
     QPixmap::setDefaultOptimization(QPixmap::MemoryOptim);
 #endif
 
-    //
-    // Construct main widget
-    //
-    main = this;
-    main->setFixedSize(1024,768);
-    QPixmap background(getPath("main.png"));
-    main->setPaletteBackgroundPixmap(background);
-    main->move(0,0);
 
-    // Setup visuals
+    // Default values for visuals
     m_pVisualCh1 = 0;
     m_pVisualCh2 = 0;
-#ifdef __VISUALS__
-    if (bVisuals)
+
+    // Load all widgets defined in the XML file
+    QDomNode node = docElem.firstChild();
+    while (!node.isNull())
     {
-        m_pVisualCh1 = new WVisual(main);
-        if (m_pVisualCh1->isValid())
+        if (node.isElement())
         {
-            m_pVisualCh2 = new WVisual(main,"",m_pVisualCh1);
+            if (node.nodeName()=="PushButton")
+            {
+                WPushButton *p = new WPushButton(this);
+                p->setup(node);
+            }
+            else if (node.nodeName()=="PushButtonInc")
+            {
+                WPushButtonInc *p = new WPushButtonInc(this);
+                p->setup(node);
+            }
+            else if (node.nodeName()=="Knob")
+            {
+                WKnob *p = new WKnob(this);
+                p->setup(node);
+            }
+            else if (node.nodeName()=="Display")
+            {
+                WDisplay *p = new WDisplay(this);
+                p->setup(node);
+            }
+            else if (node.nodeName()=="Background")
+            {
+                QString filename = WWidget::selectNodeQString(node, "Path");
+                QPixmap background(WWidget::getPath(filename));
+                this->setPaletteBackgroundPixmap(background);
+                this->setFixedSize(background.size());
+                this->move(0,0);
+            }
+            else if (node.nodeName()=="SliderComposed")
+            {
+                WSliderComposed *p = new WSliderComposed(this);
+                p->setup(node);
 
-            m_pVisualCh1->move(77,100);
-            m_pVisualCh1->setFixedSize(303,120);
-            m_pVisualCh2->move(644,100);
-            m_pVisualCh2->setFixedSize(303,120);
+                // If rate slider...
+                if (compareConfigKeys(node, "[Channel1],rate"))
+                    m_pSliderRateCh1 = p;
+                else if (compareConfigKeys(node, "[Channel2],rate"))
+                    m_pSliderRateCh2 = p;
+            }
+            else if (node.nodeName()=="VuMeter")
+            {
+                WVuMeter *p = new WVuMeter(this);
+                p->setup(node);
+            }
+            else if (node.nodeName()=="Visual")
+            {
+#ifdef __VISUALS__
+                if (bVisuals)
+                {
+                    if (WWidget::selectNodeInt(node, "Channel")==1 && m_pVisualCh1==0)
+                    {
+                        // Background color
+                        if (!WWidget::selectNode(node, "BgColor").isNull())
+                        {
+                            QColor c;
+                            c.setNamedColor(WWidget::selectNodeQString(node, "BgColor"));
+                            m_pVisualCh1 = new WVisual(this, 0, 0, c);
+                        }
+                        else
+                            m_pVisualCh1 = new WVisual(this);
+                        
+                        if (m_pVisualCh1->isValid())
+                        {
+                            // Set position
+                            QString pos = WWidget::selectNodeQString(node, "Pos");
+                            int x = pos.left(pos.find(",")).toInt();
+                            int y = pos.mid(pos.find(",")+1).toInt();
+                            m_pVisualCh1->move(x,y);
 
-            m_pVisualCh1->show();
-            m_pVisualCh2->show();
-        }
-        else
-        {
-            delete m_pVisualCh1;
-            m_pVisualCh1 = 0;
-        }
-    }
+                            // Size
+                            QString size = WWidget::selectNodeQString(node, "Size");
+                            x = size.left(size.find(",")).toInt();
+                            y = size.mid(size.find(",")+1).toInt();
+                            m_pVisualCh1->setFixedSize(x,y);
+
+                            m_pVisualCh1->show();
+//                            ControlObject::setWidget(m_pVisualCh1, ConfigKey("[Channel1]", "wheel"), true, Qt::LeftButton);
+                        }
+                        else
+                        {
+                            delete m_pVisualCh1;
+                            m_pVisualCh1 = 0;
+                        }
+                    }
+                    else if (WWidget::selectNodeInt(node, "Channel")==2 && m_pVisualCh1!=0 && m_pVisualCh2==0)
+                    {
+                        // Background color
+                        if (!WWidget::selectNode(node, "BgColor").isNull())
+                        {
+                            QColor c;
+                            c.setNamedColor(WWidget::selectNodeQString(node, "BgColor"));
+                            m_pVisualCh2 = new WVisual(this, "", m_pVisualCh1, c);
+                        }
+                        else
+                            m_pVisualCh2 = new WVisual(this,"",m_pVisualCh1);
+
+                        if (m_pVisualCh2->isValid())
+                        {
+                            // Set position
+                            QString pos = WWidget::selectNodeQString(node, "Pos");
+                            int x = pos.left(pos.find(",")).toInt();
+                            int y = pos.mid(pos.find(",")+1).toInt();
+                            m_pVisualCh2->move(x,y);
+
+                            // Size
+                            QString size = WWidget::selectNodeQString(node, "Size");
+                            x = size.left(size.find(",")).toInt();
+                            y = size.mid(size.find(",")+1).toInt();
+                            m_pVisualCh2->setFixedSize(x,y);
+
+                            m_pVisualCh2->show();
+//                            ControlObject::setWidget(m_pVisualCh2, ConfigKey("[Channel2]", "wheel"), true, Qt::LeftButton);
+                        }
+                        else
+                        {
+                            delete m_pVisualCh2;
+                            m_pVisualCh2 = 0;
+                        }
+                    }
+                }
 #endif
+            }
+            else if (node.nodeName()=="Text")
+            {
+                QLabel *p = new QLabel(this);
 
-    m_pTrackTable = new WTrackTable(main);
-    m_pTrackTable->move(76,490);
-    m_pTrackTable->setFixedSize(872, 252);
+                // Set position
+                QString pos = WWidget::selectNodeQString(node, "Pos");
+                int x = pos.left(pos.find(",")).toInt();
+                int y = pos.mid(pos.find(",")+1).toInt();
+                p->move(x,y);
 
-    m_pTextCh1 = new QLabel(main);
-    m_pTextCh1->setPaletteBackgroundColor(QColor(0,0,0));
-    m_pTextCh1->setPaletteForegroundColor(QColor(0,254,0));
-    m_pTextCh1->move(77,27);
-    m_pTextCh1->setFixedSize(303, 70);
-    
-    m_pTextCh2 = new QLabel(main);
-    m_pTextCh2->setPaletteBackgroundColor(QColor(0,0,0));
-    m_pTextCh2->setPaletteForegroundColor(QColor(0,254,0));
-    m_pTextCh2->move(644,27);
-    m_pTextCh2->setFixedSize(303, 70);
-    
-/*    
-    playcontrol1 = new DlgPlaycontrol(main);
-    playcontrol1->move(76,26);
-    playcontrol2 = new DlgPlaycontrol(main); playcontrol2->layoutMirror();
-    playcontrol2->move(643,26);
-*/
-    m_pSliderCrossfader = new WSliderComposed(main);
-    m_pSliderCrossfader->setPixmaps(true, getPath("sliders/cross.png"), getPath("sliders/knob3.png"));
-    m_pSliderCrossfader->move(408,417);
-    m_pSliderCrossfader->setFixedSize(208,37);
-    
-    m_pSliderVolumeCh1 = new WSliderComposed(main);
-    m_pSliderVolumeCh1->setPixmaps(false, getPath("sliders/volleft.png"), getPath("sliders/knob1.png"));
-    m_pSliderVolumeCh1->move(408,36);
-    m_pSliderVolumeCh1->setFixedSize(27,207);
+                // Size
+                QString size = WWidget::selectNodeQString(node, "Size");
+                x = size.left(size.find(",")).toInt();
+                y = size.mid(size.find(",")+1).toInt();
+                p->setFixedSize(x,y);
 
-    m_pSliderVolumeCh2 = new WSliderComposed(main);
-    m_pSliderVolumeCh2->setPixmaps(false, getPath("sliders/volright.png"), getPath("sliders/knob1.png"));
-    m_pSliderVolumeCh2->move(589,36);
-    m_pSliderVolumeCh2->setFixedSize(27,207);
+                // Background color
+                if (!WWidget::selectNode(node, "BgColor").isNull())
+                {
+                    QColor c;
+                    c.setNamedColor(WWidget::selectNodeQString(node, "BgColor"));
+                    p->setPaletteBackgroundColor(c);
+                }
+                
+                // Foreground color
+                if (!WWidget::selectNode(node, "FgColor").isNull())
+                {
+                    QColor c;
+                    c.setNamedColor(WWidget::selectNodeQString(node, "FgColor"));
+                    p->setPaletteForegroundColor(c);
+                }
 
-    m_pSliderRateCh1 = new WSliderComposed(main);
-    m_pSliderRateCh1->setPixmaps(false, getPath("sliders/pitchleft.png"), getPath("sliders/knob1.png"));
-    m_pSliderRateCh1->move(73,255);
-    m_pSliderRateCh1->setFixedSize(27,207);
-    QToolTip::add(m_pSliderRateCh1, "Rate. Right click to center");
+                // Associate pointers
+                if (WWidget::selectNodeInt(node, "Channel")==1)
+                    m_pTextCh1 = p;
+                else if (WWidget::selectNodeInt(node, "Channel")==2)
+                    m_pTextCh2 = p;
 
-    m_pSliderRateCh2 = new WSliderComposed(main);
-    m_pSliderRateCh2->setPixmaps(false, getPath("sliders/pitchright.png"), getPath("sliders/knob1.png"));
-    m_pSliderRateCh2->move(924,255);
-    m_pSliderRateCh2->setFixedSize(27,207);
-    QToolTip::add(m_pSliderRateCh2, "Rate. Right click to center");
+            }
+            else if (node.nodeName()=="TrackTable")
+            {
+                qDebug("Constructing TrackTable");
+                m_pTrackTable = new WTrackTable(this);
+                m_pTrackTable->setup(node);
+            }
 
-    m_pButtonRateUpCh1 = new WPushButtonInc(main);
-    m_pButtonRateUpCh1->setPixmap(0, false, getPath("buttons/up0.png"));
-    m_pButtonRateUpCh1->setPixmap(0, true, getPath("buttons/up3.png"));
-    m_pButtonRateUpCh1->setPixmapBackground(getPath("buttons/upback1.png"));
-    m_pButtonRateUpCh1->setFixedSize(28,88);
-    m_pButtonRateUpCh1->move(104,246);
-    m_pButtonRateUpCh1->setInc(0.03,0.01);
-    
-    m_pButtonRateDownCh1 = new WPushButtonInc(main);
-    m_pButtonRateDownCh1->setPixmap(0, false, getPath("buttons/down0.png"));
-    m_pButtonRateDownCh1->setPixmap(0, true, getPath("buttons/down3.png"));
-    m_pButtonRateDownCh1->setPixmapBackground(getPath("buttons/downback1.png"));
-    m_pButtonRateDownCh1->setFixedSize(28,87);
-    m_pButtonRateDownCh1->move(104,383);
-    m_pButtonRateDownCh1->setInc(-0.03,-0.01);
+        }
+        node = node.nextSibling();
+    }
 
-    m_pButtonRateUpCh2 = new WPushButtonInc(main);
-    m_pButtonRateUpCh2->setPixmap(0, false, getPath("buttons/up0.png"));
-    m_pButtonRateUpCh2->setPixmap(0, true, getPath("buttons/up3.png"));
-    m_pButtonRateUpCh2->setPixmapBackground(getPath("buttons/upback1.png"));
-    m_pButtonRateUpCh2->setFixedSize(28,88);
-    m_pButtonRateUpCh2->move(892,246);
-    m_pButtonRateUpCh2->setInc(0.03,0.01);
-
-    m_pButtonRateDownCh2 = new WPushButtonInc(main);
-    m_pButtonRateDownCh2->setPixmap(0, false, getPath("buttons/down0.png"));
-    m_pButtonRateDownCh2->setPixmap(0, true, getPath("buttons/down3.png"));
-    m_pButtonRateDownCh2->setPixmapBackground(getPath("buttons/downback1.png"));
-    m_pButtonRateDownCh2->setFixedSize(28,87);
-    m_pButtonRateDownCh2->move(892,383);
-    m_pButtonRateDownCh2->setInc(-0.03,-0.01);
-   
-    m_pPlayCh1 = new WPushButton(main);
-    m_pPlayCh1->setStates(2);
-    m_pPlayCh1->setPixmap(0, false, getPath("buttons/play0.png"));
-    m_pPlayCh1->setPixmap(0, true,  getPath("buttons/play1.png"));
-    m_pPlayCh1->setPixmap(1, false, getPath("buttons/play3.png"));
-    m_pPlayCh1->setPixmap(1, true,  getPath("buttons/play4.png"));
-    m_pPlayCh1->setPixmapBackground(getPath("buttons/playback1.png"));
-    m_pPlayCh1->setFixedSize(80,28);
-    m_pPlayCh1->move(266,267);
-
-    m_pPlayCh2 = new WPushButton(main);
-    m_pPlayCh2->setStates(2);
-    m_pPlayCh2->setPixmap(0, false, getPath("buttons/play0.png"));
-    m_pPlayCh2->setPixmap(0, true,  getPath("buttons/play1.png"));
-    m_pPlayCh2->setPixmap(1, false, getPath("buttons/play3.png"));
-    m_pPlayCh2->setPixmap(1, true,  getPath("buttons/play4.png"));
-    m_pPlayCh2->setPixmapBackground(getPath("buttons/playback2.png"));
-    m_pPlayCh2->setFixedSize(80,28);
-    m_pPlayCh2->move(678,267);
-
+/*
+    main = this;
+        
     m_pSliderPlayposCh1 = new WSliderComposed(main);
-    m_pSliderPlayposCh1->setPixmaps(true, getPath("sliders/playposslider.png"), getPath("sliders/playposmarker.png"));
+    m_pSliderPlayposCh1->setPixmaps(true, WWidget::getPath("sliders/playposslider.png"), WWidget::getPath("sliders/playposmarker.png"));
     m_pSliderPlayposCh1->setFixedSize(303,6);
     m_pSliderPlayposCh1->move(77,223);
 
     m_pSliderPlayposCh2 = new WSliderComposed(main);
-    m_pSliderPlayposCh2->setPixmaps(true, getPath("sliders/playposslider.png"), getPath("sliders/playposmarker.png"));
+    m_pSliderPlayposCh2->setPixmaps(true, WWidget::getPath("sliders/playposslider.png"), WWidget::getPath("sliders/playposmarker.png"));
     m_pSliderPlayposCh2->setFixedSize(303,6);
     m_pSliderPlayposCh2->move(644,223);
 
@@ -198,187 +263,55 @@ MixxxView::MixxxView(QWidget *parent, bool bVisuals) : QWidget(parent, "Mixxx")
     m_pVUmeterCh1->setPositions(33);
     int i;
     for (i=0; i<10; ++i)
-        m_pVUmeterCh1->setPixmap(i, getPath(QString("vu-left/vu0%1.png").arg(i).latin1()));
+        m_pVUmeterCh1->setPixmap(i, WWidget::getPath(QString("vu-left/vu0%1.png").arg(i).latin1()));
     for (i=10; i<33; ++i)
-        m_pVUmeterCh1->setPixmap(i, getPath(QString("vu-left/vu%1.png").arg(i).latin1()));
+        m_pVUmeterCh1->setPixmap(i, WWidget::getPath(QString("vu-left/vu%1.png").arg(i).latin1()));
     m_pVUmeterCh1->setFixedSize(15,105);
     m_pVUmeterCh1->move(485,99);
 
     m_pVUmeterCh2 = new WDisplay(main);
     m_pVUmeterCh2->setPositions(33);
     for (i=0; i<10; ++i)
-        m_pVUmeterCh2->setPixmap(i, getPath(QString("vu-right/vu0%1.png").arg(i).latin1()));
+        m_pVUmeterCh2->setPixmap(i, WWidget::getPath(QString("vu-right/vu0%1.png").arg(i).latin1()));
     for (i=10; i<33; ++i)
-        m_pVUmeterCh2->setPixmap(i, getPath(QString("vu-right/vu%1.png").arg(i).latin1()));
+        m_pVUmeterCh2->setPixmap(i, WWidget::getPath(QString("vu-right/vu%1.png").arg(i).latin1()));
     m_pVUmeterCh2->setFixedSize(15,105);
     m_pVUmeterCh2->move(524,99);
-
-    m_pVolume = new WKnob(main);
-    m_pVolume->setPositions(31);
-    for (i=0; i<31; ++i)
-        m_pVolume->setPixmap(i, getPath(QString("knobs/knob%1.png").arg(i).latin1()));
-    m_pVolume->setPixmapBackground(getPath("knobs/masterback.png"));
-    m_pVolume->setFixedSize(34,34);
-    m_pVolume->move( 456,342);
-    
-    m_pBalance = new WKnob(main);
-    m_pBalance->setPositions(31);
-    for (i=0; i<31; ++i)
-        m_pBalance->setPixmap(i, getPath(QString("knobs/knob%1.png").arg(i).latin1()));
-    m_pBalance->setPixmapBackground(getPath("knobs/balanceback.png"));
-    m_pBalance->setFixedSize(34,34);
-    m_pBalance->move( 534,342);
-
-    m_pHeadVolume = new WKnob(main);
-    m_pHeadVolume->setPositions(31);
-    for (i=0; i<31; ++i)
-        m_pHeadVolume->setPixmap(i, getPath(QString("knobs/knob%1.png").arg(i).latin1()));
-    m_pHeadVolume->setPixmapBackground(getPath("knobs/headvolback.png"));
-    m_pHeadVolume->setFixedSize(34,34);
-    m_pHeadVolume->move(469,251);
-
-    m_pHeadMix = new WKnob(main);
-    m_pHeadMix->setPositions(31);
-    for (i=0; i<31; ++i)
-        m_pHeadMix->setPixmap(i, getPath(QString("knobs/knob%1.png").arg(i).latin1()));
-    m_pHeadMix->setPixmapBackground(getPath("knobs/headmixback.png"));
-    m_pHeadMix->setFixedSize(34,34);
-    m_pHeadMix->move(521,251);    
-
-    m_pGainCh1 = new WKnob(main);
-    m_pGainCh1->setPositions(31);
-    for (i=0; i<31; ++i)
-        m_pGainCh1->setPixmap(i, getPath(QString("knobs/knob%1.png").arg(i).latin1()));
-    m_pGainCh1->setPixmapBackground(getPath("knobs/gainback1.png"));
-    m_pGainCh1->setFixedSize(34,34);
-    m_pGainCh1->move(405,277);
-
-    m_pGainCh2 = new WKnob(main);
-    m_pGainCh2->setPositions(31);
-    for (i=0; i<31; ++i)
-        m_pGainCh2->setPixmap(i, getPath(QString("knobs/knob%1.png").arg(i).latin1()));
-    m_pGainCh2->setPixmapBackground(getPath("knobs/gainback2.png"));
-    m_pGainCh2->setFixedSize(34,34);
-    m_pGainCh2->move(585,277);
-
-    m_pFilterLowCh1 = new WKnob(main);
-    m_pFilterLowCh1->setPositions(31);
-    for (i=0; i<31; ++i)
-        m_pFilterLowCh1->setPixmap(i, getPath(QString("knobs/knob%1.png").arg(i).latin1()));
-    m_pFilterLowCh1->setPixmapBackground(getPath("knobs/filterlowback1.png"));
-    m_pFilterLowCh1->setFixedSize(34,34);
-    m_pFilterLowCh1->move(340, 392);
-
-    m_pFilterLowCh2 = new WKnob(main);
-    m_pFilterLowCh2->setPositions(31);
-    for (i=0; i<31; ++i)
-        m_pFilterLowCh2->setPixmap(i, getPath(QString("knobs/knob%1.png").arg(i).latin1()));
-    m_pFilterLowCh2->setPixmapBackground(getPath("knobs/filterlowback2.png"));
-    m_pFilterLowCh2->setFixedSize(34,34);
-    m_pFilterLowCh2->move(649, 392);
-    
-    m_pFilterMidCh1 = new WKnob(main);
-    m_pFilterMidCh1->setPositions(31);
-    for (i=0; i<31; ++i)
-        m_pFilterMidCh1->setPixmap(i, getPath(QString("knobs/knob%1.png").arg(i).latin1()));
-    m_pFilterMidCh1->setPixmapBackground(getPath("knobs/filtermidback1.png"));
-    m_pFilterMidCh1->setFixedSize(34,34);
-    m_pFilterMidCh1->move(392, 353);
-
-    m_pFilterMidCh2 = new WKnob(main);
-    m_pFilterMidCh2->setPositions(31);
-    for (i=0; i<31; ++i)
-        m_pFilterMidCh2->setPixmap(i, getPath(QString("knobs/knob%1.png").arg(i).latin1()));
-    m_pFilterMidCh2->setPixmapBackground(getPath("knobs/filtermidback2.png"));
-    m_pFilterMidCh2->setFixedSize(34,34);
-    m_pFilterMidCh2->move(598, 353);
-
-    m_pFilterHighCh1 = new WKnob(main);
-    m_pFilterHighCh1->setPositions(31);
-    for (i=0; i<31; ++i)
-        m_pFilterHighCh1->setPixmap(i, getPath(QString("knobs/knob%1.png").arg(i).latin1()));
-    m_pFilterHighCh1->setPixmapBackground(getPath("knobs/filterhighback1.png"));
-    m_pFilterHighCh1->setFixedSize(34,34);
-    m_pFilterHighCh1->move(340, 315);
-
-    m_pFilterHighCh2 = new WKnob(main);
-    m_pFilterHighCh2->setPositions(31);
-    for (i=0; i<31; ++i)
-        m_pFilterHighCh2->setPixmap(i, getPath(QString("knobs/knob%1.png").arg(i).latin1()));
-    m_pFilterHighCh2->setPixmapBackground(getPath("knobs/filterhighback2.png"));
-    m_pFilterHighCh2->setFixedSize(34,34);
-    m_pFilterHighCh2->move(649, 315);
-
-    m_pHeadCueCh1 = new WPushButton(main);
-    m_pHeadCueCh1->setStates(2);
-    m_pHeadCueCh1->setPixmap(0, false, getPath("buttons/cuec0.png"));
-    m_pHeadCueCh1->setPixmap(0, true,  getPath("buttons/cuec0.png"));
-    m_pHeadCueCh1->setPixmap(1, false, getPath("buttons/cuec3.png"));
-    m_pHeadCueCh1->setPixmap(1, true,  getPath("buttons/cuec3.png"));
-    m_pHeadCueCh1->setPixmapBackground(getPath("buttons/cuecback1.png"));
-    m_pHeadCueCh1->setFixedSize(34,13);
-    m_pHeadCueCh1->move(477,218);
-
-    m_pHeadCueCh2 = new WPushButton(main);
-    m_pHeadCueCh2->setStates(2);
-    m_pHeadCueCh2->setPixmap(0, false, getPath("buttons/cuec0.png"));
-    m_pHeadCueCh2->setPixmap(0, true,  getPath("buttons/cuec0.png"));
-    m_pHeadCueCh2->setPixmap(1, false, getPath("buttons/cuec3.png"));
-    m_pHeadCueCh2->setPixmap(1, true,  getPath("buttons/cuec3.png"));
-    m_pHeadCueCh2->setPixmapBackground(getPath("buttons/cuecback2.png"));
-    m_pHeadCueCh2->setFixedSize(34,13);
-    m_pHeadCueCh2->move(513,218);
-
-    m_pCueCh1 = new WPushButton(main);
-    m_pCueCh1->setStates(1);
-    m_pCueCh1->setPixmap(0, false, getPath("buttons/cue0.png"));
-    m_pCueCh1->setPixmap(0, true,  getPath("buttons/cue3.png"));
-    m_pCueCh1->setPixmapBackground(getPath("buttons/cueback1.png"));
-    m_pCueCh1->setFixedSize(55,28);
-    m_pCueCh1->move(137,267);
-
-    m_pCueCh2 = new WPushButton(main);
-    m_pCueCh2->setStates(1);
-    m_pCueCh2->setPixmap(0, false, getPath("buttons/cue0.png"));
-    m_pCueCh2->setPixmap(0, true,  getPath("buttons/cue3.png"));
-    m_pCueCh2->setPixmapBackground(getPath("buttons/cueback2.png"));
-    m_pCueCh2->setFixedSize(55,28);
-    m_pCueCh2->move(832,267);
 
     m_pBpmCh1 = new WNumber(main);
     m_pBpmCh1->setFixedSize(40,15);
     m_pBpmCh1->move(330,40);
-    m_pBpmCh1->setNumDigits(6);                    
-    
+    m_pBpmCh1->setNumDigits(6);
+
     m_pBpmCh2 = new WNumber(main);
     m_pBpmCh2->setFixedSize(40,15);
     m_pBpmCh2->move(900,40);
     m_pBpmCh2->setNumDigits(6);
-    
+
     m_pEndOfTrackModeCh1 = new WPushButton(main);
     m_pEndOfTrackModeCh1->setStates(4);
-    m_pEndOfTrackModeCh1->setPixmap(0, false, getPath("buttons/endoftrackmode-stop.png"));
-    m_pEndOfTrackModeCh1->setPixmap(0, true,  getPath("buttons/endoftrackmode-stop.png"));
-    m_pEndOfTrackModeCh1->setPixmap(1, false, getPath("buttons/endoftrackmode-next.png"));
-    m_pEndOfTrackModeCh1->setPixmap(1, true,  getPath("buttons/endoftrackmode-next.png"));
-    m_pEndOfTrackModeCh1->setPixmap(2, false, getPath("buttons/endoftrackmode-loop.png"));
-    m_pEndOfTrackModeCh1->setPixmap(2, true,  getPath("buttons/endoftrackmode-loop.png"));
-    m_pEndOfTrackModeCh1->setPixmap(3, false, getPath("buttons/endoftrackmode-ping.png"));
-    m_pEndOfTrackModeCh1->setPixmap(3, true,  getPath("buttons/endoftrackmode-ping.png"));
+    m_pEndOfTrackModeCh1->setPixmap(0, false, WWidget::getPath("buttons/endoftrackmode-stop.png"));
+    m_pEndOfTrackModeCh1->setPixmap(0, true,  WWidget::getPath("buttons/endoftrackmode-stop.png"));
+    m_pEndOfTrackModeCh1->setPixmap(1, false, WWidget::getPath("buttons/endoftrackmode-next.png"));
+    m_pEndOfTrackModeCh1->setPixmap(1, true,  WWidget::getPath("buttons/endoftrackmode-next.png"));
+    m_pEndOfTrackModeCh1->setPixmap(2, false, WWidget::getPath("buttons/endoftrackmode-loop.png"));
+    m_pEndOfTrackModeCh1->setPixmap(2, true,  WWidget::getPath("buttons/endoftrackmode-loop.png"));
+    m_pEndOfTrackModeCh1->setPixmap(3, false, WWidget::getPath("buttons/endoftrackmode-ping.png"));
+    m_pEndOfTrackModeCh1->setPixmap(3, true,  WWidget::getPath("buttons/endoftrackmode-ping.png"));
     m_pEndOfTrackModeCh1->setFixedSize(30,10);
     m_pEndOfTrackModeCh1->move(330,70);
 
     m_pEndOfTrackModeCh2 = new WPushButton(main);
     m_pEndOfTrackModeCh2->setStates(4);
-    m_pEndOfTrackModeCh2->setPixmap(0, false, getPath("buttons/endoftrackmode-stop.png"));
-    m_pEndOfTrackModeCh2->setPixmap(0, true,  getPath("buttons/endoftrackmode-stop.png"));
-    m_pEndOfTrackModeCh2->setPixmap(1, false, getPath("buttons/endoftrackmode-next.png"));
-    m_pEndOfTrackModeCh2->setPixmap(1, true,  getPath("buttons/endoftrackmode-next.png"));
-    m_pEndOfTrackModeCh2->setPixmap(2, false, getPath("buttons/endoftrackmode-loop.png"));
-    m_pEndOfTrackModeCh2->setPixmap(2, true,  getPath("buttons/endoftrackmode-loop.png"));
-    m_pEndOfTrackModeCh2->setPixmap(3, false, getPath("buttons/endoftrackmode-ping.png"));
-    m_pEndOfTrackModeCh2->setPixmap(3, true,  getPath("buttons/endoftrackmode-ping.png"));
-    m_pHeadCueCh1->setPixmapBackground(getPath("buttons/cuecback1.png"));
+    m_pEndOfTrackModeCh2->setPixmap(0, false, WWidget::getPath("buttons/endoftrackmode-stop.png"));
+    m_pEndOfTrackModeCh2->setPixmap(0, true,  WWidget::getPath("buttons/endoftrackmode-stop.png"));
+    m_pEndOfTrackModeCh2->setPixmap(1, false, WWidget::getPath("buttons/endoftrackmode-next.png"));
+    m_pEndOfTrackModeCh2->setPixmap(1, true,  WWidget::getPath("buttons/endoftrackmode-next.png"));
+    m_pEndOfTrackModeCh2->setPixmap(2, false, WWidget::getPath("buttons/endoftrackmode-loop.png"));
+    m_pEndOfTrackModeCh2->setPixmap(2, true,  WWidget::getPath("buttons/endoftrackmode-loop.png"));
+    m_pEndOfTrackModeCh2->setPixmap(3, false, WWidget::getPath("buttons/endoftrackmode-ping.png"));
+    m_pEndOfTrackModeCh2->setPixmap(3, true,  WWidget::getPath("buttons/endoftrackmode-ping.png"));
+    m_pHeadCueCh1->setPixmapBackground(WWidget::getPath("buttons/cuecback1.png"));
     m_pEndOfTrackModeCh2->setFixedSize(30,10);
     m_pEndOfTrackModeCh2->move(900,70);
 
@@ -386,7 +319,7 @@ MixxxView::MixxxView(QWidget *parent, bool bVisuals) : QWidget(parent, "Mixxx")
     // QPixmap fix needed on Windows 9x
     QPixmap::setDefaultOptimization(QPixmap::NormalOptim);
 #endif
-
+*/
 }
 
 MixxxView::~MixxxView()
@@ -410,10 +343,10 @@ void MixxxView::assignWidgets(ControlObject *p)
         p->setWidget(m_pVisualCh1, ConfigKey("[Channel1]", "wheel"), true, Qt::LeftButton);
         p->setWidget(m_pVisualCh2, ConfigKey("[Channel2]", "wheel"), true, Qt::LeftButton);
     }
-    
+
     p->setWidget(m_pSliderRateCh1, ConfigKey("[Channel1]", "rate"), false);
     p->setWidget(m_pSliderRateCh2, ConfigKey("[Channel2]", "rate"), false);
-    
+
     p->setWidget(m_pButtonRateUpCh1, ConfigKey("[Channel1]", "rate"), true, Qt::LeftButton, false);
     p->setWidget(m_pButtonRateUpCh1, ConfigKey("[Channel1]", "rate"), true, Qt::RightButton, false);
     p->setWidget(m_pButtonRateDownCh1, ConfigKey("[Channel1]", "rate"), true, Qt::LeftButton, false);
@@ -440,7 +373,7 @@ void MixxxView::assignWidgets(ControlObject *p)
 
     p->setWidget(m_pEndOfTrackModeCh1, ConfigKey("[Channel1]", "TrackEndMode"), false);
     p->setWidget(m_pEndOfTrackModeCh2, ConfigKey("[Channel2]", "TrackEndMode"), false);
-    
+                                            
     // EngineMaster
     p->setWidget(m_pHeadCueCh1, ConfigKey("[Channel1]", "pfl"));
     p->setWidget(m_pHeadCueCh2, ConfigKey("[Channel2]", "pfl"));
@@ -463,7 +396,7 @@ void MixxxView::assignWidgets(ControlObject *p)
     // Vu meter
     p->setWidget(m_pVUmeterCh1, ConfigKey("[Channel1]", "VUmeter"));
     p->setWidget(m_pVUmeterCh2, ConfigKey("[Channel2]", "VUmeter"));
-    
+
 /*
     // EngineFlanger
     p->setWidget(flanger->DialDepth, ConfigKey("[Flanger]", "lfoDepth"));
@@ -481,8 +414,28 @@ void MixxxView::assignWidgets(ControlObject *p)
     p->setWidget(m_pHeadMix, ConfigKey("[Master]", "headMix"));
 }
 
-const QString MixxxView::getPath(QString location)
+/*
+const QString MixxxView::WWidget::getPath(QString location)
 {
     QString l(location);
     return l.prepend(path);
 }
+*/
+
+bool MixxxView::compareConfigKeys(QDomNode node, QString key)
+{
+    QDomNode n = node;
+
+    // Loop over each <Connection>, check if it's ConfigKey matches key
+    while (!n.isNull())
+    {
+        n = WWidget::selectNode(n, "Connection");
+        if (!n.isNull())
+        {
+            if  (WWidget::selectNodeQString(n, "ConfigKey").contains(key))
+                return true;
+        }
+    }
+    return false;    
+}
+

@@ -28,12 +28,37 @@ WPushButtonInc::~WPushButtonInc()
 {
 }
 
+void WPushButtonInc::setup(QDomNode node)
+{
+    WPushButton::setup(node);
+
+    // For each connection
+    QDomNode con = selectNode(node, "Connection");
+    while (!con.isNull())
+    {
+        // Get Inc
+        float val = selectNodeFloat(con, "Inc");
+
+        // Button state
+        Qt::ButtonState state = Qt::NoButton;
+        if (!selectNode(con, "ButtonState").isNull())
+        {
+            if (selectNodeQString(con, "ButtonState").contains("LeftButton"))
+                m_dValueIncLeft = val;
+            else if (selectNodeQString(con, "ButtonState").contains("RightButton"))
+                m_dValueIncRight = val;
+        }
+        
+        con = con.nextSibling();
+    }
+
+}
+
 void WPushButtonInc::setInc(double dValueIncLeft, double dValueIncRight)
 {
     m_dValueIncLeft = dValueIncLeft;
-    m_dValueIncRight = dValueIncRight;    
+    m_dValueIncRight = dValueIncRight;
 }
-
 
 void WPushButtonInc::mousePressEvent(QMouseEvent *e)
 {
