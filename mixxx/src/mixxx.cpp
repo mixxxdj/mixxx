@@ -49,6 +49,7 @@
 #include "trackcollection.h"
 #include "trackinfoobject.h"
 #include "mixxxsocketserver.h"
+#include "mixxxmenuplaylists.h"
 
 #ifdef __LINUX__
 #include "powermatelinux.h"
@@ -139,9 +140,6 @@ MixxxApp::MixxxApp(QApplication *a, QStringList files)
     config->set(ConfigKey("[Config]","Path"), ConfigValue(qConfigPath));
 
 
-    // Call inits to invoke all other construction parts
-    initActions();
-    initMenuBar();
 
     // Open midi
     midi = 0;
@@ -379,6 +377,10 @@ MixxxApp::MixxxApp(QApplication *a, QStringList files)
 
     // Set up socket interface
     new MixxxSocketServer(m_pTrack);
+    
+    // Call inits to invoke all other construction parts
+    initActions();
+    initMenuBar();
 }
 
 MixxxApp::~MixxxApp()
@@ -448,6 +450,16 @@ void MixxxApp::initActions()
     fileQuit->setWhatsThis(tr("Exit\n\nQuits the application"));
     connect(fileQuit, SIGNAL(activated()), this, SLOT(slotFileQuit()));
 
+    playlistsNew = new QAction(tr("Add new playlist"), tr("&New playlist"), QAccel::stringToKey(tr("Ctrl+N")), this, 0, this);
+    playlistsNew->setStatusTip(tr("Add new playlist"));
+    playlistsNew->setWhatsThis(tr("Add a new playlist"));
+    connect(playlistsNew, SIGNAL(activated()), m_pTrack, SLOT(slotNewPlaylist()));
+
+    playlistsImport = new QAction(tr("Import playlist"), tr("&Import playlist"), QAccel::stringToKey(tr("Ctrl+I")), this, 0, this);
+    playlistsImport->setStatusTip(tr("Import playlist"));
+    playlistsImport->setWhatsThis(tr("Import playlist"));
+    connect(playlistsImport, SIGNAL(activated()), m_pTrack, SLOT(slotImportPlaylist()));
+    
     optionsBeatMark = new QAction(tr("Audio Beat Marks"), tr("&Audio Beat Marks"), 0, this, 0, true);
     optionsBeatMark->setOn(false);
     optionsBeatMark->setStatusTip(tr("Audio Beat Marks"));
@@ -487,6 +499,14 @@ void MixxxApp::initMenuBar()
     optionsFullScreen->addTo(optionsMenu);
     optionsPreferences->addTo(optionsMenu);
 
+    playlistsMenu = new QPopupMenu();
+    playlistsMenu->setCheckable(true);
+    playlistsNew->addTo(playlistsMenu);
+    playlistsImport->addTo(playlistsMenu);
+    playlistsMenu->insertSeparator();
+    
+    new MixxxMenuPlaylists(playlistsMenu, m_pTrack);
+    
     // menuBar entry viewMenu
     viewMenu=new QPopupMenu();
     viewMenu->setCheckable(true);
@@ -498,6 +518,7 @@ void MixxxApp::initMenuBar()
     // MENUBAR CONFIGURATION
     menuBar()->insertItem(tr("&File"), fileMenu);
     //menuBar()->insertItem(tr("&Edit"), editMenu);
+    menuBar()->insertItem(tr("&Playlists"), playlistsMenu);
     menuBar()->insertItem(tr("&Options"), optionsMenu);
     //menuBar()->insertItem(tr("&View"), viewMenu);
     menuBar()->insertSeparator();
