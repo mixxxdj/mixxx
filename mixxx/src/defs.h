@@ -12,7 +12,7 @@ const int SAMPLE_SIZE = 2;      // Number of bytes used to store 1 sample
 typedef float CSAMPLE;          // CSAMPLE defines the CSAMPLE type used for
                                 // intermidiate calculations
 typedef CSAMPLE FLOAT_TYPE;       // Float type, used for non sample data
-static int SRATE       = 48000; // Sample rate
+static int SRATE       = 44100; // Sample rate
 const int BUFFER_SIZE  = 1024;  // Buffer size used both for input and output
 const int READAHEAD = 200000;     // how many samples to read ahead.
 const int READCHUNKSIZE = 1500000; // size of the chunk that's read in every read.
