@@ -8,7 +8,7 @@ WINPA = DIRECTSOUND
 
 # Use this define on Linux if Mixxx should be statically linked with libmad, libid3tag, fftw,
 # ogg, vorbis and audiofile
-unix:DEFINES += STATIC
+#unix:DEFINES += STATIC
 
 # Path to Macintosh libraries
 macx:MACLIBPATH = ../../mixxx-maclib
@@ -227,7 +227,7 @@ IMAGES += icon.png
 DEFINES += SETTINGS_FILE=$$SETTINGS_FILE
 unix:TEMPLATE = app
 win32:TEMPLATE = vcapp
-#CONFIG += qt thread warn_off release
-CONFIG += qt thread warn_on debug
+CONFIG += qt thread warn_off release
+#CONFIG += qt thread warn_on debug
 DBFILE = mixxx.db
 LANGUAGE = C++
