@@ -8,7 +8,8 @@ const char ControlRotary::graycodetable[256] =  {128, 56, 40, 55, 24, 128, 39, 5
 	    midino - number of the midi controller.
 	    midicontroller - pointer to the midi controller.
    -------- ------------------------------------------------------ */
-ControlRotary::ControlRotary(char* n, int _midino,  MidiObject* _midi) {
+ControlRotary::ControlRotary(char* n, int _midino,  MidiObject* _midi)
+{
   name = n;
 
   midi = _midi;
@@ -27,21 +28,28 @@ ControlRotary::ControlRotary(char* n, int _midino,  MidiObject* _midi) {
 	    real position from the gray code.
    Input:   the gray code.
    -------- ------------------------------------------------------ */
-void ControlRotary::midiEvent(int _newpos) {
+void ControlRotary::midiEvent(int _newpos)
+{
   // get position from gray code
   int newpos = graycodetable[(int)(unsigned char)_newpos]; 
   emit recievedMidi(newpos);
 }
 
-void ControlRotary::slotSetPosition(int newpos) {
-  if ((newpos != -128) && (newpos != position)) {
+void ControlRotary::slotSetPosition(int newpos)
+{
+  if ((newpos != -128) && (newpos != position))
+  {
     short change = newpos-position; 
     // Check for passing through 0 and 127:
-    if (change > 100) change = 128-change;
-    else if (change < -100) change += 126;
+    if (change > 100)
+        change = 128-change;
+    else if (change < -100)
+        change += 126;
+
     // Check for a change in direction:
     short newdirection = sign(change);
-    if ((newdirection==direction) || (abs(change)>1)) {
+    if ((newdirection==direction) || (abs(change)>1))
+    {
       direction = newdirection;
       // Get the time:
       timeb newtime;

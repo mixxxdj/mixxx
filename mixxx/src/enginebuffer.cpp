@@ -37,7 +37,11 @@ EngineBuffer::EngineBuffer(DlgPlaycontrol *_playcontrol, int midiPlaybutton, int
   connect(rateSlider, SIGNAL(recievedMidi(int)), playcontrol->SliderRate, SLOT(setValue(int)));
 
   wheel = new ControlRotary("wheel", midiWheel, midi);
-  connect(playcontrol->SliderPlaycontrol, SIGNAL(valueChanged(int)), wheel, SLOT(slotSetPosition(int)));
+
+  //connect(playcontrol->SliderPlaycontrol, SIGNAL(valueChanged(int)), wheel, SLOT(slotSetPosition(int)));
+  connect(playcontrol->SliderPlaycontrol, SIGNAL(valueChanged(int)), this, SLOT(slotSetWheel(int)));
+  connect(playcontrol->SliderPlaycontrol, SIGNAL(sliderReleased()), this, SLOT(slotCenterWheel()));
+
   connect(wheel, SIGNAL(valueChanged(FLOAT_TYPE)), this, SLOT(slotUpdateRate(FLOAT_TYPE)));
   connect(wheel, SIGNAL(recievedMidi(int)), playcontrol->SliderPlaycontrol, SLOT(setValue(int)));
 
@@ -184,16 +188,16 @@ void EngineBuffer::slotUpdateRate(FLOAT_TYPE)
 {
     if (PlayButton->getValue()==on)
         rate.write(rateSlider->getValue() + 4*wheel->getValue());
-    else
-        if (PlayButton->getPosition()==down) {
+    else if (PlayButton->getPosition()==down)
+    {
 	    // No rate while seeking:
-            rate.write(0);
+        rate.write(0);
 	    emit position((int)(100*(FLOAT_TYPE)(end_seek()-start_seek)/128));
 	}
-        else
-            rate.write(4*wheel->getValue());
+    else
+        rate.write(4*wheel->getValue());
 
-    //qDebug("Rate value: %f",rate.read());
+    qDebug("Rate value: %f, wheel value: %f",rate.read(),wheel->getValue());
 }
 
 /*
@@ -325,6 +329,7 @@ CSAMPLE *EngineBuffer::process(const CSAMPLE *, const int buf_size)
     } else {
         long prev;
 	FLOAT_TYPE myRate=rate.read();
+//qDebug("rate %f",myRate);
 	FLOAT_TYPE myPlaypos_buffer = playpos_buffer.read();
         FLOAT_TYPE myPlaypos_file = playpos_file.read();
 
@@ -360,4 +365,18 @@ CSAMPLE *EngineBuffer::process(const CSAMPLE *, const int buf_size)
     }
 
     return buffer;
+}
+
+/** Method connected to wheels sliderRelease signal, to center the wheel after an interaction */
+void EngineBuffer::slotCenterWheel()
+{
+    playcontrol->SliderPlaycontrol->setValue(49);
+    wheel->setValue(0);
+}
+
+void EngineBuffer::slotSetWheel(int val)
+{
+    FLOAT_TYPE temp = ((FLOAT_TYPE)val-49.)/400.;
+    qDebug("temp %f",temp);
+    wheel->setValue(temp);
 }

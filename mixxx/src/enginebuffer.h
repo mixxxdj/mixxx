@@ -55,6 +55,8 @@ public slots:
    void slotUpdatePlay(valueType);
    void slotUpdateRate(FLOAT_TYPE);
    void slotPosition(int);
+   void slotCenterWheel();
+   void slotSetWheel(int val);
 signals:
    void position(int);   
 private:

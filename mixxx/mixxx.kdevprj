@@ -39,7 +39,7 @@ configure_args=\s--build=i386-linux --host=i386-linux --target=i386-linux\s
 dir_where_make_will_be_called=./src/
 email=haste@diku.dk
 kdevprj_version=1.3
-lfv_open_groups=
+lfv_open_groups=User Interface
 make_options=\s-j1
 makefiles=./Makefile.am,mixxx/Makefile.am,mixxx/templates/Makefile.am,mixxx/qknob/Makefile.am,mixxx/docs/Makefile.am,mixxx/docs/en/Makefile.am,admin/Makefile.am,src/Makefile.am,src/music/Makefile.am,src/images/Makefile.am,src/qknob/Makefile.am,src/.obj/Makefile.am,src/.moc/Makefile.am,src/.ui/Makefile.am,asm/Makefile.am,asm/midiboxplus/Makefile.am,
 modifyMakefiles=false
@@ -59,6 +59,9 @@ Sources=*.cpp,*.c,*.cc,*.C,*.cxx,*.ec,*.ecpp,*.lxx,*.l++,*.ll,*.l,
 Translations=*.ts,*.po,
 User Interface=*.ui,*.kdevdlg,*.rc,
 groups=Headers,Sources,GNU,Translations,User Interface,Others
+
+[Makefile.am]
+sub_dirs=src
 
 [admin/Makefile.am]
 sub_dirs=
@@ -553,7 +556,7 @@ install_location=
 type=SOURCE
 
 [src/Makefile.am]
-files=src/playerportaudio.h,src/soundsourcemp3.cpp,src/dlgcrossfaderdlg.ui,src/mixxx.cpp,src/mixxx.pro,src/qknob.h,src/controlpotmeter.cpp,src/dlgplaycontroldlg.ui,src/fakemonitor.h,src/enginefilteriir.h,src/enginefilterrbj.h,src/enginepregain.cpp,src/enginemaster.cpp,src/dlgplaylist.cpp,src/soundsourceheavymp3.h,src/soundsourceheavymp3.cpp,src/dlgcrossfader.h,src/midiobject.cpp,src/controlrotary.cpp,src/dlgchannel.h,src/engineclipping.cpp,src/fakemonitor.cpp,src/controlrotary.h,src/controlpotmeter.h,src/controlobject.cpp,src/filenew.xpm,src/controlobject.h,src/main.cpp,src/filesave.xpm,src/dlgmaster.cpp,src/engineclipping.h,src/mixxxdoc.h,src/dlgplaylist.h,src/mixxx.h,src/mixxxdoc.cpp,src/defs.h,src/engineobject.cpp,src/monitor.cpp,src/dlgplaycontrol.h,src/mixxxview.h,src/playerportaudio.cpp,src/soundsourcemp3.h,src/dlgchannel.cpp,src/controllogpotmeter.h,src/dlgplaylistdlg.ui,src/playeralsa.h,src/soundsourceaflibfile.cpp,src/controlpushbutton.cpp,src/soundsource.cpp,src/dlgcrossfader.cpp,src/enginefilterblock.cpp,src/enginefilteriir.cpp,src/enginemaster.h,src/mixxx.db,src/enginefilterblock.h,src/player.h,src/controlpushbutton.h,src/playeralsa.cpp,src/enginechannel.h,src/enginechannel.cpp,src/mixxxview.cpp,src/fileopen.xpm,src/enginepregain.h,src/dlgmaster.h,src/enginebuffer.h,src/dlgplaycontrol.cpp,src/controllogpotmeter.cpp,src/dlgchanneldlg.ui,src/dlgmasterdlg.ui,src/engineobject.h,src/enginebuffer.cpp,src/midiobject.h,src/enginefilterrbj.cpp,src/monitor.h,src/soundsourceaflibfile.h,src/soundsource.h,src/qknob.cpp,src/player.cpp,
+files=src/playerportaudio.h,src/soundsourcemp3.cpp,src/dlgcrossfaderdlg.ui,src/mixxx.cpp,src/mixxx.pro,src/qknob.h,src/controlpotmeter.cpp,src/dlgplaycontroldlg.ui,src/fakemonitor.h,src/enginefilteriir.h,src/enginefilterrbj.h,src/enginepregain.cpp,src/enginemaster.cpp,src/dlgplaylist.cpp,src/soundsourceheavymp3.h,src/soundsourceheavymp3.cpp,src/dlgcrossfader.h,src/midiobject.cpp,src/controlrotary.cpp,src/dlgchannel.h,src/engineclipping.cpp,src/fakemonitor.cpp,src/controlrotary.h,src/controlpotmeter.h,src/controlobject.cpp,src/filenew.xpm,src/controlobject.h,src/main.cpp,src/filesave.xpm,src/dlgmaster.cpp,src/engineclipping.h,src/mixxxdoc.h,src/dlgplaylist.h,src/mixxx.h,src/mixxxdoc.cpp,src/defs.h,src/engineobject.cpp,src/monitor.cpp,src/dlgplaycontrol.h,src/mixxxview.h,src/playerportaudio.cpp,src/soundsourcemp3.h,src/dlgchannel.cpp,src/controllogpotmeter.h,src/dlgplaylistdlg.ui,src/playeralsa.h,src/soundsourceaflibfile.cpp,src/controlpushbutton.cpp,src/soundsource.cpp,src/dlgcrossfader.cpp,src/enginefilterblock.cpp,src/enginefilteriir.cpp,src/enginemaster.h,src/mixxx.db,src/enginefilterblock.h,src/player.h,src/controlpushbutton.h,src/playeralsa.cpp,src/enginechannel.h,src/enginechannel.cpp,src/mixxxview.cpp,src/fileopen.xpm,src/enginepregain.h,src/dlgmaster.h,src/enginebuffer.h,src/dlgplaycontrol.cpp,src/controllogpotmeter.cpp,src/dlgchanneldlg.ui,src/dlgmasterdlg.ui,src/engineobject.h,src/enginebuffer.cpp,src/midiobject.h,src/enginefilterrbj.cpp,src/monitor.h,src/soundsourceaflibfile.h,src/soundsource.h,src/qknob.cpp,src/player.cpp,src/mwheel.cpp,src/mwheel.h
 sub_dirs=music,qknob,images,
 type=prog_main
 
@@ -941,15 +944,9 @@ install_location=
 type=HEADER
 
 [src/music/Makefile.am]
-files=src/music/Nina Simone  My Baby Just Cares For Me.mp3,src/music/Nina Simone - Ray Charles Baby, It's Cold Outside.mp3,src/music/test1.wav,src/music/test2.wav,
+files=src/music/Nina Simone - Ray Charles Baby, It's Cold Outside.mp3
 sub_dirs=
 type=normal
-
-[src/music/Nina Simone  My Baby Just Cares For Me.mp3]
-dist=true
-install=false
-install_location=
-type=DATA
 
 [src/music/Nina Simone - Ray Charles Baby, It's Cold Outside.mp3]
 dist=true
@@ -957,17 +954,17 @@ install=false
 install_location=
 type=DATA
 
-[src/music/test1.wav]
+[src/mwheel.cpp]
 dist=true
 install=false
 install_location=
-type=DATA
+type=SOURCE
 
-[src/music/test2.wav]
+[src/mwheel.h]
 dist=true
 install=false
 install_location=
-type=DATA
+type=HEADER
 
 [src/player.cpp]
 dist=true
