@@ -385,7 +385,7 @@ bool WTreeList::populateTree(QString dirPath, QListViewItem * listItem)
 					tempItem->filePath = (* new QString(tr(currentObject->filePath())));
 					tempItem->setText(1,tr("OGG file"));
 					tempItem->setText(0,(*lstIt));
-				else if((*lstIt).endsWith(".wav",false)){
+				}else if((*lstIt).endsWith(".wav",false)){
 					WTreeItem * tempItem = new WTreeItem(listItem, FILE_T_WAV);//Create the child	
 					tempItem->setText(2,tr(currentObject->filePath()));//Set pathname for child
 					tempItem->filePath = (* new QString(tr(currentObject->filePath())));
