@@ -20,6 +20,7 @@ class ControlRotary : public ControlPotmeter
   ControlRotary(char*, int, MidiObject*);
   void updatecounter(int);
   short sign(short);
+  void midiEvent(int);
  public slots:
   void slotSetPosition(int);
 };

@@ -132,7 +132,8 @@ void MidiObject::run() {
     // Check the potmeters:
     for (int i=0; i<no_potmeters; i++) 
       if (potmeters[i]->midino == midicontrol) {
-	potmeters[i]->slotSetPosition((int)midivalue);
+	  //potmeters[i]->slotSetPosition((int)midivalue);
+	potmeters[i]->midiEvent((int)midivalue);
 	//qDebug("Changed potmeter %s to %i",potmeters[i]->print(), 
 	//       (int)potmeters[i]->getValue());
 	break;

@@ -11,7 +11,7 @@
         <rect>
             <x>0</x>
             <y>0</y>
-            <width>150</width>
+            <width>146</width>
             <height>310</height>
         </rect>
     </property>
@@ -285,7 +285,7 @@
 <customwidgets>
     <customwidget>
         <class>QKnob</class>
-        <header location="global">/home/haste/cvs/mixxx/mixxx/qknob.h</header>
+        <header location="global">qknob.h</header>
         <sizehint>
             <width>32</width>
             <height>32</height>

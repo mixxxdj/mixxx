@@ -62,6 +62,7 @@ MixxxApp::MixxxApp()
   // Initialize engines:
   EnginePregain *pregain = new EnginePregain(ADC7, midi);
   connect(view->channel->DialGain, SIGNAL(valueChanged(int)), pregain->pregainpot, SLOT(slotSetPosition(int)));
+  connect(pregain->pregainpot, SIGNAL(recievedMidi(int)), view->channel->DialGain, SLOT(setValue(int)));
   engines.push_back(pregain);
 
   //EngineHMLfilter *filters = new EngineHMLfilter(ADC4, ADC5, ADC6, midi, bessel_highpass_15000, 
