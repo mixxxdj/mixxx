@@ -44,7 +44,7 @@ MixxxView::MixxxView(QWidget *parent, MixxxDoc *doc) : QWidget(parent)
     crossfader = new DlgCrossfader(this);
     split = new DlgSplit(this);
     flanger = new DlgFlanger(this);
-	tracklist = new DlgTracklist(this);
+    tracklist = new DlgTracklist(this);
 
     // Layout management
     mainGrid = new QGridLayout(this,6,3); // A layout on a widget
@@ -71,6 +71,16 @@ MixxxView::MixxxView(QWidget *parent, MixxxDoc *doc) : QWidget(parent)
     mainGrid->setRowStretch( 0, 265);
     mainGrid->setRowStretch( 1,  43);
     mainGrid->setRowStretch( 2, 215);
+
+    // Setup tracklist collum widths
+    tracklist->tableTracks->setLeftMargin(0);
+    tracklist->tableTracks->setColumnWidth(0,20);
+    tracklist->tableTracks->setColumnWidth(1,240);
+    tracklist->tableTracks->setColumnWidth(2,230);
+    tracklist->tableTracks->setColumnWidth(3,30);
+    tracklist->tableTracks->setColumnWidth(4,50);
+    tracklist->tableTracks->setColumnWidth(5,40);
+    
 }
 
 
