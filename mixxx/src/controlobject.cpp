@@ -24,8 +24,7 @@ ConfigObject<ConfigValueMidi> *ControlObject::config = 0;
 MidiObject *ControlObject::midi = 0;
 
 ControlObject::ControlObject()
-{
-    installEventFilter(this);
+{    installEventFilter(this);
 }
 
 ControlObject::ControlObject(ConfigKey key)
@@ -54,8 +53,6 @@ QString *ControlObject::print()
 
 void ControlObject::slotSetPositionMidi(int pos)
 {
-    this->slotSetPosition(pos);
-
     // IF updateGUI is emitted directly from another thread than the main thread
     // (in this case the midi thread) the gui widgets will be updated from a non-
     // main thread which is BAD. To avoid this, an event is posted from and to the

@@ -40,6 +40,7 @@
 #include "images/b.xpm"
 #include "controlnull.h"
 #include "midiobjectnull.h"
+#include "soundbuffer.h"
 
 #ifdef __ALSA__
   #include "playeralsa.h"
@@ -277,7 +278,7 @@ void MixxxApp::engineStart()
 {
     if (view->playlist->ListPlaylist->firstChild() != 0)
     {
-		//qDebug("Init buffer 1... %s", view->playlist->ListPlaylist->firstChild()->text(1).ascii());
+        //qDebug("Init buffer 1... %s", view->playlist->ListPlaylist->firstChild()->text(1).ascii());
         buffer1 = new EngineBuffer(app, this, view->playcontrol1, "[Channel1]",
                                    view->playlist->ListPlaylist->firstChild()->text(1));
 
@@ -293,29 +294,29 @@ void MixxxApp::engineStart()
         buffer2 = new EngineBuffer(app, this, view->playcontrol2, "[Channel2]", 0);
     }
 
-	// Setup visuals
+    // Setup visuals
 #ifdef __VISUALS__
     if (visual>0)
-	{
-		CGUISignal *signal;
-		GUIContainer *container;
+    {
+        CGUISignal *signal;
+        GUIContainer *container;
 
-		container = visual->add(buffer1);
-		buffer1->setVisual(container->getBuffer());
-		signal = container->getSignal();
+        container = visual->add(buffer1);
+        buffer1->getSoundBuffer()->setVisual(container->getBuffer());
+        signal = container->getSignal();
         signal->setFishEyeLengthScale(0.5);
-		signal->setFishEyeSignalFraction(0.04);
+        signal->setFishEyeSignalFraction(0.04);
         container->setBasepos(-50,32,0);
         container->setZoompos(-50,20,0);
 
-		container = visual->add(buffer2);
-		buffer2->setVisual(container->getBuffer());
-		signal = container->getSignal();
+        container = visual->add(buffer2);
+        buffer2->getSoundBuffer()->setVisual(container->getBuffer());
+        signal = container->getSignal();
         signal->setFishEyeLengthScale(0.5);
-		signal->setFishEyeSignalFraction(0.04);
-		container->setBasepos(25,32,0);
+        signal->setFishEyeSignalFraction(0.04);
+        container->setBasepos(25,32,0);
         container->setZoompos(-50,-10,0);
-	}
+    }
 #endif
 
     // Starting channels:

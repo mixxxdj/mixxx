@@ -133,7 +133,7 @@ void MidiObject::send(char channel, char midicontrol, char midivalue)
             //app->unlock();
             
             // Send User event, to force screen update
-            postEvent(mixxx,new QEvent(QEvent::User));
+            QThread::postEvent(mixxx,new QEvent(QEvent::User));
 
             break;
         }
