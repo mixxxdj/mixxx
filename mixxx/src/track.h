@@ -68,6 +68,12 @@ private slots:
     /** Load the active track in player 1 */
     void slotLoadPlayer2();
 
+signals:
+    /** A new track has been loaded in player 1 */
+    void newTrackPlayer1(TrackInfoObject *);
+    /** A new track has been loaded in player 2 */
+    void newTrackPlayer2(TrackInfoObject *);
+
 private:
     /** Update tree view with playlist info */
     void updateTreeView();
