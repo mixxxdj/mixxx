@@ -76,11 +76,14 @@ TrackInfoObject::~TrackInfoObject()
 */
 void TrackInfoObject::CheckFileExists()
 {
-	QFile fileTrack( m_sFilename );
+	QFile fileTrack( m_sFilepath+"/"+m_sFilename );
 	if (fileTrack.exists() )
 		m_bExist = true;
 	else
+    {
 		m_bExist = false;
+        qDebug("The track %s was not found", (m_sFilepath+"/"+m_sFilename).latin1());
+    }
 }
 
 /*

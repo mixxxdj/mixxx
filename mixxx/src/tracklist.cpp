@@ -68,7 +68,6 @@ TrackList::TrackList( const QString sDirectory, WTrackTable *ptableTracks,
     // Connect the right click to the slot where the menu is shown:
     connect(m_ptableTracks, SIGNAL(pressed(int, int, int, const QPoint &)),
                             SLOT(slotClick(int, int, int, const QPoint &)));
-
 }
 
 TrackList::~TrackList()
@@ -126,12 +125,7 @@ void TrackList::UpdateTracklist()
                 else
                     m_lTracks.append( Track );
 //			    qDebug( "Read track from xml file: %s", Track->m_sFilename.latin1() );
-                // Check if the file actually exists on the disk:
-                if ( !(QFile( Track->m_sFilepath+"/"+Track->m_sFilename).exists()) )
-                {
-                    qDebug("The track %s was not found", (Track->m_sFilepath+Track->m_sFilename).latin1());
-                    Track->m_bExist = false;
-                }
+                
             }
         }
         node = node.nextSibling();
@@ -241,6 +235,14 @@ void TrackList::UpdateScores()
 void TrackList::WriteXML()
 {
     qDebug("Writing tracklist.xml");
+    // First transfer information from the comment field from the table to the Track:
+    /*for (unsigned int iRow=0; iRow<m_ptableTracks->numRows(); iRow++)
+    {
+        qDebug("Comment: %s", m_ptableTracks->item(iRow, COL_COMMENT)->text());
+        m_lTracks.at( m_ptableTracks->item(iRow, COL_INDEX)->text().toUInt() )->m_sComment =
+            m_ptableTracks->item(iRow, COL_COMMENT)->text();
+    }*/
+
 	// Create the xml document:
 	QDomDocument domXML( "Mixxx_Track_List" );
 	QDomElement elementRoot = domXML.createElement( "Mixxx_Track_List" );
@@ -253,6 +255,7 @@ void TrackList::WriteXML()
 	for (TrackInfoObject *Track = m_lTracks.first(); Track; Track = m_lTracks.next() )
 	{
 		QDomElement elementNew = domXML.createElement("Track");
+        // See if we should add information from the comment field:
 		Track->WriteToXML( domXML, elementNew );
 		elementRoot.appendChild( elementNew );
 	}
@@ -316,7 +319,7 @@ bool TrackList::AddFiles(const char *path)
                     // Append the track to the list of tracks:
                     if (ParseHeader( Track ) == OK) {
                         m_lTracks.append( Track );
-                        //qDebug( "Found new track: %s", Track->m_sFilename.latin1() );
+                        qDebug( "Found new track: %s", Track->m_sFilename.latin1() );
                         bFoundFiles = true;
                     } 
                     else
