@@ -85,8 +85,6 @@ private:
     QListViewItem *oldCurrent;
     QListViewItem *dropItem;
     QTimer *autoopen_timer;
-    /** Timer used to determine if this was a rename click */
-    QTimer *clicked_timer;
     /** Item of last clicked item */
     WTreeItem *m_pClickedItem;
 

@@ -29,7 +29,6 @@ WTreeView::WTreeView(QString qRootPath, QWidget *parent, const char *name, bool 
     m_pClickedItem = 0;
 
     autoopen_timer = new QTimer(this);
-    clicked_timer = new QTimer(this);
 
 /*
  * if (!folderLocked)
@@ -42,7 +41,6 @@ WTreeView::WTreeView(QString qRootPath, QWidget *parent, const char *name, bool 
 */
     connect(this, SIGNAL(doubleClicked(QListViewItem *)), this, SLOT(slotFolderSelected(QListViewItem *)));
     connect(this, SIGNAL(returnPressed(QListViewItem *)), this, SLOT(slotFolderSelected(QListViewItem *)));
-    //connect(clicked_timer, SIGNAL(timeout()), this, SLOT(slotRenameItem()));
 
     // Set properties
     setAcceptDrops(false);
@@ -109,7 +107,6 @@ void WTreeView::setup(QDomNode node)
 void WTreeView::slotFolderSelected( QListViewItem *i )
 {
     // Abort any rename click which is about to be executed
-    clicked_timer->stop();
     m_pClickedItem = 0;
 
     if (!i)
@@ -142,7 +139,7 @@ void WTreeView::openFolder()
 void WTreeView::slotRenameItem()
 {
     //qDebug("rename %p",m_pClickedItem);
-    if (m_pClickedItem && !mouseMoved)
+    if (m_pClickedItem)
     {
         //qDebug("start");
         m_pClickedItem->startRename(0);
@@ -304,7 +301,6 @@ QString WTreeView::fullPath(QListViewItem* item)
 void WTreeView::contentsMousePressEvent( QMouseEvent* e )
 {
     // Stop the timer, so a rename click is not issued
-    clicked_timer->stop();
     mouseMoved = false;
 
     QListView::contentsMousePressEvent(e);
@@ -312,6 +308,8 @@ void WTreeView::contentsMousePressEvent( QMouseEvent* e )
     WTreeItem *i = (WTreeItem *)itemAt( p );
     if ( i )
     {
+        m_pClickedItem = i;
+        
         // If the user right clicked, bring up a popup menu
         if (e->button()==Qt::RightButton)
         {
@@ -329,7 +327,6 @@ void WTreeView::contentsMousePressEvent( QMouseEvent* e )
             }
         }
     }
-    m_pClickedItem = i;
 }
 
 void WTreeView::contentsMouseMoveEvent( QMouseEvent* e )
@@ -344,11 +341,8 @@ void WTreeView::contentsMouseMoveEvent( QMouseEvent* e )
     mouseMoved = true;
 }
 
-void WTreeView::contentsMouseReleaseEvent(QMouseEvent *e)
+void WTreeView::contentsMouseReleaseEvent(QMouseEvent *)
 {
-    if (!mouseMoved)
-        clicked_timer->singleShot(1000, this, SLOT(slotRenameItem()));
-
     mousePressed = false;
     mouseMoved = false;
 }

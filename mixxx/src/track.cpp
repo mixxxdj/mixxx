@@ -294,7 +294,10 @@ void Track::slotPlaylistPopup(QString qName)
 
     // If this entry is actually a playlist, make it possible to delete it
     if (m_pActivePopupPlaylist)
+    {    
+        menu->insertItem("Rename", m_pView->m_pTreeView, SLOT(slotRenameItem()));
         menu->insertItem("Delete", this, SLOT(slotDeletePlaylist()));
+    }
     else
         menu->insertItem("New", this, SLOT(slotNewPlaylist()));
     menu->exec(QCursor::pos());

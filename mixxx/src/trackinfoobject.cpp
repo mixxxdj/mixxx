@@ -211,8 +211,15 @@ void TrackInfoObject::removeFromTrackTable()
     if (m_pTableTrack)
     {
         // Remove the row from the table, and delete the table items
+        int row = m_pTableTrack->currentRow();
         m_pTableTrack->removeRow(m_pTableItemScore->row());
-
+        
+        // Set a new active row
+        if (row<m_pTableTrack->numRows())
+            m_pTableTrack->setCurrentCell(row, 0);
+        else if (m_pTableTrack->numRows())    
+            m_pTableTrack->setCurrentCell(m_pTableTrack->numRows()-1, 0);
+        
         // Reset pointers
         m_pTableItemScore = 0;
         m_pTableItemTitle = 0;

@@ -119,14 +119,14 @@ void WTrackTable::setup(QDomNode node)
     // Setup column widths
     setLeftMargin(0);
     hideColumn(COL_INDEX);
-    setColumnWidth(COL_SCORE, WWidget::selectNodeInt(node, "ColWidthScore"));
-    setColumnWidth(COL_TITLE, WWidget::selectNodeInt(node, "ColWidthTitle"));
-    setColumnWidth(COL_ARTIST, WWidget::selectNodeInt(node, "ColWidthArtist"));
-    setColumnWidth(COL_COMMENT, WWidget::selectNodeInt(node, "ColWidthComment"));
-    setColumnWidth(COL_TYPE, WWidget::selectNodeInt(node, "ColWidthType"));
-    setColumnWidth(COL_DURATION, WWidget::selectNodeInt(node, "ColWidthDuration"));
-    setColumnWidth(COL_BPM, WWidget::selectNodeInt(node, "ColWidthBpm"));
-    setColumnWidth(COL_BITRATE, WWidget::selectNodeInt(node, "ColWidthBitrate"));
+    adjustColumn(COL_SCORE);
+    setColumnStretchable(COL_TITLE, true);
+    setColumnStretchable(COL_ARTIST, true);
+    setColumnStretchable(COL_COMMENT, true);
+    adjustColumn(COL_TYPE);
+    adjustColumn(COL_DURATION);
+    adjustColumn(COL_BPM);
+    adjustColumn(COL_BITRATE);
 }
 
 void WTrackTable::sortColumn(int col, bool ascending, bool)
