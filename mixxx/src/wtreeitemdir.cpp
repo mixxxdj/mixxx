@@ -87,9 +87,12 @@ void WTreeItemDir::setOpen(bool o)
                 else if ( fi->isDir() )
                     (void)new WTreeItemDir( this, fi->fileName() );
                 else if (!showDirsOnly &&
-                         (fi->fileName().endsWith(".mp3", false) ||
-                          fi->fileName().endsWith(".ogg", false) ||
-                          fi->fileName().endsWith(".wav", false)))
+                         (fi->fileName().endsWith(".mp3") ||
+                          fi->fileName().endsWith(".ogg") ||
+                          fi->fileName().endsWith(".wav") ||
+                          fi->fileName().endsWith(".MP3") ||
+                          fi->fileName().endsWith(".OGG") ||
+                          fi->fileName().endsWith(".WAV")))
                 {
                     WTreeItemFile *item = new WTreeItemFile(this, fi->fileName(),
                                                             fi->isFile()?"File":"Special" );

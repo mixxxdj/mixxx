@@ -19,7 +19,7 @@ WINPA = DIRECTSOUND
 
 # Use this definition on Linux if Mixxx should be statically linked with libmad,
 # libid3tag, fftw, ogg, vorbis and audiofile
-unix:LINLIBPATH = ../../mixxx-linlib
+#unix:LINLIBPATH = ../../mixxx-linlib
 
 # Include for unix dependencies. (19/12/2003, J_Zar)
 include( mixxx.depend )
