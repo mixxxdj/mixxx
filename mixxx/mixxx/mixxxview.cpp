@@ -28,7 +28,7 @@ MixxxView::MixxxView(QWidget *parent, MixxxDoc *doc) : QWidget(parent)
 	// Sub widgets
 	playcontrol = new DlgPlaycontrol(this);
 	channel = new DlgChannel(this);
-	//playlist = new DlgPlaylist(this);
+	playlist = new DlgPlaylist(this);
 
 	// Layout management
 	mainGrid = new QGridLayout(this,1,1); // A layout on a widget
