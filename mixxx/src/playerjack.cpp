@@ -22,7 +22,6 @@
 PlayerJack::PlayerJack(ConfigObject<ConfigValue> *config, ControlObject *pControl) : Player(config,pControl) //, mLibJack("libjack.so")
 {
     ports = 0;
-    m_iBufferSize = 1024;
     m_bOpen = false;
 
 /*

@@ -60,8 +60,6 @@ protected:
     jack_port_t *output_master_left, *output_master_right, *output_head_left, *output_head_right;
     /** True if devices are open */
     bool m_bOpen;
-    /** Current buffer size in use */
-    int m_iBufferSize;
 
 /*
     typedef void (*jack_set_error_function_t)(void (*func)(const char *));
