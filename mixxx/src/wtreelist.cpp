@@ -327,6 +327,7 @@ bool WTreeList::populatePlaylists(QListViewItem * listItem)
 		}
 		node = node.nextSibling();
 	}
+	return true;
 }
 //Once the Folder was selected get all Subdirs and build the children tree
 bool WTreeList::populateTree(QString dirPath, QListViewItem * listItem)
