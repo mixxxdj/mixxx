@@ -19,7 +19,6 @@
 #define MIXXX_H
 
 // include files for QT
-#include <qapp.h>
 #include <qmainwindow.h>
 #include <qaction.h>
 #include <qmenubar.h>

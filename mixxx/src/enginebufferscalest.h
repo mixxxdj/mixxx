@@ -19,12 +19,13 @@
 #ifndef ENGINEBUFFERSCALEST_H
 #define ENGINEBUFFERSCALEST_H
 
-#include <soundtouch/SoundTouch.h>
 #include "enginebufferscale.h"
+#include "SoundTouch.h"
 
 #define MAXBUFFERBLOCKS 100
 #define ReadAheadSize 1000
 
+using namespace soundtouch;
 
 /**
   * Performs time scaling of audio based on the SoundTouch library.

@@ -20,12 +20,15 @@ adaptation           : Mads Holm
 #include "mathstuff.h"
 #include "engineobject.h"
 #include "enginebufferscalest.h"
+#include "SoundTouch.h"
+
+using namespace soundtouch;
 
 EngineBufferScaleST::EngineBufferScaleST(ReaderExtractWave *wave) : EngineBufferScale(wave)
 {
     m_bPitchIndpTimeStretch = false;
 
-    pSoundTouch = new SoundTouch(); 
+    pSoundTouch = new soundtouch::SoundTouch(); 
     qDebug("Using SoundTouch version: %s",pSoundTouch->getVersionString());
     pSoundTouch->setChannels(2);
     pSoundTouch->setTempo(1);
@@ -164,7 +167,7 @@ CSAMPLE *EngineBufferScaleST::scale(double playpos, int buf_size, float *pBase, 
 		reset(playpos,backwards);
 	
 	
-	int sampleRate = wave->getRate();
+	unsigned int sampleRate = wave->getRate();
 	if (sampleRate != oldSampleRate)
 	{
 		uint PlaySRate=getPlaySrate();
@@ -185,7 +188,7 @@ CSAMPLE *EngineBufferScaleST::scale(double playpos, int buf_size, float *pBase, 
 		// Invert wavebuffer on backwards playback
 		if (backwards)
 		{
-			while (pSoundTouch->numSamples()<buf_size)
+			while (pSoundTouch->numSamples()<(unsigned)buf_size)
 			{
 				for (int i=0; i<ReadAheadSize; ++i)
 				{
@@ -198,7 +201,7 @@ CSAMPLE *EngineBufferScaleST::scale(double playpos, int buf_size, float *pBase, 
 					buffer_back[i*2] = pBase[(int)readAheadPos];
 				}
 				// Perform conversion
-				pSoundTouch->putSamples(buffer_back,ReadAheadSize);
+				pSoundTouch->putSamples((const SAMPLETYPE *)(buffer_back),(unsigned int)ReadAheadSize);
 				UsedSamples += ReadAheadSize;
 				ScaledSamples += (double)input_frames / factor;
 			}
@@ -206,11 +209,11 @@ CSAMPLE *EngineBufferScaleST::scale(double playpos, int buf_size, float *pBase, 
 		else
 		{
 			// Perform conversion
-			while (pSoundTouch->numSamples()<buf_size)
+			while (pSoundTouch->numSamples()<(unsigned)buf_size)
 			{
 				input_frames = 
 					min( (iBaseLength - (int)readAheadPos)/2 ,ReadAheadSize);
-				pSoundTouch->putSamples(&pBase[(int)readAheadPos],input_frames);
+				pSoundTouch->putSamples((const SAMPLETYPE *)(&pBase[(int)readAheadPos]),(unsigned int)input_frames);
 				UsedSamples += input_frames;
 				ScaledSamples += (double)input_frames / factor;
 				readAheadPos=((int)readAheadPos+input_frames*2) % iBaseLength;
@@ -224,7 +227,7 @@ CSAMPLE *EngineBufferScaleST::scale(double playpos, int buf_size, float *pBase, 
 			pBlocks->append(ScaledSamples,UsedSamples);
 		}
 		
-		output_frames_gen=(double)pSoundTouch->receiveSamples(buffer,output_frames);
+		output_frames_gen=(long int)pSoundTouch->receiveSamples((SAMPLETYPE *)buffer,(unsigned int)output_frames);
 		
 		UsedSamples=ScaledSamples=0;
 		ScaleBufferBlock *hd=pBlocks->getHead();

@@ -30,7 +30,8 @@
   *@author Svein Magne Bang
   */
 
-class JoystickLinux : public Joystick  {
+class JoystickLinux : public Joystick  
+{
 public: 
     JoystickLinux(ControlObject *pControl);
     ~JoystickLinux();

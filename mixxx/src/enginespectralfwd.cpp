@@ -32,6 +32,7 @@ EngineSpectralFwd::EngineSpectralFwd(bool Power, bool Phase, WindowKaiser *windo
     kisscfg = kiss_fftr_alloc(l, 0, 0, 0);
     tmp = new kiss_fft_cpx[l/2+1];
     spectrum = new kiss_fft_scalar[l];
+    spectrumOld = new kiss_fft_scalar[l];
 }
 
 /* -------- -----------------------------------------------------------------
@@ -47,6 +48,7 @@ EngineSpectralFwd::~EngineSpectralFwd()
     // Deallocate temporary buffer
     delete [] tmp;
     delete [] spectrum;
+    delete [] spectrumOld;
 }
 
 /* -------- -----------------------------------------------------------------
@@ -64,6 +66,11 @@ void EngineSpectralFwd::process(const CSAMPLE *pIn, const CSAMPLE *, const int)
     kiss_fft_scalar *pInput = (kiss_fft_scalar *)pIn;
     kiss_fftr(kisscfg, pInput, tmp);
 
+    // Shift pointers (spectrum/spectrumOld)
+    kiss_fft_scalar *temp = spectrum;
+    spectrum = spectrumOld;
+    spectrumOld = temp;    
+    
     if (power_calc)
     {
         // Calculate length and angle of each vector
@@ -108,9 +115,10 @@ CSAMPLE EngineSpectralFwd::getPSF()
     for (int i=1; i<l_half; ++i)
     {
         float w = kfEqualLoudness[(int)((float)(i*kiEqualLoudnessLen)/(float)l_half)];
-        psf += w * sqrtf(spectrum[i]);
-        //psf += w * (spectrum[i]);
+        //psf += w * sqrtf(spectrum[i]);
+        psf += w * (spectrum[i]-spectrumOld[i]);
     }
+    psf /= l_half;
     return psf;
 }
 
