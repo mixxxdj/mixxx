@@ -85,8 +85,8 @@ int Player::prepareBuffer() {
 
   for (int i=0; i<engines->size(); i++)
   {
-    p2 = (*engines)[i]->process(p1, BUFFER_SIZE);
-	p1=p2;
+      p2 = (*engines)[i]->process(p1, BUFFER_SIZE);
+      p1=p2;
   }
 
   // Convert the signal back to SAMPLE and write to the sound cards buffer:

@@ -18,7 +18,7 @@ class EngineIIRfilter : public EngineObject {
   double xv[NZEROS+1], yv[NPOLES+1];
   CSAMPLE *buffer;
  public:
-  ControlLogpotmeter* filterpot;
+  ControlPotmeter* filterpot;
   FLOAT gain;
   EngineIIRfilter(int, int , int , MidiObject*, const double *);
   ~EngineIIRfilter();

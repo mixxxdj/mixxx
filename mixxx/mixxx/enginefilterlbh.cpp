@@ -40,12 +40,12 @@ EngineFilterLBH::~EngineFilterLBH()
 
 CSAMPLE *EngineFilterLBH::process(CSAMPLE *source, int buf_size)
 {
-	CSAMPLE *p0 = low->process(source,buf_size);
-	CSAMPLE *p1 = band->process(source,buf_size);
-	CSAMPLE *p2 = high->process(source,buf_size);
+    CSAMPLE *p0 = low->process(source,buf_size);
+    CSAMPLE *p1 = band->process(source,buf_size);
+    CSAMPLE *p2 = high->process(source,buf_size);
 
 	for (int i=0; i<buf_size; i++)
-		buffer[i] = p0[i]+p1[i]+p2[i];
+	    buffer[i] = p0[i]+p1[i]+p2[i];
 
 	return buffer;
 }
