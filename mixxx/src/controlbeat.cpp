@@ -32,7 +32,7 @@ ControlBeat::~ControlBeat()
 {
 }
 
-void ControlBeat::slotSetPosition(int pos)
+void ControlBeat::slotSetPositionExtern(float pos)
 {
     int elapsed = time.elapsed();
     time.restart();
@@ -65,7 +65,7 @@ void ControlBeat::slotSetPositionMidi(MidiCategory, int v)
 {
     //qDebug("thread id: %p",pthread_self());
 
-    slotSetPosition(v);
+    slotSetPositionExtern(v);
     emit(updateGUI(v));
 }
 

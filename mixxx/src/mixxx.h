@@ -39,7 +39,6 @@
 
 // application specific includes
 #include "defs.h"
-#include "mixxxdoc.h"
 #include "mixxxview.h"
 #include "enginebuffer.h"
 #include "enginechannel.h"
@@ -74,35 +73,14 @@ class MixxxApp : public QMainWindow
     void initActions();
     /** initMenuBar creates the menu_bar and inserts the menuitems */
     void initMenuBar();
-    /** setup the document*/
-    void initDoc();
     /** setup the mainview*/
     void initView();
     /** overloaded for Message box on last window exit */
     bool queryExit();
   public slots:
 
-    /** generate a new document in the actual view */
-    void slotFileNew();
-    /** open a document */
-    void slotFileOpen();
-    /** save a document */
-    void slotFileSave();
-    /** save a document under a different filename*/
-    void slotFileSaveAs();
-    /** close the actual file */
-    void slotFileClose();
-    /** print the actual file */
-    void slotFilePrint();
     /** exits the application */
     void slotFileQuit();
-    /** put the marked text/object into the clipboard and remove
-     * it from the document */
-    void slotEditCut();
-    /** put the marked text/object into the clipboard*/
-    void slotEditCopy();
-    /** paste the clipboard into the document*/
-    void slotEditPaste();
     /** toggle audio beat marks */
     void slotOptionsBeatMark(bool toggle);
     /** Preference dialog */
@@ -120,13 +98,6 @@ class MixxxApp : public QMainWindow
      * changing the view class.
      */
     MixxxView *view;
-    /** doc represents your actual document and is created only once. It keeps
-     * information such as filename and does the serialization of your files.
-     */
-    MixxxDoc *doc;
-
-    /** Pointer to WVisual widgets */
-    WVisual *visual1, *visual2;
     
     QApplication *app;
     EngineObject *engine;

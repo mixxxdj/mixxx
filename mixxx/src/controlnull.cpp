@@ -25,7 +25,7 @@ ControlNull::~ControlNull()
 {
 }
 
-void ControlNull::slotSetPosition(int)
+void ControlNull::slotSetPositionExtern(float)
 {
     qDebug("ControlNull: Do not call this method!");
 };

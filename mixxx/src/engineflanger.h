@@ -40,7 +40,6 @@ private:
   int time;
   FLOAT_TYPE delay;
   int delay_pos;
-  DlgFlanger *dlg;
 };
 
 #endif

@@ -241,11 +241,10 @@ void ReaderExtractWave::getchunk(CSAMPLE rate)
     for (unsigned int j=bufIdx; j<bufIdx+READCHUNKSIZE; j++)
         read_buffer[j] = (CSAMPLE)temp[i++];
 
-
-//    // Write wave to text file
+    // Write wave to text file
 //    for (int j=bufIdx; j<bufIdx+READCHUNKSIZE; j+=2)
-//        stream << read_buffer[j] << " ";
-//    stream << "\n";
+//        stream << read_buffer[j] << "\n";
+//    //stream << "\n";
 //    textout.flush();
 
         

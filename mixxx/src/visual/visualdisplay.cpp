@@ -66,7 +66,7 @@ VisualDisplay::VisualDisplay(VisualBuffer *pVisualBuffer, const char *group)
     box->setMaterial(&lblue);
     playPosMarker->setMaterial(&purple);    
 
-    setFishEyeMode(true);
+    setFishEyeMode(false);
 
     doLayout();
 
@@ -139,6 +139,7 @@ void VisualDisplay::draw(GLenum mode)
         signal->draw(mode);
     }
 
+/*
 //    if (boxWireMaterial)
 //        box->setMaterial(boxWireMaterial);
     box->setDrawMode(GL_LINE_LOOP);
@@ -148,10 +149,9 @@ void VisualDisplay::draw(GLenum mode)
 //    box->setMaterial(&purple);
     box->setDrawMode(GL_POLYGON);
     box->draw(mode);
-
-
+*/
 //    if (playPosMarkerMaterial)
-//        playPosMarker->setMaterial(playPosMarkerMaterial);
+        playPosMarker->setMaterial(&purple);
     playPosMarker->setDrawMode(GL_POLYGON);
     playPosMarker->draw(mode);
 }
@@ -318,19 +318,19 @@ void VisualDisplay::setupScene()
 
     lgreen.shininess = 128;
 
-    purple.ambient[0] = 62/255.f;
-    purple.ambient[1] = 0.0f;
-    purple.ambient[2] = 62/255.f;
+    purple.ambient[0] = 255.f;
+    purple.ambient[1] = 50.0f;
+    purple.ambient[2] = 50.f;
     purple.ambient[3] = 1.0f;
 
-    purple.diffuse[0] = 62/255.f;
-    purple.diffuse[1] = 0/255.f;
-    purple.diffuse[2] = 62/255.f;
+    purple.diffuse[0] = 255.f;
+    purple.diffuse[1] = 50.f;
+    purple.diffuse[2] = 50.f;
     purple.diffuse[3] = 1.0f;
 
-    purple.specular[0] = 62/255.f;
-    purple.specular[1] = 0.0f;
-    purple.specular[2] = 62/255.f;
+    purple.specular[0] = 255.f;
+    purple.specular[1] = 50.0f;
+    purple.specular[2] = 50.f;
     purple.specular[3] = 1.0f;
 
     purple.shininess = 128;

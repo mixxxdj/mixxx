@@ -24,7 +24,6 @@
 #include "controlttrotary.h"
 #include "controlengine.h"
 #include "controlbeat.h"
-#include "dlgplaycontrol.h"
 #include "reader.h"
 #include "readerextractbeat.h"
 #include "enginebufferscalelinear.h"
@@ -46,17 +45,23 @@ EngineBuffer::EngineBuffer(PowerMate *_powermate, const char *_group, WVisual *p
     // Play button
     ControlPushButton *p = new ControlPushButton(ConfigKey(group, "play"));
     playButton = new ControlEngine(p);
+    playButton->setNotify(this, (EngineMethod)&EngineBuffer::controlPlay);
     playButton->set(0);
 
     // Cue set button:
-    ControlPushButton *p1 = new ControlPushButton(ConfigKey(group, "cue_set"));
-    buttonCueSet = new ControlEngine(p1);
-    buttonCueSet->setNotify(this, (EngineMethod)&EngineBuffer::CueSet);
+    p = new ControlPushButton(ConfigKey(group, "cue_set"));
+    buttonCueSet = new ControlEngine(p);
+    buttonCueSet->setNotify(this, (EngineMethod)&EngineBuffer::controlCueSet);
 
     // Cue goto button:
-    ControlPushButton *p11 = new ControlPushButton(ConfigKey(group, "cue_goto"));
-    buttonCueGoto = new ControlEngine(p11);
-    buttonCueGoto->setNotify(this, (EngineMethod)&EngineBuffer::CueGoto);
+    p = new ControlPushButton(ConfigKey(group, "cue_goto"));
+    buttonCueGoto = new ControlEngine(p);
+    buttonCueGoto->setNotify(this, (EngineMethod)&EngineBuffer::controlCueGoto);
+
+    // Cue preview button:
+    p = new ControlPushButton(ConfigKey(group, "cue_preview"));
+    buttonCuePreview = new ControlEngine(p);
+    buttonCuePreview->setNotify(this, (EngineMethod)&EngineBuffer::controlCuePreview);
 
     // Playback rate slider
     ControlPotmeter *p2 = new ControlPotmeter(ConfigKey(group, "rate"), 0.9f, 1.1f);
@@ -69,7 +74,7 @@ EngineBuffer::EngineBuffer(PowerMate *_powermate, const char *_group, WVisual *p
     // Slider to show and change song position
     ControlPotmeter *controlplaypos = new ControlPotmeter(ConfigKey(group, "playposition"), 0., 1.);
     playposSlider = new ControlEngine(controlplaypos);
-    playposSlider->setNotify(this,(EngineMethod)&EngineBuffer::seek);
+    playposSlider->setNotify(this,(EngineMethod)&EngineBuffer::controlSeek);
 
     // Potmeter used to communicate bufferpos_play to GUI thread
     ControlPotmeter *controlbufferpos = new ControlPotmeter(ConfigKey(group, "bufferplayposition"), 0., READBUFFERSIZE);
@@ -163,7 +168,7 @@ int EngineBuffer::getPlaypos(int) // int Srate
 }
 
 
-void EngineBuffer::seek(double change)
+void EngineBuffer::controlSeek(double change)
 {
 //    qDebug("seeking... %f",change);
 
@@ -184,18 +189,44 @@ void EngineBuffer::seek(double change)
 }
 
 // Set the cue point at the current play position:
-void EngineBuffer::CueSet()
+void EngineBuffer::controlCueSet()
 {
     reader->f_dCuePoint = filepos_play;
 }
 
 // Goto the cue point:
-void EngineBuffer::CueGoto()
+void EngineBuffer::controlCueGoto()
 {
-    // request a seek:
+    // Seek to cue point
     reader->requestSeek(reader->f_dCuePoint);
-
     m_iBeatMarkSamplesLeft = 0;
+
+    // Start playing
+    playButton->set(1.);
+}
+
+void EngineBuffer::controlCuePreview()
+{
+//    qDebug("cue preview: %d",buttonCuePreview->get());
+    if (buttonCuePreview->get()==0.)
+    {
+        // Stop playing (set playbutton to stoped) and seek to cue point
+        playButton->set(0.);
+        reader->requestSeek(reader->f_dCuePoint);
+        m_iBeatMarkSamplesLeft = 0;
+    }
+    else
+    {
+        // Seek to cue point and start playing
+        controlCueGoto();
+    }
+}
+
+void EngineBuffer::controlPlay()
+{
+    // Set cue when play button is pressed for stopping the sound
+    if (playButton->get()==0.)
+        controlCueSet();
 }
 
 /*
@@ -245,9 +276,10 @@ CSAMPLE *EngineBuffer::process(const CSAMPLE *, const int buf_size)
         {
             CSAMPLE *bpmBuffer = beat->getBpmPtr();
             double filebpm = bpmBuffer[(int)(bufferpos_play*(beat->getBufferSize()/READCHUNKSIZE))];
-            if (bpmControl->get()>-1. && filebpm>-1.)
-                bpmrate = bpmControl->get()/filebpm;
-  //        qDebug("bpmrate %f, filebpm %f, midibpm %f",bpmrate,filebpm,bpmControl->get());
+//            if (bpmControl->get()>-1. && filebpm>-1.)
+//                bpmrate = bpmControl->get()/filebpm;
+            bpmControl->set(filebpm);
+//        qDebug("bpmrate %f, filebpm %f, midibpm %f",bpmrate,filebpm,bpmControl->get());
         }
                                         
         double baserate =  bpmrate*((double)file_srate_old/(double)getPlaySrate());

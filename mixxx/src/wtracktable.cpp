@@ -40,6 +40,10 @@ WTrackTable::WTrackTable(QWidget *parent, const char *name) : QTable(10, 7, pare
     setBackgroundMode(Qt::PaletteDark);
     setShowGrid(false);
    
+    // Set colors
+    setPaletteBackgroundColor(QColor(0,0,0));
+    setPaletteForegroundColor(QColor(0,254,0));
+
     // Font size
     QFont f("Helvetica");
     f.setPointSize(9);

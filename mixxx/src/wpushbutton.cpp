@@ -17,33 +17,104 @@
 
 #include "wpushbutton.h"
 
-WPushButton::WPushButton(QWidget *parent, const char *name ) : QPushButton(parent,name)
+WPushButton::WPushButton(QWidget *parent, const char *name ) : WWidget(parent,name)
 {
-    setToggleButton(true);
+    m_pPixmaps = 0;
+    setStates(0);
 
-    connect(this,SIGNAL(toggled(bool)),this,SLOT(emitValueChanged(bool)));
+    setBackgroundMode(NoBackground);
 }
 
 WPushButton::~WPushButton()
 {
 }
 
-void WPushButton::setValue(int v)
+void WPushButton::setStates(int iStates)
 {
-    if (v==0)
-        setOn(false);
-    else
-        setOn(true);
-}
-
-void WPushButton::emitValueChanged(bool v)
-{
-    if (v)
+    m_iNoStates = iStates;
+    m_iState = 0;
+    m_bPressed = false;
+    
+    // If pixmap array is already allocated, delete it
+    if (m_pPixmaps)
+        delete m_pPixmaps;
+    
+    if (iStates>0)
     {
-        emit(valueChanged(1));
-        emit(valueOn());
+        m_pPixmaps = new QPixmap*[2*m_iNoStates];
+        for (int i=0; i<2*m_iNoStates; ++i)
+            m_pPixmaps[i] = 0;
     }
-    else
-        emit(valueChanged(0));
 }
 
+void WPushButton::setPixmap(int iState, bool bPressed, const QString &filename)
+{
+    int pixIdx = (iState*2)+bPressed;
+    m_pPixmaps[pixIdx] = new QPixmap(filename);
+}
+
+void WPushButton::setValue(float v)
+{
+    m_iState = (int)v;
+
+    update();
+}
+
+void WPushButton::paintEvent(QPaintEvent *)
+{
+    if (m_iNoStates>0)
+    {
+        int idx = ((m_iState%m_iNoStates)*2)+m_bPressed;
+        if (m_pPixmaps[idx])
+            bitBlt(this, 0, 0, m_pPixmaps[idx]);
+    }
+}
+
+void WPushButton::mousePressEvent(QMouseEvent *e)
+{
+    m_bPressed = true;
+
+    // Calculate new state if the left mouse button was used to press the button
+    if (e->button()==Qt::LeftButton)
+    {
+        // Special case if it is a one state button.
+        if (m_iNoStates==1)
+        {
+            if (m_iState==0)
+                m_iState = 1;
+            else
+                m_iState = 0;
+        }
+        else
+            m_iState = (m_iState+1)%m_iNoStates;
+    }
+    
+    if (e->button()==Qt::LeftButton)
+        emit(valueChangedLeftDown((float)m_iState));
+    else if (e->button()==Qt::RightButton)
+        emit(valueChangedRightDown((float)m_iState));
+
+    update();
+}
+
+void WPushButton::mouseReleaseEvent(QMouseEvent *e)
+{
+    m_bPressed = false;
+
+    // Update state if left button and it is a one state button.
+    if (m_iNoStates==1 && e->button()==Qt::LeftButton)
+    {
+        if (m_iState==0)
+            m_iState = 1;
+        else
+            m_iState = 0;
+    }
+
+
+    if (e->button()==Qt::LeftButton)
+        emit(valueChangedLeftUp((float)m_iState));
+    else if (e->button()==Qt::RightButton)
+        emit(valueChangedRightUp((float)m_iState));
+
+    update();
+}

@@ -98,9 +98,9 @@ int main(int argc, char *argv[])
     
   MixxxApp *mixxx=new MixxxApp(&a);
   a.setMainWidget(mixxx);
-  mixxx->resize( 726, 523);
-  mixxx->setFixedWidth(726);
-  mixxx->setFixedHeight(523);
+  mixxx->resize( 1024, 768);
+  mixxx->setFixedWidth(1024);
+  mixxx->setFixedHeight(700);
   //mixxx->setIcon(QPixmap());
 
   mixxx->show();

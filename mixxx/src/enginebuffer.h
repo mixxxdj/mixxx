@@ -58,9 +58,12 @@ public:
     Monitor visualPlaypos;
     float visualRate;
 private:
-    void seek(double);
-    void CueGoto();
-    void CueSet();
+    void controlSeek(double);
+    void controlPlay();
+    void controlCueGoto();
+    void controlCueSet();
+    void controlCuePreview();
+        
 //    void bpmChange(double);
     
     /** Pointer to reader */
@@ -85,7 +88,7 @@ private:
     QMutex pause;
 
     ControlEngine *playButton, *rateSlider, *wheel, *playposSlider, *bufferposSlider, *audioBeatMark;
-    ControlEngine *buttonCueSet, *buttonCueGoto;
+    ControlEngine *buttonCueSet, *buttonCueGoto, *buttonCuePreview;
     /** Control used to input desired playback BPM */
     ControlEngine *bpmControl;
     /** Control used to input beat. If this is used, only one beat is played, until a new beat mark is received from the ControlObject */

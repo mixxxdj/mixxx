@@ -18,28 +18,43 @@
 #ifndef WPUSHBUTTON_H
 #define WPUSHBUTTON_H
 
-#include <qwidget.h>
-#include <qpushbutton.h>
+#include "wwidget.h"
 #include <qpainter.h>
-#include "controlpushbutton.h"
+#include <qpixmap.h>
+#include <qstring.h>
 
 /**
   *@author Tue & Ken Haste Andersen
   */
 
-class WPushButton : public QPushButton
+class WPushButton : public WWidget
 {
     Q_OBJECT
 public: 
     WPushButton(QWidget *parent=0, const char *name=0);
     ~WPushButton();
+    /** Sets the number of states associated with this button, and removes associated
+      * pixmaps. */
+    void setStates(int iStatesW);
+    /** Associates a pixmap of a given state with the widget */
+    void setPixmap(int iState, bool bPressed, const QString &filename);
+    /** Paints the widget */
+    void paintEvent(QPaintEvent *);
+    /** Mouse pressed */
+    void mousePressEvent(QMouseEvent *e);
+    /** Mouse released */
+    void mouseReleaseEvent(QMouseEvent *e);
 public slots:
-    void setValue(int);
-signals:
-    void valueChanged(int);
-    void valueOn();
-private slots:
-    void emitValueChanged(bool);
+    void setValue(float);
+private:
+    /** Number of states associated with this button */
+    int m_iNoStates;
+    /** Array of associated pixmaps */
+    QPixmap **m_pPixmaps;
+    /** Current state */
+    int m_iState;
+    /** True, if the button is currently pressed */
+    bool m_bPressed;
 };
 
 #endif

@@ -47,13 +47,7 @@
 #include "reader.h"
 #include "enginebuffer.h"
 #include "tracklist.h"
-#include "dlgtracklist.h"
-#include "dlgflanger.h"
-#include "dlgmaster.h"
-#include "dlgchannel.h"
 #include "dlgplaycontrol.h"
-#include "dlgcrossfader.h"
-#include "dlgsplit.h"
 #include "powermate.h"
 #include "enginevumeter.h"
 
@@ -90,10 +84,6 @@
 
 #ifdef __WINMIDI__
   #include "midiobjectwin.h"
-#endif
-
-#ifdef __VISUALS__
-  #include "wvisual.h"
 #endif
 
 MixxxApp::MixxxApp(QApplication *a)
@@ -262,12 +252,12 @@ MixxxApp::MixxxApp(QApplication *a)
 #endif
 
     // Init buffers/readers
-    buffer1 = new EngineBuffer(powermate1, "[Channel1]",visual1);
-    buffer2 = new EngineBuffer(powermate2, "[Channel2]",visual2);
+    buffer1 = new EngineBuffer(powermate1, "[Channel1]", view->m_pVisualCh1);
+    buffer2 = new EngineBuffer(powermate2, "[Channel2]", view->m_pVisualCh2);
 
     // Initialize tracklist:
-    m_pTracks = new TrackList(config->getValueString(ConfigKey("[Playlist]","Directory")), view->tracklist->tableTracks,
-                              view->playcontrol1, view->playcontrol2, buffer1, buffer2);
+    m_pTracks = new TrackList(config->getValueString(ConfigKey("[Playlist]","Directory")), view->m_pTrackTable,
+                              view->m_pTextCh1, view->m_pTextCh2, buffer1, buffer2);
 
     // Initialize preference dialog
     prefDlg = new DlgPreferences(this,midi,player,m_pTracks, config, midiconfig);
@@ -354,63 +344,10 @@ bool MixxxApp::eventFilter(QObject *o, QEvent *e)
 /** initializes all QActions of the application */
 void MixxxApp::initActions()
 {
-//  QPixmap openIcon, saveIcon, newIcon;
-//  newIcon = QPixmap(filenew);
-//  openIcon = QPixmap(fileopen);
-//  saveIcon = QPixmap(filesave);
-
-/*
-  fileNew = new QAction(tr("New File"), newIcon, tr("&New"), QAccel::stringToKey(tr("Ctrl+N")), this);
-  fileNew->setStatusTip(tr("Creates a new document"));
-  fileNew->setWhatsThis(tr("New File\n\nCreates a new document"));
-  connect(fileNew, SIGNAL(activated()), this, SLOT(slotFileNew()));
-
-  fileOpen = new QAction(tr("Open File"), openIcon, tr("&Open..."), 0, this);
-  fileOpen->setStatusTip(tr("Opens an existing document"));
-  fileOpen->setWhatsThis(tr("Open File\n\nOpens an existing document"));
-  connect(fileOpen, SIGNAL(activated()), this, SLOT(slotFileOpen()));
-
-  fileSave = new QAction(tr("Save File"), saveIcon, tr("&Save"), QAccel::stringToKey(tr("Ctrl+S")), this);
-  fileSave->setStatusTip(tr("Saves the actual document"));
-  fileSave->setWhatsThis(tr("Save File.\n\nSaves the actual document"));
-  connect(fileSave, SIGNAL(activated()), this, SLOT(slotFileSave()));
-
-  fileSaveAs = new QAction(tr("Save File As"), tr("Save &as..."), 0, this);
-  fileSaveAs->setStatusTip(tr("Saves the actual document under a new filename"));
-  fileSaveAs->setWhatsThis(tr("Save As\n\nSaves the actual document under a new filename"));
-  connect(fileSaveAs, SIGNAL(activated()), this, SLOT(slotFileSave()));
-
-  fileClose = new QAction(tr("Close File"), tr("&Close"), QAccel::stringToKey(tr("Ctrl+W")), this);
-  fileClose->setStatusTip(tr("Closes the actual document"));
-  fileClose->setWhatsThis(tr("Close File\n\nCloses the actual document"));
-  connect(fileClose, SIGNAL(activated()), this, SLOT(slotFileClose()));
-
-  filePrint = new QAction(tr("Print File"), tr("&Print"), QAccel::stringToKey(tr("Ctrl+P")), this);
-  filePrint->setStatusTip(tr("Prints out the actual document"));
-  filePrint->setWhatsThis(tr("Print File\n\nPrints out the actual document"));
-  connect(filePrint, SIGNAL(activated()), this, SLOT(slotFilePrint()));
-*/
   fileQuit = new QAction(tr("Exit"), tr("E&xit"), QAccel::stringToKey(tr("Ctrl+Q")), this);
   fileQuit->setStatusTip(tr("Quits the application"));
   fileQuit->setWhatsThis(tr("Exit\n\nQuits the application"));
   connect(fileQuit, SIGNAL(activated()), this, SLOT(slotFileQuit()));
-
-/*
-  editCut = new QAction(tr("Cut"), tr("Cu&t"), QAccel::stringToKey(tr("Ctrl+X")), this);
-  editCut->setStatusTip(tr("Cuts the selected section and puts it to the clipboard"));
-  editCut->setWhatsThis(tr("Cut\n\nCuts the selected section and puts it to the clipboard"));
-  connect(editCut, SIGNAL(activated()), this, SLOT(slotEditCut()));
-
-  editCopy = new QAction(tr("Copy"), tr("&Copy"), QAccel::stringToKey(tr("Ctrl+C")), this);
-  editCopy->setStatusTip(tr("Copies the selected section to the clipboard"));
-  editCopy->setWhatsThis(tr("Copy\n\nCopies the selected section to the clipboard"));
-  connect(editCopy, SIGNAL(activated()), this, SLOT(slotEditCopy()));
-
-  editPaste = new QAction(tr("Paste"), tr("&Paste"), QAccel::stringToKey(tr("Ctrl+V")), this);
-  editPaste->setStatusTip(tr("Pastes the clipboard contents to actual position"));
-  editPaste->setWhatsThis(tr("Paste\n\nPastes the clipboard contents to actual position"));
-  connect(editPaste, SIGNAL(activated()), this, SLOT(slotEditPaste()));
-*/
 
   optionsLeft = new QAction(tr("Left channel"), tr("&Left channel"), QAccel::stringToKey(tr("Ctrl+L")), this, 0, true);
   optionsLeft->setOn(true);
@@ -443,25 +380,7 @@ void MixxxApp::initMenuBar()
   ///////////////////////////////////////////////////////////////////
   // menuBar entry fileMenu
   fileMenu=new QPopupMenu();
-/*
-  fileNew->addTo(fileMenu);
-  fileOpen->addTo(fileMenu);
-  fileClose->addTo(fileMenu);
-  fileMenu->insertSeparator();
-  fileSave->addTo(fileMenu);
-  fileSaveAs->addTo(fileMenu);
-  fileMenu->insertSeparator();
-  filePrint->addTo(fileMenu);
-  fileMenu->insertSeparator();
-*/
   fileQuit->addTo(fileMenu);
-
-  ///////////////////////////////////////////////////////////////////
-  // menuBar entry editMenu
-/*editMenu=new QPopupMenu();
-  editCut->addTo(editMenu);
-  editCopy->addTo(editMenu);
-  editPaste->addTo(editMenu);*/
 
   ///////////////////////////////////////////////////////////////////
   // menuBar entry optionsMenu
@@ -497,42 +416,11 @@ void MixxxApp::initMenuBar()
 
 }
 
-void MixxxApp::initDoc()
-{
-   doc=new MixxxDoc();
-}
-
 void MixxxApp::initView()
 {
-  ////////////////////////////////////////////////////////////////////
-  // set the main widget here
-  view=new MixxxView(this);
-  setCentralWidget(view);
-
-  // Set visual vidget here
-  visual1 = 0;
-  visual2 = 0;
-#ifdef __VISUALS__
-  visual1 = new WVisual(this);
-  if (visual1->isValid())
-  {
-      visual2 = new WVisual(this,"",visual1);
-
-      visual1->move(40,120);
-      visual1->setFixedSize(190,50);
-      visual2->move(405,120);
-      visual2->setFixedSize(190,50);
-      
-      visual1->show();
-      visual2->show();
-
-  }
-  else
-  {
-      delete visual1; 
-      visual1 = 0;
-  }
-#endif
+    // set the main widget here
+    view=new MixxxView(this);
+    setCentralWidget(view);
 }
 
 bool MixxxApp::queryExit()
@@ -558,84 +446,10 @@ bool MixxxApp::queryExit()
 /////////////////////////////////////////////////////////////////////
 
 
-void MixxxApp::slotFileNew()
-{
-    doc->newDoc();
-}
-
-void MixxxApp::slotFileOpen()
-{
-    QString fileName = QFileDialog::getOpenFileName(0,0,this);
-    if (!fileName.isEmpty())
-    {
-        doc->load(fileName);
-        setCaption(fileName);
-        QString message=tr("Loaded document: ")+fileName;
-    }
-}
-
-
-void MixxxApp::slotFileSave()
-{
-    doc->save();
-}
-
-void MixxxApp::slotFileSaveAs()
-{
-    QString fn = QFileDialog::getSaveFileName(0, 0, this);
-    if (!fn.isEmpty())
-    {
-        doc->saveAs(fn);
-    }
-}
-
-void MixxxApp::slotFileClose()
-{
-}
-
-void MixxxApp::slotFilePrint()
-{
-    QPrinter printer;
-    if (printer.setup(this))
-    {
-        QPainter painter;
-        painter.begin(&printer);
-
-        // Define printing by using the QPainter methods here
-
-        painter.end();
-    };
-}
 
 void MixxxApp::slotFileQuit()
 {
-    // exits the Application
-    if(doc->isModified())
-    {
-        if(queryExit())
-        {
-            qApp->quit();
-        }
-        else
-        {
-        };
-    }
-    else
-    {
-        qApp->quit();
-    };
-}
-
-void MixxxApp::slotEditCut()
-{
-}
-
-void MixxxApp::slotEditCopy()
-{
-}
-
-void MixxxApp::slotEditPaste()
-{
+    qApp->quit();
 }
 
 void MixxxApp::slotOptionsBeatMark(bool)
