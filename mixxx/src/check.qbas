@@ -1,7 +1,7 @@
 
 #************************************************************************
 # QBAS
-# version 0.9.5
+# version 0.9.6
 # Copyright (c) 2003-2004 Gianluca Romanin ( J_Zar )
 #        <jayorama@users.sourceforge.net>
 #************************************************************************
@@ -211,11 +211,35 @@ IS_LIB = true
 					}
 				FOUND = true
 				} else {
-				FOUND = static_failure
-				}
-		}	
+					exists( $${LIB_BASE0}/$${OBJECT} ) {
+						!contains( OPTIONS, skip_link ) {
+							LIBS += $${LIB_BASE0}/$${OBJECT}
+							LINK_TYPE = static
+							} 
+						FOUND = true
+						} else {
+							exists( $${LIB_BASE1}/$${OBJECT} ) {
+								!contains( OPTIONS, skip_link ) {
+									LIBS += $${LIB_BASE1}/$${OBJECT}
+									LINK_TYPE = static
+									} 
+								FOUND = true
+								} else {
+									exists( $${LIB_BASE2}/$${OBJECT} ) {
+										!contains( OPTIONS, skip_link ) {
+											LIBS += $${LIB_BASE2}/$${OBJECT}
+											LINK_TYPE = static
+											} 
+										FOUND = true
+										} else {
+											FOUND = static_failure
+											}
+									}
+							}
+					}
+			}	
 		}
-	}
+		}
 	
 	# --------------------------- lib 'ld' check ------------------------------
 	contains( FOUND, false) {
@@ -239,29 +263,30 @@ IS_LIB = true
 					LINK_TYPE = static
 					} 
 				FOUND = true
-			} else {
-				exists( $${LIB_BASE1}/$${OBJECT} ) {
-					!contains( OPTIONS, skip_link ) {
-						LIBS += $${LIB_BASE1}/$${OBJECT}
-						LINK_TYPE = static
-						} 
-					FOUND = true
-				}
 				} else {
-					exists( $${LIB_BASE2}/$${OBJECT} ) {
+					exists( $${LIB_BASE1}/$${OBJECT} ) {
 						!contains( OPTIONS, skip_link ) {
-							LIBS += $${LIB_BASE2}/$${OBJECT}
+							LIBS += $${LIB_BASE1}/$${OBJECT}
 							LINK_TYPE = static
 							} 
 						FOUND = true
+						} else {
+							exists( $${LIB_BASE2}/$${OBJECT} ) {
+								!contains( OPTIONS, skip_link ) {
+									LIBS += $${LIB_BASE2}/$${OBJECT}
+									LINK_TYPE = static
+									} 
+								FOUND = true
+								}
+							}
+					  
 					}
-				}
+			}
 		}
 	}
-}
 } else {
-IS_LIB = false
-}
+	IS_LIB = false
+	}
 
 
 # --------------------------- bin type ------------------------------------
@@ -426,8 +451,7 @@ contains( FOUND, true) {
 			MESSAGE += $${SKIP_LINK_MESSAGE}
 			}
 			else {
-				VAR = $$find( LIBS, $${OBJECT} )
-				!isEmpty( VAR ) {
+				contains( LINK_TYPE, static) {
 					MESSAGE += $${STATIC_MESSAGE}
 					}
 				}

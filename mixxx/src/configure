@@ -2,7 +2,7 @@
 
 #************************************************************************
 # QBAS
-# version 0.9.5
+# version 0.9.6
 # Copyright (c) 2003-2004 Gianluca Romanin ( J_Zar )
 #        <jayorama@users.sourceforge.net>
 #************************************************************************
@@ -259,8 +259,13 @@ for (( d=1; d<$NUM_OPT; d++ )); do
 		STATUS="ok"
 	fi
 
-	if [ "$OPT" = "--static-linking-path" ];
+	if [ "$OPT" = "--static-link" ];
 	then
+		# correcting a wide bug ;-(
+		if [ "$VAL" == "--static-link" ];
+		then
+			VAL="1";
+		fi
 		echo "STATIC_LIBPATH = $VAL" >> configure.def
 		STATUS="ok"
 	fi
