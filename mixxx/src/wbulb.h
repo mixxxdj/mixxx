@@ -21,6 +21,7 @@
 #include <qwidget.h>
 #include <qradiobutton.h>
 #include <qpainter.h>
+#include <qevent.h>
 
 /**
   *@author Tue & Ken Haste Andersen
@@ -33,6 +34,7 @@ public:
     ~WBulb();
 protected:
     void drawButton (QPainter *);
+    void mousePressEvent(QMouseEvent *e);
 private:
     QPixmap *bulbOn, *bulbOff;
 };

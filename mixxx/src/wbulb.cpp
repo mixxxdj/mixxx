@@ -41,3 +41,7 @@ void WBulb::drawButton(QPainter *p)
     else
         p->drawPixmap(0,0,*bulbOff);
 }
+
+void WBulb::mousePressEvent(QMouseEvent *e)
+{
+}

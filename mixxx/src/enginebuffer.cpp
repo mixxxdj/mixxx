@@ -245,53 +245,58 @@ void EngineBuffer::slotUpdateRate(FLOAT_TYPE)
 /*
   Read a new chunk into the readbuffer:
 */
-void EngineBuffer::getchunk() {
-    if (readChunkLock.read()==0.) {
-	readChunkLock.write(1.);
+void EngineBuffer::getchunk()
+{
+    if (readChunkLock.read()==0.)
+    {
+        readChunkLock.write(1.);
 
-  qDebug("Reading...");
+        qDebug("Reading...");
 
-  // Read a chunk
-  unsigned samples_read = file->read(chunk_size, temp);
+        // Read a chunk
+        unsigned samples_read = file->read(chunk_size, temp);
 
-  if (samples_read < chunk_size) {
-      qDebug("Didn't get as many samples as we asked for: %d:%d", chunk_size, samples_read);
-      if (samples_read == 0) pause = true;
-  }
+        if (samples_read < chunk_size)
+        {
+            qDebug("Didn't get as many samples as we asked for: %d:%d", chunk_size, samples_read);
+            if (samples_read == 0)
+                pause = true;
+        }
 
-  // Convert from SAMPLE to CSAMPLE. Should possibly be optimized
-  // using assembler code from music-dsp archive.
-  unsigned long lastread_buffer = ((unsigned long)(playpos_buffer.read() + lastread_file.read() -
-         playpos_file.read()))%read_buffer_size;
+        // Convert from SAMPLE to CSAMPLE. Should possibly be optimized
+        // using assembler code from music-dsp archive.
+        unsigned long lastread_buffer = ((unsigned long)(playpos_buffer.read() + lastread_file.read() -
+            playpos_file.read()))%read_buffer_size;
 
-   /* qDebug("lastread_buffer: %f", (double)lastread_buffer);
-    qDebug("playpos_buffer: %f",playpos_buffer.read());
-    qDebug("playpos_file: %f",playpos_file.read());
-    qDebug("lastread_file: %f",lastread_file.read()); */
+        /* qDebug("lastread_buffer: %f", (double)lastread_buffer);
+        qDebug("playpos_buffer: %f",playpos_buffer.read());
+        qDebug("playpos_file: %f",playpos_file.read());
+        qDebug("lastread_file: %f",lastread_file.read()); */
 
-  unsigned i = 0;
-  for (unsigned long j=lastread_buffer; j<min(read_buffer_size,lastread_buffer+samples_read); j++)
-    read_buffer[j] = temp[i++];
-  //qDebug("%i",lastread_buffer+samples_read-read_buffer_size);
-  for (signed long j=0; j<(signed long)(lastread_buffer+samples_read-read_buffer_size); j++)
-    read_buffer[j] = temp[i++];
+        unsigned i = 0;
+        for (unsigned long j=lastread_buffer; j<min(read_buffer_size,lastread_buffer+samples_read); j++)
+            read_buffer[j] = (CSAMPLE)temp[i++];
+        //qDebug("%i",lastread_buffer+samples_read-read_buffer_size);
+        for (signed long j=0; j<(signed long)(lastread_buffer+samples_read-read_buffer_size); j++)
+            read_buffer[j] = (CSAMPLE)temp[i++];
 
-  // Update lastread_file position:
-  lastread_file.add((double)samples_read);
-  qDebug("Done reading.");
+        // Update lastread_file position:
+        lastread_file.add((double)samples_read);
+        qDebug("Done reading.");
     
-    readChunkLock.write(0.);
+        readChunkLock.write(0.);
     } else
-	qDebug("getchunk not processed");
-
+        qDebug("getchunk not processed");
 }
 
 /*
   This is called when the positionslider is released:
 */
-void EngineBuffer::slotPosition(int newvalue) {
-  seek((FLOAT_TYPE)newvalue/102 - playpos_file.read()/(FLOAT_TYPE)file->length());
+void EngineBuffer::slotPosition(int newvalue)
+{
+    seek((FLOAT_TYPE)newvalue/102 - playpos_file.read()/(FLOAT_TYPE)file->length());
 }
+
 /*
   Moves the playpos forward change%
 */
