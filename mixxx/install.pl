@@ -10,6 +10,14 @@
 # src/mixxx.pro and recompile first
 $BASE='/usr'; 
 
+# Extract version info from README file
+open(F, 'README');
+$line = <F>;
+chop($line);
+close(F);
+($t1,$t2,$t3,$version) = split(' ',$line);
+$version = substr($version, 0, -1);
+
 # Check if this is running on Linux
 $_ = `uname`;
 if (!m/Linux/) 
@@ -47,11 +55,11 @@ if ($#out<0)
 `install -m 755 src/mixxx $BASE/bin`;
 
 # Copy doc files
-`install -m 755 -d $BASE/share/doc/mixxx-1.3`;
-`install -m 644 README $BASE/share/doc/mixxx-1.3`;
-`install -m 644 LICENSE $BASE/share/doc/mixxx-1.3`;
-`install -m 644 COPYING $BASE/share/doc/mixxx-1.3`;
-`install -m 644 Mixxx-Manual.pdf $BASE/share/doc/mixxx-1.3`;
+`install -m 755 -d $BASE/share/doc/mixxx-$version`;
+`install -m 644 README $BASE/share/doc/mixxx-$version`;
+`install -m 644 LICENSE $BASE/share/doc/mixxx-$version`;
+`install -m 644 COPYING $BASE/share/doc/mixxx-$version`;
+`install -m 644 Mixxx-Manual.pdf $BASE/share/doc/mixxx-$version`;
 
 printf("Install finished\n");
 printf("\n");
