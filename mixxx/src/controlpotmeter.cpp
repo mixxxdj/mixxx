@@ -3,7 +3,7 @@
                              -------------------
     begin                : Wed Feb 20 2002
     copyright            : (C) 2002 by Tue and Ken Haste Andersen
-    email                : 
+    email                :
  ***************************************************************************/
 
 /***************************************************************************
@@ -96,6 +96,7 @@ void ControlPotmeter::setValueFromEngine(double dValue)
         m_dValue = m_dMinValue;
     else
         m_dValue = dValue;
+    emit(valueChangedFromEngine(m_dValue));
 }
 
 void ControlPotmeter::setValueFromMidi(MidiCategory, int v)

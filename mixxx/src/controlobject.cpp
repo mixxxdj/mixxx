@@ -51,6 +51,7 @@ bool ControlObject::connectControls(ConfigKey src, ConfigKey dest)
     if (pSrc && pDest)
     {
         connect(pSrc, SIGNAL(valueChanged(double)), pDest, SLOT(set(double)));
+        connect(pSrc, SIGNAL(valueChangedFromEngine(double)), pDest, SLOT(set(double)));
         return true;
     }
     else
@@ -128,6 +129,7 @@ void ControlObject::queueFromMidi(MidiCategory c, int v)
 void ControlObject::setValueFromEngine(double dValue)
 {
     m_dValue = dValue;
+    emit(valueChangedFromEngine(m_dValue));
 }
 
 void ControlObject::setValueFromMidi(MidiCategory, int v)

@@ -101,6 +101,7 @@ public slots:
 
 signals:
     void valueChanged(double);
+    void valueChangedFromEngine(double);
 
 protected:
     /** Sets the value of the object. Not thread safe. */
