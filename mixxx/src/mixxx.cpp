@@ -146,7 +146,12 @@ MixxxApp::MixxxApp(QApplication *a)
 
   // Get directory where MIDI configurations are stored. If no is given, set to CONFIG_PATH
   if (config->getValueString(ConfigKey("[Midi]","Configdir")).length() == 0)
+#ifdef __WIN__ || __MACX__
       config->set(ConfigKey("[Midi]","Configdir"),ConfigValue(QDir::currentDirPath().append(QString("/").append(CONFIG_PATH))));
+#endif
+#ifdef __UNIX__ && !__MACX__
+      config->set(ConfigKey("[Midi]","Configdir"),ConfigValue(CONFIG_PATH));
+#endif
 
   // If the directory does not end with a "/", add one
   if (!config->getValueString(ConfigKey("[Midi]","Configdir")).endsWith("/"))
