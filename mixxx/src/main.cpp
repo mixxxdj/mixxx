@@ -64,6 +64,7 @@ void MessageToLogfile( QtMsgType type, const char *msg )
 		QMessageBox::warning(0, "Mixxx", msg);
 		exit(-1);
     }
+    Logfile.flush();
 }
 
 
@@ -97,6 +98,8 @@ int main(int argc, char *argv[])
   //mixxx->setIcon(QPixmap());
 
   mixxx->show();
-  return a.exec();
+  int result = a.exec();
+  delete mixxx;
+  return result;
 }
 

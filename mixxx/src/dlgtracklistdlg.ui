@@ -20,37 +20,98 @@
             <property name="text">
                 <string>**</string>
             </property>
+            <property name="pixmap">
+                <pixmap></pixmap>
+            </property>
         </column>
         <column>
             <property name="text">
                 <string>Title</string>
+            </property>
+            <property name="pixmap">
+                <pixmap></pixmap>
             </property>
         </column>
         <column>
             <property name="text">
                 <string>Artist</string>
             </property>
+            <property name="pixmap">
+                <pixmap></pixmap>
+            </property>
         </column>
         <column>
             <property name="text">
                 <string>Type</string>
+            </property>
+            <property name="pixmap">
+                <pixmap></pixmap>
             </property>
         </column>
         <column>
             <property name="text">
                 <string>Duration</string>
             </property>
+            <property name="pixmap">
+                <pixmap></pixmap>
+            </property>
         </column>
         <column>
             <property name="text">
                 <string>Bitrate</string>
+            </property>
+            <property name="pixmap">
+                <pixmap></pixmap>
             </property>
         </column>
         <column>
             <property name="text">
                 <string>Index (hidden)</string>
             </property>
+            <property name="pixmap">
+                <pixmap></pixmap>
+            </property>
         </column>
+        <row>
+            <property name="text">
+                <string>1</string>
+            </property>
+            <property name="pixmap">
+                <pixmap></pixmap>
+            </property>
+        </row>
+        <row>
+            <property name="text">
+                <string>2</string>
+            </property>
+            <property name="pixmap">
+                <pixmap></pixmap>
+            </property>
+        </row>
+        <row>
+            <property name="text">
+                <string>3</string>
+            </property>
+            <property name="pixmap">
+                <pixmap></pixmap>
+            </property>
+        </row>
+        <row>
+            <property name="text">
+                <string>4</string>
+            </property>
+            <property name="pixmap">
+                <pixmap></pixmap>
+            </property>
+        </row>
+        <row>
+            <property name="text">
+                <string>5</string>
+            </property>
+            <property name="pixmap">
+                <pixmap></pixmap>
+            </property>
+        </row>
         <property name="name">
             <cstring>tableTracks</cstring>
         </property>
@@ -75,10 +136,13 @@
             <bool>true</bool>
         </property>
         <property name="sorting">
-            <bool>true</bool>
+            <bool>false</bool>
         </property>
         <property name="selectionMode">
             <enum>SingleRow</enum>
+        </property>
+        <property name="focusStyle">
+            <enum>FollowStyle</enum>
         </property>
         <property name="toolTip" stdset="0">
             <string>List of playable tracks</string>

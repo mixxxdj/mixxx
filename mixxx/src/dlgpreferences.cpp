@@ -330,7 +330,7 @@ void DlgPreferences::slotApply()
     if (LineEditSongfiles->text() != config->getValueString(ConfigKey("[Playlist]","Directory")))
     {
         config->set(ConfigKey("[Playlist]","Directory"), LineEditSongfiles->text());
-        ((MixxxApp *)mixxx)->updatePlayList();
+        ((MixxxApp *)mixxx)->updateTracklist( LineEditSongfiles->text() );
     }
 
     // Save preferences

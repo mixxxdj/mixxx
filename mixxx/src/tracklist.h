@@ -14,13 +14,13 @@ class EngineBuffer;
 
 // Defines for the rows in the table. Should be made as simple
 // private consts, but it won't compile.
-#define ROW_SCORE 0
-#define ROW_TITLE 1
-#define ROW_ARTIST 2
-#define ROW_TYPE 3
-#define ROW_DURATION 4
-#define ROW_BITRATE 5
-#define ROW_INDEX 6
+#define COL_SCORE 0
+#define COL_TITLE 1
+#define COL_ARTIST 2
+#define COL_TYPE 3
+#define COL_DURATION 4
+#define COL_BITRATE 5
+#define COL_INDEX 6
 
 class TrackList : public QObject
 {
@@ -32,6 +32,10 @@ public:
 	void WriteXML( );
 
 	TrackInfoObject *m_ptrackCurrent; // pointer to the currently selected track
+
+public slots:
+    /** Can be called to update the whole tracklist */
+    void slotUpdateTracklist( QString );
 
 private slots:
 	void slotChangePlay_1(); // For recieving signals from the pulldown menu

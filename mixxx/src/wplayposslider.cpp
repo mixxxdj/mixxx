@@ -43,8 +43,11 @@ WPlayposSlider::WPlayposSlider(QWidget *parent, const char *name ) : QWidget(par
 
 WPlayposSlider::~WPlayposSlider()
 {
-    delete slider;
-    delete marker;
+    if (slider)
+    {
+        delete slider;
+        delete marker;
+    }
 }
 
 void WPlayposSlider::mouseMoveEvent(QMouseEvent *e)
