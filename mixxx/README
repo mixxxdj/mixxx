@@ -16,6 +16,7 @@ Mac OS 10.2.
 New since 1.0:
 - Corrected rate configuration values, and added 8% option
 - Added temporary rate change buttons
+- Fullscreen support added for MacOS X
 
 * REQUIREMENTS *********************************************
 Mixxx is depends on the following libraries:
