@@ -1071,7 +1071,6 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBuff
             case TRACK_END_MODE_STOP:
                 qDebug("stop");
                 playButton->set(0.);
-                m_pTrackEnd->set(1.);
                 break;
             case TRACK_END_MODE_NEXT:
                 //if (!backwards)

@@ -19,6 +19,7 @@
 #define ENGINEBUFFERSCALE_H
 
 #include "defs.h"
+#include <qobject.h>
 
 class ReaderExtractWave;
 
@@ -26,7 +27,7 @@ class ReaderExtractWave;
   *@author Tue & Ken Haste Andersen
   */
 
-class EngineBufferScale 
+class EngineBufferScale : public QObject
 {
 public:
     EngineBufferScale(ReaderExtractWave *_wave);
@@ -42,7 +43,7 @@ public:
     virtual void clear() = 0;
     /** Scale buffer */
     virtual CSAMPLE *scale(double playpos, int buf_size, float *pBase=0, int iBaseLength=0) = 0;
-
+    
 protected:
     /** Pointer to ReaderExtractWave object */
     ReaderExtractWave *wave;

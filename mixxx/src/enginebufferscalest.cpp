@@ -20,6 +20,8 @@
 #include "engineobject.h"
 #include "enginebufferscalest.h"
 #include "SoundTouch.h"
+#include "controlobject.h"
+#include <qapplication.h>
 
 using namespace soundtouch;
 
@@ -32,9 +34,12 @@ EngineBufferScaleST::EngineBufferScaleST(ReaderExtractWave *wave) : EngineBuffer
     m_pSoundTouch->setChannels(2);
     m_pSoundTouch->setRate(m_dBaseRate);
     m_pSoundTouch->setTempo(m_dTempo);
-    m_pSoundTouch->setSampleRate(44100); //EngineObject::getPlaySrate());
-
-    buffer_back = new CSAMPLE[MAX_BUFFER_LEN];
+    
+    slotSetSamplerate(44100.);
+    ControlObject *p = ControlObject::getControl(ConfigKey("[Master]","samplerate"));
+    connect(p, SIGNAL(valueChanged(double)), this, SLOT(slotSetSamplerate(double)));
+    
+    buffer_back = new CSAMPLE[kiSoundTouchReadAheadLength*2];
     m_bBackwards = false;
     m_bClear = true;
 }
@@ -70,6 +75,15 @@ void EngineBufferScaleST::clear()
     m_bClear = true;
 }
 
+void EngineBufferScaleST::slotSetSamplerate(double dSampleRate)
+{
+    int iSrate = (int)dSampleRate;
+    if (iSrate>0)
+        m_pSoundTouch->setSampleRate(iSrate);
+    else
+        m_pSoundTouch->setSampleRate(44100);
+}
+    
 double EngineBufferScaleST::setTempo(double dTempo)
 {
     double dTempoOld = m_dTempo;
@@ -122,7 +136,7 @@ CSAMPLE *EngineBufferScaleST::scale(double playpos, int buf_size, float *pBase, 
     {
         while (m_pSoundTouch->numSamples()<(unsigned int)(buf_size/2))
         {
-            int iLen = min(100,m_iReadAheadPos/2);
+            int iLen = min(kiSoundTouchReadAheadLength, m_iReadAheadPos/2);
             int j=0;
             for (int i=m_iReadAheadPos-1; i>=m_iReadAheadPos-iLen*2; --i)
             {
@@ -140,7 +154,7 @@ CSAMPLE *EngineBufferScaleST::scale(double playpos, int buf_size, float *pBase, 
     {
         while (m_pSoundTouch->numSamples()<(unsigned int)(buf_size/2))
         {
-            int iLen = min(100,(iBaseLength-m_iReadAheadPos)/2);
+            int iLen = min(kiSoundTouchReadAheadLength,(iBaseLength-m_iReadAheadPos)/2);
             m_pSoundTouch->putSamples((const SAMPLETYPE *)&pBase[m_iReadAheadPos], iLen);
             m_iReadAheadPos = (m_iReadAheadPos+iLen*2)%iBaseLength;
             if (m_iReadAheadPos==iBaseLength)

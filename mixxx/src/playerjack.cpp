@@ -16,8 +16,10 @@
  ***************************************************************************/
 
 #include "playerjack.h"
+#include "controlobject.h"
 #include <qmessagebox.h>
 #include <qapplication.h>
+#include "controlobject.h"
 
 PlayerJack::PlayerJack(ConfigObject<ConfigValue> *config) : Player(config) //, mLibJack("libjack.so")
 {
@@ -302,6 +304,7 @@ int PlayerJack::callbackProcess(int iBufferSize)
 void PlayerJack::callbackSetSrate(int srate)
 {
     setPlaySrate(srate);
+    m_pControlObjectSampleRate->queueFromThread((double)srate);
 }
 
 void PlayerJack::callbackSetBufferSize(int iBufferSize)

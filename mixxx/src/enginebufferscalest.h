@@ -25,14 +25,18 @@
 #include "enginebufferscale.h"
 #include "SoundTouch.h"
 
+/** Number of stereo samples to read ahead */
+const int kiSoundTouchReadAheadLength = 100;
+
 using namespace soundtouch;
 
 /**
   * Performs time scaling of audio based on the SoundTouch library.
   */
 
-class EngineBufferScaleST : public EngineBufferScale  
+class EngineBufferScaleST : public EngineBufferScale
 {
+    Q_OBJECT
 public: 
     EngineBufferScaleST(ReaderExtractWave *wave);
     ~EngineBufferScaleST();
@@ -46,7 +50,8 @@ public:
     void setBaseRate(double dBaseRate);
     /** Flush buffer */
     void clear();
-
+public slots:    
+    void slotSetSamplerate(double dSampleRate);
 private:
     /** Holds the playback direction */
     bool m_bBackwards;
