@@ -23,6 +23,7 @@
 #include "enginepregain.h"
 #include "enginevolume.h"
 #include "enginefilterblock.h"
+#include "engineflanger.h"
 #include "dlgchannel.h"
 #include "midiobject.h"
 
@@ -40,6 +41,7 @@ public:
     EngineFilterBlock* filter;
     EngineClipping* clipping;
     EngineVolume* volume;
+    EngineFlanger* flanger;
 };
 
 #endif

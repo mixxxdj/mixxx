@@ -34,17 +34,10 @@ EngineChannel::EngineChannel(DlgChannel *dlg, const char *group)
   // Clipping:
   clipping = new EngineClipping(dlg->BulbClipping);
 
-  // Flanger:
-//  flanger = new EngineFlanger(dlg->DialFlangerDelay);
-
   // Volume control:
   volume = new EngineVolume(ConfigKey(group,"volume"));
   connect(dlg->SliderVolume, SIGNAL(valueChanged(int)), volume->potmeter, SLOT(slotSetPosition(int)));
   connect(volume->potmeter, SIGNAL(updateGUI(int)), dlg->SliderVolume, SLOT(setValue(int)));
-
-
-//    connect(master_dlg->KnobVolume, SIGNAL(valueChanged(int)), volume->potmeter, SLOT(slotSetPosition(int)));
-//    connect(volume->potmeter, SIGNAL(updateGUI(int)), master_dlg->KnobVolume, SLOT(setValue(int)));
 }
 
 EngineChannel::~EngineChannel(){
@@ -55,10 +48,9 @@ EngineChannel::~EngineChannel(){
 }
 
 CSAMPLE *EngineChannel::process(const CSAMPLE* source, const int buffer_size) {
-  CSAMPLE *temp  = pregain->process(source, buffer_size);
-  CSAMPLE *temp2 = clipping->process(temp, buffer_size);
-  temp = filter->process(temp2, buffer_size); 
-//  temp2 = flanger->process(temp, buffer_size);
+//  CSAMPLE *temp  = pregain->process(source, buffer_size);
+  CSAMPLE *temp2 = clipping->process(source, buffer_size);
+  CSAMPLE *temp = filter->process(temp2, buffer_size); 
   temp2 = volume->process(temp, buffer_size);
 
   return temp2;

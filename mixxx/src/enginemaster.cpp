@@ -24,12 +24,14 @@ EngineMaster::EngineMaster(DlgMaster *master_dlg, DlgCrossfader *crossfader_dlg,
                            DlgChannel *channel1_dlg, DlgChannel *channel2_dlg,
                            EngineBuffer *_buffer1, EngineBuffer *_buffer2,
                            EngineChannel *_channel1, EngineChannel *_channel2,
+			   EngineFlanger *_flanger,
                            const char *group)
 {
     buffer1 = _buffer1;
     buffer2 = _buffer2;
     channel1 = _channel1;
     channel2 = _channel2;
+    flanger = _flanger;
 
     // Crossfader
     crossfader = new ControlPotmeter(ConfigKey(group, "crossfader"),-1.,1.);
@@ -79,20 +81,32 @@ CSAMPLE *EngineMaster::process(const CSAMPLE *, const int buffer_size)
 {
     CSAMPLE *sampMaster1=0, *sampMaster2=0;
 
+    //
+    // Process the buffer, the channels and the effects:
+    //
+
     if (master1)
     {
         CSAMPLE *temp_1 = buffer1->process(0, buffer_size);
-        sampMaster1 = channel1->process(temp_1,buffer_size);
+        CSAMPLE *temp_2 = channel1->process(temp_1,buffer_size);
+	if (flanger->channel_A) 
+            sampMaster1 = flanger->process(temp_2, buffer_size);
+	else
+	    sampMaster1 = temp_2;
     } 
 
     if (master2)
     {
-        CSAMPLE *temp_2 = buffer2->process(0, buffer_size);
-        sampMaster2 = channel2->process(temp_2,buffer_size);
+        CSAMPLE *temp_1 = buffer2->process(0, buffer_size);
+        CSAMPLE *temp_2 = channel2->process(temp_1,buffer_size);
+	if (flanger->channel_B) 
+            sampMaster2 = flanger->process(temp_2, buffer_size);
+	else
+	    sampMaster2 = temp_2;
     }
 
     //
-    // Output channel
+    // Output channel:
     //
     
     // Crossfader
@@ -116,7 +130,7 @@ CSAMPLE *EngineMaster::process(const CSAMPLE *, const int buffer_size)
     tmp2 = clipping->process(tmp, buffer_size);
 
     //
-    // Headphone channel
+    // Headphone channel:
     //
     if (CH_HEAD>0)
     {

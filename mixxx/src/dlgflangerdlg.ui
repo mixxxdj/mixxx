@@ -1,0 +1,290 @@
+<!DOCTYPE UI><UI version="3.0" stdsetdef="1">
+<class>DlgFlangerDlg</class>
+<widget class="QWidget">
+    <property name="name">
+        <cstring>DlgFlangerDlg</cstring>
+    </property>
+    <property name="geometry">
+        <rect>
+            <x>0</x>
+            <y>0</y>
+            <width>124</width>
+            <height>446</height>
+        </rect>
+    </property>
+    <property name="paletteBackgroundColor">
+        <color>
+            <red>168</red>
+            <green>181</green>
+            <blue>164</blue>
+        </color>
+    </property>
+    <property name="backgroundOrigin">
+        <enum>WindowOrigin</enum>
+    </property>
+    <property name="caption">
+        <string>Form1</string>
+    </property>
+    <widget class="WKnob">
+        <property name="name">
+            <cstring>WKnob7</cstring>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>20</x>
+                <y>245</y>
+                <width>2</width>
+                <height>2</height>
+            </rect>
+        </property>
+    </widget>
+    <widget class="QLabel">
+        <property name="name">
+            <cstring>TextLabel1</cstring>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>16</x>
+                <y>4</y>
+                <width>65</width>
+                <height>14</height>
+            </rect>
+        </property>
+        <property name="font">
+            <font>
+                <bold>1</bold>
+            </font>
+        </property>
+        <property name="text">
+            <string>Flanger</string>
+        </property>
+    </widget>
+    <widget class="Line">
+        <property name="name">
+            <cstring>Line1</cstring>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>-8</x>
+                <y>0</y>
+                <width>16</width>
+                <height>446</height>
+            </rect>
+        </property>
+        <property name="frameShape" stdset="0">
+            <enum>VLine</enum>
+        </property>
+        <property name="frameShadow">
+            <enum>Sunken</enum>
+        </property>
+        <property name="orientation">
+            <enum>Vertical</enum>
+        </property>
+    </widget>
+    <widget class="WKnob">
+        <property name="name">
+            <cstring>WKnob8</cstring>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>19</x>
+                <y>208</y>
+                <width>2</width>
+                <height>2</height>
+            </rect>
+        </property>
+    </widget>
+    <widget class="WKnob">
+        <property name="name">
+            <cstring>WKnob4</cstring>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>24</x>
+                <y>122</y>
+                <width>2</width>
+                <height>2</height>
+            </rect>
+        </property>
+    </widget>
+    <widget class="QLabel">
+        <property name="name">
+            <cstring>TextLabel5</cstring>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>8</x>
+                <y>22</y>
+                <width>16</width>
+                <height>16</height>
+            </rect>
+        </property>
+        <property name="text">
+            <string>A</string>
+        </property>
+    </widget>
+    <widget class="QRadioButton">
+        <property name="name">
+            <cstring>RadioButtonChannelA</cstring>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>22</x>
+                <y>20</y>
+                <width>16</width>
+                <height>19</height>
+            </rect>
+        </property>
+        <property name="text">
+            <string></string>
+        </property>
+    </widget>
+    <widget class="QLabel">
+        <property name="name">
+            <cstring>TextLabel5_2</cstring>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>40</x>
+                <y>23</y>
+                <width>16</width>
+                <height>16</height>
+            </rect>
+        </property>
+        <property name="text">
+            <string>B</string>
+        </property>
+    </widget>
+    <widget class="QRadioButton">
+        <property name="name">
+            <cstring>RadioButtonChannelB</cstring>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>52</x>
+                <y>21</y>
+                <width>18</width>
+                <height>19</height>
+            </rect>
+        </property>
+        <property name="text">
+            <string></string>
+        </property>
+    </widget>
+    <widget class="WKnob">
+        <property name="name">
+            <cstring>DialDepth</cstring>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>20</x>
+                <y>42</y>
+                <width>32</width>
+                <height>32</height>
+            </rect>
+        </property>
+        <property name="backgroundOrigin">
+            <enum>WindowOrigin</enum>
+        </property>
+    </widget>
+    <widget class="QLabel">
+        <property name="name">
+            <cstring>TextLabel2</cstring>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>20</x>
+                <y>76</y>
+                <width>65</width>
+                <height>14</height>
+            </rect>
+        </property>
+        <property name="text">
+            <string>Depth</string>
+        </property>
+    </widget>
+    <widget class="WKnob">
+        <property name="name">
+            <cstring>DialDelay</cstring>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>20</x>
+                <y>91</y>
+                <width>32</width>
+                <height>32</height>
+            </rect>
+        </property>
+    </widget>
+    <widget class="QLabel">
+        <property name="name">
+            <cstring>TextLabel3</cstring>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>12</x>
+                <y>125</y>
+                <width>65</width>
+                <height>14</height>
+            </rect>
+        </property>
+        <property name="text">
+            <string>Avg. Delay</string>
+        </property>
+    </widget>
+    <widget class="WKnob">
+        <property name="name">
+            <cstring>DialPeriod</cstring>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>22</x>
+                <y>141</y>
+                <width>32</width>
+                <height>32</height>
+            </rect>
+        </property>
+    </widget>
+    <widget class="QLabel">
+        <property name="name">
+            <cstring>TextLabel4</cstring>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>11</x>
+                <y>175</y>
+                <width>65</width>
+                <height>14</height>
+            </rect>
+        </property>
+        <property name="text">
+            <string>LFO period</string>
+        </property>
+    </widget>
+</widget>
+<customwidgets>
+    <customwidget>
+        <class>WKnob</class>
+        <header location="global">wknob.h</header>
+        <sizehint>
+            <width>32</width>
+            <height>32</height>
+        </sizehint>
+        <container>0</container>
+        <sizepolicy>
+            <hordata>0</hordata>
+            <verdata>0</verdata>
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+        </sizepolicy>
+        <pixmap>image0</pixmap>
+        <property type="String">property</property>
+    </customwidget>
+</customwidgets>
+<images>
+    <image name="image0">
+        <data format="XPM.GZ" length="3264">789ca596576fe2401080dff91528bc45a7495c166c9dee8154924b0352484ef7b02eb414083669a7fbef37de196f0c9896d304892fb3fb79cbec9aadcd62ebe2b4b8b955886219f7fca2df95a3e266307e7c7cfff5fbc79fc2866516f1af2c8ae6c6b7c2065c16fd62c936cc6dc351fc3361616abe512ccb86908aebcc82b804cc2ee78f132e9b42d8c44d629defa65ca6e747cc01f3ae62693aa6ab788758b882f2cfc4babd4f5c319803cdf43c8f59305f255cb1b4df26d67993d9650e99838aa558103b06b3c32c985f147b966d198a47c4bafd07b3a8788a2bcc01f349c28ea5fbdf12ebf63d66975932a7fd87293bf4bc32b16b70de4a99f3778a3ded1b13eb7c8b5930d73453fb36b3cb7c9fb06bebfed79a295f654edbc7cc01733f65d7567c412c0de627c5beee3f20d6f96dcdbe62975970fe4833e51bcc92f9216169ebfa39674eeba3432c436e6f107b267389b92cd5f3ea6a7ed24f194e13f66c919e873de680f99158d7db21b193eedf6bc2bed0edcf88f5f97c4f380cf5fcdf126eb77dd30b141f304b5f28de670efd80c63b1b5002091ef810a84f80df4368e7b5acc7790ee8608f2ef4a08f710f0ff0084f30c018c233663acb1d308208da1063f4610c2ff00a6ff0ce9601fe2f808f450e1c41844fab62c42a766017f6601f0ee0901d49d470949d7c071c61ae8d51d59663f80927700a67700e1719cb00ead09875e0189aca90b5f4e0122d5738a36b744c5b3a338e1b68e128a72db7389f1db853eb9bb56ce3a73be9c09dfb508e594bacfaf7732c35e87d3ad43c5a2ad6b38460688709163bb2f3596e19c0881c58939136ac66f974d850a2bb1344661cad9cb59d6f19029d4f0f0d16d6e4224b3cd7c2ef40e5f8aa85ee85263bd6b3a46b1b4c39262df9fb3c6d491de5b52c93fbfce9c85a5a6b59025e53f91f9680f7562eb12caa394fd7d8572d3d1872ad37956335cbe40e3d53ade399f3a19263595e2d5530f5b96de0ad24bf600992bb4cdf411e38b9f3596419d20d9fb90bf34732bfe6da10e5dcc9eb59bcd93b192d6e09e658a66bae862b91f36ed063c95f97aca537ff1dc51e0f3d95b996319e8c708577760347da54b53b6911d8df5ce59d3df1db214257121186877b59cafdedf0f77be11fade4372e</data>
+    </image>
+</images>
+<layoutdefaults spacing="6" margin="11"/>
+</UI>

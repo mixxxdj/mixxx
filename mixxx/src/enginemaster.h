@@ -25,6 +25,7 @@
 #include "enginevolume.h"
 #include "enginechannel.h"
 #include "engineclipping.h"
+#include "engineflanger.h"
 #include "controlpotmeter.h"
 
 /**
@@ -39,13 +40,14 @@ private:
     EngineVolume *volume, *head_volume;
     ControlPotmeter *crossfader, *head_mix;
     EngineClipping *clipping, *head_clipping;
+    EngineFlanger *flanger;
     CSAMPLE *out, *tmp, *tmp2, *tmp3;
     bool master1, master2, head1, head2;
 public:
     EngineMaster(DlgMaster *master_dlg, DlgCrossfader *crossfader_dlg,
                  DlgChannel *channel1_dlg, DlgChannel *channel2_dlg,
                  EngineBuffer *buffer1, EngineBuffer *buffer2,
-                 EngineChannel *, EngineChannel *,
+                 EngineChannel *, EngineChannel *, EngineFlanger *,
                  const char *group);
     ~EngineMaster();
     CSAMPLE *process(const CSAMPLE *, const int);

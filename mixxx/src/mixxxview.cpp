@@ -35,6 +35,7 @@ MixxxView::MixxxView(QWidget *parent, MixxxDoc *doc) : QWidget(parent)
     master = new DlgMaster(this);
     crossfader = new DlgCrossfader(this);
     split = new DlgSplit(this);
+    flanger = new DlgFlanger(this);
 
     // Layout management
     mainGrid = new QGridLayout(this,6,3); // A layout on a widget
@@ -43,7 +44,8 @@ MixxxView::MixxxView(QWidget *parent, MixxxDoc *doc) : QWidget(parent)
     mainGrid->addWidget(split,0,2);
     mainGrid->addWidget(channel2,0,3);
     mainGrid->addWidget(playcontrol2,0,4);
-    mainGrid->addMultiCellWidget(master,0,2,5,5);
+    mainGrid->addMultiCellWidget(master,0,1,5,5);
+    mainGrid->addMultiCellWidget(flanger,2,2,5,5);
     mainGrid->addMultiCellWidget(crossfader,1,1,0,4);
     mainGrid->addMultiCellWidget(playlist,2,2,0,4);
 
@@ -53,11 +55,11 @@ MixxxView::MixxxView(QWidget *parent, MixxxDoc *doc) : QWidget(parent)
     mainGrid->setColStretch( 2,  16);
     mainGrid->setColStretch( 3,  73);
     mainGrid->setColStretch( 4, 242);
-    mainGrid->setColStretch( 5,  45);
+    mainGrid->setColStretch( 5,  70);
 
     mainGrid->setRowStretch( 0, 230);
     mainGrid->setRowStretch( 1,  43);
-    mainGrid->setRowStretch( 2, 150);
+    mainGrid->setRowStretch( 2, 200);
 }
 
 
