@@ -24,8 +24,8 @@ public:
     MidiObject(ConfigObject<ConfigValueMidi> *c, QApplication *app, QString device);
     ~MidiObject();
     void reopen(QString device);
-    virtual void devOpen(QString device) = 0;
-    virtual void devClose() = 0;
+    void devOpen(QString device) {};
+    void devClose() {};
     void add(ControlObject* c);
     void remove(ControlObject* c);
     /** Returns a list of available devices */
@@ -34,7 +34,7 @@ public:
     /** Returns the name of the current open device */
     QString *getOpenDevice();
 protected:
-    virtual void run() = 0;
+    void run() {};
     void stop();
     void send(char channel, char midicontrol, char midivalue);
 

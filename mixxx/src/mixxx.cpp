@@ -114,7 +114,7 @@ MixxxApp::MixxxApp(QApplication *a)
   {
       if (midiConfigList.empty())
       {
-          midiconfig = new ConfigObject<ConfigValueMidi>("");
+          midiconfig = new ConfigObject<ConfigValueMidi>(QString(""));
           config->set(ConfigKey("[Midi]","Configfile"), ConfigValue(""));
       }
       else
@@ -151,6 +151,7 @@ MixxxApp::MixxxApp(QApplication *a)
 
   // Open midi
   //qDebug("Init midi...");
+  midi = 0;
 #ifdef __ALSA__
   midi = new MidiObjectALSA(midiconfig,app,config->getValueString(ConfigKey("[Midi]","Device")));
 #endif
@@ -160,6 +161,8 @@ MixxxApp::MixxxApp(QApplication *a)
 #ifdef __OSSMIDI__
   midi = new MidiObjectOSS(midiconfig,app,config->getValueString(ConfigKey("[Midi]","Device")));
 #endif
+  if (midi == 0)
+      midi = new MidiObject(midiconfig,app,config->getValueString(ConfigKey("[Midi]","Device")));
 
   // Store default midi device
   config->set(ConfigKey("[Midi]","Device"), ConfigValue(midi->getOpenDevice()->latin1()));

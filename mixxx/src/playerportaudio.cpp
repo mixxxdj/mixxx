@@ -39,7 +39,7 @@ PlayerPortAudio::PlayerPortAudio(int size, std::vector<EngineObject *> *engines,
             devInfo = Pa_GetDeviceInfo(i);
 
             // Add the device if it is an output device:
-            if (devInfo->maxOutputChannels > 0)
+            if (devInfo!=0 && devInfo->maxOutputChannels > 0)
             {
 //              qDebug("PortAudio: Name: %s, ID: %i, MaxOutput %i",devInfo->name,i,devInfo->maxOutputChannels);
 

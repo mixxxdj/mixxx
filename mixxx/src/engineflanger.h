@@ -8,6 +8,8 @@
 #include "wknob.h"
 #include "dlgflanger.h"
 
+const int max_delay = 5000;  
+
 class EngineFlanger : public EngineObject {
   Q_OBJECT
 public:
@@ -25,7 +27,6 @@ public slots:
   void slotUpdateChannelSelectB(bool); 
 
 private:
-  static const int max_delay = 5000;  
   CSAMPLE *process_buffer, *delay_buffer;
   FLOAT_TYPE depth; // the depth of the flanger [0..1];
   int  LFOamplitude;
