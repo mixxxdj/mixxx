@@ -21,6 +21,7 @@
 #include "configobject.h"
 #include <qstring.h>
 #include "engineobject.h"
+#include <qstringlist.h>
 
 class EngineMaster;
 class ControlObject;
