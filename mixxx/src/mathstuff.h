@@ -37,6 +37,6 @@ bool even(long n);
   * squarings */
 double qip(CSAMPLE x, unsigned int n);
 
-static CSAMPLE pi     = acos(-1.0);
+static CSAMPLE pi     = acos(-1.0f);
 
 #endif

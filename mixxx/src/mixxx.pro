@@ -22,7 +22,7 @@ WINPA = DIRECTSOUND
 #unix:LINLIBPATH = ../../mixxx-linlib
 
 # Include for unix dependencies. (19/12/2003, J_Zar)
-include( mixxx.depend )
+unix:include( mixxx.depend )
 
 # Path to Macintosh libraries
 macx:MACLIBPATH = ../../mixxx-maclib
@@ -248,7 +248,7 @@ win32 {
   DEFINES += __WIN__
   INCLUDEPATH += $$WINLIBPATH ../lib .
   QMAKE_CXXFLAGS += -GX
-  QMAKE_LFLAGS += /VERBOSE:LIB /libpath:$$WINLIBPATH /NODEFAULTLIB:library /NODEFAULTLIB:libcd /NODEFAULTLIB:libcmt /NODEFAULTLIB:libc
+  QMAKE_LFLAGS += /VERBOSE:LIB /LIBPATH:$$WINLIBPATH /NODEFAULTLIB:library /NODEFAULTLIB:libcd /NODEFAULTLIB:libcmt /NODEFAULTLIB:libc
   SETTINGS_FILE = \"mixxx.cfg\"
   TRACK_FILE = \"mixxxtrack.xml\"
   RC_FILE = mixxx.rc
@@ -328,8 +328,8 @@ IMAGES += icon.png
 DEFINES += SETTINGS_FILE=$$SETTINGS_FILE TRACK_FILE=$$TRACK_FILE
 unix:TEMPLATE = app
 win32:TEMPLATE = vcapp
-#CONFIG += qt thread warn_off release
-#DEFINES += QT_NO_CHECK
-CONFIG += qt thread warn_on debug
+CONFIG += qt thread warn_off release
+DEFINES += QT_NO_CHECK
+#CONFIG += qt thread warn_on debug
 DBFILE = mixxx.db
 LANGUAGE = C++

@@ -28,9 +28,9 @@ class ControlPotmeter;
 
 // These variables, together with the aspect ratio and view point set in 
 // VisualController controls the screen size of the displayed signals.
-const float kfVisualDisplayLength = 35.;
-const float kfVisualDisplayHeight = 9.5;
-const float kfVisualDisplayDepth = 0.1;
+const float kfVisualDisplayLength = 35.f;
+const float kfVisualDisplayHeight = 9.5f;
+const float kfVisualDisplayDepth = 0.1f;
 
 /**
  * A Visual Display. Usually a fisheye signal with a box.

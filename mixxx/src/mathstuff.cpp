@@ -25,15 +25,15 @@ CSAMPLE besseli(CSAMPLE x)
 
     if ((ax=fabs(x)) < 3.75)
     {
-        y = x/3.75;
+        y = x/3.75f;
         y *= y;
-        ans = 1.0+y*(3.5156229+y*(3.0899424+y*(1.2067492
-                                               +y*(0.2659732+y*(0.360768e-1+y*0.45813e-2)))));
+        ans = 1.0f+y*(3.5156229f+y*(3.0899424f+y*(1.2067492f
+                                               +y*(0.2659732f+y*(0.360768e-1+y*0.45813e-2)))));
     }
     else
     {
-        y = 3.75/ax;
-        ans=(exp(ax)/sqrt(ax))*(0.39894228+y*(0.1328592e-1
+        y = 3.75f/ax;
+        ans=(exp(ax)/sqrt(ax))*(0.39894228f+y*(0.1328592e-1
                                               +y*(0.225319e-2+y*(-0.157565e-2+y*(0.916281e-2
                                                                                  +y*(-0.2057706e-1+y*(0.2635537e-1+y*(-0.1647633e-1
                                                                                                                       +y*0.392377e-2))))))));
@@ -86,7 +86,7 @@ void polcoe(CSAMPLE x[], CSAMPLE y[], int n, CSAMPLE cof[])
     }
     for (j=0; j<=n; j++)
     {
-        phi=n+1;
+        phi=n+1.f;
         for (k=n; k>=0; k--)
             phi=k*s[k]+x[j]*phi;
         ff=y[j]/phi;
@@ -132,7 +132,7 @@ CSAMPLE arctan2(CSAMPLE y, CSAMPLE x)
     const CSAMPLE coeff_1 = pi/4;
     const CSAMPLE coeff_2 = 3*coeff_1;
 
-    CSAMPLE abs_y = fabs(y)+1e-10;      // kludge to prevent 0/0 condition
+    CSAMPLE abs_y = fabs(y)+1e-10f;      // kludge to prevent 0/0 condition
 
     if (x>=0)
     {
@@ -159,10 +159,10 @@ CSAMPLE wndKaiser(CSAMPLE *wnd, int size, CSAMPLE beta)
     CSAMPLE t = besseli(beta);
     for (int k=0; k<size; k++)
     {
-        wnd[k] = besseli(2.*beta/m*sqrt(k*(m-k)))/t;
+        wnd[k] = besseli(2.*beta/m*sqrt((float)(k*(m-k))))/t;
         AFactor += wnd[k];
     }
-    return (2./AFactor);
+    return (2.f/AFactor);
 }
 
 /*
