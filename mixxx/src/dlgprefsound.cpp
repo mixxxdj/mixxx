@@ -203,7 +203,7 @@ void DlgPrefSound::slotApply()
     // Close devices, and open using config data
     player->close();
 
-    if (!player->open())
+    if (config->getValueString(ConfigKey("[Soundcard]","SoundApi"))=="None" || !player->open())
         QMessageBox::warning(0, "Configuration error","Audio device could not be opened");
     else
     {
@@ -226,7 +226,8 @@ void DlgPrefSound::slotQueryLatency()
     // Only correct latency slider if it's more than two milliseconds off the actual value.
     // By changing the latency sliders value, the device is closed and opened again, and this
     // function will thus be called again, resulting in a loop
-    if (abs(iLatencyMsec-config->getValueString(ConfigKey("[Soundcard]","Latency")).toInt())>2)
+    if (config->getValueString(ConfigKey("[Soundcard]","SoundApi"))!="None" &&
+        abs(iLatencyMsec-config->getValueString(ConfigKey("[Soundcard]","Latency")).toInt())>2)
     {
         config->set(ConfigKey("[Soundcard]","Latency"), ConfigValue(iLatencyMsec));
         slotUpdate();
@@ -263,3 +264,4 @@ void DlgPrefSound::slotLatencySliderChange(int)
     if (!m_bLatencySliderDrag)
         slotApply();
 }
+

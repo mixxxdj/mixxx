@@ -32,7 +32,7 @@ New since 1.2.1:
   configuration. Support for WMME drivers under Windows, and 
   improved DirectSound support, ie. lower latency operation
 - Support for aiff files
-- User manual added.
+- User manual added
 
 
 * INSTALL/USE **********************************************
