@@ -81,17 +81,17 @@ int Player::prepareBuffer() {
   CSAMPLE *p1, *p2;
 
   // Resample; the linear interpolation is done in readfile:
-  p1 = reader->process(0, BUFFER_SIZE);
+  p1 = reader->process(0, buffer_size);
 
   if (reader->rate != 0)
   for (unsigned int i=0; i<engines->size(); i++)
   {
-      p2 = (*engines)[i]->process(p1, BUFFER_SIZE);
+      p2 = (*engines)[i]->process(p1, buffer_size);
       p1=p2;
   }
 
   // Convert the signal back to SAMPLE and write to the sound cards buffer:
-  for (int i=0; i<BUFFER_SIZE; i++)
+  for (int i=0; i<buffer_size; i++)
     out_buffer[i] = (SAMPLE)(0.5*p1[i]);
 
   return 0; // Hack. Should only return 0 when not at end of file

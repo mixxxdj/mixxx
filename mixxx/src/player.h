@@ -36,7 +36,7 @@ public:
 
 	SAMPLE *out_buffer;
 	int prepareBuffer(); // Calculates one buffer of sound
-	int BUFFER_SIZE;
+	int buffer_size;
 
 protected:
 	void allocate();

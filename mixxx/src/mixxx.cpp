@@ -37,7 +37,6 @@
 MixxxApp::MixxxApp()
 {
   qDebug("Start");
-
   setCaption(tr("Mixxx " VERSION));
 
   ///////////////////////////////////////////////////////////////////
