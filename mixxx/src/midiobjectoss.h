@@ -26,7 +26,7 @@
 
 class MidiObjectOSS : public MidiObject  {
 public: 
-    MidiObjectOSS(ConfigObject<ConfigValueMidi> *c, QApplication *app, QString device);
+    MidiObjectOSS(ConfigObject<ConfigValueMidi> *c, QApplication *app, QWidget *mixxx, QString device);
     ~MidiObjectOSS();
     void devOpen(QString device);
     void devClose();

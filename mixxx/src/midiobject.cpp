@@ -2,6 +2,7 @@
 #include "configobject.h"
 #include "controlobject.h"
 #include "controlpushbutton.h"
+#include <qevent.h>
 #include <algorithm>
 
 // Static member variable definition
@@ -13,9 +14,11 @@ ConfigObject<ConfigValueMidi> *MidiObject::config = 0;
             card and device.
    Output:  -
    -------- ------------------------------------------------------ */
-MidiObject::MidiObject(ConfigObject<ConfigValueMidi> *c, QApplication *a, QString)
+MidiObject::MidiObject(ConfigObject<ConfigValueMidi> *c, QApplication *a, QWidget *m, QString)
 {
     app = a;
+    mixxx = m;
+
     config = c;
     no = 0;
     requestStop = false;
@@ -93,19 +96,13 @@ void MidiObject::send(char channel, char midicontrol, char midivalue)
             // Check for possible bit mask
             int midimask = controlList[i]->cfgOption->val->midimask;
 
-            // Gain app lock
-            app->lock();
-
             if (midimask > 0)
                 controlList[i]->slotSetPosition((int)(midimask & midivalue));
             else
                 controlList[i]->slotSetPositionMidi((int)midivalue); // 127-midivalue
 
-            // Force GUI update
-            app->flush();
-
-            // Release app lock
-            app->unlock();
+            // Send User event, to force screen update
+            postEvent(mixxx,new QEvent(QEvent::User));
 
             break;
         }

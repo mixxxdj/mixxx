@@ -17,7 +17,7 @@
 
 #include "midiobjectportmidi.h"
 
-MidiObjectPortMidi::MidiObjectPortMidi(ConfigObject<ConfigValueMidi> *c, QApplication *a, QString device) : MidiObject(c,a,device)
+MidiObjectPortMidi::MidiObjectPortMidi(ConfigObject<ConfigValueMidi> *c, QApplication *a, QWidget *m, QString device) : MidiObject(c,a,m,device)
 {
     // Initialize PortMidi
     Pm_Initialize();
