@@ -23,7 +23,7 @@
 #include "enginefilteriir.h"
 #include "midiobject.h"
 #include "controllogpotmeter.h"
-#include "qknob.h"
+#include "wknob.h"
 
 /**
   * Parallel processing of LP, BP and HP filters, and final mixing
@@ -34,7 +34,7 @@
 class EngineFilterBlock : public EngineObject  {
 	Q_OBJECT
 public:
-	EngineFilterBlock(QKnob *, QKnob *, QKnob *, const char *group);
+	EngineFilterBlock(WKnob *, WKnob *, WKnob *, const char *group);
 	~EngineFilterBlock();
 	CSAMPLE *process(const CSAMPLE *source, const int buf_size);
 public slots:

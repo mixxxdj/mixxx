@@ -19,6 +19,7 @@
 #define ENGINEOBJECT_H
 
 #include <qobject.h>
+#include "mixxxview.h"
 #include "defs.h"
 
 /**
@@ -31,12 +32,15 @@ public:
   EngineObject();
   ~EngineObject();
   virtual CSAMPLE *process(const CSAMPLE *, const int) = 0;
+
 protected:
+  void set_srate(int srate);
+
   static int SRATE;
   static int NYQUIST;
   static CSAMPLE norm;
-
-  void set_srate(int srate);
+private:
+  static MixxxView *view;
 };
 
 #endif

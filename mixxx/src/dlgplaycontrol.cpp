@@ -16,8 +16,22 @@
  ***************************************************************************/
 
 #include "dlgplaycontrol.h"
+#include "wplaybutton.h"
+#include <qgroupbox.h>
 
-DlgPlaycontrol::DlgPlaycontrol(QWidget *parent, const char *name ) : DlgPlaycontrolDlg(parent,name) {
+DlgPlaycontrol::DlgPlaycontrol(QWidget *parent, const char *name ) : DlgPlaycontrolDlg(parent,name)
+{
 }
-DlgPlaycontrol::~DlgPlaycontrol(){
+
+DlgPlaycontrol::~DlgPlaycontrol()
+{
+}
+
+void DlgPlaycontrol::layoutMirror()
+{
+    // Mirror volume and knobs positions
+    QPoint playpos = PushButtonPlay->pos();
+    playpos.setX(playpos.x()+34); // Diff in width between playbutton and rate control
+    PushButtonPlay->move(GroupBoxRate->pos());
+    GroupBoxRate->move(playpos);
 }

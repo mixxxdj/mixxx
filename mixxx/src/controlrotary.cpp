@@ -36,10 +36,10 @@ void ControlRotary::slotSetPosition(int newpos)
   {
     short change = newpos-position; 
     // Check for passing through 0 and 127:
-    if (change > 100)
-        change = 128-change;
-    else if (change < -100)
-        change += 126;
+    if (change > 100.)
+        change = 128.-change;
+    else if (change < -100.)
+        change += 126.;
 
     // Check for a change in direction:
     short newdirection = sign(change);
@@ -64,18 +64,18 @@ void ControlRotary::slotSetPosition(int newpos)
       */    
       oldtime = newtime;
       position = newpos;
-      counter = 4*(FLOAT_TYPE)(deltasec*1000+deltamillisec);
+      counter = 4.*(FLOAT_TYPE)(deltasec*1000+deltamillisec);
       emit valueChanged(value);
     }
   }
 }
 
 void ControlRotary::updatecounter(int samples, int SRATE) {
-  if (counter > 0) {
+  if (counter > 0.) {
     counter -= (FLOAT_TYPE)samples/(FLOAT_TYPE)(SRATE/1000);
-    if (counter <= 0) {
+    if (counter <= 0.) {
       //cout << "Stopping wheel.\n";
-      value = 0;
+      value = 0.;
       emit valueChanged(value);
     }
   }

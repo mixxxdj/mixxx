@@ -53,12 +53,11 @@ ControlPotmeter::~ControlPotmeter()
 void ControlPotmeter::slotSetPosition(int _newpos)
 {
   char newpos =(char)_newpos;
-    qDebug("got %i",newpos);
 
   // Ensure that the position is within bounds:
-  position = max(minPosition, min(newpos, maxPosition));
+  position = (char)max(minPosition, (FLOAT_TYPE)min(newpos, maxPosition));
   // Calculate the value linearly:
-  value = (valuerange/positionrange)*(newpos-minPosition)+minvalue;
+  value = (FLOAT_TYPE)(valuerange/positionrange)*(FLOAT_TYPE)(newpos-minPosition)+minvalue;
   //qDebug("Controlpotmeter: changed %s to %g.",name,value);
 
   emit valueChanged(value);

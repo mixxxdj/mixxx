@@ -27,34 +27,37 @@ MixxxView::MixxxView(QWidget *parent, MixxxDoc *doc) : QWidget(parent)
     
     // Sub widgets
     playcontrol1 = new DlgPlaycontrol(this);
-    playcontrol2 = new DlgPlaycontrol(this);
+    playcontrol2 = new DlgPlaycontrol(this); playcontrol2->layoutMirror();
     channel1 = new DlgChannel(this);
-    channel2 = new DlgChannel(this);
+    channel2 = new DlgChannel(this); channel2->layoutMirror();
     playlist = new DlgPlaylist(this);
     playlist->ListPlaylist->setColumnWidth(0,420);
     master = new DlgMaster(this);
     crossfader = new DlgCrossfader(this);
-    
+    split = new DlgSplit(this);
+
     // Layout management
-    mainGrid = new QGridLayout(this,5,3); // A layout on a widget
-    mainGrid->addMultiCellWidget(playcontrol1,0,1,0,0);
-    mainGrid->addMultiCellWidget(channel1,0,1,1,1);
-    mainGrid->addWidget(master,0,2);
-    mainGrid->addWidget(playlist,1,2);
-    mainGrid->addMultiCellWidget(channel2,0,1,3,3);
-    mainGrid->addMultiCellWidget(playcontrol2,0,1,4,4);
-    mainGrid->addMultiCellWidget(crossfader,2,2,0,4);
+    mainGrid = new QGridLayout(this,6,3); // A layout on a widget
+    mainGrid->addWidget(playcontrol1,0,0);
+    mainGrid->addWidget(channel1,0,1);
+    mainGrid->addWidget(split,0,2);
+    mainGrid->addWidget(channel2,0,3);
+    mainGrid->addWidget(playcontrol2,0,4);
+    mainGrid->addMultiCellWidget(master,0,2,5,5);
+    mainGrid->addMultiCellWidget(crossfader,1,1,0,4);
+    mainGrid->addMultiCellWidget(playlist,2,2,0,4);
 
     //let the ratio between the widths of columns 0 and 1 be 2:3.
-    mainGrid->setColStretch( 0, 210);
-    mainGrid->setColStretch( 1,  45);
-    mainGrid->setColStretch( 2, 230);
-    mainGrid->setColStretch( 3,  45);
-    mainGrid->setColStretch( 4, 210);
-    
-    mainGrid->setRowStretch( 0,  40);
-    mainGrid->setRowStretch( 1, 350);
-    mainGrid->setRowStretch( 2,  40);
+    mainGrid->setColStretch( 0, 207);
+    mainGrid->setColStretch( 1,  71);
+    mainGrid->setColStretch( 2,  40);
+    mainGrid->setColStretch( 3,  71);
+    mainGrid->setColStretch( 4, 207);
+    mainGrid->setColStretch( 5,  45);
+
+    mainGrid->setRowStretch( 0, 265);
+    mainGrid->setRowStretch( 1,  31);
+    mainGrid->setRowStretch( 2, 150);
 
     // Add filenames in ./music/ to table
     Addfiles("music/");

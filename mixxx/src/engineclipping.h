@@ -1,16 +1,16 @@
 #ifndef ENGINECLIPPING_H
 #define ENGINECLIPPING_H
 
-#include "qradiobutton.h"
+#include "wbulb.h"
 #include "engineobject.h"
 
 class EngineClipping : public EngineObject {
  private:
-    QRadioButton *bulb_clipping;
+    WBulb *bulb_clipping;
 
     CSAMPLE *buffer;
  public:
-    EngineClipping(QRadioButton *);
+    EngineClipping(WBulb *);
     ~EngineClipping();
     CSAMPLE *process(const CSAMPLE *, const int);
 };

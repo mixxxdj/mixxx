@@ -18,7 +18,7 @@
 #include "enginefilterblock.h"
 #include "configobject.h"
 
-EngineFilterBlock::EngineFilterBlock(QKnob *DialFilterLow, QKnob *DialFilterMid, QKnob *DialFilterHigh,
+EngineFilterBlock::EngineFilterBlock(WKnob *DialFilterLow, WKnob *DialFilterMid, WKnob *DialFilterHigh,
                                      const char *group)
 {
     gainLow = gainMid = gainHigh = 1.;

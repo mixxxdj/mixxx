@@ -31,10 +31,10 @@
    -------- ------------------------------------------------------ */
 ControlPushButton::ControlPushButton(ConfigObject::ConfigKey *key, buttonType kindtype) : ControlObject(key)
 {
-  kind = kindtype;
-  position = up;
-  value = off;
-  //midimask = (int)pow(2,midibit);
+    kind = kindtype;
+    position = up;
+    value = off;
+    //midimask = (int)pow(2,midibit);
 };
 
 ControlPushButton::~ControlPushButton()
@@ -56,51 +56,59 @@ void ControlPushButton::slotSetPosition(int newpos)
    Input:   The (new) position.
    Output:  The value is updated.
    -------- ------------------------------------------------------ */
-void ControlPushButton::slotSetPosition(positionType newpos){
-  switch (kind) {
-  case latching:
-    if (newpos==up) value = off;
-    else value = on;
-  case momentaneous:
-    if (newpos==up) value = off;
-    else value = on;
-  case simulated_latching:
-    if (newpos==down && position==up)
-      value=invert(value);
-  }
-  position = newpos;
-  emit valueChanged(value);
+void ControlPushButton::slotSetPosition(positionType newpos)
+{
+    switch (kind)
+    {
+    case latching:
+        if (newpos==up)
+            value = off;
+        else
+            value = on;
+    case momentaneous:
+        if (newpos==up)
+            value = off;
+        else
+            value = on;
+    case simulated_latching:
+        if (newpos==down && position==up)
+            value=invert(value);
+    }
+    position = newpos;
+    emit valueChanged(value);
 };
 
 void ControlPushButton::pressed() {
-  slotSetPosition(down);
+    slotSetPosition(down);
 }
 
 void ControlPushButton::released() {
-  slotSetPosition(up);
+    slotSetPosition(up);
 }
 
 valueType ControlPushButton::getValue() {
-  return value;
+    return value;
 };
 
 positionType ControlPushButton::getPosition() {
-  return position;
+    return position;
 }
 
 char* ControlPushButton::printValue() {
-  if (value == on)
-    return "on";
-  else
-    return "off";
+    if (value == on)
+        return "on";
+    else
+        return "off";
 }
 
 void ControlPushButton::setValue(valueType newvalue){
-  value = newvalue;
-  emit valueChanged(value);
+    value = newvalue;
+    emit valueChanged(value);
 };
 
 valueType ControlPushButton::invert(valueType value) {
-  if (value==on) return off;
-  else return on;
+    if (value==on)
+        return off;
+    else
+        return on;
 };

@@ -30,6 +30,7 @@ class DlgPlaycontrol : public DlgPlaycontrolDlg  {
 public: 
 	DlgPlaycontrol(QWidget *parent=0, const char *name=0);
 	~DlgPlaycontrol();
+    void layoutMirror();
 };
 
 #endif
