@@ -274,6 +274,8 @@ unix {
    skino.files = skins/outline/*
    skinoc.path = $${UNIX_SHARE_PATH}/skins/outlineClose
    skinoc.files = skins/outlineClose/*
+   skinos.path = $${UNIX_SHARE_PATH}/skins/outlineSmall
+   skinos.files = skins/outlineSmall/*
    skint.path = $${UNIX_SHARE_PATH}/skins/traditional
    skint.files = skins/traditional/*
 
@@ -286,19 +288,22 @@ unix {
    keyb.files = keyboard/*
 
     # doc files...
-   readme.path = $${PREFIX}/share/doc/mixxx-1.1
+   readme.path = $${PREFIX}/share/doc/mixxx-1.3
    readme.files = ../README
-   licence.path = $${PREFIX}/share/doc/mixxx-1.1
+   licence.path = $${PREFIX}/share/doc/mixxx-1.3
    licence.files = ../LICENCE
-   copying.path = $${PREFIX}/share/doc/mixxx-1.1
+   copying.path = $${PREFIX}/share/doc/mixxx-1.3
    copying.files = ../COPYING
+   keymap.path = $${PREFIX}/share/doc/mixxx-1.3
+   keymap.files = ../keymap.rtf
+
 
     # binary...
    TARGET = mixxx
    target.path = $${PREFIX}/bin
 
     # finally adding what we wanna install...
-   INSTALLS += skino skinoc skint midi keyb readme licence copying target
+   INSTALLS += skino skinoc skinos skint midi keyb readme licence copying keymap target
 }
 
 
