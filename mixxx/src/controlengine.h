@@ -20,7 +20,7 @@
 
 #include <qmutex.h>
 #include <qobject.h>
-//#include "engineobject.h"
+
 class ControlObject;
 
 
@@ -39,10 +39,6 @@ class ControlEngine : public QObject
 public: 
     ControlEngine(ControlObject *_controlObject);
     virtual ~ControlEngine();
-    /** An method in an EngineObject is set to be called whenever the value is changed by the
-      * external ControlObject. In this way polling on ControlEngine objects can be avoided in
-      * the player thread. */
-    //void setNotify(EngineObject *, EngineMethod);
     /** Returns the value of the object */
     double get() { return value; };
     /** The value is changed by the engine, and the corresponding ControlObject is updated */
@@ -58,17 +54,13 @@ public:
     void sub(double v);
 
 signals:
-	void valueChanged(double);
+    void valueChanged(double);
 
 private:
     /** Pointer to corresponding ControlObject */
     ControlObject *controlObject;
     /** The actual value of the object */
     double value;
-
-    /** Set to an EngineObject to notify when control value changes by call to setExtern */
-    //EngineObject *notifyobj;
-    //void (EngineObject::*notifymethod) (double);
 };
 
 #endif
