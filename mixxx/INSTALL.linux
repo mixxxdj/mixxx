@@ -1,0 +1,8 @@
+To install from source on linux you need QT 3, libmad, and libsndfile.
+
+Compile and install using the following commands:
+cd src
+qmake mixxx.pro
+make
+cp -r config /usr/share/config
+cp mixxx /usr/bin

@@ -51,6 +51,15 @@ version=
 version_control=CVS
 workspace=1
 
+[KPP]
+kpp_appgrp=
+kpp_bldroot=
+kpp_icon=0
+kpp_license=0
+kpp_summary=
+kpp_url=
+kpp_version=
+
 [LFV Groups]
 GNU=AUTHORS,COPYING,ChangeLog,INSTALL,README,TODO,NEWS,
 Headers=*.h,*.hxx,*.hpp,*.H,
