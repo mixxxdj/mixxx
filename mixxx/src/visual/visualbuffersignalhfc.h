@@ -20,7 +20,7 @@
 class VisualBufferSignalHFC : public VisualBufferSignal
 {
 public:
-    VisualBufferSignalHFC(ReaderExtract *pReaderExtract, ControlPotmeter *pPlaypos);
+    VisualBufferSignalHFC(ReaderExtract *pReaderExtract, const char *group);
     ~VisualBufferSignalHFC();
 
     void update(int iPos, int iLen);

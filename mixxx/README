@@ -17,14 +17,13 @@ at least G4 CPU).
 New since 1.2.1:
 - Playlist import of pls and m3u files
 - Small skin fitting 800x600 screen
-- Socket interface
+- Socket interface, for remote control
 - Linux ./configure and make process much improved
 - Cue point visualization
-- Drop files, from playlist, treeview or external file
-  manager to one of the visuals, loads the track.
+- Drag and drop. Drop a file from the treeview, playlist or
+  external file manager to one of the visuals, to load track
 - New and improved keymap
 - Performance optimizations
-- Optimized sound quality selection
 - Playlist layout improvements
 - Various bug fixes
 
@@ -116,3 +115,4 @@ designed your own skin etc.
 Send mail to tuehaste@users.sourceforge.net or subscribe to
 mixxx-devel@lists.sourceforge.net and send a message
 to the list.
+

@@ -20,7 +20,7 @@
 #include "../controlpotmeter.h"
 #include "../controlobject.h"
 
-VisualBufferMarks::VisualBufferMarks(ReaderExtract *pReaderExtract, ControlPotmeter *pPlaypos, const char *group) : VisualBuffer(pReaderExtract, pPlaypos)
+VisualBufferMarks::VisualBufferMarks(ReaderExtract *pReaderExtract, const char *group) : VisualBuffer(pReaderExtract, group)
 {
     m_pCuePoint = ControlObject::getControl(ConfigKey(group, "cue_point"));
     m_pAbsPlaypos = ControlObject::getControl(ConfigKey(group, "absplayposition"));

@@ -110,6 +110,10 @@ EngineBuffer::EngineBuffer(PowerMate *_powermate, const char *_group)
     p5 = new ControlObject(ConfigKey(group, "rateDisplay"));
     ControlObject::connectControls(ConfigKey(group, "rate"), ConfigKey(group, "rateDisplay"));
 
+    // Actual rate (used in visuals, not for control)
+    p5 = new ControlObject(ConfigKey(group, "rateEngine"));
+    rateEngine = new ControlEngine(p5);
+    
     // Permanent rate-change buttons
     p = new ControlPushButton(ConfigKey(group,"rate_perm_down"));
     buttonRatePermDown = new ControlEngine(p);
@@ -241,7 +245,7 @@ void EngineBuffer::setVisual(WVisualWaveform *pVisualWaveform)
     if (pVisualWaveform)
     {
         // Add buffer as a visual channel
-        pVisualChannel = pVisualWaveform->add((ControlPotmeter *)ControlObject::getControl(ConfigKey(group, "bufferplayposition")), group);
+        pVisualChannel = pVisualWaveform->add(group);
         reader->addVisual(pVisualChannel);
     }
 }
@@ -645,6 +649,7 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBuff
         else
             rate=wheel->get()*baserate*10.;
 
+            
 /*
         //
         // Beat event control. Assume forward play
@@ -878,13 +883,15 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBuff
                 else
                     playposSlider->set(0.);
                 bpmControl->set(filebpm);
-
+                rateEngine->set(rate);
+                
                 m_iSamplesCalculated = 0;
+                
+                // Update bufferposSlider
+                bufferposSlider->set((CSAMPLE)bufferpos_play);
+                absPlaypos->set(filepos_play);
             }
 
-            // Update bufferposSlider
-            bufferposSlider->set((CSAMPLE)bufferpos_play);
-            absPlaypos->set(filepos_play);
         }
 
         //qDebug("filepos_play %f, len %i, back %i, play %f",filepos_play,file_length_old, backwards, playButton->get());

@@ -18,7 +18,7 @@
 #include "visualbuffersignal.h"
 #include "../readerextract.h"
 
-VisualBufferSignal::VisualBufferSignal(ReaderExtract *pReaderExtract, ControlPotmeter *pPlaypos) : VisualBuffer(pReaderExtract, pPlaypos)
+VisualBufferSignal::VisualBufferSignal(ReaderExtract *pReaderExtract, const char *group) : VisualBuffer(pReaderExtract, group)
 {
 //    qDebug("signal: resampleFactor %f, displayRate %f, displayFactor %f, readerExtractFactor %f", m_fResampleFactor, m_fDisplayRate,m_fDisplayFactor, m_fReaderExtractFactor);
     m_fLastNegative = 0.;

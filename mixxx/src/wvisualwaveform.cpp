@@ -34,7 +34,7 @@ WVisualWaveform::WVisualWaveform(QWidget *pParent, const char *pName, const QGLW
     startTimer(100);
 #endif
 #ifdef __WIN__
-    startTimer(25);
+    startTimer(15);
 #endif
 #ifdef __LINUX__
     startTimer(25);
@@ -155,9 +155,9 @@ bool WVisualWaveform::eventFilter(QObject *o, QEvent *e)
     return true;
 }
 
-VisualChannel *WVisualWaveform::add(ControlPotmeter *pPlaypos, const char *group)
+VisualChannel *WVisualWaveform::add(const char *group)
 {
-    VisualChannel *c = new VisualChannel(pPlaypos, m_pVisualController, group);
+    VisualChannel *c = new VisualChannel(m_pVisualController, group);
 
     // Position coding... hack
     //if (m_qlList.isEmpty())

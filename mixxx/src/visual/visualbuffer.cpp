@@ -18,17 +18,23 @@
 #include "visualbuffer.h"
 #include "../readerextract.h"
 #include "../readerevent.h"
-#include "controlpotmeter.h"
+#include "../controlobject.h"
 #include "../defs.h"
+#include "../engineobject.h"
 
 /**
  * Default Constructor.
  */
-VisualBuffer::VisualBuffer(ReaderExtract *pReaderExtract, ControlPotmeter *pPlaypos)
+VisualBuffer::VisualBuffer(ReaderExtract *pReaderExtract, const char *group)
 {
-    m_pPlaypos = pPlaypos;
+    m_pPlaypos = ControlObject::getControl(ConfigKey(group, "bufferplayposition"));
+    m_pRate = ControlObject::getControl(ConfigKey(group, "rateEngine"));
     m_pReaderExtract = pReaderExtract;
     Q_ASSERT(m_pReaderExtract);
+    
+    // Setup timer for use in corrected playpos calculation
+    m_qTime.start();
+    connect(m_pPlaypos, SIGNAL(signalUpdateApp(double)), this, SLOT(slotPlayposUpdate(double)));
     
     // Get length and pointer to buffer in ReaderExtract
     m_pSource = (CSAMPLE *)m_pReaderExtract->getBasePtr();
@@ -139,6 +145,13 @@ bufInfo VisualBuffer::getVertexArray()
 {
     // Conversion to DISPLAYRATE
     float fPos = (((m_pPlaypos->getValue()/m_fReaderExtractFactor)/m_fResampleFactor)-(float)m_iDisplayLen/2.f);
+    
+    //qDebug("pos %f, corrected %f", m_pPlaypos->getValue(), getCorrectedPlaypos());
+    
+    //
+    // Add to fPos based on current rate and time since m_pPlaypos was updated
+    //
+    
     while (fPos<0)
         fPos += (float)m_iLen;
     int iPos = (int)fPos;
@@ -221,4 +234,12 @@ void VisualBuffer::setColorBg(float r, float g, float b)
     m_materialBg.shininess = 128;
 }
 
+void VisualBuffer::slotPlayposUpdate(double)
+{
+    m_qTime.restart();
+}
 
+double VisualBuffer::getCorrectedPlaypos()
+{
+    return m_pPlaypos->getValue()+2.*(((double)m_qTime.elapsed()/1000.)*m_pRate->getValue()*(double)EngineObject::getPlaySrate());
+}
