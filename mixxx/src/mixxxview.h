@@ -65,7 +65,8 @@ private:
     WPushButton *m_pHeadCueCh1, *m_pHeadCueCh2;
     WPushButton *m_pCueCh1, *m_pCueCh2;
     WNumber *m_pBpmCh1, *m_pBpmCh2;
-
+    WPushButton *m_pEndOfTrackModeCh1, *m_pEndOfTrackModeCh2;
+    
     QString path;
 };
 

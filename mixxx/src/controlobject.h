@@ -73,9 +73,9 @@ public:
     /** Used to set a keyboard accelarator (up) for the ControlObject. Up and down directions are provided,
       * even though some ControlObjects does not distinguish between the two (ControlPushButton for
       * instance */
-    virtual void setAccelUp(const QKeySequence key) = 0;
+    virtual void setAccelUp(const QKeySequence key) {};
     /** Used to set a keyboard accelarator (down) for the ControlObject */
-    virtual void setAccelDown(const QKeySequence key) = 0;
+    virtual void setAccelDown(const QKeySequence key) {};
     /** Sets up parent widget. Used when setting up keyboard accelerators */
     static void setParentWidget(QWidget *pParentWidget);
     /** Syncronizes queue, by writing the values to ControlEngine objects. Non blocking.
@@ -107,7 +107,7 @@ protected:
     /** Method called when the application thread needs to be updated */
     virtual void updateApp();
     /** Called when a MIDI event associated with this object is received */
-    virtual void setValueFromMidi(MidiCategory c, int v) = 0;
+    virtual void setValueFromMidi(MidiCategory c, int v);
     /** Called when a event from an associated ControlEngine object is received */
     virtual void setValueFromEngine(double dValue);
 

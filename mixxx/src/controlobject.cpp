@@ -119,9 +119,10 @@ void ControlObject::setWidget(QWidget *widget, ConfigKey key, bool emitOnDownPre
         if (c->cfgOption->key->group == key.group && c->cfgOption->key->item == key.item)
         {
             c->setWidget(widget, emitOnDownPress, state);
-            break;
+            return;
         }
     }
+    qDebug("woops, %s",key.item.latin1());
 }
 
 void ControlObject::setWidget(QWidget *widget, bool emitOnDownPress, Qt::ButtonState state)
@@ -204,6 +205,12 @@ void ControlObject::updateWidget()
 void ControlObject::updateApp()
 {
     emit(signalUpdateApp(m_dValue));
+}
+
+void ControlObject::setValueFromMidi(MidiCategory c, int v)
+{
+    m_dValue = (double)v;
+    updateFromMidi();
 }
 
 void ControlObject::setValueFromEngine(double dValue)
