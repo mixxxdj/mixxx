@@ -326,7 +326,8 @@ MixxxView::MixxxView(QWidget *parent, ControlObject *control, bool bVisualsWavef
                 y = size.mid(size.find(",")+1).toInt();
                 m_pSplitter->setFixedSize(x,y);
 
-                m_pSplitter->setHandleWidth(2);
+                // This is QT 3.2 only
+		//m_pSplitter->setHandleWidth(2);
 
                 m_qWidgetList.append(m_pSplitter);
             }
