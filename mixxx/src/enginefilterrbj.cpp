@@ -19,7 +19,9 @@
 
 EngineFilterRBJ::EngineFilterRBJ(bool low, CSAMPLE frequency, CSAMPLE bandwidth)
 {
-	// Determine filter constants
+    const CSAMPLE ln_2 = 0.6931472;
+
+    // Determine filter constants
     CSAMPLE omega = two_pi*frequency/SRATE;
     CSAMPLE sn    = sin(omega);
     CSAMPLE cs    = cos(omega);
@@ -29,7 +31,7 @@ EngineFilterRBJ::EngineFilterRBJ(bool low, CSAMPLE frequency, CSAMPLE bandwidth)
 
     CSAMPLE b0, b1, b2, a0, a1, a2;
 
-	if (low)
+    if (low)
     {
         // Low pass filter constants
         b0 = (1.-cs)/2.;

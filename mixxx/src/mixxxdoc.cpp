@@ -35,12 +35,12 @@ bool MixxxDoc::save()
   return true;
 }
 
-bool MixxxDoc::saveAs(const QString &filename)
+bool MixxxDoc::saveAs(const QString &)
 {
   return true;
 }
 
-bool MixxxDoc::load(const QString &filename)
+bool MixxxDoc::load(const QString &)
 {
   emit documentChanged();
   return true;

@@ -26,10 +26,10 @@ ControlObject::ControlObject()
 {
 }
 
-ControlObject::ControlObject(ConfigKey *key)
+ControlObject::ControlObject(ConfigKey key)
 {
     // Retreive configuration option object
-    cfgOption = config->get(*key);
+    cfgOption = config->get(key);
 
     // Register the control in the midi object:
     midi->add(this);

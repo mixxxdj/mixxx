@@ -5,22 +5,23 @@ const char ControlRotary::graycodetable[256] =  {128, 56, 40, 55, 24, 128, 39, 5
 /* -------- ------------------------------------------------------
    Purpose: Creates a new rotary encoder
    Input:   n - name
-	    midino - number of the midi controller.
-	    midicontroller - pointer to the midi controller.
+            midino - number of the midi controller.
+            midicontroller - pointer to the midi controller.
    -------- ------------------------------------------------------ */
-ControlRotary::ControlRotary(ConfigKey *key, ControlPushButton *playbutton) : ControlPotmeter(key,0.,1.) // ????
+ControlRotary::ControlRotary(ConfigKey key, ControlPushButton *playbutton) : ControlPotmeter(key,0.,1.) // ????
 {
-  play = playbutton;
-  direction = 1; // arbitrary
-  ftime(&oldtime);
-  value = 0;
-  emit valueChanged(value);
+    play = playbutton;
+    direction = 1; // arbitrary
+    ftime(&oldtime);
+    value = 0;
+    counter = 0.;
+    emit valueChanged(value);
 }
 
 /* -------- ------------------------------------------------------
    Purpose: Sets the position of the encoder. Called from midi
             and given the gray code as input. Calculates the
-	    real position from the gray code.
+            real position from the gray code.
    Input:   the gray code.
    -------- ------------------------------------------------------ */
 // This member is not properly overloading the one in controlobject. Therefore it is 
@@ -28,78 +29,81 @@ ControlRotary::ControlRotary(ConfigKey *key, ControlPushButton *playbutton) : Co
 void ControlRotary::slotSetPositionMidi(int _newpos)
 {
     qDebug("rot");
-  //int newpos = graycodetable[(int)(unsigned char)_newpos]; 
-  slotSetPosition(_newpos);
-  //emit updateGUI(newpos);
+    //int newpos = graycodetable[(int)(unsigned char)_newpos];
+    slotSetPosition(_newpos);
+    //emit updateGUI(newpos);
 }
 
 void ControlRotary::slotSetPosition(int newpos)
 {
-  // get position from gray code
-  newpos = graycodetable[(int)(unsigned char)newpos]; 
+    // get position from gray code
+    newpos = graycodetable[(int)(unsigned char)newpos];
 
-  if ((newpos != -128) && (newpos != position))
-  {
-    short change = newpos-position; 
-    // Check for passing through 0 and 127:
-    if (change > 100)
-        change = 128-change;
-    else if (change < -100)
-        change += 126;
-
-    // Check for a change in direction:
-    short newdirection = sign(change);
-    if ((newdirection==direction) || (abs(change)>1))
+    if ((newpos != -128) && (newpos != position))
     {
-      direction = newdirection;
-      // Get the time:
-      timeb newtime;
-      ftime(&newtime);
-      time_t deltasec = newtime.time - oldtime.time;
-      unsigned short deltamillisec = newtime.millitm - oldtime.millitm;
-      if (deltamillisec > 1000) deltamillisec = 65536 - deltamillisec;
-      if (deltasec > 2) 
-	    value = 0.;
-      else 
-	    if (deltasec*1000+deltamillisec > 0)
-	        value = (FLOAT_TYPE)change / (FLOAT_TYPE)(deltasec*1000+deltamillisec);
-      /*	    cout << "Wheel: new position " << (int)newpos << " to " <<(int)position << ", velocity " << 
-		    setw(8) << value <<"\n.";
-		    cout << "deltat " << deltasec << ", " << deltamillisec << "\n";
-		    cout << "millitime " << newtime.millitm << " old " << oldtime.millitm << "\n";
-      */    
-      oldtime = newtime;
-      position = newpos;
-      counter = 4.*(FLOAT_TYPE)(deltasec*1000+deltamillisec);
+        short change = newpos-position;
+        // Check for passing through 0 and 127:
+        if (change > 100)
+            change = 128-change;
+        else if (change < -100)
+            change += 126;
 
-      if (play->getValue()==off)
-          value *= 4.;
-      emit valueChanged(value);
+        // Check for a change in direction:
+        short newdirection = sign(change);
+        if ((newdirection==direction) || (abs(change)>1))
+        {
+            direction = newdirection;
+            // Get the time:
+            timeb newtime;
+            ftime(&newtime);
+            time_t deltasec = newtime.time - oldtime.time;
+            unsigned short deltamillisec = newtime.millitm - oldtime.millitm;
+            if (deltamillisec > 1000)
+                deltamillisec = 65536 - deltamillisec;
+            if (deltasec > 2)
+                value = 0.;
+            else if (deltasec*1000+deltamillisec > 0)
+                value = (FLOAT_TYPE)change / (FLOAT_TYPE)(deltasec*1000+deltamillisec);
+
+//            cout << "Wheel: new position " << (int)newpos << " to " <<(int)position << ", velocity " <<
+//            setw(8) << value <<"\n.";
+//            cout << "deltat " << deltasec << ", " << deltamillisec << "\n";
+//            cout << "millitime " << newtime.millitm << " old " << oldtime.millitm << "\n";
+
+            oldtime = newtime;
+            position = newpos;
+            counter = 4.*(FLOAT_TYPE)(deltasec*1000+deltamillisec);
+
+            if (play->getValue()==off)
+                value *= 4.;
+            emit valueChanged(value);
+        }
     }
-  }
 }
 
 void ControlRotary::updatecounter(int samples, int SRATE)
 {
-  if (counter > 0.) {
-    counter -= (FLOAT_TYPE)samples/(FLOAT_TYPE)(SRATE/1000);
-    if (counter <= 0.) {
-      //cout << "Stopping wheel.\n";
-      value = 0.;
-      emit valueChanged(value);
+    if (counter > 0.)
+    {
+        counter -= (FLOAT_TYPE)samples/(FLOAT_TYPE)(SRATE/1000);
+        if (counter <= 0.)
+        {
+            //cout << "Stopping wheel.\n";
+            value = 0.;
+            emit valueChanged(value);
+        }
     }
-  }
 }
 
 short ControlRotary::sign(short x)
 {
-  if (x < 0) 
-    return -1;
-  else
-    if (x==0)
-      return 0;
+    if (x < 0)
+        return -1;
     else
-      return 1;
+        if (x==0)
+            return 0;
+        else
+            return 1;
 }
 
 void ControlRotary::slotSetValue(int newvalue)

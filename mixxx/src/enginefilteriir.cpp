@@ -6,7 +6,7 @@ EngineFilterIIR::EngineFilterIIR(const double *_coefs)
     buffer = new CSAMPLE[MAX_BUFFER_LEN];
 
     // Reset the yv's:
-    for (int i=0; i<NPOLES; i++)
+    for (int i=0; i<=NPOLES; i++)
         yv[i]=xv[i]=0;
 }
 

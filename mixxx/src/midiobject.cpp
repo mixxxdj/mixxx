@@ -13,7 +13,7 @@ ConfigObject<ConfigValueMidi> *MidiObject::config = 0;
             card and device.
    Output:  -
    -------- ------------------------------------------------------ */
-MidiObject::MidiObject(ConfigObject<ConfigValueMidi> *c, QApplication *a, QString device)
+MidiObject::MidiObject(ConfigObject<ConfigValueMidi> *c, QApplication *a, QString)
 {
     app = a;
     config = c;
@@ -90,7 +90,8 @@ void MidiObject::send(char channel, char midicontrol, char midivalue)
     // Check the potmeters:
     for (int i=0; i<no; i++)
     {
-        //qDebug("(%i) checking: no %i ch %i",i,(int)controlList[i]->cfgOption->val->midino,(int)controlList[i]->cfgOption->val->midichannel);
+        //qDebug("(%i) checking: no %i ch %i [%p]", i, controlList[i]->cfgOption->val->midino, controlList[i]->cfgOption->val->midichannel,controlList[i]->cfgOption->val);
+        //cout << "value: " << controlList[i]->cfgOption->val->value << "\n";
         if ((controlList[i]->cfgOption->val->midino == midicontrol) &
             (controlList[i]->cfgOption->val->midichannel == channel))
         {

@@ -29,7 +29,7 @@
 	            attached. This control is acknowledged when the
 		    button is changed.
    -------- ------------------------------------------------------ */
-ControlPushButton::ControlPushButton(ConfigKey *key, buttonType kindtype) : ControlObject(key)
+ControlPushButton::ControlPushButton(ConfigKey key, buttonType kindtype) : ControlObject(key)
 {
     kind = kindtype;
     position = up;

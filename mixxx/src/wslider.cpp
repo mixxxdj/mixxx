@@ -71,7 +71,7 @@ void WSlider::mouseMoveEvent(QMouseEvent *e)
     // value ranges from 0 to 127
     value = (int)((FLOAT_TYPE)pos*(128./(FLOAT_TYPE)(slider_length)));
     if (size_state<3)
-        value = 127.-value;
+        value = 127-value;
 
     //qDebug("WSlider value: %i",value);
 
@@ -140,7 +140,7 @@ void WSlider::setValue(int v)
 
     // Calculate handle position
     if (size_state<3)
-        v = 127.-v;
+        v = 127-v;
     pos = (int)(((FLOAT_TYPE)(v)/128.)*(FLOAT_TYPE)(slider_length-handle_length))+handle_length/2;
     if (size_state==0)
         pos=0;

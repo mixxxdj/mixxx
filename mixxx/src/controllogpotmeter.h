@@ -32,7 +32,7 @@ class ControlLogpotmeter : public ControlPotmeter  {
  protected:
   FLOAT_TYPE a,b,a2,b2;
  public:
-  ControlLogpotmeter(ConfigKey *key, FLOAT_TYPE=5);
+  ControlLogpotmeter(ConfigKey key, FLOAT_TYPE=5);
  public slots:
   void slotSetPosition(int);
 };

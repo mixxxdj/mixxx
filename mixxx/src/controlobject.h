@@ -32,7 +32,7 @@ class ControlObject : public QObject
   Q_OBJECT
 public:
   ControlObject();
-  ControlObject(ConfigKey *key);
+  ControlObject(ConfigKey key);
   ~ControlObject();
   QString *print();
 
