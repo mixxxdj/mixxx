@@ -24,6 +24,7 @@
 
 class MidiObject;
 class PowerMate;
+class Mouse;
 
 /**
   *@author Tue & Ken Haste Andersen
@@ -46,6 +47,7 @@ private:
     ConfigObject<ConfigValue> *m_pConfig;
     ConfigObject<ConfigValueMidi> *m_pMidiConfig;
     PowerMate *m_pPowerMate1, *m_pPowerMate2;
+    Mouse *m_pMouse1, *m_pMouse2;
 };
 
 #endif

@@ -225,7 +225,7 @@
                 <x>6</x>
                 <y>184</y>
                 <width>349</width>
-                <height>125</height>
+                <height>144</height>
             </rect>
         </property>
         <property name="title">
@@ -256,6 +256,52 @@
         </widget>
         <widget class="QLabel">
             <property name="name">
+                <cstring>TextLabel5_2_3_3_3</cstring>
+            </property>
+            <property name="enabled">
+                <bool>true</bool>
+            </property>
+            <property name="geometry">
+                <rect>
+                    <x>9</x>
+                    <y>52</y>
+                    <width>53</width>
+                    <height>19</height>
+                </rect>
+            </property>
+            <property name="font">
+                <font>
+                </font>
+            </property>
+            <property name="text">
+                <string>Function</string>
+            </property>
+        </widget>
+        <widget class="QLabel">
+            <property name="name">
+                <cstring>TextLabel5_2_3_3_3_2</cstring>
+            </property>
+            <property name="enabled">
+                <bool>true</bool>
+            </property>
+            <property name="geometry">
+                <rect>
+                    <x>9</x>
+                    <y>117</y>
+                    <width>53</width>
+                    <height>19</height>
+                </rect>
+            </property>
+            <property name="font">
+                <font>
+                </font>
+            </property>
+            <property name="text">
+                <string>Function</string>
+            </property>
+        </widget>
+        <widget class="QLabel">
+            <property name="name">
                 <cstring>TextLabel5_2_3_3_2</cstring>
             </property>
             <property name="enabled">
@@ -264,7 +310,7 @@
             <property name="geometry">
                 <rect>
                     <x>9</x>
-                    <y>77</y>
+                    <y>87</y>
                     <width>53</width>
                     <height>19</height>
                 </rect>
@@ -286,81 +332,9 @@
             </property>
             <property name="geometry">
                 <rect>
-                    <x>65</x>
+                    <x>135</x>
                     <y>17</y>
-                    <width>66</width>
-                    <height>22</height>
-                </rect>
-            </property>
-            <property name="font">
-                <font>
-                </font>
-            </property>
-        </widget>
-        <widget class="QComboBox">
-            <property name="name">
-                <cstring>ComboBoxMouseDevice2</cstring>
-            </property>
-            <property name="enabled">
-                <bool>true</bool>
-            </property>
-            <property name="geometry">
-                <rect>
-                    <x>65</x>
-                    <y>72</y>
-                    <width>66</width>
-                    <height>22</height>
-                </rect>
-            </property>
-            <property name="font">
-                <font>
-                </font>
-            </property>
-        </widget>
-        <widget class="QCheckBox">
-            <property name="name">
-                <cstring>checkBoxMouseRelative1</cstring>
-            </property>
-            <property name="geometry">
-                <rect>
-                    <x>148</x>
-                    <y>45</y>
-                    <width>193</width>
-                    <height>18</height>
-                </rect>
-            </property>
-            <property name="text">
-                <string>Relative changes</string>
-            </property>
-        </widget>
-        <widget class="QCheckBox">
-            <property name="name">
-                <cstring>checkBoxMouseRelative2</cstring>
-            </property>
-            <property name="geometry">
-                <rect>
-                    <x>148</x>
-                    <y>100</y>
-                    <width>194</width>
-                    <height>18</height>
-                </rect>
-            </property>
-            <property name="text">
-                <string>Relative changes</string>
-            </property>
-        </widget>
-        <widget class="QComboBox">
-            <property name="name">
-                <cstring>ComboBoxMouseFunction1</cstring>
-            </property>
-            <property name="enabled">
-                <bool>true</bool>
-            </property>
-            <property name="geometry">
-                <rect>
-                    <x>136</x>
-                    <y>17</y>
-                    <width>204</width>
+                    <width>117</width>
                     <height>22</height>
                 </rect>
             </property>
@@ -378,8 +352,8 @@
             </property>
             <property name="geometry">
                 <rect>
-                    <x>136</x>
-                    <y>72</y>
+                    <x>135</x>
+                    <y>111</y>
                     <width>204</width>
                     <height>22</height>
                 </rect>
@@ -387,6 +361,78 @@
             <property name="font">
                 <font>
                 </font>
+            </property>
+        </widget>
+        <widget class="QComboBox">
+            <property name="name">
+                <cstring>ComboBoxMouseDevice2</cstring>
+            </property>
+            <property name="enabled">
+                <bool>true</bool>
+            </property>
+            <property name="geometry">
+                <rect>
+                    <x>135</x>
+                    <y>82</y>
+                    <width>117</width>
+                    <height>22</height>
+                </rect>
+            </property>
+            <property name="font">
+                <font>
+                </font>
+            </property>
+        </widget>
+        <widget class="QComboBox">
+            <property name="name">
+                <cstring>ComboBoxMouseFunction1</cstring>
+            </property>
+            <property name="enabled">
+                <bool>true</bool>
+            </property>
+            <property name="geometry">
+                <rect>
+                    <x>135</x>
+                    <y>46</y>
+                    <width>204</width>
+                    <height>22</height>
+                </rect>
+            </property>
+            <property name="font">
+                <font>
+                </font>
+            </property>
+        </widget>
+        <widget class="QPushButton">
+            <property name="name">
+                <cstring>pushButtonMouseCalibrate2</cstring>
+            </property>
+            <property name="geometry">
+                <rect>
+                    <x>259</x>
+                    <y>82</y>
+                    <width>80</width>
+                    <height>22</height>
+                </rect>
+            </property>
+            <property name="text">
+                <string>Calibrate</string>
+            </property>
+        </widget>
+        <widget class="QPushButton">
+            <property name="name">
+                <cstring>pushButtonMouseCalibrate1</cstring>
+            </property>
+            <property name="geometry">
+                <rect>
+                    <x>259</x>
+                    <y>17</y>
+                    <width>80</width>
+                    <height>22</height>
+                </rect>
+            </property>
+            <property name="text">
+                <string>Calibrate</string>
             </property>
         </widget>
     </widget>

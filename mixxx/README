@@ -23,6 +23,7 @@ New since 1.3.2:
 - Bug fix in socket communication (for Prokyon3 control)
 - Improved thread syncronization
 - Improved PowerMate configuration
+- Support for additional mice on Linux
 
 * INSTALL/USE **********************************************
 Please see manual, included in this directory, 
