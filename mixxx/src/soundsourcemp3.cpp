@@ -31,7 +31,7 @@ SoundSourceMp3::SoundSourceMp3( QString sFilename )
     inputbuf = new char[inputbuf_len];
     unsigned int tmp = file.readBlock(inputbuf, inputbuf_len);
     if (tmp != inputbuf_len)
-        qFatal("MAD: Error reading mp3-file: %s\nRead only %d bytes, but wanted %d bytes.",sFilename.latin1() ,tmp,inputbuf_len);
+        qFatal("MAD: ERR reading mp3-file: %s\nRead only %d bytes, but wanted %d bytes.",sFilename.latin1() ,tmp,inputbuf_len);
 
     // Transfer it to the mad stream-buffer:
     mad_stream_init(&Stream);
@@ -53,7 +53,7 @@ SoundSourceMp3::SoundSourceMp3( QString sFilename )
         {
             if (!MAD_RECOVERABLE (Stream.error))
                 break;
-           /* if (Stream.error == MAD_ERROR_LOSTSYNC)
+           /* if (Stream.ERR == MAD_ERR_LOSTSYNC)
             {
                 // ignore LOSTSYNC due to ID3 tags 
                 int tagsize = id3_tag_query (Stream.this_frame,
@@ -65,7 +65,7 @@ SoundSourceMp3::SoundSourceMp3( QString sFilename )
                 }
             }*/
 
-            //qDebug("MAD: Error decoding header %d: %s (len=%d)", currentframe, mad_stream_errorstr(&Stream), len);
+            //qDebug("MAD: ERR decoding header %d: %s (len=%d)", currentframe, mad_stream_ERRstr(&Stream), len);
             continue;
         }
         currentframe++;
@@ -181,19 +181,19 @@ unsigned SoundSourceMp3::read(unsigned long samples_wanted, const SAMPLE* _desti
         {
             if(MAD_RECOVERABLE(Stream.error))
             {
-                //qDebug("MAD: Recoverable frame level error (%s)",
-                //       mad_stream_errorstr(&Stream));
+                //qDebug("MAD: Recoverable frame level ERR (%s)",
+                //       mad_stream_ERRstr(&Stream));
                 continue;
             } else if(Stream.error==MAD_ERROR_BUFLEN) {
-                //qDebug("MAD: buflen error");
+                //qDebug("MAD: buflen ERR");
                 break;
             } else {
-                //qDebug("MAD: Unrecoverable frame level error (%s).",
-                //mad_stream_errorstr(&Stream));
+                //qDebug("MAD: Unrecoverable frame level ERR (%s).",
+                //mad_stream_ERRstr(&Stream));
                 break;
             }
         }
-        /* Once decoded the frame is synthesized to PCM samples. No errors
+        /* Once decoded the frame is synthesized to PCM samples. No ERRs
          * are reported by mad_synth_frame();
          */
         mad_synth_frame(&Synth,&Frame);
@@ -233,7 +233,7 @@ unsigned SoundSourceMp3::read(unsigned long samples_wanted, const SAMPLE* _desti
     return Total_samples_decoded;
 }
 
-void SoundSourceMp3::ParseHeader(TrackInfoObject *Track)
+int SoundSourceMp3::ParseHeader(TrackInfoObject *Track)
 {
     QString location = Track->m_sFilepath+'/'+Track->m_sFilename;
 
@@ -254,7 +254,9 @@ void SoundSourceMp3::ParseHeader(TrackInfoObject *Track)
                 Track->m_iDuration = dur.toInt();
         }
         id3_file_close(fh);
-    }
+    } 
+    else
+        return ERR;
 
     // Get file length. This has to be done by one of these options:
     // 1) looking for the tag named TLEN (above),
@@ -270,12 +272,16 @@ void SoundSourceMp3::ParseHeader(TrackInfoObject *Track)
     const unsigned int READLENGTH = 5000;
     mad_timer_t dur = mad_timer_zero;
     QFile file(location.latin1());
-    if (!file.open(IO_ReadOnly))
-        qFatal("MAD: Open of %s failed.", location.latin1());
+    if (!file.open(IO_ReadOnly)) {
+        qWarning("MAD: Open of %s failed.", location.latin1());
+        return ERR;
+    }
     char *inputbuf = new char[READLENGTH];
     unsigned int tmp = file.readBlock(inputbuf, READLENGTH);
-    if (tmp != READLENGTH)
-        qFatal("MAD: Error reading mp3-file: %s\nRead only %d bytes, but wanted %d bytes.",location.latin1() ,tmp,READLENGTH);
+    if (tmp != READLENGTH) {
+        qWarning("MAD: ERR reading mp3-file: %s\nRead only %d bytes, but wanted %d bytes.",location.latin1() ,tmp,READLENGTH);
+        return ERR;
+    }
     mad_stream Stream;
     mad_header Header;
     mad_stream_init(&Stream);
@@ -338,7 +344,7 @@ void SoundSourceMp3::ParseHeader(TrackInfoObject *Track)
     mad_stream_finish(&Stream);
     delete [] inputbuf;
     file.close();
-
+    return OK;
 }
 
 void SoundSourceMp3::getField(id3_tag *tag, const char *frameid, QString str)

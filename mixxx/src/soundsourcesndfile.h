@@ -29,7 +29,7 @@ public:
   long seek(long);
   unsigned read(unsigned long size, const SAMPLE*);
   inline long unsigned length();
-  static void ParseHeader( TrackInfoObject * );	
+  static int ParseHeader( TrackInfoObject * );	
 
  private:
   int channels;

@@ -156,22 +156,28 @@ bool TrackList::AddFiles(const char *path)
 				// Find the type:
 				QString sType = fi->fileName().section(".",-1).lower();
 				// Parse it using the sound sources:
+                int iResult = ERR;
 				if (sType == "wav")
 #ifdef __WIN__
-					SoundSourceSndFile::ParseHeader( Track );
+                    iResult = SoundSourceSndFile::ParseHeader( Track );
 #endif
 #ifdef __UNIX__
-					SoundSourceAudioFile::ParseHeader(Track);
+					iResult = SoundSourceAudioFile::ParseHeader(Track);
 #endif
-        else if (sType == "mp3")
-            SoundSourceMp3::ParseHeader(Track);
-        else if (sType == "ogg")
-            SoundSourceOggVorbis::ParseHeader(Track);
+                else if (sType == "mp3")
+                    iResult = SoundSourceMp3::ParseHeader(Track);
+                else if (sType == "ogg")
+                    iResult = SoundSourceOggVorbis::ParseHeader(Track);
                     
 				// Append the track to the list of tracks:
-				m_lTracks.append( Track );
-//				qDebug( "Found new track: %s", Track->m_sFilename.latin1() );
-				bFoundFiles = true;
+                if (iResult == OK) {
+				    m_lTracks.append( Track );
+//				    qDebug( "Found new track: %s", Track->m_sFilename.latin1() );
+				    bFoundFiles = true;
+                } 
+                else
+                    qWarning("Could not parse %s", fi->fileName() );
+                
 			}
             ++it;   // goto next list element
         }

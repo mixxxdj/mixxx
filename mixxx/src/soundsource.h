@@ -37,7 +37,7 @@ public:
     virtual long seek(long) = 0;
     virtual unsigned read(unsigned long size, const SAMPLE*) = 0;
     virtual long unsigned length() = 0;
-    static void ParseHeader( TrackInfoObject * );
+    static int ParseHeader( TrackInfoObject * );
     int getSrate();
   
     QString type;
