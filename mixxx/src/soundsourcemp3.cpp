@@ -36,9 +36,9 @@ SoundSourceMp3::SoundSourceMp3(const char* filename)
         {
             if (!MAD_RECOVERABLE (Stream.error))
                 break;
-            if (Stream.error == MAD_ERROR_LOSTSYNC)
+           /* if (Stream.error == MAD_ERROR_LOSTSYNC)
             {
-                /* ignore LOSTSYNC due to ID3 tags */
+                // ignore LOSTSYNC due to ID3 tags 
                 int tagsize = id3_tag_query (Stream.this_frame,
                                 Stream.bufend - Stream.this_frame);
                 if (tagsize > 0)
@@ -46,7 +46,7 @@ SoundSourceMp3::SoundSourceMp3(const char* filename)
                     mad_stream_skip (&Stream, tagsize);
                     continue;
                 }
-            }
+            }*/
 
             qDebug("MAD: Error decoding header %d: %s (len=%d)", currentframe, mad_stream_errorstr(&Stream), len);
             continue;

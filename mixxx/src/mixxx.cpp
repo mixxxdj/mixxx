@@ -127,12 +127,11 @@ MixxxApp::MixxxApp(QApplication *a)
 
   initView();
 
-  //qDebug("Init playlist");
+  //qWarning("Init playlist");
   PlaylistKey = ConfigKey("[Playlist]","Directory");
   QDir d( config->getValueString(PlaylistKey ));
-  if (config->getValueString(PlaylistKey ).length()<1 | !d.exists()) {
-      QFileDialog* fd = new QFileDialog( this, QString::null, TRUE );
-      fd->setCaption("Choose directory with music files");
+  if ((config->getValueString(PlaylistKey ).length()<1) | (!d.exists())) {
+      QFileDialog* fd = new QFileDialog( this, "Choose directory with music files", TRUE );
       fd->setMode( QFileDialog::Directory );
       if ( fd->exec() == QDialog::Accepted ) {
           config->set(PlaylistKey, fd->selectedFile());
@@ -170,12 +169,12 @@ MixxxApp::MixxxApp(QApplication *a)
   control->config = midiconfig;
 
   // Initialize player with a desired buffer size
-  //qDebug("Init player...");
 #ifdef __ALSA__
   player = new PlayerALSA(BUFFER_SIZE, &engines, config->getValueString(ConfigKey("[Soundcard]","Device")));
 #else
   player = new PlayerPortAudio(BUFFER_SIZE, &engines, config->getValueString(ConfigKey("[Soundcard]","Device")));
 #endif
+  qWarning("Init player finished...");
 
   // Ensure the correct configuration is chosen and stored in the config object
   config->set(ConfigKey("[Soundcard]","Device"),ConfigValue(player->NAME));
@@ -653,7 +652,7 @@ void MixxxApp::slotOptionsPreferences()
         // Fill dialog with info
 
         // Sound card info
-        for (unsigned int j=0; j<pInfo->count(); j++)
+        {for (unsigned int j=0; j<pInfo->count(); j++)
         {
             Player::Info *p = pInfo->at(j);
 
@@ -669,11 +668,11 @@ void MixxxApp::slotOptionsPreferences()
                 pDlg->ComboBoxSoundcard->setCurrentItem(j);
                 slotOptionsPreferencesUpdateDeviceOptions();
             }
-        }
+        }}
 
         // Midi configuration
         int j=0;
-        for (QStringList::Iterator it = midiConfigList.begin(); it != midiConfigList.end(); ++it )
+        {for (QStringList::Iterator it = midiConfigList.begin(); it != midiConfigList.end(); ++it )
         {
             // Insert the file name into the list, with ending (.midi.cfg) stripped
             pDlg->ComboBoxMidiconf->insertItem((*it).left((*it).length()-9));
@@ -681,7 +680,7 @@ void MixxxApp::slotOptionsPreferences()
             if ((*it) == config->getValueString(ConfigKey("[Midi]","Configfile")))
                 pDlg->ComboBoxMididevice->setCurrentItem(j);
             j++;
-        }
+        }}
 
         // Midi device
         QStringList *mididev = midi->getDeviceList();
@@ -720,12 +719,12 @@ void MixxxApp::slotOptionsPreferencesUpdateDeviceOptions()
         {
             // Sample rates
             pDlg->ComboBoxSamplerates->clear();
-            for (unsigned int i=0; i<p->sampleRates.size(); i++)
+            {for (unsigned int i=0; i<p->sampleRates.size(); i++)
             {
                 pDlg->ComboBoxSamplerates->insertItem(QString("%1 Hz").arg(p->sampleRates[i]));
                 if (p->sampleRates[i]==player->SRATE)
                     pDlg->ComboBoxSamplerates->setCurrentItem(i);
-            }
+            }}
 
             // Bits
             pDlg->ComboBoxBits->clear();

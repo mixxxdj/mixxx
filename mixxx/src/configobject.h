@@ -21,7 +21,8 @@
 #include <qstring.h>
 #include <qptrlist.h>
 #include <qvaluelist.h>
-#include "defs.h"
+#include <qfile.h>
+#include <qtextstream.h>
 
 /*
   Class for the key for a specific configuration element. A key consists of a

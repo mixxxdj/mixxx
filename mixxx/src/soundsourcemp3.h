@@ -25,7 +25,7 @@
 #include "mad.h"
 #include "errno.h"
 #include "soundsource.h"
-#include "id3tag.h"
+//#include "id3tag.h"
 #include <sys/types.h>
 #include <sys/stat.h>
 //#include <unistd.h>
