@@ -167,7 +167,7 @@ void TrackList::slotEndOfTrackCh1(double)
     switch ((int)m_pEndOfTrackModeCh1->getValue())
     {
     case END_OF_TRACK_MODE_STOP:
-        m_pPlayCh1->setValueFromApp(0.);
+        //m_pPlayCh1->setValueFromApp(0.);
         break;
     case END_OF_TRACK_MODE_NEXT:
         // Load next track
@@ -192,7 +192,7 @@ void TrackList::slotEndOfTrackCh2(double)
     switch ((int)m_pEndOfTrackModeCh2->getValue())
     {
     case END_OF_TRACK_MODE_STOP:
-        m_pPlayCh2->setValueFromApp(0.);
+        //m_pPlayCh2->setValueFromApp(0.);
         break;
     case END_OF_TRACK_MODE_NEXT:
         // Load next track

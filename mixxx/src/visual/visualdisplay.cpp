@@ -48,8 +48,8 @@ VisualDisplay::VisualDisplay(VisualBuffer *pVisualBuffer, const char *group, boo
 
     fishEyeMode = false;
 
-    fishEyeLengthScale = 0.5f;
-    fishEyeSignalFraction = 0.2f;
+    fishEyeLengthScale = 0.3f;
+    fishEyeSignalFraction = 0.05f;
     signalScale = 1.0f;
 
     fishEyeSignal = new VisualDisplayBuffer(m_pVisualBuffer);
