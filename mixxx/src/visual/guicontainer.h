@@ -57,6 +57,7 @@ class GUIContainer : public QObject
 public:
     GUIContainer(ReaderExtract *readerExtract, ControlPotmeter *playpos);
     ~GUIContainer();
+    int getId();
     GUIContainer *getContainer(int id);
     GUISignal *getSignal();
     SignalVertexBuffer *getBuffer();

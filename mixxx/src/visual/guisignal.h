@@ -39,8 +39,11 @@ class GUISignal : public VisualObject
   Q_OBJECT
 public:
   GUISignal(SignalVertexBuffer *buffer, FastVertexArray * vertex, const char *group);
+  ~GUISignal();
 public:
-
+  /** Returns unique id of signal */
+  int getId();
+  
   void update(float * signal,int samples);
   void draw(GLenum mode);
   void draw();
@@ -89,8 +92,7 @@ private:
   float height;
   float depth;
 
-  VisualBox box;
-  VisualBox playPosMarker;
+  VisualBox *box, *playPosMarker;
 
   VisualSignal preSignal,fishEyeSignal,postSignal;
   VisualSignal signal;
@@ -101,7 +103,10 @@ private:
   
   ControlPotmeter *sliderFishEyeSignalFraction;
   ControlPotmeter *sliderFishEyeLengthScale;
-
+  /** Count total number of instantiated objects. Used to assign unique id's to each signal */
+  static int idCount;
+  /** Unique id of signal */
+  int id;  
 };
 #endif
 

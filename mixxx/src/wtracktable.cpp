@@ -35,8 +35,9 @@ WTrackTable::WTrackTable(QWidget *parent, const char *name) : QTable(10, 7, pare
     horizontalHeader()->setLabel( 6, tr( "Index" ) );
 
     // Setup background color
-    setPaletteBackgroundColor(QColor(168,181,164));
-    setBackgroundMode(Qt::NoBackground);
+//    setPaletteForegroundColor(QColor(0,0,0)); //168,181,164));
+    setEraseColor(QColor(0,0,0)); //168,181,164));
+    setBackgroundMode(Qt::PaletteDark);
     setShowGrid(false);
    
     // Font size

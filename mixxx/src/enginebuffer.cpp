@@ -377,7 +377,7 @@ CSAMPLE *EngineBuffer::process(const CSAMPLE *, const int buf_size)
                                 buffer[j] = 30000.;
                         }
                     }
-#ifdef __LINUX__
+#ifdef __UNIX__
                     if (powermate!=0)
                         powermate->led();
 #endif

@@ -134,7 +134,7 @@ int Picking::pick(int x,int y)
         glMatrixMode(GL_PROJECTION);
         glPopMatrix();
         hits = glRenderMode(GL_RENDER);
-        processHits(hits,selectBuf);
+//        processHits(hits,selectBuf);
         picked = inFront(hits,selectBuf);
     }
     return picked;

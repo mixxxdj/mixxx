@@ -22,7 +22,7 @@
 /**
  * Default Constructor.
  */
-VisualBox::VisualBox()
+VisualBox::VisualBox(int id) : PickableObject(id)
 {
     ox = oy = oz = 0;
 

@@ -42,6 +42,8 @@ public:
     GUIChannel(Reader *_reader, ControlPotmeter *_playpos, VisualController *_controller);
     ~GUIChannel();
     bool eventFilter(QObject *o, QEvent *e);
+    /** Zoom/unzoom the signal of id */
+    void zoom(int id);
     SignalVertexBuffer *add(ReaderExtract *readerExtract);
     void move(int msec);
     void setPosX(int x);
@@ -50,7 +52,13 @@ private:
     Reader                  *reader;
     VisualController        *controller;
     ControlPotmeter         *playpos;
-    static QPtrList<GUIContainer>  list;
+    /** List of containers associated with this channel */
+    QPtrList<GUIContainer>  list;
+    /** channel number */
+    int channelNo;
+    /** Total number of channels */
+    static int channelTotal;
+    /** X position of this channel */
     int                     posx, zoomposx;
 };
 #endif

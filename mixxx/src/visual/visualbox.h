@@ -25,7 +25,7 @@
 class VisualBox : public PickableObject
 {
 public:
-  VisualBox();
+  VisualBox(int id);
 
   void draw(GLenum mode);
   void draw();
