@@ -35,7 +35,7 @@ private:
     /** True if remaining content is being shown */
     bool m_bRemain;
     /** Pointer to control object for rate */
-    ControlObject *m_pRateControl;
+    ControlObject *m_pRateControl, *m_pRateDirControl;
 };
 
 #endif

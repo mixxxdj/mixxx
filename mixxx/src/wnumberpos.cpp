@@ -19,6 +19,7 @@ WNumberPos::WNumberPos(const char *group, QWidget *parent, const char *name) : W
     m_qsText = "Pos: ";
     m_bRemain = false;
     m_pRateControl = ControlObject::getControl(ConfigKey(QString(group), QString("rate")));
+    m_pRateDirControl = ControlObject::getControl(ConfigKey(QString(group), QString("rate_dir")));
 }
 
 WNumberPos::~WNumberPos()
@@ -34,7 +35,7 @@ void WNumberPos::setValue(double dValue)
 {
     double v = dValue*((float)m_iDuration/127.);
     if (m_bRemain)
-        v = ((float)m_iDuration-v)*(1.-m_pRateControl->getValue());
+        v = ((float)m_iDuration-v)*(1.-m_pRateControl->getValue()*m_pRateDirControl->getValue());
 
     int min1=0,min2=0,sec1=0,sec2=0,msec1=0,msec2=0;
     if (v>0.)
@@ -67,5 +68,7 @@ void WNumberPos::setRemain(bool bRemain)
     else
         m_qsText = "Pos: ";
 }
+
+
 
 
