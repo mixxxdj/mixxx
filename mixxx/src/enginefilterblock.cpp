@@ -27,19 +27,22 @@ EngineFilterBlock::EngineFilterBlock(QKnob *DialFilterLow, int midiLow,
     low = new EngineFilterIIR(bessel_lowpass);
     filterpotLow = new ControlLogpotmeter("filterpot", midiLow, midi, 5.);
     connect(filterpotLow,  SIGNAL(valueChanged(FLOAT_TYPE)), this, SLOT(slotUpdateLow(FLOAT_TYPE)));
-	connect(DialFilterLow, SIGNAL(valueChanged(int)), filterpotLow, SLOT(slotSetPosition(int)));
+    connect(DialFilterLow, SIGNAL(valueChanged(int)), filterpotLow, SLOT(slotSetPosition(int)));
+    connect(filterpotLow, SIGNAL(recievedMidi(int)), DialFilterLow, SLOT(setValue(int)));
 
     filterpotMid = new ControlLogpotmeter("filterpot", midiMid, midi, 5.);
     connect(filterpotMid,  SIGNAL(valueChanged(FLOAT_TYPE)), this, SLOT(slotUpdateMid(FLOAT_TYPE)));
-	connect(DialFilterMid, SIGNAL(valueChanged(int)), filterpotMid, SLOT(slotSetPosition(int)));
+    connect(DialFilterMid, SIGNAL(valueChanged(int)), filterpotMid, SLOT(slotSetPosition(int)));
+    connect(filterpotMid, SIGNAL(recievedMidi(int)), DialFilterMid, SLOT(setValue(int)));
   	
     //high = new EngineFilterRBJ(true,700.,1.);
     high = new EngineFilterIIR(bessel_highpass_5000);
     filterpotHigh = new ControlLogpotmeter("filterpot", midiHigh, midi, 5.);
     connect(filterpotHigh,  SIGNAL(valueChanged(FLOAT_TYPE)), this, SLOT(slotUpdateHigh(FLOAT_TYPE)));
-	connect(DialFilterHigh, SIGNAL(valueChanged(int)), filterpotHigh, SLOT(slotSetPosition(int)));
+    connect(DialFilterHigh, SIGNAL(valueChanged(int)), filterpotHigh, SLOT(slotSetPosition(int)));
+    connect(filterpotHigh, SIGNAL(recievedMidi(int)), DialFilterHigh, SLOT(setValue(int)));
 
-	buffer = new CSAMPLE[MAX_BUFFER_LEN];
+    buffer = new CSAMPLE[MAX_BUFFER_LEN];
 }
 
 EngineFilterBlock::~EngineFilterBlock()

@@ -130,12 +130,15 @@ void MidiObject::removepotmeter(ControlPotmeter* potmeter) {
    Output:  -
    -------- ------------------------------------------------------ */
 void MidiObject::run() {
-#ifdef __PORTMIDI__
+
   int stop = 0;
+#ifdef __PORTMIDI__
   PmError err;
   char channel, midicontrol, midivalue;
+#endif
 
   while(stop == 0) {
+#ifdef __PORTMIDI__
     err = Pm_Poll(midi);
     if (err == TRUE) {
           if (Pm_Read(midi, buffer, 1) > 0) {
@@ -172,18 +175,17 @@ void MidiObject::run() {
     char midivalue = buffer[2];
 #endif    
 
-     qDebug("Received midi message: %i %i %i",(int)channel, 
-             (int)midicontrol,(int)midivalue);
+     qDebug("Received midi message: %i %i %i",(int)channel,(int)midicontrol,(int)midivalue);
 
     // Check the potmeters:
     for (int i=0; i<no_potmeters; i++) 
       if (potmeters[i]->midino == midicontrol) {
-	  //potmeters[i]->slotSetPosition((int)midivalue);
-	potmeters[i]->midiEvent(127-(int)midivalue);
-	//qDebug("Changed potmeter %s to %i",potmeters[i]->print(), 
-	//       (int)potmeters[i]->getValue());
-	break;
-      }
+ 		  //potmeters[i]->slotSetPosition((int)midivalue);
+			potmeters[i]->midiEvent(127-(int)midivalue);
+			//qDebug("Changed potmeter %s to %i",potmeters[i]->print(),
+			//       (int)potmeters[i]->getValue());
+			break;
+    }
     
     // Check the buttons:
     for (int i=0; i<no_buttons; i++) 
@@ -199,9 +201,5 @@ void MidiObject::run() {
 	  break;
 	}
       }
-#ifdef __PORTMIDI__
   }
-#endif
 };
-
-

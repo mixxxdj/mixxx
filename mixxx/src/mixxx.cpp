@@ -55,8 +55,8 @@ MixxxApp::MixxxApp()
   initView();
   qDebug("Init playlist");
   // Connect play list table selection with "play new file"
-  connect(view->playlist->ListPlaylist, SIGNAL(clicked(QViewListItem)),
-          this,                         SLOT(slotChangePlay(QViewListItem &)));
+  connect(view->playlist->ListPlaylist, SIGNAL(clicked(QListViewItem *)),
+          this,                         SLOT(slotChangePlay(QListViewItem *)));
 
   //viewToolBar->setOn(false);
   //viewStatusBar->setOn(true);
@@ -73,7 +73,7 @@ MixxxApp::MixxxApp()
   buffer2 = new EngineBuffer(view->playcontrol2, 0, 0, 0, midi,
                              view->playlist->ListPlaylist->firstChild()->nextSibling()->text(1));
 
-  channel1 = new EngineChannel(view->channel1, midi, ADC7, ADC6, ADC5, ADC4, 0);
+  channel1 = new EngineChannel(view->channel1, midi, ADC7, ADC4, ADC5, ADC6, 0);
   channel2 = new EngineChannel(view->channel2, midi, 0, 0, 0, 0, 0);
 
   qDebug("Init master...");
