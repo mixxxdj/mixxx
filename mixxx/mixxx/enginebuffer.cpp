@@ -34,6 +34,8 @@ EngineBuffer::EngineBuffer(DlgPlaycontrol *playcontrol, DlgChannel *channel, Mid
   wheel = new ControlRotary("wheel", PORT_D, midi);
   connect(playcontrol->DialPlaycontrol, SIGNAL(dialMoved(int)), wheel, SLOT(slotSetPosition(int)));
   connect(wheel, SIGNAL(valueChanged(FLOAT)), this, SLOT(slotUpdateRate(FLOAT)));
+
+  connect(this, SIGNAL(position(int)), channel->LCDposition, SLOT(display(int)));
   /*
     Open the file:
   */
@@ -280,14 +282,10 @@ long EngineBuffer::distance(const long _start, const long end) {
 
 void EngineBuffer::writepos() {
   static FLOAT lastwrite = 0.;
-  // Write position to screen:
   FLOAT newwrite = play_pos/file->length();
-  //cout << newwrite << ",";
   if (floor(fabs(newwrite-lastwrite)*100) >= 1) {
-    char str[10];
-    sprintf(str, "%6.1f%%", 100*newwrite);
-    //qDebug("%s",str);
-    lastwrite = newwrite;
+      emit position((int)(100*newwrite));
+      lastwrite = newwrite;
   }
 }
 
@@ -322,4 +320,8 @@ void EngineBuffer::process(CSAMPLE *, CSAMPLE *buffer, int buf_size) {
   writepos();
   // Check the wheel:
   wheel->updatecounter(buf_size);
+  // Write position to the gui: 
+  writepos();
 }
+
+
