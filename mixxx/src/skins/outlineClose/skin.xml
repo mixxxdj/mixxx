@@ -880,9 +880,10 @@
 
  <NumberPos>
   <Tooltip>Play position/remaining time</Tooltip>
+  <Alignment>right</Alignment>
   <Channel>1</Channel>
-  <Pos>150,355</Pos>
-  <Size>85,20</Size>
+  <Pos>162,355</Pos>
+  <Size>100,20</Size>
   <NumberOfDigits>6</NumberOfDigits>
   <BgColor>#ffffff</BgColor>
   <FgColor>#606060</FgColor>
@@ -893,9 +894,10 @@
 
  <NumberPos>
   <Tooltip>Play position/remaining time</Tooltip>
+  <Alignment>right</Alignment>
   <Channel>2</Channel>
-  <Pos>620,355</Pos>
-  <Size>85,20</Size>
+  <Pos>632,355</Pos>
+  <Size>100,20</Size>
   <NumberOfDigits>6</NumberOfDigits>
   <BgColor>#ffffff</BgColor>
   <FgColor>#606060</FgColor>
@@ -903,6 +905,33 @@
    <ConfigKey>[Channel2],playposition</ConfigKey>
   </Connection>
  </NumberPos>
+
+ <NumberRate>
+  <Tooltip>Playback rate factor</Tooltip>
+  <Channel>1</Channel>
+  <Pos>800,213</Pos>
+  <Size>60,20</Size>
+  <NumberOfDigits>3</NumberOfDigits>
+  <BgColor>#ffffff</BgColor>
+  <FgColor>#606060</FgColor>
+  <Connection>
+   <ConfigKey>[Channel1],rateDisplay</ConfigKey>
+  </Connection>
+ </NumberRate>
+
+ <NumberRate>
+  <Tooltip>Playback rate factor</Tooltip>
+  <Channel>2</Channel>
+  <Pos>940,213</Pos>
+  <Size>60,20</Size>
+  <NumberOfDigits>3</NumberOfDigits>
+  <BgColor>#ffffff</BgColor>
+  <FgColor>#606060</FgColor>
+  <Connection>
+   <ConfigKey>[Channel2],rateDisplay</ConfigKey>
+  </Connection>
+ </NumberRate>
+
 
  <SliderComposed>
   <Tooltip>Play position - Use mouse to seek</Tooltip>
@@ -930,19 +959,20 @@
   </Connection>
  </SliderComposed>
 
- <TreeList>
+ <Splitter>
   <Pos>0,399</Pos>
-  <Size>200,310</Size>
+  <Size>748,310</Size>
+ </Splitter>
+
+ <TreeView>
+  <InSplitter>Yes</InSplitter>
   <FgColor>#000000</FgColor>
   <BgColor>#ffffff</BgColor>
-  <ColWidthName>20</ColWidthName>
-  <ColWidthType>20</ColWidthType>
-  <ColWidthFullPath>180</ColWidthFullPath>
- </TreeList>
+  <Size>250,310</Size>
+ </TreeView>
 
  <TrackTable>
-  <Pos>200,399</Pos>
-  <Size>550,310</Size>
+  <InSplitter>Yes</InSplitter>
   <FgColor>#000000</FgColor>
   <BgColor>#ffffff</BgColor>
   <BgColorRowEven>#ffffff</BgColorRowEven>
@@ -950,11 +980,12 @@
   <ColWidthScore>20</ColWidthScore>
   <ColWidthTitle>190</ColWidthTitle>
   <ColWidthArtist>180</ColWidthArtist>
-  <ColWidthComment>170</ColWidthComment>
+  <ColWidthComment>166</ColWidthComment>
   <ColWidthType>30</ColWidthType>
   <ColWidthDuration>50</ColWidthDuration>
   <ColWidthBpm>40</ColWidthBpm>
   <ColWidthBitrate>50</ColWidthBitrate>
+  <Size>600,310</Size>
  </TrackTable>
 
 
