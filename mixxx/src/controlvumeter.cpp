@@ -34,3 +34,29 @@ void ControlVUmeter::setValue(FLOAT_TYPE fValue)
 
     emit valueChanged(fValue);
 }
+
+
+void ControlVUmeter::setAccelUp(const QKeySequence key)
+{
+    qDebug("Cannot call setAccelUp for %s", print());
+}
+
+void ControlVUmeter::setAccelDown(const QKeySequence key)
+{
+    qDebug("Cannot call setAccelDown for %s", print());
+}
+
+void ControlVUmeter::forceGUIUpdate()
+{
+    qDebug("Cannot call forceGUIUpdate() for %s", print());
+}
+
+void ControlVUmeter::slotSetPosition(int dummy)
+{
+    qDebug("Cannot call slotSetPosition() for %s", print());
+}
+    
+void ControlVUmeter::slotSetPositionMidi(MidiCategory c, int v)
+{
+    qDebug("Cannot call slotSetPositionMidi() for %s", print());
+}
