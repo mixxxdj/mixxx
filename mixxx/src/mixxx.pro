@@ -147,8 +147,8 @@ SOURCES += mouse.cpp
 HEADERS += mouse.h
 unix:!macx:SOURCES += mouselinux.cpp
 unix:!macx:HEADERS += mouselinux.h
-#win32:SOURCES += powermatewin.cpp
-#win32:HEADERS += powermatewin.h
+win32:SOURCES += mousewin.cpp
+win32:HEADERS += mousewin.h
 #win32:LIBS += setupapi.lib
 
 # Joystick

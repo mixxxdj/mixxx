@@ -24,7 +24,9 @@ New since 1.3.2:
 - Improved thread syncronization
 - Improved PowerMate configuration
 - Support for additional mice on Linux
-
+- Preliminary ALSA support. Look in README.ALSA for details
+  on configuring ALSA for use with Mixxx. 
+  
 * INSTALL/USE **********************************************
 Please see manual, included in this directory, 
 Mixxx-Manual.pdf.
