@@ -78,7 +78,7 @@ void TrackPlaylist::addTrack(TrackInfoObject *pTrack)
 
     m_qList.append(pTrack);
 
-	qDebug("insert in table");
+	//qDebug("insert in table");
     // If this playlist is active, update WTableTrack
     if (m_pTable)
         pTrack->insertInTrackTableRow(m_pTable, m_pTable->numRows());
@@ -87,7 +87,7 @@ void TrackPlaylist::addTrack(TrackInfoObject *pTrack)
 
 void TrackPlaylist::addTrack(QString qLocation)
 {
-	qDebug("Add track %s",qLocation.latin1());
+	//qDebug("Add track %s",qLocation.latin1());
     TrackInfoObject *pTrack = m_pTrackCollection->getTrack(qLocation);
 
     if (pTrack)
@@ -150,7 +150,7 @@ void TrackPlaylist::setListName(QString name)
 
 void TrackPlaylist::slotDrop(QDropEvent *e)
 {
-    qDebug("playlist drop");
+    //qDebug("playlist drop");
 
     // Check if this drag is a playlist subtype
     QString s;
@@ -163,7 +163,7 @@ void TrackPlaylist::slotDrop(QDropEvent *e)
 
     if (!QUriDrag::canDecode(e))
     {
-        qDebug("TrackPlaylist: Could not decode drag object.");
+        //qDebug("TrackPlaylist: Could not decode drag object.");
         e->ignore();
         return;
     }
@@ -179,7 +179,7 @@ void TrackPlaylist::slotDrop(QDropEvent *e)
 
 void TrackPlaylist::addPath(QString qPath)
 {
-    qDebug("path %s",qPath.latin1());
+    //qDebug("path %s",qPath.latin1());
 
     // Is this a file or directory?
     QDir dir(qPath);
@@ -220,7 +220,7 @@ void TrackPlaylist::addPath(QString qPath)
 
         while ((fi=it.current()))
         {
-            qDebug("add %s",fi->filePath().latin1());
+            //qDebug("add %s",fi->filePath().latin1());
             addTrack(fi->filePath());
             ++it;   // goto next list element
         }

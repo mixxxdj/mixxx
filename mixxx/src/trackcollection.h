@@ -39,6 +39,8 @@ public:
       * created and added to the database */
     TrackInfoObject *getTrack(QString location);
 protected:
+    /** Used in binary search for an ID in the list */
+    TrackInfoObject *getTrack(int id, int min, int mid, int max);
     /** List of TrackInfoObjects. This is the actual database */
     QPtrList <TrackInfoObject> m_qTrackList;
     /** Counter used to assign unique id's to tracks in database */

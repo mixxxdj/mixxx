@@ -378,11 +378,14 @@ void Track::slotEndOfTrackPlayer1(double)
     switch ((int)m_pEndOfTrackModeCh1->getValue())
     {
     case TRACK_END_MODE_NEXT:
-        TrackInfoObject *pTrack = m_pTrackPlayer1->getNext();
-        if (pTrack)
-            slotLoadPlayer1(pTrack);
-        else
-            m_pPlayButtonCh1->setValueFromApp(0.);
+        if (m_pTrackPlayer1)
+        {
+            TrackInfoObject *pTrack = m_pTrackPlayer1->getNext();
+            if (pTrack)
+                slotLoadPlayer1(pTrack);
+            else
+                m_pPlayButtonCh1->setValueFromApp(0.);
+        }
         break;
     }
     m_pEndOfTrackCh1->setValueFromApp(0.);
@@ -393,11 +396,14 @@ void Track::slotEndOfTrackPlayer2(double)
     switch ((int)m_pEndOfTrackModeCh2->getValue())
     {
     case TRACK_END_MODE_NEXT:
-        TrackInfoObject *pTrack = m_pTrackPlayer2->getNext();
-        if (pTrack)
-            slotLoadPlayer2(pTrack);
-        else
-            m_pPlayButtonCh2->setValueFromApp(0.);
+        if (m_pTrackPlayer2)
+        {
+            TrackInfoObject *pTrack = m_pTrackPlayer2->getNext();
+            if (pTrack)
+                slotLoadPlayer2(pTrack);
+            else
+                m_pPlayButtonCh2->setValueFromApp(0.);
+        }
         break;
     }
     m_pEndOfTrackCh2->setValueFromApp(0.);

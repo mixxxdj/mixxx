@@ -28,6 +28,9 @@
 #include <math.h>
 #include "portaudio.h"
 #include "mixxx.h"
+#include "qpixmap.h"
+// #include "qsplashscreen.h"
+
 
 void qInitImages_mixxx();
     
@@ -83,6 +86,15 @@ int main(int argc, char *argv[])
 #endif
 
     QApplication a(argc, argv);
+
+    // Show splash
+/*
+    QPixmap pixmap("splash.jpg");
+    QSplashScreen *splash = new QSplashScreen(pixmap);
+    splash->show();
+    splash->message("Loading...");
+*/
+    
     QTranslator tor( 0 );
     // set the location where your .qm files are in load() below as the last parameter instead of "."
     // for development, use "/" to use the english original as
@@ -105,6 +117,8 @@ int main(int argc, char *argv[])
     a.setMainWidget(mixxx);
 
     mixxx->show();
+//    splash->finish(mixxx);
+//    delete splash;
     int result = a.exec();
     delete mixxx;
     return result;

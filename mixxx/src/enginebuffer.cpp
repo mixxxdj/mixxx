@@ -46,6 +46,8 @@ EngineBuffer::EngineBuffer(PowerMate *_powermate, const char *_group)
 
     m_pOtherEngineBuffer = 0;
 
+    m_bTempPress = false;
+
     // Play button
     ControlPushButton *p = new ControlPushButton(ConfigKey(group, "play"), true);
     playButton = new ControlEngine(p);
@@ -470,37 +472,61 @@ void EngineBuffer::slotControlRatePermUpSmall(double)
 void EngineBuffer::slotControlRateTempDown(double)
 {
     // Adjusts temp rate down if button pressed, otherwise set to 0.
-    if (buttonRateTempDown->get()==1.)
+    if (buttonRateTempDown->get()==1. && !m_bTempPress)
+    {
+        m_bTempPress = true;
         rateSlider->sub(m_dTemp);
-    else
+    }
+    else if (buttonRateTempDown->get()==0.)
+    {
+        m_bTempPress = false;
         rateSlider->add(m_dTemp);
+    }
 }
 
 void EngineBuffer::slotControlRateTempDownSmall(double)
 {
     // Adjusts temp rate down if button pressed, otherwise set to 0.
-    if (buttonRateTempDownSmall->get()==1.)
+    if (buttonRateTempDownSmall->get()==1. && !m_bTempPress)
+    {
+        m_bTempPress = true;
         rateSlider->sub(m_dTempSmall);
-    else
+    }
+    else if (buttonRateTempDownSmall->get()==0.)
+    {
+        m_bTempPress = false;
         rateSlider->add(m_dTempSmall);
+    }
 }
 
 void EngineBuffer::slotControlRateTempUp(double)
 {
     // Adjusts temp rate up if button pressed, otherwise set to 0.
-    if (buttonRateTempUp->get()==1.)
+    if (buttonRateTempUp->get()==1. && !m_bTempPress)
+    {
+        m_bTempPress = true;
         rateSlider->add(m_dTemp);
-    else
+    }
+    else if (buttonRateTempUp->get()==0.)
+    {
+        m_bTempPress = false;
         rateSlider->sub(m_dTemp);
+    }
 }
 
 void EngineBuffer::slotControlRateTempUpSmall(double)
 {
     // Adjusts temp rate up if button pressed, otherwise set to 0.
-    if (buttonRateTempUpSmall->get()==1.)
+    if (buttonRateTempUpSmall->get()==1. && !m_bTempPress)
+    {
+        m_bTempPress = true;
         rateSlider->add(m_dTempSmall);
-    else
+    }
+    else if (buttonRateTempUpSmall->get()==0.)
+    {
+        m_bTempPress = false;
         rateSlider->sub(m_dTempSmall);
+    }
 }
 
 void EngineBuffer::slotControlBeatSync(double)

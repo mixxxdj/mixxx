@@ -169,12 +169,8 @@ void TrackInfoObject::insertInTrackTableRow(WTrackTable *pTableTrack, int iRow)
     if (pTableTrack->numRows()<iRow+1)
         pTableTrack->setNumRows(iRow+1);
 
-qDebug("update scores");
-
     // Update the score
     updateScore();
-
-qDebug("making items");
 
     // Construct elements to insert into the table, if they are not already allocated
     if (!m_pTableItemScore)
@@ -194,7 +190,7 @@ qDebug("making items");
     if (!m_pTableItemBitrate)
         m_pTableItemBitrate = new WTrackTableItem(this, pTableTrack,QTableItem::Never, getBitrateStr(), typeNumber);
 
-    qDebug("inserting.. %p",pTableTrack->item(iRow, COL_SCORE));
+    //qDebug("inserting.. %p",pTableTrack->item(iRow, COL_SCORE));
 
     // Insert the elements into the table
     pTableTrack->setItem(iRow, COL_SCORE, m_pTableItemScore);
