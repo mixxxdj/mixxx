@@ -449,7 +449,7 @@ void MixxxApp::initActions()
   optionsFullScreen->setWhatsThis(tr("Display Mixxx using the full screen"));
   connect(optionsFullScreen, SIGNAL(toggled(bool)), this, SLOT(slotOptionsFullScreen(bool)));
 
-  optionsPreferences = new QAction(tr("Preferences"), tr("&Preferences..."), QAccel::stringToKey(tr("9")), this);
+  optionsPreferences = new QAction(tr("Preferences"), tr("&Preferences..."), QAccel::stringToKey(tr("Ctrl+P")), this);
   optionsPreferences->setStatusTip(tr("Preferences"));
   optionsPreferences->setWhatsThis(tr("Preferences\nPlayback and MIDI preferences"));
   connect(optionsPreferences, SIGNAL(activated()), this, SLOT(slotOptionsPreferences()));
