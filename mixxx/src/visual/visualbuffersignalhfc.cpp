@@ -11,7 +11,7 @@
 //
 #include "visualbuffersignalhfc.h"
 
-VisualBufferSignalHFC::VisualBufferSignalHFC(ReaderExtract *pReaderExtract, ControlPotmeter *pPlaypos) : VisualBufferSignal(pReaderExtract, pPlaypos)
+VisualBufferSignalHFC::VisualBufferSignalHFC(ReaderExtract *pReaderExtract, const char *group) : VisualBufferSignal(pReaderExtract, group)
 {
 }
 

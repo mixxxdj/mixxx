@@ -37,7 +37,7 @@ class ControlPotmeter;
 class VisualChannel : public QObject
 {
 public:
-    VisualChannel(ControlPotmeter *pPlaypos, VisualController *pVisualController, const char *_group);
+    VisualChannel(VisualController *pVisualController, const char *_group);
     ~VisualChannel();
     /** Add a ReaderExtract buffer to object, and construct a corresponding display. A
       * pointer to the constructed VisualBuffer is returned */
@@ -53,7 +53,6 @@ public:
     void toggleFishEyeMode();
 private:
     VisualController        *m_pVisualController;
-    ControlPotmeter         *m_pPlaypos;
     /** List of buffers associated with this channel */
     QPtrList<VisualBuffer>  m_qlListBuffer;
     /** List of displays associated with this channel */

@@ -30,13 +30,12 @@ int VisualChannel::siChannelTotal = 0;
  * Default Consructor.
  */
 
-VisualChannel::VisualChannel(ControlPotmeter *pPlaypos, VisualController *pVisualController, const char *_group)
+VisualChannel::VisualChannel(VisualController *pVisualController, const char *_group)
 {
     m_iChannelNo = siChannelTotal;
     siChannelTotal++;
     group = (char *)_group;
 
-    m_pPlaypos = pPlaypos;
     m_pVisualController = pVisualController;
     m_qlListBuffer.setAutoDelete(true);
     m_qlListDisplay.setAutoDelete(true);
@@ -55,17 +54,17 @@ VisualBuffer *VisualChannel::add(ReaderExtract *pReaderExtract)
     if (pReaderExtract->getVisualDataType()=="signal")
     {
         // Construct a new buffer
-        b = new VisualBufferSignal(pReaderExtract, m_pPlaypos);
+        b = new VisualBufferSignal(pReaderExtract, group);
     }
     else if (pReaderExtract->getVisualDataType()=="hfc")
     {
         // Construct a new buffer
-        b = new VisualBufferSignalHFC(pReaderExtract, m_pPlaypos);
+        b = new VisualBufferSignalHFC(pReaderExtract, group);
     }
     else if (pReaderExtract->getVisualDataType()=="marks")
     {
         // Construct a new buffer
-        b = new VisualBufferMarks(pReaderExtract, m_pPlaypos, group);
+        b = new VisualBufferMarks(pReaderExtract, group);
         b->setColorFg(m_fColorBeatR, m_fColorBeatG, m_fColorBeatB);
         b->setColorBg(m_fColorBackR, m_fColorBackG, m_fColorBackB);
     }

@@ -144,7 +144,7 @@ private:
     ControlEngine *buttonCueSet, *buttonCueGoto, *buttonCuePreview, *m_pRateDir;
     ControlEngine *buttonRateTempDown, *buttonRateTempDownSmall, *buttonRateTempUp, *buttonRateTempUpSmall;
     ControlEngine *buttonRatePermDown, *buttonRatePermDownSmall, *buttonRatePermUp, *buttonRatePermUpSmall;
-    ControlEngine *buttonBeatSync, *cuePoint;
+    ControlEngine *buttonBeatSync, *cuePoint, *rateEngine;
     /** Control used to signal when at end of file */
     ControlEngine *m_pTrackEnd, *m_pTrackEndMode;
     /** Control used to input desired playback BPM */
