@@ -22,15 +22,13 @@
 #include <portaudio.h>
 #include <qapplication.h>
 
-class ControlEngineQueue;
-
 /**
   *@author Tue and Ken Haste Andersen
   */
 
 class PlayerPortAudio : public Player  {
 public: 
-    PlayerPortAudio(ConfigObject<ConfigValue> *config, ControlEngineQueue *queue, QApplication *app);
+    PlayerPortAudio(ConfigObject<ConfigValue> *config, ControlObject *pControl, QApplication *app);
     ~PlayerPortAudio();
     /** Close device */
     void close();

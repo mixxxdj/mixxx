@@ -31,12 +31,10 @@
 #include <qstring.h>
 #include <qapplication.h>
 
-class ControlEngineQueue;
-
 class Player : public EngineObject
 {
 public:
-    Player(ConfigObject<ConfigValue> *_config, ControlEngineQueue *queue, QApplication *_app);
+    Player(ConfigObject<ConfigValue> *_config, ControlObject *pControl, QApplication *_app);
     virtual ~Player();      // Deallocate
     void notify(double) {};
     bool open(bool useDefault);
@@ -84,9 +82,8 @@ protected:
     /** Indicates where in the out_buffer the current synthesized frame is placed. */
     int bufferIdx;
 
-    /** Pointer to ControlEngineQueue taking care of syncing control parameters
-        from GUI (main) thread to player thread */
-    ControlEngineQueue *queue;
+    /** Pointer to ControlObject used in syncronization between ControlObject and ControlEngines */
+    ControlObject *m_pControl;
     /** Pointer to qapp */
     QApplication *app;
 };

@@ -42,7 +42,6 @@
 #include "midiobjectnull.h"
 #include "readerextractwave.h"
 #include "controlengine.h"
-#include "controlenginequeue.h"
 #include "controlpotmeter.h"
 #include "reader.h"
 #include "enginebuffer.h"
@@ -201,13 +200,9 @@ MixxxApp::MixxxApp(QApplication *a)
     // Set the static config pointer for the ControlObject
     control->setConfig(midiconfig);
 
-    // Configure ControlEngine object, and get ControlEngineQueue for input to the player object
+    // Configure ControlEngine object
     ControlEngine *controlengine = new ControlEngine(control);
-    ControlEngineQueue *queue = new ControlEngineQueue(controlengine->getList());
 
-    // Set static ControlEngineQueue pointer of ControlObject
-    control->setControlEngineQueue(queue);
-          
     // Install event handler
     //installEventFilter(this);
 
@@ -264,7 +259,7 @@ MixxxApp::MixxxApp(QApplication *a)
 #ifdef __ALSA__
     player = new PlayerALSA(BUFFER_SIZE, &engines, config->getValueString(ConfigKey("[Soundcard]","DeviceMaster")));
 #else
-    player = new PlayerPortAudio(config,queue,app);
+    player = new PlayerPortAudio(config,control,app);
 #endif
 
     // Init buffers/readers

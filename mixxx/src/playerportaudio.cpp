@@ -20,7 +20,7 @@
 int bufferIdxSlave = 0;
 
 
-PlayerPortAudio::PlayerPortAudio(ConfigObject<ConfigValue> *config, ControlEngineQueue *queue, QApplication *app) : Player(config,queue,app)
+PlayerPortAudio::PlayerPortAudio(ConfigObject<ConfigValue> *config, ControlObject *pControl, QApplication *app) : Player(config,pControl,app)
 {
     opendev = false;
     

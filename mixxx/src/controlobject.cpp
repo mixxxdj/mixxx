@@ -17,7 +17,6 @@
 
 #include "controlobject.h"
 #include "controlengine.h"
-#include "controlenginequeue.h"
 #include "controleventmidi.h"
 #include "controleventengine.h"
 #include "midiobject.h"
@@ -25,7 +24,8 @@
 
 // Static member variable definition
 ConfigObject<ConfigValueMidi> *ControlObject::config = 0;
-ControlEngineQueue *ControlObject::queue = 0;
+QPtrQueue<ControlQueueEngineItem> ControlObject::queue;
+QMutex ControlObject::queueMutex;
 QPtrList<ControlObject> ControlObject::list;
 QWidget *ControlObject::spParentWidget = 0;
 
@@ -34,12 +34,13 @@ ControlObject::ControlObject()
 {
     value = 0.;
     installEventFilter(this);
+    m_pControlEngine = 0;
     m_pAccel = 0;
 }
 
 ControlObject::ControlObject(ConfigKey key)
 {
-    controlEngineNo = -1;
+    m_pControlEngine = 0;
     installEventFilter(this);
 
     // Retreive configuration option object
@@ -97,15 +98,9 @@ void ControlObject::setConfig(ConfigObject<ConfigValueMidi> *_config)
     config = _config;
 }
 
-void ControlObject::setControlEngineQueue(ControlEngineQueue *_queue)
+void ControlObject::setControlEngine(ControlEngine *pControlEngine)
 {
-    queue = _queue;
-}
-
-
-void ControlObject::setControlEngine(int _controlEngineNo)
-{
-    controlEngineNo = _controlEngineNo;
+    m_pControlEngine = pControlEngine;
 }
 
 void ControlObject::setWidget(QWidget *widget)
@@ -143,25 +138,16 @@ QWidget *ControlObject::getParentWidget()
 
 void ControlObject::emitValueChanged(FLOAT_TYPE value)
 {
-    //qDebug("thread id: %p",pthread_self());
-
-    if (controlEngineNo>-1)
+    if (m_pControlEngine!=0)
     {
-        ControlEngineQueueItem *item = new ControlEngineQueueItem;
-        item->no = controlEngineNo;
+        ControlQueueEngineItem *item = new ControlQueueEngineItem;
+        item->ptr = m_pControlEngine;
         item->value = value;
-        if (queue)
-        {
-            queue->add(item);
-//            qDebug("no %i, add %f",item->no,value);
-        }
+
+        queueMutex.lock();
+        queue.enqueue(item);
+        queueMutex.unlock();
     }
-    //qDebug("val %f",value);
-
-// DO SOMETHING HERE *********************** ADD TO QUEUE
-//    if (controlEngine>0)
-//        controlEngine->setExtern(value);
-
     emit(valueChanged(value));
 }
 
@@ -229,4 +215,25 @@ void ControlObject::slotSetPositionMidi(MidiCategory c, int v)
 {
     qDebug("Cannot call slotSetPositionMidi() for %s", print());
 }
-*/ 
+*/
+
+void ControlObject::sync()
+{
+    // If possible lock mutex and process queue
+    if (queueMutex.tryLock())
+    {
+        //qDebug("queue len %i",queue.count());
+
+        ControlQueueEngineItem *item = queue.dequeue();
+        while (item!=0)
+        {
+            item->ptr->setExtern(item->value);
+            delete item;
+            item = queue.dequeue();
+        }
+
+        // Unlock mutex
+        queueMutex.unlock();
+    }
+}
+ 
