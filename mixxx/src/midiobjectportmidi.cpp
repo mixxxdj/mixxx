@@ -70,7 +70,7 @@ void MidiObjectPortMidi::devOpen(QString device)
     PmDeviceID id = -1;
     for (int i=0; i<Pm_CountDevices(); i++)
     {
-        if (QString(Pm_GetDeviceInfo(i)->name) == device)
+        if (QString(Pm_GetDeviceInfo(i)->name) == device && Pm_GetDeviceInfo(i)->input>0)
         {
             id = i;
             break;
