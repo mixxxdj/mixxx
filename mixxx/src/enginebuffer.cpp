@@ -50,7 +50,7 @@ EngineBuffer::EngineBuffer(DlgPlaycontrol *_playcontrol, const char *group, cons
 
   connect(wheel, SIGNAL(valueChanged(FLOAT_TYPE)), this, SLOT(slotUpdateRate(FLOAT_TYPE)));
   //connect(wheel, SIGNAL(updateGUI(int)), playcontrol->SliderPlaycontrol, SLOT(setValue(int)));
-  connect(wheel, SIGNAL(updateGUI(int)), wheel, SLOT(slotSetPositionMidi(int)));
+  //connect(wheel, SIGNAL(updateGUI(int)), wheel, SLOT(slotSetPositionMidi(int)));
 
   connect(this, SIGNAL(position(int)), playcontrol->LCDposition, SLOT(display(int)));
 
@@ -203,27 +203,25 @@ int EngineBuffer::end_seek() {
 */
 void EngineBuffer::slotUpdateRate(FLOAT_TYPE)
 {
-    qDebug("1: Rate value: %f, wheel value: %f",rate.read(),wheel->getValue());
+    //qDebug("1: Rate value: %f, wheel value: %f",rate.read(),wheel->getValue());
 
     if (PlayButton->getValue()==on)
     {
-        qDebug("slotUpdateRate 1");
+        //qDebug("slotUpdateRate 1");
         rate.write(rateSlider->getValue() + 4.*wheel->getValue());
     }
     else if (PlayButton->getPosition()==down)
     {
-	    // No rate while seeking:
+	// No rate while seeking:
         rate.write(0.);
-	    emit position((int)(100.*(FLOAT_TYPE)(end_seek()-start_seek)/128.));
-        qDebug("pos emitted: %i",(int)(100.*(FLOAT_TYPE)(end_seek()-start_seek)/128.));
-	}
-    else
-    {
-        qDebug("slotUpdateRate 3");
-        rate.write(4.*wheel->getValue());
+	emit position((int)(100.*(FLOAT_TYPE)(end_seek()-start_seek)/128.));
+	//qDebug("pos emitted: %i",(int)(100.*(FLOAT_TYPE)(end_seek()-start_seek)/128.));
     }
-
-    qDebug("2: Rate value: %f, wheel value: %f",rate.read(),wheel->getValue());
+    else
+        rate.write(8*wheel->getValue());
+    
+    //qDebug("Rate value: %f, wheel value: %f",rate.read(),wheel->getValue());
+    
 }
 
 /*
@@ -373,15 +371,16 @@ CSAMPLE *EngineBuffer::process(const CSAMPLE *, const int buf_size)
         playpos_buffer.write(myPlaypos_buffer);
         playpos_file.write(myPlaypos_file);
 
-        checkread();
-
-        // Check the wheel:
-        wheel->updatecounter(buf_size,EngineObject::SRATE);
-
-        // Write position to the gui:
-        writepos();
     }
 
+    checkread();
+    
+    // Check the wheel:
+    wheel->updatecounter(buf_size,EngineObject::SRATE);
+    
+    // Write position to the gui:
+    writepos();
+    
     return buffer;
 }
 

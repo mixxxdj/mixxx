@@ -185,12 +185,12 @@ void MidiObject::run()
 #endif
 #ifdef __OSSMIDI__
         do
-		{
+	{
             int no = read(handle,&buffer[0],1);
 //            qDebug("midi: %i",(short int)buffer[0]);
             if (no != 1)
                 qWarning("Warning: midiobject recieved %i bytes.", no);
-        } while (buffer[0] & 128 != 128); // Continue until we receive a status byte (bit 7 is set)
+        } while ((buffer[0] & 128) != 128); // Continue until we receive a status byte (bit 7 is set)
 #endif
         /*
         and then get the following 2 bytes:
@@ -216,6 +216,7 @@ void MidiObject::run()
             if (no != 1)
                 qWarning("Warning: midiobject recieved %i bytes.", no);
         }
+	//qDebug("Received midi message: ch %i no %i val %i",(int)buffer[0],(int)buffer[1],(int)buffer[2]);
         channel = buffer[0] & 15; // The channel is stored in the lower 4 bits of the status byte received
         midicontrol = buffer[1];
         midivalue = buffer[2];
