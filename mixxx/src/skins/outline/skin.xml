@@ -74,7 +74,7 @@
  </PushButton>
 
  <PushButton>
-  <Tooltip>Increase playback rate</Tooltip>
+  <Tooltip>Increase playback rate (left/right click: large/small effect)</Tooltip>
   <NumberStates>1</NumberStates>
   <State>
    <Number>0</Number>
@@ -95,7 +95,7 @@
  </PushButton>
 
  <PushButton>
-  <Tooltip>Increase playback rate</Tooltip>
+  <Tooltip>Increase playback rate (left/right click: large/small effect)</Tooltip>
   <NumberStates>1</NumberStates>
   <State>
    <Number>0</Number>
@@ -116,7 +116,7 @@
  </PushButton>
 
  <PushButton>
-  <Tooltip>Decrease playback rate</Tooltip>
+  <Tooltip>Decrease playback rate (left/right click: large/small effect)</Tooltip>
   <NumberStates>1</NumberStates>
   <State>
    <Number>0</Number>
@@ -137,7 +137,7 @@
  </PushButton>
 
  <PushButton>
-  <Tooltip>Decrease playback rate</Tooltip>
+  <Tooltip>Decrease playback rate (left/right click: large/small effect)</Tooltip>
   <NumberStates>1</NumberStates>
   <State>
    <Number>0</Number>
@@ -158,7 +158,7 @@
  </PushButton>
 
  <PushButton>
-  <Tooltip>Temporary increase playback rate (only when button is pressed)</Tooltip>
+  <Tooltip>Temporary increase playback rate (left/right click: large/small effect)</Tooltip>
   <NumberStates>1</NumberStates>
   <State>
    <Number>0</Number>
@@ -189,7 +189,7 @@
  </PushButton>
 
  <PushButton>
-  <Tooltip>Temporary decrease playback rate (only when button is pressed)</Tooltip>
+  <Tooltip>Temporary decrease playback rate (left/right click: large/small effect)</Tooltip>
   <NumberStates>1</NumberStates>
   <State>
    <Number>0</Number>
@@ -220,7 +220,7 @@
  </PushButton>
 
  <PushButton>
-  <Tooltip>Temporary increase playback rate (only when button is pressed)</Tooltip>
+  <Tooltip>Temporary increase playback rate (left/right click: large/small effect)</Tooltip>
   <NumberStates>1</NumberStates>
   <State>
    <Number>0</Number>
@@ -251,7 +251,7 @@
  </PushButton>
 
  <PushButton>
-  <Tooltip>Temporary decrease playback rate (only when button is pressed)</Tooltip>
+  <Tooltip>Temporary decrease playback rate (left/right click: large/small effect)</Tooltip>
   <NumberStates>1</NumberStates>
   <State>
    <Number>0</Number>
@@ -385,7 +385,7 @@
  </PushButton>
 
  <PushButton>
-  <Tooltip>Pause/play</Tooltip>
+  <Tooltip>Left click: Pause/play, Right click: Set cue point</Tooltip>
   <NumberStates>2</NumberStates>
   <State>
    <Number>0</Number>
@@ -411,7 +411,7 @@
  </PushButton>
 
  <PushButton>
-  <Tooltip>Pause/play</Tooltip>
+  <Tooltip>Left click: Pause/play, Right click: Set cue point</Tooltip>
   <NumberStates>2</NumberStates>
   <State>
    <Number>0</Number>
@@ -437,7 +437,7 @@
  </PushButton>
 
  <PushButton>
-  <Tooltip>Cue preview/cue goto</Tooltip>
+  <Tooltip>Left click: Cue preview, Right click: Cue goto</Tooltip>
   <NumberStates>1</NumberStates>
   <State>
    <Number>0</Number>
@@ -463,7 +463,7 @@
  </PushButton>
 
  <PushButton>
-  <Tooltip>Cue preview (left click), Cue goto (right click)</Tooltip>
+  <Tooltip>Left click: Cue preview, Right click: Cue goto</Tooltip>
   <NumberStates>1</NumberStates>
   <State>
    <Number>0</Number>
@@ -531,7 +531,7 @@
  </PushButton>
 
  <PushButton>
-  <Tooltip>Fast forward</Tooltip>
+  <Tooltip>Left click: Fast forward, Right click: End of track</Tooltip>
   <NumberStates>1</NumberStates>
   <State>
    <Number>0</Number>
@@ -557,7 +557,7 @@
  </PushButton>
 
  <PushButton>
-  <Tooltip>Fast backward</Tooltip>
+  <Tooltip>Left click: Fast backward, Right click: Start of track</Tooltip>
   <NumberStates>1</NumberStates>
   <State>
    <Number>0</Number>
@@ -583,7 +583,7 @@
  </PushButton>
 
  <PushButton>
-  <Tooltip>Fast forward</Tooltip>
+  <Tooltip>Left click: Fast forward, Right click: End of track</Tooltip>
   <NumberStates>1</NumberStates>
   <State>
    <Number>0</Number>
@@ -609,7 +609,7 @@
  </PushButton>
 
  <PushButton>
-  <Tooltip>Fast backward</Tooltip>
+  <Tooltip>Left click: Fast backward, Right click: Start of track</Tooltip>
   <NumberStates>1</NumberStates>
   <State>
    <Number>0</Number>
