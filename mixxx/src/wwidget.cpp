@@ -82,13 +82,14 @@ void WWidget::setup(QDomNode node)
 
             ControlObject::setWidget(this, configKey, bEmitOnDownPress, state);
 
-			// Add keyboard shortcut info to tooltip string
-			ControlObject *p = ControlObject::getControl(configKey);
-			ASSERT(p!=0);
-	
-			if (!p->getKbdConfigStr().isEmpty())
-				strTooltip += QString(" (%1)").arg(p->getKbdConfigStr());
-		}
+            // Add keyboard shortcut info to tooltip string
+            ControlObject *p = ControlObject::getControl(configKey);
+            ASSERT(p!=0);
+
+            QString key = QString(" (%1)").arg(p->getKbdConfigStr());
+            if (!p->getKbdConfigStr().isEmpty() && !strTooltip.contains(key,false))
+                strTooltip += key;
+        }
         con = con.nextSibling();
     }
 
