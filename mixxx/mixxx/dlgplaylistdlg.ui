@@ -1,0 +1,55 @@
+<!DOCTYPE UI><UI>
+<class>DlgPlaylistDlg</class>
+<widget>
+    <class>QWidget</class>
+    <property stdset="1">
+        <name>name</name>
+        <cstring>DlgPlaylistDlg</cstring>
+    </property>
+    <property stdset="1">
+        <name>geometry</name>
+        <rect>
+            <x>0</x>
+            <y>0</y>
+            <width>516</width>
+            <height>210</height>
+        </rect>
+    </property>
+    <property stdset="1">
+        <name>caption</name>
+        <string>Form1</string>
+    </property>
+    <widget>
+        <class>QTable</class>
+        <property stdset="1">
+            <name>name</name>
+            <cstring>TableList</cstring>
+        </property>
+        <property stdset="1">
+            <name>geometry</name>
+            <rect>
+                <x>0</x>
+                <y>0</y>
+                <width>510</width>
+                <height>210</height>
+            </rect>
+        </property>
+        <property stdset="1">
+            <name>frameShape</name>
+            <enum>NoFrame</enum>
+        </property>
+        <property stdset="1">
+            <name>frameShadow</name>
+            <enum>Sunken</enum>
+        </property>
+        <property stdset="1">
+            <name>numRows</name>
+            <number>200</number>
+        </property>
+        <property stdset="1">
+            <name>numCols</name>
+            <number>1</number>
+        </property>
+    </widget>
+</widget>
+</UI>

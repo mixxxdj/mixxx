@@ -1,0 +1,83 @@
+#!/usr/bin/perl -w
+
+use Shell qw(mv cp mkdir rm) ;
+use File::Find;
+use Cwd;
+
+$origPwd = `pwd`;
+chomp $origPwd;
+
+
+if (@ARGV && $ARGV[0] eq 'cleanup') {
+
+if (-d "debian/tmp/usr/share/config") {
+	if (! -d "debian/tmp/$kde_confdir") {
+	  system("mv debian/tmp/usr/share/config debian/tmp/$kde_confdir");
+	}
+}
+system("rm -f `find debian/ -name \".anchors\"`");
+
+exit;
+}
+
+$QTDIR="/usr/share/qt";
+$kde_prefix="/usr";
+$kde_htmldir="$kde_prefix/share/doc/kde/HTML";
+$kde_icondir="$kde_prefix/share/icons";
+$kde_sounddir="$kde_prefix/share/sounds";
+$kde_datadir="$kde_prefix/share/apps";
+$kde_locale="$kde_prefix/share/locale";
+$kde_confdir="/etc/kde2";
+$kde_cgidir="$kde_prefix/lib/cgi-bin";
+$kde_appsdir="$kde_prefix/share/applnk";
+$kde_mimedir="$kde_prefix/share/mimelnk";
+$kde_wallpaperdir="$kde_prefix/share/wallpapers";
+$kde_bindir="$kde_prefix/bin";
+$kde_servicesdir="$kde_prefix/share/services";
+$kde_servicetypesdir="$kde_prefix/share/servicetypes";
+$kde_includedir="$kde_prefix/include/kde";
+$kde_libdir="$kde_prefix/lib";
+$kde_moduledir="$kde_prefix/lib/kde2";
+$mandir="$kde_prefix/share/man"; 
+$infodir="$kde_prefix/share/info";
+$IDL="$kde_bindir/cuteidl";
+$DCOPIDL="$kde_bindir/dcopidl";
+$DCOPIDL2CPP="$kde_bindir/dcopidl2cpp";
+$KDB2HTML="$kde_bindir/kdb2html";
+$MCOPIDL="$kde_bindir/mcopidl";
+$ARTSCCONFIG="$kde_bindir/artsc-config";
+
+if (@ARGV && $ARGV[0] eq 'echodirs') {
+  print STDOUT "export kde_htmldir=$kde_htmldir\n";
+  print STDOUT "export kde_appsdir=$kde_appsdir\n";
+  print STDOUT "export kde_icondir=$kde_icondir\n";
+  print STDOUT "export kde_sounddir=$kde_sounddir\n";
+  print STDOUT "export kde_datadir=$kde_datadir\n";
+  print STDOUT "export kde_cgidir=$kde_cgidir\n";
+  print STDOUT "export kde_locale=$kde_locale\n";
+  print STDOUT "export kde_confdir=$kde_confdir\n";
+  print STDOUT "export kde_mimedir=$kde_mimedir\n";
+  print STDOUT "export kde_wallpaperdir=$kde_wallpaperdir\n";
+  print STDOUT "export kde_bindir=$kde_bindir\n";
+  print STDOUT "export kde_servicesdir=$kde_servicesdir\n";
+  print STDOUT "export kde_servicetypesdir=$kde_servicetypesdir\n";
+  print STDOUT "export kde_includedir=$kde_includedir\n";
+  print STDOUT "export kde_libdir=$kde_libdir\n";
+  print STDOUT "export kde_moduledir=$kde_moduledir\n";
+  print STDOUT "export mandir=$mandir\n";
+  print STDOUT "export infodir=$infodir\n";
+  print STDOUT "export QTDIR=$QTDIR\n";
+  print STDOUT "export kde_prefix=$kde_prefix\n";
+  print STDOUT "export INSTALL_DATA=install -p -c -m 644\n";
+  print STDOUT "export IDL=$IDL\n";
+  print STDOUT "export DCOPIDL=$DCOPIDL\n";
+  print STDOUT "export DCOPIDL2CPP=$DCOPIDL2CPP\n";
+  print STDOUT "export KDB2HTML=$KDB2HTML\n";
+  print STDOUT "export MCOPIDL=$MCOPIDL\n";
+  print STDOUT "export ARTSCCONFIG=$ARTSCCONFIG\n";
+  print STDOUT "configkde=--enable-debug --disable-rpath --prefix=\$(kde_prefix) --libexecdir=\$(kde_bindir) --with-qt-includes=/usr/include/qt --mandir=\$(mandir) --infodir=\$(infodir)\n";
+  print STDOUT "configkdevelop=--enable-debug --enable-docbase --enable-kdoc2 --disable-rpath --libdir=\$(kde_libdir) --includedir=\$(kde_includedir) --with-qt-includes=/usr/include/qt --mandir=\$(mandir) --with-kdelibsdoc-dir=/usr/share/doc/kdelibs3-doc/html\n";
+  print STDOUT "configkdepim=--enable-debug --with-extra-includes=/usr/include/libpisock --enable-shared --disable-rpath --prefix=\$(kde_prefix) --libexecdir=\$(kde_bindir) --with-qt-includes=/usr/include/qt --mandir=\$(mandir) --infodir=\$(infodir)\n";
+  exit
+}
+
