@@ -40,7 +40,7 @@ const int filterLength = 20;
 class ControlBeat : public ControlObject
 {
 public: 
-    ControlBeat(ConfigKey key);
+    ControlBeat(ConfigKey key, bool bMidiSimulateLatching=false);
     ~ControlBeat();
 public slots:
     void setValueFromWidget(double dValue);
@@ -51,6 +51,9 @@ private:
 
     QTime time;
     CSAMPLE *buffer;
+    bool m_bMidiSimulateLatching;
+    bool m_bPressed;
+
 };
 
 #endif

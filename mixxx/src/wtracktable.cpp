@@ -85,7 +85,7 @@ void WTrackTable::setup(QDomNode node)
         QString size = WWidget::selectNodeQString(node, "Size");
         int x = size.left(size.find(",")).toInt();
         int y = size.mid(size.find(",")+1).toInt();
-        setFixedSize(x,y);
+        setBaseSize(x,y);
         resizeContents(x,y);
     }
 
@@ -135,9 +135,11 @@ void WTrackTable::sortColumn(int col, bool ascending, bool)
 
 void WTrackTable::slotMousePressed(int row, int col, int button, const QPoint &)
 {
-    qDebug("mouse pressed");
-    WTrackTableItem *p = (WTrackTableItem *)item(row,col);
-    TrackInfoObject *pTrackInfoObject = p->getTrackInfoObject();
-    emit(mousePressed(pTrackInfoObject, button));
+    if (col!=COL_COMMENT)
+    {
+        WTrackTableItem *p = (WTrackTableItem *)item(row,col);
+        TrackInfoObject *pTrackInfoObject = p->getTrackInfoObject();
+        emit(mousePressed(pTrackInfoObject, button));
+    }
 }
 

@@ -1048,9 +1048,7 @@
   <InSplitter>Yes</InSplitter>
   <FgColor>#000000</FgColor>
   <BgColor>#ffffff</BgColor>
-  <ColWidthName>20</ColWidthName>
-  <ColWidthType>20</ColWidthType>
-  <ColWidthFullPath>180</ColWidthFullPath>
+  <Size>250,255</Size>
  </TreeView>
 
  <TrackTable>
@@ -1062,11 +1060,12 @@
   <ColWidthScore>20</ColWidthScore>
   <ColWidthTitle>190</ColWidthTitle>
   <ColWidthArtist>180</ColWidthArtist>
-  <ColWidthComment>170</ColWidthComment>
+  <ColWidthComment>166</ColWidthComment>
   <ColWidthType>30</ColWidthType>
   <ColWidthDuration>50</ColWidthDuration>
   <ColWidthBpm>40</ColWidthBpm>
   <ColWidthBitrate>50</ColWidthBitrate>
+  <Size>726,255</Size>
  </TrackTable>
 
 </skin>

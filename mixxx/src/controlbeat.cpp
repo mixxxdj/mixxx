@@ -17,10 +17,12 @@
 
 #include "controlbeat.h"
 
-ControlBeat::ControlBeat(ConfigKey key) : ControlObject(key)
+ControlBeat::ControlBeat(ConfigKey key, bool bMidiSimulateLatching) : ControlObject(key)
 {
+    m_bMidiSimulateLatching = bMidiSimulateLatching;
     m_dValue = 0.;
     time.start();
+    m_bPressed = false;
 
     // Filter buffer
     buffer = new CSAMPLE[filterLength];
@@ -42,9 +44,14 @@ void ControlBeat::setValueFromWidget(double dValue)
 
 void ControlBeat::setValueFromMidi(MidiCategory, int v)
 {
-    setValue((double)v);
-
-    updateFromMidi();
+    if (!m_bPressed || !m_bMidiSimulateLatching)
+    {
+        setValue((double)v);
+        m_bPressed = true;
+        updateFromMidi();
+    }
+    else
+        m_bPressed = false;
 }
 
 void ControlBeat::setValue(double)

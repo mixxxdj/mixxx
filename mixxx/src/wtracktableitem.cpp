@@ -16,6 +16,8 @@
  ***************************************************************************/
 
 #include "wtracktableitem.h"
+#include "wtracktable.h"
+#include "trackinfoobject.h"
 #include <qpainter.h>
 #include <qcolor.h>
 #include <qrect.h>
@@ -76,3 +78,12 @@ TrackInfoObject *WTrackTableItem::getTrackInfoObject()
     return m_pTrackInfoObject;
 }
 
+void WTrackTableItem::setContentFromEditor(QWidget *w)
+{
+    // Update cell
+    QTableItem::setContentFromEditor(w);
+
+    // If this is a comment column, update TrackInfoObject
+    if (col()==COL_COMMENT)
+        m_pTrackInfoObject->setComment(text());
+}

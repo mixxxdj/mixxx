@@ -42,6 +42,9 @@ public:
     void paint(QPainter *p, const QColorGroup &cg, const QRect &cr, bool selected);
     /** Return pointer to corresponding TrackInfoObject */
     TrackInfoObject *getTrackInfoObject();
+    /** Used to update corresponding TrackInfoObject when the comment field is edited */
+    void setContentFromEditor(QWidget *w);
+
 private:
     static QColor kqRowColor1, kqRowColor2;
     QString key() const;
