@@ -9,7 +9,7 @@
 
 typedef short int SAMPLE;       // Data type used in output buffer. S16_LE works on SB/ALSA.
 const int SAMPLE_SIZE = 2;      // Number of bytes used to store 1 sample
-typedef double CSAMPLE;          // CSAMPLE defines the CSAMPLE type used for
+typedef float CSAMPLE;          // CSAMPLE defines the CSAMPLE type used for
                                 // intermidiate calculations
 typedef CSAMPLE FLOAT_TYPE;       // Float type, used for non sample data
 static int SRATE       = 44100; // Sample rate
@@ -43,6 +43,14 @@ const short ADC6 = 0x30;
 const short ADC7 = 0x38;
 const short PORT_B = 1;
 const short PORT_D = 3;
+
+// Ensure that CSAMPLE x stays above the intel cpu denormalization range,
+// otherwise sets x equal to 0.
+inline CSAMPLE zap_denormal(CSAMPLE x)
+{
+  CSAMPLE absx = fabs(x);
+  return (absx > 1e-15 && absx < 1e15) ? x : 0.;
+}
 
 #ifndef max
 #define max(a,b)            (((a) > (b)) ? (a) : (b))
