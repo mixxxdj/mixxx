@@ -22,12 +22,31 @@ PlayerPortAudio::PlayerPortAudio(int size, std::vector<EngineObject *> *engines)
     PaError err;
     err = Pa_Initialize();
     if( err != paNoError ) qFatal("PortAudio initialization error");
+
+    // Get device id of playback device
+    PaDeviceID id = Pa_GetDefaultOutputDeviceID();
+
+    // Ensure stereo is supported
+    const PaDeviceInfo *info = Pa_GetDeviceInfo(id);
+    if (info->maxOutputChannels < NO_CHANNELS)
+    	qFatal("Not enough channels available on default output device: %i",info->maxOutputChannels);
+
+    // Set sample rate to 44100 if possible, otherwise highest possible
+    int temp = 0;
+    for (int i=0; i<=info->numSampleRates; i++)
+        if (info->sampleRates[i] == 44100.)
+	    temp = 44100;
+    if (temp == 0)
+    	temp = (int)info->sampleRates[info->numSampleRates-1];
+    set_srate(temp);
+    qDebug("Using %iHz as output sample rate",SRATE);
+
     err = Pa_OpenStream(&stream,
                         paNoDevice,     // default input device
                         0,              // no input
                         paInt16,      
                         NULL,
-                        Pa_GetDefaultOutputDeviceID(), // default output device
+                        id, 		// default output device
                         NO_CHANNELS,              // stereo output
                         paInt16,    
                         NULL,
@@ -68,6 +87,11 @@ void PlayerPortAudio::stop()
 
 	err = Pa_CloseStream( stream );
 	if( err != paNoError ) exit(-1);
+}
+
+CSAMPLE *PlayerPortAudio::process(const CSAMPLE *, const int)
+{
+	return 0;
 }
 
 /* -------- ------------------------------------------------------

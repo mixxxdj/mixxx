@@ -18,7 +18,7 @@ class ControlRotary : public ControlPotmeter
  public:
   short direction;
   ControlRotary(char*, int, MidiObject*);
-  void updatecounter(int);
+  void updatecounter(int, int SRATE);
   short sign(short);
   void midiEvent(int);
  public slots:

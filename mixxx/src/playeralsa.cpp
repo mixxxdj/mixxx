@@ -25,6 +25,13 @@ PlayerALSA::PlayerALSA(int size, vector<EngineObject *> *engines) : Player(size,
       std::exit(-1);
     }
 
+    // Ensure NO_CHANNELS are supported
+    // NOT IMPLEMENTED
+    
+    // Select sample rate, 44100 preferred, otherwise highest possible
+    // NOT IMPLEMENTED
+    set_srate(44100);
+
     // ALSA channel parameters
     params = new snd_pcm_channel_params_t;
     params->mode=SND_PCM_MODE_BLOCK;
@@ -171,4 +178,8 @@ void PlayerALSA::rt_priority()
 
 }
 
+CSAMPLE *PlayerALSA::process(const CSAMPLE *, const int)
+{
+	return 0;
+}
 

@@ -26,7 +26,7 @@
 #include "controlobject.h"
 #include <vector>
 
-class Player : public QObject {
+class Player : public EngineObject {
 public:
 	Player(int, std::vector<EngineObject *> *);
 	~Player();      // Deallocate

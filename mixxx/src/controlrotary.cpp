@@ -67,7 +67,7 @@ void ControlRotary::slotSetPosition(int newpos) {
   }
 }
 
-void ControlRotary::updatecounter(int samples) {
+void ControlRotary::updatecounter(int samples, int SRATE) {
   if (counter > 0) {
     counter -= (FLOAT_TYPE)samples/(FLOAT_TYPE)(SRATE/1000);
     if (counter <= 0) {

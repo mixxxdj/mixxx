@@ -34,6 +34,7 @@ public:
 	void start(EngineObject *_reader);
 	/** No descriptions */
 	void wait();
+	CSAMPLE *process(const CSAMPLE *, const int);
 protected:
 	PortAudioStream *stream;
 };

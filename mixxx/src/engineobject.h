@@ -31,6 +31,12 @@ public:
   EngineObject();
   ~EngineObject();
   virtual CSAMPLE *process(const CSAMPLE *, const int) = 0;
+protected:
+  static int SRATE;
+  static int NYQUIST;
+  static CSAMPLE norm;
+
+  void set_srate(int srate);
 };
 
 #endif

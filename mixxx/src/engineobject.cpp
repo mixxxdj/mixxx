@@ -17,7 +17,23 @@
 
 #include "engineobject.h"
 
-EngineObject::EngineObject(){
+// Static member variable definition
+int EngineObject::SRATE = 0;
+int EngineObject::NYQUIST = 0;
+CSAMPLE EngineObject::norm = 0.;
+
+EngineObject::EngineObject()
+{
 }
-EngineObject::~EngineObject(){
+
+EngineObject::~EngineObject()
+{
 }
+
+void EngineObject::set_srate(int srate)
+{
+    SRATE   = srate;
+    NYQUIST = SRATE/2;
+    norm    = (2.*acos(-1.0))/SRATE;
+}
+
