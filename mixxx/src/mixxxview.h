@@ -27,7 +27,6 @@
 #include "mixxxdoc.h"
 class DlgPlaycontrol;
 class DlgChannel;
-class DlgPlaylist;
 class DlgMaster;
 class DlgCrossfader;
 class DlgSplit;
@@ -46,7 +45,6 @@ class MixxxView : public QWidget
     ~MixxxView();
     DlgPlaycontrol *playcontrol1, *playcontrol2;
     DlgChannel	*channel1, *channel2;
-    DlgPlaylist *playlist;
     DlgMaster *master;
     DlgCrossfader *crossfader;
     DlgSplit *split;
