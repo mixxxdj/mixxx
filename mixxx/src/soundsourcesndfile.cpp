@@ -29,21 +29,18 @@ SoundSourceSndFile::SoundSourceSndFile(QString qFilename) : SoundSource(qFilenam
         qDebug("libsndfile: Error opening file %s",qFilename.latin1());
         filelength = 0;
         return;
-    } else
-        filelength = 2*info->frames;
+    }
 
-    if (info->channels != 2)
-    {
-        qDebug("libsndfile: Only two-channel files are supported.");
-        sf_close(fh);
-        filelength = 0;
-        return;
-    }        
-    channels = 2;
+    channels = info->channels;
 
-    SRATE =  info->samplerate;
+    // Buffer only used when opening a non-stereo file
+    if (channels!=2)
+        buffer = new SAMPLE[MAX_BUFFER_LEN];
+    else
+        buffer = 0;
     
-    type = "wav file.";
+    filelength = 2*info->frames; // File length with two interleaved channels
+    SRATE =  info->samplerate;
 }
 
 SoundSourceSndFile::~SoundSourceSndFile()
@@ -51,15 +48,20 @@ SoundSourceSndFile::~SoundSourceSndFile()
     if (filelength > 0)
         sf_close(fh);
     delete info;
+    if (buffer)
+        delete [] buffer;
 };
 
 long SoundSourceSndFile::seek(long filepos)
 {
-    if (filelength > 0)
-        if (sf_seek(fh, (sf_count_t)filepos/channels, SEEK_SET) == -1)
+    if (filelength>0)
+    {
+	filepos = max(0, min(filepos,filelength));
+        if (sf_seek(fh, (sf_count_t)filepos/2, SEEK_SET) == -1)
             qDebug("libsndfile: Seek ERR.");
-    
-    return filepos;
+        return filepos;
+    }
+    return 0;
 }
 
 /*
@@ -68,14 +70,40 @@ long SoundSourceSndFile::seek(long filepos)
 */
 unsigned SoundSourceSndFile::read(unsigned long size, const SAMPLE* destination)
 {
+    SAMPLE *dest = (SAMPLE *)destination;
     if (filelength > 0)
-        return sf_read_short(fh,(SAMPLE *)destination, size);
+    {
+        if (channels==2)
+        {
+            int no = sf_read_short(fh, dest, size);
+    	    for (int i=no; i<size; ++i)
+                dest[i] = 0;
+            return size;
+        }
+        else
+        {
+            // If the file is not in stereo, make the returned buffer so.
+            int readNo = sf_read_short(fh, buffer, channels*size/2);
+            int j=0;
+            for (int i=0; i<readNo*channels; i+=channels)
+            {
+                dest[j] = buffer[i];
+                ++j;
+                if (channels>1)
+                    dest[j] = buffer[i+1];
+                else
+                    dest[j] = buffer[i];
+                ++j;
+            }
+            return 2*readNo/channels;
+        }
+    }
     else
     {
         for (unsigned int i=0; i<size; i++)
             ((SAMPLE *)destination)[i] = 0;
-        return size;
     }
+    return size;
 }
 
 int SoundSourceSndFile::ParseHeader( TrackInfoObject *Track )
@@ -89,7 +117,7 @@ int SoundSourceSndFile::ParseHeader( TrackInfoObject *Track )
         return ERR;
     }
 
-    Track->setType("wav");
+    Track->setType(location.section(".",-1).lower());
     Track->setBitrate( (int)(info.samplerate*32./1000.) );
     Track->setDuration( info.frames/info.samplerate );
 

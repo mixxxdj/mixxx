@@ -37,6 +37,7 @@ private:
     SNDFILE *fh;
     SF_INFO *info;
     unsigned long filelength;
+    SAMPLE *buffer;
 };
 
 #endif

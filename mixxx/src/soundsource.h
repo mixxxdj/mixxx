@@ -42,7 +42,6 @@ public:
     /** Returns filename */
     QString getFilename();
     
-    QString type;
 protected:
     /** Sample rate of the file */
     int SRATE;

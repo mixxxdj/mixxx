@@ -241,7 +241,7 @@ int TrackInfoObject::parse()
 
     // Parse the using information stored in the sound file
     int iResult = ERR;
-    if (m_sType == "wav")
+    if (m_sType == "wav" || m_sType == "aif" || m_sType == "aiff")
 #ifdef __SNDFILE__
         iResult = SoundSourceSndFile::ParseHeader(this);
 #endif

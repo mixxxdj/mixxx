@@ -90,9 +90,18 @@ void WTreeItemDir::setOpen(bool o)
                          (fi->fileName().endsWith(".mp3") ||
                           fi->fileName().endsWith(".ogg") ||
                           fi->fileName().endsWith(".wav") ||
+			  fi->fileName().endsWith(".aif") ||
+			  fi->fileName().endsWith(".aiff") ||
+			  fi->fileName().endsWith(".Mp3") ||
+                          fi->fileName().endsWith(".Ogg") ||
+                          fi->fileName().endsWith(".Wav") ||
+                          fi->fileName().endsWith(".Aif") ||
+                          fi->fileName().endsWith(".Aiff") ||
                           fi->fileName().endsWith(".MP3") ||
                           fi->fileName().endsWith(".OGG") ||
-                          fi->fileName().endsWith(".WAV")))
+                          fi->fileName().endsWith(".WAV") ||
+			  fi->fileName().endsWith(".AIF") ||
+			  fi->fileName().endsWith(".AIFF")))
                 {
                      WTreeItemFile *item = new WTreeItemFile(this, fi->fileName(),
                                                              fi->isFile()?"File":"Special" );
