@@ -220,10 +220,13 @@ void DlgPrefSound::slotApply()
 
 void DlgPrefSound::slotQueryLatency()
 {
-    int iLatencyMsec = (int)(1000.*((float)Player::getBufferSize()/(float)EngineObject::getPlaySrate()));
+    int iLatencyMsec = (int)ceil(1000.*((float)Player::getBufferSize()/(float)EngineObject::getPlaySrate()));
     qDebug("got latency msec %i, buffer size %i",iLatencyMsec,Player::getBufferSize());
     
-	//if (abs(iLatencyMsec-config->getValueString(ConfigKey("[Soundcard]","Latency")).toInt())>1)
+    // Only correct latency slider if it's more than two milliseconds off the actual value.
+    // By changing the latency sliders value, the device is closed and opened again, and this
+    // function will thus be called again, resulting in a loop
+    if (abs(iLatencyMsec-config->getValueString(ConfigKey("[Soundcard]","Latency")).toInt())>2)
     {
         config->set(ConfigKey("[Soundcard]","Latency"), ConfigValue(iLatencyMsec));
         slotUpdate();
