@@ -29,6 +29,7 @@
 #include <qstatusbar.h>
 #include <qwhatsthis.h>
 #include <qstring.h>
+#include <qstringlist.h>
 #include <qpixmap.h>
 #include <qmsgbox.h>
 #include <qfiledialog.h>
@@ -161,6 +162,10 @@ class MixxxApp : public QMainWindow
     ConfigKey PlaylistKey;
     ConfigObject<ConfigValue> *config;
     ConfigObject<ConfigValueMidi> *midiconfig;
+    /** List of available midi configurations */
+    QStringList midiConfigList;
+    /** Name of active midi configuration */
+    //QString midiConfigActive;
 
     /** Popup menu used to select player when a track has been selected */
     QPopupMenu *playSelectMenu;
