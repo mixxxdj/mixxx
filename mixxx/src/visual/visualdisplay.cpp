@@ -44,7 +44,7 @@ VisualDisplay::VisualDisplay(VisualBuffer *pVisualBuffer, const char *type, cons
 
     fishEyeMode = false;
 
-    fishEyeLengthScale = 0.15f;
+    fishEyeLengthScale = 0.5f;
     fishEyeSignalFraction = 0.01f;
     signalScaleHeight = 1.0f;
     signalScaleLength = 1.0f;
