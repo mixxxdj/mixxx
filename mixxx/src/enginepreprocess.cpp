@@ -19,12 +19,12 @@
 #include "enginespectralfwd.h"
 #include "windowkaiser.h"
 #include "configobject.h"
-#include "soundbuffer.h"
+#include "readerbuffer.h"
 
-EnginePreProcess::EnginePreProcess(SoundBuffer *_soundbuffer, int _specNo, WindowKaiser *window)
+EnginePreProcess::EnginePreProcess(ReaderBuffer *_readerbuffer, int _specNo, WindowKaiser *window)
 {
     specNo = _specNo;
-    soundbuffer = _soundbuffer;
+    readerbuffer = _readerbuffer;
 
     // Allocate list of EngineSpectralFwd objects, corresponding to one object for each
     // stepsize throughout the readbuffer of EngineBuffer
@@ -63,7 +63,8 @@ CSAMPLE *EnginePreProcess::process(const CSAMPLE *, const int)
 
 void EnginePreProcess::process(int idx)
 {
-    specList.at(idx)->process(soundbuffer->getWindowPtr(idx),0);
+    specList.at(idx)->process(readerbuffer->getWindowPtr(idx),0);
     hfc[idx] = specList.at(idx)->getHFC();    
     //qDebug("hfc: %f",hfc[idx]);
 }
+
