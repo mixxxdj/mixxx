@@ -226,7 +226,7 @@ void *ReaderExtractBeat::processChunk(const int idx, const int start_idx, const 
             --it2;
 
             // Reset beatIntVector
-            for (int i=0; i<histSize; i++)
+            for (i=0; i<histSize; i++)
                 beatIntVector[i] = 0.;
 
             // Current interval in seconds
@@ -317,7 +317,7 @@ void *ReaderExtractBeat::processChunk(const int idx, const int start_idx, const 
                 qDebug("maxidx: %i", maxidx);
                       qDebug("beat at %i, beatIntMax: %f, maxidx %i",(*it),beatIntMax,maxidx);
 
-                      for (int i=0; i<histSize; i++)
+                      for (i=0; i<histSize; i++)
                         if (beatIntVector[i]>0.)
                           std::cout << "(" << i << "," << beatIntVector[i] << ") ";
                       std::cout << "\n";

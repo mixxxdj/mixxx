@@ -49,6 +49,14 @@
 #include "reader.h"
 #include "enginebuffer.h"
 #include "tracklist.h"
+#include "dlgtracklist.h"
+#include "dlgflanger.h"
+#include "dlgplaylist.h"
+#include "dlgmaster.h"
+#include "dlgchannel.h"
+#include "dlgplaycontrol.h"
+#include "dlgcrossfader.h"
+#include "dlgsplit.h"
 
 #ifdef __ALSA__
   #include "playeralsa.h"
@@ -127,7 +135,7 @@ MixxxApp::MixxxApp(QApplication *a)
   addFiles(config->getValueString(PlaylistKey).latin1());
 
   // Experimental new tracklist:
-  //TrackList Tracks( config->getValueString(PlaylistKey) );
+  TrackList Tracks( config->getValueString(PlaylistKey), view->tracklist->tableTracks );
 
   // Construct popup menu used to select playback channel on track selection
   playSelectMenu = new QPopupMenu(this);
@@ -762,7 +770,7 @@ void MixxxApp::slotHelpAbout()
                       tr("Mixxx\nVersion " VERSION "\nBy Tue and Ken Haste Andersen\nReleased under the GNU General Public Licence version 2") );
 }
 
-void MixxxApp::slotChangePlay_1()
+void MixxxApp::slotChangePlay_1( )
 {
     buffer1->getReader()->requestNewTrack(selection);
     slotSetTitle(selection, view->playcontrol1);

@@ -5,15 +5,22 @@
 #include <qmessagebox.h>
 #include <qdir.h>
 #include <qtextstream.h>
+#include <qtable.h>
+#include <qpopupmenu.h>
+#include <qpoint.h>
 
 #include "tracklist.h"
 #include "trackinfoobject.h"
+#include "images/a.xpm"
+#include "images/b.xpm"
 
-TrackList::TrackList( const QString sDirectory )
+TrackList::TrackList( const QString sDirectory, QTable *ptableTracks ) 
 {
 	m_sDirectory = sDirectory;
+	m_ptableTracks = ptableTracks;
+	m_ptrackCurrent = 0;
 
-	// Initialize xml file:
+ 	// Initialize xml file:
 	QFile opmlFile( m_sDirectory + "/tracklist.xml" );
 	
 	if ( !opmlFile.exists() )
@@ -56,11 +63,50 @@ TrackList::TrackList( const QString sDirectory )
 	// Run through all the files and add the new ones to the xml file:
 	if (AddFiles( m_sDirectory ))
 		WriteXML();
+
+	// Put information from all the tracks into the table:
+	int iRow=0;
+	m_ptableTracks->setNumRows( m_lTracks.count() );
+	for (TrackInfoObject *Track = m_lTracks.first(); Track; Track = m_lTracks.next() )
+	{
+		m_ptableTracks->setText( iRow, 1, Track->m_sTitle );
+		m_ptableTracks->setText( iRow, 2, Track->m_sArtist );
+		m_ptableTracks->setText( iRow, 3, Track->m_sType );
+		m_ptableTracks->setText( iRow, 4, Track->m_sDuration );
+		m_ptableTracks->setText( iRow, 5, Track->m_sBitrate );
+		iRow ++;
+	}
+
+	// Find the track which has been played the most times:
+	m_iMaxTimesPlayed = 1;
+	for (unsigned int i=0; i<m_lTracks.count(); i++)
+		if ( m_lTracks.at(i)->m_iTimesPlayed > m_iMaxTimesPlayed)
+			m_iMaxTimesPlayed = m_lTracks.at(i)->m_iTimesPlayed;
+
+	// Update the scores for all the tracks:
+	UpdateScores();
+
+	// Construct popup menu used to select playback channel on track selection
+	playSelectMenu = new QPopupMenu( );
+	playSelectMenu->insertItem(QIconSet(a_xpm), "Player A",this, SLOT(slotChangePlay_1()));
+	playSelectMenu->insertItem(QIconSet(b_xpm), "Player B",this, SLOT(slotChangePlay_2()));
+
+	// Connect the right click to the slot where the menu is shown:
+	if (connect( m_ptableTracks, SIGNAL( pressed( int, int, int, const QPoint &) ),
+		SLOT( slotRightClick( int, int, int, const QPoint &) ) ) )
+		qDebug("Connected context menu on tracklist.");
 }
 
 TrackList::~TrackList()
 {
 	// Delete all the tracks:
+}
+
+void TrackList::UpdateScores()
+{
+	for (unsigned int i=0; i<m_lTracks.count(); i++)
+		m_ptableTracks->setText( i, 0, 
+		QString("%1").arg( (int) ( 99*m_lTracks.at(i)->m_iTimesPlayed/m_iMaxTimesPlayed ), 2 ) );
 }
 
 /*
@@ -150,6 +196,9 @@ bool TrackList::AddFiles(const char *path)
 	return bFoundFiles;
 }
 
+/*
+	Returns the TrackInfoObject which has the filename sFilename.
+*/
 TrackInfoObject *TrackList::FileExistsInList( const QString sFilename )
 {	
 	TrackInfoObject *Track;
@@ -158,5 +207,41 @@ TrackInfoObject *TrackList::FileExistsInList( const QString sFilename )
 		Track = m_lTracks.next();
 
 	return Track;
+}
+
+/*
+	These two slots basically just routes information further, but adds
+	track information.
+*/
+void TrackList::slotChangePlay_1()
+{
+	TrackInfoObject *track = m_lTracks.at( m_ptableTracks->currentRow() );
+	emit signalChangePlay_1( track );
+
+	// Update score:
+	track->m_iTimesPlayed++;
+	UpdateScores();
+}
+
+void TrackList::slotChangePlay_2()
+{
+	TrackInfoObject *track = m_lTracks.at( m_ptableTracks->currentRow() );
+	emit signalChangePlay_2( track );
+
+	// Update score:
+	track->m_iTimesPlayed++;
+	UpdateScores();
+}
+
+/*
+	Slot connected to popup menu activated when a track is clicked:
+*/
+void TrackList::slotRightClick( int iRow, int iCol, int iButton, const QPoint &pos )
+{
+	// Store the selected track:
+	m_ptrackCurrent = m_lTracks.at( iRow );
+
+	// Display popup menu
+    playSelectMenu->popup(pos);
 }
 

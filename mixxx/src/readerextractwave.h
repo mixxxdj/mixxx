@@ -30,7 +30,7 @@ class ReaderExtractFFT;
 class ReaderExtractHFC;
 class ReaderExtractBeat;
 
-#define EXTRACT
+//#define EXTRACT
 
 /**
   *@author Tue & Ken Haste Andersen

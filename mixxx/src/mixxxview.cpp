@@ -19,6 +19,14 @@
 
 #include <qtable.h>
 #include <qdir.h>
+#include "dlgtracklist.h"
+#include "dlgflanger.h"
+#include "dlgplaylist.h"
+#include "dlgmaster.h"
+#include "dlgchannel.h"
+#include "dlgplaycontrol.h"
+#include "dlgcrossfader.h"
+#include "dlgsplit.h"
 
 MixxxView::MixxxView(QWidget *parent, MixxxDoc *doc) : QWidget(parent)
 {
@@ -36,6 +44,7 @@ MixxxView::MixxxView(QWidget *parent, MixxxDoc *doc) : QWidget(parent)
     crossfader = new DlgCrossfader(this);
     split = new DlgSplit(this);
     flanger = new DlgFlanger(this);
+	tracklist = new DlgTracklist(this);
 
     // Layout management
     mainGrid = new QGridLayout(this,6,3); // A layout on a widget
@@ -48,6 +57,8 @@ MixxxView::MixxxView(QWidget *parent, MixxxDoc *doc) : QWidget(parent)
     mainGrid->addMultiCellWidget(flanger,2,2,5,5);
     mainGrid->addMultiCellWidget(crossfader,1,1,0,4);
     mainGrid->addMultiCellWidget(playlist,2,2,0,4);
+	mainGrid->addMultiCellWidget(tracklist,2,2,0,4);
+	tracklist->hide();
 
     //let the ratio between the widths of columns 0 and 1 be 2:3.
     mainGrid->setColStretch( 0, 240);

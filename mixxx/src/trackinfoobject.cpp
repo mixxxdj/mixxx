@@ -10,11 +10,13 @@
 TrackInfoObject::TrackInfoObject( const QString sFile )
 {
 	m_sFilename = sFile;
+	m_sFilepath = "";
 	m_sArtist = "";
 	m_sTitle = "";
 	m_sType= "";
 	m_sDuration = "??:??";
-	m_iDurationSeconds = 0;
+	m_sBitrate = "";
+	m_iTimesPlayed = 0;
 
 	// Check that the file exists:
 	CheckFileExists();
@@ -31,6 +33,9 @@ TrackInfoObject::TrackInfoObject( const QDomNode &nodeHeader )
 	m_sFilename = node.toElement().text();
 	node = node.nextSibling();
 
+	m_sFilepath = node.toElement().text();
+	node = node.nextSibling();
+
 	m_sTitle = node.toElement().text();
 	node = node.nextSibling();
 
@@ -42,6 +47,11 @@ TrackInfoObject::TrackInfoObject( const QDomNode &nodeHeader )
 	
 	m_sDuration = node.toElement().text();
 	node = node.nextSibling();
+
+	m_sBitrate = node.toElement().text();
+	node = node.nextSibling();
+
+	m_iTimesPlayed = node.toElement().text().toInt();
 
 	// Check that the actual file exists:
 	CheckFileExists();
@@ -71,10 +81,13 @@ void TrackInfoObject::CheckFileExists()
 void TrackInfoObject::WriteToXML( QDomDocument &doc, QDomElement &header )
 {
 	AddElement( doc, header, "Filename", m_sFilename );
+	AddElement( doc, header, "Filepath", m_sFilepath );
 	AddElement( doc, header, "Title", m_sTitle );
 	AddElement( doc, header, "Artist", m_sArtist );
 	AddElement( doc, header, "Type", m_sType );
 	AddElement( doc, header, "Duration", m_sDuration );
+	AddElement( doc, header, "Bitrate", m_sBitrate );
+	AddElement( doc, header, "TimesPlayed", QString("%1").arg(m_iTimesPlayed) );
 }
 
 /*
@@ -89,9 +102,20 @@ void TrackInfoObject::AddElement( QDomDocument &doc, QDomElement &header,
 }
 
 /*
-	Dummy method for parsing information from the file.
+	Dummy method for parsing information from knowing only the file name.
 */
 void TrackInfoObject::Parse()
 {
-	m_sTitle = m_sFilename;
+	if (m_sFilename.find('-') != -1)
+	{
+		m_sArtist = m_sFilename.section('-',0,0); // Get the first part
+		m_sTitle = m_sFilename.section('-',1,1); // Get the second part
+		m_sTitle = m_sTitle.section('.',0,-2); // Remove the ending
+		m_sType = m_sFilename.section('.',-1); // Get the ending
+	} 
+	else 
+	{
+		m_sTitle = m_sFilename.section('.',0,-2); // Remove the ending;
+		m_sType = m_sFilename.section('.',-1); // Get the ending
+	}
 }
