@@ -6,11 +6,11 @@
 #include "soundsource.h"
 #include <mad.h>
 #include "errno.h"
-#include <vector.h>
+#include <vector>
 
 class SoundSourceHeavymp3 : public SoundSource {
  private:
-    vector<SAMPLE> buffer;
+	 std::vector<SAMPLE> buffer;
     long unsigned bufferlen;
     FILE *file;
     unsigned inputbuf_len;

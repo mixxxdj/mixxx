@@ -8,7 +8,7 @@ EngineIIRfilter::EngineIIRfilter(int potmeter_midi, int button_midi,
   //connect(killbutton, SIGNAL(valueChanged(valueType)), this, SLOT(slotUpdate()));
 
   filterpot = new ControlLogpotmeter("filterpot", potmeter_midi, midi, 5.);
-  connect(filterpot, SIGNAL(valueChanged(FLOAT)), this, SLOT(slotUpdate()));
+  connect(filterpot, SIGNAL(valueChanged(FLOAT_TYPE)), this, SLOT(slotUpdate()));
   coefs = _coefs;
   buffer = new CSAMPLE[MAX_BUFFER_LEN];
   gain = 1;

@@ -13,13 +13,13 @@ class EngineIIRfilter : public EngineObject {
  protected:
   ControlPushButton* killbutton;
   const double *coefs;
-  static const int NZEROS = 8;
-  static const int NPOLES = 8;
+#define NZEROS 8
+#define NPOLES 8
   double xv[NZEROS+1], yv[NPOLES+1];
   CSAMPLE *buffer;
  public:
   ControlPotmeter* filterpot;
-  FLOAT gain;
+  FLOAT_TYPE gain;
   EngineIIRfilter(int, int , int , MidiObject*, const double *);
   ~EngineIIRfilter();
   virtual CSAMPLE *process(const CSAMPLE*, const int);

@@ -19,7 +19,7 @@
 #define DLGPLAYLIST_H
 
 #include <qwidget.h>
-#include <dlgplaylistdlg.h>
+#include "dlgplaylistdlg.h"
 
 /**
   *@author Tue and Ken Haste Andersen

@@ -19,7 +19,7 @@
 #define DLGCHANNEL_H
 
 #include <qwidget.h>
-#include <dlgchanneldlg.h>
+#include "dlgchanneldlg.h"
 
 /**
   *@author Tue and Ken Haste Andersen

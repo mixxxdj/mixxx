@@ -20,14 +20,16 @@
 
 #include <qobject.h>
 #include "defs.h"
+#ifndef Q_WS_WIN
 #include <audiofile.h>
+#endif
 #include <stdio.h>
 #include <fstream>
 #include <stdlib.h>
 #include <iostream>
 #include <sys/stat.h>
 #include <string.h>
-#include <mad.h>
+#include "mad.h"
 #include <vector>
 #include "errno.h"
 
@@ -44,6 +46,7 @@ public:
   virtual long unsigned length() = 0;
 };
 
+#ifndef Q_WS_WIN
 class AFlibfile : public SoundSource {
  public:
   AFlibfile(const char*);
@@ -56,6 +59,7 @@ class AFlibfile : public SoundSource {
   AFfilehandle fh;
   unsigned long filelength, mp3filelength;
 };
+#endif
 
 class mp3file : public SoundSource {
  public:
@@ -73,7 +77,7 @@ class mp3file : public SoundSource {
   mad_stream Stream;
   mad_frame Frame;
   mad_synth Synth;
-  vector<long> ftable,sampletable;
+  std::vector<long> ftable,sampletable;
 };
 
 

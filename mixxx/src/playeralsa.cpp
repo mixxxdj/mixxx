@@ -14,7 +14,7 @@
  *   (at your option) any later version.                                   *
  *                                                                         *
  ***************************************************************************/
-
+#ifdef Q_WS_X11
 #include "playeralsa.h"
 
 PlayerALSA::PlayerALSA(int size, vector<EngineObject *> *engines) : Player(size, engines)
@@ -164,3 +164,4 @@ void PlayerALSA::rt_priority()
 	if (sched_setscheduler(0, SCHED_FIFO, &schp) != 0)
 		qWarning("Not possible to give audio I/O thread realtime prioriy.");
 }
+#endif

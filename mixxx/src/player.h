@@ -28,7 +28,7 @@
 
 class Player : public QObject {
 public:
-	Player(int, vector<EngineObject *> *);
+	Player(int, std::vector<EngineObject *> *);
 	~Player();      // Deallocate
 	virtual void start(EngineBuffer*); // Start audio stream
 	virtual void stop() = 0;           // Stops audio stream
@@ -42,7 +42,7 @@ protected:
 	void allocate();
 	void deallocate();
 
-	vector<EngineObject *> *engines;
+	std::vector<EngineObject *> *engines;
 	CSAMPLE *process_buffer,*tmp1, *tmp2;
 	int index;    // Current playback frame in input buffer
 	EngineBuffer* reader;

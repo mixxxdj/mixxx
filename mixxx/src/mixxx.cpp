@@ -22,7 +22,7 @@
 #include <qaccel.h>
 #include <qpushbutton.h>
 #include <qtable.h>
-#include <qknob.h>
+#include "qknob.h"
 
 #include "mixxx.h"
 #include "filesave.xpm"
@@ -76,7 +76,12 @@ MixxxApp::MixxxApp()
 
   // Initialize player with a desired buffer size
   qDebug("Init player...");
+
+#ifndef Q_WS_WIN
   player = new PlayerALSA(BUFFER_SIZE, &engines);
+#else
+  player = new PlayerPortAudio(BUFFER_SIZE, &engines);
+#endif
   //player = new PlayerPortAudio(BUFFER_SIZE);
 
   qDebug("Init engine...");

@@ -33,28 +33,28 @@ class ControlPotmeter : public ControlObject  {
  protected:
   char position;  // position of the controller.
   char* name;        // The name of the controller
-  FLOAT value;    // The actual value of the controller
-  static char const maxPosition = 127;
-  static char const minPosition  = 0;
-  static char const middlePosition = (maxPosition-minPosition)/2;
-  static char const positionrange = maxPosition-minPosition;
-  FLOAT maxvalue, minvalue, valuerange;
+  FLOAT_TYPE value;    // The actual value of the controller
+#define maxPosition 127 
+#define minPosition 0
+#define middlePosition ((maxPosition-minPosition)/2)
+#define positionrange (maxPosition-minPosition)
+  FLOAT_TYPE maxvalue, minvalue, valuerange;
   MidiObject *midi;
  public:
   int midino;
   ControlPotmeter();
-  ControlPotmeter(char* n, short int, MidiObject *, FLOAT=0.0, FLOAT=1.0);
+  ControlPotmeter(char* n, short int, MidiObject *, FLOAT_TYPE=0.0, FLOAT_TYPE=1.0);
   virtual ~ControlPotmeter();
   char* print();
   char getmidino();
-  void setValue(FLOAT newvalue);
-  FLOAT getValue();
+  void setValue(FLOAT_TYPE newvalue);
+  FLOAT_TYPE getValue();
   char getPosition();
   virtual void midiEvent(int);
 public slots:
   virtual void slotSetPosition(int);
 signals:
-  void valueChanged(FLOAT);
+  void valueChanged(FLOAT_TYPE);
   void recievedMidi(int);
 };
 

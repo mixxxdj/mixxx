@@ -1,13 +1,14 @@
 #ifndef MIDIOBJECT_H
 #define MIDIOBJECT_H
 
-#include <sys/asoundlib.h>
-#include <stdlib.h>
+#include "stdio.h"
+#include "stdlib.h"
+#include "portmidi.h"
 #include <vector>
 #include "defs.h"
 #include <qthread.h>
 #include <qobject.h>
-#include <sched.h>
+//#include <sched.h>
 #include "controlpushbutton.h"
 #include "controlpotmeter.h"
 class ControlPotmeter;
@@ -22,12 +23,12 @@ public:
   void addpotmeter(ControlPotmeter* newpotmeter);
   void removepotmeter(ControlPotmeter* potmeter);
  protected:
+  PmEvent buffer[2];
+  PmStream *midi;
   void run();
-  snd_rawmidi_t *handle;
   int fd, count, size, no_potmeters, no_buttons;
-  char *buffer;
-  vector<ControlPushButton*> buttons;
-  vector<ControlPotmeter*> potmeters;
+  std::vector<ControlPushButton*> buttons;
+  std::vector<ControlPotmeter*> potmeters;
 };
 
 #endif

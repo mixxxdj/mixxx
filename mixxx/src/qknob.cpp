@@ -125,7 +125,7 @@ QKnob::~QKnob()
 	delete button31;
 }
 
-void QKnob::repaintScreen(const QRect *cr=0)
+void QKnob::repaintScreen(const QRect *cr)
 {
 	if (cr != 0)
 	{
