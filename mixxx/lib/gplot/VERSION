@@ -1,0 +1,4 @@
+EIC gnuplot API (file date 05-Jan-2003)
+URL: http://eic.sourceforge.net/addons/gnuplot/
+
+NOTE: Use of randg commented out in scat_plot function. 

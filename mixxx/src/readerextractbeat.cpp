@@ -54,6 +54,12 @@ ReaderExtractBeat::ReaderExtractBeat(ReaderExtract *input, int frameSize, int fr
         peakIt[i] = 0;
         
     hfc = (CSAMPLE *)input->getBasePtr();
+
+
+#ifdef __GNUPLOT__
+    // Initialize gnuplot interface
+    gnuplot = openPlot("hist");
+#endif
 }
 
 ReaderExtractBeat::~ReaderExtractBeat()
@@ -208,6 +214,7 @@ void *ReaderExtractBeat::processChunk(const int idx, const int start_idx, const 
     // Perform updates to histogram if peaks was found
     if (foundPeak)
     {
+        qDebug("PEAK: %i",(*it));
         int count = 0;
         while ((*it)>=chunkStart && (*it)<=chunkEnd)
         {
@@ -277,24 +284,46 @@ void *ReaderExtractBeat::processChunk(const int idx, const int start_idx, const 
                         
 
             // Check if maximum interval is max in beatIntVector
+                CSAMPLE beatIntMax = 0.;
             if (maxidx>-1)
             {
                 bool beat = true;
-                for (int i=0; i<maxidx; i++)
-                {
-                    if (beatIntVector[i]>beatIntVector[maxidx])
-                    {
-                        beat = false;
-                        break;
-                    }
-                }
-                beatBuffer[(*it)] = beat;
 
-                if (beat)
-                    qDebug("beat at %f",(CSAMPLE)(*it)/(CSAMPLE)getRate());
+                // Search for max in a small range around maxidx in beatIntVector
+                const int RANGE = 5;
+                for (int i=max(0,maxidx-RANGE); i<min(histSize,maxidx+RANGE); i++)
+                    beatIntMax = max(beatIntMax,beatIntVector[i]);
+                
+                if (beatIntMax>0)
+                {
+
+                  for (int i=0; i<max(0,maxidx-RANGE); i++)
+                  {
+                      if (beatIntVector[i]>beatIntVector[maxidx])
+                      {
+                          beat = false;
+                          break;
+                      }
+                  }
+                  if (beat)
+                  {
+                    qDebug("BEAT INT FOUND");
+                  }
+
+                  beatBuffer[(*it)] = beat;
+                }
             }
 
+                qDebug("maxidx: %i", maxidx);
+                      qDebug("beat at %i, beatIntMax: %f, maxidx %i",(*it),beatIntMax,maxidx);
 
+                      for (int i=0; i<histSize; i++)
+                        if (beatIntVector[i]>0.)
+                          std::cout << "(" << i << "," << beatIntVector[i] << ") ";
+                      std::cout << "\n";
+
+
+                      
             ++it;
             if (it == peaks.end())
                 it = peaks.begin();
@@ -308,16 +337,20 @@ void *ReaderExtractBeat::processChunk(const int idx, const int start_idx, const 
     for (i=0; i<histSize; i++)
         hist[i] *= histDownWrite;
     
-    // Find and print maximum
+    // Find maximum
     int maxidx = -1;
     for (i=1; i<histSize-1; i++)
     {
-//        std::cout << hist[i] << " ";   
         if (hist[i]>hist[i-1] && hist[i]>hist[i+1])
             if ((maxidx>-1 && hist[i]>hist[maxidx]) || maxidx==-1)
                 maxidx = i;
     }
     //std::cout << "\n";        
+
+#ifdef __GNUPLOT__
+    plotData(hist,histSize,gnuplot,plotFloats);
+#endif
+
     
     // Update remaining part of bpmBuffer
 /*
