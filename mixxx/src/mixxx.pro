@@ -6,14 +6,10 @@
 SOURCES += playerportaudio.cpp
 HEADERS += playerportaudio.h
 DEFINES += __PORTAUDIO__
-# For unix, choose between static or dynamic linking of PortAudio. If you
-# want dynamic use only the LIBS line, else use the two first lines.
-# PortAudio files needs to be placed in ../lib for the static to work.
-#unix:!macx:LIBS += -lportaudio
-unix:!macx:SOURCES += ../lib/pa_lib.c ../lib/pa_convert.c ../lib/pa_unix_oss.c
-unix:!macx:HEADERS += ../lib/portaudio.h ../lib/pa_host.h
-win32:SOURCES += ../lib/pa_lib.c ../lib/dsound_wrapper.c ../lib/pa_dsound.c
-win32:HEADERS += ../lib/portaudio.h ../lib/pa_host.h
+unix:!macx:SOURCES += ../lib/portaudio-v18/pa_lib.c ../lib/portaudio-v18/pa_convert.c ../lib/portaudio-v18/pa_unix_oss.c
+unix:!macx:HEADERS += ../lib/portaudio-v18/portaudio.h ../lib/portaudio-v18/pa_host.h
+win32:SOURCES += ../lib/portaudio-v18/pa_lib.c ../lib/portaudio-v18/dsound_wrapper.c ../lib/portaudio-v18/pa_dsound.c
+win32:HEADERS += ../lib/portaudio-v18/portaudio.h ../lib/portaudio-v18/pa_host.h
 win32:LIBS += dsound.lib
 macx:SOURCES += ../../../libs/portaudio_v18/pa_lib.c ../../../libs/portaudio_v18/pa_mac_core.c ../../../libs/portaudio_v18/pa_convert.c
 macx:HEADERS += ../../../libs/portaudio_v18/portaudio.h ../../../libs/portaudio_v18/pa_host.h
@@ -30,7 +26,6 @@ unix:!macx:DEFINES += __OSSMIDI__
 win32:SOURCES += midiobjectwin.cpp
 win32:HEADERS += midiobjectwin.h
 win32:DEFINES += __WINMIDI__
-
 
 # PortMidi (Not really working, Linux ALSA, Windows and MacOS X)
 #SOURCES += midiobjectportmidi.cpp
