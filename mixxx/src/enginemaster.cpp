@@ -22,17 +22,11 @@
 #include "engineclipping.h"
 #include "engineflanger.h"
 #include "enginevumeter.h"
-#include "dlgmaster.h"
-#include "dlgcrossfader.h"
-#include "wslider.h"
-#include "wpflbutton.h"
-#include "wknob.h"
 #include "configobject.h"
 #include "controlpotmeter.h"
 #include "controlengine.h"
 
-EngineMaster::EngineMaster(DlgMaster *master_dlg, DlgCrossfader *crossfader_dlg,
-                           EngineBuffer *_buffer1, EngineBuffer *_buffer2,
+EngineMaster::EngineMaster(EngineBuffer *_buffer1, EngineBuffer *_buffer2,
                            EngineChannel *_channel1, EngineChannel *_channel2,
                            EngineFlanger *_flanger,
                            const char *group)
@@ -49,28 +43,26 @@ EngineMaster::EngineMaster(DlgMaster *master_dlg, DlgCrossfader *crossfader_dlg,
 
     // Crossfader
     ControlPotmeter *p = new ControlPotmeter(ConfigKey(group, "crossfader"),-1.,1.);
-    p->setWidget(crossfader_dlg->SliderCrossfader);
     crossfader = new ControlEngine(p);
     
     // Master volume
-    volume = new EngineVolume(master_dlg->KnobVolume,ConfigKey(group,"volume"));
+    volume = new EngineVolume(ConfigKey(group,"volume"));
 
     // Clipping
-    clipping = new EngineClipping(master_dlg->BulbClipping, group);
+    clipping = new EngineClipping(group);
 
     // VU meter:
-    vumeter = new EngineVUmeter(master_dlg->vumeter, group);
+    vumeter = new EngineVUmeter(group);
 
     // Headphone volume
-    head_volume = new EngineVolume(master_dlg->KnobHeadVol,ConfigKey(group, "headvolume"));
+    head_volume = new EngineVolume(ConfigKey(group, "headVolume"));
    
     // Headphone mix (left/right)
-    p = new ControlPotmeter(ConfigKey(group, "head_mix"),-1.,1.);
-    p->setWidget(master_dlg->KnobHeadLR);
+    p = new ControlPotmeter(ConfigKey(group, "headMix"),-1.,1.);
     head_mix = new ControlEngine(p);
 
     // Headphone Clipping
-    head_clipping = new EngineClipping(0,"");
+    head_clipping = new EngineClipping("");
 
     pfl1 = channel1->getPFL();
     pfl2 = channel2->getPFL();

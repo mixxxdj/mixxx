@@ -17,15 +17,13 @@
 #include "enginepregain.h"
 #include "controllogpotmeter.h"
 #include "controlengine.h"
-#include "wknob.h"
 
 /*----------------------------------------------------------------
   A pregaincontrol is ... a pregain.
   ----------------------------------------------------------------*/
-EnginePregain::EnginePregain(WKnob *knob, const char *group)
+EnginePregain::EnginePregain(const char *group)
 {
     ControlLogpotmeter *p = new ControlLogpotmeter(ConfigKey(group, "pregain"), 5.0);
-    p->setWidget(knob);
     potmeterPregain = new ControlEngine(p);
     buffer = new CSAMPLE[MAX_BUFFER_LEN];
 }

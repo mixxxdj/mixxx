@@ -20,14 +20,13 @@
 #include "engineobject.h"
 
 class ControlEngine;
-class WKnob;
 
 const int max_delay = 20000; 
 
 class EngineDelay : public EngineObject
 {
 public:
-  EngineDelay(WKnob *, const char *group);
+  EngineDelay(const char *group);
   ~EngineDelay();
     void notify(double) {};
   CSAMPLE *process(const CSAMPLE *, const int);

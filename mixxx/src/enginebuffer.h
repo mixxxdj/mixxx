@@ -19,13 +19,10 @@
 #define ENGINEBUFFER_H
 
 #include <qapplication.h>
-#include <qaction.h>
 #include "defs.h"
 #include "engineobject.h"
 #include "monitor.h"
 
-class MixxxApp;
-class DlgPlaycontrol;
 class ControlEngine;
 class ControlObject;
 class Reader;
@@ -44,7 +41,7 @@ const int audioBeatMarkLen = 40;
 class EngineBuffer : public EngineObject
 {
 public:
-    EngineBuffer(MixxxApp *_mixxx, QAction *actionAudioBeatMark, PowerMate *, DlgPlaycontrol *_playcontrol, const char *_group, WVisual *pVisual);
+    EngineBuffer(PowerMate *, const char *_group, WVisual *pVisual);
     ~EngineBuffer();
     /** Returns pointer to Reader object. Used in MixxxApp. */
     Reader *getReader();
@@ -66,9 +63,6 @@ private:
     void CueSet();
 //    void bpmChange(double);
     
-    MixxxApp *mixxx;
-    QApplication *app;
-
     /** Pointer to reader */
     Reader *reader;    
     /** Buffer used in the process() */
@@ -89,8 +83,6 @@ private:
     /** Mutex controlling weather the process function is in pause mode. This happens
       * during seek and loading of a new track */
     QMutex pause;
-    /** Pointer to DlgPlaycontrol dialog. Used when updating file info window */
-    DlgPlaycontrol *playcontrol;
 
     ControlEngine *playButton, *rateSlider, *wheel, *playposSlider, *bufferposSlider, *audioBeatMark;
     ControlEngine *buttonCueSet, *buttonCueGoto;

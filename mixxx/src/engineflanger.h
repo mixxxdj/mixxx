@@ -19,14 +19,13 @@
 
 #include "engineobject.h"
 
-class DlgFlanger;
 class ControlEngine;
 
 const int max_delay = 5000;  
 
 class EngineFlanger : public EngineObject {
 public:
-  EngineFlanger(DlgFlanger *dlg_flanger, const char *group);
+  EngineFlanger(const char *group);
   ~EngineFlanger();
     void notify(double) {};
   CSAMPLE *process(const CSAMPLE *, const int);

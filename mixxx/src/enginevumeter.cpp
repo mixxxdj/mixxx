@@ -19,12 +19,11 @@
 #include "controlengine.h"
 #include "controlpotmeter.h"
 
-EngineVUmeter::EngineVUmeter(WVUmeter *wVUmeter, const char *group)
+EngineVUmeter::EngineVUmeter(const char *group)
 {
     // The VUmeter widget is controlled via a controlpotmeter, which means
     // that it should react on the setValue(int) signal.
     ControlPotmeter *ctrlVUmeter = new ControlPotmeter(ConfigKey(group, "VUmeter"), 0., 1.);
-    ctrlVUmeter->setWidget(wVUmeter);
     m_ctrlVUmeter = new ControlEngine(ctrlVUmeter);
     m_ctrlVUmeter->set(0);
 

@@ -31,6 +31,7 @@ class ControlPushButton : public ControlObject
 {
     Q_OBJECT
 public:
+    // LED??????????
     ControlPushButton(ConfigKey key, WBulb *led = 0);
     ~ControlPushButton();
     char *print();

@@ -15,11 +15,6 @@
  ***************************************************************************/
 
 #include "engineflanger.h"
-// #include "qradiobutton.h"
-#include "wknob.h"
-#include "wpushbutton.h"
-// #include <qpushbutton.h>
-#include "dlgflanger.h"
 #include "controlpotmeter.h"
 #include "controlpushbutton.h"
 #include "controlengine.h"
@@ -33,32 +28,27 @@
     LFOamplitude - the amplitude of the modulation of the delay length.
     depth - the depth of the flanger, controlled by a ControlPotmeter.
   ----------------------------------------------------------------*/
-EngineFlanger::EngineFlanger(DlgFlanger *dlg_flanger, const char *group)
+EngineFlanger::EngineFlanger(const char *group)
 {
     // Init. buffers:
     process_buffer = new CSAMPLE[MAX_BUFFER_LEN];
     delay_buffer = new CSAMPLE[max_delay+1];
 
     // Init. potmeters
-    ControlPotmeter *p = new ControlPotmeter(ConfigKey(group, "lfo_depth"), 0., 1.);
-    p->setWidget(dlg_flanger->DialDepth);
+    ControlPotmeter *p = new ControlPotmeter(ConfigKey(group, "lfoDepth"), 0., 1.);
     potmeterDepth = new ControlEngine(p);
     
-    p = new ControlPotmeter(ConfigKey(group, "lfo_delay"), 50., 1000.);
-    p->setWidget(dlg_flanger->DialDelay);
+    p = new ControlPotmeter(ConfigKey(group, "lfoDelay"), 50., 1000.);
     potmeterDelay = new ControlEngine(p);
 
-    p = new ControlPotmeter(ConfigKey(group, "lfo_period"), 5000., 80000.);
-    p->setWidget(dlg_flanger->DialPeriod);
+    p = new ControlPotmeter(ConfigKey(group, "lfoPeriod"), 5000., 80000.);
     potmeterLFOperiod = new ControlEngine(p);
 
     // Init. channel selects:
-    ControlPushButton *p_a =  new ControlPushButton( ConfigKey(group, "FlangerA"), dlg_flanger->BulbChannelA);
-    p_a->setWidget(dlg_flanger->PushButtonChA);
+    ControlPushButton *p_a =  new ControlPushButton(ConfigKey(group, "ch1"));
     pushbuttonChannelA = new ControlEngine(p_a);
     
-    ControlPushButton *p_b =  new ControlPushButton( ConfigKey(group, "FlangerB"), dlg_flanger->BulbChannelB);
-    p_b->setWidget(dlg_flanger->PushButtonChB);
+    ControlPushButton *p_b =  new ControlPushButton(ConfigKey(group, "ch2"));
     pushbuttonChannelB = new ControlEngine(p_b);
 
     // Fixed values of controls:

@@ -20,7 +20,6 @@
 
 #include "engineobject.h"
 
-class DlgChannel;
 class ControlEngine;
 class EnginePregain;
 class EngineFilterBlock;
@@ -35,7 +34,7 @@ class EngineVUmeter;
 
 class EngineChannel : public EngineObject  {
 public:
-    EngineChannel(DlgChannel *, const char *group);
+    EngineChannel(const char *group);
     ~EngineChannel();
     void notify(double) {};
     ControlEngine *getPFL();

@@ -103,6 +103,21 @@ void ControlObject::setControlEngine(ControlEngine *pControlEngine)
     m_pControlEngine = pControlEngine;
 }
 
+void ControlObject::setWidget(QWidget *widget, ConfigKey key)
+{
+    // Loop through the list of ConfigObjects to find one matching
+    // key, and associate the found object with the widget.
+    ControlObject *c;
+    for (c=list.first(); c; c=list.next())
+    {
+        if (c->cfgOption->key->group == key.group && c->cfgOption->key->item == key.item)
+        {
+            c->setWidget(widget);
+            break;
+        }
+    }
+}
+
 void ControlObject::setWidget(QWidget *widget)
 {
     QApplication::connect(widget, SIGNAL(valueChanged(int)), this,   SLOT(slotSetPosition(int)));

@@ -35,8 +35,7 @@ class EngineVUmeter;
 class EngineMaster : public EngineObject
 {
 public:
-    EngineMaster(DlgMaster *master_dlg, DlgCrossfader *crossfader_dlg,
-                 EngineBuffer *buffer1, EngineBuffer *buffer2,
+    EngineMaster(EngineBuffer *buffer1, EngineBuffer *buffer2,
                  EngineChannel *, EngineChannel *, EngineFlanger *, const char *group);
     ~EngineMaster();
     void notify(double) {};

@@ -119,13 +119,12 @@ MixxxApp::MixxxApp(QApplication *a)
     config = new ConfigObject<ConfigValue>(QDir::homeDirPath().append("/").append(SETTINGS_DIR).append("/mixxx.cfg"));
     qDebug(QDir::homeDirPath().append("/").append(SETTINGS_DIR).append("/mixxx.cfg"));
 
-    initDoc();
-    initView();
-
     // Instantiate a ControlObject, and set static parent widget
     control = new ControlNull();
     control->setParentWidget(this);
-                                                       
+
+    initView();
+
     // Open midi
     //qDebug("Init midi...");
     midi = 0;
@@ -263,8 +262,8 @@ MixxxApp::MixxxApp(QApplication *a)
 #endif
 
     // Init buffers/readers
-    buffer1 = new EngineBuffer(this, optionsBeatMark, powermate1, view->playcontrol1, "[Channel1]",visual1);
-    buffer2 = new EngineBuffer(this, optionsBeatMark, powermate2, view->playcontrol2, "[Channel2]",visual2);
+    buffer1 = new EngineBuffer(powermate1, "[Channel1]",visual1);
+    buffer2 = new EngineBuffer(powermate2, "[Channel2]",visual2);
 
     // Initialize tracklist:
     m_pTracks = new TrackList(config->getValueString(ConfigKey("[Playlist]","Directory")), view->tracklist->tableTracks,
@@ -281,15 +280,17 @@ MixxxApp::MixxxApp(QApplication *a)
             prefDlg->setHidden(false);
     
     // Starting channels:
-    channel1 = new EngineChannel(view->channel1, "[Channel1]");
-    channel2 = new EngineChannel(view->channel2, "[Channel2]");
+    channel1 = new EngineChannel("[Channel1]");
+    channel2 = new EngineChannel("[Channel2]");
 
     // Starting effects:
-    flanger = new EngineFlanger(view->flanger, "[Flanger]");
+    flanger = new EngineFlanger("[Flanger]");
 
     // Starting the master (mixing of the channels and effects):
-    master = new EngineMaster(view->master, view->crossfader,
-                              buffer1, buffer2, channel1, channel2,flanger, "[Master]");
+    master = new EngineMaster(buffer1, buffer2, channel1, channel2, flanger, "[Master]");
+
+    // Assign widgets to corresponding ControlObjects
+    view->assignWidgets(control);
 
     // Start audio
     //qDebug("Starting player...");
@@ -505,7 +506,7 @@ void MixxxApp::initView()
 {
   ////////////////////////////////////////////////////////////////////
   // set the main widget here
-  view=new MixxxView(this, doc);
+  view=new MixxxView(this);
   setCentralWidget(view);
 
   // Set visual vidget here
