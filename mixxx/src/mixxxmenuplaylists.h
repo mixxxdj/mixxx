@@ -40,7 +40,7 @@ public:
     ~MixxxMenuPlaylists();
     
 public slots:
-    void slotUpdate(const TrackPlaylistList &qPlaylists);
+    void slotUpdate(TrackPlaylistList *pPlaylists);
     /** When a menu item is activated, this slot is called to request the activation of the corresponding playlist */
     void slotRequestActive(int id);
     /** This slot is called from Track when a playlist has been activated. */

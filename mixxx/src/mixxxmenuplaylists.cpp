@@ -28,28 +28,28 @@ MixxxMenuPlaylists::~MixxxMenuPlaylists()
 {
 }
 
-void MixxxMenuPlaylists::slotUpdate(const TrackPlaylistList &qPlaylists)
+void MixxxMenuPlaylists::slotUpdate(TrackPlaylistList *pPlaylists)
 {
     //qDebug("update menu");
     
     // Delete all items currently in the menu
-    QPtrList<menuItem_t>::iterator it = m_qMenuList.begin();
-    while (it!=m_qMenuList.end())
+    menuItem_t *it = m_qMenuList.first();
+    while (it)
     {    
-        m_pMenu->removeItem((*it)->id);
-        m_qMenuList.remove((*it));
-        it = m_qMenuList.begin();
+        m_pMenu->removeItem(it->id);
+        m_qMenuList.remove(it);
+        it = m_qMenuList.first();
     }
     
     // Add items in qPlaylists to the menu
-    TrackPlaylistList::iterator it2 = qPlaylists.begin();
-    while (it2!=qPlaylists.end())
+    TrackPlaylist *it2 = pPlaylists->first();
+    while (it2)
     {
         menuItem_t *p = new menuItem_t;
         m_qMenuList.append(p);
-        p->pTrackPlaylist = (*it2);
-        p->id = m_pMenu->insertItem((*it2)->getListName());
-        ++it2;
+        p->pTrackPlaylist = it2;
+        p->id = m_pMenu->insertItem(it2->getListName());
+        it2 = pPlaylists->next();
     }
 }
 
@@ -59,15 +59,15 @@ void MixxxMenuPlaylists::slotRequestActive(int id)
     
     // Activate the playlist in the menu with the given id
     QString name;
-    QPtrList<menuItem_t>::iterator it = m_qMenuList.begin();
-    while (it!=m_qMenuList.end())
+    menuItem_t *it = m_qMenuList.first();
+    while (it)
     {
-        if ((*it)->id==id)
+        if (it->id==id)
         {
-            m_pTrack->slotActivatePlaylist((*it)->pTrackPlaylist->getListName());
+            m_pTrack->slotActivatePlaylist(it->pTrackPlaylist->getListName());
             break;
         }
-        ++it;
+        it = m_qMenuList.next();
     }
 }
 
@@ -78,14 +78,14 @@ void MixxxMenuPlaylists::slotSetActive(TrackPlaylist *pTrackPlaylist)
     
     //qDebug("set active %s",pTrackPlaylist->getListName().latin1());
        
-    QPtrList<menuItem_t>::iterator it = m_qMenuList.begin();
-    while (it!=m_qMenuList.end())
+    menuItem_t *it = m_qMenuList.first();
+    while (it)
     {
-        if ((*it)->pTrackPlaylist==pTrackPlaylist)
-            m_pMenu->setItemChecked((*it)->id, true);
+        if (it->pTrackPlaylist==pTrackPlaylist)
+            m_pMenu->setItemChecked(it->id, true);
         else            
-            m_pMenu->setItemChecked((*it)->id, false);
-        ++it;
+            m_pMenu->setItemChecked(it->id, false);
+        it = m_qMenuList.next();
     }
 }
 
