@@ -29,14 +29,10 @@ class ControlNull : public ControlObject  {
 public:
     ControlNull();
     ~ControlNull();
-    void setValue(FLOAT_TYPE) {};
     void setAccelUp(const QKeySequence) {};
     void setAccelDown(const QKeySequence) {};
-public slots:
-    void slotSetPositionExtern(float);
-    void slotSetPositionMidi(MidiCategory c, int v);
 protected:
-    void forceGUIUpdate() {};
+    void setValueFromMidi(MidiCategory c, int v) {};
 };
 
 #endif

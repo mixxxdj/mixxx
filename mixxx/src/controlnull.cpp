@@ -25,13 +25,3 @@ ControlNull::~ControlNull()
 {
 }
 
-void ControlNull::slotSetPositionExtern(float)
-{
-    qDebug("ControlNull: Do not call this method!");
-};
-
-void ControlNull::slotSetPositionMidi(MidiCategory, int)
-{
-    qDebug("ControlNull: Do not call this method!");
-}
-

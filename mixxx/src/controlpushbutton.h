@@ -32,24 +32,20 @@ class ControlPushButton : public ControlObject
 public:
     ControlPushButton(ConfigKey key);
     ~ControlPushButton();
-    char *print();
-    char *printValue();
-    int getPosition();
     void setAccelUp(const QKeySequence key);
     void setAccelDown(const QKeySequence key);
     /** Associates a QAction to the ControlPushButton. This can be used to associate a menu item
       * with the control */
     void setAction(QAction *action);
-public slots:
-    void slotSetPositionExtern(float);
-    void slotSetPositionMidi(MidiCategory c, int v);
+protected:
+    void setValueFromMidi(MidiCategory c, int v);
+
+
 private slots:
     void slotUpdateAction(int);
 signals:
     void valueChanged(int);
     void updateAction(bool);
-protected:
-    void forceGUIUpdate();
 };
 
 #endif

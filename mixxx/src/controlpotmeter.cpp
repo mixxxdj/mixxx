@@ -27,67 +27,51 @@
                      potmeter is changed.
             midicontroller - pointer to the midi controller.
    -------- ------------------------------------------------------ */
-ControlPotmeter::ControlPotmeter(ConfigKey key, FLOAT_TYPE _minvalue, FLOAT_TYPE _maxvalue) : ControlObject(key)
+ControlPotmeter::ControlPotmeter(ConfigKey key, double dMinValue, double dMaxValue) : ControlObject(key)
 {
-    setRange(_minvalue,_maxvalue);
+    setRange(dMinValue,dMaxValue);
 }
 
 ControlPotmeter::~ControlPotmeter()
 {
 }
 
-/* -------- ------------------------------------------------------
-   Purpose: Set the position of the potmeter, and change the
-            value correspondingly.
-   Input:   The (new) position.
-   Output:  The value is updated.
-   -------- ------------------------------------------------------ */
-void ControlPotmeter::slotSetPositionExtern(float newpos)
+double ControlPotmeter::getMin()
 {
-    value = minvalue + ((FLOAT_TYPE)newpos/127.)*valuerange;
-
-    emitValueChanged(value);
+    return m_dMinValue;
 }
 
-void ControlPotmeter::slotSetPositionMidi(MidiCategory c, int v)
+double ControlPotmeter::getMax()
 {
-    slotSetPositionExtern(v);
-    emit(updateGUI(v));
+    return m_dMaxValue;
 }
 
-void ControlPotmeter::forceGUIUpdate()
+void ControlPotmeter::setRange(double dMinValue, double dMaxValue)
 {
-    emit(updateGUI((int)(127.*(value-minvalue)/valuerange)));
+    m_dMinValue = dMinValue;
+    m_dMaxValue = dMaxValue;
+    m_dValueRange = m_dMaxValue-m_dMinValue;
+    m_dValue = m_dMinValue + 0.5*m_dValueRange;
+
+    updateFromApp();
 }
 
-void ControlPotmeter::setValue(int newpos)
+void ControlPotmeter::setValueFromWidget(double dValue)
 {
-    value = minvalue + ((FLOAT_TYPE)newpos/127.)*valuerange;;
-    emit(updateGUI(newpos));
+    m_dValue = m_dMinValue + (dValue/127.)*m_dValueRange;
+    updateFromWidget();
 }
 
-FLOAT_TYPE ControlPotmeter::getValue()
+void ControlPotmeter::setValueFromMidi(MidiCategory c, int v)
 {
-    return value;
+    m_dValue = m_dMinValue + ((double)v/127.)*m_dValueRange;
+    updateFromMidi();
 }
 
-float ControlPotmeter::getMin()
+void ControlPotmeter::updateWidget()
 {
-    return minvalue;
+    emit(signalUpdateWidget(127.*(m_dValue-m_dMinValue)/m_dValueRange));
 }
 
-float ControlPotmeter::getMax()
-{
-    return maxvalue;
-}
 
-void ControlPotmeter::setRange(float fMin, float fMax)
-{
-    minvalue = fMin;
-    maxvalue = fMax;
-    valuerange = maxvalue-minvalue;
-    value = minvalue + 0.5*valuerange;
-    emitValueChanged(value);
-    forceGUIUpdate();
-}
 

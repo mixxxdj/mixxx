@@ -45,7 +45,7 @@ public:
     /** Mouse released */
     void mouseReleaseEvent(QMouseEvent *e);
 public slots:
-    void setValue(float);
+    void setValue(double);
 private:
     /** Number of states associated with this button */
     int m_iNoStates;

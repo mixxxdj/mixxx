@@ -32,7 +32,7 @@ QWidget *ControlObject::spParentWidget = 0;
 
 ControlObject::ControlObject()
 {
-    value = 0.;
+    m_dValue = 0.;
     installEventFilter(this);
     m_pControlEngine = 0;
     m_pAccel = 0;
@@ -40,6 +40,7 @@ ControlObject::ControlObject()
 
 ControlObject::ControlObject(ConfigKey key)
 {
+    m_dValue = 0.;
     m_pControlEngine = 0;
     installEventFilter(this);
 
@@ -58,6 +59,7 @@ ControlObject::~ControlObject()
 bool ControlObject::connectControls(ConfigKey src, ConfigKey dest)
 {
 qDebug("unfinished");
+/*
     // Find src object
     ControlObject *pSrc = 0;
     for (pSrc=list.first(); pSrc; pSrc=list.next())
@@ -80,17 +82,9 @@ qDebug("unfinished");
         return false;
 
     QApplication::connect(pSrc, SIGNAL(valueChanged(FLOAT_TYPE)), pDest, SLOT(setValue(FLOAT_TYPE)));
+*/
 
     return true;
-}
-
-
-QString *ControlObject::print()
-{
-    QString *s = new QString(cfgOption->key->group.ascii());
-    s->append(" ");
-    s->append(cfgOption->key->item.ascii());
-    return s;
 }
 
 void ControlObject::setConfig(ConfigObject<ConfigValueMidi> *_config)
@@ -105,8 +99,7 @@ void ControlObject::setControlEngine(ControlEngine *pControlEngine)
 
 ControlObject *ControlObject::getControl(ConfigKey key)
 {
-    // Loop through the list of ConfigObjects to find one matching
-    // key
+    // Loop through the list of ConfigObjects to find one matching key
     ControlObject *c;
     for (c=list.first(); c; c=list.next())
     {
@@ -136,36 +129,109 @@ void ControlObject::setWidget(QWidget *widget, bool emitOnDownPress, Qt::ButtonS
     if (emitOnDownPress)
     {
         if (state == Qt::NoButton)
-            QApplication::connect(widget, SIGNAL(valueChangedDown(float)), this,   SLOT(slotSetPositionExtern(float)));
+            QApplication::connect(widget, SIGNAL(valueChangedDown(double)), this,   SLOT(setValueFromWidget(double)));
         else if (state == Qt::LeftButton)
-            QApplication::connect(widget, SIGNAL(valueChangedLeftDown(float)), this,   SLOT(slotSetPositionExtern(float)));
+            QApplication::connect(widget, SIGNAL(valueChangedLeftDown(double)), this,   SLOT(setValueFromWidget(double)));
         else if (state == Qt::RightButton)
-            QApplication::connect(widget, SIGNAL(valueChangedRightDown(float)), this,   SLOT(slotSetPositionExtern(float)));
+            QApplication::connect(widget, SIGNAL(valueChangedRightDown(double)), this,   SLOT(setValueFromWidget(double)));
     }
     else
     {
         if (state == Qt::NoButton)
-            QApplication::connect(widget, SIGNAL(valueChangedUp(float)), this,   SLOT(slotSetPositionExtern(float)));
+            QApplication::connect(widget, SIGNAL(valueChangedUp(double)), this,   SLOT(setValueFromWidget(double)));
         else if (state == Qt::LeftButton)
-            QApplication::connect(widget, SIGNAL(valueChangedLeftUp(float)), this,   SLOT(slotSetPositionExtern(float)));
+            QApplication::connect(widget, SIGNAL(valueChangedLeftUp(double)), this,   SLOT(setValueFromWidget(double)));
         else if (state == Qt::RightButton)
-            QApplication::connect(widget, SIGNAL(valueChangedRightUp(float)), this,   SLOT(slotSetPositionExtern(float)));
+            QApplication::connect(widget, SIGNAL(valueChangedRightUp(double)), this,   SLOT(setValueFromWidget(double)));
     }
     
-    QApplication::connect(this,   SIGNAL(updateGUI(float)),    widget, SLOT(setValue(float)));
+    QApplication::connect(this,   SIGNAL(signalUpdateWidget(double)),    widget, SLOT(setValue(double)));
 
-    forceGUIUpdate();
+    updateWidget();
 }
 
-void ControlObject::setValue(FLOAT_TYPE v)
+void ControlObject::updateFromMidi()
 {
-    value = v;
-    forceGUIUpdate();
+    updateEngine();
+    updateWidget();
+    updateApp();
 }
 
-FLOAT_TYPE ControlObject::getValue()
+void ControlObject::updateFromKeyboard()
 {
-    return value;
+    updateEngine();
+    updateWidget();
+    updateApp();
+}
+    
+void ControlObject::updateFromEngine()
+{
+    updateWidget();
+    updateApp();
+}
+    
+void ControlObject::updateFromWidget()
+{
+    updateEngine();
+    updateApp();
+}
+
+void ControlObject::updateFromApp()
+{
+    updateEngine();
+    updateWidget();
+}
+
+void ControlObject::updateEngine()
+{
+    if (m_pControlEngine!=0)
+    {
+        ControlQueueEngineItem *item = new ControlQueueEngineItem;
+        item->ptr = m_pControlEngine;
+        item->value = m_dValue;
+
+        queueMutex.lock();
+        queue.enqueue(item);
+        queueMutex.unlock();
+    }
+}
+
+void ControlObject::updateWidget()
+{
+    emit(signalUpdateWidget(m_dValue));
+}
+
+void ControlObject::updateApp()
+{
+    emit(signalUpdateApp(m_dValue));
+}
+
+void ControlObject::setValueFromEngine(double dValue)
+{
+    m_dValue = dValue;
+    updateFromEngine();
+}
+
+void ControlObject::setValueFromWidget(double dValue)
+{
+    m_dValue = dValue;
+    updateFromWidget();
+}
+
+void ControlObject::setValueFromKeyboard()
+{
+    qDebug("Value received from keyboard. Currently not implemented");
+}
+
+void ControlObject::setValueFromApp(double dValue)
+{
+    m_dValue = dValue;
+    updateFromEngine();
+}
+
+double ControlObject::getValue()
+{
+    return m_dValue;
 }
 
 void ControlObject::setParentWidget(QWidget *pParentWidget)
@@ -178,22 +244,6 @@ QWidget *ControlObject::getParentWidget()
     return spParentWidget;
 }
 
-void ControlObject::emitValueChanged(FLOAT_TYPE value)
-{
-    if (m_pControlEngine!=0)
-    {
-        ControlQueueEngineItem *item = new ControlQueueEngineItem;
-        item->ptr = m_pControlEngine;
-        item->value = value;
-
-        queueMutex.lock();
-        queue.enqueue(item);
-        queueMutex.unlock();
-    }
-    emit(valueChanged(value));
-}
-
-/** Called when a midi event is received from MidiObject */
 void ControlObject::midi(MidiCategory category, char channel, char control, char value)
 {
 //    qDebug("Received midi message: ch %i no %i val %i",(int)channel,(int)control,(int)value);
@@ -205,7 +255,7 @@ void ControlObject::midi(MidiCategory category, char channel, char control, char
         if ((c->cfgOption->val->midino == control) &
             (c->cfgOption->val->midichannel == channel))
         {
-            c->slotSetPositionMidi(category, (int)value); // 127-value
+            c->setValueFromMidi(category, (int)value);
             break;
         }
     }
@@ -223,7 +273,7 @@ bool ControlObject::eventFilter(QObject *o, QEvent *e)
     else if (e->type() == (QEvent::Type)10000)
     {
         ControlEventEngine *cee = (ControlEventEngine *)e;
-        setValue(cee->value());
+        setValueFromEngine(cee->value());
     }
     else
         // Standard event processing
@@ -232,7 +282,7 @@ bool ControlObject::eventFilter(QObject *o, QEvent *e)
     return TRUE;
 }
 
-void ControlObject::sync()
+void ControlObject::syncControlEngineObjects()
 {
     // If possible lock mutex and process queue
     if (queueMutex.tryLock())

@@ -21,7 +21,6 @@
 #include "controlpotmeter.h"
 #include "configobject.h"
 #include <algorithm>
-#include "defs.h"
 
 /**
  *@author Tue and Ken Haste Andersen
@@ -31,13 +30,13 @@ class ControlLogpotmeter : public ControlPotmeter
 {
     Q_OBJECT
 public:
-    ControlLogpotmeter(ConfigKey key, FLOAT_TYPE=5);
+    ControlLogpotmeter(ConfigKey key, double dMaxValue=5.);
 public slots:
-    void slotSetPositionExtern(float);
+    void setValueFromWidget(double dValue);
 protected:
-    void forceGUIUpdate();
+    void updateWidget();
 
-    FLOAT_TYPE a,b,a2,b2;
+    double a,b,a2,b2;
 };
 
 #endif

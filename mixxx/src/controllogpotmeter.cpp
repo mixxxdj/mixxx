@@ -27,59 +27,40 @@
             midino - number of the midi controller.
             midicontroller - pointer to the midi controller.
    -------- ------------------------------------------------------ */
-ControlLogpotmeter::ControlLogpotmeter(ConfigKey key, FLOAT_TYPE _maxvalue) : ControlPotmeter(key)
+ControlLogpotmeter::ControlLogpotmeter(ConfigKey key, double dMaxValue) : ControlPotmeter(key)
 {
     a = 1.;
     b = log10(2.)/middlePosition;
-    b2 = log10((_maxvalue+1.)/2.)/middlePosition;
+    b2 = log10((dMaxValue+1.)/2.)/middlePosition;
     a2 = 2.*pow(10., -middlePosition*b);
 
-    minvalue = 0.;
-    maxvalue = _maxvalue;
-    valuerange = maxvalue-minvalue;
+    m_dMinValue = 0.;
+    m_dMaxValue = dMaxValue;
+    m_dValueRange = m_dMaxValue-m_dMinValue;
         
-    value = 1.;
+    m_dValue = 1.;
 }
 
-/* -------- ------------------------------------------------------
-   Purpose: Set the position of the potmeter, and change the
-            value correspondingly.
-   Input:   The (new) position.
-   Output:  The value is updated.
-   -------- ------------------------------------------------------ */
-#define min(a,b)            (((a) < (b)) ? (a) : (b))
-void ControlLogpotmeter::slotSetPositionExtern(float newpos)
+//#define min(a,b)            (((a) < (b)) ? (a) : (b))
+void ControlLogpotmeter::setValueFromWidget(double dValue)
 {
-  // Calculate the value linearly:
-  if (newpos <= middlePosition)
-      value = a*pow(10., b*(FLOAT_TYPE)newpos) - 1.;
-  else
-      value = a2*pow(10., b2*(FLOAT_TYPE)newpos) - 2.;
-
-/*
-  char newpos =(char)_newpos;
-
-  // Ensure that the position is within bounds:
-  position = max(minPosition, min(newpos, maxPosition));
-  // Calculate the value linearly:
-  if (newpos <= middlePosition)
-      value = a*pow(10, b*(FLOAT_TYPE)newpos) - 1;
-  else
-      value = a2*pow(10, b2*(FLOAT_TYPE)newpos) - 2;
-
-  //qDebug("Logpotmeter, midi:%i value:%g", _newpos, value);
-*/
-
-  emitValueChanged(value);
-}
-
-void ControlLogpotmeter::forceGUIUpdate()
-{
-    int pos;
-    if (value>1.)
-        pos = (int)(log10(value+2./a2)/b2);
+    // Calculate the value linearly:
+    if (dValue <= middlePosition)
+        m_dValue = a*pow(10., b*dValue) - 1.;
     else
-        pos = (int)(log10(value+1./a)/b);    
-    emit(updateGUI(pos));
+        m_dValue = a2*pow(10., b2*dValue) - 2.;
+
+    updateFromWidget();
+}
+
+void ControlLogpotmeter::updateWidget()
+{
+    double pos;
+    if (m_dValue>1.)
+        pos = log10(m_dValue+2./a2)/b2;
+    else
+        pos = log10(m_dValue+1./a)/b;    
+
+    emit(signalUpdateWidget(pos));
 }
 

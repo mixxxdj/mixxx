@@ -47,10 +47,10 @@ public:
     VisualChannel *add(ControlPotmeter *pPlaypos);
 
 public slots:
-    void setValue(float) {};
+    void setValue(double) {};
 signals:
-    void valueChangedLeftDown(float);
-    void valueChangedRightDown(float);
+    void valueChangedLeftDown(double);
+    void valueChangedRightDown(double);
 
 protected:
     void initializeGL();

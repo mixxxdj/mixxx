@@ -23,78 +23,32 @@
    -------- ------------------------------------------------------ */
 ControlTTRotary::ControlTTRotary(ConfigKey key) : ControlObject(key)
 {
-    value = 0.;
-    received = 0;
-    
-    // Connect 10ms timer, and start
-    //connect(&timer, SIGNAL(timeout()), this, SLOT(slotTimer()));
-    //timer.start(100,false);
 }
 
-void ControlTTRotary::setValue(int v)
-{
-    value = ((float)v-64.)/200.;
-    emit(updateGUI(v));
-}
-
-void ControlTTRotary::slotSetPositionExtern(float v)
+void ControlTTRotary::setValueFromWidget(double dValue)
 {
     // Non-linear scaling
-    float value = ((((float)v-64.)*((float)v-64.))/64.)/100.;
-    if ((v-64.)<0)
-        value = -value;
-
-    // Linear scaling
-    //value = ((float)v-64.)/200.;
-
-//    qDebug("ControlTTRotary value %f",value);
-
-    emitValueChanged(value);
-/*    if (v==0)
-        received--;
+    double temp = (((dValue-64.)*(dValue-64.))/64.)/100.;
+    if ((temp-64.)<0)
+        m_dValue = -temp;
     else
-        received++;
-*/
+        m_dValue = temp;
+
+    updateFromWidget();
 }
 
-void ControlTTRotary::slotSetPositionMidi(MidiCategory, int v)
+void ControlTTRotary::setValueFromMidi(MidiCategory, int v)
 {
-    //qDebug("thread id: %p",pthread_self());
+    double temp = ((((double)v-64.)*((double)v-64.))/64.)/100.;
+    if ((temp-64.)<0)
+        m_dValue = -temp;
+    else
+        m_dValue = temp;
 
-    slotSetPositionExtern(v);
-    emit(updateGUI(v));
+    updateFromMidi();        
 }
 
-FLOAT_TYPE ControlTTRotary::getValue()
+void ControlTTRotary::updateWidget()
 {
-    return value;
-}
-
-/*
-void ControlTTRotary::slotSetValue(int newvalue)
-{
-    value = ((FLOAT_TYPE)newvalue-64.)/200.;
-    emitValueChanged(value);
-}
-*/
-/*
-void ControlTTRotary::slotTimer()
-{
-    FLOAT_TYPE newv = (FLOAT_TYPE)received/1000.;
-    received = 0;
-    
-    if (newv != value)
-    {
-        value = newv;
-
-        emitValueChanged(value);
-        //updateGUI();
-    }
-    //qDebug("rotary: %f",value);
-}
-*/
-
-void ControlTTRotary::forceGUIUpdate()
-{
-    emit(updateGUI((int)(value*200)+64));
+    emit(signalUpdateWidget(m_dValue*200.+64.));
 }
