@@ -21,29 +21,30 @@
 
 EngineBufferScaleLinear::EngineBufferScaleLinear(ReaderExtractWave *wave) : EngineBufferScale(wave)
 {
-    wavebuffer = (CSAMPLE *)wave->getBasePtr();
 }
 
 EngineBufferScaleLinear::~EngineBufferScaleLinear()
 {
 }
 
-void EngineBufferScaleLinear::setRate(double _rate)
+double EngineBufferScaleLinear::setRate(double _rate)
 {
     rate = _rate;
-    
+
     // Determine playback direction
     if (rate<0.)
         backwards = true;
     else
         backwards = false;
+
+    return rate;
 }
 
 CSAMPLE *EngineBufferScaleLinear::scale(double playpos, int buf_size)
 {
     double rate_add = 2.*rate;
 
-    // Determine position in read_buffer to start from 
+    // Determine position in read_buffer to start from
     new_playpos = playpos;
 
     // Prepare buffer

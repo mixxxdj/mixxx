@@ -52,6 +52,8 @@ class EngineBuffer : public EngineObject
 public:
     EngineBuffer(PowerMate *, const char *_group);
     ~EngineBuffer();
+    /** Reconfigures the EngineBufferScaleSRC objects with the sound quality written in the config database */
+    void setQuality(int);
     /** Pointer to visual widget */
     void setVisual(WVisualWaveform *pVisualWaveform);
     /** Returns pointer to Reader object. Used in MixxxApp. */

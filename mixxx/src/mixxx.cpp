@@ -356,6 +356,7 @@ MixxxApp::MixxxApp(QApplication *a, QStringList files)
 
     // Try open player device using config data, if that fails, use default values. If that fails too, the
     // preference panel should be opened.
+    player->setMaster(master);
     if (!player->open(false))
         if (!player->open(true))
             prefDlg->setHidden(false);
@@ -363,7 +364,6 @@ MixxxApp::MixxxApp(QApplication *a, QStringList files)
 
     // Start audio
     //qDebug("Starting player...");
-    player->setMaster(master);
     player->start();
 
     setFocusPolicy(QWidget::StrongFocus);

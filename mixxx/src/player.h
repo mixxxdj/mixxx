@@ -31,6 +31,8 @@
 #include <qstring.h>
 #include <qapplication.h>
 
+class EngineMaster;
+
 class Player : public EngineObject
 {
 public:
@@ -43,7 +45,7 @@ public:
     virtual void stop() = 0;           // Stops audio stream
     virtual void wait() = 0;           // Wait for audio stream to finish
     virtual int minLatency(int SRATE) = 0; // Given a sample rate, return the minimum latency for that card
-    void setMaster(EngineObject *);
+    void setMaster(EngineMaster *);
     typedef struct
     {
         int             id;
@@ -76,7 +78,7 @@ protected:
 
     /** Configuration data */
     ConfigObject<ConfigValue> *config;
-    EngineObject        *master;
+    EngineMaster        *master;
     QPtrList<Info>      devices;
 
     /** Indicates where in the out_buffer the current synthesized frame is placed. */

@@ -89,6 +89,12 @@ EngineMaster::~EngineMaster()
     delete [] out;
 }
 
+void EngineMaster::setQuality(int q)
+{
+    buffer1->setQuality(q);
+    buffer2->setQuality(q);
+}
+
 CSAMPLE *EngineMaster::process(const CSAMPLE *, const int buffer_size)
 {
     CSAMPLE *sampMaster1=0, *sampMaster2=0;

@@ -27,24 +27,27 @@ class ReaderExtractWave;
   */
 
 class EngineBufferScale {
-public: 
+public:
     EngineBufferScale(ReaderExtractWave *_wave);
     virtual ~EngineBufferScale();
+    virtual void setQuality(int);
     /** Set scaling rate */
-    virtual void setRate(double _rate) = 0;
+    virtual double setRate(double _rate) = 0;
     /** Get new playpos after call to scale() */
     double getNewPlaypos();
     virtual CSAMPLE *scale(double playpos, int buf_size) = 0;
 protected:
     /** Pointer to ReaderExtractWave object */
     ReaderExtractWave *wave;
+    /** Pointer to ReaderExtractWave buffer */
+    CSAMPLE *wavebuffer;
     /** Rate */
     double rate;
     /** Pointer to internal buffer */
     CSAMPLE *buffer;
     /** New playpos after call to scale */
     double new_playpos;
-    
+
 };
 
 #endif

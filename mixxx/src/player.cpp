@@ -16,6 +16,7 @@
  ***************************************************************************/
 
 #include "player.h"
+#include "enginemaster.h"
 
 // Static member variable definition
 SAMPLE *Player::out_buffer = 0;
@@ -34,6 +35,7 @@ Player::Player(ConfigObject<ConfigValue> *_config, ControlObject *pControl, QApp
     m_pControl = pControl;
     app = _app;
     allocate();
+    master = 0;
 
 //    qDebug("Player: init...");
 }
@@ -113,11 +115,15 @@ bool Player::open(bool useDefault)
     }
 
 //    qDebug("Latency %i,%i",MasterBufferSize,(int)((MasterBufferSize*2)/((float)config->getValueString(ConfigKey("[Soundcard]","Samplerate")).toInt()/1000.)));
-    
+
     // Write latency values back to config object
     config->set(ConfigKey("[Soundcard]","LatencyMaster"),ConfigValue((int)((MasterBufferSize*2)/((float)config->getValueString(ConfigKey("[Soundcard]","Samplerate")).toInt()/1000.))));
     config->set(ConfigKey("[Soundcard]","LatencyHeadphone"),ConfigValue((int)((MasterBufferSize*2*HeadPerMasterBuffer)/((float)config->getValueString(ConfigKey("[Soundcard]","Samplerate")).toInt()/1000.))));
-    
+
+    // Setup sound quality in EngineBufferScaleSRC objects
+    if (master)
+        master->setQuality(config->getValueString(ConfigKey("[Soundcard]","SoundQuality")).toInt());
+
     return true;
 }
 
@@ -133,7 +139,7 @@ void Player::deallocate()
     delete [] out_buffer;
 }
 
-void Player::setMaster(EngineObject *_master)
+void Player::setMaster(EngineMaster *_master)
 {
     master = _master;
 }
@@ -147,13 +153,13 @@ void Player::setMaster(EngineObject *_master)
 int Player::prepareBuffer()
 {
   // ----------------------------------------------------
-  // Do the processing.                         
+  // Do the processing.
   // ----------------------------------------------------
 
-  
+
   // First, sync control parameters with changes from GUI thread
   m_pControl->syncControlEngineObjects();
-  
+
   CSAMPLE *p1;
 
   // Resample; the linear interpolation is done in readfile:

@@ -21,6 +21,8 @@
 EngineBufferScale::EngineBufferScale(ReaderExtractWave *_wave)
 {
     wave = _wave;
+    wavebuffer = (CSAMPLE *)wave->getBasePtr();
+
     rate = 1.;
     buffer = new CSAMPLE[MAX_BUFFER_LEN];
     new_playpos = 0;
@@ -29,6 +31,10 @@ EngineBufferScale::EngineBufferScale(ReaderExtractWave *_wave)
 EngineBufferScale::~EngineBufferScale()
 {
     delete [] buffer;
+}
+
+void EngineBufferScale::setQuality(int)
+{
 }
 
 double EngineBufferScale::getNewPlaypos()
