@@ -10,16 +10,17 @@ unix:LIBS += -lportaudio
 win32:LIBS += ../lib/PAstaticWMMED.lib winmm.lib
 
 # OSS Midi (Working good, Linux specific)
-SOURCES += midiobjectoss.cpp
-HEADERS += midiobjectoss.h
-DEFINES += __OSSMIDI__
+#SOURCES += midiobjectoss.cpp
+#HEADERS += midiobjectoss.h
+#DEFINES += __OSSMIDI__
 
 # PortMidi (Alpha - only available on Windows)
-#SOURCES += midiobjectportmidi.cpp
-#HEADERS += midiobjectportmidi.h
-#DEFINES += __PORTMIDI__
-#unix:LIBS += -lportmidi -lporttime
-#win32:LIBS += ../lib/portmidi.lib ../lib/porttime.lib
+SOURCES += midiobjectportmidi.cpp
+HEADERS += midiobjectportmidi.h
+DEFINES += __PORTMIDI__
+x11:LIBS += -lportmidi -lporttime
+macx:LIBS += -lportmidi
+win32:LIBS += ../lib/portmidi.lib ../lib/porttime.lib
 
 # ALSA PCM (Not currently working, Linux specific)
 #SOURCES += playeralsa.cpp
@@ -44,7 +45,7 @@ unix {
   UI_DIR = .ui
   MOC_DIR = .moc
   OBJECTS_DIR = .obj
-  LIBS += -lmad -laudiofile -lid3tag -lsndfile
+  LIBS += -lmad -lid3tag -lsndfile
   QMAKE_CXXFLAGS += -O -dD
   CONFIG_PATH = \"/usr/share/mixxx\"
 }
@@ -61,6 +62,10 @@ win32 {
   QMAKE_CXXFLAGS += -GX
   QMAKE_LFLAGS += /NODEFAULTLIB:libcd /NODEFAULTLIB:libcmtd /NODEFAULTLIB:msvcrt.lib
   CONFIG_PATH = \"d:\\mixxx\"
+}
+
+macx {
+  DEFINES += __MACX__
 }
 
 # Profiling
