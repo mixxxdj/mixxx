@@ -15,10 +15,6 @@
  *                                                                         *
  ***************************************************************************/
 
-// #ifdef HAVE_CONFIG_H
-// #include <config.h>
-// #endif
-
 #include <qaccel.h>
 #include <qpushbutton.h>
 #include <qtable.h>
@@ -26,6 +22,7 @@
 #include <qiconset.h>
 
 #include "wknob.h"
+#include "wslider.h"
 #include "mixxx.h"
 #include "filesave.xpm"
 #include "fileopen.xpm"
@@ -534,16 +531,3 @@ void MixxxApp::slotSelectPlay(QListViewItem *item, const QPoint &pos, int)
     // Display popup menu
     playSelectMenu->exec(pos);
 }
-
-
-
-
-
-
-
-
-
-
-
-
-

@@ -34,10 +34,9 @@ public:
   ControlPotmeter();
   ControlPotmeter(ConfigObject::ConfigKey *key, FLOAT_TYPE=0.0, FLOAT_TYPE=1.0);
   ~ControlPotmeter();
-  void setValue(FLOAT_TYPE newvalue);
   FLOAT_TYPE getValue();
   char getPosition();
-
+  void setValue(FLOAT_TYPE newvalue);
 public slots:
   void slotSetPosition(int);
 signals:

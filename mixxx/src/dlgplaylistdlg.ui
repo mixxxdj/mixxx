@@ -8,7 +8,7 @@
         <rect>
             <x>0</x>
             <y>0</y>
-            <width>592</width>
+            <width>596</width>
             <height>150</height>
         </rect>
     </property>
@@ -55,9 +55,17 @@
             <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>592</width>
+                <width>596</width>
                 <height>150</height>
             </rect>
+        </property>
+        <property name="sizePolicy">
+            <sizepolicy>
+                <hsizetype>0</hsizetype>
+                <vsizetype>7</vsizetype>
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+            </sizepolicy>
         </property>
         <property name="paletteBackgroundColor">
             <color>
@@ -74,6 +82,9 @@
                 <family>Helvetica</family>
                 <pointsize>8</pointsize>
             </font>
+        </property>
+        <property name="frameShape">
+            <enum>NoFrame</enum>
         </property>
         <property name="lineWidth">
             <number>0</number>

@@ -20,6 +20,9 @@
 
 #include <qwidget.h>
 #include <qdial.h>
+#include <qpixmap.h>
+#include <qrect.h>
+
 
 /**
   *@author Tue & Ken Haste Andersen
@@ -35,13 +38,7 @@ protected:
     void repaintScreen(const QRect *cr, QPixmap *p);
     QPixmap *getKnob();
 private:
-	QPixmap *button00, *button01, *button02, *button03, *button04, *button05,
-			*button06, *button07, *button08, *button09, *button10, *button11,
-			*button12, *button13, *button14, *button15, *button16, *button17,
-			*button18, *button19, *button20, *button21, *button22, *button23,
-			*button24, *button25, *button26, *button27, *button28, *button29,
-			*button30, *button31;
-	QRect *repaintRect;
+    static QPixmap **pix;
 };
 
 #endif

@@ -20,10 +20,6 @@
 
 #include <qthread.h>
 #include <qwaitcondition.h>
-#include <qslider.h>
-#include "wknob.h"
-#include <qstring.h>
-#include <qlcdnumber.h>
 
 #include "defs.h"
 #include "monitor.h"
@@ -55,8 +51,6 @@ public slots:
    void slotUpdatePlay(valueType);
    void slotUpdateRate(FLOAT_TYPE);
    void slotPosition(int);
-   void slotCenterWheel();
-   void slotSetWheel(int val);
 signals:
    void position(int);   
 private:

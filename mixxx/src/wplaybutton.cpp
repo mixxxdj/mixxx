@@ -17,26 +17,66 @@
 
 #include "wplaybutton.h"
 
-#include "images/playbutton_up.xpm"
-#include "images/playbutton_down.xpm"
+#include "images/playbutton_up_on.xpm"
+#include "images/playbutton_up_off.xpm"
+#include "images/playbutton_down_on.xpm"
+#include "images/playbutton_down_off.xpm"
+
+// Static member variable definition
+QPixmap *WPlayButton::buttonUpOn    = 0;
+QPixmap *WPlayButton::buttonUpOff   = 0;
+QPixmap *WPlayButton::buttonDownOn  = 0;
+QPixmap *WPlayButton::buttonDownOff = 0;
 
 WPlayButton::WPlayButton(QWidget *parent, const char *name ) : QPushButton(parent,name)
 {
-    buttonUp   = new QPixmap(playbutton_up_xpm);
-    buttonDown = new QPixmap(playbutton_down_xpm);
+    if (buttonUpOn == 0)
+    {
+        buttonUpOn    = new QPixmap(playbutton_up_on_xpm);
+        buttonUpOff   = new QPixmap(playbutton_up_off_xpm);
+        buttonDownOn  = new QPixmap(playbutton_down_on_xpm);
+        buttonDownOff = new QPixmap(playbutton_down_off_xpm);
+    }
+    controlButton = 0;
 }
 
 WPlayButton::~WPlayButton()
 {
-    delete buttonUp;
-    delete buttonDown;
+    delete buttonUpOn;
+    delete buttonUpOff;
+    delete buttonDownOn;
+    delete buttonDownOff;
 }
 
 void WPlayButton::drawButton(QPainter *p)
 {
     if (isDown())
-        p->drawPixmap(0,0,*buttonDown);
+        if (controlButton==0 | controlButton->getValue()==off)
+            p->drawPixmap(0,0,*buttonDownOff);
+        else
+            p->drawPixmap(0,0,*buttonDownOn);
+    else if (controlButton==0 | controlButton->getValue()==off)
+        p->drawPixmap(0,0,*buttonUpOff);
     else
-        p->drawPixmap(0,0,*buttonUp);
+        p->drawPixmap(0,0,*buttonUpOn);
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 

@@ -17,6 +17,7 @@
 
 #include "enginemaster.h"
 #include "configobject.h"
+#include <wslider.h>
 
 EngineMaster::EngineMaster(DlgMaster *master_dlg, DlgCrossfader *crossfader_dlg,
                            EngineBuffer *_buffer1, EngineBuffer *_buffer2,

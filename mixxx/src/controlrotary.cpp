@@ -8,8 +8,9 @@ const char ControlRotary::graycodetable[256] =  {128, 56, 40, 55, 24, 128, 39, 5
 	    midino - number of the midi controller.
 	    midicontroller - pointer to the midi controller.
    -------- ------------------------------------------------------ */
-ControlRotary::ControlRotary(ConfigObject::ConfigKey *key) : ControlPotmeter(key,0.,1.) // ????
+ControlRotary::ControlRotary(ConfigObject::ConfigKey *key, ControlPushButton *playbutton) : ControlPotmeter(key,0.,1.) // ????
 {
+  play = playbutton;
   direction = 1; // arbitrary
   ftime(&oldtime);
   value = 0;
@@ -70,12 +71,16 @@ void ControlRotary::slotSetPosition(int newpos)
       oldtime = newtime;
       position = newpos;
       counter = 4.*(FLOAT_TYPE)(deltasec*1000+deltamillisec);
+
+      if (play->getValue()==off)
+          value *= 4.;
       emit valueChanged(value);
     }
   }
 }
 
-void ControlRotary::updatecounter(int samples, int SRATE) {
+void ControlRotary::updatecounter(int samples, int SRATE)
+{
   if (counter > 0.) {
     counter -= (FLOAT_TYPE)samples/(FLOAT_TYPE)(SRATE/1000);
     if (counter <= 0.) {
@@ -86,7 +91,8 @@ void ControlRotary::updatecounter(int samples, int SRATE) {
   }
 }
 
-short ControlRotary::sign(short x) {
+short ControlRotary::sign(short x)
+{
   if (x < 0) 
     return -1;
   else
@@ -94,4 +100,13 @@ short ControlRotary::sign(short x) {
       return 0;
     else
       return 1;
+}
+
+void ControlRotary::slotSetValue(int newvalue)
+{
+    FLOAT_TYPE d = 400.;
+    if (play->getValue()==off)
+        d = 100.;
+
+    setValue(((FLOAT_TYPE)newvalue-49.)/d);
 }

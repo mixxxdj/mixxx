@@ -16,7 +16,7 @@
  ***************************************************************************/
 
 #include "enginechannel.h"
-#include "qslider.h"
+#include "wslider.h"
 #include "controllogpotmeter.h"
 
 EngineChannel::EngineChannel(DlgChannel *dlg, const char *group)

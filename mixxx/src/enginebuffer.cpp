@@ -18,43 +18,60 @@
 #include "enginebuffer.h"
 #include <qlabel.h>
 #include "wplaybutton.h"
+#include "wwheel.h"
+#include "wknob.h"
+#include <qslider.h>
+#include "wslider.h"
+#include "wplayposslider.h"
 #include "configobject.h"
+#include <qstring.h>
+#include <qlcdnumber.h>
 
 EngineBuffer::EngineBuffer(DlgPlaycontrol *_playcontrol, const char *group, const char *filename)
 {
   lastwrite = 0.;
   playcontrol = _playcontrol;
 
+  // Play button
   ConfigObject::ConfigKey k1(group, "play");
   PlayButton = new ControlPushButton(&k1, simulated_latching);
   PlayButton->setValue(on);
+  playcontrol->PushButtonPlay->controlButton = PlayButton;
   connect(playcontrol->PushButtonPlay, SIGNAL(pressed()), PlayButton, SLOT(pressed()));
   connect(playcontrol->PushButtonPlay, SIGNAL(released()), PlayButton, SLOT(released()));
   connect(PlayButton, SIGNAL(valueChanged(valueType)), this, SLOT(slotUpdatePlay(valueType)));
 
+  // Playback rate slider
   ConfigObject::ConfigKey k2(group, "rate");
   rateSlider = new ControlPotmeter(&k2, 0.9, 1.1);
-
   rateSlider->slotSetPosition(64);
   rate.write(rateSlider->getValue());
   connect(playcontrol->SliderRate, SIGNAL(valueChanged(int)), rateSlider, SLOT(slotSetPosition(int)));
   connect(rateSlider, SIGNAL(valueChanged(FLOAT_TYPE)), this, SLOT(slotUpdateRate(FLOAT_TYPE)));
   connect(rateSlider, SIGNAL(updateGUI(int)), playcontrol->SliderRate, SLOT(setValue(int)));
 
+  // Wheel to control playback position/speed
   ConfigObject::ConfigKey k3(group, "wheel");
-  wheel = new ControlRotary(&k3);
-
-  //connect(playcontrol->SliderPlaycontrol, SIGNAL(valueChanged(int)), wheel, SLOT(slotSetPosition(int)));
-  connect(playcontrol->SliderPlaycontrol, SIGNAL(valueChanged(int)), this, SLOT(slotSetWheel(int)));
-  connect(playcontrol->SliderPlaycontrol, SIGNAL(sliderReleased()), this, SLOT(slotCenterWheel()));
-
+  wheel = new ControlRotary(&k3, PlayButton);
+  connect(playcontrol->WheelPlaycontrol, SIGNAL(valueChanged(int)), wheel, SLOT(slotSetValue(int)));
   connect(wheel, SIGNAL(valueChanged(FLOAT_TYPE)), this, SLOT(slotUpdateRate(FLOAT_TYPE)));
-  //connect(wheel, SIGNAL(updateGUI(int)), playcontrol->SliderPlaycontrol, SLOT(setValue(int)));
+
+  // Why have these two been commented out?
+  connect(wheel, SIGNAL(updateGUI(int)), playcontrol->WheelPlaycontrol, SLOT(setValue(int)));
+  connect(wheel, SIGNAL(updateGUI(int)), wheel, SLOT(slotSetPositionMidi(int)));
+
+  // ????
+i //connect(wheel, SIGNAL(updateGUI(int)), playcontrol->SliderPlaycontrol, SLOT(setValue(int)));
   //connect(wheel, SIGNAL(updateGUI(int)), wheel, SLOT(slotSetPositionMidi(int)));
 
-  connect(this, SIGNAL(position(int)), playcontrol->LCDposition, SLOT(display(int)));
+  // Connect playbutton signal to wheel state slot, to notify the wheel of the playback state
+  //connect(PlayButton, SIGNAL(valueChanged(valueType)), wheel, slotPlayState(valueType));
 
-  //connect(this, SIGNAL(position(int)), playcontrol->SliderPosition, SLOT(setValue(int)));
+  // LCD Display showing song position
+  //connect(this, SIGNAL(position(int)), playcontrol->LCDposition, SLOT(display(int)));
+
+  // Slider to show and change song position
+  connect(this, SIGNAL(position(int)), playcontrol->SliderPosition, SLOT(setValue(int)));
   connect(playcontrol->SliderPosition, SIGNAL(valueChanged(int)), this, SLOT(slotPosition(int)));
 
   // Allocate temporary buffer
@@ -130,7 +147,8 @@ void EngineBuffer::newtrack(const char* filename) {
     qFatal("Error opening %s", filename);
   }
   // Write to playcontrol:
-  playcontrol->textLabelTrack->setText(filename);
+  QString title = QString("TITLE :") + filename;
+  playcontrol->textLabelTrack->setText(title);
 
   // Initialize position in read buffer:
   lastread_file.write(0.);
@@ -387,18 +405,4 @@ CSAMPLE *EngineBuffer::process(const CSAMPLE *, const int buf_size)
     }
     
     return buffer;
-}
-
-/** Method connected to wheels sliderRelease signal, to center the wheel after an interaction */
-void EngineBuffer::slotCenterWheel()
-{
-    playcontrol->SliderPlaycontrol->setValue(63);
-    wheel->setValue(0);
-}
-
-void EngineBuffer::slotSetWheel(int val)
-{
-    FLOAT_TYPE temp = ((FLOAT_TYPE)val-49.)/400.;
-    //qDebug("temp %f",temp);
-    wheel->setValue(temp);
 }

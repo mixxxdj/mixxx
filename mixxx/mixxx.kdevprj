@@ -556,7 +556,7 @@ install_location=
 type=SOURCE
 
 [src/Makefile.am]
-files=src/playerportaudio.h,src/soundsourcemp3.cpp,src/dlgcrossfaderdlg.ui,src/mixxx.cpp,src/mixxx.pro,src/controlpotmeter.cpp,src/dlgplaycontroldlg.ui,src/fakemonitor.h,src/enginefilteriir.h,src/enginefilterrbj.h,src/enginepregain.cpp,src/enginemaster.cpp,src/dlgplaylist.cpp,src/soundsourceheavymp3.h,src/soundsourceheavymp3.cpp,src/dlgcrossfader.h,src/midiobject.cpp,src/controlrotary.cpp,src/dlgchannel.h,src/engineclipping.cpp,src/fakemonitor.cpp,src/controlrotary.h,src/controlpotmeter.h,src/controlobject.cpp,src/filenew.xpm,src/controlobject.h,src/main.cpp,src/filesave.xpm,src/dlgmaster.cpp,src/engineclipping.h,src/mixxxdoc.h,src/dlgplaylist.h,src/mixxx.h,src/mixxxdoc.cpp,src/defs.h,src/engineobject.cpp,src/monitor.cpp,src/dlgplaycontrol.h,src/mixxxview.h,src/playerportaudio.cpp,src/soundsourcemp3.h,src/dlgchannel.cpp,src/controllogpotmeter.h,src/dlgplaylistdlg.ui,src/playeralsa.h,src/soundsourceaflibfile.cpp,src/controlpushbutton.cpp,src/soundsource.cpp,src/dlgcrossfader.cpp,src/enginefilterblock.cpp,src/enginefilteriir.cpp,src/enginemaster.h,src/mixxx.db,src/enginefilterblock.h,src/player.h,src/controlpushbutton.h,src/playeralsa.cpp,src/enginechannel.h,src/enginechannel.cpp,src/mixxxview.cpp,src/fileopen.xpm,src/enginepregain.h,src/dlgmaster.h,src/enginebuffer.h,src/dlgplaycontrol.cpp,src/controllogpotmeter.cpp,src/dlgchanneldlg.ui,src/dlgmasterdlg.ui,src/engineobject.h,src/enginebuffer.cpp,src/midiobject.h,src/enginefilterrbj.cpp,src/monitor.h,src/soundsourceaflibfile.h,src/soundsource.h,src/player.cpp,src/configmapping.cpp,src/configmapping.h,src/configobject.cpp,src/configobject.h,src/enginevolume.cpp,src/enginevolume.h,src/controlnull.cpp,src/controlnull.h,src/wplaybutton.cpp,src/wplaybutton.h,src/wknob.cpp,src/wknob.h,src/wknobbulb.cpp,src/wknobbulb.h,src/wbulb.cpp,src/wbulb.h,src/dlgsplit.cpp,src/dlgsplit.h,src/dlgchannelleft.cpp,src/dlgchannelleft.h,src/dlgchannelleftdlg.ui,src/dlgchannelright.cpp,src/dlgchannelright.h,src/dlgchannelrightdlg.ui,src/dlgsplitdlg.ui
+files=src/playerportaudio.h,src/soundsourcemp3.cpp,src/dlgcrossfaderdlg.ui,src/mixxx.cpp,src/mixxx.pro,src/controlpotmeter.cpp,src/dlgplaycontroldlg.ui,src/fakemonitor.h,src/enginefilteriir.h,src/enginefilterrbj.h,src/enginepregain.cpp,src/enginemaster.cpp,src/dlgplaylist.cpp,src/soundsourceheavymp3.h,src/soundsourceheavymp3.cpp,src/dlgcrossfader.h,src/midiobject.cpp,src/controlrotary.cpp,src/dlgchannel.h,src/engineclipping.cpp,src/fakemonitor.cpp,src/controlrotary.h,src/controlpotmeter.h,src/controlobject.cpp,src/filenew.xpm,src/controlobject.h,src/main.cpp,src/filesave.xpm,src/dlgmaster.cpp,src/engineclipping.h,src/mixxxdoc.h,src/dlgplaylist.h,src/mixxx.h,src/mixxxdoc.cpp,src/defs.h,src/engineobject.cpp,src/monitor.cpp,src/dlgplaycontrol.h,src/mixxxview.h,src/playerportaudio.cpp,src/soundsourcemp3.h,src/dlgchannel.cpp,src/controllogpotmeter.h,src/dlgplaylistdlg.ui,src/playeralsa.h,src/soundsourceaflibfile.cpp,src/controlpushbutton.cpp,src/soundsource.cpp,src/dlgcrossfader.cpp,src/enginefilterblock.cpp,src/enginefilteriir.cpp,src/enginemaster.h,src/mixxx.db,src/enginefilterblock.h,src/player.h,src/controlpushbutton.h,src/playeralsa.cpp,src/enginechannel.h,src/enginechannel.cpp,src/mixxxview.cpp,src/fileopen.xpm,src/enginepregain.h,src/dlgmaster.h,src/enginebuffer.h,src/dlgplaycontrol.cpp,src/controllogpotmeter.cpp,src/dlgchanneldlg.ui,src/dlgmasterdlg.ui,src/engineobject.h,src/enginebuffer.cpp,src/midiobject.h,src/enginefilterrbj.cpp,src/monitor.h,src/soundsourceaflibfile.h,src/soundsource.h,src/player.cpp,src/configmapping.cpp,src/configmapping.h,src/configobject.cpp,src/configobject.h,src/enginevolume.cpp,src/enginevolume.h,src/controlnull.cpp,src/controlnull.h,src/wplaybutton.cpp,src/wplaybutton.h,src/wknob.cpp,src/wknob.h,src/wknobbulb.cpp,src/wknobbulb.h,src/wbulb.cpp,src/wbulb.h,src/dlgsplit.cpp,src/dlgsplit.h,src/dlgchannelleft.cpp,src/dlgchannelleft.h,src/dlgchannelright.cpp,src/dlgchannelright.h,src/dlgsplitdlg.ui,src/mixxxstyle.cpp,src/mixxxstyle.h,src/wwheel.cpp,src/wwheel.h,src/wslider.cpp,src/wslider.h,src/wplayposslider.cpp,src/wplayposslider.h
 sub_dirs=music,qknob,images,
 type=prog_main
 
@@ -692,12 +692,6 @@ install=false
 install_location=
 type=HEADER
 
-[src/dlgchannelleftdlg.ui]
-dist=true
-install=false
-install_location=
-type=SOURCE
-
 [src/dlgchannelright.cpp]
 dist=true
 install=false
@@ -709,12 +703,6 @@ dist=true
 install=false
 install_location=
 type=HEADER
-
-[src/dlgchannelrightdlg.ui]
-dist=true
-install=false
-install_location=
-type=SOURCE
 
 [src/dlgcrossfader.cpp]
 dist=true
@@ -1016,6 +1004,18 @@ install_location=
 type=SOURCE
 
 [src/mixxxdoc.h]
+dist=true
+install=false
+install_location=
+type=HEADER
+
+[src/mixxxstyle.cpp]
+dist=true
+install=false
+install_location=
+type=SOURCE
+
+[src/mixxxstyle.h]
 dist=true
 install=false
 install_location=
@@ -1380,6 +1380,42 @@ install_location=
 type=SOURCE
 
 [src/wplaybutton.h]
+dist=true
+install=false
+install_location=
+type=HEADER
+
+[src/wplayposslider.cpp]
+dist=true
+install=false
+install_location=
+type=SOURCE
+
+[src/wplayposslider.h]
+dist=true
+install=false
+install_location=
+type=HEADER
+
+[src/wslider.cpp]
+dist=true
+install=false
+install_location=
+type=SOURCE
+
+[src/wslider.h]
+dist=true
+install=false
+install_location=
+type=HEADER
+
+[src/wwheel.cpp]
+dist=true
+install=false
+install_location=
+type=SOURCE
+
+[src/wwheel.h]
 dist=true
 install=false
 install_location=

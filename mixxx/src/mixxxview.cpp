@@ -49,14 +49,14 @@ MixxxView::MixxxView(QWidget *parent, MixxxDoc *doc) : QWidget(parent)
 
     //let the ratio between the widths of columns 0 and 1 be 2:3.
     mainGrid->setColStretch( 0, 207);
-    mainGrid->setColStretch( 1,  71);
-    mainGrid->setColStretch( 2,  40);
-    mainGrid->setColStretch( 3,  71);
+    mainGrid->setColStretch( 1,  73);
+    mainGrid->setColStretch( 2,  36);
+    mainGrid->setColStretch( 3,  73);
     mainGrid->setColStretch( 4, 207);
     mainGrid->setColStretch( 5,  45);
 
-    mainGrid->setRowStretch( 0, 265);
-    mainGrid->setRowStretch( 1,  31);
+    mainGrid->setRowStretch( 0, 230);
+    mainGrid->setRowStretch( 1,  43);
     mainGrid->setRowStretch( 2, 150);
 
     // Add filenames in ./music/ to table
@@ -82,6 +82,7 @@ void MixxxView::Addfiles(const char *dir_name) {
 
 	// ... and then all the files:
 	dir.setFilter(QDir::Files);
+    dir.setNameFilter("*.wav *.Wav *.WAV *.mp3 *.Mp3 *.MP3");
 	const QFileInfoList *list = dir.entryInfoList();
 	QFileInfoListIterator it(*list);        // create list iterator
 	QFileInfo *fi;                          // pointer for traversing

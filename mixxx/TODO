@@ -1,7 +1,7 @@
-- GUI controls: wheel and sliders
-- Reverse volume sliders
+- New ControlObject structure
 - Tune bandwidth parameter of EngineFilterRBJ
-
+- Extensive stability test
+- Memory optimization
 Future options:
 - Headphone channel
 - Sound Effects
