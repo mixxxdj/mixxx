@@ -330,25 +330,27 @@ TrackInfoObject *TrackList::getTrackInfo2()
 
 void TrackList::slotEndOfTrackCh1(double)
 {
-    switch ((int)m_pEndOfTrackModeCh1->getValue())
+    int iIndex = 0;
+	switch ((int)m_pEndOfTrackModeCh1->getValue())
     {
     case TRACK_END_MODE_NEXT:
         // Load next track
-        m_iCurTrackIdxCh1++;
-        slotChangePlay_1(m_iCurTrackIdxCh1);
+        if(m_lPlaylist.count() != 0)
+			for(TrackInfoObject * plsTrack = m_lPlaylist.first();plsTrack;plsTrack = m_lPlaylist.next())
+            {
+             if(plsTrack && plsTrack->m_iIndex == m_iCurTrackIdxCh1)
+			 {
+				 plsTrack = m_lPlaylist.next();
+				 if(plsTrack)
+				 iIndex =  plsTrack->m_iIndex;
+			 }
+            
+            }				
+	
+	    if(iIndex != 0)
+        slotChangePlay_1(iIndex);
         break;
-/*
-    case TRACK_END_MODE_STOP:
-        //m_pPlayCh1->setValueFromApp(0.);
-        break;
-    case TRACK_END_MODE_LOOP:
-        // Load same track
-        slotChangePlay_1(m_iCurTrackIdxCh1);
-        break;
-    case TRACK_END_MODE_PING:
-        qDebug("EndOfTrack mode ping not yet implemented");
-        break;
-*/
+
     default:
         qDebug("Invalid EndOfTrack mode value");
     }
@@ -357,25 +359,27 @@ void TrackList::slotEndOfTrackCh1(double)
 
 void TrackList::slotEndOfTrackCh2(double)
 {
-    switch ((int)m_pEndOfTrackModeCh2->getValue())
+    int iIndex = 0;
+	switch ((int)m_pEndOfTrackModeCh2->getValue())
     {
     case TRACK_END_MODE_NEXT:
         // Load next track
-        m_iCurTrackIdxCh2++;
-        slotChangePlay_2(m_iCurTrackIdxCh2);
+        if(m_lPlaylist.count() != 0)
+			for(TrackInfoObject * plsTrack = m_lPlaylist.first();plsTrack;plsTrack = m_lPlaylist.next())
+            {
+             if(plsTrack && plsTrack->m_iIndex == m_iCurTrackIdxCh2)
+			 {
+				 plsTrack = m_lPlaylist.next();
+				 if(plsTrack)
+				 iIndex =  plsTrack->m_iIndex;
+			 }
+            
+            }				
+	
+	    if(iIndex != 0)
+        slotChangePlay_2(iIndex);
         break;
-/*
-    case TRACK_END_MODE_STOP:
-        //m_pPlayCh2->setValueFromApp(0.);
-        break;
-    case TRACK_END_MODE_LOOP:
-        // Load same track
-        slotChangePlay_2(m_iCurTrackIdxCh2);
-        break;
-    case TRACK_END_MODE_PING:
-        qDebug("EndOfTrack mode ping not yet implemented");
-        break;
-*/
+
     default:
         qDebug("Invalid EndOfTrack mode value");
     }
@@ -505,56 +509,18 @@ void TrackList::WriteXML()
 	
 
 /*
-	Adds the files given in <path> to the list of files.
-	Returns true if any new files were in fact added.
+	Iterates through the global collection and returns index which is highest +1
 */
-int TrackList::getTrackCount(QDomDocument * docXML){
-	int count = 0;
+int TrackList::getNewTrackIndex(){
+	int iIndex = 0;
 	
-	if(docXML == 0x0){
-	//qDebug("DocXML was null");
-	QFile opmlFile(wTree->m_sPlaylistdir);
-	docXML = new QDomDocument("Mixxx_Track_List");
-	//qDebug("PlaylistID is: %s", currentPlaylist.latin1());
-	if (!opmlFile.exists()){
-        
-	qDebug("Could not open the default playlist file!");
-	
+	for(TrackInfoObject *Track = m_lTracks.first(); Track; Track = m_lTracks.next()){
+		if(Track->m_iIndex > iIndex)
+            iIndex= Track->m_iIndex;			
 		}
-    if (!docXML->setContent(&opmlFile))
-    {
-        qDebug("Could not set content.");
-        opmlFile.close();
-        return count;
-        //WriteXML();
-    }
-    
-	opmlFile.close();
-    QDomElement elementRoot = docXML->documentElement();
-    // Get all the tracks written in the xml file:
-    QDomNode node = elementRoot.firstChild();
-	
-	while ( !node.isNull() )
-    {
-	qDebug("Checking child"); 
-	if ( node.isElement() && node.nodeName() == "Track" )
-	 count++;
-	 node = node.nextSibling();
-	}
-	qDebug("Count is now: %d", count);
-	return count;
-	}else{
 		
-		for(TrackInfoObject *Track = m_lTracks.first(); Track; Track = m_lTracks.next()){
-		if(Track->m_iIndex > count)
-            count= Track->m_iIndex;			
-		}
-		return count;
-		
+		return iIndex+1;
 	}
-	
-	
-}
 bool TrackList::AddFiles(const char *path, QDomDocument * docXML)
 {    
 	
@@ -574,9 +540,10 @@ bool TrackList::AddFiles(const char *path, QDomDocument * docXML)
 			
 		
 		
-		
-			int iTrackNumber = getTrackCount(docXML)+1;
-		// Check if the file exists in the list:
+		    
+			int iTrackNumber = getNewTrackIndex();
+		    qDebug("Tracknumber is: %d" + iTrackNumber);			
+			// Check if the file exists in the list:
             TrackInfoObject *Track;
 			Track = FileExistsInList( m_fileInfo.fileName(),docXML, -1 ); 
 	
@@ -590,7 +557,8 @@ bool TrackList::AddFiles(const char *path, QDomDocument * docXML)
                 // Append the track to the list of tracks:
                 if (ParseHeader(Track) == OK)
                 {
-                    m_lTracks.append(Track);
+                    m_lPlaylist.append(Track);
+					m_lTracks.append(Track);
                     qDebug( "Added new track: %s", Track->getFilename().latin1() );
                     bFoundFiles = true;
                 } 
@@ -644,7 +612,7 @@ bool TrackList::AddFiles(const char *path, QDomDocument * docXML)
 		
 		
 		
-		int iTrackNumber = getTrackCount(docXML) + 1;
+		int iTrackNumber = getNewTrackIndex();
 		
 		
         
@@ -792,7 +760,10 @@ void TrackList::slotChangePlay_1(int idx)
         if (track->getTimesPlayed() > m_iMaxTimesPlayed)
             m_iMaxTimesPlayed = track->getTimesPlayed();
         UpdateScores();
-
+        
+		//Set the current Track index so that slotEndOfTrack knows which track to play next
+		m_iCurTrackIdxCh1 = track->m_iIndex;
+		
         // Request a new track from the reader:
         m_pBuffer1->getReader()->requestNewTrack( track );
 
@@ -823,12 +794,15 @@ void TrackList::slotChangePlay_2(int idx)
         m_pTrack2 = track;
         emit(signalNewTrack2(track));
 
-        // Update score:
+        //Set the current Track index so that slotEndOfTrack knows which track to play next
+		m_iCurTrackIdxCh2 = track->m_iIndex;
+		
+		// Update score:
         track->incTimesPlayed();
         if (track->getTimesPlayed() > m_iMaxTimesPlayed)
             m_iMaxTimesPlayed = track->getTimesPlayed();
         UpdateScores();
-        m_iCurTrackIdxCh1 = idx;
+        m_iCurTrackIdxCh2 = idx;
         // Request a new track from the reader:
         m_pBuffer2->getReader()->requestNewTrack( track );
     
