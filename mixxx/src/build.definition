@@ -1,6 +1,7 @@
 
 # Project file definition ---------------------------------------------
 PROJECT_FILE = mixxx.pro
+PROJECT_SETTINGS = enable_summary
 #----------------------------------------------------------------------
 
 # Qt Version definition -----------------------------------------------
@@ -238,9 +239,10 @@ include( check.qbas )
 OBJECT = libasound.so
 TYPE = lib
 DESCRIPTION = Alsa library
+FEATURE = Alsa
 TIP_MESSAGE =
-LINK_LIBS = -lasound
-OPTIONS =  skip_link
+LINK_LIBS = -lasound 
+OPTIONS =  disable_feature   lock_feature
 #----------------------------------------------------------------------
 # Check routines         (DON'T TOUCH!)
 include( check.qbas )
@@ -268,12 +270,13 @@ include( check.qbas )
 OBJECT = pkg-config --exists 'jack >= 0.61.0'
 TYPE = command
 DESCRIPTION = Jack >= 0.61.0
+FEATURE = Jack
 TIP_MESSAGE = "Jack needed!"
 LINK_LIBS = `pkg-config --silence-errors --cflags --libs jack`
-ADD_DEFINES = #__JACK__
-ADD_SOURCES = #playerjack.cpp
-ADD_HEADERS = #playerjack.h
-OPTIONS = skip_link
+ADD_DEFINES = __JACK__
+ADD_SOURCES = playerjack.cpp
+ADD_HEADERS = playerjack.h
+OPTIONS =     disable_feature
 #----------------------------------------------------------------------
 # Check routines         (DON'T TOUCH!)
 include( check.qbas )

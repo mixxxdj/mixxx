@@ -1,7 +1,7 @@
 
 #************************************************************************
 # QBAS
-# version 0.9
+# version 0.9.1
 # Copyright (c) 2003-2004 Gianluca Romanin ( J_Zar )
 #        <jayorama@users.sourceforge.net>
 #************************************************************************
@@ -32,6 +32,22 @@
 # -------------------------------------------------------------------------
 # -------------------------------------------------------------------------
 FOUND = false
+# by default we suppose not to have features and DO_ACTIONS
+# is always true...
+DO_ACTIONS = true
+# --------------------------------------
+# Generic init step (only once)... 
+# --------------------------------------
+contains( INIT, true ) {
+	# init the summary output...
+	contains( PROJECT_SETTINGS , enable_summary ) {
+		system( echo " " >> summary.log )
+		system( echo "	---------- Features Summary ----------" >> summary.log )
+		system( echo " " >> summary.log )
+	# all done: no more through this step!
+	INIT = false
+	}
+}
 # --------------------------------------
 # At first: check for errors in definition... 
 # --------------------------------------
@@ -66,6 +82,49 @@ isEmpty( TYPE ) {
 	else {
 	ERROR_MESSAGE = "Cannot compile without $${OBJECT}!"
 	}
+# --------------------------------------
+# if FEATURE is set we check if it is enabled... 
+# --------------------------------------
+!isEmpty( FEATURE ) {
+	contains( OPTIONS, lock_feature ) {
+		# if feature is locked by the developer
+		# then we skip user directives...
+		contains( OPTIONS, disable_feature ) {
+			# we avoid to link libraries if disabled
+			# Finally there is no reason to exit on failure
+			OPTIONS += skip_link
+			OPTIONS -= exit_on_failure
+			DO_ACTIONS = false
+			}
+		# by default FEATURE is >>> ENABLED <<< !
+		} else {
+		# this is the user time: if he disabled the feature
+		# we set the environment on conseguence...
+		contains( DISABLED_FEATURES, $${FEATURE} ) {
+			# we avoid to link libraries if disabled
+			# Finally there is no reason to exit on failure
+			OPTIONS += skip_link
+			OPTIONS -= exit_on_failure
+			DO_ACTIONS = false
+		}
+		# this is the user time: if he enabled the feature
+		# we set the environment on conseguence...
+		# Although code is provided for convenience...
+		contains( ENABLED_FEATURES, $${FEATURE} ) {
+			DO_ACTIONS = true
+		} else {
+			# if nothing is set, looking at developer's will...
+			contains( OPTIONS, disable_feature ) {
+				# we avoid to link libraries if disabled
+				# Finally there is no reason to exit on failure
+				OPTIONS += skip_link
+				OPTIONS -= exit_on_failure
+				DO_ACTIONS = false
+			}
+		}
+		}
+	}
+
 
 
 # --------------------------- lib type ------------------------------------
@@ -319,15 +378,32 @@ contains( FOUND, false) {
 # if found:
 # Add something
 contains( FOUND, true ) {
-	!contains( OPTIONS, skip_link ) {
-		!contains( MESSAGE, statically ) {
-			LIBS += $${LINK_LIBS}
+	contains( DO_ACTIONS , true ) {
+		!contains( OPTIONS, skip_link ) {
+			!contains( MESSAGE, statically ) {
+				LIBS += $${LINK_LIBS}
+				}
 			}
+		DEFINES += $${ADD_DEFINES}
+		SOURCES += $${ADD_SOURCES}
+		HEADERS += $${ADD_HEADERS}
+		CONFIG += $${ADD_CONFIG}
+		SUMMARY_MESSAGE = yes
+	} else {
+		SUMMARY_MESSAGE = no
+	}
+}
+
+# --------------------------- summary output ------------------------------
+# -------------------------------------------------------------------------
+# -------------------------------------------------------------------------
+!isEmpty( FEATURE ) {
+	contains( OPTIONS, lock_feature ) {
+	SUMMARY_MESSAGE += 	(locked)
+	}
+	contains( PROJECT_SETTINGS , enable_summary ) {
+			system( echo "	$${FEATURE}	==>	$${SUMMARY_MESSAGE}" >> summary.log )
 		}
-	DEFINES += $${ADD_DEFINES}
-	SOURCES += $${ADD_SOURCES}
-	HEADERS += $${ADD_HEADERS}
-	CONFIG += $${ADD_CONFIG}
 }
 
 
@@ -340,6 +416,7 @@ contains( FOUND, true ) {
 # TYPE =
 # --------------------------------------
 DESCRIPTION =
+FEATURE =
 TIP_MESSAGE =
 LINK_LIBS =
 ADD_DEFINES =
