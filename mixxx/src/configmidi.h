@@ -20,9 +20,9 @@
 
 #include "configobject.h"
 
-class ConfigMIDI : ConfigObject {
+class ConfigMIDI : public ConfigObject {
  public:
-    class ConfigValue : ConfigObject::ConfigValue {
+    class ConfigValue : public ConfigObject::ConfigValue {
      public:
       ConfigValue(QString _value) : ConfigObject::ConfigValue(_value) {
 	  QString s2;
@@ -33,21 +33,25 @@ class ConfigMIDI : ConfigObject {
 	  else
 	      midichannel = 0; // Default to 0 (channel 1)
       };
+      ConfigValue(int _midino, int _midimask, int _midichannel) {
+	  midino = _midino;
+	  midimask = _midimask;
+	  midichannel = _midichannel;
+	  QTextIStream(&value) << midino << midimask << "ch" << midichannel;
+      }; 
       int   midino, midimask, midichannel;
-      QString value;
     };
     
-    class ConfigOption : ConfigObject::ConfigOption {
+    class ConfigOption : public ConfigObject::ConfigOption {
     public:
-	ConfigOption(ConfigObject::ConfigKey *_key, ConfigValue *_val) : 
-	    ConfigObject::ConfigOption(_key, _val->value) {};
+	ConfigOption(ConfigObject::ConfigKey *_key, ConfigMIDI::ConfigValue *_val) {key=_key; val=_val;};
 	ConfigObject::ConfigKey *key;
     };
     
     
     ConfigMIDI(QString file) : ConfigObject(file) {};
     ~ConfigMIDI() {};
-    ConfigObject::ConfigOption *get(ConfigObject::ConfigKey *key) {return ConfigObject::get(key);};
+    ConfigMIDI::ConfigOption *get(ConfigObject::ConfigKey *key) {return ConfigObject::get(key);};
     void Save();
 
 };

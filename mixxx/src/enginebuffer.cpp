@@ -37,7 +37,7 @@ EngineBuffer::EngineBuffer(QApplication *a, QWidget *m, DlgPlaycontrol *_playcon
   playcontrol = _playcontrol;
 
   // Play button
-  ConfigObject::ConfigKey k1(group, "play");
+  ConfigKey k1(group, "play");
   PlayButton = new ControlPushButton(&k1, simulated_latching);
   playcontrol->PushButtonPlay->controlButton = PlayButton;
   connect(playcontrol->PushButtonPlay, SIGNAL(pressed()), PlayButton, SLOT(pressed()));
@@ -45,7 +45,7 @@ EngineBuffer::EngineBuffer(QApplication *a, QWidget *m, DlgPlaycontrol *_playcon
   connect(PlayButton, SIGNAL(valueChanged(valueType)), this, SLOT(slotUpdatePlay(valueType)));
 
   // Playback rate slider
-  ConfigObject::ConfigKey k2(group, "rate");
+  ConfigKey k2(group, "rate");
   rateSlider = new ControlPotmeter(&k2, 0.9, 1.1);
   rateSlider->slotSetPosition(64);
   rate.write(rateSlider->getValue());
@@ -54,7 +54,7 @@ EngineBuffer::EngineBuffer(QApplication *a, QWidget *m, DlgPlaycontrol *_playcon
   connect(rateSlider, SIGNAL(updateGUI(int)), playcontrol->SliderRate, SLOT(setValue(int)));
 
   // Wheel to control playback position/speed
-  ConfigObject::ConfigKey k3(group, "wheel");
+  ConfigKey k3(group, "wheel");
   wheel = new ControlRotary(&k3, PlayButton);
   connect(playcontrol->WheelPlaycontrol, SIGNAL(valueChanged(int)), wheel, SLOT(slotSetValue(int)));
   connect(wheel, SIGNAL(valueChanged(FLOAT_TYPE)), this, SLOT(slotUpdateRate(FLOAT_TYPE)));

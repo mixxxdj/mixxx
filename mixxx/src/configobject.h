@@ -23,46 +23,77 @@
 #include <qvaluelist.h>
 #include "defs.h"
 
-/**
-  * List element of configuration values as stored in a specific configuration file
-  *@author Tue & Ken Haste Andersen
-  */
+/*
+  Class for the key for a specific configuration element. A key consists of a
+  group and an item.
+*/
+class ConfigKey {
+ public:
+    ConfigKey() {};
+    ConfigKey(QString g, QString i) { group = g; item = i; };
+    QString group, item;
+};
 
-class ConfigObject {
+/*
+  The value corresponding to a key. The basic value is a string, but can be
+  subclassed to more specific needs.
+*/
+class ConfigValue {
+ public:
+    ConfigValue() {};
+    ConfigValue(QString _value) {value = _value;};
+    QString value;
+};
+
+class ConfigValueMidi : public ConfigValue {
+ public:
+    ConfigValueMidi() {};
+    ConfigValueMidi(QString _value) : ConfigValue(_value) {
+	QString s2;
+	QTextIStream(&_value) >> midino >> midimask >> s2 >> midichannel;
+	if (s2.endsWith("h"))
+	    midichannel--;   // Internally midi channels are form 0-15,
+	// while musicians operates on midi channels 1-16.
+	else
+	    midichannel = 0; // Default to 0 (channel 1)
+    };
+    ConfigValueMidi(int _midino, int _midimask, int _midichannel) {
+	midino = _midino;
+	midimask = _midimask;
+	midichannel = _midichannel;
+	QTextIStream(&value) << midino << midimask << "ch" << midichannel;
+    }; 
+    int   midino, midimask, midichannel;
+};
+
+template <class ValueType> class ConfigOption {
+ public:
+    ConfigOption() {};
+    ConfigOption(ConfigKey *_key, ValueType *_val) { key = _key ; val = _val; };
+    ValueType *val;
+    ConfigKey *key;
+};
+
+template <class ValueType> class ConfigObject {
  public: 
-    class ConfigKey {
-    public:
-	ConfigKey(QString g, QString c) { group = g; control = c; };
-	QString group, control;
-    };
-    
-    class ConfigValue {
-    public:
-	ConfigValue(QString _value) {value = _value;};
-	QString value;
-    };
-    
-    class ConfigOption {
-    public:
-	ConfigOption(ConfigKey *_key, ConfigValue *_val) { key = _key ; val = _val; };
-	ConfigValue *val;
-	ConfigKey *key;
-    };
+    ConfigKey key;
+    ValueType value;
+    ConfigOption<ValueType> option;
     
     ConfigObject(QString file);
     ~ConfigObject();
-    ConfigObject::ConfigOption *set(ConfigObject::ConfigKey *, ConfigObject::ConfigValue *);
-    ConfigObject::ConfigOption *get(ConfigObject::ConfigKey *key);
+    ConfigOption<ValueType> *set(ConfigKey, ValueType);
+    ConfigOption<ValueType> *get(ConfigKey key);
+    QString getValueString(ConfigKey k);
+
     void Save();
     
  protected:
-    QPtrList<ConfigObject::ConfigOption> list;
+    QPtrList< ConfigOption<ValueType> > list;
     QString filename;
     
     void Parse();
 };
-
-
 
 #endif
 

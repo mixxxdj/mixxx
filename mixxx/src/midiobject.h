@@ -11,13 +11,13 @@
 #include <qstring.h>
 #include <qapplication.h>
 #include "defs.h"
-#include "configmidi.h"
+#include "configobject.h"
 
 class ControlObject;
 
 class MidiObject : public QThread {
 public:
-    MidiObject(ConfigMIDI *c, QApplication *app);
+    MidiObject(ConfigObject<ConfigValueMidi> *c, QApplication *app);
     ~MidiObject();
     void reopen(QString device);
     void add(ControlObject* c);
@@ -36,7 +36,7 @@ protected:
     void send(char channel, char midicontrol, char midivalue);
 
     bool requestStop;
-    static ConfigMIDI             *config;
+    static ConfigObject<ConfigValueMidi> *config;
     int                           fd, count, size, no;
     std::vector<ControlObject*>   controlList;
 

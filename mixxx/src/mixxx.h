@@ -152,7 +152,9 @@ class MixxxApp : public QMainWindow
     MidiObject *midi;
     ControlObject *control;
     std::vector<EngineObject *> engines;
-    QString songpath;
+    ConfigKey PlaylistKey;
+    ConfigObject<ConfigValue> *config;
+    ConfigObject<ConfigValueMidi> *midiconfig;
 
     /** Popup menu used to select player when a track has been selected */
     QPopupMenu *playSelectMenu;

@@ -47,38 +47,6 @@
             </rect>
         </property>
     </widget>
-    <widget class="QComboBox">
-        <property name="name">
-            <cstring>ComboBoxMidiconf</cstring>
-        </property>
-        <property name="enabled">
-            <bool>true</bool>
-        </property>
-        <property name="geometry">
-            <rect>
-                <x>145</x>
-                <y>10</y>
-                <width>210</width>
-                <height>22</height>
-            </rect>
-        </property>
-    </widget>
-    <widget class="QComboBox">
-        <property name="name">
-            <cstring>ComboBoxMididevice</cstring>
-        </property>
-        <property name="enabled">
-            <bool>true</bool>
-        </property>
-        <property name="geometry">
-            <rect>
-                <x>145</x>
-                <y>45</y>
-                <width>85</width>
-                <height>22</height>
-            </rect>
-        </property>
-    </widget>
     <widget class="QPushButton">
         <property name="name">
             <cstring>PushButtonCancel</cstring>
@@ -107,19 +75,6 @@
                 <x>145</x>
                 <y>150</y>
                 <width>85</width>
-                <height>22</height>
-            </rect>
-        </property>
-    </widget>
-    <widget class="QLineEdit">
-        <property name="name">
-            <cstring>LineEditSongfiles</cstring>
-        </property>
-        <property name="geometry">
-            <rect>
-                <x>145</x>
-                <y>185</y>
-                <width>210</width>
                 <height>22</height>
             </rect>
         </property>
@@ -344,6 +299,48 @@
         </property>
         <property name="text">
             <string>OK</string>
+        </property>
+    </widget>
+    <widget class="QLineEdit">
+        <property name="name">
+            <cstring>LineEditSongfiles</cstring>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>145</x>
+                <y>185</y>
+                <width>210</width>
+                <height>22</height>
+            </rect>
+        </property>
+    </widget>
+    <widget class="QLineEdit">
+        <property name="name">
+            <cstring>LineEditMidiconf</cstring>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>147</x>
+                <y>11</y>
+                <width>210</width>
+                <height>22</height>
+            </rect>
+        </property>
+    </widget>
+    <widget class="QComboBox">
+        <property name="name">
+            <cstring>ComboBoxMididevice</cstring>
+        </property>
+        <property name="enabled">
+            <bool>true</bool>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>145</x>
+                <y>45</y>
+                <width>210</width>
+                <height>22</height>
+            </rect>
         </property>
     </widget>
 </widget>

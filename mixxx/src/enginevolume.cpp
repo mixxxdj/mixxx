@@ -5,7 +5,7 @@
   ----------------------------------------------------------------*/
 EngineVolume::EngineVolume(const char *group)
 {
-    potmeter = new ControlLogpotmeter(new ConfigObject::ConfigKey(group, "volume"), 5.0);
+    potmeter = new ControlLogpotmeter(new ConfigKey(group, "volume"), 5.0);
     volume = 1.0;
     buffer = new CSAMPLE[MAX_BUFFER_LEN];
 

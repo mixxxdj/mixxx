@@ -8,7 +8,7 @@ const char ControlRotary::graycodetable[256] =  {128, 56, 40, 55, 24, 128, 39, 5
 	    midino - number of the midi controller.
 	    midicontroller - pointer to the midi controller.
    -------- ------------------------------------------------------ */
-ControlRotary::ControlRotary(ConfigObject::ConfigKey *key, ControlPushButton *playbutton) : ControlPotmeter(key,0.,1.) // ????
+ControlRotary::ControlRotary(ConfigKey *key, ControlPushButton *playbutton) : ControlPotmeter(key,0.,1.) // ????
 {
   play = playbutton;
   direction = 1; // arbitrary
@@ -41,10 +41,10 @@ void ControlRotary::slotSetPosition(int newpos)
   {
     short change = newpos-position; 
     // Check for passing through 0 and 127:
-    if (change > 100.)
-        change = 128.-change;
-    else if (change < -100.)
-        change += 126.;
+    if (change > 100)
+        change = 128-change;
+    else if (change < -100)
+        change += 126;
 
     // Check for a change in direction:
     short newdirection = sign(change);
