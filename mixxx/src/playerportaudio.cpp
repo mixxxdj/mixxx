@@ -131,11 +131,13 @@ bool PlayerPortAudio::open()
     int iFramesPerBuffer;
     int iLatency = (int)(iSrate*(m_pConfig->getValueString(ConfigKey("[Soundcard]","Latency")).toFloat()/1000.));
 
+    // Apply simple rule to determine number of buffers
     if (iLatency/kiMaxFrameSize<2)
         m_iNumberOfBuffers = 2;
     else
         m_iNumberOfBuffers = iLatency/kiMaxFrameSize;
 
+    // Frame size...    
     iFramesPerBuffer = iLatency/m_iNumberOfBuffers;
 
     // Ensure the chosen configuration is valid
