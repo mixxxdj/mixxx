@@ -378,8 +378,8 @@ MixxxApp::MixxxApp(QApplication *a, QStringList files)
         m_pTrack->slotLoadPlayer2((*files.at(2)));
 
     // Set up socket interface
-#ifdef __WIN__
-    new MixxxSocketServer(m_pTrack);
+#ifndef __WIN__
+	new MixxxSocketServer(m_pTrack);
 #endif
     
     // Call inits to invoke all other construction parts
