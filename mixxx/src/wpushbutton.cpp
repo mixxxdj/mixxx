@@ -135,21 +135,20 @@ void WPushButton::mousePressEvent(QMouseEvent *e)
 {
     m_bPressed = true;
 
-    // Calculate new state if the left mouse button was used to press the button
-    if (e->button()==Qt::LeftButton)
+    // Calculate new state if it is a one state button
+    if (m_iNoStates==1)
     {
-        // Special case if it is a one state button.
-        if (m_iNoStates==1)
-        {
-            if (m_iState==0)
-                m_iState = 1;
-            else
-                m_iState = 0;
-        }
+        if (m_iState==0)
+            m_iState = 1;
         else
-            m_iState = (m_iState+1)%m_iNoStates;
+            m_iState = 0;
     }
-    
+    // Update state on left press if it is a n-state button
+    else if (e->button()==Qt::LeftButton)
+    {
+        m_iState = (m_iState+1)%m_iNoStates;
+    }
+
     if (e->button()==Qt::LeftButton)
         emit(valueChangedLeftDown((double)m_iState));
     else if (e->button()==Qt::RightButton)
@@ -162,8 +161,8 @@ void WPushButton::mouseReleaseEvent(QMouseEvent *e)
 {
     m_bPressed = false;
 
-    // Update state if left button and it is a one state button.
-    if (m_iNoStates==1 && e->button()==Qt::LeftButton)
+    // Update state if it is a one state button.
+    if (m_iNoStates==1) // && e->button()==Qt::LeftButton)
     {
         if (m_iState==0)
             m_iState = 1;

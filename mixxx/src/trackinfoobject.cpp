@@ -106,7 +106,7 @@ void TrackInfoObject::AddElement( QDomDocument &doc, QDomElement &header,
 }
 
 /*
-	Dummy method for parsing information from knowing only the file name.
+    Method for parsing information from knowing only the file name.
     It assumes that the filename is written like: "artist - trackname.xxx"
 */
 void TrackInfoObject::Parse()
@@ -124,11 +124,22 @@ void TrackInfoObject::Parse()
         m_sType = m_sFilename.section('.',-1); // Get the ending
     }
 
-    // Sort out obvíously wrong parsings:
+    // Remove spaces from start and end of title and artist
+    while (m_sArtist.startsWith(" "))
+	    m_sArtist = m_sArtist.right(m_sArtist.length()-1);
+    while (m_sArtist.endsWith(" "))
+            m_sArtist = m_sArtist.left(m_sArtist.length()-1);
+    while (m_sTitle.startsWith(" "))
+            m_sTitle = m_sTitle.right(m_sTitle.length()-1);
+    while (m_sTitle.endsWith(" "))
+            m_sTitle = m_sTitle.left(m_sTitle.length()-1);
+
+
+    // Sort out obviously wrong parsings:
     if ((m_sArtist.length() < 3) || (m_sTitle < 3))
     {
         m_sTitle = m_sFilename.section('.',0,-2);
-        m_sArtist = ' ';
+        m_sArtist = "";
     }
 
     // Find the length:

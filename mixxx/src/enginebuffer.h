@@ -77,12 +77,14 @@ public slots:
     void slotControlCueSet(double=0);
     void slotControlCuePreview(double);
     void slotControlRateTempDown(double);
+    void slotControlRateTempDownSmall(double);
     void slotControlRateTempUp(double);
+    void slotControlRateTempUpSmall(double);
 //    void bpmChange(double);
 
 private:
     /** Pointer to reader */
-    Reader *reader;    
+    Reader *reader;
     /** Buffer used in the process() */
     CSAMPLE *buffer;
     /** The current sample to play in the file. */
@@ -107,7 +109,7 @@ private:
     int m_iSamplesCalculated;
 
     ControlEngine *playButton, *rateSlider, *wheel, *playposSlider, *bufferposSlider, *audioBeatMark;
-    ControlEngine *buttonCueSet, *buttonCueGoto, *buttonCuePreview, *buttonRateTempDown, *buttonRateTempUp;
+    ControlEngine *buttonCueSet, *buttonCueGoto, *buttonCuePreview, *buttonRateTempDown, *buttonRateTempDownSmall, *buttonRateTempUp, *buttonRateTempUpSmall;
     /** Control used to signal when at end of file */
     ControlEngine *m_pTrackEnd, *m_pTrackEndMode;
     /** Control used to input desired playback BPM */

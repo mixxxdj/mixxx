@@ -39,7 +39,7 @@ EngineBuffer::EngineBuffer(PowerMate *_powermate, const char *_group)
 {
     group = _group;
     powermate = _powermate;
-        
+
     // Play button
     ControlPushButton *p = new ControlPushButton(ConfigKey(group, "play"));
     playButton = new ControlEngine(p);
@@ -96,10 +96,16 @@ EngineBuffer::EngineBuffer(PowerMate *_powermate, const char *_group)
     p = new ControlPushButton(ConfigKey(group,"rate_temp_down"));
     buttonRateTempDown = new ControlEngine(p);
     connect(buttonRateTempDown, SIGNAL(valueChanged(double)), this, SLOT(slotControlRateTempDown(double)));
+    p = new ControlPushButton(ConfigKey(group,"rate_temp_down_small"));
+    buttonRateTempDownSmall = new ControlEngine(p);
+    connect(buttonRateTempDownSmall, SIGNAL(valueChanged(double)), this, SLOT(slotControlRateTempDownSmall(double)));
     p = new ControlPushButton(ConfigKey(group,"rate_temp_up"));
     buttonRateTempUp = new ControlEngine(p);
     connect(buttonRateTempUp, SIGNAL(valueChanged(double)), this, SLOT(slotControlRateTempUp(double)));
-    
+    p = new ControlPushButton(ConfigKey(group,"rate_temp_up_small"));
+    buttonRateTempUpSmall = new ControlEngine(p);
+    connect(buttonRateTempUpSmall, SIGNAL(valueChanged(double)), this, SLOT(slotControlRateTempUpSmall(double)));
+
     // Wheel to control playback position/speed
     ControlTTRotary *p3 = new ControlTTRotary(ConfigKey(group, "wheel"));
     wheel = new ControlEngine(p3);
@@ -126,7 +132,7 @@ EngineBuffer::EngineBuffer(PowerMate *_powermate, const char *_group)
     ControlBeat *p4 = new ControlBeat(ConfigKey(group, "bpm"));
     bpmControl = new ControlEngine(p4);
 //    bpmControl->setNotify(this,(EngineMethod)&EngineBuffer::bpmChange);
-                
+
     // Beat event control
     p2 = new ControlPotmeter(ConfigKey(group, "beatevent"));
     beatEventControl = new ControlEngine(p2);
@@ -307,7 +313,16 @@ void EngineBuffer::slotControlRateTempDown(double)
 {
     // Adjusts temp rate down if button pressed, otherwise set to 0.
     if (buttonRateTempDown->get()==1.)
-        temp_rate = -0.1;
+        temp_rate = -0.01;
+    else
+        temp_rate = 0.;
+}
+
+void EngineBuffer::slotControlRateTempDownSmall(double)
+{
+    // Adjusts temp rate down if button pressed, otherwise set to 0.
+    if (buttonRateTempDownSmall->get()==1.)
+        temp_rate = -0.001;
     else
         temp_rate = 0.;
 }
@@ -316,7 +331,16 @@ void EngineBuffer::slotControlRateTempUp(double)
 {
     // Adjusts temp rate up if button pressed, otherwise set to 0.
     if (buttonRateTempUp->get()==1.)
-        temp_rate = 0.1;
+        temp_rate = 0.01;
+    else
+        temp_rate = 0.;
+}
+
+void EngineBuffer::slotControlRateTempUpSmall(double)
+{
+    // Adjusts temp rate up if button pressed, otherwise set to 0.
+    if (buttonRateTempUpSmall->get()==1.)
+        temp_rate = 0.001;
     else
         temp_rate = 0.;
 }
@@ -331,7 +355,7 @@ inline bool even(long n)
 }
 
 CSAMPLE *EngineBuffer::process(const CSAMPLE *, const int buf_size)
-{    
+{
     // pause can be locked if the reader is currently loading a new track.
     if (m_pTrackEnd->get()==0 && pause.tryLock())
     {
@@ -386,11 +410,10 @@ CSAMPLE *EngineBuffer::process(const CSAMPLE *, const int buf_size)
             rate=temp_rate+wheel->get()+rateSlider->get()*baserate;
         else
             rate=temp_rate+wheel->get()*baserate*20.;
-
 /*
         //
         // Beat event control. Assume forward play
-        //    
+        //
 
         // Search for next beat
         ReaderExtractBeat *readerbeat = reader->getBeatPtr();
