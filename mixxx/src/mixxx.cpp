@@ -258,6 +258,9 @@ MixxxApp::MixxxApp(QApplication *a, QStringList files, QSplashScreen *pSplash, Q
     if (pSplash)
         pSplash->message("Setting up sound engine...",Qt::AlignLeft|Qt::AlignBottom);
     
+    // Sample rate used by Player object
+    new ControlObject(ConfigKey("[Master]","samplerate"));
+    
     // Init buffers/readers
     buffer1 = new EngineBuffer(powermate1, "[Channel1]");
     buffer2 = new EngineBuffer(powermate2, "[Channel2]");

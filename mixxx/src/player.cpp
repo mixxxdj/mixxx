@@ -31,7 +31,7 @@ Player::Player(ConfigObject<ConfigValue> *pConfig)
 {
     m_pConfig = pConfig;
     m_pBuffer = new CSAMPLE[MAX_BUFFER_LEN];
-    m_pControlObjectSampleRate = new ControlObject(ConfigKey("[Master]","samplerate"));
+    m_pControlObjectSampleRate = ControlObject::getControl(ConfigKey("[Master]","samplerate"));
 }
 
 /* -------- ------------------------------------------------------
