@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE KDevPrjSession ><KDevPrjSession>
+ <Mainframe MaximizeMode="0" />
+ <DocsAndViews NumberOfDocuments="1" >
+  <Doc0 Type="CDocBrowser" NumberOfViews="1" FileName="file:/usr/lib/qt2/doc/html/qthread.html#be34d4" >
+   <View Top="0" Width="758" Attach="0" Height="460" Left="0" Focus="0" Type="KHTMLView" MinMaxMode="0" />
+  </Doc0>
+ </DocsAndViews>
+</KDevPrjSession>

@@ -1,0 +1,295 @@
+
+SHELL=/bin/sh
+
+cvs:
+	@if grep '$$(top_srcdir)/acinclude.m4:' Makefile.am >/dev/null; then \
+	  echo "*** Creating acinclude.m4" ;\
+	  rm -f acinclude.m4 configure.files ;\
+	  $(MAKE) -f Makefile.am top_srcdir=. acinclude.m4 ;\
+	fi
+	@echo "!!! If you get recursion errors from autoconf, it is advisable to set the"
+	@echo "    environment variable M4 to something including \"--nesting-limit=500\""
+	@if test -r configure.in.in; then \
+	  rm -f subdirs configure.in ;\
+	  echo "*** Creating list of subdirectories" ;\
+	  $(MAKE) -f Makefile.am top_srcdir=. subdirs ;\
+	  echo "*** Creating configure.in" ;\
+	  $(MAKE) -f Makefile.am top_srcdir=. configure.in ;\
+	fi
+	@echo "*** Creating aclocal.m4"
+	@aclocal
+	@echo "*** Creating configure"
+	@autoconf
+	@if test -r configure.in.in ; then \
+	  perl -pi -e 'print "if test \"x\$$with_fast_perl\" = \"xyes\" ;\
+	  then\n  perl -i.bak \$$ac_aux_dir/conf.change.pl \$$CONFIG_STATUS\
+	  || mv \$$CONFIG_STATUS.bak \$$CONFIG_STATUS;\
+	  \n  rm -f \$$CONFIG_STATUS.bak;\nfi\
+	  \n" if /^\s*chmod\s+.*\+x\s+.*CONFIG_STATUS/;' configure ;\
+	fi
+	@if grep '} \$$ac_kw foo' configure >/dev/null 2>&1; then perl -p -i -e "s/ac_kw foo/ac_kw int foo/" configure; fi
+#David's hack for autoconf bug when $INSTALL is set
+	@perl -pi -e 'if (/\[\/\$$\]\*. INSTALL=/) { print $$_ ; $$_ = "\"\") ;;\n"; }' configure
+	@if egrep "^AM_CONFIG_HEADER" configure.in >/dev/null 2>&1; then \
+	  echo "*** Creating config.h template" ;\
+		autoheader ;\
+	fi
+	@echo "*** Creating Makefile templates"
+	@automake
+	@echo "*** Postprocessing Makefile templates"
+	@perl admin/am_edit
+	@if egrep "^cvs-local:" Makefile.am >/dev/null; then \
+	  $(MAKE) -f Makefile.am cvs-local ;\
+	fi
+	@echo "*** Creating date/time stamp"
+	@touch stamp-h.in
+	@echo "*** Finished"
+	@echo "    Don't forget to run ./configure"
+	@echo "    If you haven't done so in a while, run ./configure --help"
+
+dist:	
+	@if grep -e '$$(top_srcdir)/acinclude.m4:' Makefile.am >/dev/null; then \
+	  $(MAKE) -f Makefile.am top_srcdir=. acinclude.m4 ;\
+	fi
+	@if test -r configure.in.in; then \
+	  $(MAKE) -f Makefile.am top_srcdir=. subdirs configure.in; \
+	fi ;\
+	aclocal; \
+	autoheader; \
+	automake --foreign --include-deps; \
+	perl admin/am_edit; \
+	autoconf; \
+	if test -r configure.in.in ; then \
+	  perl -pi -e 'print "if test \"x\$$with_fast_perl\" = \"xyes\" ;\
+	  then\n  perl -i.bak \$$ac_aux_dir/conf.change.pl \$$CONFIG_STATUS\
+	  || mv \$$CONFIG_STATUS.bak \$$CONFIG_STATUS;\
+	  \n  rm -f \$$CONFIG_STATUS.bak;\nfi\
+	  \n" if /^\s*chmod\s+.*\+x\s+.*CONFIG_STATUS/;' configure ;\
+	fi ;\
+	touch stamp-h.in; \
+	if grep -e "^cvs-local:" Makefile.am >/dev/null; then \
+	  $(MAKE) -f Makefile.am cvs-local ;\
+	fi ;\
+	if grep "ac_kw foo" configure >/dev/null 2>&1; then perl -p -i -e "s/ac_kw foo/ac_kw int foo/" configure; fi ;\
+	if test -d po; then \
+	 LIST=`find ./po -name "*.po"`; \
+	 for i in $$LIST; do \
+	  file2=`echo $$i | sed -e "s#\.po#\.gmo#"`; \
+	  msgfmt -o $$file2 $$i || touch $$file2; \
+	 done ;\
+	fi
+	@if grep -e "^cvs-dist-local:" Makefile.am >/dev/null; then \
+	  $(MAKE) -f Makefile.am cvs-dist-local ;\
+	fi
+
+cvs-clean:
+	@if test ! -d CVS; then \
+	  echo "You don't have a toplevel CVS directory."; \
+	  echo "You most certainly didn't use cvs to get these sources."; \
+	  echo "But this function depends on cvs's information."; \
+	  exit 1 ;\
+	fi;\
+	pwd=`pwd` ;\
+	dirs=`find . -type d | grep -v CVS | sed -e "s#^./##"` ;\
+	for i in $$dirs; do \
+	  if test ! -d "$$pwd/$$i/CVS"; then \
+	    echo "D $$i" ;\
+	    rm -rf "$$pwd/$$i"; \
+	    continue; \
+	  fi ;\
+	  cd $$pwd/$$i ;\
+	  for f in * .*; do \
+	    if test ! -d "$$f"; then \
+	      if grep "^/$$f/" CVS/Entries > /dev/null; then \
+		a="b"; \
+	      else \
+	        echo "F $$i/$$f"; \
+		rm -f "$$pwd/$$i/$$f"; \
+	      fi; \
+	    fi ; \
+	  done; \
+	done
+
+
+# The Makefiles have to be sorted for slashes, since configure creates
+# only one directory per Makefile not the whole hierarchy
+configure.in: configure.files $(shell test -f configure.files && cat configure.files) subdirs
+	@rm -f configure.in configure.in.new ;\
+	cat `cat configure.files | egrep -v "^configure.in.bot"` >> configure.in.new ;\
+	echo "KDE_CREATE_SUBDIRSLIST" >> configure.in.new ;\
+	echo "AC_OUTPUT( \\" >> configure.in.new ;\
+	mfs=`find . -type d -print | fgrep -v "/." | sed -e "s#\./##" -e "/^debian/d" | sort`; \
+	for i in $$mfs; do \
+	  topleveldir=`echo $$i| sed -e "s#/.*##"`; \
+	  if test -f $$topleveldir/configure.in; then \
+		continue; \
+	  fi ;\
+	  if test ! -f $$i/Makefile.am; then \
+		continue; \
+	  fi ;\
+	  if test -s inst-apps; then \
+	    if test -z "`grep \"^$$topleveldir\" inst-apps`"; then \
+		continue; \
+	    fi ;\
+	  fi ;\
+	  echo "$$i/Makefile \\" >> configure.in.new ;\
+	done ;\
+	egrep '^dnl AC_OUTPUT\(.*\)' `cat configure.files` | sed -e "s#^.*dnl AC_OUTPUT(\(.*\))#\1 \\\\#" >> configure.in.new ;\
+	echo ")" >> configure.in.new
+	@modulename= ;\
+	if test -f configure.in.in; then \
+	   if head -2 configure.in.in | egrep "^#MIN_CONFIG$$" > /dev/null; then \
+	      line=`egrep "^AM_INIT_AUTOMAKE\(" configure.in.in` ;\
+	      if test -n "$$line"; then \
+		  modulename=`echo $$line | sed -e "s#AM_INIT_AUTOMAKE(\([^,]*\),.*#\1#"` ;\
+		  VERSION=`echo $$line | sed -e "s#AM_INIT_AUTOMAKE([^,]*, *\([^)]*\)).*#\1#"` ;\
+	       fi ;\
+	      sed -e "s#AM_INIT_AUTOMAKE([^@].*#dnl PACKAGE set before#" configure.in.new > configure.in \
+		  && mv configure.in configure.in.new ;\
+	   fi ;\
+	fi ;\
+	if test -z "$$modulename" || test "$$modulename" = "@MODULENAME@"; then \
+	   modulename=`pwd`; modulename=`basename $$modulename`; \
+	fi ;\
+	if test -z "$$VERSION" || test "$$VERSION" = "@VERSION@"; then \
+	     VERSION="\"2.90\"";  \
+	fi ;\
+	sed -e "s#@MODULENAME@#$$modulename#" configure.in.new | \
+		sed -e "s#@VERSION@#$$VERSION#" > configure.in
+	@if test -f configure.in.bot ; then cat configure.in.bot >> configure.in ; fi
+	@rm -f configure.in.new
+
+configure.files: subdirs
+	@admindir=NO ;\
+	for i in . .. ../.. ../../..; do \
+	  if test -x $$i/admin; then admindir=$$i/admin; break; fi; \
+	done ;\
+	rm -rf configure.files ;\
+	if test -f configure.in.in && head -2 configure.in.in | egrep "^#MIN_CONFIG$$" > /dev/null; then \
+		echo $$admindir/configure.in.min >> configure.files  ;\
+	fi
+	@test -f configure.in.in && echo configure.in.in >> configure.files
+	@list=`find . -name "configure.in.in" | sort`; \
+	for i in $$list; do if test -f $$i && test ! `dirname $$i` = "." ; then \
+	  echo $$i >> configure.files ;\
+	fi; done
+	@if test -f configure.in.mid ; then echo configure.in.mid >> configure.files ; fi
+	@if test -f configure.in.bot ; then echo configure.in.bot >> configure.files ; fi
+
+subdirs:
+	@files=`ls -1 | sort`; \
+	dirs= ;\
+	lib_dirs= ;\
+	first_dirs= ;\
+	last_dirs= ;\
+	compilefirst=`grep '^COMPILE_FIRST[ ]*=' Makefile.am | \
+		sed -e 's#^COMPILE_FIRST[ ]*=[ ]*#|#' | sed -e 's#$$#|#' | sed -e 's# #|#g'`;\
+	compilelast=`grep '^COMPILE_LAST[ ]*=' Makefile.am | \
+		sed -e 's#^COMPILE_LAST[ ]*=[ ]*#|#' | sed -e 's#$$#|#' | sed -e 's# #|#g'`;\
+	for i in $$files; do if test -d $$i; then \
+	    if test -f $$i/Makefile.am; then \
+		if echo $$compilefirst | grep "|$$i|" >/dev/null; then \
+			first_dirs="$$first_dirs $$i" ;\
+		elif echo $$compilelast | grep "|$$i|" >/dev/null; then \
+			last_dirs="$$last_dirs $$i" ; \
+		else dirs="$$dirs $$i" ;\
+		fi ;\
+	     fi ;\
+	   fi; \
+	done ;\
+	rm -f SUBDIRS ;\
+	for i in $$dirs; do \
+	echo $$i >> ./SUBDIRS; \
+	done
+	@if test -r subdirs && diff subdirs SUBDIRS > /dev/null; then \
+	  rm -f SUBDIRS; \
+	fi
+	@test -r SUBDIRS && mv SUBDIRS subdirs || true
+
+package-merge:
+	@catalogs='$(POFILES)'; \
+	for cat in $$catalogs; do \
+	echo $$cat $$name; \
+	msgmerge -o $$cat.new $$cat $(PACKAGE).pot ; \
+	if test -s $$cat.new; then \
+	  grep -v "\"POT-Creation" $$cat.new > $$cat.new.2 ; \
+	  grep -v "\"POT-Creation" $$cat >> $$cat.new.1; \
+	  if diff $$cat.new.1 $$cat.new.2; then \
+		rm $$cat.new;  \
+	  else  \
+		mv $$cat.new $$cat ; \
+	fi; \
+	rm -f $$cat.new.1 $$cat.new.2 ;\
+	fi ;\
+	done
+
+
+package-messages:
+	@rm -rf po.backup ;\
+	mkdir po.backup ;\
+	for i in `ls -1 po/*.pot 2>/dev/null | sed -e "s#po/##"`; do \
+	  egrep -v '^#([^:]|$)' po/$$i | egrep '^.*[^ ]+.*$$' | grep -v "\"POT-Creation" > po.backup/$$i ; \
+	  cp po/$$i po.backup/backup_$$i ;  \
+	  touch -r po/$$i po.backup/backup_$$i ;\
+	  rm po/$$i ;\
+	done
+	@podir=$${podir:-$$PWD/po} ;\
+	files=`find . -name Makefile.am | xargs egrep -l '^messages:' `; \
+	dirs=`for i in $$files; do echo \`dirname $$i\`; done`; \
+	tmpname="$$PWD/messages.log" ;\
+	if test -z "$$EXTRACTRC"; then EXTRACTRC=extractrc ; fi ;\
+	if test -z "$$PREPARETIPS"; then PREPARETIPS=preparetips ; fi ;\
+	export EXTRACTRC PREPARETIPS ;\
+	for subdir in $$dirs; do \
+	  test -z "$$VERBOSE" || echo "Making messages in $$subdir"; \
+	  (cd $$subdir ;\
+	   if test -n "`grep -e '^messages:.*rc.cpp' Makefile.am`"; then \
+	   	$$EXTRACTRC *.rc *.ui > rc.cpp ;\
+	   else \
+		candidates=`ls -1 *.rc *.ui 2>/dev/null` ;\
+		if test -n "$$candidates"; then \
+		    echo "$$subdir has *.rc or *.ui files, but not correct messages line" ;\
+		fi ;\
+	   fi ;\
+	   if test -n "`grep -r KAboutData *.c* *.C* 2>/dev/null`"; then \
+		echo -e 'i18n("_: NAME OF TRANSLATORS\\n"\n"Your names")\ni18n("_: EMAIL OF TRANSLATORS\\n"\n"Your emails")' > _translatorinfo.cpp ;\
+	   else echo " " > _translatorinfo.cpp ;\
+	   fi; \
+	   perl -e '$$mes=0; while (<STDIN>) { if (/^messages:/) { $$mes=1; print $$_; next; } if ($$mes) { if (/$$\\(XGETTEXT\)/ && / -o/) { s/ -o \$$\(podir\)/ _translatorinfo.cpp -o \$$\(podir\)/ } print $$_; } else { print $$_; } }' < Makefile.am > _transMakefile ;\
+	   $(MAKE) -s -f _transMakefile podir=$$podir EXTRACTRC="$$EXTRACTRC" PREPARETIPS="$$PREPARETIPS" \
+	   XGETTEXT="$${XGETTEXT:-xgettext} -C -ki18n \
+	   -kI18N_NOOP -ktranslate -kaliasLocale \
+	   -x $${includedir:-$$KDEDIR/include}/kde.pot" \
+	   messages ) >$$tmpname 2>&1 ;\
+	   test -s $$tmpname && (echo $$subdir ; cat $$tmpname) ;\
+	   test ! -f $$subdir/rc.cpp || rm -f $$subdir/rc.cpp ;\
+	   rm -f $$subdir/_translatorinfo.cpp ;\
+	   rm -f $$subdir/_transMakefile ;\
+	done
+	rm -f $$tmpname
+	@for i in `ls -1 po.backup/*.pot 2>/dev/null | sed -e "s#po.backup/##" | egrep -v '^backup_'`; do \
+	  if test ! -f po/$$i; then echo "disappeared: $$i"; fi ;\
+	done
+	@for  i in `ls -1 po/*.pot 2>/dev/null | sed -e "s#po/##"`; do \
+	   egrep -v '^#([^:]|$)' po/$$i | egrep '^.*[^ ]+.*$$' | grep -v "\"POT-Creation" > temp.pot ;\
+	  if test -f po.backup/$$i && test -n "`diff temp.pot po.backup/$$i`"; then \
+	 	echo "will update $$i"; \
+		msgmerge -q po.backup/backup_$$i po/$$i > temp.pot ;\
+	        mv temp.pot po/$$i; \
+	   else \
+	    if test -f po.backup/backup_$$i; then \
+	      test -z "$$VERBOSE" || echo "I'm restoring $$i" ;\
+	      mv po.backup/backup_$$i po/$$i; \
+	      rm po.backup/$$i; \
+	    else \
+	      echo "will add $$i" ;\
+	    fi ;\
+	fi ;\
+	done
+	@rm -f temp.pot
+	@rm -rf po.backup
+
+test:
+	perl -e '$$mes=0; while (<STDIN>) { if (/^messages:/) { $$mes=1; print $$_; next; } if ($$mes) { if (! /^\t/) { exit(0); } if (/$$\\(XGETTEXT\)/ && / -o/) { s/ -o/ _translatorinfo.cpp -o/ } print $$_;  } }' < Makefile.am
+
+.SILENT:
