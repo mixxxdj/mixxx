@@ -77,26 +77,6 @@
             </property>
         </widget>
         <widget>
-            <class>QPushButton</class>
-            <property stdset="1">
-                <name>name</name>
-                <cstring>PushButtonKillLow</cstring>
-            </property>
-            <property stdset="1">
-                <name>geometry</name>
-                <rect>
-                    <x>110</x>
-                    <y>200</y>
-                    <width>30</width>
-                    <height>30</height>
-                </rect>
-            </property>
-            <property stdset="1">
-                <name>text</name>
-                <string></string>
-            </property>
-        </widget>
-        <widget>
             <class>QDial</class>
             <property stdset="1">
                 <name>name</name>
@@ -334,6 +314,50 @@
             <property stdset="1">
                 <name>segmentStyle</name>
                 <enum>Flat</enum>
+            </property>
+        </widget>
+        <widget>
+            <class>QPushButton</class>
+            <property stdset="1">
+                <name>name</name>
+                <cstring>PushButtonKillLow</cstring>
+            </property>
+            <property stdset="1">
+                <name>geometry</name>
+                <rect>
+                    <x>110</x>
+                    <y>40</y>
+                    <width>30</width>
+                    <height>30</height>
+                </rect>
+            </property>
+            <property stdset="1">
+                <name>text</name>
+                <string></string>
+            </property>
+        </widget>
+        <widget>
+            <class>QSlider</class>
+            <property stdset="1">
+                <name>name</name>
+                <cstring>SliderPosition</cstring>
+            </property>
+            <property stdset="1">
+                <name>geometry</name>
+                <rect>
+                    <x>120</x>
+                    <y>180</y>
+                    <width>16</width>
+                    <height>110</height>
+                </rect>
+            </property>
+            <property stdset="1">
+                <name>tracking</name>
+                <bool>false</bool>
+            </property>
+            <property stdset="1">
+                <name>orientation</name>
+                <enum>Vertical</enum>
             </property>
         </widget>
     </widget>

@@ -36,6 +36,8 @@ EngineBuffer::EngineBuffer(DlgPlaycontrol *playcontrol, DlgChannel *channel, Mid
   connect(wheel, SIGNAL(valueChanged(FLOAT)), this, SLOT(slotUpdateRate(FLOAT)));
 
   connect(this, SIGNAL(position(int)), channel->LCDposition, SLOT(display(int)));
+  //connect(this, SIGNAL(position(int)), channel->SliderPosition, SLOT(setValue(int)));
+  connect(channel->SliderPosition, SIGNAL(valueChanged(int)), this, SLOT(slotPosition(int)));
   /*
     Open the file:
   */
@@ -201,6 +203,12 @@ void EngineBuffer::getchunk() {
 //  statuswin->print(2,20,"          ");
   //cout << "New filepos " << filepos << ":" << frontpos << "\n" << flush;
   // std::cout << "Finished read.\n" << flush;
+}
+/*
+  This is called when the positionslider is released:
+*/
+void EngineBuffer::slotPosition(int newvalue) {
+  seek((FLOAT)newvalue/102 - play_pos/(FLOAT)file->length());
 }
 /*
   Moves the playpos forward change%
