@@ -89,6 +89,13 @@ MixxxApp::MixxxApp(QApplication *a)
 
   qDebug("Init playlist");
   songpath = "music/";
+  QDir d( "music" );
+  if ( !d.exists() ) {
+      QFileDialog* fd = new QFileDialog( this, "Choose directory with music files", TRUE );
+      fd->setMode( QFileDialog::Directory );
+      if ( fd->exec() == QDialog::Accepted )
+	  songpath = fd->selectedFile();
+  }
   addFiles(songpath.latin1());
 
   // Construct popup menu used to select playback channel on track selection
