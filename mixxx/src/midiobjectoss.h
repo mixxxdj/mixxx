@@ -30,7 +30,7 @@
 
 class MidiObjectOSS : public MidiObject  {
 public: 
-    MidiObjectOSS(ConfigObject *c, QApplication *app);
+    MidiObjectOSS(ConfigMIDI *c, QApplication *app);
     ~MidiObjectOSS();
 protected:
     void devOpen(QString device);

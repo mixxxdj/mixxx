@@ -19,7 +19,7 @@
 #include <qdir.h>
 #include <unistd.h>
 
-MidiObjectOSS::MidiObjectOSS(ConfigObject *c, QApplication *a) : MidiObject(c, a)
+MidiObjectOSS::MidiObjectOSS(ConfigMIDI *c, QApplication *a) : MidiObject(c, a)
 {
     thread_pid = 0;
 

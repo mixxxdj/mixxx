@@ -26,7 +26,7 @@
 
 class MidiObjectPortMidi : public MidiObject  {
 public: 
-    MidiObjectPortMidi(ConfigObject *c, QApplication *app);
+    MidiObjectPortMidi(ConfigMIDI *c, QApplication *app);
     ~MidiObjectPortMidi();
 protected:
     void run();

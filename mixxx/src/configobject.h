@@ -29,32 +29,40 @@
   */
 
 class ConfigObject {
-public: 
+ public: 
     class ConfigKey {
-     public:
-      ConfigKey(QString g, QString c) { group = g; control = c; };
-      QString group, control;
+    public:
+	ConfigKey(QString g, QString c) { group = g; control = c; };
+	QString group, control;
     };
-
+    
     class ConfigValue {
-     public:
-      ConfigValue(int no, int mask, int channel) { midino = no; midimask = mask; midichannel = channel; };
-      int   midino, midimask, midichannel;
+    public:
+	ConfigValue(QString _value) {value = _value;};
+	QString value;
     };
-
+    
     class ConfigOption {
-     public:
-      ConfigOption(ConfigKey *_key, ConfigValue *_val) { key = _key ; val = _val; };
-      ConfigValue *val;
-      ConfigKey *key;
+    public:
+	ConfigOption(ConfigKey *_key, ConfigValue *_val) { key = _key ; val = _val; };
+	ConfigValue *val;
+	ConfigKey *key;
     };
-
-    ConfigObject();
+    
+    ConfigObject(QString file);
     ~ConfigObject();
-    ConfigObject::ConfigOption *set(ConfigObject::ConfigKey *key, ConfigObject::ConfigValue *val);
+    ConfigObject::ConfigOption *set(ConfigObject::ConfigKey *, ConfigObject::ConfigValue *);
     ConfigObject::ConfigOption *get(ConfigObject::ConfigKey *key);
-private:
+    void Save();
+    
+ protected:
     QPtrList<ConfigObject::ConfigOption> list;
+    QString filename;
+    
+    void Parse();
 };
 
+
+
 #endif
+

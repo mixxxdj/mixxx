@@ -75,13 +75,11 @@ MixxxApp::MixxxApp(QApplication *a)
   // Reset pointer to preference dialog
   pDlg = 0;
 
-  // Initialize first available configuration
-  configMap = new ConfigMapping();
-  QStringList *list = configMap->getConfigurations();
-  QStringList::Iterator it = list->begin();
-  //for (; it != list->end(); ++it)
-//  qDebug("Using config %s",(*it).ascii());
-  ConfigObject *config = configMap->setConfiguration((*it).ascii());
+  // Read the config file:
+  ConfigObject *config = new ConfigObject('.mixxx'); 
+
+  // Read the midi configuration:
+  ConfigMIDI *midiconfig = new ConfigMIDI(config->get('Midi','Configfile'));
 
   initDoc();
 
@@ -110,13 +108,13 @@ MixxxApp::MixxxApp(QApplication *a)
   // Initialize midi:
   qDebug("Init midi...");
 #ifdef __ALSA__
-  midi = new MidiObjectALSA(config,app);
+  midi = new MidiObjectALSA(midiconfig,app);
 #endif
 #ifdef __PORTMIDI__
-  midi = new MidiObjectPortMidi(config,app);
+  midi = new MidiObjectPortMidi(midiconfig,app);
 #endif
 #ifdef __OSSMIDI__
-  midi = new MidiObjectOSS(config,app);
+  midi = new MidiObjectOSS(midiconfig,app);
 #endif
 
   // Instantiate a ControlObject, and set the static midi and config pointer

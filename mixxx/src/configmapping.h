@@ -31,8 +31,8 @@
 
 class ConfigMapping : public QObject  {
 public: 
-	ConfigMapping();
-	~ConfigMapping();
+    ConfigMapping();
+    ~ConfigMapping();
     QStringList *getConfigurations();
     ConfigObject *setConfiguration(const char *str);
 private:
