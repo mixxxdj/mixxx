@@ -26,7 +26,7 @@ WVisualWaveform::WVisualWaveform(QWidget *pParent, const char *pName, const QGLW
     m_pVisualController = new VisualController();
 
     installEventFilter(this);
-    m_qtTime.start();
+
 #ifdef __MACX__
     // Hack to reduce load in GUI thread. This makes the system behave 
     // "correctly" on MacOS X, where it would otherwise stall the system
@@ -147,17 +147,6 @@ bool WVisualWaveform::eventFilter(QObject *o, QEvent *e)
     {
         emit(valueChangedLeftDown(64.));
     }
-
-/*
-        int id = m_Picking.pick(m->x(),m->y());
-        qDebug("pick id %i",id);
-        
-        VisualChannel *c;
-        for (c = m_qlList.first(); c; c = m_qlList.next())
-            c->zoom(id);
-    }
-*/
-
     else
     {
         // standard event processing
@@ -171,12 +160,14 @@ VisualChannel *WVisualWaveform::add(ControlPotmeter *pPlaypos, const char *group
     VisualChannel *c = new VisualChannel(pPlaypos, m_pVisualController, group);
 
     // Position coding... hack
-    if (m_qlList.isEmpty())
+    //if (m_qlList.isEmpty())
     {
+/*
         c->setPosX(-(width()/2));
-        c->setLength(width());
-        c->setHeight(height());
+        c->setLength(800); //width());
+        c->setHeight(50); //height());
         c->setZoomPosX(50);
+*/
         c->setColorBack((float)colorBack.red()/255., (float)colorBack.green()/255., (float)colorBack.blue()/255.);
         c->setColorSignal((float)colorSignal.red()/255., (float)colorSignal.green()/255., (float)colorSignal.blue()/255.);
         c->setColorHfc((float)colorHfc.red()/255., (float)colorHfc.green()/255., (float)colorHfc.blue()/255.);
@@ -184,11 +175,11 @@ VisualChannel *WVisualWaveform::add(ControlPotmeter *pPlaypos, const char *group
         c->setColorBeat((float)colorBeat.red()/255., (float)colorBeat.green()/255., (float)colorBeat.blue()/255.);
         c->setColorFisheye((float)colorFisheye.red()/255., (float)colorFisheye.green()/255., (float)colorFisheye.blue()/255.);
     }
-    else
+    /* else
     {
         c->setPosX(50);
         c->setZoomPosX(50);
-    }
+    } */
 
     m_qlList.append(c);
     return c;
@@ -206,15 +197,6 @@ void WVisualWaveform::initializeGL()
 
 void WVisualWaveform::paintGL()
 {
-    // Get time since last paint, and reset timer
-    int msec = m_qtTime.elapsed();
-    m_qtTime.restart();
-
-    // Update position of each channel
-    VisualChannel *c;
-    for (c = m_qlList.first(); c; c = m_qlList.next())
-        c->move(msec);
-
     // Display stuff
     m_pVisualController->display();
 }

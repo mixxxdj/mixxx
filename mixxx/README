@@ -1,4 +1,4 @@
-Mixxx - version 1.2.1.
+Mixxx - version 1.3.
 
 * HOMEPAGE *************************************************
 http://mixxx.sourceforge.net
@@ -15,10 +15,12 @@ at least G4 CPU).
 
 * NEWS *****************************************************
 New since 1.2.1:
+- Playlist import of pls and m3u files
+- Small skin fitting 800x600 screen
 - Bug fixes in build system
 - Socket interface
 - Cue point visualization
-- Various optimizations
+- Various speed optimizations
 - Drop files, from playlist, treeview or external file
   manager to one of the visuals, loads the track.
 - New and improved keymap

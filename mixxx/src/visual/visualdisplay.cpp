@@ -26,27 +26,25 @@ VisualDisplay::VisualDisplay(VisualBuffer *pVisualBuffer, const char *type, cons
 {
     m_pVisualBuffer = pVisualBuffer;
 
-    atBasepos = true;
-    movement = false;
-
     idCount++;
     id = idCount;
+    
+    // Rotation variables
+    angle = 0; rx = 1;ry=0;rz=0;
 
-    length = baselength;
-    height = baseheight;
-    depth  = basedepth;
+    // Origo of visual signal
+    ox = oy = oz = 0;
 
-    angle = 0;
-    rx = 1;ry=0;rz=0;
-
-    ox = -25;
-    oy = oz = 0;
-
+    // Fish eye mode
     fishEyeMode = false;
 
-    fishEyeLengthScale = 0.5f;
+    // Relative length of the fish eye signal
+    fishEyeLengthScale = 0.25f;
+    // Fraction of the signal shown in the fish eye
     fishEyeSignalFraction = 0.02f;
-    signalScaleHeight = 1.0f;
+    // Relative height of signal
+    signalScaleHeight = 0.9f;
+    // Relative length of signal
     signalScaleLength = 1.0f;
 
     fishEyeSignal = new VisualDisplayBuffer(m_pVisualBuffer);
@@ -56,8 +54,6 @@ VisualDisplay::VisualDisplay(VisualBuffer *pVisualBuffer, const char *type, cons
 
     box = new VisualBox(id);
     m_bDrawBox = drawBox;
-
-//    setBoxWireMaterial(&m_materialBeat);
 
     if (QString(type)=="marks")
     {
@@ -195,89 +191,6 @@ void VisualDisplay::draw()
 {
 }
 
-void VisualDisplay::setBasepos(float x, float y, float z)
-{
-    basex = x;
-    basey = y;
-    basez = z;
-
-    if (atBasepos)
-    {
-        ox = x;
-        oy = y;
-        oz = z;
-    }
-}
-
-void VisualDisplay::setZoompos(float x, float y, float z)
-{
-    zoomx = x;
-    zoomy = y;
-    zoomz = z;
-
-    if (!atBasepos)
-    {
-        ox = x;
-        oy = y;
-        oz = z;
-    }
-}
-
-void VisualDisplay::zoom()
-{
-    qDebug("zoom");
-    if (atBasepos)
-    {
-        zoom(zoomx,zoomy,zoomz,zoomlength,zoomheight,zoomdepth);
-        atBasepos = false;
-    }
-    else
-    {
-        zoom(basex,basey,basez,baselength,baseheight,basedepth);
-        atBasepos = true;
-    }
-}
-
-void VisualDisplay::move(int msec)
-{
-    if (movement)
-    {
-            float x = signal->getOrigoX();
-            float y = signal->getOrigoY();
-            float z = signal->getOrigoZ();
-            float l = signal->getLength();
-            float h = signal->getHeight();
-            float d = signal->getDepth();
-            float dx = msec*(destx - x)/100.;
-            float dy = msec*(desty - y)/100.;
-            float dz = msec*(destz - z)/100.;
-            float dl = msec*(destl - l)/100.;
-            float dh = msec*(desth - h)/100.;
-            float dd = msec*(destd - d)/100.;
-            float updx = x+dx;
-            float updy = y+dy;
-            float updz = z+dz;
-            float updl = l+dl;
-            float updh = h+dh;
-            float updd = d+dd;
-            signal->setOrigo(updx,updy,updz);
-            signal->setLength(updl);
-            signal->setHeight(updh);
-//            signal->setDepth(updd);
-
-//       qDebug("updd %f, origo %f,%f,%f, len: %f, hei: %f",updd);
-
-//        signal->setOrigo(updx,updy,updz);
-//        signal->setLength(updl);
-//        signal->setHeight(updh);
-//        signal->setDepth(updd);
-
-        // Check if destination is reached
-        if (updx==destx && updy==desty && updz==destz && updl==destl && updh==desth && updd==destd)
-            movement = false;
-    }
-}
-
 void VisualDisplay::toggleFishEyeMode()
 {
     fishEyeMode = !fishEyeMode;
@@ -303,7 +216,7 @@ void VisualDisplay::setSignalScaleLength(double scale)
 
 
     signalScaleLength = 1./(1.+(ControlObject::getControl(ConfigKey("[Channel1]","rate_dir"))->getValue()*scale));
-//    qDebug("scale input %f, actual %f",scale, signalScaleLength);
+    qDebug("scale input %f, actual %f",scale, signalScaleLength);
 }
 
 void VisualDisplay::setColorSignal(float r, float g, float b)
@@ -414,13 +327,12 @@ void VisualDisplay::doLayout()
     float nz = 0;
 
     // Set length, position and offset of signal to be displayed
-    float curLength = length*signalScaleLength*1.5;
-    float curOx = ox+(length-curLength)/2;
+    float curOx = ox-(kfVisualDisplayLength*signalScaleLength/2.);
 
     if(fishEyeMode)
     {
-        float fishEyeLength = fishEyeLengthScale*length;
-        float nonFishEyeLength = (curLength- fishEyeLength)/2.0f;
+        float fishEyeLength = fishEyeLengthScale*kfVisualDisplayLength;
+        float nonFishEyeLength = (signalScaleLength*kfVisualDisplayLength-fishEyeLength)/2.0f;
 
         float ox2 = curOx + nx*nonFishEyeLength;
         float oy2 = oy + ny*nonFishEyeLength;
@@ -431,71 +343,48 @@ void VisualDisplay::doLayout()
 
         preSignal->setOrigo(curOx,oy,oz);
         preSignal->setLength(nonFishEyeLength);
-        preSignal->setHeight(signalScaleHeight*height*2);
+        preSignal->setHeight(kfVisualDisplayHeight*signalScaleHeight);
         preSignal->setRotation(angle,rx,ry,rz);
 
         fishEyeSignal->setOrigo(ox2,oy2,oz2);
         fishEyeSignal->setLength(fishEyeLength);
-        fishEyeSignal->setHeight(signalScaleHeight*height*2);
+        fishEyeSignal->setHeight(kfVisualDisplayHeight*signalScaleHeight);
         fishEyeSignal->setRotation(angle,rx,ry,rz);
 
         postSignal->setOrigo(ox3,oy3,oz3);
         postSignal->setLength(nonFishEyeLength);
-        postSignal->setHeight(signalScaleHeight*height*2);
+        postSignal->setHeight(kfVisualDisplayHeight*signalScaleHeight);
         postSignal->setRotation(angle,rx,ry,rz);
 
 
-        box->setOrigo(ox2,oy2,oz2-5);
+        box->setOrigo(ox2,oy2,oz2-kfVisualDisplayDepth);
         box->setLength(fishEyeLength);
-        box->setHeight(signalScaleHeight*height);
-        box->setDepth(depth);
+        box->setHeight(kfVisualDisplayHeight*2.);
+        box->setDepth(kfVisualDisplayDepth);
         box->setRotation(angle,rx,ry,rz);
-
     }
     else
     {
         signal->setOrigo(curOx,oy,oz);
-        signal->setLength(curLength);
-        signal->setHeight(signalScaleHeight*height*2);
+        signal->setLength(kfVisualDisplayLength*signalScaleLength);
+        signal->setHeight(kfVisualDisplayHeight*signalScaleHeight);
         signal->setRotation(angle,rx,ry,rz);
     
         box->setOrigo(curOx,oy,oz);
-        box->setLength(curLength);
-        box->setHeight(height);
-        box->setDepth(depth);
+        box->setLength(0.);
+        box->setHeight(kfVisualDisplayHeight*2.);
+        box->setDepth(kfVisualDisplayDepth);
         box->setRotation(angle,rx,ry,rz);
     }
 
-    float plength = 2.;
-    float pheight = height*1.2;
-    float pdepth = depth*1.05;
-
-    float offset = (curLength-plength)/2.0f;
-
-    float px = curOx + nx*offset; 
-    float py = oy + ny*offset;
-    float pz = oz + nz*offset;
-
     if (playPosMarker)
     {
-        playPosMarker->setOrigo(px,py,pz);
-        playPosMarker->setLength(plength);
-        playPosMarker->setHeight(pheight);
-        playPosMarker->setDepth(pdepth);
+        playPosMarker->setOrigo(ox,oy,oz);
+        playPosMarker->setLength(kfVisualDisplayLength/400.);
+        playPosMarker->setHeight(kfVisualDisplayHeight*2.);
+        playPosMarker->setDepth(kfVisualDisplayDepth);
         playPosMarker->setRotation(angle,rx,ry,rz);
     }
-}
-
-void VisualDisplay::zoom(float ox, float oy, float oz, float _length, float _height, float _depth)
-{
-    destx = ox;
-    desty = oy;
-    destz = oz;
-    destl = _length;
-    desth = _height;
-    destd = _depth;
-
-    movement = true;
 }
 
 void VisualDisplay::setRotation(float angle, float rx,float ry,float rz)
@@ -505,16 +394,4 @@ void VisualDisplay::setRotation(float angle, float rx,float ry,float rz)
     this->ry = ry;
     this->rz = rz;
 }
-
-void VisualDisplay::setLength(float l)
-{
-//    qDebug("l %f",l);
-    length = l;
-}
-
-void VisualDisplay::setHeight(float h)
-{
-    height = h;
-}
-
 

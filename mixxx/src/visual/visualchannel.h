@@ -39,16 +39,9 @@ class VisualChannel : public QObject
 public:
     VisualChannel(ControlPotmeter *pPlaypos, VisualController *pVisualController, const char *_group);
     ~VisualChannel();
-    /** Zoom/unzoom the signal of id */
-    void zoom(int id);
     /** Add a ReaderExtract buffer to object, and construct a corresponding display. A
       * pointer to the constructed VisualBuffer is returned */
     VisualBuffer *add(ReaderExtract *pReaderExtract);
-    void move(int msec);
-    void setPosX(int x);
-    void setZoomPosX(int x);
-    void setLength(float l);
-    void setHeight(float h);
     void setColorSignal(float r, float g, float b);
     void setColorHfc(float r, float g, float b);
     void setColorMarker(float r, float g, float b);
@@ -69,10 +62,6 @@ private:
     int m_iChannelNo;
     /** Total number of channels */
     static int siChannelTotal;
-    /** X position of this channel */
-    int m_iPosX, m_iZoomPosX;
-    /** Length and height of gl widget */
-    float length, height;
     /** Control group */
     char *group;
     /** Colors */

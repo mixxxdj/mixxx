@@ -18,6 +18,7 @@
 #include <qobject.h>
 #include "trackplaylist.h"
 
+class TrackImporter;
 class TrackInfoObject;
 class TrackCollection;
 class EngineBuffer;
@@ -59,6 +60,8 @@ public slots:
     void slotDeletePlaylist(QString qName);
     /** Delete a playlist */
     void slotDeletePlaylist();
+    /** Import a Playlist from a different format */
+    void slotImportPlaylist();
     /** Bring up playlist popup menu */
     void slotPlaylistPopup(QString qName);
     /** Bring up track popup menu */
@@ -67,9 +70,9 @@ public slots:
     void slotLoadPlayer1(TrackInfoObject *pTrackInfoObject);
     /** Load the given track in player 2 */
     void slotLoadPlayer2(TrackInfoObject *pTrackInfoObject);
-    /** Load the given track in player 1 if it exists*/
+    /** Load the given track in player 1 if it exists */
     void slotLoadPlayer1(QString filename);
-    /** Load the given track in player 2 if it exists*/
+    /** Load the given track in player 2 if it exists */
     void slotLoadPlayer2(QString filename);
     /** Slot used when playback reaches end of track */
     void slotEndOfTrackPlayer1(double);
@@ -94,6 +97,9 @@ private:
     void updateTreeView();
     /** Returns pointer to playlist by the given name */
     TrackPlaylist *getPlaylist(QString qName);
+
+    /** Pointer to the Importer class */
+    TrackImporter *m_pTrackImporter;
     /** List of pointers to TrackPlaylists */
     QPtrList<TrackPlaylist> m_qPlaylists;
     /** Current active playlist */

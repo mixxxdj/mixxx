@@ -87,8 +87,8 @@ void VisualBufferMarks::draw(GLfloat *p, int iLen, float xscale)
 //    glDrawArrays(GL_LINE_STRIP,0,iLen);
 
     // Ensures constant width of beat marks regardles for scaling
-    float kfWidthBeat = 1.*(1./xscale);
-    float kfWidthCue =  8.*(1./xscale);
+    float kfWidthBeat = 0.05*(1./xscale);
+    float kfWidthCue =  0.15*(1./xscale);
 
     for (int i=0; i<iLen*3; i+=3)
     {

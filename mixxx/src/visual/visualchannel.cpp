@@ -47,14 +47,6 @@ VisualChannel::~VisualChannel()
     siChannelTotal--;
 }
 
-void VisualChannel::zoom(int id)
-{
-    VisualDisplay *d;
-    for (d = m_qlListDisplay.first(); d; d = m_qlListDisplay.next())
-        if (id==d->getId())
-            d->zoom();
-}
-
 VisualBuffer *VisualChannel::add(ReaderExtract *pReaderExtract)
 {
     VisualBuffer *b;
@@ -91,9 +83,9 @@ VisualBuffer *VisualChannel::add(ReaderExtract *pReaderExtract)
     //
 
     // Base y pos dependent on number of containers
-    d->setBasepos(m_iPosX,0 /*10*(m_qlListDisplay.count())*/, 0);
-    d->setLength(length);
-    d->setHeight(height);
+//     d->setBasepos(m_iPosX,0 /*10*(m_qlListDisplay.count())*/, 0);
+//     d->setLength(length);
+//     d->setHeight(height);
     d->setColorSignal(m_fColorSignalR, m_fColorSignalG, m_fColorSignalB);
     d->setColorHfc(m_fColorHfcR, m_fColorHfcG, m_fColorHfcB);
     d->setColorMarker(m_fColorMarkerR, m_fColorMarkerG, m_fColorMarkerB);
@@ -101,10 +93,10 @@ VisualBuffer *VisualChannel::add(ReaderExtract *pReaderExtract)
     d->setColorFisheye(m_fColorFisheyeR, m_fColorFisheyeG, m_fColorFisheyeB);
 
     // Zoom y pos dependent on channel
-    if (m_iChannelNo==0)
-        d->setZoompos(m_iZoomPosX,20,0);
-    else
-        d->setZoompos(m_iZoomPosX,-10,0);
+//     if (m_iChannelNo==0)
+//         d->setZoompos(m_iZoomPosX,20,0);
+//     else
+//         d->setZoompos(m_iZoomPosX,-10,0);
 
     // Append buffer and display to corresponding lists
     m_qlListBuffer.append(b);
@@ -117,34 +109,6 @@ VisualBuffer *VisualChannel::add(ReaderExtract *pReaderExtract)
 
     return b;
 }
-
-void VisualChannel::move(int msec)
-{
-    VisualDisplay *d;
-    for (d = m_qlListDisplay.first(); d; d = m_qlListDisplay.next())
-        d->move(msec);
-}
-
-void VisualChannel::setPosX(int x)
-{
-    m_iPosX = x;
-}
-
-void VisualChannel::setZoomPosX(int x)
-{
-    m_iZoomPosX = x;
-}
-
-void VisualChannel::setLength(float l)
-{
-    length = l;
-}
-
-void VisualChannel::setHeight(float h)
-{
-    height = h;
-}
-
 
 void VisualChannel::toggleFishEyeMode()
 {

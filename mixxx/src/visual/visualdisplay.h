@@ -26,12 +26,11 @@
 
 class ControlPotmeter;
 
-const float baselength = 350.;
-const float baseheight = 90.;
-const float basedepth = 5.;
-const float zoomlength = 100.;
-const float zoomheight = 15.;
-const float zoomdepth = 5.;
+// These variables, together with the aspect ratio and view point set in 
+// VisualController controls the screen size of the displayed signals.
+const float kfVisualDisplayLength = 35.;
+const float kfVisualDisplayHeight = 9.5;
+const float kfVisualDisplayDepth = 0.1;
 
 /**
  * A Visual Display. Usually a fisheye signal with a box.
@@ -58,13 +57,6 @@ public:
       */
     void draw(GLenum mode);
     void draw();
-
-    void setBasepos(float x, float y, float z);
-    void setZoompos(float x, float y, float z);
-    void setLength(float l);
-    void setHeight(float h);
-    void zoom();
-    void move(int msec);
 
     void setColorSignal(float r, float g, float b);
     void setColorHfc(float r, float g, float b);
@@ -95,21 +87,18 @@ public slots:
       */
     void setSignalScaleHeight(double scale);
     void setSignalScaleLength(double scale);
-    /**
-      * Set Rotation.
-      * Rotations are currently not fully implemented.
-      *
-      */
+    /** Set Rotation. Rotations are currently not fully implemented. */
     void setRotation(float angle, float rx,float ry,float rz);
 
 protected:
     void doLayout();
-
-    void zoom(float ox, float oy, float oz, float length, float height, float width);
-
-    float ox,oy,oz;   ///< Origio of visual signal (from where signal propagates from)
-    float angle;      ///< Rotation angle in radians.
-    float rx,ry,rz;   ///< Rotation Axe.
+    
+    /** Origio of visual signal (from where signal propagates from) */
+    float ox,oy,oz;
+    /** Rotation angle in radians */
+    float angle;
+    /** Rotation Axe */
+    float rx,ry,rz;
 
     float fishEyeLengthScale;
     float signalScaleHeight;
@@ -117,9 +106,6 @@ protected:
     bool  fishEyeMode;
     float fishEyeSignalFraction;
 
-    float length;     ///< Signal Length.
-    float height;     ///< Signal Heigth.
-    float depth;
 
     VisualBox *box, *playPosMarker;
 
@@ -136,16 +122,6 @@ protected:
     /** Count total number of instantiated objects. Used to assign unique id's to each signal */
     static int idCount;
 
-    /** Base position */
-    float               basex, basey, basez;
-    /** Zoom position */
-    float               zoomx, zoomy, zoomz;
-    /** Destination position and size used when in movement */
-    float               destx, desty, destz, destl, desth, destd;
-    /** True if container is currently at or moving towards basepos */
-    bool                atBasepos;
-    /** True if the container is currently moving */
-    bool                movement;
     /** True if box has to be drawn in fish eye mode */
     bool m_bDrawBox;
 
