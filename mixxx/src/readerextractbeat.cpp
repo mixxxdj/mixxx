@@ -33,15 +33,6 @@ ReaderExtractBeat::ReaderExtractBeat(ReaderExtract *input, int frameSize, int fr
     framePerChunk = frameNo/READCHUNK_NO;
     framePerFrameSize = frameSize/frameStep;
     
-    // Initialize histogram
-/*
-    histSize = _histSize;
-    hist = new CSAMPLE[histSize];
-    int i;
-    for (i=0; i<histSize; i++)
-        hist[i]=0.;
-*/
-
     // Initialize beat and bpm buffer
     beatBuffer = new float[getBufferSize()];
     beatCorr = new float[getBufferSize()];
@@ -54,17 +45,6 @@ ReaderExtractBeat::ReaderExtractBeat(ReaderExtract *input, int frameSize, int fr
     }
     beatBufferLastIdx = 0;
     
-    // These should be updated whenever a new track is loaded
-/*
-    histMinInterval = 60.f/histMaxBPM;
-    histMaxInterval = 60.f/histMinBPM;              
-    histInterval = (histMaxInterval-histMinInterval)/(CSAMPLE)(histSize-1.f);
-    histMaxIdx = -1;
-    histMaxCorr = 0.f;
-    
-    qDebug("min %f, max %f, interval %f",histMinInterval, histMaxInterval, histInterval);
-*/
-
     // Initialize beat probability vector
     bpv = new ProbabilityVector(60.f/histMaxBPM, 60.f/histMinBPM, _histSize);
                                                                                             
@@ -194,7 +174,8 @@ void *ReaderExtractBeat::processChunk(const int _idx, const int start_idx, const
         frameTo = ((((idx+1)%READCHUNK_NO)*framePerChunk)+1)%frameNo;
     else
         frameTo = (((((idx+1)%READCHUNK_NO)*framePerChunk)-framePerFrameSize)-2+frameNo)%frameNo;
-
+    frameTo = (frameTo+1)%frameNo;
+        
     int frameAdd = 0;
     if (frameFrom>frameTo)
         frameAdd = frameNo;
@@ -206,12 +187,12 @@ void *ReaderExtractBeat::processChunk(const int _idx, const int start_idx, const
 //    idx = idx%READCHUNK_NO;
 //    end_idx = end_idx%READCHUNK_NO;
 
-//    qDebug("from %i-%i",frameFrom,frameTo);
+    qDebug("from %i-%i",frameFrom,frameTo);
                                 
     // Delete beat markings in beat buffer covered by chunk idx
     int i;
     //qDebug("Deleting beat marks %i-%i (bufsize: %i)",frameFrom,frameTo+frameAdd,getBufferSize());
-    for (i=frameFrom; i<=frameTo+frameAdd; i++)
+    for (i=frameFrom; i<frameTo+frameAdd; i++)
     {
         beatBuffer[i%frameNo] = 0.;
         beatCorr[i%frameNo] = 0.;
@@ -295,7 +276,7 @@ void *ReaderExtractBeat::processChunk(const int _idx, const int start_idx, const
     PeakList::iterator it = peaks->getFirstInRange(frameFrom, frameTo+frameAdd-frameFrom);
     i= frameFrom;
 
-    while (i<=frameTo+frameAdd)
+    while (i<frameTo+frameAdd)
     {
         // Is this sample a peak?
         if ((i%frameNo)==(*it).i)
@@ -508,7 +489,7 @@ void *ReaderExtractBeat::processChunk(const int _idx, const int start_idx, const
     float bpm = bpv->getCurrMaxInterval();
     if (bpm>0.)
         bpm = 60./bpm;
-    for (i=frameFrom; i<=frameTo+frameAdd; ++i)
+    for (i=frameFrom; i<frameTo+frameAdd; ++i)
     {
         bpmBuffer[i%frameNo] = bpm;
     }
@@ -524,7 +505,7 @@ void *ReaderExtractBeat::processChunk(const int _idx, const int start_idx, const
     if (writeTo<writeFrom)
         writeAdd = frameNo;
 
-    for (i=writeFrom; i<=writeTo+writeAdd; i++)
+    for (i=writeFrom; i<writeTo+writeAdd; i++)
     {
         streambeat << beatBuffer[i%frameNo] << " " << beatCorr[i%frameNo] << "\n";
         streamhfc << hfc[i%frameNo] << "\n";

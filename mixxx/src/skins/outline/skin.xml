@@ -285,6 +285,181 @@
  </PushButton>
 
  <PushButton>
+  <NumberStates>1</NumberStates>
+  <State>
+   <Number>0</Number>
+   <Pressed>rev-on-Ch1.png</Pressed>
+   <Unpressed>rev-off-Ch1.png</Unpressed>
+  </State>
+  <Pos>72,104</Pos>
+  <Connection>
+   <ConfigKey>[Channel1],reverse</ConfigKey>
+   <EmitOnDownPress>true</EmitOnDownPress>
+   <ButtonState>LeftButton</ButtonState>
+  </Connection>
+  <Connection>
+   <ConfigKey>[Channel1],reverse</ConfigKey>
+   <EmitOnDownPress>false</EmitOnDownPress>
+   <ButtonState>LeftButton</ButtonState>
+  </Connection>
+ </PushButton>
+
+ <PushButton>
+  <NumberStates>1</NumberStates>
+  <State>
+   <Number>0</Number>
+   <Pressed>rev-on-Ch2.png</Pressed>
+   <Unpressed>rev-off-Ch2.png</Unpressed>
+  </State>
+  <Pos>959,103</Pos>
+  <Connection>
+   <ConfigKey>[Channel2],reverse</ConfigKey>
+   <EmitOnDownPress>true</EmitOnDownPress>
+   <ButtonState>LeftButton</ButtonState>
+  </Connection>
+  <Connection>
+   <ConfigKey>[Channel2],reverse</ConfigKey>
+   <EmitOnDownPress>false</EmitOnDownPress>
+   <ButtonState>LeftButton</ButtonState>
+  </Connection>
+ </PushButton>
+
+ <PushButton>
+  <NumberStates>1</NumberStates>
+  <State>
+   <Number>0</Number>
+   <Pressed>fwd-on-Ch1.png</Pressed>
+   <Unpressed>fwd-off-Ch1.png</Unpressed>
+  </State>
+  <Pos>40,104</Pos>
+  <Connection>
+   <ConfigKey>[Channel1],fwd</ConfigKey>
+   <EmitOnDownPress>true</EmitOnDownPress>
+   <ButtonState>LeftButton</ButtonState>
+  </Connection>
+  <Connection>
+   <ConfigKey>[Channel1],fwd</ConfigKey>
+   <EmitOnDownPress>false</EmitOnDownPress>
+   <ButtonState>LeftButton</ButtonState>
+  </Connection>
+  <Connection>
+   <ConfigKey>[Channel1],end</ConfigKey>
+   <EmitOnDownPress>true</EmitOnDownPress>
+   <ButtonState>RightButton</ButtonState>
+  </Connection>
+ </PushButton>
+
+ <PushButton>
+  <NumberStates>1</NumberStates>
+  <State>
+   <Number>0</Number>
+   <Pressed>back-on-Ch1.png</Pressed>
+   <Unpressed>back-off-Ch1.png</Unpressed>
+  </State>
+  <Pos>8,104</Pos>
+  <Connection>
+   <ConfigKey>[Channel1],back</ConfigKey>
+   <EmitOnDownPress>true</EmitOnDownPress>
+   <ButtonState>LeftButton</ButtonState>
+  </Connection>
+  <Connection>
+   <ConfigKey>[Channel1],back</ConfigKey>
+   <EmitOnDownPress>false</EmitOnDownPress>
+   <ButtonState>LeftButton</ButtonState>
+  </Connection>
+  <Connection>
+   <ConfigKey>[Channel1],start</ConfigKey>
+   <EmitOnDownPress>true</EmitOnDownPress>
+   <ButtonState>RightButton</ButtonState>
+  </Connection>
+ </PushButton>
+
+ <PushButton>
+  <NumberStates>1</NumberStates>
+  <State>
+   <Number>0</Number>
+   <Pressed>fwd-on-Ch2.png</Pressed>
+   <Unpressed>fwd-off-Ch2.png</Unpressed>
+  </State>
+  <Pos>927,103</Pos>
+  <Connection>
+   <ConfigKey>[Channel2],fwd</ConfigKey>
+   <EmitOnDownPress>true</EmitOnDownPress>
+   <ButtonState>LeftButton</ButtonState>
+  </Connection>
+  <Connection>
+   <ConfigKey>[Channel2],fwd</ConfigKey>
+   <EmitOnDownPress>false</EmitOnDownPress>
+   <ButtonState>LeftButton</ButtonState>
+  </Connection>
+  <Connection>
+   <ConfigKey>[Channel2],end</ConfigKey>
+   <EmitOnDownPress>true</EmitOnDownPress>
+   <ButtonState>RightButton</ButtonState>
+  </Connection>
+ </PushButton>
+
+ <PushButton>
+  <NumberStates>1</NumberStates>
+  <State>
+   <Number>0</Number>
+   <Pressed>back-on-Ch2.png</Pressed>
+   <Unpressed>back-off-Ch2.png</Unpressed>
+  </State>
+  <Pos>895,103</Pos>
+  <Connection>
+   <ConfigKey>[Channel2],back</ConfigKey>
+   <EmitOnDownPress>true</EmitOnDownPress>
+   <ButtonState>LeftButton</ButtonState>
+  </Connection>
+  <Connection>
+   <ConfigKey>[Channel2],back</ConfigKey>
+   <EmitOnDownPress>false</EmitOnDownPress>
+   <ButtonState>LeftButton</ButtonState>
+  </Connection>
+  <Connection>
+   <ConfigKey>[Channel2],start</ConfigKey>
+   <EmitOnDownPress>true</EmitOnDownPress>
+   <ButtonState>RightButton</ButtonState>
+  </Connection>
+ </PushButton>
+ <PushButton>
+  <NumberStates>2</NumberStates>
+  <State>
+   <Number>0</Number>
+   <Pressed>flanger-off-Ch1.png</Pressed>
+   <Unpressed>flanger-off-Ch1.png</Unpressed>
+  </State>
+  <State>
+   <Number>1</Number>
+   <Pressed>flanger-on-Ch1.png</Pressed>
+   <Unpressed>flanger-on-Ch1.png</Unpressed>
+  </State>
+  <Pos>72,445</Pos>
+  <Connection>
+   <ConfigKey>[Channel1],flanger</ConfigKey>
+  </Connection>
+ </PushButton>
+
+ <PushButton>
+  <NumberStates>2</NumberStates>
+  <State>
+   <Number>0</Number>
+   <Pressed>flanger-off-Ch2.png</Pressed>
+   <Unpressed>flanger-off-Ch2.png</Unpressed>
+  </State>
+  <State>
+   <Number>1</Number>
+   <Pressed>flanger-on-Ch2.png</Pressed>
+   <Unpressed>flanger-on-Ch2.png</Unpressed>
+  </State>
+  <Pos>960,444</Pos>
+  <Connection>
+   <ConfigKey>[Channel2],flanger</ConfigKey>
+  </Connection>
+ </PushButton>
+
+ <PushButton>
   <NumberStates>2</NumberStates>
   <State>
    <Number>0</Number>
@@ -496,7 +671,7 @@
   <Align>right</Align>
  </Text>
 
- <Number>
+ <Numberx>
   <Pos>144,350</Pos>
   <Size>100,20</Size>
   <Text>BPM: </Text>
@@ -506,9 +681,9 @@
   <Connection>
    <ConfigKey>[Channel1],bpm</ConfigKey>
   </Connection>
- </Number>
+ </Numberx>
 
- <Number>
+ <Numberx>
   <Pos>623,350</Pos>
   <Size>100,20</Size>
   <Text>BPM: </Text>
@@ -518,7 +693,7 @@
   <Connection>
    <ConfigKey>[Channel2],bpm</ConfigKey>
   </Connection>
- </Number>
+ </Numberx>
 
  <SliderComposed>
   <Handle>playpos-marker1.png</Handle>

@@ -35,40 +35,49 @@ void PeakList::update(int idx, int len)
     //
     // Delete peaks in range
     it = getFirstInRange(idx, len);
-    while (it!=end() && (*it).i<=idx+len && (*it).i>=idx)
+    while (it!=end() && (*it).i<idx+len && (*it).i>=idx)
         it = remove(it);
     // Check if buffer is wrapped
-    if (idx+len>m_iIdxSize)
+    if (idx+len>m_iIdxSize && it==end())
     {
         it = begin();
-        while (it!=end() && (*it).i<=(idx+len)%m_iIdxSize)
+        while (it!=end() && (*it).i<(idx+len)%m_iIdxSize)
             it = remove(it);
     }
 
+    qDebug("START %i, no %i",(*it).i,getNoInRange(idx,len));
+
     //
     // Add new peaks to the peak list
-    if (idx+len<m_iIdxSize)
+    if (idx+len<=m_iIdxSize)
     {
+        qDebug("un");
         // The buffer is not wrapped
-        for (int i=idx+len; i>=idx; --i)
+        for (int i=idx+len-1; i>=idx; --i)
             it = insertIfPeak(i, it);
     }
     else
     {
         // The buffer is wrapped
         int i;
-        for (i=(idx+len)%m_iIdxSize; i>=0; --i)
+        for (i=(idx+len-1+m_iIdxSize)%m_iIdxSize; i>=0; --i)
+        {
             it = insertIfPeak(i, it);
+        }
         it = end();
-        for (i=m_iIdxSize; i>=idx; --i)
+        for (i=m_iIdxSize-1; i>=idx; --i)
+        {
             it = insertIfPeak(i, it);
+        }
     }
 }
 
 PeakList::iterator PeakList::insertIfPeak(int idx, PeakList::iterator it)
 {
+//    qDebug("check idx %i",idx);
     if (m_pBuffer[idx]>m_pBuffer[(idx-1+m_iIdxSize)%m_iIdxSize] && m_pBuffer[idx]>m_pBuffer[(idx+1)%m_iIdxSize])
     {        
+//        qDebug("peak");
         PeakType p;
         p.i = idx;
 
@@ -96,52 +105,82 @@ PeakList::iterator PeakList::getFirstInRange(int idx, int len)
     // Find first peak in list which is bigger than or equal than idx
     iterator it = begin();
 
-    // If the buffer range is not wrapped...
-    if (idx+len<m_iIdxSize)
+    // Only search further if the list is not empty...
+    if (begin()!=end())
     {
-        while (it!=end() && (*it).i<idx)
-            ++it;
-    }
-    else
-    {
-        // The range is wrapped
-        while (it!=end() && (*it).i<idx)
-            ++it;
-        if (it!=end())
-            return it;
-
-        if ((*begin()).i+m_iIdxSize<idx+len)
-            it = begin();
+        // If wrapped...
+        if (idx+len>m_iIdxSize)
+        {
+            while (it!=end() && (*it).i<idx)
+                ++it;
+        }
+        // If we're at the end of the list, and the buffer range is wrapped
+        if (it==end() && idx+len>m_iIdxSize)
+        {
+            if ((*begin()).i+m_iIdxSize>=idx && (*begin()).i+m_iIdxSize<idx+len)
+                it = begin();
+        }
     }
     return it;
 }
 
 PeakList::iterator PeakList::getLastInRange(int idx, int len)
 {
+    iterator it = end();
+
+    // Only search further if the list is not empty...
+    if (begin()!=end())
+    {
+        while (it!=begin() && (*it).i>=idx+len)
+           --it;
+
+        // If we're at the start of the list, and the buffer range is wrapped
+        if (it==begin() && idx+len>m_iIdxSize)
+        {
+            if ((*end()).i+m_iIdxSize>=idx && (*end()).i+m_iIdxSize<idx+len)
+                it = begin();
+        }
+    }
+    return it;
+
+
+    /*
     // Find last peak in list which is bigger than or equal to idx+len
     iterator it = end();
     --it;
 
     // If the buffer range is not wrapped...
-    if (idx+len<m_iIdxSize)
+    if (idx+len<=m_iIdxSize)
     {
         while (it!=end() && (*it).i>idx+len)
             --it;
     }
     else
     {
+        qDebug("--");
+        
         // The range is wrapped
         it = begin();
+        bool found = false;
         while (it!=end() && (*it).i<(idx+len)%m_iIdxSize)
+        {
+            qDebug("-0");
+            found = true;
             ++it;
-        if (it!=end())
-            return it;
-
-        it = end()--;
+        }
+        if (found)
+        {
+            qDebug("-1");
+            return --it;
+        }
+        
+        it = --end();
         if (!((*it).i<idx+len && (*it).i>=idx))
-            it = end();
+        {
+            qDebug("-2");
+        }
     }
-    return it;
+    return it;*/
 }
 
 int PeakList::getNoInRange(int idx, int len)
@@ -151,7 +190,7 @@ int PeakList::getNoInRange(int idx, int len)
 
     int no = 0;
 
-    if (idx+len>=m_iIdxSize)
+    if (idx+len>m_iIdxSize)
     {
         // Wrapped buffer
         while ((*it).i<m_iIdxSize && it!=end())
@@ -169,7 +208,7 @@ int PeakList::getNoInRange(int idx, int len)
     else
     {
         // Unwrapped buffer
-        while ((*it).i<=idx+len && it!=end())
+        while ((*it).i<idx+len && it!=end())
         {
             ++it;
             ++no;
@@ -233,25 +272,16 @@ PeakList::iterator PeakList::getMaxInRange(int idx, int len)
     return itmax;    
 }
 
-/*
-bool PeakList::circularValidIndex(int idx, int start, int end, int len)
+void PeakList::print()
 {
-    if (start<end)
+    iterator it = begin();
+    while (it!=end())
     {
-        if (idx<=end && idx>=start)
-            return true;
+        qDebug("%i",(*it).i);
+        ++it;
     }
-    else if (start>end)
-    {
-        if (!(idx>end && idx<start))
-            return true;
-    }
-    else if (start==end)
-        return true;
-
-    return false;
-}
-*/
+}    
+        
 
 
 

@@ -1,4 +1,4 @@
-Mixxx - version 0.9.2.
+Mixxx - version 1.0.
 
 * HOMEPAGE *************************************************
 http://mixxx.sourceforge.net
@@ -14,12 +14,10 @@ Mac OS 10.2.
 
 * NEWS *****************************************************
 New since 0.9.2:
-- Improved Stability 
 - Waveform displays 
-- Support for PowerMate controllers on Windows and Linux
+- Support for PowerMate controllers on Linux
 - Better MIDI key support
 - Better sound card support for MacOS X
-- Beat estimation 
 - Better playlist interface with playlists in XML format 
 - Added support for Ogg Vorbis
 - Cue buttons
@@ -29,13 +27,13 @@ New since 0.9.2:
 - Fixes in wavefile and MP3 playback
 - Skin support
 - Loop, next track, ping-pong playmodes
+- Improved stability
 
 * REQUIREMENTS *********************************************
 Mixxx is based on the following libraries:
 QT >= 3 
 libMAD
 libAudioFile
-FFTW
 vorbisfile
 
 The Windows version uses libsndfile instead of libAudioFile.

@@ -28,7 +28,7 @@
 /** Width of gauss/2 used in histogram updates */
 const int kiGaussWidth = 8;
 /** Hysterisis factor. */
-const float kfHysterisis = 1.2f;
+const float kfHysterisis = 2.0f;
 
 /**
   *@author Tue & Ken Haste Andersen

@@ -71,8 +71,8 @@ EngineMaster::EngineMaster(EngineBuffer *_buffer1, EngineBuffer *_buffer2,
     pfl1 = channel1->getPFL();
     pfl2 = channel2->getPFL();
 
-    flanger1 = flanger->getButtonA();
-    flanger2 = flanger->getButtonB();
+    flanger1 = flanger->getButtonCh1();
+    flanger2 = flanger->getButtonCh2();
         
     out = new CSAMPLE[MAX_BUFFER_LEN];
 }
@@ -101,7 +101,7 @@ CSAMPLE *EngineMaster::process(const CSAMPLE *, const int buffer_size)
     {
         CSAMPLE *temp_1 = buffer1->process(0, buffer_size);
         CSAMPLE *temp_2 = channel1->process(temp_1,buffer_size);
-        if (flanger1->get()==1.)
+        if (flanger1->get()==1. && flanger2->get()==0.)
             sampMaster1 = flanger->process(temp_2, buffer_size);
         else
             sampMaster1 = temp_2;
@@ -143,6 +143,10 @@ CSAMPLE *EngineMaster::process(const CSAMPLE *, const int buffer_size)
     // Master volume
     tmp = volume->process(out, buffer_size);
 
+    // Process the flanger on master if flanger is enabled on both channels
+    if (flanger1->get()==1. && flanger2->get()==1.)
+        tmp = flanger->process(tmp, buffer_size);
+    
     // Clipping
     tmp2 = clipping->process(tmp, buffer_size);
 
