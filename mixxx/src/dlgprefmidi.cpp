@@ -71,7 +71,7 @@ DlgPrefMidi::~DlgPrefMidi()
 
 void DlgPrefMidi::slotUpdate()
 {
-    qDebug("upd");
+//    qDebug("upd");
 
     // Midi configurations
     ComboBoxMidiconf->clear();
@@ -169,7 +169,7 @@ void DlgPrefMidi::slotUpdate()
         j++;
     }
     ComboBoxMouseFunction1->clear();
-    qDebug("cur item %i", ComboBoxMouseDevice1->currentItem());
+//    qDebug("cur item %i", ComboBoxMouseDevice1->currentItem());
     if (ComboBoxMouseDevice1->currentItem()>0)
     {
         ComboBoxMouseFunction1->setEnabled(true);
@@ -221,7 +221,7 @@ void DlgPrefMidi::slotUpdate()
 
 void DlgPrefMidi::slotApply()
 {
-    qDebug("apply");
+//    qDebug("apply");
 
     m_pConfig->set(ConfigKey("[Midi]","File"), ConfigValue(ComboBoxMidiconf->currentText().append(".midi.cfg")));
     m_pConfig->set(ConfigKey("[Midi]","Device"), ConfigValue(ComboBoxMididevice->currentText()));

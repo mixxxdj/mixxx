@@ -40,7 +40,7 @@ MouseLinux::~MouseLinux()
 
 bool MouseLinux::opendev(QString name)
 {
-    qDebug("try open %s",name.latin1());
+//    qDebug("try open %s",name.latin1());
     for(int iId=0; iId<kiMouseNumDevices; iId++)
     {
         char rgcDevName[256];
