@@ -349,13 +349,17 @@ void WTreeView::contentsMouseReleaseEvent(QMouseEvent *)
 
 void WTreeView::slotUpdateDir( const QString &s )
 {
-    //qDebug("dir %s", s.latin1());
+    QString dir = s;
+    
+    // Ensure that the dir ends with a separator
+    if (!dir.endsWith(QString(QChar(QDir::separator()))))
+        dir += QChar(QDir::separator());
     
     // Clear current dir
     if (m_pRootDir)
         delete m_pRootDir;
     
-    m_pRootDir = new WTreeItemDir(this, s);
+    m_pRootDir = new WTreeItemDir(this, dir);
 }
 
 void WTreeView::slotHighlightPlaylist(TrackPlaylist *p)
