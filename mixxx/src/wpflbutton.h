@@ -1,9 +1,9 @@
 /***************************************************************************
-                          dlgchannel.cpp  -  description
+                          wpflbutton.h  -  description
                              -------------------
-    begin                : Wed Feb 20 2002
-    copyright            : (C) 2002 by Tue and Ken Haste Andersen
-    email                : 
+    begin                : Sun Nov 17 2002
+    copyright            : (C) 2002 by Tue & Ken Haste Andersen
+    email                : haste@diku.dk
  ***************************************************************************/
 
 /***************************************************************************
@@ -15,31 +15,30 @@
  *                                                                         *
  ***************************************************************************/
 
-#include "dlgchannel.h"
-#include <qgroupbox.h>
-#include "wpflbutton.h"
-#include <qlabel.h>
-#include <qnamespace.h>
+#ifndef WPFLBUTTON_H
+#define WPFLBUTTON_H
 
-DlgChannel::DlgChannel(QWidget *parent, const char *name ) : DlgChannelDlg(parent,name)
-{
-}
+#include <qwidget.h>
+#include <qcheckbox.h>
+#include <qpainter.h>
+#include <qpixmap.h>
 
-DlgChannel::~DlgChannel()
-{
-}
+// #include "controlpushbutton.h"
 
-void DlgChannel::layoutMirror()
-{
-    // Mirror volume and knobs positions
-    QPoint knobpos = GroupBoxKnobs->pos();
-    GroupBoxKnobs->move(GroupBoxVolume->pos());
-    GroupBoxVolume->move(knobpos);
-    CheckBoxPFL->move(43,CheckBoxPFL->y());
-    TextLabelPFL->move(4,TextLabelPFL->y());
-    TextLabelPFL->setAlignment(Qt::AlignRight|Qt::AlignVCenter);
-    
-}
+/**
+  *@author Tue & Ken Haste Andersen
+  */
 
+class WPFLButton : public QCheckBox  {
+   Q_OBJECT
+public: 
+    WPFLButton(QWidget *parent=0, const char *name=0);
+    ~WPFLButton();
+//    ControlPushButton *controlButton;
+protected:
+    void drawButton (QPainter *);
+private:
+    static QPixmap *buttonUp, *buttonDown;
+};
 
-
+#endif

@@ -1,5 +1,7 @@
 #include "engineflanger.h"
 #include "qradiobutton.h"
+#include "wknob.h"
+#include <qpushbutton.h>
 
 /*----------------------------------------------------------------
   A flanger effect.
@@ -28,23 +30,21 @@ EngineFlanger::EngineFlanger(DlgFlanger *_dlg, const char *group)
     delay_buffer = new CSAMPLE[max_delay+1];
 
     // Init. potmeters
-    potmeterDepth = new ControlPotmeter(ConfigKey(group, "depth"), 0., 1.);
+    potmeterDepth = new ControlPotmeter(ConfigKey(group, "lfo_depth"), 0., 1.);
     connect(dlg->DialDepth, SIGNAL(valueChanged(int)), potmeterDepth, SLOT(slotSetPosition(int))); 
     connect(potmeterDepth, SIGNAL(valueChanged(FLOAT_TYPE)), this, SLOT(slotUpdateDepth(FLOAT_TYPE)));
 
-    potmeterDelay = new ControlPotmeter(ConfigKey(group, "delay"), 50, 1000);
+    potmeterDelay = new ControlPotmeter(ConfigKey(group, "lfo_delay"), 50, 1000);
     connect(dlg->DialDelay, SIGNAL(valueChanged(int)), potmeterDelay, SLOT(slotSetPosition(int))); 
     connect(potmeterDelay, SIGNAL(valueChanged(FLOAT_TYPE)), this, SLOT(slotUpdateDelay(FLOAT_TYPE)));
 
-    potmeterLFOperiod = new ControlPotmeter(ConfigKey(group, "LFO period"), 5000, 80000);
+    potmeterLFOperiod = new ControlPotmeter(ConfigKey(group, "lfo_period"), 5000, 80000);
     connect(dlg->DialPeriod, SIGNAL(valueChanged(int)), potmeterLFOperiod, SLOT(slotSetPosition(int))); 
     connect(potmeterLFOperiod, SIGNAL(valueChanged(FLOAT_TYPE)), this, SLOT(slotUpdateLFOperiod(FLOAT_TYPE)));
 
     // Init. channel selects:
-    pushbuttonChannelA = new ControlPushButton( ConfigKey(group, "channel A"), simulated_latching, 
-						dlg->BulbChannelA);
-    pushbuttonChannelB = new ControlPushButton( ConfigKey(group, "channel B"), simulated_latching, 
-						dlg->BulbChannelB);
+    pushbuttonChannelA = new ControlPushButton( ConfigKey(group, "channel A"), simulated_latching, dlg->BulbChannelA);
+    pushbuttonChannelB = new ControlPushButton( ConfigKey(group, "channel B"), simulated_latching, dlg->BulbChannelB);
     connect(dlg->PushButtonChannelA, SIGNAL(pressed()), pushbuttonChannelA, SLOT(pressed()));
     connect(dlg->PushButtonChannelA, SIGNAL(released()), pushbuttonChannelA, SLOT(released()));
     connect(pushbuttonChannelA, SIGNAL(valueChanged(valueType)), this, SLOT(slotUpdateChannelSelectA(valueType)));

@@ -1,9 +1,9 @@
 /***************************************************************************
-                          dlgchannel.cpp  -  description
+                          wselector.h  -  description
                              -------------------
-    begin                : Wed Feb 20 2002
-    copyright            : (C) 2002 by Tue and Ken Haste Andersen
-    email                : 
+    begin                : Sun Nov 17 2002
+    copyright            : (C) 2002 by Tue & Ken Haste Andersen
+    email                : haste@diku.dk
  ***************************************************************************/
 
 /***************************************************************************
@@ -15,31 +15,26 @@
  *                                                                         *
  ***************************************************************************/
 
-#include "dlgchannel.h"
-#include <qgroupbox.h>
-#include "wpflbutton.h"
-#include <qlabel.h>
-#include <qnamespace.h>
+#ifndef WSELECTOR_H
+#define WSELECTOR_H
 
-DlgChannel::DlgChannel(QWidget *parent, const char *name ) : DlgChannelDlg(parent,name)
-{
-}
+#include <qslider.h>
+#include <qpainter.h>
+#include <qpixmap.h>
 
-DlgChannel::~DlgChannel()
-{
-}
+/**
+  *@author Tue & Ken Haste Andersen
+  */
 
-void DlgChannel::layoutMirror()
-{
-    // Mirror volume and knobs positions
-    QPoint knobpos = GroupBoxKnobs->pos();
-    GroupBoxKnobs->move(GroupBoxVolume->pos());
-    GroupBoxVolume->move(knobpos);
-    CheckBoxPFL->move(43,CheckBoxPFL->y());
-    TextLabelPFL->move(4,TextLabelPFL->y());
-    TextLabelPFL->setAlignment(Qt::AlignRight|Qt::AlignVCenter);
-    
-}
+class WSelector : public QSlider  {
+public: 
+    WSelector(QWidget *parent=0, const char *name=0);
+    ~WSelector();
+protected:
+    void drawButton (QPainter *);
+private:
+    static QPixmap *sliderA, *sliderB;
 
+};
 
-
+#endif

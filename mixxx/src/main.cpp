@@ -63,7 +63,7 @@ int main(int argc, char *argv[])
   a.setMainWidget(mixxx);
   mixxx->resize( 641+90, 450+50);
   mixxx->setFixedWidth(641+90);
-  mixxx->setFixedHeight(450+50);
+  mixxx->setFixedHeight(450+100);
   //mixxx->setIcon(QPixmap());
 
   mixxx->show();

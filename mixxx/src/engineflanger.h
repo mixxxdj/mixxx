@@ -4,11 +4,9 @@
 #include <qobject.h>
 
 #include "engineobject.h"
-#include "controlpotmeter.h"
-#include "wknob.h"
 #include "dlgflanger.h"
+#include "controlpotmeter.h"
 #include "controlpushbutton.h"
-#include "qpushbutton.h"
 
 const int max_delay = 5000;  
 
