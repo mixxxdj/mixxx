@@ -55,7 +55,8 @@ MixxxApp::MixxxApp()
 
   // Initialize player with a desired buffer size
   qDebug("Init player...");
-  player = new PlayerALSA(BUFFER_SIZE);
+  //player = new PlayerALSA(BUFFER_SIZE);
+  player = new PlayerPortAudio(BUFFER_SIZE);
   // Initialize midi:
   qDebug("Init midi...");
   midi = new MidiObject();

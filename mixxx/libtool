@@ -37,7 +37,7 @@ if test "X${CDPATH+set}" = Xset; then CDPATH=:; export CDPATH; fi
 available_tags=" CXX"
 
 ### BEGIN LIBTOOL CONFIG
-# Libtool was configured as follows, on host vieras.hut.fi:
+# Libtool was configured as follows, on host liqui2.isva.dtu.dk:
 #
 # AR="" AR_FLAGS="" LTCC="gcc" CC="gcc" \
 # CFLAGS="-O2  " CPPFLAGS="" \
@@ -47,7 +47,7 @@ available_tags=" CXX"
 # objext="" exeext="" reload_flag=" -r" \
 # deplibs_check_method="pass_all" \
 # file_magic_cmd="\$MAGIC_CMD" \
-#   admin/ltconfig --cache-file=./config.cache --disable-static --with-gcc --with-gnu-ld --enable-dlopen --no-verify --build=i586-pc-linux-gnu admin/ltmain.sh i586-pc-linux-gnu
+#   admin/ltconfig --cache-file=./config.cache --disable-static --with-gcc --with-gnu-ld --enable-dlopen --no-verify --build=i686-pc-linux-gnu admin/ltmain.sh i686-pc-linux-gnu
 #
 # Compiler and other test output produced by ltconfig, useful for
 # debugging ltconfig, is in ./config.log if it exists.
@@ -71,8 +71,8 @@ build_old_libs=no
 fast_install=yes
 
 # The host system.
-host_alias=i586-pc-linux-gnu
-host=i586-pc-linux-gnu
+host_alias=i686-pc-linux-gnu
+host=i686-pc-linux-gnu
 
 # An echo program that does not interpret backslashes.
 echo="echo"
@@ -5718,7 +5718,7 @@ build_old_libs=`case $build_libtool_libs in yes) echo no;; *) echo yes;; esac`
 # sh-indentation:2
 # End:
 ### BEGIN LIBTOOL TAG CONFIG: CXX
-# Libtool was configured as follows, on host vieras.hut.fi:
+# Libtool was configured as follows, on host liqui2.isva.dtu.dk:
 #
 # AR="" AR_FLAGS="" LTCC="gcc" CC="c++" \
 # CFLAGS="-O2 -fno-exceptions -fno-check-new" CPPFLAGS="" \
@@ -5728,7 +5728,7 @@ build_old_libs=`case $build_libtool_libs in yes) echo no;; *) echo yes;; esac`
 # objext="" exeext="" reload_flag=" -r" \
 # deplibs_check_method="pass_all" \
 # file_magic_cmd="\$MAGIC_CMD" \
-#   admin/ltconfig -o libtool --cache-file=./config.cache --disable-static --with-gcc --with-gnu-ld --enable-dlopen --build=i586-pc-linux-gnu --add-tag=CXX admin/ltcf-cxx.sh i586-pc-linux-gnu
+#   admin/ltconfig -o libtool --cache-file=./config.cache --disable-static --with-gcc --with-gnu-ld --enable-dlopen --build=i686-pc-linux-gnu --add-tag=CXX admin/ltcf-cxx.sh i686-pc-linux-gnu
 #
 # Compiler and other test output produced by ltconfig, useful for
 # debugging ltconfig, is in ./config.log if it exists.
@@ -5752,8 +5752,8 @@ build_old_libs=no
 fast_install=yes
 
 # The host system.
-host_alias=i586-pc-linux-gnu
-host=i586-pc-linux-gnu
+host_alias=i686-pc-linux-gnu
+host=i686-pc-linux-gnu
 
 # An echo program that does not interpret backslashes.
 echo="echo"
