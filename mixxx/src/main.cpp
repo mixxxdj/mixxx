@@ -38,8 +38,8 @@ int main(int argc, char *argv[])
     
   MixxxApp *mixxx=new MixxxApp(&a);
   a.setMainWidget(mixxx);
-  mixxx->resize( 641, 450);
-  mixxx->setFixedWidth(641);
+  mixxx->resize( 641+70, 450);
+  mixxx->setFixedWidth(641+70);
   mixxx->setFixedHeight(450);
   //mixxx->setIcon(QPixmap());
 

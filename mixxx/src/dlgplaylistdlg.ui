@@ -8,8 +8,8 @@
         <rect>
             <x>0</x>
             <y>0</y>
-            <width>595</width>
-            <height>150</height>
+            <width>666</width>
+            <height>148</height>
         </rect>
     </property>
     <property name="paletteBackgroundColor">
@@ -55,7 +55,7 @@
             <rect>
                 <x>3</x>
                 <y>0</y>
-                <width>590</width>
+                <width>660</width>
                 <height>148</height>
             </rect>
         </property>

@@ -31,7 +31,7 @@ MixxxView::MixxxView(QWidget *parent, MixxxDoc *doc) : QWidget(parent)
     channel1 = new DlgChannel(this);
     channel2 = new DlgChannel(this); channel2->layoutMirror();
     playlist = new DlgPlaylist(this);
-    playlist->ListPlaylist->setColumnWidth(0,575);
+    playlist->ListPlaylist->setColumnWidth(0,645);
     master = new DlgMaster(this);
     crossfader = new DlgCrossfader(this);
     split = new DlgSplit(this);
@@ -48,11 +48,11 @@ MixxxView::MixxxView(QWidget *parent, MixxxDoc *doc) : QWidget(parent)
     mainGrid->addMultiCellWidget(playlist,2,2,0,4);
 
     //let the ratio between the widths of columns 0 and 1 be 2:3.
-    mainGrid->setColStretch( 0, 207);
+    mainGrid->setColStretch( 0, 242);
     mainGrid->setColStretch( 1,  73);
     mainGrid->setColStretch( 2,  36);
     mainGrid->setColStretch( 3,  73);
-    mainGrid->setColStretch( 4, 207);
+    mainGrid->setColStretch( 4, 242);
     mainGrid->setColStretch( 5,  45);
 
     mainGrid->setRowStretch( 0, 230);
