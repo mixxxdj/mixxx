@@ -129,9 +129,10 @@ void DlgPreferences::slotMasterDevice()
     }
 
     // Latency
-    int latency = config->getValueString(ConfigKey("[Soundcard]","LatencyMaster")).toInt();
-    SliderLatencyMaster->setValue(getSliderLatencyVal(latency));
+    SliderLatencyMaster->setValue(getSliderLatencyVal(config->getValueString(ConfigKey("[Soundcard]","LatencyMaster")).toInt()));
     slotLatencyMaster();
+    SliderLatencyHead->setValue(getSliderLatencyVal(config->getValueString(ConfigKey("[Soundcard]","LatencyHead")).toInt()));
+    slotLatencyHead();
 }
 
 void DlgPreferences::slotHeadDevice()
@@ -320,12 +321,17 @@ void DlgPreferences::slotApply()
     config->set(ConfigKey("[Soundcard]","ChannelMaster"),ComboBoxChannelsMaster->currentText().left(1));
     config->set(ConfigKey("[Soundcard]","ChannelHeadphone"),ComboBoxChannelsHead->currentText().left(1));
     config->set(ConfigKey("[Soundcard]","LatencyMaster"),getSliderLatencyMsec(SliderLatencyMaster->value()));
+    config->set(ConfigKey("[Soundcard]","LatencyHead"),getSliderLatencyMsec(SliderLatencyHead->value()));
     config->set(ConfigKey("[Midi]","Configfile"),ComboBoxMidiconf->currentText().append(".midi.cfg"));
     config->set(ConfigKey("[Midi]","Device"), ComboBoxMididevice->currentText());
 
     // Reopen devices
     ((MixxxApp *)mixxx)->reopen();
-    
+
+    // Update sliders with possible changed latency values
+    SliderLatencyMaster->setValue(getSliderLatencyVal(config->getValueString(ConfigKey("[Soundcard]","LatencyMaster")).toInt()));
+    SliderLatencyHead->setValue(getSliderLatencyVal(config->getValueString(ConfigKey("[Soundcard]","LatencyHead")).toInt()));
+        
     // Update playlist if path has changed
     if (LineEditSongfiles->text() != config->getValueString(ConfigKey("[Playlist]","Directory")))
     {

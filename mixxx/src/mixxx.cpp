@@ -797,8 +797,21 @@ void MixxxApp::updatePlayList()
 
 void MixxxApp::reopen()
 {
-    // Calculate buffer size based on sample rate and latency in msecs
+    // Calculate buffer size based on sample rate and latency in msecs for master device
     int bufferSize = (int)((float)config->getValueString(ConfigKey("[Soundcard]","LatencyMaster")).toInt()*((float)config->getValueString(ConfigKey("[Soundcard]","Samplerate")).toInt()/1000.));
+
+    // Same for head device. Ensure that head has the same latency or an integer multiple
+    // of master latency
+    int bufferSizeHead = (int)((float)config->getValueString(ConfigKey("[Soundcard]","LatencyHead")).toInt()*((float)config->getValueString(ConfigKey("[Soundcard]","Samplerate")).toInt()/1000.));
+    if (bufferSizeHead<=bufferSize)
+        bufferSizeHead = bufferSize;
+    else
+   {
+        int b = bufferSize;
+        while (bufferSizeHead>b)
+            b += bufferSize;
+        bufferSizeHead = b;
+    }
 
     // Stop playback
     if (playerSlave != 0)
@@ -837,6 +850,10 @@ void MixxxApp::reopen()
         playerSlave = 0;
     }
 
+    // Write latency values back to config object
+    config->set(ConfigKey("[Soundcard]","LatencyMaster"),ConfigValue((player->MasterBufferSize*2)/((float)config->getValueString(ConfigKey("[Soundcard]","Samplerate")).toInt()/1000.)));
+    config->set(ConfigKey("[Soundcard]","LatencyHead"),ConfigValue((player->MasterBufferSize*2*player->HeadPerMasterBuffer)/((float)config->getValueString(ConfigKey("[Soundcard]","Samplerate")).toInt()/1000.)));
+    
     // Close MIDI
     midi->devClose();
 

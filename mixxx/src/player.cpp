@@ -17,9 +17,12 @@
 
 #include "player.h"
 
+
 // Static member variable definition
 SAMPLE *Player::out_buffer = 0;
 SAMPLE *Player::out_buffer_offset = 0;
+int Player::HeadPerMasterBuffer = 1;
+int Player::MasterBufferSize = 0;
 
 /* -------- ------------------------------------------------------
    Purpose: Initializes the audio hardware.
@@ -95,7 +98,7 @@ int Player::prepareBuffer()
   }
 
   // Convert the signal back to SAMPLE and write to the sound cards buffer:
-  if (bufferIdx>20)
+  if (bufferIdx>HeadPerMasterBuffer*3)
       bufferIdx = 0;
   else
       bufferIdx++;

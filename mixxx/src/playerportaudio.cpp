@@ -171,11 +171,16 @@ bool PlayerPortAudio::open(QString name, int srate, int bits, int bufferSize, in
     // Determine which callback function to use
     PortAudioCallback *callbackFunc;
     if (chMaster>0)
+    {
         callbackFunc = paCallback;
+        MasterBufferSize = bufferSize;
+    }
     else
     {
         callbackFunc = paCallbackSlave;
         bufferIdxSlave = 0;
+        HeadPerMasterBuffer = bufferSize/MasterBufferSize;
+        qDebug("HeadPerMasterBuffer %i",HeadPerMasterBuffer);
     }
 
     // Try to open device 5 times before giving up!
@@ -276,6 +281,8 @@ int paCallback(void *, void *outputBuffer,
                       unsigned long framesPerBuffer,
                       PaTimestamp, void *_player)
 {
+    // player->BUFFERSIZE = framesPerBuffer*no_of_channels
+
     Player *player = (Player *)_player;
     SAMPLE *out = (SAMPLE*)outputBuffer;
     player->prepareBuffer();
@@ -326,7 +333,7 @@ int paCallbackSlave(void *, void *outputBuffer,
         *out++=buffer[(i*4)+3];
     }
 
-    if (bufferIdxSlave>20)
+    if (bufferIdxSlave>3)
         bufferIdxSlave = 0;
     else
         bufferIdxSlave++;

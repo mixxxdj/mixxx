@@ -92,6 +92,6 @@ FORMS	= dlgchanneldlg.ui dlgplaycontroldlg.ui dlgplaylistdlg.ui dlgmasterdlg.ui 
 IMAGES	= filesave.xpm
 unix:TEMPLATE         = app
 win32:TEMPLATE       = vcapp
-CONFIG	+= qt warn_off thread relese 
+CONFIG	+= qt warn_off thread debug 
 DBFILE	= mixxx.db
 LANGUAGE	= C++
