@@ -1,30 +1,21 @@
-#ifndef ENGINEIIRFILTER_H
-#define ENGINEIIRFILTER_H
+#ifndef ENGINEFILTERIIR_H
+#define ENGINEFILTERIIR_H
 
 #include <qobject.h>
 
 #include "engineobject.h"
-#include "midiobject.h"
-#include "controllogpotmeter.h"
-#include "controlpushbutton.h"
 
-class EngineIIRfilter : public EngineObject {
- Q_OBJECT
+class EngineFilterIIR : public EngineObject {
+ public:
+  EngineFilterIIR(const double *);
+  ~EngineFilterIIR();
+  CSAMPLE *process(const CSAMPLE*, const int);
  protected:
-  ControlPushButton* killbutton;
   const double *coefs;
 #define NZEROS 8
 #define NPOLES 8
   double xv[NZEROS+1], yv[NPOLES+1];
   CSAMPLE *buffer;
- public:
-  ControlPotmeter* filterpot;
-  FLOAT_TYPE gain;
-  EngineIIRfilter(int, int , int , MidiObject*, const double *);
-  ~EngineIIRfilter();
-  virtual CSAMPLE *process(const CSAMPLE*, const int);
- public slots:
-  void slotUpdate();
 };
 
 //

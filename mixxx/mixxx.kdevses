@@ -7,35 +7,35 @@
   <Doc0 CursorPosLine="32" Type="KWriteDoc" NumberOfViews="1" CursorPosCol="19" FileName="/home/haste/cvs/mixxx/src/defs.h" >
    <View0 Top="24" Width="400" Attach="1" Height="300" Left="3" Focus="0" Type="KWriteView" MinMaxMode="0" />
   </Doc0>
-  <Doc1 CursorPosLine="158" Type="KWriteDoc" NumberOfViews="1" CursorPosCol="2" FileName="/home/haste/cvs/mixxx/src/mixxx.h" >
-   <View0 Top="46" Width="758" Attach="1" Height="609" Left="25" Focus="0" Type="KWriteView" MinMaxMode="0" />
+  <Doc1 CursorPosLine="30" Type="KWriteDoc" NumberOfViews="1" CursorPosCol="0" FileName="/home/haste/cvs/mixxx/src/enginefilterrbj.h" >
+   <View0 Top="46" Width="758" Attach="1" Height="426" Left="25" Focus="0" Type="KWriteView" MinMaxMode="0" />
   </Doc1>
-  <Doc2 CursorPosLine="436" Type="KWriteDoc" NumberOfViews="1" CursorPosCol="47" FileName="/home/haste/cvs/mixxx/src/mixxx.cpp" >
-   <View0 Top="68" Width="758" Attach="1" Height="609" Left="47" Focus="0" Type="KWriteView" MinMaxMode="0" />
+  <Doc2 CursorPosLine="67" Type="KWriteDoc" NumberOfViews="1" CursorPosCol="0" FileName="/home/haste/cvs/mixxx/src/enginefilterrbj.cpp" >
+   <View0 Top="68" Width="758" Attach="1" Height="426" Left="47" Focus="0" Type="KWriteView" MinMaxMode="0" />
   </Doc2>
-  <Doc3 CursorPosLine="67" Type="KWriteDoc" NumberOfViews="1" CursorPosCol="3" FileName="/home/haste/cvs/mixxx/src/enginebuffer.h" >
-   <View0 Top="90" Width="761" Attach="1" Height="609" Left="69" Focus="0" Type="KWriteView" MinMaxMode="0" />
+  <Doc3 CursorPosLine="44" Type="KWriteDoc" NumberOfViews="1" CursorPosCol="14" FileName="/home/haste/cvs/mixxx/src/enginefilterblock.h" >
+   <View0 Top="90" Width="758" Attach="1" Height="410" Left="69" Focus="0" Type="KWriteView" MinMaxMode="0" />
   </Doc3>
-  <Doc4 CursorPosLine="193" Type="KWriteDoc" NumberOfViews="1" CursorPosCol="32" FileName="/home/haste/cvs/mixxx/src/enginebuffer.cpp" >
-   <View0 Top="112" Width="758" Attach="1" Height="371" Left="91" Focus="0" Type="KWriteView" MinMaxMode="0" />
+  <Doc4 CursorPosLine="69" Type="KWriteDoc" NumberOfViews="1" CursorPosCol="46" FileName="/home/haste/cvs/mixxx/src/enginefilterblock.cpp" >
+   <View0 Top="112" Width="758" Attach="1" Height="410" Left="91" Focus="0" Type="KWriteView" MinMaxMode="0" />
   </Doc4>
-  <Doc5 CursorPosLine="51" Type="KWriteDoc" NumberOfViews="1" CursorPosCol="6" FileName="/home/haste/cvs/mixxx/src/enginefilterrbj.h" >
-   <View0 Top="134" Width="758" Attach="1" Height="292" Left="113" Focus="0" Type="KWriteView" MinMaxMode="0" />
+  <Doc5 CursorPosLine="40" Type="KWriteDoc" NumberOfViews="1" CursorPosCol="21" FileName="/home/haste/cvs/mixxx/src/enginechannel.h" >
+   <View0 Top="134" Width="758" Attach="1" Height="410" Left="113" Focus="0" Type="KWriteView" MinMaxMode="0" />
   </Doc5>
-  <Doc6 CursorPosLine="48" Type="KWriteDoc" NumberOfViews="1" CursorPosCol="22" FileName="/home/haste/cvs/mixxx/src/enginefilterrbj.cpp" >
-   <View0 Top="156" Width="761" Attach="1" Height="586" Left="135" Focus="0" Type="KWriteView" MinMaxMode="0" />
+  <Doc6 CursorPosLine="28" Type="KWriteDoc" NumberOfViews="1" CursorPosCol="33" FileName="/home/haste/cvs/mixxx/src/enginechannel.cpp" >
+   <View0 Top="156" Width="758" Attach="1" Height="410" Left="135" Focus="0" Type="KWriteView" MinMaxMode="0" />
   </Doc6>
-  <Doc7 CursorPosLine="20" Type="KWriteDoc" NumberOfViews="1" CursorPosCol="0" FileName="/home/haste/cvs/mixxx/src/enginechannel.cpp" >
-   <View0 Top="200" Width="758" Attach="1" Height="410" Left="179" Focus="0" Type="KWriteView" MinMaxMode="0" />
+  <Doc7 CursorPosLine="9" Type="KWriteDoc" NumberOfViews="1" CursorPosCol="0" FileName="/home/haste/cvs/mixxx/src/enginepregain.h" >
+   <View0 Top="178" Width="758" Attach="1" Height="410" Left="157" Focus="0" Type="KWriteView" MinMaxMode="0" />
   </Doc7>
-  <Doc8 CursorPosLine="39" Type="KWriteDoc" NumberOfViews="1" CursorPosCol="26" FileName="/home/haste/cvs/mixxx/src/enginefilterlbh.h" >
-   <View0 Top="198" Width="764" Attach="1" Height="437" Left="198" Focus="1" Type="KWriteView" MinMaxMode="2" />
+  <Doc8 CursorPosLine="5" Type="KWriteDoc" NumberOfViews="1" CursorPosCol="0" FileName="/home/haste/cvs/mixxx/src/enginepregain.cpp" >
+   <View0 Top="200" Width="758" Attach="1" Height="410" Left="179" Focus="0" Type="KWriteView" MinMaxMode="0" />
   </Doc8>
-  <Doc9 CursorPosLine="26" Type="KWriteDoc" NumberOfViews="1" CursorPosCol="3" FileName="/home/haste/cvs/mixxx/src/enginefilterlbh.cpp" >
-   <View0 Top="244" Width="758" Attach="1" Height="410" Left="223" Focus="0" Type="KWriteView" MinMaxMode="0" />
+  <Doc9 CursorPosLine="55" Type="KWriteDoc" NumberOfViews="1" CursorPosCol="10" FileName="/home/haste/cvs/mixxx/src/enginefilteriir.h" >
+   <View0 Top="198" Width="764" Attach="1" Height="437" Left="198" Focus="1" Type="KWriteView" MinMaxMode="2" />
   </Doc9>
-  <Doc10 Type="CDocBrowser" NumberOfViews="1" FileName="/usr/kde/3/share/doc/HTML/en/kdevelop/index.html" >
-   <View Top="178" Width="124" Attach="1" Height="115" Left="157" Focus="0" Type="KHTMLView" MinMaxMode="0" />
+  <Doc10 CursorPosLine="38" Type="KWriteDoc" NumberOfViews="1" CursorPosCol="26" FileName="/home/haste/cvs/mixxx/src/enginefilteriir.cpp" >
+   <View0 Top="244" Width="758" Attach="1" Height="410" Left="223" Focus="0" Type="KWriteView" MinMaxMode="0" />
   </Doc10>
  </DocsAndViews>
 </KDevPrjSession>

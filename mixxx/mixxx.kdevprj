@@ -114,7 +114,7 @@ install_location=
 type=DATA
 
 [src/Makefile.am]
-files=src/Makefile,src/controllogpotmeter.cpp,src/controllogpotmeter.h,src/controlobject.cpp,src/controlobject.h,src/controlpotmeter.cpp,src/controlpotmeter.h,src/controlpushbutton.cpp,src/controlpushbutton.h,src/controlrotary.cpp,src/controlrotary.h,src/defs.h,src/dlgchannel.cpp,src/dlgchannel.h,src/dlgchanneldlg.ui,src/dlgplaycontrol.cpp,src/dlgplaycontrol.h,src/dlgplaycontroldlg.ui,src/dlgplaylist.cpp,src/dlgplaylist.h,src/dlgplaylistdlg.ui,src/enginebuffer.cpp,src/enginebuffer.h,src/engineclipping.cpp,src/engineclipping.h,src/enginefilterlbh.cpp,src/enginefilterlbh.h,src/enginefilterrbj.cpp,src/enginefilterrbj.h,src/enginehmlfilter.cpp,src/enginehmlfilter.h,src/engineiirfilter.cpp,src/engineiirfilter.h,src/engineobject.cpp,src/engineobject.h,src/enginepregain.cpp,src/enginepregain.h,src/filenew.xpm,src/fileopen.xpm,src/filesave.xpm,src/main.cpp,src/midiobject.cpp,src/midiobject.h,src/mixxx.cpp,src/mixxx.db,src/mixxx.h,src/mixxx.pro,src/mixxxdoc.cpp,src/mixxxdoc.h,src/mixxxview.cpp,src/mixxxview.h,src/player.cpp,src/player.h,src/playeralsa.cpp,src/playeralsa.h,src/playerportaudio.cpp,src/playerportaudio.h,src/qknob.cpp,src/qknob.h,src/soundsource.cpp,src/soundsource.h,src/soundsourceheavymp3.cpp,src/soundsourceheavymp3.h,src/soundsourcenull.cpp,src/soundsourcenull.h,src/monitor.cpp,src/monitor.h,src/enginechannel.cpp,src/enginechannel.h,src/dlgmasterdlg.ui,src/dlgmaster.h,src/dlgmaster.cpp,src/enginemaster.cpp,src/enginemaster.h
+files=src/Makefile,src/controllogpotmeter.cpp,src/controllogpotmeter.h,src/controlobject.cpp,src/controlobject.h,src/controlpotmeter.cpp,src/controlpotmeter.h,src/controlpushbutton.cpp,src/controlpushbutton.h,src/controlrotary.cpp,src/controlrotary.h,src/defs.h,src/dlgchannel.cpp,src/dlgchannel.h,src/dlgchanneldlg.ui,src/dlgplaycontrol.cpp,src/dlgplaycontrol.h,src/dlgplaycontroldlg.ui,src/dlgplaylist.cpp,src/dlgplaylist.h,src/dlgplaylistdlg.ui,src/enginebuffer.cpp,src/enginebuffer.h,src/engineclipping.cpp,src/engineclipping.h,src/enginefilterlbh.cpp,src/enginefilterlbh.h,src/enginefilterrbj.cpp,src/enginefilterrbj.h,src/enginehmlfilter.cpp,src/enginehmlfilter.h,src/engineiirfilter.cpp,src/engineiirfilter.h,src/engineobject.cpp,src/engineobject.h,src/enginepregain.cpp,src/enginepregain.h,src/filenew.xpm,src/fileopen.xpm,src/filesave.xpm,src/main.cpp,src/midiobject.cpp,src/midiobject.h,src/mixxx.cpp,src/mixxx.db,src/mixxx.h,src/mixxx.pro,src/mixxxdoc.cpp,src/mixxxdoc.h,src/mixxxview.cpp,src/mixxxview.h,src/player.cpp,src/player.h,src/playeralsa.cpp,src/playeralsa.h,src/playerportaudio.cpp,src/playerportaudio.h,src/qknob.cpp,src/qknob.h,src/soundsource.cpp,src/soundsource.h,src/soundsourceheavymp3.cpp,src/soundsourceheavymp3.h,src/soundsourcenull.cpp,src/soundsourcenull.h,src/monitor.cpp,src/monitor.h,src/enginechannel.cpp,src/enginechannel.h,src/dlgmasterdlg.ui,src/dlgmaster.h,src/dlgmaster.cpp,src/enginemaster.cpp,src/enginemaster.h,src/enginefilterblock.cpp,src/enginefilterblock.h,src/enginefilteriir.cpp,src/enginefilteriir.h
 sub_dirs=
 type=static_library
 
@@ -287,6 +287,30 @@ install_location=
 type=SOURCE
 
 [src/engineclipping.h]
+dist=true
+install=false
+install_location=
+type=HEADER
+
+[src/enginefilterblock.cpp]
+dist=true
+install=false
+install_location=
+type=SOURCE
+
+[src/enginefilterblock.h]
+dist=true
+install=false
+install_location=
+type=HEADER
+
+[src/enginefilteriir.cpp]
+dist=true
+install=false
+install_location=
+type=SOURCE
+
+[src/enginefilteriir.h]
 dist=true
 install=false
 install_location=
