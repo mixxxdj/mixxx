@@ -1,0 +1,349 @@
+
+#************************************************************************
+# QBAS
+# version 0.9
+# Copyright (c) 2003-2004 Gianluca Romanin ( J_Zar )
+#        <jayorama@users.sourceforge.net>
+#************************************************************************
+
+
+#************************************************************************
+#
+#  This program is free software; you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation; either version 2 of the License, or
+#  (at your option) any later version.
+#
+#  This program is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+#
+#  You should have received a copy of the GNU General Public License
+#  along with this program; if not, write to the Free Software
+#  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+#
+#************************************************************************
+
+
+
+
+# --------------------------- Init     ------------------------------------
+# -------------------------------------------------------------------------
+# -------------------------------------------------------------------------
+FOUND = false
+# --------------------------------------
+# At first: check for errors in definition... 
+# --------------------------------------
+isEmpty( OBJECT ) {
+	message( "Error in the build.definition file." )
+	message( "Please, contact the author of this package and send" )
+	message( "him a bug message." )
+	error( "Exit with failure at OBJECT definition..." )
+	}
+isEmpty( TYPE ) {
+	message( "Error in the build.definition file." )
+	message( "Please, contact the author of this package and send" )
+	message( "him a bug message." )
+	error( "Exit with failure at TYPE definition..." )
+	}
+# --------------------------------------
+# if DESCRIPTION is not empty we use it to set the output message... 
+# --------------------------------------
+!isEmpty( DESCRIPTION ) {
+	MESSAGE = "Checking for $${DESCRIPTION} ...............
+	}
+	else {
+	MESSAGE = "Checking for $${OBJECT} ...............
+	}
+# --------------------------------------
+# if ERROR_TEMPLATE_MESSAGE is not empty we use it to set the 
+# error output message... 
+# --------------------------------------
+!isEmpty( ERROR_TEMPLATE_MESSAGE ) {
+	ERROR_MESSAGE = "$${ERROR_TEMPLATE_MESSAGE} $${OBJECT}"
+	}
+	else {
+	ERROR_MESSAGE = "Cannot compile without $${OBJECT}!"
+	}
+
+
+# --------------------------- lib type ------------------------------------
+# -------------------------------------------------------------------------
+# -------------------------------------------------------------------------
+# checking with defaults
+contains( TYPE, lib ) {
+
+# if we have a library
+IS_LIB = true
+
+# --------------------------- marked static -------------------------------
+# static linking for package
+contains( OPTIONS, marked_static ) {
+	!isEmpty( STATIC_LIBPATH ) {
+		!contains( OPTIONS, skip_link ) {
+			LIBS += $${STATIC_LIBPATH}/$${OBJECT}
+			MESSAGE += yes , statically linked"
+			} else {
+				MESSAGE += yes"
+				}
+		message( $${MESSAGE} )
+		FOUND = true
+	}
+}
+
+# --------------------------- lib 'ld' check ------------------------------
+contains( FOUND, false) {
+# --------------------------------------
+# STANDARD LIB CHECK
+# At first ----> check using LD
+# --------------------------------------
+!isEmpty( LINK_LIBS ) {
+	system( ld $${LINK_LIBS} 2>/dev/null ) {
+		MESSAGE += yes"
+		message( $${MESSAGE} )
+		FOUND = true
+	}
+}
+
+# --------------------------- lib existance check -------------------------
+# If this fails ----> check the file existence
+contains( FOUND, false) {
+	exists( $${LIB_BASE0}/$${OBJECT} ) {
+		!contains( OPTIONS, skip_link ) {
+			LIBS += $${LIB_BASE0}/$${OBJECT}
+			MESSAGE += yes , statically linked"
+			} else {
+				MESSAGE += yes"
+				}
+		message( $${MESSAGE} )
+		FOUND = true
+	} else {
+		exists( $${LIB_BASE1}/$${OBJECT} ) {
+			!contains( OPTIONS, skip_link ) {
+				LIBS += $${LIB_BASE1}/$${OBJECT}
+				MESSAGE += yes , statically linked"
+				} else {
+					MESSAGE += yes"
+					}
+			message( $${MESSAGE} )
+			FOUND = true
+		}
+		} else {
+			exists( $${LIB_BASE2}/$${OBJECT} ) {
+				!contains( OPTIONS, skip_link ) {
+					LIBS += $${LIB_BASE2}/$${OBJECT}
+					MESSAGE += yes , statically linked"
+					} else {
+						MESSAGE += yes"
+						}
+				message( $${MESSAGE} )
+				FOUND = true
+			}
+		}
+}
+}
+} else {
+IS_LIB = false
+}
+
+# --------------------------- bin type ------------------------------------
+# -------------------------------------------------------------------------
+# -------------------------------------------------------------------------
+contains( TYPE, bin ) {
+# if we have a binary
+exists( $${BIN_BASE0}/$${OBJECT} ) {
+	MESSAGE += yes"
+	message( $${MESSAGE} )
+	FOUND = true
+} else {
+	exists( $${BIN_BASE1}/$${OBJECT} ) {
+		MESSAGE += yes"
+		message( $${MESSAGE} )
+		FOUND = true
+	}
+}
+}
+
+# --------------------------- header type ---------------------------------
+# -------------------------------------------------------------------------
+# -------------------------------------------------------------------------
+contains( TYPE, header ) {
+# if we have header
+exists( $${HEADER_BASE0}/$${OBJECT} ) {
+	MESSAGE += yes"
+	message( $${MESSAGE} )
+	FOUND = true
+} else {
+	exists( $${HEADER_BASE1}/$${OBJECT} ) {
+		MESSAGE += yes"
+		message( $${MESSAGE} )
+		FOUND = true
+	}
+}
+}
+
+# --------------------------- command type --------------------------------
+# -------------------------------------------------------------------------
+# -------------------------------------------------------------------------
+contains( TYPE, command ) {
+# if we have command
+system( $${OBJECT} ) {
+	MESSAGE += yes"
+	message( $${MESSAGE} )
+	FOUND = true
+} else {
+	ERROR_MESSAGE = "Command "$${OBJECT}" scores an error!"
+}
+}
+
+# --------------------------- other type ----------------------------------
+# -------------------------------------------------------------------------
+# -------------------------------------------------------------------------
+contains( TYPE, other ) {
+# if we have other stuff
+exists( $${OPTIONAL_BASE0}/$${OBJECT} ) {
+	MESSAGE += yes"
+	message( $${MESSAGE} )
+	FOUND = true
+} else {
+	exists( $${OPTIONAL_BASE1}/$${OBJECT} ) {
+		MESSAGE += yes"
+		message( $${MESSAGE} )
+		FOUND = true
+	} else {
+			exists( $${OPTIONAL_BASE2}/$${OBJECT} ) {
+				MESSAGE += yes"
+				message( $${MESSAGE} )
+				FOUND = true
+			}
+		}
+}
+}
+
+# --------------------------- not found but... ----------------------------
+# -------------------------------------------------------------------------
+# -------------------------------------------------------------------------
+# if not found check with user-added paths
+# This code is not much sharp... Dirty hack...
+contains( FOUND, false) {
+		!isEmpty( PATH1 ) {
+			exists( $$PATH1/$${OBJECT} ){
+			MESSAGE += yes"
+			contains( IS_LIB, true) {
+				!contains( OPTIONS, skip_link ) {
+					LIBS += $$PATH1/$${OBJECT}
+					MESSAGE += , statically linked"
+					}
+			}
+			message( $${MESSAGE} )
+			FOUND = true
+			}
+		}
+		!isEmpty( PATH2 ) {
+			exists( $$PATH2/$${OBJECT} ){
+			MESSAGE += yes"
+			contains( IS_LIB, true) {
+				!contains( OPTIONS, skip_link ) {
+					LIBS += $$PATH2/$${OBJECT}
+					MESSAGE += , statically linked"
+					}
+			}
+			message( $${MESSAGE} )
+			FOUND = true
+			}
+		}
+		!isEmpty( PATH3 ) {
+			exists( $$PATH3/$${OBJECT} ){
+			MESSAGE += yes"
+			contains( IS_LIB, true) {
+				!contains( OPTIONS, skip_link ) {
+					LIBS += $$PATH3/$${OBJECT}
+					MESSAGE += , statically linked"
+					}
+			}
+			message( $${MESSAGE} )
+			FOUND = true
+			}
+		}
+		!isEmpty( PATH4 ) {
+			exists( $$PATH4/$${OBJECT} ){
+			MESSAGE += yes"
+			contains( IS_LIB, true) {
+				!contains( OPTIONS, skip_link ) {
+					LIBS += $$PATH4/$${OBJECT}
+					MESSAGE += , statically linked"
+					}
+			}
+			message( $${MESSAGE} )
+			FOUND = true
+			}
+		}
+		!isEmpty( PATH5 ) {
+			exists( $$PATH5/$${OBJECT} ){
+			MESSAGE += yes"
+			contains( IS_LIB, true) {
+				!contains( OPTIONS, skip_link ) {
+					LIBS += $$PATH5/$${OBJECT}
+					MESSAGE += , statically linked"
+					}
+			}
+			message( $${MESSAGE} )
+			FOUND = true
+			}
+		}
+}
+
+# --------------------------- definitely not found ------------------------
+# -------------------------------------------------------------------------
+# -------------------------------------------------------------------------
+# Not found again? Nothing to do...
+contains( FOUND, false) {
+	MESSAGE += no"
+	message( $${MESSAGE} )
+	!isEmpty( TIP_MESSAGE ) {
+		message( "**************************************" )
+		message( $${TIP_MESSAGE} )
+		message( "**************************************" )
+	}
+	contains( OPTIONS, exit_on_failure ) {
+		message( "**************************************" )
+		error( $${ERROR_MESSAGE} )
+	}
+}
+
+
+# --------------------------- actions -------------------------------------
+# -------------------------------------------------------------------------
+# -------------------------------------------------------------------------
+# if found:
+# Add something
+contains( FOUND, true ) {
+	!contains( OPTIONS, skip_link ) {
+		!contains( MESSAGE, statically ) {
+			LIBS += $${LINK_LIBS}
+			}
+		}
+	DEFINES += $${ADD_DEFINES}
+	SOURCES += $${ADD_SOURCES}
+	HEADERS += $${ADD_HEADERS}
+	CONFIG += $${ADD_CONFIG}
+}
+
+
+# --------------------------- clean up ------------------------------------
+# -------------------------------------------------------------------------
+# -------------------------------------------------------------------------
+# reset all env fields... (except for OBJECT and TYPE that have
+# always to be set!)
+# OBJECT =
+# TYPE =
+# --------------------------------------
+DESCRIPTION =
+TIP_MESSAGE =
+LINK_LIBS =
+ADD_DEFINES =
+ADD_SOURCES =
+ADD_HEADERS =
+ADD_CONFIG =
+OPTIONS =

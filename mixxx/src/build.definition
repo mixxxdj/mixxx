@@ -1,0 +1,283 @@
+
+# Project file definition ---------------------------------------------
+PROJECT_FILE = mixxx.pro
+#----------------------------------------------------------------------
+
+# Qt Version definition -----------------------------------------------
+QT_MINIMUM_REQUIRED_VERSION = 030100
+QT_MINIMUM_REQUIRED_VERSION_STR = 3.1.0
+#----------------------------------------------------------------------
+
+
+
+#   QT thread ---------------------------------------------------------
+OBJECT = lib/libqt-mt*
+TYPE = other
+DESCRIPTION = Qt library -mt
+TIP_MESSAGE = "Your QT system has been build without '-thread' option!"
+LINK_LIBS =
+ADD_CONFIG =
+OPTIONS =     exit_on_failure
+#----------------------------------------------------------------------
+# Check routines         (DON'T TOUCH!)
+include( check.qbas )
+#----------------------------------------------------------------------
+
+
+
+#   GLIB  -------------------------------------------------------------
+OBJECT = libglib.so
+TYPE = lib
+DESCRIPTION = GNU library (Glib)
+LINK_LIBS = -lglib
+OPTIONS =    skip_link
+#----------------------------------------------------------------------
+# Check routines         (DON'T TOUCH!)
+include( check.qbas )
+#----------------------------------------------------------------------
+
+
+
+
+#   PKG-CONFIG --------------------------------------------------------
+OBJECT = pkg-config
+TYPE = bin
+DESCRIPTION =
+TIP_MESSAGE = "No pkg-config found!"
+OPTIONS =     exit_on_failure
+#----------------------------------------------------------------------
+# Check routines         (DON'T TOUCH!)
+include( check.qbas )
+#----------------------------------------------------------------------
+
+
+
+
+#   MAD ---------------------------------------------------------------
+OBJECT = libmad.so
+TYPE = lib
+DESCRIPTION = Mad audio decoder
+TIP_MESSAGE = "The Mad decoder is needed for mp3 playback!"
+LINK_LIBS = -lmad
+OPTIONS =   exit_on_failure    marked_static
+#----------------------------------------------------------------------
+# Check routines         (DON'T TOUCH!)
+include( check.qbas )
+#----------------------------------------------------------------------
+
+
+
+#   ID3TAG ------------------------------------------------------------
+OBJECT = libid3.so
+TYPE = lib
+DESCRIPTION = Id3Tag
+TIP_MESSAGE = "Id3tag library needed!"
+LINK_LIBS = -lid3tag
+OPTIONS =   exit_on_failure    marked_static
+#----------------------------------------------------------------------
+# Check routines         (DON'T TOUCH!)
+include( check.qbas )
+#----------------------------------------------------------------------
+
+
+
+#   AUDIOFILE ---------------------------------------------------------
+OBJECT = libaudiofile.so
+TYPE = lib
+DESCRIPTION = Audiofile
+TIP_MESSAGE = "AudioFile is needed for the Mixxx playback engine!"
+LINK_LIBS = -laudiofile
+OPTIONS =    exit_on_failure      marked_static
+#----------------------------------------------------------------------
+# Check routines         (DON'T TOUCH!)
+include( check.qbas )
+#----------------------------------------------------------------------
+
+
+
+
+#   OGG/VORBIS HEADERS ------------------------------------------------
+OBJECT = vorbis/codec.h
+TYPE = header
+DESCRIPTION = Vorbis headers
+TIP_MESSAGE = "Can't compile without Vorbis headers!"
+LINK_LIBS =
+OPTIONS =  exit_on_failure
+#----------------------------------------------------------------------
+# Check routines         (DON'T TOUCH!)
+include( check.qbas )
+#----------------------------------------------------------------------
+
+
+
+
+#   OGG/VORBIS --------------------------------------------------------
+OBJECT = libvorbis.so
+TYPE = lib
+DESCRIPTION = Vorbis library
+TIP_MESSAGE = "Vorbis library is needed for ogg playback!"
+LINK_LIBS = -lvorbis
+ADD_DEFINES = 
+OPTIONS =   exit_on_failure   marked_static
+#----------------------------------------------------------------------
+# Check routines         (DON'T TOUCH!)
+include( check.qbas )
+#----------------------------------------------------------------------
+
+
+
+
+#   OGG   -------------------------------------------------------------
+OBJECT = libogg.so
+TYPE = lib
+DESCRIPTION = Ogg Vorbis library
+TIP_MESSAGE = "Ogg library is needed for ogg playback!"
+LINK_LIBS = -logg
+ADD_DEFINES = 
+OPTIONS =   exit_on_failure   marked_static
+#----------------------------------------------------------------------
+# Check routines         (DON'T TOUCH!)
+include( check.qbas )
+#----------------------------------------------------------------------
+
+
+
+
+#   VORBISFILE --------------------------------------------------------
+OBJECT = libvorbisfile.so
+TYPE = lib
+DESCRIPTION = Vorbisfile library
+TIP_MESSAGE = Vorbisfile library is needed for ogg playback!"
+LINK_LIBS = -lvorbisfile
+ADD_DEFINES = 
+OPTIONS =   exit_on_failure   marked_static
+#----------------------------------------------------------------------
+# Check routines         (DON'T TOUCH!)
+include( check.qbas )
+#----------------------------------------------------------------------
+
+
+
+
+#   FFTW HEADERS (s) --------------------------------------------------
+OBJECT = sfftw.h
+TYPE = header
+DESCRIPTION =
+TIP_MESSAGE = "FFTW 2 headers needed for the Mixxx playback engine!"
+LINK_LIBS =
+OPTIONS =  exit_on_failure
+#----------------------------------------------------------------------
+# Check routines         (DON'T TOUCH!)
+include( check.qbas )
+#----------------------------------------------------------------------
+
+
+
+
+#   FFTW HEADERS (sr) -------------------------------------------------
+OBJECT = srfftw.h
+TYPE = header
+DESCRIPTION =
+TIP_MESSAGE = "FFTW 2 headers needed for the Mixxx playback engine!"
+LINK_LIBS =
+OPTIONS =  exit_on_failure
+#----------------------------------------------------------------------
+# Check routines         (DON'T TOUCH!)
+include( check.qbas )
+#----------------------------------------------------------------------
+
+
+
+
+#   FFTW --------------------------------------------------------------
+OBJECT = libsfftw.so
+TYPE = lib
+DESCRIPTION =  FFT version 2
+TIP_MESSAGE = "FFTW 2 lib needed for the Mixxx playback engine!"
+LINK_LIBS = -lsrfftw -lsfftw
+OPTIONS =  exit_on_failure    marked_static
+#----------------------------------------------------------------------
+# Check routines         (DON'T TOUCH!)
+include( check.qbas )
+#----------------------------------------------------------------------
+
+
+
+
+#   SNDFILE -----------------------------------------------------------
+OBJECT = libsndfile.so
+TYPE = lib
+DESCRIPTION = Sndfile library
+TIP_MESSAGE =
+LINK_LIBS = -lsndfile
+OPTIONS =   skip_link
+#----------------------------------------------------------------------
+# Check routines         (DON'T TOUCH!)
+include( check.qbas )
+#----------------------------------------------------------------------
+
+
+
+
+#   ALSA HEADERS ------------------------------------------------------
+OBJECT = alsa/asoundlib.h
+TYPE = header
+DESCRIPTION = Alsa Asoundlib
+TIP_MESSAGE =
+LINK_LIBS =
+OPTIONS =
+#----------------------------------------------------------------------
+# Check routines         (DON'T TOUCH!)
+include( check.qbas )
+#----------------------------------------------------------------------
+
+
+
+
+#   ALSA LIBRARY ------------------------------------------------------
+OBJECT = libasound.so
+TYPE = lib
+DESCRIPTION = Alsa library
+TIP_MESSAGE =
+LINK_LIBS = -lasound
+OPTIONS =  skip_link
+#----------------------------------------------------------------------
+# Check routines         (DON'T TOUCH!)
+include( check.qbas )
+#----------------------------------------------------------------------
+
+
+
+
+#   JACK HEADERS ------------------------------------------------------
+OBJECT = jack/jack.h
+TYPE = header
+DESCRIPTION = Jack headers
+TIP_MESSAGE = "Jack headers needed to compile with Jack support!"
+LINK_LIBS =
+OPTIONS =
+#----------------------------------------------------------------------
+# Check routines         (DON'T TOUCH!)
+include( check.qbas )
+#----------------------------------------------------------------------
+
+
+
+
+#   JACK --------------------------------------------------------------
+OBJECT = pkg-config --exists 'jack >= 0.61.0'
+TYPE = command
+DESCRIPTION = Jack >= 0.61.0
+TIP_MESSAGE = "Jack needed!"
+LINK_LIBS = `pkg-config --silence-errors --cflags --libs jack`
+ADD_DEFINES = #__JACK__
+ADD_SOURCES = #playerjack.cpp
+ADD_HEADERS = #playerjack.h
+OPTIONS = skip_link
+#----------------------------------------------------------------------
+# Check routines         (DON'T TOUCH!)
+include( check.qbas )
+#----------------------------------------------------------------------
+
+
+
