@@ -60,7 +60,7 @@
   </Connection>
  </SliderComposed>
 
- <PushButtonInc>
+ <PushButton>
   <BackPath>upback1.png</BackPath>
   <NumberStates>1</NumberStates>
   <State>
@@ -70,22 +70,18 @@
   </State>
   <Pos>104,246</Pos>
   <Connection>
-   <ConfigKey>[Channel1],rate</ConfigKey>
+   <ConfigKey>[Channel1],rate_perm_up</ConfigKey>
    <EmitOnDownPress>true</EmitOnDownPress>
    <ButtonState>LeftButton</ButtonState>
-   <UseSetFromApp>false</UseSetFromApp>
-   <Inc>0.01</Inc>
   </Connection>
   <Connection>
-   <ConfigKey>[Channel1],rate</ConfigKey>
+   <ConfigKey>[Channel1],rate_perm_up_small</ConfigKey>
    <EmitOnDownPress>true</EmitOnDownPress>
    <ButtonState>RightButton</ButtonState>
-   <UseSetFromApp>false</UseSetFromApp>
-   <Inc>0.001</Inc>
   </Connection>
- </PushButtonInc>
+ </PushButton>
 
- <PushButtonInc>
+ <PushButton>
   <BackPath>upback1.png</BackPath>
   <NumberStates>1</NumberStates>
   <State>
@@ -95,22 +91,18 @@
   </State>
   <Pos>892,246</Pos>
   <Connection>
-   <ConfigKey>[Channel2],rate</ConfigKey>
+   <ConfigKey>[Channel2],rate_perm_up</ConfigKey>
    <EmitOnDownPress>true</EmitOnDownPress>
    <ButtonState>LeftButton</ButtonState>
-   <UseSetFromApp>false</UseSetFromApp>
-   <Inc>0.01</Inc>
   </Connection>
   <Connection>
-   <ConfigKey>[Channel2],rate</ConfigKey>
+   <ConfigKey>[Channel2],rate_perm_up_small</ConfigKey>
    <EmitOnDownPress>true</EmitOnDownPress>
    <ButtonState>RightButton</ButtonState>
-   <UseSetFromApp>false</UseSetFromApp>
-   <Inc>0.001</Inc>
   </Connection>
- </PushButtonInc>
+ </PushButton>
 
- <PushButtonInc>
+ <PushButton>
   <BackPath>downback1.png</BackPath>
   <NumberStates>1</NumberStates>
   <State>
@@ -120,22 +112,18 @@
   </State>
   <Pos>104,383</Pos>
   <Connection>
-   <ConfigKey>[Channel1],rate</ConfigKey>
+   <ConfigKey>[Channel1],rate_perm_down</ConfigKey>
    <EmitOnDownPress>true</EmitOnDownPress>
    <ButtonState>LeftButton</ButtonState>
-   <UseSetFromApp>false</UseSetFromApp>
-   <Inc>-0.01</Inc>
   </Connection>
   <Connection>
-   <ConfigKey>[Channel1],rate</ConfigKey>
+   <ConfigKey>[Channel1],rate_perm_down_small</ConfigKey>
    <EmitOnDownPress>true</EmitOnDownPress>
    <ButtonState>RightButton</ButtonState>
-   <UseSetFromApp>false</UseSetFromApp>
-   <Inc>-0.001</Inc>
   </Connection>
- </PushButtonInc>
+ </PushButton>
 
- <PushButtonInc>
+ <PushButton>
   <BackPath>downback1.png</BackPath>
   <NumberStates>1</NumberStates>
   <State>
@@ -145,20 +133,16 @@
   </State>
   <Pos>892,383</Pos>
   <Connection>
-   <ConfigKey>[Channel2],rate</ConfigKey>
+   <ConfigKey>[Channel2],rate_perm_down</ConfigKey>
    <EmitOnDownPress>true</EmitOnDownPress>
    <ButtonState>LeftButton</ButtonState>
-   <UseSetFromApp>false</UseSetFromApp>
-   <Inc>-0.01</Inc>
   </Connection>
   <Connection>
-   <ConfigKey>[Channel2],rate</ConfigKey>
+   <ConfigKey>[Channel2],rate_perm_down_small</ConfigKey>
    <EmitOnDownPress>true</EmitOnDownPress>
    <ButtonState>RightButton</ButtonState>
-   <UseSetFromApp>false</UseSetFromApp>
-   <Inc>-0.001</Inc>
   </Connection>
- </PushButtonInc>
+ </PushButton>
 
  <SliderComposed>
   <Handle>sliderhandle1.png</Handle>

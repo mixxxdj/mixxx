@@ -69,8 +69,6 @@ private:
     bool m_bEmitOnDownPress;
     /** Property used when connecting to ControlObject */
     Qt::ButtonState m_qButtonState;
-    /** Property used when connecting to ControlObject */
-    bool m_bUseSetFromApp;
 };
 
 #endif

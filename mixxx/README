@@ -22,6 +22,7 @@ New since 1.0:
 - Crossfader fixed (linear mode)
 - Rate button factors adjusted
 - File name parsing, bug fix
+- Startup on some Windows XP machines fixed
 
 * REQUIREMENTS *********************************************
 Mixxx is depends on the following libraries:

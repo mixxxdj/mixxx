@@ -26,7 +26,6 @@ class ControlObject;
 class WSlider;
 class WSliderComposed;
 class WPushButton;
-class WPushButtonInc;
 class WTrackTable;
 class WDisplay;
 class WKnob;

@@ -25,7 +25,6 @@
 class ControlObject;
 class ControlPotmeter;
 class MixxxView;
-class WSliderComposed;
 
 /**
   *@author Tue & Ken Haste Andersen
@@ -40,6 +39,7 @@ public:
 public slots:
     void slotUpdate();
     void slotSetRateRange(int pos);
+    void slotSetRateDir(int pos);
     void slotSetSkin(int);
     void slotApply();
 private:
@@ -47,9 +47,9 @@ private:
     ConfigObject<ConfigValue> *m_pConfig;
     /** Pointers to ControlObjects associated with rate sliders */
     ControlPotmeter *m_pControlRate1, *m_pControlRate2;
-    /** Pointer to rate sliders */
-    WSliderComposed *m_pWidgetRate1, *m_pWidgetRate2;
-    
+    /** Pointer to ControlObjects for controlling direction of rate sliders */
+    ControlObject *m_pControlRateDir1, *m_pControlRateDir2;
+
 };
 
 #endif

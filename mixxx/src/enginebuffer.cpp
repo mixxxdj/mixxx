@@ -92,6 +92,20 @@ EngineBuffer::EngineBuffer(PowerMate *_powermate, const char *_group)
     ControlPotmeter *p2 = new ControlPotmeter(ConfigKey(group, "rate"), 0.9f, 1.1f);
     rateSlider = new ControlEngine(p2);
 
+    // Permanent rate-change buttons
+    p = new ControlPushButton(ConfigKey(group,"rate_perm_down"));
+    buttonRatePermDown = new ControlEngine(p);
+    connect(buttonRatePermDown, SIGNAL(valueChanged(double)), this, SLOT(slotControlRatePermDown(double)));
+    p = new ControlPushButton(ConfigKey(group,"rate_perm_down_small"));
+    buttonRatePermDownSmall = new ControlEngine(p);
+    connect(buttonRatePermDownSmall, SIGNAL(valueChanged(double)), this, SLOT(slotControlRatePermDownSmall(double)));
+    p = new ControlPushButton(ConfigKey(group,"rate_perm_up"));
+    buttonRatePermUp = new ControlEngine(p);
+    connect(buttonRatePermUp, SIGNAL(valueChanged(double)), this, SLOT(slotControlRatePermUp(double)));
+    p = new ControlPushButton(ConfigKey(group,"rate_perm_up_small"));
+    buttonRatePermUpSmall = new ControlEngine(p);
+    connect(buttonRatePermUpSmall, SIGNAL(valueChanged(double)), this, SLOT(slotControlRatePermUpSmall(double)));
+
     // Temporary rate-change buttons
     p = new ControlPushButton(ConfigKey(group,"rate_temp_down"));
     buttonRateTempDown = new ControlEngine(p);
@@ -123,6 +137,10 @@ EngineBuffer::EngineBuffer(PowerMate *_powermate, const char *_group)
     ControlObject *p5 = new ControlObject(ConfigKey(group, "TrackEnd"));
     m_pTrackEnd = new ControlEngine(p5);
 
+    // Direction of rate slider
+    p5 = new ControlObject(ConfigKey(group, "rate_dir"));
+    m_pRateDir = new ControlEngine(p5);
+    
     // TrackEndMode determines what to do at the end of a track
     p5 = new ControlObject(ConfigKey(group,"TrackEndMode"));
     m_pTrackEndMode = new ControlEngine(p5);
@@ -309,6 +327,34 @@ void EngineBuffer::bpmChange(double bpm)
 }
 */
 
+void EngineBuffer::slotControlRatePermDown(double)
+{
+    // Adjusts temp rate down if button pressed
+    if (buttonRatePermDown->get()==1.)
+        rateSlider->sub(0.001);
+}
+
+void EngineBuffer::slotControlRatePermDownSmall(double)
+{
+    // Adjusts temp rate down if button pressed
+    if (buttonRatePermDownSmall->get()==1.)
+        rateSlider->sub(0.0001);
+}
+
+void EngineBuffer::slotControlRatePermUp(double)
+{
+    // Adjusts temp rate up if button pressed
+    if (buttonRatePermUp->get()==1.)
+        rateSlider->add(0.001);
+}
+
+void EngineBuffer::slotControlRatePermUpSmall(double)
+{
+    // Adjusts temp rate up if button pressed
+    if (buttonRatePermUpSmall->get()==1.)
+        rateSlider->add(0.0001);
+}
+
 void EngineBuffer::slotControlRateTempDown(double)
 {
     // Adjusts temp rate down if button pressed, otherwise set to 0.
@@ -407,7 +453,7 @@ CSAMPLE *EngineBuffer::process(const CSAMPLE *, const int buf_size)
 
         double rate;
         if (playButton->get()==1. || fwdButton->get()==1. || backButton->get()==1.)
-            rate=temp_rate+wheel->get()+rateSlider->get()*baserate;
+            rate=temp_rate+wheel->get()+(1.+rateSlider->get()*m_pRateDir->get())*baserate;
         else
             rate=temp_rate+wheel->get()*baserate*20.;
 /*

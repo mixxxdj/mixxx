@@ -76,6 +76,10 @@ public slots:
     void slotControlCueGoto(double=0);
     void slotControlCueSet(double=0);
     void slotControlCuePreview(double);
+    void slotControlRatePermDown(double);
+    void slotControlRatePermDownSmall(double);
+    void slotControlRatePermUp(double);
+    void slotControlRatePermUpSmall(double);
     void slotControlRateTempDown(double);
     void slotControlRateTempDownSmall(double);
     void slotControlRateTempUp(double);
@@ -109,7 +113,9 @@ private:
     int m_iSamplesCalculated;
 
     ControlEngine *playButton, *rateSlider, *wheel, *playposSlider, *bufferposSlider, *audioBeatMark;
-    ControlEngine *buttonCueSet, *buttonCueGoto, *buttonCuePreview, *buttonRateTempDown, *buttonRateTempDownSmall, *buttonRateTempUp, *buttonRateTempUpSmall;
+    ControlEngine *buttonCueSet, *buttonCueGoto, *buttonCuePreview, *m_pRateDir;
+    ControlEngine *buttonRateTempDown, *buttonRateTempDownSmall, *buttonRateTempUp, *buttonRateTempUpSmall;
+    ControlEngine *buttonRatePermDown, *buttonRatePermDownSmall, *buttonRatePermUp, *buttonRatePermUpSmall;
     /** Control used to signal when at end of file */
     ControlEngine *m_pTrackEnd, *m_pTrackEndMode;
     /** Control used to input desired playback BPM */

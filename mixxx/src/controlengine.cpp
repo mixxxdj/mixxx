@@ -55,7 +55,7 @@ void ControlEngine::add(double v)
 {
     value += v;
 
-    ControlEventEngine *e = new ControlEventEngine(v);
+    ControlEventEngine *e = new ControlEventEngine(value);
     QApplication::postEvent(controlObject,e);
 }
 
@@ -63,6 +63,6 @@ void ControlEngine::sub(double v)
 {
     value -= v;
 
-    ControlEventEngine *e = new ControlEventEngine(v);
+    ControlEventEngine *e = new ControlEventEngine(value);
     QApplication::postEvent(controlObject,e);
 }
