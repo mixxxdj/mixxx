@@ -451,26 +451,6 @@
             </font>
         </property>
     </widget>
-    <widget class="QLabel">
-        <property name="name">
-            <cstring>textLabelSoundScaling</cstring>
-        </property>
-        <property name="geometry">
-            <rect>
-                <x>29</x>
-                <y>241</y>
-                <width>327</width>
-                <height>76</height>
-            </rect>
-        </property>
-        <property name="text">
-            <string>Pitch independent time stretch adds about 60 milli seconds latency to the latency selected with the slider below.
-Also stretching beyond +-10% is not adviced, and is likely to result in bad sound quality.</string>
-        </property>
-        <property name="alignment">
-            <set>WordBreak|AlignTop</set>
-        </property>
-    </widget>
     <widget class="QCheckBox">
         <property name="name">
             <cstring>checkBoxPitchIndp</cstring>
@@ -485,6 +465,25 @@ Also stretching beyond +-10% is not adviced, and is likely to result in bad soun
         </property>
         <property name="text">
             <string>Pitch independent time stretch</string>
+        </property>
+    </widget>
+    <widget class="QLabel">
+        <property name="name">
+            <cstring>textLabelSoundScaling</cstring>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>29</x>
+                <y>241</y>
+                <width>327</width>
+                <height>76</height>
+            </rect>
+        </property>
+        <property name="text">
+            <string>Stretching beyond +-10% with pitch independent time stretch is not adviced, and is likely to result in bad sound quality.</string>
+        </property>
+        <property name="alignment">
+            <set>WordBreak|AlignTop</set>
         </property>
     </widget>
 </widget>

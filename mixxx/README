@@ -25,6 +25,7 @@ New since 1.4.2:
   files with embedded images
 - Bug fixes: Simple visual display works again, crash at
   exit, sane default setting of sample rate.
+- Loading tracks with left-clicking in playlist.
 
 * INSTALL/USE **********************************************
 Please see manual, included in this directory, 
