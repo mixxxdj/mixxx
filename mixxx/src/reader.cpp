@@ -92,7 +92,7 @@ void Reader::wake()
 
 CSAMPLE *Reader::getBufferWavePtr()
 {
-    return (CSAMPLE *)readerwave->getChunkPtr(0);
+    return (CSAMPLE *)readerwave->getBasePtr();
 }
 
 

@@ -37,7 +37,7 @@ public:
     ReaderExtractFFT(ReaderExtract *input, int _frameSize, int _frameStep);
     ~ReaderExtractFFT();
     void reset();
-    void *getChunkPtr(const int idx);
+    void *getBasePtr();
     int getRate();
     void *processChunk(const int idx, const int start_idx, const int end_idx);
 private:

@@ -27,6 +27,7 @@
 
 class SignalVertexBuffer;
 class ReaderExtractFFT;
+class ReaderExtractHFC;
 
 /**
   *@author Tue & Ken Haste Andersen
@@ -37,7 +38,7 @@ public:
     ReaderExtractWave(QMutex *_enginelock);
     ~ReaderExtractWave();
     void reset();
-    void *getChunkPtr(const int idx);
+    void *getBasePtr();
     int getRate();
     void *processChunk(const int, const int, const int);
     void setSoundSource(SoundSource *_file);
@@ -71,6 +72,7 @@ private:
     CSAMPLE *read_buffer;
     /** Pointer to FFT extractor */
     ReaderExtractFFT *readerfft;
+    ReaderExtractHFC *readerhfc;
 };
 
 #endif
