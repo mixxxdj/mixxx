@@ -1,38 +1,7 @@
 <?xml version = '1.0' encoding = 'UTF-8'?>
 <!DOCTYPE KDevPrjSession>
 <KDevPrjSession>
- <DocsAndViews NumberOfDocuments="6" >
-  <Doc0 NumberOfViews="1" URL="file:/home/haste/cvs/mixxx/src/enginebuffer.h" >
-   <View0 line="126" Type="???" >
-    <AdditionalSettings/>
-   </View0>
-  </Doc0>
-  <Doc1 NumberOfViews="1" URL="file:/home/haste/cvs/mixxx/src/enginebuffer.cpp" >
-   <View0 line="559" Type="???" >
-    <AdditionalSettings/>
-   </View0>
-  </Doc1>
-  <Doc2 NumberOfViews="1" URL="file:/home/haste/cvs/mixxx/src/soundsourcemp3.cpp" >
-   <View0 line="383" Type="???" >
-    <AdditionalSettings/>
-   </View0>
-  </Doc2>
-  <Doc3 NumberOfViews="1" URL="file:/home/haste/cvs/mixxx/src/trackinfoobject.cpp" >
-   <View0 line="221" Type="???" >
-    <AdditionalSettings/>
-   </View0>
-  </Doc3>
-  <Doc4 NumberOfViews="1" URL="file:/home/haste/cvs/mixxx/src/wpushbutton.cpp" >
-   <View0 line="101" Type="???" >
-    <AdditionalSettings/>
-   </View0>
-  </Doc4>
-  <Doc5 NumberOfViews="1" URL="file:/home/haste/cvs/mixxx/src/tracklist.cpp" >
-   <View0 line="302" Type="???" >
-    <AdditionalSettings/>
-   </View0>
-  </Doc5>
- </DocsAndViews>
+ <DocsAndViews NumberOfDocuments="0" />
  <pluginList>
   <kdevbookmarks>
    <bookmarks/>
