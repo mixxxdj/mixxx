@@ -2,7 +2,7 @@
 
 #************************************************************************
 # Qmake deps script
-# version 0.2
+# version 0.4
 # Copyright (c) 2003 Gianluca Romanin ( J_Zar )  <jayorama@users.sourceforge.net>
 #************************************************************************
 
@@ -31,173 +31,125 @@ echo "-------------------------------------------"
 
 ######################### Main stage
 #
-if   test "$1" = "--help" ;
+if   test "$1" = "--help" || test "$1" = "-h"  || test "$1" = "--h";
 then
-	echo ""
-	echo ""
-	echo "Usage:  ./configure  [ options ] [ values ]"
-	echo "Options:"
-	echo "	-h, --help		stamp this message"
-	echo "	--includedir		adds a path for dependency checking (max number allowed = 5)"
-	echo "	--prefix		define the install directory prefix"
-	echo ""
-	echo "Examples:"
-	echo "	./configure     --includedir  /usr/share/libx /home/liby"
-	echo "		adds two paths to check dependencies:     /usr/share/libx  and /home/liby"
-	echo ""
-	echo ""
+	cat help ;
 	exit
 fi
 
-if   test "$1" = "-h"  ;
-then
-	echo ""
-	echo ""
-	echo "Usage:  ./configure  [ options ] [ values ]"
-	echo "Options:"
-	echo "	-h, --help		stamp this message"
-	echo "	--includedir		adds a path for dependency checking (max number allowed = 5)"
-	echo "	--prefix		define the install directory prefix"
-	echo ""
-	echo "Examples:"
-	echo "	./configure     --includedir  /usr/share/libx /home/liby"
-	echo "		adds two paths to check dependencies:     /usr/share/libx  and /home/liby"
-	echo ""
-	echo ""
-	exit
-fi
 
 # cleanup phase
 rm -f configure.def
 
-# global control
-PREFIX_DEFINED_AT="-1"
+# number of arguments + 1
+NUM_OPT=$(($# + 1));
 
+# parsing arguments
+for (( d=1; d<$NUM_OPT; d++ )); do
 
-# this code needs a great optimization.... ;-(
-if test "$1" = "--includedir";
-then
-	if test "$#" = "1" ;
+	# retrieve the field $d
+	ARG=$(echo $@ | cut -f$d -d" ") ;
+	# retrieve the option
+	OPT=$(echo $ARG | cut -f1 -d"=") ;
+	# retrieve the value
+	VAL=$(echo $ARG | cut -f2- -d"=") ;
+
+	if [ "$OPT" = "--cflags" ];
 	then
-		echo " Missing include parameters! "
-		exit
-	else
+		T=""
+		for (( y=1; y<128; y++ )); do
+			# parse option value to find different subvalues
+			V=$(echo $VAL | cut -f$y -d";") ;
+			# checking to avoid duplicates or if we have finished
+			if [ "$V" = "" ] || [ "$V" = "$T" ] ;
+			then
+				break
+			fi
+			T=$V ;
+			echo "QMAKE_CFLAGS += $V" >> configure.def
+		done
+	fi
 
-	if test "$2" = "--prefix";
+	if [ "$OPT" = "--cxxflags" ];
 	then
-		echo " Missing include parameters! "
-		exit
-	else
-		echo "PATH0 = $2" >> configure.def
+		T=""
+		for (( y=1; y<128; y++ )); do
+			# parse option value to find different subvalues
+			V=$(echo $VAL | cut -f$y -d";") ;
+			# checking to avoid duplicates or if we have finished
+			if [ "$V" = "" ] || [ "$V" = "$T" ] ;
+			then
+				break
+			fi
+			T=$V ;
+			echo "QMAKE_CXXFLAGS += $V" >> configure.def
+		done
+	fi
+
+	if [ "$OPT" = "--lflags" ];
+	then
+		T=""
+		for (( y=1; y<128; y++ )); do
+			# parse option value to find different subvalues
+			V=$(echo $VAL | cut -f$y -d";") ;
+			# checking to avoid duplicates or if we have finished
+			if [ "$V" = "" ] || [ "$V" = "$T" ] ;
+			then
+				break
+			fi
+			T=$V ;
+			echo "QMAKE_LFLAGS += $V" >> configure.def
+		done
+	fi
+
+	if [ "$OPT" = "--includedir" ];
+	then
+		T=""
+		for (( y=1; y<6; y++ )); do
+			# parse option value to find different subvalues
+			V=$(echo $VAL | cut -f$y -d";") ;
+			# checking to avoid duplicates or if we have finished
+			if [ "$V" = "" ] || [ "$V" = "$T" ] ;
+			then
+				break
+			fi
+			T=$V ;
+			echo "PATH$y = $V" >> configure.def
+		done
 	fi
 
 
-
-	if test "$3" = "--prefix";
+	if [ "$OPT" = "--prefix" ];
 	then
-		if test "$#" = "3" ;
-		then
-			echo " Missing parameters! "
-			exit
-		else
-			echo "PREFIX = $4" >> configure.def
-			PREFIX_DEFINED_AT="3"
-		fi
-	else
-		echo "PATH1 = $3" >> configure.def
+		echo "PREFIX = $VAL" >> configure.def
 	fi
 
-
-
-	if test "$4" = "--prefix";
+	if [ "$OPT" = "--static-linking-path" ];
 	then
-		if test "$#" = "4" ;
-		then
-			echo " Missing parameters! "
-			exit
-		else
-			echo "PREFIX = $5" >> configure.def
-			PREFIX_DEFINED_AT="4"
-		fi
-	else
-		if test "$PREFIX_DEFINED_AT" = "-1";
-		then
-			echo "PATH2 = $4" >> configure.def
-		fi
+		echo "LINLIBPATH = $VAL" >> configure.def
 	fi
 
-
-
-	if test "$5" = "--prefix";
+	if [ "$OPT" = "--enable-debug" ];
 	then
-		if test "$#" = "5" ;
-		then
-			echo " Missing parameters! "
-			exit
-		else
-			echo "PREFIX = $6" >> configure.def
-			PREFIX_DEFINED_AT="5"
-		fi
-	else
-		if test "$PREFIX_DEFINED_AT" = "-1";
-		then
-			echo "PATH3 = $5" >> configure.def
-		fi
+		echo "CONFIG += debug" >> configure.def
 	fi
 
-
-
-	if test "$6" = "--prefix";
+	if [ "$OPT" = "--includelib" ];
 	then
-		if test "$#" = "6" ;
-		then
-			echo " Missing parameters! "
-			exit
-		else
-			echo "PREFIX = $7" >> configure.def
-		fi
-	else
-		if test "$PREFIX_DEFINED_AT" = "-1";
-		then
-			echo "PATH4 = $6" >> configure.def
-		fi
+		T=""
+		for (( y=1; y<6; y++ )); do
+			# parse option value to find different subvalues
+			V=$(echo $VAL | cut -f$y -d";") ;
+			# checking to avoid duplicates or if we have finished
+			if [ "$V" = "" ] || [ "$V" = "$T" ] ;
+			then
+				break
+			fi
+			T=$V ;
+			echo "LIBS += $V" >> configure.def
+		done
 	fi
-
-	fi
-fi
-
-if test "$1" = "--prefix";
-then
-	if test "$#" = "1" ;
-	then
-		echo " Missing parameters! "
-		exit
-	else
-		if test "$2" = "--includedir" ;
-		then
-			echo " Missing prefix parameters! "
-			exit
-		else
-			echo "PREFIX = $2" >> configure.def
-		fi
-	fi
-
-
-	if test "$3" = "--includedir";
-	then
-		echo "PATH0 = $4" >> configure.def
-		echo "PATH1 = $5" >> configure.def
-		echo "PATH2 = $6" >> configure.def
-		echo "PATH3 = $7" >> configure.def
-		echo "PATH4 = $8" >> configure.def
-	fi
-
-fi
-
-
-
-
-
+done
 
 
 
@@ -217,9 +169,9 @@ echo Checking for QT library    ........    $RES   , $QTDIR
 if echo $RES | grep "no" -q ;
 then
 	echo
-	echo __ Probably your QT libraries arent set correctly or you havent
-	echo __ already set the QT environment variables.
-	echo __ Please see at http://www.trolltech.com for more info
+	echo "__ Probably your QT libraries aren't set correctly or you haven't"
+	echo "__ already set the QT environment variables."
+	echo "__ Please see at http://www.trolltech.com for more info"
 	exit
 fi
 
@@ -237,7 +189,7 @@ echo Checking for qmake    ........    $RES
 if test "$RES" = "no" ;
 then
 	echo
-	echo __ I cant locate qmake. Just tried: $QTDIR/bin/qmake
+	echo "__ I can't locate qmake. Just tried: $QTDIR/bin/qmake"
 	exit
 fi
 
@@ -253,7 +205,7 @@ echo Checking for uic    ........    $RES
 if test "$RES" = "no" ;
 then
 	echo
-	echo __ I cant locate uic. Just tried: $QTDIR/bin/uic
+	echo "__ I can't locate uic. Just tried: $QTDIR/bin/uic"
 	exit
 fi
 
@@ -269,7 +221,7 @@ echo Checking for moc    ........    $RES
 if test "$RES" = "no" ;
 then
 	echo
-	echo __ I cant locate moc. Just tried: $QTDIR/bin/moc
+	echo "__ I can't locate moc. Just tried: $QTDIR/bin/moc"
 	exit
 fi
 
