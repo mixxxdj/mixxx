@@ -463,7 +463,7 @@
     </customwidget>
     <customwidget>
         <class>WPFLButton</class>
-        <header location="global">/home/haste/cvs/mixxx/src/wpflbutton.h</header>
+        <header location="global">wpflbutton.h</header>
         <sizehint>
             <width>20</width>
             <height>20</height>
