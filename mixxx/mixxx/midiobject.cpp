@@ -126,8 +126,8 @@ void MidiObject::run() {
     char midicontrol = buffer[1];
     char midivalue = buffer[2];
 
-     qDebug("Received midi message: %i %i %i",(int)channel, 
-    	   (int)midicontrol,(int)midivalue);
+    // qDebug("Received midi message: %i %i %i",(int)channel, 
+    //	   (int)midicontrol,(int)midivalue);
     
     // Check the potmeters:
     for (int i=0; i<no_potmeters; i++) 
