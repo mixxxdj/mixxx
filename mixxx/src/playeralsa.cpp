@@ -96,13 +96,56 @@ bool PlayerALSA::open()
     QString devname, devtmp;
     int err;
 
+#ifndef PLAYERTEST
+    QRegExp rx("(\\S+) \\(ch (\\d+)\\)");
+
+    name = m_pConfig->getValueString(ConfigKey("[Soundcard]", "DeviceMasterLeft"));
+    if (name != "None")
+    {
+	if (rx.search(name) < 0)
+	{
+	    qWarning("can't find device name or channel number in (%s)", name.latin1());
+	}
+	devname = rx.cap(1);
+    } else {
+        setDefaults(); // initialise defaults
+        return open();
+    }
+#else
+    devname = QString("surround40:0");
+#endif
+
+    // If no device was selected return false
+    if (!devname)
+        return false;
+        
+    qDebug("Alsa opening pcm_open: %s", devname.ascii());
+
+    if ((err = snd_pcm_open(&handle, devname.ascii(), SND_PCM_STREAM_PLAYBACK, 0)) < 0)
+    {
+	qWarning("Playback open error: %s\n", snd_strerror(err));
+	return false;
+    }
+
+    qDebug("Alsa setting hw");
+    if ((err = set_hwparams()) < 0)
+    {
+	qWarning("Setting of hwparams failed: %s\n", snd_strerror(err));
+	return false;
+    }
+
+    qDebug("Alsa setting sw");
+    if ((err = set_swparams()) < 0)
+    {
+        qWarning("Setting of swparams failed: %s\n", snd_strerror(err));
+        return false;
+    }
+
     masterleft = masterright = -1;
     headleft = headright = -1;
 
 #ifndef PLAYERTEST
     int temp;
-
-    QRegExp rx("(\\S+) \\(ch (\\d+)\\)");
 
     // master left
     name = m_pConfig->getValueString(ConfigKey("[Soundcard]", "DeviceMasterLeft"));
@@ -113,7 +156,7 @@ bool PlayerALSA::open()
 	{
 	    qWarning("can't find device name or channel number in (%s)", name.latin1());
 	}
-	devname = rx.cap(1);
+//	devname = rx.cap(1);
 	temp = rx.cap(2).toInt();
         if (temp > 0 && temp <= max_channels)
 	{
@@ -200,34 +243,7 @@ bool PlayerALSA::open()
     masterright = 1;
     headleft = 2;
     headright = 3;
-    devname = QString("surround40:0");
 #endif
-
-    // If no device was selected return false
-    if (!devname)
-        return false;
-        
-    qDebug("Alsa opening pcm_open: %s", devname.ascii());
-
-    if ((err = snd_pcm_open(&handle, devname.ascii(), SND_PCM_STREAM_PLAYBACK, 0)) < 0)
-    {
-	qWarning("Playback open error: %s\n", snd_strerror(err));
-	return false;
-    }
-
-    qDebug("Alsa setting hw");
-    if ((err = set_hwparams()) < 0)
-    {
-	qWarning("Setting of hwparams failed: %s\n", snd_strerror(err));
-	return false;
-    }
-
-    qDebug("Alsa setting sw");
-    if ((err = set_swparams()) < 0)
-    {
-        qWarning("Setting of swparams failed: %s\n", snd_strerror(err));
-        return false;
-    }
 
     twrite = true;
     isopen = true;
@@ -465,17 +481,10 @@ QStringList PlayerALSA::getInterfaces()
     qDebug("Alsa getinter");
     QStringList result;
 
-#if 0
-    result.append("plug:hw:0 (ch 1)");
-    result.append("plug:hw:0 (ch 2)");
-    result.append("plug:hw:0 (ch 3)");
-    result.append("plug:hw:0 (ch 4)");
-#else
-    result.append("plug:surround40:0 (ch 1)");
-    result.append("plug:surround40:0 (ch 2)");
-    result.append("plug:surround40:0 (ch 3)");
-    result.append("plug:surround40:0 (ch 4)");
-#endif
+    result.append("mixxx (ch 1)");
+    result.append("mixxx (ch 2)");
+    result.append("mixxx (ch 3)");
+    result.append("mixxx (ch 4)");
 
     return result;
 }
@@ -550,6 +559,7 @@ int PlayerALSA::set_hwparams()
     }
     qDebug("Channels max %d", rate);
     max_channels = min(rate, alsa_channels);
+    qDebug("Set channels = %d", max_channels);
 
     /* set the count of channels */
     err = snd_pcm_hw_params_set_channels(handle, hwparams, max_channels);
