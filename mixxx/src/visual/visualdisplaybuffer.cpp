@@ -60,7 +60,7 @@ void VisualDisplayBuffer::draw()
     if (bufferInfo.len1>0)
     {
         glTranslatef(-bufferInfo.p1[0],0,0);
-        m_pVisualBuffer->draw(bufferInfo.p1,bufferInfo.len1);
+        m_pVisualBuffer->draw(bufferInfo.p1,bufferInfo.len1, xscale);
     }
 
     if (bufferInfo.len2>0)
@@ -69,7 +69,7 @@ void VisualDisplayBuffer::draw()
            glTranslatef(-bufferInfo.p2[0],0,0);
         else
             glTranslatef(bufferInfo.p1[0]+bufferInfo.len1,0,0);
-        m_pVisualBuffer->draw(bufferInfo.p2, bufferInfo.len2);
+        m_pVisualBuffer->draw(bufferInfo.p2, bufferInfo.len2, xscale);
     }
 
     //--- Clean up after us

@@ -29,7 +29,7 @@ public:
     VisualBufferSignal(ReaderExtract *pReaderExtract, ControlPotmeter *pPlaypos);
     ~VisualBufferSignal();
     void update(int iPos, int iLen);
-    void draw(GLfloat *p, int iLen);
+    void draw(GLfloat *p, int iLen, float);
 };
 
 #endif

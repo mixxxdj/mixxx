@@ -29,7 +29,7 @@ public:
     VisualBufferMarks(ReaderExtract *pReaderExtract, ControlPotmeter *pPlaypos);
     ~VisualBufferMarks();
     void update(int iPos, int iLen);
-    void draw(GLfloat *p, int iLen);
+    void draw(GLfloat *p, int iLen, float xscale);
 };
 
 #endif

@@ -232,6 +232,6 @@ HEADERS	+= configobject.h fakemonitor.h controlengine.h controleventengine.h con
 DEFINES += SETTINGS_FILE=$$SETTINGS_FILE
 unix:TEMPLATE = app
 win32:TEMPLATE = vcapp
-CONFIG += qt warn_off thread release
+CONFIG += qt warn_on thread debug 
 DBFILE = mixxx.db
 LANGUAGE = C++
