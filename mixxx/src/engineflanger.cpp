@@ -45,10 +45,10 @@ EngineFlanger::EngineFlanger(const char *group)
     potmeterLFOperiod = new ControlEngine(p);
 
     // Init. channel selects:
-    ControlPushButton *p1 =  new ControlPushButton(ConfigKey("[Channel1]", "flanger"));
+    ControlPushButton *p1 =  new ControlPushButton(ConfigKey("[Channel1]", "flanger"), true);
     pushbuttonFlangerCh1 = new ControlEngine(p1);
     
-    ControlPushButton *p2 =  new ControlPushButton(ConfigKey("[Channel2]", "flanger"));
+    ControlPushButton *p2 =  new ControlPushButton(ConfigKey("[Channel2]", "flanger"), true);
     pushbuttonFlangerCh2 = new ControlEngine(p2);
 
     // Fixed values of controls:

@@ -25,12 +25,12 @@
 /**
   *@author Tue and Ken Haste Andersen
   */
-
+  
 class ControlPushButton : public ControlObject
 {
     Q_OBJECT
 public:
-    ControlPushButton(ConfigKey key);
+    ControlPushButton(ConfigKey key, bool bMidiSimulateLatching=false);
     ~ControlPushButton();
     void setAccelUp(const QKeySequence key);
     void setAccelDown(const QKeySequence key);
@@ -46,6 +46,8 @@ private slots:
 signals:
     void valueChanged(int);
     void updateAction(bool);
+private:
+    bool m_bMidiSimulateLatching;
 };
 
 #endif
