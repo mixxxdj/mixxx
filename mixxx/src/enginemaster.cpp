@@ -138,7 +138,7 @@ CSAMPLE *EngineMaster::process(const CSAMPLE *, const int buffer_size)
     //
     // Headphone channel:
     //
-    if (CH_HEAD>0)
+//    if (CH_HEAD>0)
     {
         // Head phone left/right mix
         cf_val = head_mix->getValue();
@@ -166,6 +166,7 @@ CSAMPLE *EngineMaster::process(const CSAMPLE *, const int buffer_size)
     }
 
     // Interleave samples
+/*
     if (CH_HEAD==0)
     {
         int j=0;
@@ -179,6 +180,7 @@ CSAMPLE *EngineMaster::process(const CSAMPLE *, const int buffer_size)
         }
     }
     else
+*/
     {
         int j=0;
         for (int i=0; i<buffer_size; i+=2)

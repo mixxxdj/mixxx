@@ -39,8 +39,6 @@ public:
   void setValue(FLOAT_TYPE newvalue);
 public slots:
   void slotSetPosition(int);
-signals:
-  void valueChanged(FLOAT_TYPE);
 
 protected:
   char position;     // position of the controller.

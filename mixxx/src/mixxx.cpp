@@ -89,7 +89,6 @@ MixxxApp::MixxxApp(QApplication *a)
   // Reset pointer to preference dialog and players
   pDlg = 0;
   player = 0;
-  playerSlave = 0;
 
   // Read the config file
   config = new ConfigObject<ConfigValue>(QDir::homeDirPath().append("/.mixxx/mixxx.cfg"));
@@ -183,58 +182,18 @@ MixxxApp::MixxxApp(QApplication *a)
   //
   qDebug("Init master");
 
-  // Open device to retreive default values
+  // Initialize device
 #ifdef __ALSA__
   player = new PlayerALSA(BUFFER_SIZE, &engines, config->getValueString(ConfigKey("[Soundcard]","DeviceMaster")));
 #else
-  player = new PlayerPortAudio(BUFFER_SIZE, &engines,
-                               config->getValueString(ConfigKey("[Soundcard]","DeviceMaster")),
-                               1,0);
+  player = new PlayerPortAudio(config);
 #endif
-  //qWarning("Init player finished...");
 
-  // Ensure the correct configuration is chosen and stored in the config object
-  config->set(ConfigKey("[Soundcard]","DeviceMaster"),ConfigValue(player->NAME_MASTER));
-  int srate = config->getValueString(ConfigKey("[Soundcard]","Samplerate")).toInt();
-  int bits  = config->getValueString(ConfigKey("[Soundcard]","Bits")).toInt();
-  int chMaster = config->getValueString(ConfigKey("[Soundcard]","ChannelMaster")).toInt();
-  if (srate == 0)
-      srate = player->SRATE;
-  if (bits == 0)
-      bits = player->BITS;
-  if (chMaster == 0)
-      chMaster =1;
-
-  // Calculate buffer size from latency in msec and sample rate
-  int bufferSize = (int)((float)config->getValueString(ConfigKey("[Soundcard]","LatencyMaster")).toInt()*((float)srate/1000.));
-  if (bufferSize == 0)
-      bufferSize = BUFFER_SIZE;
-
-  player->reopen(config->getValueString(ConfigKey("[Soundcard]","DeviceMaster")),
-                 srate,bits,bufferSize,chMaster,
-                 config->getValueString(ConfigKey("[Soundcard]","ChannelHeadphone")).toInt());
-  config->set(ConfigKey("[Soundcard]","Samplerate"),ConfigValue(player->SRATE));
-  config->set(ConfigKey("[Soundcard]","Bits"),ConfigValue(player->BITS));
-  config->set(ConfigKey("[Soundcard]","ChannelMaster"),ConfigValue(player->CH_MASTER));
-  config->set(ConfigKey("[Soundcard]","LatencyMaster"),ConfigValue(bufferSize/((float)srate/1000.)));
-
-  
-  if (player->CH_HEAD>0)
-      config->set(ConfigKey("[Soundcard]","ChannelHeadphone"),ConfigValue(player->CH_HEAD));
-
-  //
-  // Initialize slave (headphone) player if necessary
-  //
-  QString devHead = config->getValueString(ConfigKey("[Soundcard]","DeviceHeadphone"));
-  if (devHead.length()>0 && devHead != "None")
-  {
-      qDebug("Init headphone");
-      int channel = config->getValueString(ConfigKey("[Soundcard]","ChannelHeadphone")).toInt();
-#ifdef __ALSA__
-#else
-      playerSlave = new PlayerPortAudio(BUFFER_SIZE, &engines, devHead, 0, channel);                                              
-#endif
-  }
+  // Open device using config data, if that fails, use default values. If that fails too, the
+  // preference panel should be opened.
+  if (!player->open(false))
+      if (!player->open(true))
+          pDlg = new DlgPreferences(this,"",midi,player,0,config,midiconfig);
 
   // Install event handler to update playpos slider and force screen update.
   // This method is used to avoid emitting signals (and QApplication::lock())
@@ -242,8 +201,8 @@ MixxxApp::MixxxApp(QApplication *a)
   // of a (temporary) stalled GUI thread.
   installEventFilter(this);
 
-  // Save main configuration file
-  config->Save();
+  // Save main configuration file .... well, maybe only in the pref panel!!
+  //config->Save();
 
   // Start engine
   engineStart();
@@ -269,8 +228,8 @@ bool MixxxApp::eventFilter(QObject *o, QEvent *e)
         // Gain app lock
         //app->lock();
 
-        view->playcontrol1->SliderPosition->setValue(buffer1->playposSliderNew);
-        view->playcontrol2->SliderPosition->setValue(buffer2->playposSliderNew);
+        view->playcontrol1->SliderPosition->setValue((int)buffer1->playposSliderNew);
+        view->playcontrol2->SliderPosition->setValue((int)buffer2->playposSliderNew);
 
         // Force GUI update
         //app->flush();
@@ -333,11 +292,6 @@ void MixxxApp::engineStart()
     //qDebug("Starting player...");
     player->setReader(master);
     player->start();
-    if (playerSlave!=0)
-    {
-        playerSlave->setReader(master);
-        playerSlave->start();
-    }
 }
 
 void MixxxApp::engineStop()
@@ -719,7 +673,7 @@ void MixxxApp::slotViewStatusBar(bool toggle)
 void MixxxApp::slotOptionsPreferences()
 {
     if (pDlg==0)
-        pDlg = new DlgPreferences(this,"",midi,player,playerSlave,config,midiconfig);
+        pDlg = new DlgPreferences(this,"",midi,player,0,config,midiconfig);
 }
 
 
@@ -811,63 +765,13 @@ void MixxxApp::updatePlayList()
 
 void MixxxApp::reopen()
 {
-    // Calculate buffer size based on sample rate and latency in msecs for master device
-    int bufferSize = (int)((float)config->getValueString(ConfigKey("[Soundcard]","LatencyMaster")).toInt()*((float)config->getValueString(ConfigKey("[Soundcard]","Samplerate")).toInt()/1000.));
-
-    // Same for head device. Ensure that head has the same latency or an integer multiple
-    // of master latency
-    int bufferSizeHead = (int)((float)config->getValueString(ConfigKey("[Soundcard]","LatencyHead")).toInt()*((float)config->getValueString(ConfigKey("[Soundcard]","Samplerate")).toInt()/1000.));
-    if (bufferSizeHead<=bufferSize)
-        bufferSizeHead = bufferSize;
+    // Close devices, and open using config data.
+    player->close();
+    if (!player->open(false))
+        QMessageBox::warning(0, "Configuration error","Problem opening audio device");
     else
-   {
-        int b = bufferSize;
-        while (bufferSizeHead>b)
-            b += bufferSize;
-        bufferSizeHead = b;
-    }
-
-    // Stop playback
-    if (playerSlave != 0)
-        playerSlave->stop();
-    player->stop();
-
-    // Perform changes to master sound card setup
-    player->reopen(config->getValueString(ConfigKey("[Soundcard]","DeviceMaster")),
-           config->getValueString(ConfigKey("[Soundcard]","Samplerate")).toInt(),
-           config->getValueString(ConfigKey("[Soundcard]","Bits")).toInt(),
-           bufferSize,
-           config->getValueString(ConfigKey("[Soundcard]","ChannelMaster")).toInt(),
-           config->getValueString(ConfigKey("[Soundcard]","ChannelHeadphone")).toInt());
-    player->start();
-
-    // And the headphone card
-    if (config->getValueString(ConfigKey("[Soundcard]","DeviceHeadphone")) != "None")
-    {
-        if (config->getValueString(ConfigKey("[Soundcard]","DeviceHeadphone")) != config->getValueString(ConfigKey("[Soundcard]","DeviceMaster")))
-            if (playerSlave != 0)
-                playerSlave->reopen(config->getValueString(ConfigKey("[Soundcard]","DeviceHeadphone")),
-                                    config->getValueString(ConfigKey("[Soundcard]","Samplerate")).toInt(),
-                                    config->getValueString(ConfigKey("[Soundcard]","Bits")).toInt(),
-                                    bufferSize,
-                                    0,
-                                    config->getValueString(ConfigKey("[Soundcard]","ChannelHeadphone")).toInt());
-            else
-                playerSlave = new PlayerPortAudio(BUFFER_SIZE, 0,
-                                                  config->getValueString(ConfigKey("[Soundcard]","DeviceHeadphone")),
-                                                  0,
-                                                  config->getValueString(ConfigKey("[Soundcard]","ChannelHeadphone")).toInt());
-    }
-    else if (playerSlave != 0)
-    {
-        delete playerSlave;
-        playerSlave = 0;
-    }
-
-    // Write latency values back to config object
-    config->set(ConfigKey("[Soundcard]","LatencyMaster"),ConfigValue((player->MasterBufferSize*2)/((float)config->getValueString(ConfigKey("[Soundcard]","Samplerate")).toInt()/1000.)));
-    config->set(ConfigKey("[Soundcard]","LatencyHead"),ConfigValue((player->MasterBufferSize*2*player->HeadPerMasterBuffer)/((float)config->getValueString(ConfigKey("[Soundcard]","Samplerate")).toInt()/1000.)));
-    
+        player->start();
+            
     // Close MIDI
     midi->devClose();
 

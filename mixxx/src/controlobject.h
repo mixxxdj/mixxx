@@ -20,6 +20,7 @@
 
 #include <qobject.h>
 #include "configobject.h"
+#include "defs.h"
 
 class MidiObject;
 
@@ -45,6 +46,7 @@ public slots:
   void slotSetPositionMidi(int);
 signals:
   void updateGUI(int);
+  void valueChanged(FLOAT_TYPE);
 };
 
 #endif

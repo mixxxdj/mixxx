@@ -19,18 +19,18 @@
 
 int bufferIdxSlave = 0;
 
-PlayerPortAudio::PlayerPortAudio(int size, std::vector<EngineObject *> *engines, QString device, int chMaster, int chHead) : Player(size, engines, device)
+
+PlayerPortAudio::PlayerPortAudio(ConfigObject<ConfigValue> *config) : Player(config)
 {
     PaError err = Pa_Initialize();
-    if( err != paNoError )
+    if (err!=paNoError)
         qFatal("PortAudio: Initialization error");
-
-    // Default device ID.
-    PaDeviceID id = -1;
-
+    
     const PaDeviceInfo *devInfo;
 
+    //
     // Fill out devices list with info about available devices if list is empty
+    //
     if (devices.isEmpty())
     {
         int no = Pa_CountDevices();
@@ -41,7 +41,7 @@ PlayerPortAudio::PlayerPortAudio(int size, std::vector<EngineObject *> *engines,
             // Add the device if it is an output device:
             if (devInfo!=0 && devInfo->maxOutputChannels > 0)
             {
-              //qWarning("PortAudio: Name: %s, ID: %i, MaxOutput %i",devInfo->name,i,devInfo->maxOutputChannels);
+                //qWarning("PortAudio: Name: %s, ID: %i, MaxOutput %i",devInfo->name,i,devInfo->maxOutputChannels);
 
                 // Add new PlayerInfo object to devices list
                 Player::Info *p = new Player::Info;
@@ -50,10 +50,6 @@ PlayerPortAudio::PlayerPortAudio(int size, std::vector<EngineObject *> *engines,
                 // ID & Name
                 p->name = QString(devInfo->name);
                 p->id = i;
-
-                // Check for default device
-                if (p->name == device)
-                    id = i;
 
                 // Sample rates and latency
                 if (devInfo->numSampleRates != -1)
@@ -64,7 +60,7 @@ PlayerPortAudio::PlayerPortAudio(int size, std::vector<EngineObject *> *engines,
 
                         // Get minimum latency for sample rate
                         p->latency.append(minLatency((int)devInfo->sampleRates[j]));
-//                        qDebug("SRATE: %i, Latency: %i",(int)devInfo->sampleRates[j],minLatency((int)devInfo->sampleRates[j]));
+                        //qDebug("SRATE: %i, Latency: %i",(int)devInfo->sampleRates[j],minLatency((int)devInfo->sampleRates[j]));
                     }
                 }
                 else
@@ -90,34 +86,6 @@ PlayerPortAudio::PlayerPortAudio(int size, std::vector<EngineObject *> *engines,
             }
         }
     }
-    
-    // Get id of default playback device if ID of device was not found in previous loop
-    if (id<0)
-        id = Pa_GetDefaultOutputDeviceID();
- 
-    devInfo = Pa_GetDeviceInfo(id);
-//    qDebug("PortAudio: Device name %s",devInfo->name);
-
-    // Ensure requested number of channels is supported
-    int channels = devInfo->maxOutputChannels;
-    if (channels < max(chMaster,chHead)+1)
-        qFatal("PortAudio: Not enough channels available on output device, only %i is supported.",channels);
-
-    // Set sample rate to 44100 if possible, otherwise highest possible
-    int temp_sr = 0;
-    if (devInfo->numSampleRates>0)
-    {
-        for (int i=0; i<=devInfo->numSampleRates; i++)
-            if (devInfo->sampleRates[i] == 44100.)
-                temp_sr = 44100;
-    }
-    else
-        temp_sr = 44100;
-                
-    if (temp_sr == 0)
-        temp_sr = (int)devInfo->sampleRates[devInfo->numSampleRates-1];
-    if (!open(QString(devInfo->name),temp_sr,16,size,chMaster,chHead))
-        qFatal("PortAudio: Error opening device");
 }
 
 PlayerPortAudio::~PlayerPortAudio()
@@ -125,12 +93,11 @@ PlayerPortAudio::~PlayerPortAudio()
     Pa_Terminate();
 }
 
-bool PlayerPortAudio::open(QString name, int srate, int bits, int bufferSize, int chMaster, int chHead)
+bool PlayerPortAudio::open(QString name, int srate, int bits, int bufferSize, int _chMaster, int _chHead)
 {
     // Adjust bufferSize and number of buffers
     int bufferNo   = 2;
     bufferSize = bufferSize/bufferNo;
-
 
     // Extract bit information
     PaSampleFormat format = 0;
@@ -140,49 +107,52 @@ bool PlayerPortAudio::open(QString name, int srate, int bits, int bufferSize, in
         case 16: format = paInt16; break;
         case 24: format = paInt24; break;
         case 32: format = paInt32; break;
-        default: qFatal("PortAudio: Sample format not supported (%i bits)", bits); return false;
+        default: qWarning("PortAudio: Sample format not supported (%i bits)", bits); return false;
     }
 
     // Extract device information
-    unsigned int id = 0;
-    unsigned int i;
-    for (i=0; i<devices.count(); i++)
+    int id = -1;
+    int i;
+    for (i=0; i<(int)devices.count(); i++)
         if (name == devices.at(i)->name && chMaster+chHead <= devices.at(i)->noChannels)
         {
             id = devices.at(i)->id;
             break;
         }
 
+    // Return if name wasn't found
+    if (id==-1) return false;
+                
     // Get number of channels to open
-    int chNo = max(chMaster,chHead)+1;
+    int chNo = max(_chMaster,_chHead)+1;
     
-    // Verify srate and bufferSize 
-    unsigned int j = 0;
-    while (j<devices.at(i)->sampleRates.count() && *devices.at(i)->sampleRates.at(j) != srate)
-    { j++; qDebug("j: %i",j); }
-    if (j>=devices.at(i)->sampleRates.count())
-    {
-         j=0;
-         srate = *devices.at(i)->sampleRates.at(j);
-    }
-    bufferSize = max(*devices.at(i)->latency.at(j),bufferSize);
+    // If this is not the master device, ensure that chosen sample rate matches master device
+    if (_chMaster==0 && srate != config->getValueString(ConfigKey("[Soundcard]","Samplerate")).toInt())
+        return false;
+    
+    //bufferSize = max(*devices.at(i)->latency.at(j),bufferSize);
     //qDebug("PortAudio: Latency %i samples",bufferSize);
 
     // Determine which callback function to use
     PortAudioCallback *callbackFunc;
-    if (chMaster>0)
+    if (_chMaster>0)
     {
         callbackFunc = paCallback;
         MasterBufferSize = bufferSize;
+        chMaster = _chMaster;
     }
-    else
+    if (chHead>0)
     {
-        callbackFunc = paCallbackSlave;
+        if (chMaster==0)
+            callbackFunc = paCallbackSlave;
         bufferIdxSlave = 0;
         HeadPerMasterBuffer = bufferSize/MasterBufferSize;
         qDebug("HeadPerMasterBuffer %i",HeadPerMasterBuffer);
+        chHead = _chHead;
     }
 
+    qDebug("Open using buffer size %i",bufferSize);
+    
     // Try to open device 5 times before giving up!
     PaError err = 0;
     {for (int i=0; i<5; i++)
@@ -201,34 +171,29 @@ bool PlayerPortAudio::open(QString name, int srate, int bits, int bufferSize, in
                         bufferNo,           // number of buffers, if zero then use default minimum
                         paClipOff,          // we won't output out of range samples so don't bother clipping them
                         callbackFunc,
-                        this );
+                        this);
 
         if (err == paNoError)
             break;
     }}
     if( err != paNoError )
     {
-        qFatal("PortAudio: Open stream error: %s", Pa_GetErrorText(err));
+        qWarning("PortAudio: Open stream error: %s", Pa_GetErrorText(err));
         return false;
     }
 
-    //qDebug("Number of channels: %i",chNo);
-    
-    // Fill in active config information
-    setParams(QString(Pa_GetDeviceInfo(id)->name), srate, 16, bufferSize, chMaster, chHead);
-
-    allocate();
-
+    // Update SRATE and BASERATE in EngineObject
+    setSrate(srate);
+   
     return true;
 }
 
 void PlayerPortAudio::close()
 {
+    // Close stream
     PaError err = Pa_CloseStream( stream );
     if( err != paNoError )
         qFatal("PortAudio: Close stream error: %s", Pa_GetErrorText(err));
-
-    deallocate();
 }
 
 void PlayerPortAudio::start()
@@ -270,6 +235,14 @@ CSAMPLE *PlayerPortAudio::process(const CSAMPLE *, const int)
     return 0;
 }
 
+QString PlayerPortAudio::getDefaultDevice()
+{
+    // Return default device name
+    PaDeviceID id = Pa_GetDefaultOutputDeviceID();
+    const PaDeviceInfo *devInfo = Pa_GetDeviceInfo(id);
+    return QString(devInfo->name);
+}
+
 /* -------- ------------------------------------------------------
    Purpose: Wrapper function to call processing loop function,
             implemented as a method in a class. Used in PortAudio,
@@ -288,20 +261,20 @@ int paCallback(void *, void *outputBuffer,
     player->prepareBuffer();
     SAMPLE *buffer = player->out_buffer_offset;
 
-    //qDebug("chMaster: %i, chHead: %i, frames: %i, buffersize: %i",player->CH_MASTER,player->CH_HEAD,framesPerBuffer,player->BUFFERSIZE);
-    
-    int openChNo = max(player->CH_HEAD,player->CH_MASTER);
+    qDebug("oMaster (%i), chMaster %i",framesPerBuffer,player->chMaster);
+
+    int openChNo = max(player->chHead,player->chMaster);
 
     for (int i=0; i<(long)framesPerBuffer; i++)
     {
         for (int j=0; j<=openChNo; j+=2)
         {
-            if (j+1==player->CH_MASTER)
+            if (j+1==player->chMaster)
             {
                 *out++=buffer[(i*4)  ];
                 *out++=buffer[(i*4)+1];
             }
-            else if (j+1==player->CH_HEAD)
+            else if (j+1==player->chHead)
             {
                 *out++=buffer[(i*4)+2];
                 *out++=buffer[(i*4)+3];
@@ -314,9 +287,6 @@ int paCallback(void *, void *outputBuffer,
         }    
     }
 
-    //if (player->CH_HEAD>0)
-    //    player->buffersync.lock();
-
     return 0;
 }
 
@@ -326,7 +296,7 @@ int paCallbackSlave(void *, void *outputBuffer,
 {
     PlayerPortAudio *player = (PlayerPortAudio *)_player;
     SAMPLE *out = (SAMPLE*)outputBuffer;
-    SAMPLE *buffer = player->out_buffer + (player->BUFFERSIZE*2*bufferIdxSlave);
+    SAMPLE *buffer = player->out_buffer + (player->MasterBufferSize*2*bufferIdxSlave);
     for (int i=0; i<(long)framesPerBuffer; i++)
     {
         *out++=buffer[(i*4)+2];

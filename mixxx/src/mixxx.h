@@ -157,7 +157,7 @@ class MixxxApp : public QMainWindow
     EngineChannel *channel1, *channel2;
     EngineMaster *master;
     EngineFlanger *flanger;
-    Player *player, *playerSlave;
+    Player *player;
     MidiObject *midi;
     ControlObject *control;
     std::vector<EngineObject *> engines;
