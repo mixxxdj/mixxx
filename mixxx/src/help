@@ -1,5 +1,5 @@
 -----------------------------------------------------
-Qmake Building Automation System (QBAS) version 0.9.5
+Qmake Building Automation System (QBAS) version 0.9.6
 Copyright (c) 2003-2004 Gianluca Romanin (aka J_Zar)
 -----------------------------------------------------
 Usage:  ./configure  option1="value1;value2..." ...
@@ -14,7 +14,11 @@ Usage:  ./configure  option1="value1;value2..." ...
 --cflags		overwrite default cflags with user defined
 --cxxflags		overwrite default cxxflags with user defined
 --lflags		overwrite default lflags with user defined
---static-linking-path	define the path to link statically libs
+--static-link		define if link should be static. You can define a
+			PATH that should be tryed ( before defaults ) in this 
+			way: --static-link=PATH
+			User has no warranty on the static result: on failure,
+			shared link will be tryed!
 --enable-debug		enable debug mode
 --enable-FEATURE	enable FEATURE 
 --disable-FEATURE	disable FEATURE
