@@ -126,6 +126,12 @@ void TrackList::UpdateTracklist()
                 else
                     m_lTracks.append( Track );
 //			    qDebug( "Read track from xml file: %s", Track->m_sFilename.latin1() );
+                // Check if the file actually exists on the disk:
+                if ( !(QFile( Track->m_sFilepath+"/"+Track->m_sFilename).exists()) )
+                {
+                    qDebug("The track %s was not found", (Track->m_sFilepath+Track->m_sFilename).latin1());
+                    Track->m_bExist = false;
+                }
             }
         }
         node = node.nextSibling();
@@ -140,16 +146,17 @@ void TrackList::UpdateTracklist()
 //	m_ptableTracks->hideColumn( COL_INDEX ); // Hide the index row
 	m_ptableTracks->setNumRows( m_lTracks.count() );
 	for (TrackInfoObject *Track = m_lTracks.first(); Track; Track = m_lTracks.next() )
-	{
-        m_ptableTracks->setItem(iRow, COL_TITLE, new WTrackTableItem(m_ptableTracks,QTableItem::Never, Track->m_sTitle));
-		m_ptableTracks->setItem(iRow, COL_ARTIST, new WTrackTableItem(m_ptableTracks,QTableItem::Never, Track->m_sArtist));
-		m_ptableTracks->setItem(iRow, COL_COMMENT, new WTrackTableItem(m_ptableTracks,QTableItem::WhenCurrent, Track->m_sComment));
-		m_ptableTracks->setItem(iRow, COL_TYPE, new WTrackTableItem(m_ptableTracks,QTableItem::Never, Track->m_sType));
-		m_ptableTracks->setItem(iRow, COL_DURATION, new WTrackTableItem(m_ptableTracks,QTableItem::Never, Track->Duration()));
-		m_ptableTracks->setItem(iRow, COL_BITRATE, new WTrackTableItem(m_ptableTracks,QTableItem::Never, Track->m_sBitrate));
-		m_ptableTracks->setItem(iRow, COL_INDEX, new WTrackTableItem(m_ptableTracks,QTableItem::Never, QString("%1").arg(iRow)));
-		iRow ++;
-	}
+        if (Track->m_bExist)
+        {
+            m_ptableTracks->setItem(iRow, COL_TITLE, new WTrackTableItem(m_ptableTracks,QTableItem::Never, Track->m_sTitle));
+    		m_ptableTracks->setItem(iRow, COL_ARTIST, new WTrackTableItem(m_ptableTracks,QTableItem::Never, Track->m_sArtist));
+	    	m_ptableTracks->setItem(iRow, COL_COMMENT, new WTrackTableItem(m_ptableTracks,QTableItem::WhenCurrent, Track->m_sComment));
+		    m_ptableTracks->setItem(iRow, COL_TYPE, new WTrackTableItem(m_ptableTracks,QTableItem::Never, Track->m_sType));
+	    	m_ptableTracks->setItem(iRow, COL_DURATION, new WTrackTableItem(m_ptableTracks,QTableItem::Never, Track->Duration()));
+		    m_ptableTracks->setItem(iRow, COL_BITRATE, new WTrackTableItem(m_ptableTracks,QTableItem::Never, Track->m_sBitrate));
+    		m_ptableTracks->setItem(iRow, COL_INDEX, new WTrackTableItem(m_ptableTracks,QTableItem::Never, QString("%1").arg(iRow)));
+	       	iRow ++;
+	    }
 
 	// Find the track which has been played the most times:
 	m_iMaxTimesPlayed = 1;

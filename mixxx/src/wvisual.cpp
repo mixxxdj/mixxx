@@ -48,7 +48,7 @@ bool WVisual::eventFilter(QObject *o, QEvent *e)
     {
         QMouseEvent *m = (QMouseEvent *)e;
 
-        m_iStartPosX == -1;
+        m_iStartPosX = -1;
         if (m->button()==Qt::LeftButton)
         {
             // Store current x position of mouse pointer

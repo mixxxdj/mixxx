@@ -232,7 +232,7 @@ void ReaderExtractWave::getchunk(CSAMPLE rate)
 
     // Copy samples to read_buffer
     i=0;
-    for (unsigned int j=bufIdx; j<bufIdx+READCHUNKSIZE; j++)
+    for (j=bufIdx; j<bufIdx+READCHUNKSIZE; j++)
         read_buffer[j] = (CSAMPLE)temp[i++];
 
 #ifdef __VISUALS__
