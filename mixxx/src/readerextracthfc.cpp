@@ -141,6 +141,8 @@ void *ReaderExtractHFC::processChunk(const int _idx, const int start_idx, const 
 //        qDebug("HFC vals 2 : %i",j);
     }
 
+//     qDebug("hfc %i: %f", frameFrom, hfc[frameFrom]);
+    
     // Get DHFC, first derivative and HFC, rectified
     //dhfc[(idx*framePerChunk)%frameNo] = hfc[(idx*framePerChunk)%frameNo];
 
