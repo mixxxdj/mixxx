@@ -6,9 +6,9 @@
 # If ASIO is used, ensure that the path to the ASIO SDK 2 is set correctly below
 WINPA = DIRECTSOUND
 
-# Use this define on Linux if Mixxx should be statically linked with libmad, libid3tag, fftw,
-# ogg, vorbis and audiofile
-#unix:DEFINES += STATIC
+# Use this definition on Linux if Mixxx should be statically linked with libmad, 
+# libid3tag, fftw, ogg, vorbis and audiofile
+#unix:LINLIBPATH = ../../mixxx-linlib
 
 # Path to Macintosh libraries
 macx:MACLIBPATH = ../../mixxx-maclib
@@ -89,8 +89,8 @@ HEADERS += wvisualsimple.h wvisualwaveform.h visual/visualbackplane.h  visual/te
 CONFIG += opengl
 
 # MP3
-contains(DEFINES, STATIC) {
-    unix:!macx:LIBS += ../lib/libmad-0.15.0b/.libs/libmad.a ../lib/libid3tag-0.15.0b/.libs/libid3tag.a
+count(LINLIBPATH, 1) {
+    unix:!macx:LIBS += $$LINLIBPATH/libs/libmad.a $$LINLIBPATH/libs/libid3tag.a
 } else {
     unix:!macx:LIBS += -lmad -lid3tag
 }
@@ -105,8 +105,8 @@ HEADERS += ../lib/vbrheadersdk/dxhead.h
 # Wave files
 unix:SOURCES += soundsourceaudiofile.cpp
 unix:HEADERS += soundsourceaudiofile.h
-contains(DEFINES, STATIC) {
-    unix:!macx:LIBS += ../lib/audiofile-0.2.3/libaudiofile/.libs/libaudiofile.a
+count(LINLIBPATH, 1) {
+    unix:!macx:LIBS += $$LINLIBPATH/libs/libaudiofile.a
 } else {
     unix:!macx:LIBS += -laudiofile
 }
@@ -116,8 +116,8 @@ win32:LIBS += libsndfile.lib
 macx:LIBS += $$MACLIBPATH/lib/libaudiofile.a
 
 # Ogg Vorbis
-contains(DEFINES, STATIC) {
-    unix:!macx:LIBS += ../lib/libvorbis-1.0/lib/.libs/libvorbisfile.a ../lib/libvorbis-1.0/lib/.libs/libvorbis.a ../lib/libogg-1.0/src/.libs/libogg.a
+count(LINLIBPATH, 1) {
+    unix:!macx:LIBS += $$LINLIBPATH/libs/libvorbisfile.a $$LINLIBPATH/libs/libvorbis.a $$LINLIBPATH/libs/libogg.a
 } else {
     unix:!macx:LIBS += -lvorbisfile -lvorbis -logg
 }
@@ -140,8 +140,8 @@ unix:!macx:SOURCES += joysticklinux.cpp
 unix:!macx:HEADERS += joysticklinux.h
 
 # FFT
-contains(DEFINES, STATIC) {
-    unix:!macx:LIBS += ../lib/fftw-2.1.5/rfftw/.libs/libsrfftw.a ../lib/fftw-2.1.5/fftw/.libs/libsfftw.a
+count(LINLIBPATH, 1) {
+    unix:!macx:LIBS += $$LINLIBPATH/libs/libsrfftw.a $$LINLIBPATH/libs/libsfftw.a
 } else {
     unix:!macx:LIBS += -lsrfftw -lsfftw
 }
@@ -187,7 +187,7 @@ unix {
   OBJECTS_DIR = .obj
 
 # Libs needed for static linking on Linux
-contains(DEFINES, STATIC) {
+count(LINLIBPATH,1) {
     unix:message("Using static linking")
 #    unix:LIBS += -ldl -lm -lXrender -lSM /usr/lib/libfontconfig.a -lXft
 }
