@@ -338,6 +338,7 @@ QStringList PlayerPortAudio::getInterfaces()
         // Add the device if it is an output device:
         if (devInfo!=0 && devInfo->maxOutputChannels > 0)
         {
+            qDebug("name %s",devInfo->name);
             for (int j=1; j<=devInfo->maxOutputChannels; ++j)
                 result.append(QString("%1 (channel %2)").arg(devInfo->name).arg(j));
         }
