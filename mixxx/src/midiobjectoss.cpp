@@ -88,6 +88,7 @@ void MidiObjectOSS::devClose()
 void MidiObjectOSS::run()
 {
     thread_pid = getpid();
+    requestStop=false;
     while(requestStop==false)
     {
         // First read until we get a midi channel event:
@@ -121,7 +122,6 @@ void MidiObjectOSS::run()
             //qDebug("midi ch: %i, ctrl: %i, val: %i",channel,midicontrol,midivalue);
         }
     }
-    requestStop=false;
 }
 
 void MidiObjectOSS::stop()
@@ -131,10 +131,8 @@ void MidiObjectOSS::stop()
     // Raise signal to stop abort blocking read in main thread loop
     if (thread_pid!=0)
     {
-        // Install signal handler
-        signal(2,&abortRead);
-
-        kill(thread_pid,2);
+         signal(2,&abortRead);
+         kill(thread_pid,2);
     }
     thread_pid = 0;
 }

@@ -45,7 +45,7 @@ void EngineObject::setParams(QString name, int srate, int bits, int bufferSize)
 
     NYQUIST = SRATE/2;
     norm    = (2.*acos(-1.0))/SRATE;
-    BASERATE = FLOAT_TYPE(srate)/44100.0; // Set the basic rate.
-    //qDebug("%f %f",FLOAT_TYPE(srate),BASERATE);
+    BASERATE = 44100.0/FLOAT_TYPE(SRATE); // Set the basic rate.
+    qDebug("SRATE: %f BASERATE: %f",FLOAT_TYPE(srate),BASERATE);
 }
 

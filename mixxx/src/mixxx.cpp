@@ -27,6 +27,7 @@
 
 #include "wknob.h"
 #include "wslider.h"
+#include "wplayposslider.h"
 #include "mixxx.h"
 #include "filesave.xpm"
 #include "fileopen.xpm"
@@ -119,6 +120,13 @@ MixxxApp::MixxxApp(QApplication *a)
   player = new PlayerPortAudio(BUFFER_SIZE, &engines);
 #endif
 
+  // Install event handler to update playpos slider and force screen update.
+  // This method is used to avoid emitting signals (and QApplication::lock())
+  // in the player thread. This ensures that the player will not lock because
+  // of a (temporary) stalled GUI thread.
+  installEventFilter(this);
+
+  // Start engine
   engineStart();
 }
 
@@ -131,21 +139,40 @@ MixxxApp::~MixxxApp()
     delete playSelectMenu;
 }
 
+bool MixxxApp::eventFilter(QObject *o, QEvent *e)
+{
+    // If a user event is received, update playpos sliders,
+    // and force screen update
+    if (e->type() == QEvent::User)
+    {
+        view->playcontrol1->SliderPosition->setValue(buffer1->playposSliderNew);
+        view->playcontrol2->SliderPosition->setValue(buffer2->playposSliderNew);
+
+        // Force update
+        app->flush();
+
+        return TRUE;
+    } else {
+        // standard event processing
+        return QWidget::eventFilter(o,e);
+    }
+}
+
 void MixxxApp::engineStart()
 {
     if (view->playlist->ListPlaylist->firstChild() != 0)
     {
         qDebug("Init buffer 1... %s", view->playlist->ListPlaylist->firstChild()->text(1).ascii());
-        buffer1 = new EngineBuffer(app, view->playcontrol1, "[Channel1]", view->playlist->ListPlaylist->firstChild()->text(1));
+        buffer1 = new EngineBuffer(app, this, view->playcontrol1, "[Channel1]", view->playlist->ListPlaylist->firstChild()->text(1));
     } else
-        buffer1 = new EngineBuffer(app, view->playcontrol1, "[Channel1]", 0);
+        buffer1 = new EngineBuffer(app, this, view->playcontrol1, "[Channel1]", 0);
 
     if (view->playlist->ListPlaylist->firstChild()->nextSibling() != 0)
     {
         qDebug("Init buffer 2... %s", view->playlist->ListPlaylist->firstChild()->nextSibling()->text(1).ascii());
-        buffer2 = new EngineBuffer(app, view->playcontrol2, "[Channel2]", view->playlist->ListPlaylist->firstChild()->nextSibling()->text(1));
+        buffer2 = new EngineBuffer(app, this, view->playcontrol2, "[Channel2]", view->playlist->ListPlaylist->firstChild()->nextSibling()->text(1));
     } else
-        buffer2 = new EngineBuffer(app, view->playcontrol2, "[Channel2]", 0);
+        buffer2 = new EngineBuffer(app, this, view->playcontrol2, "[Channel2]", 0);
 
     qDebug("...");
     channel1 = new EngineChannel(view->channel1, "[Channel1]");
@@ -697,5 +724,5 @@ void MixxxApp::slotSelectPlay(QListViewItem *item, const QPoint &pos, int)
     selection = item->text(1);
 
     // Display popup menu
-    playSelectMenu->exec(pos);
+    playSelectMenu->popup(pos);
 }

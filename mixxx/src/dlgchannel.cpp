@@ -29,7 +29,7 @@ DlgChannel::~DlgChannel()
 void DlgChannel::layoutMirror()
 {
     // Mirror volume and knobs positions
-    // QPoint knobpos = GroupBoxKnobs->pos();
-    //GroupBoxKnobs->move(GroupBoxVolume->pos());
-    //GroupBoxVolume->move(knobpos);
+    QPoint knobpos = GroupBoxKnobs->pos();
+    GroupBoxKnobs->move(GroupBoxVolume->pos());
+    GroupBoxVolume->move(knobpos);
 }

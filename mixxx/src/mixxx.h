@@ -127,7 +127,8 @@ class MixxxApp : public QMainWindow
     void slotChangePlay_1();
     void slotChangePlay_2();
     void slotSelectPlay(QListViewItem *item, const QPoint &pos, int);
-
+  protected:
+    bool eventFilter(QObject *, QEvent *);
   private:
 
     void engineStart();

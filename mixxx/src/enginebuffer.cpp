@@ -26,12 +26,14 @@
 #include "configobject.h"
 #include <qstring.h>
 #include <qlcdnumber.h>
+#include <qevent.h>
 
-EngineBuffer::EngineBuffer(QApplication *a, DlgPlaycontrol *_playcontrol, const char *group, const char *filename)
+EngineBuffer::EngineBuffer(QApplication *a, QWidget *m, DlgPlaycontrol *_playcontrol, const char *group, const char *filename)
 {
   app = a;
+  mixxx = m;
 
-  lastwrite = 0.;
+  playposSliderLast = 0.;
   playcontrol = _playcontrol;
 
   // Play button
@@ -57,23 +59,10 @@ EngineBuffer::EngineBuffer(QApplication *a, DlgPlaycontrol *_playcontrol, const 
   wheel = new ControlRotary(&k3, PlayButton);
   connect(playcontrol->WheelPlaycontrol, SIGNAL(valueChanged(int)), wheel, SLOT(slotSetValue(int)));
   connect(wheel, SIGNAL(valueChanged(FLOAT_TYPE)), this, SLOT(slotUpdateRate(FLOAT_TYPE)));
-
-  // Why have these two been commented out?
   connect(wheel, SIGNAL(updateGUI(int)), playcontrol->WheelPlaycontrol, SLOT(setValue(int)));
   connect(wheel, SIGNAL(updateGUI(int)), wheel, SLOT(slotSetPositionMidi(int)));
 
-  // ????
-  //connect(wheel, SIGNAL(updateGUI(int)), playcontrol->SliderPlaycontrol, SLOT(setValue(int)));
-  //connect(wheel, SIGNAL(updateGUI(int)), wheel, SLOT(slotSetPositionMidi(int)));
-
-  // Connect playbutton signal to wheel state slot, to notify the wheel of the playback state
-  //connect(PlayButton, SIGNAL(valueChanged(valueType)), wheel, slotPlayState(valueType));
-
-  // LCD Display showing song position
-  //connect(this, SIGNAL(position(int)), playcontrol->LCDposition, SLOT(display(int)));
-
   // Slider to show and change song position
-  connect(this, SIGNAL(position(int)), playcontrol->SliderPosition, SLOT(setValue(int)));
   connect(playcontrol->SliderPosition, SIGNAL(valueChanged(int)), this, SLOT(slotPosition(int)));
 
   // Allocate temporary buffer
@@ -139,9 +128,7 @@ void EngineBuffer::newtrack(const char* filename) {
   char ending[80];
   strcpy(ending,&filename[i]);
 
-  playcontrol->textLabelTrack->setText("Opening file...");
-  playcontrol->repaint();
-  app->flush();
+  //playcontrol->textLabelTrack->setText("Opening file...");
 #ifndef Q_WS_WIN
   if (!strcmp(ending,".wav"))
     file = new SoundSourceAFlibfile(filename);
@@ -364,14 +351,14 @@ void EngineBuffer::checkread()
 // Called from process.
 void EngineBuffer::writepos()
 {
-    FLOAT_TYPE newwrite = playpos_file.read()/file->length();
-    if (floor(fabs(newwrite-lastwrite)*100.) >= 1.)
+    playposSliderNew = (playpos_file.read()/file->length())*100.;
+    if (floor(fabs(playposSliderNew-playposSliderLast)) >= 1.)
     {
-        emit position((int)(100*newwrite));
-        lastwrite = newwrite;
+        // Send User event
+        postEvent(mixxx,new QEvent(QEvent::User));
 
-        // Force screen update
-        app->flush();
+        // Store old position
+        playposSliderLast = playposSliderNew;
     }
 }
 

@@ -96,6 +96,10 @@ void MidiObject::send(char channel, char midicontrol, char midivalue)
         {
             // Check for possible bit mask
             int midimask = controlList[i]->cfgOption->val->midimask;
+
+            // Gain app lock
+            app->lock();
+
             if (midimask > 0)
                 controlList[i]->slotSetPosition((int)(midimask & midivalue));
             else
@@ -103,6 +107,9 @@ void MidiObject::send(char channel, char midicontrol, char midivalue)
 
             // Force GUI update
             app->flush();
+
+            // Release app lock
+            app->unlock();
 
             break;
         }
