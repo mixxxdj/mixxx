@@ -27,13 +27,17 @@ EngineFilterRBJ::EngineFilterRBJ(int potmeter_midi, int button_midi,
 
     updateFilter();
 	s0 = 0.; s1 = 0.; s2 = 0.; d0 = 0.; d1 = 0.; d2 = 0.;
+
+	buffer = new CSAMPLE[MAX_BUFFER_LEN];
 }
 
 EngineFilterRBJ::~EngineFilterRBJ()
 {
+	delete [] buffer;
+	delete filterpot;
 }
 
-void EngineFilterRBJ::process(CSAMPLE *source, CSAMPLE *destination, int buf_size)
+CSAMPLE *EngineFilterRBJ::process(CSAMPLE *source, int buf_size)
 {
 	for (int i=0; i<buf_size; i++)
 	{
@@ -44,10 +48,11 @@ void EngineFilterRBJ::process(CSAMPLE *source, CSAMPLE *destination, int buf_siz
 		d2 = d1;
 		d1 = d0;
 
-		source[i] = (b0/a0)*s0 + (b1/a0)*s1 + (b2/a0)*s2 - (a1/a0)*d1 - (a2/a0)*d2;
+		buffer[i] = (b0/a0)*s0 + (b1/a0)*s1 + (b2/a0)*s2 - (a1/a0)*d1 - (a2/a0)*d2;
 
-		d0 = source[i];
+		d0 = buffer[i];
 	}
+	return buffer;
 }
 
 void EngineFilterRBJ::slotUpdate()

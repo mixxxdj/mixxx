@@ -10,14 +10,16 @@ EngineIIRfilter::EngineIIRfilter(int potmeter_midi, int button_midi,
   filterpot = new ControlLogpotmeter("filterpot", potmeter_midi, midi);
   connect(filterpot, SIGNAL(valueChanged(FLOAT)), this, SLOT(slotUpdate()));
   coefs = _coefs;
+  buffer = new CSAMPLE[MAX_BUFFER_LEN];
 }
 
 EngineIIRfilter::~EngineIIRfilter() {
   delete killbutton;
   delete filterpot;
+  delete [] buffer;
 }
 
-void EngineIIRfilter::process(CSAMPLE *source, CSAMPLE *destination, int buf_size) {
+CSAMPLE *EngineIIRfilter::process(CSAMPLE *source, int buf_size) {
   double GAIN =  coefs[0];
   for (int i=0; i<buf_size; i++) {
     xv[0] = xv[1]; xv[1] = xv[2]; xv[2] = xv[3]; xv[3] = xv[4];
@@ -34,8 +36,9 @@ void EngineIIRfilter::process(CSAMPLE *source, CSAMPLE *destination, int buf_siz
 	+ (coefs[9] * yv[4]) + ( coefs[10] * yv[5])
 	+ (coefs[11] * yv[6]) + ( coefs[12] * yv[7]);
     
-    destination[i] = gain*yv[8];  //(gain-1)*yv[8];
+    buffer[i] = gain*yv[8];  //(gain-1)*yv[8];
   }
+  return buffer;
 }
 
 void EngineIIRfilter::slotUpdate() {

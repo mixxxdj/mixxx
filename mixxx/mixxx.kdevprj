@@ -93,7 +93,7 @@ install_location=
 type=DATA
 
 [mixxx/Makefile.am]
-files=mixxx/main.cpp,mixxx/mixxx.cpp,mixxx/mixxx.h,mixxx/mixxxdoc.cpp,mixxx/mixxxdoc.h,mixxx/mixxxview.cpp,mixxx/mixxxview.h,mixxx/lo32-app-mixxx.png,mixxx/lo16-app-mixxx.png,mixxx/filenew.xpm,mixxx/filesave.xpm,mixxx/fileopen.xpm,mixxx/dlgchanneldlg.ui,mixxx/dlgmessagesdlg.ui,mixxx/dlgplaycontroldlg.ui,mixxx/dlgchannel.cpp,mixxx/dlgchannel.h,mixxx/dlgmessages.cpp,mixxx/dlgmessages.h,mixxx/dlgplaycontrol.cpp,mixxx/dlgplaycontrol.h,mixxx/soundsource.cpp,mixxx/soundsource.h,mixxx/defs.h,mixxx/controlobject.cpp,mixxx/controlobject.h,mixxx/engineobject.cpp,mixxx/engineobject.h,mixxx/controlpushbutton.cpp,mixxx/controlpushbutton.h,mixxx/enginebuffer.cpp,mixxx/enginebuffer.h,mixxx/player.cpp,mixxx/player.h,mixxx/controlpotmeter.cpp,mixxx/controlpotmeter.h,mixxx/playeralsa.cpp,mixxx/playeralsa.h,mixxx/playerportaudio.cpp,mixxx/playerportaudio.h,mixxx/midiobject.h,mixxx/midiobject.cpp,mixxx/enginepregain.cpp,mixxx/enginepregain.h,mixxx/dlgplaylistdlg.ui,mixxx/dlgplaylist.h,mixxx/dlgplaylist.cpp,mixxx/soundsourcenull.cpp,mixxx/soundsourcenull.h,mixxx/qknob.cpp,mixxx/qknob.h,mixxx/controllogpotmeter.h,mixxx/controllogpotmeter.cpp,mixxx/controlrotary.h,mixxx/controlrotary.cpp,mixxx/engineiirfilter.h,mixxx/engineiirfilter.cpp,mixxx/enginehmlfilter.h,mixxx/enginehmlfilter.cpp,mixxx/knob000.xpm,mixxx/knob090.xpm,mixxx/knob180.xpm,mixxx/knob270.xpm,mixxx/knob045.xpm,mixxx/knob135.xpm,mixxx/knob225.xpm,mixxx/knob315.xpm,mixxx/soundsourceheavymp3.cpp,mixxx/soundsourceheavymp3.h
+files=mixxx/main.cpp,mixxx/mixxx.cpp,mixxx/mixxx.h,mixxx/mixxxdoc.cpp,mixxx/mixxxdoc.h,mixxx/mixxxview.cpp,mixxx/mixxxview.h,mixxx/lo32-app-mixxx.png,mixxx/lo16-app-mixxx.png,mixxx/filenew.xpm,mixxx/filesave.xpm,mixxx/fileopen.xpm,mixxx/dlgchanneldlg.ui,mixxx/dlgmessagesdlg.ui,mixxx/dlgplaycontroldlg.ui,mixxx/dlgchannel.cpp,mixxx/dlgchannel.h,mixxx/dlgmessages.cpp,mixxx/dlgmessages.h,mixxx/dlgplaycontrol.cpp,mixxx/dlgplaycontrol.h,mixxx/soundsource.cpp,mixxx/soundsource.h,mixxx/defs.h,mixxx/controlobject.cpp,mixxx/controlobject.h,mixxx/engineobject.cpp,mixxx/engineobject.h,mixxx/controlpushbutton.cpp,mixxx/controlpushbutton.h,mixxx/enginebuffer.cpp,mixxx/enginebuffer.h,mixxx/player.cpp,mixxx/player.h,mixxx/controlpotmeter.cpp,mixxx/controlpotmeter.h,mixxx/playeralsa.cpp,mixxx/playeralsa.h,mixxx/playerportaudio.cpp,mixxx/playerportaudio.h,mixxx/midiobject.h,mixxx/midiobject.cpp,mixxx/enginepregain.cpp,mixxx/enginepregain.h,mixxx/dlgplaylistdlg.ui,mixxx/dlgplaylist.h,mixxx/dlgplaylist.cpp,mixxx/soundsourcenull.cpp,mixxx/soundsourcenull.h,mixxx/qknob.cpp,mixxx/qknob.h,mixxx/controllogpotmeter.h,mixxx/controllogpotmeter.cpp,mixxx/controlrotary.h,mixxx/controlrotary.cpp,mixxx/engineiirfilter.h,mixxx/engineiirfilter.cpp,mixxx/enginehmlfilter.h,mixxx/enginehmlfilter.cpp,mixxx/knob000.xpm,mixxx/knob090.xpm,mixxx/knob180.xpm,mixxx/knob270.xpm,mixxx/knob045.xpm,mixxx/knob135.xpm,mixxx/knob225.xpm,mixxx/knob315.xpm,mixxx/soundsourceheavymp3.cpp,mixxx/soundsourceheavymp3.h,mixxx/enginefilterrbj.cpp,mixxx/enginefilterrbj.h,mixxx/enginefilterlbh.cpp,mixxx/enginefilterlbh.h
 sub_dirs=docs,qknob
 type=prog_main
 
@@ -293,6 +293,30 @@ install_location=
 type=SOURCE
 
 [mixxx/enginebuffer.h]
+dist=true
+install=false
+install_location=
+type=HEADER
+
+[mixxx/enginefilterlbh.cpp]
+dist=true
+install=false
+install_location=
+type=SOURCE
+
+[mixxx/enginefilterlbh.h]
+dist=true
+install=false
+install_location=
+type=HEADER
+
+[mixxx/enginefilterrbj.cpp]
+dist=true
+install=false
+install_location=
+type=SOURCE
+
+[mixxx/enginefilterrbj.h]
 dist=true
 install=false
 install_location=

@@ -22,7 +22,7 @@ class EngineHMLfilter : public EngineObject {
   FLOAT highgain, midgain, lowgain;
   EngineHMLfilter(int, int , int , MidiObject*, const double *, const double *);
   ~EngineHMLfilter();
-  void process(CSAMPLE*, CSAMPLE*, int);
+  CSAMPLE *process(CSAMPLE*, int);
  public slots:
   void slotUpdate();
 };

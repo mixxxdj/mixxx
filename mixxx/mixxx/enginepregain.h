@@ -15,9 +15,12 @@ private:
   FLOAT pregain;
   EnginePregain(int, MidiObject*);
   ~EnginePregain();
-  void process(CSAMPLE*, CSAMPLE*, int);
+  CSAMPLE *process(CSAMPLE*, int);
  public slots:
   void slotUpdate(FLOAT);
+
+ private:
+  CSAMPLE *buffer;
 };
 
 #endif

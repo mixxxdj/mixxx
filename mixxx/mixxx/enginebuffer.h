@@ -50,7 +50,7 @@ public:
   ~EngineBuffer();
   void newtrack(const char *);
   void start();
-  void process(CSAMPLE *, CSAMPLE *, int);
+  CSAMPLE *process(CSAMPLE *, int);
 public slots:
    void slotUpdatePlay(valueType);
    void slotUpdateRate(FLOAT);
@@ -84,5 +84,6 @@ private:
   long distance(const long, const long);
   FLOAT min(const FLOAT, const FLOAT);
   FLOAT max(const FLOAT, const FLOAT);
+  CSAMPLE *buffer;
 };
 #endif
