@@ -212,6 +212,7 @@ win32 {
   QMAKE_CXXFLAGS += -GX
   QMAKE_LFLAGS += /libpath:$$WINLIBPATH /NODEFAULTLIB:libcd /NODEFAULTLIB:libcmtd /NODEFAULTLIB:libc /NODEFAULTLIB:msvcrt #/NODEFAULTLIB:library
   SETTINGS_FILE = \"mixxx.cfg\"
+  RC_FILE = mixxx.rc
 }
 
 macx {
