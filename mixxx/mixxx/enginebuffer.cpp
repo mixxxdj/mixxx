@@ -32,7 +32,7 @@ EngineBuffer::EngineBuffer(DlgPlaycontrol *playcontrol, DlgChannel *channel, Mid
   connect(rateSlider, SIGNAL(valueChanged(FLOAT)), this, SLOT(slotUpdateRate(FLOAT)));
 
   wheel = new ControlRotary("wheel", PORT_D, midi);
-  //connect(playcontrol->DialPlaycontrol, SIGNAL(valueChanged(int)), wheel, SLOT(slotSetPosition(int)));
+  //connect(playcontrol->DialPlaycontrol, SIGNAL(dialMoved(int)), wheel, SLOT(slotSetPosition(int)));
   connect(wheel, SIGNAL(valueChanged(FLOAT)), this, SLOT(slotUpdateRate(FLOAT)));
   /*
     Open the file:
@@ -144,19 +144,18 @@ void EngineBuffer::slotUpdatePlay(valueType newvalue) {
 	  end_seek -= 128;
       //cout << "Seeking " << (FLOAT)((end_seek-start_seek)/128.) 
       //   << ".";
-      file->seek((long)(end_seek-start_seek)/128);
+      seek((FLOAT)(end_seek-start_seek)/128);
     }
     qDebug("Ended seeking");
   }
   slotUpdateRate(rateSlider->getValue());
 }
 
-void EngineBuffer::slotUpdateRate(FLOAT r)
-{
+void EngineBuffer::slotUpdateRate(FLOAT r) {
   if (PlayButton->getValue()==on)
     rate = rateSlider->getValue() + 4*wheel->getValue();
   else
-    rate = 0.;
+      rate = 4*wheel->getValue();
   qDebug("Rate value: %f",rate);
 }
 
@@ -208,14 +207,11 @@ void EngineBuffer::seek(FLOAT change) {
   filepos = (long unsigned)new_play_pos;
   frontpos = 0;
   cout << change << " ";
-  qDebug("Seeking...");
-  //cout << "Seeking...\n";
+  qDebug("Seeking %g to %g",change, new_play_pos/file->length());
   file->seek(filepos);
   getchunk();
-  //cout << "done seeking.\n";
-//  statuswin->print(2,1,"          ");
+  qDebug("done seeking.");
   play_pos = new_play_pos;
-
 }
 
 bool even(long n) {

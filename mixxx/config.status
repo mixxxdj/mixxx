@@ -2,7 +2,7 @@
 # Generated automatically by configure.
 # Run this file to recreate the current configuration.
 # This directory was configured as follows,
-# on host sakaki:
+# on host akira:
 #
 # ./configure  --enable-mt --prefix /usr/local
 #
@@ -38,10 +38,10 @@ sed 's/%@/@@/; s/@%/@@/; s/%g$/@g/; /@g$/s/[\\&%]/\\&/g;
 s%@SHELL@%/bin/sh%g
 s%@CFLAGS@%-O2  %g
 s%@CPPFLAGS@% -DPIC -fPIC -DQT_THREAD_SUPPORT  -D_REENTRANT%g
-s%@CXXFLAGS@%-O2 -O0 -g3 -Wall -fno-exceptions -fno-check-new%g
+s%@CXXFLAGS@%-O2 -fno-exceptions -fno-check-new%g
 s%@FFLAGS@%%g
 s%@DEFS@%-DHAVE_CONFIG_H%g
-s%@LDFLAGS@%  %g
+s%@LDFLAGS@%%g
 s%@LIBS@%%g
 s%@exec_prefix@%${prefix}%g
 s%@prefix@%/usr/local%g
@@ -89,7 +89,7 @@ s%@CXX@%c++%g
 s%@USE_EXCEPTIONS@%-fexceptions%g
 s%@USE_RTTI@%%g
 s%@CXXCPP@%c++ -E%g
-s%@NOOPT_CXXFLAGS@% -g3 -Wall -fno-exceptions -fno-check-new%g
+s%@NOOPT_CXXFLAGS@% -fno-exceptions -fno-check-new%g
 s%@REPO@%-frepo%g
 s%@NOREPO@%-fno-repo%g
 s%@KDE_USE_FINAL_TRUE@%#%g
@@ -104,8 +104,8 @@ s%@RANLIB@%ranlib%g
 s%@STRIP@%strip%g
 s%@LIBTOOL@%$(SHELL) $(top_builddir)/libtool%g
 s%@KDE_PLUGIN@%-avoid-version -module -no-undefined $(KDE_RPATH) $(KDE_MT_LDFLAGS)%g
-s%@all_includes@%-I/usr/lib/qt2//include -I/usr/X11R6/include%g
-s%@all_libraries@%-L/usr/X11R6/lib -L/usr/lib/qt2//lib  -DPIC -fPIC -lpthread%g
+s%@all_includes@%-I/usr/lib/qt2/include -I/usr/X11R6/include%g
+s%@all_libraries@%-L/usr/X11R6/lib -L/usr/lib/qt2/lib  -DPIC -fPIC -lpthread%g
 s%@MSGFMT@%/usr/bin/msgfmt%g
 s%@GMSGFMT@%/usr/bin/msgfmt%g
 s%@XGETTEXT@%/usr/bin/xgettext%g
@@ -136,12 +136,12 @@ s%@USER_LDFLAGS@%%g
 s%@LIBZ@%-lz%g
 s%@LIBPNG@%-lpng -lz -lm%g
 s%@LIBJPEG@%-ljpeg%g
-s%@qt_libraries@%/usr/lib/qt2//lib%g
-s%@qt_includes@%/usr/lib/qt2//include%g
-s%@QT_INCLUDES@%-I/usr/lib/qt2//include%g
-s%@QT_LDFLAGS@%-L/usr/lib/qt2//lib%g
-s%@MOC@%/usr/lib/qt2//bin/moc%g
-s%@UIC@%/usr/lib/qt2//bin/uic%g
+s%@qt_libraries@%/usr/lib/qt2/lib%g
+s%@qt_includes@%/usr/lib/qt2/include%g
+s%@QT_INCLUDES@%-I/usr/lib/qt2/include%g
+s%@QT_LDFLAGS@%-L/usr/lib/qt2/lib%g
+s%@MOC@%/usr/lib/qt2/bin/moc%g
+s%@UIC@%/usr/lib/qt2/bin/uic%g
 s%@UIC_TR@%i18n%g
 s%@LIB_QT@%-lqt-mt $(LIBPNG) $(LIBJPEG) -lXext $(LIB_X11) $(LIBSM)%g
 s%@kde_qtver@%2%g

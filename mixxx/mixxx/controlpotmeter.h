@@ -42,6 +42,7 @@ class ControlPotmeter : public ControlObject  {
   MidiObject *midi;
  public:
   int midino;
+  ControlPotmeter();
   ControlPotmeter(char* n, short int, MidiObject *, FLOAT=0.0, FLOAT=1.0);
   virtual ~ControlPotmeter();
   char* print();
@@ -50,7 +51,7 @@ class ControlPotmeter : public ControlObject  {
   FLOAT getValue();
   char getPosition();
 public slots:
-  void slotSetPosition(int);
+  virtual void slotSetPosition(int);
 signals:
   void valueChanged(FLOAT);
 };

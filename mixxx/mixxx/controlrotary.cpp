@@ -8,10 +8,17 @@ const char ControlRotary::graycodetable[256] =  {128, 56, 40, 55, 24, 128, 39, 5
 	    midino - number of the midi controller.
 	    midicontroller - pointer to the midi controller.
    -------- ------------------------------------------------------ */
-ControlRotary::ControlRotary(char* n, int midino,  MidiObject* midi) : ControlPotmeter(name, midino, midi) 
-{
+ControlRotary::ControlRotary(char* n, int _midino,  MidiObject* _midi) {
+  name = n;
+
+  midi = _midi;
+  midino = _midino;
+  midi->addpotmeter(this);
+
   direction = 1; // arbitrary
   ftime(&oldtime);
+  value = 0;
+  emit valueChanged(value);
 }
 
 /* -------- ------------------------------------------------------

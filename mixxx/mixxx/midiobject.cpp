@@ -109,7 +109,7 @@ void MidiObject::run() {
     do {
       int no = snd_rawmidi_read(handle,&buffer[0],1);
       if (no != 1)
-	std::cout << "Warning: midi recieved " << no << " bytes.\n";
+	  qWarning("Warning: midiobject recieved %i bytes.", no);
     } while (buffer[0] != -79);
     /*
       and then get the following 2 bytes:
@@ -117,22 +117,22 @@ void MidiObject::run() {
     for (int i=1; i<3; i++) {
       int no = snd_rawmidi_read(handle,&buffer[i],1);
       if (no != 1)
-	std::cout << "Warning: midi recieved " << no << " bytes.\n";
+	  qWarning("Warning: midiobject recieved %i bytes.", no);
     }
     
     char channel = buffer[0];
     char midicontrol = buffer[1];
     char midivalue = buffer[2];
 
-    qDebug("Received midi message: %i %i %i",(int)channel, 
-	   (int)midicontrol,(int)midivalue);
+    // qDebug("Received midi message: %i %i %i",(int)channel, 
+    //	   (int)midicontrol,(int)midivalue);
     
     // Check the potmeters:
     for (int i=0; i<no_potmeters; i++) 
       if (potmeters[i]->midino == midicontrol) {
 	potmeters[i]->slotSetPosition((int)midivalue);
-	qDebug("Changed potmeter %s to %i",potmeters[i]->print(), 
-	       (int)potmeters[i]->getValue());
+	//qDebug("Changed potmeter %s to %i",potmeters[i]->print(), 
+	//       (int)potmeters[i]->getValue());
 	break;
       }
     

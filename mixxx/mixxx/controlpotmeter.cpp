@@ -26,7 +26,8 @@
 		    potmeter is changed.
 	    midicontroller - pointer to the midi controller.
    -------- ------------------------------------------------------ */
-//ControlPotmeter::ControlPotmeter() {}
+ControlPotmeter::ControlPotmeter() {}
+
 ControlPotmeter::ControlPotmeter(char* n, short int _midino, MidiObject *_midi,
 				 FLOAT _minvalue=0.0, FLOAT _maxvalue=1.0)
 {
@@ -46,8 +47,7 @@ ControlPotmeter::~ControlPotmeter() {
   midi->removepotmeter(this);
 }
 
-char* ControlPotmeter::print()
-{
+char* ControlPotmeter::print() {
   return name;
 }
 
@@ -57,10 +57,8 @@ char* ControlPotmeter::print()
    Input:   The (new) position.
    Output:  The value is updated.
    -------- ------------------------------------------------------ */
-void ControlPotmeter::slotSetPosition(int _newpos)
-{
+void ControlPotmeter::slotSetPosition(int _newpos) {
   char newpos =(char)_newpos;
-
   char static const maxPosition = 127;
   char static const minPosition  = 0;
 
@@ -69,6 +67,7 @@ void ControlPotmeter::slotSetPosition(int _newpos)
   // Calculate the value linearly:
   value = (valuerange/positionrange)*
     ((maxPosition-newpos)-minPosition)+minvalue;
+  qDebug("Controlpotmeter: changed %s to %g.",name,value);
 
   emit valueChanged(value);
 }
