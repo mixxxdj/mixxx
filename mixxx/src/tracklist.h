@@ -9,7 +9,7 @@
 class QString;
 class QPopupMenu;
 class QPoint;
-class DlgPlayControl;
+class DlgPlaycontrol;
 class EngineBuffer;
 
 // Defines for the rows in the table. Should be made as simple
@@ -26,8 +26,8 @@ class TrackList : public QObject
 {
 	Q_OBJECT
 public:
-	TrackList( const QString, const QTable *, const DlgPlayControl *, const DlgPlayControl *,
-               const EngineBuffer *, const EngineBuffer * );
+	TrackList( const QString, QTable *, DlgPlaycontrol *, DlgPlaycontrol *,
+               EngineBuffer *, EngineBuffer * );
 	~TrackList();
 	void WriteXML( );
 
@@ -49,16 +49,11 @@ private:
 	QTable *m_ptableTracks;
 	QPopupMenu *playSelectMenu;
     /** Pointers to the play controls */
-    DlgPlayControl *m_pPlaycontrol1, *m_pPlaycontrol2;
+    DlgPlaycontrol *m_pPlaycontrol1, *m_pPlaycontrol2;
     /** Points to the two play buffers */
     EngineBuffer *m_pBuffer1, *m_pBuffer2;
     
 	int m_iMaxTimesPlayed;
-
-signals:
-	void signalChangePlay_1( TrackInfoObject * ); // for sending information to mixxx
-	void signalChangePlay_2( TrackInfoObject * );
-
 };
 
 #endif

@@ -19,6 +19,8 @@ public:
 	QString Duration(); // Returns the duration as a string
     /** Returns the location of the file, included path */
     QString Location();
+    /** Writes all the info nicely */
+    QString getInfo();
 
 	bool m_bExist; // Flag which determines if the file exist or not.
 	QString m_sFilename;

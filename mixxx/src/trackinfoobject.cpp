@@ -139,4 +139,10 @@ QString TrackInfoObject::Location()
     return m_sFilepath + "/" + m_sFilename;
 }
 
-
+QString TrackInfoObject::getInfo()
+{
+    return QString("Artist : " + m_sArtist + "\n" +
+                   "Title  : " + m_sTitle + "\n" +
+                   "Type   : " + m_sType  + "\n" +
+                   "Bitrate: " + m_sBitrate );
+}
