@@ -90,7 +90,7 @@ win32 {
 macx {
   DEFINES += __MACX__
   LIBS += /usr/local/lib/libaudiofile.a -lz -framework Carbon -framework QuickTime
-  CONFIG_PATH = \"./Mixxx.app/Contents/Resources/config/\" 
+  CONFIG_PATH = \"./Contents/Resources/config/\" 
 }
 
 # gcc Profiling
@@ -102,6 +102,6 @@ FORMS	= dlgchanneldlg.ui dlgplaycontroldlg.ui dlgplaylistdlg.ui dlgmasterdlg.ui 
 IMAGES	= filesave.xpm
 unix:TEMPLATE         = app
 win32:TEMPLATE       = vcapp
-CONFIG	+= qt warn_off thread release 
+CONFIG	+= qt warn_on thread release 
 DBFILE	= mixxx.db
 LANGUAGE	= C++

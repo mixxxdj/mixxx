@@ -108,6 +108,7 @@ bool PlayerPortAudio::open(QString nameMaster, QString nameHead, int srate, int 
     PaSampleFormat format = 16;
     switch (bits)
     {
+        case 0:  format = paInt16; break;
         case 8:  format = paInt8; break;
         case 16: format = paInt16; break;
         case 24: format = paInt24; break;

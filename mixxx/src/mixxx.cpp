@@ -144,13 +144,24 @@ MixxxApp::MixxxApp(QApplication *a)
   // Store default midi device
   config->set(ConfigKey("[Midi]","Device"), ConfigValue(midi->getOpenDevice()->latin1()));
 
-  // Get directory where MIDI configurations are stored. If no is given, set to CONFIG_PATH
-  if (config->getValueString(ConfigKey("[Midi]","Configdir")).length() == 0)
-#ifdef __WIN__ || __MACX__
-      config->set(ConfigKey("[Midi]","Configdir"),ConfigValue(QDir::currentDirPath().append(QString("/").append(CONFIG_PATH))));
-#endif
+  // On unix, get directory where MIDI configurations are stored. If no is given, set to CONFIG_PATH
 #ifdef __UNIX__ && !__MACX__
+  if (config->getValueString(ConfigKey("[Midi]","Configdir")).length() == 0)
       config->set(ConfigKey("[Midi]","Configdir"),ConfigValue(CONFIG_PATH));
+#endif
+
+  // On Mac and Windows, always set the config dir relative to the application dir
+#ifdef __WIN__
+  config->set(ConfigKey("[Midi]","Configdir"),ConfigValue(QDir::currentDirPath().append(QString("/").append(CONFIG_PATH))));
+#endif
+#ifdef __MACX__
+  CFURLRef pluginRef = CFBundleCopyBundleURL(CFBundleGetMainBundle());
+  CFStringRef macPath = CFURLCopyFileSystemPath(pluginRef, kCFURLPOSIXPathStyle);
+  const char *pathPtr = CFStringGetCStringPtr(macPath, CFStringGetSystemEncoding());
+  qDebug("Path = %s",pathPtr);
+  
+  config->set(ConfigKey("[Midi]","Configdir"),ConfigValue(QString(pathPtr).append(QString("/").append(CONFIG_PATH))));
+
 #endif
 
   // If the directory does not end with a "/", add one
