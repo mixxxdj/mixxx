@@ -35,6 +35,7 @@
 #include "midiobject.h"
 #include "soundsource.h"
 
+class MixxxApp;
 class SoundBuffer;
 
 /**
@@ -44,7 +45,7 @@ class SoundBuffer;
 class EngineBuffer : public EngineObject, public QThread {
  Q_OBJECT
 public:
-    EngineBuffer(QApplication *app, QWidget *mixxx, DlgPlaycontrol *, const char *group, const char *filename);
+    EngineBuffer(QApplication *app, MixxxApp *mixxx, DlgPlaycontrol *, const char *group, const char *filename);
     ~EngineBuffer();
     void newtrack(const char *);
     CSAMPLE *update_visual();
@@ -74,7 +75,7 @@ private:
     QSemaphore *readChunkLock;
 
    QApplication *app;
-   QWidget *mixxx;
+   MixxxApp *mixxx;
    bool pause;
    int start_seek;
    Monitor rate;

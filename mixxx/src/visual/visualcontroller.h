@@ -52,7 +52,7 @@ public:
   void drawScene(GLenum mode);
   void display();
   void resize(GLsizei _width,GLsizei _height);
-  void add(VisualObject * obj);
+  int add(VisualObject * obj);
   void remove(VisualObject * obj);
 
   GLdouble fov,aspect,znear,zfar;
@@ -65,7 +65,7 @@ public:
 
 private:
   Objects objects;
-
+  static int idCount;
 };
 #endif
 

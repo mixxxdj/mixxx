@@ -289,37 +289,12 @@ void MixxxApp::engineStart()
                                        view->playlist->ListPlaylist->firstChild()->nextSibling()->text(1));
         } else
             buffer2 = new EngineBuffer(app, this, view->playcontrol2, "[Channel2]", 0);
-    } else {
+    }
+    else
+    {
         buffer1 = new EngineBuffer(app, this, view->playcontrol1, "[Channel1]", 0);
         buffer2 = new EngineBuffer(app, this, view->playcontrol2, "[Channel2]", 0);
     }
-
-    // Setup visuals
-#ifdef __VISUALS__
-    if (visual>0)
-    {
-        GUISignal *signal;
-        GUIContainer *container;
-
-        container = visual->add(buffer1);
-        buffer1->getSoundBuffer()->setVisual(container->getBuffer());
-        signal = container->getSignal();
-//        signal->setFishEyeMode(false);
-        signal->setFishEyeLengthScale(0.5);
-        signal->setFishEyeSignalFraction(0.4);
-        container->setBasepos(-50,32,0);
-        container->setZoompos(-50,20,0);
-
-        container = visual->add(buffer2);
-        buffer2->getSoundBuffer()->setVisual(container->getBuffer());
-        signal = container->getSignal();
-//        signal->setFishEyeMode(false);
-        signal->setFishEyeLengthScale(0.5);
-        signal->setFishEyeSignalFraction(0.04);
-        container->setBasepos(25,32,0);
-        container->setZoompos(-50,-10,0);
-    }
-#endif
 
     // Starting channels:
     channel1 = new EngineChannel(view->channel1, "[Channel1]");
@@ -841,3 +816,9 @@ void MixxxApp::reopen()
     // Open MIDI device
     midi->devOpen(config->getValueString(ConfigKey("[Midi]","Device")));
 }
+
+MixxxVisual *MixxxApp::getVisual()
+{
+    return visual;
+}
+

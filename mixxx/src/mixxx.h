@@ -88,7 +88,8 @@ class MixxxApp : public QMainWindow
     void updatePlayList();
     /** overloaded for Message box on last window exit */
     bool queryExit();
-
+    /** Get pointer to the MixxxVisual object */
+    MixxxVisual *getVisual();
   public slots:
 
     /** generate a new document in the actual view */
