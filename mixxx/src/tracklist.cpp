@@ -162,6 +162,7 @@ void TrackList::updateTracklist()
 
 void TrackList::slotEndOfTrackCh1(double)
 {
+//    qDebug("end of track ch 1");
     switch ((int)m_pEndOfTrackModeCh1->getValue())
     {
     case TRACK_END_MODE_NEXT:

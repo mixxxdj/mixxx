@@ -165,7 +165,7 @@ int ReaderExtractBeat::getBufferSize()
     return input->getBufferSize();
 }
 
-void *ReaderExtractBeat::processChunk(const int _idx, const int start_idx, const int _end_idx, bool)
+void *ReaderExtractBeat::processChunk(const int _idx, const int start_idx, const int _end_idx, bool backwards)
 {
 #ifdef FILEOUTPUT
     QTextStream streambpm(&textbpm);
@@ -362,7 +362,7 @@ void *ReaderExtractBeat::processChunk(const int _idx, const int start_idx, const
 
 //            qDebug("int %f, min %f, max %f",beatint, bpv->getCurrMaxInterval()-kfBeatRange, bpv->getCurrMaxInterval()+kfBeatRange);
 
-            if (beatint>bpv->getCurrMaxInterval()-kfBeatRange && beatint<bpv->getCurrMaxInterval()+kfBeatRange)
+            if (!backwards && beatint>bpv->getCurrMaxInterval()-kfBeatRange && beatint<bpv->getCurrMaxInterval()+kfBeatRange)
             {
                 if (!maxPeakInHistMaxInterval)
                 {
@@ -381,7 +381,7 @@ void *ReaderExtractBeat::processChunk(const int _idx, const int start_idx, const
             if (it==peaks->end())
                 it = peaks->begin();
         }
-        else
+        else if (!backwards)
         {
             //
             // No peak
@@ -499,6 +499,11 @@ void *ReaderExtractBeat::processChunk(const int _idx, const int start_idx, const
                 }
             }
         }
+        else
+            // Going backwards set confidence very low
+            confidence = -1.;
+
+
         ++i;
     }
 
