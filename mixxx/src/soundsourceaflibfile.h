@@ -1,6 +1,3 @@
-
-#ifdef Q_WS_X11
-
 #include "soundsource.h"
 #include <audiofile.h>
 #include <stdio.h>
@@ -17,5 +14,4 @@ class SoundSourceAFlibfile : public SoundSource {
   AFfilehandle fh;
   unsigned long filelength;
 };
-#endif
 
