@@ -22,6 +22,7 @@
 #include "readerextractwave.h"
 #include "soundsource.h"
 #include "soundsourcemp3.h"
+#include "soundsourceoggvorbis.h"
 #ifdef __UNIX__
   #include "soundsourceaudiofile.h"
 #endif
@@ -193,8 +194,11 @@ void Reader::newtrack()
 #ifdef __WIN__
                 file = new SoundSourceSndFile(filename);
 #endif
-            else if (finfo.extension(false).upper() == "MP3")
+            else if (finfo.extension(false).upper() == "MP3")                    
                 file = new SoundSourceMp3(filename);
+            else if (finfo.extension(false).upper() == "OGG")
+                file = new SoundSourceOggVorbis(filename);
+
             file_srate = file->getSrate();
             file_length = file->length();
         }
