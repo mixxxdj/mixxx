@@ -9,11 +9,11 @@ Mixxx is software for DJ'ing, using custom or
 commercial MIDI controllers. You can use wave based
 audio files, Ogg Vorbis and MP3 files as audio input.
 This release works on Linux (OSS Sound Drivers), Windows and 
-Mac OS 10.2.
+MacOS X (Recent version of MacOS X and at least G4 CPU).
 
 
 * NEWS *****************************************************
-New since 1.1:
+New since 1.0.1:
 - Added support for mouse interaction when OpenGL is not
   available
 - Configurable keyboard shortcuts
@@ -29,6 +29,7 @@ New since 1.1:
 - Kill buttons (keyboard/midi assignable) for low, mid, and
   high filter
 
+
 * REQUIREMENTS *********************************************
 Mixxx is depends on the following libraries:
 QT >= 3.1 
@@ -39,6 +40,7 @@ vorbisfile
 FFTW 2
 
 The Windows version uses libsndfile instead of libAudioFile.
+
 
 * INSTALL **************************************************
 You can either install Mixxx from binary, or from source.
@@ -55,11 +57,11 @@ You will need to have QT installed already, but the other
 libs mentioned above is included in this binary version
 (statically linked).
 
-This will install the program in /usr/bin with midi configs
-and skins in /usr/share/mixxx. The placement of the skin,
-keyboard and midi configs can be changed in the users 
-~/.mixxx.cfg file created after the first startup of the 
-program.
+The install script will install the program in /usr/bin 
+with midi configs and skins in /usr/share/mixxx. The 
+placement of the skin, keyboard and midi configs can be 
+changed in the users ~/.mixxx.cfg file created after the 
+first startup of the program.
 
 To compile and install from source use the following commands:
 cd src
@@ -75,7 +77,8 @@ The midi configs and skins are placed in the application
 directory (application bundle on mac). A configuration
 file mixxx.cfg is written to the users home directory
 containing the Mixxx preferences as set in the preference
-panel.
+panel. The Mac version requires a recent version of MacOS X
+and at least a G4 CPU.
 
 * RUN THE PROGRAM ******************************************
 Run the program by double clicking on the Mixxx application
@@ -98,6 +101,10 @@ instead of "Waveform" under GUI/Visuals. If you hear
 cracks in the sound or the program stops for small periods
 this is often because your computer is not fast enough. Try
 increasing the latency.
+
+To configure the keyboard and MIDI, take a look at the
+Configuration.txt file in this directory.
+
 
 * DEVELOPMENT **********************************************
 If you are interested in joining the development team of

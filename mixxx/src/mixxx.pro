@@ -216,6 +216,9 @@ macx {
   LIBS += -lz -framework Carbon -framework QuickTime
   SETTINGS_FILE = \"mixxx.cfg\"
   RC_FILE = icon.icns
+  QMAKE_CXXFLAGS += -O3 -faltivec -mtune=G4 -mcpu=G4 -mdynamic-no-pic -funroll-loops -ffast-math -fstrict-aliasing  
+  QMAKE_CFLAGS += -O3 -faltivec -mtune=G4 -mcpu=G4 -mdynamic-no-pic -funroll-loops -ffast-math -fstrict-aliasing 
+  QMAKE_LFLAGS += -O3 -faltivec -mtune=G4 -mcpu=G4 -mdynamic-no-pic -funroll-loops -ffast-math -fstrict-aliasing
 }
 
 FORMS	= dlgprefsounddlg.ui dlgprefmididlg.ui dlgprefplaylistdlg.ui dlgprefcontrolsdlg.ui
@@ -227,7 +230,7 @@ IMAGES += icon.png
 DEFINES += SETTINGS_FILE=$$SETTINGS_FILE
 unix:TEMPLATE = app
 win32:TEMPLATE = vcapp
-#CONFIG += qt thread warn_off release
-CONFIG += qt thread warn_on debug
+CONFIG += qt thread warn_off release
+#CONFIG += qt thread warn_on debug
 DBFILE = mixxx.db
 LANGUAGE = C++

@@ -6,8 +6,7 @@
     email                : haste@diku.dk
  ***************************************************************************/
 
-/*******
-********************************************************************
+/***************************************************************************
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -313,7 +312,7 @@ void PeakList::print()
                 }
                 std::cout << "\n";
 
-    qDebug("size %i",size());
+    //qDebug("size %i",size());
     if (size()>1)
     {
         iterator it2 = begin();
