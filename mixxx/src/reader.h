@@ -79,6 +79,9 @@ public:
     /** Returns file sample rate. This method must only be called when holding the enginelock
       * mutex */
     long int getFileposEnd();
+    /** Set the file play position. This method must only be called when holding the enginelock
+      * mutex */
+    void setFileposPlay(long int);
     /** Cue point */
     double f_dCuePoint;
 

@@ -50,6 +50,7 @@ ReaderExtractWave::ReaderExtractWave(Reader *pReader) : ReaderExtract(0, "signal
     m_pReader->lock();
     filepos_start = 0;
     filepos_end = 0;
+    filepos_play = 0;
     m_pReader->unlock();
     bufferpos_start = 0;
     bufferpos_end = 0;
@@ -130,6 +131,7 @@ void ReaderExtractWave::newSource(TrackInfoObject *pTrack)
     m_pReader->lock();
     filepos_start = 0;
     filepos_end = 0;
+    filepos_play = 0;
     m_pReader->unlock();
     bufferpos_start = 0;
     bufferpos_end = 0;
@@ -229,30 +231,75 @@ void ReaderExtractWave::getchunk(CSAMPLE rate)
     // Determine playback direction
     bool backwards;
     if (rate < 0.)
+    {
+//        qDebug("rate back");
         backwards = true;
+    }
     else
+    {
+//        qDebug("rate fwd");
         backwards = false;
+    }
+
+    //
+    // Read a chunk. If playback direction is backwards we need to perform a seek, read forward, and perform a
+    // seek to the end of the buffer. However, if we are reading samples before position 0 (this can happen to
+    // reset the buffer) we have to avoid the two seeks because this can mess up the mp3 stream, because we
+    // cannot perform an accurate seek.
+    //
+
+    // Determine which chunk to fetch, one back in time, or one ahead of time. This is to ensure that the
+    // whole waveform display is updated, and ofcourse also that chunks in the playback direction is fetched
+    // before playback.
+
+/*
+    if (!backwards && filepos_play>READCHUNKSIZE*(READCHUNK_NO)/2-1 && filepos_end>filepos_play && filepos_end-filepos_play>filepos_play-filepos_start)
+        backwards = true;
+    else if (backwards && filepos_play-filepos_start>filepos_end-filepos_play)
+        backwards = false;
+*/
+
+    //qDebug(":::::::::: %i ::: %i",filepos_end-filepos_play,filepos_play-(filepos_start));
+    if (!backwards && filepos_end>filepos_play && filepos_end-filepos_play>(filepos_play-filepos_start))
+    {
+//        qDebug("f-back");
+        backwards = true;
+    }
+    else if (backwards && filepos_start<filepos_play && (filepos_play-filepos_start)>filepos_end-filepos_play)
+    {
+//        qDebug("f-fwd");
+        backwards = false;
+    }
+
+//    qDebug("getchunk: pos %i, range %i-%i, back %i",filepos_play, filepos_start, filepos_end, backwards);
+
+    //qDebug("play %i, range %i-%i",filepos_play,filepos_start,filepos_end);
 
     // Determine new start and end positions in file and buffer, start index of where read samples
     // will be placed in read buffer (bufIdx), and perform seek if reading backwards
-    double filepos_start_new, filepos_end_new;
+    long int filepos_start_new, filepos_end_new;
     int bufIdx;
 
     m_pReader->lock();
 
     int chunkCurr, chunkStart, chunkEnd;
 
+    bool seek = false;
     if (backwards)
     {
-        filepos_start_new = max(0.,filepos_start-(double)READCHUNKSIZE);
+        filepos_start_new = filepos_start-READCHUNKSIZE;
         bufferpos_start = (bufferpos_start-READCHUNKSIZE+READBUFFERSIZE)%READBUFFERSIZE;
-        file->seek((long int)filepos_start_new);
-
+        //qDebug("filepos %f",filepos_start_new);
+        {
+//            qDebug("seek back");
+            file->seek((long int)max(0,filepos_start_new));
+            seek = true;
+        }
         if ((filepos_end-filepos_start)/READCHUNKSIZE < (unsigned int)READCHUNK_NO)
             filepos_end_new = filepos_end;
         else
         {
-            filepos_end_new = filepos_end-(double)READCHUNKSIZE;
+            filepos_end_new = filepos_end-READCHUNKSIZE;
             bufferpos_end   = bufferpos_start; //(bufferpos_end-READCHUNKSIZE+READBUFFERSIZE)%READBUFFERSIZE;
         }
 
@@ -262,7 +309,7 @@ void ReaderExtractWave::getchunk(CSAMPLE rate)
     }
     else
     {
-        filepos_end_new = filepos_end+(double)READCHUNKSIZE;
+        filepos_end_new = filepos_end+READCHUNKSIZE;
         bufIdx = bufferpos_end;
         bufferpos_end   = (bufferpos_end+READCHUNKSIZE)%READBUFFERSIZE;
         if ((filepos_end-filepos_start)/READCHUNKSIZE < (unsigned int)READCHUNK_NO)
@@ -281,20 +328,43 @@ void ReaderExtractWave::getchunk(CSAMPLE rate)
     filepos_start = (long int)filepos_start_new;
     filepos_end = (long int)filepos_end_new;
 
+    //qDebug("f %i-%i, b %i-%i",filepos_start, filepos_end, bufferpos_start, bufferpos_end);
+
     // Read samples (reset samples not read, but requested)
-    int i = file->read(READCHUNKSIZE, temp);
-    int j;
-    for (j=i; j<READCHUNKSIZE; ++j)
-        temp[j] = 0.;
+    int chunksize = READCHUNKSIZE;
+    int k = 0;
+    if (backwards && filepos_start<0)
+    {
+        //qDebug("d1 filepos %i-%i",filepos_start,filepos_end);
+        int i;
+        for (i=0; i<min(READCHUNKSIZE,-filepos_start); ++i)
+            temp[i] = 0.;
+        //qDebug("i %i",i);
+        chunksize += filepos_start;
+        k = -filepos_start;
+    }
+    int i = 0;
+    if (chunksize>0)
+    {
+        //qDebug("d2 filepos %i-%i",filepos_start,filepos_end);
+        i = file->read(chunksize, &temp[k]);
+        //qDebug("read %i",i);
+        for (int j=i+k; j<READCHUNKSIZE; ++j)
+            temp[j] = 0.;
+    }
 
     // Seek to end of the samples read in buffer, if we are reading backwards. This is to ensure, that the correct samples
     // are read, if we next time are going forward.
-    if (backwards)
+    if (seek)
+    {
+        //qDebug("seek fwd");
         file->seek((long int)filepos_end);
+    }
 
     // Copy samples to read_buffer
     i=0;
-    for (j=bufIdx; j<bufIdx+READCHUNKSIZE; j++)
+    //qDebug("bufIdx %i",bufIdx);
+    for (int j=bufIdx; j<bufIdx+READCHUNKSIZE; j++)
         read_buffer[j] = (CSAMPLE)temp[i++];
 
     // Update vertex buffer by sending an event containing indexes of where to update.
@@ -320,6 +390,7 @@ long int ReaderExtractWave::seek(long int new_playpos)
         m_pReader->lock();
         filepos_start = new_playpos;
         filepos_end = new_playpos;
+        filepos_play = new_playpos;
 
         seekpos = file->seek((long int)filepos_start);
 
@@ -330,12 +401,9 @@ long int ReaderExtractWave::seek(long int new_playpos)
         bufferpos_start = 0;
         bufferpos_end = 0;
 
-        for (unsigned int i=0; i<READBUFFERSIZE; i++)
+        unsigned int i;
+        for (i=0; i<READBUFFERSIZE; i++)
             read_buffer[i] = 0.;
-
-        // Update vertex buffer by sending an event containing indexes of where to update.
-        if (m_pVisualBuffer != 0)
-            QApplication::postEvent(m_pVisualBuffer, new ReaderEvent(0,READBUFFERSIZE));
 
 #ifdef EXTRACT
         // Reset extract objects
@@ -343,6 +411,24 @@ long int ReaderExtractWave::seek(long int new_playpos)
         readerhfc->reset();
         readerbeat->reset();
 #endif
+
+        // Update vertex buffer by sending an event containing indexes of where to update.
+        if (m_pVisualBuffer != 0)
+            QApplication::postEvent(m_pVisualBuffer, new ReaderEvent(0,READBUFFERSIZE));
+
+        // Refresh buffers in both directions (before and after playpos)
+        for (i=0; i<READCHUNK_NO/2-1; ++i)
+        {
+        }
+        /*
+            getchunk(0.);
+            getchunk(-1.);
+            getchunk(0.);
+            getchunk(-1.);
+            getchunk(0.);
+            getchunk(-1.);
+        */
+
     }
     else
         seekpos = 0;

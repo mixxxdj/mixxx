@@ -30,6 +30,8 @@
 #include "powermate.h"
 #include "wvisualwaveform.h"
 #include "visual/visualchannel.h"
+#include "mathstuff.h"
+
 
 // Static default values for rate buttons
 double EngineBuffer::m_dTemp = 0.01;
@@ -316,16 +318,19 @@ void EngineBuffer::setPermSmall(double v)
 
 void EngineBuffer::slotControlSeek(double change)
 {
-//    qDebug("seeking... %f",change);
+    //qDebug("seeking... %f",change);
 
     // Find new playpos
-    double new_playpos = change*file_length_old;
+    double new_playpos = round(change*file_length_old);
+    if (!even(new_playpos))
+        new_playpos--;
     if (new_playpos > file_length_old)
         new_playpos = file_length_old;
     if (new_playpos < 0.)
         new_playpos = 0.;
 
     // Seek reader
+    //qDebug("seek %f",new_playpos);
     reader->requestSeek(new_playpos);
 
     m_iBeatMarkSamplesLeft = 0;
@@ -337,12 +342,19 @@ void EngineBuffer::slotControlSeek(double change)
 // Set the cue point at the current play position:
 void EngineBuffer::slotControlCueSet(double)
 {
-    reader->f_dCuePoint = filepos_play;
+    double cue = round(filepos_play);
+    if (!even(cue))
+        cue--;
+    reader->f_dCuePoint = cue;
 }
 
 // Goto the cue point:
 void EngineBuffer::slotControlCueGoto(double)
 {
+    // Set cue point if play is not pressed
+    if (playButton->get()==0.)
+        slotControlCueSet();
+
     // Seek to cue point
     reader->requestSeek(reader->f_dCuePoint);
     m_iBeatMarkSamplesLeft = 0;
@@ -353,6 +365,10 @@ void EngineBuffer::slotControlCueGoto(double)
 
 void EngineBuffer::slotControlCuePreview(double d)
 {
+    // Set cue point if play is not pressed
+    if (playButton->get()==0.)
+        slotControlCueSet();
+
     if (buttonCuePreview->get()==0.)
     {
         // Stop playing (set playbutton to stoped) and seek to cue point
@@ -372,7 +388,7 @@ void EngineBuffer::slotControlCuePreview(double d)
 void EngineBuffer::slotControlPlay(double)
 {
     // Set cue when play button is pressed for stopping the sound
-    if (playButton->get()==0.)
+    //if (playButton->get()==0.)
         slotControlCueSet();
 }
 
@@ -522,6 +538,8 @@ CSAMPLE *EngineBuffer::process(const CSAMPLE *, const int buf_size)
             file_srate_old = reader->getFileSrate();
             filepos_start = reader->getFileposStart();
             filepos_end = reader->getFileposEnd();
+            reader->setFileposPlay(filepos_play);
+
             reader->unlock();
             readerinfo = true;
         }
@@ -544,7 +562,7 @@ CSAMPLE *EngineBuffer::process(const CSAMPLE *, const int buf_size)
             filebpm = bpmBuffer[(int)(bufferpos_play*(beat->getBufferSize()/READCHUNKSIZE))];
         }
 
-        // Determine direction of playback
+        // Determine direction of playback from reverse button
         double dir = 1.;
         if (reverseButton->get()==1.)
             dir = -1.;
@@ -616,7 +634,7 @@ CSAMPLE *EngineBuffer::process(const CSAMPLE *, const int buf_size)
                     // No next beat was found
                     nextBeatPos = -1;
             }
-            
+
             oldEvent = 1.;
         }
         else if (oldEvent==0.)
@@ -624,14 +642,17 @@ CSAMPLE *EngineBuffer::process(const CSAMPLE *, const int buf_size)
 
 //        qDebug("NextBeatPos :%i, bufDiff: %i",nextBeatPos,READBUFFERSIZE/readerbeat->getBufferSize());
 */
-        
+
         // If the rate has changed, write it to the rate_exchange monitor
         if (rate != rate_old)
         {
             rate_exchange.tryWrite(rate);
             rate_old = rate;
-            scale->setRate(rate);        
+            scale->setRate(rate);
         }
+
+        bool at_start = false;
+        bool at_end = false;
 
         // Determine playback direction
         bool backwards = false;
@@ -647,8 +668,9 @@ CSAMPLE *EngineBuffer::process(const CSAMPLE *, const int buf_size)
         else
         {
             // Check if we are at the boundaries of the file
-            if ((filepos_play<0. && backwards==true) || (filepos_play>file_length_old && backwards==false))
+            if ((filepos_play<0. && backwards) || (filepos_play>file_length_old && !backwards))
             {
+                qDebug("buffer out of range");
                 for (int i=0; i<buf_size; i++)
                     buffer[i] = 0.;
             }
@@ -705,7 +727,21 @@ CSAMPLE *EngineBuffer::process(const CSAMPLE *, const int buf_size)
                 }
 
                 // Write file playpos
-                filepos_play += (idx-bufferpos_play); //rate*(double)(buf_size);
+                filepos_play += (idx-bufferpos_play);
+                if (file_length_old>0 && filepos_play>file_length_old)
+                {
+                    idx -= filepos_play-file_length_old;
+                    filepos_play = file_length_old;
+                    at_end = true;
+                    //qDebug("end");
+                }
+                else if (filepos_play<0)
+                {
+                    //qDebug("start %f",filepos_play);
+                    idx -= filepos_play;
+                    filepos_play = 0;
+                    at_start = true;
+                }
 
                 // Ensure valid range of idx
                 if (idx>READBUFFERSIZE)
@@ -715,27 +751,32 @@ CSAMPLE *EngineBuffer::process(const CSAMPLE *, const int buf_size)
 
                 // Write buffer playpos
                 bufferpos_play = idx;
+
+                //qDebug("bufferpos_play %f",idx);
             }
         }
 
         //
         // Check if more samples are needed from reader, and wake it up if necessary.
         //
-        if (readerinfo)
+        if (readerinfo && filepos_end>0)
         {
 //            qDebug("checking");
             // Part of this if condition is commented out to ensure that more block is
             // loaded at the end of an file to fill the buffer with zeros
-            if (!backwards && /*filepos_end<file_length_old &&*/ (filepos_end - filepos_play < READCHUNKSIZE*(READCHUNK_NO/2-1)))
+            if (/*!backwards && *//*filepos_end<file_length_old &&*/ (filepos_end - filepos_play < READCHUNKSIZE*(READCHUNK_NO/2-1)))
             {
-//                qDebug("wake fwd");
+                //qDebug("wake fwd play %f, end %i",filepos_play, filepos_end);
                 reader->wake();
             }
-            else if (backwards && filepos_start>0. && (filepos_play-filepos_start)<READCHUNKSIZE*(READCHUNK_NO/2-1))
+            else if (/*backwards && filepos_start>READCHUNKSIZE*(READCHUNK_NO/2-1) &&*/ abs(filepos_play-filepos_start)<READCHUNKSIZE*(READCHUNK_NO/2-1))
             {
-//                qDebug("wake back");
+                //qDebug("wake back");
                 reader->wake();
             }
+
+
+
             //
             // Check if end or start of file, and playmode, write new rate, playpos and do wakeall
             // if playmode is next file: set next in playlistcontrol
@@ -746,10 +787,12 @@ CSAMPLE *EngineBuffer::process(const CSAMPLE *, const int buf_size)
             if (m_iSamplesCalculated > (44100/UPDATE_RATE) )
             {
                 if (file_length_old!=0.)
-                    playposSlider->set(filepos_play/file_length_old);
+                {
+                    double f = max(0.,min(filepos_play,file_length_old));
+                    playposSlider->set(f/file_length_old);
+                }
                 else
                     playposSlider->set(0.);
-
                 bpmControl->set(filebpm);
 
                 m_iSamplesCalculated = 0;
@@ -786,7 +829,7 @@ CSAMPLE *EngineBuffer::process(const CSAMPLE *, const int buf_size)
                     reverseButton->set(0.);
                 else
                     reverseButton->set(1.);
-                
+
                 break;
 */
             default:

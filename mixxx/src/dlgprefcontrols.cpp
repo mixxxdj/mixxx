@@ -82,9 +82,9 @@ DlgPrefControls::DlgPrefControls(QWidget *parent, ControlObject *pControl, Mixxx
     // Rate buttons configuration
     //
     if (m_pConfig->getValueString(ConfigKey("[Controls]","RateTempLeft")).length() == 0)
-        m_pConfig->set(ConfigKey("[Controls]","RateTempLeft"),ConfigValue(10));
+        m_pConfig->set(ConfigKey("[Controls]","RateTempLeft"),ConfigValue(50));
     if (m_pConfig->getValueString(ConfigKey("[Controls]","RateTempRight")).length() == 0)
-        m_pConfig->set(ConfigKey("[Controls]","RateTempRight"),ConfigValue(5));
+        m_pConfig->set(ConfigKey("[Controls]","RateTempRight"),ConfigValue(10));
     if (m_pConfig->getValueString(ConfigKey("[Controls]","RatePermLeft")).length() == 0)
         m_pConfig->set(ConfigKey("[Controls]","RatePermLeft"),ConfigValue(10));
     if (m_pConfig->getValueString(ConfigKey("[Controls]","RatePermRight")).length() == 0)

@@ -28,13 +28,13 @@ WSliderComposed::WSliderComposed(QWidget *parent, const char *name ) : WWidget(p
     m_pDoubleBuffer = 0;
     m_bHorizontal = false;
     m_bEventWhileDrag = true;
+    m_bDrag = false;
 
     // Set default values
     m_iSliderLength=0;
     m_iHandleLength=0;
 
     m_fValue = 63.;
-
 }
 
 WSliderComposed::~WSliderComposed()
@@ -150,6 +150,8 @@ void WSliderComposed::mouseReleaseEvent(QMouseEvent *e)
             emit(valueChangedRightUp(m_fValue));
         else
             emit(valueChangedLeftUp(m_fValue));
+
+        m_bDrag = false;
     }
 }
 
@@ -160,6 +162,7 @@ void WSliderComposed::mousePressEvent(QMouseEvent *e)
         m_iStartMousePos = 0;
         m_iStartHandlePos = 0;
         mouseMoveEvent(e);
+        m_bDrag = true;
     }
     else
     {
@@ -205,15 +208,18 @@ void WSliderComposed::paintEvent(QPaintEvent *)
 
 void WSliderComposed::setValue(double fValue)
 {
-    // Set value without emitting a valueChanged signal, and force display update
-    m_fValue = fValue;
+    if (!m_bDrag)
+    {
+        // Set value without emitting a valueChanged signal, and force display update
+        m_fValue = fValue;
 
-    // Calculate handle position
-    if (!m_bHorizontal)
-        fValue = 127-fValue;
-    m_iPos = (int)((fValue/127.)*(double)(m_iSliderLength-m_iHandleLength));
+        // Calculate handle position
+        if (!m_bHorizontal)
+            fValue = 127-fValue;
+        m_iPos = (int)((fValue/127.)*(double)(m_iSliderLength-m_iHandleLength));
 
-    repaint();
+        repaint();
+    }
 }
 
 void WSliderComposed::reset()

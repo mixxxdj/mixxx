@@ -30,6 +30,14 @@
 //#include <sys/stat.h>
 //#include <unistd.h>
 #include <id3tag.h>
+#include <qptrlist.h>
+
+/** Struct used to store mad frames for seeking */
+typedef struct MadSeekFrameType {
+    unsigned char *m_pStreamPos;
+    long int pos;
+} MadSeekFrameType;
+
 
 /**
   *@author Tue and Ken Haste Andersen
@@ -42,10 +50,14 @@ public:
     ~SoundSourceMp3();
     long seek(long);
     unsigned read(unsigned long size, const SAMPLE*);
+    /** Return the length of the file in samples. */
     inline long unsigned length();
     static int ParseHeader( TrackInfoObject * );
     
 private:
+    /** Returns the position of the frame which was found. The found frame is set to
+      * the current element in m_qSeekList */
+    int findFrame(int pos);
     /** Fills the string str with the content of the id3tag frame of frameid.
       * If the frame does not exist or is empty the string is left untouched. */
     static void getField(id3_tag *tag, const char *frameid, QString *str);
@@ -60,12 +72,23 @@ private:
     mad_timer_t pos;
     mad_timer_t filelength;
     mad_stream Stream;
-    mad_frame Frame;
+    mad_frame *Frame;
     mad_synth Synth;
     unsigned inputbuf_len;
     char *inputbuf;
     /** Start index in Synth buffer of samples left over from previous call to read */
     int rest;
+    /** Number of channels in file */
+    int m_iChannels;
+
+    /** It is not possible to make a precise seek in an mp3 file without decoding the whole stream.
+      * To have precise seek within a limited range from the current decode position, we keep track
+      * of past decodeded frame, and their exact position. If a seek occours and it is within the
+      * range of frames we keep track of a precise seek occours, otherwise an unprecise seek is performed
+      */
+    QPtrList<MadSeekFrameType> m_qSeekList;
+    /** Average frame size used when searching for a frame*/
+    int m_iAvgFrameSize;
 };
 
 
