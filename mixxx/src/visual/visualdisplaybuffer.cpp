@@ -55,20 +55,20 @@ void VisualDisplayBuffer::draw()
 
     float xscale = length/(float)(bufferInfo.len1+bufferInfo.len2-1);
     glScalef(xscale,yscale,1);
-
+    //**********************
     //--- Now draw the mother fucker:-)
     if (bufferInfo.len1>0)
     {
-        glTranslatef(-bufferInfo.p1[0],0,0);
+        glTranslatef(-bufferInfo.p1[0]-bufferInfo.corr,0,0);
         m_pVisualBuffer->draw(bufferInfo.p1,bufferInfo.len1, xscale);
     }
 
     if (bufferInfo.len2>0)
     {
         if (bufferInfo.len1==0)
-           glTranslatef(-bufferInfo.p2[0],0,0);
+           glTranslatef(-bufferInfo.p2[0]-bufferInfo.corr,0,0);
         else
-            glTranslatef(bufferInfo.p1[0]+bufferInfo.len1,0,0);
+            glTranslatef(bufferInfo.p1[0]+bufferInfo.len1-bufferInfo.corr,0,0);
         m_pVisualBuffer->draw(bufferInfo.p2, bufferInfo.len2, xscale);
     }
 

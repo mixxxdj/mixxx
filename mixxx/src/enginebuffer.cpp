@@ -569,14 +569,17 @@ CSAMPLE *EngineBuffer::process(const CSAMPLE *, const int buf_size)
                             buffer[j] = 30000.;
                         m_iBeatMarkSamplesLeft = max(0,m_iBeatMarkSamplesLeft-to);
                     }
-                    
+
                     float *beatBuffer = (float *)readerbeat->getBasePtr();
                     int chunkSizeDiff = READBUFFERSIZE/readerbeat->getBufferSize();
-                    for (i=(int)floor(bufferpos_play); i<=(int)floor(idx); i++)
+//                    qDebug("from %i-%i",(int)floor(bufferpos_play),(int)floor(idx));
+					for (i=(int)floor(bufferpos_play); i<=(int)floor(idx); i++)
                     {
-                        if (((i%chunkSizeDiff)==0) && (beatBuffer[i/chunkSizeDiff]==1))
+                        if (((i%chunkSizeDiff)==0) && (beatBuffer[i/chunkSizeDiff]>0.))
                         {
-                            // Audio beat mark
+//                            qDebug("%i: %f",i/chunkSizeDiff,beatBuffer[i/chunkSizeDiff]);
+
+							// Audio beat mark
                             if (audioBeatMark->get()==1.)
                             {
                                 int from = (int)(i-bufferpos_play);
@@ -588,7 +591,7 @@ CSAMPLE *EngineBuffer::process(const CSAMPLE *, const int buf_size)
                             //    qDebug("mark %i: %i-%i", i2/chunkSizeDiff, (int)max(0,i-bufferpos_play),(int)min(i-bufferpos_play+audioBeatMarkLen, idx));
                             }
 #ifdef __UNIX__
-                            // PowerMate led      
+                            // PowerMate led
                             if (powermate!=0)
                                 powermate->led();
 #endif

@@ -106,28 +106,31 @@ void VisualDisplay::draw(GLenum mode)
 
     bufInfo b = m_pVisualBuffer->getVertexArray();
 
-  
+
     if(fishEyeMode)
     {
         // TOTAL LENGTH SHOULD EQUAL b.len1+b.len2 but seems to give b-1!!!!
-    
+
         int nfish = (int)((b.len1+b.len2)*fishEyeSignalFraction);
         int noutside = ((b.len1+b.len2)-nfish)/2;
 //      int n = ((b.len1+b.len2)/3)+1;
         bufInfo i1, i2, i3;
 
+        i1.corr = b.corr;
         i1.p1 = b.p1;
         i1.p2 = b.p2;
         i1.len1 = max(0,min(b.len1, noutside));
         i1.len2 = noutside-i1.len1;
         //std::cout << "i1: len1: " << i1.len1 << ", len2: " << i1.len2 << "\n";
 
+        i3.corr = b.corr;
         i2.p1 = i1.p1+noutside*3;
         i2.p2 = i1.p2+(i1.len2*3);
         i2.len1 = max(0,min(b.len1-noutside,nfish));
         i2.len2 = nfish-i2.len1;
         //std::cout << "i2: len1: " << i2.len1 << ", len2: " << i2.len2 << "\n";
 
+        i3.corr = b.corr;
         i3.p1 = i2.p1+nfish*3;
         i3.p2 = i2.p2+(i2.len2*3);
         i3.len1 = max(0,min(b.len1-nfish-noutside,noutside));

@@ -18,6 +18,11 @@
 
 #include "peaklist.h"
 
+#include <stdio.h>
+#include <fstream.h>
+#include <string>
+#include <iostream>
+
 PeakList::PeakList(int iIdxSize, float *pBuffer) : QValueList<PeakType>()
 {
     m_iIdxSize = iIdxSize;
@@ -35,23 +40,39 @@ void PeakList::update(int idx, int len)
     //
     // Delete peaks in range
     it = getFirstInRange(idx, len);
-    while (it!=end() && (*it).i<idx+len && (*it).i>=idx)
-        it = remove(it);
-    // Check if buffer is wrapped
-    if (idx+len>m_iIdxSize && it==end())
+
+    if (it!=end())
     {
-        it = begin();
-        while (it!=end() && (*it).i<(idx+len)%m_iIdxSize)
-            it = remove(it);
+        // If buffer is wrapped, and we are at the beginning
+        if (idx+len>m_iIdxSize && it==begin())
+        {
+            while (it!=end() && (*it).i<(idx+len)%m_iIdxSize)
+                it = remove(it);
+        }
+        else
+        {
+            while (it!=end() && (*it).i<idx+len && (*it).i>=idx)
+                it = remove(it);
+            // Check if buffer is wrapped
+            if (idx+len>m_iIdxSize && it==end())
+            {
+                it = begin();
+                while (it!=end() && (*it).i<(idx+len)%m_iIdxSize)
+                    it = remove(it);
+            }
+        }
     }
 
-    qDebug("START %i, no %i",(*it).i,getNoInRange(idx,len));
+
+
+    //qDebug("from %i, len %i, START %i, no %i",idx,len,(*it).i,getNoInRange(idx,len));
 
     //
     // Add new peaks to the peak list
     if (idx+len<=m_iIdxSize)
     {
-        qDebug("un");
+        if (it==end())
+            it = getFirstInRange(idx,len,true);
         // The buffer is not wrapped
         for (int i=idx+len-1; i>=idx; --i)
             it = insertIfPeak(i, it);
@@ -59,6 +80,7 @@ void PeakList::update(int idx, int len)
     else
     {
         // The buffer is wrapped
+        it = begin();
         int i;
         for (i=(idx+len-1+m_iIdxSize)%m_iIdxSize; i>=0; --i)
         {
@@ -76,7 +98,7 @@ PeakList::iterator PeakList::insertIfPeak(int idx, PeakList::iterator it)
 {
 //    qDebug("check idx %i",idx);
     if (m_pBuffer[idx]>m_pBuffer[(idx-1+m_iIdxSize)%m_iIdxSize] && m_pBuffer[idx]>m_pBuffer[(idx+1)%m_iIdxSize])
-    {        
+    {
 //        qDebug("peak");
         PeakType p;
         p.i = idx;
@@ -100,30 +122,38 @@ PeakList::iterator PeakList::insertIfPeak(int idx, PeakList::iterator it)
     return it;
 }
 
-PeakList::iterator PeakList::getFirstInRange(int idx, int len)
+PeakList::iterator PeakList::getFirstInRange(int idx, int len, bool returnElementAfterRange)
 {
     // Find first peak in list which is bigger than or equal than idx
     iterator it = begin();
 
-    // Only search further if the list is not empty...
-    if (begin()!=end())
+    // Return if the list is empty...
+    if (it==end())
+        return it;
+
+    // If range is not wrapped...
+    if (idx+len<m_iIdxSize)
     {
-        // If wrapped...
-        if (idx+len>m_iIdxSize)
-        {
-            while (it!=end() && (*it).i<idx)
-                ++it;
-        }
-        // If we're at the end of the list, and the buffer range is wrapped
-        if (it==end() && idx+len>m_iIdxSize)
-        {
-            if ((*begin()).i+m_iIdxSize>=idx && (*begin()).i+m_iIdxSize<idx+len)
-                it = begin();
-        }
+        while ((*it).i<idx && it!=end())
+            ++it;
+
+        if (!returnElementAfterRange && it!=end() && (*it).i>idx+len)
+            it = end();
+    }
+    else // Range is wrapped...
+    {
+        // Search for a valid point in the end of the list (start of range)
+        while (it!=end() && (*it).i<idx)
+            ++it;
+
+        // If we're at the end of the list check if the first point in the list is in range
+        if (it==end() && (*begin()).i<(idx+len)%m_iIdxSize)
+            it = begin();
     }
     return it;
 }
 
+/*
 PeakList::iterator PeakList::getLastInRange(int idx, int len)
 {
     iterator it = end();
@@ -158,7 +188,7 @@ PeakList::iterator PeakList::getLastInRange(int idx, int len)
     else
     {
         qDebug("--");
-        
+
         // The range is wrapped
         it = begin();
         bool found = false;
@@ -173,7 +203,7 @@ PeakList::iterator PeakList::getLastInRange(int idx, int len)
             qDebug("-1");
             return --it;
         }
-        
+
         it = --end();
         if (!((*it).i<idx+len && (*it).i>=idx))
         {
@@ -181,7 +211,7 @@ PeakList::iterator PeakList::getLastInRange(int idx, int len)
         }
     }
     return it;*/
-}
+//}
 
 int PeakList::getNoInRange(int idx, int len)
 {
@@ -252,6 +282,7 @@ PeakList::iterator PeakList::getMaxInRange(int idx, int len)
     {
         while (it!=end() && (*it).i<idx+len)
         {
+            //qDebug("it1 %i",(*it).i);
             if (m_pBuffer[(*it).i]>m_pBuffer[(*itmax).i])
                 itmax =it;
             ++it;
@@ -260,9 +291,10 @@ PeakList::iterator PeakList::getMaxInRange(int idx, int len)
         // If the range is wrapped...
         if (idx+len>m_iIdxSize)
         {
-            it = begin();        
+            it = begin();
             while (it!=end() && (*it).i<(idx+len)%m_iIdxSize)
             {
+                //qDebug("it2 %i",(*it).i);
                 if (m_pBuffer[(*it).i]>m_pBuffer[(*itmax).i])
                     itmax =it;
                 ++it;
@@ -274,14 +306,33 @@ PeakList::iterator PeakList::getMaxInRange(int idx, int len)
 
 void PeakList::print()
 {
-    iterator it = begin();
-    while (it!=end())
+                iterator it = begin();
+                while (it!=end())
+                {
+                    std::cout << (*it).i << " ";
+                    ++it;
+                }
+                std::cout << "\n";
+
+    qDebug("size %i",size());
+    if (size()>1)
     {
-        qDebug("%i",(*it).i);
-        ++it;
+        iterator it2 = begin();
+        ++it2;
+        while (it2!=end())
+        {
+            iterator itback = it2;
+            --itback;
+            if ((*itback).i>(*it2).i)
+            {
+                qDebug("************error");
+            }
+            ++it2;
+        }
     }
-}    
-        
+    qDebug("---");
+}
+
 
 
 

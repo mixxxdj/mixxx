@@ -42,6 +42,7 @@ typedef struct
 {
     float           *p1, *p2;
     int             len1, len2;
+    float           corr;
 } bufInfo;
 
 class VisualBuffer : public QObject

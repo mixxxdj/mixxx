@@ -16,6 +16,8 @@ Mac OS 10.2.
 New since 1.0.1:
 - Added support for mouse interaction when OpenGL is not
   available
+- Keyboard shortcuts
+- Beat estimation
 
 * REQUIREMENTS *********************************************
 Mixxx is depends on the following libraries:
