@@ -823,13 +823,19 @@ void TrackList::slotDeleteTrack(int idx)
 	int count = 0;
 	for(Track = m_lPlaylist.first(); Track; Track = m_lPlaylist.next()){
 		if(Track->m_iIndex == idx)
-			break;
+		{	
+		Track->removeFromTrackTable();
+		break;
+		}
 		count++;
 		
 	}
+	m_lPlaylist.remove(count);
+	refreshTrackTableContents(1);
 	
-	//qDebug("Removing index at: %d", idx);
-	m_lTracks.remove(count);
+	qDebug("Removed playlist item at: %d", count);
+	
+	/**
 	if (Track)
 	{
 		for(int i= 0; i<m_lPlaylist.count(); i++){//Iterate through the whole table from point idx on
@@ -847,7 +853,7 @@ void TrackList::slotDeleteTrack(int idx)
 		    }
 		}
 		m_pTableTracks->setNumRows(m_lPlaylist.count());
-		
+		**/
 	}
 
 /*
@@ -1294,7 +1300,15 @@ void TrackList::slotFindTrack()
 	   }  
   wTree->mousePressed=false;
  }
-
+/** Sorts the Tracktable ascending index and substracts iCount of numRows**/
+void TrackList::refreshTrackTableContents(int iCount){
+	
+	m_pTableTracks->sortColumn(COL_INDEX,TRUE,TRUE);
+	
+	m_pTableTracks->setNumRows(m_pTableTracks->numRows() - iCount);
+	
+	
+}
 void TrackList::slotUpdateTracklist( QString sDir )
 {
 //    qDebug("dir: %s",sDir.latin1());

@@ -93,7 +93,7 @@ public:
     QString getScoreStr();
     /** Sets the score */
     void setScore(int);
-
+   
     /** Index ?? */
     int m_iIndex;
 

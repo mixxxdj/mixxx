@@ -118,6 +118,8 @@ private:
     void UpdateTracklistFromPls();
     void loadPlaylist( QString , QDomDocument * domXML);
 	void loadCollection();
+    void refreshTrackTableContents(int);
+
     int ParseHeader(TrackInfoObject *Track);
 
     /** Index of current track in channel 1 and 2 */
