@@ -85,7 +85,7 @@ EngineBuffer::EngineBuffer(MixxxApp *_mixxx, QAction *actionAudioBeatMark, Power
     // BPM control
     ControlBeat *p4 = new ControlBeat(ConfigKey(group, "bpm"));
     bpmControl = new ControlEngine(p4);
-//    bpmControl->setNotify(this,(void (EngineObject::*)(double))bpmChange);
+//    bpmControl->setNotify(this,(EngineMethod)&EngineBuffer::bpmChange);
                 
     // Beat event control
     p2 = new ControlPotmeter(ConfigKey(group, "beatevent"));
@@ -98,7 +98,7 @@ EngineBuffer::EngineBuffer(MixxxApp *_mixxx, QAction *actionAudioBeatMark, Power
 
     // Control file changed
 //    filechanged = new ControlEngine(controlfilechanged);
-//    filechanged->setNotify(this,(void (EngineObject::*)(double))newtrack);
+//    filechanged->setNotify(this,(EngineMethod)&EngineBuffer::newtrack);
 
     reader = new Reader(this, &rate_exchange, &pause);
     read_buffer_prt = reader->getBufferWavePtr();
@@ -209,13 +209,13 @@ CSAMPLE *EngineBuffer::process(const CSAMPLE *, const int buf_size)
         bool readerinfo = false;
         long int filepos_start = 0;
         long int filepos_end = 0;
-        if (reader->enginelock.tryLock())
+        if (reader->tryLock())
         {
             file_length_old = reader->getFileLength();
             file_srate_old = reader->getFileSrate();
             filepos_start = reader->getFileposStart();
             filepos_end = reader->getFileposEnd();
-            reader->enginelock.unlock();
+            reader->unlock();
             readerinfo = true;
         }
 
@@ -223,7 +223,7 @@ CSAMPLE *EngineBuffer::process(const CSAMPLE *, const int buf_size)
         // Calculate rate
         //
 
-        // Find bpm adjustment factor
+        // Find BPM adjustment factor
         ReaderExtractBeat *beat = reader->getBeatPtr();
         double bpmrate = 1.;
         if (beat!=0)

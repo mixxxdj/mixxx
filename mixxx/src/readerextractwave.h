@@ -23,22 +23,25 @@
 #include "monitor.h"
 #include "soundsource.h"
 #include <qevent.h>
-#include <qmutex.h>
 
 class SignalVertexBuffer;
 class ReaderExtractFFT;
 class ReaderExtractHFC;
 class ReaderExtractBeat;
+class Reader;
 
 #define EXTRACT
 
 /**
-  *@author Tue & Ken Haste Andersen
+  * This is the main ReaderExtract class, taking care of buffering the incoming wave data from
+  * the SoundSource objects, and subsequently calls other ReaderExtract objects.
+  *
+  *@author Tue Haste Andersen
   */
 
 class ReaderExtractWave : ReaderExtract {
 public: 
-    ReaderExtractWave(QMutex *_enginelock);
+    ReaderExtractWave(Reader *pReader);
     ~ReaderExtractWave();
     void addVisual(GUIChannel *_guichannel);
     void reset();
@@ -53,7 +56,6 @@ public:
     void getchunk(CSAMPLE rate);
     /** Seek to a new play position. Returns positon actually seeked to */
     long int seek(long int new_playpos);
-
     /** The first read sample in the file, currently in read_buffer. This should only be
       * accessed while holding the enginelock from the reader class. */
     long int filepos_start;
@@ -61,8 +63,8 @@ public:
       * accessed while holding the enginelock from the reader class. */
     long int filepos_end;
 private:
-    /** Pointer to enginelock mutex in the Reader class */
-    QMutex *enginelock;
+    /** Pointer to Reader class */
+    Reader *m_pReader;
     /** Temporary buffer for the raw samples */
     SAMPLE *temp;
     /** Buffer start and end position */

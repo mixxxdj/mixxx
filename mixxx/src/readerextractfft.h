@@ -28,7 +28,7 @@ class WindowKaiser;
 /**
   * FFT processing of wave buffer.
   *
-  *@author Tue and Ken Haste Andersen
+  *@author Tue Haste Andersen
   */
 
 class ReaderExtractFFT : public ReaderExtract

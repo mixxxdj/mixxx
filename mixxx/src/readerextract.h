@@ -23,7 +23,11 @@
 class GUIChannel;
 
 /**
-  *@author Tue & Ken Haste Andersen
+  * Abstract class for feature extraction. Each ReaderExtract object sets up its own buffer
+  * containing READCHUNK_NO chunks. Each chunk containing a number of samples relative to the
+  * ReaderExtractWave object. processChunk is called whenever a chunk needs to be updated.
+  *
+  *@author Tue Haste Andersen
   */
 
 class ReaderExtract

@@ -32,7 +32,12 @@ class EngineBuffer;
 class GUIChannel;
 
 /**
-  *@author Tue & Ken Haste Andersen
+  * The Reader class is a thread taking care of reading and buffering waveform data from external sources.
+  * The source can be any SoundSource derived object. The Reader is waked up by signals from the EngineBuffer
+  * whenever data is needed. The Reader calls SoundSource to read the data, followed by calls to a number of
+  * ReaderExtract objects to perform feature extraction from the waveform data.
+  *
+  *@author Tue Haste Andersen
   */
 
 class Reader: public QThread
@@ -49,18 +54,18 @@ public:
     /** Wake up reader thread. Thread safe, non-blocking */
     void wake();
     /** Get wave buffer pointer. This address is used by EngineBuffer. The method is
-      * not thread safe and should #ifdef __VISUALS__
-be called before the reader thread is started */
+      * not thread safe and should be called before the reader thread is started */
     CSAMPLE *getBufferWavePtr();
     /** Get pointer to beat extraction object */
     ReaderExtractBeat *getBeatPtr();
     /** Get pointer to wave extraction object */
     ReaderExtractWave *getWavePtr();
-
-    /** Mutex controlling access to file_srate, file_length along with filepos_start and
-      * filepos_end from ReaderBuffer. These variables are shared between the reader and the
-      * player (engine) thread */
-    QMutex enginelock;
+    /** Tries to lock mutex controlling access to file_srate, file_length and filepos_start. Non-blocking */
+    bool tryLock();
+    /** Lock mutex controlling access to file_srate, file_length and filepos_start. Blocking. */
+    void lock();
+    /** Unlock mutex controlling access to file_srate, file_length and filepos_start */
+    void unlock();
     /** Returns file length. This method must only be called when holding the enginelock
       * mutex */
     int getFileLength();
@@ -73,32 +78,40 @@ be called before the reader thread is started */
     /** Returns file sample rate. This method must only be called when holding the enginelock
       * mutex */
     long int getFileposEnd();
+    
 private:
+    /** Main loop of the thread */
     void run();
+    /** Stop thread */
     void stop();
+    /** Load new track */
     void newtrack();
     /** Seek to a new position. */
     void seek();
-
+    /** Mutex controlling access to file_srate, file_length along with filepos_start and
+      * filepos_end from ReaderBuffer. These variables are shared between the reader and the
+      * player (engine) thread */
+    QMutex enginelock;
+    /** Pointer to sound source */
     SoundSource *file;
     /** Pointer to rate monitor allocated and written in EngineBuffer. */
     Monitor *rate;
     /** Pointer to mutex allocated in EngineBuffer, controlling rendering in EngineBuffer::process.
       * While holding this mutex, the EngineBuffer::process will silence, not reading the sound buffer */
     QMutex *pause;
-      
+    /** Pointer to ReaderExtractWave object */  
     ReaderExtractWave *readerwave;
-    
+    /** Pointer to EngineBuffer */
     EngineBuffer *enginebuffer;
-    
+    /** Mutex used in termination of the thread */
     QMutex requestStop;
+    /** Wait condition to make thread sleep when not needed */
     QWaitCondition *readAhead;
-
-    /** Track queue used in communication with reader from other threads */
     typedef QValueList<QString> TTrackQueue;
+    /** Track queue used in communication with reader from other threads */
     TTrackQueue trackqueue;
-    /** Seek queue used in communication with reader from other threads */
     typedef QValueList<double> TSeekQueue;
+    /** Seek queue used in communication with reader from other threads */
     TSeekQueue seekqueue;
     /** Mutex used when accessing queues */
     QMutex trackqueuemutex, seekqueuemutex;
