@@ -164,7 +164,7 @@ unix:!macx {
   COMPILER = $$system(echo $QMAKESPEC)
   contains(COMPILER, linux-icc) {
     message("Using Intel compiler")
-#    QMAKE_CXXFLAGS += -rcd -tpp6 -xiMK # icc pentium III
+    QMAKE_CXXFLAGS += -rcd -tpp6 -xiMK # icc pentium III
 #    QMAKE_CXXFLAGS += -rcd -tpp7 -xiMKW # icc pentium IV
 #    QMAKE_CXXFLAGS += -prof_gen # generete profiling
 #    QMAKE_CXXFLAGS += -prof_use # use profiling
