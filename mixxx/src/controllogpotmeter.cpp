@@ -39,7 +39,6 @@ ControlLogpotmeter::ControlLogpotmeter(ConfigKey key, FLOAT_TYPE _maxvalue) : Co
     valuerange = maxvalue-minvalue;
         
     value = 1.;
-//    qDebug("%g %g",a,b);
 }
 
 /* -------- ------------------------------------------------------
@@ -74,4 +73,13 @@ void ControlLogpotmeter::slotSetPosition(int newpos)
   emitValueChanged(value);
 }
 
+void ControlLogpotmeter::forceGUIUpdate()
+{
+    int pos;
+    if (value>1.)
+        pos = (int)(log10(value+2./a2)/b2);
+    else
+        pos = (int)(log10(value+1./a)/b);    
+    emit(updateGUI(pos));
+}
 

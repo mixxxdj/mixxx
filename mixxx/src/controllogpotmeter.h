@@ -27,14 +27,17 @@
  *@author Tue and Ken Haste Andersen
  */
 
-class ControlLogpotmeter : public ControlPotmeter  {
-  Q_OBJECT
- protected:
-  FLOAT_TYPE a,b,a2,b2;
- public:
-  ControlLogpotmeter(ConfigKey key, FLOAT_TYPE=5);
- public slots:
-  void slotSetPosition(int);
+class ControlLogpotmeter : public ControlPotmeter
+{
+    Q_OBJECT
+public:
+    ControlLogpotmeter(ConfigKey key, FLOAT_TYPE=5);
+public slots:
+    void slotSetPosition(int);
+protected:
+    void forceGUIUpdate();
+
+    FLOAT_TYPE a,b,a2,b2;
 };
 
 #endif
