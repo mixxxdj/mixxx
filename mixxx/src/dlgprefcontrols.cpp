@@ -38,21 +38,20 @@ DlgPrefControls::DlgPrefControls(QWidget *parent, ControlObject *pControl, Mixxx
     // Set default direction as stored in config file
     if (m_pConfig->getValueString(ConfigKey("[Controls]","RateDir")).length() == 0)
         m_pConfig->set(ConfigKey("[Controls]","RateDir"),ConfigValue(0));
-    else
-    {
-        float dir = 1.;
-        if (m_pConfig->getValueString(ConfigKey("[Controls]","RateDir")).toInt()==1.)
-            dir = -1.;
-        m_pControlRateDir1->setValueFromApp(dir);
-        m_pControlRateDir2->setValueFromApp(dir);
-    }
+
+	float fDir = 1.;
+    if (m_pConfig->getValueString(ConfigKey("[Controls]","RateDir")).toInt()==1.)
+        fDir = -1.;
+    m_pControlRateDir1->setValueFromApp(fDir);
+    m_pControlRateDir2->setValueFromApp(fDir);
+
     connect(ComboBoxRateDir,   SIGNAL(activated(int)), this, SLOT(slotSetRateDir(int)));
 
     // Set default range as stored in config file
     if (m_pConfig->getValueString(ConfigKey("[Controls]","RateRange")).length() == 0)
         m_pConfig->set(ConfigKey("[Controls]","RateRange"),ConfigValue(1));
-    else
-        slotSetRateRange(m_pConfig->getValueString(ConfigKey("[Controls]","RateRange")).toInt());
+
+	slotSetRateRange(m_pConfig->getValueString(ConfigKey("[Controls]","RateRange")).toInt());
     connect(ComboBoxRateRange, SIGNAL(activated(int)), this, SLOT(slotSetRateRange(int)));
 
     //
@@ -83,7 +82,6 @@ DlgPrefControls::DlgPrefControls(QWidget *parent, ControlObject *pControl, Mixxx
     }
 
     connect(ComboBoxSkinconf, SIGNAL(activated(int)), this, SLOT(slotSetSkin(int)));
-    
 }
 
 DlgPrefControls::~DlgPrefControls()
