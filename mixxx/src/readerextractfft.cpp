@@ -1,5 +1,5 @@
 /***************************************************************************
-                          enginepreprocess.cpp  -  description
+                          readerextractfft.cpp  -  description
                              -------------------
     begin                : Mon Feb 3 2003
     copyright            : (C) 2003 by Tue and Ken Haste Andersen
@@ -15,16 +15,14 @@
  *                                                                         *
  ***************************************************************************/
 
-#include "enginepreprocess.h"
+#include "readerextractfft.h"
 #include "enginespectralfwd.h"
 #include "windowkaiser.h"
 #include "configobject.h"
-#include "readerbuffer.h"
 
-EnginePreProcess::EnginePreProcess(ReaderBuffer *_readerbuffer, int _specNo, WindowKaiser *window)
+ReaderExtractFFT::ReaderExtractFFT(ReaderExtract *input, int _specNo, WindowKaiser *window) : ReaderExtract(input)
 {
     specNo = _specNo;
-    readerbuffer = _readerbuffer;
 
     // Allocate list of EngineSpectralFwd objects, corresponding to one object for each
     // stepsize throughout the readbuffer of EngineBuffer
@@ -38,11 +36,12 @@ EnginePreProcess::EnginePreProcess(ReaderBuffer *_readerbuffer, int _specNo, Win
     }
 }
 
-EnginePreProcess::~EnginePreProcess()
+ReaderExtractFFT::~ReaderExtractFFT()
 {
 }
 
-void EnginePreProcess::update(int specFrom, int specTo)
+/*
+void ReaderExtractFFT::update(int specFrom, int specTo)
 {
     if (specTo>specFrom)
         for (int i=specFrom; i<specTo; i++)
@@ -55,16 +54,14 @@ void EnginePreProcess::update(int specFrom, int specTo)
             process(i);
     }
 }
+*/
 
-CSAMPLE *EnginePreProcess::process(const CSAMPLE *, const int)
+void *ReaderExtractFFT::processChunk(const int idx)
 {
-    return 0;
-}
-
-void EnginePreProcess::process(int idx)
-{
-    specList.at(idx)->process(readerbuffer->getWindowPtr(idx),0);
+//    specList.at(idx)->process(input->getWindowPtr(idx),0);
     hfc[idx] = specList.at(idx)->getHFC();    
     //qDebug("hfc: %f",hfc[idx]);
+
+    return 0;
 }
 

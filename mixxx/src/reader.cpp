@@ -19,7 +19,7 @@
 
 #include <qfileinfo.h>
 #include "enginebuffer.h"
-#include "readerbuffer.h"
+#include "readerextractwave.h"
 #include "soundsource.h"
 #include "soundsourcemp3.h"
 #ifdef __UNIX__
@@ -36,7 +36,7 @@ Reader::Reader(EngineBuffer *_enginebuffer, Monitor *_rate, QMutex *_pause)
     pause = _pause;
     
     // Allocate sound buffer
-    readerbuffer = new ReaderBuffer(&enginelock, READCHUNKSIZE, READCHUNK_NO, WINDOWSIZE, STEPSIZE);
+    readerwave = new ReaderExtractWave(&enginelock, READCHUNKSIZE, READCHUNK_NO, WINDOWSIZE, STEPSIZE);
 
     // Allocate semaphore
     readAhead = new QWaitCondition();
@@ -52,7 +52,7 @@ Reader::~Reader()
     if (running())
         stop();
 
-    delete readerbuffer;
+    delete readerwave;
 
     if (file != 0)
         delete file;
@@ -92,7 +92,7 @@ void Reader::wake()
 
 CSAMPLE *Reader::getBufferWavePtr()
 {
-    return readerbuffer->getChunkPtr(0);
+    return (CSAMPLE *)readerwave->getChunkPtr(0);
 }
 
 
@@ -106,19 +106,19 @@ int Reader::getFileSrate()
     return file_srate;
 }
 
-ReaderBuffer *Reader::getSoundBuffer()
+ReaderExtractWave *Reader::getSoundBuffer()
 {
-    return readerbuffer;
+    return readerwave;
 }
 
 long int Reader::getFileposStart()
 {
-    return readerbuffer->filepos_start;
+    return readerwave->filepos_start;
 }
 
 long int Reader::getFileposEnd()
 {
-    return readerbuffer->filepos_end;
+    return readerwave->filepos_end;
 }
 
 void Reader::newtrack()
@@ -189,10 +189,10 @@ void Reader::newtrack()
 //    rate_exchange.tryWrite(BASERATE);
 
 
-    readerbuffer->setSoundSource(file);
+    readerwave->setSoundSource(file);
 
     // ...and read one chunk to get started:
-    readerbuffer->getchunk(1.);
+    readerwave->getchunk(1.);
 
 
     // Reset playpos
@@ -230,7 +230,7 @@ void Reader::run()
             seek();
         
         // Read a new chunk:
-        readerbuffer->getchunk(rate->read());
+        readerwave->getchunk(rate->read());
 
         // Send user event to main thread, indicating that the visual sample buffers should be updated
 //        if (guichannel>0)
@@ -268,7 +268,7 @@ void Reader::seek()
     if (new_playpos==-1.)
         return;
         
-    new_playpos = readerbuffer->seek(new_playpos);
+    new_playpos = readerwave->seek(new_playpos);
     wake();
 
     // Set playpos

@@ -1,5 +1,5 @@
 /***************************************************************************
-                          enginepreprocess.h  -  description
+                          readerextractfft.h  -  description
                              -------------------
     begin                : Mon Feb 3 2003
     copyright            : (C) 2003 by Tue and Ken Haste Andersen
@@ -15,35 +15,33 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef ENGINEPREPROCESS_H
-#define ENGINEPREPROCESS_H
+#ifndef READEREXTRACTFFT_H
+#define READEREXTRACTFFT_H
 
-#include "engineobject.h"
+#include "readerextract.h"
 #include "defs.h"
 #include <qptrlist.h>
 
 class EngineSpectralFwd;
 class WindowKaiser;
-class ReaderBuffer;
 
 /**
-  * Pre-processing of audio buffers before playback and handling by EngineBuffer::process()
+  * FFT processing of wave buffer.
   *
   *@author Tue and Ken Haste Andersen
   */
 
-class EnginePreProcess : public EngineObject
+class ReaderExtractFFT : public ReaderExtract
 {
 public:
-    EnginePreProcess(ReaderBuffer *_readerbuffer, int _specNo, WindowKaiser *window);
-    ~EnginePreProcess();
-    void notify(double) {};
-    void update(int specFrom, int specTo);
-    CSAMPLE *process(const CSAMPLE *, const int);
-private:
-    void process(int idx);
+    ReaderExtractFFT(ReaderExtract *input, int _specNo, WindowKaiser *window);
+    ~ReaderExtractFFT();
+    void *processChunk(const int idx);
 
-    ReaderBuffer *readerbuffer;
+
+//    void notify(double) {};
+//    void update(int specFrom, int specTo);
+private:
     int specNo;
     QPtrList<EngineSpectralFwd> specList;
     CSAMPLE *hfc;    

@@ -1,5 +1,5 @@
 /***************************************************************************
-                          readerbuffer.h  -  description
+                          readerextractwave.h  -  description
                              -------------------
     begin                : Thu Feb 6 2003
     copyright            : (C) 2003 by Tue & Ken Haste Andersen
@@ -15,13 +15,13 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef READERBUFFER_H
-#define READERBUFFER_H
+#ifndef READEREXTRACTWAVE_H
+#define READEREXTRACTWAVE_H
 
+#include "readerextract.h"
 #include "defs.h"
 #include "monitor.h"
 #include "soundsource.h"
-#include "enginepreprocess.h"
 #include "windowkaiser.h"
 #include <qevent.h>
 #include <qmutex.h>
@@ -32,24 +32,23 @@ class SignalVertexBuffer;
   *@author Tue & Ken Haste Andersen
   */
 
-class ReaderBuffer {
+class ReaderExtractWave : ReaderExtract {
 public: 
-    ReaderBuffer(QMutex *_enginelock, int _chunkSize, int _chunkNo, int windowSize, int _stepSize);
-    ~ReaderBuffer();
+    ReaderExtractWave(QMutex *_enginelock, int _chunkSize, int _chunkNo, int windowSize, int _stepSize);
+    ~ReaderExtractWave();
+    void reset();
+    int getChunkSize();
+    void *getChunkPtr(const int idx);
+    int getRate();
+    void *processChunk(const int);
     void setSoundSource(SoundSource *_file);
     void setSignalVertexBuffer(SignalVertexBuffer *_signalVertexBuffer);
+    /** Read a new chunk into the readbuffer: */
     void getchunk(CSAMPLE rate);
     /** Seek to a new play position. Returns positon actually seeked to */
     long int seek(long int new_playpos);
-    CSAMPLE *getChunkPtr(int chunkIdx);
+    /** Get a pointer to a window centered around the sample at windowIdx*windowSize */
     CSAMPLE *getWindowPtr(int windowIdx);
-    /** Return sample rate of buffer */
-    int getRate();
-    /** Return size of samples read at each update signal (USER:1001) */
-    int getChunkSize();
-
-    /** The buffer where the samples are read into */
-    CSAMPLE *read_buffer;
 
     /** The first read sample in the file, currently in read_buffer. This should only be
       * accessed while holding the enginelock from the reader class. */
@@ -57,30 +56,25 @@ public:
     /** The last read sample in the file, currently in read_buffer. This should only be
       * accessed while holding the enginelock from the reader class. */
     long int filepos_end;
-
 private:
     /** Pointer to enginelock mutex in the Reader class */
     QMutex *enginelock;
-    
+    /** Temporary buffer for the raw samples */
     SAMPLE *temp;
-
     /** Buffer start and end position */
     int bufferpos_start, bufferpos_end;
     /** Pointer to SignalVertexBuffer associated with this buffer */
     SignalVertexBuffer *signalVertexBuffer;
-
     /** Pointer to window and windowed samples of signal */
     WindowKaiser *window;
     CSAMPLE *windowedSamples;
-    /** Pointer to pre-processing object */
-    EnginePreProcess *preprocess;
-
+    /** Pointer to the sound source */
     SoundSource *file;
-    int chunkSize;
-    int chunkNo;
     int stepSize;
     int windowPerChunk;
     int windowNo;
+    /** The buffer where the samples are read into */
+    CSAMPLE *read_buffer;
 };
 
 #endif

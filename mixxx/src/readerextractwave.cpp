@@ -1,5 +1,5 @@
 /***************************************************************************
-                          readerbuffer.cpp  -  description
+                          readerextractwave.cpp  -  description
                              -------------------
     begin                : Thu Feb 6 2003
     copyright            : (C) 2003 by Tue & Ken Haste Andersen
@@ -15,12 +15,12 @@
  *                                                                         *
  ***************************************************************************/
 
-#include "readerbuffer.h"
-#include "readerbufferevent.h"
+#include "readerextractwave.h"
+#include "readerevent.h"
 #include "visual/signalvertexbuffer.h"
 #include <qapplication.h>
 
-ReaderBuffer::ReaderBuffer(QMutex *_enginelock, int _chunkSize, int _chunkNo, int windowSize, int _stepSize)
+ReaderExtractWave::ReaderExtractWave(QMutex *_enginelock, int _chunkSize, int _chunkNo, int windowSize, int _stepSize) : ReaderExtract(0)
 {
     enginelock = _enginelock;
 
@@ -30,7 +30,6 @@ ReaderBuffer::ReaderBuffer(QMutex *_enginelock, int _chunkSize, int _chunkNo, in
     stepSize = _stepSize;
     windowPerChunk = chunkSize/stepSize;
     windowNo = chunkNo*windowPerChunk;
-
     
     // Allocate and calculate window
     window = new WindowKaiser(windowSize, 6.5);
@@ -39,16 +38,13 @@ ReaderBuffer::ReaderBuffer(QMutex *_enginelock, int _chunkSize, int _chunkNo, in
     windowedSamples = new CSAMPLE[windowSize];
 
     // Allocate temporary buffer
-    temp = new SAMPLE[READCHUNKSIZE*2]; // Temporary buffer for the raw samples
+    temp = new SAMPLE[READCHUNKSIZE*2]; 
 
     // Allocate read_buffer
     read_buffer = new CSAMPLE[READBUFFERSIZE];
     for (unsigned i=0; i<READBUFFERSIZE; ++i)
         read_buffer[i] = 0.;
 
-    // Allocate pre processing object
-    preprocess = new EnginePreProcess(this, windowNo, window);
-        
     // Initialize position in read buffer
     enginelock->lock();
     filepos_start = 0;
@@ -60,15 +56,55 @@ ReaderBuffer::ReaderBuffer(QMutex *_enginelock, int _chunkSize, int _chunkNo, in
     signalVertexBuffer = 0;
 }
 
-ReaderBuffer::~ReaderBuffer()
+ReaderExtractWave::~ReaderExtractWave()
 {
     delete [] temp;
     delete [] read_buffer;
     delete [] window;
-    delete preprocess;
 }
 
-void ReaderBuffer::setSoundSource(SoundSource *_file)
+void ReaderExtractWave::reset()
+{
+    enginelock->lock();
+    filepos_start = 0;
+    filepos_end = 0;
+
+    file->seek(0);
+
+    enginelock->unlock();
+
+    bufferpos_start = 0;
+    bufferpos_end = 0;
+
+    for (unsigned int i=0; i<READBUFFERSIZE; i++)
+        read_buffer[i] = 0.;
+}
+
+int ReaderExtractWave::getChunkSize()
+{
+    return chunkSize;
+}
+
+void *ReaderExtractWave::getChunkPtr(const int chunkIdx)
+{
+    return (void *)(&read_buffer[chunkSize*chunkIdx]);
+}
+
+int ReaderExtractWave::getRate()
+{
+    // Sample rate of file with two channels
+    if (file)
+        return file->getSrate()*2;
+    else
+        return 88200; // HACKKKK!!!!!
+}
+
+void *ReaderExtractWave::processChunk(const int)
+{
+    return 0;
+}
+
+void ReaderExtractWave::setSoundSource(SoundSource *_file)
 {
     file = _file;
 
@@ -81,15 +117,12 @@ void ReaderBuffer::setSoundSource(SoundSource *_file)
     bufferpos_end = 0;
 }
 
-void ReaderBuffer::setSignalVertexBuffer(SignalVertexBuffer *_signalVertexBuffer)
+void ReaderExtractWave::setSignalVertexBuffer(SignalVertexBuffer *_signalVertexBuffer)
 {
     signalVertexBuffer = _signalVertexBuffer;
 }
 
-/*
-  Read a new chunk into the readbuffer:
-*/
-void ReaderBuffer::getchunk(CSAMPLE rate)
+void ReaderExtractWave::getchunk(CSAMPLE rate)
 {
     //qDebug("Reading..., bufferpos_start %i",bufferpos_start);
 
@@ -126,7 +159,7 @@ void ReaderBuffer::getchunk(CSAMPLE rate)
         bufIdx = bufferpos_start;
 
         // Do pre-processing.
-        preprocess->update((bufferpos_start/stepSize+1)%windowNo, (preEnd/stepSize-1+windowNo)%windowNo);
+        //preprocess->update((bufferpos_start/stepSize+1)%windowNo, (preEnd/stepSize-1+windowNo)%windowNo);
     }
     else
     {
@@ -144,7 +177,7 @@ void ReaderBuffer::getchunk(CSAMPLE rate)
         }
 
         // Do pre-processing...
-        preprocess->update((preStart/stepSize+1)%windowNo, (bufferpos_end/stepSize-1+windowNo)%windowNo);
+        //preprocess->update((preStart/stepSize+1)%windowNo, (bufferpos_end/stepSize-1+windowNo)%windowNo);
     }
     filepos_start = filepos_start_new;
     filepos_end = filepos_end_new;
@@ -166,10 +199,10 @@ void ReaderBuffer::getchunk(CSAMPLE rate)
 
     // Update vertex buffer by sending an event containing indexes of where to update.
     if (signalVertexBuffer != 0)
-        QApplication::postEvent(signalVertexBuffer, new ReaderBufferEvent(bufIdx, READCHUNKSIZE));
+        QApplication::postEvent(signalVertexBuffer, new ReaderEvent(bufIdx, READCHUNKSIZE));
 }
 
-long int ReaderBuffer::seek(long int new_playpos)
+long int ReaderExtractWave::seek(long int new_playpos)
 {
     enginelock->lock();
     filepos_start = new_playpos;
@@ -190,14 +223,7 @@ long int ReaderBuffer::seek(long int new_playpos)
     return seekpos;
 }
 
-// Get a pointer to the chunk at index chunkIdx
-CSAMPLE *ReaderBuffer::getChunkPtr(int chunkIdx)
-{
-    return &read_buffer[chunkSize*chunkIdx];
-}
-
-// Get a pointer to a window centered around the sample at windowIdx*windowSize
-CSAMPLE *ReaderBuffer::getWindowPtr(int windowIdx)
+CSAMPLE *ReaderExtractWave::getWindowPtr(int windowIdx)
 {
     // Start position of window
     int windowPos = (windowIdx*stepSize-window->getSize()/2+READBUFFERSIZE)%READBUFFERSIZE;
@@ -224,16 +250,4 @@ CSAMPLE *ReaderBuffer::getWindowPtr(int windowIdx)
     return windowedSamples;    
 }
 
-int ReaderBuffer::getRate()
-{
-    // Sample rate of file with two channels
-    if (file)
-        return file->getSrate()*2;
-    else
-        return 88200; // HACKKKK!!!!!
-}
 
-int ReaderBuffer::getChunkSize()
-{
-    return chunkSize;
-}

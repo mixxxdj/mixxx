@@ -1,5 +1,5 @@
 /***************************************************************************
-                          readerbufferevent.h  -  description
+                          readerevent.cpp  -  description
                              -------------------
     begin                : Mon Mar 3 2003
     copyright            : (C) 2003 by Tue & Ken Haste Andersen
@@ -15,25 +15,22 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef READERBUFFEREVENT_H
-#define READERBUFFEREVENT_H
+#include "readerevent.h"
 
-#include <qevent.h>
-
-/**
-  *@author Tue & Ken Haste Andersen
-  */
-
-class ReaderBufferEvent : public QCustomEvent
+ReaderEvent::ReaderEvent(int pos, int len) : QCustomEvent(10002), position(pos), length(len)
 {
-public: 
-    ReaderBufferEvent(int pos, int len);
-    ~ReaderBufferEvent();
-    int pos() const;
-    int len() const;
-private:
-    int position;
-    int length;
-};
+}
 
-#endif
+ReaderEvent::~ReaderEvent()
+{
+}
+
+int ReaderEvent::pos() const
+{
+    return position;
+}
+
+int ReaderEvent::len() const
+{
+    return length;
+}
