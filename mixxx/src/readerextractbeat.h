@@ -25,7 +25,7 @@
 
 const CSAMPLE threshold = 5.;
 const CSAMPLE histMinBPM = 60.;
-const CSAMPLE histMaxBPM = 240.;
+const CSAMPLE histMaxBPM = 200.;
 const int gaussWidth = 8; // Width of gauss/2
 
 /**
@@ -39,11 +39,16 @@ public:
     ~ReaderExtractBeat();
     void reset();
     void *getBasePtr();
+    CSAMPLE *getBpmPtr();
     int getRate();
     int getChannels();
     int getBufferSize();
     void *processChunk(const int idx, const int start_idx, const int end_idx);
 private:
+    /** Buffer indicating if a beat has occoured or not. */
+    bool *beatBuffer;
+    /** Buffer holding bpm values */
+    CSAMPLE *bpmBuffer;
     /** Sorted list of peak indexes in HFC */
     typedef QValueList<int> Tpeaks;
     Tpeaks peaks;
@@ -53,6 +58,8 @@ private:
     Tpeaks::iterator *peakIt;    
     /** Pointer to histogram */
     CSAMPLE *hist;
+    /** Pointer to beat interval vector */
+    CSAMPLE *beatIntVector;
     /** Size of histogram */
     int histSize;
     /** Histogram interval size, and min and max interval in seconds*/

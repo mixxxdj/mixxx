@@ -26,6 +26,7 @@
 #include "monitor.h"
 
 class ReaderExtractWave;
+class ReaderExtractBeat;
 class SoundSource;
 class EngineBuffer;
 class MixxxApp;
@@ -50,6 +51,8 @@ public:
     /** Get wave buffer pointer. This address is used by EngineBuffer. The method is
       * not thread safe and should be called before the reader thread is started */
     CSAMPLE *getBufferWavePtr();
+    /** Get pointer to beat extraction object */
+    ReaderExtractBeat *getBeatPtr();
     /** Should this really be possible??? */
     ReaderExtractWave *getSoundBuffer();
 

@@ -37,8 +37,10 @@
 #include "controlpotmeter.h"
 #include "controlttrotary.h"
 #include "controlengine.h"
+#include "controlbeat.h"
 #include "dlgplaycontrol.h"
 #include "reader.h"
+#include "readerextractbeat.h"
 
 EngineBuffer::EngineBuffer(MixxxApp *_mixxx, DlgPlaycontrol *_playcontrol, const char *_group)
 {
@@ -67,7 +69,12 @@ EngineBuffer::EngineBuffer(MixxxApp *_mixxx, DlgPlaycontrol *_playcontrol, const
     p2->setWidget(playcontrol->SliderPosition);
     playposSlider = new ControlEngine(p2);
     playposSlider->setNotify(this,(void (EngineObject::*)(double))seek);
-    
+
+    // Beat control
+    ControlBeat *p4 = new ControlBeat(ConfigKey(group, "beat"));
+    beatControl = new ControlEngine(p4);
+//    beatControl->setNotify(this,(void (EngineObject::*)(double))bpmChange);
+                
     // Control file changed
 //    filechanged = new ControlEngine(controlfilechanged);
 //    filechanged->setNotify(this,(void (EngineObject::*)(double))newtrack);
@@ -139,6 +146,15 @@ void EngineBuffer::seek(double change)
 //    visualPlaypos.tryWrite(
 }
 
+/*
+void EngineBuffer::bpmChange(double bpm)
+{
+    CSAMPLE filebpm = bpmbuffer[];
+
+
+    baserate = baserate*(bpm/reader->->getBPM());
+}
+*/
 
 inline bool even(long n)
 {
@@ -167,14 +183,32 @@ CSAMPLE *EngineBuffer::process(const CSAMPLE *, const int buf_size)
             readerinfo = true;
         }
 
+        //
         // Calculate rate
-        double baserate =  (double)file_srate_old/(double)getPlaySrate();
+        //
+
+        // Find bpm adjustment factor
+        ReaderExtractBeat *beat = reader->getBeatPtr();
+        CSAMPLE *bpmBuffer = beat->getBpmPtr();
+        double filebpm = bpmBuffer[(int)(bufferpos_play*(beat->getBufferSize()/READCHUNKSIZE))];
+        double bpmrate;
+        if (beatControl->get()>-1.)
+            bpmrate = beatControl->get()/filebpm;
+        else
+            bpmrate = 1.;
+
+        //qDebug("bpmrate %f, filebpm %f, midibpm %f",bpmrate,filebpm,beatControl->get());
+                    
+        double baserate =  bpmrate*((double)file_srate_old/(double)getPlaySrate());
         double rate;
         if (playButton->get()==1.)
             rate=wheel->get()+rateSlider->get()*baserate;
         else
             rate=wheel->get()*baserate*20.;
 
+
+
+            
         // If the rate has changed, write it to the rate_exchange monitor
         if (rate != rate_old)
         {

@@ -1,8 +1,8 @@
 /***************************************************************************
-                          midiobjectnull.h  -  description
+                          controlbeat.cpp  -  description
                              -------------------
-    begin                : Thu Jul 4 2002
-    copyright            : (C) 2002 by Tue & Ken Haste Andersen
+    begin                : Mon Apr 7 2003
+    copyright            : (C) 2003 by Tue & Ken Haste Andersen
     email                : haste@diku.dk
  ***************************************************************************/
 
@@ -15,21 +15,35 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef MIDIOBJECTNULL_H
-#define MIDIOBJECTNULL_H
+#include "controlbeat.h"
 
-#include "midiobject.h"
+ControlBeat::ControlBeat(ConfigKey key) : ControlObject(key)
+{
+    value = -1.;
+    time.start();
+}
 
-/**
-  *@author Tue & Ken Haste Andersen
-  */
+ControlBeat::~ControlBeat()
+{
+}
 
-class MidiObjectNull : public MidiObject  {
-public: 
-    MidiObjectNull(ConfigObject<ConfigValueMidi> *c, QApplication *app, ControlObject *control, QString device);
-    ~MidiObjectNull();
-    void devOpen(QString device);
-    void devClose();
-};
+void ControlBeat::slotSetPosition(int pos)
+{
+    qDebug("ControlBeat: %i",pos);
+    int elapsed = time.elapsed();
+    time.restart();
 
-#endif
+    if (elapsed<=maxInterval)    
+    {
+        value = 6000./elapsed;
+    }
+    else
+        value = 0.;
+
+    emitValueChanged(value);
+}
+
+void ControlBeat::forceGUIUpdate()
+{
+}
+    

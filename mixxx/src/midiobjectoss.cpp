@@ -19,7 +19,7 @@
 #include <qdir.h>
 #include <unistd.h>
 
-MidiObjectOSS::MidiObjectOSS(ConfigObject<ConfigValueMidi> *c, QApplication *a, QWidget *m, QString device) : MidiObject(c, a, m, device)
+MidiObjectOSS::MidiObjectOSS(ConfigObject<ConfigValueMidi> *c, QApplication *a, ControlObject *control, QString device) : MidiObject(c, a, control, device)
 {
     thread_pid = 0;
 
@@ -140,7 +140,7 @@ void MidiObjectOSS::run()
                 midicontrol = buffer[1];
                 midivalue = buffer[2];
 
-//                qDebug("midi ch: %i, ctrl: %i, val: %i",channel,midicontrol,midivalue);
+                qDebug("midi ch: %i, ctrl: %i, val: %i",channel,midicontrol,midivalue);
                 send(channel, midicontrol, midivalue);
             }
         }

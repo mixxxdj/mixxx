@@ -43,6 +43,7 @@ public:
     int getRate();
     int getChannels();
     int getBufferSize();
+    ReaderExtractBeat *getExtractBeat();
     void *processChunk(const int, const int, const int);
     void setSoundSource(SoundSource *_file);
     void setSignalVertexBuffer(SignalVertexBuffer *_signalVertexBuffer);

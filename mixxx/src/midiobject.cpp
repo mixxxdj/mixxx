@@ -32,10 +32,10 @@ ConfigObject<ConfigValueMidi> *MidiObject::config = 0;
             card and device.
    Output:  -
    -------- ------------------------------------------------------ */
-MidiObject::MidiObject(ConfigObject<ConfigValueMidi> *c, QApplication *a, QWidget *m, QString)
+MidiObject::MidiObject(ConfigObject<ConfigValueMidi> *c, QApplication *a, ControlObject *_control, QString)
 {
     app = a;
-    mixxx = m;
+    control = _control;
 
     config = c;
     no = 0;
@@ -125,7 +125,7 @@ QString *MidiObject::getOpenDevice()
 void MidiObject::send(char channel, char midicontrol, char midivalue)
 {
     // Send event to GUI thread
-    QApplication::postEvent(mixxx,new ControlEventMidi(channel,midicontrol,midivalue));
+    QApplication::postEvent(control,new ControlEventMidi(channel,midicontrol,midivalue));
 };
 
 void MidiObject::stop()

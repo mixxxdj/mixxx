@@ -38,7 +38,7 @@ class ControlObject;
 
 class MidiObject : public QThread {
 public:
-    MidiObject(ConfigObject<ConfigValueMidi> *c, QApplication *app, QWidget *mixxx, QString device);
+    MidiObject(ConfigObject<ConfigValueMidi> *c, QApplication *app, ControlObject *_control, QString device);
     ~MidiObject();
     void reopen(QString device);
     virtual void devOpen(QString) = 0;
@@ -71,7 +71,7 @@ protected:
     QStringList configs;
 
     QApplication *app;
-    QWidget *mixxx;
+    ControlObject *control;
 };
 
 void abortRead(int);

@@ -32,7 +32,7 @@
 class MidiObjectPortMidi : public MidiObject
 {
 public: 
-    MidiObjectPortMidi(ConfigObject<ConfigValueMidi> *, QApplication *app, QWidget *mixxx, QString device);
+    MidiObjectPortMidi(ConfigObject<ConfigValueMidi> *, QApplication *app, ControlObject *control, QString device);
     ~MidiObjectPortMidi();
     void devOpen(QString device);
     void devClose();
