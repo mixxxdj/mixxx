@@ -2,6 +2,9 @@
 # Project file definition ---------------------------------------------
 PROJECT_FILE = mixxx.pro
 PROJECT_SETTINGS = enable_summary
+contains( CONFIG, debug ) {
+	DEFINES += QT_NO_CHECK
+}
 #----------------------------------------------------------------------
 
 # Qt Version definition -----------------------------------------------
@@ -27,7 +30,7 @@ include( check.qbas )
 
 
 #   GLIB  -------------------------------------------------------------
-OBJECT = libglib.so
+OBJECT = libglib.a
 TYPE = lib
 DESCRIPTION = GNU library (Glib)
 LINK_LIBS = -lglib
@@ -55,7 +58,7 @@ include( check.qbas )
 
 
 #   MAD ---------------------------------------------------------------
-OBJECT = libmad.so
+OBJECT = libmad.a
 TYPE = lib
 DESCRIPTION = Mad audio decoder
 TIP_MESSAGE = "The Mad decoder is needed for mp3 playback!"
@@ -69,7 +72,7 @@ include( check.qbas )
 
 
 #   ID3TAG ------------------------------------------------------------
-OBJECT = libid3.so
+OBJECT = libid3.a
 TYPE = lib
 DESCRIPTION = Id3Tag
 TIP_MESSAGE = "Id3tag library needed!"
@@ -83,7 +86,7 @@ include( check.qbas )
 
 
 #   AUDIOFILE ---------------------------------------------------------
-OBJECT = libaudiofile.so
+OBJECT = libaudiofile.a
 TYPE = lib
 DESCRIPTION = Audiofile
 TIP_MESSAGE = "AudioFile is needed for the Mixxx playback engine!"
@@ -113,7 +116,7 @@ include( check.qbas )
 
 
 #   OGG/VORBIS --------------------------------------------------------
-OBJECT = libvorbis.so
+OBJECT = libvorbis.a
 TYPE = lib
 DESCRIPTION = Vorbis library
 TIP_MESSAGE = "Vorbis library is needed for ogg playback!"
@@ -129,7 +132,7 @@ include( check.qbas )
 
 
 #   OGG   -------------------------------------------------------------
-OBJECT = libogg.so
+OBJECT = libogg.a
 TYPE = lib
 DESCRIPTION = Ogg Vorbis library
 TIP_MESSAGE = "Ogg library is needed for ogg playback!"
@@ -145,7 +148,7 @@ include( check.qbas )
 
 
 #   VORBISFILE --------------------------------------------------------
-OBJECT = libvorbisfile.so
+OBJECT = libvorbisfile.a
 TYPE = lib
 DESCRIPTION = Vorbisfile library
 TIP_MESSAGE = Vorbisfile library is needed for ogg playback!"
@@ -160,10 +163,53 @@ include( check.qbas )
 
 
 
+#   FFTW HEADERS (s) --------------------------------------------------
+OBJECT = sfftw.h
+TYPE = header
+DESCRIPTION =
+TIP_MESSAGE = "FFTW 2 headers needed for the Mixxx playback engine!"
+LINK_LIBS =
+OPTIONS =  exit_on_failure
+#----------------------------------------------------------------------
+# Check routines         (DON'T TOUCH!)
+include( check.qbas )
+#----------------------------------------------------------------------
+
+
+
+
+#   FFTW HEADERS (sr) -------------------------------------------------
+OBJECT = srfftw.h
+TYPE = header
+DESCRIPTION =
+TIP_MESSAGE = "FFTW 2 headers needed for the Mixxx playback engine!"
+LINK_LIBS =
+OPTIONS =  exit_on_failure
+#----------------------------------------------------------------------
+# Check routines         (DON'T TOUCH!)
+include( check.qbas )
+#----------------------------------------------------------------------
+
+
+
+
+#   FFTW --------------------------------------------------------------
+OBJECT = libsfftw.a
+TYPE = lib
+DESCRIPTION =  FFT version 2
+TIP_MESSAGE = "FFTW 2 lib needed for the Mixxx playback engine!"
+LINK_LIBS = -lsrfftw -lsfftw
+OPTIONS =  exit_on_failure    marked_static
+#----------------------------------------------------------------------
+# Check routines         (DON'T TOUCH!)
+include( check.qbas )
+#----------------------------------------------------------------------
+
+
 
 
 #   SNDFILE -----------------------------------------------------------
-OBJECT = libsndfile.so
+OBJECT = libsndfile.a
 TYPE = lib
 DESCRIPTION = Sndfile library
 TIP_MESSAGE =
@@ -193,16 +239,13 @@ include( check.qbas )
 
 
 #   ALSA LIBRARY ------------------------------------------------------
-OBJECT = libasound.so
+OBJECT = libasound.a
 TYPE = lib
 DESCRIPTION = Alsa library
 FEATURE = Alsa
 TIP_MESSAGE =
 LINK_LIBS = -lasound 
 OPTIONS =  disable_feature   lock_feature
-ADD_DEFINES = __ALSA__
-ADD_SOURCES = playeralsa.cpp
-ADD_HEADERS = playeralsa.h
 #----------------------------------------------------------------------
 # Check routines         (DON'T TOUCH!)
 include( check.qbas )
@@ -231,7 +274,7 @@ OBJECT = pkg-config --exists 'jack >= 0.61.0'
 TYPE = command
 DESCRIPTION = Jack >= 0.61.0
 FEATURE = Jack
-TIP_MESSAGE = "Jack needed!"
+TIP_MESSAGE = "Jack not found!"
 LINK_LIBS = `pkg-config --silence-errors --cflags --libs jack`
 ADD_DEFINES = __JACK__
 ADD_SOURCES = playerjack.cpp

@@ -1,7 +1,7 @@
 
 #************************************************************************
 # QBAS
-# version 0.9.1
+# version 0.9.2
 # Copyright (c) 2003-2004 Gianluca Romanin ( J_Zar )
 #        <jayorama@users.sourceforge.net>
 #************************************************************************
@@ -30,6 +30,11 @@
 # Paths         (DON'T TOUCH!)
 include( paths.qbas )
 # --------------------------------------------------
+
+# If we don't have a debug build, set 'release' optimization...
+!contains( CONFIG, debug ) {
+	CONFIG += release
+}
 
 # --------------------------------------------------
 # Depend definitions         (DON'T TOUCH!)
