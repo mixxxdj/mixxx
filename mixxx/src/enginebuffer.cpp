@@ -355,21 +355,24 @@ void EngineBuffer::slotControlCueSet(double)
 }
 
 // Goto the cue point:
-void EngineBuffer::slotControlCueGoto(double)
+void EngineBuffer::slotControlCueGoto(double pos)
 {
-    // Set cue point if play is not pressed
-    if (playButton->get()==0.)
+    if (pos!=0.)
     {
-        slotControlCueSet();
+        // Set cue point if play is not pressed
+        if (playButton->get()==0.)
+        {
+            slotControlCueSet();
 
-        // Start playing
-        playButton->set(1.);
-    }
-    else
-    {
-        // Seek to cue point
-        reader->requestSeek(reader->f_dCuePoint);
-        m_iBeatMarkSamplesLeft = 0;
+            // Start playing
+            playButton->set(1.);
+        }
+        else
+        {
+            // Seek to cue point
+            reader->requestSeek(reader->f_dCuePoint);
+            m_iBeatMarkSamplesLeft = 0;
+        }
     }
 }
 
@@ -391,15 +394,21 @@ void EngineBuffer::slotControlCuePreview(double d)
     {
         // Seek to cue point and start playing
         m_bCuePreview = true;
-        slotControlCueGoto();
+
+        if (playButton->get()==0.)
+            playButton->set(1.);
+        else
+        {
+            // Seek to cue point
+            reader->requestSeek(reader->f_dCuePoint);
+            m_iBeatMarkSamplesLeft = 0;
+        }
     }
 }
 
 void EngineBuffer::slotControlPlay(double)
 {
-    // Set cue when play button is pressed for stopping the sound
-    //if (playButton->get()==0.)
-        slotControlCueSet();
+    slotControlCueSet();
 }
 
 void EngineBuffer::slotControlStart(double)
