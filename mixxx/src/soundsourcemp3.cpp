@@ -92,7 +92,7 @@ long SoundSourceMp3::seek(long filepos) {
   Return the length of the file in samples.
 */
 long unsigned SoundSourceMp3::length() {
-  return (long unsigned) mad_timer_count(filelength, MAD_UNITS_44100_HZ);
+  return (long unsigned) 2*mad_timer_count(filelength, MAD_UNITS_44100_HZ);
 }
 
 /*	
@@ -102,6 +102,7 @@ long unsigned SoundSourceMp3::length() {
 unsigned SoundSourceMp3::read(unsigned long samples_wanted, const SAMPLE* _destination) {
   SAMPLE *destination = (SAMPLE*)_destination;
   unsigned Total_samples_decoded = 0;
+  int frames = 0;
   qDebug("Decoding");
   while (Total_samples_decoded < samples_wanted) {
       if(mad_frame_decode(&Frame,&Stream)) {
@@ -124,6 +125,7 @@ unsigned SoundSourceMp3::read(unsigned long samples_wanted, const SAMPLE* _desti
      * are reported by mad_synth_frame();
      */
     mad_synth_frame(&Synth,&Frame);
+    frames ++;
     /* Synthesized samples must be converted from mad's fixed
      * point number to the consumer format. Here we use unsigned
      * 16 bit big endian integers on two channels. Integer samples
@@ -138,13 +140,13 @@ unsigned SoundSourceMp3::read(unsigned long samples_wanted, const SAMPLE* _desti
       /* Right channel. If the decoded stream is monophonic then
        * the right output channel is the same as the left one.
        */
-      if(MAD_NCHANNELS(&Frame.header)==2)
-	Sample=(SAMPLE)(Synth.pcm.samples[0][i]>>(MAD_F_FRACBITS-15));
+      if (MAD_NCHANNELS(&Frame.header)==2)
+	Sample=(SAMPLE)(Synth.pcm.samples[1][i]>>(MAD_F_FRACBITS-15));
       *(destination++) = Sample;
     }
     Total_samples_decoded += 2*Synth.pcm.length;
   }
   
-  qDebug("decoded %i samples.", Total_samples_decoded);
+  qDebug("decoded %i samples in %i frames.", Total_samples_decoded, frames);
   return Total_samples_decoded;
 }

@@ -49,7 +49,7 @@ EngineBuffer::EngineBuffer(DlgPlaycontrol *_playcontrol, int midiPlaybutton, int
   // Allocate temporary buffer
   read_buffer_size = READBUFFERSIZE;
   chunk_size = READCHUNKSIZE;
-  temp = new SAMPLE[2*chunk_size]; // Temporary buffer for the raw samples
+  temp = new SAMPLE[3*chunk_size]; // Temporary buffer for the raw samples
   read_buffer = new CSAMPLE[read_buffer_size];
 
   // Allocate semaphore
@@ -196,7 +196,7 @@ void EngineBuffer::getchunk() {
 
   // Read a chunk
   unsigned samples_read = file->read(chunk_size, temp);
-  if (samples_read != chunk_size)
+  if (samples_read < chunk_size)
       qDebug("Didn't get as many samples as we asked for: %d:%d", chunk_size, samples_read);
 
   // Convert from SAMPLE to CSAMPLE. Should possibly be optimized
