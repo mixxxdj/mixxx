@@ -29,12 +29,12 @@
 #include "controlobject.h"
 #include "enginebuffer.h"
 
-TrackList::TrackList( const QString sDirectory, WTrackTable *ptableTracks,
+TrackList::TrackList( const QString sDirectory, WTrackTable *pTableTracks,
                       QLabel *text1, QLabel *text2,
                       EngineBuffer *buffer1, EngineBuffer *buffer2)
 {
     m_sDirectory = sDirectory;
-    m_ptableTracks = ptableTracks;
+    m_pTableTracks = pTableTracks;
     m_pText1 = text1;
     m_pText2 = text2;
     m_pBuffer1 = buffer1;
@@ -66,7 +66,7 @@ TrackList::TrackList( const QString sDirectory, WTrackTable *ptableTracks,
     playSelectMenu->insertItem(QIconSet(b_xpm), "Player B",this, SLOT(slotChangePlay_2()));
 
     // Connect the right click to the slot where the menu is shown:
-    connect(m_ptableTracks, SIGNAL(pressed(int, int, int, const QPoint &)),
+    connect(m_pTableTracks, SIGNAL(pressed(int, int, int, const QPoint &)),
                             SLOT(slotClick(int, int, int, const QPoint &)));
 }
 
@@ -136,22 +136,21 @@ void TrackList::UpdateTracklist()
 
 	// Put information from all the tracks into the table:
 	int iRow=0;
-//	m_ptableTracks->hideColumn( COL_INDEX ); // Hide the index row
-	m_ptableTracks->setNumRows( m_lTracks.count() );
+	m_pTableTracks->setNumRows( m_lTracks.count() );
 	for (TrackInfoObject *Track = m_lTracks.first(); Track; Track = m_lTracks.next() )
         if (Track->m_bExist)
         {
-            m_ptableTracks->setItem(iRow, COL_TITLE, new WTrackTableItem(m_ptableTracks,QTableItem::Never, Track->m_sTitle));
-    		m_ptableTracks->setItem(iRow, COL_ARTIST, new WTrackTableItem(m_ptableTracks,QTableItem::Never, Track->m_sArtist));
-	    	m_ptableTracks->setItem(iRow, COL_COMMENT, new WTrackTableItem(m_ptableTracks,QTableItem::WhenCurrent, Track->m_sComment));
-		    m_ptableTracks->setItem(iRow, COL_TYPE, new WTrackTableItem(m_ptableTracks,QTableItem::Never, Track->m_sType));
-	    	m_ptableTracks->setItem(iRow, COL_DURATION, new WTrackTableItem(m_ptableTracks,QTableItem::Never, Track->Duration()));
-		    m_ptableTracks->setItem(iRow, COL_BITRATE, new WTrackTableItem(m_ptableTracks,QTableItem::Never, Track->m_sBitrate));
-    		m_ptableTracks->setItem(iRow, COL_INDEX, new WTrackTableItem(m_ptableTracks,QTableItem::Never, QString("%1").arg(iRow)));
+            m_pTableTracks->setItem(iRow, COL_TITLE, new WTrackTableItem(m_pTableTracks,QTableItem::Never, Track->m_sTitle));
+    		m_pTableTracks->setItem(iRow, COL_ARTIST, new WTrackTableItem(m_pTableTracks,QTableItem::Never, Track->m_sArtist));
+	    	m_pTableTracks->setItem(iRow, COL_COMMENT, new WTrackTableItem(m_pTableTracks,QTableItem::WhenCurrent, Track->m_sComment));
+		    m_pTableTracks->setItem(iRow, COL_TYPE, new WTrackTableItem(m_pTableTracks,QTableItem::Never, Track->m_sType));
+	    	m_pTableTracks->setItem(iRow, COL_DURATION, new WTrackTableItem(m_pTableTracks,QTableItem::Never, Track->Duration()));
+		    m_pTableTracks->setItem(iRow, COL_BITRATE, new WTrackTableItem(m_pTableTracks,QTableItem::Never, Track->m_sBitrate));
+    		m_pTableTracks->setItem(iRow, COL_INDEX, new WTrackTableItem(m_pTableTracks,QTableItem::Never, QString("%1").arg(iRow)));
 	       	iRow ++;
 	    }
     // Readjust the number of rows:
-    m_ptableTracks->setNumRows( iRow );
+    m_pTableTracks->setNumRows( iRow );
 
 	// Find the track which has been played the most times:
 	m_iMaxTimesPlayed = 1;
@@ -227,8 +226,8 @@ void TrackList::UpdateScores()
 {
 	for (unsigned int iRow=0; iRow<m_lTracks.count(); iRow++)
 	{
-		TrackInfoObject *track = m_lTracks.at( m_ptableTracks->text( iRow, COL_INDEX ).toInt() );
-        m_ptableTracks->setItem(iRow, COL_SCORE, new WTrackTableItem(m_ptableTracks,QTableItem::Never,
+		TrackInfoObject *track = m_lTracks.at( m_pTableTracks->text( iRow, COL_INDEX ).toInt() );
+        m_pTableTracks->setItem(iRow, COL_SCORE, new WTrackTableItem(m_pTableTracks,QTableItem::Never,
                                 QString("%1").arg( (int) ( 99*track->m_iTimesPlayed/m_iMaxTimesPlayed ), 2 ) ));
 	}
 }
@@ -238,13 +237,13 @@ void TrackList::UpdateScores()
 */
 void TrackList::WriteXML()
 {
-    qDebug("Writing tracklist.xml, %d tracks", m_ptableTracks->numRows());
+    qDebug("Writing tracklist.xml, %d tracks", m_pTableTracks->numRows());
     // First transfer information from the comment field from the table to the Track:
-    for (unsigned int iRow=0; iRow<m_ptableTracks->numRows(); iRow++)
+    for (unsigned int iRow=0; iRow<m_pTableTracks->numRows(); iRow++)
     {
-        //qDebug("Comment: %s", m_ptableTracks->item(iRow, COL_COMMENT)->text());
-        m_lTracks.at( m_ptableTracks->item(iRow, COL_INDEX)->text().toUInt() )->m_sComment =
-            m_ptableTracks->item(iRow, COL_COMMENT)->text();
+        //qDebug("Comment: %s", m_pTableTracks->item(iRow, COL_COMMENT)->text());
+        m_lTracks.at( m_pTableTracks->item(iRow, COL_INDEX)->text().toUInt() )->m_sComment =
+            m_pTableTracks->item(iRow, COL_COMMENT)->text();
     }
 
 	// Create the xml document:
@@ -388,7 +387,7 @@ TrackInfoObject *TrackList::FileExistsInList( const QString sFilename )
 void TrackList::slotChangePlay_1(int idx)
 {
     if (idx==-1)
-        m_iCurTrackIdxCh1 = m_ptableTracks->text(m_ptableTracks->currentRow(), COL_INDEX ).toInt();
+        m_iCurTrackIdxCh1 = m_pTableTracks->text(m_pTableTracks->currentRow(), COL_INDEX ).toInt();
     TrackInfoObject *track = m_lTracks.at(m_iCurTrackIdxCh1);
     
     if (track)
@@ -410,7 +409,7 @@ void TrackList::slotChangePlay_1(int idx)
 void TrackList::slotChangePlay_2(int idx)
 {
     if (idx==-1)
-        m_iCurTrackIdxCh2 = m_ptableTracks->text(m_ptableTracks->currentRow(), COL_INDEX).toInt();
+        m_iCurTrackIdxCh2 = m_pTableTracks->text(m_pTableTracks->currentRow(), COL_INDEX).toInt();
     TrackInfoObject *track = m_lTracks.at(m_iCurTrackIdxCh2);
         
     if (track)
@@ -434,10 +433,14 @@ void TrackList::slotChangePlay_2(int idx)
 */
 void TrackList::slotClick( int iRow, int iCol, int iButton, const QPoint &pos )
 {
-    // Display popup menu
-    QPoint globalPos = m_ptableTracks->mapToGlobal(pos);
-    globalPos -= QPoint(m_ptableTracks->contentsX(), m_ptableTracks->contentsY());
-    playSelectMenu->popup(globalPos);
+    // Display popup menu if mouse pointer is placed outside comment row
+    if (pos.x()<m_pTableTracks->columnPos(COL_COMMENT) ||
+        pos.x()>m_pTableTracks->columnPos(COL_COMMENT)+m_pTableTracks->columnWidth(COL_COMMENT))
+    {
+        QPoint globalPos = m_pTableTracks->mapToGlobal(pos);
+        globalPos -= QPoint(m_pTableTracks->contentsX(), m_pTableTracks->contentsY());
+        playSelectMenu->popup(globalPos);
+    }
 }
 
 

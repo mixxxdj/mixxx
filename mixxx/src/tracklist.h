@@ -73,7 +73,7 @@ private:
     QString m_sDirectory; 
     /** list of all tracks */
     QPtrList<TrackInfoObject> m_lTracks; 
-    WTrackTable *m_ptableTracks;
+    WTrackTable *m_pTableTracks;
     QPopupMenu *playSelectMenu;
     /** Pointers to the play controls */
     QLabel *m_pText1, *m_pText2;
