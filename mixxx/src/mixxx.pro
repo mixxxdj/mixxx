@@ -240,31 +240,31 @@ macx {
 unix {
 
     # skins... (copy all)
-    skins.path = /usr/share/mixxx/skins
-    skins.files = skins/*
+   skins.path = /usr/share/mixxx/skins
+   skins.files = skins/*
 
     # midi conf... (copy all)
-    midi.path = /usr/share/mixxx/midi
-    midi.files = midi/*
+   midi.path = /usr/share/mixxx/midi
+   midi.files = midi/*
 
     # keyboard conf... (copy all)
-    keyb.path = /usr/share/mixxx/keyboard
-    keyb.files = keyboard/*
+   keyb.path = /usr/share/mixxx/keyboard
+   keyb.files = keyboard/*
 
     # doc files...
-    readme.path = /usr/share/doc/mixxx-1.1
-    readme.files = ../README
-    licence.path = /usr/share/doc/mixxx-1.1
-    licence.files = ../LICENCE
-    copying.path = /usr/share/doc/mixxx-1.1
-    copying.files = ../COPYING
+   readme.path = /usr/share/doc/mixxx-1.1
+   readme.files = ../README
+   licence.path = /usr/share/doc/mixxx-1.1
+   licence.files = ../LICENCE
+   copying.path = /usr/share/doc/mixxx-1.1
+   copying.files = ../COPYING
 
     # binary...
-    TARGET = mixxx
-    target.path = /usr/bin
+   TARGET = mixxx
+   target.path = /usr/bin
 
     # finally adding what we wanna install...
-    INSTALLS += skins midi keyb readme licence copying target
+   INSTALLS += skins midi keyb readme licence copying target
 }
 
 
