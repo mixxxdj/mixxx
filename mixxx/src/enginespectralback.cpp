@@ -56,7 +56,7 @@ EngineSpectralBack::~EngineSpectralBack()
    into real and imaginary parts, before the IFFT is calculated.
    Output:  Pointer to an array of CSAMPLES of length l.
    -------- ----------------------------------------------------------------- */
-CSAMPLE *EngineSpectralBack::process(CSAMPLE *p, const int)
+CSAMPLE *EngineSpectralBack::process(const CSAMPLE *p, const int)
 {
     CSAMPLE *p2 = (CSAMPLE *)p;
 
