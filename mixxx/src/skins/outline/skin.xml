@@ -6,7 +6,7 @@
  </Background>
 
  <SliderComposed>
-  <Tooltip>Test</Tooltip>
+  <Tooltip>Crossfader</Tooltip>
   <Handle>crosshandle-on-.png</Handle>
   <Slider>crossslider-off-.png</Slider>
   <Pos>400,462</Pos>
@@ -18,6 +18,7 @@
  </SliderComposed>
 
  <SliderComposed>
+  <Tooltip>Playback rate</Tooltip>
   <Handle>ratehandle-on-Ch1.png</Handle>
   <Slider>rateslider-off-Ch1.png</Slider>
   <Pos>9,170</Pos>
@@ -29,6 +30,7 @@
  </SliderComposed>
 
  <SliderComposed>
+  <Tooltip>Playback rate</Tooltip>
   <Handle>ratehandle-on-Ch2.png</Handle>
   <Slider>rateslider-off-Ch2.png</Slider>
   <Pos>896,169</Pos>
@@ -40,6 +42,7 @@
  </SliderComposed>
 
  <PushButton>
+  <Tooltip>Tempo syncronization</Tooltip>
   <NumberStates>1</NumberStates>
   <State>
    <Number>0</Number>
@@ -55,6 +58,7 @@
  </PushButton>
 
  <PushButton>
+  <Tooltip>Tempo syncronization</Tooltip>
   <NumberStates>1</NumberStates>
   <State>
    <Number>0</Number>
@@ -70,6 +74,7 @@
  </PushButton>
 
  <PushButton>
+  <Tooltip>Increase playback rate</Tooltip>
   <NumberStates>1</NumberStates>
   <State>
    <Number>0</Number>
@@ -90,6 +95,7 @@
  </PushButton>
 
  <PushButton>
+  <Tooltip>Increase playback rate</Tooltip>
   <NumberStates>1</NumberStates>
   <State>
    <Number>0</Number>
@@ -110,6 +116,7 @@
  </PushButton>
 
  <PushButton>
+  <Tooltip>Decrease playback rate</Tooltip>
   <NumberStates>1</NumberStates>
   <State>
    <Number>0</Number>
@@ -130,6 +137,7 @@
  </PushButton>
 
  <PushButton>
+  <Tooltip>Decrease playback rate</Tooltip>
   <NumberStates>1</NumberStates>
   <State>
    <Number>0</Number>
@@ -150,6 +158,7 @@
  </PushButton>
 
  <PushButton>
+  <Tooltip>Temporary increase playback rate (only when button is pressed)</Tooltip>
   <NumberStates>1</NumberStates>
   <State>
    <Number>0</Number>
@@ -180,6 +189,7 @@
  </PushButton>
 
  <PushButton>
+  <Tooltip>Temporary decrease playback rate (only when button is pressed)</Tooltip>
   <NumberStates>1</NumberStates>
   <State>
    <Number>0</Number>
@@ -210,6 +220,7 @@
  </PushButton>
 
  <PushButton>
+  <Tooltip>Temporary increase playback rate (only when button is pressed)</Tooltip>
   <NumberStates>1</NumberStates>
   <State>
    <Number>0</Number>
@@ -240,6 +251,7 @@
  </PushButton>
 
  <PushButton>
+  <Tooltip>Temporary decrease playback rate (only when button is pressed)</Tooltip>
   <NumberStates>1</NumberStates>
   <State>
    <Number>0</Number>
@@ -270,6 +282,7 @@
  </PushButton>
 
  <SliderComposed>
+  <Tooltip>Channel volume</Tooltip>
   <Handle>volhandle-on-Ch1.png</Handle>
   <Slider>volslider-off-Ch1.png</Slider>
   <Pos>9,520</Pos>
@@ -281,6 +294,7 @@
  </SliderComposed>
 
  <SliderComposed>
+  <Tooltip>Channel volume</Tooltip>
   <Handle>volhandle-on-Ch2.png</Handle>
   <Slider>volslider-off-Ch2.png</Slider>
   <Pos>896,517</Pos>
@@ -292,6 +306,7 @@
  </SliderComposed>
 
  <VuMeter>
+  <Tooltip>Master VuMeter</Tooltip>
   <PathVu>vumeter-on-.png</PathVu>
   <PathBack>vumeter-off-.png</PathBack>
   <Pos>663,404</Pos>
@@ -302,6 +317,7 @@
  </VuMeter>
 
  <VuMeter>
+  <Tooltip>Channel VuMeter</Tooltip>
   <PathVu>vumeter-on-Ch1.png</PathVu>
   <PathBack>vumeter-off-Ch1.png</PathBack>
   <Pos>107,529</Pos>
@@ -311,6 +327,7 @@
  </VuMeter>
 
  <VuMeter>
+  <Tooltip>Channel VuMeter</Tooltip>
   <PathVu>vumeter-on-Ch2.png</PathVu>
   <PathBack>vumeter-off-Ch2.png</PathBack>
   <Pos>995,525</Pos>
@@ -320,6 +337,7 @@
  </VuMeter>
 
  <PushButton>
+  <Tooltip>End of track mode</Tooltip>
   <NumberStates>3</NumberStates>
   <State>
    <Number>0</Number>
@@ -343,6 +361,7 @@
  </PushButton>
 
  <PushButton>
+  <Tooltip>End of track mode</Tooltip>
   <NumberStates>3</NumberStates>
   <State>
    <Number>0</Number>
@@ -366,6 +385,7 @@
  </PushButton>
 
  <PushButton>
+  <Tooltip>Pause/play</Tooltip>
   <NumberStates>2</NumberStates>
   <State>
    <Number>0</Number>
@@ -391,6 +411,7 @@
  </PushButton>
 
  <PushButton>
+  <Tooltip>Pause/play</Tooltip>
   <NumberStates>2</NumberStates>
   <State>
    <Number>0</Number>
@@ -416,6 +437,7 @@
  </PushButton>
 
  <PushButton>
+  <Tooltip>Cue preview/cue goto</Tooltip>
   <NumberStates>1</NumberStates>
   <State>
    <Number>0</Number>
@@ -441,6 +463,7 @@
  </PushButton>
 
  <PushButton>
+  <Tooltip>Cue preview (left click), Cue goto (right click)</Tooltip>
   <NumberStates>1</NumberStates>
   <State>
    <Number>0</Number>
@@ -466,6 +489,7 @@
  </PushButton>
 
  <PushButton>
+  <Tooltip>Reverse playback</Tooltip>
   <NumberStates>1</NumberStates>
   <State>
    <Number>0</Number>
@@ -486,6 +510,7 @@
  </PushButton>
 
  <PushButton>
+  <Tooltip>Reverse playback</Tooltip>
   <NumberStates>1</NumberStates>
   <State>
    <Number>0</Number>
@@ -506,6 +531,7 @@
  </PushButton>
 
  <PushButton>
+  <Tooltip>Fast forward</Tooltip>
   <NumberStates>1</NumberStates>
   <State>
    <Number>0</Number>
@@ -531,6 +557,7 @@
  </PushButton>
 
  <PushButton>
+  <Tooltip>Fast backward</Tooltip>
   <NumberStates>1</NumberStates>
   <State>
    <Number>0</Number>
@@ -556,6 +583,7 @@
  </PushButton>
 
  <PushButton>
+  <Tooltip>Fast forward</Tooltip>
   <NumberStates>1</NumberStates>
   <State>
    <Number>0</Number>
@@ -581,6 +609,7 @@
  </PushButton>
 
  <PushButton>
+  <Tooltip>Fast backward</Tooltip>
   <NumberStates>1</NumberStates>
   <State>
    <Number>0</Number>
@@ -606,6 +635,7 @@
  </PushButton>
 
  <PushButton>
+  <Tooltip>Flanger on/off</Tooltip>
   <NumberStates>2</NumberStates>
   <State>
    <Number>0</Number>
@@ -624,6 +654,7 @@
  </PushButton>
 
  <PushButton>
+  <Tooltip>Flanger on/off</Tooltip>
   <NumberStates>2</NumberStates>
   <State>
    <Number>0</Number>
@@ -642,6 +673,7 @@
  </PushButton>
 
  <PushButton>
+  <Tooltip>Headphone cue</Tooltip>
   <NumberStates>2</NumberStates>
   <State>
    <Number>0</Number>
@@ -660,6 +692,7 @@
  </PushButton>
 
  <PushButton>
+  <Tooltip>Headphone cue</Tooltip>
   <NumberStates>2</NumberStates>
   <State>
    <Number>0</Number>
@@ -678,6 +711,7 @@
  </PushButton>
 
  <Knob>
+  <Tooltip>Master volume</Tooltip>
   <NumberStates>41</NumberStates>
   <Path>knobm%1.png</Path>
   <Pos>842,459</Pos>
@@ -687,6 +721,7 @@
  </Knob>
 
  <Knob>
+  <Tooltip>Master balance</Tooltip>
   <NumberStates>41</NumberStates>
   <Path>knobm%1.png</Path>
   <Pos>791,459</Pos>
@@ -696,6 +731,7 @@
  </Knob>
 
  <Knob>
+  <Tooltip>Headphone volume</Tooltip>
   <NumberStates>41</NumberStates>
   <Path>knobm%1.png</Path>
   <Pos>198,459</Pos>
@@ -705,6 +741,7 @@
  </Knob>
 
  <Knob>
+  <Tooltip>Mix between headphone and main</Tooltip>
   <NumberStates>41</NumberStates>
   <Path>knobm%1.png</Path>
   <Pos>146,459</Pos>
@@ -714,6 +751,7 @@
  </Knob>
 
  <Knob>
+  <Tooltip>Flanger depth</Tooltip>
   <NumberStates>41</NumberStates>
   <Path>knobm%1.png</Path>
   <Pos>146,403</Pos>
@@ -723,6 +761,7 @@
  </Knob>
 
  <Knob>
+  <Tooltip>Flanger delay</Tooltip>
   <NumberStates>41</NumberStates>
   <Path>knobm%1.png</Path>
   <Pos>198,403</Pos>
@@ -732,6 +771,7 @@
  </Knob>
 
  <Knob>
+  <Tooltip>Flanger LFO period</Tooltip>
   <NumberStates>41</NumberStates>
   <Path>knobm%1.png</Path>
   <Pos>250,403</Pos>
@@ -741,6 +781,7 @@
  </Knob>
 
  <Knob>
+  <Tooltip>Channel pre gain</Tooltip>
   <NumberStates>41</NumberStates>
   <Path>knobl%1.png</Path>
   <Pos>62,530</Pos>
@@ -750,6 +791,7 @@
  </Knob>
 
  <Knob>
+  <Tooltip>Channel highpass filter</Tooltip>
   <NumberStates>41</NumberStates>
   <Path>knobl%1.png</Path>
   <Pos>62,587</Pos>
@@ -759,6 +801,7 @@
  </Knob>
 
  <Knob>
+  <Tooltip>Channel bandpass filter</Tooltip>
   <NumberStates>41</NumberStates>
   <Path>knobl%1.png</Path>
   <Pos>62,642</Pos>
@@ -768,6 +811,7 @@
  </Knob>
 
  <Knob>
+  <Tooltip>Channel lowpass filter</Tooltip>
   <NumberStates>41</NumberStates>
   <Path>knobl%1.png</Path>
   <Pos>62,698</Pos>
@@ -777,6 +821,7 @@
  </Knob>
 
 <Knob>
+  <Tooltip>Channel pre gain</Tooltip>
   <NumberStates>41</NumberStates>
   <Path>knobr%1.png</Path>
   <Pos>948,529</Pos>
@@ -786,6 +831,7 @@
  </Knob>
 
  <Knob>
+  <Tooltip>Channel highpass filter</Tooltip>
   <NumberStates>41</NumberStates>
   <Path>knobr%1.png</Path>
   <Pos>948,586</Pos>
@@ -795,6 +841,7 @@
  </Knob>
 
  <Knob>
+  <Tooltip>Channel bandpass filter</Tooltip>
   <NumberStates>41</NumberStates>
   <Path>knobr%1.png</Path>
   <Pos>948,641</Pos>
@@ -804,6 +851,7 @@
  </Knob>
 
  <Knob>
+  <Tooltip>Channel lowpass filter</Tooltip>
   <NumberStates>41</NumberStates>
   <Path>knobr%1.png</Path>
   <Pos>948,697</Pos>
@@ -813,6 +861,7 @@
  </Knob>
 
  <Visual>
+  <Tooltip>Waveform visualization with beat marks. Playposition marked by vertical bar in the middle. Drag with mouse.</Tooltip>
   <Channel>1</Channel>
   <Pos>139,50</Pos>
   <Size>747,148</Size>
@@ -825,6 +874,7 @@
  </Visual>
 
  <Visual>
+  <Tooltip>Waveform visualization with beat marks. Playposition marked by vertical bar in the middle. Drag with mouse.</Tooltip>
   <Channel>2</Channel>
   <Pos>139,200</Pos>
   <Size>747,148</Size>
@@ -854,6 +904,7 @@
  </Text>
 
  <Number>
+  <Tooltip>Tempo display (Beat Per Minute)</Tooltip>
   <Pos>144,355</Pos>
   <Size>100,20</Size>
   <Text>BPM: </Text>
@@ -866,6 +917,7 @@
  </Number>
 
  <Number>
+  <Tooltip>Tempo display (Beat Per Minute)</Tooltip>
   <Pos>623,355</Pos>
   <Size>100,20</Size>
   <Text>BPM: </Text>
@@ -878,6 +930,7 @@
  </Number>
 
  <NumberPos>
+  <Tooltip>Play position/remaining time</Tooltip>
   <Channel>1</Channel>
   <Pos>320,355</Pos>
   <Size>85,20</Size>
@@ -890,6 +943,7 @@
  </NumberPos>
 
  <NumberPos>
+  <Tooltip>Play position/remaining time</Tooltip>
   <Channel>2</Channel>
   <Pos>798,355</Pos>
   <Size>85,20</Size>
@@ -902,6 +956,7 @@
  </NumberPos>
 
  <SliderComposed>
+  <Tooltip>Play position - Use mouse to seek</Tooltip>
   <Handle>playpos-marker1.png</Handle>
   <Slider>playpos-slider.png</Slider>
   <Pos>144,375</Pos>
@@ -913,6 +968,7 @@
  </SliderComposed>
 
  <SliderComposed>
+  <Tooltip>Play position - Use mouse to seek</Tooltip>
   <Handle>playpos-marker2.png</Handle>
   <Slider>playpos-slider.png</Slider>
   <Pos>623,375</Pos>

@@ -450,8 +450,6 @@ void EngineBuffer::slotControlBeatSync(double)
         else
             fRateScale = fOtherBpm/fThisBpm * (1.+m_pOtherEngineBuffer->getRate());
 
-        qDebug("sync scale %f",fRateScale);
-
         // Ensure the rate is within resonable boundaries
         if (fRateScale<2. || fRateScale>0.5)
             // Adjust the rate:
