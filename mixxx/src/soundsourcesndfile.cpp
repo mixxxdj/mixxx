@@ -15,6 +15,8 @@
  ***************************************************************************/
 
 #include "soundsourcesndfile.h"
+#include <qstring.h>
+#include "trackinfoobject.h"
 /*
   Class for reading files using libsndfile
 */
@@ -75,6 +77,23 @@ unsigned SoundSourceSndFile::read(unsigned long size, const SAMPLE* destination)
     }
 }
 
+void SoundSourceSndFile::ParseHeader( TrackInfoObject *Track )
+{
+    SF_INFO info;
+	QString location = Track->m_sFilepath+'/'+Track->m_sFilename;
+    SNDFILE *fh = sf_open( location.ascii() ,SFM_READ, &info);
+    if (fh == 0 || !sf_format_check(&info))
+    {
+        qDebug("libsndfile: Error opening file.");
+        return;
+    }
+
+	Track->m_sType = "wav";
+	Track->m_sBitrate = QString("%1").arg(Track->m_iLength/(info.samplerate));
+	Track->m_iDuration = Track->m_iLength/(4*info.samplerate);
+
+	sf_close( fh );
+}
 /*
   Return the length of the file in samples.
 */

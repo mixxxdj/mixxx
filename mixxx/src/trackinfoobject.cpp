@@ -7,14 +7,14 @@
 /*
 	Initialize a new track with the filename.
 */
-TrackInfoObject::TrackInfoObject( const QString sFile )
+TrackInfoObject::TrackInfoObject( const QString sPath, const QString sFile ) :
+m_sFilepath(sPath), m_sFilename(sFile)
 {
-	m_sFilename = sFile;
-	m_sFilepath = "";
 	m_sArtist = "";
 	m_sTitle = "";
 	m_sType= "";
-	m_sDuration = "??:??";
+	m_iDuration = 0;
+	m_iLength = 0;
 	m_sBitrate = "";
 	m_iTimesPlayed = 0;
 
@@ -45,7 +45,7 @@ TrackInfoObject::TrackInfoObject( const QDomNode &nodeHeader )
 	m_sType = node.toElement().text();
 	node = node.nextSibling();
 	
-	m_sDuration = node.toElement().text();
+	m_iDuration = node.toElement().text().toInt();
 	node = node.nextSibling();
 
 	m_sBitrate = node.toElement().text();
@@ -85,7 +85,7 @@ void TrackInfoObject::WriteToXML( QDomDocument &doc, QDomElement &header )
 	AddElement( doc, header, "Title", m_sTitle );
 	AddElement( doc, header, "Artist", m_sArtist );
 	AddElement( doc, header, "Type", m_sType );
-	AddElement( doc, header, "Duration", m_sDuration );
+	AddElement( doc, header, "Duration", QString("%1").arg(Duration()) );
 	AddElement( doc, header, "Bitrate", m_sBitrate );
 	AddElement( doc, header, "TimesPlayed", QString("%1").arg(m_iTimesPlayed) );
 }
@@ -118,4 +118,12 @@ void TrackInfoObject::Parse()
 		m_sTitle = m_sFilename.section('.',0,-2); // Remove the ending;
 		m_sType = m_sFilename.section('.',-1); // Get the ending
 	}
+
+	// Find the length:
+	m_iLength = QFile( m_sFilepath + '/' + m_sFilename ).size();
+}
+
+QString TrackInfoObject::Duration()
+{
+	return QString("%1:%2").arg( (int) (m_iDuration/60), 2 ).arg( m_iDuration%60, 2);
 }
