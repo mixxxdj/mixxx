@@ -595,6 +595,7 @@ void MixxxApp::slotHelpAbout()
                          "<tr><td></td><td>Kristoffer Jensen</td></tr>"
                          "<tr><td>Playlist import:</td><td>Ingo Kossyk</td></tr>"
 			 "<tr><td>Beat phase sync:</td><td>Torben Hohn</td></tr>"
+			 "<tr><td>ALSA support:</td><td>Peter Chang</td></tr>"
                          "<tr><td>Other contributions:</td><td>Lukas Zapletal</td></tr>"
                          "<tr><td></td><td>Jeremie Zimmermann</td></tr>"
                          "<tr><td></td><td>Gianluca Romanin</td></tr>"

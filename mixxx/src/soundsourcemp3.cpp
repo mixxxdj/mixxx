@@ -189,7 +189,7 @@ long SoundSourceMp3::seek(long filepos)
             mad_stream_finish(&Stream);
             mad_stream_init(&Stream);
             mad_stream_options(&Stream, MAD_OPTION_IGNORECRC);
-	    //qDebug("mp3 restore %p",cur->m_pStreamPos);
+        //qDebug("mp3 restore %p",cur->m_pStreamPos);
             mad_stream_buffer(&Stream, (const unsigned char*)cur->m_pStreamPos, inputbuf_len-(long int)(cur->m_pStreamPos-(unsigned char*)inputbuf));
             mad_synth_mute(&Synth);
             mad_frame_mute(Frame);
@@ -211,7 +211,7 @@ long SoundSourceMp3::seek(long filepos)
 
         // Synthesize the the samples from the frame which should be discard to reach the requested position
         SAMPLE *temp = new SAMPLE[READCHUNKSIZE];
-        //int r = read(filepos-cur->pos, temp);
+        int r = read(filepos-cur->pos, temp);
         //qDebug("try read %i, got %i...frame pos %i, filepos %i",filepos-cur->pos,r,cur->pos,filepos);
         //qDebug("ok");
         delete [] temp;

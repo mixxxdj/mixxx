@@ -17,7 +17,6 @@
 
 #include "powermatelinux.h"
 #include <linux/input.h>
-#include <sys/time.h>
 #include <string.h>
 #include <errno.h>
 #include <stdio.h>
