@@ -20,13 +20,12 @@
 EngineFilterRBJ::EngineFilterRBJ(int potmeter_midi, int button_midi,
 				 int button_bit, MidiObject *midi)
 {
-	gain = 100.;
+	dbGain = 100.;
 
 	filterpot = new ControlPotmeter("filterpot", potmeter_midi, midi);
 	connect(filterpot, SIGNAL(valueChanged(FLOAT_TYPE)), this, SLOT(slotUpdate()));
 
     updateFilter();
-	s0 = 0.; s1 = 0.; s2 = 0.; d0 = 0.; d1 = 0.; d2 = 0.;
 
 	buffer = new CSAMPLE[MAX_BUFFER_LEN];
 }
@@ -39,37 +38,38 @@ EngineFilterRBJ::~EngineFilterRBJ()
 
 CSAMPLE *EngineFilterRBJ::process(const CSAMPLE *source, const int buf_size)
 {
-	for (int i=0; i<buf_size; i++)
+    for (int i=0; i<buf_size; i++)
 	{
-		s2 = s1;
-		s1 = s0;
-		s0 = source[i];
+		buffer[i] = c0* source[i] + c1*x1 + c2*x2 - c3*y1 - c4*y2;
 
-		d2 = d1;
-		d1 = d0;
-
-		buffer[i] = (b0/a0)*s0 + (b1/a0)*s1 + (b2/a0)*s2 - (a1/a0)*d1 - (a2/a0)*d2;
-
-		d0 = buffer[i];
-	}
+        // Shift buffered samples
+	    x2 = x1;
+        x1 = source[i];
+        y2 = y1;
+        y1 = buffer[i];
+    }
 	return buffer;
 }
 
 void EngineFilterRBJ::slotUpdate()
 {
-	gain = filterpot->getValue();
+	dbGain = 10.*filterpot->getValue();
     updateFilter();
 
-	qDebug("Got gain: %f",gain);
+	qDebug("Got gain: %f",dbGain);
 }
 
 void EngineFilterRBJ::updateFilter()
 {
 	// Determine filter constants
-    omega = two_pi*frequency/SRATE;
-    sn    = sin(omega);
-    cs    = cos(omega);
-    alpha = sn/(2.*gain*1000.); //sn*sinh(log(2.)/2. * bandwidth * omega/sn);
+    CSAMPLE omega = two_pi*frequency/SRATE;
+    CSAMPLE sn    = sin(omega);
+    CSAMPLE cs    = cos(omega);
+    CSAMPLE A     = pow(10, dbGain /40);
+    CSAMPLE alpha = sn * sinh(ln_2 /2. * bandwidth * omega /sn);
+    CSAMPLE beta  = sqrt(A + A);
+
+    CSAMPLE b0, b1, b2, a0, a1, a2;
 
 	// Low pass filter constants
     b0 = (1.-cs)/2.;
@@ -79,5 +79,13 @@ void EngineFilterRBJ::updateFilter()
     a1 = -2.*cs;
     a2 = 1.-alpha;
 	
-	qDebug("a0: %f, b0: %f",a0,b0);
+    c0 = b0 / a0;
+    c1 = b1 / a0;
+    c2 = b2 / a0;
+    c3 = a1 / a0;
+    c4 = a2 / a0;
+
+    // Set samples to zero
+    x1 = x2 = 0.;
+    y1 = y2 = 0.;
 }

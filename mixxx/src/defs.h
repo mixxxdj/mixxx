@@ -30,6 +30,7 @@ static int NYQUIST    = SRATE/2;
 static CSAMPLE norm   = (2.*acos(-1.0))/SRATE;
 static CSAMPLE pi     = acos(-1.0);
 static CSAMPLE two_pi = (2.*acos(-1.0));
+static CSAMPLE ln_2   = 0.69314718055994530942;
 
 // Defs for the ports and their midi control values:
 const short ADC0 = 0x00;

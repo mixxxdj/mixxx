@@ -23,7 +23,10 @@ EngineFilterLBH::EngineFilterLBH(QKnob *DialFilterLow, int midiLow,
 {
 	low = new EngineIIRfilter(midiLow, PORT_B, 4, midi,bessel_lowpass);
 	connect(DialFilterLow,  SIGNAL(valueChanged(int)), low->filterpot,  SLOT(slotSetPosition(int)));
-	band = new EngineIIRfilter(midiBand, PORT_B, 4, midi,bessel_bandpass);
+	//low = new EngineFilterRBJ(midiLow, PORT_B, 4, midi);
+	//connect(DialFilterLow,  SIGNAL(valueChanged(int)), low->filterpot,  SLOT(slotSetPosition(int)));
+	
+    band = new EngineIIRfilter(midiBand, PORT_B, 4, midi,bessel_bandpass);
 	connect(DialFilterMiddle,  SIGNAL(valueChanged(int)), band->filterpot,  SLOT(slotSetPosition(int)));
 	high = new EngineIIRfilter(midiHigh, PORT_B, 4, midi,bessel_highpass);
 	connect(DialFilterHigh,  SIGNAL(valueChanged(int)), high->filterpot,  SLOT(slotSetPosition(int)));
@@ -46,7 +49,7 @@ CSAMPLE *EngineFilterLBH::process(const CSAMPLE *source, const int buf_size)
     CSAMPLE *p2 = high->process(source,buf_size);
     
     for (int i=0; i<buf_size; i++)
-	buffer[i] = p0[i]+p1[i]+p2[i];
+	    buffer[i] = p0[i]+p1[i]+p2[i];
     
     return buffer;
 }

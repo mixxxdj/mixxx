@@ -44,14 +44,13 @@ public slots:
 private:
 	void updateFilter();
 
-	CSAMPLE omega, sn, cs, alpha;
-    CSAMPLE b0, b1, b2, a0, a1, a2;
+    CSAMPLE c0, c1, c2, c3, c4;
 
 	/** Block boundary values */
-    CSAMPLE s0, s1, s2, d0, d1, d2;
+    CSAMPLE x1, x2, y1, y2;
 
-	/** Normalized filter gain. Controled via signals/slots */
-	CSAMPLE gain;
+	/** Filter gain. Controled via signals/slots */
+	CSAMPLE dbGain;
 
 	CSAMPLE *buffer;
 };
