@@ -214,14 +214,6 @@ void Track::slotNewPlaylist()
     updateTreeView();
 }
 
-void Track::slotDeleteTIO(TrackInfoObject *pTrackInfoObject)
-{
-	
-	pTrackInfoObject->removeFromTrackTable();
-    m_pActivePlaylist->removeTrack(pTrackInfoObject);	
-	
-}
-
 void Track::slotDeletePlaylist(QString qName)
 {
     TrackPlaylist *list = getPlaylist(qName);
@@ -267,17 +259,7 @@ void Track::updateTreeView()
         m_pView->m_pTreeView->updatePlaylists(list);
     }
 }
-void Track::updateTrackView()
-{
-	if(m_pView->m_pTrackTable)
-	{
-		m_pActivePlaylist->deactivate();
-		m_pView->m_pTrackTable->setNumRows(0);
-	    m_pActivePlaylist->activate(m_pView->m_pTrackTable);
 
-	}
-	
-}
 void Track::slotPlaylistPopup(QString qName)
 {
     QPopupMenu *menu = new QPopupMenu();
@@ -300,9 +282,7 @@ void Track::slotTrackPopup(TrackInfoObject *pTrackInfoObject, int)
 
     menu->insertItem("Player 1", this, SLOT(slotLoadPlayer1()));
     menu->insertItem("Player 2", this, SLOT(slotLoadPlayer2()));
-    menu->insertItem("Delete", this, SLOT(slotDeleteTIO()));
-	menu->insertSeparator(2);
-	
+
     menu->exec(QCursor::pos());
 
 }
@@ -348,12 +328,6 @@ void Track::slotLoadPlayer2(TrackInfoObject *pTrackInfoObject)
     if (m_pView->m_pTextCh2)
         m_pView->m_pTextCh2->setText(m_pTrackPlayer2->getInfo());
 }
-void Track::slotDeleteTIO()
-{
-	
-	slotDeleteTIO(m_pActivePopupTrack);
-    updateTrackView();
-}
 
 void Track::slotLoadPlayer1()
 {
@@ -364,3 +338,4 @@ void Track::slotLoadPlayer2()
 {
     slotLoadPlayer2(m_pActivePopupTrack);
 }
+
