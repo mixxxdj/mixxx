@@ -19,9 +19,11 @@
 #include <qpainter.h>
 #include <qcolor.h>
 #include <qrect.h>
+#include <qstring.h>
 
-WTrackTableItem::WTrackTableItem(QTable *table, EditType et, const QString &text) : QTableItem(table, et, text)
+WTrackTableItem::WTrackTableItem(QTable *table, EditType et, const QString &text, enumType eType) : QTableItem(table, et, text)
 {
+    m_eType = eType;
 }
 
 WTrackTableItem::~WTrackTableItem()
@@ -41,3 +43,21 @@ void WTrackTableItem::paint(QPainter *p, const QColorGroup &cg, const QRect &cr,
 
     QTableItem::paint( p, g, cr, selected);
 }
+/*
+    Returns a key which is used for sorting of the table.
+*/
+QString WTrackTableItem::key() const
+{
+    static QString sResult;
+    switch (m_eType) {
+    case typeText: 
+        sResult = text();
+        break;
+    case typeNumber: case typeDuration:
+        sResult.fill('0', 10-text().length()); // Assume at most 10 digits
+        sResult += text();
+        break;
+    }
+    return sResult;
+}
+
