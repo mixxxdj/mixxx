@@ -2,7 +2,7 @@
 
 #************************************************************************
 # QBAS
-# version 0.9
+# version 0.9.1
 # Copyright (c) 2003-2004 Gianluca Romanin ( J_Zar )
 #        <jayorama@users.sourceforge.net>
 #************************************************************************
@@ -63,6 +63,7 @@ echo "Project file is:      $PROJECT_FILE"
 
 # cleanup phase
 rm -f configure.def ;
+rm -f summary.log ;
 
 # number of arguments + 1
 NUM_OPT=$(($# + 1));
@@ -167,6 +168,40 @@ for (( d=1; d<$NUM_OPT; d++ )); do
 	if [ "$OPT" = "--enable-debug" ];
 	then
 		echo "CONFIG += debug" >> configure.def
+		STATUS="ok"
+	fi
+	
+	if [ "$OPT" = "--enable-features" ];
+	then
+		T=""
+		for (( y=1; y<6; y++ )); do
+			# parse option value to find different subvalues
+			V=$(echo $VAL | cut -f$y -d";") ;
+			# checking to avoid duplicates or if we have finished
+			if [ "$V" = "" ] || [ "$V" = "$T" ] ;
+			then
+				break
+			fi
+			T=$V ;
+			echo "ENABLED_FEATURES += $V" >> configure.def
+		done
+		STATUS="ok"
+	fi
+	
+	if [ "$OPT" = "--disable-features" ];
+	then
+		T=""
+		for (( y=1; y<6; y++ )); do
+			# parse option value to find different subvalues
+			V=$(echo $VAL | cut -f$y -d";") ;
+			# checking to avoid duplicates or if we have finished
+			if [ "$V" = "" ] || [ "$V" = "$T" ] ;
+			then
+				break
+			fi
+			T=$V ;
+			echo "DISABLED_FEATURES += $V" >> configure.def
+		done
 		STATUS="ok"
 	fi
 

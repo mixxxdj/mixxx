@@ -1,7 +1,7 @@
 
 #************************************************************************
 # QBAS
-# version 0.9
+# version 0.9.1
 # Copyright (c) 2003-2004 Gianluca Romanin ( J_Zar )
 #        <jayorama@users.sourceforge.net>
 #************************************************************************
@@ -31,11 +31,18 @@
 include( paths.qbas )
 # --------------------------------------------------
 
-
 # --------------------------------------------------
 # Depend definitions         (DON'T TOUCH!)
 include( build.definition )
 # --------------------------------------------------
+
+# close the summary output then print it...
+contains( PROJECT_SETTINGS , enable_summary ) {
+		system( echo " " >> summary.log )
+		system( echo "	--------------------------------------" >> summary.log )
+		system( echo " " >> summary.log )
+		system( cat summary.log )
+	}
 
 
 
