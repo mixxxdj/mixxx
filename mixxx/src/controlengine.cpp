@@ -50,7 +50,7 @@ ControlEngine::~ControlEngine()
     delete controlObject;
 }
 
-void ControlEngine::setNotify(EngineObject *_notifyobj, void (EngineObject::*_notifymethod)(double))
+void ControlEngine::setNotify(EngineObject *_notifyobj, EngineMethod _notifymethod)
 {
     notifyobj = _notifyobj;
     notifymethod = _notifymethod;

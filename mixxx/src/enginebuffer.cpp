@@ -74,9 +74,7 @@ EngineBuffer::EngineBuffer(MixxxApp *_mixxx, QAction *actionAudioBeatMark, Power
     ControlPotmeter *controlplaypos = new ControlPotmeter(ConfigKey(group, "playposition"), 0., 1.);
     controlplaypos->setWidget(playcontrol->SliderPosition);
     playposSlider = new ControlEngine(controlplaypos);
-#ifdef __UNIX__
-//    playposSlider->setNotify(this,(void (EngineObject::*)(double))seek);
-#endif
+    playposSlider->setNotify(this,(EngineMethod)&EngineBuffer::seek);
 
     // Potmeter used to communicate bufferpos_play to GUI thread
     ControlPotmeter *controlbufferpos = new ControlPotmeter(ConfigKey(group, "bufferplayposition"), 0., READBUFFERSIZE);
@@ -354,8 +352,8 @@ CSAMPLE *EngineBuffer::process(const CSAMPLE *, const int buf_size)
             bool *beatBuffer = (bool *)readerbeat->getBasePtr();
             int chunkSizeDiff = READBUFFERSIZE/readerbeat->getBufferSize();
 
-            int from = ((bufferpos_play-audioBeatMarkLen)/chunkSizeDiff);
-            int to   = (idx                              /chunkSizeDiff);
+            int from = (int)((bufferpos_play-audioBeatMarkLen)/chunkSizeDiff);
+            int to   = (int)(idx                              /chunkSizeDiff);
             for (int i=from; i<=to; i++)
             {
                 if (beatBuffer[i%readerbeat->getBufferSize()])
@@ -369,8 +367,8 @@ CSAMPLE *EngineBuffer::process(const CSAMPLE *, const int buf_size)
 //                        qDebug("%i-%i, buffer: %f-%f",j_start,j_end,bufferpos_play,idx);
                         if (j_start > bufferpos_play-audioBeatMarkLen)
                         {
-                            j_start = max(0,j_start-bufferpos_play);
-                            j_end = min(j_end-bufferpos_play,buf_size);
+                            j_start = (int)max(0,j_start-bufferpos_play);
+                            j_end = (int)min(j_end-bufferpos_play,buf_size);
 //                            qDebug("j_start %i, j_end %i",j_start,j_end);
                             for (int j=j_start; j<j_end; j++)
                                 buffer[j] = 30000.;

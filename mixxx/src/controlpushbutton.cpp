@@ -68,20 +68,20 @@ void ControlPushButton::slotSetPosition(bool newpos)
         slotSetPosition(0);
 }
 
-void ControlPushButton::slotSetPositionMidi(MidiCategory c, int v)
+void ControlPushButton::slotSetPositionMidi(MidiCategory c, int)
 {
     // Only react on NOTE_ON midi events
     if (c==NOTE_ON)
     {
-        qDebug("value : %i",value);
+        qDebug("value : %f",value);
         if (value==0)
             slotSetPosition(1);
         else
             slotSetPosition(0);
 
-        qDebug("value : %i",value);
+        qDebug("value : %f",value);
             
-        emit(updateGUI(value));
+        emit(updateGUI((int)value));
     }
 }
 
