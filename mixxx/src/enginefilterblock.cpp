@@ -26,9 +26,9 @@ EngineFilterBlock::EngineFilterBlock(const char *group)
     ControlLogpotmeter *p;
     ControlPushButton *pb;
 
-    low = new EngineFilterIIR(bessel_lowpass);
-    band = new EngineFilterIIR(bessel_bandpass);
-    high = new EngineFilterIIR(bessel_highpass);
+    low = new EngineFilterIIR(bessel_lowpass4,4);
+    band = new EngineFilterIIR(bessel_bandpass,8);
+    high = new EngineFilterIIR(bessel_highpass4,4);
 
     /*
     lowrbj = new EngineFilterRBJ();
@@ -83,11 +83,11 @@ void EngineFilterBlock::process(const CSAMPLE *pIn, const CSAMPLE *pOut, const i
     CSAMPLE fLow=0.f, fMid=0.f, fHigh=0.f;
 
     if (filterKillLow->get()==0.)
-        fLow = filterpotLow->get()*0.7;
+        fLow = filterpotLow->get(); //*0.7;
     if (filterKillMid->get()==0.)
-        fMid = filterpotMid->get()*1.1;
+        fMid = filterpotMid->get(); //*1.1;
     if (filterKillHigh->get()==0.)
-        fHigh = filterpotHigh->get()*1.2;
+        fHigh = filterpotHigh->get(); //*1.2;
 
     
 /*    if (fLow == 1. && fMid == 1. && fHigh == 1.)
@@ -112,6 +112,6 @@ void EngineFilterBlock::process(const CSAMPLE *pIn, const CSAMPLE *pOut, const i
     high->process(pIn, m_pTemp3, iBufferSize);
         
     for (int i=0; i<iBufferSize; ++i)
-        pOutput[i] = 0.5*(fLow*m_pTemp1[i] + fMid*m_pTemp2[i] + fHigh*m_pTemp3[i]);
+        pOutput[i] = (fLow*m_pTemp1[i] + fMid*m_pTemp2[i] + fHigh*m_pTemp3[i]);
 }
 

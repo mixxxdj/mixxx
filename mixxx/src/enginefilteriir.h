@@ -23,58 +23,60 @@
 class EngineFilterIIR : public EngineObject 
 {
 public:
-    EngineFilterIIR(const float *coefs);
+    EngineFilterIIR(const double *coefs, int order);
     ~EngineFilterIIR();
     void process(const CSAMPLE *pIn, const CSAMPLE *pOut, const int iBufferSize);
 protected:
-    const float *coefs;
-    #define NZEROS 8
-    #define NPOLES 8
-    float xv1[NZEROS+1], yv1[NPOLES+1];
-    float xv2[NZEROS+1], yv2[NPOLES+1];
+    int order;
+    const double *coefs;
+    #define MAXNZEROS 8 
+    #define MAXNPOLES 8 
+    double xv1[MAXNZEROS+1], yv1[MAXNPOLES+1];
+    double xv2[MAXNZEROS+1], yv2[MAXNPOLES+1];
 };
 
 //
 // Defines filter coefficients for IIR filters:
 //
 
-// corner at 600 Hz
-static const float bessel_lowpass[13] = { 7.444032197e+08,
+// 8th order lowpass, corner at 600 Hz
+static const double bessel_lowpass[13] = {  7.444032197e+08, 
 					    8, 28, 56, 70,
 					    -0.3800297563, 3.4120798629, 
 					    -13.4230504610, 30.2214248640,
 					    -42.5938048390, 38.4826057150,
 					    -21.7665031930, 7.0472774638};
 
-static const float bessel_highpass_15000[13] = {1.155528189e+02,
-						 -8,28,-56,70,
-						 -0.0000256948, -0.0000692066,
-						 -0.0047711800, 0.0030454662,
-						 -0.1122770236, 0.0900031430,
-						 -0.6804656031, 0.3249181788};
-
-static const float bessel_highpass_5000[13] = {3.115907019e+00,
-						- 8, 28, - 56, 70,
-						-0.0938545059, 0.9902863433,
-						-4.5923856269,12.2296988290,
-						-20.4633626500,22.0401949270,
-						-14.9300062810, 5.8192734790};
-
-
-// corner at 4000 Hz:
-static const float bessel_highpass[13] = {2.465837728e+00, // gain
+// 4th order highpass, corner at 4000 Hz:
+static const double bessel_highpass[13] = {2.465837728e+00, // gain
 					   - 8,+ 28, - 56, + 70,
 					   -0.1552424571, 1.5489970216,
 					   -6.7821376632,17.0223182510,
 					   -26.7923322400,27.0856195480,
 					   -17.1796384890, 6.2523870250};
 
-// 4th order bandpass at 600 - 4000Hz:
-static const float bessel_bandpass[13] = {1.455078491e+02,
+// 8th order bandpass at 600 - 4000Hz:
+static const double bessel_bandpass[13] = {1.455078491e+02,
 					   0,-4,0,6,
 					   -0.1002852333, 1.0213655417,
 					   -4.6272090652,  12.1726925480,
 					   -20.3120761830, 21.9557125490,
 					   -14.9560287020,  5.8458265249};
+
+
+// 2nd order lowpass, corner 600Hz
+static const double bessel_lowpass2[4] = {3.707141512e+02, 2, -0.8282366449, 1.8174466602};
+
+// 2nd order bandpass at 600 - 4000Hz:
+static const double bessel_bandpass2[7] = {1.596830813e+01, 0, -2, -0.3374389990, 1.7280392126, -3.4124608099, 3.0203698354};
+
+// 2nd order highpass, corner at 4000 Hz:
+static const double bessel_highpass2[4] = {1.451889828e+00, -2, -0.4505643044, 1.3044656722}; 
+
+// 4th order lowpass, corner 600Hz
+static const double bessel_lowpass4[7] = {6.943736360e+04, 4, 6, -0.6673458737, 2.9444565421, -4.8814113588, 3.6040702669};
+
+// 4th order highpass, corner 4000Hz
+static const double bessel_highpass4[7] = {1.807553687e+00, -4, 6, -0.2898387148, 1.5497144728, -3.1422295239, 2.8699599032};
 
 #endif
