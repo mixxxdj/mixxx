@@ -19,6 +19,7 @@
   #include "soundsourceaudiofile.h"
 #endif
 #include "soundsourcemp3.h"
+#include "soundsourceoggvorbis.h"
 
 #include "images/a.xpm"
 #include "images/b.xpm"
@@ -138,7 +139,7 @@ bool TrackList::AddFiles(const char *path)
 
         // ... and then all the files:
         dir.setFilter(QDir::Files);
-        dir.setNameFilter("*.wav *.Wav *.WAV *.mp3 *.Mp3 *.MP3");
+        dir.setNameFilter("*.wav *.Wav *.WAV *.mp3 *.Mp3 *.MP3 *.ogg *.Ogg *.OGG");
         const QFileInfoList *list = dir.entryInfoList();
         QFileInfoListIterator it(*list);        // create list iterator
         QFileInfo *fi;                          // pointer for traversing
@@ -162,8 +163,10 @@ bool TrackList::AddFiles(const char *path)
 #ifdef __UNIX__
 					SoundSourceAudioFile::ParseHeader(Track);
 #endif
-                else if (sType == "mp3")
-                    SoundSourceMp3::ParseHeader(Track);
+        else if (sType == "mp3")
+            SoundSourceMp3::ParseHeader(Track);
+        else if (sType == "ogg")
+            SoundSourceOggVorbis::ParseHeader(Track);
                     
 				// Append the track to the list of tracks:
 				m_lTracks.append( Track );
