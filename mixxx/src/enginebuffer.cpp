@@ -205,7 +205,7 @@ EngineBuffer::~EngineBuffer()
     delete playButton;
     delete wheel;
     delete rateSlider;
-    delete buffer;
+    delete [] buffer;
     delete scale;
     delete bufferposSlider;
     delete m_pTrackEnd;

@@ -227,7 +227,7 @@ IMAGES += icon.png
 DEFINES += SETTINGS_FILE=$$SETTINGS_FILE
 unix:TEMPLATE = app
 win32:TEMPLATE = vcapp
-CONFIG += qt thread warn_off release
-#CONFIG += qt thread warn_on debug
+#CONFIG += qt thread warn_off release
+CONFIG += qt thread warn_on debug
 DBFILE = mixxx.db
 LANGUAGE = C++

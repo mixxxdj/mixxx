@@ -5,7 +5,7 @@
 #
 #
 
-$BASE='~mixxxdist';
+$BASE='dist';
 
 # Check if this is running on Linux
 $_ = `uname`;
@@ -30,31 +30,49 @@ if ($#out<0)
 }
 
 # Get version
-($t1, $t2, $version) = split(' ',`grep VERSION src/defs.h`);
-printf("Version: %s\n",$version);
+($_, $_, $version) = split(' ',`grep VERSION src/defs.h`);
+
+# Add version to base
+$BASE = $BASE . "/mixxx-$version";
+
+# Determine base for misc files like keyborad, midi and skins:
+if ($arch =~ /i586/)
+{
+    $BASEMISC = $BASE . "/src";
+} else {
+    $BASEMISC = $BASE . "/mixxx.app";
+}
 
 # Construct package base dir
-`install -d $BASE`;
+`install -d $BASEMISC`;
 
 # Copy skins to $BASE/share/mixxx
-`install -d $BASE/src/skins/outline`;
-`install -d $BASE/src/skins/traditional`;
-`install -d $BASE/src/skins/outlineClose`;
-`install src/skins/outline/* $BASE/src/skins/outline`;
-`install src/skins/outlineClose/* $BASE/src/skins/outlineClose`;
-`install src/skins/traditional/* $BASE/src/skins/traditional`;
+`install -d $BASEMISC/skins/outline`;
+`install -d $BASEMISC/skins/traditional`;
+`install -d $BASEMISC/skins/outlineClose`;
+`install src/skins/outline/* $BASEMISC/skins/outline`;
+`install src/skins/outlineClose/* $BASEMISC/skins/outlineClose`;
+`install src/skins/traditional/* $BASEMISC/skins/traditional`;
 
 # Copy midi config files
-`install -d $BASE/src/midi`;
-`install src/midi/* $BASE/src/midi`;
+`install -d $BASEMISC/midi`;
+`install src/midi/*.midi.cfg $BASEMISC/midi`;
 
 # Copy keyboard config files
-`install -d $BASE/src/keyboard`;
-`install src/keyboard/* $BASE/src/keyboard`;
+`install -d $BASEMISC/keyboard`;
+`install src/keyboard/*.kbd.cfg $BASEMISC/keyboard`;
 
-# Copy mixxx binary to $BASE/bin
-`install -d $BASE/src`;
-`install src/mixxx $BASE/src`;
+if ($arch =~ /i586/)
+{
+    # Copy mixxx binary to $BASE/bin
+    `install src/mixxx $BASEMISC`;
+
+    # Copy install script
+    `install install.pl $BASE`;
+} else {
+    # Install bundle
+    `cp -r mixxx.app $BASE`;
+}
 
 # Copy doc files
 `install README $BASE`;
@@ -62,13 +80,6 @@ printf("Version: %s\n",$version);
 `install COPYING $BASE`;
 `install Configuration.txt $BASE`;
 
-# Copy install script if running on Linux
-if ($arch =~ /i586/)
-{
-    `install install.pl $BASE`;
-}
-
-# Make tar file
 $path = `pwd`;
 chdir $BASE or die "Can't change to package dir!\n";
 `tar -cvzf ~/mixxx-$version-$arch.tar.gz *`;

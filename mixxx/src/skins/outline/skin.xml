@@ -861,7 +861,7 @@
  </Knob>
 
  <Visual>
-  <Tooltip>Waveform visualization with beat marks. Playposition marked by vertical bar in the middle. Drag with mouse.</Tooltip>
+  <Tooltip>Drag with mouse to control sound playback</Tooltip>
   <Channel>1</Channel>
   <Pos>139,50</Pos>
   <Size>747,148</Size>
@@ -874,7 +874,7 @@
  </Visual>
 
  <Visual>
-  <Tooltip>Waveform visualization with beat marks. Playposition marked by vertical bar in the middle. Drag with mouse.</Tooltip>
+  <Tooltip>Drag with mouse to control sound playback</Tooltip>
   <Channel>2</Channel>
   <Pos>139,200</Pos>
   <Size>747,148</Size>
