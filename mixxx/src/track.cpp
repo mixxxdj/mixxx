@@ -315,13 +315,10 @@ void Track::slotLoadPlayer1(TrackInfoObject *pTrackInfoObject)
     m_pTrackPlayer1 = pTrackInfoObject;
     emit(newTrackPlayer1(m_pTrackPlayer1));
 
-/*
     // Update score:
     m_pTrackPlayer1->incTimesPlayed();
-    if (m_pTrackPlayer1->getTimesPlayed() > m_iMaxTimesPlayed)
-        m_iMaxTimesPlayed = m_pTrackPlayer1->getTimesPlayed();
-    UpdateScores();
-*/
+    if (m_pActivePlaylist)
+        m_pActivePlaylist->updateScores();
 
     // Request a new track from the reader:
     m_pBuffer1->getReader()->requestNewTrack(m_pTrackPlayer1);
@@ -340,13 +337,10 @@ void Track::slotLoadPlayer2(TrackInfoObject *pTrackInfoObject)
     m_pTrackPlayer2 = pTrackInfoObject;
     emit(newTrackPlayer2(m_pTrackPlayer2));
 
-/*
     // Update score:
-    m_pTrackPlayer2->incTimesPlayed();
-    if (m_pTrackPlayer2->getTimesPlayed() > m_iMaxTimesPlayed)
-        m_iMaxTimesPlayed = m_pTrackPlayer2->getTimesPlayed();
-    UpdateScores();
-*/
+    m_pTrackPlayer1->incTimesPlayed();
+    if (m_pActivePlaylist)
+        m_pActivePlaylist->updateScores();
 
     // Request a new track from the reader:
     m_pBuffer2->getReader()->requestNewTrack(m_pTrackPlayer2);
@@ -400,3 +394,4 @@ void Track::slotEndOfTrackPlayer2(double)
     }
     m_pEndOfTrackCh2->setValueFromApp(0.);
 }
+

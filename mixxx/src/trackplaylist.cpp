@@ -104,6 +104,7 @@ void TrackPlaylist::activate(WTrackTable *pTable)
     {
         //qDebug("inserting in row %i",i);
         (*it)->insertInTrackTableRow(m_pTable, i);
+
         ++it;
         ++i;
     }
@@ -224,5 +225,15 @@ void TrackPlaylist::slotRemoveTrack(TrackInfoObject *pTrack)
     pTrack->removeFromTrackTable();
 }
 
+void TrackPlaylist::updateScores()
+{
+    // Update the score column for each track
+    QPtrList<TrackInfoObject>::iterator it = m_qList.begin();
+    while (it!=m_qList.end())
+    {
+        (*it)->updateScore();
+        ++it;
+    }
+}
 
 

@@ -31,6 +31,8 @@
 #include "wtracktableitem.h"
 #include "xmlparse.h"
 
+int TrackInfoObject::siMaxTimesPlayed = 0;
+
 TrackInfoObject::TrackInfoObject(const QString sPath, const QString sFile) : m_sFilename(sFile), m_sFilepath(sPath)
 {
     m_sArtist = "";
@@ -89,6 +91,9 @@ TrackInfoObject::TrackInfoObject(const QDomNode &nodeHeader)
     m_pTableItemDuration = 0;
     m_pTableItemBpm = 0;
     m_pTableItemBitrate = 0;
+
+    if (m_iTimesPlayed>siMaxTimesPlayed)
+        siMaxTimesPlayed = m_iTimesPlayed;
 
     // Check that the actual file exists:
     checkFileExists();
@@ -162,6 +167,9 @@ void TrackInfoObject::insertInTrackTableRow(WTrackTable *pTableTrack, int iRow)
     // Ensure the row that is requested for insert in the WTrackTable exists
     if (pTableTrack->numRows()<iRow+1)
         pTableTrack->setNumRows(iRow+1);
+
+    // Update the score
+    updateScore();
 
     // Construct elements to insert into the table, if they are not already allocated
     if (!m_pTableItemScore)
@@ -417,6 +425,8 @@ int TrackInfoObject::getTimesPlayed()
 void TrackInfoObject::incTimesPlayed()
 {
     ++m_iTimesPlayed;
+    if (m_iTimesPlayed>siMaxTimesPlayed)
+        siMaxTimesPlayed = m_iTimesPlayed;
 }
 
 void TrackInfoObject::setFilepath(QString s)
@@ -488,9 +498,9 @@ QString TrackInfoObject::getScoreStr()
     return QString("%1").arg(m_iScore);
 }
 
-void TrackInfoObject::setScore(int i)
+void TrackInfoObject::updateScore()
 {
-    m_iScore = i;
+    m_iScore = 99*m_iTimesPlayed/siMaxTimesPlayed;
 
     if (m_pTableItemScore)
     {

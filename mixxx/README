@@ -26,6 +26,8 @@ New since 1.1:
   knobs 
 - Fix in calling sound interpolation methods
 - Adjust tempo by beat tapping
+- Improved Linux compile and install procedure
+
 
 * REQUIREMENTS *********************************************
 Mixxx is depends on the following libraries:
