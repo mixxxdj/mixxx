@@ -226,16 +226,16 @@ bool MixxxApp::eventFilter(QObject *o, QEvent *e)
     if (e->type() == QEvent::User)
     {
         // Gain app lock
-        app->lock();
+        //app->lock();
 
         view->playcontrol1->SliderPosition->setValue((int)buffer1->playposSliderNew);
         view->playcontrol2->SliderPosition->setValue((int)buffer2->playposSliderNew);
 
         // Force GUI update
-        app->flush();
+        //app->flush();
 
         // Release app lock
-        app->unlock();
+        //app->unlock();
 
     }
     else
