@@ -64,8 +64,8 @@ void SoundSourceAudioFile::ParseHeader(TrackInfoObject *Track)
 
     Track->m_sType = "wav";
     Track->m_iDuration = (int)(afGetFrameCount(fh, AF_DEFAULT_TRACK)/afGetRate(fh, AF_DEFAULT_TRACK));
-    Track->m_sBitrate = QString("%1").arg((Track->m_iLength/(Track->m_iDuration*afGetRate(fh, AF_DEFAULT_TRACK))*
-                                          afGetRate(fh, AF_DEFAULT_TRACK)*8)/1000);
+    Track->m_sBitrate = QString("%1").arg((int)((Track->m_iLength/(Track->m_iDuration*afGetRate(fh, AF_DEFAULT_TRACK))*
+                                                 afGetRate(fh, AF_DEFAULT_TRACK)*8.)/1000.));
     afCloseFile(fh);
 }
 
