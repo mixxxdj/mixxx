@@ -97,6 +97,12 @@ void ControlPushButton::slotClicked()
         slotSetPosition(1);
 }
 
+void ControlPushButton::slotKeyPress()
+{
+    slotClicked();
+    emit(updateGUI((int)value));
+}
+
 char *ControlPushButton::printValue()
 {
     if (value == 1.)
@@ -125,6 +131,26 @@ void ControlPushButton::setWidget(QWidget *widget)
     QApplication::connect(this, SIGNAL(updateGUI(int)), widget, SLOT(setValue(int)));
 
     forceGUIUpdate();
+}
+
+void ControlPushButton::setAccelUp(const QKeySequence key)
+{
+    if (getParentWidget()!=0)
+    {
+        if (m_pAccel==0)
+            m_pAccel = new QAccel(getParentWidget());
+
+        m_pAccel->insertItem(key, 0);
+        m_pAccel->connectItem(0, this, SLOT(slotClicked()));
+        m_pAccel->setEnabled(true);
+    }
+    else    
+        qWarning("Error setting up keybard accelerator: Parent widget is not set in ControlObject");
+}
+
+void ControlPushButton::setAccelDown(const QKeySequence key)
+{
+    setAccelUp(key);
 }
 
 void ControlPushButton::setAction(QAction *action)

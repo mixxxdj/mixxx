@@ -7,7 +7,7 @@
 WINPA = DIRECTSOUND
 
 # Use this define if the visual subsystem should be included
-DEFINES += __VISUALS__
+#DEFINES += __VISUALS__
 
 # Path to ASIO SDK
 ASIOSDK_DIR   = ../winlib/asiosdk2
@@ -129,8 +129,18 @@ win32:SOURCES += powermatewin.cpp
 win32:HEADERS += powermatewin.h
 win32:LIBS += setupapi.lib
 
-
 unix {
+  # If Intel compiler is used, set icc optimization flags
+  COMPILER = $$system(echo $QMAKESPEC)
+  contains(COMPILER, linux-icc) {
+    message("Using Intel compiler")
+    QMAKE_CXXFLAGS += -rcd -tpp6 -xiMK # icc pentium III
+#  QMAKE_CXXFLAGS += -rcd -tpp7 -xiMKW # icc pentium IV
+#  QMAKE_CXXFLAGS += -prof_gen # generete profiling
+#    QMAKE_CXXFLAGS += -prof_use # use profiling
+    QMAKE_CXXFLAGS += -Wall
+  }
+
   DEFINES += __UNIX__
   UI_DIR = .ui
   MOC_DIR = .moc
@@ -141,14 +151,7 @@ unix {
   !macx:LIBS += -laudiofile #/usr/lib/libaudiofile.a
   LIBS += -lsrfftw -lsfftw
   INCLUDEPATH += . 
-  QMAKE_CXXFLAGS += -Wall
     
-#  Intel Compiler optimization flags
-  QMAKE_CXXFLAGS += -rcd -tpp6 -xiMK # icc pentium III
-#  QMAKE_CXXFLAGS += -rcd -tpp7 -xiMKW # icc pentium IV 
-#  QMAKE_CXXFLAGS += -prof_gen # icc profiling
-  QMAKE_CXXFLAGS += -prof_use # 
-
 # GCC Compiler optimization flags
 #  QMAKE_CXXFLAGS += -march=pentium3 -O3 -pipe
 #  QMAKE_CFLAGS   += -march=pentium3 -O3 -pipe

@@ -31,22 +31,23 @@ class ControlPotmeter : public ControlObject
 {
   Q_OBJECT
 public:
-  ControlPotmeter(ConfigKey key, FLOAT_TYPE=0.0, FLOAT_TYPE=1.0);
-  ~ControlPotmeter();
-  FLOAT_TYPE getValue();
+    ControlPotmeter(ConfigKey key, FLOAT_TYPE=0.0, FLOAT_TYPE=1.0);
+    ~ControlPotmeter();
+    FLOAT_TYPE getValue();
 //  char getPosition();
-  void setValue(int newpos);
+    void setValue(int newpos);
+    void setAccelUp(const QKeySequence key) {};
+    void setAccelDown(const QKeySequence key) {};
 public slots:
-  void slotSetPosition(int);
-  void slotSetPositionMidi(MidiCategory c, int v);
+    void slotSetPosition(int);
+    void slotSetPositionMidi(MidiCategory c, int v);
 protected:
-  void forceGUIUpdate();
-//  char position;     // position of the controller.
+    void forceGUIUpdate();
 #define maxPosition 127
 #define minPosition 0
 #define middlePosition ((maxPosition-minPosition)/2)
 #define positionrange (maxPosition-minPosition)
-  FLOAT_TYPE maxvalue, minvalue, valuerange;
+    FLOAT_TYPE maxvalue, minvalue, valuerange;
 };
 
 #endif

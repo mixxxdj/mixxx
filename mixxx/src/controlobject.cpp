@@ -27,11 +27,14 @@
 ConfigObject<ConfigValueMidi> *ControlObject::config = 0;
 ControlEngineQueue *ControlObject::queue = 0;
 QPtrList<ControlObject> ControlObject::list;
+QWidget *ControlObject::spParentWidget = 0;
+
 
 ControlObject::ControlObject()
 {
     value = 0.;
     installEventFilter(this);
+    m_pAccel = 0;
 }
 
 ControlObject::ControlObject(ConfigKey key)
@@ -43,6 +46,7 @@ ControlObject::ControlObject(ConfigKey key)
     cfgOption = config->get(key);
 
     list.append(this);
+    m_pAccel = 0;
 }
 
 ControlObject::~ControlObject()
@@ -125,6 +129,16 @@ FLOAT_TYPE ControlObject::getValue()
     //qDebug("thread id: %p",pthread_self());
 
     return value;
+}
+
+void ControlObject::setParentWidget(QWidget *pParentWidget)
+{
+    spParentWidget = pParentWidget;
+}
+
+QWidget *ControlObject::getParentWidget()
+{
+    return spParentWidget;
 }
 
 void ControlObject::emitValueChanged(FLOAT_TYPE value)

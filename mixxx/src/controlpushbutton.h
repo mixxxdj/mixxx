@@ -38,13 +38,20 @@ public:
     int getPosition();
     void setValue(int);
     void setWidget(QWidget *widget);
+    void setAccelUp(const QKeySequence key);
+    void setAccelDown(const QKeySequence key);
+    /** Associates a QAction to the ControlPushButton. This can be used to associate a menu item
+      * with the control */
     void setAction(QAction *action);
 public slots:
     void slotSetPosition(int);
     void slotSetPositionMidi(MidiCategory c, int v);
     void slotSetPositionOff();
 private slots:
+    /** This slot is connected to the widgets clicked signal */
     void slotClicked();
+    /** Connected to QAccel key event */
+    void slotKeyPress();
     void slotSetPosition(bool);
     void slotUpdateAction(int);
 signals:
