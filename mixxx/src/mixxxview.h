@@ -36,6 +36,7 @@ class WVisual;
 class WNumberPos;
 class QDomNode;
 class QSplitter;
+class MixxxKeyboard;
 
 /**
  * This class provides an incomplete base for your application view.
@@ -47,7 +48,7 @@ class MixxxView : public QWidget
     Q_OBJECT
 public:
     /** Construtor. Tries to open visuals if bVisuals is true. */
-    MixxxView(QWidget *parent, bool bVisualsWaveform, QString qSkinPath, ConfigObject<ConfigValue> *pConfig);
+    MixxxView(QWidget *parent, ControlObject *control, bool bVisualsWaveform, QString qSkinPath, ConfigObject<ConfigValue> *pConfig);
     ~MixxxView();
 
     /** Return true if WVisualWaveform has been instantiated. */
@@ -73,6 +74,8 @@ private:
     bool m_bVisualWaveform;
     bool compareConfigKeys(QDomNode node, QString key);
     QPtrList<QObject> m_qWidgetList;
+    /** Pointer to keyboard handler */
+    MixxxKeyboard *m_pKeyboard;
 };
 
 #endif

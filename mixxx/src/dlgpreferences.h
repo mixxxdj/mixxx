@@ -48,6 +48,9 @@ public:
                    ConfigObject<ConfigValueMidi> *midiconfig,
                    ControlObject *pControl);
     ~DlgPreferences();
+public slots:
+    void slotUpdate();
+    void slotApply();
 signals:
     void closeDlg();
 protected:
@@ -58,6 +61,7 @@ private:
     DlgPrefPlaylist *wplaylist;
     DlgPrefControls *wcontrols;
     ConfigObject<ConfigValue> *config;
+    MixxxApp *m_pMixxx;
 };
 
 #endif

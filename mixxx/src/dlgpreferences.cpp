@@ -29,6 +29,8 @@ DlgPreferences::DlgPreferences(MixxxApp *mixxx, MixxxView *view,
                                ConfigObject<ConfigValueMidi> *midiconfig,
                                ControlObject *pControl) : QTabDialog(mixxx, "")
 {    
+    m_pMixxx = mixxx;
+
     setCaption("Preferences");
     config = _config;
     
@@ -54,6 +56,7 @@ DlgPreferences::DlgPreferences(MixxxApp *mixxx, MixxxView *view,
     installEventFilter(this);
     
     // Connections
+    connect(this,        SIGNAL(aboutToShow()),          this,      SLOT(slotUpdate()));
     connect(this,        SIGNAL(aboutToShow()),          wsound,    SLOT(slotUpdate()));
     connect(this,        SIGNAL(aboutToShow()),          wmidi,     SLOT(slotUpdate()));
     connect(this,        SIGNAL(aboutToShow()),          wplaylist, SLOT(slotUpdate()));
@@ -62,6 +65,7 @@ DlgPreferences::DlgPreferences(MixxxApp *mixxx, MixxxView *view,
 //    connect(this,        SIGNAL(closeDlg()),             wmidi,     SLOT(slotApply()));
 //    connect(this,        SIGNAL(closeDlg()),             wplaylist, SLOT(slotApply()));
 //    connect(this,        SIGNAL(closeDlg()),             wcontrols, SLOT(slotApply()));
+    connect(this,        SIGNAL(closeDlg()),             this, SLOT(slotApply()));
     connect(wplaylist,   SIGNAL(apply(QString,QString)),         tracklist->wTree, SLOT(slotSetDirs(QString,QString)));
 }
 
@@ -78,3 +82,14 @@ bool DlgPreferences::eventFilter(QObject *o, QEvent *e)
     // Standard event processing
     return QWidget::eventFilter(o,e);
 }
+
+void DlgPreferences::slotUpdate()
+{
+//    m_pMixxx->releaseKeyboard();
+}
+
+void DlgPreferences::slotApply()
+{
+//    m_pMixxx->grabKeyboard();
+}
+
