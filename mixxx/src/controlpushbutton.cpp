@@ -45,47 +45,18 @@ void ControlPushButton::slotSetPositionExtern(float newpos)
     emitValueChanged(value);
 };
 
-void ControlPushButton::slotSetPosition(bool newpos)
-{
-    if (newpos)
-        slotSetPosition(1);
-    else
-        slotSetPosition(0);
-}
-
 void ControlPushButton::slotSetPositionMidi(MidiCategory c, int)
 {
     // Only react on NOTE_ON midi events
     if (c==NOTE_ON)
     {
         if (value==0)
-            slotSetPosition(1);
+            slotSetPositionExtern(1);
         else
-            slotSetPosition(0);
+            slotSetPositionExtern(0);
 
-//        qDebug("value : %f",value);
-            
         emit(updateGUI((int)value));
     }
-}
-
-void ControlPushButton::slotSetPositionOff()
-{
-    slotSetPosition(0);
-}
-
-void ControlPushButton::slotClicked()
-{
-    if (value==1.)
-        slotSetPosition(0);
-    else
-        slotSetPosition(1);
-}
-
-void ControlPushButton::slotKeyPress()
-{
-    slotClicked();
-    emit(updateGUI((int)value));
 }
 
 char *ControlPushButton::printValue()
@@ -95,16 +66,6 @@ char *ControlPushButton::printValue()
     else
         return "off";
 }
-
-/*
-void ControlPushButton::setWidget(QWidget *widget)
-{
-    QApplication::connect(widget, SIGNAL(clicked()), this, SLOT(slotClicked()));
-    QApplication::connect(this, SIGNAL(updateGUI(int)), widget, SLOT(setValue(int)));
-
-    forceGUIUpdate();
-}
-*/
 
 void ControlPushButton::setAccelUp(const QKeySequence key)
 {
