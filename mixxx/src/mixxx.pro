@@ -9,14 +9,14 @@ WINPA = DIRECTSOUND
 # Use this define if the visual subsystem should be included
 DEFINES += __VISUALS__
 
-# Path to ASIO SDK
-ASIOSDK_DIR   = ../winlib/asiosdk2
-
 # Path to Macintosh libraries
 macx:MACLIBPATH = ../../mixxx-maclib
 
 # Path to Windows libraries
-win32:WINLIBPATH = ../winlib
+win32:WINLIBPATH = ../../mixxx-winlib
+
+# Path to ASIO SDK
+ASIOSDK_DIR   = $$WINLIBPATH/asiosdk2
 
 #
 # End of options
@@ -171,7 +171,7 @@ unix:!macx {
   }
 
   CONFIG_PATH = \"/usr/share/mixxx\"
-  SETTINGS_DIR = "/.mixxx"
+  SETTINGS_DIR = \".mixxx\"
   DEFINES += __LINUX__
 }    
 
@@ -191,8 +191,8 @@ unix {
 win32 {
   DEFINES += __WIN__
   INCLUDEPATH += $$WINLIBPATH ../lib .
-#  QMAKE_CXXFLAGS += -GX
-  QMAKE_LFLAGS += /libpath:..\winlib /NODEFAULTLIB:libcd /NODEFAULTLIB:libcmtd /NODEFAULTLIB:libc /NODEFAULTLIB:msvcrt #/NODEFAULTLIB:library
+  QMAKE_CXXFLAGS += -GX
+  QMAKE_LFLAGS += /libpath:$$WINLIBPATH /NODEFAULTLIB:libcd /NODEFAULTLIB:libcmtd /NODEFAULTLIB:libc /NODEFAULTLIB:msvcrt #/NODEFAULTLIB:library
   CONFIG_PATH = \"config\"
   SETTINGS_DIR = \"Mixxx\"
 }
