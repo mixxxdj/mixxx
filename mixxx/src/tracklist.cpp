@@ -132,8 +132,7 @@ void TrackList::UpdateTracklist()
     }
 
     // Run through all the files and add the new ones to the xml file:
-	if (AddFiles( m_sDirectory ))
-		WriteXML();
+	bool bFilesAdded = (AddFiles( m_sDirectory ));
 
 	// Put information from all the tracks into the table:
 	int iRow=0;
@@ -151,6 +150,8 @@ void TrackList::UpdateTracklist()
     		m_ptableTracks->setItem(iRow, COL_INDEX, new WTrackTableItem(m_ptableTracks,QTableItem::Never, QString("%1").arg(iRow)));
 	       	iRow ++;
 	    }
+    // Readjust the number of rows:
+    m_ptableTracks->setNumRows( iRow );
 
 	// Find the track which has been played the most times:
 	m_iMaxTimesPlayed = 1;
@@ -160,6 +161,9 @@ void TrackList::UpdateTracklist()
 
 	// Update the scores for all the tracks:
 	UpdateScores();
+
+    if (bFilesAdded) 
+        WriteXML();
 }
 
 void TrackList::slotEndOfTrackCh1(double)
@@ -234,14 +238,14 @@ void TrackList::UpdateScores()
 */
 void TrackList::WriteXML()
 {
-    qDebug("Writing tracklist.xml");
+    qDebug("Writing tracklist.xml, %d tracks", m_ptableTracks->numRows());
     // First transfer information from the comment field from the table to the Track:
-    /*for (unsigned int iRow=0; iRow<m_ptableTracks->numRows(); iRow++)
+    for (unsigned int iRow=0; iRow<m_ptableTracks->numRows(); iRow++)
     {
-        qDebug("Comment: %s", m_ptableTracks->item(iRow, COL_COMMENT)->text());
+        //qDebug("Comment: %s", m_ptableTracks->item(iRow, COL_COMMENT)->text());
         m_lTracks.at( m_ptableTracks->item(iRow, COL_INDEX)->text().toUInt() )->m_sComment =
             m_ptableTracks->item(iRow, COL_COMMENT)->text();
-    }*/
+    }
 
 	// Create the xml document:
 	QDomDocument domXML( "Mixxx_Track_List" );
