@@ -88,6 +88,7 @@ void EngineObject::rtThread()
         fprintf(stderr, "Can't do thread_policy_set\n");
 #endif
 #ifdef __UNIX__
+#ifndef __MACX__
     // Try to set realtime priority on the current executing thread. This should be used in time-critical
     // producer threads.
     struct sched_param schp;
@@ -97,7 +98,7 @@ void EngineObject::rtThread()
     schp.sched_priority = ((sched_get_priority_max(SCHED_RR) - 11)); //sched_get_priority_min(SCHED_RR)) / 2)-1;
     if (sched_setscheduler(0, SCHED_RR, &schp) != 0)
     qWarning("Not possible to give audio producer thread high prioriy.");
-
+#endif
 #endif
 #ifdef __WIN__
     HANDLE h = GetCurrentThread();
