@@ -31,7 +31,7 @@ MixxxView::MixxxView(QWidget *parent, MixxxDoc *doc) : QWidget(parent)
     channel1 = new DlgChannel(this);
     channel2 = new DlgChannel(this); channel2->layoutMirror();
     playlist = new DlgPlaylist(this);
-    playlist->ListPlaylist->setColumnWidth(0,581);
+    playlist->ListPlaylist->setColumnWidth(0,575);
     master = new DlgMaster(this);
     crossfader = new DlgCrossfader(this);
     split = new DlgSplit(this);
