@@ -27,6 +27,7 @@ WTreeView::WTreeView(QString qRootPath, QWidget *parent, const char *name, bool 
     folderOpen = 0;
     fileNormal = 0;
     m_pClickedItem = 0;
+    m_pRootDir = 0;
 
     autoopen_timer = new QTimer(this);
 
@@ -54,12 +55,11 @@ WTreeView::WTreeView(QString qRootPath, QWidget *parent, const char *name, bool 
     //
     // Load information into the view
     //
-    new WTreeItemDir(this, qRootPath);
+    slotUpdateDir(qRootPath);
 
     // Insert root playlist
     m_pRootPlaylist = new WTreeItem(this, "Playlists");
     m_pRootPlaylist->setOpen(true); // be interesting
-
 }
 
 WTreeView::~WTreeView()
@@ -347,31 +347,13 @@ void WTreeView::contentsMouseReleaseEvent(QMouseEvent *)
     mouseMoved = false;
 }
 
-void WTreeView::setDir( const QString &s )
+void WTreeView::slotUpdateDir( const QString &s )
 {
-    QListViewItemIterator it( this );
-    ++it;
-    for ( ; it.current(); ++it )
-    {
-        it.current()->setOpen( FALSE );
-    }
-
-    QStringList lst( QStringList::split( "/", s ) );
-    QListViewItem *item = firstChild();
-    QStringList::Iterator it2 = lst.begin();
-    for ( ; it2 != lst.end(); ++it2 )
-    {
-        while ( item )
-        {
-            if ( item->text( 0 ) == *it2 )
-            {
-                item->setOpen( TRUE );
-                break;
-            }
-            item = item->itemBelow();
-        }
-    }
-
-    if ( item )
-        setCurrentItem( item );
+    //qDebug("dir %s", s.latin1());
+    
+    // Clear current dir
+    if (m_pRootDir)
+        delete m_pRootDir;
+    
+    m_pRootDir = new WTreeItemDir(this, s);
 }

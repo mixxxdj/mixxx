@@ -56,7 +56,7 @@ public:
     void updatePlaylists(QPtrList<TrackPlaylist> *pList);
     static QString fullPath(QListViewItem* item);
 public slots:
-    void setDir(const QString &);
+    void slotUpdateDir(const QString &);
 
 signals:
     void folderSelected(const QString &);
@@ -78,9 +78,10 @@ protected:
     void contentsMouseReleaseEvent(QMouseEvent *e);
 
 private:
-
     /** Root item for playlists */
     WTreeItem *m_pRootPlaylist;
+    /** Root item for directory structure */
+    WTreeItem *m_pRootDir;    
     bool dirsOnly;
     QListViewItem *oldCurrent;
     QListViewItem *dropItem;
