@@ -181,7 +181,7 @@ bool PlayerJack::open()
         m_pConfig->set(ConfigKey("[Soundcard]","Samplerate"),ConfigValue((*it)));
 
         // Set currently used latency in config database
-        int msec = 1000*m_iBufferSize/(*it).toInt();
+        int msec = (int)(1000.*(float)m_iBufferSize/((float)(*it).toInt()*2.));
         m_pConfig->set(ConfigKey("[Soundcard]","Latency"), ConfigValue(msec));
     }
 

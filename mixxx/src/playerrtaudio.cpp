@@ -149,7 +149,7 @@ bool PlayerRtAudio::open()
 
     // Setup latency
     int iFramesPerBuffer;
-    int iLatency = (int)(iSrate*(m_pConfig->getValueString(ConfigKey("[Soundcard]","Latency")).toFloat()/1000.));
+    int iLatency = (int)((float)iSrate*2.*(m_pConfig->getValueString(ConfigKey("[Soundcard]","Latency")).toFloat()/1000.));
 
     // Apply simple rule to determine number of buffers
     if (iLatency/kiMaxFrameSize<2)
@@ -260,7 +260,7 @@ void PlayerRtAudio::setDefaults()
     }
 
     // Set currently used latency in config database
-    int msec = 1000*(2*1024)/(*it).toInt();
+    int msec = (int)(1000.*(2.*1024.)/(2.*(float)(*it).toInt()));
     m_pConfig->set(ConfigKey("[Soundcard]","Latency"), ConfigValue(msec));
 }
 
