@@ -143,7 +143,7 @@ template <class ValueType> void ConfigObject<ValueType>::reopen(QString file)
 template <class ValueType> void ConfigObject<ValueType>::Save()
 {
     QFile file(filename);
-    if (!file.open(IO_WriteOnly))
+    if (!file.open(IO_WriteOnly| IO_Translate))
     {
         qDebug("Could not write file %s, don't worry.",filename.ascii());
         return;

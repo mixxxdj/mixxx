@@ -75,7 +75,7 @@ int main(int argc, char *argv[])
 #ifdef Q_WS_WIN
   // For windows write all debug messages to a logfile:
   Logfile.setName( "mixxx.log" );
-  Logfile.open( IO_WriteOnly );
+  Logfile.open(IO_WriteOnly | IO_Translate);
   qInstallMsgHandler( MessageToLogfile );
 #else
     // For others, write to the console:

@@ -19,7 +19,7 @@
 #include <qpixmap.h>
 #include <qpainter.h>
 #include "defs.h"
-
+#include "wpixmapstore.h"
 
 WSliderComposed::WSliderComposed(QWidget *parent, const char *name ) : WWidget(parent,name)
 {
@@ -60,10 +60,10 @@ void WSliderComposed::setPixmaps(bool bHorizontal, const QString &filenameSlider
 {
     m_bHorizontal = bHorizontal;
     unsetPixmaps();
-    m_pSlider = new QPixmap(filenameSlider);
+    m_pSlider = WPixmapStore::getPixmap(filenameSlider);
     if (!m_pSlider)
         qDebug("WSliderComposed: Error loading slider pixmap: %s",filenameSlider.latin1());
-    m_pHandle = new QPixmap(filenameHandle);
+    m_pHandle = WPixmapStore::getPixmap(filenameHandle);
     if (!m_pHandle)
         qDebug("WSliderComposed: Error loading handle pixmap: %s",filenameHandle.latin1());
     m_pDoubleBuffer = new QPixmap(m_pSlider->size());
