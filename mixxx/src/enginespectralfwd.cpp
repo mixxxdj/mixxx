@@ -33,6 +33,12 @@ EngineSpectralFwd::EngineSpectralFwd(bool Power, bool Phase, WindowKaiser *windo
     tmp = new kiss_fft_cpx[l/2+1];
     spectrum = new kiss_fft_scalar[l];
     spectrumOld = new kiss_fft_scalar[l];
+
+    for (int i=0; i<l; ++i)
+    {
+        spectrum[i] = 0.;
+	spectrumOld[i] = 0.;
+    }
 }
 
 /* -------- -----------------------------------------------------------------

@@ -48,11 +48,11 @@ void WaveSummary::run()
     while (1)
     {
         // Check if there is a new track to process in the queue...
-		m_qMutex.lock();
+        m_qMutex.lock();
         TrackInfoObject *pTrackInfoObject = m_qQueue.dequeue();
         m_qMutex.unlock();
 
-		// If that's not the case...
+        // If that's not the case...
         if (!pTrackInfoObject)
         {
             // Wait for track to be requested
@@ -62,20 +62,20 @@ void WaveSummary::run()
             m_qMutex.unlock();
         }
 
-		//
-		// Track processing
-		//
+        //
+        // Track processing
+        //
 
         // Length of track in samples
-        long liSamplesPerSecond = pTrackInfoObject->getSampleRate()*pTrackInfoObject->getChannels();
-        qDebug("sample per second %li",liSamplesPerSecond);
+        //long liSamplesPerSecond = pTrackInfoObject->getSampleRate()*pTrackInfoObject->getChannels();
+        //qDebug("sample per second %li",liSamplesPerSecond);
         
 //         qDebug("start generate for %s",pTrackInfoObject->getLocation().latin1());
         
 		//// Check if preview has been generated in the meantime
-        //QMemArray<char> *p = pTrackInfoObject->getWaveSummary();
-        //if (!p || !p->size())
-        if (0) {
+        QMemArray<char> *p = pTrackInfoObject->getWaveSummary();
+        if (!p || !p->size())
+        {
             //
 			// Generate summary
             //
@@ -83,6 +83,49 @@ void WaveSummary::run()
 			// Open sound file
 			SoundSourceProxy *pSoundSource = new SoundSourceProxy(pTrackInfoObject->getLocation());
 
+            // Length of file in samples
+            long liLengthSamples = pSoundSource->length();
+
+            // Block size
+            int iBlockSize = liLengthSamples/kiSummaryBufferSize;
+
+// 	    qDebug("len %i samples %i ch %i srate %i",liSamplesPerSecond, liLengthSeconds,pTrackInfoObject->getChannels(),pTrackInfoObject->getSampleRate());
+            
+            // Allocate and reset buffer used to store summary data: max and min amplitude for block, and HFC value
+            QMemArray<char> *pData = new QMemArray<char>(kiSummaryBufferSize);
+            unsigned int i;
+            for (i=0; i<pData->size(); ++i)
+                pData->at(i) = 0;
+
+            SAMPLE *pBuffer = new SAMPLE[iBlockSize];
+            for (i=0; i<pData->size()-2; i+=3)
+            {
+                // Read a block of samples
+                pSoundSource->read(iBlockSize, pBuffer);
+            
+                // Find min and max value
+                int iMin=0, iMax=0;
+                for (int j=0; j<iBlockSize; ++j)
+                {
+                    if (pBuffer[j]<0)
+                        iMin += pBuffer[j];
+                    if (pBuffer[j]>0)
+                        iMax += pBuffer[j];
+                }
+
+                // Store max and min amplitude
+                pData->at(i) = max(iMin/((iBlockSize/5)*256),-127);
+                pData->at(i+1) = min(iMax/((iBlockSize/5)*256),127);
+                pData->at(i+2) = 0;
+            
+                // Store summary in TrackInfoObject
+                QApplication::postEvent(pTrackInfoObject, new WaveSummaryEvent(pData, 0));            
+            }
+            
+                
+                            
+            
+/*
             // Initialize objects for extrating PSF values
             float *pSpectralBuffer = new float[kiBlockSize];
             WindowKaiser *pWindow = new WindowKaiser(kiBlockSize, 6.5);
@@ -160,7 +203,7 @@ void WaveSummary::run()
 				float psf=pSpectral->getPSF();
 				sPSF_vector[sI]=psf;
                 
-                 qDebug("PSF[%i]=%f",sI,psf);
+                 //qDebug("PSF[%i]=%f",sI,psf);
                 
                 // Low pass filter HFC
 				if(DoSummary)
@@ -198,16 +241,20 @@ void WaveSummary::run()
 					qDebug("Segment boundary at %d seconds (%li samples)",(int)sgPoints[i],(long)sgPoints[i]*liSamplesPerSecond);
 
             }
-
+            
             // Store summary in TrackInfoObject
             QApplication::postEvent(pTrackInfoObject, new WaveSummaryEvent(pData, segpoints));
+*/
+            
+            
 
-            qDebug("segpoints %i", segpoints->size());
+            //qDebug("segpoints %i", segpoints->size());
 
+            delete [] pBuffer;
             delete pSoundSource;
-            delete pSpectral;
-            delete pWindow;
-            delete [] pSpectralBuffer;
+//            delete pSpectral;
+//             delete pWindow;
+//             delete [] pSpectralBuffer;
 
 //         qDebug("generate successful for %s",pTrackInfoObject->getFilename().latin1());
 
