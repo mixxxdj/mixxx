@@ -19,8 +19,10 @@
 #define READEREXTRACT_H
 
 #include <qstring.h>
+#include <qapplication.h>
 
 class VisualChannel;
+class VisualBuffer;
 
 /**
   * Abstract class for feature extraction. Each ReaderExtract object sets up its own buffer
@@ -56,8 +58,8 @@ public:
 protected:
     /** Pointer to input object */
     ReaderExtract *input;
-    /** Pointer to associated VisualChannel */
-    VisualChannel *m_pVisualChannel;
+    /** Pointer to associated VisualBuffer */
+    VisualBuffer *m_pVisualBuffer;
     /** Holds visual signal type */
     QString m_qsVisualDataType;
 };

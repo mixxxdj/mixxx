@@ -24,7 +24,7 @@ ReaderExtract::ReaderExtract(ReaderExtract *_input, QString qsVisualDataType)
 {
     m_qsVisualDataType = qsVisualDataType;
     input = _input;
-    m_pVisualChannel = 0;
+    m_pVisualBuffer = 0;
 }
 
 ReaderExtract::~ReaderExtract()
@@ -34,8 +34,7 @@ ReaderExtract::~ReaderExtract()
 void ReaderExtract::addVisual(VisualChannel *pVisualChannel)
 {
 #ifdef __VISUALS__
-    m_pVisualChannel = pVisualChannel;
-    m_pVisualChannel->add(this);
+    m_pVisualBuffer = pVisualChannel->add(this);
 #endif
 }
 

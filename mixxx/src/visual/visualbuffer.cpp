@@ -17,6 +17,7 @@
 
 #include "visualbuffer.h"
 #include "../readerextract.h"
+#include "../readerevent.h"
 #include "controlpotmeter.h"
 #include "../defs.h"
 
@@ -32,10 +33,41 @@ VisualBuffer::VisualBuffer(ReaderExtract *pReaderExtract, ControlPotmeter *pPlay
     m_pSource = (CSAMPLE *)m_pReaderExtract->getBasePtr();
     m_iSourceLen = m_pReaderExtract->getBufferSize();
 
-    // iPos and iLen in update()is given relative to the ReaderExtractWave buffer,
-    // of length READBUFFERSIZE. iCpos and iClen is the relative position in the
-    // current ReaderExtract object
-    m_fPositionFactor = (CSAMPLE)READBUFFERSIZE/(CSAMPLE)m_iSourceLen;
+    // Set resample factor and display rate and display factor
+    if (m_pReaderExtract->getRate()>MAXDISPLAYRATE)
+    {
+        m_fResampleFactor = (float)m_pReaderExtract->getRate()/(float)MAXDISPLAYRATE;
+        m_fDisplayRate = MAXDISPLAYRATE;
+    }
+    else
+    {
+        m_fResampleFactor = 1.;
+        m_fDisplayRate = m_pReaderExtract->getRate();
+    }
+    m_fDisplayFactor = (float)MAXDISPLAYRATE/m_fDisplayRate;
+
+    // Determine conversion factor between ReaderExtractWave and the m_pReaderExtract object
+    m_fReaderExtractFactor = READBUFFERSIZE/m_iSourceLen;
+    
+    // Length of this buffer
+    m_iLen = (float)m_iSourceLen/m_fResampleFactor;
+
+    // Number of samples from this buffer to display
+    m_iDisplayLen = m_iLen-(2*m_iLen/READCHUNK_NO);
+
+    // Allocate buffer in video memory
+    m_pBuffer = allocate(3*m_iLen);
+
+    // Reset buffer
+    GLfloat *p = m_pBuffer;
+    for (int i=0; i<m_iLen; i++)
+    {
+        *p++ = (float)i; //*m_fDisplayFactor;
+        *p++ = 0.;
+        *p++ = 0.;
+    }
+
+    installEventFilter(this);
 }
 
 /**
@@ -43,12 +75,26 @@ VisualBuffer::VisualBuffer(ReaderExtract *pReaderExtract, ControlPotmeter *pPlay
  */
 VisualBuffer::~VisualBuffer()
 {
-    if (m_pBuffer)
-    {
-        delete [] m_pBuffer;
-        m_pBuffer = 0;
-    }
+    delete [] m_pBuffer;
 }
+
+bool VisualBuffer::eventFilter(QObject *o, QEvent *e)
+{
+    // Update buffers
+    // If a user events are received, update containers
+    if (e->type() == (QEvent::Type)10002)
+    {
+        ReaderEvent *re = (ReaderEvent *)e;
+        update(re->pos(), re->len());
+    }
+    else
+    {
+        // standard event processing
+        return QObject::eventFilter(o,e);
+    }
+    return true;
+}
+
 
 GLfloat *VisualBuffer::allocate(int iSize)
 {
@@ -91,19 +137,18 @@ void VisualBuffer::validate()
 bufInfo VisualBuffer::getVertexArray()
 {
     // Conversion to DISPLAYRATE
-    //GLfloat fResampleFactor = (GLfloat)READCHUNKSIZE/(GLfloat)vertex->getChunkSize();
-    int iPos = (m_pPlaypos->getValue()/m_fResampleFactor)-m_iDisplayLen/2;
+    int iPos = ((m_pPlaypos->getValue()/m_fReaderExtractFactor)/m_fResampleFactor)-m_iDisplayLen/2;
     while (iPos<0)
         iPos += m_iLen;
 
     bufInfo i;
     i.p1 = &m_pBuffer[iPos*3];
-    i.len1 = min(iPos+m_iDisplayLen, m_iLen-iPos);
+    i.len1 = min(m_iDisplayLen, m_iLen-iPos);
     i.p2 = m_pBuffer;
     i.len2 = m_iDisplayLen-i.len1;
 
 //    qDebug("Total pos %i",i.len1+i.len2);
-//    std::cout << "pos " << pos << ", len1 " << i.len1 << ", len2 " << i.len2 << ", displayLen " << displayLen << "\n";
+//    std::cout << "playpos " << m_pPlaypos->getValue() << ", pos " << iPos << "\n"; //", len1 " << i.len1 << ", len2 " << i.len2 << ", displayLen " << m_iDisplayLen << "\n";
 
     return i;
 }

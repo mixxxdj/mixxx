@@ -1989,7 +1989,7 @@ install_location=
 type=HEADER
 
 [src/visual/Makefile.am]
-files=src/visual/box.cpp,src/visual/box.h,src/visual/buffer.cpp,src/visual/buffer.h,src/visual/controller.cpp,src/visual/controller.h,src/visual/fastvertexarray.cpp,src/visual/fastvertexarray.h,src/visual/guisignal.cpp,src/visual/guisignal.h,src/visual/light.cpp,src/visual/light.h,src/visual/material.cpp,src/visual/visualbackplane.h,src/visual/visualbackplane.cpp,src/visual/visual.h,src/visual/visual.cpp,src/visual/texture.h,src/visual/texture.cpp,src/visual/signal.h,src/visual/signal.cpp,src/visual/pickable.h,src/visual/pickable.cpp,src/visual/pick.h,src/visual/pick.cpp,src/visual/material.h,src/visual/picking.cpp,src/visual/picking.h,src/visual/signalvertexbuffer.cpp,src/visual/signalvertexbuffer.h,src/visual/visualobject.h,src/visual/visualobject.cpp,src/visual/visualcontroller.h,src/visual/visualcontroller.cpp,src/visual/visualbox.h,src/visual/visualbox.cpp,src/visual/guichannel.cpp,src/visual/guichannel.h,src/visual/visualdata.cpp,src/visual/visualdata.h,src/visual/visualbuffer.h,src/visual/visualbuffer.cpp,src/visual/visualchannel.cpp,src/visual/visualchannel.h,src/visual/visualdisplay.cpp,src/visual/visualdisplay.h,src/visual/visualdisplaybuffer.h,src/visual/visualdisplaybuffer.cpp,src/visual/visualbuffersignal.cpp,src/visual/visualbuffersignal.h,src/visual/glthread.cpp,src/visual/glthread.h,src/visual/glwidget.cpp,src/visual/glwidget.h
+files=src/visual/box.cpp,src/visual/box.h,src/visual/buffer.cpp,src/visual/buffer.h,src/visual/controller.cpp,src/visual/controller.h,src/visual/fastvertexarray.cpp,src/visual/fastvertexarray.h,src/visual/guisignal.cpp,src/visual/guisignal.h,src/visual/light.cpp,src/visual/light.h,src/visual/material.cpp,src/visual/visualbackplane.h,src/visual/visualbackplane.cpp,src/visual/visual.h,src/visual/visual.cpp,src/visual/texture.h,src/visual/texture.cpp,src/visual/signal.h,src/visual/signal.cpp,src/visual/pickable.h,src/visual/pickable.cpp,src/visual/pick.h,src/visual/pick.cpp,src/visual/material.h,src/visual/picking.cpp,src/visual/picking.h,src/visual/signalvertexbuffer.cpp,src/visual/signalvertexbuffer.h,src/visual/visualobject.h,src/visual/visualobject.cpp,src/visual/visualcontroller.h,src/visual/visualcontroller.cpp,src/visual/visualbox.h,src/visual/visualbox.cpp,src/visual/guichannel.cpp,src/visual/guichannel.h,src/visual/visualdata.cpp,src/visual/visualdata.h,src/visual/visualbuffer.h,src/visual/visualbuffer.cpp,src/visual/visualchannel.cpp,src/visual/visualchannel.h,src/visual/visualdisplay.cpp,src/visual/visualdisplay.h,src/visual/visualdisplaybuffer.h,src/visual/visualdisplaybuffer.cpp,src/visual/visualbuffersignal.cpp,src/visual/visualbuffersignal.h,src/visual/glthread.cpp,src/visual/glthread.h,src/visual/glwidget.cpp,src/visual/glwidget.h,src/visual/visualbuffermarks.cpp,src/visual/visualbuffermarks.h
 sharedlib_LDFLAGS=-version-info 0:0:0
 sharedlib_rootname=visual
 sub_dirs=
@@ -2230,6 +2230,18 @@ install_location=
 type=SOURCE
 
 [src/visual/visualbuffer.h]
+dist=true
+install=false
+install_location=
+type=HEADER
+
+[src/visual/visualbuffermarks.cpp]
+dist=true
+install=false
+install_location=
+type=SOURCE
+
+[src/visual/visualbuffermarks.h]
 dist=true
 install=false
 install_location=

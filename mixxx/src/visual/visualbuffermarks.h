@@ -1,7 +1,7 @@
 /***************************************************************************
-                          readerevent.cpp  -  description
+                          visualbuffermarks.h  -  description
                              -------------------
-    begin                : Mon Mar 3 2003
+    begin                : Fri Jun 13 2003
     copyright            : (C) 2003 by Tue & Ken Haste Andersen
     email                : haste@diku.dk
  ***************************************************************************/
@@ -15,22 +15,21 @@
  *                                                                         *
  ***************************************************************************/
 
-#include "readerevent.h"
+#ifndef VISUALBUFFERMARKS_H
+#define VISUALBUFFERMARKS_H
 
-ReaderEvent::ReaderEvent(int pos, int len) : QCustomEvent(10002), position(pos), length(len)
-{
-}
+#include "visualbuffer.h"
 
-ReaderEvent::~ReaderEvent()
-{
-}
+/**
+  *@author Tue & Ken Haste Andersen
+  */
 
-int ReaderEvent::pos() const
-{
-    return position;
-}
+class VisualBufferMarks : public VisualBuffer  {
+public: 
+    VisualBufferMarks(ReaderExtract *pReaderExtract, ControlPotmeter *pPlaypos);
+    ~VisualBufferMarks();
+    void update(int iPos, int iLen);
+    void draw(GLfloat *p, int iLen);
+};
 
-int ReaderEvent::len() const
-{
-    return length;
-}
+#endif

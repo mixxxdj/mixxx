@@ -17,11 +17,11 @@
 
 #include "visualchannel.h"
 #include "../defs.h"
-#include "../readerevent.h"
 #include "../readerextract.h"
 #include "visualcontroller.h"
 #include "visualbuffer.h"
 #include "visualbuffersignal.h"
+#include "visualbuffermarks.h"
 #include "visualdisplay.h"
 
 int VisualChannel::siChannelTotal = 0;
@@ -39,32 +39,11 @@ VisualChannel::VisualChannel(ControlPotmeter *pPlaypos, VisualController *pVisua
     m_pVisualController = pVisualController;
     m_qlListBuffer.setAutoDelete(true);
     m_qlListDisplay.setAutoDelete(true);
-
-    installEventFilter(this);
 }
 
 VisualChannel::~VisualChannel()
 {
     siChannelTotal--;
-}
-
-bool VisualChannel::eventFilter(QObject *o, QEvent *e)
-{
-    // Update buffers
-    // If a user events are received, update containers
-    if (e->type() == (QEvent::Type)10002)
-    {
-        ReaderEvent *re = (ReaderEvent *)e;
-        VisualBuffer *b;
-        for (b = m_qlListBuffer.first(); b; b = m_qlListBuffer.next())
-            b->update(re->pos());
-    }
-    else
-    {
-        // standard event processing
-        return QObject::eventFilter(o,e);
-    }
-    return true;
 }
 
 void VisualChannel::zoom(int id)
@@ -75,7 +54,7 @@ void VisualChannel::zoom(int id)
             d->zoom();
 }
 
-void VisualChannel::add(ReaderExtract *pReaderExtract)
+VisualBuffer *VisualChannel::add(ReaderExtract *pReaderExtract)
 {
     VisualBuffer *b;
 
@@ -85,17 +64,22 @@ void VisualChannel::add(ReaderExtract *pReaderExtract)
         // Construct a new buffer
         b = new VisualBufferSignal(pReaderExtract, m_pPlaypos);
     }
+    else if (pReaderExtract->getVisualDataType()=="marks")
+    {
+        // Construct a new buffer
+        b = new VisualBufferMarks(pReaderExtract, m_pPlaypos);
+    }
     
     // And a corresponding display
     // ADD GROUP INFO *****************
-    VisualDisplay *d = new VisualDisplay(b, "");
+    VisualDisplay *d = new VisualDisplay(b, pReaderExtract->getVisualDataType());
 
     //
     // Setup position of display
     //
 
     // Base y pos dependent on number of containers
-    d->setBasepos(m_iPosX,10*(m_qlListDisplay.count()),0);
+    d->setBasepos(m_iPosX,0 /*10*(m_qlListDisplay.count())*/, 0);
 
     // Zoom y pos dependent on channel
     if (m_iChannelNo==0)
@@ -111,6 +95,8 @@ void VisualChannel::add(ReaderExtract *pReaderExtract)
 //        d->zoom();
 
     m_pVisualController->add(d);
+
+    return b;
 }
 
 void VisualChannel::move(int msec)

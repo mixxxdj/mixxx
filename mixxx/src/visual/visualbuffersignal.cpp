@@ -20,39 +20,17 @@
 
 VisualBufferSignal::VisualBufferSignal(ReaderExtract *pReaderExtract, ControlPotmeter *pPlaypos) : VisualBuffer(pReaderExtract, pPlaypos)
 {
-    // Find resampling factor, and length of own buffer
-    CSAMPLE fSignalRate = (CSAMPLE)pReaderExtract->getRate();
-    CSAMPLE fFactor = 1.;
-    if (DISPLAYRATE<fSignalRate)
-        fFactor = DISPLAYRATE/fSignalRate;
-    m_iLen = fFactor*m_iSourceLen;
+//    qDebug("signal: resampleFactor %f, displayRate %f, displayFactor %f, readerExtractFactor %f", m_fResampleFactor, m_fDisplayRate,m_fDisplayFactor, m_fReaderExtractFactor);
 
-    // Should match update boundary used in EngineBuffer when calling Reader::wake()
-    m_iDisplayLen = m_iLen-(2*m_iLen/READCHUNK_NO);
-
-    // Determine resampling and positioning factor
-    m_fResampleFactor = ((GLfloat)m_iSourceLen/(GLfloat)m_iLen);
-
-    // Allocate buffer in video memory
-    m_pBuffer = allocate(3*m_iLen);
-
-    // Reset buffer
-    GLfloat *p = m_pBuffer;
-    for (int i=0; i<m_iLen; i++)
-    {
-        *p++ = (float)i;
-        *p++ = 0.; //(float)cos((i/(1.0f*len))*6.28*5+1.5707963267);
-        *p++ = 0.;
-    }
 }
 
 VisualBufferSignal::~VisualBufferSignal()
 {
 }
 
-void VisualBufferSignal::update(int iPos)
+void VisualBufferSignal::update(int iPos, int iLen)
 {
-    int iCpos = (int)((CSAMPLE)iPos/(CSAMPLE)m_fPositionFactor);
+    int iCpos = (int)(CSAMPLE)iPos;
 
     CSAMPLE *pSource = &m_pSource[iCpos];
     GLfloat *pDest = &m_pBuffer[(int)(iCpos/m_fResampleFactor)*3];

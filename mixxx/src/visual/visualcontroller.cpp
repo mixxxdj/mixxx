@@ -118,21 +118,19 @@ void VisualController::init()
     setupZBuffer();
     setupBlending();
 
-/*
   glEnable(GL_LINE_SMOOTH);
   glEnable(GL_POINT_SMOOTH);
   glEnable(GL_POLYGON_SMOOTH);
-*/
 
     glDisable(GL_LINE_SMOOTH);
     glDisable(GL_POINT_SMOOTH);
     glDisable(GL_POLYGON_SMOOTH);
-
+/*
     glHint(GL_FOG_HINT,GL_FASTEST);
     glHint(GL_LINE_SMOOTH_HINT,GL_FASTEST);
     glHint(GL_POINT_SMOOTH_HINT,GL_FASTEST);
     glHint(GL_POLYGON_SMOOTH_HINT,GL_FASTEST); 
-
+*/
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
     gluPerspective(fov,aspect,znear,zfar);
@@ -169,9 +167,11 @@ void VisualController::display()
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
+
     gluLookAt(eyex,eyey,eyez,
               centerx,centery,centerz,
               upx,upy,upz);
+
     glDrawBuffer(GL_BACK);
     drawScene(GL_RENDER);
     glFlush();
@@ -192,6 +192,7 @@ void VisualController::resize(GLsizei _width,GLsizei _height)
 
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
+//    glOrtho(-10, 10, -10, 10, znear, zfar);
     gluPerspective(fov,aspect,znear,zfar);
     glViewport(0,0,width,height);
 };
