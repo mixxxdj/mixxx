@@ -9,6 +9,7 @@
 #include <qpopupmenu.h>
 #include <qpoint.h>
 #include <qtextcodec.h>
+#include <qlabel.h>
 
 #include "tracklist.h"
 #include "trackinfoobject.h"
@@ -23,15 +24,16 @@
 #include "images/b.xpm"
 #include "enginebuffer.h"
 #include "dlgplaycontrol.h"
+#include "reader.h"
 
-TrackList::TrackList( const QString sDirectory, const QTable *ptableTracks,
-                      const DlgPlayControl *playcontrol, const DlgPlayControl *playcontrol2,
-                      const EngineBuffer *buffer1, const EngineBuffer *buffer2)
+TrackList::TrackList( const QString sDirectory, QTable *ptableTracks,
+                      DlgPlaycontrol *playcontrol1, DlgPlaycontrol *playcontrol2,
+                      EngineBuffer *buffer1, EngineBuffer *buffer2)
 {
     m_sDirectory = sDirectory;
-    m_ptableTracks = ptabletracks;
+    m_ptableTracks = ptableTracks;
     m_pPlaycontrol1 = playcontrol1;
-    m_pPlaycontrol2 = playcontrol2;'
+    m_pPlaycontrol2 = playcontrol2;
     m_pBuffer1 = buffer1;
     m_pBuffer2 = buffer2;
 
@@ -264,7 +266,12 @@ void TrackList::slotChangePlay_1()
 		m_iMaxTimesPlayed = track->m_iTimesPlayed;
 	UpdateScores();
 
-    emit signalChangePlay_1( track );
+	// Request a new track from the reader:
+    m_pBuffer1->getReader()->requestNewTrack( track->Location() );
+	
+	// Write info
+    m_pPlaycontrol1->textLabelTrack->
+        setText( track->getInfo() );
 }
 
 void TrackList::slotChangePlay_2()
@@ -278,7 +285,12 @@ void TrackList::slotChangePlay_2()
 		m_iMaxTimesPlayed = track->m_iTimesPlayed;
 	UpdateScores();
 
-    emit signalChangePlay_2( track );
+	// Request a new track from the reader:
+    m_pBuffer2->getReader()->requestNewTrack( track->Location() );
+	
+	// Write info
+    m_pPlaycontrol2->textLabelTrack->
+        setText( track->getInfo() );
 }
 
 /*
