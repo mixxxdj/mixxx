@@ -31,7 +31,6 @@
 #include "controlengine.h"
 
 EngineMaster::EngineMaster(DlgMaster *master_dlg, DlgCrossfader *crossfader_dlg,
-                           DlgChannel *channel1_dlg, DlgChannel *channel2_dlg,
                            EngineBuffer *_buffer1, EngineBuffer *_buffer2,
                            EngineChannel *_channel1, EngineChannel *_channel2,
                            EngineFlanger *_flanger, const char *group)

@@ -17,6 +17,7 @@
 
 #include "enginechannel.h"
 #include "wslider.h"
+#include "wpflbutton.h"
 #include "controlengine.h"
 #include "controlpushbutton.h"
 #include "engineclipping.h"

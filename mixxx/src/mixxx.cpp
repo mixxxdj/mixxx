@@ -308,7 +308,7 @@ void MixxxApp::engineStart()
     flanger = new EngineFlanger(view->flanger, "[Flanger]");
 
     //qDebug("Init master...");
-    master = new EngineMaster(view->master, view->crossfader, view->channel1, view->channel2,
+    master = new EngineMaster(view->master, view->crossfader, 
                               buffer1, buffer2, channel1, channel2,flanger, "[Master]");
 
     /** Connect signals from option menu, selecting processing of channel 1 & 2, to

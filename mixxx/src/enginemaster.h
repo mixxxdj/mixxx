@@ -35,7 +35,6 @@ class EngineMaster : public EngineObject
 {
 public:
     EngineMaster(DlgMaster *master_dlg, DlgCrossfader *crossfader_dlg,
-                 DlgChannel *channel1_dlg, DlgChannel *channel2_dlg,
                  EngineBuffer *buffer1, EngineBuffer *buffer2,
                  EngineChannel *, EngineChannel *, EngineFlanger *,
                  const char *group);
