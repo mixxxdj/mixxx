@@ -3,21 +3,12 @@
 <KDevPrjSession>
  <LastCompileConfig>(Default)</LastCompileConfig>
  <Mainframe MaximizeMode="1" />
- <DocsAndViews NumberOfDocuments="5" >
-  <Doc0 CursorPosLine="468" Type="KWriteDoc" NumberOfViews="1" CursorPosCol="30" FileName="/home/haste/cvs/mixxx/src/enginebuffer.cpp" >
-   <View0 Top="0" Width="949" Attach="1" Height="573" Left="0" Focus="0" Type="KWriteView" MinMaxMode="0" />
+ <DocsAndViews NumberOfDocuments="2" >
+  <Doc0 CursorPosLine="116" Type="KWriteDoc" NumberOfViews="1" CursorPosCol="56" FileName="/home/haste/cvs/mixxx/src/readerextractbeat.h" >
+   <View0 Top="0" Width="757" Attach="1" Height="606" Left="0" Focus="0" Type="KWriteView" MinMaxMode="0" />
   </Doc0>
-  <Doc1 CursorPosLine="103" Type="KWriteDoc" NumberOfViews="1" CursorPosCol="33" FileName="/home/haste/cvs/mixxx/src/enginebuffer.h" >
-   <View0 Top="0" Width="949" Attach="1" Height="573" Left="0" Focus="1" Type="KWriteView" MinMaxMode="0" />
+  <Doc1 CursorPosLine="477" Type="KWriteDoc" NumberOfViews="1" CursorPosCol="39" FileName="/home/haste/cvs/mixxx/src/readerextractbeat.cpp" >
+   <View0 Top="0" Width="949" Attach="1" Height="862" Left="0" Focus="1" Type="KWriteView" MinMaxMode="0" />
   </Doc1>
-  <Doc2 CursorPosLine="84" Type="KWriteDoc" NumberOfViews="1" CursorPosCol="22" FileName="/home/haste/cvs/mixxx/src/tracklist.h" >
-   <View0 Top="0" Width="949" Attach="1" Height="573" Left="0" Focus="0" Type="KWriteView" MinMaxMode="0" />
-  </Doc2>
-  <Doc3 CursorPosLine="164" Type="KWriteDoc" NumberOfViews="1" CursorPosCol="0" FileName="/home/haste/cvs/mixxx/src/tracklist.cpp" >
-   <View0 Top="0" Width="949" Attach="1" Height="573" Left="0" Focus="0" Type="KWriteView" MinMaxMode="0" />
-  </Doc3>
-  <Doc4 CursorPosLine="336" Type="KWriteDoc" NumberOfViews="1" CursorPosCol="14" FileName="/home/haste/cvs/mixxx/src/mixxxview.cpp" >
-   <View0 Top="0" Width="949" Attach="1" Height="573" Left="0" Focus="0" Type="KWriteView" MinMaxMode="0" />
-  </Doc4>
  </DocsAndViews>
 </KDevPrjSession>

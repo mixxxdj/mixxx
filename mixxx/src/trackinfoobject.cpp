@@ -8,12 +8,12 @@
 /*
 	Initialize a new track with the filename.
 */
-TrackInfoObject::TrackInfoObject( const QString sPath, const QString sFile ) :
-m_sFilename(sFile), m_sFilepath(sPath)
+TrackInfoObject::TrackInfoObject( const QString sPath, const QString sFile ) : m_sFilename(sFile), m_sFilepath(sPath)
 {
 	m_sArtist = "";
 	m_sTitle = "";
 	m_sType= "";
+    m_sComment = "";
 	m_iDuration = 0;
 	m_iLength = 0;
 	m_sBitrate = "";
@@ -38,7 +38,9 @@ TrackInfoObject::TrackInfoObject( const QDomNode &nodeHeader )
 
 	m_sType = SelectNode( nodeHeader, "Type").toElement().text();
 
-	m_iDuration = SelectNode( nodeHeader, "Duration").toElement().text().toInt();
+    m_sComment = SelectNode( nodeHeader, "Comment").toElement().text();
+
+    m_iDuration = SelectNode( nodeHeader, "Duration").toElement().text().toInt();
 
 	m_sBitrate = SelectNode( nodeHeader, "Bitrate").toElement().text();
 
@@ -91,6 +93,7 @@ void TrackInfoObject::WriteToXML( QDomDocument &doc, QDomElement &header )
 	AddElement( doc, header, "Title", m_sTitle );
 	AddElement( doc, header, "Artist", m_sArtist );
 	AddElement( doc, header, "Type", m_sType );
+    AddElement( doc, header, "Comment", m_sComment);
 	AddElement( doc, header, "Duration", QString("%1").arg(m_iDuration) );
 	AddElement( doc, header, "Bitrate", m_sBitrate );
 	AddElement( doc, header, "Length", QString("%1").arg(m_iLength) );
@@ -136,6 +139,9 @@ void TrackInfoObject::Parse()
 
 	// Find the length:
 	m_iLength = QFileInfo( m_sFilepath + '/' + m_sFilename ).size();
+
+    // Add no comment
+    m_sComment = QString("");
 }
 
 /*
@@ -168,8 +174,8 @@ QString TrackInfoObject::Location()
 
 QString TrackInfoObject::getInfo()
 {
-    return QString("Artist : " + m_sArtist + "\n" +
-                   "Title  : " + m_sTitle + "\n" +
-                   "Type   : " + m_sType  + "\n" +
-                   "Bitrate: " + m_sBitrate );
+    return QString("" + m_sArtist + "\n" +
+                   "" + m_sTitle + "\n");
+//                   "Type   : " + m_sType  + "\n" +
+//                   "Bitrate: " + m_sBitrate );
 }

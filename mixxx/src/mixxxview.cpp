@@ -84,7 +84,7 @@ MixxxView::MixxxView(QWidget *parent, bool bVisuals) : QWidget(parent, "Mixxx")
 
     m_pTrackTable = new WTrackTable(main);
     m_pTrackTable->move(76,490);
-    m_pTrackTable->setFixedSize(870, 250);
+    m_pTrackTable->setFixedSize(872, 252);
 
     m_pTextCh1 = new QLabel(main);
     m_pTextCh1->setPaletteBackgroundColor(QColor(0,0,0));
