@@ -99,7 +99,9 @@ void ReaderExtractWave::newSource(TrackInfoObject *pTrack)
         QFileInfo finfo(filename);
         if (finfo.exists())
         {
-            if (finfo.extension(false).upper() == "WAV")
+            if (finfo.extension(false).upper() == "WAV" ||
+                finfo.extension(false).upper() == "AIF" ||
+                finfo.extension(false).upper() == "AIFF")
 #ifdef __AUDIOFILE__
                 file = new SoundSourceAudioFile(filename);
 #endif

@@ -31,6 +31,7 @@ New since 1.2.1:
 - Correct feedback about actual used latency in sound card
   configuration. Support for WMME drivers under Windows, and 
   improved DirectSound support, ie. lower latency operation
+- Support for aiff files
 - User manual added.
 
 

@@ -36,8 +36,6 @@ SoundSourceAudioFile::SoundSourceAudioFile(QString qFilename) : SoundSource(qFil
     filelength = channels*afGetFrameCount(fh,AF_DEFAULT_TRACK);
 
     SRATE = (int)afGetRate(fh,AF_DEFAULT_TRACK);
-    type = "wav file.";
-//    qDebug("length: %i",filelength);
 }
 
 SoundSourceAudioFile::~SoundSourceAudioFile()
@@ -49,10 +47,16 @@ SoundSourceAudioFile::~SoundSourceAudioFile()
 
 long SoundSourceAudioFile::seek(long filepos)
 {
-    qDebug("seek %i",filepos);
-    if (afSeekFrame(fh, AF_DEFAULT_TRACK, (AFframecount) (filepos/channels))<0);
-        qDebug("libaudiofile: Seek ERR.");
-    return filepos;
+//    if (filelength>0)
+    {
+//	   qDebug("seek %i, len %i, channels %i",filepos,filelength,channels);
+//        filepos = max(0, min(filepos,filelength));
+    
+        if (afSeekFrame(fh, AF_DEFAULT_TRACK, (AFframecount) (filepos/2))<0)
+            qDebug("libaudiofile: Seek ERR.");
+        return filepos;
+    }
+//    return 0;
 }
 
 /*
@@ -64,8 +68,9 @@ unsigned SoundSourceAudioFile::read(unsigned long size, const SAMPLE* destinatio
     SAMPLE *dest = (SAMPLE *)destination;
     if (channels==2)
     {    
+	//qDebug("req %i, ch %i, frames %i",size,channels,size/channels);
         int readNo = afReadFrames(fh,AF_DEFAULT_TRACK, dest, size/channels);
-        qDebug("stereo ch %i, req %i, read %i",channels,size, readNo);
+	//qDebug("read  %i",readNo);
         return readNo*channels;
     }
     else
@@ -97,7 +102,7 @@ int SoundSourceAudioFile::ParseHeader(TrackInfoObject *Track)
         return(ERR);
     }
 
-    Track->setType("wav");
+    Track->setType(location.section(".",-1).lower());
     Track->setDuration((int)(afGetFrameCount(fh, AF_DEFAULT_TRACK)/afGetRate(fh, AF_DEFAULT_TRACK)));
     Track->setBitrate((int)((Track->getLength()/(Track->getDuration()*afGetRate(fh, AF_DEFAULT_TRACK))*afGetRate(fh, AF_DEFAULT_TRACK)*8.)/1000.));
     afCloseFile(fh);

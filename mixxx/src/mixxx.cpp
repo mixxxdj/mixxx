@@ -544,7 +544,7 @@ bool MixxxApp::queryExit()
 void MixxxApp::slotFileOpen()
 {
     QString s = QFileDialog::getOpenFileName(config->getValueString(ConfigKey("[Playlist]","Directory")),
-                                             "Audio (*.wav *.ogg *.mp3)",
+                                             "Audio (*.wav *.ogg *.mp3 *.aiff)",
                                              this,
                                              "Open file");
     TrackInfoObject *pTrack = m_pTrack->getTrackCollection()->getTrack(s);

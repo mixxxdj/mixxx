@@ -61,8 +61,6 @@ SoundSourceOggVorbis::SoundSourceOggVorbis(QString qFilename) : SoundSource(qFil
       }
         
       filelength = (unsigned long) ov_pcm_total(&vf, -1) * 2;
-
-      type = "ogg vorbis file.";
     }
 }
 

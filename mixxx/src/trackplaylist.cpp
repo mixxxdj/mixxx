@@ -213,7 +213,7 @@ void TrackPlaylist::addPath(QString qPath)
 	    //m_pTable->setNumRows(m_pTable->numRows()+dir.count());
 		
 		dir.setFilter(QDir::Files);
-        dir.setNameFilter("*.wav *.Wav *.WAV *.mp3 *.Mp3 *.MP3 *.ogg *.Ogg *.OGG");
+        dir.setNameFilter("*.wav *.Wav *.WAV *.mp3 *.Mp3 *.MP3 *.ogg *.Ogg *.OGG *.aiff *.Aiff *.AIFF *.aif *.Aif *.AIF");
         const QFileInfoList *list = dir.entryInfoList();
         QFileInfoListIterator it(*list);        // create list iterator
         QFileInfo *fi;                          // pointer for traversing

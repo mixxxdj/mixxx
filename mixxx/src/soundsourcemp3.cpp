@@ -103,9 +103,6 @@ SoundSourceMp3::SoundSourceMp3(QString qFilename) : SoundSource(qFilename)
     qDebug("Size    = %d", length());
     */
 
-    // Set the type field:
-    type = "mp3 file.";
-
     Frame = new mad_frame;
 
     m_qSeekList.setAutoDelete(true);
