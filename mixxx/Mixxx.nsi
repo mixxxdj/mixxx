@@ -5,6 +5,9 @@
 ;
 ; It will install makensisw.exe into a directory that the user selects,
 
+;Include Modern UI
+!include "MUI.nsh"
+
 ; The name of the installer
 Name "Mixxx"
 
@@ -18,30 +21,40 @@ InstallDir $PROGRAMFILES\Mixxx
 ; overwrite the old one automatically)
 InstallDirRegKey HKLM "Software\NSIS_Mixxx" "Install_Dir"
 
-;--------------------------------
+;Interface Settings
+!define MUI_ABORTWARNING
 
 ; Pages
+!insertmacro MUI_PAGE_LICENSE "LICENSE"
+!insertmacro MUI_PAGE_COMPONENTS
+!insertmacro MUI_PAGE_DIRECTORY
+!insertmacro MUI_PAGE_INSTFILES
+  
+!insertmacro MUI_UNPAGE_CONFIRM
+!insertmacro MUI_UNPAGE_INSTFILES
 
-Page components
-Page directory
-Page instfiles
-
-UninstPage uninstConfirm
-UninstPage instfiles
+;Languages
+!insertmacro MUI_LANGUAGE "English"
 
 ;--------------------------------
 
 ; The stuff to install
-Section "Mixxx (required)"
+Section "Mixxx (required)" SecMixxx
 
   SectionIn RO
   
   ; Set output path to the installation directory.
   SetOutPath $INSTDIR
   
-  ; Put file there
+  ; Put binary files there
   File "src\Release\mixxx.exe"
   File "..\mixxx-winlib\libsndfile.dll"
+
+  ; And documentation, licence etc.
+  File "Mixxx-Manual.pdf"
+  File "LICENSE"
+  File "README"
+  File "COPYING"
 
   SetOutPath $INSTDIR\midi
   File "src\midi\Midi-Keyboard.midi.cfg"
@@ -1185,7 +1198,7 @@ Section "Mixxx (required)"
 SectionEnd
 
 ; Optional section (can be disabled by the user)
-Section "Start Menu Shortcuts"
+Section "Start Menu Shortcuts" SecStartMenu
 
   CreateDirectory "$SMPROGRAMS\Mixxx"
   CreateShortCut "$SMPROGRAMS\Mixxx\Uninstall.lnk" "$INSTDIR\uninstall.exe" "" "$INSTDIR\uninstall.exe" 0
@@ -1195,12 +1208,29 @@ Section "Start Menu Shortcuts"
 SectionEnd
 
 ; Optional section (can be disabled by the user)
-Section "Desktop Shortcut"
+Section "Desktop Shortcut" SecDesktop
 
   SetOutPath $INSTDIR
   CreateShortCut "$DESKTOP\Mixxx.lnk" "$INSTDIR\mixxx.exe" "" "$INSTDIR\mixxx.exe" 0
   
 SectionEnd
+
+;--------------------------------
+;Descriptions
+
+  ;Language strings
+  LangString DESC_SecMixxx ${LANG_ENGLISH} "Mixxx software."
+  LangString DESC_SecStartMenu ${LANG_ENGLISH} "Start menu shortcuts."
+  LangString DESC_SecDesktop ${LANG_ENGLISH} "Desktop shortcut."
+
+  ;Assign language strings to sections
+  !insertmacro MUI_FUNCTION_DESCRIPTION_BEGIN
+    !insertmacro MUI_DESCRIPTION_TEXT ${SecMixxx} $(DESC_SecMixxx)
+    !insertmacro MUI_DESCRIPTION_TEXT ${SecStartMenu} $(DESC_SecStartMenu)
+    !insertmacro MUI_DESCRIPTION_TEXT ${SecDesktop} $(DESC_SecDesktop)
+  !insertmacro MUI_FUNCTION_DESCRIPTION_END
+
+
 ;--------------------------------
 
 ; Uninstaller
