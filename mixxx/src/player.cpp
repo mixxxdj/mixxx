@@ -125,8 +125,6 @@ void Player::allocate()
     // Allocate buffer
     out_buffer = new SAMPLE[MAX_BUFFER_LEN*10];
     out_buffer_offset = out_buffer;
-    
-    bufferIdx = 0;
 }
 
 void Player::deallocate()

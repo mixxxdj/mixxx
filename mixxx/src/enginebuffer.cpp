@@ -65,11 +65,11 @@ EngineBuffer::EngineBuffer(QApplication *a, QWidget *m, DlgPlaycontrol *_playcon
 
   // Wheel to control playback position/speed
   wheel = new ControlTTRotary(ConfigKey(group, "wheel"));
-  //connect(playcontrol->WheelPlaycontrol, SIGNAL(valueChanged(int)), wheel, SLOT(slotSetValue(int)));
+  connect(playcontrol->WheelPlaycontrol, SIGNAL(valueChanged(int)), wheel, SLOT(slotSetValue(int)));
   connect(wheel, SIGNAL(valueChanged(FLOAT_TYPE)), this, SLOT(slotUpdateRate(FLOAT_TYPE)));
   // Don't connect this, it results in an infinite loop:
 //  connect(wheel, SIGNAL(updateGUI(int)), playcontrol->WheelPlaycontrol, SLOT(setValue(int)));
-  //connect(wheel, SIGNAL(updateGUI(int)), wheel, SLOT(slotSetPosition(int)));
+  connect(wheel, SIGNAL(updateGUI(int)), wheel, SLOT(slotSetPosition(int)));
 
   // Slider to show and change song position
   connect(playcontrol->SliderPosition, SIGNAL(valueChanged(int)), this, SLOT(slotPosition(int)));
@@ -241,8 +241,8 @@ void EngineBuffer::slotUpdatePlay(valueType)
     }
     else if (PlayButton->getPosition()==up && start_seek>=0)
     {
-        int end_seek = 0; //wheel->getPosition();
 /*
+        int end_seek = 0; //wheel->getPosition();
         if (abs(start_seek - end_seek) > 2)
         {
             // A seek has occured. Find new filepos:
@@ -312,7 +312,7 @@ void EngineBuffer::getchunk()
     {
         filepos_start_new = max(0.,filepos_start.read()-(double)READCHUNKSIZE);    
         bufferpos_start = (bufferpos_start-READCHUNKSIZE+READBUFFERSIZE)%READBUFFERSIZE;
-        file->seek(filepos_start_new);
+        file->seek((long int)filepos_start_new);
 
         if ((filepos_end.read()-filepos_start_new)/READCHUNKSIZE < READCHUNK_NO)
             filepos_end_new = filepos_end.read();
@@ -346,11 +346,11 @@ void EngineBuffer::getchunk()
     // Seek to end of the samples read in buffer, if we are reading backwards. This is to ensure, that the correct samples
     // are read, if we next time are going forward.
     if (backwards)
-        file->seek(filepos_end.read());
+        file->seek((long int)filepos_end.read());
     
     // Copy samples to read_buffer
     int i=0;
-    for (int j=bufIdx; j<bufIdx+READCHUNKSIZE; j++)
+    for (unsigned int j=bufIdx; j<bufIdx+READCHUNKSIZE; j++)
         read_buffer[j] = (CSAMPLE)temp[i++];
         
     // Update variables used to copy the buffer to a vertex buffer for 3D visualization
@@ -398,7 +398,7 @@ qDebug("seeking...");
     bufferpos_start = 0;
     bufferpos_end = 0;
 
-    for (int i=0; i<READBUFFERSIZE; i++)
+    for (unsigned int i=0; i<READBUFFERSIZE; i++)
         read_buffer[i] = 0.;
 
     //qDebug("Seeking %g to %g",change, playpos_file.read());
@@ -429,12 +429,12 @@ inline bool even(long n)
 // -------- ------------------------------------------------------
 void EngineBuffer::checkread()
 {
-    if (rate.read()>=0. /*&& filepos_end.read()< file->length()*/ && (filepos_end.read() - filepos_play.read() < READCHUNKSIZE*(READCHUNK_NO/2-2)))
+    if (rate.read()>=0. && filepos_end.read()< file->length() && (filepos_end.read() - filepos_play.read() < READCHUNKSIZE*(READCHUNK_NO/2-2)))
     {
         //qDebug("forw: diff %f,%f",filepos_end.read(),filepos_play.read());
         buffersReadAhead->wakeAll();
     }
-    else if (rate.read()<0. /*&& filepos_start.read()>0.*/ && (filepos_play.read() - filepos_start.read() < READCHUNKSIZE*(READCHUNK_NO/2-2))) 
+    else if (rate.read()<0. && filepos_start.read()>0. && (filepos_play.read() - filepos_start.read() < READCHUNKSIZE*(READCHUNK_NO/2-2))) 
     {
         //qDebug("back: diff %f,%f",filepos_play.read(),filepos_start.read());
         buffersReadAhead->wakeAll();
@@ -469,23 +469,19 @@ CSAMPLE *EngineBuffer::process(const CSAMPLE *, const int buf_size)
         // Get rate and playpos
         double myRate=rate.read()*BASERATE;
 
-        // Check if we are at the boundaries of the file
-        if (filepos_play.read()<0. || filepos_play.read()>file->length())
-        {
-            if (filepos_play.read()<0.)
-                filepos_play.write(0.);
-            else
-                filepos_play.write(file->length());
-
-            for (int i=0; i<buf_size; i++)
-                buffer[i] = 0.;
-            return buffer;
-        }
-
         // Determine playback direction
         bool backwards = false;
         if (myRate<0.)
             backwards = true;
+
+        // Check if we are at the boundaries of the file
+        if ((filepos_play.read()<0. && backwards==true) ||
+            (filepos_play.read()>file->length() && backwards==false))
+        {
+            for (int i=0; i<buf_size; i++)
+                buffer[i] = 0.;
+            return buffer;
+        }
 
         //double abs_rate = fabs(myRate);
         double rate_add = 2.*myRate;
@@ -537,7 +533,7 @@ CSAMPLE *EngineBuffer::process(const CSAMPLE *, const int buf_size)
         filepos_play.add(myRate*(double)buf_size);
         
         // Update visual rate and playpos
-        visualPlaypos = floor(idx);
+        visualPlaypos = (int)floor(idx);
         visualRate = myRate;
     }
 

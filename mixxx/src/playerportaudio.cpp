@@ -136,12 +136,13 @@ bool PlayerPortAudio::open(QString nameMaster, QString nameHead, int srate, int 
     }
 
     // Number of channels to open and buffersize
+    bufferIdx = 0;
     int chNoMaster, chNoHead;
     if (headActive)
     {
         chNoMaster = chMaster+1;
         chNoHead   = chHead+1;
-        bufferIdxSlave = 0;
+        bufferIdxSlave = 2;
         HeadPerMasterBuffer = (int)floor((float)(bufferSizeHead/2.)/(float)MasterBufferSize);
     }
     else
@@ -319,7 +320,7 @@ int paCallback(void *, void *outputBuffer,
     player->prepareBuffer();
     SAMPLE *buffer = player->out_buffer_offset;
 
-    //qDebug("oMaster (%i), chMaster %i",framesPerBuffer,player->chMaster);
+//    qDebug("Master %i, MasterBufferSize %i",framesPerBuffer,player->MasterBufferSize);
 
     int openChNo = max(player->chHead,player->chMaster);
 
@@ -354,7 +355,7 @@ int paCallbackSlave(void *, void *outputBuffer,
 {
     PlayerPortAudio *player = (PlayerPortAudio *)_player;
     SAMPLE *out = (SAMPLE*)outputBuffer;
-    SAMPLE *buffer = player->out_buffer + (player->MasterBufferSize*2*bufferIdxSlave);
+    SAMPLE *buffer = player->out_buffer + (2*player->MasterBufferSize*player->HeadPerMasterBuffer*bufferIdxSlave);
     for (int i=0; i<(long)framesPerBuffer; i++)
     {
         *out++=buffer[(i*4)+2];
@@ -366,9 +367,6 @@ int paCallbackSlave(void *, void *outputBuffer,
     else
         bufferIdxSlave++;
 
-    //if (player->buffersync.locked())
-    //    player->buffersync.unlock();
-    
     return 0;
 }
 
