@@ -32,6 +32,8 @@
 #include <qstring.h>
 #include <qstringlist.h>
 
+#include <qregexp.h>
+
 typedef float CSAMPLE; // defines the CSAMPLE type used for intermediate calculations
 #endif
 
@@ -87,8 +89,6 @@ protected:
     snd_pcm_uframes_t buffer_size;
     snd_pcm_uframes_t period_size;
     int period_no;
-
-    snd_async_handler_t *ahandler;
 
     /** True if devices are open */
     bool isopen;
