@@ -7,7 +7,8 @@ SOURCES += playerportaudio.cpp
 HEADERS += playerportaudio.h
 DEFINES += __PORTAUDIO__
 unix:LIBS += -lportaudio
-win32:LIBS += ../lib/PAstaticWMMED.lib winmm.lib
+#win32:LIBS += ../lib/PAstaticWMMED.lib winmm.lib
+win32:LIBS += ../lib/PAStaticDS.lib
 
 # OSS Midi (Working good, Linux specific)
 #SOURCES += midiobjectoss.cpp
@@ -23,7 +24,7 @@ macx:LIBS -= -lportmidi -lporttime
 macx:LIBS += -framework Carbon -framework CoreMIDI
 macx:SOURCES += ../../../portmidi-macosx-1.0/pmdarwin.c ../../../portmidi-macosx-1.0/pmmacosx.c ../../../portmidi-macosx-1.0/pmutil.c ../../../portmidi-macosx-1.0/portmidi.c ../../../portmidi-macosx-1.0/ptdarwin.c
 macx:HEADERS += ../../../portmidi-macosx-1.0/pminternal.h ../../../portmidi-macosx-1.0/pmmacosx.h ../../../portmidi-macosx-1.0/pmutil.h ../../../portmidi-macosx-1.0/portmidi.h ../../../portmidi-macosx-1.0/porttime.h 
-win32:LIBS += ../lib/portmidi.lib ../lib/porttime.lib
+win32:LIBS += -l../lib/portmidi.lib -l../lib/porttime.lib
 
 # ALSA PCM (Not currently working, Linux specific)
 #SOURCES += playeralsa.cpp
@@ -55,13 +56,8 @@ unix {
 
 win32 {
   DEFINES += __WIN__
-  INCLUDEPATH += ../portmidi/
-  #INCLUDEPATH += ../mad-0.14.2b/libid3tag
-  INCLUDEPATH += ../mad-0.14.2b
-  INCLUDEPATH += ../portaudio/pa_common
-  INCLUDEPATH += .
-  LIBS += ../lib/libmad.lib 
-  #../lib/libid3tag.lib ../lib/libz.lib
+  INCLUDEPATH += ../lib .
+  LIBS += -l../lib/libmad.lib -l../lib/libsndfile.lib
   QMAKE_CXXFLAGS += -GX
   QMAKE_LFLAGS += /NODEFAULTLIB:libcd /NODEFAULTLIB:libcmtd /NODEFAULTLIB:msvcrt.lib
   CONFIG_PATH = \"d:\\mixxx\"
@@ -78,7 +74,8 @@ macx {
 DEFINES += CONFIG_PATH=$$CONFIG_PATH
 FORMS	= dlgchanneldlg.ui dlgplaycontroldlg.ui dlgplaylistdlg.ui dlgmasterdlg.ui dlgcrossfaderdlg.ui dlgsplitdlg.ui dlgpreferencesdlg.ui
 IMAGES	= filesave.xpm
-TEMPLATE	=app
+TEMPLATE        =app
+# win32:TEMPLATE       = vcapp
 TRANSLATIONS = mixxx_de.ts
 CONFIG	+= qt warn_on thread debug 
 DBFILE	= mixxx.db

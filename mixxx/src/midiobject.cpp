@@ -115,15 +115,6 @@ void MidiObject::send(char channel, char midicontrol, char midivalue)
 void MidiObject::stop()
 {
     requestStop = true;
-
-    // Raise signal to stop abort blocking read in main thread loop
-    if (thread_pid != 0)
-    {
-        signal(SIGINT,&abortRead);
-        kill(thread_pid,SIGINT);
-    }
-    wait();
-    thread_pid = 0;
 }
 
 void abortRead(int)
