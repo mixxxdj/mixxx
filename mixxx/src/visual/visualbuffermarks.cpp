@@ -29,7 +29,6 @@ VisualBufferMarks::~VisualBufferMarks()
                                                                                    
 void VisualBufferMarks::update(int iPos, int iLen)
 {
-    qDebug("pos %i-%i",iPos,(iPos+iLen)%m_iSourceLen);
     CSAMPLE *pSource = &m_pSource[iPos];
     GLfloat *pDest = &m_pBuffer[iPos*3];
 
