@@ -248,6 +248,7 @@ void *ReaderExtractBeat::processChunk(const int _idx, const int start_idx, const
         }
     }
 
+/*
 #ifdef __GNUPLOT__
     //
     // Plot HFC
@@ -300,6 +301,7 @@ void *ReaderExtractBeat::processChunk(const int _idx, const int start_idx, const
 
 //    sleep(1);
 #endif
+*/
 
     // For each sample in the current chunk...
     it = itStart;
@@ -496,7 +498,6 @@ void *ReaderExtractBeat::processChunk(const int _idx, const int start_idx, const
         streambeat << beatBuffer[i%frameNo] << "\n";
     textbeat.flush();
 
-/*    
 #ifdef __GNUPLOT__
     //
     // Plot Histogram
@@ -510,7 +511,6 @@ void *ReaderExtractBeat::processChunk(const int _idx, const int start_idx, const
 
     //savePlot(gnuplot_hist, "hist.png", "png");
 #endif
-*/
 
 #ifdef __VISUALS__
     // Update vertex buffer by sending an event containing indexes of where to update.

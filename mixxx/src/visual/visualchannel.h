@@ -47,6 +47,8 @@ public:
     void move(int msec);
     void setPosX(int x);
     void setZoomPosX(int x);    
+    /** Toggle fish eye mode on all connected VisualDisplays */
+    void toggleFishEyeMode();
 private:
     VisualController        *m_pVisualController;
     ControlPotmeter         *m_pPlaypos;
