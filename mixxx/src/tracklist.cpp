@@ -60,15 +60,12 @@ TrackList::TrackList( const QString sDirectory,const QString sPlaylistdir ,WTrac
     m_pNumberPos1 = pNumberPos1;
     m_pNumberPos2 = pNumberPos2;
     
-    m_iCurTrackIdxCh1 = -1;
-    m_iCurTrackIdxCh2 = -1;
-    m_pTrack1 = 0;
-    m_pTrack2 = 0;
-    
-    wTree = pTree;
+	m_iCurTrackIdxCh1 = -1;
+    m_iCurTrackIdxCh2 = -1;                  
+	wTree = pTree;
     wTree->m_sPlaylistdir = sPlaylistdir;
-    wTree->setRoot(m_sDirectory);
-    wTree->setPlaylist(wTree->m_sPlaylistdir);
+	wTree->setRoot(m_sDirectory);
+	wTree->setPlaylist(wTree->m_sPlaylistdir);
 	
 	//m_lTracks.setAutoDelete( TRUE ); // the list owns the objects
     
@@ -181,7 +178,7 @@ void TrackList::UpdateTracklist(QDomDocument * domXML)
 	int iRow=0;
     
 	if(!m_sDirectory.endsWith(".xml")){
-	    bFilesAdded = AddFiles(m_sDirectory.latin1(),domXML);
+	    bFilesAdded = AddFiles(m_sDirectory.latin1(),domXML, &tempTracks);
 		iRow = m_pTableTracks->numRows();
     }else{
 		bFilesAdded = TRUE;
@@ -245,17 +242,6 @@ void TrackList::loadTrack2(QString name)
         m_pText2->setText(t->getInfo());
     }
 }
-
-TrackInfoObject *TrackList::getTrackInfo1()
-{
-    return m_pTrack1;
-}
-
-TrackInfoObject *TrackList::getTrackInfo2()
-{
-    return m_pTrack2;
-}
-
 void TrackList::slotEndOfTrackCh1(double)
 {
     switch ((int)m_pEndOfTrackModeCh1->getValue())
@@ -460,9 +446,9 @@ int TrackList::getTrackCount(QDomDocument * docXML){
 	qDebug("Count is now: %d", count);
 	return count;
 }
-bool TrackList::AddFiles(const char *path, QDomDocument * docXML)
+bool TrackList::AddFiles(const char *path, QDomDocument * docXML, QPtrList<TrackInfoObject> * tempTracks)
 {    
-	QPtrList<TrackInfoObject> tempTracks = m_lTracks;
+	
 	bool bFoundFiles = false;
     // First run through all directories:
     QDir dir(path);
@@ -522,12 +508,15 @@ bool TrackList::AddFiles(const char *path, QDomDocument * docXML)
         QFileInfoListIterator dir_it(dir_list);
         QFileInfo *d;
         dir_it += 2; // Traverse past "." and ".."
-        while ((d=dir_it.current()))
+        
+		while ((d=dir_it.current()))
         {
             //qDebug("Execing addfile: %s",d->filePath().latin1());
-			if (AddFiles(d->filePath(),docXML))
+			if (AddFiles(d->filePath(),docXML, tempTracks)){
                 bFoundFiles = true;
-            ++dir_it;
+            	WriteXML(tempTracks);
+				}
+			++dir_it;
         }
 	
         // ... and then all the files:
@@ -539,9 +528,9 @@ bool TrackList::AddFiles(const char *path, QDomDocument * docXML)
 		
 		
 		
-		
-		
 		int iTrackNumber = getTrackCount((QDomDocument*) 0x0);
+		
+		
         
 		while ((fi=it.current()))
         {
@@ -670,9 +659,6 @@ void TrackList::slotChangePlay_1(int idx)
     //qDebug("Working on : %s",track->getFilename().latin1());
     if (track && track->m_iIndex == idx)
     {
-        m_pTrack1 = track;
-        emit(signalNewTrack1(track));
-		
         // Update score:
         track->incTimesPlayed();
         if (track->getTimesPlayed() > m_iMaxTimesPlayed)
@@ -705,9 +691,6 @@ void TrackList::slotChangePlay_2(int idx)
         
     if (track && track->m_iIndex == idx)
     {
-        m_pTrack2 = track;
-        emit(signalNewTrack2(track));
-
         // Update score:
         track->incTimesPlayed();
         if (track->getTimesPlayed() > m_iMaxTimesPlayed)
