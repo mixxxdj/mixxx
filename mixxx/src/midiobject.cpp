@@ -15,77 +15,9 @@ ConfigObject *MidiObject::config = 0;
    -------- ------------------------------------------------------ */
 MidiObject::MidiObject(ConfigObject *c)
 {
-  config = c;
-  no = 0;
-
-#ifdef __PORTMIDI__
-  // Open midi device for input
-  Pm_Initialize();
-
-  /*for (i = 0; i < Pm_CountDevices(); i++) {
-	    const PmDeviceInfo *info = Pm_GetDeviceInfo(i);
-        printf("%d: %s, %s", i, info->interf, info->name);
-        if (info->input) printf(" (input)");
-        if (info->output) printf(" (output)");
-        printf("\n");
-  }*/
-
-  PmError err = Pm_OpenInput(&midi, 1, NULL, 100, NULL, NULL, NULL);
-  if (err) {
-        qDebug("could not open midi device: %s\n", Pm_GetErrorText(err));
-  }
-
-  // Start the midi thread:
-  start();
-#endif
-#ifdef __ALSAMIDI__
-  // Open midi device for input
-  int card = snd_defaults_rawmidi_card();
-  int device = snd_defaults_rawmidi_device();
-  int err;
-  if ((err = snd_rawmidi_open(&handle, card, device, SND_RAWMIDI_OPEN_INPUT)) != 0)
-  {
-      qDebug("Open of midi failed: %s.", snd_strerror(err));
-  }
-  else
-  {
-      // Allocate buffer
-      buffer = new char[4096];
-      if (buffer == 0)
-      {
-          qDebug("Midi: Error allocating buffer");
-          return;
-      }
-
-      // Set number of bytes received, before snd_rawmidi_read is woken up.
-      snd_rawmidi_params_t params;
-      params.channel = SND_RAWMIDI_CHANNEL_INPUT;
-      params.size    = 4096;
-      params.min     = 1;
-      err = snd_rawmidi_channel_params(handle,&params);
-
-      // Start the midi thread:
-      start();
-  }
-#endif
-#ifdef __OSSMIDI__
-  // Allocate buffer
-  buffer = new char[4096];
-  if (buffer == 0)
-  {
-    qDebug("Midi: Error allocating buffer");
-    return;
-  }
-  // Open midi device
-  handle = open("/dev/midi",0);
-  if (handle == -1)
-  {
-    qDebug("Open of /dev/midi failed.");
-    return;
-  }
-  start();
-#endif
-
+    config = c;
+    no = 0;
+    requestStop = new QSemaphore(1);
 };
 
 /* -------- ------------------------------------------------------
@@ -93,22 +25,16 @@ MidiObject::MidiObject(ConfigObject *c)
    Input:   -
    Output:  -
    -------- ------------------------------------------------------ */
-MidiObject::~MidiObject() {
-#ifdef __PORTMIDI__
-  // Close device
-  Pm_Close(midi);
-#endif
-#ifdef __ALSAMIDI__
-  // Close device
-  snd_rawmidi_close(handle);
-  // Deallocate buffer
-  delete [] buffer;
-#endif
-#ifdef __OSSMIDI__
-  close(handle);
-  delete [] buffer;
-#endif
+MidiObject::~MidiObject()
+{
+    delete requestStop;
 };
+
+void MidiObject::reopen(QString device)
+{
+    devClose();
+    devOpen(device);
+}
 
 /* -------- ------------------------------------------------------
    Purpose: Add a control ready to recieve midi events.
@@ -137,110 +63,46 @@ void MidiObject::remove(ControlObject* c)
         qWarning("Control which is requested for removal in MidiObject does not exist.");
 }
 
+QStringList *MidiObject::getDeviceList()
+{
+    return &devices;
+}
+
+QString *MidiObject::getOpenDevice()
+{
+    return &openDevice;
+}
+
+void MidiObject::stop()
+{
+    qDebug("sem 1");
+    requestStop->operator++(1);
+    qDebug("sem 2");
+}
+
 /* -------- ------------------------------------------------------
    Purpose: Loop for parsing midi events
    Input:   -
    Output:  -
    -------- ------------------------------------------------------ */
-void MidiObject::run()
+void MidiObject::send(char channel, char midicontrol, char midivalue)
 {
-    int stop = 0;
-#ifdef __PORTMIDI__
-    PmError err;
-    char channel, midicontrol, midivalue;
-#endif
+    //qDebug("Received midi message: ch %i no %i val %i",(int)channel,(int)midicontrol,(int)midivalue);
 
-    while(stop == 0)
-	{
-
-
-
-#ifdef __PORTMIDI__
-        err = Pm_Poll(midi);
-        if (err == TRUE)
+    // Check the potmeters:
+    for (int i=0; i<no; i++)
+    {
+        //qDebug("(%i) checking: no %i ch %i",i,(int)controlList[i]->cfgOption->val->midino,(int)controlList[i]->cfgOption->val->midichannel);
+        if (controlList[i]->cfgOption->val->midino == midicontrol &
+            controlList[i]->cfgOption->val->midichannel == channel)
         {
-            if (Pm_Read(midi, buffer, 1) > 0)
-            {
-                midicontrol = Pm_MessageData1(buffer[0].message);
-                midivalue = Pm_MessageData2(buffer[0].message);
-            } else {
-                qDebug("Error in Pm_Read: %s\n", Pm_GetErrorText(err));
-                break;
-            }
-        } else if (err != FALSE) {
-            qDebug("Error in Pm_Poll: %s\n", Pm_GetErrorText(err));
+            // Check for possible bit mask
+            int midimask = controlList[i]->cfgOption->val->midimask;
+            if (midimask > 0)
+                controlList[i]->slotSetPosition((int)(midimask & midivalue));
+            else
+                controlList[i]->slotSetPositionMidi((int)midivalue); // 127-midivalue
             break;
-        }
-#else
-        /*
-        First read until we get a midi channel event:
-        */
-#ifdef __ALSAMIDI__
-        do
-		{
-            int no = snd_rawmidi_read(handle,&buffer[0],1);
-            if (no != 1)
-                qWarning("Warning: midiobject recieved %i bytes.", no);
-        } while (buffer[0] & 128 != 128);
-#endif
-#ifdef __OSSMIDI__
-        do
-	{
-            int no = read(handle,&buffer[0],1);
-//            qDebug("midi: %i",(short int)buffer[0]);
-            if (no != 1)
-                qWarning("Warning: midiobject recieved %i bytes.", no);
-        } while ((buffer[0] & 128) != 128); // Continue until we receive a status byte (bit 7 is set)
-#endif
-        /*
-        and then get the following 2 bytes:
-        */
-        char channel;
-        char midicontrol;
-        char midivalue;
-#ifdef __ALSAMIDI__
-        for (int i=1; i<3; i++)
-        {
-            int no = snd_rawmidi_read(handle,&buffer[i],1);
-            if (no != 1)
-                qWarning("Warning: midiobject recieved %i bytes.", no);
-        }
-        channel = buffer[0] & 15;
-        midicontrol = buffer[1];
-        midivalue = buffer[2];
-#endif
-#ifdef __OSSMIDI__
-        for (int i=1; i<3; i++)
-        {
-            int no = read(handle,&buffer[i],1);
-            if (no != 1)
-                qWarning("Warning: midiobject recieved %i bytes.", no);
-        }
-	//qDebug("Received midi message: ch %i no %i val %i",(int)buffer[0],(int)buffer[1],(int)buffer[2]);
-        channel = buffer[0] & 15; // The channel is stored in the lower 4 bits of the status byte received
-        midicontrol = buffer[1];
-        midivalue = buffer[2];
-#endif
-
-#endif
-
-        //qDebug("Received midi message: ch %i no %i val %i",(int)channel,(int)midicontrol,(int)midivalue);
-
-        // Check the potmeters:
-        for (int i=0; i<no; i++)
-        {
-            //qDebug("(%i) checking: no %i ch %i",i,(int)controlList[i]->cfgOption->val->midino,(int)controlList[i]->cfgOption->val->midichannel);
-            if (controlList[i]->cfgOption->val->midino == midicontrol &
-                controlList[i]->cfgOption->val->midichannel == channel)
-            {
-                // Check for possible bit mask
-                int midimask = controlList[i]->cfgOption->val->midimask;
-                if (midimask > 0)
-                    controlList[i]->slotSetPosition((int)(midimask & midivalue));
-                else
-                    controlList[i]->slotSetPositionMidi((int)midivalue); // 127-midivalue
-                break;
-            }
         }
     }
 };

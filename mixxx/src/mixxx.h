@@ -46,6 +46,7 @@
 #include "enginemaster.h"
 #include "player.h"
 #include "midiobject.h"
+#include "configmapping.h"
 #include "controlobject.h"
 #include "dlgpreferences.h"
 
@@ -148,6 +149,7 @@ class MixxxApp : public QMainWindow
     Player *player;
     MidiObject *midi;
     ControlObject *control;
+    ConfigMapping *configMap;
 	std::vector<EngineObject *> engines;
 
     /** Popup menu used to select player when a track has been selected */

@@ -1,11 +1,10 @@
 Urgent:
-- New ControlObject structure
-- Tune bandwidth parameter of EngineFilterRBJ
 - Extensive stability test
 - Memory optimization
-- "floating point exception" on some mp3 files
+- Wheel graphics: Single mode slider
 
 Future options:
+- New ControlObject structure
 - Headphone channel
 - Sound Effects
 - VU meters

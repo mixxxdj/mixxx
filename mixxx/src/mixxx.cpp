@@ -33,14 +33,25 @@
 #include "images/a.xpm"
 #include "images/b.xpm"
 #include "controlnull.h"
-#include "configmapping.h"
 
 #ifdef __ALSA__
   #include "playeralsa.h"
 #endif
 
+#ifdef __ALSA__
+  #include "midiobjectalsa.h"
+#endif
+
 #ifdef __PORTAUDIO__
   #include "playerportaudio.h"
+#endif
+
+#ifdef __PORTMIDI__
+  #include "midiobjectportmidi.h"
+#endif
+
+#ifdef __OSSMIDI__
+  #include "midiobjectoss.h"
 #endif
 
 MixxxApp::MixxxApp()
@@ -59,7 +70,7 @@ MixxxApp::MixxxApp()
   pDlg = 0;
 
   // Initialize first available configuration
-  ConfigMapping *configMap = new ConfigMapping();
+  configMap = new ConfigMapping();
   QStringList *list = configMap->getConfigurations();
   QStringList::Iterator it = list->begin();
   //for (; it != list->end(); ++it)
@@ -82,7 +93,15 @@ MixxxApp::MixxxApp()
 
   // Initialize midi:
   qDebug("Init midi...");
-  midi = new MidiObject(config);
+#ifdef __ALSA__
+  midi = new MidiObjectALSA(config);
+#endif
+#ifdef __PORTMIDI__
+  midi = new MidiObjectPortMidi(config);
+#endif
+#ifdef __OSSMIDI__
+  midi = new MidiObjectOSS(config);
+#endif
 
   // Instantiate a ControlObject, and set the static midi and config pointer
   control = new ControlNull();
@@ -517,12 +536,13 @@ void MixxxApp::slotOptionsPreferences()
     {
         pDlg = new DlgPreferences(this);
         QPtrList<Player::Info> *pInfo = player->getInfo();
-        Player::Info *p = pInfo->first();
 
         // Fill dialog with info
-        int j=0;
-        while (p != 0)
+
+        // Sound card info
+        for (unsigned int j=0; j<pInfo->count(); j++)
         {
+            Player::Info *p = pInfo->at(j);
             // Name of device
             pDlg->ComboBoxSoundcard->insertItem(p->name);
             if (p->name == player->NAME)
@@ -530,9 +550,22 @@ void MixxxApp::slotOptionsPreferences()
                 pDlg->ComboBoxSoundcard->setCurrentItem(j);
                 slotOptionsPreferencesUpdateDeviceOptions();
             }
+        }
 
-            // Get next device
-            p = pInfo->next();
+        // Midi configuration
+        QStringList *list = configMap->getConfigurations();
+        QStringList::Iterator it = list->begin();
+        for (; it != list->end(); ++it)
+            pDlg->ComboBoxMidiconf->insertItem(*it);
+
+        // Midi device
+        QStringList *mididev = midi->getDeviceList();
+        int j=0;
+        for (it = mididev->begin(); it != mididev->end(); ++it )
+        {
+            pDlg->ComboBoxMididevice->insertItem(*it);
+            if ((*it) == (*midi->getOpenDevice()))
+                pDlg->ComboBoxMididevice->setCurrentItem(j);
             j++;
         }
 
@@ -596,39 +629,29 @@ void MixxxApp::slotOptionsSetPreferences()
     }
 */
 
-    // Find parameters
-    QString name;
-    int srate, bits, bufferSize;
-    QPtrList<Player::Info> *pInfo = player->getInfo();
-    Player::Info *p = pInfo->first();
-    while (p != 0)
-    {
-        if (pDlg->ComboBoxSoundcard->currentText() == p->name)
-        {
-            name = p->name;
+    // Get parameters from dialog
+    QString name = pDlg->ComboBoxSoundcard->currentText();
 
-            // Sample rates
-            pDlg->ComboBoxSamplerates->clear();
-            for (unsigned int i=0; i<p->sampleRates.size(); i++)
-                if (p->sampleRates[i]==player->SRATE)
-                    srate = player->SRATE;
+    QString temp = pDlg->ComboBoxSamplerates->currentText();
+    temp.truncate(temp.length()-3);
+    int srate = temp.toInt();
 
-            // Bits
-            pDlg->ComboBoxBits->clear();
-            for (unsigned int i=0; i<p->bits.size(); i++)
-                if (p->bits[i]==player->BITS)
-                    bits = player->BITS;
-        }
+    temp = pDlg->ComboBoxBits->currentText();
+    temp.truncate(temp.length()-3);
+    int bits = temp.toInt();
 
-        // Get next device
-        p = pInfo->next();
-    }
-    bufferSize = BUFFER_SIZE;
+    int bufferSize = BUFFER_SIZE;
 
-    // Perform changes
+    // Perform changes to sound card setup
     player->stop();
     player->reopen(name,srate,bits,bufferSize);
     player->start(master);
+
+    // Perform changes to MIDI configuration
+    configMap->setConfiguration(pDlg->ComboBoxMidiconf->currentText());
+
+    // Change MIDI device
+    midi->reopen(pDlg->ComboBoxMididevice->currentText());
 
     slotOptionsClosePreferences();
 }

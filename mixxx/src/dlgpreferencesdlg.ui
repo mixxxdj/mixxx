@@ -31,76 +31,6 @@
             <string>Cancel</string>
         </property>
     </widget>
-    <widget class="QComboBox">
-        <property name="name">
-            <cstring>ComboBoxMididevice</cstring>
-        </property>
-        <property name="enabled">
-            <bool>false</bool>
-        </property>
-        <property name="geometry">
-            <rect>
-                <x>145</x>
-                <y>45</y>
-                <width>85</width>
-                <height>22</height>
-            </rect>
-        </property>
-    </widget>
-    <widget class="QComboBox">
-        <property name="name">
-            <cstring>ComboBoxMidiconf</cstring>
-        </property>
-        <property name="enabled">
-            <bool>false</bool>
-        </property>
-        <property name="geometry">
-            <rect>
-                <x>145</x>
-                <y>10</y>
-                <width>210</width>
-                <height>22</height>
-            </rect>
-        </property>
-    </widget>
-    <widget class="QLabel">
-        <property name="name">
-            <cstring>TextLabel5</cstring>
-        </property>
-        <property name="enabled">
-            <bool>false</bool>
-        </property>
-        <property name="geometry">
-            <rect>
-                <x>10</x>
-                <y>50</y>
-                <width>72</width>
-                <height>16</height>
-            </rect>
-        </property>
-        <property name="text">
-            <string>Midi Device</string>
-        </property>
-    </widget>
-    <widget class="QLabel">
-        <property name="name">
-            <cstring>TextLabel6</cstring>
-        </property>
-        <property name="enabled">
-            <bool>false</bool>
-        </property>
-        <property name="geometry">
-            <rect>
-                <x>10</x>
-                <y>15</y>
-                <width>106</width>
-                <height>16</height>
-            </rect>
-        </property>
-        <property name="text">
-            <string>Midi Configuration</string>
-        </property>
-    </widget>
     <widget class="QGroupBox">
         <property name="name">
             <cstring>GroupBox1</cstring>
@@ -241,25 +171,6 @@
             </rect>
         </property>
     </widget>
-    <widget class="QLabel">
-        <property name="name">
-            <cstring>TextLabel2</cstring>
-        </property>
-        <property name="enabled">
-            <bool>true</bool>
-        </property>
-        <property name="geometry">
-            <rect>
-                <x>10</x>
-                <y>120</y>
-                <width>70</width>
-                <height>16</height>
-            </rect>
-        </property>
-        <property name="text">
-            <string>Sample rate</string>
-        </property>
-    </widget>
     <widget class="QComboBox">
         <property name="name">
             <cstring>ComboBoxBits</cstring>
@@ -312,6 +223,95 @@
         </property>
         <property name="text">
             <string>OK</string>
+        </property>
+    </widget>
+    <widget class="QLabel">
+        <property name="name">
+            <cstring>TextLabel2</cstring>
+        </property>
+        <property name="enabled">
+            <bool>true</bool>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>10</x>
+                <y>120</y>
+                <width>70</width>
+                <height>16</height>
+            </rect>
+        </property>
+        <property name="text">
+            <string>Sample rate</string>
+        </property>
+    </widget>
+    <widget class="QComboBox">
+        <property name="name">
+            <cstring>ComboBoxMidiconf</cstring>
+        </property>
+        <property name="enabled">
+            <bool>true</bool>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>145</x>
+                <y>10</y>
+                <width>210</width>
+                <height>22</height>
+            </rect>
+        </property>
+    </widget>
+    <widget class="QLabel">
+        <property name="name">
+            <cstring>TextLabel6</cstring>
+        </property>
+        <property name="enabled">
+            <bool>true</bool>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>10</x>
+                <y>15</y>
+                <width>106</width>
+                <height>16</height>
+            </rect>
+        </property>
+        <property name="text">
+            <string>Midi Configuration</string>
+        </property>
+    </widget>
+    <widget class="QComboBox">
+        <property name="name">
+            <cstring>ComboBoxMididevice</cstring>
+        </property>
+        <property name="enabled">
+            <bool>true</bool>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>145</x>
+                <y>45</y>
+                <width>85</width>
+                <height>22</height>
+            </rect>
+        </property>
+    </widget>
+    <widget class="QLabel">
+        <property name="name">
+            <cstring>TextLabel5</cstring>
+        </property>
+        <property name="enabled">
+            <bool>true</bool>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>10</x>
+                <y>50</y>
+                <width>72</width>
+                <height>16</height>
+            </rect>
+        </property>
+        <property name="text">
+            <string>Midi Device</string>
         </property>
     </widget>
 </widget>

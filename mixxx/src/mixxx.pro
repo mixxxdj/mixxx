@@ -8,6 +8,11 @@
 #DEFINES += __ALSA__
 #unix:LIBS += -lasound
 
+# ALSA MIDI
+#SOURCES += midiobjectalsa.cpp
+#HEADERS += midiobjectalsa.h
+#DEFINES  += __ALSAMIDI__
+
 # PortAudio
 SOURCES += playerportaudio.cpp
 HEADERS += playerportaudio.h
@@ -16,11 +21,15 @@ unix:LIBS += -lportaudio
 win32:LIBS += ../lib/PAstaticDSD.lib dsound.lib
 
 # PortMidi
+#SOURCES += midiobjectportmidi.cpp
+#HEADERS += midiobjectportmidi.h
 #DEFINES += __PORTMIDI__
 #unix:LIBS += -lportmidi -lporttime
 #win32:LIBS += ../lib/portmidi.lib ../lib/porttime.lib ../lib/libmad.lib
 
 # OSS Midi
+SOURCES += midiobjectoss.cpp
+HEADERS += midiobjectoss.h
 DEFINES += __OSSMIDI__
 
 #

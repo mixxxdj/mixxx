@@ -59,7 +59,10 @@ SoundSourceMp3::SoundSourceMp3(const char* filename)
     }
 
     mad_header_finish (&Header);
-    bitrate = bitrate/currentframe;
+    if (currentframe==0)
+        bitrate = 0;
+    else
+        bitrate = bitrate/currentframe;
     framecount = currentframe;
     currentframe = 0;
 
