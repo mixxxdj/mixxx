@@ -37,7 +37,15 @@ EngineVolume::~EngineVolume()
 
 CSAMPLE *EngineVolume::process(const CSAMPLE *source, const int buffer_size)
 {
+    double volume=potmeter->get();
+
+    if (volume == 1.)
+    {
+        memcpy(buffer, source, sizeof(CSAMPLE) * buffer_size);
+        return buffer;
+    }
+
     for (int i=0; i<buffer_size; i++)
-        buffer[i] = source[i]*potmeter->get();
+        buffer[i] = source[i]*volume;
     return buffer;
 }

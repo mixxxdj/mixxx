@@ -33,7 +33,7 @@ const int OK = 0;               // Just defs to use for returning errors from fu
 const int ERR = -1;
 
 const int BUFFER_SIZE  = 2048;  // Buffer size used both for input and output as default
-                                            
+ 
 /** size of the chunk that's read in every read. */
 const unsigned int READCHUNKSIZE = 20480; //40960;
 /** Number of readchunks. Should minimum be set to 5. In theory this should minimum be four, but
@@ -70,5 +70,4 @@ inline CSAMPLE zap_denormal(CSAMPLE x)
 #endif
 
 #endif
-
 

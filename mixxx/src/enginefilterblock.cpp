@@ -73,19 +73,23 @@ EngineFilterBlock::~EngineFilterBlock()
 
 CSAMPLE *EngineFilterBlock::process(const CSAMPLE *source, const int buf_size)
 {
-    CSAMPLE *p0 = low->process(source,buf_size);
-    CSAMPLE *p1 = high->process(source,buf_size);
-
-//    CSAMPLE *p0 = lowrbj->process(source, buf_size);
-//    CSAMPLE *p1 = highrbj->process(source, buf_size);
-
     CSAMPLE fLow=0.f, fMid=0.f, fHigh=0.f;
+
     if (filterKillLow->get()==0.)
         fLow = filterpotLow->get();
     if (filterKillMid->get()==0.)
         fMid = filterpotMid->get();
     if (filterKillHigh->get()==0.)
         fHigh = filterpotHigh->get();
+
+    if ((fLow == 1.) && (fMid == 1.) && (fHigh == 1.))
+    {
+        memcpy(buffer, source, sizeof(CSAMPLE) * buf_size);
+        return buffer;
+    }
+
+    CSAMPLE *p0 = low->process(source,buf_size);
+    CSAMPLE *p1 = high->process(source,buf_size);
 
     for (int i=0; i<buf_size; i++)
         buffer[i] = fLow*p0[i] + fHigh*p1[i] + fMid*(source[i]-p0[i]-p1[i]);
