@@ -74,9 +74,19 @@ public:
     const char *getGroup();
     /** Get the relative playpos in a buffer sampled at Srate hz*/
     int getPlaypos(int Srate);
+    /** Set rate change when temp rate button is pressed */
+    static void setTemp(double v);
+    /** Set rate change when temp rate small button is pressed */
+    static void setTempSmall(double v);
+    /** Set rate change when perm rate button is pressed */
+    static void setPerm(double v);
+    /** Set rate change when perm rate small button is pressed */
+    static void setPermSmall(double v);
     /** Notify used to call seek when playpos slider changes */
     Monitor visualPlaypos;
     float visualRate;
+
+
 public slots:
     void slotControlPlay(double);
     void slotControlStart(double);
@@ -123,6 +133,8 @@ private:
     QMutex pause;
     /** Used in update of playpos slider */
     int m_iSamplesCalculated;
+    /** Values used when temp and perm rate buttons are pressed */
+    static double m_dTemp, m_dTempSmall, m_dPerm, m_dPermSmall;
 
     ControlEngine *playButton, *rateSlider, *wheel, *playposSlider, *bufferposSlider, *audioBeatMark;
     ControlEngine *buttonCueSet, *buttonCueGoto, *buttonCuePreview, *m_pRateDir;
@@ -141,6 +153,9 @@ private:
     ControlEngine *fwdButton, *backButton, *startButton, *endButton;
     /** Holds the name of the control group */
     const char *group;
+    /** Is true if currently in cue preview mode. We need to keep track of the state
+      * because the preview key slot can be activated many times during one preview */
+    bool m_bCuePreview;
 
     CSAMPLE *read_buffer_prt;
 

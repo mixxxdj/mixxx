@@ -21,10 +21,8 @@
 #include "readerextracthfc.h"
 #include "readerextractbeat.h"
 #include "readerevent.h"
-#ifdef __VISUALS__
 #include "visual/visualchannel.h"
 #include "visual/visualbuffer.h"
-#endif
 #include "soundsource.h"
 #include "soundsourcemp3.h"
 #include "soundsourceoggvorbis.h"
@@ -176,11 +174,9 @@ void ReaderExtractWave::reset()
     readerbeat->reset();
 #endif
 
-#ifdef __VISUALS__
     // Update vertex buffer by sending an event containing indexes of where to update.
     if (m_pVisualBuffer != 0)
         QApplication::postEvent(m_pVisualBuffer, new ReaderEvent(0, READBUFFERSIZE));
-#endif
 }
 
 void *ReaderExtractWave::getBasePtr()
@@ -301,11 +297,9 @@ void ReaderExtractWave::getchunk(CSAMPLE rate)
     for (j=bufIdx; j<bufIdx+READCHUNKSIZE; j++)
         read_buffer[j] = (CSAMPLE)temp[i++];
 
-#ifdef __VISUALS__
     // Update vertex buffer by sending an event containing indexes of where to update.
     if (m_pVisualBuffer != 0)
         QApplication::postEvent(m_pVisualBuffer, new ReaderEvent(bufIdx, READCHUNKSIZE));
-#endif
 
 #ifdef EXTRACT
     // Do pre-processing...
@@ -339,11 +333,9 @@ long int ReaderExtractWave::seek(long int new_playpos)
         for (unsigned int i=0; i<READBUFFERSIZE; i++)
             read_buffer[i] = 0.;
 
-#ifdef __VISUALS__
         // Update vertex buffer by sending an event containing indexes of where to update.
         if (m_pVisualBuffer != 0)
             QApplication::postEvent(m_pVisualBuffer, new ReaderEvent(0,READBUFFERSIZE));
-#endif
 
 #ifdef EXTRACT
         // Reset extract objects

@@ -32,14 +32,9 @@ class ControlPushButton : public ControlObject
 public:
     ControlPushButton(ConfigKey key, bool bMidiSimulateLatching=false);
     ~ControlPushButton();
-    void setAccelUp(const QKeySequence key);
-    void setAccelDown(const QKeySequence key);
 protected:
     void setValueFromMidi(MidiCategory c, int v);
 
-
-private slots:
-    void slotUpdateAction(int);
 signals:
     void valueChanged(int);
     void updateAction(bool);

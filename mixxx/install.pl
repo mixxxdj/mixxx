@@ -34,6 +34,10 @@ if ($#out<0)
 `install -m 755 -d $BASE/share/mixxx/midi`;
 `install -m 644 src/midi/* $BASE/share/mixxx/midi`;
 
+# Copy keyboard config files
+`install -m 755 -d $BASE/share/mixxx/keyboard`;
+`install -m 644 src/keyboard/* $BASE/share/mixxx/keyboard`;
+
 # Copy mixxx binary to $BASE/bin
 `install -m 755 -d $BASE/bin`;
 `install -m 755 src/mixxx $BASE/bin`;

@@ -3,7 +3,7 @@
                              -------------------
     begin                : Wed Feb 20 2002
     copyright            : (C) 2002 by Tue and Ken Haste Andersen
-    email                : 
+    email                :
  ***************************************************************************/
 
 /***************************************************************************
@@ -28,12 +28,14 @@
 #include "readerextractbeat.h"
 #include "enginebufferscalelinear.h"
 #include "powermate.h"
+#include "wvisualwaveform.h"
+#include "visual/visualchannel.h"
 
-class VisualChannel;
-#ifdef __VISUALS__
-  #include "wvisualwaveform.h"
-  #include "visual/visualchannel.h"
-#endif
+// Static default values for rate buttons
+double EngineBuffer::m_dTemp = 0.01;
+double EngineBuffer::m_dTempSmall = 0.001;
+double EngineBuffer::m_dPerm = 0.01;
+double EngineBuffer::m_dPermSmall = 0.001;
 
 EngineBuffer::EngineBuffer(PowerMate *_powermate, const char *_group)
 {
@@ -170,6 +172,8 @@ EngineBuffer::EngineBuffer(PowerMate *_powermate, const char *_group)
 //    filechanged = new ControlEngine(controlfilechanged);
 //    filechanged->setNotify(this,(EngineMethod)&EngineBuffer::newtrack);
 
+    m_bCuePreview = false;
+
     setNewPlaypos(0.);
 
     reader = new Reader(this, &rate_exchange, &pause);
@@ -212,14 +216,12 @@ void EngineBuffer::setVisual(WVisualWaveform *pVisualWaveform)
 {
     VisualChannel *pVisualChannel = 0;
     // Try setting up visuals
-#ifdef __VISUALS__
     if (pVisualWaveform)
     {
         // Add buffer as a visual channel
         pVisualChannel = pVisualWaveform->add((ControlPotmeter *)ControlObject::getControl(ConfigKey(group, "bufferplayposition")), group);
         reader->addVisual(pVisualChannel);
     }
-#endif
 }
 
 float EngineBuffer::getDistanceNextBeatMark()
@@ -290,6 +292,28 @@ int EngineBuffer::getPlaypos(int) // int Srate
     return 0; //(int)((CSAMPLE)visualPlaypos.read()/(2.*(CSAMPLE)file_srate/(CSAMPLE)Srate));
 }
 
+void EngineBuffer::setTemp(double v)
+{
+    m_dTemp = v;
+}
+
+void EngineBuffer::setTempSmall(double v)
+{
+    m_dTempSmall = v;
+}
+
+void EngineBuffer::setPerm(double v)
+{
+    m_dPerm = v;
+}
+
+void EngineBuffer::setPermSmall(double v)
+{
+    m_dPermSmall = v;
+}
+
+
+
 void EngineBuffer::slotControlSeek(double change)
 {
 //    qDebug("seeking... %f",change);
@@ -327,19 +351,20 @@ void EngineBuffer::slotControlCueGoto(double)
     playButton->set(1.);
 }
 
-void EngineBuffer::slotControlCuePreview(double)
+void EngineBuffer::slotControlCuePreview(double d)
 {
-//    qDebug("cue preview: %d",buttonCuePreview->get());
     if (buttonCuePreview->get()==0.)
     {
         // Stop playing (set playbutton to stoped) and seek to cue point
         playButton->set(0.);
+        m_bCuePreview = false;
         reader->requestSeek(reader->f_dCuePoint);
         m_iBeatMarkSamplesLeft = 0;
     }
-    else
+    else if (!m_bCuePreview)
     {
         // Seek to cue point and start playing
+        m_bCuePreview = true;
         slotControlCueGoto();
     }
 }
@@ -374,35 +399,35 @@ void EngineBuffer::slotControlRatePermDown(double)
 {
     // Adjusts temp rate down if button pressed
     if (buttonRatePermDown->get()==1.)
-        rateSlider->sub(0.005);
+        rateSlider->sub(m_dPerm);
 }
 
 void EngineBuffer::slotControlRatePermDownSmall(double)
 {
     // Adjusts temp rate down if button pressed
     if (buttonRatePermDownSmall->get()==1.)
-        rateSlider->sub(0.001);
+        rateSlider->sub(m_dPermSmall);
 }
 
 void EngineBuffer::slotControlRatePermUp(double)
 {
     // Adjusts temp rate up if button pressed
     if (buttonRatePermUp->get()==1.)
-        rateSlider->add(0.005);
+        rateSlider->add(m_dPerm);
 }
 
 void EngineBuffer::slotControlRatePermUpSmall(double)
 {
     // Adjusts temp rate up if button pressed
     if (buttonRatePermUpSmall->get()==1.)
-        rateSlider->add(0.001);
+        rateSlider->add(m_dPermSmall);
 }
 
 void EngineBuffer::slotControlRateTempDown(double)
 {
     // Adjusts temp rate down if button pressed, otherwise set to 0.
     if (buttonRateTempDown->get()==1.)
-        temp_rate = -0.01;
+        temp_rate = -m_dTemp;
     else
         temp_rate = 0.;
 }
@@ -411,7 +436,7 @@ void EngineBuffer::slotControlRateTempDownSmall(double)
 {
     // Adjusts temp rate down if button pressed, otherwise set to 0.
     if (buttonRateTempDownSmall->get()==1.)
-        temp_rate = -0.001;
+        temp_rate = -m_dTempSmall;
     else
         temp_rate = 0.;
 }
@@ -420,7 +445,7 @@ void EngineBuffer::slotControlRateTempUp(double)
 {
     // Adjusts temp rate up if button pressed, otherwise set to 0.
     if (buttonRateTempUp->get()==1.)
-        temp_rate = 0.01;
+        temp_rate = m_dTemp;
     else
         temp_rate = 0.;
 }
@@ -429,7 +454,7 @@ void EngineBuffer::slotControlRateTempUpSmall(double)
 {
     // Adjusts temp rate up if button pressed, otherwise set to 0.
     if (buttonRateTempUpSmall->get()==1.)
-        temp_rate = 0.001;
+        temp_rate = m_dTempSmall;
     else
         temp_rate = 0.;
 }
@@ -653,13 +678,13 @@ CSAMPLE *EngineBuffer::process(const CSAMPLE *, const int buf_size)
                     float *beatBuffer = (float *)readerbeat->getBasePtr();
                     int chunkSizeDiff = READBUFFERSIZE/readerbeat->getBufferSize();
 //                    qDebug("from %i-%i",(int)floor(bufferpos_play),(int)floor(idx));
-					for (i=(int)floor(bufferpos_play); i<=(int)floor(idx); i++)
+                    for (i=(int)floor(bufferpos_play); i<=(int)floor(idx); i++)
                     {
                         if (((i%chunkSizeDiff)==0) && (beatBuffer[i/chunkSizeDiff]>0.))
                         {
 //                            qDebug("%i: %f",i/chunkSizeDiff,beatBuffer[i/chunkSizeDiff]);
 
-							// Audio beat mark
+                            // Audio beat mark
                             if (audioBeatMark->get()==1.)
                             {
                                 int from = (int)(i-bufferpos_play);

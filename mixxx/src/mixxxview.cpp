@@ -36,10 +36,8 @@
 #include "wnumber.h"
 #include "wnumberpos.h"
 #include "wnumberbpm.h"
-#ifdef __VISUALS__
-  #include "wvisualwaveform.h"
-  #include "wvisualsimple.h"
-#endif
+#include "wvisualwaveform.h"
+#include "wvisualsimple.h"
 
 MixxxView::MixxxView(QWidget *parent, bool bVisualsWaveform, QString qSkinPath) : QWidget(parent, "Mixxx")
 {

@@ -20,9 +20,7 @@
 #include "enginebuffer.h"
 #include "readerextractwave.h"
 #include "rtthread.h"
-#ifdef __VISUALS__
-  #include "visual/visualchannel.h"
-#endif
+#include "visual/visualchannel.h"
 
 Reader::Reader(EngineBuffer *_enginebuffer, Monitor *_rate, QMutex *_pause)
 {
@@ -53,10 +51,8 @@ Reader::~Reader()
 
 void Reader::addVisual(VisualChannel *pVisualChannel)
 {
-#ifdef __VISUALS__
     m_pVisualChannel = pVisualChannel;
     readerwave->addVisual(m_pVisualChannel);
-#endif
 }
 
 void Reader::requestNewTrack(TrackInfoObject *pTrack)

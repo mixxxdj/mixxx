@@ -28,8 +28,6 @@ class ControlTTRotary : public ControlObject
     Q_OBJECT
 public:
     ControlTTRotary(ConfigKey key);
-    void setAccelUp(const QKeySequence) {};
-    void setAccelDown(const QKeySequence) {};
 public slots:
     void setValueFromWidget(double);
 protected:

@@ -29,8 +29,6 @@ class ControlNull : public ControlObject  {
 public:
     ControlNull();
     ~ControlNull();
-    void setAccelUp(const QKeySequence) {};
-    void setAccelDown(const QKeySequence) {};
 protected:
     void setValueFromMidi(MidiCategory c, int v) {};
 };

@@ -20,8 +20,10 @@ New since 1.0.1:
 - Beat estimation, visual beat marks, bpm display
 - Tempo syncronization button
 - Absolute position/remaining time display
-- Tooltips added
-- User interface bug fixes
+- Tooltips
+- Various user interface bug fixes
+- Up and down push button controls for all sliders and knobs
+- Temporary and permanent rate change buttons configurable
 
 * REQUIREMENTS *********************************************
 Mixxx is depends on the following libraries:
@@ -33,23 +35,29 @@ FFTW 2
 
 The Windows version uses libsndfile instead of libAudioFile.
 
-
 * INSTALL **************************************************
 You can either install Mixxx from binary, or from source.
 
 *Linux:
-The linux version is distributed as package files (RPM),
-built for various distributions. To compile and install from 
-source use the following commands:
+If you have downloaded the binary version of Mixxx (i586)
+you just need to unpack the file and run the install script:
+
+tar -xvzf mixxx-1.x-i586.tar.gz
+cd mixxx-1.x
+./install.pl
+
+This will install the program in /usr/bin with midi configs
+and skins in /usr/share/mixxx. The placement of the skin,
+keyboard and midi configs can be changed in the users 
+~/.mixxx.cfg file created after the first startup of the 
+program.
+
+To compile and install from source use the following commands:
 cd src
 qmake mixxx.pro
 make
 cd ..
 ./install.pl
-This will install the program in /usr/bin with midi configs
-and skins in /usr/share/mixxx. The placement of the skin and
-midi configs can be changed in the users ~/.mixxx.cfg file
-created after the first startup of the program. 
 
 *Mac and Windows:
 Extract the downloaded file to a folder and start the
@@ -62,7 +70,9 @@ panel.
 
 * RUN THE PROGRAM ******************************************
 Run the program by double clicking on the Mixxx application
-icon or typing mixxx at the prompt (Linux).
+icon or typing mixxx at the prompt (Linux). On linux it is 
+important to run the program as root (eg. by using the
+sudo command) to avoid cracks in the sound output.
 
 Mixxx can use any midi controller for input. More info 
 on the file format can be found on the home page. Also

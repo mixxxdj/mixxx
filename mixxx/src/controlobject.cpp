@@ -36,7 +36,6 @@ ControlObject::ControlObject()
     m_dValue = 0.;
     installEventFilter(this);
     m_pControlEngine = 0;
-    m_pAccel = 0;
 }
 
 ControlObject::ControlObject(ConfigKey key)
@@ -52,7 +51,6 @@ ControlObject::ControlObject(ConfigKey key)
     m_pKbdConfigOption = m_pKbdConfig->get(key);
 
     list.append(this);
-    m_pAccel = 0;
 }
 
 ControlObject::~ControlObject()
@@ -62,8 +60,6 @@ ControlObject::~ControlObject()
 
 bool ControlObject::connectControls(ConfigKey src, ConfigKey dest)
 {
-//    qDebug("unfinished");
-
     // Find src object
     ControlObject *pSrc = 0;
     for (pSrc=list.first(); pSrc; pSrc=list.next())
@@ -154,7 +150,7 @@ void ControlObject::setWidget(QWidget *widget, bool emitOnDownPress, Qt::ButtonS
         else if (state == Qt::RightButton)
             QApplication::connect(widget, SIGNAL(valueChangedRightUp(double)), this,   SLOT(setValueFromWidget(double)));
     }
-    
+
     QApplication::connect(this,   SIGNAL(signalUpdateWidget(double)),    widget, SLOT(setValue(double)));
     updateWidget();
 }
@@ -166,7 +162,7 @@ void ControlObject::updateFromMidi()
     updateApp();
 }
 
-void ControlObject::updateFromKeyboard()
+void ControlObject::updateAll()
 {
     updateEngine();
     updateWidget();
@@ -231,12 +227,6 @@ void ControlObject::setValueFromWidget(double dValue)
 {
     m_dValue = dValue;
     updateFromWidget();
-}
-
-void ControlObject::setValueFromKeyboard()
-{
-    qDebug("Value received from keyboard. Currently not implemented");
-    updateFromKeyboard();
 }
 
 void ControlObject::setValueFromApp(double dValue)
@@ -306,7 +296,7 @@ bool ControlObject::kbdPress(QKeySequence k, bool release)
 
     if (!k.isEmpty())
     {
-//        qDebug("kbd %s, press %i",((QString)k).latin1(),release);
+        //qDebug("kbd %s, press %i",((QString)k).latin1(),release);
 
         // Check the controls...
         ControlObject *c;
@@ -318,6 +308,8 @@ bool ControlObject::kbdPress(QKeySequence k, bool release)
                     c->setValueFromMidi(NOTE_OFF, 0);
                 else
                     c->setValueFromMidi(NOTE_ON, 1);
+
+//                if (release) qDebug("r"); else qDebug("p");
 
                 react = true;
 

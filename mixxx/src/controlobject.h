@@ -22,7 +22,7 @@
 #include <qwidget.h>
 #include <qevent.h>
 #include <qptrlist.h>
-#include <qaccel.h>
+//#include <qaccel.h>
 #include <qptrqueue.h>
 #include <qmutex.h>
 #include "configobject.h"
@@ -72,12 +72,6 @@ public:
     void setControlEngine(ControlEngine *pControlEngine);
     /** Return the value of the ControlObject */
     double getValue();
-    /** Used to set a keyboard accelarator (up) for the ControlObject. Up and down directions are provided,
-      * even though some ControlObjects does not distinguish between the two (ControlPushButton for
-      * instance */
-    virtual void setAccelUp(const QKeySequence key) {};
-    /** Used to set a keyboard accelarator (down) for the ControlObject */
-    virtual void setAccelDown(const QKeySequence key) {};
     /** Sets up parent widget. Used when setting up keyboard accelerators */
     static void setParentWidget(QWidget *pParentWidget);
     /** Syncronizes queue, by writing the values to ControlEngine objects. Non blocking.
@@ -97,14 +91,15 @@ signals:
 protected:
     /** Method called internally when the value has been updated by Midi */
     void updateFromMidi();
-    /** Method called internally when the value has been updated by the keyboard */
-    void updateFromKeyboard();
     /** Method called internally when the value has been updated by a ControlEngine */
     void updateFromEngine();
     /** Method called internally when the value has been updated by a graphical widget */
     void updateFromWidget();
     /** Method called internally when the value has been updated by the main application thread */
     void updateFromApp();
+    /** Method called internally when the control value should be updated in all connected
+      * objects */
+    void updateAll();
     /** Method called when the associated ControlEngine object needs to be updated */
     virtual void updateEngine();
     /** Method called when the associated widget needs to be updated */
@@ -119,8 +114,6 @@ public slots:
     virtual void setValueFromEngine(double dValue);
     /** Called when a signal from the associated widget is received */
     virtual void setValueFromWidget(double dValue);
-    /** Called when a keyboard event associated with this object is received */
-    virtual void setValueFromKeyboard();
     /** Called when the value is changed by the main application thread */
     virtual void setValueFromApp(double dValue);
 
@@ -141,9 +134,6 @@ protected:
     ConfigOption<ConfigValueKbd> *m_pKbdConfigOption;
     /** Pointer to associated ControlEngine object */
     ControlEngine *m_pControlEngine;
-    /** Keyboard accelerator */
-    QAccel *m_pAccel;
-
 
 private:
     /** Called when a ControlEventMidi event is received */

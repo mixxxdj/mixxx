@@ -33,40 +33,24 @@ ControlPushButton::~ControlPushButton()
 
 void ControlPushButton::setValueFromMidi(MidiCategory c, int v)
 {
-    // Only react on NOTE_ON midi events
-    if (m_bMidiSimulateLatching==false || (c==NOTE_ON && v>0))
+    if (m_bMidiSimulateLatching)
     {
-        if (m_dValue==0.)
-            m_dValue = 1;
+        // Only react on NOTE_ON midi events if simulating latching...
+        if (c==NOTE_ON && v>0)
+        {
+            if (m_dValue==0.)
+                m_dValue = 1.;
+            else
+                m_dValue = 0.;
+        }
+    }
+    else
+    {
+        if (v==0)
+            m_dValue = 0.;
         else
-            m_dValue = 0;
-
-        updateFromMidi();
+            m_dValue = 1.;
     }
+    updateFromMidi();
 }
-
-void ControlPushButton::setAccelUp(const QKeySequence key)
-{
-    if (getParentWidget()!=0)
-    {
-        if (m_pAccel==0)
-            m_pAccel = new QAccel(getParentWidget());
-
-        m_pAccel->insertItem(key, 0);
-        m_pAccel->connectItem(0, this, SLOT(slotClicked()));
-        m_pAccel->setEnabled(true);
-    }
-    else    
-        qWarning("Error setting up keyboard accelerator: Parent widget is not set in ControlObject");
-}
-
-void ControlPushButton::setAccelDown(const QKeySequence key)
-{
-    setAccelUp(key);
-}
-
-void ControlPushButton::slotUpdateAction(int)
-{
-}
-
 

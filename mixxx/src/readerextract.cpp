@@ -16,9 +16,7 @@
  ***************************************************************************/
 
 #include "readerextract.h"
-#ifdef __VISUALS__
 #include "visual/visualchannel.h"
-#endif
 
 ReaderExtract::ReaderExtract(ReaderExtract *_input, QString qsVisualDataType)
 {
@@ -33,9 +31,7 @@ ReaderExtract::~ReaderExtract()
 
 void ReaderExtract::addVisual(VisualChannel *pVisualChannel)
 {
-#ifdef __VISUALS__
     m_pVisualBuffer = pVisualChannel->add(this);
-#endif
 }
 
 QString ReaderExtract::getVisualDataType()
