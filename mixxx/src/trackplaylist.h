@@ -17,8 +17,7 @@
 #include <qdom.h>
 #include <qptrlist.h>
 #include <qevent.h>
-
-class TrackInfoObject;
+#include "trackinfoobject.h"
 class TrackCollection;
 class WTrackTable;
 
