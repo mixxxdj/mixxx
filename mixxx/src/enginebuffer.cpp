@@ -501,14 +501,14 @@ CSAMPLE *EngineBuffer::process(const CSAMPLE *, const int buf_size)
                     }
                 }
 
+                // Write file playpos
+                filepos_play += (idx-bufferpos_play); //rate*(double)(buf_size);
+
                 // Ensure valid range of idx
                 if (idx>READBUFFERSIZE)
                     idx -= (double)READBUFFERSIZE;
                 else if (idx<0)
                     idx += (double)READBUFFERSIZE;
-        
-                // Write file playpos
-                filepos_play += rate*(double)(buf_size);;
 
                 // Write buffer playpos
                 bufferpos_play = idx;

@@ -31,11 +31,11 @@ New since 0.9.2:
 
 * REQUIREMENTS *********************************************
 Mixxx is depends on the following libraries:
-QT >= 3 
+QT >= 3.1 
 libMAD
 libAudioFile
 vorbisfile
-FFTW
+FFTW 2
 
 The Windows version uses libsndfile instead of libAudioFile.
 
