@@ -45,6 +45,10 @@ DlgPrefSound::DlgPrefSound(QWidget *parent, Player *_player,
     connect(SliderLatencyMaster,      SIGNAL(valueChanged(int)), this, SLOT(slotLatencyMaster()));
     connect(SliderLatencyHead,        SIGNAL(valueChanged(int)), this, SLOT(slotLatencyHead()));
 
+    // Set default sound quality as stored in config file
+    if (config->getValueString(ConfigKey("[Soundcard]","SoundQuality")).length() == 0)
+        config->set(ConfigKey("[Soundcard]","SoundQuality"),ConfigValue(4));
+
     // Sound quality slider updates
     SliderSoundQuality->setValue(4-config->getValueString(ConfigKey("[Soundcard]","SoundQuality")).toInt());
 

@@ -99,7 +99,7 @@ CSAMPLE *EngineBufferScaleSRC::scale(double playpos, int buf_size)
     // Invert wavebuffer is backwards playback
     if (backwards)
     {
-        int no = buf_size*(1./rate)+1;
+        int no = buf_size*(1./rate)+4; // Read some extra samples
         if (!even(no))
             no++;
 
@@ -131,15 +131,12 @@ CSAMPLE *EngineBufferScaleSRC::scale(double playpos, int buf_size)
     consumed += data->input_frames_used;
 
     // Check if wave_buffer is wrapped
-    if (data->output_frames_gen*2 < buf_size)
+    if (data->output_frames_gen*2 < buf_size && !backwards)
     {
-        if (!backwards)
-        {
-            data->data_in = &wavebuffer[0];
-            data->data_out = &buffer[data->output_frames_gen*2];
-            data->input_frames = READBUFFERSIZE/2;
-            data->output_frames = (buf_size-data->output_frames_gen*2)/2;
-        }
+        data->data_in = &wavebuffer[0];
+        data->data_out = &buffer[data->output_frames_gen*2];
+        data->input_frames = READBUFFERSIZE/2;
+        data->output_frames = (buf_size-data->output_frames_gen*2)/2;
 
         // Perform conversion
         int error = src_process(converter, data);
@@ -147,7 +144,7 @@ CSAMPLE *EngineBufferScaleSRC::scale(double playpos, int buf_size)
             qDebug("EngineBufferScaleSRC: %s",src_strerror(error));
 
         consumed += data->input_frames_used;
-    }
+   }
 
     // Calculate new playpos
     if (backwards)
