@@ -77,18 +77,18 @@ EngineMaster::~EngineMaster()
 
 CSAMPLE *EngineMaster::process(const CSAMPLE *, const int buffer_size)
 {
-    CSAMPLE *sampLeft=0, *sampRight=0;
+    CSAMPLE *sampMaster1=0, *sampMaster2=0;
 
-    if (left)
+    if (master1)
     {
         CSAMPLE *temp_1 = buffer1->process(0, buffer_size);
-        sampLeft = channel1->process(temp_1,buffer_size);
+        sampMaster1 = channel1->process(temp_1,buffer_size);
     } 
 
-    if (right)
+    if (master2)
     {
         CSAMPLE *temp_2 = buffer2->process(0, buffer_size);
-        sampRight = channel2->process(temp_2,buffer_size);
+        sampMaster2 = channel2->process(temp_2,buffer_size);
     }
 
     //
@@ -103,10 +103,10 @@ CSAMPLE *EngineMaster::process(const CSAMPLE *, const int buffer_size)
     for (int i=0; i<buffer_size; i++)
     {
         out[i] = 0.;
-        if (left)
-            out[i] += sampLeft[i]*c1_gain;
-        if (right)
-            out[i] += sampRight[i]*c2_gain;
+        if (master1 && !head1)
+            out[i] += sampMaster1[i]*c1_gain;
+        if (master2 && !head2)
+            out[i] += sampMaster2[i]*c2_gain;
     }
 
     // Master volume
@@ -122,12 +122,16 @@ CSAMPLE *EngineMaster::process(const CSAMPLE *, const int buffer_size)
     {
         // Head phone left/right mix
         cf_val = head_mix->getValue();
-        c2_gain = 0.5*(cf_val+1.);
         c1_gain = 0.5*(-cf_val+1.);
-        for (int i=0; i<buffer_size; i+=2)
+        c2_gain = 0.5*(cf_val+1.);
+
+        for (int i=0; i<buffer_size; i++)
         {
-            out[i  ] = tmp2[i  ]*c1_gain + sampLeft[i]*c2_gain;
-            out[i+1] = tmp2[i+1]*c1_gain + sampRight[i]*c2_gain;
+            out[i] = tmp2[i  ]*c1_gain;
+            if (master1 && head1)
+                out[i] += sampMaster1[i]*c2_gain;
+            if (master2 && head2)
+                out[i] += sampMaster2[i]*c2_gain;
         }
 
         // Master volume
@@ -166,14 +170,14 @@ CSAMPLE *EngineMaster::process(const CSAMPLE *, const int buffer_size)
     return out;
 }
 
-void EngineMaster::slotChannelLeft(bool toggle)
+void EngineMaster::slotChannelMaster1(bool toggle)
 {
-    left = toggle;
+    master1 = toggle;
 }
 
-void EngineMaster::slotChannelRight(bool toggle)
+void EngineMaster::slotChannelMaster2(bool toggle)
 {
-    right = toggle;
+    master2 = toggle;
 }
 
 void EngineMaster::slotChannelHead1(int toggle)
