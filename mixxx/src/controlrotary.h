@@ -5,7 +5,7 @@
 #include "controlpotmeter.h"
 #include "defs.h"
 #include "controlpushbutton.h"
-#include <sys/timeb.h>
+#include <sys/time.h>
 #include <algorithm>
 
 class ControlRotary : public ControlPotmeter
@@ -21,7 +21,7 @@ public slots:
     void slotSetValue(int newvalue);
 private:
     short sign(short);
-    timeb oldtime;
+    timeval oldtime;
     FLOAT_TYPE counter;
     static const char graycodetable[256];
     ControlPushButton *play;

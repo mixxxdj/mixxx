@@ -202,7 +202,8 @@ MixxxApp::MixxxApp(QApplication *a)
   config->set(ConfigKey("[Soundcard]","Samplerate"),ConfigValue(player->SRATE));
   config->set(ConfigKey("[Soundcard]","Bits"),ConfigValue(player->BITS));
   config->set(ConfigKey("[Soundcard]","ChannelMaster"),ConfigValue(player->CH_MASTER));
-  config->set(ConfigKey("[Soundcard]","ChannelHeadphone"),ConfigValue(player->CH_HEAD));
+  if (player->CH_HEAD>0)
+      config->set(ConfigKey("[Soundcard]","ChannelHeadphone"),ConfigValue(player->CH_HEAD));
 
   //
   // Initialize slave (headphone) player if necessary
@@ -719,16 +720,16 @@ void MixxxApp::slotOptionsPreferences()
         pDlg->LineEditSongfiles->setText(config->getValueString(PlaylistKey));
 
         // Connect buttons
-        connect(pDlg->PushButtonOK,      SIGNAL(clicked()),      this, SLOT(slotOptionsSetPreferences()));
-        connect(pDlg->PushButtonApply,   SIGNAL(clicked()),      this, SLOT(slotOptionsApplyPreferences()));
-        connect(pDlg->PushButtonCancel,  SIGNAL(clicked()),      this, SLOT(slotOptionsClosePreferences()));
+        connect(pDlg->PushButtonOK,             SIGNAL(clicked()),      this, SLOT(slotOptionsSetPreferences()));
+        connect(pDlg->PushButtonApply,          SIGNAL(clicked()),      this, SLOT(slotOptionsApplyPreferences()));
+        connect(pDlg->PushButtonCancel,         SIGNAL(clicked()),      this, SLOT(slotOptionsClosePreferences()));
         connect(pDlg->ComboBoxSoundcardMaster,  SIGNAL(activated(int)), this, SLOT(slotOptionsPreferencesUpdateHeadDevice()));
         connect(pDlg->ComboBoxSoundcardMaster,  SIGNAL(activated(int)), this, SLOT(slotOptionsPreferencesUpdateMasterDeviceOptions()));
         connect(pDlg->ComboBoxSoundcardMaster,  SIGNAL(activated(int)), this, SLOT(slotOptionsPreferencesUpdateHeadDeviceOptions()));
         connect(pDlg->ComboBoxSoundcardHead,    SIGNAL(activated(int)), this, SLOT(slotOptionsPreferencesUpdateMasterDevice()));
         connect(pDlg->ComboBoxSoundcardHead,    SIGNAL(activated(int)), this, SLOT(slotOptionsPreferencesUpdateHeadDeviceOptions()));
         connect(pDlg->ComboBoxSoundcardHead,    SIGNAL(activated(int)), this, SLOT(slotOptionsPreferencesUpdateMasterDeviceOptions()));
-        connect(pDlg->PushButtonBrowsePlaylist, SIGNAL(clicked()),this,SLOT(slotBrowsePlaylistDir()));
+        connect(pDlg->PushButtonBrowsePlaylist, SIGNAL(clicked()),      this, SLOT(slotBrowsePlaylistDir()));
 
         // Show dialog
         pDlg->show();
@@ -894,7 +895,7 @@ void MixxxApp::slotOptionsApplyPreferences()
 {
     // Get parameters from dialog
     config->set(ConfigKey("[Soundcard]","DeviceMaster"), pDlg->ComboBoxSoundcardMaster->currentText());
-    config->set(ConfigKey("[Soundcard]","DeviceHeadphone"), pDlg->ComboBoxSoundcardMaster->currentText());
+    config->set(ConfigKey("[Soundcard]","DeviceHeadphone"), pDlg->ComboBoxSoundcardHead->currentText());
     QString temp = pDlg->ComboBoxSamplerates->currentText();
     temp.truncate(temp.length()-3);
     config->set(ConfigKey("[Soundcard]","Samplerate"), temp);

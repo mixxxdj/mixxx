@@ -12,7 +12,7 @@ ControlRotary::ControlRotary(ConfigKey key, ControlPushButton *playbutton) : Con
 {
     play = playbutton;
     direction = 1; // arbitrary
-    ftime(&oldtime);
+    gettimeofday(&oldtime,0);
     value = 0;
     counter = 0.;
     emit valueChanged(value);
@@ -54,16 +54,14 @@ void ControlRotary::slotSetPosition(int newpos)
         {
             direction = newdirection;
             // Get the time:
-            timeb newtime;
-            ftime(&newtime);
-            time_t deltasec = newtime.time - oldtime.time;
-            unsigned short deltamillisec = newtime.millitm - oldtime.millitm;
-            if (deltamillisec > 1000)
-                deltamillisec = 65536 - deltamillisec;
+            timeval newtime;
+            gettimeofday(&newtime,0);
+            long deltasec = newtime.tv_sec - oldtime.tv_sec;
+            long deltamsec = (newtime.tv_usec - oldtime.tv_usec)/1000;
             if (deltasec > 2)
                 value = 0.;
-            else if (deltasec*1000+deltamillisec > 0)
-                value = (FLOAT_TYPE)change / (FLOAT_TYPE)(deltasec*1000+deltamillisec);
+            else if (deltasec*1000+deltamsec > 0)
+                value = (FLOAT_TYPE)change / (FLOAT_TYPE)(deltasec*1000+deltamsec);
 
 //            cout << "Wheel: new position " << (int)newpos << " to " <<(int)position << ", velocity " <<
 //            setw(8) << value <<"\n.";
@@ -72,7 +70,7 @@ void ControlRotary::slotSetPosition(int newpos)
 
             oldtime = newtime;
             position = newpos;
-            counter = 4.*(FLOAT_TYPE)(deltasec*1000+deltamillisec);
+            counter = 4.*(FLOAT_TYPE)(deltasec*1000+deltamsec);
 
             if (play->getValue()==off)
                 value *= 4.;
