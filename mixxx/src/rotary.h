@@ -32,8 +32,10 @@ class ControlObject;
 const int kiRotaryFilterMaxLen = 50;
 static QString kqRotaryMappingP1Phase =   "Player 1, phase adjustment";
 static QString kqRotaryMappingP1Scratch = "Player 1, scratch";
+static QString kqRotaryMappingP1Search =  "Player 1, RealSearch";
 static QString kqRotaryMappingP2Phase =   "Player 2, phase adjustment";
 static QString kqRotaryMappingP2Scratch = "Player 2, scratch";
+static QString kqRotaryMappingP2Search =  "Player 2, RealSearch";
 
 class Rotary : public QThread
 {
@@ -73,6 +75,8 @@ protected:
     double *m_pFilter;
     /** Calibration value */
     double m_dCalibration;
+    /** Last value */
+    double m_dLastValue;
     int m_iCalibrationCount;
     /** Mutex to control calibration mode */
     QMutex m_qCalibrationMutex;

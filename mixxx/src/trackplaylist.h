@@ -55,7 +55,11 @@ public:
     void addPath(QString qPath);
     /** Updates the score field in the WTrackTable */
     void updateScores();
-
+    /** Returns name of playlist */
+    QString getName();
+    /** Get TrackInfoObject of first track in playlist */
+    TrackInfoObject *getFirstTrack();
+    
 public slots:
     /** Decode drop event and calls addPath */
     void slotDrop(QDropEvent *e);

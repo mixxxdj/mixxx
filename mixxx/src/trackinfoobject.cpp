@@ -733,6 +733,17 @@ TrackInfoObject *TrackInfoObject::getNext()
     return 0;
 }
 
+TrackInfoObject *TrackInfoObject::getPrev()
+{
+    if (m_pTableTrack)
+    {
+        WTrackTableItem *p = (WTrackTableItem *)m_pTableTrack->item(m_pTableItemArtist->row()-1,0);
+        if (p)
+            return p->getTrackInfoObject();
+    }
+    return 0;
+}
+
 void TrackInfoObject::setOverviewWidget(WOverview *p)
 {
     m_pOverviewWidget = p;

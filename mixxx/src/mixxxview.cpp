@@ -35,6 +35,7 @@
 #include "wslidercomposed.h"
 #include "wdisplay.h"
 #include "wvumeter.h"
+#include "wlabel.h"
 #include "wnumber.h"
 #include "wnumberpos.h"
 #include "wnumberbpm.h"
@@ -112,6 +113,13 @@ MixxxView::MixxxView(QWidget *parent, ConfigObject<ConfigValueKbd> *kbdconfig, b
                 WKnob *p = new WKnob(this);
                 p->setup(node);
                 p->installEventFilter(m_pKeyboard);
+                m_qWidgetList.append(p);
+            }
+	    else if (node.nodeName()=="Label")
+            {
+                WLabel *p = new WLabel(this);
+                p->setup(node);
+
                 m_qWidgetList.append(p);
             }
             else if (node.nodeName()=="Number")

@@ -83,6 +83,20 @@ Track::Track(QString location, MixxxView *pView, EngineBuffer *pBuffer1, EngineB
     m_pPlayButtonCh1 = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey("[Channel1]","play")));
     m_pPlayButtonCh2 = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey("[Channel2]","play")));
 
+    // Play position for each player. Used to determine which track to load next
+    m_pPlayPositionCh1 = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey("[Channel1]","playposition")));
+    m_pPlayPositionCh2 = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey("[Channel2]","playposition")));
+    
+    // Make controls for next and previous track
+    m_pNextTrackCh1 = new ControlObjectThreadMain(new ControlObject(ConfigKey("[Channel1]","NextTrack")));
+    m_pPrevTrackCh1 = new ControlObjectThreadMain(new ControlObject(ConfigKey("[Channel1]","PrevTrack")));
+    m_pNextTrackCh2 = new ControlObjectThreadMain(new ControlObject(ConfigKey("[Channel2]","NextTrack")));
+    m_pPrevTrackCh2 = new ControlObjectThreadMain(new ControlObject(ConfigKey("[Channel2]","PrevTrack")));
+    connect(m_pNextTrackCh1, SIGNAL(valueChanged(double)), this, SLOT(slotNextTrackPlayer1(double)));
+    connect(m_pPrevTrackCh1, SIGNAL(valueChanged(double)), this, SLOT(slotPrevTrackPlayer1(double)));
+    connect(m_pNextTrackCh2, SIGNAL(valueChanged(double)), this, SLOT(slotNextTrackPlayer2(double)));
+    connect(m_pPrevTrackCh2, SIGNAL(valueChanged(double)), this, SLOT(slotPrevTrackPlayer2(double)));
+    
     TrackPlaylist::setTrack(this);
 }
 
@@ -320,7 +334,7 @@ void Track::slotTrackPopup(TrackInfoObject *pTrackInfoObject, int)
 
 }
 
-void Track::slotLoadPlayer1(TrackInfoObject *pTrackInfoObject)
+void Track::slotLoadPlayer1(TrackInfoObject *pTrackInfoObject, bool bStartFromEndPos)
 {
     if (m_pTrackPlayer1)
         m_pTrackPlayer1->setOverviewWidget(0);
@@ -333,7 +347,7 @@ void Track::slotLoadPlayer1(TrackInfoObject *pTrackInfoObject)
         m_pActivePlaylist->updateScores();
 
     // Request a new track from the reader:
-    m_pBuffer1->getReader()->requestNewTrack(m_pTrackPlayer1);
+    m_pBuffer1->getReader()->requestNewTrack(m_pTrackPlayer1, bStartFromEndPos);
 
     // Generate waveform summary
     if (m_pWaveSummary && (m_pTrackPlayer1->getWaveSummary()==0 || m_pTrackPlayer1->getWaveSummary()->size()==0))
@@ -353,7 +367,7 @@ void Track::slotLoadPlayer1(TrackInfoObject *pTrackInfoObject)
     emit(newTrackPlayer1(m_pTrackPlayer1));
 }
 
-void Track::slotLoadPlayer2(TrackInfoObject *pTrackInfoObject)
+void Track::slotLoadPlayer2(TrackInfoObject *pTrackInfoObject, bool bStartFromEndPos)
 {
     if (m_pTrackPlayer2)
         m_pTrackPlayer2->setOverviewWidget(0);
@@ -366,7 +380,7 @@ void Track::slotLoadPlayer2(TrackInfoObject *pTrackInfoObject)
         m_pActivePlaylist->updateScores();
 
     // Request a new track from the reader:
-    m_pBuffer2->getReader()->requestNewTrack(m_pTrackPlayer2);
+    m_pBuffer2->getReader()->requestNewTrack(m_pTrackPlayer2, bStartFromEndPos);
 
     // Generate waveform summary
     if (m_pWaveSummary && (m_pTrackPlayer2->getWaveSummary()==0 || m_pTrackPlayer2->getWaveSummary()->size()==0))
@@ -410,6 +424,11 @@ void Track::slotLoadPlayer2(QString filename)
         slotLoadPlayer2(pTrack);
 }
 
+TrackPlaylist *Track::getActivePlaylist()
+{
+    return m_pActivePlaylist;
+}
+
 void Track::slotRemoveFromPlaylist()
 {
     m_pActivePlaylist->slotRemoveTrack(m_pActivePopupTrack);
@@ -417,44 +436,115 @@ void Track::slotRemoveFromPlaylist()
 
 void Track::slotEndOfTrackPlayer1(double val)
 {
+//    qDebug("end of track %f",val);
+    
     if (val==0.)
-        return;
+        return; 
         
     switch ((int)m_pEndOfTrackModeCh1->get())
     {
     case TRACK_END_MODE_NEXT:
         if (m_pTrackPlayer1)
         {
-            TrackInfoObject *pTrack = m_pTrackPlayer1->getNext();
-            if (pTrack)
-                slotLoadPlayer1(pTrack);
+            TrackInfoObject *pTrack;
+            bool bStartFromEndPos = false;
+            
+            if (m_pPlayPositionCh1->get()>0.5)
+                pTrack = m_pTrackPlayer1->getNext();
             else
-                m_pPlayButtonCh1->slotSet(0.);
+            {
+                pTrack = m_pTrackPlayer1->getPrev();
+                bStartFromEndPos = true;
+            }
+
+            if (bStartFromEndPos)
+                qDebug("start from end");
+                        
+            if (pTrack)
+                slotLoadPlayer1(pTrack, bStartFromEndPos);
+            else
+            {
+//                 m_pPlayButtonCh1->slotSet(0.);
+                m_pEndOfTrackCh1->slotSet(0.);
+            }
         }
         break;
     }
-    m_pEndOfTrackCh1->slotSet(0.);
+    //m_pEndOfTrackCh1->slotSet(0.);
 }
 
 void Track::slotEndOfTrackPlayer2(double val)
 {
     if (val==0.)
-        return;
-    
+        return; 
+
     switch ((int)m_pEndOfTrackModeCh2->get())
     {
     case TRACK_END_MODE_NEXT:
         if (m_pTrackPlayer2)
         {
-            TrackInfoObject *pTrack = m_pTrackPlayer2->getNext();
-            if (pTrack)
-                slotLoadPlayer2(pTrack);
+            TrackInfoObject *pTrack;
+            bool bStartFromEndPos = false;
+            
+            if (m_pPlayPositionCh2->get()>0.5)
+                pTrack = m_pTrackPlayer2->getNext();
             else
-                m_pPlayButtonCh2->slotSet(0.);
+            {
+                pTrack = m_pTrackPlayer2->getPrev();
+                bStartFromEndPos = true;
+            }
+                
+            if (pTrack)
+                slotLoadPlayer2(pTrack, bStartFromEndPos);
+            else
+            {    
+//                 m_pPlayButtonCh2->slotSet(0.);
+                m_pEndOfTrackCh2->slotSet(0.);
+            }
         }
         break;
     }
-    m_pEndOfTrackCh2->slotSet(0.);
+    //m_pEndOfTrackCh2->slotSet(0.);
+}
+
+void Track::slotNextTrackPlayer1(double v)
+{
+    if (v)
+    {
+        TrackInfoObject *pTrack = m_pTrackPlayer1->getNext();
+        if (pTrack)
+            slotLoadPlayer1(pTrack);
+    }
+}
+
+void Track::slotPrevTrackPlayer1(double v)
+{
+    if (v)
+    {
+        TrackInfoObject *pTrack = m_pTrackPlayer1->getPrev();
+        if (pTrack)
+            slotLoadPlayer1(pTrack);
+    }
+}
+
+void Track::slotNextTrackPlayer2(double v)
+{
+    if (v)
+    {
+        TrackInfoObject *pTrack = m_pTrackPlayer2->getNext();
+        if (pTrack)
+            slotLoadPlayer2(pTrack);
+    }
+}
+
+void Track::slotPrevTrackPlayer2(double v)
+{
+    if (v)
+    {
+        TrackInfoObject *pTrack = m_pTrackPlayer2->getPrev();
+        if (pTrack)
+            slotLoadPlayer2(pTrack);
+    }
 }
 
 void Track::updatePlaylistViews()

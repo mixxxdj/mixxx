@@ -28,19 +28,20 @@
 
 EngineMaster::EngineMaster(EngineBuffer *_buffer1, EngineBuffer *_buffer2,
                            EngineChannel *_channel1, EngineChannel *_channel2,
-                           EngineFlanger *_flanger,
                            const char *group)
 {
     buffer1 = _buffer1;
     buffer2 = _buffer2;
     channel1 = _channel1;
     channel2 = _channel2;
-    flanger = _flanger;
-
+    
     // Defaults
     master1 = true;
     master2 = true;
 
+    // Flanger   
+    flanger = new EngineFlanger("[Flanger]");    
+    
     // Crossfader
     crossfader = new ControlPotmeter(ConfigKey(group, "crossfader"),-1.,1.);
 

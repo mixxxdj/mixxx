@@ -135,6 +135,8 @@ public:
     QValueList<long> *getSegmentationSummary();
     /** Return the next track as listed in WTrackTable */
     TrackInfoObject *getNext();
+    /** Return the previous track as listed in WTrackTable */
+    TrackInfoObject *getPrev();
     /** Set corresponding overview widget */
     void setOverviewWidget(WOverview *p);
 

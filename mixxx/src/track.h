@@ -67,9 +67,9 @@ public slots:
     /** Bring up track popup menu */
     void slotTrackPopup(TrackInfoObject *pTrackInfoObject, int button);
     /** Load the given track in player 1 */
-    void slotLoadPlayer1(TrackInfoObject *pTrackInfoObject);
+    void slotLoadPlayer1(TrackInfoObject *pTrackInfoObject, bool bStartFromEndPos = false);
     /** Load the given track in player 2 */
-    void slotLoadPlayer2(TrackInfoObject *pTrackInfoObject);
+    void slotLoadPlayer2(TrackInfoObject *pTrackInfoObject, bool bStartFromEndPos = false);
     /** Load the given track in player 1 if it exists */
     void slotLoadPlayer1(QString filename);
     /** Load the given track in player 2 if it exists */
@@ -78,7 +78,17 @@ public slots:
     void slotEndOfTrackPlayer1(double);
     /** Slot used when playback reaches end of track */
     void slotEndOfTrackPlayer2(double);
-
+    /** Slot for loading next track in player 1 */
+    void slotNextTrackPlayer1(double);
+    /** Slot for loading previous track in player 1 */
+    void slotPrevTrackPlayer1(double);
+    /** Slot for loading next track in player 1 */
+    void slotNextTrackPlayer2(double);
+    /** Slot for loading previous track in player 1 */
+    void slotPrevTrackPlayer2(double);
+    /** Returns pointer to active playlist */
+    TrackPlaylist *getActivePlaylist();    
+        
 private slots:
     /** Load the active popup track in player 1 */
     void slotLoadPlayer1();
@@ -98,7 +108,6 @@ signals:
 private:
     /** Returns pointer to playlist by the given name */
     TrackPlaylist *getPlaylist(QString qName);
-
     /** Pointer to the Importer class */
     TrackImporter *m_pTrackImporter;
     /** List of pointers to TrackPlaylists */
@@ -123,6 +132,10 @@ private:
     ControlObjectThreadMain *m_pEndOfTrackModeCh1, *m_pEndOfTrackModeCh2;
     /** Pointer to ControlObject for play buttons */
     ControlObjectThreadMain *m_pPlayButtonCh1, *m_pPlayButtonCh2;
+    /** Pointer to ControlObject for next/prev buttons */
+    ControlObjectThreadMain *m_pNextTrackCh1, *m_pNextTrackCh2, *m_pPrevTrackCh1, *m_pPrevTrackCh2;
+    /** Pointer to ControlObject for play position */
+    ControlObjectThreadMain *m_pPlayPositionCh1, *m_pPlayPositionCh2;
     /** Pointer to waveform summary generator */
     WaveSummary *m_pWaveSummary;
 };

@@ -56,7 +56,7 @@ protected:
     static QValueList <int> sqlOpenDevs;
     /** File set used in select() call */
     fd_set fdset;
-
+    int oldv;
 };
 
 #endif

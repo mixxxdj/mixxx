@@ -28,7 +28,8 @@
 typedef enum {
     MIDI_EMPTY            = 0,
     MIDI_KEY              = 1,
-    MIDI_CTRL             = 2
+    MIDI_CTRL             = 2,
+    MIDI_PITCH            = 3
 } MidiType;
 
 

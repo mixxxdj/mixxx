@@ -98,27 +98,32 @@ unsigned SoundSourceOggVorbis::read(unsigned long size, const SAMPLE* destinatio
 {
     dest = (SAMPLE*) destination;
     index = 0;
-    needed = size * channels;
-
+    needed = size*channels;
+    
     // loop until requested number of samples has been retrieved
-    while (needed > 0){
+    while (needed > 0)
+    {
         // read samples into buffer
         ret = ov_read(&vf,(char*) dest+index,needed, 0, 2, 1, &current_section);
         // if eof we fill the rest with zero
-        if (ret == 0) {
-            while (needed > 0){
+        if (ret == 0) 
+        {
+            while (needed > 0)
+            {
                 dest[index] = 0;
                 index++;
                 needed--;
-              }
+            }
         }
         index += ret;
         needed -= ret;
     }
 
     // convert into stereo if file is mono
-    if (channels == 1){
-        for(int i=index;i>0;i--){
+    if (channels == 1)
+    {
+        for(int i=index;i>0;i--)
+        {
             dest[i*2]     = dest[i];
             dest[(i*2)+1] = dest[i];
         }

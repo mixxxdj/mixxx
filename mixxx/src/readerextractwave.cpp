@@ -238,9 +238,9 @@ void ReaderExtractWave::getchunk(CSAMPLE rate)
         backwards = false;
     }
 
-//    qDebug("getchunk: pos %i, range %i-%i, back %i",filepos_play, filepos_start, filepos_end, backwards);
+//     qDebug("getchunk: pos %i, range %i-%i, back %i",filepos_play, filepos_start, filepos_end, backwards);
 
-    //qDebug("play %i, range %i-%i",filepos_play,filepos_start,filepos_end);
+//     qDebug("play %i, range %i-%i",filepos_play,filepos_start,filepos_end);
 
     // Determine new start and end positions in file and buffer, start index of where read samples
     // will be placed in read buffer (bufIdx), and perform seek if reading backwards

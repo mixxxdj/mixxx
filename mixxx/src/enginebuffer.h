@@ -73,12 +73,12 @@ public:
     double getRate();
     /** Return the distance to the next beat mark from curr. play pos (not thread-safe) */
     float getDistanceNextBeatMark();
+    /** Sets pointer to other engine buffer/channel */
+    void setOtherEngineBuffer(EngineBuffer *);
     /** Reset buffer playpos and set file playpos. This must only be called while holding the
       * pause mutex */
     void setNewPlaypos(double);
-    /** Sets pointer to other engine buffer/channel */
-    void setOtherEngineBuffer(EngineBuffer *);
-
+    
     void process(const CSAMPLE *pIn, const CSAMPLE *pOut, const int iBufferSize);
 
     CSAMPLE *update_visual();
@@ -125,7 +125,8 @@ public slots:
     void slotControlRateTempUpSmall(double);
     void slotControlBeatSync(double);
     void slotSetBpm(double);
-    void slotControlFastFwdBack(double);
+    void slotControlFastFwd(double);
+    void slotControlFastBack(double);
 
 private:
     /** Called from process() when an empty buffer, possible ramped to zero is needed */
@@ -144,7 +145,7 @@ private:
     /** Copy of rate_exchange, used to check if rate needs to be updated */
     double rate_old;
     /** Copy of length of file */
-    int file_length_old;
+    long int file_length_old;
     /** Copy of file sample rate*/
     int file_srate_old;
     /** Mutex controlling weather the process function is in pause mode. This happens
@@ -160,10 +161,11 @@ private:
     ControlPushButton *playButton, *buttonCueSet, *buttonCueGoto, *buttonCuePreview, *audioBeatMark, *buttonBeatSync;
     ControlPushButton *buttonRateTempDown, *buttonRateTempDownSmall, *buttonRateTempUp, *buttonRateTempUpSmall;
     ControlPushButton *buttonRatePermDown, *buttonRatePermDownSmall, *buttonRatePermUp, *buttonRatePermUpSmall;
-    ControlObject *cuePoint, *rateEngine, *m_pRateDir, *m_pRateRange;
-    ControlPotmeter *rateSlider, *playposSlider;
+    ControlObject *cuePoint, *rateEngine, *m_pRateDir, *m_pRateRange, *m_pRealSearch;
+    ControlPotmeter *rateSlider, *m_pRateSearch;
     ControlTTRotary *wheel, *m_pControlScratch;
-
+    ControlPotmeter *playposSlider;
+    
     /** Mutex used in sharing buffer and abs playpos */
     QMutex m_qPlayposMutex;
     /** Buffer and absolute playpos shared among threads */
@@ -190,7 +192,7 @@ private:
     /** Used to store if an event has happen in last iteration of event based playback */
     double oldEvent;
     /** Object used to perform waveform scaling (sample rate conversion) */
-    EngineBufferScale *scale;
+    EngineBufferScale *m_pScale;
     /** Pointer to PowerMate object */
     PowerMate *powermate;
     /** Number of samples left in audio beat mark from last call to process */

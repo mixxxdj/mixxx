@@ -903,7 +903,7 @@
   <Zoom>true</Zoom>
  </Visual>
 
- <Visual>
+ <XVisual>
   <Tooltip>Drag with mouse to control sound playback. Drop tracks from external file manager here</Tooltip>
   <Channel>2</Channel>
   <Pos>108,128</Pos>
@@ -914,7 +914,7 @@
   <MarkerColor>#ff0000</MarkerColor>
   <FisheyeColor>#ffffff</FisheyeColor>
   <Zoom>true</Zoom>
- </Visual>
+ </XVisual>
 
  <Text>
   <Channel>1</Channel>
@@ -947,7 +947,7 @@
   </Connection>
  </NumberBpm>
 
- <NumberBpm>
+ <XNumberBpm>
   <Tooltip>Tempo display (Beat Per Minute)</Tooltip>
   <Channel>2</Channel>
   <Pos>487,162</Pos>
@@ -959,13 +959,13 @@
   <Connection>
    <ConfigKey>[Channel2],bpm</ConfigKey>
   </Connection>
- </NumberBpm>
+ </XNumberBpm>
 
  <NumberPos>
   <Tooltip>Play position/remaining time</Tooltip>
   <Channel>1</Channel>
-  <Pos>594,98</Pos>
-  <Size>94,16</Size>
+  <Pos>680,148</Pos>
+  <Size>124,16</Size>
   <Alignment>right</Alignment>
   <NumberOfDigits>6</NumberOfDigits>
   <BgColor>#ffffff</BgColor>
@@ -975,7 +975,7 @@
   </Connection>
  </NumberPos>
 
- <NumberPos>
+ <XNumberPos>
   <Tooltip>Play position/remaining time</Tooltip>
   <Channel>2</Channel>
   <Pos>594,162</Pos>
@@ -987,7 +987,7 @@
   <Connection>
    <ConfigKey>[Channel2],playposition</ConfigKey>
   </Connection>
- </NumberPos>
+ </XNumberPos>
 
  <NumberRate>
   <Tooltip>Playback rate factor</Tooltip>
@@ -1002,7 +1002,7 @@
   </Connection>
  </NumberRate>
 
- <NumberRate>
+ <XNumberRate>
   <Tooltip>Playback rate factor</Tooltip>
   <Channel>2</Channel>
   <Pos>733,212</Pos>
@@ -1013,14 +1013,14 @@
   <Connection>
    <ConfigKey>[Channel2],rate</ConfigKey>
   </Connection>
- </NumberRate>
+ </XNumberRate>
 
  <Overview>
   <Tooltip>Overview display of waveform</Tooltip>
   <Channel>1</Channel>
   <Pos>113,98</Pos>
-  <Size>452,100</Size>
-  <BgColor>#f0f0f0</BgColor>
+  <Size>452,90</Size>
+  <BgColor>#fafafa</BgColor>
   <SignalColor>#00ff00</SignalColor>
   <MarkerColor>#0000ff</MarkerColor>
   <Connection>
@@ -1029,7 +1029,7 @@
   </Connection>
  </Overview>
 
- <Overview>
+ <XOverview>
   <Tooltip>Overview display of waveform</Tooltip>
   <Channel>2</Channel>
   <Pos>487,177</Pos>
@@ -1041,7 +1041,7 @@
    <ConfigKey>[Channel2],playposition</ConfigKey>
    <EmitOnDownPress>false</EmitOnDownPress>
   </Connection>
- </Overview>
+ </XOverview>
 
  <XSliderComposed>
   <Tooltip>Play position - Use mouse to seek</Tooltip>

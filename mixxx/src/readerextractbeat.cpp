@@ -66,7 +66,7 @@ ReaderExtractBeat::ReaderExtractBeat(ReaderExtract *input, EngineBuffer *pEngine
 #endif
 
     m_pTrack = 0;
-    m_dBeatFirst = 0.;
+    m_dBeatFirst = -1;
     m_dBeatInterval = 0.;
 }
 
@@ -97,7 +97,12 @@ void ReaderExtractBeat::newSource(TrackInfoObject *pTrack)
         bpmBuffer[i] = m_pTrack->getBpm();
 
     m_dBeatFirst = m_pTrack->getBeatFirst();
-    if (m_dBeatFirst>0.)
+    
+    // Hack to use beat sync seek even without reliable beat info
+    //if (m_dBeatFirst<0.)
+    //    m_dBeatFirst = 0.;
+    
+    if (m_dBeatFirst>=0.)
         m_dBeatInterval = 60./m_pTrack->getBpm();
     else
         m_dBeatInterval = 0.;
@@ -656,6 +661,8 @@ void ReaderExtractBeat::updateConfidence(int curBeatIdx, int lastBeatIdx)
 
 void ReaderExtractBeat::markBeat(int i)
 {
+    i = (i+getBufferSize())%getBufferSize();
+    
     // Color is defined from confidence (between -0.2 and 0.3)
     float v = (0.2+max(-0.2,min(confidence,0.3)))/0.5;
 

@@ -34,7 +34,8 @@ EngineBufferScaleST::EngineBufferScaleST(ReaderExtractWave *wave) : EngineBuffer
     pSoundTouch->setTempo(1);
     rateUsed  = 1;
     tempoUsed = 1;
-
+    
+    
     uint PlaySRate = getPlaySrate();
 
     pSoundTouch->setSampleRate(PlaySRate);
@@ -44,6 +45,11 @@ EngineBufferScaleST::EngineBufferScaleST(ReaderExtractWave *wave) : EngineBuffer
     oldSampleRate = PlaySRate;
 
     buffer_back = new CSAMPLE[ReadAheadSize*2];
+    
+    // Initialize variables used in fast mode
+    m_bFastMode = false;
+    m_iScaleFastSamplesRemainInChunk = 0;
+    buffer_fast = new CSAMPLE[ReadAheadSize*2];
 
     pBlocks= new ScaleBufferDescriptor();
     backwards = false;
@@ -56,6 +62,11 @@ EngineBufferScaleST::~EngineBufferScaleST()
     delete pBlocks;
     delete pSoundTouch;
     delete [] buffer_back;
+}
+
+void EngineBufferScaleST::setFastMode(bool bMode)
+{
+    //m_bFastMode = bMode;
 }
 
 void EngineBufferScaleST::setPitchIndpTimeStretch(bool b)
@@ -91,7 +102,6 @@ void EngineBufferScaleST::reset(double _playposition,bool _backwards)
 	pSoundTouch->clear();
 	pBlocks->clear();
 	old_backwards=_backwards;
-	ajourplaypos=_playposition;
 	_clear_pending=false;
     readAheadPos=_playposition;
 }
@@ -115,11 +125,14 @@ double EngineBufferScaleST::setTempo(double _tempo)
     // Ensure valid range of rate
     if (tempoUsed==0.)
         return 0.;
-    else if (tempoUsed>2.)
-        tempoUsed = 2.;
-    else if (tempoUsed<1./2.)
-        tempoUsed = 1./2.;
-	
+    else
+    {
+        if (tempoUsed>4.)
+            tempoUsed = 4.;
+        else if (tempoUsed<1./2.)
+            tempoUsed = 1./2.;
+    }
+    
 	//rate= 1.0 + (rate - 1)*2;
 	if (tempoOld != tempoUsed)
 	{
@@ -147,7 +160,10 @@ CSAMPLE *EngineBufferScaleST::scale(double playpos, int buf_size, float *pBase, 
         iBaseLength = READBUFFERSIZE;
     }
 
-
+    CSAMPLE *pFastBuffer;
+    if (m_bFastMode)
+        return scaleFast(playpos, buf_size, pBase, iBaseLength);
+        
 	
 	double ScaledSamples=0;
 	double UsedSamples=0;
@@ -156,12 +172,6 @@ CSAMPLE *EngineBufferScaleST::scale(double playpos, int buf_size, float *pBase, 
 	long	input_frames      = 0;
 	long    output_frames     = 0;
 	long	output_frames_gen = 0;
-	
-	//The following conditional statement should be omitted if clear() is called
-	//from the engine (recommended change)
-	
-// 	if (ajourplaypos!=playpos || backwards!=old_backwards)
-// 		clear();
 	
 	if (_clear_pending)
 		reset(playpos,backwards);
@@ -279,11 +289,10 @@ CSAMPLE *EngineBufferScaleST::scale(double playpos, int buf_size, float *pBase, 
     else
         new_playpos = playpos + (double)UsedSamples*2.;
 	
-	ajourplaypos = (iBaseLength + (int)new_playpos) % iBaseLength;
-	
-    return buffer;
-	
-	
+    if (m_bFastMode)
+        return pFastBuffer;
+    else
+        return buffer;
 }
 
 ScaleBufferDescriptor::ScaleBufferDescriptor()
@@ -344,5 +353,52 @@ void ScaleBufferDescriptor::showDebug()
 void ScaleBufferDescriptor::clear()
 {
 	Head=Tail=0;
+}
+
+CSAMPLE *EngineBufferScaleST::scaleFast(double playpos, int buf_size, float *pBase, int iBaseLength)
+{
+    
+    const float kfChunkLenSec = 0.1;
+    
+    int iChunkSize = kfChunkLenSec*getPlaySrate();
+//     int iFileBufferLen = buf_size*tempoUsed;
+//     int iChunkNo = buf_size/iChunkSize;
+    
+    // Fast scaling (sounds like fast forward on ordinary CD players)
+    int no = 0;
+    int iBase = 0;
+    int iOut = 0;
+    float *pBaseNew = &pBase[(int)playpos];
+     
+    if (m_iScaleFastSamplesRemainInChunk==0)
+        m_iScaleFastSamplesRemainInChunk = iChunkSize;
+    
+    while (iOut<buf_size)
+    {
+        buffer[iOut] = pBaseNew[(iBase+iBaseLength*10)%iBaseLength];
+    
+        iBase++;
+        iOut++;
+        m_iScaleFastSamplesRemainInChunk--;
+        
+        if (m_iScaleFastSamplesRemainInChunk<=0)
+        {
+            m_iScaleFastSamplesRemainInChunk = iChunkSize;
+            
+            if (backwards)
+                iBase -= iChunkSize*(tempoUsed);
+            else
+                iBase += iChunkSize*(tempoUsed);
+        }
+    }
+
+    // Update new play position
+    new_playpos = playpos + iBase;
+
+//      qDebug("tempo %f",tempoUsed);
+    
+    //qDebug("got %f, new %f, diff %f",playpos, new_playpos, new_playpos-playpos);
+            
+    return buffer;
 }
 

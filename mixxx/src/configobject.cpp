@@ -60,6 +60,8 @@ ConfigValueMidi::ConfigValueMidi(QString _value)
             miditype = MIDI_KEY;
         else if (type.contains("Ctrl",false))
             miditype = MIDI_CTRL;
+        else if (type.contains("Pitch",false))
+            miditype = MIDI_PITCH;
         else
             miditype = MIDI_EMPTY;
 
@@ -90,6 +92,8 @@ ConfigValueMidi::ConfigValueMidi(MidiType _miditype, int _midino, int _midichann
             value.prepend("Key ");
         else if (miditype==MIDI_CTRL)
             value.prepend("Ctrl ");
+        else if (miditype==MIDI_PITCH)
+            value.prepend("Pitch ");
 
         //QTextIStream(&value) << midino << midimask << "ch" << midichannel;
 }
@@ -105,6 +109,9 @@ void ConfigValueMidi::valCopy(const ConfigValueMidi v)
             value.prepend("Key ");
         else if (miditype==MIDI_CTRL)
             value.prepend("Ctrl ");
+        else if (miditype==MIDI_PITCH)
+            value.prepend("Pitch ");
+        
         //qDebug("--1, midino: %i, midimask: %i, midichannel: %i",midino,midimask,midichannel);
 }
 

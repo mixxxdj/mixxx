@@ -22,6 +22,9 @@
 #include "readerextractbeat.h"
 #include "rtthread.h"
 #include "visual/visualchannel.h"
+#include "controlobjectthread.h"
+#include "controlobject.h"
+#include "configobject.h"
 
 Reader::Reader(EngineBuffer *_enginebuffer, QMutex *_pause)
 {
@@ -30,6 +33,8 @@ Reader::Reader(EngineBuffer *_enginebuffer, QMutex *_pause)
     pause = _pause;
     m_pVisualChannel = 0;
 
+    m_iReaderAccess = 0;
+    
     // Allocate reader extract objects
     readerwave = new ReaderExtractWave(this, enginebuffer);
 
@@ -39,6 +44,8 @@ Reader::Reader(EngineBuffer *_enginebuffer, QMutex *_pause)
     // Open the track:
     file_srate = 44100;
     file_length = 0;
+
+    m_pTrackEnd = new ControlObjectThread(ControlObject::getControl(ConfigKey(enginebuffer->getGroup(),"TrackEnd")));
 }
 
 Reader::~Reader()
@@ -48,6 +55,7 @@ Reader::~Reader()
 
     delete readerwave;
     delete readAhead;
+    delete m_pTrackEnd;
 }
 
 void Reader::addVisual(VisualChannel *pVisualChannel)
@@ -56,17 +64,31 @@ void Reader::addVisual(VisualChannel *pVisualChannel)
     readerwave->addVisual(m_pVisualChannel);
 }
 
-void Reader::requestNewTrack(TrackInfoObject *pTrack)
+void Reader::requestNewTrack(TrackInfoObject *pTrack, bool bStartAtEndPos)
 {
 //    qDebug("request: %s",name->latin1());
 
+    TrackQueueType *p = new TrackQueueType;
+    p->pTrack = pTrack;
+    p->bStartAtEndPos = bStartAtEndPos;
+    
     // Put new track request in queue
     trackqueuemutex.lock();
-    trackqueue.append(pTrack);
+    trackqueue.append(p);
     trackqueuemutex.unlock();
 
+    // Ensure that the reader is not currently awake, befofe waking    
+    m_qReaderMutex.lock();
+    while (m_iReaderAccess>0)
+    {
+        m_qReaderMutex.unlock();
+        sleep(1);
+        m_qReaderMutex.lock();
+    }
+    m_qReaderMutex.unlock();
+    
     // Wakeup reader
-    wake();
+    wake();    
 }
 
 void Reader::requestSeek(double new_playpos)
@@ -83,7 +105,7 @@ void Reader::requestSeek(double new_playpos)
 }
 
 void Reader::wake()
-{
+{    
     // Wakeup reader
     readAhead->wakeAll();
 }
@@ -126,6 +148,7 @@ long int Reader::getFileposEnd()
 
 void Reader::setFileposPlay(long int pos)
 {
+    //qDebug("reader set file pos play %li",pos);
     readerwave->filepos_play = pos;
 }
 
@@ -161,16 +184,25 @@ void Reader::unlock()
 
 void Reader::newtrack()
 {
+// qDebug("newtrack, get pause lock");
+    
     // Set pause while loading new track
     pause->lock();
 
+// qDebug("newtrack, got pause lock");
+
     // Get filename
     TrackInfoObject *pTrack;
+    bool bStartAtEndPos;
+    
     trackqueuemutex.lock();
     if (!trackqueue.isEmpty())
     {
-        pTrack = trackqueue.first();
+        TrackQueueType *p = trackqueue.first();
+        pTrack = p->pTrack;
+        bStartAtEndPos = p->bStartAtEndPos;
         trackqueue.remove();
+        delete p;
     }
     trackqueuemutex.unlock();
 
@@ -183,13 +215,26 @@ void Reader::newtrack()
 
     readerwave->newSource(pTrack);
 
+//     qDebug("newtrack, new source set");
+    
     // Initialize the new sound source
     file_srate = readerwave->getRate();
     file_length = readerwave->getLength();
 
+    qDebug("file length %li",file_length);
+    
     // Reset playpos
-    enginebuffer->setNewPlaypos(0.);
-
+    if (bStartAtEndPos)
+    {
+        readerwave->seek(file_length);
+        enginebuffer->setNewPlaypos(file_length);
+    }
+    else
+        enginebuffer->setNewPlaypos(0);
+    
+    // Not at track end anymore
+    m_pTrackEnd->slotSet(0.);      
+    
     // Stop pausing process method
     pause->unlock();
 }
@@ -203,8 +248,14 @@ void Reader::run()
 
     while(!requestStop.locked())
     {
+// qDebug("wait");        
         // Wait for playback if in buffer is filled.
         readAhead->wait();
+// qDebug("woke");
+        
+        m_qReaderMutex.lock();
+        m_iReaderAccess++;
+        m_qReaderMutex.unlock();
 
         // Check if a new track is requested
         trackqueuemutex.lock();
@@ -212,18 +263,25 @@ void Reader::run()
         trackqueuemutex.unlock();
         if (!requeststate)
             newtrack();
-
+            
+// qDebug("check seek");            
+            
         // Check if a seek is requested
         seekqueuemutex.lock();
         requeststate = seekqueue.isEmpty();
         seekqueuemutex.unlock();
         if (!requeststate)
             seek();
-
-// qDebug("read");
+            
+//  qDebug("read");
 
         // Read a new chunk:
         readerwave->getchunk(m_dRate);
+    
+        m_qReaderMutex.lock();
+        m_iReaderAccess--;
+        m_qReaderMutex.unlock();
+        
     }
     //qDebug("reader stopping");
 }
@@ -256,20 +314,6 @@ void Reader::seek()
     if (new_playpos==-1.)
         return;
 
-    // Set playpos
-//    enginebuffer->setNewPlaypos(new_playpos);
-
     new_playpos = readerwave->seek((long int)new_playpos);
-
-/*
-    // Perform seek
-    new_playpos = readerwave->seek((long int)new_playpos);
-
-    // Read a new chunk:
-    readerwave->getchunk(m_dRate);
-
-    // Set playpos
-    enginebuffer->setNewPlaypos(new_playpos);
-*/
 }
 

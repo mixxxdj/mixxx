@@ -35,6 +35,7 @@
 #include "wslider.h"
 #include "wpushbutton.h"
 #include "wtracktable.h"
+#include "woverview.h"
 #include "mixxx.h"
 #include "controlnull.h"
 #include "midiobjectnull.h"
@@ -52,6 +53,7 @@
 #include "mixxxmenuplaylists.h"
 #include "wtreeitem.h"
 #include "wavesummary.h"
+#include "log.h"
 
 #ifdef __LINUX__
 #include "powermatelinux.h"
@@ -86,7 +88,8 @@
 
 #include "playerproxy.h"
 
-MixxxApp::MixxxApp(QApplication *a, QStringList files, QSplashScreen *pSplash)
+
+MixxxApp::MixxxApp(QApplication *a, QStringList files, QSplashScreen *pSplash, QString qLogFileName)
 {
     app = a;
 
@@ -188,7 +191,7 @@ MixxxApp::MixxxApp(QApplication *a, QStringList files, QSplashScreen *pSplash)
         }
     }
     midi->setMidiConfig(midiconfig);
-
+        
     // Read keyboard configuration and set kdbConfig object in WWidget
     kbdconfig = new ConfigObject<ConfigValueKbd>(QString(qConfigPath).append("keyboard/").append("Standard.kbd.cfg"));
     WWidget::setKeyboardConfig(kbdconfig);
@@ -255,14 +258,11 @@ MixxxApp::MixxxApp(QApplication *a, QStringList files, QSplashScreen *pSplash)
     buffer2->setOtherEngineBuffer(buffer1);
 
     // Starting channels:
-    channel1 = new EngineChannel("[Channel1]");
-    channel2 = new EngineChannel("[Channel2]");
-
-    // Starting effects:
-    flanger = new EngineFlanger("[Flanger]");
+    channel1 = new EngineChannel("[Channel1]", buffer1);
+    channel2 = new EngineChannel("[Channel2]", buffer2);
 
     // Starting the master (mixing of the channels and effects):
-    master = new EngineMaster(buffer1, buffer2, channel1, channel2, flanger, "[Master]");
+    master = new EngineMaster(buffer1, buffer2, channel1, channel2, "[Master]");
 
     // Initialize player device
     Player::setMaster(master);
@@ -302,6 +302,9 @@ MixxxApp::MixxxApp(QApplication *a, QStringList files, QSplashScreen *pSplash)
         }
     }
 
+    // Needed for Search class and Simple skin
+    new ControlPotmeter(ConfigKey("[Channel1]","virtualplayposition"),0.,1.);
+    
     // Initialize widgets
     bool bVisualsWaveform = true;
     if (config->getValueString(ConfigKey("[Controls]","Visuals")).toInt()==1)
@@ -381,6 +384,7 @@ MixxxApp::MixxxApp(QApplication *a, QStringList files, QSplashScreen *pSplash)
     //grabKeyboard();
 
 
+
     // Load tracks in files (command line arguments) into player 1 and 2:
     if (files.count()>1)
         m_pTrack->slotLoadPlayer1((*files.at(1)));
@@ -399,6 +403,11 @@ MixxxApp::MixxxApp(QApplication *a, QStringList files, QSplashScreen *pSplash)
     // Check direct rendering
     if (bVisualsWaveform)
         view->checkDirectRendering();
+    
+    // Initialize the log if a log file name was given on the command line
+    Log *pLog = 0;
+    if (qLogFileName.length()>0)
+        pLog = new Log(qLogFileName, m_pTrack);
 }
 
 MixxxApp::~MixxxApp()
@@ -420,8 +429,6 @@ MixxxApp::~MixxxApp()
     delete channel1;
 //    qDebug("delete channel2");
     delete channel2;
-//    qDebug("delete flanger");
-    delete flanger;
 //    qDebug("delete buffer1");
     delete buffer1;
 //    qDebug("delete buffer2");
@@ -446,7 +453,6 @@ MixxxApp::~MixxxApp()
     config->Save();
     qDebug("delete config");
     delete config;
-
 
 #ifdef __UNIX__
     if (powermate1!=0)

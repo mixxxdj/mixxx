@@ -105,7 +105,7 @@ void WOverview::setData(QMemArray<char> *pWaveformSummary, QValueList<long> *pSe
     // Erase background
     paint.eraseRect(rect());
 
-    float yscale = ((float)height()/2.)/128.; //32768.;
+    float yscale = (((float)(height()-2)/2.)/128.); //32768.;
     float xscale = (float)m_pWaveformSummary->size()/width();
 
     float hfcMax = 0.;
@@ -171,14 +171,13 @@ void WOverview::setData(QMemArray<char> *pWaveformSummary, QValueList<long> *pSe
             int g = kqDarkColor.green()+ (int)((kqLightColor.green()-kqDarkColor.green())*hfc);
             int b = kqDarkColor.blue() + (int)((kqLightColor.blue()-kqDarkColor.blue())*hfc);
             paint.setPen(QColor(r,g,b));
-
-            //qDebug("min %f, max %f", fMin, fMax);
-
         }
+//         qDebug("min %f, max %f", fMin, fMax);
         paint.drawLine(i, height()/2-(int)(fMin*yscale), i, height()/2-(int)(fMax*yscale));
     }
 
     // Draw segmentation points
+/*
     paint.setPen(QColor("#FF9900"));
     if (m_pSegmentation)
     {
@@ -189,7 +188,7 @@ void WOverview::setData(QMemArray<char> *pWaveformSummary, QValueList<long> *pSe
             paint.drawLine(point, 0, point, height());
         }
     }
-
+*/
     paint.end();
 
     update();
@@ -245,7 +244,7 @@ void WOverview::paintEvent(QPaintEvent *)
     {
         // Draw play position
         paint.setPen(QColor("#0000FF"));
-        paint.drawLine(m_iPos, 0, m_iPos, height());
+        paint.drawLine(m_iPos,   0, m_iPos,   height());
         paint.drawLine(m_iPos+1, 0, m_iPos+1, height());
         paint.drawLine(m_iPos-1, 0, m_iPos-1, height());
 
@@ -254,17 +253,18 @@ void WOverview::paintEvent(QPaintEvent *)
         {
             int dist = min(10,abs(m_iVirtualPos-m_iPos));
             //qDebug("dist %i",dist);
-            paint.drawLine(m_iPos, height()/2, m_iVirtualPos, height()/2);
+            paint.drawLine(m_iPos, height()/2,   m_iVirtualPos, height()/2);
+            paint.drawLine(m_iPos, height()/2+1, m_iVirtualPos, height()/2+1);
 
             if (m_iVirtualPos>m_iPos)
             {
-                paint.drawLine(m_iVirtualPos, height()/2, m_iVirtualPos-dist, height()/2-dist);
-                paint.drawLine(m_iVirtualPos, height()/2, m_iVirtualPos-dist, height()/2+dist);
+                paint.drawLine(m_iVirtualPos, height()/2,   m_iVirtualPos-dist, height()/2-dist);
+                paint.drawLine(m_iVirtualPos, height()/2+1, m_iVirtualPos-dist, height()/2+dist+1);
             }
             else
             {
-                paint.drawLine(m_iVirtualPos, height()/2, m_iVirtualPos+dist, height()/2-dist);
-                paint.drawLine(m_iVirtualPos, height()/2, m_iVirtualPos+dist, height()/2+dist);
+                paint.drawLine(m_iVirtualPos, height()/2,   m_iVirtualPos+dist, height()/2-dist);
+                paint.drawLine(m_iVirtualPos, height()/2+1, m_iVirtualPos+dist, height()/2+dist+1);
             }
         }
     }
