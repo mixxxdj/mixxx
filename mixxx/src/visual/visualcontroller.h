@@ -41,8 +41,8 @@ typedef std::list<VisualObject *>::iterator ObjectsIterator;
 class VisualController
 {
 public: 
-  VisualController(QColor qBackground);
-
+  VisualController();
+  void setBackgroundColor(QColor qBackground);
 private:
   void setupBackfaceCulling();
   void setupZBuffer();

@@ -99,7 +99,8 @@ MixxxView::MixxxView(QWidget *parent, bool bVisuals, QString qSkinPath) : QWidge
                 QString filename = WWidget::selectNodeQString(node, "Path");
                 QPixmap background(WWidget::getPath(filename));
                 this->setPaletteBackgroundPixmap(background);
-                this->setFixedSize(background.size());
+                this->setFixedSize(background.width(),background.height()+15);
+                parent->setFixedSize(background.size());
                 this->move(0,0);
             }
             else if (node.nodeName()=="SliderComposed")
@@ -125,33 +126,9 @@ MixxxView::MixxxView(QWidget *parent, bool bVisuals, QString qSkinPath) : QWidge
                 {
                     if (WWidget::selectNodeInt(node, "Channel")==1 && m_pVisualCh1==0)
                     {
-                        // Background color
-                        if (!WWidget::selectNode(node, "BgColor").isNull())
-                        {
-                            QColor c;
-                            c.setNamedColor(WWidget::selectNodeQString(node, "BgColor"));
-                            m_pVisualCh1 = new WVisual(this, 0, 0, c);
-                        }
-                        else
-                            m_pVisualCh1 = new WVisual(this);
-                        
+                        m_pVisualCh1 = new WVisual(this, 0, 0);
                         if (m_pVisualCh1->isValid())
-                        {
-                            // Set position
-                            QString pos = WWidget::selectNodeQString(node, "Pos");
-                            int x = pos.left(pos.find(",")).toInt();
-                            int y = pos.mid(pos.find(",")+1).toInt();
-                            m_pVisualCh1->move(x,y);
-
-                            // Size
-                            QString size = WWidget::selectNodeQString(node, "Size");
-                            x = size.left(size.find(",")).toInt();
-                            y = size.mid(size.find(",")+1).toInt();
-                            m_pVisualCh1->setFixedSize(x,y);
-
-                            m_pVisualCh1->show();
-//                            ControlObject::setWidget(m_pVisualCh1, ConfigKey("[Channel1]", "wheel"), true, Qt::LeftButton);
-                        }
+                            m_pVisualCh1->setup(node);
                         else
                         {
                             delete m_pVisualCh1;
@@ -161,32 +138,9 @@ MixxxView::MixxxView(QWidget *parent, bool bVisuals, QString qSkinPath) : QWidge
                     else if (WWidget::selectNodeInt(node, "Channel")==2 && m_pVisualCh1!=0 && m_pVisualCh2==0)
                     {
                         // Background color
-                        if (!WWidget::selectNode(node, "BgColor").isNull())
-                        {
-                            QColor c;
-                            c.setNamedColor(WWidget::selectNodeQString(node, "BgColor"));
-                            m_pVisualCh2 = new WVisual(this, "", m_pVisualCh1, c);
-                        }
-                        else
-                            m_pVisualCh2 = new WVisual(this,"",m_pVisualCh1);
-
+                        m_pVisualCh2 = new WVisual(this, "", m_pVisualCh1);
                         if (m_pVisualCh2->isValid())
-                        {
-                            // Set position
-                            QString pos = WWidget::selectNodeQString(node, "Pos");
-                            int x = pos.left(pos.find(",")).toInt();
-                            int y = pos.mid(pos.find(",")+1).toInt();
-                            m_pVisualCh2->move(x,y);
-
-                            // Size
-                            QString size = WWidget::selectNodeQString(node, "Size");
-                            x = size.left(size.find(",")).toInt();
-                            y = size.mid(size.find(",")+1).toInt();
-                            m_pVisualCh2->setFixedSize(x,y);
-
-                            m_pVisualCh2->show();
-//                            ControlObject::setWidget(m_pVisualCh2, ConfigKey("[Channel2]", "wheel"), true, Qt::LeftButton);
-                        }
+                            m_pVisualCh2->setup(node);
                         else
                         {
                             delete m_pVisualCh2;

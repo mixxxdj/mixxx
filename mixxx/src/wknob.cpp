@@ -33,7 +33,6 @@ WKnob::~WKnob()
 
 void WKnob::setup(QDomNode node)
 {
-    qDebug("knob setup");
     WWidget::setup(node);
 
     // Set background pixmap if available

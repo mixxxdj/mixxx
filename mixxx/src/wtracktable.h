@@ -33,6 +33,7 @@ public:
     ~WTrackTable();
     void setup(QDomNode node);
     void sortColumn(int col, bool ascending, bool);
+//    void paintFocus(QPainter *p, const QRect &cr);
 };
 
 #endif

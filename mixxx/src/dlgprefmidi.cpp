@@ -35,7 +35,7 @@ void DlgPrefMidi::slotUpdate()
 {
     // Midi configurations
     ComboBoxMidiconf->clear();
-    QStringList *midiConfigList = midi->getConfigList(config->getValueString(ConfigKey("[Midi]","Configdir")));
+    QStringList *midiConfigList = midi->getConfigList(config->getValueString(ConfigKey("[Config]","Path")).append("midi/"));
     int j=0;
     if (midiConfigList->count()>0)
     {
@@ -44,7 +44,7 @@ void DlgPrefMidi::slotUpdate()
             // Insert the file name into the list, with ending (.midi.cfg) stripped
             ComboBoxMidiconf->insertItem((*it).left((*it).length()-9));
 
-            if ((*it) == config->getValueString(ConfigKey("[Midi]","Configfile")))
+            if ((*it) == config->getValueString(ConfigKey("[Midi]","File")))
                 ComboBoxMidiconf->setCurrentItem(j);
             j++;
         }
@@ -65,7 +65,7 @@ void DlgPrefMidi::slotUpdate()
 
 void DlgPrefMidi::slotApply()
 {
-    config->set(ConfigKey("[Midi]","Configfile"), ConfigValue(ComboBoxMidiconf->currentText().append(".midi.cfg")));
+    config->set(ConfigKey("[Midi]","File"), ConfigValue(ComboBoxMidiconf->currentText().append(".midi.cfg")));
     config->set(ConfigKey("[Midi]","Device"), ConfigValue(ComboBoxMididevice->currentText()));
 
     // Close MIDI
@@ -73,7 +73,7 @@ void DlgPrefMidi::slotApply()
 
     // Change MIDI configuration
     //midiconfig->clear(); // (is currently not implemented correctly)
-    midiconfig->reopen(config->getValueString(ConfigKey("[Midi]","Configdir")).append(config->getValueString(ConfigKey("[Midi]","Configfile"))));
+    midiconfig->reopen(config->getValueString(ConfigKey("[Config]","Path")).append("midi/").append(config->getValueString(ConfigKey("[Midi]","File"))));
 
     // Open MIDI device
     midi->devOpen(config->getValueString(ConfigKey("[Midi]","Device")));

@@ -17,11 +17,9 @@
 
 #include "visualdisplay.h"
 #include "../controlpotmeter.h"
-#include "material.h"
 #include <math.h>
 
 // Static members
-Material VisualDisplay::dblue, VisualDisplay::lblue, VisualDisplay::purple, VisualDisplay::lgreen;
 int VisualDisplay::idCount = 0;
 
 VisualDisplay::VisualDisplay(VisualBuffer *pVisualBuffer, const char *group, bool drawBox)
@@ -29,7 +27,6 @@ VisualDisplay::VisualDisplay(VisualBuffer *pVisualBuffer, const char *group, boo
     qDebug("buffer %p",pVisualBuffer);
     m_pVisualBuffer = pVisualBuffer;
 
-    setupScene();
     atBasepos = true;
     movement = false;
 
@@ -60,26 +57,26 @@ VisualDisplay::VisualDisplay(VisualBuffer *pVisualBuffer, const char *group, boo
     box = new VisualBox(id);
     m_bDrawBox = drawBox;
                         
-//    setBoxWireMaterial(&lblue);
+//    setBoxWireMaterial(&m_materialBeat);
 
     if (QString(group)=="marks")
     {
-        fishEyeSignal->setMaterial(&lblue);
-        preSignal->setMaterial(&lblue);
-        postSignal->setMaterial(&lblue);
-        signal->setMaterial(&lblue);
-        box->setMaterial(&lblue);
+        fishEyeSignal->setMaterial(&m_materialBeat);
+        preSignal->setMaterial(&m_materialBeat);
+        postSignal->setMaterial(&m_materialBeat);
+        signal->setMaterial(&m_materialBeat);
+        box->setMaterial(&m_materialBeat);
         playPosMarker = 0;
     }
     else
     {
-        fishEyeSignal->setMaterial(&lgreen);
-        preSignal->setMaterial(&lgreen);
-        postSignal->setMaterial(&lgreen);
-        signal->setMaterial(&lgreen);
-        box->setMaterial(&lblue);
+        fishEyeSignal->setMaterial(&m_materialSignal);
+        preSignal->setMaterial(&m_materialSignal);
+        postSignal->setMaterial(&m_materialSignal);
+        signal->setMaterial(&m_materialSignal);
+        box->setMaterial(&m_materialFisheye);
         playPosMarker = new VisualBox(id);
-        playPosMarker->setMaterial(&purple);
+        playPosMarker->setMaterial(&m_materialMarker);
     }
 
     fishEyeMode = true;
@@ -163,7 +160,7 @@ void VisualDisplay::draw(GLenum mode)
     box->draw(mode);
 
 //    if (boxMaterial)
-//    box->setMaterial(&purple);
+//    box->setMaterial(&m_materialMarker);
     box->setDrawMode(GL_POLYGON);
     box->draw(mode);
 */
@@ -177,7 +174,7 @@ void VisualDisplay::draw(GLenum mode)
     // Only draw box in fish eye mode
     if (fishEyeMode && m_bDrawBox)
     {
-        box->setMaterial(&dblue);
+        box->setMaterial(&m_materialFisheye);
         box->setDrawMode(GL_POLYGON);
         box->draw(mode);
     }
@@ -292,78 +289,84 @@ void VisualDisplay::setSignalScale(float scale)
     signalScale = scale;
 }
 
-
-
-void VisualDisplay::setupScene()
+void VisualDisplay::setColorSignal(float r, float g, float b)
 {
-    dblue.ambient[0] = 100.f/255.f;
-    dblue.ambient[1] = 100.f/255.f;
-    dblue.ambient[2] = 100.f/255.f;
-    dblue.ambient[3] = 0.5f;
+    m_materialSignal.ambient[0] = r;
+    m_materialSignal.ambient[1] = g;
+    m_materialSignal.ambient[2] = b;
+    m_materialSignal.ambient[3] = 1.0f;
 
-    dblue.diffuse[0] = 100.f/255.f;
-    dblue.diffuse[1] = 100.f/255.f;
-    dblue.diffuse[2] = 100.f/255.f;
-    dblue.diffuse[3] = 0.5f;
+    m_materialSignal.diffuse[0] = r;
+    m_materialSignal.diffuse[1] = g;
+    m_materialSignal.diffuse[2] = b;
+    m_materialSignal.diffuse[3] = 1.0f;
 
-    dblue.specular[0] = 100.f/255.f;
-    dblue.specular[1] = 100.f/255.f;
-    dblue.specular[2] = 100.f/255.f;
-    dblue.specular[3] = 0.5f;
+    m_materialSignal.specular[0] = r;
+    m_materialSignal.specular[1] = g;
+    m_materialSignal.specular[2] = b;
+    m_materialSignal.specular[3] = 1.0f;
 
-    dblue.shininess = 128;
+    m_materialSignal.shininess = 128;
+}
 
-    lblue.ambient[0] = 0.0f;
-    lblue.ambient[1] = 0.0f;
-    lblue.ambient[2] = 255.0f;
-    lblue.ambient[3] = 1.0f;
+void VisualDisplay::setColorBeat(float r, float g, float b)
+{
+    m_materialBeat.ambient[0] = r;
+    m_materialBeat.ambient[1] = g;
+    m_materialBeat.ambient[2] = b;
+    m_materialBeat.ambient[3] = 1.0f;
 
-    lblue.diffuse[0] = 0.f;
-    lblue.diffuse[1] = 0.f;
-    lblue.diffuse[2] = 255.f;
-    lblue.diffuse[3] = 1.0f;
+    m_materialBeat.diffuse[0] = r;
+    m_materialBeat.diffuse[1] = g;
+    m_materialBeat.diffuse[2] = b;
+    m_materialBeat.diffuse[3] = 1.0f;
 
-    lblue.specular[0] = 0.0f;
-    lblue.specular[1] = 0.0f;
-    lblue.specular[2] = 255.f;
-    lblue.specular[3] = 1.0f;
+    m_materialBeat.specular[0] = r;
+    m_materialBeat.specular[1] = g;
+    m_materialBeat.specular[2] = b;
+    m_materialBeat.specular[3] = 1.0f;
 
-    lblue.shininess = 0;
+    m_materialBeat.shininess = 128;
+}
 
-    lgreen.ambient[0] = 0.0f;
-    lgreen.ambient[1] = 255.f;
-    lgreen.ambient[2] = 0.0f;
-    lgreen.ambient[3] = 1.f;
+void VisualDisplay::setColorMarker(float r, float g, float b)
+{
+    m_materialMarker.ambient[0] = r;
+    m_materialMarker.ambient[1] = g;
+    m_materialMarker.ambient[2] = b;
+    m_materialMarker.ambient[3] = 1.0f;
 
-    lgreen.diffuse[0] = 0.f;
-    lgreen.diffuse[1] = 255.f;
-    lgreen.diffuse[2] = 0.f;
-    lgreen.diffuse[3] = 1.f;
+    m_materialMarker.diffuse[0] = r;
+    m_materialMarker.diffuse[1] = g;
+    m_materialMarker.diffuse[2] = b;
+    m_materialMarker.diffuse[3] = 1.0f;
 
-    lgreen.specular[0] = 0.f;
-    lgreen.specular[1] = 255.f;
-    lgreen.specular[2] = 0.f;
-    lgreen.specular[3] = 1.f;
+    m_materialMarker.specular[0] = r;
+    m_materialMarker.specular[1] = g;
+    m_materialMarker.specular[2] = b;
+    m_materialMarker.specular[3] = 1.0f;
 
-    lgreen.shininess = 128;
+    m_materialMarker.shininess = 128;
+}
 
-    purple.ambient[0] = 255.f;
-    purple.ambient[1] = 0.0f;
-    purple.ambient[2] = 0.f;
-    purple.ambient[3] = 1.0f;
+void VisualDisplay::setColorFisheye(float r, float g, float b)
+{
+    m_materialFisheye.ambient[0] = r;
+    m_materialFisheye.ambient[1] = g;
+    m_materialFisheye.ambient[2] = b;
+    m_materialFisheye.ambient[3] = 1.0f;
 
-    purple.diffuse[0] = 255.f;
-    purple.diffuse[1] = 0.f;
-    purple.diffuse[2] = 0.f;
-    purple.diffuse[3] = 1.0f;
+    m_materialFisheye.diffuse[0] = r;
+    m_materialFisheye.diffuse[1] = g;
+    m_materialFisheye.diffuse[2] = b;
+    m_materialFisheye.diffuse[3] = 1.0f;
 
-    purple.specular[0] = 255.f;
-    purple.specular[1] = 0.0f;
-    purple.specular[2] = 0.f;
-    purple.specular[3] = 1.0f;
+    m_materialFisheye.specular[0] = r;
+    m_materialFisheye.specular[1] = g;
+    m_materialFisheye.specular[2] = b;
+    m_materialFisheye.specular[3] = 1.0f;
 
-    purple.shininess = 128;
-
+    m_materialFisheye.shininess = 128;
 }
 
 void VisualDisplay::doLayout()
@@ -461,4 +464,16 @@ void VisualDisplay::setRotation(float angle, float rx,float ry,float rz)
     this->ry = ry;
     this->rz = rz;
 }
+
+void VisualDisplay::setLength(float l)
+{
+    qDebug("l %f",l);
+    length = l;
+}
+
+void VisualDisplay::setHeight(float h)
+{
+    height = h;
+}
+
 

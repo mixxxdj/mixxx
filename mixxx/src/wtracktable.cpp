@@ -50,17 +50,6 @@ WTrackTable::WTrackTable(QWidget *parent, const char *name) : QTable(10, 8, pare
     // Setup scrollbars
     setVScrollBarMode(AlwaysOn);
     setHScrollBarMode(AlwaysOff);
-    
-    // Setup tracklist collum widths
-    setLeftMargin(0);
-    setColumnWidth(COL_SCORE,20);
-    setColumnWidth(COL_TITLE,240);
-    setColumnWidth(COL_ARTIST,220);
-    setColumnWidth(COL_COMMENT,246);
-    setColumnWidth(COL_TYPE,30);
-    setColumnWidth(COL_DURATION,50);
-    setColumnWidth(COL_BITRATE,50);
-    hideColumn(COL_INDEX);
 }
 
 WTrackTable::~WTrackTable()
@@ -107,7 +96,16 @@ void WTrackTable::setup(QDomNode node)
         WTrackTableItem::setRowColors(r1, r2);
     }
 
-
+    // Setup column widths
+    setLeftMargin(0);
+    hideColumn(COL_INDEX);
+    setColumnWidth(COL_SCORE, WWidget::selectNodeInt(node, "ColWidthScore"));
+    setColumnWidth(COL_TITLE, WWidget::selectNodeInt(node, "ColWidthTitle"));
+    setColumnWidth(COL_ARTIST, WWidget::selectNodeInt(node, "ColWidthArtist"));
+    setColumnWidth(COL_COMMENT, WWidget::selectNodeInt(node, "ColWidthComment"));
+    setColumnWidth(COL_TYPE, WWidget::selectNodeInt(node, "ColWidthType"));
+    setColumnWidth(COL_DURATION, WWidget::selectNodeInt(node, "ColWidthDuration"));
+    setColumnWidth(COL_BITRATE, WWidget::selectNodeInt(node, "ColWidthBitrate"));
 }
 
 
@@ -116,3 +114,9 @@ void WTrackTable::sortColumn(int col, bool ascending, bool)
     QTable::sortColumn(col,ascending,true);
 }
 
+/*
+void WTrackTable::paintFocus(QPainter *p, const QRect &cr)
+{
+
+}
+*/

@@ -16,11 +16,13 @@
  ***************************************************************************/
 
 #include "wvisual.h"
+#include "wwidget.h"
 #include "visual/visualchannel.h"
+#include "visual/visualdisplay.h"
 
-WVisual::WVisual(QWidget *pParent, const char *pName, const QGLWidget *pShareWidget, QColor qBackground) : QGLWidget(pParent,pName,pShareWidget)
+WVisual::WVisual(QWidget *pParent, const char *pName, const QGLWidget *pShareWidget) : QGLWidget(pParent,pName,pShareWidget)
 {
-    m_pVisualController = new VisualController(qBackground);
+    m_pVisualController = new VisualController();
 
     installEventFilter(this);
     m_qtTime.start();
@@ -39,6 +41,36 @@ WVisual::~WVisual()
 
     // Finally delete the VisualController
     delete m_pVisualController;
+}
+
+void WVisual::setup(QDomNode node)
+{
+    // Background color
+    if (!WWidget::selectNode(node, "BgColor").isNull())
+    {
+        QColor c;
+        c.setNamedColor(WWidget::selectNodeQString(node, "BgColor"));
+            m_pVisualController->setBackgroundColor(c);
+    }
+
+    colorSignal.setNamedColor(WWidget::selectNodeQString(node, "SignalColor"));
+    colorMarker.setNamedColor(WWidget::selectNodeQString(node, "MarkerColor"));
+    colorBeat.setNamedColor(WWidget::selectNodeQString(node, "BeatColor"));
+    colorFisheye.setNamedColor(WWidget::selectNodeQString(node, "FisheyeColor"));
+
+    // Set position
+    QString pos = WWidget::selectNodeQString(node, "Pos");
+    int x = pos.left(pos.find(",")).toInt();
+    int y = pos.mid(pos.find(",")+1).toInt();
+    move(x,y);
+
+    // Size
+    QString size = WWidget::selectNodeQString(node, "Size");
+    x = size.left(size.find(",")).toInt();
+    y = size.mid(size.find(",")+1).toInt();
+    setFixedSize(x,y);
+
+    
 }
 
 bool WVisual::eventFilter(QObject *o, QEvent *e)
@@ -107,8 +139,14 @@ VisualChannel *WVisual::add(ControlPotmeter *pPlaypos)
     // Position coding... hack
     if (m_qlList.isEmpty())
     {
-        c->setPosX(-176);
+        c->setPosX(-(width()/2));
+        c->setLength(width());
+        c->setHeight(height());
         c->setZoomPosX(50);
+        c->setColorSignal((float)colorSignal.red()/255., (float)colorSignal.green()/255., (float)colorSignal.blue()/255.);
+        c->setColorMarker((float)colorMarker.red()/255., (float)colorMarker.green()/255., (float)colorMarker.blue()/255.);
+        c->setColorBeat((float)colorBeat.red()/255., (float)colorBeat.green()/255., (float)colorBeat.blue()/255.);
+        c->setColorFisheye((float)colorFisheye.red()/255., (float)colorFisheye.green()/255., (float)colorFisheye.blue()/255.);
     }
     else    
     {
