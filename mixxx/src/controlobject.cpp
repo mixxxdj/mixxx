@@ -78,8 +78,8 @@ void ControlObject::setControlEngine(int _controlEngineNo)
 void ControlObject::setWidget(QWidget *_widget)
 {
     widget = _widget;
-    connect(widget, SIGNAL(valueChanged(int)), this, SLOT(slotSetPosition(int)));
-    connect(this, SIGNAL(updateGUI(int)), widget, SLOT(setValue(int)));
+    connect(widget, SIGNAL(valueChanged(int)), this,   SLOT(slotSetPosition(int)));
+    connect(this,   SIGNAL(updateGUI(int)),    widget, SLOT(setValue(int)));
 
     forceGUIUpdate();
 }
