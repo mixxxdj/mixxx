@@ -25,7 +25,7 @@
 #include <qmessagebox.h>
 #include <qdragobject.h>
 #include <qmime.h>
-#include <qstrlist.h>
+#include <qptrlist.h>
 #include <qstringlist.h>
 #include <qapplication.h>
 #include <qheader.h>
@@ -37,6 +37,7 @@ class QDragMoveEvent;
 class QDragLeaveEvent;
 class QDropEvent;
 class WTreeItem;
+class TrackPlaylist;
 
 /**
 @author Tue Haste Andersen
@@ -52,7 +53,7 @@ public:
     void setup(QDomNode node);
     bool showDirsOnly() { return dirsOnly; }
     /** Updates the playlists entries to match the names given in the string list */
-    void updatePlaylists(QStrList qPlaylists);
+    void updatePlaylists(QPtrList<TrackPlaylist> *pList);
     static QString fullPath(QListViewItem* item);
 public slots:
     void setDir(const QString &);
@@ -61,6 +62,7 @@ signals:
     void folderSelected(const QString &);
     void playlistPopup(QString);
     void activatePlaylist(QString);
+
 protected slots:
     void slotFolderSelected(QListViewItem *);
     void openFolder();

@@ -227,15 +227,35 @@ void Track::slotNewPlaylist()
 
 void Track::slotDeletePlaylist(QString qName)
 {
+    // Is set to true if we need to activate another playlist after this one
+    // has been removed
+    bool bActivateOtherList = false;
+
     TrackPlaylist *list = getPlaylist(qName);
     if (list)
     {
+        // If the deleted list is the active list...
         if (list==m_pActivePlaylist)
+        {
+            // Deactivate the list
             list->deactivate();
+            m_pActivePlaylist = 0;
+            
+            bActivateOtherList = true;
+        }
 
         m_qPlaylists.remove(list);
         delete list;
     }
+
+    if (bActivateOtherList)
+    {
+        if (m_qPlaylists.count()==0)
+            slotNewPlaylist();
+
+        slotActivatePlaylist(m_qPlaylists.at(0)->getListName());
+    }
+
     updateTreeView();
 }
 
@@ -259,16 +279,7 @@ TrackPlaylist *Track::getPlaylist(QString qName)
 void Track::updateTreeView()
 {
     if (m_pView->m_pTreeView)
-    {
-        QStrList list;
-        QPtrList<TrackPlaylist>::iterator it = m_qPlaylists.begin();
-        while (it!=m_qPlaylists.end())
-        {
-            list.append((*it)->getListName());
-            ++it;
-        }
-        m_pView->m_pTreeView->updatePlaylists(list);
-    }
+        m_pView->m_pTreeView->updatePlaylists(&m_qPlaylists);
 }
 
 void Track::slotPlaylistPopup(QString qName)
