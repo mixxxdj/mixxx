@@ -900,11 +900,12 @@
   <BgColorRowEven>#ffffff</BgColorRowEven>
   <BgColorRowUneven>#ffffff</BgColorRowUneven>
   <ColWidthScore>20</ColWidthScore>
-  <ColWidthTitle>200</ColWidthTitle>
+  <ColWidthTitle>190</ColWidthTitle>
   <ColWidthArtist>180</ColWidthArtist>
-  <ColWidthComment>200</ColWidthComment>
+  <ColWidthComment>170</ColWidthComment>
   <ColWidthType>30</ColWidthType>
   <ColWidthDuration>50</ColWidthDuration>
+  <ColWidthBpm>40</ColWidthBpm>
   <ColWidthBitrate>50</ColWidthBitrate>
  </TrackTable>
 

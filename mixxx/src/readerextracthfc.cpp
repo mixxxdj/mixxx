@@ -51,8 +51,9 @@ void ReaderExtractHFC::reset()
     }
 }
 
-void ReaderExtractHFC::newsource(QString qFilename)
+void ReaderExtractHFC::newSource(TrackInfoObject *)
 {
+    reset();
 }
 
 

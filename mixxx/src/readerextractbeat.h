@@ -42,7 +42,7 @@ const CSAMPLE histMinBPM = 60.f;
 /** Maximum acceptable BPM */
 const CSAMPLE histMaxBPM = 200.f;
 /** Down write factor of the histogram, between 0 and 1. */
-const float kfHistDownWrite = 0.999f;
+const float kfHistDownWrite = 0.991f;
 /** Range around predicted beat position in which it is allowed to place a beat
   * (given in seconds times two, ie. 0.05 = 0.1 seconds total range). */
 const float kfBeatRange = 0.04f;
@@ -52,7 +52,7 @@ const float kfBeatRange = 0.04f;
 const float kfBeatRangeForce = 0.04f;
 /** Confidence threashold. When confidence value goes below this value, try
   * to resyncronize beat marks, and set confidence to zero on success */
-const float kfBeatConfThreshold = -0.1f;
+const float kfBeatConfThreshold = -0.3f;
 /** Filter coefficient for confidence measure */
 const float kfBeatConfFilter = 0.995f;
 
@@ -66,21 +66,23 @@ const float kfBeatConfFilter = 0.995f;
 
 class ReaderExtractBeat : public ReaderExtract
 {
-public: 
+public:
     ReaderExtractBeat(ReaderExtract *input, int frameSize, int frameStep, int _histSize);
     ~ReaderExtractBeat();
-    /** Reset all buffers */
+    void requestNewTrack(TrackInfoObject *pTrack);
+    /** Reset buffer without cleaning the histogram (BPM value) */
     void reset();
-    /** Reset buffers except histogram (BPM value) */
-    void softreset();
-    /** Used only when writing output to text files */
-    void newsource(QString filename);
+    /** Open a new sound source */
+    void newSource(TrackInfoObject *pTrack);
+    /** Close a sound source */
+    void closeSource();
     void *getBasePtr();
     CSAMPLE *getBpmPtr();
     int getRate();
     int getChannels();
     int getBufferSize();
     void *processChunk(const int idx, const int start_idx, const int end_idx, bool backwards);
+
 private:
     /** Updates the confidence variable. */
     void updateConfidence(int curBeatIdx, int lastBeatIdx);
@@ -88,7 +90,7 @@ private:
     PeakList *peaks;
     /** Beat probability vector histogram */
     ProbabilityVector *bpv;
-        
+
     /** Buffer indicating if a beat has occoured or not. */
     float *beatBuffer;
     /** Buffer holding the interpolated beat position for the beats marked in beatBuffer */
@@ -104,15 +106,18 @@ private:
     CSAMPLE *hfc;
     /** Confidence measure */
     CSAMPLE confidence;
+    /** Pointer to TrackInfoObject of open file */
+    TrackInfoObject *m_pTrack;
+
 
 #ifdef __GNUPLOT__
     /** Pointer to gnuplot interface */
     plot_t *gnuplot_bpm;
-    plot_t *gnuplot_hfc;    
+    plot_t *gnuplot_hfc;
 #endif
 
 #ifdef FILEOUTPUT
-    QFile textbpm, textconf, textbeat, texthfc;   
+    QFile textbpm, textconf, textbeat, texthfc;
 #endif
 };
 

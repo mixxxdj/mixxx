@@ -37,6 +37,7 @@ class ReaderExtractFFT : public ReaderExtract
 public:
     ReaderExtractFFT(ReaderExtract *input, int _frameSize, int _frameStep);
     ~ReaderExtractFFT();
+    void newSource(TrackInfoObject *);
     void reset();
     void *getBasePtr();
     int getRate();

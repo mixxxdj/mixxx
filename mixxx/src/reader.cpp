@@ -17,19 +17,9 @@
 
 #include "reader.h"
 
-#include <qfileinfo.h>
 #include "enginebuffer.h"
 #include "readerextractwave.h"
 #include "rtthread.h"
-#include "soundsource.h"
-#include "soundsourcemp3.h"
-#include "soundsourceoggvorbis.h"
-#ifdef __UNIX__
-  #include "soundsourceaudiofile.h"
-#endif
-#ifdef __WIN__
-  #include "soundsourcesndfile.h"
-#endif
 #ifdef __VISUALS__
   #include "visual/visualchannel.h"
 #endif
@@ -40,7 +30,7 @@ Reader::Reader(EngineBuffer *_enginebuffer, Monitor *_rate, QMutex *_pause)
     rate = _rate;
     pause = _pause;
     m_pVisualChannel = 0;
-    
+
     // Allocate reader extract objects
     readerwave = new ReaderExtractWave(this);
 
@@ -48,7 +38,6 @@ Reader::Reader(EngineBuffer *_enginebuffer, Monitor *_rate, QMutex *_pause)
     readAhead = new QWaitCondition();
 
     // Open the track:
-    file = 0;
     file_srate = 44100;
     file_length = 0;
 }
@@ -59,10 +48,6 @@ Reader::~Reader()
         stop();
 
     delete readerwave;
-
-    if (file != 0)
-        delete file;
-
     delete readAhead;
 }
 
@@ -74,15 +59,15 @@ void Reader::addVisual(VisualChannel *pVisualChannel)
 #endif
 }
 
-void Reader::requestNewTrack(QString name)
+void Reader::requestNewTrack(TrackInfoObject *pTrack)
 {
 //    qDebug("request: %s",name->latin1());
 
     // Put new track request in queue
     trackqueuemutex.lock();
-    trackqueue.append(name);
+    trackqueue.append(pTrack);
     trackqueuemutex.unlock();
-    
+
     // Wakeup reader
     wake();
 }
@@ -128,7 +113,7 @@ ReaderExtractBeat *Reader::getBeatPtr()
 ReaderExtractWave *Reader::getWavePtr()
 {
     return readerwave;
-}    
+}
 
 long int Reader::getFileposStart()
 {
@@ -160,75 +145,29 @@ void Reader::newtrack()
     // Set pause while loading new track
     pause->lock();
 
-    QString filename("");
-
     // Get filename
+    TrackInfoObject *pTrack;
     trackqueuemutex.lock();
     if (!trackqueue.isEmpty())
     {
-        TTrackQueue::iterator it = trackqueue.begin();
-        filename = (*it);
-        trackqueue.remove(it);
+        pTrack = trackqueue.first();
+        trackqueue.remove();
     }
     trackqueuemutex.unlock();
 
-    // Exit if no filename was in queue
-    if (filename == "")
+    // Exit if no track info was in queue
+    if (pTrack==0)
         return;
-        
-    // If we are already playing a file, then get rid of the sound source:
-    if (file != 0)
-    {
-        delete file;
-        file = 0;
-    }
-//    qDebug("filename: %s",filename->latin1());
+
+    readerwave->newSource(pTrack);
 
     // Initialize the new sound source
-//    enginelock.lock();
-    file_srate = 44100;
-    file_length = 0;
+    file_srate = readerwave->getRate();
+    file_length = readerwave->getLength();
     f_dCuePoint = 0;
 
-    if (filename != 0)
-    {
-        // Check if filename is valid
-        QFileInfo finfo(filename);
-        if (finfo.exists())
-        {
-            if (finfo.extension(false).upper() == "WAV")
-#ifdef __UNIX__
-                file = new SoundSourceAudioFile(filename);
-#endif
-#ifdef __WIN__
-                file = new SoundSourceSndFile(filename);
-#endif
-            else if (finfo.extension(false).upper() == "MP3")
-                file = new SoundSourceMp3(filename);
-            else if (finfo.extension(false).upper() == "OGG")
-                file = new SoundSourceOggVorbis(filename);
-
-            file_srate = file->getSrate();
-            file_length = file->length();
-        }
-    }
-    else
-    {
-#ifdef __UNIX__
-        file = new SoundSourceAudioFile( QString("/dev/null") );
-#endif
-#ifdef __WIN__
-        file = new SoundSourceSndFile( QString("/dev/null") );
-#endif
-    }
-//    enginelock.unlock();
-    if (file==0)
-        qFatal("Error opening %s", filename.latin1());
-
-    readerwave->setSoundSource(file);
-
     // Reset playpos
-    enginebuffer->setNewPlaypos(0.);    
+    enginebuffer->setNewPlaypos(0.);
 
     // Stop pausing process method
     pause->unlock();
@@ -271,9 +210,8 @@ void Reader::run()
 
 void Reader::stop()
 {
-    readAhead->wakeAll();
-
     requestStop.lock();
+    readAhead->wakeAll();
     wait();
     requestStop.unlock();
 }

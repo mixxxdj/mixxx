@@ -17,7 +17,7 @@
 #include "soundsourceaudiofile.h"
 #include "trackinfoobject.h"
 
-SoundSourceAudioFile::SoundSourceAudioFile(QString qFilename) : SoundSource(qFilename) 
+SoundSourceAudioFile::SoundSourceAudioFile(QString qFilename) : SoundSource(qFilename)
 {
     fh = afOpenFile( qFilename.latin1() ,"r",0);
     if (fh == AF_NULL_FILEHANDLE) {
@@ -77,7 +77,7 @@ unsigned SoundSourceAudioFile::read(unsigned long size, const SAMPLE* destinatio
 
 int SoundSourceAudioFile::ParseHeader(TrackInfoObject *Track)
 {
-    QString location = Track->m_sFilepath+'/'+Track->m_sFilename;
+    QString location = Track->getLocation();
     AFfilehandle fh = afOpenFile(location.ascii() , "r", 0);
     if (fh == AF_NULL_FILEHANDLE)
     {
@@ -85,10 +85,9 @@ int SoundSourceAudioFile::ParseHeader(TrackInfoObject *Track)
         return(ERR);
     }
 
-    Track->m_sType = "wav";
-    Track->m_iDuration = (int)(afGetFrameCount(fh, AF_DEFAULT_TRACK)/afGetRate(fh, AF_DEFAULT_TRACK));
-    Track->m_sBitrate = QString("%1").arg((int)((Track->m_iLength/(Track->m_iDuration*afGetRate(fh, AF_DEFAULT_TRACK))*
-                                                 afGetRate(fh, AF_DEFAULT_TRACK)*8.)/1000.));
+    Track->setType("wav");
+    Track->setDuration((int)(afGetFrameCount(fh, AF_DEFAULT_TRACK)/afGetRate(fh, AF_DEFAULT_TRACK)));
+    Track->setBitrate((Track->getLength()/(Track->getDuration()*afGetRate(fh, AF_DEFAULT_TRACK))*afGetRate(fh, AF_DEFAULT_TRACK)*8.)/1000.);
     afCloseFile(fh);
     return OK;
 }

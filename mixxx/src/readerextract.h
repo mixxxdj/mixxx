@@ -20,9 +20,10 @@
 
 #include <qstring.h>
 #include <qapplication.h>
-
 #include "visual/visualbuffer.h"
+
 class VisualChannel;
+class TrackInfoObject;
 
 /**
   * Abstract class for feature extraction. Each ReaderExtract object sets up its own buffer
@@ -34,11 +35,13 @@ class VisualChannel;
 
 class ReaderExtract
 {
-public: 
+public:
     ReaderExtract(ReaderExtract *_input, QString qsVisualSignalType);
 
     virtual ~ReaderExtract();
-    /** Reset the buffer. This may be used when loading a new track and when seeking */
+    /** Called when a new sound source is loaded */
+    virtual void newSource(TrackInfoObject *) = 0;
+    /** Reset the buffer. This is when seeking */
     virtual void reset() = 0;
     /** Get pointer to start of buffer array, pointer to list or however data are stored */
     virtual void *getBasePtr() = 0;

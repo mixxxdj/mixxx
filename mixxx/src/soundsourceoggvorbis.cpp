@@ -112,7 +112,7 @@ unsigned SoundSourceOggVorbis::read(unsigned long size, const SAMPLE* destinatio
                 dest[index] = 0;
                 index++;
                 needed--;
-              }   
+              }
         }
         index += ret;
         needed -= ret;
@@ -136,10 +136,10 @@ unsigned SoundSourceOggVorbis::read(unsigned long size, const SAMPLE* destinatio
 
 int SoundSourceOggVorbis::ParseHeader( TrackInfoObject *Track )
 {
-    QString filename = Track->m_sFilepath+'/'+Track->m_sFilename;
+    QString filename = Track->getLocation();
     vorbis_comment *comment;
     OggVorbis_File vf;
-       
+
     FILE* vorbisfile = fopen(filename, "r");
     if (!vorbisfile) {
         qWarning("oggvorbis: file cannot be opened.\n");
@@ -150,7 +150,7 @@ int SoundSourceOggVorbis::ParseHeader( TrackInfoObject *Track )
     #ifdef __WIN__
         _setmode( _fileno( vorbisfile ), _O_BINARY );
     #endif
-            
+
     if (ov_open(vorbisfile, &vf, NULL, 0) < 0) {
         qWarning("oggvorbis: Input does not appear to be an Ogg bitstream.\n");
         return ERR;
@@ -159,12 +159,12 @@ int SoundSourceOggVorbis::ParseHeader( TrackInfoObject *Track )
     comment = ov_comment(&vf, -1);
 
     if (QString(vorbis_comment_query(comment, "title", 0)).length()!=0)
-        Track->m_sTitle = vorbis_comment_query(comment, "title", 0);
+        Track->setTitle(vorbis_comment_query(comment, "title", 0));
     if (QString(vorbis_comment_query(comment, "artist", 0)).length()!=0)
-        Track->m_sArtist = vorbis_comment_query(comment, "artist", 0);
-    Track->m_sType = "ogg";
-    Track->m_iDuration = (long) ov_time_total(&vf, -1);
-    Track->m_sBitrate.setNum(ov_bitrate(&vf, -1)/1000);
+        Track->setArtist(vorbis_comment_query(comment, "artist", 0));
+    Track->setType("ogg");
+    Track->setDuration((int)ov_time_total(&vf, -1));
+    Track->setBitrate(ov_bitrate(&vf, -1)/1000);
 
     ov_clear(&vf);
     return OK;

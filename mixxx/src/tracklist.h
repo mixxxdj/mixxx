@@ -22,8 +22,12 @@ const int COL_ARTIST = 2;
 const int COL_COMMENT = 3;
 const int COL_TYPE = 4;
 const int COL_DURATION = 5;
-const int COL_BITRATE = 6;
-const int COL_INDEX = 7;
+const int COL_BPM = 6;
+const int COL_BITRATE = 7;
+const int COL_INDEX = 8;
+
+// Number of rows in the table
+const int ROW_NO = 9;
 
 
 
@@ -31,7 +35,7 @@ const int COL_INDEX = 7;
 // bugfixed, this number should be increased. If TRACKLIST_VERSION is larger
 // than the version written in the current tracklist, the list will be
 // re-parsed.
-const int TRACKLIST_VERSION = 8;
+const int TRACKLIST_VERSION = 9;
 
 class TrackList : public QObject
 {
@@ -40,7 +44,7 @@ public:
     TrackList(const QString, WTrackTable *, QLabel *, QLabel *, WNumberPos *, WNumberPos *,
               EngineBuffer *, EngineBuffer *);
     ~TrackList();
-    void WriteXML( );
+    void writeXML( );
 
     /** Loads the given track in player 1 */
     void loadTrack1(QString name);
@@ -64,15 +68,18 @@ private slots:
     void slotClick(int, int, int, const QPoint &);
 
 private:
-    TrackInfoObject *FileExistsInList(const QString);
-    void ReadXML();
-    bool AddFiles(const char *);
-    void UpdateScores();
-    void UpdateTracklist();
-    int ParseHeader(TrackInfoObject *Track);
+    TrackInfoObject *fileExistsInList(const QString);
+    void readXML();
+    /** Adds the files given in <path> to the list of files.
+        Returns true if any new files were in fact added. */
+    bool addFiles(const char *);
+    void updateScores();
+    void updateTracklist();
 
     /** Index of current track in channel 1 and 2 */
     int m_iCurTrackIdxCh1, m_iCurTrackIdxCh2;
+    /** Pointer to TrackInfoObject's of current loaded tracks */
+    TrackInfoObject *m_pTrack1, *m_pTrack2;
 
     /** The directory where the music files are stored */
     QString m_sDirectory;
@@ -86,16 +93,15 @@ private:
     WNumberPos *m_pNumberPos1, *m_pNumberPos2;
     /** Points to the two play buffers */
     EngineBuffer *m_pBuffer1, *m_pBuffer2;
-
+    /** The number of times most often played track has been played */
     int m_iMaxTimesPlayed;
-
     /** Pointer to ControlObject signalling end of track */
     ControlObject *m_pEndOfTrackCh1, *m_pEndOfTrackCh2;
     /** Pointer to ControlObject dertermining end of track mode */
     ControlObject *m_pEndOfTrackModeCh1, *m_pEndOfTrackModeCh2;
     /** Pointer to ControlObjects for play buttons */
     ControlObject *m_pPlayCh1, *m_pPlayCh2;
-    
+
 };
 
 #endif

@@ -40,18 +40,19 @@ class Reader;
   */
 
 class ReaderExtractWave : ReaderExtract {
-public: 
+public:
     ReaderExtractWave(Reader *pReader);
     ~ReaderExtractWave();
-    void addVisual(VisualChannel *pVisualChannel);
+    void newSource(TrackInfoObject *);
     void reset();
+    void addVisual(VisualChannel *pVisualChannel);
     void *getBasePtr();
     int getRate();
+    int getLength();
     int getChannels();
     int getBufferSize();
     ReaderExtractBeat *getExtractBeat();
     void *processChunk(const int, const int, const int, bool);
-    void setSoundSource(SoundSource *_file);
     /** Read a new chunk into the readbuffer: */
     void getchunk(CSAMPLE rate);
     /** Seek to a new play position. Returns positon actually seeked to */

@@ -236,9 +236,9 @@ unsigned SoundSourceMp3::read(unsigned long samples_wanted, const SAMPLE* _desti
 
 int SoundSourceMp3::ParseHeader(TrackInfoObject *Track)
 {
-    QString location = Track->m_sFilepath+'/'+Track->m_sFilename;
+    QString location = Track->getLocation();
 
-    Track->m_sType = "mp3";
+    Track->setType("mp3");
 
     id3_file *fh = id3_file_open(location.latin1(), ID3_FILE_MODE_READONLY);
     if (fh!=0)
@@ -246,19 +246,24 @@ int SoundSourceMp3::ParseHeader(TrackInfoObject *Track)
         id3_tag *tag = id3_file_tag(fh);
         if (tag!=0)
         {
-            getField(tag,"TIT2",Track->m_sTitle);
-            getField(tag,"TPE1",Track->m_sArtist);
+            QString s;
+            getField(tag,"TIT2",&s);
+            if (s.length()>2)
+                Track->setTitle(s);
+            getField(tag,"TPE1",&s);
+            if (s.length()>2)
+                Track->setArtist(s);
 
             /*
             // On some tracks this segfaults. TLEN is very seldom used anyway...
             QString dur;
-            getField(tag,"TLEN",dur);
+            getField(tag,"TLEN",&dur);
             if (dur.length()>0)
                 Track->m_iDuration = dur.toInt();
             */
         }
         id3_file_close(fh);
-    } 
+    }
     else
         return ERR;
 
@@ -309,7 +314,7 @@ int SoundSourceMp3::ParseHeader(TrackInfoObject *Track)
 
     if (foundxing)
     {
-        Track->m_iDuration = dur.seconds;
+        Track->setDuration(dur.seconds);
     }
     else
     {
@@ -337,21 +342,21 @@ int SoundSourceMp3::ParseHeader(TrackInfoObject *Track)
         }
         if (constantbitrate && frames>1)
         {
-            mad_timer_multiply(&dur, Track->m_iLength/((Stream.this_frame-Stream.buffer)/frames));
-            Track->m_iDuration = dur.seconds;
-            Track->m_sBitrate.setNum(Header.bitrate/1000);
+            mad_timer_multiply(&dur, Track->getLength()/((Stream.this_frame-Stream.buffer)/frames));
+            Track->setDuration(dur.seconds);
+            Track->setBitrate(Header.bitrate/1000);
         }
 //        else
 //            qDebug("MAD: Count frames to get file duration!");
     }
-    
+
     mad_stream_finish(&Stream);
     delete [] inputbuf;
     file.close();
     return OK;
 }
 
-void SoundSourceMp3::getField(id3_tag *tag, const char *frameid, QString str)
+void SoundSourceMp3::getField(id3_tag *tag, const char *frameid, QString *str)
 {
     id3_frame *frame = id3_tag_findframe(tag, frameid, 0);
     if (frame)
@@ -368,7 +373,7 @@ void SoundSourceMp3::getField(id3_tag *tag, const char *frameid, QString str)
         id3_utf16_t *framestr = id3_ucs4_utf16duplicate(id3_field_getstrings(&frame->fields[1], 0));
         int strlen = 0; while (framestr[strlen]!=0) strlen++;
         if (strlen>0)
-            str.setUnicodeCodes((ushort *)framestr,strlen);
+            str->setUnicodeCodes((ushort *)framestr,strlen);
         delete [] framestr;
     }
 }
