@@ -51,6 +51,9 @@ void WPushButton::setPixmap(int iState, bool bPressed, const QString &filename)
 {
     int pixIdx = (iState*2)+bPressed;
     m_pPixmaps[pixIdx] = new QPixmap(filename);
+    if (!m_pPixmaps[pixIdx])
+        qDebug("WPushButton: Error loading pixmap: %s",filename.latin1());
+
 }
 
 void WPushButton::setValue(double v)
