@@ -166,13 +166,16 @@ bool PlayerRtAudio::open()
     qDebug("id %i, sr %i, ch %i, bufsize %i, bufno %i", id, iSrate, iChannels, iFramesPerBuffer, m_iNumberOfBuffers);
 
     if (id<1)
+    {
+        m_devId = -1;
         return false;
-
+    }
+    
     // Start playback
     try 
     {
         // Open stream
-        m_pRtAudio->openStream(id, iChannels, 0, 0, RTAUDIO_SINT16, iSrate, &iFramesPerBuffer, m_iNumberOfBuffers);  
+        m_pRtAudio->openStream(id, iChannels, 0, 0, RTAUDIO_FLOAT32, iSrate, &iFramesPerBuffer, m_iNumberOfBuffers);  
         
         // Set callback function
         m_pRtAudio->setStreamCallback(&rtCallback, (void *)this);
@@ -201,22 +204,26 @@ bool PlayerRtAudio::open()
 
 void PlayerRtAudio::close()
 {
-    m_devId = -1;
     m_iChannels = 0;
     m_iMasterLeftCh = -1;
     m_iMasterRigthCh = -1;
     m_iHeadLeftCh = -1;
     m_iHeadRightCh = -1;
 
-    try 
-    {
-        m_pRtAudio->stopStream();
-        m_pRtAudio->closeStream();
+    if (m_devId>0)
+    {    
+        qDebug("close");
+        try 
+        {
+            m_pRtAudio->stopStream();
+            m_pRtAudio->closeStream();
+        }
+        catch (RtError &error)
+        {
+            error.printMessage();
+        }
     }
-    catch (RtError &error)
-    {
-        error.printMessage();
-    }
+    m_devId = -1;
 }
 
 void PlayerRtAudio::setDefaults()
@@ -313,7 +320,7 @@ QStringList PlayerRtAudio::getSampleRates()
     // Sample rates
     if (info.sampleRates.size() > 0)
     {
-        for (int j=0; j<info.sampleRates.size(); ++j)
+        for (unsigned int j=0; j<info.sampleRates.size(); ++j)
             result.append(QString("%1").arg(info.sampleRates[j]));
     }
     
@@ -324,6 +331,9 @@ QString PlayerRtAudio::getSoundApi()
 {
 #ifdef __WIN__
     return QString("DirectSound");
+#endif
+#ifdef __LINUX__
+    return QString("ALSA");
 #endif
 }
 
