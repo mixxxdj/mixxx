@@ -49,7 +49,7 @@ VisualChannel::~VisualChannel()
 
 VisualBuffer *VisualChannel::add(ReaderExtract *pReaderExtract)
 {
-    VisualBuffer *b;
+    VisualBuffer *b = 0;
 
     // Determine type.... A hack, yes!
     if (pReaderExtract->getVisualDataType()=="signal")
@@ -70,6 +70,8 @@ VisualBuffer *VisualChannel::add(ReaderExtract *pReaderExtract)
         b->setColorBg(m_fColorBackR, m_fColorBackG, m_fColorBackB);
     }
 
+    Q_ASSERT(b);
+    
     // And a corresponding display. If the display is the first, also draw box
     // ADD GROUP INFO *****************
     VisualDisplay *d;

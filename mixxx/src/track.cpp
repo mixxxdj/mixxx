@@ -113,7 +113,7 @@ void Track::readXML(QString location)
     QDomElement elementRoot = domXML.documentElement();
 
     // Get version
-    int version = XmlParse::selectNodeInt(elementRoot, "Version");
+    //int version = XmlParse::selectNodeInt(elementRoot, "Version");
 
     // Initialize track collection
     QDomNode node = XmlParse::selectNode(elementRoot, "TrackList");

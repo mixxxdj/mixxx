@@ -583,7 +583,7 @@ void EngineBuffer::slotControlFastFwdBack(double v)
         scale->setFastMode(true);
 }
 
-void EngineBuffer::process(const CSAMPLE *pIn, const CSAMPLE *pOut, const int iBufferSize)
+void EngineBuffer::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBufferSize)
 {
     CSAMPLE *pOutput = (CSAMPLE *)pOut;
 
@@ -966,11 +966,17 @@ void EngineBuffer::rampOut(const CSAMPLE *pOut, int iBufferSize)
     {
         int iLen = min(iBufferSize, kiRampLength);
         float fStep = m_fLastSampleValue/(float)iLen;
-        for (i; i<iLen; ++i)
+        while (i<iLen)
+        {
             pOutput[i] = fStep*(iLen-(i+1));
+            ++i;
+        }
     }    
                            
     // Reset rest of buffer 
-    for (i; i<iBufferSize; i++)
+    while (i<iBufferSize)
+    {
         pOutput[i]=0.;
+        ++i;
+    }
 }

@@ -17,7 +17,6 @@
 
 #include "reader.h"
 #include "readerextractwave.h"
-#include "readerextractfft.h"
 #include "readerextracthfc.h"
 #include "readerextractbeat.h"
 #include "readerevent.h"
@@ -58,12 +57,10 @@ ReaderExtractWave::ReaderExtractWave(Reader *pReader) : ReaderExtract(0, "signal
     file = 0;
 
     // Initialize extractor objects
-    readerfft = 0;
     readerhfc = 0;
     readerbeat = 0;
 #ifdef EXTRACT
-    readerfft  = new ReaderExtractFFT((ReaderExtract *)this, WINDOWSIZE, STEPSIZE);
-    readerhfc  = new ReaderExtractHFC((ReaderExtract *)readerfft, WINDOWSIZE, STEPSIZE);
+    readerhfc  = new ReaderExtractHFC((ReaderExtract *)this, WINDOWSIZE, STEPSIZE);
     readerbeat = new ReaderExtractBeat((ReaderExtract *)readerhfc, WINDOWSIZE, STEPSIZE, 100);
 #endif
 }
@@ -77,7 +74,6 @@ ReaderExtractWave::~ReaderExtractWave()
 #ifdef EXTRACT
     delete readerbeat;
     delete readerhfc;
-    delete readerfft;
 #endif
 }
 
@@ -138,7 +134,6 @@ void ReaderExtractWave::newSource(TrackInfoObject *pTrack)
     reset();
 
 #ifdef EXTRACT
-    readerfft->newSource(pTrack);
     readerhfc->newSource(pTrack);
     readerbeat->newSource(pTrack);
 #endif
@@ -148,7 +143,6 @@ void ReaderExtractWave::addVisual(VisualChannel *pVisualChannel)
 {
     ReaderExtract::addVisual(pVisualChannel);
 #ifdef EXTRACT
-//    readerfft->addVisual(pVisualChannel);
 //    readerhfc->addVisual(pVisualChannel);
     readerbeat->addVisual(pVisualChannel);
 #endif
@@ -170,7 +164,6 @@ void ReaderExtractWave::reset()
 
 #ifdef EXTRACT
     // Reset extract objects
-    readerfft->reset();
     readerhfc->reset();
     readerbeat->reset();
 #endif
@@ -373,7 +366,6 @@ void ReaderExtractWave::getchunk(CSAMPLE rate)
 #ifdef EXTRACT
     // Do pre-processing...
 //    qDebug("curr %i, start %i, end %i",chunkCurr,chunkStart,chunkEnd);
-    readerfft->processChunk(chunkCurr, chunkStart, chunkEnd, backwards);
     readerhfc->processChunk(chunkCurr, chunkStart, chunkEnd, backwards);
     readerbeat->processChunk(chunkCurr, chunkStart, chunkEnd, backwards);
 #endif
@@ -420,7 +412,6 @@ long int ReaderExtractWave::seek(long int new_playpos)
 
 #ifdef EXTRACT
         // Reset extract objects
-        readerfft->reset();
         readerhfc->reset();
         readerbeat->reset();
 #endif

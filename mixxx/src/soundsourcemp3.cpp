@@ -303,7 +303,7 @@ unsigned SoundSourceMp3::read(unsigned long samples_wanted, const SAMPLE* _desti
     }
 
     //qDebug("Decoding");
-    int no;
+    int no = 0;
     int frames = 0;
     while (Total_samples_decoded < samples_wanted)
     {
