@@ -328,16 +328,20 @@ void EngineBuffer::checkread(bool backwards)
 {
     FLOAT_TYPE start = soundbuffer->getFileposStart();
     FLOAT_TYPE end = soundbuffer->getFileposEnd();
-    
-    if (!backwards && end< file->length() && (end - filepos_play < READCHUNKSIZE*(READCHUNK_NO/2-2)))
+
+    // Check only if we were able to read start and end pos in file (ie. start and end not equals -1)
+    if (start>-1. && end>-1.)
     {
-        //qDebug("forw: diff %f,%f",filepos_end.read(),filepos_play.read());
-        buffersReadAhead->wakeAll();
-    }
-    else if (backwards && start>0. && (filepos_play - start < READCHUNKSIZE*(READCHUNK_NO/2-2))) 
-    {
-        //qDebug("back: diff %f,%f",filepos_play.read(),filepos_start.read());
-        buffersReadAhead->wakeAll();
+        if (!backwards && end< file->length() && (end - filepos_play < READCHUNKSIZE*(READCHUNK_NO/2-2)))
+        {
+            //qDebug("forw: diff %f,%f",filepos_end.read(),filepos_play.read());
+            buffersReadAhead->wakeAll();
+        }
+        else if (backwards && start>0. && (filepos_play - start < READCHUNKSIZE*(READCHUNK_NO/2-2))) 
+        {
+            //qDebug("back: diff %f,%f",filepos_play.read(),filepos_start.read());
+            buffersReadAhead->wakeAll();
+        }
     }
 }
 
