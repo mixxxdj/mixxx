@@ -46,7 +46,7 @@ win32 {
 FORMS	= dlgchanneldlg.ui dlgplaycontroldlg.ui dlgplaylistdlg.ui dlgmasterdlg.ui dlgcrossfaderdlg.ui 
 IMAGES	= filesave.xpm 
 TEMPLATE	=app
-CONFIG	+= qt warn_on thread release debug
+CONFIG	+= qt warn_on thread debug
 DEFINES	+= __ALSA__
 unix:LIBS	+= -lasound
 DBFILE	= mixxx.db

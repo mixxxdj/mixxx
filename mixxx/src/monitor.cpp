@@ -34,22 +34,22 @@ Monitor::~Monitor()
 double Monitor::read()
 {
     double temp;
-//    mutex.lock();
+    mutex.lock();
     temp = value;
-//    mutex.unlock();
+    mutex.unlock();
     return temp;
 }
 
 void Monitor::write(double v)
 {
-//    mutex.lock();
+    mutex.lock();
     value = v;
-//    mutex.unlock();
+    mutex.unlock();
 }
 
 void Monitor::add(double v)
 {
-//    mutex.lock();
+    mutex.lock();
     value += v;
-//    mutex.unlock();
+    mutex.unlock();
 }

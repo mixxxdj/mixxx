@@ -153,35 +153,43 @@ void EngineBuffer::run() {
   Called when the playbutten is pressed
 */
 void EngineBuffer::slotUpdatePlay(valueType) {
-  static int start_seek;
-  if (PlayButton->getPosition()==down) {
-    qDebug("Entered seeking mode");
-    rate.write(0);
-    start_seek = wheel->getPosition();
-  }
-  else if (PlayButton->getPosition()==up) {
-    int end_seek = wheel->getPosition();
-    if (abs(start_seek - end_seek) > 2) {
-      // A seek has occured. Find new filepos:
-      if ((wheel->direction==1) &&(end_seek < start_seek))
-	end_seek += 128;
-      else
-	if ((wheel->direction==-1) && (end_seek > start_seek))
-	  end_seek -= 128;
-      seek((FLOAT_TYPE)(end_seek-start_seek)/128);
+    if (PlayButton->getPosition()==down) {
+	qDebug("Entered seeking mode");
+	rate.write(0);
+	start_seek = wheel->getPosition();
     }
-    qDebug("Ended seeking");
-  }
-  slotUpdateRate(rateSlider->getValue());
+    else if (PlayButton->getPosition()==up) {
+	seek((FLOAT_TYPE)(end_seek()-start_seek)/128);
+	qDebug("Ended seeking");
+    }
+    slotUpdateRate(rateSlider->getValue());
 }
 
+int EngineBuffer::end_seek() {
+    int _end_seek = wheel->getPosition();
+    if (abs(start_seek - _end_seek) > 2) {
+	// A seek has occured. Find new filepos:
+	if ((wheel->direction==1) &&(_end_seek < start_seek))
+	    _end_seek += 128;
+	else
+	    if ((wheel->direction==-1) && (_end_seek > start_seek))
+		_end_seek -= 128;
+    } 
+    return _end_seek;
+}
+/*
+  Called when the wheel is turned or the rate slider is moved:
+*/
 void EngineBuffer::slotUpdateRate(FLOAT_TYPE)
 {
     if (PlayButton->getValue()==on)
         rate.write(rateSlider->getValue() + 4*wheel->getValue());
     else
-        if (PlayButton->getPosition()==down)
+        if (PlayButton->getPosition()==down) {
+	    // No rate while seeking:
             rate.write(0);
+	    emit position((int)(100*(FLOAT_TYPE)(end_seek()-start_seek)/128));
+	}
         else
             rate.write(4*wheel->getValue());
 
@@ -192,17 +200,25 @@ void EngineBuffer::slotUpdateRate(FLOAT_TYPE)
   Read a new chunk into the readbuffer:
 */
 void EngineBuffer::getchunk() {
+    if (readChunkLock.read()==0.) {
+	readChunkLock.write(1.);
+
   qDebug("Reading...");
 
   // Read a chunk
   unsigned samples_read = file->read(chunk_size, temp);
+
+qDebug("1");
+
   if (samples_read < chunk_size)
       qDebug("Didn't get as many samples as we asked for: %d:%d", chunk_size, samples_read);
 
+qDebug("2");
   // Convert from SAMPLE to CSAMPLE. Should possibly be optimized
   // using assembler code from music-dsp archive.
   unsigned long lastread_buffer = ((unsigned long)(playpos_buffer.read() + lastread_file.read() -
          playpos_file.read()))%read_buffer_size;
+qDebug("3");
 
    /* qDebug("lastread_buffer: %f", (double)lastread_buffer);
     qDebug("playpos_buffer: %f",playpos_buffer.read());
@@ -210,15 +226,23 @@ void EngineBuffer::getchunk() {
     qDebug("lastread_file: %f",lastread_file.read()); */
 
   unsigned i = 0;
+  qDebug("p: %p,%p, j=%i to %i",read_buffer,temp,lastread_buffer,min(read_buffer_size,lastread_buffer+samples_read));
   for (unsigned long j=lastread_buffer; j<min(read_buffer_size,lastread_buffer+samples_read); j++)
     read_buffer[j] = temp[i++];
+qDebug("4");
   //qDebug("%i",lastread_buffer+samples_read-read_buffer_size);
   for (signed long j=0; j<(signed long)(lastread_buffer+samples_read-read_buffer_size); j++)
     read_buffer[j] = temp[i++];
+qDebug("5");
 
   // Update lastread_file position:
   lastread_file.add((double)samples_read);
   qDebug("Done reading.");
+    
+    readChunkLock.write(0.);
+    } else
+	qDebug("getchunk not processed");
+
 }
 
 /*
@@ -232,8 +256,13 @@ void EngineBuffer::slotPosition(int newvalue) {
 */
 void EngineBuffer::seek(FLOAT_TYPE change)
 {
+    if (readChunkLock.read()==0.) {
+        readChunkLock.write(1.);
+
+    qDebug("Entered seek");
   double saved_rate = rate.read();
   rate.write(0);
+  qDebug("Set rate to zero");
   double new_playpos = playpos_file.read() + change*file->length();
   if (new_playpos > file->length()) new_playpos = file->length();
   if (new_playpos < 0) new_playpos = 0;
@@ -242,9 +271,14 @@ void EngineBuffer::seek(FLOAT_TYPE change)
   lastread_file.write(new_playpos);
   qDebug("Seeking %g to %g",change, playpos_file.read());
   file->seek((long unsigned)playpos_file.read());
-  getchunk();
+  //getchunk();
+  buffersReadAhead->wakeAll();
   qDebug("done seeking.");
   rate.write(saved_rate);
+} else {
+	qDebug("no seeking since getChunk is active!");
+}
+  readChunkLock.write(0.);
 }
 
 bool even(long n)
@@ -290,7 +324,7 @@ CSAMPLE *EngineBuffer::process(const CSAMPLE *, const int buf_size)
 	        buffer[i]=0.;
     } else {
         long prev;
-	    for (int i=0; i<buf_size; i+=2)
+	for (int i=0; i<buf_size; i+=2)
         {
             if (playpos_file.read() < file->length())
             {

@@ -157,16 +157,18 @@ void PlayerALSA::run()
 void PlayerALSA::rt_priority()
 {
     // Set the max. possible priority for a non-realtime process:
-    setpriority(PRIO_PROCESS, 0, -20);
+    //if (setpriority(PRIO_PROCESS, 0, -20) != 0)
+	//qWarning("Didn't get max. priority");
 
-/*
+
     // Try to set realtime priority on the current executing thread
 	struct sched_param schp;
     memset(&schp, 0, sizeof(schp));
     schp.sched_priority = sched_get_priority_max(SCHED_FIFO);
-    if (sched_setscheduler(0, SCHED_RR, &schp) != 0)
+    if (sched_setscheduler(0, SCHED_FIFO, &schp) != 0)
 	qWarning("Not possible to give audio I/O thread realtime prioriy.");
-*/
+
+
 }
 
 

@@ -57,30 +57,33 @@ public slots:
 signals:
    void position(int);   
 private:
-  Monitor rate;
-  void run();
-  void stop();
-  QSemaphore *requestStop;
-  QWaitCondition *buffersReadAhead;
-
-  Monitor lastread_file; // The last read sample in the file.
-  Monitor playpos_file; // The current sample to play in the file.
-  Monitor playpos_buffer; // The corresponding sample in the buffer.
-  CSAMPLE *read_buffer; // The buffer where the samples are read into
-  unsigned long int read_buffer_size; // Length of buffer.
-
-  DlgPlaycontrol *playcontrol;
-
-  void getchunk();
-  void seek(FLOAT_TYPE);
-  void checkread();
-  void writepos();
-  ControlPushButton *PlayButton;
-  ControlPotmeter *rateSlider;
-  ControlRotary *wheel;
-  SoundSource *file;
-  SAMPLE *temp;
-  unsigned  chunk_size;
-  CSAMPLE *buffer; // Buffer used in the process()
+   int start_seek;
+   Monitor rate;
+   Monitor readChunkLock;
+   void run();
+   void stop();
+   QSemaphore *requestStop;
+   QWaitCondition *buffersReadAhead;
+   
+   Monitor lastread_file; // The last read sample in the file.
+   Monitor playpos_file; // The current sample to play in the file.
+   Monitor playpos_buffer; // The corresponding sample in the buffer.
+   CSAMPLE *read_buffer; // The buffer where the samples are read into
+   unsigned long int read_buffer_size; // Length of buffer.
+   
+   DlgPlaycontrol *playcontrol;
+   
+   void getchunk();
+   void seek(FLOAT_TYPE);
+   void checkread();
+   void writepos();
+   int end_seek();
+   ControlPushButton *PlayButton;
+   ControlPotmeter *rateSlider;
+   ControlRotary *wheel;
+   SoundSource *file;
+   SAMPLE *temp;
+   unsigned  chunk_size;
+   CSAMPLE *buffer; // Buffer used in the process()
 };
 #endif
