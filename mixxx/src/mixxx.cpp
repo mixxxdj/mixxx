@@ -71,6 +71,8 @@
 
 MixxxApp::MixxxApp(QApplication *a)
 {
+qDebug("path %s",QDir::currentDirPath().latin1());
+
   qDebug("Starting up...");
   setCaption(tr("Mixxx " VERSION));
 

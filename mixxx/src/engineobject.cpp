@@ -85,7 +85,7 @@ void EngineObject::rtThread()
                THREAD_TIME_CONSTRAINT_POLICY, (int *)&ttcpolicy,
                THREAD_TIME_CONSTRAINT_POLICY_COUNT);
     if (theError != KERN_SUCCESS)
-        fprintf(stderr, "Can't do thread_policy_set\n");
+        qDebug("Can't do thread_policy_set");
 #endif
 #ifdef __UNIX__
 #ifndef __MACX__
