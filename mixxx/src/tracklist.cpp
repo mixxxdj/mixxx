@@ -161,7 +161,7 @@ bool TrackList::AddFiles(const char *path)
 #endif
 				// Append the track to the list of tracks:
 				m_lTracks.append( Track );
-				qDebug( "Found new track: %s", Track->m_sFilename.latin1() );
+//				qDebug( "Found new track: %s", Track->m_sFilename.latin1() );
 				bFoundFiles = true;
 			}
             ++it;   // goto next list element
@@ -266,7 +266,7 @@ void TrackList::UpdateTracklist()
             if (!FileExistsInList( Track->m_sFilename ) )
             {
 			    m_lTracks.append( Track );
-			    qDebug( "Read track from xml file: %s", Track->m_sFilename.latin1() );
+//			    qDebug( "Read track from xml file: %s", Track->m_sFilename.latin1() );
             }
         }
         node = node.nextSibling();
@@ -302,7 +302,7 @@ void TrackList::UpdateTracklist()
 }
 void TrackList::slotUpdateTracklist( QString sDir )
 {
-    qDebug("dir: %s",sDir.latin1());
+//    qDebug("dir: %s",sDir.latin1());
 
     // Save the "old" xml file:
     WriteXML();

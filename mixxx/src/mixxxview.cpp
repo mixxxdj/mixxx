@@ -76,10 +76,10 @@ MixxxView::MixxxView(QWidget *parent, MixxxDoc *doc) : QWidget(parent)
     tracklist->tableTracks->setLeftMargin(0);
     tracklist->tableTracks->setColumnWidth(0,20);
     tracklist->tableTracks->setColumnWidth(1,240);
-    tracklist->tableTracks->setColumnWidth(2,230);
+    tracklist->tableTracks->setColumnWidth(2,220);
     tracklist->tableTracks->setColumnWidth(3,30);
     tracklist->tableTracks->setColumnWidth(4,50);
-    tracklist->tableTracks->setColumnWidth(5,40);
+    tracklist->tableTracks->setColumnWidth(5,50);
     
 }
 

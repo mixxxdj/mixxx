@@ -80,7 +80,7 @@ unsigned SoundSourceSndFile::read(unsigned long size, const SAMPLE* destination)
 void SoundSourceSndFile::ParseHeader( TrackInfoObject *Track )
 {
     SF_INFO info;
-	QString location = Track->m_sFilepath+'/'+Track->m_sFilename;
+    QString location = Track->m_sFilepath+'/'+Track->m_sFilename;
     SNDFILE *fh = sf_open( location.ascii() ,SFM_READ, &info);
     if (fh == 0 || !sf_format_check(&info))
     {
@@ -88,11 +88,11 @@ void SoundSourceSndFile::ParseHeader( TrackInfoObject *Track )
         return;
     }
 
-	Track->m_sType = "wav";
-	Track->m_sBitrate = QString("%1").arg(Track->m_iLength/(info.samplerate));
-	Track->m_iDuration = Track->m_iLength/(4*info.samplerate);
+    Track->m_sType = "wav";
+    Track->m_sBitrate = QString("%1").arg(Track->m_iLength/(info.samplerate));
+    Track->m_iDuration = Track->m_iLength/(4*info.samplerate);
 
-	sf_close( fh );
+    sf_close( fh );
 }
 
 /*
