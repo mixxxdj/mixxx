@@ -27,7 +27,7 @@
 
  class PlayerPortAudio : public Player  {
 public: 
-	PlayerPortAudio(int size, vector<EngineObject *> *);
+	PlayerPortAudio(int size, std::vector<EngineObject *> *);
 	~PlayerPortAudio();
 	/** No descriptions */
 	void stop();

@@ -29,12 +29,12 @@ EngineBuffer::EngineBuffer(DlgPlaycontrol *playcontrol, DlgChannel *channel, Mid
   rateSlider->slotSetPosition(64);
   rate = rateSlider->getValue();
   connect(channel->SliderRate, SIGNAL(valueChanged(int)), rateSlider, SLOT(slotSetPosition(int)));
-  connect(rateSlider, SIGNAL(valueChanged(FLOAT)), this, SLOT(slotUpdateRate(FLOAT)));
+  connect(rateSlider, SIGNAL(valueChanged(FLOAT_TYPE)), this, SLOT(slotUpdateRate(FLOAT_TYPE)));
   connect(rateSlider, SIGNAL(recievedMidi(int)), channel->SliderRate, SLOT(setValue(int)));
 
   wheel = new ControlRotary("wheel", PORT_D, midi);
   connect(playcontrol->DialPlaycontrol, SIGNAL(valueChanged(int)), wheel, SLOT(slotSetPosition(int)));
-  connect(wheel, SIGNAL(valueChanged(FLOAT)), this, SLOT(slotUpdateRate(FLOAT)));
+  connect(wheel, SIGNAL(valueChanged(FLOAT_TYPE)), this, SLOT(slotUpdateRate(FLOAT_TYPE)));
   connect(wheel, SIGNAL(recievedMidi(int)), playcontrol->DialPlaycontrol, SLOT(setValue(int)));
 
   connect(this, SIGNAL(position(int)), channel->LCDposition, SLOT(display(int)));
@@ -95,18 +95,19 @@ void EngineBuffer::newtrack(const char* filename) {
     i--;
   if (i == 0) {
     qFatal("Wrong filename: %s.",filename);
-    std::exit(-1);
   }
   char ending[80];
   strcpy(ending,&filename[i]);
+#ifndef Q_WS_WIN
   if (!strcmp(ending,".wav"))
     file = new AFlibfile(filename);
-  else if (!strcmp(ending,".mp3") || (!strcmp(ending,".MP3")))
+  else 
+#endif
+  if (!strcmp(ending,".mp3") || (!strcmp(ending,".MP3")))
 	file = new SoundSourceHeavymp3(filename);
 
   if (file==0) {
     qFatal("Error opening %s", filename);
-    std::exit(-1);
   }
   // Initialize position in read buffer:
   filepos = 0;
@@ -166,16 +167,14 @@ void EngineBuffer::slotUpdatePlay(valueType) {
       else
 	if ((wheel->direction==-1) && (end_seek > start_seek))
 	  end_seek -= 128;
-      //cout << "Seeking " << (FLOAT)((end_seek-start_seek)/128.) 
-      //   << ".";
-      seek((FLOAT)(end_seek-start_seek)/128);
+      seek((FLOAT_TYPE)(end_seek-start_seek)/128);
     }
     qDebug("Ended seeking");
   }
   slotUpdateRate(rateSlider->getValue());
 }
 
-void EngineBuffer::slotUpdateRate(FLOAT) {
+void EngineBuffer::slotUpdateRate(FLOAT_TYPE) {
   if (PlayButton->getValue()==on)
       rate = rateSlider->getValue() + 4*wheel->getValue();
   else
@@ -224,12 +223,12 @@ void EngineBuffer::getchunk() {
   This is called when the positionslider is released:
 */
 void EngineBuffer::slotPosition(int newvalue) {
-  seek((FLOAT)newvalue/102 - play_pos/(FLOAT)file->length());
+  seek((FLOAT_TYPE)newvalue/102 - play_pos/(FLOAT_TYPE)file->length());
 }
 /*
   Moves the playpos forward change%
 */
-void EngineBuffer::seek(FLOAT change) {
+void EngineBuffer::seek(FLOAT_TYPE change) {
   double saved_rate = rate;
   rate = 0;
   double new_play_pos = play_pos + change*file->length();
@@ -314,28 +313,12 @@ long EngineBuffer::distance(const long _start, const long end)
 
 void EngineBuffer::writepos()
 {
-  static FLOAT lastwrite = 0.;
-  FLOAT newwrite = play_pos/file->length();
+  static FLOAT_TYPE lastwrite = 0.;
+  FLOAT_TYPE newwrite = play_pos/file->length();
   if (floor(fabs(newwrite-lastwrite)*100) >= 1) {
       emit position((int)(100*newwrite));
       lastwrite = newwrite;
   }
-}
-
-FLOAT EngineBuffer::min(const FLOAT a, const FLOAT b)
-{
-  if (a > b)
-    return b;
-  else
-    return a;
-}
-
-FLOAT EngineBuffer::max(const FLOAT a, const FLOAT b)
-{
-  if (a > b)
-    return a;
-  else
-    return b;
 }
 
 CSAMPLE *EngineBuffer::process(const CSAMPLE *, const int buf_size)
@@ -349,7 +332,7 @@ CSAMPLE *EngineBuffer::process(const CSAMPLE *, const int buf_size)
 	    prev = (long)floor(play_pos)%read_buffer_size;
 	    if (!even(prev)) prev--;
 	    long next = (prev+2)%read_buffer_size;
-	    FLOAT frac = play_pos - floor(play_pos);
+	    FLOAT_TYPE frac = play_pos - floor(play_pos);
 	    buffer[i  ] = readbuffer[prev  ] +frac*(readbuffer[next  ]-readbuffer[prev  ]);
 	    buffer[i+1] = readbuffer[prev+1] +frac*(readbuffer[next+1]-readbuffer[prev+1]);
 	    play_pos += 2.*rate;

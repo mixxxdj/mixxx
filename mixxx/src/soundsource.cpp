@@ -33,6 +33,7 @@ SoundSource::~SoundSource()
 {
 }
 
+#ifndef Q_WS_WIN
 /*
   Class for reading files using libaudiofile
 */
@@ -68,7 +69,7 @@ unsigned AFlibfile::read(unsigned long size, const SAMPLE* destination) {
 long unsigned AFlibfile::length() {
   return filelength;
 }
-
+#endif
 /*
   Reading and decoding of mp3-files:
 */
@@ -76,8 +77,7 @@ mp3file::mp3file(const char* filename) {
   // Open the file:
   file = fopen(filename,"r");
   if (!file) {
-	cout << "Open of " << filename << " failed\n" << flush;
-	exit(-1);
+	qFatal("Open of %s failed.", filename);
   }
   // Read in the whole file into inputbuf:
   struct stat filestat;
@@ -86,7 +86,7 @@ mp3file::mp3file(const char* filename) {
   inputbuf_len = mp3filelength;
   inputbuf = new unsigned char[inputbuf_len];
   if (fread(inputbuf,1,mp3filelength,file) != mp3filelength)
-    cout << "Error reading mp3-file.\n" << flush;
+    qFatal("Error reading mp3-file.");
   // Transfer it to the mad stream-buffer:
   mad_stream_init(&Stream);
   mad_stream_buffer(&Stream, inputbuf, mp3filelength);

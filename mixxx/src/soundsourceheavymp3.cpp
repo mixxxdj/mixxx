@@ -4,8 +4,7 @@ SoundSourceHeavymp3::SoundSourceHeavymp3(const char *filename) {
   // Open the file:
   file = fopen(filename,"r");
   if (!file) {
-      cout << "Open of " << filename << " failed\n" << flush;
-      exit(-1);
+      qFatal("Open of %s failed",filename);
   }
   // Read in the whole file into inputbuf:
   struct stat filestat;
@@ -14,7 +13,7 @@ SoundSourceHeavymp3::SoundSourceHeavymp3(const char *filename) {
   inputbuf_len = mp3filelength;
   inputbuf = new unsigned char[inputbuf_len];
   if (fread(inputbuf,1,mp3filelength,file) != mp3filelength)
-    cout << "Error reading mp3-file.\n" << flush;
+    qFatal("Error reading mp3-file.");
   fclose(file);
 
   mad_stream Stream;

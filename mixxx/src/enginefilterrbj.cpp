@@ -23,7 +23,7 @@ EngineFilterRBJ::EngineFilterRBJ(int potmeter_midi, int button_midi,
 	gain = 100.;
 
 	filterpot = new ControlPotmeter("filterpot", potmeter_midi, midi);
-	connect(filterpot, SIGNAL(valueChanged(FLOAT)), this, SLOT(slotUpdate()));
+	connect(filterpot, SIGNAL(valueChanged(FLOAT_TYPE)), this, SLOT(slotUpdate()));
 
     updateFilter();
 	s0 = 0.; s1 = 0.; s2 = 0.; d0 = 0.; d1 = 0.; d2 = 0.;

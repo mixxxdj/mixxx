@@ -12,12 +12,12 @@ class EnginePregain : public EngineObject {
 private:
  public:
   ControlPotmeter* pregainpot;
-  FLOAT pregain;
+  FLOAT_TYPE pregain;
   EnginePregain(int, MidiObject*);
   ~EnginePregain();
   CSAMPLE *process(const CSAMPLE*, const int);
  public slots:
-  void slotUpdate(FLOAT);
+  void slotUpdate(FLOAT_TYPE);
 
  private:
   CSAMPLE *buffer;

@@ -22,7 +22,7 @@
 #include <qpushbutton.h>
 #include <qmultilineedit.h>
 #include <qslider.h>
-#include <qknob.h>
+#include "qknob.h"
 #include <qstring.h>
 #include <qlcdnumber.h>
 //#include <semaphore.h>
@@ -52,7 +52,7 @@ public:
   CSAMPLE *process(const CSAMPLE *, const int);
 public slots:
    void slotUpdatePlay(valueType);
-   void slotUpdateRate(FLOAT);
+   void slotUpdateRate(FLOAT_TYPE);
    void slotPosition(int);
 signals:
    void position(int);   
@@ -68,7 +68,7 @@ private:
   double play_pos;
   CSAMPLE *readbuffer;
   void getchunk();
-  void seek(FLOAT);
+  void seek(FLOAT_TYPE);
   void checkread();
   void writepos();
   ControlPushButton *PlayButton;
@@ -78,11 +78,9 @@ private:
   SAMPLE *temp;
   unsigned  chunk_size;
   unsigned long int filepos;
-  FLOAT filelength;
+  FLOAT_TYPE filelength;
   int direction;
   long distance(const long, const long);
-  FLOAT min(const FLOAT, const FLOAT);
-  FLOAT max(const FLOAT, const FLOAT);
   CSAMPLE *buffer;
 };
 #endif

@@ -53,7 +53,7 @@ void ControlRotary::slotSetPosition(int newpos) {
 	value = 0.;
       else 
 	if (deltasec*1000+deltamillisec > 0)
-	  value = (FLOAT)change / (FLOAT)(deltasec*1000+deltamillisec);
+	  value = (FLOAT_TYPE)change / (FLOAT_TYPE)(deltasec*1000+deltamillisec);
       /*	    cout << "Wheel: new position " << (int)newpos << " to " <<(int)position << ", velocity " << 
 		    setw(8) << value <<"\n.";
 		    cout << "deltat " << deltasec << ", " << deltamillisec << "\n";
@@ -61,7 +61,7 @@ void ControlRotary::slotSetPosition(int newpos) {
       */    
       oldtime = newtime;
       position = newpos;
-      counter = 4*(FLOAT)(deltasec*1000+deltamillisec);
+      counter = 4*(FLOAT_TYPE)(deltasec*1000+deltamillisec);
       emit valueChanged(value);
     }
   }
@@ -69,7 +69,7 @@ void ControlRotary::slotSetPosition(int newpos) {
 
 void ControlRotary::updatecounter(int samples) {
   if (counter > 0) {
-    counter -= (FLOAT)samples/(FLOAT)(SRATE/1000);
+    counter -= (FLOAT_TYPE)samples/(FLOAT_TYPE)(SRATE/1000);
     if (counter <= 0) {
       //cout << "Stopping wheel.\n";
       value = 0;

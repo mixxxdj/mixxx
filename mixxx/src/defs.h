@@ -11,7 +11,7 @@ typedef short int SAMPLE;       // Data type used in output buffer. S16_LE works
 const int SAMPLE_SIZE = 2;      // Number of bytes used to store 1 sample
 typedef double CSAMPLE;          // CSAMPLE defines the CSAMPLE type used for
                                 // intermidiate calculations
-typedef CSAMPLE FLOAT;            // Float type, used for non sample data
+typedef CSAMPLE FLOAT_TYPE;       // Float type, used for non sample data
 static int SRATE       = 44100; // Sample rate
 const int BUFFER_SIZE  = 128;  // Buffer size used both for input and output
 const int READAHEAD = 150000;     // how many samples to read ahead.
@@ -39,5 +39,13 @@ const short ADC6 = 0x30;
 const short ADC7 = 0x38;
 const short PORT_B = 1;
 const short PORT_D = 3;
+
+#ifndef max
+#define max(a,b)            (((a) > (b)) ? (a) : (b))
+#endif
+
+#ifndef min
+#define min(a,b)            (((a) < (b)) ? (a) : (b))
+#endif
 
 #endif

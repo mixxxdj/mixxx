@@ -4,11 +4,17 @@ unix {
   UI_DIR = .ui
   MOC_DIR = .moc
   OBJECTS_DIR = .obj
+  LIBS	+= -lportaudio -lmad -lasound -laudiofile
+}
+win32 {
+  INCLUDEPATH += ../portmidi/
+  INCLUDEPATH += ../mad-0.14.2b
+  INCLUDEPATH += .
+  LIBS += winmm.lib ../lib/portmidi.lib ../lib/PAstaticDSD.lib dsound.lib ../lib/porttime.lib ../lib/libmad.lib
 }
 FORMS	= dlgchanneldlg.ui dlgplaycontroldlg.ui dlgplaylistdlg.ui 
 IMAGES	= filesave.xpm 
-TEMPLATE	=app
+TEMPLATE = app
 CONFIG	+= qt warn_on thread debug
-LIBS	+= -lportaudio -lmad -lasound -laudiofile
 DBFILE	= mixxx.db
 LANGUAGE	= C++

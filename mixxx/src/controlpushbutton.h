@@ -18,7 +18,7 @@
 #ifndef CONTROLPUSHBUTTON_H
 #define CONTROLPUSHBUTTON_H
 
-#include <controlobject.h>
+#include "controlobject.h"
 #include "defs.h"
 #include "midiobject.h"
 #include <sys/timeb.h>

@@ -14,7 +14,7 @@
  *   (at your option) any later version.                                   *
  *                                                                         *
  ***************************************************************************/
-
+#ifdef Q_WS_X11
 #ifndef PLAYERALSA_H
 #define PLAYERALSA_H
 
@@ -48,4 +48,5 @@ private:
 
 };
 
+#endif
 #endif

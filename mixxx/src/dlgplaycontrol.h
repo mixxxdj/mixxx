@@ -19,7 +19,7 @@
 #define DLGPLAYCONTROL_H
 
 #include <qwidget.h>
-#include <dlgplaycontroldlg.h>
+#include "dlgplaycontroldlg.h"
 
 /**
   *@author Tue and Ken Haste Andersen

@@ -13,7 +13,7 @@ class ControlRotary : public ControlPotmeter
   Q_OBJECT
  private:
   timeb oldtime;
-  FLOAT counter;
+  FLOAT_TYPE counter;
   static const char graycodetable[256];
  public:
   short direction;

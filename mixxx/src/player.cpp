@@ -22,7 +22,7 @@
    Input:   Size of the output buffer in samples
    Output:  Pointer to internal synthesis data structure.
    -------- ------------------------------------------------------ */
-Player::Player(int size, vector<EngineObject*> *_engines)
+Player::Player(int size, std::vector<EngineObject*> *_engines)
 {
     engines = _engines;
     qDebug("Player: init...");

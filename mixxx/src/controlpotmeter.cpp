@@ -29,7 +29,7 @@
 ControlPotmeter::ControlPotmeter() {}
 
 ControlPotmeter::ControlPotmeter(char* n, short int _midino, MidiObject *_midi,
-				 FLOAT _minvalue=0.0, FLOAT _maxvalue=1.0)
+				 FLOAT_TYPE _minvalue, FLOAT_TYPE _maxvalue)
 {
   name = n;
   position = middlePosition;
@@ -71,11 +71,9 @@ void ControlPotmeter::midiEvent(int newpos) {
    -------- ------------------------------------------------------ */
 void ControlPotmeter::slotSetPosition(int _newpos) {
   char newpos =(char)_newpos;
-  static char const maxPosition = 127;
-  static char const minPosition  = 0;
 
   // Ensure that the position is within bounds:
-  position = std::max(minPosition,std::min(newpos, maxPosition));
+  position = max(minPosition, min(newpos, maxPosition));
   // Calculate the value linearly:
   value = (valuerange/positionrange)*(newpos-minPosition)+minvalue;
   //qDebug("Controlpotmeter: changed %s to %g.",name,value);
@@ -88,16 +86,17 @@ char ControlPotmeter::getPosition()
   return position;
 }
 
-void ControlPotmeter::setValue(FLOAT newvalue)
+void ControlPotmeter::setValue(FLOAT_TYPE newvalue)
 {
   value = newvalue;
   emit valueChanged(value);
 }
 
-FLOAT ControlPotmeter::getValue()
+FLOAT_TYPE ControlPotmeter::getValue()
 {
   return value;
 }
 
 char ControlPotmeter::getmidino()
 { return midino; }
+

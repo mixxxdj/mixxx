@@ -27,7 +27,7 @@
 	    midicontroller - pointer to the midi controller.
    -------- ------------------------------------------------------ */
 ControlLogpotmeter::ControlLogpotmeter(char* n, int _midino, MidiObject *_midi,
-				       FLOAT _maxvalue=5) : ControlPotmeter(n,_midino,_midi) {
+				       FLOAT_TYPE _maxvalue) : ControlPotmeter(n,_midino,_midi) {
     a = 1;
     b = log10(2)/middlePosition;
     b2 = log10((_maxvalue+1)/2)/middlePosition;
@@ -45,16 +45,13 @@ void ControlLogpotmeter::slotSetPosition(int _newpos)
 {
   char newpos =(char)_newpos;
 
-  static char const maxPosition = 127;
-  static char const minPosition  = 0;
-
   // Ensure that the position is within bounds:
-  position = std::max(minPosition,std::min(newpos, maxPosition));
+  position = max(minPosition, min(newpos, maxPosition));
   // Calculate the value linearly:
   if (newpos <= middlePosition)
-      value = a*pow(10, b*(FLOAT)newpos) - 1;
+      value = a*pow(10, b*(FLOAT_TYPE)newpos) - 1;
   else
-      value = a2*pow(10, b2*(FLOAT)newpos) - 2;
+      value = a2*pow(10, b2*(FLOAT_TYPE)newpos) - 2;
 
   qDebug("Logpotmeter, midi:%i value:%g", _newpos, value);
 

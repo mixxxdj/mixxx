@@ -127,7 +127,7 @@ class MixxxApp : public QMainWindow
     EngineBuffer *buffer;
     Player *player;
     MidiObject *midi;
-    vector<EngineObject *> engines;
+	std::vector<EngineObject *> engines;
 
     /** file_menu contains all items of the menubar entry "File" */
     QPopupMenu *fileMenu;
