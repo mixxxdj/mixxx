@@ -1,8 +1,9 @@
 /***************************************************************************
-                          mathstuff.h  -  description
+                          enginebufferscale.cpp  -  description
                              -------------------
-    copyright            : (C) 2002 by Tue and Ken Haste Andersen
-    email                :
+    begin                : Sun Apr 13 2003
+    copyright            : (C) 2003 by Tue & Ken Haste Andersen
+    email                : haste@diku.dk
  ***************************************************************************/
 
 /***************************************************************************
@@ -14,29 +15,24 @@
  *                                                                         *
  ***************************************************************************/
 
-// Misc. math functios for Mixxx by Tue Haste Andersen.
+#include "enginebufferscale.h"
+#include "readerextractwave.h"
 
-#ifndef MATHSTUFF_H
-#define MATHSTUFF_H
+EngineBufferScale::EngineBufferScale(ReaderExtractWave *_wave)
+{
+    wave = _wave;
+    rate = 1.;
+    buffer = new CSAMPLE[MAX_BUFFER_LEN];
+    new_playpos = 0;
+}
 
-#include "defs.h"
-#include <math.h>
-#include <algorithm>
+EngineBufferScale::~EngineBufferScale()
+{
+    delete [] buffer;
+}
 
-CSAMPLE besseli(CSAMPLE);
-int sign(CSAMPLE);
-int invmatrix(CSAMPLE *);
-void polcoe(CSAMPLE x[], CSAMPLE y[], int n, CSAMPLE cof[]);
-CSAMPLE mod2pi(CSAMPLE);
-int round(CSAMPLE x);
-CSAMPLE arctan2(CSAMPLE y, CSAMPLE x);
-CSAMPLE wndKaiser(CSAMPLE *wnd, int size, CSAMPLE beta);
-bool even(long n);
-//void wndDwnd(CSAMPLE *wnd, CSAMPLE *dwnd, int size);
-/** Compute pow(x,n) for positive integer n through repeated
-  * squarings */
-double qip(CSAMPLE x, unsigned int n);
+double EngineBufferScale::getNewPlaypos()
+{
+    return new_playpos;
+}
 
-static CSAMPLE pi     = acos(-1.0);
-
-#endif

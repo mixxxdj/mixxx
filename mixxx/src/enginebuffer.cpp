@@ -41,6 +41,7 @@
 #include "dlgplaycontrol.h"
 #include "reader.h"
 #include "readerextractbeat.h"
+#include "enginebufferscalelinear.h"
 
 EngineBuffer::EngineBuffer(MixxxApp *_mixxx, QAction *actionAudioBeatMark, DlgPlaycontrol *_playcontrol, const char *_group)
 {
@@ -97,6 +98,9 @@ EngineBuffer::EngineBuffer(MixxxApp *_mixxx, QAction *actionAudioBeatMark, DlgPl
     // Allocate buffer for processing:
     buffer = new CSAMPLE[MAX_BUFFER_LEN];
 
+    // Construct scaling object
+    scale = new EngineBufferScaleLinear(reader->getWavePtr());
+    
     playposUpdateCounter = 0;
     oldEvent = 0.;
 
@@ -110,6 +114,7 @@ EngineBuffer::~EngineBuffer()
     delete wheel;
     delete rateSlider;
     delete buffer;
+    delete scale;
 }
 
 Reader *EngineBuffer::getReader()
@@ -176,8 +181,7 @@ inline bool even(long n)
 }
 
 CSAMPLE *EngineBuffer::process(const CSAMPLE *, const int buf_size)
-{
-
+{    
     if (pause.tryLock())
     {
         // Try to fetch info from the reader
@@ -284,7 +288,8 @@ CSAMPLE *EngineBuffer::process(const CSAMPLE *, const int buf_size)
         if (rate != rate_old)
         {
             rate_exchange.tryWrite(rate);
-            rate_old = rate;        
+            rate_old = rate;
+            scale->setRate(rate);        
         }
 
         // Determine playback direction
@@ -316,74 +321,12 @@ CSAMPLE *EngineBuffer::process(const CSAMPLE *, const int buf_size)
                 return buffer;
             }
 
-            double rate_add = 2.*rate;
-
-            // Determine position in read_buffer to start from (idx)
-            double idx = bufferpos_play;
-
-            // Prepare buffer
-            if (backwards)
-            {
-                for (int i=0; i<buf_size; i+=2)
-                {
-                    long prev = (long)(floor(idx)+READBUFFERSIZE)%READBUFFERSIZE;
-                    if (!even(prev)) prev--;
-                    long next = (prev-2+READBUFFERSIZE)%READBUFFERSIZE;
+            // Perform scaling of Reader buffer into buffer
+            CSAMPLE *output = scale->scale(bufferpos_play, buf_size);
+            for (int i=0; i<buf_size; i++)
+                buffer[i] = output[i];
+            double idx = scale->getNewPlaypos();
                 
-                    FLOAT_TYPE frac = idx-floor(idx);
-                    buffer[i  ] = read_buffer_prt[prev  ] + frac*(read_buffer_prt[next  ]-read_buffer_prt[prev  ]);
-                    buffer[i+1] = read_buffer_prt[prev+1] + frac*(read_buffer_prt[next+1]-read_buffer_prt[prev+1]);
-
-                    idx += rate_add;
-                }
-            }
-            else
-            {
-                
-                // Ensure that we only play until the next beat marking
-                int i_end;
-/*
-                if (nextBeatPos==-1)
-                    i_end = 0;
-                else
-                    i_end = max(0,min(buf_size, nextBeatPos-idx));
-*/
-//                qDebug("start, i_end %i",i_end);
-
-
-                i_end = buf_size;
-                
-                int i;
-                for (i=0; i<i_end; i+=2)
-                {
-//                    if (i==0)
-//                        qDebug("playpos: %f",idx);
-
-                    long prev = (long)floor(idx)%READBUFFERSIZE;
-                    if (!even(prev)) prev--;
-
-                    long next = (prev+2)%READBUFFERSIZE;
-
-                    FLOAT_TYPE frac = idx - floor(idx);
-                    buffer[i  ] = read_buffer_prt[prev  ] + frac*(read_buffer_prt[next  ]-read_buffer_prt[prev  ]);
-                    buffer[i+1] = read_buffer_prt[prev+1] + frac*(read_buffer_prt[next+1]-read_buffer_prt[prev+1]);
-
-                    idx += rate_add;
-                }
-                
-                // Pad rest of buffer with zeros if necessary
-/*
-                if (i<buf_size)
-                {
-//                    qDebug("end");
-                    oldEvent = 0.;
-                    for (; i<buf_size; i++)
-                        buffer[i] = 0.;
-                }
-*/
-            }
-
-
             // If a beat occours in current buffer, and if audio marking is enabled, mark it
             if (audioBeatMark->get()==1.)
             {

@@ -53,8 +53,8 @@ public:
     CSAMPLE *getBufferWavePtr();
     /** Get pointer to beat extraction object */
     ReaderExtractBeat *getBeatPtr();
-    /** Should this really be possible??? */
-    ReaderExtractWave *getSoundBuffer();
+    /** Get pointer to wave extraction object */
+    ReaderExtractWave *getWavePtr();
 
     /** Mutex controlling access to file_srate, file_length along with filepos_start and
       * filepos_end from ReaderBuffer. These variables are shared between the reader and the
