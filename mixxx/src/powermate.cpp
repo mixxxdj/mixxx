@@ -70,7 +70,7 @@ void PowerMate::knob_event()
         m_fMagnitude = -64;
 
     // Post event
-    //qDebug("knobval: %i, magnitude: %i, fadeIn: %i, midi ctrl: %i, instno: %i",knobval,magnitude,fadeIn,(instno*2),instno);
+    qDebug("knobval: %i, magnitude: %f, midi ctrl: %i, instno: %i",m_iKnobVal,m_fMagnitude,m_iInstNo*2,m_iInstNo);
     QApplication::postEvent(m_pControl,new ControlEventMidi(CTRL_CHANGE, kiPowermateMidiChannel, (char)(m_iInstNo*2+kiPowermateMidiDial),(char)((int)(m_fMagnitude)+64)));
 
     if (bStop && m_fMagnitude==0)

@@ -63,6 +63,9 @@
 #ifdef __UNIX__
 #include "powermatelinux.h"
 #endif
+#ifdef __WIN__
+#include "powermatewin.h"
+#endif
 
 #ifdef __ALSA__
   #include "playeralsa.h"
@@ -232,24 +235,25 @@ MixxxApp::MixxxApp(QApplication *a)
     powermate1 = new PowerMateLinux(control);
     powermate2 = new PowerMateLinux(control);
 #endif
-    if (powermate1==0) {
-        if (powermate1->opendev())
-            qDebug("Found PowerMate 1");
-        else
-        {
-            delete powermate1;
-            powermate1 = 0;
-        }
+#ifdef __WIN__
+    powermate1 = new PowerMateWin(control);
+    powermate2 = new PowerMateWin(control);
+#endif
+
+    if (powermate1->opendev())
+        qDebug("Found PowerMate 1");
+	else
+    {
+        delete powermate1;
+        powermate1 = 0;
     }
 
-    if (powermate2==0) {
-        if (powermate2->opendev())
-            qDebug("Found PowerMate 2");
-        else
-        {
-            delete powermate2;
-           powermate2 = 0;
-        }
+    if (powermate2->opendev())
+        qDebug("Found PowerMate 2");
+	else
+    {
+        delete powermate2;
+        powermate2 = 0;
     }
   
     // Initialize player device
