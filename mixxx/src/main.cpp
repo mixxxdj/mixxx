@@ -38,7 +38,7 @@ int main(int argc, char *argv[])
     
   MixxxApp *mixxx=new MixxxApp();
   a.setMainWidget(mixxx);
-  mixxx->resize( 45*2+210*2, 340+35);
+  mixxx->resize( 740, 430);
   mixxx->show();
   return a.exec();
 }

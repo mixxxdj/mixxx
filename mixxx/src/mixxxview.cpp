@@ -53,7 +53,7 @@ MixxxView::MixxxView(QWidget *parent, MixxxDoc *doc) : QWidget(parent)
     mainGrid->setColStretch( 4, 210);
     
     mainGrid->setRowStretch( 0,  40);
-    mainGrid->setRowStretch( 1, 100);
+    mainGrid->setRowStretch( 1, 350);
     mainGrid->setRowStretch( 2,  40);
 
     // Add filenames in ./music/ to table
