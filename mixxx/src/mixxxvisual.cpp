@@ -111,11 +111,9 @@ void MixxxVisual::paintGL()
     time.restart();
 
     // Update position of each channel
-/*
     GUIChannel *c;
     for (c = list.first(); c; c = list.next())
         c->move(msec);
-*/
 
     // Display stuff
     controller->display();

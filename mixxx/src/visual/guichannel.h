@@ -50,7 +50,7 @@ private:
     Reader                  *reader;
     VisualController        *controller;
     ControlPotmeter         *playpos;
-    QPtrList<GUIContainer>  list;
+    static QPtrList<GUIContainer>  list;
     int                     posx, zoomposx;
 };
 #endif
