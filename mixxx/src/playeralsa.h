@@ -32,8 +32,12 @@
 #include <qstring.h>
 #include <qstringlist.h>
 
-typedef float CSAMPLE;	  // defines the CSAMPLE type used for intermediate calculations
+typedef float CSAMPLE; // defines the CSAMPLE type used for intermediate calculations
 #endif
+
+#include <qthread.h>
+
+#include <alsa/asoundlib.h>
 
 /**
  * there are two independent defines S16_OUTPUT and DIRECT_OUTPUT
@@ -44,11 +48,6 @@ typedef float CSAMPLE;	  // defines the CSAMPLE type used for intermediate calcu
  * plug plugin. Defining S16_OUTPUT allows the bare hw to be used (via surround40).
  * XXX: Mmapped output doesn't seem to work with the plug plugin...
  */
-
-#include <qregexp.h>
-
-#include <alsa/asoundlib.h>
-
 #ifdef S16_OUTPUT
 typedef short int OSAMPLE;
 #else
@@ -56,14 +55,12 @@ typedef float OSAMPLE;
 #endif
 
 #ifndef PLAYERTEST
-class PlayerALSA : public Player {
-#else
-class PlayerALSA {
-#endif
-  public:
-#ifndef PLAYERTEST
+class PlayerALSA : public Player, public QThread {
+public:
     PlayerALSA(ConfigObject<ConfigValue> *config, ControlObject *pControl);
 #else
+class PlayerALSA : public QThread {
+public:
     PlayerALSA();
 #endif
     ~PlayerALSA();
@@ -74,15 +71,15 @@ class PlayerALSA {
     QStringList getInterfaces();
     QStringList getSampleRates();
     static QString getSoundApi();
-    QString getSoundApiName()
-    {
-	return getSoundApi();
-    };
+    QString getSoundApiName() { return getSoundApi(); };
     /** Satisfy virtual declaration in EngineObject */
-    void process(const CSAMPLE *, const CSAMPLE *, const int) { };
+    void process(const CSAMPLE *, const CSAMPLE *, const int) {};
 
-  protected:
-    /** ALSA parameters */
+    /** Main loop of player. Executed in a separate thread by QT */
+    void run();
+
+protected:
+/** ALSA parameters */
     snd_pcm_t * handle;
     snd_pcm_hw_params_t *hwparams;
     snd_pcm_sw_params_t *swparams;
@@ -106,13 +103,9 @@ class PlayerALSA {
     int set_swparams();
     int xrun_recovery(int err);
 
-    bool async();
-    void async_callback();
-    bool async_direct();          // mmapped version (need to use SAMPLE for output)
-    void async_direct_callback();
-    static void callbackwrapper(snd_async_handler_t * a);
+    bool twrite; // flag for thread
 
-  private:
+private:
     static const snd_pcm_access_t alsa_access = SND_PCM_ACCESS_RW_INTERLEAVED;
 #ifdef S16_OUTPUT
     static const snd_pcm_format_t alsa_format = SND_PCM_FORMAT_S16;
@@ -122,5 +115,4 @@ class PlayerALSA {
     static const int alsa_channels = 4;
     static const int default_latency = 200;
 };
-
 #endif
