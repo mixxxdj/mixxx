@@ -208,7 +208,7 @@ void Reader::newtrack()
 #endif
     enginelock.unlock();
     if (file==0)
-        qFatal("Error opening %s", filename);
+        qFatal("Error opening %s", filename.latin1());
 
     readerwave->setSoundSource(file);
 
@@ -281,7 +281,7 @@ void Reader::seek()
     if (new_playpos==-1.)
         return;
         
-    new_playpos = readerwave->seek(new_playpos);
+    new_playpos = readerwave->seek((long int)new_playpos);
     wake();
 
     // Set playpos

@@ -42,18 +42,18 @@ void Picking::processHits(GLint hits, GLuint buffer[])
   ptr = (GLuint *) buffer;
   for(i=0;i<hits;i++) {	/*  for each hit  */
     names = *ptr;
-    //printf (" number of names for hit = %d\n", names);
+    printf (" number of names for hit = %d\n", names);
     ptr++;
-    //printf("  z1 is %g;", (float) *ptr/0x7fffffff);
+    printf("  z1 is %g;", (float) *ptr/0x7fffffff);
     ptr++;
-    //printf(" z2 is %g\n", (float) *ptr/0x7fffffff);
+    printf(" z2 is %g\n", (float) *ptr/0x7fffffff);
     ptr++;
-    //printf ("   the name is ");
+    printf ("   the name is ");
     for (j=0;j<names;j++){	/*  for each name */
-      //printf ("%d ", *ptr);
+      printf ("%d ", *ptr);
       ptr++;
     }
-    //printf ("\n");
+    printf ("\n");
   }
 };
 
@@ -134,7 +134,7 @@ int Picking::pick(int x,int y)
         glMatrixMode(GL_PROJECTION);
         glPopMatrix();
         hits = glRenderMode(GL_RENDER);
-
+        processHits(hits,selectBuf);
         picked = inFront(hits,selectBuf);
     }
     return picked;

@@ -29,7 +29,7 @@ class ReaderExtractWave;
 class EngineBufferScale {
 public: 
     EngineBufferScale(ReaderExtractWave *_wave);
-    ~EngineBufferScale();
+    virtual ~EngineBufferScale();
     /** Set scaling rate */
     virtual void setRate(double _rate) = 0;
     /** Get new playpos after call to scale() */

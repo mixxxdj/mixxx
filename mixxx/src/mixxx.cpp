@@ -632,7 +632,7 @@ void MixxxApp::slotEditPaste()
 {
 }
 
-void MixxxApp::slotOptionsBeatMark(bool toggle)
+void MixxxApp::slotOptionsBeatMark(bool)
 {
 // BEAT MARK STUFF
 }

@@ -177,6 +177,7 @@ int VisualController::add(VisualObject * obj)
 {
     objects.push_back(obj);
     int id=idCount;
+    qDebug("id %i",id);
     idCount++;
 
     return id;

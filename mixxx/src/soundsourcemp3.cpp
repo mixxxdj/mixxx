@@ -24,14 +24,14 @@ SoundSourceMp3::SoundSourceMp3( QString sFilename )
 {
     QFile file( sFilename.latin1() );
     if (!file.open(IO_ReadOnly))
-        qFatal("MAD: Open of %s failed.", sFilename );
+        qFatal("MAD: Open of %s failed.", sFilename.latin1());
 
     // Read the whole file into inputbuf:
     inputbuf_len = file.size();
     inputbuf = new char[inputbuf_len];
     unsigned int tmp = file.readBlock(inputbuf, inputbuf_len);
     if (tmp != inputbuf_len)
-        qFatal("MAD: Error reading mp3-file: %s\nRead only %d bytes, but wanted %d bytes.",sFilename ,tmp,inputbuf_len);
+        qFatal("MAD: Error reading mp3-file: %s\nRead only %d bytes, but wanted %d bytes.",sFilename.latin1() ,tmp,inputbuf_len);
 
     // Transfer it to the mad stream-buffer:
     mad_stream_init(&Stream);
@@ -267,15 +267,15 @@ void SoundSourceMp3::ParseHeader(TrackInfoObject *Track)
     // Open file, initialize MAD and read beginnning of file
 
     // Number of bytes to read from file to determine duration
-    const int READLENGTH = 5000;
+    const unsigned int READLENGTH = 5000;
     mad_timer_t dur = mad_timer_zero;
     QFile file(location.latin1());
     if (!file.open(IO_ReadOnly))
-        qFatal("MAD: Open of %s failed.", location );
+        qFatal("MAD: Open of %s failed.", location.latin1());
     char *inputbuf = new char[READLENGTH];
     unsigned int tmp = file.readBlock(inputbuf, READLENGTH);
     if (tmp != READLENGTH)
-        qFatal("MAD: Error reading mp3-file: %s\nRead only %d bytes, but wanted %d bytes.",location ,tmp,READLENGTH);
+        qFatal("MAD: Error reading mp3-file: %s\nRead only %d bytes, but wanted %d bytes.",location.latin1() ,tmp,READLENGTH);
     mad_stream Stream;
     mad_header Header;
     mad_stream_init(&Stream);
