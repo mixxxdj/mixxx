@@ -21,7 +21,6 @@
 #include <qdir.h>
 #include "dlgtracklist.h"
 #include "dlgflanger.h"
-#include "dlgplaylist.h"
 #include "dlgmaster.h"
 #include "dlgchannel.h"
 #include "dlgplaycontrol.h"
@@ -39,8 +38,6 @@ MixxxView::MixxxView(QWidget *parent, MixxxDoc *doc) : QWidget(parent)
     playcontrol2 = new DlgPlaycontrol(this); playcontrol2->layoutMirror();
     channel1 = new DlgChannel(this);
     channel2 = new DlgChannel(this); channel2->layoutMirror();
-    playlist = new DlgPlaylist(this);
-    playlist->ListPlaylist->setColumnWidth(0,610);
     master = new DlgMaster(this);
     crossfader = new DlgCrossfader(this);
     split = new DlgSplit(this);
@@ -57,9 +54,7 @@ MixxxView::MixxxView(QWidget *parent, MixxxDoc *doc) : QWidget(parent)
     mainGrid->addMultiCellWidget(master,0,1,5,5);
     mainGrid->addMultiCellWidget(flanger,2,2,5,5);
     mainGrid->addMultiCellWidget(crossfader,1,1,0,4);
-    mainGrid->addMultiCellWidget(playlist,2,2,0,4);
     mainGrid->addMultiCellWidget(tracklist,2,2,0,4);
-    playlist->hide();
 
     //let the ratio between the widths of columns 0 and 1 be 2:3.
     mainGrid->setColStretch( 0, 240);

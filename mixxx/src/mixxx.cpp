@@ -49,7 +49,6 @@
 #include "tracklist.h"
 #include "dlgtracklist.h"
 #include "dlgflanger.h"
-#include "dlgplaylist.h"
 #include "dlgmaster.h"
 #include "dlgchannel.h"
 #include "dlgplaycontrol.h"
