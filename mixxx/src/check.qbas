@@ -44,6 +44,21 @@ contains( INIT, true ) {
 		system( echo " " >> summary.log )
 		system( echo "	---------- Features Summary ----------" >> summary.log )
 		system( echo " " >> summary.log )
+	# init all template messages...
+	# warning for static linking
+	!isEmpty( STATIC_TEMPLATE_MESSAGE ) {
+		STATIC_MESSAGE = "$${STATIC_TEMPLATE_MESSAGE}"
+		}
+		else {
+		STATIC_MESSAGE = , statically linked
+		}
+	# warning for skipped link
+	!isEmpty( SKIP_LINK_TEMPLATE_MESSAGE ) {
+		SKIP_LINK_MESSAGE = "$${SKIP_LINK_TEMPLATE_MESSAGE}"
+		}
+		else {
+		SKIP_LINK_MESSAGE = , skipped
+		}
 	# all done: no more through this step!
 	INIT = false
 	}
@@ -67,10 +82,10 @@ isEmpty( TYPE ) {
 # if DESCRIPTION is not empty we use it to set the output message... 
 # --------------------------------------
 !isEmpty( DESCRIPTION ) {
-	MESSAGE = "Checking for $${DESCRIPTION} ...............
+	MESSAGE = Checking for $${DESCRIPTION} ...............
 	}
 	else {
-	MESSAGE = "Checking for $${OBJECT} ...............
+	MESSAGE = Checking for $${OBJECT} ...............
 	}
 # --------------------------------------
 # if ERROR_TEMPLATE_MESSAGE is not empty we use it to set the 
@@ -142,11 +157,7 @@ contains( OPTIONS, marked_static ) {
 	!isEmpty( STATIC_LIBPATH ) {
 		!contains( OPTIONS, skip_link ) {
 			LIBS += $${STATIC_LIBPATH}/$${OBJECT}
-			MESSAGE += yes , statically linked"
-			} else {
-				MESSAGE += yes , skipped"
-				}
-		message( $${MESSAGE} )
+			}
 		FOUND = true
 	}
 }
@@ -159,15 +170,8 @@ contains( FOUND, false) {
 # --------------------------------------
 !isEmpty( LINK_LIBS ) {
 	system( ld $${LINK_LIBS} 2>/dev/null ) {
-		MESSAGE += yes
-		contains( OPTIONS, skip_link ) {
-			MESSAGE += , skipped"
-			} else {
-				MESSAGE += "
-				}
-		message( $${MESSAGE} )
 		FOUND = true
-	}
+		}
 }
 
 # --------------------------- lib existance check -------------------------
@@ -176,32 +180,20 @@ contains( FOUND, false) {
 	exists( $${LIB_BASE0}/$${OBJECT} ) {
 		!contains( OPTIONS, skip_link ) {
 			LIBS += $${LIB_BASE0}/$${OBJECT}
-			MESSAGE += yes , statically linked"
-			} else {
-				MESSAGE += yes , skipped"
-				}
-		message( $${MESSAGE} )
+			} 
 		FOUND = true
 	} else {
 		exists( $${LIB_BASE1}/$${OBJECT} ) {
 			!contains( OPTIONS, skip_link ) {
 				LIBS += $${LIB_BASE1}/$${OBJECT}
-				MESSAGE += yes , statically linked"
-				} else {
-					MESSAGE += yes , skipped"
-					}
-			message( $${MESSAGE} )
+				} 
 			FOUND = true
 		}
 		} else {
 			exists( $${LIB_BASE2}/$${OBJECT} ) {
 				!contains( OPTIONS, skip_link ) {
 					LIBS += $${LIB_BASE2}/$${OBJECT}
-					MESSAGE += yes , statically linked"
-					} else {
-						MESSAGE += yes , skipped"
-						}
-				message( $${MESSAGE} )
+					} 
 				FOUND = true
 			}
 		}
@@ -211,23 +203,21 @@ contains( FOUND, false) {
 IS_LIB = false
 }
 
+
 # --------------------------- bin type ------------------------------------
 # -------------------------------------------------------------------------
 # -------------------------------------------------------------------------
 contains( TYPE, bin ) {
 # if we have a binary
 exists( $${BIN_BASE0}/$${OBJECT} ) {
-	MESSAGE += yes"
-	message( $${MESSAGE} )
 	FOUND = true
-} else {
-	exists( $${BIN_BASE1}/$${OBJECT} ) {
-		MESSAGE += yes"
-		message( $${MESSAGE} )
-		FOUND = true
-	}
+	} else {
+		exists( $${BIN_BASE1}/$${OBJECT} ) {
+			FOUND = true
+			}
+		}
 }
-}
+
 
 # --------------------------- header type ---------------------------------
 # -------------------------------------------------------------------------
@@ -235,17 +225,14 @@ exists( $${BIN_BASE0}/$${OBJECT} ) {
 contains( TYPE, header ) {
 # if we have header
 exists( $${HEADER_BASE0}/$${OBJECT} ) {
-	MESSAGE += yes"
-	message( $${MESSAGE} )
 	FOUND = true
-} else {
-	exists( $${HEADER_BASE1}/$${OBJECT} ) {
-		MESSAGE += yes"
-		message( $${MESSAGE} )
-		FOUND = true
-	}
+	} else {
+		exists( $${HEADER_BASE1}/$${OBJECT} ) {
+			FOUND = true
+			}
+		}
 }
-}
+
 
 # --------------------------- command type --------------------------------
 # -------------------------------------------------------------------------
@@ -253,13 +240,12 @@ exists( $${HEADER_BASE0}/$${OBJECT} ) {
 contains( TYPE, command ) {
 # if we have command
 system( $${OBJECT} ) {
-	MESSAGE += yes"
-	message( $${MESSAGE} )
 	FOUND = true
 } else {
 	ERROR_MESSAGE = "Command "$${OBJECT}" scores an error!"
 }
 }
+
 
 # --------------------------- other type ----------------------------------
 # -------------------------------------------------------------------------
@@ -267,22 +253,16 @@ system( $${OBJECT} ) {
 contains( TYPE, other ) {
 # if we have other stuff
 exists( $${OPTIONAL_BASE0}/$${OBJECT} ) {
-	MESSAGE += yes"
-	message( $${MESSAGE} )
 	FOUND = true
-} else {
-	exists( $${OPTIONAL_BASE1}/$${OBJECT} ) {
-		MESSAGE += yes"
-		message( $${MESSAGE} )
-		FOUND = true
 	} else {
-			exists( $${OPTIONAL_BASE2}/$${OBJECT} ) {
-				MESSAGE += yes"
-				message( $${MESSAGE} )
-				FOUND = true
-			}
+		exists( $${OPTIONAL_BASE1}/$${OBJECT} ) {
+			FOUND = true
+			} else {
+				exists( $${OPTIONAL_BASE2}/$${OBJECT} ) {
+					FOUND = true
+					}
+				}
 		}
-}
 }
 
 # --------------------------- not found but... ----------------------------
@@ -293,87 +273,84 @@ exists( $${OPTIONAL_BASE0}/$${OBJECT} ) {
 contains( FOUND, false) {
 		!isEmpty( PATH1 ) {
 			exists( $$PATH1/$${OBJECT} ){
-			MESSAGE += yes"
 			contains( IS_LIB, true) {
 				!contains( OPTIONS, skip_link ) {
 					LIBS += $$PATH1/$${OBJECT}
-					MESSAGE += , statically linked"
-					} else {
-						MESSAGE +=  , skipped"
-						}
+					}
 			}
-			message( $${MESSAGE} )
 			FOUND = true
 			}
 		}
 		!isEmpty( PATH2 ) {
 			exists( $$PATH2/$${OBJECT} ){
-			MESSAGE += yes"
 			contains( IS_LIB, true) {
 				!contains( OPTIONS, skip_link ) {
 					LIBS += $$PATH2/$${OBJECT}
-					MESSAGE += , statically linked"
-					} else {
-						MESSAGE +=  , skipped"
-						}
+					}
 			}
-			message( $${MESSAGE} )
 			FOUND = true
 			}
 		}
 		!isEmpty( PATH3 ) {
 			exists( $$PATH3/$${OBJECT} ){
-			MESSAGE += yes"
 			contains( IS_LIB, true) {
 				!contains( OPTIONS, skip_link ) {
 					LIBS += $$PATH3/$${OBJECT}
-					MESSAGE += , statically linked"
-					} else {
-						MESSAGE +=  , skipped"
-						}
+					}
 			}
-			message( $${MESSAGE} )
 			FOUND = true
 			}
 		}
 		!isEmpty( PATH4 ) {
 			exists( $$PATH4/$${OBJECT} ){
-			MESSAGE += yes"
 			contains( IS_LIB, true) {
 				!contains( OPTIONS, skip_link ) {
 					LIBS += $$PATH4/$${OBJECT}
-					MESSAGE += , statically linked"
-					} else {
-						MESSAGE +=  , skipped"
-						}
+					}
 			}
-			message( $${MESSAGE} )
 			FOUND = true
 			}
 		}
 		!isEmpty( PATH5 ) {
 			exists( $$PATH5/$${OBJECT} ){
-			MESSAGE += yes"
 			contains( IS_LIB, true) {
 				!contains( OPTIONS, skip_link ) {
 					LIBS += $$PATH5/$${OBJECT}
-					MESSAGE += , statically linked"
-					} else {
-						MESSAGE +=  , skipped"
-						}
+					}
 			}
-			message( $${MESSAGE} )
 			FOUND = true
 			}
 		}
 }
+
+
+# --------------------------- create output message -----------------------
+# -------------------------------------------------------------------------
+# -------------------------------------------------------------------------
+# We create the right output message for each situation...
+contains( FOUND, true) {
+	MESSAGE += yes
+#	contains( IS_LIB, true) {
+		contains( OPTIONS, skip_link ) {
+			MESSAGE += $${SKIP_LINK_MESSAGE}
+			}
+			else {
+				VAR = $$find( LIBS, $${OBJECT} )
+				!isEmpty( VAR ) {
+					MESSAGE += $${STATIC_MESSAGE}
+					}
+				}
+#		}
+	message( $${MESSAGE} )
+}
+
 
 # --------------------------- definitely not found ------------------------
 # -------------------------------------------------------------------------
 # -------------------------------------------------------------------------
 # Not found again? Nothing to do...
 contains( FOUND, false) {
-	MESSAGE += no"
+	MESSAGE += no
 	SUMMARY_MESSAGE = no
 	message( $${MESSAGE} )
 	!isEmpty( TIP_MESSAGE ) {
