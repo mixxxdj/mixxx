@@ -73,7 +73,7 @@ void WSlider::mouseMoveEvent(QMouseEvent *e)
 
     // value is mouse position, in range from 0 to 127
     value = (int)((FLOAT_TYPE)pos*(128./(FLOAT_TYPE)(slider_length)));
-    if (size_state <3) // Volume or rate slider
+    if (size_state == 2) // Volume slider
         value = 127-value;
 
     //qDebug("WSlider value: %i",value);
@@ -121,7 +121,7 @@ void WSlider::paintEvent(QPaintEvent *)
     if (size_state == 1)
     {
         paint.drawPixmap(0,0,*smallv);
-        paint.drawPixmap(0,slider_range-handle_pos,*smallv_h);
+        paint.drawPixmap(0,handle_pos,*smallv_h);
     }
     else if (size_state == 2)
     {
