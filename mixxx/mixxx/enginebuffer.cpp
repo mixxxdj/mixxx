@@ -70,6 +70,7 @@ EngineBuffer::EngineBuffer(DlgPlaycontrol *playcontrol, DlgChannel *channel, Mid
 
   // Allocate semaphore
   buffers_read_ahead = new sem_t;
+  sem_init(buffers_read_ahead, 0, 1);
 
   // Semaphore for stopping thread
   requestStop = new QSemaphore(1);
@@ -119,7 +120,7 @@ void EngineBuffer::run() {
     int sem_value;
     sem_getvalue(buffers_read_ahead, &sem_value);
     if (sem_value != 0)
-      ;
+      qDebug("Reader is requesting %d reads at once.", sem_value+1);
     else
       // Read a new chunk:
       getchunk();
@@ -307,7 +308,6 @@ FLOAT EngineBuffer::max(const FLOAT a, const FLOAT b) {
 
 void EngineBuffer::process(CSAMPLE *, CSAMPLE *buffer, int buf_size) {
   long prev;
-
   for (int i=0; i<buf_size; i+=2) {
     prev = (long)floor(play_pos)%read_buffer_size;
     if (!even(prev)) prev--;
