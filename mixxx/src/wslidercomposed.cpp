@@ -45,7 +45,12 @@ void WSliderComposed::setPixmaps(bool bHorizontal, const QString &filenameSlider
     m_bHorizontal = bHorizontal;
     unsetPixmaps();
     m_pSlider = new QPixmap(filenameSlider);
+		qDebug("WSliderComposed: Try loading slider pixmap: %s",filenameSlider.latin1());
+	if (!m_pSlider)
+		qDebug("WSliderComposed: Error loading slider pixmap: %s",filenameSlider.latin1());
     m_pHandle = new QPixmap(filenameHandle);
+	if (!m_pHandle)
+		qDebug("WSliderComposed: Error loading handle pixmap: %s",filenameHandle.latin1());
     m_pDoubleBuffer = new QPixmap(m_pSlider->size());
     
     if (m_bHorizontal)

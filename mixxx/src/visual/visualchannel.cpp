@@ -19,7 +19,6 @@
 #include "../defs.h"
 #include "../readerextract.h"
 #include "visualcontroller.h"
-#include "visualbuffer.h"
 #include "visualbuffersignal.h"
 #include "visualbuffermarks.h"
 #include "visualdisplay.h"

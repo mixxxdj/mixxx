@@ -22,8 +22,8 @@
 #include "defs.h"
 #include <qptrlist.h>
 //#include <qfile.h>
+#include "enginespectralfwd.h"
 
-class EngineSpectralFwd;
 class WindowKaiser;
 
 /**

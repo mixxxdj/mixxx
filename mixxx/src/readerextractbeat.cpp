@@ -264,7 +264,8 @@ void *ReaderExtractBeat::processChunk(const int _idx, const int start_idx, const
     replotxy(px, py, j, gnuplot_hfc);
 
     // Beat marks
-    for (int i=0; i<getBufferSize(); i++)
+	int i;
+    for (i=0; i<getBufferSize(); i++)
     {
         if (beatBuffer[i]==1)
             py[i] = hfc[i];
@@ -567,7 +568,7 @@ void *ReaderExtractBeat::processChunk(const int _idx, const int start_idx, const
         bpm = 60./(((CSAMPLE)histMaxIdx*histInterval)+histMinInterval);
     else
         bpm = -1.;
-    for (int i=frameFrom; i<frameTo+frameAdd; ++i)
+    for (i=frameFrom; i<frameTo+frameAdd; ++i)
     {
         bpmBuffer[i%frameNo] = bpm;
 //        stream << bpm << "\n";
@@ -622,28 +623,28 @@ bool ReaderExtractBeat::circularValidIndex(int idx, int start, int end, int len)
 
 void ReaderExtractBeat::updateConfidence(int curBeatIdx, int lastBeatIdx)
 {
-    CSAMPLE min = 0.4;
+    CSAMPLE min = 0.4f;
     if (confidence>=0.7)
-        min = 0.71;
+        min = 0.71f;
         
     int i=curBeatIdx-1+frameNo;
     while (i<lastBeatIdx)
         i+=frameNo;
         
-    CSAMPLE max = 0.00001;
+    CSAMPLE max = 0.00001f;
     for (i; i%frameNo!=lastBeatIdx%frameNo; --i)
         if (hfc[i%frameNo]>max && hfc[i%frameNo]>hfc[(i-1+frameNo)%frameNo] && hfc[i%frameNo]>hfc[(i+1)%frameNo])
             max = hfc[i%frameNo];
 
     CSAMPLE tmp = hfc[curBeatIdx%frameNo]/max;
     if (tmp<=0.)
-        tmp = 0.00001;
+        tmp = 0.00001f;
     confidence = confidence*0.99+(0.01*(log(tmp)+2.));
 
     if (confidence<min)
         confidence = min;
     if (confidence>0.9)
-        confidence = 0.9;
+        confidence = 0.9f;
 
 //    confidence=0.9;    
     //qDebug("confidence :%f, beat %f, max %f, tmp %f",confidence,hfc[curBeatIdx%frameNo], max, tmp);
