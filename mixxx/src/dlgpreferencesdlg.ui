@@ -1,4 +1,4 @@
-<!DOCTYPE UI><UI version="3.0" stdsetdef="1">
+<!DOCTYPE UI><UI version="3.1" stdsetdef="1">
 <class>DlgPreferencesDlg</class>
 <widget class="QDialog">
     <property name="name">
@@ -282,22 +282,6 @@
             </rect>
         </property>
     </widget>
-    <widget class="QPushButton">
-        <property name="name">
-            <cstring>PushButtonBrowsePlaylist</cstring>
-        </property>
-        <property name="geometry">
-            <rect>
-                <x>343</x>
-                <y>155</y>
-                <width>19</width>
-                <height>22</height>
-            </rect>
-        </property>
-        <property name="text">
-            <string>...</string>
-        </property>
-    </widget>
     <widget class="QLineEdit">
         <property name="name">
             <cstring>LineEditSongfiles</cstring>
@@ -342,25 +326,6 @@
     </widget>
     <widget class="QPushButton">
         <property name="name">
-            <cstring>PushButtonOK</cstring>
-        </property>
-        <property name="enabled">
-            <bool>true</bool>
-        </property>
-        <property name="geometry">
-            <rect>
-                <x>85</x>
-                <y>440</y>
-                <width>85</width>
-                <height>22</height>
-            </rect>
-        </property>
-        <property name="text">
-            <string>OK</string>
-        </property>
-    </widget>
-    <widget class="QPushButton">
-        <property name="name">
             <cstring>PushButtonCancel</cstring>
         </property>
         <property name="geometry">
@@ -368,7 +333,7 @@
                 <x>275</x>
                 <y>440</y>
                 <width>85</width>
-                <height>22</height>
+                <height>30</height>
             </rect>
         </property>
         <property name="text">
@@ -387,7 +352,7 @@
                 <x>180</x>
                 <y>440</y>
                 <width>85</width>
-                <height>22</height>
+                <height>30</height>
             </rect>
         </property>
         <property name="text">
@@ -620,6 +585,41 @@
                 <number>5</number>
             </property>
         </widget>
+    </widget>
+    <widget class="QPushButton">
+        <property name="name">
+            <cstring>PushButtonBrowsePlaylist</cstring>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>343</x>
+                <y>155</y>
+                <width>20</width>
+                <height>22</height>
+            </rect>
+        </property>
+        <property name="text">
+            <string>...</string>
+        </property>
+    </widget>
+    <widget class="QPushButton">
+        <property name="name">
+            <cstring>PushButtonOK</cstring>
+        </property>
+        <property name="enabled">
+            <bool>true</bool>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>80</x>
+                <y>440</y>
+                <width>85</width>
+                <height>30</height>
+            </rect>
+        </property>
+        <property name="text">
+            <string>OK</string>
+        </property>
     </widget>
 </widget>
 <layoutdefaults spacing="6" margin="11"/>

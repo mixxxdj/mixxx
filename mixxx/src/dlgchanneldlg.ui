@@ -33,6 +33,51 @@
     <property name="caption">
         <string>Form1</string>
     </property>
+    <widget class="WPFLButton">
+        <property name="name">
+            <cstring>CheckBoxPFL</cstring>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>8</x>
+                <y>230</y>
+                <width>20</width>
+                <height>20</height>
+            </rect>
+        </property>
+    </widget>
+    <widget class="QLabel">
+        <property name="name">
+            <cstring>TextLabelPFL</cstring>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>31</x>
+                <y>232</y>
+                <width>35</width>
+                <height>16</height>
+            </rect>
+        </property>
+        <property name="paletteForegroundColor">
+            <color>
+                <red>80</red>
+                <green>80</green>
+                <blue>80</blue>
+            </color>
+        </property>
+        <property name="font">
+            <font>
+                <family>Helvetica</family>
+                <pointsize>8</pointsize>
+            </font>
+        </property>
+        <property name="text">
+            <string>PFL</string>
+        </property>
+        <property name="alignment">
+            <set>AlignVCenter|AlignLeft</set>
+        </property>
+    </widget>
     <widget class="QGroupBox">
         <property name="name">
             <cstring>GroupBoxVolume</cstring>
@@ -45,6 +90,13 @@
                 <height>228</height>
             </rect>
         </property>
+        <property name="paletteBackgroundColor">
+            <color>
+                <red>168</red>
+                <green>181</green>
+                <blue>164</blue>
+            </color>
+        </property>
         <property name="frameShape">
             <enum>NoFrame</enum>
         </property>
@@ -54,33 +106,6 @@
         <property name="title">
             <string></string>
         </property>
-        <widget class="WSlider">
-            <property name="name">
-                <cstring>SliderVolume</cstring>
-            </property>
-            <property name="geometry">
-                <rect>
-                    <x>3</x>
-                    <y>43</y>
-                    <width>30</width>
-                    <height>170</height>
-                </rect>
-            </property>
-            <property name="sizePolicy">
-                <sizepolicy>
-                    <hsizetype>0</hsizetype>
-                    <vsizetype>0</vsizetype>
-                    <horstretch>0</horstretch>
-                    <verstretch>0</verstretch>
-                </sizepolicy>
-            </property>
-            <property name="minimumSize">
-                <size>
-                    <width>30</width>
-                    <height>170</height>
-                </size>
-            </property>
-        </widget>
         <widget class="QLabel">
             <property name="name">
                 <cstring>TextLabel1_2_3_2</cstring>
@@ -120,6 +145,33 @@
                 <set>AlignCenter</set>
             </property>
         </widget>
+        <widget class="WSlider">
+            <property name="name">
+                <cstring>SliderVolume</cstring>
+            </property>
+            <property name="geometry">
+                <rect>
+                    <x>3</x>
+                    <y>43</y>
+                    <width>30</width>
+                    <height>170</height>
+                </rect>
+            </property>
+            <property name="sizePolicy">
+                <sizepolicy>
+                    <hsizetype>0</hsizetype>
+                    <vsizetype>0</vsizetype>
+                    <horstretch>0</horstretch>
+                    <verstretch>0</verstretch>
+                </sizepolicy>
+            </property>
+            <property name="minimumSize">
+                <size>
+                    <width>30</width>
+                    <height>170</height>
+                </size>
+            </property>
+        </widget>
     </widget>
     <widget class="QGroupBox">
         <property name="name">
@@ -132,6 +184,13 @@
                 <width>35</width>
                 <height>230</height>
             </rect>
+        </property>
+        <property name="paletteBackgroundColor">
+            <color>
+                <red>168</red>
+                <green>181</green>
+                <blue>164</blue>
+            </color>
         </property>
         <property name="frameShape">
             <enum>NoFrame</enum>
@@ -315,6 +374,58 @@
                 <set>AlignCenter</set>
             </property>
         </widget>
+        <widget class="WKnob">
+            <property name="name">
+                <cstring>DialFilterHigh</cstring>
+            </property>
+            <property name="geometry">
+                <rect>
+                    <x>2</x>
+                    <y>88</y>
+                    <width>32</width>
+                    <height>32</height>
+                </rect>
+            </property>
+        </widget>
+        <widget class="WKnob">
+            <property name="name">
+                <cstring>DialFilterLow</cstring>
+            </property>
+            <property name="geometry">
+                <rect>
+                    <x>2</x>
+                    <y>183</y>
+                    <width>32</width>
+                    <height>32</height>
+                </rect>
+            </property>
+        </widget>
+        <widget class="WKnob">
+            <property name="name">
+                <cstring>DialFilterMiddle</cstring>
+            </property>
+            <property name="geometry">
+                <rect>
+                    <x>2</x>
+                    <y>135</y>
+                    <width>32</width>
+                    <height>32</height>
+                </rect>
+            </property>
+        </widget>
+        <widget class="WKnob">
+            <property name="name">
+                <cstring>DialGain</cstring>
+            </property>
+            <property name="geometry">
+                <rect>
+                    <x>2</x>
+                    <y>41</y>
+                    <width>32</width>
+                    <height>32</height>
+                </rect>
+            </property>
+        </widget>
         <widget class="QLabel">
             <property name="name">
                 <cstring>TextLabel1_2_2</cstring>
@@ -354,103 +465,6 @@
                 <set>AlignCenter</set>
             </property>
         </widget>
-        <widget class="WKnob">
-            <property name="name">
-                <cstring>DialFilterLow</cstring>
-            </property>
-            <property name="geometry">
-                <rect>
-                    <x>2</x>
-                    <y>183</y>
-                    <width>32</width>
-                    <height>32</height>
-                </rect>
-            </property>
-        </widget>
-        <widget class="WKnob">
-            <property name="name">
-                <cstring>DialFilterMiddle</cstring>
-            </property>
-            <property name="geometry">
-                <rect>
-                    <x>2</x>
-                    <y>135</y>
-                    <width>32</width>
-                    <height>32</height>
-                </rect>
-            </property>
-        </widget>
-        <widget class="WKnob">
-            <property name="name">
-                <cstring>DialFilterHigh</cstring>
-            </property>
-            <property name="geometry">
-                <rect>
-                    <x>2</x>
-                    <y>88</y>
-                    <width>32</width>
-                    <height>32</height>
-                </rect>
-            </property>
-        </widget>
-        <widget class="WKnob">
-            <property name="name">
-                <cstring>DialGain</cstring>
-            </property>
-            <property name="geometry">
-                <rect>
-                    <x>2</x>
-                    <y>41</y>
-                    <width>32</width>
-                    <height>32</height>
-                </rect>
-            </property>
-        </widget>
-    </widget>
-    <widget class="WPFLButton">
-        <property name="name">
-            <cstring>CheckBoxPFL</cstring>
-        </property>
-        <property name="geometry">
-            <rect>
-                <x>8</x>
-                <y>230</y>
-                <width>20</width>
-                <height>20</height>
-            </rect>
-        </property>
-    </widget>
-    <widget class="QLabel">
-        <property name="name">
-            <cstring>TextLabelPFL</cstring>
-        </property>
-        <property name="geometry">
-            <rect>
-                <x>31</x>
-                <y>232</y>
-                <width>35</width>
-                <height>16</height>
-            </rect>
-        </property>
-        <property name="paletteForegroundColor">
-            <color>
-                <red>80</red>
-                <green>80</green>
-                <blue>80</blue>
-            </color>
-        </property>
-        <property name="font">
-            <font>
-                <family>Helvetica</family>
-                <pointsize>8</pointsize>
-            </font>
-        </property>
-        <property name="text">
-            <string>PFL</string>
-        </property>
-        <property name="alignment">
-            <set>AlignVCenter|AlignLeft</set>
-        </property>
     </widget>
 </widget>
 <customwidgets>
@@ -536,12 +550,12 @@
 </images>
 <layoutdefaults spacing="6" margin="11"/>
 <includehints>
+    <includehint>wpflbutton.h</includehint>
     <includehint>wslider.h</includehint>
     <includehint>wbulb.h</includehint>
     <includehint>wknob.h</includehint>
     <includehint>wknob.h</includehint>
     <includehint>wknob.h</includehint>
     <includehint>wknob.h</includehint>
-    <includehint>wpflbutton.h</includehint>
 </includehints>
 </UI>
