@@ -89,10 +89,10 @@ MixxxApp::MixxxApp()
   // Instantiate a EngineObject to ensure static references are updated
   //engine = new EngineObject(view);
 
-  qDebug("Init buffer 1...");
+  qDebug("Init buffer 1... %s", view->playlist->ListPlaylist->firstChild()->text(1).ascii());
   buffer1 = new EngineBuffer(view->playcontrol1, "[Channel1]", view->playlist->ListPlaylist->firstChild()->text(1));
 
-  qDebug("Init buffer 2...");
+  qDebug("Init buffer 2... %s", view->playlist->ListPlaylist->firstChild()->nextSibling()->text(1).ascii());
   buffer2 = new EngineBuffer(view->playcontrol2, "[Channel2]", view->playlist->ListPlaylist->firstChild()->nextSibling()->text(1));
   qDebug("...");
   channel1 = new EngineChannel(view->channel1, "[Channel1]");
