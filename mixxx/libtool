@@ -37,7 +37,7 @@ if test "X${CDPATH+set}" = Xset; then CDPATH=:; export CDPATH; fi
 available_tags=" CXX"
 
 ### BEGIN LIBTOOL CONFIG
-# Libtool was configured as follows, on host sakaki:
+# Libtool was configured as follows, on host akira:
 #
 # AR="" AR_FLAGS="" LTCC="gcc" CC="gcc" \
 # CFLAGS="-O2  " CPPFLAGS="" \
@@ -47,7 +47,7 @@ available_tags=" CXX"
 # objext="" exeext="" reload_flag=" -r" \
 # deplibs_check_method="pass_all" \
 # file_magic_cmd="\$MAGIC_CMD" \
-#   admin/ltconfig --cache-file=./config.cache --disable-static --with-gcc --with-gnu-ld --enable-dlopen --no-verify --build=i686-pc-linux-gnu admin/ltmain.sh i686-pc-linux-gnu
+#   admin/ltconfig --cache-file=/dev/null --disable-static --with-gcc --with-gnu-ld --enable-dlopen --no-verify --build=i686-pc-linux-gnu admin/ltmain.sh i686-pc-linux-gnu
 #
 # Compiler and other test output produced by ltconfig, useful for
 # debugging ltconfig, is in ./config.log if it exists.
@@ -5718,9 +5718,9 @@ build_old_libs=`case $build_libtool_libs in yes) echo no;; *) echo yes;; esac`
 # sh-indentation:2
 # End:
 ### BEGIN LIBTOOL TAG CONFIG: CXX
-# Libtool was configured as follows, on host sakaki:
+# Libtool was configured as follows, on host akira:
 #
-# AR="" AR_FLAGS="" LTCC="gcc" CC="c++" \
+# AR="" AR_FLAGS="" LTCC="gcc" CC="g++" \
 # CFLAGS="-O2 -fno-exceptions -fno-check-new" CPPFLAGS="" \
 # MAGIC_CMD="" LD="/usr/i486-suse-linux/bin/ld" LDFLAGS="" LIBS="" \
 # LN_S="ln -s" NM="/usr/bin/nm -B" RANLIB="ranlib" STRIP="strip" \
@@ -5728,7 +5728,7 @@ build_old_libs=`case $build_libtool_libs in yes) echo no;; *) echo yes;; esac`
 # objext="" exeext="" reload_flag=" -r" \
 # deplibs_check_method="pass_all" \
 # file_magic_cmd="\$MAGIC_CMD" \
-#   admin/ltconfig -o libtool --cache-file=./config.cache --disable-static --with-gcc --with-gnu-ld --enable-dlopen --build=i686-pc-linux-gnu --add-tag=CXX admin/ltcf-cxx.sh i686-pc-linux-gnu
+#   admin/ltconfig -o libtool --cache-file=/dev/null --disable-static --with-gcc --with-gnu-ld --enable-dlopen --build=i686-pc-linux-gnu --add-tag=CXX admin/ltcf-cxx.sh i686-pc-linux-gnu
 #
 # Compiler and other test output produced by ltconfig, useful for
 # debugging ltconfig, is in ./config.log if it exists.
@@ -5766,7 +5766,7 @@ AR_FLAGS="cru"
 LTCC="gcc"
 
 # A language-specific compiler.
-CC="c++"
+CC="g++"
 
 # Is the compiler the GNU C compiler?
 with_gcc=yes
@@ -5837,10 +5837,10 @@ need_version=no
 dlopen_support=yes
 
 # Whether dlopen of programs is supported.
-dlopen_self=yes
+dlopen_self=no
 
 # Whether dlopen of statically linked programs is supported.
-dlopen_self_static=no
+dlopen_self_static=unknown
 
 # Compiler flag to prevent dynamic linking.
 link_static_flag="-static"
