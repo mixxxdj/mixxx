@@ -11,10 +11,6 @@
 # Options, and path to libraries
 #
 
-# On Windows, select between WMME, DIRECTSOUND and ASIO.
-# If ASIO is used, ensure that the path to the ASIO SDK 2 is set correctly below
-WINPA = WMME 
-
 # Include for unix dependencies. (19/12/2003, J_Zar)
 unix:!macx:include( main.qbas )
 
@@ -49,16 +45,8 @@ macx:LIBS += -framework CoreAudio -framework AudioToolbox
 macx:INCLUDEPATH += $$PORTAUDIO_DIR/pa_mac_core $$PORTAUDIO_DIR/pablio 
 }
 win32 {
-    contains(WINPA, DIRECTSOUND) {
-        message("Compiling with PortAudio/DirectSound drivers")
-        SOURCES += $$PORTAUDIO_DIR/pa_win_ds/dsound_wrapper.c $$PORTAUDIO_DIR/pa_win_ds/pa_dsound.c 
-        LIBS += winmm.lib dsound.lib
-        INCLUDEPATH += $$PORTAUDIO_DIR/pa_win_ds
-    }
-    contains(WINPA, WMME) {
-        message("Compiling with PortAudio/WMME drivers")
-        LIBS += winmm.lib PAStaticWMME.lib
-    }
+    message("Compiling with PortAudio/WMME drivers")
+    LIBS += winmm.lib PAStaticWMME.lib
 }
 
 # RTAudio (Windows DirectSound)
@@ -70,6 +58,14 @@ win32 {
     HEADERS += playerrtaudio.h $$RTAUDIO_DIR/RtAudio.h $$RTAUDIO_DIR/RtError.h
     SOURCES += playerrtaudio.cpp $$RTAUDIO_DIR/RtAudio.cpp
     LIBS += dsound.lib
+}
+
+# ASIO (Windows)
+win32 {
+    DEFINES += __ASIO__
+    SOURCES += playerasio.cpp $$ASIOSDK_DIR/common/asio.cpp $$ASIOSDK_DIR/host/asiodrivers.cpp $$ASIOSDK_DIR/host/pc/asiolist.cpp
+    HEADERS += playerasio.h $$ASIOSDK_DIR/common/asio.h $$ASIOSDK_DIR/host/asiodrivers.h $$ASIOSDK_DIR/host/pc/asiolist.h
+    INCLUDEPATH += $$ASIOSDK_DIR/common $$ASIOSDK_DIR/host $$ASIOSDK_DIR/host/pc
 }
 
 # RTAudio (Linux ALSA)

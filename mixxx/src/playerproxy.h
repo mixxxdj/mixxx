@@ -38,6 +38,8 @@ public:
     bool setSoundApi(QString name);
     /** Satisfy virtual declaration in EngineObject */
     void process(const CSAMPLE *, const CSAMPLE *, const int) {};
+    /** Static function to return active player class. Needed for ASIO implementation */
+    static Player *getPlayer() { return m_pPlayer; }
 
 protected:
     /** Pointer to active Player class */
