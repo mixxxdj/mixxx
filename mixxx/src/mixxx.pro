@@ -14,12 +14,12 @@ win32:LIBS += ../lib/PAstaticWMMED.lib winmm.lib
 #HEADERS += midiobjectoss.h
 #DEFINES += __OSSMIDI__
 
-# PortMidi (Alpha - only available on Windows)
+# PortMidi (Alpha - Linux ALSA, Windows and MacOS X)
 SOURCES += midiobjectportmidi.cpp
 HEADERS += midiobjectportmidi.h
 DEFINES += __PORTMIDI__
-x11:LIBS += -lportmidi -lporttime
-macx:LIBS += -lportmidi
+unix:LIBS += -lportmidi -lporttime
+macx:LIBS -= -lporttime
 win32:LIBS += ../lib/portmidi.lib ../lib/porttime.lib
 
 # ALSA PCM (Not currently working, Linux specific)

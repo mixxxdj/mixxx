@@ -54,12 +54,12 @@ MidiObjectOSS::MidiObjectOSS(ConfigObject<ConfigValueMidi> *c, QApplication *a, 
         }
     }
 
-    // Open deafult device
-    if (device_valid==true)
+    // Open device
+    if (device_valid)
         devOpen(device);
     else
         if (devices.count()==0)
-            qWarning("No MIDI devices available.");
+            qWarning("OSSMidi: No MIDI devices available.");
         else
             devOpen(devices.first());
 }
