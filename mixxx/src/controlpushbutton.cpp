@@ -60,6 +60,15 @@ void ControlPushButton::slotSetPosition(int newpos)
     emitValueChanged(value);
 };
 
+void ControlPushButton::slotSetPosition(bool newpos)
+{
+    if (newpos)
+        slotSetPosition(1);
+    else
+        slotSetPosition(0);
+}
+
+
 void ControlPushButton::slotSetPositionOff()
 {
     slotSetPosition(0);
@@ -95,13 +104,29 @@ void ControlPushButton::setValue(int newvalue)
     emit(updateGUI(newvalue));
 };
 
-void ControlPushButton::setWidget(QWidget *_widget)
+void ControlPushButton::setWidget(QWidget *widget)
 {
-    widget = _widget;
     connect(widget, SIGNAL(clicked()), this, SLOT(slotClicked()));
     connect(this, SIGNAL(updateGUI(int)), widget, SLOT(setValue(int)));
 
     forceGUIUpdate();
+}
+
+void ControlPushButton::setAction(QAction *action)
+{
+    connect(action, SIGNAL(toggled(bool)), this, SLOT(slotSetPosition(bool)));
+    connect(this, SIGNAL(updateGUI(int)), this, SLOT(slotUpdateAction(int)));
+    connect(this, SIGNAL(updateAction(bool)), action, SLOT(setOn(bool)));
+
+    forceGUIUpdate();
+}
+
+void ControlPushButton::slotUpdateAction(int v)
+{
+    if (v==1)
+        emit(updateAction(true));
+    else
+        emit(updateAction(false));
 }
 
 void ControlPushButton::forceGUIUpdate()

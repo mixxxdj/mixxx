@@ -2,10 +2,10 @@
 #define TRACKLIST_H
 
 #include <qobject.h>
+#include <qptrlist.h>
 
 class QString;
 class TrackInfoObject;
-class QPtrList;
 
 class TrackList : public QObject
 {

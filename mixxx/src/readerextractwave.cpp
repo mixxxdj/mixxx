@@ -73,6 +73,11 @@ void ReaderExtractWave::reset()
 
     for (unsigned int i=0; i<READBUFFERSIZE; i++)
         read_buffer[i] = 0.;
+
+    // Reset extract objects
+    readerfft->reset();
+    readerhfc->reset();
+    readerbeat->reset();
 }
 
 void *ReaderExtractWave::getBasePtr()
@@ -120,6 +125,7 @@ void ReaderExtractWave::setSoundSource(SoundSource *_file)
     enginelock->unlock();
     bufferpos_start = 0;
     bufferpos_end = 0;
+    reset();
 }
 
 void ReaderExtractWave::setSignalVertexBuffer(SignalVertexBuffer *_signalVertexBuffer)
@@ -209,22 +215,6 @@ void ReaderExtractWave::getchunk(CSAMPLE rate)
     readerhfc->processChunk(chunkCurr, chunkStart, chunkEnd);
     readerbeat->processChunk(chunkCurr, chunkStart, chunkEnd);
 
-
-    // Mark beats in read_buffer
-    bool *beatBuffer = (bool *)readerbeat->getBasePtr();
-    int from = chunkCurr    *(readerbeat->getBufferSize()/READCHUNK_NO);
-    int to   = (chunkCurr+1)*(readerbeat->getBufferSize()/READCHUNK_NO)-1;
-    int chunkSizeDiff = READBUFFERSIZE/readerbeat->getBufferSize();
-//    qDebug("wave %i-%i",from,to);
-    //qDebug("chunkSizeDiff: %i",chunkSizeDiff);
-    for (i=from; i<to; i++)
-        if (beatBuffer[i%readerbeat->getBufferSize()])
-        {
-            for (int j=i*chunkSizeDiff; j<i*chunkSizeDiff+40; j++)
-                read_buffer[j%READBUFFERSIZE] = 30000.;
-//            qDebug("beat %i, size %i",i,readerbeat->getBufferSize());
-        }
-
     enginelock->unlock();
 
     // Update vertex buffer by sending an event containing indexes of where to update.
@@ -249,6 +239,11 @@ long int ReaderExtractWave::seek(long int new_playpos)
 
     for (unsigned int i=0; i<READBUFFERSIZE; i++)
         read_buffer[i] = 0.;
+
+    // Reset extract objects
+    readerfft->reset();
+    readerhfc->reset();
+    readerbeat->reset();
 
     return seekpos;
 }

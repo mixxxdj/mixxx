@@ -117,6 +117,8 @@ class MixxxApp : public QMainWindow
     void slotViewToolBar(bool toggle);
     /** toggle the statusbar*/
     void slotViewStatusBar(bool toggle);
+    /** toggle audio beat marks */
+    void slotOptionsBeatMark(bool toggle);
     /** Preference dialog */
     void slotOptionsPreferences();
     /** Cancel preferences from dialog */
@@ -200,6 +202,7 @@ class MixxxApp : public QMainWindow
 
     QAction *optionsLeft;
     QAction *optionsRight;
+    QAction *optionsBeatMark;
 
     QAction *optionsPreferences;
     /** Pointer to preference dialog */

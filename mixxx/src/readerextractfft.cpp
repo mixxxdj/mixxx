@@ -90,9 +90,10 @@ void *ReaderExtractFFT::processChunk(const int idx, const int start_idx, const i
             processFrame(i);
     else
     {
-        for (int i=frameFrom; i<frameNo; i++)
+	int i;    
+        for (i=frameFrom; i<frameNo; i++)
             processFrame(i);
-        for (i=0; i<frameTo; i++)
+	for (i=0; i<frameTo; i++)
             processFrame(i);
     }
 

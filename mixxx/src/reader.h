@@ -107,7 +107,6 @@ private:
     int file_length;
     /** Pointer to GUIChannel */
     GUIChannel *guichannel;
-
 };
 
 #endif

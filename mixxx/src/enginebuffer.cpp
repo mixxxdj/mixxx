@@ -42,7 +42,7 @@
 #include "reader.h"
 #include "readerextractbeat.h"
 
-EngineBuffer::EngineBuffer(MixxxApp *_mixxx, DlgPlaycontrol *_playcontrol, const char *_group)
+EngineBuffer::EngineBuffer(MixxxApp *_mixxx, QAction *actionAudioBeatMark, DlgPlaycontrol *_playcontrol, const char *_group)
 {
     mixxx = _mixxx;
     playcontrol = _playcontrol;
@@ -70,11 +70,20 @@ EngineBuffer::EngineBuffer(MixxxApp *_mixxx, DlgPlaycontrol *_playcontrol, const
     playposSlider = new ControlEngine(p2);
     playposSlider->setNotify(this,(void (EngineObject::*)(double))seek);
 
-    // Beat control
-    ControlBeat *p4 = new ControlBeat(ConfigKey(group, "beat"));
-    beatControl = new ControlEngine(p4);
-//    beatControl->setNotify(this,(void (EngineObject::*)(double))bpmChange);
+    // BPM control
+    ControlBeat *p4 = new ControlBeat(ConfigKey(group, "bpm"));
+    bpmControl = new ControlEngine(p4);
+//    bpmControl->setNotify(this,(void (EngineObject::*)(double))bpmChange);
                 
+    // Beat event control
+    p2 = new ControlPotmeter(ConfigKey(group, "beatevent"));
+    beatEventControl = new ControlEngine(p2);
+
+    // Audio beat mark toggle
+    p = new ControlPushButton(ConfigKey(group, "audiobeatmarks"));
+    p->setAction(actionAudioBeatMark);
+    audioBeatMark = new ControlEngine(p);
+
     // Control file changed
 //    filechanged = new ControlEngine(controlfilechanged);
 //    filechanged->setNotify(this,(void (EngineObject::*)(double))newtrack);
@@ -89,6 +98,7 @@ EngineBuffer::EngineBuffer(MixxxApp *_mixxx, DlgPlaycontrol *_playcontrol, const
     buffer = new CSAMPLE[MAX_BUFFER_LEN];
 
     playposUpdateCounter = 0;
+    oldEvent = 0.;
 
     reader->start();
 }
@@ -192,12 +202,11 @@ CSAMPLE *EngineBuffer::process(const CSAMPLE *, const int buf_size)
         CSAMPLE *bpmBuffer = beat->getBpmPtr();
         double filebpm = bpmBuffer[(int)(bufferpos_play*(beat->getBufferSize()/READCHUNKSIZE))];
         double bpmrate;
-        if (beatControl->get()>-1.)
-            bpmrate = beatControl->get()/filebpm;
+        if (bpmControl->get()>-1. && filebpm>-1.)
+            bpmrate = bpmControl->get()/filebpm;
         else
             bpmrate = 1.;
-
-//        qDebug("bpmrate %f, filebpm %f, midibpm %f",bpmrate,filebpm,beatControl->get());
+//        qDebug("bpmrate %f, filebpm %f, midibpm %f",bpmrate,filebpm,bpmControl->get());
                     
         double baserate =  bpmrate*((double)file_srate_old/(double)getPlaySrate());
         double rate;
@@ -206,16 +215,77 @@ CSAMPLE *EngineBuffer::process(const CSAMPLE *, const int buf_size)
         else
             rate=wheel->get()*baserate*20.;
 
+/*
+        //
+        // Beat event control. Assume forward play
+        //    
 
+        // Search for next beat
+        ReaderExtractBeat *readerbeat = reader->getBeatPtr();
+        bool *beatBuffer = (bool *)readerbeat->getBasePtr();
+        int nextBeatPos;
+        int beatBufferPos = bufferpos_play*((CSAMPLE)readerbeat->getBufferSize()/(CSAMPLE)READBUFFERSIZE);
+        int i;
+        for (i=beatBufferPos+1; i<beatBufferPos+readerbeat->getBufferSize(); i++)
+            if (beatBuffer[i%readerbeat->getBufferSize()])
+                break;
+        if (beatBuffer[i%readerbeat->getBufferSize()])
+            // Next beat was found
+            nextBeatPos = (i%readerbeat->getBufferSize())*(READBUFFERSIZE/readerbeat->getBufferSize());
+        else
+            // No next beat was found
+            nextBeatPos = bufferpos_play+buf_size;
 
+        double event = beatEventControl->get();
+        if (event > 0.)
+        {
+            qDebug("event: %f, playpos %f, nextBeatPos %i",event,bufferpos_play,nextBeatPos);
+            //
+            // Play next event
+            //
+
+            // Reset beat event control
+            beatEventControl->set(0.);
+
+            if (oldEvent>0.)
+            {
+                // Adjust bufferplaypos
+                bufferpos_play = nextBeatPos;
+
+                // Search for a new next beat position
+                ReaderExtractBeat *readerbeat = reader->getBeatPtr();
+                bool *beatBuffer = (bool *)readerbeat->getBasePtr();
+
+                int beatBufferPos = bufferpos_play*((CSAMPLE)readerbeat->getBufferSize()/(CSAMPLE)READBUFFERSIZE);
+                int i;
+                for (i=beatBufferPos+1; i<beatBufferPos+readerbeat->getBufferSize(); i++)
+                {
+    //                qDebug("i %i",i);
+                    if (beatBuffer[i%readerbeat->getBufferSize()])
+                        break;
+                }
+                if (beatBuffer[i%readerbeat->getBufferSize()])
+                    // Next beat was found
+                    nextBeatPos = (i%readerbeat->getBufferSize())*(READBUFFERSIZE/readerbeat->getBufferSize());
+                else
+                    // No next beat was found
+                    nextBeatPos = -1;
+            }
             
+            oldEvent = 1.;
+        }
+        else if (oldEvent==0.)
+            nextBeatPos = -1;
+
+//        qDebug("NextBeatPos :%i, bufDiff: %i",nextBeatPos,READBUFFERSIZE/readerbeat->getBufferSize());
+*/
+        
         // If the rate has changed, write it to the rate_exchange monitor
         if (rate != rate_old)
         {
             rate_exchange.tryWrite(rate);
             rate_old = rate;        
         }
-        
 
         // Determine playback direction
         bool backwards = false;
@@ -269,8 +339,26 @@ CSAMPLE *EngineBuffer::process(const CSAMPLE *, const int buf_size)
             }
             else
             {
-                for (int i=0; i<buf_size; i+=2)
+                
+                // Ensure that we only play until the next beat marking
+                int i_end;
+/*
+                if (nextBeatPos==-1)
+                    i_end = 0;
+                else
+                    i_end = max(0,min(buf_size, nextBeatPos-idx));
+*/
+//                qDebug("start, i_end %i",i_end);
+
+
+                i_end = buf_size;
+                
+                int i;
+                for (i=0; i<i_end; i+=2)
                 {
+//                    if (i==0)
+//                        qDebug("playpos: %f",idx);
+
                     long prev = (long)floor(idx)%READBUFFERSIZE;
                     if (!even(prev)) prev--;
 
@@ -282,20 +370,59 @@ CSAMPLE *EngineBuffer::process(const CSAMPLE *, const int buf_size)
 
                     idx += rate_add;
                 }
+                
+                // Pad rest of buffer with zeros if necessary
+/*
+                if (i<buf_size)
+                {
+//                    qDebug("end");
+                    oldEvent = 0.;
+                    for (; i<buf_size; i++)
+                        buffer[i] = 0.;
+                }
+*/
             }
-        
-            // Write buffer playpos (ensure valid range)
+
+
+            // If a beat occours in current buffer, and if audio marking is enabled, mark it
+            if (audioBeatMark->get()==1.)
+            {
+                ReaderExtractBeat *readerbeat = reader->getBeatPtr();
+                bool *beatBuffer = (bool *)readerbeat->getBasePtr();
+                int chunkSizeDiff = READBUFFERSIZE/readerbeat->getBufferSize();
+
+                int from = ((bufferpos_play-audioBeatMarkLen)/chunkSizeDiff);
+                int to   = (idx                              /chunkSizeDiff);
+                for (int i=from; i<to; i++)
+                    if (beatBuffer[i%readerbeat->getBufferSize()])
+                    {
+                        int j_start = i*chunkSizeDiff;
+                        int j_end   = j_start+audioBeatMarkLen;
+                        if (j_start > bufferpos_play-audioBeatMarkLen)
+                        {
+                            j_start = max(0,j_start-bufferpos_play);
+                            j_end = min(j_end-bufferpos_play,buf_size);
+//                            qDebug("j_start %i, j_end %i",j_start,j_end);
+                            for (int j=j_start; j<j_end; j++)
+                                buffer[j%buf_size] = 30000.;
+                        }
+                    }
+            }
+
+            // Ensure valid range of idx
             if (idx>READBUFFERSIZE)
                 idx -= (double)READBUFFERSIZE;
             else if (idx<0)
                 idx += (double)READBUFFERSIZE;
 //if (idx<bufferpos_play)
 //    qDebug("idx: %f, bufferpos_play %f, diff: %f",idx,bufferpos_play,bufferpos_play-idx);
-            bufferpos_play = idx;
         
             // Write file playpos
-            filepos_play += rate*(double)buf_size;
+            filepos_play += rate*(double)(buf_size);;
 
+            // Write buffer playpos
+            bufferpos_play = idx;
+            
             //qDebug("bufferpos_play %f,\t filepos_play %f", bufferpos_play, filepos_play);
 
         

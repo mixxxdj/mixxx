@@ -25,7 +25,8 @@ ReaderExtractBeat::ReaderExtractBeat(ReaderExtract *input, int frameSize, int fr
     // Initialize histogram
     histSize = _histSize;
     hist = new CSAMPLE[histSize];
-    for (int i=0; i<histSize; i++)
+    int i;
+    for (i=0; i<histSize; i++)
         hist[i]=0.;
 
     // Initialize beat interval vector
@@ -63,6 +64,17 @@ ReaderExtractBeat::~ReaderExtractBeat()
 
 void ReaderExtractBeat::reset()
 {
+    peaks.clear();
+    for (int i=0; i<READCHUNK_NO; i++)
+        peakIt[i] = 0;    
+    for (int i=0; i<getBufferSize(); i++)
+    {
+        beatBuffer[i] = false;
+        bpmBuffer[i] = -1.;
+    }
+    for (int i=0; i<histSize; i++)
+        hist[i]=0.;
+    
 }
 
 void *ReaderExtractBeat::getBasePtr()
@@ -105,10 +117,11 @@ void *ReaderExtractBeat::processChunk(const int idx, const int start_idx, const 
 //    int chunkStart = idx*framePerChunk;
 //    int chunkEnd   = (idx+1)*framePerChunk-1;
 
-    qDebug("chunk %i-%i, max: %i",chunkStart,chunkEnd,frameNo);
+//    qDebug("chunk %i-%i, max: %i",chunkStart,chunkEnd,frameNo);
     
     // Delete beat markings in beat buffer covered by chunk idx
-    for (int i=chunkStart; i<chunkEnd; i++)
+    int i;
+    for (i=chunkStart; i<chunkEnd; i++)
         beatBuffer[i] = false;
 
     // Delete peaks in range covered by chunk idx, from the peak list
@@ -290,8 +303,8 @@ void *ReaderExtractBeat::processChunk(const int idx, const int start_idx, const 
     }
 
     // Down-write histogram
-    for (i=0; i<histSize; i++)
-        hist[i] *= 0.8;
+    for (int i=0; i<histSize; i++)
+        hist[i] *= 0.9999;
     
     // Find and print maximum
     int maxidx = -1;
@@ -334,6 +347,7 @@ void *ReaderExtractBeat::processChunk(const int idx, const int start_idx, const 
             beatIdx = 0;
         
         // Fill current chunk of beatBuffer
+        //maxidx=10; //HACK!!!
         int interval = (((CSAMPLE)maxidx*histInterval)+histMinInterval)*getRate();
 
         if (chunkStart<beatIdx)
@@ -342,6 +356,7 @@ void *ReaderExtractBeat::processChunk(const int idx, const int start_idx, const 
             chunkEnd += getBufferSize();
         while (beatIdx < chunkStart)
             beatIdx += interval;
+
         while (beatIdx < chunkEnd)
         {
             beatBuffer[beatIdx%getBufferSize()]=true;

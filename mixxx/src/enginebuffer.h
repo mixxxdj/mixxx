@@ -19,7 +19,7 @@
 #define ENGINEBUFFER_H
 
 #include <qapplication.h>
-
+#include <qaction.h>
 #include "defs.h"
 #include "engineobject.h"
 #include "monitor.h"
@@ -34,10 +34,14 @@ class Reader;
   *@author Tue and Ken Haste Andersen
 */
 
+// Length of audio beat marks in samples
+const int audioBeatMarkLen = 40;
+
+
 class EngineBuffer : public EngineObject
 {
 public:
-    EngineBuffer(MixxxApp *_mixxx, DlgPlaycontrol *_playcontrol, const char *_group);
+    EngineBuffer(MixxxApp *_mixxx, QAction *actionAudioBeatMark, DlgPlaycontrol *_playcontrol, const char *_group);
     ~EngineBuffer();
     /** Returns pointer to Reader object. Used in MixxxApp. */
     Reader *getReader();
@@ -86,7 +90,12 @@ private:
     /** Pointer to DlgPlaycontrol dialog. Used when updating file info window */
     DlgPlaycontrol *playcontrol;
    
-    ControlEngine *playButton, *rateSlider, *wheel, *playposSlider, *beatControl;
+    ControlEngine *playButton, *rateSlider, *wheel, *playposSlider, *audioBeatMark;
+    /** Control used to input desired playback BPM */
+    ControlEngine *bpmControl;
+    /** Control used to input beat. If this is used, only one beat is played, until a new beat mark is received from the ControlObject */
+    ControlEngine *beatEventControl;
+    /** Holds the name of the control group */
     const char *group;
 
     CSAMPLE *read_buffer_prt;
@@ -95,6 +104,10 @@ private:
     //FLOAT_TYPE BASERATE;
     /** Counter; when to update playpos slider */
     int playposUpdateCounter;
+    /** Used to store if an event has happen in last iteration of event based playback */
+    double oldEvent;
+
+
 
 };
 #endif

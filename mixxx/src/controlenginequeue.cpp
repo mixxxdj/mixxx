@@ -44,7 +44,7 @@ void ControlEngineQueue::sync()
         {
             ControlEngineQueueItem *item = queue.dequeue();
 
-            qDebug("item %i, value %f",item->no, item->value);
+//            qDebug("item %i, value %f",item->no, item->value);
             list->at(item->no)->setExtern(item->value);
             queue.remove();
             

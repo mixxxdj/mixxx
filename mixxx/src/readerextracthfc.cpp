@@ -25,6 +25,12 @@ ReaderExtractHFC::ReaderExtractHFC(ReaderExtract *input, int frameSize, int fram
    
     hfc = new CSAMPLE[frameNo];
     dhfc = new CSAMPLE[frameNo];
+    for (int i=0; i<frameNo; i++)
+    {
+        hfc[i] = 0.;
+        dhfc[i] = 0.;
+    }
+    
     specList = (QPtrList<EngineSpectralFwd> *)input->getBasePtr();
 }
 
@@ -36,6 +42,11 @@ ReaderExtractHFC::~ReaderExtractHFC()
 
 void ReaderExtractHFC::reset()
 {
+    for (int i=0; i<frameNo; i++)
+    {
+        hfc[i] = 0.;
+        dhfc[i] = 0.;
+    }
 }
 
 void *ReaderExtractHFC::getBasePtr()
@@ -60,7 +71,8 @@ int ReaderExtractHFC::getBufferSize()
 
 void *ReaderExtractHFC::processChunk(const int idx, const int start_idx, const int end_idx)
 {
-    for (int i=idx*framePerChunk; i<(idx+1)*framePerChunk; i++)
+    int i;
+    for (i=idx*framePerChunk; i<(idx+1)*framePerChunk; i++)
     {
         int i2 = i%frameNo;
         hfc[i2] = specList->at(i2)->getHFC();
