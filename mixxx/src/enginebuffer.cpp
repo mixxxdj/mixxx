@@ -803,6 +803,10 @@ CSAMPLE *EngineBuffer::process(const CSAMPLE *, const int buf_size)
                     at_start = true;
                 }
 
+                // Set cue point if play button not pressed
+                if (playButton->get()==0.)
+                    cuePoint->set(filepos_play);
+
                 // Ensure valid range of idx
                 while (idx>READBUFFERSIZE)
                     idx -= (double)READBUFFERSIZE;
