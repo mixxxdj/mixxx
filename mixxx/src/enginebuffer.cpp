@@ -326,12 +326,14 @@ void EngineBuffer::checkread()
             qDebug("Warning: reader is (close to) lacking behind player!");
 }
 
+// Write the position in the buffer on the LCD display.
+// Called from process.
 void EngineBuffer::writepos()
 {
     FLOAT_TYPE newwrite = playpos_file.read()/file->length();
     if (floor(fabs(newwrite-lastwrite)*100.) >= 1.)
     {
-        //emit position((int)(100*newwrite));  // ***********
+        emit position((int)(100*newwrite));  // ***********
         lastwrite = newwrite;
     }
 }
@@ -371,15 +373,18 @@ CSAMPLE *EngineBuffer::process(const CSAMPLE *, const int buf_size)
         playpos_buffer.write(myPlaypos_buffer);
         playpos_file.write(myPlaypos_file);
 
-    }
 
-    checkread();
+    }
     
-    // Check the wheel:
-    wheel->updatecounter(buf_size,EngineObject::SRATE);
+    if (!pause) {
+	checkread();
     
-    // Write position to the gui:
-    writepos();
+	// Check the wheel:
+	wheel->updatecounter(buf_size,EngineObject::SRATE);
+	
+	// Write position to the gui:
+	writepos();
+    }
     
     return buffer;
 }
