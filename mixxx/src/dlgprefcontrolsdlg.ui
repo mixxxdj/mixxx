@@ -9,7 +9,7 @@
             <x>0</x>
             <y>0</y>
             <width>459</width>
-            <height>440</height>
+            <height>443</height>
         </rect>
     </property>
     <property name="caption">
@@ -162,29 +162,6 @@
         </property>
         <property name="text">
             <string>Pitch/Rate slider range</string>
-        </property>
-    </widget>
-    <widget class="QLabel">
-        <property name="name">
-            <cstring>TextLabel6_2_2_3_2</cstring>
-        </property>
-        <property name="enabled">
-            <bool>true</bool>
-        </property>
-        <property name="geometry">
-            <rect>
-                <x>9</x>
-                <y>234</y>
-                <width>170</width>
-                <height>19</height>
-            </rect>
-        </property>
-        <property name="font">
-            <font>
-            </font>
-        </property>
-        <property name="text">
-            <string>Tool tips</string>
         </property>
     </widget>
     <widget class="QLabel">
@@ -353,33 +330,6 @@
             </font>
         </property>
     </widget>
-    <widget class="QComboBox">
-        <item>
-            <property name="text">
-                <string>On</string>
-            </property>
-        </item>
-        <item>
-            <property name="text">
-                <string>Off</string>
-            </property>
-        </item>
-        <property name="name">
-            <cstring>ComboBoxTooltips</cstring>
-        </property>
-        <property name="geometry">
-            <rect>
-                <x>189</x>
-                <y>230</y>
-                <width>170</width>
-                <height>22</height>
-            </rect>
-        </property>
-        <property name="font">
-            <font>
-            </font>
-        </property>
-    </widget>
     <widget class="QLabel">
         <property name="name">
             <cstring>TextLabel6_2_3</cstring>
@@ -493,12 +443,115 @@
     </widget>
     <widget class="QLabel">
         <property name="name">
+            <cstring>TextLabel6_2_2_3_2</cstring>
+        </property>
+        <property name="enabled">
+            <bool>true</bool>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>9</x>
+                <y>264</y>
+                <width>170</width>
+                <height>19</height>
+            </rect>
+        </property>
+        <property name="font">
+            <font>
+            </font>
+        </property>
+        <property name="text">
+            <string>Tool tips</string>
+        </property>
+    </widget>
+    <widget class="QLabel">
+        <property name="name">
+            <cstring>TextLabel6_2_2_3_3</cstring>
+        </property>
+        <property name="enabled">
+            <bool>true</bool>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>9</x>
+                <y>234</y>
+                <width>170</width>
+                <height>19</height>
+            </rect>
+        </property>
+        <property name="font">
+            <font>
+            </font>
+        </property>
+        <property name="text">
+            <string>Scale BPM display</string>
+        </property>
+    </widget>
+    <widget class="QComboBox">
+        <item>
+            <property name="text">
+                <string>On</string>
+            </property>
+        </item>
+        <item>
+            <property name="text">
+                <string>Off</string>
+            </property>
+        </item>
+        <property name="name">
+            <cstring>ComboBoxTooltips</cstring>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>189</x>
+                <y>260</y>
+                <width>170</width>
+                <height>22</height>
+            </rect>
+        </property>
+        <property name="font">
+            <font>
+            </font>
+        </property>
+    </widget>
+    <widget class="QComboBox">
+        <item>
+            <property name="text">
+                <string>Yes</string>
+            </property>
+        </item>
+        <item>
+            <property name="text">
+                <string>No</string>
+            </property>
+        </item>
+        <property name="name">
+            <cstring>ComboBoxScaleBpm</cstring>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>189</x>
+                <y>230</y>
+                <width>170</width>
+                <height>22</height>
+            </rect>
+        </property>
+        <property name="font">
+            <font>
+            </font>
+        </property>
+        <property name="toolTip" stdset="0">
+            <string>Scale BPM display according to playback rate</string>
+        </property>
+    </widget>
+    <widget class="QLabel">
+        <property name="name">
             <cstring>textLabel</cstring>
         </property>
         <property name="geometry">
             <rect>
                 <x>10</x>
-                <y>275</y>
+                <y>305</y>
                 <width>341</width>
                 <height>70</height>
             </rect>

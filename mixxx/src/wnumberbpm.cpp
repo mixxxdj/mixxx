@@ -18,6 +18,8 @@
 #include "wnumberbpm.h"
 #include "controlobject.h"
 
+bool WNumberBpm::m_bScaleBpm = true;
+
 WNumberBpm::WNumberBpm(const char *group, QWidget *parent, const char *name) : WNumber(parent, name)
 {
     m_qsText = "BPM: ";
@@ -32,5 +34,13 @@ WNumberBpm::~WNumberBpm()
 
 void WNumberBpm::setValue(double dValue)
 {
-    WNumber::setValue(dValue*(1.+m_pRateControl->getValue()*m_pRateDirControl->getValue()));
+    if (m_bScaleBpm)
+        WNumber::setValue(dValue*(1.+m_pRateControl->getValue()*m_pRateDirControl->getValue()));
+    else
+        WNumber::setValue(dValue);
+}
+
+void WNumberBpm::setScaleBpm(bool bScaleBpm)
+{
+    m_bScaleBpm = bScaleBpm;
 }

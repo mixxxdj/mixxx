@@ -32,10 +32,13 @@ public:
     ~WNumberBpm();
     /** Sets the value */
     void setValue(double dValue);
+    /** Sets weather the display should scale bpm according to the current playback rate */
+    static void setScaleBpm(bool);
+
 private:
     /** Pointer to control object for rate */
     ControlObject *m_pRateControl, *m_pRateDirControl;
-
+    static bool m_bScaleBpm;
 };
 
 #endif
