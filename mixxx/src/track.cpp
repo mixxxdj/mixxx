@@ -368,6 +368,20 @@ void Track::slotLoadPlayer2()
     slotLoadPlayer2(m_pActivePopupTrack);
 }
 
+void Track::slotLoadPlayer1(QString filename)
+{
+    TrackInfoObject *pTrack = m_pTrackCollection->getTrack(filename);
+    if (pTrack)
+        slotLoadPlayer1(pTrack);
+}
+
+void Track::slotLoadPlayer2(QString filename)
+{
+    TrackInfoObject *pTrack = m_pTrackCollection->getTrack(filename);
+    if (pTrack)
+        slotLoadPlayer2(pTrack);
+}
+
 void Track::slotRemoveFromPlaylist()
 {
     m_pActivePlaylist->slotRemoveTrack(m_pActivePopupTrack);

@@ -348,6 +348,13 @@ MixxxApp::MixxxApp(QApplication *a, QStringList files)
     // Initialize track object:
     m_pTrack = new Track(config->getValueString(ConfigKey("[Playlist]","Listfile")), view, buffer1, buffer2);
 
+    // Set up drag and drop to player visuals
+    if (view->m_pVisualCh1)
+        connect(view->m_pVisualCh1, SIGNAL(trackDropped(QString)), m_pTrack, SLOT(slotLoadPlayer1(QString)));
+    if (view->m_pVisualCh2)
+        connect(view->m_pVisualCh2, SIGNAL(trackDropped(QString)), m_pTrack, SLOT(slotLoadPlayer2(QString)));
+
+
     // Setup state of End of track controls from config database
     ControlObject::getControl(ConfigKey("[Channel1]","TrackEndMode"))->setValueFromApp(config->getValueString(ConfigKey("[Controls]","TrackEndModeCh1")).toDouble());
     ControlObject::getControl(ConfigKey("[Channel2]","TrackEndMode"))->setValueFromApp(config->getValueString(ConfigKey("[Controls]","TrackEndModeCh2")).toDouble());
@@ -366,19 +373,9 @@ MixxxApp::MixxxApp(QApplication *a, QStringList files)
 
     // Load tracks in files (command line arguments) into player 1 and 2:
     if (files.count()>1)
-    {
-        // Get TrackInfoObject from TrackCollection
-        TrackInfoObject *pTrack = m_pTrack->getTrackCollection()->getTrack((*files.at(1)));
-        if (pTrack)
-            m_pTrack->slotLoadPlayer1(pTrack);
-    }
+        m_pTrack->slotLoadPlayer1((*files.at(1)));
     if (files.count()>2)
-    {
-        // Get TrackInfoObject from TrackCollection
-        TrackInfoObject *pTrack = m_pTrack->getTrackCollection()->getTrack((*files.at(2)));
-        if (pTrack)
-            m_pTrack->slotLoadPlayer2(pTrack);
-    }
+        m_pTrack->slotLoadPlayer2((*files.at(2)));
 
     // Set up socket interface
     new MixxxSocketServer(m_pTrack);

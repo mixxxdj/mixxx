@@ -44,9 +44,11 @@ class ControlPotmeter;
 class WVisualWaveform : public QGLWidget
 {
     Q_OBJECT
-public: 
+public:
     WVisualWaveform(QWidget *pParent=0, const char *pName=0, const QGLWidget *pShareWidget = 0);
     ~WVisualWaveform();
+    void dragEnterEvent(QDragEnterEvent *event);
+    void dropEvent(QDropEvent *event);
     void setup(QDomNode node);
     bool eventFilter(QObject *o, QEvent *e);
     /** Add a VisualChannel */
@@ -57,6 +59,7 @@ public slots:
 signals:
     void valueChangedLeftDown(double);
     void valueChangedRightDown(double);
+    void trackDropped(QString filename);
 
 protected:
     void initializeGL();

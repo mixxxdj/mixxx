@@ -29,14 +29,19 @@
 class WVisualSimple : public WWidget
 {
     Q_OBJECT
-public: 
+public:
     WVisualSimple(QWidget *pParent=0, const char *pName=0);
     ~WVisualSimple();
+    void dragEnterEvent(QDragEnterEvent *event);
+    void dropEvent(QDropEvent *event);
     void setup(QDomNode node);
     void mouseMoveEvent(QMouseEvent *e);
     void mousePressEvent(QMouseEvent *e);
     void mouseReleaseEvent(QMouseEvent *e);
     void paintEvent(QPaintEvent *);
+
+signals:
+    void trackDropped(QString filename);
 
 public slots:
     void setValue(double) {};
@@ -44,7 +49,7 @@ public slots:
 protected:
     int m_iStartPosX, m_iValue;
     QPoint m_qMarkerPos1, m_qMarkerPos2, m_qMousePos;
-        
+
     /** Colors */
     QColor colorSignal, colorMarker;
 };

@@ -18,6 +18,7 @@
 #include "wvisualsimple.h"
 #include <qpainter.h>
 #include <qpixmap.h>
+#include <qdragobject.h>
 
 WVisualSimple::WVisualSimple(QWidget *pParent, const char *pName) : WWidget(pParent, pName)
 {
@@ -26,6 +27,27 @@ WVisualSimple::WVisualSimple(QWidget *pParent, const char *pName) : WWidget(pPar
 
 WVisualSimple::~WVisualSimple()
 {
+}
+
+void WVisualSimple::dragEnterEvent(QDragEnterEvent *event)
+{
+    event->accept(QUriDrag::canDecode(event));
+}
+
+void WVisualSimple::dropEvent(QDropEvent *event)
+{
+    QStringList lst;
+    if (!QUriDrag::canDecode(event))
+    {
+        event->ignore();
+        return;
+    }
+
+    event->accept();
+    QUriDrag::decodeLocalFiles(event, lst);
+    QString name = (*lst.begin());
+
+    emit(trackDropped(name));
 }
 
 void WVisualSimple::setup(QDomNode node)
