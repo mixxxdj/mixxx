@@ -1,9 +1,16 @@
 - Stability of EngineBuffer
 - MP3/report out of memory
-- GUI
+- GUI reorganization
+- GUI controls: wheel, new knob gfx
 - Two channels
+- Volume sliders
+- Proper exit
+- Change tracks
+- Decode MP3's
+- Gui grid
 
 Future options:
 - Headphone channel
 - Sound Effects
-
+- VU meters
+- Leds

@@ -22,7 +22,7 @@
 #include "defs.h"
 #include <stdlib.h>
 #include <iostream>
-#include "enginebuffer.h"
+#include "engineobject.h"
 #include "controlobject.h"
 #include <vector>
 
@@ -30,7 +30,7 @@ class Player : public QObject {
 public:
 	Player(int, std::vector<EngineObject *> *);
 	~Player();      // Deallocate
-	virtual void start(EngineBuffer*); // Start audio stream
+	virtual void start(EngineObject *); // Start audio stream
 	virtual void stop() = 0;           // Stops audio stream
 	virtual void wait() = 0;           // Wait for audio stream to finish
 
@@ -45,8 +45,7 @@ protected:
 	std::vector<EngineObject *> *engines;
 	CSAMPLE *process_buffer,*tmp1, *tmp2;
 	int index;    // Current playback frame in input buffer
-	EngineBuffer* reader;
-	unsigned long int play_pos;
+	EngineObject* reader;
 };
 
 #endif

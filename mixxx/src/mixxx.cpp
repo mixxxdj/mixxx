@@ -67,12 +67,18 @@ MixxxApp::MixxxApp()
   qDebug("Init midi...");
   midi = new MidiObject();
 
-  qDebug("Init engine...");
-  buffer = new EngineBuffer(view->playcontrol, 0, ADC3, PORT_D, midi,
-                            view->playlist->TableList->item(0,1)->text());
+  qDebug("Init buffer 1...");
+  buffer1 = new EngineBuffer(view->playcontrol1, 0, ADC3, PORT_D, midi,
+                             view->playlist->TableList->item(0,1)->text());
 
-  channel = new EngineChannel(view->channel, midi, ADC7, ADC6, ADC5, ADC4, 0);
-  engines.push_back(channel);
+  qDebug("Init buffer 2...");
+  buffer2 = new EngineBuffer(view->playcontrol2, 0, 0, 0, midi,
+                             view->playlist->TableList->item(1,1)->text());
+
+  channel1 = new EngineChannel(view->channel1, midi, ADC7, ADC6, ADC5, ADC4, 0);
+  channel2 = new EngineChannel(view->channel2, midi, 0, 0, 0, 0, 0);
+
+  master = new EngineMaster(view->master, buffer1, buffer2, channel1, channel2, 0, 0, midi);
 
   // Initialize player with a desired buffer size
   qDebug("Init player...");
@@ -87,19 +93,23 @@ MixxxApp::MixxxApp()
   player = new PlayerPortAudio(BUFFER_SIZE, &engines);
 #endif
 
-  buffer->start();
+  buffer1->start();
+  buffer2->start();
 
   // Start audio
   qDebug("Start player...");
-  player->start(buffer);
+  player->start(master);
 }
 
 MixxxApp::~MixxxApp()
 {
 	player->stop();
 	delete player;
-    delete buffer;
-    delete channel;
+    delete buffer1;
+    delete buffer2;
+    delete channel1;
+    delete channel2;
+    delete master;
 }
 
 /** initializes all QActions of the application */
@@ -453,9 +463,9 @@ void MixxxApp::slotChangePlay(int row,int col,int button, const QPoint &)
   player->stop();
 
   // Tell the buffer to get a new file:
-  buffer->newtrack(view->playlist->TableList->item(row,1)->text());
+  buffer1->newtrack(view->playlist->TableList->item(row,1)->text());
   // Start buffer and playback
-  player->start(buffer);
+  player->start(master);
 }
 
 

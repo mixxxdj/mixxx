@@ -1,36 +1,73 @@
 <!DOCTYPE UI><UI version="3.0" stdsetdef="1">
-<class>DlgPlaycontrolDlg</class>
+<class>DlgMasterDlg</class>
 <widget class="QWidget">
     <property name="name">
-        <cstring>DlgPlaycontrolDlg</cstring>
+        <cstring>DlgMasterDlg</cstring>
     </property>
     <property name="geometry">
         <rect>
             <x>0</x>
             <y>0</y>
-            <width>300</width>
-            <height>60</height>
+            <width>310</width>
+            <height>70</height>
         </rect>
-    </property>
-    <property name="sizePolicy">
-        <sizepolicy>
-            <hsizetype>1</hsizetype>
-            <vsizetype>1</vsizetype>
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-        </sizepolicy>
     </property>
     <property name="caption">
         <string>Form1</string>
     </property>
+    <widget class="QKnob">
+        <property name="name">
+            <cstring>Knob1</cstring>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>205</x>
+                <y>25</y>
+                <width>32</width>
+                <height>32</height>
+            </rect>
+        </property>
+    </widget>
+    <widget class="QRadioButton">
+        <property name="name">
+            <cstring>RadioButtonClipping</cstring>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>250</x>
+                <y>30</y>
+                <width>45</width>
+                <height>19</height>
+            </rect>
+        </property>
+        <property name="text">
+            <string>clip</string>
+        </property>
+    </widget>
+    <widget class="QLabel">
+        <property name="name">
+            <cstring>TextLabel1</cstring>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>200</x>
+                <y>10</y>
+                <width>42</width>
+                <height>16</height>
+            </rect>
+        </property>
+        <property name="text">
+            <string>Master</string>
+        </property>
+    </widget>
     <widget class="QSlider">
         <property name="name">
             <cstring>SliderCrossfader</cstring>
         </property>
         <property name="geometry">
             <rect>
-                <x>10</x>
-                <y>15</y>
+                <x>15</x>
+                <y>20</y>
                 <width>170</width>
                 <height>40</height>
             </rect>
@@ -43,51 +80,6 @@
         </property>
         <property name="tickmarks">
             <enum>Both</enum>
-        </property>
-    </widget>
-    <widget class="QKnob">
-        <property name="name">
-            <cstring>Knob1</cstring>
-        </property>
-        <property name="geometry">
-            <rect>
-                <x>200</x>
-                <y>20</y>
-                <width>32</width>
-                <height>32</height>
-            </rect>
-        </property>
-    </widget>
-    <widget class="QLabel">
-        <property name="name">
-            <cstring>TextLabel1</cstring>
-        </property>
-        <property name="geometry">
-            <rect>
-                <x>195</x>
-                <y>5</y>
-                <width>42</width>
-                <height>16</height>
-            </rect>
-        </property>
-        <property name="text">
-            <string>Master</string>
-        </property>
-    </widget>
-    <widget class="QRadioButton">
-        <property name="name">
-            <cstring>RadioButtonClipping</cstring>
-        </property>
-        <property name="geometry">
-            <rect>
-                <x>245</x>
-                <y>25</y>
-                <width>45</width>
-                <height>19</height>
-            </rect>
-        </property>
-        <property name="text">
-            <string>clip</string>
         </property>
     </widget>
 </widget>

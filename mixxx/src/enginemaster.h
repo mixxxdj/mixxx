@@ -1,8 +1,8 @@
 /***************************************************************************
-                          playerportaudio.h  -  description
+                          enginemaster.h  -  description
                              -------------------
-    begin                : Wed Feb 20 2002
-    copyright            : (C) 2002 by Tue and Ken Haste Andersen
+    begin                : Sun Apr 28 2002
+    copyright            : (C) 2002 by 
     email                : 
  ***************************************************************************/
 
@@ -15,32 +15,32 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef PLAYERPORTAUDIO_H
-#define PLAYERPORTAUDIO_H
+#ifndef ENGINEMASTER_H
+#define ENGINEMASTER_H
 
-#include "player.h"
-#include <portaudio.h>
+#include "engineobject.h"
+#include "enginebuffer.h"
+#include "dlgmaster.h"
+#include "enginepregain.h"
+#include "enginechannel.h"
+#include "controlpotmeter.h"
 
 /**
-  *@author Tue and Ken Haste Andersen
+  *@author 
   */
 
- class PlayerPortAudio : public Player  {
+class EngineMaster : public EngineObject  {
+private:
+    EngineBuffer *buffer1, *buffer2;
+    EngineChannel *channel1, *channel2;
+    EnginePregain *volume;
+    ControlPotmeter *crossfader;
 public: 
-	PlayerPortAudio(int size, std::vector<EngineObject *> *);
-	~PlayerPortAudio();
-	/** No descriptions */
-	void stop();
-	void start(EngineObject *_reader);
-	/** No descriptions */
-	void wait();
-protected:
-	PortAudioStream *stream;
+	EngineMaster(DlgMaster *master, EngineBuffer *buffer1, EngineBuffer *buffer2,
+                 EngineChannel *, EngineChannel *,
+                 int midiCrossfader, int midiVolume, MidiObject *midi);
+	~EngineMaster();
+    CSAMPLE *process(const CSAMPLE *, const int);
 };
-
-
-static int paCallback(void *inputBuffer, void *outputBuffer,
-                      unsigned long framesPerBuffer,
-                      PaTimestamp outTime, void *_player);
 
 #endif
