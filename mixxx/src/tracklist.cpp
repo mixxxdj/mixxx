@@ -142,13 +142,13 @@ void TrackList::UpdateTracklist()
     {
         if (Track->m_bExist)
         {
-            m_pTableTracks->setItem(iRow, COL_TITLE, new WTrackTableItem(m_pTableTracks,QTableItem::Never, Track->m_sTitle));
-    		m_pTableTracks->setItem(iRow, COL_ARTIST, new WTrackTableItem(m_pTableTracks,QTableItem::Never, Track->m_sArtist));
-	    	m_pTableTracks->setItem(iRow, COL_COMMENT, new WTrackTableItem(m_pTableTracks,QTableItem::WhenCurrent, Track->m_sComment));
-		    m_pTableTracks->setItem(iRow, COL_TYPE, new WTrackTableItem(m_pTableTracks,QTableItem::Never, Track->m_sType));
-	    	m_pTableTracks->setItem(iRow, COL_DURATION, new WTrackTableItem(m_pTableTracks,QTableItem::Never, Track->Duration()));
-		    m_pTableTracks->setItem(iRow, COL_BITRATE, new WTrackTableItem(m_pTableTracks,QTableItem::Never, Track->m_sBitrate));
-    		m_pTableTracks->setItem(iRow, COL_INDEX, new WTrackTableItem(m_pTableTracks,QTableItem::Never, QString("%1").arg(iTrackno)));
+            m_pTableTracks->setItem(iRow, COL_TITLE, new WTrackTableItem(m_pTableTracks,QTableItem::Never, Track->m_sTitle, typeText));
+    		m_pTableTracks->setItem(iRow, COL_ARTIST, new WTrackTableItem(m_pTableTracks,QTableItem::Never, Track->m_sArtist, typeText));
+	    	m_pTableTracks->setItem(iRow, COL_COMMENT, new WTrackTableItem(m_pTableTracks,QTableItem::WhenCurrent, Track->m_sComment, typeText));
+		    m_pTableTracks->setItem(iRow, COL_TYPE, new WTrackTableItem(m_pTableTracks,QTableItem::Never, Track->m_sType, typeText));
+	    	m_pTableTracks->setItem(iRow, COL_DURATION, new WTrackTableItem(m_pTableTracks,QTableItem::Never, Track->Duration(), typeDuration));
+		    m_pTableTracks->setItem(iRow, COL_BITRATE, new WTrackTableItem(m_pTableTracks,QTableItem::Never, Track->m_sBitrate, typeNumber));
+    		m_pTableTracks->setItem(iRow, COL_INDEX, new WTrackTableItem(m_pTableTracks,QTableItem::Never, QString("%1").arg(iTrackno), typeText));
 	       	iRow ++;
 	    }
         iTrackno ++;
@@ -232,7 +232,7 @@ void TrackList::UpdateScores()
 	{
 		TrackInfoObject *track = m_lTracks.at( m_pTableTracks->text( iRow, COL_INDEX ).toInt() );
         m_pTableTracks->setItem(iRow, COL_SCORE, new WTrackTableItem(m_pTableTracks,QTableItem::Never,
-                                QString("%1").arg( (int) ( 99*track->m_iTimesPlayed/m_iMaxTimesPlayed ), 2 ) ));
+                                QString("%1").arg( (int) ( 99*track->m_iTimesPlayed/m_iMaxTimesPlayed ), 2 ), typeNumber ));
 	}
 }
 

@@ -69,3 +69,4 @@ void WTrackTable::sortColumn(int col, bool ascending, bool)
 {
     QTable::sortColumn(col,ascending,true);
 }
+
