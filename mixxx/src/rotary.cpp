@@ -21,7 +21,6 @@
 #include "qapplication.h"
 #include "midiobject.h"
 #include "mathstuff.h"
-#include <qdatetime.h>
 
 Rotary::Rotary()
 {
@@ -95,28 +94,18 @@ void Rotary::sendRotaryEvent(double dValue)
     m_pFilter[m_iFilterLength-1] = dValue/m_dCalibration;
     dMagnitude += m_pFilter[m_iFilterLength-1];
     dMagnitude /= (double)m_iFilterLength;
-/*
-    // Range check
-    if (m_fMagnitude>63)
-        m_fMagnitude = 63;
-    else if (m_fMagnitude<-64)
-        m_fMagnitude = -64;
-*/
-//     qDebug("val %f, mag %f", (float)dValue, (float)dMagnitude);
 
- //   if (m_qCalibrationMutex.tryLock())
+    if (m_qCalibrationMutex.tryLock())
     {
         if (m_pControlObjectRotary)
             m_pControlObjectRotary->queueFromThread(dMagnitude);
-//        m_qCalibrationMutex.unlock();
+        m_qCalibrationMutex.unlock();
     }
-/*
     else
     {
         m_dCalibration += dValue;
         m_iCalibrationCount += 1;
     }
-*/
 }
 
 void Rotary::sendButtonEvent(bool press)
@@ -136,10 +125,6 @@ void Rotary::calibrateStart()
     m_dCalibration = 0.;
     m_iCalibrationCount = 0;
 
-    // Start time
-    m_pCalibrationTime = new QTime();
-    m_pCalibrationTime->start();
-
     m_qCalibrationMutex.lock();
 }
 
@@ -147,11 +132,9 @@ double Rotary::calibrateEnd()
 {
     m_qCalibrationMutex.unlock();
 
-    int msec = m_pCalibrationTime->elapsed();
+    m_dCalibration /= (double)m_iCalibrationCount;
 
-    m_dCalibration /= (double)m_iCalibrationCount; //msec;
-
-    qDebug("Calibration %f, msec %i",m_dCalibration, msec);
+    qDebug("Calibration %f",m_dCalibration);
 
     return m_dCalibration;
 }

@@ -47,6 +47,15 @@ DlgPrefMidi::DlgPrefMidi(QWidget *parent, MidiObject *pMidi, ConfigObject<Config
     m_pPowerMate1->selectMapping(ComboBoxPowerMate1->currentText());
     m_pPowerMate2->selectMapping(ComboBoxPowerMate2->currentText());
 
+    // Used in mouse calibration
+    m_pProgressDialog = new QProgressDialog("Calibrating mouse turntable", "Cancel", 30, this, "Progress...", TRUE );
+    m_pProgressDialog->setMinimumDuration(0);
+    m_pTimer = new QTimer(this);
+    connect(m_pTimer, SIGNAL(timeout()), this, SLOT(slotUpdateProgressBar()));
+    connect(m_pProgressDialog, SIGNAL(canceled()), this, SLOT(slotCancelCalibrate()));
+
+
+
     connect(ComboBoxMouseDevice1, SIGNAL(activated(int)), this, SLOT(slotApply()));
     connect(ComboBoxMouseDevice2, SIGNAL(activated(int)), this, SLOT(slotApply()));
     connect(pushButtonMouseCalibrate1, SIGNAL(clicked()), this, SLOT(slotMouseCalibrate1()));
@@ -291,12 +300,10 @@ void DlgPrefMidi::slotMouseCalibrate1()
             ComboBoxMouseDevice1->setCurrentItem(0);
     }
 
-    m_pProgressDialog = new QProgressDialog("Calibrating mouse turntable", "Cancel", 300, this, "Progress...", TRUE );
-    m_pTimer = new QTimer(this);
     m_iProgress = 0;
-    connect(m_pTimer, SIGNAL(timeout()), this, SLOT(slotUpdateProgressBar()));
+    m_pProgressDialog->setProgress(0);
 
-    m_pTimer->start(10);
+    m_pTimer->start(100);
 
     // Start measurement
     m_pMouseCalibrate->calibrateStart();
@@ -326,14 +333,18 @@ void DlgPrefMidi::slotUpdateProgressBar()
     m_iProgress++;
     m_pProgressDialog->setProgress(m_iProgress);
 
-    if (m_iProgress==300)
+    if (m_iProgress==30)
     {
         m_pTimer->stop();
         double c = m_pMouseCalibrate->calibrateEnd();
         m_pConfig->set(ConfigKey("[Controls]","MouseCalibration1"), ConfigValue(QString("%1").arg(c)));
 
-        delete m_pTimer;
-        delete m_pProgressDialog;
         slotApply();
     }
+}
+
+void DlgPrefMidi::slotCancelCalibrate()
+{
+    m_pTimer->stop();
+    slotApply();
 }

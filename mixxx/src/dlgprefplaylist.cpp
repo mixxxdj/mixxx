@@ -53,8 +53,8 @@ void DlgPrefPlaylist::slotBrowseDir()
 
 void DlgPrefPlaylist::slotApply()
 {
-    
-	// Update playlist if path has changed
+
+    // Update playlist if path has changed
     if (LineEditSongfiles->text() != config->getValueString(ConfigKey("[Playlist]","Directory")))
     {
         // Check for valid directory and put up a dialog if invalid!!!

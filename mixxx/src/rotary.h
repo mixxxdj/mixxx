@@ -28,7 +28,6 @@
   */
 
 class ControlObject;
-class QTime;
 
 const int kiRotaryFilterMaxLen = 25;
 static QString kqRotaryMappingP1Phase =   "Player 1, phase adjustment";
@@ -73,8 +72,6 @@ protected:
     /** Calibration value */
     double m_dCalibration;
     int m_iCalibrationCount;
-    /** Time used in calibration */
-    QTime *m_pCalibrationTime;
     /** Mutex to control calibration mode */
     QMutex m_qCalibrationMutex;
 };
