@@ -64,7 +64,7 @@ SoundSourceMp3::SoundSourceMp3(const char* filename) {
     qDebug("bitrate = %d" , bitrate/1000);
     qDebug("Size    = %d", length());
 
-       // Re-init buffer:
+    // Re-init buffer:
     mad_stream_finish(&Stream);
     mad_stream_init(&Stream);
     mad_stream_buffer(&Stream, inputbuf, inputbuf_len);
