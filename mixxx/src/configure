@@ -1,10 +1,10 @@
 #!/bin/bash 
 
 #************************************************************************
-# QBAS
-# version 0.9.6
+# QBASystem
+# version 0.9.7
 # Copyright (c) 2003-2004 Gianluca Romanin ( J_Zar )
-#        <jayorama@users.sourceforge.net>
+#        <j_zar_AT_users.berlios.de>
 #************************************************************************
 
 #************************************************************************
@@ -29,83 +29,81 @@
 
 # inserting blanks...
 echo
-echo "-----------------------------------------------------"
+echo "-----------------------------------------------------------"
 
 ######################### Main stage
 #
 
+# define temp files
+H_TEMP=".help_temp" 
+L_TEMP=".l_temp" 
+CONFIGURE_DEF=".configure.def" 
+SUMMARY_LOG=".summary.log" 
+
+
 # remove temp files if there are...
-rm -f l_temp
-rm -f help_temp
+rm -f $L_TEMP
+rm -f $H_TEMP
 rm -f a.out
 
 # Here set up the "help message" -------------------------
-# DELIMITER="£" : hoping not to find this char in build.definition!!
 if   test "$1" = "--help" || test "$1" = "-h"  || test "$1" = "--h";
 then
+	CONFIGURE_OPTIONS=$(cat build.definition | grep "CONFIGURE_SCRIPT_OPTIONS" -0 -w | cut -f2 -d"=" ) ;
+	CONFIGURE_FEATURES=$(cat build.definition | grep "CONFIGURE_SCRIPT_FEATURES" -0 -w | cut -f2 -d"=" ) ;
+	CONFIGURE_PACKAGES=$(cat build.definition | grep "CONFIGURE_SCRIPT_PACKAGE_LIST" -0 -w | cut -f2 -d"=" ) ;
+	
 	cat help ;
-	cat build.definition | grep "FEATURE" > l_temp ;
-	V=$( paste -s -d"£" l_temp  ) ;
+	echo " " ;
 	
-	if [ "$V" != "" ] ; 
+	if [ "$CONFIGURE_OPTIONS" != "" ] ; 
 	then
-		echo " " >> help_temp ;
-		echo "		Custom options:" >> help_temp ;
-		echo " " >> help_temp ;
+		echo " " ;
+		echo "Custom options:" ;
+		echo " " ;
+		echo "  Add a custom option to configuration with" ;
+# 		echo " " ;
+		
+		for i in $CONFIGURE_OPTIONS ; do
+			DESCRIPTION=$(cat build.definition | grep "${i}_HELP_DESCRIPTION" -0 -w | cut -f2 -d"=" ) ;
+			echo "  --$i	$DESCRIPTION" ;
+		done
+		echo " " ;
 	fi
 	
-	# 256 seems a good value of features...but could be internal exception
-	for (( u=1; u<256; u++ )); do
-		LINE=$(echo $V | cut -f$u -d"£") ;
-		ITEM=$(echo $LINE | cut -f2  -d"=" ) ;
-		ITEM=$(echo $ITEM | cut -f2  -d" " ) ;
-		
-		if [ "$ITEM" == "" ] ;
-		then
-			break ;
-		fi
-		
-		if ( (cat help_temp | grep "enable-$ITEM" -q ) ) ;
-		then 
-			break ;
-		else
-			echo "--enable-$ITEM 			Enable $ITEM related code" >> help_temp ;
-			echo "--disable-$ITEM			Disable $ITEM related code" >> help_temp ;
-		fi
-	done
-	
-	cat build.definition | grep "PACKAGE" > l_temp ;
-	V=$( paste -s -d"£" l_temp  ) ;
-	
-	for (( u=1; u<256; u++ )); do
-		LINE=$(echo $V | cut -f$u -d"£") ;
-		ITEM=$(echo $LINE | cut -f2  -d"=" ) ;
-		ITEM=$(echo $ITEM | cut -f2  -d" " ) ;
-		
-		if [ "$ITEM" == "" ] ;
-		then
-			break ;
-		fi
-		
-		if ( (cat help_temp | grep "with-$ITEM=DIR" -q ) ) ;
-		then
-			break ;
-		else 
-			echo "--with-$ITEM=DIR		Set DIR as dependency directory for $ITEM" >> help_temp ;
-		fi
-	done
-	
-# 	if [ "$V" != "" ] ; 
-# 	then
-		echo " " >> help_temp ;
-		echo "-----------------------------------------------------" >> help_temp ;
-		echo " " >> help_temp ;
-# 	fi
-	
-	if test -e help_temp ;
+	if [ "$CONFIGURE_FEATURES" != "" ] ; 
 	then
-		cat help_temp ;
+		echo " " ;
+		echo "Features:" ;
+		echo " " ;
+		echo "  Enable/disable feature's related code with" ;
+# 		echo " " ;
+		
+		for i in $CONFIGURE_FEATURES ; do
+			echo "  --enable-$i" ;
+			echo "  --disable-$i" ;
+		done
+		echo " " ;
 	fi
+	
+	if [ "$CONFIGURE_PACKAGES" != "" ] ; 
+	then
+		echo " " ;
+		echo "Package custom configuration:" ;
+		echo " " ;
+		echo "  Set custom DIR for a package with" ;
+# 		echo " " ;
+		
+		for i in $CONFIGURE_PACKAGES ; do
+			echo "  --with-$i=DIR" ;
+		done
+		echo " " ;
+	fi	
+	
+	echo " " ;
+	echo "-----------------------------------------------------------" ;
+	echo "-----------------------------------------------------------" ;
+	echo " " ;
 	exit
 fi
 
@@ -139,13 +137,13 @@ echo "Project file is:      $PROJECT_FILE" ;
 #echo "Project path is:      $PROJECT_PATH" ;
 
 # cleanup phase
-rm -f configure.def ;
-rm -f summary.log ;
+rm -f $CONFIGURE_DEF ;
+rm -f $SUMMARY_LOG ;
 rm -f config.h ;
 
 
 # save project path variable
-echo "PROJECT_PATH = $PROJECT_PATH" >> configure.def ;
+echo "PROJECT_PATH = $PROJECT_PATH" >> $CONFIGURE_DEF ;
 
 # number of arguments + 1
 NUM_OPT=$(($# + 1));
@@ -153,7 +151,7 @@ NUM_OPT=$(($# + 1));
 # if we have arguments, we update the user friendly output...
 if [ "$NUM_OPT" != "1" ] ;
 then 
-	echo "CUSTOM_BUILD = true" >> configure.def
+	echo "CUSTOM_BUILD = true" >> $CONFIGURE_DEF
 fi
 
 # retrieve the project type: Qt or not Qt?
@@ -164,7 +162,7 @@ then
 fi
 
 # Init the warning configuration
-echo "CONFIG	+= warn_on" >> configure.def
+echo "CONFIG	+= warn_on" >> $CONFIGURE_DEF
 
 
 # parsing arguments-------------------------------------------->>
@@ -189,7 +187,7 @@ for (( d=1; d<$NUM_OPT; d++ )); do
 				break
 			fi
 			T=$V ;
-			echo "QMAKE_CFLAGS = $V" >> configure.def
+			echo "QMAKE_CFLAGS = $V" >> $CONFIGURE_DEF
 		done
 		STATUS="ok"
 	fi
@@ -206,7 +204,7 @@ for (( d=1; d<$NUM_OPT; d++ )); do
 				break
 			fi
 			T=$V ;
-			echo "QMAKE_CXXFLAGS = $V" >> configure.def
+			echo "QMAKE_CXXFLAGS = $V" >> $CONFIGURE_DEF
 		done
 		STATUS="ok"
 	fi
@@ -223,7 +221,7 @@ for (( d=1; d<$NUM_OPT; d++ )); do
 				break
 			fi
 			T=$V ;
-			echo "QMAKE_LFLAGS = $V" >> configure.def
+			echo "QMAKE_LFLAGS = $V" >> $CONFIGURE_DEF
 		done
 		STATUS="ok"
 	fi
@@ -240,7 +238,7 @@ for (( d=1; d<$NUM_OPT; d++ )); do
 				break
 			fi
 			T=$V ;
-			echo "PATH$y = $V" >> configure.def
+			echo "PATH$y = $V" >> $CONFIGURE_DEF
 		done
 		STATUS="ok"
 	fi
@@ -248,14 +246,14 @@ for (( d=1; d<$NUM_OPT; d++ )); do
 
 	if [ "$OPT" = "--prefix" ];
 	then
-		echo "PREFIX = $VAL" >> configure.def
+		echo "PREFIX = $VAL" >> $CONFIGURE_DEF
 		STATUS="ok"
 	fi
 	
 	if [ "$OPT" = "--disable-warnings" ];
 	then
-		echo "CONFIG	-= warn_on" >> configure.def
-		echo "CONFIG	+= warn_off" >> configure.def
+		echo "CONFIG	-= warn_on" >> $CONFIGURE_DEF
+		echo "CONFIG	+= warn_off" >> $CONFIGURE_DEF
 		STATUS="ok"
 	fi
 
@@ -266,13 +264,13 @@ for (( d=1; d<$NUM_OPT; d++ )); do
 		then
 			VAL="1";
 		fi
-		echo "STATIC_LIBPATH = $VAL" >> configure.def
+		echo "STATIC_LIBPATH = $VAL" >> $CONFIGURE_DEF
 		STATUS="ok"
 	fi
 
 	if [ "$OPT" = "--enable-debug" ];
 	then
-		echo "CONFIG += debug" >> configure.def
+		echo "CONFIG += debug" >> $CONFIGURE_DEF
 		DBG=$(cat build.definition | grep "enable_config_h" -q );
 		if [ "$DBG" != "" ];
 		then
@@ -284,23 +282,44 @@ for (( d=1; d<$NUM_OPT; d++ )); do
 	if echo $OPT | grep -q -e "--enable-" ;
 	then
 		V=$(echo $OPT | cut -f4 -d"-") ;
-		echo "ENABLED_FEATURES += $V" >> configure.def
+		echo "ENABLED_FEATURES += $V" >> $CONFIGURE_DEF
 		STATUS="ok"
 	fi
 	
 	if echo $OPT | grep -q -e "--disable-" ;
 	then
 		V=$(echo $OPT | cut -f4 -d"-") ;
-		echo "DISABLED_FEATURES += $V" >> configure.def
+		echo "DISABLED_FEATURES += $V" >> $CONFIGURE_DEF
 		STATUS="ok"
 	fi
 	
 	if echo $OPT | grep -q -e "--with-" ;
 	then
 		V=$(echo $OPT | cut -f4 -d"-") ;
-		echo "USER_DEFINED_PACKAGES += $V" >> configure.def
-		echo "${V}_PATH += $VAL" >> configure.def
+		echo "USER_DEFINED_PACKAGES += $V" >> $CONFIGURE_DEF
+		echo "${V}_PATH += $VAL" >> $CONFIGURE_DEF
 		STATUS="ok"
+	fi
+	
+	if echo $OPT | grep -q -e "--" ;
+	then
+		V=$(echo $OPT | cut -f3 -d"-") ;
+		echo $V ;
+		CONF_OPT=$(cat build.definition | grep "CONFIGURE_SCRIPT_OPTIONS" -0 -w | cut -f2 -d"=" ) ;
+		if [ "$CONF_OPT" != "" ] ; 
+		then
+			for i in $CONF_OPT ; do
+				if [ "$V" == "$i" ] ;
+				then
+					echo "PROJECT_ACTIVE_OPTIONS += $V" >> $CONFIGURE_DEF ;
+					if [ "$VAL" != "" ] ;
+					then
+						echo "${V}_OPTION_VALUE = $VAL" >> $CONFIGURE_DEF ;
+					fi
+					STATUS="ok" ;
+				fi
+			done
+		fi
 	fi
 
 # OLD DEPRECATED STUFF!! ----------------------------->>
@@ -317,7 +336,7 @@ for (( d=1; d<$NUM_OPT; d++ )); do
 # 				break
 # 			fi
 # 			T=$V ;
-# 			echo "ENABLED_FEATURES += $V" >> configure.def
+# 			echo "ENABLED_FEATURES += $V" >> $CONFIGURE_DEF
 # 		done
 # 		STATUS="ok"
 # 	fi
@@ -333,7 +352,7 @@ for (( d=1; d<$NUM_OPT; d++ )); do
 # 				break
 # 			fi
 # 			T=$V ;
-# 			echo "DISABLED_FEATURES += $V" >> configure.def
+# 			echo "DISABLED_FEATURES += $V" >> $CONFIGURE_DEF
 # 		done
 # 		STATUS="ok"
 # 	fi
@@ -352,7 +371,7 @@ for (( d=1; d<$NUM_OPT; d++ )); do
 # 				break
 # 			fi
 # 			T=$V ;
-# 			echo "LIBS += -L$V" >> configure.def
+# 			echo "LIBS += -L$V" >> $CONFIGURE_DEF
 # 		done
 # 		STATUS="ok"
 # 	fi
@@ -373,7 +392,7 @@ for (( d=1; d<$NUM_OPT; d++ )); do
 				break
 			fi
 			T=$V ;
-			echo "LIBS += $V" >> configure.def
+			echo "LIBS += $V" >> $CONFIGURE_DEF
 		done
 		STATUS="ok"
 	fi
@@ -490,14 +509,14 @@ then
 	then
 		QT_LIB="$QTDIR/lib" ;
 		RES="yes"
-		echo "CONFIG += thread" >> configure.def ;
+		echo "CONFIG += thread" >> $CONFIGURE_DEF ;
 	else
 		find /usr -name libqt-mt.so 1> temp ;
 		QT_LIB=$(cat temp) ;
 		if [ "$QT_LIB" != "" ]
 		then
 			RES="yes"
-			echo "CONFIG += thread" >> configure.def ;
+			echo "CONFIG += thread" >> $CONFIGURE_DEF ;
 			
 			echo
 			echo "__ Qt lib not in the expected path!"
