@@ -200,7 +200,6 @@ MixxxApp::MixxxApp(QApplication *a)
   int bufferSize = (int)((float)config->getValueString(ConfigKey("[Soundcard]","LatencyMaster")).toInt()*((float)srate/1000.));
   if (bufferSize == 0)
       bufferSize = BUFFER_SIZE;
-  qDebug("bufferSize: %i",bufferSize);
 
   player->reopen(config->getValueString(ConfigKey("[Soundcard]","DeviceMaster")),
                  srate,bits,bufferSize,chMaster,
@@ -348,7 +347,7 @@ void MixxxApp::initActions()
   openIcon = QPixmap(fileopen);
   saveIcon = QPixmap(filesave);
 
-
+/*
   fileNew = new QAction(tr("New File"), newIcon, tr("&New"), QAccel::stringToKey(tr("Ctrl+N")), this);
   fileNew->setStatusTip(tr("Creates a new document"));
   fileNew->setWhatsThis(tr("New File\n\nCreates a new document"));
@@ -378,7 +377,7 @@ void MixxxApp::initActions()
   filePrint->setStatusTip(tr("Prints out the actual document"));
   filePrint->setWhatsThis(tr("Print File\n\nPrints out the actual document"));
   connect(filePrint, SIGNAL(activated()), this, SLOT(slotFilePrint()));
-
+*/
   fileQuit = new QAction(tr("Exit"), tr("E&xit"), QAccel::stringToKey(tr("Ctrl+Q")), this);
   fileQuit->setStatusTip(tr("Quits the application"));
   fileQuit->setWhatsThis(tr("Exit\n\nQuits the application"));
@@ -436,7 +435,8 @@ void MixxxApp::initMenuBar()
 
   ///////////////////////////////////////////////////////////////////
   // menuBar entry fileMenu
-/*fileMenu=new QPopupMenu();
+  fileMenu=new QPopupMenu();
+/*
   fileNew->addTo(fileMenu);
   fileOpen->addTo(fileMenu);
   fileClose->addTo(fileMenu);
@@ -446,7 +446,8 @@ void MixxxApp::initMenuBar()
   fileMenu->insertSeparator();
   filePrint->addTo(fileMenu);
   fileMenu->insertSeparator();
-  fileQuit->addTo(fileMenu);*/
+*/
+  fileQuit->addTo(fileMenu);
 
   ///////////////////////////////////////////////////////////////////
   // menuBar entry editMenu
@@ -480,7 +481,7 @@ void MixxxApp::initMenuBar()
 
   ///////////////////////////////////////////////////////////////////
   // MENUBAR CONFIGURATION
-  //menuBar()->insertItem(tr("&File"), fileMenu);
+  menuBar()->insertItem(tr("&File"), fileMenu);
   //menuBar()->insertItem(tr("&Edit"), editMenu);
   menuBar()->insertItem(tr("&Options"), optionsMenu);
   //menuBar()->insertItem(tr("&View"), viewMenu);
@@ -798,7 +799,6 @@ void MixxxApp::reopen()
 {
     // Calculate buffer size based on sample rate and latency in msecs
     int bufferSize = (int)((float)config->getValueString(ConfigKey("[Soundcard]","LatencyMaster")).toInt()*((float)config->getValueString(ConfigKey("[Soundcard]","Samplerate")).toInt()/1000.));
-    qDebug("bufferSize: %i",bufferSize);
 
     // Stop playback
     if (playerSlave != 0)
