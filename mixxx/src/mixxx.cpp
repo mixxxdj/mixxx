@@ -225,7 +225,10 @@ MixxxApp::MixxxApp(QApplication *a)
     if (powermate1!=0)
     {
     if (powermate1->opendev())
+    {
         qDebug("Found PowerMate 1");
+
+    }
     else
     {
         delete powermate1;

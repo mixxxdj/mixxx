@@ -35,7 +35,6 @@ public:
     char *print();
     char *printValue();
     int getPosition();
-//    void setWidget(QWidget *widget);
     void setAccelUp(const QKeySequence key);
     void setAccelDown(const QKeySequence key);
     /** Associates a QAction to the ControlPushButton. This can be used to associate a menu item
@@ -44,21 +43,13 @@ public:
 public slots:
     void slotSetPositionExtern(float);
     void slotSetPositionMidi(MidiCategory c, int v);
-    void slotSetPositionOff();
 private slots:
-    /** This slot is connected to the widgets clicked signal */
-    void slotClicked();
-    /** Connected to QAccel key event */
-    void slotKeyPress();
-    void slotSetPosition(bool);
     void slotUpdateAction(int);
 signals:
     void valueChanged(int);
     void updateAction(bool);
 protected:
     void forceGUIUpdate();
-//    char *name;            // The name of the button
-//    buttonType kind;       // Determine whether the button is latching or not.
 };
 
 #endif
