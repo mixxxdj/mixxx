@@ -197,7 +197,7 @@ CSAMPLE *EngineBuffer::process(const CSAMPLE *, const int buf_size)
         else
             bpmrate = 1.;
 
-        //qDebug("bpmrate %f, filebpm %f, midibpm %f",bpmrate,filebpm,beatControl->get());
+//        qDebug("bpmrate %f, filebpm %f, midibpm %f",bpmrate,filebpm,beatControl->get());
                     
         double baserate =  bpmrate*((double)file_srate_old/(double)getPlaySrate());
         double rate;
