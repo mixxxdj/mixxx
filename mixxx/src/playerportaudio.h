@@ -33,11 +33,14 @@ class PlayerPortAudio : public Player  {
 public:
     PlayerPortAudio(ConfigObject<ConfigValue> *config, ControlObject *pControl);
     ~PlayerPortAudio();
+    bool initialize();
     bool open();
     void close();
     void setDefaults();
     QStringList getInterfaces();
     QStringList getSampleRates();
+    static QString getSoundApi();
+    QString getSoundApiName() { return getSoundApi(); };
     /** Satisfy virtual declaration in EngineObject */
     CSAMPLE *process(const CSAMPLE *, const int) { return 0; };
     /** Process samples. Called from PortAudio callback */
@@ -57,6 +60,8 @@ protected:
     int m_iChannels;
     /** Channels used for each output from Mixxx. Set to -1 when not in use */
     int m_iMasterLeftCh, m_iMasterRigthCh, m_iHeadLeftCh, m_iHeadRightCh;
+    /** True if PortAudio was sucessfully initialized */
+    bool m_bInit;
 };
 
 

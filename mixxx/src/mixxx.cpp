@@ -58,24 +58,8 @@
 #include "joysticklinux.h"
 #endif
 
-#ifdef __ALSA__
-  #include "playeralsa.h"
-#endif
-
 #ifdef __ALSAMIDI__
   #include "midiobjectalsa.h"
-#endif
-
-#ifdef __PORTAUDIO__
-  #include "playerportaudio.h"
-#endif
-
-#ifdef __PORTAUDIO19__
-  #include "playerportaudio19.h"
-#endif
-
-#ifdef __JACK__
-  #include "playerjack.h"
 #endif
 
 #ifdef __PORTMIDI__
@@ -93,6 +77,8 @@
 #ifdef __WINMIDI__
   #include "midiobjectwin.h"
 #endif
+
+#include "playerproxy.h"
 
 MixxxApp::MixxxApp(QApplication *a, QStringList files)
 {
@@ -291,20 +277,6 @@ MixxxApp::MixxxApp(QApplication *a, QStringList files)
         }
     }
 
-    // Initialize player device
-#ifdef __ALSA__
-    player = new PlayerALSA(BUFFER_SIZE, &engines, config->getValueString(ConfigKey("[Soundcard]","DeviceMaster")));
-#endif
-#ifdef __PORTAUDIO__
-    player = new PlayerPortAudio(config,control);
-#endif
-#ifdef __PORTAUDIO19__
-    player = new PlayerPortAudio19(config,control);
-#endif
-#ifdef __JACK__
-    player = new PlayerJack(config,control);
-#endif
-
     // Init buffers/readers
     buffer1 = new EngineBuffer(powermate1, "[Channel1]");
     buffer2 = new EngineBuffer(powermate2, "[Channel2]");
@@ -320,6 +292,10 @@ MixxxApp::MixxxApp(QApplication *a, QStringList files)
 
     // Starting the master (mixing of the channels and effects):
     master = new EngineMaster(buffer1, buffer2, channel1, channel2, flanger, "[Master]");
+
+    // Initialize player device
+    Player::setMaster(master);
+    player = new PlayerProxy(config,control);
 
     // Find path of skin
     QString qSkinPath(qConfigPath);
@@ -387,15 +363,9 @@ MixxxApp::MixxxApp(QApplication *a, QStringList files)
     prefDlg = new DlgPreferences(this, view, midi, player, m_pTracks, config, midiconfig, control);
     prefDlg->setHidden(true);
 
-    // Try open player device using config data, if that fails, use default values. If that fails too, the
-    // preference panel should be opened.
-    player->setMaster(master);
+    // Try open player device If that fails, the preference panel is opened.
     if (!player->open())
-    {
-        player->setDefaults();
-        if (!player->open())
-            prefDlg->setHidden(false);
-    }
+        prefDlg->setHidden(false);
 
     setFocusPolicy(QWidget::StrongFocus);
 

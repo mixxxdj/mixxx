@@ -17,9 +17,6 @@
 
 #include "playerportaudio.h"
 
-int bufferIdxSlave = 0;
-
-
 PlayerPortAudio::PlayerPortAudio(ConfigObject<ConfigValue> *config, ControlObject *pControl) : Player(config,pControl)
 {
     m_devId = -1;
@@ -29,15 +26,27 @@ PlayerPortAudio::PlayerPortAudio(ConfigObject<ConfigValue> *config, ControlObjec
     m_iHeadLeftCh = -1;
     m_iHeadRightCh = -1;
     m_pStream = 0;
+    m_bInit = false;
 
-    PaError err = Pa_Initialize();
-    if (err!=paNoError)
-        qFatal("PortAudio: Initialization error");
 }
 
 PlayerPortAudio::~PlayerPortAudio()
 {
-    Pa_Terminate();
+    if (m_devId>=0)
+        close();
+    if (m_bInit)
+        Pa_Terminate();
+}
+
+bool PlayerPortAudio::initialize()
+{
+    PaError err = Pa_Initialize();
+    if (err!=paNoError)
+        m_bInit = false;
+    else
+        m_bInit = true;
+
+    return m_bInit;
 }
 
 bool PlayerPortAudio::open()
@@ -356,6 +365,20 @@ QStringList PlayerPortAudio::getSampleRates()
 
     return result;
 }
+
+QString PlayerPortAudio::getSoundApi()
+{
+#ifdef __LINUX__
+    return QString("OSS");
+#endif
+#ifdef __MACX__
+    return QString("CoreAudio");
+#endif
+#ifdef __WIN__
+    return QString("DirectSound");
+#endif
+}
+
 
 PaDeviceID PlayerPortAudio::getDeviceID(QString name)
 {

@@ -1,5 +1,5 @@
 /***************************************************************************
-                          playerportjack.cpp  -  description
+                          playerjack.cpp  -  description
                              -------------------
     begin                : Sat Nov 15 2003
     copyright            : (C) 2003 by Tue Haste Andersen
@@ -17,9 +17,6 @@
 
 #include "playerjack.h"
 
-int bufferIdxSlave = 0;
-
-
 PlayerJack::PlayerJack(ConfigObject<ConfigValue> *config, ControlObject *pControl) : Player(config,pControl)
 {
     ports = 0;
@@ -27,11 +24,30 @@ PlayerJack::PlayerJack(ConfigObject<ConfigValue> *config, ControlObject *pContro
     m_bOpen = false;
 
     jack_set_error_function(jackError);
+}
 
-    if ((client = jack_client_new("Mixxx")) == 0)
+PlayerJack::~PlayerJack()
+{
+    close();
+
+    if (client)
     {
-        qFatal("Jack server not running.");
+        jack_port_unregister(client, output_master_left);
+        jack_port_unregister(client, output_master_right);
+        jack_port_unregister(client, output_head_left);
+        jack_port_unregister(client, output_head_right);
+
+        jack_client_close(client);
     }
+
+    if (ports)
+        free(ports);
+}
+
+bool PlayerJack::initialize()
+{
+    if ((client = jack_client_new("Mixxx")) == 0)
+        return false;
 
     jack_set_process_callback(client, jackProcess, this);
     jack_set_sample_rate_callback(client, jackSrate, this);
@@ -41,21 +57,8 @@ PlayerJack::PlayerJack(ConfigObject<ConfigValue> *config, ControlObject *pContro
     output_master_right = jack_port_register(client, "Master right", JACK_DEFAULT_AUDIO_TYPE, JackPortIsOutput, 0);
     output_head_left    = jack_port_register(client, "Head left", JACK_DEFAULT_AUDIO_TYPE, JackPortIsOutput, 0);
     output_head_right   = jack_port_register(client, "Head right", JACK_DEFAULT_AUDIO_TYPE, JackPortIsOutput, 0);
-}
 
-PlayerJack::~PlayerJack()
-{
-    close();
-
-    jack_port_unregister(client, output_master_left);
-    jack_port_unregister(client, output_master_right);
-    jack_port_unregister(client, output_head_left);
-    jack_port_unregister(client, output_head_right);
-
-    jack_client_close(client);
-
-    if (ports!=0)
-        free(ports);
+    return true;
 }
 
 bool PlayerJack::open()
@@ -116,6 +119,8 @@ bool PlayerJack::open()
     }
 
     m_bOpen = true;
+    
+    // FIX ME: RETURN FALSE IF NO DEVICES WERE OPENED!!!
 
     return true;
 }
@@ -123,7 +128,7 @@ bool PlayerJack::open()
 void PlayerJack::close()
 {
     // Deactivate jack and disconnect all ports
-    if (m_bOpen)
+    if (m_bOpen && client)
         jack_deactivate(client);
     m_bOpen = false;
 }
@@ -190,6 +195,10 @@ QStringList PlayerJack::getSampleRates()
     return result;
 }
 
+QString PlayerJack::getSoundApi()
+{
+    return QString("Jack");
+}
 
 int PlayerJack::callbackProcess(int iBufferSize)
 {
@@ -228,7 +237,9 @@ void PlayerJack::callbackSetBufferSize(int iBufferSize)
 void PlayerJack::callbackShutdown()
 {
     qWarning("Jack is killing our connection.");
-    exit(-1);
+    client = 0;
+
+    //exit(-1);
     
 /*
     if ((client = jack_client_new("Mixxx")) == 0)

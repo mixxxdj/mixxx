@@ -45,7 +45,6 @@
 #include "enginechannel.h"
 #include "enginemaster.h"
 #include "engineflanger.h"
-#include "player.h"
 #include "midiobject.h"
 #include "controlobject.h"
 #include "dlgpreferences.h"
@@ -56,6 +55,7 @@ class TrackInfoObject;
 class PowerMate;
 class Joystick;
 class ControlEngine;
+class PlayerProxy;
 
 /**
   * This Class is the base class for Mixxx. It sets up the main
@@ -109,7 +109,7 @@ class MixxxApp : public QMainWindow
     EngineChannel *channel1, *channel2;
     EngineMaster *master;
     EngineFlanger *flanger;
-    Player *player;
+    PlayerProxy *player;
     MidiObject *midi;
     ControlObject *control;
     ControlEngine *m_pControlEngine;

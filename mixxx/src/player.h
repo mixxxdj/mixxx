@@ -30,8 +30,12 @@ class Player : public EngineObject
 public:
     Player(ConfigObject<ConfigValue> *pConfig, ControlObject *pControl);
     virtual ~Player();
+    /** Initialize the API. Returns true on success. No other methods in a Player
+      * class can be called before this method returns true. Called by the proxy
+      * class. */
+    virtual bool initialize() = 0;
     /** Set EngineMaster object */
-    void setMaster(EngineMaster *pMaster);
+    static void setMaster(EngineMaster *pMaster);
     /** Open devices according to config database, and start audio stream.
       * Returns true on success. */
     virtual bool open();
@@ -43,6 +47,8 @@ public:
     virtual QStringList getInterfaces() = 0;
     /** Return list of sample rates */
     virtual QStringList getSampleRates() = 0;
+    /** Return name of sound api */
+    virtual QString getSoundApiName() = 0;
 
 protected:
     /** Prepares one buffer of sound by calling the engine */
@@ -51,7 +57,7 @@ protected:
     /** Pointer to config database */
     ConfigObject<ConfigValue> *m_pConfig;
     /** Pointer to EngineMaster object */
-    EngineMaster *m_pMaster;
+    static EngineMaster *m_pMaster;
     /** Pointer to ControlObject used in syncronization between ControlObject and ControlEngines */
     ControlObject *m_pControl;
 };
