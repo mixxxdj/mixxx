@@ -32,6 +32,7 @@
 MouseLinux::MouseLinux() : Mouse()
 {
     m_iFd = -1;
+    m_bSending = false;
 }
 
 MouseLinux::~MouseLinux()
@@ -58,7 +59,7 @@ bool MouseLinux::opendev(QString name)
                     m_iFd = iFd;
 
 
-                    start();
+                    start(QThread::TimeCriticalPriority);
                     return true;
                 }
             }
@@ -82,21 +83,34 @@ void MouseLinux::getNextEvent()
         FD_SET(m_iFd, &fdset);
         struct timespec ts;
         ts.tv_sec = 0;
-        ts.tv_nsec = 100000000;
+        // Select time to wait. If we just received data, we want to wait longer for it (100ms), if the
+        // select call timed out last time, we don't want to wait so long time, because we want to have the
+        // low-pass filter in Rotary reach zero fast, if movement has stopped (10ms)
+        if (m_bSending)
+            ts.tv_nsec = 100000000;
+        else
+            ts.tv_nsec = 10000000;
+
         int r = pselect(m_iFd+1, &fdset, NULL, NULL, &ts, 0);
+//         qDebug("waited %i,%i",ts.tv_sec, ts.tv_nsec);
         if (r>0)
         {
+            m_bSending = true;
             int iR = read(m_iFd, &ev, sizeof(struct input_event));
             if (iR == sizeof(struct input_event) && ev.type==EV_REL && ev.code==REL_X)
             {
                 int v = ev.value;
+
+//                 qDebug("send value");
                 sendRotaryEvent((double)v);
             }
-            else
-                sendRotaryEvent(0.);
         }
         else
+        {
+//             qDebug("timeout");
             sendRotaryEvent(0.);
+            m_bSending = false;
+        }
 }
 
 QStringList MouseLinux::getDeviceList()
