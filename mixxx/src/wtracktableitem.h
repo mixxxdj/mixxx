@@ -48,6 +48,7 @@ public:
 private:
     static QColor kqRowColor1, kqRowColor2;
     QString key() const;
+    int alignment() const;
 
     /** Pointer to track info object corresponding to this item */
     TrackInfoObject *m_pTrackInfoObject;

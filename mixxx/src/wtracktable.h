@@ -28,10 +28,10 @@ const int COL_SCORE = 0;
 const int COL_TITLE = 1;
 const int COL_ARTIST = 2;
 const int COL_COMMENT = 3;
-const int COL_TYPE = 4;
-const int COL_DURATION = 5;
-const int COL_BITRATE = 6;
-const int COL_BPM = 7;
+const int COL_TYPE = 6;
+const int COL_DURATION = 4;
+const int COL_BITRATE = 7;
+const int COL_BPM = 5;
 const int COL_INDEX = 8;
 
 const int ROW_NO = 9;

@@ -211,11 +211,10 @@ unix:!macx {
   }
 
   # if PREFIX is defined by the user, we use it! ( 19/12/2003, J_Zar)
-  !isEmpty( PREFIX ) {
-     UNIX_SHARE_PATH = $${PREFIX}/mixxx
-  } else {
-     UNIX_SHARE_PATH = /usr/share/mixxx
+  isEmpty( PREFIX ) {
+    PREFIX = /usr
   }
+  UNIX_SHARE_PATH = $${PREFIX}/share/mixxx
   DEFINES += UNIX_SHARE_PATH=\"$$UNIX_SHARE_PATH\"
 
   SETTINGS_FILE = \".mixxx.cfg\"
@@ -271,8 +270,12 @@ macx {
 unix {
 
     # skins... (copy all)
-   skins.path = $${UNIX_SHARE_PATH}/skins
-   skins.files = skins/*
+   skino.path = $${UNIX_SHARE_PATH}/skins/outline
+   skino.files = skins/outline/*
+   skinoc.path = $${UNIX_SHARE_PATH}/skins/outlineClose
+   skinoc.files = skins/outlineClose/*
+   skint.path = $${UNIX_SHARE_PATH}/skins/traditional
+   skint.files = skins/traditional/*
 
     # midi conf... (copy all)
    midi.path = $${UNIX_SHARE_PATH}/midi
@@ -283,19 +286,19 @@ unix {
    keyb.files = keyboard/*
 
     # doc files...
-   readme.path = /usr/share/doc/mixxx-1.1
+   readme.path = $${PREFIX}/share/doc/mixxx-1.1
    readme.files = ../README
-   licence.path = /usr/share/doc/mixxx-1.1
+   licence.path = $${PREFIX}/share/doc/mixxx-1.1
    licence.files = ../LICENCE
-   copying.path = /usr/share/doc/mixxx-1.1
+   copying.path = $${PREFIX}/share/doc/mixxx-1.1
    copying.files = ../COPYING
 
     # binary...
    TARGET = mixxx
-   target.path = /usr/bin
+   target.path = $${PREFIX}/bin
 
     # finally adding what we wanna install...
-   INSTALLS += skins midi keyb readme licence copying target
+   INSTALLS += skino skinoc skint midi keyb readme licence copying target
 }
 
 
@@ -312,8 +315,8 @@ IMAGES += icon.png
 DEFINES += SETTINGS_FILE=$$SETTINGS_FILE TRACK_FILE=$$TRACK_FILE
 unix:TEMPLATE = app
 win32:TEMPLATE = vcapp
-CONFIG += qt thread warn_off release
-DEFINES += QT_NO_CHECK
-#CONFIG += qt thread warn_on debug
+#CONFIG += qt thread warn_off release
+#DEFINES += QT_NO_CHECK
+CONFIG += qt thread warn_on debug
 DBFILE = mixxx.db
 LANGUAGE = C++

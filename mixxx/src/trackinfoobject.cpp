@@ -300,6 +300,7 @@ QString TrackInfoObject::getDurationStr()
         return QString("?");
     else
     {
+#if 0
         int iHours = m_iDuration/3600;
         int iMinutes = (m_iDuration - 3600*iHours)/60;
         int iSeconds = m_iDuration%60;
@@ -308,9 +309,19 @@ QString TrackInfoObject::getDurationStr()
         if (iHours > 5)
             return QString("??");
         if (iHours >= 1)
-            return QString().sprintf("%2d:%2d:%02d", iHours, iMinutes, iSeconds);
+            return QString().sprintf("%d:%02d:%02d", iHours, iMinutes, iSeconds);
         else
-            return QString().sprintf("%2d:%02d", iMinutes, iSeconds);
+            return QString().sprintf("%d:%02d", iMinutes, iSeconds);
+#else
+        QTime t = QTime().addSecs(m_iDuration);
+        if (t.hour() > 5)
+            return QString("??");
+       
+        if (t.hour() >= 1)
+	    return t.toString("h:mm:ss");
+        else
+	    return t.toString("m:ss");
+#endif
     }
 }
 
