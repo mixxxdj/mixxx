@@ -143,7 +143,7 @@ bool PlayerPortAudio::open(QString name, int srate, int bits, int bufferSize, in
     int chNo = max(chMaster,chHead)+1;
     
     // Size update
-    //bufferSize = bufferSize*4;
+    bufferSize = bufferSize*20;
 
     // Determine which callback function to use
     PortAudioCallback *callbackFunc;
@@ -260,7 +260,7 @@ int paCallback(void *, void *outputBuffer,
     player->prepareBuffer();
     SAMPLE *buffer = player->out_buffer_offset;
 
-    qDebug("chMaster: %i, chHead: %i, frames: %i, buffersize: %i",player->CH_MASTER,player->CH_HEAD,framesPerBuffer,player->BUFFERSIZE);
+    //qDebug("chMaster: %i, chHead: %i, frames: %i, buffersize: %i",player->CH_MASTER,player->CH_HEAD,framesPerBuffer,player->BUFFERSIZE);
     
     int openChNo = max(player->CH_HEAD,player->CH_MASTER);
     for (int i=0; i<(long)framesPerBuffer; i++)

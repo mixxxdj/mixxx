@@ -32,10 +32,10 @@
 
 class EngineChannel : public EngineObject  {
 public:
-	EngineChannel(DlgChannel *dlg, const char *group);
-	~EngineChannel();
+    EngineChannel(DlgChannel *, const char *group);
+    ~EngineChannel();
     CSAMPLE *process(const CSAMPLE *, const int);
-private:
+ private:
     EnginePregain* pregain;
     EngineFilterBlock* filter;
     EngineClipping* clipping;

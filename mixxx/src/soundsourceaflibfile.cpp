@@ -1,5 +1,4 @@
 #include "soundsourceaflibfile.h"
-
 /*
   Class for reading files using libaudiofile
 */
@@ -44,3 +43,4 @@ long unsigned SoundSourceAFlibfile::length()
 {
     return filelength;
 }
+
