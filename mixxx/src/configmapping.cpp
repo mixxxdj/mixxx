@@ -51,8 +51,10 @@ ConfigObject *ConfigMapping::setConfiguration(const char *str)
     QString groupStr;
     while (!QTextIStream(handle).atEnd())
     {
+        QString line = QTextIStream(handle).readLine();
+
         QString s;
-        QTextIStream(handle) >> s;
+        QTextIStream((const QString*)&line) >> s;
         if (s.startsWith("[") & s.endsWith("]"))
         {
             group++;
@@ -62,11 +64,14 @@ ConfigObject *ConfigMapping::setConfiguration(const char *str)
         {
             int no, mask, ch;
             QString s2;
-            QTextIStream(handle) >> no >> mask >> s2 >> ch;
-            if (!s2.endsWith("h"))
-                ch = 0;
+            QTextIStream((const QString*)&line) >> s >> no >> mask >> s2 >> ch;
+            if (s2.endsWith("h"))
+                ch--;   // Internally midi channels are form 0-15,
+                        // while musicians operates on midi channels 1-16.
+            else
+                ch = 0; // Default to 0 (channel 1)
 
-            //qDebug("no: %i, mask: %i, str: %s, ch: %i",no,mask,s2.ascii(),ch);
+            //qDebug("control: %s, no: %i, mask: %i, str: %s, ch: %i",s.ascii(), no,mask,s2.ascii(),ch);
             ConfigObject::ConfigKey k(groupStr, s);
             ConfigObject::ConfigValue m(no, mask, ch);
             cfg->set(&k, &m);

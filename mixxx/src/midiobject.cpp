@@ -181,7 +181,7 @@ void MidiObject::run()
             int no = snd_rawmidi_read(handle,&buffer[0],1);
             if (no != 1)
                 qWarning("Warning: midiobject recieved %i bytes.", no);
-        } while (!config->midiChannelInUse(buffer[0]));
+        } while (buffer[0] & 128 != 128);
 #endif
 #ifdef __OSSMIDI__
         do
@@ -190,7 +190,7 @@ void MidiObject::run()
             qDebug("midi: %i",(short int)buffer[0]);
             if (no != 1)
                 qWarning("Warning: midiobject recieved %i bytes.", no);
-        } while (!config->midiChannelInUse(buffer[0]));
+        } while (buffer[0] & 128 != 128); // Continue until we receive a status byte (bit 7 is set)
 #endif
         /*
         and then get the following 2 bytes:
@@ -205,7 +205,7 @@ void MidiObject::run()
             if (no != 1)
                 qWarning("Warning: midiobject recieved %i bytes.", no);
         }
-        channel = buffer[0];
+        channel = buffer[0] & 15;
         midicontrol = buffer[1];
         midivalue = buffer[2];
 #endif
@@ -216,21 +216,23 @@ void MidiObject::run()
             if (no != 1)
                 qWarning("Warning: midiobject recieved %i bytes.", no);
         }
-        channel = buffer[0];
+        channel = buffer[0] & 15; // The channel is store in the lower 4 bits of the status byte received
         midicontrol = buffer[1];
         midivalue = buffer[2];
 #endif
 
 #endif
 
-        qDebug("Received midi message: %i %i %i",(int)channel,(int)midicontrol,(int)midivalue);
+        qDebug("Received midi message: ch %i no %i val %i",(int)channel,(int)midicontrol,(int)midivalue);
 
         // Check the potmeters:
         for (int i=0; i<no; i++)
         {
+            qDebug("(%i) checking: no %i ch %i",i,(int)controlList[i]->cfgOption->val->midino,(int)controlList[i]->cfgOption->val->midichannel);
             if (controlList[i]->cfgOption->val->midino == midicontrol &
                 controlList[i]->cfgOption->val->midichannel == channel)
             {
+              qDebug("gotit");
                 // Check for possible bit mask
                 int midimask = controlList[i]->cfgOption->val->midimask;
                 if (midimask > 0)

@@ -42,13 +42,7 @@ public:
       int   midino, midimask, midichannel;
     };
 
-    bool midiChannelInUse(int ch);
 private:
-    int midiChannels[MAX_MIDI_CHANNELS];
-    int midiChannelsNo;
-
-    void addMidiChannel(int ch);
-
     class ConfigOption {
      public:
       ConfigOption(ConfigKey *_key, ConfigValue *_val) { key = _key ; val = _val; };
