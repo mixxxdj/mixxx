@@ -38,9 +38,9 @@ class PeakList;
 class ProbabilityVector;
 
 /** Minimum acceptable BPM */
-const CSAMPLE histMinBPM = 60.f;
+const CSAMPLE histMinBPM = 70.f;
 /** Maximum acceptable BPM */
-const CSAMPLE histMaxBPM = 200.f;
+const CSAMPLE histMaxBPM = 170.f;
 /** Down write factor of the histogram, between 0 and 1. */
 const float kfHistDownWrite = 0.991f;
 /** Range around predicted beat position in which it is allowed to place a beat

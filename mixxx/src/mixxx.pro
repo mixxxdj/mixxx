@@ -144,9 +144,7 @@ count(LINLIBPATH, 1) {
 }
 win32:SOURCES += soundsourcesndfile.cpp
 win32:HEADERS += soundsourcesndfile.h
-win32:LIBS += LibSndFile.lib
-#DEBUG VERSION
-#win32:LIBS += LibSndFileDbg.lib
+win32:LIBS += libsndfile.lib
 macx:LIBS += $$MACLIBPATH/lib/libaudiofile.a
 
 
@@ -313,12 +311,16 @@ HEADERS += mixxxkeyboard.h configobject.h fakemonitor.h controlengine.h controle
 SOURCES += track.cpp trackcollection.cpp trackplaylist.cpp xmlparse.cpp wtreeview.cpp wtreeitem.cpp wtreeitemfile.cpp wtreeitemdir.cpp wtreeitemplaylist.cpp
 HEADERS += track.h trackcollection.h trackplaylist.h xmlparse.h wtreeview.h wtreeitem.h wtreeitemfile.h wtreeitemdir.h wtreeitemplaylist.h
 
+# Socket
+SOURCES += mixxxsocketserver.cpp mixxxsocketclient.cpp
+HEADERS += mixxxsocketserver.h mixxxsocketclient.h
+
 IMAGES += icon.png
 DEFINES += SETTINGS_FILE=$$SETTINGS_FILE TRACK_FILE=$$TRACK_FILE
 unix:TEMPLATE = app
 win32:TEMPLATE = vcapp
-#CONFIG += qt thread warn_off release
-#DEFINES += QT_NO_CHECK
-CONFIG += qt thread warn_on debug
+CONFIG += qt thread warn_off release
+DEFINES += QT_NO_CHECK
+#CONFIG += qt thread warn_on debug
 DBFILE = mixxx.db
 LANGUAGE = C++

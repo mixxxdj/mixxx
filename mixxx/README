@@ -14,23 +14,9 @@ at least G4 CPU).
 
 
 * NEWS *****************************************************
-New since 1.2:
-- Mixxx now compiles on QT 3.1.x again
-- Fix crash when no sound interfaces are available
-
-New since 1.1:
-- Sound card API structure updated. Now a normal stereo 
-  soundcard can be used to hear both master and headphone
-  output
-- Jack support added
-- Improved playlist interface
-- Pitch display
-- State of currently "killed" frequency bands visible on 
-  knobs 
-- Fix in calling sound interpolation methods
-- Adjust tempo by beat tapping
-- Improved Linux compile and install procedure
-- More MP3 decoding improvements
+New since 1.2.1:
+- Bug fixes in build system
+- Socket interface
 
 * REQUIREMENTS *********************************************
 Mixxx is depends on the following libraries:

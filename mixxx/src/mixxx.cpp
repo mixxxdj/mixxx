@@ -48,6 +48,7 @@
 #include "track.h"
 #include "trackcollection.h"
 #include "trackinfoobject.h"
+#include "mixxxsocketserver.h"
 
 #ifdef __LINUX__
 #include "powermatelinux.h"
@@ -159,7 +160,7 @@ MixxxApp::MixxxApp(QApplication *a, QStringList files)
 #ifdef __WINMIDI__
     midi = new MidiObjectWin(midiconfig,app,control,config->getValueString(ConfigKey("[Midi]","Device")));
 #endif
-    
+
     if (midi == 0)
         midi = new MidiObjectNull(midiconfig,app,control,config->getValueString(ConfigKey("[Midi]","Device")));
 
@@ -378,6 +379,9 @@ MixxxApp::MixxxApp(QApplication *a, QStringList files)
         if (pTrack)
             m_pTrack->slotLoadPlayer2(pTrack);
     }
+
+    // Set up socket interface
+    new MixxxSocketServer(m_pTrack);
 }
 
 MixxxApp::~MixxxApp()

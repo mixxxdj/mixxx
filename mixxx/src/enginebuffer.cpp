@@ -876,6 +876,7 @@ CSAMPLE *EngineBuffer::process(const CSAMPLE *, const int buf_size)
             case TRACK_END_MODE_STOP:
                 qDebug("stop");
                 playButton->set(0.);
+                m_pTrackEnd->set(1.);
                 break;
             case TRACK_END_MODE_NEXT:
                 qDebug("next");
