@@ -124,8 +124,8 @@ QString *MidiObject::getOpenDevice()
    -------- ------------------------------------------------------ */
 void MidiObject::send(char channel, char midicontrol, char midivalue)
 {
-    // Send User event, to force screen update
-    //QThread::postEvent(mixxx,new ControlEventMidi(channel,midicontrol,midivalue));
+    // Send event to GUI thread
+    QThread::postEvent(mixxx,new ControlEventMidi(channel,midicontrol,midivalue));
 };
 
 void MidiObject::stop()

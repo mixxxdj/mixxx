@@ -87,7 +87,4 @@ void WPlayposSlider::paintEvent(QPaintEvent *)
 {
     bitBlt(this, 0, 0, slider);
     bitBlt(this, poss, 2, marker);
-    
-    //paint.drawPixmap(0,0,*slider);
-    //paint.drawPixmap(poss,2,*marker);
 }

@@ -41,7 +41,8 @@
 #include "controlpotmeter.h"
 #include "controlttrotary.h"
 #include "controlengine.h"
-
+#include "dlgplaycontrol.h"
+#include "soundsource.h"
 
 #ifdef __UNIX__
   #include "soundsourceaudiofile.h"
@@ -111,6 +112,8 @@ EngineBuffer::EngineBuffer(MixxxApp *_mixxx, DlgPlaycontrol *_playcontrol, const
                               
     // Allocate buffer for processing:
     buffer = new CSAMPLE[MAX_BUFFER_LEN];
+
+    playposUpdateCounter = 0;
 }
 
 EngineBuffer::~EngineBuffer()
@@ -226,7 +229,7 @@ void EngineBuffer::newtrack(const char* filename)
 
     // Reset playpos
     filepos_play = 0.;
-    filepos_play_exchange.write(0.);
+    //filepos_play_exchange.write(0.);
     bufferpos_play = 0.;
     playposSlider->set(0.);
 
@@ -250,7 +253,7 @@ void EngineBuffer::run()
         soundbuffer->getchunk(rate_exchange.read());
 
         // Write playpos slider
-        playposSlider->set(filepos_play_exchange.read()/file->length());
+        //playposSlider->set(filepos_play_exchange.read()/file->length());
 
         // Send user event to main thread, indicating that the visual sample buffers should be updated
         if (guichannel>0)
@@ -294,7 +297,7 @@ void EngineBuffer::seek(FLOAT_TYPE change)
     soundbuffer->reset(new_playpos);
         
     filepos_play = new_playpos;
-    filepos_play_exchange.write(filepos_play);
+    //filepos_play_exchange.write(filepos_play);
     
     bufferpos_play =0.;
 
@@ -434,14 +437,23 @@ CSAMPLE *EngineBuffer::process(const CSAMPLE *, const int buf_size)
             filepos_play += rate*(double)buf_size;
         
             // Try to write playpos for exchange with other threads
-            filepos_play_exchange.write(filepos_play);
+            //filepos_play_exchange.write(filepos_play);
         
             // Update visual rate and playpos
             visualPlaypos = (int)floor(idx);
             visualRate = rate;
         }
         checkread(backwards);
-        pause.unlock();
+        
+        // Update playpos slider if necessary
+	playposUpdateCounter +=buf_size;
+	if (playposUpdateCounter>(int)(file->length()/(127.*rate)))
+	{
+            playposSlider->set(filepos_play/file->length());
+            playposUpdateCounter = 0;
+	}
+	pause.unlock();
+
     }
     else
     {

@@ -24,30 +24,19 @@
 #include <qwidget.h>
 
 #include "defs.h"
-#include "monitor.h"
-#include "fakemonitor.h"
 #include "engineobject.h"
-#include "dlgplaycontrol.h"
-#include "dlgchannel.h"
-#include "midiobject.h"
-#include "soundsource.h"
+#include "monitor.h"
 
 class MixxxApp;
 class SoundBuffer;
 class GUIChannel;
 class ControlEngine;
-#include "controlpushbutton.h"
-#include "controlpotmeter.h"
-#include "controlttrotary.h"
-#include "controlpushbutton.h"
-#include "controlpotmeter.h"
-#include "controlttrotary.h"
-#include "controlpushbutton.h"
-#include "controlpotmeter.h"
-#include "controlttrotary.h"
-#include "controlpushbutton.h"
-#include "controlpotmeter.h"
-#include "controlttrotary.h"
+class DlgPlaycontrol;
+class SoundSource;
+
+// #include "controlpushbutton.h"
+// #include "controlpotmeter.h"
+// #include "controlttrotary.h"
 
 /**
   *@author Tue and Ken Haste Andersen
@@ -97,7 +86,7 @@ private:
       * reader thread when calling soundbuffer->getchunk() */
     Monitor rate_exchange;
     /** Fileposition used in communication with file reader and main thread */
-    Monitor filepos_play_exchange;
+    //Monitor filepos_play_exchange;
     /** Mutex controlling weather the process function is in pause mode. This happens
       * during seek and loading of a new track */
     QMutex pause;
@@ -113,5 +102,8 @@ private:
     FLOAT_TYPE BASERATE;
     /** Pointer to GUIChannel */
     GUIChannel *guichannel;
+    /** Counter; when to update playpos slider */
+    int playposUpdateCounter;
+
 };
 #endif
