@@ -21,6 +21,11 @@
 #include <audiofile.h>
 #include <stdio.h>
 
+class TrackInfoObject;
+
+/**
+  * Class for reading files using libaudiofile
+  */
 class SoundSourceAudioFile : public SoundSource {
  public:
   SoundSourceAudioFile(const char*);
@@ -28,6 +33,7 @@ class SoundSourceAudioFile : public SoundSource {
   long seek(long);
   unsigned read(unsigned long size, const SAMPLE*);
   inline long unsigned length();
+  static void ParseHeader( TrackInfoObject * );
  private:
   int channels;
   AFfilehandle fh;

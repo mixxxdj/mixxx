@@ -41,7 +41,7 @@ public:
     virtual int getBufferSize() = 0;
     /** Process a given chunk at chunk idx i. start_idx and end_idx gives the indexes of the the chunks
       * at the update boundaries of the buffer. Returns a pointer to the newly processed chunk */
-    virtual void *processChunk(const int idx, const int start_idx, const int end_idx) = 0;
+    virtual void *processChunk(const int idx, const int start_idx, const int end_idx, bool backwards) = 0;
 protected:
     /** Pointer to input object */
     ReaderExtract *input;
