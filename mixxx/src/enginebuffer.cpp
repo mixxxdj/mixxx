@@ -200,6 +200,9 @@ EngineBuffer::EngineBuffer(PowerMate *_powermate, const char *_group)
     rate_old = 0;
 
     m_iBeatMarkSamplesLeft = 0;
+    
+    m_bLastBufferPaused = true;
+    m_fLastSampleValue = 0;
 
     // Allocate buffer for processing:
     buffer = new CSAMPLE[MAX_BUFFER_LEN];
@@ -586,6 +589,8 @@ void EngineBuffer::slotControlFastFwdBack(double v)
 
 CSAMPLE *EngineBuffer::process(const CSAMPLE *, const int buf_size)
 {
+    bool bCurBufferPaused = false;
+    
     //Q_ASSERT( scale->getNewPlaypos() == 0);
     // pause can be locked if the reader is currently loading a new track.
     if (m_pTrackEnd->get()==0 && pause.tryLock())
@@ -730,8 +735,8 @@ CSAMPLE *EngineBuffer::process(const CSAMPLE *, const int buf_size)
 
         if ((rate==0.) || (filepos_play==0. && backwards) || (filepos_play==(float)file_length_old && !backwards))
         {
-            for (int i=0; i<buf_size; i++)
-                buffer[i]=0.;
+            rampOut(buf_size);
+            bCurBufferPaused = true;
         }
         else
         {
@@ -739,8 +744,9 @@ CSAMPLE *EngineBuffer::process(const CSAMPLE *, const int buf_size)
             if ((filepos_play<0. && backwards) || (filepos_play>file_length_old && !backwards))
             {
                 qDebug("buffer out of range");
-                for (int i=0; i<buf_size; i++)
-                    buffer[i] = 0.;
+                
+                rampOut(buf_size);
+                bCurBufferPaused = true;
             }
             else
             {
@@ -928,10 +934,42 @@ CSAMPLE *EngineBuffer::process(const CSAMPLE *, const int buf_size)
     }
     else
     {
-        for (int i=0; i<buf_size; i++)
-            buffer[i]=0.;
+        rampOut(buf_size);
+        bCurBufferPaused = true;
     }
-
+    
+    // Force ramp in if this is the first buffer during a play
+    if (m_bLastBufferPaused && !bCurBufferPaused)
+    {
+        //qDebug("ramp in");
+        // Ramp from zero 
+        int iLen = min(buf_size, kiRampLength);
+        float fStep = buffer[iLen-1]/(float)iLen;
+        for (int i=0; i<iLen; ++i)
+            buffer[i] = fStep*i;
+    }    
+    
+    m_bLastBufferPaused = bCurBufferPaused;
+    
+    m_fLastSampleValue = buffer[buf_size-1];
+//    qDebug("last %f",m_fLastSampleValue);
     return buffer;
 }
 
+void EngineBuffer::rampOut(int buf_size)
+{
+    // Ramp to zero 
+    int i=0;
+    if (m_fLastSampleValue!=0.)
+    {
+        //qDebug("ramp out");
+        int iLen = min(buf_size, kiRampLength);
+        float fStep = m_fLastSampleValue/(float)iLen;
+        for (i; i<iLen; ++i)
+            buffer[i] = fStep*(iLen-(i+1));
+    }    
+                           
+    // Reset rest of buffer 
+    for (i; i<buf_size; i++)
+        buffer[i]=0.;
+}
