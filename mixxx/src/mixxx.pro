@@ -43,3 +43,7 @@ TEMPLATE = app
 CONFIG	+= qt warn_on thread debug
 DBFILE	= mixxx.db
 LANGUAGE	= C++
+
+# Profiling
+QMAKE_CXXFLAGS_DEBUG += -pg
+QMAKE_LFLAGS_DEBUG += -pg

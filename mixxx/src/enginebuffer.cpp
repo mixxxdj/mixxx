@@ -280,34 +280,38 @@ void EngineBuffer::writepos()
 
 CSAMPLE *EngineBuffer::process(const CSAMPLE *, const int buf_size)
 {
-    if (rate.read()==0)
-	for (int i=0; i<buf_size; i+=2)
-	    buffer[i]=buffer[i+1]=0;
-    else {
-	  long prev;
-	  for (int i=0; i<buf_size; i+=2) {
-        if (playpos_file.read() < file->length()) {
-  	      prev = (long)floor(playpos_buffer.read())%read_buffer_size;
-	      if (!even(prev)) prev--;
-	      long next = (prev+2)%read_buffer_size;
-	      FLOAT_TYPE frac = playpos_buffer.read() - floor(playpos_buffer.read());
-          buffer[i  ] = read_buffer[prev  ] +frac*(read_buffer[next  ]-read_buffer[prev  ]);
-	      buffer[i+1] = read_buffer[prev+1] +frac*(read_buffer[next+1]-read_buffer[prev+1]);
-          double rate_add = 2*rate.read();
-	      playpos_buffer.add(rate_add);
-          playpos_file.add(rate_add);
-        } else {
-          buffer[i  ] = 0;
-	      buffer[i+1] = 0;
+    if (rate.read()==0.)
+    {
+	    for (int i=0; i<buf_size; i++)
+	        buffer[i]=0.;
+    } else {
+        long prev;
+	    for (int i=0; i<buf_size; i+=2)
+        {
+            if (playpos_file.read() < file->length())
+            {
+  	            prev = (long)floor(playpos_buffer.read())%read_buffer_size;
+	            if (!even(prev)) prev--;
+                long next = (prev+2)%read_buffer_size;
+	            FLOAT_TYPE frac = playpos_buffer.read() - floor(playpos_buffer.read());
+                buffer[i  ] = read_buffer[prev  ] +frac*(read_buffer[next  ]-read_buffer[prev  ]);
+	            buffer[i+1] = read_buffer[prev+1] +frac*(read_buffer[next+1]-read_buffer[prev+1]);
+                double rate_add = 2*rate.read();
+	            playpos_buffer.add(rate_add);
+                playpos_file.add(rate_add);
+            } else {
+                buffer[i  ] = 0.;
+	            buffer[i+1] = 0.;
+            }
         }
-      }
-    }
-
     checkread();
+
     // Check the wheel:
     wheel->updatecounter(buf_size);
-    // Write position to the gui: 
+
+    // Write position to the gui:
     writepos();
+    }
 
     return buffer;
 }
