@@ -28,7 +28,9 @@ int sign(CSAMPLE);
 int invmatrix(CSAMPLE *);
 void polcoe(CSAMPLE x[], CSAMPLE y[], int n, CSAMPLE cof[]);
 CSAMPLE mod2pi(CSAMPLE);
-//int round(CSAMPLE x);
+#ifdef __WIN__
+int round(CSAMPLE x);
+#endif
 CSAMPLE arctan2(CSAMPLE y, CSAMPLE x);
 CSAMPLE wndKaiser(CSAMPLE *wnd, int size, CSAMPLE beta);
 bool even(long n);

@@ -109,7 +109,7 @@ CSAMPLE mod2pi(CSAMPLE x)
     return(r);
 }
 
-/*
+#ifdef __WIN__
 // Rounds a CSAMPLE to nearest integer, and returns as int
 int round(CSAMPLE x)
 {
@@ -124,7 +124,7 @@ int round(CSAMPLE x)
 
     return(reti);
 }
-*/
+#endif
 
 // Fast arctan2 from http://www.dspguru.com/comp.dsp/tricks/alg/fxdatan2.htm
 CSAMPLE arctan2(CSAMPLE y, CSAMPLE x)
