@@ -695,15 +695,18 @@ void MixxxApp::slotOptionsPreferences()
 
         // Midi configuration
         int j=0;
-        {for (QStringList::Iterator it = midiConfigList.begin(); it != midiConfigList.end(); ++it )
+        if (midiConfigList.count()>0)
         {
-            // Insert the file name into the list, with ending (.midi.cfg) stripped
-            pDlg->ComboBoxMidiconf->insertItem((*it).left((*it).length()-9));
+            for (QStringList::Iterator it = midiConfigList.begin(); it != midiConfigList.end(); ++it )
+            {
+                // Insert the file name into the list, with ending (.midi.cfg) stripped
+                pDlg->ComboBoxMidiconf->insertItem((*it).left((*it).length()-9));
 
-            if ((*it) == config->getValueString(ConfigKey("[Midi]","Configfile")))
-                pDlg->ComboBoxMididevice->setCurrentItem(j);
-            j++;
-        }}
+                if ((*it) == config->getValueString(ConfigKey("[Midi]","Configfile")))
+                    pDlg->ComboBoxMididevice->setCurrentItem(j);
+                j++;
+            }
+        }
 
         // Midi device
         QStringList *mididev = midi->getDeviceList();
