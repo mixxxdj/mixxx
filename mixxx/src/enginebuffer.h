@@ -25,7 +25,6 @@
 #include "qknob.h"
 #include <qstring.h>
 #include <qlcdnumber.h>
-//#include <semaphore.h>
 
 #include "defs.h"
 #include "monitor.h"
@@ -45,7 +44,6 @@
 class EngineBuffer : public EngineObject, public QThread  {
  Q_OBJECT
 public:
-  Monitor rate;
   EngineBuffer(DlgPlaycontrol *, int, int, int, MidiObject *, const char *);
   ~EngineBuffer();
   void newtrack(const char *);
@@ -58,6 +56,7 @@ public slots:
 signals:
    void position(int);   
 private:
+  Monitor rate;
   void run();
   void stop();
   QSemaphore *requestStop;
@@ -81,6 +80,6 @@ private:
   SoundSource *file;
   SAMPLE *temp;
   unsigned  chunk_size;
-  CSAMPLE *buffer; // Buffer using in the processing.
+  CSAMPLE *buffer; // Buffer used in the process()
 };
 #endif
