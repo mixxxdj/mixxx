@@ -49,45 +49,13 @@
     </widget>
     <widget class="QLabel">
         <property name="name">
-            <cstring>TextLabel1_2_2</cstring>
-        </property>
-        <property name="geometry">
-            <rect>
-                <x>26</x>
-                <y>16</y>
-                <width>38</width>
-                <height>16</height>
-            </rect>
-        </property>
-        <property name="paletteForegroundColor">
-            <color>
-                <red>80</red>
-                <green>80</green>
-                <blue>80</blue>
-            </color>
-        </property>
-        <property name="font">
-            <font>
-                <family>Helvetica</family>
-                <pointsize>8</pointsize>
-            </font>
-        </property>
-        <property name="text">
-            <string>CLIP</string>
-        </property>
-        <property name="alignment">
-            <set>AlignCenter</set>
-        </property>
-    </widget>
-    <widget class="QLabel">
-        <property name="name">
-            <cstring>TextLabel1</cstring>
+            <cstring>TextLabel1_2</cstring>
         </property>
         <property name="geometry">
             <rect>
                 <x>24</x>
-                <y>62</y>
-                <width>44</width>
+                <y>191</y>
+                <width>45</width>
                 <height>18</height>
             </rect>
         </property>
@@ -101,11 +69,11 @@
         <property name="font">
             <font>
                 <family>Helvetica</family>
-                <pointsize>8</pointsize>
+                <pointsize>9</pointsize>
             </font>
         </property>
         <property name="text">
-            <string>MASTER</string>
+            <string>M/H MIX</string>
         </property>
         <property name="alignment">
             <set>AlignCenter</set>
@@ -133,7 +101,7 @@
         <property name="font">
             <font>
                 <family>Helvetica</family>
-                <pointsize>8</pointsize>
+                <pointsize>9</pointsize>
             </font>
         </property>
         <property name="text">
@@ -145,13 +113,13 @@
     </widget>
     <widget class="QLabel">
         <property name="name">
-            <cstring>TextLabel1_2</cstring>
+            <cstring>TextLabel1</cstring>
         </property>
         <property name="geometry">
             <rect>
                 <x>24</x>
-                <y>191</y>
-                <width>45</width>
+                <y>62</y>
+                <width>44</width>
                 <height>18</height>
             </rect>
         </property>
@@ -165,11 +133,43 @@
         <property name="font">
             <font>
                 <family>Helvetica</family>
-                <pointsize>8</pointsize>
+                <pointsize>9</pointsize>
             </font>
         </property>
         <property name="text">
-            <string>M/H MIX</string>
+            <string>MASTER</string>
+        </property>
+        <property name="alignment">
+            <set>AlignCenter</set>
+        </property>
+    </widget>
+    <widget class="QLabel">
+        <property name="name">
+            <cstring>TextLabel1_2_2</cstring>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>26</x>
+                <y>16</y>
+                <width>38</width>
+                <height>16</height>
+            </rect>
+        </property>
+        <property name="paletteForegroundColor">
+            <color>
+                <red>80</red>
+                <green>80</green>
+                <blue>80</blue>
+            </color>
+        </property>
+        <property name="font">
+            <font>
+                <family>Helvetica</family>
+                <pointsize>9</pointsize>
+            </font>
+        </property>
+        <property name="text">
+            <string>CLIP</string>
         </property>
         <property name="alignment">
             <set>AlignCenter</set>
@@ -240,7 +240,7 @@
 <customwidgets>
     <customwidget>
         <class>WKnob</class>
-        <header location="global">wknob.h</header>
+        <header location="local">../wknob.h</header>
         <sizehint>
             <width>32</width>
             <height>32</height>

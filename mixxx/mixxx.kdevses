@@ -3,36 +3,27 @@
 <KDevPrjSession>
  <LastCompileConfig>(Default)</LastCompileConfig>
  <Mainframe MaximizeMode="1" />
- <DocsAndViews NumberOfDocuments="10" >
+ <DocsAndViews NumberOfDocuments="7" >
   <Doc0 CursorPosLine="134" Type="KWriteDoc" NumberOfViews="1" CursorPosCol="0" FileName="/home/haste/cvs/mixxx/src/mixxx.h" >
    <View0 Top="24" Width="400" Attach="1" Height="300" Left="3" Focus="0" Type="KWriteView" MinMaxMode="0" />
   </Doc0>
   <Doc1 CursorPosLine="761" Type="KWriteDoc" NumberOfViews="1" CursorPosCol="56" FileName="/home/haste/cvs/mixxx/src/mixxx.cpp" >
-   <View0 Top="46" Width="925" Attach="1" Height="563" Left="25" Focus="0" Type="KWriteView" MinMaxMode="0" />
+   <View0 Top="46" Width="738" Attach="1" Height="401" Left="25" Focus="0" Type="KWriteView" MinMaxMode="0" />
   </Doc1>
-  <Doc2 CursorPosLine="445" Type="KWriteDoc" NumberOfViews="1" CursorPosCol="0" FileName="/home/haste/cvs/mixxx/src/enginebuffer.cpp" >
-   <View0 Top="68" Width="738" Attach="1" Height="446" Left="47" Focus="0" Type="KWriteView" MinMaxMode="0" />
+  <Doc2 CursorPosLine="68" Type="KWriteDoc" NumberOfViews="1" CursorPosCol="11" FileName="/home/haste/cvs/mixxx/src/configobject.h" >
+   <View0 Top="68" Width="738" Attach="1" Height="638" Left="47" Focus="0" Type="KWriteView" MinMaxMode="0" />
   </Doc2>
-  <Doc3 CursorPosLine="34" Type="KWriteDoc" NumberOfViews="1" CursorPosCol="0" FileName="/home/haste/cvs/mixxx/src/enginemaster.h" >
-   <View0 Top="90" Width="925" Attach="1" Height="625" Left="69" Focus="0" Type="KWriteView" MinMaxMode="0" />
+  <Doc3 CursorPosLine="120" Type="KWriteDoc" NumberOfViews="1" CursorPosCol="14" FileName="/home/haste/cvs/mixxx/src/midiobject.cpp" >
+   <View0 Top="90" Width="738" Attach="1" Height="638" Left="69" Focus="0" Type="KWriteView" MinMaxMode="0" />
   </Doc3>
-  <Doc4 CursorPosLine="0" Type="KWriteDoc" NumberOfViews="1" CursorPosCol="0" FileName="/home/haste/cvs/mixxx/src/midiobject.cpp" >
-   <View0 Top="112" Width="738" Attach="1" Height="502" Left="91" Focus="0" Type="KWriteView" MinMaxMode="0" />
+  <Doc4 CursorPosLine="0" Type="KWriteDoc" NumberOfViews="1" CursorPosCol="0" FileName="/home/haste/cvs/mixxx/src/midiobject.h" >
+   <View0 Top="112" Width="738" Attach="1" Height="614" Left="91" Focus="0" Type="KWriteView" MinMaxMode="0" />
   </Doc4>
-  <Doc5 CursorPosLine="36" Type="KWriteDoc" NumberOfViews="1" CursorPosCol="15" FileName="/home/haste/cvs/mixxx/src/configobject.h" >
-   <View0 Top="134" Width="738" Attach="1" Height="446" Left="113" Focus="0" Type="KWriteView" MinMaxMode="0" />
+  <Doc5 CursorPosLine="54" Type="KWriteDoc" NumberOfViews="1" CursorPosCol="0" FileName="/home/haste/cvs/mixxx/src/controlobject.cpp" >
+   <View0 Top="134" Width="738" Attach="1" Height="614" Left="113" Focus="0" Type="KWriteView" MinMaxMode="0" />
   </Doc5>
-  <Doc6 CursorPosLine="26" Type="KWriteDoc" NumberOfViews="1" CursorPosCol="23" FileName="/home/haste/cvs/mixxx/src/soundsourcemp3.cpp" >
-   <View0 Top="156" Width="738" Attach="1" Height="446" Left="135" Focus="0" Type="KWriteView" MinMaxMode="0" />
+  <Doc6 CursorPosLine="107" Type="KWriteDoc" NumberOfViews="1" CursorPosCol="0" FileName="/home/haste/cvs/mixxx/src/midiobjectoss.cpp" >
+   <View0 Top="132" Width="744" Attach="1" Height="641" Left="132" Focus="1" Type="KWriteView" MinMaxMode="2" />
   </Doc6>
-  <Doc7 CursorPosLine="60" Type="KWriteDoc" NumberOfViews="1" CursorPosCol="23" FileName="/home/haste/cvs/mixxx/src/mixxx.pro" >
-   <View0 Top="178" Width="738" Attach="1" Height="446" Left="157" Focus="0" Type="KWriteView" MinMaxMode="0" />
-  </Doc7>
-  <Doc8 CursorPosLine="65" Type="KWriteDoc" NumberOfViews="1" CursorPosCol="27" FileName="/home/haste/cvs/mixxx/src/main.cpp" >
-   <View0 Top="200" Width="925" Attach="1" Height="564" Left="179" Focus="0" Type="KWriteView" MinMaxMode="0" />
-  </Doc8>
-  <Doc9 CursorPosLine="34" Type="KWriteDoc" NumberOfViews="1" CursorPosCol="27" FileName="/home/haste/cvs/mixxx/src/mixxxview.cpp" >
-   <View0 Top="198" Width="744" Attach="1" Height="641" Left="198" Focus="1" Type="KWriteView" MinMaxMode="2" />
-  </Doc9>
  </DocsAndViews>
 </KDevPrjSession>
