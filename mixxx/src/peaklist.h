@@ -52,7 +52,9 @@ public:
 
     /** Return list iterator to the maximum peak in the given range from idx to idx+len */
     PeakList::iterator getMaxInRange(int idx, int len);
-    
+
+    void print();
+        
 private:
     /** Insert a peak into the list before iterator it, but only if idx is a valid peak in the m_pBuffer. */
     PeakList::iterator insertIfPeak(int idx, PeakList::iterator it);

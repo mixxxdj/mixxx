@@ -97,16 +97,6 @@ private:
     int beatBufferLastIdx;
     /** Buffer holding bpm values */
     CSAMPLE *bpmBuffer;
-    /** Pointer to histogram */
-    //CSAMPLE *hist;
-    /** Size of histogram */
-    //int histSize;
-    /** Histogram interval size, and min and max interval in seconds */
-    //CSAMPLE histInterval, histMinInterval, histMaxInterval;
-    /** Index of maximum histogram value */
-    //int histMaxIdx;
-    /** Correction (second order interpolation) relative to histMaxIdx */
-    //float histMaxCorr;
     /** Total number of frames */
     int frameNo;
     int framePerChunk, framePerFrameSize;

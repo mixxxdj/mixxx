@@ -46,6 +46,33 @@ EngineBuffer::EngineBuffer(PowerMate *_powermate, const char *_group)
     connect(playButton, SIGNAL(valueChanged(double)), this, SLOT(slotControlPlay(double)));
     playButton->set(0);
 
+    // Reverse button
+    p = new ControlPushButton(ConfigKey(group, "reverse"));
+    reverseButton = new ControlEngine(p);
+    reverseButton->set(0);
+    
+    // Fwd button
+    p = new ControlPushButton(ConfigKey(group, "fwd"));
+    fwdButton = new ControlEngine(p);
+    fwdButton->set(0);
+
+    // Back button
+    p = new ControlPushButton(ConfigKey(group, "back"));
+    backButton = new ControlEngine(p);
+    backButton->set(0);
+
+    // Start button
+    p = new ControlPushButton(ConfigKey(group, "start"));
+    startButton = new ControlEngine(p);
+    connect(startButton, SIGNAL(valueChanged(double)), this, SLOT(slotControlStart(double)));
+    startButton->set(0);
+
+    // End button
+    p = new ControlPushButton(ConfigKey(group, "end"));
+    endButton = new ControlEngine(p);
+    connect(endButton, SIGNAL(valueChanged(double)), this, SLOT(slotControlEnd(double)));
+    endButton->set(0);
+
     // Cue set button:
     p = new ControlPushButton(ConfigKey(group, "cue_set"));
     buttonCueSet = new ControlEngine(p);
@@ -248,6 +275,16 @@ void EngineBuffer::slotControlPlay(double)
         slotControlCueSet();
 }
 
+void EngineBuffer::slotControlStart(double)
+{
+    slotControlSeek(0.);
+}
+
+void EngineBuffer::slotControlEnd(double)
+{
+    slotControlSeek(1.);
+}
+
 /*
 void EngineBuffer::bpmChange(double bpm)
 {
@@ -287,6 +324,8 @@ CSAMPLE *EngineBuffer::process(const CSAMPLE *, const int buf_size)
 
 //        qDebug("filepos_play %f,\tstart %i,\tend %i\t info %i",filepos_play, filepos_start, filepos_end, readerinfo);
 
+
+
         //
         // Calculate rate
         //
@@ -303,10 +342,20 @@ CSAMPLE *EngineBuffer::process(const CSAMPLE *, const int buf_size)
             bpmControl->set(filebpm);
 //        qDebug("bpmrate %f, filebpm %f, midibpm %f",bpmrate,filebpm,bpmControl->get());
         }
-                                        
-        double baserate = bpmrate*((double)file_srate_old/(double)getPlaySrate());
+                                                
+        // Determine direction of playback
+        double dir = 1.;
+        if (reverseButton->get()==1.)
+            dir = -1.;
+
+        double baserate = dir*bpmrate*((double)file_srate_old/(double)getPlaySrate());
+        if (fwdButton->get()==1.)
+            baserate = abs(baserate)*5.;
+        else if (backButton->get()==1.)
+            baserate = abs(baserate)*-5.;
+
         double rate;
-        if (playButton->get()==1.)
+        if (playButton->get()==1. || fwdButton->get()==1. || backButton->get()==1.)
             rate=wheel->get()+rateSlider->get()*baserate;
         else
             rate=wheel->get()*baserate*20.;
@@ -477,7 +526,7 @@ CSAMPLE *EngineBuffer::process(const CSAMPLE *, const int buf_size)
 //                qDebug("wake fwd");
                 reader->wake();
             }
-            else if (backwards && filepos_start>0. && (filepos_play - filepos_start < READCHUNKSIZE*(READCHUNK_NO/2-1)))
+            else if (backwards && filepos_start>0. && (filepos_play-filepos_start)<READCHUNKSIZE*(READCHUNK_NO/2-1))
             {
 //                qDebug("wake back");
                 reader->wake();

@@ -45,11 +45,11 @@ EngineFlanger::EngineFlanger(const char *group)
     potmeterLFOperiod = new ControlEngine(p);
 
     // Init. channel selects:
-    ControlPushButton *p_a =  new ControlPushButton(ConfigKey(group, "ch1"));
-    pushbuttonChannelA = new ControlEngine(p_a);
+    ControlPushButton *p1 =  new ControlPushButton(ConfigKey("[Channel1]", "flanger"));
+    pushbuttonFlangerCh1 = new ControlEngine(p1);
     
-    ControlPushButton *p_b =  new ControlPushButton(ConfigKey(group, "ch2"));
-    pushbuttonChannelB = new ControlEngine(p_b);
+    ControlPushButton *p2 =  new ControlPushButton(ConfigKey("[Channel2]", "flanger"));
+    pushbuttonFlangerCh2 = new ControlEngine(p2);
 
     // Fixed values of controls:
     LFOamplitude = 240;
@@ -65,20 +65,20 @@ EngineFlanger::~EngineFlanger()
     delete potmeterDepth;
     delete potmeterDelay;
     delete potmeterLFOperiod;
-    delete pushbuttonChannelA;
-    delete pushbuttonChannelB;
+    delete pushbuttonFlangerCh1;
+    delete pushbuttonFlangerCh2;
     delete [] process_buffer;
     delete [] delay_buffer;
 }
 
-ControlEngine *EngineFlanger::getButtonA()
+ControlEngine *EngineFlanger::getButtonCh1()
 {
-    return pushbuttonChannelA;
+    return pushbuttonFlangerCh1;
 }        
 
-ControlEngine *EngineFlanger::getButtonB()
+ControlEngine *EngineFlanger::getButtonCh2()
 {
-    return pushbuttonChannelB;
+    return pushbuttonFlangerCh2;
 }
 
 CSAMPLE *EngineFlanger::process(const CSAMPLE *source, const int buffer_size)

@@ -169,10 +169,10 @@ unix:!macx {
   COMPILER = $$system(echo $QMAKESPEC)
   contains(COMPILER, linux-icc) {
     message("Using Intel compiler")
-#    QMAKE_CXXFLAGS += -rcd -tpp6 -xiMK # icc pentium III
+    QMAKE_CXXFLAGS += -rcd -tpp6 -xiMK # icc pentium III
 #    QMAKE_CXXFLAGS += -rcd -tpp7 -xiMKW # icc pentium IV
 #    QMAKE_CXXFLAGS += -prof_gen # generete profiling
-#    QMAKE_CXXFLAGS += -prof_use # use profiling
+    QMAKE_CXXFLAGS += -prof_use # use profiling
     QMAKE_CXXFLAGS += -w1 #-Wall
     # icc Profiling
     QMAKE_CXXFLAGS_DEBUG += -qp -g
@@ -232,6 +232,6 @@ HEADERS	+= configobject.h fakemonitor.h controlengine.h controleventengine.h con
 DEFINES += SETTINGS_FILE=$$SETTINGS_FILE
 unix:TEMPLATE = app
 win32:TEMPLATE = vcapp
-CONFIG += qt warn_on thread debug 
+CONFIG += qt warn_off thread release 
 DBFILE = mixxx.db
 LANGUAGE = C++

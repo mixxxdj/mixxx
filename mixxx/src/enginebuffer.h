@@ -70,6 +70,8 @@ public:
     float visualRate;
 public slots:
     void slotControlPlay(double);
+    void slotControlStart(double);
+    void slotControlEnd(double);
     void slotControlSeek(double);
     void slotControlCueGoto(double=0);
     void slotControlCueSet(double=0);
@@ -108,6 +110,10 @@ private:
     ControlEngine *bpmControl;
     /** Control used to input beat. If this is used, only one beat is played, until a new beat mark is received from the ControlObject */
     ControlEngine *beatEventControl;
+    /** Reverse playback control */
+    ControlEngine *reverseButton;
+    /** Fwd and back controls, start and end of track control */
+    ControlEngine *fwdButton, *backButton, *startButton, *endButton;
     /** Holds the name of the control group */
     const char *group;
 

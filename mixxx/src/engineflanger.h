@@ -29,11 +29,11 @@ public:
   ~EngineFlanger();
     void notify(double) {};
   CSAMPLE *process(const CSAMPLE *, const int);
-  ControlEngine *getButtonA();
-  ControlEngine *getButtonB();
+  ControlEngine *getButtonCh1();
+  ControlEngine *getButtonCh2();
 private:
   ControlEngine *potmeterDepth, *potmeterDelay, *potmeterLFOperiod;
-  ControlEngine *pushbuttonChannelA, *pushbuttonChannelB;
+  ControlEngine *pushbuttonFlangerCh1, *pushbuttonFlangerCh2;
   CSAMPLE *process_buffer, *delay_buffer;
   int  LFOamplitude;
   int average_delay_length;
