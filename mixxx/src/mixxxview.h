@@ -46,11 +46,9 @@ public:
     MixxxView(QWidget *parent, bool bVisualsWaveform, QString qSkinPath);
     ~MixxxView();
 
-    //bool eventFilter(QObject *o, QEvent *e);
-    
     /** Return true if WVisualWaveform has been instantiated. */
     bool activeWaveform();
-        
+
     WTrackTable *m_pTrackTable;
     QLabel *m_pTextCh1, *m_pTextCh2;
     /** Pointer to WVisual widgets */
@@ -61,7 +59,7 @@ public:
 
 protected:
     //void keyPressEvent(QKeyEvent *e);
-    
+
 private:
     // True if m_pVisualChX is instantiated as WVisualWaveform
     bool m_bVisualWaveform;

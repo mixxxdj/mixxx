@@ -361,7 +361,7 @@ MixxxApp::MixxxApp(QApplication *a)
     player->setMaster(master);
     player->start();
 
-    installEventFilter(this);
+    setFocusPolicy(QWidget::StrongFocus);
 }
 
 MixxxApp::~MixxxApp()
@@ -390,18 +390,16 @@ MixxxApp::~MixxxApp()
 #endif
 }
 
-bool MixxxApp::eventFilter(QObject *o, QEvent *e)
+void MixxxApp::keyPressEvent(QKeyEvent *e)
 {
-    if (e->type() == QEvent::KeyPress)
-        control->kbdPress(QKeySequence(((QKeyEvent*)e)->key()), false);
-    else if (e->type() == QEvent::KeyRelease)
-        control->kbdPress(QKeySequence(((QKeyEvent*)e)->key()), true);
-    else
-    {
-        // Standard event processing
-        return QWidget::eventFilter(o,e);
-    }
-    return TRUE;
+    if (!control->kbdPress(QKeySequence(e->key()), false))
+        e->ignore();
+}
+
+void MixxxApp::keyReleaseEvent(QKeyEvent *e)
+{
+    if (!control->kbdPress(QKeySequence(e->key()), true))
+        e->ignore();
 }
 
 /** initializes all QActions of the application */

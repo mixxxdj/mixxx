@@ -233,26 +233,11 @@ MixxxView::MixxxView(QWidget *parent, bool bVisualsWaveform, QString qSkinPath) 
     QPixmap::setDefaultOptimization(QPixmap::NormalOptim);
 #endif
 
-    grabKeyboard();
 }
 
 MixxxView::~MixxxView()
 {
 }
-
-/*
-bool MixxxView::eventFilter(QObject *o, QEvent *e)
-{
-    if (e->type() == QEvent::KeyPress || e->type() == QEvent::KeyRelease)
-        postEvent(control, e);
-    else
-    {
-        // Standard event processing
-        return QWidget::eventFilter(o,e);
-    }
-    return TRUE;
-}
-*/
 
 bool MixxxView::activeWaveform()
 {
