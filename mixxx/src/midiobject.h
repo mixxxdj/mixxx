@@ -17,20 +17,19 @@ class ControlObject;
 
 class MidiObject : public QThread {
 public:
-    MidiObject(ConfigObject<ConfigValueMidi> *c, QApplication *app);
+    MidiObject(ConfigObject<ConfigValueMidi> *c, QApplication *app, QString device);
     ~MidiObject();
     void reopen(QString device);
+    virtual void devOpen(QString device) = 0;
+    virtual void devClose() = 0;
     void add(ControlObject* c);
     void remove(ControlObject* c);
-
     /** Returns a list of available devices */
     QStringList *getDeviceList();
 
     /** Returns the name of the current open device */
     QString *getOpenDevice();
 protected:
-    virtual void devOpen(QString device) = 0;
-    virtual void devClose() = 0;
     virtual void run() = 0;
     void stop();
     void send(char channel, char midicontrol, char midivalue);

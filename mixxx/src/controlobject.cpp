@@ -53,12 +53,3 @@ void ControlObject::slotSetPositionMidi(int pos)
     //this->slotSetPosition(pos);
     emit updateGUI(pos);
 }
-
-
-
-
-
-
-
-
-

@@ -22,7 +22,7 @@
    Input:   Size of the output buffer in samples
    Output:  Pointer to internal synthesis data structure.
    -------- ------------------------------------------------------ */
-Player::Player(int size, std::vector<EngineObject*> *_engines)
+Player::Player(int size, std::vector<EngineObject*> *_engines, QString)
 {
     engines = _engines;
 
@@ -47,19 +47,19 @@ bool Player::reopen(QString name, int srate, int bits, int bufferSize)
 
 void Player::allocate()
 {
-	// Allocate buffers
-	out_buffer = new SAMPLE[BUFFER_SIZE];
-	process_buffer = new CSAMPLE[BUFFER_SIZE];
-	tmp1 = new CSAMPLE[BUFFER_SIZE];
-	tmp2 = new CSAMPLE[BUFFER_SIZE];
+    // Allocate buffers
+    out_buffer = new SAMPLE[BUFFER_SIZE];
+    process_buffer = new CSAMPLE[BUFFER_SIZE];
+    tmp1 = new CSAMPLE[BUFFER_SIZE];
+    tmp2 = new CSAMPLE[BUFFER_SIZE];
 }
 
 void Player::deallocate()
 {
-	delete [] tmp2;
-	delete [] tmp1;
-	delete [] process_buffer;
-	delete [] out_buffer;
+    delete [] tmp2;
+    delete [] tmp1;
+    delete [] process_buffer;
+    delete [] out_buffer;
 }
 
 /* -------- ------------------------------------------------------
@@ -67,8 +67,9 @@ void Player::deallocate()
    Input:   Internal synth datastructure
    Output:
    -------- ------------------------------------------------------ */
-void Player::start(EngineObject *_reader) {
-	reader = _reader;
+void Player::start(EngineObject *_reader)
+{
+    reader = _reader;
 }
 
 /* -------- ------------------------------------------------------
@@ -77,14 +78,14 @@ void Player::start(EngineObject *_reader) {
    Input:   -
    Output:  -
    -------- ------------------------------------------------------ */
-int Player::prepareBuffer() {
+int Player::prepareBuffer()
+{
   // ----------------------------------------------------
   // Do the processing.
   // ----------------------------------------------------
 
   CSAMPLE *p1, *p2;
 
-  //qDebug("player::prepareBuffer()");
   // Resample; the linear interpolation is done in readfile:
   p1 = reader->process(0, buffer_size);
 
@@ -95,8 +96,8 @@ int Player::prepareBuffer() {
   }
 
   // Convert the signal back to SAMPLE and write to the sound cards buffer:
-  {for (int i=0; i<buffer_size; i++)
-	  out_buffer[i] = (SAMPLE)p1[i];}
+  for (int i=0; i<buffer_size; i++)
+      out_buffer[i] = (SAMPLE)p1[i];
 
   return 0; // Hack. Should only return 0 when not at end of file
 }

@@ -24,14 +24,15 @@
   *@author Tue & Ken Haste Andersen
   */
 
-class MidiObjectPortMidi : public MidiObject  {
+class MidiObjectPortMidi : public MidiObject
+{
 public: 
-    MidiObjectPortMidi(ConfigObject<ConfigValueMidi> *, QApplication *);
+    MidiObjectPortMidi(ConfigObject<ConfigValueMidi> *, QApplication *, QString device);
     ~MidiObjectPortMidi();
-protected:
     void devOpen(QString device);
-	void devClose();
-	void run();
+    void devClose();
+protected:
+    void run();
 
     PmEvent     buffer[2];
     PmStream    *midi;

@@ -13,13 +13,13 @@ ConfigObject<ConfigValueMidi> *MidiObject::config = 0;
             card and device.
    Output:  -
    -------- ------------------------------------------------------ */
-MidiObject::MidiObject(ConfigObject<ConfigValueMidi> *c, QApplication *a)
+MidiObject::MidiObject(ConfigObject<ConfigValueMidi> *c, QApplication *a, QString device)
 {
     app = a;
     config = c;
     no = 0;
     requestStop = false;
-};
+}
 
 /* -------- ------------------------------------------------------
   Purpose: Deallocates midi buffer, and closes device
@@ -47,7 +47,7 @@ void MidiObject::add(ControlObject* c)
 {
     controlList.push_back(c);
     no++;
-    qDebug("Registered midi control %s (%p).", c->print()->ascii(),c);
+//    qDebug("Registered midi control %s (%p).", c->print()->ascii(),c);
 }
 
 void MidiObject::remove(ControlObject* c)
@@ -60,7 +60,7 @@ void MidiObject::remove(ControlObject* c)
         no--;
     }
     else
-        qWarning("Control which is requested for removal in MidiObject does not exist.");
+        qWarning("MidiObject: Control which is requested for removal does not exist.");
 }
 
 QStringList *MidiObject::getDeviceList()

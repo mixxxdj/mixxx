@@ -16,7 +16,7 @@
  ***************************************************************************/
 #include "playeralsa.h"
 
-PlayerALSA::PlayerALSA(int size, vector<EngineObject *> *engines) : Player(size, engines)
+PlayerALSA::PlayerALSA(int size, vector<EngineObject *> *engines, QString device) : Player(size, engines, device)
 {
     // Open device 0 on card 0
     int err = snd_pcm_open(&handle, 0, 0, SND_PCM_OPEN_PLAYBACK);

@@ -19,7 +19,7 @@
 
 #include <qthread.h>
 #include "player.h"
-#include <sys/asoundlib.h>
+#include <alsa/asoundlib.h>
 #include <sched.h>
 #include <sys/time.h>
 #include <sys/resource.h>
@@ -31,7 +31,7 @@
 
 class PlayerALSA : public Player, public QThread  {
 public:
-	PlayerALSA(int size, vector<EngineObject *> *);
+	PlayerALSA(int size, vector<EngineObject *> *, QString device);
 	~PlayerALSA();
 	void start(EngineObject *);
 	void stop();

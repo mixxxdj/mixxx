@@ -17,9 +17,9 @@
 
 #include "midiobjectportmidi.h"
 
-MidiObjectPortMidi::MidiObjectPortMidi(ConfigObject<ConfigValueMidi> *c, QApplication *a) : MidiObject(c,a)
+MidiObjectPortMidi::MidiObjectPortMidi(ConfigObject<ConfigValueMidi> *c, QApplication *a, QString) : MidiObject(c,a,"")
 {
-	devOpen("");
+    devOpen("");
     // Start the midi thread:
     start();
 }

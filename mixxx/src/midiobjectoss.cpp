@@ -19,7 +19,7 @@
 #include <qdir.h>
 #include <unistd.h>
 
-MidiObjectOSS::MidiObjectOSS(ConfigObject<ConfigValueMidi> *c, QApplication *a) : MidiObject(c, a)
+MidiObjectOSS::MidiObjectOSS(ConfigObject<ConfigValueMidi> *c, QApplication *a, QString device) : MidiObject(c, a, device)
 {
     thread_pid = 0;
 
@@ -32,6 +32,7 @@ MidiObjectOSS::MidiObjectOSS(ConfigObject<ConfigValueMidi> *c, QApplication *a) 
     }
 
     // Fill in list of available devices
+    bool device_valid = false; // Is true if device is a valid device name
     QDir dir("/dev");
     if (!dir.exists())
         qWarning( "Cannot find /dev directory.");
@@ -47,15 +48,20 @@ MidiObjectOSS::MidiObjectOSS(ConfigObject<ConfigValueMidi> *c, QApplication *a) 
         while ((fi=it.current()))
         {
             devices.append(QString("/dev/").append(fi->fileName()));
+            if (thread_pid == 0 & QString("/dev/").append(fi->fileName()) == device)
+                device_valid = true;
             ++it;   // goto next list element
         }
     }
 
-    // Open default device (first in list)
-    if (devices.count()==0)
-        qWarning("No MIDI devices available.");
+    // Open deafult device
+    if (device_valid==true)
+        devOpen(device);
     else
-        devOpen(devices.first());
+        if (devices.count()==0)
+            qWarning("No MIDI devices available.");
+        else
+            devOpen(devices.first());
 }
 
 MidiObjectOSS::~MidiObjectOSS()
@@ -68,7 +74,7 @@ MidiObjectOSS::~MidiObjectOSS()
 void MidiObjectOSS::devOpen(QString device)
 {
     // Open midi device
-    handle = open(device.ascii(),0);
+    handle = open(device.latin1(),0);
     if (handle == -1)
     {
         qDebug("Open of MIDI device %s failed.",device.ascii());
@@ -114,12 +120,15 @@ void MidiObjectOSS::run()
                 if (requestStop==true)
                     break;
             }
-            channel = buffer[0] & 15; // The channel is stored in the lower 4 bits of the status byte received
-            midicontrol = buffer[1];
-            midivalue = buffer[2];
+            if (requestStop==false)
+            {
+                channel = buffer[0] & 15; // The channel is stored in the lower 4 bits of the status byte received
+                midicontrol = buffer[1];
+                midivalue = buffer[2];
 
-            send(channel, midicontrol, midivalue);
-            //qDebug("midi ch: %i, ctrl: %i, val: %i",channel,midicontrol,midivalue);
+//                qDebug("midi ch: %i, ctrl: %i, val: %i",channel,midicontrol,midivalue);
+                send(channel, midicontrol, midivalue);
+            }
         }
     }
 }
@@ -129,21 +138,20 @@ void MidiObjectOSS::stop()
     MidiObject::stop();
 
     // Raise signal to stop abort blocking read in main thread loop
-    if (thread_pid!=0)
+    if (thread_pid != 0)
     {
-         signal(2,&abortRead);
-         kill(thread_pid,2);
+        signal(SIGINT,&abortRead);
+        kill(thread_pid,SIGINT);
     }
+    wait();
     thread_pid = 0;
 }
 
 void abortRead(int)
 {
     // Reinstall default handler
-    signal(2,SIG_DFL);
+    signal(SIGINT,SIG_DFL);
 
-    //qDebug("sig received");
-    // Empty signal handler. Installed on signal 2 (SIGINT)
-    // in start of MidiObjectOSS:run(), and used to exit the
-    // read function when reopening the midi device is necessary.
+    // End thread execution
+    QThread::exit();
 }

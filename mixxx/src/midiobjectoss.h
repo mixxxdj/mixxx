@@ -30,11 +30,11 @@
 
 class MidiObjectOSS : public MidiObject  {
 public: 
-    MidiObjectOSS(ConfigObject<ConfigValueMidi> *c, QApplication *app);
+    MidiObjectOSS(ConfigObject<ConfigValueMidi> *c, QApplication *app, QString device);
     ~MidiObjectOSS();
-protected:
     void devOpen(QString device);
     void devClose();
+protected:
     void run();
     void stop();
 
