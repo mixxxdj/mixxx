@@ -18,32 +18,7 @@ directory for a copy of the licence.
 * NEWS *****************************************************
 New since 1.3.2:
 - Compiles on gcc 3.4
-
-New since 1.3.1:
-- More filter fixes
-
-New since 1.3:
-- Filters fixed
-- Fixes waveform display updates
-
-New since 1.2.1:
-- Playlist import of pls and m3u files
-- Small skin fitting 800x600 screen
-- Socket interface, for remote control
-- Linux ./configure and make process much improved
-- Cue point visualization
-- Drag and drop. Drop a file from the treeview, playlist or
-  external file manager to one of the visuals, to load track
-- New and improved keymap
-- Performance optimizations
-- Playlist layout improvements
-- Various bug fixes
-- Correct feedback about actual used latency in sound card
-  configuration. Support for WMME drivers under Windows, and 
-  improved DirectSound support, ie. lower latency operation
-- Support for aiff files
-- User manual added
-
+- Beat phase syncronization, by Torben Hohn
 
 * INSTALL/USE **********************************************
 Please see manual, included in this directory, 

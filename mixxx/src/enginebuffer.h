@@ -127,6 +127,8 @@ public slots:
 private:
     /** Called from process() when an empty buffer, possible ramped to zero is needed */
     void rampOut(const CSAMPLE *pOut, int iBufferSize);
+    /** Adjust beat phase */
+    void adjustPhase();
 
     /** Pointer to other EngineBuffer */
     EngineBuffer *m_pOtherEngineBuffer;

@@ -218,6 +218,11 @@ void WSliderComposed::setValue(double fValue)
             fValue = 127-fValue;
         m_iPos = (int)((fValue/127.)*(double)(m_iSliderLength-m_iHandleLength));
 
+	if (m_iPos>(m_iSliderLength-m_iHandleLength))
+	    m_iPos = m_iSliderLength-m_iHandleLength;
+	else if (m_iPos<0)
+	    m_iPos = 0;
+
         repaint();
     }
 }

@@ -105,10 +105,11 @@ CSAMPLE EngineSpectralFwd::getPSF()
     ASSERT(power_calc);
 
     CSAMPLE psf = 0.;
-    for (int i=0; i<l_half; ++i)
+    for (int i=1; i<l_half; ++i)
     {
         float w = kfEqualLoudness[(int)((float)(i*kiEqualLoudnessLen)/(float)l_half)];
         psf += w * sqrtf(spectrum[i]);
+        //psf += w * (spectrum[i]);
     }
     return psf;
 }

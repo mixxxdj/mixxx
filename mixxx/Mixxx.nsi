@@ -1,10 +1,10 @@
-; mixxx.nsi
+; Mixxx.nsi
 ;
-; This script is based on example1.nsi, but it remember the directory, 
+; Mixxx NSI install script. 
 ; has uninstall support and (optionally) installs start menu shortcuts.
 ;
-; It will install makensisw.exe into a directory that the user selects,
-
+; By Tue Haste Andersen <haste@diku.dk>, June 2004.
+;
 ;Include Modern UI
 !include "MUI.nsh"
 

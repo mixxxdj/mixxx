@@ -40,7 +40,7 @@ void ProbabilityVector::setBpm(float fBpm, float fBpmConfidence)
 {
     // Find hist position from fBpm and insert fBpmConfidence.
     m_fCurrMaxInterval = (1./fBpm)*60.;
-    m_iCurrMaxBin = (int)((m_fCurrMaxInterval-m_fMinInterval)/m_fSecPerBin);
+    m_iCurrMaxBin = max(0, (int)((m_fCurrMaxInterval-m_fMinInterval)/m_fSecPerBin) );
     m_pHist[m_iCurrMaxBin] = fBpmConfidence;
 }
 
@@ -50,7 +50,7 @@ void ProbabilityVector::add(float fInterval, float fValue)
     {
         // Histogram is updated with a gauss function centered at the found interval
         float fCenter =  (fInterval-m_fMinInterval)/m_fSecPerBin;
-        float fStart  = -min(kiGaussWidth, fCenter);
+        float fStart  = min( (float)m_iBins-1 - fCenter, -min(kiGaussWidth, fCenter) );
         float fEnd    =  min(kiGaussWidth, (float)(m_iBins-1)-fCenter);
 
         for (float j=fStart; j<fEnd; j++)
