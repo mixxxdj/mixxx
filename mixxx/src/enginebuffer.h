@@ -68,9 +68,9 @@ public:
     /** Returns pointer to Reader object. Used in MixxxApp. */
     Reader *getReader();
     /** Returns current bpm value (not thread-safe) */
-    float getBpm();
+    double getBpm();
     /** Return the current rate (not thread-safe) */
-    float getRate();
+    double getRate();
     /** Return the distance to the next beat mark from curr. play pos (not thread-safe) */
     float getDistanceNextBeatMark();
     /** Reset buffer playpos and set file playpos. This must only be called while holding the

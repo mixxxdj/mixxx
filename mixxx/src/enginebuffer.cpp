@@ -189,7 +189,7 @@ EngineBuffer::EngineBuffer(PowerMate *_powermate, const char *_group)
     m_iSamplesCalculated = 0;
 
 
-    reader->start();
+    reader->start(QThread::LowPriority);
 }
 
 EngineBuffer::~EngineBuffer()
@@ -260,7 +260,7 @@ float EngineBuffer::getDistanceNextBeatMark()
         if (p[(pos-i)%size] > 0.0)
         {
             found = true;
-            qDebug("p[%i] = %f ",(pos+i)%size,p[(pos+i)%size]);
+            //qDebug("p[%i] = %f ",(pos+i)%size,p[(pos+i)%size]);
         }
     }
 
@@ -292,7 +292,7 @@ Reader *EngineBuffer::getReader()
     return reader;
 }
 
-float EngineBuffer::getBpm()
+double EngineBuffer::getBpm()
 {
     return bpmControl->get();
 }
@@ -329,7 +329,7 @@ const char *EngineBuffer::getGroup()
     return group;
 }
 
-float EngineBuffer::getRate()
+double EngineBuffer::getRate()
 {
     return rateSlider->get()*m_pRateRange->get();
 }
@@ -559,9 +559,9 @@ void EngineBuffer::slotControlRateTempUpSmall(double)
 
 void EngineBuffer::slotControlBeatSync(double)
 {
-    float fOtherBpm = m_pOtherEngineBuffer->getBpm();
-    float fThisBpm  = bpmControl->get();
-    float fRateScale;
+    double fOtherBpm = m_pOtherEngineBuffer->getBpm();
+    double fThisBpm  = bpmControl->get();
+    double fRateScale;
 
     if (fOtherBpm>0. && fThisBpm>0.)
     {
@@ -571,15 +571,20 @@ void EngineBuffer::slotControlBeatSync(double)
         else if ( fabs(fThisBpm-2.*fOtherBpm) < fabs(fThisBpm-fOtherBpm))
             fRateScale = 2.*fOtherBpm/fThisBpm * (1.+m_pOtherEngineBuffer->getRate());
         else
-            fRateScale = fOtherBpm/fThisBpm * (1.+m_pOtherEngineBuffer->getRate());
+            fRateScale = (fOtherBpm*(1.+m_pOtherEngineBuffer->getRate()))/fThisBpm;
 
         // Ensure the rate is within resonable boundaries
-        if (fRateScale<2. || fRateScale>0.5)
+        if (fRateScale<2. & fRateScale>0.5)
+        {
             // Adjust the rate:
-            rateSlider->set(fRateScale-1.);
+            fRateScale = (fRateScale-1.)/m_pRateRange->get();
+            rateSlider->set(fRateScale);
+
+            // Adjust phase
+            adjustPhase();
+        }
     }
 
-    adjustPhase();
 }
 
 void EngineBuffer::adjustPhase()
