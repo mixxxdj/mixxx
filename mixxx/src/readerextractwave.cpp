@@ -25,10 +25,10 @@
 #include "soundsource.h"
 #include "soundsourcemp3.h"
 #include "soundsourceoggvorbis.h"
-#ifdef __UNIX__
+#ifdef __AUDIOFILE__
   #include "soundsourceaudiofile.h"
 #endif
-#ifdef __WIN__
+#ifdef __SNDFILE__
   #include "soundsourcesndfile.h"
 #endif
 #include <qfileinfo.h>
@@ -100,10 +100,10 @@ void ReaderExtractWave::newSource(TrackInfoObject *pTrack)
         if (finfo.exists())
         {
             if (finfo.extension(false).upper() == "WAV")
-#ifdef __UNIX__
+#ifdef __AUDIOFILE__
                 file = new SoundSourceAudioFile(filename);
 #endif
-#ifdef __WIN__
+#ifdef __SNDFILE__
                 file = new SoundSourceSndFile(filename);
 #endif
             else if (finfo.extension(false).upper() == "MP3")
@@ -114,10 +114,10 @@ void ReaderExtractWave::newSource(TrackInfoObject *pTrack)
     }
     else
     {
-#ifdef __UNIX__
+#ifdef __AUDIOFILE__
         file = new SoundSourceAudioFile( QString("/dev/null") );
 #endif
-#ifdef __WIN__
+#ifdef __SNDFILE__
         file = new SoundSourceSndFile( QString("/dev/null") );
 #endif
     }

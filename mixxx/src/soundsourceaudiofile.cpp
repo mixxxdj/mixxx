@@ -49,7 +49,9 @@ SoundSourceAudioFile::~SoundSourceAudioFile()
 
 long SoundSourceAudioFile::seek(long filepos)
 {
-    afSeekFrame(fh, AF_DEFAULT_TRACK, (AFframecount) (filepos/2));
+    qDebug("seek %i",filepos);
+    if (afSeekFrame(fh, AF_DEFAULT_TRACK, (AFframecount) (filepos/channels))<0);
+        qDebug("libaudiofile: Seek ERR.");
     return filepos;
 }
 
@@ -61,11 +63,15 @@ unsigned SoundSourceAudioFile::read(unsigned long size, const SAMPLE* destinatio
 {
     SAMPLE *dest = (SAMPLE *)destination;
     if (channels==2)
-        return afReadFrames(fh,AF_DEFAULT_TRACK, dest, size/channels)*channels;
+    {    
+        int readNo = afReadFrames(fh,AF_DEFAULT_TRACK, dest, size/channels);
+        qDebug("stereo ch %i, req %i, read %i",channels,size, readNo);
+        return readNo*channels;
+    }
     else
     {
         // If the file is not in stereo, make the returned buffer so.
-        int readNo = afReadFrames(fh,AF_DEFAULT_TRACK, buffer, size/2);
+        int readNo = afReadFrames(fh,AF_DEFAULT_TRACK, buffer, size*channels/2);
         int j=0;
         for (int i=0; i<readNo*channels; i+=channels)
         {
@@ -77,7 +83,7 @@ unsigned SoundSourceAudioFile::read(unsigned long size, const SAMPLE* destinatio
                 dest[j] = buffer[i];
             ++j;
         }
-        return readNo*2;
+        return readNo/channels*2;
     }
 }
 

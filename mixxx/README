@@ -32,12 +32,12 @@ New since 1.2.1:
   improved DirectSound support, ie. lower latency operation
 
 * REQUIREMENTS *********************************************
-Mixxx is depends on the following libraries:
+Mixxx depends on the following libraries:
 QT >= 3.1 
 libmad
 libid3tag
-libAudioFile (Linux and MacOS X only)
-libSndFile (Windows only)
+libAudioFile (MacOS X only)
+libSndFile (Linux and Windows only)
 vorbisfile
 pkg-config (Linux only)
 
@@ -121,7 +121,7 @@ version of Mixxx, as we no longer have access to a Macintosh
 computer. Basically it's a matter of installing QT
 on a Mac with XCode, and compile the code once in a while,
 to check if things got broken, and to pack up releases.
-No strong skills in C++ or anything is required.
+No strong skills in C++ is required.
 
 Send mail to tuehaste@users.sourceforge.net or subscribe to
 mixxx-devel@lists.sourceforge.net and send a message

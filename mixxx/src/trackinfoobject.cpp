@@ -19,10 +19,10 @@
 #include "qdom.h"
 #include <qfileinfo.h>
 #include "trackinfoobject.h"
-#ifdef __WIN__
+#ifdef __SNDFILE__
   #include "soundsourcesndfile.h"
 #endif
-#ifdef __UNIX__
+#ifdef __AUDIOFILE__
   #include "soundsourceaudiofile.h"
 #endif
 #include "soundsourcemp3.h"
@@ -242,10 +242,10 @@ int TrackInfoObject::parse()
     // Parse the using information stored in the sound file
     int iResult = ERR;
     if (m_sType == "wav")
-#ifdef __WIN__
+#ifdef __SNDFILE__
         iResult = SoundSourceSndFile::ParseHeader(this);
 #endif
-#ifdef __UNIX__
+#ifdef __AUDIOFILE__
         iResult = SoundSourceAudioFile::ParseHeader(this);
 #endif
     else if (m_sType == "mp3")

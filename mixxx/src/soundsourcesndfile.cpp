@@ -40,6 +40,7 @@ SoundSourceSndFile::SoundSourceSndFile(QString qFilename) : SoundSource(qFilenam
         return;
     }        
     channels = 2;
+
     SRATE =  info->samplerate;
     
     type = "wav file.";
@@ -55,7 +56,7 @@ SoundSourceSndFile::~SoundSourceSndFile()
 long SoundSourceSndFile::seek(long filepos)
 {
     if (filelength > 0)
-        if (sf_seek(fh, (sf_count_t)filepos, SEEK_SET) == -1)
+        if (sf_seek(fh, (sf_count_t)filepos/channels, SEEK_SET) == -1)
             qDebug("libsndfile: Seek ERR.");
     
     return filepos;
