@@ -169,7 +169,7 @@
  <VuMeter>
   <PathVu>vumeter-on-Ch1.png</PathVu>
   <PathBack>vumeter-off-Ch1.png</PathBack>
-  <Pos>107,528</Pos>
+  <Pos>107,529</Pos>
   <Connection>
    <ConfigKey>[Channel1],VuMeter</ConfigKey>
   </Connection>
@@ -178,7 +178,7 @@
  <VuMeter>
   <PathVu>vumeter-on-Ch2.png</PathVu>
   <PathBack>vumeter-off-Ch2.png</PathBack>
-  <Pos>995,527</Pos>
+  <Pos>995,525</Pos>
   <Connection>
    <ConfigKey>[Channel2],VuMeter</ConfigKey>
   </Connection>

@@ -218,7 +218,6 @@ macx {
   DEFINES += __MACX__
   INCLUDEPATH += $$MACLIBPATH/include
   LIBS += -lz -framework Carbon -framework QuickTime
-#  CONFIG_PATH = \"./Contents/Resources/config/\"
   SETTINGS_FILE = \"mixxx.cfg\"
 }
 
@@ -226,8 +225,6 @@ FORMS	= dlgprefsounddlg.ui dlgprefmididlg.ui dlgprefplaylistdlg.ui dlgprefcontro
 
 SOURCES	+= configobject.cpp fakemonitor.cpp controlengine.cpp controleventengine.cpp controleventmidi.cpp controllogpotmeter.cpp controlobject.cpp controlnull.cpp controlpotmeter.cpp controlpushbutton.cpp controlttrotary.cpp controlbeat.cpp dlgpreferences.cpp dlgprefsound.cpp dlgprefmidi.cpp dlgprefplaylist.cpp dlgprefcontrols.cpp enginebuffer.cpp enginebufferscale.cpp enginebufferscalelinear.cpp engineclipping.cpp enginefilterblock.cpp enginefilteriir.cpp engineobject.cpp enginepregain.cpp enginevolume.cpp main.cpp midiobject.cpp midiobjectnull.cpp mixxx.cpp mixxxview.cpp player.cpp soundsource.cpp soundsourcemp3.cpp soundsourceoggvorbis.cpp monitor.cpp enginechannel.cpp enginemaster.cpp wwidget.cpp wpixmapstore.cpp wnumber.cpp wknob.cpp wdisplay.cpp wvumeter.cpp wpushbutton.cpp wpushbuttoninc.cpp wslidercomposed.cpp wslider.cpp wtracktable.cpp wtracktableitem.cpp enginedelay.cpp engineflanger.cpp enginespectralfwd.cpp enginespectralback.cpp mathstuff.cpp readerextract.cpp readerextractwave.cpp readerextractfft.cpp readerextracthfc.cpp readerextractbeat.cpp readerevent.cpp rtthread.cpp windowkaiser.cpp probabilityvector.cpp reader.cpp tracklist.cpp trackinfoobject.cpp enginevumeter.cpp peaklist.cpp
 HEADERS	+= configobject.h fakemonitor.h controlengine.h controleventengine.h controleventmidi.h controllogpotmeter.h controlobject.h controlnull.h controlpotmeter.h controlpushbutton.h controlttrotary.h controlbeat.h defs.h dlgpreferences.h dlgprefsound.h dlgprefmidi.h dlgprefplaylist.h dlgprefcontrols.h enginebuffer.h enginebufferscale.h enginebufferscalelinear.h engineclipping.h enginefilterblock.h enginefilteriir.h engineobject.h enginepregain.h enginevolume.h midiobject.h midiobjectnull.h mixxx.h mixxxview.h player.h soundsource.h soundsourcemp3.h soundsourceoggvorbis.h monitor.h enginechannel.h enginemaster.h wwidget.h wpixmapstore.h wnumber.h wknob.h wdisplay.h wvumeter.h wpushbutton.h wpushbuttoninc.h wslidercomposed.h wslider.h wtracktable.h wtracktableitem.h enginedelay.h engineflanger.h enginespectralfwd.h enginespectralback.h mathstuff.h readerextract.h readerextractwave.h readerextractfft.h readerextracthfc.h readerextractbeat.h readerevent.h rtthread.h windowkaiser.h probabilityvector.h reader.h  tracklist.h trackinfoobject.h enginevumeter.h peaklist.h
-#SOURCES += wslidervol.cpp
-#HEADERS += wslidervol.h images/slidervoltest/lp1.h images/slidervoltest/lp2.h
 
 DEFINES += SETTINGS_FILE=$$SETTINGS_FILE
 unix:TEMPLATE = app
