@@ -58,3 +58,11 @@ class MixxxView : public QWidget
 #endif
 
 
+
+
+
+
+
+
+
+
