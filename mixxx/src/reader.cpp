@@ -175,7 +175,6 @@ void Reader::newtrack()
     // Initialize the new sound source
     file_srate = readerwave->getRate();
     file_length = readerwave->getLength();
-    f_dCuePoint = 0;
 
     // Reset playpos
     enginebuffer->setNewPlaypos(0.);

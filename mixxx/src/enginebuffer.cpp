@@ -31,6 +31,7 @@
 #include "wvisualwaveform.h"
 #include "visual/visualchannel.h"
 #include "mathstuff.h"
+#include "player.h"
 
 
 // Static default values for rate buttons
@@ -96,7 +97,7 @@ EngineBuffer::EngineBuffer(PowerMate *_powermate, const char *_group)
     // Cue point
     ControlObject *p5 = new ControlObject(ConfigKey(group, "cue_point"));
     cuePoint = new ControlEngine(p5);
-	    
+    
     // Cue preview button:
     p = new ControlPushButton(ConfigKey(group, "cue_preview"));
     buttonCuePreview = new ControlEngine(p);
@@ -334,8 +335,6 @@ void EngineBuffer::setPermSmall(double v)
     m_dPermSmall = v;
 }
 
-
-
 void EngineBuffer::slotControlSeek(double change)
 {
     //qDebug("seeking... %f",change);
@@ -362,10 +361,9 @@ void EngineBuffer::slotControlSeek(double change)
 // Set the cue point at the current play position:
 void EngineBuffer::slotControlCueSet(double)
 {
-    double cue = round(filepos_play);
+    double cue = max(0.,round(filepos_play-Player::getBufferSize()));
     if (!even((int)cue))
         cue--;
-    reader->f_dCuePoint = cue;
     cuePoint->set(cue);
 }
 
@@ -385,7 +383,7 @@ void EngineBuffer::slotControlCueGoto(double pos)
         else
         {
             // Seek to cue point
-            reader->requestSeek(reader->f_dCuePoint);
+            reader->requestSeek(cuePoint->get());
             m_iBeatMarkSamplesLeft = 0;
         }
     }
@@ -402,7 +400,7 @@ void EngineBuffer::slotControlCuePreview(double)
         // Stop playing (set playbutton to stoped) and seek to cue point
         playButton->set(0.);
         m_bCuePreview = false;
-        reader->requestSeek(reader->f_dCuePoint);
+        reader->requestSeek(cuePoint->get());
         m_iBeatMarkSamplesLeft = 0;
     }
     else if (!m_bCuePreview)
@@ -415,7 +413,7 @@ void EngineBuffer::slotControlCuePreview(double)
         else
         {
             // Seek to cue point
-            reader->requestSeek(reader->f_dCuePoint);
+            reader->requestSeek(cuePoint->get());
             m_iBeatMarkSamplesLeft = 0;
         }
     }
@@ -825,7 +823,7 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBuff
 
                 // Set cue point if play button not pressed
                 if (playButton->get()==0.)
-                    cuePoint->set(filepos_play);
+                    cuePoint->set(max(0.,filepos_play-Player::getBufferSize()));
 
                 // Ensure valid range of idx
                 while (idx>READBUFFERSIZE)

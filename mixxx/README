@@ -5,9 +5,10 @@ http://mixxx.sourceforge.net
 
 
 * ABOUT ****************************************************
-Mixxx is software for DJ'ing, using custom or 
-commercial MIDI controllers. You can use wave based
-audio files, Ogg Vorbis and MP3 files as audio input.
+Mixxx is software for DJ'ing. You can use wave based
+audio files, Ogg Vorbis and MP3 files as audio input. Mixxx
+can be controlled through the GUI and with external 
+controllers including MIDI devices, joysticks and more.
 This release works on Linux (OSS Sound Drivers, Jack sound
 server), Windows and MacOS X (Recent version of MacOS X and 
 at least G4 CPU).
@@ -107,10 +108,17 @@ Configuration.txt file in this directory.
 If you are interested in joining the development team of
 Mixxx you are most welcome. Especially we are looking for
 people to help with adding support for various sound api's, 
-eg. native ALSA and Arts etc. Also we are interested in
+eg. native ALSA and Arts. Also we are interested in
 hearing about how you use Mixxx, what features you would 
 like, if you have used any special midi controllers,
 designed your own skin etc.
+
+We are currently looking for a maintainer of the MacOS X
+version of Mixxx, as we no longer have access to a Macintosh
+computer. Basically it's a matter of installing QT
+on a Mac with XCode, and compile the code once in a while,
+to check if things got broken, and to pack up releases.
+No strong skills in C++ or anything is required.
 
 Send mail to tuehaste@users.sourceforge.net or subscribe to
 mixxx-devel@lists.sourceforge.net and send a message

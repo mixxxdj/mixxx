@@ -21,6 +21,7 @@
 #include "../controlobject.h"
 #include "../defs.h"
 #include "../engineobject.h"
+#include "player.h"
 
 /**
  * Default Constructor.
@@ -143,11 +144,11 @@ void VisualBuffer::validate()
  */
 bufInfo VisualBuffer::getVertexArray()
 {
-    // Conversion to DISPLAYRATE
-    float fPos = (((m_pPlaypos->getValue()/m_fReaderExtractFactor)/m_fResampleFactor)-(float)m_iDisplayLen/2.f);
+    // Convert playpos (minus latency) to DISPLAYRATE
+    float fPos = ((((m_pPlaypos->getValue()-Player::getBufferSize())/m_fReaderExtractFactor)/m_fResampleFactor)-(float)m_iDisplayLen/2.f);
     
     //qDebug("pos %f, corrected %f", m_pPlaypos->getValue(), getCorrectedPlaypos());
-    
+        
     //
     // Add to fPos based on current rate and time since m_pPlaypos was updated
     //
