@@ -124,9 +124,6 @@ private:
     double filepos_play;
     /** Sample in the buffer relative to filepos_play. */
     double bufferpos_play;
-    /** Holds the rate as calculated in process. This is used in the
-      * reader thread when calling soundbuffer->getchunk() */
-    Monitor rate_exchange;
     /** Copy of rate_exchange, used to check if rate needs to be updated */
     double rate_old;
     /** Copy of length of file */

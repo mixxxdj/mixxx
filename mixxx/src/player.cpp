@@ -75,3 +75,4 @@ CSAMPLE *Player::prepareBuffer(int iBufferSize)
     m_pMaster->process(0, m_pBuffer, iBufferSize*2);
     return m_pBuffer;
 }
+
