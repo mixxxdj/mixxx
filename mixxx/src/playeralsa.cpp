@@ -14,171 +14,886 @@
  *   (at your option) any later version.                                   *
  *                                                                         *
  ***************************************************************************/
+
 #include "playeralsa.h"
 
-PlayerALSA::PlayerALSA(int size, vector<EngineObject *> *engines, QString device) : Player(size, engines, device)
+// Tutorials /home/peter/pad-alsa-audio.html /home/peter/alsa090_howto.html
+// Docs      /usr/share/doc/alsa-lib-1.0.1/doxygen/html/index.html
+// Example   /usr/share/doc/alsa-lib-1.0.1/doxygen/html/_2test_2pcm_8c-example.html
+
+
+#ifndef PLAYERTEST
+PlayerALSA::PlayerALSA(ConfigObject<ConfigValue> *config, ControlObject *pControl) : Player(config, pControl)
+#else
+PlayerALSA::PlayerALSA()
+#endif
 {
-    // Open device 0 on card 0
-    int err = snd_pcm_open(&handle, 0, 0, SND_PCM_OPEN_PLAYBACK);
-    if (err != 0) {
-      qFatal("Error opening device (%i): %s",err,snd_strerror(err));
-      std::exit(-1);
+    int err;
+
+    handle = 0;
+    err = snd_pcm_hw_params_malloc(&hwparams);
+    if (err < 0)
+    {
+	qFatal("Couldn't allocate memory for hw params: %s\n", snd_strerror(err));
+    }
+    err = snd_pcm_sw_params_malloc(&swparams);
+    if (err < 0)
+    {
+	qFatal("Couldn't allocate memory for sw params: %s\n", snd_strerror(err));
     }
 
-    // Ensure NO_CHANNELS are supported
-    // NOT IMPLEMENTED
-    
-    // Select sample rate, 44100 preferred, otherwise highest possible
-    // NOT IMPLEMENTED
-    set_srate(44100);
+    ahandler = 0;
 
-    // ALSA channel parameters
-    params = new snd_pcm_channel_params_t;
-    params->mode=SND_PCM_MODE_BLOCK;
-    params->start_mode=SND_PCM_START_FULL;
-    params->stop_mode=SND_PCM_STOP_ROLLOVER; // This makes the audio keep playing even
-                                             // if underruns occurs
-    params->buf.block.frag_size = size*SAMPLE_SIZE; // Buffer size in bytes
-    params->buf.block.frags_max=3;
-    params->buf.block.frags_min=1;
-    params->format.interleave=1;
-    params->format.format=SND_PCM_SFMT_S16_LE;
-    params->format.rate=SRATE;
-    params->channel=SND_PCM_CHANNEL_PLAYBACK;
-    params->format.voices=2;
-
-    err = snd_pcm_channel_params(handle,params);
-    if (err != 0) {
-      // try to close what was opened!
-      snd_pcm_close(handle);
-      qFatal("Error setting parameters for device %i", err);
-      std::exit(-1);
-    }
-    setup = new snd_pcm_channel_setup_t;
-    setup->channel=SND_PCM_CHANNEL_PLAYBACK;
-    err = snd_pcm_channel_setup(handle, setup);
-    if (err>0) {
-      qFatal("Error setting up channel (%i)", err);
-      std::exit(-1);
-    }
-
-    err = snd_pcm_playback_flush(handle);
-    if (err>0) {
-      qFatal("Error flushing playback buffer %i):%s", err, snd_strerror(err));
-      std::exit(-1);
-    }
-
-    // The buffer size has possible been changed by the driver. The size returned
-    // by the driver is given in number of bytes, and BUFFER_SIZE indicates the
-    // same size in samples
-    if ((buffer_size = setup->buf.block.frag_size/SAMPLE_SIZE) == 0) {
-      qFatal("Driver returned zero buffer size.");
-      std::exit(-1);
-    }
-
-    qDebug("Using ALSA. Buffer size : %i samples.", buffer_size/2);
-	allocate();
-
-	// Allocate semaphore to stop playback
-	requestStop = new QSemaphore(1);
+    isopen = false;
+    masterleft = masterright = -1;
+    headleft = headright = -1;
+    output = 0;
+    qDebug("Alsa constructed");
 }
 
 PlayerALSA::~PlayerALSA()
 {
-	qDebug("dealloc buffer");
-	if (running())
+    if (isopen) close();
+
+    qDebug("Alsa destroying...");
+    if (hwparams)
+    {
+	snd_pcm_hw_params_free(hwparams);
+    }
+    if (swparams)
+    {
+	snd_pcm_sw_params_free(swparams);
+    }
+    qDebug("Alsa destroyed");
+}
+
+bool PlayerALSA::initialize()
+{
+    qDebug("Alsa initialized");
+
+    return true;
+}
+
+bool PlayerALSA::open()
+{
+#ifndef PLAYERTEST
+    Player::open();
+#endif
+    QString name;
+    QString devname, devtmp;
+    int err;
+
+    masterleft = masterright = -1;
+    headleft = headright = -1;
+
+    qDebug("Alsa opening...2");
+//#ifndef PLAYERTEST
+// XXX: use pre-determined output until fixed
+#if 0
+    int temp;
+    QRegExp rx("\(\\S+\) (ch \(\\d+\))");
+    // XXX: crashing somewhere near here!
+    // master left
+    qDebug("Alsa opening...2.5");
+    name = m_pConfig->getValueString(ConfigKey("[Soundcard]", "DeviceMasterLeft"));
+    qDebug("Alsa opening...3 %s", name);
+    if (name != "None")
+    {
+	if (rx.search(name) < 0)
 	{
-		qDebug("Stopping buffer");
-		stop();
+	    qWarning("can't find device name or channel number in (%s)",
+		     name);
 	}
-
-	// Close audio device
-	snd_pcm_close(handle);
-
-	// Deallocate objects
-	delete setup;
-	delete params;
-}
-
-void PlayerALSA::start(EngineObject *_reader)
-{
-	Player::start(_reader);
-
-	// Prepare for playback
-	int err = snd_pcm_channel_prepare(handle, params->channel);
-	if (err>0)
+	devname = rx.cap(1);
+	temp = rx.cap(2).toInt();
+	if (temp > 0)
 	{
-		qFatal("Error preparing channel (%i)%s",err , snd_strerror(err));
-     	std::exit(-1);
+	    masterleft = temp - 1;
 	}
+    }
+    qDebug("Alsa opening...ML");
 
-	// Start thread
-	QThread::start();
-}
-
-void PlayerALSA::stop()
-{
-	qDebug("Request stop");
-	requestStop->operator++(1);
-	qDebug("Waiting for thread to stop: %i",requestStop->total());
-	wait();
-	requestStop->operator--(1);
-
-	qDebug("drain audio");
-
-	// Stop audio
-	snd_pcm_playback_drain(handle);
-
-	// Terminate synth thread
-	//pthread_cancel(p_thread);
-
-	// Wait for synth thread to terminate
-	//void *thread_state;
-	//pthread_join(p_thread, &thread_state);
-}
-
-void PlayerALSA::wait()
-{
-	QThread::wait();
-}
-
-void PlayerALSA::run()
-{
-	qDebug("PlayerALSA: Beginning of thread.");
-	rt_priority();
-
-	// Loop the synthesis, and pass the buffers to ALSA
-	int res = 0;
-	int BUFFER_SIZE_BYTES = buffer_size*SAMPLE_SIZE;
-	//std::cout << "Starting playback thread\n" << flush;
-	while ((res == 0) && (requestStop->available()))
+    // master right
+    name = m_pConfig->getValueString(ConfigKey("[Soundcard]", "DeviceMasterRight"));
+    if (name != "None")
+    {
+	if (rx.search(name) < 0)
 	{
-		res = prepareBuffer();
-		if ((res == 0) && (snd_pcm_write(handle,out_buffer,BUFFER_SIZE_BYTES)
-						   != BUFFER_SIZE_BYTES))
-			qFatal("Error writing samples to hardware %i",res);
+	    qWarning("can't find device name or channel number in (%s)",
+		     name);
 	}
-	qDebug("Leaving thread");
+	devtmp = rx.cap(1);
+	if (devname != devtmp)
+	{
+	    qWarning("device name mismatch, only one device supported");
+	}
+	temp = rx.cap(2).toInt();
+	if (temp > 0)
+	{
+	    masterright = temp - 1;
+	}
+    }
+    qDebug("Alsa opening...MR");
+
+    // head left
+    name = m_pConfig->getValueString(ConfigKey("[Soundcard]", "DeviceHeadLeft"));
+    if (name != "None")
+    {
+	if (rx.search(name) < 0)
+	{
+	    qWarning("can't find device name or channel number in (%s)",
+		     name);
+	}
+	devtmp = rx.cap(1);
+	if (devname != devtmp)
+	{
+	    qWarning("device name mismatch, only one device supported");
+	}
+	temp = rx.cap(2).toInt();
+	if (temp > 0)
+	{
+	    headleft = temp - 1;
+	}
+    }
+    qDebug("Alsa opening...HL");
+
+    // head right
+    name = m_pConfig->getValueString(ConfigKey("[Soundcard]", "DeviceHeadRight"));
+    if (name != "None")
+    {
+	if (rx.search(name) < 0)
+	{
+	    qWarning("can't find device name or channel number in (%s)",
+		     name);
+	}
+	devtmp = rx.cap(1);
+	if (devname != devtmp)
+	{
+	    qWarning("device name mismatch, only one device supported");
+	}
+	temp = rx.cap(2).toInt();
+	if (temp > 0)
+	{
+	    headright = temp - 1;
+	}
+    }
+    qDebug("Alsa opening...MR");
+    // Check if any of the devices in the config database needs to be set to "None"
+    if (masterleft < 0)
+	m_pConfig->set(ConfigKey("[Soundcard]", "DeviceMasterLeft"), ConfigValue("None"));
+    if (masterright < 0)
+	m_pConfig->set(ConfigKey("[Soundcard]", "DeviceMasterRight"), ConfigValue("None"));
+    if (headleft < 0)
+	m_pConfig->set(ConfigKey("[Soundcard]", "DeviceHeadLeft"), ConfigValue("None"));
+    if (headright < 0)
+	m_pConfig->set(ConfigKey("[Soundcard]", "DeviceHeadRight"), ConfigValue("None"));
+
+#else
+    masterleft = 0;
+    masterright = 1;
+    headleft = 2;
+    headright = 3;
+#ifdef S16_OUTPUT
+    devname = QString("surround40:0");
+#else
+    devname = QString("plug:surround40:0");
+#endif
+#endif
+
+    qDebug("Alsa opening pcm_open: %s", devname.ascii());
+
+    if ((err = snd_pcm_open(&handle, devname.ascii(), SND_PCM_STREAM_PLAYBACK, 0)) < 0)
+    {
+	qWarning("Playback open error: %s\n", snd_strerror(err));
+	return false;
+    }
+
+    qDebug("Alsa settting hw");
+    if ((err = set_hwparams()) < 0)
+    {
+	qWarning("Setting of hwparams failed: %s\n", snd_strerror(err));
+	return false;
+    }
+    qDebug("Alsa settting sw");
+    if ((err = set_swparams()) < 0)
+    {
+	qWarning("Setting of swparams failed: %s\n", snd_strerror(err));
+	return false;
+    }
+
+#ifndef DIRECT_OUTPUT
+    qDebug("Alsa allocating output buffer %p", output);
+    if (output)
+	delete output;
+    output = new OSAMPLE[buffer_size * alsa_channels];
+
+   return async();
+#else
+   return async_direct();
+#endif
 }
 
-void PlayerALSA::rt_priority()
+/*
+ *   Underrun and suspend recovery
+ */
+int PlayerALSA::xrun_recovery(int err)
 {
-    // Set the max. possible priority for a non-realtime process:
-    //if (setpriority(PRIO_PROCESS, 0, -20) != 0)
-	//qWarning("Didn't get max. priority");
-
-
-    // Try to set realtime priority on the current executing thread
-	struct sched_param schp;
-    memset(&schp, 0, sizeof(schp));
-    schp.sched_priority = sched_get_priority_max(SCHED_FIFO);
-    if (sched_setscheduler(0, SCHED_FIFO, &schp) != 0)
-	qWarning("Not possible to give audio I/O thread realtime prioriy.");
-
-
+    if (err == -EPIPE) {	/* under-run */
+        err = snd_pcm_prepare(handle);
+        if (err < 0)
+	    qWarning("Can't recovery from underrun, prepare failed: %s\n", snd_strerror(err));
+        return 0;
+    } else if (err == -ESTRPIPE) {
+	while ((err = snd_pcm_resume(handle)) == -EAGAIN)
+	    sleep(1);	/* wait until the suspend flag is released */
+        if (err < 0) {
+	    err = snd_pcm_prepare(handle);
+	    if (err < 0)
+	        qWarning("Can't recovery from suspend, prepare failed: %s\n", snd_strerror(err));
+	}
+        return 0;
+    }
+    return err;
 }
 
-CSAMPLE *PlayerALSA::process(const CSAMPLE *, const int)
+// async, async_callback use the standard writei() calls
+bool PlayerALSA::async()
 {
-	return 0;
+    int err;
+    qDebug("Alsa settting async callbacks");
+    err = snd_async_add_pcm_handler(&ahandler, handle, callbackwrapper, this);
+    if (err < 0)
+    {
+	qWarning("Unable to register async handler\n");
+	return false;
+    }
+    CSAMPLE *sptr;
+    OSAMPLE *optr;
+    for (int count = 0; count < 2; count++)
+    {
+	sptr = prepareBuffer(period_size);
+	optr = output;
+	for (int i = 0; i < (int) period_size; i++)
+	{
+#ifndef S16_OUTPUT
+	    optr[0] = optr[1] = optr[2] = optr[3] = 0.;
+	    if (masterleft >= 0)  optr[masterleft]  = *sptr / 32768.;
+	    sptr++;
+	    if (masterright >= 0) optr[masterright] = *sptr / 32768.;
+	    sptr++;
+	    if (headleft >= 0)  optr[headleft]  = *sptr / 32768.;
+	    sptr++;
+	    if (headright >= 0) optr[headright] = *sptr / 32768.;
+	    sptr++;
+#else
+	    optr[0] = optr[1] = optr[2] = optr[3] = 0;
+	    if (masterleft >= 0)  optr[masterleft]  = (OSAMPLE) *sptr;
+	    sptr++;
+	    if (masterright >= 0) optr[masterright] = (OSAMPLE) *sptr;
+	    sptr++;
+	    if (headleft >= 0)  optr[headleft]  = (OSAMPLE) *sptr;
+	    sptr++;
+	    if (headright >= 0) optr[headright] = (OSAMPLE) *sptr;
+	    sptr++;
+#endif
+	    optr += 4;
+	}
+	err = snd_pcm_writei(handle, output, period_size);
+	if (err < 0)
+	{
+	    qWarning("Initial write error: %s\n", snd_strerror(err));
+	    return false;
+	}
+	if (err != (int) period_size)
+	{
+	    qWarning("Initial write error: written %i expected %li\n", err,
+		     period_size);
+	    return false;
+	}
+    }
+
+    err = snd_pcm_start(handle);
+    if (err < 0)
+    {
+	qWarning("Start error: %s\n", snd_strerror(err));
+	return false;
+    }
+    isopen = true;
+
+    return true;
+}
+
+/**
+ * service SIGIO callback from alsa-lib (called by the wrapper)
+ */
+void PlayerALSA::async_callback()
+{
+    snd_pcm_uframes_t avail;
+    CSAMPLE *sptr;
+    OSAMPLE *optr;
+    int err;
+
+    avail = snd_pcm_avail_update(handle);
+    while (avail >= period_size)
+    {
+	sptr = prepareBuffer((int) period_size);
+	optr = output;
+	for (int i = 0; i < (int) period_size; i++)
+	{
+#ifndef S16_OUTPUT
+	    optr[0] = optr[1] = optr[2] = optr[3] = 0.;
+	    if (masterleft >= 0)  optr[masterleft]  = *sptr / 32768.;
+	    sptr++;
+	    if (masterright >= 0) optr[masterright] = *sptr / 32768.;
+	    sptr++;
+	    if (headleft >= 0)  optr[headleft]  = *sptr / 32768.;
+	    sptr++;
+	    if (headright >= 0) optr[headright] = *sptr / 32768.;
+	    sptr++;
+#else
+	    optr[0] = optr[1] = optr[2] = optr[3] = 0;
+	    if (masterleft >= 0)  optr[masterleft]  = (OSAMPLE) *sptr;
+	    sptr++;
+	    if (masterright >= 0) optr[masterright] = (OSAMPLE) *sptr;
+	    sptr++;
+	    if (headleft >= 0)  optr[headleft]  = (OSAMPLE) *sptr;
+	    sptr++;
+	    if (headright >= 0) optr[headright] = (OSAMPLE) *sptr;
+	    sptr++;
+#endif
+	    optr += 4;
+	}
+	err = snd_pcm_writei(handle, output, period_size);
+	if (err < 0) {
+	    if (xrun_recovery(err) < 0) {
+	        qFatal("Write error: %s\n", snd_strerror(err));
+	    }
+	} else
+	if (err != (int) period_size)
+	{
+	    qWarning("Write error: written %i expected %li\n", err, period_size);
+	}
+	avail = snd_pcm_avail_update(handle);
+    }
+}
+
+
+// async_direct, async_direct_callback use the standard mmap calls
+// XXX: doesn't seem to work with the plug plugin
+bool PlayerALSA::async_direct()
+{
+    const snd_pcm_channel_area_t *my_areas;
+    snd_pcm_uframes_t offset, frames, size;
+    snd_pcm_sframes_t commitres;
+    int err, count;
+
+    err = snd_async_add_pcm_handler(&ahandler, handle, callbackwrapper, this);
+    if (err < 0) {
+        qWarning("Unable to register async handler\n");
+        return false;
+    }
+    CSAMPLE *sptr;
+    OSAMPLE *optrs[alsa_channels];
+    int steps[alsa_channels];
+    for (count = 0; count < 2; count++) {
+        size = period_size;
+        while (size > 0) {
+	    frames = size;
+	    err = snd_pcm_mmap_begin(handle, &my_areas, &offset, &frames);
+#if 0
+	    qDebug("offset %d frames %d", (int) offset, (int) frames);
+	    for (int chn = 0; chn < alsa_channels; chn++) {
+	        qDebug("chn %d: addr %p first %u, step %u", chn,
+		       my_areas[chn].addr, my_areas[chn].first, my_areas[chn].step);
+	    }
+#endif
+	    if (err < 0) {
+	        if ((err = xrun_recovery(err)) < 0) {
+		   qWarning("MMAP begin avail error: %s\n", snd_strerror(err));
+		   return false;
+		}
+	    }
+	    sptr = prepareBuffer(frames);
+	    // copy samples to my_areas (alsa_channels)
+	    //  addr  = base address
+	    //  first = offset in bits
+	    //  step = distance in bits
+	    for (int chn = 0; chn < alsa_channels; chn++) {
+	        if ((my_areas[chn].first % 8) != 0) {
+		    qWarning("areas[%d].first %u", chn, my_areas[chn].first);
+		    return false;
+		}
+	        optrs[chn] = (OSAMPLE *) (((unsigned char *)my_areas[chn].addr) + (my_areas[chn].first/8));
+	        if ((my_areas[chn].step % (sizeof(OSAMPLE)*8)) != 0) {
+		    qWarning("areas[%d].step %u", chn, my_areas[chn].step);
+		    return false;
+		}
+	        steps[chn] = my_areas[chn].step / (sizeof(OSAMPLE)*8);
+	        optrs[chn] += offset*steps[chn];
+	    }
+	    for (int i = 0; i < (int) frames; i++)
+	    {
+#ifndef S16_OUTPUT
+	        *optrs[0] = *optrs[1] = *optrs[2] = *optrs[3] = 0.;
+	        if (masterleft >= 0)  *optrs[masterleft]  = *sptr / 32768.;
+	        sptr++;
+	        if (masterright >= 0) *optrs[masterright] = *sptr / 32768.;
+	        sptr++;
+	        if (headleft >= 0)  *optrs[headleft]  = *sptr / 32768.;
+	        sptr++;
+	        if (headright >= 0) *optrs[headright] = *sptr / 32768.;
+	        sptr++;
+#else
+	        *optrs[0] = *optrs[1] = *optrs[2] = *optrs[3] = 0;
+	        if (masterleft >= 0)  *optrs[masterleft]  = (OSAMPLE) *sptr;
+	        sptr++;
+	        if (masterright >= 0) *optrs[masterright] = (OSAMPLE) *sptr;
+	        sptr++;
+	        if (headleft >= 0)  *optrs[headleft]  = (OSAMPLE) *sptr;
+	        sptr++;
+	        if (headright >= 0) *optrs[headright] = (OSAMPLE) *sptr;
+	        sptr++;
+#endif
+	        optrs[0] += steps[0];
+	        optrs[1] += steps[1];
+	        optrs[2] += steps[2];
+	        optrs[3] += steps[3];
+	    }
+	    commitres = snd_pcm_mmap_commit(handle, offset, frames);
+	    if (commitres < 0 || (snd_pcm_uframes_t) commitres != frames) {
+	        if ((err = xrun_recovery(commitres >= 0 ? -EPIPE : commitres)) < 0) {
+		    qWarning("MMAP commit error: %s\n", snd_strerror(err));
+		    return false;
+		}
+	    }
+	    size -= frames;
+	}
+    }
+    err = snd_pcm_start(handle);
+    if (err < 0) {
+        qWarning("Start error: %s\n", snd_strerror(err));
+        return false;
+    }
+    return true;
+}
+
+void PlayerALSA::async_direct_callback()
+{
+    const snd_pcm_channel_area_t *my_areas;
+    snd_pcm_uframes_t offset, frames, size;
+    snd_pcm_sframes_t avail, commitres;
+    snd_pcm_state_t state;
+    int first = 0, err;
+
+    CSAMPLE *sptr;
+    OSAMPLE *optrs[alsa_channels];
+    int steps[alsa_channels];
+    while (1) {
+        state = snd_pcm_state(handle);
+        if (state == SND_PCM_STATE_XRUN) {
+	    err = xrun_recovery(-EPIPE);
+	    if (err < 0) {
+	        qFatal("XRUN recovery failed: %s\n", snd_strerror(err));
+	    }
+	    first = 1;
+	} else if (state == SND_PCM_STATE_SUSPENDED) {
+	    err = xrun_recovery(-ESTRPIPE);
+	    if (err < 0) {
+	        qFatal("SUSPEND recovery failed: %s\n", snd_strerror(err));
+	    }
+	}
+        avail = snd_pcm_avail_update(handle);
+        if (avail < 0) {
+	    err = xrun_recovery(avail);
+	    if (err < 0) {
+	        qFatal("avail update failed: %s\n", snd_strerror(err));
+	    }
+	    first = 1;
+	    continue;
+	}
+        if ((snd_pcm_uframes_t) avail < period_size) {
+	    if (first) {
+	        first = 0;
+	        err = snd_pcm_start(handle);
+	        if (err < 0) {
+		    qFatal("Start error: %s\n", snd_strerror(err));
+		}
+	    } else {
+	        break;
+	    }
+	    continue;
+	}
+        size = period_size;
+        while (size > 0) {
+	    frames = size;
+	    err = snd_pcm_mmap_begin(handle, &my_areas, &offset, &frames);
+	    if (err < 0) {
+	        if ((err = xrun_recovery(err)) < 0) {
+		    qFatal("MMAP begin avail error: %s\n", snd_strerror(err));
+		}
+	        first = 1;
+	    }
+	    sptr = prepareBuffer(frames);
+	    for (int chn = 0; chn < alsa_channels; chn++) {
+	        if ((my_areas[chn].first % 8) != 0) {
+		    qFatal("areas[%d].first %u", chn, my_areas[chn].first);
+		}
+	        optrs[chn] = (OSAMPLE *) (((unsigned char *)my_areas[chn].addr) + (my_areas[chn].first/8));
+	        if ((my_areas[chn].step % (sizeof(OSAMPLE)*8)) != 0) {
+		    qFatal("areas[%d].step %u", chn, my_areas[chn].step);
+		}
+	        steps[chn] = my_areas[chn].step / (sizeof(OSAMPLE)*8);
+	        optrs[chn] += offset*steps[chn];
+	    }
+	    for (int i = 0; i < (int) frames; i++)
+	    {
+#ifndef S16_OUTPUT
+	        *optrs[0] = *optrs[1] = *optrs[2] = *optrs[3] = 0.;
+	        if (masterleft >= 0)  *optrs[masterleft]  = *sptr / 32768.;
+	        sptr++;
+	        if (masterright >= 0) *optrs[masterright] = *sptr / 32768.;
+	        sptr++;
+	        if (headleft >= 0)  *optrs[headleft]  = *sptr / 32768.;
+	        sptr++;
+	        if (headright >= 0) *optrs[headright] = *sptr / 32768.;
+	        sptr++;
+#else
+	        *optrs[0] = *optrs[1] = *optrs[2] = *optrs[3] = 0;
+	        if (masterleft >= 0)  *optrs[masterleft]  = (OSAMPLE) *sptr;
+	        sptr++;
+	        if (masterright >= 0) *optrs[masterright] = (OSAMPLE) *sptr;
+	        sptr++;
+	        if (headleft >= 0)  *optrs[headleft]  = (OSAMPLE) *sptr;
+	        sptr++;
+	        if (headright >= 0) *optrs[headright] = (OSAMPLE) *sptr;
+	        sptr++;
+#endif
+	        optrs[0] += steps[0];
+	        optrs[1] += steps[1];
+	        optrs[2] += steps[2];
+	        optrs[3] += steps[3];
+	    }
+	    commitres = snd_pcm_mmap_commit(handle, offset, frames);
+	    if (commitres < 0 || (snd_pcm_uframes_t) commitres != frames) {
+	        if ((err = xrun_recovery(commitres >= 0 ? -EPIPE : commitres)) < 0) {
+		    qFatal("MMAP commit error: %s\n", snd_strerror(err));
+		}
+	        first = 1;
+	    }
+	    size -= frames;
+	}
+    }
+}
+
+#ifdef PLAYERTEST
+/**
+ * generate a middle A slowly shifting across the channels
+ */
+CSAMPLE *PlayerALSA::prepareBuffer(int count)
+{
+    const double freq = 440.;
+    const unsigned int rate = 44100;
+    static CSAMPLE *out = 0;
+
+    static double phase = 0;
+    double max_phase = 1.0 / freq;
+    double step = 1.0 / (double) rate;
+    double res;
+    CSAMPLE *sptr;
+    int chn;
+    static int channel = 0;
+    static int ccount = 0;
+
+    if (out == 0)
+	out = new CSAMPLE[80000];
+    sptr = out;
+    while (count-- > 0)
+    {
+	res = 32768. * sin((phase * 2 * M_PI) / max_phase - M_PI);
+	for (chn = 0; chn < alsa_channels; chn++)
+	{
+	    if (chn == channel)
+		*sptr = res;
+	    else
+		*sptr = 0;
+	    sptr++;
+	}
+	phase += step;
+	if (phase >= max_phase)
+	{
+	    phase -= max_phase;
+	    ccount++;
+	    if (ccount == (3 * 440))
+	    {
+		ccount = 0;
+		channel++;
+		if (channel == alsa_channels) channel = 0;
+	    }
+	}
+    }
+    return out;
+}
+#endif
+
+void PlayerALSA::close()
+{
+    qDebug("Alsa closing");
+    // XXX: what should the shutdown routine be?
+    // Stop audio
+    //	snd_pcm_drain(handle);
+    snd_pcm_drop(handle);
+    snd_pcm_close(handle);
+    if (output)
+    {
+	delete output;
+        output = 0;
+    }
+    // XXX: this segfaults!
+    // snd_async_del_handler(ahandler);
+    //	ahandler = 0;
+    isopen = false;
+}
+
+void PlayerALSA::setDefaults()
+{
+    qDebug("Alsa setdefs");
+#ifndef PLAYERTEST
+    // Get list of interfaces
+    QStringList interfaces = getInterfaces();
+
+    // Set first interfaces to master left
+    QStringList::iterator it = interfaces.begin();
+    if (*it)
+	m_pConfig->set(ConfigKey("[Soundcard]", "DeviceMasterLeft"), ConfigValue((*it)));
+    else
+	m_pConfig->set(ConfigKey("[Soundcard]", "DeviceMasterLeft"), ConfigValue("None"));
+
+    // Set second interface to master right
+    ++it;
+    if (*it)
+	m_pConfig->set(ConfigKey("[Soundcard]", "DeviceMasterRight"), ConfigValue((*it)));
+    else
+	m_pConfig->set(ConfigKey("[Soundcard]", "DeviceMasterRight"), ConfigValue("None"));
+
+    // Set head left and right to none
+    m_pConfig->set(ConfigKey("[Soundcard]", "DeviceHeadLeft"), ConfigValue("None"));
+    m_pConfig->set(ConfigKey("[Soundcard]", "DeviceHeadRight"), ConfigValue("None"));
+
+    // Set default sample rate
+    QStringList srates = getSampleRates();
+    it = srates.begin();
+    if (*it)
+    {
+	m_pConfig->set(ConfigKey("[Soundcard]", "Samplerate"), ConfigValue((*it)));
+
+	// Set currently used latency in config database
+	m_pConfig->set(ConfigKey("[Soundcard]", "Latency"), ConfigValue(default_latency));
+    }
+#endif
+}
+
+QStringList PlayerALSA::getInterfaces()
+{
+    qDebug("Alsa getinter");
+    QStringList result;
+//   result.append("plug:front:0 (ch 1)");
+//   result.append("plug:front:0 (ch 2)");
+    result.append("plug:surround40:0 (ch 1)");
+    result.append("plug:surround40:0 (ch 2)");
+    result.append("plug:surround40:0 (ch 3)");
+    result.append("plug:surround40:0 (ch 4)");
+    return result;
+}
+
+QStringList PlayerALSA::getSampleRates()
+{
+    qDebug("Alsa getsample");
+    QStringList result;
+    result.append("11025");
+    result.append("22050");
+    result.append("44100");
+    result.append("48000");
+    return result;
+}
+
+QString PlayerALSA::getSoundApi()
+{
+    qDebug("Alsa getapi");
+    return QString("Alsa");
+}
+
+int PlayerALSA::set_hwparams()
+{
+    unsigned int rate, rrate;
+    unsigned int buffer_time = 500000;	/* ring buffer length in us */
+    unsigned int period_time = 100000;	/* period time in us */
+
+
+    int err, dir;
+
+    /* choose all parameters */
+    err = snd_pcm_hw_params_any(handle, hwparams);
+    if (err < 0)
+    {
+	qWarning("Broken configuration for playback: no configurations available: %s\n", snd_strerror(err));
+	return err;
+    }
+    /* set the interleaved read/write format */
+    err = snd_pcm_hw_params_set_access(handle, hwparams, alsa_access);
+    if (err < 0)
+    {
+	qWarning("Access type not available for playback: %s\n", snd_strerror(err));
+	return err;
+    }
+    /* set the sample format */
+    err = snd_pcm_hw_params_set_format(handle, hwparams, alsa_format);
+    if (err < 0)
+    {
+	qWarning("Sample format not available for playback: %s\n", snd_strerror(err));
+	return err;
+    }
+    /* set the count of channels */
+    err = snd_pcm_hw_params_set_channels(handle, hwparams, alsa_channels);
+    if (err < 0)
+    {
+	qWarning("Channels count (%i) not available for playbacks: %s\n", alsa_channels, snd_strerror(err));
+	return err;
+    }
+    /* set the stream rate */
+#ifndef PLAYERTEST
+    rate = m_pConfig->getValueString(ConfigKey("[Soundcard]", "Samplerate")).toUInt();
+#else
+    rate = 44100;
+#endif
+    rrate = rate;
+    err = snd_pcm_hw_params_set_rate_near(handle, hwparams, &rrate, 0);
+    if (err < 0)
+    {
+	qWarning("Rate %iHz not available for playback: %s\n", rate, snd_strerror(err));
+	return err;
+    }
+    if (rrate != rate)
+    {
+	qWarning("Rate doesn't match (requested %iHz, get %iHz)\n", rate, err);
+	return -EINVAL;
+    }
+
+    setPlaySrate(rrate);
+    
+    /* set the buffer time */
+#ifndef PLAYERTEST
+    buffer_time = m_pConfig->getValueString(ConfigKey("[Soundcard]", "Latency")).toUInt() * 1000;
+#else
+    buffer_time = 50000;
+#endif
+    err = snd_pcm_hw_params_set_buffer_time_near(handle, hwparams, &buffer_time, &dir);
+    if (err < 0)
+    {
+	qWarning("Unable to set buffer time %i for playback: %s\n", buffer_time, snd_strerror(err));
+	return err;
+    }
+    err = snd_pcm_hw_params_get_buffer_size(hwparams, &buffer_size);
+    if (err < 0)
+    {
+	qWarning("Unable to get buffer size for playback: %s\n", snd_strerror(err));
+	return err;
+    }
+
+    // XXX: maybe using set_periods (and its ilk) is a better option
+    /* set the period size */
+    // the config space seems to reduce in extent as as we try out possible
+    // choices so work backwards from a maximum number of periods per buffer of 4
+    for (period_no = 4; period_no > 1; period_no--)
+    {
+	period_time = buffer_time / period_no;
+//      period_time = (unsigned int) (buffer_size/(rrate*4e-6));
+//      period_time = buffer_time/4;
+	qWarning("Period %dus (no: %d)", (int) period_time, period_no);
+
+	err = snd_pcm_hw_params_set_period_time_near(handle, hwparams, &period_time, &dir);
+	if (err < 0)
+	{
+	    qWarning("Unable to set period time %i for playback: %s\n", period_time, snd_strerror(err));
+	    return err;
+	}
+//      qWarning("-> %dus\n", (int) period_time);
+	err = snd_pcm_hw_params_get_period_size(hwparams, &period_size, &dir);
+	if (err < 0)
+	{
+	    qWarning("Unable to get period size for playback: %s\n", snd_strerror(err));
+	    return err;
+	}
+	qWarning("Period %df, buffer %df", (int) period_size, (int) buffer_size);
+	if (period_size < buffer_size)
+	    break;
+    }
+    if (period_no == 1)
+	return -1;
+
+    /* write the parameters to device */
+    err = snd_pcm_hw_params(handle, hwparams);
+    if (err < 0)
+    {
+	qWarning("Unable to set hw params for playback: %s\n", snd_strerror(err));
+	return err;
+    }
+    qWarning("Rate: %d, buf %df (%dus), per %df (%dus)", rrate,
+	     (int) buffer_size, (int) (buffer_size / (rrate * 1e-6)),
+	     (int) period_size, (int) (period_size / (rrate * 1e-6)));
+    return 0;
+}
+
+int PlayerALSA::set_swparams()
+{
+    int err;
+
+    /* get the current swparams */
+    err = snd_pcm_sw_params_current(handle, swparams);
+    if (err < 0)
+    {
+	qWarning("Unable to determine current swparams for playback: %s\n", snd_strerror(err));
+	return err;
+    }
+    /* start the transfer when the buffer is full */
+    err = snd_pcm_sw_params_set_start_threshold(handle, swparams, buffer_size);
+    if (err < 0)
+    {
+	qWarning("Unable to set start threshold mode for playback: %s\n", snd_strerror(err));
+	return err;
+    }
+    /* allow the transfer when at least period_size samples can be processed */
+    err = snd_pcm_sw_params_set_avail_min(handle, swparams, period_size);
+    if (err < 0)
+    {
+	qWarning("Unable to set avail min for playback: %s\n", snd_strerror(err));
+	return err;
+    }
+    /* align all transfers to 1 sample */
+    err = snd_pcm_sw_params_set_xfer_align(handle, swparams, 1);
+    if (err < 0)
+    {
+	qWarning("Unable to set transfer align for playback: %s\n", snd_strerror(err));
+	return err;
+    }
+    /* write the parameters to the playback device */
+    err = snd_pcm_sw_params(handle, swparams);
+    if (err < 0)
+    {
+	qWarning("Unable to set sw params for playback: %s\n", snd_strerror(err));
+	return err;
+    }
+    return 0;
+}
+
+/**
+ *   wrapper for asynchronous notification
+ */
+void PlayerALSA::callbackwrapper(snd_async_handler_t * a)
+{
+    void *pao = snd_async_handler_get_callback_private(a);
+#ifdef DIRECT_OUTPUT
+    ((PlayerALSA *) pao)->async_direct_callback();
+#else
+    ((PlayerALSA *) pao)->async_callback();
+#endif
 }

@@ -143,7 +143,7 @@ MixxxApp::MixxxApp(QApplication *a, QStringList files)
 
     // Open midi
     midi = 0;
-#ifdef __ALSA__
+#ifdef __ALSAMIDI__
     midi = new MidiObjectALSA(midiconfig,app,config->getValueString(ConfigKey("[Midi]","Device")));
 #endif
 #ifdef __PORTMIDI__

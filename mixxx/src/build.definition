@@ -202,8 +202,11 @@ TYPE = lib
 DESCRIPTION = Alsa library
 FEATURE = Alsa
 TIP_MESSAGE =
+ADD_DEFINES = __ALSA__
+ADD_SOURCES = playeralsa.cpp
+ADD_HEADERS = playeralsa.h
 LINK_LIBS = -lasound 
-OPTIONS =  disable_feature   lock_feature
+OPTIONS =  disable_feature
 #----------------------------------------------------------------------
 # Check routines         (DON'T TOUCH!)
 include( check.qbas )
