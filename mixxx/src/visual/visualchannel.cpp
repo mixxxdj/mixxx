@@ -21,6 +21,7 @@
 #include "visualcontroller.h"
 #include "visualbuffersignal.h"
 #include "visualbuffersignalhfc.h"
+#include "visualbuffertemporal.h"
 #include "visualbuffermarks.h"
 #include "visualdisplay.h"
 
@@ -58,8 +59,14 @@ VisualBuffer *VisualChannel::add(ReaderExtract *pReaderExtract, EngineBuffer *pE
 {
     VisualBuffer *b = 0;
 
+
     // Determine type.... A hack, yes!
-    if (pReaderExtract->getVisualDataType()=="signal")
+    if (!pReaderExtract)
+    {
+        // Temporal
+        b = new VisualBufferTemporal(pEngineBuffer, group);
+    }
+    else if (pReaderExtract->getVisualDataType()=="signal")
     {
         // Construct a new buffer
         b = new VisualBufferSignal(pReaderExtract, pEngineBuffer, group);
@@ -83,9 +90,19 @@ VisualBuffer *VisualChannel::add(ReaderExtract *pReaderExtract, EngineBuffer *pE
     // ADD GROUP INFO *****************
     VisualDisplay *d;
     if (m_qlListDisplay.isEmpty())
-        d = new VisualDisplay(b, pReaderExtract->getVisualDataType(), group, true);
-    else
-        d = new VisualDisplay(b, pReaderExtract->getVisualDataType(), group, false);
+	{
+		if (pReaderExtract)
+			d = new VisualDisplay(b, pReaderExtract->getVisualDataType(), group, true);
+		else
+			d = new VisualDisplay(b, "temporal", group, true);
+	}
+	else
+    {
+		if (pReaderExtract)
+			d = new VisualDisplay(b, pReaderExtract->getVisualDataType(), group, false);
+		else
+			d = new VisualDisplay(b, "temporal", group, false);
+	}
 
     //
     // Setup position of display
@@ -97,6 +114,7 @@ VisualBuffer *VisualChannel::add(ReaderExtract *pReaderExtract, EngineBuffer *pE
 //     d->setHeight(height);
     d->setColorSignal(m_fColorSignalR, m_fColorSignalG, m_fColorSignalB);
     d->setColorHfc(m_fColorHfcR, m_fColorHfcG, m_fColorHfcB);
+    d->setColorCue(m_fColorCueR, m_fColorCueG, m_fColorCueB);
     d->setColorMarker(m_fColorMarkerR, m_fColorMarkerG, m_fColorMarkerB);
     d->setColorBeat(m_fColorBeatR, m_fColorBeatG, m_fColorBeatB);
     d->setColorFisheye(m_fColorFisheyeR, m_fColorFisheyeG, m_fColorFisheyeB);
@@ -138,6 +156,13 @@ void VisualChannel::setColorHfc(float r, float g, float b)
     m_fColorHfcR = r;
     m_fColorHfcG = g;
     m_fColorHfcB = b;
+}
+
+void VisualChannel::setColorCue(float r, float g, float b)
+{
+    m_fColorCueR = r;
+    m_fColorCueG = g;
+    m_fColorCueB = b;
 }
 
 void VisualChannel::setColorBack(float r, float g, float b)

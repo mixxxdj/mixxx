@@ -60,6 +60,7 @@ public:
 
     void setColorSignal(float r, float g, float b);
     void setColorHfc(float r, float g, float b);
+    void setColorCue(float r, float g, float b);
     void setColorBeat(float r, float g, float b);
     void setColorMarker(float r, float g, float b);
     void setColorFisheye(float r, float g, float b);
@@ -113,7 +114,7 @@ protected:
     VisualBuffer *m_pVisualBuffer;
 
     /** Materials */
-    Material m_materialSignal, m_materialHfc, m_materialMarker, m_materialBeat, m_materialFisheye;
+    Material m_materialSignal, m_materialHfc, m_materialCue, m_materialMarker, m_materialBeat, m_materialFisheye;
 
     /** Unique id of signal */
     int id;

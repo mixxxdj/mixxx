@@ -38,6 +38,7 @@ const int MAXDISPLAYRATE = 100;
 
 class ReaderExtract;
 class EngineBuffer;
+class ControlObject;
 
 typedef struct
 {
@@ -50,6 +51,7 @@ class VisualBuffer : public QObject
 {
     Q_OBJECT
 public:
+    VisualBuffer(EngineBuffer *pEngineBuffer, const char *group);
     VisualBuffer(ReaderExtract *pReaderExtract, EngineBuffer *pEngineBuffer, const char *group);
     virtual ~VisualBuffer();
     bool eventFilter(QObject *o, QEvent *e);
@@ -72,6 +74,8 @@ public slots:
 protected:
     /** This is used to validate the error state of openGL. */
     void validate();
+    /** Pointer to rate control object */
+    ControlObject *m_pRate;
     /** Pointer to the actual buffer, an openGL vertex array */
     GLfloat *m_pBuffer;
     /** Pointer to source buffer from ReaderExtract */
@@ -82,7 +86,13 @@ protected:
     int m_iSourceLen;
     /** Resample factor determining the factor to reduce the incomming signal with */
     CSAMPLE m_fResampleFactor;
-    /** Factor used in convesion of position and length between ReaderExtractWave and
+    /** Display rate. Rate at which this buffer represents. The x axis values of this buffer correspond to samples
+     *       * at MAXDISPLAYRATE positions */
+    CSAMPLE m_fDisplayRate;
+    /** Factor between this buffers sample rate, and MAXDISPLAYRATE */
+    CSAMPLE m_fDisplayFactor;
+
+     /** Factor used in convesion of position and length between ReaderExtractWave and
       * the associated ReaderExtract position and length*/
     CSAMPLE m_fReaderExtractFactor;
     /** Number of samples of this buffer to display (used in getVertexArray) */
