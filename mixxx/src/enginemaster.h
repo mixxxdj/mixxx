@@ -26,6 +26,7 @@ class EngineVolume;
 class EngineChannel;
 class EngineClipping;
 class EngineFlanger;
+class EngineVUmeter;
 
 /**
   *@author 
@@ -37,7 +38,7 @@ public:
     EngineMaster(DlgMaster *master_dlg, DlgCrossfader *crossfader_dlg,
                  EngineBuffer *buffer1, EngineBuffer *buffer2,
                  EngineChannel *, EngineChannel *, EngineFlanger *,
-                 const char *group);
+                 EngineVUmeter *, const char *group);
     ~EngineMaster();
     void notify(double) {};
     CSAMPLE *process(const CSAMPLE *, const int);
@@ -47,9 +48,10 @@ private:
     EngineVolume *volume, *head_volume; 
     EngineClipping *clipping, *head_clipping;
     EngineFlanger *flanger;
+    EngineVUmeter *vumeter;
 
     ControlEngine *crossfader, *head_mix, *pfl1, *pfl2, *flanger1, *flanger2;
-    CSAMPLE *out, *tmp, *tmp2, *tmp3;
+    CSAMPLE *out, *tmp, *tmp2, *tmp3, *tmp4;
     bool master1, master2;
 };
 

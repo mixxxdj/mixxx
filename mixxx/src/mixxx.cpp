@@ -59,6 +59,7 @@
 #include "dlgcrossfader.h"
 #include "dlgsplit.h"
 #include "powermate.h"
+#include "enginevumeter.h"
 
 #ifdef __UNIX__
 #include "powermatelinux.h"
@@ -288,27 +289,6 @@ MixxxApp::MixxxApp(QApplication *a)
     if (!player->open(false))
         if (!player->open(true))
             prefDlg->setHidden(false);
-
-
-
-    // Set track information in reader
-    /*
-    if (view->playlist->ListPlaylist->firstChild() != 0)
-    {
-        buffer1->getReader()->requestNewTrack(view->playlist->ListPlaylist->firstChild()->text(1));
-        slotSetTitle(view->playlist->ListPlaylist->firstChild()->text(1), view->playcontrol1);
-
-        if (view->playlist->ListPlaylist->firstChild()->nextSibling() != 0)
-        {
-            buffer2->getReader()->requestNewTrack(view->playlist->ListPlaylist->firstChild()->nextSibling()->text(1));
-            slotSetTitle(view->playlist->ListPlaylist->firstChild()->nextSibling()->text(1), view->playcontrol2);
-        }
-    }
-    */
-
-//    if (!control->connect(ConfigKey("[Channel1]","rate"), ConfigKey("","FishEyeSignalFraction")))
-//       qDebug("connect error");    
-
     
     // Starting channels:
     channel1 = new EngineChannel(view->channel1, "[Channel1]");
@@ -317,20 +297,12 @@ MixxxApp::MixxxApp(QApplication *a)
     // Starting effects:
     flanger = new EngineFlanger(view->flanger, "[Flanger]");
 
-    //qDebug("Init master...");
+    // Starting vumeter:
+    vumeter = new EngineVUmeter(view->vumeter, "[VUmeter]");
+
+    // Starting the master (mixing of the channels and effects):
     master = new EngineMaster(view->master, view->crossfader,
-                              buffer1, buffer2, channel1, channel2,flanger, "[Master]");
-
-    /** Connect signals from option menu, selecting processing of channel 1 & 2, to
-        EngineMaster */
-//    connect(optionsLeft, SIGNAL(toggled(bool)), master, SLOT(slotChannelMaster1(bool)));
-//    connect(optionsRight, SIGNAL(toggled(bool)), master, SLOT(slotChannelMaster2(bool)));
-//    master->slotChannelMaster1(optionsLeft->isOn());
-//    master->slotChannelMaster2(optionsRight->isOn());
-
-    //qDebug("Starting buffers...");
-//    buffer1->start();
-//    buffer2->start();
+                              buffer1, buffer2, channel1, channel2,flanger,vumeter, "[Master]");
 
     // Start audio
     //qDebug("Starting player...");
@@ -354,6 +326,8 @@ MixxxApp::~MixxxApp()
     delete config;
     delete midiconfig;
     delete m_pTracks;
+    delete flanger;
+    delete vumeter;
 
 #ifdef __UNIX__
     if (powermate1!=0)

@@ -25,28 +25,6 @@
     <property name="caption">
         <string>Form1</string>
     </property>
-    <widget class="Line">
-        <property name="name">
-            <cstring>Line1</cstring>
-        </property>
-        <property name="geometry">
-            <rect>
-                <x>-6</x>
-                <y>0</y>
-                <width>16</width>
-                <height>446</height>
-            </rect>
-        </property>
-        <property name="frameShape">
-            <enum>VLine</enum>
-        </property>
-        <property name="frameShadow">
-            <enum>Sunken</enum>
-        </property>
-        <property name="orientation">
-            <enum>Vertical</enum>
-        </property>
-    </widget>
     <widget class="QLabel">
         <property name="name">
             <cstring>TextLabel1_2</cstring>
@@ -203,19 +181,6 @@
             <enum>WindowOrigin</enum>
         </property>
     </widget>
-    <widget class="WBulb">
-        <property name="name">
-            <cstring>BulbClipping</cstring>
-        </property>
-        <property name="geometry">
-            <rect>
-                <x>37</x>
-                <y>2</y>
-                <width>16</width>
-                <height>16</height>
-            </rect>
-        </property>
-    </widget>
     <widget class="WKnob">
         <property name="name">
             <cstring>KnobHeadLR</cstring>
@@ -230,6 +195,41 @@
         </property>
         <property name="backgroundOrigin">
             <enum>WindowOrigin</enum>
+        </property>
+    </widget>
+    <widget class="WBulb">
+        <property name="name">
+            <cstring>BulbClipping</cstring>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>37</x>
+                <y>2</y>
+                <width>16</width>
+                <height>16</height>
+            </rect>
+        </property>
+    </widget>
+    <widget class="Line">
+        <property name="name">
+            <cstring>Line1</cstring>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>-10</x>
+                <y>0</y>
+                <width>16</width>
+                <height>446</height>
+            </rect>
+        </property>
+        <property name="frameShape">
+            <enum>VLine</enum>
+        </property>
+        <property name="frameShadow">
+            <enum>Sunken</enum>
+        </property>
+        <property name="orientation">
+            <enum>Vertical</enum>
         </property>
     </widget>
 </widget>
@@ -280,7 +280,7 @@
 <includehints>
     <includehint>wknob.h</includehint>
     <includehint>wknob.h</includehint>
-    <includehint>wbulb.h</includehint>
     <includehint>wknob.h</includehint>
+    <includehint>wbulb.h</includehint>
 </includehints>
 </UI>
