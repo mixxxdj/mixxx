@@ -192,7 +192,14 @@ MixxxApp::MixxxApp(QApplication *a)
     }
 
     // Set the static config pointer for the ControlObject
-    control->setConfig(midiconfig);
+    control->setMidiConfig(midiconfig);
+
+    // Read keyboard configuration and set kdbConfig object in WWidget
+    kbdconfig = new ConfigObject<ConfigValueKbd>(QString(qConfigPath).append("keyboard/").append("Standard.kbd.cfg"));
+    
+    // Set the static config pointer for the ControlObject
+    control->setKbdConfig(kbdconfig);
+
 
     // Configure ControlEngine object
     ControlEngine *m_pControlEngine = new ControlEngine(control);
@@ -353,6 +360,8 @@ MixxxApp::MixxxApp(QApplication *a)
     //qDebug("Starting player...");
     player->setMaster(master);
     player->start();
+
+    installEventFilter(this);
 }
 
 MixxxApp::~MixxxApp()
@@ -383,23 +392,10 @@ MixxxApp::~MixxxApp()
 
 bool MixxxApp::eventFilter(QObject *o, QEvent *e)
 {
-    // If a user event is received, update playpos sliders,
-    // and force screen update
-    if (e->type() == QEvent::User)
-    {
-        // Gain app lock
-        //app->lock();
-
-        //view->playcontrol1->SliderPosition->setValue((int)buffer1->playposSliderNew);
-        //view->playcontrol2->SliderPosition->setValue((int)buffer2->playposSliderNew);
-
-        // Force GUI update
-        //app->flush();
-
-        // Release app lock
-        //app->unlock();
-
-    }
+    if (e->type() == QEvent::KeyPress)
+        control->kbdPress(QKeySequence(((QKeyEvent*)e)->key()), false);
+    else if (e->type() == QEvent::KeyRelease)
+        control->kbdPress(QKeySequence(((QKeyEvent*)e)->key()), true);
     else
     {
         // Standard event processing

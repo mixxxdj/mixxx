@@ -65,15 +65,6 @@ void ControlPushButton::setAccelDown(const QKeySequence key)
     setAccelUp(key);
 }
 
-void ControlPushButton::setAction(QAction *action)
-{
-    QApplication::connect(action, SIGNAL(toggled(bool)), this, SLOT(slotSetPosition(bool)));
-    QApplication::connect(this, SIGNAL(updateGUI(int)), this, SLOT(slotUpdateAction(int)));
-    QApplication::connect(this, SIGNAL(updateAction(bool)), action, SLOT(setOn(bool)));
-
-//    forceGUIUpdate();
-}
-
 void ControlPushButton::slotUpdateAction(int)
 {
 }

@@ -18,6 +18,7 @@
 #include "wwidget.h"
 #include "controlobject.h"
 
+// Static member variable definition
 QString WWidget::m_qPath;
 
 WWidget::WWidget(QWidget *parent, const char *name, WFlags flags) : QWidget(parent,name, flags|WStaticContents|WRepaintNoErase|WNoAutoErase)

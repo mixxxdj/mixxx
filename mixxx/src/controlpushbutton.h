@@ -34,9 +34,6 @@ public:
     ~ControlPushButton();
     void setAccelUp(const QKeySequence key);
     void setAccelDown(const QKeySequence key);
-    /** Associates a QAction to the ControlPushButton. This can be used to associate a menu item
-      * with the control */
-    void setAction(QAction *action);
 protected:
     void setValueFromMidi(MidiCategory c, int v);
 

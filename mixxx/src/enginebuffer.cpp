@@ -157,7 +157,6 @@ EngineBuffer::EngineBuffer(PowerMate *_powermate, const char *_group)
 
     // Audio beat mark toggle
     p = new ControlPushButton(ConfigKey(group, "audiobeatmarks"));
-    //p->setAction(actionAudioBeatMark);
     audioBeatMark = new ControlEngine(p);
 
     // Control file changed
