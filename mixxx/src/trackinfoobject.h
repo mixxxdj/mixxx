@@ -4,24 +4,31 @@
 #include <qobject.h>
 class QString;
 class QDomElement;
+class QDomDocument;
+class QDomNode;
 
 class TrackInfoObject : public QObject
 {
 	Q_OBJECT
 public:
 	TrackInfoObject( const QString );
+	TrackInfoObject( const QDomNode & );
 	~TrackInfoObject();
-	void ReadFromXML( const QDomElement & );
-	void WriteToXML( const QDomElement & );
+	void WriteToXML( QDomDocument &, QDomElement & );
 	void Parse();
 
-	bool bExist; // Flag which determines if the file exist or not.
-	QString sFilename;
-	QString sArtist;
-	QString sTitle;
-	QString sType;
-	QString sDuration;
-    int iDurationSeconds;
+	bool m_bExist; // Flag which determines if the file exist or not.
+	QString m_sFilename;
+private:
+	void AddElement( QDomDocument &, QDomElement &, QString, QString );
+	void CheckFileExists();
+
+	QString m_sArtist;
+	QString m_sTitle;
+	QString m_sType;
+	QString m_sDuration;
+    int m_iDurationSeconds;
+
 };
 
 #endif
