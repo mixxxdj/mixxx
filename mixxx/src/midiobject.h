@@ -20,8 +20,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include <vector>
-// #include <unistd.h>
+#include <qptrvector.h>
 #include <fcntl.h>
 #include <stdio.h>
 #include <signal.h>
@@ -73,7 +72,7 @@ protected:
 
     static ConfigObject<ConfigValueMidi> *config;
     int                           fd, count, size, no;
-    std::vector<ControlObject*>   controlList;
+    QPtrVector<ControlObject> controlList;
 
     /** List of available midi devices */
     QStringList devices;

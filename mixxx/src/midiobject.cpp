@@ -66,18 +66,18 @@ void MidiObject::reopen(QString device)
    -------- ------------------------------------------------------ */
 void MidiObject::add(ControlObject* c)
 {
-    controlList.push_back(c);
     no++;
+    controlList.resize(no);
+    controlList.insert(no-1,(const ControlObject *)c);
 //    qDebug("Registered midi control %s (%p).", c->print()->ascii(),c);
 }
 
 void MidiObject::remove(ControlObject* c)
 {
-    std::vector<ControlObject*>::iterator it =
-        std::find(controlList.begin(), controlList.end(), c);
-    if (it != controlList.end())
+    int i = controlList.find(c,0);
+    if (i>=0)
     {
-        controlList.erase(it);
+        controlList.remove(i);
         no--;
     }
     else
