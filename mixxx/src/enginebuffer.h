@@ -124,8 +124,6 @@ private:
     Monitor rate_exchange;
     /** Copy of rate_exchange, used to check if rate needs to be updated */
     double rate_old;
-    /** Temp rate, used for pitch temp buttons */
-    double temp_rate;
     /** Copy of length of file */
     int file_length_old;
     /** Copy of file sample rate*/
