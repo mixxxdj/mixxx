@@ -138,6 +138,12 @@ win32:SOURCES += powermatewin.cpp
 win32:HEADERS += powermatewin.h
 win32:LIBS += setupapi.lib
 
+# Joystick
+SOURCES += joystick.cpp
+HEADERS += joystick.h
+unix:!macx:SOURCES += joysticklinux.cpp
+unix:!macx:HEADERS += joysticklinux.h
+
 # FFT
 unix:!macx:LIBS += -lsrfftw -lsfftw
 win32:LIBS += rfftw2st.lib fftw2st.lib

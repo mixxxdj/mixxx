@@ -44,6 +44,7 @@
 #include "enginebuffer.h"
 #include "tracklist.h"
 #include "powermate.h"
+#include "joystick.h"
 #include "enginevumeter.h"
 
 #ifdef __UNIX__
@@ -51,6 +52,10 @@
 #endif
 #ifdef __WIN__
 #include "powermatewin.h"
+#endif
+
+#ifdef __UNIX__
+#include "joysticklinux.h"
 #endif
 
 #ifdef __ALSA__
@@ -240,6 +245,24 @@ MixxxApp::MixxxApp(QApplication *a, bool bVisuals)
     }
     }
  
+    // Try initializing Joystick
+    joystick1 = 0;
+#ifdef __LINUX__
+    joystick1 = new JoystickLinux(control);
+#endif
+
+    if (joystick1!=0)
+    {
+    if (joystick1->opendev())
+    {
+        qDebug("Found Joystick 1");
+    }
+    else
+    {
+        delete joystick1;
+        joystick1 = 0;
+    }
+
     // Initialize player device
 #ifdef __ALSA__
     player = new PlayerALSA(BUFFER_SIZE, &engines, config->getValueString(ConfigKey("[Soundcard]","DeviceMaster")));

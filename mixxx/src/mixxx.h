@@ -53,6 +53,7 @@ class WVisual;
 class TrackList;
 class TrackInfoObject;
 class PowerMate;
+class Joystick;
 class ControlEngine;
 
 /**
@@ -117,6 +118,8 @@ class MixxxApp : public QMainWindow
     TrackList *m_pTracks;
     /** Pointer to PowerMate objects */
     PowerMate *powermate1, *powermate2;
+    /** Pointer to Joystick object */
+    Joystick *joystick1;
     /** file_menu contains all items of the menubar entry "File" */
     QPopupMenu *fileMenu;
     /** edit_menu contains all items of the menubar entry "Edit" */
