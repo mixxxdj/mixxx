@@ -22,6 +22,7 @@
 #include <unistd.h>
 #include <fcntl.h>
 #include <stdio.h>
+#include <signal.h>
 
 /**
   *@author Tue & Ken Haste Andersen
@@ -29,15 +30,19 @@
 
 class MidiObjectOSS : public MidiObject  {
 public: 
-    MidiObjectOSS(ConfigObject *c);
+    MidiObjectOSS(ConfigObject *c, QApplication *app);
     ~MidiObjectOSS();
 protected:
     void devOpen(QString device);
     void devClose();
     void run();
+    void stop();
 
     int     handle;
     char    *buffer;
+    int     thread_pid;
 };
+
+void abortRead(int);
 
 #endif

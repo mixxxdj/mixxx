@@ -35,6 +35,7 @@
 #include <qprinter.h>
 #include <qpainter.h>
 #include <qpoint.h>
+#include <qapplication.h>
 #include <vector>
 
 // application specific includes
@@ -63,7 +64,7 @@ class MixxxApp : public QMainWindow
   
   public:
     /** construtor */
-    MixxxApp();
+    MixxxApp(QApplication *app);
     /** destructor */
     ~MixxxApp();
     /** initializes all QActions of the application */
@@ -142,6 +143,7 @@ class MixxxApp : public QMainWindow
      * information such as filename and does the serialization of your files.
      */
     MixxxDoc *doc;
+    QApplication *app;
     EngineObject *engine;
     EngineBuffer *buffer1, *buffer2;
     EngineChannel *channel1, *channel2;

@@ -27,8 +27,10 @@
 #include <qstring.h>
 #include <qlcdnumber.h>
 
-EngineBuffer::EngineBuffer(DlgPlaycontrol *_playcontrol, const char *group, const char *filename)
+EngineBuffer::EngineBuffer(QApplication *a, DlgPlaycontrol *_playcontrol, const char *group, const char *filename)
 {
+  app = a;
+
   lastwrite = 0.;
   playcontrol = _playcontrol;
 
@@ -231,10 +233,8 @@ void EngineBuffer::slotUpdateRate(FLOAT_TYPE)
     }
     else if (PlayButton->getPosition()==down)
     {
-	// No rate while seeking:
+        // No rate while seeking:
         rate.write(0.);
-	emit position((int)(100.*(FLOAT_TYPE)(end_seek()-start_seek)/128.));
-	//qDebug("pos emitted: %i",(int)(100.*(FLOAT_TYPE)(end_seek()-start_seek)/128.));
     }
     else
         rate.write(8*wheel->getValue());
@@ -357,8 +357,11 @@ void EngineBuffer::writepos()
     FLOAT_TYPE newwrite = playpos_file.read()/file->length();
     if (floor(fabs(newwrite-lastwrite)*100.) >= 1.)
     {
-        emit position((int)(100*newwrite));  // ***********
+        emit position((int)(100*newwrite));
         lastwrite = newwrite;
+
+        // Force screen update
+        app->flush();
     }
 }
 

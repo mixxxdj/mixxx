@@ -9,6 +9,7 @@
 #include <qobject.h>
 #include <qstringlist.h>
 #include <qstring.h>
+#include <qapplication.h>
 #include "defs.h"
 #include "configobject.h"
 
@@ -16,7 +17,7 @@ class ControlObject;
 
 class MidiObject : public QThread {
 public:
-    MidiObject(ConfigObject *c);
+    MidiObject(ConfigObject *c, QApplication *app);
     ~MidiObject();
     void reopen(QString device);
     void add(ControlObject* c);
@@ -34,7 +35,7 @@ protected:
     void stop();
     void send(char channel, char midicontrol, char midivalue);
 
-    QSemaphore *requestStop;
+    bool requestStop;
     static ConfigObject           *config;
     int                           fd, count, size, no;
     std::vector<ControlObject*>   controlList;
@@ -44,6 +45,8 @@ protected:
 
     /** Name of current open device */
     QString openDevice;
+
+    QApplication *app;
 };
 
 #endif

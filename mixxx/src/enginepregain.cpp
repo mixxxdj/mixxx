@@ -5,16 +5,16 @@
   ----------------------------------------------------------------*/
 EnginePregain::EnginePregain(const char *group)
 {
-  pregainpot = new ControlLogpotmeter(new ConfigObject::ConfigKey(group, "pregain"), 5.0);
-  pregain = 1.0;
-  buffer = new CSAMPLE[MAX_BUFFER_LEN];
+    potmeter = new ControlLogpotmeter(new ConfigObject::ConfigKey(group, "pregain"), 5.0);
+    pregain = 1.0;
+    buffer = new CSAMPLE[MAX_BUFFER_LEN];
 
-  connect(pregainpot, SIGNAL(valueChanged(FLOAT_TYPE)), this, SLOT(slotUpdate(FLOAT_TYPE)));
+    connect(potmeter, SIGNAL(valueChanged(FLOAT_TYPE)), this, SLOT(slotUpdate(FLOAT_TYPE)));
 }
 
 EnginePregain::~EnginePregain()
 {
-    delete pregainpot;
+    delete potmeter;
     delete [] buffer;
 }
 

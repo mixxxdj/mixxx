@@ -17,7 +17,7 @@
 
 #include "midiobjectalsa.h"
 
-MidiObjectALSA::MidiObjectALSA(ConfigObject *c) : MidiObject(c)
+MidiObjectALSA::MidiObjectALSA(ConfigObject *c, QApplication *a) : MidiObject(c,a)
 {
     // Open midi device for input
     int card = snd_defaults_rawmidi_card();

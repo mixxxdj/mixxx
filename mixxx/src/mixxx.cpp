@@ -23,6 +23,7 @@
 #include <qptrlist.h>
 #include <qcombobox.h>
 #include <qmessagebox.h>
+#include <signal.h>
 
 #include "wknob.h"
 #include "wslider.h"
@@ -54,10 +55,12 @@
   #include "midiobjectoss.h"
 #endif
 
-MixxxApp::MixxxApp()
+MixxxApp::MixxxApp(QApplication *a)
 {
   qDebug("Start");
   setCaption(tr("Mixxx " VERSION));
+
+  app = a;
 
   ///////////////////////////////////////////////////////////////////
   // call inits to invoke all other construction parts
@@ -94,13 +97,13 @@ MixxxApp::MixxxApp()
   // Initialize midi:
   qDebug("Init midi...");
 #ifdef __ALSA__
-  midi = new MidiObjectALSA(config);
+  midi = new MidiObjectALSA(config,app);
 #endif
 #ifdef __PORTMIDI__
-  midi = new MidiObjectPortMidi(config);
+  midi = new MidiObjectPortMidi(config,app);
 #endif
 #ifdef __OSSMIDI__
-  midi = new MidiObjectOSS(config);
+  midi = new MidiObjectOSS(config,app);
 #endif
 
   // Instantiate a ControlObject, and set the static midi and config pointer
@@ -133,16 +136,16 @@ void MixxxApp::engineStart()
     if (view->playlist->ListPlaylist->firstChild() != 0)
     {
         qDebug("Init buffer 1... %s", view->playlist->ListPlaylist->firstChild()->text(1).ascii());
-        buffer1 = new EngineBuffer(view->playcontrol1, "[Channel1]", view->playlist->ListPlaylist->firstChild()->text(1));
+        buffer1 = new EngineBuffer(app, view->playcontrol1, "[Channel1]", view->playlist->ListPlaylist->firstChild()->text(1));
     } else
-        buffer1 = new EngineBuffer(view->playcontrol1, "[Channel1]", 0);
+        buffer1 = new EngineBuffer(app, view->playcontrol1, "[Channel1]", 0);
 
     if (view->playlist->ListPlaylist->firstChild()->nextSibling() != 0)
     {
         qDebug("Init buffer 2... %s", view->playlist->ListPlaylist->firstChild()->nextSibling()->text(1).ascii());
-        buffer2 = new EngineBuffer(view->playcontrol2, "[Channel2]", view->playlist->ListPlaylist->firstChild()->nextSibling()->text(1));
+        buffer2 = new EngineBuffer(app, view->playcontrol2, "[Channel2]", view->playlist->ListPlaylist->firstChild()->nextSibling()->text(1));
     } else
-        buffer2 = new EngineBuffer(view->playcontrol2, "[Channel2]", 0);
+        buffer2 = new EngineBuffer(app, view->playcontrol2, "[Channel2]", 0);
 
     qDebug("...");
     channel1 = new EngineChannel(view->channel1, "[Channel1]");
@@ -660,6 +663,7 @@ void MixxxApp::slotOptionsSetPreferences()
     configMap->setConfiguration(pDlg->ComboBoxMidiconf->currentText());
 
     // Change MIDI device
+    //std::raise(2);
     midi->reopen(pDlg->ComboBoxMididevice->currentText());
 
     slotOptionsClosePreferences();

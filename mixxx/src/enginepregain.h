@@ -14,7 +14,7 @@ public:
   ~EnginePregain();
   CSAMPLE *process(const CSAMPLE*, const int);
 
-  ControlLogpotmeter* pregainpot;
+  ControlLogpotmeter* potmeter;
 public slots:
   void slotUpdate(FLOAT_TYPE);
 

@@ -34,6 +34,7 @@ public:
     void paintEvent(QPaintEvent *);
 public slots:
     void setValue(int);
+    void slotSetPosition(int);
 signals:
     void valueChanged(int);
 private:

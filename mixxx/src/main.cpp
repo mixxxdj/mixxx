@@ -36,7 +36,7 @@ int main(int argc, char *argv[])
   /* uncomment the following line, if you want a Windows 95 look*/
   // a.setStyle(WindowsStyle);
     
-  MixxxApp *mixxx=new MixxxApp();
+  MixxxApp *mixxx=new MixxxApp(&a);
   a.setMainWidget(mixxx);
   mixxx->resize( 641, 450);
   mixxx->setFixedWidth(641);

@@ -17,8 +17,9 @@
 
 #include "midiobjectoss.h"
 #include <qdir.h>
+#include <unistd.h>
 
-MidiObjectOSS::MidiObjectOSS(ConfigObject *c) : MidiObject(c)
+MidiObjectOSS::MidiObjectOSS(ConfigObject *c, QApplication *a) : MidiObject(c, a)
 {
     // Allocate buffer
     buffer = new char[4096];
@@ -65,26 +66,37 @@ MidiObjectOSS::~MidiObjectOSS()
 void MidiObjectOSS::devOpen(QString device)
 {
     // Open midi device
+   qDebug("5");
     handle = open(device.ascii(),0);
+   qDebug("6");
     if (handle == -1)
     {
         qDebug("Open of MIDI device %s failed.",device.ascii());
         return;
     }
+   qDebug("7");
     openDevice = device;
+   qDebug("8");
     start();
+   qDebug("9");
 }
 
 void MidiObjectOSS::devClose()
 {
+   qDebug("1");
     stop();
+   qDebug("2");
     close(handle);
+   qDebug("3");
     openDevice = QString("");
+   qDebug("4");
 }
 
 void MidiObjectOSS::run()
 {
-    while(requestStop->available())
+    thread_pid = getpid();
+    signal(2,&abortRead);
+    while(requestStop==false)
     {
         // First read until we get a midi channel event:
         do
@@ -93,26 +105,45 @@ void MidiObjectOSS::run()
             //qDebug("midi: %i",(short int)buffer[0]);
             if (no != 1)
                 qWarning("Warning: midiobject recieved %i bytes.", no);
-        } while (buffer[0] & 128 != 128); // Continue until we receive a status byte (bit 7 is set)
+        } while (buffer[0] & 128 != 128 & requestStop==false); // Continue until we receive a status byte (bit 7 is set)
 
-        // and then get the following 2 bytes:
-        char channel;
-        char midicontrol;
-        char midivalue;
-        for (int i=1; i<3; i++)
+        if (requestStop==false)
         {
-            int no = read(handle,&buffer[i],1);
-            if (no != 1)
-                qWarning("Warning: midiobject recieved %i bytes.", no);
-        }
-        channel = buffer[0] & 15; // The channel is stored in the lower 4 bits of the status byte received
-        midicontrol = buffer[1];
-        midivalue = buffer[2];
+            // and then get the following 2 bytes:
+            char channel;
+            char midicontrol;
+            char midivalue;
+            for (int i=1; i<3; i++)
+            {
+                int no = read(handle,&buffer[i],1);
+                if (no != 1)
+                    qWarning("Warning: midiobject recieved %i bytes.", no);
+                if (requestStop==true)
+                    break;
+            }
+            channel = buffer[0] & 15; // The channel is stored in the lower 4 bits of the status byte received
+            midicontrol = buffer[1];
+            midivalue = buffer[2];
 
-        send(channel, midicontrol, midivalue);
-        qDebug("midi");
+            send(channel, midicontrol, midivalue);
+            //qDebug("midi ch: %i, ctrl: %i, val: %i",channel,midicontrol,midivalue);
+        }
     }
-    qDebug("sem 3");
-    requestStop->operator--(1);
-    qDebug("sem 4");
+    requestStop=false;
+}
+
+void MidiObjectOSS::stop()
+{
+    MidiObject::stop();
+
+    // Raise signal to stop abort blocking read in main thread loop
+    kill(thread_pid,2);
+}
+
+void abortRead(int)
+{
+    qDebug("sig received");
+    // Empty signal handler. Installed on signal 2 (SIGINT)
+    // in start of MidiObjectOSS:run(), and used to exit the
+    // read function when reopening the midi device is necessary.
 }

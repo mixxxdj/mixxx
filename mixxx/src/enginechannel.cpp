@@ -23,8 +23,8 @@ EngineChannel::EngineChannel(DlgChannel *dlg, const char *group)
 {
   // Pregain:
   pregain = new EnginePregain(group);
-  connect(dlg->DialGain, SIGNAL(valueChanged(int)), pregain->pregainpot, SLOT(slotSetPosition(int)));
-  connect(pregain->pregainpot, SIGNAL(updateGUI(int)), dlg->DialGain, SLOT(setValue(int)));
+  connect(dlg->DialGain, SIGNAL(valueChanged(int)), pregain->potmeter, SLOT(slotSetPosition(int)));
+  connect(pregain->potmeter, SIGNAL(updateGUI(int)), dlg->DialGain, SLOT(setValue(int)));
 
   // Filters:
   filter = new EngineFilterBlock(dlg->DialFilterLow,
@@ -38,6 +38,10 @@ EngineChannel::EngineChannel(DlgChannel *dlg, const char *group)
   volume = new EngineVolume(group);
   connect(dlg->SliderVolume, SIGNAL(valueChanged(int)), volume->potmeter, SLOT(slotSetPosition(int)));
   connect(volume->potmeter, SIGNAL(updateGUI(int)), dlg->SliderVolume, SLOT(setValue(int)));
+
+
+//    connect(master_dlg->KnobVolume, SIGNAL(valueChanged(int)), volume->potmeter, SLOT(slotSetPosition(int)));
+//    connect(volume->potmeter, SIGNAL(updateGUI(int)), master_dlg->KnobVolume, SLOT(setValue(int)));
 }
 
 EngineChannel::~EngineChannel(){
