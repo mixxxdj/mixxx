@@ -50,7 +50,7 @@ public:
     WVisual *m_pVisualCh1, *m_pVisualCh2;
 
 private:
-    const char *getPath(QString location);
+    const QString getPath(QString location);
 
     QWidget *main;
     WSliderComposed *m_pSliderCrossfader;
