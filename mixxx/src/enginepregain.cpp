@@ -23,7 +23,7 @@
   ----------------------------------------------------------------*/
 EnginePregain::EnginePregain(const char *group)
 {
-    ControlLogpotmeter *p = new ControlLogpotmeter(ConfigKey(group, "pregain"), 3.0);
+    ControlLogpotmeter *p = new ControlLogpotmeter(ConfigKey(group, "pregain"), 4.);
     potmeterPregain = new ControlEngine(p);
     buffer = new CSAMPLE[MAX_BUFFER_LEN];
 }
