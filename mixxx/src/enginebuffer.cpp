@@ -729,9 +729,10 @@ void EngineBuffer::process(const CSAMPLE *pIn, const CSAMPLE *pOut, const int iB
         if (rate<0.)
             backwards = true;
 
-        //qDebug("rate: %f, playpos: %f",rate,playButton->get());
+//         qDebug("rate: %f, filepos_play: %f, file_length_old %i",rate, filepos_play, file_length_old);
 
-        if ((rate==0.) || (filepos_play==0. && backwards) || (filepos_play==(float)file_length_old && !backwards))
+        if ((rate==0.) || (filepos_play==0. && backwards) || 
+            (filepos_play==(float)file_length_old && !backwards))
         {
             rampOut(pOut, iBufferSize);
             bCurBufferPaused = true;
@@ -939,7 +940,7 @@ void EngineBuffer::process(const CSAMPLE *pIn, const CSAMPLE *pOut, const int iB
     // Force ramp in if this is the first buffer during a play
     if (m_bLastBufferPaused && !bCurBufferPaused)
     {
-        //qDebug("ramp in");
+//         qDebug("ramp in");
         // Ramp from zero 
         int iLen = min(iBufferSize, kiRampLength);
         float fStep = pOutput[iLen-1]/(float)iLen;
@@ -957,11 +958,12 @@ void EngineBuffer::rampOut(const CSAMPLE *pOut, int iBufferSize)
 {
     CSAMPLE *pOutput = (CSAMPLE *)pOut;
     
+//     qDebug("ramp out");
+    
     // Ramp to zero 
     int i=0;
     if (m_fLastSampleValue!=0.)
     {
-        //qDebug("ramp out");
         int iLen = min(iBufferSize, kiRampLength);
         float fStep = m_fLastSampleValue/(float)iLen;
         for (i; i<iLen; ++i)

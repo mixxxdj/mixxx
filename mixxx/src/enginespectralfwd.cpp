@@ -63,7 +63,7 @@ EngineSpectralFwd::~EngineSpectralFwd()
    -------- ----------------------------------------------------------------- */
 void EngineSpectralFwd::process(const CSAMPLE *pIn, const CSAMPLE *, const int)
 {
-    fftw_real *pInput = (fftw_real *)pInput;
+    fftw_real *pInput = (fftw_real *)pIn;
 
     // Perform FFT
     rfftw_one(plan_forward, pInput, tmp);
@@ -75,6 +75,8 @@ void EngineSpectralFwd::process(const CSAMPLE *pIn, const CSAMPLE *, const int)
         spectrum[l_half] = tmp[l_half]*tmp[l_half]; // Nyquist freq.
         for (int i=0; i<l_half; ++i)
             spectrum[i]  = sqrt(tmp[i]*tmp[i] + tmp[l-(i+1)]*tmp[l-(i+1)]);
+        
+//         qDebug("spec[10]: %f", spectrum[10]);
     }
 
     if (phase_calc)
@@ -98,7 +100,7 @@ CSAMPLE EngineSpectralFwd::getHFC()
         CSAMPLE fr = (CSAMPLE)i/(CSAMPLE)l;
         hfc += wndNorm*spectrum[i]*(fr*fr)/(0.5*0.5); //(l_half*l_half);
     }
-//    qDebug("hfc %f",hfc);
+//     qDebug("hfc %f",hfc);
     //hfc *= (two_pi/l_half)*wndNorm;
     return hfc;
 }
