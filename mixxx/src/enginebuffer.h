@@ -48,7 +48,7 @@ const int TRACK_END_MODE_PING = 3;
 
 class EngineBuffer : public EngineObject
 {
-	Q_OBJECT
+    Q_OBJECT
 public:
     EngineBuffer(PowerMate *, const char *_group);
     ~EngineBuffer();

@@ -92,6 +92,7 @@ MixxxApp::MixxxApp(QApplication *a, bool bVisuals)
 
     qDebug("Starting up...");
     setCaption(tr("Mixxx " VERSION));
+    setIcon(QPixmap::fromMimeSource("icon.png"));
 
     // Reset pointer to players
     player = 0;
