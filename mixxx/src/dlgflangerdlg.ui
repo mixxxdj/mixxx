@@ -1,4 +1,4 @@
-<!DOCTYPE UI><UI version="3.0" stdsetdef="1">
+<!DOCTYPE UI><UI version="3.1" stdsetdef="1">
 <class>DlgFlangerDlg</class>
 <widget class="QWidget">
     <property name="name">
@@ -64,144 +64,6 @@
             </rect>
         </property>
     </widget>
-    <widget class="QLabel">
-        <property name="name">
-            <cstring>TextLabel1_2</cstring>
-        </property>
-        <property name="geometry">
-            <rect>
-                <x>20</x>
-                <y>81</y>
-                <width>55</width>
-                <height>16</height>
-            </rect>
-        </property>
-        <property name="paletteForegroundColor">
-            <color>
-                <red>80</red>
-                <green>80</green>
-                <blue>80</blue>
-            </color>
-        </property>
-        <property name="font">
-            <font>
-                <family>Application</family>
-                <pointsize>8</pointsize>
-            </font>
-        </property>
-        <property name="text">
-            <string>DEPTH</string>
-        </property>
-        <property name="alignment">
-            <set>AlignCenter</set>
-        </property>
-    </widget>
-    <widget class="QLabel">
-        <property name="name">
-            <cstring>TextLabel1_2_2</cstring>
-        </property>
-        <property name="geometry">
-            <rect>
-                <x>19</x>
-                <y>131</y>
-                <width>55</width>
-                <height>16</height>
-            </rect>
-        </property>
-        <property name="paletteForegroundColor">
-            <color>
-                <red>80</red>
-                <green>80</green>
-                <blue>80</blue>
-            </color>
-        </property>
-        <property name="font">
-            <font>
-                <family>Application</family>
-                <pointsize>8</pointsize>
-            </font>
-        </property>
-        <property name="text">
-            <string>DELAY</string>
-        </property>
-        <property name="alignment">
-            <set>AlignCenter</set>
-        </property>
-    </widget>
-    <widget class="WKnob">
-        <property name="name">
-            <cstring>DialDelay</cstring>
-        </property>
-        <property name="geometry">
-            <rect>
-                <x>30</x>
-                <y>99</y>
-                <width>32</width>
-                <height>32</height>
-            </rect>
-        </property>
-    </widget>
-    <widget class="WKnob">
-        <property name="name">
-            <cstring>DialPeriod</cstring>
-        </property>
-        <property name="geometry">
-            <rect>
-                <x>30</x>
-                <y>149</y>
-                <width>32</width>
-                <height>32</height>
-            </rect>
-        </property>
-    </widget>
-    <widget class="QLabel">
-        <property name="name">
-            <cstring>TextLabel1_2_2_2</cstring>
-        </property>
-        <property name="geometry">
-            <rect>
-                <x>19</x>
-                <y>181</y>
-                <width>55</width>
-                <height>16</height>
-            </rect>
-        </property>
-        <property name="paletteForegroundColor">
-            <color>
-                <red>80</red>
-                <green>80</green>
-                <blue>80</blue>
-            </color>
-        </property>
-        <property name="font">
-            <font>
-                <family>Application</family>
-                <pointsize>8</pointsize>
-            </font>
-        </property>
-        <property name="text">
-            <string>LFO</string>
-        </property>
-        <property name="alignment">
-            <set>AlignCenter</set>
-        </property>
-    </widget>
-    <widget class="WKnob">
-        <property name="name">
-            <cstring>DialDepth</cstring>
-        </property>
-        <property name="geometry">
-            <rect>
-                <x>30</x>
-                <y>50</y>
-                <width>32</width>
-                <height>32</height>
-            </rect>
-        </property>
-        <property name="backgroundOrigin">
-            <enum>WindowOrigin</enum>
-        </property>
-    </widget>
     <widget class="Line">
         <property name="name">
             <cstring>Line1</cstring>
@@ -222,38 +84,6 @@
         </property>
         <property name="orientation">
             <enum>Vertical</enum>
-        </property>
-    </widget>
-    <widget class="QLabel">
-        <property name="name">
-            <cstring>TextHeading</cstring>
-        </property>
-        <property name="geometry">
-            <rect>
-                <x>5</x>
-                <y>3</y>
-                <width>83</width>
-                <height>18</height>
-            </rect>
-        </property>
-        <property name="paletteForegroundColor">
-            <color>
-                <red>80</red>
-                <green>80</green>
-                <blue>80</blue>
-            </color>
-        </property>
-        <property name="font">
-            <font>
-                <family>Helvetica</family>
-                <pointsize>14</pointsize>
-            </font>
-        </property>
-        <property name="text">
-            <string>FLANGER</string>
-        </property>
-        <property name="alignment">
-            <set>AlignCenter</set>
         </property>
     </widget>
     <widget class="WBulb">
@@ -548,6 +378,38 @@
             </rect>
         </property>
     </widget>
+    <widget class="QLabel">
+        <property name="name">
+            <cstring>TextHeading</cstring>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>5</x>
+                <y>3</y>
+                <width>83</width>
+                <height>18</height>
+            </rect>
+        </property>
+        <property name="paletteForegroundColor">
+            <color>
+                <red>80</red>
+                <green>80</green>
+                <blue>80</blue>
+            </color>
+        </property>
+        <property name="font">
+            <font>
+                <family>Helvetica</family>
+                <pointsize>14</pointsize>
+            </font>
+        </property>
+        <property name="text">
+            <string>FLANGER</string>
+        </property>
+        <property name="alignment">
+            <set>AlignCenter</set>
+        </property>
+    </widget>
     <widget class="QPushButton">
         <property name="name">
             <cstring>PushButtonChannelA</cstring>
@@ -814,6 +676,144 @@
             <string>A</string>
         </property>
     </widget>
+    <widget class="QLabel">
+        <property name="name">
+            <cstring>TextLabel1_2</cstring>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>19</x>
+                <y>81</y>
+                <width>55</width>
+                <height>16</height>
+            </rect>
+        </property>
+        <property name="paletteForegroundColor">
+            <color>
+                <red>80</red>
+                <green>80</green>
+                <blue>80</blue>
+            </color>
+        </property>
+        <property name="font">
+            <font>
+                <family>Helvetica</family>
+                <pointsize>8</pointsize>
+            </font>
+        </property>
+        <property name="text">
+            <string>DEPTH</string>
+        </property>
+        <property name="alignment">
+            <set>AlignCenter</set>
+        </property>
+    </widget>
+    <widget class="WKnob">
+        <property name="name">
+            <cstring>DialDepth</cstring>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>30</x>
+                <y>50</y>
+                <width>32</width>
+                <height>32</height>
+            </rect>
+        </property>
+        <property name="backgroundOrigin">
+            <enum>WindowOrigin</enum>
+        </property>
+    </widget>
+    <widget class="QLabel">
+        <property name="name">
+            <cstring>TextLabel1_2_2</cstring>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>19</x>
+                <y>130</y>
+                <width>55</width>
+                <height>16</height>
+            </rect>
+        </property>
+        <property name="paletteForegroundColor">
+            <color>
+                <red>80</red>
+                <green>80</green>
+                <blue>80</blue>
+            </color>
+        </property>
+        <property name="font">
+            <font>
+                <family>Helvetica</family>
+                <pointsize>8</pointsize>
+            </font>
+        </property>
+        <property name="text">
+            <string>DELAY</string>
+        </property>
+        <property name="alignment">
+            <set>AlignCenter</set>
+        </property>
+    </widget>
+    <widget class="WKnob">
+        <property name="name">
+            <cstring>DialDelay</cstring>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>30</x>
+                <y>99</y>
+                <width>32</width>
+                <height>32</height>
+            </rect>
+        </property>
+    </widget>
+    <widget class="QLabel">
+        <property name="name">
+            <cstring>TextLabel1_2_2_2</cstring>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>18</x>
+                <y>180</y>
+                <width>55</width>
+                <height>16</height>
+            </rect>
+        </property>
+        <property name="paletteForegroundColor">
+            <color>
+                <red>80</red>
+                <green>80</green>
+                <blue>80</blue>
+            </color>
+        </property>
+        <property name="font">
+            <font>
+                <family>Helvetica</family>
+                <pointsize>8</pointsize>
+            </font>
+        </property>
+        <property name="text">
+            <string>LFO</string>
+        </property>
+        <property name="alignment">
+            <set>AlignCenter</set>
+        </property>
+    </widget>
+    <widget class="WKnob">
+        <property name="name">
+            <cstring>DialPeriod</cstring>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>30</x>
+                <y>149</y>
+                <width>32</width>
+                <height>32</height>
+            </rect>
+        </property>
+    </widget>
 </widget>
 <customwidgets>
     <customwidget>
@@ -859,4 +859,14 @@
     </image>
 </images>
 <layoutdefaults spacing="6" margin="11"/>
+<includehints>
+    <includehint>wknob.h</includehint>
+    <includehint>wknob.h</includehint>
+    <includehint>wknob.h</includehint>
+    <includehint>wbulb.h</includehint>
+    <includehint>wbulb.h</includehint>
+    <includehint>wknob.h</includehint>
+    <includehint>wknob.h</includehint>
+    <includehint>wknob.h</includehint>
+</includehints>
 </UI>

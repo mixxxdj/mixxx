@@ -180,7 +180,7 @@ MixxxApp::MixxxApp(QApplication *a)
 
   // Initialize master player
   //
-  qDebug("Init master");
+  //qDebug("Init master");
 
   // Initialize device
 #ifdef __ALSA__

@@ -71,6 +71,7 @@ unix {
   SOURCES += soundsourceaudiofile.cpp
   HEADERS += soundsourceaudiofile.h
   LIBS += -laudiofile -lmad #/usr/local/lib/libmad.a # -lmad
+  INCLUDEPATH += .
 #  Intel Compiler optimization flags
 #  QMAKE_CXXFLAGS += -rcd -tpp6 -xiMK # icc pentium III
 #  QMAKE_CXXFLAGS += -rcd -tpp7 -xiMKW # icc pentium IV 
