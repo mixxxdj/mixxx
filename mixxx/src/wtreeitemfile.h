@@ -23,6 +23,7 @@ public:
     WTreeItemFile(WTreeItem *parent, const QString &s1, const QString &s2 );
     ~WTreeItemFile();
 
+    QString type() { return "WTreeItemFile"; };
     void popupMenu();
 };
 

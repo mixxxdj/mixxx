@@ -24,6 +24,9 @@ public:
     WTreeItemPlaylist(WTreeItem *parent, const QString &s1);
     ~WTreeItemPlaylist();
 
+    QString type() { return "WTreeItemPlaylist"; };
+    QString name();
+
     void popupMenu();
     void drag(QWidget *viewport);
 signals:

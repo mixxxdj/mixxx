@@ -24,6 +24,8 @@ public:
     WTreeItemDir(WTreeItemDir *parent, const QString& filename, const QString &col2);
     WTreeItemDir(WTreeItemDir *parent, const QString& filename);
     ~WTreeItemDir();
+
+    QString type() { return "WTreeItemDir"; };
     QString text(int column) const;
     QString fullName();
     void setOpen(bool);

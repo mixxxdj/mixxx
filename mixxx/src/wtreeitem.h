@@ -29,6 +29,8 @@ public:
     WTreeItem(WTreeItem *parent, const QString &s1, const QString &s2);
     ~WTreeItem();
 
+    virtual QString type() { return "WTreeItem"; };
+
     void popupMenu();
     virtual void drag(QWidget *viewport);
 };

@@ -95,11 +95,13 @@ void TrackPlaylist::activate(WTrackTable *pTable)
 {
     m_pTable = pTable;
 
+    m_pTable->setNumRows(m_qList.count());
+
     int i=0;
     QPtrList<TrackInfoObject>::iterator it = m_qList.begin();
     while (it!=m_qList.end())
     {
-        qDebug("inserting in row %i",i);
+        //qDebug("inserting in row %i",i);
         (*it)->insertInTrackTableRow(m_pTable, i);
         ++it;
         ++i;

@@ -181,7 +181,7 @@ void TrackInfoObject::insertInTrackTableRow(WTrackTable *pTableTrack, int iRow)
     if (!m_pTableItemBitrate)
         m_pTableItemBitrate = new WTrackTableItem(this, pTableTrack,QTableItem::Never, getBitrateStr(), typeNumber);
 
-    qDebug("inserting.. %p",pTableTrack->item(iRow, COL_SCORE));
+    //qDebug("inserting.. %p",pTableTrack->item(iRow, COL_SCORE));
 
     // Insert the elements into the table
     pTableTrack->setItem(iRow, COL_SCORE, m_pTableItemScore);
