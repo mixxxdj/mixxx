@@ -99,9 +99,9 @@ void ControlPotmeter::setValueFromEngine(double dValue)
     emit(valueChangedFromEngine(m_dValue));
 }
 
-void ControlPotmeter::setValueFromMidi(MidiCategory, int v)
+void ControlPotmeter::setValueFromMidi(MidiCategory, double v)
 {
-    m_dValue = m_dMinValue + ((double)v/127.)*m_dValueRange;
+    m_dValue = m_dMinValue + (v/127.)*m_dValueRange;
     emit(valueChanged(m_dValue));
 }
 

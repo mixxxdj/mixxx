@@ -33,7 +33,7 @@ public:
     double getValueToWidget(double dValue);
     
     protected:
-    void setValueFromMidi(MidiCategory c, int v);
+    void setValueFromMidi(MidiCategory c, double v);
 };
 
 #endif

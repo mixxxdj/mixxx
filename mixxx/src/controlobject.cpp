@@ -81,11 +81,14 @@ bool ControlObject::updateProxies(ControlObjectThread *pProxyNoUpdate)
 {
     ControlObjectThread *obj;
     bool bUpdateSuccess = true;
+//     qDebug("Key %s,%s",m_Key.group.latin1(), m_Key.item.latin1());
     for (obj = m_qProxyList.first(); obj; obj = m_qProxyList.next())
     {
         if (obj!=pProxyNoUpdate)
+        {
+            //const char *thisname = this->getKey().item.latin1();
             bUpdateSuccess = obj->setExtern(m_dValue);
-
+        }
     }
     return bUpdateSuccess;
 }
@@ -114,7 +117,7 @@ void ControlObject::queueFromThread(double dValue, ControlObjectThread *pControl
     m_sqQueueMutexThread.unlock();
 }
 
-void ControlObject::queueFromMidi(MidiCategory c, int v)
+void ControlObject::queueFromMidi(MidiCategory c, double v)
 {
     QueueObjectMidi *p = new QueueObjectMidi;
     p->pControlObject = this;
@@ -132,9 +135,9 @@ void ControlObject::setValueFromEngine(double dValue)
     emit(valueChangedFromEngine(m_dValue));
 }
 
-void ControlObject::setValueFromMidi(MidiCategory, int v)
+void ControlObject::setValueFromMidi(MidiCategory, double v)
 {
-    m_dValue = (double)v;
+    m_dValue = v;
     emit(valueChanged(m_dValue));
 }
 

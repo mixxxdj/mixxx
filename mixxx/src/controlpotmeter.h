@@ -53,7 +53,7 @@ public slots:
     void decValue(double);
 
 protected:
-    void setValueFromMidi(MidiCategory c, int v);
+    void setValueFromMidi(MidiCategory c, double v);
     
     double m_dMaxValue, m_dMinValue, m_dValueRange, m_dStep;
 

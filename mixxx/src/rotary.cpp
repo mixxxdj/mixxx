@@ -27,6 +27,7 @@ Rotary::Rotary()
     m_pControlObjectRotary = 0;
     m_pControlObjectButton = 0;
     m_dCalibration = 1.;
+    m_dLastValue = 0.;
 
     m_iFilterLength = kiRotaryFilterMaxLen;
     m_iFilterPos = 0;
@@ -75,6 +76,20 @@ void Rotary::selectMapping(QString mapping)
         m_iFilterLength = 5;
         m_iFilterPos = 0;
     }
+    else if (mapping==kqRotaryMappingP1Search)
+    {
+        m_pControlObjectRotary = ControlObject::getControl(ConfigKey("[Channel1]","rateSearch"));
+        m_pControlObjectButton = ControlObject::getControl(ConfigKey("[Channel1]","play"));
+        m_iFilterLength = kiRotaryFilterMaxLen;
+        m_iFilterPos = 0;
+    }
+    else if (mapping==kqRotaryMappingP2Search)
+    {
+        m_pControlObjectRotary = ControlObject::getControl(ConfigKey("[Channel2]","realsearch"));
+        m_pControlObjectButton = ControlObject::getControl(ConfigKey("[Channel2]","play"));
+        m_iFilterLength = kiRotaryFilterMaxLen;
+        m_iFilterPos = 0;
+    }
 }
 
 void Rotary::run()
@@ -99,11 +114,14 @@ void Rotary::sendRotaryEvent(double dValue)
 
     if (m_qCalibrationMutex.tryLock())
     {
-        if (m_pControlObjectRotary)
-            m_pControlObjectRotary->queueFromThread(dMagnitude);
+        if (m_dLastValue!=dMagnitude)
+        {
+            if (m_pControlObjectRotary)
+                m_pControlObjectRotary->queueFromThread(dMagnitude);
+        }
         m_qCalibrationMutex.unlock();
 
-        //qDebug("mag %f, value %f",dMagnitude, dValue);
+//          qDebug("mag %f, value %f",dMagnitude, dValue);
     }
     else
     {
@@ -113,6 +131,7 @@ void Rotary::sendRotaryEvent(double dValue)
         if (m_pControlObjectRotary)
             m_pControlObjectRotary->queueFromThread(0);
     }
+    m_dLastValue = dMagnitude;
 }
 
 void Rotary::sendButtonEvent(bool press)

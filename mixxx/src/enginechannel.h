@@ -26,15 +26,18 @@ class EngineClipping;
 class EngineVolume;
 class EngineFlanger;
 class EngineVuMeter;
+class EngineRealSearch;
+class EngineBuffer;
 class ControlPushButton;
 
 /**
   *@author 
   */
 
-class EngineChannel : public EngineObject  {
+class EngineChannel : public EngineObject  
+{
 public:
-    EngineChannel(const char *group);
+    EngineChannel(const char *group, EngineBuffer *pBuffer);
     ~EngineChannel();
     void notify(double) {};
     ControlPushButton *getPFL();
@@ -46,6 +49,7 @@ private:
     EngineClipping *clipping;
     EngineVolume *volume;
     EngineVuMeter *vumeter;
+    EngineRealSearch *m_pRealSearch;
     ControlPushButton *pfl;
 };
 

@@ -37,7 +37,7 @@ class EngineMaster : public EngineObject
 {
 public:
     EngineMaster(EngineBuffer *buffer1, EngineBuffer *buffer2,
-                 EngineChannel *, EngineChannel *, EngineFlanger *, const char *group);
+                 EngineChannel *, EngineChannel *, const char *group);
     ~EngineMaster();
     /** Reconfigures the EngineBufferScaleSRC objects with the sound quality written in the config database */
     void setPitchIndpTimeStretch(bool b);
@@ -49,7 +49,7 @@ private:
     EngineClipping *clipping, *head_clipping;
     EngineFlanger *flanger;
     EngineVuMeter *vumeter;
-
+    
     ControlPotmeter *crossfader, *head_mix, *m_pBalance;
     ControlPushButton *pfl1, *pfl2, *flanger1, *flanger2;
     CSAMPLE *m_pMaster, *m_pHead, *m_pTemp1, *m_pTemp2;

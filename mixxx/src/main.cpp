@@ -30,7 +30,7 @@
 #include "mixxx.h"
 #include "qpixmap.h"
 #include "qsplashscreen.h"
-
+#include "log.h"
 
 QApplication *a;
 
@@ -112,10 +112,19 @@ int main(int argc, char *argv[])
 
     // Construct a list of strings based on the command line arguments
     QStringList files;
+    QString qLogFileName = "";
     for (int i=0; i<argc; ++i)
-        files += argv[i];
-
-    MixxxApp *mixxx=new MixxxApp(a, files, pSplash);
+    {
+        if (argv[i]==QString("--log"))
+        {
+            qLogFileName = argv[i+1];
+            i++;
+        }
+        else
+            files += argv[i];
+    }
+    
+    MixxxApp *mixxx=new MixxxApp(a, files, pSplash, qLogFileName);
     a->setMainWidget(mixxx);
 
     mixxx->show();

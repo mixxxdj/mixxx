@@ -31,6 +31,7 @@ class ReaderExtractWave;
 class ReaderExtractBeat;
 class EngineBuffer;
 class VisualChannel;
+class ControlObjectThread;
 
 /**
   * The Reader class is a thread taking care of reading and buffering waveform data from external sources.
@@ -49,7 +50,7 @@ public:
 
     void addVisual(VisualChannel *pVisualChannel);
     /** Request new track to be loaded. This method is thread safe, but may block */
-    void requestNewTrack(TrackInfoObject *pTrack);
+    void requestNewTrack(TrackInfoObject *pTrack, bool bStartAtEndPos=false);
     /** Request seek. This method is thread safe, but may block */
     void requestSeek(double new_playpos);
     /** Wake up reader thread. Thread safe, non-blocking */
@@ -117,9 +118,18 @@ private:
     EngineBuffer *enginebuffer;
     /** Mutex used in termination of the thread */
     QMutex requestStop;
+    /** Mutex used to sync this thread (reader) with other threads */
+    QMutex m_qReaderMutex;
+    /** Variable used with readerMutex to sync thread. Must only be modified when holding readerMutex */
+    int m_iReaderAccess;
+    
     /** Wait condition to make thread sleep when not needed */
     QWaitCondition *readAhead;
-    typedef QPtrList<TrackInfoObject> TTrackQueue;
+    typedef struct TrackQueueType {
+        TrackInfoObject *pTrack;
+        bool bStartAtEndPos;
+    } TrackQueueType;
+    typedef QPtrList<TrackQueueType> TTrackQueue;
     /** Track queue used in communication with reader from other threads */
     TTrackQueue trackqueue;
     typedef QValueList<double> TSeekQueue;
@@ -130,9 +140,10 @@ private:
     /** Local copy of file sample rate */
     int file_srate;
     /** Local copy of file length */
-    int file_length;
+    long int file_length;
     /** Pointer to VisualChannel */
     VisualChannel *m_pVisualChannel;
+    ControlObjectThread *m_pTrackEnd;
 };
 
 #endif

@@ -30,12 +30,12 @@ ControlPushButton::~ControlPushButton()
 {
 }
 
-void ControlPushButton::setValueFromMidi(MidiCategory c, int v)
+void ControlPushButton::setValueFromMidi(MidiCategory c, double v)
 {
     if (m_bMidiSimulateLatching)
     {
         // Only react on NOTE_ON midi events if simulating latching...
-        if (c==NOTE_ON && v>0)
+        if (c==NOTE_ON && v>0.)
         {
             if (m_dValue==0.)
                 m_dValue = 1.;
@@ -45,7 +45,7 @@ void ControlPushButton::setValueFromMidi(MidiCategory c, int v)
     }
     else
     {
-        if (v==0)
+        if (v==0.)
             m_dValue = 0.;
         else
             m_dValue = 1.;

@@ -44,7 +44,7 @@ public:
     ~ControlBeat();
 
 protected:
-    void setValueFromMidi(MidiCategory c, int v);
+    void setValueFromMidi(MidiCategory c, double v);
 private:
     void setValue(double dValue);
 

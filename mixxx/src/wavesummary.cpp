@@ -74,22 +74,27 @@ void WaveSummary::run()
         
 		//// Check if preview has been generated in the meantime
         QMemArray<char> *p = pTrackInfoObject->getWaveSummary();
-        if (!p || !p->size())
+        //if (!p || !p->size())
         {
             //
-			// Generate summary
+            // Generate summary
             //
 
-			// Open sound file
-			SoundSourceProxy *pSoundSource = new SoundSourceProxy(pTrackInfoObject->getLocation());
+            // Open sound file
+            SoundSourceProxy *pSoundSource = new SoundSourceProxy(pTrackInfoObject->getLocation());
 
             // Length of file in samples
             long liLengthSamples = pSoundSource->length();
 
-            // Block size
-            int iBlockSize = liLengthSamples/kiSummaryBufferSize;
+            // Block and hop size
+            int iHopSize = liLengthSamples/(kiSummaryBufferSize/3);
+            if (!even(iHopSize))
+                iHopSize--;
+            int iBlockSize = iHopSize;
+                
+// qDebug("block size %i",iBlockSize);
 
-// 	    qDebug("len %i samples %i ch %i srate %i",liSamplesPerSecond, liLengthSeconds,pTrackInfoObject->getChannels(),pTrackInfoObject->getSampleRate());
+//          qDebug("len %i samples %i ch %i srate %i",liSamplesPerSecond, liLengthSeconds,pTrackInfoObject->getChannels(),pTrackInfoObject->getSampleRate());
             
             // Allocate and reset buffer used to store summary data: max and min amplitude for block, and HFC value
             QMemArray<char> *pData = new QMemArray<char>(kiSummaryBufferSize);
@@ -98,30 +103,39 @@ void WaveSummary::run()
                 pData->at(i) = 0;
 
             SAMPLE *pBuffer = new SAMPLE[iBlockSize];
+            long int pos = 0;
+            
             for (i=0; i<pData->size()-2; i+=3)
             {
                 // Read a block of samples
-                pSoundSource->read(iBlockSize, pBuffer);
+                int iRead = pSoundSource->read(iBlockSize, pBuffer);
+
+//                 qDebug("wanted %i, got %i",iBlockSize,iRead);
+                
+                // Seek to new position
+                pos += iHopSize;
+                if (iHopSize!=iBlockSize)
+                    pSoundSource->seek(pos);
             
                 // Find min and max value
                 int iMin=0, iMax=0;
                 for (int j=0; j<iBlockSize; ++j)
                 {
-                    if (pBuffer[j]<0)
-                        iMin += pBuffer[j];
-                    if (pBuffer[j]>0)
-                        iMax += pBuffer[j];
+                    if (pBuffer[j]<iMin)
+                        iMin = pBuffer[j];
+                    if (pBuffer[j]>iMax)
+                        iMax = pBuffer[j];
                 }
-
+                
                 // Store max and min amplitude
-                pData->at(i) = max(iMin/((iBlockSize/5)*256),-127);
-                pData->at(i+1) = min(iMax/((iBlockSize/5)*256),127);
+                pData->at(i) = max((iMin/256.),-127);
+                pData->at(i+1) = min((iMax/256.),127);
                 pData->at(i+2) = 0;
             
                 // Store summary in TrackInfoObject
                 QApplication::postEvent(pTrackInfoObject, new WaveSummaryEvent(pData, 0));            
             }
-            
+            qDebug("read %i, len %i",pos, liLengthSamples);
                 
                             
             

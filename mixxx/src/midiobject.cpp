@@ -118,21 +118,27 @@ QString *MidiObject::getOpenDevice()
    Input:   -
    Output:  -
    -------- ------------------------------------------------------ */
-void MidiObject::send(MidiCategory category, char channel, char control, char value)
+void MidiObject::send(MidiCategory category, char channel, char control, double value)
 {
     MidiType type = MIDI_EMPTY;
     if ((category==NOTE_ON) | (category==NOTE_OFF))
         type = MIDI_KEY;
     else if (category==CTRL_CHANGE)
         type = MIDI_CTRL;
+    else if (category==PITCH_WHEEL)
+        type = MIDI_PITCH;
 
     Q_ASSERT(m_pMidiConfig);
     ConfigKey *pConfigKey = m_pMidiConfig->get(ConfigValueMidi(type,control,channel));
 //     qDebug("ok %p",pConfigKey);
 
     if (pConfigKey)
-        ControlObject::getControl(*pConfigKey)->queueFromMidi(category, value);
-}
+    {
+        ControlObject *p = ControlObject::getControl(*pConfigKey);
+        if (p)
+            p->queueFromMidi(category, value);
+    }
+}   
 
 void MidiObject::stop()
 {

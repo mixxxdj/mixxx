@@ -129,36 +129,40 @@ void PowerMateLinux::getNextEvent()
     int v = select(m_iFd+1, &fdset, 0, 0, &tv);
     if (v>0)
 */
-        struct input_event ev;
-        int iR = read(m_iFd, &ev, sizeof(struct input_event));
-        if (iR == sizeof(struct input_event))
+    struct input_event ev;
+    int iR = read(m_iFd, &ev, sizeof(struct input_event));
+    if (iR == sizeof(struct input_event))
+    {
+        switch(ev.type)
         {
-            switch(ev.type)
+        case EV_REL:
+            if (ev.code == REL_DIAL)
             {
-            case EV_REL:
-                if (ev.code == REL_DIAL)
-                {
-                    int v = ev.value;
-                    sendRotaryEvent((double)v*10.);
-                }
-                break;
-            case EV_KEY:
-                if(ev.code == BTN_0)
-                {
-                    // Send event to GUI thread
-                    if (ev.value==1)
-                        sendButtonEvent(true);
-                    else
-                        sendButtonEvent(false);
-                }
-                break;
-            default:
-                sendRotaryEvent(0.);
+                int v = ev.value;
+                sendRotaryEvent((double)v*200.);
             }
+            break;
+        case EV_KEY:
+            if(ev.code == BTN_0)
+            {
+                // Send event to GUI thread
+                if (ev.value==1)
+                    sendButtonEvent(true);
+                else
+                    sendButtonEvent(false);
+            }
+            break;
+        //default:
+        //    qDebug("def");
+        //    sendRotaryEvent(0.);
         }
-        else
-            sendRotaryEvent(0.);
-
+    }
+    else
+    {
+//         qDebug("unread");
+        sendRotaryEvent(0.);
+    }
+            
     //
     // Check if led queue is empty
     //
@@ -170,7 +174,7 @@ void PowerMateLinux::getNextEvent()
 
         msleep(5);
 
-        led_write(0, 0, 0, 0, 0);
+        //led_write(0, 0, 0, 0, 0);
     }
     else if (iR != sizeof(struct input_event))
         msleep(5);

@@ -35,11 +35,11 @@ ControlBeat::~ControlBeat()
     delete [] buffer;
 }
 
-void ControlBeat::setValueFromMidi(MidiCategory, int v)
+void ControlBeat::setValueFromMidi(MidiCategory, double v)
 {
     if (!m_bPressed || !m_bMidiSimulateLatching)
     {
-        setValue((double)v);
+        setValue(v);
         m_bPressed = true;
     }
     else

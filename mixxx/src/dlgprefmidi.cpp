@@ -110,8 +110,8 @@ void DlgPrefMidi::slotUpdate()
     // PowerMates
 
     QStringList qPowerMateConfigList;
-    qPowerMateConfigList << kqRotaryMappingP1Phase << kqRotaryMappingP1Scratch <<
-                            kqRotaryMappingP2Phase << kqRotaryMappingP2Scratch;
+    qPowerMateConfigList << kqRotaryMappingP1Phase << kqRotaryMappingP1Scratch << kqRotaryMappingP1Search <<
+                            kqRotaryMappingP2Phase << kqRotaryMappingP2Scratch << kqRotaryMappingP2Search;
 
     if (m_pPowerMate1 || m_pPowerMate2)
     {
@@ -158,8 +158,8 @@ void DlgPrefMidi::slotUpdate()
 
     // Mouse
     QStringList qMouseConfigList;
-    qMouseConfigList << kqRotaryMappingP1Phase << kqRotaryMappingP1Scratch <<
-                        kqRotaryMappingP2Phase << kqRotaryMappingP2Scratch;
+    qMouseConfigList << kqRotaryMappingP1Phase << kqRotaryMappingP1Scratch << kqRotaryMappingP1Search <<
+                        kqRotaryMappingP2Phase << kqRotaryMappingP2Scratch << kqRotaryMappingP2Search;
 
     QStringList qMouseDeviceList = Mouse::getDeviceList();
     ComboBoxMouseDevice1->clear();

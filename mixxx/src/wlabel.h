@@ -1,9 +1,9 @@
 /***************************************************************************
-                          controlpushbutton.h  -  description
+                          wlabel.h  -  description
                              -------------------
-    begin                : Wed Feb 20 2002
-    copyright            : (C) 2002 by Tue and Ken Haste Andersen
-    email                : 
+    begin                : Wed Jan 5 2005
+    copyright            : (C) 2003 by Tue Haste Andersen
+    email                : haste@diku.dk
  ***************************************************************************/
 
 /***************************************************************************
@@ -15,29 +15,35 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef CONTROLPUSHBUTTON_H
-#define CONTROLPUSHBUTTON_H
+#ifndef WLABEL_H
+#define WLABEL_H
 
-#include "controlobject.h"
-#include "defs.h"
-#include <qaction.h>
+#include "wwidget.h"
+#include <qlabel.h>
+#include <qevent.h>
 
 /**
-  *@author Tue and Ken Haste Andersen
+  *@author Tue Haste Andersen
   */
-  
-class ControlPushButton : public ControlObject
+
+class WLabel : public WWidget  
 {
     Q_OBJECT
 public:
-    ControlPushButton(ConfigKey key, bool bMidiSimulateLatching=false);
-    ~ControlPushButton();
+    WLabel(QWidget *parent=0, const char *name=0);
+    ~WLabel();
+    void setup(QDomNode node);
+    void move(int, int);
+    void setFixedSize(int, int);
+    void setAlignment(int);
+    void setConstFactor(double);
 
 protected:
-    void setValueFromMidi(MidiCategory c, double v);
-
-private:
-    bool m_bMidiSimulateLatching;
+    /** Multiplication factor */
+    QLabel *m_pLabel;
+    QString m_qsText;
+    /** Foreground and background colors */
+    QColor m_qFgColor, m_qBgColor;
 };
 
 #endif

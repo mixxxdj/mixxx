@@ -43,7 +43,6 @@
 #include "enginebuffer.h"
 #include "enginechannel.h"
 #include "enginemaster.h"
-#include "engineflanger.h"
 #include "midiobject.h"
 #include "controlobject.h"
 #include "dlgpreferences.h"
@@ -70,7 +69,7 @@ class MixxxApp : public QMainWindow
 
   public:
     /** Construtor. files is a list of command line arguments */
-    MixxxApp(QApplication *app, QStringList files, QSplashScreen *pSplash);
+    MixxxApp(QApplication *app, QStringList files, QSplashScreen *pSplash, QString qLogFileName);
     /** destructor */
     ~MixxxApp();
     /** initializes all QActions of the application */
@@ -110,7 +109,6 @@ class MixxxApp : public QMainWindow
     EngineBuffer *buffer1, *buffer2;
     EngineChannel *channel1, *channel2;
     EngineMaster *master;
-    EngineFlanger *flanger;
     PlayerProxy *player;
     MidiObject *midi;
     ControlObject *control;

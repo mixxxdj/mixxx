@@ -255,4 +255,12 @@ void TrackPlaylist::updateScores()
     }
 }
 
+QString TrackPlaylist::getName()
+{
+    return m_qName;
+}
 
+TrackInfoObject *TrackPlaylist::getFirstTrack()
+{
+    return m_qList.first();    
+}

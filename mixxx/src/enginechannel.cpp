@@ -22,9 +22,13 @@
 #include "enginevolume.h"
 #include "enginefilterblock.h"
 #include "enginevumeter.h"
+// #include "enginerealsearch.h"
 
-EngineChannel::EngineChannel(const char *group)
+EngineChannel::EngineChannel(const char *group, EngineBuffer *pBuffer)
 {
+    // RealSearch
+    //m_pRealSearch = new EngineRealSearch(group, pBuffer);
+    
     // Pregain:
     pregain = new EnginePregain(group);
 
@@ -46,6 +50,7 @@ EngineChannel::EngineChannel(const char *group)
 
 EngineChannel::~EngineChannel()
 {
+    //delete m_pRealSearch;
     delete pregain;
     delete filter;
     delete clipping;
@@ -60,6 +65,7 @@ ControlPushButton *EngineChannel::getPFL()
 
 void EngineChannel::process(const CSAMPLE *pIn, const CSAMPLE *pOut, const int iBufferSize)
 {
+//     m_pRealSearch->process(pIn, pIn, iBufferSize);
     pregain->process(pIn, pOut, iBufferSize);
     clipping->process(pOut, pOut, iBufferSize);
     filter->process(pOut, pOut, iBufferSize); 

@@ -33,7 +33,7 @@ class ControlObjectThread;
   */
 
 const int kiBlockSize = 2048;
-const int kiSummaryBufferSize = 300;
+const int kiSummaryBufferSize = 2000;
 const float kfFeatureStepSize = 0.01;
 
 class WaveSummary : public QThread

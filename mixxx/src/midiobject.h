@@ -67,7 +67,7 @@ public:
 protected:
     void run() {};
     void stop();
-    void send(MidiCategory category, char channel, char control, char value);
+    void send(MidiCategory category, char channel, char control, double value);
 
     bool requestStop;
 

@@ -56,9 +56,9 @@ WTrackTable::WTrackTable(QWidget *parent, const char *name) : QTable(0, ROW_NO, 
     setRowMovingEnabled(true);
     
     // Font size
-    QFont f("Helvetica");
-    f.setPointSize(9);
-    setFont(f);
+//    QFont f("Helvetica");
+//    f.setPointSize(10);
+//    setFont(f);
 
     // Setup scrollbars
     setVScrollBarMode(AlwaysOn);
