@@ -79,7 +79,7 @@ void WKnob::setPixmapBackground(const QString &filename)
 
 void WKnob::mouseMoveEvent(QMouseEvent *e)
 {
-    m_fValue += (e->y()-m_dStartValue);
+    m_fValue += (m_dStartValue-e->y());
     m_dStartValue = e->y();
     if (m_fValue>127.)
         m_fValue = 127.;

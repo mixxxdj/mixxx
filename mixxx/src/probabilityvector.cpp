@@ -48,7 +48,7 @@ void ProbabilityVector::add(float fInterval, float fValue)
         // Set hysterisisFactor. If the gauss is within histMaxIdx, use a large hysterisisFactor
         float fHysterisisFactor = 1.;
         if ((int)fCenter>m_iCurrMaxBin-kiGaussWidth && (int)fCenter<m_iCurrMaxBin+kiGaussWidth)
-            fHysterisisFactor = 1.2;
+            fHysterisisFactor = kfHysterisis;
 
         for (float j=fStart; j<fEnd; j++)
         {
@@ -102,8 +102,20 @@ float ProbabilityVector::getCurrMaxInterval()
 
 void ProbabilityVector::downWrite(float fFactor)
 {
+#ifdef FILEOUTPUT
+    QTextStream streamhist(&texthist);
+#endif
+
     for (int i=0; i<m_iBins; ++i)
+    {
         m_pHist[i] = fFactor*m_pHist[i];
+#ifdef FILEOUTPUT
+        streamhist << m_pHist[i] << " ";
+#endif
+    }
+#ifdef FILEOUTPUT
+    streamhist << "\n";        
+#endif
 }
 
 void ProbabilityVector::reset()
@@ -114,3 +126,13 @@ void ProbabilityVector::reset()
     m_iCurrMaxBin = -1;
     m_fCurrMaxInterval = 0.;
 }
+
+void ProbabilityVector::newsource(QString qFilename)
+{
+#ifdef FILEOUTPUT
+    texthist.close();
+    texthist.setName(QString(qFilename).append(".hist"));
+    texthist.open(IO_WriteOnly);
+#endif
+}
+    

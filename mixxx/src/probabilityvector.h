@@ -18,8 +18,18 @@
 #ifndef PROBABILITYVECTOR_H
 #define PROBABILITYVECTOR_H
 
+#include "readerextractbeat.h"
+
+#ifdef FILEOUTPUT
+    #include <qfile.h>
+    #include <qstring.h>
+#endif
+
 /** Width of gauss/2 used in histogram updates */
 const int kiGaussWidth = 8;
+/** Hysterisis factor. The weight of an interval lying within a small range around the
+  * histogram maximum is multiplied with this factor when added to the histogram */
+const float kfHysterisis = 1.2;
 
 /**
   *@author Tue & Ken Haste Andersen
@@ -40,6 +50,8 @@ public:
     void downWrite(float fFactor);
     /** Reset the probability vector */
     void reset();
+    /** New file */
+    void newsource(QString qFilename);
 private:
     /** Number of bins in histogram */
     int m_iBins;
@@ -53,6 +65,11 @@ private:
     float m_fCurrMaxInterval;
     /** Current bin corresponding to m_fCurrMaxInterval */
     int m_iCurrMaxBin;
+
+#ifdef FILEOUTPUT
+    QFile texthist;
+#endif
+
 };
 
 #endif
