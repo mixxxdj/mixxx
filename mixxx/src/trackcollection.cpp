@@ -105,15 +105,13 @@ TrackInfoObject *TrackCollection::getTrack(int id)
 
 TrackInfoObject *TrackCollection::getTrack(int id, int min, int mid, int max)
 {
-//    qDebug("id %i, min %i, mid %i, max %i",id,min,mid,max);
-    if (max-min<=1)
-        return 0;
+    qDebug("id %i, min %i, mid %i, max %i",id,min,mid,max);
     int midId = m_qTrackList.at(mid)->getId();
     if (midId==id)
         return m_qTrackList.at(mid);
-    else if (midId<id)
+    else if (midId<id && !(mid==min && mid+(max-mid)/2==mid))
         return getTrack(id, mid, mid+(max-mid)/2, max);
-    else if (midId>id)
+    else if (midId>id && !((mid-min/2)==mid && mid==max))
         return getTrack(id, min, (mid-min)/2, mid);
 
     return 0;

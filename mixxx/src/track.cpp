@@ -342,7 +342,7 @@ void Track::slotLoadPlayer2(TrackInfoObject *pTrackInfoObject)
     emit(newTrackPlayer2(m_pTrackPlayer2));
 
     // Update score:
-    m_pTrackPlayer1->incTimesPlayed();
+    m_pTrackPlayer2->incTimesPlayed();
     if (m_pActivePlaylist)
         m_pActivePlaylist->updateScores();
 
