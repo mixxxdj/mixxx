@@ -55,6 +55,7 @@ MixxxView::MixxxView(QWidget *parent, MixxxDoc *doc) : QWidget(parent)
 	    QFileInfo *fi;                          // pointer for traversing
 	    
 	    while ((fi=it.current()) && (i<playlist->TableList->numRows())) {             // for each file...
+		qDebug(fi->fileName());
 		playlist->TableList->setItem(i,0,new QTableItem(playlist->TableList,QTableItem::Never,
 								fi->baseName()));
 		playlist->TableList->setItem(i,1,new QTableItem(playlist->TableList,QTableItem::Never,

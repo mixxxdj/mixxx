@@ -285,38 +285,6 @@
             </property>
         </widget>
         <widget>
-            <class>QLCDNumber</class>
-            <property stdset="1">
-                <name>name</name>
-                <cstring>LCDposition</cstring>
-            </property>
-            <property stdset="1">
-                <name>geometry</name>
-                <rect>
-                    <x>5</x>
-                    <y>45</y>
-                    <width>35</width>
-                    <height>23</height>
-                </rect>
-            </property>
-            <property stdset="1">
-                <name>frameShape</name>
-                <enum>NoFrame</enum>
-            </property>
-            <property stdset="1">
-                <name>frameShadow</name>
-                <enum>Plain</enum>
-            </property>
-            <property stdset="1">
-                <name>numDigits</name>
-                <number>3</number>
-            </property>
-            <property stdset="1">
-                <name>segmentStyle</name>
-                <enum>Flat</enum>
-            </property>
-        </widget>
-        <widget>
             <class>QPushButton</class>
             <property stdset="1">
                 <name>name</name>
@@ -358,6 +326,38 @@
             <property stdset="1">
                 <name>orientation</name>
                 <enum>Vertical</enum>
+            </property>
+        </widget>
+        <widget>
+            <class>QLCDNumber</class>
+            <property stdset="1">
+                <name>name</name>
+                <cstring>LCDposition</cstring>
+            </property>
+            <property stdset="1">
+                <name>geometry</name>
+                <rect>
+                    <x>5</x>
+                    <y>45</y>
+                    <width>35</width>
+                    <height>23</height>
+                </rect>
+            </property>
+            <property stdset="1">
+                <name>frameShape</name>
+                <enum>NoFrame</enum>
+            </property>
+            <property stdset="1">
+                <name>frameShadow</name>
+                <enum>Plain</enum>
+            </property>
+            <property stdset="1">
+                <name>numDigits</name>
+                <number>2</number>
+            </property>
+            <property stdset="1">
+                <name>segmentStyle</name>
+                <enum>Flat</enum>
             </property>
         </widget>
     </widget>
