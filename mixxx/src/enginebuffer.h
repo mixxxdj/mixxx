@@ -40,6 +40,12 @@ const int audioBeatMarkLen = 40;
 // Rate at which the playpos slider is updated (using a sample rate of 44100 Hz):
 const int UPDATE_RATE = 1;
 
+// End of track mode constants
+const int TRACK_END_MODE_STOP = 0;
+const int TRACK_END_MODE_NEXT = 1;
+const int TRACK_END_MODE_LOOP = 2;
+const int TRACK_END_MODE_PING = 3;
+
 class EngineBuffer : public EngineObject
 {
 	Q_OBJECT
@@ -95,7 +101,7 @@ private:
     ControlEngine *playButton, *rateSlider, *wheel, *playposSlider, *bufferposSlider, *audioBeatMark;
     ControlEngine *buttonCueSet, *buttonCueGoto, *buttonCuePreview;
     /** Control used to signal when at end of file */
-    ControlEngine *m_pTrackEnd;
+    ControlEngine *m_pTrackEnd, *m_pTrackEndMode;
     /** Control used to input desired playback BPM */
     ControlEngine *bpmControl;
     /** Control used to input beat. If this is used, only one beat is played, until a new beat mark is received from the ControlObject */

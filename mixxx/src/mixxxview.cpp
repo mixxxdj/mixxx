@@ -335,8 +335,8 @@ void MixxxView::assignWidgets(ControlObject *p)
     p->setWidget(m_pSliderPlayposCh1, ConfigKey("[Channel1]", "playposition"), false);
     p->setWidget(m_pSliderPlayposCh2, ConfigKey("[Channel2]", "playposition"), false);
 
-    p->setWidget(m_pEndOfTrackModeCh1, ConfigKey("[Channel1]", "EndOfTrackMode"), false);
-    p->setWidget(m_pEndOfTrackModeCh2, ConfigKey("[Channel2]", "EndOfTrackMode"), false);
+    p->setWidget(m_pEndOfTrackModeCh1, ConfigKey("[Channel1]", "TrackEndMode"), false);
+    p->setWidget(m_pEndOfTrackModeCh2, ConfigKey("[Channel2]", "TrackEndMode"), false);
     
     // EngineMaster
     p->setWidget(m_pHeadCueCh1, ConfigKey("[Channel1]", "pfl"));
