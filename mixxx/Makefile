@@ -1,5 +1,5 @@
 # Generated automatically from Makefile.in by configure.
-# KDE tags expanded automatically by am_edit - $Revision: 12 $ 
+# KDE tags expanded automatically by am_edit - $Revision: 14 $ 
 # Makefile.in generated automatically by automake 1.4-p5 from Makefile.am
 
 # Copyright (C) 1994, 1995-8, 1999, 2001 Free Software Foundation, Inc.
@@ -244,7 +244,7 @@ KDE_DIST=Makefile.dist mixxx.kdevses
 DISTFILES= $(DIST_COMMON) $(SOURCES) $(HEADERS) $(TEXINFOS) $(EXTRA_DIST) $(KDE_DIST)
 
 
-TAR = gtar
+TAR = tar
 GZIP_ENV = --best
 #>- all: all-redirect
 #>+ 1

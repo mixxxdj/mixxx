@@ -17,7 +17,7 @@
 
 #include "enginebuffer.h"
 
-EngineBuffer::EngineBuffer(DlgPlaycontrol *playcontrol, DlgChannel *channel, MidiObject *midi, char *filename)
+EngineBuffer::EngineBuffer(DlgPlaycontrol *playcontrol, DlgChannel *channel, MidiObject *midi, const char *filename)
 {
   PlayButton = new ControlPushButton("playbutton", simulated_latching, PORT_B, 0, midi);
   PlayButton->setValue(on);
@@ -71,16 +71,28 @@ EngineBuffer::EngineBuffer(DlgPlaycontrol *playcontrol, DlgChannel *channel, Mid
   // Allocate semaphore
   buffers_read_ahead = new sem_t;
 
+  // Semaphore for stopping thread
+  requestStop = new QSemaphore(1);
+
   // ...and read one chunk to get started:
   getchunk();
 
 }
 
 EngineBuffer::~EngineBuffer(){
+  qDebug("dealloc buffer");
+  if (running())
+  {
+    qDebug("Stopping buffer");
+    stop();
+  }
+  qDebug("buffer waiting...");
+
+  qDebug("buffer actual dealloc");
+  if (file != 0) delete file;
   delete [] temp;
   delete [] readbuffer;
   delete buffers_read_ahead;
-  delete file;
   delete PlayButton;
 }
 
@@ -90,10 +102,17 @@ void EngineBuffer::start() {
 	qDebug("started!");
 }
 
+void EngineBuffer::stop()
+{
+  sem_post(buffers_read_ahead);
+  requestStop->operator++(1);
+  wait();
+  requestStop->operator--(1);
+}
+
 void EngineBuffer::run() {
-  //pthread_setcancelstate(PTHREAD_CANCEL_ENABLE,0);
   qDebug("..");
-  while(true) {
+  while(requestStop->available()) {
     // Wait for playback if in buffer is filled.
     sem_wait(buffers_read_ahead);
     // Check if the semaphore is too large:
@@ -166,8 +185,7 @@ void EngineBuffer::getchunk() {
   // Convert from SAMPLE to CSAMPLE. Should possibly be optimized
   // using assembler code from music-dsp archive.
   filepos += samples_read;
-  unsigned new_frontpos =
- (frontpos-chunk_size+read_buffer_size)%read_buffer_size;
+  unsigned new_frontpos = (frontpos-chunk_size+read_buffer_size)%read_buffer_size;
   for (unsigned j=0; j<samples_read; j++) {
     readbuffer[new_frontpos] = temp[j];
     new_frontpos ++;

@@ -18,132 +18,42 @@ configure:1127: checking whether the C compiler (gcc   ) works
 configure:1143: gcc -o conftest     conftest.c  1>&5
 configure:1169: checking whether the C compiler (gcc   ) is a cross-compiler
 configure:1174: checking whether we are using GNU C
-configure:1183: gcc -E conftest.c
 configure:1202: checking whether gcc accepts -g
 configure:1267: checking for c++
 configure:1299: checking whether the C++ compiler (c++   ) works
 configure:1320: rm -rf SunWS_cache; c++ -o conftest     conftest.C  1>&5
 configure:1346: checking whether the C++ compiler (c++   ) is a cross-compiler
 configure:1351: checking whether we are using GNU C++
-configure:1360: c++ -E conftest.C
 configure:1379: checking whether c++ accepts -g
 configure:1561: checking whether c++ supports -fno-exceptions
 configure:1590: checking whether c++ supports -fno-check-new
 configure:1619: checking whether c++ supports -fexceptions
 configure:1703: checking how to run the C++ preprocessor
-configure:1724: c++ -E  conftest.C >/dev/null 2>conftest.out
-configure:1789: checking whether c++ supports -frepo
-configure:1983: checking for ld used by GCC
-configure:2051: checking if the linker (/usr/bin/ld) is GNU ld
-GNU ld version 2.10.91 (with BFD 2.10.91.0.2)
-configure:2068: checking for /usr/bin/ld option to reload object files
-configure:2080: checking for BSD-compatible nm
-configure:2118: checking whether ln -s works
-configure:2139: checking how to recognise dependant libraries
-configure:2460: checking for ranlib
-configure:2527: checking for strip
-configure:2699: checking for Cygwin environment
-configure:2715: gcc -c -O2    conftest.c 1>&5
-configure: In function `main':
-configure:2711: `__CYGWIN32__' undeclared (first use in this function)
-configure:2711: (Each undeclared identifier is reported only once
-configure:2711: for each function it appears in.)
-configure: failed program was:
-#line 2704 "configure"
-#include "confdefs.h"
-
-int main() {
-
-#ifndef __CYGWIN__
-#define __CYGWIN__ __CYGWIN32__
-#endif
-return __CYGWIN__;
-; return 0; }
-configure:2732: checking for mingw32 environment
-configure:2744: gcc -c -O2    conftest.c 1>&5
-configure: In function `main':
-configure:2740: `__MINGW32__' undeclared (first use in this function)
-configure:2740: (Each undeclared identifier is reported only once
-configure:2740: for each function it appears in.)
-configure: failed program was:
-#line 2737 "configure"
-#include "confdefs.h"
-
-int main() {
-return __MINGW32__;
-; return 0; }
-ltcf-c.sh:need_lc: gcc -c -O2    conftest.c 1>&5
-ltcf-c.sh:need_lc: gcc -shared conftest.  -v -Wl,-soname -Wl,conftest -o conftest
+configure:1792: checking whether c++ supports -frepo
+configure:1986: checking for ld used by GCC
+configure:2054: checking if the linker (/usr/i486-suse-linux/bin/ld) is GNU ld
+configure:2071: checking for /usr/i486-suse-linux/bin/ld option to reload object files
+configure:2083: checking for BSD-compatible nm
+configure:2121: checking whether ln -s works
+configure:2142: checking how to recognise dependant libraries
+configure:2463: checking for ranlib
+configure:2530: checking for strip
+configure:2702: checking for Cygwin environment
+configure:2735: checking for mingw32 environment
 ltconfig:678:checking for gcc option to produce PIC
-ltconfig:687:checking that gcc PIC flag -fPIC -DPIC works.
-ltconfig:697: gcc -c -O2   -fPIC -DPIC -DPIC  conftest.c 1>&5
+ltconfig:687:checking that gcc PIC flag  -fPIC -DPIC works.
 ltconfig:749: checking if gcc static flag -static works
-ltconfig:758: gcc -o conftest -O2     -static conftest.c  1>&5
 ltconfig:780: finding the maximum length of command line arguments
 ltconfig:@lineno@: result: 73729
-ltconfig:829: checking if gcc supports -c -o file.o
-ltconfig:830: gcc -c -O2   -o out/conftest2.o  conftest.c 1>&5
 ltconfig:883: checking if gcc supports -fno-rtti -fno-exceptions
 ltconfig:884: gcc -c -O2   -fno-rtti -fno-exceptions -c conftest.c  conftest.c 1>&5
 ltconfig:1423: checking if global_symbol_pipe works
 ltconfig:1424: gcc -c -O2    conftest.c 1>&5
 ltconfig:1427: eval "/usr/bin/nm -B conftest.o | sed -n -e 's/^.*[ 	]\([ABCDGISTW]\)[ 	][ 	]*\(\)\([_A-Za-z][_A-Za-z0-9]*\)$/\1 \2\3 \3/p' > conftest.nm"
 ltconfig:1479: gcc -o conftest -O2   -fno-builtin -fno-rtti -fno-exceptions   conftest.c conftstm.o 1>&5
-ltconfig:1583: checking for dlopen in -ldl
-ltconfig:1603: gcc -o conftest -O2   -fno-builtin -fno-rtti -fno-exceptions   conftest.c -ldl   1>&5
 ltconfig:1863: checking for dlfcn.h
-ltconfig:1874: gcc -c -O2   -fno-builtin -fno-rtti -fno-exceptions  conftest.c 1>&5 >/dev/null 2>conftest.out
 ltconfig:1902: checking whether a program can dlopen itself
-ltconfig:1957: gcc -o conftest -O2   -fno-builtin -fno-rtti -fno-exceptions  -DHAVE_DLFCN_H  -Wl,--export-dynamic conftest.c -ldl  1>&5
 ltconfig:1976: checking whether a statically linked program can dlopen itself
-ltconfig:2031: gcc -o conftest -O2   -fno-builtin -fno-rtti -fno-exceptions  -DHAVE_DLFCN_H  -Wl,--export-dynamic -static conftest.c -ldl  1>&5
-ltconfig: failed program was:
-/*#line 1984 "ltconfig"*/
-
-#if HAVE_DLFCN_H
-#include <dlfcn.h>
-#endif
-
-#include <stdio.h>
-
-#ifdef RTLD_GLOBAL
-# define LTDL_GLOBAL	RTLD_GLOBAL
-#else
-# ifdef DL_GLOBAL
-#  define LTDL_GLOBAL	DL_GLOBAL
-# else
-#  define LTDL_GLOBAL	0
-# endif
-#endif
-
-/* We may have to define LTDL_LAZY_OR_NOW in the command line if we
-   find out it does not work in some platform. */
-#ifndef LTDL_LAZY_OR_NOW
-# ifdef RTLD_LAZY
-#  define LTDL_LAZY_OR_NOW	RTLD_LAZY
-# else
-#  ifdef DL_LAZY
-#   define LTDL_LAZY_OR_NOW	DL_LAZY
-#  else
-#   ifdef RTLD_NOW
-#    define LTDL_LAZY_OR_NOW	RTLD_NOW
-#   else
-#    ifdef DL_NOW
-#     define LTDL_LAZY_OR_NOW	DL_NOW
-#    else
-#     define LTDL_LAZY_OR_NOW	0
-#    endif
-#   endif
-#  endif
-# endif
-#endif
-
-void fnord() { int i=42; }
-int main() {
-    void *self, *ptr1, *ptr2; self=dlopen(0,LTDL_GLOBAL|LTDL_LAZY_OR_NOW);
-    if(self) { ptr1=dlsym(self,"fnord"); ptr2=dlsym(self,"_fnord");
-    if(ptr1 || ptr2) { dlclose(self); exit(0); } } exit(1); return 1; }
-
 c++ -E conftest.cc
 ltconfig:678:checking for c++ option to produce PIC
 ltconfig:687:checking that c++ PIC flag -fPIC -DPIC works.
@@ -161,223 +71,47 @@ ltconfig:1479: c++ -o conftest -O2 -fno-exceptions -fno-check-new -fno-builtin -
 ltconfig:1863: checking for dlfcn.h
 ltconfig:1902: checking whether a program can dlopen itself
 ltconfig:1976: checking whether a statically linked program can dlopen itself
-configure:2879: checking for object suffix
-configure:2885: gcc -c -O2    conftest.c 1>&5
-configure:2905: checking for executable suffix
-configure:2915: gcc -o conftest -O2     conftest.c  1>&5
-configure:2966: checking for msgfmt
-configure:3000: checking for gmsgfmt
-configure:3045: checking for xgettext
-configure:3090: checking how to run the C preprocessor
-configure:3111: gcc -E  conftest.c >/dev/null 2>conftest.out
-configure:3178: checking for main in -lutil
-configure:3193: gcc -o conftest -O2     conftest.c -lutil   1>&5
-configure:3214: checking for main in -lcompat
-configure:3229: gcc -o conftest -O2     conftest.c -lcompat   1>&5
-/usr/bin/ld: cannot find -lcompat
-collect2: ld returned 1 exit status
-configure: failed program was:
-#line 3222 "configure"
-#include "confdefs.h"
-
-int main() {
-main()
-; return 0; }
-configure:3251: checking for crypt in -lcrypt
-configure:3270: gcc -o conftest -O2     conftest.c -lcrypt   1>&5
-configure:3345: checking for socklen_t
-configure:3375: c++ -c -O2 -fno-exceptions -fno-check-new  conftest.C 1>&5
-configure:3442: checking for dnet_ntoa in -ldnet
-configure:3461: gcc -o conftest -O2     conftest.c -ldnet   1>&5
-/usr/bin/ld: cannot find -ldnet
-collect2: ld returned 1 exit status
-configure: failed program was:
-#line 3450 "configure"
-#include "confdefs.h"
-/* Override any gcc2 internal prototype to avoid an error.  */
-/* We use char because int might match the return type of a gcc2
-    builtin and then its argument prototype would still apply.  */
-char dnet_ntoa();
-
-int main() {
-dnet_ntoa()
-; return 0; }
-configure:3483: checking for dnet_ntoa in -ldnet_stub
-configure:3502: gcc -o conftest -O2     conftest.c -ldnet_stub   1>&5
-/usr/bin/ld: cannot find -ldnet_stub
-collect2: ld returned 1 exit status
-configure: failed program was:
-#line 3491 "configure"
-#include "confdefs.h"
-/* Override any gcc2 internal prototype to avoid an error.  */
-/* We use char because int might match the return type of a gcc2
-    builtin and then its argument prototype would still apply.  */
-char dnet_ntoa();
-
-int main() {
-dnet_ntoa()
-; return 0; }
-configure:3524: checking for inet_ntoa
-configure:3552: gcc -o conftest -O2     conftest.c  1>&5
-configure:3614: checking for connect
-configure:3642: gcc -o conftest -O2     conftest.c  1>&5
-configure:3705: checking for remove
-configure:3733: gcc -o conftest -O2     conftest.c  1>&5
-configure:3797: checking for shmat
-configure:3825: gcc -o conftest -O2     conftest.c  1>&5
-configure:3889: checking for res_init
-configure:3917: gcc -o conftest -O2     conftest.c  1>&5
-/tmp/cc7WOztn.o: In function `main':
-/tmp/cc7WOztn.o(.text+0x7): undefined reference to `res_init'
-collect2: ld returned 1 exit status
-configure: failed program was:
-#line 3894 "configure"
-#include "confdefs.h"
-/* System header to define __stub macros and hopefully few prototypes,
-    which can conflict with char res_init(); below.  */
-#include <assert.h>
-/* Override any gcc2 internal prototype to avoid an error.  */
-/* We use char because int might match the return type of a gcc2
-    builtin and then its argument prototype would still apply.  */
-char res_init();
-
-int main() {
-
-/* The GNU C library defines this for functions which it implements
-    to always fail with ENOSYS.  Some functions are actually named
-    something starting with __ and the normal name is an alias.  */
-#if defined (__stub_res_init) || defined (__stub___res_init)
-choke me
-#else
-res_init();
-#endif
-
-; return 0; }
-configure:3952: gcc -o conftest -O2     conftest.c   -lresolv 1>&5
-configure:3977: checking for killpg in -lucb
-configure:3996: gcc -o conftest -O2     conftest.c -lucb   1>&5
-/usr/bin/ld: cannot find -lucb
-collect2: ld returned 1 exit status
-configure: failed program was:
-#line 3985 "configure"
-#include "confdefs.h"
-/* Override any gcc2 internal prototype to avoid an error.  */
-/* We use char because int might match the return type of a gcc2
-    builtin and then its argument prototype would still apply.  */
-char killpg();
-
-int main() {
-killpg()
-; return 0; }
-configure:4065: checking size of int
-configure:4084: gcc -o conftest -O2     conftest.c  1>&5
-configure:4103: checking size of long
-configure:4122: gcc -o conftest -O2     conftest.c  1>&5
-configure:4141: checking size of char *
-configure:4160: gcc -o conftest -O2     conftest.c  1>&5
-configure:4179: checking size of char
-configure:4198: gcc -o conftest -O2     conftest.c  1>&5
-configure:4219: checking for dlopen in -ldl
-configure:4263: checking for shl_unload in -ldld
-configure:4282: gcc -o conftest -O2     conftest.c -ldld   1>&5
-/usr/bin/ld: cannot find -ldld
-collect2: ld returned 1 exit status
-configure: failed program was:
-#line 4271 "configure"
-#include "confdefs.h"
-/* Override any gcc2 internal prototype to avoid an error.  */
-/* We use char because int might match the return type of a gcc2
-    builtin and then its argument prototype would still apply.  */
-char shl_unload();
-
-int main() {
-shl_unload()
-; return 0; }
-configure:4311: checking for extra includes
-configure:4342: checking for extra libs
-configure:4376: checking for libz
-configure:4402: gcc -o conftest -O2        conftest.c    -lz  -lresolv 1>&5
-configure:4445: checking for X
-configure:4484: gcc -E  conftest.c >/dev/null 2>conftest.out
-configure:4560: gcc -o conftest -O2     conftest.c -lXt  1>&5
-/usr/bin/ld: cannot find -lXt
-collect2: ld returned 1 exit status
-configure: failed program was:
-#line 4553 "configure"
-#include "confdefs.h"
-
-int main() {
-XtMalloc()
-; return 0; }
-configure:4734: checking for IceConnectionNumber in -lICE
-configure:4753: gcc -o conftest -O2     -L/usr/X11R6/lib conftest.c -lICE  -lresolv  1>&5
-configure:4782: checking for libXext
-configure:4808: gcc -o conftest -O2     -L/usr/X11R6/lib  conftest.c -lXext -lX11  -lresolv 1>&5
-configure:4835: checking for Xinerama
-configure:5010: checking for pthread_create in -lpthread
-configure:5029: gcc -o conftest -O2     conftest.c -lpthread   1>&5
-configure:5248: checking for libpng
-configure:5282: gcc -o conftest -O2   -I/usr/X11R6/include   -D_REENTRANT  conftest.c  -L/usr/X11R6/lib  -lpng -lz -lm -lX11  -lresolv 1>&5
-configure:5314: checking for libjpeg6b
-configure:5352: gcc -o conftest -O2   -I/usr/X11R6/include   -D_REENTRANT  conftest.c -L/usr/X11R6/lib  -ljpeg6b -lm 1>&5
-/usr/bin/ld: cannot find -ljpeg6b
-collect2: ld returned 1 exit status
-configure: failed program was:
-#line 5331 "configure"
-#include "confdefs.h"
-/* Override any gcc2 internal prototype to avoid an error.  */
-struct jpeg_decompress_struct;
-typedef struct jpeg_decompress_struct * j_decompress_ptr;
-typedef int size_t;
-#ifdef __cplusplus
-extern "C" {
-#endif
-    void jpeg_CreateDecompress(j_decompress_ptr cinfo,
-                                    int version, size_t structsize);
-#ifdef __cplusplus
-}
-#endif
-/* We use char because int might match the return type of a gcc2
-    builtin and then its argument prototype would still apply.  */
-
-int main() {
-jpeg_CreateDecompress(0L, 0, 0);
-; return 0; }
-configure:5375: checking for libjpeg
-configure:5413: gcc -o conftest -O2   -I/usr/X11R6/include   -D_REENTRANT  conftest.c -L/usr/X11R6/lib  -ljpeg -lm 1>&5
-configure: 5453: /usr/include/jpeglib.h
+configure:2882: checking for object suffix
+configure:2908: checking for executable suffix
+configure:2969: checking for msgfmt
+configure:3003: checking for gmsgfmt
+configure:3048: checking for xgettext
+configure:3093: checking how to run the C preprocessor
+configure:3181: checking for main in -lutil
+configure:3217: checking for main in -lcompat
+configure:3254: checking for crypt in -lcrypt
+configure:3348: checking for socklen_t
+configure:3445: checking for dnet_ntoa in -ldnet
+configure:3486: checking for dnet_ntoa in -ldnet_stub
+configure:3527: checking for inet_ntoa
+configure:3617: checking for connect
+configure:3708: checking for remove
+configure:3800: checking for shmat
+configure:3892: checking for res_init
+configure:3955: gcc -o conftest -O2     conftest.c   -lresolv 1>&5
+configure:3980: checking for killpg in -lucb
+configure:4068: checking size of int
+configure:4106: checking size of long
+configure:4144: checking size of char *
+configure:4182: checking size of char
+configure:4222: checking for dlopen in -ldl
+configure:4266: checking for shl_unload in -ldld
+configure:4314: checking for extra includes
+configure:4345: checking for extra libs
+configure:4379: checking for libz
+configure:4448: checking for X
+configure:4737: checking for IceConnectionNumber in -lICE
+configure:4785: checking for libXext
+configure:4838: checking for Xinerama
+configure:5013: checking for pthread_create in -lpthread
+configure:5251: checking for libpng
+configure:5317: checking for libjpeg6b
+configure:5378: checking for libjpeg
+configure: 5456: /usr/include/jpeglib.h
 taking that
-configure:5587: checking for Qt
-configure: 5651: /usr/lib/qt-2.3.0/include/qstyle.h
-taking that
-tried NO
-configure:5761: rm -rf SunWS_cache; c++ -o conftest -O2 -fno-exceptions -fno-check-new -I/usr/lib/qt-2.3.0/include -I/usr/X11R6/include  -DPIC -fPIC -DQT_THREAD_SUPPORT  -D_REENTRANT  -L/usr/lib/qt-2.3.0/lib -L/usr/X11R6/lib   -DPIC -fPIC -lpthread conftest.C  -lqt-mt -lpng -lz -lm -ljpeg  -lXext -lX11 -lSM -lICE  -lresolv 1>&5
-configure:5819: checking if Qt compiles without flags
-configure:5913: rm -rf SunWS_cache; c++ -o conftest -O2 -fno-exceptions -fno-check-new -I/usr/lib/qt-2.3.0/include  -DPIC -fPIC -DQT_THREAD_SUPPORT  -D_REENTRANT  -L/usr/X11R6/lib conftest.C -lqt-mt -lpng -lz -lm -ljpeg  -lXext -lX11 -lSM -lICE  -lresolv -lXext -lX11  -lresolv 1>&5
-/usr/bin/ld: cannot find -lqt-mt
-collect2: ld returned 1 exit status
-configure: failed program was:
-#include "confdefs.h"
-#include <qglobal.h>
-#include <qapplication.h>
-#include <qevent.h>
-#include <qstring.h>
-#include <qstyle.h>
-#include <qiconview.h>
-#if ! (QT_VERSION >= 222)
-#error 1
-#endif
-
-int main() {
-    QStringList *t = new QStringList();
-    QIconView iv(0);
-    iv.setWordWrapIconText(false);
-    QString s;
-    s.setLatin1("Elvis is alive", 14);
-    int magnolia = QEvent::Speech; /* new in 2.2 beta2 */
-    return 0;
-}
-configure:5983: checking for moc
-configure:6049: checking for uic
-configure:6166: checking if admin should be compiled
-configure:6166: checking if mixxx should be compiled
+configure:5590: checking for Qt
+configure:5822: checking if Qt compiles without flags
+configure:5986: checking for moc
+configure:6052: checking for uic
+configure:6169: checking if admin should be compiled
+configure:6169: checking if mixxx should be compiled

@@ -43,9 +43,28 @@
 
 class EngineBuffer : public EngineObject, public QThread  {
  Q_OBJECT
+public:
+  EngineBuffer(DlgPlaycontrol *, DlgChannel *, MidiObject *, const char *);
+  ~EngineBuffer();
+  void start();
+  void process(CSAMPLE *, CSAMPLE *, int);
+public slots:
+   void slotUpdatePlay(valueType);
+   void slotUpdateRate(FLOAT);
 private:
   void run();
+  void stop();
 
+  QSemaphore *requestStop;
+  sem_t *buffers_read_ahead;
+  unsigned long int read_buffer_size;
+  unsigned long int frontpos;
+  double play_pos;
+  CSAMPLE *readbuffer;
+  void getchunk();
+  void seek(FLOAT);
+  void checkread();
+  void writepos();
   ControlPushButton *PlayButton;
   ControlPotmeter *rateSlider;
   ControlRotary *wheel;
@@ -59,22 +78,5 @@ private:
   long distance(const long, const long);
   FLOAT min(const FLOAT, const FLOAT);
   FLOAT max(const FLOAT, const FLOAT);
-public:
-  EngineBuffer(DlgPlaycontrol *, DlgChannel *, MidiObject *, char *);
-  ~EngineBuffer();
-  void start();
-  void process(CSAMPLE *, CSAMPLE *, int);
-  sem_t *buffers_read_ahead;
-  unsigned long int read_buffer_size;
-  unsigned long int frontpos;
-  double play_pos;
-  CSAMPLE *readbuffer;
-  void getchunk();
-  void seek(FLOAT);
-  void checkread();
-  void writepos();
-public slots:
-   void slotUpdatePlay(valueType);
-   void slotUpdateRate(FLOAT);
 };
 #endif
