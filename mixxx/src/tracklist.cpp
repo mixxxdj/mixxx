@@ -45,7 +45,17 @@
 #include "wtracktableitem.h"
 #include "controlobject.h"
 #include "enginebuffer.h"
-
+/**
+*********************
+IMPORTANT INFORMATION
+*********************
+The corresponding names below the functions description are a 
+proposal on how to split things up.
+I thought about spliting it into 3 classes:
+PLAYLIST - handles all work on Playlists
+COLLECTION - handles all work on global collection
+MAIN TRACKLIST - handles the PLAYLIST and COLLECTION and does INTERFACING
+**/
 TrackList::TrackList( const QString sDirectory,const QString sPlaylistdir ,WTrackTable *pTableTracks, WTreeList *pTree,
                       QLabel *text1, QLabel *text2,
                       WNumberPos *pNumberPos1, WNumberPos *pNumberPos2,
@@ -95,7 +105,14 @@ TrackList::TrackList( const QString sDirectory,const QString sPlaylistdir ,WTrac
 	treeSelectMenu = new QPopupMenu();
 	treeSelectMenu->insertItem("Delete Playlist",this,SLOT(slotDeletePlaylist()));
 	treeSelectMenu->insertItem("Search for Trackname",this,SLOT(slotFindTrack()));
-	
+	treeSelectMenu->insertItem("Save Playlist", this, SLOT(slotSavePls()));
+	treeSelectMenu->insertItem("Save Playlist as", this, SLOT(slotSavePlsAs()));
+	//Here we have to think about having this entry in playSelectMenu, 
+	//because the user should have a file selected prior to deletion 
+	treeSelectMenu->insertItem("Delete Track",this, SLOT(slotDeleteTrack()));
+	treeSelectMenu->insertItem("Clear Playlist", this, SLOT(slotClearPlaylist()));
+	treeSelectMenu->insertSeparator(2);
+	treeSelectMenu->insertSeparator(5);
 	// Construct popup menu used to select playback channel on track selection
 	/**
 	NEW!!! : Deleting Tracks, Save current Playlist , save playlist as
@@ -104,12 +121,8 @@ TrackList::TrackList( const QString sDirectory,const QString sPlaylistdir ,WTrac
     playSelectMenu->insertItem("Player 1",this, SLOT(slotChangePlay_1()));
     playSelectMenu->insertItem("Player 2",this, SLOT(slotChangePlay_2()));
 	//playSelectMenu->insertItem("--------",this);
-	playSelectMenu->insertItem("Save Playlist", this, SLOT(slotSavePls()));
-	playSelectMenu->insertItem("Save Playlist as", this, SLOT(slotSavePlsAs()));
-	playSelectMenu->insertItem("Delete Track",this, SLOT(slotDeleteTrack()));
-	playSelectMenu->insertItem("Clear Playlist", this, SLOT(slotClearPlaylist()));
-	playSelectMenu->insertSeparator(2);
-	playSelectMenu->insertSeparator(5);
+	
+	
 	// Connect the right click to the slot where the menu is shown:
     if (m_pTableTracks)
         connect(m_pTableTracks, SIGNAL(pressed(int, int, int, const QPoint &)),
@@ -177,6 +190,7 @@ TrackList::~TrackList()
 }
 
 //Loads the Main Collection into m_lTracks
+//COLLECTION
 void TrackList::loadCollection()
 {
     if (!wTree)
@@ -222,6 +236,7 @@ void TrackList::loadCollection()
 
 }
 //Loads a Playlist into the TrackTable
+//PLAYLIST
 void TrackList::UpdateTracklistFromPls(){
 	int iRow = 0;
 	TrackInfoObject *Track;
@@ -245,6 +260,8 @@ void TrackList::UpdateTracklistFromPls(){
 			m_iMaxTimesPlayed = m_lPlaylist.at(i)->getTimesPlayed();
 
 }
+//Handles updates to the Tracktable and PLaylist
+//MAIN TRACKLIST (because its working on both and in the collection)
 void TrackList::UpdateTracklist(QDomDocument * domXML)
 {
     // Run through all the files and add the new ones to the xml file:
@@ -314,6 +331,8 @@ void TrackList::UpdateTracklist(QDomDocument * domXML)
 		//WriteXML(&tempTracks);
     
 }
+//"Hard"loads a track into deck1
+//MAIN TRACKLIST
 void TrackList::loadTrack1(QString name)
 {
     if (QFile(name).exists())
@@ -324,6 +343,8 @@ void TrackList::loadTrack1(QString name)
             m_pText1->setText(t->getInfo());
     }
 }
+//"Hard"loads a track into deck2
+//MAIN TRACKLIST
 void TrackList::loadTrack2(QString name)
 {
     if (QFile(name).exists())
@@ -334,17 +355,20 @@ void TrackList::loadTrack2(QString name)
             m_pText2->setText(t->getInfo());
     }
 }
-
+//Returns track in deck1
+// MAIN TRACKLIST
 TrackInfoObject *TrackList::getTrackInfo1()
 {
     return m_pTrack1;
 }
-
+//Returns track in deck2
+// MAIN TRACKLIST
 TrackInfoObject *TrackList::getTrackInfo2()
 {
     return m_pTrack2;
 }
-
+//Loads next track in Playlist if current has ended
+//MAIN TRACKLIST
 void TrackList::slotEndOfTrackCh1(double)
 {
     int iIndex = 0;
@@ -373,7 +397,8 @@ void TrackList::slotEndOfTrackCh1(double)
     }
     m_pEndOfTrackCh1->setValueFromApp(0.);
 }
-
+//Loads next track in Playlist if current has ended
+//MAIN TRACKLIST
 void TrackList::slotEndOfTrackCh2(double)
 {
     int iIndex = 0;
@@ -405,6 +430,7 @@ void TrackList::slotEndOfTrackCh2(double)
 
 /*
     Updates the score field (column 0) in the table.
+	COLLECTION
 */
 void TrackList::UpdateScores()
 {
@@ -437,6 +463,7 @@ void TrackList::UpdateScores()
 
 /*
 	Write the xml tree to the file:
+    COLLECTION
 */
 void TrackList::WriteXML()
 {
@@ -530,7 +557,9 @@ void TrackList::WriteXML()
 
 /*
 	Iterates through the global collection and returns index which is highest +1
+	COLLECTION
 */
+
 int TrackList::getNewTrackIndex(){
 	int iIndex = 0;
 	
@@ -541,6 +570,9 @@ int TrackList::getNewTrackIndex(){
 		
 		return iIndex+1;
 	}
+
+//Parses Files and adds them to the collection if non existent
+// COLLECTION
 bool TrackList::AddFiles(const char *path, QDomDocument * docXML)
 {    
 	
@@ -693,6 +725,7 @@ bool TrackList::AddFiles(const char *path, QDomDocument * docXML)
 /*
     Fill in the information in the track, by using the static member ParseHeader
     in the different SoundSource objects.
+	COLLECTION
 */
 int TrackList::ParseHeader( TrackInfoObject *Track )
 {
@@ -726,6 +759,7 @@ int TrackList::ParseHeader( TrackInfoObject *Track )
 
 /*
     Returns the TrackInfoObject which has the filename sFilename.
+	COLLECTION
 */
 TrackInfoObject *TrackList::FileExistsInList( const QString sFilename,QDomDocument * docXML, int Index)
 {
@@ -760,6 +794,7 @@ TrackInfoObject *TrackList::FileExistsInList( const QString sFilename,QDomDocume
 /*
     These two slots basically just routes information further, but adds
     track information.
+    MAIN TRACKLIST
 */
 void TrackList::slotChangePlay_1(int idx)
 {
@@ -796,10 +831,13 @@ void TrackList::slotChangePlay_1(int idx)
   }
 }
 //Refreshes the Tree of the Playlist Repository
+//MAIN TRACKLIST
 void TrackList::refreshPlaylist(){
 
 	wTree->setPlaylist(wTree->m_sPlaylistdir);
 }
+//Changes Song in Deck 2
+//MAIN TRACKLIST
 void TrackList::slotChangePlay_2(int idx)
 {
     if (idx==-1)
@@ -836,6 +874,7 @@ void TrackList::slotChangePlay_2(int idx)
   }
 }
 //Deletes a Track from the Table
+// Either MAIN TRACKLIST or PLAYLIST
 void TrackList::slotDeleteTrack(int idx)
 {
 	TrackInfoObject *Track;
@@ -880,6 +919,7 @@ void TrackList::slotDeleteTrack(int idx)
 
 /*
     Slot connected to popup menu activated when a track is clicked:
+	- MAIN TRACKLIST
 */
 void TrackList::slotClick( int iRow, int iCol, int iButton, const QPoint &pos )
 {
@@ -894,6 +934,7 @@ void TrackList::slotClick( int iRow, int iCol, int iButton, const QPoint &pos )
     }
 }
 /** Can be called to Update the Root Directory in the TreeList **/
+// MAIN TRACKLIST
 void TrackList::slotUpdateRoot(QString sDir)
 {
 	
@@ -901,7 +942,8 @@ void TrackList::slotUpdateRoot(QString sDir)
 	
 	
 	}
-
+//Loads a Playlist into the Tracktable
+// PLAYLIST
 void TrackList::loadPlaylist( QString sPlaylist , QDomDocument * domXML) {
 	
 	
@@ -977,6 +1019,8 @@ void TrackList::loadPlaylist( QString sPlaylist , QDomDocument * domXML) {
 	}
 	
 }
+//Saves the playlist as a new playlist with the name the user puts in the dialog
+// PLAYLIST
 void TrackList::slotSavePlsAs()
 {
   
@@ -1040,6 +1084,8 @@ void TrackList::slotSavePlsAs()
 	//Update the Treelist
 	refreshPlaylist();	
 }
+//Saves the current playlist
+// PLAYLIST
 void TrackList::slotSavePls()
 {
 
@@ -1106,6 +1152,7 @@ void TrackList::slotSavePls()
 	refreshPlaylist();	
 }
 //Deletes all the tracks in the Tracktable
+// PLAYLIST
 void TrackList::slotClearPlaylist()
 {
 	for(TrackInfoObject *Track = m_lPlaylist.first();Track;Track = m_lPlaylist.next())
@@ -1119,6 +1166,8 @@ void TrackList::slotClearPlaylist()
     m_pTableTracks->setNumRows(0);	
 	m_pTableTracks->clearSelection(TRUE);
 }
+//Display the popupmenu for the TREELIST
+// MAIN TRACKLIST 
 void TrackList::slotTreeClick(QListViewItem * item, const QPoint & pos, int a)
 {
 	// Display popup menu ...
@@ -1130,6 +1179,8 @@ void TrackList::slotTreeClick(QListViewItem * item, const QPoint & pos, int a)
 	
 	
 }
+//Deletes a Playlist in the Treelist window 
+// PLAYLIST 
 void TrackList::slotDeletePlaylist()
 {
 	qDebug("Deleting Playlist: %s",wTree->selectedItem()->text(0).latin1());
@@ -1189,6 +1240,7 @@ void TrackList::slotDeletePlaylist()
 	
 	}	
 }
+//Will be removed ...
 void TrackList::slotUpdateTracklistFake(QString sDir)
 {
 	
@@ -1196,6 +1248,7 @@ slotUpdateTracklist(sDir);
 	
 }
 //Looks through the playlists and gets the first occurence of findText in filename
+// - MAIN TRACKLIST
 void TrackList::slotFindTrack()
 {
 	
@@ -1322,7 +1375,8 @@ void TrackList::slotFindTrack()
 	   }  
   wTree->mousePressed=false;
  }
-/** Sorts the Tracktable ascending index and substracts iCount of numRows**/
+// Sorts the Tracktable ascending index and substracts iCount of numRows
+// - MAIN TRACKLIST  
 void TrackList::refreshTrackTableContents(int iCount){
 	
 	m_pTableTracks->sortColumn(COL_INDEX,TRUE,TRUE);
@@ -1331,6 +1385,8 @@ void TrackList::refreshTrackTableContents(int iCount){
 	
 	
 }
+//Adds items to collection and to the Tracktable or loads the playlist the
+//user droped / double clicked. - MAIN TRACKLIST
 void TrackList::slotUpdateTracklist( QString sDir )
 {
 //    qDebug("dir: %s",sDir.latin1());
