@@ -49,8 +49,6 @@ EngineBuffer::EngineBuffer(DlgPlaycontrol *playcontrol, DlgChannel *channel, Mid
   readbuffer = new CSAMPLE[read_buffer_size];
 
   // Allocate semaphore
-  //buffers_read_ahead = new sem_t;
-  //sem_init(buffers_read_ahead, 0, 1);
   buffersReadAhead = new QSemaphore(1);
 
   // Semaphore for stopping thread
@@ -76,7 +74,6 @@ EngineBuffer::~EngineBuffer(){
   if (file != 0) delete file;
   delete [] temp;
   delete [] readbuffer;
-//  delete buffers_read_ahead;
 
   delete buffersReadAhead;
   delete requestStop;
@@ -128,7 +125,6 @@ void EngineBuffer::start() {
 
 void EngineBuffer::stop()
 {
-  //sem_post(buffers_read_ahead);
   buffersReadAhead->operator--(1);
 
   requestStop->operator++(1);
@@ -139,7 +135,6 @@ void EngineBuffer::stop()
 void EngineBuffer::run() {
   while(requestStop->available()) {
     // Wait for playback if in buffer is filled.
-    //sem_wait(buffers_read_ahead);
     buffersReadAhead->operator++(1);
 
     // Check if the semaphore is too large:
@@ -284,13 +279,11 @@ void EngineBuffer::checkread()
   if (send_request) {
     // check if we still have a request pending:
     //std::cout << (long)play_pos << ", " << frontpos << ", " << filepos << "\n";
-    //sem_getvalue(buffers_read_ahead, &sem_value);
-    if (buffersReadAhead->available()) {
+    if (buffersReadAhead->available()==0) {
 	  //qDebug("Frontpos: %i Playpos: %i),frontpos,play_pos);
       //std::cout << frontpos << "," <<play_pos<<","<<(long)floor(play_pos)%read_buffer_size<<"\n";
       //cout << filepos << "," << filelength << "\n";
 
-      //sem_post(buffers_read_ahead);
       buffersReadAhead->operator--(1);
 
       pending_time = 0;
