@@ -27,6 +27,9 @@ New since 1.2.1:
 - Performance optimizations
 - Playlist layout improvements
 - Various bug fixes
+- Correct feedback about actual used latency in sound card
+  configuration. Support for WMME drivers under Windows, and 
+  improved DirectSound support, ie. lower latency operation
 
 * REQUIREMENTS *********************************************
 Mixxx is depends on the following libraries:
