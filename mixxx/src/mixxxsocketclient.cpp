@@ -51,7 +51,7 @@ void MixxxSocketClient::readClient()
         // Split string into player, command and argument
         QString player = str.section(" ", 0, 0);
         QString command = str.section(" ", 1, 1);
-        QString argument = str.section(" ", 2, 2);
+        QString argument = str.section(" ", 2);
         QString response = "OK";
 
         // Find out if the command is for player 1 or 2:
