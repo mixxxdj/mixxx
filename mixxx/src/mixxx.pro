@@ -22,7 +22,7 @@ WINPA = DIRECTSOUND
 #unix:LINLIBPATH = ../../mixxx-linlib
 
 # Include for unix dependencies. (19/12/2003, J_Zar)
-unix:include( mixxx.depend )
+unix:include( main.qbas )
 
 # Path to Macintosh libraries
 macx:MACLIBPATH = ../../mixxx-maclib

@@ -1,11 +1,11 @@
-#!/bin/bash
+#!/bin/bash 
 
 #************************************************************************
-# Qmake deps script
-# version 0.4
-# Copyright (c) 2003 Gianluca Romanin ( J_Zar )  <jayorama@users.sourceforge.net>
+# QBAS
+# version 0.9
+# Copyright (c) 2003-2004 Gianluca Romanin ( J_Zar )
+#        <jayorama@users.sourceforge.net>
 #************************************************************************
-
 
 #************************************************************************
 #
@@ -25,6 +25,8 @@
 #
 #************************************************************************
 
+
+
 # inserting blanks...
 echo
 echo "-------------------------------------------"
@@ -37,12 +39,39 @@ then
 	exit
 fi
 
+# We should locate a project file:
+# if not defined in build.definition
+# we'll retrieve by yourself.
+# If more than one then, we take only the first.
+PROJECT_FILE=$(cat build.definition | grep "PROJECT_FILE" -0 -w | cut -f2 -d"=" ) ;
+if [ "$PROJECT_FILE" = "" ] ;
+then 
+	ls *.pro 2> proj_temp 1> /dev/null ;
+	if cat proj_temp  | grep "No such file" -q ;	
+	then
+		rm -f proj_temp ;
+		echo "Can't locate a project file!" ;
+		exit 
+	else
+		ls --format=commas *.pro 1> proj_temp ;
+		PROJECT_FILE=$(cat proj_temp | cut -f1 -d",") ;
+		rm -f proj_temp ;
+	fi
+fi
+
+echo "Project file is:      $PROJECT_FILE"
 
 # cleanup phase
-rm -f configure.def
+rm -f configure.def ;
 
 # number of arguments + 1
 NUM_OPT=$(($# + 1));
+
+# if we have arguments, we update the user friendly output...
+if [ "$NUM_OPT" != "1" ] ;
+then 
+	echo "CUSTOM_BUILD = true" >> configure.def
+fi
 
 # parsing arguments
 for (( d=1; d<$NUM_OPT; d++ )); do
@@ -68,6 +97,7 @@ for (( d=1; d<$NUM_OPT; d++ )); do
 			T=$V ;
 			echo "QMAKE_CFLAGS += $V" >> configure.def
 		done
+		STATUS="ok"
 	fi
 
 	if [ "$OPT" = "--cxxflags" ];
@@ -84,6 +114,7 @@ for (( d=1; d<$NUM_OPT; d++ )); do
 			T=$V ;
 			echo "QMAKE_CXXFLAGS += $V" >> configure.def
 		done
+		STATUS="ok"
 	fi
 
 	if [ "$OPT" = "--lflags" ];
@@ -100,6 +131,7 @@ for (( d=1; d<$NUM_OPT; d++ )); do
 			T=$V ;
 			echo "QMAKE_LFLAGS += $V" >> configure.def
 		done
+		STATUS="ok"
 	fi
 
 	if [ "$OPT" = "--includedir" ];
@@ -116,22 +148,26 @@ for (( d=1; d<$NUM_OPT; d++ )); do
 			T=$V ;
 			echo "PATH$y = $V" >> configure.def
 		done
+		STATUS="ok"
 	fi
 
 
 	if [ "$OPT" = "--prefix" ];
 	then
 		echo "PREFIX = $VAL" >> configure.def
+		STATUS="ok"
 	fi
 
 	if [ "$OPT" = "--static-linking-path" ];
 	then
-		echo "LINLIBPATH = $VAL" >> configure.def
+		echo "STATIC_LIBPATH = $VAL" >> configure.def
+		STATUS="ok"
 	fi
 
 	if [ "$OPT" = "--enable-debug" ];
 	then
 		echo "CONFIG += debug" >> configure.def
+		STATUS="ok"
 	fi
 
 	if [ "$OPT" = "--includelib" ];
@@ -148,87 +184,245 @@ for (( d=1; d<$NUM_OPT; d++ )); do
 			T=$V ;
 			echo "LIBS += $V" >> configure.def
 		done
+		STATUS="ok"
+	fi
+	
+	# if we have not parsed a valid argument
+	# we score an error...
+	if [ "$STATUS" = "ok" ];
+	then
+		STATUS="error"
+	else
+		echo
+		echo "__ Wrong parameter!"
+		echo "__ If unsure, type './configure --help'"
+		echo 
+		exit
 	fi
 done
 
 
-
-
+# rolling to go with qmake...
 
 ######################### QT Env variables checking
 #
-if  export | grep "$QTDIR" -q ;
+if  export | grep "QTDIR" -q ;
 then
 	RES="yes"
 else
 	RES="no"
 fi
 
-echo Checking for QT library    ........    $RES   , $QTDIR
+echo Checking whether QTDIR is set     ........    $RES   , $QTDIR
 
 if echo $RES | grep "no" -q ;
 then
 	echo
-	echo "__ Probably your QT libraries aren't set correctly or you haven't"
-	echo "__ already set the QT environment variables."
-	echo "__ Please see at http://www.trolltech.com for more info"
+	echo "__ QTDIR must be properly set."
+	echo "__ Please see at http://www.trolltech.com, section developers"
+	echo "__ and find the installation instructions."
 	exit
 fi
+
+
+######################### Qt headers ---> qglobal.h
+#
+if test -f $QTDIR/include/qglobal.h ;
+then
+	QT_GLOBAL_HEADER="$QTDIR/include/qglobal.h" ;
+	RES="yes"
+else
+	find /usr -name qglobal.h 1> temp ;
+	QT_GLOBAL_HEADER=$(cat temp) ;
+	if [ "$QT_GLOBAL_HEADER" != "" ]
+	then
+		RES="yes"
+	else
+		RES="no"
+	fi
+fi
+
+echo Checking for Qt headers    ........    $RES
+
+if test "$RES" = "no" ;
+then
+	echo
+	echo "__ I can't locate Qt headers. Just tried: $QTDIR/include"
+	echo "__ If your headers are located in another path, please send a"
+	echo "__ bug report to the QBAS developers ( http://qbas.berlios.de )."
+	exit
+fi
+
+
+
+######################### QT Version >= $QT_MINIMUM_REQUIRED_VERSION (if it is set)
+#
+
+QT_MINIMUM_REQUIRED_VERSION=$(cat build.definition | grep "QT_MINIMUM_REQUIRED_VERSION" -0 -w | cut -f2 -d"=" ) ;
+QT_MINIMUM_REQUIRED_VERSION_STR=$(cat build.definition | grep "QT_MINIMUM_REQUIRED_VERSION_STR" -0 -w | cut -f2 -d"=" ) ;
+
+if [ "$QT_MINIMUM_REQUIRED_VERSION" != "" ] && [ "$QT_MINIMUM_REQUIRED_VERSION_STR" != "" ];
+then
+	cat $QT_GLOBAL_HEADER | grep "QT_VERSION" -0 > temp ; 
+	QVERSION=$(cat temp | grep "#define QT_VERSION" -0 -w | cut -f3 -d" " | cut -f2 -d"x") ;
+	QVERSION_STR=$(cat temp | grep "QT_VERSION_STR" -0 -w | cut -f2 -d'"') ;
+
+	if test $QVERSION -ge $QT_MINIMUM_REQUIRED_VERSION  ;
+	then 
+		RES="yes"
+	else
+		RES="no"
+	fi
+
+	rm -f temp ;
+
+	echo Checking if Qt \>\= $QT_MINIMUM_REQUIRED_VERSION_STR    ........    $RES   , $QVERSION_STR
+
+	if echo $RES | grep "no" -q ;
+	then
+		echo
+		echo "__ Incorrect Qt version!"
+		exit
+	fi
+fi
+
+
+
+######################### QT library is thread type?
+#
+if test -e $QTDIR/lib/libqt-mt.so ;
+then
+	QT_LIB="$QTDIR/lib" ;
+	RES="yes"
+	echo "CONFIG += thread" >> configure.def ;
+else
+	find /usr -name libqt-mt.so 1> temp ;
+	QT_LIB=$(cat temp) ;
+	if [ "$QT_LIB" != "" ]
+	then
+		RES="yes"
+		echo "CONFIG += thread" >> configure.def ;
+		
+		echo
+		echo "__ Qt lib not in the expected path!"
+		echo
+		
+		CRITICAL="1" ;
+	else
+		RES="no"
+	fi
+fi
+
+echo Checking if Qt is -mt    ........    $RES 
+
+
+
 
 ######################### qmake, uic, moc checking
 #
 if test -e $QTDIR/bin/qmake ;
 then
+	QT_QMAKE_EXEC="$QTDIR/bin/qmake" ;
 	RES="yes"
 else
-	RES="no"
+	find /usr -name qmake 1> temp ;
+	QT_QMAKE_EXEC=$(cat temp) ;
+	if [ "$QT_QMAKE_EXEC" != "" ]
+	then
+		RES="yes"
+		echo
+		echo "__ qmake not in the expected path!"
+		echo
+		
+		CRITICAL="1" ;
+	else
+		RES="no"
+	fi
 fi
 
-echo Checking for qmake    ........    $RES
+echo Checking for qmake    ........    $RES , $QT_QMAKE_EXEC
 
 if test "$RES" = "no" ;
 then
 	echo
-	echo "__ I can't locate qmake. Just tried: $QTDIR/bin/qmake"
+	echo "__ I can't locate qmake."
 	exit
 fi
 
 if test -e $QTDIR/bin/uic ;
 then
+	QT_UIC_EXEC="$QTDIR/bin/uic" ;
 	RES="yes"
 else
-	RES="no"
+	find /usr -name uic 1> temp ;
+	QT_UIC_EXEC=$(cat temp) ;
+	if [ "$QT_UIC_EXEC" != "" ]
+	then
+		RES="yes"
+		echo
+		echo "__ uic not in the expected path!"
+		echo
+		
+		CRITICAL="1" ;
+	else
+		RES="no"
+	fi
 fi
 
-echo Checking for uic    ........    $RES
+echo Checking for uic    ........    $RES , $QT_UIC_EXEC 
 
 if test "$RES" = "no" ;
 then
 	echo
-	echo "__ I can't locate uic. Just tried: $QTDIR/bin/uic"
+	echo "__ I can't locate uic."
 	exit
 fi
 
 if test -e $QTDIR/bin/moc ;
 then
+	QT_MOC_EXEC="$QTDIR/bin/moc" ;
 	RES="yes"
 else
-	RES="no"
+	find /usr -name moc 1> temp ;
+	QT_MOC_EXEC=$(cat temp) ;
+	if [ "$QT_MOC_EXEC" != "" ]
+	then
+		RES="yes"
+		echo
+		echo "__ moc not in the expected path!"
+		echo
+		
+		CRITICAL="1" ;
+	else
+		RES="no"
+	fi
 fi
 
-echo Checking for moc    ........    $RES
+echo Checking for moc    ........    $RES , $QT_MOC_EXEC
 
 if test "$RES" = "no" ;
 then
 	echo
-	echo "__ I can't locate moc. Just tried: $QTDIR/bin/moc"
+	echo "__ I can't locate moc."
 	exit
 fi
+
+
+if [ "$CRITICAL" = "1" ] ;
+then 
+	echo
+	echo "__ Critical exceptions occurred."
+	echo "__ Check errors above if something goes wrong..."
+	echo 
+fi
+
+#cleanup
+rm -f temp ;
 
 
 echo "-------------------------------------------"
 echo    Now going with qmake...
 echo "-------------------------------------------"
 
-qmake mixxx.pro
+$QT_QMAKE_EXEC $PROJECT_FILE
 
