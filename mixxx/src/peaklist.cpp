@@ -125,29 +125,30 @@ PeakList::iterator PeakList::getFirstInRange(int idx, int len, bool returnElemen
 {
     // Find first peak in list which is bigger than or equal than idx
     iterator it = begin();
-
+    iterator itbegin = begin();
+    iterator itend = end();
     // Return if the list is empty...
-    if (it==end())
+    if (it==itend)
         return it;
 
     // If range is not wrapped...
     if (idx+len<m_iIdxSize)
     {
-        while (it!=end() && (*it).i<idx)
+        while (it!=itend && (*it).i<idx)
             ++it;
 
-        if (!returnElementAfterRange && it!=end() && (*it).i>idx+len)
+        if (!returnElementAfterRange && it!=itend && (*it).i>idx+len)
             it = end();
     }
     else // Range is wrapped...
     {
         // Search for a valid point in the end of the list (start of range)
-        while (it!=end() && (*it).i<idx)
+        while (it!=itend && (*it).i<idx)
             ++it;
 
         // If we're at the end of the list check if the first point in the list is in range
-        if (it==end() && (*begin()).i<(idx+len)%m_iIdxSize)
-            it = begin();
+        if (it==itend && (*itbegin).i<(idx+len)%m_iIdxSize)
+            it = itbegin;
     }
     return it;
 }

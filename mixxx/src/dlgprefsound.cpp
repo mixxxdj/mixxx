@@ -27,10 +27,11 @@
 DlgPrefSound::DlgPrefSound(QWidget *parent, PlayerProxy *_player,
                            ConfigObject<ConfigValue> *_config) : DlgPrefSoundDlg(parent,"")
 {
+    m_bLatencySliderDrag = false;
     player = _player;
     config = _config;
 
-    // Latency slider updates
+    // Update of latency label, when latency slider is updated
     connect(SliderLatency,                SIGNAL(sliderMoved(int)),  this, SLOT(slotLatency()));
     connect(SliderLatency,                SIGNAL(sliderReleased()),  this, SLOT(slotLatency()));
     connect(SliderLatency,                SIGNAL(valueChanged(int)), this, SLOT(slotLatency()));
@@ -49,8 +50,9 @@ DlgPrefSound::DlgPrefSound(QWidget *parent, PlayerProxy *_player,
     connect(ComboBoxSoundcardHeadRight,   SIGNAL(activated(int)),    this, SLOT(slotApply()));
     connect(ComboBoxSamplerates,          SIGNAL(activated(int)),    this, SLOT(slotApply()));
     connect(ComboBoxSoundApi,             SIGNAL(activated(int)),    this, SLOT(slotApplyApi()));
-    connect(SliderLatency,                SIGNAL(sliderMoved(int)),  this, SLOT(slotApply()));
-    connect(SliderSoundQuality,           SIGNAL(valueChanged(int)), this, SLOT(slotApply()));
+    connect(SliderLatency,                SIGNAL(sliderPressed()),   this, SLOT(slotLatencySliderClick()));
+    connect(SliderLatency,                SIGNAL(sliderReleased()),  this, SLOT(slotLatencySliderRelease()));
+    connect(SliderLatency,                SIGNAL(valueChanged(int)), this, SLOT(slotLatencySliderChange(int)));
     connect(SliderSoundQuality,           SIGNAL(valueChanged(int)), this, SLOT(slotApply()));
 }
 
@@ -199,6 +201,8 @@ void DlgPrefSound::slotApply()
     if (!player->open())
         QMessageBox::warning(0, "Configuration error","Audio device could not be opened");
 
+    qDebug("latency %s", config->getValueString(ConfigKey("[Soundcard]", "Latency")).latin1());    
+        
     // Configuration values might have changed after the opening of the player,
     // so ensure the form is updated...
     slotUpdate();
@@ -218,4 +222,19 @@ void DlgPrefSound::slotApplyApi()
     slotUpdate();
 }
 
+void DlgPrefSound::slotLatencySliderClick()
+{
+    m_bLatencySliderDrag = true;
+}
 
+void DlgPrefSound::slotLatencySliderRelease()
+{
+    m_bLatencySliderDrag = false;
+    slotApply();
+}
+
+void DlgPrefSound::slotLatencySliderChange(int)
+{
+    if (!m_bLatencySliderDrag)
+        slotApply();
+}

@@ -208,8 +208,8 @@ count(LINLIBPATH,1) {
 #  QMAKE_CFLAGS   += -pg -march=pentium3 -O3 -pipe
 
 # gcc Profiling
-#  QMAKE_CXXFLAGS_DEBUG += -pg
-#  QMAKE_LFLAGS_DEBUG += -pg
+QMAKE_CXXFLAGS += -pg
+QMAKE_LFLAGS += -pg
 }
 
 win32 {

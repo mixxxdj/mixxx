@@ -39,6 +39,11 @@ public slots:
     void slotLatency();
     void slotApply();
     void slotApplyApi();
+
+private slots:
+    void slotLatencySliderClick();
+    void slotLatencySliderRelease();
+    void slotLatencySliderChange(int);
 signals:
     void apply();
 private:
@@ -50,6 +55,8 @@ private:
     PlayerProxy *player;
     /** Pointer to config object */
     ConfigObject<ConfigValue> *config;
+    /** True if the mouse is currently dragging the latency slider */
+    bool m_bLatencySliderDrag; 
 };
 
 #endif
