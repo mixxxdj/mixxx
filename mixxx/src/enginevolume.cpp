@@ -17,6 +17,7 @@
 #include "enginevolume.h"
 #include "controllogpotmeter.h"
 #include "controlengine.h"
+#include "configobject.h"
 
 /*----------------------------------------------------------------
   Volume effect.
@@ -25,27 +26,26 @@ EngineVolume::EngineVolume(ConfigKey key, double maxval)
 {
     ControlLogpotmeter *p = new ControlLogpotmeter(key, maxval);
     potmeter = new ControlEngine(p);
-
-    buffer = new CSAMPLE[MAX_BUFFER_LEN];
 }
 
 EngineVolume::~EngineVolume()
 {
     delete potmeter;
-    delete [] buffer;
 }
 
-CSAMPLE *EngineVolume::process(const CSAMPLE *source, const int buffer_size)
+void EngineVolume::process(const CSAMPLE *pIn, const CSAMPLE *pOut, const int iBufferSize)
 {
-    double volume=potmeter->get();
+    CSAMPLE *pOutput = (CSAMPLE *)pOut;
+    float volume=(float)potmeter->get();
 
     if (volume == 1.)
     {
-        memcpy(buffer, source, sizeof(CSAMPLE) * buffer_size);
-        return buffer;
+        if (pIn!=pOut)
+            memcpy(pOutput, pIn, sizeof(CSAMPLE) * iBufferSize);
     }
-
-    for (int i=0; i<buffer_size; i++)
-        buffer[i] = source[i]*volume;
-    return buffer;
+    else
+    {
+        for (int i=0; i<iBufferSize; ++i)
+            pOutput[i] = pIn[i]*volume;
+    }
 }

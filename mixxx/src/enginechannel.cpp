@@ -59,18 +59,11 @@ ControlEngine *EngineChannel::getPFL()
     return pfl;
 }
 
-CSAMPLE *EngineChannel::process(const CSAMPLE* source, const int buffer_size)
+void EngineChannel::process(const CSAMPLE *pIn, const CSAMPLE *pOut, const int iBufferSize)
 {
-    CSAMPLE *temp  = pregain->process(source, buffer_size);
-    CSAMPLE *temp2 = clipping->process(temp, buffer_size);
-    temp = filter->process(temp2, buffer_size); 
-    temp2 = volume->process(temp, buffer_size);
-    vumeter->process(temp2, buffer_size);
-
-    return temp2;
+    pregain->process(pIn, pOut, iBufferSize);
+    clipping->process(pOut, pOut, iBufferSize);
+    filter->process(pOut, pOut, iBufferSize); 
+    volume->process(pOut, pOut, iBufferSize);
+    vumeter->process(pOut, pOut, iBufferSize);
 }
-
-
-
-
-

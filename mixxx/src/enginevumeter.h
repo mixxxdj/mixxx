@@ -28,7 +28,7 @@ class EngineVuMeter : public EngineObject {
 public:
     EngineVuMeter(const char *);
     ~EngineVuMeter();
-    CSAMPLE *process(const CSAMPLE*, const int);
+    void process(const CSAMPLE *pIn, const CSAMPLE *pOut, const int iBufferSize);
 
 private:
     ControlEngine *m_ctrlVuMeter;

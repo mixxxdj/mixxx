@@ -21,19 +21,18 @@
 
 class ControlEngine;
 
-const int max_delay = 20000; 
+const int kiMaxDelay = 20000; 
 
 class EngineDelay : public EngineObject
 {
 public:
-  EngineDelay(const char *group);
-  ~EngineDelay();
-    void notify(double) {};
-  CSAMPLE *process(const CSAMPLE *, const int);
+    EngineDelay(const char *group);
+    ~EngineDelay();
+    void process(const CSAMPLE *pIn, const CSAMPLE *pOut, const int iBufferSize);
 private:
-  ControlEngine *potmeter;
-  CSAMPLE *process_buffer, *delay_buffer;
-  int delay, delay_pos;
+    ControlEngine *m_pPotmeter;
+    CSAMPLE *m_pDelayBuffer;
+    int m_iDelay, m_iDelayPos;
 };
 
 #endif

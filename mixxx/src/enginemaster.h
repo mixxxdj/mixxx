@@ -29,7 +29,7 @@ class EngineFlanger;
 class EngineVuMeter;
 
 /**
-  *@author 
+  *@author Tue and Ken Haste Andersen
   */
 
 class EngineMaster : public EngineObject
@@ -40,8 +40,7 @@ public:
     ~EngineMaster();
     /** Reconfigures the EngineBufferScaleSRC objects with the sound quality written in the config database */
     void setQuality(int);
-    void notify(double) {};
-    CSAMPLE *process(const CSAMPLE *, const int);
+    void process(const CSAMPLE *pIn, const CSAMPLE *pOut, const int iBufferSize);
 private:
     EngineBuffer *buffer1, *buffer2;
     EngineChannel *channel1, *channel2;
@@ -51,7 +50,7 @@ private:
     EngineVuMeter *vumeter;
 
     ControlEngine *crossfader, *head_mix, *pfl1, *pfl2, *flanger1, *flanger2, *m_pBalance;
-    CSAMPLE *out, *tmp, *tmp2, *tmp3, *tmp4;
+    CSAMPLE *m_pMaster, *m_pHead, *m_pTemp1, *m_pTemp2;
     bool master1, master2;
 };
 

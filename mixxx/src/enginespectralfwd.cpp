@@ -61,44 +61,35 @@ EngineSpectralFwd::~EngineSpectralFwd()
             phase_calc is true, a pointer to tmp is returned instead, giving
             the complex result of the fft.
    -------- ----------------------------------------------------------------- */
-CSAMPLE *EngineSpectralFwd::process(const CSAMPLE *p, const int)
+void EngineSpectralFwd::process(const CSAMPLE *pIn, const CSAMPLE *, const int)
 {
-    if (p>0)
+    fftw_real *pInput = (fftw_real *)pInput;
+
+    // Perform FFT
+    rfftw_one(plan_forward, pInput, tmp);
+
+    if (power_calc)
     {
-        fftw_real *s = (fftw_real *)p;
-
-        // Perform FFT
-        rfftw_one(plan_forward, s, tmp);
-
-        fftw_real *r = tmp;
-
-        if (power_calc)
-        {
-            // Calculate length and angle of each vector
-            //spectrum[0]      = tmp[0]     *tmp[0];  // Length of element 0 ... this gives a wrong value?!
-            spectrum[l_half] = tmp[l_half]*tmp[l_half]; // Nyquist freq.
-            for (int i=0; i<l_half; ++i)
-                spectrum[i]  = sqrt(tmp[i]*tmp[i] + tmp[l-(i+1)]*tmp[l-(i+1)]);
-
-            r = spectrum;
-        }
-
-        if (phase_calc)
-        {
-            //spectrum[l+2-1] = mod2pi(atan(0/tmp[0])); // Angle of element 0
-            //spectrum[l_half+1] = 0;     // Angle of nyquist element
-            for (int i=1; i<l_half; ++i)
-                spectrum[l-i] = arctan2(tmp[l-i],tmp[i]);
-            r = spectrum;
-        }
-        return (CSAMPLE *) r;
+        // Calculate length and angle of each vector
+        //spectrum[0]      = tmp[0]     *tmp[0];  // Length of element 0 ... this gives a wrong value?!
+        spectrum[l_half] = tmp[l_half]*tmp[l_half]; // Nyquist freq.
+        for (int i=0; i<l_half; ++i)
+            spectrum[i]  = sqrt(tmp[i]*tmp[i] + tmp[l-(i+1)]*tmp[l-(i+1)]);
     }
-    else
-        return (CSAMPLE *) tmp;
+
+    if (phase_calc)
+    {
+        //spectrum[l+2-1] = mod2pi(atan(0/tmp[0])); // Angle of element 0
+        //spectrum[l_half+1] = 0;     // Angle of nyquist element
+        for (int i=1; i<l_half; ++i)
+            spectrum[l-i] = arctan2(tmp[l-i],tmp[i]);
+    }
 }
 
 CSAMPLE EngineSpectralFwd::getHFC()
 {
+    ASSERT(power_calc);
+
     // Calculate sum of power spectrum
     CSAMPLE hfc = 0;
 
@@ -114,7 +105,7 @@ CSAMPLE EngineSpectralFwd::getHFC()
 
 /* -------- -----------------------------------------------------------------
    Purpose: Returns the power of the spectrum at a specific bin. Expects the
-            fft to be calculated by a call to tick() before this method is
+            fft to be calculated by a call to process() before this method is
             called.
    Input:   index of the bin.
    Output:  Power value.
@@ -129,7 +120,7 @@ CSAMPLE EngineSpectralFwd::power(int index)
 
 /* -------- -----------------------------------------------------------------
    Purpose: Returns the phase of the spectrum at a specific bin. Expects the
-            fft to be calculated by a call to tick() before this method is
+            fft to be calculated by a call to process() before this method is
             called.
    Input:   index of the bin.
    Output:  Phase value.

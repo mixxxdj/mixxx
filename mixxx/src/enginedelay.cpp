@@ -15,50 +15,40 @@
  ***************************************************************************/
 
 #include "enginedelay.h"
-#include "controlengine.h"
 #include "controlpotmeter.h"
-#include "wknob.h"
 
 /*----------------------------------------------------------------
 
   ----------------------------------------------------------------*/
 EngineDelay::EngineDelay(const char *group)
 {
-    process_buffer = new CSAMPLE[MAX_BUFFER_LEN];
-    delay_buffer = new CSAMPLE[max_delay];
-
-    delay_pos = 0;
-
-    new ControlPotmeter(ConfigKey(group, "delay"), 0, max_delay);
+    m_pDelayBuffer = new CSAMPLE[kiMaxDelay];
+    m_iDelayPos = 0;
+    new ControlPotmeter(ConfigKey(group, "delay"), 0, kiMaxDelay);
 }
 
 EngineDelay::~EngineDelay()
 {
-    delete potmeter;
-    delete [] process_buffer;
-    delete [] delay_buffer;
+    delete [] m_pDelayBuffer;
 }
 
-CSAMPLE *EngineDelay::process(const CSAMPLE *source, const int buffer_size)
+void EngineDelay::process(const CSAMPLE *pIn, const CSAMPLE *pOut, const int iBufferSize)
 {
-    int delay_source_pos = (delay_pos+max_delay-delay)%max_delay;
-    if ((delay_source_pos<0) || (delay_source_pos>max_delay)) 
-        qFatal("Error in EngineDelay: delay_source_pos = %d", delay_source_pos);
-
-    for (int i=0; i<buffer_size; i++)
+    int iDelaySourcePos = (m_iDelayPos+kiMaxDelay-m_iDelay)%kiMaxDelay;
+    CSAMPLE *pOutput = (CSAMPLE *)pOut;
+        
+    Q_ASSERT(iDelaySourcePos>=0);
+    Q_ASSERT(iDelaySourcePos<=kiMaxDelay);
+        
+    for (int i=0; i<iBufferSize; ++i)
     {
         // put sample into delay buffer:
-        delay_buffer[delay_pos] = source[i];
-        delay_pos++;
-        if (delay_pos >= max_delay)
-            delay_pos=0;
+        m_pDelayBuffer[m_iDelayPos] = pIn[i];
+        m_iDelayPos = (m_iDelayPos+1)%kiMaxDelay;
 
         // Take "old" sample from delay buffer and mix it with the source buffer:
-        process_buffer[i] = 0.5*(delay_buffer[delay_source_pos] + source[i]);
-        delay_source_pos++;
-        if (delay_source_pos >= max_delay)
-            delay_source_pos=0;
+        pOutput[i] = 0.5*(m_pDelayBuffer[iDelaySourcePos] + pIn[i]);
+        iDelaySourcePos = (iDelaySourcePos+1)%kiMaxDelay;
     }
-    return process_buffer;
 }
 

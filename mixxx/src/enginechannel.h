@@ -38,7 +38,7 @@ public:
     ~EngineChannel();
     void notify(double) {};
     ControlEngine *getPFL();
-    CSAMPLE *process(const CSAMPLE *, const int);
+    void process(const CSAMPLE *pIn, const CSAMPLE *pOut, const int iBufferSize);
 
 private:
     EnginePregain *pregain;

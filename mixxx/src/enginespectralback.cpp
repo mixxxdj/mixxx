@@ -29,7 +29,6 @@ EngineSpectralBack::EngineSpectralBack(int Length, CSAMPLE *_window)
     // Allocate temporary buffer. Double size arrays of the input size is used,
     // because of the FFT's
     tmp = new fftw_real[l];
-    samples = new fftw_real[l];
 }
 
 /* -------- -----------------------------------------------------------------
@@ -44,7 +43,6 @@ EngineSpectralBack::~EngineSpectralBack()
 
     // Deallocate temporary buffer
     delete [] tmp;
-    delete [] samples;
 }
 
 /* -------- -----------------------------------------------------------------
@@ -56,23 +54,23 @@ EngineSpectralBack::~EngineSpectralBack()
    into real and imaginary parts, before the IFFT is calculated.
    Output:  Pointer to an array of CSAMPLES of length l.
    -------- ----------------------------------------------------------------- */
-CSAMPLE *EngineSpectralBack::process(const CSAMPLE *p, const int)
+void EngineSpectralBack::process(const CSAMPLE *pIn, const CSAMPLE *pOut, const int)
 {
-    CSAMPLE *p2 = (CSAMPLE *)p;
+    fftw_real *pOutput = (fftw_real *)pOut;
 
     // Subtract linear phase incriment caused by window
     // for (int i=l_half; i<l; i++)
     //  p2[i] -= (i-l_half)*pi;
 
     // Convert from (mag,phase) to (real,imag).
-    tmp[0]      = sqrt(p2[0]);
-    tmp[l_half] = sqrt(p2[l_half]);
+    tmp[0]      = sqrt(pIn[0]);
+    tmp[l_half] = sqrt(pIn[l_half]);
 
     int i;
     for (i=1; i<l_half; i++)
     {
-        tmp[i]    = cos(p2[l-i])*p2[i];
-        tmp[l-i]  = sin(p2[l-i])*p2[i];
+        tmp[i]    = cos(pIn[l-i])*pIn[i];
+        tmp[l-i]  = sin(pIn[l-i])*pIn[i];
     }
 
     // No conversion
@@ -80,11 +78,9 @@ CSAMPLE *EngineSpectralBack::process(const CSAMPLE *p, const int)
     // tmp[i]=p2[i];
 
     // Perform FFT
-    rfftw_one(plan_backward,tmp,samples);
+    rfftw_one(plan_backward, tmp, pOutput);
 
     // Descale the data by window length and divide by window
     for (i=0; i<l; i++)
-        samples[i] /= (l*window[i]);
-
-    return (CSAMPLE *) samples;
+        pOutput[i] /= (l*window[i]);
 }

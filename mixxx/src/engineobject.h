@@ -19,7 +19,6 @@
 #define ENGINEOBJECT_H
 
 #include <qobject.h>
-#include "mixxxview.h"
 #include "defs.h"
 
 class EngineObject;
@@ -33,7 +32,7 @@ class EngineObject : public QObject {
 public:
     EngineObject();
     virtual ~EngineObject();
-    virtual CSAMPLE *process(const CSAMPLE *, const int) = 0;
+    virtual void process(const CSAMPLE *pIn, const CSAMPLE *pOut, const int iLen) = 0;
     int  getPlaySrate();
 protected:
     void setPlaySrate(int srate);

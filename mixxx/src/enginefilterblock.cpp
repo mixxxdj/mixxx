@@ -19,6 +19,7 @@
 #include "controllogpotmeter.h"
 #include "controlpushbutton.h"
 #include "controlengine.h"
+#include "enginefilteriir.h"
 
 EngineFilterBlock::EngineFilterBlock(const char *group)
 {
@@ -40,6 +41,7 @@ EngineFilterBlock::EngineFilterBlock(const char *group)
     highrbj = new EngineFilterRBJ();
     highrbj->calc_filter_coeffs(1, 10000., 48000., 0.3., 0., false);
 */
+    
     p = new ControlLogpotmeter(ConfigKey(group, "filterLow"), 4.);
     filterpotLow = new ControlEngine(p);
     pb = new ControlPushButton(ConfigKey(group, "filterLowKill"),  true);
@@ -54,13 +56,12 @@ EngineFilterBlock::EngineFilterBlock(const char *group)
     filterpotHigh = new ControlEngine(p);
     pb = new ControlPushButton(ConfigKey(group, "filterHighKill"),  true);
     filterKillHigh = new ControlEngine(pb);
-
-    buffer = new CSAMPLE[MAX_BUFFER_LEN];
+    
+    m_pTemp = new CSAMPLE[MAX_BUFFER_LEN];
 }
 
 EngineFilterBlock::~EngineFilterBlock()
 {
-    delete [] buffer;
     delete high;
     delete low;
     delete filterpotLow;
@@ -71,8 +72,9 @@ EngineFilterBlock::~EngineFilterBlock()
     delete filterKillHigh;
 }
 
-CSAMPLE *EngineFilterBlock::process(const CSAMPLE *source, const int buf_size)
+void EngineFilterBlock::process(const CSAMPLE *pIn, const CSAMPLE *pOut, const int iBufferSize)
 {
+    CSAMPLE *pOutput = (CSAMPLE *)pOut;
     CSAMPLE fLow=0.f, fMid=0.f, fHigh=0.f;
 
     if (filterKillLow->get()==0.)
@@ -84,14 +86,15 @@ CSAMPLE *EngineFilterBlock::process(const CSAMPLE *source, const int buf_size)
 
     if ((fLow == 1.) && (fMid == 1.) && (fHigh == 1.))
     {
-        memcpy(buffer, source, sizeof(CSAMPLE) * buf_size);
-        return buffer;
+        if (pIn!=pOut)
+            memcpy(pOutput, pIn, sizeof(CSAMPLE) * iBufferSize);
     }
-
-    CSAMPLE *p0 = low->process(source,buf_size);
-    CSAMPLE *p1 = high->process(source,buf_size);
-
-    for (int i=0; i<buf_size; i++)
-        buffer[i] = fLow*p0[i] + fHigh*p1[i] + fMid*(source[i]-p0[i]-p1[i]);
-    return buffer;
+    else
+    {
+        low->process(pIn, m_pTemp, iBufferSize);
+        high->process(pIn, pOut, iBufferSize);
+        
+        for (int i=0; i<iBufferSize; ++i)
+            pOutput[i] = fLow*m_pTemp[i] + fHigh*pOutput[i] + fMid*(pIn[i]-m_pTemp[i]-pOutput[i]);
+    }
 }

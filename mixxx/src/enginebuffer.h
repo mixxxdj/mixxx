@@ -75,7 +75,7 @@ public:
     /** Sets pointer to other engine buffer/channel */
     void setOtherEngineBuffer(EngineBuffer *);
     
-    CSAMPLE *process(const CSAMPLE *, const int);
+    void process(const CSAMPLE *pIn, const CSAMPLE *pOut, const int iBufferSize);
 
     CSAMPLE *update_visual();
     const char *getGroup();
@@ -114,14 +114,12 @@ public slots:
 
 private:
     /** Called from process() when an empty buffer, possible ramped to zero is needed */
-    void rampOut(int buf_size);
+    void rampOut(const CSAMPLE *pOut, int iBufferSize);
 
     /** Pointer to other EngineBuffer */
     EngineBuffer *m_pOtherEngineBuffer;
     /** Pointer to reader */
     Reader *reader;
-    /** Buffer used in the process() */
-    CSAMPLE *buffer;
     /** The current sample to play in the file. */
     double filepos_play;
     /** Sample in the buffer relative to filepos_play. */

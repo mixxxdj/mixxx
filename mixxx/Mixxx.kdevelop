@@ -22,6 +22,7 @@
       <group pattern="*.png" name="Icons" />
       <group pattern="*" name="Others" />
       <hidenonprojectfiles>true</hidenonprojectfiles>
+      <hidenonlocation>false</hidenonlocation>
     </groups>
     <tree>
       <hidenonprojectfiles>false</hidenonprojectfiles>
@@ -136,4 +137,11 @@
     <diffoptions>-u3 -p</diffoptions>
     <rshoptions/>
   </kdevcvs>
+  <kdevcvsservice>
+    <recursivewhenupdate>true</recursivewhenupdate>
+    <prunedirswhenupdate>true</prunedirswhenupdate>
+    <createdirswhenupdate>true</createdirswhenupdate>
+    <recursivewhencommitremove>true</recursivewhencommitremove>
+    <revertoptions>-C</revertoptions>
+  </kdevcvsservice>
 </kdevelop>

@@ -35,13 +35,12 @@ public:
     /** Destructor */
     ~EngineSpectralBack();
     /** Performs the IFFT */
-    CSAMPLE *process(const CSAMPLE *p, const int buf_len);
-    void notify(double) {};
+    void process(const CSAMPLE *pIn, const CSAMPLE *pOut, const int iBufferSize);
 protected:
     /** Internal fftw plan */
     rfftw_plan   plan_backward;
-    /** Internal fftw plans */
-    fftw_real   *tmp, *samples;
+    /** Internal fftw plan */
+    fftw_real   *tmp;
     /** Length, double length, and half the length of the fft */
     int    l, l2, l_half;
     CSAMPLE *window;
