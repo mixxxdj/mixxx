@@ -73,11 +73,18 @@ void PowerMateWin::run()
     QString qsName("PowerMate2");
     HANDLE hEvent = CreateEvent(NULL , true, false, (const unsigned short *)qsName.latin1() );
 
-    // Overlapped structure required for ascyc reading
+    // Overlapped structure required for async reading
     OVERLAPPED overlapped;
     overlapped.Offset = 0;
     overlapped.OffsetHigh = 0;
     overlapped.hEvent = 0;
+
+    // Setup timeouts when reading using ReadFile
+    COMMTIMEOUTS commtimeouts;
+    commtimeouts.ReadIntervalTimeout = MAXDWORD;
+    commtimeouts.ReadTotalTimeoutMultiplier = MAXDWORD;
+    commtimeouts.ReadTotalTimeoutConstant = 5; // Time to wait for requested characters in msec
+    SetCommTimeouts(m_hFd, &commtimeouts);
 
     // If ReadFile has been called without the data fetched, bRead is true
     bool bRead = false;
@@ -123,23 +130,14 @@ void PowerMateWin::run()
         // Check if led queue is empty
         //
 
-        // If last event was a knob event, send out zero value of knob
-        if (m_bSendKnobEvent)
-            knob_event();
-
         // Check if we have to turn on led
         if (m_pRequestLed->available()==0)
         {
             (*m_pRequestLed)--;
             led_write(255, 0, 0, 0, 1);
-            usleep(1);
-
-            led_write(0, 0, 0, 0, 0);
         }
         else
-        {
-            usleep(50);
-        }
+            led_write(0, 0, 0, 0, 0);
     }
 }
 
@@ -221,10 +219,10 @@ void PowerMateWin::process_event(char *pEv)
     {
         // Send event to GUI thread
         if (pEv[0]==1)
-			if (m_pControlObjectButton)
+            if (m_pControlObjectButton)
                 m_pControlObjectButton->queueFromMidi(NOTE_ON, 1);
         else
-			if (m_pControlObjectButton)
+            if (m_pControlObjectButton)
                 m_pControlObjectButton->queueFromMidi(NOTE_OFF, 1);
 
 //      qDebug("PowerMate: Button was %s %i", pEv[1]? "pressed":"released",pEv[1]);

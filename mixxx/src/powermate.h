@@ -18,8 +18,8 @@
 #ifndef POWERMATE_H
 #define POWERMATE_H
 
-#include <qthread.h>
 #include <qsemaphore.h>
+#include "rotary.h"
 
 /**
   * Virtual class for handling the PowerMate. This is implemented as a separate thread.
@@ -27,50 +27,22 @@
   *@author Tue & Ken Haste Andersen
   */
 
-class ControlObject;
-
 const int kiPowermateBufferSize = 32;
 const int kiPowermateKnobIntegralMaxLen = 25;
 
-static QString kqPowerMateMappingP1Phase =   "Player 1, phase adjustment";
-static QString kqPowerMateMappingP1Scratch = "Player 1, scratch";
-static QString kqPowerMateMappingP2Phase =   "Player 2, phase adjustment";
-static QString kqPowerMateMappingP2Scratch = "Player 2, scratch";
-
-class PowerMate : public QThread
+class PowerMate : public Rotary
 {
 public:
     PowerMate();
     ~PowerMate();
-    void led();
-    /** Open a PowerMate device */
+    bool opendev(QString) { return opendev(); }
     virtual bool opendev() = 0;
-    /** Close the device */
-    virtual void closedev() = 0;
-    void selectMapping(QString mapping);
+    void led();
 protected:
-    /** Main thread loop */
-    virtual void run() = 0;
     /** Change the led */
     virtual void led_write(int static_brightness, int speed, int table, int asleep, int awake) = 0;
-    /** This method should be called every 50ms during an active period of the knob. The method sends
-      * knob events out, which has been interpolated and fitted to a certain function */
-    void knob_event();
-
     /** Instantiate number. Used in the calculation of MIDI controller id's */
     int m_iInstNo;
-    /** Pointer to associated ControlObjects */
-    ControlObject *m_pControlObjectRotary, *m_pControlObjectButton;
-    /** Variable used to indicate weather a knob event should be sent or not */
-    bool m_bSendKnobEvent;
-    /** Amplitude of knob */
-    float m_fMagnitude;
-    /** Current value got from knob */
-    int m_iKnobVal;
-    /** Pointer to knob integral buffer */
-    int *m_pKnobIntegral;
-    /** Current length of integral buffer */
-    int m_iKnobIntegralLength;
     /** Pointer to semaphore used to control led */
     QSemaphore *m_pRequestLed;
 };

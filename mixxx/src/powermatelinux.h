@@ -39,13 +39,12 @@ class PowerMateLinux : public PowerMate
 public:
     PowerMateLinux();
     ~PowerMateLinux();
-    int opendev(int iId);
-    void closedev();
-protected:
     bool opendev();
-    void run();
+    void closedev();
+    void getNextEvent();
+protected:
+    int opendev(int iId);
     void led_write(int iStaticBrightness, int iSpeed, int iTable, int iAsleep, int iAwake);
-    void process_event(struct input_event *pEv);
 
     /** File handle of current open /dev/input/event device */
     int m_iFd;
@@ -53,6 +52,9 @@ protected:
     int m_iId;
     /** List of open devices */
     static QValueList <int> sqlOpenDevs;
+    /** File set used in select() call */
+    fd_set fdset;
+
 };
 
 #endif

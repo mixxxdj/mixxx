@@ -25,6 +25,8 @@
 class MidiObject;
 class PowerMate;
 class Mouse;
+class QProgressDialog;
+class QTimer;
 
 /**
   *@author Tue & Ken Haste Andersen
@@ -43,6 +45,7 @@ public slots:
     void slotMouseCalibrate1();
     void slotMouseCalibrate2();
     void slotMouseHelp();
+    void slotUpdateProgressBar();
 signals:
     void apply();
 private:
@@ -51,6 +54,10 @@ private:
     ConfigObject<ConfigValueMidi> *m_pMidiConfig;
     PowerMate *m_pPowerMate1, *m_pPowerMate2;
     Mouse *m_pMouse1, *m_pMouse2;
+    QProgressDialog *m_pProgressDialog;
+    QTimer *m_pTimer;
+    int m_iProgress;
+    Mouse *m_pMouseCalibrate;
 };
 
 #endif

@@ -27,8 +27,8 @@
 #include "mathstuff.h"
 
 #ifndef MSC_PULSELED
-/* this may not have made its way into the kernel headers yet ... */
-#define MSC_PULSELED 0x01
+  // this may not have made its way into the kernel headers yet ...
+  #define MSC_PULSELED 0x01
 #endif
 
 QValueList <int> PowerMateLinux::sqlOpenDevs;
@@ -69,47 +69,19 @@ bool PowerMateLinux::opendev()
         return false;
 }
 
-void PowerMateLinux::run()
+void PowerMateLinux::closedev()
 {
-    struct input_event buffer[kiPowermateBufferSize];
-    int iR, iEvents, i;
-
-    //timeval *waittime = new timeval;
-    while (1)
+    if (m_iFd>0)
     {
-        iR = read(m_iFd, buffer, sizeof(struct input_event) * kiPowermateBufferSize);
-        if(iR > 0)
-        {
-            iEvents = iR / sizeof(struct input_event);
-            for(i=0; i<iEvents; i++)
-                process_event(&buffer[i]);
-        }
+        close(m_iFd);
 
-        //
-        // Check if led queue is empty
-        //
-
-        // If last event was a knob event, send out zero value of knob
-        if (m_bSendKnobEvent)
-            knob_event();
-
-        // Check if we have to turn on led
-        if (m_pRequestLed->available()==0)
-        {
-            (*m_pRequestLed)--;
-            led_write(255, 0, 0, 0, 1);
-
-            // Sleep
-            msleep(1);
-
-            led_write(0, 0, 0, 0, 0);
-        }
-        else
-        {
-            // Sleep
-            msleep(5);
-        }
+        // Remove id from list
+        QValueList<int>::iterator it = sqlOpenDevs.find(m_iId);
+        if (it!=sqlOpenDevs.end())
+            sqlOpenDevs.remove(it);
     }
+    m_iFd = -1;
+    m_iId = -1;
 }
 
 int PowerMateLinux::opendev(int iId)
@@ -137,6 +109,8 @@ int PowerMateLinux::opendev(int iId)
             // Add id to list of open devices
             sqlOpenDevs.append(iId);
 
+            qDebug("pm id %i",iId);
+
             return iFd;
         }
 
@@ -144,19 +118,63 @@ int PowerMateLinux::opendev(int iId)
     return -1;
 }
 
-void PowerMateLinux::closedev()
+void PowerMateLinux::getNextEvent()
 {
-    if (m_iFd>0)
-    {
-        close(m_iFd);
+/*
+    // Apparently the PowerMate driver does not support select
+    FD_ZERO(&fdset);
+    FD_SET(m_iFd, &fdset);
+    struct timeval tv;
+    tv.tv_sec = 1;
+    tv.tv_usec = 0;
+    int v = select(m_iFd+1, &fdset, 0, 0, &tv);
+    if (v>0)
+*/
+        struct input_event ev;
+        int iR = read(m_iFd, &ev, sizeof(struct input_event));
+        if (iR == sizeof(struct input_event))
+        {
+            switch(ev.type)
+            {
+            case EV_REL:
+                if (ev.code == REL_DIAL)
+                {
+                    int v = ev.value;
+                    sendRotaryEvent((double)v/10.);
+                }
+                break;
+            case EV_KEY:
+                if(ev.code == BTN_0)
+                {
+                    // Send event to GUI thread
+                    if (ev.value==1)
+                        sendButtonEvent(true);
+                    else
+                        sendButtonEvent(false);
+                }
+                break;
+            default:
+                sendRotaryEvent(0.);
+            }
+        }
+        else
+            sendRotaryEvent(0.);
 
-        // Remove id from list
-        QValueList<int>::iterator it = sqlOpenDevs.find(m_iId);
-        if (it!=sqlOpenDevs.end())
-            sqlOpenDevs.remove(it);
+    //
+    // Check if led queue is empty
+    //
+    // Check if we have to turn on led
+    if (m_pRequestLed->available()==0)
+    {
+        (*m_pRequestLed)--;
+        led_write(255, 0, 0, 0, 1);
+
+        msleep(5);
+
+        led_write(0, 0, 0, 0, 0);
     }
-    m_iFd = -1;
-    m_iId = -1;
+    else if (iR != sizeof(struct input_event))
+        msleep(5);
 }
 
 void PowerMateLinux::led_write(int iStaticBrightness, int iSpeed, int iTable, int iAsleep, int iAwake)
@@ -183,39 +201,4 @@ void PowerMateLinux::led_write(int iStaticBrightness, int iSpeed, int iTable, in
 
     if(write(m_iFd, &ev, sizeof(struct input_event)) != sizeof(struct input_event))
         qDebug("PowerMate: write(): %s", strerror(errno));
-}
-
-void PowerMateLinux::process_event(struct input_event *pEv)
-{
-    switch(pEv->type)
-    {
-    case EV_REL:
-        if(pEv->code == REL_DIAL)
-        {
-            // Update knob variables
-            m_iKnobVal = pEv->value;
-            m_bSendKnobEvent = true;
-        }
-        break;
-    case EV_KEY:
-        if(pEv->code == BTN_0)
-        {
-            // Send event to GUI thread
-            if (pEv->value==1)
-                if (m_pControlObjectButton)
-                    m_pControlObjectButton->queueFromMidi(NOTE_ON, 1);
-                //QApplication::postEvent(m_pControl,new ControlEventMidi(NOTE_ON, kiPowermateMidiChannel, (char)(m_iInstNo*2+kiPowermateMidiBtn),1));
-            else
-                if (m_pControlObjectButton)
-                    m_pControlObjectButton->queueFromMidi(NOTE_OFF, 1);
-
-                //QApplication::postEvent(m_pControl,new ControlEventMidi(NOTE_OFF, kiPowermateMidiChannel, (char)(m_iInstNo*2+kiPowermateMidiBtn),1));
-
-
-
-
-//            qDebug("PowerMate: Button was %s %i", ev->value? "pressed":"released",ev->value);
-        }
-        break;
-    }
 }
