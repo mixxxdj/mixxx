@@ -44,10 +44,14 @@ EngineMaster::EngineMaster(EngineBuffer *_buffer1, EngineBuffer *_buffer2,
     // Crossfader
     ControlPotmeter *p = new ControlPotmeter(ConfigKey(group, "crossfader"),-1.,1.);
     crossfader = new ControlEngine(p);
-    
+
+    // Balance
+    p = new ControlPotmeter(ConfigKey(group, "balance"), -1., 1.);
+    m_pBalance = new ControlEngine(p);
+            
     // Master volume
     volume = new EngineVolume(ConfigKey(group,"volume"));
-
+    
     // Clipping
     clipping = new EngineClipping(group);
 
@@ -76,6 +80,7 @@ EngineMaster::EngineMaster(EngineBuffer *_buffer1, EngineBuffer *_buffer2,
 EngineMaster::~EngineMaster()
 { 
     delete crossfader;
+    delete m_pBalance;
     delete head_mix;
     delete volume;
     delete head_volume;
@@ -193,11 +198,22 @@ CSAMPLE *EngineMaster::process(const CSAMPLE *, const int buffer_size)
 */
     {
         int j=0;
+
+        // Balance values
+        float balright = 1.;
+        float balleft = 1.;
+        float bal = m_pBalance->get();
+        qDebug("bal %f",bal);
+        if (bal>0.)
+            balleft -= bal;
+        else if (bal<0.)
+            balright += bal;
+        
         for (int i=0; i<buffer_size; i+=2)
         {
-            // Interleave the output and the headphone channels
-            out[j  ] = tmp2[i  ];
-            out[j+1] = tmp2[i+1];
+            // Interleave the output and the headphone channels, and perform balancing on main out
+            out[j  ] = tmp2[i  ]*balleft;
+            out[j+1] = tmp2[i+1]*balright;
             out[j+2] = tmp3[i  ];
             out[j+3] = tmp3[i+1];
             j+=4;

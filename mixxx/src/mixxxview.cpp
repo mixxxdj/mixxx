@@ -211,12 +211,101 @@ MixxxView::MixxxView(QWidget *parent, bool bVisuals) : QWidget(parent, "Mixxx")
     m_pVUmeterCh2->move(524,99);
 
     m_pVolume = new WKnob(main);
-    m_pVolume->setPositions(10);
-    for (i=0; i<10; ++i)
+    m_pVolume->setPositions(31);
+    for (i=0; i<31; ++i)
         m_pVolume->setPixmap(i, getPath(QString("knobs/knob%1.png").arg(i).latin1()));
+    m_pVolume->setPixmapBackground(getPath("knobs/masterback.png"));
     m_pVolume->setFixedSize(34,34);
-    m_pVolume->move( 462,348);
+    m_pVolume->move( 456,342);
     
+    m_pBalance = new WKnob(main);
+    m_pBalance->setPositions(31);
+    for (i=0; i<31; ++i)
+        m_pBalance->setPixmap(i, getPath(QString("knobs/knob%1.png").arg(i).latin1()));
+    m_pBalance->setPixmapBackground(getPath("knobs/balanceback.png"));
+    m_pBalance->setFixedSize(34,34);
+    m_pBalance->move( 534,342);
+
+    m_pHeadVolume = new WKnob(main);
+    m_pHeadVolume->setPositions(31);
+    for (i=0; i<31; ++i)
+        m_pHeadVolume->setPixmap(i, getPath(QString("knobs/knob%1.png").arg(i).latin1()));
+    m_pHeadVolume->setPixmapBackground(getPath("knobs/headvolback.png"));
+    m_pHeadVolume->setFixedSize(34,34);
+    m_pHeadVolume->move(469,251);
+
+    m_pHeadMix = new WKnob(main);
+    m_pHeadMix->setPositions(31);
+    for (i=0; i<31; ++i)
+        m_pHeadMix->setPixmap(i, getPath(QString("knobs/knob%1.png").arg(i).latin1()));
+    m_pHeadMix->setPixmapBackground(getPath("knobs/headmixback.png"));
+    m_pHeadMix->setFixedSize(34,34);
+    m_pHeadMix->move(521,251);    
+
+    m_pGainCh1 = new WKnob(main);
+    m_pGainCh1->setPositions(31);
+    for (i=0; i<31; ++i)
+        m_pGainCh1->setPixmap(i, getPath(QString("knobs/knob%1.png").arg(i).latin1()));
+    m_pGainCh1->setPixmapBackground(getPath("knobs/gainback1.png"));
+    m_pGainCh1->setFixedSize(34,34);
+    m_pGainCh1->move(405,277);
+
+    m_pGainCh2 = new WKnob(main);
+    m_pGainCh2->setPositions(31);
+    for (i=0; i<31; ++i)
+        m_pGainCh2->setPixmap(i, getPath(QString("knobs/knob%1.png").arg(i).latin1()));
+    m_pGainCh2->setPixmapBackground(getPath("knobs/gainback2.png"));
+    m_pGainCh2->setFixedSize(34,34);
+    m_pGainCh2->move(585,277);
+
+    m_pFilterLowCh1 = new WKnob(main);
+    m_pFilterLowCh1->setPositions(31);
+    for (i=0; i<31; ++i)
+        m_pFilterLowCh1->setPixmap(i, getPath(QString("knobs/knob%1.png").arg(i).latin1()));
+    m_pFilterLowCh1->setPixmapBackground(getPath("knobs/filterlowback1.png"));
+    m_pFilterLowCh1->setFixedSize(34,34);
+    m_pFilterLowCh1->move(340, 392);
+
+    m_pFilterLowCh2 = new WKnob(main);
+    m_pFilterLowCh2->setPositions(31);
+    for (i=0; i<31; ++i)
+        m_pFilterLowCh2->setPixmap(i, getPath(QString("knobs/knob%1.png").arg(i).latin1()));
+    m_pFilterLowCh2->setPixmapBackground(getPath("knobs/filterlowback2.png"));
+    m_pFilterLowCh2->setFixedSize(34,34);
+    m_pFilterLowCh2->move(649, 392);
+    
+    m_pFilterMidCh1 = new WKnob(main);
+    m_pFilterMidCh1->setPositions(31);
+    for (i=0; i<31; ++i)
+        m_pFilterMidCh1->setPixmap(i, getPath(QString("knobs/knob%1.png").arg(i).latin1()));
+    m_pFilterMidCh1->setPixmapBackground(getPath("knobs/filtermidback1.png"));
+    m_pFilterMidCh1->setFixedSize(34,34);
+    m_pFilterMidCh1->move(392, 353);
+
+    m_pFilterMidCh2 = new WKnob(main);
+    m_pFilterMidCh2->setPositions(31);
+    for (i=0; i<31; ++i)
+        m_pFilterMidCh2->setPixmap(i, getPath(QString("knobs/knob%1.png").arg(i).latin1()));
+    m_pFilterMidCh2->setPixmapBackground(getPath("knobs/filtermidback2.png"));
+    m_pFilterMidCh2->setFixedSize(34,34);
+    m_pFilterMidCh2->move(598, 353);
+
+    m_pFilterHighCh1 = new WKnob(main);
+    m_pFilterHighCh1->setPositions(31);
+    for (i=0; i<31; ++i)
+        m_pFilterHighCh1->setPixmap(i, getPath(QString("knobs/knob%1.png").arg(i).latin1()));
+    m_pFilterHighCh1->setPixmapBackground(getPath("knobs/filterhighback1.png"));
+    m_pFilterHighCh1->setFixedSize(34,34);
+    m_pFilterHighCh1->move(340, 315);
+
+    m_pFilterHighCh2 = new WKnob(main);
+    m_pFilterHighCh2->setPositions(31);
+    for (i=0; i<31; ++i)
+        m_pFilterHighCh2->setPixmap(i, getPath(QString("knobs/knob%1.png").arg(i).latin1()));
+    m_pFilterHighCh2->setPixmapBackground(getPath("knobs/filterhighback2.png"));
+    m_pFilterHighCh2->setFixedSize(34,34);
+    m_pFilterHighCh2->move(649, 315);
+
     m_pHeadCueCh1 = new WPushButton(main);
     m_pHeadCueCh1->setStates(2);
     m_pHeadCueCh1->setPixmap(0, false, getPath("buttons/cuec0.png"));
@@ -256,7 +345,7 @@ MixxxView::MixxxView(QWidget *parent, bool bVisuals) : QWidget(parent, "Mixxx")
     m_pBpmCh1 = new WNumber(main);
     m_pBpmCh1->setFixedSize(40,15);
     m_pBpmCh1->move(330,40);
-    m_pBpmCh1->setNumDigits(6);
+    m_pBpmCh1->setNumDigits(6);                    
     
     m_pBpmCh2 = new WNumber(main);
     m_pBpmCh2->setFixedSize(40,15);
@@ -355,28 +444,18 @@ void MixxxView::assignWidgets(ControlObject *p)
 
     p->setWidget(m_pSliderVolumeCh1, ConfigKey("[Channel1]", "volume"), false);
     p->setWidget(m_pSliderVolumeCh2, ConfigKey("[Channel2]", "volume"), false);
-/*
+
     // EnginePregain
-    p->setWidget(channel1->DialGain, ConfigKey("[Channel1]", "pregain"));
-    p->setWidget(channel2->DialGain, ConfigKey("[Channel2]", "pregain"));
+    p->setWidget(m_pGainCh1, ConfigKey("[Channel1]", "pregain"));
+    p->setWidget(m_pGainCh2, ConfigKey("[Channel2]", "pregain"));
 
     // EngineFilterBlock
-    p->setWidget(channel1->DialFilterLow, ConfigKey("[Channel1]", "filterLow"));
-    p->setWidget(channel2->DialFilterLow, ConfigKey("[Channel2]", "filterLow"));
-    p->setWidget(channel1->DialFilterMiddle, ConfigKey("[Channel1]", "filterMid"));
-    p->setWidget(channel2->DialFilterMiddle, ConfigKey("[Channel2]", "filterMid"));
-    p->setWidget(channel1->DialFilterHigh, ConfigKey("[Channel1]", "filterHigh"));
-    p->setWidget(channel2->DialFilterHigh, ConfigKey("[Channel2]", "filterHigh"));
-
-    // EngineClipping
-    p->setWidget(channel1->BulbClipping, ConfigKey("[Channel1]", "clipLed"));
-    p->setWidget(channel2->BulbClipping, ConfigKey("[Channel2]", "clipLed"));
-
-*/
-
-    // EngineVUmeter
-    p->setWidget(m_pVUmeterCh1, ConfigKey("[Channel1]", "VUmeter"));
-    p->setWidget(m_pVUmeterCh2, ConfigKey("[Channel2]", "VUmeter"));
+    p->setWidget(m_pFilterLowCh1, ConfigKey("[Channel1]", "filterLow"));
+    p->setWidget(m_pFilterLowCh2, ConfigKey("[Channel2]", "filterLow"));
+    p->setWidget(m_pFilterMidCh1, ConfigKey("[Channel1]", "filterMid"));
+    p->setWidget(m_pFilterMidCh2, ConfigKey("[Channel2]", "filterMid"));
+    p->setWidget(m_pFilterHighCh1, ConfigKey("[Channel1]", "filterHigh"));
+    p->setWidget(m_pFilterHighCh2, ConfigKey("[Channel2]", "filterHigh"));
 
 /*
     // EngineFlanger
@@ -386,17 +465,13 @@ void MixxxView::assignWidgets(ControlObject *p)
     p->setWidget(flanger->PushButtonChA, ConfigKey("[Flanger]", "ch1"));
     p->setWidget(flanger->PushButtonChB, ConfigKey("[Flanger]", "ch2"));
 
-    // EngineMaster
 */
+    // EngineMaster
     p->setWidget(m_pSliderCrossfader, ConfigKey("[Master]", "crossfader"), false);
-/*
-    p->setWidget(master->KnobVolume, ConfigKey("[Master]", "volume"));
-    p->setWidget(master->BulbClipping, ConfigKey("[Master]", "clipLed"));
-    p->setWidget(master->vumeter, ConfigKey("[Master]", "VUmeter"));
-    p->setWidget(master->KnobHeadVol, ConfigKey("[Master]", "headVolume"));
-    p->setWidget(master->KnobHeadLR, ConfigKey("[Master]", "headMix"));
-*/    
-                                                                   
+    p->setWidget(m_pVolume, ConfigKey("[Master]", "volume"));
+    p->setWidget(m_pBalance, ConfigKey("[Master]", "balance"));
+    p->setWidget(m_pHeadVolume, ConfigKey("[Master]", "headVolume"));
+    p->setWidget(m_pHeadMix, ConfigKey("[Master]", "headMix"));
 }
 
 const QString MixxxView::getPath(QString location)

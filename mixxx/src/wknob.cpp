@@ -20,6 +20,8 @@
 WKnob::WKnob(QWidget *parent, const char *name) : WWidget(parent,name)
 {
     m_pPixmaps = 0;
+    m_pPixmapBack = 0;
+    m_pPixmapBuffer = 0;
     setPositions(0);
     setBackgroundMode(NoBackground);
 }
@@ -64,40 +66,41 @@ void WKnob::setPixmap(int iPos, const QString &filename)
         qDebug("WKnob: Error loading pixmap %s",filename.latin1());
 }
 
+void WKnob::setPixmapBackground(const QString &filename)
+{
+    // Load background pixmap
+    m_pPixmapBack = new QPixmap(filename);
+    if (!m_pPixmapBack)
+        qDebug("WKnob: Error loading background pixmap: %s",filename.latin1());
+
+    // Construct corresponding double buffer
+    m_pPixmapBuffer = new QPixmap(m_pPixmapBack->size());
+}
+
 void WKnob::mouseMoveEvent(QMouseEvent *e)
 {
-    if (e->button()==Qt::LeftButton)
-    {
-        m_fOldValue = m_fValue;
-        m_fValue = (e->y()-m_fStartValue+64);
-        if (m_fValue>127)
-            m_fValue = 127;
-        else if (m_fValue<0)
-            m_fValue = 0;
+    m_fValue += (e->y()-m_dStartValue);
+    m_dStartValue = e->y();
+    if (m_fValue>127.)
+        m_fValue = 127.;
+    else if (m_fValue<0.)
+        m_fValue = 0.;
 
-        emit(valueChangedLeftUp(m_fValue));
-    }
-    else if (e->button()==Qt::RightButton)
-        emit(valueChangedRightUp(m_fValue));
+    emit(valueChangedLeftDown(m_fValue));
 
     update();
 }
 
 void WKnob::mousePressEvent(QMouseEvent *e)
 {
-    m_fStartValue = e->y();
+    m_dStartValue = e->y();
 
-    if (e->button()==Qt::LeftButton)
-        emit(valueChangedLeftDown(m_fValue));
-    else if (e->button()==Qt::RightButton)
-        emit(valueChangedRightDown(m_fValue));
+    if (e->button() == Qt::RightButton)
+        reset();
 }
 
 void WKnob::mouseReleaseEvent(QMouseEvent *e)
 {
-    m_fOldValue = m_fValue;
-    m_fValue = 64;
-
     if (e->button()==Qt::LeftButton)
         emit(valueChangedLeftUp(m_fValue));
     else if (e->button()==Qt::RightButton)
@@ -110,14 +113,35 @@ void WKnob::paintEvent(QPaintEvent *)
 {
     if (m_pPixmaps>0)
     {
-        int idx = (int)(((m_fValue-64.)*((m_iNoPos-1.)/127.))+(m_iNoPos/2.));
-
+        int idx = (int)(((m_fValue-64.)*(((float)m_iNoPos-1.)/127.))+((float)m_iNoPos/2.));
         // Range check
         if (idx>(m_iNoPos-1))
             idx = m_iNoPos-1;
         else if (idx<0)
             idx = 0;
 
-        bitBlt(this, 0, 0, m_pPixmaps[idx]);
+
+        // If m_pPixmapBuffer is defined, use double buffering when painting,
+        // otherwise paint the button directly to the screen.
+        if (m_pPixmapBuffer!=0)
+        {
+            // Paint background on buffer
+            bitBlt(m_pPixmapBuffer, 0, 0, m_pPixmapBack);
+
+            // Paint button on buffer
+            bitBlt(m_pPixmapBuffer, 0, 0, m_pPixmaps[idx]);
+
+            // Paint buffer to screen
+            bitBlt(this, 0, 0, m_pPixmapBuffer);
+        }
+        else
+            bitBlt(this, 0, 0, m_pPixmaps[idx]);
     }
 }
+
+void WKnob::reset()
+{
+    setValue(63.);
+    emit(valueChangedLeftUp(m_fValue));
+}
+
