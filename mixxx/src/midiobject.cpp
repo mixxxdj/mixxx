@@ -186,7 +186,7 @@ void MidiObject::run() {
       }
     
     // Check the buttons:
-    for (int i=0; i<no_buttons; i++) 
+    for (i=0; i<no_buttons; i++) 
       if (buttons[i]->midino == midicontrol) {
 	// Now that we've found a button on the right gate, we try to
 	// see if the button is really changed:
