@@ -42,10 +42,10 @@ EngineBufferScaleSRC::EngineBufferScaleSRC(ReaderExtractWave *wave) : EngineBuff
     data = new SRC_DATA;
     data->end_of_input = 0; // HACK
 
-    backwards = false;
-    src_set_ratio(converter2, rate);
-    src_set_ratio(converter3, rate);
-    src_set_ratio(converter4, rate);
+    m_bBackwards = false;
+    src_set_ratio(converter2, m_dTempo);
+    src_set_ratio(converter3, m_dTempo);
+    src_set_ratio(converter4, m_dTempo);
 }
 
 EngineBufferScaleSRC::~EngineBufferScaleSRC()
@@ -91,45 +91,45 @@ void EngineBufferScaleSRC::setFastMode(bool bMode)
     }
 }
 
-double EngineBufferScaleSRC::setRate(double _rate)
+double EngineBufferScaleSRC::setTempo(double dTempo)
 {
-    double rateold = rate;
+    double dTempoOld = m_dTempo;
 
-    if (_rate==0.)
-        rate = 0.;
-    else if (_rate<0.)
+    if (dTempo==0.)
+        m_dTempo = 0.;
+    else if (dTempo<0.)
     {
-        backwards = true;
-        rate = 1./(-_rate);
+        m_bBackwards = true;
+        m_dTempo = 1./(-dTempo);
     }
     else
     {
-        backwards = false;
-        rate = 1./_rate;
+        m_bBackwards = false;
+        m_dTempo = 1./dTempo;
     }
 
     // Force dirty interpolation if speed is above 2x
-    if (rate<0.5 && rateold>=0.5)
+    if (m_dTempo<0.5 && dTempoOld>=0.5)
         setFastMode(true);
-    else if (rate>=0.5 && rateold<0.5)
-    setFastMode(false);
+    else if (m_dTempo>=0.5 && dTempoOld<0.5)
+        setFastMode(false);
 
     // Ensure valid range of rate
-    if (rate==0.)
+    if (m_dTempo==0.)
         return 0.;
-    else if (rate>12.)
-        rate = 12.;
-    else if (rate<1./12.)
-        rate = 1./12.;
+    else if (m_dTempo>12.)
+        m_dTempo = 12.;
+    else if (m_dTempo<1./12.)
+        m_dTempo = 1./12.;
     
-    src_set_ratio(converter2, rate);
-    src_set_ratio(converter3, rate);
-    src_set_ratio(converter4, rate);
+    src_set_ratio(converter2, m_dTempo);
+    src_set_ratio(converter3, m_dTempo);
+    src_set_ratio(converter4, m_dTempo);
 
-    if (backwards)
-        return -(1./rate);
+    if (m_bBackwards)
+        return -(1./m_dTempo);
     else
-        return (1./rate);
+        return (1./m_dTempo);
 }
 
 CSAMPLE *EngineBufferScaleSRC::scale(double playpos, int buf_size, float *pBase, int iBaseLength)
@@ -143,9 +143,9 @@ CSAMPLE *EngineBufferScaleSRC::scale(double playpos, int buf_size, float *pBase,
     int consumed = 0;
 
     // Invert wavebuffer is backwards playback
-    if (backwards)
+    if (m_bBackwards)
     {
-        int no = (int)(buf_size*(1./rate)+4); // Read some extra samples
+        int no = (int)(buf_size*(1./m_dTempo)+4); // Read some extra samples
         if (!even(no))
             no++;
 
@@ -167,7 +167,7 @@ CSAMPLE *EngineBufferScaleSRC::scale(double playpos, int buf_size, float *pBase,
 
     data->data_out = buffer;
     data->output_frames = buf_size/2;
-    data->src_ratio = rate;
+    data->src_ratio = m_dTempo;
 
     // Perform conversion
     int error = src_process(converterActive, data);
@@ -177,7 +177,7 @@ CSAMPLE *EngineBufferScaleSRC::scale(double playpos, int buf_size, float *pBase,
     consumed += data->input_frames_used;
 
     // Check if wave_buffer is wrapped
-    if (data->output_frames_gen*2 < buf_size && !backwards)
+    if (data->output_frames_gen*2 < buf_size && !m_bBackwards)
     {
         data->data_in = &pBase[0];
         data->data_out = &buffer[data->output_frames_gen*2];
@@ -193,7 +193,7 @@ CSAMPLE *EngineBufferScaleSRC::scale(double playpos, int buf_size, float *pBase,
    }
 
     // Calculate new playpos
-    if (backwards)
+    if (m_bBackwards)
         new_playpos = playpos - (double)consumed*2.;
     else
         new_playpos = playpos + (double)consumed*2.;

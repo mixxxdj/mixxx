@@ -16,6 +16,7 @@
  ***************************************************************************/
 
 #include "mouselinux.h"
+#include "rotary.h"
 #include "powermatelinux.h"
 #include <sys/time.h>
 #include <sys/types.h>
@@ -104,13 +105,15 @@ void MouseLinux::getNextEvent()
                 int v = ev.value;
 
 //                 qDebug("send value");
-                sendRotaryEvent((double)v);
+
+                double dValue = m_pRotary->filter((double)v);
+                sendEvent(dValue, m_pControlObjectRotary);
             }
         }
         else
         {
 //             qDebug("timeout");
-            sendRotaryEvent(0.);
+            sendEvent(0., m_pControlObjectRotary);
             m_bSending = false;
         }
 }

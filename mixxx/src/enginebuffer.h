@@ -33,6 +33,7 @@ class Reader;
 class EngineBufferScale;
 class PowerMate;
 class WVisualWaveform;
+class EngineBufferCue;
 
 /**
   *@author Tue and Ken Haste Andersen
@@ -112,9 +113,7 @@ public slots:
     void slotControlStart(double);
     void slotControlEnd(double);
     void slotControlSeek(double, bool bBeatSync=true);
-    void slotControlCueGoto(double=0);
-    void slotControlCueSet(double=0);
-    void slotControlCuePreview(double);
+    void slotControlSeekAbs(double, bool bBeatSync=true);
     void slotControlRatePermDown(double);
     void slotControlRatePermDownSmall(double);
     void slotControlRatePermUp(double);
@@ -158,10 +157,10 @@ private:
     /** Is true if a rate temp button is pressed */
     double m_bTempPress;
 
-    ControlPushButton *playButton, *buttonCueSet, *buttonCueGoto, *buttonCuePreview, *audioBeatMark, *buttonBeatSync;
+    ControlPushButton *playButton, *audioBeatMark, *buttonBeatSync;
     ControlPushButton *buttonRateTempDown, *buttonRateTempDownSmall, *buttonRateTempUp, *buttonRateTempUpSmall;
     ControlPushButton *buttonRatePermDown, *buttonRatePermDownSmall, *buttonRatePermUp, *buttonRatePermUpSmall;
-    ControlObject *cuePoint, *rateEngine, *m_pRateDir, *m_pRateRange, *m_pRealSearch;
+    ControlObject *rateEngine, *m_pRateDir, *m_pRateRange, *m_pRealSearch;
     ControlPotmeter *rateSlider, *m_pRateSearch;
     ControlTTRotary *wheel, *m_pControlScratch;
     ControlPotmeter *playposSlider;
@@ -183,12 +182,12 @@ private:
     ControlPushButton *fwdButton, *backButton, *startButton, *endButton;
     /** Holds the name of the control group */
     const char *group;
-    /** Is true if currently in cue preview mode. We need to keep track of the state
-      * because the preview key slot can be activated many times during one preview */
-    bool m_bCuePreview;
 
     CSAMPLE *read_buffer_prt;
 
+    /** Pointer to cue object */
+    EngineBufferCue *m_pEngineBufferCue;
+    
     /** Used to store if an event has happen in last iteration of event based playback */
     double oldEvent;
     /** Object used to perform waveform scaling (sample rate conversion) */

@@ -509,7 +509,7 @@ void Track::slotEndOfTrackPlayer2(double val)
 
 void Track::slotNextTrackPlayer1(double v)
 {
-    if (v)
+    if (v && m_pTrackPlayer1)
     {
         TrackInfoObject *pTrack = m_pTrackPlayer1->getNext();
         if (pTrack)
@@ -519,7 +519,7 @@ void Track::slotNextTrackPlayer1(double v)
 
 void Track::slotPrevTrackPlayer1(double v)
 {
-    if (v)
+    if (v && m_pTrackPlayer1)
     {
         TrackInfoObject *pTrack = m_pTrackPlayer1->getPrev();
         if (pTrack)
@@ -529,7 +529,7 @@ void Track::slotPrevTrackPlayer1(double v)
 
 void Track::slotNextTrackPlayer2(double v)
 {
-    if (v)
+    if (v && m_pTrackPlayer2)
     {
         TrackInfoObject *pTrack = m_pTrackPlayer2->getNext();
         if (pTrack)
@@ -539,7 +539,7 @@ void Track::slotNextTrackPlayer2(double v)
 
 void Track::slotPrevTrackPlayer2(double v)
 {
-    if (v)
+    if (v && m_pTrackPlayer2)
     {
         TrackInfoObject *pTrack = m_pTrackPlayer2->getPrev();
         if (pTrack)

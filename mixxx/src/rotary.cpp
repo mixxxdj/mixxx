@@ -16,16 +16,10 @@
  ***************************************************************************/
 
 #include "rotary.h"
-#include "controlobject.h"
-#include "controlobjectthreadmain.h"
-#include "qapplication.h"
-#include "midiobject.h"
 #include "mathstuff.h"
 
 Rotary::Rotary()
 {
-    m_pControlObjectRotary = 0;
-    m_pControlObjectButton = 0;
     m_dCalibration = 1.;
     m_dLastValue = 0.;
 
@@ -38,14 +32,10 @@ Rotary::Rotary()
 
 Rotary::~Rotary()
 {
-    if (running())
-    {
-        terminate();
-        wait();
-    }
     delete [] m_pFilter;
 }
 
+/*
 void Rotary::selectMapping(QString mapping)
 {
     if (mapping==kqRotaryMappingP1Phase)
@@ -91,14 +81,9 @@ void Rotary::selectMapping(QString mapping)
         m_iFilterPos = 0;
     }
 }
+*/
 
-void Rotary::run()
-{
-    while (1)
-        getNextEvent();
-}
-
-void Rotary::sendRotaryEvent(double dValue)
+double Rotary::filter(double dValue)
 {
     // Update filter buffer
     m_pFilter[m_iFilterPos] = dValue/m_dCalibration;
@@ -109,40 +94,21 @@ void Rotary::sendRotaryEvent(double dValue)
     {
         dMagnitude += m_pFilter[i];
     }
-
     dMagnitude /= (double)m_iFilterLength;
-
-    if (m_qCalibrationMutex.tryLock())
-    {
-        if (m_dLastValue!=dMagnitude)
-        {
-            if (m_pControlObjectRotary)
-                m_pControlObjectRotary->queueFromThread(dMagnitude);
-        }
-        m_qCalibrationMutex.unlock();
-
-//          qDebug("mag %f, value %f",dMagnitude, dValue);
-    }
-    else
-    {
-        m_dCalibration += dValue;
-        m_iCalibrationCount += 1;
-
-        if (m_pControlObjectRotary)
-            m_pControlObjectRotary->queueFromThread(0);
-    }
+//     qDebug("filter in %f, out %f",dValue,dMagnitude);
+    
+    if (m_dLastValue!=dMagnitude)
+        return dMagnitude;
+    
     m_dLastValue = dMagnitude;
+    
+    return dMagnitude;
 }
 
-void Rotary::sendButtonEvent(bool press)
+void Rotary::calibrate(double dValue)
 {
-    if (m_pControlObjectButton)
-    {
-        if (press)
-            m_pControlObjectButton->queueFromMidi(NOTE_ON, 1);
-        else
-            m_pControlObjectButton->queueFromMidi(NOTE_OFF, 1);
-    }
+    m_dCalibration += dValue;
+    m_iCalibrationCount += 1;
 }
 
 void Rotary::calibrateStart()
@@ -150,14 +116,10 @@ void Rotary::calibrateStart()
     // Reset calibration data
     m_dCalibration = 0.;
     m_iCalibrationCount = 0;
-
-    m_qCalibrationMutex.lock();
 }
 
 double Rotary::calibrateEnd()
 {
-    m_qCalibrationMutex.unlock();
-
     m_dCalibration /= (double)m_iCalibrationCount;
 
     qDebug("Calibration %f, count %i",m_dCalibration,m_iCalibrationCount);
@@ -168,4 +130,14 @@ double Rotary::calibrateEnd()
 void Rotary::setCalibration(double c)
 {
     m_dCalibration = c;
+}
+
+void Rotary::setFilterLength(int i)
+{
+    if (i>kiRotaryFilterMaxLen)
+        m_iFilterLength = kiRotaryFilterMaxLen;
+    else if (i<1)
+        m_iFilterLength = 1;
+    else
+        m_iFilterLength = i;
 }

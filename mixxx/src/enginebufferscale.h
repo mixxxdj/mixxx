@@ -26,31 +26,34 @@ class ReaderExtractWave;
   *@author Tue & Ken Haste Andersen
   */
 
-class EngineBufferScale {
+class EngineBufferScale 
+{
 public:
     EngineBufferScale(ReaderExtractWave *_wave);
     virtual ~EngineBufferScale();
-    virtual void setPitchIndpTimeStretch(bool b);
-    virtual void setFastMode(bool bMode);
-    /** Set scaling rate */
-    virtual double setRate(double _rate) = 0;
+    
+    /** Set base tempo, ie. normal playback speed. */
+    virtual void setBaseRate(double dBaseRate) = 0;
+    /** Set tempo */
+    virtual double setTempo(double dTempo) = 0;
     /** Get new playpos after call to scale() */
     double getNewPlaypos();
     /** Called from EngineBuffer when seeking, to ensure the buffers are flushed */
-    virtual void clear();
+    virtual void clear() = 0;
+    /** Scale buffer */
     virtual CSAMPLE *scale(double playpos, int buf_size, float *pBase=0, int iBaseLength=0) = 0;
+
 protected:
     /** Pointer to ReaderExtractWave object */
     ReaderExtractWave *wave;
     /** Pointer to ReaderExtractWave buffer */
     CSAMPLE *wavebuffer;
-    /** Rate */
-    double rate;
+    /** Tempo and base rate */
+    double m_dTempo, m_dBaseRate;
     /** Pointer to internal buffer */
     CSAMPLE *buffer;
     /** New playpos after call to scale */
     double new_playpos;
-
 };
 
 #endif

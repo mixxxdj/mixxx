@@ -27,11 +27,13 @@ ControlTTRotary::ControlTTRotary(ConfigKey key) : ControlObject(key)
 double ControlTTRotary::getValueFromWidget(double dValue)
 {
     // Non-linear scaling
-    double temp = (((dValue-64.)*(dValue-64.))/64.)/100.;
+    double temp = (((dValue-64.)*(dValue-64.))/64.);
     if ((dValue-64.)<0)
-        return -temp;
-    else
-        return temp;
+        temp = -temp;
+
+    //qDebug("tt rotary in %f, out %f",dValue,temp);    
+            
+    return temp; //dValue-64.;
 }
 
 double ControlTTRotary::getValueToWidget(double dValue)
@@ -41,7 +43,7 @@ double ControlTTRotary::getValueToWidget(double dValue)
 
 void ControlTTRotary::setValueFromMidi(MidiCategory, double v)
 {
-    m_dValue = getValueFromWidget(v);
+    m_dValue = v;
     emit(valueChanged(m_dValue));
 }
 

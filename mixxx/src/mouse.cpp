@@ -10,6 +10,7 @@
 //
 //
 #include "mouse.h"
+#include "rotary.h"
 #include <qstringlist.h>
 
 #ifdef __LINUX__
@@ -18,13 +19,15 @@
 
 QPtrList<Mouse> Mouse::m_sqInstanceList;
 
-Mouse::Mouse() : Rotary()
+Mouse::Mouse() : Input()
 {
+    m_pRotary = new Rotary();
     m_sqInstanceList.append(this);
 }
 
 Mouse::~Mouse()
 {
+    delete m_pRotary;
     m_sqInstanceList.remove(this);
 }
 

@@ -1,8 +1,8 @@
 /***************************************************************************
-                          powermate.cpp  -  description
+                          rotary.cpp  -  description
                              -------------------
-    begin                : Tue Apr 29 2003
-    copyright            : (C) 2003 by Tue & Ken Haste Andersen
+    begin                : Thu Feb 24 2005
+    copyright            : (C) 2005 by Tue Haste Andersen
     email                : haste@diku.dk
  ***************************************************************************/
 
@@ -15,34 +15,54 @@
  *                                                                         *
  ***************************************************************************/
 
-#include "powermate.h"
-#include "rotary.h"
+#include "input.h"
 #include "controlobject.h"
-#include "controleventmidi.h"
+#include "controlobjectthreadmain.h"
 #include "qapplication.h"
 #include "midiobject.h"
 #include "mathstuff.h"
 
-PowerMate::PowerMate() : Input()
+Input::Input()
 {
-    m_pRequestLed = new QSemaphore(5);
-    m_pRotary = new Rotary();
-    m_pControlObjectButton = 0;
-    m_pControlObjectRotary = 0;
 }
 
-PowerMate::~PowerMate()
+Input::~Input()
 {
     if (running())
     {
         terminate();
         wait();
     }
-    delete m_pRequestLed;
-    delete m_pRotary;
 }
 
-void PowerMate::led()
+QStringList Input::getMappings()
 {
-    m_pRequestLed->tryAccess(1);
+    return QStringList();
+}
+
+void Input::setMapping(QString mapping)
+{
+}
+
+void Input::run()
+{
+    while (1)
+        getNextEvent();
+}
+
+void Input::sendEvent(double dValue, ControlObject *pControlObject)
+{
+    if (pControlObject)
+        pControlObject->queueFromMidi(CTRL_CHANGE, dValue);
+}
+
+void Input::sendButtonEvent(bool bPressed, ControlObject *pControlObject)
+{
+    if (pControlObject)
+    {
+        if (bPressed)
+            pControlObject->queueFromMidi(NOTE_ON, 1);
+        else
+            pControlObject->queueFromMidi(NOTE_OFF, 0);
+    }
 }

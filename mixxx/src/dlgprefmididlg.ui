@@ -1,4 +1,4 @@
-<!DOCTYPE UI><UI version="3.1" stdsetdef="1">
+<!DOCTYPE UI><UI version="3.3" stdsetdef="1">
 <class>DlgPrefMidiDlg</class>
 <widget class="QWidget">
     <property name="name">
@@ -455,6 +455,65 @@
             </property>
             <property name="text">
                 <string>Help</string>
+            </property>
+        </widget>
+    </widget>
+    <widget class="QGroupBox">
+        <property name="name">
+            <cstring>groupHercules</cstring>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>6</x>
+                <y>367</y>
+                <width>349</width>
+                <height>49</height>
+            </rect>
+        </property>
+        <property name="title">
+            <string>Hercules DJ Console</string>
+        </property>
+        <widget class="QLabel">
+            <property name="name">
+                <cstring>TextLabelPowerMate1_2</cstring>
+            </property>
+            <property name="enabled">
+                <bool>true</bool>
+            </property>
+            <property name="geometry">
+                <rect>
+                    <x>9</x>
+                    <y>22</y>
+                    <width>120</width>
+                    <height>19</height>
+                </rect>
+            </property>
+            <property name="font">
+                <font>
+                </font>
+            </property>
+            <property name="text">
+                <string>Mapping</string>
+            </property>
+        </widget>
+        <widget class="QComboBox">
+            <property name="name">
+                <cstring>ComboBoxHercules</cstring>
+            </property>
+            <property name="enabled">
+                <bool>true</bool>
+            </property>
+            <property name="geometry">
+                <rect>
+                    <x>135</x>
+                    <y>17</y>
+                    <width>204</width>
+                    <height>22</height>
+                </rect>
+            </property>
+            <property name="font">
+                <font>
+                </font>
             </property>
         </widget>
     </widget>

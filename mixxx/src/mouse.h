@@ -12,15 +12,17 @@
 #ifndef MOUSE_H
 #define MOUSE_H
 
-#include "rotary.h"
 #include <qptrlist.h>
+#include "input.h"
 
 class QStringList;
+class Rotary;
+class ControlObject;
 
 /**
 @author Tue Haste Andersen
 */
-class Mouse : public Rotary
+class Mouse : public Input
 {
 public:
     Mouse();
@@ -30,6 +32,10 @@ public:
 
 protected:
     static QPtrList<Mouse> m_sqInstanceList;
+    /** Pointer to rotary filtering object */
+    Rotary *m_pRotary;
+    /** Pointer to control objects connected to the PowerMate */
+    ControlObject *m_pControlObjectRotary;
 };
 
 #endif

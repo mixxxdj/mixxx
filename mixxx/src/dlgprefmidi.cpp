@@ -19,6 +19,7 @@
 #include "midiobject.h"
 #include "powermate.h"
 #include "mouse.h"
+#include "rotary.h"
 #include <qcombobox.h>
 #include <qlabel.h>
 #include <qcheckbox.h>
@@ -44,8 +45,8 @@ DlgPrefMidi::DlgPrefMidi(QWidget *parent, MidiObject *pMidi, ConfigObject<Config
 
     m_pPowerMate1 = pPowerMate1;
     m_pPowerMate2 = pPowerMate2;
-    m_pPowerMate1->selectMapping(ComboBoxPowerMate1->currentText());
-    m_pPowerMate2->selectMapping(ComboBoxPowerMate2->currentText());
+//    m_pPowerMate1->selectMapping(ComboBoxPowerMate1->currentText());
+//    m_pPowerMate2->selectMapping(ComboBoxPowerMate2->currentText());
 
     // Used in mouse calibration
     m_pProgressDialog = new QProgressDialog("Calibrating mouse turntable", "Cancel", 30, this, "Progress...", TRUE );
@@ -242,8 +243,8 @@ void DlgPrefMidi::slotApply()
     m_pMidi->devOpen(m_pConfig->getValueString(ConfigKey("[Midi]","Device")));
 
     // PowerMates
-    m_pPowerMate1->selectMapping(ComboBoxPowerMate1->currentText());
-    m_pPowerMate2->selectMapping(ComboBoxPowerMate2->currentText());
+//     m_pPowerMate1->selectMapping(ComboBoxPowerMate1->currentText());
+//     m_pPowerMate2->selectMapping(ComboBoxPowerMate2->currentText());
 
     // Mice
     Mouse::destroyAll();
@@ -255,10 +256,10 @@ void DlgPrefMidi::slotApply()
 #endif
         if (p && p->opendev(ComboBoxMouseDevice1->currentText()))
         {
-            p->selectMapping(ComboBoxMouseFunction1->currentText());
+//             p->selectMapping(ComboBoxMouseFunction1->currentText());
             double c = m_pConfig->getValueString(ConfigKey("[Controls]","MouseCalibration1")).toDouble();
-            if (c!=0.)
-                p->setCalibration(c);
+//             if (c!=0.)
+//                 p->setCalibration(c);
         }
         else
             ComboBoxMouseDevice1->setCurrentItem(0);
@@ -271,10 +272,10 @@ void DlgPrefMidi::slotApply()
 #endif
         if (p && p->opendev(ComboBoxMouseDevice2->currentText()))
         {
-            p->selectMapping(ComboBoxMouseFunction2->currentText());
+//             p->selectMapping(ComboBoxMouseFunction2->currentText());
             double c = m_pConfig->getValueString(ConfigKey("[Controls]","MouseCalibration2")).toDouble();
-            if (c!=0.)
-                p->setCalibration(c);
+//             if (c!=0.)
+//                 p->setCalibration(c);
         }
         else
             ComboBoxMouseDevice2->setCurrentItem(0);
@@ -297,10 +298,12 @@ void DlgPrefMidi::slotMouseCalibrate1()
 #ifdef __LINUX__
         m_pMouseCalibrate = (Mouse *)new MouseLinux();
 #endif
+/*        
         if (m_pMouseCalibrate && m_pMouseCalibrate->opendev(ComboBoxMouseDevice1->currentText()))
             m_pMouseCalibrate->selectMapping(ComboBoxMouseFunction1->currentText());
         else
             ComboBoxMouseDevice1->setCurrentItem(0);
+*/
     }
 
     m_iProgress = 0;
@@ -309,7 +312,7 @@ void DlgPrefMidi::slotMouseCalibrate1()
     m_pTimer->start(100);
 
     // Start measurement
-    m_pMouseCalibrate->calibrateStart();
+//    m_pMouseCalibrate->calibrateStart();
 }
 
 void DlgPrefMidi::slotMouseCalibrate2()
@@ -339,8 +342,8 @@ void DlgPrefMidi::slotUpdateProgressBar()
     if (m_iProgress==30)
     {
         m_pTimer->stop();
-        double c = m_pMouseCalibrate->calibrateEnd();
-        m_pConfig->set(ConfigKey("[Controls]","MouseCalibration1"), ConfigValue(QString("%1").arg(c)));
+//        double c = m_pMouseCalibrate->calibrateEnd();
+//        m_pConfig->set(ConfigKey("[Controls]","MouseCalibration1"), ConfigValue(QString("%1").arg(c)));
 
         slotApply();
     }
