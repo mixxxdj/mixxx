@@ -61,7 +61,7 @@ EngineBuffer::EngineBuffer(MixxxApp *_mixxx, QAction *actionAudioBeatMark, Power
     playButton->set(0);
 
     // Playback rate slider
-    ControlPotmeter *p2 = new ControlPotmeter(ConfigKey(group, "rate"), 0.9, 1.1);
+    ControlPotmeter *p2 = new ControlPotmeter(ConfigKey(group, "rate"), 0.9f, 1.1f);
     p2->setWidget(playcontrol->SliderRate);
     rateSlider = new ControlEngine(p2);
 

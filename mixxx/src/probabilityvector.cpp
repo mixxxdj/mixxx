@@ -54,5 +54,5 @@ int ProbabilityVector::maxIdx()
 void ProbabilityVector::down()
 {
     for (int i=0; i<size; i++)
-        hist[i] *= 0.99;
+        hist[i] *= 0.99f;
 }

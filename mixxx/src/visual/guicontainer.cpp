@@ -60,6 +60,10 @@ GUIContainer::GUIContainer(ReaderExtract *readerExtract, ControlPotmeter *playpo
     signal->setFishEyeMode(true);
 }
 
+GUIContainer::~GUIContainer()
+{
+}
+
 GUISignal *GUIContainer::getSignal()
 {
     return signal;
@@ -211,11 +215,11 @@ void GUIContainer::setupScene()
     lblue.ambient[2] = 0.0f;
     lblue.ambient[3] = 1.0f;
     
-    lblue.diffuse[0] = 10./255.;
-    lblue.diffuse[1] = 20./255.;
-    lblue.diffuse[2] = 130./255.;
+    lblue.diffuse[0] = 10/255.f;
+    lblue.diffuse[1] = 20/255.f;
+    lblue.diffuse[2] = 130/255.f;
     lblue.diffuse[3] = 1.0f;
-    
+   
     lblue.specular[0] = 0.0f;
     lblue.specular[1] = 0.0f;
     lblue.specular[2] = 0.01f;
@@ -223,31 +227,31 @@ void GUIContainer::setupScene()
     
     lblue.shininess = 0;
 
-    purple.ambient[0] = 62./255.f;
+    purple.ambient[0] = 62/255.f;
     purple.ambient[1] = 0.0f;
-    purple.ambient[2] = 62./255.f;
+    purple.ambient[2] = 62/255.f;
     purple.ambient[3] = 1.0f;
     
-    purple.diffuse[0] = 62./255.;
-    purple.diffuse[1] = 0./255.;
-    purple.diffuse[2] = 62./255.;
+    purple.diffuse[0] = 62/255.f;
+    purple.diffuse[1] = 0/255.f;
+    purple.diffuse[2] = 62/255.f;
     purple.diffuse[3] = 0.f;
     
-    purple.specular[0] = 62./255.f;
+    purple.specular[0] = 62/255.f;
     purple.specular[1] = 0.0f;
-    purple.specular[2] = 62./255.;
+    purple.specular[2] = 62/255.f;
     purple.specular[3] = 1.0f;
     
-    purple.shininess = 128;
+    purple.shininess = 128.f;
     
-    lgreen.ambient[0] = 0.0;
-    lgreen.ambient[1] = 0.0;
-    lgreen.ambient[2] = 0.0;
+    lgreen.ambient[0] = 0.0f;
+    lgreen.ambient[1] = 0.0f;
+    lgreen.ambient[2] = 0.0f;
     lgreen.ambient[3] = 1.0f;
     
-    lgreen.diffuse[0] = 90./255.;
-    lgreen.diffuse[1] = 255./255.;
-    lgreen.diffuse[2] = 90./255.;
+    lgreen.diffuse[0] = 90/255.f;
+    lgreen.diffuse[1] = 255/255.f;
+    lgreen.diffuse[2] = 90/255.f;
     lgreen.diffuse[3] = 1.0f;
     
     lgreen.specular[0] = 0.3f;
