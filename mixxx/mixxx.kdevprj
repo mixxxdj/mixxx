@@ -47,9 +47,21 @@ install_location=
 type=DATA
 
 [mixxx/Makefile.am]
-files=mixxx/monitor.cpp,mixxx/monitor.h,mixxx/enginechannel.cpp,mixxx/enginechannel.h,mixxx/dlgmaster.cpp,mixxx/dlgmaster.h,mixxx/enginemaster.cpp,mixxx/enginemaster.h
+files=mixxx/monitor.cpp,mixxx/monitor.h,mixxx/enginechannel.cpp,mixxx/enginechannel.h,mixxx/dlgmaster.cpp,mixxx/dlgmaster.h,mixxx/enginemaster.cpp,mixxx/enginemaster.h,mixxx/dlgcrossfader.cpp,mixxx/dlgcrossfader.h
 sub_dirs=
 type=prog_main
+
+[mixxx/dlgcrossfader.cpp]
+dist=true
+install=false
+install_location=
+type=SOURCE
+
+[mixxx/dlgcrossfader.h]
+dist=true
+install=false
+install_location=
+type=HEADER
 
 [mixxx/dlgmaster.cpp]
 dist=true

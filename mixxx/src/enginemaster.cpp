@@ -17,28 +17,30 @@
 
 #include "enginemaster.h"
 
-EngineMaster::EngineMaster(DlgMaster *master, EngineBuffer *_buffer1, EngineBuffer *_buffer2,
+EngineMaster::EngineMaster(DlgMaster *master_dlg, DlgCrossfader *crossfader_dlg,
+                           EngineBuffer *_buffer1, EngineBuffer *_buffer2,
                            EngineChannel *_channel1, EngineChannel *_channel2,
-                           int midiCrossfader, int midiVolume, MidiObject *midi){
+                           int midiCrossfader, int midiVolume, MidiObject *midi)
+{
     buffer1 = _buffer1;
     buffer2 = _buffer2;
     channel1 = _channel1;
     channel2 = _channel2;
 
     crossfader = new ControlPotmeter("crossfader", midiCrossfader, midi, -1, 1);
-    connect(master->SliderCrossfader, SIGNAL(valueChanged(int)), crossfader, SLOT(slotSetPosition(int)));
-    connect(crossfader, SIGNAL(recievedMidi(int)), master->SliderCrossfader, SLOT(setValue(int)));
+    connect(crossfader_dlg->SliderCrossfader, SIGNAL(valueChanged(int)), crossfader, SLOT(slotSetPosition(int)));
+    connect(crossfader, SIGNAL(recievedMidi(int)), crossfader_dlg->SliderCrossfader, SLOT(setValue(int)));
 
     volume = new EnginePregain(midiVolume, midi);
-    connect(master->KnobVolume, SIGNAL(valueChanged(int)), volume->pregainpot, SLOT(slotSetPosition(int)));
-    connect(volume->pregainpot, SIGNAL(recievedMidi(int)), master->KnobVolume, SLOT(setValue(int)));
+    connect(master_dlg->KnobVolume, SIGNAL(valueChanged(int)), volume->pregainpot, SLOT(slotSetPosition(int)));
+    connect(volume->pregainpot, SIGNAL(recievedMidi(int)), master_dlg->KnobVolume, SLOT(setValue(int)));
     connect(volume->pregainpot, SIGNAL(valueChanged(FLOAT_TYPE)), volume, SLOT(slotUpdate(FLOAT_TYPE)));
 
     // Clipping:
-    clipping = new EngineClipping(master->BulbClipping);
+    clipping = new EngineClipping(master_dlg->BulbClipping);
 
-    leftchannel = master->ButtonLeftChannel;
-    rightchannel = master->ButtonRightChannel;
+    leftchannel = crossfader_dlg->ButtonLeftChannel;
+    rightchannel = crossfader_dlg->ButtonRightChannel;
 
     out = new CSAMPLE[MAX_BUFFER_LEN];
     out2 = new CSAMPLE[MAX_BUFFER_LEN];

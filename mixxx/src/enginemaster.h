@@ -21,6 +21,7 @@
 #include "engineobject.h"
 #include "enginebuffer.h"
 #include "dlgmaster.h"
+#include "dlgcrossfader.h"
 #include "enginepregain.h"
 #include "enginechannel.h"
 #include "engineclipping.h"
@@ -40,7 +41,8 @@ private:
     QRadioButton *rightchannel, *leftchannel;
     CSAMPLE *out, *out2;
 public: 
-    EngineMaster(DlgMaster *master, EngineBuffer *buffer1, EngineBuffer *buffer2,
+    EngineMaster(DlgMaster *master_dlg, DlgCrossfader *crossfader_dlg,
+                 EngineBuffer *buffer1, EngineBuffer *buffer2,
                  EngineChannel *, EngineChannel *,
                  int midiCrossfader, int midiVolume, MidiObject *midi);
     ~EngineMaster();

@@ -37,9 +37,9 @@ EngineBuffer::EngineBuffer(DlgPlaycontrol *_playcontrol, int midiPlaybutton, int
   connect(rateSlider, SIGNAL(recievedMidi(int)), playcontrol->SliderRate, SLOT(setValue(int)));
 
   wheel = new ControlRotary("wheel", midiWheel, midi);
-  connect(playcontrol->DialPlaycontrol, SIGNAL(valueChanged(int)), wheel, SLOT(slotSetPosition(int)));
+  connect(playcontrol->SliderPlaycontrol, SIGNAL(valueChanged(int)), wheel, SLOT(slotSetPosition(int)));
   connect(wheel, SIGNAL(valueChanged(FLOAT_TYPE)), this, SLOT(slotUpdateRate(FLOAT_TYPE)));
-  connect(wheel, SIGNAL(recievedMidi(int)), playcontrol->DialPlaycontrol, SLOT(setValue(int)));
+  connect(wheel, SIGNAL(recievedMidi(int)), playcontrol->SliderPlaycontrol, SLOT(setValue(int)));
 
   connect(this, SIGNAL(position(int)), playcontrol->LCDposition, SLOT(display(int)));
 

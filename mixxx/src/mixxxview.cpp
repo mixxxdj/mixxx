@@ -31,49 +31,52 @@ MixxxView::MixxxView(QWidget *parent, MixxxDoc *doc) : QWidget(parent)
     channel1 = new DlgChannel(this);
     channel2 = new DlgChannel(this);
     playlist = new DlgPlaylist(this);
-    playlist->TableList->setColumnWidth(0,420);
+    playlist->ListPlaylist->setColumnWidth(0,420);
     master = new DlgMaster(this);
+    crossfader = new DlgCrossfader(this);
     
     // Layout management
-    mainGrid = new QGridLayout(this,3,4); // A layout on a widget
-    //hMainBox->setResizeMode(QLayout::Minimum);
-    mainGrid->addMultiCellWidget(channel1,0,2,0,0);
-    mainGrid->addWidget(playcontrol1,0,1);
-    mainGrid->addMultiCellWidget(channel2,0,2,3,3);
-    mainGrid->addWidget(playcontrol2,0,2);
-    mainGrid->addMultiCellWidget(playlist,1,1,1,2);
-    mainGrid->addMultiCellWidget(master,2,2,1,2);
-    
+    mainGrid = new QGridLayout(this,5,3); // A layout on a widget
+    mainGrid->addMultiCellWidget(playcontrol1,0,1,0,0);
+    mainGrid->addMultiCellWidget(channel1,0,1,1,1);
+    mainGrid->addWidget(master,0,2);
+    mainGrid->addWidget(playlist,1,2);
+    mainGrid->addMultiCellWidget(channel2,0,1,3,3);
+    mainGrid->addMultiCellWidget(playcontrol2,0,1,4,4);
+    mainGrid->addMultiCellWidget(crossfader,2,2,0,4);
+
     //let the ratio between the widths of columns 0 and 1 be 2:3.
-    mainGrid->setColStretch( 0,  45);
-    mainGrid->setColStretch( 1, 210);
-    mainGrid->setColStretch( 2, 210);
+    mainGrid->setColStretch( 0, 210);
+    mainGrid->setColStretch( 1,  45);
+    mainGrid->setColStretch( 2, 230);
     mainGrid->setColStretch( 3,  45);
+    mainGrid->setColStretch( 4, 210);
     
-    mainGrid->setRowStretch( 0, 185);
+    mainGrid->setRowStretch( 0,  40);
     mainGrid->setRowStretch( 1, 100);
     mainGrid->setRowStretch( 2,  40);
-    
+
     // Add filenames in ./music/ to table
     QDir d("music");
     d.setFilter(QDir::Files);
     if (!d.exists())
 	qWarning( "Cannot find the ./music directory" );
     else {
-	int i=0;
-	const QFileInfoList *list = d.entryInfoList();
-	QFileInfoListIterator it(*list);        // create list iterator
-	QFileInfo *fi;                          // pointer for traversing
+        const QFileInfoList *list = d.entryInfoList();
+	    QFileInfoListIterator it(*list);        // create list iterator
+	    QFileInfo *fi;                          // pointer for traversing
 	
-	while ((fi=it.current()) && (i<playlist->TableList->numRows())) {             // for each file...
-	    qDebug(fi->fileName());
-	    playlist->TableList->setItem(i,0,new QTableItem(playlist->TableList,QTableItem::Never,
-							    fi->baseName()));
-	    playlist->TableList->setItem(i,1,new QTableItem(playlist->TableList,QTableItem::Never,
-							    fi->filePath()));
-	    ++it;                               // goto next list element
-	    i++;
-	}
+	    while ((fi=it.current()))
+        {
+	        qDebug(fi->fileName());
+            playlist->ListPlaylist->insertItem(new QListViewItem(playlist->ListPlaylist,fi->baseName(),fi->filePath()));
+	     /*
+         playlist->TableList->setItem(i,0,new QTableItem(playlist->TableList,QTableItem::Never,
+		            					 fi->baseName()));
+	        playlist->TableList->setItem(i,1,new QTableItem(playlist->TableList,QTableItem::Never,
+			  				             fi->filePath()));
+	      */  ++it;                               // goto next list element
+    	}
     }
 }
 

@@ -8,8 +8,8 @@
         <rect>
             <x>0</x>
             <y>0</y>
-            <width>210</width>
-            <height>189</height>
+            <width>211</width>
+            <height>332</height>
         </rect>
     </property>
     <property name="sizePolicy">
@@ -23,6 +23,25 @@
     <property name="caption">
         <string>Form1</string>
     </property>
+    <widget class="QSlider">
+        <property name="name">
+            <cstring>SliderPosition</cstring>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>0</x>
+                <y>0</y>
+                <width>210</width>
+                <height>24</height>
+            </rect>
+        </property>
+        <property name="tracking">
+            <bool>false</bool>
+        </property>
+        <property name="orientation">
+            <enum>Horizontal</enum>
+        </property>
+    </widget>
     <widget class="QLabel">
         <property name="name">
             <cstring>textLabelTrack</cstring>
@@ -30,10 +49,19 @@
         <property name="geometry">
             <rect>
                 <x>5</x>
-                <y>5</y>
-                <width>200</width>
-                <height>45</height>
+                <y>25</y>
+                <width>205</width>
+                <height>95</height>
             </rect>
+        </property>
+        <property name="frameShape">
+            <enum>NoFrame</enum>
+        </property>
+        <property name="frameShadow">
+            <enum>Plain</enum>
+        </property>
+        <property name="margin">
+            <number>0</number>
         </property>
         <property name="text">
             <string></string>
@@ -44,12 +72,28 @@
     </widget>
     <widget class="QSlider">
         <property name="name">
+            <cstring>SliderPlaycontrol</cstring>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>0</x>
+                <y>125</y>
+                <width>210</width>
+                <height>26</height>
+            </rect>
+        </property>
+        <property name="orientation">
+            <enum>Horizontal</enum>
+        </property>
+    </widget>
+    <widget class="QSlider">
+        <property name="name">
             <cstring>SliderRate</cstring>
         </property>
         <property name="geometry">
             <rect>
                 <x>5</x>
-                <y>100</y>
+                <y>180</y>
                 <width>24</width>
                 <height>84</height>
             </rect>
@@ -68,29 +112,13 @@
         <property name="geometry">
             <rect>
                 <x>5</x>
-                <y>80</y>
+                <y>160</y>
                 <width>29</width>
                 <height>16</height>
             </rect>
         </property>
         <property name="text">
             <string>Rate</string>
-        </property>
-    </widget>
-    <widget class="QPushButton">
-        <property name="name">
-            <cstring>PushButtonPlay</cstring>
-        </property>
-        <property name="geometry">
-            <rect>
-                <x>55</x>
-                <y>160</y>
-                <width>100</width>
-                <height>22</height>
-            </rect>
-        </property>
-        <property name="text">
-            <string>play</string>
         </property>
     </widget>
     <widget class="QLCDNumber">
@@ -100,7 +128,7 @@
         <property name="geometry">
             <rect>
                 <x>170</x>
-                <y>60</y>
+                <y>90</y>
                 <width>35</width>
                 <height>23</height>
             </rect>
@@ -115,36 +143,20 @@
             <number>2</number>
         </property>
     </widget>
-    <widget class="QDial">
+    <widget class="QPushButton">
         <property name="name">
-            <cstring>DialPlaycontrol</cstring>
+            <cstring>PushButtonPlay</cstring>
         </property>
         <property name="geometry">
             <rect>
-                <x>55</x>
-                <y>55</y>
-                <width>100</width>
-                <height>100</height>
+                <x>150</x>
+                <y>160</y>
+                <width>60</width>
+                <height>40</height>
             </rect>
         </property>
-    </widget>
-    <widget class="QSlider">
-        <property name="name">
-            <cstring>SliderPosition</cstring>
-        </property>
-        <property name="geometry">
-            <rect>
-                <x>180</x>
-                <y>100</y>
-                <width>24</width>
-                <height>84</height>
-            </rect>
-        </property>
-        <property name="tracking">
-            <bool>false</bool>
-        </property>
-        <property name="orientation">
-            <enum>Vertical</enum>
+        <property name="text">
+            <string>Play</string>
         </property>
     </widget>
 </widget>

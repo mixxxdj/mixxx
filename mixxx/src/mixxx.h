@@ -111,7 +111,7 @@ class MixxxApp : public QMainWindow
 
 	/** Change of file to play */
 	void slotChangePlay(int,int,int, const QPoint &);
-
+    void slotChangePlay(QListViewItem *item);
 
   private:
 
