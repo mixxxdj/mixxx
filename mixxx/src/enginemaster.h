@@ -19,30 +19,20 @@
 #define ENGINEMASTER_H
 
 #include "engineobject.h"
-#include "enginebuffer.h"
-#include "dlgmaster.h"
-#include "dlgcrossfader.h"
-#include "enginevolume.h"
-#include "enginechannel.h"
-#include "engineclipping.h"
-#include "engineflanger.h"
-#include "controlpotmeter.h"
+
+class ControlEngine;
+class EngineBuffer;
+class EngineVolume;
+class EngineChannel;
+class EngineClipping;
+class EngineFlanger;
 
 /**
   *@author 
   */
 
-class EngineMaster : public EngineObject  {
-  Q_OBJECT
-private:
-    EngineBuffer *buffer1, *buffer2;
-    EngineChannel *channel1, *channel2;
-    EngineVolume *volume, *head_volume;
-    ControlPotmeter *crossfader, *head_mix;
-    EngineClipping *clipping, *head_clipping;
-    EngineFlanger *flanger;
-    CSAMPLE *out, *tmp, *tmp2, *tmp3;
-    bool master1, master2, head1, head2;
+class EngineMaster : public EngineObject
+{
 public:
     EngineMaster(DlgMaster *master_dlg, DlgCrossfader *crossfader_dlg,
                  DlgChannel *channel1_dlg, DlgChannel *channel2_dlg,
@@ -50,12 +40,18 @@ public:
                  EngineChannel *, EngineChannel *, EngineFlanger *,
                  const char *group);
     ~EngineMaster();
+    void notify(double) {};
     CSAMPLE *process(const CSAMPLE *, const int);
-public slots:
-    void slotChannelMaster1(bool toggle);
-    void slotChannelMaster2(bool toggle);
-    void slotChannelHead1(int toggle);
-    void slotChannelHead2(int toggle);
+private:
+    EngineBuffer *buffer1, *buffer2;
+    EngineChannel *channel1, *channel2;
+    EngineVolume *volume, *head_volume; 
+    EngineClipping *clipping, *head_clipping;
+    EngineFlanger *flanger;
+
+    ControlEngine *crossfader, *head_mix, *pfl1, *pfl2;
+    CSAMPLE *out, *tmp, *tmp2, *tmp3;
+    bool master1, master2;
 };
 
 #endif

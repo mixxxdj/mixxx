@@ -31,14 +31,16 @@ public:
     ControlRotary(ConfigKey key, ControlPushButton *playbutton);
     void updatecounter(int, int SRATE);
     short direction;
+    void setValue(int);
 public slots:
     void slotSetPosition(int);
     void slotSetPositionMidi(int);
     void slotSetValue(int newvalue);
+protected:
+    void forceGUIUpdate();
 private:
-    short sign(short);
-    //timeval oldtime;
     FLOAT_TYPE counter;
+    //timeval oldtime;
 //    static const char graycodetable[256];
     ControlPushButton *play;
 };

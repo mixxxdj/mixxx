@@ -32,11 +32,12 @@ class SoundBuffer;
   *@author Tue and Ken Haste Andersen
   */
 
-class EnginePreProcess : public EngineObject  {
-    Q_OBJECT
+class EnginePreProcess : public EngineObject
+{
 public:
     EnginePreProcess(SoundBuffer *_soundbuffer, int _specNo, WindowKaiser *window);
     ~EnginePreProcess();
+    void notify(double) {};
     void update(int specFrom, int specTo);
     CSAMPLE *process(const CSAMPLE *, const int);
 private:

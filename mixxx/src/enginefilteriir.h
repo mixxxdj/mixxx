@@ -26,6 +26,7 @@ class EngineFilterIIR : public EngineObject {
  public:
   EngineFilterIIR(const double *);
   ~EngineFilterIIR();
+    void notify(double) {};
   CSAMPLE *process(const CSAMPLE*, const int);
  protected:
   const double *coefs;

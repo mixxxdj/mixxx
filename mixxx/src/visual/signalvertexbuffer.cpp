@@ -23,24 +23,20 @@
 /**
  * Default Constructor.
  */
-SignalVertexBuffer::SignalVertexBuffer(int _len, int _resampleFactor, EngineBuffer *_enginebuffer, FastVertexArray *_vertex)
+SignalVertexBuffer::SignalVertexBuffer(EngineBuffer *_enginebuffer, FastVertexArray *_vertex)
 {
     installEventFilter(this);
 
     vertex = _vertex;
     enginebuffer = _enginebuffer;
     soundbuffer = enginebuffer->getSoundBuffer();
-    resampleFactor = _resampleFactor;
-    len = _len/resampleFactor;
-    displayLen = len-(4*READCHUNKSIZE/resampleFactor);
-    std::cout << "displayLen: " << displayLen << "\n";
-    playpos = 0;
-    time.start();
 
-    qDebug("LEN %i",len);
+    len = vertex->getSize();
+    displayLen = len/2; // QUICK AND DIRTY HACK!
+    buffer = vertex->getStartPtr();
+
+    qDebug("len: %i, displayLen: %i, READCHUNKSIZE: %i, chunkSize: %i",len,displayLen,READCHUNKSIZE,vertex->getChunkSize());
     
-    buffer = vertex->getStartPtr(READCHUNK_NO);
-
     // Reset buffer
     GLfloat *p = buffer;
     for (int i=0; i<len; i++)
@@ -56,58 +52,32 @@ SignalVertexBuffer::SignalVertexBuffer(int _len, int _resampleFactor, EngineBuff
  */
 SignalVertexBuffer::~SignalVertexBuffer()
 {
-    //delete [] buffer;
 };
-
-bool SignalVertexBuffer::eventFilter(QObject *o, QEvent *e)
-{
-    // If a user events are received, update either playpos or buffer
-    if (e->type() == (QEvent::Type)1001)
-    {
-        // Update visual buffer 1
-        updateBuffer(soundbuffer->read_buffer,soundbuffer->visualPos1, 
-                     soundbuffer->visualLen1,soundbuffer->visualPos2, soundbuffer->visualLen2);
-    }
-    else
-    {
-        // standard event processing
-        return QObject::eventFilter(o,e);
-    }
-    return TRUE;
-}
-
 
 /**
  * Updates buffer.
  *
- * Input: source     - Pointer to samples which is to be copied to this buffer
- *        pos1, len1 - Position and length of samples relative to source
- *        pos2, len2 - Same. Is used if buffer is circular and the samples are wrapped
+ * Input: playpos - Play position relative to the vertex buffer
  *
  */ 
-void SignalVertexBuffer::updateBuffer(float *source, int pos1, int len1, int pos2, int len2)
+void SignalVertexBuffer::update()
 {
-    //std::cout << "pos1: " << pos1 << ", len1: " << len1 <<", pos2: " << pos2 << ", len2: " << len2 << ", len: " << len1+len2 << "\n";
+    int pos = soundbuffer->visualPos;
+    int len = soundbuffer->visualLen;
+    CSAMPLE *source = soundbuffer->read_buffer+pos;
 
-    int pos, len;
-    if (len1>0) 
-    { 
-        len=len1; 
-        pos=pos1; 
-    }
-    else 
-    { 
-        len=len2; 
-        pos=pos2;
-    }
-    
-    float *copySource = source+pos;
-    GLfloat *copyDest = &buffer[(int)(pos/resampleFactor)*3];
-    for (int i=0; i<len; i+=resampleFactor)
+    GLfloat resampleFactor = (GLfloat)READCHUNKSIZE/(GLfloat)vertex->getChunkSize();
+    GLfloat *dest = &buffer[(int)(pos/resampleFactor)*3];
+
+    for (int i=0; i<READCHUNKSIZE; i+=resampleFactor)
     {
-        *copyDest++;
-        *copyDest++ = copySource[i]*(1./32768.);
-        *copyDest++;
+        GLfloat val = 0;
+        for (int j=i; j<i+resampleFactor; j++)
+            val += source[j]*(1./32768.);
+
+        *dest++;
+        *dest++ = val/resampleFactor;
+        *dest++;
     }
 }
 
@@ -120,13 +90,7 @@ void SignalVertexBuffer::updateBuffer(float *source, int pos1, int len1, int pos
  */
 bufInfo SignalVertexBuffer::getVertexArray()
 {
-    // Calculate new playpos based on playpos, rate and time since 
-    int dt = time.elapsed();
-    time.restart();
-    int newPlaypos = playpos + (int)(dt*enginebuffer->visualRate*enginebuffer->getPlaySrate()/1000.);
-    
-    playpos = enginebuffer->visualPlaypos/resampleFactor;
-
+    int playpos = enginebuffer->getPlaypos(DISPLAYRATE);
     int pos = playpos-(displayLen/2);
     while (pos<0)
         pos += len;

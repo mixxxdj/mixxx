@@ -25,10 +25,7 @@
   #include <glh_glut.h>
 #endif
 
-using namespace std;
-
-// Static members
-int FastVertexArray::usedBufCount = 0;
+//using namespace std;
 
 FastVertexArray::FastVertexArray()
 {
@@ -57,9 +54,9 @@ FastVertexArray::~FastVertexArray()
     }
 };
 
-void FastVertexArray::init(int vertices,int bufferCount)
+void FastVertexArray::init(int vertices,int _bufferCount)
 {
-    this->bufferCount = bufferCount;
+    bufferCount = _bufferCount;
     verticesPerBuffer = vertices;
 
 #ifdef __NVSDK__
@@ -89,11 +86,13 @@ void FastVertexArray::init(int vertices,int bufferCount)
 #endif
 };
 
-GLfloat *FastVertexArray::getStartPtr(int no)
+GLfloat *FastVertexArray::getStartPtr()
 {
-    int r = usedBufCount;
+/*    int r = usedBufCount;
     usedBufCount+=no;
     return &pointer[r*3*verticesPerBuffer];
+*/
+    return pointer;
 }
 
 
@@ -135,7 +134,9 @@ GLfloat *FastVertexArray::allocate(int size)
 #endif
     if(array==0)
     {
+#ifdef __NVSDK__
         qDebug("Visuals: Unable to allocate %f megabytes of fast video memory. Reverting to standard OpenGL.",megabytes);
+#endif
         nv_fence = false;
         array = new GLfloat[size];
     }
@@ -153,3 +154,12 @@ void FastVertexArray::validate()
     }
 }
 
+int FastVertexArray::getSize()
+{
+    return verticesPerBuffer*bufferCount;
+}
+
+int FastVertexArray::getChunkSize()
+{
+    return verticesPerBuffer;
+}

@@ -20,7 +20,7 @@
 int bufferIdxSlave = 0;
 
 
-PlayerPortAudio::PlayerPortAudio(ConfigObject<ConfigValue> *config) : Player(config)
+PlayerPortAudio::PlayerPortAudio(ConfigObject<ConfigValue> *config, ControlEngineQueue *queue) : Player(config,queue)
 {
     opendev = false;
     

@@ -31,10 +31,10 @@
 class WKnob : public QDial  {
    Q_OBJECT
 public: 
-	WKnob(QWidget *parent=0, const char *name=0);
-	~WKnob();
+    WKnob(QWidget *parent=0, const char *name=0);
+    ~WKnob();
 protected:
-	void repaintScreen(const QRect *cr=0);
+    void repaintScreen(const QRect *cr=0);
     void repaintScreen(const QRect *cr, QPixmap *p);
     QPixmap *getKnob();
 private:

@@ -15,34 +15,30 @@
  ***************************************************************************/
 
 #include "enginevolume.h"
+#include "controllogpotmeter.h"
+#include "controlengine.h"
 
 /*----------------------------------------------------------------
   Volume effect.
   ----------------------------------------------------------------*/
-EngineVolume::EngineVolume(const ConfigKey key)
+EngineVolume::EngineVolume(QWidget *knob, ConfigKey key)
 {
-    potmeter = new ControlLogpotmeter(key, 5.0);
-    volume = 1.0;
-    buffer = new CSAMPLE[MAX_BUFFER_LEN];
+    ControlLogpotmeter *p = new ControlLogpotmeter(key, 5.0);
+    p->setWidget(knob);
+    potmeterVolume = new ControlEngine(p);
 
-    connect(potmeter, SIGNAL(valueChanged(FLOAT_TYPE)), this, SLOT(slotUpdate(FLOAT_TYPE)));
+    buffer = new CSAMPLE[MAX_BUFFER_LEN];
 }
 
 EngineVolume::~EngineVolume()
 {
-    delete potmeter;
+    delete potmeterVolume;
     delete [] buffer;
-}
-
-void EngineVolume::slotUpdate(FLOAT_TYPE newvalue)
-{
-    volume = newvalue;
-    //qDebug("Volume: %f",volume);
 }
 
 CSAMPLE *EngineVolume::process(const CSAMPLE *source, const int buffer_size)
 {
     for (int i=0; i<buffer_size; i++)
-        buffer[i] = source[i]*volume;
+        buffer[i] = source[i]*potmeterVolume->get();
     return buffer;
 }

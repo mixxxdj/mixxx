@@ -37,6 +37,7 @@ public:
     EngineSpectralFwd(bool Power, bool Phase, WindowKaiser *window);
     /** Destructor */
     ~EngineSpectralFwd();
+    void notify(double) {};
     /** Performs an fft opeation on the samples pointed to by p */
     CSAMPLE *process(const CSAMPLE *p, const int);
     /** Return the High Frequency Content (HFC) of the spectrum */

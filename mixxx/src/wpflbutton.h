@@ -34,9 +34,14 @@ class WPFLButton : public QCheckBox  {
 public: 
     WPFLButton(QWidget *parent=0, const char *name=0);
     ~WPFLButton();
-//    ControlPushButton *controlButton;
+public slots:
+    void setValue(int);
+signals:
+    void valueChanged(int);
 protected:
     void drawButton (QPainter *);
+private slots:
+    void emitValueChanged(bool);
 private:
     static QPixmap *buttonUp, *buttonDown;
 };

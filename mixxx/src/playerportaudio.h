@@ -21,13 +21,15 @@
 #include "player.h"
 #include <portaudio.h>
 
+class ControlEngineQueue;
+
 /**
   *@author Tue and Ken Haste Andersen
   */
 
 class PlayerPortAudio : public Player  {
 public: 
-    PlayerPortAudio(ConfigObject<ConfigValue> *config);
+    PlayerPortAudio(ConfigObject<ConfigValue> *config, ControlEngineQueue *queue);
     ~PlayerPortAudio();
     /** Close device */
     void close();

@@ -27,15 +27,13 @@
 #include <qevent.h>
 #include <qobject.h>
 
-class GUIChannel;
-
 /**
   *@author Tue & Ken Haste Andersen
   */
 
 class SoundBuffer {
 public: 
-    SoundBuffer(int _chunkSize, int _chunkNo, int windowSize, int _stepSize, GUIChannel *guichannel);
+    SoundBuffer(int _chunkSize, int _chunkNo, int windowSize, int _stepSize);
     ~SoundBuffer();
     void setSoundSource(SoundSource *_file);
     void getchunk(CSAMPLE rate);
@@ -44,11 +42,15 @@ public:
     CSAMPLE *getWindowPtr(int windowIdx);
     double getFileposStart();
     double getFileposEnd();
-    void setVisual(QObject *_visualBuffer);    
+    /** Return sample rate of buffer */
+    int getRate();
+    /** Return size of samples read at each update signal (USER:1001) */
+    int getChunkSize();
+
     /** The buffer where the samples are read into */
     CSAMPLE *read_buffer;
 
-    int visualPos1, visualLen1, visualPos2, visualLen2;
+    int visualPos, visualLen;
 
 private:
 
@@ -60,8 +62,6 @@ private:
     Monitor filepos_end;
     /** Buffer start and end position */
     int bufferpos_start, bufferpos_end;
-    /** Pointer to visual vertex buffer */
-    QObject *visualBuffer;
     /** Pointer to window and windowed samples of signal */
     WindowKaiser *window;
     CSAMPLE *windowedSamples;

@@ -18,6 +18,7 @@
 #include "configobject.h"
 #include "controlobject.h"
 #include "controlpushbutton.h"
+#include "controleventmidi.h"
 #include <qevent.h>
 #include <algorithm>
 #include <qdir.h>
@@ -123,37 +124,8 @@ QString *MidiObject::getOpenDevice()
    -------- ------------------------------------------------------ */
 void MidiObject::send(char channel, char midicontrol, char midivalue)
 {
-    //qDebug("Received midi message: ch %i no %i val %i",(int)channel,(int)midicontrol,(int)midivalue);
-
-    // Check the potmeters:
-    for (int i=0; i<no; i++)
-    {
-        //qDebug("(%i) checking: no %i ch %i [%p]", i, controlList[i]->cfgOption->val->midino, 
-        //               controlList[i]->cfgOption->val->midichannel);
-        //cout << "value: " << controlList[i]->cfgOption->val->value << "\n";
-       if ((controlList[i]->cfgOption->val->midino == midicontrol) &
-            (controlList[i]->cfgOption->val->midichannel == channel))
-        {
-            // Check for possible bit mask
-            int midimask = controlList[i]->cfgOption->val->midimask;
-
-            // Lock application before update gui signal is sent in call
-            // to ControlObject->slotSetPositionMidi
-            //app->lock();
-
-            if (midimask > 0)
-                controlList[i]->slotSetPositionMidi((int)(midimask & midivalue));
-            else
-                controlList[i]->slotSetPositionMidi((int)midivalue); // 127-midivalue
-
-            //app->unlock();
-            
-            // Send User event, to force screen update
-            QThread::postEvent(mixxx,new QEvent(QEvent::User));
-
-            break;
-        }
-    }
+    // Send User event, to force screen update
+    //QThread::postEvent(mixxx,new ControlEventMidi(channel,midicontrol,midivalue));
 };
 
 void MidiObject::stop()

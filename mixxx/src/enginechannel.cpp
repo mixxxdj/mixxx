@@ -17,43 +17,58 @@
 
 #include "enginechannel.h"
 #include "wslider.h"
-#include "controllogpotmeter.h"
+#include "controlengine.h"
+#include "controlpushbutton.h"
+#include "engineclipping.h"
+#include "enginepregain.h"
+#include "enginevolume.h"
+#include "enginefilterblock.h"
+#include "engineflanger.h"
+#include "dlgchannel.h"
 
 EngineChannel::EngineChannel(DlgChannel *dlg, const char *group)
 {
-  // Pregain:
-  pregain = new EnginePregain(group);
-  connect(dlg->DialGain, SIGNAL(valueChanged(int)), pregain->potmeter, SLOT(slotSetPosition(int)));
-  connect(pregain->potmeter, SIGNAL(updateGUI(int)), dlg->DialGain, SLOT(setValue(int)));
+    // Pregain:
+    pregain = new EnginePregain(dlg->DialGain, group);
 
-  // Filters:
-  filter = new EngineFilterBlock(dlg->DialFilterLow,
-                                 dlg->DialFilterMiddle,
-                                 dlg->DialFilterHigh, group);
+    // Filters:
+    filter = new EngineFilterBlock(dlg->DialFilterLow,
+                                   dlg->DialFilterMiddle,
+                                   dlg->DialFilterHigh, group);
 
-  // Clipping:
-  clipping = new EngineClipping(dlg->BulbClipping);
+    // Clipping:
+    clipping = new EngineClipping(dlg->BulbClipping);
 
-  // Volume control:
-  volume = new EngineVolume(ConfigKey(group,"volume"));
-  connect(dlg->SliderVolume, SIGNAL(valueChanged(int)), volume->potmeter, SLOT(slotSetPosition(int)));
-  connect(volume->potmeter, SIGNAL(updateGUI(int)), dlg->SliderVolume, SLOT(setValue(int)));
+    // Volume control:
+    volume = new EngineVolume(dlg->SliderVolume,ConfigKey(group,"volume"));
+
+    // PFL button
+    ControlPushButton *p = new ControlPushButton(ConfigKey(group, "pfl" ));
+    p->setWidget(dlg->CheckBoxPFL);
+    pfl = new ControlEngine(p);
 }
 
-EngineChannel::~EngineChannel(){
-  delete pregain;
-  delete filter;
-  delete clipping;
-  delete volume;
+EngineChannel::~EngineChannel()
+{
+    delete pregain;
+    delete filter;
+    delete clipping;
+    delete volume;
 }
 
-CSAMPLE *EngineChannel::process(const CSAMPLE* source, const int buffer_size) {
-  CSAMPLE *temp  = pregain->process(source, buffer_size);
-  CSAMPLE *temp2 = clipping->process(temp, buffer_size);
-  temp = filter->process(temp2, buffer_size); 
-  temp2 = volume->process(temp, buffer_size);
+ControlEngine *EngineChannel::getPFL()
+{
+    return pfl;
+}
 
-  return temp2;
+CSAMPLE *EngineChannel::process(const CSAMPLE* source, const int buffer_size)
+{
+    CSAMPLE *temp  = pregain->process(source, buffer_size);
+    CSAMPLE *temp2 = clipping->process(temp, buffer_size);
+    temp = filter->process(temp2, buffer_size); 
+    temp2 = volume->process(temp, buffer_size);
+
+    return temp2;
 }
 
 

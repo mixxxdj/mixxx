@@ -1,7 +1,8 @@
 /***************************************************************************
                           guichannel.cpp  -  description
                              -------------------
-    copyright            : (C) 2003 by Tue and Ken Haste Andersen
+    copyright            : (C) 2003 by Tue and Ken Haste Andersen and Kenny
+                                       Erleben
     email                :
  ***************************************************************************/
 
@@ -15,7 +16,6 @@
  ***************************************************************************/
 
 #include "guichannel.h"
-#include "fastvertexarray.h"
 #include "../defs.h"
 #include "../enginebuffer.h"
 #include "../soundbuffer.h"
@@ -28,9 +28,8 @@
  * Default Consructor.
  */
 
-GUIChannel::GUIChannel(FastVertexArray *_vertex, EngineBuffer *_engineBuffer, VisualController *_controller)
+GUIChannel::GUIChannel(EngineBuffer *_engineBuffer, VisualController *_controller)
 {
-    vertex = _vertex;
     engineBuffer = _engineBuffer;
     controller = _controller;
     list.setAutoDelete(true);
@@ -44,11 +43,12 @@ GUIChannel::~GUIChannel()
 
 bool GUIChannel::eventFilter(QObject *o, QEvent *e)
 {
-    // If a user events are received, update either playpos or buffer
+    // If a user events are received, update containers
     if (e->type() == (QEvent::Type)1001)
     {
-        // Update visual buffers
-        // ***
+        GUIContainer *c;
+        for (c = list.first(); c; c = list.next())
+            c->update();
     }
     else
     {
@@ -62,7 +62,7 @@ bool GUIChannel::eventFilter(QObject *o, QEvent *e)
 SignalVertexBuffer *GUIChannel::add(SoundBuffer *soundBuffer)
 {
     // Construct a new container
-    GUIContainer *c = new GUIContainer(vertex, engineBuffer);
+    GUIContainer *c = new GUIContainer(engineBuffer);
 
     if (list.isEmpty())
     {

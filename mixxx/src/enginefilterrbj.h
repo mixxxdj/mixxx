@@ -29,6 +29,7 @@ class EngineFilterRBJ : public EngineObject {
 public:
     EngineFilterRBJ(bool low, CSAMPLE frequency, CSAMPLE bandwidth);
     ~EngineFilterRBJ();
+    void notify(double) {};
     CSAMPLE *process(const CSAMPLE *source, const int buf_size);
 private:
     CSAMPLE c0, c1, c2, c3, c4;

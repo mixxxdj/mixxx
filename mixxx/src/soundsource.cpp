@@ -27,6 +27,7 @@
 */
 SoundSource::SoundSource()
 {
+    SRATE = 0;
 }
 
 SoundSource::~SoundSource()

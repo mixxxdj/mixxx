@@ -27,10 +27,13 @@
 class ControlNull : public ControlObject  {
     Q_OBJECT
 public:
-	ControlNull();
-	~ControlNull();
+    ControlNull();
+    ~ControlNull();
+    void setValue(FLOAT_TYPE) {};
 public slots:
-    void slotSetPosition(int) { qDebug("Do not call this method!"); };
+    void slotSetPosition(int);
+protected:
+    void forceGUIUpdate() {};
 };
 
 #endif

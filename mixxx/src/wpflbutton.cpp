@@ -31,13 +31,33 @@ WPFLButton::WPFLButton(QWidget *parent, const char *name ) : QCheckBox(parent,na
         buttonUp    = new QPixmap(pfl_off_xpm);
         buttonDown  = new QPixmap(pfl_on_xpm);
     }
+    setToggleButton(true);
+
     setBackgroundMode(NoBackground);
+
+    connect(this,SIGNAL(toggled(bool)),this,SLOT(emitValueChanged(bool)));
 }
 
 WPFLButton::~WPFLButton()
 {
     delete buttonUp;
     delete buttonDown;
+}
+
+void WPFLButton::setValue(int v)
+{
+    if (v==0)
+        setChecked(false);
+    else
+        setChecked(true);
+}
+
+void WPFLButton::emitValueChanged(bool v)
+{
+    if (v)
+        emit(valueChanged(1));
+    else
+        emit(valueChanged(0));
 }
 
 void WPFLButton::drawButton(QPainter *p)

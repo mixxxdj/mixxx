@@ -21,14 +21,15 @@
 #include "engineobject.h"
 
 class EngineClipping : public EngineObject {
+ public:
+    EngineClipping(WBulb *);
+    ~EngineClipping();
+    void notify(double) {};
+    CSAMPLE *process(const CSAMPLE *, const int);
  private:
     WBulb *bulb_clipping;
 
     CSAMPLE *buffer;
- public:
-    EngineClipping(WBulb *);
-    ~EngineClipping();
-    CSAMPLE *process(const CSAMPLE *, const int);
 };
 
 #endif

@@ -30,6 +30,7 @@ public:
     ~EngineSpectralBack();
     /** Performs the IFFT */
     CSAMPLE *process(CSAMPLE *p, const int buf_len);
+    void notify(double) {};
 protected:
     /** Internal fftw plan */
     rfftw_plan   plan_backward;

@@ -16,40 +16,37 @@
  ***************************************************************************/
 
 #include "enginefilterblock.h"
-#include "configobject.h"
+#include "controllogpotmeter.h"
+#include "controlengine.h"
+#include "wknob.h"
 
 EngineFilterBlock::EngineFilterBlock(WKnob *DialFilterLow, WKnob *DialFilterMid, WKnob *DialFilterHigh,
                                      const char *group)
 {
-    gainLow = gainMid = gainHigh = 1.;
+    ControlLogpotmeter *p;
 
-    //low = new EngineFilterRBJ(true,700.,1.);
     low = new EngineFilterIIR(bessel_lowpass);
-    filterpotLow = new ControlLogpotmeter(ConfigKey(group, "filterLow"), 5.);
-    connect(filterpotLow,  SIGNAL(valueChanged(FLOAT_TYPE)), this, SLOT(slotUpdateLow(FLOAT_TYPE)));
-    connect(DialFilterLow, SIGNAL(valueChanged(int)), filterpotLow, SLOT(slotSetPosition(int)));
-    connect(filterpotLow, SIGNAL(updateGUI(int)), DialFilterLow, SLOT(setValue(int)));
+    p = new ControlLogpotmeter(ConfigKey(group, "filterLow"), 5.);
+    p->setWidget(DialFilterLow);
+    filterpotLow = new ControlEngine(p);
 
-    filterpotMid = new ControlLogpotmeter(ConfigKey(group, "filterMid"), 5.);
-    connect(filterpotMid,  SIGNAL(valueChanged(FLOAT_TYPE)), this, SLOT(slotUpdateMid(FLOAT_TYPE)));
-    connect(DialFilterMid, SIGNAL(valueChanged(int)), filterpotMid, SLOT(slotSetPosition(int)));
-    connect(filterpotMid, SIGNAL(updateGUI(int)), DialFilterMid, SLOT(setValue(int)));
-  	
-    //high = new EngineFilterRBJ(true,700.,1.);
+    p = new ControlLogpotmeter(ConfigKey(group, "filterMid"), 5.);
+    p->setWidget(DialFilterMid);
+    filterpotMid = new ControlEngine(p);
+
     high = new EngineFilterIIR(bessel_highpass);
-    filterpotHigh = new ControlLogpotmeter(ConfigKey(group, "filterHigh"), 5.);
-    connect(filterpotHigh,  SIGNAL(valueChanged(FLOAT_TYPE)), this, SLOT(slotUpdateHigh(FLOAT_TYPE)));
-    connect(DialFilterHigh, SIGNAL(valueChanged(int)), filterpotHigh, SLOT(slotSetPosition(int)));
-    connect(filterpotHigh, SIGNAL(updateGUI(int)), DialFilterHigh, SLOT(setValue(int)));
+    p = new ControlLogpotmeter(ConfigKey(group, "filterHigh"), 5.);
+    p->setWidget(DialFilterHigh);
+    filterpotHigh = new ControlEngine(p);
 
     buffer = new CSAMPLE[MAX_BUFFER_LEN];
 }
 
 EngineFilterBlock::~EngineFilterBlock()
 {
-	delete [] buffer;
-	delete high;
-	delete low;
+    delete [] buffer;
+    delete high;
+    delete low;
 }
 
 CSAMPLE *EngineFilterBlock::process(const CSAMPLE *source, const int buf_size)
@@ -58,22 +55,7 @@ CSAMPLE *EngineFilterBlock::process(const CSAMPLE *source, const int buf_size)
     CSAMPLE *p1 = high->process(source,buf_size);
     
     for (int i=0; i<buf_size; i++)
-	    buffer[i] = gainLow*p0[i] + gainHigh*p1[i] + gainMid*(source[i]-p0[i]-p1[i]);
+        buffer[i] = filterpotLow->get()*p0[i] + filterpotHigh->get()*p1[i] + filterpotMid->get()*(source[i]-p0[i]-p1[i]);
     
     return buffer;
-}
-
-void EngineFilterBlock::slotUpdateLow(FLOAT_TYPE gain)
-{
-    gainLow = gain;
-}
-
-void EngineFilterBlock::slotUpdateMid(FLOAT_TYPE gain)
-{
-    gainMid = gain;
-}
-
-void EngineFilterBlock::slotUpdateHigh(FLOAT_TYPE gain)
-{
-    gainHigh = gain;
 }

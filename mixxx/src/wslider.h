@@ -39,6 +39,7 @@ signals:
     void valueChanged(int);
 private:
     void setDefaultValue();
+    void setState();
 
     /** Internal representation of slider value */
     int value;

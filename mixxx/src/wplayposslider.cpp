@@ -70,7 +70,7 @@ void WPlayposSlider::mouseReleaseEvent(QMouseEvent *e)
     mouseMoveEvent(e);
 
     // Calculate and emit new value
-    int value = (int)((CSAMPLE)(poss-2)*100./(CSAMPLE)pix_length);
+    int value = (int)((CSAMPLE)(poss-2)*127./(CSAMPLE)pix_length);
     emit(valueChanged(value));
 }
 
@@ -78,7 +78,7 @@ void WPlayposSlider::setValue(int v)
 {
     // Set value without emitting a valueChanged signal, and update display
     value = v;
-    poss = (int)((CSAMPLE)value*((CSAMPLE)pix_length/100.))+2;
+    poss = (int)((CSAMPLE)value*((CSAMPLE)pix_length/127.))+2;
 
     repaint();
 }

@@ -25,8 +25,8 @@ QPixmap **WWheel::pix = 0;
 
 WWheel::WWheel(QWidget *parent, const char *name ) : QWidget(parent,name)
 {
-    oldvalue = 49;
-    value = 49;
+    oldvalue = 64;
+    value = 64;
 
     // Convert xpm's to pixmaps
     if (pix == 0)
@@ -49,9 +49,9 @@ WWheel::~WWheel()
 void WWheel::mouseMoveEvent(QMouseEvent *e)
 {
     oldvalue = value;
-    value = (e->x()-startval+49);
-    if (value>99)
-        value = 99;
+    value = (e->x()-startval+64);
+    if (value>127)
+        value = 127;
     else if (value<0)
         value = 0;
 
@@ -67,14 +67,15 @@ void WWheel::mousePressEvent(QMouseEvent *e)
 void WWheel::mouseReleaseEvent(QMouseEvent *)
 {
     oldvalue = value;
-    value = 49;
+    value = 64;
     emit(valueChanged(value));
     update();
 }
 
 void WWheel::paintEvent(QPaintEvent *)
 {
-    bitBlt(this, 0, 0, pix[value]);
+    int idx = (int)(((float)value-64.)*(99./127.))+50;
+    bitBlt(this, 0, 0, pix[idx]);
 }
 
 void WWheel::setValue(int v)

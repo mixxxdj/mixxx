@@ -16,7 +16,6 @@
  ***************************************************************************/
 
 #include "mixxxvisual.h"
-#include "visual/fastvertexarray.h"
 #include "visual/signalvertexbuffer.h"
 #include "visual/guisignal.h"
 #include "visual/guicontainer.h"
@@ -27,14 +26,13 @@ MixxxVisual::MixxxVisual(QWidget *parent, const char *name) : QGLWidget(parent,n
 //    idCount = 0;
     installEventFilter(this);
     time.start();
-    startTimer(0);
+    startTimer(50);
 
     list.setAutoDelete(true);
 }
 
 MixxxVisual::~MixxxVisual()
 {
-    delete vertex;
 }
 
 bool MixxxVisual::eventFilter(QObject *o, QEvent *e)
@@ -66,7 +64,7 @@ bool MixxxVisual::eventFilter(QObject *o, QEvent *e)
 
 GUIChannel *MixxxVisual::add(EngineBuffer *engineBuffer)
 {
-    GUIChannel *c = new GUIChannel(vertex,engineBuffer,&controller);
+    GUIChannel *c = new GUIChannel(engineBuffer,&controller);
 
     // Position coding... hack
     if (list.isEmpty())
@@ -102,10 +100,6 @@ void MixxxVisual::initializeGL()
     controller.init();
     backplane = new VisualBackplane();
     controller.add(backplane);
-    vertex = new FastVertexArray();
-
-    // Allocate room for a lot of vertices
-    vertex->init(READCHUNKSIZE/RESAMPLE_FACTOR,READCHUNK_NO*2); 
 
     picking.init(&controller);
 }

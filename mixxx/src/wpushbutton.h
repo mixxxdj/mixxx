@@ -1,7 +1,7 @@
 /***************************************************************************
-                          controlnull.cpp  -  description
+                          wpushbutton.h  -  description
                              -------------------
-    begin                : Sat Jun 15 2002
+    begin                : Fri Jun 21 2002
     copyright            : (C) 2002 by Tue & Ken Haste Andersen
     email                : haste@diku.dk
  ***************************************************************************/
@@ -15,17 +15,30 @@
  *                                                                         *
  ***************************************************************************/
 
-#include "controlnull.h"
+#ifndef WPUSHBUTTON_H
+#define WPUSHBUTTON_H
 
-ControlNull::ControlNull() //: ControlObject(key)
-{
-}
+#include <qwidget.h>
+#include <qpushbutton.h>
+#include <qpainter.h>
+#include "controlpushbutton.h"
 
-ControlNull::~ControlNull()
-{
-}
+/**
+  *@author Tue & Ken Haste Andersen
+  */
 
-void ControlNull::slotSetPosition(int)
+class WPushButton : public QPushButton
 {
-    qDebug("Do not call this method!");
+    Q_OBJECT
+public: 
+    WPushButton(QWidget *parent=0, const char *name=0);
+    ~WPushButton();
+public slots:
+    void setValue(int);
+signals:
+    void valueChanged(int);
+private slots:
+    void emitValueChanged(bool);
 };
+
+#endif

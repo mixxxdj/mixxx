@@ -17,14 +17,15 @@
 
 #include "soundbuffer.h"
 
-SoundBuffer::SoundBuffer(int _chunkSize, int _chunkNo, int windowSize, int _stepSize, GUIChannel *guichannel)
+SoundBuffer::SoundBuffer(int _chunkSize, int _chunkNo, int windowSize, int _stepSize)
 {
     // Setup variables for block based analysis
     chunkSize = _chunkSize;
     chunkNo = _chunkNo;
     stepSize = _stepSize;
     windowPerChunk = chunkSize/stepSize;
-    windowNo = chunkNo*windowPerChunk;    
+    windowNo = chunkNo*windowPerChunk;
+
     
     // Allocate and calculate window
     window = new WindowKaiser(windowSize, 6.5);
@@ -42,8 +43,6 @@ SoundBuffer::SoundBuffer(int _chunkSize, int _chunkNo, int windowSize, int _step
 
     // Allocate pre processing object
     preprocess = new EnginePreProcess(this, windowNo, window);
-        
-    visualBuffer = 0;
         
     // Initialize position in read buffer
     filepos_start.write(0.);
@@ -63,6 +62,12 @@ SoundBuffer::~SoundBuffer()
 void SoundBuffer::setSoundSource(SoundSource *_file)
 {
     file = _file;
+
+    // Initialize position in read buffer
+    filepos_start.write(0.);
+    filepos_end.write(0.);
+    bufferpos_start = 0;
+    bufferpos_end = 0;
 }
 
 /*
@@ -140,14 +145,8 @@ void SoundBuffer::getchunk(CSAMPLE rate)
         read_buffer[j] = (CSAMPLE)temp[i++];
 
     // Update variables used to copy the buffer to a vertex buffer for 3D visualization
-    visualPos1 = bufIdx;
-    visualLen1 = READCHUNKSIZE;
-    visualPos2 = 0;
-    visualLen2 = 0;
-
-    // Send user event to main thread, indicating that the visual sample buffer should be updated
-    if (visualBuffer>0)
-        QThread::postEvent(visualBuffer,new QEvent((QEvent::Type)1001));
+    visualPos = bufIdx;
+    visualLen = READCHUNKSIZE;
 }
 
 /*
@@ -209,7 +208,16 @@ double SoundBuffer::getFileposEnd()
     return filepos_end.read();
 }
 
-void SoundBuffer::setVisual(QObject *_visualBuffer)
+int SoundBuffer::getRate()
 {
-    visualBuffer = _visualBuffer;
+    // Sample rate of file with two channels
+    if (file)
+        return file->getSrate()*2;
+    else
+        return 88200; // HACKKKK!!!!!
+}
+
+int SoundBuffer::getChunkSize()
+{
+    return chunkSize;
 }

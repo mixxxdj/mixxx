@@ -75,8 +75,6 @@ void WSlider::mouseMoveEvent(QMouseEvent *e)
     if (size_state<3)
         value = 127-value;
 
-    //qDebug("WSlider value: %i",value);
-
     // Emit valueChanged signal
     emit(valueChanged(value));
 
@@ -92,8 +90,67 @@ void WSlider::mousePressEvent(QMouseEvent *e)
 
 void WSlider::paintEvent(QPaintEvent *)
 {
-    //QPainter paint(this);
+    setState();
+    
+    if (pos==-1)
+        setValue(value);
 
+    if (size_state == 1)
+    {
+        bitBlt(this, 0, 0, smallv);
+        bitBlt(this, 0, pos-handle_length/2, smallv_h);
+    }
+    else if (size_state == 2)
+    {
+        bitBlt(this, 0, 0, midv);
+        bitBlt(this, 0, pos-handle_length/2, midv_h);
+    }
+    else if (size_state == 3)
+    {
+        bitBlt(this, 0, 0, largeh);
+        bitBlt(this, pos-handle_length/2, 0, largeh_h);
+    }
+}
+
+void WSlider::setValue(int v)
+{
+    setState();
+
+    // Set value without emitting a valueChanged signal, and force display update
+    value = v;
+
+    // Calculate handle position
+    if (size_state<3)
+        v = 127-v;
+    pos = (int)(((FLOAT_TYPE)(v)/128.)*(FLOAT_TYPE)(slider_length-handle_length))+handle_length/2;
+    //qDebug("pos %i",minimumWidth());
+    if (size_state==0)
+        pos=0;
+    repaint();
+    //emit(valueChanged(value));
+}
+
+void WSlider::slotSetPosition(int p)
+{
+    pos = p;
+    value = (int)((FLOAT_TYPE)p*(128./100.));
+
+    repaint();
+    emit(valueChanged(value));
+}
+
+
+void WSlider::setDefaultValue()
+{
+    value = 63;
+    pos = -1;
+    size_state=0;
+    slider_length=0;
+    handle_length=0;
+}
+
+void WSlider::setState()
+{
     // Ensure size_state has been set
     if (size_state == 0)
         if ((minimumWidth()==20) & (minimumHeight()==80))
@@ -114,63 +171,4 @@ void WSlider::paintEvent(QPaintEvent *)
             slider_length = 400;
             handle_length = 16;
         }
-
-    if (pos==-1)
-        setValue(value);
-
-    if (size_state == 1)
-    {
-        bitBlt(this, 0, 0, smallv);
-        bitBlt(this, 0, pos-handle_length/2, smallv_h);
-        //paint.drawPixmap(0,0,*smallv);
-        //paint.drawPixmap(0,pos-handle_length/2,*smallv_h);
-    }
-    else if (size_state == 2)
-    {
-        bitBlt(this, 0, 0, midv);
-        bitBlt(this, 0, pos-handle_length/2, midv_h);
-        //paint.drawPixmap(0,0,*midv);
-        //paint.drawPixmap(0,pos-handle_length/2,*midv_h);
-    }
-    else if (size_state == 3)
-    {
-        bitBlt(this, 0, 0, largeh);
-        bitBlt(this, pos-handle_length/2, 0, largeh_h);
-        //paint.drawPixmap(0,0,*largeh);
-        //paint.drawPixmap(pos-handle_length/2,0,*largeh_h);
-    }
-}
-
-void WSlider::setValue(int v)
-{
-    // Set value without emitting a valueChanged signal, and force display update
-    value = v;
-
-    // Calculate handle position
-    if (size_state<3)
-        v = 127-v;
-    pos = (int)(((FLOAT_TYPE)(v)/128.)*(FLOAT_TYPE)(slider_length-handle_length))+handle_length/2;
-    if (size_state==0)
-        pos=0;
-    repaint();
-    emit(valueChanged(value));
-}
-
-void WSlider::slotSetPosition(int p)
-{
-    pos = p;
-    value = (int)((FLOAT_TYPE)p*(128./100.));
-
-    repaint();
-    emit(valueChanged(value));
-}
-
-
-void WSlider::setDefaultValue()
-{
-    value = 63;
-    pos = -1;
-    size_state=0;
-    slider_length=0;
-    handle_length=0;
 }

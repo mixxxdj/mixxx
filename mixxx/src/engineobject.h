@@ -18,7 +18,6 @@
 #ifndef ENGINEOBJECT_H
 #define ENGINEOBJECT_H
 
-#include <qobject.h>
 #include "mixxxview.h"
 #include "defs.h"
 
@@ -26,19 +25,18 @@
   *@author Tue and Ken Haste Andersen
   */
 
-class EngineObject : public QObject  {
-  Q_OBJECT
+class EngineObject {
 public: 
-  EngineObject();
-  ~EngineObject();
-  virtual CSAMPLE *process(const CSAMPLE *, const int) = 0;
-  int  getPlaySrate();
-  
+    EngineObject();
+    virtual ~EngineObject();
+    virtual CSAMPLE *process(const CSAMPLE *, const int) = 0;
+    int  getPlaySrate();
+    virtual void notify(double) = 0;  
 protected:
-  void setPlaySrate(int srate);
+    void setPlaySrate(int srate);
 
 private:
-  static int PLAY_SRATE;
+    static int PLAY_SRATE;
 };
 
 #endif
