@@ -88,7 +88,7 @@ public slots:
     void slotEndOfTrackCh2(double);
     bool AddFiles(const char *, QDomDocument * docXML);
 	void WriteXML();
-    int getTrackCount(QDomDocument * docXML);
+    int getNewTrackIndex();
 private slots:
     /** Loads new track for channel 1. Idx refers to index in m_lTracks. If not given it loads the
       * currently marked track in m_pTableTracks. */
