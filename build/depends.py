@@ -870,6 +870,11 @@ class MixxxCore(Feature):
                    "waveform/renderers/waveformmark.cpp",
                    "waveform/renderers/waveformmarkset.cpp",
                    "waveform/renderers/waveformmarkrange.cpp",
+		   "waveform/renderers/glwaveformrenderersimplesignal.cpp",
+		   "waveform/renderers/glwaveformrendererrgb.cpp",
+		   "waveform/renderers/glwaveformrendererfilteredsignal.cpp",
+		   "waveform/renderers/glslwaveformrenderersignal.cpp",
+		   "waveform/renderers/glvsynctestrenderer.cpp",
 
                    "waveform/widgets/waveformwidgetabstract.cpp",
                    "waveform/widgets/emptywaveformwidget.cpp",
@@ -956,13 +961,6 @@ class MixxxCore(Feature):
 
                    '#res/mixxx.qrc'
                    ]
-
-	if not int(build.flags['opengles']):
-		sources.append('waveform/renderers/glwaveformrenderersimplesignal.cpp')
-		sources.append('waveform/renderers/glwaveformrendererrgb.cpp')
-		sources.append('waveform/renderers/glwaveformrendererfilteredsignal.cpp')
-		sources.append('waveform/renderers/glslwaveformrenderersignal.cpp')
-		sources.append('waveform/renderers/glvsynctestrenderer.cpp')
 
         proto_args = {
             'PROTOCPROTOPATH': ['src'],

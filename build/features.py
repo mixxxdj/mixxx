@@ -20,17 +20,11 @@ class OpenGLES(Feature):
 	def configure(self, build, conf):
 		if not self.enabled(build):
           		return
+		if build.flags['opengles']:
+			build.env.Append(CPPDEFINES='__OPENGLES__')
 	
 	def sources(self, build):
-		sources = [
-			'waveform/renderers/gleswaveformrenderersimplesignal.cpp', 
-			'waveform/renderers/gleswaveformrendererrgb.cpp', 
-			'waveform/renderers/gleswaveformrendererfilteredsignal.cpp', 
-			 'waveform/renderers/glesslwaveformrenderersignal.cpp', 
-			 'waveform/renderers/glesvsynctestrenderer.cpp', 
-		]
-
-		return sources
+		return []
 
 class HSS1394(Feature):
     def description(self):
