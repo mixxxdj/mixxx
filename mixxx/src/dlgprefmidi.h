@@ -23,6 +23,7 @@
 #include "configobject.h"
 
 class MidiObject;
+class PowerMate;
 
 /**
   *@author Tue & Ken Haste Andersen
@@ -30,9 +31,10 @@ class MidiObject;
 
 class DlgPrefMidi : public DlgPrefMidiDlg  {
     Q_OBJECT
-public: 
-    DlgPrefMidi(QWidget *parent, MidiObject *_midi, ConfigObject<ConfigValue> *_config,
-                ConfigObject<ConfigValueMidi> *_midiconfig);
+public:
+    DlgPrefMidi(QWidget *parent, MidiObject *pMidi, ConfigObject<ConfigValue> *pConfig,
+                ConfigObject<ConfigValueMidi> *pMidiConfig,
+                PowerMate *pPowerMate1, PowerMate *pPowerMate2);
     ~DlgPrefMidi();
 public slots:
     void slotUpdate();
@@ -40,9 +42,10 @@ public slots:
 signals:
     void apply();
 private:
-    MidiObject *midi;
-    ConfigObject<ConfigValue> *config;
-    ConfigObject<ConfigValueMidi> *midiconfig;
+    MidiObject *m_pMidi;
+    ConfigObject<ConfigValue> *m_pConfig;
+    ConfigObject<ConfigValueMidi> *m_pMidiConfig;
+    PowerMate *m_pPowerMate1, *m_pPowerMate2;
 };
 
 #endif

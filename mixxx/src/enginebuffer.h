@@ -24,8 +24,11 @@
 #include "engineobject.h"
 #include "monitor.h"
 
-class ControlEngine;
 class ControlObject;
+class ControlPushButton;
+class ControlBeat;
+class ControlTTRotary;
+class ControlPotmeter;
 class Reader;
 class EngineBufferScale;
 class PowerMate;
@@ -47,7 +50,7 @@ const int TRACK_END_MODE_NEXT = 1;
 const int TRACK_END_MODE_LOOP = 2;
 const int TRACK_END_MODE_PING = 3;
 
-// Maximum number of samples used to ramp to or from zero when playback is 
+// Maximum number of samples used to ramp to or from zero when playback is
 // stopped or started.
 const int kiRampLength = 50;
 
@@ -75,7 +78,7 @@ public:
     void setNewPlaypos(double);
     /** Sets pointer to other engine buffer/channel */
     void setOtherEngineBuffer(EngineBuffer *);
-    
+
     void process(const CSAMPLE *pIn, const CSAMPLE *pOut, const int iBufferSize);
 
     CSAMPLE *update_visual();
@@ -91,16 +94,16 @@ public:
     /** Notify used to call seek when playpos slider changes */
     Monitor visualPlaypos;
     float visualRate;
-    
-    /** Lock abs and buffer playpos vars, so that they can be accessed through 
+
+    /** Lock abs and buffer playpos vars, so that they can be accessed through
       * getBufferPlaypos() and getAbsPlaypos() from another thread */
     void lockPlayposVars();
-    /** Unlocks abs and buffer playpos vars, so that they can be accessed 
+    /** Unlocks abs and buffer playpos vars, so that they can be accessed
       * internally in this object */
     void unlockPlayposVars();
-    /** Returns the buffer playpos. lockPlayposVars() must be called in advance */    
+    /** Returns the buffer playpos. lockPlayposVars() must be called in advance */
     double getBufferPlaypos();
-    /** Returns the abs playpos. lockPlayposVars() must be called in advance */    
+    /** Returns the abs playpos. lockPlayposVars() must be called in advance */
     double getAbsPlaypos();
 
 
@@ -154,28 +157,28 @@ private:
     /** Is true if a rate temp button is pressed */
     double m_bTempPress;
 
-    ControlEngine *playButton, *rateSlider, *wheel, *playposSlider, *audioBeatMark;
-    ControlEngine *buttonCueSet, *buttonCueGoto, *buttonCuePreview, *m_pRateDir;
-    ControlEngine *buttonRateTempDown, *buttonRateTempDownSmall, *buttonRateTempUp, *buttonRateTempUpSmall;
-    ControlEngine *buttonRatePermDown, *buttonRatePermDownSmall, *buttonRatePermUp, *buttonRatePermUpSmall;
-    ControlEngine *buttonBeatSync, *cuePoint, *rateEngine;
-    //ControlEngine *bufferposSlider;
-    
+    ControlPushButton *playButton, *buttonCueSet, *buttonCueGoto, *buttonCuePreview, *audioBeatMark, *buttonBeatSync;
+    ControlPushButton *buttonRateTempDown, *buttonRateTempDownSmall, *buttonRateTempUp, *buttonRateTempUpSmall;
+    ControlPushButton *buttonRatePermDown, *buttonRatePermDownSmall, *buttonRatePermUp, *buttonRatePermUpSmall;
+    ControlObject *cuePoint, *rateEngine, *m_pRateDir, *m_pRateRange;
+    ControlPotmeter *rateSlider, *playposSlider;
+    ControlTTRotary *wheel, *m_pControlScratch;
+
     /** Mutex used in sharing buffer and abs playpos */
     QMutex m_qPlayposMutex;
     /** Buffer and absolute playpos shared among threads */
     double m_dBufferPlaypos, m_dAbsPlaypos;
-    
+
     /** Control used to signal when at end of file */
-    ControlEngine *m_pTrackEnd, *m_pTrackEndMode;
+    ControlObject *m_pTrackEnd, *m_pTrackEndMode;
     /** Control used to input desired playback BPM */
-    ControlEngine *bpmControl;
+    ControlBeat *bpmControl;
     /** Control used to input beat. If this is used, only one beat is played, until a new beat mark is received from the ControlObject */
-    ControlEngine *beatEventControl;
+    ControlPotmeter *beatEventControl;
     /** Reverse playback control */
-    ControlEngine *reverseButton;
+    ControlPushButton *reverseButton;
     /** Fwd and back controls, start and end of track control */
-    ControlEngine *fwdButton, *backButton, *startButton, *endButton;
+    ControlPushButton *fwdButton, *backButton, *startButton, *endButton;
     /** Holds the name of the control group */
     const char *group;
     /** Is true if currently in cue preview mode. We need to keep track of the state

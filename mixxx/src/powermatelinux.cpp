@@ -34,7 +34,7 @@
 
 QValueList <int> PowerMateLinux::sqlOpenDevs;
 
-PowerMateLinux::PowerMateLinux(ControlObject *pControl) : PowerMate(pControl)
+PowerMateLinux::PowerMateLinux() : PowerMate()
 {
     m_iFd = -1;
     m_iId = -1;
@@ -55,7 +55,7 @@ bool PowerMateLinux::opendev()
                 break;
         }
     }
-    
+
     if (m_iFd>0)
     {
         // Start thread
@@ -102,7 +102,7 @@ void PowerMateLinux::run()
 
             // Sleep
             msleep(1);
-   
+
             led_write(0, 0, 0, 0, 0);
         }
         else
@@ -112,7 +112,7 @@ void PowerMateLinux::run()
         }
     }
 }
-    
+
 int PowerMateLinux::opendev(int iId)
 {
     char rgcDevName[256];
@@ -137,7 +137,7 @@ int PowerMateLinux::opendev(int iId)
 
             // Add id to list of open devices
             sqlOpenDevs.append(iId);
-            
+
             return iFd;
         }
 
@@ -158,7 +158,7 @@ void PowerMateLinux::closedev()
     }
     m_iFd = -1;
     m_iId = -1;
-}        
+}
 
 void PowerMateLinux::led_write(int iStaticBrightness, int iSpeed, int iTable, int iAsleep, int iAwake)
 {
@@ -203,9 +203,17 @@ void PowerMateLinux::process_event(struct input_event *pEv)
         {
             // Send event to GUI thread
             if (pEv->value==1)
-                QApplication::postEvent(m_pControl,new ControlEventMidi(NOTE_ON, kiPowermateMidiChannel, (char)(m_iInstNo*2+kiPowermateMidiBtn),1));
+                if (m_pControlObjectButton)
+                    m_pControlObjectButton->queueFromMidi(NOTE_ON, 1);
+                //QApplication::postEvent(m_pControl,new ControlEventMidi(NOTE_ON, kiPowermateMidiChannel, (char)(m_iInstNo*2+kiPowermateMidiBtn),1));
             else
-                QApplication::postEvent(m_pControl,new ControlEventMidi(NOTE_OFF, kiPowermateMidiChannel, (char)(m_iInstNo*2+kiPowermateMidiBtn),1));
+                if (m_pControlObjectButton)
+                    m_pControlObjectButton->queueFromMidi(NOTE_OFF, 1);
+
+                //QApplication::postEvent(m_pControl,new ControlEventMidi(NOTE_OFF, kiPowermateMidiChannel, (char)(m_iInstNo*2+kiPowermateMidiBtn),1));
+
+
+
 
 //            qDebug("PowerMate: Button was %s %i", ev->value? "pressed":"released",ev->value);
         }

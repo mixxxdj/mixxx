@@ -12,6 +12,7 @@
 
 #include "mixxxsocketclient.h"
 #include "controlobject.h"
+#include "controlobjectthreadmain.h"
 #include "enginebuffer.h"
 #include "track.h"
 #include "trackcollection.h"
@@ -25,11 +26,11 @@ MixxxSocketClient::MixxxSocketClient(Track *pTrack, int sock, QObject *parent, c
     connect(this, SIGNAL(connectionClosed()), SLOT(deleteLater()));
     setSocket(sock);
 
-    ControlObject *p;
-    p = ControlObject::getControl(ConfigKey("[Channel1]","TrackEnd"));
-    connect(p, SIGNAL(signalUpdateApp(double)), this, SLOT(slotEndOfFileCh1(double)));
-    p = ControlObject::getControl(ConfigKey("[Channel2]","TrackEnd"));
-    connect(p, SIGNAL(signalUpdateApp(double)), this, SLOT(slotEndOfFileCh2(double)));
+    ControlObjectThreadMain *p;
+    p = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey("[Channel1]","TrackEnd")));
+    connect(p, SIGNAL(valueChanged(double)), this, SLOT(slotEndOfFileCh1(double)));
+    p = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey("[Channel2]","TrackEnd")));
+    connect(p, SIGNAL(valueChanged(double)), this, SLOT(slotEndOfFileCh2(double)));
 
     ts.setDevice(this);
 
@@ -72,17 +73,17 @@ void MixxxSocketClient::readClient()
                 if (command=="stop_on_eof")
                 {
                     ControlObject *p = ControlObject::getControl(ConfigKey(group,"TrackEndMode"));
-                    p->setValueFromApp(TRACK_END_MODE_STOP);
+                    p->queueFromThread(TRACK_END_MODE_STOP);
                 }
                 else if (command=="stop")
                 {
                     ControlObject *p = ControlObject::getControl(ConfigKey(group,"play"));
-                    p->setValueFromApp(0.);
+                    p->queueFromThread(0.);
                 }
                 else if (command=="start")
                 {
                     ControlObject *p = ControlObject::getControl(ConfigKey(group,"play"));
-                    p->setValueFromApp(1.);
+                    p->queueFromThread(1.);
                 }
                 else if (command=="load")
                 {

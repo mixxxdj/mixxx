@@ -19,7 +19,7 @@
 
 #include "engineobject.h"
 
-class ControlEngine;
+class ControlPotmeter;
 
 const int kiMaxDelay = 20000; 
 
@@ -30,7 +30,7 @@ public:
     ~EngineDelay();
     void process(const CSAMPLE *pIn, const CSAMPLE *pOut, const int iBufferSize);
 private:
-    ControlEngine *m_pPotmeter;
+    ControlPotmeter *m_pPotmeter;
     CSAMPLE *m_pDelayBuffer;
     int m_iDelay, m_iDelayPos;
 };

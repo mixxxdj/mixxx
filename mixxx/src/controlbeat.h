@@ -42,8 +42,7 @@ class ControlBeat : public ControlObject
 public: 
     ControlBeat(ConfigKey key, bool bMidiSimulateLatching=false);
     ~ControlBeat();
-public slots:
-    void setValueFromWidget(double dValue);
+
 protected:
     void setValueFromMidi(MidiCategory c, int v);
 private:

@@ -26,9 +26,9 @@
 #include <qkeysequence.h>
 
 typedef enum {
-    EMPTY            = 0,
-    KEY              = 1,
-    CTRL             = 2
+    MIDI_EMPTY            = 0,
+    MIDI_KEY              = 1,
+    MIDI_CTRL             = 2
 } MidiType;
 
 
@@ -68,11 +68,11 @@ public:
 
         QTextIStream(&_value) >> type >> midino >> channelMark >> midichannel;
         if (type.contains("Key",false))
-            miditype = KEY;
+            miditype = MIDI_KEY;
         else if (type.contains("Ctrl",false))
-            miditype = CTRL;
+            miditype = MIDI_CTRL;
         else
-            miditype = EMPTY;
+            miditype = MIDI_EMPTY;
 
         if (channelMark.endsWith("h"))
             midichannel--;   // Internally midi channels are form 0-15,
@@ -93,9 +93,9 @@ public:
         midino = _midino;
         midichannel = _midichannel;
         QTextOStream(&value) << midino << " ch " << midichannel;
-        if (miditype==KEY)
+        if (miditype==MIDI_KEY)
             value.prepend("Key ");
-        else if (miditype==CTRL)
+        else if (miditype==MIDI_CTRL)
             value.prepend("Ctrl ");
 
         //QTextIStream(&value) << midino << midimask << "ch" << midichannel;
@@ -107,9 +107,9 @@ public:
         midino = v.midino;
         midichannel = v.midichannel;
         QTextOStream(&value) << midino << " ch " << midichannel;
-        if (miditype==KEY)
+        if (miditype==MIDI_KEY)
             value.prepend("Key ");
-        else if (miditype==CTRL)
+        else if (miditype==MIDI_CTRL)
             value.prepend("Ctrl ");
         //qDebug("--1, midino: %i, midimask: %i, midichannel: %i",midino,midimask,midichannel);
     }
@@ -133,7 +133,8 @@ public:
     ConfigValueKbd(QKeySequence key)
     {
         m_qKey = key;
-        QTextOStream(&value) << (const QString &)m_qKey;
+        QTextOStream(&value) << (const QString)m_qKey;
+//          qDebug("value %s",value.latin1());
     };
 
     void valCopy(const ConfigValueKbd v)
@@ -141,7 +142,7 @@ public:
         m_qKey = v.m_qKey;
         QTextOStream(&value) << (const QString &)m_qKey;
     }
-    
+
     QKeySequence m_qKey;
 };
 
@@ -160,17 +161,18 @@ template <class ValueType> class ConfigObject
     ConfigKey key;
     ValueType value;
     ConfigOption<ValueType> option;
-    
+
     ConfigObject(QString file);
     ~ConfigObject();
     ConfigOption<ValueType> *set(ConfigKey, ValueType);
     ConfigOption<ValueType> *get(ConfigKey key);
+    ConfigKey *get(ValueType v);
     QString getValueString(ConfigKey k);
 
     void clear();
     void reopen(QString file);
     void Save();
-    
+
   protected:
     QPtrList< ConfigOption<ValueType> > list;
     QString filename;

@@ -16,15 +16,13 @@
 
 #include "enginepregain.h"
 #include "controllogpotmeter.h"
-#include "controlengine.h"
 
 /*----------------------------------------------------------------
   A pregaincontrol is ... a pregain.
   ----------------------------------------------------------------*/
 EnginePregain::EnginePregain(const char *group)
 {
-    ControlLogpotmeter *p = new ControlLogpotmeter(ConfigKey(group, "pregain"), 4.);
-    potmeterPregain = new ControlEngine(p);
+    potmeterPregain = new ControlLogpotmeter(ConfigKey(group, "pregain"), 4.);
 }
 
 EnginePregain::~EnginePregain()

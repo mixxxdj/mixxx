@@ -16,7 +16,6 @@
  ***************************************************************************/
 
 #include "controlpushbutton.h"
-#include "controlengine.h"
 
 /* -------- ------------------------------------------------------
    Purpose: Creates a new simulated latching push-button. 
@@ -51,6 +50,6 @@ void ControlPushButton::setValueFromMidi(MidiCategory c, int v)
         else
             m_dValue = 1.;
     }
-    updateFromMidi();
+    emit(valueChanged(m_dValue));
 }
 

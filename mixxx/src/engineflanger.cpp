@@ -17,7 +17,6 @@
 #include "engineflanger.h"
 #include "controlpotmeter.h"
 #include "controlpushbutton.h"
-#include "controlengine.h"
 
 
 /*----------------------------------------------------------------
@@ -36,21 +35,13 @@ EngineFlanger::EngineFlanger(const char *group)
         delay_buffer[i] = 0.;
 
     // Init. potmeters
-    ControlPotmeter *p = new ControlPotmeter(ConfigKey(group, "lfoDepth"), 0., 1.);
-    potmeterDepth = new ControlEngine(p);
-    
-    p = new ControlPotmeter(ConfigKey(group, "lfoDelay"), 50., 1000.);
-    potmeterDelay = new ControlEngine(p);
-
-    p = new ControlPotmeter(ConfigKey(group, "lfoPeriod"), 5000., 80000.);
-    potmeterLFOperiod = new ControlEngine(p);
+    potmeterDepth = new ControlPotmeter(ConfigKey(group, "lfoDepth"), 0., 1.);
+    potmeterDelay = new ControlPotmeter(ConfigKey(group, "lfoDelay"), 50., 1000.);
+    potmeterLFOperiod = new ControlPotmeter(ConfigKey(group, "lfoPeriod"), 5000., 80000.);
 
     // Init. channel selects:
-    ControlPushButton *p1 =  new ControlPushButton(ConfigKey("[Channel1]", "flanger"), true);
-    pushbuttonFlangerCh1 = new ControlEngine(p1);
-    
-    ControlPushButton *p2 =  new ControlPushButton(ConfigKey("[Channel2]", "flanger"), true);
-    pushbuttonFlangerCh2 = new ControlEngine(p2);
+    pushbuttonFlangerCh1 =  new ControlPushButton(ConfigKey("[Channel1]", "flanger"), true);
+    pushbuttonFlangerCh2 =  new ControlPushButton(ConfigKey("[Channel2]", "flanger"), true);
 
     // Fixed values of controls:
     LFOamplitude = 240;
@@ -71,12 +62,12 @@ EngineFlanger::~EngineFlanger()
     delete [] delay_buffer;
 }
 
-ControlEngine *EngineFlanger::getButtonCh1()
+ControlPushButton *EngineFlanger::getButtonCh1()
 {
     return pushbuttonFlangerCh1;
 }        
 
-ControlEngine *EngineFlanger::getButtonCh2()
+ControlPushButton *EngineFlanger::getButtonCh2()
 {
     return pushbuttonFlangerCh2;
 }

@@ -28,7 +28,6 @@
 #include <qobject.h>
 #include <qstringlist.h>
 #include <qstring.h>
-#include <qapplication.h>
 #include <qwidget.h>
 #include "defs.h"
 #include "configobject.h"
@@ -49,7 +48,7 @@ typedef enum {
 
 class MidiObject : public QThread {
 public:
-    MidiObject(ConfigObject<ConfigValueMidi> *c, QApplication *app, ControlObject *_control, QString device);
+    MidiObject(ConfigObject<ConfigValueMidi> *pMidiConfig, QString device);
     ~MidiObject();
     void reopen(QString device);
     virtual void devOpen(QString) = 0;
@@ -66,12 +65,11 @@ public:
 protected:
     void run() {};
     void stop();
-    void send(MidiCategory category, char channel, char midicontrol, char midivalue);
+    void send(MidiCategory category, char channel, char control, char value);
 
     bool requestStop;
 
-    static ConfigObject<ConfigValueMidi> *config;
-    int                           fd, count, size, no;
+    int fd, count, size, no;
     QPtrVector<ControlObject> controlList;
 
     /** List of available midi devices */
@@ -80,13 +78,10 @@ protected:
     QString openDevice;
     /** List of available midi configurations. Initialized upon call to getConfigList() */
     QStringList configs;
-
-    QApplication *app;
-    ControlObject *control;
+    /** Pointer to midi config object*/
+    ConfigObject<ConfigValueMidi> *m_pMidiConfig;
 };
 
 void abortRead(int);
 
 #endif
-
-

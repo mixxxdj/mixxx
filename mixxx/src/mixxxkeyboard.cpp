@@ -18,9 +18,9 @@
 #include "mixxxkeyboard.h"
 #include "controlobject.h"
 
-MixxxKeyboard::MixxxKeyboard(ControlObject *control, QObject *parent, const char *name) : QObject(parent, name)
+MixxxKeyboard::MixxxKeyboard(ConfigObject<ConfigValueKbd> *pKbdConfigObject, QObject *parent, const char *name) : QObject(parent, name)
 {
-    m_pControl = control;
+    m_pKbdConfigObject = pKbdConfigObject;
 }
 
 MixxxKeyboard::~MixxxKeyboard()
@@ -33,9 +33,9 @@ bool MixxxKeyboard::eventFilter(QObject *, QEvent *e)
     {
         QKeyEvent *ke = (QKeyEvent *)e;
 
-        //qDebug("press");
+//         qDebug("press");
 
-        if (!m_pControl->kbdPress(getKeySeq(ke), false))
+        if (!kbdPress(getKeySeq(ke), false))
             ke->ignore();
         else
         {
@@ -55,11 +55,11 @@ bool MixxxKeyboard::eventFilter(QObject *, QEvent *e)
         {
             if ((*it) == ke->key())
             {
-                //qDebug("release");
+//                 qDebug("release");
 
                 if (!ke->isAutoRepeat())
                 {
-                    if (!m_pControl->kbdPress(getKeySeq(ke), true))
+                    if (!kbdPress(getKeySeq(ke), true))
                         ke->ignore();
                     else
                     {
@@ -76,6 +76,28 @@ bool MixxxKeyboard::eventFilter(QObject *, QEvent *e)
     return false;
 }
 
+bool MixxxKeyboard::kbdPress(QKeySequence k, bool release)
+{
+    bool react = false;
+
+    if (!k.isEmpty())
+    {
+        // Check if a shortcut is defined
+        ConfigKey *pConfigKey = m_pKbdConfigObject->get(ConfigValueKbd(k));
+        
+        if (pConfigKey)
+        {
+            if (release)
+                ControlObject::getControl(*pConfigKey)->queueFromMidi(NOTE_OFF, 0);
+            else
+                ControlObject::getControl(*pConfigKey)->queueFromMidi(NOTE_ON, 1);
+                
+            react = true;
+        }
+    }
+    return react;
+}
+
 QKeySequence MixxxKeyboard::getKeySeq(QKeyEvent *e)
 {
     QString s = QKeySequence(e->key());
@@ -87,7 +109,7 @@ QKeySequence MixxxKeyboard::getKeySeq(QKeyEvent *e)
     if (e->state() & AltButton)
         s = "Alt+" + s;
 
-    //qDebug("key %s",s.latin1());
+//     qDebug("key %s",s.latin1());
 
     return QKeySequence(s);
 }

@@ -1,4 +1,4 @@
-<!DOCTYPE UI><UI version="3.1" stdsetdef="1">
+<!DOCTYPE UI><UI version="3.3" stdsetdef="1">
 <class>DlgPrefMidiDlg</class>
 <widget class="QWidget">
     <property name="name">
@@ -15,88 +15,380 @@
     <property name="caption">
         <string>Form2</string>
     </property>
-    <widget class="QComboBox">
+    <widget class="QGroupBox">
         <property name="name">
-            <cstring>ComboBoxMididevice</cstring>
-        </property>
-        <property name="enabled">
-            <bool>true</bool>
+            <cstring>groupBoxMidi</cstring>
         </property>
         <property name="geometry">
             <rect>
-                <x>144</x>
-                <y>40</y>
-                <width>215</width>
-                <height>22</height>
+                <x>6</x>
+                <y>4</y>
+                <width>349</width>
+                <height>82</height>
             </rect>
         </property>
-        <property name="font">
-            <font>
-            </font>
+        <property name="title">
+            <string>MIDI</string>
         </property>
+        <widget class="QLabel">
+            <property name="name">
+                <cstring>TextLabel6</cstring>
+            </property>
+            <property name="enabled">
+                <bool>true</bool>
+            </property>
+            <property name="geometry">
+                <rect>
+                    <x>9</x>
+                    <y>20</y>
+                    <width>122</width>
+                    <height>19</height>
+                </rect>
+            </property>
+            <property name="font">
+                <font>
+                </font>
+            </property>
+            <property name="text">
+                <string>Configuration</string>
+            </property>
+        </widget>
+        <widget class="QComboBox">
+            <property name="name">
+                <cstring>ComboBoxMidiconf</cstring>
+            </property>
+            <property name="geometry">
+                <rect>
+                    <x>136</x>
+                    <y>16</y>
+                    <width>204</width>
+                    <height>22</height>
+                </rect>
+            </property>
+            <property name="font">
+                <font>
+                </font>
+            </property>
+        </widget>
+        <widget class="QLabel">
+            <property name="name">
+                <cstring>TextLabel5</cstring>
+            </property>
+            <property name="enabled">
+                <bool>true</bool>
+            </property>
+            <property name="geometry">
+                <rect>
+                    <x>9</x>
+                    <y>55</y>
+                    <width>119</width>
+                    <height>19</height>
+                </rect>
+            </property>
+            <property name="font">
+                <font>
+                </font>
+            </property>
+            <property name="text">
+                <string>Device</string>
+            </property>
+        </widget>
+        <widget class="QComboBox">
+            <property name="name">
+                <cstring>ComboBoxMididevice</cstring>
+            </property>
+            <property name="enabled">
+                <bool>true</bool>
+            </property>
+            <property name="geometry">
+                <rect>
+                    <x>136</x>
+                    <y>50</y>
+                    <width>204</width>
+                    <height>22</height>
+                </rect>
+            </property>
+            <property name="font">
+                <font>
+                </font>
+            </property>
+        </widget>
     </widget>
-    <widget class="QComboBox">
+    <widget class="QGroupBox">
         <property name="name">
-            <cstring>ComboBoxMidiconf</cstring>
+            <cstring>groupPowerMates</cstring>
         </property>
         <property name="geometry">
             <rect>
-                <x>144</x>
-                <y>6</y>
-                <width>215</width>
-                <height>22</height>
+                <x>6</x>
+                <y>94</y>
+                <width>349</width>
+                <height>82</height>
             </rect>
         </property>
-        <property name="font">
-            <font>
-            </font>
+        <property name="title">
+            <string>PowerMates</string>
         </property>
+        <widget class="QLabel">
+            <property name="name">
+                <cstring>TextLabelPowerMate1</cstring>
+            </property>
+            <property name="enabled">
+                <bool>true</bool>
+            </property>
+            <property name="geometry">
+                <rect>
+                    <x>9</x>
+                    <y>22</y>
+                    <width>135</width>
+                    <height>19</height>
+                </rect>
+            </property>
+            <property name="font">
+                <font>
+                </font>
+            </property>
+            <property name="text">
+                <string>Device 1</string>
+            </property>
+        </widget>
+        <widget class="QLabel">
+            <property name="name">
+                <cstring>TextLabelPowerMate2</cstring>
+            </property>
+            <property name="enabled">
+                <bool>true</bool>
+            </property>
+            <property name="geometry">
+                <rect>
+                    <x>9</x>
+                    <y>56</y>
+                    <width>135</width>
+                    <height>19</height>
+                </rect>
+            </property>
+            <property name="font">
+                <font>
+                </font>
+            </property>
+            <property name="text">
+                <string>Device 2</string>
+            </property>
+        </widget>
+        <widget class="QComboBox">
+            <property name="name">
+                <cstring>ComboBoxPowerMate1</cstring>
+            </property>
+            <property name="enabled">
+                <bool>true</bool>
+            </property>
+            <property name="geometry">
+                <rect>
+                    <x>135</x>
+                    <y>17</y>
+                    <width>204</width>
+                    <height>22</height>
+                </rect>
+            </property>
+            <property name="font">
+                <font>
+                </font>
+            </property>
+        </widget>
+        <widget class="QComboBox">
+            <property name="name">
+                <cstring>ComboBoxPowerMate2</cstring>
+            </property>
+            <property name="enabled">
+                <bool>true</bool>
+            </property>
+            <property name="geometry">
+                <rect>
+                    <x>135</x>
+                    <y>51</y>
+                    <width>204</width>
+                    <height>22</height>
+                </rect>
+            </property>
+            <property name="font">
+                <font>
+                </font>
+            </property>
+        </widget>
     </widget>
-    <widget class="QLabel">
+    <widget class="QGroupBox">
         <property name="name">
-            <cstring>TextLabel5</cstring>
-        </property>
-        <property name="enabled">
-            <bool>true</bool>
+            <cstring>groupBoxMice</cstring>
         </property>
         <property name="geometry">
             <rect>
-                <x>9</x>
-                <y>45</y>
-                <width>128</width>
-                <height>19</height>
+                <x>6</x>
+                <y>184</y>
+                <width>349</width>
+                <height>125</height>
             </rect>
         </property>
-        <property name="font">
-            <font>
-            </font>
+        <property name="title">
+            <string>Mice</string>
         </property>
-        <property name="text">
-            <string>Midi Device</string>
-        </property>
-    </widget>
-    <widget class="QLabel">
-        <property name="name">
-            <cstring>TextLabel6</cstring>
-        </property>
-        <property name="enabled">
-            <bool>true</bool>
-        </property>
-        <property name="geometry">
-            <rect>
-                <x>9</x>
-                <y>10</y>
-                <width>128</width>
-                <height>19</height>
-            </rect>
-        </property>
-        <property name="font">
-            <font>
-            </font>
-        </property>
-        <property name="text">
-            <string>Midi Configuration</string>
-        </property>
+        <widget class="QLabel">
+            <property name="name">
+                <cstring>TextLabel5_2_3_3</cstring>
+            </property>
+            <property name="enabled">
+                <bool>true</bool>
+            </property>
+            <property name="geometry">
+                <rect>
+                    <x>9</x>
+                    <y>22</y>
+                    <width>53</width>
+                    <height>19</height>
+                </rect>
+            </property>
+            <property name="font">
+                <font>
+                </font>
+            </property>
+            <property name="text">
+                <string>Device</string>
+            </property>
+        </widget>
+        <widget class="QLabel">
+            <property name="name">
+                <cstring>TextLabel5_2_3_3_2</cstring>
+            </property>
+            <property name="enabled">
+                <bool>true</bool>
+            </property>
+            <property name="geometry">
+                <rect>
+                    <x>9</x>
+                    <y>77</y>
+                    <width>53</width>
+                    <height>19</height>
+                </rect>
+            </property>
+            <property name="font">
+                <font>
+                </font>
+            </property>
+            <property name="text">
+                <string>Device</string>
+            </property>
+        </widget>
+        <widget class="QComboBox">
+            <property name="name">
+                <cstring>ComboBoxMouseDevice1</cstring>
+            </property>
+            <property name="enabled">
+                <bool>true</bool>
+            </property>
+            <property name="geometry">
+                <rect>
+                    <x>65</x>
+                    <y>17</y>
+                    <width>66</width>
+                    <height>22</height>
+                </rect>
+            </property>
+            <property name="font">
+                <font>
+                </font>
+            </property>
+        </widget>
+        <widget class="QComboBox">
+            <property name="name">
+                <cstring>ComboBoxMouseDevice2</cstring>
+            </property>
+            <property name="enabled">
+                <bool>true</bool>
+            </property>
+            <property name="geometry">
+                <rect>
+                    <x>65</x>
+                    <y>72</y>
+                    <width>66</width>
+                    <height>22</height>
+                </rect>
+            </property>
+            <property name="font">
+                <font>
+                </font>
+            </property>
+        </widget>
+        <widget class="QCheckBox">
+            <property name="name">
+                <cstring>checkBoxMouseRelative1</cstring>
+            </property>
+            <property name="geometry">
+                <rect>
+                    <x>148</x>
+                    <y>45</y>
+                    <width>193</width>
+                    <height>18</height>
+                </rect>
+            </property>
+            <property name="text">
+                <string>Relative changes</string>
+            </property>
+        </widget>
+        <widget class="QCheckBox">
+            <property name="name">
+                <cstring>checkBoxMouseRelative2</cstring>
+            </property>
+            <property name="geometry">
+                <rect>
+                    <x>148</x>
+                    <y>100</y>
+                    <width>194</width>
+                    <height>18</height>
+                </rect>
+            </property>
+            <property name="text">
+                <string>Relative changes</string>
+            </property>
+        </widget>
+        <widget class="QComboBox">
+            <property name="name">
+                <cstring>ComboBoxMouseFunction1</cstring>
+            </property>
+            <property name="enabled">
+                <bool>true</bool>
+            </property>
+            <property name="geometry">
+                <rect>
+                    <x>136</x>
+                    <y>17</y>
+                    <width>204</width>
+                    <height>22</height>
+                </rect>
+            </property>
+            <property name="font">
+                <font>
+                </font>
+            </property>
+        </widget>
+        <widget class="QComboBox">
+            <property name="name">
+                <cstring>ComboBoxMouseFunction2</cstring>
+            </property>
+            <property name="enabled">
+                <bool>true</bool>
+            </property>
+            <property name="geometry">
+                <rect>
+                    <x>136</x>
+                    <y>72</y>
+                    <width>204</width>
+                    <height>22</height>
+                </rect>
+            </property>
+            <property name="font">
+                <font>
+                </font>
+            </property>
+        </widget>
     </widget>
 </widget>
 <layoutdefaults spacing="6" margin="11"/>

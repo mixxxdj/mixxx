@@ -70,6 +70,7 @@ ReaderExtractBeat::ReaderExtractBeat(ReaderExtract *input, EngineBuffer *pEngine
 
 ReaderExtractBeat::~ReaderExtractBeat()
 {
+    qDebug("del");
     closeSource();
     delete bpv;
     delete [] beatBuffer;
@@ -547,11 +548,11 @@ void *ReaderExtractBeat::processChunk(const int _idx, const int start_idx, const
     {
         if (beatBuffer[i]==1.)
             std::cout << "*";
-		else if (beatBuffer[i]==3.)
-		    std::cout << "F";
-		else if (beatBuffer[i]==2.)
-		    std::cout << "R";
-		    std::cout << "-";
+        else if (beatBuffer[i]==3.)
+            std::cout << "F";
+        else if (beatBuffer[i]==2.)
+            std::cout << "R";
+            std::cout << "-";
     }
     std::cout << "\n";
 */

@@ -19,7 +19,8 @@
 
 #include "engineobject.h"
 
-class ControlEngine;
+class ControlPotmeter;
+class ControlPushButton;
 
 const int max_delay = 5000;  
 
@@ -29,11 +30,11 @@ public:
     EngineFlanger(const char *group);
     ~EngineFlanger();
     void process(const CSAMPLE *pIn, const CSAMPLE *pOut, const int iBufferSize);
-    ControlEngine *getButtonCh1();
-    ControlEngine *getButtonCh2();
+    ControlPushButton *getButtonCh1();
+    ControlPushButton *getButtonCh2();
 private:
-    ControlEngine *potmeterDepth, *potmeterDelay, *potmeterLFOperiod;
-    ControlEngine *pushbuttonFlangerCh1, *pushbuttonFlangerCh2;
+    ControlPotmeter *potmeterDepth, *potmeterDelay, *potmeterLFOperiod;
+    ControlPushButton *pushbuttonFlangerCh1, *pushbuttonFlangerCh2;
     CSAMPLE *delay_buffer;
     int  LFOamplitude;
     int average_delay_length;

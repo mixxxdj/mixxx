@@ -3,7 +3,7 @@
                              -------------------
     begin                : Wed Feb 20 2002
     copyright            : (C) 2002 by Tue and Ken Haste Andersen
-    email                : 
+    email                :
  ***************************************************************************/
 
 /***************************************************************************
@@ -16,354 +16,223 @@
  ***************************************************************************/
 
 #include "controlobject.h"
-#include "controlengine.h"
-#include "controleventmidi.h"
-#include "controleventengine.h"
-#include "midiobject.h"
-
+#include "controlevent.h"
 
 // Static member variable definition
-ConfigObject<ConfigValueMidi> *ControlObject::m_pMidiConfig = 0;
-ConfigObject<ConfigValueKbd> *ControlObject::m_pKbdConfig = 0;
-QPtrQueue<ControlQueueEngineItem> ControlObject::queue;
-QMutex ControlObject::queueMutex;
-QPtrList<ControlObject> ControlObject::list;
-QWidget *ControlObject::spParentWidget = 0;
-
+QPtrList<ControlObject> ControlObject::m_sqList;
+QMutex ControlObject::m_sqQueueMutexMidi;
+QMutex ControlObject::m_sqQueueMutexThread;
+QPtrQueue<QueueObjectMidi> ControlObject::m_sqQueueMidi;
+QPtrQueue<QueueObjectThread> ControlObject::m_sqQueueThread;
+QPtrQueue<ControlObject> ControlObject::m_sqQueueChanges;
 
 ControlObject::ControlObject()
 {
-    m_dValue = 0.;
-    installEventFilter(this);
-    m_pControlEngine = 0;
 }
 
 ControlObject::ControlObject(ConfigKey key)
 {
     m_dValue = 0.;
-    m_pControlEngine = 0;
-    installEventFilter(this);
-
-    // Retreive midi configuration option object
-    m_pMidiConfigOption = m_pMidiConfig->get(key);
-
-    // Retreive keyboard configuration option object
-    m_pKbdConfigOption = m_pKbdConfig->get(key);
-
-    list.append(this);
+    m_Key = key;
+    m_sqList.append(this);
 }
 
 ControlObject::~ControlObject()
 {
-    list.remove(this);
+    m_sqList.remove(this);
 }
 
 bool ControlObject::connectControls(ConfigKey src, ConfigKey dest)
 {
-    // Find src object
-    ControlObject *pSrc = 0;
-    for (pSrc=list.first(); pSrc; pSrc=list.next())
+    // Find src and dest objects
+    ControlObject *pSrc = getControl(src);
+    ControlObject *pDest = getControl(dest);
+
+    if (pSrc && pDest)
     {
-//        qDebug("src (%s,%s) (%s,%s)",pSrc->m_pMidiConfigOption->key->group.latin1(),src.group.latin1(),pSrc->m_pMidiConfigOption->key->item.latin1(),src.item.latin1());
-        if ((pSrc->m_pMidiConfigOption->key->group == src.group) && (pSrc->m_pMidiConfigOption->key->item == src.item))
-            break;
+        connect(pSrc, SIGNAL(valueChanged(double)), pDest, SLOT(set(double)));
+        return true;
     }
-    if (pSrc==0)
+    else
         return false;
-        
-    // Find dest object
-    ControlObject *pDest = 0;
-    for (pDest=list.first(); pDest; pDest=list.next())
+}
+
+bool ControlObject::disconnectControl(ConfigKey key)
+{
+    // Find src and dest objects
+    ControlObject *pSrc = getControl(key);
+
+    if (pSrc)
     {
-//        qDebug("dest (%s,%s) (%s,%s)",pDest->m_pMidiConfigOption->key->group.latin1(),dest.group.latin1(),pDest->m_pMidiConfigOption->key->item.latin1(),dest.item.latin1());
-        if ((pDest->m_pMidiConfigOption->key->group == dest.group) && (pDest->m_pMidiConfigOption->key->item == dest.item))
-            break;
+        disconnect(pSrc, 0, 0, 0);
+        return true;
     }
-    if (pDest==0)
+    else
         return false;
-
-    QApplication::connect(pSrc, SIGNAL(signalUpdateApp(double)), pDest, SLOT(setValueFromEngine(double)));
-
-    return true;
 }
 
-void ControlObject::setMidiConfig(ConfigObject<ConfigValueMidi> *pMidiConfig)
+void ControlObject::addProxy(ControlObjectThread *pControlObjectThread)
 {
-    m_pMidiConfig = pMidiConfig;
+    m_qProxyList.append(pControlObjectThread);
 }
 
-void ControlObject::setKbdConfig(ConfigObject<ConfigValueKbd> *pKbdConfig)
+bool ControlObject::updateProxies(ControlObjectThread *pProxyNoUpdate)
 {
-    m_pKbdConfig = pKbdConfig;
-}
+    ControlObjectThread *obj;
+    bool bUpdateSuccess = true;
+    for (obj = m_qProxyList.first(); obj; obj = m_qProxyList.next())
+    {
+        if (obj!=pProxyNoUpdate)
+            bUpdateSuccess = obj->setExtern(m_dValue);
 
-QString ControlObject::getKbdConfigStr()
-{
-    return m_pKbdConfigOption->val->m_qKey;
-}
-
-void ControlObject::setControlEngine(ControlEngine *pControlEngine)
-{
-    m_pControlEngine = pControlEngine;
+    }
+    return bUpdateSuccess;
 }
 
 ControlObject *ControlObject::getControl(ConfigKey key)
 {
     // Loop through the list of ConfigObjects to find one matching key
     ControlObject *c;
-    for (c=list.first(); c; c=list.next())
+    for (c=m_sqList.first(); c; c=m_sqList.next())
     {
-        if (c->m_pMidiConfigOption->key->group == key.group && c->m_pMidiConfigOption->key->item == key.item)
+        if (c->getKey().group == key.group && c->getKey().item == key.item)
             return c;
     }
     return 0;
 }
 
-void ControlObject::setWidget(QWidget *widget, ConfigKey key, bool emitOnDownPress, Qt::ButtonState state)
+void ControlObject::queueFromThread(double dValue, ControlObjectThread *pControlObjectThread)
 {
-    // Loop through the list of ConfigObjects to find one matching
-    // key, and associate the found object with the widget.
-    ControlObject *c;
-    for (c=list.first(); c; c=list.next())
-    {
-        if (c->m_pMidiConfigOption->key->group == key.group && c->m_pMidiConfigOption->key->item == key.item)
-        {
-            c->setWidget(widget, emitOnDownPress, state);
-            return;
-        }
-    }
-    qDebug("woops, %s",key.item.latin1());
+    QueueObjectThread *p = new QueueObjectThread;
+    p->pControlObjectThread = pControlObjectThread;
+    p->pControlObject = this;
+    p->value = dValue;
+
+    m_sqQueueMutexThread.lock();
+    m_sqQueueThread.enqueue(p);
+    m_sqQueueMutexThread.unlock();
 }
 
-void ControlObject::setWidget(QWidget *widget, bool emitOnDownPress, Qt::ButtonState state)
+void ControlObject::queueFromMidi(MidiCategory c, int v)
 {
-    if (emitOnDownPress)
-    {
-        if (state == Qt::NoButton)
-            QApplication::connect(widget, SIGNAL(valueChangedDown(double)), this,   SLOT(setValueFromWidget(double)));
-        else if (state == Qt::LeftButton)
-            QApplication::connect(widget, SIGNAL(valueChangedLeftDown(double)), this,   SLOT(setValueFromWidget(double)));
-        else if (state == Qt::RightButton)
-            QApplication::connect(widget, SIGNAL(valueChangedRightDown(double)), this,   SLOT(setValueFromWidget(double)));
-    }
-    else
-    {
-        if (state == Qt::NoButton)
-            QApplication::connect(widget, SIGNAL(valueChangedUp(double)), this,   SLOT(setValueFromWidget(double)));
-        else if (state == Qt::LeftButton)
-            QApplication::connect(widget, SIGNAL(valueChangedLeftUp(double)), this,   SLOT(setValueFromWidget(double)));
-        else if (state == Qt::RightButton)
-            QApplication::connect(widget, SIGNAL(valueChangedRightUp(double)), this,   SLOT(setValueFromWidget(double)));
-    }
+    QueueObjectMidi *p = new QueueObjectMidi;
+    p->pControlObject = this;
+    p->category = c;
+    p->value = v;
 
-    QApplication::connect(this,   SIGNAL(signalUpdateWidget(double)),    widget, SLOT(setValue(double)));
-    updateWidget();
-}
-
-void ControlObject::setWidgetOnOff(QWidget *widget, ConfigKey key)
-{
-    // Loop through the list of ConfigObjects to find one matching
-    // key, and associate the found object with the widget.
-    ControlObject *c;
-    for (c=list.first(); c; c=list.next())
-    {
-        if (c->m_pMidiConfigOption->key->group == key.group && c->m_pMidiConfigOption->key->item == key.item)
-        {
-            c->setWidgetOnOff(widget);
-            return;
-        }
-    }
-    qDebug("woops, %s",key.item.latin1());
-}
-
-void ControlObject::setWidgetOnOff(QWidget *widget)
-{
-    QApplication::connect(this,   SIGNAL(signalUpdateWidget(double)),    widget, SLOT(setOnOff(double)));
-    updateWidget();
-}
-
-void ControlObject::updateFromMidi()
-{
-    updateEngine();
-    updateWidget();
-    updateApp();
-}
-
-void ControlObject::updateAll()
-{
-    updateEngine();
-    updateWidget();
-    updateApp();
-}
-    
-void ControlObject::updateFromEngine()
-{
-    updateWidget();
-    updateApp();
-}
-    
-void ControlObject::updateFromWidget()
-{
-    updateEngine();
-    updateApp();
-}
-
-void ControlObject::updateFromApp()
-{
-    updateEngine();
-    updateWidget();
-}
-
-void ControlObject::updateEngine()
-{
-    if (m_pControlEngine!=0)
-    {
-        ControlQueueEngineItem *item = new ControlQueueEngineItem;
-        item->ptr = m_pControlEngine;
-        item->value = m_dValue;
-
-        queueMutex.lock();
-        queue.enqueue(item);
-        queueMutex.unlock();
-    }
-}
-
-void ControlObject::updateWidget()
-{
-    emit(signalUpdateWidget(m_dValue));
-}
-
-void ControlObject::updateApp()
-{
-    emit(signalUpdateApp(m_dValue));
-}
-
-void ControlObject::setValueFromMidi(MidiCategory, int v)
-{
-    m_dValue = (double)v;
-    updateFromMidi();
+    m_sqQueueMutexMidi.lock();
+    m_sqQueueMidi.enqueue(p);
+    m_sqQueueMutexMidi.unlock();
 }
 
 void ControlObject::setValueFromEngine(double dValue)
 {
     m_dValue = dValue;
-    updateFromEngine();
 }
 
-void ControlObject::setValueFromWidget(double dValue)
+void ControlObject::setValueFromMidi(MidiCategory, int v)
+{
+    m_dValue = (double)v;
+    emit(valueChanged(m_dValue));
+}
+
+void ControlObject::setValueFromThread(double dValue)
 {
     m_dValue = dValue;
-    updateFromWidget();
+    emit(valueChanged(m_dValue));
 }
 
-void ControlObject::setValueFromApp(double dValue)
+void ControlObject::set(double dValue)
 {
-    m_dValue = dValue;
-    updateFromApp();
+    setValueFromEngine(dValue);
+    m_sqQueueChanges.enqueue(this);
 }
 
-double ControlObject::getValue()
+void ControlObject::add(double dValue)
+{
+    setValueFromEngine(m_dValue+dValue);
+    m_sqQueueChanges.enqueue(this);
+}
+
+void ControlObject::sub(double dValue)
+{
+    setValueFromEngine(m_dValue-dValue);
+    m_sqQueueChanges.enqueue(this);
+}
+
+double ControlObject::getValueFromWidget(double v)
+{
+    return v;
+}
+
+double ControlObject::getValueToWidget(double v)
+{
+    return v;
+}
+
+ConfigKey ControlObject::getKey()
+{
+    return m_Key;
+}
+
+double ControlObject::get()
 {
     return m_dValue;
 }
 
-void ControlObject::setParentWidget(QWidget *pParentWidget)
+void ControlObject::sync()
 {
-    spParentWidget = pParentWidget;
-}
-
-QWidget *ControlObject::getParentWidget()
-{
-    return spParentWidget;
-}
-
-void ControlObject::midi(MidiCategory category, char channel, char control, char value)
-{
-    //qDebug("Received midi message: ch %i no %i val %i",(int)channel,(int)control,(int)value);
-
-    // Check the potmeters:
-    ControlObject *c;
-    for (c=list.first(); c; c=list.next())
+    // Update control objects with values recieved from threads
+    if (m_sqQueueMutexThread.tryLock())
     {
-        if ((c->m_pMidiConfigOption->val->midino == control) &
-            (c->m_pMidiConfigOption->val->midichannel == channel))
+        QueueObjectThread *obj;
+        while(!m_sqQueueThread.isEmpty())
         {
-            c->setValueFromMidi(category, (int)value);
-            break;
-        }
-    }
-}
+            obj = m_sqQueueThread.dequeue();
 
-bool ControlObject::eventFilter(QObject *o, QEvent *e)
-{
-    // ControlEventMidi
-    if (e->type() == (QEvent::Type)10001)
-    {
-        ControlEventMidi *cem = (ControlEventMidi *)e;
-        midi(cem->category(), cem->channel(), cem->control(), cem->value());
-    }
-    // ControlEventEngine
-    else if (e->type() == (QEvent::Type)10000)
-    {
-        ControlEventEngine *cee = (ControlEventEngine *)e;
-        setValueFromEngine(cee->value());
-    }
-    else if (e->type() == QEvent::KeyPress)
-        qDebug("control Key press");
-    else
-        // Standard event processing
-        return QObject::eventFilter(o,e);
-
-    return TRUE;
-}
-
-bool ControlObject::kbdPress(QKeySequence k, bool release)
-{
-    bool react = false;
-
-    if (!k.isEmpty())
-    {
-        //qDebug("kbd %s, press %i",((QString)k).latin1(),release);
-
-        // Check the controls...
-        ControlObject *c;
-        for (c=list.first(); c; c=list.next())
-        {
-            if (c->m_pKbdConfigOption->val->m_qKey==k)
-            {
-                if (release)
-                    c->setValueFromMidi(NOTE_OFF, 0);
-                else
-                    c->setValueFromMidi(NOTE_ON, 1);
-
-                //if (release) qDebug("r"); else qDebug("p");
-
-                react = true;
-
-                break;
-            }
-        }
-    }
-    return react;
-}
-
-void ControlObject::syncControlEngineObjects()
-{
-    // If possible lock mutex and process queue
-    if (queueMutex.tryLock())
-    {
-        //qDebug("queue len %i",queue.count());
-
-        ControlQueueEngineItem *item = queue.dequeue();
-        while (item!=0)
-        {
-            item->ptr->setExtern(item->value);
-            delete item;
-            item = queue.dequeue();
+            obj->pControlObject->setValueFromThread(obj->value);
+            obj->pControlObject->updateProxies(obj->pControlObjectThread);
+            delete obj;
         }
 
-        // Unlock mutex
-        queueMutex.unlock();
+        //
+        // If the object is in m_sqQueueChanges, delete it from that queue.
+        //
+
+        m_sqQueueMutexThread.unlock();
+    }
+
+    // Update control objects with values recieved from MIDI
+    if (m_sqQueueMutexMidi.tryLock())
+    {
+        QueueObjectMidi *obj;
+        while(!m_sqQueueMidi.isEmpty())
+        {
+            obj = m_sqQueueMidi.dequeue();
+
+            obj->pControlObject->setValueFromMidi(obj->category, obj->value);
+            obj->pControlObject->updateProxies(0);
+            delete obj;
+        }
+
+        //
+        // If the object is in m_sqQueueChanges, delete it from that queue.
+        //
+
+        m_sqQueueMutexMidi.unlock();
+    }
+
+    // Update app threads (ControlObjectThread objects) with changes in the corresponding
+    // ControlObjects. These updates should only occour if no changes has been in the object
+    // from widgets, midi og application threads.
+    ControlObject *obj;
+    while(!m_sqQueueChanges.isEmpty())
+    {
+        obj = m_sqQueueChanges.dequeue();
+
+        // If update is not successful, enqueue again
+        if (!obj->updateProxies())
+            m_sqQueueChanges.enqueue(obj);
+
     }
 }
- 

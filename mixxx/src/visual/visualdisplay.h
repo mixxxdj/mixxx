@@ -1,7 +1,7 @@
 /***************************************************************************
                           visualdisplay.h  -  description
                              -------------------
-    copyright            : (C) 2002 by Tue and Ken Haste Andersen and Kenny 
+    copyright            : (C) 2002 by Tue and Ken Haste Andersen and Kenny
                                        Erleben
     email                :
  ***************************************************************************/
@@ -24,9 +24,9 @@
 #include "visualbox.h"
 #include "material.h"
 
-class ControlPotmeter;
+class ControlObjectThreadMain;
 
-// These variables, together with the aspect ratio and view point set in 
+// These variables, together with the aspect ratio and view point set in
 // VisualController controls the screen size of the displayed signals.
 const float kfVisualDisplayLength = 35.f;
 const float kfVisualDisplayHeight = 9.5f;
@@ -92,7 +92,7 @@ public slots:
 
 protected:
     void doLayout();
-    
+
     /** Origio of visual signal (from where signal propagates from) */
     float ox,oy,oz;
     /** Rotation angle in radians */
@@ -112,8 +112,6 @@ protected:
     VisualDisplayBuffer *preSignal, *fishEyeSignal, *postSignal, *signal;
     VisualBuffer *m_pVisualBuffer;
 
-    ControlPotmeter *controlScaleLength;
-
     /** Materials */
     Material m_materialSignal, m_materialHfc, m_materialMarker, m_materialBeat, m_materialFisheye;
 
@@ -124,6 +122,8 @@ protected:
 
     /** True if box has to be drawn in fish eye mode */
     bool m_bDrawBox;
+
+    ControlObjectThreadMain *m_pControlRateDir, *m_pControlRateRange;
 
 };
 #endif

@@ -24,7 +24,7 @@
 #include "enginevumeter.h"
 #include "configobject.h"
 #include "controlpotmeter.h"
-#include "controlengine.h"
+#include "controlpushbutton.h"
 
 EngineMaster::EngineMaster(EngineBuffer *_buffer1, EngineBuffer *_buffer2,
                            EngineChannel *_channel1, EngineChannel *_channel2,
@@ -42,12 +42,10 @@ EngineMaster::EngineMaster(EngineBuffer *_buffer1, EngineBuffer *_buffer2,
     master2 = true;
 
     // Crossfader
-    ControlPotmeter *p = new ControlPotmeter(ConfigKey(group, "crossfader"),-1.,1.);
-    crossfader = new ControlEngine(p);
+    crossfader = new ControlPotmeter(ConfigKey(group, "crossfader"),-1.,1.);
 
     // Balance
-    p = new ControlPotmeter(ConfigKey(group, "balance"), -1., 1.);
-    m_pBalance = new ControlEngine(p);
+    m_pBalance = new ControlPotmeter(ConfigKey(group, "balance"), -1., 1.);
             
     // Master volume
     volume = new EngineVolume(ConfigKey(group,"volume"), 5.);
@@ -62,8 +60,7 @@ EngineMaster::EngineMaster(EngineBuffer *_buffer1, EngineBuffer *_buffer2,
     head_volume = new EngineVolume(ConfigKey(group, "headVolume"), 5.);
 
     // Headphone mix (left/right)
-    p = new ControlPotmeter(ConfigKey(group, "headMix"),-1.,1.);
-    head_mix = new ControlEngine(p);
+    head_mix = new ControlPotmeter(ConfigKey(group, "headMix"),-1.,1.);
 
     // Headphone Clipping
     head_clipping = new EngineClipping("");
@@ -73,6 +70,9 @@ EngineMaster::EngineMaster(EngineBuffer *_buffer1, EngineBuffer *_buffer2,
 
     flanger1 = flanger->getButtonCh1();
     flanger2 = flanger->getButtonCh2();
+    
+    Q_ASSERT(flanger1);
+    Q_ASSERT(flanger2);
     
     // Allocate buffers
     m_pTemp1 = new CSAMPLE[MAX_BUFFER_LEN];

@@ -3,7 +3,7 @@
                              -------------------
     begin                : Thu May 20 2004
     copyright            : (C) 2002 by Tue and Ken Haste Andersen
-    email                : 
+    email                :
  ***************************************************************************/
 
 /***************************************************************************
@@ -22,11 +22,11 @@
 const int kiMaxFrameSize = 64;
 
 
-PlayerRtAudio::PlayerRtAudio(ConfigObject<ConfigValue> *config, ControlObject *pControl) : Player(config,pControl)
+PlayerRtAudio::PlayerRtAudio(ConfigObject<ConfigValue> *config) : Player(config)
 {
     m_pRtAudio = 0;
     m_bInit = false;
-    
+
     m_devId = -1;
     m_iNumberOfBuffers = 2;
     m_iChannels = -1;
@@ -49,7 +49,7 @@ PlayerRtAudio::~PlayerRtAudio()
             error.printMessage();
         }
     }
-    
+
     if (m_bInit)
         delete m_pRtAudio;
 }
@@ -66,7 +66,7 @@ bool PlayerRtAudio::initialize()
         m_bInit = false;
     }
     m_bInit = true;
-    
+
     return m_bInit;
 }
 
@@ -157,7 +157,7 @@ bool PlayerRtAudio::open()
     else
         m_iNumberOfBuffers = iLatency/kiMaxFrameSize;
 
-    // Frame size...    
+    // Frame size...
     iFramesPerBuffer = iLatency/m_iNumberOfBuffers;
 
     qDebug("id %i, sr %i, ch %i, bufsize %i, bufno %i", id, iSrate, iChannels, iFramesPerBuffer, m_iNumberOfBuffers);
@@ -167,29 +167,29 @@ bool PlayerRtAudio::open()
         m_devId = -1;
         return false;
     }
-    
+
     // Start playback
-    try 
+    try
     {
         // Open stream
-        m_pRtAudio->openStream(id, iChannels, 0, 0, RTAUDIO_FLOAT32, iSrate, &iFramesPerBuffer, m_iNumberOfBuffers);  
-        
+        m_pRtAudio->openStream(id, iChannels, 0, 0, RTAUDIO_FLOAT32, iSrate, &iFramesPerBuffer, m_iNumberOfBuffers);
+
         // Set callback function
         m_pRtAudio->setStreamCallback(&rtCallback, (void *)this);
-        
+
         m_iChannels = iChannels;
         m_devId = id;
-        
+
         // Update SRATE in EngineObject
         setPlaySrate(iSrate);
-        
+
         // Start playback
         m_pRtAudio->startStream();
     }
     catch (RtError &error)
     {
-        error.printMessage();  
-        
+        error.printMessage();
+
         m_devId = -1;
         m_iChannels = -1;
 
@@ -208,9 +208,9 @@ void PlayerRtAudio::close()
     m_iHeadRightCh = -1;
 
     if (m_devId>0)
-    {    
+    {
         qDebug("close");
-        try 
+        try
         {
             m_pRtAudio->stopStream();
             m_pRtAudio->closeStream();
@@ -277,7 +277,7 @@ QStringList PlayerRtAudio::getInterfaces()
             info = m_pRtAudio->getDeviceInfo(i);
             bGotInfo = true;
         }
-        catch (RtError &error) 
+        catch (RtError &error)
         {
             error.printMessage();
         }
@@ -314,14 +314,14 @@ QStringList PlayerRtAudio::getSampleRates()
         error.printMessage();
         return result;
     }
-            
+
     // Sample rates
     if (info.sampleRates.size() > 0)
     {
         for (unsigned int j=0; j<info.sampleRates.size(); ++j)
             result.append(QString("%1").arg(info.sampleRates[j]));
     }
-    
+
     return result;
 }
 
@@ -390,7 +390,7 @@ int PlayerRtAudio::getChannelNo(QString name)
 int PlayerRtAudio::callbackProcess(int iBufferSize, float *out)
 {
     m_iBufferSize = iBufferSize*m_iNumberOfBuffers;
-    
+
     float *tmp = prepareBuffer(iBufferSize);
     float *output = out;
     int i;

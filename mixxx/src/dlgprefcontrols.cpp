@@ -18,7 +18,8 @@
 #include "dlgprefcontrols.h"
 #include "qcombobox.h"
 #include "configobject.h"
-#include "controlpotmeter.h"
+#include "controlobject.h"
+#include "controlobjectthreadmain.h"
 #include "mixxxview.h"
 #include "wnumberpos.h"
 #include "wnumberbpm.h"
@@ -27,19 +28,21 @@
 #include "enginebuffer.h"
 #include <qspinbox.h>
 
-DlgPrefControls::DlgPrefControls(QWidget *parent, ControlObject *pControl, MixxxView *pView, ConfigObject<ConfigValue> *pConfig) : DlgPrefControlsDlg(parent,"")
+DlgPrefControls::DlgPrefControls(QWidget *parent, MixxxView *pView, ConfigObject<ConfigValue> *pConfig) : DlgPrefControlsDlg(parent,"")
 {
-    m_pConfig = pConfig;
     m_pView = pView;
-
+    m_pConfig = pConfig;
+    
     //
     // Rate slider configuration
     //
 
-    m_pControlRate1 = (ControlPotmeter *)pControl->getControl(ConfigKey("[Channel1]","rate"));
-    m_pControlRate2 = (ControlPotmeter *)pControl->getControl(ConfigKey("[Channel2]","rate"));
-    m_pControlRateDir1 = pControl->getControl(ConfigKey("[Channel1]","rate_dir"));
-    m_pControlRateDir2 = pControl->getControl(ConfigKey("[Channel2]","rate_dir"));    
+    m_pControlRate1 = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey("[Channel1]","rate")));
+    m_pControlRate2 = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey("[Channel2]","rate")));
+    m_pControlRateDir1 = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey("[Channel1]","rate_dir")));
+    m_pControlRateDir2 = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey("[Channel2]","rate_dir")));
+    m_pControlRateRange1 = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey("[Channel1]","rateRange")));
+    m_pControlRateRange2 = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey("[Channel2]","rateRange")));
 
     // Set default direction as stored in config file
     if (m_pConfig->getValueString(ConfigKey("[Controls]","RateDir")).length() == 0)
@@ -71,8 +74,8 @@ DlgPrefControls::DlgPrefControls(QWidget *parent, ControlObject *pControl, Mixxx
     float fDir = 1.;
     if (m_pConfig->getValueString(ConfigKey("[Controls]","RateDir")).toInt()==1.)
         fDir = -1.;
-    m_pControlRateDir1->setValueFromApp(fDir);
-    m_pControlRateDir2->setValueFromApp(fDir);
+    m_pControlRateDir1->slotSet(fDir);
+    m_pControlRateDir2->slotSet(fDir);
 
     connect(ComboBoxRateDir,   SIGNAL(activated(int)), this, SLOT(slotSetRateDir(int)));
 
@@ -195,17 +198,17 @@ void DlgPrefControls::slotUpdate()
     ComboBoxRateRange->insertItem("80%");
     ComboBoxRateRange->insertItem("90%");
 
-    float idx = 10.*m_pControlRate1->getMax();
-    if (m_pControlRate1->getMin()==0.08)
+    float idx = 10.*m_pControlRateRange1->get();
+    if (m_pControlRateRange1->get()==0.08)
         idx = 0.;
-
+    
     ComboBoxRateRange->setCurrentItem((int)idx);
 
     ComboBoxRateDir->clear();
     ComboBoxRateDir->insertItem("Up increase speed");
     ComboBoxRateDir->insertItem("Down increase speed (Technics SL1210)");
 
-    if (m_pControlRateDir1->getValue()==1)
+    if (m_pControlRateDir1->get()==1)
         ComboBoxRateDir->setCurrentItem(0);
     else
         ComboBoxRateDir->setCurrentItem(1);
@@ -218,8 +221,12 @@ void DlgPrefControls::slotSetRateRange(int pos)
         range = 0.08f;
 
     // Set the rate range
-    m_pControlRate1->setRange(-range, range);
-    m_pControlRate2->setRange(-range, range);
+    m_pControlRateRange1->slotSet(range);
+    m_pControlRateRange2->slotSet(range);
+    
+    // Reset rate
+    m_pControlRate1->slotSet(0.);
+    m_pControlRate2->slotSet(0.);
 }
 
 void DlgPrefControls::slotSetRateDir(int)
@@ -229,8 +236,8 @@ void DlgPrefControls::slotSetRateDir(int)
         dir = -1.;
 
     // Set rate dir
-    m_pControlRateDir1->setValueFromApp(dir);
-    m_pControlRateDir2->setValueFromApp(dir);
+    m_pControlRateDir1->slotSet(dir);
+    m_pControlRateDir2->slotSet(dir);
 }
 
 void DlgPrefControls::slotSetVisuals(int)
@@ -310,13 +317,14 @@ void DlgPrefControls::slotSetRatePermRight(int v)
 void DlgPrefControls::slotApply()
 {
     // Write rate range to config file
-    float idx = 10.*m_pControlRate1->getMax();
-    if (m_pControlRate1->getMin()==0.08)
+    float idx = 10.*m_pControlRateRange1->get();
+    if (idx==0.8)
         idx = 0.;
+    
     m_pConfig->set(ConfigKey("[Controls]","RateRange"), ConfigValue((int)idx));
 
     // Write rate direction to config file
-    if (m_pControlRateDir1->getValue()==1)
+    if (m_pControlRateDir1->get()==1)
         m_pConfig->set(ConfigKey("[Controls]","RateDir"), ConfigValue(0));
     else
         m_pConfig->set(ConfigKey("[Controls]","RateDir"), ConfigValue(1));

@@ -11,20 +11,26 @@
 //
 #include "wnumberrate.h"
 #include "controlobject.h"
+#include "controlobjectthreadmain.h"
 
 WNumberRate::WNumberRate(const char *group, QWidget *parent, const char *name) : WNumber(parent, name)
 {
-    m_pRateControl = ControlObject::getControl(ConfigKey(QString(group), QString("rate")));
-    m_pRateDirControl = ControlObject::getControl(ConfigKey(QString(group), QString("rate_dir")));
+    m_pRateRangeControl = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey(group, "rateRange")));
+    m_pRateDirControl = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey(group, "rate_dir")));
+    m_pRateControl = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey(group, "rate")));
 }
 
 WNumberRate::~WNumberRate()
 {
+    delete m_pRateControl;
+    delete m_pRateDirControl;
+    delete m_pRateRangeControl;
 }
 
 void WNumberRate::setValue(double)
-{
-    double vsign = m_pRateControl->getValue()*m_pRateDirControl->getValue();
+{    
+    double vsign = m_pRateControl->get()*m_pRateRangeControl->get()*m_pRateDirControl->get();
+    
     double v = fabs(vsign);
     int v1=0,v2=0,v3=0;
 

@@ -19,7 +19,7 @@
 #include <qdir.h>
 #include <unistd.h>
 
-MidiObjectOSS::MidiObjectOSS(ConfigObject<ConfigValueMidi> *c, QApplication *a, ControlObject *control, QString device) : MidiObject(c, a, control, device)
+MidiObjectOSS::MidiObjectOSS(ConfigObject<ConfigValueMidi> *c, QString device) : MidiObject(c, device)
 {
     thread_pid = 0;
 
@@ -96,7 +96,7 @@ void MidiObjectOSS::devClose()
 
 void MidiObjectOSS::stop()
 {
-	MidiObject::stop();
+    MidiObject::stop();
 
     // Raise signal to stop abort blocking read in main thread loop
     if (thread_pid != 0)
@@ -130,7 +130,7 @@ void MidiObjectOSS::run()
             unsigned char midichannel;
             unsigned char midicontrol;
             unsigned char midivalue;
-	    int i;
+        int i;
             for (i=1; i<3; i++)
             {
                 int no = read(handle,&buffer[i],1);
@@ -139,7 +139,7 @@ void MidiObjectOSS::run()
                 if (requestStop==true)
                     break;
                 if ((buffer[i] & 0xF0)>127)
-	            {
+                {
                     // Somehow the sequence got mixed up, since we now receive a start
                     // of a midi command. Restart reading the command
                     buffer[0] = buffer[i];
@@ -148,7 +148,7 @@ void MidiObjectOSS::run()
             }
             if (requestStop==false && i==3)
             {
-//		    qDebug("midi oss received %i, %i, %i",buffer[0], buffer[1], buffer[2]);
+//          qDebug("midi oss received %i, %i, %i",buffer[0], buffer[1], buffer[2]);
                 midicategory = (MidiCategory)(buffer[0] & 0xF0);
                 midichannel = buffer[0] & 0x0F; // The channel is stored in the lower 4 bits of the status byte received
                 midicontrol = buffer[1];

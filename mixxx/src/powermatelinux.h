@@ -34,10 +34,10 @@ static const char *pPowermateValidPrefix[kiPowermateNumValidPrefixes] =
 };
 const int kiPowermateNumEventDevices = 16;
 
-class PowerMateLinux : public PowerMate 
+class PowerMateLinux : public PowerMate
 {
-public: 
-    PowerMateLinux(ControlObject *pControl);
+public:
+    PowerMateLinux();
     ~PowerMateLinux();
     int opendev(int iId);
     void closedev();

@@ -16,17 +16,18 @@
  ***************************************************************************/
 
 #include "visualbuffermarks.h"
-#include "../readerextract.h"
-#include "../controlpotmeter.h"
-#include "../controlobject.h"
+#include "readerextract.h"
+#include "controlobject.h"
+#include "configobject.h"
+#include "controlobjectthreadmain.h"
 
 VisualBufferMarks::VisualBufferMarks(ReaderExtract *pReaderExtract, EngineBuffer *pEngineBuffer, const char *group) : VisualBuffer(pReaderExtract, pEngineBuffer, group)
 {
-    m_pCuePoint = ControlObject::getControl(ConfigKey(group, "cue_point"));
+    m_pCuePoint = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey(group, "cue_point")));
 //    qDebug("marks: resampleFactor %f, displayRate %f, displayFactor %f, readerExtractFactor %f", m_fResampleFactor, m_fDisplayRate,m_fDisplayFactor, m_fReaderExtractFactor);
     m_iCuePosition = -1;
 
-    connect(m_pCuePoint, SIGNAL(signalUpdateApp(double)), this, SLOT(slotUpdateCuePoint(double)));
+    connect(m_pCuePoint, SIGNAL(valueChanged(double)), this, SLOT(slotUpdateCuePoint(double)));
 }
 
 VisualBufferMarks::~VisualBufferMarks()
@@ -60,7 +61,7 @@ void VisualBufferMarks::update(int iPos, int iLen)
         }
     }
 
-    slotUpdateCuePoint(m_pCuePoint->getValue());
+    slotUpdateCuePoint(m_pCuePoint->get());
 }
 
 void VisualBufferMarks::slotUpdateCuePoint(double v)
@@ -68,10 +69,10 @@ void VisualBufferMarks::slotUpdateCuePoint(double v)
     // Find index in buffer where cue point should be displayed. Is set to -1 if cue point is
     // currently not in the visible buffer
     m_iCuePosition = -1;
-    
+
     if (v>=0 && ((fabs(v-m_dAbsPlaypos)/m_fReaderExtractFactor)/m_fResampleFactor)<(float)m_iDisplayLen/2.f)
     {
-        //qDebug("cue %f, play %f",m_pCuePoint->getValue(),m_pAbsPlaypos->getValue());
+        //qDebug("cue %f, play %f",m_pCuePoint->get(),m_pAbsPlaypos->get());
         float fCuediff = m_dAbsPlaypos-v;
         float fCuePos = m_dBufferPlaypos-fCuediff;
         fCuePos = (fCuePos/m_fReaderExtractFactor)/m_fResampleFactor;
@@ -83,6 +84,7 @@ void VisualBufferMarks::slotUpdateCuePoint(double v)
 
 void VisualBufferMarks::draw(GLfloat *p, int iLen, float xscale)
 {
+//    return;
 //    glDrawArrays(GL_LINE_STRIP,0,iLen);
 
     // Ensures constant width of beat marks regardles for scaling

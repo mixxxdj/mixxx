@@ -22,7 +22,7 @@
 // Rate at which the vumeter is updated (using a sample rate of 44100 Hz):
 #define UPDATE_RATE 5
 
-class ControlEngine;
+class ControlPotmeter;
 
 class EngineVuMeter : public EngineObject {
 public:
@@ -31,7 +31,7 @@ public:
     void process(const CSAMPLE *pIn, const CSAMPLE *pOut, const int iBufferSize);
 
 private:
-    ControlEngine *m_ctrlVuMeter;
+    ControlPotmeter *m_ctrlVuMeter;
     FLOAT_TYPE m_fRMSvolume;
     FLOAT_TYPE m_iSamplesCalculated;
 };

@@ -15,8 +15,6 @@
  ***************************************************************************/
 
 #include "engineclipping.h"
-#include "controlpushbutton.h"
-#include "controlengine.h"
 
 /*----------------------------------------------------------------
   A pregaincontrol is ... a pregain.

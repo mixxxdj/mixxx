@@ -19,7 +19,7 @@
 
 #include "engineobject.h"
 
-class ControlEngine;
+class ControlLogpotmeter;
 
 class EnginePregain : public EngineObject 
 {
@@ -29,7 +29,7 @@ public:
     void process(const CSAMPLE *pIn, const CSAMPLE *pOut, const int iBufferSize);
 
 private:
-    ControlEngine* potmeterPregain;
+    ControlLogpotmeter *potmeterPregain;
 };
 
 #endif

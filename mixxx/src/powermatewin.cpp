@@ -30,7 +30,7 @@ DEFINE_GUID(POWERMATE_GUID, 0xfc3da4b7, 0x1e9d, 0x47f4, 0xa7, 0xe3, 0x15, 0x1b, 
 
 int PowerMateWin::siInstCount = 0;
 
-PowerMateWin::PowerMateWin(ControlObject *pControl) : PowerMate(pControl)
+PowerMateWin::PowerMateWin() : PowerMate()
 {
     m_hFd = INVALID_HANDLE_VALUE;
     m_iId = -1;
@@ -42,84 +42,84 @@ PowerMateWin::~PowerMateWin()
 
 bool PowerMateWin::opendev()
 {
-	// Get the handle to the PowerMate device
-	m_hFd = GetDeviceViaInterface((LPGUID)&POWERMATE_GUID,siInstCount);
-	if(m_hFd == INVALID_HANDLE_VALUE)
-	{
-		qDebug("No powermate");
-		return false;
-	}
-	m_iInstNo = siInstCount;
-	siInstCount++;
+    // Get the handle to the PowerMate device
+    m_hFd = GetDeviceViaInterface((LPGUID)&POWERMATE_GUID,siInstCount);
+    if(m_hFd == INVALID_HANDLE_VALUE)
+    {
+        qDebug("No powermate");
+        return false;
+    }
+    m_iInstNo = siInstCount;
+    siInstCount++;
 
-	qDebug("found powermate %i",m_iInstNo);
+    qDebug("found powermate %i",m_iInstNo);
 
-	// Start thread
+    // Start thread
     start();
 
     // Turn off led
     led_write(0,0,0,0,0);
 
-	return true;
+    return true;
 }
 
 void PowerMateWin::run()
 {
-	char *pBuffer = new char[6];
-	for (int i=0; i<6; i++)
-		pBuffer[i] = 0;
+    char *pBuffer = new char[6];
+    for (int i=0; i<6; i++)
+        pBuffer[i] = 0;
 
-	// create the timeout event
-	QString qsName("PowerMate2");
-	HANDLE hEvent = CreateEvent(NULL , true, false, (const unsigned short *)qsName.latin1() );
+    // create the timeout event
+    QString qsName("PowerMate2");
+    HANDLE hEvent = CreateEvent(NULL , true, false, (const unsigned short *)qsName.latin1() );
 
-	// Overlapped structure required for ascyc reading
-	OVERLAPPED overlapped;
-	overlapped.Offset = 0; 
-	overlapped.OffsetHigh = 0; 
-	overlapped.hEvent = 0; 
+    // Overlapped structure required for ascyc reading
+    OVERLAPPED overlapped;
+    overlapped.Offset = 0;
+    overlapped.OffsetHigh = 0;
+    overlapped.hEvent = 0;
 
-	// If ReadFile has been called without the data fetched, bRead is true
-	bool bRead = false;
+    // If ReadFile has been called without the data fetched, bRead is true
+    bool bRead = false;
 
-	while (1)
+    while (1)
     {
-		DWORD lBytesRead = 0;
-		bool success = false;
+        DWORD lBytesRead = 0;
+        bool success = false;
 
-		if (!bRead)
-		{
-			//qDebug("r");
-			success = ReadFile(m_hFd, pBuffer, 6, &lBytesRead, &overlapped);
-			bRead = true;
-		}
-		
-		if (bRead) // && GetLastError()==ERROR_IO_PENDING)
-		{
-			//qDebug("o");
-			// asynchronous i/o is still in progress 
-			// wait for completion or interupt
-			//WaitForSingleObject(hEvent, 5); 
+        if (!bRead)
+        {
+            //qDebug("r");
+            success = ReadFile(m_hFd, pBuffer, 6, &lBytesRead, &overlapped);
+            bRead = true;
+        }
 
-			// check on the results of the asynchronous read 
-			success = GetOverlappedResult(m_hFd, &overlapped, &lBytesRead, false);
-			
-//			if (!success)
-//				qDebug("overlap error: %i",GetLastError());
-			
-			//ResetEvent(hEvent);
-		}
-		
-		//qDebug("success %i, read %i",success,lBytesRead);
+        if (bRead) // && GetLastError()==ERROR_IO_PENDING)
+        {
+            //qDebug("o");
+            // asynchronous i/o is still in progress
+            // wait for completion or interupt
+            //WaitForSingleObject(hEvent, 5);
 
-		// if there was a problem, or the async operation's still pending
-		if (success)
-		{
-			bRead = false;
-			if (lBytesRead == 6)		
-				process_event(pBuffer);
-		}
-		//
+            // check on the results of the asynchronous read
+            success = GetOverlappedResult(m_hFd, &overlapped, &lBytesRead, false);
+
+//          if (!success)
+//              qDebug("overlap error: %i",GetLastError());
+
+            //ResetEvent(hEvent);
+        }
+
+        //qDebug("success %i, read %i",success,lBytesRead);
+
+        // if there was a problem, or the async operation's still pending
+        if (success)
+        {
+            bRead = false;
+            if (lBytesRead == 6)
+                process_event(pBuffer);
+        }
+        //
         // Check if led queue is empty
         //
 
@@ -133,16 +133,16 @@ void PowerMateWin::run()
             (*m_pRequestLed)--;
             led_write(255, 0, 0, 0, 1);
             usleep(1);
-			
+
             led_write(0, 0, 0, 0, 0);
         }
         else
         {
-			usleep(50);
+            usleep(50);
         }
     }
 }
-    
+
 void PowerMateWin::closedev()
 {
 /*
@@ -158,7 +158,7 @@ void PowerMateWin::closedev()
 */
     m_hFd = NULL;
     m_iId = -1;
-}        
+}
 
 void PowerMateWin::led_write(int iStaticBrightness, int iSpeed, int iTable, int iAsleep, int iAwake)
 {
@@ -175,43 +175,43 @@ void PowerMateWin::led_write(int iStaticBrightness, int iSpeed, int iTable, int 
     iAsleep = !!iAsleep;
     iAwake = !!iAwake;
 
-	DWORD lBytesReturned = 0;
+    DWORD lBytesReturned = 0;
 
-	USHORT sendVal = iStaticBrightness;
-	DeviceIoControl(m_hFd, IOCTL_POWERMATE_SET_LED_BRIGHTNESS,
-					&sendVal, sizeof(sendVal),
-					NULL, 0,    // Output
-					&lBytesReturned, NULL);
+    USHORT sendVal = iStaticBrightness;
+    DeviceIoControl(m_hFd, IOCTL_POWERMATE_SET_LED_BRIGHTNESS,
+                    &sendVal, sizeof(sendVal),
+                    NULL, 0,    // Output
+                    &lBytesReturned, NULL);
 
-	if (iAsleep)
-	{
-		sendVal = iAsleep;
-		DeviceIoControl(m_hFd, IOCTL_POWERMATE_PULSE_DURING_SLEEP,
-						&sendVal, sizeof(sendVal),    // 0, 1
-						NULL, 0,    // Output
-						&lBytesReturned, NULL);
-	}
+    if (iAsleep)
+    {
+        sendVal = iAsleep;
+        DeviceIoControl(m_hFd, IOCTL_POWERMATE_PULSE_DURING_SLEEP,
+                        &sendVal, sizeof(sendVal),    // 0, 1
+                        NULL, 0,    // Output
+                        &lBytesReturned, NULL);
+    }
 
-	if (iAwake)
-	{
-		sendVal = iAwake;
-		DeviceIoControl(m_hFd, IOCTL_POWERMATE_PULSE_ALWAYS,
-						&sendVal, sizeof(sendVal),    // 0, 1
-						NULL, 0,    // Output
-						&lBytesReturned, NULL);
-	}
+    if (iAwake)
+    {
+        sendVal = iAwake;
+        DeviceIoControl(m_hFd, IOCTL_POWERMATE_PULSE_ALWAYS,
+                        &sendVal, sizeof(sendVal),    // 0, 1
+                        NULL, 0,    // Output
+                        &lBytesReturned, NULL);
+    }
 
-	sendVal = iSpeed;
-	DeviceIoControl(m_hFd, IOCTL_POWERMATE_PULSE_SPEED,
-					&sendVal, sizeof(sendVal),    // 1-24
-					NULL, 0,    // Output
-					&lBytesReturned, NULL);
+    sendVal = iSpeed;
+    DeviceIoControl(m_hFd, IOCTL_POWERMATE_PULSE_SPEED,
+                    &sendVal, sizeof(sendVal),    // 1-24
+                    NULL, 0,    // Output
+                    &lBytesReturned, NULL);
 }
 
 void PowerMateWin::process_event(char *pEv)
 {
-	qDebug("process %i,%i,%i,%i,%i,%i", pEv[0],pEv[1],pEv[2],pEv[3],pEv[4],pEv[5]);
-	if (pEv[1]>0 || pEv[1]<0)
+    qDebug("process %i,%i,%i,%i,%i,%i", pEv[0],pEv[1],pEv[2],pEv[3],pEv[4],pEv[5]);
+    if (pEv[1]>0 || pEv[1]<0)
     {
         // Update knob variables
         m_iKnobVal = pEv[1];
@@ -225,53 +225,53 @@ void PowerMateWin::process_event(char *pEv)
         else
             QApplication::postEvent(m_pControl,new ControlEventMidi(NOTE_OFF, kiPowermateMidiChannel, (char)(m_iInstNo*2+kiPowermateMidiBtn),1));
 
-//		qDebug("PowerMate: Button was %s %i", pEv[1]? "pressed":"released",pEv[1]);
+//      qDebug("PowerMate: Button was %s %i", pEv[1]? "pressed":"released",pEv[1]);
     }
 }
 
 HANDLE PowerMateWin::GetDeviceViaInterface(GUID* pGuid, DWORD instance)
 {
-	// Get handle to relevant device information set
-	HDEVINFO info = SetupDiGetClassDevs(pGuid, NULL, NULL, DIGCF_PRESENT | DIGCF_INTERFACEDEVICE);
-	if(info==INVALID_HANDLE_VALUE)
-		return INVALID_HANDLE_VALUE;
+    // Get handle to relevant device information set
+    HDEVINFO info = SetupDiGetClassDevs(pGuid, NULL, NULL, DIGCF_PRESENT | DIGCF_INTERFACEDEVICE);
+    if(info==INVALID_HANDLE_VALUE)
+        return INVALID_HANDLE_VALUE;
 
-	// Get interface data for the requested instance
-	SP_INTERFACE_DEVICE_DATA ifdata;
-	ifdata.cbSize = sizeof(ifdata);
-	if(!SetupDiEnumDeviceInterfaces(info, NULL, pGuid, instance, &ifdata))
-	{
-		SetupDiDestroyDeviceInfoList(info);
-		return INVALID_HANDLE_VALUE;
-	}
+    // Get interface data for the requested instance
+    SP_INTERFACE_DEVICE_DATA ifdata;
+    ifdata.cbSize = sizeof(ifdata);
+    if(!SetupDiEnumDeviceInterfaces(info, NULL, pGuid, instance, &ifdata))
+    {
+        SetupDiDestroyDeviceInfoList(info);
+        return INVALID_HANDLE_VALUE;
+    }
 
-	// Get size of symbolic link name
-	DWORD ReqLen;
-	SetupDiGetDeviceInterfaceDetail(info, &ifdata, NULL, 0, &ReqLen, NULL);
-	PSP_INTERFACE_DEVICE_DETAIL_DATA ifDetail = (PSP_INTERFACE_DEVICE_DETAIL_DATA)(new char[ReqLen]);
-	if( ifDetail==NULL)
-	{
-		SetupDiDestroyDeviceInfoList(info);
-		return INVALID_HANDLE_VALUE;
-	}
+    // Get size of symbolic link name
+    DWORD ReqLen;
+    SetupDiGetDeviceInterfaceDetail(info, &ifdata, NULL, 0, &ReqLen, NULL);
+    PSP_INTERFACE_DEVICE_DETAIL_DATA ifDetail = (PSP_INTERFACE_DEVICE_DETAIL_DATA)(new char[ReqLen]);
+    if( ifDetail==NULL)
+    {
+        SetupDiDestroyDeviceInfoList(info);
+        return INVALID_HANDLE_VALUE;
+    }
 
-	// Get symbolic link name
-	ifDetail->cbSize = sizeof(SP_INTERFACE_DEVICE_DETAIL_DATA);
-	if( !SetupDiGetDeviceInterfaceDetail(info, &ifdata, ifDetail, ReqLen, NULL, NULL))
-	{
-		SetupDiDestroyDeviceInfoList(info);
-		delete ifDetail;
-		return INVALID_HANDLE_VALUE;
-	}
+    // Get symbolic link name
+    ifDetail->cbSize = sizeof(SP_INTERFACE_DEVICE_DETAIL_DATA);
+    if( !SetupDiGetDeviceInterfaceDetail(info, &ifdata, ifDetail, ReqLen, NULL, NULL))
+    {
+        SetupDiDestroyDeviceInfoList(info);
+        delete ifDetail;
+        return INVALID_HANDLE_VALUE;
+    }
 
-	// Open file
-	HANDLE rv = CreateFile( ifDetail->DevicePath, 
-		GENERIC_READ | GENERIC_WRITE,
-		FILE_SHARE_READ | FILE_SHARE_WRITE,
-		NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL | FILE_FLAG_OVERLAPPED, NULL);  //    FILE_ATTRIBUTE_NORMAL
-	//if( rv==INVALID_HANDLE_VALUE) rv = NULL;
+    // Open file
+    HANDLE rv = CreateFile( ifDetail->DevicePath,
+        GENERIC_READ | GENERIC_WRITE,
+        FILE_SHARE_READ | FILE_SHARE_WRITE,
+        NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL | FILE_FLAG_OVERLAPPED, NULL);  //    FILE_ATTRIBUTE_NORMAL
+    //if( rv==INVALID_HANDLE_VALUE) rv = NULL;
 
-	delete ifDetail;
-	SetupDiDestroyDeviceInfoList(info);
-	return rv;
+    delete ifDetail;
+    SetupDiDestroyDeviceInfoList(info);
+    return rv;
 }

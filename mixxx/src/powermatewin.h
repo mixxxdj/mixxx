@@ -26,17 +26,17 @@
 #define IOCTL_POWERMATE_PULSE_DURING_SLEEP CTL_CODE(FILE_DEVICE_UNKNOWN,0x808,METHOD_BUFFERED,FILE_ANY_ACCESS)
 #define IOCTL_POWERMATE_PULSE_ALWAYS CTL_CODE(FILE_DEVICE_UNKNOWN,0x809,METHOD_BUFFERED,FILE_ANY_ACCESS)
 #define IOCTL_POWERMATE_PULSE_SPEED CTL_CODE(FILE_DEVICE_UNKNOWN,0x80A,METHOD_BUFFERED,FILE_ANY_ACCESS)
- 
+
 /**
   * Windows code for handling the PowerMate.
   *
   *@author Tue & Ken Haste Andersen
   */
 
-class PowerMateWin : public PowerMate 
+class PowerMateWin : public PowerMate
 {
-public: 
-    PowerMateWin(ControlObject *pControl);
+public:
+    PowerMateWin();
     ~PowerMateWin();
     bool opendev();
     void closedev();
@@ -44,7 +44,7 @@ protected:
     void run();
     void led_write(int iStaticBrightness, int iSpeed, int iTable, int iAsleep, int iAwake);
     void process_event(char *pEv);
-	HANDLE GetDeviceViaInterface(GUID* pGuid, DWORD instance);
+    HANDLE GetDeviceViaInterface(GUID* pGuid, DWORD instance);
 
     /** File handle of current open /dev/input/event device */
     HANDLE m_hFd;

@@ -26,7 +26,7 @@ template <class ValueType> ConfigObject<ValueType>::~ConfigObject()
 {
 }
 
-template <class ValueType> 
+template <class ValueType>
 ConfigOption<ValueType> *ConfigObject<ValueType>::set(ConfigKey k, ValueType v)
 {
     // Search for key in list, and set value if found
@@ -51,7 +51,7 @@ ConfigOption<ValueType> *ConfigObject<ValueType>::set(ConfigKey k, ValueType v)
     return it;
 }
 
-template <class ValueType> 
+template <class ValueType>
 ConfigOption<ValueType> *ConfigObject<ValueType>::get(ConfigKey k)
 {
     ConfigOption<ValueType> *it;
@@ -71,7 +71,21 @@ ConfigOption<ValueType> *ConfigObject<ValueType>::get(ConfigKey k)
     return it;
 }
 
-template <class ValueType> 
+template <class ValueType>
+ConfigKey *ConfigObject<ValueType>::get(ValueType v)
+{
+    ConfigOption<ValueType> *it;
+    for (it = list.first(); it; it = list.next())
+    {
+        if (it->val->value.upper() == v.value.upper())
+        {
+            return it->key;
+        }
+    }
+    return 0;
+}
+
+template <class ValueType>
 QString ConfigObject<ValueType>::getValueString(ConfigKey k)
 {
     return get(k)->val->value;
@@ -156,7 +170,7 @@ template <class ValueType> void ConfigObject<ValueType>::Save()
         QString grp = "";
         for (it = list.first(); it; it = list.next())
         {
-            //qDebug("group: %s, item %s, val %s",it->key->group.latin1(), it->key->item.latin1(),it->val->value.latin1());
+//            qDebug("group: %s, item %s, val %s",it->key->group.latin1(), it->key->item.latin1(),it->val->value.latin1());
             if (it->key->group != grp)
             {
                 grp = it->key->group;

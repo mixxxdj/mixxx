@@ -22,7 +22,6 @@
 #include "controlpushbutton.h"
 #include "controlpotmeter.h"
 #include "controlttrotary.h"
-#include "controlengine.h"
 #include "controlbeat.h"
 #include "reader.h"
 #include "readerextractbeat.h"
@@ -51,143 +50,116 @@ EngineBuffer::EngineBuffer(PowerMate *_powermate, const char *_group)
 
     m_dAbsPlaypos = 0.;
     m_dBufferPlaypos = 0.;
-    
+
     // Play button
-    ControlPushButton *p = new ControlPushButton(ConfigKey(group, "play"), true);
-    playButton = new ControlEngine(p);
+    playButton = new ControlPushButton(ConfigKey(group, "play"), true);
     connect(playButton, SIGNAL(valueChanged(double)), this, SLOT(slotControlPlay(double)));
     playButton->set(0);
 
     // Reverse button
-    p = new ControlPushButton(ConfigKey(group, "reverse"));
-    reverseButton = new ControlEngine(p);
+    reverseButton = new ControlPushButton(ConfigKey(group, "reverse"));
     reverseButton->set(0);
 
     // Fwd button
-    p = new ControlPushButton(ConfigKey(group, "fwd"));
-    fwdButton = new ControlEngine(p);
+    fwdButton = new ControlPushButton(ConfigKey(group, "fwd"));
     connect(fwdButton, SIGNAL(valueChanged(double)), this, SLOT(slotControlFastFwdBack(double)));
     fwdButton->set(0);
 
     // Back button
-    p = new ControlPushButton(ConfigKey(group, "back"));
-    backButton = new ControlEngine(p);
+    backButton = new ControlPushButton(ConfigKey(group, "back"));
     connect(backButton, SIGNAL(valueChanged(double)), this, SLOT(slotControlFastFwdBack(double)));
     backButton->set(0);
 
     // Start button
-    p = new ControlPushButton(ConfigKey(group, "start"));
-    startButton = new ControlEngine(p);
+    startButton = new ControlPushButton(ConfigKey(group, "start"));
     connect(startButton, SIGNAL(valueChanged(double)), this, SLOT(slotControlStart(double)));
     startButton->set(0);
 
     // End button
-    p = new ControlPushButton(ConfigKey(group, "end"));
-    endButton = new ControlEngine(p);
+    endButton = new ControlPushButton(ConfigKey(group, "end"));
     connect(endButton, SIGNAL(valueChanged(double)), this, SLOT(slotControlEnd(double)));
     endButton->set(0);
 
     // Cue set button:
-    p = new ControlPushButton(ConfigKey(group, "cue_set"));
-    buttonCueSet = new ControlEngine(p);
+    buttonCueSet = new ControlPushButton(ConfigKey(group, "cue_set"));
     connect(buttonCueSet, SIGNAL(valueChanged(double)), this, SLOT(slotControlCueSet(double)));
 
     // Cue goto button:
-    p = new ControlPushButton(ConfigKey(group, "cue_goto"));
-    buttonCueGoto = new ControlEngine(p);
+    buttonCueGoto = new ControlPushButton(ConfigKey(group, "cue_goto"));
     connect(buttonCueGoto, SIGNAL(valueChanged(double)), this, SLOT(slotControlCueGoto(double)));
 
     // Cue point
-    ControlObject *p5 = new ControlObject(ConfigKey(group, "cue_point"));
-    cuePoint = new ControlEngine(p5);
-    
+    cuePoint = new ControlObject(ConfigKey(group, "cue_point"));
+
     // Cue preview button:
-    p = new ControlPushButton(ConfigKey(group, "cue_preview"));
-    buttonCuePreview = new ControlEngine(p);
+    buttonCuePreview = new ControlPushButton(ConfigKey(group, "cue_preview"));
     connect(buttonCuePreview, SIGNAL(valueChanged(double)), this, SLOT(slotControlCuePreview(double)));
 
     // Playback rate slider
-    ControlPotmeter *p2 = new ControlPotmeter(ConfigKey(group, "rate"), 0.9f, 1.1f);
-    rateSlider = new ControlEngine(p2);
+    rateSlider = new ControlPotmeter(ConfigKey(group, "rate"), -1.f, 1.f);
 
-    // Rate display
-    p5 = new ControlObject(ConfigKey(group, "rateDisplay"));
-    ControlObject::connectControls(ConfigKey(group, "rate"), ConfigKey(group, "rateDisplay"));
-
+    // Range of rate
+    m_pRateRange = new ControlObject(ConfigKey(group, "rateRange"));
+    m_pRateRange->set(0.1);
     // Actual rate (used in visuals, not for control)
-    p5 = new ControlObject(ConfigKey(group, "rateEngine"));
-    rateEngine = new ControlEngine(p5);
-    
+    rateEngine = new ControlObject(ConfigKey(group, "rateEngine"));
+
     // Permanent rate-change buttons
-    p = new ControlPushButton(ConfigKey(group,"rate_perm_down"));
-    buttonRatePermDown = new ControlEngine(p);
+    buttonRatePermDown = new ControlPushButton(ConfigKey(group,"rate_perm_down"));
     connect(buttonRatePermDown, SIGNAL(valueChanged(double)), this, SLOT(slotControlRatePermDown(double)));
-    p = new ControlPushButton(ConfigKey(group,"rate_perm_down_small"));
-    buttonRatePermDownSmall = new ControlEngine(p);
+    buttonRatePermDownSmall = new ControlPushButton(ConfigKey(group,"rate_perm_down_small"));
     connect(buttonRatePermDownSmall, SIGNAL(valueChanged(double)), this, SLOT(slotControlRatePermDownSmall(double)));
-    p = new ControlPushButton(ConfigKey(group,"rate_perm_up"));
-    buttonRatePermUp = new ControlEngine(p);
+    buttonRatePermUp = new ControlPushButton(ConfigKey(group,"rate_perm_up"));
     connect(buttonRatePermUp, SIGNAL(valueChanged(double)), this, SLOT(slotControlRatePermUp(double)));
-    p = new ControlPushButton(ConfigKey(group,"rate_perm_up_small"));
-    buttonRatePermUpSmall = new ControlEngine(p);
+    buttonRatePermUpSmall = new ControlPushButton(ConfigKey(group,"rate_perm_up_small"));
     connect(buttonRatePermUpSmall, SIGNAL(valueChanged(double)), this, SLOT(slotControlRatePermUpSmall(double)));
 
     // Temporary rate-change buttons
-    p = new ControlPushButton(ConfigKey(group,"rate_temp_down"));
-    buttonRateTempDown = new ControlEngine(p);
+    buttonRateTempDown = new ControlPushButton(ConfigKey(group,"rate_temp_down"));
     connect(buttonRateTempDown, SIGNAL(valueChanged(double)), this, SLOT(slotControlRateTempDown(double)));
-    p = new ControlPushButton(ConfigKey(group,"rate_temp_down_small"));
-    buttonRateTempDownSmall = new ControlEngine(p);
+    buttonRateTempDownSmall = new ControlPushButton(ConfigKey(group,"rate_temp_down_small"));
     connect(buttonRateTempDownSmall, SIGNAL(valueChanged(double)), this, SLOT(slotControlRateTempDownSmall(double)));
-    p = new ControlPushButton(ConfigKey(group,"rate_temp_up"));
-    buttonRateTempUp = new ControlEngine(p);
+    buttonRateTempUp = new ControlPushButton(ConfigKey(group,"rate_temp_up"));
     connect(buttonRateTempUp, SIGNAL(valueChanged(double)), this, SLOT(slotControlRateTempUp(double)));
-    p = new ControlPushButton(ConfigKey(group,"rate_temp_up_small"));
-    buttonRateTempUpSmall = new ControlEngine(p);
+    buttonRateTempUpSmall = new ControlPushButton(ConfigKey(group,"rate_temp_up_small"));
     connect(buttonRateTempUpSmall, SIGNAL(valueChanged(double)), this, SLOT(slotControlRateTempUpSmall(double)));
 
     // Wheel to control playback position/speed
-    ControlTTRotary *p3 = new ControlTTRotary(ConfigKey(group, "wheel"));
-    wheel = new ControlEngine(p3);
+    wheel = new ControlTTRotary(ConfigKey(group, "wheel"));
+
+    // Scratch controller
+    m_pControlScratch = new ControlTTRotary(ConfigKey(group, "scratch"));
 
     // Slider to show and change song position
-    ControlPotmeter *controlplaypos = new ControlPotmeter(ConfigKey(group, "playposition"), 0., 1.);
-    playposSlider = new ControlEngine(controlplaypos);
+    playposSlider = new ControlPotmeter(ConfigKey(group, "playposition"), 0., 1.);
     connect(playposSlider, SIGNAL(valueChanged(double)), this, SLOT(slotControlSeek(double)));
-    
+
     // Control used to communicate absolute playpos to GUI thread
     //ControlObject *controlabsplaypos = new ControlObject(ConfigKey(group, "absplayposition"));
     //absPlaypos = new ControlEngine(controlabsplaypos);
 
     // m_pTrackEnd is used to signal when at end of file during playback
-    p5 = new ControlObject(ConfigKey(group, "TrackEnd"));
-    m_pTrackEnd = new ControlEngine(p5);
+    m_pTrackEnd = new ControlObject(ConfigKey(group, "TrackEnd"));
 
     // Direction of rate slider
-    p5 = new ControlObject(ConfigKey(group, "rate_dir"));
-    m_pRateDir = new ControlEngine(p5);
+    m_pRateDir = new ControlObject(ConfigKey(group, "rate_dir"));
 
     // TrackEndMode determines what to do at the end of a track
-    p5 = new ControlObject(ConfigKey(group,"TrackEndMode"));
-    m_pTrackEndMode = new ControlEngine(p5);
+    m_pTrackEndMode = new ControlObject(ConfigKey(group,"TrackEndMode"));
 
     // BPM control
-    ControlBeat *p4 = new ControlBeat(ConfigKey(group, "bpm"), true);
-    bpmControl = new ControlEngine(p4);
+    bpmControl = new ControlBeat(ConfigKey(group, "bpm"), true);
     connect(bpmControl, SIGNAL(valueChanged(double)), this, SLOT(slotSetBpm(double)));
 
     // Beat event control
-    p2 = new ControlPotmeter(ConfigKey(group, "beatevent"));
-    beatEventControl = new ControlEngine(p2);
+    beatEventControl = new ControlPotmeter(ConfigKey(group, "beatevent"));
 
     // Beat sync (scale buffer tempo relative to tempo of other buffer)
-    p = new ControlPushButton(ConfigKey(group, "beatsync"));
-    buttonBeatSync = new ControlEngine(p);
+    buttonBeatSync = new ControlPushButton(ConfigKey(group, "beatsync"));
     connect(buttonBeatSync, SIGNAL(valueChanged(double)), this, SLOT(slotControlBeatSync(double)));
 
     // Audio beat mark toggle
-    p = new ControlPushButton(ConfigKey(group, "audiobeatmarks"));
-    audioBeatMark = new ControlEngine(p);
+    audioBeatMark = new ControlPushButton(ConfigKey(group, "audiobeatmarks"));
 
     // Control file changed
 //    filechanged = new ControlEngine(controlfilechanged);
@@ -204,7 +176,7 @@ EngineBuffer::EngineBuffer(PowerMate *_powermate, const char *_group)
     rate_old = 0;
 
     m_iBeatMarkSamplesLeft = 0;
-    
+
     m_bLastBufferPaused = true;
     m_fLastSampleValue = 0;
 
@@ -224,6 +196,7 @@ EngineBuffer::~EngineBuffer()
 {
     delete playButton;
     delete wheel;
+    delete m_pControlScratch;
     delete rateSlider;
     delete scale;
     delete m_pTrackEnd;
@@ -280,11 +253,11 @@ float EngineBuffer::getDistanceNextBeatMark()
 
     int i;
     bool found = false;
-    
-    for (i=0; i>(pos-size) && !found; --i) 
+
+    for (i=0; i>(pos-size) && !found; --i)
     {
         //qDebug("p[%i] = %f ",(pos+i)%size,p[(pos+i)%size]);
-        if (p[(pos-i)%size] > 0.0) 
+        if (p[(pos-i)%size] > 0.0)
         {
             found = true;
             qDebug("p[%i] = %f ",(pos+i)%size,p[(pos+i)%size]);
@@ -303,7 +276,7 @@ float EngineBuffer::getDistanceNextBeatMark()
     if( !found )
     */
 
-    if (found) 
+    if (found)
     {
         //qDebug("found" );
 
@@ -344,7 +317,7 @@ void EngineBuffer::setNewPlaypos(double newpos)
         m_dAbsPlaypos = filepos_play;
         m_qPlayposMutex.unlock();
     }
-    
+
     // Ensures that the playpos slider gets updated in next process call
     m_iSamplesCalculated = 1000000;
 
@@ -358,7 +331,7 @@ const char *EngineBuffer::getGroup()
 
 float EngineBuffer::getRate()
 {
-    return rateSlider->get();
+    return rateSlider->get()*m_pRateRange->get();
 }
 
 void EngineBuffer::setTemp(double v)
@@ -615,13 +588,12 @@ void EngineBuffer::adjustPhase()
     float fThisDistance = getDistanceNextBeatMark();
     float fOtherDistance = m_pOtherEngineBuffer->getDistanceNextBeatMark();
 
-    qDebug("this %f, other %f diff %f",fThisDistance, fOtherDistance, fOtherDistance-fThisDistance);
+//    qDebug("this %f, other %f diff %f",fThisDistance, fOtherDistance, fOtherDistance-fThisDistance);
 
     //filepos_play += fOtherDistance-fThisDistance;
     bufferpos_play = bufferpos_play+fOtherDistance-fThisDistance;
-    if (bufferpos_play>(double)READBUFFERSIZE) 
+    if (bufferpos_play>(double)READBUFFERSIZE)
     {
-        qDebug( "grrrr...." );
         bufferpos_play -= (double)READBUFFERSIZE;
     }
 
@@ -641,7 +613,7 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBuff
     CSAMPLE *pOutput = (CSAMPLE *)pOut;
 
     bool bCurBufferPaused = false;
-    
+
     //Q_ASSERT( scale->getNewPlaypos() == 0);
     // pause can be locked if the reader is currently loading a new track.
     if (m_pTrackEnd->get()==0 && pause.tryLock())
@@ -694,11 +666,24 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBuff
 
         double rate;
         if (playButton->get()==1. || fwdButton->get()==1. || backButton->get()==1.)
-            rate=wheel->get()+(1.+rateSlider->get()*m_pRateDir->get())*baserate;
-        else
-            rate=wheel->get()*baserate*10.;
+        {
+            rate=wheel->get()+(1.+rateSlider->get()*m_pRateRange->get()*m_pRateDir->get())*baserate;
 
-            
+            // Apply scratch
+            if (m_pControlScratch->get()<0.)
+                rate = rate * (m_pControlScratch->get()-1.);
+            else if (m_pControlScratch->get()>0.)
+                rate = rate * (m_pControlScratch->get()+1.);
+        }
+        else
+        {
+            rate=(wheel->get()+m_pControlScratch->get())*baserate*10.;
+        }
+
+        //qDebug("rateslider %f, ratedir %f, wheel %f", rateSlider->get(), m_pRateDir->get(), wheel->get());
+
+        //qDebug("rate %f, bpmrate %f, file srate %f, play srate %f, baserate %f",rate, bpmrate, (double)file_srate_old, (double)getPlaySrate(), baserate);
+
 /*
         //
         // Beat event control. Assume forward play
@@ -729,7 +714,7 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBuff
             //
 
             // Reset beat event control
-            beatEventControl->set(0.);
+        beatEventControl->set(0.);
 
             if (oldEvent>0.)
             {
@@ -785,7 +770,7 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBuff
 
 //         qDebug("rate: %f, filepos_play: %f, file_length_old %i",rate, filepos_play, file_length_old);
 
-        if ((rate==0.) || (filepos_play==0. && backwards) || 
+        if ((rate==0.) || (filepos_play==0. && backwards) ||
             (filepos_play==(float)file_length_old && !backwards))
         {
             rampOut(pOut, iBufferSize);
@@ -797,7 +782,7 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBuff
             if ((filepos_play<0. && backwards) || (filepos_play>file_length_old && !backwards))
             {
                 qDebug("buffer out of range");
-                
+
                 rampOut(pOut, iBufferSize);
                 bCurBufferPaused = true;
             }
@@ -933,11 +918,11 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBuff
                     playposSlider->set(0.);
                 bpmControl->set(filebpm);
                 rateEngine->set(rate);
-                
+
                 m_iSamplesCalculated = 0;
-                
+
             }
-                
+
             // Update buffer and abs position. These variables are not in the ControlObject
             // framework because they need very frequent updates.
             if (m_qPlayposMutex.tryLock())
@@ -978,9 +963,9 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBuff
                 qDebug("Ping not implemented yet");
 
                 if (reverseButton->get()==1.)
-                    reverseButton->set(0.);
+                reverseButton->set(0.);
                 else
-                    reverseButton->set(1.);
+                reverseButton->set(1.);
 
                 break;
 */
@@ -996,20 +981,20 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBuff
         rampOut(pOut, iBufferSize);
         bCurBufferPaused = true;
     }
-    
+
     // Force ramp in if this is the first buffer during a play
     if (m_bLastBufferPaused && !bCurBufferPaused)
     {
 //         qDebug("ramp in");
-        // Ramp from zero 
+        // Ramp from zero
         int iLen = min(iBufferSize, kiRampLength);
         float fStep = pOutput[iLen-1]/(float)iLen;
         for (int i=0; i<iLen; ++i)
             pOutput[i] = fStep*i;
-    }    
-    
+    }
+
     m_bLastBufferPaused = bCurBufferPaused;
-    
+
     m_fLastSampleValue = pOutput[iBufferSize-1];
 //    qDebug("last %f",m_fLastSampleValue);
 }
@@ -1017,10 +1002,10 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBuff
 void EngineBuffer::rampOut(const CSAMPLE *pOut, int iBufferSize)
 {
     CSAMPLE *pOutput = (CSAMPLE *)pOut;
-    
+
 //     qDebug("ramp out");
-    
-    // Ramp to zero 
+
+    // Ramp to zero
     int i=0;
     if (m_fLastSampleValue!=0.)
     {
@@ -1031,9 +1016,9 @@ void EngineBuffer::rampOut(const CSAMPLE *pOut, int iBufferSize)
             pOutput[i] = fStep*(iLen-(i+1));
             ++i;
         }
-    }    
-                           
-    // Reset rest of buffer 
+    }
+
+    // Reset rest of buffer
     while (i<iBufferSize)
     {
         pOutput[i]=0.;

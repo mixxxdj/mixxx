@@ -17,14 +17,8 @@
 #include "midiobject.h"
 #include "configobject.h"
 #include "controlobject.h"
-#include "controlpushbutton.h"
-#include "controleventmidi.h"
-#include <qevent.h>
 #include <algorithm>
 #include <qdir.h>
-
-// Static member variable definition
-ConfigObject<ConfigValueMidi> *MidiObject::config = 0;
 
 /* -------- ------------------------------------------------------
    Purpose: Initialize midi, and start parsing loop
@@ -32,12 +26,9 @@ ConfigObject<ConfigValueMidi> *MidiObject::config = 0;
             card and device.
    Output:  -
    -------- ------------------------------------------------------ */
-MidiObject::MidiObject(ConfigObject<ConfigValueMidi> *c, QApplication *a, ControlObject *_control, QString)
+MidiObject::MidiObject(ConfigObject<ConfigValueMidi> *pMidiConfig, QString)
 {
-    app = a;
-    control = _control;
-
-    config = c;
+    m_pMidiConfig = pMidiConfig;
     no = 0;
     requestStop = false;
 }
@@ -61,7 +52,7 @@ void MidiObject::reopen(QString device)
    Purpose: Add a control ready to recieve midi events.
    Input:   a pointer to the control. The second argument
             is the method in the control to call when the button
-	    has been moved.
+        has been moved.
    Output:  -
    -------- ------------------------------------------------------ */
 void MidiObject::add(ControlObject* c)
@@ -122,13 +113,19 @@ QString *MidiObject::getOpenDevice()
    Input:   -
    Output:  -
    -------- ------------------------------------------------------ */
-void MidiObject::send(MidiCategory category, char channel, char midicontrol, char midivalue)
+void MidiObject::send(MidiCategory category, char channel, char control, char value)
 {
-    //qDebug("MIDI: cat: %i, ch: %i, ctrl: %i, val: %i",category, channel,midicontrol, midivalue);
-
-    // Send event to GUI thread
-    QApplication::postEvent(control,new ControlEventMidi(category, channel,midicontrol,midivalue));
-};
+    MidiType type = MIDI_EMPTY;
+    if (category==NOTE_ON | category==NOTE_OFF)
+        type = MIDI_KEY;
+    else if (category==CTRL_CHANGE)
+        type = MIDI_CTRL;
+    
+    ConfigKey *pConfigKey = m_pMidiConfig->get(ConfigValueMidi(type,channel,control));
+        
+    if (pConfigKey)
+        ControlObject::getControl(*pConfigKey)->queueFromMidi(category, value);
+}
 
 void MidiObject::stop()
 {

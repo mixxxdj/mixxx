@@ -16,7 +16,6 @@
  ***************************************************************************/
 
 #include "controlpotmeter.h"
-#include "controlengine.h"
 #include "controlpushbutton.h"
 
 /* -------- ------------------------------------------------------
@@ -35,9 +34,9 @@ ControlPotmeter::ControlPotmeter(ConfigKey key, double dMinValue, double dMaxVal
 
     ControlPushButton *p;
     p = new ControlPushButton(ConfigKey(key.group, QString(key.item)+"_up"));
-    connect(p, SIGNAL(signalUpdateApp(double)), this, SLOT(incValue(double)));
+    connect(p, SIGNAL(valueChanged(double)), this, SLOT(incValue(double)));
     p = new ControlPushButton(ConfigKey(key.group, QString(key.item)+"_down"));
-    connect(p, SIGNAL(signalUpdateApp(double)), this, SLOT(decValue(double)));
+    connect(p, SIGNAL(valueChanged(double)), this, SLOT(decValue(double)));
 }
 
 ControlPotmeter::~ControlPotmeter()
@@ -66,17 +65,19 @@ void ControlPotmeter::setRange(double dMinValue, double dMaxValue)
     m_dValueRange = m_dMaxValue-m_dMinValue;
     m_dValue = m_dMinValue + 0.5*m_dValueRange;
     //qDebug("%p, min %f, max %f, range %f, val %f",this, m_dMinValue, m_dMaxValue, m_dValueRange, m_dValue);
-    updateFromApp();
 }
 
-void ControlPotmeter::setValueFromWidget(double dValue)
+double ControlPotmeter::getValueToWidget(double dValue)
 {
-    m_dValue = m_dMinValue + (dValue/127.)*m_dValueRange;
-
-    updateFromWidget();
+    return 127.*(dValue-m_dMinValue)/m_dValueRange;
 }
 
-void ControlPotmeter::setValueFromApp(double dValue)
+double ControlPotmeter::getValueFromWidget(double dValue)
+{
+    return m_dMinValue + (dValue/127.)*m_dValueRange;
+}
+
+void ControlPotmeter::setValueFromThread(double dValue)
 {
     if (dValue>m_dMaxValue)
         m_dValue = m_dMaxValue;
@@ -84,38 +85,23 @@ void ControlPotmeter::setValueFromApp(double dValue)
         m_dValue = m_dMinValue;
     else
         m_dValue = dValue;
-
-    updateFromApp();
+    emit(valueChanged(m_dValue));
 }
 
 void ControlPotmeter::setValueFromEngine(double dValue)
 {
     if (dValue>m_dMaxValue)
-    {
         m_dValue = m_dMaxValue;
-        updateAll();
-    }
     else if (dValue<m_dMinValue)
-    {
         m_dValue = m_dMinValue;
-        updateAll();
-    }
     else
-    {
         m_dValue = dValue;
-        updateFromEngine();
-    }
 }
 
 void ControlPotmeter::setValueFromMidi(MidiCategory, int v)
 {
     m_dValue = m_dMinValue + ((double)v/127.)*m_dValueRange;
-    updateFromMidi();
-}
-
-void ControlPotmeter::updateWidget()
-{
-    emit(signalUpdateWidget(127.*(m_dValue-m_dMinValue)/m_dValueRange));
+    emit(valueChanged(m_dValue));
 }
 
 void ControlPotmeter::incValue(double keypos)
@@ -126,8 +112,6 @@ void ControlPotmeter::incValue(double keypos)
             m_dValue = m_dMaxValue;
         else
             m_dValue += m_dStep;
-
-        updateAll();
     }
 }
 
@@ -139,8 +123,6 @@ void ControlPotmeter::decValue(double keypos)
             m_dValue = m_dMinValue;
         else
             m_dValue -= m_dStep;
-
-        updateAll();
     }
 }
 

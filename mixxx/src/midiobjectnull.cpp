@@ -17,7 +17,7 @@
 
 #include "midiobjectnull.h"
 
-MidiObjectNull::MidiObjectNull(ConfigObject<ConfigValueMidi> *c, QApplication *a, ControlObject *control, QString device) : MidiObject(c, a, control, device)
+MidiObjectNull::MidiObjectNull(ConfigObject<ConfigValueMidi> *c, QString device) : MidiObject(c, device)
 {
 }
 

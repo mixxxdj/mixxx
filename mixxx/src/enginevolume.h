@@ -19,7 +19,7 @@
 
 #include "engineobject.h"
 
-class ControlEngine;
+class ControlLogpotmeter;
 class ConfigKey;
 
 class EngineVolume : public EngineObject {
@@ -30,7 +30,7 @@ public:
 
 private:
     CSAMPLE *buffer;
-    ControlEngine *potmeter;
+    ControlLogpotmeter *potmeter;
 };
 
 #endif

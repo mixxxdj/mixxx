@@ -19,7 +19,7 @@
 #include <qmessagebox.h>
 #include <qapplication.h>
 
-PlayerJack::PlayerJack(ConfigObject<ConfigValue> *config, ControlObject *pControl) : Player(config,pControl) //, mLibJack("libjack.so")
+PlayerJack::PlayerJack(ConfigObject<ConfigValue> *config) : Player(config) //, mLibJack("libjack.so")
 {
     ports = 0;
     m_bOpen = false;

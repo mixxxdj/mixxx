@@ -45,11 +45,8 @@ Reader::~Reader()
     if (running())
         stop();
 
-#ifndef __WIN__
-    // If these objects are deleted on Windows, the program often crashes.
     delete readerwave;
     delete readAhead;
-#endif
 }
 
 void Reader::addVisual(VisualChannel *pVisualChannel)
@@ -74,7 +71,7 @@ void Reader::requestNewTrack(TrackInfoObject *pTrack)
 void Reader::requestSeek(double new_playpos)
 {
 //    qDebug("req seek");
-    
+
     // Put seek request in queue
     seekqueuemutex.lock();
     seekqueue.append(new_playpos);
@@ -170,7 +167,7 @@ void Reader::newtrack()
     if (pTrack==0)
     {
         pause->unlock();
-	return;
+    return;
     }
 
     readerwave->newSource(pTrack);

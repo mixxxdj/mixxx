@@ -19,7 +19,8 @@
 #define VISUALBUFFERMARKS_H
 
 #include "visualbuffer.h"
-#include "controlobject.h"
+
+class ControlObjectThreadMain;
 
 /**
   *@author Tue & Ken Haste Andersen
@@ -38,7 +39,7 @@ protected slots:
 
 private:
     /** Pointer to cue point position */
-    ControlObject *m_pCuePoint;
+    ControlObjectThreadMain *m_pCuePoint;
     /** Index in visual buffer where cue point is set. Is -1 if the cue point
      *  is currently not visible */
     int m_iCuePosition;

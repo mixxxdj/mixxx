@@ -28,11 +28,12 @@ class ControlTTRotary : public ControlObject
     Q_OBJECT
 public:
     ControlTTRotary(ConfigKey key);
-public slots:
-    void setValueFromWidget(double);
-protected:
+    
+    double getValueFromWidget(double dValue);
+    double getValueToWidget(double dValue);
+    
+    protected:
     void setValueFromMidi(MidiCategory c, int v);
-    void updateWidget();
 };
 
 #endif

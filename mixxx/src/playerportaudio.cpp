@@ -17,7 +17,7 @@
 
 #include "playerportaudio.h"
 
-PlayerPortAudio::PlayerPortAudio(ConfigObject<ConfigValue> *config, ControlObject *pControl) : Player(config,pControl)
+PlayerPortAudio::PlayerPortAudio(ConfigObject<ConfigValue> *config) : Player(config)
 {
     m_devId = -1;
     m_iNumberOfBuffers = 2;
