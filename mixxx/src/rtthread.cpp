@@ -73,7 +73,7 @@ void rtThread()
     // Choose a priority just one step lower than the PortAudio thread
     schp.sched_priority = ((sched_get_priority_max(SCHED_RR) - 11)); //sched_get_priority_min(SCHED_RR)) / 2)-1;
     if (sched_setscheduler(0, SCHED_RR, &schp) != 0)
-    qWarning("Not possible to give audio producer thread high prioriy.");
+    qDebug("Not possible to give audio producer thread high prioriy.");
 */
 #endif
 #endif

@@ -23,40 +23,70 @@ EngineBufferScaleSRC::EngineBufferScaleSRC(ReaderExtractWave *wave) : EngineBuff
 {
     buffer_back = new CSAMPLE[MAX_BUFFER_LEN];
 
-    // Initialize converter using low quality sinc interpolation and two channels
+    // Initialize converter for three qualities and two channels
     int error;
-    converter = src_new(4, 2, &error);
+    converter2 = src_new(2, 2, &error);    
+    if (error!=0)
+        qDebug("EngineBufferScaleSRC: %s",src_strerror(error));
+    converter3 = src_new(3, 2, &error);    
+    if (error!=0)
+        qDebug("EngineBufferScaleSRC: %s",src_strerror(error));
+    converter4 = src_new(4, 2, &error);    
     if (error!=0)
         qDebug("EngineBufferScaleSRC: %s",src_strerror(error));
 
+    m_iQuality = 4;
+    converterActive = converter4;    
+        
     // Initialize data struct. Assume that the audio file is never ending
     data = new SRC_DATA;
     data->end_of_input = 0; // HACK
 
     backwards = false;
-    src_set_ratio(converter, rate);
+    src_set_ratio(converter2, rate);
+    src_set_ratio(converter3, rate);
+    src_set_ratio(converter4, rate);
 }
 
 EngineBufferScaleSRC::~EngineBufferScaleSRC()
 {
-    src_delete(converter);
+    src_delete(converter2);
+    src_delete(converter3);
+    src_delete(converter4);
     delete data;
     delete [] buffer_back;
 }
 
 void EngineBufferScaleSRC::setQuality(int q)
 {
-    if (q>4 || q<0)
+    if (q>4 || q<2)
+        m_iQuality = 4;
+    else
+        m_iQuality = q;
+    
+    switch (m_iQuality)
     {
-        qDebug("EngineBufferScaleSRC: Quality out of range");
-        q = 4;
-    }
+    case 2:
+        converterActive = converter2;
+    case 3:
+        converterActive = converter3;
+    case 4:
+        converterActive = converter4;
+    }    
+}
 
-    src_delete(converter);
-    int error;
-    converter = src_new(q, 2, &error);
-    if (error!=0)
-        qDebug("EngineBufferScaleSRC: %s",src_strerror(error));
+void EngineBufferScaleSRC::setFastMode(bool bMode)
+{
+    if (bMode)
+    {
+        qDebug("fast");
+        converterActive = converter4;
+    }
+    else
+    {
+        qDebug("slow");
+        setQuality(m_iQuality);
+    }
 }
 
 double EngineBufferScaleSRC::setRate(double _rate)
@@ -82,7 +112,9 @@ double EngineBufferScaleSRC::setRate(double _rate)
     else if (rate<1./12.)
         rate = 1./12.;
 
-    src_set_ratio(converter, rate);
+    src_set_ratio(converter2, rate);
+    src_set_ratio(converter3, rate);
+    src_set_ratio(converter4, rate);
 
     if (backwards)
         return -(1./rate);
@@ -122,7 +154,7 @@ CSAMPLE *EngineBufferScaleSRC::scale(double playpos, int buf_size)
     data->src_ratio = rate;
 
     // Perform conversion
-    int error = src_process(converter, data);
+    int error = src_process(converterActive, data);
     if (error!=0)
         qFatal("EngineBufferScaleSRC: %s",src_strerror(error));
 
@@ -137,7 +169,7 @@ CSAMPLE *EngineBufferScaleSRC::scale(double playpos, int buf_size)
         data->output_frames = (buf_size-data->output_frames_gen*2)/2;
 
         // Perform conversion
-        int error = src_process(converter, data);
+        int error = src_process(converterActive, data);
         if (error!=0)
             qDebug("EngineBufferScaleSRC: %s",src_strerror(error));
 

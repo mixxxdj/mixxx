@@ -31,6 +31,7 @@ public:
     EngineBufferScale(ReaderExtractWave *_wave);
     virtual ~EngineBufferScale();
     virtual void setQuality(int);
+    virtual void setFastMode(bool bMode);
     /** Set scaling rate */
     virtual double setRate(double _rate) = 0;
     /** Get new playpos after call to scale() */

@@ -62,11 +62,13 @@ EngineBuffer::EngineBuffer(PowerMate *_powermate, const char *_group)
     // Fwd button
     p = new ControlPushButton(ConfigKey(group, "fwd"));
     fwdButton = new ControlEngine(p);
+    connect(fwdButton, SIGNAL(valueChanged(double)), this, SLOT(slotControlFastFwdBack(double)));
     fwdButton->set(0);
 
     // Back button
     p = new ControlPushButton(ConfigKey(group, "back"));
     backButton = new ControlEngine(p);
+    connect(backButton, SIGNAL(valueChanged(double)), this, SLOT(slotControlFastFwdBack(double)));
     backButton->set(0);
 
     // Start button
@@ -572,6 +574,14 @@ void EngineBuffer::slotControlBeatSync(double)
 
     qDebug("buffer pos %f, file pos %f",bufferpos_play,filepos_play);
 */
+}
+
+void EngineBuffer::slotControlFastFwdBack(double v)
+{
+    if (v==0.)
+        scale->setFastMode(false);
+    else
+        scale->setFastMode(true);
 }
 
 CSAMPLE *EngineBuffer::process(const CSAMPLE *, const int buf_size)

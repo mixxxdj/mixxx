@@ -105,6 +105,7 @@ public slots:
     void slotControlRateTempUpSmall(double);
     void slotControlBeatSync(double);
     void slotSetBpm(double);
+    void slotControlFastFwdBack(double);
 
 private:
     /** Pointer to other EngineBuffer */

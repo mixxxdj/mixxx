@@ -418,13 +418,13 @@ int SoundSourceMp3::ParseHeader(TrackInfoObject *Track)
     mad_timer_t dur = mad_timer_zero;
     QFile file(location.latin1());
     if (!file.open(IO_ReadOnly)) {
-        qWarning("MAD: Open of %s failed.", location.latin1());
+        qDebug("MAD: Open of %s failed.", location.latin1());
         return ERR;
     }
     char *inputbuf = new char[READLENGTH];
     unsigned int tmp = file.readBlock(inputbuf, READLENGTH);
     if (tmp != READLENGTH) {
-        qWarning("MAD: ERR reading mp3-file: %s\nRead only %d bytes, but wanted %d bytes.",location.latin1() ,tmp,READLENGTH);
+        qDebug("MAD: ERR reading mp3-file: %s\nRead only %d bytes, but wanted %d bytes.",location.latin1() ,tmp,READLENGTH);
         return ERR;
     }
     mad_stream Stream;

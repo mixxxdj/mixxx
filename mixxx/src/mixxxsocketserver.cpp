@@ -18,7 +18,7 @@ MixxxSocketServer::MixxxSocketServer(Track *pTrack, QObject *parent, const char 
 
     if (!ok())
     {
-        qWarning("Failed to bind to port 33033");
+        qDebug("Failed to bind to port 33033");
     }
 }
 

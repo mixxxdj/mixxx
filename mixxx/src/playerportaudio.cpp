@@ -227,7 +227,7 @@ bool PlayerPortAudio::open()
 
     if( err != paNoError )
     {
-        qWarning("PortAudio: Open stream error: %s", Pa_GetErrorText(err));
+        qDebug("PortAudio: Open stream error: %s", Pa_GetErrorText(err));
         err = Pa_GetHostError();
 
         m_devId = -1;
@@ -244,7 +244,7 @@ bool PlayerPortAudio::open()
     // Start stream
     err = Pa_StartStream(m_pStream);
     if (err != paNoError)
-        qWarning("PortAudio: Start stream error: %s", Pa_GetErrorText(err));
+        qDebug("PortAudio: Start stream error: %s", Pa_GetErrorText(err));
 
     return true;
 }
@@ -263,13 +263,13 @@ void PlayerPortAudio::close()
     {
         PaError err = Pa_StopStream(m_pStream);
         if( err != paNoError )
-            qWarning("PortAudio: Stop stream error: %s,", Pa_GetErrorText(err));
+            qDebug("PortAudio: Stop stream error: %s,", Pa_GetErrorText(err));
     }
 
     // Close stream
     PaError err = Pa_CloseStream(m_pStream);
     if( err != paNoError )
-        qWarning("PortAudio: Close stream error: %s", Pa_GetErrorText(err));
+        qDebug("PortAudio: Close stream error: %s", Pa_GetErrorText(err));
     m_pStream = 0;
 }
 

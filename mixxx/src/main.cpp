@@ -3,7 +3,7 @@
                              -------------------
     begin                : Mon Feb 18 09:48:17 CET 2002
     copyright            : (C) 2002 by Tue and Ken Haste Andersen
-    email                : 
+    email                :
  ***************************************************************************/
 
 /***************************************************************************
@@ -32,8 +32,10 @@
 // #include "qsplashscreen.h"
 
 
+QApplication *a;
+
 void qInitImages_mixxx();
-    
+
 void MessageOutput( QtMsgType type, const char *msg )
 {
         switch ( type ) {
@@ -41,8 +43,9 @@ void MessageOutput( QtMsgType type, const char *msg )
                 fprintf( stderr, "Debug: %s\n", msg );
                 break;
             case QtWarningMsg:
-                fprintf( stderr, "Warning: %s\n", msg );
-                //QMessageBox::warning(0, "Mixxx", msg);
+                a->lock();
+                QMessageBox::warning(0, "Mixxx", msg);
+                a->unlock();
                 break;
             case QtFatalMsg:
                 fprintf( stderr, "Fatal: %s\n", msg );
@@ -63,7 +66,9 @@ void MessageToLogfile( QtMsgType type, const char *msg )
         break;
     case QtWarningMsg:
         Log << "Warning: " << msg << "\n";
-        break;
+        a->lock();
+        QMessageBox::warning(0, "Mixxx", msg);
+        a->unlock();
     case QtFatalMsg:
         fprintf( stderr, "Fatal: %s\n", msg );
         QMessageBox::warning(0, "Mixxx", msg);
@@ -87,7 +92,7 @@ int main(int argc, char *argv[])
     qInstallMsgHandler( MessageOutput );
 #endif
 
-    QApplication a(argc, argv);
+    a = new QApplication(argc, argv);
 
     // Show splash
 /*
@@ -96,13 +101,13 @@ int main(int argc, char *argv[])
     splash->show();
     splash->message("Loading...");
 */
-    
+
     QTranslator tor( 0 );
     // set the location where your .qm files are in load() below as the last parameter instead of "."
     // for development, use "/" to use the english original as
     // .qm files are stored in the base project directory.
     tor.load( QString("mixxx.") + QTextCodec::locale(), "." );
-    a.installTranslator( &tor );
+    a->installTranslator( &tor );
 
     // Check if one of the command line arguments is "--no-visuals"
 //    bool bVisuals = true;
@@ -115,13 +120,13 @@ int main(int argc, char *argv[])
     for (int i=0; i<argc; ++i)
         files += argv[i];
 
-    MixxxApp *mixxx=new MixxxApp(&a, files);
-    a.setMainWidget(mixxx);
+    MixxxApp *mixxx=new MixxxApp(a, files);
+    a->setMainWidget(mixxx);
 
     mixxx->show();
 //    splash->finish(mixxx);
 //    delete splash;
-    int result = a.exec();
+    int result = a->exec();
     delete mixxx;
     return result;
 }

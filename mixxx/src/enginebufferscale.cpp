@@ -37,6 +37,10 @@ void EngineBufferScale::setQuality(int)
 {
 }
 
+void EngineBufferScale::setFastMode(bool)
+{
+}
+
 double EngineBufferScale::getNewPlaypos()
 {
     return new_playpos;

@@ -54,7 +54,7 @@ MidiObjectCoreMidi::MidiObjectCoreMidi(ConfigObject<ConfigValueMidi> *c, QApplic
         devOpen(device);
     else
         if (devices.count()==0)
-            qWarning("CoreMidi: No MIDI devices available.");
+            qDebug("CoreMidi: No MIDI devices available.");
         else
             devOpen(devices.first());
 */

@@ -31,7 +31,7 @@ SoundSourceOggVorbis::SoundSourceOggVorbis(QString qFilename) : SoundSource(qFil
     vorbisfile =  fopen(qFilename.latin1(), "r");
     if (!vorbisfile)
     {
-        qWarning("oggvorbis: cannot open %s", qFilename.latin1());
+        qDebug("oggvorbis: cannot open %s", qFilename.latin1());
         return;
     }
 
@@ -142,7 +142,7 @@ int SoundSourceOggVorbis::ParseHeader( TrackInfoObject *Track )
 
     FILE* vorbisfile = fopen(filename, "r");
     if (!vorbisfile) {
-        qWarning("oggvorbis: file cannot be opened.\n");
+        qDebug("oggvorbis: file cannot be opened.\n");
         return ERR;
     }
 
@@ -152,7 +152,7 @@ int SoundSourceOggVorbis::ParseHeader( TrackInfoObject *Track )
     #endif
 
     if (ov_open(vorbisfile, &vf, NULL, 0) < 0) {
-        qWarning("oggvorbis: Input does not appear to be an Ogg bitstream.\n");
+        qDebug("oggvorbis: Input does not appear to be an Ogg bitstream.\n");
         return ERR;
     }
 

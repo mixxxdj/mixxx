@@ -81,7 +81,7 @@ void MidiObject::remove(ControlObject* c)
         no--;
     }
     else
-        qWarning("MidiObject: Control which is requested for removal does not exist.");
+        qDebug("MidiObject: Control which is requested for removal does not exist.");
 }
 
 QStringList *MidiObject::getDeviceList()
