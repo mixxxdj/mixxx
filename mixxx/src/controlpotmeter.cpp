@@ -20,48 +20,28 @@
 /* -------- ------------------------------------------------------
    Purpose: Creates a new potmeter
    Input:   n - name
-	    midino - number of the midi controller.
-	    master - pointer to the control to which the potmeter is
-	            attached. This control is acknowledged when the
-		    potmeter is changed.
-	    midicontroller - pointer to the midi controller.
+            midino - number of the midi controller.
+            master - pointer to the control to which the potmeter is
+                     attached. This control is acknowledged when the
+                     potmeter is changed.
+            midicontroller - pointer to the midi controller.
    -------- ------------------------------------------------------ */
-ControlPotmeter::ControlPotmeter() {}
-
-ControlPotmeter::ControlPotmeter(char* n, short int _midino, MidiObject *_midi,
-				 FLOAT_TYPE _minvalue, FLOAT_TYPE _maxvalue)
+ControlPotmeter::ControlPotmeter()
 {
-  name = n;
+}
+
+ControlPotmeter::ControlPotmeter(ConfigObject::ConfigKey *key, FLOAT_TYPE _minvalue, FLOAT_TYPE _maxvalue) : ControlObject(key)
+{
   position = middlePosition;
   minvalue = _minvalue;
   maxvalue = _maxvalue;
   valuerange = maxvalue-minvalue;
   value = minvalue + 0.5*(maxvalue-minvalue);
-  /*
-    Register the potmeter at the midi controller:
-  */
-  midi = _midi;
-  midino = _midino;
-  midi->addpotmeter(this);
 }
 
-ControlPotmeter::~ControlPotmeter() {
-  midi->removepotmeter(this);
+ControlPotmeter::~ControlPotmeter()
+{
 }
-
-char* ControlPotmeter::print() {
-  return name;
-}
-/* -------- ------------------------------------------------------
-   Purpose: Called from the midiObject when the potmeter has been 
-            moved. It send a signal to the gui, which then reemits
-	    a signal which is caught by slotSetPosition, where
-	    the processing of the event takes place. 
-   Input:   The (new) position.
-   -------- ------------------------------------------------------ */
-void ControlPotmeter::midiEvent(int newpos) {
-  emit recievedMidi(newpos);
-}  
 
 /* -------- ------------------------------------------------------
    Purpose: Set the position of the potmeter, and change the
@@ -70,7 +50,8 @@ void ControlPotmeter::midiEvent(int newpos) {
    Output:  The value is updated.
    -------- ------------------------------------------------------ */
 #define min(a,b)            (((a) < (b)) ? (a) : (b))
-void ControlPotmeter::slotSetPosition(int _newpos) {
+void ControlPotmeter::slotSetPosition(int _newpos)
+{
   char newpos =(char)_newpos;
 
   // Ensure that the position is within bounds:
@@ -97,9 +78,3 @@ FLOAT_TYPE ControlPotmeter::getValue()
 {
   return value;
 }
-
-char ControlPotmeter::getmidino()
-{
-    return midino;
-}
-

@@ -16,25 +16,26 @@
  ***************************************************************************/
 
 #include "enginemaster.h"
+#include "configobject.h"
 
 EngineMaster::EngineMaster(DlgMaster *master_dlg, DlgCrossfader *crossfader_dlg,
                            EngineBuffer *_buffer1, EngineBuffer *_buffer2,
                            EngineChannel *_channel1, EngineChannel *_channel2,
-                           int midiCrossfader, int midiVolume, MidiObject *midi)
+                           const char *group)
 {
     buffer1 = _buffer1;
     buffer2 = _buffer2;
     channel1 = _channel1;
     channel2 = _channel2;
 
-    crossfader = new ControlPotmeter("crossfader", midiCrossfader, midi, -1, 1);
+    ConfigObject::ConfigKey k(group, "crossfader");
+    crossfader = new ControlPotmeter(&k,-1.,1.);
     connect(crossfader_dlg->SliderCrossfader, SIGNAL(valueChanged(int)), crossfader, SLOT(slotSetPosition(int)));
-    connect(crossfader, SIGNAL(recievedMidi(int)), crossfader_dlg->SliderCrossfader, SLOT(setValue(int)));
+    connect(crossfader, SIGNAL(updateGUI(int)), crossfader_dlg->SliderCrossfader, SLOT(setValue(int)));
 
-    volume = new EnginePregain(midiVolume, midi);
-    connect(master_dlg->KnobVolume, SIGNAL(valueChanged(int)), volume->pregainpot, SLOT(slotSetPosition(int)));
-    connect(volume->pregainpot, SIGNAL(recievedMidi(int)), master_dlg->KnobVolume, SLOT(setValue(int)));
-    connect(volume->pregainpot, SIGNAL(valueChanged(FLOAT_TYPE)), volume, SLOT(slotUpdate(FLOAT_TYPE)));
+    volume = new EngineVolume(group);
+    connect(master_dlg->KnobVolume, SIGNAL(valueChanged(int)), volume->potmeter, SLOT(slotSetPosition(int)));
+    connect(volume->potmeter, SIGNAL(updateGUI(int)), master_dlg->KnobVolume, SLOT(setValue(int)));
 
     // Clipping:
     clipping = new EngineClipping(master_dlg->BulbClipping);

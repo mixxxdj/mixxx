@@ -1,4 +1,8 @@
 #include "midiobject.h"
+#include "configobject.h"
+#include "controlobject.h"
+#include "controlpushbutton.h"
+#include <algorithm>
 
 /* -------- ------------------------------------------------------
    Purpose: Initialize midi, and start parsing loop
@@ -6,11 +10,9 @@
             card and device.
    Output:  -
    -------- ------------------------------------------------------ */
-MidiObject::MidiObject() {
-  // Init buttons:
-  no_potmeters = 0;
-  no_buttons = 0;
-
+MidiObject::MidiObject()
+{
+  no = 0;
 
 #ifdef __PORTMIDI__
   // Open midi device for input
@@ -105,50 +107,30 @@ MidiObject::~MidiObject() {
 };
 
 /* -------- ------------------------------------------------------
-   Purpose: Add a button ready to recieve midi events.
-   Input:   a pointer to the button. The second argument
+   Purpose: Add a control ready to recieve midi events.
+   Input:   a pointer to the control. The second argument
             is the method in the control to call when the button
 	    has been moved.
    Output:  -
    -------- ------------------------------------------------------ */
-void MidiObject::addbutton(ControlPushButton* newbutton) {
-  buttons.push_back(newbutton);
-  no_buttons++;
-  qDebug("Registered midi button %s.", newbutton->print());
+void MidiObject::add(ControlObject* c)
+{
+    controlList.push_back(c);
+    no++;
+    qDebug("Registered midi control %s (%p).", c->print()->ascii(),c);
 }
 
-void MidiObject::removebutton(ControlPushButton* button) {
-	std::vector<ControlPushButton*>::iterator iter =
-		std::find(buttons.begin(), buttons.end(), button);
-  if (iter != buttons.end())
-    buttons.erase(iter);
-  else
-    qWarning("Pushbutton which is requested for removal in MidiObject does not exist.");
-}
-
-/* -------- ------------------------------------------------------
-   Purpose: Add a potmeter ready to recieve midi events.
-   Input:   a pointer to the potmeter. The second argument
-            is the method in the control to call when the potmeter
-	    has been moved.
-   Output:  -
-   -------- ------------------------------------------------------ */
-void MidiObject::addpotmeter(ControlPotmeter* newpotmeter) {
-  potmeters.push_back(newpotmeter);
-  no_potmeters++;
-  qDebug("Registered midi potmeter %s.", newpotmeter->print());;
-}
-
-void MidiObject::removepotmeter(ControlPotmeter* potmeter) {
-	std::vector<ControlPotmeter*>::iterator iter =
-		std::find(potmeters.begin(), potmeters.end(), potmeter);
-  if (iter != potmeters.end())
-    potmeters.erase(iter);
-  else
-    qWarning("Potmeter which is requested for removal in MidiObject does not exist.");
-  //for (int i=0; i<potmeters.size(); i++)
-  //  if (potmeters[i] == potmeter) potmeters.erase(i);
-  //qWarning("Remove of midi potmeters not yet implemented.");
+void MidiObject::remove(ControlObject* c)
+{
+    std::vector<ControlObject*>::iterator it =
+        std::find(controlList.begin(), controlList.end(), c);
+    if (it != controlList.end())
+    {
+        controlList.erase(it);
+        no--;
+    }
+    else
+        qWarning("Control which is requested for removal in MidiObject does not exist.");
 }
 
 /* -------- ------------------------------------------------------
@@ -166,6 +148,9 @@ void MidiObject::run()
 
     while(stop == 0)
 	{
+
+
+
 #ifdef __PORTMIDI__
         err = Pm_Poll(midi);
         if (err == TRUE)
@@ -198,10 +183,10 @@ void MidiObject::run()
         do
 		{
             int no = read(handle,&buffer[0],1);
-            qDebug("midi: %i",no);
+            //qDebug("midi: %i",(short int)buffer[0]);
             if (no != 1)
                 qWarning("Warning: midiobject recieved %i bytes.", no);
-        } while (buffer[0] != -80); // -79 for MixxxBox
+        } while (buffer[0] != -79); // -79 for MixxxBox
 #endif
         /*
         and then get the following 2 bytes:
@@ -237,32 +222,19 @@ void MidiObject::run()
         qDebug("Received midi message: %i %i %i",(int)channel,(int)midicontrol,(int)midivalue);
 
         // Check the potmeters:
-        for (int i=0; i<no_potmeters; i++)
-            if (potmeters[i]->midino == midicontrol)
+        for (int i=0; i<no; i++)
+        {
+            if (controlList[i]->cfgOption->val->midino == midicontrol)
             {
-                //potmeters[i]->slotSetPosition((int)midivalue);
-                potmeters[i]->midiEvent(127-(int)midivalue);
+                // Check for possible bit mask
+                int midimask = controlList[i]->cfgOption->val->midimask;
+                if (midimask > 0)
+                    controlList[i]->slotSetPosition((int)(midimask & midivalue));
+                else
+                    controlList[i]->slotSetPositionMidi((int)midivalue); // 127-midivalue
 
-                //qDebug("Changed potmeter %s to %i",potmeters[i]->print(),
-                //       (int)potmeters[i]->getValue());
                 break;
             }
-
-        // Check the buttons:
-        for (int i=0; i<no_buttons; i++)
-            if (buttons[i]->midino == midicontrol)
-            {
-                // Now that we've found a button on the right gate, we try to
-                // see if the button is really changed:
-                positionType state = down;
-                if ((buttons[i]->midimask & midivalue) == 0)
-                    state = up;
-                if (buttons[i]->position != state)
-                {
-                    buttons[i]->slotSetPosition(state);
-                    qDebug("Changed button %s to %s", buttons[i]->print(),buttons[i]->printValue());
-                    break;
-                }
-            }
+        }
     }
 };

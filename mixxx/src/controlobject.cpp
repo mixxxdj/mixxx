@@ -16,8 +16,40 @@
  ***************************************************************************/
 
 #include "controlobject.h"
+#include "midiobject.h"
 
-ControlObject::ControlObject(){
+// Static member variable definition
+ConfigObject *ControlObject::config = 0;
+MidiObject *ControlObject::midi = 0;
+
+ControlObject::ControlObject()
+{
 }
-ControlObject::~ControlObject(){
+
+ControlObject::ControlObject(ConfigObject::ConfigKey *key)
+{
+    // Retreive configuration option object
+    cfgOption = config->get(key);
+
+    // Register the control in the midi object:
+    midi->add(this);
+}
+
+ControlObject::~ControlObject()
+{
+    midi->remove(this);
+}
+
+QString *ControlObject::print()
+{
+    QString *s = new QString(cfgOption->key->group.ascii());
+    s->append(" ");
+    s->append(cfgOption->key->control.ascii());
+    return s;
+}
+
+void ControlObject::slotSetPositionMidi(int pos)
+{
+    slotSetPosition(pos);
+    emit updateGUI(pos);
 }

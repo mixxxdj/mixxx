@@ -1,9 +1,9 @@
 /***************************************************************************
-                          enginechannel.h  -  description
+                          configmapping.h  -  description
                              -------------------
-    begin                : Sun Apr 28 2002
-    copyright            : (C) 2002 by 
-    email                : 
+    begin                : Thu Jun 6 2002
+    copyright            : (C) 2002 by Tue & Ken Haste Andersen
+    email                : haste@diku.dk
  ***************************************************************************/
 
 /***************************************************************************
@@ -15,31 +15,30 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef ENGINECHANNEL_H
-#define ENGINECHANNEL_H
+#ifndef CONFIGMAPPING_H
+#define CONFIGMAPPING_H
 
-#include "engineobject.h"
-#include "engineclipping.h"
-#include "enginepregain.h"
-#include "enginevolume.h"
-#include "enginefilterblock.h"
-#include "dlgchannel.h"
-#include "midiobject.h"
+#include <qobject.h>
+#include <qstring.h>
+#include <qstringlist.h>
+
+#include "configobject.h"
 
 /**
-  *@author 
+  * Maps active ConfigFile object to MixxxApp application
+  *@author Tue & Ken Haste Andersen
   */
 
-class EngineChannel : public EngineObject  {
-public:
-	EngineChannel(DlgChannel *dlg, const char *group);
-	~EngineChannel();
-    CSAMPLE *process(const CSAMPLE *, const int);
+class ConfigMapping : public QObject  {
+public: 
+	ConfigMapping();
+	~ConfigMapping();
+    QStringList *getConfigurations();
+    ConfigObject *setConfiguration(const char *str);
 private:
-    EnginePregain* pregain;
-    EngineFilterBlock* filter;
-    EngineClipping* clipping;
-    EngineVolume* volume;
+    /** List of configuration files */
+    QStringList list;
+
 };
 
 #endif

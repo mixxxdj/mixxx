@@ -20,21 +20,17 @@
 #include <qthread.h>
 #include <qobject.h>
 #include "defs.h"
-#include "controlpushbutton.h"
-#include "controlpotmeter.h"
 
-class ControlPotmeter;
-class ControlPushButton;
+class ControlObject;
 
 class MidiObject : public QThread  {
+//  Q_OBJECT
 public:
   MidiObject();
   ~MidiObject();
-  void addbutton(ControlPushButton* newbutton);
-  void removebutton(ControlPushButton* button);
-  void addpotmeter(ControlPotmeter* newpotmeter);
-  void removepotmeter(ControlPotmeter* potmeter);
- protected:
+  void add(ControlObject* c);
+  void remove(ControlObject* c);
+protected:
 #ifdef __PORTMIDI__
   PmEvent buffer[2];
   PmStream *midi;
@@ -48,9 +44,9 @@ public:
   char *buffer;
 #endif
   void run();
-  int fd, count, size, no_potmeters, no_buttons;
-  std::vector<ControlPushButton*> buttons;
-  std::vector<ControlPotmeter*> potmeters;
+
+  int fd, count, size, no;
+  std::vector<ControlObject*> controlList;
 };
 
 #endif

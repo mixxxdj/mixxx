@@ -30,6 +30,7 @@
 #include "fileopen.xpm"
 #include "filenew.xpm"
 #include "controlpushbutton.h"
+#include "configmapping.h"
 
 #ifdef __ALSA__
   #include "playeralsa.h"
@@ -51,6 +52,14 @@ MixxxApp::MixxxApp()
   initToolBar();
   //initStatusBar();
 
+  // Initialize first available configuration
+  ConfigMapping *configMap = new ConfigMapping();
+  QStringList *list = configMap->getConfigurations();
+  QStringList::Iterator it = list->begin();
+  //for (; it != list->end(); ++it)
+  //    qDebug("%s",(*it).ascii());
+  ConfigObject *config = configMap->setConfiguration((*it).ascii());
+
   initDoc();
   initView();
   qDebug("Init playlist");
@@ -65,19 +74,22 @@ MixxxApp::MixxxApp()
   qDebug("Init midi...");
   midi = new MidiObject();
 
+  // Instantiate a ControlObject, and set the static midi and config pointer
+  control = new ControlObject();
+  control->midi = midi;
+  control->config = config;
+
   qDebug("Init buffer 1...");
-  buffer1 = new EngineBuffer(view->playcontrol1, 0, ADC3, PORT_D, midi,
-                             view->playlist->ListPlaylist->firstChild()->text(1));
+  buffer1 = new EngineBuffer(view->playcontrol1, "[Channel1]", view->playlist->ListPlaylist->firstChild()->text(1));
 
   qDebug("Init buffer 2...");
-  buffer2 = new EngineBuffer(view->playcontrol2, 0, 14, 15, midi,
-                             view->playlist->ListPlaylist->firstChild()->nextSibling()->text(1));
-
-  channel1 = new EngineChannel(view->channel1, midi, ADC7, ADC4, ADC5, ADC6, 0);
-  channel2 = new EngineChannel(view->channel2, midi, 0, 0, 0, 0, 0);
+  buffer2 = new EngineBuffer(view->playcontrol2, "[Channel2]", view->playlist->ListPlaylist->firstChild()->nextSibling()->text(1));
+  qDebug("...");
+  channel1 = new EngineChannel(view->channel1, "[Channel1]");
+  channel2 = new EngineChannel(view->channel2, "[Channel2]");
 
   qDebug("Init master...");
-  master = new EngineMaster(view->master, view->crossfader, buffer1, buffer2, channel1, channel2, 13, 10, midi);
+  master = new EngineMaster(view->master, view->crossfader, buffer1, buffer2, channel1, channel2, "[Master]");
 
   /** Connect signals from option menu, selecting processing of left and right channel, to
       EngineMaster */

@@ -17,33 +17,37 @@
 
 #include "enginebuffer.h"
 #include <qlabel.h>
+#include "configobject.h"
 
-EngineBuffer::EngineBuffer(DlgPlaycontrol *_playcontrol, int midiPlaybutton, int midiRateslider,
-                           int midiWheel, MidiObject *midi, const char *filename)
+EngineBuffer::EngineBuffer(DlgPlaycontrol *_playcontrol, const char *group, const char *filename)
 {
   playcontrol = _playcontrol;
 
-  PlayButton = new ControlPushButton("playbutton", simulated_latching, PORT_B, midiPlaybutton, midi);
+  ConfigObject::ConfigKey k1(group, "play");
+  PlayButton = new ControlPushButton(&k1, simulated_latching);
   PlayButton->setValue(on);
   connect(playcontrol->PushButtonPlay, SIGNAL(pressed()), PlayButton, SLOT(pressed()));
   connect(playcontrol->PushButtonPlay, SIGNAL(released()), PlayButton, SLOT(released()));
   connect(PlayButton, SIGNAL(valueChanged(valueType)), this, SLOT(slotUpdatePlay(valueType)));
 
-  rateSlider = new ControlPotmeter("rateslider", midiRateslider, midi, 0.9,1.1);
+  ConfigObject::ConfigKey k2(group, "rate");
+  rateSlider = new ControlPotmeter(&k2, 0.9, 1.1);
+
   rateSlider->slotSetPosition(64);
   rate.write(rateSlider->getValue());
   connect(playcontrol->SliderRate, SIGNAL(valueChanged(int)), rateSlider, SLOT(slotSetPosition(int)));
   connect(rateSlider, SIGNAL(valueChanged(FLOAT_TYPE)), this, SLOT(slotUpdateRate(FLOAT_TYPE)));
-  connect(rateSlider, SIGNAL(recievedMidi(int)), playcontrol->SliderRate, SLOT(setValue(int)));
+  connect(rateSlider, SIGNAL(updateGUI(int)), playcontrol->SliderRate, SLOT(setValue(int)));
 
-  wheel = new ControlRotary("wheel", midiWheel, midi);
+  ConfigObject::ConfigKey k3(group, "wheel");
+  wheel = new ControlRotary(&k3);
 
   //connect(playcontrol->SliderPlaycontrol, SIGNAL(valueChanged(int)), wheel, SLOT(slotSetPosition(int)));
   connect(playcontrol->SliderPlaycontrol, SIGNAL(valueChanged(int)), this, SLOT(slotSetWheel(int)));
   connect(playcontrol->SliderPlaycontrol, SIGNAL(sliderReleased()), this, SLOT(slotCenterWheel()));
 
   connect(wheel, SIGNAL(valueChanged(FLOAT_TYPE)), this, SLOT(slotUpdateRate(FLOAT_TYPE)));
-  connect(wheel, SIGNAL(recievedMidi(int)), playcontrol->SliderPlaycontrol, SLOT(setValue(int)));
+  connect(wheel, SIGNAL(updateGUI(int)), playcontrol->SliderPlaycontrol, SLOT(setValue(int)));
 
   connect(this, SIGNAL(position(int)), playcontrol->LCDposition, SLOT(display(int)));
 

@@ -19,16 +19,32 @@
 #define CONTROLOBJECT_H
 
 #include <qobject.h>
+#include "configobject.h"
+//#include "midiobject.h"
+class MidiObject;
 
 /**
   *@author Tue and Ken Haste Andersen
   */
 
-class ControlObject : public QObject  {
+class ControlObject : public QObject
+{
   Q_OBJECT
 public:
   ControlObject();
+  ControlObject(ConfigObject::ConfigKey *key);
   ~ControlObject();
+  QString *print();
+
+  ConfigObject::ConfigOption *cfgOption;
+
+  static ConfigObject *config;
+  static MidiObject *midi;
+public slots:
+  void slotSetPosition(int) {};
+  void slotSetPositionMidi(int);
+signals:
+  void updateGUI(int);
 };
 
 #endif

@@ -34,7 +34,7 @@
 class EngineFilterBlock : public EngineObject  {
 	Q_OBJECT
 public:
-	EngineFilterBlock(QKnob *, int, QKnob *, int, QKnob *, int, MidiObject *midi);
+	EngineFilterBlock(QKnob *, QKnob *, QKnob *, const char *group);
 	~EngineFilterBlock();
 	CSAMPLE *process(const CSAMPLE *source, const int buf_size);
 public slots:

@@ -22,7 +22,7 @@
 #include "enginebuffer.h"
 #include "dlgmaster.h"
 #include "dlgcrossfader.h"
-#include "enginepregain.h"
+#include "enginevolume.h"
 #include "enginechannel.h"
 #include "engineclipping.h"
 #include "controlpotmeter.h"
@@ -36,7 +36,7 @@ class EngineMaster : public EngineObject  {
 private:
     EngineBuffer *buffer1, *buffer2;
     EngineChannel *channel1, *channel2;
-    EnginePregain *volume;
+    EngineVolume *volume;
     ControlPotmeter *crossfader;
     EngineClipping *clipping;
     CSAMPLE *out, *out2;
@@ -45,7 +45,7 @@ public:
     EngineMaster(DlgMaster *master_dlg, DlgCrossfader *crossfader_dlg,
                  EngineBuffer *buffer1, EngineBuffer *buffer2,
                  EngineChannel *, EngineChannel *,
-                 int midiCrossfader, int midiVolume, MidiObject *midi);
+                 const char *group);
     ~EngineMaster();
     CSAMPLE *process(const CSAMPLE *, const int);
 public slots:

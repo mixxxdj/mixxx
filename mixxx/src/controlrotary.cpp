@@ -8,14 +8,8 @@ const char ControlRotary::graycodetable[256] =  {128, 56, 40, 55, 24, 128, 39, 5
 	    midino - number of the midi controller.
 	    midicontroller - pointer to the midi controller.
    -------- ------------------------------------------------------ */
-ControlRotary::ControlRotary(char* n, int _midino,  MidiObject* _midi)
+ControlRotary::ControlRotary(ConfigObject::ConfigKey *key) : ControlPotmeter(key,0.,1.) // ????
 {
-  name = n;
-
-  midi = _midi;
-  midino = _midino;
-  midi->addpotmeter(this);
-
   direction = 1; // arbitrary
   ftime(&oldtime);
   value = 0;
@@ -28,11 +22,13 @@ ControlRotary::ControlRotary(char* n, int _midino,  MidiObject* _midi)
 	    real position from the gray code.
    Input:   the gray code.
    -------- ------------------------------------------------------ */
-void ControlRotary::midiEvent(int _newpos)
+void ControlRotary::slotSetPositionMidi(int _newpos)
 {
   // get position from gray code
   int newpos = graycodetable[(int)(unsigned char)_newpos]; 
-  emit recievedMidi(newpos);
+
+    slotSetPosition(newpos);
+    emit updateGUI(newpos);
 }
 
 void ControlRotary::slotSetPosition(int newpos)
