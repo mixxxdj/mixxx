@@ -1,7 +1,7 @@
 /***************************************************************************
-                          enginefilterrbj.h  -  description
+                          enginefilterlbh.h  -  description
                              -------------------
-    begin                : Wed Apr 3 2002
+    begin                : Thu Apr 4 2002
     copyright            : (C) 2002 by Tue and Ken Haste Andersen
     email                : 
  ***************************************************************************/
@@ -15,44 +15,27 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef ENGINEFILTERRBJ_H
-#define ENGINEFILTERRBJ_H
+#ifndef ENGINEFILTERLBH_H
+#define ENGINEFILTERLBH_H
 
 #include "engineobject.h"
-#include "midiobject.h"
-#include "controlpotmeter.h"
-#include "controlpushbutton.h"
-
-const CSAMPLE frequency = 1000.;
-const CSAMPLE bandwidth = 10.;
+#include "engineiirfilter.h"
+#include "mixxxview.h"
 
 /**
+  * Parallel processing of LP, BP and HP filters, and final mixing
+  *
   *@author Tue and Ken Haste Andersen
   */
 
-class EngineFilterRBJ : public EngineObject {
+class EngineFilterLBH : public EngineObject  {
 	Q_OBJECT
 public:
-	EngineFilterRBJ(int potmeter_midi, int button_midi,
-				 	int button_bit, MidiObject *midi);
-	~EngineFilterRBJ();
+	EngineFilterLBH(MixxxView *view, MidiObject *midi);
+	~EngineFilterLBH();
 	CSAMPLE *process(CSAMPLE *source, int buf_size);
-
-	ControlPotmeter* filterpot;
-public slots:
-	void slotUpdate();
 private:
-	void updateFilter();
-
-	CSAMPLE omega, sn, cs, alpha;
-    CSAMPLE b0, b1, b2, a0, a1, a2;
-
-	/** Block boundary values */
-    CSAMPLE s0, s1, s2, d0, d1, d2;
-
-	/** Normalized filter gain. Controled via signals/slots */
-	CSAMPLE gain;
-
+	EngineIIRfilter *low, *band, *high;
 	CSAMPLE *buffer;
 };
 

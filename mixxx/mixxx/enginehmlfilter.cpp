@@ -20,7 +20,7 @@ EngineHMLfilter::~EngineHMLfilter() {
   delete lowfilterpot;
 }
 
-void EngineHMLfilter::process(CSAMPLE *source, CSAMPLE *destination, int buf_size) {
+CSAMPLE *EngineHMLfilter::process(CSAMPLE *source, int buf_size) {
   for (int i=0; i<buf_size; i++) {
     /*
       highpass filter:
@@ -58,8 +58,9 @@ void EngineHMLfilter::process(CSAMPLE *source, CSAMPLE *destination, int buf_siz
       Mix the filters together:
     */
     //destination[i] = (highgain-midgain)*yv_high[8] + (lowgain-midgain)*yv_low[8];
-    destination[i] += highgain*yv_high[8] + lowgain*yv_low[8];
+    //destination[i] += highgain*yv_high[8] + lowgain*yv_low[8];
   }
+  return 0; //****************
 }
 
 void EngineHMLfilter::slotUpdate() {

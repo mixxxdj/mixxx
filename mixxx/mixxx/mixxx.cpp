@@ -32,7 +32,7 @@
 #include "playeralsa.h"
 #include "playerportaudio.h"
 #include "enginepregain.h"
-#include "enginefilterrbj.h"
+#include "enginefilterlbh.h"
 
 MixxxApp::MixxxApp()
 {
@@ -60,10 +60,12 @@ MixxxApp::MixxxApp()
   midi = new MidiObject();
 
   // Initialize engines:
+
   EnginePregain *pregain = new EnginePregain(ADC7, midi);
   connect(view->channel->DialGain, SIGNAL(valueChanged(int)), pregain->pregainpot, SLOT(slotSetPosition(int)));
   connect(pregain->pregainpot, SIGNAL(recievedMidi(int)), view->channel->DialGain, SLOT(setValue(int)));
   engines.push_back(pregain);
+
 
   //EngineHMLfilter *filters = new EngineHMLfilter(ADC4, ADC5, ADC6, midi, bessel_highpass_15000, 
   //						 bessel_lowpass_60);
@@ -76,9 +78,10 @@ MixxxApp::MixxxApp()
   engines.push_back(lowpass);
   */
 
-  EngineIIRfilter *lowpass = new EngineIIRfilter(ADC4,PORT_B, 4, midi,bessel_lowpass);
-  connect(view->channel->DialFilterLow,  SIGNAL(valueChanged(int)), lowpass->filterpot,  SLOT(slotSetPosition(int)));
-  engines.push_back(lowpass);
+
+  EngineFilterLBH *lbh_filter = new EngineFilterLBH(view,midi);
+  engines.push_back(lbh_filter);
+
 
   // Initialize player with a desired buffer size
   qDebug("Init player...");

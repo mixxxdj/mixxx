@@ -17,6 +17,9 @@ const int READCHUNKSIZE = 1500000; // size of the chunk that's read in every rea
 const int READBUFFERSIZE = 2*READCHUNKSIZE; // size of read buffer.
 const int NO_CHANNELS  = 2;     // 2 for stereo
 
+/** Maximum buffer length to each EObject::process call */
+const int MAX_BUFFER_LEN = 10000;
+
 // Various fixed constants
 static int NYQUIST    = SRATE/2;
 static CSAMPLE norm   = (2*acos(-1.0))/SRATE;

@@ -58,6 +58,8 @@ EngineBuffer::EngineBuffer(DlgPlaycontrol *playcontrol, DlgChannel *channel, Mid
   // Open the track:
   file = 0;
   newtrack(filename);
+
+  buffer = new CSAMPLE[MAX_BUFFER_LEN];
 }
 
 EngineBuffer::~EngineBuffer(){
@@ -77,6 +79,7 @@ EngineBuffer::~EngineBuffer(){
   delete PlayButton;
   delete wheel;
   delete rateSlider;
+  delete buffer;
 }
 
 void EngineBuffer::newtrack(const char* filename) {
@@ -322,7 +325,7 @@ FLOAT EngineBuffer::max(const FLOAT a, const FLOAT b) {
     return b;
 }
 
-void EngineBuffer::process(CSAMPLE *, CSAMPLE *buffer, int buf_size) {
+CSAMPLE *EngineBuffer::process(CSAMPLE *, int buf_size) {
   long prev;
   for (int i=0; i<buf_size; i+=2) {
     prev = (long)floor(play_pos)%read_buffer_size;
@@ -341,6 +344,8 @@ void EngineBuffer::process(CSAMPLE *, CSAMPLE *buffer, int buf_size) {
   wheel->updatecounter(buf_size);
   // Write position to the gui: 
   writepos();
+
+  return buffer;
 }
 
 

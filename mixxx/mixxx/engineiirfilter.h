@@ -16,12 +16,13 @@ class EngineIIRfilter : public EngineObject {
   static const int NZEROS = 8;
   static const int NPOLES = 8;
   double xv[NZEROS+1], yv[NPOLES+1];
+  CSAMPLE *buffer;
  public:
   ControlLogpotmeter* filterpot;
   FLOAT gain;
   EngineIIRfilter(int, int , int , MidiObject*, const double *);
   ~EngineIIRfilter();
-  void process(CSAMPLE*, CSAMPLE*, int);
+  CSAMPLE *process(CSAMPLE*, int);
  public slots:
   void slotUpdate();
 };

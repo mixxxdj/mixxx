@@ -1,4 +1,4 @@
-# KDE tags expanded automatically by am_edit - $Revision: 33 $ 
+# KDE tags expanded automatically by am_edit - $Revision: 37 $ 
 # Makefile.in generated automatically by automake 1.4-p5 from Makefile.am
 
 # Copyright (C) 1994, 1995-8, 1999, 2001 Free Software Foundation, Inc.
@@ -239,7 +239,7 @@ configure configure.in
 
 #>- DISTFILES = $(DIST_COMMON) $(SOURCES) $(HEADERS) $(TEXINFOS) $(EXTRA_DIST)
 #>+ 4
-KDE_DIST=test.mp3 Makefile.dist mixxx.kdevses restart 
+KDE_DIST=Makefile.dist mixxx.kdevses 
 
 DISTFILES= $(DIST_COMMON) $(SOURCES) $(HEADERS) $(TEXINFOS) $(EXTRA_DIST) $(KDE_DIST)
 
