@@ -69,8 +69,8 @@ macx {
 }
 
 # Profiling
-#QMAKE_CXXFLAGS_DEBUG += -pg
-#QMAKE_LFLAGS_DEBUG += -pg
+QMAKE_CXXFLAGS_DEBUG += -pg
+QMAKE_LFLAGS_DEBUG += -pg
 
 DEFINES += CONFIG_PATH=$$CONFIG_PATH
 FORMS	= dlgchanneldlg.ui dlgplaycontroldlg.ui dlgplaylistdlg.ui dlgmasterdlg.ui dlgcrossfaderdlg.ui dlgsplitdlg.ui dlgpreferencesdlg.ui dlgflangerdlg.ui

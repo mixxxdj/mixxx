@@ -52,7 +52,7 @@ unsigned SoundSourceWave::read(unsigned long size, const SAMPLE* destination)
         return sf_read_short(fh,(SAMPLE *)destination, size/channels)*channels;
     else
     {
-        for (int i=0; i<size; i++)
+        for (unsigned int i=0; i<size; i++)
             ((SAMPLE *)destination)[i] = 0;
         return size;
     }
@@ -61,7 +61,7 @@ unsigned SoundSourceWave::read(unsigned long size, const SAMPLE* destination)
 /*
   Return the length of the file in samples.
 */
-long unsigned SoundSourceWave::length()
+inline long unsigned SoundSourceWave::length()
 {
     return filelength;
 }

@@ -117,7 +117,7 @@ long SoundSourceMp3::seek(long filepos)
 /*    FILE *file;
   Return the length of the file in samples.
 */
-long unsigned SoundSourceMp3::length()
+inline long unsigned SoundSourceMp3::length()
 {
     return (long unsigned) 2*mad_timer_count(filelength, MAD_UNITS_44100_HZ);
 }
