@@ -43,11 +43,11 @@ ReaderExtractBeat::ReaderExtractBeat(ReaderExtract *input, int frameSize, int fr
     beatIntVector = new CSAMPLE[histSize];
 
     // Initialize beat and bpm buffer
-    beatBuffer = new bool[getBufferSize()];
+    beatBuffer = new float[getBufferSize()];
     bpmBuffer = new CSAMPLE[getBufferSize()];
     for (i=0; i<getBufferSize(); i++)
     {
-        beatBuffer[i] = false;
+        beatBuffer[i] = 0;
         bpmBuffer[i] = -1.;
     }
     beatBufferLastIdx = 0;
@@ -100,7 +100,7 @@ void ReaderExtractBeat::softreset()
         peakIt[i] = 0;
     for (i=0; i<getBufferSize(); i++)
     {
-        beatBuffer[i] = false;
+        beatBuffer[i] = 0;
         bpmBuffer[i] = -1.;
     }
 }
@@ -165,7 +165,7 @@ void *ReaderExtractBeat::processChunk(const int _idx, const int start_idx, const
     int i;
     //qDebug("Deleting beat marks %i-%i (bufsize: %i)",frameFrom,frameTo+frameAdd,getBufferSize());
     for (i=frameFrom; i<=frameTo+frameAdd; i++)
-        beatBuffer[i%frameNo] = false;
+        beatBuffer[i%frameNo] = 0;
 
     // Delete peaks in range covered by chunk idx, from the peak list
     Tpeaks::iterator it = peakIt[idx];
@@ -268,7 +268,7 @@ void *ReaderExtractBeat::processChunk(const int _idx, const int start_idx, const
     // Beat marks
     for (int i=0; i<getBufferSize(); i++)
     {
-        if (beatBuffer[i])
+        if (beatBuffer[i]==1)
             py[i] = hfc[i];
         else
             py[i] = 0;
@@ -437,19 +437,19 @@ void *ReaderExtractBeat::processChunk(const int _idx, const int start_idx, const
                         beatIntMaxIdx = i;
                 
                 // Set beat point if no greater value is found in beatIntVector before the index beatIntMaxIdx
-                bool beat = true;
+                bool beat = 1;
                 if (beatIntMaxIdx>-1)
                 {
                     for (int i=0; i<max(0,histMaxIdx-RANGE); i++)
                     {
                         if (beatIntVector[i]>beatIntVector[beatIntMaxIdx])
                         {
-                            beat = false;
+                            beat = 0;
                             break;
                         }
                     }
                                                                      
-                    if (beat)
+                    if (beat==1)
                     {
                         // Mark beat if long enough distance to last beat
                         CSAMPLE histint = (((CSAMPLE)histMaxIdx*histInterval)+histMinInterval);
@@ -529,7 +529,7 @@ void *ReaderExtractBeat::processChunk(const int _idx, const int start_idx, const
         if (histint<dist)
         {
             int i = (int)((last+histint)*getRate())%frameNo;
-            beatBuffer[i] = true;
+            beatBuffer[i] = 1;
             beatBufferLastIdx = i;
             qDebug("Force beat mark at no peak, dist %f",histint);
         }

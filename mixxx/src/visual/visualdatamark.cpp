@@ -48,7 +48,7 @@ void VisualDataMark::draw()
     float angle=0;
     if(angle!=0)
         glRotatef(angle,rx,ry,rz);
-    float yscale = height/2.0f;
+    float yscale = 100000.f;
 
     //std::cout << "len1 " << bufferInfo.len1 << ", len2 " << bufferInfo.len2  << "\n";
     //qDebug("LENGTH: %i",bufferInfo.len1+bufferInfo.len2);
