@@ -45,7 +45,7 @@
    <Pressed>rateup-on-Ch1.png</Pressed>
    <Unpressed>rateup-off-Ch1.png</Unpressed>
   </State>
-  <Pos>51,338</Pos>
+  <Pos>51,328</Pos>
   <Connection>
    <ConfigKey>[Channel1],rate</ConfigKey>
    <EmitOnDownPress>true</EmitOnDownPress>
@@ -69,7 +69,7 @@
    <Pressed>rateup-on-Ch2.png</Pressed>
    <Unpressed>rateup-off-Ch2.png</Unpressed>
   </State>
-  <Pos>938,337</Pos>
+  <Pos>938,328</Pos>
   <Connection>
    <ConfigKey>[Channel2],rate</ConfigKey>
    <EmitOnDownPress>true</EmitOnDownPress>
@@ -93,7 +93,7 @@
    <Pressed>ratedown-on-Ch1.png</Pressed>
    <Unpressed>ratedown-off-Ch1.png</Unpressed>
   </State>
-  <Pos>51,370</Pos>
+  <Pos>51,359</Pos>
   <Connection>
    <ConfigKey>[Channel1],rate</ConfigKey>
    <EmitOnDownPress>true</EmitOnDownPress>
@@ -117,7 +117,7 @@
    <Pressed>ratedown-on-Ch2.png</Pressed>
    <Unpressed>ratedown-off-Ch2.png</Unpressed>
   </State>
-  <Pos>938,369</Pos>
+  <Pos>938,359</Pos>
   <Connection>
    <ConfigKey>[Channel2],rate</ConfigKey>
    <EmitOnDownPress>true</EmitOnDownPress>
@@ -133,6 +133,86 @@
    <Inc>-0.001</Inc>
   </Connection>
  </PushButtonInc>
+
+ <PushButton>
+  <NumberStates>1</NumberStates>
+  <State>
+   <Number>0</Number>
+   <Pressed>rateup-on-Ch1.png</Pressed>
+   <Unpressed>rateup-off-Ch1.png</Unpressed>
+  </State>
+  <Pos>96,328</Pos>
+  <Connection>
+   <ConfigKey>[Channel1],rate_temp_up</ConfigKey>
+   <EmitOnDownPress>true</EmitOnDownPress>
+   <ButtonState>LeftButton</ButtonState>
+  </Connection>
+  <Connection>
+   <ConfigKey>[Channel1],rate_temp_up</ConfigKey>
+   <EmitOnDownPress>false</EmitOnDownPress>
+   <ButtonState>LeftButton</ButtonState>
+  </Connection>
+ </PushButton>
+
+ <PushButton>
+  <NumberStates>1</NumberStates>
+  <State>
+   <Number>0</Number>
+   <Pressed>ratedown-on-Ch1.png</Pressed>
+   <Unpressed>ratedown-off-Ch1.png</Unpressed>
+  </State>
+  <Pos>96,359</Pos>
+  <Connection>
+   <ConfigKey>[Channel1],rate_temp_down</ConfigKey>
+   <EmitOnDownPress>true</EmitOnDownPress>
+   <ButtonState>LeftButton</ButtonState>
+  </Connection>
+  <Connection>
+   <ConfigKey>[Channel1],rate_temp_down</ConfigKey>
+   <EmitOnDownPress>false</EmitOnDownPress>
+   <ButtonState>LeftButton</ButtonState>
+  </Connection>
+ </PushButton>
+
+ <PushButton>
+  <NumberStates>1</NumberStates>
+  <State>
+   <Number>0</Number>
+   <Pressed>rateup-on-Ch2.png</Pressed>
+   <Unpressed>rateup-off-Ch2.png</Unpressed>
+  </State>
+  <Pos>983,328</Pos>
+  <Connection>
+   <ConfigKey>[Channel2],rate_temp_up</ConfigKey>
+   <EmitOnDownPress>true</EmitOnDownPress>
+   <ButtonState>LeftButton</ButtonState>
+  </Connection>
+  <Connection>
+   <ConfigKey>[Channel2],rate_temp_up</ConfigKey>
+   <EmitOnDownPress>false</EmitOnDownPress>
+   <ButtonState>LeftButton</ButtonState>
+  </Connection>
+ </PushButton>
+
+ <PushButton>
+  <NumberStates>1</NumberStates>
+  <State>
+   <Number>0</Number>
+   <Pressed>ratedown-on-Ch2.png</Pressed>
+   <Unpressed>ratedown-off-Ch2.png</Unpressed>
+  </State>
+  <Pos>983,359</Pos>
+  <Connection>
+   <ConfigKey>[Channel2],rate_temp_down</ConfigKey>
+   <EmitOnDownPress>true</EmitOnDownPress>
+   <ButtonState>LeftButton</ButtonState>
+  </Connection>
+  <Connection>
+   <ConfigKey>[Channel2],rate_temp_down</ConfigKey>
+   <EmitOnDownPress>false</EmitOnDownPress>
+   <ButtonState>LeftButton</ButtonState>
+  </Connection>
+ </PushButton>
 
  <SliderComposed>
   <Handle>volhandle-on-Ch1.png</Handle>

@@ -92,6 +92,14 @@ EngineBuffer::EngineBuffer(PowerMate *_powermate, const char *_group)
     ControlPotmeter *p2 = new ControlPotmeter(ConfigKey(group, "rate"), 0.9f, 1.1f);
     rateSlider = new ControlEngine(p2);
 
+    // Temporary rate-change buttons
+    p = new ControlPushButton(ConfigKey(group,"rate_temp_down"));
+    buttonRateTempDown = new ControlEngine(p);
+    connect(buttonRateTempDown, SIGNAL(valueChanged(double)), this, SLOT(slotControlRateTempDown(double)));
+    p = new ControlPushButton(ConfigKey(group,"rate_temp_up"));
+    buttonRateTempUp = new ControlEngine(p);
+    connect(buttonRateTempUp, SIGNAL(valueChanged(double)), this, SLOT(slotControlRateTempUp(double)));
+    
     // Wheel to control playback position/speed
     ControlTTRotary *p3 = new ControlTTRotary(ConfigKey(group, "wheel"));
     wheel = new ControlEngine(p3);
@@ -149,6 +157,7 @@ EngineBuffer::EngineBuffer(PowerMate *_powermate, const char *_group)
     scale = new EngineBufferScaleLinear(reader->getWavePtr());
     
     oldEvent = 0.;
+    temp_rate = 0.;
 
     // Used in update of playpos slider
     m_iSamplesCalculated = 0;
@@ -294,6 +303,24 @@ void EngineBuffer::bpmChange(double bpm)
 }
 */
 
+void EngineBuffer::slotControlRateTempDown(double)
+{
+    // Adjusts temp rate down if button pressed, otherwise set to 0.
+    if (buttonRateTempDown->get()==1.)
+        temp_rate = -0.1;
+    else
+        temp_rate = 0.;
+}
+
+void EngineBuffer::slotControlRateTempUp(double)
+{
+    // Adjusts temp rate up if button pressed, otherwise set to 0.
+    if (buttonRateTempUp->get()==1.)
+        temp_rate = 0.1;
+    else
+        temp_rate = 0.;
+}
+
 inline bool even(long n)
 {
 //    if ((n/2) != (n+1)/2)
@@ -356,9 +383,9 @@ CSAMPLE *EngineBuffer::process(const CSAMPLE *, const int buf_size)
 
         double rate;
         if (playButton->get()==1. || fwdButton->get()==1. || backButton->get()==1.)
-            rate=wheel->get()+rateSlider->get()*baserate;
+            rate=temp_rate+wheel->get()+rateSlider->get()*baserate;
         else
-            rate=wheel->get()*baserate*20.;
+            rate=temp_rate+wheel->get()*baserate*20.;
 
 /*
         //

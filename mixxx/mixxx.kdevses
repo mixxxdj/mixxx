@@ -3,30 +3,24 @@
 <KDevPrjSession>
  <LastCompileConfig>(Default)</LastCompileConfig>
  <Mainframe MaximizeMode="1" />
- <DocsAndViews NumberOfDocuments="8" >
+ <DocsAndViews NumberOfDocuments="6" >
   <Doc0 CursorPosLine="121" Type="KWriteDoc" NumberOfViews="1" CursorPosCol="20" FileName="/home/haste/cvs/mixxx/src/mixxx.cpp" >
-   <View0 Top="0" Width="717" Attach="1" Height="854" Left="0" Focus="0" Type="KWriteView" MinMaxMode="0" />
+   <View0 Top="0" Width="715" Attach="1" Height="855" Left="0" Focus="0" Type="KWriteView" MinMaxMode="0" />
   </Doc0>
-  <Doc1 CursorPosLine="69" Type="KWriteDoc" NumberOfViews="1" CursorPosCol="62" FileName="/home/haste/cvs/mixxx/src/enginebuffer.h" >
-   <View0 Top="0" Width="98" Attach="1" Height="28" Left="0" Focus="0" Type="KWriteView" MinMaxMode="0" />
+  <Doc1 CursorPosLine="97" Type="KWriteDoc" NumberOfViews="1" CursorPosCol="17" FileName="/home/haste/cvs/mixxx/src/enginebuffer.h" >
+   <View0 Top="0" Width="715" Attach="1" Height="855" Left="0" Focus="0" Type="KWriteView" MinMaxMode="0" />
   </Doc1>
-  <Doc2 CursorPosLine="523" Type="KWriteDoc" NumberOfViews="1" CursorPosCol="23" FileName="/home/haste/cvs/mixxx/src/enginebuffer.cpp" >
-   <View0 Top="0" Width="717" Attach="1" Height="854" Left="0" Focus="0" Type="KWriteView" MinMaxMode="0" />
+  <Doc2 CursorPosLine="321" Type="KWriteDoc" NumberOfViews="1" CursorPosCol="0" FileName="/home/haste/cvs/mixxx/src/enginebuffer.cpp" >
+   <View0 Top="0" Width="715" Attach="1" Height="855" Left="0" Focus="1" Type="KWriteView" MinMaxMode="0" />
   </Doc2>
-  <Doc3 CursorPosLine="33" Type="KWriteDoc" NumberOfViews="1" CursorPosCol="0" FileName="/home/haste/cvs/mixxx/src/enginebufferscale.cpp" >
-   <View0 Top="0" Width="717" Attach="1" Height="854" Left="0" Focus="0" Type="KWriteView" MinMaxMode="0" />
+  <Doc3 CursorPosLine="20" Type="KWriteDoc" NumberOfViews="1" CursorPosCol="0" FileName="/home/haste/cvs/mixxx/src/wpushbutton.cpp" >
+   <View0 Top="0" Width="715" Attach="1" Height="855" Left="0" Focus="0" Type="KWriteView" MinMaxMode="0" />
   </Doc3>
-  <Doc4 CursorPosLine="41" Type="KWriteDoc" NumberOfViews="1" CursorPosCol="0" FileName="/home/haste/cvs/mixxx/src/enginebufferscalelinear.cpp" >
-   <View0 Top="0" Width="717" Attach="1" Height="854" Left="0" Focus="0" Type="KWriteView" MinMaxMode="0" />
+  <Doc4 CursorPosLine="37" Type="KWriteDoc" NumberOfViews="1" CursorPosCol="0" FileName="/home/haste/cvs/mixxx/src/wwidget.cpp" >
+   <View0 Top="0" Width="715" Attach="1" Height="855" Left="0" Focus="0" Type="KWriteView" MinMaxMode="0" />
   </Doc4>
-  <Doc5 CursorPosLine="126" Type="KWriteDoc" NumberOfViews="1" CursorPosCol="0" FileName="/home/haste/cvs/mixxx/src/dlgprefcontrols.cpp" >
-   <View0 Top="0" Width="717" Attach="1" Height="854" Left="0" Focus="0" Type="KWriteView" MinMaxMode="0" />
+  <Doc5 CursorPosLine="135" Type="KWriteDoc" NumberOfViews="1" CursorPosCol="10" FileName="/home/haste/cvs/mixxx/src/controlobject.cpp" >
+   <View0 Top="0" Width="715" Attach="1" Height="855" Left="0" Focus="0" Type="KWriteView" MinMaxMode="0" />
   </Doc5>
-  <Doc6 CursorPosLine="0" Type="KWriteDoc" NumberOfViews="1" CursorPosCol="37" FileName="/home/haste/cvs/mixxx/src/dlgprefcontrols.h" >
-   <View0 Top="0" Width="717" Attach="1" Height="854" Left="0" Focus="0" Type="KWriteView" MinMaxMode="0" />
-  </Doc6>
-  <Doc7 CursorPosLine="56" Type="KWriteDoc" NumberOfViews="1" CursorPosCol="0" FileName="/home/haste/cvs/mixxx/src/controlpotmeter.cpp" >
-   <View0 Top="0" Width="717" Attach="1" Height="854" Left="0" Focus="1" Type="KWriteView" MinMaxMode="0" />
-  </Doc7>
  </DocsAndViews>
 </KDevPrjSession>
