@@ -263,14 +263,16 @@ void TrackList::UpdateTracklist(QDomDocument * domXML)
 	TrackInfoObject *Track;
 	for(int i=iRowTracks; i<m_lPlaylist.count();i++){
 	Track = m_lPlaylist.at(i);	
-		//qDebug("Working on Track: %d",Track->m_iIndex);
+		qDebug("Working on Track: %d",Track->m_iIndex);
 	bool trackExistsinTable = false;
+	
 	if(iRow !=0)
 	for(int i = 0; i< iRow;i++){	 
 		int idx = m_pTableTracks->text(i, COL_INDEX).toInt();
-		if(Track->m_iIndex == idx)
+		if(Track->m_iIndex == idx){
 		trackExistsinTable = true;
-	     
+	     qDebug("Track allready exists");
+		}
 		}
     if(!trackExistsinTable){
 	m_pTableTracks->insertRows(iRow, 1);	
@@ -527,9 +529,7 @@ int TrackList::getTrackCount(QDomDocument * docXML){
     }
     
 	opmlFile.close();
-    }
-	
-	QDomElement elementRoot = docXML->documentElement();
+    QDomElement elementRoot = docXML->documentElement();
     // Get all the tracks written in the xml file:
     QDomNode node = elementRoot.firstChild();
 	
@@ -542,6 +542,17 @@ int TrackList::getTrackCount(QDomDocument * docXML){
 	}
 	qDebug("Count is now: %d", count);
 	return count;
+	}else{
+		
+		for(TrackInfoObject *Track = m_lTracks.first(); Track; Track = m_lTracks.next()){
+		if(Track->m_iIndex > count)
+            count= Track->m_iIndex;			
+		}
+		return count;
+		
+	}
+	
+	
 }
 bool TrackList::AddFiles(const char *path, QDomDocument * docXML)
 {    
@@ -632,7 +643,7 @@ bool TrackList::AddFiles(const char *path, QDomDocument * docXML)
 		
 		
 		
-		int iTrackNumber = getTrackCount((QDomDocument*) 0x0);
+		int iTrackNumber = getTrackCount(docXML) + 1;
 		
 		
         
