@@ -73,11 +73,6 @@ QString *MidiObject::getOpenDevice()
     return &openDevice;
 }
 
-void MidiObject::stop()
-{
-    requestStop = true;
-}
-
 /* -------- ------------------------------------------------------
    Purpose: Loop for parsing midi events
    Input:   -
@@ -90,7 +85,7 @@ void MidiObject::send(char channel, char midicontrol, char midivalue)
     // Check the potmeters:
     for (int i=0; i<no; i++)
     {
-        //qDebug("(%i) checking: no %i ch %i [%p]", i, controlList[i]->cfgOption->val->midino, controlList[i]->cfgOption->val->midichannel,controlList[i]->cfgOption->val);
+//        qDebug("(%i) checking: no %i ch %i [%p]", i, controlList[i]->cfgOption->val->midino, controlList[i]->cfgOption->val->midichannel,controlList[i]->cfgOption->val);
         //cout << "value: " << controlList[i]->cfgOption->val->value << "\n";
         if ((controlList[i]->cfgOption->val->midino == midicontrol) &
             (controlList[i]->cfgOption->val->midichannel == channel))
@@ -116,4 +111,27 @@ void MidiObject::send(char channel, char midicontrol, char midivalue)
         }
     }
 };
+
+void MidiObject::stop()
+{
+    requestStop = true;
+
+    // Raise signal to stop abort blocking read in main thread loop
+    if (thread_pid != 0)
+    {
+        signal(SIGINT,&abortRead);
+        kill(thread_pid,SIGINT);
+    }
+    wait();
+    thread_pid = 0;
+}
+
+void abortRead(int)
+{
+    // Reinstall default handler
+    signal(SIGINT,SIG_DFL);
+
+    // End thread execution
+    QThread::exit();
+}
 

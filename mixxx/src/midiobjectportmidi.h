@@ -19,7 +19,12 @@
 #define MIDIOBJECTPORTMIDI_H
 
 #include <midiobject.h>
-#include "portmidi.h"
+#include <portmidi.h>
+#include <porttime.h>
+
+#include <stdlib.h>
+#include <unistd.h>
+
 /**
   *@author Tue & Ken Haste Andersen
   */
@@ -34,7 +39,7 @@ public:
 protected:
     void run();
 
-    PmEvent     buffer[2];
+    PmEvent     buffer[10];
     PmStream    *midi;
 
 };
