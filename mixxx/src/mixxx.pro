@@ -156,6 +156,13 @@ unix:!macx:HEADERS += joysticklinux.h
 win32:LIBS += rfftw2st-release.lib fftw2st-release.lib
 macx:LIBS += $$MACLIBPATH/lib/librfftw.a $$MACLIBPATH/lib/libfftw.a
 
+# KissFFT
+DEFINES += __KISSFFT__
+KISSFFT_DIR = ../lib/kissfft
+SOURCES += $$KISSFFT_DIR/kiss_fft.c $$KISSFFT_DIR/kiss_fftr.c
+HEADERS += $$KISSFFT_DIR/kiss_fft.h $$KISSFFT_DIR/kiss_fftr.h $$KISSFFT_DIR/_kiss_fft_guts.h 
+INCLUDEPATH += $$KISSFFT_DIR
+
 # Audio scaling
 INCLUDEPATH += ../lib/libsamplerate
 SOURCES += enginebufferscalesrc.cpp ../lib/libsamplerate/samplerate.c ../lib/libsamplerate/src_linear.c ../lib/libsamplerate/src_sinc.c ../lib/libsamplerate/src_zoh.c

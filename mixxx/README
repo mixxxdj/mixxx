@@ -18,6 +18,7 @@ New since 1.2.1:
 - Playlist import of pls and m3u files
 - Small skin fitting 800x600 screen
 - Socket interface
+- Linux ./configure and make process much improved
 - Cue point visualization
 - Drop files, from playlist, treeview or external file
   manager to one of the visuals, loads the track.
@@ -25,7 +26,7 @@ New since 1.2.1:
 - Performance optimizations
 - Optimized sound quality selection
 - Playlist layout improvements
-- Various bug fixes, including build system fixes
+- Various bug fixes
 
 * REQUIREMENTS *********************************************
 Mixxx is depends on the following libraries:
