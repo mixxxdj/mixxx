@@ -28,14 +28,17 @@ SoundSourceWave::SoundSourceWave(const char* filename)
 
 SoundSourceWave::~SoundSourceWave()
 {
-    sf_close(fh);
+    if (filelength > 0)
+        sf_close(fh);
     delete info;
 };
 
 long SoundSourceWave::seek(long filepos)
 {
-    if (sf_seek(fh, (sf_count_t)filepos, SEEK_SET) == -1)
-        qDebug("libsndfile: Seek error.");
+    if (filelength > 0)
+        if (sf_seek(fh, (sf_count_t)filepos, SEEK_SET) == -1)
+            qDebug("libsndfile: Seek error.");
+    
     return filepos;
 }
 
@@ -45,7 +48,14 @@ long SoundSourceWave::seek(long filepos)
 */
 unsigned SoundSourceWave::read(unsigned long size, const SAMPLE* destination)
 {
-    return sf_read_short(fh,(SAMPLE *)destination, size/channels)*channels;
+    if (filelength > 0)
+        return sf_read_short(fh,(SAMPLE *)destination, size/channels)*channels;
+    else
+    {
+        for (int i=0; i<size; i++)
+            ((SAMPLE *)destination)[i] = 0;
+        return size;
+    }
 }
 
 /*

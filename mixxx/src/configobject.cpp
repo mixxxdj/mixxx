@@ -81,7 +81,7 @@ template <class ValueType> bool ConfigObject<ValueType>::Parse()
 {
     // Open file for reading
  	QFile configfile(filename);
-	if (!configfile.open(IO_ReadOnly))
+	if (filename.length()<1 || !configfile.open(IO_ReadOnly))
     {
         qDebug("Could not open file %s, don't worry.",filename.ascii());
         return false;
@@ -142,9 +142,14 @@ template <class ValueType> void ConfigObject<ValueType>::reopen(QString file)
 
 template <class ValueType> void ConfigObject<ValueType>::Save()
 {
-    FILE *handle = fopen(filename.ascii(),"w");
-    if (handle != 0)
+	QFile file(filename);
+	if (!file.open(IO_WriteOnly))
     {
+        qDebug("Could not write file %s, don't worry.",filename.ascii());
+		return;
+    } else {
+        QTextStream stream(&file);
+        
         ConfigOption<ValueType> *it;
         QString grp = 0;
         for (it = list.first(); it; it = list.next())
@@ -152,13 +157,14 @@ template <class ValueType> void ConfigObject<ValueType>::Save()
             if (it->key->group != grp)
             {
                 grp = it->key->group;
-                fprintf(handle, "\n%s\n", it->key->group.ascii());
+                stream << "\n" << it->key->group.ascii() << "\n";
             }
-            fprintf(handle, "%s %s\n", it->key->item.ascii(), it->val->value.ascii());
+            stream << it->key->item.ascii() << " " << it->val->value.ascii() << "\n";
         }
-        fclose(handle);
+        file.close();
     }
 }
+
 
 template class ConfigObject<ConfigValue>;
 template class ConfigObject<ConfigValueMidi>;

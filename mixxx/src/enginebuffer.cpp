@@ -27,6 +27,7 @@
 #include <qstring.h>
 #include <qlcdnumber.h>
 #include <qevent.h>
+#include <qfileinfo.h>
 #ifdef __MACX__
     #include "rtthread.cpp"
 #endif
@@ -113,10 +114,31 @@ void EngineBuffer::newtrack(const char* filename)
 
     // If we are already playing a file, then get rid of it:
     if (file != 0)
+    {
         delete file;
+        file = 0;
+    }
 
     if (filename != 0)
     {
+        // Check if filename is valid
+        QFileInfo finfo(filename);
+        if (finfo.exists())
+        {
+            if (finfo.extension(false).upper() == "WAV")
+                file = new SoundSourceWave(filename);
+            else if (finfo.extension(false).upper() == "MP3")
+                file = new SoundSourceMp3(filename);
+        } else
+            file = new SoundSourceWave("/dev/null");
+    }
+    if (file==0)
+        qFatal("Error opening %s", filename);
+
+
+
+
+/*
         // Open the file:
         int i=strlen(filename)-1;
         while ((filename[i] != '.') && (i>0))
@@ -130,12 +152,12 @@ void EngineBuffer::newtrack(const char* filename)
         //playcontrol->textLabelTrack->setText("Opening file...");
 
 #ifndef Q_WS_WIN
-        if (!strcmp(ending,".wav"))
-            file = new SoundSourceWave(filename);
+        if (!strcmp(ending,".wav") || !strcmp(ending,".WAV"))
+            
         else
 #endif
-        if (!strcmp(ending,".mp3") || (!strcmp(ending,".MP3")))
-            file = new SoundSourceMp3(filename);
+        if (!strcmp(ending,".mp3") || !strcmp(ending,".MP3"))
+            
 
         if (file==0)
             qFatal("Error opening %s", filename);
@@ -144,7 +166,7 @@ void EngineBuffer::newtrack(const char* filename)
 	else
         file = new SoundSourceWave("/dev/null");
 #endif
-
+*/
     // Initialize position in read buffer:
     lastread_file.write(0.);
     playpos_file.write(0.);
