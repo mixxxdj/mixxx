@@ -45,10 +45,12 @@ ReaderExtractFFT::ReaderExtractFFT(ReaderExtract *input, int _frameSize, int _fr
         specList.append(new EngineSpectralFwd(true,false,window));
 
 
-//    textout.setName("fftabs.txt");
-//    textout.open( IO_WriteOnly );
-//    textout2.setName("fftwave.txt");
-//    textout2.open( IO_WriteOnly );
+/*
+    textout.setName("fftabs.txt");
+    textout.open( IO_WriteOnly );
+    textout2.setName("fftwave.txt");
+    textout2.open( IO_WriteOnly );
+*/
 }
 
 ReaderExtractFFT::~ReaderExtractFFT()
@@ -160,7 +162,7 @@ void ReaderExtractFFT::processFrame(int idx)
     CSAMPLE *tmp = specList.at(idx%frameNo)->process(windowedSamples,0);
 //    qDebug("frame %i",idx%frameNo);
 //    // Write FFT to text file
-//    for (int i=0; i<frameSize/2; i++)
+//    for (i=0; i<frameSize/2; i++)
 //        stream << tmp[i] << " ";
 //    stream << "\n";
     
