@@ -30,6 +30,7 @@
 #include "controlpushbutton.h"
 #include "playeralsa.h"
 #include "playerportaudio.h"
+#include "enginepregain.h"
 
 MixxxApp::MixxxApp()
 {
@@ -53,13 +54,18 @@ MixxxApp::MixxxApp()
   viewToolBar->setOn(true);
   viewStatusBar->setOn(true);
 
-  // Initialize player with a desired buffer size
-  qDebug("Init player...");
-  player = new PlayerALSA(BUFFER_SIZE);
-  //player = new PlayerPortAudio(BUFFER_SIZE);
   // Initialize midi:
   qDebug("Init midi...");
   midi = new MidiObject();
+
+  // Initialize engines:
+  EnginePregain *pregain = new EnginePregain(ADC7, midi);
+  engines.push_back(pregain);
+
+  // Initialize player with a desired buffer size
+  qDebug("Init player...");
+  player = new PlayerALSA(BUFFER_SIZE, &engines);
+  //player = new PlayerPortAudio(BUFFER_SIZE);
 
   qDebug("Init engine...");
   buffer = new EngineBuffer(view->playcontrol, view->channel, midi, "test.wav");

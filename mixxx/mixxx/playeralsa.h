@@ -31,7 +31,7 @@
 
 class PlayerALSA : public Player, public QThread  {
 public:
-	PlayerALSA(int size);
+	PlayerALSA(int size, vector<EngineObject *> *);
 	~PlayerALSA();
 	void start(EngineBuffer *);
 	void stop();

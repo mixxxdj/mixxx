@@ -24,11 +24,11 @@
 #include <iostream>
 #include "enginebuffer.h"
 #include "controlobject.h"
-#include <qmultilineedit.h>
+#include <vector>
 
 class Player : public QObject {
 public:
-	Player(int);
+	Player(int, vector<EngineObject *> *);
 	~Player();      // Deallocate
 	virtual void start(EngineBuffer*); // Start audio stream
 	virtual void stop() = 0;           // Stops audio stream
@@ -42,6 +42,7 @@ protected:
 	void allocate();
 	void deallocate();
 
+	vector<EngineObject *> *engines;
 	CSAMPLE *process_buffer,*tmp1, *tmp2;
 	int index;    // Current playback frame in input buffer
 	EngineBuffer* reader;

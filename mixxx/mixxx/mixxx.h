@@ -35,6 +35,7 @@
 #include <qprinter.h>
 #include <qpainter.h>
 #include <qpoint.h>
+#include <vector>
 
 // application specific includes
 #include "mixxxview.h"
@@ -124,6 +125,7 @@ class MixxxApp : public QMainWindow
     EngineBuffer *buffer;
     Player *player;
     MidiObject *midi;
+    vector<EngineObject *> engines;
 
     /** file_menu contains all items of the menubar entry "File" */
     QPopupMenu *fileMenu;

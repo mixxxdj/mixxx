@@ -16,25 +16,24 @@ MidiObject::MidiObject() {
   int device = snd_defaults_rawmidi_device();
   int err;
   if ((err = snd_rawmidi_open(&handle, card, device, SND_RAWMIDI_OPEN_INPUT)) != 0) {
-    qDebug("Open of midi failed: %s.", snd_strerror(err));
+      qDebug("Open of midi failed: %s.", snd_strerror(err));
   }  else {
+      // Allocate buffer
+      buffer = new char[4096];
+      if (buffer == 0) {
+	  qDebug("Midi: Error allocating buffer");
+	  return;
+      }
 
-    // Allocate buffer
-    buffer = new char[4096];
-    if (buffer == 0) {
-      qDebug("Midi: Error allocating buffer");
-      return;
-    }
-
-    // Set number of bytes received, before snd_rawmidi_read is woken up.
-    snd_rawmidi_params_t params;
-    params.channel = SND_RAWMIDI_CHANNEL_INPUT;
-    params.size    = 4096;
-    params.min     = 1;
-    err = snd_rawmidi_channel_params(handle,&params);
-
-    // Start the midi thread:
-    start();
+      // Set number of bytes received, before snd_rawmidi_read is woken up.
+      snd_rawmidi_params_t params;
+      params.channel = SND_RAWMIDI_CHANNEL_INPUT;
+      params.size    = 4096;
+      params.min     = 1;
+      err = snd_rawmidi_channel_params(handle,&params);
+      
+      // Start the midi thread:
+      start();
   }
 };
 
@@ -124,8 +123,8 @@ void MidiObject::run() {
     char midicontrol = buffer[1];
     char midivalue = buffer[2];
 
-    // qDebug("Received midi message: %i %i %i",(int)channel, 
-    //	   (int)midicontrol,(int)midivalue);
+     qDebug("Received midi message: %i %i %i",(int)channel, 
+    	   (int)midicontrol,(int)midivalue);
     
     // Check the potmeters:
     for (int i=0; i<no_potmeters; i++) 
