@@ -50,10 +50,12 @@ class ControlPotmeter : public ControlObject  {
   void setValue(FLOAT newvalue);
   FLOAT getValue();
   char getPosition();
+  virtual void midiEvent(int);
 public slots:
   virtual void slotSetPosition(int);
 signals:
   void valueChanged(FLOAT);
+  void recievedMidi(int);
 };
 
 #endif

@@ -30,13 +30,16 @@ EngineBuffer::EngineBuffer(DlgPlaycontrol *playcontrol, DlgChannel *channel, Mid
   rate = rateSlider->getValue();
   connect(channel->SliderRate, SIGNAL(valueChanged(int)), rateSlider, SLOT(slotSetPosition(int)));
   connect(rateSlider, SIGNAL(valueChanged(FLOAT)), this, SLOT(slotUpdateRate(FLOAT)));
+  connect(rateSlider, SIGNAL(recievedMidi(int)), channel->SliderRate, SLOT(setValue(int)));
 
   wheel = new ControlRotary("wheel", PORT_D, midi);
-  connect(playcontrol->DialPlaycontrol, SIGNAL(dialMoved(int)), wheel, SLOT(slotSetPosition(int)));
+  connect(playcontrol->DialPlaycontrol, SIGNAL(valueChanged(int)), wheel, SLOT(slotSetPosition(int)));
   connect(wheel, SIGNAL(valueChanged(FLOAT)), this, SLOT(slotUpdateRate(FLOAT)));
+  connect(wheel, SIGNAL(recievedMidi(int)), playcontrol->DialPlaycontrol, SLOT(setValue(int)));
 
   connect(this, SIGNAL(position(int)), channel->LCDposition, SLOT(display(int)));
   //connect(this, SIGNAL(position(int)), channel->SliderPosition, SLOT(setValue(int)));
+
   connect(channel->SliderPosition, SIGNAL(valueChanged(int)), this, SLOT(slotPosition(int)));
   /*
     Open the file:

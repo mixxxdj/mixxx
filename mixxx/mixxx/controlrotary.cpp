@@ -24,13 +24,16 @@ ControlRotary::ControlRotary(char* n, int _midino,  MidiObject* _midi) {
 /* -------- ------------------------------------------------------
    Purpose: Sets the position of the encoder. Called from midi
             and given the gray code as input. Calculates the
-	    real position from the gray code, and updates the
-	    velocity stored in 'value'.
+	    real position from the gray code.
    Input:   the gray code.
    -------- ------------------------------------------------------ */
-void ControlRotary::slotSetPosition(int newpos) {
+void ControlRotary::midiEvent(int _newpos) {
   // get position from gray code
-  newpos = graycodetable[(int)(unsigned char)newpos]; 
+  int newpos = graycodetable[(int)(unsigned char)_newpos]; 
+  emit recievedMidi(newpos);
+}
+
+void ControlRotary::slotSetPosition(int newpos) {
   if ((newpos != -128) && (newpos != position)) {
     short change = newpos-position; 
     // Check for passing through 0 and 127:

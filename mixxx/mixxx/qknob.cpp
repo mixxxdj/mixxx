@@ -138,7 +138,7 @@ void QKnob::repaintScreen(const QRect *cr=0)
 	int range = (maxValue()-minValue());
 	int val = value()*32/range;
 
-	qDebug("Value: %i (%p)",val,cr);
+	//qDebug("Value: %i (%p)",val,cr);
 
 	QPixmap *b = button00;
 	switch (val)

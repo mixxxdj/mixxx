@@ -52,6 +52,16 @@ ControlPotmeter::~ControlPotmeter() {
 char* ControlPotmeter::print() {
   return name;
 }
+/* -------- ------------------------------------------------------
+   Purpose: Called from the midiObject when the potmeter has been 
+            moved. It send a signal to the gui, which then reemits
+	    a signal which is caught by slotSetPosition, where
+	    the processing of the event takes place. 
+   Input:   The (new) position.
+   -------- ------------------------------------------------------ */
+void ControlPotmeter::midiEvent(int newpos) {
+  emit recievedMidi(newpos);
+}  
 
 /* -------- ------------------------------------------------------
    Purpose: Set the position of the potmeter, and change the
