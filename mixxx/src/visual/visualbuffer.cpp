@@ -23,6 +23,7 @@
 #include "../engineobject.h"
 #include "player.h"
 #include "../enginebuffer.h"
+#include "../mathstuff.h"
 
 /**
  * Default Constructor.
@@ -57,9 +58,14 @@ VisualBuffer::VisualBuffer(ReaderExtract *pReaderExtract, EngineBuffer *pEngineB
     // Determine conversion factor between ReaderExtractWave and the m_pReaderExtract object
     m_fReaderExtractFactor = READBUFFERSIZE/m_iSourceLen;
     
-    // Length of this buffer
-    m_iLen = (int)((float)m_iSourceLen/m_fResampleFactor);
-
+    // Length of this buffer. 
+    m_iLen = (int)(floorf((float)m_iSourceLen/m_fResampleFactor));
+    if (!even(m_iLen))
+        m_iLen--;
+        
+    // Readjust resample factor to actual length of display buffer
+    m_fResampleFactor = (float)m_pReaderExtract->getBufferSize()/(float)m_iLen;    
+        
     // Number of samples from this buffer to display
     m_iDisplayLen = m_iLen-(2*m_iLen/READCHUNK_NO);
 
@@ -70,11 +76,11 @@ VisualBuffer::VisualBuffer(ReaderExtract *pReaderExtract, EngineBuffer *pEngineB
     GLfloat *p = m_pBuffer;
     for (int i=0; i<m_iLen; i++)
     {
-        *p++ = (float)i; //*m_fDisplayFactor;
+        *p++ = (float)i;
         *p++ = 0.;
         *p++ = 0.;
     }
-
+    
     installEventFilter(this);
 }
 
@@ -162,6 +168,10 @@ bufInfo VisualBuffer::getVertexArray()
         fPos += (float)m_iLen;
     int iPos = (int)fPos;
 
+    // Ensure the position is even
+    if (!even(iPos))
+        iPos--;
+        
     bufInfo i;
     i.p1 = &m_pBuffer[iPos*3];
     i.len1 = min(m_iDisplayLen, m_iLen-iPos);

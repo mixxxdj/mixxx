@@ -19,6 +19,7 @@ directory for a copy of the licence.
 New since 1.3.2:
 - Compiles on gcc 3.4
 - Beat phase syncronization, by Torben Hohn
+- Reduced flicker in waveform visualizations
 
 * INSTALL/USE **********************************************
 Please see manual, included in this directory, 
