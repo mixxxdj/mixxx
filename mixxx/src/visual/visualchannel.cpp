@@ -33,7 +33,7 @@ VisualChannel::VisualChannel(ControlPotmeter *pPlaypos, VisualController *pVisua
 {
     m_iChannelNo = siChannelTotal;
     siChannelTotal++;
-    group = _group;
+    group = (char *)_group;
     
     m_pPlaypos = pPlaypos;
     m_pVisualController = pVisualController;
