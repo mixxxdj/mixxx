@@ -25,14 +25,9 @@
 
 const CSAMPLE threshold = 5.;
 
-// krist06.wav
 const CSAMPLE histMinBPM = 60.;
 const CSAMPLE histMaxBPM = 160.;
-
-//const CSAMPLE histMinBPM = 50.;
-//const CSAMPLE histMaxBPM = 160.;
-
-
+const CSAMPLE histDownWrite = 0.9999;
 const int gaussWidth = 8; // Width of gauss/2
 
 /**
