@@ -8,7 +8,7 @@
         <rect>
             <x>0</x>
             <y>0</y>
-            <width>596</width>
+            <width>595</width>
             <height>150</height>
         </rect>
     </property>
@@ -53,16 +53,16 @@
         </property>
         <property name="geometry">
             <rect>
-                <x>0</x>
+                <x>3</x>
                 <y>0</y>
-                <width>596</width>
-                <height>150</height>
+                <width>590</width>
+                <height>148</height>
             </rect>
         </property>
         <property name="sizePolicy">
             <sizepolicy>
-                <hsizetype>0</hsizetype>
-                <vsizetype>7</vsizetype>
+                <hsizetype>5</hsizetype>
+                <vsizetype>5</vsizetype>
                 <horstretch>0</horstretch>
                 <verstretch>0</verstretch>
             </sizepolicy>
@@ -84,7 +84,10 @@
             </font>
         </property>
         <property name="frameShape">
-            <enum>NoFrame</enum>
+            <enum>WinPanel</enum>
+        </property>
+        <property name="frameShadow">
+            <enum>Sunken</enum>
         </property>
         <property name="lineWidth">
             <number>0</number>

@@ -35,242 +35,6 @@
     </property>
     <widget class="QGroupBox">
         <property name="name">
-            <cstring>GroupBoxKnobs</cstring>
-        </property>
-        <property name="geometry">
-            <rect>
-                <x>0</x>
-                <y>0</y>
-                <width>35</width>
-                <height>230</height>
-            </rect>
-        </property>
-        <property name="frameShape">
-            <enum>NoFrame</enum>
-        </property>
-        <property name="title">
-            <string></string>
-        </property>
-        <widget class="WBulb">
-            <property name="name">
-                <cstring>BulbClipping</cstring>
-            </property>
-            <property name="geometry">
-                <rect>
-                    <x>9</x>
-                    <y>1</y>
-                    <width>20</width>
-                    <height>20</height>
-                </rect>
-            </property>
-            <property name="paletteBackgroundColor">
-                <color>
-                    <red>168</red>
-                    <green>181</green>
-                    <blue>164</blue>
-                </color>
-            </property>
-        </widget>
-        <widget class="QLabel">
-            <property name="name">
-                <cstring>TextLabel1_2_2</cstring>
-            </property>
-            <property name="geometry">
-                <rect>
-                    <x>8</x>
-                    <y>19</y>
-                    <width>26</width>
-                    <height>14</height>
-                </rect>
-            </property>
-            <property name="paletteForegroundColor">
-                <color>
-                    <red>80</red>
-                    <green>80</green>
-                    <blue>80</blue>
-                </color>
-            </property>
-            <property name="font">
-                <font>
-                    <family>Application</family>
-                    <pointsize>8</pointsize>
-                </font>
-            </property>
-            <property name="text">
-                <string>CLIP</string>
-            </property>
-        </widget>
-        <widget class="QLabel">
-            <property name="name">
-                <cstring>TextLabel1_2</cstring>
-            </property>
-            <property name="geometry">
-                <rect>
-                    <x>7</x>
-                    <y>71</y>
-                    <width>24</width>
-                    <height>15</height>
-                </rect>
-            </property>
-            <property name="paletteForegroundColor">
-                <color>
-                    <red>80</red>
-                    <green>80</green>
-                    <blue>80</blue>
-                </color>
-            </property>
-            <property name="font">
-                <font>
-                    <family>Application</family>
-                    <pointsize>8</pointsize>
-                </font>
-            </property>
-            <property name="text">
-                <string>GAIN</string>
-            </property>
-        </widget>
-        <widget class="QLabel">
-            <property name="name">
-                <cstring>TextLabel1_2_5</cstring>
-            </property>
-            <property name="geometry">
-                <rect>
-                    <x>7</x>
-                    <y>116</y>
-                    <width>24</width>
-                    <height>18</height>
-                </rect>
-            </property>
-            <property name="paletteForegroundColor">
-                <color>
-                    <red>80</red>
-                    <green>80</green>
-                    <blue>80</blue>
-                </color>
-            </property>
-            <property name="font">
-                <font>
-                    <family>Application</family>
-                    <pointsize>8</pointsize>
-                </font>
-            </property>
-            <property name="text">
-                <string>HIGH</string>
-            </property>
-        </widget>
-        <widget class="WKnob">
-            <property name="name">
-                <cstring>DialFilterHigh</cstring>
-            </property>
-            <property name="geometry">
-                <rect>
-                    <x>2</x>
-                    <y>88</y>
-                    <width>32</width>
-                    <height>32</height>
-                </rect>
-            </property>
-        </widget>
-        <widget class="QLabel">
-            <property name="name">
-                <cstring>TextLabel1_2_4</cstring>
-            </property>
-            <property name="geometry">
-                <rect>
-                    <x>10</x>
-                    <y>164</y>
-                    <width>24</width>
-                    <height>18</height>
-                </rect>
-            </property>
-            <property name="paletteForegroundColor">
-                <color>
-                    <red>80</red>
-                    <green>80</green>
-                    <blue>80</blue>
-                </color>
-            </property>
-            <property name="font">
-                <font>
-                    <family>Application</family>
-                    <pointsize>8</pointsize>
-                </font>
-            </property>
-            <property name="text">
-                <string>MID</string>
-            </property>
-        </widget>
-        <widget class="WKnob">
-            <property name="name">
-                <cstring>DialFilterMiddle</cstring>
-            </property>
-            <property name="geometry">
-                <rect>
-                    <x>2</x>
-                    <y>135</y>
-                    <width>32</width>
-                    <height>32</height>
-                </rect>
-            </property>
-        </widget>
-        <widget class="WKnob">
-            <property name="name">
-                <cstring>DialGain</cstring>
-            </property>
-            <property name="geometry">
-                <rect>
-                    <x>2</x>
-                    <y>41</y>
-                    <width>32</width>
-                    <height>32</height>
-                </rect>
-            </property>
-        </widget>
-        <widget class="QLabel">
-            <property name="name">
-                <cstring>TextLabel1_2_3</cstring>
-            </property>
-            <property name="geometry">
-                <rect>
-                    <x>7</x>
-                    <y>211</y>
-                    <width>24</width>
-                    <height>18</height>
-                </rect>
-            </property>
-            <property name="paletteForegroundColor">
-                <color>
-                    <red>80</red>
-                    <green>80</green>
-                    <blue>80</blue>
-                </color>
-            </property>
-            <property name="font">
-                <font>
-                    <family>Application</family>
-                    <pointsize>8</pointsize>
-                </font>
-            </property>
-            <property name="text">
-                <string>LOW</string>
-            </property>
-        </widget>
-        <widget class="WKnob">
-            <property name="name">
-                <cstring>DialFilterLow</cstring>
-            </property>
-            <property name="geometry">
-                <rect>
-                    <x>2</x>
-                    <y>183</y>
-                    <width>32</width>
-                    <height>32</height>
-                </rect>
-            </property>
-        </widget>
-    </widget>
-    <widget class="QGroupBox">
-        <property name="name">
             <cstring>GroupBoxVolume</cstring>
         </property>
         <property name="geometry">
@@ -290,35 +54,6 @@
         <property name="title">
             <string></string>
         </property>
-        <widget class="QLabel">
-            <property name="name">
-                <cstring>TextLabel1_2_3_2</cstring>
-            </property>
-            <property name="geometry">
-                <rect>
-                    <x>-1</x>
-                    <y>213</y>
-                    <width>40</width>
-                    <height>16</height>
-                </rect>
-            </property>
-            <property name="paletteForegroundColor">
-                <color>
-                    <red>80</red>
-                    <green>80</green>
-                    <blue>80</blue>
-                </color>
-            </property>
-            <property name="font">
-                <font>
-                    <family>Application</family>
-                    <pointsize>8</pointsize>
-                </font>
-            </property>
-            <property name="text">
-                <string>VOLUME</string>
-            </property>
-        </widget>
         <widget class="WSlider">
             <property name="name">
                 <cstring>SliderVolume</cstring>
@@ -344,6 +79,289 @@
                     <width>30</width>
                     <height>170</height>
                 </size>
+            </property>
+        </widget>
+        <widget class="QLabel">
+            <property name="name">
+                <cstring>TextLabel1_2_3_2</cstring>
+            </property>
+            <property name="geometry">
+                <rect>
+                    <x>-10</x>
+                    <y>213</y>
+                    <width>53</width>
+                    <height>16</height>
+                </rect>
+            </property>
+            <property name="paletteForegroundColor">
+                <color>
+                    <red>80</red>
+                    <green>80</green>
+                    <blue>80</blue>
+                </color>
+            </property>
+            <property name="font">
+                <font>
+                    <family>Application</family>
+                    <pointsize>8</pointsize>
+                </font>
+            </property>
+            <property name="text">
+                <string>VOLUME</string>
+            </property>
+            <property name="alignment">
+                <set>AlignCenter</set>
+            </property>
+        </widget>
+    </widget>
+    <widget class="QGroupBox">
+        <property name="name">
+            <cstring>GroupBoxKnobs</cstring>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>0</x>
+                <y>0</y>
+                <width>35</width>
+                <height>230</height>
+            </rect>
+        </property>
+        <property name="frameShape">
+            <enum>NoFrame</enum>
+        </property>
+        <property name="title">
+            <string></string>
+        </property>
+        <widget class="QLabel">
+            <property name="name">
+                <cstring>TextLabel1_2_2</cstring>
+            </property>
+            <property name="geometry">
+                <rect>
+                    <x>-1</x>
+                    <y>18</y>
+                    <width>40</width>
+                    <height>16</height>
+                </rect>
+            </property>
+            <property name="paletteForegroundColor">
+                <color>
+                    <red>80</red>
+                    <green>80</green>
+                    <blue>80</blue>
+                </color>
+            </property>
+            <property name="font">
+                <font>
+                    <family>Application</family>
+                    <pointsize>8</pointsize>
+                </font>
+            </property>
+            <property name="text">
+                <string>CLIP</string>
+            </property>
+            <property name="alignment">
+                <set>AlignCenter</set>
+            </property>
+        </widget>
+        <widget class="WBulb">
+            <property name="name">
+                <cstring>BulbClipping</cstring>
+            </property>
+            <property name="geometry">
+                <rect>
+                    <x>9</x>
+                    <y>1</y>
+                    <width>20</width>
+                    <height>20</height>
+                </rect>
+            </property>
+            <property name="paletteBackgroundColor">
+                <color>
+                    <red>168</red>
+                    <green>181</green>
+                    <blue>164</blue>
+                </color>
+            </property>
+        </widget>
+        <widget class="QLabel">
+            <property name="name">
+                <cstring>TextLabel1_2_5</cstring>
+            </property>
+            <property name="geometry">
+                <rect>
+                    <x>-1</x>
+                    <y>116</y>
+                    <width>36</width>
+                    <height>18</height>
+                </rect>
+            </property>
+            <property name="paletteForegroundColor">
+                <color>
+                    <red>80</red>
+                    <green>80</green>
+                    <blue>80</blue>
+                </color>
+            </property>
+            <property name="font">
+                <font>
+                    <family>Application</family>
+                    <pointsize>8</pointsize>
+                </font>
+            </property>
+            <property name="text">
+                <string>HIGH</string>
+            </property>
+            <property name="alignment">
+                <set>AlignCenter</set>
+            </property>
+        </widget>
+        <widget class="WKnob">
+            <property name="name">
+                <cstring>DialFilterHigh</cstring>
+            </property>
+            <property name="geometry">
+                <rect>
+                    <x>2</x>
+                    <y>88</y>
+                    <width>32</width>
+                    <height>32</height>
+                </rect>
+            </property>
+        </widget>
+        <widget class="QLabel">
+            <property name="name">
+                <cstring>TextLabel1_2</cstring>
+            </property>
+            <property name="geometry">
+                <rect>
+                    <x>1</x>
+                    <y>70</y>
+                    <width>33</width>
+                    <height>16</height>
+                </rect>
+            </property>
+            <property name="paletteForegroundColor">
+                <color>
+                    <red>80</red>
+                    <green>80</green>
+                    <blue>80</blue>
+                </color>
+            </property>
+            <property name="font">
+                <font>
+                    <family>Application</family>
+                    <pointsize>8</pointsize>
+                </font>
+            </property>
+            <property name="text">
+                <string>GAIN</string>
+            </property>
+            <property name="alignment">
+                <set>AlignCenter</set>
+            </property>
+        </widget>
+        <widget class="WKnob">
+            <property name="name">
+                <cstring>DialGain</cstring>
+            </property>
+            <property name="geometry">
+                <rect>
+                    <x>2</x>
+                    <y>41</y>
+                    <width>32</width>
+                    <height>32</height>
+                </rect>
+            </property>
+        </widget>
+        <widget class="QLabel">
+            <property name="name">
+                <cstring>TextLabel1_2_4</cstring>
+            </property>
+            <property name="geometry">
+                <rect>
+                    <x>2</x>
+                    <y>164</y>
+                    <width>32</width>
+                    <height>18</height>
+                </rect>
+            </property>
+            <property name="paletteForegroundColor">
+                <color>
+                    <red>80</red>
+                    <green>80</green>
+                    <blue>80</blue>
+                </color>
+            </property>
+            <property name="font">
+                <font>
+                    <family>Application</family>
+                    <pointsize>8</pointsize>
+                </font>
+            </property>
+            <property name="text">
+                <string>MID</string>
+            </property>
+            <property name="alignment">
+                <set>AlignCenter</set>
+            </property>
+        </widget>
+        <widget class="WKnob">
+            <property name="name">
+                <cstring>DialFilterMiddle</cstring>
+            </property>
+            <property name="geometry">
+                <rect>
+                    <x>2</x>
+                    <y>135</y>
+                    <width>32</width>
+                    <height>32</height>
+                </rect>
+            </property>
+        </widget>
+        <widget class="QLabel">
+            <property name="name">
+                <cstring>TextLabel1_2_3</cstring>
+            </property>
+            <property name="geometry">
+                <rect>
+                    <x>-2</x>
+                    <y>211</y>
+                    <width>37</width>
+                    <height>18</height>
+                </rect>
+            </property>
+            <property name="paletteForegroundColor">
+                <color>
+                    <red>80</red>
+                    <green>80</green>
+                    <blue>80</blue>
+                </color>
+            </property>
+            <property name="font">
+                <font>
+                    <family>Application</family>
+                    <pointsize>8</pointsize>
+                </font>
+            </property>
+            <property name="text">
+                <string>LOW</string>
+            </property>
+            <property name="alignment">
+                <set>AlignCenter</set>
+            </property>
+        </widget>
+        <widget class="WKnob">
+            <property name="name">
+                <cstring>DialFilterLow</cstring>
+            </property>
+            <property name="geometry">
+                <rect>
+                    <x>2</x>
+                    <y>183</y>
+                    <width>32</width>
+                    <height>32</height>
+                </rect>
             </property>
         </widget>
     </widget>
