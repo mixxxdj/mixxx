@@ -30,7 +30,7 @@ EngineSpectralFwd::EngineSpectralFwd(bool Power, bool Phase, WindowKaiser *windo
     
     // Create plans for use in FFT calculations.
     kisscfg = kiss_fftr_alloc(l, 0, 0, 0);
-    tmp = new kiss_fft_cpx[l/2];
+    tmp = new kiss_fft_cpx[l/2+1];
     spectrum = new kiss_fft_scalar[l];
 }
 
@@ -42,11 +42,11 @@ EngineSpectralFwd::EngineSpectralFwd(bool Power, bool Phase, WindowKaiser *windo
 EngineSpectralFwd::~EngineSpectralFwd()
 {
     // Destroy fft plans
-//    free(kisscfg);
+    free(kisscfg);
 
     // Deallocate temporary buffer
-//     delete [] tmp;
-//     delete [] spectrum;
+    delete [] tmp;
+    delete [] spectrum;
 }
 
 /* -------- -----------------------------------------------------------------
