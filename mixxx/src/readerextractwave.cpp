@@ -17,6 +17,7 @@
 
 #include "readerextractwave.h"
 #include "readerextractfft.h"
+#include "readerextracthfc.h"
 #include "readerevent.h"
 #include "visual/signalvertexbuffer.h"
 #include <qapplication.h>
@@ -45,6 +46,7 @@ ReaderExtractWave::ReaderExtractWave(QMutex *_enginelock) : ReaderExtract(0)
 
     // Initialize extractor objects
     readerfft  = new ReaderExtractFFT((ReaderExtract *)this, WINDOWSIZE, STEPSIZE);
+    readerhfc  = new ReaderExtractHFC((ReaderExtract *)readerfft, WINDOWSIZE, STEPSIZE);
 
 }
 
@@ -71,9 +73,9 @@ void ReaderExtractWave::reset()
         read_buffer[i] = 0.;
 }
 
-void *ReaderExtractWave::getChunkPtr(const int chunkIdx)
+void *ReaderExtractWave::getBasePtr()
 {
-    return (void *)(&read_buffer[READCHUNKSIZE*chunkIdx]);
+    return (void *)read_buffer;
 }
 
 int ReaderExtractWave::getRate()
@@ -126,6 +128,9 @@ void ReaderExtractWave::getchunk(CSAMPLE rate)
     int bufIdx;
 
     enginelock->lock();
+
+    int chunkCurr, chunkStart, chunkEnd;
+    
     if (backwards)
     {        
         int preEnd = bufferpos_start;
@@ -144,8 +149,7 @@ void ReaderExtractWave::getchunk(CSAMPLE rate)
         
         bufIdx = bufferpos_start;
 
-        // Do pre-processing.
-        readerfft->processChunk(bufferpos_start/READCHUNKSIZE, bufferpos_start/READCHUNKSIZE, bufferpos_end/READCHUNKSIZE);
+        chunkCurr = bufferpos_start/READCHUNKSIZE;
     }
     else
     {
@@ -161,10 +165,17 @@ void ReaderExtractWave::getchunk(CSAMPLE rate)
             filepos_start_new = filepos_start+READCHUNKSIZE;
             bufferpos_start = bufferpos_end; //(bufferpos_start+READCHUNKSIZE)%READBUFFERSIZE;
         }
-
-        // Do pre-processing...
-        readerfft->processChunk(bufIdx/READCHUNKSIZE, bufferpos_start/READCHUNKSIZE, bufferpos_end/READCHUNKSIZE);
+        chunkCurr = bufIdx/READCHUNKSIZE;
     }
+    chunkStart = bufferpos_start/READCHUNKSIZE;
+    chunkEnd   = bufferpos_end/READCHUNKSIZE;
+    
+    // Do pre-processing...
+    //qDebug("curr %i, start %i, end %i",chunkCurr,chunkStart,chunkEnd);
+    readerfft->processChunk(chunkCurr, chunkStart, chunkEnd);
+    readerhfc->processChunk(chunkCurr, chunkStart, chunkEnd);
+
+
     filepos_start = filepos_start_new;
     filepos_end = filepos_end_new;
 

@@ -30,7 +30,7 @@ ReaderExtractFFT::ReaderExtractFFT(ReaderExtract *input, int _frameSize, int _fr
     // Allocate and calculate window
     window = new WindowKaiser(frameSize, 6.5);
     windowPtr = window->getWindowPtr();
-    readbufferPtr = (CSAMPLE *)input->getChunkPtr(0);
+    readbufferPtr = (CSAMPLE *)input->getBasePtr();
     
     // Allocate memory for windowed portion of signal
     windowedSamples = new CSAMPLE[frameSize];
@@ -56,9 +56,9 @@ void ReaderExtractFFT::reset()
 {
 }
     
-void *ReaderExtractFFT::getChunkPtr(const int idx)
+void *ReaderExtractFFT::getBasePtr()
 {
-    return 0;
+    return (void *)&specList;
 }
 
 int ReaderExtractFFT::getRate()
@@ -71,7 +71,7 @@ void *ReaderExtractFFT::processChunk(const int idx, const int start_idx, const i
     int frameFrom  = idx*framePerChunk;
     int frameTo    = (frameFrom+framePerChunk)%frameNo;
 
-    qDebug("no %i, from %i ,to %i",frameNo,frameFrom,frameTo);
+//    qDebug("no %i, from %i ,to %i",frameNo,frameFrom,frameTo);
     
     if (frameTo>frameFrom)
         for (int i=frameFrom; i<frameTo; i++)
