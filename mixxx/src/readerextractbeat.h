@@ -28,7 +28,7 @@ extern "C" {
 }
 #endif
 
-#define FILEOUTPUT
+//#define FILEOUTPUT
 
 #ifdef FILEOUTPUT
     #include <qfile.h>
