@@ -263,22 +263,6 @@
             <string>Number of bits</string>
         </property>
     </widget>
-    <widget class="QPushButton">
-        <property name="name">
-            <cstring>PushButtonBrowsePlaylist</cstring>
-        </property>
-        <property name="geometry">
-            <rect>
-                <x>334</x>
-                <y>120</y>
-                <width>19</width>
-                <height>22</height>
-            </rect>
-        </property>
-        <property name="text">
-            <string>...</string>
-        </property>
-    </widget>
     <widget class="QLabel">
         <property name="name">
             <cstring>TextLabel2</cstring>
@@ -327,25 +311,6 @@
             </rect>
         </property>
     </widget>
-    <widget class="QPushButton">
-        <property name="name">
-            <cstring>PushButtonOK</cstring>
-        </property>
-        <property name="enabled">
-            <bool>true</bool>
-        </property>
-        <property name="geometry">
-            <rect>
-                <x>177</x>
-                <y>328</y>
-                <width>84</width>
-                <height>22</height>
-            </rect>
-        </property>
-        <property name="text">
-            <string>OK</string>
-        </property>
-    </widget>
     <widget class="QLineEdit">
         <property name="name">
             <cstring>LineEditSongfiles</cstring>
@@ -357,6 +322,60 @@
                 <width>183</width>
                 <height>22</height>
             </rect>
+        </property>
+    </widget>
+    <widget class="QPushButton">
+        <property name="name">
+            <cstring>PushButtonBrowsePlaylist</cstring>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>334</x>
+                <y>120</y>
+                <width>19</width>
+                <height>22</height>
+            </rect>
+        </property>
+        <property name="text">
+            <string>...</string>
+        </property>
+    </widget>
+    <widget class="QPushButton">
+        <property name="name">
+            <cstring>PushButtonApply</cstring>
+        </property>
+        <property name="enabled">
+            <bool>true</bool>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>184</x>
+                <y>328</y>
+                <width>79</width>
+                <height>22</height>
+            </rect>
+        </property>
+        <property name="text">
+            <string>Apply</string>
+        </property>
+    </widget>
+    <widget class="QPushButton">
+        <property name="name">
+            <cstring>PushButtonOK</cstring>
+        </property>
+        <property name="enabled">
+            <bool>true</bool>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>101</x>
+                <y>328</y>
+                <width>77</width>
+                <height>22</height>
+            </rect>
+        </property>
+        <property name="text">
+            <string>OK</string>
         </property>
     </widget>
 </widget>

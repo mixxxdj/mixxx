@@ -43,8 +43,8 @@ class MixxxView : public QWidget
     MixxxView(QWidget *parent=0, MixxxDoc* doc=0);
     ~MixxxView();
     DlgPlaycontrol *playcontrol1, *playcontrol2;
-	DlgChannel	*channel1, *channel2;
-	DlgPlaylist *playlist;
+    DlgChannel	*channel1, *channel2;
+    DlgPlaylist *playlist;
     DlgMaster *master;
     DlgCrossfader *crossfader;
     DlgSplit *split;
