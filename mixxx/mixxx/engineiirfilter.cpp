@@ -34,7 +34,7 @@ void EngineIIRfilter::process(CSAMPLE *source, CSAMPLE *destination, int buf_siz
 	+ (coefs[9] * yv[4]) + ( coefs[10] * yv[5])
 	+ (coefs[11] * yv[6]) + ( coefs[12] * yv[7]);
     
-    destination[i] += gain*yv[8];  //(gain-1)*yv[8];
+    destination[i] = gain*yv[8];  //(gain-1)*yv[8];
   }
 }
 
