@@ -25,6 +25,8 @@
 #include <qcstring.h>
 #include "enginebuffer.h"
 #include "reader.h"
+#include "controlobject.h"
+#include "configobject.h"
 
 Track::Track(QString location, MixxxView *pView, EngineBuffer *pBuffer1, EngineBuffer *pBuffer2)
 {
@@ -52,7 +54,7 @@ Track::Track(QString location, MixxxView *pView, EngineBuffer *pBuffer1, EngineB
     m_pActivePlaylist = m_qPlaylists.at(0);
     m_pActivePlaylist->activate(m_pView->m_pTrackTable);
 
-    
+    // Connect mouse events from the tree view
     connect(m_pView->m_pTreeView, SIGNAL(playlistPopup(QString)), this, SLOT(slotPlaylistPopup(QString)));
 
     // Connect drop events to table
@@ -60,6 +62,16 @@ Track::Track(QString location, MixxxView *pView, EngineBuffer *pBuffer1, EngineB
 
     // Connect mouse events from WTrackTable
     connect(m_pView->m_pTrackTable, SIGNAL(mousePressed(TrackInfoObject*, int )), this, SLOT(slotTrackPopup(TrackInfoObject*, int )));
+
+    // Get ControlObject for determining end of track mode, and set default value to STOP.
+    m_pEndOfTrackModeCh1 = ControlObject::getControl(ConfigKey("[Channel1]","TrackEndMode"));
+    m_pEndOfTrackModeCh2 = ControlObject::getControl(ConfigKey("[Channel2]","TrackEndMode"));
+
+    // Connect end-of-track signals to this object
+    m_pEndOfTrackCh1 = ControlObject::getControl(ConfigKey("[Channel1]","TrackEnd"));
+    m_pEndOfTrackCh2 = ControlObject::getControl(ConfigKey("[Channel2]","TrackEnd"));
+    connect(m_pEndOfTrackCh1, SIGNAL(signalUpdateApp(double)), this, SLOT(slotEndOfTrackPlayer1(double)));
+    connect(m_pEndOfTrackCh2, SIGNAL(signalUpdateApp(double)), this, SLOT(slotEndOfTrackPlayer2(double)));
 }
 
 Track::~Track()
@@ -340,3 +352,28 @@ void Track::slotLoadPlayer2()
     slotLoadPlayer2(m_pActivePopupTrack);
 }
 
+void Track::slotEndOfTrackPlayer1(double)
+{
+    switch ((int)m_pEndOfTrackModeCh1->getValue())
+    {
+    case TRACK_END_MODE_NEXT:
+        TrackInfoObject *pTrack = m_pTrackPlayer1->getNext();
+        if (pTrack)
+            slotLoadPlayer1(pTrack);
+        break;
+    }
+    m_pEndOfTrackCh1->setValueFromApp(0.);
+}
+
+void Track::slotEndOfTrackPlayer2(double)
+{
+    switch ((int)m_pEndOfTrackModeCh2->getValue())
+    {
+    case TRACK_END_MODE_NEXT:
+        TrackInfoObject *pTrack = m_pTrackPlayer2->getNext();
+        if (pTrack)
+            slotLoadPlayer2(pTrack);
+        break;
+    }
+    m_pEndOfTrackCh2->setValueFromApp(0.);
+}

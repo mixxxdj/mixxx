@@ -71,6 +71,10 @@ void TrackPlaylist::writeXML(QDomDocument &doc, QDomElement &header)
 
 void TrackPlaylist::addTrack(TrackInfoObject *pTrack)
 {
+    // Currently a track can only appear once in a playlist
+    if (m_qList.findRef(pTrack)!=-1)
+        return;
+
     m_qList.append(pTrack);
 
     // If this playlist is active, update WTableTrack
@@ -212,5 +216,6 @@ void TrackPlaylist::slotRemoveTrack(int iRow)
 {
 //    m_qList.remove(pTrack);
 }
+
 
 

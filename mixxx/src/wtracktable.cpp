@@ -2,8 +2,8 @@
                           wtracktable.cpp  -  description
                              -------------------
     begin                : Sun May 4 2003
-    copyright            : (C) 2003 by Tue & Ken Haste Andersen, Ingo Kossyk
-    email                : haste@diku.dk, kossyki@cs.tu-berlin.de
+    copyright            : (C) 2003 by Tue & Ken Haste Andersen
+    email                : haste@diku.dk
  ***************************************************************************/
 
 /***************************************************************************
