@@ -997,6 +997,10 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBuff
 
     m_fLastSampleValue = pOutput[iBufferSize-1];
 //    qDebug("last %f",m_fLastSampleValue);
+
+    //for (int i=0; i<iBufferSize; ++i)
+    //    qDebug("%f", pOutput[i]);
+
 }
 
 void EngineBuffer::rampOut(const CSAMPLE *pOut, int iBufferSize)

@@ -1,4 +1,4 @@
-Mixxx - version 1.4
+Mixxx - version 1.4.1
 
 * HOMEPAGE *************************************************
 http://mixxx.sourceforge.net
@@ -18,6 +18,8 @@ directory for a copy of the licence.
 * NEWS *****************************************************
 New since 1.4:
 - Fixed error in latency calculation
+- Fixed glitches in decoding mp3 files at start of files or
+  after seek.
 
 * INSTALL/USE **********************************************
 Please see manual, included in this directory, 

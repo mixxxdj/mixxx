@@ -20,6 +20,8 @@
 
 #include <qvaluelist.h>
 #include "powermate.h"
+#include <sys/select.h>
+
 /**
   * Linux code for handling the PowerMate.
   *
