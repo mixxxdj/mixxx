@@ -23,6 +23,7 @@ New since 1.2.1:
   manager to one of the visuals, loads the track.
 - New and improved keymap
 - Optimized sound quality selection
+- Playlist layout improvements 
 
 * REQUIREMENTS *********************************************
 Mixxx is depends on the following libraries:
