@@ -378,14 +378,14 @@ MixxxApp::MixxxApp(QApplication *a, QStringList files)
 MixxxApp::~MixxxApp()
 {
 //    qDebug("Destroying MixxxApp");
-    player->stop();
-    delete buffer1;
-    delete buffer2;
+    player->close();
+    delete player;
+    delete master;
     delete channel1;
     delete channel2;
-    delete master;
+    delete buffer1;
+    delete buffer2;
     delete prefDlg;
-    delete player;
 //    delete m_pControlEngine;
     delete midi;
     delete config;

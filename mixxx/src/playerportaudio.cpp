@@ -30,6 +30,9 @@ PlayerPortAudio::PlayerPortAudio(ConfigObject<ConfigValue> *config, ControlObjec
     
     const PaDeviceInfo *devInfo;
 
+    streamMaster = 0;
+    streamHead = 0;
+
     //
     // Fill out devices list with info about available devices if list is empty
     //
@@ -226,11 +229,14 @@ void PlayerPortAudio::close()
         PaError err = Pa_CloseStream(streamMaster);
         if( err != paNoError )
             qWarning("PortAudio: Close master stream error: %s", Pa_GetErrorText(err));
+        streamMaster = 0;
+
         if (headActive)
         {
             err = Pa_CloseStream(streamHead);
             if( err != paNoError )
                 qWarning("PortAudio: Close headphone stream error: %s", Pa_GetErrorText(err));
+            streamHead = 0;
         }
         opendev = false;
     }
@@ -260,12 +266,16 @@ void PlayerPortAudio::wait()
 
 void PlayerPortAudio::stop()
 {
-    PaError err = Pa_StopStream(streamMaster);
-    if( err != paNoError )
-        qFatal("PortAudio: Stop master stream error: %s,", Pa_GetErrorText(err));
-    if (headActive)
+    if (streamMaster)
     {
-        err = Pa_StopStream(streamHead);
+        PaError err = Pa_StopStream(streamMaster);
+        if( err != paNoError )
+            qWarning("PortAudio: Stop master stream error: %s,", Pa_GetErrorText(err));
+    }
+
+    if (headActive && streamHead)
+    {
+        PaError err = Pa_StopStream(streamHead);
         if (err != paNoError)
             qWarning("PortAudio: Stop headphone stream error: %s", Pa_GetErrorText(err));
     }

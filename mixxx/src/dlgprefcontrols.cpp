@@ -21,6 +21,7 @@
 #include "controlpotmeter.h"
 #include "mixxxview.h"
 #include "wnumberpos.h"
+#include "wnumberbpm.h"
 #include <qdir.h>
 #include <qtooltip.h>
 #include "enginebuffer.h"
@@ -145,6 +146,20 @@ DlgPrefControls::DlgPrefControls(QWidget *parent, ControlObject *pControl, Mixxx
     connect(ComboBoxSkinconf, SIGNAL(activated(int)), this, SLOT(slotSetSkin(int)));
 
     //
+    // Scale BPM configuration
+    //
+    // Set default value in config file, if not present
+    if (m_pConfig->getValueString(ConfigKey("[Controls]","ScaleBpm")).length() == 0)
+        m_pConfig->set(ConfigKey("[Controls]","ScaleBpm"), ConfigValue(1));
+
+    // Update combo box
+    ComboBoxScaleBpm->setCurrentItem((m_pConfig->getValueString(ConfigKey("[Controls]","ScaleBpm")).toInt()+1)%2);
+
+    connect(ComboBoxScaleBpm,   SIGNAL(activated(int)), this, SLOT(slotSetScaleBpm(int)));
+    slotSetScaleBpm(0);
+
+
+    //
     // Tooltip configuration
     //
     // Set default value in config file, if not present
@@ -218,6 +233,15 @@ void DlgPrefControls::slotSetVisuals(int)
 {
     m_pConfig->set(ConfigKey("[Controls]","Visuals"), ConfigValue(ComboBoxVisuals->currentItem()));
     textLabel->setText("Restart Mixxx before the change of visuals will take effect.");
+}
+
+void DlgPrefControls::slotSetScaleBpm(int)
+{
+    m_pConfig->set(ConfigKey("[Controls]","ScaleBpm"), ConfigValue((ComboBoxScaleBpm->currentItem()+1)%2));
+    if (ComboBoxScaleBpm->currentItem()==0)
+        WNumberBpm::setScaleBpm(true);
+    else
+        WNumberBpm::setScaleBpm(false);
 }
 
 void DlgPrefControls::slotSetTooltips(int)

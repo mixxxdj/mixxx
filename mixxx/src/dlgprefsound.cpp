@@ -294,11 +294,9 @@ void DlgPrefSound::slotApply()
     config->set(ConfigKey("[Soundcard]","SoundQuality"), ConfigValue(4-SliderSoundQuality->value()));
 
     // Close devices, and open using config data
+    player->stop();
     player->close();
-
-    // Make a small pause
-    for (int i=0; i<1000; i++);
-
+    
     if (!player->open(false))
         QMessageBox::warning(0, "Configuration error","Problem opening audio device");
     else

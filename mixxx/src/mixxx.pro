@@ -6,8 +6,9 @@
 # If ASIO is used, ensure that the path to the ASIO SDK 2 is set correctly below
 WINPA = DIRECTSOUND
 
-# Use this define on Linux if Mixxx should be statically linked with QT
-#unix:DEFINES += STATIC
+# Use this define on Linux if Mixxx should be statically linked with libmad, libid3tag, fftw,
+# ogg, vorbis and audiofile
+unix:DEFINES += STATIC
 
 # Path to Macintosh libraries
 macx:MACLIBPATH = ../../mixxx-maclib
@@ -89,10 +90,9 @@ CONFIG += opengl
 
 # MP3
 contains(DEFINES, STATIC) {
-    unix:!macx:LIBS += /usr/lib/libmad.a /usr/lib/libid3tag.a
+    unix:!macx:LIBS += ../lib/libmad-0.15.0b/.libs/libmad.a ../lib/libid3tag-0.15.0b/.libs/libid3tag.a
 } else {
     unix:!macx:LIBS += -lmad -lid3tag
-    #unix:!macx:LIBS += -lmad ../lib/libid3tag-0.15.0b/.libs/libid3tag.a
 }
 win32:LIBS += libmad-release.lib libid3tag-release.lib
 macx:LIBS += $$MACLIBPATH/lib/libmad.a $$MACLIBPATH/lib/libid3tag.a
@@ -106,7 +106,7 @@ HEADERS += ../lib/vbrheadersdk/dxhead.h
 unix:SOURCES += soundsourceaudiofile.cpp
 unix:HEADERS += soundsourceaudiofile.h
 contains(DEFINES, STATIC) {
-    unix:!macx:LIBS += /usr/lib/libaudiofile.a
+    unix:!macx:LIBS += ../lib/audiofile-0.2.3/libaudiofile/.libs/libaudiofile.a
 } else {
     unix:!macx:LIBS += -laudiofile
 }
@@ -117,7 +117,7 @@ macx:LIBS += $$MACLIBPATH/lib/libaudiofile.a
 
 # Ogg Vorbis
 contains(DEFINES, STATIC) {
-    unix:!macx:LIBS += /usr/lib/libvorbisfile.a /usr/lib/libvorbis.a /usr/lib/libogg.a
+    unix:!macx:LIBS += ../lib/libvorbis-1.0/lib/.libs/libvorbisfile.a ../lib/libvorbis-1.0/lib/.libs/libvorbis.a ../lib/libogg-1.0/src/.libs/libogg.a
 } else {
     unix:!macx:LIBS += -lvorbisfile -lvorbis -logg
 }
@@ -141,7 +141,7 @@ unix:!macx:HEADERS += joysticklinux.h
 
 # FFT
 contains(DEFINES, STATIC) {
-    unix:!macx:LIBS += /usr/lib/libsrfftw.a /usr/lib/libsfftw.a
+    unix:!macx:LIBS += ../lib/fftw-2.1.5/rfftw/.libs/libsrfftw.a ../lib/fftw-2.1.5/fftw/.libs/libsfftw.a
 } else {
     unix:!macx:LIBS += -lsrfftw -lsfftw
 }
@@ -151,7 +151,7 @@ macx:LIBS += $$MACLIBPATH/lib/librfftw.a $$MACLIBPATH/lib/libfftw.a
 # Audio scaling
 INCLUDEPATH += ../lib/libsamplerate
 SOURCES += enginebufferscalesrc.cpp ../lib/libsamplerate/samplerate.c ../lib/libsamplerate/src_linear.c ../lib/libsamplerate/src_sinc.c ../lib/libsamplerate/src_zoh.c
-HEADERS += enginebufferscalesrc.h ../lib/libsamplerate/samplerate.h ../lib/libsamplerate/config.h ../lib/libsamplerate/common.h ../lib/libsamplerate/float_cast.h ../lib/libsamplerate/fastest_coeffs.h ../lib/libsamplerate/high_qual_coeffs.h ../lib/libsamplerate/mid_qual_coeffs.h 
+HEADERS += enginebufferscalesrc.h ../lib/libsamplerate/samplerate.h ../lib/libsamplerate/config.h ../lib/libsamplerate/common.h ../lib/libsamplerate/float_cast.h ../lib/libsamplerate/fastest_coeffs.h ../lib/libsamplerate/high_qual_coeffs.h ../lib/libsamplerate/mid_qual_coeffs.h
 
 # Debug plotting through gplot API
 #unix:DEFINES += __GNUPLOT__
@@ -177,19 +177,19 @@ unix:!macx {
   DEFINES += UNIX_SHARE_PATH=\"/usr/share/mixxx\"
   SETTINGS_FILE = \".mixxx.cfg\"
   DEFINES += __LINUX__
-}    
+}
 
 unix {
   DEFINES += __UNIX__
-  INCLUDEPATH += . 
+  INCLUDEPATH += .
   UI_DIR = .ui
   MOC_DIR = .moc
   OBJECTS_DIR = .obj
-  
+
 # Libs needed for static linking on Linux
 contains(DEFINES, STATIC) {
     unix:message("Using static linking")
-    unix:LIBS += -ldl -lm -lXrender -lSM /usr/lib/libfontconfig.a -lXft
+#    unix:LIBS += -ldl -lm -lXrender -lSM /usr/lib/libfontconfig.a -lXft
 }
 
 # GCC Compiler optimization flags
@@ -205,7 +205,7 @@ win32 {
   DEFINES += __WIN__
   INCLUDEPATH += $$WINLIBPATH ../lib .
   QMAKE_CXXFLAGS += -GX
-  QMAKE_LFLAGS += /VERBOSE:LIB /libpath:$$WINLIBPATH /NODEFAULTLIB:library /NODEFAULTLIB:libcd /NODEFAULTLIB:libcmt /NODEFAULTLIB:libc  
+  QMAKE_LFLAGS += /VERBOSE:LIB /libpath:$$WINLIBPATH /NODEFAULTLIB:library /NODEFAULTLIB:libcd /NODEFAULTLIB:libcmt /NODEFAULTLIB:libc
   SETTINGS_FILE = \"mixxx.cfg\"
   RC_FILE = mixxx.rc
 }
