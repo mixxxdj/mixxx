@@ -38,7 +38,12 @@ void EnginePregain::process(const CSAMPLE *pIn, const CSAMPLE *pOut, const int i
     if (fGain == 1.)
     {
         if (pIn!=pOut)
-            memcpy(pOutput, pIn, sizeof(CSAMPLE) * iBufferSize);
+        {
+            for (int i=0; i<iBufferSize; ++i)
+                pOutput[i] = pIn[i]; 
+            //memcpy(pOutput, pIn, sizeof(CSAMPLE) * iBufferSize);
+        }
+        return;
     }
     
     for (int i=0; i<iBufferSize; ++i)

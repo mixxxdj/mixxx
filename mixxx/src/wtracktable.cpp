@@ -139,13 +139,19 @@ void WTrackTable::setup(QDomNode node)
     //setColumnStretchable(COL_COMMENT, true);
     adjustColumn(COL_TYPE);
     adjustColumn(COL_DURATION);
-    adjustColumn(COL_BPM);
+//    adjustColumn(COL_BPM);
     adjustColumn(COL_BITRATE);
     //setColumnStretchable(COL_SCORE,true);
     setColumnStretchable(COL_TYPE,true);
     setColumnStretchable(COL_DURATION,true);
-    setColumnStretchable(COL_BPM,true);
+//    setColumnStretchable(COL_BPM,true);
     setColumnStretchable(COL_BITRATE,true);
+
+    if (!WWidget::selectNode(node, "ColWidthBpm").isNull())
+    {
+        int width = WWidget::selectNodeQString(node, "ColWidthBpm").toInt();
+	setColumnWidth(COL_BPM,width);
+    }				
 }
 
 void WTrackTable::sortColumn(int col, bool ascending, bool)

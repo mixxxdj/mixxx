@@ -167,6 +167,13 @@ CSAMPLE wndKaiser(CSAMPLE *wnd, int size, CSAMPLE beta)
     return (2.f/AFactor);
 }
 
+CSAMPLE wndKaiserSample(int size, CSAMPLE beta, int i)
+{
+    int m = size-1;
+    CSAMPLE t = besseli(beta);
+    return besseli(2.*beta/m*sqrt((float)(i*(m-i))))/t;
+}
+
 /*
  * // Calculate the derivative of the window in kaiser_wnd.
 // The result goes in kaiser_dwnd.

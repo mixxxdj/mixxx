@@ -35,6 +35,7 @@ Input::~Input()
     }
 }
 
+/*
 QStringList Input::getMappings()
 {
     return QStringList();
@@ -43,6 +44,7 @@ QStringList Input::getMappings()
 void Input::setMapping(QString mapping)
 {
 }
+*/
 
 void Input::run()
 {

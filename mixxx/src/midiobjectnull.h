@@ -26,7 +26,7 @@
 
 class MidiObjectNull : public MidiObject  {
 public: 
-    MidiObjectNull(ConfigObject<ConfigValueMidi> *c, QString device);
+    MidiObjectNull(QString device);
     ~MidiObjectNull();
     void devOpen(QString device);
     void devClose();

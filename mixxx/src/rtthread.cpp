@@ -70,9 +70,13 @@ void rtThread()
     memset(&schp, 0, sizeof(schp));
 
     // Choose a priority just one step lower than the PortAudio thread
-    schp.sched_priority = ((sched_get_priority_max(SCHED_RR) - 11)); //sched_get_priority_min(SCHED_RR)) / 2)-1;
+    //schp.sched_priority = ((sched_get_priority_max(SCHED_RR) - 11)); //sched_get_priority_min(SCHED_RR)) / 2)-1;
+    
+    // Actually, for alsa real time priority is needed, and this function is only called in Linux by PlayerALSA
+    schp.sched_priority = ((sched_get_priority_max(SCHED_RR))); //sched_get_priority_min(SCHED_RR)) / 2)-1;
+    
     if (sched_setscheduler(0, SCHED_RR, &schp) != 0)
-    qDebug("Not possible to give audio producer thread high prioriy.");
+        qDebug("Not possible to give audio producer thread high prioriy.");
 #endif
 #endif
 #ifdef __WIN__

@@ -33,7 +33,7 @@
 class JoystickLinux : public Joystick  
 {
 public: 
-    JoystickLinux(ControlObject *pControl);
+    JoystickLinux();
     ~JoystickLinux();
     int opendev();
     void closedev();

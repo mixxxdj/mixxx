@@ -96,6 +96,8 @@ bool ControlObject::updateProxies(ControlObjectThread *pProxyNoUpdate)
 
 ControlObject *ControlObject::getControl(ConfigKey key)
 {
+//    qDebug("trying to get group %s, item %s",key.group.latin1(), key.item.latin1());
+    
     // Loop through the list of ConfigObjects to find one matching key
     ControlObject *c;
     for (c=m_sqList.first(); c; c=m_sqList.next())

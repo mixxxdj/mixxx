@@ -33,6 +33,7 @@ int round(CSAMPLE x);
 #endif
 CSAMPLE arctan2(CSAMPLE y, CSAMPLE x);
 CSAMPLE wndKaiser(CSAMPLE *wnd, int size, CSAMPLE beta);
+CSAMPLE wndKaiserSample(int size, CSAMPLE beta, int i);
 bool even(long n);
 //void wndDwnd(CSAMPLE *wnd, CSAMPLE *dwnd, int size);
 /** Compute pow(x,n) for positive integer n through repeated

@@ -29,6 +29,7 @@ ControlObjectThread::ControlObjectThread(ControlObject *pControlObject)
     m_pControlObject = pControlObject;
 
     // Update associated ControlObject
+    Q_ASSERT(m_pControlObject);
     m_pControlObject->addProxy(this);
 
     // Initialize value
@@ -69,7 +70,7 @@ bool ControlObjectThread::setExtern(double v)
     return false;
 }
 
-void ControlObjectThread::update(int time)
+bool ControlObjectThread::update()
 {
     ControlObjectThread *p;
     m_sqMutex.lock();
@@ -77,7 +78,12 @@ void ControlObjectThread::update(int time)
     m_sqMutex.unlock();
 
     if (p)
+    {
         p->emitValueChanged();
+        return true;
+    }
+    else
+        return false;
 }
 
 void ControlObjectThread::emitValueChanged()

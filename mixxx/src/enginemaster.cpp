@@ -25,6 +25,7 @@
 #include "configobject.h"
 #include "controlpotmeter.h"
 #include "controlpushbutton.h"
+// #include "enginebuffermasterrate.h"
 
 EngineMaster::EngineMaster(EngineBuffer *_buffer1, EngineBuffer *_buffer2,
                            EngineChannel *_channel1, EngineChannel *_channel2,
@@ -62,7 +63,8 @@ EngineMaster::EngineMaster(EngineBuffer *_buffer1, EngineBuffer *_buffer2,
 
     // Headphone mix (left/right)
     head_mix = new ControlPotmeter(ConfigKey(group, "headMix"),-1.,1.);
-
+    head_mix->set(-1.);
+    
     // Headphone Clipping
     head_clipping = new EngineClipping("");
 
@@ -77,6 +79,8 @@ EngineMaster::EngineMaster(EngineBuffer *_buffer1, EngineBuffer *_buffer2,
     
     Q_ASSERT(flanger1);
     Q_ASSERT(flanger2);
+    
+//     m_pEngineBufferMasterRate = new EngineBufferMasterRate();
     
     // Allocate buffers
     m_pTemp1 = new CSAMPLE[MAX_BUFFER_LEN];
@@ -95,6 +99,7 @@ EngineMaster::~EngineMaster()
     delete clipping;
     delete head_clipping;
     delete m_pControlObjectHeadphoneMute;
+//     delete m_pEngineBufferMasterRate;
     delete [] m_pTemp1;
     delete [] m_pTemp2;
     delete [] m_pHead;
@@ -163,9 +168,10 @@ void EngineMaster::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBuff
         for (int i=0; i<iBufferSize; ++i)
             m_pMaster[i] = 0.;
 
+
     // Master volume
     volume->process(m_pMaster, m_pMaster, iBufferSize);
-
+        
     // Process the flanger on master if flanger is enabled on both channels
     if (flanger1->get()==1. && flanger2->get()==1.)
         flanger->process(m_pMaster, m_pMaster, iBufferSize);
@@ -180,45 +186,84 @@ void EngineMaster::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBuff
     //
     // Headphone channel:
     //
-
-    // Head phone left/right mix
-    cf_val = head_mix->get();
-    float chead_gain = 0.5*(-cf_val+1.);
-    float cmaster_gain = 0.5*(cf_val+1.);
-
-    //qDebug("head val %f, head %f, master %f",cf_val,chead_gain,cmaster_gain);
-
-    if (master1 && pfl1->get()==1. && master2 && pfl2->get()==1.)
-    {
-        //qDebug("both");
-        for (int i=0; i<iBufferSize; i++)
-            m_pHead[i] = m_pMaster[i]*cmaster_gain + m_pTemp1[i]*chead_gain + m_pTemp2[i]*chead_gain;
-    }
-    else if (master1 && pfl1->get()==1.)
-    {
-        //qDebug("ch 1");
-        for (int i=0; i<iBufferSize; i++)
-            m_pHead[i] = m_pMaster[i]*cmaster_gain + m_pTemp1[i]*chead_gain;
-    }
-    else if (master2 && pfl2->get()==1.)
-    {
-        //qDebug("ch 2");
-        for (int i=0; i<iBufferSize; i++)
-            m_pHead[i] = m_pMaster[i]*cmaster_gain + m_pTemp2[i]*chead_gain;
+//     if (m_pControlObjectHeadphoneMute->get()==1)
+//     {
+        // Head phone left/right mix
+        cf_val = head_mix->get();
+        float chead_gain = 0.5*(-cf_val+1.);
+        float cmaster_gain = 0.5*(cf_val+1.);
+    
+        //qDebug("head val %f, head %f, master %f",cf_val,chead_gain,cmaster_gain);
+    
+        if (master1 && pfl1->get()==1. && master2 && pfl2->get()==1.)
+        {
+            //qDebug("both");
+            for (int i=0; i<iBufferSize; i++)
+                m_pHead[i] = m_pMaster[i]*cmaster_gain + m_pTemp1[i]*chead_gain + m_pTemp2[i]*chead_gain;
+        }
+        else if (master1 && pfl1->get()==1.)
+        {
+            //qDebug("ch 1");
+            for (int i=0; i<iBufferSize; i++)
+                m_pHead[i] = m_pMaster[i]*cmaster_gain + m_pTemp1[i]*chead_gain;
+        }
+        else if (master2 && pfl2->get()==1.)
+        {
+            //qDebug("ch 2");
+            for (int i=0; i<iBufferSize; i++)
+                m_pHead[i] = m_pMaster[i]*cmaster_gain + m_pTemp2[i]*chead_gain;
+        }
+        else
+        {
+            //qDebug("none");
+            for (int i=0; i<iBufferSize; i++)
+                m_pHead[i] = m_pMaster[i]*cmaster_gain;
+        }
+/*
     }
     else
     {
-        //qDebug("none");
-        for (int i=0; i<iBufferSize; i++)
-            m_pHead[i] = m_pMaster[i]*cmaster_gain;
+        // Head phone left/right mix
+        cf_val = head_mix->get();
+        float gain1 = 0.5*(-cf_val+1.);
+        float gain2 = 0.5*(cf_val+1.);
+    
+        //qDebug("head val %f, head %f, master %f",cf_val,chead_gain,cmaster_gain);
+    
+        if (master1 && pfl1->get()==1. && master2 && pfl2->get()==1.)
+        {
+            //qDebug("both");
+            for (int i=0; i<iBufferSize; i++)
+                m_pHead[i] = m_pTemp1[i]*gain1 + m_pTemp2[i]*gain2;
+        }
+        else if (master1 && pfl1->get()==1.)
+        {
+            //qDebug("ch 1");
+            for (int i=0; i<iBufferSize; i++)
+                m_pHead[i] = m_pTemp1[i]*gain1;
+        }
+        else if (master2 && pfl2->get()==1.)
+        {
+            //qDebug("ch 2");
+            for (int i=0; i<iBufferSize; i++)
+                m_pHead[i] = m_pTemp2[i]*gain2;
+        }
+        else
+        {
+            //qDebug("none");
+            for (int i=0; i<iBufferSize; i++)
+                m_pHead[i] = 0.;
+        }
     }
-
+*/
+    
     // Head volume and clipping
     head_volume->process(m_pHead, m_pHead, iBufferSize);
     head_clipping->process(m_pHead, m_pHead, iBufferSize);
 
     int j=0;
 
+ 
     // Balance values
     float balright = 1.;
     float balleft = 1.;

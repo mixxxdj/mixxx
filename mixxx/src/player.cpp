@@ -19,9 +19,22 @@
 #include "enginemaster.h"
 #include "controlobject.h"
 
+#ifdef RECORD_OUTPUT
+  // HACK TO RECORD OUTPUT. WRITTEN TO FILE AT PROGRAM EXIT
+  #include <audiofile.h>
+  #include <qptrlist.h>
+  typedef struct {
+      short int *pBuffer;
+      int size;
+  } recordObject;
+  QPtrList<recordObject> m_qRecordList;
+#endif
+
 short int Player::m_iBufferSize = 0;
 short int Player::m_iChannels = 0;
 EngineMaster *Player::m_pMaster = 0;
+
+
 
 /* -------- ------------------------------------------------------
    Purpose: Initializes the audio hardware.
@@ -43,13 +56,37 @@ Player::Player(ConfigObject<ConfigValue> *pConfig)
 Player::~Player()
 {
     delete [] m_pBuffer;
+    
+#ifdef RECORD_OUTPUT
+    //
+    // HACK: Write recorded sound
+    //
+    // Setup file format
+    AFfilesetup outputSetup = afNewFileSetup();
+    afInitFileFormat(outputSetup, AF_FILE_WAVE);
+    afInitRate(outputSetup, AF_DEFAULT_TRACK, getPlaySrate());
+    afInitChannels(outputSetup, AF_DEFAULT_TRACK, 2);
+    afInitSampleFormat (outputSetup, AF_DEFAULT_TRACK, AF_SAMPFMT_TWOSCOMP, 16);
+    //afInitByteOrder (outputSetup, AF_DEFAULT_TRACK, AF_BYTEORDER_BIGENDIAN);
+
+    // Open file handle
+    AFfilehandle fh = afOpenFile("output.wav","w",outputSetup);
+    if (!fh)
+        qFatal("Could not write wave output file");
+    recordObject *r;
+    for (r = m_qRecordList.first(); r; r=m_qRecordList.next())
+    {
+        afWriteFrames(fh,AF_DEFAULT_TRACK,r->pBuffer,r->size/2);
+    }
+    afCloseFile(fh);
+#endif
 }
 
 short int Player::getBufferSize()
 {
-    if (m_iChannels>0)
-        return m_iBufferSize/m_iChannels;
-    else
+//     if (m_iChannels>0)
+//         return m_iBufferSize/m_iChannels;
+//     else
         return m_iBufferSize;
 }
 
@@ -86,6 +123,17 @@ CSAMPLE *Player::prepareBuffer(int iBufferSize)
     // architecture expects number of samples for two channels
     // as input so...
     m_pMaster->process(0, m_pBuffer, iBufferSize*2);
+    
+#ifdef RECORD_OUTPUT
+    // HACK: RECORD SOUND
+    recordObject *r = new recordObject;
+    m_qRecordList.append(r);
+    r->size = iBufferSize*2;
+    r->pBuffer = new short int[r->size];
+    for (int j=0; j<r->size; ++j)
+        r->pBuffer[j] = (short int)(m_pBuffer[j]);
+#endif
+
     return m_pBuffer;
 }
 

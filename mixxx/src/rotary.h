@@ -28,13 +28,6 @@
 
 const int kiRotaryFilterMaxLen = 50;
 
-static QString kqRotaryMappingP1Phase =   "Player 1, phase adjustment";
-static QString kqRotaryMappingP1Scratch = "Player 1, scratch";
-static QString kqRotaryMappingP1Search =  "Player 1, RealSearch";
-static QString kqRotaryMappingP2Phase =   "Player 2, phase adjustment";
-static QString kqRotaryMappingP2Scratch = "Player 2, scratch";
-static QString kqRotaryMappingP2Search =  "Player 2, RealSearch";
-
 class Rotary
 {
 public:

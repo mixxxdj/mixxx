@@ -115,7 +115,6 @@ private:
     double m_dBeatFirst;
     /** Beat interval in seconds. Only used if m_dBeatFirst>0 */
     double m_dBeatInterval;
-
 #ifdef __GNUPLOT__
     /** Pointer to gnuplot interface */
     plot_t *gnuplot_bpm;

@@ -49,7 +49,7 @@ typedef enum {
 class MidiObject : public QThread
 {
 public:
-    MidiObject(ConfigObject<ConfigValueMidi> *pMidiConfig, QString device);
+    MidiObject(QString device);
     ~MidiObject();
     void setMidiConfig(ConfigObject<ConfigValueMidi> *pMidiConfig);
     void reopen(QString device);

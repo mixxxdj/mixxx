@@ -16,6 +16,7 @@
  ***************************************************************************/
 
 #include "configobject.h"
+#include <qdir.h>
 
 ConfigKey::ConfigKey()
 {
@@ -306,6 +307,44 @@ template <class ValueType> void ConfigObject<ValueType>::Save()
         if (file.status()!=IO_Ok)
             qDebug("Error while writing configuration file.");
     }
+}
+
+template <class ValueType> 
+QString ConfigObject<ValueType>::getConfigPath()
+{
+    //
+    // Find the config path, path where midi configuration files, skins etc. are stored.
+    // On Linux the search order is whats listed in mixxx.cfg, then UNIX_SHARE_PATH
+    // On Windows and Mac it is always (and only) app dir.
+    //
+    QString qConfigPath;
+#ifdef __LINUX__
+    // On Linux, check if the path is stored in the configuration database.
+    if (getValueString(ConfigKey("[Config]","Path")).length()>0 && QDir(getValueString(ConfigKey("[Config]","Path"))).exists())
+        qConfigPath = getValueString(ConfigKey("[Config]","Path"));
+    else
+    {
+        // Set the path according to the compile time define, UNIX_SHARE_PATH
+        qConfigPath = UNIX_SHARE_PATH;
+    }
+#endif
+#ifdef __WIN__
+    // On Windows, set the config dir relative to the application dir
+    char *str = new char[200];
+    GetModuleFileName(NULL, (unsigned short *)str, 200);
+    qConfigPath = QFileInfo(str).dirPath();
+#endif
+#ifdef __MACX__
+    // Set the path relative to the bundle directory
+    CFURLRef pluginRef = CFBundleCopyBundleURL(CFBundleGetMainBundle());
+    CFStringRef macPath = CFURLCopyFileSystemPath(pluginRef, kCFURLPOSIXPathStyle);
+    qConfigPath = CFStringGetCStringPtr(macPath, CFStringGetSystemEncoding());
+#endif
+    // If the directory does not end with a "/", add one
+    if (!qConfigPath.endsWith("/"))
+        qConfigPath.append("/");
+    
+    return qConfigPath;
 }
 
 

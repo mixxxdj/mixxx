@@ -24,7 +24,6 @@
 
 class MixxxApp;
 class MixxxView;
-class MidiObject;
 class PlayerProxy;
 class Track;
 class DlgPrefSound;
@@ -42,10 +41,8 @@ class DlgPreferences : public QTabDialog
     Q_OBJECT
 public:
     DlgPreferences(MixxxApp *mixxx, MixxxView *view,
-                   MidiObject *midi, PlayerProxy *player,
-                   Track *track, ConfigObject<ConfigValue> *config,
-                   ConfigObject<ConfigValueMidi> *midiconfig,
-                   PowerMate *pPowerMate1, PowerMate *pPowerMate2);
+                   PlayerProxy *player,
+                   Track *track, ConfigObject<ConfigValue> *config);
     ~DlgPreferences();
 public slots:
     void slotUpdate();

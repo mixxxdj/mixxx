@@ -28,7 +28,7 @@
 
 class MidiObjectWin : public MidiObject  {
 public: 
-    MidiObjectWin(ConfigObject<ConfigValueMidi> *c, QString device);
+    MidiObjectWin(QString device);
     ~MidiObjectWin();
     void devOpen(QString device);
     void devClose();

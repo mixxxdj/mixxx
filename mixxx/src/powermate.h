@@ -38,6 +38,8 @@ class PowerMate : public Input
 public:
     PowerMate();
     ~PowerMate();
+    static QStringList getMappings();
+    void selectMapping(QString mapping);
     bool opendev(QString) { return opendev(); }
     virtual bool opendev() = 0;
     void led();

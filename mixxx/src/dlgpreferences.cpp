@@ -25,10 +25,8 @@
 #include "wtreeview.h"
 
 DlgPreferences::DlgPreferences(MixxxApp *mixxx, MixxxView *view,
-                               MidiObject *midi, PlayerProxy *player,
-                               Track *, ConfigObject<ConfigValue> *_config,
-                               ConfigObject<ConfigValueMidi> *midiconfig,
-                               PowerMate *pPowerMate1, PowerMate *pPowerMate2) : QTabDialog(mixxx, "")
+                               PlayerProxy *player,
+                               Track *, ConfigObject<ConfigValue> *_config) : QTabDialog(mixxx, "")
 {
     m_pMixxx = mixxx;
 
@@ -37,7 +35,7 @@ DlgPreferences::DlgPreferences(MixxxApp *mixxx, MixxxView *view,
 
     // Construct widgets for use in tabs
     wsound = new DlgPrefSound(this, player, config);
-    wmidi  = new DlgPrefMidi(this, midi, config, midiconfig, pPowerMate1, pPowerMate2);
+    wmidi  = new DlgPrefMidi(this, config);
     wplaylist = new DlgPrefPlaylist(this, config);
     wcontrols = new DlgPrefControls(this, view, config);
 

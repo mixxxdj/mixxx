@@ -33,7 +33,7 @@
 
 class MidiObjectCoreMidi : public MidiObject  {
 public: 
-    MidiObjectCoreMidi(ConfigObject<ConfigValueMidi> *pMidiConfig, QString device);
+    MidiObjectCoreMidi(QString device);
     ~MidiObjectCoreMidi();
     void devOpen(QString device);
     void devClose();

@@ -55,8 +55,8 @@ public:
      * to set. Thread safe, blocking. */
     void sub(double v);
     /** Updates the object with changes from the corresponding ControlObject, and emits
-     * valueChagned signal. Time specifies how much time to wait for a control change */
-    static void update(int time);
+     * valueChagned signal. Returns true if this it was updated*/
+    static bool update();
     /** Called from update(); */
     void emitValueChanged();
 public slots:

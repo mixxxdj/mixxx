@@ -66,6 +66,8 @@ private:
     ControlObject *m_pControlObjectHeadphoneMute;
     /** True if the mouse is currently dragging the latency slider */
     bool m_bLatencySliderDrag; 
+    /** Last value of the latency slider. Used to determine when to update the slider */
+    int m_iLastLatencySliderValue;
 };
 
 #endif

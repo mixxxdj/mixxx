@@ -42,7 +42,11 @@ public:
     int getRate();
     int getChannels();
     int getBufferSize();
+//<<<<<<< readerextracthfc.h
+//    void *processChunk(const int idx, const int start_idx, const int end_idx, bool, const long signed int filepos_start);
+//=======
     void *processChunk(const int idx, const int start_idx, const int end_idx, bool, const long signed int);
+//>>>>>>> 1.12
 private:
     void processFftFrame(int idx);
 

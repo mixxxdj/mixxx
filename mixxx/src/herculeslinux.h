@@ -22,7 +22,7 @@
 #include "hercules.h"
 #include <sys/select.h>
 #include <linux/input.h>
-
+#include <qobject.h>
 
 /**
   * Linux code for handling the Hercules DJ console.
@@ -77,6 +77,23 @@ const int kiHerculesRightBtn3 = 305;
 const int kiHerculesRightBtnFx = 288;
 const int kiHerculesCrossfade = 2;
 
+const int kiHerculesLedRightSync = 0;
+const int kiHerculesLedLeftLoop = 1;
+const int kiHerculesLedRightLoop = 2;
+const int kiHerculesLedLeftMasterTempo = 3;
+const int kiHerculesLedRightMasterTempo = 4;
+const int kiHerculesLedLeftFx = 5;
+const int kiHerculesLedRightFx = 6;
+const int kiHerculesLedRightCueLamp = 7;
+const int kiHerculesLedRightCueBtn = 8;
+const int kiHerculesLedRightPlay = 9;
+const int kiHerculesLedLeftCueLamp = 10;
+const int kiHerculesLedLeftPlay = 11;
+const int kiHerculesLedLeftHeadphone = 12;
+const int kiHerculesLedRightHeadphone = 13;
+const int kiHerculesLedLeftCueBtn = 14;
+const int kiHerculesLedLeftSync = 15;
+
 class HerculesLinux : public Hercules
 {
 public:
@@ -85,10 +102,12 @@ public:
     bool opendev();
     void closedev();
     void getNextEvent();
+    void selectMapping(QString qMapping);
+
 protected:
     void run();  // main thread loop
     int opendev(int iId);
-    void led_write(int iStaticBrightness, int iSpeed, int iTable, int iAsleep, int iAwake);
+    void led_write(int iLed, bool bOn);
 
     /** File handle of current open /dev/input/event device */
     int m_iFd;
@@ -99,6 +118,7 @@ protected:
     /** File set used in select() call */
     fd_set fdset;
     int m_iJogLeft, m_iJogRight;
+    double m_dJogLeftOld, m_dJogRightOld;
 };
 
 #endif

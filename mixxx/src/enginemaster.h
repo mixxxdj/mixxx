@@ -29,6 +29,7 @@ class EngineVuMeter;
 class ControlPotmeter;
 class ControlPushButton;
 class ControlObject;
+// class EngineBufferMasterRate;
 
 /**
   *@author Tue and Ken Haste Andersen
@@ -50,7 +51,8 @@ private:
     EngineClipping *clipping, *head_clipping;
     EngineFlanger *flanger;
     EngineVuMeter *vumeter;
-    
+//     EngineBufferMasterRate *m_pEngineBufferMasterRate;
+        
     ControlObject *m_pControlObjectHeadphoneMute;
     ControlPotmeter *crossfader, *head_mix, *m_pBalance;
     ControlPushButton *pfl1, *pfl2, *flanger1, *flanger2;

@@ -20,7 +20,7 @@
 #include "controleventmidi.h"
 
 
-JoystickLinux::JoystickLinux(ControlObject *pControl) : Joystick(pControl)
+JoystickLinux::JoystickLinux() : Joystick()
 {
 }
 

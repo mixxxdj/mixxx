@@ -42,7 +42,7 @@ typedef struct {
 class Joystick : public QThread
 {
 public: 
-    Joystick(ControlObject *pControl);
+    Joystick();
     ~Joystick();
     virtual int opendev() = 0;
     virtual void closedev() = 0;

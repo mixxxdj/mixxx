@@ -37,7 +37,7 @@ DlgPrefSound::DlgPrefSound(QWidget *parent, PlayerProxy *_player,
     m_pControlObjectHeadphoneMute = ControlObject::getControl(ConfigKey("[Master]","HeadphoneMute"));
     if (config->getValueString(ConfigKey("[Soundcard]","HeadphoneMute")).length() == 0)
         config->set(ConfigKey("[Soundcard]","HeadphoneMute"),ConfigValue(1));
-    if (config->getValueString(ConfigKey("[Soundcard]","HeadphoneMute")).toInt()==1)
+    if (config->getValueString(ConfigKey("[Soundcard]","HeadphoneMute")).toInt()>0)
     {
         checkBoxHeadphoneMute->setChecked(true);
         m_pControlObjectHeadphoneMute->queueFromThread(1.);
@@ -228,7 +228,7 @@ void DlgPrefSound::slotApply()
     //temp.truncate(temp.length()-3);
     config->set(ConfigKey("[Soundcard]","Samplerate"), ConfigValue(temp));
     //config->set(ConfigKey("[Soundcard]","Bits"), ConfigValue(ComboBoxBits->currentText()));
-    config->set(ConfigKey("[Soundcard]","Latency"), ConfigValue(getSliderLatencyMsec(SliderLatency->value())));
+     config->set(ConfigKey("[Soundcard]","Latency"), ConfigValue(getSliderLatencyMsec(SliderLatency->value())));
 //    config->set(ConfigKey("[Soundcard]","SoundQuality"), ConfigValue(2+4-SliderSoundQuality->value()));
     
     if (checkBoxPitchIndp->isChecked())
@@ -237,7 +237,7 @@ void DlgPrefSound::slotApply()
         config->set(ConfigKey("[Soundcard]","PitchIndpTimeStretch"), ConfigValue(0));
      
         
-    qDebug("request msec %i", getSliderLatencyMsec(SliderLatency->value()));
+    //qDebug("request msec %i", getSliderLatencyMsec(SliderLatency->value()));
     
     // Close devices, and open using config data
     player->close();
@@ -260,7 +260,8 @@ void DlgPrefSound::slotApply()
 void DlgPrefSound::slotQueryLatency()
 {
     int iLatencyMsec = (int)ceil(1000.*((float)Player::getBufferSize()/((float)EngineObject::getPlaySrate())));
-    qDebug("got latency msec %i, buffer size %i",iLatencyMsec,Player::getBufferSize());
+    qDebug("got latency msec %i, buffer size %i, config latency %i",iLatencyMsec,Player::getBufferSize(), 
+           config->getValueString(ConfigKey("[Soundcard]","Latency")).toInt());
     
     // Only correct latency slider if it's more than two milliseconds off the actual value.
     // By changing the latency sliders value, the device is closed and opened again, and this

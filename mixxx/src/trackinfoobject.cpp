@@ -41,6 +41,7 @@ TrackInfoObject::TrackInfoObject(const QString sPath, const QString sFile) : m_s
     m_iTimesPlayed = 0;
     m_fBpm = 0.;
     m_fBpmConfidence = 0.;
+    m_fBeatFirst = -1.;
     m_iScore = 0;
     m_iId = 0;
     m_pWave = 0;

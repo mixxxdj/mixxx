@@ -359,7 +359,7 @@ MixxxView::MixxxView(QWidget *parent, ConfigObject<ConfigValueKbd> *kbdconfig, b
                 m_pSplitter->setFixedSize(x,y);
 
                 // This is QT 3.2 only
-        //m_pSplitter->setHandleWidth(2);
+                //m_pSplitter->setHandleWidth(2);
 
                 m_qWidgetList.append(m_pSplitter);
             }

@@ -26,9 +26,9 @@
             card and device.
    Output:  -
    -------- ------------------------------------------------------ */
-MidiObject::MidiObject(ConfigObject<ConfigValueMidi> *pMidiConfig, QString)
+MidiObject::MidiObject(QString)
 {
-    m_pMidiConfig = pMidiConfig;
+    m_pMidiConfig = 0;
     no = 0;
     requestStop = false;
 }

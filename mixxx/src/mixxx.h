@@ -43,7 +43,6 @@
 #include "enginebuffer.h"
 #include "enginechannel.h"
 #include "enginemaster.h"
-#include "midiobject.h"
 #include "controlobject.h"
 #include "dlgpreferences.h"
 #include "trackplaylist.h"
@@ -51,9 +50,6 @@
 class WVisual;
 class Track;
 class TrackInfoObject;
-class PowerMate;
-class Hercules;
-class Joystick;
 class PlayerProxy;
 class WaveSummary;
 class QSplashScreen;
@@ -120,12 +116,6 @@ class MixxxApp : public QMainWindow
     ConfigObject<ConfigValueKbd> *kbdconfig;
     /** Pointer to track object */
     Track *m_pTrack;
-    /** Pointer to PowerMate objects */
-    PowerMate *powermate1, *powermate2;
-    /** Pointer to Hercules object */
-    Hercules *m_pHercules;
-    /** Pointer to Joystick object */
-    Joystick *joystick1;
     /** file_menu contains all items of the menubar entry "File" */
     QPopupMenu *fileMenu;
     /** edit_menu contains all items of the menubar entry "Edit" */

@@ -896,7 +896,7 @@
   <Pos>139,50</Pos>
   <Size>747,74</Size>
   <BgColor>#ffffff</BgColor>
-  <SignalColor>#00ff00</SignalColor>
+  <SignalColor>#00ff00</SignalColor><HfcColor>#FFC115</HfcColor>
   <BeatColor>#0000f0</BeatColor>
   <MarkerColor>#0000ff</MarkerColor>
   <FisheyeColor>#ffffff</FisheyeColor>
@@ -909,7 +909,7 @@
   <Pos>139,126</Pos>
   <Size>747,74</Size>
   <BgColor>#ffffff</BgColor>
-  <SignalColor>#00ff00</SignalColor>
+  <SignalColor>#00ff00</SignalColor><HfcColor>#FFC115</HfcColor>
   <BeatColor>#f00000</BeatColor>
   <MarkerColor>#ff0000</MarkerColor>
   <FisheyeColor>#ffffff</FisheyeColor>

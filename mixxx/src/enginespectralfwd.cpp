@@ -37,7 +37,7 @@ EngineSpectralFwd::EngineSpectralFwd(bool Power, bool Phase, WindowKaiser *windo
     for (int i=0; i<l; ++i)
     {
         spectrum[i] = 0.;
-	spectrumOld[i] = 0.;
+        spectrumOld[i] = 0.;
     }
 }
 
