@@ -296,19 +296,19 @@ void VisualDisplay::setSignalScale(float scale)
 
 void VisualDisplay::setupScene()
 {
-    dblue.ambient[0] = 100./255.f;
-    dblue.ambient[1] = 100./255.f;
-    dblue.ambient[2] = 100./255.f;
+    dblue.ambient[0] = 100.f/255.f;
+    dblue.ambient[1] = 100.f/255.f;
+    dblue.ambient[2] = 100.f/255.f;
     dblue.ambient[3] = 0.5f;
 
-    dblue.diffuse[0] = 100./255.f;
-    dblue.diffuse[1] = 100./255.f;
-    dblue.diffuse[2] = 100./255.f;
+    dblue.diffuse[0] = 100.f/255.f;
+    dblue.diffuse[1] = 100.f/255.f;
+    dblue.diffuse[2] = 100.f/255.f;
     dblue.diffuse[3] = 0.5f;
 
-    dblue.specular[0] = 100./255.f;
-    dblue.specular[1] = 100./255.f;
-    dblue.specular[2] = 100./255.f;
+    dblue.specular[0] = 100.f/255.f;
+    dblue.specular[1] = 100.f/255.f;
+    dblue.specular[2] = 100.f/255.f;
     dblue.specular[3] = 0.5f;
 
     dblue.shininess = 128;

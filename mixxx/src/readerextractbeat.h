@@ -48,7 +48,7 @@ const CSAMPLE histDownWrite = 0.9999f;
 /** Width of gauss/2 used in histogram updates */
 const int gaussWidth = 8; 
 /** Slack allowed in beat positioning given in seconds times two, ie. 0.05 = 0.1 total slack. */
-const CSAMPLE kfBeatRange = 0.05;
+const CSAMPLE kfBeatRange = 0.05f;
 
 /**
   * Extracts beat information based on peaks in the HFC and a beat probability vector.
