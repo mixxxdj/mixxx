@@ -26,6 +26,8 @@ VisualBufferMarks::VisualBufferMarks(ReaderExtract *pReaderExtract, ControlPotme
     m_pAbsPlaypos = ControlObject::getControl(ConfigKey(group, "absplayposition"));
 //    qDebug("marks: resampleFactor %f, displayRate %f, displayFactor %f, readerExtractFactor %f", m_fResampleFactor, m_fDisplayRate,m_fDisplayFactor, m_fReaderExtractFactor);
     m_iCuePosition = -1;
+
+    connect(m_pCuePoint, SIGNAL(signalUpdateApp(double)), this, SLOT(slotUpdateCuePoint(double)));
 }
 
 VisualBufferMarks::~VisualBufferMarks()
@@ -59,14 +61,19 @@ void VisualBufferMarks::update(int iPos, int iLen)
         }
     }
 
+    slotUpdateCuePoint(m_pCuePoint->getValue());
+}
+
+void VisualBufferMarks::slotUpdateCuePoint(double v)
+{
     // Find index in buffer where cue point should be displayed. Is set to -1 if cue point is
     // currently not in the visible buffer
     m_iCuePosition = -1;
 
-    if (m_pCuePoint->getValue()>=0 && ((fabs(m_pCuePoint->getValue()-m_pAbsPlaypos->getValue())/m_fReaderExtractFactor)/m_fResampleFactor)<(float)m_iDisplayLen/2.f)
+    if (v>=0 && ((fabs(v-m_pAbsPlaypos->getValue())/m_fReaderExtractFactor)/m_fResampleFactor)<(float)m_iDisplayLen/2.f)
     {
         //qDebug("cue %f, play %f",m_pCuePoint->getValue(),m_pAbsPlaypos->getValue());
-        float fCuediff = m_pAbsPlaypos->getValue()-m_pCuePoint->getValue();
+        float fCuediff = m_pAbsPlaypos->getValue()-v;
         float fCuePos = m_pPlaypos->getValue()-fCuediff;
         fCuePos = (fCuePos/m_fReaderExtractFactor)/m_fResampleFactor;
         while (fCuePos<0)
@@ -81,7 +88,7 @@ void VisualBufferMarks::draw(GLfloat *p, int iLen, float xscale)
 
     // Ensures constant width of beat marks regardles for scaling
     float kfWidthBeat = 1.*(1./xscale);
-    float kfWidthCue =  5.*(1./xscale);
+    float kfWidthCue =  8.*(1./xscale);
 
     for (int i=0; i<iLen*3; i+=3)
     {

@@ -26,11 +26,15 @@
   */
 
 class VisualBufferMarks : public VisualBuffer  {
+    Q_OBJECT
 public:
     VisualBufferMarks(ReaderExtract *pReaderExtract, ControlPotmeter *pPlaypos, const char *group);
     ~VisualBufferMarks();
     void update(int iPos, int iLen);
     void draw(GLfloat *p, int iLen, float xscale);
+
+protected slots:
+    void slotUpdateCuePoint(double);
 
 private:
     /** Pointer to cue point position */
