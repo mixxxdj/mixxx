@@ -163,7 +163,7 @@ TrackList::~TrackList()
 		delete m_lPlaylist.at(i);
     
     // Delete all the tracks:
-    for (i=0; i<m_lTracks.count(); i++)
+    for (int i=0; i<m_lTracks.count(); i++)
         delete m_lTracks.at(i);
 }
 //Loads the Main Collection into m_lTracks
@@ -226,7 +226,7 @@ void TrackList::UpdateTracklistFromPls(){
 	}
 	// Find the track which has been played the most times:
 	m_iMaxTimesPlayed = 1;
-	for (i=0; i<m_lPlaylist.count(); i++)
+	for (int i=0; i<m_lPlaylist.count(); i++)
 		if ( m_lPlaylist.at(i)->getTimesPlayed() > m_iMaxTimesPlayed)
 			m_iMaxTimesPlayed = m_lPlaylist.at(i)->getTimesPlayed();
 
@@ -290,7 +290,7 @@ void TrackList::UpdateTracklist(QDomDocument * domXML)
 
 	// Find the track which has been played the most times:
 	m_iMaxTimesPlayed = 1;
-	for (i=0; i<m_lPlaylist.count(); i++)
+	for (int i=0; i<m_lPlaylist.count(); i++)
 		if ( m_lPlaylist.at(i)->getTimesPlayed() > m_iMaxTimesPlayed)
 			m_iMaxTimesPlayed = m_lPlaylist.at(i)->getTimesPlayed();
 
@@ -612,9 +612,9 @@ bool TrackList::AddFiles(const char *path, QDomDocument * docXML)
 		
 		
 		
+		
+		
 		int iTrackNumber = getNewTrackIndex();
-		
-		
         
 		while ((fi=it.current()))
         {
@@ -635,7 +635,8 @@ bool TrackList::AddFiles(const char *path, QDomDocument * docXML)
                     m_lPlaylist.append(Track);
 					m_lTracks.append(Track);
                     qDebug( "Tracknumber %d", iTrackNumber );
-                    bFoundFiles = true;
+                    ++iTrackNumber;
+					bFoundFiles = true;
                 } 
                 else
                     qWarning("Could not parse while looking through dir nonuser: %s", fi->fileName().latin1());
@@ -663,7 +664,7 @@ bool TrackList::AddFiles(const char *path, QDomDocument * docXML)
 
 				}					
             ++it;   // goto next list element
-        	++iTrackNumber;
+        	
 			}
     }
    return bFoundFiles;
