@@ -24,7 +24,7 @@ int VisualController::idCount = 0;
 /**
  *
  */
-VisualController::VisualController(QColor qBackground)
+VisualController::VisualController()
 {
     fov   = 60.0;
     znear = 10.0;
@@ -46,11 +46,18 @@ VisualController::VisualController(QColor qBackground)
     else
         aspect=1.0;
 
+    bg_r = 0.;
+    bg_g = 0.;
+    bg_b = 0.;
+};
+
+
+void VisualController::setBackgroundColor(QColor qBackground)
+{
     bg_r = qBackground.red()/255.;
     bg_g = qBackground.green()/255.;
     bg_b = qBackground.blue()/255.;
-};
-
+}
 
 /**
  * Initializes opengl, so backface culling is enabled.

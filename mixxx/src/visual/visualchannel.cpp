@@ -73,9 +73,9 @@ VisualBuffer *VisualChannel::add(ReaderExtract *pReaderExtract)
     // ADD GROUP INFO *****************
     VisualDisplay *d;
     if (m_qlListDisplay.isEmpty())
-        d = new VisualDisplay(b, pReaderExtract->getVisualDataType(),true);
+        d = new VisualDisplay(b, pReaderExtract->getVisualDataType(), true);
     else
-        d = new VisualDisplay(b, pReaderExtract->getVisualDataType(),false);
+        d = new VisualDisplay(b, pReaderExtract->getVisualDataType(), false);
 
     //
     // Setup position of display
@@ -83,7 +83,13 @@ VisualBuffer *VisualChannel::add(ReaderExtract *pReaderExtract)
 
     // Base y pos dependent on number of containers
     d->setBasepos(m_iPosX,0 /*10*(m_qlListDisplay.count())*/, 0);
-
+    d->setLength(length);
+    d->setHeight(height);
+    d->setColorSignal(m_fColorSignalR, m_fColorSignalG, m_fColorSignalB);
+    d->setColorMarker(m_fColorMarkerR, m_fColorMarkerG, m_fColorMarkerB);
+    d->setColorBeat(m_fColorBeatR, m_fColorBeatG, m_fColorBeatB);
+    d->setColorFisheye(m_fColorFisheyeR, m_fColorFisheyeG, m_fColorFisheyeB);
+    
     // Zoom y pos dependent on channel
     if (m_iChannelNo==0)
         d->setZoompos(m_iZoomPosX,20,0);
@@ -119,10 +125,49 @@ void VisualChannel::setZoomPosX(int x)
     m_iZoomPosX = x;
 }
 
+void VisualChannel::setLength(float l)
+{
+    length = l;
+}
+
+void VisualChannel::setHeight(float h)
+{
+    height = h;
+}
+
+
 void VisualChannel::toggleFishEyeMode()
 {
     VisualDisplay *d;
     for ( d = m_qlListDisplay.first(); d; d = m_qlListDisplay.next() )
         d->toggleFishEyeMode();
+}
+
+void VisualChannel::setColorSignal(float r, float g, float b)
+{
+    m_fColorSignalR = r;
+    m_fColorSignalG = g;
+    m_fColorSignalB = b;
+}
+
+void VisualChannel::setColorMarker(float r, float g, float b)
+{
+    m_fColorMarkerR = r;
+    m_fColorMarkerG = g;
+    m_fColorMarkerB = b;
+}
+
+void VisualChannel::setColorBeat(float r, float g, float b)
+{
+    m_fColorBeatR = r;
+    m_fColorBeatG = g;
+    m_fColorBeatB = b;
+}
+
+void VisualChannel::setColorFisheye(float r, float g, float b)
+{
+    m_fColorFisheyeR = r;
+    m_fColorFisheyeG = g;
+    m_fColorFisheyeB = b;
 }
 

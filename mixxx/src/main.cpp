@@ -101,9 +101,11 @@ int main(int argc, char *argv[])
     
     MixxxApp *mixxx=new MixxxApp(&a, bVisuals);
     a.setMainWidget(mixxx);
+/*    
     mixxx->resize( 1024, 768);
     mixxx->setFixedWidth(1024);
     mixxx->setFixedHeight(768);
+*/
     //mixxx->setIcon(QPixmap());
 
     mixxx->show();

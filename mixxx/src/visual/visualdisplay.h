@@ -22,9 +22,9 @@
 #include "visualdisplaybuffer.h"
 #include "visualbuffer.h"
 #include "visualbox.h"
+#include "material.h"
 
 class ControlPotmeter;
-class Material;
 
 const float baselength = 350.;
 const float baseheight = 90.;
@@ -61,8 +61,15 @@ public:
 
     void setBasepos(float x, float y, float z);
     void setZoompos(float x, float y, float z);
+    void setLength(float l);
+    void setHeight(float h);
     void zoom();
     void move(int msec);
+
+    void setColorSignal(float r, float g, float b);
+    void setColorBeat(float r, float g, float b);
+    void setColorMarker(float r, float g, float b);
+    void setColorFisheye(float r, float g, float b);
     
 public slots:
     /**
@@ -94,8 +101,6 @@ public slots:
     void setRotation(float angle, float rx,float ry,float rz);
 
 protected:
-
-    void setupScene();
     void doLayout();
 
     void zoom(float ox, float oy, float oz, float length, float height, float width);
@@ -122,7 +127,7 @@ protected:
     ControlPotmeter *sliderFishEyeLengthScale;
 
     /** Materials */
-    static Material dblue, lblue, purple, lgreen;
+    Material m_materialSignal, m_materialMarker, m_materialBeat, m_materialFisheye;
 
     /** Unique id of signal */
     int id;

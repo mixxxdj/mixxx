@@ -83,7 +83,7 @@ template <class ValueType> bool ConfigObject<ValueType>::Parse()
     QFile configfile(filename);
     if (filename.length()<1 || !configfile.open(IO_ReadOnly))
     {
-        qDebug("Creating configuration file: %s",filename.latin1());
+        qDebug("Could not read %s",filename.latin1());
         return false;
     }
     else
@@ -142,12 +142,14 @@ template <class ValueType> void ConfigObject<ValueType>::reopen(QString file)
 
 template <class ValueType> void ConfigObject<ValueType>::Save()
 {
-	QFile file(filename);
-	if (!file.open(IO_WriteOnly))
+    QFile file(filename);
+    if (!file.open(IO_WriteOnly))
     {
         qDebug("Could not write file %s, don't worry.",filename.ascii());
-		return;
-    } else {
+        return;
+    }
+    else
+    {
         QTextStream stream(&file);
         
         ConfigOption<ValueType> *it;

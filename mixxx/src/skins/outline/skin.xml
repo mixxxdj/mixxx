@@ -458,15 +458,23 @@
  <Visual>
   <Channel>1</Channel>
   <Pos>139,50</Pos>
-  <Size>747,150</Size>
+  <Size>747,148</Size>
   <BgColor>#ffffff</BgColor>
+  <SignalColor>#00ff00</SignalColor>
+  <BeatColor>#0000ff</BeatColor>
+  <MarkerColor>#ff0000</MarkerColor>
+  <FisheyeColor>#fefefe</FisheyeColor>
  </Visual>
 
  <Visual>
   <Channel>2</Channel>
   <Pos>139,200</Pos>
-  <Size>747,150</Size>
+  <Size>747,148</Size>
   <BgColor>#ffffff</BgColor>
+  <SignalColor>#00ff00</SignalColor>
+  <BeatColor>#0000ff</BeatColor>
+  <MarkerColor>#ff0000</MarkerColor>
+  <FisheyeColor>#fefefe</FisheyeColor>
  </Visual>
 
  <Text>
@@ -492,6 +500,13 @@
   <BgColor>#ffffff</BgColor>
   <BgColorRowEven>#ffffff</BgColorRowEven>
   <BgColorRowUneven>#ffffff</BgColorRowUneven>
+  <ColWidthScore>20</ColWidthScore>
+  <ColWidthTitle>200</ColWidthTitle>
+  <ColWidthArtist>180</ColWidthArtist>
+  <ColWidthComment>200</ColWidthComment>
+  <ColWidthType>30</ColWidthType>
+  <ColWidthDuration>50</ColWidthDuration>
+  <ColWidthBitrate>50</ColWidthBitrate>
  </TrackTable>
 
 </skin>

@@ -475,6 +475,10 @@
   <Pos>77,100</Pos>
   <Size>303,120</Size>
   <BgColor>#000000</BgColor>
+  <SignalColor>#00ff00</SignalColor>
+  <BeatColor>#0000ff</BeatColor>
+  <MarkerColor>#ff0000</MarkerColor>
+  <FisheyeColor>#404040</FisheyeColor>
  </Visual>
 
  <Visual>
@@ -482,6 +486,10 @@
   <Pos>644,100</Pos>
   <Size>303,120</Size>
   <BgColor>#000000</BgColor>
+  <SignalColor>#00ff00</SignalColor>
+  <BeatColor>#0000ff</BeatColor>
+  <MarkerColor>#ff0000</MarkerColor>
+  <FisheyeColor>#404040</FisheyeColor>
  </Visual>
 
  <Text>
@@ -507,6 +515,13 @@
   <BgColor>#94abc2</BgColor>
   <BgColorRowEven>#9ab2c4</BgColorRowEven>
   <BgColorRowUneven>#94abc2</BgColorRowUneven>
+  <ColWidthScore>20</ColWidthScore>
+  <ColWidthTitle>240</ColWidthTitle>
+  <ColWidthArtist>220</ColWidthArtist>
+  <ColWidthComment>246</ColWidthComment>
+  <ColWidthType>30</ColWidthType>
+  <ColWidthDuration>50</ColWidthDuration>
+  <ColWidthBitrate>50</ColWidthBitrate>
  </TrackTable>
 
 </skin>

@@ -172,19 +172,19 @@ MixxxApp::MixxxApp(QApplication *a, bool bVisuals)
     QStringList *midiConfigList = midi->getConfigList(QString(qConfigPath).append("midi/"));
     midiconfig = 0;
     for (QStringList::Iterator it = midiConfigList->begin(); it != midiConfigList->end(); ++it )
-        if (*it == config->getValueString(ConfigKey("[Config]","Midifile")))
-            midiconfig = new ConfigObject<ConfigValueMidi>(config->getValueString(ConfigKey("[Config]","Midifile")).append(config->getValueString(ConfigKey("[Midi]","Configfile"))));
+        if (*it == config->getValueString(ConfigKey("[Midi]","File")))
+            midiconfig = new ConfigObject<ConfigValueMidi>(QString(qConfigPath).append("midi/").append(config->getValueString(ConfigKey("[Midi]","File"))));
     if (midiconfig == 0)
     {
         if (midiConfigList->empty())
         {
             midiconfig = new ConfigObject<ConfigValueMidi>("");
-            config->set(ConfigKey("[Config]","Midifile"), ConfigValue(""));
+            config->set(ConfigKey("[Midi]","File"), ConfigValue(""));
         }
         else
         {
             midiconfig = new ConfigObject<ConfigValueMidi>(QString(qConfigPath).append("midi/").append((*midiConfigList->at(0)).latin1()));
-            config->set(ConfigKey("[Config]","Midifile"), ConfigValue((*midiConfigList->at(0)).latin1()));
+            config->set(ConfigKey("[Midi]","File"), ConfigValue((*midiConfigList->at(0)).latin1()));
         }
     }
 

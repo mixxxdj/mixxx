@@ -43,7 +43,6 @@ void WWidget::setup(QDomNode node)
     int y = pos.mid(pos.find(",")+1).toInt();
     move(x,y);
 
-
     // For each connection
     QDomNode con = selectNode(node, "Connection");
     while (!con.isNull())
@@ -51,8 +50,6 @@ void WWidget::setup(QDomNode node)
         // Get ConfigKey
         ConfigKey configKey;
         QString key = selectNodeQString(con, "ConfigKey");
-
-        qDebug("ConfigKey: %s",key.latin1());
 
         configKey.group = key.left(key.find(","));
         configKey.item = key.mid(key.find(",")+1);

@@ -22,7 +22,7 @@
 #include <qptrlist.h>
 #include <qevent.h>
 #include <qdatetime.h>
-
+#include <qdom.h>
 #include "visual/visualcontroller.h"
 #include "visual/picking.h"
 #include "visual/visualbackplane.h"
@@ -40,8 +40,9 @@ class WVisual : public QGLWidget
 {
     Q_OBJECT
 public: 
-    WVisual(QWidget *pParent=0, const char *pName=0, const QGLWidget *pShareWidget = 0, QColor qBackground = QColor(0,0,0));
+    WVisual(QWidget *pParent=0, const char *pName=0, const QGLWidget *pShareWidget = 0);
     ~WVisual();
+    void setup(QDomNode node);
     bool eventFilter(QObject *o, QEvent *e);
     /** Add a VisualChannel */
     VisualChannel *add(ControlPotmeter *pPlaypos);
@@ -73,6 +74,9 @@ protected:
 
     QPtrList <VisualChannel> m_qlList;
     QTime m_qtTime;
+
+    /** Colors */
+    QColor colorBeat, colorSignal, colorMarker, colorFisheye;
 };
 
 #endif
