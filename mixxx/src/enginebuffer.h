@@ -33,8 +33,7 @@
 #include "dlgplaycontrol.h"
 #include "dlgchannel.h"
 #include "midiobject.h"
-#include "soundsourcemp3.h"
-#include "soundsourcewave.h"
+#include "soundsource.h"
 
 /**
   *@author Tue and Ken Haste Andersen

@@ -115,7 +115,7 @@ CSAMPLE *EngineFlanger::process(const CSAMPLE *source, const int buffer_size)
 	// Update the LFO to find the current delay:
 	time++;
 	if (time==LFOperiod) time=0;
-	delay = average_delay_length + LFOamplitude*sin( 2*pi*((FLOAT_TYPE) time)/((FLOAT_TYPE) LFOperiod) );
+	delay = average_delay_length + LFOamplitude*sin( two_pi*((FLOAT_TYPE) time)/((FLOAT_TYPE) LFOperiod) );
 	// Make a linear interpolation to find the delayed sample:
 	prev = delay_buffer[(delay_pos-(int)delay+max_delay-1) % max_delay];
 	next = delay_buffer[(delay_pos-(int)delay+max_delay) % max_delay];

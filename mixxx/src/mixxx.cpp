@@ -54,6 +54,10 @@
   #include "midiobjectportmidi.h"
 #endif
 
+#ifdef __COREMIDI__
+  #include "midiobjectcoremidi.h"
+#endif
+
 #ifdef __OSSMIDI__
   #include "midiobjectoss.h"
 #endif
@@ -158,6 +162,10 @@ MixxxApp::MixxxApp(QApplication *a)
 #ifdef __PORTMIDI__
   midi = new MidiObjectPortMidi(midiconfig,app,this,config->getValueString(ConfigKey("[Midi]","Device")));
 #endif
+#ifdef __COREMIDI__
+  midi = new MidiObjectCoreMidi(midiconfig,app,this,config->getValueString(ConfigKey("[Midi]","Device")));
+#endif
+
 #ifdef __OSSMIDI__
   midi = new MidiObjectOSS(midiconfig,app,this,config->getValueString(ConfigKey("[Midi]","Device")));
 #endif
@@ -1028,11 +1036,14 @@ void MixxxApp::slotChangePlay_2()
 
 void MixxxApp::slotSelectPlay(QListViewItem *item, const QPoint &pos, int)
 {
-    // Store the current selected track
-    selection = item->text(1);
+    if (item!=0)
+    {
+        // Store the current selected track
+        selection = item->text(1);
 
-    // Display popup menu
-    playSelectMenu->popup(pos);
+        // Display popup menu
+        playSelectMenu->popup(pos);
+    }
 }
 
 void MixxxApp::addFiles(const char *path)

@@ -28,8 +28,12 @@
 #include <qlcdnumber.h>
 #include <qevent.h>
 #include <qfileinfo.h>
-#ifdef __MACX__
-    #include "rtthread.cpp"
+#include "soundsourcemp3.h"
+#ifdef __UNIX__
+  #include "soundsourceaflibfile.h"
+#endif
+#ifdef __WIN__
+  #include "soundsourcewave.h"
 #endif
 
 EngineBuffer::EngineBuffer(QApplication *a, QWidget *m, DlgPlaycontrol *_playcontrol, const char *group, const char *filename)
@@ -126,12 +130,23 @@ void EngineBuffer::newtrack(const char* filename)
         if (finfo.exists())
         {
             if (finfo.extension(false).upper() == "WAV")
+#ifdef __UNIX__
+                file = new SoundSourceAFlibfile(filename);
+#endif
+#ifdef __WIN__
                 file = new SoundSourceWave(filename);
+#endif
             else if (finfo.extension(false).upper() == "MP3")
                 file = new SoundSourceMp3(filename);
         }
     } else
+#ifdef __UNIX__
+        file = new SoundSourceAFlibfile("/dev/null");
+#endif
+#ifdef __WIN__
         file = new SoundSourceWave("/dev/null");
+#endif  
+
     if (file==0)
         qFatal("Error opening %s", filename);
 
@@ -218,6 +233,10 @@ void EngineBuffer::stop()
 
 void EngineBuffer::run()
 {
+#ifdef __MACX__
+    rtThread();
+#endif
+
     while(requestStop->available())
     {
         // Wait for playback if in buffer is filled.

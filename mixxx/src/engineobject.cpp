@@ -84,12 +84,12 @@ void EngineObject::rtThread()
        1/4 the bus speed on most machines. */
     // hard-coded numbers are approximations for 100 MHz bus speed.
     // assume that app deals in frame-sized chunks, e.g. 30 per second.
-    // ttcpolicy.period=833333;
+    //ttcpolicy.period=833333;
     ttcpolicy.period=(get_bus_speed() / 120);
-    // ttcpolicy.computation=60000;
-    ttcpolicy.computation=(get_bus_speed() / 1440);
-    // ttcpolicy.constraint=120000;
-    ttcpolicy.constraint=(get_bus_speed() / 720);
+    ttcpolicy.computation=1000;
+    //ttcpolicy.computation=(get_bus_speed() / (800));
+    ttcpolicy.constraint=1500;
+    //ttcpolicy.constraint=(get_bus_speed() / (454));
     ttcpolicy.preemptible=1;
     theError = thread_policy_set(mach_thread_self(),
                THREAD_TIME_CONSTRAINT_POLICY, (int *)&ttcpolicy,

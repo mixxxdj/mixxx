@@ -13,8 +13,8 @@ typedef float CSAMPLE;          // CSAMPLE defines the CSAMPLE type used for
                                 // intermidiate calculations
 typedef CSAMPLE FLOAT_TYPE;       // Float type, used for non sample data
 const int BUFFER_SIZE  = 32;  // Buffer size used both for input and output
-const int READAHEAD = 200000;     // how many samples to read ahead.
-const int READCHUNKSIZE = 1500000; // size of the chunk that's read in every read.
+const int READAHEAD = 22050; //200000;     // how many samples to read ahead.
+const int READCHUNKSIZE = 48000; //1500000; // size of the chunk that's read in every read.
 const int READBUFFERSIZE = 3*READCHUNKSIZE; // size of read buffer must be at least three
                                             // times READCHUNKSIZE (one extra is needed in case of
                                             // "stop" is pressed.
@@ -23,7 +23,7 @@ const int READBUFFERSIZE = 3*READCHUNKSIZE; // size of read buffer must be at le
 const int MAX_BUFFER_LEN = 10000;
 
 // Various fixed constants
-static CSAMPLE pi     = acos(-1.0);
+// static CSAMPLE pi     = acos(-1.0); // Conflicts with macx headers
 static CSAMPLE two_pi = (2.*acos(-1.0));
 
 // Defs for the ports and their midi control values:

@@ -140,7 +140,8 @@ bool PlayerPortAudio::open(QString name, int srate, int bits, int bufferSize, in
 
     // Extract device information
     unsigned int id = 0;
-    for (unsigned int i=0; i<devices.count(); i++)
+    unsigned int i;
+    for (i=0; i<devices.count(); i++)
         if (name == devices.at(i)->name && chMaster+chHead <= devices.at(i)->noChannels)
         {
             id = devices.at(i)->id;
@@ -150,8 +151,17 @@ bool PlayerPortAudio::open(QString name, int srate, int bits, int bufferSize, in
     // Get number of channels to open
     int chNo = max(chMaster,chHead)+1;
     
-    // Size update
-    //bufferSize = bufferSize*20;
+    // Verify srate and bufferSize 
+    unsigned int j = 0;
+    while (j<devices.at(i)->sampleRates.count() && *devices.at(i)->sampleRates.at(j) != srate)
+{        j++; qDebug("j: %i",j); }
+    if (j>=devices.at(i)->sampleRates.count())
+    {
+         j=0;
+         srate = *devices.at(i)->sampleRates.at(j);
+    }
+    bufferSize = max(*devices.at(i)->latency.at(j),bufferSize);
+    qDebug("PortAudio: Latency %i samples",bufferSize);
 
     // Determine which callback function to use
     PortAudioCallback *callbackFunc;
@@ -268,6 +278,7 @@ int paCallback(void *, void *outputBuffer,
     //qDebug("chMaster: %i, chHead: %i, frames: %i, buffersize: %i",player->CH_MASTER,player->CH_HEAD,framesPerBuffer,player->BUFFERSIZE);
     
     int openChNo = max(player->CH_HEAD,player->CH_MASTER);
+
     for (int i=0; i<(long)framesPerBuffer; i++)
     {
         for (int j=0; j<=openChNo; j+=2)
