@@ -19,6 +19,7 @@
 #include "enginemaster.h"
 #include "controlobject.h"
 
+short int Player::m_iBufferSize = 0;
 EngineMaster *Player::m_pMaster = 0;
 
 /* -------- ------------------------------------------------------
@@ -41,6 +42,11 @@ Player::Player(ConfigObject<ConfigValue> *pConfig, ControlObject *pControl)
 Player::~Player()
 {
     delete [] m_pBuffer;
+}
+
+short int Player::getBufferSize()
+{
+    return m_iBufferSize;
 }
 
 void Player::setMaster(EngineMaster *pMaster)

@@ -35,6 +35,8 @@ public:
       * class can be called before this method returns true. Called by the proxy
       * class. */
     virtual bool initialize() = 0;
+    /** Returns the current buffer size (total latency) used by the playback system */
+    static short int getBufferSize();
     /** Set EngineMaster object */
     static void setMaster(EngineMaster *pMaster);
     /** Open devices according to config database, and start audio stream.
@@ -62,6 +64,8 @@ protected:
     /** Pointer to ControlObject used in syncronization between ControlObject and ControlEngines */
     ControlObject *m_pControl;
     CSAMPLE *m_pBuffer;
+    /** Current buffer size in use. */
+    static short int m_iBufferSize;
 };
 
 #endif

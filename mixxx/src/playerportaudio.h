@@ -62,6 +62,8 @@ protected:
     int m_iMasterLeftCh, m_iMasterRigthCh, m_iHeadLeftCh, m_iHeadRightCh;
     /** True if PortAudio was sucessfully initialized */
     bool m_bInit;
+    /** Number of buffers */
+    int m_iNumberOfBuffers;
 };
 
 

@@ -21,8 +21,6 @@
 #include <qobject.h>
 #include "defs.h"
 
-class EngineObject;
-
 /**
   *@author Tue and Ken Haste Andersen
   */

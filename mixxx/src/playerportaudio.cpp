@@ -20,6 +20,7 @@
 PlayerPortAudio::PlayerPortAudio(ConfigObject<ConfigValue> *config, ControlObject *pControl) : Player(config,pControl)
 {
     m_devId = -1;
+    m_iNumberOfBuffers = 2;
     m_iChannels = -1;
     m_iMasterLeftCh = -1;
     m_iMasterRigthCh = -1;
@@ -127,22 +128,21 @@ bool PlayerPortAudio::open()
     int iSrate = m_pConfig->getValueString(ConfigKey("[Soundcard]","Samplerate")).toInt();
 
     // Setup latency
-    int iNumberOfBuffers;
     int iFramesPerBuffer;
     int iLatency = (int)(iSrate*(m_pConfig->getValueString(ConfigKey("[Soundcard]","Latency")).toFloat()/1000.));
 
     if (iLatency/kiMaxFrameSize<2)
-        iNumberOfBuffers = 2;
+        m_iNumberOfBuffers = 2;
     else
-        iNumberOfBuffers = iLatency/kiMaxFrameSize;
+        m_iNumberOfBuffers = iLatency/kiMaxFrameSize;
 
-    iFramesPerBuffer = iLatency/iNumberOfBuffers;
+    iFramesPerBuffer = iLatency/m_iNumberOfBuffers;
 
 
     // Callback function to use
     PortAudioCallback *callback = paCallback;
 
-    qDebug("id %i, sr %i, ch %i, bufsize %i, bufno %i", id, iSrate, iChannels, iFramesPerBuffer, iNumberOfBuffers);
+    qDebug("id %i, sr %i, ch %i, bufsize %i, bufno %i", id, iSrate, iChannels, iFramesPerBuffer, m_iNumberOfBuffers);
 
     if (id<0)
         return false;
@@ -157,7 +157,7 @@ bool PlayerPortAudio::open()
                         0,                  // Extra info. Not used.
                         iSrate,             // Sample rate
                         iFramesPerBuffer,   // Frames per buffer
-                        iNumberOfBuffers,   // Number of buffers
+                        m_iNumberOfBuffers,   // Number of buffers
                         paClipOff,          // we won't output out of range samples so don't bother clipping them
                         callback,           // Callback function
                         this);              // Pointer passed to the callback function
@@ -174,7 +174,7 @@ bool PlayerPortAudio::open()
                         0,                  // Extra info. Not used.
                         iSrate,             // Sample rate
                         iFramesPerBuffer,   // Frames per buffer
-                        iNumberOfBuffers,   // Number of buffers
+                        m_iNumberOfBuffers,   // Number of buffers
                         paClipOff,          // we won't output out of range samples so don't bother clipping them
                         callback,           // Callback function
                         this);              // Pointer passed to the callback function
@@ -192,7 +192,7 @@ bool PlayerPortAudio::open()
                         0,                  // Extra info. Not used.
                         iSrate,             // Sample rate
                         iFramesPerBuffer,   // Frames per buffer
-                        iNumberOfBuffers,   // Number of buffers
+                        m_iNumberOfBuffers,   // Number of buffers
                         paClipOff,          // we won't output out of range samples so don't bother clipping them
                         callback,           // Callback function
                         this);              // Pointer passed to the callback function
@@ -418,6 +418,8 @@ PaDeviceID PlayerPortAudio::getChannelNo(QString name)
 
 int PlayerPortAudio::callbackProcess(int iBufferSize, float *out)
 {
+    m_iBufferSize = iBufferSize*m_iNumberOfBuffers;
+    
     float *tmp = prepareBuffer(iBufferSize);
     float *output = out;
     int i;

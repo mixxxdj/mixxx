@@ -54,6 +54,9 @@ DlgPrefSound::DlgPrefSound(QWidget *parent, PlayerProxy *_player,
     connect(SliderLatency,                SIGNAL(sliderReleased()),  this, SLOT(slotLatencySliderRelease()));
     connect(SliderLatency,                SIGNAL(valueChanged(int)), this, SLOT(slotLatencySliderChange(int)));
     connect(SliderSoundQuality,           SIGNAL(valueChanged(int)), this, SLOT(slotApply()));
+
+    // Connect timer to latency query slot
+    connect(&m_qTimer, SIGNAL(timeout()), this, SLOT(slotQueryLatency()));
 }
 
 DlgPrefSound::~DlgPrefSound()
@@ -194,18 +197,36 @@ void DlgPrefSound::slotApply()
     //config->set(ConfigKey("[Soundcard]","Bits"), ConfigValue(ComboBoxBits->currentText()));
     config->set(ConfigKey("[Soundcard]","Latency"), ConfigValue(getSliderLatencyMsec(SliderLatency->value())));
     config->set(ConfigKey("[Soundcard]","SoundQuality"), ConfigValue(2+4-SliderSoundQuality->value()));
+ 
+    qDebug("request msec %i", getSliderLatencyMsec(SliderLatency->value()));
     
     // Close devices, and open using config data
     player->close();
 
     if (!player->open())
         QMessageBox::warning(0, "Configuration error","Audio device could not be opened");
-
-    qDebug("latency %s", config->getValueString(ConfigKey("[Soundcard]", "Latency")).latin1());    
+    else
+    {
+        // Because the latency value configured with PortAudio, is not necessary what is actually
+        // used, it is read again 500 msec after the open
+        m_qTimer.start(500, true);
         
-    // Configuration values might have changed after the opening of the player,
-    // so ensure the form is updated...
-    slotUpdate();
+        // Configuration values might have changed after the opening of the player,
+        // so ensure the form is updated...
+        slotUpdate();
+    }
+    
+}
+
+void DlgPrefSound::slotQueryLatency()
+{
+    int iLatencyMsec = (int)(1000.*((float)Player::getBufferSize()/(float)EngineObject::getPlaySrate()));
+    qDebug("got latency msec %i",iLatencyMsec);
+    //if (abs(iLatencyMsec-config->getValueString(ConfigKey("[Soundcard]","Latency")).toInt())>1)
+    {
+        config->set(ConfigKey("[Soundcard]","Latency"), ConfigValue(iLatencyMsec));
+        slotUpdate();
+    }
 }
 
 void DlgPrefSound::slotApplyApi()

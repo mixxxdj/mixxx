@@ -208,8 +208,8 @@ count(LINLIBPATH,1) {
 #  QMAKE_CFLAGS   += -pg -march=pentium3 -O3 -pipe
 
 # gcc Profiling
-QMAKE_CXXFLAGS += -pg
-QMAKE_LFLAGS += -pg
+#QMAKE_CXXFLAGS += -pg
+#QMAKE_LFLAGS += -pg
 }
 
 win32 {
@@ -296,8 +296,8 @@ IMAGES += icon.png
 DEFINES += SETTINGS_FILE=$$SETTINGS_FILE TRACK_FILE=$$TRACK_FILE
 unix:TEMPLATE = app
 win32:TEMPLATE = vcapp
-CONFIG += qt thread warn_off release
-DEFINES += QT_NO_CHECK
-#CONFIG += qt thread warn_on debug
+#CONFIG += qt thread warn_off release
+#DEFINES += QT_NO_CHECK
+CONFIG += qt thread warn_on debug
 DBFILE = mixxx.db
 LANGUAGE = C++

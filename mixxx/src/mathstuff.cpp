@@ -78,13 +78,13 @@ void polcoe(CSAMPLE x[], CSAMPLE y[], int n, CSAMPLE cof[])
     for (i=0; i<n; i++)
         s[i]=cof[i]=.0;
     s[n]= -x[0];
-    for (i=1; i<=n; i++)
+    for (i=1; i<=n; ++i)
     {
         for (j=n-i; j<=n-1; j++)
             s[j] -= x[i]*s[j+1];
         s[n] -= x[i];
     }
-    for (j=0; j<=n; j++)
+    for (j=0; j<=n; ++j)
     {
         phi=n+1.f;
         for (k=n; k>=0; k--)
@@ -109,6 +109,7 @@ CSAMPLE mod2pi(CSAMPLE x)
     return(r);
 }
 
+/*
 // Rounds a CSAMPLE to nearest integer, and returns as int
 int round(CSAMPLE x)
 {
@@ -123,6 +124,7 @@ int round(CSAMPLE x)
 
     return(reti);
 }
+*/
 
 // Fast arctan2 from http://www.dspguru.com/comp.dsp/tricks/alg/fxdatan2.htm
 CSAMPLE arctan2(CSAMPLE y, CSAMPLE x)
@@ -157,7 +159,7 @@ CSAMPLE wndKaiser(CSAMPLE *wnd, int size, CSAMPLE beta)
     CSAMPLE AFactor = 0.;
 
     CSAMPLE t = besseli(beta);
-    for (int k=0; k<size; k++)
+    for (int k=0; k<size; ++k)
     {
         wnd[k] = besseli(2.*beta/m*sqrt((float)(k*(m-k))))/t;
         AFactor += wnd[k];
