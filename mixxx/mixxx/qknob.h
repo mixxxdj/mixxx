@@ -35,9 +35,13 @@ protected:
 	void repaintScreen(const QRect *cr=0);
 private:
 	QPixmap *button000;
+	QPixmap *button045;
 	QPixmap *button090;
+	QPixmap *button135;
 	QPixmap *button180;
+	QPixmap *button225;
 	QPixmap *button270;
+	QPixmap *button315;
 
 	QRect *repaintRect;
 };
