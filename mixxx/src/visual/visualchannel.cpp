@@ -29,11 +29,12 @@ int VisualChannel::siChannelTotal = 0;
  * Default Consructor.
  */
 
-VisualChannel::VisualChannel(ControlPotmeter *pPlaypos, VisualController *pVisualController)
+VisualChannel::VisualChannel(ControlPotmeter *pPlaypos, VisualController *pVisualController, const char *_group)
 {
     m_iChannelNo = siChannelTotal;
     siChannelTotal++;
-
+    group = _group;
+    
     m_pPlaypos = pPlaypos;
     m_pVisualController = pVisualController;
     m_qlListBuffer.setAutoDelete(true);
@@ -73,9 +74,9 @@ VisualBuffer *VisualChannel::add(ReaderExtract *pReaderExtract)
     // ADD GROUP INFO *****************
     VisualDisplay *d;
     if (m_qlListDisplay.isEmpty())
-        d = new VisualDisplay(b, pReaderExtract->getVisualDataType(), true);
+        d = new VisualDisplay(b, pReaderExtract->getVisualDataType(), group, true);
     else
-        d = new VisualDisplay(b, pReaderExtract->getVisualDataType(), false);
+        d = new VisualDisplay(b, pReaderExtract->getVisualDataType(), group, false);
 
     //
     // Setup position of display

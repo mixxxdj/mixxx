@@ -22,9 +22,8 @@
 // Static members
 int VisualDisplay::idCount = 0;
 
-VisualDisplay::VisualDisplay(VisualBuffer *pVisualBuffer, const char *group, bool drawBox)
+VisualDisplay::VisualDisplay(VisualBuffer *pVisualBuffer, const char *type, const char *group, bool drawBox)
 {
-    qDebug("buffer %p",pVisualBuffer);
     m_pVisualBuffer = pVisualBuffer;
 
     atBasepos = true;
@@ -45,9 +44,10 @@ VisualDisplay::VisualDisplay(VisualBuffer *pVisualBuffer, const char *group, boo
 
     fishEyeMode = false;
 
-    fishEyeLengthScale = 0.3f;
-    fishEyeSignalFraction = 0.05f;
-    signalScale = 1.0f;
+    fishEyeLengthScale = 0.15f;
+    fishEyeSignalFraction = 0.01f;
+    signalScaleHeight = 1.0f;
+    signalScaleLength = 1.0f;
 
     fishEyeSignal = new VisualDisplayBuffer(m_pVisualBuffer);
     preSignal     = new VisualDisplayBuffer(m_pVisualBuffer);
@@ -59,7 +59,7 @@ VisualDisplay::VisualDisplay(VisualBuffer *pVisualBuffer, const char *group, boo
                         
 //    setBoxWireMaterial(&m_materialBeat);
 
-    if (QString(group)=="marks")
+    if (QString(type)=="marks")
     {
         fishEyeSignal->setMaterial(&m_materialBeat);
         preSignal->setMaterial(&m_materialBeat);
@@ -79,18 +79,13 @@ VisualDisplay::VisualDisplay(VisualBuffer *pVisualBuffer, const char *group, boo
         playPosMarker->setMaterial(&m_materialMarker);
     }
 
-    fishEyeMode = true;
-
     doLayout();
 
-//    boxMaterial = boxWireMaterial = 0;
-//    playPosMarkerMaterial = 0;
+    QString id("VisualLengthScale-");
+    id.append(type);
+    controlScaleLength = new ControlPotmeter(ConfigKey(group,id.latin1()),0.9f,1.1f);
+    connect(controlScaleLength, SIGNAL(signalUpdateApp(double)), this, SLOT(setSignalScaleLength(double)));
 
-    sliderFishEyeSignalFraction = new ControlPotmeter(ConfigKey(group,"FishEyeSignalFraction"),0.001f,0.5f);
-//  connect(sliderFishEyeSignalFraction, SIGNAL(valueChanged(FLOAT_TYPE)), this, SLOT(setFishEyeSignalFraction(FLOAT_TYPE)));
-
-    sliderFishEyeLengthScale = new ControlPotmeter(ConfigKey(group,"FishEyeLengthScale"),0.05f,0.95f);
-//  connect(sliderFishEyeLengthScale, SIGNAL(valueChanged(FLOAT_TYPE)), this, SLOT(setFishEyeLengthScale(FLOAT_TYPE)));
 }
 
 VisualDisplay::~VisualDisplay()
@@ -274,19 +269,33 @@ void VisualDisplay::toggleFishEyeMode()
     fishEyeMode = !fishEyeMode;
 }
 
-void VisualDisplay::setFishEyeLengthScale(FLOAT_TYPE scale)
+void VisualDisplay::setFishEyeLengthScale(double scale)
 {
-    fishEyeLengthScale = scale;
+    qDebug("scale %f",scale);
+    fishEyeLengthScale = 1.+scale;
 }
 
-void VisualDisplay::setFishEyeSignalFraction(FLOAT_TYPE fraction)
+void VisualDisplay::setFishEyeSignalFraction(double fraction)
 {
+    qDebug("fraction %f",fraction);
     fishEyeSignalFraction = fraction;
 }
 
-void VisualDisplay::setSignalScale(float scale)
+void VisualDisplay::setSignalScaleHeight(double scale)
 {
-    signalScale = scale;
+    signalScaleHeight = scale;
+}
+
+void VisualDisplay::setSignalScaleLength(double scale)
+{
+    signalScaleLength = 1.+((1.-scale));
+
+    // Limits to avoid unreasonable behaviour
+    if (signalScaleLength<0.3)
+        signalScaleLength = 0.3;
+    else if (signalScaleLength>1.7)
+        signalScaleLength = 1.7;
+//    qDebug("scale input %f, actual %f",scale, signalScaleLength);
 }
 
 void VisualDisplay::setColorSignal(float r, float g, float b)
@@ -376,62 +385,66 @@ void VisualDisplay::doLayout()
     float ny = 0;
     float nz = 0;
 
+    // Set length, position and offset of signal to be displayed
+    float curLength = length*signalScaleLength*1.5;
+    float curOx = ox+(length-curLength)/2;
+    
     if(fishEyeMode)
     {
         float fishEyeLength = fishEyeLengthScale*length;
-        float nonFishEyeLength = (length- fishEyeLength)/2.0f;
+        float nonFishEyeLength = (curLength- fishEyeLength)/2.0f;
 
-        float ox2 = ox + nx*nonFishEyeLength;
+        float ox2 = curOx + nx*nonFishEyeLength;
         float oy2 = oy + ny*nonFishEyeLength;
         float oz2 = oz + nz*nonFishEyeLength;
         float ox3 = ox2 + nx*fishEyeLength;
         float oy3 = oy2 + ny*fishEyeLength;
         float oz3 = oz2 + nz*fishEyeLength;
 
-        preSignal->setOrigo(ox,oy,oz);
+        preSignal->setOrigo(curOx,oy,oz);
         preSignal->setLength(nonFishEyeLength);
-        preSignal->setHeight(signalScale*height*2);
+        preSignal->setHeight(signalScaleHeight*height*2);
         preSignal->setRotation(angle,rx,ry,rz);
 
         fishEyeSignal->setOrigo(ox2,oy2,oz2);
         fishEyeSignal->setLength(fishEyeLength);
-        fishEyeSignal->setHeight(signalScale*height*2);
+        fishEyeSignal->setHeight(signalScaleHeight*height*2);
         fishEyeSignal->setRotation(angle,rx,ry,rz);
 
         postSignal->setOrigo(ox3,oy3,oz3);
         postSignal->setLength(nonFishEyeLength);
-        postSignal->setHeight(signalScale*height*2);
+        postSignal->setHeight(signalScaleHeight*height*2);
         postSignal->setRotation(angle,rx,ry,rz);
 
 
         box->setOrigo(ox2,oy2,oz2-5);
         box->setLength(fishEyeLength);
-        box->setHeight(signalScale*height);
+        box->setHeight(signalScaleHeight*height);
         box->setDepth(depth);
         box->setRotation(angle,rx,ry,rz);
 
     }
     else
     {
-        signal->setOrigo(ox,oy,oz);
-        signal->setLength(length);
-        signal->setHeight(signalScale*height*2);
+        signal->setOrigo(curOx,oy,oz);
+        signal->setLength(curLength);
+        signal->setHeight(signalScaleHeight*height*2);
         signal->setRotation(angle,rx,ry,rz);
     
-        box->setOrigo(ox,oy,oz);
-        box->setLength(length);
+        box->setOrigo(curOx,oy,oz);
+        box->setLength(curLength);
         box->setHeight(height);
         box->setDepth(depth);
         box->setRotation(angle,rx,ry,rz);
     }
 
-    float plength = length/100;
+    float plength = curLength/100.;
     float pheight = height*1.2;
     float pdepth = depth*1.05;
 
-    float offset = (length-plength)/2.0f;
+    float offset = (curLength-plength)/2.0f;
 
-    float px = ox + nx*offset; 
+    float px = curOx + nx*offset; 
     float py = oy + ny*offset;
     float pz = oz + nz*offset;
 

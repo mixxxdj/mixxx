@@ -57,7 +57,7 @@ public:
     ControlObject(ConfigKey key);
     ~ControlObject();
     /** Connect two control objects dest and src, so each time src is updated, so is dest */
-    bool connectControls(ConfigKey src, ConfigKey dest);
+    static bool connectControls(ConfigKey src, ConfigKey dest);
     /** Returns a pointer to the ControlObject matching the given ConfigKey */
     static ControlObject *getControl(ConfigKey key);
     /** Sets the config object */
@@ -109,10 +109,10 @@ protected:
     virtual void updateApp();
     /** Called when a MIDI event associated with this object is received */
     virtual void setValueFromMidi(MidiCategory c, int v);
-    /** Called when a event from an associated ControlEngine object is received */
-    virtual void setValueFromEngine(double dValue);
 
 public slots:
+    /** Called when a event from an associated ControlEngine object is received */
+    virtual void setValueFromEngine(double dValue);
     /** Called when a signal from the associated widget is received */
     virtual void setValueFromWidget(double dValue);
     /** Called when a keyboard event associated with this object is received */

@@ -3,39 +3,33 @@
 <KDevPrjSession>
  <LastCompileConfig>(Default)</LastCompileConfig>
  <Mainframe MaximizeMode="1" />
- <DocsAndViews NumberOfDocuments="11" >
-  <Doc0 CursorPosLine="185" Type="KWriteDoc" NumberOfViews="1" CursorPosCol="0" FileName="/home/haste/cvs/mixxx/src/mixxx.cpp" >
+ <DocsAndViews NumberOfDocuments="9" >
+  <Doc0 CursorPosLine="321" Type="KWriteDoc" NumberOfViews="1" CursorPosCol="4" FileName="/home/haste/cvs/mixxx/src/mixxx.cpp" >
    <View0 Top="0" Width="757" Attach="1" Height="606" Left="0" Focus="0" Type="KWriteView" MinMaxMode="0" />
   </Doc0>
-  <Doc1 CursorPosLine="69" Type="KWriteDoc" NumberOfViews="1" CursorPosCol="45" FileName="/home/haste/cvs/mixxx/src/mixxx.h" >
+  <Doc1 CursorPosLine="84" Type="KWriteDoc" NumberOfViews="1" CursorPosCol="25" FileName="/home/haste/cvs/mixxx/src/mixxx.h" >
    <View0 Top="0" Width="757" Attach="1" Height="606" Left="0" Focus="0" Type="KWriteView" MinMaxMode="0" />
   </Doc1>
-  <Doc2 CursorPosLine="87" Type="KWriteDoc" NumberOfViews="1" CursorPosCol="11" FileName="/home/haste/cvs/mixxx/src/mixxxview.cpp" >
+  <Doc2 CursorPosLine="32" Type="KWriteDoc" NumberOfViews="1" CursorPosCol="0" FileName="/home/haste/cvs/mixxx/src/controlobject.cpp" >
    <View0 Top="0" Width="757" Attach="1" Height="606" Left="0" Focus="0" Type="KWriteView" MinMaxMode="0" />
   </Doc2>
-  <Doc3 CursorPosLine="143" Type="KWriteDoc" NumberOfViews="1" CursorPosCol="27" FileName="/home/haste/cvs/mixxx/src/wvisual.cpp" >
-   <View0 Top="0" Width="757" Attach="1" Height="606" Left="0" Focus="0" Type="KWriteView" MinMaxMode="0" />
-  </Doc3>
-  <Doc4 CursorPosLine="72" Type="KWriteDoc" NumberOfViews="1" CursorPosCol="17" FileName="/home/haste/cvs/mixxx/src/visual/visualchannel.cpp" >
+  <Doc3 CursorPosLine="297" Type="KWriteDoc" NumberOfViews="1" CursorPosCol="0" FileName="/home/haste/cvs/mixxx/src/visual/visualdisplay.cpp" >
    <View0 Top="0" Width="757" Attach="1" Height="606" Left="0" Focus="1" Type="KWriteView" MinMaxMode="0" />
+  </Doc3>
+  <Doc4 CursorPosLine="50" Type="KWriteDoc" NumberOfViews="1" CursorPosCol="56" FileName="/home/haste/cvs/mixxx/src/visual/visualdisplay.h" >
+   <View0 Top="0" Width="757" Attach="1" Height="606" Left="0" Focus="0" Type="KWriteView" MinMaxMode="0" />
   </Doc4>
-  <Doc5 CursorPosLine="68" Type="KWriteDoc" NumberOfViews="1" CursorPosCol="25" FileName="/home/haste/cvs/mixxx/src/visual/visualchannel.h" >
+  <Doc5 CursorPosLine="20" Type="KWriteDoc" NumberOfViews="1" CursorPosCol="64" FileName="/home/haste/cvs/mixxx/src/visual/visualbuffer.h" >
    <View0 Top="0" Width="757" Attach="1" Height="606" Left="0" Focus="0" Type="KWriteView" MinMaxMode="0" />
   </Doc5>
-  <Doc6 CursorPosLine="57" Type="KWriteDoc" NumberOfViews="1" CursorPosCol="13" FileName="/home/haste/cvs/mixxx/src/wvisual.h" >
+  <Doc6 CursorPosLine="9" Type="KWriteDoc" NumberOfViews="1" CursorPosCol="17" FileName="/home/haste/cvs/mixxx/src/mixxxview.h" >
    <View0 Top="0" Width="757" Attach="1" Height="606" Left="0" Focus="0" Type="KWriteView" MinMaxMode="0" />
   </Doc6>
-  <Doc7 CursorPosLine="298" Type="KWriteDoc" NumberOfViews="1" CursorPosCol="37" FileName="/home/haste/cvs/mixxx/src/visual/visualdisplay.cpp" >
+  <Doc7 CursorPosLine="152" Type="KWriteDoc" NumberOfViews="1" CursorPosCol="22" FileName="/home/haste/cvs/mixxx/src/mixxxview.cpp" >
    <View0 Top="0" Width="757" Attach="1" Height="606" Left="0" Focus="0" Type="KWriteView" MinMaxMode="0" />
   </Doc7>
-  <Doc8 CursorPosLine="103" Type="KWriteDoc" NumberOfViews="1" CursorPosCol="0" FileName="/home/haste/cvs/mixxx/src/visual/visualdisplay.h" >
+  <Doc8 CursorPosLine="57" Type="KWriteDoc" NumberOfViews="1" CursorPosCol="13" FileName="/home/haste/cvs/mixxx/src/wvisual.cpp" >
    <View0 Top="0" Width="757" Attach="1" Height="606" Left="0" Focus="0" Type="KWriteView" MinMaxMode="0" />
   </Doc8>
-  <Doc9 CursorPosLine="20" Type="KWriteDoc" NumberOfViews="1" CursorPosCol="0" FileName="/home/haste/cvs/mixxx/src/visual/visualbuffersignal.cpp" >
-   <View0 Top="0" Width="757" Attach="1" Height="606" Left="0" Focus="0" Type="KWriteView" MinMaxMode="0" />
-  </Doc9>
-  <Doc10 CursorPosLine="26" Type="KWriteDoc" NumberOfViews="1" CursorPosCol="0" FileName="/home/haste/cvs/mixxx/src/visual/visualbuffer.cpp" >
-   <View0 Top="0" Width="757" Attach="1" Height="606" Left="0" Focus="0" Type="KWriteView" MinMaxMode="0" />
-  </Doc10>
  </DocsAndViews>
 </KDevPrjSession>

@@ -53,7 +53,7 @@ void VisualDisplayBuffer::draw()
     //std::cout << "len1 " << bufferInfo.len1 << ", len2 " << bufferInfo.len2  << "\n";
     //qDebug("LENGTH: %i",bufferInfo.len1+bufferInfo.len2);
 
-    float xscale = length/(bufferInfo.len1+bufferInfo.len2-1);
+    float xscale = length/(float)(bufferInfo.len1+bufferInfo.len2-1);
     glScalef(xscale,yscale,1);
 
     //--- Now draw the mother fucker:-)

@@ -22,6 +22,7 @@
 #include <qpixmap.h>
 #include <qtooltip.h>
 
+#include "configobject.h"
 #include "controlobject.h"
 #include "wtracktable.h"
 #include "wwidget.h"
@@ -66,7 +67,8 @@ MixxxView::MixxxView(QWidget *parent, bool bVisuals, QString qSkinPath) : QWidge
     // Default values for visuals
     m_pVisualCh1 = 0;
     m_pVisualCh2 = 0;
-
+    m_bZoom = false;
+    
     // Load all widgets defined in the XML file
     QDomNode node = docElem.firstChild();
     while (!node.isNull())
@@ -152,6 +154,9 @@ MixxxView::MixxxView(QWidget *parent, bool bVisuals, QString qSkinPath) : QWidge
                             m_pVisualCh2 = 0;
                         }
                     }
+
+                    if (!WWidget::selectNode(node, "Zoom").isNull() && WWidget::selectNodeQString(node, "Zoom")=="true")
+                        m_bZoom = true;
                 }
 #endif
             }

@@ -37,7 +37,7 @@ class ControlPotmeter;
 class VisualChannel : public QObject
 {
 public:
-    VisualChannel(ControlPotmeter *pPlaypos, VisualController *pVisualController);
+    VisualChannel(ControlPotmeter *pPlaypos, VisualController *pVisualController, const char *_group);
     ~VisualChannel();
     /** Zoom/unzoom the signal of id */
     void zoom(int id);
@@ -71,6 +71,8 @@ private:
     int m_iPosX, m_iZoomPosX;
     /** Length and height of gl widget */
     float length, height;
+    /** Control group */
+    char *group;
     /** Colors */
     float m_fColorSignalR, m_fColorSignalG, m_fColorSignalB;
     float m_fColorMarkerR, m_fColorMarkerG, m_fColorMarkerB;

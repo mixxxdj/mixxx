@@ -310,7 +310,16 @@ MixxxApp::MixxxApp(QApplication *a, bool bVisuals)
     // Tell EngineBuffer to notify the visuals
     buffer1->setVisual(view->m_pVisualCh1);
     buffer2->setVisual(view->m_pVisualCh2);
-    
+
+    // Dynamic zoom on visuals
+    if (view->m_bZoom)
+    {
+        ControlObject::connectControls(ConfigKey("[Channel1]", "rate"), ConfigKey("[Channel1]", "VisualLengthScale-marks"));
+        ControlObject::connectControls(ConfigKey("[Channel1]", "rate"), ConfigKey("[Channel1]", "VisualLengthScale-signal"));
+        ControlObject::connectControls(ConfigKey("[Channel2]", "rate"), ConfigKey("[Channel2]", "VisualLengthScale-marks"));
+        ControlObject::connectControls(ConfigKey("[Channel2]", "rate"), ConfigKey("[Channel2]", "VisualLengthScale-signal"));
+    }
+            
     // Initialize tracklist:
     m_pTracks = new TrackList(config->getValueString(ConfigKey("[Playlist]","Directory")), view->m_pTrackTable,
                               view->m_pTextCh1, view->m_pTextCh2, buffer1, buffer2);

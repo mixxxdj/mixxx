@@ -150,7 +150,7 @@ void EngineBuffer::setVisual(WVisual *pVisual)
     if (pVisual)
     {
         // Add buffer as a visual channel
-        pVisualChannel = pVisual->add((ControlPotmeter *)ControlObject::getControl(ConfigKey(group, "bufferplayposition")));
+        pVisualChannel = pVisual->add((ControlPotmeter *)ControlObject::getControl(ConfigKey(group, "bufferplayposition")), group);
         reader->addVisual(pVisualChannel);
     }
 #endif

@@ -58,13 +58,13 @@ ControlObject::~ControlObject()
 
 bool ControlObject::connectControls(ConfigKey src, ConfigKey dest)
 {
-    qDebug("unfinished");
-/*
+//    qDebug("unfinished");
+
     // Find src object
     ControlObject *pSrc = 0;
     for (pSrc=list.first(); pSrc; pSrc=list.next())
     {
-        qDebug("(%s,%s) (%s,%s)",pSrc->cfgOption->key->group.latin1(),src.group.latin1(),pSrc->cfgOption->key->item.latin1(),src.item.latin1());
+//        qDebug("src (%s,%s) (%s,%s)",pSrc->cfgOption->key->group.latin1(),src.group.latin1(),pSrc->cfgOption->key->item.latin1(),src.item.latin1());
         if ((pSrc->cfgOption->key->group == src.group) && (pSrc->cfgOption->key->item == src.item))
             break;
     }
@@ -75,14 +75,14 @@ bool ControlObject::connectControls(ConfigKey src, ConfigKey dest)
     ControlObject *pDest = 0;
     for (pDest=list.first(); pDest; pDest=list.next())
     {
+//        qDebug("dest (%s,%s) (%s,%s)",pDest->cfgOption->key->group.latin1(),dest.group.latin1(),pDest->cfgOption->key->item.latin1(),dest.item.latin1());
         if ((pDest->cfgOption->key->group == dest.group) && (pDest->cfgOption->key->item == dest.item))
             break;
     }
     if (pDest==0)
         return false;
 
-    QApplication::connect(pSrc, SIGNAL(valueChanged(FLOAT_TYPE)), pDest, SLOT(setValue(FLOAT_TYPE)));
-*/
+    QApplication::connect(pSrc, SIGNAL(signalUpdateApp(double)), pDest, SLOT(setValueFromEngine(double)));
 
     return true;
 }

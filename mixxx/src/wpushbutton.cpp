@@ -65,7 +65,7 @@ void WPushButton::setStates(int iStates)
     
     // If pixmap array is already allocated, delete it
     if (m_pPixmaps)
-        delete m_pPixmaps;
+        delete [] m_pPixmaps;
     
     if (iStates>0)
     {
