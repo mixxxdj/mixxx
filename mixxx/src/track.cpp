@@ -217,8 +217,8 @@ void Track::slotActivatePlaylist(QString name)
         // Activate new playlist
         m_pActivePlaylist = pNewlist;
         m_pActivePlaylist->activate(m_pView->m_pTrackTable);
+        emit(activePlaylist(pNewlist));
     }
-    emit(activePlaylist(pNewlist));
 }
 
 void Track::slotNewPlaylist()
@@ -457,5 +457,6 @@ void Track::updatePlaylistViews()
     emit(updateMenu(m_qPlaylists));
     
     // Set active
-    emit(activePlaylist(m_pActivePlaylist));
+    if (m_pActivePlaylist)
+        emit(activePlaylist(m_pActivePlaylist));
 }
