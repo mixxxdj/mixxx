@@ -592,7 +592,7 @@ void ReaderExtractBeat::markBeat(int i)
     float v = (0.2+max(-0.2,min(confidence,0.3)))/0.5;
 
     if (v==0.)
-        beatBuffer[i] = 0.0001;
+        beatBuffer[i] = 0.0001f;
     else
         beatBuffer[i] = v;
 }
