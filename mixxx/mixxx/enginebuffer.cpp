@@ -77,7 +77,6 @@ EngineBuffer::EngineBuffer(DlgPlaycontrol *playcontrol, DlgChannel *channel, Mid
 
   // ...and read one chunk to get started:
   getchunk();
-
 }
 
 EngineBuffer::~EngineBuffer(){

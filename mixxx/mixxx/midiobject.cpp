@@ -64,9 +64,12 @@ void MidiObject::addbutton(ControlPushButton* newbutton) {
 }
 
 void MidiObject::removebutton(ControlPushButton* button) {
-  //for (iterator i=0; i<buttons.size(); i++)
-  //  if (buttons[i] == button) buttons->erase(i);
-  qWarning("Removal of midibutton not implemented");
+  vector<ControlPushButton*>::iterator iter = 
+    find(buttons.begin(), buttons.end(), button);
+  if (iter != buttons.end())
+    buttons.erase(iter);
+  else
+    qWarning("Pushbutton which is requested for removal in MidiObject does not exist.");
 }
 
 /* -------- ------------------------------------------------------
