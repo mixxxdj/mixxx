@@ -30,7 +30,7 @@ class ReaderExtractHFC;
 class ReaderExtractBeat;
 class Reader;
 
-//#define EXTRACT
+#define EXTRACT
 
 /**
   * This is the main ReaderExtract class, taking care of buffering the incoming wave data from

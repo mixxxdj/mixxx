@@ -38,9 +38,9 @@ public:
     /** Update the peak list with content from buffer index idx of length len */
     void update(int idx, int len);
     /** Return list iterator to first peak in the given range from idx to idx+len */
-    PeakList::iterator getFirstInRange(int idx, int len);
+    PeakList::iterator getFirstInRange(int idx, int len, bool returnElementAfterRange=false);
     /** Return list iterator to last peak in the given range from idx to idx+len */
-    PeakList::iterator getLastInRange(int idx, int len);
+    //PeakList::iterator getLastInRange(int idx, int len);
     /** Return number of peaks in the given range from idx to idx+len */
     int getNoInRange(int idx, int len);
     /** Returns distance between two peaks */
@@ -54,7 +54,7 @@ public:
     PeakList::iterator getMaxInRange(int idx, int len);
 
     void print();
-        
+
 private:
     /** Insert a peak into the list before iterator it, but only if idx is a valid peak in the m_pBuffer. */
     PeakList::iterator insertIfPeak(int idx, PeakList::iterator it);

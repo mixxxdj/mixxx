@@ -46,26 +46,28 @@ void Monitor::write(double v)
     mutex.unlock();
 }
 
-double Monitor::tryRead()
+bool Monitor::tryRead(double *v)
 {
-    double temp;
     if (mutex.tryLock())
     {
-        temp = value;
+        *v = value;
         mutex.unlock();
+        return true;
     }
     else
-        temp = -1.;
-    return temp;
+        return false;
 }
 
-void Monitor::tryWrite(double v)
+bool Monitor::tryWrite(double v)
 {
     if (mutex.tryLock())
     {
         value = v;
         mutex.unlock();
+        return true;
     }
+    else
+        return false;
 }
 
 /*

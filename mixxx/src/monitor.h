@@ -31,8 +31,10 @@ public:
     ~Monitor();
     double read();
     void write(double);
-    double tryRead();
-    void tryWrite(double);
+    /** Returns true if the value could be read; in that case, the variable pointed to by v has been updated */
+    bool tryRead(double *v);
+    /** Returns true if write was sucessful */
+    bool tryWrite(double);
 
 //    void add(double);
 //    void sub(double);

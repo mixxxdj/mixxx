@@ -822,7 +822,7 @@
   <Align>right</Align>
  </Text>
 
- <Numberx>
+ <Number>
   <Pos>144,350</Pos>
   <Size>100,20</Size>
   <Text>BPM: </Text>
@@ -832,9 +832,9 @@
   <Connection>
    <ConfigKey>[Channel1],bpm</ConfigKey>
   </Connection>
- </Numberx>
+ </Number>
 
- <Numberx>
+ <Number>
   <Pos>623,350</Pos>
   <Size>100,20</Size>
   <Text>BPM: </Text>
@@ -844,7 +844,7 @@
   <Connection>
    <ConfigKey>[Channel2],bpm</ConfigKey>
   </Connection>
- </Numberx>
+ </Number>
 
  <SliderComposed>
   <Handle>playpos-marker1.png</Handle>

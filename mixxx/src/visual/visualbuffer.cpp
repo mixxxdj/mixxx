@@ -136,15 +136,17 @@ void VisualBuffer::validate()
 bufInfo VisualBuffer::getVertexArray()
 {
     // Conversion to DISPLAYRATE
-    int iPos = (int)(((m_pPlaypos->getValue()/m_fReaderExtractFactor)/m_fResampleFactor)-m_iDisplayLen/2);
-    while (iPos<0)
-        iPos += m_iLen;
+    float fPos = (((m_pPlaypos->getValue()/m_fReaderExtractFactor)/m_fResampleFactor)-(float)m_iDisplayLen/2.f);
+    while (fPos<0)
+        fPos += (float)m_iLen;
+    int iPos = (int)fPos;
 
     bufInfo i;
     i.p1 = &m_pBuffer[iPos*3];
     i.len1 = min(m_iDisplayLen, m_iLen-iPos);
     i.p2 = m_pBuffer;
     i.len2 = m_iDisplayLen-i.len1;
+    i.corr = fPos-(float)iPos;
 
 //    qDebug("Total pos %i",i.len1+i.len2);
 //    std::cout << "playpos " << m_pPlaypos->getValue() << ", pos " << iPos << "\n"; //", len1 " << i.len1 << ", len2 " << i.len2 << ", displayLen " << m_iDisplayLen << "\n";

@@ -203,7 +203,7 @@ void Reader::newtrack()
 #ifdef __WIN__
                 file = new SoundSourceSndFile(filename);
 #endif
-            else if (finfo.extension(false).upper() == "MP3")                    
+            else if (finfo.extension(false).upper() == "MP3")
                 file = new SoundSourceMp3(filename);
             else if (finfo.extension(false).upper() == "OGG")
                 file = new SoundSourceOggVorbis(filename);
@@ -261,8 +261,8 @@ void Reader::run()
             seek();
 
         // Read a new chunk:
-        double temp = rate->tryRead();
-        if (temp!=-1.)
+        double temp;
+        if (rate->tryRead(&temp))
             rate_old = temp;
         readerwave->getchunk(rate_old);
     }
