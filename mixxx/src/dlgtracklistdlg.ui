@@ -9,8 +9,15 @@
             <x>0</x>
             <y>0</y>
             <width>760</width>
-            <height>480</height>
+            <height>473</height>
         </rect>
+    </property>
+    <property name="paletteBackgroundColor">
+        <color>
+            <red>168</red>
+            <green>181</green>
+            <blue>164</blue>
+        </color>
     </property>
     <property name="caption">
         <string>Form1</string>
@@ -72,46 +79,6 @@
                 <pixmap></pixmap>
             </property>
         </column>
-        <row>
-            <property name="text">
-                <string>1</string>
-            </property>
-            <property name="pixmap">
-                <pixmap></pixmap>
-            </property>
-        </row>
-        <row>
-            <property name="text">
-                <string>2</string>
-            </property>
-            <property name="pixmap">
-                <pixmap></pixmap>
-            </property>
-        </row>
-        <row>
-            <property name="text">
-                <string>3</string>
-            </property>
-            <property name="pixmap">
-                <pixmap></pixmap>
-            </property>
-        </row>
-        <row>
-            <property name="text">
-                <string>4</string>
-            </property>
-            <property name="pixmap">
-                <pixmap></pixmap>
-            </property>
-        </row>
-        <row>
-            <property name="text">
-                <string>5</string>
-            </property>
-            <property name="pixmap">
-                <pixmap></pixmap>
-            </property>
-        </row>
         <property name="name">
             <cstring>tableTracks</cstring>
         </property>
@@ -119,18 +86,45 @@
             <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>610</width>
-                <height>160</height>
+                <width>630</width>
+                <height>200</height>
             </rect>
         </property>
+        <property name="paletteBackgroundColor">
+            <color>
+                <red>168</red>
+                <green>181</green>
+                <blue>164</blue>
+            </color>
+        </property>
+        <property name="font">
+            <font>
+                <pointsize>10</pointsize>
+            </font>
+        </property>
+        <property name="frameShape">
+            <enum>WinPanel</enum>
+        </property>
+        <property name="lineWidth">
+            <number>2</number>
+        </property>
+        <property name="vScrollBarMode">
+            <enum>AlwaysOn</enum>
+        </property>
+        <property name="hScrollBarMode">
+            <enum>AlwaysOff</enum>
+        </property>
         <property name="numRows">
-            <number>5</number>
+            <number>0</number>
         </property>
         <property name="numCols">
             <number>7</number>
         </property>
+        <property name="showGrid">
+            <bool>false</bool>
+        </property>
         <property name="columnMovingEnabled">
-            <bool>true</bool>
+            <bool>false</bool>
         </property>
         <property name="readOnly">
             <bool>true</bool>
