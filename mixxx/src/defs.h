@@ -55,9 +55,9 @@ static CSAMPLE two_pi = (2.f*acos(-1.f));
 
 // Ensure that CSAMPLE x stays above the intel cpu denormalization range,
 // otherwise sets x equal to 0.
-inline CSAMPLE zap_denormal(CSAMPLE x)
+inline double zap_denormal(double x)
 {
-    CSAMPLE absx = fabs(x);
+    double absx = fabs(x);
     return (absx > 1e-15f && absx < 1e15f) ? x : 0.f;
 }
 
