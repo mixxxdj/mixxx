@@ -84,17 +84,17 @@ void WSliderComposed::unsetPixmaps()
 void WSliderComposed::mouseMoveEvent(QMouseEvent *e)
 {
     if (m_bHorizontal)
-        m_iPos = e->x();
+        m_iPos = e->x()-m_iHandleLength/2;
     else
-        m_iPos = e->y();
+        m_iPos = e->y()-m_iHandleLength/2;
 
-    if (m_iPos>m_iSliderLength-(m_iHandleLength/2))
-        m_iPos = m_iSliderLength-(m_iHandleLength/2);
-    else if (m_iPos<(m_iHandleLength/2))
-        m_iPos = m_iHandleLength/2;
+    if (m_iPos>(m_iSliderLength-m_iHandleLength))
+        m_iPos = m_iSliderLength-m_iHandleLength;
+    else if (m_iPos<0)
+        m_iPos = 0;
 
     // value ranges from 0 to 127
-    m_fValue = (double)m_iPos*(128./(double)(m_iSliderLength));
+    m_fValue = (double)m_iPos*(127./(double)(m_iSliderLength-m_iHandleLength));
     if ((!m_bHorizontal && !m_bReverse) || (m_bHorizontal && m_bReverse))
         m_fValue = 127.-m_fValue;
 
@@ -125,13 +125,13 @@ void WSliderComposed::paintEvent(QPaintEvent *)
         int posy;
         if (m_bHorizontal)
         {
-            posx = m_iPos-m_iHandleLength/2;
+            posx = m_iPos;
             posy = 0;
         }
         else
         {
             posx = 0;
-            posy = m_iPos-m_iHandleLength/2;
+            posy = m_iPos;
         }
 
         // Draw slider followed by handle to double buffer
