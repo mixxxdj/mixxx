@@ -37,16 +37,25 @@ public:
     ControlVUmeter(ConfigKey key, DlgVUmeter *);
     ~ControlVUmeter();
     void setValue(FLOAT_TYPE);
+    void setAccelUp(const QKeySequence key);
+    void setAccelDown(const QKeySequence key);
+
 
 public slots:
+    void slotSetPosition(int);
+    void slotSetPositionMidi(MidiCategory c, int v);
 
 signals:
     void valueChanged(FLOAT_TYPE);
+
+protected:
+    void forceGUIUpdate();
 
 private:
     static const FLOAT_TYPE m_fTresholds[NLEDS];
     FLOAT_TYPE m_fValue;
     WBulb *m_aLeds[NLEDS];
+
 };
 
 
