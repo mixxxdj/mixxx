@@ -39,7 +39,7 @@ DlgPrefControls::DlgPrefControls(QWidget *parent, ControlObject *pControl, Mixxx
     if (m_pConfig->getValueString(ConfigKey("[Controls]","RateDir")).length() == 0)
         m_pConfig->set(ConfigKey("[Controls]","RateDir"),ConfigValue(0));
 
-	float fDir = 1.;
+    float fDir = 1.;
     if (m_pConfig->getValueString(ConfigKey("[Controls]","RateDir")).toInt()==1.)
         fDir = -1.;
     m_pControlRateDir1->setValueFromApp(fDir);
@@ -51,9 +51,24 @@ DlgPrefControls::DlgPrefControls(QWidget *parent, ControlObject *pControl, Mixxx
     if (m_pConfig->getValueString(ConfigKey("[Controls]","RateRange")).length() == 0)
         m_pConfig->set(ConfigKey("[Controls]","RateRange"),ConfigValue(1));
 
-	slotSetRateRange(m_pConfig->getValueString(ConfigKey("[Controls]","RateRange")).toInt());
+    slotSetRateRange(m_pConfig->getValueString(ConfigKey("[Controls]","RateRange")).toInt());
     connect(ComboBoxRateRange, SIGNAL(activated(int)), this, SLOT(slotSetRateRange(int)));
 
+    //
+    // Visuals
+    //
+    
+    // Set default value in config file, if not present
+    if (m_pConfig->getValueString(ConfigKey("[Controls]","Visuals")).length() == 0)
+        m_pConfig->set(ConfigKey("[Controls]","Visuals"), ConfigValue(0));
+
+    // Update combo box
+    ComboBoxVisuals->insertItem("Waveform");
+    ComboBoxVisuals->insertItem("Simple");
+    ComboBoxVisuals->setCurrentItem(m_pConfig->getValueString(ConfigKey("[Controls]","Visuals")).toInt());
+    
+    connect(ComboBoxVisuals,   SIGNAL(activated(int)), this, SLOT(slotSetVisuals(int)));
+        
     //
     // Skin configurations
     //
@@ -94,7 +109,7 @@ void DlgPrefControls::slotUpdate()
     ComboBoxRateRange->insertItem(" 8% (Technics SL1210)");
     ComboBoxRateRange->insertItem("10% (Omnitronic 3xxx)");
     ComboBoxRateRange->insertItem("20%");
-    ComboBoxRateRange->insertItem("30% (Traktor)");
+    ComboBoxRateRange->insertItem("30%");
     ComboBoxRateRange->insertItem("40%");
     ComboBoxRateRange->insertItem("50%");
     ComboBoxRateRange->insertItem("60%");
@@ -138,6 +153,12 @@ void DlgPrefControls::slotSetRateDir(int)
     // Set rate dir
     m_pControlRateDir1->setValueFromApp(dir);
     m_pControlRateDir2->setValueFromApp(dir);
+}
+
+void DlgPrefControls::slotSetVisuals(int)
+{
+    m_pConfig->set(ConfigKey("[Controls]","Visuals"), ConfigValue(ComboBoxVisuals->currentItem()));
+    textLabel->setText("Restart Mixxx before the change of visuals will take effect.");
 }
 
 void DlgPrefControls::slotSetSkin(int)

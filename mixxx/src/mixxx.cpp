@@ -86,7 +86,7 @@
   #include "midiobjectwin.h"
 #endif
 
-MixxxApp::MixxxApp(QApplication *a, bool bVisuals)
+MixxxApp::MixxxApp(QApplication *a)
 {
     app = a;
 
@@ -303,20 +303,35 @@ MixxxApp::MixxxApp(QApplication *a, bool bVisuals)
         qFatal("Skin directory does not exist: %s",qSkinPath.latin1());
 
     // Initialize widgets
-    view=new MixxxView(this,bVisuals, qSkinPath);
+    bool bVisualsWaveform = true;
+    if (config->getValueString(ConfigKey("[Controls]","Visuals")).toInt()==1)
+        bVisualsWaveform = false;
+    view=new MixxxView(this, bVisualsWaveform, qSkinPath);
+    if (bVisualsWaveform && !view->activeWaveform())
+    {
+        config->set(ConfigKey("[Controls]","Visuals"), ConfigValue(1));
+        QMessageBox* mb = new QMessageBox(this);
+        mb->setCaption(QString("Wavform displays"));
+        mb->setIcon(QMessageBox::Information);
+        mb->setText("OpenGL cannot be initialized, which means that\nthe waveform displays won't work. A simple\nmode will be used instead where you can still\nuse the mouse to change speed.");
+        mb->show();
+    }    
     setCentralWidget(view);
 
-    // Tell EngineBuffer to notify the visuals
-    buffer1->setVisual(view->m_pVisualCh1);
-    buffer2->setVisual(view->m_pVisualCh2);
-
-    // Dynamic zoom on visuals
-    if (view->m_bZoom)
+    // Tell EngineBuffer to notify the visuals if they are WVisualWaveform
+    if (view->activeWaveform())
     {
-        ControlObject::connectControls(ConfigKey("[Channel1]", "rate"), ConfigKey("[Channel1]", "VisualLengthScale-marks"));
-        ControlObject::connectControls(ConfigKey("[Channel1]", "rate"), ConfigKey("[Channel1]", "VisualLengthScale-signal"));
-        ControlObject::connectControls(ConfigKey("[Channel2]", "rate"), ConfigKey("[Channel2]", "VisualLengthScale-marks"));
-        ControlObject::connectControls(ConfigKey("[Channel2]", "rate"), ConfigKey("[Channel2]", "VisualLengthScale-signal"));
+        buffer1->setVisual(view->m_pVisualCh1);
+        buffer2->setVisual(view->m_pVisualCh2);
+
+        // Dynamic zoom on visuals
+        if (view->m_bZoom)
+        {
+            ControlObject::connectControls(ConfigKey("[Channel1]", "rate"), ConfigKey("[Channel1]", "VisualLengthScale-marks"));
+            ControlObject::connectControls(ConfigKey("[Channel1]", "rate"), ConfigKey("[Channel1]", "VisualLengthScale-signal"));
+            ControlObject::connectControls(ConfigKey("[Channel2]", "rate"), ConfigKey("[Channel2]", "VisualLengthScale-marks"));
+            ControlObject::connectControls(ConfigKey("[Channel2]", "rate"), ConfigKey("[Channel2]", "VisualLengthScale-signal"));
+        }
     }
             
     // Initialize tracklist:

@@ -1,7 +1,11 @@
 /***************************************************************************
-                          wvisual.h  -  description
+                          wvisualwaveform.h  - Waveform visualization
+                          using OpenGL. This object cannot make use of
+                          multiple inheritance from both WWidget and
+                          QGLWidget, since both in turn inherit from
+                          QObject.
                              -------------------
-    begin                : Thu Oct 10 2002
+    begin                : Thu Oct 9 2003
     copyright            : (C) 2002 by Tue & Ken Haste Andersen
     email                : haste@diku.dk
  ***************************************************************************/
@@ -15,14 +19,15 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef WVISUAL_H
-#define WVISUAL_H
+#ifndef WVISUALWAVEFORM_H
+#define WVISUALWAVEFORM_H
 
 #include <qgl.h>
 #include <qptrlist.h>
 #include <qevent.h>
 #include <qdatetime.h>
 #include <qdom.h>
+#include "wwidget.h"
 #include "visual/visualcontroller.h"
 #include "visual/picking.h"
 #include "visual/visualbackplane.h"
@@ -36,12 +41,12 @@ class ControlPotmeter;
   *@author Tue & Ken Haste Andersen
   */
 
-class WVisual : public QGLWidget
+class WVisualWaveform : public QGLWidget
 {
     Q_OBJECT
 public: 
-    WVisual(QWidget *pParent=0, const char *pName=0, const QGLWidget *pShareWidget = 0);
-    ~WVisual();
+    WVisualWaveform(QWidget *pParent=0, const char *pName=0, const QGLWidget *pShareWidget = 0);
+    ~WVisualWaveform();
     void setup(QDomNode node);
     bool eventFilter(QObject *o, QEvent *e);
     /** Add a VisualChannel */

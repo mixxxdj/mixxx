@@ -28,7 +28,7 @@ class ControlObject;
 class Reader;
 class EngineBufferScale;
 class PowerMate;
-class WVisual;
+class WVisualWaveform;
 
 /**
   *@author Tue and Ken Haste Andersen
@@ -53,7 +53,7 @@ public:
     EngineBuffer(PowerMate *, const char *_group);
     ~EngineBuffer();
     /** Pointer to visual widget */
-    void setVisual(WVisual *pVisual);
+    void setVisual(WVisualWaveform *pVisualWaveform);
     /** Returns pointer to Reader object. Used in MixxxApp. */
     Reader *getReader();
     /** Reset buffer playpos and set file playpos. This must only be called while holding the

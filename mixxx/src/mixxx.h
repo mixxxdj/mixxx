@@ -67,8 +67,8 @@ class MixxxApp : public QMainWindow
   Q_OBJECT
   
   public:
-    /** Construtor. Tries to open visuals if bVisuals is true. */
-    MixxxApp(QApplication *app, bool bVisuals);
+    /** Construtor */
+    MixxxApp(QApplication *app);
     /** destructor */
     ~MixxxApp();
     /** initializes all QActions of the application */

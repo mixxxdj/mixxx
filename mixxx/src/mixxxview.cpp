@@ -34,10 +34,11 @@
 #include "wvumeter.h"
 #include "wnumber.h"
 #ifdef __VISUALS__
-  #include "wvisual.h"
+  #include "wvisualwaveform.h"
+  #include "wvisualsimple.h"
 #endif
 
-MixxxView::MixxxView(QWidget *parent, bool bVisuals, QString qSkinPath) : QWidget(parent, "Mixxx")
+MixxxView::MixxxView(QWidget *parent, bool bVisualsWaveform, QString qSkinPath) : QWidget(parent, "Mixxx")
 {
     // Path to image files
     WWidget::setPixmapPath(qSkinPath.append("/"));
@@ -67,6 +68,7 @@ MixxxView::MixxxView(QWidget *parent, bool bVisuals, QString qSkinPath) : QWidge
     m_pVisualCh1 = 0;
     m_pVisualCh2 = 0;
     m_bZoom = false;
+    m_bVisualWaveform = false;
     
     // Load all widgets defined in the XML file
     QDomNode node = docElem.firstChild();
@@ -121,43 +123,55 @@ MixxxView::MixxxView(QWidget *parent, bool bVisuals, QString qSkinPath) : QWidge
             }
             else if (node.nodeName()=="Visual")
             {
-#ifdef __VISUALS__
-                if (bVisuals)
+                if (WWidget::selectNodeInt(node, "Channel")==1 && m_pVisualCh1==0)
                 {
-                    if (WWidget::selectNodeInt(node, "Channel")==1 && m_pVisualCh1==0)
+                    if (bVisualsWaveform)
                     {
-                        m_pVisualCh1 = new WVisual(this, 0, 0);
-                        if (m_pVisualCh1->isValid())
+                        m_pVisualCh1 = new WVisualWaveform(this, 0, 0);
+                        if (((WVisualWaveform *)m_pVisualCh1)->isValid())
                         {
-                            m_pVisualCh1->setup(node);
-                            ControlObject::setWidget(m_pVisualCh1, ConfigKey("[Channel1]", "wheel"), true, Qt::LeftButton);
+                            ((WVisualWaveform *)m_pVisualCh1)->setup(node);
+                            m_bVisualWaveform = true;
                         }
                         else
                         {
+                            m_bVisualWaveform = false;
                             delete m_pVisualCh1;
-                            m_pVisualCh1 = 0;
                         }
                     }
-                    else if (WWidget::selectNodeInt(node, "Channel")==2 && m_pVisualCh1!=0 && m_pVisualCh2==0)
+                    if (!m_bVisualWaveform)
                     {
-                        // Background color
-                        m_pVisualCh2 = new WVisual(this, "", m_pVisualCh1);
-                        if (m_pVisualCh2->isValid())
+                        m_pVisualCh1 = new WVisualSimple(this, 0);
+                        ((WVisualSimple *)m_pVisualCh1)->setup(node);
+                    }
+                    ControlObject::setWidget((QWidget *)m_pVisualCh1, ConfigKey("[Channel1]", "wheel"), true, Qt::LeftButton);
+                }        
+                else if (WWidget::selectNodeInt(node, "Channel")==2 && m_pVisualCh1!=0 && m_pVisualCh2==0)
+                {
+                    if (bVisualsWaveform)
+                    {
+                        m_pVisualCh2 = new WVisualWaveform(this, "", (QGLWidget *)m_pVisualCh1);
+                        if (((WVisualWaveform *)m_pVisualCh2)->isValid())
                         {
-                            m_pVisualCh2->setup(node);
-                            ControlObject::setWidget(m_pVisualCh2, ConfigKey("[Channel2]", "wheel"), true, Qt::LeftButton);
+                            ((WVisualWaveform *)m_pVisualCh2)->setup(node);
+                            m_bVisualWaveform = true;
                         }
                         else
                         {
+                            m_bVisualWaveform = false;
                             delete m_pVisualCh2;
-                            m_pVisualCh2 = 0;
                         }
                     }
-
-                    if (!WWidget::selectNode(node, "Zoom").isNull() && WWidget::selectNodeQString(node, "Zoom")=="true")
-                        m_bZoom = true;
+                    if (!m_bVisualWaveform)
+                    {
+                        m_pVisualCh2 = new WVisualSimple(this, 0);
+                        ((WVisualSimple *)m_pVisualCh2)->setup(node);
+                    }
+                    ControlObject::setWidget((QWidget *)m_pVisualCh2, ConfigKey("[Channel2]", "wheel"), true, Qt::LeftButton);
                 }
-#endif
+
+                if (!WWidget::selectNode(node, "Zoom").isNull() && WWidget::selectNodeQString(node, "Zoom")=="true")
+                    m_bZoom = true;
             }
             else if (node.nodeName()=="Text")
             {
@@ -221,6 +235,11 @@ MixxxView::MixxxView(QWidget *parent, bool bVisuals, QString qSkinPath) : QWidge
 
 MixxxView::~MixxxView()
 {
+}
+
+bool MixxxView::activeWaveform()
+{
+    return m_bVisualWaveform;
 }
 
 bool MixxxView::compareConfigKeys(QDomNode node, QString key)
