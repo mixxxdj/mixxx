@@ -59,10 +59,13 @@ public:
     long int seek(long int new_playpos);
     /** The first read sample in the file, currently in read_buffer. This should only be
       * accessed while holding the enginelock from the reader class. */
-    long int filepos_start;
+    long signed int filepos_start;
     /** The last read sample in the file, currently in read_buffer. This should only be
       * accessed while holding the enginelock from the reader class. */
-    long int filepos_end;
+    long signed int filepos_end;
+    /** The current play position in the file. This should only be
+      * updated while holding the enginelock from the reader class. */
+    long signed int filepos_play;
 private:
     /** Pointer to Reader class */
     Reader *m_pReader;

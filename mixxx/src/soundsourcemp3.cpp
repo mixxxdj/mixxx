@@ -38,7 +38,7 @@ SoundSourceMp3::SoundSourceMp3(QString qFilename) : SoundSource(qFilename)
     mad_stream_buffer(&Stream, (unsigned char *) inputbuf, inputbuf_len);
 
     /*
-      Decode all the headers, and fill in stats:
+      Decode all the headers, and fi    ll in stats:
     */
 //    int len = 0;
     mad_header Header;
@@ -68,11 +68,23 @@ SoundSourceMp3::SoundSourceMp3(QString qFilename) : SoundSource(qFilename)
             //qDebug("MAD: ERR decoding header %d: %s (len=%d)", currentframe, mad_stream_ERRstr(&Stream), len);
             continue;
         }
+
+        // Add frame to list of frames
+        MadSeekFrameType *p = new MadSeekFrameType;
+        p->m_pStreamPos = (unsigned char*)Stream.this_frame;
+        p->pos = length();
+        m_qSeekList.append(p);
+
         currentframe++;
         mad_timer_add (&filelength, Header.duration);
         bitrate += Header.bitrate;
         SRATE = Header.samplerate;
+        m_iChannels = MAD_NCHANNELS(&Header);
+
     }
+
+    // Find average frame size
+    m_iAvgFrameSize = length()/currentframe;
 
     mad_header_finish (&Header);
     if (currentframe==0)
@@ -82,6 +94,7 @@ SoundSourceMp3::SoundSourceMp3(QString qFilename) : SoundSource(qFilename)
     framecount = currentframe;
     currentframe = 0;
 
+
     /*
     qDebug("length  = %ld sec." , filelength.seconds);
     qDebug("frames  = %d" , framecount);
@@ -89,63 +102,166 @@ SoundSourceMp3::SoundSourceMp3(QString qFilename) : SoundSource(qFilename)
     qDebug("Size    = %d", length());
     */
 
-    // Re-init buffer:
-    mad_stream_finish(&Stream);
-    mad_stream_init(&Stream);
-    mad_stream_buffer(&Stream, (unsigned char *) inputbuf, inputbuf_len);
-    mad_frame_init(&Frame);
-    mad_synth_init(&Synth);
-
     // Set the type field:
     type = "mp3 file.";
 
-    rest = -1;
+    Frame = new mad_frame;
+
+    m_qSeekList.setAutoDelete(true);
+
+    // Re-init buffer:
+    seek(0);
 }
 
 SoundSourceMp3::~SoundSourceMp3()
 {
     mad_stream_finish(&Stream);
-    mad_frame_finish(&Frame);
+    mad_frame_finish(Frame);
     mad_synth_finish(&Synth);
     delete [] inputbuf;
+
+    m_qSeekList.clear();
 }
 
 long SoundSourceMp3::seek(long filepos)
 {
-    int newpos = (int)(inputbuf_len * ((float)filepos/(float)length()));
-    //qDebug("Seek to %d %d %d", filepos, inputbuf_len, newpos);
+    //qDebug("SEEK %i",filepos);
 
-    // Go to an approximate position:
-    mad_stream_buffer(&Stream, (unsigned char *) (inputbuf+newpos), inputbuf_len-newpos);
-    mad_synth_mute(&Synth);
-    mad_frame_mute(&Frame);
+    MadSeekFrameType *cur;
 
-    // Decode a few (possible wrong) buffers:
-    int no = 0;
-    int succesfull = 0;
-    while ((no<10) && (succesfull<2)) {
-        if (!mad_frame_decode(&Frame, &Stream))
-            succesfull ++;
-        no ++;
+    if (filepos==0)
+    {
+        // Seek to beginning of file
+
+        // Re-init buffer:
+        mad_stream_finish(&Stream);
+        mad_stream_init(&Stream);
+        mad_stream_buffer(&Stream, (unsigned char *) inputbuf, inputbuf_len);
+        mad_frame_init(Frame);
+        mad_synth_init(&Synth);
+        rest=-1;
+        cur = m_qSeekList.at(0);
     }
+    else
+    {
+        //qDebug("seek precise");
+        // Perform precise seek accomplished by using a frame in the seek list
 
-    // Discard the first synth:
-    mad_synth_frame(&Synth, &Frame);
+        // Find the frame to seek to in the list
+        /*
+        MadSeekFrameType *cur = m_qSeekList.last();
+        int k=0;
+        while (cur!=0 && cur->pos>filepos)
+        {
+            cur = m_qSeekList.prev();
+            ++k;
+        }
+        */
 
-    // Remaining samples in buffer are useless
-    rest = -1;
+        int framePos = findFrame(filepos);
+
+        //qDebug("list length %i, list pos %i",m_qSeekList.count(), k);
+
+        if (framePos==0 || framePos>filepos || m_qSeekList.at()<4)
+        {
+            qDebug("Problem finding good seek frame (wanted %i, got %i), starting from 0",filepos,framePos);
+
+            // Re-init buffer:
+            mad_stream_finish(&Stream);
+            mad_stream_init(&Stream);
+            mad_stream_buffer(&Stream, (unsigned char *) inputbuf, inputbuf_len);
+            mad_frame_init(Frame);
+            mad_synth_init(&Synth);
+            rest = -1;
+        }
+        else
+        {
+//            qDebug("frame pos %i",cur->pos);
+
+            // Start three frame before wanted frame to get in sync...
+            m_qSeekList.prev();
+            m_qSeekList.prev();
+            cur = m_qSeekList.prev();
+
+            // Start from the new frame
+            mad_stream_finish(&Stream);
+            mad_stream_init(&Stream);
+            //qDebug("mp3 restore %p",cur->m_pStreamPos);
+            mad_stream_buffer(&Stream, (const unsigned char*)cur->m_pStreamPos, inputbuf_len-(long int)(cur->m_pStreamPos-(unsigned char*)inputbuf));
+            mad_synth_mute(&Synth);
+            mad_frame_mute(Frame);
+
+            // Decode the three frames before
+            mad_frame_decode(Frame,&Stream);
+            mad_frame_decode(Frame,&Stream);
+            if(mad_frame_decode(Frame,&Stream)) qDebug("******decode error 3*************");
+            mad_synth_frame(&Synth, Frame);
+
+            // Set current position
+            rest = -1;
+            m_qSeekList.next();
+            m_qSeekList.next();
+            cur = m_qSeekList.next();
+        }
+
+        // Synthesize the the samples from the frame which should be discard to reach the requested position
+        SAMPLE *temp = new SAMPLE[READCHUNKSIZE];
+        int r = read(filepos-cur->pos, temp);
+        //qDebug("try read %i, got %i...frame pos %i, filepos %i",filepos-cur->pos,r,cur->pos,filepos);
+        //qDebug("ok");
+        delete [] temp;
+    }
+/*
+    else
+    {
+        qDebug("seek unprecise");
+        // Perform seek which is can not be done precise because no frames is in the seek list
+
+        int newpos = (int)(inputbuf_len * ((float)filepos/(float)length()));
+//        qDebug("Seek to %d %d %d", filepos, inputbuf_len, newpos);
+
+        // Go to an approximate position:
+        mad_stream_buffer(&Stream, (unsigned char *) (inputbuf+newpos), inputbuf_len-newpos);
+        mad_synth_mute(&Synth);
+        mad_frame_mute(Frame);
+
+        // Decode a few (possible wrong) buffers:
+        int no = 0;
+        int succesfull = 0;
+        while ((no<10) && (succesfull<2))
+        {
+            if (!mad_frame_decode(Frame, &Stream))
+            succesfull ++;
+            no ++;
+        }
+
+        // Discard the first synth:
+        mad_synth_frame(&Synth, Frame);
+
+        // Remaining samples in buffer are useless
+        rest = -1;
+
+        // Reset seek frame list
+        m_qSeekList.clear();
+        MadSeekFrameType *p = new MadSeekFrameType;
+        p->m_pStreamPos = (unsigned char*)Stream.this_frame;
+        p->pos = filepos;
+        m_qSeekList.append(p);
+        m_iSeekListMinPos = filepos;
+        m_iSeekListMaxPos = filepos;
+        m_iCurFramePos = filepos;
+    }
+*/
 
     // Unfortunately we don't know the exact fileposition. The returned position is thus an
     // approximation only:
     return filepos;
+
 }
 
-/*    FILE *file;
-  Return the length of the file in samples.
-*/
 inline long unsigned SoundSourceMp3::length()
 {
-    return (long unsigned) 2*mad_timer_count(filelength, MAD_UNITS_44100_HZ);
+    return (long unsigned) m_iChannels*mad_timer_count(filelength, MAD_UNITS_44100_HZ);
 }
 
 /*
@@ -154,9 +270,10 @@ inline long unsigned SoundSourceMp3::length()
 */
 unsigned SoundSourceMp3::read(unsigned long samples_wanted, const SAMPLE* _destination)
 {
+//    qDebug("frame list %i",m_qSeekList.count());
+
     SAMPLE *destination = (SAMPLE *)_destination;
     unsigned Total_samples_decoded = 0;
-    int frames = 0;
 
     // If samples are left from previous read, then copy them to start of destination
     if (rest > 0)
@@ -168,60 +285,69 @@ unsigned SoundSourceMp3::read(unsigned long samples_wanted, const SAMPLE* _desti
 
             /* Right channel. If the decoded stream is monophonic then
              * the right output channel is the same as the left one. */
-            if (MAD_NCHANNELS(&Frame.header)==2)
+            if (m_iChannels>1)
                 *(destination++) = madScale(Synth.pcm.samples[1][i]);
             else
                 *(destination++) = madScale(Synth.pcm.samples[0][i]);
         }
-        Total_samples_decoded += 2*(Synth.pcm.length-rest);
+        Total_samples_decoded += min(m_iChannels,2)*(Synth.pcm.length-rest);
     }
-    
+
     //qDebug("Decoding");
     int no;
+    int frames = 0;
     while (Total_samples_decoded < samples_wanted)
     {
-        if(mad_frame_decode(&Frame,&Stream))
+        //qDebug("no %i",Total_samples_decoded);
+        if(mad_frame_decode(Frame,&Stream))
         {
             if(MAD_RECOVERABLE(Stream.error))
             {
-                //qDebug("MAD: Recoverable frame level ERR (%s)",
-                //       mad_stream_ERRstr(&Stream));
+                qDebug("MAD: Recoverable frame level ERR (%s)",mad_stream_errorstr(&Stream));
                 continue;
             } else if(Stream.error==MAD_ERROR_BUFLEN) {
-                //qDebug("MAD: buflen ERR");
+                qDebug("MAD: buflen ERR");
                 break;
             } else {
-                //qDebug("MAD: Unrecoverable frame level ERR (%s).",
-                //mad_stream_ERRstr(&Stream));
+                qDebug("MAD: Unrecoverable frame level ERR (%s).",mad_stream_errorstr(&Stream));
                 break;
             }
         }
+
+        ++frames;
+
         /* Once decoded the frame is synthesized to PCM samples. No ERRs
          * are reported by mad_synth_frame();
          */
-        mad_synth_frame(&Synth,&Frame);
-        frames ++;
+        mad_synth_frame(&Synth,Frame);
+
+        // Number of channels in frame
+        //ch = MAD_NCHANNELS(&Frame->header);
+
         /* Synthesized samples must be converted from mad's fixed
          * point number to the consumer format (16 bit). Integer samples
          * are temporarily stored in a buffer that is flushed when
          * full.
          */
+
+
+        //qDebug("synthlen %i, remain %i",Synth.pcm.length,(samples_wanted-Total_samples_decoded));
         no = min(Synth.pcm.length,(samples_wanted-Total_samples_decoded)/2);
-        for (int i=0;i<no;i++)
+        for (int i=0; i<no; i++)
         {
             // Left channel
             *(destination++) = madScale(Synth.pcm.samples[0][i]);
 
             /* Right channel. If the decoded stream is monophonic then
              * the right output channel is the same as the left one. */
-            if (MAD_NCHANNELS(&Frame.header)==2)
+            if (m_iChannels==2)
                 *(destination++) = madScale(Synth.pcm.samples[1][i]);
             else
                 *(destination++) = madScale(Synth.pcm.samples[0][i]);
         }
         Total_samples_decoded += 2*no;
 
-//        qDebug("decoded: %i, wanted: %i",Total_samples_decoded,samples_wanted);
+        //qDebug("decoded: %i, wanted: %i",Total_samples_decoded,samples_wanted);
     }
 
     // If samples are still left in buffer, set rest to the index of the unused samples
@@ -230,7 +356,7 @@ unsigned SoundSourceMp3::read(unsigned long samples_wanted, const SAMPLE* _desti
     else
         rest = -1;
 
-    //qDebug("decoded %i samples in %i frames, rest: %i, chan %i", Total_samples_decoded, frames, rest, MAD_NCHANNELS(&Frame.header));
+    //qDebug("decoded %i samples in %i frames, rest: %i, chan %i", Total_samples_decoded, frames, rest, m_iChannels);
     return Total_samples_decoded;
 }
 
@@ -375,6 +501,53 @@ void SoundSourceMp3::getField(id3_tag *tag, const char *frameid, QString *str)
         if (strlen>0)
             str->setUnicodeCodes((ushort *)framestr,strlen);
         delete [] framestr;
+    }
+}
+
+int SoundSourceMp3::findFrame(int pos)
+{
+    // Guess position of frame in m_qSeekList based on average frame size
+    MadSeekFrameType *temp = m_qSeekList.at(min(m_qSeekList.count()-1, pos/m_iAvgFrameSize));
+
+/*
+    if (temp!=0)
+        qDebug("find %i, got %i",pos, temp->pos);
+    else
+        qDebug("find %i, tried idx %i, total %i",pos, min(m_qSeekList.count()-1, pos/m_iAvgFrameSize),m_qSeekList.count());
+*/
+
+    // Ensure that the list element is not at a greater position than pos
+    while (temp!=0 && temp->pos>pos)
+    {
+        temp = m_qSeekList.prev();
+//        if (temp!=0) qDebug("backing %i, got %i",pos,temp->pos);
+    }
+
+    // Ensure that the following position is also not smaller than pos
+    if (temp!=0)
+    {
+        temp = m_qSeekList.current();
+        while (temp!=0 && temp->pos<pos)
+        {
+            temp = m_qSeekList.next();
+//            if (temp!=0) qDebug("fwd'ing %i, got %i",pos,temp->pos);
+        }
+
+        if (temp==0)
+            temp = m_qSeekList.last();
+        else
+            temp = m_qSeekList.prev();
+    }
+
+    if (temp>0)
+    {
+//        qDebug("ended at %i, got %i",pos,temp->pos);
+        return temp->pos;
+    }
+    else
+    {
+//        qDebug("ended at 0");
+        return 0;
     }
 }
 

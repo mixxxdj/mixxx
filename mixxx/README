@@ -24,6 +24,7 @@ New since 1.0.1:
 - Various user interface bug fixes
 - Up and down push button controls for all sliders and knobs
 - Temporary and permanent rate change buttons configurable
+- Improved refresh of waveform displays
 
 * REQUIREMENTS *********************************************
 Mixxx is depends on the following libraries:

@@ -70,6 +70,8 @@ void Reader::requestNewTrack(TrackInfoObject *pTrack)
 
 void Reader::requestSeek(double new_playpos)
 {
+//    qDebug("req seek");
+    
     // Put seek request in queue
     seekqueuemutex.lock();
     seekqueue.append(new_playpos);
@@ -119,6 +121,11 @@ long int Reader::getFileposStart()
 long int Reader::getFileposEnd()
 {
     return readerwave->filepos_end;
+}
+
+void Reader::setFileposPlay(long int pos)
+{
+    readerwave->filepos_play = pos;
 }
 
 bool Reader::tryLock()
@@ -199,6 +206,7 @@ void Reader::run()
         double temp;
         if (rate->tryRead(&temp))
             rate_old = temp;
+        //qDebug("Get chunk %f",rate_old);
         readerwave->getchunk(rate_old);
     }
     //qDebug("reader stopping");
@@ -227,16 +235,17 @@ void Reader::seek()
     seekqueuemutex.unlock();
 
 //    qDebug("seek %f",new_playpos);
-    
+
     // Return if queue was empty
     if (new_playpos==-1.)
         return;
-        
-    new_playpos = readerwave->seek((long int)new_playpos);
-    wake();
 
     // Set playpos
     enginebuffer->setNewPlaypos(new_playpos);
+
+    new_playpos = readerwave->seek((long int)new_playpos);
+    wake();
+
 }
 
 

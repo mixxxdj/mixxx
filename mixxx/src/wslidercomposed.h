@@ -55,6 +55,8 @@ private:
     bool m_bHorizontal;
     /** Is true if events is emitted while the slider is dragged */
     bool m_bEventWhileDrag;
+    /** True if slider is dragged. Only used when m_bEventWhileDrag is false */
+    bool m_bDrag;
     /** Pointer to double buffer */
     QPixmap *m_pDoubleBuffer;
     /** Pointer to pixmap of the slider */
