@@ -28,11 +28,10 @@ WSliderComposed::WSliderComposed(QWidget *parent, const char *name ) : WWidget(p
     m_pDoubleBuffer = 0;
 
     // Set default values
-    m_fValue = 63;
     m_iSliderLength=0;
     m_iHandleLength=0;
 
-    setBackgroundMode(NoBackground);
+    reset();
 }
 
 WSliderComposed::~WSliderComposed()
@@ -45,11 +44,11 @@ void WSliderComposed::setPixmaps(bool bHorizontal, const QString &filenameSlider
     m_bHorizontal = bHorizontal;
     unsetPixmaps();
     m_pSlider = new QPixmap(filenameSlider);
-	if (!m_pSlider)
-		qDebug("WSliderComposed: Error loading slider pixmap: %s",filenameSlider.latin1());
+    if (!m_pSlider)
+        qDebug("WSliderComposed: Error loading slider pixmap: %s",filenameSlider.latin1());
     m_pHandle = new QPixmap(filenameHandle);
-	if (!m_pHandle)
-		qDebug("WSliderComposed: Error loading handle pixmap: %s",filenameHandle.latin1());
+    if (!m_pHandle)
+        qDebug("WSliderComposed: Error loading handle pixmap: %s",filenameHandle.latin1());
     m_pDoubleBuffer = new QPixmap(m_pSlider->size());
     
     if (m_bHorizontal)
@@ -111,14 +110,18 @@ void WSliderComposed::mouseMoveEvent(QMouseEvent *e)
 
 void WSliderComposed::mousePressEvent(QMouseEvent *e)
 {
-    mouseMoveEvent(e);
+    if (e->button() == Qt::RightButton)
+        reset();
+    else
+        mouseMoveEvent(e);
 }
 
 void WSliderComposed::paintEvent(QPaintEvent *p)
 {
     if (m_pSlider && m_pHandle)
     {
-        int posx, posy;
+        int posx;
+        int posy;
         if (m_bHorizontal)
         {
             posx = m_iPos-m_iHandleLength/2;
@@ -130,7 +133,7 @@ void WSliderComposed::paintEvent(QPaintEvent *p)
             posy = m_iPos-m_iHandleLength/2;
         }
 
-		// Draw slider followed by handle to double buffer
+        // Draw slider followed by handle to double buffer
         bitBlt(m_pDoubleBuffer, 0, 0, m_pSlider);
         bitBlt(m_pDoubleBuffer, posx, posy, m_pHandle);
 
@@ -150,4 +153,10 @@ void WSliderComposed::setValue(float fValue)
     m_iPos = (int)((fValue/128.)*(float)(m_iSliderLength-m_iHandleLength))+m_iHandleLength/2;
 
     repaint();
+}
+
+void WSliderComposed::reset()
+{
+    setValue(63.);
+    emit(valueChangedLeftUp(m_fValue));
 }
