@@ -36,9 +36,7 @@ typedef float CSAMPLE; // defines the CSAMPLE type used for intermediate calcula
 #endif
 
 #include <qregexp.h>
-
 #include <qthread.h>
-
 #include <alsa/asoundlib.h>
 
 /**
@@ -50,6 +48,7 @@ typedef float CSAMPLE; // defines the CSAMPLE type used for intermediate calcula
  * plug plugin. Defining S16_OUTPUT allows the bare hw to be used (via surround40).
  * XXX: Mmapped output doesn't seem to work with the plug plugin...
  */
+
 #ifdef S16_OUTPUT
 typedef short int OSAMPLE;
 #else
@@ -88,7 +87,7 @@ protected:
 
     snd_pcm_uframes_t buffer_size;
     snd_pcm_uframes_t period_size;
-    int period_no;
+    unsigned int period_no;
 
     /** True if devices are open */
     bool isopen;
@@ -99,6 +98,7 @@ protected:
 #ifdef PLAYERTEST
     CSAMPLE *prepareBuffer(int nframes);
 #endif
+    int setPeriodSize(bool setMinimum);
     int set_hwparams();
     int set_swparams();
     int xrun_recovery(int err);
@@ -112,7 +112,7 @@ private:
 #else
     static const snd_pcm_format_t alsa_format = SND_PCM_FORMAT_FLOAT;
 #endif
-    static const int alsa_channels = 4;
+    int alsa_channels;
     static const int default_latency = 200;
 };
 #endif

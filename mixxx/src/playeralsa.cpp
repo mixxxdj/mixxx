@@ -28,7 +28,7 @@
 
 /** Maximum frame size used with ALSA. Used to determine no of buffers
  *   * when setting latency */
-const int kiMaxFrameSize = 64;
+const int kiMaxFrameSize = 512;
 
 
 #ifndef PLAYERTEST
@@ -104,6 +104,9 @@ bool PlayerALSA::open()
 
     QRegExp rx("(\\S+) \\(ch (\\d+)\\)");
 
+    // Hold the number of channels to open
+    alsa_channels = 0;
+    
     // master left
     qDebug("Alsa opening...2.5");
     name = m_pConfig->getValueString(ConfigKey("[Soundcard]", "DeviceMasterLeft"));
@@ -116,9 +119,10 @@ bool PlayerALSA::open()
 	}
 	devname = rx.cap(1);
 	temp = rx.cap(2).toInt();
-	if (temp > 0)
+        if (temp > 0)
 	{
 	    masterleft = temp - 1;
+            alsa_channels = max(masterleft+1,alsa_channels);
 	}
     }
     qDebug("Alsa opening...ML %d", masterleft);
@@ -140,7 +144,8 @@ bool PlayerALSA::open()
 	if (temp > 0)
 	{
 	    masterright = temp - 1;
-	}
+            alsa_channels = max(masterright+1,alsa_channels);
+        }
     }
     qDebug("Alsa opening...MR %d", masterright);
 
@@ -161,6 +166,7 @@ bool PlayerALSA::open()
 	if (temp > 0)
 	{
 	    headleft = temp - 1;
+            alsa_channels = max(headleft+1,alsa_channels);
 	}
     }
     qDebug("Alsa opening...HL %d", headleft);
@@ -182,8 +188,13 @@ bool PlayerALSA::open()
 	if (temp > 0)
 	{
 	    headright = temp - 1;
+            alsa_channels = max(headright+1,alsa_channels);
 	}
     }
+    
+    // OVERWRITE NUMBER OF CHANNELS
+    alsa_channels = 4;
+    
     qDebug("Alsa opening...HR %d", headright);
     // Check if any of the devices in the config database needs to be set to "None"
     if (masterleft < 0)
@@ -195,6 +206,8 @@ bool PlayerALSA::open()
     if (headright < 0)
 	m_pConfig->set(ConfigKey("[Soundcard]", "DeviceHeadRight"), ConfigValue("None"));
 
+    
+    
 #else
     masterleft = 0;
     masterright = 1;
@@ -207,6 +220,10 @@ bool PlayerALSA::open()
 #endif
 #endif
 
+    // If no device was selected return false
+    if (!devname)
+        return false;
+        
     qDebug("Alsa opening pcm_open: %s", devname.ascii());
 
     if ((err = snd_pcm_open(&handle, devname.ascii(), SND_PCM_STREAM_PLAYBACK, 0)) < 0)
@@ -215,18 +232,26 @@ bool PlayerALSA::open()
 	return false;
     }
 
-    qDebug("Alsa settting hw");
+    qDebug("Alsa setting hw");
     if ((err = set_hwparams()) < 0)
     {
 	qWarning("Setting of hwparams failed: %s\n", snd_strerror(err));
 	return false;
     }
 
-    qDebug("Alsa settting sw");
+    qDebug("Alsa setting sw");
     if ((err = set_swparams()) < 0)
     {
-	qWarning("Setting of swparams failed: %s\n", snd_strerror(err));
-	return false;
+        while (err!=0 && period_no>2)
+        {
+	    setPeriodSize(false);
+            err = set_swparams();
+        }
+        if (err!=0)
+        {
+            qWarning("Setting of swparams failed: %s\n", snd_strerror(err));
+	    return false;
+        }
     }
 
     qDebug("Alsa allocating output buffer %p", output);
@@ -235,7 +260,8 @@ bool PlayerALSA::open()
     output = new OSAMPLE[buffer_size * alsa_channels];
 
     twrite = true;
-
+    isopen = true;
+    
     QThread::start();
 
     return true;
@@ -376,6 +402,9 @@ CSAMPLE *PlayerALSA::prepareBuffer(int count)
 
 void PlayerALSA::close()
 {
+    if (!isopen)
+        return;
+        
     qDebug("Alsa closing");
     twrite = false;
     qDebug("Alsa waiting for thread for close");
@@ -540,6 +569,7 @@ int PlayerALSA::set_hwparams()
 	qWarning("Channels count (%i) not available for playbacks: %s\n", alsa_channels, snd_strerror(err));
 	return err;
     }
+    qDebug("1");
     /* set the stream rate */
 #ifndef PLAYERTEST
     rate = m_pConfig->getValueString(ConfigKey("[Soundcard]", "Samplerate")).toUInt();
@@ -548,6 +578,7 @@ int PlayerALSA::set_hwparams()
 #endif
     rrate = rate;
     err = snd_pcm_hw_params_set_rate_near(handle, hwparams, &rrate, 0);
+    qDebug("2");
     if (err < 0)
     {
 	qWarning("Rate %iHz not available for playback: %s\n", rate, snd_strerror(err));
@@ -558,6 +589,7 @@ int PlayerALSA::set_hwparams()
 	qWarning("Rate doesn't match (requested %iHz, get %iHz)\n", rate, err);
 	return -EINVAL;
     }
+    qDebug("3");
 
 #ifndef PLAYERTEST
     setPlaySrate(rrate);
@@ -583,24 +615,62 @@ int PlayerALSA::set_hwparams()
     }
     qWarning("Buffer %dus (size: %d)", (int) buffer_time, buffer_size);
 
+    if (!setPeriodSize(true))
+        return -1;
+
+    /* write the parameters to device */
+    err = snd_pcm_hw_params(handle, hwparams);
+    if (err < 0)
+    {
+	qWarning("Unable to set hw params for playback: %s\n", snd_strerror(err));
+	return err;
+    }
+    qWarning("Rate: %d, buf %df (%dus), per %df (%dus)", rrate,
+	     (int) buffer_size, (int) (buffer_size / (rrate * 1e-6)),
+	     (int) period_size, (int) (period_size / (rrate * 1e-6)));
+
+    m_iBufferSize = buffer_size; // send back latency value
+    return 0;
+}
+
+int PlayerALSA::setPeriodSize(bool setMinimum)
+{    
     // XXX: maybe using set_periods (and its ilk) is a better option
     /* set the period size */
     // the config space seems to reduce in extent as as we try out possible
     // choices so work backwards from a maximum number of periods per buffer of 4
     
-    int period_no_start = 2;
-    //int iMinPeriodSize = 
+    // Get buffer size 
+    int err = snd_pcm_hw_params_get_buffer_size(hwparams, &buffer_size);
+    if (err < 0)
+    {
+	qWarning("Unable to get buffer size for playback: %s\n", snd_strerror(err));
+	return err;
+    }
     
-    if (buffer_size/kiMaxFrameSize>2)
-        period_no_start = buffer_size/kiMaxFrameSize;
-
+    // Get requested buffer time in usec
+    unsigned int buffer_time = m_pConfig->getValueString(ConfigKey("[Soundcard]", "Latency")).toUInt() * 1000;
+    
+    int period_no_start;
+    if (setMinimum)     
+    {
+        period_no_start = 2;
+        if (buffer_size/kiMaxFrameSize>2)
+            period_no_start = buffer_size/kiMaxFrameSize;
+    }
+    else
+    {
+        // Continue from where we left last time setPeriodSize was called
+        period_no_start = period_no-1;
+    }
     
     for (period_no = period_no_start; period_no > 1; period_no--)
     {
-	period_time = buffer_time / period_no;
+	unsigned int period_time = buffer_time / period_no;
 	qWarning("Period %dus (no: %d)", (int) period_time, period_no);
 
-	err = snd_pcm_hw_params_set_period_time_near(handle, hwparams, &period_time, &dir);
+	int dir;
+        err = snd_pcm_hw_params_set_period_time_near(handle, hwparams, &period_time, &dir);
 	if (err < 0)
 	{
 	    qWarning("Unable to set period time %i for playback: %s\n", period_time, snd_strerror(err));
@@ -619,20 +689,6 @@ int PlayerALSA::set_hwparams()
     }
     if (period_no == 1)
 	return -1;
-
-    /* write the parameters to device */
-    err = snd_pcm_hw_params(handle, hwparams);
-    if (err < 0)
-    {
-	qWarning("Unable to set hw params for playback: %s\n", snd_strerror(err));
-	return err;
-    }
-    qWarning("Rate: %d, buf %df (%dus), per %df (%dus)", rrate,
-	     (int) buffer_size, (int) (buffer_size / (rrate * 1e-6)),
-	     (int) period_size, (int) (period_size / (rrate * 1e-6)));
-
-    m_iBufferSize = buffer_size; // send back latency value
-    return 0;
 }
 
 int PlayerALSA::set_swparams()
