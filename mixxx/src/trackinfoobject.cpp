@@ -58,10 +58,14 @@ TrackInfoObject::TrackInfoObject(const QString sPath, const QString sFile) : m_s
 
     m_pTableTrack = 0;
 
+    
     // Check that the file exists:
     checkFileExists();
 
-    parse();
+    if (parse()==OK)
+        m_bIsValid = true;
+    else
+        m_bIsValid = false;
 
     installEventFilter(this);
 }
@@ -95,7 +99,9 @@ TrackInfoObject::TrackInfoObject(const QDomNode &nodeHeader)
     m_pTableItemDuration = 0;
     m_pTableItemBpm = 0;
     m_pTableItemBitrate = 0;
-
+    
+    m_bIsValid = true;
+    
     if (m_iTimesPlayed>siMaxTimesPlayed)
         siMaxTimesPlayed = m_iTimesPlayed;
 
@@ -108,6 +114,11 @@ TrackInfoObject::TrackInfoObject(const QDomNode &nodeHeader)
 TrackInfoObject::~TrackInfoObject()
 {
     removeFromTrackTable();
+}
+
+bool TrackInfoObject::isValid()
+{
+    return m_bIsValid;
 }
 
 bool TrackInfoObject::eventFilter(QObject *, QEvent *e)
