@@ -40,7 +40,7 @@ public:
     QString getSoundApiName() { return getSoundApi(); };
     /** Satisfy virtual declaration in EngineObject */
     void process(const CSAMPLE *, const CSAMPLE *, const int) {};
-    /** Process samples. Called from PortAudio callback */
+    /** Process samples. Called from RtAudio callback */
     int callbackProcess(int iBufferSize, float *out);
 
 protected:
@@ -56,7 +56,7 @@ protected:
     int m_iChannels;
     /** Channels used for each output from Mixxx. Set to -1 when not in use */
     int m_iMasterLeftCh, m_iMasterRigthCh, m_iHeadLeftCh, m_iHeadRightCh;
-    /** True if PortAudio was sucessfully initialized */
+    /** True if RtAudio was sucessfully initialized */
     bool m_bInit;
     /** Number of buffers */
     int m_iNumberOfBuffers;

@@ -85,7 +85,7 @@ if ($arch =~ /i586/)
 
 # Copy doc files
 `install README $BASE`;
-`install LICENCE $BASE`;
+`install LICENSE $BASE`;
 `install COPYING $BASE`;
 `install Configuration.txt $BASE`;
 
