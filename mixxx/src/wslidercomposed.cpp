@@ -45,7 +45,6 @@ void WSliderComposed::setPixmaps(bool bHorizontal, const QString &filenameSlider
     m_bHorizontal = bHorizontal;
     unsetPixmaps();
     m_pSlider = new QPixmap(filenameSlider);
-		qDebug("WSliderComposed: Try loading slider pixmap: %s",filenameSlider.latin1());
 	if (!m_pSlider)
 		qDebug("WSliderComposed: Error loading slider pixmap: %s",filenameSlider.latin1());
     m_pHandle = new QPixmap(filenameHandle);
@@ -131,7 +130,7 @@ void WSliderComposed::paintEvent(QPaintEvent *p)
             posy = m_iPos-m_iHandleLength/2;
         }
 
-        // Draw slider followed by handle to double buffer
+		// Draw slider followed by handle to double buffer
         bitBlt(m_pDoubleBuffer, 0, 0, m_pSlider);
         bitBlt(m_pDoubleBuffer, posx, posy, m_pHandle);
 

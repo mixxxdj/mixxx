@@ -36,14 +36,14 @@
 MixxxView::MixxxView(QWidget *parent) : QWidget(parent)
 {
     // Path to image files
-#ifdef __UNIX__
     path = QDir::currentDirPath().append("/images/");
-#endif
+    qDebug("Image path %s",path.latin1());
+
 #ifdef __WIN__
-    path = QDir::currentDirPath().append("/images/");
+	// QPixmap fix needed on Windows 9x
+	QPixmap::setDefaultOptimization(QPixmap::MemoryOptim);
 #endif
 
-    qDebug("Image path %s",path.latin1());
 
     //
     // Construct main widget
@@ -210,6 +210,12 @@ MixxxView::MixxxView(QWidget *parent) : QWidget(parent)
     m_pCueCh2->setPixmap(0, true,  getPath("buttons/cue3.png"));
     m_pCueCh2->setFixedSize(55,28);
     m_pCueCh2->move(832,267);
+
+#ifdef __WIN__	
+	// QPixmap fix needed on Windows 9x
+	QPixmap::setDefaultOptimization(QPixmap::NormalOptim);
+#endif
+
 }
 
 MixxxView::~MixxxView()
@@ -299,10 +305,11 @@ void MixxxView::assignWidgets(ControlObject *p)
                                                                    
 }
 
-const char *MixxxView::getPath(QString location)
+const QString MixxxView::getPath(QString location)
 {
-    qDebug("getpath: %s\n\n",location.prepend(path).latin1());
-	return location.prepend(path).latin1();
+	QString l(location);
+	
+	return l.prepend(path);
 }
 
                                                                  

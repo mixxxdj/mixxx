@@ -219,6 +219,6 @@ DEFINES += CONFIG_PATH=$$CONFIG_PATH
 DEFINES += SETTINGS_DIR=$$SETTINGS_DIR
 unix:TEMPLATE = app
 win32:TEMPLATE = vcapp
-CONFIG += qt warn_off thread release 
+CONFIG += qt warn_on thread debug 
 DBFILE = mixxx.db
 LANGUAGE = C++
