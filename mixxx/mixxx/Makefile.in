@@ -1,4 +1,4 @@
-# KDE tags expanded automatically by am_edit - $Revision: 17 $ 
+# KDE tags expanded automatically by am_edit - $Revision: 19 $ 
 # Makefile.in generated automatically by automake 1.4-p5 from Makefile.am
 
 # Copyright (C) 1994, 1995-8, 1999, 2001 Free Software Foundation, Inc.
@@ -219,19 +219,18 @@ x_includes = @x_includes@
 x_libraries = @x_libraries@
 
 bin_PROGRAMS = mixxx
-#>- mixxx_SOURCES = dlgplaylist.cpp dlgplaylistdlg.ui enginepregain.cpp controllogpotmeter.cpp engineiirfilter.cpp enginehmlfilter.cpp controlrotary.cpp midiobject.cpp playerportaudio.cpp playeralsa.cpp controlpotmeter.cpp player.cpp enginebuffer.cpp controlpushbutton.cpp engineobject.cpp controlobject.cpp soundsource.cpp dlgplaycontrol.cpp dlgmessages.cpp dlgchannel.cpp dlgplaycontroldlg.ui dlgmessagesdlg.ui dlgchanneldlg.ui mixxxview.cpp mixxxdoc.cpp mixxx.cpp main.cpp 
+#>- mixxx_SOURCES = enginehmlfilter.cpp engineiirfilter.cpp controlrotary.cpp controllogpotmeter.cpp qknob.cpp soundsourcenull.cpp dlgplaylist.cpp dlgplaylistdlg.ui enginepregain.cpp midiobject.cpp playerportaudio.cpp playeralsa.cpp controlpotmeter.cpp player.cpp enginebuffer.cpp controlpushbutton.cpp engineobject.cpp controlobject.cpp soundsource.cpp dlgplaycontrol.cpp dlgmessages.cpp dlgchannel.cpp dlgplaycontroldlg.ui dlgmessagesdlg.ui dlgchanneldlg.ui mixxxview.cpp mixxxdoc.cpp mixxx.cpp main.cpp 
 #>+ 1
-mixxx_SOURCES=dlgplaylist.cpp  enginepregain.cpp controllogpotmeter.cpp engineiirfilter.cpp enginehmlfilter.cpp controlrotary.cpp midiobject.cpp playerportaudio.cpp playeralsa.cpp controlpotmeter.cpp player.cpp enginebuffer.cpp controlpushbutton.cpp engineobject.cpp controlobject.cpp soundsource.cpp dlgplaycontrol.cpp dlgmessages.cpp dlgchannel.cpp    mixxxview.cpp mixxxdoc.cpp mixxx.cpp main.cpp  dlgplaylistdlg.cpp dlgplaycontroldlg.cpp dlgmessagesdlg.cpp dlgchanneldlg.cpp
-SOURCES = enginepregain.cpp dlgplaylist.cpp controllogpotmeter.cpp engineiirfilter.cpp enginehmlfilter.cpp controlrotary.cpp midiobject.cpp playerportaudio.cpp playeralsa.cpp controlpotmeter.cpp player.cpp enginebuffer.cpp controlpushbutton.cpp engineobject.cpp controlobject.cpp soundsource.cpp dlgplaycontrol.cpp dlgmessages.cpp dlgchannel.cpp mixxxview.cpp mixxxdoc.cpp mixxx.cpp main.cpp
+mixxx_SOURCES=enginehmlfilter.cpp engineiirfilter.cpp controlrotary.cpp controllogpotmeter.cpp qknob.cpp soundsourcenull.cpp dlgplaylist.cpp  enginepregain.cpp midiobject.cpp playerportaudio.cpp playeralsa.cpp controlpotmeter.cpp player.cpp enginebuffer.cpp controlpushbutton.cpp engineobject.cpp controlobject.cpp soundsource.cpp dlgplaycontrol.cpp dlgmessages.cpp dlgchannel.cpp    mixxxview.cpp mixxxdoc.cpp mixxx.cpp main.cpp  dlgplaylistdlg.cpp dlgplaycontroldlg.cpp dlgmessagesdlg.cpp dlgchanneldlg.cpp
+SOURCES = enginehmlfilter.cpp engineiirfilter.cpp controlrotary.cpp controllogpotmeter.cpp qknob.cpp soundsourcenull.cpp dlgplaylist.cpp enginepregain.cpp midiobject.cpp playerportaudio.cpp playeralsa.cpp controlpotmeter.cpp player.cpp enginebuffer.cpp controlpushbutton.cpp engineobject.cpp controlobject.cpp soundsource.cpp dlgplaycontrol.cpp dlgmessages.cpp dlgchannel.cpp mixxxview.cpp mixxxdoc.cpp mixxx.cpp main.cpp 
 INTERFACES = dlgplaylistdlg.ui dlgplaycontroldlg.ui dlgmessagesdlg.ui dlgchanneldlg.ui 
-
 TRANSLATIONS = 
 KDE_OPTIONS = qtonly
 mixxx_LDADD = -laudiofile -lmad -lpthread -lasound -lportaudio $(LIB_QT) $(LIBSOCKET)
 
 SUBDIRS = docs 
 
-EXTRA_DIST = enginepregain.h enginepregain.cpp controllogpotmeter.h controllogpotmeter.cpp engineiirfilter.h engineiirfilter.cpp enginehmlfilter.h enginehmlfilter.cpp controlrotary.h controlrotary.cpp midiobject.cpp main.cpp mixxx.cpp mixxx.h mixxxdoc.cpp mixxxdoc.h mixxxview.cpp mixxxview.h lo32-app-mixxx.png lo16-app-mixxx.png filenew.xpm filesave.xpm fileopen.xpm dlgchanneldlg.ui dlgmessagesdlg.ui dlgplaycontroldlg.ui dlgchannel.cpp dlgchannel.h dlgmessages.cpp dlgmessages.h dlgplaycontrol.cpp dlgplaycontrol.h soundsource.cpp soundsource.h defs.h controlobject.cpp controlobject.h engineobject.cpp engineobject.h controlpushbutton.cpp controlpushbutton.h enginebuffer.cpp enginebuffer.h player.cpp player.h controlpotmeter.cpp controlpotmeter.h playeralsa.cpp playeralsa.h playerportaudio.cpp playerportaudio.h midiobject.h dlgplaylistdlg.ui dlgplaylist.h dlgplaylist.cpp
+EXTRA_DIST = main.cpp mixxx.cpp mixxx.h mixxxdoc.cpp mixxxdoc.h mixxxview.cpp mixxxview.h lo32-app-mixxx.png lo16-app-mixxx.png filenew.xpm filesave.xpm fileopen.xpm dlgchanneldlg.ui dlgmessagesdlg.ui dlgplaycontroldlg.ui dlgchannel.cpp dlgchannel.h dlgmessages.cpp dlgmessages.h dlgplaycontrol.cpp dlgplaycontrol.h soundsource.cpp soundsource.h defs.h controlobject.cpp controlobject.h engineobject.cpp engineobject.h controlpushbutton.cpp controlpushbutton.h enginebuffer.cpp enginebuffer.h player.cpp player.h controlpotmeter.cpp controlpotmeter.h playeralsa.cpp playeralsa.h playerportaudio.cpp playerportaudio.h midiobject.h midiobject.cpp enginepregain.cpp enginepregain.h dlgplaylistdlg.ui dlgplaylist.h dlgplaylist.cpp soundsourcenull.cpp soundsourcenull.h qknob.cpp qknob.h controllogpotmeter.h controllogpotmeter.cpp controlrotary.h controlrotary.cpp engineiirfilter.h engineiirfilter.cpp enginehmlfilter.h enginehmlfilter.cpp knob000.xpm knob090.xpm knob180.xpm knob270.xpm 
 
 ####### kdevelop will overwrite this part!!! (end)############
 
@@ -256,10 +255,10 @@ DEFS = @DEFS@ -I. -I$(srcdir) -I..
 CPPFLAGS = @CPPFLAGS@
 LDFLAGS = @LDFLAGS@
 LIBS = @LIBS@
-#>- mixxx_OBJECTS =  dlgplaylist.$(OBJEXT) enginepregain.$(OBJEXT) \
-#>- controllogpotmeter.$(OBJEXT) engineiirfilter.$(OBJEXT) \
-#>- enginehmlfilter.$(OBJEXT) controlrotary.$(OBJEXT) midiobject.$(OBJEXT) \
-#>- playerportaudio.$(OBJEXT) playeralsa.$(OBJEXT) \
+#>- mixxx_OBJECTS =  enginehmlfilter.$(OBJEXT) engineiirfilter.$(OBJEXT) \
+#>- controlrotary.$(OBJEXT) controllogpotmeter.$(OBJEXT) qknob.$(OBJEXT) \
+#>- soundsourcenull.$(OBJEXT) dlgplaylist.$(OBJEXT) enginepregain.$(OBJEXT) \
+#>- midiobject.$(OBJEXT) playerportaudio.$(OBJEXT) playeralsa.$(OBJEXT) \
 #>- controlpotmeter.$(OBJEXT) player.$(OBJEXT) enginebuffer.$(OBJEXT) \
 #>- controlpushbutton.$(OBJEXT) engineobject.$(OBJEXT) \
 #>- controlobject.$(OBJEXT) soundsource.$(OBJEXT) dlgplaycontrol.$(OBJEXT) \
@@ -267,16 +266,16 @@ LIBS = @LIBS@
 #>- mixxxdoc.$(OBJEXT) mixxx.$(OBJEXT) main.$(OBJEXT)
 #>+ 13
 mixxx_final_OBJECTS = mixxx.all_cpp.o 
-mixxx_nofinal_OBJECTS = dlgplaylist.$(OBJEXT) enginepregain.$(OBJEXT) \
-controllogpotmeter.$(OBJEXT) engineiirfilter.$(OBJEXT) \
-enginehmlfilter.$(OBJEXT) controlrotary.$(OBJEXT) midiobject.$(OBJEXT) \
-playerportaudio.$(OBJEXT) playeralsa.$(OBJEXT) \
+mixxx_nofinal_OBJECTS = enginehmlfilter.$(OBJEXT) engineiirfilter.$(OBJEXT) \
+controlrotary.$(OBJEXT) controllogpotmeter.$(OBJEXT) qknob.$(OBJEXT) \
+soundsourcenull.$(OBJEXT) dlgplaylist.$(OBJEXT) enginepregain.$(OBJEXT) \
+midiobject.$(OBJEXT) playerportaudio.$(OBJEXT) playeralsa.$(OBJEXT) \
 controlpotmeter.$(OBJEXT) player.$(OBJEXT) enginebuffer.$(OBJEXT) \
 controlpushbutton.$(OBJEXT) engineobject.$(OBJEXT) \
 controlobject.$(OBJEXT) soundsource.$(OBJEXT) dlgplaycontrol.$(OBJEXT) \
 dlgmessages.$(OBJEXT) dlgchannel.$(OBJEXT) mixxxview.$(OBJEXT) \
 mixxxdoc.$(OBJEXT) mixxx.$(OBJEXT) main.$(OBJEXT) dlgplaylistdlg.$(OBJEXT) dlgplaycontroldlg.$(OBJEXT) dlgmessagesdlg.$(OBJEXT) dlgchanneldlg.$(OBJEXT)\
-enginehmlfilter.moc.o mixxxview.moc.o enginebuffer.moc.o controlpushbutton.moc.o engineiirfilter.moc.o enginepregain.moc.o dlgplaylist.moc.o controllogpotmeter.moc.o dlgplaycontrol.moc.o mixxx.moc.o mixxxdoc.moc.o dlgmessages.moc.o controlobject.moc.o engineobject.moc.o controlpotmeter.moc.o dlgchannel.moc.o controlrotary.moc.o 
+mixxxview.moc.o enginebuffer.moc.o controlpushbutton.moc.o engineiirfilter.moc.o dlgplaylist.moc.o mixxx.moc.o controlobject.moc.o dlgchannel.moc.o controlpotmeter.moc.o enginehmlfilter.moc.o controllogpotmeter.moc.o enginepregain.moc.o dlgplaycontrol.moc.o mixxxdoc.moc.o dlgmessages.moc.o qknob.moc.o engineobject.moc.o controlrotary.moc.o 
 @KDE_USE_FINAL_FALSE@mixxx_OBJECTS = $(mixxx_nofinal_OBJECTS)
 @KDE_USE_FINAL_TRUE@mixxx_OBJECTS = $(mixxx_final_OBJECTS)
 mixxx_DEPENDENCIES = 
@@ -296,12 +295,12 @@ DIST_COMMON =  Makefile.am Makefile.in
 
 #>- DISTFILES = $(DIST_COMMON) $(SOURCES) $(HEADERS) $(TEXINFOS) $(EXTRA_DIST)
 #>+ 4
-KDE_DIST=dlgmessagesdlg.h engineIIRfilter.h soundsourcenull.h engineIIRfilter.cpp soundsourcenull.cpp dlgplaycontroldlg.h dlgchanneldlg.h dlgplaylistdlg.h 
+KDE_DIST=dlgmessagesdlg.h test.mp3 test.wav dlgplaycontroldlg.h dlgchanneldlg.h dlgplaylistdlg.h 
 
 DISTFILES= $(DIST_COMMON) $(SOURCES) $(HEADERS) $(TEXINFOS) $(EXTRA_DIST) $(KDE_DIST)
 
 
-TAR = gtar
+TAR = tar
 GZIP_ENV = --best
 #>- DEP_FILES =  .deps/controllogpotmeter.P .deps/controlobject.P \
 #>- .deps/controlpotmeter.P .deps/controlpushbutton.P .deps/controlrotary.P \
@@ -310,9 +309,10 @@ GZIP_ENV = --best
 #>- .deps/engineiirfilter.P .deps/engineobject.P .deps/enginepregain.P \
 #>- .deps/main.P .deps/midiobject.P .deps/mixxx.P .deps/mixxxdoc.P \
 #>- .deps/mixxxview.P .deps/player.P .deps/playeralsa.P \
-#>- .deps/playerportaudio.P .deps/soundsource.P
-#>+ 18
-@KDE_USE_FINAL_TRUE@DEP_FILES =  $(DEPDIR)/dlgplaylistdlg.P $(DEPDIR)/dlgplaycontroldlg.P $(DEPDIR)/dlgmessagesdlg.P $(DEPDIR)/dlgchanneldlg.P $(DEPDIR)/enginehmlfilter.moc.P $(DEPDIR)/mixxxview.moc.P $(DEPDIR)/enginebuffer.moc.P $(DEPDIR)/controlpushbutton.moc.P $(DEPDIR)/engineiirfilter.moc.P $(DEPDIR)/enginepregain.moc.P $(DEPDIR)/dlgplaylist.moc.P $(DEPDIR)/controllogpotmeter.moc.P $(DEPDIR)/dlgplaycontrol.moc.P $(DEPDIR)/mixxx.moc.P $(DEPDIR)/mixxxdoc.moc.P $(DEPDIR)/dlgmessages.moc.P $(DEPDIR)/controlobject.moc.P $(DEPDIR)/engineobject.moc.P $(DEPDIR)/controlpotmeter.moc.P $(DEPDIR)/dlgchannel.moc.P $(DEPDIR)/controlrotary.moc.P  $(DEPDIR)/mixxx.all_cpp.P \
+#>- .deps/playerportaudio.P .deps/qknob.P .deps/soundsource.P \
+#>- .deps/soundsourcenull.P
+#>+ 20
+@KDE_USE_FINAL_TRUE@DEP_FILES =  $(DEPDIR)/dlgplaylistdlg.P $(DEPDIR)/dlgplaycontroldlg.P $(DEPDIR)/dlgmessagesdlg.P $(DEPDIR)/dlgchanneldlg.P $(DEPDIR)/mixxxview.moc.P $(DEPDIR)/enginebuffer.moc.P $(DEPDIR)/controlpushbutton.moc.P $(DEPDIR)/engineiirfilter.moc.P $(DEPDIR)/dlgplaylist.moc.P $(DEPDIR)/mixxx.moc.P $(DEPDIR)/controlobject.moc.P $(DEPDIR)/dlgchannel.moc.P $(DEPDIR)/controlpotmeter.moc.P $(DEPDIR)/enginehmlfilter.moc.P $(DEPDIR)/controllogpotmeter.moc.P $(DEPDIR)/enginepregain.moc.P $(DEPDIR)/dlgplaycontrol.moc.P $(DEPDIR)/mixxxdoc.moc.P $(DEPDIR)/dlgmessages.moc.P $(DEPDIR)/qknob.moc.P $(DEPDIR)/engineobject.moc.P $(DEPDIR)/controlrotary.moc.P  $(DEPDIR)/mixxx.all_cpp.P \
 	  .deps/controllogpotmeter.P .deps/controlobject.P \
 .deps/controlpotmeter.P .deps/controlpushbutton.P .deps/controlrotary.P \
 .deps/dlgchannel.P .deps/dlgmessages.P .deps/dlgplaycontrol.P \
@@ -320,15 +320,17 @@ GZIP_ENV = --best
 .deps/engineiirfilter.P .deps/engineobject.P .deps/enginepregain.P \
 .deps/main.P .deps/midiobject.P .deps/mixxx.P .deps/mixxxdoc.P \
 .deps/mixxxview.P .deps/player.P .deps/playeralsa.P \
-.deps/playerportaudio.P .deps/soundsource.P
-@KDE_USE_FINAL_FALSE@DEP_FILES =  $(DEPDIR)/dlgplaylistdlg.P $(DEPDIR)/dlgplaycontroldlg.P $(DEPDIR)/dlgmessagesdlg.P $(DEPDIR)/dlgchanneldlg.P $(DEPDIR)/enginehmlfilter.moc.P $(DEPDIR)/mixxxview.moc.P $(DEPDIR)/enginebuffer.moc.P $(DEPDIR)/controlpushbutton.moc.P $(DEPDIR)/engineiirfilter.moc.P $(DEPDIR)/enginepregain.moc.P $(DEPDIR)/dlgplaylist.moc.P $(DEPDIR)/controllogpotmeter.moc.P $(DEPDIR)/dlgplaycontrol.moc.P $(DEPDIR)/mixxx.moc.P $(DEPDIR)/mixxxdoc.moc.P $(DEPDIR)/dlgmessages.moc.P $(DEPDIR)/controlobject.moc.P $(DEPDIR)/engineobject.moc.P $(DEPDIR)/controlpotmeter.moc.P $(DEPDIR)/dlgchannel.moc.P $(DEPDIR)/controlrotary.moc.P   .deps/controllogpotmeter.P .deps/controlobject.P \
+.deps/playerportaudio.P .deps/qknob.P .deps/soundsource.P \
+.deps/soundsourcenull.P
+@KDE_USE_FINAL_FALSE@DEP_FILES =  $(DEPDIR)/dlgplaylistdlg.P $(DEPDIR)/dlgplaycontroldlg.P $(DEPDIR)/dlgmessagesdlg.P $(DEPDIR)/dlgchanneldlg.P $(DEPDIR)/mixxxview.moc.P $(DEPDIR)/enginebuffer.moc.P $(DEPDIR)/controlpushbutton.moc.P $(DEPDIR)/engineiirfilter.moc.P $(DEPDIR)/dlgplaylist.moc.P $(DEPDIR)/mixxx.moc.P $(DEPDIR)/controlobject.moc.P $(DEPDIR)/dlgchannel.moc.P $(DEPDIR)/controlpotmeter.moc.P $(DEPDIR)/enginehmlfilter.moc.P $(DEPDIR)/controllogpotmeter.moc.P $(DEPDIR)/enginepregain.moc.P $(DEPDIR)/dlgplaycontrol.moc.P $(DEPDIR)/mixxxdoc.moc.P $(DEPDIR)/dlgmessages.moc.P $(DEPDIR)/qknob.moc.P $(DEPDIR)/engineobject.moc.P $(DEPDIR)/controlrotary.moc.P   .deps/controllogpotmeter.P .deps/controlobject.P \
 .deps/controlpotmeter.P .deps/controlpushbutton.P .deps/controlrotary.P \
 .deps/dlgchannel.P .deps/dlgmessages.P .deps/dlgplaycontrol.P \
 .deps/dlgplaylist.P .deps/enginebuffer.P .deps/enginehmlfilter.P \
 .deps/engineiirfilter.P .deps/engineobject.P .deps/enginepregain.P \
 .deps/main.P .deps/midiobject.P .deps/mixxx.P .deps/mixxxdoc.P \
 .deps/mixxxview.P .deps/player.P .deps/playeralsa.P \
-.deps/playerportaudio.P .deps/soundsource.P
+.deps/playerportaudio.P .deps/qknob.P .deps/soundsource.P \
+.deps/soundsourcenull.P
 
 SOURCES = $(mixxx_SOURCES)
 OBJECTS = $(mixxx_OBJECTS)
@@ -729,10 +731,6 @@ dlgchanneldlg.moc: dlgchanneldlg.h
 	$(MOC) dlgchanneldlg.h -o dlgchanneldlg.moc
 
 #>+ 3
-enginehmlfilter.moc.cpp: $(srcdir)/enginehmlfilter.h
-	$(MOC) $(srcdir)/enginehmlfilter.h -o enginehmlfilter.moc.cpp
-
-#>+ 3
 mixxxview.moc.cpp: $(srcdir)/mixxxview.h
 	$(MOC) $(srcdir)/mixxxview.h -o mixxxview.moc.cpp
 
@@ -749,24 +747,40 @@ engineiirfilter.moc.cpp: $(srcdir)/engineiirfilter.h
 	$(MOC) $(srcdir)/engineiirfilter.h -o engineiirfilter.moc.cpp
 
 #>+ 3
-enginepregain.moc.cpp: $(srcdir)/enginepregain.h
-	$(MOC) $(srcdir)/enginepregain.h -o enginepregain.moc.cpp
-
-#>+ 3
 dlgplaylist.moc.cpp: $(srcdir)/dlgplaylist.h
 	$(MOC) $(srcdir)/dlgplaylist.h -o dlgplaylist.moc.cpp
+
+#>+ 3
+mixxx.moc.cpp: $(srcdir)/mixxx.h
+	$(MOC) $(srcdir)/mixxx.h -o mixxx.moc.cpp
+
+#>+ 3
+controlobject.moc.cpp: $(srcdir)/controlobject.h
+	$(MOC) $(srcdir)/controlobject.h -o controlobject.moc.cpp
+
+#>+ 3
+dlgchannel.moc.cpp: $(srcdir)/dlgchannel.h
+	$(MOC) $(srcdir)/dlgchannel.h -o dlgchannel.moc.cpp
+
+#>+ 3
+controlpotmeter.moc.cpp: $(srcdir)/controlpotmeter.h
+	$(MOC) $(srcdir)/controlpotmeter.h -o controlpotmeter.moc.cpp
+
+#>+ 3
+enginehmlfilter.moc.cpp: $(srcdir)/enginehmlfilter.h
+	$(MOC) $(srcdir)/enginehmlfilter.h -o enginehmlfilter.moc.cpp
 
 #>+ 3
 controllogpotmeter.moc.cpp: $(srcdir)/controllogpotmeter.h
 	$(MOC) $(srcdir)/controllogpotmeter.h -o controllogpotmeter.moc.cpp
 
 #>+ 3
-dlgplaycontrol.moc.cpp: $(srcdir)/dlgplaycontrol.h
-	$(MOC) $(srcdir)/dlgplaycontrol.h -o dlgplaycontrol.moc.cpp
+enginepregain.moc.cpp: $(srcdir)/enginepregain.h
+	$(MOC) $(srcdir)/enginepregain.h -o enginepregain.moc.cpp
 
 #>+ 3
-mixxx.moc.cpp: $(srcdir)/mixxx.h
-	$(MOC) $(srcdir)/mixxx.h -o mixxx.moc.cpp
+dlgplaycontrol.moc.cpp: $(srcdir)/dlgplaycontrol.h
+	$(MOC) $(srcdir)/dlgplaycontrol.h -o dlgplaycontrol.moc.cpp
 
 #>+ 3
 mixxxdoc.moc.cpp: $(srcdir)/mixxxdoc.h
@@ -777,20 +791,12 @@ dlgmessages.moc.cpp: $(srcdir)/dlgmessages.h
 	$(MOC) $(srcdir)/dlgmessages.h -o dlgmessages.moc.cpp
 
 #>+ 3
-controlobject.moc.cpp: $(srcdir)/controlobject.h
-	$(MOC) $(srcdir)/controlobject.h -o controlobject.moc.cpp
+qknob.moc.cpp: $(srcdir)/qknob.h
+	$(MOC) $(srcdir)/qknob.h -o qknob.moc.cpp
 
 #>+ 3
 engineobject.moc.cpp: $(srcdir)/engineobject.h
 	$(MOC) $(srcdir)/engineobject.h -o engineobject.moc.cpp
-
-#>+ 3
-controlpotmeter.moc.cpp: $(srcdir)/controlpotmeter.h
-	$(MOC) $(srcdir)/controlpotmeter.h -o controlpotmeter.moc.cpp
-
-#>+ 3
-dlgchannel.moc.cpp: $(srcdir)/dlgchannel.h
-	$(MOC) $(srcdir)/dlgchannel.h -o dlgchannel.moc.cpp
 
 #>+ 3
 controlrotary.moc.cpp: $(srcdir)/controlrotary.h
@@ -798,7 +804,7 @@ controlrotary.moc.cpp: $(srcdir)/controlrotary.h
 
 #>+ 3
 clean-metasources:
-	-rm -f  enginehmlfilter.moc.cpp mixxxview.moc.cpp enginebuffer.moc.cpp controlpushbutton.moc.cpp engineiirfilter.moc.cpp enginepregain.moc.cpp dlgplaylist.moc.cpp controllogpotmeter.moc.cpp dlgplaycontrol.moc.cpp mixxx.moc.cpp mixxxdoc.moc.cpp dlgmessages.moc.cpp controlobject.moc.cpp engineobject.moc.cpp controlpotmeter.moc.cpp dlgchannel.moc.cpp controlrotary.moc.cpp
+	-rm -f  mixxxview.moc.cpp enginebuffer.moc.cpp controlpushbutton.moc.cpp engineiirfilter.moc.cpp dlgplaylist.moc.cpp mixxx.moc.cpp controlobject.moc.cpp dlgchannel.moc.cpp controlpotmeter.moc.cpp enginehmlfilter.moc.cpp controllogpotmeter.moc.cpp enginepregain.moc.cpp dlgplaycontrol.moc.cpp mixxxdoc.moc.cpp dlgmessages.moc.cpp qknob.moc.cpp engineobject.moc.cpp controlrotary.moc.cpp
 
 #>+ 7
 clean-ui:
@@ -818,11 +824,11 @@ force-reedit:
 
 
 #>+ 11
-mixxx.all_cpp.cpp: $(srcdir)/Makefile.in $(srcdir)/dlgplaylist.cpp $(srcdir)/enginepregain.cpp $(srcdir)/controllogpotmeter.cpp $(srcdir)/engineiirfilter.cpp $(srcdir)/enginehmlfilter.cpp $(srcdir)/controlrotary.cpp $(srcdir)/midiobject.cpp $(srcdir)/playerportaudio.cpp $(srcdir)/playeralsa.cpp $(srcdir)/controlpotmeter.cpp $(srcdir)/player.cpp $(srcdir)/enginebuffer.cpp $(srcdir)/controlpushbutton.cpp $(srcdir)/engineobject.cpp $(srcdir)/controlobject.cpp $(srcdir)/soundsource.cpp $(srcdir)/dlgplaycontrol.cpp $(srcdir)/dlgmessages.cpp $(srcdir)/dlgchannel.cpp $(srcdir)/mixxxview.cpp $(srcdir)/mixxxdoc.cpp $(srcdir)/mixxx.cpp $(srcdir)/main.cpp dlgplaylistdlg.cpp $(srcdir)/dlgplaycontroldlg.cpp $(srcdir)/dlgmessagesdlg.cpp $(srcdir)/dlgchanneldlg.cpp  enginehmlfilter.moc.cpp mixxxview.moc.cpp enginebuffer.moc.cpp controlpushbutton.moc.cpp engineiirfilter.moc.cpp enginepregain.moc.cpp dlgplaylist.moc.cpp controllogpotmeter.moc.cpp dlgplaycontrol.moc.cpp mixxx.moc.cpp mixxxdoc.moc.cpp dlgmessages.moc.cpp controlobject.moc.cpp engineobject.moc.cpp controlpotmeter.moc.cpp dlgchannel.moc.cpp controlrotary.moc.cpp
+mixxx.all_cpp.cpp: $(srcdir)/Makefile.in $(srcdir)/enginehmlfilter.cpp $(srcdir)/engineiirfilter.cpp $(srcdir)/controlrotary.cpp $(srcdir)/controllogpotmeter.cpp $(srcdir)/qknob.cpp $(srcdir)/soundsourcenull.cpp $(srcdir)/dlgplaylist.cpp $(srcdir)/enginepregain.cpp $(srcdir)/midiobject.cpp $(srcdir)/playerportaudio.cpp $(srcdir)/playeralsa.cpp $(srcdir)/controlpotmeter.cpp $(srcdir)/player.cpp $(srcdir)/enginebuffer.cpp $(srcdir)/controlpushbutton.cpp $(srcdir)/engineobject.cpp $(srcdir)/controlobject.cpp $(srcdir)/soundsource.cpp $(srcdir)/dlgplaycontrol.cpp $(srcdir)/dlgmessages.cpp $(srcdir)/dlgchannel.cpp $(srcdir)/mixxxview.cpp $(srcdir)/mixxxdoc.cpp $(srcdir)/mixxx.cpp $(srcdir)/main.cpp $(srcdir)/dlgplaylistdlg.cpp $(srcdir)/dlgplaycontroldlg.cpp $(srcdir)/dlgmessagesdlg.cpp $(srcdir)/dlgchanneldlg.cpp  mixxxview.moc.cpp enginebuffer.moc.cpp controlpushbutton.moc.cpp engineiirfilter.moc.cpp dlgplaylist.moc.cpp mixxx.moc.cpp controlobject.moc.cpp dlgchannel.moc.cpp controlpotmeter.moc.cpp enginehmlfilter.moc.cpp controllogpotmeter.moc.cpp enginepregain.moc.cpp dlgplaycontrol.moc.cpp mixxxdoc.moc.cpp dlgmessages.moc.cpp qknob.moc.cpp engineobject.moc.cpp controlrotary.moc.cpp
 	@echo 'creating mixxx.all_cpp.cpp ...'; \
 	rm -f mixxx.all_cpp.files mixxx.all_cpp.final; \
 	echo "#define KDE_USE_FINAL 1" >> mixxx.all_cpp.final; \
-	for file in dlgplaylist.cpp enginepregain.cpp controllogpotmeter.cpp engineiirfilter.cpp enginehmlfilter.cpp controlrotary.cpp midiobject.cpp playerportaudio.cpp playeralsa.cpp controlpotmeter.cpp player.cpp enginebuffer.cpp controlpushbutton.cpp engineobject.cpp controlobject.cpp soundsource.cpp dlgplaycontrol.cpp dlgmessages.cpp dlgchannel.cpp mixxxview.cpp mixxxdoc.cpp mixxx.cpp main.cpp dlgplaylistdlg.cpp dlgplaycontroldlg.cpp dlgmessagesdlg.cpp dlgchanneldlg.cpp  enginehmlfilter.moc.cpp mixxxview.moc.cpp enginebuffer.moc.cpp controlpushbutton.moc.cpp engineiirfilter.moc.cpp enginepregain.moc.cpp dlgplaylist.moc.cpp controllogpotmeter.moc.cpp dlgplaycontrol.moc.cpp mixxx.moc.cpp mixxxdoc.moc.cpp dlgmessages.moc.cpp controlobject.moc.cpp engineobject.moc.cpp controlpotmeter.moc.cpp dlgchannel.moc.cpp controlrotary.moc.cpp; do \
+	for file in enginehmlfilter.cpp engineiirfilter.cpp controlrotary.cpp controllogpotmeter.cpp qknob.cpp soundsourcenull.cpp dlgplaylist.cpp enginepregain.cpp midiobject.cpp playerportaudio.cpp playeralsa.cpp controlpotmeter.cpp player.cpp enginebuffer.cpp controlpushbutton.cpp engineobject.cpp controlobject.cpp soundsource.cpp dlgplaycontrol.cpp dlgmessages.cpp dlgchannel.cpp mixxxview.cpp mixxxdoc.cpp mixxx.cpp main.cpp dlgplaylistdlg.cpp dlgplaycontroldlg.cpp dlgmessagesdlg.cpp dlgchanneldlg.cpp  mixxxview.moc.cpp enginebuffer.moc.cpp controlpushbutton.moc.cpp engineiirfilter.moc.cpp dlgplaylist.moc.cpp mixxx.moc.cpp controlobject.moc.cpp dlgchannel.moc.cpp controlpotmeter.moc.cpp enginehmlfilter.moc.cpp controllogpotmeter.moc.cpp enginepregain.moc.cpp dlgplaycontrol.moc.cpp mixxxdoc.moc.cpp dlgmessages.moc.cpp qknob.moc.cpp engineobject.moc.cpp controlrotary.moc.cpp; do \
 	  echo "#include \"$$file\"" >> mixxx.all_cpp.files; \
 	  test ! -f $(srcdir)/$$file || egrep '^#pragma +implementation' $(srcdir)/$$file >> mixxx.all_cpp.final; \
 	done; \
@@ -853,11 +859,12 @@ cvs-clean:
 kde-rpo-clean:
 	-rm -f *.rpo
 
-#>+ 24
+#>+ 26
 $(srcdir)/controlpotmeter.cpp: dlgplaylistdlg.h dlgplaycontroldlg.h dlgmessagesdlg.h dlgchanneldlg.h 
 $(srcdir)/controlobject.cpp: dlgplaylistdlg.h dlgplaycontroldlg.h dlgmessagesdlg.h dlgchanneldlg.h 
 $(srcdir)/dlgchannel.cpp: dlgplaylistdlg.h dlgplaycontroldlg.h dlgmessagesdlg.h dlgchanneldlg.h 
 $(srcdir)/midiobject.cpp: dlgplaylistdlg.h dlgplaycontroldlg.h dlgmessagesdlg.h dlgchanneldlg.h 
+$(srcdir)/qknob.cpp: dlgplaylistdlg.h dlgplaycontroldlg.h dlgmessagesdlg.h dlgchanneldlg.h 
 $(srcdir)/mixxxdoc.cpp: dlgplaylistdlg.h dlgplaycontroldlg.h dlgmessagesdlg.h dlgchanneldlg.h 
 $(srcdir)/dlgplaylist.cpp: dlgplaylistdlg.h dlgplaycontroldlg.h dlgmessagesdlg.h dlgchanneldlg.h 
 $(srcdir)/main.cpp: dlgplaylistdlg.h dlgplaycontroldlg.h dlgmessagesdlg.h dlgchanneldlg.h 
@@ -872,6 +879,7 @@ $(srcdir)/enginehmlfilter.cpp: dlgplaylistdlg.h dlgplaycontroldlg.h dlgmessagesd
 $(srcdir)/dlgmessages.cpp: dlgplaylistdlg.h dlgplaycontroldlg.h dlgmessagesdlg.h dlgchanneldlg.h 
 $(srcdir)/playeralsa.cpp: dlgplaylistdlg.h dlgplaycontroldlg.h dlgmessagesdlg.h dlgchanneldlg.h 
 $(srcdir)/player.cpp: dlgplaylistdlg.h dlgplaycontroldlg.h dlgmessagesdlg.h dlgchanneldlg.h 
+$(srcdir)/soundsourcenull.cpp: dlgplaylistdlg.h dlgplaycontroldlg.h dlgmessagesdlg.h dlgchanneldlg.h 
 $(srcdir)/controlpushbutton.cpp: dlgplaylistdlg.h dlgplaycontroldlg.h dlgmessagesdlg.h dlgchanneldlg.h 
 $(srcdir)/enginepregain.cpp: dlgplaylistdlg.h dlgplaycontroldlg.h dlgmessagesdlg.h dlgchanneldlg.h 
 $(srcdir)/engineobject.cpp: dlgplaylistdlg.h dlgplaycontroldlg.h dlgmessagesdlg.h dlgchanneldlg.h 
