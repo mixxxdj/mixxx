@@ -1,46 +1,43 @@
------------------------------------------------------
-Qmake Building Automation System (QBAS) version 0.9.6
+-----------------------------------------------------------
+Qmake Building Automation System (QBASystem) version 0.9.7
 Copyright (c) 2003-2004 Gianluca Romanin (aka J_Zar)
------------------------------------------------------
+-----------------------------------------------------------
 Usage:  ./configure  option1="value1;value2..." ...
 
-		Generic options:
+Generic options:
 
--h, --h, --help		stamp this message
---includelib		adds libraries
---dependency-dir	adds paths for dependency checking (max allowed = 5)
---prefix		define the install directory prefix
---disable-warnings	switch to "warn_off" mode
---cflags		overwrite default cflags with user defined
---cxxflags		overwrite default cxxflags with user defined
---lflags		overwrite default lflags with user defined
---static-link		define if link should be static. You can define a
+  -h, --h, --help		stamp this message
+  --includelib		adds libraries
+  --dependency-dir	adds paths for dependency checking (max allowed = 5)
+  --prefix		define the install directory prefix
+  --disable-warnings	switch to "warn_off" mode
+  --cflags		overwrite default cflags with user defined
+  --cxxflags		overwrite default cxxflags with user defined
+  --lflags		overwrite default lflags with user defined
+  --static-link		define if link should be static. You can define a
 			PATH that should be tryed ( before defaults ) in this 
 			way: --static-link=PATH
 			User has no warranty on the static result: on failure,
 			shared link will be tryed!
---enable-debug		enable debug mode
---enable-FEATURE	enable FEATURE 
---disable-FEATURE	disable FEATURE
---with-PACKAGE		set custom directory for PACKAGE (higher 
+  --enable-debug	enable debug mode
+  --enable-FEATURE	enable FEATURE 
+  --disable-FEATURE	disable FEATURE
+  --with-PACKAGE	set custom directory for PACKAGE (higher 
 			priority than --static-linking-path!)
-
-
 
 Examples:
 
-$ ./configure     --dependency-dir="/usr/share/libx;/home/liby"
-adds two paths to check dependencies: /usr/share/libx  and /home/liby.
+  $ ./configure     --dependency-dir="/usr/share/libx;/home/liby"
+  adds two paths to check dependencies: /usr/share/libx  and /home/liby.
 
-$ ./configure     --cflags="-march=i686;-mcpu=pentium3"
-adds -march=i686 and -mcpu=pentium3 as cflags to the Makefile.
+  $ ./configure     --cflags="-march=i686;-mcpu=pentium3"
+  adds -march=i686 and -mcpu=pentium3 as cflags to the Makefile.
 
-$ ./configure     --prefix="/home/user/program"
-it will be used /home/user/program as prefix.
+  $ ./configure     --prefix="/home/user/program"
+  it will be used /home/user/program as prefix.
 
-$ ./configure     --includelib="/home/user/libx.so;/home/user/liby.a"
-adds two libs to be linked: /home/user/libx.so and /home/user/liby.a.
+  $ ./configure     --includelib="/home/user/libx.so;/home/user/liby.a"
+  adds two libs to be linked: /home/user/libx.so and /home/user/liby.a.
 
-$ ./configure     --enable-feat1
-enable feat1 to be compiled.
------------------------------------------------------
+  $ ./configure     --enable-feat1
+  enable feat1 to be compiled.

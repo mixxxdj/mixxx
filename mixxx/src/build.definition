@@ -7,6 +7,12 @@ contains( CONFIG, debug ) {
 }
 #----------------------------------------------------------------------
 
+# Configure Help facilities -------------------------------------------
+CONFIGURE_SCRIPT_FEATURES = jack alsa
+CONFIGURE_SCRIPT_PACKAGE_LIST =  libmad jack id3tag vorbisfile vorbis oggvorbis libsndfile
+#----------------------------------------------------------------------
+
+
 # Qt Version definition -----------------------------------------------
 QT_MINIMUM_REQUIRED_VERSION = 030100
 QT_MINIMUM_REQUIRED_VERSION_STR = 3.1.0
@@ -206,7 +212,7 @@ include( check.qbas )
 OBJECT = libasound.a
 TYPE = lib
 DESCRIPTION = Alsa library
-FEATURE = Alsa
+FEATURE = alsa
 TIP_MESSAGE =
 ADD_DEFINES = __ALSA__
 ADD_SOURCES = playeralsa.cpp
@@ -240,8 +246,8 @@ include( check.qbas )
 OBJECT = pkg-config --exists 'jack >= 0.61.0'
 TYPE = command
 DESCRIPTION = Jack >= 0.61.0
-FEATURE = Jack
-PACKAGE = Jack
+FEATURE = jack
+PACKAGE = jack
 TIP_MESSAGE = "Jack not found!"
 LINK_LIBS = `pkg-config --silence-errors --cflags --libs jack`
 ADD_DEFINES = __JACK__
