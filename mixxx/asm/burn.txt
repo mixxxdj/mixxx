@@ -1,0 +1,10 @@
+Oscillator: HS
+Protection CP0: off
+Protection CP1: off
+Chien de garde: on
+Power Up Timer: off
+BODEN:          on
+CPD:            off
+Debugger:       off
+LVP:            on
+WRT:            on
