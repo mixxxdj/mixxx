@@ -38,7 +38,7 @@ EngineChannel::EngineChannel(DlgChannel *dlg, const char *group)
                                    dlg->DialFilterHigh, group);
 
     // Clipping:
-    clipping = new EngineClipping(dlg->BulbClipping);
+    clipping = new EngineClipping(dlg->BulbClipping, group);
 
     // Volume control:
     volume = new EngineVolume(dlg->SliderVolume,ConfigKey(group,"volume"));

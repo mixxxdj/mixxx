@@ -17,17 +17,19 @@
 #ifndef ENGINECLIPPING_H
 #define ENGINECLIPPING_H
 
-#include "wbulb.h"
 #include "engineobject.h"
+
+class WBulb;
+class ControlEngine;
 
 class EngineClipping : public EngineObject {
  public:
-    EngineClipping(WBulb *);
+    EngineClipping(WBulb *, const char *group);
     ~EngineClipping();
     void notify(double) {};
     CSAMPLE *process(const CSAMPLE *, const int);
  private:
-    WBulb *bulb_clipping;
+    ControlEngine *bulb;
 
     CSAMPLE *buffer;
 };

@@ -36,6 +36,8 @@ WBulb::WBulb(QWidget *parent, const char *name ) : QRadioButton(parent,name)
         bulbOff = new QPixmap(bulb_off_xpm);
     }
     setBackgroundMode(NoBackground);
+
+    connect(this,SIGNAL(toggled(bool)),this,SLOT(emitValueChanged(bool)));
 }
 
 WBulb::~WBulb()
@@ -59,3 +61,23 @@ void WBulb::drawButton(QPainter *p)
 void WBulb::mousePressEvent(QMouseEvent *)
 {
 }
+
+void WBulb::setValue(int v)
+{
+    if (v==0)
+        setOn(false);
+    else
+        setOn(true);
+}
+
+void WBulb::emitValueChanged(bool v)
+{
+    if (v)
+    {
+        emit(valueChanged(1));
+        emit(valueOn());
+    }
+    else
+        emit(valueChanged(0));
+}
+
