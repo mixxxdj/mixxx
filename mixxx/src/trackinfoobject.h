@@ -21,6 +21,10 @@ public:
     QString Location();
     /** Writes all the info nicely */
     QString getInfo();
+    // Utility function to get a node from an xml file:
+    static QDomNode SelectNode( const QDomNode &, const QString );
+    // Utility function ro add a node:
+    static void AddElement( QDomDocument &, QDomElement &, QString, QString );
 
 	bool m_bExist; // Flag which determines if the file exist or not.
 	QString m_sFilename;
@@ -35,9 +39,8 @@ public:
 	int m_iTimesPlayed;
 
 private:
-	void AddElement( QDomDocument &, QDomElement &, QString, QString );
 	void CheckFileExists();
-	QDomNode SelectNode( const QDomNode &, const QString );
+
 
 };
 

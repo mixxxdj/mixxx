@@ -24,18 +24,19 @@ class TrackInfoObject;
 
 class SoundSourceSndFile : public SoundSource {
 public:
-  SoundSourceSndFile( QString );
-  ~SoundSourceSndFile();
-  long seek(long);
-  unsigned read(unsigned long size, const SAMPLE*);
-  inline long unsigned length();
-  static int ParseHeader( TrackInfoObject * );	
+    SoundSourceSndFile( QString );
+    ~SoundSourceSndFile();
+    long seek(long);
+    unsigned read(unsigned long size, const SAMPLE*);
+    inline long unsigned length();
+    static int ParseHeader( TrackInfoObject * );	
 
- private:
-  int channels;
-  SNDFILE *fh;
-  SF_INFO *info;
-  unsigned long filelength;
+private:
+  
+    int channels;
+    SNDFILE *fh;
+    SF_INFO *info;
+    unsigned long filelength;
 };
 
 #endif

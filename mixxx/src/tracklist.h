@@ -23,6 +23,13 @@ class WTrackTable;
 #define COL_BITRATE 5
 #define COL_INDEX 6
 
+// This define sets the version of the tracklist. If any code is changed or
+// bugfixed, this number should be increased. If TRACKLIST_VERSION is larger
+// than the version written in the current tracklist, the list will be
+// re-parsed.
+// - And yes, it should be a const member, but I don't know how to do that.
+#define TRACKLIST_VERSION 1
+
 class TrackList : public QObject
 {
 	Q_OBJECT
@@ -47,6 +54,7 @@ private:
 	bool AddFiles(const char *);
 	void UpdateScores();
     void UpdateTracklist();
+    int ParseHeader( TrackInfoObject *Track );
 
 	QString m_sDirectory; // the directory where the music files are stored
 	QPtrList<TrackInfoObject> m_lTracks; // list of all tracks
