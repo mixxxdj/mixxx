@@ -301,9 +301,10 @@ bool WTreeList::populatePlaylists(QListViewItem * listItem)
 	QDomDocument domXML("Mixxx_Track_List");
     if (!domXML.setContent( &opmlFile))
     {
-        QMessageBox::critical( 0,
+        qWarning(tr("Error: Cannot open file %1").arg(((WTreeItem*)listItem)->filePath));
+		/**QMessageBox::critical( 0,
                 tr( "Critical Error" ),
-                tr( "Parsing error for file %1" ).arg( ((WTreeItem*)listItem)->filePath ) );
+                tr( "Parsing error for file %1" ).arg( ((WTreeItem*)listItem)->filePath ) );**/
         opmlFile.close();
     }
     opmlFile.close();

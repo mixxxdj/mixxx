@@ -484,9 +484,10 @@ void TrackList::WriteXML()
     //Dont touch any other playlist items
 	if (!opmlFile.open(IO_WriteOnly))
     {
-        QMessageBox::critical(0,
+        qWarning(tr("Error: Cannot open file %1").arg(wTree->m_sPlaylistdir.latin1()));
+		/**QMessageBox::critical(0,
                 tr("Error"),
-                tr("Cannot open file %1").arg(wTree->m_sPlaylistdir.latin1()));
+                tr("Cannot open file %1").arg(wTree->m_sPlaylistdir.latin1()));**/
         return;
     }
 	
@@ -1086,9 +1087,10 @@ void TrackList::slotSavePls()
 	//Dont touch any other playlist items
 	if (!opmlFile.open(IO_WriteOnly))
     {
-        QMessageBox::critical(0,
+        qWarning(tr("Error: Cannot open file %1").arg(wTree->m_sPlaylistdir.latin1()));
+		/**QMessageBox::critical(0,
                 tr("Error"),
-                tr("Cannot open file %1").arg(wTree->m_sPlaylistdir.latin1()));
+                tr("Cannot open file %1").arg(wTree->m_sPlaylistdir.latin1()));**/
         return;
     }
 	
