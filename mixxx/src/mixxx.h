@@ -86,8 +86,6 @@ class MixxxApp : public QMainWindow
     void initView();
     /** Reopen player and midi devices */
     void reopen();
-    /** Update file list */
-    void updateTracklist( QString );
     /** overloaded for Message box on last window exit */
     bool queryExit();
     /** Get pointer to the MixxxVisual object */
@@ -123,10 +121,10 @@ class MixxxApp : public QMainWindow
     void slotOptionsBeatMark(bool toggle);
     /** Preference dialog */
     void slotOptionsPreferences();
-    /** Cancel preferences from dialog */
-    void slotOptionsClosePreferences();
+    /** Cancel preferences from dialog *
+//    void slotOptionsClosePreferences();
     /** Browse for playlist directory */
-    void slotBrowsePlaylistDir();
+//    void slotBrowsePlaylistDir();
     /** shows an about dlg*/
     void slotHelpAbout();
     /** Change of file to play */
@@ -134,9 +132,6 @@ class MixxxApp : public QMainWindow
   protected:
     bool eventFilter(QObject *, QEvent *);
   private:
-    void engineStart();
-    void engineStop();
-
     /** view is the main widget which represents your working area. The View
      * class should handle all events of the view widget.  It is kept empty so
      * you can create your view according to your application's needs by
@@ -161,7 +156,6 @@ class MixxxApp : public QMainWindow
     MidiObject *midi;
     ControlObject *control;
     std::vector<EngineObject *> engines;
-    ConfigKey PlaylistKey;
     ConfigObject<ConfigValue> *config;
     ConfigObject<ConfigValueMidi> *midiconfig;
     /** Pointer to track list object */
@@ -199,7 +193,7 @@ class MixxxApp : public QMainWindow
 
     QAction *optionsPreferences;
     /** Pointer to preference dialog */
-    DlgPreferences *pDlg;
+    DlgPreferences *prefDlg;
 
 //    QAction *viewToolBar;
     QAction *viewStatusBar;

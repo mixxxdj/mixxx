@@ -446,7 +446,6 @@ void *ReaderExtractBeat::processChunk(const int idx, const int start_idx, const 
         }    
     }
 
-
     // Down-write histogram
     for (i=0; i<histSize; i++)
         hist[i] *= histDownWrite;
@@ -476,57 +475,14 @@ void *ReaderExtractBeat::processChunk(const int idx, const int start_idx, const 
 #endif
 
             
-    // Update remaining part of bpmBuffer
 /*
+    // Update remaining part of bpmBuffer
     CSAMPLE bpm = 60./(((CSAMPLE)maxidx*histInterval)+histMinInterval);
     Tpeaks::iterator it3 = peaks.end(); --it3;
     for (int i=(*it3); i<chunkEnd; i++)
         bpmBuffer[i] = bpm;
 */
 
-/*
-    // Fill beat information based on result from histogram
-    if (maxidx!=-1)
-    {
-        // Find previous beat in beatBuffer
-        int beatIdx = -1;
-
-        int i=chunkStart;
-        if (i<=chunkStart)
-            i+=getBufferSize();
-        while (i>chunkStart)
-        {
-            i--;
-            if (beatBuffer[i%getBufferSize()])
-            {
-                beatIdx = i%getBufferSize();
-                break;
-            }
-        }
-        if (beatIdx==-1)
-            beatIdx = 0;
-        
-        // Fill current chunk of beatBuffer
-        //maxidx=10; //HACK!!!
-        int interval = (((CSAMPLE)maxidx*histInterval)+histMinInterval)*getRate();
-
-        if (chunkStart<beatIdx)
-            chunkStart += getBufferSize();
-        while (chunkEnd<chunkStart)
-            chunkEnd += getBufferSize();
-        while (beatIdx < chunkStart)
-            beatIdx += interval;
-
-        while (beatIdx < chunkEnd)
-        {
-            beatBuffer[beatIdx%getBufferSize()]=true;
-//            qDebug("interval %i, beatIdx %i, frameSize %i",interval,beatIdx,getBufferSize()/READCHUNK_NO);
-
-            beatIdx += interval;
-        }
-*/
-
-        //qDebug("beat(89) = %i",beatBuffer[89]);
         // Print beat buffer
 /*
         std::cout << "idx: " << idx << "\n";
@@ -565,25 +521,6 @@ void *ReaderExtractBeat::processChunk(const int idx, const int start_idx, const 
     }
 */
 
-
-
-    // Print beat intervals
-/*
-    int b1 = -1;
-    int b2 = -1;
-    for (int i=chunkStart; i<chunkEnd; i++)
-    {
-        if (beatBuffer[i])
-        {
-            b2=b1;
-            b1=i;
-
-            if (b2>-1)
-                qDebug("beat interval %f ms (equals %f BPM)",1000.*(CSAMPLE)(b1-b2)/(CSAMPLE)getRate(),60.*((CSAMPLE)getRate()/(CSAMPLE)(b1-b2)));
-        }
-    }
-*/            
-    
     if (maxidx>-1)
         qDebug("BPM: %f, maxidx: %i, maxval %f, srate: %i",60.*(1./(((CSAMPLE)maxidx*histInterval)+histMinInterval)),maxidx, hist[maxidx], input->getRate());
             

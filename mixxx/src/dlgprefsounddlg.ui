@@ -1,45 +1,20 @@
 <!DOCTYPE UI><UI version="3.1" stdsetdef="1">
-<class>DlgPreferencesDlg</class>
-<widget class="QDialog">
+<class>DlgPrefSoundDlg</class>
+<widget class="QWidget">
     <property name="name">
-        <cstring>DlgPreferencesDlg</cstring>
+        <cstring>DlgPrefSoundDlg</cstring>
     </property>
     <property name="geometry">
         <rect>
             <x>0</x>
             <y>0</y>
-            <width>371</width>
-            <height>481</height>
+            <width>600</width>
+            <height>480</height>
         </rect>
     </property>
     <property name="caption">
-        <string>Preferences</string>
+        <string>Form1</string>
     </property>
-    <widget class="QLabel">
-        <property name="name">
-            <cstring>TextLabel1</cstring>
-        </property>
-        <property name="enabled">
-            <bool>true</bool>
-        </property>
-        <property name="geometry">
-            <rect>
-                <x>12</x>
-                <y>20</y>
-                <width>130</width>
-                <height>19</height>
-            </rect>
-        </property>
-        <property name="font">
-            <font>
-                <family>Helvetica</family>
-                <pointsize>12</pointsize>
-            </font>
-        </property>
-        <property name="text">
-            <string>Master output</string>
-        </property>
-    </widget>
     <widget class="QLabel">
         <property name="name">
             <cstring>TextLabel1_2</cstring>
@@ -49,239 +24,24 @@
         </property>
         <property name="geometry">
             <rect>
-                <x>12</x>
-                <y>55</y>
+                <x>10</x>
+                <y>41</y>
                 <width>130</width>
                 <height>19</height>
             </rect>
         </property>
         <property name="font">
             <font>
-                <family>Helvetica</family>
-                <pointsize>12</pointsize>
             </font>
+        </property>
+        <property name="frameShape">
+            <enum>NoFrame</enum>
+        </property>
+        <property name="frameShadow">
+            <enum>Plain</enum>
         </property>
         <property name="text">
             <string>Headphone output</string>
-        </property>
-    </widget>
-    <widget class="QLabel">
-        <property name="name">
-            <cstring>TextLabel2</cstring>
-        </property>
-        <property name="enabled">
-            <bool>true</bool>
-        </property>
-        <property name="geometry">
-            <rect>
-                <x>12</x>
-                <y>90</y>
-                <width>130</width>
-                <height>20</height>
-            </rect>
-        </property>
-        <property name="font">
-            <font>
-                <family>Helvetica</family>
-                <pointsize>12</pointsize>
-            </font>
-        </property>
-        <property name="text">
-            <string>Sample rate</string>
-        </property>
-    </widget>
-    <widget class="QLabel">
-        <property name="name">
-            <cstring>TextLabel3</cstring>
-        </property>
-        <property name="enabled">
-            <bool>true</bool>
-        </property>
-        <property name="geometry">
-            <rect>
-                <x>12</x>
-                <y>125</y>
-                <width>128</width>
-                <height>19</height>
-            </rect>
-        </property>
-        <property name="font">
-            <font>
-                <family>Helvetica</family>
-                <pointsize>12</pointsize>
-            </font>
-        </property>
-        <property name="text">
-            <string>Number of bits</string>
-        </property>
-    </widget>
-    <widget class="QLabel">
-        <property name="name">
-            <cstring>TextLabel3_2</cstring>
-        </property>
-        <property name="enabled">
-            <bool>true</bool>
-        </property>
-        <property name="geometry">
-            <rect>
-                <x>11</x>
-                <y>159</y>
-                <width>128</width>
-                <height>21</height>
-            </rect>
-        </property>
-        <property name="font">
-            <font>
-                <family>Helvetica</family>
-                <pointsize>12</pointsize>
-            </font>
-        </property>
-        <property name="text">
-            <string>Song files directory</string>
-        </property>
-    </widget>
-    <widget class="QLabel">
-        <property name="name">
-            <cstring>TextLabel6</cstring>
-        </property>
-        <property name="enabled">
-            <bool>true</bool>
-        </property>
-        <property name="geometry">
-            <rect>
-                <x>11</x>
-                <y>194</y>
-                <width>128</width>
-                <height>19</height>
-            </rect>
-        </property>
-        <property name="font">
-            <font>
-                <family>Helvetica</family>
-                <pointsize>12</pointsize>
-            </font>
-        </property>
-        <property name="text">
-            <string>Midi Configuration</string>
-        </property>
-    </widget>
-    <widget class="QPushButton">
-        <property name="name">
-            <cstring>PushButtonOK</cstring>
-        </property>
-        <property name="enabled">
-            <bool>true</bool>
-        </property>
-        <property name="geometry">
-            <rect>
-                <x>85</x>
-                <y>440</y>
-                <width>85</width>
-                <height>30</height>
-            </rect>
-        </property>
-        <property name="font">
-            <font>
-                <family>Helvetica</family>
-                <pointsize>12</pointsize>
-            </font>
-        </property>
-        <property name="text">
-            <string>OK</string>
-        </property>
-    </widget>
-    <widget class="QPushButton">
-        <property name="name">
-            <cstring>PushButtonApply</cstring>
-        </property>
-        <property name="enabled">
-            <bool>true</bool>
-        </property>
-        <property name="geometry">
-            <rect>
-                <x>180</x>
-                <y>440</y>
-                <width>85</width>
-                <height>30</height>
-            </rect>
-        </property>
-        <property name="font">
-            <font>
-                <family>Helvetica</family>
-                <pointsize>12</pointsize>
-            </font>
-        </property>
-        <property name="text">
-            <string>Apply</string>
-        </property>
-    </widget>
-    <widget class="QPushButton">
-        <property name="name">
-            <cstring>PushButtonCancel</cstring>
-        </property>
-        <property name="geometry">
-            <rect>
-                <x>275</x>
-                <y>440</y>
-                <width>85</width>
-                <height>30</height>
-            </rect>
-        </property>
-        <property name="font">
-            <font>
-                <family>Helvetica</family>
-                <pointsize>12</pointsize>
-            </font>
-        </property>
-        <property name="text">
-            <string>Cancel</string>
-        </property>
-    </widget>
-    <widget class="QPushButton">
-        <property name="name">
-            <cstring>PushButtonBrowsePlaylist</cstring>
-        </property>
-        <property name="geometry">
-            <rect>
-                <x>336</x>
-                <y>155</y>
-                <width>25</width>
-                <height>22</height>
-            </rect>
-        </property>
-        <property name="font">
-            <font>
-                <family>Helvetica</family>
-                <pointsize>12</pointsize>
-            </font>
-        </property>
-        <property name="text">
-            <string>...</string>
-        </property>
-    </widget>
-    <widget class="QLabel">
-        <property name="name">
-            <cstring>TextLabel1_3_2</cstring>
-        </property>
-        <property name="enabled">
-            <bool>true</bool>
-        </property>
-        <property name="geometry">
-            <rect>
-                <x>285</x>
-                <y>55</y>
-                <width>25</width>
-                <height>19</height>
-            </rect>
-        </property>
-        <property name="font">
-            <font>
-                <family>Helvetica</family>
-                <pointsize>12</pointsize>
-            </font>
-        </property>
-        <property name="text">
-            <string>Ch</string>
         </property>
     </widget>
     <widget class="QLabel">
@@ -293,16 +53,14 @@
         </property>
         <property name="geometry">
             <rect>
-                <x>285</x>
-                <y>20</y>
-                <width>25</width>
+                <x>283</x>
+                <y>6</y>
+                <width>20</width>
                 <height>19</height>
             </rect>
         </property>
         <property name="font">
             <font>
-                <family>Helvetica</family>
-                <pointsize>12</pointsize>
             </font>
         </property>
         <property name="text">
@@ -311,43 +69,111 @@
     </widget>
     <widget class="QComboBox">
         <property name="name">
-            <cstring>ComboBoxMidiconf</cstring>
-        </property>
-        <property name="geometry">
-            <rect>
-                <x>146</x>
-                <y>190</y>
-                <width>215</width>
-                <height>22</height>
-            </rect>
-        </property>
-        <property name="font">
-            <font>
-                <family>Helvetica</family>
-                <pointsize>12</pointsize>
-            </font>
-        </property>
-    </widget>
-    <widget class="QComboBox">
-        <property name="name">
-            <cstring>ComboBoxSoundcardMaster</cstring>
+            <cstring>ComboBoxChannelsHead</cstring>
         </property>
         <property name="enabled">
             <bool>true</bool>
         </property>
         <property name="geometry">
             <rect>
-                <x>146</x>
-                <y>15</y>
-                <width>135</width>
+                <x>304</x>
+                <y>36</y>
+                <width>55</width>
                 <height>22</height>
             </rect>
         </property>
         <property name="font">
             <font>
-                <family>Helvetica</family>
-                <pointsize>12</pointsize>
             </font>
+        </property>
+    </widget>
+    <widget class="QLabel">
+        <property name="name">
+            <cstring>TextLabel2</cstring>
+        </property>
+        <property name="enabled">
+            <bool>true</bool>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>10</x>
+                <y>76</y>
+                <width>130</width>
+                <height>20</height>
+            </rect>
+        </property>
+        <property name="font">
+            <font>
+            </font>
+        </property>
+        <property name="text">
+            <string>Sample rate</string>
+        </property>
+    </widget>
+    <widget class="QComboBox">
+        <property name="name">
+            <cstring>ComboBoxChannelsMaster</cstring>
+        </property>
+        <property name="enabled">
+            <bool>true</bool>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>304</x>
+                <y>1</y>
+                <width>55</width>
+                <height>22</height>
+            </rect>
+        </property>
+        <property name="font">
+            <font>
+            </font>
+        </property>
+    </widget>
+    <widget class="QLabel">
+        <property name="name">
+            <cstring>TextLabel1</cstring>
+        </property>
+        <property name="enabled">
+            <bool>true</bool>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>10</x>
+                <y>6</y>
+                <width>130</width>
+                <height>19</height>
+            </rect>
+        </property>
+        <property name="font">
+            <font>
+            </font>
+        </property>
+        <property name="text">
+            <string>Master output</string>
+        </property>
+    </widget>
+    <widget class="QLabel">
+        <property name="name">
+            <cstring>TextLabel1_3_2</cstring>
+        </property>
+        <property name="enabled">
+            <bool>true</bool>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>283</x>
+                <y>41</y>
+                <width>20</width>
+                <height>19</height>
+            </rect>
+        </property>
+        <property name="font">
+            <font>
+            </font>
+        </property>
+        <property name="text">
+            <string>Ch</string>
         </property>
     </widget>
     <widget class="QComboBox">
@@ -359,16 +185,14 @@
         </property>
         <property name="geometry">
             <rect>
-                <x>146</x>
-                <y>50</y>
+                <x>144</x>
+                <y>36</y>
                 <width>135</width>
                 <height>22</height>
             </rect>
         </property>
         <property name="font">
             <font>
-                <family>Helvetica</family>
-                <pointsize>12</pointsize>
             </font>
         </property>
     </widget>
@@ -381,16 +205,34 @@
         </property>
         <property name="geometry">
             <rect>
-                <x>146</x>
-                <y>85</y>
+                <x>144</x>
+                <y>71</y>
                 <width>86</width>
                 <height>22</height>
             </rect>
         </property>
         <property name="font">
             <font>
-                <family>Helvetica</family>
-                <pointsize>12</pointsize>
+            </font>
+        </property>
+    </widget>
+    <widget class="QComboBox">
+        <property name="name">
+            <cstring>ComboBoxSoundcardMaster</cstring>
+        </property>
+        <property name="enabled">
+            <bool>true</bool>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>144</x>
+                <y>1</y>
+                <width>135</width>
+                <height>22</height>
+            </rect>
+        </property>
+        <property name="font">
+            <font>
             </font>
         </property>
     </widget>
@@ -403,127 +245,38 @@
         </property>
         <property name="geometry">
             <rect>
-                <x>146</x>
-                <y>120</y>
+                <x>144</x>
+                <y>106</y>
                 <width>86</width>
                 <height>22</height>
             </rect>
         </property>
         <property name="font">
             <font>
-                <family>Helvetica</family>
-                <pointsize>12</pointsize>
-            </font>
-        </property>
-    </widget>
-    <widget class="QLineEdit">
-        <property name="name">
-            <cstring>LineEditSongfiles</cstring>
-        </property>
-        <property name="geometry">
-            <rect>
-                <x>146</x>
-                <y>155</y>
-                <width>188</width>
-                <height>22</height>
-            </rect>
-        </property>
-        <property name="font">
-            <font>
-                <family>Helvetica</family>
-                <pointsize>12</pointsize>
-            </font>
-        </property>
-    </widget>
-    <widget class="QComboBox">
-        <property name="name">
-            <cstring>ComboBoxChannelsHead</cstring>
-        </property>
-        <property name="enabled">
-            <bool>true</bool>
-        </property>
-        <property name="geometry">
-            <rect>
-                <x>306</x>
-                <y>50</y>
-                <width>55</width>
-                <height>22</height>
-            </rect>
-        </property>
-        <property name="font">
-            <font>
-                <family>Helvetica</family>
-                <pointsize>12</pointsize>
-            </font>
-        </property>
-    </widget>
-    <widget class="QComboBox">
-        <property name="name">
-            <cstring>ComboBoxChannelsMaster</cstring>
-        </property>
-        <property name="enabled">
-            <bool>true</bool>
-        </property>
-        <property name="geometry">
-            <rect>
-                <x>306</x>
-                <y>15</y>
-                <width>55</width>
-                <height>22</height>
-            </rect>
-        </property>
-        <property name="font">
-            <font>
-                <family>Helvetica</family>
-                <pointsize>12</pointsize>
-            </font>
-        </property>
-    </widget>
-    <widget class="QComboBox">
-        <property name="name">
-            <cstring>ComboBoxMididevice</cstring>
-        </property>
-        <property name="enabled">
-            <bool>true</bool>
-        </property>
-        <property name="geometry">
-            <rect>
-                <x>146</x>
-                <y>224</y>
-                <width>215</width>
-                <height>22</height>
-            </rect>
-        </property>
-        <property name="font">
-            <font>
-                <family>Helvetica</family>
-                <pointsize>12</pointsize>
             </font>
         </property>
     </widget>
     <widget class="QLabel">
         <property name="name">
-            <cstring>TextLabel5</cstring>
+            <cstring>TextLabel3</cstring>
         </property>
         <property name="enabled">
             <bool>true</bool>
         </property>
         <property name="geometry">
             <rect>
-                <x>11</x>
-                <y>229</y>
+                <x>10</x>
+                <y>111</y>
                 <width>128</width>
                 <height>19</height>
             </rect>
         </property>
         <property name="font">
             <font>
-                <family>Helvetica</family>
-                <pointsize>12</pointsize>
             </font>
         </property>
         <property name="text">
-            <string>Midi Device</string>
+            <string>Number of bits</string>
         </property>
     </widget>
     <widget class="QGroupBox">
@@ -535,16 +288,14 @@
         </property>
         <property name="geometry">
             <rect>
-                <x>10</x>
-                <y>255</y>
+                <x>8</x>
+                <y>141</y>
                 <width>350</width>
                 <height>175</height>
             </rect>
         </property>
         <property name="font">
             <font>
-                <family>Helvetica</family>
-                <pointsize>12</pointsize>
             </font>
         </property>
         <property name="title">
@@ -558,43 +309,6 @@
                 <rect>
                     <x>15</x>
                     <y>40</y>
-                    <width>315</width>
-                    <height>29</height>
-                </rect>
-            </property>
-            <property name="minValue">
-                <number>2</number>
-            </property>
-            <property name="maxValue">
-                <number>32</number>
-            </property>
-            <property name="lineStep">
-                <number>1</number>
-            </property>
-            <property name="pageStep">
-                <number>1</number>
-            </property>
-            <property name="value">
-                <number>28</number>
-            </property>
-            <property name="orientation">
-                <enum>Horizontal</enum>
-            </property>
-            <property name="tickmarks">
-                <enum>Right</enum>
-            </property>
-            <property name="tickInterval">
-                <number>5</number>
-            </property>
-        </widget>
-        <widget class="QSlider">
-            <property name="name">
-                <cstring>SliderLatencyHead</cstring>
-            </property>
-            <property name="geometry">
-                <rect>
-                    <x>15</x>
-                    <y>120</y>
                     <width>315</width>
                     <height>29</height>
                 </rect>
@@ -689,6 +403,63 @@
         </widget>
         <widget class="QLabel">
             <property name="name">
+                <cstring>TextLabel8_2</cstring>
+            </property>
+            <property name="geometry">
+                <rect>
+                    <x>310</x>
+                    <y>70</y>
+                    <width>36</width>
+                    <height>20</height>
+                </rect>
+            </property>
+            <property name="font">
+                <font>
+                </font>
+            </property>
+            <property name="text">
+                <string>High</string>
+            </property>
+        </widget>
+        <widget class="QSlider">
+            <property name="name">
+                <cstring>SliderLatencyHead</cstring>
+            </property>
+            <property name="geometry">
+                <rect>
+                    <x>15</x>
+                    <y>120</y>
+                    <width>315</width>
+                    <height>29</height>
+                </rect>
+            </property>
+            <property name="minValue">
+                <number>2</number>
+            </property>
+            <property name="maxValue">
+                <number>32</number>
+            </property>
+            <property name="lineStep">
+                <number>1</number>
+            </property>
+            <property name="pageStep">
+                <number>1</number>
+            </property>
+            <property name="value">
+                <number>28</number>
+            </property>
+            <property name="orientation">
+                <enum>Horizontal</enum>
+            </property>
+            <property name="tickmarks">
+                <enum>Right</enum>
+            </property>
+            <property name="tickInterval">
+                <number>5</number>
+            </property>
+        </widget>
+        <widget class="QLabel">
+            <property name="name">
                 <cstring>TextLabelLatencyHead</cstring>
             </property>
             <property name="geometry">
@@ -712,27 +483,7 @@
         </widget>
         <widget class="QLabel">
             <property name="name">
-                <cstring>TextLabel8_3</cstring>
-            </property>
-            <property name="geometry">
-                <rect>
-                    <x>15</x>
-                    <y>149</y>
-                    <width>30</width>
-                    <height>16</height>
-                </rect>
-            </property>
-            <property name="font">
-                <font>
-                </font>
-            </property>
-            <property name="text">
-                <string>Low</string>
-            </property>
-        </widget>
-        <widget class="QLabel">
-            <property name="name">
-                <cstring>TextLabel1_4_2</cstring>
+                <cstring>TextLabelLatency</cstring>
             </property>
             <property name="geometry">
                 <rect>
@@ -752,14 +503,14 @@
         </widget>
         <widget class="QLabel">
             <property name="name">
-                <cstring>TextLabel8_2</cstring>
+                <cstring>TextLabelLatencyLow</cstring>
             </property>
             <property name="geometry">
                 <rect>
-                    <x>310</x>
-                    <y>70</y>
-                    <width>36</width>
-                    <height>20</height>
+                    <x>15</x>
+                    <y>149</y>
+                    <width>30</width>
+                    <height>16</height>
                 </rect>
             </property>
             <property name="font">
@@ -767,12 +518,12 @@
                 </font>
             </property>
             <property name="text">
-                <string>High</string>
+                <string>Low</string>
             </property>
         </widget>
         <widget class="QLabel">
             <property name="name">
-                <cstring>TextLabel8_2_2</cstring>
+                <cstring>TextLabelLatencyHigh</cstring>
             </property>
             <property name="geometry">
                 <rect>

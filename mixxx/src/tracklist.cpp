@@ -40,10 +40,10 @@ TrackList::TrackList( const QString sDirectory, QTable *ptableTracks,
     // Update the track list by reading the xml file, and adding new files:
     UpdateTracklist();
 
-	// Construct popup menu used to select playback channel on track selection
-	playSelectMenu = new QPopupMenu( );
-	playSelectMenu->insertItem(QIconSet(a_xpm), "Player A",this, SLOT(slotChangePlay_1()));
-	playSelectMenu->insertItem(QIconSet(b_xpm), "Player B",this, SLOT(slotChangePlay_2()));
+    // Construct popup menu used to select playback channel on track selection
+    playSelectMenu = new QPopupMenu( );
+    playSelectMenu->insertItem(QIconSet(a_xpm), "Player A",this, SLOT(slotChangePlay_1()));
+    playSelectMenu->insertItem(QIconSet(b_xpm), "Player B",this, SLOT(slotChangePlay_2()));
 
     // Connect the right click to the slot where the menu is shown:
 	connect( m_ptableTracks, SIGNAL( contextMenuRequested( int, int, const QPoint &) ),
@@ -302,6 +302,8 @@ void TrackList::UpdateTracklist()
 }
 void TrackList::slotUpdateTracklist( QString sDir )
 {
+    qDebug("dir: %s",sDir.latin1());
+
     // Save the "old" xml file:
     WriteXML();
 
