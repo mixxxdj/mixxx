@@ -18,8 +18,10 @@
 #include "enginemaster.h"
 #include "configobject.h"
 #include <wslider.h>
+#include <qcheckbox.h>
 
 EngineMaster::EngineMaster(DlgMaster *master_dlg, DlgCrossfader *crossfader_dlg,
+                           DlgChannel *channel1_dlg, DlgChannel *channel2_dlg,
                            EngineBuffer *_buffer1, EngineBuffer *_buffer2,
                            EngineChannel *_channel1, EngineChannel *_channel2,
                            const char *group)
@@ -55,6 +57,10 @@ EngineMaster::EngineMaster(DlgMaster *master_dlg, DlgCrossfader *crossfader_dlg,
     // Headphone Clipping
     head_clipping = new EngineClipping(0);
 
+    // Channel 1 and 2 head
+    connect(channel1_dlg->CheckBoxHead, SIGNAL(stateChanged(int)), this, SLOT(slotChannelHead1(int)));
+    connect(channel2_dlg->CheckBoxHead, SIGNAL(stateChanged(int)), this, SLOT(slotChannelHead2(int)));
+         
     out = new CSAMPLE[MAX_BUFFER_LEN];
 }
 
@@ -118,13 +124,10 @@ CSAMPLE *EngineMaster::process(const CSAMPLE *, const int buffer_size)
         cf_val = head_mix->getValue();
         c2_gain = 0.5*(cf_val+1.);
         c1_gain = 0.5*(-cf_val+1.);
-        for (int i=0; i<buffer_size; i++)
+        for (int i=0; i<buffer_size; i+=2)
         {
-            out[i] = 0.;
-            if (left)
-                out[i] += sampLeft[i]*c1_gain;
-            if (right)
-                out[i] += sampRight[i]*c2_gain;
+            out[i  ] = tmp2[i  ]*c1_gain + sampLeft[i]*c2_gain;
+            out[i+1] = tmp2[i+1]*c1_gain + sampRight[i]*c2_gain;
         }
 
         // Master volume
@@ -171,5 +174,21 @@ void EngineMaster::slotChannelLeft(bool toggle)
 void EngineMaster::slotChannelRight(bool toggle)
 {
     right = toggle;
+}
+
+void EngineMaster::slotChannelHead1(int toggle)
+{
+    if (toggle == 2)
+        head1 = true;
+    else
+        head1 = false;
+}
+
+void EngineMaster::slotChannelHead2(int toggle)
+{
+    if (toggle == 2)
+        head2 = true;
+    else
+        head2 = false;
 }
 

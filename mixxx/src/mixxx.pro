@@ -72,6 +72,7 @@ DEFINES += CONFIG_PATH=$$CONFIG_PATH
 FORMS	= dlgchanneldlg.ui dlgplaycontroldlg.ui dlgplaylistdlg.ui dlgmasterdlg.ui dlgcrossfaderdlg.ui dlgsplitdlg.ui dlgpreferencesdlg.ui
 IMAGES	= filesave.xpm
 TEMPLATE	=app
+TRANSLATIONS = mixxx_de.ts
 CONFIG	+= qt warn_on thread debug 
 DBFILE	= mixxx.db
 LANGUAGE	= C++
