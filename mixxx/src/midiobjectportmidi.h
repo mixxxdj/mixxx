@@ -29,7 +29,9 @@ public:
     MidiObjectPortMidi(ConfigObject<ConfigValueMidi> *, QApplication *);
     ~MidiObjectPortMidi();
 protected:
-    void run();
+    void devOpen(QString device);
+	void devClose();
+	void run();
 
     PmEvent     buffer[2];
     PmStream    *midi;

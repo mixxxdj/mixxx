@@ -91,8 +91,8 @@ void MidiObject::send(char channel, char midicontrol, char midivalue)
     for (int i=0; i<no; i++)
     {
         //qDebug("(%i) checking: no %i ch %i",i,(int)controlList[i]->cfgOption->val->midino,(int)controlList[i]->cfgOption->val->midichannel);
-        if (controlList[i]->cfgOption->val->midino == midicontrol &
-            controlList[i]->cfgOption->val->midichannel == channel)
+        if ((controlList[i]->cfgOption->val->midino == midicontrol) &
+            (controlList[i]->cfgOption->val->midichannel == channel))
         {
             // Check for possible bit mask
             int midimask = controlList[i]->cfgOption->val->midimask;

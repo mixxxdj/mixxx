@@ -25,7 +25,7 @@ SOURCES += midiobjectportmidi.cpp
 HEADERS += midiobjectportmidi.h
 DEFINES += __PORTMIDI__
 unix:LIBS += -lportmidi -lporttime
-win32:LIBS += ../lib/portmidi.lib ../lib/porttime.lib ../lib/libmad.lib
+win32:LIBS += ../lib/portmidi.lib ../lib/porttime.lib 
 
 # OSS Midi
 #SOURCES += midiobjectoss.cpp
@@ -53,6 +53,7 @@ win32 {
   INCLUDEPATH += ../mad-0.14.2b
   INCLUDEPATH += ../portaudio/pa_common
   INCLUDEPATH += .
+  LIBS += ../lib/libmad.lib ../lib/libid3tag.lib ../lib/libz.lib
   QMAKE_CXXFLAGS += -GX
   QMAKE_LFLAGS += /NODEFAULTLIB:libcd /NODEFAULTLIB:libcmtd /NODEFAULTLIB:msvcrt.lib
 }

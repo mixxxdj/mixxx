@@ -19,7 +19,19 @@
 
 MidiObjectPortMidi::MidiObjectPortMidi(ConfigObject<ConfigValueMidi> *c, QApplication *a) : MidiObject(c,a)
 {
-    // Open midi device for input
+	devOpen("");
+    // Start the midi thread:
+    start();
+}
+
+MidiObjectPortMidi::~MidiObjectPortMidi()
+{
+	devClose();
+}
+
+void MidiObjectPortMidi::devOpen(QString device)
+{
+   // Open midi device for input
     Pm_Initialize();
 
     /*for (i = 0; i < Pm_CountDevices(); i++) {
@@ -34,11 +46,9 @@ MidiObjectPortMidi::MidiObjectPortMidi(ConfigObject<ConfigValueMidi> *c, QApplic
     if (err)
         qDebug("could not open midi device: %s\n", Pm_GetErrorText(err));
 
-    // Start the midi thread:
-    start();
 }
 
-MidiObjectPortMidi::~MidiObjectPortMidi()
+void MidiObjectPortMidi::devClose()
 {
     // Close device
     Pm_Close(midi);

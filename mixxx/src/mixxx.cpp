@@ -609,14 +609,14 @@ void MixxxApp::slotOptionsPreferences()
 
         // Midi device
         QStringList *mididev = midi->getDeviceList();
-        int j=0;
+        {int j=0;
         for (QStringList::Iterator it = mididev->begin(); it != mididev->end(); ++it )
         {
             pDlg->ComboBoxMididevice->insertItem(*it);
             if ((*it) == (*midi->getOpenDevice()))
                 pDlg->ComboBoxMididevice->setCurrentItem(j);
             j++;
-        }
+        }}
 
         // Song path
         pDlg->LineEditSongfiles->setText(config->getValueString(PlaylistKey));
@@ -653,12 +653,12 @@ void MixxxApp::slotOptionsPreferencesUpdateDeviceOptions()
 
             // Bits
             pDlg->ComboBoxBits->clear();
-            for (unsigned int i=0; i<p->bits.size(); i++)
+            {for (unsigned int i=0; i<p->bits.size(); i++)
             {
                 pDlg->ComboBoxBits->insertItem(QString("%1").arg(p->bits[i]));
                 if (p->bits[i]==player->BITS)
                     pDlg->ComboBoxBits->setCurrentItem(i);
-            }
+            }}
         }
 
         // Get next device

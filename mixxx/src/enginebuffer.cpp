@@ -296,8 +296,8 @@ void EngineBuffer::getchunk()
         for (unsigned long j=lastread_buffer; j<min(read_buffer_size,lastread_buffer+samples_read); j++)
             read_buffer[j] = (CSAMPLE)temp[i++];
         //qDebug("%i",lastread_buffer+samples_read-read_buffer_size);
-        for (signed long j=0; j<(signed long)(lastread_buffer+samples_read-read_buffer_size); j++)
-            read_buffer[j] = (CSAMPLE)temp[i++];
+        {for (signed long j=0; j<(signed long)(lastread_buffer+samples_read-read_buffer_size); j++)
+            read_buffer[j] = (CSAMPLE)temp[i++];}
 
         // Update lastread_file position:
         lastread_file.add((double)samples_read);
