@@ -18,7 +18,7 @@
 #ifndef MIDIOBJECTWIN_H
 #define MIDIOBJECTWIN_H
 
-#include <midiobject.h>
+#include "midiobject.h"
 
 #include "windows.h"
 

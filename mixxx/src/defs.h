@@ -1,7 +1,7 @@
 #ifndef DEFS_H
 #define DEFS_H
 
-#define VERSION "0.9.1"
+#define VERSION "0.9.2"
 
 #include <math.h>
 #include <iostream>
@@ -12,7 +12,7 @@ typedef short int SAMPLE;       // Data type used in output buffer. S16_LE works
 typedef float CSAMPLE;          // CSAMPLE defines the CSAMPLE type used for
                                 // intermidiate calculations
 typedef CSAMPLE FLOAT_TYPE;       // Float type, used for non sample data
-const int BUFFER_SIZE  = 2048;  // Buffer size used both for input and output
+const int BUFFER_SIZE  = 2048;  // Buffer size used both for input and output as default
                                             
 /** size of the chunk that's read in every read. */
 const unsigned int READCHUNKSIZE = 23040;
@@ -24,7 +24,7 @@ const unsigned int READBUFFERSIZE = READCHUNKSIZE*READCHUNK_NO;
 
 
 /** Maximum buffer length to each EObject::process call */
-const int MAX_BUFFER_LEN = 100000;
+const int MAX_BUFFER_LEN = 400000;
 
 // Various fixed constants
 // static CSAMPLE pi     = acos(-1.0); // Conflicts with macx headers

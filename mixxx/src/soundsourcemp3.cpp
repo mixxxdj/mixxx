@@ -45,7 +45,7 @@ SoundSourceMp3::SoundSourceMp3(const char* filename)
                 }
             }*/
 
-            qDebug("MAD: Error decoding header %d: %s (len=%d)", currentframe, mad_stream_errorstr(&Stream), len);
+            //qDebug("MAD: Error decoding header %d: %s (len=%d)", currentframe, mad_stream_errorstr(&Stream), len);
             continue;
         }
         currentframe++;

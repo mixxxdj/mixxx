@@ -18,7 +18,7 @@
 #ifndef CONTROLNULL_H
 #define CONTROLNULL_H
 
-#include <controlobject.h>
+#include "controlobject.h"
 
 /**
   *@author Tue & Ken Haste Andersen
