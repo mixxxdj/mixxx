@@ -35,7 +35,7 @@ class ControlPushButton : public ControlObject
 {
  Q_OBJECT
 public:
-  ControlPushButton(ConfigKey key, buttonType, WBulb* = 0);
+  ControlPushButton(ConfigKey key, buttonType, WBulb* _led = 0);
   ~ControlPushButton();
   char* print();
   valueType getValue();

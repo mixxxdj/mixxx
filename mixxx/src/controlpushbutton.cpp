@@ -23,7 +23,7 @@
             kindtype - A button can be either be latching, momenteneous and simulated_latching.
 	    _led - A led which is connected to the button.
    -------- ------------------------------------------------------ */
-ControlPushButton::ControlPushButton(ConfigKey key, buttonType kindtype, WBulb* _led = 0) : ControlObject(key)
+ControlPushButton::ControlPushButton(ConfigKey key, buttonType kindtype, WBulb* _led) : ControlObject(key)
 {
     kind = kindtype;
     position = up;

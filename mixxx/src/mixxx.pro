@@ -14,16 +14,16 @@ x11:SOURCES += ../lib/pa_lib.c ../lib/pa_convert.c ../lib/pa_unix_oss.c
 x11:HEADERS += ../lib/portaudio.h ../lib/pa_host.h
 win32:SOURCES += ../lib/pa_lib.c ../lib/dsound_wrapper.c ../lib/pa_dsound.c
 win32:HEADERS += ../lib/portaudio.h ../lib/pa_host.h
-win32:LIBS += winmm.lib /DXSDK/lib/dsound.lib
+win32:LIBS += dsound.lib
 macx:SOURCES += ../../../libs/portaudio_v18/pa_lib.c ../../../libs/portaudio_v18/pa_mac_core.c ../../../libs/portaudio_v18/pa_convert.c
 macx:HEADERS += ../../../libs/portaudio_v18/portaudio.h ../../../libs/portaudio_v18/pa_host.h
 macx:LIBS += -framework CoreAudio
 macx:INCLUDEPATH += ../../../libs/portaudio_v18
 
 # OSS Midi (Working good. Linux specific)
-SOURCES += midiobjectoss.cpp
-HEADERS += midiobjectoss.h
-DEFINES += __OSSMIDI__
+#SOURCES += midiobjectoss.cpp
+#HEADERS += midiobjectoss.h
+#DEFINES += __OSSMIDI__
 
 # PortMidi (Alpha - Linux ALSA, Windows)
 #SOURCES += midiobjectportmidi.cpp
@@ -75,7 +75,8 @@ win32 {
   HEADERS += soundsourcesndfile.h
   LIBS += ../lib/libmad.lib ../lib/libsndfile.lib
   QMAKE_CXXFLAGS += -GX
-  QMAKE_LFLAGS += /NODEFAULTLIB:libcd /NODEFAULTLIB:libcmtd /NODEFAULTLIB:msvcrt.lib /NODEFAULTLIB:library
+  QMAKE_LFLAGS += /NODEFAULTLIB:libcd /NODEFAULTLIB:libcmtd 
+  #/NODEFAULTLIB:msvcrt.lib 
   CONFIG_PATH = \"c:\\mixxx\"
 }
 
