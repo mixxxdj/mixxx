@@ -66,8 +66,9 @@ QString WTrackTableItem::key() const
         sResult = text();
         break;
     case typeNumber: case typeDuration:
-        sResult.fill('0', 10-text().length()); // Assume at most 10 digits
-        sResult += text();
+//        sResult.fill('0', 10-text().length()); // Assume at most 10 digits
+//        sResult += text();
+        sResult = text().rightJustify(10,'0');
         break;
     }
     return sResult;
@@ -86,4 +87,18 @@ void WTrackTableItem::setContentFromEditor(QWidget *w)
     // If this is a comment column, update TrackInfoObject
     if (col()==COL_COMMENT)
         m_pTrackInfoObject->setComment(text());
+}
+
+int WTrackTableItem::alignment() const
+{
+   static int a;
+    switch (m_eType) {
+    case typeText: 
+       a = Qt::AlignLeft;
+        break;
+    case typeNumber: case typeDuration:
+       a = Qt::AlignRight;
+       break;
+    }
+   return a;
 }
