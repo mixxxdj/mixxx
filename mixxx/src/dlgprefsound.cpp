@@ -60,6 +60,13 @@ DlgPrefSound::DlgPrefSound(QWidget *parent, PlayerProxy *_player,
     // Sound quality slider updates
 //    SliderSoundQuality->setValue(2+4-config->getValueString(ConfigKey("[Soundcard]","SoundQuality")).toInt());
     
+    // Pitch-indp. time stretch disabled on mac
+#ifdef __MACX__
+    checkBoxPitchIndp->setChecked(false);
+    checkBoxPitchIndp->setEnabled(false);
+    textLabelSoundScaling->setEnabled(false);
+#endif
+
     // Set default value for scale mode check box
     int iPitchIndpTimeStretch = config->getValueString(ConfigKey("[Soundcard]","PitchIndpTimeStretch")).toInt();
     if (iPitchIndpTimeStretch)
