@@ -220,6 +220,7 @@ macx {
   INCLUDEPATH += $$MACLIBPATH/include
   LIBS += -lz -framework Carbon -framework QuickTime
   SETTINGS_FILE = \"mixxx.cfg\"
+  RC_FILE = icon.icns
 }
 
 FORMS	= dlgprefsounddlg.ui dlgprefmididlg.ui dlgprefplaylistdlg.ui dlgprefcontrolsdlg.ui
