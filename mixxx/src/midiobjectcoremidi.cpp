@@ -123,7 +123,12 @@ void MidiObjectCoreMidi::handleMidi(const MIDIPacketList *packets)
                 continue; // Skip over realtime data?!?
             if ((packet->data[j] & 0x80) != 0 && messageSize > 0)
             {
-                send((buffer[0] & 15),buffer[1],buffer[2]);
+                MidiCategory midicategory = (MidiCategory)(buffer[0] & 0xF0);
+                char midichannel = buffer[0] & 0x0F; // The channel is stored in the lower 4 bits of the status byte received
+                char midicontrol = buffer[1];
+                char midivalue = buffer[2];
+
+                send(midicategory, midichannel, midicontrol, midivalue);
                 messageSize = 0;
             }
             
@@ -133,7 +138,14 @@ void MidiObjectCoreMidi::handleMidi(const MIDIPacketList *packets)
         packet = MIDIPacketNext(packet);
     }
     if (messageSize>0)
-        send((buffer[0] & 15),buffer[1],buffer[2]);
+    {
+         MidiCategory midicategory = (MidiCategory)(buffer[0] & 0xF0);
+         char midichannel = buffer[0] & 0x0F; // The channel is stored in the lower 4 bits of the status byte received
+         char midicontrol = buffer[1];
+         char midivalue = buffer[2];
+
+         send(midicategory, midichannel, midicontrol, midivalue);
+    }
 }
 
 // C/C++ wrapper function

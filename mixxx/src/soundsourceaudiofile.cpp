@@ -52,14 +52,14 @@ unsigned SoundSourceAudioFile::read(unsigned long size, const SAMPLE* destinatio
     return afReadFrames(fh,AF_DEFAULT_TRACK, (SAMPLE *)destination,size/channels)*channels;
 }
 
-void SoundSourceAudioFile::ParseHeader(TrackInfoObject *Track)
+int SoundSourceAudioFile::ParseHeader(TrackInfoObject *Track)
 {
     QString location = Track->m_sFilepath+'/'+Track->m_sFilename;
     AFfilehandle fh = afOpenFile(location.ascii() , "r", 0);
     if (fh == AF_NULL_FILEHANDLE)
     {
         qDebug("libaudiofile: Error opening file.");
-        return;
+        return(ERR);
     }
 
     Track->m_sType = "wav";
@@ -67,6 +67,7 @@ void SoundSourceAudioFile::ParseHeader(TrackInfoObject *Track)
     Track->m_sBitrate = QString("%1").arg((int)((Track->m_iLength/(Track->m_iDuration*afGetRate(fh, AF_DEFAULT_TRACK))*
                                                  afGetRate(fh, AF_DEFAULT_TRACK)*8.)/1000.));
     afCloseFile(fh);
+    return OK;
 }
 
 /*

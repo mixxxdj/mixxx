@@ -234,7 +234,9 @@ MixxxApp::MixxxApp(QApplication *a)
     }
 
     // Try initializing PowerMates
-#ifdef __UNIX__
+    powermate1 = 0;
+    powermate2 = 0;
+#ifdef __LINUX__
     powermate1 = new PowerMateLinux(control);
     powermate2 = new PowerMateLinux(control);
 #endif
@@ -243,9 +245,11 @@ MixxxApp::MixxxApp(QApplication *a)
     powermate2 = new PowerMateWin(control);
 #endif
 
+    if (powermate1!=0)
+    {
     if (powermate1->opendev())
         qDebug("Found PowerMate 1");
-	else
+    else
     {
         delete powermate1;
         powermate1 = 0;
@@ -253,12 +257,13 @@ MixxxApp::MixxxApp(QApplication *a)
 
     if (powermate2->opendev())
         qDebug("Found PowerMate 2");
-	else
+    else
     {
         delete powermate2;
         powermate2 = 0;
     }
-  
+    }
+ 
     // Initialize player device
 #ifdef __ALSA__
     player = new PlayerALSA(BUFFER_SIZE, &engines, config->getValueString(ConfigKey("[Soundcard]","DeviceMaster")));
