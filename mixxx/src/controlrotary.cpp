@@ -50,10 +50,10 @@ void ControlRotary::slotSetPosition(int newpos) {
       unsigned short deltamillisec = newtime.millitm - oldtime.millitm;
       if (deltamillisec > 1000) deltamillisec = 65536 - deltamillisec;
       if (deltasec > 2) 
-	value = 0.;
+	    value = 0.;
       else 
-	if (deltasec*1000+deltamillisec > 0)
-	  value = (FLOAT_TYPE)change / (FLOAT_TYPE)(deltasec*1000+deltamillisec);
+	    if (deltasec*1000+deltamillisec > 0)
+	        value = (FLOAT_TYPE)change / (FLOAT_TYPE)(deltasec*1000+deltamillisec);
       /*	    cout << "Wheel: new position " << (int)newpos << " to " <<(int)position << ", velocity " << 
 		    setw(8) << value <<"\n.";
 		    cout << "deltat " << deltasec << ", " << deltamillisec << "\n";

@@ -1,13 +1,12 @@
 - Stability of EngineBuffer
 - MP3/report out of memory
-- GUI reorganization
 - GUI controls: wheel, new knob gfx
-- Two channels
 - Volume sliders
 - Proper exit
 - Change tracks
 - Decode MP3's
-- Gui grid
+- Finish implementation of EngineFilterRBJ
+- Use denormalize macro in filters
 
 Future options:
 - Headphone channel

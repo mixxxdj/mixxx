@@ -25,7 +25,7 @@ EngineIIRfilter::~EngineIIRfilter() {
 CSAMPLE *EngineIIRfilter::process(const CSAMPLE *source, const int buf_size) {
   double GAIN =  coefs[0];
   for (int i=0; i<buf_size; i++) {
-        xv[0] = xv[1]; xv[1] = xv[2]; xv[2] = xv[3]; xv[3] = xv[4];
+      xv[0] = xv[1]; xv[1] = xv[2]; xv[2] = xv[3]; xv[3] = xv[4];
 	  xv[4] = xv[5]; xv[5] = xv[6]; xv[6] = xv[7]; xv[7] = xv[8]; 
 	  xv[8] = source[i] / GAIN;
 	  yv[0] = yv[1]; yv[1] = yv[2]; yv[2] = yv[3]; yv[3] = yv[4];
