@@ -152,6 +152,7 @@ long mp3file::seek(long filepos) {
 unsigned mp3file::read(unsigned long samples_wanted, const SAMPLE* _destination) {
   SAMPLE *destination = (SAMPLE*)_destination;
   unsigned Total_samples_decoded = 0;
+  qDebug("Decoding");
   while (Total_samples_decoded < samples_wanted) {
     if(mad_frame_decode(&Frame,&Stream))
       if(MAD_RECOVERABLE(Stream.error))	{
