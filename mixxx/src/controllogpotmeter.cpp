@@ -20,9 +20,15 @@
 
 /* -------- ------------------------------------------------------
    Purpose: Creates a new logarithmic potmeter, where the value is
-            given by: value = a*10^(b*midibyte) - 1. The lower value
-            is 0, for midibyte=64 the value is 1 and the upper 
+            given by: 
+            
+                value = 10^(b*midibyte) - 1
+            
+            The lower value is 0, for midibyte=64 the value is 1 and the upper 
             value is set by maxvalue.
+
+            If the maxvalue is set to 1, the potmeter operates with only
+            one logarithmid scale between 0 (for midi 0) and 1 (midivalue 128).
    Input:   n - name
             midino - number of the midi controller.
             midicontroller - pointer to the midi controller.
@@ -36,17 +42,14 @@ ControlLogpotmeter::ControlLogpotmeter(ConfigKey key, double dMaxValue) : Contro
     {
         m_bTwoState = false;
 
-        a = 1.;
-        b = log10(2.)/maxPosition;
+        m_fB1 = log10(2.)/maxPosition;
     }
     else
     {
         m_bTwoState = true;
 
-        a = 1.;
-        b = log10(2.)/middlePosition;
-        b2 = log10((dMaxValue+1.)/2.)/middlePosition;
-        a2 = 2.*pow(10., -middlePosition*b);
+        m_fB1 = log10(2.)/middlePosition;
+        m_fB2 = log10(dMaxValue)/(maxPosition-middlePosition);
     }
     
     m_dValueRange = m_dMaxValue-m_dMinValue;
@@ -59,15 +62,18 @@ void ControlLogpotmeter::setValueFromWidget(double dValue)
     // Calculate the value linearly:
     if (!m_bTwoState)
     {
-        m_dValue = a*pow(10., b*dValue) - 1.;
+        m_dValue = pow(10, m_fB1*dValue) - 1;
     }
     else
     {
         if (dValue <= middlePosition)
-            m_dValue = a*pow(10., b*dValue) - 1.;
+            m_dValue = pow(10., m_fB1*dValue) - 1;
         else
-            m_dValue = a2*pow(10., b2*dValue) - 2.;
+            m_dValue = pow(10., m_fB2*(dValue - middlePosition));
     }
+
+    qDebug("Midi: %f Value : %f", dValue, m_dValue);
+
     updateFromWidget();
 }
 
@@ -77,14 +83,14 @@ void ControlLogpotmeter::updateWidget()
 
     if (!m_bTwoState)
     {
-        pos = log10(m_dValue+1./a)/b;
+        pos = log10(m_dValue+1)/m_fB1;
     }
     else
     {
         if (m_dValue>1.)
-            pos = log10(m_dValue+2./a2)/b2;
+            pos = log10(m_dValue)/m_fB2 + middlePosition;
         else
-            pos = log10(m_dValue+1./a)/b;    
+            pos = log10(m_dValue+1)/m_fB1;    
     }
     
     emit(signalUpdateWidget(pos));
