@@ -54,7 +54,7 @@ void ControlLogpotmeter::slotSetPosition(int _newpos)
   if (newpos <= middlePosition)
       value = a*pow(10, b*(FLOAT)newpos) - 1;
   else
-      value = a2*pow(10, b2*(FLOAT)newpos) - 1;
+      value = a2*pow(10, b2*(FLOAT)newpos) - 2;
 
   qDebug("Logpotmeter, midi:%i value:%g", _newpos, value);
 
