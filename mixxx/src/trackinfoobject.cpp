@@ -156,6 +156,10 @@ void TrackInfoObject::writeToXML( QDomDocument &doc, QDomElement &header )
 
 void TrackInfoObject::insertInTrackTableRow(WTrackTable *pTableTrack, int iRow)
 {
+    // Return if no WTrackTable is instantiated
+    if (!pTableTrack)
+        return;
+
     // Ensure the row that is requested for insert in the WTrackTable exists
     if (pTableTrack->numRows()<iRow+1)
         pTableTrack->setNumRows(iRow+1);
