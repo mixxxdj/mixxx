@@ -26,6 +26,8 @@ New since 1.0.1:
 - Up and down push button controls for all sliders and knobs
 - Temporary and permanent rate change buttons configurable
 - Improved refresh of waveform displays
+- Kill buttons (keyboard/midi assignable) for low, mid, and
+  high filter
 
 * REQUIREMENTS *********************************************
 Mixxx is depends on the following libraries:

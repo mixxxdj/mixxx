@@ -27,7 +27,9 @@ if ($#out<0)
 # Copy skins to $BASE/share/mixxx
 `install -m 755 -d $BASE/share/mixxx/skins/outline`;
 `install -m 755 -d $BASE/share/mixxx/skins/traditional`;
+`install -m 755 -d $BASE/share/mixxx/skins/close_outline`;
 `install -m 644 src/skins/outline/* $BASE/share/mixxx/skins/outline`;
+`install -m 644 src/skins/close_outline/* $BASE/share/mixxx/skins/close_outline`;
 `install -m 644 src/skins/traditional/* $BASE/share/mixxx/skins/traditional`;
 
 # Copy midi config files

@@ -394,7 +394,7 @@ int SoundSourceMp3::ParseHeader(TrackInfoObject *Track)
                 Track->m_iDuration = dur.toInt();
             */
         }
-        //id3_file_close(fh);
+        id3_file_close(fh);
     }
     else
         return ERR;
