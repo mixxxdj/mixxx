@@ -714,8 +714,8 @@ CSAMPLE *EngineBuffer::process(const CSAMPLE *, const int buf_size)
 
                     float *beatBuffer = (float *)readerbeat->getBasePtr();
                     int chunkSizeDiff = READBUFFERSIZE/readerbeat->getBufferSize();
-//                    qDebug("from %i-%i",(int)floor(bufferpos_play),(int)floor(idx));
-					Q_ASSERT( floor(bufferpos_play) <= floor(idx) );
+                    //qDebug("from %i-%i",(int)floor(bufferpos_play),(int)floor(idx));
+                    //Q_ASSERT( (int)floor(bufferpos_play) <= (int)floor(idx) );
                     for (i=(int)floor(bufferpos_play); i<=(int)floor(idx); i++)
                     {
                         if (((i%chunkSizeDiff)==0) && (beatBuffer[i/chunkSizeDiff]>0.))
@@ -731,7 +731,8 @@ CSAMPLE *EngineBuffer::process(const CSAMPLE *, const int buf_size)
                                     buffer[j] = 30000.;
                                 m_iBeatMarkSamplesLeft = max(0,audioBeatMarkLen-(to-from));
 
-                            //    qDebug("mark %i: %i-%i", i2/chunkSizeDiff, (int)max(0,i-bufferpos_play),(int)min(i-bufferpos_play+audioBeatMarkLen, idx));
+                                qDebug("audio beat mark");
+                                //qDebug("mark %i: %i-%i", i2/chunkSizeDiff, (int)max(0,i-bufferpos_play),(int)min(i-bufferpos_play+audioBeatMarkLen, idx));
                             }
 #ifdef __UNIX__
                             // PowerMate led

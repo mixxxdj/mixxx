@@ -27,7 +27,7 @@ MixxxKeyboard::~MixxxKeyboard()
 {
 }
 
-bool MixxxKeyboard::eventFilter(QObject *obj, QEvent *e)
+bool MixxxKeyboard::eventFilter(QObject *, QEvent *e)
 {
     if (e->type()==QEvent::KeyPress)
     {

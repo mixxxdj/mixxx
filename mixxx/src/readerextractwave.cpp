@@ -384,12 +384,15 @@ void ReaderExtractWave::getchunk(CSAMPLE rate)
 long int ReaderExtractWave::seek(long int new_playpos)
 {
     long int seekpos;
+    bool reset = false;
 
     if (file!=0)
     {
         m_pReader->lock();
+
         filepos_start = new_playpos;
         filepos_end = new_playpos;
+
         filepos_play = new_playpos;
 
         seekpos = file->seek((long int)filepos_start);
