@@ -16,6 +16,7 @@
  ***************************************************************************/
 
 #include "wvumeter.h"
+#include "wpixmapstore.h"
 
 WVuMeter::WVuMeter(QWidget *parent, const char *name) : WWidget(parent,name)
 {
@@ -56,10 +57,10 @@ void WVuMeter::resetPositions()
 
 void WVuMeter::setPixmaps(const QString &backFilename, const QString &vuFilename, bool bHorizontal)
 {
-    m_pPixmapBack = new QPixmap(backFilename);
+    m_pPixmapBack = WPixmapStore::getPixmap(backFilename);
     if (!m_pPixmapBack || m_pPixmapBack->size()==QSize(0,0))
         qDebug("WVuMeter: Error loading back pixmap %s",backFilename.latin1());
-    m_pPixmapVu = new QPixmap(vuFilename);
+    m_pPixmapVu = WPixmapStore::getPixmap(vuFilename);
     if (!m_pPixmapVu || m_pPixmapVu->size()==QSize(0,0))
         qDebug("WVuMeter: Error loading vu pixmap %s",vuFilename.latin1());
 

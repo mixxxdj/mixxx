@@ -37,8 +37,11 @@ PowerMate::PowerMate(ControlObject *pControl)
 
 PowerMate::~PowerMate()
 {
-    terminate();
-    wait();
+	if (running())
+	{
+		terminate();
+		wait();
+	}
     delete [] m_pKnobIntegral;
     delete m_pRequestLed;
 }

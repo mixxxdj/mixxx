@@ -16,6 +16,7 @@
  ***************************************************************************/
 
 #include "wknob.h"
+#include "wpixmapstore.h"
 
 WKnob::WKnob(QWidget *parent, const char *name) : WWidget(parent,name)
 {
@@ -80,7 +81,7 @@ void WKnob::resetPositions()
 
 void WKnob::setPixmap(int iPos, const QString &filename)
 {
-    m_pPixmaps[iPos] = new QPixmap(filename);
+    m_pPixmaps[iPos] = WPixmapStore::getPixmap(filename);
     if (!m_pPixmaps[iPos])
         qDebug("WKnob: Error loading pixmap %s",filename.latin1());
     setFixedSize(m_pPixmaps[iPos]->size());
@@ -89,7 +90,7 @@ void WKnob::setPixmap(int iPos, const QString &filename)
 void WKnob::setPixmapBackground(const QString &filename)
 {
     // Load background pixmap
-    m_pPixmapBack = new QPixmap(filename);
+    m_pPixmapBack = WPixmapStore::getPixmap(filename);
     if (!m_pPixmapBack)
         qDebug("WKnob: Error loading background pixmap: %s",filename.latin1());
 

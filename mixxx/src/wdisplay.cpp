@@ -16,6 +16,7 @@
  ***************************************************************************/
 
 #include "wdisplay.h"
+#include "wpixmapstore.h"
 
 WDisplay::WDisplay(QWidget *parent, const char *name) : WWidget(parent,name)
 {
@@ -74,7 +75,7 @@ void WDisplay::resetPositions()
                    
 void WDisplay::setPixmap(int iPos, const QString &filename)
 {
-    m_pPixmaps[iPos] = new QPixmap(filename);
+    m_pPixmaps[iPos] = WPixmapStore::getPixmap(filename);
     if (!m_pPixmaps[iPos])
         qDebug("WDisplay: Error loading pixmap %s",filename.latin1());
     else

@@ -16,6 +16,7 @@
  ***************************************************************************/
 
 #include "wpushbutton.h"
+#include "wpixmapstore.h"
 
 WPushButton::WPushButton(QWidget *parent, const char *name ) : WWidget(parent,name)
 {
@@ -77,7 +78,7 @@ void WPushButton::setStates(int iStates)
 void WPushButton::setPixmap(int iState, bool bPressed, const QString &filename)
 {
     int pixIdx = (iState*2)+bPressed;
-    m_pPixmaps[pixIdx] = new QPixmap(filename);
+    m_pPixmaps[pixIdx] = WPixmapStore::getPixmap(filename);
     if (!m_pPixmaps[pixIdx])
         qDebug("WPushButton: Error loading pixmap: %s",filename.latin1());
 
@@ -88,7 +89,7 @@ void WPushButton::setPixmap(int iState, bool bPressed, const QString &filename)
 void WPushButton::setPixmapBackground(const QString &filename)
 {
     // Load background pixmap
-    m_pPixmapBack = new QPixmap(filename);
+    m_pPixmapBack = WPixmapStore::getPixmap(filename);
     if (!m_pPixmapBack)
         qDebug("WPushButton: Error loading background pixmap: %s",filename.latin1());
 

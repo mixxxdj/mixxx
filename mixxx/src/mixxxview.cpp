@@ -41,7 +41,8 @@ MixxxView::MixxxView(QWidget *parent, bool bVisuals, QString qSkinPath) : QWidge
 {
     // Path to image files
     WWidget::setPixmapPath(qSkinPath.append("/"));
-    
+    qDebug("skin %s",qSkinPath.latin1());
+
     // Read XML file
     QDomDocument skin("skin");
     QFile file(WWidget::getPath("skin.xml"));
