@@ -16,8 +16,6 @@
  ***************************************************************************/
 
 #include "enginechannel.h"
-#include "wslider.h"
-#include "wpflbutton.h"
 #include "controlengine.h"
 #include "controlpushbutton.h"
 #include "engineclipping.h"
@@ -25,30 +23,26 @@
 #include "enginevolume.h"
 #include "enginefilterblock.h"
 #include "enginevumeter.h"
-#include "dlgchannel.h"
 
-EngineChannel::EngineChannel(DlgChannel *dlg, const char *group)
+EngineChannel::EngineChannel(const char *group)
 {
     // Pregain:
-    pregain = new EnginePregain(dlg->DialGain, group);
+    pregain = new EnginePregain(group);
 
     // Filters:
-    filter = new EngineFilterBlock(dlg->DialFilterLow,
-                                   dlg->DialFilterMiddle,
-                                   dlg->DialFilterHigh, group);
+    filter = new EngineFilterBlock(group);
 
     // Clipping:
-    clipping = new EngineClipping(dlg->BulbClipping, group);
+    clipping = new EngineClipping(group);
 
     // Volume control:
-    volume = new EngineVolume(dlg->SliderVolume,ConfigKey(group,"volume"));
+    volume = new EngineVolume(ConfigKey(group,"volume"));
 
     // VU meter:
-    vumeter = new EngineVUmeter(dlg->vumeter, group);
+    vumeter = new EngineVUmeter(group);
 
     // PFL button
     ControlPushButton *p = new ControlPushButton(ConfigKey(group, "pfl" ));
-    p->setWidget(dlg->CheckBoxPFL);
     pfl = new ControlEngine(p);
 }
 

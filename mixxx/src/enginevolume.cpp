@@ -21,10 +21,9 @@
 /*----------------------------------------------------------------
   Volume effect.
   ----------------------------------------------------------------*/
-EngineVolume::EngineVolume(QWidget *knob, ConfigKey key)
+EngineVolume::EngineVolume(ConfigKey key)
 {
     ControlLogpotmeter *p = new ControlLogpotmeter(key, 5.0);
-    p->setWidget(knob);
     potmeterVolume = new ControlEngine(p);
 
     buffer = new CSAMPLE[MAX_BUFFER_LEN];

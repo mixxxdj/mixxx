@@ -19,12 +19,11 @@
 
 #include "engineobject.h"
 
-class WBulb;
 class ControlEngine;
 
 class EngineClipping : public EngineObject {
  public:
-    EngineClipping(WBulb *, const char *group);
+    EngineClipping(const char *group);
     ~EngineClipping();
     void notify(double) {};
     CSAMPLE *process(const CSAMPLE *, const int);

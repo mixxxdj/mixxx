@@ -22,7 +22,7 @@
 /*----------------------------------------------------------------
 
   ----------------------------------------------------------------*/
-EngineDelay::EngineDelay(WKnob *DialDelay, const char *group)
+EngineDelay::EngineDelay(const char *group)
 {
     process_buffer = new CSAMPLE[MAX_BUFFER_LEN];
     delay_buffer = new CSAMPLE[max_delay];
@@ -30,7 +30,6 @@ EngineDelay::EngineDelay(WKnob *DialDelay, const char *group)
     delay_pos = 0;
 
     ControlPotmeter *p = new ControlPotmeter(ConfigKey(group, "delay"), 0, max_delay);
-    p->setWidget(DialDelay);
 }
 
 EngineDelay::~EngineDelay()

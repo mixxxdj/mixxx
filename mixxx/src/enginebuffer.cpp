@@ -17,19 +17,8 @@
 
 #include "enginebuffer.h"
 
-#include <qlabel.h>
-#include <qslider.h>
-#include <qstring.h>
-#include <qlcdnumber.h>
 #include <qevent.h>
-#include <qevent.h>
-#include "wplaybutton.h"
-#include "wwheel.h"
-#include "wknob.h"
-#include "wslider.h"
-#include "wplayposslider.h"
 #include "configobject.h"
-#include "mixxx.h"
 #include "controlpushbutton.h"
 #include "controlpotmeter.h"
 #include "controlttrotary.h"
@@ -47,10 +36,8 @@ class VisualChannel;
   #include "visual/visualchannel.h"
 #endif
 
-EngineBuffer::EngineBuffer(MixxxApp *_mixxx, QAction *actionAudioBeatMark, PowerMate *_powermate, DlgPlaycontrol *_playcontrol, const char *_group, WVisual *pVisual)
+EngineBuffer::EngineBuffer(PowerMate *_powermate, const char *_group, WVisual *pVisual)
 {
-    mixxx = _mixxx;
-    playcontrol = _playcontrol;
     group = _group;
     powermate = _powermate;
 
@@ -58,35 +45,29 @@ EngineBuffer::EngineBuffer(MixxxApp *_mixxx, QAction *actionAudioBeatMark, Power
     
     // Play button
     ControlPushButton *p = new ControlPushButton(ConfigKey(group, "play"));
-    p->setWidget(playcontrol->PushButtonPlay);
     playButton = new ControlEngine(p);
     playButton->set(0);
 
     // Cue set button:
     ControlPushButton *p1 = new ControlPushButton(ConfigKey(group, "cue_set"));
-    p1->setWidget(playcontrol->PushButtonCueSet);
     buttonCueSet = new ControlEngine(p1);
     buttonCueSet->setNotify(this, (EngineMethod)&EngineBuffer::CueSet);
 
     // Cue goto button:
     ControlPushButton *p11 = new ControlPushButton(ConfigKey(group, "cue_goto"));
-    p11->setWidget(playcontrol->PushButtonCueGoto);
     buttonCueGoto = new ControlEngine(p11);
     buttonCueGoto->setNotify(this, (EngineMethod)&EngineBuffer::CueGoto);
 
     // Playback rate slider
     ControlPotmeter *p2 = new ControlPotmeter(ConfigKey(group, "rate"), 0.9f, 1.1f);
-    p2->setWidget(playcontrol->SliderRate);
     rateSlider = new ControlEngine(p2);
 
     // Wheel to control playback position/speed
     ControlTTRotary *p3 = new ControlTTRotary(ConfigKey(group, "wheel"));
-    p3->setWidget(playcontrol->WheelPlaycontrol);
     wheel = new ControlEngine(p3);
 
     // Slider to show and change song position
     ControlPotmeter *controlplaypos = new ControlPotmeter(ConfigKey(group, "playposition"), 0., 1.);
-    controlplaypos->setWidget(playcontrol->SliderPosition);
     playposSlider = new ControlEngine(controlplaypos);
     playposSlider->setNotify(this,(EngineMethod)&EngineBuffer::seek);
 
@@ -105,7 +86,7 @@ EngineBuffer::EngineBuffer(MixxxApp *_mixxx, QAction *actionAudioBeatMark, Power
 
     // Audio beat mark toggle
     p = new ControlPushButton(ConfigKey(group, "audiobeatmarks"));
-    p->setAction(actionAudioBeatMark);
+    //p->setAction(actionAudioBeatMark);
     audioBeatMark = new ControlEngine(p);
 
     // Control file changed

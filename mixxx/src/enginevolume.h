@@ -18,14 +18,13 @@
 #define ENGINEVOLUME_H
 
 #include "engineobject.h"
-#include <qwidget.h>
 #include "configobject.h"
 
 class ControlEngine;
 
 class EngineVolume : public EngineObject {
 public:
-  EngineVolume(QWidget *knob, ConfigKey key);
+  EngineVolume(ConfigKey key);
   ~EngineVolume();
   CSAMPLE *process(const CSAMPLE*, const int);
     void notify(double) {};

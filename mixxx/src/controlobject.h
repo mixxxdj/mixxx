@@ -64,10 +64,12 @@ public:
     QString *print();
     /** Sets the config object */
     static void setConfig(ConfigObject<ConfigValueMidi> *_config);
-    /** Used to set the corresponding ControlEngine number of this ControlObject */
-    void setControlEngine(ControlEngine *pControlEngine);
+    /** Associates a QWidget with the ControlObject identified by a given ConfigKey */
+    static void setWidget(QWidget *widget, ConfigKey key);
     /** Associates a QWidget with the ControlObject */
     void setWidget(QWidget *widget);
+    /** Used to set the corresponding ControlEngine number of this ControlObject */
+    void setControlEngine(ControlEngine *pControlEngine);
     /** Return the value of the ControlObject */
     FLOAT_TYPE getValue();
     /** Used to set a keyboard accelarator (up) for the ControlObject. Up and down directions are provided,

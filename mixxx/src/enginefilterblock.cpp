@@ -18,25 +18,20 @@
 #include "enginefilterblock.h"
 #include "controllogpotmeter.h"
 #include "controlengine.h"
-#include "wknob.h"
 
-EngineFilterBlock::EngineFilterBlock(WKnob *DialFilterLow, WKnob *DialFilterMid, WKnob *DialFilterHigh,
-                                     const char *group)
+EngineFilterBlock::EngineFilterBlock(const char *group)
 {
     ControlLogpotmeter *p;
 
     low = new EngineFilterIIR(bessel_lowpass);
     p = new ControlLogpotmeter(ConfigKey(group, "filterLow"), 5.);
-    p->setWidget(DialFilterLow);
     filterpotLow = new ControlEngine(p);
 
     p = new ControlLogpotmeter(ConfigKey(group, "filterMid"), 5.);
-    p->setWidget(DialFilterMid);
     filterpotMid = new ControlEngine(p);
 
     high = new EngineFilterIIR(bessel_highpass);
     p = new ControlLogpotmeter(ConfigKey(group, "filterHigh"), 5.);
-    p->setWidget(DialFilterHigh);
     filterpotHigh = new ControlEngine(p);
 
     buffer = new CSAMPLE[MAX_BUFFER_LEN];

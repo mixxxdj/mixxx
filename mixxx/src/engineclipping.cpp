@@ -15,18 +15,15 @@
  ***************************************************************************/
 
 #include "engineclipping.h"
-#include "wbulb.h"
 #include "controlpushbutton.h"
 #include "controlengine.h"
 
 /*----------------------------------------------------------------
   A pregaincontrol is ... a pregain.
   ----------------------------------------------------------------*/
-EngineClipping::EngineClipping(WBulb *BulbClipping, const char *group)
+EngineClipping::EngineClipping(const char *group)
 {
-    ControlPushButton *p = new ControlPushButton(ConfigKey(group, "clipled"));
-    if (BulbClipping!=0)
-        p->setWidget(BulbClipping);
+    ControlPushButton *p = new ControlPushButton(ConfigKey(group, "clipLed"));
     bulb = new ControlEngine(p);
     bulb->set(0);
     buffer = new CSAMPLE[MAX_BUFFER_LEN];

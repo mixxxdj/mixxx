@@ -18,13 +18,10 @@
 #ifndef MIXXXVIEW_H
 #define MIXXXVIEW_H
 
-// include files for QT
 #include <qwidget.h>
 #include <qlayout.h>
 #include <qlistview.h>
 
-// application specific includes
-#include "mixxxdoc.h"
 class DlgPlaycontrol;
 class DlgChannel;
 class DlgMaster;
@@ -32,6 +29,7 @@ class DlgCrossfader;
 class DlgSplit;
 class DlgFlanger;
 class DlgTracklist;
+class ControlObject;
 
 /**
  * This class provides an incomplete base for your application view. 
@@ -39,21 +37,22 @@ class DlgTracklist;
 
 class MixxxView : public QWidget
 {
-  Q_OBJECT
-  public:
-    MixxxView(QWidget *parent=0, MixxxDoc* doc=0);
+    Q_OBJECT
+public:
+    MixxxView(QWidget *parent=0);
     ~MixxxView();
+    /** Setup connections between widgets and ControlObjects */
+    void assignWidgets(ControlObject *p);
+    
     DlgPlaycontrol *playcontrol1, *playcontrol2;
-    DlgChannel	*channel1, *channel2;
+    DlgChannel *channel1, *channel2;
     DlgMaster *master;
     DlgCrossfader *crossfader;
     DlgSplit *split;
     DlgFlanger *flanger;
     DlgTracklist *tracklist;
 
-  protected slots:
-    void slotDocumentChanged();
-  private:
+private:
     QGridLayout *mainGrid;
 };
 

@@ -22,7 +22,6 @@
 #include "enginefilterrbj.h"
 #include "enginefilteriir.h"
 
-class WKnob;
 class ControlEngine;
 
 /**
@@ -33,9 +32,8 @@ class ControlEngine;
 
 class EngineFilterBlock : public EngineObject  {
 public:
-    EngineFilterBlock(WKnob *, WKnob *, WKnob *, const char *group);
+    EngineFilterBlock(const char *group);
     ~EngineFilterBlock();
-    void notify(double) {};
     CSAMPLE *process(const CSAMPLE *source, const int buf_size);
 private:
     EngineObject *low, *high;

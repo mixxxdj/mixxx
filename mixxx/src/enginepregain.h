@@ -20,11 +20,10 @@
 #include "engineobject.h"
 
 class ControlEngine;
-class WKnob;
 
 class EnginePregain : public EngineObject {
 public:
-  EnginePregain(WKnob *knob, const char *group);
+  EnginePregain(const char *group);
   ~EnginePregain();
     void notify(double) {};
   CSAMPLE *process(const CSAMPLE*, const int);
