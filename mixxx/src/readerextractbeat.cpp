@@ -383,6 +383,7 @@ void *ReaderExtractBeat::processChunk(const int _idx, const int start_idx, const
             // Update bpmBuffer
             if (histMaxIdx>-1)
             {
+/*
                 CSAMPLE bpm = 60./(((CSAMPLE)histMaxIdx*histInterval)+histMinInterval);
                 Tpeaks::iterator it3 = it;
                 ++it3;
@@ -394,6 +395,7 @@ void *ReaderExtractBeat::processChunk(const int _idx, const int start_idx, const
                 for (int i=start; i<(*it3); i++)
                     bpmBuffer[i] = bpm;
 //                qDebug("update from %i - %i",(*it),(*(it3)));
+*/
 
                 // Check if maximum interval is max in beatIntVector
                 // Multiply everything in a small range around maxidx with a constant
@@ -401,6 +403,7 @@ void *ReaderExtractBeat::processChunk(const int _idx, const int start_idx, const
                 int i;
                 for (i=max(0,histMaxIdx-RANGE); i<min(histSize,histMaxIdx+RANGE); i++)
                     beatIntVector[i] *= 1.5;
+
 /*                                    
 #ifdef __GNUPLOT__
             //

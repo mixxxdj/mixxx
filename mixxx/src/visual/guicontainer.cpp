@@ -178,6 +178,8 @@ void GUIContainer::move(int msec)
 
 void GUIContainer::setupScene()
 {
+    if (!glIsEnabled(GL_COLOR_MATERIAL))
+        glEnable(GL_COLOR_MATERIAL);
 
     dblue.ambient[0] = 0.f;
     dblue.ambient[1] = 0.f;
