@@ -71,8 +71,6 @@
 
 MixxxApp::MixxxApp(QApplication *a)
 {
-qDebug("path %s",QDir::currentDirPath().latin1());
-
   qDebug("Starting up...");
   setCaption(tr("Mixxx " VERSION));
 
@@ -103,9 +101,11 @@ qDebug("path %s",QDir::currentDirPath().latin1());
   QDir d( config->getValueString(PlaylistKey ));
   if ((config->getValueString(PlaylistKey ).length()<1) | (!d.exists())) {
       QFileDialog* fd = new QFileDialog( this, "Choose directory with music files", TRUE );
+      fd->setCaption(QString("Choose directory with music files"));
       fd->setMode( QFileDialog::Directory );
       if ( fd->exec() == QDialog::Accepted ) {
           config->set(PlaylistKey, fd->selectedFile());
+          config->Save();
       }
   }
   addFiles(config->getValueString(PlaylistKey).latin1());
