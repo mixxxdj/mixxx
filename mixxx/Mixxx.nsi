@@ -1189,7 +1189,7 @@ Section "Start Menu Shortcuts"
 
   CreateDirectory "$SMPROGRAMS\Mixxx"
   CreateShortCut "$SMPROGRAMS\Mixxx\Uninstall.lnk" "$INSTDIR\uninstall.exe" "" "$INSTDIR\uninstall.exe" 0
-  CreateShortCut "$SMPROGRAMS\Mixxx\Mixxx (Mixxx).lnk" "$INSTDIR\mixxx.exe" "" "$INSTDIR\mixxx.exe" 0
+  CreateShortCut "$SMPROGRAMS\Mixxx\Mixxx.lnk" "$INSTDIR\mixxx.exe" "" "$INSTDIR\mixxx.exe" 0
   
 SectionEnd
 
