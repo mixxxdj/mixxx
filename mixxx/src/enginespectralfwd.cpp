@@ -78,7 +78,7 @@ CSAMPLE *EngineSpectralFwd::process(const CSAMPLE *p, const int)
             //spectrum[0]      = tmp[0]     *tmp[0];  // Length of element 0 ... this gives a wrong value?!
             spectrum[l_half] = tmp[l_half]*tmp[l_half]; // Nyquist freq.
             for (int i=0; i<l_half; ++i)
-                spectrum[i]  = sqrt(tmp[i]*tmp[i] + tmp[l-i]*tmp[l-i]);
+***                spectrum[i]  = sqrt(tmp[i]*tmp[i] + tmp[l-i]*tmp[l-i]);
 
             r = spectrum;
         }

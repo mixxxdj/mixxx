@@ -1,7 +1,18 @@
 <?xml version = '1.0' encoding = 'UTF-8'?>
 <!DOCTYPE KDevPrjSession>
 <KDevPrjSession>
- <DocsAndViews NumberOfDocuments="0" />
+ <DocsAndViews NumberOfDocuments="2" >
+  <Doc0 NumberOfViews="1" URL="file:/home/haste/cvs/mixxx/src/enginebuffer.h" >
+   <View0 line="116" Type="???" >
+    <AdditionalSettings/>
+   </View0>
+  </Doc0>
+  <Doc1 NumberOfViews="1" URL="file:/home/haste/cvs/mixxx/src/enginebuffer.cpp" >
+   <View0 line="207" Type="???" >
+    <AdditionalSettings/>
+   </View0>
+  </Doc1>
+ </DocsAndViews>
  <pluginList>
   <kdevbookmarks>
    <bookmarks/>
