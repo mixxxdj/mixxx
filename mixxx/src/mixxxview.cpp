@@ -74,17 +74,20 @@ MixxxView::MixxxView(QWidget *parent, ControlObject *control, bool bVisualsWavef
     QPixmap::setDefaultOptimization(QPixmap::MemoryOptim);
 #endif
 
-
     // Default values for visuals
+    m_pTextCh1 = 0;
+    m_pTextCh2 = 0;
     m_pVisualCh1 = 0;
     m_pVisualCh2 = 0;
-    m_bZoom = false;
-    m_bVisualWaveform = false;
-    m_pSplitter = 0;
-
     m_pNumberPosCh1 = 0;
     m_pNumberPosCh2 = 0;
-    
+    m_pSliderRateCh1 = 0;
+    m_pSliderRateCh2 = 0;
+    m_bZoom = false;
+    m_pSplitter = 0;
+    m_bVisualWaveform = false;
+
+
     // Load all widgets defined in the XML file
     QDomNode node = docElem.firstChild();
     while (!node.isNull())
