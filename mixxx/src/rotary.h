@@ -19,6 +19,7 @@
 #define ROTARY_H
 
 #include <qthread.h>
+#include <qmutex.h>
 
 /**
   * Virtual class for handling the PowerMate. This is implemented as a separate thread.
@@ -55,13 +56,14 @@ public:
     double calibrateEnd();
     /** Set calibration */
     void setCalibration(double c);
+
 protected:
     /** Main thread loop */
     virtual void run();
     /** Send out a low pass filtered rotary event */
     void sendRotaryEvent(double dValue);
     /** Send out a button event */
-    void sendButtonEvent();
+    void sendButtonEvent(bool press);
     /** Pointer to associated ControlObjects */
     ControlObject *m_pControlObjectRotary, *m_pControlObjectButton;
     /** Length of filter */
@@ -70,8 +72,11 @@ protected:
     double *m_pFilter;
     /** Calibration value */
     double m_dCalibration;
+    int m_iCalibrationCount;
     /** Time used in calibration */
     QTime *m_pCalibrationTime;
+    /** Mutex to control calibration mode */
+    QMutex m_qCalibrationMutex;
 };
 
 #endif

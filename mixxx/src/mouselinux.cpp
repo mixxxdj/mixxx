@@ -18,6 +18,7 @@
 #include "mouselinux.h"
 #include "powermatelinux.h"
 #include <sys/time.h>
+#include <sys/types.h>
 #include <string.h>
 #include <errno.h>
 #include <stdio.h>
@@ -75,41 +76,27 @@ void MouseLinux::closedev()
 
 void MouseLinux::getNextEvent()
 {
-    int iR = 0;
-    while (iR!=sizeof(struct input_event))
-    {
         struct input_event ev;
-        /*
+
         FD_ZERO(&fdset);
         FD_SET(m_iFd, &fdset);
-        struct timespec tv;
-        tv.tv_sec = 0;
-        tv.tv_nsec = 100;
-        */
+        struct timespec ts;
+        ts.tv_sec = 0;
+        ts.tv_nsec = 100000000;
+        int r = pselect(m_iFd+1, &fdset, NULL, NULL, &ts, 0);
+        if (r>0)
         {
-            //int r = pselect(1, &fdset, 0, 0, &tv, 0);
-            //qDebug("r %i", r);
-            iR = read(m_iFd, &ev, sizeof(struct input_event));
-            if (iR == sizeof(struct input_event))
+            int iR = read(m_iFd, &ev, sizeof(struct input_event));
+            if (iR == sizeof(struct input_event) && ev.type==EV_REL && ev.code==REL_X)
             {
-                switch(ev.type)
-                {
-                case EV_REL:
-                    if (ev.code == REL_X)
-                    {
-                        int v = ev.value;
-                        sendRotaryEvent((double)v);
-                    }
-                    break;
-                }
+                int v = ev.value;
+                sendRotaryEvent((double)v);
             }
             else
-            {
                 sendRotaryEvent(0.);
-                msleep(5);
-            }
         }
-    }
+        else
+            sendRotaryEvent(0.);
 }
 
 QStringList MouseLinux::getDeviceList()

@@ -17,6 +17,7 @@
 
 #include "rotary.h"
 #include "controlobject.h"
+#include "controlobjectthreadmain.h"
 #include "qapplication.h"
 #include "midiobject.h"
 #include "mathstuff.h"
@@ -26,6 +27,7 @@ Rotary::Rotary()
 {
     m_pControlObjectRotary = 0;
     m_pControlObjectButton = 0;
+    m_dCalibration = 1.;
 
     m_iFilterLength = kiRotaryFilterMaxLen;
 
@@ -55,7 +57,7 @@ void Rotary::selectMapping(QString mapping)
     else if (mapping==kqRotaryMappingP2Phase)
     {
         m_pControlObjectRotary = ControlObject::getControl(ConfigKey("[Channel2]","wheel"));
-        m_pControlObjectRotary = ControlObject::getControl(ConfigKey("[Channel2]","play"));
+        m_pControlObjectButton = ControlObject::getControl(ConfigKey("[Channel2]","play"));
         m_iFilterLength = kiRotaryFilterMaxLen;
     }
     else if (mapping==kqRotaryMappingP1Scratch)
@@ -67,7 +69,7 @@ void Rotary::selectMapping(QString mapping)
     else if (mapping==kqRotaryMappingP2Scratch)
     {
         m_pControlObjectRotary = ControlObject::getControl(ConfigKey("[Channel2]","scratch"));
-        m_pControlObjectRotary = ControlObject::getControl(ConfigKey("[Channel2]","play"));
+        m_pControlObjectButton = ControlObject::getControl(ConfigKey("[Channel2]","play"));
         m_iFilterLength = 5;
     }
 }
@@ -90,9 +92,9 @@ void Rotary::sendRotaryEvent(double dValue)
         if (m_pFilter[i]!=0)
             bStop = false;
     }
-    m_pFilter[m_iFilterLength-1] = dValue;
+    m_pFilter[m_iFilterLength-1] = dValue/m_dCalibration;
     dMagnitude += m_pFilter[m_iFilterLength-1];
-
+    dMagnitude /= (double)m_iFilterLength;
 /*
     // Range check
     if (m_fMagnitude>63)
@@ -102,33 +104,59 @@ void Rotary::sendRotaryEvent(double dValue)
 */
 //     qDebug("val %f, mag %f", (float)dValue, (float)dMagnitude);
 
-    if (m_pControlObjectRotary)
-        m_pControlObjectRotary->queueFromThread(dMagnitude);
+ //   if (m_qCalibrationMutex.tryLock())
+    {
+        if (m_pControlObjectRotary)
+            m_pControlObjectRotary->queueFromThread(dMagnitude);
+//        m_qCalibrationMutex.unlock();
+    }
+/*
+    else
+    {
+        m_dCalibration += dValue;
+        m_iCalibrationCount += 1;
+    }
+*/
 }
 
-void Rotary::sendButtonEvent()
+void Rotary::sendButtonEvent(bool press)
 {
     if (m_pControlObjectButton)
-        m_pControlObjectButton->queueFromMidi(NOTE_ON, 1);
+    {
+        if (press)
+            m_pControlObjectButton->queueFromMidi(NOTE_ON, 1);
+        else
+            m_pControlObjectButton->queueFromMidi(NOTE_OFF, 1);
+    }
 }
 
 void Rotary::calibrateStart()
 {
+    // Reset calibration data
+    m_dCalibration = 0.;
+    m_iCalibrationCount = 0;
+
     // Start time
     m_pCalibrationTime = new QTime();
     m_pCalibrationTime->start();
 
-
+    m_qCalibrationMutex.lock();
 }
 
 double Rotary::calibrateEnd()
 {
+    m_qCalibrationMutex.unlock();
+
     int msec = m_pCalibrationTime->elapsed();
-    return 0.;
+
+    m_dCalibration /= (double)m_iCalibrationCount; //msec;
+
+    qDebug("Calibration %f, msec %i",m_dCalibration, msec);
+
+    return m_dCalibration;
 }
 
 void Rotary::setCalibration(double c)
 {
     m_dCalibration = c;
 }
-

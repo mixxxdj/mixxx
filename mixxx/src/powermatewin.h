@@ -40,10 +40,10 @@ public:
     ~PowerMateWin();
     bool opendev();
     void closedev();
+    void getNextEvent() {};
 protected:
     void run();
     void led_write(int iStaticBrightness, int iSpeed, int iTable, int iAsleep, int iAwake);
-    void process_event(char *pEv);
     HANDLE GetDeviceViaInterface(GUID* pGuid, DWORD instance);
 
     /** File handle of current open /dev/input/event device */
