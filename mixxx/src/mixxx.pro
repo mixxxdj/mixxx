@@ -297,8 +297,12 @@ SOURCES += mixxxsocketserver.cpp mixxxsocketclient.cpp #mixxxsocketcli.cpp
 HEADERS += mixxxsocketserver.h mixxxsocketclient.h #mixxxsocket.cli.h
 
 # Waveform summary
-#SOURCES += wavesummary.cpp soundsourceproxy.cpp
-#HEADERS += wavesummary.h soundsourceproxy.h
+SOURCES += wavesummary.cpp wavesummaryevent.cpp soundsourceproxy.cpp woverview.cpp
+HEADERS += wavesummary.h wavesummaryevent.h soundsourceproxy.h woverview.h
+
+# Beat seek
+SOURCES += enginebeatseek.cpp
+HEADERS += enginebeatseek.h
 
 IMAGES += icon.png
 DEFINES += SETTINGS_FILE=$$SETTINGS_FILE TRACK_FILE=$$TRACK_FILE

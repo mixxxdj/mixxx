@@ -58,6 +58,7 @@ public:
 
 public slots:
     void setValue(double) {};
+    void slotNewTrack();
 signals:
     void valueChangedLeftDown(double);
     void valueChangedRightDown(double);

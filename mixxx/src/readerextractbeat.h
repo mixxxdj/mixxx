@@ -81,7 +81,9 @@ public:
     int getRate();
     int getChannels();
     int getBufferSize();
-    void *processChunk(const int idx, const int start_idx, const int end_idx, bool backwards);
+    double getFirstBeat();
+    double getBeatInterval();
+    void *processChunk(const int idx, const int start_idx, const int end_idx, bool backwards, const long signed int filepos_start);
 
 private:
     /** Updates the confidence variable. */
@@ -109,6 +111,10 @@ private:
     CSAMPLE confidence;
     /** Pointer to TrackInfoObject of open file */
     TrackInfoObject *m_pTrack;
+    /** First beat mark. -1 if not defined */
+    double m_dBeatFirst;
+    /** Beat interval in seconds. Only used if m_dBeatFirst>0 */
+    double m_dBeatInterval;
 
 #ifdef __GNUPLOT__
     /** Pointer to gnuplot interface */

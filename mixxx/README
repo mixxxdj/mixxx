@@ -1,4 +1,4 @@
-Mixxx - version 1.4.2
+Mixxx - version 1.5
 
 * HOMEPAGE *************************************************
 http://mixxx.sourceforge.net
@@ -16,8 +16,10 @@ directory for a copy of the licence.
 
 
 * NEWS *****************************************************
-New since 1.4.1:
-- Bug fixes: MIDI, beat syncronization, kill buttons,
+New since 1.4.2:
+- Splash screen
+- Support for manual beat marks
+- Waveform displays
 
 
 * INSTALL/USE **********************************************

@@ -29,10 +29,10 @@ public:
     long seek(long);
     unsigned read(unsigned long size, const SAMPLE*);
     inline long unsigned length();
-    static int ParseHeader( TrackInfoObject * );	
+    static int ParseHeader( TrackInfoObject * );
 
 private:
-  
+
     int channels;
     SNDFILE *fh;
     SF_INFO *info;

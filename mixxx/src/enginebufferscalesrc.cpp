@@ -25,19 +25,19 @@ EngineBufferScaleSRC::EngineBufferScaleSRC(ReaderExtractWave *wave) : EngineBuff
 
     // Initialize converter for three qualities and two channels
     int error;
-    converter2 = src_new(2, 2, &error);    
+    converter2 = src_new(2, 2, &error);
     if (error!=0)
         qDebug("EngineBufferScaleSRC: %s",src_strerror(error));
-    converter3 = src_new(3, 2, &error);    
+    converter3 = src_new(3, 2, &error);
     if (error!=0)
         qDebug("EngineBufferScaleSRC: %s",src_strerror(error));
-    converter4 = src_new(4, 2, &error);    
+    converter4 = src_new(4, 2, &error);
     if (error!=0)
         qDebug("EngineBufferScaleSRC: %s",src_strerror(error));
 
     m_iQuality = 4;
-    converterActive = converter4;    
-        
+    converterActive = converter4;
+
     // Initialize data struct. Assume that the audio file is never ending
     data = new SRC_DATA;
     data->end_of_input = 0; // HACK
@@ -63,9 +63,9 @@ void EngineBufferScaleSRC::setQuality(int q)
         m_iQuality = 4;
     else
         m_iQuality = q;
-    
+
     //qDebug("quality %i", m_iQuality);
-    
+
     switch (m_iQuality)
     {
     case 2:
@@ -74,7 +74,7 @@ void EngineBufferScaleSRC::setQuality(int q)
         converterActive = converter3;
     case 4:
         converterActive = converter4;
-    }    
+    }
 }
 
 void EngineBufferScaleSRC::setFastMode(bool bMode)
@@ -107,12 +107,12 @@ double EngineBufferScaleSRC::setRate(double _rate)
         backwards = false;
         rate = 1./_rate;
     }
-    
+
     // Force dirty interpolation if speed is above 2x
     if (rate<0.5 && rateold>=0.5)
         setFastMode(true);
     else if (rate>=0.5 && rateold<0.5)
-	setFastMode(false);
+    setFastMode(false);
 
     // Ensure valid range of rate
     if (rate==0.)
@@ -121,7 +121,7 @@ double EngineBufferScaleSRC::setRate(double _rate)
         rate = 12.;
     else if (rate<1./12.)
         rate = 1./12.;
-
+    
     src_set_ratio(converter2, rate);
     src_set_ratio(converter3, rate);
     src_set_ratio(converter4, rate);
@@ -132,8 +132,14 @@ double EngineBufferScaleSRC::setRate(double _rate)
         return (1./rate);
 }
 
-CSAMPLE *EngineBufferScaleSRC::scale(double playpos, int buf_size)
+CSAMPLE *EngineBufferScaleSRC::scale(double playpos, int buf_size, float *pBase, int iBaseLength)
 {
+    if (!pBase)
+    {
+        pBase = wavebuffer;
+        iBaseLength = READBUFFERSIZE;
+    }
+
     int consumed = 0;
 
     // Invert wavebuffer is backwards playback
@@ -147,16 +153,16 @@ CSAMPLE *EngineBufferScaleSRC::scale(double playpos, int buf_size)
         for (int i=0; i<no; ++i)
         {
             if (pos-i<0)
-                pos = READBUFFERSIZE+i;
-            buffer_back[i] = wavebuffer[pos-i];
+                pos = iBaseLength+i;
+            buffer_back[i] = pBase[pos-i];
         }
         data->data_in = buffer_back;
         data->input_frames = no/2;
     }
     else
     {
-        data->data_in = &wavebuffer[(int)playpos];
-        data->input_frames = (READBUFFERSIZE-(int)playpos)/2;
+        data->data_in = &pBase[(int)playpos];
+        data->input_frames = (iBaseLength-(int)playpos)/2;
     }
 
     data->data_out = buffer;
@@ -173,9 +179,9 @@ CSAMPLE *EngineBufferScaleSRC::scale(double playpos, int buf_size)
     // Check if wave_buffer is wrapped
     if (data->output_frames_gen*2 < buf_size && !backwards)
     {
-        data->data_in = &wavebuffer[0];
+        data->data_in = &pBase[0];
         data->data_out = &buffer[data->output_frames_gen*2];
-        data->input_frames = READBUFFERSIZE/2;
+        data->input_frames = iBaseLength/2;
         data->output_frames = (buf_size-data->output_frames_gen*2)/2;
 
         // Perform conversion

@@ -14,7 +14,7 @@
  *   (at your option) any later version.                                   *
  *                                                                         *
  ***************************************************************************/
- 
+
 #ifndef VISUALCHANNEL_H
 #define VISUALCHANNEL_H
 
@@ -40,6 +40,7 @@ class VisualChannel : public QObject
 public:
     VisualChannel(VisualController *pVisualController, const char *_group);
     ~VisualChannel();
+    void setupBuffer();
     /** Add a ReaderExtract buffer to object, and construct a corresponding display. A
       * pointer to the constructed VisualBuffer is returned */
     VisualBuffer *add(ReaderExtract *pReaderExtract, EngineBuffer *pEngineBuffer);

@@ -36,7 +36,7 @@ public:
     virtual double setRate(double _rate) = 0;
     /** Get new playpos after call to scale() */
     double getNewPlaypos();
-    virtual CSAMPLE *scale(double playpos, int buf_size) = 0;
+    virtual CSAMPLE *scale(double playpos, int buf_size, float *pBase=0, int iBaseLength=0) = 0;
 protected:
     /** Pointer to ReaderExtractWave object */
     ReaderExtractWave *wave;

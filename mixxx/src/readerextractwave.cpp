@@ -23,14 +23,7 @@
 #include "visual/visualchannel.h"
 #include "visual/visualbuffer.h"
 #include "soundsource.h"
-#include "soundsourcemp3.h"
-#include "soundsourceoggvorbis.h"
-#ifdef __AUDIOFILE__
-  #include "soundsourceaudiofile.h"
-#endif
-#ifdef __SNDFILE__
-  #include "soundsourcesndfile.h"
-#endif
+#include "soundsourceproxy.h"
 #include <qfileinfo.h>
 
 ReaderExtractWave::ReaderExtractWave(Reader *pReader, EngineBuffer *pEngineBuffer) : ReaderExtract(0, pEngineBuffer, "signal")
@@ -98,31 +91,10 @@ void ReaderExtractWave::newSource(TrackInfoObject *pTrack)
         // Check if filename is valid
         QFileInfo finfo(filename);
         if (finfo.exists())
-        {
-            if (finfo.extension(false).upper() == "WAV" ||
-                finfo.extension(false).upper() == "AIF" ||
-                finfo.extension(false).upper() == "AIFF")
-#ifdef __AUDIOFILE__
-                file = new SoundSourceAudioFile(filename);
-#endif
-#ifdef __SNDFILE__
-                file = new SoundSourceSndFile(filename);
-#endif
-            else if (finfo.extension(false).upper() == "MP3")
-                file = new SoundSourceMp3(filename);
-            else if (finfo.extension(false).upper() == "OGG")
-                file = new SoundSourceOggVorbis(filename);
-        }
+            file = new SoundSourceProxy(filename);
     }
     else
-    {
-#ifdef __AUDIOFILE__
-        file = new SoundSourceAudioFile( QString("/dev/null") );
-#endif
-#ifdef __SNDFILE__
-        file = new SoundSourceSndFile( QString("/dev/null") );
-#endif
-    }
+        file = new SoundSourceProxy(QString("/dev/null"));
 
     if (file==0)
         qFatal("Error opening %s", filename.latin1());
@@ -174,7 +146,7 @@ void ReaderExtractWave::reset()
 
     // Update vertex buffer by sending an event containing indexes of where to update.
     if (m_pVisualBuffer != 0)
-        QApplication::postEvent(m_pVisualBuffer, new ReaderEvent(0, READBUFFERSIZE));
+        QApplication::postEvent(m_pVisualBuffer, new ReaderEvent(0, READBUFFERSIZE, getBufferSize(), getRate()));
 }
 
 void *ReaderExtractWave::getBasePtr()
@@ -214,7 +186,7 @@ ReaderExtractBeat *ReaderExtractWave::getExtractBeat()
     return readerbeat;
 }
 
-void *ReaderExtractWave::processChunk(const int, const int, const int, bool)
+void *ReaderExtractWave::processChunk(const int, const int, const int, bool, const long signed int)
 {
     return 0;
 }
@@ -276,7 +248,9 @@ void ReaderExtractWave::getchunk(CSAMPLE rate)
     long int filepos_start_new, filepos_end_new;
     int bufIdx;
 
+//     qDebug("l1");
     m_pReader->lock();
+//     qDebug("l1enter");
 
     int chunkCurr, chunkStart, chunkEnd;
 
@@ -365,13 +339,13 @@ void ReaderExtractWave::getchunk(CSAMPLE rate)
 
     // Update vertex buffer by sending an event containing indexes of where to update.
     if (m_pVisualBuffer != 0)
-        QApplication::postEvent(m_pVisualBuffer, new ReaderEvent(bufIdx, READCHUNKSIZE));
+        QApplication::postEvent(m_pVisualBuffer, new ReaderEvent(bufIdx, READCHUNKSIZE, getBufferSize(), getRate()));
 
 #ifdef EXTRACT
     // Do pre-processing...
 //    qDebug("curr %i, start %i, end %i",chunkCurr,chunkStart,chunkEnd);
-    readerhfc->processChunk(chunkCurr, chunkStart, chunkEnd, backwards);
-    readerbeat->processChunk(chunkCurr, chunkStart, chunkEnd, backwards);
+    readerhfc->processChunk(chunkCurr, chunkStart, chunkEnd, backwards, filepos_start);
+    readerbeat->processChunk(chunkCurr, chunkStart, chunkEnd, backwards, filepos_start);
 #endif
 
     // This is really a hack. To display a cue point the value in the beat vector is set below zero.
@@ -386,6 +360,8 @@ void ReaderExtractWave::getchunk(CSAMPLE rate)
 */
 
     m_pReader->unlock();
+//     qDebug("u1");
+
 }
 
 long int ReaderExtractWave::seek(long int new_playpos)
@@ -394,18 +370,23 @@ long int ReaderExtractWave::seek(long int new_playpos)
 
     if (file!=0)
     {
+//         qDebug("l2");
         m_pReader->lock();
+//         qDebug("l2enter");
 
         filepos_start = new_playpos;
         filepos_end = new_playpos;
 
         filepos_play = new_playpos;
 
+//         qDebug("try seek.. %i, length %i",(int)filepos_start, (int)file->length());
+
         seekpos = file->seek((long int)filepos_start);
 
-        //qDebug("seek: %i, %i",new_playpos, seekpos);
+//         qDebug("seek: %i, %i",new_playpos, seekpos);
 
         m_pReader->unlock();
+//         qDebug("u2");
 
         bufferpos_start = 0;
         bufferpos_end = 0;
@@ -422,7 +403,7 @@ long int ReaderExtractWave::seek(long int new_playpos)
 
         // Update vertex buffer by sending an event containing indexes of where to update.
         if (m_pVisualBuffer != 0)
-            QApplication::postEvent(m_pVisualBuffer, new ReaderEvent(0,READBUFFERSIZE));
+            QApplication::postEvent(m_pVisualBuffer, new ReaderEvent(0,READBUFFERSIZE, getBufferSize(), getRate()));
     }
     else
         seekpos = 0;

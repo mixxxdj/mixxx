@@ -123,7 +123,10 @@ SoundSourceMp3::~SoundSourceMp3()
 
 long SoundSourceMp3::seek(long filepos)
 {
-    //qDebug("SEEK %i",filepos);
+    // Ensure that we are seeking to an even filepos
+    Q_ASSERT(filepos%2==0);
+
+//     qDebug("SEEK %i",filepos);
 
     MadSeekFrameType *cur;
 
@@ -159,11 +162,11 @@ long SoundSourceMp3::seek(long filepos)
 
         int framePos = findFrame(filepos);
 
-        //qDebug("list length %i, list pos %i",m_qSeekList.count(), k);
+//         qDebug("list length %i",m_qSeekList.count());
 
         if (framePos==0 || framePos>filepos || m_qSeekList.at()<5)
         {
-            //qDebug("Problem finding good seek frame (wanted %i, got %i), starting from 0",filepos,framePos);
+//             qDebug("Problem finding good seek frame (wanted %i, got %i), starting from 0",filepos,framePos);
 
             // Re-init buffer:
             mad_stream_finish(&Stream);
@@ -177,7 +180,7 @@ long SoundSourceMp3::seek(long filepos)
         }
         else
         {
-//            qDebug("frame pos %i",cur->pos);
+//             qDebug("frame pos %i",cur->pos);
 
             // Start four frame before wanted frame to get in sync...
             m_qSeekList.prev();
@@ -189,7 +192,7 @@ long SoundSourceMp3::seek(long filepos)
             mad_stream_finish(&Stream);
             mad_stream_init(&Stream);
             mad_stream_options(&Stream, MAD_OPTION_IGNORECRC);
-        //qDebug("mp3 restore %p",cur->m_pStreamPos);
+//        qDebug("mp3 restore %p",cur->m_pStreamPos);
             mad_stream_buffer(&Stream, (const unsigned char*)cur->m_pStreamPos, inputbuf_len-(long int)(cur->m_pStreamPos-(unsigned char*)inputbuf));
             mad_synth_mute(&Synth);
             mad_frame_mute(Frame);
@@ -211,9 +214,9 @@ long SoundSourceMp3::seek(long filepos)
 
         // Synthesize the the samples from the frame which should be discard to reach the requested position
         SAMPLE *temp = new SAMPLE[READCHUNKSIZE];
-        int r = read(filepos-cur->pos, temp);
-        //qDebug("try read %i, got %i...frame pos %i, filepos %i",filepos-cur->pos,r,cur->pos,filepos);
-        //qDebug("ok");
+        read(filepos-cur->pos, temp);
+//         qDebug("try read %i,...frame pos %i, filepos %i",filepos-cur->pos,cur->pos,filepos);
+//         qDebug("ok");
         delete [] temp;
     }
 /*
@@ -275,7 +278,10 @@ inline long unsigned SoundSourceMp3::length()
 */
 unsigned SoundSourceMp3::read(unsigned long samples_wanted, const SAMPLE* _destination)
 {
-//    qDebug("frame list %i",m_qSeekList.count());
+    // Ensure that we are reading an even number of samples. Otherwise this function may
+    // go into an infinite loop
+    Q_ASSERT(samples_wanted%2==0);
+//     qDebug("frame list %i",m_qSeekList.count());
 
     SAMPLE *destination = (SAMPLE *)_destination;
     unsigned Total_samples_decoded = 0;
@@ -298,23 +304,23 @@ unsigned SoundSourceMp3::read(unsigned long samples_wanted, const SAMPLE* _desti
         Total_samples_decoded += 2*(Synth.pcm.length-rest);
     }
 
-    //qDebug("Decoding");
+//     qDebug("Decoding");
     int no = 0;
     int frames = 0;
     while (Total_samples_decoded < samples_wanted)
     {
-        //qDebug("no %i",Total_samples_decoded);
+//         qDebug("no %i",Total_samples_decoded);
         if(mad_frame_decode(Frame,&Stream))
         {
             if(MAD_RECOVERABLE(Stream.error))
             {
-                //qDebug("MAD: Recoverable frame level ERR (%s)",mad_stream_errorstr(&Stream));
+//                 qDebug("MAD: Recoverable frame level ERR (%s)",mad_stream_errorstr(&Stream));
                 continue;
             } else if(Stream.error==MAD_ERROR_BUFLEN) {
-                //qDebug("MAD: buflen ERR");
+//                 qDebug("MAD: buflen ERR");
                 break;
             } else {
-                //qDebug("MAD: Unrecoverable frame level ERR (%s).",mad_stream_errorstr(&Stream));
+//                 qDebug("MAD: Unrecoverable frame level ERR (%s).",mad_stream_errorstr(&Stream));
                 break;
             }
         }
@@ -336,7 +342,7 @@ unsigned SoundSourceMp3::read(unsigned long samples_wanted, const SAMPLE* _desti
          */
 
 
-        //qDebug("synthlen %i, remain %i",Synth.pcm.length,(samples_wanted-Total_samples_decoded));
+//         qDebug("synthlen %i, remain %i",Synth.pcm.length,(samples_wanted-Total_samples_decoded));
         no = min(Synth.pcm.length,(samples_wanted-Total_samples_decoded)/2);
         for (int i=0; i<no; i++)
         {
@@ -352,7 +358,7 @@ unsigned SoundSourceMp3::read(unsigned long samples_wanted, const SAMPLE* _desti
         }
         Total_samples_decoded += 2*no;
 
-        //qDebug("decoded: %i, wanted: %i",Total_samples_decoded,samples_wanted);
+//         qDebug("decoded: %i, wanted: %i",Total_samples_decoded,samples_wanted);
     }
 
     // If samples are still left in buffer, set rest to the index of the unused samples
@@ -361,7 +367,7 @@ unsigned SoundSourceMp3::read(unsigned long samples_wanted, const SAMPLE* _desti
     else
         rest = -1;
 
-    //qDebug("decoded %i samples in %i frames, rest: %i, chan %i", Total_samples_decoded, frames, rest, m_iChannels);
+//     qDebug("decoded %i samples in %i frames, rest: %i, chan %i", Total_samples_decoded, frames, rest, m_iChannels);
     return Total_samples_decoded;
 }
 

@@ -111,7 +111,7 @@ public slots:
     void slotControlPlay(double);
     void slotControlStart(double);
     void slotControlEnd(double);
-    void slotControlSeek(double);
+    void slotControlSeek(double, bool bBeatSync=true);
     void slotControlCueGoto(double=0);
     void slotControlCueSet(double=0);
     void slotControlCuePreview(double);
@@ -200,5 +200,22 @@ private:
     float m_fLastSampleValue;
     /** Is true if the previous buffer was silent due to pausing */
     bool m_bLastBufferPaused;
+    /** Temporary seek buffer */
+    float *m_pTempSeekBuffer;
+    /** Temproray seek buffer position in file */
+    double m_dTempSeekFilePos;
+    /** Seek position */
+    double m_dSeekFilePos;
+    /** True if currently performing a beat syncronious seek */
+    bool m_bSeekBeat;
+    /** True if crossfade has been performed (is only used when m_bSeekBeat is true) */
+    bool m_bSeekCrossfade;
+    /** File position of cross fade end */
+    double m_dSeekCrossfadeEndFilePos;
+    /** Pointer to ReaderExtractWave buffer */
+    float *m_pWaveBuffer;
+    /** Variables used to calculate safe beat info. Automatically updated during process() */
+    double m_dBeatFirst, m_dBeatInterval;
+
 };
 #endif

@@ -1,7 +1,7 @@
 //
 // C++ Implementation: wtreeitemplaylistroot
 //
-// Description: 
+// Description:
 //
 //
 // Author: Tue Haste Andersen <haste@diku.dk>, (C) 2004
@@ -31,7 +31,7 @@ void WTreeItemPlaylistRoot::popupMenu()
     menu->exec(QCursor::pos());
 }
 
-void WTreeItemPlaylistRoot::drag(QWidget *viewport)
+void WTreeItemPlaylistRoot::drag(QWidget *)
 {
 }
 

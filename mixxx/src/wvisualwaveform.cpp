@@ -28,7 +28,7 @@ WVisualWaveform::WVisualWaveform(QWidget *pParent, const char *pName, const QGLW
     installEventFilter(this);
 
 #ifdef __MACX__
-    // Hack to reduce load in GUI thread. This makes the system behave 
+    // Hack to reduce load in GUI thread. This makes the system behave
     // "correctly" on MacOS X, where it would otherwise stall the system
     // for some seconds now and then.
     startTimer(100);
@@ -157,6 +157,14 @@ bool WVisualWaveform::eventFilter(QObject *o, QEvent *e)
     return true;
 }
 
+void WVisualWaveform::slotNewTrack()
+{
+    // Call each channel associated
+    VisualChannel *c;
+    for (c=m_qlList.first(); c; c=m_qlList.next())
+        c->setupBuffer();
+}
+
 VisualChannel *WVisualWaveform::add(const char *group)
 {
     VisualChannel *c = new VisualChannel(m_pVisualController, group);
@@ -200,6 +208,7 @@ void WVisualWaveform::initializeGL()
 void WVisualWaveform::paintGL()
 {
     // Display stuff
+    makeCurrent();
     m_pVisualController->display();
 }
 

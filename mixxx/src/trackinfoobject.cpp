@@ -19,17 +19,13 @@
 #include "qdom.h"
 #include <qfileinfo.h>
 #include "trackinfoobject.h"
-#ifdef __SNDFILE__
-  #include "soundsourcesndfile.h"
-#endif
-#ifdef __AUDIOFILE__
-  #include "soundsourceaudiofile.h"
-#endif
-#include "soundsourcemp3.h"
-#include "soundsourceoggvorbis.h"
+#include "soundsourceproxy.h"
 #include "wtracktable.h"
 #include "wtracktableitem.h"
+#include "woverview.h"
 #include "xmlparse.h"
+#include <qdom.h>
+#include "wavesummaryevent.h"
 
 int TrackInfoObject::siMaxTimesPlayed = 1;
 
@@ -47,6 +43,9 @@ TrackInfoObject::TrackInfoObject(const QString sPath, const QString sFile) : m_s
     m_fBpmConfidence = 0.;
     m_iScore = 0;
     m_iId = 0;
+    m_pWave = 0;
+    m_pSegmentation = 0;
+    m_fBeatFirst = -1.;
 
     m_pTableItemScore = 0;
     m_pTableItemTitle = 0;
@@ -63,24 +62,29 @@ TrackInfoObject::TrackInfoObject(const QString sPath, const QString sFile) : m_s
     checkFileExists();
 
     parse();
+
+    installEventFilter(this);
 }
 
 TrackInfoObject::TrackInfoObject(const QDomNode &nodeHeader)
 {
-    m_sFilename = selectNodeStr( nodeHeader, "Filename");
-    m_sFilepath = selectNodeStr( nodeHeader, "Filepath");
-    m_sTitle = selectNodeStr( nodeHeader, "Title");
-    m_sArtist = selectNodeStr( nodeHeader, "Artist");
-    m_sType = selectNodeStr( nodeHeader, "Type");
-    m_sComment = selectNodeStr( nodeHeader, "Comment");
-    m_iDuration = selectNodeStr( nodeHeader, "Duration").toInt();
-    m_iBitrate = selectNodeStr( nodeHeader, "Bitrate").toInt();
-    m_iLength = selectNodeStr( nodeHeader, "Length").toInt();
-    m_iTimesPlayed = selectNodeStr( nodeHeader, "TimesPlayed").toInt();
-    m_fBpm = selectNodeStr( nodeHeader, "Bpm").toFloat();
-    m_fBpmConfidence = selectNodeStr( nodeHeader, "BpmConfidence").toFloat();
+    m_sFilename = XmlParse::selectNodeQString(nodeHeader, "Filename");
+    m_sFilepath = XmlParse::selectNodeQString(nodeHeader, "Filepath");
+    m_sTitle = XmlParse::selectNodeQString(nodeHeader, "Title");
+    m_sArtist = XmlParse::selectNodeQString(nodeHeader, "Artist");
+    m_sType = XmlParse::selectNodeQString(nodeHeader, "Type");
+    m_sComment = XmlParse::selectNodeQString(nodeHeader, "Comment");
+    m_iDuration = XmlParse::selectNodeQString(nodeHeader, "Duration").toInt();
+    m_iBitrate = XmlParse::selectNodeQString(nodeHeader, "Bitrate").toInt();
+    m_iLength = XmlParse::selectNodeQString(nodeHeader, "Length").toInt();
+    m_iTimesPlayed = XmlParse::selectNodeQString(nodeHeader, "TimesPlayed").toInt();
+    m_fBpm = XmlParse::selectNodeQString(nodeHeader, "Bpm").toFloat();
+    m_fBpmConfidence = XmlParse::selectNodeQString(nodeHeader, "BpmConfidence").toFloat();
+    m_fBeatFirst = XmlParse::selectNodeQString(nodeHeader, "BeatFirst").toFloat();
     m_iScore = 0;
-    m_iId = selectNodeStr( nodeHeader, "ID").toInt();
+    m_iId = XmlParse::selectNodeQString(nodeHeader, "ID").toInt();
+    m_pWave = XmlParse::selectNodeCharArray(nodeHeader, QString("WaveSummary"));
+    m_pSegmentation = XmlParse::selectNodeIntList(nodeHeader, QString("SegmentationSummary"));
     m_pTableTrack = 0;
 
     m_pTableItemScore = 0;
@@ -97,33 +101,28 @@ TrackInfoObject::TrackInfoObject(const QDomNode &nodeHeader)
 
     // Check that the actual file exists:
     checkFileExists();
-}
 
-QDomNode TrackInfoObject::selectNode( const QDomNode &nodeHeader, const QString sNode )
-{
-    QDomNode node = nodeHeader.firstChild();
-
-    while ( !node.isNull() )
-    {
-        if (node.nodeName() == sNode)
-            return node;
-        node = node.nextSibling();
-    }
-    return node;
-}
-
-QString TrackInfoObject::selectNodeStr( const QDomNode &nodeHeader, const QString sNode )
-{
-    QString s = "";
-    QDomNode node = selectNode(nodeHeader, sNode);
-    if (!node.isNull())
-        s = node.toElement().text();
-    return s;
+    installEventFilter(this);
 }
 
 TrackInfoObject::~TrackInfoObject()
 {
     removeFromTrackTable();
+}
+
+bool TrackInfoObject::eventFilter(QObject *, QEvent *e)
+{
+    if (e->type() == 10001)
+    {
+        WaveSummaryEvent *we = (WaveSummaryEvent *)e;
+        setWaveSummary(we->wave(), we->segmentation());
+        return true; // eat event
+    }
+    else
+    {
+        // standard event processing
+        return false;
+    }
 }
 
 bool TrackInfoObject::checkFileExists()
@@ -144,6 +143,8 @@ bool TrackInfoObject::checkFileExists()
 */
 void TrackInfoObject::writeToXML( QDomDocument &doc, QDomElement &header )
 {
+    m_qMutex.lock();
+
     XmlParse::addElement( doc, header, "Filename", m_sFilename );
     XmlParse::addElement( doc, header, "Filepath", m_sFilepath );
     XmlParse::addElement( doc, header, "Title", m_sTitle );
@@ -156,7 +157,14 @@ void TrackInfoObject::writeToXML( QDomDocument &doc, QDomElement &header )
     XmlParse::addElement( doc, header, "TimesPlayed", QString("%1").arg(m_iTimesPlayed) );
     XmlParse::addElement( doc, header, "Bpm", QString("%1").arg(m_fBpm) );
     XmlParse::addElement( doc, header, "BpmConfidence", QString("%1").arg(m_fBpmConfidence) );
+    XmlParse::addElement( doc, header, "BeatFirst", QString("%1").arg(m_fBeatFirst) );
     XmlParse::addElement( doc, header, "Id", QString("%1").arg(m_iId) );
+    if (m_pWave)
+        XmlParse::addElement(doc, header, "WaveSummary", m_pWave);
+    if (m_pSegmentation)
+        XmlParse::addElement(doc, header, "SegmentationSummary", m_pSegmentation);
+
+    m_qMutex.unlock();
 }
 
 void TrackInfoObject::insertInTrackTableRow(WTrackTable *pTableTrack, int iRow)
@@ -176,13 +184,13 @@ void TrackInfoObject::insertInTrackTableRow(WTrackTable *pTableTrack, int iRow)
     if (!m_pTableItemScore)
         m_pTableItemScore = new WTrackTableItem(this, pTableTrack,QTableItem::Never, getScoreStr(), typeNumber);
     if (!m_pTableItemTitle)
-        m_pTableItemTitle = new WTrackTableItem(this, pTableTrack,QTableItem::Never, m_sTitle, typeText);
+        m_pTableItemTitle = new WTrackTableItem(this, pTableTrack,QTableItem::Never, getTitle(), typeText);
     if (!m_pTableItemArtist)
-        m_pTableItemArtist = new WTrackTableItem(this, pTableTrack,QTableItem::Never, m_sArtist, typeText);
+        m_pTableItemArtist = new WTrackTableItem(this, pTableTrack,QTableItem::Never, getArtist(), typeText);
     if (!m_pTableItemComment)
-        m_pTableItemComment = new WTrackTableItem(this, pTableTrack,QTableItem::WhenCurrent, m_sComment, typeText);
+        m_pTableItemComment = new WTrackTableItem(this, pTableTrack,QTableItem::WhenCurrent, getComment(), typeText);
     if (!m_pTableItemType)
-        m_pTableItemType = new WTrackTableItem(this, pTableTrack,QTableItem::Never, m_sType, typeText);
+        m_pTableItemType = new WTrackTableItem(this, pTableTrack,QTableItem::Never, getType(), typeText);
     if (!m_pTableItemDuration)
         m_pTableItemDuration = new WTrackTableItem(this, pTableTrack,QTableItem::Never, getDurationStr(), typeDuration);
     if (!m_pTableItemBpm)
@@ -203,6 +211,7 @@ void TrackInfoObject::insertInTrackTableRow(WTrackTable *pTableTrack, int iRow)
     pTableTrack->setItem(iRow, COL_BITRATE, m_pTableItemBitrate);
 
     m_pTableTrack = pTableTrack;
+
 }
 
 void TrackInfoObject::removeFromTrackTable()
@@ -213,13 +222,13 @@ void TrackInfoObject::removeFromTrackTable()
         // Remove the row from the table, and delete the table items
         int row = m_pTableTrack->currentRow();
         m_pTableTrack->removeRow(m_pTableItemScore->row());
-        
+
         // Set a new active row
         if (row<m_pTableTrack->numRows())
             m_pTableTrack->setCurrentCell(row, 0);
-        else if (m_pTableTrack->numRows())    
+        else if (m_pTableTrack->numRows())
             m_pTableTrack->setCurrentCell(m_pTableTrack->numRows()-1, 0);
-        
+
         // Reset pointers
         m_pTableItemScore = 0;
         m_pTableItemTitle = 0;
@@ -240,25 +249,14 @@ int TrackInfoObject::parse()
     parseFilename();
 
     // Parse the using information stored in the sound file
-    int iResult = ERR;
-    if (m_sType == "wav" || m_sType == "aif" || m_sType == "aiff")
-#ifdef __SNDFILE__
-        iResult = SoundSourceSndFile::ParseHeader(this);
-#endif
-#ifdef __AUDIOFILE__
-        iResult = SoundSourceAudioFile::ParseHeader(this);
-#endif
-    else if (m_sType == "mp3")
-        iResult = SoundSourceMp3::ParseHeader(this);
-    else if (m_sType == "ogg")
-        iResult = SoundSourceOggVorbis::ParseHeader(this);
-
-    return iResult;
+    return SoundSourceProxy::ParseHeader(this);
 }
 
 
 void TrackInfoObject::parseFilename()
 {
+    m_qMutex.lock();
+
     if (m_sFilename.find('-') != -1)
     {
         m_sArtist = m_sFilename.section('-',0,0); // Get the first part
@@ -299,18 +297,23 @@ void TrackInfoObject::parseFilename()
     // Find the type
     m_sType = m_sFilename.section(".",-1).lower();
 
+    m_qMutex.unlock();
 }
 
 QString TrackInfoObject::getDurationStr()
 {
-    if (m_iDuration <=0)
+    m_qMutex.lock();
+    int iDuration = m_iDuration;
+    m_qMutex.unlock();
+
+    if (iDuration <=0)
         return QString("?");
     else
     {
 #if 0
-        int iHours = m_iDuration/3600;
-        int iMinutes = (m_iDuration - 3600*iHours)/60;
-        int iSeconds = m_iDuration%60;
+        int iHours = iDuration/3600;
+        int iMinutes = (iDuration - 3600*iHours)/60;
+        int iSeconds = iDuration%60;
 
         // Sort out obviously wrong results:
         if (iHours > 5)
@@ -320,31 +323,40 @@ QString TrackInfoObject::getDurationStr()
         else
             return QString().sprintf("%d:%02d", iMinutes, iSeconds);
 #else
-        QTime t = QTime().addSecs(m_iDuration);
+        QTime t = QTime().addSecs(iDuration);
         if (t.hour() > 5)
             return QString("??");
-       
+
         if (t.hour() >= 1)
-	    return t.toString("h:mm:ss");
+        return t.toString("h:mm:ss");
         else
-	    return t.toString("m:ss");
+        return t.toString("m:ss");
 #endif
     }
 }
 
 QString TrackInfoObject::getLocation()
 {
-    return m_sFilepath + "/" + m_sFilename;
+    m_qMutex.lock();
+    QString qLocation = m_sFilepath + "/" + m_sFilename;
+    m_qMutex.unlock();
+    return qLocation;
 }
 
 float TrackInfoObject::getBpm()
 {
-    return m_fBpm;
+    m_qMutex.lock();
+    float fBpm = m_fBpm;
+    m_qMutex.unlock();
+
+    return fBpm;
 }
 
 void TrackInfoObject::setBpm(float f)
 {
+    m_qMutex.lock();
     m_fBpm = f;
+    m_qMutex.unlock();
 
     if (m_pTableItemBpm)
     {
@@ -355,35 +367,52 @@ void TrackInfoObject::setBpm(float f)
 
 QString TrackInfoObject::getBpmStr()
 {
-    return QString("%1").arg(m_fBpm, 3,'f',1);
+    m_qMutex.lock();
+    float fBpm = m_fBpm;
+    m_qMutex.unlock();
+
+    return QString("%1").arg(fBpm, 3,'f',1);
 }
 
 float TrackInfoObject::getBpmConfidence()
 {
-    return m_fBpmConfidence;
+    m_qMutex.lock();
+    float fBpmConfidence = m_fBpmConfidence;
+    m_qMutex.unlock();
+
+    return fBpmConfidence;
 }
 
 void TrackInfoObject::setBpmConfidence(float f)
 {
+    m_qMutex.lock();
     m_fBpmConfidence = f;
+    m_qMutex.unlock();
 }
 
 QString TrackInfoObject::getInfo()
 {
-    return QString("" + m_sArtist + "\n" +
-                   "" + m_sTitle + "\n");
-//                   "Type   : " + m_sType  + "\n" +
-//                   "Bitrate: " + m_sBitrate );
+    m_qMutex.lock();
+    QString sInfo = m_sArtist + ", " + m_sTitle + "";
+    m_qMutex.unlock();
+
+    return sInfo;
 }
 
 int TrackInfoObject::getDuration()
 {
-    return m_iDuration;
+    m_qMutex.lock();
+    int iDuration = m_iDuration;
+    m_qMutex.unlock();
+
+    return iDuration;
 }
 
 void TrackInfoObject::setDuration(int i)
 {
+    m_qMutex.lock();
     m_iDuration = i;
+    m_qMutex.unlock();
 
     if (m_pTableItemDuration)
     {
@@ -394,115 +423,163 @@ void TrackInfoObject::setDuration(int i)
 
 QString TrackInfoObject::getTitle()
 {
-    return m_sTitle;
+    m_qMutex.lock();
+    QString sTitle = m_sTitle;
+    m_qMutex.unlock();
+
+    return sTitle;
 }
 
 void TrackInfoObject::setTitle(QString s)
 {
+    m_qMutex.lock();
     m_sTitle = s;
+    m_qMutex.unlock();
 
     if (m_pTableItemTitle)
     {
-        m_pTableItemTitle->setText(m_sTitle);
+        m_pTableItemTitle->setText(s);
         m_pTableItemTitle->table()->updateCell(m_pTableItemTitle->row(), m_pTableItemTitle->col());
     }
 }
 
 QString TrackInfoObject::getArtist()
 {
-    return m_sArtist;
+    m_qMutex.lock();
+    QString sArtist = m_sArtist;
+    m_qMutex.unlock();
+
+    return sArtist;
 }
 
 void TrackInfoObject::setArtist(QString s)
 {
+    m_qMutex.lock();
     m_sArtist = s;
+    m_qMutex.unlock();
 
     if (m_pTableItemArtist)
     {
-        m_pTableItemArtist->setText(m_sArtist);
+        m_pTableItemArtist->setText(s);
         m_pTableItemArtist->table()->updateCell(m_pTableItemArtist->row(), m_pTableItemArtist->col());
     }
-
 }
 
 QString TrackInfoObject::getFilename()
 {
-    return m_sFilename;
+    m_qMutex.lock();
+    QString sFilename = m_sFilename;
+    m_qMutex.unlock();
+
+    return sFilename;
 }
 
 bool TrackInfoObject::exists()
 {
-    return m_bExists;
+    m_qMutex.lock();
+    bool bExists = m_bExists;
+    m_qMutex.unlock();
+
+    return bExists;
 }
 
 int TrackInfoObject::getTimesPlayed()
 {
-    return m_iTimesPlayed;
+    m_qMutex.lock();
+    int iTimesPlayed = m_iTimesPlayed;
+    m_qMutex.unlock();
+
+    return iTimesPlayed;
 }
 
 void TrackInfoObject::incTimesPlayed()
 {
+    m_qMutex.lock();
     ++m_iTimesPlayed;
     if (m_iTimesPlayed>siMaxTimesPlayed)
         siMaxTimesPlayed = m_iTimesPlayed;
+    m_qMutex.unlock();
 }
 
 void TrackInfoObject::setFilepath(QString s)
 {
+    m_qMutex.lock();
     m_sFilepath = s;
+    m_qMutex.unlock();
 }
 
 QString TrackInfoObject::getComment()
 {
-    return m_sComment;
+    m_qMutex.lock();
+    QString sComment = m_sComment;
+    m_qMutex.unlock();
+
+    return sComment;
 }
 
 void TrackInfoObject::setComment(QString s)
 {
+    m_qMutex.lock();
     m_sComment = s;
+    m_qMutex.unlock();
 
     if (m_pTableItemComment)
     {
-        m_pTableItemComment->setText(m_sComment);
+        m_pTableItemComment->setText(s);
         m_pTableItemComment->table()->updateCell(m_pTableItemComment->row(), m_pTableItemComment->col());
     }
-
 }
 
 QString TrackInfoObject::getType()
 {
-    return m_sType;
+    m_qMutex.lock();
+    QString sType = m_sType;
+    m_qMutex.unlock();
+
+    return sType;
 }
 
 void TrackInfoObject::setType(QString s)
 {
+    m_qMutex.lock();
     m_sType = s;
+    m_qMutex.unlock();
 
     if (m_pTableItemType)
     {
-        m_pTableItemType->setText(m_sType);
+        m_pTableItemType->setText(s);
         m_pTableItemType->table()->updateCell(m_pTableItemType->row(), m_pTableItemType->col());
     }
 }
 
 int TrackInfoObject::getLength()
 {
-    return m_iLength;
+    m_qMutex.lock();
+    int iLength = m_iLength;
+    m_qMutex.unlock();
+
+    return iLength;
 }
 
 int TrackInfoObject::getBitrate()
 {
-    return m_iBitrate;
+    m_qMutex.lock();
+    int iBitrate = m_iBitrate;
+    m_qMutex.unlock();
+
+    return iBitrate;
 }
 
 QString TrackInfoObject::getBitrateStr()
 {
-    return QString("%1").arg(m_iBitrate);
+    return QString("%1").arg(getBitrate());
 }
 
 void TrackInfoObject::setBitrate(int i)
 {
+    m_qMutex.lock();
     m_iBitrate = i;
+    m_qMutex.unlock();
 
     if (m_pTableItemBitrate)
     {
@@ -511,15 +588,37 @@ void TrackInfoObject::setBitrate(int i)
     }
 }
 
+void TrackInfoObject::setBeatFirst(float fBeatFirstPos)
+{
+    m_qMutex.lock();
+    m_fBeatFirst = fBeatFirstPos;
+    m_qMutex.unlock();
+}
+
+float TrackInfoObject::getBeatFirst()
+{
+    m_qMutex.lock();
+    float fBeatFirst = m_fBeatFirst;
+    m_qMutex.unlock();
+
+    return fBeatFirst;
+}
+
 QString TrackInfoObject::getScoreStr()
 {
-    return QString("%1").arg(m_iScore);
+    m_qMutex.lock();
+    int iScore = m_iScore;
+    m_qMutex.unlock();
+
+    return QString("%1").arg(iScore);
 }
 
 void TrackInfoObject::updateScore()
 {
-	ASSERT(siMaxTimesPlayed!=0);
+    m_qMutex.lock();
+    ASSERT(siMaxTimesPlayed!=0);
     m_iScore = 99*m_iTimesPlayed/siMaxTimesPlayed;
+    m_qMutex.unlock();
 
     if (m_pTableItemScore)
     {
@@ -530,12 +629,47 @@ void TrackInfoObject::updateScore()
 
 int TrackInfoObject::getId()
 {
-    return m_iId;
+    m_qMutex.lock();
+    int iId = m_iId;
+    m_qMutex.unlock();
+
+    return iId;
 }
 
 void TrackInfoObject::setId(int iId)
 {
+    m_qMutex.lock();
     m_iId = iId;
+    m_qMutex.unlock();
+}
+
+QMemArray<char> *TrackInfoObject::getWaveSummary()
+{
+    m_qMutex.lock();
+    QMemArray<char> *pWaveSummary = m_pWave;
+    m_qMutex.unlock();
+
+    return pWaveSummary;
+}
+
+QValueList<int> *TrackInfoObject::getSegmentationSummary()
+{
+    m_qMutex.lock();
+    QValueList<int> *pSegmentationSummary = m_pSegmentation;
+    m_qMutex.unlock();
+
+    return pSegmentationSummary;
+}
+
+void TrackInfoObject::setWaveSummary(QMemArray<char> *pWave, QValueList<int> *pSegmentation)
+{
+    m_qMutex.lock();
+    m_pWave = pWave;
+    m_pSegmentation = pSegmentation;
+    m_qMutex.unlock();
+
+    if (m_pOverviewWidget)
+        m_pOverviewWidget->setData(pWave, pSegmentation, getDuration());
 }
 
 TrackInfoObject *TrackInfoObject::getNext()
@@ -549,3 +683,10 @@ TrackInfoObject *TrackInfoObject::getNext()
     return 0;
 }
 
+void TrackInfoObject::setOverviewWidget(WOverview *p)
+{
+    m_pOverviewWidget = p;
+
+    if (m_pOverviewWidget)
+        p->setData(getWaveSummary(), getSegmentationSummary(), getDuration());
+}

@@ -1,7 +1,7 @@
 //
 // C++ Implementation: track
 //
-// Description: 
+// Description:
 //
 //
 // Author: Tue Haste Andersen <haste@diku.dk>, (C) 2003
@@ -29,8 +29,10 @@
 #include "controlobjectthreadmain.h"
 #include "configobject.h"
 #include "trackimporter.h"
+#include "wavesummary.h"
+#include "woverview.h"
 
-Track::Track(QString location, MixxxView *pView, EngineBuffer *pBuffer1, EngineBuffer *pBuffer2)
+Track::Track(QString location, MixxxView *pView, EngineBuffer *pBuffer1, EngineBuffer *pBuffer2, WaveSummary *pWaveSummary)
 {
     m_pView = pView;
     m_pBuffer1 = pBuffer1;
@@ -39,6 +41,7 @@ Track::Track(QString location, MixxxView *pView, EngineBuffer *pBuffer1, EngineB
     m_pActivePopupPlaylist = 0;
     m_pTrackPlayer1 = 0;
     m_pTrackPlayer2 = 0;
+    m_pWaveSummary = pWaveSummary;
 
     m_pTrackCollection = new TrackCollection();
     m_pTrackImporter = new TrackImporter(m_pView,m_pTrackCollection);
@@ -96,7 +99,7 @@ void Track::readXML(QString location)
     // Check if we can open the file
     if (!file.exists())
     {
-        qDebug("Track: %s does not exists.",location.latin1());
+        //qDebug("Track: %s does not exist.",location.latin1());
         file.close();
         return;
     }
@@ -230,12 +233,12 @@ void Track::slotNewPlaylist()
     while (getPlaylist(QString("Default %1").arg(i)))
         ++i;
 
-    TrackPlaylist *p = new TrackPlaylist(m_pTrackCollection, QString("Default %1").arg(i));    
+    TrackPlaylist *p = new TrackPlaylist(m_pTrackCollection, QString("Default %1").arg(i));
     m_qPlaylists.append(p);
-    
+
     // Make the new playlist active
     slotActivatePlaylist(p->getListName());
-    
+
     // Update list views
     updatePlaylistViews();
 }
@@ -255,7 +258,7 @@ void Track::slotDeletePlaylist(QString qName)
             // Deactivate the list
             list->deactivate();
             m_pActivePlaylist = 0;
-            
+
             bActivateOtherList = true;
         }
 
@@ -319,6 +322,9 @@ void Track::slotTrackPopup(TrackInfoObject *pTrackInfoObject, int)
 
 void Track::slotLoadPlayer1(TrackInfoObject *pTrackInfoObject)
 {
+    if (m_pTrackPlayer1)
+        m_pTrackPlayer1->setOverviewWidget(0);
+
     m_pTrackPlayer1 = pTrackInfoObject;
     emit(newTrackPlayer1(m_pTrackPlayer1));
 
@@ -329,6 +335,13 @@ void Track::slotLoadPlayer1(TrackInfoObject *pTrackInfoObject)
 
     // Request a new track from the reader:
     m_pBuffer1->getReader()->requestNewTrack(m_pTrackPlayer1);
+
+    // Generate waveform summary
+    if (m_pWaveSummary && (m_pTrackPlayer1->getWaveSummary()==0 || m_pTrackPlayer1->getWaveSummary()->size()==0))
+        m_pWaveSummary->enqueue(m_pTrackPlayer1);
+
+    // Set waveform summary display
+    m_pTrackPlayer1->setOverviewWidget(m_pView->m_pOverviewCh1);
 
     // Set duration in playpos widget
     if (m_pView->m_pNumberPosCh1)
@@ -341,6 +354,9 @@ void Track::slotLoadPlayer1(TrackInfoObject *pTrackInfoObject)
 
 void Track::slotLoadPlayer2(TrackInfoObject *pTrackInfoObject)
 {
+    if (m_pTrackPlayer2)
+        m_pTrackPlayer2->setOverviewWidget(0);
+
     m_pTrackPlayer2 = pTrackInfoObject;
     emit(newTrackPlayer2(m_pTrackPlayer2));
 
@@ -351,6 +367,13 @@ void Track::slotLoadPlayer2(TrackInfoObject *pTrackInfoObject)
 
     // Request a new track from the reader:
     m_pBuffer2->getReader()->requestNewTrack(m_pTrackPlayer2);
+
+    // Generate waveform summary
+    if (m_pWaveSummary && (m_pTrackPlayer2->getWaveSummary()==0 || m_pTrackPlayer2->getWaveSummary()->size()==0))
+        m_pWaveSummary->enqueue(m_pTrackPlayer2);
+
+    // Set waveform summary display
+    m_pTrackPlayer2->setOverviewWidget(m_pView->m_pOverviewCh2);
 
     // Set duration in playpos widget
     if (m_pView->m_pNumberPosCh2)
@@ -437,7 +460,7 @@ void Track::updatePlaylistViews()
 
     // Update menu
     emit(updateMenu(&m_qPlaylists));
-    
+
     // Set active
     if (m_pActivePlaylist)
         emit(activePlaylist(m_pActivePlaylist));

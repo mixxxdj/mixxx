@@ -38,7 +38,7 @@ SoundSourceSndFile::SoundSourceSndFile(QString qFilename) : SoundSource(qFilenam
         buffer = new SAMPLE[MAX_BUFFER_LEN];
     else
         buffer = 0;
-    
+
     filelength = 2*info->frames; // File length with two interleaved channels
     SRATE =  info->samplerate;
 }
@@ -54,12 +54,13 @@ SoundSourceSndFile::~SoundSourceSndFile()
 
 long SoundSourceSndFile::seek(long filepos)
 {
+    unsigned long filepos2 = (unsigned long)filepos;
     if (filelength>0)
     {
-        filepos = max(0, min(filepos,filelength));
-        if (sf_seek(fh, (sf_count_t)filepos/2, SEEK_SET) == -1)
+        filepos2 = min(filepos2,filelength);
+        if (sf_seek(fh, (sf_count_t)filepos2/2, SEEK_SET) == -1)
             qDebug("libsndfile: Seek ERR.");
-        return filepos;
+        return filepos2;
     }
     return 0;
 }
@@ -75,8 +76,8 @@ unsigned SoundSourceSndFile::read(unsigned long size, const SAMPLE* destination)
     {
         if (channels==2)
         {
-            int no = sf_read_short(fh, dest, size);
-            for (int i=no; i<size; ++i)
+            unsigned long no = sf_read_short(fh, dest, size);
+            for (unsigned long i=no; i<size; ++i)
                 dest[i] = 0;
             return size;
         }

@@ -41,6 +41,7 @@
 #include "wnumberrate.h"
 #include "wvisualwaveform.h"
 #include "wvisualsimple.h"
+#include "woverview.h"
 #include "mixxxkeyboard.h"
 #include "controlobject.h"
 #include "controlobjectthreadwidget.h"
@@ -90,7 +91,8 @@ MixxxView::MixxxView(QWidget *parent, ConfigObject<ConfigValueKbd> *kbdconfig, b
     m_bZoom = false;
     m_pSplitter = 0;
     m_bVisualWaveform = false;
-
+    m_pOverviewCh1 = 0;
+    m_pOverviewCh2 = 0;
 
     // Load all widgets defined in the XML file
     QDomNode node = docElem.firstChild();
@@ -205,6 +207,21 @@ MixxxView::MixxxView(QWidget *parent, ConfigObject<ConfigValueKbd> *kbdconfig, b
                 m_qWidgetList.append(p);
                 p->setup(node);
                 p->installEventFilter(m_pKeyboard);
+            }
+            else if (node.nodeName()=="Overview")
+            {
+                if (WWidget::selectNodeInt(node, "Channel")==1 && m_pOverviewCh1==0)
+                {
+                    m_pOverviewCh1 = new WOverview(this);
+                    m_qWidgetList.append(m_pOverviewCh1);
+                    m_pOverviewCh1->setup(node);
+                }
+                else if (WWidget::selectNodeInt(node, "Channel")==2 && m_pOverviewCh2==0)
+                {
+                    m_pOverviewCh2 = new WOverview(this);
+                    m_qWidgetList.append(m_pOverviewCh2);
+                    m_pOverviewCh2->setup(node);
+                }
             }
             else if (node.nodeName()=="Visual")
             {
