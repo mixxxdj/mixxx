@@ -34,7 +34,7 @@ ReaderExtractBeat::ReaderExtractBeat(ReaderExtract *input, int frameSize, int fr
     // Initialize beat and bpm buffer
     beatBuffer = new bool[getBufferSize()];
     bpmBuffer = new CSAMPLE[getBufferSize()];
-    for (int i=0; i<getBufferSize(); i++)
+    for (i=0; i<getBufferSize(); i++)
     {
         beatBuffer[i] = false;
         bpmBuffer[i] = -1.;
@@ -49,7 +49,7 @@ ReaderExtractBeat::ReaderExtractBeat(ReaderExtract *input, int frameSize, int fr
                 
     // Initialize peak chunk array
     peakIt = new Tpeaks::iterator[READCHUNK_NO];
-    for (int i=0; i<READCHUNK_NO; i++)
+    for (i=0; i<READCHUNK_NO; i++)
         peakIt[i] = 0;
         
     hfc = (CSAMPLE *)input->getBasePtr();
@@ -144,7 +144,7 @@ void *ReaderExtractBeat::processChunk(const int idx, const int start_idx, const 
 
     // Add new peaks to the peak list
     bool foundPeak = false;                   
-    for (int i=chunkEnd-1; i>chunkStart+1; i--)
+    for (i=chunkEnd-1; i>chunkStart+1; i--)
         if (hfc[i]>hfc[i-1] && hfc[i]>hfc[i+1] && hfc[i]>threshold)
         {
             foundPeak = true;
@@ -185,7 +185,7 @@ void *ReaderExtractBeat::processChunk(const int idx, const int start_idx, const 
     
     // Print list of peaks    
     Tpeaks::iterator ii;
-    int i = 0;
+    i = 0;
     for (ii=peaks.begin(); ii!=peaks.end(); ++ii)
     {
 //        qDebug("list element %i: %i",i,(*ii));
@@ -242,7 +242,7 @@ void *ReaderExtractBeat::processChunk(const int idx, const int start_idx, const 
             
             // Find maximum in histogram
             int maxidx = -1;
-            for (int i=1; i<histSize-1; i++)
+            for (i=1; i<histSize-1; i++)
                 if (hist[i]>hist[i-1] && hist[i]>hist[i+1])
                     if ((maxidx>-1 && hist[i]>hist[maxidx]) || maxidx==-1)
                         maxidx = i;
@@ -290,12 +290,12 @@ void *ReaderExtractBeat::processChunk(const int idx, const int start_idx, const 
     }
 
     // Down-write histogram
-    for (int i=0; i<histSize; i++)
+    for (i=0; i<histSize; i++)
         hist[i] *= 0.8;
     
     // Find and print maximum
     int maxidx = -1;
-    for (int i=1; i<histSize-1; i++)
+    for (i=1; i<histSize-1; i++)
     {
 //        std::cout << hist[i] << " ";   
         if (hist[i]>hist[i-1] && hist[i]>hist[i+1])

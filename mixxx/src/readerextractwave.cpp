@@ -217,7 +217,7 @@ void ReaderExtractWave::getchunk(CSAMPLE rate)
     int chunkSizeDiff = READBUFFERSIZE/readerbeat->getBufferSize();
 //    qDebug("wave %i-%i",from,to);
     //qDebug("chunkSizeDiff: %i",chunkSizeDiff);
-    for (int i=from; i<to; i++)
+    for (i=from; i<to; i++)
         if (beatBuffer[i%readerbeat->getBufferSize()])
         {
             for (int j=i*chunkSizeDiff; j<i*chunkSizeDiff+40; j++)

@@ -82,8 +82,8 @@ CSAMPLE *EngineSpectralBack::process(CSAMPLE *p, const int)
     rfftw_one(plan_backward,tmp,samples);
 
     // Descale the data by window length and divide by window
-    for (int i=0; i<l; i++)
+    for (i=0; i<l; i++)
         samples[i] /= (l*window[i]);
 
-    return samples;
+    return (CSAMPLE *) samples;
 }

@@ -93,8 +93,8 @@ win32 {
   DEFINES += __WIN__
   INCLUDEPATH += ../winlib ../lib/portaudio-v18 .
   SOURCES += soundsourcesndfile.cpp
-  HEADERS += soundsourcesndfile.h
-  LIBS += ../winlib/libmad.lib ../winlib/libsndfile.lib
+  HEADERS += soundsourcesndfile.h ../winlib/fftw.h ../winlib/rfftw.h
+  LIBS += ../winlib/libmad.lib ../winlib/libsndfile.lib ../winlib/rfftw2st.lib ../winlib/fftw2st.lib
   QMAKE_CXXFLAGS += -GX
   QMAKE_LFLAGS += /NODEFAULTLIB:libcd /NODEFAULTLIB:libcmtd 
   #/NODEFAULTLIB:msvcrt.lib 
