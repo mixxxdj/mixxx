@@ -18,8 +18,7 @@
 #ifndef ROTARY_H
 #define ROTARY_H
 
-#include <qthread.h>
-#include <qmutex.h>
+#include <qstring.h>
 
 /**
   * Virtual class for handling the PowerMate. This is implemented as a separate thread.
@@ -27,9 +26,8 @@
   *@author Tue Haste Andersen
   */
 
-class ControlObject;
-
 const int kiRotaryFilterMaxLen = 50;
+
 static QString kqRotaryMappingP1Phase =   "Player 1, phase adjustment";
 static QString kqRotaryMappingP1Scratch = "Player 1, scratch";
 static QString kqRotaryMappingP1Search =  "Player 1, RealSearch";
@@ -37,36 +35,25 @@ static QString kqRotaryMappingP2Phase =   "Player 2, phase adjustment";
 static QString kqRotaryMappingP2Scratch = "Player 2, scratch";
 static QString kqRotaryMappingP2Search =  "Player 2, RealSearch";
 
-class Rotary : public QThread
+class Rotary
 {
 public:
     Rotary();
     ~Rotary();
 
-    /** Open a rotary device */
-    virtual bool opendev(QString name) = 0;
-    /** Close a rotary device */
-    virtual void closedev() = 0;
-    /** Wait for the next rotary event. Blocking call. */
-    virtual void getNextEvent() = 0;
-    /** Select mapping */
-    void selectMapping(QString mapping);
     /** Start calibration measurement */
     void calibrateStart();
     /** End calibration measurement */
     double calibrateEnd();
     /** Set calibration */
     void setCalibration(double c);
-
+    /** Low pass filtered rotary event */
+    double filter(double dValue);
+    /** Collect callibration data */
+    void calibrate(double dValue);
+    /** Set filter length */
+    void setFilterLength(int i);
 protected:
-    /** Main thread loop */
-    virtual void run();
-    /** Send out a low pass filtered rotary event */
-    void sendRotaryEvent(double dValue);
-    /** Send out a button event */
-    void sendButtonEvent(bool press);
-    /** Pointer to associated ControlObjects */
-    ControlObject *m_pControlObjectRotary, *m_pControlObjectButton;
     /** Length of filter */
     int m_iFilterLength;
     /** Update position in filter */
@@ -78,8 +65,6 @@ protected:
     /** Last value */
     double m_dLastValue;
     int m_iCalibrationCount;
-    /** Mutex to control calibration mode */
-    QMutex m_qCalibrationMutex;
 };
 
 #endif

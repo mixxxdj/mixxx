@@ -16,6 +16,7 @@
  ***************************************************************************/
 
 #include "powermatelinux.h"
+#include "rotary.h"
 #include <linux/input.h>
 #include <string.h>
 #include <errno.h>
@@ -139,7 +140,8 @@ void PowerMateLinux::getNextEvent()
             if (ev.code == REL_DIAL)
             {
                 int v = ev.value;
-                sendRotaryEvent((double)v*200.);
+                double dValue = m_pRotary->filter((double)v);
+                sendEvent((double)dValue*200., m_pControlObjectRotary);
             }
             break;
         case EV_KEY:
@@ -147,9 +149,9 @@ void PowerMateLinux::getNextEvent()
             {
                 // Send event to GUI thread
                 if (ev.value==1)
-                    sendButtonEvent(true);
+                    sendButtonEvent(true, m_pControlObjectButton);
                 else
-                    sendButtonEvent(false);
+                    sendButtonEvent(false, m_pControlObjectButton);
             }
             break;
         //default:
@@ -160,7 +162,7 @@ void PowerMateLinux::getNextEvent()
     else
     {
 //         qDebug("unread");
-        sendRotaryEvent(0.);
+        sendEvent(0., m_pControlObjectRotary);
     }
             
     //

@@ -34,7 +34,7 @@ public:
       * When set to off, ie. normal mode, the previous selected quality is used */
     void setFastMode(bool bMode);
     CSAMPLE *scale(double playpos, int buf_size, float *pBase=0, int iBaseLength=0);
-    double setRate(double rate);
+    double setTempo(double dTempo);
 private:
     void setQuality(int);
     /** Pointer to converter objects of three different qualities, and a pointer to
@@ -44,7 +44,7 @@ private:
     int m_iQuality;
     SRC_DATA *data;
     /** Holds the playback direction */
-    bool backwards;
+    bool m_bBackwards;
     /** Buffer used to reverse output from SRC library when playback direction is backwards */
     CSAMPLE *buffer_back;
 };

@@ -52,6 +52,7 @@ class WVisual;
 class Track;
 class TrackInfoObject;
 class PowerMate;
+class Hercules;
 class Joystick;
 class PlayerProxy;
 class WaveSummary;
@@ -121,6 +122,8 @@ class MixxxApp : public QMainWindow
     Track *m_pTrack;
     /** Pointer to PowerMate objects */
     PowerMate *powermate1, *powermate2;
+    /** Pointer to Hercules object */
+    Hercules *m_pHercules;
     /** Pointer to Joystick object */
     Joystick *joystick1;
     /** file_menu contains all items of the menubar entry "File" */

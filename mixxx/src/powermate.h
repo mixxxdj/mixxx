@@ -19,7 +19,10 @@
 #define POWERMATE_H
 
 #include <qsemaphore.h>
-#include "rotary.h"
+#include "input.h"
+
+class Rotary;
+class ControlObject;
 
 /**
   * Virtual class for handling the PowerMate. This is implemented as a separate thread.
@@ -30,7 +33,7 @@
 const int kiPowermateBufferSize = 32;
 const int kiPowermateKnobIntegralMaxLen = 25;
 
-class PowerMate : public Rotary
+class PowerMate : public Input
 {
 public:
     PowerMate();
@@ -45,6 +48,10 @@ protected:
     int m_iInstNo;
     /** Pointer to semaphore used to control led */
     QSemaphore *m_pRequestLed;
+    /** Pointer to rotary object */
+    Rotary *m_pRotary;
+    /** Pointer to control objects connected to the PowerMate */
+    ControlObject *m_pControlObjectRotary, *m_pControlObjectButton;
 };
 
 #endif

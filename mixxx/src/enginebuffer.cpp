@@ -32,6 +32,7 @@
 #include "visual/visualchannel.h"
 #include "mathstuff.h"
 #include "player.h"
+#include "enginebuffercue.h"
 
 
 // Static default values for rate buttons
@@ -90,21 +91,6 @@ EngineBuffer::EngineBuffer(PowerMate *_powermate, const char *_group)
     connect(endButton, SIGNAL(valueChanged(double)), this, SLOT(slotControlEnd(double)));
     endButton->set(0);
 
-    // Cue set button:
-    buttonCueSet = new ControlPushButton(ConfigKey(group, "cue_set"));
-    connect(buttonCueSet, SIGNAL(valueChanged(double)), this, SLOT(slotControlCueSet(double)));
-
-    // Cue goto button:
-    buttonCueGoto = new ControlPushButton(ConfigKey(group, "cue_goto"));
-    connect(buttonCueGoto, SIGNAL(valueChanged(double)), this, SLOT(slotControlCueGoto(double)));
-
-    // Cue point
-    cuePoint = new ControlObject(ConfigKey(group, "cue_point"));
-
-    // Cue preview button:
-    buttonCuePreview = new ControlPushButton(ConfigKey(group, "cue_preview"));
-    connect(buttonCuePreview, SIGNAL(valueChanged(double)), this, SLOT(slotControlCuePreview(double)));
-
     // Playback rate slider
     rateSlider = new ControlPotmeter(ConfigKey(group, "rate"), -1.f, 1.f);
 
@@ -113,11 +99,12 @@ EngineBuffer::EngineBuffer(PowerMate *_powermate, const char *_group)
     
     // Control if RealSearch is enabled
     m_pRealSearch = new ControlObject(ConfigKey(group, "realSearch")); 
-    m_pRealSearch->set(1.);
+    m_pRealSearch->set(0.);
     
     // Range of rate
     m_pRateRange = new ControlObject(ConfigKey(group, "rateRange"));
     m_pRateRange->set(0.1);
+    
     // Actual rate (used in visuals, not for control)
     rateEngine = new ControlObject(ConfigKey(group, "rateEngine"));
 
@@ -178,11 +165,13 @@ EngineBuffer::EngineBuffer(PowerMate *_powermate, const char *_group)
     // Audio beat mark toggle
     audioBeatMark = new ControlPushButton(ConfigKey(group, "audiobeatmarks"));
 
+    m_pEngineBufferCue = new EngineBufferCue(group, this);
+    
     // Control file changed
 //    filechanged = new ControlEngine(controlfilechanged);
 //    filechanged->setNotify(this,(EngineMethod)&EngineBuffer::newtrack);
 
-    m_bCuePreview = false;
+    //m_bCuePreview = false;
 
     m_pScale = 0;
     setNewPlaypos(0.);
@@ -246,7 +235,7 @@ double EngineBuffer::getAbsPlaypos()
 void EngineBuffer::setPitchIndpTimeStretch(bool b)
 {
     // Change sound scale mode
-    m_pScale->setPitchIndpTimeStretch(b);
+    ((EngineBufferScaleST *)m_pScale)->setPitchIndpTimeStretch(b);
 }
 
 void EngineBuffer::setVisual(WVisualWaveform *pVisualWaveform)
@@ -450,70 +439,14 @@ void EngineBuffer::slotControlSeek(double change, bool bBeatSync)
     }
 }
 
-// Set the cue point at the current play position:
-void EngineBuffer::slotControlCueSet(double)
+void EngineBuffer::slotControlSeekAbs(double abs, bool bBeatSync)
 {
-    double cue = max(0.,round(filepos_play-Player::getBufferSize()));
-    if (!even((int)cue))
-        cue--;
-    cuePoint->set(cue);
-}
-
-// Goto the cue point:
-void EngineBuffer::slotControlCueGoto(double pos)
-{
-    if (pos!=0.)
-    {
-        // Set cue point if play is not pressed
-        if (playButton->get()==0.)
-        {
-            slotControlCueSet();
-
-            // Start playing
-            playButton->set(1.);
-        }
-        else
-        {
-            // Seek to cue point
-            reader->requestSeek(cuePoint->get());
-            m_iBeatMarkSamplesLeft = 0;
-        }
-    }
-}
-
-void EngineBuffer::slotControlCuePreview(double)
-{
-    // Set cue point if play is not pressed
-    if (playButton->get()==0.)
-        slotControlCueSet();
-
-    if (buttonCuePreview->get()==0.)
-    {
-        // Stop playing (set playbutton to stoped) and seek to cue point
-        playButton->set(0.);
-        m_bCuePreview = false;
-        reader->requestSeek(cuePoint->get());
-        m_iBeatMarkSamplesLeft = 0;
-    }
-    else if (!m_bCuePreview)
-    {
-        // Seek to cue point and start playing
-        m_bCuePreview = true;
-
-        if (playButton->get()==0.)
-            playButton->set(1.);
-        else
-        {
-            // Seek to cue point
-            reader->requestSeek(cuePoint->get());
-            m_iBeatMarkSamplesLeft = 0;
-        }
-    }
+    slotControlSeek(abs/file_length_old, bBeatSync);
 }
 
 void EngineBuffer::slotControlPlay(double)
 {
-    slotControlCueSet();
+    m_pEngineBufferCue->slotControlCueSet();
 }
 
 void EngineBuffer::slotControlStart(double)
@@ -749,7 +682,7 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBuff
         if (reverseButton->get()==1.)
             dir = -1.;
 
-        double baserate = dir*bpmrate*((double)file_srate_old/(double)getPlaySrate());
+        double baserate = ((double)file_srate_old/(double)getPlaySrate());
         
         /*
         if (fwdButton->get()==1.)
@@ -774,6 +707,8 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBuff
             rate=(wheel->get()+m_pControlScratch->get())*baserate; //*10.;
         }
         
+        rate *= dir*bpmrate;
+        
         // If searching in progress...
         if (m_pRateSearch->get()!=0.)
         {
@@ -781,16 +716,16 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBuff
             if (m_pRealSearch->get()==1.)
             {
                 rate = baserate;
-                m_pScale->setFastMode(false);
+//                 m_pScale->setFastMode(false);
             }
             else
             {
                 rate = m_pRateSearch->get();        
-                m_pScale->setFastMode(true);
+//                 m_pScale->setFastMode(true);
             }
         }
-        else
-            m_pScale->setFastMode(false);
+//         else
+//             m_pScale->setFastMode(false);
         
         //qDebug("rateslider %f, ratedir %f, wheel %f, scratch %f", rateSlider->get(), m_pRateDir->get(), wheel->get(), m_pControlScratch->get());
 
@@ -868,7 +803,8 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBuff
         {
             // The rate returned by the scale object can be different from the wanted rate!
             rate_old = rate;
-            rate = m_pScale->setRate(rate);
+            rate = baserate*m_pScale->setTempo(rate/baserate);
+            m_pScale->setBaseRate(baserate);
             rate_old = rate;
         }
 
@@ -1037,10 +973,6 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBuff
                     filepos_play = 0;
                     at_start = true;
                 }
-
-                // Set cue point if play button not pressed
-                if (playButton->get()==0.)
-                    cuePoint->set(max(0.,filepos_play-Player::getBufferSize()));
 
                 // Ensure valid range of idx
                 while (idx>READBUFFERSIZE)

@@ -44,6 +44,7 @@
 #include "reader.h"
 #include "enginebuffer.h"
 #include "powermate.h"
+#include "hercules.h"
 #include "joystick.h"
 #include "enginevumeter.h"
 #include "track.h"
@@ -60,6 +61,10 @@
 #endif
 #ifdef __WIN__
 #include "powermatewin.h"
+#endif
+
+#ifdef __LINUX__
+#include "herculeslinux.h"
 #endif
 
 #ifdef __LINUX__
@@ -387,6 +392,21 @@ MixxxApp::MixxxApp(QApplication *a, QStringList files, QSplashScreen *pSplash, Q
     //setFocusPolicy(QWidget::StrongFocus);
     //grabKeyboard();
 
+    // Try initializing Hercules DJ Console
+    m_pHercules = 0;
+#ifdef __LINUX__
+    m_pHercules = new HerculesLinux();
+#endif
+    if (m_pHercules)
+    {
+        if (m_pHercules->opendev())
+            qDebug("Found Hercules DJ Console");
+        else
+        {
+            delete m_pHercules;
+            m_pHercules = 0;
+        }
+    }    
 
 
     // Load tracks in files (command line arguments) into player 1 and 2:

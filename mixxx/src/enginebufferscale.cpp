@@ -23,7 +23,7 @@ EngineBufferScale::EngineBufferScale(ReaderExtractWave *_wave)
     wave = _wave;
     wavebuffer = (CSAMPLE *)wave->getBasePtr();
 
-    rate = 1.;
+    m_dTempo = 1.;
     buffer = new CSAMPLE[MAX_BUFFER_LEN];
     new_playpos = 0;
 }
@@ -33,19 +33,7 @@ EngineBufferScale::~EngineBufferScale()
     delete [] buffer;
 }
 
-void EngineBufferScale::setPitchIndpTimeStretch(bool)
-{
-}
-
-void EngineBufferScale::setFastMode(bool)
-{
-}
-
 double EngineBufferScale::getNewPlaypos()
 {
     return new_playpos;
-}
-
-void EngineBufferScale::clear()
-{
 }

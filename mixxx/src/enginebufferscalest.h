@@ -2,9 +2,8 @@
                           enginebufferscalest.h  -  description
                              -------------------
 	begin                : November 2004
-	copyright            : (C) 2004 by Tue & Ken Haste Andersen
+	copyright            : (C) 2004 by Tue Haste Andersen
 	email                : haste@diku.dk
-	adaptation           : Mads Holm
  ***************************************************************************/
 
 /***************************************************************************
@@ -16,113 +15,51 @@
  *                                                                         *
  ***************************************************************************/
 
+/**
+  *@author Tue Haste Andersen
+*/
+
 #ifndef ENGINEBUFFERSCALEST_H
 #define ENGINEBUFFERSCALEST_H
 
 #include "enginebufferscale.h"
 #include "SoundTouch.h"
 
-#define MAXBUFFERBLOCKS 1000
-#define ReadAheadSize 1000
-
 using namespace soundtouch;
 
 /**
   * Performs time scaling of audio based on the SoundTouch library.
-  * Adapted by Mads Holm, based on work by Tue & Ken Haste Andersen
-  * The SoundTouch Library is courtesy of Olli Parviainen, released
-  * under the GNU Lesser General Public License.
   */
-
-// Info structures for keeping track of buffered sound data
-class ScaleBufferBlock 
-{
-public:
-    double ScaledSamples;
-    double UsedSamples;
-};
-
-class ScaleBufferDescriptor 
-{
-private:
-    ScaleBufferBlock *pScaleBlocks;
-    int Head;
-    int Tail;
-public:
-    ScaleBufferDescriptor();
-    ~ScaleBufferDescriptor();
-    void append(double ScaledSamples, double UsedSamples);
-    void pop();
-    bool empty();
-    ScaleBufferBlock *getHead();
-    void showDebug();
-    void clear();
-};
 
 class EngineBufferScaleST : public EngineBufferScale  
 {
 public: 
     EngineBufferScaleST(ReaderExtractWave *wave);
     ~EngineBufferScaleST();
-    
-    void setFastMode(bool bMode);
+    /** Toggle pitch independent time stretch */
     void setPitchIndpTimeStretch(bool b);
-
+    /** Scale buffer */
     CSAMPLE *scale(double playpos, int buf_size, float *pBase=0, int iBaseLength=0);
-
-    /* This one is actually called from the engine
-     * Should be replaced by a call to setTempo.  */
-    double setRate(double rate);
-    
-    /* This one should be called instead of setRate */
-    double setTempo(double _tempo);
-
-    //flush buffer
+    /** Set tempo */
+    double setTempo(double dTempo);
+    /** Set base rate */
+    void setBaseRate(double dBaseRate);
+    /** Flush buffer */
     void clear();
 
 private:
-    CSAMPLE *scaleFast(double playpos, int buf_size, float *pBase=0, int iBaseLength=0);
-    
-    // reset does the real work of clear() 
-    void reset(double _playposition,bool _backwards);
-    bool _clear_pending;
-
-    // Info structure for keeping track of buffered sound data
-    ScaleBufferDescriptor *pBlocks;
-
-    /** True if currenty in fast mode */
-    bool m_bFastMode;
     /** Holds the playback direction */
-    bool backwards;
-    bool old_backwards;
-
+    bool m_bBackwards;
     /** Buffer used to reverse output from SoundTouch 
       * library when playback direction is backwards */
-    CSAMPLE *buffer_back, *buffer_fast;
-
-    /* SoundTouch time/pitch scaling lib */
-    SoundTouch *pSoundTouch;
-
-    /* Sample rate of soundfile last time checked */
-    uint oldSampleRate;
-
-    /* Index of the actual read position */
-    double readAheadPos;
-
-    /* Actual rate used when calling SoundTouch */
-    double rateUsed;
-
-    /* Actual tempo used when calling SoundTouch */
-    double tempoUsed;
-
-    /* EngineBuffer::getPlaySrate() returns 0 so this one replaces it for now */
-    uint getPlaySrate(){return 44100;};
-
+    CSAMPLE *buffer_back;
+    /** SoundTouch time/pitch scaling lib */
+    SoundTouch *m_pSoundTouch;
+    /** True if in pitch independent time stretch mode */
     bool m_bPitchIndpTimeStretch;
-
-    /** When in fast mode, returned samples are grouped in chunks. This variable hold how many samples are left
-      * of the current chunk the previous time scaleFast was called */
-    int m_iScaleFastSamplesRemainInChunk;
+    int m_iReadAheadPos;
+    /** Used when clear is called */
+    bool m_bClear;
 };
 
 #endif
