@@ -40,6 +40,7 @@ const int audioBeatMarkLen = 40;
 
 class EngineBuffer : public EngineObject
 {
+	Q_OBJECT
 public:
     EngineBuffer(PowerMate *, const char *_group, WVisual *pVisual);
     ~EngineBuffer();
@@ -57,15 +58,15 @@ public:
     /** Notify used to call seek when playpos slider changes */
     Monitor visualPlaypos;
     float visualRate;
-private:
-    void controlSeek(double);
-    void controlPlay();
-    void controlCueGoto();
-    void controlCueSet();
-    void controlCuePreview();
-        
+public slots:
+    void slotControlPlay(double);
+    void slotControlSeek(double);
+    void slotControlCueGoto(double=0);
+    void slotControlCueSet(double=0);
+    void slotControlCuePreview(double);
 //    void bpmChange(double);
-    
+
+private:
     /** Pointer to reader */
     Reader *reader;    
     /** Buffer used in the process() */

@@ -18,14 +18,18 @@
 #ifndef ENGINEOBJECT_H
 #define ENGINEOBJECT_H
 
+#include <qobject.h>
 #include "mixxxview.h"
 #include "defs.h"
+
+class EngineObject;
 
 /**
   *@author Tue and Ken Haste Andersen
   */
 
-class EngineObject {
+class EngineObject : public QObject {
+	Q_OBJECT
 public: 
     EngineObject();
     virtual ~EngineObject();
@@ -37,5 +41,6 @@ protected:
 private:
     static int PLAY_SRATE;
 };
+
 
 #endif

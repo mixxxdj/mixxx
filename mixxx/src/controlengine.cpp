@@ -25,7 +25,7 @@ ControlEngine::ControlEngine(ControlObject *_controlObject)
 {
     controlObject = _controlObject;
 
-    notifyobj = 0;
+//    notifyobj = 0;
     
     // Insert this object into the static list of controlEngines
 //    list->append(this);
@@ -47,11 +47,13 @@ ControlEngine::~ControlEngine()
     delete controlObject;
 }
 
+/*
 void ControlEngine::setNotify(EngineObject *_notifyobj, EngineMethod _notifymethod)
 {
     notifyobj = _notifyobj;
     notifymethod = _notifymethod;
 }
+*/
 
 double ControlEngine::get()
 {
@@ -69,8 +71,10 @@ void ControlEngine::set(double v)
 void ControlEngine::setExtern(double v)
 {
     value = v;
-    if (notifyobj!=0)
-        (notifyobj->*notifymethod)(v);
+	emit(valueChanged(v));
+	//	if (notifyobj!=0)
+//		notifyobj->controlEventHandler(notifymethod,v);
+        //(notifyobj->*notifymethod)(v);
 }
 
 void ControlEngine::add(double v)
