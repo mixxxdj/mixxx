@@ -20,6 +20,7 @@
 
 #include "controlobject.h"
 #include "defs.h"
+#include "wbulb.h"
 #include <sys/timeb.h>
 
 /**
@@ -34,7 +35,7 @@ class ControlPushButton : public ControlObject
 {
  Q_OBJECT
 public:
-  ControlPushButton(ConfigKey key, buttonType);
+  ControlPushButton(ConfigKey key, buttonType, WBulb* = 0);
   ~ControlPushButton();
   char* print();
   valueType getValue();
@@ -57,6 +58,7 @@ protected:
   buttonType kind;  // Determine whether the button is latching or not.
   valueType invert(valueType value);
   MidiObject *midi;
+  WBulb *led;
 };
 
 #endif

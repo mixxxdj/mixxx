@@ -7,6 +7,8 @@
 #include "controlpotmeter.h"
 #include "wknob.h"
 #include "dlgflanger.h"
+#include "controlpushbutton.h"
+#include "qpushbutton.h"
 
 const int max_delay = 5000;  
 
@@ -17,14 +19,15 @@ public:
   ~EngineFlanger();
   CSAMPLE *process(const CSAMPLE *, const int);
   ControlPotmeter *potmeterDepth, *potmeterDelay, *potmeterLFOperiod;
-  bool channel_A, channel_B;
+  ControlPushButton *pushbuttonChannelA, *pushbuttonChannelB;
+  valueType channel_A, channel_B;
 
 public slots:
   void slotUpdateDepth(FLOAT_TYPE);
   void slotUpdateDelay(FLOAT_TYPE);
   void slotUpdateLFOperiod(FLOAT_TYPE);
-  void slotUpdateChannelSelectA(bool); 
-  void slotUpdateChannelSelectB(bool); 
+  void slotUpdateChannelSelectA(valueType); 
+  void slotUpdateChannelSelectB(valueType); 
 
 private:
   CSAMPLE *process_buffer, *delay_buffer;

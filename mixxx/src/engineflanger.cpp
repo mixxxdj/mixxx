@@ -23,22 +23,30 @@ EngineFlanger::EngineFlanger(DlgFlanger *_dlg, const char *group)
     delay_buffer = new CSAMPLE[max_delay];
 
     // Init. potmeters
-    potmeterDepth = new ControlPotmeter(ConfigKey(group, "flanger depth"), 0., 1.);
-    connect(potmeterDepth, SIGNAL(valueChanged(FLOAT_TYPE)), this, SLOT(slotUpdateDepth(FLOAT_TYPE)));
+    potmeterDepth = new ControlPotmeter(ConfigKey(group, "depth"), 0., 1.);
     connect(dlg->DialDepth, SIGNAL(valueChanged(int)), potmeterDepth, SLOT(slotSetPosition(int))); 
+    connect(potmeterDepth, SIGNAL(valueChanged(FLOAT_TYPE)), this, SLOT(slotUpdateDepth(FLOAT_TYPE)));
 
-    potmeterDelay = new ControlPotmeter(ConfigKey(group, "flanger delay"), 50, 1000);
-    connect(potmeterDelay, SIGNAL(valueChanged(FLOAT_TYPE)), this, SLOT(slotUpdateDelay(FLOAT_TYPE)));
+    potmeterDelay = new ControlPotmeter(ConfigKey(group, "delay"), 50, 1000);
     connect(dlg->DialDelay, SIGNAL(valueChanged(int)), potmeterDelay, SLOT(slotSetPosition(int))); 
+    connect(potmeterDelay, SIGNAL(valueChanged(FLOAT_TYPE)), this, SLOT(slotUpdateDelay(FLOAT_TYPE)));
 
-    potmeterLFOperiod = new ControlPotmeter(ConfigKey(group, "flanger LFO period"), 5000, 80000);
-    connect(potmeterLFOperiod, SIGNAL(valueChanged(FLOAT_TYPE)), this, SLOT(slotUpdateLFOperiod(FLOAT_TYPE)));
+    potmeterLFOperiod = new ControlPotmeter(ConfigKey(group, "LFO period"), 5000, 80000);
     connect(dlg->DialPeriod, SIGNAL(valueChanged(int)), potmeterLFOperiod, SLOT(slotSetPosition(int))); 
+    connect(potmeterLFOperiod, SIGNAL(valueChanged(FLOAT_TYPE)), this, SLOT(slotUpdateLFOperiod(FLOAT_TYPE)));
 
     // Init. channel selects:
-    channel_A = channel_B = false;
-    connect(dlg->RadioButtonChannelA, SIGNAL(toggled(bool)), this, SLOT(slotUpdateChannelSelectA(bool)));
-    connect(dlg->RadioButtonChannelB, SIGNAL(toggled(bool)), this, SLOT(slotUpdateChannelSelectB(bool)));
+    pushbuttonChannelA = new ControlPushButton( ConfigKey(group, "channel A"), simulated_latching, 
+						dlg->BulbChannelA);
+    pushbuttonChannelB = new ControlPushButton( ConfigKey(group, "channel B"), simulated_latching, 
+						dlg->BulbChannelB);
+    connect(dlg->PushButtonChannelA, SIGNAL(pressed()), pushbuttonChannelA, SLOT(pressed()));
+    connect(dlg->PushButtonChannelA, SIGNAL(released()), pushbuttonChannelA, SLOT(released()));
+    connect(pushbuttonChannelA, SIGNAL(valueChanged(valueType)), this, SLOT(slotUpdateChannelSelectA(valueType)));
+    connect(dlg->PushButtonChannelB, SIGNAL(pressed()), pushbuttonChannelB, SLOT(pressed()));
+    connect(dlg->PushButtonChannelB, SIGNAL(released()), pushbuttonChannelB, SLOT(released()));
+    connect(pushbuttonChannelB, SIGNAL(valueChanged(valueType)), this, SLOT(slotUpdateChannelSelectB(valueType)));
+    channel_A = channel_B = off;
 
     // Reset:
     delay_pos = 0;
@@ -60,26 +68,26 @@ void EngineFlanger::slotUpdateDepth(FLOAT_TYPE newvalue) {
 
 void EngineFlanger::slotUpdateDelay(FLOAT_TYPE newvalue) {
     average_delay_length = (int)newvalue;
-    LFOamplitude = 0.9*average_delay_length;
+    LFOamplitude = (int)(0.9*average_delay_length);
 }
 
 void EngineFlanger::slotUpdateLFOperiod(FLOAT_TYPE newvalue) {
     LFOperiod = (int) newvalue;
 }
 
-void EngineFlanger::slotUpdateChannelSelectA(bool newvalue) {
+void EngineFlanger::slotUpdateChannelSelectA(valueType newvalue) {
     channel_A = newvalue;
     if (channel_A)  {
-	channel_B = false;
-	dlg->RadioButtonChannelB->setChecked(false);
-    }
+	channel_B = off;
+	pushbuttonChannelB->setValue(off);
+    } 
 }
 
-void EngineFlanger::slotUpdateChannelSelectB(bool newvalue) {
+void EngineFlanger::slotUpdateChannelSelectB(valueType newvalue) {
     channel_B = newvalue;
     if (channel_B) {
-	channel_A = false;
-	dlg->RadioButtonChannelA->setChecked(false);
+	channel_A = off;
+	pushbuttonChannelA->setValue(off);
     }
 }
 
