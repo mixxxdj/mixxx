@@ -519,13 +519,11 @@ bool MixxxApp::queryExit()
 
 void MixxxApp::slotFileOpen()
 {
-    QFileDialog* fd = new QFileDialog(this, QString::null, true);
-    fd->setCaption(QString("Choose a music file"));
-    fd->setMode(QFileDialog::ExistingFile);
-    if (fd->exec() == QDialog::Accepted)
-    {
-        m_pTracks->loadTrack1(fd->selectedFile());
-    }
+    QString s = QFileDialog::getOpenFileName(config->getValueString(ConfigKey("[Playlist]","Directory")),
+                                             "Audio (*.wav *.ogg *.mp3)",
+                                             this,
+                                             "Open file");
+    m_pTracks->loadTrack1(s);
 }
 
 void MixxxApp::slotFileQuit()
