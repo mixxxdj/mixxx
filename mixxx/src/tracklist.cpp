@@ -163,7 +163,7 @@ TrackList::~TrackList()
 		delete m_lPlaylist.at(i);
     
     // Delete all the tracks:
-    for (unsigned int i=0; i<m_lTracks.count(); i++)
+    for (i=0; i<m_lTracks.count(); i++)
         delete m_lTracks.at(i);
 }
 //Loads the Main Collection into m_lTracks
@@ -226,7 +226,7 @@ void TrackList::UpdateTracklistFromPls(){
 	}
 	// Find the track which has been played the most times:
 	m_iMaxTimesPlayed = 1;
-	for (unsigned int i=0; i<m_lPlaylist.count(); i++)
+	for (i=0; i<m_lPlaylist.count(); i++)
 		if ( m_lPlaylist.at(i)->getTimesPlayed() > m_iMaxTimesPlayed)
 			m_iMaxTimesPlayed = m_lPlaylist.at(i)->getTimesPlayed();
 
@@ -267,7 +267,7 @@ void TrackList::UpdateTracklist(QDomDocument * domXML)
 	bool trackExistsinTable = false;
 	
 	if(iRow !=0)
-	for(int i = 0; i< iRow;i++){	 
+	for(unsigned int i = 0; i< iRow;i++){	 
 		int idx = m_pTableTracks->text(i, COL_INDEX).toInt();
 		if(Track->m_iIndex == idx){
 		trackExistsinTable = true;
@@ -290,7 +290,7 @@ void TrackList::UpdateTracklist(QDomDocument * domXML)
 
 	// Find the track which has been played the most times:
 	m_iMaxTimesPlayed = 1;
-	for (unsigned int i=0; i<m_lPlaylist.count(); i++)
+	for (i=0; i<m_lPlaylist.count(); i++)
 		if ( m_lPlaylist.at(i)->getTimesPlayed() > m_iMaxTimesPlayed)
 			m_iMaxTimesPlayed = m_lPlaylist.at(i)->getTimesPlayed();
 
