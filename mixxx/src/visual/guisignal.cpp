@@ -18,6 +18,8 @@
 #include "guisignal.h"
 #include "signalvertexbuffer.h"
 #include "../controlpotmeter.h"
+#include "visualdatasignal.h"
+#include "visualdatamark.h"
 #include <math.h>
 
 int GUISignal::idCount = 0;
@@ -25,40 +27,55 @@ int GUISignal::idCount = 0;
 /**
  * Default Consructor.
  */
-GUISignal::GUISignal(SignalVertexBuffer *_buffer, FastVertexArray *vertex, const char *group) : fishEyeSignal(_buffer->buffer,vertex), preSignal(_buffer->buffer,vertex), postSignal(_buffer->buffer,vertex), signal(_buffer->buffer,vertex)
+GUISignal::GUISignal(SignalVertexBuffer *_buffer, FastVertexArray *vertex, const char *group, QString qsVisualDataType)
 {
-  idCount++;
-  id = idCount;
+    idCount++;
+    id = idCount;
 
-  buffer = _buffer;
-  length = 50;
-  height = 20;
-  depth  = 10;
+    buffer = _buffer;
+    length = 50;
+    height = 20;
+    depth  = 10;
 
-  angle = 0;
-  rx = 1;ry=0;rz=0;
+    angle = 0;
+    rx = 1;ry=0;rz=0;
 
-  ox = -25;
-  oy = oz = 0;
+    ox = -25;
+    oy = oz = 0;
 
-  fishEyeMode = false;
+    fishEyeMode = false;
 
-  fishEyeLengthScale = 0.5f;
-  fishEyeSignalFraction = 0.2f;
-  signalScale = 1.0f;
+    fishEyeLengthScale = 0.5f;
+    fishEyeSignalFraction = 0.2f;
+    signalScale = 1.0f;
 
-  box = new VisualBox(id);
-  playPosMarker = new VisualBox(id);
+    if (qsVisualDataType=="signal")
+    {
+        fishEyeSignal = new VisualDataSignal(buffer->buffer, vertex);
+        preSignal     = new VisualDataSignal(buffer->buffer, vertex);
+        postSignal    = new VisualDataSignal(buffer->buffer, vertex);
+        signal        = new VisualDataSignal(buffer->buffer, vertex);
+    }
+    else if (qsVisualDataType=="mark")
+    {
+        fishEyeSignal = new VisualDataMark(buffer->buffer, vertex);
+        preSignal     = new VisualDataMark(buffer->buffer, vertex);
+        postSignal    = new VisualDataMark(buffer->buffer, vertex);
+        signal        = new VisualDataMark(buffer->buffer, vertex);
+    }
+        
+    box = new VisualBox(id);
+    playPosMarker = new VisualBox(id);
 
-  doLayout();
+    doLayout();
 
-  boxMaterial = boxWireMaterial = 0;
-  playPosMarkerMaterial = 0;
+    boxMaterial = boxWireMaterial = 0;
+    playPosMarkerMaterial = 0;
 
-  sliderFishEyeSignalFraction = new ControlPotmeter(ConfigKey(group,"FishEyeSignalFraction"),0.001f,0.5f);
+    sliderFishEyeSignalFraction = new ControlPotmeter(ConfigKey(group,"FishEyeSignalFraction"),0.001f,0.5f);
 //  connect(sliderFishEyeSignalFraction, SIGNAL(valueChanged(FLOAT_TYPE)), this, SLOT(setFishEyeSignalFraction(FLOAT_TYPE)));
 
-  sliderFishEyeLengthScale = new ControlPotmeter(ConfigKey(group,"FishEyeLengthScale"),0.05f,0.95f);
+    sliderFishEyeLengthScale = new ControlPotmeter(ConfigKey(group,"FishEyeLengthScale"),0.05f,0.95f);
 //  connect(sliderFishEyeLengthScale, SIGNAL(valueChanged(FLOAT_TYPE)), this, SLOT(setFishEyeLengthScale(FLOAT_TYPE)));
 };
 
@@ -100,9 +117,9 @@ void GUISignal::setBoxWireMaterial(Material * material)
  */
 void GUISignal::setSignalMaterial(Material * material)
 {
-    preSignal.setMaterial(material);
-    postSignal.setMaterial(material);
-    signal.setMaterial(material);
+    preSignal->setMaterial(material);
+    postSignal->setMaterial(material);
+    signal->setMaterial(material);
 };
 
 /**
@@ -110,7 +127,7 @@ void GUISignal::setSignalMaterial(Material * material)
  */
 void GUISignal::setFishEyeSignalMaterial(Material * material)
 {
-    fishEyeSignal.setMaterial(material);
+    fishEyeSignal->setMaterial(material);
 };
 
 /**
@@ -155,18 +172,18 @@ void GUISignal::draw(GLenum mode)
         i3.len2 = noutside-i3.len1;
         //std::cout << "i3: len1: " << i3.len1 << ", len2: " << i3.len2 << "\n";
 
-        preSignal.setVertexArray(i1);
-        fishEyeSignal.setVertexArray(i2);
-        postSignal.setVertexArray(i3);
+        preSignal->setVertexArray(i1);
+        fishEyeSignal->setVertexArray(i2);
+        postSignal->setVertexArray(i3);
 
-        preSignal.draw(mode);
-        postSignal.draw(mode);
-        fishEyeSignal.draw(mode);
+        preSignal->draw(mode);
+        postSignal->draw(mode);
+        fishEyeSignal->draw(mode);
     }
     else
     {
-        signal.setVertexArray(b);
-        signal.draw(mode);
+        signal->setVertexArray(b);
+        signal->draw(mode);
     }
 
     if (boxWireMaterial)
@@ -303,78 +320,75 @@ float GUISignal::getDepth()
  */
 void GUISignal::doLayout()
 {
+    //--- Argh, in order to support rotations we must rotate the n-vector!!!
+    float nx = 1;
+    float ny = 0;
+    float nz = 0;
 
-  //--- Argh, in order to support rotations we must rotate the n-vector!!!
-  float nx = 1;
-  float ny = 0;
-  float nz = 0;
+    if(fishEyeMode)
+    {
+        float fishEyeLength = fishEyeLengthScale*length;
+        float nonFishEyeLength = (length- fishEyeLength)/2.0f;
 
-  if(fishEyeMode){
+        float ox2 = ox + nx*nonFishEyeLength;
+        float oy2 = oy + ny*nonFishEyeLength;
+        float oz2 = oz + nz*nonFishEyeLength;
+        float ox3 = ox2 + nx*fishEyeLength;
+        float oy3 = oy2 + ny*fishEyeLength;
+        float oz3 = oz2 + nz*fishEyeLength;
+
+        preSignal->setOrigo(ox,oy,oz);
+        preSignal->setLength(nonFishEyeLength);
+        preSignal->setHeight(signalScale*height*2);
+        preSignal->setRotation(angle,rx,ry,rz);
+
+        fishEyeSignal->setOrigo(ox2,oy2,oz2);
+        fishEyeSignal->setLength(fishEyeLength);
+        fishEyeSignal->setHeight(signalScale*height*2);
+        fishEyeSignal->setRotation(angle,rx,ry,rz);
+
+        postSignal->setOrigo(ox3,oy3,oz3);
+        postSignal->setLength(nonFishEyeLength);
+        postSignal->setHeight(signalScale*height*2);
+        postSignal->setRotation(angle,rx,ry,rz);
+
+
+        box->setOrigo(ox2,oy2,oz2);
+        box->setLength(fishEyeLength);
+        box->setHeight(signalScale*height);
+        box->setDepth(depth);
+        box->setRotation(angle,rx,ry,rz);
+
+    }
+    else
+    {
+        signal->setOrigo(ox,oy,oz);
+        signal->setLength(length);
+        signal->setHeight(signalScale*height*2);
+        signal->setRotation(angle,rx,ry,rz);
     
-    float fishEyeLength = fishEyeLengthScale*length;
-    float nonFishEyeLength = (length- fishEyeLength)/2.0f;
+        box->setOrigo(ox,oy,oz);
+        box->setLength(length);
+        box->setHeight(height);
+        box->setDepth(depth);
+        box->setRotation(angle,rx,ry,rz);
+    }
 
-    float ox2 = ox + nx*nonFishEyeLength;
-    float oy2 = oy + ny*nonFishEyeLength;
-    float oz2 = oz + nz*nonFishEyeLength;
-    float ox3 = ox2 + nx*fishEyeLength;
-    float oy3 = oy2 + ny*fishEyeLength;
-    float oz3 = oz2 + nz*fishEyeLength;
+    float plength = length/300;
+    float pheight = height*1.05;
+    float pdepth = depth*1.05;
 
-    preSignal.setOrigo(ox,oy,oz);
-    preSignal.setLength(nonFishEyeLength);
-    preSignal.setHeight(signalScale*height*2);
-    preSignal.setRotation(angle,rx,ry,rz);
+    float offset = (length-plength)/2.0f;
 
-    fishEyeSignal.setOrigo(ox2,oy2,oz2);
-    fishEyeSignal.setLength(fishEyeLength);
-    fishEyeSignal.setHeight(signalScale*height*2);
-    fishEyeSignal.setRotation(angle,rx,ry,rz);
+    float px = ox + nx*offset; 
+    float py = oy + ny*offset;
+    float pz = oz + nz*offset;
 
-    postSignal.setOrigo(ox3,oy3,oz3);
-    postSignal.setLength(nonFishEyeLength);
-    postSignal.setHeight(signalScale*height*2);
-    postSignal.setRotation(angle,rx,ry,rz);
-
-
-    box->setOrigo(ox2,oy2,oz2);
-    box->setLength(fishEyeLength);
-    box->setHeight(signalScale*height);
-    box->setDepth(depth);
-    box->setRotation(angle,rx,ry,rz);
-
-  }
-  else
-  {
-
-    signal.setOrigo(ox,oy,oz);
-    signal.setLength(length);
-    signal.setHeight(signalScale*height*2);
-    signal.setRotation(angle,rx,ry,rz);
-    
-    box->setOrigo(ox,oy,oz);
-    box->setLength(length);
-    box->setHeight(height);
-    box->setDepth(depth);
-    box->setRotation(angle,rx,ry,rz);
-  }
-
-  float plength = length/300;
-  float pheight = height*1.05;
-  float pdepth = depth*1.05;
-
-  float offset = (length-plength)/2.0f;
-
-  float px = ox + nx*offset; 
-  float py = oy + ny*offset;
-  float pz = oz + nz*offset;
-
-  playPosMarker->setOrigo(px,py,pz);
-  playPosMarker->setLength(plength);
-  playPosMarker->setHeight(pheight);
-  playPosMarker->setDepth(pdepth);
-  playPosMarker->setRotation(angle,rx,ry,rz);
-
+    playPosMarker->setOrigo(px,py,pz);
+    playPosMarker->setLength(plength);
+    playPosMarker->setHeight(pheight);
+    playPosMarker->setDepth(pdepth);
+    playPosMarker->setRotation(angle,rx,ry,rz);
 };
 
 /**

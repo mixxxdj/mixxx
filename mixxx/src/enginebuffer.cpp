@@ -53,6 +53,8 @@ EngineBuffer::EngineBuffer(MixxxApp *_mixxx, QAction *actionAudioBeatMark, Power
     playcontrol = _playcontrol;
     group = _group;
     powermate = _powermate;
+
+    setNewPlaypos(0.);
     
     // Play button
     ControlPushButton *p = new ControlPushButton(ConfigKey(group, "play"));
@@ -156,7 +158,7 @@ const char *EngineBuffer::getGroup()
     return group;
 }
 
-int EngineBuffer::getPlaypos(int Srate)
+int EngineBuffer::getPlaypos(int) // int Srate
 {
     return 0; //(int)((CSAMPLE)visualPlaypos.read()/(2.*(CSAMPLE)file_srate/(CSAMPLE)Srate));
 }
@@ -205,7 +207,8 @@ CSAMPLE *EngineBuffer::process(const CSAMPLE *, const int buf_size)
     {
         // Try to fetch info from the reader
         bool readerinfo = false;
-        long int filepos_start, filepos_end;
+        long int filepos_start = 0;
+        long int filepos_end = 0;
         if (reader->enginelock.tryLock())
         {
             file_length_old = reader->getFileLength();

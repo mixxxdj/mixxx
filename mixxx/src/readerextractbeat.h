@@ -30,9 +30,9 @@ extern "C" {
 
 const CSAMPLE threshold = 5.;
 
-const CSAMPLE histMinBPM = 60.f;
-const CSAMPLE histMaxBPM = 200.f;
-const CSAMPLE histDownWrite = 0.9999f;
+const CSAMPLE histMinBPM = 70.f;
+const CSAMPLE histMaxBPM = 140.f;
+const CSAMPLE histDownWrite = 0.99999f;
 const int gaussWidth = 8; // Width of gauss/2
 
 /**

@@ -121,17 +121,17 @@ void ControlPushButton::setValue(int newvalue)
 
 void ControlPushButton::setWidget(QWidget *widget)
 {
-    connect(widget, SIGNAL(clicked()), this, SLOT(slotClicked()));
-    connect(this, SIGNAL(updateGUI(int)), widget, SLOT(setValue(int)));
+    QApplication::connect(widget, SIGNAL(clicked()), this, SLOT(slotClicked()));
+    QApplication::connect(this, SIGNAL(updateGUI(int)), widget, SLOT(setValue(int)));
 
     forceGUIUpdate();
 }
 
 void ControlPushButton::setAction(QAction *action)
 {
-    connect(action, SIGNAL(toggled(bool)), this, SLOT(slotSetPosition(bool)));
-    connect(this, SIGNAL(updateGUI(int)), this, SLOT(slotUpdateAction(int)));
-    connect(this, SIGNAL(updateAction(bool)), action, SLOT(setOn(bool)));
+    QApplication::connect(action, SIGNAL(toggled(bool)), this, SLOT(slotSetPosition(bool)));
+    QApplication::connect(this, SIGNAL(updateGUI(int)), this, SLOT(slotUpdateAction(int)));
+    QApplication::connect(this, SIGNAL(updateAction(bool)), action, SLOT(setOn(bool)));
 
     forceGUIUpdate();
 }

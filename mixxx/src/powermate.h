@@ -36,7 +36,7 @@ const int kiPowermateMidiDial = 0;
 const int kiPowermateMidiBtn = 1;
 
 const int kiPowermateBufferSize = 32;
-const int kiPowermateKnobIntegralLen = 40;
+const int kiPowermateKnobIntegralLen = 25;
 
 class PowerMate : public QThread
 {

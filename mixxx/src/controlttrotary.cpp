@@ -39,8 +39,15 @@ void ControlTTRotary::setValue(int v)
 
 void ControlTTRotary::slotSetPosition(int v)
 {
-    value = ((float)v-64.)/200.;
-//    qDebug("%f",value);
+    // Non-linear scaling
+    float value = ((((float)v-64.)*((float)v-64.))/64.)/100.;
+    if ((v-64.)<0)
+        value = -value;
+
+    // Linear scaling
+    //value = ((float)v-64.)/200.;
+
+//    qDebug("ControlTTRotary value %f",value);
 
     emitValueChanged(value);
 /*    if (v==0)

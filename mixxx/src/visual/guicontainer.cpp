@@ -19,7 +19,6 @@
 #include "fastvertexarray.h"
 #include "signalvertexbuffer.h"
 #include "guisignal.h"
-#include "visualsignal.h"
 #include "../defs.h"
 #include "../readerextract.h"
 
@@ -51,7 +50,7 @@ GUIContainer::GUIContainer(ReaderExtract *readerExtract, ControlPotmeter *playpo
     // Create objects
     buffer = new SignalVertexBuffer(readerExtract, playpos, vertex);
     //***********************
-    signal = new GUISignal(buffer,vertex,"" /*engineBuffer->getGroup()*/);
+    signal = new GUISignal(buffer,vertex,"" /*engineBuffer->getGroup()*/, readerExtract->getVisualDataType());
     
     signal->setBoxMaterial(&dblue);
     signal->setBoxWireMaterial(&lblue);
@@ -222,7 +221,7 @@ void GUIContainer::setupScene()
     purple.diffuse[0] = 62/255.f;
     purple.diffuse[1] = 0/255.f;
     purple.diffuse[2] = 62/255.f;
-    purple.diffuse[3] = 0.f;
+    purple.diffuse[3] = 1.0f;
     
     purple.specular[0] = 62/255.f;
     purple.specular[1] = 0.0f;

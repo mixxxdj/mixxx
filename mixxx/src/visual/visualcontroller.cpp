@@ -104,9 +104,6 @@ void VisualController::setupBlending()
     glEnable(GL_BLEND);
     //--- Transparency fog effects???? primitves should be sorted from nearst to farest
     glBlendFunc(GL_SRC_ALPHA, GL_ONE);
-//    glBlendFunc(GL_ONE,GL_ONE); //To powefull
-    //glBlendFunc(GL_ONE_MINUS_SRC_ALPHA,GL_ONE);
-    //glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 };
 
 /**
@@ -116,6 +113,7 @@ void VisualController::init()
 {
     //glClearColor(0.4f,0.4f,0.4f,0.0f);
     glClearColor(0.0f,0.f,0.0f,0.0f);
+//    glClearColor(1.0f,1.f,1.0f,0.1f);
 
     setupBackfaceCulling();
     setupZBuffer();
