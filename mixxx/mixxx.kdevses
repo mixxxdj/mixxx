@@ -1,35 +1,29 @@
 <?xml version="1.0" encoding="UTF-8"?><!DOCTYPE KDevPrjSession ><KDevPrjSession>
  <Mainframe MaximizeMode="0" />
- <DocsAndViews NumberOfDocuments="10" >
+ <DocsAndViews NumberOfDocuments="8" >
   <Doc0 CursorPosLine="0" Type="KWriteDoc" NumberOfViews="1" CursorPosCol="0" FileName="/home/haste/cvs/mixxx/mixxx/defs.h" >
-   <View0 Top="0" Width="752" Attach="0" Height="370" Left="0" Focus="0" Type="KWriteView" MinMaxMode="0" />
+   <View0 Top="0" Width="752" Attach="0" Height="429" Left="0" Focus="0" Type="KWriteView" MinMaxMode="0" />
   </Doc0>
-  <Doc1 CursorPosLine="60" Type="KWriteDoc" NumberOfViews="1" CursorPosCol="30" FileName="/home/haste/cvs/mixxx/mixxx/mixxxview.cpp" >
-   <View0 Top="0" Width="752" Attach="0" Height="370" Left="0" Focus="0" Type="KWriteView" MinMaxMode="0" />
-  </Doc1>
-  <Doc2 CursorPosLine="46" Type="KWriteDoc" NumberOfViews="1" CursorPosCol="0" FileName="/home/haste/cvs/mixxx/mixxx/mixxxview.h" >
-   <View0 Top="0" Width="752" Attach="0" Height="370" Left="0" Focus="0" Type="KWriteView" MinMaxMode="0" />
-  </Doc2>
-  <Doc3 CursorPosLine="36" Type="KWriteDoc" NumberOfViews="1" CursorPosCol="16" FileName="/home/haste/cvs/mixxx/mixxx/mixxx.h" >
-   <View0 Top="0" Width="752" Attach="0" Height="370" Left="0" Focus="0" Type="KWriteView" MinMaxMode="0" />
-  </Doc3>
-  <Doc4 CursorPosLine="433" Type="KWriteDoc" NumberOfViews="1" CursorPosCol="43" FileName="/home/haste/cvs/mixxx/mixxx/mixxx.cpp" >
-   <View0 Top="0" Width="752" Attach="0" Height="370" Left="0" Focus="0" Type="KWriteView" MinMaxMode="0" />
-  </Doc4>
-  <Doc5 CursorPosLine="55" Type="KWriteDoc" NumberOfViews="1" CursorPosCol="0" FileName="/home/haste/cvs/mixxx/mixxx/enginebuffer.h" >
+  <Doc1 CursorPosLine="36" Type="KWriteDoc" NumberOfViews="1" CursorPosCol="16" FileName="/home/haste/cvs/mixxx/mixxx/mixxx.h" >
    <View0 Top="0" Width="752" Attach="0" Height="627" Left="0" Focus="0" Type="KWriteView" MinMaxMode="0" />
+  </Doc1>
+  <Doc2 CursorPosLine="63" Type="KWriteDoc" NumberOfViews="1" CursorPosCol="62" FileName="/home/haste/cvs/mixxx/mixxx/mixxx.cpp" >
+   <View0 Top="0" Width="752" Attach="0" Height="429" Left="0" Focus="0" Type="KWriteView" MinMaxMode="0" />
+  </Doc2>
+  <Doc3 CursorPosLine="63" Type="KWriteDoc" NumberOfViews="1" CursorPosCol="75" FileName="/home/haste/cvs/mixxx/mixxx/enginebuffer.h" >
+   <View0 Top="0" Width="752" Attach="0" Height="429" Left="0" Focus="0" Type="KWriteView" MinMaxMode="0" />
+  </Doc3>
+  <Doc4 CursorPosLine="21" Type="KWriteDoc" NumberOfViews="1" CursorPosCol="17" FileName="/home/haste/cvs/mixxx/mixxx/enginebuffer.cpp" >
+   <View0 Top="0" Width="752" Attach="0" Height="429" Left="0" Focus="0" Type="KWriteView" MinMaxMode="0" />
+  </Doc4>
+  <Doc5 CursorPosLine="19" Type="KWriteDoc" NumberOfViews="1" CursorPosCol="0" FileName="/home/haste/cvs/mixxx/mixxx/playerportaudio.cpp" >
+   <View0 Top="0" Width="752" Attach="0" Height="429" Left="0" Focus="0" Type="KWriteView" MinMaxMode="0" />
   </Doc5>
-  <Doc6 CursorPosLine="69" Type="KWriteDoc" NumberOfViews="1" CursorPosCol="0" FileName="/home/haste/cvs/mixxx/mixxx/enginebuffer.cpp" >
-   <View0 Top="0" Width="752" Attach="0" Height="370" Left="0" Focus="0" Type="KWriteView" MinMaxMode="0" />
+  <Doc6 CursorPosLine="19" Type="KWriteDoc" NumberOfViews="1" CursorPosCol="0" FileName="/home/haste/cvs/mixxx/mixxx/playeralsa.cpp" >
+   <View0 Top="0" Width="752" Attach="0" Height="429" Left="0" Focus="1" Type="KWriteView" MinMaxMode="0" />
   </Doc6>
-  <Doc7 CursorPosLine="97" Type="KWriteDoc" NumberOfViews="1" CursorPosCol="4" FileName="/home/haste/cvs/mixxx/mixxx/playeralsa.cpp" >
-   <View0 Top="0" Width="752" Attach="0" Height="370" Left="0" Focus="1" Type="KWriteView" MinMaxMode="0" />
+  <Doc7 Type="CDocBrowser" NumberOfViews="1" FileName="file:/usr/lib/qt2/doc/html/qfileinfo.html#a9e3d2" >
+   <View Top="0" Width="752" Attach="0" Height="429" Left="0" Focus="0" Type="KHTMLView" MinMaxMode="0" />
   </Doc7>
-  <Doc8 CursorPosLine="46" Type="KWriteDoc" NumberOfViews="1" CursorPosCol="24" FileName="/home/haste/cvs/mixxx/mixxx/playeralsa.h" >
-   <View0 Top="0" Width="752" Attach="0" Height="370" Left="0" Focus="0" Type="KWriteView" MinMaxMode="0" />
-  </Doc8>
-  <Doc9 Type="CDocBrowser" NumberOfViews="1" FileName="file:/usr/lib/qt2/doc/html/qfileinfo.html#a9e3d2" >
-   <View Top="0" Width="752" Attach="0" Height="370" Left="0" Focus="0" Type="KHTMLView" MinMaxMode="0" />
-  </Doc9>
  </DocsAndViews>
 </KDevPrjSession>

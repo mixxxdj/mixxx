@@ -37,11 +37,11 @@ if test "X${CDPATH+set}" = Xset; then CDPATH=:; export CDPATH; fi
 available_tags=" CXX"
 
 ### BEGIN LIBTOOL CONFIG
-# Libtool was configured as follows, on host liqui2.isva.dtu.dk:
+# Libtool was configured as follows, on host sakaki:
 #
 # AR="" AR_FLAGS="" LTCC="gcc" CC="gcc" \
 # CFLAGS="-O2  " CPPFLAGS="" \
-# MAGIC_CMD="" LD="/usr/bin/ld" LDFLAGS="" LIBS="" \
+# MAGIC_CMD="" LD="/usr/i486-suse-linux/bin/ld" LDFLAGS="" LIBS="" \
 # LN_S="ln -s" NM="/usr/bin/nm -B" RANLIB="ranlib" STRIP="strip" \
 # AS="" DLLTOOL="" OBJDUMP="" \
 # objext="" exeext="" reload_flag=" -r" \
@@ -91,7 +91,7 @@ CC="gcc"
 with_gcc=yes
 
 # The linker used to build libraries.
-LD="/usr/bin/ld"
+LD="/usr/i486-suse-linux/bin/ld"
 
 # Whether we need hard or soft links.
 LN_S="ln -s"
@@ -5718,11 +5718,11 @@ build_old_libs=`case $build_libtool_libs in yes) echo no;; *) echo yes;; esac`
 # sh-indentation:2
 # End:
 ### BEGIN LIBTOOL TAG CONFIG: CXX
-# Libtool was configured as follows, on host liqui2.isva.dtu.dk:
+# Libtool was configured as follows, on host sakaki:
 #
 # AR="" AR_FLAGS="" LTCC="gcc" CC="c++" \
 # CFLAGS="-O2 -fno-exceptions -fno-check-new" CPPFLAGS="" \
-# MAGIC_CMD="" LD="/usr/bin/ld" LDFLAGS="" LIBS="" \
+# MAGIC_CMD="" LD="/usr/i486-suse-linux/bin/ld" LDFLAGS="" LIBS="" \
 # LN_S="ln -s" NM="/usr/bin/nm -B" RANLIB="ranlib" STRIP="strip" \
 # AS="" DLLTOOL="" OBJDUMP="" \
 # objext="" exeext="" reload_flag=" -r" \
@@ -5772,7 +5772,7 @@ CC="c++"
 with_gcc=yes
 
 # The linker used to build libraries.
-LD="/usr/bin/ld"
+LD="/usr/i486-suse-linux/bin/ld"
 
 # Whether we need hard or soft links.
 LN_S="ln -s"
@@ -5894,11 +5894,11 @@ striplib="strip --strip-unneeded"
 
 # Dependencies to place before the objects being linked to create a
 # shared library.
-predep_objects="/usr/lib/gcc-lib/i386-redhat-linux/2.96/../../../crti.o /usr/lib/gcc-lib/i386-redhat-linux/2.96/crtbeginS.o"
+predep_objects="/usr/lib/crti.o /usr/lib/gcc-lib/i486-suse-linux/2.95.3/crtbeginS.o"
 
 # Dependencies to place after the objects being linked to create a
 # shared library.
-postdep_objects="/usr/lib/gcc-lib/i386-redhat-linux/2.96/crtendS.o /usr/lib/gcc-lib/i386-redhat-linux/2.96/../../../crtn.o"
+postdep_objects="/usr/lib/gcc-lib/i486-suse-linux/2.95.3/crtendS.o /usr/lib/crtn.o"
 
 # Dependencies to place before the objects being linked to create a
 # shared library.
@@ -5910,7 +5910,7 @@ postdeps="-lstdc++ -lm -lgcc -lc -lgcc"
 
 # The library search path used internally by the compiler when linking
 # a shared library.
-compiler_lib_search_path="-L/usr/lib/gcc-lib/i386-redhat-linux/2.96 -L/usr/lib/gcc-lib/i386-redhat-linux/2.96/../../.."
+compiler_lib_search_path="-L/usr/lib/gcc-lib/i486-suse-linux/2.95.3 -L/usr/i486-suse-linux/lib"
 
 # Method to check whether dependent libraries are shared objects.
 deplibs_check_method="pass_all"
