@@ -16,6 +16,8 @@
  ***************************************************************************/
 
 #include "playerjack.h"
+#include <qmessagebox.h>
+#include <qapplication.h>
 
 PlayerJack::PlayerJack(ConfigObject<ConfigValue> *config, ControlObject *pControl) : Player(config,pControl), mLibJack("libjack.so")
 {
@@ -124,7 +126,10 @@ bool PlayerJack::open()
 
     /* tell the JACK server that we are ready to roll */
     if (jack_activate(client))
-        qFatal("Jack: Cannot activate client");
+    {
+        qDebug("Jack: Cannot activate client");
+        return false;
+    }
 
     // Connect to the ports
     QString name;
@@ -174,9 +179,6 @@ bool PlayerJack::open()
     }
 
     m_bOpen = true;
-
-    // FIX ME: RETURN FALSE IF NO DEVICES WERE OPENED!!!
-
     return true;
 }
 
@@ -203,7 +205,7 @@ void PlayerJack::setDefaults()
         m_pConfig->set(ConfigKey("[Soundcard]","DeviceMasterLeft"),ConfigValue("None"));
 
     // Set second interface to master right
-    ++it;
+    if (*it) ++it;
     if (*it)
         m_pConfig->set(ConfigKey("[Soundcard]","DeviceMasterRight"),ConfigValue((*it)));
     else
@@ -230,14 +232,22 @@ QStringList PlayerJack::getInterfaces()
 {
     QStringList result;
 
-    if ((ports = jack_get_ports (client, 0, 0, JackPortIsPhysical|JackPortIsInput)) == 0)
-        qFatal("Jack: Cannot find any physical playback ports");
-
-    int i=0;
-    while (ports[i]!=0)
+    if (!client && !initialize())
     {
-        result.append(ports[i]);
-        ++i;
+        qDebug("Jack: Failed to reinitialize the connection to Jack");
+        return result;
+    }
+
+    if ((ports = jack_get_ports (client, 0, 0, JackPortIsPhysical|JackPortIsInput)) == 0)
+        qDebug("Jack: Cannot find any physical playback ports");
+    else
+    {
+        int i=0;
+        while (ports[i]!=0)
+        {
+            result.append(ports[i]);
+            ++i;
+        }
     }
 
     return result;
@@ -246,7 +256,10 @@ QStringList PlayerJack::getInterfaces()
 QStringList PlayerJack::getSampleRates()
 {
     QStringList result;
-    result.append(QString("%1").arg((int)jack_get_sample_rate(client)));
+
+    if (client)
+        result.append(QString("%1").arg((int)jack_get_sample_rate(client)));
+
     return result;
 }
 
@@ -291,27 +304,16 @@ void PlayerJack::callbackSetBufferSize(int iBufferSize)
 
 void PlayerJack::callbackShutdown()
 {
-    qWarning("Jack is killing our connection.");
     client = 0;
+    m_bOpen = false;
+    m_pConfig->set(ConfigKey("[Soundcard]","SoundApi"), ConfigValue("None"));
 
-    //exit(-1);
-
-/*
-    if ((client = jack_client_new("Mixxx")) == 0)
-    {
-        qFatal("Jack server not running.");
-    }
-
-    output_master_left  = jack_port_register(client, "Master left", JACK_DEFAULT_AUDIO_TYPE, JackPortIsOutput, 0);
-    output_master_right = jack_port_register(client, "Master right", JACK_DEFAULT_AUDIO_TYPE, JackPortIsOutput, 0);
-    output_head_left    = jack_port_register(client, "Head left", JACK_DEFAULT_AUDIO_TYPE, JackPortIsOutput, 0);
-    output_head_right   = jack_port_register(client, "Head right", JACK_DEFAULT_AUDIO_TYPE, JackPortIsOutput, 0);
-*/
+    qWarning("Jack connection was killed.\n\nThis is probably due to a high CPU load. Try reducing\nthe sound quality and/or disable the waveform displays.");
 }
 
 void jackError(const char *desc)
 {
-    qWarning("Jack experienced an error: %s", desc);
+    qDebug("Jack experienced an error: %s", desc);
 }
 
 int jackProcess(jack_nframes_t nframes, void *arg)

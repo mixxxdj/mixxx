@@ -40,7 +40,7 @@ MidiObjectWin::MidiObjectWin(ConfigObject<ConfigValueMidi> *c, QApplication *a, 
         devOpen(device);
     else
         if (devices.count()==0)
-            qWarning("MIDI: No MIDI devices available.");
+            qDebug("MIDI: No MIDI devices available.");
         else
             devOpen(devices.first());
 }

@@ -19,7 +19,7 @@ WINPA = DIRECTSOUND
 
 # Use this definition on Linux if Mixxx should be statically linked with libmad,
 # libid3tag, fftw, ogg, vorbis and audiofile
-unix:LINLIBPATH = ../../mixxx-linlib
+#unix:LINLIBPATH = ../../mixxx-linlib
 
 # Include for unix dependencies. (19/12/2003, J_Zar)
 include( mixxx.depend )
@@ -319,8 +319,8 @@ IMAGES += icon.png
 DEFINES += SETTINGS_FILE=$$SETTINGS_FILE TRACK_FILE=$$TRACK_FILE
 unix:TEMPLATE = app
 win32:TEMPLATE = vcapp
-CONFIG += qt thread warn_off release
-DEFINES += QT_NO_CHECK
-#CONFIG += qt thread warn_on debug
+#CONFIG += qt thread warn_off release
+#DEFINES += QT_NO_CHECK
+CONFIG += qt thread warn_on debug
 DBFILE = mixxx.db
 LANGUAGE = C++

@@ -145,7 +145,7 @@ TrackInfoObject *TrackCollection::getTrack(QString location)
             }
             else
             {
-                //qWarning("Could not parse %s", file.fileName().latin1());
+                //qDebug("Could not parse %s", file.fileName().latin1());
                 delete pTrack;
             }
         }

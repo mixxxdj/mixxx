@@ -40,7 +40,7 @@ DlgPrefSound::DlgPrefSound(QWidget *parent, PlayerProxy *_player,
         config->set(ConfigKey("[Soundcard]","SoundQuality"),ConfigValue(4));
 
     // Sound quality slider updates
-    SliderSoundQuality->setValue(4-config->getValueString(ConfigKey("[Soundcard]","SoundQuality")).toInt());
+    SliderSoundQuality->setValue(2+4-config->getValueString(ConfigKey("[Soundcard]","SoundQuality")).toInt());
 
     // Apply changes whenever apply signal is emitted
     connect(ComboBoxSoundcardMasterLeft,  SIGNAL(activated(int)),    this, SLOT(slotApply()));
@@ -49,7 +49,7 @@ DlgPrefSound::DlgPrefSound(QWidget *parent, PlayerProxy *_player,
     connect(ComboBoxSoundcardHeadRight,   SIGNAL(activated(int)),    this, SLOT(slotApply()));
     connect(ComboBoxSamplerates,          SIGNAL(activated(int)),    this, SLOT(slotApply()));
     connect(ComboBoxSoundApi,             SIGNAL(activated(int)),    this, SLOT(slotApplyApi()));
-    connect(SliderLatency,                SIGNAL(valueChanged(int)), this, SLOT(slotApply()));
+    connect(SliderLatency,                SIGNAL(sliderMoved(int)),  this, SLOT(slotApply()));
     connect(SliderSoundQuality,           SIGNAL(valueChanged(int)), this, SLOT(slotApply()));
     connect(SliderSoundQuality,           SIGNAL(valueChanged(int)), this, SLOT(slotApply()));
 }
@@ -69,7 +69,7 @@ void DlgPrefSound::slotUpdate()
     ComboBoxSoundcardMasterLeft->insertItem("None");
     it = interfaces.begin();
     j = 1;
-    while ((*it)!=0)
+    while ((*it))
     {
         ComboBoxSoundcardMasterLeft->insertItem((*it));
         if ((*it)==config->getValueString(ConfigKey("[Soundcard]","DeviceMasterLeft")))
@@ -83,7 +83,7 @@ void DlgPrefSound::slotUpdate()
     ComboBoxSoundcardMasterRight->insertItem("None");
     it = interfaces.begin();
     j = 1;
-    while ((*it)!=0)
+    while ((*it))
     {
         ComboBoxSoundcardMasterRight->insertItem((*it));
         if ((*it)==config->getValueString(ConfigKey("[Soundcard]","DeviceMasterRight")))
@@ -97,7 +97,7 @@ void DlgPrefSound::slotUpdate()
     ComboBoxSoundcardHeadLeft->insertItem("None");
     it = interfaces.begin();
     j = 1;
-    while ((*it)!=0)
+    while ((*it))
     {
         ComboBoxSoundcardHeadLeft->insertItem((*it));
         if ((*it)==config->getValueString(ConfigKey("[Soundcard]","DeviceHeadLeft")))
@@ -111,7 +111,7 @@ void DlgPrefSound::slotUpdate()
     ComboBoxSoundcardHeadRight->insertItem("None");
     it = interfaces.begin();
     j = 1;
-    while ((*it)!=0)
+    while ((*it))
     {
         ComboBoxSoundcardHeadRight->insertItem((*it));
         if ((*it)==config->getValueString(ConfigKey("[Soundcard]","DeviceHeadRight")))
@@ -125,7 +125,7 @@ void DlgPrefSound::slotUpdate()
     QStringList srates = player->getSampleRates();
     it = srates.begin();
     j = 0;
-    while ((*it)!=0)
+    while ((*it))
     {
         ComboBoxSamplerates->insertItem((*it));
         if ((*it)==config->getValueString(ConfigKey("[Soundcard]","Samplerate")))
@@ -143,7 +143,7 @@ void DlgPrefSound::slotUpdate()
     QStringList api = player->getSoundApiList();
     it = api.begin();
     j = 1;
-    while ((*it)!=0)
+    while ((*it))
     {
         ComboBoxSoundApi->insertItem((*it));
         if ((*it)==config->getValueString(ConfigKey("[Soundcard]","SoundApi")))
@@ -191,8 +191,8 @@ void DlgPrefSound::slotApply()
     config->set(ConfigKey("[Soundcard]","Samplerate"), ConfigValue(temp));
     //config->set(ConfigKey("[Soundcard]","Bits"), ConfigValue(ComboBoxBits->currentText()));
     config->set(ConfigKey("[Soundcard]","Latency"), ConfigValue(getSliderLatencyMsec(SliderLatency->value())));
-    config->set(ConfigKey("[Soundcard]","SoundQuality"), ConfigValue(4-SliderSoundQuality->value()));
-
+    config->set(ConfigKey("[Soundcard]","SoundQuality"), ConfigValue(2+4-SliderSoundQuality->value()));
+    
     // Close devices, and open using config data
     player->close();
 

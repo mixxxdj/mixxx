@@ -31,10 +31,17 @@ public:
     EngineBufferScaleSRC(ReaderExtractWave *wave);
     ~EngineBufferScaleSRC();
     void setQuality(int);
+    /** Set fast mode on or off. In fast mode the lowest quality is selected. 
+      * When set to off, ie. normal mode, the previous selected quality is used */
+    void setFastMode(bool bMode);
     CSAMPLE *scale(double playpos, int buf_size);
     double setRate(double rate);
 private:
-    SRC_STATE *converter;
+    /** Pointer to converter objects of three different qualities, and a pointer to
+      * the current active object */
+    SRC_STATE *converter2, *converter3, *converter4, *converterActive;
+    /** Current quality */
+    int m_iQuality;
     SRC_DATA *data;
     /** Holds the playback direction */
     bool backwards;

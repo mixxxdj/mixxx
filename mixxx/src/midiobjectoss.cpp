@@ -35,7 +35,7 @@ MidiObjectOSS::MidiObjectOSS(ConfigObject<ConfigValueMidi> *c, QApplication *a, 
     bool device_valid = false; // Is true if device is a valid device name
     QDir dir("/dev");
     if (!dir.exists())
-        qWarning( "MidiObjectOSS: Cannot find /dev directory.");
+        qDebug( "MidiObjectOSS: Cannot find /dev directory.");
     else
     {
         // Search for /dev/midi* devices
@@ -59,7 +59,7 @@ MidiObjectOSS::MidiObjectOSS(ConfigObject<ConfigValueMidi> *c, QApplication *a, 
         devOpen(device);
     else
         if (devices.count()==0)
-            qWarning("MidiObjectOSS: No MIDI devices available.");
+            qDebug("MidiObjectOSS: No MIDI devices available.");
         else
             devOpen(devices.first());
 }
@@ -120,7 +120,7 @@ void MidiObjectOSS::run()
             int no = read(handle,&buffer[0],1);
             //qDebug("midi: %i",(short int)buffer[0]);
             if (no != 1)
-                qWarning("MidiObjectOSS: midiobject recieved %i bytes.", no);
+                qDebug("MidiObjectOSS: midiobject recieved %i bytes.", no);
         } while ((buffer[0] & 128) != 128 & requestStop==false); // Continue until we receive a status byte (bit 7 is set)
 
         if (requestStop==false)
@@ -134,7 +134,7 @@ void MidiObjectOSS::run()
             {
                 int no = read(handle,&buffer[i],1);
                 if (no != 1)
-                    qWarning("MidiObjectOSS: midiobject recieved %i bytes.", no);
+                    qDebug("MidiObjectOSS: midiobject recieved %i bytes.", no);
                 if (requestStop==true)
                     break;
             }

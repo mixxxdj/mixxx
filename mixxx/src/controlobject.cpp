@@ -350,7 +350,7 @@ bool ControlObject::kbdPress(QKeySequence k, bool release)
 void ControlObject::syncControlEngineObjects()
 {
     // If possible lock mutex and process queue
-    if (queueMutex.tryLock())
+//    if (queueMutex.tryLock())
     {
         //qDebug("queue len %i",queue.count());
 

@@ -44,7 +44,7 @@ MidiObjectPortMidi::MidiObjectPortMidi(ConfigObject<ConfigValueMidi> *c, QApplic
         devOpen(device);
     else
         if (devices.count()==0)
-            qWarning("PortMidi: No MIDI devices available.");
+            qDebug("PortMidi: No MIDI devices available.");
         else
             devOpen(devices.first());
 }

@@ -22,6 +22,7 @@ New since 1.2.1:
 - Drop files, from playlist, treeview or external file
   manager to one of the visuals, loads the track.
 - New and improved keymap
+- Optimized sound quality selection
 
 * REQUIREMENTS *********************************************
 Mixxx is depends on the following libraries:
