@@ -22,6 +22,7 @@
 #include <qaccel.h>
 #include <qpushbutton.h>
 #include <qtable.h>
+#include <qlistview.h>
 #include "qknob.h"
 
 #include "mixxx.h"
@@ -54,8 +55,8 @@ MixxxApp::MixxxApp()
   initView();
   qDebug("Init playlist");
   // Connect play list table selection with "play new file"
-  connect(view->playlist->TableList, SIGNAL(clicked(int,int,int,const QPoint &)),
-          this,                      SLOT(slotChangePlay(int,int,int, const QPoint &)));
+  connect(view->playlist->ListPlaylist, SIGNAL(clicked(QViewListItem)),
+          this,                         SLOT(slotChangePlay(QViewListItem &)));
 
   //viewToolBar->setOn(false);
   viewStatusBar->setOn(true);
@@ -66,17 +67,17 @@ MixxxApp::MixxxApp()
 
   qDebug("Init buffer 1...");
   buffer1 = new EngineBuffer(view->playcontrol1, 0, ADC3, PORT_D, midi,
-                             view->playlist->TableList->item(0,1)->text());
+                             view->playlist->ListPlaylist->firstChild()->text(1));
 
   qDebug("Init buffer 2...");
   buffer2 = new EngineBuffer(view->playcontrol2, 0, 0, 0, midi,
-                             view->playlist->TableList->item(1,1)->text());
+                             view->playlist->ListPlaylist->firstChild()->nextSibling()->text(1));
 
   channel1 = new EngineChannel(view->channel1, midi, ADC7, ADC6, ADC5, ADC4, 0);
   channel2 = new EngineChannel(view->channel2, midi, 0, 0, 0, 0, 0);
 
   qDebug("Init master...");
-  master = new EngineMaster(view->master, buffer1, buffer2, channel1, channel2, 0, 0, midi);
+  master = new EngineMaster(view->master, view->crossfader, buffer1, buffer2, channel1, channel2, 0, 0, midi);
 
   // Initialize player with a desired buffer size
   qDebug("Init player...");
@@ -460,9 +461,20 @@ void MixxxApp::slotChangePlay(int row,int col,int button, const QPoint &)
   player->stop();
 
   // Tell the buffer to get a new file:
-  buffer1->newtrack(view->playlist->TableList->item(row,1)->text());
+  //buffer1->newtrack(view->playlist->TableList->item(row,1)->text());
   // Start buffer and playback
   player->start(master);
 }
 
+void MixxxApp::slotChangePlay(QListViewItem *item)
+{
+  // stop playback and deallocate buffer
+  player->stop();
+
+  // Tell the buffer to get a new file:
+  buffer1->newtrack(item->text(1));
+
+  // Start buffer and playback
+  player->start(master);
+}
 

@@ -21,6 +21,7 @@
 // include files for QT
 #include <qwidget.h>
 #include <qlayout.h>
+#include <qlistview.h>
 
 // application specific includes
 #include "mixxxdoc.h"
@@ -28,6 +29,7 @@
 #include "dlgchannel.h"
 #include "dlgplaylist.h"
 #include "dlgmaster.h"
+#include "dlgcrossfader.h"
 
 /**
  * This class provides an incomplete base for your application view. 
@@ -43,6 +45,7 @@ class MixxxView : public QWidget
 	DlgChannel	*channel1, *channel2;
 	DlgPlaylist *playlist;
     DlgMaster *master;
+    DlgCrossfader *crossfader;
 
   protected slots:
     void slotDocumentChanged();
