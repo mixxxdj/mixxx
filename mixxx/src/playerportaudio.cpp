@@ -31,47 +31,68 @@ PlayerPortAudio::PlayerPortAudio(int size, std::vector<EngineObject *> *engines,
     const PaDeviceInfo *devInfo;
     for (int i=0; i<no; i++)
     {
-        // Add new PlayerInfo object to devices list
-        Player::Info *p = new Player::Info;
-        devices.append(p);
+		// Add the device if it is an output device:
         devInfo = Pa_GetDeviceInfo(i);
+		if (devInfo->maxOutputChannels != 0)
+		{
+			// Add new PlayerInfo object to devices list
+			Player::Info *p = new Player::Info;
+			devices.append(p);
+        
+	        // Name
+		    p->name = QString(devInfo->name);
 
-        // Name
-        p->name = QString(devInfo->name);
+			// Check for default device
+	        if (p->name == device)
+		        id = i;
 
-        // Check for default device
-        if (p->name == device)
-            id = i;
-
-        // Sample rates
-        for (int j=0; j<devInfo->numSampleRates; j++)
-            p->sampleRates.append((int)devInfo->sampleRates[j]);
-
-        // Bits
-        if (devInfo->nativeSampleFormats & paInt8)        p->bits.append(8);
-        if (devInfo->nativeSampleFormats & paInt16)       p->bits.append(16);
-        //if (devInfo->nativeSampleFormats & paPackedInt24) p->bits.append(24);
-        if (devInfo->nativeSampleFormats & paInt24)       p->bits.append(24);
-        if (devInfo->nativeSampleFormats & paInt32)       p->bits.append(32);
+			// Sample rates
+			if (devInfo->numSampleRates != -1)
+			{
+				for (int j=0; j<devInfo->numSampleRates; j++)
+					p->sampleRates.append((int)devInfo->sampleRates[j]);
+			} 
+			else 
+			{
+				// If we're just given a range of samplerates, then just
+				// assume some standard rates:
+				p->sampleRates.append(11025);
+				p->sampleRates.append(22050);
+				p->sampleRates.append(44100);
+				p->sampleRates.append(48000);
+				p->sampleRates.append(96000);
+			}
+	
+		    // Bits
+			if (devInfo->nativeSampleFormats & paInt8)        p->bits.append(8);
+	        if (devInfo->nativeSampleFormats & paInt16)       p->bits.append(16);
+		    //if (devInfo->nativeSampleFormats & paPackedInt24) p->bits.append(24);
+			if (devInfo->nativeSampleFormats & paInt24)       p->bits.append(24);
+			if (devInfo->nativeSampleFormats & paInt32)       p->bits.append(32);
+		}
     }
 
     // Get id of default playback device if ID of device was not found in previous loop
     if (id<0)
         id = Pa_GetDefaultOutputDeviceID();
+    devInfo = Pa_GetDeviceInfo(id);
+
+	//qWarning("Device %s, num rates %d",devInfo->name, devInfo->numSampleRates);
 
     // Ensure stereo is supported
-    devInfo = Pa_GetDeviceInfo(id);
     if (devInfo->maxOutputChannels < NO_CHANNELS)
         qFatal("PortAudio: Not enough channels available on default output device: %i",devInfo->maxOutputChannels);
 
     // Set sample rate to 44100 if possible, otherwise highest possible
-    int temp_sr = 0;
-    for (int i=0; i<=devInfo->numSampleRates; i++)
+    /*int temp_sr = 0;
+    {for (int i=0; i<=devInfo->numSampleRates; i++)
         if (devInfo->sampleRates[i] == 44100.)
             temp_sr = 44100;
+	}
     if (temp_sr == 0)
-        temp_sr = (int)devInfo->sampleRates[devInfo->numSampleRates-1];
-    if (!open(QString(devInfo->name),temp_sr,16,size))
+        temp_sr = (int)devInfo->sampleRates[devInfo->numSampleRates-1];*/
+
+    if (!open(QString(devInfo->name),44100,16,size))
         qFatal("PortAudio: Error opening device");
 }
 
@@ -90,7 +111,7 @@ bool PlayerPortAudio::open(QString name, int srate, int bits, int bufferSize)
         case 16: format = paInt16; break;
         case 24: format = paInt24; break;
         case 32: format = paInt32; break;
-        default: qWarning("PortAudio: Sample format not supported (%i bits)", bits); return false;
+        default: qFatal("PortAudio: Sample format not supported (%i bits)", bits); return false;
     }
 
     // Extract device information
@@ -98,12 +119,11 @@ bool PlayerPortAudio::open(QString name, int srate, int bits, int bufferSize)
     for (id=0; id<devices.count(); id++)
         if (name == devices.at(id)->name)
             break;
-
     // Try to open device 5 times before giving up!
     PaError err = 0;
     for (int i=0; i<5; i++)
     {
-        err = Pa_OpenStream(&stream,
+      err = Pa_OpenStream(&stream,
                         paNoDevice,         // no input device
                         0,                  // no input
                         format,
@@ -117,13 +137,14 @@ bool PlayerPortAudio::open(QString name, int srate, int bits, int bufferSize)
                         0,                  // number of buffers, if zero then use default minimum
                         paClipOff,          // we won't output out of range samples so don't bother clipping them
                         paCallback,
-                        this );
+                        this );*/
+
         if (err == paNoError)
             break;
     }
     if( err != paNoError )
     {
-        qDebug("PortAudio: Open stream error: %s", Pa_GetErrorText(err));
+        qFatal("PortAudio: Open stream error: %s", Pa_GetErrorText(err));
         return false;
     }
 

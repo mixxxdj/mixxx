@@ -20,11 +20,30 @@
 #include <qstring.h>
 #include <qtextcodec.h>
 #include <qtranslator.h>
+#include <qmessagebox.h> 
 
 #include "mixxx.h"
+    
+void MessageOutput( QtMsgType type, const char *msg )
+{
+        switch ( type ) {
+            case QtDebugMsg:
+                fprintf( stderr, "Debug: %s\n", msg );
+                break;
+            case QtWarningMsg:
+                fprintf( stderr, "Warning: %s\n", msg );
+				QMessageBox::warning(0, "Mixxx", msg);
+                break;
+            case QtFatalMsg:
+                fprintf( stderr, "Fatal: %s\n", msg );
+				QMessageBox::warning(0, "Mixxx", msg);
+                abort();                        // dump core on purpose
+    }
+}
 
 int main(int argc, char *argv[])
 {
+  qInstallMsgHandler( MessageOutput );
   QApplication a(argc, argv);
   a.setFont(QFont("helvetica", 12));
   QTranslator tor( 0 );
