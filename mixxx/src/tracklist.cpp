@@ -60,15 +60,12 @@ TrackList::TrackList( const QString sDirectory,const QString sPlaylistdir ,WTrac
     m_pNumberPos1 = pNumberPos1;
     m_pNumberPos2 = pNumberPos2;
     
-    m_iCurTrackIdxCh1 = -1;
+	m_iCurTrackIdxCh1 = -1;
     m_iCurTrackIdxCh2 = -1;                  
-    m_pTrack1 = 0;
-    m_pTrack2 = 0;
-
-    wTree = pTree;
+	wTree = pTree;
     wTree->m_sPlaylistdir = sPlaylistdir;
-    wTree->setRoot(m_sDirectory);
-    wTree->setPlaylist(wTree->m_sPlaylistdir);
+	wTree->setRoot(m_sDirectory);
+	wTree->setPlaylist(wTree->m_sPlaylistdir);
 	
 	//m_lTracks.setAutoDelete( TRUE ); // the list owns the objects
     
@@ -182,7 +179,7 @@ void TrackList::UpdateTracklist(QDomDocument * domXML)
     
 	if(!m_sDirectory.endsWith(".xml")){
 	    bFilesAdded = AddFiles(m_sDirectory.latin1(),domXML);
-	    iRow= m_pTableTracks->numRows();
+		iRow = m_pTableTracks->numRows();
     }else{
 		bFilesAdded = TRUE;
 		}
@@ -192,15 +189,16 @@ void TrackList::UpdateTracklist(QDomDocument * domXML)
 	
 	TrackInfoObject *Track;
 	for(Track = m_lTracks.first(); Track; Track = m_lTracks.next()){
+	//qDebug("Working on Track: %d",Track->m_iIndex);
 	bool trackExistsinTable = false;
-	for(int i = 0; i< m_pTableTracks->numRows();i++){	 
+	for(int i = 0; i< iRow;i++){	 
 		int idx = m_pTableTracks->text(i, COL_INDEX).toInt();
 		if(Track->m_iIndex == idx)
 		trackExistsinTable = true;
 	     
 		}
     if(!trackExistsinTable){
-	m_pTableTracks->insertRows(m_pTableTracks->numRows(), 1);	
+	m_pTableTracks->insertRows(iRow, 1);	
 	
 		if (Track->exists())
         {
@@ -244,17 +242,6 @@ void TrackList::loadTrack2(QString name)
         m_pText2->setText(t->getInfo());
     }
 }
-
-TrackInfoObject *TrackList::getTrackInfo1()
-{
-    return m_pTrack1;
-}
-
-TrackInfoObject *TrackList::getTrackInfo2()
-{
-    return m_pTrack2;
-}
-
 void TrackList::slotEndOfTrackCh1(double)
 {
     switch ((int)m_pEndOfTrackModeCh1->getValue())
@@ -421,17 +408,42 @@ void TrackList::WriteXML(QPtrList<TrackInfoObject> * tempTracks)
 	Adds the files given in <path> to the list of files.
 	Returns true if any new files were in fact added.
 */
-int TrackList::getTrackCount( QDomDocument * docXML ){
+int TrackList::getTrackCount(QDomDocument * docXML){
+	int count = 0;
+	
+	if(docXML == 0x0){
+	//qDebug("DocXML was null");
+	QFile opmlFile(wTree->m_sPlaylistdir);
+	docXML = new QDomDocument("Mixxx_Track_List");
+	//qDebug("PlaylistID is: %s", currentPlaylist.latin1());
+	if (!opmlFile.exists()){
+        
+	qDebug("Could not open the default playlist file!");
+	
+		}
+    if (!docXML->setContent(&opmlFile))
+    {
+        qDebug("Could not set content.");
+        opmlFile.close();
+        return count;
+        //WriteXML();
+    }
+    
+	opmlFile.close();
+    }
+	
 	QDomElement elementRoot = docXML->documentElement();
     // Get all the tracks written in the xml file:
     QDomNode node = elementRoot.firstChild();
-	int count = 0;
+	
 	while ( !node.isNull() )
     {
-	 if ( node.firstChild().isElement() && node.firstChild().nodeName() == "Track" )
-				 count++;
+	qDebug("Checking child"); 
+	if ( node.isElement() && node.nodeName() == "Track" )
+	 count++;
 	 node = node.nextSibling();
 	}
+	qDebug("Count is now: %d", count);
 	return count;
 }
 bool TrackList::AddFiles(const char *path, QDomDocument * docXML)
@@ -451,17 +463,19 @@ bool TrackList::AddFiles(const char *path, QDomDocument * docXML)
 	    else{
 		QFileInfo m_fileInfo(mFile);
 			
-		int iTrackNumber = 0;
 		
-		iTrackNumber = getTrackCount(docXML);
-			
+		
+		
+			int iTrackNumber = getTrackCount(docXML);
 		// Check if the file exists in the list:
             TrackInfoObject *Track;
 			Track = FileExistsInList( m_fileInfo.fileName(),docXML ); 
 	
 			if (!Track)
             {
-                Track = new TrackInfoObject( m_fileInfo.dir().absPath(), m_fileInfo.fileName() );
+                //qDebug("Single Track not found in list: %s", m_fileInfo.fileName().latin1());
+				
+				Track = new TrackInfoObject( m_fileInfo.dir().absPath(), m_fileInfo.fileName() );
                 Track->m_iIndex = iTrackNumber;
 				
                 // Append the track to the list of tracks:
@@ -510,26 +524,29 @@ bool TrackList::AddFiles(const char *path, QDomDocument * docXML)
         QFileInfo *fi;                          // pointer for traversing
 		
 		
-		int iTrackNumber = 0;
 		
-		iTrackNumber = m_lTracks.count();
 		
-        while ((fi=it.current()))
+		
+		int iTrackNumber = getTrackCount((QDomDocument*) 0x0);
+        
+		while ((fi=it.current()))
         {
-            
+           
 			// Check if the file exists in the list:
             TrackInfoObject *Track;
 			Track = FileExistsInList( fi->fileName(),docXML ); 
 			if (!Track)
             {
-                Track = new TrackInfoObject( dir.absPath(), fi->fileName() );
+               // qDebug("Found new Track while parsing dir.Filename: %s", fi->fileName().latin1());
+				
+				Track = new TrackInfoObject( dir.absPath(), fi->fileName() );
                 Track->m_iIndex = iTrackNumber;
 				
                 // Append the track to the list of tracks:
                 if (ParseHeader(Track) == OK)
                 {
                     m_lTracks.append(Track);
-                    //qDebug( "Found new track while looking through dir nonuser: %s", Track->getFilename().latin1() );
+                    qDebug( "Tracknumber %d", iTrackNumber );
                     bFoundFiles = true;
                 } 
                 else
@@ -630,7 +647,7 @@ TrackInfoObject *TrackList::FileExistsInList( const QString sFilename,QDomDocume
 void TrackList::slotChangePlay_1(int idx)
 {
     if (idx==-1)
-        idx =  m_pTableTracks->text(m_pTableTracks->currentRow(), COL_INDEX ).toInt();
+       idx =  m_pTableTracks->text(m_pTableTracks->currentRow(), COL_INDEX ).toInt();
 	
 	//(m_iCurTrackIdxCh1 = m_pTableTracks->text(m_pTableTracks->currentRow(), COL_INDEX ).toInt();
     
@@ -639,8 +656,6 @@ void TrackList::slotChangePlay_1(int idx)
     //qDebug("Working on : %s",track->getFilename().latin1());
     if (track && track->m_iIndex == idx)
     {
-        m_pTrack1 = track;
-
         // Update score:
         track->incTimesPlayed();
         if (track->getTimesPlayed() > m_iMaxTimesPlayed)
@@ -673,8 +688,6 @@ void TrackList::slotChangePlay_2(int idx)
         
     if (track && track->m_iIndex == idx)
     {
-        m_pTrack2 = track;
-
         // Update score:
         track->incTimesPlayed();
         if (track->getTimesPlayed() > m_iMaxTimesPlayed)
@@ -1169,9 +1182,8 @@ void TrackList::slotUpdateTracklist( QString sDir )
         //WriteXML();
     }
     opmlFile.close();
-    // Delete contents of tabletrack
-    m_pTableTracks->setNumRows(0);
-
+  
+	
     // Set the new directory:
     m_sDirectory = sDir;
 	if(sDir.endsWith(".xml")){
@@ -1179,7 +1191,10 @@ void TrackList::slotUpdateTracklist( QString sDir )
     {
       m_lTracks.removeFirst(); //Delete All old Tracks
     }	
-		loadPlaylist( sDir , &domXML);
+	
+	// Delete contents of tabletrack
+    m_pTableTracks->setNumRows(0);
+	loadPlaylist( sDir , &domXML);
     
 	}	
 	// Make the newlist:
