@@ -70,11 +70,18 @@ ReaderExtractBeat::ReaderExtractBeat(ReaderExtract *input, EngineBuffer *pEngine
 
 ReaderExtractBeat::~ReaderExtractBeat()
 {
-    qDebug("del");
+    // Seg faults sometimes when deleting this object?!
+    return;
+
+    qDebug("del 1");
     closeSource();
+    qDebug("del 2");
     delete bpv;
+    qDebug("del 3");
     delete [] beatBuffer;
+    qDebug("del 4");
     delete [] bpmBuffer;
+    qDebug("del 5");
 }
 
 void ReaderExtractBeat::newSource(TrackInfoObject *pTrack)

@@ -134,7 +134,7 @@ QStringList MouseLinux::getDeviceList()
                 bool bPowerMate = false;
                 for(i=0; i<kiPowermateNumValidPrefixes; i++)
                 {
-                    if(strncasecmp(rgcName, pPowermateValidPrefix[i],strlen(pPowermateValidPrefix[i])==0))
+                    if(kqPowermateValidPrefix[i]==rgcName)
                         bPowerMate = true;
                 }
 

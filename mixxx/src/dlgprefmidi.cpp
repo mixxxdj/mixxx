@@ -24,6 +24,8 @@
 #include <qcheckbox.h>
 #include <qpushbutton.h>
 #include <qgroupbox.h>
+#include <qprogressdialog.h>
+#include <qmessagebox.h>
 #include "controlobject.h"
 #ifdef __LINUX__
 #include "mouselinux.h"
@@ -44,7 +46,9 @@ DlgPrefMidi::DlgPrefMidi(QWidget *parent, MidiObject *pMidi, ConfigObject<Config
 
     connect(ComboBoxMouseDevice1, SIGNAL(activated(int)), this, SLOT(slotApply()));
     connect(ComboBoxMouseDevice2, SIGNAL(activated(int)), this, SLOT(slotApply()));
-
+    connect(pushButtonMouseCalibrate1, SIGNAL(clicked()), this, SLOT(slotMouseCalibrate1()));
+    connect(pushButtonMouseCalibrate2, SIGNAL(clicked()), this, SLOT(slotMouseCalibrate2()));
+    connect(pushButtonMouseHelp, SIGNAL(clicked()), this, SLOT(slotMouseHelp()));
     slotUpdate();
     slotApply();
 }
@@ -259,3 +263,41 @@ void DlgPrefMidi::slotApply()
     slotUpdate();
 }
 
+void DlgPrefMidi::slotMouseCalibrate1()
+{
+    QProgressDialog progress("Calibrating mouse turntable", "Cancel", 100, this, "Progress...", TRUE );
+
+    // Start measurement
+
+    // Update progress bar
+    for (int i=0; i<500; i++)
+    {
+        progress.setProgress(i);
+        //qApp->processEvents();
+
+        if (progress.wasCanceled())
+            break;
+    }
+    progress.setProgress(500);
+
+    // End measurement
+}
+
+void DlgPrefMidi::slotMouseCalibrate2()
+{
+}
+
+void DlgPrefMidi::slotMouseHelp()
+{
+    QMessageBox::information(0, "Mouse help", "Additional mice can be used to control playback in Mixxx. You can use<br>"
+                                              "the mouse in the usual way, on a table surface, and scratch or adjust<br>"
+                                              "phase of playback. You can also use the mouse as a sensor for a<br>"
+                                              "turntable. Attach the optical mouse just above the platter of the<br>"
+                                              "turntable so that the mouse senses the platter movement on the x <br>"
+                                              "axis of the mouse. Then start the turntable at normal speed (33 RPM)<br>"
+                                              "and press calibrate. Now you can use the turntable to control playback<br>"
+                                              "in Mixxx instead of using the play button. The calibration is also<br>"
+                                              "needed when using the mouse on a table. Move the mouse at the pace you<br>"
+                                              "want to map to normal playback speed, and press calibrate. Keep moving<br>"
+                                              "the mouse at a steady pace until the calibration is finished.", "Ok");
+}

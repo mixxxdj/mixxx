@@ -1,6 +1,6 @@
 
-ALSA support in Mixxx
----------------------
+ALSA support in Mixxx (alpha)
+-----------------------------
 
 Pre-requisites: A working ALSA setup - check the ALSA website[1] for
 documentation and the Wiki[2] is also very helpful.

@@ -40,6 +40,9 @@ public:
 public slots:
     void slotUpdate();
     void slotApply();
+    void slotMouseCalibrate1();
+    void slotMouseCalibrate2();
+    void slotMouseHelp();
 signals:
     void apply();
 private:
