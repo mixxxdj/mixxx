@@ -130,32 +130,41 @@ MixxxApp::~MixxxApp()
 
 void MixxxApp::engineStart()
 {
-  qDebug("Init buffer 1... %s", view->playlist->ListPlaylist->firstChild()->text(1).ascii());
-  buffer1 = new EngineBuffer(view->playcontrol1, "[Channel1]", view->playlist->ListPlaylist->firstChild()->text(1));
+    if (view->playlist->ListPlaylist->firstChild() != 0)
+    {
+        qDebug("Init buffer 1... %s", view->playlist->ListPlaylist->firstChild()->text(1).ascii());
+        buffer1 = new EngineBuffer(view->playcontrol1, "[Channel1]", view->playlist->ListPlaylist->firstChild()->text(1));
+    } else
+        buffer1 = new EngineBuffer(view->playcontrol1, "[Channel1]", 0);
 
-  qDebug("Init buffer 2... %s", view->playlist->ListPlaylist->firstChild()->nextSibling()->text(1).ascii());
-  buffer2 = new EngineBuffer(view->playcontrol2, "[Channel2]", view->playlist->ListPlaylist->firstChild()->nextSibling()->text(1));
-  qDebug("...");
-  channel1 = new EngineChannel(view->channel1, "[Channel1]");
-  channel2 = new EngineChannel(view->channel2, "[Channel2]");
+    if (view->playlist->ListPlaylist->firstChild()->nextSibling() != 0)
+    {
+        qDebug("Init buffer 2... %s", view->playlist->ListPlaylist->firstChild()->nextSibling()->text(1).ascii());
+        buffer2 = new EngineBuffer(view->playcontrol2, "[Channel2]", view->playlist->ListPlaylist->firstChild()->nextSibling()->text(1));
+    } else
+        buffer2 = new EngineBuffer(view->playcontrol2, "[Channel2]", 0);
 
-  qDebug("Init master...");
-  master = new EngineMaster(view->master, view->crossfader, buffer1, buffer2, channel1, channel2, "[Master]");
+    qDebug("...");
+    channel1 = new EngineChannel(view->channel1, "[Channel1]");
+    channel2 = new EngineChannel(view->channel2, "[Channel2]");
 
-  /** Connect signals from option menu, selecting processing of left and right channel, to
-      EngineMaster */
-  connect(optionsLeft, SIGNAL(toggled(bool)), master, SLOT(slotChannelLeft(bool)));
-  connect(optionsRight, SIGNAL(toggled(bool)), master, SLOT(slotChannelRight(bool)));
-  master->slotChannelLeft(optionsLeft->isOn());
-  master->slotChannelRight(optionsRight->isOn());
+    qDebug("Init master...");
+    master = new EngineMaster(view->master, view->crossfader, buffer1, buffer2, channel1, channel2, "[Master]");
 
-  qDebug("Starting buffers...");
-  buffer1->start();
-  buffer2->start();
+    /** Connect signals from option menu, selecting processing of left and right channel, to
+        EngineMaster */
+    connect(optionsLeft, SIGNAL(toggled(bool)), master, SLOT(slotChannelLeft(bool)));
+    connect(optionsRight, SIGNAL(toggled(bool)), master, SLOT(slotChannelRight(bool)));
+    master->slotChannelLeft(optionsLeft->isOn());
+    master->slotChannelRight(optionsRight->isOn());
 
-  // Start audio
-  qDebug("Starting player...");
-  player->start(master);
+    qDebug("Starting buffers...");
+    buffer1->start();
+    buffer2->start();
+
+    // Start audio
+    qDebug("Starting player...");
+    player->start(master);
 }
 
 void MixxxApp::engineStop()
