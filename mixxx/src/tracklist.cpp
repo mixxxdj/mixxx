@@ -26,6 +26,7 @@
 #include "dlgplaycontrol.h"
 #include "reader.h"
 #include "wtracktable.h"
+#include "wtracktableitem.h"
 
 
 TrackList::TrackList( const QString sDirectory, WTrackTable *ptableTracks,
@@ -70,8 +71,8 @@ void TrackList::UpdateScores()
 	for (unsigned int iRow=0; iRow<m_lTracks.count(); iRow++)
 	{
 		TrackInfoObject *track = m_lTracks.at( m_ptableTracks->text( iRow, COL_INDEX ).toInt() );
-		m_ptableTracks->setText( iRow, COL_SCORE, 
-		QString("%1").arg( (int) ( 99*track->m_iTimesPlayed/m_iMaxTimesPlayed ), 2 ) );
+        m_ptableTracks->setItem(iRow, COL_SCORE, new WTrackTableItem(m_ptableTracks,QTableItem::Never,
+                                QString("%1").arg( (int) ( 99*track->m_iTimesPlayed/m_iMaxTimesPlayed ), 2 ) ));
 	}
 }
 
@@ -286,12 +287,12 @@ void TrackList::UpdateTracklist()
 	m_ptableTracks->setNumRows( m_lTracks.count() );
 	for (TrackInfoObject *Track = m_lTracks.first(); Track; Track = m_lTracks.next() )
 	{
-		m_ptableTracks->setText( iRow, COL_TITLE, Track->m_sTitle );
-		m_ptableTracks->setText( iRow, COL_ARTIST, Track->m_sArtist );
-		m_ptableTracks->setText( iRow, COL_TYPE, Track->m_sType );
-		m_ptableTracks->setText( iRow, COL_DURATION, Track->Duration() );
-		m_ptableTracks->setText( iRow, COL_BITRATE, Track->m_sBitrate );
-		m_ptableTracks->setText( iRow, COL_INDEX, QString("%1").arg(iRow) );
+        m_ptableTracks->setItem(iRow, COL_TITLE, new WTrackTableItem(m_ptableTracks,QTableItem::Never, Track->m_sTitle));
+		m_ptableTracks->setItem(iRow, COL_ARTIST, new WTrackTableItem(m_ptableTracks,QTableItem::Never, Track->m_sArtist));
+		m_ptableTracks->setItem(iRow, COL_TYPE, new WTrackTableItem(m_ptableTracks,QTableItem::Never, Track->m_sType));
+		m_ptableTracks->setItem(iRow, COL_DURATION, new WTrackTableItem(m_ptableTracks,QTableItem::Never, Track->Duration()));
+		m_ptableTracks->setItem(iRow, COL_BITRATE, new WTrackTableItem(m_ptableTracks,QTableItem::Never, Track->m_sBitrate));
+		m_ptableTracks->setItem(iRow, COL_INDEX, new WTrackTableItem(m_ptableTracks,QTableItem::Never, QString("%1").arg(iRow)));
 		iRow ++;
 	}
 
