@@ -49,7 +49,7 @@ SoundSourceAudioFile::~SoundSourceAudioFile()
 
 long SoundSourceAudioFile::seek(long filepos)
 {
-    afSeekFrame(fh, AF_DEFAULT_TRACK, (AFframecount) (filepos/channels));
+    afSeekFrame(fh, AF_DEFAULT_TRACK, (AFframecount) (filepos/2));
     return filepos;
 }
 
@@ -61,15 +61,21 @@ unsigned SoundSourceAudioFile::read(unsigned long size, const SAMPLE* destinatio
 {
     SAMPLE *dest = (SAMPLE *)destination;
     if (channels==2)
-        return afReadFrames(fh,AF_DEFAULT_TRACK, (SAMPLE *)dest, size/channels)*channels;
+        return afReadFrames(fh,AF_DEFAULT_TRACK, dest, size/channels)*channels;
     else
     {
-        // If the file is not in stereo, make the returned buffer.
+        // If the file is not in stereo, make the returned buffer so.
         int readNo = afReadFrames(fh,AF_DEFAULT_TRACK, buffer, size/2);
-        for (int i=0; i<readNo; i+=channels)
+        int j=0;
+        for (int i=0; i<readNo*channels; i+=channels)
         {
-            for (int j=0; j<2; j++)
-                dest[(i*max(channels,2))+j] = buffer[(i*channels)+max(j,channels-1)];
+            dest[j] = buffer[i];
+            ++j;
+            if (channels>1)
+                dest[j] = buffer[i+1];
+            else
+                dest[j] = buffer[i];
+            ++j;
         }
         return readNo*2;
     }
