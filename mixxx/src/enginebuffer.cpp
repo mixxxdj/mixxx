@@ -40,6 +40,8 @@ EngineBuffer::EngineBuffer(PowerMate *_powermate, const char *_group)
     group = _group;
     powermate = _powermate;
 
+    m_pOtherEngineBuffer = 0;
+
     // Play button
     ControlPushButton *p = new ControlPushButton(ConfigKey(group, "play"), true);
     playButton = new ControlEngine(p);
@@ -155,6 +157,11 @@ EngineBuffer::EngineBuffer(PowerMate *_powermate, const char *_group)
     p2 = new ControlPotmeter(ConfigKey(group, "beatevent"));
     beatEventControl = new ControlEngine(p2);
 
+    // Cue goto button:
+    p = new ControlPushButton(ConfigKey(group, "beatsync"));
+    buttonBeatSync = new ControlEngine(p);
+    connect(buttonBeatSync, SIGNAL(valueChanged(double)), this, SLOT(slotControlBeatSync(double)));
+
     // Audio beat mark toggle
     p = new ControlPushButton(ConfigKey(group, "audiobeatmarks"));
     audioBeatMark = new ControlEngine(p);
@@ -215,10 +222,38 @@ void EngineBuffer::setVisual(WVisualWaveform *pVisualWaveform)
 #endif
 }
 
+float EngineBuffer::getDistanceNextBeatMark()
+{
+    float *p = (float *)reader->getBeatPtr()->getBasePtr();
+
+    int i;
+    bool found = false;
+    for (i=0; i<100 && !found; ++i)
+        if (p[((int)bufferpos_play+i)%READBUFFERSIZE]>0)
+            found = true;
+
+    if (found)
+        return (float)i-(bufferpos_play-floor(bufferpos_play));
+    else
+        return 0.f;
+}
 
 Reader *EngineBuffer::getReader()
 {
     return reader;
+}
+
+float EngineBuffer::getBpm()
+{
+    return bpmControl->get();
+}
+
+void EngineBuffer::setOtherEngineBuffer(EngineBuffer *pOtherEngineBuffer)
+{
+    if (!m_pOtherEngineBuffer)
+        m_pOtherEngineBuffer = pOtherEngineBuffer;
+    else
+        qFatal("EngineBuffer: Other engine buffer already set!");
 }
 
 void EngineBuffer::setNewPlaypos(double newpos)
@@ -240,11 +275,15 @@ const char *EngineBuffer::getGroup()
     return group;
 }
 
+float EngineBuffer::getRate()
+{
+    return rateSlider->get();
+}
+
 int EngineBuffer::getPlaypos(int) // int Srate
 {
     return 0; //(int)((CSAMPLE)visualPlaypos.read()/(2.*(CSAMPLE)file_srate/(CSAMPLE)Srate));
 }
-
 
 void EngineBuffer::slotControlSeek(double change)
 {
@@ -388,6 +427,35 @@ void EngineBuffer::slotControlRateTempUpSmall(double)
         temp_rate = 0.001;
     else
         temp_rate = 0.;
+}
+
+void EngineBuffer::slotControlBeatSync(double)
+{
+    float fOtherBpm = m_pOtherEngineBuffer->getBpm();
+    float fThisBpm  = bpmControl->get();
+    float fRateScale;
+
+    // Test if this buffers bpm is the double of the other one, and find rate scale:
+    if ( abs(fThisBpm*2-fOtherBpm) < abs(fThisBpm-fOtherBpm))
+        fRateScale = fOtherBpm/(2*fThisBpm) * (1+m_pOtherEngineBuffer->getRate());
+    else if ( abs(fThisBpm-2*fOtherBpm) < abs(fThisBpm-fOtherBpm))
+        fRateScale = 2*fOtherBpm/fThisBpm * (1+m_pOtherEngineBuffer->getRate());
+    else
+        fRateScale = fOtherBpm/fThisBpm * (1+m_pOtherEngineBuffer->getRate());
+
+    // Adjust the rate:
+    rateSlider->set(fRateScale-1);
+
+    
+    // Search for distance from playpos to beat mark of both buffers
+    float fThisDistance = getDistanceNextBeatMark();
+    float fOtherDistance = m_pOtherEngineBuffer->getDistanceNextBeatMark();
+
+    filepos_play += fOtherDistance-fThisDistance;
+    bufferpos_play = bufferpos_play+fOtherDistance-fThisDistance;
+    if (bufferpos_play>(double)READBUFFERSIZE)
+        bufferpos_play -= (double)READBUFFERSIZE;
+
 }
 
 inline bool even(long n)
