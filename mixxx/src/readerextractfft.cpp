@@ -62,6 +62,11 @@ ReaderExtractFFT::~ReaderExtractFFT()
     specList.clear();
 }
 
+void ReaderExtractFFT::newSource(TrackInfoObject *)
+{
+    reset();
+}
+
 void ReaderExtractFFT::reset()
 {
 }

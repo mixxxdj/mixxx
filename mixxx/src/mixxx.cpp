@@ -232,24 +232,24 @@ MixxxApp::MixxxApp(QApplication *a, QStringList files)
 
     if (powermate1!=0)
     {
-	    if (powermate1->opendev())
-		{
-			qDebug("Found PowerMate 1");
-	    }
-		else
-	    {
-		    delete powermate1;
-			powermate1 = 0;
-		}
+        if (powermate1->opendev())
+        {
+            qDebug("Found PowerMate 1");
+        }
+        else
+        {
+            delete powermate1;
+            powermate1 = 0;
+        }
 
-		if (powermate2->opendev())
-			qDebug("Found PowerMate 2");
-	    else
-		{
-			delete powermate2;
-	        powermate2 = 0;
-		}
-	}
+        if (powermate2->opendev())
+            qDebug("Found PowerMate 2");
+        else
+        {
+            delete powermate2;
+            powermate2 = 0;
+        }
+    }
 
     // Try initializing Joystick
     joystick1 = 0;
@@ -328,8 +328,8 @@ MixxxApp::MixxxApp(QApplication *a, QStringList files)
     // Tell EngineBuffer to notify the visuals if they are WVisualWaveform
     if (view->activeWaveform())
     {
-        buffer1->setVisual(view->m_pVisualCh1);
-        buffer2->setVisual(view->m_pVisualCh2);
+        buffer1->setVisual((WVisualWaveform *)view->m_pVisualCh1);
+        buffer2->setVisual((WVisualWaveform *)view->m_pVisualCh2);
 
         // Dynamic zoom on visuals
         if (view->m_bZoom)
@@ -375,7 +375,7 @@ MixxxApp::MixxxApp(QApplication *a, QStringList files)
 
 MixxxApp::~MixxxApp()
 {
-    qDebug("Destroying MixxxApp");
+//    qDebug("Destroying MixxxApp");
     player->stop();
     delete buffer1;
     delete buffer2;

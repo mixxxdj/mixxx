@@ -25,13 +25,23 @@
 #include "visual/visualchannel.h"
 #include "visual/visualbuffer.h"
 #endif
+#include "soundsource.h"
+#include "soundsourcemp3.h"
+#include "soundsourceoggvorbis.h"
+#ifdef __UNIX__
+  #include "soundsourceaudiofile.h"
+#endif
+#ifdef __WIN__
+  #include "soundsourcesndfile.h"
+#endif
+#include <qfileinfo.h>
 
 ReaderExtractWave::ReaderExtractWave(Reader *pReader) : ReaderExtract(0, "signal")
 {
     m_pReader = pReader;
     
     // Allocate temporary buffer
-    temp = new SAMPLE[READCHUNKSIZE*2]; 
+    temp = new SAMPLE[READCHUNKSIZE*2];
 
     // Allocate read_buffer
     read_buffer = new CSAMPLE[READBUFFERSIZE];
@@ -47,7 +57,7 @@ ReaderExtractWave::ReaderExtractWave(Reader *pReader) : ReaderExtract(0, "signal
     bufferpos_end = 0;
 
     file = 0;
-    
+
     // Initialize extractor objects
     readerfft = 0;
     readerhfc = 0;
@@ -63,10 +73,74 @@ ReaderExtractWave::~ReaderExtractWave()
 {
     delete [] temp;
     delete [] read_buffer;
+    if (file)
+        delete file;
 #ifdef EXTRACT
     delete readerbeat;
     delete readerhfc;
     delete readerfft;
+#endif
+}
+
+void ReaderExtractWave::newSource(TrackInfoObject *pTrack)
+{
+    //
+    // Initialize new sound source
+    //
+
+    // If we are already playing a file, then get rid of the sound source:
+    if (file != 0)
+    {
+        delete file;
+        file = 0;
+    }
+
+    QString filename = pTrack->getLocation();
+    if (filename != 0)
+    {
+        // Check if filename is valid
+        QFileInfo finfo(filename);
+        if (finfo.exists())
+        {
+            if (finfo.extension(false).upper() == "WAV")
+#ifdef __UNIX__
+                file = new SoundSourceAudioFile(filename);
+#endif
+#ifdef __WIN__
+                file = new SoundSourceSndFile(filename);
+#endif
+            else if (finfo.extension(false).upper() == "MP3")
+                file = new SoundSourceMp3(filename);
+            else if (finfo.extension(false).upper() == "OGG")
+                file = new SoundSourceOggVorbis(filename);
+        }
+    }
+    else
+    {
+#ifdef __UNIX__
+        file = new SoundSourceAudioFile( QString("/dev/null") );
+#endif
+#ifdef __WIN__
+        file = new SoundSourceSndFile( QString("/dev/null") );
+#endif
+    }
+
+    if (file==0)
+        qFatal("Error opening %s", filename.latin1());
+
+    // Initialize position in read buffer
+    m_pReader->lock();
+    filepos_start = 0;
+    filepos_end = 0;
+    m_pReader->unlock();
+    bufferpos_start = 0;
+    bufferpos_end = 0;
+    reset();
+
+#ifdef EXTRACT
+    readerfft->newSource(pTrack);
+    readerhfc->newSource(pTrack);
+    readerbeat->newSource(pTrack);
 #endif
 }
 
@@ -86,9 +160,7 @@ void ReaderExtractWave::reset()
     m_pReader->lock();
     filepos_start = 0;
     filepos_end = 0;
-
     file->seek(0);
-
     m_pReader->unlock();
 
     bufferpos_start = 0;
@@ -101,9 +173,7 @@ void ReaderExtractWave::reset()
     // Reset extract objects
     readerfft->reset();
     readerhfc->reset();
-    readerhfc->newsource(file->getFilename());
     readerbeat->reset();
-    readerbeat->newsource(file->getFilename());
 #endif
 
 #ifdef __VISUALS__
@@ -126,6 +196,14 @@ int ReaderExtractWave::getRate()
         return 44100; // HACKKKK!!!!!
 }
 
+int ReaderExtractWave::getLength()
+{
+    if (file)
+        return file->length();
+    else
+        return 0;
+}
+
 int ReaderExtractWave::getChannels()
 {
     // Two channels waveform is hardcoded for the moment!!!
@@ -145,20 +223,6 @@ ReaderExtractBeat *ReaderExtractWave::getExtractBeat()
 void *ReaderExtractWave::processChunk(const int, const int, const int, bool)
 {
     return 0;
-}
-
-void ReaderExtractWave::setSoundSource(SoundSource *_file)
-{
-    file = _file;
-
-    // Initialize position in read buffer
-    m_pReader->lock();
-    filepos_start = 0;
-    filepos_end = 0;
-    m_pReader->unlock();
-    bufferpos_start = 0;
-    bufferpos_end = 0;
-    reset();
 }
 
 void ReaderExtractWave::getchunk(CSAMPLE rate)
@@ -266,7 +330,7 @@ long int ReaderExtractWave::seek(long int new_playpos)
         seekpos = file->seek((long int)filepos_start);
 
         //qDebug("seek: %i, %i",new_playpos, seekpos);
-    
+
         m_pReader->unlock();
 
         bufferpos_start = 0;
@@ -285,7 +349,7 @@ long int ReaderExtractWave::seek(long int new_playpos)
         // Reset extract objects
         readerfft->reset();
         readerhfc->reset();
-        readerbeat->softreset(); // Only make a soft reset on beat estimation (keep histogram)
+        readerbeat->reset();
 #endif
     }
     else

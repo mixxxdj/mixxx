@@ -21,6 +21,7 @@
 #include "mathstuff.h"
 #include "peaklist.h"
 #include "probabilityvector.h"
+#include "trackinfoobject.h"
 
 #ifdef __GNUPLOT__
     // For sleep:
@@ -44,7 +45,8 @@ ReaderExtractBeat::ReaderExtractBeat(ReaderExtract *input, int frameSize, int fr
         bpmBuffer[i] = 0.;
     }
     beatBufferLastIdx = 0;
-    
+
+
     // Initialize beat probability vector
     bpv = new ProbabilityVector(60.f/histMaxBPM, 60.f/histMinBPM, _histSize);
 
@@ -53,52 +55,44 @@ ReaderExtractBeat::ReaderExtractBeat(ReaderExtract *input, int frameSize, int fr
 
     // Construct hfc peak list
     peaks = new PeakList(frameNo, hfc);
-    
+
     // Confidence is calculated for each new beat mark
     confidence = -1.;
-    
+
 #ifdef __GNUPLOT__
     // Initialize gnuplot interface
     gnuplot_hfc = openPlot("HFC");
 //    gnuplot_bpm  = openPlot("BPM");
 #endif
+
+    m_pTrack = 0;
 }
 
 ReaderExtractBeat::~ReaderExtractBeat()
 {
+    closeSource();
     delete bpv;
     delete [] beatBuffer;
     delete [] bpmBuffer;
 }
 
-void ReaderExtractBeat::reset()
+void ReaderExtractBeat::newSource(TrackInfoObject *pTrack)
 {
-    softreset();
-    
+    closeSource();
+
+    // Reset the beat estimation
+    reset();
     bpv->reset();
-}
 
-void ReaderExtractBeat::softreset()
-{
-    peaks->clear();
+    m_pTrack = pTrack;
+
+    // Initialization of the BPV with the BPM value from the TrackInfoObject
+    bpv->setBpm(m_pTrack->getBpm(), m_pTrack->getBpmConfidence());
     for (int i=0; i<getBufferSize(); i++)
-    {
-        beatBuffer[i] = 0.;
-        beatCorr[i] = 0.;
-        bpmBuffer[i] = 0.;
-    }
-    confidence = -1.;
+        bpmBuffer[i] = m_pTrack->getBpm();
 
-#ifdef __VISUALS__
-    // Update vertex buffer by sending an event containing indexes of where to update.
-    if (m_pVisualBuffer != 0)
-        QApplication::postEvent(m_pVisualBuffer, new ReaderEvent(0, getBufferSize()));
-#endif
-}
-
-void ReaderExtractBeat::newsource(QString qFilename)
-{
 #ifdef FILEOUTPUT
+    QString qFilename = m_pTrack->Location();
     textbpm.close();
     textbpm.setName(QString(qFilename).append(".bpm"));
     textbpm.open(IO_WriteOnly);
@@ -106,7 +100,7 @@ void ReaderExtractBeat::newsource(QString qFilename)
     textbeat.close();
     textbeat.setName(QString(qFilename).append(".beat"));
     textbeat.open(IO_WriteOnly);
-    
+
     textconf.close();
     textconf.setName(QString(qFilename).append(".conf"));
     textconf.open(IO_WriteOnly);
@@ -119,6 +113,32 @@ void ReaderExtractBeat::newsource(QString qFilename)
 #endif
 }
 
+void ReaderExtractBeat::closeSource()
+{
+    // Update TrackInfoObject with new BPM value
+    if (m_pTrack && bpv->getBestBpmConfidence()>m_pTrack->getBpmConfidence())
+    {
+        m_pTrack->setBpmConfidence(bpv->getBestBpmConfidence());
+        m_pTrack->setBpm(bpv->getBestBpmValue());
+    }
+}
+
+void ReaderExtractBeat::reset()
+{
+    peaks->clear();
+    for (int i=0; i<getBufferSize(); i++)
+    {
+        beatBuffer[i] = 0.;
+        beatCorr[i] = 0.;
+    }
+    confidence = -1.;
+
+#ifdef __VISUALS__
+    // Update vertex buffer by sending an event containing indexes of where to update.
+    if (m_pVisualBuffer != 0)
+        QApplication::postEvent(m_pVisualBuffer, new ReaderEvent(0, getBufferSize()));
+#endif
+}
 
 void *ReaderExtractBeat::getBasePtr()
 {
@@ -433,10 +453,9 @@ void *ReaderExtractBeat::processChunk(const int _idx, const int start_idx, const
                                 if ((*itmax).i<updateFrom)
                                     updateFrom = (*itmax).i;
 
-								// Delete everything from resync point to frameTo+frameAdd
-								int j;
-								for (j=(*itmax).i; j<frameTo+frameAdd; ++j)
-								    beatBuffer[j%frameNo] = 0.;
+                                // Delete everything from resync point to frameTo+frameAdd
+                                for (int j=(*itmax).i+1; j<frameTo+frameAdd; ++j)
+                                    beatBuffer[j%frameNo] = 0.;
 
 #ifdef FILEOUTPUT
                                 QTextStream streamconf(&textconf);
@@ -448,7 +467,6 @@ void *ReaderExtractBeat::processChunk(const int _idx, const int start_idx, const
                             }
                         }
                     }
-
 
                     if (!beat)
                     {
@@ -567,6 +585,3 @@ void ReaderExtractBeat::updateConfidence(int curBeatIdx, int lastBeatIdx)
     textconf.flush();
 #endif
 }
-
-
-

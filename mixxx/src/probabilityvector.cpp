@@ -25,7 +25,7 @@ ProbabilityVector::ProbabilityVector(float fMinInterval, float fMaxInterval, int
     m_fMaxInterval = fMaxInterval;
     m_iBins = iBins;
     m_fSecPerBin = (fMaxInterval-fMinInterval)/m_iBins;
-    
+
     m_pHist = new float[m_iBins];
 
     reset();
@@ -34,6 +34,14 @@ ProbabilityVector::ProbabilityVector(float fMinInterval, float fMaxInterval, int
 ProbabilityVector::~ProbabilityVector()
 {
     delete [] m_pHist;
+}
+
+void ProbabilityVector::setBpm(float fBpm, float fBpmConfidence)
+{
+    // Find hist position from fBpm and insert fBpmConfidence.
+    m_fCurrMaxInterval = (1./fBpm)*60.;
+    m_iCurrMaxBin = (m_fCurrMaxInterval-m_fMinInterval)/m_fSecPerBin;
+    m_pHist[m_iCurrMaxBin] = fBpmConfidence;
 }
 
 void ProbabilityVector::add(float fInterval, float fValue)
@@ -53,12 +61,12 @@ void ProbabilityVector::add(float fInterval, float fValue)
             {
                 m_iCurrMaxBin = idx;
 
-                // Only use the newly found max if the distance to the last max is small, or it is 
+                // Only use the newly found max if the distance to the last max is small, or it is
                 // bigger than the old max times the hysterisis factor
                 if (m_iLastMaxBin<0 || abs(m_iLastMaxBin-m_iCurrMaxBin)<kiGaussWidth || m_pHist[m_iCurrMaxBin]>m_pHist[m_iLastMaxBin]*kfHysterisis)
                 {
                     m_iLastMaxBin = m_iCurrMaxBin;
-                
+
                     // Interpolate maximum
                     float fCorr = 0.;
                     if (m_iCurrMaxBin>1 && m_iCurrMaxBin<m_iBins-2)
@@ -73,7 +81,15 @@ void ProbabilityVector::add(float fInterval, float fValue)
 
                     // Interval in seconds
                     m_fCurrMaxInterval = ((float)m_iCurrMaxBin+fCorr)*m_fSecPerBin+m_fMinInterval;
-//                qDebug("hist idx %i, int %f, corr %f, bpm %f",m_iCurrMaxBin, m_fCurrMaxInterval,fCorr, 60./m_fCurrMaxInterval);
+
+                    // Check if the current interval has a higher histogram value than the one in m_fBestBpmValue
+                    if (m_pHist[m_iCurrMaxBin]>m_fBestBpmConfidence)
+                    {
+                        m_fBestBpmConfidence = m_pHist[m_iCurrMaxBin];
+                        m_fBestBpmValue = 60./m_fCurrMaxInterval;
+                    }
+
+//                    qDebug("hist idx %i, int %f, corr %f, bpm %f",m_iCurrMaxBin, m_fCurrMaxInterval,fCorr, 60./m_fCurrMaxInterval);
                 }
             }
         }
@@ -116,7 +132,7 @@ void ProbabilityVector::downWrite(float fFactor)
 #endif
     }
 #ifdef FILEOUTPUT
-//    streamhist << "\n";        
+//    streamhist << "\n";
 #endif
 }
 
@@ -128,6 +144,9 @@ void ProbabilityVector::reset()
     m_iCurrMaxBin = -1;
     m_iLastMaxBin = -1;
     m_fCurrMaxInterval = 0.;
+
+    m_fBestBpmValue = 0.;
+    m_fBestBpmConfidence = 0.;
 }
 
 void ProbabilityVector::newsource(QString qFilename)
@@ -138,4 +157,13 @@ void ProbabilityVector::newsource(QString qFilename)
     texthist.open(IO_WriteOnly);
 #endif
 }
-    
+
+float ProbabilityVector::getBestBpmValue()
+{
+    return m_fBestBpmValue;
+}
+
+float ProbabilityVector::getBestBpmConfidence()
+{
+    return m_fBestBpmConfidence;
+}

@@ -35,7 +35,7 @@ public:
     ReaderExtractHFC(ReaderExtract *input, int frameSize, int frameStep);
     ~ReaderExtractHFC();
     void reset();
-    void newsource(QString qFilename);
+    void newSource(TrackInfoObject *);
     void *getBasePtr();
     int getRate();
     int getChannels();

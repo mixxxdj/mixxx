@@ -41,6 +41,8 @@ public:
       * fMaxInterval seconds, using iBins number of bins */
     ProbabilityVector(float fMinInterval, float fMaxInterval, int iBins);
     ~ProbabilityVector();
+    /** Initialize the BPV with a given BPM at a given confidence */
+    void setBpm(float fBpm, float fBpmConfidence);
     /** Add an interval to the histogram with a given value*/
     void add(float fInterval, float fValue);
     /** Returns the current maximum interval of the histogram in seconds */
@@ -51,6 +53,10 @@ public:
     void reset();
     /** New file */
     void newsource(QString qFilename);
+    /** Returns best BPM value (BPM with highest value in histogram) for this track */
+    float getBestBpmValue();
+    /** Returns histogram value for the best BPM */
+    float getBestBpmConfidence();
 private:
     /** Number of bins in histogram */
     int m_iBins;
@@ -66,6 +72,8 @@ private:
     int m_iCurrMaxBin;
     /** Bin corresponding to last max interval */
     int m_iLastMaxBin;
+    /** BPM value with highest value in histogram, and the histogram value */
+    float m_fBestBpmValue, m_fBestBpmConfidence;
 
 #ifdef FILEOUTPUT
     QFile texthist;

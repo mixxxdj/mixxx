@@ -22,7 +22,7 @@
 #include <qfont.h>
 #include <qcolor.h>
 
-WTrackTable::WTrackTable(QWidget *parent, const char *name) : QTable(10, 8, parent, name)
+WTrackTable::WTrackTable(QWidget *parent, const char *name) : QTable(10, ROW_NO, parent, name)
 {
     setSorting(true);
     setSelectionMode(QTable::SingleRow);
@@ -38,6 +38,7 @@ WTrackTable::WTrackTable(QWidget *parent, const char *name) : QTable(10, 8, pare
     horizontalHeader()->setLabel(COL_COMMENT, tr( "Comment" ) );
     horizontalHeader()->setLabel(COL_TYPE, tr( "Type" ) );
     horizontalHeader()->setLabel(COL_DURATION, tr( "Duration" ) );
+    horizontalHeader()->setLabel(COL_BPM, tr( "BPM" ) );
     horizontalHeader()->setLabel(COL_BITRATE, tr( "Bitrate" ) );
     horizontalHeader()->setLabel(COL_INDEX, tr( "Index" ) );
 
@@ -109,6 +110,7 @@ void WTrackTable::setup(QDomNode node)
     setColumnWidth(COL_COMMENT, WWidget::selectNodeInt(node, "ColWidthComment"));
     setColumnWidth(COL_TYPE, WWidget::selectNodeInt(node, "ColWidthType"));
     setColumnWidth(COL_DURATION, WWidget::selectNodeInt(node, "ColWidthDuration"));
+    setColumnWidth(COL_BPM, WWidget::selectNodeInt(node, "ColWidthBpm"));
     setColumnWidth(COL_BITRATE, WWidget::selectNodeInt(node, "ColWidthBitrate"));
 }
 

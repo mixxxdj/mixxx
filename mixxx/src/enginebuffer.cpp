@@ -191,7 +191,6 @@ EngineBuffer::EngineBuffer(PowerMate *_powermate, const char *_group)
 
 EngineBuffer::~EngineBuffer()
 {
-
     delete playButton;
     delete wheel;
     delete rateSlider;
@@ -199,6 +198,7 @@ EngineBuffer::~EngineBuffer()
     delete scale;
     delete bufferposSlider;
     delete m_pTrackEnd;
+    delete reader;
 }
 
 void EngineBuffer::setVisual(WVisualWaveform *pVisualWaveform)

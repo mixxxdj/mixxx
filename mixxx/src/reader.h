@@ -22,14 +22,15 @@
 #include <qwaitcondition.h>
 #include <qmutex.h>
 #include <qvaluelist.h>
+#include <qptrlist.h>
 #include "defs.h"
 #include "monitor.h"
 
 class ReaderExtractWave;
 class ReaderExtractBeat;              
-class SoundSource;
 class EngineBuffer;
 class VisualChannel;
+class TrackInfoObject;
 
 /**
   * The Reader class is a thread taking care of reading and buffering waveform data from external sources.
@@ -48,7 +49,7 @@ public:
 
     void addVisual(VisualChannel *pVisualChannel);
     /** Request new track to be loaded. This method is thread safe, but may block */
-    void requestNewTrack(QString name);
+    void requestNewTrack(TrackInfoObject *pTrack);
     /** Request seek. This method is thread safe, but may block */
     void requestSeek(double new_playpos);
     /** Wake up reader thread. Thread safe, non-blocking */
@@ -80,7 +81,7 @@ public:
     long int getFileposEnd();
     /** Cue point */
     double f_dCuePoint;
-    
+
 private:
     /** Main loop of the thread */
     void run();
@@ -94,14 +95,12 @@ private:
       * filepos_end from ReaderBuffer. These variables are shared between the reader and the
       * player (engine) thread */
     QMutex enginelock;
-    /** Pointer to sound source */
-    SoundSource *file;
     /** Pointer to rate monitor allocated and written in EngineBuffer. */
     Monitor *rate;
     /** Pointer to mutex allocated in EngineBuffer, controlling rendering in EngineBuffer::process.
       * While holding this mutex, the EngineBuffer::process will silence, not reading the sound buffer */
     QMutex *pause;
-    /** Pointer to ReaderExtractWave object */  
+    /** Pointer to ReaderExtractWave object */
     ReaderExtractWave *readerwave;
     /** Pointer to EngineBuffer */
     EngineBuffer *enginebuffer;
@@ -109,7 +108,7 @@ private:
     QMutex requestStop;
     /** Wait condition to make thread sleep when not needed */
     QWaitCondition *readAhead;
-    typedef QValueList<QString> TTrackQueue;
+    typedef QPtrList<TrackInfoObject> TTrackQueue;
     /** Track queue used in communication with reader from other threads */
     TTrackQueue trackqueue;
     typedef QValueList<double> TSeekQueue;
