@@ -33,7 +33,6 @@
 #include "dlgplaycontrol.h"
 #include "dlgchannel.h"
 #include "midiobject.h"
-#include "soundsourceheavymp3.h"
 #include "soundsourcemp3.h"
 #include "soundsourceaflibfile.h"
 

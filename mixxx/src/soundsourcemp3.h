@@ -28,9 +28,7 @@
 #include "id3tag.h"
 #include <sys/types.h>
 #include <sys/stat.h>
-#include <unistd.h>
-
-//#include "id3tag.h"
+//#include <unistd.h>
 
 /**
   *@author Tue and Ken Haste Andersen
