@@ -2,7 +2,7 @@
 # Generated automatically by configure.
 # Run this file to recreate the current configuration.
 # This directory was configured as follows,
-# on host vieras.hut.fi:
+# on host liqui2.isva.dtu.dk:
 #
 # ./configure  --enable-mt --prefix /usr/local
 #
@@ -58,19 +58,19 @@ s%@includedir@%${prefix}/include%g
 s%@oldincludedir@%/usr/include%g
 s%@infodir@%${prefix}/info%g
 s%@mandir@%${prefix}/man%g
-s%@host@%i586-pc-linux-gnu%g
-s%@host_alias@%i586-pc-linux-gnu%g
-s%@host_cpu@%i586%g
+s%@host@%i686-pc-linux-gnu%g
+s%@host_alias@%i686-pc-linux-gnu%g
+s%@host_cpu@%i686%g
 s%@host_vendor@%pc%g
 s%@host_os@%linux-gnu%g
-s%@target@%i586-pc-linux-gnu%g
-s%@target_alias@%i586-pc-linux-gnu%g
-s%@target_cpu@%i586%g
+s%@target@%i686-pc-linux-gnu%g
+s%@target_alias@%i686-pc-linux-gnu%g
+s%@target_cpu@%i686%g
 s%@target_vendor@%pc%g
 s%@target_os@%linux-gnu%g
-s%@build@%i586-pc-linux-gnu%g
-s%@build_alias@%i586-pc-linux-gnu%g
-s%@build_cpu@%i586%g
+s%@build@%i686-pc-linux-gnu%g
+s%@build_alias@%i686-pc-linux-gnu%g
+s%@build_cpu@%i686%g
 s%@build_vendor@%pc%g
 s%@build_os@%linux-gnu%g
 s%@INSTALL_PROGRAM@%${INSTALL} $(INSTALL_STRIP_FLAG)%g
@@ -104,8 +104,8 @@ s%@RANLIB@%ranlib%g
 s%@STRIP@%strip%g
 s%@LIBTOOL@%$(SHELL) $(top_builddir)/libtool%g
 s%@KDE_PLUGIN@%-avoid-version -module -no-undefined $(KDE_RPATH) $(KDE_MT_LDFLAGS)%g
-s%@all_includes@%-I/usr/lib/qt-2.3.0/include -I/usr/X11R6/include%g
-s%@all_libraries@%-L/usr/X11R6/lib -L/usr/lib/qt-2.3.0/lib  -DPIC -fPIC -lpthread%g
+s%@all_includes@%-I/usr/lib/qt2/include -I/usr/X11R6/include%g
+s%@all_libraries@%-L/usr/X11R6/lib -L/usr/lib/qt2/lib  -DPIC -fPIC -lpthread%g
 s%@MSGFMT@%/usr/bin/msgfmt%g
 s%@GMSGFMT@%/usr/bin/msgfmt%g
 s%@XGETTEXT@%/usr/bin/xgettext%g
@@ -136,12 +136,12 @@ s%@USER_LDFLAGS@%%g
 s%@LIBZ@%-lz%g
 s%@LIBPNG@%-lpng -lz -lm%g
 s%@LIBJPEG@%-ljpeg%g
-s%@qt_libraries@%/usr/lib/qt-2.3.0/lib%g
-s%@qt_includes@%/usr/lib/qt-2.3.0/include%g
-s%@QT_INCLUDES@%-I/usr/lib/qt-2.3.0/include%g
-s%@QT_LDFLAGS@%-L/usr/lib/qt-2.3.0/lib%g
-s%@MOC@%/usr/lib/qt-2.3.0/bin/moc%g
-s%@UIC@%/usr/lib/qt-2.3.0/bin/uic%g
+s%@qt_libraries@%/usr/lib/qt2/lib%g
+s%@qt_includes@%/usr/lib/qt2/include%g
+s%@QT_INCLUDES@%-I/usr/lib/qt2/include%g
+s%@QT_LDFLAGS@%-L/usr/lib/qt2/lib%g
+s%@MOC@%/usr/lib/qt2/bin/moc%g
+s%@UIC@%/usr/lib/qt2/bin/uic%g
 s%@UIC_TR@%i18n%g
 s%@LIB_QT@%-lqt-mt $(LIBPNG) $(LIBJPEG) -lXext $(LIB_X11) $(LIBSM)%g
 s%@kde_qtver@%2%g

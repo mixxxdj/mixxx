@@ -1,5 +1,5 @@
 # Generated automatically from Makefile.in by configure.
-# KDE tags expanded automatically by am_edit - $Revision: 10 $ 
+# KDE tags expanded automatically by am_edit - $Revision: 11 $ 
 # Makefile.in generated automatically by automake 1.4-p5 from Makefile.am
 
 # Copyright (C) 1994, 1995-8, 1999, 2001 Free Software Foundation, Inc.
@@ -64,12 +64,12 @@ POST_INSTALL = :
 NORMAL_UNINSTALL = :
 PRE_UNINSTALL = :
 POST_UNINSTALL = :
-build_alias = i586-pc-linux-gnu
-build_triplet = i586-pc-linux-gnu
-host_alias = i586-pc-linux-gnu
-host_triplet = i586-pc-linux-gnu
-target_alias = i586-pc-linux-gnu
-target_triplet = i586-pc-linux-gnu
+build_alias = i686-pc-linux-gnu
+build_triplet = i686-pc-linux-gnu
+host_alias = i686-pc-linux-gnu
+host_triplet = i686-pc-linux-gnu
+target_alias = i686-pc-linux-gnu
+target_triplet = i686-pc-linux-gnu
 ARTSCCONFIG = @ARTSCCONFIG@
 AS = @AS@
 AUTODIRS = @AUTODIRS@
@@ -152,7 +152,7 @@ MCOPIDL = @MCOPIDL@
 MEINPROC = @MEINPROC@
 MICO_INCLUDES = @MICO_INCLUDES@
 MICO_LDFLAGS = @MICO_LDFLAGS@
-MOC = /usr/lib/qt-2.3.0/bin/moc
+MOC = /usr/lib/qt2/bin/moc
 MSGFMT = /usr/bin/msgfmt
 NOOPT_CXXFLAGS =  -fno-exceptions -fno-check-new
 NOREPO = -fno-repo
@@ -165,14 +165,14 @@ PYTHONINC = @PYTHONINC@
 PYTHONLIB = @PYTHONLIB@
 PYTHONMODDIR = @PYTHONMODDIR@
 QTE_NORTTI = 
-QT_INCLUDES = -I/usr/lib/qt-2.3.0/include
-QT_LDFLAGS = -L/usr/lib/qt-2.3.0/lib
+QT_INCLUDES = -I/usr/lib/qt2/include
+QT_LDFLAGS = -L/usr/lib/qt2/lib
 RANLIB = ranlib
 REPO = -frepo
 SETUIDFLAGS = @SETUIDFLAGS@
 STRIP = strip
 TOPSUBDIRS =  mixxx
-UIC = /usr/lib/qt-2.3.0/bin/uic
+UIC = /usr/lib/qt2/bin/uic
 UIC_TR = i18n
 USER_INCLUDES = 
 USER_LDFLAGS = 
@@ -187,8 +187,8 @@ X_EXTRA_LIBS =  -lresolv
 X_INCLUDES = -I/usr/X11R6/include
 X_LDFLAGS = -L/usr/X11R6/lib
 X_PRE_LIBS = 
-all_includes = -I/usr/lib/qt-2.3.0/include -I/usr/X11R6/include
-all_libraries = -L/usr/X11R6/lib -L/usr/lib/qt-2.3.0/lib  -DPIC -fPIC -lpthread
+all_includes = -I/usr/lib/qt2/include -I/usr/X11R6/include
+all_libraries = -L/usr/X11R6/lib -L/usr/lib/qt2/lib  -DPIC -fPIC -lpthread
 idldir = @idldir@
 jni_includes = @jni_includes@
 kde_appsdir = @kde_appsdir@
@@ -213,8 +213,8 @@ kde_templatesdir = @kde_templatesdir@
 kde_wallpaperdir = @kde_wallpaperdir@
 kde_widgetdir = @kde_widgetdir@
 micodir = @micodir@
-qt_includes = /usr/lib/qt-2.3.0/include
-qt_libraries = /usr/lib/qt-2.3.0/lib
+qt_includes = /usr/lib/qt2/include
+qt_libraries = /usr/lib/qt2/lib
 x_includes = /usr/X11R6/include
 x_libraries = /usr/X11R6/lib
 
