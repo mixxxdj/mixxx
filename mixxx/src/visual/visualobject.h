@@ -1,5 +1,5 @@
 /***************************************************************************
-                          texture.h  -  description
+                          visualobject.h  -  description
                              -------------------
     copyright            : (C) 2002 by Tue and Ken Haste Andersen and Kenny 
                                        Erleben
@@ -15,36 +15,47 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef TEXTURE_H
-#define TEXTURE_H
-//#include <GL/gl.h>
-//#include <GL/glu.h>
+#ifndef VISUALOBJECT_H
+#define VISUALOBJECT_H
+
+/*
+#if defined(WIN32)
+#include <windows.h>
+#endif
+#include <GL/gl.h>
+*/
+
+#include <qobject.h>
 #include <qgl.h>
 
 /**
- * A texture.
- * This class represents a texture map. The map
- * corresponds to a stored bmp-file.
+ * Forward Declaration.
  */
-class Texture
+class Material;
+
+/**
+ * A Visual Object.
+ * Every visual object must be inherited from
+ * this class (or the CPickableObject). The class
+ * sets up the interface that the visual controller
+ * class uses.
+ *
+ * All you have to do is to implement the openGL drawing
+ * specific stuffs in the method draw().
+ *
+ * Notice that the class automatically supports materials, so
+ * you do not need to handle these in you drawing method, only
+ * pure geometry (and textures)
+ */
+class VisualObject : public QObject
 {
 public:
-
-  Texture();
-  virtual ~Texture();
-
-  int load(char * filename,const int & wrap,const int & decal);
-  int unload(void);
-  void use();
-
-  static void disable(void);
-  static void enable(void);
+  virtual void draw(GLenum mode);
+  virtual void draw()=0;
+  void setMaterial(Material *material);
 
 protected:
-  GLuint texture; ///< A texture object.
-  int loaded;     ///< If true then m_texture is a valid texture object
-  int decal;      ///< Remembers how the texture should be rendered.
-  void validate();
+  Material *material; ///< The material of the object.
 
 };
 #endif

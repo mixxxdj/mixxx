@@ -1,5 +1,22 @@
-#include "controller.h"
-#include "visual.h"
+/***************************************************************************
+                          visualcontroller.cpp  -  description
+                             -------------------
+    copyright            : (C) 2002 by Tue and Ken Haste Andersen and Kenny 
+                                       Erleben
+    email                :
+ ***************************************************************************/
+
+/***************************************************************************
+ *                                                                         *
+ *   This program is free software; you can redistribute it and/or modify  *
+ *   it under the terms of the GNU General Public License as published by  *
+ *   the Free Software Foundation; either version 2 of the License, or     *
+ *   (at your option) any later version.                                   *
+ *                                                                         *
+ ***************************************************************************/
+
+#include "visualcontroller.h"
+#include "visualobject.h"
 #if defined(WIN32)
 #include <windows.h>
 #endif
@@ -9,7 +26,7 @@
 /**
  *
  */
-CVisualController::CVisualController(){
+VisualController::VisualController(){
   fov   = 55.0;
   znear = 10.0;
   zfar  = 1000.0;
@@ -35,7 +52,7 @@ CVisualController::CVisualController(){
 /**
  * Initializes opengl, so backface culling is enabled.
  */
-void CVisualController::setupBackfaceCulling(){
+void VisualController::setupBackfaceCulling(){
   glFrontFace(GL_CCW);		//--- Counter clock-wise polygons face out
   glEnable(GL_CULL_FACE);
   glCullFace(GL_BACK);
@@ -45,7 +62,7 @@ void CVisualController::setupBackfaceCulling(){
 /**
  * Initializes opengl, so zbuffer is enabled.
  */
-void CVisualController::setupZBuffer(){
+void VisualController::setupZBuffer(){
 //  glDisable(GL_DEPTH_TEST);
   glClearDepth(1.0);
   glEnable(GL_DEPTH_TEST);
@@ -57,7 +74,7 @@ void CVisualController::setupZBuffer(){
 /**
  * Initializes opengl, so alphablending is enabled.
  */
-void CVisualController::setupBlending(){
+void VisualController::setupBlending(){
   glEnable(GL_BLEND);
   //--- Transparency fog effects???? primitves should be sorted from nearst to farest
   //glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -71,7 +88,7 @@ void CVisualController::setupBlending(){
 /**
  * Controller Initialization Routine.
  */
-void CVisualController::init(){
+void VisualController::init(){
         
   //glClearColor(0.4f,0.4f,0.4f,0.0f);
   glClearColor(0.f,0.f,0.f,0.0f);
@@ -113,18 +130,20 @@ void CVisualController::init(){
 /**
  *
  */
-void CVisualController::drawScene(GLenum mode){
-  ObjectsIterator it = objects.begin();
-  for(;it!=objects.end();++it){
-    CVisualObject * obj = *it;
-    obj->draw(mode);
-  }
+void VisualController::drawScene(GLenum mode)
+{
+    ObjectsIterator it = objects.begin();
+    for(;it!=objects.end();++it)
+    {
+        VisualObject * obj = *it;
+        obj->draw(mode);
+    }
 };
 
 /**
  * Display Function.
  */
-void CVisualController::display(){
+void VisualController::display(){
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
   glMatrixMode(GL_MODELVIEW);
   glLoadIdentity();
@@ -141,26 +160,29 @@ void CVisualController::display(){
 /**
  * Resize Function.
  */
-void CVisualController::resize(GLsizei _width,GLsizei _height){
-  width = _width;
-  height = _height;
+void VisualController::resize(GLsizei _width,GLsizei _height)
+{
+    width = _width;
+    height = _height;
     
-  if(height>0)
-    aspect=(GLdouble)width/(GLdouble)height;
-  else
-    aspect=1.0;
+    if(height>0)
+        aspect=(GLdouble)width/(GLdouble)height;
+    else
+        aspect=1.0;
 
-  glMatrixMode(GL_PROJECTION);
-  glLoadIdentity();
-  gluPerspective(	fov,aspect,znear,zfar);
-  glViewport(0,0,width,height);
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    gluPerspective(fov,aspect,znear,zfar);
+    glViewport(0,0,width,height);
 };
   
-void CVisualController::add(CVisualObject * obj){
-  objects.push_back(obj);
+void VisualController::add(VisualObject * obj)
+{
+    objects.push_back(obj);
 };
 
 
-void CVisualController::remove(CVisualObject * obj){
-  objects.remove(obj);
+void VisualController::remove(VisualObject * obj)
+{
+    objects.remove(obj);
 };

@@ -1,5 +1,5 @@
 /***************************************************************************
-                          texture.h  -  description
+                          visualbox.h  -  description
                              -------------------
     copyright            : (C) 2002 by Tue and Ken Haste Andersen and Kenny 
                                        Erleben
@@ -15,37 +15,41 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef TEXTURE_H
-#define TEXTURE_H
-//#include <GL/gl.h>
-//#include <GL/glu.h>
-#include <qgl.h>
+#ifndef VISUALBOX_H
+#define VISUALBOX_H
+#include "pickable.h"
 
 /**
- * A texture.
- * This class represents a texture map. The map
- * corresponds to a stored bmp-file.
+ * A Visual Pickable Box.
  */
-class Texture
+class VisualBox : public PickableObject
 {
 public:
+  VisualBox();
 
-  Texture();
-  virtual ~Texture();
+  void draw(GLenum mode);
+  void draw();
+  void setDrawMode(GLenum);
+  void setOrigo(float ox, float oy,float oz);
+  void setRotation(float angle, float rx,float ry,float rz);
+  void setLength(float length);
+  void setHeight(float height);
+  void setDepth(float depth);
 
-  int load(char * filename,const int & wrap,const int & decal);
-  int unload(void);
-  void use();
+private:
+  float ox,oy,oz;   ///< Origo of the box
 
-  static void disable(void);
-  static void enable(void);
+  float angle;      ///< Rotation angle in radians.
+  float rx,ry,rz;   ///< Rotation Axe.
 
-protected:
-  GLuint texture; ///< A texture object.
-  int loaded;     ///< If true then m_texture is a valid texture object
-  int decal;      ///< Remembers how the texture should be rendered.
-  void validate();
+  float length;     ///< The edge size in the x-axe direction.
+  float height;     ///< The edge size in the y-axe direction.
+  float depth;      ///< The edge size in the z-axe direction.
+
+  GLenum mode;		///< Draw mode
+
 
 };
+
 #endif
 

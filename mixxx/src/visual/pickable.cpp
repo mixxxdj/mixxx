@@ -1,3 +1,20 @@
+/***************************************************************************
+                          pickable.cpp  -  description
+                             -------------------
+    copyright            : (C) 2002 by Tue and Ken Haste Andersen and Kenny 
+                                       Erleben
+    email                :
+ ***************************************************************************/
+
+/***************************************************************************
+ *                                                                         *
+ *   This program is free software; you can redistribute it and/or modify  *
+ *   it under the terms of the GNU General Public License as published by  *
+ *   the Free Software Foundation; either version 2 of the License, or     *
+ *   (at your option) any later version.                                   *
+ *                                                                         *
+ ***************************************************************************/
+
 #include "pickable.h"
 #include "material.h"
 #if defined(WIN32)
@@ -6,14 +23,15 @@
 #include <GL/gl.h>
 
 
-int CPickableObject::next = 1;   ///< Next free avaible index.
+int PickableObject::next = 1;   ///< Next free avaible index.
 
 
 /**
  * Default Constructor.
  */
-CPickableObject::CPickableObject(){
-  index = next++;
+PickableObject::PickableObject()
+{
+    index = next++;
 };
 
 /**
@@ -21,12 +39,13 @@ CPickableObject::CPickableObject(){
  *
  * @param mode    The rendering state.
  */
-void CPickableObject::draw(GLenum mode){
-  if(material)
-    material->use();
-  if(mode == GL_SELECT)
-    glLoadName(index);
-  draw();    
+void PickableObject::draw(GLenum mode)
+{
+    if(material)
+        material->use();
+    if(mode == GL_SELECT)
+        glLoadName(index);
+    draw();    
 };
 
 
@@ -35,8 +54,9 @@ void CPickableObject::draw(GLenum mode){
  *
  * @return    The value of the index.
  */
-int CPickableObject::getIndex(){
-  return index;
+int PickableObject::getIndex()
+{
+    return index;
 };
 
 

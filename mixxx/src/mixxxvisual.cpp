@@ -17,7 +17,7 @@
 
 #include "mixxxvisual.h"
 #include "visual/fastvertexarray.h"
-#include "visual/buffer.h"
+#include "visual/signalvertexbuffer.h"
 #include "visual/guisignal.h"
 #include "visual/guicontainer.h"
 
@@ -96,7 +96,7 @@ void MixxxVisual::initializeGL()
     controller.init();
     backplane = new VisualBackplane();
     controller.add(backplane);
-    vertex = new CFastVertexArray();
+    vertex = new FastVertexArray();
     vertex->init(READCHUNKSIZE/RESAMPLE_FACTOR,READCHUNK_NO*2); // Allocate room for a lot of vertices
 
     picking.init(&controller);

@@ -1,9 +1,26 @@
-#ifndef __PICKABLE_INCLUDED__
-#define __PICKABLE_INCLUDED__
+/***************************************************************************
+                          pickable.h  -  description
+                             -------------------
+    copyright            : (C) 2002 by Tue and Ken Haste Andersen and Kenny 
+                                       Erleben
+    email                :
+ ***************************************************************************/
+
+/***************************************************************************
+ *                                                                         *
+ *   This program is free software; you can redistribute it and/or modify  *
+ *   it under the terms of the GNU General Public License as published by  *
+ *   the Free Software Foundation; either version 2 of the License, or     *
+ *   (at your option) any later version.                                   *
+ *                                                                         *
+ ***************************************************************************/
+
+#ifndef PICKABLE_H
+#define PICKABLE_H
 #if defined(WIN32)
 #include <windows.h>
 #endif
-#include "visual.h"
+#include "visualobject.h"
 #include <GL/gl.h>
 
 /**
@@ -17,23 +34,17 @@
  * You should use the CPicking when you want to pick
  * an object at a given location.
  */
-class CPickableObject : public CVisualObject
+class PickableObject : public VisualObject
 {
 public:
-
-  CPickableObject();
-
-public:
-
+  PickableObject();
   virtual void draw(GLenum mode);
   virtual void draw()=0;
   int getIndex();
 
 private:
-
   int index;        ///< The index of the object.
   static int next;  ///< Next free avaible index.
-
-};/* End of class CPickableObject */
-#endif //__PICKABLE_INCLUDED__
+};
+#endif
 

@@ -1,26 +1,45 @@
-#include "pick.h"
+/***************************************************************************
+                          picking.cpp  -  description
+                             -------------------
+    copyright            : (C) 2002 by Tue and Ken Haste Andersen and Kenny 
+                                       Erleben
+    email                :
+ ***************************************************************************/
+
+/***************************************************************************
+ *                                                                         *
+ *   This program is free software; you can redistribute it and/or modify  *
+ *   it under the terms of the GNU General Public License as published by  *
+ *   the Free Software Foundation; either version 2 of the License, or     *
+ *   (at your option) any later version.                                   *
+ *                                                                         *
+ ***************************************************************************/
+
+#include "picking.h"
 #ifdef _WIN32_
 #include <windows.h>
 #endif
 #include <GL/gl.h>
 #include <GL/glu.h>
-#include "controller.h"
+#include "visualcontroller.h"
 
 /**
  * Default Constructor.
  */
-CPicking::CPicking()
+Picking::Picking()
 {
 }
 
-void CPicking::init(CVisualController * controller){
-  this->controller = controller;
+void Picking::init(VisualController * controller)
+{
+    this->controller = controller;
 };
 
 /**
  * processHits prints out the contents of the selection array
  */
-void CPicking::processHits(GLint hits, GLuint buffer[]){
+void Picking::processHits(GLint hits, GLuint buffer[])
+{
   GLuint names, *ptr;
 
   //printf ("hits = %d\n", hits);
@@ -46,7 +65,8 @@ void CPicking::processHits(GLint hits, GLuint buffer[]){
  * Processes hits, in order to find the one in front
  * of all the others.
  */
-GLuint CPicking::inFront(GLint hits, GLuint buffer[]){
+GLuint Picking::inFront(GLint hits, GLuint buffer[])
+{
 
   depth = (GLuint)-1;
 
@@ -88,7 +108,7 @@ GLuint CPicking::inFront(GLint hits, GLuint buffer[]){
  *
  * @return     An unique index, representing the picked object.
  */
-int CPicking::pick(int x,int y){
+int Picking::pick(int x,int y){
 //  GLenum error = glGetError();
 //  const GLubyte* errmsg = gluErrorString(error);
       
@@ -120,3 +140,4 @@ int CPicking::pick(int x,int y){
   int  picked = inFront(hits,selectBuf);
   return picked;
 };
+

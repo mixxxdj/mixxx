@@ -72,7 +72,7 @@
 
 #ifdef __VISUALS__
   #include "mixxxvisual.h"
-  #include "visual/signal.h"
+  #include "visual/visualsignal.h"
   #include "visual/guisignal.h"
   #include "visual/guicontainer.h"
 #endif
@@ -298,7 +298,7 @@ void MixxxApp::engineStart()
 #ifdef __VISUALS__
     if (visual>0)
     {
-        CGUISignal *signal;
+        GUISignal *signal;
         GUIContainer *container;
 
         container = visual->add(buffer1);

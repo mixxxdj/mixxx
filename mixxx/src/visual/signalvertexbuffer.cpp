@@ -1,4 +1,21 @@
-#include "buffer.h"
+/***************************************************************************
+                          signalvertexbuffer.cpp  -  description
+                             -------------------
+    copyright            : (C) 2002 by Tue and Ken Haste Andersen and Kenny 
+                                       Erleben
+    email                :
+ ***************************************************************************/
+
+/***************************************************************************
+ *                                                                         *
+ *   This program is free software; you can redistribute it and/or modify  *
+ *   it under the terms of the GNU General Public License as published by  *
+ *   the Free Software Foundation; either version 2 of the License, or     *
+ *   (at your option) any later version.                                   *
+ *                                                                         *
+ ***************************************************************************/
+
+#include "signalvertexbuffer.h"
 #include "../enginebuffer.h"
 #include "../soundbuffer.h"
 #include "fastvertexarray.h"
@@ -6,7 +23,7 @@
 /**
  * Default Constructor.
  */
-CSignalVertexBuffer::CSignalVertexBuffer(int _len, int _resampleFactor, EngineBuffer *_enginebuffer, CFastVertexArray *_vertex)
+SignalVertexBuffer::SignalVertexBuffer(int _len, int _resampleFactor, EngineBuffer *_enginebuffer, FastVertexArray *_vertex)
 {
     installEventFilter(this);
 
@@ -35,12 +52,12 @@ CSignalVertexBuffer::CSignalVertexBuffer(int _len, int _resampleFactor, EngineBu
 /**
  * Deconstructor.
  */
-CSignalVertexBuffer::~CSignalVertexBuffer()
+SignalVertexBuffer::~SignalVertexBuffer()
 {
     //delete [] buffer;
 };
 
-bool CSignalVertexBuffer::eventFilter(QObject *o, QEvent *e)
+bool SignalVertexBuffer::eventFilter(QObject *o, QEvent *e)
 {
     // If a user events are received, update either playpos or buffer
     if (e->type() == (QEvent::Type)1001)
@@ -66,7 +83,7 @@ bool CSignalVertexBuffer::eventFilter(QObject *o, QEvent *e)
  *        pos2, len2 - Same. Is used if buffer is circular and the samples are wrapped
  *
  */ 
-void CSignalVertexBuffer::updateBuffer(float *source, int pos1, int len1, int pos2, int len2)
+void SignalVertexBuffer::updateBuffer(float *source, int pos1, int len1, int pos2, int len2)
 {
     //std::cout << "pos1: " << pos1 << ", len1: " << len1 <<", pos2: " << pos2 << ", len2: " << len2 << ", len: " << len1+len2 << "\n";
 
@@ -99,7 +116,7 @@ void CSignalVertexBuffer::updateBuffer(float *source, int pos1, int len1, int po
  * @return          A bufInfo struct containing a pointer to the samples,
  *                  and the number of samples.
  */
-bufInfo CSignalVertexBuffer::getVertexArray()
+bufInfo SignalVertexBuffer::getVertexArray()
 {
 	// Calculate new playpos based on playpos, rate and time since 
 	int dt = time.elapsed();
@@ -128,7 +145,7 @@ bufInfo CSignalVertexBuffer::getVertexArray()
  *
  * @return    The number of samples in buffer.
  */
-int CSignalVertexBuffer::getBufferLength()
+int SignalVertexBuffer::getBufferLength()
 {
     return len;
 };
@@ -138,7 +155,8 @@ int CSignalVertexBuffer::getBufferLength()
  *
  * @return    The number of samples to display.
  */
-int CSignalVertexBuffer::getDisplayLength()
+int SignalVertexBuffer::getDisplayLength()
 {
     return displayLen;
 };
+

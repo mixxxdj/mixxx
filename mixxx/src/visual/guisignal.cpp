@@ -1,12 +1,29 @@
+/***************************************************************************
+                          guisignal.cpp  -  description
+                             -------------------
+    copyright            : (C) 2002 by Tue and Ken Haste Andersen and Kenny 
+                                       Erleben
+    email                :
+ ***************************************************************************/
+
+/***************************************************************************
+ *                                                                         *
+ *   This program is free software; you can redistribute it and/or modify  *
+ *   it under the terms of the GNU General Public License as published by  *
+ *   the Free Software Foundation; either version 2 of the License, or     *
+ *   (at your option) any later version.                                   *
+ *                                                                         *
+ ***************************************************************************/
+
 #include "guisignal.h"
-#include "buffer.h"
+#include "signalvertexbuffer.h"
 #include "../controlpotmeter.h"
 #include <math.h>
 
 /**
  * Default Consructor.
  */
-CGUISignal::CGUISignal(CSignalVertexBuffer *_buffer, CFastVertexArray *vertex, const char *group) : fishEyeSignal(_buffer->buffer,vertex), preSignal(_buffer->buffer,vertex), postSignal(_buffer->buffer,vertex), signal(_buffer->buffer,vertex)
+GUISignal::GUISignal(SignalVertexBuffer *_buffer, FastVertexArray *vertex, const char *group) : fishEyeSignal(_buffer->buffer,vertex), preSignal(_buffer->buffer,vertex), postSignal(_buffer->buffer,vertex), signal(_buffer->buffer,vertex)
 {
   buffer = _buffer;
   length = 50;
@@ -35,15 +52,13 @@ CGUISignal::CGUISignal(CSignalVertexBuffer *_buffer, CFastVertexArray *vertex, c
 
   sliderFishEyeLengthScale = new ControlPotmeter(ConfigKey(group,"FishEyeLengthScale"),0.05,0.95);
   connect(sliderFishEyeLengthScale, SIGNAL(valueChanged(FLOAT_TYPE)), this, SLOT(setFishEyeLengthScale(FLOAT_TYPE)));
-
-  
 };
 
 
 /**
  *
  */
-void CGUISignal::setPlayPosMarkerMaterial(CMaterial * material)
+void GUISignal::setPlayPosMarkerMaterial(Material * material)
 {
     playPosMarkerMaterial = material;
 };
@@ -52,12 +67,12 @@ void CGUISignal::setPlayPosMarkerMaterial(CMaterial * material)
 /**
  *
  */
-void CGUISignal::setBoxMaterial(CMaterial * material)
+void GUISignal::setBoxMaterial(Material * material)
 {
     boxMaterial = material;
 };
 
-void CGUISignal::setBoxWireMaterial(CMaterial * material)
+void GUISignal::setBoxWireMaterial(Material * material)
 {
     boxWireMaterial = material;
 };
@@ -65,7 +80,7 @@ void CGUISignal::setBoxWireMaterial(CMaterial * material)
 /**
  *
  */
-void CGUISignal::setSignalMaterial(CMaterial * material)
+void GUISignal::setSignalMaterial(Material * material)
 {
     preSignal.setMaterial(material);
     postSignal.setMaterial(material);
@@ -75,7 +90,7 @@ void CGUISignal::setSignalMaterial(CMaterial * material)
 /**
  *
  */
-void CGUISignal::setFishEyeSignalMaterial(CMaterial * material)
+void GUISignal::setFishEyeSignalMaterial(Material * material)
 {
     fishEyeSignal.setMaterial(material);
 };
@@ -88,7 +103,7 @@ void CGUISignal::setFishEyeSignalMaterial(CMaterial * material)
  *
  * @param mode     The render mode.
  */
-void CGUISignal::draw(GLenum mode)
+void GUISignal::draw(GLenum mode)
 {
     doLayout();
 
@@ -155,31 +170,31 @@ void CGUISignal::draw(GLenum mode)
  * The Drawing Method.
  * Currently there is no need for any drawing.
  */
-void CGUISignal::draw()
+void GUISignal::draw()
 {
 };
 
 /**
  * Set Origo.
  */
-void CGUISignal::setOrigo(float ox, float oy,float oz)
+void GUISignal::setOrigo(float ox, float oy,float oz)
 {
     this->ox = ox;
     this->oy = oy;
     this->oz = oz;
 };
 
-float CGUISignal::getOrigoX()
+float GUISignal::getOrigoX()
 {
     return ox;
 }
 
-float CGUISignal::getOrigoY()
+float GUISignal::getOrigoY()
 {
     return oy;
 }
 
-float CGUISignal::getOrigoZ()
+float GUISignal::getOrigoZ()
 {
 	return oz;
 }
@@ -190,7 +205,7 @@ float CGUISignal::getOrigoZ()
  * @param value   Boolean value indicating what ever
  *                fish eye mode is on or off.
  */
-void CGUISignal::setFishEyeMode(bool value)
+void GUISignal::setFishEyeMode(bool value)
 {
     fishEyeMode = value;
 };
@@ -201,13 +216,13 @@ void CGUISignal::setFishEyeMode(bool value)
  * @param scale    A non zero value indicating how long the fish
  *                 eye box should be stretched. 0 means no fisheye, 1 means full length fish eye
  */
-void CGUISignal::setFishEyeLengthScale(FLOAT_TYPE scale)
+void GUISignal::setFishEyeLengthScale(FLOAT_TYPE scale)
 {
     fishEyeLengthScale = scale;
 };
 
 /** Controls the fraction of the signal display in fish eye */
-void CGUISignal::setFishEyeSignalFraction(FLOAT_TYPE fraction)
+void GUISignal::setFishEyeSignalFraction(FLOAT_TYPE fraction)
 {
     fishEyeSignalFraction = fraction;
 };
@@ -219,7 +234,7 @@ void CGUISignal::setFishEyeSignalFraction(FLOAT_TYPE fraction)
  * @param scale   A non zero value indicating how heigh signals
  *                in the fish eye box should stretched. 
  */
-void CGUISignal::setSignalScale(float scale)
+void GUISignal::setSignalScale(float scale)
 {
     signalScale = scale;
 };
@@ -227,24 +242,24 @@ void CGUISignal::setSignalScale(float scale)
 /**
  *
  */
-void CGUISignal::setLength(float length)
+void GUISignal::setLength(float length)
 {
     this->length = length;
 };
 
-float CGUISignal::getLength()
+float GUISignal::getLength()
 {
     return length;
 };
 /**
  *
  */
-void CGUISignal::setHeight(float height)
+void GUISignal::setHeight(float height)
 {
     this->height = height;
 };
 
-float CGUISignal::getHeight()
+float GUISignal::getHeight()
 {
     return height;
 }
@@ -252,12 +267,12 @@ float CGUISignal::getHeight()
 /**
  *
  */
-void CGUISignal::setDepth(float depth)
+void GUISignal::setDepth(float depth)
 {
     this->depth = depth;
 };
 
-float CGUISignal::getDepth()
+float GUISignal::getDepth()
 {
     return depth;
 }
@@ -266,7 +281,7 @@ float CGUISignal::getDepth()
 /**
  *
  */
-void CGUISignal::doLayout()
+void GUISignal::doLayout()
 {
 
   //--- Argh, in order to support rotations we must rotate the n-vector!!!
@@ -347,7 +362,7 @@ void CGUISignal::doLayout()
  * Rotations are currently not fully implemented.
  *
  */
-void CGUISignal::setRotation(float angle, float rx,float ry,float rz)
+void GUISignal::setRotation(float angle, float rx,float ry,float rz)
 {
     this->angle = angle;
     this->rx = rx;

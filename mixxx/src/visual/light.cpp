@@ -1,3 +1,20 @@
+/***************************************************************************
+                          light.cpp  -  description
+                             -------------------
+    copyright            : (C) 2002 by Tue and Ken Haste Andersen and Kenny 
+                                       Erleben
+    email                :
+ ***************************************************************************/
+
+/***************************************************************************
+ *                                                                         *
+ *   This program is free software; you can redistribute it and/or modify  *
+ *   it under the terms of the GNU General Public License as published by  *
+ *   the Free Software Foundation; either version 2 of the License, or     *
+ *   (at your option) any later version.                                   *
+ *                                                                         *
+ ***************************************************************************/
+
 #include "light.h"
 #if defined(WIN32)
 #include <windows.h>
@@ -5,12 +22,12 @@
 #include <GL/gl.h>
 #include <GL/glu.h>
 
-int CLight::nextLight = 1;
+int Light::nextLight = 1;
 
 /**
  * Default constructor.
  */
-CLight::CLight(){
+Light::Light(){
   i = nextLight;
   nextLight++;
 
@@ -34,8 +51,9 @@ CLight::CLight(){
 /**
  * Deconstructor.
  */
-CLight::~CLight(){
-  glDisable(getLightIndex());
+Light::~Light()
+{
+    glDisable(getLightIndex());
 };
 
 	/**
@@ -43,16 +61,17 @@ CLight::~CLight(){
  * This mehod disables this light. Note lighting is not disabled
  * only this single lightsource is disabled.
  */
-void CLight::disable(){
-  glDisable(getLightIndex());
+void Light::disable()
+{
+    glDisable(getLightIndex());
 };
 
 /**
  * Enables a light source.
  * This method enables both lighting  and this light source.
  */
-void CLight::enable(){
-
+void Light::enable()
+{
   glMatrixMode(GL_MODELVIEW);
   glPushMatrix();
   glLoadIdentity();
@@ -79,6 +98,7 @@ void CLight::enable(){
  *
  * @return   The openGL light index.
  */
-int CLight::getLightIndex(){
-  return GL_LIGHT0 + i;
+int Light::getLightIndex()
+{
+    return GL_LIGHT0 + i;
 };

@@ -1,3 +1,20 @@
+/***************************************************************************
+                          fastvertexarray.cpp  -  description
+                             -------------------
+    copyright            : (C) 2002 by Tue and Ken Haste Andersen and Kenny 
+                                       Erleben
+    email                :
+ ***************************************************************************/
+
+/***************************************************************************
+ *                                                                         *
+ *   This program is free software; you can redistribute it and/or modify  *
+ *   it under the terms of the GNU General Public License as published by  *
+ *   the Free Software Foundation; either version 2 of the License, or     *
+ *   (at your option) any later version.                                   *
+ *                                                                         *
+ ***************************************************************************/
+
 #include "fastvertexarray.h"
 
 #ifdef __NVSDK__
@@ -11,15 +28,15 @@
 using namespace std;
 
 // Static members
-int CFastVertexArray::usedBufCount = 0;
+int FastVertexArray::usedBufCount = 0;
 
-CFastVertexArray::CFastVertexArray()
+FastVertexArray::FastVertexArray()
 {
     pointer = 0;
     nv_fence = false;
 };
 
-CFastVertexArray::~CFastVertexArray()
+FastVertexArray::~FastVertexArray()
 {
     if(pointer)
     {
@@ -40,7 +57,7 @@ CFastVertexArray::~CFastVertexArray()
     }
 };
 
-void CFastVertexArray::init(int vertices,int bufferCount)
+void FastVertexArray::init(int vertices,int bufferCount)
 {
     this->bufferCount = bufferCount;
     verticesPerBuffer = vertices;
@@ -72,7 +89,7 @@ void CFastVertexArray::init(int vertices,int bufferCount)
 #endif
 };
 
-GLfloat *CFastVertexArray::getStartPtr(int no)
+GLfloat *FastVertexArray::getStartPtr(int no)
 {
     int r = usedBufCount;
     usedBufCount+=no;
@@ -80,7 +97,7 @@ GLfloat *CFastVertexArray::getStartPtr(int no)
 }
 
 
-void CFastVertexArray::draw(GLfloat *p, int vlen)
+void FastVertexArray::draw(GLfloat *p, int vlen)
 {
     glVertexPointer(3, GL_FLOAT, 0, p);
     if (!nv_fence)
@@ -88,7 +105,7 @@ void CFastVertexArray::draw(GLfloat *p, int vlen)
     glDrawArrays(GL_LINE_STRIP,0,vlen);
 };
 
-GLfloat *CFastVertexArray::allocate(int size)
+GLfloat *FastVertexArray::allocate(int size)
 {
     //---
     //--- Memory is allocated according to the values
@@ -127,7 +144,7 @@ GLfloat *CFastVertexArray::allocate(int size)
     return array;
 };
 
-void CFastVertexArray::validate()
+void FastVertexArray::validate()
 {
     GLenum errCode = glGetError();
     if(errCode!=GL_NO_ERROR)
@@ -136,3 +153,4 @@ void CFastVertexArray::validate()
         qDebug("Visuals: %s",errmsg);
     }
 }
+
