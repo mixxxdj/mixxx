@@ -36,13 +36,14 @@ Light::Light()
     diffuse[1]  = 0.35f;
     diffuse[2]  = 0.35f;
     diffuse[3]  = 1.0f;
-    specular[0] = 1.0f;
-    specular[1] = 1.0f;
-    specular[2] = 1.0f;
-    specular[3] = 1.0f;
+    specular[0] = 0.1f;
+    specular[1] = 0.1f;
+    specular[2] = 0.1f;
+    specular[3] = 0.1f;
     position[0] = 0.0f;
     position[1] = 0.0f;
     position[2] = 250.0f;
+    position[3] = 0.f;
 };
 
 /**
@@ -69,10 +70,6 @@ void Light::disable()
  */
 void Light::enable()
 {
-    glMatrixMode(GL_MODELVIEW);
-    glPushMatrix();
-    glLoadIdentity();
-
     glShadeModel(GL_SMOOTH);
   
     if (!glIsEnabled(GL_LIGHTING))
@@ -84,8 +81,6 @@ void Light::enable()
     glLightfv(getLightIndex(),GL_DIFFUSE,diffuse);
     glLightfv(getLightIndex(),GL_SPECULAR,specular);
     glLightfv(getLightIndex(),GL_POSITION,position);
-
-    glPopMatrix();
 };
 
 /**

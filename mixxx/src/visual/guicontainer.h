@@ -87,7 +87,6 @@ private:
     /** True if the container is currently moving */
     bool                movement;
 
-    static Light mylight;
     static Material dblue, lblue, purple, lgreen;
 };
 #endif

@@ -36,9 +36,9 @@
 #include "wpushbutton.h"
 #include "wtracktable.h"
 #include "mixxx.h"
-#include "filesave.xpm"
-#include "fileopen.xpm"
-#include "filenew.xpm"
+//#include "filesave.xpm"
+//#include "fileopen.xpm"
+//#include "filenew.xpm"
 #include "images/a.xpm"
 #include "images/b.xpm"
 #include "controlnull.h"
@@ -50,7 +50,6 @@
 #include "reader.h"
 #include "enginebuffer.h"
 #include "tracklist.h"
-#include "powermate.h"
 #include "dlgtracklist.h"
 #include "dlgflanger.h"
 #include "dlgplaylist.h"
@@ -59,6 +58,10 @@
 #include "dlgplaycontrol.h"
 #include "dlgcrossfader.h"
 #include "dlgsplit.h"
+
+#ifdef __UNIX__
+#include "powermatelinux.h"
+#endif
 
 #ifdef __ALSA__
   #include "playeralsa.h"
@@ -228,18 +231,24 @@ MixxxApp::MixxxApp(QApplication *a)
 
     // Try initializing PowerMates
 #ifdef __UNIX__
-    powermate1 = new PowerMate(control);
+    powermate1 = new PowerMateLinux(control);
+    powermate2 = new PowerMateLinux(control);
+#endif
     if (powermate1->opendev())
         qDebug("Found PowerMate 1");
     else
+    {
+        delete powermate1;
         powermate1 = 0;
+    }
 
-    powermate2 = new PowerMate(control);
     if (powermate2->opendev())
         qDebug("Found PowerMate 2");
     else
+    {
+        delete powermate2;
         powermate2 = 0;
-#endif    
+    }
   
     // Initialize player device
 #ifdef __ALSA__
@@ -366,10 +375,10 @@ bool MixxxApp::eventFilter(QObject *o, QEvent *e)
 /** initializes all QActions of the application */
 void MixxxApp::initActions()
 {
-  QPixmap openIcon, saveIcon, newIcon;
-  newIcon = QPixmap(filenew);
-  openIcon = QPixmap(fileopen);
-  saveIcon = QPixmap(filesave);
+//  QPixmap openIcon, saveIcon, newIcon;
+//  newIcon = QPixmap(filenew);
+//  openIcon = QPixmap(fileopen);
+//  saveIcon = QPixmap(filesave);
 
 /*
   fileNew = new QAction(tr("New File"), newIcon, tr("&New"), QAccel::stringToKey(tr("Ctrl+N")), this);

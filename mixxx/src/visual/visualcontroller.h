@@ -26,6 +26,8 @@
  * Forward Declaration.
  */
 class VisualObject;
+//class Light;
+#include "light.h"
 
 /**
  * Common Data Types.
@@ -66,6 +68,8 @@ private:
   QApplication *app;
   Objects objects;
   static int idCount;
+  Light mylight;
+
 };
 #endif
 

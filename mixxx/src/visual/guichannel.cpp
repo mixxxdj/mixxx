@@ -88,7 +88,7 @@ SignalVertexBuffer *GUIChannel::add(ReaderExtract *readerExtract)
     if (channelNo==0)
         c->setZoompos(zoomposx,20,0);
     else
-        c->setZoompos(zoomposx,-10,0);
+        c->setZoompos(zoomposx,20,10);
 
     // Append container to list
     list.append(c);

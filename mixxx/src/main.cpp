@@ -28,6 +28,8 @@
 #include "portaudio.h"
 
 #include "mixxx.h"
+
+void qInitImages_mixxx();
     
 void MessageOutput( QtMsgType type, const char *msg )
 {
@@ -79,6 +81,10 @@ int main(int argc, char *argv[])
   // For others, write to the console:
   qInstallMsgHandler( MessageOutput );
 #endif
+
+  // Ensure image data is initialized
+  //qInitImages_mixxx();
+  
   QApplication a(argc, argv);
 //  a.setFont(QFont("helvetica", 10));
   QTranslator tor( 0 );

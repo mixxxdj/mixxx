@@ -24,7 +24,6 @@
 #include "../readerextract.h"
 
 // Static members:
-Light GUIContainer::mylight;
 Material GUIContainer::dblue, GUIContainer::lblue, GUIContainer::purple, GUIContainer::lgreen;
 
 /**
@@ -163,12 +162,14 @@ void GUIContainer::move(int msec)
             signal->setOrigo(updx,updy,updz);
             signal->setLength(updl);
             signal->setHeight(updh);
-            signal->setDepth(updd);
+//            signal->setDepth(updd);
 
-        signal->setOrigo(updx,updy,updz);
-        signal->setLength(updl);
-        signal->setHeight(updh);
-        signal->setDepth(updd);
+//       qDebug("updd %f, origo %f,%f,%f, len: %f, hei: %f",updd);
+            
+//        signal->setOrigo(updx,updy,updz);
+//        signal->setLength(updl);
+//        signal->setHeight(updh);
+//        signal->setDepth(updd);
 
         // Check if destination is reached
         if (updx==destx && updy==desty && updz==destz && updl==destl && updh==desth && updd==destd)
@@ -178,43 +179,22 @@ void GUIContainer::move(int msec)
 
 void GUIContainer::setupScene()
 {
-    mylight.ambient[0]  = 1.f;
-    mylight.ambient[1]  = 1.f;
-    mylight.ambient[2]  = 1.f;
-    mylight.ambient[3]  = 1.f;
-    
-    mylight.diffuse[0]  = 1.f;
-    mylight.diffuse[1]  = 1.f;
-    mylight.diffuse[2]  = 1.f;
-    mylight.diffuse[3]  = 1.f;
 
-    mylight.specular[0] = 1.f;
-    mylight.specular[1] = 1.f;
-    mylight.specular[2] = 1.f;
-    mylight.specular[3] = 1.f;
+    dblue.ambient[0] = 0.f;
+    dblue.ambient[1] = 0.f;
+    dblue.ambient[2] = 62/255.f;
+    dblue.ambient[3] = 0.5f;
 
-    mylight.position[0] = 100.0f;
-    mylight.position[1] = 100.0f;
-    mylight.position[2] = 180.0f;
-    mylight.position[3] = 1.0f;
+    dblue.diffuse[0] = 0.f;
+    dblue.diffuse[1] = 0.f;
+    dblue.diffuse[2] = 62/255.f;
+    dblue.diffuse[3] = 0.5f;
 
-    mylight.enable();
+    dblue.specular[0] = 0.f;
+    dblue.specular[1] = 0.0f;
+    dblue.specular[2] = 62/255.f;
+    dblue.specular[3] = 0.5f;
 
-    dblue.ambient[0] = 0.0f;
-    dblue.ambient[1] = 0.0f;
-    dblue.ambient[2] = 0.0f;
-    dblue.ambient[3] = 1.0f;
-    
-    dblue.diffuse[0] = 0./255.;
-    dblue.diffuse[1] = 0./255.;
-    dblue.diffuse[2] = 255./255.;
-    dblue.diffuse[3] = 0.1f;
-    
-    dblue.specular[0] = 0.4f;
-    dblue.specular[1] = 0.4f;
-    dblue.specular[2] = 0.4f;
-    dblue.specular[3] = 1.0f;
-    
     dblue.shininess = 128;
 
     lblue.ambient[0] = 0.0f;
@@ -252,19 +232,19 @@ void GUIContainer::setupScene()
     purple.shininess = 128.f;
     
     lgreen.ambient[0] = 0.0f;
-    lgreen.ambient[1] = 0.0f;
+    lgreen.ambient[1] = 255.f;
     lgreen.ambient[2] = 0.0f;
-    lgreen.ambient[3] = 1.0f;
+    lgreen.ambient[3] = 1.f;
     
-    lgreen.diffuse[0] = 90/255.f;
-    lgreen.diffuse[1] = 255/255.f;
-    lgreen.diffuse[2] = 90/255.f;
-    lgreen.diffuse[3] = 1.0f;
+    lgreen.diffuse[0] = 0.f;
+    lgreen.diffuse[1] = 255.f;
+    lgreen.diffuse[2] = 0.f;
+    lgreen.diffuse[3] = 1.f;
     
-    lgreen.specular[0] = 0.3f;
-    lgreen.specular[1] = 0.3f;
-    lgreen.specular[2] = 0.3f;
-    lgreen.specular[3] = 1.0f;
+    lgreen.specular[0] = 0.f;
+    lgreen.specular[1] = 255.f;
+    lgreen.specular[2] = 0.f;
+    lgreen.specular[3] = 1.f;
     
     lgreen.shininess = 128;
 };
