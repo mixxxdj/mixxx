@@ -463,7 +463,7 @@
   <SignalColor>#00ff00</SignalColor>
   <BeatColor>#0000ff</BeatColor>
   <MarkerColor>#ff0000</MarkerColor>
-  <FisheyeColor>#fefefe</FisheyeColor>
+  <FisheyeColor>#ffffff</FisheyeColor>
  </Visual>
 
  <Visual>
@@ -474,7 +474,7 @@
   <SignalColor>#00ff00</SignalColor>
   <BeatColor>#0000ff</BeatColor>
   <MarkerColor>#ff0000</MarkerColor>
-  <FisheyeColor>#fefefe</FisheyeColor>
+  <FisheyeColor>#ffffff</FisheyeColor>
  </Visual>
 
  <Text>

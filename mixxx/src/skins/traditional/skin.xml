@@ -38,6 +38,28 @@
   </Connection>
  </SliderComposed>
 
+ <SliderComposed>
+  <Handle>playposmarker.png</Handle>
+  <Slider>playposslider.png</Slider>
+  <Pos>77,223</Pos>
+  <Horizontal>true</Horizontal>
+  <Connection>
+   <ConfigKey>[Channel1],playposition</ConfigKey>
+   <EmitOnDownPress>false</EmitOnDownPress>
+  </Connection>
+ </SliderComposed>
+
+ <SliderComposed>
+  <Handle>playposmarker.png</Handle>
+  <Slider>playposslider.png</Slider>
+  <Pos>644,223</Pos>
+  <Horizontal>true</Horizontal>
+  <Connection>
+   <ConfigKey>[Channel2],playposition</ConfigKey>
+   <EmitOnDownPress>false</EmitOnDownPress>
+  </Connection>
+ </SliderComposed>
+
  <PushButtonInc>
   <BackPath>upback1.png</BackPath>
   <NumberStates>1</NumberStates>
@@ -320,6 +342,62 @@
   </Connection>
  </PushButton>
 
+ <PushButton>
+  <NumberStates>4</NumberStates>
+  <State>
+   <Number>0</Number>
+   <Pressed>endoftrackmode-stop.png</Pressed>
+   <Unpressed>endoftrackmode-stop.png</Unpressed>
+  </State>
+  <State>
+   <Number>1</Number>
+   <Pressed>endoftrackmode-next.png</Pressed>
+   <Unpressed>endoftrackmode-next.png</Unpressed>
+  </State>
+  <State>
+   <Number>2</Number>
+   <Pressed>endoftrackmode-loop.png</Pressed>
+   <Unpressed>endoftrackmode-loop.png</Unpressed>
+  </State>
+  <State>
+   <Number>3</Number>
+   <Pressed>endoftrackmode-ping.png</Pressed>
+   <Unpressed>endoftrackmode-ping.png</Unpressed>
+  </State>
+  <Pos>330,70</Pos>
+  <Connection>
+   <ConfigKey>[Channel1],TrackEndMode</ConfigKey>
+  </Connection>
+ </PushButton>
+
+ <PushButton>
+  <NumberStates>4</NumberStates>
+  <State>
+   <Number>0</Number>
+   <Pressed>endoftrackmode-stop.png</Pressed>
+   <Unpressed>endoftrackmode-stop.png</Unpressed>
+  </State>
+  <State>
+   <Number>1</Number>
+   <Pressed>endoftrackmode-next.png</Pressed>
+   <Unpressed>endoftrackmode-next.png</Unpressed>
+  </State>
+  <State>
+   <Number>2</Number>
+   <Pressed>endoftrackmode-loop.png</Pressed>
+   <Unpressed>endoftrackmode-loop.png</Unpressed>
+  </State>
+  <State>
+   <Number>3</Number>
+   <Pressed>endoftrackmode-ping.png</Pressed>
+   <Unpressed>endoftrackmode-ping.png</Unpressed>
+  </State>
+  <Pos>900,70</Pos>
+  <Connection>
+   <ConfigKey>[Channel2],TrackEndMode</ConfigKey>
+  </Connection>
+ </PushButton>
+
  <Knob>
   <NumberStates>31</NumberStates>
   <Path>knob%1.png</Path>
@@ -495,7 +573,7 @@
  <Text>
   <Channel>1</Channel>
   <Pos>77,27</Pos>
-  <Size>303,70</Size>
+  <Size>200,70</Size>
   <FgColor>#00fe00</FgColor>
   <BgColor>#000000</BgColor>
  </Text>
@@ -503,7 +581,7 @@
  <Text>
   <Channel>2</Channel>
   <Pos>644,27</Pos>
-  <Size>303,70</Size>
+  <Size>200,70</Size>
   <FgColor>#00fe00</FgColor>
   <BgColor>#000000</BgColor>
  </Text>

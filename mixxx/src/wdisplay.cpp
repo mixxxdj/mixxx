@@ -75,7 +75,6 @@ void WDisplay::resetPositions()
 void WDisplay::setPixmap(int iPos, const QString &filename)
 {
     m_pPixmaps[iPos] = new QPixmap(filename);
-    qDebug("%s",filename.latin1());
     if (!m_pPixmaps[iPos])
         qDebug("WDisplay: Error loading pixmap %s",filename.latin1());
     else
