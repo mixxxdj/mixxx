@@ -47,7 +47,7 @@ void TrackCollection::readXML(QDomNode node)
 
 void TrackCollection::writeXML(QDomDocument &domXML, QDomElement &root)
 {
-    qDebug("ELEMENTS %i",m_qTrackList.count());
+    //qDebug("ELEMENTS %i",m_qTrackList.count());
     QDomElement trackroot = domXML.createElement("TrackList");
 
     QPtrList<TrackInfoObject>::iterator it = m_qTrackList.begin();
@@ -77,7 +77,11 @@ void TrackCollection::addTrack(TrackInfoObject *pTrack)
 
 TrackInfoObject *TrackCollection::getTrack(int id)
 {
-    // Search through list to find the track of the given id
+    // Binary search
+    return getTrack(id, 0, m_qTrackList.count()/2, m_qTrackList.count());
+
+/*
+    // Linear search through list to find the track of the given id
     QPtrList<TrackInfoObject>::iterator it = m_qTrackList.begin();
     while (it!=m_qTrackList.end())
     {
@@ -85,11 +89,34 @@ TrackInfoObject *TrackCollection::getTrack(int id)
             break;
         ++it;
     }
-
     if (it && (*it)->getId()==id)
+    {
+        qDebug("found %i",id);
         return (*it);
+    }
     else
+    {
+        qDebug("not found %i",id);
         return 0;
+    }
+*/
+}
+
+
+TrackInfoObject *TrackCollection::getTrack(int id, int min, int mid, int max)
+{
+//    qDebug("id %i, min %i, mid %i, max %i",id,min,mid,max);
+    if (max-min<=1)
+        return 0;
+    int midId = m_qTrackList.at(mid)->getId();
+    if (midId==id)
+        return m_qTrackList.at(mid);
+    else if (midId<id)
+        return getTrack(id, mid, mid+(max-mid)/2, max);
+    else if (midId>id)
+        return getTrack(id, min, (mid-min)/2, mid);
+
+    return 0;
 }
 
 TrackInfoObject *TrackCollection::getTrack(QString location)
@@ -102,7 +129,6 @@ TrackInfoObject *TrackCollection::getTrack(QString location)
             break;
         ++it;
     }
-qDebug("not in collection");
     if (it && (*it)->getLocation()==location)
         return (*it);
     else
@@ -111,23 +137,21 @@ qDebug("not in collection");
         QFileInfo file(location);
         if (file.exists())
         {
-qDebug("exists");
             TrackInfoObject *pTrack = new TrackInfoObject(file.dirPath(), file.fileName());
-qDebug("new TIO");
             // Add track to the collection
             if (pTrack->parse() == OK)
             {
-qDebug("parse ok");
                 addTrack(pTrack);
-                qDebug("Found new track: %s", pTrack->getFilename().latin1());
+                //qDebug("Found new track: %s", pTrack->getFilename().latin1());
                 return pTrack;
             }
             else
             {
-                qWarning("Could not parse %s", file.fileName().latin1());
+                //qWarning("Could not parse %s", file.fileName().latin1());
                 delete pTrack;
             }
         }
     }
     return 0;
 }
+

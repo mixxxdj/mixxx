@@ -1,4 +1,4 @@
-Mixxx - version 1.1.
+Mixxx - version 1.2.
 
 * HOMEPAGE *************************************************
 http://mixxx.sourceforge.net
@@ -19,7 +19,6 @@ New since 1.1:
   soundcard can be used to hear both master and headphone
   output
 - Jack support added
-- ASIO support added
 - Improved playlist interface
 - Pitch display
 - State of currently "killed" frequency bands visible on 

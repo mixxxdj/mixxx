@@ -3,7 +3,7 @@
                              -------------------
     begin                : Wed Dec 2 2003
     copyright            : (C) 2003 by Tue Haste Andersen
-    email                : 
+    email                :
  ***************************************************************************/
 
 /***************************************************************************
@@ -33,10 +33,9 @@ bool MixxxKeyboard::eventFilter(QObject *, QEvent *e)
     {
         QKeyEvent *ke = (QKeyEvent *)e;
 
-
         //qDebug("press");
 
-        if (!m_pControl->kbdPress(QKeySequence(ke->key()), false))
+        if (!m_pControl->kbdPress(getKeySeq(ke), false))
             ke->ignore();
         else
         {
@@ -60,7 +59,7 @@ bool MixxxKeyboard::eventFilter(QObject *, QEvent *e)
 
                 if (!ke->isAutoRepeat())
                 {
-                    if (!m_pControl->kbdPress(QKeySequence(ke->key()), true))
+                    if (!m_pControl->kbdPress(getKeySeq(ke), true))
                         ke->ignore();
                     else
                     {
@@ -76,3 +75,20 @@ bool MixxxKeyboard::eventFilter(QObject *, QEvent *e)
 
     return false;
 }
+
+QKeySequence MixxxKeyboard::getKeySeq(QKeyEvent *e)
+{
+    QString s = QKeySequence(e->key());
+
+    if (e->state() & ShiftButton)
+        s = "Shift+" + s;
+    if (e->state() & ControlButton)
+        s = "Ctrl+" + s;
+    if (e->state() & AltButton)
+        s = "Alt+" + s;
+
+    //qDebug("key %s",s.latin1());
+
+    return QKeySequence(s);
+}
+

@@ -21,6 +21,7 @@
 #include <qobject.h>
 #include <qevent.h>
 #include <qvaluelist.h>
+#include <qkeysequence.h>
 
 /**
  * This class provides handling of keyboard events
@@ -37,6 +38,8 @@ public:
     /** Event filter */
     bool eventFilter(QObject *obj, QEvent *e);
 private:
+    /** Returns a valid QKeySequency with modifier keys from a QKeyEvent */
+    QKeySequence getKeySeq(QKeyEvent *e);
     /** List containing keys which is currently pressed */
     QValueList<int> m_qActiveKeyList;
     /** Pointer to control object */
