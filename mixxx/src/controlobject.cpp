@@ -309,7 +309,7 @@ bool ControlObject::kbdPress(QKeySequence k, bool release)
                 else
                     c->setValueFromMidi(NOTE_ON, 1);
 
-//                if (release) qDebug("r"); else qDebug("p");
+                //if (release) qDebug("r"); else qDebug("p");
 
                 react = true;
 

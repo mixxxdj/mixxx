@@ -165,7 +165,7 @@ long SoundSourceMp3::seek(long filepos)
 
         if (framePos==0 || framePos>filepos || m_qSeekList.at()<5)
         {
-            qDebug("Problem finding good seek frame (wanted %i, got %i), starting from 0",filepos,framePos);
+            //qDebug("Problem finding good seek frame (wanted %i, got %i), starting from 0",filepos,framePos);
 
             // Re-init buffer:
             mad_stream_finish(&Stream);
@@ -174,6 +174,7 @@ long SoundSourceMp3::seek(long filepos)
             mad_frame_init(Frame);
             mad_synth_init(&Synth);
             rest = -1;
+            cur = m_qSeekList.first();
         }
         else
         {
