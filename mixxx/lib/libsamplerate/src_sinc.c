@@ -250,9 +250,9 @@ sinc_reset (SRC_PRIVATE *psrc)
 int
 sinc_process (SRC_PRIVATE *psrc, SRC_DATA *data)
 {	SINC_FILTER *filter ;
-	double		input_index, src_ratio, count, float_increment ;
+	double		input_index, src_ratio, count, float_increment, terminate ;
 	increment_t	increment, start_filter_index ;
-	int			half_filter_chan_len, samples_in_hand, terminate, ch ;
+	int			half_filter_chan_len, samples_in_hand, ch ;
 
 	if (psrc->private_data == NULL)
 		return SRC_ERR_NO_PRIVATE ;
@@ -266,10 +266,6 @@ sinc_process (SRC_PRIVATE *psrc, SRC_DATA *data)
 	filter->in_count = data->input_frames * filter->channels ;
 	filter->out_count = data->output_frames * filter->channels ;
 	filter->in_used = filter->out_gen = 0 ;
-
-	/* Special case for when last_ratio has not been set. */
-	if (psrc->last_ratio < (1.0 / SRC_MAX_RATIO))
-		psrc->last_ratio = data->src_ratio ;
 
 	src_ratio = psrc->last_ratio ;
 
@@ -293,7 +289,7 @@ sinc_process (SRC_PRIVATE *psrc, SRC_DATA *data)
 	filter->b_current = (filter->b_current + filter->channels * lrint (floor (input_index))) % filter->b_len ;
 	input_index -= floor (input_index) ;
 
-	terminate = (src_ratio > 1.0) ? 1 : (int) ceil (1.0 / src_ratio) ;
+	terminate = 1.0 / src_ratio + 1e-20 ;
 
 	/* Main processing loop. */
 	while (filter->out_gen < filter->out_count)
@@ -310,9 +306,10 @@ sinc_process (SRC_PRIVATE *psrc, SRC_DATA *data)
 			} ;
 
 		/* This is the termination condition. */
-		if (filter->b_real_end >= 0 && filter->b_current < filter->b_real_end + terminate &&
-				filter->b_current + terminate > filter->b_real_end)
-			break ;
+		if (filter->b_real_end >= 0)
+		{	if (filter->b_current + input_index + terminate >= filter->b_real_end)
+				break ;
+			} ;
 
 		if (fabs (psrc->last_ratio - data->src_ratio) > 1e-10)
 			src_ratio = psrc->last_ratio + filter->out_gen * (data->src_ratio - psrc->last_ratio) / (filter->out_count - 1) ;
@@ -399,7 +396,7 @@ prepare_data (SINC_FILTER *filter, SRC_DATA *data, int half_filter_chan_len)
 		** consumed and this is the last buffer.
 		*/
 
-		if (filter->b_len - filter->b_end < half_filter_chan_len)
+		if (filter->b_len - filter->b_end < half_filter_chan_len + 5)
 		{	/* If necessary, move data down to the start of the buffer. */
 			len = filter->b_end - filter->b_current ;
 			memmove (filter->buffer, filter->buffer + filter->b_current - half_filter_chan_len,
@@ -410,7 +407,7 @@ prepare_data (SINC_FILTER *filter, SRC_DATA *data, int half_filter_chan_len)
 			} ;
 
 		filter->b_real_end = filter->b_end ;
-		len = half_filter_chan_len ;
+		len = half_filter_chan_len + 5 ;
 
 		memset (filter->buffer + filter->b_end, 0, len * sizeof (filter->buffer [0])) ;
 		filter->b_end += len ;

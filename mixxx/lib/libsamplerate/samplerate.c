@@ -123,8 +123,12 @@ src_process (SRC_STATE *state, SRC_DATA *data)
 	data->input_frames_used = 0 ;
 	data->output_frames_gen = 0 ;
 
+	/* Special case for when last_ratio has not been set. */
+	if (psrc->last_ratio < (1.0 / SRC_MAX_RATIO))
+		psrc->last_ratio = data->src_ratio ;
+
 	/* Now process. */
-	error = psrc->process (state, data) ;
+	error = psrc->process (psrc, data) ;
 
 	return error ;
 } /* src_process */
