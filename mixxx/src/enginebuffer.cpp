@@ -393,18 +393,19 @@ CSAMPLE *EngineBuffer::process(const CSAMPLE *, const int buf_size)
 
                 int from = ((bufferpos_play-audioBeatMarkLen)/chunkSizeDiff);
                 int to   = (idx                              /chunkSizeDiff);
-                for (int i=from; i<to; i++)
+                for (int i=from; i<=to; i++)
                     if (beatBuffer[i%readerbeat->getBufferSize()])
                     {
                         int j_start = i*chunkSizeDiff;
                         int j_end   = j_start+audioBeatMarkLen;
+//                        qDebug("%i-%i, buffer: %f-%f",j_start,j_end,bufferpos_play,idx);
                         if (j_start > bufferpos_play-audioBeatMarkLen)
                         {
                             j_start = max(0,j_start-bufferpos_play);
                             j_end = min(j_end-bufferpos_play,buf_size);
 //                            qDebug("j_start %i, j_end %i",j_start,j_end);
                             for (int j=j_start; j<j_end; j++)
-                                buffer[j%buf_size] = 30000.;
+                                buffer[j] = 30000.;
                         }
                     }
             }
