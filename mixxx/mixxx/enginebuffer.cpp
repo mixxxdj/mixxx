@@ -153,9 +153,12 @@ void EngineBuffer::slotUpdatePlay(valueType newvalue) {
 
 void EngineBuffer::slotUpdateRate(FLOAT r) {
   if (PlayButton->getValue()==on)
-    rate = rateSlider->getValue() + 4*wheel->getValue();
+      rate = rateSlider->getValue() + 4*wheel->getValue();
   else
-      rate = 4*wheel->getValue();
+      if (PlayButton->getPosition()==down)
+	  rate = 0;
+      else
+	  rate = 4*wheel->getValue();
   qDebug("Rate value: %f",rate);
 }
 

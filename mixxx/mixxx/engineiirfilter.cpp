@@ -1,13 +1,13 @@
 #include "engineiirfilter.h"
 
 EngineIIRfilter::EngineIIRfilter(int potmeter_midi, int button_midi,
-				 int button_bit, MidiObject *midi, double *_coefs) {
+				 int button_bit, MidiObject *midi, const double *_coefs) {
   //  Initialize the buttons:
   //killbutton = new ControlPushButton("kill", simulated_latching, button_midi,
   //				     button_bit, midi);
   //connect(killbutton, SIGNAL(valueChanged(valueType)), this, SLOT(slotUpdate()));
 
-  filterpot = new ControlPotmeter("filterpot", potmeter_midi, midi, 0., 2.);
+  filterpot = new ControlLogpotmeter("filterpot", potmeter_midi, midi);
   connect(filterpot, SIGNAL(valueChanged(FLOAT)), this, SLOT(slotUpdate()));
   coefs = _coefs;
 }
@@ -34,7 +34,7 @@ void EngineIIRfilter::process(CSAMPLE *source, CSAMPLE *destination, int buf_siz
 	+ (coefs[9] * yv[4]) + ( coefs[10] * yv[5])
 	+ (coefs[11] * yv[6]) + ( coefs[12] * yv[7]);
     
-    destination[i] += (gain-1)*yv[8];
+    destination[i] += gain*yv[8];  //(gain-1)*yv[8];
   }
 }
 

@@ -14,13 +14,13 @@ class EngineHMLfilter : public EngineObject {
  private:
   ControlPushButton* killbutton;
   ControlLogpotmeter *highfilterpot, *midfilterpot, *lowfilterpot;
-  double *low_coefs, *high_coefs;
+  const double *low_coefs, *high_coefs;
   static const int NZEROS = 8;
   static const int NPOLES = 8;
   double xv_low[NZEROS+1], yv_low[NPOLES+1], xv_high[NZEROS+1], yv_high[NPOLES+1];
  public:
   FLOAT highgain, midgain, lowgain;
-  EngineHMLfilter(int, int , int , MidiObject*, double *, double *);
+  EngineHMLfilter(int, int , int , MidiObject*, const double *, const double *);
   ~EngineHMLfilter();
   void process(CSAMPLE*, CSAMPLE*, int);
  public slots:

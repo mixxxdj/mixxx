@@ -1,7 +1,7 @@
 #include "enginehmlfilter.h"
 
 EngineHMLfilter::EngineHMLfilter(int high_potmeter_midi, int mid_potmeter_midi, int low_potmeter_midi,
-				 MidiObject *midi, double *_high_coefs, double *_low_coefs) {
+				 MidiObject *midi, const double *_high_coefs, const double *_low_coefs) {
   //  Initialize the buttons:
   highfilterpot = new ControlLogpotmeter("filterpot", high_potmeter_midi, midi);
   midfilterpot = new ControlLogpotmeter("filterpot", mid_potmeter_midi, midi);
@@ -57,7 +57,8 @@ void EngineHMLfilter::process(CSAMPLE *source, CSAMPLE *destination, int buf_siz
     /*
       Mix the filters together:
     */
-    destination[i] = (highgain-midgain)*yv_high[8] + (lowgain-midgain)*yv_low[8];
+    //destination[i] = (highgain-midgain)*yv_high[8] + (lowgain-midgain)*yv_low[8];
+    destination[i] += highgain*yv_high[8] + lowgain*yv_low[8];
   }
 }
 
@@ -65,4 +66,5 @@ void EngineHMLfilter::slotUpdate() {
   highgain = highfilterpot->getValue();
   midgain = midfilterpot->getValue();
   lowgain = lowfilterpot->getValue();
+  //qDebug("filtergains: %g %g %g",highgain,midgain,lowgain);
 }

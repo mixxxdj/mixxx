@@ -67,7 +67,6 @@ void Player::start(EngineBuffer *_reader) {
 	play_pos = 0;
 }
 
-
 /* -------- ------------------------------------------------------
    Purpose: Internal callback function used for preparing samples
             for playback. This is where the synthesis is done.
@@ -82,8 +81,8 @@ int Player::prepareBuffer() {
   // Resample; the linear interpolation is done in readfile:
   reader->process(0, process_buffer, BUFFER_SIZE);
 
-  //for (int i=0; i<engines->size(); i++)
-  //    engines[i]->process(process_buffer, process_buffer, BUFFER_SIZE);
+  for (int i=0; i<engines->size(); i++) 
+    (*engines)[i]->process(process_buffer, process_buffer, BUFFER_SIZE);
 
   // Convert the signal back to SAMPLE and write to the sound cards buffer:
   for (int i=0; i<BUFFER_SIZE; i++)

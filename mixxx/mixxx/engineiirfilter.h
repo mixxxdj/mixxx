@@ -5,21 +5,21 @@
 
 #include "engineobject.h"
 #include "midiobject.h"
-#include "controlpotmeter.h"
+#include "controllogpotmeter.h"
 #include "controlpushbutton.h"
 
 class EngineIIRfilter : public EngineObject {
  Q_OBJECT
  private:
   ControlPushButton* killbutton;
-  ControlPotmeter* filterpot;
-  double *coefs;
+  ControlLogpotmeter* filterpot;
+  const double *coefs;
   static const int NZEROS = 8;
   static const int NPOLES = 8;
   double xv[NZEROS+1], yv[NPOLES+1];
  public:
   FLOAT gain;
-  EngineIIRfilter(int, int , int , MidiObject*, double *);
+  EngineIIRfilter(int, int , int , MidiObject*, const double *);
   ~EngineIIRfilter();
   void process(CSAMPLE*, CSAMPLE*, int);
  public slots:
@@ -37,6 +37,21 @@ static const double bessel_lowpass[13] = { 7.444032197e+08,
 					    -13.4230504610, 30.2214248640,
 					    -42.5938048390, 38.4826057150,
 					    -21.7665031930, 7.0472774638};
+
+static const double bessel_lowpass_60[13] = {1.152213688e+18,
+					     8,28,56,70,
+					     -0.9077490353,   7.3499672361,
+					     -26.0369479070, 52.7064446970,
+					     -66.6844281670, 53.9973165890,
+					     -27.3279481000,  7.9033446870};
+
+static const double bessel_highpass_15000[13] = {1.155528189e+02,
+						 -8,28,-56,70,
+						 -0.0000256948, -0.0000692066,
+						 -0.0047711800, 0.0030454662,
+						 -0.1122770236, 0.0900031430,
+						 -0.6804656031, 0.3249181788};
+
 
 // corner at 4000 Hz:
 static const double bessel_highpass[13] = {2.465837728e+00, // gain

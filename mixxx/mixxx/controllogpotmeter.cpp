@@ -19,7 +19,7 @@
 
 /* -------- ------------------------------------------------------
    Purpose: Creates a new logarithmic potmeter, where the value is
-            given by: value = a*10^(b*midibyte). The lower value
+            given by: value = a*10^(b*midibyte) - 1. The lower value
 	    is set by _minvalue, and for midibyte=64, the value
 	    is 1.
    Input:   n - name
@@ -27,9 +27,10 @@
 	    midicontroller - pointer to the midi controller.
    -------- ------------------------------------------------------ */
 ControlLogpotmeter::ControlLogpotmeter(char* n, int _midino, MidiObject *_midi,
-				       FLOAT _minvalue=-0.1) : ControlPotmeter(n,_midino,_midi) {
-  a = _minvalue;
+				       FLOAT _minvalue=-0.9) : ControlPotmeter(n,_midino,_midi) {
+  a = _minvalue+1;
   b = -2*log10(a)/(FLOAT)maxPosition;
+  qDebug("%g %g",a,b);
 }
 
 /* -------- ------------------------------------------------------
@@ -48,7 +49,7 @@ void ControlLogpotmeter::slotSetPosition(int _newpos)
   // Ensure that the position is within bounds:
   position = std::max(minPosition,std::min(newpos, maxPosition));
   // Calculate the value linearly:
-  value = a*pow(10, b*(FLOAT)newpos);
+  value = a*pow(10, b*(FLOAT)newpos) - 1;
   qDebug("Logpotmeter, midi:%i value:%g", _newpos, value);
 
   emit valueChanged(value);
