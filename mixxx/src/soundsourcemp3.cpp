@@ -78,6 +78,8 @@ SoundSourceMp3::SoundSourceMp3(const char* filename)
 
     // Set the type field:
     type = "mp3 file.";
+
+    rest = -1;
 }
 
 SoundSourceMp3::~SoundSourceMp3()
@@ -109,6 +111,10 @@ long SoundSourceMp3::seek(long filepos)
 
     // Discard the first synth:
     mad_synth_frame(&Synth, &Frame);
+
+    // Remaining samples in buffer are useless
+    rest = -1;
+
     // Unfortunately we don't know the exact fileposition. The returned position is thus an
     // approximation only:
     return filepos;
@@ -131,7 +137,24 @@ unsigned SoundSourceMp3::read(unsigned long samples_wanted, const SAMPLE* _desti
     SAMPLE *destination = (SAMPLE*)_destination;
     unsigned Total_samples_decoded = 0;
     int frames = 0;
+
+    // If samples are left from previous read, then copy them to start of destination
+    if (rest != -1)
+    {
+        for (int i=rest; i<Synth.pcm.length; i++)
+        {
+            *(destination++) = (SAMPLE)((Synth.pcm.samples[0][i]>>(MAD_F_FRACBITS-14)));
+
+            /* Right channel. If the decoded stream is monophonic then
+             * the right output channel is the same as the left one. */
+            if (MAD_NCHANNELS(&Frame.header)==2)
+                *(destination++) = (SAMPLE)((Synth.pcm.samples[1][i]>>(MAD_F_FRACBITS-14)));
+        }
+        Total_samples_decoded += 2*(Synth.pcm.length-rest);
+    }
+    
     //qDebug("Decoding");
+    int no;
     while (Total_samples_decoded < samples_wanted)
     {
         if(mad_frame_decode(&Frame,&Stream))
@@ -164,7 +187,8 @@ unsigned SoundSourceMp3::read(unsigned long samples_wanted, const SAMPLE* _desti
          * this is not enough to avoid out of range when converting to 16 bit
          * (at least on a P3).
          */
-        for (int i=0;i<Synth.pcm.length;i++)
+        no = min(Synth.pcm.length,samples_wanted-Total_samples_decoded);
+        for (int i=0;i<no;i++)
         {
              /* Left channel */
             *(destination++) = (SAMPLE)((Synth.pcm.samples[0][i]>>(MAD_F_FRACBITS-14)));
@@ -174,8 +198,14 @@ unsigned SoundSourceMp3::read(unsigned long samples_wanted, const SAMPLE* _desti
             if (MAD_NCHANNELS(&Frame.header)==2)
                 *(destination++) = (SAMPLE)((Synth.pcm.samples[1][i]>>(MAD_F_FRACBITS-14)));
         }
-        Total_samples_decoded += 2*Synth.pcm.length;
+        Total_samples_decoded += 2*no;
     }
+
+    // If samples are still left in buffer, set rest to the index of the unused samples
+    if (Synth.pcm.length > no)
+        rest = no;
+    else
+        rest = -1;
   
     //qDebug("decoded %i samples in %i frames.", Total_samples_decoded, frames);
     return Total_samples_decoded;

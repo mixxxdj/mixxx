@@ -39,6 +39,7 @@
 #include "images/a.xpm"
 #include "images/b.xpm"
 #include "controlnull.h"
+#include "midiobjectnull.h"
 
 #ifdef __ALSA__
   #include "playeralsa.h"
@@ -62,6 +63,10 @@
 
 #ifdef __OSSMIDI__
   #include "midiobjectoss.h"
+#endif
+
+#ifdef __WINMIDI__
+  #include "midiobjectwin.h"
 #endif
 
 MixxxApp::MixxxApp(QApplication *a)
@@ -125,12 +130,14 @@ MixxxApp::MixxxApp(QApplication *a)
 #ifdef __COREMIDI__
   midi = new MidiObjectCoreMidi(midiconfig,app,this,config->getValueString(ConfigKey("[Midi]","Device")));
 #endif
-
 #ifdef __OSSMIDI__
   midi = new MidiObjectOSS(midiconfig,app,this,config->getValueString(ConfigKey("[Midi]","Device")));
 #endif
+#ifdef __WINMIDI__
+  midi = new MidiObjectWin(midiconfig,app,this,config->getValueString(ConfigKey("[Midi]","Device")));
+#endif
   if (midi == 0)
-      midi = new MidiObject(midiconfig,app,this,config->getValueString(ConfigKey("[Midi]","Device")));
+      midi = new MidiObjectNull(midiconfig,app,this,config->getValueString(ConfigKey("[Midi]","Device")));
 
   // Store default midi device
   config->set(ConfigKey("[Midi]","Device"), ConfigValue(midi->getOpenDevice()->latin1()));

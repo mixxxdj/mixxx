@@ -146,6 +146,7 @@ class MixxxApp : public QMainWindow
      * information such as filename and does the serialization of your files.
      */
     MixxxDoc *doc;
+
     QApplication *app;
     EngineObject *engine;
     EngineBuffer *buffer1, *buffer2;

@@ -25,8 +25,8 @@ public:
     MidiObject(ConfigObject<ConfigValueMidi> *c, QApplication *app, QWidget *mixxx, QString device);
     ~MidiObject();
     void reopen(QString device);
-    void devOpen(QString) {};
-    void devClose() {};
+    virtual void devOpen(QString) = 0;
+    virtual void devClose() = 0;
     void add(ControlObject* c);
     void remove(ControlObject* c);
     /** Returns a list of available devices */
