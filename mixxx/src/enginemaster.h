@@ -37,11 +37,13 @@ private:
     EnginePregain *volume;
     ControlPotmeter *crossfader;
     EngineClipping *clipping;
+    QRadioButton *rightchannel, *leftchannel;
+    CSAMPLE *out, *out2;
 public: 
-	EngineMaster(DlgMaster *master, EngineBuffer *buffer1, EngineBuffer *buffer2,
+    EngineMaster(DlgMaster *master, EngineBuffer *buffer1, EngineBuffer *buffer2,
                  EngineChannel *, EngineChannel *,
                  int midiCrossfader, int midiVolume, MidiObject *midi);
-	~EngineMaster();
+    ~EngineMaster();
     CSAMPLE *process(const CSAMPLE *, const int);
 };
 

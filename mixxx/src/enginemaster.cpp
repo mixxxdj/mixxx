@@ -37,18 +37,32 @@ EngineMaster::EngineMaster(DlgMaster *master, EngineBuffer *_buffer1, EngineBuff
     // Clipping:
     clipping = new EngineClipping(master->BulbClipping);
 
+    leftchannel = master->ButtonLeftChannel;
+    rightchannel = master->ButtonRightChannel;
+
+    out = new CSAMPLE[MAX_BUFFER_LEN];
+    out2 = new CSAMPLE[MAX_BUFFER_LEN];
 }
 
 EngineMaster::~EngineMaster(){
     delete crossfader;
     delete volume;
+    delete out;
+    delete out2;
 }
 
 CSAMPLE *EngineMaster::process(const CSAMPLE *, const int buffer_size) {
-    CSAMPLE *temp_1 = buffer1->process(0, buffer_size);
-    CSAMPLE *temp_2 = buffer2->process(0, buffer_size);
-    CSAMPLE *temp_3 = channel1->process(temp_1,buffer_size);
-    CSAMPLE *temp_4 = channel2->process(temp_2,buffer_size);
+    CSAMPLE *left, *right;
+
+    if (leftchannel->isChecked()) {
+	CSAMPLE *temp_1 = buffer1->process(0, buffer_size);
+	left = channel1->process(temp_1,buffer_size);
+    } 
+
+    if (rightchannel->isChecked()) {
+	CSAMPLE *temp_2 = buffer2->process(0, buffer_size);
+	right = channel2->process(temp_2,buffer_size);
+    }
 
     // Crossfader:
     FLOAT_TYPE cf_val = crossfader->getValue();
@@ -57,19 +71,22 @@ CSAMPLE *EngineMaster::process(const CSAMPLE *, const int buffer_size) {
     c1_gain = 0.5*(-cf_val+1.);
     //qDebug("c1_gain: %f, c2_gain: %f",c1_gain,c2_gain);
 
-    for (int i=0; i<buffer_size; i++)
-        temp_1[i] = temp_3[i]*c1_gain + temp_4[i]*c2_gain;
+    for (int i=0; i<buffer_size; i++) {
+	out[i] = 0;
+	if (leftchannel->isChecked())
+	    out[i] += left[i]*c1_gain;
+        if (rightchannel->isChecked())
+	    out[i] += right[i]*c2_gain;
+    }
 
     // Master volume:
-    temp_3 = volume->process(temp_1, buffer_size);
+    out2 = volume->process(out, buffer_size);
 
     // Clipping
-    temp_1 = clipping->process(temp_3, buffer_size);
+    out = clipping->process(out2, buffer_size);
 
-    return temp_1;
+    return out;
 }
-
-
 
 
 
