@@ -83,7 +83,7 @@ int Player::prepareBuffer() {
   // Resample; the linear interpolation is done in readfile:
   p1 = reader->process(0, buffer_size);
 
-  if (reader->rate != 0)
+  if (reader->rate.read() != 0)
   for (unsigned int i=0; i<engines->size(); i++)
   {
       p2 = (*engines)[i]->process(p1, buffer_size);

@@ -27,7 +27,7 @@ EngineBuffer::EngineBuffer(DlgPlaycontrol *playcontrol, DlgChannel *channel, Mid
 
   rateSlider = new ControlPotmeter("rateslider", ADC3, midi, 0.9,1.1);
   rateSlider->slotSetPosition(64);
-  rate = rateSlider->getValue();
+  rate.write(rateSlider->getValue());
   connect(channel->SliderRate, SIGNAL(valueChanged(int)), rateSlider, SLOT(slotSetPosition(int)));
   connect(rateSlider, SIGNAL(valueChanged(FLOAT_TYPE)), this, SLOT(slotUpdateRate(FLOAT_TYPE)));
   connect(rateSlider, SIGNAL(recievedMidi(int)), channel->SliderRate, SLOT(setValue(int)));
@@ -41,15 +41,15 @@ EngineBuffer::EngineBuffer(DlgPlaycontrol *playcontrol, DlgChannel *channel, Mid
   //connect(this, SIGNAL(position(int)), channel->SliderPosition, SLOT(setValue(int)));
 
   connect(channel->SliderPosition, SIGNAL(valueChanged(int)), this, SLOT(slotPosition(int)));
+
   // Allocate temporary buffer
   read_buffer_size = READBUFFERSIZE;
   chunk_size = READCHUNKSIZE;
   temp = new SAMPLE[2*chunk_size]; // Temporary buffer for the raw samples
-  // note that the temp buffer is made extra large.
-  readbuffer = new CSAMPLE[read_buffer_size];
+  read_buffer = new CSAMPLE[read_buffer_size];
 
   // Allocate semaphore
-  buffersReadAhead = new QSemaphore(1);
+  buffersReadAhead = new QWaitCondition();
 
   // Semaphore for stopping thread
   requestStop = new QSemaphore(1);
@@ -58,6 +58,7 @@ EngineBuffer::EngineBuffer(DlgPlaycontrol *playcontrol, DlgChannel *channel, Mid
   file = 0;
   newtrack(filename);
 
+  // Allocate buffer for processing:
   buffer = new CSAMPLE[MAX_BUFFER_LEN];
 }
 
@@ -73,7 +74,7 @@ EngineBuffer::~EngineBuffer(){
   qDebug("buffer actual dealloc");
   if (file != 0) delete file;
   delete [] temp;
-  delete [] readbuffer;
+  delete [] read_buffer;
 
   delete buffersReadAhead;
   delete requestStop;
@@ -109,11 +110,11 @@ void EngineBuffer::newtrack(const char* filename) {
   if (file==0) {
     qFatal("Error opening %s", filename);
   }
+
   // Initialize position in read buffer:
-  filepos = 0;
-  frontpos = 0;
-  play_pos = 0;
-  direction = 1;
+  lastread_file.write(0.);
+  playpos_file.write(0.);
+  playpos_buffer.write(0.);
   // ...and read one chunk to get started:
   getchunk();
 }
@@ -126,7 +127,7 @@ void EngineBuffer::start() {
 
 void EngineBuffer::stop()
 {
-  buffersReadAhead->operator--(1);
+  buffersReadAhead->wakeAll();
 
   requestStop->operator++(1);
   wait();
@@ -136,16 +137,10 @@ void EngineBuffer::stop()
 void EngineBuffer::run() {
   while(requestStop->available()) {
     // Wait for playback if in buffer is filled.
-    buffersReadAhead->operator++(1);
+    buffersReadAhead->wait();
 
-    // Check if the semaphore is too large:
-    int sem_value = buffersReadAhead->available();
-    //sem_getvalue(buffers_read_ahead, &sem_value);
-    if (sem_value != 0)
-      qDebug("Reader is requesting %d reads at once.", sem_value+1);
-    else
-      // Read a new chunk:
-      getchunk();
+    // Read a new chunk:
+    getchunk();
   }
 };
 /*
@@ -155,7 +150,7 @@ void EngineBuffer::slotUpdatePlay(valueType) {
   static int start_seek;
   if (PlayButton->getPosition()==down) {
     qDebug("Entered seeking mode");
-    rate = 0;
+    rate.write(0);
     start_seek = wheel->getPosition();
   }
   else if (PlayButton->getPosition()==up) {
@@ -176,74 +171,70 @@ void EngineBuffer::slotUpdatePlay(valueType) {
 
 void EngineBuffer::slotUpdateRate(FLOAT_TYPE) {
   if (PlayButton->getValue()==on)
-      rate = rateSlider->getValue() + 4*wheel->getValue();
+      rate.write(rateSlider->getValue() + 4*wheel->getValue());
   else
       if (PlayButton->getPosition()==down)
-	  rate = 0;
+	  rate.write(0);
       else
-	  rate = 4*wheel->getValue();
+	  rate.write(4*wheel->getValue());
   //qDebug("Rate value: %f",rate);
 }
+
 /*
   Read a new chunk into the readbuffer:
 */
 void EngineBuffer::getchunk() {
-  // Save direction if player changes it's mind while we're processing.
-  //int saved_direction = direction;
-
-  // update frontpos so that we wont be called while reading:
-  frontpos = (frontpos+chunk_size)%read_buffer_size;
   qDebug("Reading...");
-  // For a read backwards, we have to change the position in the file:
-  /*if (direction == -1) {
-    filepos -= (read_buffer_size + chunk_size);
-    file->seek(filepos);
-    //afSeekFrame(fh, AF_DEFAULT_TRACK, (AFframecount) (filepos/channels));
-  } else*/
 
   // Read a chunk
   unsigned samples_read = file->read(chunk_size, temp);
-
   if (samples_read != chunk_size)
       qDebug("Didn't get as many samples as we asked for: %d:%d", chunk_size, samples_read);
 
   // Convert from SAMPLE to CSAMPLE. Should possibly be optimized
   // using assembler code from music-dsp archive.
-  filepos += samples_read;
-  unsigned new_frontpos = (frontpos-chunk_size+read_buffer_size)%read_buffer_size;
-  //qDebug("Reading into position %d %f",new_frontpos, play_pos);
-  for (unsigned j=0; j<samples_read; j++) {
-    readbuffer[new_frontpos] = temp[j];
-    new_frontpos ++;
-    if (new_frontpos > read_buffer_size) new_frontpos = 0;
-  }
+  unsigned long lastread_buffer = ((unsigned long)(playpos_buffer.read() + lastread_file.read() -
+         playpos_file.read()))%read_buffer_size;
+
+    qDebug("lastread_buffer: %f", (double)lastread_buffer);
+    qDebug("playpos_buffer: %f",playpos_buffer.read());
+    qDebug("playpos_file: %f",playpos_file.read());
+    qDebug("lastread_file: %f",lastread_file.read());
+
+  unsigned i = 0;
+  for (unsigned long j=lastread_buffer; j<min(read_buffer_size,lastread_buffer+samples_read); j++)
+    read_buffer[j] = temp[i++];
+  //qDebug("%i",lastread_buffer+samples_read-read_buffer_size);
+  for (signed long j=0; j<(signed long)(lastread_buffer+samples_read-read_buffer_size); j++)
+    read_buffer[j] = temp[i++];
+
+  // Update lastread_file position:
+  lastread_file.add((double)samples_read);
   qDebug("Done reading.");
 }
 /*
   This is called when the positionslider is released:
 */
 void EngineBuffer::slotPosition(int newvalue) {
-  seek((FLOAT_TYPE)newvalue/102 - play_pos/(FLOAT_TYPE)file->length());
+  seek((FLOAT_TYPE)newvalue/102 - playpos_file.read()/(FLOAT_TYPE)file->length());
 }
 /*
   Moves the playpos forward change%
 */
 void EngineBuffer::seek(FLOAT_TYPE change) {
-  double saved_rate = rate;
-  rate = 0;
-  double new_play_pos = play_pos + change*file->length();
-  if (new_play_pos > file->length()) new_play_pos = file->length();
-  if (new_play_pos < 0) new_play_pos = 0;
-  filepos = (long unsigned)new_play_pos;
-  qDebug("Seeking %g to %g",change, new_play_pos/file->length());
-  file->seek(filepos);
-  frontpos = chunk_size*(((int)floor(play_pos/chunk_size))%2);
-  qDebug("%li",frontpos);
-  getchunk();
+  double saved_rate = rate.read();
+  rate.write(0);
+  double new_playpos = playpos_file.read() + change*file->length();
+  if (new_playpos > file->length()) new_playpos = file->length();
+  if (new_playpos < 0) new_playpos = 0;
+  playpos_file.write(new_playpos);
+  playpos_buffer.write(0.);
+  lastread_file.write(new_playpos);
+  qDebug("Seeking %g to %g",change, playpos_file.read());
+  file->seek((long unsigned)playpos_file.read());
   getchunk();
   qDebug("done seeking.");
-  play_pos = new_play_pos;
-  rate = saved_rate;
+  rate.write(saved_rate);
 }
 
 bool even(long n)
@@ -262,59 +253,19 @@ bool even(long n)
 // -------- ------------------------------------------------------
 void EngineBuffer::checkread()
 {
-  //static int sem_value; // place to store the value of the semaphore for read
-  static int pending_time = 0;
-
-  bool send_request = false;
-
-  if ((distance((long)floor(play_pos)%read_buffer_size, frontpos)
-      < READAHEAD) && (filepos != (unsigned long) file->length())) {
-    direction = 1;
-    send_request = true;
-  } else
-    if ((distance(frontpos, (long)floor(play_pos)%read_buffer_size)
-	< READAHEAD) && (filepos > read_buffer_size)){
-      direction = -1;
-      send_request = true;
-    }
-
-  if (send_request) {
-    // check if we still have a request pending:
-    //std::cout << (long)play_pos << ", " << frontpos << ", " << filepos << "\n";
-    if (buffersReadAhead->available()==0) {
-	  //qDebug("Frontpos: %i Playpos: %i),frontpos,play_pos);
-      //std::cout << frontpos << "," <<play_pos<<","<<(long)floor(play_pos)%read_buffer_size<<"\n";
-      //cout << filepos << "," << filelength << "\n";
-
-      buffersReadAhead->operator--(1);
-
-      pending_time = 0;
-    }
-    else {
-      pending_time ++;
-      //std::cout << pending_time << "\n";
-      if (pending_time == 0.9*READAHEAD/BUFFER_SIZE)
-	qDebug("Warning: reader is (close to) lacking behind player!");
-    }
+  if ((lastread_file.read() - playpos_file.read()) < READAHEAD)
+    buffersReadAhead->wakeAll();
+  else {
+      if (lastread_file.read() - playpos_file.read() < 0.1*READAHEAD)
+    	qDebug("Warning: reader is (close to) lacking behind player!");
   }
 }
 
-/*
-  Helper function which returns the distance in the readbuffer between
-  _start and end.
-*/
-long EngineBuffer::distance(const long _start, const long end)
-{
-  long start = _start;
-  if (start > end)
-    start -= read_buffer_size;
-  return end-start;
-}
 
 void EngineBuffer::writepos()
 {
   static FLOAT_TYPE lastwrite = 0.;
-  FLOAT_TYPE newwrite = play_pos/file->length();
+  FLOAT_TYPE newwrite = playpos_file.read()/file->length();
   if (floor(fabs(newwrite-lastwrite)*100) >= 1) {
       emit position((int)(100*newwrite));
       lastwrite = newwrite;
@@ -323,23 +274,27 @@ void EngineBuffer::writepos()
 
 CSAMPLE *EngineBuffer::process(const CSAMPLE *, const int buf_size)
 {
-    if (rate==0)
+    if (rate.read()==0)
 	for (int i=0; i<buf_size; i+=2)
 	    buffer[i]=buffer[i+1]=0;
     else {
-	long prev;
-	for (int i=0; i<buf_size; i+=2) {
-	    prev = (long)floor(play_pos)%read_buffer_size;
-	    if (!even(prev)) prev--;
-	    long next = (prev+2)%read_buffer_size;
-	    FLOAT_TYPE frac = play_pos - floor(play_pos);
-	    buffer[i  ] = readbuffer[prev  ] +frac*(readbuffer[next  ]-readbuffer[prev  ]);
-	    buffer[i+1] = readbuffer[prev+1] +frac*(readbuffer[next+1]-readbuffer[prev+1]);
-	    play_pos += 2.*rate;
-	    play_pos = max(0.,min(file->length(), play_pos));
-	}
-	if (play_pos == file->length())
-	    PlayButton->slotSetPosition(down);
+	  long prev;
+	  for (int i=0; i<buf_size; i+=2) {
+        if (playpos_file.read() < file->length()) {
+  	      prev = (long)floor(playpos_buffer.read())%read_buffer_size;
+	      if (!even(prev)) prev--;
+	      long next = (prev+2)%read_buffer_size;
+	      FLOAT_TYPE frac = playpos_buffer.read() - floor(playpos_buffer.read());
+          buffer[i  ] = read_buffer[prev  ] +frac*(read_buffer[next  ]-read_buffer[prev  ]);
+	      buffer[i+1] = read_buffer[prev+1] +frac*(read_buffer[next+1]-read_buffer[prev+1]);
+          double rate_add = 2*rate.read();
+	      playpos_buffer.add(rate_add);
+          playpos_file.add(rate_add);
+        } else {
+          buffer[i  ] = 0;
+	      buffer[i+1] = 0;
+        }
+      }
     }
 
     checkread();
