@@ -25,6 +25,8 @@
 #include "configobject.h"
 #include <qstringlist.h>
 
+class MixxxApp;
+
 /**
   *@author Tue & Ken Haste Andersen
   */
@@ -33,7 +35,7 @@ class DlgPreferences : public DlgPreferencesDlg
 {
     Q_OBJECT
 public: 
-    DlgPreferences(QWidget *p, const char *name,
+    DlgPreferences(MixxxApp *_mixxx, const char *name,
                    MidiObject *_midi, Player *_player, Player *_playerSlave,
                    ConfigObject<ConfigValue> *_config,
                    ConfigObject<ConfigValueMidi> *_midiconfig);
@@ -51,8 +53,10 @@ public slots:
     void slotApply();
     /** Set preferences from dialog */
     void slotSetPreferences();
+protected:
+    void closeEvent(QCloseEvent *e);
 private:
-    QWidget *mixxx;
+    MixxxApp *mixxx;
     MidiObject *midi;
     Player *player, *playerSlave;
     ConfigObject<ConfigValue> *config;

@@ -31,12 +31,12 @@
 #endif
 
 
-DlgPreferences::DlgPreferences(QWidget *p, const char *name,
+DlgPreferences::DlgPreferences(MixxxApp *_mixxx, const char *name,
                                MidiObject *_midi, Player *_player, Player *_playerSlave,
                                ConfigObject<ConfigValue> *_config,
-                               ConfigObject<ConfigValueMidi> *_midiconfig) : DlgPreferencesDlg(p,name)
+                               ConfigObject<ConfigValueMidi> *_midiconfig) : DlgPreferencesDlg(_mixxx, name)
 {    
-    mixxx = p;
+    mixxx = _mixxx;
     config = _config;
     midiconfig = _midiconfig;
     midi = _midi;
@@ -99,6 +99,12 @@ DlgPreferences::DlgPreferences(QWidget *p, const char *name,
 DlgPreferences::~DlgPreferences()
 {
 }
+
+void DlgPreferences::closeEvent(QCloseEvent *e)
+{
+    mixxx->slotOptionsClosePreferences();
+}
+
 
 void DlgPreferences::slotMasterDevice()
 {

@@ -13,14 +13,9 @@ Mac OS 10.2.
 
 
 * NEWS *****************************************************
-New since 0.9.1:
-- Headphone channel added
-- Latency adjustments added
-- Better detection of available devices at startup
-- Flanger sound effect added
-- Playback structure changed, to work better in reverse
-  playback mode
-- Windows and MacOS X support added
+New since 0.9.2:
+- Improved Stability 
+- OpenGL Visualization
 
 
 * REQUIREMENTS *********************************************
@@ -28,6 +23,7 @@ Mixxx is based on the following libraries:
 QT >= 3 
 libMAD
 libAudioFile
+FFTW
 
 The Windows version uses libsndfile instead of libAudioFile.
 
