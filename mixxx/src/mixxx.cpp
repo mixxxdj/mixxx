@@ -24,6 +24,8 @@
 #include <qcombobox.h>
 #include <qmessagebox.h>
 #include <signal.h>
+#include <qlineedit.h>
+#include <qdir.h>
 
 #include "wknob.h"
 #include "wslider.h"
@@ -58,7 +60,7 @@
 
 MixxxApp::MixxxApp(QApplication *a)
 {
-  qDebug("Start");
+  qDebug("Starting up...");
   setCaption(tr("Mixxx " VERSION));
 
   app = a;
@@ -78,13 +80,16 @@ MixxxApp::MixxxApp(QApplication *a)
   QStringList *list = configMap->getConfigurations();
   QStringList::Iterator it = list->begin();
   //for (; it != list->end(); ++it)
-  qDebug("Using config %s",(*it).ascii());
+//  qDebug("Using config %s",(*it).ascii());
   ConfigObject *config = configMap->setConfiguration((*it).ascii());
 
   initDoc();
+
   initView();
 
   qDebug("Init playlist");
+  songpath = "music/";
+  addFiles(songpath.latin1());
 
   // Construct popup menu used to select playback channel on track selection
   playSelectMenu = new QPopupMenu(this);
@@ -162,23 +167,24 @@ void MixxxApp::engineStart()
 {
     if (view->playlist->ListPlaylist->firstChild() != 0)
     {
-        qDebug("Init buffer 1... %s", view->playlist->ListPlaylist->firstChild()->text(1).ascii());
+        //qDebug("Init buffer 1... %s", view->playlist->ListPlaylist->firstChild()->text(1).ascii());
         buffer1 = new EngineBuffer(app, this, view->playcontrol1, "[Channel1]", view->playlist->ListPlaylist->firstChild()->text(1));
-    } else
+
+        if (view->playlist->ListPlaylist->firstChild()->nextSibling() != 0)
+        {
+            //qDebug("Init buffer 2... %s", view->playlist->ListPlaylist->firstChild()->nextSibling()->text(1).ascii());
+            buffer2 = new EngineBuffer(app, this, view->playcontrol2, "[Channel2]", view->playlist->ListPlaylist->firstChild()->nextSibling()->text(1));
+        } else
+            buffer2 = new EngineBuffer(app, this, view->playcontrol2, "[Channel2]", 0);
+    } else {
         buffer1 = new EngineBuffer(app, this, view->playcontrol1, "[Channel1]", 0);
-
-    if (view->playlist->ListPlaylist->firstChild()->nextSibling() != 0)
-    {
-        qDebug("Init buffer 2... %s", view->playlist->ListPlaylist->firstChild()->nextSibling()->text(1).ascii());
-        buffer2 = new EngineBuffer(app, this, view->playcontrol2, "[Channel2]", view->playlist->ListPlaylist->firstChild()->nextSibling()->text(1));
-    } else
         buffer2 = new EngineBuffer(app, this, view->playcontrol2, "[Channel2]", 0);
+    }
 
-    qDebug("...");
     channel1 = new EngineChannel(view->channel1, "[Channel1]");
     channel2 = new EngineChannel(view->channel2, "[Channel2]");
 
-    qDebug("Init master...");
+    //qDebug("Init master...");
     master = new EngineMaster(view->master, view->crossfader, buffer1, buffer2, channel1, channel2, "[Master]");
 
     /** Connect signals from option menu, selecting processing of left and right channel, to
@@ -608,6 +614,9 @@ void MixxxApp::slotOptionsPreferences()
             j++;
         }
 
+        // Song path
+        pDlg->LineEditSongfiles->setText(songpath);
+
         // Connect buttons
         connect(pDlg->PushButtonOK,      SIGNAL(clicked()),      this, SLOT(slotOptionsSetPreferences()));
         connect(pDlg->PushButtonCancel,  SIGNAL(clicked()),      this, SLOT(slotOptionsClosePreferences()));
@@ -690,9 +699,16 @@ void MixxxApp::slotOptionsSetPreferences()
     configMap->setConfiguration(pDlg->ComboBoxMidiconf->currentText());
 
     // Change MIDI device
-    //std::raise(2);
     midi->reopen(pDlg->ComboBoxMididevice->currentText());
 
+    // Update playlist if path has changed
+    if (pDlg->LineEditSongfiles->text() != songpath)
+    {
+        songpath = pDlg->LineEditSongfiles->text().latin1();
+        addFiles(songpath.latin1());
+    }
+
+    // Close dialog
     slotOptionsClosePreferences();
 }
 
@@ -705,7 +721,7 @@ void MixxxApp::slotOptionsClosePreferences()
 void MixxxApp::slotHelpAbout()
 {
   QMessageBox::about(this,tr("About..."),
-                      tr("Mixxx\nVersion " VERSION "\n(c) 2002 by Tue and Ken Haste Andersen") );
+                      tr("Mixxx\nVersion " VERSION "\nBy Tue and Ken Haste Andersen\nReleased under the GNU General Public Licence version 2") );
 }
 
 void MixxxApp::slotChangePlay_1()
@@ -725,4 +741,39 @@ void MixxxApp::slotSelectPlay(QListViewItem *item, const QPoint &pos, int)
 
     // Display popup menu
     playSelectMenu->popup(pos);
+}
+
+void MixxxApp::addFiles(const char *path)
+{
+    QDir dir(path);
+    if (!dir.exists())
+        qWarning( "Cannot find the directory %s.",path);
+    else
+    {
+        // First run though all directories:
+        dir.setFilter(QDir::Dirs);
+        const QFileInfoList dir_list = *dir.entryInfoList();
+        QFileInfoListIterator dir_it(dir_list);
+        QFileInfo *d;
+        dir_it += 2; // Traverse past "." and ".."
+        while ((d=dir_it.current()))
+        {
+            addFiles(d->filePath());
+            ++dir_it;
+        }
+
+        // ... and then all the files:
+        dir.setFilter(QDir::Files);
+        dir.setNameFilter("*.wav *.Wav *.WAV *.mp3 *.Mp3 *.MP3");
+        const QFileInfoList *list = dir.entryInfoList();
+        QFileInfoListIterator it(*list);        // create list iterator
+        QFileInfo *fi;                          // pointer for traversing
+
+        while ((fi=it.current()))
+        {
+            view->playlist->ListPlaylist->insertItem(new QListViewItem(view->playlist->ListPlaylist,
+            fi->fileName(),fi->filePath()));
+            ++it;   // goto next list element
+        }
+    }
 }

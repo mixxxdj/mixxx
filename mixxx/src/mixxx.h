@@ -130,9 +130,9 @@ class MixxxApp : public QMainWindow
   protected:
     bool eventFilter(QObject *, QEvent *);
   private:
-
     void engineStart();
     void engineStop();
+    void addFiles(const char *path);
 
     /** view is the main widget which represents your working area. The View
      * class should handle all events of the view widget.  It is kept empty so
@@ -154,6 +154,7 @@ class MixxxApp : public QMainWindow
     ControlObject *control;
     ConfigMapping *configMap;
 	std::vector<EngineObject *> engines;
+    QString songpath;
 
     /** Popup menu used to select player when a track has been selected */
     QPopupMenu *playSelectMenu;

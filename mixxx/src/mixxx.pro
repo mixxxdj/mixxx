@@ -62,6 +62,6 @@ win32 {
 FORMS	= dlgchanneldlg.ui dlgplaycontroldlg.ui dlgplaylistdlg.ui dlgmasterdlg.ui dlgcrossfaderdlg.ui dlgsplitdlg.ui dlgpreferencesdlg.ui
 IMAGES	= filesave.xpm
 TEMPLATE	=app
-CONFIG	+= qt warn_on thread debug
+CONFIG	+= qt warn_on thread release
 DBFILE	= mixxx.db
 LANGUAGE	= C++

@@ -44,39 +44,39 @@ ConfigObject *ConfigMapping::setConfiguration(const char *str)
     filename.append(str);
     FILE *handle = fopen(filename.ascii(),"r");
     if (handle == 0)
-        qFatal("Could not open file %s",filename.ascii());
-
-    // Parse the file
-    int group = 0;
-    QString groupStr;
-    while (!QTextIStream(handle).atEnd())
+        qDebug("Could not open file %s",filename.ascii());
+    else
     {
-        QString line = QTextIStream(handle).readLine();
-
-        QString s;
-        QTextIStream((const QString*)&line) >> s;
-        if (s.startsWith("[") & s.endsWith("]"))
+        // Parse the file
+        int group = 0;
+        QString groupStr;
+        while (!QTextIStream(handle).atEnd())
         {
-            group++;
-            groupStr = s;
-        }
-        else if (group>0)
-        {
-            int no, mask, ch;
-            QString s2;
-            QTextIStream((const QString*)&line) >> s >> no >> mask >> s2 >> ch;
-            if (s2.endsWith("h"))
-                ch--;   // Internally midi channels are form 0-15,
-                        // while musicians operates on midi channels 1-16.
-            else
-                ch = 0; // Default to 0 (channel 1)
+            QString line = QTextIStream(handle).readLine();
 
-            //qDebug("control: %s, no: %i, mask: %i, str: %s, ch: %i",s.ascii(), no,mask,s2.ascii(),ch);
-            ConfigObject::ConfigKey k(groupStr, s);
-            ConfigObject::ConfigValue m(no, mask, ch);
-            cfg->set(&k, &m);
+            QString s;
+            QTextIStream((const QString*)&line) >> s;
+            if (s.startsWith("[") & s.endsWith("]"))
+            {
+                group++;
+                groupStr = s;
+            }
+            else if (group>0)
+            {
+                int no, mask, ch;
+                QString s2;
+                QTextIStream((const QString*)&line) >> s >> no >> mask >> s2 >> ch;
+                if (s2.endsWith("h"))
+                    ch--;   // Internally midi channels are form 0-15,
+                            // while musicians operates on midi channels 1-16.
+                else
+                    ch = 0; // Default to 0 (channel 1)
 
-
+                //qDebug("control: %s, no: %i, mask: %i, str: %s, ch: %i",s.ascii(), no,mask,s2.ascii(),ch);
+                ConfigObject::ConfigKey k(groupStr, s);
+                ConfigObject::ConfigValue m(no, mask, ch);
+                cfg->set(&k, &m);
+            }
         }
     }
     return cfg;

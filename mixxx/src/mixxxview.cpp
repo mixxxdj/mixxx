@@ -58,46 +58,8 @@ MixxxView::MixxxView(QWidget *parent, MixxxDoc *doc) : QWidget(parent)
     mainGrid->setRowStretch( 0, 230);
     mainGrid->setRowStretch( 1,  43);
     mainGrid->setRowStretch( 2, 150);
-
-    // Add filenames in ./music/ to table
-    Addfiles("music/");
 }
 
-void MixxxView::Addfiles(const char *dir_name) {
-    QDir dir(dir_name);
-    if (!dir.exists())
-        qWarning( "Cannot find the directory %s.",dir_name);
-    else
-    {
-        // First run though all directories:
-        dir.setFilter(QDir::Dirs);
-        const QFileInfoList dir_list = *dir.entryInfoList();
-        QFileInfoListIterator dir_it(dir_list);
-        QFileInfo *d;
-        dir_it += 2; // Traverse past "." and ".."
-        while ((d=dir_it.current()))
-        {
-            qDebug(d->filePath());
-            Addfiles(d->filePath());
-            ++dir_it;
-        }
-
-        // ... and then all the files:
-        dir.setFilter(QDir::Files);
-        dir.setNameFilter("*.wav *.Wav *.WAV *.mp3 *.Mp3 *.MP3");
-        const QFileInfoList *list = dir.entryInfoList();
-        QFileInfoListIterator it(*list);        // create list iterator
-        QFileInfo *fi;                          // pointer for traversing
-
-        while ((fi=it.current()))
-        {
-            //qDebug(fi->fileName());
-            playlist->ListPlaylist->insertItem(new QListViewItem(playlist->ListPlaylist,
-            fi->fileName(),fi->filePath()));
-            ++it;   // goto next list element
-        }
-    }
-}
 
 MixxxView::~MixxxView()
 {

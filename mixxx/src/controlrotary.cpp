@@ -30,7 +30,6 @@ void ControlRotary::slotSetPositionMidi(int _newpos)
   // get position from gray code
   int newpos = graycodetable[(int)(unsigned char)_newpos]; 
   slotSetPosition(newpos);
-  qDebug("wheel");
   //emit updateGUI(newpos);
 }
 
