@@ -105,7 +105,7 @@ MixxxView::MixxxView(QWidget *parent, bool bVisuals, QString qSkinPath) : QWidge
                 QString filename = WWidget::selectNodeQString(node, "Path");
                 QPixmap background(WWidget::getPath(filename));
                 this->setPaletteBackgroundPixmap(background);
-                this->setFixedSize(background.width(),background.height()+15);
+                this->setFixedSize(background.width(),background.height());
                 parent->setFixedSize(background.size());
                 this->move(0,0);
             }
@@ -218,31 +218,6 @@ MixxxView::MixxxView(QWidget *parent, bool bVisuals, QString qSkinPath) : QWidge
         }
         node = node.nextSibling();
     }
-
-/*
-    main = this;
-
-    m_pBpmCh1 = new WNumber(main);
-    m_pBpmCh1->setFixedSize(40,15);
-    m_pBpmCh1->move(330,40);
-    m_pBpmCh1->setNumDigits(6);
-
-    m_pBpmCh2 = new WNumber(main);
-    m_pBpmCh2->setFixedSize(40,15);
-    m_pBpmCh2->move(900,40);
-    m_pBpmCh2->setNumDigits(6);
-
-    p->setWidget(m_pBpmCh1, ConfigKey("[Channel1]", "bpm"));
-    p->setWidget(m_pBpmCh2, ConfigKey("[Channel2]", "bpm"));
-
-    // EngineFlanger
-    p->setWidget(flanger->DialDepth, ConfigKey("[Flanger]", "lfoDepth"));
-    p->setWidget(flanger->DialDepth, ConfigKey("[Flanger]", "lfoDepth"));
-    p->setWidget(flanger->DialPeriod, ConfigKey("[Flanger]", "lfoPeriod"));
-    p->setWidget(flanger->PushButtonChA, ConfigKey("[Flanger]", "ch1"));
-    p->setWidget(flanger->PushButtonChB, ConfigKey("[Flanger]", "ch2"));
-
-*/
 
 #ifdef __WIN__
     // QPixmap fix needed on Windows 9x

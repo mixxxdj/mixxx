@@ -35,6 +35,7 @@ QT >= 3
 libMAD
 libAudioFile
 vorbisfile
+FFTW
 
 The Windows version uses libsndfile instead of libAudioFile.
 
