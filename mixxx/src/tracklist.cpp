@@ -8,6 +8,7 @@
 #include <qtable.h>
 #include <qpopupmenu.h>
 #include <qpoint.h>
+#include <qtextcodec.h>
 
 #include "tracklist.h"
 #include "trackinfoobject.h"
@@ -67,14 +68,16 @@ TrackList::TrackList( const QString sDirectory, QTable *ptableTracks )
 
 	// Put information from all the tracks into the table:
 	int iRow=0;
+	m_ptableTracks->hideRow( ROW_INDEX ); // Hide the index row
 	m_ptableTracks->setNumRows( m_lTracks.count() );
 	for (TrackInfoObject *Track = m_lTracks.first(); Track; Track = m_lTracks.next() )
 	{
-		m_ptableTracks->setText( iRow, 1, Track->m_sTitle );
-		m_ptableTracks->setText( iRow, 2, Track->m_sArtist );
-		m_ptableTracks->setText( iRow, 3, Track->m_sType );
-		m_ptableTracks->setText( iRow, 4, Track->Duration() );
-		m_ptableTracks->setText( iRow, 5, Track->m_sBitrate );
+		m_ptableTracks->setText( iRow, ROW_TITLE, Track->m_sTitle );
+		m_ptableTracks->setText( iRow, ROW_ARTIST, Track->m_sArtist );
+		m_ptableTracks->setText( iRow, ROW_TYPE, Track->m_sType );
+		m_ptableTracks->setText( iRow, ROW_DURATION, Track->Duration() );
+		m_ptableTracks->setText( iRow, ROW_BITRATE, Track->m_sBitrate );
+		m_ptableTracks->setText( iRow, ROW_INDEX, QString("%1").arg(iRow) );
 		iRow ++;
 	}
 
@@ -100,14 +103,25 @@ TrackList::TrackList( const QString sDirectory, QTable *ptableTracks )
 
 TrackList::~TrackList()
 {
+	// Write out the xml file:
+	WriteXML();
+
 	// Delete all the tracks:
+	for (unsigned int i=0; i<m_lTracks.count(); i++)
+		delete m_lTracks.at(i);
 }
 
+/*
+	Updates the score field (column 0) in the table.
+*/
 void TrackList::UpdateScores()
 {
-	for (unsigned int i=0; i<m_lTracks.count(); i++)
-		m_ptableTracks->setText( i, 0, 
-		QString("%1").arg( (int) ( 99*m_lTracks.at(i)->m_iTimesPlayed/m_iMaxTimesPlayed ), 2 ) );
+	for (unsigned int iRow=0; iRow<m_lTracks.count(); iRow++)
+	{
+		TrackInfoObject *track = m_lTracks.at( m_ptableTracks->text( iRow, ROW_INDEX ).toInt() );
+		m_ptableTracks->setText( iRow, ROW_SCORE, 
+		QString("%1").arg( (int) ( 99*track->m_iTimesPlayed/m_iMaxTimesPlayed ), 2 ) );
+	}
 }
 
 /*
@@ -222,21 +236,27 @@ TrackInfoObject *TrackList::FileExistsInList( const QString sFilename )
 */
 void TrackList::slotChangePlay_1()
 {
-	TrackInfoObject *track = m_lTracks.at( m_ptableTracks->currentRow() );
+	TrackInfoObject *track = m_lTracks.at( 
+		m_ptableTracks->text( m_ptableTracks->currentRow(), ROW_INDEX ).toInt() );
 	emit signalChangePlay_1( track );
 
 	// Update score:
 	track->m_iTimesPlayed++;
+	if (track->m_iTimesPlayed > m_iMaxTimesPlayed)
+		m_iMaxTimesPlayed = track->m_iTimesPlayed;
 	UpdateScores();
 }
 
 void TrackList::slotChangePlay_2()
 {
-	TrackInfoObject *track = m_lTracks.at( m_ptableTracks->currentRow() );
+	TrackInfoObject *track = m_lTracks.at(		
+		m_ptableTracks->text( m_ptableTracks->currentRow(), ROW_INDEX ).toInt() );
 	emit signalChangePlay_2( track );
 
 	// Update score:
 	track->m_iTimesPlayed++;
+	if (track->m_iTimesPlayed > m_iMaxTimesPlayed)
+		m_iMaxTimesPlayed = track->m_iTimesPlayed;
 	UpdateScores();
 }
 
@@ -245,9 +265,6 @@ void TrackList::slotChangePlay_2()
 */
 void TrackList::slotRightClick( int iRow, int iCol, int iButton, const QPoint &pos )
 {
-	// Store the selected track:
-	m_ptrackCurrent = m_lTracks.at( iRow );
-
 	// Display popup menu
     playSelectMenu->popup(pos);
 }

@@ -10,6 +10,16 @@ class QString;
 class QPopupMenu;
 class QPoint;
 
+// Defines for the rows in the table. Should be made as simple
+// private consts, but it won't compile.
+#define ROW_SCORE 0
+#define ROW_TITLE 1
+#define ROW_ARTIST 2
+#define ROW_TYPE 3
+#define ROW_DURATION 4
+#define ROW_BITRATE 5
+#define ROW_INDEX 6
+
 class TrackList : public QObject
 {
 	Q_OBJECT

@@ -33,6 +33,7 @@ public:
 private:
 	void AddElement( QDomDocument &, QDomElement &, QString, QString );
 	void CheckFileExists();
+	QDomNode SelectNode( const QDomNode &, const QString );
 
 };
 

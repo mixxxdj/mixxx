@@ -8,7 +8,7 @@
         <rect>
             <x>0</x>
             <y>0</y>
-            <width>620</width>
+            <width>760</width>
             <height>480</height>
         </rect>
     </property>
@@ -59,6 +59,14 @@
         <column>
             <property name="text">
                 <string>Bitrate</string>
+            </property>
+            <property name="pixmap">
+                <pixmap></pixmap>
+            </property>
+        </column>
+        <column>
+            <property name="text">
+                <string>Index (hidden)</string>
             </property>
             <property name="pixmap">
                 <pixmap></pixmap>
@@ -119,7 +127,7 @@
             <number>5</number>
         </property>
         <property name="numCols">
-            <number>6</number>
+            <number>7</number>
         </property>
         <property name="columnMovingEnabled">
             <bool>true</bool>
