@@ -1,4 +1,4 @@
-<!DOCTYPE UI><UI version="3.3" stdsetdef="1">
+<!DOCTYPE UI><UI version="3.1" stdsetdef="1">
 <class>DlgPrefMidiDlg</class>
 <widget class="QWidget">
     <property name="name">
@@ -26,6 +26,12 @@
                 <width>349</width>
                 <height>82</height>
             </rect>
+        </property>
+        <property name="frameShape">
+            <enum>GroupBoxPanel</enum>
+        </property>
+        <property name="frameShadow">
+            <enum>Sunken</enum>
         </property>
         <property name="title">
             <string>MIDI</string>
@@ -415,22 +421,6 @@
                 <string>Calibrate</string>
             </property>
         </widget>
-        <widget class="QPushButton">
-            <property name="name">
-                <cstring>pushButtonMouseHelp</cstring>
-            </property>
-            <property name="geometry">
-                <rect>
-                    <x>259</x>
-                    <y>145</y>
-                    <width>80</width>
-                    <height>20</height>
-                </rect>
-            </property>
-            <property name="text">
-                <string>Help</string>
-            </property>
-        </widget>
         <widget class="QComboBox">
             <property name="name">
                 <cstring>ComboBoxMouseDevice2</cstring>
@@ -449,6 +439,22 @@
             <property name="font">
                 <font>
                 </font>
+            </property>
+        </widget>
+        <widget class="QPushButton">
+            <property name="name">
+                <cstring>pushButtonMouseHelp</cstring>
+            </property>
+            <property name="geometry">
+                <rect>
+                    <x>259</x>
+                    <y>145</y>
+                    <width>80</width>
+                    <height>20</height>
+                </rect>
+            </property>
+            <property name="text">
+                <string>Help</string>
             </property>
         </widget>
     </widget>
