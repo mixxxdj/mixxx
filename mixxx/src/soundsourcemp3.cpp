@@ -83,8 +83,22 @@ SoundSourceMp3::~SoundSourceMp3() {
 long SoundSourceMp3::seek(long filepos) {
     int newpos = inputbuf_len* ((float)filepos/(float)length());
     qDebug("Seek to %d %d %d", filepos, inputbuf_len, newpos);
+    // Go to an approximate position:
     mad_stream_buffer(&Stream, inputbuf+newpos, inputbuf_len-newpos);
-    Stream.sync = 0;
+    mad_synth_mute(&Synth);
+    mad_frame_mute(&Frame);
+    // Decode a few (possible wrong) buffers:
+    int no = 0;
+    int succesfull = 0;
+    while ((no<10) && (succesfull<2)) {
+	if (!mad_frame_decode(&Frame, &Stream))
+	    succesfull ++;
+	no ++;
+    }
+    // Discard the first synth:
+    mad_synth_frame(&Synth, &Frame);
+    // Unfortunately we don't know the exact fileposition. The returned position is thus an
+    // approximation only:
     return filepos;
 }
 
@@ -107,8 +121,8 @@ unsigned SoundSourceMp3::read(unsigned long samples_wanted, const SAMPLE* _desti
   while (Total_samples_decoded < samples_wanted) {
       if(mad_frame_decode(&Frame,&Stream)) {
 	  if(MAD_RECOVERABLE(Stream.error))	{
-	      qWarning("Recoverable frame level error (%s)",
-		       mad_stream_errorstr(&Stream));
+	      //qWarning("Recoverable frame level error (%s)",
+	      //       mad_stream_errorstr(&Stream));
 	      continue;
 	  } else
 	      if(Stream.error==MAD_ERROR_BUFLEN) {
