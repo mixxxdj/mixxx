@@ -83,6 +83,14 @@ unix:!macx:SOURCES += midiobjectoss.cpp
 unix:!macx:HEADERS += midiobjectoss.h
 unix:!macx:DEFINES += __OSSMIDI__
 
+# Jack (for MacOS X)
+# macx:HEADERS += ../../mixxx-maclib/includes/jack/jack.h
+#macx:LIBS += ../../mixxx-maclib/lib/libjack.a
+#macx:INCLUDEPATH += ../../mixxx-maclib/includes
+#macx:HEADERS += playerjack.h
+#macx:SOURCES += playerjack.cpp
+#DEFINES += __JACK__
+
 # Windows MIDI
 win32:SOURCES += midiobjectwin.cpp
 win32:HEADERS += midiobjectwin.h
@@ -177,7 +185,8 @@ INCLUDEPATH += $$KISSFFT_DIR
 INCLUDEPATH += ../lib/soundtouch
 SOURCES += enginebufferscalest.cpp ../lib/soundtouch/SoundTouch.cpp ../lib/soundtouch/TDStretch.cpp ../lib/soundtouch/RateTransposer.cpp ../lib/soundtouch/AAFilter.cpp ../lib/soundtouch/FIFOSampleBuffer.cpp ../lib/soundtouch/FIRFilter.cpp
 HEADERS += enginebufferscalest.h ../lib/soundtouch/TDStretch.h ../lib/soundtouch/RateTransposer.h ../lib/soundtouch/cpu_detect.h ../lib/soundtouch/STTypes.h ../lib/soundtouch/SoundTouch.h ../lib/soundtouch/FIFOSamplePipe.h ../lib/soundtouch/FIFOSampleBuffer.h ../lib/soundtouch/AAFilter.h ../lib/soundtouch/FIRFilter.h ../lib/soundtouch/config.h
-unix:!macx:SOURCES += ../lib/soundtouch/cpu_detect_x86_gcc.cpp ../lib/soundtouch/mmx_gcc.cpp
+unix:!macx:SOURCES += ../lib/soundtouch/mmx_gcc.cpp
+unix:SOURCES += ../lib/soundtouch/cpu_detect_x86_gcc.cpp
 win32:SOURCES += ../lib/soundtouch/cpu_detect_x86_win.cpp ../lib/soundtouch/mmx_win.cpp sse_win.cpp ../lib/soundtouch/3dnow_win.cpp
 
 # Debug plotting through gplot API
