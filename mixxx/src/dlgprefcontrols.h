@@ -41,6 +41,7 @@ public slots:
     void slotSetRateRange(int pos);
     void slotSetRateDir(int pos);
     void slotSetVisuals(int pos);
+    void slotSetTooltips(int pos);
     void slotSetSkin(int);
     void slotSetPositionDisplay(int);
     void slotApply();

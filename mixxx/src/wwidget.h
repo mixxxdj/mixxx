@@ -34,7 +34,7 @@
 
 class WWidget : public QWidget  {
    Q_OBJECT
-public: 
+public:
     WWidget(QWidget *parent=0, const char *name=0, WFlags flags=0);
     ~WWidget();
     /** Sets the path used to find pixmaps */
@@ -45,7 +45,7 @@ public:
     static int selectNodeInt(const QDomNode &nodeHeader, const QString sNode);
     static float selectNodeFloat(const QDomNode &nodeHeader, const QString sNode);
     static QString selectNodeQString(const QDomNode &nodeHeader, const QString sNode);
-    
+
     /** Given a filename of a pixmap, returns its path */
     static const QString getPath(QString location);
 public slots:

@@ -29,7 +29,7 @@
 
 class WSliderComposed : public WWidget  {
     Q_OBJECT
-public: 
+public:
     WSliderComposed(QWidget *parent=0, const char *name=0);
     ~WSliderComposed();
     void setup(QDomNode node);
@@ -38,6 +38,7 @@ public:
     void mouseReleaseEvent(QMouseEvent *e);
     void mousePressEvent(QMouseEvent *e);
     void paintEvent(QPaintEvent *);
+
 public slots:
     void setValue(double);
 private:
