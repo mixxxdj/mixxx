@@ -8,10 +8,10 @@
 ///
 ////////////////////////////////////////////////////////////////////////////////
 //
-// Last changed  : $Date: 2005-02-10 13:11:55 +0000 (Thu, 10 Feb 2005) $
-// File revision : $Revision: 857 $
+// Last changed  : $Date: 2005-02-10 13:17:01 +0000 (Thu, 10 Feb 2005) $
+// File revision : $Revision: 858 $
 //
-// $Id: STTypes.h 857 2005-02-10 13:11:55Z tuehaste $
+// $Id: STTypes.h 858 2005-02-10 13:17:01Z tuehaste $
 //
 ////////////////////////////////////////////////////////////////////////////////
 //
@@ -58,8 +58,8 @@ namespace soundtouch
     /// Enable one of the following defines to choose either 16bit integer or
     /// 32bit float sample type. If you don't have opinion, using integer samples
     /// is generally faster.
-    #define INTEGER_SAMPLES       //< 16bit integer samples
-    //#define FLOAT_SAMPLES       //< 32bit float samples
+    //#define INTEGER_SAMPLES       //< 16bit integer samples
+    #define FLOAT_SAMPLES       //< 32bit float samples
 
 
     /// Define this to allow CPU-specific assembler optimizations. Notice that 
