@@ -59,7 +59,7 @@
 #include "dlgcrossfader.h"
 #include "dlgsplit.h"
 #include "powermate.h"
-#include "enginevumeter.h"
+// #include "enginevumeter.h"
 
 #ifdef __UNIX__
 #include "powermatelinux.h"
@@ -120,10 +120,8 @@ MixxxApp::MixxxApp(QApplication *a)
     prefDlg = 0;
 
     // Read the config file
-    config = new ConfigObject<ConfigValue>(QDir::homeDirPath()
-        .append("/").append(SETTINGS_DIR).append("/mixxx.cfg"));
-    qDebug(QDir::homeDirPath()
-        .append("/").append(SETTINGS_DIR).append("/mixxx.cfg"));
+    config = new ConfigObject<ConfigValue>(QDir::homeDirPath().append("/").append(SETTINGS_DIR).append("/mixxx.cfg"));
+    qDebug(QDir::homeDirPath().append("/").append(SETTINGS_DIR).append("/mixxx.cfg"));
 
     initDoc();
     initView();
@@ -298,7 +296,7 @@ MixxxApp::MixxxApp(QApplication *a)
     flanger = new EngineFlanger(view->flanger, "[Flanger]");
 
     // Starting vumeter:
-    vumeter = new EngineVUmeter(view->vumeter, "[VUmeter]");
+    // vumeter = new EngineVUmeter(view->vumeter, "[VUmeter]");
 
     // Starting the master (mixing of the channels and effects):
     master = new EngineMaster(view->master, view->crossfader,
@@ -327,7 +325,7 @@ MixxxApp::~MixxxApp()
     delete midiconfig;
     delete m_pTracks;
     delete flanger;
-    delete vumeter;
+    // delete vumeter;
 
 #ifdef __UNIX__
     if (powermate1!=0)

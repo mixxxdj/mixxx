@@ -21,6 +21,7 @@
 #include "readerextract.h"
 #include "defs.h"
 #include <qptrlist.h>
+//#include <qfile.h>
 
 class EngineSpectralFwd;
 class WindowKaiser;
@@ -63,6 +64,9 @@ private:
     int framePerChunk;
     /** List of pointers to spectrums */
     QPtrList<EngineSpectralFwd> specList;
+
+//    QFile textout;
+//    QFile textout2;
 };
 
 #endif

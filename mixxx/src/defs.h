@@ -42,23 +42,23 @@ const unsigned int READCHUNKSIZE = 20480; //40960;
 const int READCHUNK_NO = 8;
 const unsigned int READBUFFERSIZE = READCHUNKSIZE*READCHUNK_NO;
 /** Window size used in ReaderExtract objects */
-const int WINDOWSIZE = 2560; //4608; //512;
-/** Step size used in block based processing (EnginePreProcess and others) */
-const int STEPSIZE = 512; //WINDOWSIZE/2;
+const int WINDOWSIZE = 2048;
+/** Step size used in block based processing (ReaderExtract classes) */
+const int STEPSIZE = 256; //WINDOWSIZE/2; //WINDOWSIZE/STEPSIZE must result in an integer value 
 
-/** Maximum buffer length to each EObject::process call */
+/** Maximum buffer length to each EngineObject::process call */
 const int MAX_BUFFER_LEN = 80000;
 
 // Various fixed constants
 // static CSAMPLE pi     = acos(-1.0); // Conflicts with macx headers
-static CSAMPLE two_pi = (2.*acos(-1.0));
+static CSAMPLE two_pi = (2.f*acos(-1.f));
 
 // Ensure that CSAMPLE x stays above the intel cpu denormalization range,
 // otherwise sets x equal to 0.
 inline CSAMPLE zap_denormal(CSAMPLE x)
 {
     CSAMPLE absx = fabs(x);
-    return (absx > 1e-15 && absx < 1e15) ? x : 0.;
+    return (absx > 1e-15f && absx < 1e15f) ? x : 0.f;
 }
 
 #ifndef max

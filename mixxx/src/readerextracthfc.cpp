@@ -22,7 +22,8 @@ ReaderExtractHFC::ReaderExtractHFC(ReaderExtract *input, int frameSize, int fram
 {
     frameNo = input->getBufferSize(); ///frameStep;
     framePerChunk = frameNo/READCHUNK_NO;
-   
+    framePerFrameSize = frameSize/frameStep;
+    
     hfc = new CSAMPLE[frameNo];
     dhfc = new CSAMPLE[frameNo];
     for (int i=0; i<frameNo; i++)
@@ -72,31 +73,56 @@ int ReaderExtractHFC::getBufferSize()
     return input->getBufferSize();
 }
 
-void *ReaderExtractHFC::processChunk(const int idx, const int start_idx, const int end_idx, bool)
+void *ReaderExtractHFC::processChunk(const int _idx, const int start_idx, const int _end_idx, bool)
 {
-//    QTextStream stream( &textout );
+    int end_idx = _end_idx;
+    int idx = _idx;
+    int frameFrom, frameTo;
 
+    // Adjust range (circular buffer)
+    if (start_idx>=_end_idx)
+        end_idx += READCHUNK_NO;
+    if (start_idx>_idx)
+        idx += READCHUNK_NO;
 
-    int i;
-    for (i=idx*framePerChunk; i<(idx+1)*framePerChunk; i++)
+    // From frame...
+    if (idx>start_idx)
+        frameFrom = ((((idx%READCHUNK_NO)*framePerChunk)-framePerFrameSize+1)+frameNo)%frameNo;
+    else
+        frameFrom = (idx%READCHUNK_NO)*framePerChunk;
+
+    // To frame...
+    if (idx<end_idx-1)
+        frameTo = ((idx+1)%READCHUNK_NO)*framePerChunk;
+    else
+        frameTo = (((((idx+1)%READCHUNK_NO)*framePerChunk)-framePerFrameSize)+frameNo)%frameNo;
+
+    // Get HFC
+    if (frameTo>frameFrom)
+        for (int i=frameFrom; i<=frameTo; i++)
+            hfc[i] = specList->at(i)->getHFC();
+    else
     {
-        int i2 = i%frameNo;
-        hfc[i2] = specList->at(i2)->getHFC();
-//        qDebug("hfc(%i) %f",i2,hfc[i2]);
+        int i;
+        for (i=frameFrom; i<frameNo; i++)
+            hfc[i] = specList->at(i)->getHFC();
+        for (i=0; i<=frameTo; i++)
+            hfc[i] = specList->at(i)->getHFC();
     }
 
+    // Get DHFC, first derivative and HFC, rectified
     dhfc[(idx*framePerChunk)%frameNo] = hfc[(idx*framePerChunk)%frameNo];
-    for (i=idx*framePerChunk+1; i<(idx+1)*framePerChunk; i++)
+    if (frameTo>frameFrom)
+        for (int i=frameFrom+1; i<=frameTo; i++)
+            dhfc[i] = max(0.,hfc[i]-hfc[i-1]);
+    else
     {
-        int i2 = i%frameNo;
-        dhfc[i2] = hfc[i2]-hfc[i2-i];
-//        qDebug("dhfc(%i) %f",i2,dhfc[i2]);
-
-        // Write HFC to text file
-        //stream << i << " , " << hfc[i2] << " , " << dhfc[i2] << "\n";
-    }    
-
-//    textout.flush();
+        int i;
+        for (i=frameFrom+1; i<frameNo; i++)
+            dhfc[i] = max(0.,hfc[i]-hfc[i-1]);
+        for (i=1; i<=frameTo; i++)
+            dhfc[i] = max(0.,hfc[i]-hfc[i-1]);
+    }
     
     return (void *)&dhfc[idx];
 }

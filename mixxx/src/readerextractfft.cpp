@@ -43,6 +43,12 @@ ReaderExtractFFT::ReaderExtractFFT(ReaderExtract *input, int _frameSize, int _fr
 
     for (int i=0; i<frameNo; i++)
         specList.append(new EngineSpectralFwd(true,false,window));
+
+
+//    textout.setName("fftabs.txt");
+//    textout.open( IO_WriteOnly );
+//    textout2.setName("fftwave.txt");
+//    textout2.open( IO_WriteOnly );
 }
 
 ReaderExtractFFT::~ReaderExtractFFT()
@@ -78,22 +84,43 @@ int ReaderExtractFFT::getBufferSize()
     return frameNo; //input->getBufferSize()/input->getChannels();
 }
 
-void *ReaderExtractFFT::processChunk(const int idx, const int start_idx, const int end_idx, bool)
+void *ReaderExtractFFT::processChunk(const int _idx, const int start_idx, const int _end_idx, bool)
 {
-    int frameFrom  = idx*framePerChunk;
-    int frameTo    = (idx+1)*framePerChunk; //(frameFrom+framePerChunk)%frameNo;
+    int end_idx = _end_idx;
+    int idx = _idx;
+    int frameFrom, frameTo;
 
+//    qDebug("start %i, end %i, curr %i",start_idx, end_idx, idx);
+
+    // Adjust range (circular buffer)
+    if (start_idx>=_end_idx)
+        end_idx += READCHUNK_NO;
+    if (start_idx>_idx)
+        idx += READCHUNK_NO;
+
+    // From frame...
+    if (idx>start_idx)
+        frameFrom = ((((idx%READCHUNK_NO)*framePerChunk)-(frameSize/frameStep)+1)+frameNo)%frameNo;
+    else
+        frameFrom = (idx%READCHUNK_NO)*framePerChunk;
+
+    // To frame...
+    if (idx<end_idx-1)
+        frameTo = ((idx+1)%READCHUNK_NO)*framePerChunk;
+    else
+        frameTo = (((((idx+1)%READCHUNK_NO)*framePerChunk)-(frameSize/frameStep))+frameNo)%frameNo;
+        
 //    qDebug("no %i, from %i ,to %i",frameNo,frameFrom,frameTo);
     
     if (frameTo>frameFrom)
-        for (int i=frameFrom; i<frameTo; i++)
+        for (int i=frameFrom; i<=frameTo; i++)
             processFrame(i);
     else
     {
-	int i;    
+        int i;    
         for (i=frameFrom; i<frameNo; i++)
             processFrame(i);
-	for (i=0; i<frameTo; i++)
+        for (i=0; i<=frameTo; i++)
             processFrame(i);
     }
 
@@ -102,6 +129,8 @@ void *ReaderExtractFFT::processChunk(const int idx, const int start_idx, const i
 
 void ReaderExtractFFT::processFrame(int idx)
 {
+//    QTextStream stream( &textout );
+//    QTextStream stream2( &textout2 );
 //    qDebug("fft %i",idx);
     //
     // Window samples
@@ -110,17 +139,28 @@ void ReaderExtractFFT::processFrame(int idx)
     int inputFrameStep = frameStep*input->getChannels();
     int inputFrameSize = frameSize*input->getChannels();
 
-    int inputFramePos = (idx*inputFrameStep-inputFrameSize/2+inputBufferSize)%inputBufferSize;
+    int inputFramePos = (idx*inputFrameStep+inputBufferSize)%inputBufferSize;
     if (inputFramePos+inputFrameSize < inputBufferSize)
         for (int i=0; i<frameSize; i++)
-            windowedSamples[i] = (readbufferPtr[inputFramePos+(i*2)]+readbufferPtr[inputFramePos+(i*2)+1])/2.;
+            windowedSamples[i] = ((readbufferPtr[inputFramePos+(i*2)]+readbufferPtr[inputFramePos+(i*2)+1])/2.)*windowPtr[i];
     else
         for (int i=0; i<frameSize; i++)
-            windowedSamples[i] = (readbufferPtr[(inputFramePos+(i*2))%inputBufferSize] +
-                                  readbufferPtr[(inputFramePos+(i*2)+1)%inputBufferSize])/2.; // To optimize put % outside loop
+            windowedSamples[i] = ((readbufferPtr[(inputFramePos+(i*2))%inputBufferSize] +
+                                   readbufferPtr[(inputFramePos+(i*2)+1)%inputBufferSize])/2.)*windowPtr[i]; // To optimize put % outside loop
     
-    // Perform FFT
-    specList.at(idx)->process(windowedSamples,0);
+//    // Write wave to text file
+//    for (int i=0; i<frameSize; i++)
+//        stream2 << windowedSamples[i] << " ";
+//    stream2 << "\n";
 
-//    hfc[idx] = specList.at(idx)->getHFC();
+    // Perform FFT
+    CSAMPLE *tmp = specList.at(idx%frameNo)->process(windowedSamples,0);
+
+//    // Write FFT to text file
+//    for (int i=0; i<frameSize/2; i++)
+//        stream << tmp[i] << " ";
+//    stream << "\n";
+    
+//    textout.flush();
+//    textout2.flush();
 }

@@ -57,8 +57,11 @@ ReaderExtractWave::ReaderExtractWave(Reader *pReader) : ReaderExtract(0, "signal
 #ifdef EXTRACT
     readerfft  = new ReaderExtractFFT((ReaderExtract *)this, WINDOWSIZE, STEPSIZE);
     readerhfc  = new ReaderExtractHFC((ReaderExtract *)readerfft, WINDOWSIZE, STEPSIZE);
-    readerbeat = new ReaderExtractBeat((ReaderExtract *)readerhfc, WINDOWSIZE, STEPSIZE, 100);
+    readerbeat = new ReaderExtractBeat((ReaderExtract *)readerhfc, WINDOWSIZE, STEPSIZE, 200);
 #endif
+
+//    textout.setName("wave.txt");
+//    textout.open( IO_WriteOnly );
 }
 
 ReaderExtractWave::~ReaderExtractWave()
@@ -166,6 +169,9 @@ void ReaderExtractWave::setSoundSource(SoundSource *_file)
 
 void ReaderExtractWave::getchunk(CSAMPLE rate)
 {
+//    QTextStream stream( &textout );
+
+
     //qDebug("Reading..., bufferpos_start %i",bufferpos_start);
 
 
@@ -240,9 +246,17 @@ void ReaderExtractWave::getchunk(CSAMPLE rate)
     for (unsigned int j=bufIdx; j<bufIdx+READCHUNKSIZE; j++)
         read_buffer[j] = (CSAMPLE)temp[i++];
 
+
+//    // Write wave to text file
+//    for (int j=bufIdx; j<bufIdx+READCHUNKSIZE; j+=2)
+//        stream << read_buffer[j] << " ";
+//    stream << "\n";
+//    textout.flush();
+
+        
 #ifdef EXTRACT
     // Do pre-processing...
-    //qDebug("curr %i, start %i, end %i",chunkCurr,chunkStart,chunkEnd);
+//    qDebug("curr %i, start %i, end %i",chunkCurr,chunkStart,chunkEnd);
     readerfft->processChunk(chunkCurr, chunkStart, chunkEnd, backwards);
     readerhfc->processChunk(chunkCurr, chunkStart, chunkEnd, backwards);
     readerbeat->processChunk(chunkCurr, chunkStart, chunkEnd, backwards);
@@ -278,7 +292,7 @@ long int ReaderExtractWave::seek(long int new_playpos)
     // Reset extract objects
     readerfft->reset();
     readerhfc->reset();
-    readerbeat->reset();
+    readerbeat->softreset(); // Only make a soft reset on beat estimation (keep histogram)
 #endif
 
     return seekpos;
