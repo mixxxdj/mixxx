@@ -358,7 +358,10 @@ void EngineBuffer::getchunk()
     visualLen1 = READCHUNKSIZE;
     visualPos2 = 0;
     visualLen2 = 0;
-        
+    
+    // Pre-processing of each block in a loop
+    
+                            
     (*readChunkLock)--;
 
     // Send user event to main thread, indicating that the visual sample buffer should be updated
