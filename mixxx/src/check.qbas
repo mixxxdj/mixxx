@@ -1,7 +1,7 @@
 
 #************************************************************************
 # QBAS
-# version 0.9.2
+# version 0.9.5
 # Copyright (c) 2003-2004 Gianluca Romanin ( J_Zar )
 #        <jayorama@users.sourceforge.net>
 #************************************************************************
@@ -35,6 +35,10 @@ FOUND = false
 # by default we suppose not to have features and DO_ACTIONS
 # is always true...
 DO_ACTIONS = true
+# Init the package path to null value... (used if --with-PACKAGE is set by configure)
+PACKAGE_PATH =
+# Variable for internal use: take trace of linking type.
+LINK_TYPE = standard
 # --------------------------------------
 # Generic init step (only once)... 
 # --------------------------------------
@@ -44,6 +48,25 @@ contains( INIT, true ) {
 		system( echo " " >> summary.log )
 		system( echo "	---------- Features Summary ----------" >> summary.log )
 		system( echo " " >> summary.log )
+		}
+	# init config.h if required...
+	# We allow a prototype called 'config.h.in' to be then
+	# modified by our code.
+	contains( PROJECT_SETTINGS , enable_config_h ) {
+		DEFINES += HAVE_CONFIG_H
+		exists( config.h.in ) {
+			!system( cp -f config.h.in config.h ) {
+				error( "Internal error renaming config.h!" )
+				}
+			}
+		system( echo " " >> config.h )
+		system( echo "/** This file is automatically created by QBAS" >> config.h )
+		system( echo " *  Pay attention: changes are unsafe!" >> config.h )
+		system( echo " */" >> config.h )
+		system( echo " " >> config.h )
+		system( echo "$${DEF_CHAR}define	LINUX	1" >> config.h )
+		system( echo " " >> config.h )
+		}
 	# init all template messages...
 	# warning for static linking
 	!isEmpty( STATIC_TEMPLATE_MESSAGE ) {
@@ -59,10 +82,15 @@ contains( INIT, true ) {
 		else {
 		SKIP_LINK_MESSAGE = , skipped
 		}
+	!isEmpty( USER_DEFINED_PATH_TEMPLATE_MESSAGE ) {
+		USER_DEFINED_MESSAGE = "$${USER_DEFINED_PATH_TEMPLATE_MESSAGE}"
+		}
+		else {
+		USER_DEFINED_PATH_MESSAGE =   (user defined)
+		}
 	# all done: no more through this step!
 	INIT = false
 	}
-}
 # --------------------------------------
 # At first: check for errors in definition... 
 # --------------------------------------
@@ -139,6 +167,16 @@ isEmpty( TYPE ) {
 		}
 		}
 	}
+# --------------------------------------
+# if PACKAGE is set we act properly... 
+# --------------------------------------
+!isEmpty( PACKAGE ) {
+	contains( USER_DEFINED_PACKAGES, $${PACKAGE} ) {
+		TMP = $$system( cat configure.def | grep "$${PACKAGE}_PATH" )
+		PACKAGE_PATH = $$system( echo $${TMP} | cut -f2  -d"=" )
+		LINK_TYPE = user_defined
+		} 
+	}
 
 
 
@@ -151,53 +189,75 @@ contains( TYPE, lib ) {
 # if we have a library
 IS_LIB = true
 
-# --------------------------- marked static -------------------------------
-# static linking for package
-contains( OPTIONS, marked_static ) {
-	!isEmpty( STATIC_LIBPATH ) {
+# --------------------------- PACKAGE path is user defined ----------------
+!isEmpty( PACKAGE_PATH ) {
+	exists( $${PACKAGE_PATH}/$${OBJECT} ) {
 		!contains( OPTIONS, skip_link ) {
-			LIBS += $${STATIC_LIBPATH}/$${OBJECT}
+			LIBS += $${PACKAGE_PATH}/$${OBJECT}
 			}
 		FOUND = true
-	}
-}
-
-# --------------------------- lib 'ld' check ------------------------------
-contains( FOUND, false) {
-# --------------------------------------
-# STANDARD LIB CHECK
-# At first ----> check using LD
-# --------------------------------------
-!isEmpty( LINK_LIBS ) {
-	system( ld $${LINK_LIBS} 2>/dev/null ) {
-		FOUND = true
 		}
-}
+} else { 
 
-# --------------------------- lib existance check -------------------------
-# If this fails ----> check the file existence
-contains( FOUND, false) {
-	exists( $${LIB_BASE0}/$${OBJECT} ) {
-		!contains( OPTIONS, skip_link ) {
-			LIBS += $${LIB_BASE0}/$${OBJECT}
-			} 
-		FOUND = true
-	} else {
-		exists( $${LIB_BASE1}/$${OBJECT} ) {
-			!contains( OPTIONS, skip_link ) {
-				LIBS += $${LIB_BASE1}/$${OBJECT}
-				} 
-			FOUND = true
-		}
-		} else {
-			exists( $${LIB_BASE2}/$${OBJECT} ) {
+	# --------------------------- marked static -------------------------------
+	contains( FOUND, false) {
+	# static linking for package
+	contains( OPTIONS, marked_static ) {
+		!isEmpty( STATIC_LIBPATH ) {
+			exists( $${STATIC_LIBPATH}/$${OBJECT} ) {
 				!contains( OPTIONS, skip_link ) {
-					LIBS += $${LIB_BASE2}/$${OBJECT}
+					LIBS += $${STATIC_LIBPATH}/$${OBJECT}
+					LINK_TYPE = static
+					}
+				FOUND = true
+				} else {
+				FOUND = static_failure
+				}
+		}	
+		}
+	}
+	
+	# --------------------------- lib 'ld' check ------------------------------
+	contains( FOUND, false) {
+		# --------------------------------------
+		# STANDARD LIB CHECK
+		# At first ----> check using LD
+		# --------------------------------------
+		!isEmpty( LINK_LIBS ) {
+			system( ld $${LINK_LIBS} 2>/dev/null ) {
+				FOUND = true
+				LINK_TYPE = shared
+				}
+		}
+		
+		# --------------------------- lib existance check -------------------------
+		# If this fails ----> check the file existence
+		contains( FOUND, false) {
+			exists( $${LIB_BASE0}/$${OBJECT} ) {
+				!contains( OPTIONS, skip_link ) {
+					LIBS += $${LIB_BASE0}/$${OBJECT}
+					LINK_TYPE = static
 					} 
 				FOUND = true
-			}
+			} else {
+				exists( $${LIB_BASE1}/$${OBJECT} ) {
+					!contains( OPTIONS, skip_link ) {
+						LIBS += $${LIB_BASE1}/$${OBJECT}
+						LINK_TYPE = static
+						} 
+					FOUND = true
+				}
+				} else {
+					exists( $${LIB_BASE2}/$${OBJECT} ) {
+						!contains( OPTIONS, skip_link ) {
+							LIBS += $${LIB_BASE2}/$${OBJECT}
+							LINK_TYPE = static
+							} 
+						FOUND = true
+					}
+				}
 		}
-}
+	}
 }
 } else {
 IS_LIB = false
@@ -209,6 +269,13 @@ IS_LIB = false
 # -------------------------------------------------------------------------
 contains( TYPE, bin ) {
 # if we have a binary
+# ------  PACKAGE path is user defined  -----------
+!isEmpty( PACKAGE_PATH ) {
+	exists( $${PACKAGE_PATH}/$${OBJECT} ) {
+		FOUND = true
+		}
+} else {
+# ---------------  standard  ----------------------
 exists( $${BIN_BASE0}/$${OBJECT} ) {
 	FOUND = true
 	} else {
@@ -217,6 +284,7 @@ exists( $${BIN_BASE0}/$${OBJECT} ) {
 			}
 		}
 }
+}
 
 
 # --------------------------- header type ---------------------------------
@@ -224,6 +292,13 @@ exists( $${BIN_BASE0}/$${OBJECT} ) {
 # -------------------------------------------------------------------------
 contains( TYPE, header ) {
 # if we have header
+# ------  PACKAGE path is user defined  -----------
+!isEmpty( PACKAGE_PATH ) {
+	exists( $${PACKAGE_PATH}/$${OBJECT} ) {
+		FOUND = true
+		}
+} else {
+# ---------------  standard  ----------------------
 exists( $${HEADER_BASE0}/$${OBJECT} ) {
 	FOUND = true
 	} else {
@@ -231,6 +306,7 @@ exists( $${HEADER_BASE0}/$${OBJECT} ) {
 			FOUND = true
 			}
 		}
+}
 }
 
 
@@ -252,6 +328,13 @@ system( $${OBJECT} ) {
 # -------------------------------------------------------------------------
 contains( TYPE, other ) {
 # if we have other stuff
+# ------  PACKAGE path is user defined  -----------
+!isEmpty( PACKAGE_PATH ) {
+	exists( $${PACKAGE_PATH}/$${OBJECT} ) {
+		FOUND = true
+		}
+} else {
+# ---------------  standard  ----------------------
 exists( $${OPTIONAL_BASE0}/$${OBJECT} ) {
 	FOUND = true
 	} else {
@@ -264,63 +347,71 @@ exists( $${OPTIONAL_BASE0}/$${OBJECT} ) {
 				}
 		}
 }
+}
 
 # --------------------------- not found but... ----------------------------
 # -------------------------------------------------------------------------
 # -------------------------------------------------------------------------
 # if not found check with user-added paths
 # This code is not much sharp... Dirty hack...
-contains( FOUND, false) {
-		!isEmpty( PATH1 ) {
-			exists( $$PATH1/$${OBJECT} ){
-			contains( IS_LIB, true) {
-				!contains( OPTIONS, skip_link ) {
-					LIBS += $$PATH1/$${OBJECT}
-					}
+isEmpty( PACKAGE_PATH ) {
+	contains( FOUND, false) {
+			!isEmpty( PATH1 ) {
+				exists( $$PATH1/$${OBJECT} ){
+				contains( IS_LIB, true) {
+					!contains( OPTIONS, skip_link ) {
+						LIBS += $$PATH1/$${OBJECT}
+						LINK_TYPE = static
+						}
+				}
+				FOUND = true
+				}
 			}
-			FOUND = true
+			!isEmpty( PATH2 ) {
+				exists( $$PATH2/$${OBJECT} ){
+				contains( IS_LIB, true) {
+					!contains( OPTIONS, skip_link ) {
+						LIBS += $$PATH2/$${OBJECT}
+						LINK_TYPE = static
+						}
+				}
+				FOUND = true
+				}
 			}
-		}
-		!isEmpty( PATH2 ) {
-			exists( $$PATH2/$${OBJECT} ){
-			contains( IS_LIB, true) {
-				!contains( OPTIONS, skip_link ) {
-					LIBS += $$PATH2/$${OBJECT}
-					}
+			!isEmpty( PATH3 ) {
+				exists( $$PATH3/$${OBJECT} ){
+				contains( IS_LIB, true) {
+					!contains( OPTIONS, skip_link ) {
+						LIBS += $$PATH3/$${OBJECT}
+						LINK_TYPE = static
+						}
+				}
+				FOUND = true
+				}
 			}
-			FOUND = true
+			!isEmpty( PATH4 ) {
+				exists( $$PATH4/$${OBJECT} ){
+				contains( IS_LIB, true) {
+					!contains( OPTIONS, skip_link ) {
+						LIBS += $$PATH4/$${OBJECT}
+						LINK_TYPE = static
+						}
+				}
+				FOUND = true
+				}
 			}
-		}
-		!isEmpty( PATH3 ) {
-			exists( $$PATH3/$${OBJECT} ){
-			contains( IS_LIB, true) {
-				!contains( OPTIONS, skip_link ) {
-					LIBS += $$PATH3/$${OBJECT}
-					}
+			!isEmpty( PATH5 ) {
+				exists( $$PATH5/$${OBJECT} ){
+				contains( IS_LIB, true) {
+					!contains( OPTIONS, skip_link ) {
+						LIBS += $$PATH5/$${OBJECT}
+						LINK_TYPE = static
+						}
+				}
+				FOUND = true
+				}
 			}
-			FOUND = true
-			}
-		}
-		!isEmpty( PATH4 ) {
-			exists( $$PATH4/$${OBJECT} ){
-			contains( IS_LIB, true) {
-				!contains( OPTIONS, skip_link ) {
-					LIBS += $$PATH4/$${OBJECT}
-					}
-			}
-			FOUND = true
-			}
-		}
-		!isEmpty( PATH5 ) {
-			exists( $$PATH5/$${OBJECT} ){
-			contains( IS_LIB, true) {
-				!contains( OPTIONS, skip_link ) {
-					LIBS += $$PATH5/$${OBJECT}
-					}
-			}
-			FOUND = true
-			}
-		}
+	}
 }
 
 
@@ -335,10 +426,14 @@ contains( FOUND, true) {
 			MESSAGE += $${SKIP_LINK_MESSAGE}
 			}
 			else {
-				contains( LIBS, $${OBJECT} ) {
+				VAR = $$find( LIBS, $${OBJECT} )
+				!isEmpty( VAR ) {
 					MESSAGE += $${STATIC_MESSAGE}
 					}
 				}
+		!isEmpty( PACKAGE_PATH ) {
+			MESSAGE += $${USER_DEFINED_PATH_MESSAGE}
+			}
 #		}
 	message( $${MESSAGE} )
 }
@@ -362,6 +457,10 @@ contains( FOUND, false) {
 		error( $${ERROR_MESSAGE} )
 	}
 }
+contains( FOUND, static_failure ) {
+		message( "**************************************" )
+		error( "Failure on static linkage: object not found where expected!" )
+	}
 
 
 # --------------------------- actions -------------------------------------
@@ -372,8 +471,10 @@ contains( FOUND, false) {
 contains( FOUND, true ) {
 	contains( DO_ACTIONS , true ) {
 		!contains( OPTIONS, skip_link ) {
-			!contains( MESSAGE, statically ) {
-				LIBS += $${LINK_LIBS}
+			!contains( LINK_TYPE , static ) {
+				isEmpty( PACKAGE_PATH ) {
+					LIBS += $${LINK_LIBS}
+					}
 				}
 			}
 		DEFINES += $${ADD_DEFINES}
@@ -394,7 +495,23 @@ contains( FOUND, true ) {
 	SUMMARY_MESSAGE += 	(locked)
 	}
 	contains( PROJECT_SETTINGS , enable_summary ) {
-			system( echo "	$${FEATURE}	==>	$${SUMMARY_MESSAGE}" >> summary.log )
+			# if already set into summary file, skip other output
+			!system( cat summary.log  | grep "$${FEATURE}" -q ) {
+				system( echo "	$${FEATURE}	==>	$${SUMMARY_MESSAGE}" >> summary.log )
+				}
+		}
+}
+
+
+# --------------------------- create config.h -----------------------------
+# -------------------------------------------------------------------------
+# -------------------------------------------------------------------------
+# For feature compatibility we do what autoheader does...
+contains( FOUND, true) {
+	!isEmpty( CONFIG_HEADER_DEFINE ) {
+		system( echo " " >> config.h )
+		system( echo "$${DEF_CHAR}define	$${CONFIG_HEADER_DEFINE}	1" >> config.h )
+		system( echo " " >> config.h )
 		}
 }
 
@@ -409,6 +526,7 @@ contains( FOUND, true ) {
 # --------------------------------------
 DESCRIPTION =
 FEATURE =
+CONFIG_HEADER_DEFINE =
 TIP_MESSAGE =
 LINK_LIBS =
 ADD_DEFINES =
@@ -416,3 +534,4 @@ ADD_SOURCES =
 ADD_HEADERS =
 ADD_CONFIG =
 OPTIONS =
+PACKAGE =

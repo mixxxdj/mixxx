@@ -60,6 +60,7 @@ include( check.qbas )
 #   MAD ---------------------------------------------------------------
 OBJECT = libmad.a
 TYPE = lib
+PACKAGE = libmad
 DESCRIPTION = Mad audio decoder
 TIP_MESSAGE = "The Mad decoder is needed for mp3 playback!"
 LINK_LIBS = -lmad
@@ -74,6 +75,7 @@ include( check.qbas )
 #   ID3TAG ------------------------------------------------------------
 OBJECT = libid3tag.a
 TYPE = lib
+PACKAGE = id3tag
 DESCRIPTION = Id3Tag
 TIP_MESSAGE = "Id3tag library needed!"
 LINK_LIBS = -lid3tag
@@ -120,6 +122,7 @@ include( check.qbas )
 #   VORBISFILE --------------------------------------------------------
 OBJECT = libvorbisfile.a
 TYPE = lib
+PACKAGE = vorbisfile
 DESCRIPTION = Vorbisfile library
 TIP_MESSAGE = Vorbisfile library is needed for ogg playback!"
 LINK_LIBS = -lvorbisfile
@@ -134,6 +137,7 @@ include( check.qbas )
 #   OGG/VORBIS --------------------------------------------------------
 OBJECT = libvorbis.a
 TYPE = lib
+PACKAGE = vorbis
 DESCRIPTION = Vorbis library
 TIP_MESSAGE = "Vorbis library is needed for ogg playback!"
 LINK_LIBS = -lvorbis
@@ -150,6 +154,7 @@ include( check.qbas )
 #   OGG   -------------------------------------------------------------
 OBJECT = libogg.a
 TYPE = lib
+PACKAGE = oggvorbis
 DESCRIPTION = Ogg Vorbis library
 TIP_MESSAGE = "Ogg library is needed for ogg playback!"
 LINK_LIBS = -logg
@@ -166,6 +171,7 @@ include( check.qbas )
 #   SNDFILE -----------------------------------------------------------
 OBJECT = libsndfile.a
 TYPE = lib
+PACKAGE = libsndfile
 DESCRIPTION = Sndfile library
 TIP_MESSAGE = "libsndfile is needed for the Mixxx playback engine!"
 LINK_LIBS = -lsndfile
@@ -206,7 +212,7 @@ ADD_DEFINES = __ALSA__
 ADD_SOURCES = playeralsa.cpp
 ADD_HEADERS = playeralsa.h
 LINK_LIBS = -lasound 
-OPTIONS =  disable_feature lock_feature
+OPTIONS =  disable_feature
 #----------------------------------------------------------------------
 # Check routines         (DON'T TOUCH!)
 include( check.qbas )
@@ -235,6 +241,7 @@ OBJECT = pkg-config --exists 'jack >= 0.61.0'
 TYPE = command
 DESCRIPTION = Jack >= 0.61.0
 FEATURE = Jack
+PACKAGE = Jack
 TIP_MESSAGE = "Jack not found!"
 LINK_LIBS = `pkg-config --silence-errors --cflags --libs jack`
 ADD_DEFINES = __JACK__
