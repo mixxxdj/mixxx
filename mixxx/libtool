@@ -37,17 +37,17 @@ if test "X${CDPATH+set}" = Xset; then CDPATH=:; export CDPATH; fi
 available_tags=" CXX"
 
 ### BEGIN LIBTOOL CONFIG
-# Libtool was configured as follows, on host sakaki:
+# Libtool was configured as follows, on host vieras.hut.fi:
 #
 # AR="" AR_FLAGS="" LTCC="gcc" CC="gcc" \
 # CFLAGS="-O2  " CPPFLAGS="" \
-# MAGIC_CMD="" LD="/usr/i486-suse-linux/bin/ld" LDFLAGS="  " LIBS="" \
+# MAGIC_CMD="" LD="/usr/bin/ld" LDFLAGS="" LIBS="" \
 # LN_S="ln -s" NM="/usr/bin/nm -B" RANLIB="ranlib" STRIP="strip" \
 # AS="" DLLTOOL="" OBJDUMP="" \
 # objext="" exeext="" reload_flag=" -r" \
 # deplibs_check_method="pass_all" \
 # file_magic_cmd="\$MAGIC_CMD" \
-#   admin/ltconfig --cache-file=./config.cache --disable-static --with-gcc --with-gnu-ld --enable-dlopen --no-verify --build=i686-pc-linux-gnu admin/ltmain.sh i686-pc-linux-gnu
+#   admin/ltconfig --cache-file=./config.cache --disable-static --with-gcc --with-gnu-ld --enable-dlopen --no-verify --build=i586-pc-linux-gnu admin/ltmain.sh i586-pc-linux-gnu
 #
 # Compiler and other test output produced by ltconfig, useful for
 # debugging ltconfig, is in ./config.log if it exists.
@@ -71,8 +71,8 @@ build_old_libs=no
 fast_install=yes
 
 # The host system.
-host_alias=i686-pc-linux-gnu
-host=i686-pc-linux-gnu
+host_alias=i586-pc-linux-gnu
+host=i586-pc-linux-gnu
 
 # An echo program that does not interpret backslashes.
 echo="echo"
@@ -91,7 +91,7 @@ CC="gcc"
 with_gcc=yes
 
 # The linker used to build libraries.
-LD="/usr/i486-suse-linux/bin/ld"
+LD="/usr/bin/ld"
 
 # Whether we need hard or soft links.
 LN_S="ln -s"
@@ -5718,17 +5718,17 @@ build_old_libs=`case $build_libtool_libs in yes) echo no;; *) echo yes;; esac`
 # sh-indentation:2
 # End:
 ### BEGIN LIBTOOL TAG CONFIG: CXX
-# Libtool was configured as follows, on host sakaki:
+# Libtool was configured as follows, on host vieras.hut.fi:
 #
 # AR="" AR_FLAGS="" LTCC="gcc" CC="c++" \
-# CFLAGS="-O2 -O0 -g3 -Wall -fno-exceptions -fno-check-new" CPPFLAGS="" \
-# MAGIC_CMD="" LD="/usr/i486-suse-linux/bin/ld" LDFLAGS="  " LIBS="" \
+# CFLAGS="-O2 -fno-exceptions -fno-check-new" CPPFLAGS="" \
+# MAGIC_CMD="" LD="/usr/bin/ld" LDFLAGS="" LIBS="" \
 # LN_S="ln -s" NM="/usr/bin/nm -B" RANLIB="ranlib" STRIP="strip" \
 # AS="" DLLTOOL="" OBJDUMP="" \
 # objext="" exeext="" reload_flag=" -r" \
 # deplibs_check_method="pass_all" \
 # file_magic_cmd="\$MAGIC_CMD" \
-#   admin/ltconfig -o libtool --cache-file=./config.cache --disable-static --with-gcc --with-gnu-ld --enable-dlopen --build=i686-pc-linux-gnu --add-tag=CXX admin/ltcf-cxx.sh i686-pc-linux-gnu
+#   admin/ltconfig -o libtool --cache-file=./config.cache --disable-static --with-gcc --with-gnu-ld --enable-dlopen --build=i586-pc-linux-gnu --add-tag=CXX admin/ltcf-cxx.sh i586-pc-linux-gnu
 #
 # Compiler and other test output produced by ltconfig, useful for
 # debugging ltconfig, is in ./config.log if it exists.
@@ -5752,8 +5752,8 @@ build_old_libs=no
 fast_install=yes
 
 # The host system.
-host_alias=i686-pc-linux-gnu
-host=i686-pc-linux-gnu
+host_alias=i586-pc-linux-gnu
+host=i586-pc-linux-gnu
 
 # An echo program that does not interpret backslashes.
 echo="echo"
@@ -5772,7 +5772,7 @@ CC="c++"
 with_gcc=yes
 
 # The linker used to build libraries.
-LD="/usr/i486-suse-linux/bin/ld"
+LD="/usr/bin/ld"
 
 # Whether we need hard or soft links.
 LN_S="ln -s"
@@ -5894,11 +5894,11 @@ striplib="strip --strip-unneeded"
 
 # Dependencies to place before the objects being linked to create a
 # shared library.
-predep_objects="/usr/lib/crti.o /usr/lib/gcc-lib/i486-suse-linux/2.95.3/crtbeginS.o"
+predep_objects="/usr/lib/gcc-lib/i386-redhat-linux/2.96/../../../crti.o /usr/lib/gcc-lib/i386-redhat-linux/2.96/crtbeginS.o"
 
 # Dependencies to place after the objects being linked to create a
 # shared library.
-postdep_objects="/usr/lib/gcc-lib/i486-suse-linux/2.95.3/crtendS.o /usr/lib/crtn.o"
+postdep_objects="/usr/lib/gcc-lib/i386-redhat-linux/2.96/crtendS.o /usr/lib/gcc-lib/i386-redhat-linux/2.96/../../../crtn.o"
 
 # Dependencies to place before the objects being linked to create a
 # shared library.
@@ -5910,7 +5910,7 @@ postdeps="-lstdc++ -lm -lgcc -lc -lgcc"
 
 # The library search path used internally by the compiler when linking
 # a shared library.
-compiler_lib_search_path="-L/usr/lib/gcc-lib/i486-suse-linux/2.95.3 -L/usr/i486-suse-linux/lib"
+compiler_lib_search_path="-L/usr/lib/gcc-lib/i386-redhat-linux/2.96 -L/usr/lib/gcc-lib/i386-redhat-linux/2.96/../../.."
 
 # Method to check whether dependent libraries are shared objects.
 deplibs_check_method="pass_all"

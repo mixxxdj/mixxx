@@ -62,12 +62,13 @@ MidiObject::~MidiObject() {
 void MidiObject::addbutton(ControlPushButton* newbutton) {
   buttons.push_back(newbutton);
   no_buttons++;
-  //std::cout << "Registered midi button " << newbutton->print() << ".\n";
+  qDebug("Registered midi button %s.", newbutton->print());
 }
 
 void MidiObject::removebutton(ControlPushButton* button) {
-  for (int i=0; i<buttons.size(); i++)
-    if (buttons[i] == button) ; // buttons.erase(i); **************************************
+  //for (iterator i=0; i<buttons.size(); i++)
+  //  if (buttons[i] == button) buttons->erase(i);
+  qWarning("Removal of midibutton not implemented");
 }
 
 /* -------- ------------------------------------------------------
@@ -80,13 +81,19 @@ void MidiObject::removebutton(ControlPushButton* button) {
 void MidiObject::addpotmeter(ControlPotmeter* newpotmeter) {
   potmeters.push_back(newpotmeter);
   no_potmeters++;
-  //std::cout << "Registered midi potmeter " << newpotmeter->print() << ".\n";
+  qDebug("Registered midi potmeter %s.", newpotmeter->print());;
 }
 
 void MidiObject::removepotmeter(ControlPotmeter* potmeter) {
-  for (int i=0; i<potmeters.size(); i++)
-    if (potmeters[i] == potmeter); // potmeters.erase(i); ************************************'
-  qWarning("Remove of midi potmeters not yet implemented.");
+  vector<ControlPotmeter*>::iterator iter = 
+    find(potmeters.begin(), potmeters.end(), potmeter);
+  if (iter != potmeters.end())
+    potmeters.erase(iter);
+  else
+    qWarning("Potmeter which is requested for removal in MidiObject does not exist.");
+  //for (int i=0; i<potmeters.size(); i++)
+  //  if (potmeters[i] == potmeter) potmeters.erase(i);
+  //qWarning("Remove of midi potmeters not yet implemented.");
 }
 
 /* -------- ------------------------------------------------------
