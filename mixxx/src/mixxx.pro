@@ -7,8 +7,9 @@ SOURCES += playerportaudio.cpp
 HEADERS += playerportaudio.h
 DEFINES += __PORTAUDIO__
 unix:LIBS += -lportaudio
-#win32:LIBS += ../lib/PAstaticWMMED.lib winmm.lib
-win32:LIBS += ../lib/PAStaticDS.lib
+win32:SOURCES += ../lib/pa_lib.c ../lib/dsound_wrapper.c ../lib/pa_dsound.c
+win32:HEADERS += ../lib/portaudio.h ../lib/pa_host.h
+win32:LIBS += winmm.lib /DXSDK/lib/dsound.lib
 
 # OSS Midi (Working good, Linux specific)
 SOURCES += midiobjectoss.cpp
@@ -24,7 +25,7 @@ DEFINES += __OSSMIDI__
 #macx:LIBS += -framework Carbon -framework CoreMIDI
 #macx:SOURCES += ../../../portmidi-macosx-1.0/pmdarwin.c ../../../portmidi-macosx-1.0/pmmacosx.c ../../../portmidi-macosx-1.0/pmutil.c ../../../portmidi-macosx-1.0/portmidi.c ../../../portmidi-macosx-1.0/ptdarwin.c
 #macx:HEADERS += ../../../portmidi-macosx-1.0/pminternal.h ../../../portmidi-macosx-1.0/pmmacosx.h ../../../portmidi-macosx-1.0/pmutil.h ../../../portmidi-macosx-1.0/portmidi.h ../../../portmidi-macosx-1.0/porttime.h 
-#win32:LIBS += -l../lib/portmidi.lib -l../lib/porttime.lib
+#win32:LIBS += ../lib/pm_dll.lib
 
 # ALSA PCM (Not currently working, Linux specific)
 #SOURCES += playeralsa.cpp
@@ -57,10 +58,10 @@ unix {
 win32 {
   DEFINES += __WIN__
   INCLUDEPATH += ../lib .
-  LIBS += -l../lib/libmad.lib -l../lib/libsndfile.lib
+  LIBS += ../lib/libmad.lib ../lib/libsndfile.lib
   QMAKE_CXXFLAGS += -GX
-  QMAKE_LFLAGS += /NODEFAULTLIB:libcd /NODEFAULTLIB:libcmtd /NODEFAULTLIB:msvcrt.lib
-  CONFIG_PATH = \"d:\\mixxx\"
+  QMAKE_LFLAGS += /NODEFAULTLIB:libcd /NODEFAULTLIB:libcmtd /NODEFAULTLIB:msvcrt.lib /NODEFAULTLIB:library
+  CONFIG_PATH = \"c:\\mixxx\"
 }
 
 macx {
@@ -74,9 +75,8 @@ macx {
 DEFINES += CONFIG_PATH=$$CONFIG_PATH
 FORMS	= dlgchanneldlg.ui dlgplaycontroldlg.ui dlgplaylistdlg.ui dlgmasterdlg.ui dlgcrossfaderdlg.ui dlgsplitdlg.ui dlgpreferencesdlg.ui dlgflangerdlg.ui
 IMAGES	= filesave.xpm
-TEMPLATE        =app
-# win32:TEMPLATE       = vcapp
-TRANSLATIONS = mixxx_de.ts
-CONFIG	+= qt warn_on thread debug 
+unix:TEMPLATE        =app
+win32:TEMPLATE       = vcapp
+CONFIG	+= qt warn_on thread release
 DBFILE	= mixxx.db
 LANGUAGE	= C++
