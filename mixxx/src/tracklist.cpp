@@ -136,8 +136,10 @@ void TrackList::UpdateTracklist()
 
 	// Put information from all the tracks into the table:
 	int iRow=0;
+    int iTrackno=0;
 	m_pTableTracks->setNumRows( m_lTracks.count() );
 	for (TrackInfoObject *Track = m_lTracks.first(); Track; Track = m_lTracks.next() )
+    {
         if (Track->m_bExist)
         {
             m_pTableTracks->setItem(iRow, COL_TITLE, new WTrackTableItem(m_pTableTracks,QTableItem::Never, Track->m_sTitle));
@@ -146,9 +148,11 @@ void TrackList::UpdateTracklist()
 		    m_pTableTracks->setItem(iRow, COL_TYPE, new WTrackTableItem(m_pTableTracks,QTableItem::Never, Track->m_sType));
 	    	m_pTableTracks->setItem(iRow, COL_DURATION, new WTrackTableItem(m_pTableTracks,QTableItem::Never, Track->Duration()));
 		    m_pTableTracks->setItem(iRow, COL_BITRATE, new WTrackTableItem(m_pTableTracks,QTableItem::Never, Track->m_sBitrate));
-    		m_pTableTracks->setItem(iRow, COL_INDEX, new WTrackTableItem(m_pTableTracks,QTableItem::Never, QString("%1").arg(iRow)));
+    		m_pTableTracks->setItem(iRow, COL_INDEX, new WTrackTableItem(m_pTableTracks,QTableItem::Never, QString("%1").arg(iTrackno)));
 	       	iRow ++;
 	    }
+        iTrackno ++;
+    }
     // Readjust the number of rows:
     m_pTableTracks->setNumRows( iRow );
 

@@ -253,14 +253,15 @@ MixxxApp::MixxxApp(QApplication *a, bool bVisuals)
 
     if (joystick1!=0)
     {
-    if (joystick1->opendev())
-    {
-        qDebug("Found Joystick 1");
-    }
-    else
-    {
-        delete joystick1;
-        joystick1 = 0;
+        if (joystick1->opendev())
+        {
+            qDebug("Found Joystick 1");
+        }
+        else
+        {
+            delete joystick1;
+            joystick1 = 0;
+        }
     }
 
     // Initialize player device
