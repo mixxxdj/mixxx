@@ -24,6 +24,8 @@
 #include "guisignal.h"
 #include "signalvertexbuffer.h"
 
+QPtrList<GUIContainer> GUIChannel::list;
+
 /**
  * Default Consructor.
  */
@@ -84,6 +86,8 @@ SignalVertexBuffer *GUIChannel::add(ReaderExtract *readerExtract)
     // Append container to list
     list.append(c);
 
+    c->zoom();
+    
     return c->getBuffer();
 }
 
