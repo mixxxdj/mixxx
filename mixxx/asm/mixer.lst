@@ -1,0 +1,825 @@
+gpasm-0.9.11 alpha              mixer.asm   8-25-2001  11:57:45          PAGE  1
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+               00001 ; 
+               00002 ; Mixer
+               00003 ;
+               00004 
+               00001         LIST
+               00002 ; P16F874.INC  Standard Header File, Version 1.00    Microchip Technology, Inc.
+               00374         LIST
+               00005 #include <p16f874.inc>
+               00006         ERRORLEVEL      -302 ; suppress bank selection warnings
+               00007 
+  00000009     00008 Baudrate        EQU     0x09
+  00000020     00009 Dataarea        EQU     0x20
+  00000020     00010 TEMPQ           EQU     Dataarea
+  00000001     00011 PORTB_init      EQU     B'00000001'
+  000000FF     00012 PORTD_init      EQU     B'11111111'
+               00013 ;
+               00014 ; Midi queue
+               00015 ;
+  00000024     00016 SerBytes        EQU     Dataarea+4
+  00000025     00017 SerByte0        EQU     Dataarea+5
+  00000026     00018 SerByte1        EQU     Dataarea+6
+  00000027     00019 SerByte2        EQU     Dataarea+7
+               00020 ;
+               00021 ; ADC
+               00022 ;
+  00000028     00023 ADC_delaycount  EQU     Dataarea+8
+  00000029     00024 ADC_0           EQU     Dataarea+9   ; These hold the last 
+  00000030     00025 ADC_1           EQU     Dataarea+10  ; values read from the
+  00000031     00026 ADC_2           EQU     Dataarea+11  ; analog ports.
+  00000032     00027 ADC_3           EQU     Dataarea+12
+  00000033     00028 ADC_4           EQU     Dataarea+13
+  00000034     00029 ADC_5           EQU     Dataarea+14
+  00000035     00030 ADC_6           EQU     Dataarea+15
+  00000036     00031 ADC_7           EQU     Dataarea+16
+  00000037     00032 ADC_curr_no     EQU     Dataarea+17
+  00000038     00033 ADC_curr_value  EQU     Dataarea+18
+  00000039     00034 ADC_new_value   EQU     Dataarea+19
+  00000040     00035 ADC_potvalue    EQU     Dataarea+20
+               00036 ;
+               00037 ; Input ports
+               00038 ;
+  00000041     00039 PORTB_curr_value EQU    Dataarea+21  ; this is the current value
+  00000042     00040 PORTB_new_value EQU     Dataarea+22  ; temporary storage for new read.
+  00000043     00041 PORTD_curr_value EQU    Dataarea+23  ; this is the current value
+  00000044     00042 PORTD_new_value EQU     Dataarea+24  ; temporary storage for new read.
+               00043 
+               00044 ;; ==========================================================================
+               00045 ;;  Macros
+               00046 ;; ==========================================================================
+               00047 BANK1 MACRO
+               00048         bsf     STATUS, RP0
+               00049         ENDM
+               00050 
+               00051 BANK0 MACRO
+gpasm-0.9.11 alpha              mixer.asm   8-25-2001  11:57:45          PAGE  2
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+               00052         bcf     STATUS, RP0
+               00053         ENDM
+               00054 
+               00055 IFCLR   MACRO   reg, bit, instr
+               00056         btfss   reg, bit
+               00057         instr
+               00058         ENDM
+               00059 
+               00060 IFSET   MACRO   reg, bit, instr
+               00061         btfsc   reg, bit
+               00062         instr
+               00063         ENDM
+               00064 
+0000           00065         ORG     0x0000
+0000 158A 120A 00066         lgoto   Start
+0002 28B1
+0800           00067         ORG     0x800
+               00068 
+               00001 ;; ==========================================================================
+               00002 ;;  Send out MIDI Messages, if MIDI-Queue initialized
+               00003 ;; ==========================================================================
+               00004 
+0800           00005 MIDIinit:
+0800 1683          M         bsf     STATUS, RP0
+               00006         BANK1
+0801 3020      00007         movlw   1 << TXEN
+0802 0098      00008         movwf   TXSTA
+0803 3009      00009         movlw   Baudrate                ; Set the speed
+0804 0099      00010         movwf   SPBRG
+0805 1283          M         bcf     STATUS, RP0
+               00011         BANK0
+0806 3090      00012         movlw   (1 << SPEN) | (1 << CREN); activate port
+0807 0098      00013         movwf   RCSTA
+0808 0008      00014         return
+               00015 
+               00016 ;-----------------------
+               00017 ;       Send byte in W
+               00018 ;-----------------------
+0809           00019 MIDIsendbyte
+0809 0099      00020         movwf   TXREG
+080A 1683          M         bsf     STATUS, RP0
+               00021         BANK1
+080B           00022 MIDIwaitloop                    
+               00023         ; IFCLR TXSTA, TRMT, goto MIDIwaitloop;
+080B 1C98      00024         btfss TXSTA, TRMT
+080C 280B      00025         goto MIDIwaitloop
+080D 1283          M         bcf     STATUS, RP0
+               00026         BANK0
+080E 0008      00027         return
+               00028 
+080F           00029 MIDIflushQueue:
+080F 0825      00030         movf    SerByte0, W
+0810 2009      00031         call    MIDIsendbyte
+0811 0826      00032         movf    SerByte1, W             ; Move the queue up
+gpasm-0.9.11 alpha              mixer.asm   8-25-2001  11:57:45          PAGE  3
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+0812 2009      00033         call    MIDIsendbyte
+0813 0827      00034         movf    SerByte2, W
+0814 2009      00035         call    MIDIsendbyte
+0815 0008      00036         return
+               00037 
+               00038 
+               00069 #include "midi.asm"
+               00001 ;
+               00002 ; ADC Handling
+               00003 ;
+               00004 
+               00005 ;; ==========================================================================
+               00006 ;;  ADC Handling
+               00007 ;; ==========================================================================
+               00008 
+0816           00009 ADC_init
+0816 0185      00010         clrf    PORTA   ; reset port A
+               00011         
+0817 1683          M         bsf     STATUS, RP0
+               00012         BANK1
+0818 30FF      00013         movlw   0xff
+0819 0085      00014         movwf   TRISA   ; set all A lines to input.
+               00015         
+081A 019F      00016         clrf    ADCON1  ; Set all A lines to analog input
+081B 1283          M         bcf     STATUS, RP0
+               00017         BANK0
+081C 0008      00018         return
+               00019 
+               00020 ;; --------------------------------------------------------------------------
+               00021 ;; Read one of the ports. If the value is
+               00022 ;; changed, send the value via midi.
+               00023 ;; --------------------------------------------------------------------------
+081D           00024 ADC_check_0
+081D 0829      00025         movf    ADC_0, W        ; shift the last value over to curr_value
+081E 00B8      00026         movwf   ADC_curr_value
+081F 3000      00027         movlw   0x00            ; the port no.
+0820 2055      00028         call    ADC_checkchange
+               00029         ; store the new (maybe unchanged) value:
+0821 0839      00030         movf    ADC_new_value, W
+0822 00A9      00031         movwf   ADC_0
+0823 0008      00032         return
+               00033 
+0824           00034 ADC_check_1
+0824 0830      00035         movf    ADC_1,W
+0825 00B8      00036         movwf   ADC_curr_value
+0826 3008      00037         movlw   0x08            ; port 1.
+0827 2055      00038         call    ADC_checkchange
+               00039         ; store the new (maybe unchanged) value:
+0828 0839      00040         movf    ADC_new_value, W
+0829 00B0      00041         movwf   ADC_1
+082A 0008      00042         return
+               00043 
+082B           00044 ADC_check_2
+082B 0831      00045         movf    ADC_2,W
+gpasm-0.9.11 alpha              mixer.asm   8-25-2001  11:57:45          PAGE  4
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+082C 00B8      00046         movwf   ADC_curr_value
+082D 3010      00047         movlw   0x10            ; port 2.
+082E 2055      00048         call    ADC_checkchange
+               00049         ; store the new (maybe unchanged) value:
+082F 0839      00050         movf    ADC_new_value, W
+0830 00B1      00051         movwf   ADC_2
+0831 0008      00052         return
+               00053 
+0832           00054 ADC_check_3
+0832 0832      00055         movf    ADC_3,W
+0833 00B8      00056         movwf   ADC_curr_value
+0834 3018      00057         movlw   B'00011000'     ; port 3.
+0835 2055      00058         call    ADC_checkchange
+               00059         ; store the new (maybe unchanged) value:
+0836 0839      00060         movf    ADC_new_value, W
+0837 00B2      00061         movwf   ADC_3
+0838 0008      00062         return
+               00063 
+0839           00064 ADC_check_4
+0839 0833      00065         movf    ADC_4,W
+083A 00B8      00066         movwf   ADC_curr_value
+083B 3020      00067         movlw   B'00100000'     ; port 4.
+083C 2055      00068         call    ADC_checkchange
+               00069         ; store the new (maybe unchanged) value:
+083D 0839      00070         movf    ADC_new_value, W
+083E 00B3      00071         movwf   ADC_4
+083F 0008      00072         return
+               00073 
+0840           00074 ADC_check_5
+0840 0834      00075         movf    ADC_5,W
+0841 00B8      00076         movwf   ADC_curr_value
+0842 3028      00077         movlw   B'00101000'     ; port 5.
+0843 2055      00078         call    ADC_checkchange
+               00079         ; store the new (maybe unchanged) value:
+0844 0839      00080         movf    ADC_new_value, W
+0845 00B4      00081         movwf   ADC_5
+0846 0008      00082         return
+               00083 
+0847           00084 ADC_check_6
+0847 0835      00085         movf    ADC_6,W
+0848 00B8      00086         movwf   ADC_curr_value
+0849 3030      00087         movlw   0x30            ; port 6.
+084A 2055      00088         call    ADC_checkchange
+               00089         ; store the new (maybe unchanged) value:
+084B 0839      00090         movf    ADC_new_value, W
+084C 00B5      00091         movwf   ADC_6
+084D 0008      00092         return
+               00093 
+084E           00094 ADC_check_7
+084E 0836      00095         movf    ADC_7,W
+084F 00B8      00096         movwf   ADC_curr_value
+0850 3038      00097         movlw   0x38            ; port 7.
+0851 2055      00098         call    ADC_checkchange
+               00099         ; store the new (maybe unchanged) value:
+gpasm-0.9.11 alpha              mixer.asm   8-25-2001  11:57:45          PAGE  5
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+0852 0839      00100         movf    ADC_new_value, W
+0853 00B6      00101         movwf   ADC_7
+0854 0008      00102         return
+               00103 
+               00104 ;       See if there is a change in the value:
+0855           00105 ADC_checkchange
+0855 00B7      00106         movwf   ADC_curr_no
+0856 2074      00107         call    ADC_Conversion
+0857 00C0      00108         movwf   ADC_potvalue    ; current pot-value
+               00109         ; is the value changed?
+0858 0638      00110         xorwf   ADC_curr_value,W
+0859 1903 2871 00111         bz      ADC_forgetit
+               00112         ;
+               00113         ; Accept the value only if three subsequent reads give the same
+               00114         ;
+085B 2074      00115         call    ADC_Conversion
+085C 0640      00116         xorwf   ADC_potvalue, W
+085D 1D03 2871 00117         bnz     ADC_forgetit
+               00118 
+085F 2074      00119         call    ADC_Conversion
+0860 0640      00120         xorwf   ADC_potvalue, W
+0861 1D03 2871 00121         bnz     ADC_forgetit
+               00122 
+0863 2074      00123         call    ADC_Conversion
+0864 0640      00124         xorwf   ADC_potvalue, W
+0865 1D03 2871 00125         bnz     ADC_forgetit
+               00126         ;
+               00127         ; Value accepted; save it
+               00128         ;               
+0867 0840      00129         movf    ADC_potvalue, W
+0868 00B9      00130         movwf   ADC_new_value   
+               00131  
+               00132         ; Send it via midi.
+0869           00133 ADC_send_value
+               00134         ; Send a MIDI controller change
+0869 3001      00135         movlw   1       ; midi channel
+086A 3EB0      00136         addlw   0xb0
+086B 00A5      00137         movwf   SerByte0
+086C 0837      00138         movf    ADC_curr_no,W   ; controller no.
+086D 00A6      00139         movwf   SerByte1
+086E 0839      00140         movf    ADC_new_value,W
+086F 00A7      00141         movwf   SerByte2
+0870 280F      00142         goto    MIDIflushQueue
+               00143 
+0871           00144 ADC_forgetit
+0871 0838      00145         movf    ADC_curr_value, W       ; restore the old value
+0872 00B9      00146         movwf   ADC_new_value
+0873 0008      00147         return
+               00148  
+               00149 ;; --------------------------------------------------------------------------
+               00150 ;;  ADC Conversion
+               00151 ;;  In:  Channel no. (in bits. 6,5,4) in ADC_curr_no.
+               00152 ;;  Out: Conversion Result in W
+               00153 ;; --------------------------------------------------------------------------
+gpasm-0.9.11 alpha              mixer.asm   8-25-2001  11:57:45          PAGE  6
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+0874           00154 ADC_Conversion
+0874 0837      00155         movfw   ADC_curr_no
+0875 3E81      00156         addlw   0x81    ; add configurations bits to channel    
+0876 009F      00157         movwf   ADCON0
+               00158         ; Make a delay:
+0877 3040      00159         movlw   0x40
+0878 00A8      00160         movwf   ADC_delaycount
+0879           00161 ADC_DelayLoop
+0879 0BA8      00162         decfsz  ADC_delaycount, F
+087A 2879      00163         goto    ADC_DelayLoop
+               00164         ; Wait until the conversion is finished:
+087B 151F      00165         bsf     ADCON0, GO
+087C           00166 ADC_ConversionLoop              
+               00167         ;IFSET  ADCON0, NOT_DONE, goto ADC_ConversionLoop
+087C 191F      00168         btfsc   ADCON0, NOT_DONE
+087D 287C      00169         goto ADC_ConversionLoop
+               00170         
+087E 0C1E      00171         rrf     ADRESH, W
+087F 397F      00172         andlw   0x7f
+               00173 
+0880 0008      00174         return
+               00175         
+               00070 #include "adc.asm"
+               00071 
+               00072 ;; ==========================================================================
+               00073 ;;  Control the init LED
+               00074 ;; ==========================================================================
+               00075 
+  00000005     00076 InitLED EQU     5               ; The portc bit for initLED
+               00077         ; Set port C to output
+0881           00078 InitInit
+0881 1683          M         bsf     STATUS, RP0
+               00079         BANK1
+0882 1287      00080         bcf     TRISC, InitLED
+0883 0008      00081         return
+               00082 
+0884           00083 InitOn
+0884 1283          M         bcf     STATUS, RP0
+               00084         BANK0
+0885 1287      00085         bcf     PORTC, InitLED
+0886 0008      00086         return
+               00087 
+0887           00088 InitOff
+0887 1283          M         bcf     STATUS, RP0
+               00089         BANK0
+0888 1687      00090         bsf     PORTC, InitLED
+0889 0008      00091         return
+               00092 
+               00093 ;; ==========================================================================
+               00094 ;;  Check any new inputs on port b
+               00095 ;; ==========================================================================
+088A           00096 Portb_check
+088A 0806      00097         movf    PORTB, W
+088B 3901      00098         andlw   PORTB_init      ; take only the used pins
+gpasm-0.9.11 alpha              mixer.asm   8-25-2001  11:57:45          PAGE  7
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+088C 00C2      00099         movwf   PORTB_new_value ; save it temporarily
+               00100         ; Check if the value has changed from last time:
+Message [305] : Using default destination of 1 (file).
+088D 06C1      00101         xorwf   PORTB_curr_value
+088E 1D03 2893 00102         bnz     Portb_send
+0890 0842      00103         movf    PORTB_new_value, W
+0891 00C1      00104         movwf   PORTB_curr_value  ; restore the current value.
+0892 0008      00105         return
+               00106 
+0893           00107 Portb_send
+               00108         ; Save the new value:
+0893 0842      00109         movf    PORTB_new_value, W
+0894 00C1      00110         movwf   PORTB_curr_value
+               00111 
+               00112         ; Send it as a control change on 1
+0895 39FF      00113         andlw   B'11111111'
+0896 00A7      00114         movwf   SerByte2
+0897 3001      00115         movlw   1       ; midi channel
+0898 3EB0      00116         addlw   0xb0
+0899 00A5      00117         movwf   SerByte0
+089A 3001      00118         movlw   1       ; controller no.
+089B 00A6      00119         movwf   SerByte1
+089C 200F      00120         call    MIDIflushQueue
+089D 0008      00121         return
+               00122 
+               00123 ;; ==========================================================================
+               00124 ;;  Check any new inputs on port d
+               00125 ;; ==========================================================================
+089E           00126 Portd_check
+089E 0808      00127         movf    PORTD, W
+089F 39FF      00128         andlw   PORTD_init      ; take only the used pins
+08A0 00C4      00129         movwf   PORTD_new_value ; save it temporarily
+               00130         ; Check if the value has changed from last time:
+Message [305] : Using default destination of 1 (file).
+08A1 06C3      00131         xorwf   PORTD_curr_value
+08A2 1D03 28A7 00132         bnz     Portd_send
+08A4 0844      00133         movf    PORTD_new_value, W
+08A5 00C3      00134         movwf   PORTD_curr_value  ; restore the current value.
+08A6 0008      00135         return
+               00136 
+08A7           00137 Portd_send
+               00138         ; Save the new value:
+08A7 0844      00139         movf    PORTD_new_value, W
+08A8 00C3      00140         movwf   PORTD_curr_value
+               00141 
+               00142         ; Send it as a controller 3 change 
+               00143         ;andlw  B'01111111'     
+08A9 00A7      00144         movwf   SerByte2
+08AA 3001      00145         movlw   1       ; midi channel
+08AB 3EB0      00146         addlw   0xb0
+08AC 00A5      00147         movwf   SerByte0
+08AD 3003      00148         movlw   3       ; controller no.
+08AE 00A6      00149         movwf   SerByte1
+08AF 200F      00150         call    MIDIflushQueue
+gpasm-0.9.11 alpha              mixer.asm   8-25-2001  11:57:45          PAGE  8
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+08B0 0008      00151         return
+               00152 
+               00153 ; ======================================================
+               00154 ; Main program
+               00155 ; ======================================================
+08B1           00156 Start
+               00157         ; Switch on the init LED
+08B1 2081      00158         call    InitInit
+08B2 2084      00159         call    InitOn
+               00160 
+08B3 2016      00161         call    ADC_init
+08B4 2000      00162         call    MIDIinit
+               00163 
+               00164         ; Initialize port B
+08B5 0186      00165         clrf    PORTB   ; Set all pins to low.
+08B6 1683          M         bsf     STATUS, RP0
+               00166         BANK1
+08B7 3001      00167         movlw   PORTB_init
+08B8 0086      00168         movwf   TRISB
+               00169         ;bcf    OPTION_REG, NOT_RBPU    ; enable weak pull-ups
+08B9 1283          M         bcf     STATUS, RP0
+               00170         BANK0
+               00171 
+               00172         ; Initialize port D
+08BA 0188      00173         clrf    PORTD   ; Set all pins to low.
+08BB 1683          M         bsf     STATUS, RP0
+               00174         BANK1
+08BC 30FF      00175         movlw   PORTD_init
+08BD 0088      00176         movwf   TRISD
+08BE 1283          M         bcf     STATUS, RP0
+               00177         BANK0
+               00178         
+08BF           00179 Loop
+               00180         ; Check potmeters:
+08BF 201D      00181         call    ADC_check_0
+08C0 2024      00182         call    ADC_check_1
+08C1 202B      00183         call    ADC_check_2
+08C2 2032      00184         call    ADC_check_3
+08C3 2039      00185         call    ADC_check_4
+08C4 2040      00186         call    ADC_check_5
+08C5 2047      00187         call    ADC_check_6
+08C6 204E      00188         call    ADC_check_7
+               00189 
+               00190         ; Check contacts:
+08C7 208A      00191         call    Portb_check             
+08C8 209E      00192         call    Portd_check
+               00193         
+08C9 28BF      00194         goto Loop
+               00195 
+gpasm-0.9.11 alpha              mixer.asm   8-25-2001  11:57:45          PAGE  9
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+ACKDT                             00000005
+ACKEN                             00000004
+ACKSTAT                           00000006
+ADCON0                            0000001F
+ADCON1                            0000009F
+ADCS0                             00000006
+ADCS1                             00000007
+ADC_0                             00000029
+ADC_1                             00000030
+ADC_2                             00000031
+ADC_3                             00000032
+ADC_4                             00000033
+ADC_5                             00000034
+ADC_6                             00000035
+ADC_7                             00000036
+ADC_Conversion                    00000874
+ADC_ConversionLoop                0000087C
+ADC_DelayLoop                     00000879
+ADC_check_0                       0000081D
+ADC_check_1                       00000824
+ADC_check_2                       0000082B
+ADC_check_3                       00000832
+ADC_check_4                       00000839
+ADC_check_5                       00000840
+ADC_check_6                       00000847
+ADC_check_7                       0000084E
+ADC_checkchange                   00000855
+ADC_curr_no                       00000037
+ADC_curr_value                    00000038
+ADC_delaycount                    00000028
+ADC_forgetit                      00000871
+ADC_init                          00000816
+ADC_new_value                     00000039
+ADC_potvalue                      00000040
+ADC_send_value                    00000869
+ADDEN                             00000003
+ADFM                              00000007
+ADIE                              00000006
+ADIF                              00000006
+ADON                              00000000
+ADRESH                            0000001E
+ADRESL                            0000009E
+BCLIE                             00000003
+BCLIF                             00000003
+BF                                00000000
+BRGH                              00000002
+Baudrate                          00000009
+C                                 00000000
+CCP1CON                           00000017
+CCP1IE                            00000002
+CCP1IF                            00000002
+CCP1M0                            00000000
+CCP1M1                            00000001
+gpasm-0.9.11 alpha              mixer.asm   8-25-2001  11:57:45          PAGE 10
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+CCP1M2                            00000002
+CCP1M3                            00000003
+CCP1X                             00000005
+CCP1Y                             00000004
+CCP2CON                           0000001D
+CCP2IE                            00000000
+CCP2IF                            00000000
+CCP2M0                            00000000
+CCP2M1                            00000001
+CCP2M2                            00000002
+CCP2M3                            00000003
+CCP2X                             00000005
+CCP2Y                             00000004
+CCPR1H                            00000016
+CCPR1L                            00000015
+CCPR2H                            0000001C
+CCPR2L                            0000001B
+CHS0                              00000003
+CHS1                              00000004
+CHS2                              00000005
+CKE                               00000006
+CKP                               00000004
+CREN                              00000004
+CSRC                              00000007
+D                                 00000005
+DATA_ADDRESS                      00000005
+DC                                00000001
+D_A                               00000005
+Dataarea                          00000020
+EEADR                             0000010D
+EEADRH                            0000010F
+EECON1                            0000018C
+EECON2                            0000018D
+EEDATA                            0000010C
+EEDATH                            0000010E
+EEIE                              00000004
+EEIF                              00000004
+EEPGD                             00000007
+F                                 00000001
+FERR                              00000002
+FSR                               00000004
+GCEN                              00000007
+GIE                               00000007
+GO                                00000002
+GO_DONE                           00000002
+I2C_DATA                          00000005
+I2C_READ                          00000002
+I2C_START                         00000003
+I2C_STOP                          00000004
+IBF                               00000007
+IBOV                              00000005
+INDF                              00000000
+INTCON                            0000000B
+INTE                              00000004
+gpasm-0.9.11 alpha              mixer.asm   8-25-2001  11:57:45          PAGE 11
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+INTEDG                            00000006
+INTF                              00000001
+IRP                               00000007
+InitInit                          00000881
+InitLED                           00000005
+InitOff                           00000887
+InitOn                            00000884
+Loop                              000008BF
+MIDIflushQueue                    0000080F
+MIDIinit                          00000800
+MIDIsendbyte                      00000809
+MIDIwaitloop                      0000080B
+NOT_A                             00000005
+NOT_ADDRESS                       00000005
+NOT_BO                            00000000
+NOT_BOR                           00000000
+NOT_DONE                          00000002
+NOT_PD                            00000003
+NOT_POR                           00000001
+NOT_RBPU                          00000007
+NOT_RC8                           00000006
+NOT_T1SYNC                        00000002
+NOT_TO                            00000004
+NOT_TX8                           00000006
+NOT_W                             00000002
+NOT_WRITE                         00000002
+OBF                               00000006
+OERR                              00000001
+OPTION_REG                        00000081
+P                                 00000004
+PCFG0                             00000000
+PCFG1                             00000001
+PCFG2                             00000002
+PCFG3                             00000003
+PCL                               00000002
+PCLATH                            0000000A
+PCON                              0000008E
+PEIE                              00000006
+PEN                               00000002
+PIE1                              0000008C
+PIE2                              0000008D
+PIR1                              0000000C
+PIR2                              0000000D
+PORTA                             00000005
+PORTB                             00000006
+PORTB_curr_value                  00000041
+PORTB_init                        00000001
+PORTB_new_value                   00000042
+PORTC                             00000007
+PORTD                             00000008
+PORTD_curr_value                  00000043
+PORTD_init                        000000FF
+PORTD_new_value                   00000044
+PORTE                             00000009
+gpasm-0.9.11 alpha              mixer.asm   8-25-2001  11:57:45          PAGE 12
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+PR2                               00000092
+PS0                               00000000
+PS1                               00000001
+PS2                               00000002
+PSA                               00000003
+PSPIE                             00000007
+PSPIF                             00000007
+PSPMODE                           00000004
+Portb_check                       0000088A
+Portb_send                        00000893
+Portd_check                       0000089E
+Portd_send                        000008A7
+R                                 00000002
+RBIE                              00000003
+RBIF                              00000000
+RC8_9                             00000006
+RC9                               00000006
+RCD8                              00000000
+RCEN                              00000003
+RCIE                              00000005
+RCIF                              00000005
+RCREG                             0000001A
+RCSTA                             00000018
+RD                                00000000
+READ_WRITE                        00000002
+RP0                               00000005
+RP1                               00000006
+RSEN                              00000001
+RX9                               00000006
+RX9D                              00000000
+R_W                               00000002
+S                                 00000003
+SEN                               00000000
+SMP                               00000007
+SPBRG                             00000099
+SPEN                              00000007
+SREN                              00000005
+SSPADD                            00000093
+SSPBUF                            00000013
+SSPCON                            00000014
+SSPCON2                           00000091
+SSPEN                             00000005
+SSPIE                             00000003
+SSPIF                             00000003
+SSPM0                             00000000
+SSPM1                             00000001
+SSPM2                             00000002
+SSPM3                             00000003
+SSPOV                             00000006
+SSPSTAT                           00000094
+STATUS                            00000003
+SYNC                              00000004
+SerByte0                          00000025
+SerByte1                          00000026
+gpasm-0.9.11 alpha              mixer.asm   8-25-2001  11:57:45          PAGE 13
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+SerByte2                          00000027
+SerBytes                          00000024
+Start                             000008B1
+T0CS                              00000005
+T0IE                              00000005
+T0IF                              00000002
+T0SE                              00000004
+T1CKPS0                           00000004
+T1CKPS1                           00000005
+T1CON                             00000010
+T1INSYNC                          00000002
+T1OSCEN                           00000003
+T1SYNC                            00000002
+T2CKPS0                           00000000
+T2CKPS1                           00000001
+T2CON                             00000012
+TEMPQ                             00000020
+TMR0                              00000001
+TMR1CS                            00000001
+TMR1H                             0000000F
+TMR1IE                            00000000
+TMR1IF                            00000000
+TMR1L                             0000000E
+TMR1ON                            00000000
+TMR2                              00000011
+TMR2IE                            00000001
+TMR2IF                            00000001
+TMR2ON                            00000002
+TOUTPS0                           00000003
+TOUTPS1                           00000004
+TOUTPS2                           00000005
+TOUTPS3                           00000006
+TRISA                             00000085
+TRISB                             00000086
+TRISC                             00000087
+TRISD                             00000088
+TRISE                             00000089
+TRISE0                            00000000
+TRISE1                            00000001
+TRISE2                            00000002
+TRMT                              00000001
+TX8_9                             00000006
+TX9                               00000006
+TX9D                              00000000
+TXD8                              00000000
+TXEN                              00000005
+TXIE                              00000004
+TXIF                              00000004
+TXREG                             00000019
+TXSTA                             00000098
+UA                                00000001
+W                                 00000000
+WCOL                              00000007
+WR                                00000001
+gpasm-0.9.11 alpha              mixer.asm   8-25-2001  11:57:45          PAGE 14
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+WREN                              00000002
+WRERR                             00000003
+Z                                 00000002
+_BODEN_OFF                        00003FBF
+_BODEN_ON                         00003FFF
+_CPD_OFF                          00003FFF
+_CPD_ON                           00003EFF
+_CP_ALL                           00000FCF
+_CP_HALF                          00001FDF
+_CP_OFF                           00003FFF
+_CP_UPPER_256                     00002FEF
+_DEBUG_OFF                        00003FFF
+_DEBUG_ON                         000037FF
+_HS_OSC                           00003FFE
+_LP_OSC                           00003FFC
+_LVP_OFF                          00003F7F
+_LVP_ON                           00003FFF
+_PWRTE_OFF                        00003FFF
+_PWRTE_ON                         00003FF7
+_RC_OSC                           00003FFF
+_WDT_OFF                          00003FFB
+_WDT_ON                           00003FFF
+_WRT_ENABLE_OFF                   00003DFF
+_WRT_ENABLE_ON                    00003FFF
+_XT_OSC                           00003FFD
+__16F874                          00000001
+
+
+MEMORY USAGE MAP ('X' = Used,  '-' = Unused)
+
+0000 : XXX------------- ---------------- ---------------- ----------------
+0800 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+0840 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+0880 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+08c0 : XXXXXXXXXX------ ---------------- ---------------- ----------------
+
+All other memory blocks unused.
+
+Program Memory Words Used: 205
+
+
+Errors   :       0
+Warnings :       0 reported,       0 suppressed
+Messages :       2 reported,       0 suppressed
+
