@@ -1,6 +1,6 @@
 /* -*- C -*- */
 /*
- * Copyright (c) 1997-1999 Massachusetts Institute of Technology
+ * Copyright (c) 1997-1999, 2003 Massachusetts Institute of Technology
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,7 +19,7 @@
  */
 
 /* fftw.h -- system-wide definitions */
-/* $Id: fftw.h 363 2003-06-10 15:29:38Z tuehaste $ */
+/* $Id: fftw.h 408 2003-06-30 09:10:32Z tuehaste $ */
 
 #ifndef FFTW_H
 #define FFTW_H
@@ -36,7 +36,7 @@ extern "C" {
  * If you can, use configure --enable-float instead of changing this
  * flag directly 
  */
-/* #undef FFTW_ENABLE_FLOAT */
+#define FFTW_ENABLE_FLOAT
 
 /* our real numbers */
 #ifdef FFTW_ENABLE_FLOAT
@@ -51,7 +51,6 @@ typedef double fftw_real;
 typedef struct {
      fftw_real re, im;
 } fftw_complex;
-
 #define c_re(c)  ((c).re)
 #define c_im(c)  ((c).im)
 
