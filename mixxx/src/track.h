@@ -44,6 +44,9 @@ public:
     void readXML(QString location);
     /** Write content to XML file */
     void writeXML(QString location);
+    /** Get pointer to TrackCollection */
+    TrackCollection *getTrackCollection();
+
 public slots:
     /** Decode playlist drops to WTrackTable, and loads corresponding playlist */
     void slotDrop(QDropEvent *e);

@@ -113,18 +113,6 @@ void Track::readXML(QString location)
 
 void Track::writeXML(QString location)
 {
-
-/*
-    // First transfer information from the comment field from the table to the Track:
-    for (int iRow=0; iRow<m_pTableTracks->numRows(); iRow++)
-    {
-        if (m_pTableTracks->item(iRow, COL_INDEX))
-        {
-            m_lTracks.at( m_pTableTracks->item(iRow, COL_INDEX)->text().toUInt() )->setComment(m_pTableTracks->item(iRow, COL_COMMENT)->text());
-        }
-    }
-*/
-
     // Create the xml document:
     QDomDocument domXML( "Mixxx_Track_List" );
 
@@ -170,6 +158,11 @@ void Track::writeXML(QString location)
     Xml.setEncoding(QTextStream::Unicode);
     Xml << domXML.toString();
     opmlFile.close();
+}
+
+TrackCollection *Track::getTrackCollection()
+{
+    return m_pTrackCollection;
 }
 
 void Track::slotDrop(QDropEvent *e)

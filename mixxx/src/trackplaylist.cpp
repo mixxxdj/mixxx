@@ -15,10 +15,9 @@
 #include "xmlparse.h"
 #include "wtracktable.h"
 #include <qdragobject.h>
-#include <qfileinfo.h>
-#include <qdir.h>
 #include <qcstring.h>
-#include "defs.h"
+#include <qdir.h>
+
 
 TrackPlaylist::TrackPlaylist(TrackCollection *pTrackCollection, QString qName)
 {
@@ -83,27 +82,6 @@ void TrackPlaylist::addTrack(TrackInfoObject *pTrack)
 void TrackPlaylist::addTrack(QString qLocation)
 {
     TrackInfoObject *pTrack = m_pTrackCollection->getTrack(qLocation);
-    if (!pTrack)
-    {
-        QFileInfo file(qLocation);
-        if (file.exists())
-        {
-            pTrack = new TrackInfoObject(file.dirPath(), file.fileName());
-
-            // Add track to the collection
-            if (pTrack->parse() == OK)
-            {
-                m_pTrackCollection->addTrack(pTrack);
-                qDebug("Found new track: %s", pTrack->getFilename().latin1());
-            }
-            else
-            {
-                qWarning("Could not parse %s", file.fileName().latin1());
-                delete pTrack;
-                pTrack = 0;
-            }
-        }
-    }
 
     if (pTrack)
         addTrack(pTrack);
