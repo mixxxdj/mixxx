@@ -243,7 +243,7 @@ void TrackList::UpdateScores()
 */
 void TrackList::WriteXML()
 {
-    qDebug("Writing tracklist.xml, %d tracks", m_pTableTracks->numRows());
+    qDebug("Writing %stracklist.xml, %d tracks", m_sDirectory.latin1(),m_pTableTracks->numRows());
     // First transfer information from the comment field from the table to the Track:
     for (unsigned int iRow=0; iRow<m_pTableTracks->numRows(); iRow++)
     {
@@ -337,7 +337,7 @@ bool TrackList::AddFiles(const char *path)
                 if (ParseHeader(Track) == OK)
                 {
                     m_lTracks.append(Track);
-                    qDebug( "Found new track: %s", Track->m_sFilename.latin1() );
+//                    qDebug( "Found new track: %s", Track->m_sFilename.latin1() );
                     bFoundFiles = true;
                 } 
                 else
@@ -483,6 +483,9 @@ void TrackList::slotUpdateTracklist( QString sDir )
         delete m_lTracks.first();
         m_lTracks.removeFirst();
     }
+
+    // Delete contents of tabletrack
+    m_pTableTracks->setNumRows(0);
 
     // Set the new directory:
     m_sDirectory = sDir;
