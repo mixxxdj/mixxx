@@ -65,6 +65,7 @@ WTrackTable::WTrackTable(QWidget *parent, const char *name) : QTable(0, ROW_NO, 
     setHScrollBarMode(AlwaysOff);
 
     connect(this, SIGNAL(pressed(int, int, int, const QPoint &)), this, SLOT(slotMousePressed(int, int, int, const QPoint &)));
+    connect(this, SIGNAL(clicked(int, int, int, const QPoint &)), this, SLOT(slotMouseClicked(int, int, int, const QPoint &)));
 }
 
 
@@ -154,9 +155,21 @@ void WTrackTable::sortColumn(int col, bool ascending, bool)
 
 void WTrackTable::slotMousePressed(int row, int col, int button, const QPoint &)
 {
-//    QTable::slotMousePressed(row, col, button, p);
-    
     if (col!=COL_COMMENT && button==Qt::RightButton)
+    {
+        WTrackTableItem *p = (WTrackTableItem *)item(row,col);
+        if (p)
+        {
+            TrackInfoObject *pTrackInfoObject = p->getTrackInfoObject();
+            if (pTrackInfoObject)
+                emit(mousePressed(pTrackInfoObject, button));
+        }
+    }
+}
+
+void WTrackTable::slotMouseClicked(int row, int col, int button, const QPoint &)
+{
+    if (col!=COL_COMMENT)
     {
         WTrackTableItem *p = (WTrackTableItem *)item(row,col);
         if (p)
