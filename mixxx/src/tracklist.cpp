@@ -292,12 +292,17 @@ bool TrackList::addFiles(const char *path)
     else
     {
         dir.setFilter(QDir::Dirs);
+        if (dir.entryInfoList()==0)
+            return bFoundFiles;
+
         const QFileInfoList dir_list = *dir.entryInfoList();
+
+
         QFileInfoListIterator dir_it(dir_list);
         QFileInfo *d;
-        while ((d=dir_it.current()))
+        while (d=dir_it.current())
         {
-        if (!d->filePath().endsWith(".") && !d->filePath().endsWith(".."))
+            if (!d->filePath().endsWith(".") && !d->filePath().endsWith(".."))
             {
                 if (addFiles(d->filePath()))
                     bFoundFiles = true;
