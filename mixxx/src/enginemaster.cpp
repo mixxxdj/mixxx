@@ -18,7 +18,7 @@
 #include "enginemaster.h"
 #include "configobject.h"
 #include <wslider.h>
-#include <qcheckbox.h>
+#include <wpflbutton.h>
 
 EngineMaster::EngineMaster(DlgMaster *master_dlg, DlgCrossfader *crossfader_dlg,
                            DlgChannel *channel1_dlg, DlgChannel *channel2_dlg,
@@ -59,8 +59,8 @@ EngineMaster::EngineMaster(DlgMaster *master_dlg, DlgCrossfader *crossfader_dlg,
     head_clipping = new EngineClipping(0);
 
     // Channel 1 and 2 head
-    connect(channel1_dlg->CheckBoxHead, SIGNAL(stateChanged(int)), this, SLOT(slotChannelHead1(int)));
-    connect(channel2_dlg->CheckBoxHead, SIGNAL(stateChanged(int)), this, SLOT(slotChannelHead2(int)));
+    connect(channel1_dlg->CheckBoxPFL, SIGNAL(stateChanged(int)), this, SLOT(slotChannelHead1(int)));
+    connect(channel2_dlg->CheckBoxPFL, SIGNAL(stateChanged(int)), this, SLOT(slotChannelHead2(int)));
     head1=false;
     head2=false;
 

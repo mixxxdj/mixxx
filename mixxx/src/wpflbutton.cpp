@@ -1,9 +1,9 @@
 /***************************************************************************
-                          dlgchannel.cpp  -  description
+                          wpflbutton.cpp  -  description
                              -------------------
-    begin                : Wed Feb 20 2002
-    copyright            : (C) 2002 by Tue and Ken Haste Andersen
-    email                : 
+    begin                : Sun Nov 17 2002
+    copyright            : (C) 2002 by Tue & Ken Haste Andersen
+    email                : haste@diku.dk
  ***************************************************************************/
 
 /***************************************************************************
@@ -15,31 +15,54 @@
  *                                                                         *
  ***************************************************************************/
 
-#include "dlgchannel.h"
-#include <qgroupbox.h>
 #include "wpflbutton.h"
-#include <qlabel.h>
-#include <qnamespace.h>
 
-DlgChannel::DlgChannel(QWidget *parent, const char *name ) : DlgChannelDlg(parent,name)
+#include "images/pfl-on.xpm"
+#include "images/pfl-off.xpm"
+
+// Static member variable definition
+QPixmap *WPFLButton::buttonUp    = 0;
+QPixmap *WPFLButton::buttonDown  = 0;
+
+WPFLButton::WPFLButton(QWidget *parent, const char *name ) : QCheckBox(parent,name)
 {
+    if (buttonUp == 0)
+    {
+        buttonUp    = new QPixmap(pfl_off_xpm);
+        buttonDown  = new QPixmap(pfl_on_xpm);
+    }
 }
 
-DlgChannel::~DlgChannel()
+WPFLButton::~WPFLButton()
 {
+    delete buttonUp;
+    delete buttonDown;
 }
 
-void DlgChannel::layoutMirror()
+void WPFLButton::drawButton(QPainter *p)
 {
-    // Mirror volume and knobs positions
-    QPoint knobpos = GroupBoxKnobs->pos();
-    GroupBoxKnobs->move(GroupBoxVolume->pos());
-    GroupBoxVolume->move(knobpos);
-    CheckBoxPFL->move(43,CheckBoxPFL->y());
-    TextLabelPFL->move(4,TextLabelPFL->y());
-    TextLabelPFL->setAlignment(Qt::AlignRight|Qt::AlignVCenter);
-    
+    if (isOn())
+        p->drawPixmap(0,0,*buttonDown);
+    else
+        p->drawPixmap(0,0,*buttonUp);
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
