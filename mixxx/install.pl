@@ -6,7 +6,9 @@
 # August 2003, Tue Haste Andersen <haste@diku.dk>
 #
 
-$BASE='/home/haste/m/usr'; 
+# If you change the base install dir, you have to make changes to
+# src/mixxx.pro and recompile first
+$BASE='/usr'; 
 
 # Check if this is running on Linux
 $_ = `uname`;
