@@ -92,7 +92,7 @@ MixxxApp::MixxxApp(QApplication *a, QStringList files)
     qDebug("Starting up...");
     setCaption(tr("Mixxx " VERSION));
 #ifndef __MACX__
-//    setIcon(QPixmap::fromMimeSource("icon.png"));
+    setIcon(QPixmap::fromMimeSource("icon.png"));
 #endif
 
     // Reset pointer to players
