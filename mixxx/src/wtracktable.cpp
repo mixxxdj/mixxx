@@ -139,8 +139,12 @@ void WTrackTable::slotMousePressed(int row, int col, int button, const QPoint &)
     if (col!=COL_COMMENT && button==Qt::RightButton)
     {
         WTrackTableItem *p = (WTrackTableItem *)item(row,col);
-        TrackInfoObject *pTrackInfoObject = p->getTrackInfoObject();
-        emit(mousePressed(pTrackInfoObject, button));
+        if (p)
+        {
+            TrackInfoObject *pTrackInfoObject = p->getTrackInfoObject();
+            if (pTrackInfoObject)
+                emit(mousePressed(pTrackInfoObject, button));
+        }
     }
 }
 
