@@ -29,6 +29,9 @@
 #ifdef __ASIO__
     #include "playerasio.h"
 #endif
+#ifdef __ALSA__
+    #include "playeralsa.h"
+#endif
 
 Player *PlayerProxy::m_pPlayer = 0;
 
@@ -120,7 +123,10 @@ QStringList PlayerProxy::getSoundApiList()
 #ifdef __ASIO__
     result.append(PlayerAsio::getSoundApi());
 #endif
-
+#ifdef __ALSA__
+        result.append(PlayerALSA::getSoundApi());
+#endif
+	
     return result;
 }
 
@@ -148,6 +154,11 @@ bool PlayerProxy::setSoundApi(QString name)
 #ifdef __ASIO__
     if (name == PlayerAsio::getSoundApi())
         m_pPlayer = new PlayerAsio(m_pConfig, m_pControl);
+#endif
+
+#ifdef __ALSA__
+    if (name == PlayerALSA::getSoundApi())
+        m_pPlayer = new PlayerALSA(m_pConfig, m_pControl);
 #endif
 
     // Try initializing the selected API
