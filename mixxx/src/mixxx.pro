@@ -1,4 +1,15 @@
 #
+# Qmake file for Mixxx.
+#
+# (C) 2002-2003 Tue Haste Andersen <haste@diku.dk>
+#
+# Unix dependency code and configure script by Gianluca Romanin. See included
+# files for copyright details.
+#
+
+
+
+#
 # Options, and path to libraries
 #
 
@@ -9,6 +20,9 @@ WINPA = DIRECTSOUND
 # Use this definition on Linux if Mixxx should be statically linked with libmad,
 # libid3tag, fftw, ogg, vorbis and audiofile
 #unix:LINLIBPATH = ../../mixxx-linlib
+
+# Include for unix dependencies. (19/12/2003, J_Zar)
+include( mixxx.depend )
 
 # Path to Macintosh libraries
 macx:MACLIBPATH = ../../mixxx-maclib
@@ -56,20 +70,21 @@ win32 {
     }
 }
 
-unix {
-    # Check if we can link against libjack:
-    system(ld -ljack 2> /dev/null):HAS_JACK=FALSE
-    count(HAS_JACK,1) {
-        DEFINES += __JACK__
-        SOURCES += playerjack.cpp
-        HEADERS += playerjack.h
-        LIBS += -ljack
-        message("Compiling with Jack support")
-    }
-    isEmpty(HAS_JACK) {
-        message("Did not find Jack libraries.")
-    }
-}
+# DEPRECATED!     ( 19/12/2003, J_Zar)
+# unix {
+#     # Check if we can link against libjack:
+#     system(ld -ljack 2> /dev/null):HAS_JACK=FALSE
+#     count(HAS_JACK,1) {
+#         DEFINES += __JACK__
+#         SOURCES += playerjack.cpp
+#         HEADERS += playerjack.h
+#         LIBS += -ljack
+#         message("Compiling with Jack support")
+#     }
+#     isEmpty(HAS_JACK) {
+#         message("Did not find Jack libraries.")
+#     }
+# }
 
 # OSS Midi (Working good, Linux specific)
 unix:!macx:SOURCES += midiobjectoss.cpp
@@ -106,8 +121,9 @@ CONFIG += opengl
 # MP3
 count(LINLIBPATH, 1) {
     unix:!macx:LIBS += $$LINLIBPATH/libs/libmad.a $$LINLIBPATH/libs/libid3tag.a
-} else {
-    unix:!macx:LIBS += -lmad -lid3tag
+# DEPRECATED!     ( 19/12/2003, J_Zar)
+# } else {
+#     unix:!macx:LIBS += -lmad -lid3tag
 }
 win32:LIBS += libmad-release.lib libid3tag-release.lib
 macx:LIBS += $$MACLIBPATH/lib/libmad.a $$MACLIBPATH/lib/libid3tag.a
@@ -122,19 +138,22 @@ unix:SOURCES += soundsourceaudiofile.cpp
 unix:HEADERS += soundsourceaudiofile.h
 count(LINLIBPATH, 1) {
     unix:!macx:LIBS += $$LINLIBPATH/libs/libaudiofile.a
-} else {
-    unix:!macx:LIBS += -laudiofile
+# DEPRECATED!     ( 19/12/2003, J_Zar)
+# } else {
+#     unix:!macx:LIBS += -laudiofile
 }
 win32:SOURCES += soundsourcesndfile.cpp
 win32:HEADERS += soundsourcesndfile.h
 win32:LIBS += libsndfile.lib
 macx:LIBS += $$MACLIBPATH/lib/libaudiofile.a
 
+
 # Ogg Vorbis
 count(LINLIBPATH, 1) {
     unix:!macx:LIBS += $$LINLIBPATH/libs/libvorbisfile.a $$LINLIBPATH/libs/libvorbis.a $$LINLIBPATH/libs/libogg.a
-} else {
-    unix:!macx:LIBS += -lvorbisfile -lvorbis -logg
+# DEPRECATED!     ( 19/12/2003, J_Zar)
+# } else {
+#     unix:!macx:LIBS += -lvorbisfile -lvorbis -logg
 }
 win32:LIBS += vorbisfile_static.lib vorbis_static.lib ogg_static.lib
 macx:LIBS += $$MACLIBPATH/lib/libvorbis.a $$MACLIBPATH/lib/libvorbisfile.a $$MACLIBPATH/lib/libogg.a
@@ -154,11 +173,13 @@ HEADERS += joystick.h
 unix:!macx:SOURCES += joysticklinux.cpp
 unix:!macx:HEADERS += joysticklinux.h
 
+
 # FFT
-count(LINLIBPATH, 1) {
-    unix:!macx:LIBS += $$LINLIBPATH/libs/libsrfftw.a $$LINLIBPATH/libs/libsfftw.a
-} else {
-    unix:!macx:LIBS += -lsrfftw -lsfftw
+ count(LINLIBPATH, 1) {
+     unix:!macx:LIBS += $$LINLIBPATH/libs/libsrfftw.a $$LINLIBPATH/libs/libsfftw.a
+# DEPRECATED!     ( 19/12/2003, J_Zar)
+#  } else {
+#     unix:!macx:LIBS += -lsrfftw -lsfftw
 }
 win32:LIBS += rfftw2st-release.lib fftw2st-release.lib
 macx:LIBS += $$MACLIBPATH/lib/librfftw.a $$MACLIBPATH/lib/libfftw.a
@@ -189,7 +210,16 @@ unix:!macx {
 #    QMAKE_LFLAGS_DEBUG += -qp -g
   }
 
-  DEFINES += UNIX_SHARE_PATH=\"/usr/share/mixxx\"
+  # if PREFIX is defined by the user, we use it! ( 19/12/2003, J_Zar)
+  !isEmpty( PREFIX ) {
+  	  UNIX_SHARE_PATH = $${PREFIX}/mixxx
+	  # dont know exactly why, but adopting the old solutions...
+	  DEFINES += UNIX_SHARE_PATH
+  } else {
+  		UNIX_SHARE_PATH = /usr/share/mixxx
+  		DEFINES += UNIX_SHARE_PATH
+	}
+
   SETTINGS_FILE = \".mixxx.cfg\"
   TRACK_FILE = \".mixxxtrack.xml\"
   DEFINES += __LINUX__
@@ -243,15 +273,15 @@ macx {
 unix {
 
     # skins... (copy all)
-   skins.path = /usr/share/mixxx/skins
+   skins.path = $${UNIX_SHARE_PATH}/skins
    skins.files = skins/*
 
     # midi conf... (copy all)
-   midi.path = /usr/share/mixxx/midi
+   midi.path = $${UNIX_SHARE_PATH}/midi
    midi.files = midi/*
 
     # keyboard conf... (copy all)
-   keyb.path = /usr/share/mixxx/keyboard
+   keyb.path = $${UNIX_SHARE_PATH}/keyboard
    keyb.files = keyboard/*
 
     # doc files...
