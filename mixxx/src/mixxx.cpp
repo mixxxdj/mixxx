@@ -44,6 +44,8 @@
 #include "soundbuffer.h"
 #include "controlengine.h"
 #include "controlenginequeue.h"
+#include "controlpotmeter.h"
+#include "reader.h"
 
 #ifdef __ALSA__
   #include "playeralsa.h"
@@ -174,7 +176,6 @@ MixxxApp::MixxxApp(QApplication *a)
   qDebug("Path = %s",pathPtr);
   
   config->set(ConfigKey("[Midi]","Configdir"),ConfigValue(QString(pathPtr).append(QString("/").append(CONFIG_PATH))));
-
 #endif
 
   // If the directory does not end with a "/", add one
@@ -217,7 +218,7 @@ MixxxApp::MixxxApp(QApplication *a)
 #ifdef __ALSA__
   player = new PlayerALSA(BUFFER_SIZE, &engines, config->getValueString(ConfigKey("[Soundcard]","DeviceMaster")));
 #else
-  player = new PlayerPortAudio(config,queue);
+  player = new PlayerPortAudio(config,queue,app);
 #endif
 
   // Open device using config data, if that fails, use default values. If that fails too, the
@@ -280,26 +281,24 @@ bool MixxxApp::eventFilter(QObject *o, QEvent *e)
 void MixxxApp::engineStart()
 {
     qDebug("starting engine...");
+
+    // Init buffers/readers
+    buffer1 = new EngineBuffer(this, view->playcontrol1, "[Channel1]");
+    buffer2 = new EngineBuffer(this, view->playcontrol2, "[Channel2]");
+
+    // Set track information in reader
     if (view->playlist->ListPlaylist->firstChild() != 0)
     {
-        //qDebug("Init buffer 1... %s", view->playlist->ListPlaylist->firstChild()->text(1).ascii());
-        buffer1 = new EngineBuffer(this, view->playcontrol1, "[Channel1]",
-                                   view->playlist->ListPlaylist->firstChild()->text(1));
+        buffer1->getReader()->requestNewTrack(view->playlist->ListPlaylist->firstChild()->text(1));
+        slotSetTitle(view->playlist->ListPlaylist->firstChild()->text(1), view->playcontrol1);
 
         if (view->playlist->ListPlaylist->firstChild()->nextSibling() != 0)
         {
-            //qDebug("Init buffer 2... %s", view->playlist->ListPlaylist->firstChild()->nextSibling()->text(1).ascii());
-            buffer2 = new EngineBuffer(this, view->playcontrol2, "[Channel2]",
-                                       view->playlist->ListPlaylist->firstChild()->nextSibling()->text(1));
-        } else
-            buffer2 = new EngineBuffer(this, view->playcontrol2, "[Channel2]", 0);
+            buffer2->getReader()->requestNewTrack(view->playlist->ListPlaylist->firstChild()->nextSibling()->text(1));
+            slotSetTitle(view->playlist->ListPlaylist->firstChild()->nextSibling()->text(1), view->playcontrol2);
+        }
     }
-    else
-    {
-        buffer1 = new EngineBuffer(this, view->playcontrol1, "[Channel1]", 0);
-        buffer2 = new EngineBuffer(this, view->playcontrol2, "[Channel2]", 0);
-    }
-
+    
     // Starting channels:
     channel1 = new EngineChannel(view->channel1, "[Channel1]");
     channel2 = new EngineChannel(view->channel2, "[Channel2]");
@@ -319,8 +318,8 @@ void MixxxApp::engineStart()
 //    master->slotChannelMaster2(optionsRight->isOn());
 
     //qDebug("Starting buffers...");
-    buffer1->start();
-    buffer2->start();
+//    buffer1->start();
+//    buffer2->start();
 
     // Start audio
     //qDebug("Starting player...");
@@ -525,8 +524,8 @@ void MixxxApp::initView()
   // Set visual vidget here
   visual = 0;
 #ifdef __VISUALS__
-//  visual = new MixxxVisual();
-//  visual->show();
+  visual = new MixxxVisual(app);
+  visual->show();
 #endif
 }
 
@@ -740,13 +739,33 @@ void MixxxApp::slotHelpAbout()
 
 void MixxxApp::slotChangePlay_1()
 {
-    buffer1->newtrack(selection.ascii());
+    buffer1->getReader()->requestNewTrack(selection);
+    slotSetTitle(selection, view->playcontrol1);
 }
 
 void MixxxApp::slotChangePlay_2()
 {
-    buffer2->newtrack(selection.ascii());
+    buffer2->getReader()->requestNewTrack(selection);
+    slotSetTitle(selection, view->playcontrol2);
 }
+
+void MixxxApp::slotSetTitle(QString filename, DlgPlaycontrol *dlg)
+{
+    //
+    // Update info panel in playcontrol dialog
+    //
+    QString title = filename;
+    title = title.section('/',-1);                // Prune path from filename:
+    title = title.section('.',0,-2);              // Prune last ending from filename:
+    title = QString("Title : ") + title + "\n\n"; // Finish the title string:
+//    int seconds = file->length()/(2*file_srate);
+//    QString tmp;
+//    tmp.sprintf("Length : %02d:%02d\n\n", seconds/60, seconds - 60*(seconds/60));
+//    title += tmp;
+//    title += "Type  : " + file->type;
+    dlg->textLabelTrack->setText(title);
+}
+
 
 void MixxxApp::slotSelectPlay(QListViewItem *item, const QPoint &pos, int)
 {

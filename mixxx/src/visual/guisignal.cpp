@@ -48,10 +48,10 @@ GUISignal::GUISignal(SignalVertexBuffer *_buffer, FastVertexArray *vertex, const
   playPosMarkerMaterial = 0;
 
   sliderFishEyeSignalFraction = new ControlPotmeter(ConfigKey(group,"FishEyeSignalFraction"),0.001,0.5);
-  connect(sliderFishEyeSignalFraction, SIGNAL(valueChanged(FLOAT_TYPE)), this, SLOT(setFishEyeSignalFraction(FLOAT_TYPE)));
+//  connect(sliderFishEyeSignalFraction, SIGNAL(valueChanged(FLOAT_TYPE)), this, SLOT(setFishEyeSignalFraction(FLOAT_TYPE)));
 
   sliderFishEyeLengthScale = new ControlPotmeter(ConfigKey(group,"FishEyeLengthScale"),0.05,0.95);
-  connect(sliderFishEyeLengthScale, SIGNAL(valueChanged(FLOAT_TYPE)), this, SLOT(setFishEyeLengthScale(FLOAT_TYPE)));
+//  connect(sliderFishEyeLengthScale, SIGNAL(valueChanged(FLOAT_TYPE)), this, SLOT(setFishEyeLengthScale(FLOAT_TYPE)));
 };
 
 

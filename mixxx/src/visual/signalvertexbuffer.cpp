@@ -18,6 +18,7 @@
 #include "signalvertexbuffer.h"
 #include "../enginebuffer.h"
 #include "../soundbuffer.h"
+#include "../soundbufferevent.h"
 #include "fastvertexarray.h"
 
 /**
@@ -44,8 +45,10 @@ SignalVertexBuffer::SignalVertexBuffer(EngineBuffer *_enginebuffer, FastVertexAr
         *p++ = (float)i;
         *p++ = 0.; //(float)cos((i/(1.0f*len))*6.28*5+1.5707963267);
         *p++ = 0.;
-    }   
-};
+    }
+
+    installEventFilter(this);   
+}
 
 /**
  * Deconstructor.
@@ -54,16 +57,35 @@ SignalVertexBuffer::~SignalVertexBuffer()
 {
 };
 
+bool SignalVertexBuffer::eventFilter(QObject *o, QEvent *e)
+{
+    //qDebug("SignalVertexBuffer: event");
+
+    // If a user events are received, update containers
+    if (e->type() == (QEvent::Type)10002)
+    {
+        SoundBufferEvent *sbe = (SoundBufferEvent *)e;
+
+        update(sbe->pos(), sbe->len());
+    }
+    else
+    {
+        // standard event processing
+        return QObject::eventFilter(o,e);
+    }
+    return TRUE;
+}
+
 /**
  * Updates buffer.
  *
  * Input: playpos - Play position relative to the vertex buffer
  *
  */ 
-void SignalVertexBuffer::update()
+void SignalVertexBuffer::update(int pos, int len)
 {
-    int pos = soundbuffer->visualPos;
-    int len = soundbuffer->visualLen;
+//    soundbuffer->lockBuffer();
+    
     CSAMPLE *source = soundbuffer->read_buffer+pos;
 
     GLfloat resampleFactor = (GLfloat)READCHUNKSIZE/(GLfloat)vertex->getChunkSize();
@@ -79,6 +101,8 @@ void SignalVertexBuffer::update()
         *dest++ = val/resampleFactor;
         *dest++;
     }
+    
+//    soundbuffer->unlockBuffer();
 }
 
 /**

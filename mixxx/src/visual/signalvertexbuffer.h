@@ -19,7 +19,7 @@
 #define SIGNALVERTEXBUFFER_H
 
 /** Display rate in Hz. This relates to the display resolution */
-const int DISPLAYRATE = 200;
+const int DISPLAYRATE = 20;
 
 /**
  * A Signal Vertex Array Buffer.
@@ -53,8 +53,8 @@ class SignalVertexBuffer : public QObject
 public:
     SignalVertexBuffer(EngineBuffer *engineBuffer, FastVertexArray *vertex);
     virtual ~SignalVertexBuffer();
-
-    void update();
+    bool eventFilter(QObject *o, QEvent *e);
+    
     bufInfo getVertexArray();
     int getBufferLength();
     int getDisplayLength();
@@ -63,6 +63,8 @@ public:
     GLfloat *buffer;
 
 private:
+    /** Update and resample signal vertex buffer */
+    void update(int len, int pos);
     /** The total number of samples in the buffer. */
     int len;
     /** Resample factor. An even integer determining the factor to reduce the incomming signal with */

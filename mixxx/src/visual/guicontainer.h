@@ -63,7 +63,6 @@ public:
     void setZoompos(float x, float y, float z);
     void zoom();
     void move(int msec);
-    void update();
 private:
     void setupScene();
     void zoom(float ox, float oy, float oz, float length, float height, float width);

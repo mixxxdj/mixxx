@@ -23,9 +23,10 @@
 #include "soundsource.h"
 #include "enginepreprocess.h"
 #include "windowkaiser.h"
-#include <qthread.h>
 #include <qevent.h>
-#include <qobject.h>
+#include <qmutex.h>
+
+class SignalVertexBuffer;
 
 /**
   *@author Tue & Ken Haste Andersen
@@ -33,15 +34,15 @@
 
 class SoundBuffer {
 public: 
-    SoundBuffer(int _chunkSize, int _chunkNo, int windowSize, int _stepSize);
+    SoundBuffer(QMutex *_enginelock, int _chunkSize, int _chunkNo, int windowSize, int _stepSize);
     ~SoundBuffer();
     void setSoundSource(SoundSource *_file);
+    void setSignalVertexBuffer(SignalVertexBuffer *_signalVertexBuffer);
     void getchunk(CSAMPLE rate);
-    void reset(double new_playpos);
+    /** Seek to a new play position. Returns positon actually seeked to */
+    long int seek(long int new_playpos);
     CSAMPLE *getChunkPtr(int chunkIdx);
     CSAMPLE *getWindowPtr(int windowIdx);
-    double getFileposStart();
-    double getFileposEnd();
     /** Return sample rate of buffer */
     int getRate();
     /** Return size of samples read at each update signal (USER:1001) */
@@ -50,24 +51,29 @@ public:
     /** The buffer where the samples are read into */
     CSAMPLE *read_buffer;
 
-    int visualPos, visualLen;
+    /** The first read sample in the file, currently in read_buffer. This should only be
+      * accessed while holding the enginelock from the reader class. */
+    long int filepos_start;
+    /** The last read sample in the file, currently in read_buffer. This should only be
+      * accessed while holding the enginelock from the reader class. */
+    long int filepos_end;
 
 private:
-
+    /** Pointer to enginelock mutex in the Reader class */
+    QMutex *enginelock;
+    
     SAMPLE *temp;
 
-    /** The first read sample in the file, currently in read_buffer. */
-    Monitor filepos_start;
-    /** The last read sample in the file, currently in read_buffer. */
-    Monitor filepos_end;
     /** Buffer start and end position */
     int bufferpos_start, bufferpos_end;
+    /** Pointer to SignalVertexBuffer associated with this buffer */
+    SignalVertexBuffer *signalVertexBuffer;
+
     /** Pointer to window and windowed samples of signal */
     WindowKaiser *window;
     CSAMPLE *windowedSamples;
     /** Pointer to pre-processing object */
     EnginePreProcess *preprocess;
-
 
     SoundSource *file;
     int chunkSize;

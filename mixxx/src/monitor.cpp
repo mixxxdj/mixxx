@@ -33,6 +33,21 @@ Monitor::~Monitor()
 
 double Monitor::read()
 {
+    mutex.lock();
+    double temp = value;
+    mutex.unlock();
+    return temp;
+}
+
+void Monitor::write(double v)
+{
+    mutex.lock();
+    value = v;
+    mutex.unlock();
+}
+
+double Monitor::tryRead()
+{
     double temp;
     if (mutex.tryLock())
     {
@@ -44,7 +59,7 @@ double Monitor::read()
     return temp;
 }
 
-void Monitor::write(double v)
+void Monitor::tryWrite(double v)
 {
     if (mutex.tryLock())
     {

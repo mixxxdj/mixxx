@@ -31,6 +31,9 @@ public:
     ~Monitor();
     double read();
     void write(double);
+    double tryRead();
+    void tryWrite(double);
+
 //    void add(double);
 //    void sub(double);
 private:

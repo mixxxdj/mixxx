@@ -17,11 +17,9 @@
 
 #ifndef PICKABLE_H
 #define PICKABLE_H
-#if defined(WIN32)
-#include <windows.h>
-#endif
+
+#include <qgl.h>
 #include "visualobject.h"
-#include <GL/gl.h>
 
 /**
  * A Picable Visual Object.

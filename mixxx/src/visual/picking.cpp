@@ -16,11 +16,6 @@
  ***************************************************************************/
 
 #include "picking.h"
-#ifdef _WIN32_
-#include <windows.h>
-#endif
-#include <GL/gl.h>
-#include <GL/glu.h>
 #include "visualcontroller.h"
 
 /**
@@ -28,6 +23,7 @@
  */
 Picking::Picking()
 {
+    controller = 0;
 }
 
 void Picking::init(VisualController * controller)
@@ -108,36 +104,39 @@ GLuint Picking::inFront(GLint hits, GLuint buffer[])
  *
  * @return     An unique index, representing the picked object.
  */
-int Picking::pick(int x,int y){
+int Picking::pick(int x,int y)
+{
 //  GLenum error = glGetError();
 //  const GLubyte* errmsg = gluErrorString(error);
-      
-  glGetIntegerv(GL_VIEWPORT, viewport);
-  
-  glSelectBuffer(BUFSIZE, selectBuf);
-  glRenderMode(GL_SELECT);
-  glInitNames();
-  glPushName((unsigned)0);
-  glMatrixMode(GL_PROJECTION);
-  glPushMatrix();
-  glLoadIdentity();
-  /*  create 5x5 pixel picking region near cursor location    */
-  gluPickMatrix((GLdouble) x, (GLdouble) (viewport[3] - y), 5.0, 5.0, viewport);    
-  gluPerspective(controller->fov,controller->aspect,controller->znear,controller->zfar);
-  glMatrixMode(GL_MODELVIEW);
-  glLoadIdentity();
-  gluLookAt(
-	  controller->eyex,controller->eyey,controller->eyez,
-	  controller->centerx,controller->centery,controller->centerz,
-	  controller->upx,controller->upy,controller->upz
-	);
-  controller->drawScene(GL_SELECT);  
-  glFlush();
-  glMatrixMode(GL_PROJECTION);
-  glPopMatrix();
-  hits = glRenderMode(GL_RENDER);
 
-  int  picked = inFront(hits,selectBuf);
-  return picked;
+    int picked = 0;  
+    if (controller != 0)
+    {
+        glGetIntegerv(GL_VIEWPORT, viewport);
+  
+        glSelectBuffer(BUFSIZE, selectBuf);
+        glRenderMode(GL_SELECT);
+        glInitNames();
+        glPushName((unsigned)0);
+        glMatrixMode(GL_PROJECTION);
+        glPushMatrix();
+        glLoadIdentity();
+        /*  create 5x5 pixel picking region near cursor location    */
+        gluPickMatrix((GLdouble) x, (GLdouble) (viewport[3] - y), 5.0, 5.0, viewport);    
+        gluPerspective(controller->fov,controller->aspect,controller->znear,controller->zfar);
+        glMatrixMode(GL_MODELVIEW);
+        glLoadIdentity();
+        gluLookAt(controller->eyex,controller->eyey,controller->eyez,
+                  controller->centerx,controller->centery,controller->centerz,
+                  controller->upx,controller->upy,controller->upz);
+        controller->drawScene(GL_SELECT);  
+        glFlush();
+        glMatrixMode(GL_PROJECTION);
+        glPopMatrix();
+        hits = glRenderMode(GL_RENDER);
+
+        picked = inFront(hits,selectBuf);
+    }
+    return picked;
 };
 

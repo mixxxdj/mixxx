@@ -35,7 +35,7 @@ class ControlObject : public QObject
 {
   Q_OBJECT
 public:
-  ControlObject() {};
+  ControlObject();
   ControlObject(ConfigKey key);
   ~ControlObject();
   

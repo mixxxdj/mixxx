@@ -17,10 +17,8 @@
 
 #ifndef PICKING_H
 #define PICKING_H
-#if defined(WIN32)
-#include <windows.h>
-#endif
-#include <GL/gl.h>
+
+#include <qgl.h>
 
 /**
  * Forward Declaration.

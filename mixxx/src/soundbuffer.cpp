@@ -16,9 +16,14 @@
  ***************************************************************************/
 
 #include "soundbuffer.h"
+#include "soundbufferevent.h"
+#include "visual/signalvertexbuffer.h"
+#include <qapplication.h>
 
-SoundBuffer::SoundBuffer(int _chunkSize, int _chunkNo, int windowSize, int _stepSize)
+SoundBuffer::SoundBuffer(QMutex *_enginelock, int _chunkSize, int _chunkNo, int windowSize, int _stepSize)
 {
+    enginelock = _enginelock;
+
     // Setup variables for block based analysis
     chunkSize = _chunkSize;
     chunkNo = _chunkNo;
@@ -45,10 +50,14 @@ SoundBuffer::SoundBuffer(int _chunkSize, int _chunkNo, int windowSize, int _step
     preprocess = new EnginePreProcess(this, windowNo, window);
         
     // Initialize position in read buffer
-    filepos_start.write(0.);
-    filepos_end.write(0.);
+    enginelock->lock();
+    filepos_start = 0;
+    filepos_end = 0;
+    enginelock->unlock();
     bufferpos_start = 0;
     bufferpos_end = 0;
+
+    signalVertexBuffer = 0;
 }
 
 SoundBuffer::~SoundBuffer()
@@ -64,10 +73,17 @@ void SoundBuffer::setSoundSource(SoundSource *_file)
     file = _file;
 
     // Initialize position in read buffer
-    filepos_start.write(0.);
-    filepos_end.write(0.);
+    enginelock->lock();
+    filepos_start = 0;
+    filepos_end = 0;
+    enginelock->unlock();
     bufferpos_start = 0;
     bufferpos_end = 0;
+}
+
+void SoundBuffer::setSignalVertexBuffer(SignalVertexBuffer *_signalVertexBuffer)
+{
+    signalVertexBuffer = _signalVertexBuffer;
 }
 
 /*
@@ -75,7 +91,7 @@ void SoundBuffer::setSoundSource(SoundSource *_file)
 */
 void SoundBuffer::getchunk(CSAMPLE rate)
 {
-    //qDebug("Reading..., playpos %f",playpos_buffer.read());
+    //qDebug("Reading..., bufferpos_start %i",bufferpos_start);
 
 
     // Determine playback direction
@@ -89,22 +105,24 @@ void SoundBuffer::getchunk(CSAMPLE rate)
     // will be placed in read buffer (bufIdx), and perform seek if reading backwards
     double filepos_start_new, filepos_end_new;
     int bufIdx;
+
+    enginelock->lock();
     if (backwards)
     {        
         int preEnd = bufferpos_start;
 
-        filepos_start_new = max(0.,filepos_start.read()-(double)READCHUNKSIZE);
+        filepos_start_new = max(0.,filepos_start-(double)READCHUNKSIZE);
         bufferpos_start = (bufferpos_start-READCHUNKSIZE+READBUFFERSIZE)%READBUFFERSIZE;
         file->seek((long int)filepos_start_new);
 
-        if ((filepos_end.read()-filepos_start_new)/READCHUNKSIZE < READCHUNK_NO)
-            filepos_end_new = filepos_end.read();
+        if ((filepos_end-filepos_start)/READCHUNKSIZE < READCHUNK_NO)
+            filepos_end_new = filepos_end;
         else
         {
-            filepos_end_new = filepos_end.read()-(double)READCHUNKSIZE;
+            filepos_end_new = filepos_end-(double)READCHUNKSIZE;
             bufferpos_end   = bufferpos_start; //(bufferpos_end-READCHUNKSIZE+READBUFFERSIZE)%READBUFFERSIZE;
         }
-
+        
         bufIdx = bufferpos_start;
 
         // Do pre-processing.
@@ -114,22 +132,22 @@ void SoundBuffer::getchunk(CSAMPLE rate)
     {
         int preStart = bufferpos_end;
 
-        filepos_end_new = filepos_end.read()+(double)READCHUNKSIZE;
+        filepos_end_new = filepos_end+(double)READCHUNKSIZE;
         bufIdx = bufferpos_end;
         bufferpos_end   = (bufferpos_end+READCHUNKSIZE)%READBUFFERSIZE;
-        if ((filepos_end.read()-filepos_start.read())/READCHUNKSIZE < READCHUNK_NO)
-            filepos_start_new = filepos_start.read();
+        if ((filepos_end-filepos_start)/READCHUNKSIZE < READCHUNK_NO)
+            filepos_start_new = filepos_start;
         else
         {
-            filepos_start_new = filepos_start.read()+READCHUNKSIZE;
+            filepos_start_new = filepos_start+READCHUNKSIZE;
             bufferpos_start = bufferpos_end; //(bufferpos_start+READCHUNKSIZE)%READBUFFERSIZE;
         }
 
         // Do pre-processing...
         preprocess->update((preStart/stepSize+1)%windowNo, (bufferpos_end/stepSize-1+windowNo)%windowNo);
     }
-    filepos_start.write(filepos_start_new);
-    filepos_end.write(filepos_end_new);
+    filepos_start = filepos_start_new;
+    filepos_end = filepos_end_new;
 
     // Read samples
     file->read(READCHUNKSIZE, temp);
@@ -137,31 +155,39 @@ void SoundBuffer::getchunk(CSAMPLE rate)
     // Seek to end of the samples read in buffer, if we are reading backwards. This is to ensure, that the correct samples
     // are read, if we next time are going forward.
     if (backwards)
-        file->seek((long int)filepos_end.read());
+        file->seek((long int)filepos_end);
+
+    enginelock->unlock();
 
     // Copy samples to read_buffer
     int i=0;
     for (unsigned int j=bufIdx; j<bufIdx+READCHUNKSIZE; j++)
         read_buffer[j] = (CSAMPLE)temp[i++];
 
-    // Update variables used to copy the buffer to a vertex buffer for 3D visualization
-    visualPos = bufIdx;
-    visualLen = READCHUNKSIZE;
+    // Update vertex buffer by sending an event containing indexes of where to update.
+    if (signalVertexBuffer != 0)
+        QApplication::postEvent(signalVertexBuffer, new SoundBufferEvent(bufIdx, READCHUNKSIZE));
 }
 
-/*
-  Reset data in read_buffer
-*/
-void SoundBuffer::reset(double new_playpos)
+long int SoundBuffer::seek(long int new_playpos)
 {
-    filepos_start.write(new_playpos);
-    filepos_end.write(new_playpos);
+    enginelock->lock();
+    filepos_start = new_playpos;
+    filepos_end = new_playpos;
+
+    long int seekpos = file->seek((long int)filepos_start);
+
+    qDebug("seek: %i, %i",new_playpos, seekpos);
+    
+    enginelock->unlock();
 
     bufferpos_start = 0;
     bufferpos_end = 0;
 
     for (unsigned int i=0; i<READBUFFERSIZE; i++)
         read_buffer[i] = 0.;
+
+    return seekpos;
 }
 
 // Get a pointer to the chunk at index chunkIdx
@@ -196,16 +222,6 @@ CSAMPLE *SoundBuffer::getWindowPtr(int windowIdx)
         }
     }
     return windowedSamples;    
-}
-
-double SoundBuffer::getFileposStart()
-{
-    return filepos_start.read();
-}
-
-double SoundBuffer::getFileposEnd()
-{
-    return filepos_end.read();
 }
 
 int SoundBuffer::getRate()

@@ -31,7 +31,6 @@ public:
     virtual ~EngineObject();
     virtual CSAMPLE *process(const CSAMPLE *, const int) = 0;
     int  getPlaySrate();
-    virtual void notify(double) = 0;  
 protected:
     void setPlaySrate(int srate);
 
