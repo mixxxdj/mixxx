@@ -66,7 +66,7 @@ void MidiObjectALSA::run()
             int no = snd_rawmidi_read(handle,&buffer[0],1);
             if (no != 1)
                 qWarning("Warning: midiobject recieved %i bytes.", no);
-        } while (buffer[0] & 128 != 128);
+        } while ((buffer[0] & 128) != 128);
 
         // and then get the following 2 bytes:
         char channel;
