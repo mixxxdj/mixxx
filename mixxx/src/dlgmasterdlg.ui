@@ -8,8 +8,8 @@
         <rect>
             <x>0</x>
             <y>0</y>
-            <width>310</width>
-            <height>70</height>
+            <width>419</width>
+            <height>40</height>
         </rect>
     </property>
     <property name="caption">
@@ -21,8 +21,8 @@
         </property>
         <property name="geometry">
             <rect>
-                <x>205</x>
-                <y>25</y>
+                <x>385</x>
+                <y>5</y>
                 <width>32</width>
                 <height>32</height>
             </rect>
@@ -34,30 +34,14 @@
         </property>
         <property name="geometry">
             <rect>
-                <x>250</x>
-                <y>30</y>
-                <width>45</width>
+                <x>365</x>
+                <y>10</y>
+                <width>16</width>
                 <height>19</height>
             </rect>
         </property>
         <property name="text">
-            <string>clip</string>
-        </property>
-    </widget>
-    <widget class="QLabel">
-        <property name="name">
-            <cstring>TextLabel1</cstring>
-        </property>
-        <property name="geometry">
-            <rect>
-                <x>200</x>
-                <y>10</y>
-                <width>42</width>
-                <height>16</height>
-            </rect>
-        </property>
-        <property name="text">
-            <string>Master</string>
+            <string> </string>
         </property>
     </widget>
     <widget class="QSlider">
@@ -66,14 +50,17 @@
         </property>
         <property name="geometry">
             <rect>
-                <x>15</x>
-                <y>20</y>
-                <width>170</width>
-                <height>40</height>
+                <x>110</x>
+                <y>5</y>
+                <width>200</width>
+                <height>34</height>
             </rect>
         </property>
         <property name="maxValue">
             <number>127</number>
+        </property>
+        <property name="value">
+            <number>64</number>
         </property>
         <property name="orientation">
             <enum>Horizontal</enum>

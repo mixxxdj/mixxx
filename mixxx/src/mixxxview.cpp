@@ -31,25 +31,30 @@ MixxxView::MixxxView(QWidget *parent, MixxxDoc *doc) : QWidget(parent)
 	channel1 = new DlgChannel(this);
 	channel2 = new DlgChannel(this);
 	playlist = new DlgPlaylist(this);
+    playlist->TableList->setColumnWidth(0,420);
     master = new DlgMaster(this);
 
 	// Layout management
 	mainGrid = new QGridLayout(this,3,4); // A layout on a widget
 	//hMainBox->setResizeMode(QLayout::Minimum);
-	mainGrid->addMultiCellWidget(channel1,0,1,0,0);
+	mainGrid->addMultiCellWidget(channel1,0,2,0,0);
 	mainGrid->addWidget(playcontrol1,0,1);
+	mainGrid->addMultiCellWidget(channel2,0,2,3,3);
 	mainGrid->addWidget(playcontrol2,0,2);
-	mainGrid->addMultiCellWidget(channel2,0,1,3,3);
 	mainGrid->addMultiCellWidget(playlist,1,1,1,2);
 	mainGrid->addMultiCellWidget(master,2,2,1,2);
 
 	//let the ratio between the widths of columns 0 and 1 be 2:3.
-/*	mainGrid->setColStretch( 0, 150);
-	mainGrid->setColStretch( 1, 310);
-	mainGrid->setRowStretch( 0, 310);
-	mainGrid->setRowStretch( 1, 210);
-*/
-	// Add filenames in ./music/ to table
+	mainGrid->setColStretch( 0,  45);
+	mainGrid->setColStretch( 1, 210);
+ 	mainGrid->setColStretch( 2, 210);
+	mainGrid->setColStretch( 3,  45);
+
+	mainGrid->setRowStretch( 0, 185);
+	mainGrid->setRowStretch( 1, 100);
+	mainGrid->setRowStretch( 2,  40);
+	
+    // Add filenames in ./music/ to table
 	QDir d("music");
 	d.setFilter(QDir::Files);
 	if (!d.exists())
