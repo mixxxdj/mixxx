@@ -20,12 +20,14 @@
 #include "configobject.h"
 #include "controlpotmeter.h"
 #include "mixxxview.h"
+#include "wnumberpos.h"
 #include <qdir.h>
 
 DlgPrefControls::DlgPrefControls(QWidget *parent, ControlObject *pControl, MixxxView *pView, ConfigObject<ConfigValue> *pConfig) : DlgPrefControlsDlg(parent,"")
 {
     m_pConfig = pConfig;
-    
+    m_pView = pView;
+
     //
     // Rate slider configuration
     //
@@ -38,6 +40,25 @@ DlgPrefControls::DlgPrefControls(QWidget *parent, ControlObject *pControl, Mixxx
     // Set default direction as stored in config file
     if (m_pConfig->getValueString(ConfigKey("[Controls]","RateDir")).length() == 0)
         m_pConfig->set(ConfigKey("[Controls]","RateDir"),ConfigValue(0));
+
+    // Position display configuration
+    ComboBoxPosition->insertItem("Position");
+    ComboBoxPosition->insertItem("Remaining");
+    if (m_pConfig->getValueString(ConfigKey("[Controls]","PositionDisplay")).length() == 0)
+        m_pConfig->set(ConfigKey("[Controls]","PositionDisplay"),ConfigValue(0));
+    if (m_pConfig->getValueString(ConfigKey("[Controls]","PositionDisplay")).toInt() == 1)
+    {
+        pView->m_pNumberPosCh1->setRemain(true);
+        pView->m_pNumberPosCh2->setRemain(true);
+        ComboBoxPosition->setCurrentItem(1);
+    }
+    else
+    {
+        pView->m_pNumberPosCh1->setRemain(false);
+        pView->m_pNumberPosCh2->setRemain(false);
+        ComboBoxPosition->setCurrentItem(0);
+    }
+    connect(ComboBoxPosition,   SIGNAL(activated(int)), this, SLOT(slotSetPositionDisplay(int)));
 
     float fDir = 1.;
     if (m_pConfig->getValueString(ConfigKey("[Controls]","RateDir")).toInt()==1.)
@@ -57,7 +78,7 @@ DlgPrefControls::DlgPrefControls(QWidget *parent, ControlObject *pControl, Mixxx
     //
     // Visuals
     //
-    
+
     // Set default value in config file, if not present
     if (m_pConfig->getValueString(ConfigKey("[Controls]","Visuals")).length() == 0)
         m_pConfig->set(ConfigKey("[Controls]","Visuals"), ConfigValue(0));
@@ -165,6 +186,22 @@ void DlgPrefControls::slotSetSkin(int)
 {
     m_pConfig->set(ConfigKey("[Config]","Skin"), ComboBoxSkinconf->currentText());
     textLabel->setText("Restart Mixxx before the new skin will be loaded.");
+}
+
+void DlgPrefControls::slotSetPositionDisplay(int)
+{
+    m_pConfig->set(ConfigKey("[Controls]","PositionDisplay"), ConfigValue(ComboBoxPosition->currentItem()));
+
+    if (ComboBoxPosition->currentItem()==1)
+    {
+        m_pView->m_pNumberPosCh1->setRemain(true);
+        m_pView->m_pNumberPosCh2->setRemain(true);
+    }
+    else
+    {
+        m_pView->m_pNumberPosCh1->setRemain(false);
+        m_pView->m_pNumberPosCh2->setRemain(false);
+    }
 }
 
 void DlgPrefControls::slotApply()

@@ -23,13 +23,6 @@ WNumber::WNumber(QWidget *parent, const char *name ) : WWidget(parent,name)
 {
     m_pLabel = new QLabel(parent);
     m_qsText = "";
-    
-    // Setup mono-spaced font
-/*
-    QFont f;
-    f.setStyleHint(QFont::TypeWriter);
-    m_pLabel->setFont(f);
-*/
 }
 
 WNumber::~WNumber()
@@ -52,7 +45,14 @@ void WNumber::setup(QDomNode node)
     m_pLabel->setPaletteForegroundColor(c);
 
     // Text
-    m_qsText = selectNodeQString(node, "Text");
+    if (!selectNode(node, "Text").isNull())
+        m_qsText = selectNodeQString(node, "Text");
+
+    // Size
+    QString size = selectNodeQString(node, "Size");
+    int x = size.left(size.find(",")).toInt();
+    int y = size.mid(size.find(",")+1).toInt();
+    setFixedSize(x,y);
 }
 
 void WNumber::setFixedSize(int x,int y)
@@ -76,7 +76,8 @@ void WNumber::setValue(double dValue)
 {
     int d1 = (int)((dValue-floor(dValue))*10.);
     int d2 = (int)((dValue-floor(dValue))*100.)%10;
-    
+
     m_pLabel->setText(QString(m_qsText).append("%1.%2%3").arg((int)dValue,3,10).arg(d1,1,10).arg(d2,1,10));
 }
+
 

@@ -34,6 +34,7 @@
 #include "wdisplay.h"
 #include "wvumeter.h"
 #include "wnumber.h"
+#include "wnumberpos.h"
 #ifdef __VISUALS__
   #include "wvisualwaveform.h"
   #include "wvisualsimple.h"
@@ -70,6 +71,9 @@ MixxxView::MixxxView(QWidget *parent, bool bVisualsWaveform, QString qSkinPath) 
     m_pVisualCh2 = 0;
     m_bZoom = false;
     m_bVisualWaveform = false;
+
+    m_pNumberPosCh1 = 0;
+    m_pNumberPosCh2 = 0;
     
     // Load all widgets defined in the XML file
     QDomNode node = docElem.firstChild();
@@ -91,6 +95,19 @@ MixxxView::MixxxView(QWidget *parent, bool bVisualsWaveform, QString qSkinPath) 
             {
                 WNumber *p = new WNumber(this);
                 p->setup(node);
+            }
+            else if (node.nodeName()=="NumberPos")
+            {
+                if (WWidget::selectNodeInt(node, "Channel")==1 && m_pNumberPosCh1==0)
+                {
+                    m_pNumberPosCh1 = new WNumberPos(this);
+                    m_pNumberPosCh1->setup(node);
+                }
+                else if (WWidget::selectNodeInt(node, "Channel")==2 && m_pNumberPosCh2==0)
+                {
+                    m_pNumberPosCh2 = new WNumberPos(this);
+                    m_pNumberPosCh2->setup(node);
+                }
             }
             else if (node.nodeName()=="Display")
             {

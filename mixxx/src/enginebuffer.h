@@ -38,7 +38,7 @@ class WVisualWaveform;
 const int audioBeatMarkLen = 40;
 
 // Rate at which the playpos slider is updated (using a sample rate of 44100 Hz):
-const int UPDATE_RATE = 1;
+const int UPDATE_RATE = 5;
 
 // End of track mode constants
 const int TRACK_END_MODE_STOP = 0;

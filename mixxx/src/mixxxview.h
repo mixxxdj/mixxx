@@ -30,7 +30,7 @@ class WTrackTable;
 class WDisplay;
 class WKnob;
 class WVisual;
-class WNumber;
+class WNumberPos;
 class QDomNode;
 
 /**
@@ -53,6 +53,9 @@ public:
     QLabel *m_pTextCh1, *m_pTextCh2;
     /** Pointer to WVisual widgets */
     QObject *m_pVisualCh1, *m_pVisualCh2;
+    /** Pointer to absolute file position widgets */
+    WNumberPos *m_pNumberPosCh1, *m_pNumberPosCh2;
+    /** Pointer to rate slider widgets */
     WSliderComposed *m_pSliderRateCh1, *m_pSliderRateCh2;
     /** Allow dynamic zoom on visuals */
     bool m_bZoom;

@@ -42,6 +42,7 @@ public slots:
     void slotSetRateDir(int pos);
     void slotSetVisuals(int pos);
     void slotSetSkin(int);
+    void slotSetPositionDisplay(int);
     void slotApply();
 private:
     /** Pointer to ConfigObject */
@@ -50,7 +51,8 @@ private:
     ControlPotmeter *m_pControlRate1, *m_pControlRate2;
     /** Pointer to ControlObjects for controlling direction of rate sliders */
     ControlObject *m_pControlRateDir1, *m_pControlRateDir2;
-
+    /** Pointer to MixxxView */
+    MixxxView *m_pView;
 };
 
 #endif

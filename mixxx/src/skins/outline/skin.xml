@@ -823,7 +823,7 @@
  </Text>
 
  <Number>
-  <Pos>144,350</Pos>
+  <Pos>144,355</Pos>
   <Size>100,20</Size>
   <Text>BPM: </Text>
   <NumberOfDigits>6</NumberOfDigits>
@@ -835,7 +835,7 @@
  </Number>
 
  <Number>
-  <Pos>623,350</Pos>
+  <Pos>623,355</Pos>
   <Size>100,20</Size>
   <Text>BPM: </Text>
   <NumberOfDigits>6</NumberOfDigits>
@@ -845,6 +845,30 @@
    <ConfigKey>[Channel2],bpm</ConfigKey>
   </Connection>
  </Number>
+
+ <NumberPos>
+  <Channel>1</Channel>
+  <Pos>320,355</Pos>
+  <Size>85,20</Size>
+  <NumberOfDigits>6</NumberOfDigits>
+  <BgColor>#ffffff</BgColor>
+  <FgColor>#606060</FgColor>
+  <Connection>
+   <ConfigKey>[Channel1],playposition</ConfigKey>
+  </Connection>
+ </NumberPos>
+
+ <NumberPos>
+  <Channel>2</Channel>
+  <Pos>798,355</Pos>
+  <Size>85,20</Size>
+  <NumberOfDigits>6</NumberOfDigits>
+  <BgColor>#ffffff</BgColor>
+  <FgColor>#606060</FgColor>
+  <Connection>
+   <ConfigKey>[Channel2],playposition</ConfigKey>
+  </Connection>
+ </NumberPos>
 
  <SliderComposed>
   <Handle>playpos-marker1.png</Handle>
