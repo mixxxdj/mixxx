@@ -159,16 +159,12 @@ void ControlObject::setWidget(QWidget *widget, bool emitOnDownPress, Qt::ButtonS
 
 void ControlObject::setValue(FLOAT_TYPE v)
 {
-    //qDebug("thread id: %p",pthread_self());
-
     value = v;
     forceGUIUpdate();
 }
 
 FLOAT_TYPE ControlObject::getValue()
 {
-    //qDebug("thread id: %p",pthread_self());
-
     return value;
 }
 
