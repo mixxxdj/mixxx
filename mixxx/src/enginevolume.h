@@ -31,7 +31,7 @@ public:
 
 private:
     CSAMPLE *buffer;
-    ControlEngine *potmeter, *buttonDown, *buttonUp;
+    ControlEngine *potmeter;
 };
 
 #endif
