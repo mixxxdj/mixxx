@@ -35,9 +35,6 @@ const int minBPM = 10;
 const int maxBPM = 240;
 /** Maximum allowed interval between beats in milli seconds (calculated from minBPM) */
 const int maxInterval = (int)(1000.*(60./(CSAMPLE)minBPM));
-
-
-
 /** Filter length */
 const int filterLength = 20;
   
@@ -46,6 +43,8 @@ class ControlBeat : public ControlObject
 public: 
     ControlBeat(ConfigKey key);
     ~ControlBeat();
+    void setAccelUp(const QKeySequence key) {};
+    void setAccelDown(const QKeySequence key) {};
 public slots:
     void slotSetPosition(int pos);
     void slotSetPositionMidi(MidiCategory c, int v);

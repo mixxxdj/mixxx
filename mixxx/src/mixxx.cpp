@@ -124,9 +124,10 @@ MixxxApp::MixxxApp(QApplication *a)
     initDoc();
     initView();
 
-    // Instantiate a ControlObject
+    // Instantiate a ControlObject, and set static parent widget
     control = new ControlNull();
-
+    control->setParentWidget(this);
+                                                       
     // Open midi
     //qDebug("Init midi...");
     midi = 0;
@@ -207,7 +208,6 @@ MixxxApp::MixxxApp(QApplication *a)
 
     // Set static ControlEngineQueue pointer of ControlObject
     control->setControlEngineQueue(queue);
-
           
     // Install event handler
     //installEventFilter(this);

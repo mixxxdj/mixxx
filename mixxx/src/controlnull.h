@@ -30,6 +30,8 @@ public:
     ControlNull();
     ~ControlNull();
     void setValue(FLOAT_TYPE) {};
+    void setAccelUp(const QKeySequence key) {};
+    void setAccelDown(const QKeySequence key) {};
 public slots:
     void slotSetPosition(int);
     void slotSetPositionMidi(MidiCategory c, int v);
