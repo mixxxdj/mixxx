@@ -63,9 +63,10 @@ public:
     /** Sets the config object */
     static void setConfig(ConfigObject<ConfigValueMidi> *_config);
     /** Associates a QWidget with the ControlObject identified by a given ConfigKey */
-    static void setWidget(QWidget *widget, ConfigKey key, bool emitOnDownPress=true, Qt::ButtonState state=Qt::NoButton);
-    /** Associates a QWidget with the ControlObject */
-    void setWidget(QWidget *widget, bool emitOnDownPress=true, Qt::ButtonState state=Qt::NoButton);
+    static void setWidget(QWidget *widget, ConfigKey key, bool emitOnDownPress=true, Qt::ButtonState state=Qt::NoButton, bool useSetFromApp=true);
+    /** Associates a QWidget with the ControlObject. useSetFromApp connects the widget to ControlObject::setFromApp() if
+      * true, otherwise to addFromApp() which increments the given value from the widget, to the ControlObjects value */
+    void setWidget(QWidget *widget, bool emitOnDownPress=true, Qt::ButtonState state=Qt::NoButton, bool useSetFromApp=true);
     /** Used to set a pointer to the corresponding ControlEngine of this ControlObject */
     void setControlEngine(ControlEngine *pControlEngine);
     /** Return the value of the ControlObject */
@@ -118,6 +119,8 @@ public slots:
     virtual void setValueFromKeyboard();
     /** Called when the value is changed by the main application thread */
     virtual void setValueFromApp(double dValue);
+    /** Called when the value is incremented by the main application thread */
+    virtual void addValueFromApp(double dValue);
 
 protected:
     /** Return pointer to parent widget */

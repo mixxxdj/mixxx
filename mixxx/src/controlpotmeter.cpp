@@ -62,6 +62,18 @@ void ControlPotmeter::setValueFromWidget(double dValue)
     updateFromWidget();
 }
 
+void ControlPotmeter::setValueFromApp(double dValue)
+{
+    if (dValue>m_dMaxValue)
+        m_dValue = m_dMaxValue;
+    else if (dValue<m_dMinValue)
+        m_dValue = m_dMinValue;
+    else
+        m_dValue = dValue;
+
+    updateFromApp();
+}
+
 void ControlPotmeter::setValueFromMidi(MidiCategory c, int v)
 {
     m_dValue = m_dMinValue + ((double)v/127.)*m_dValueRange;
