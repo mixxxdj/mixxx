@@ -454,7 +454,7 @@ void Track::updatePlaylistViews()
         m_pView->m_pTreeView->updatePlaylists(&m_qPlaylists);
 
     // Update menu
-    emit(updateMenu(m_qPlaylists));
+    emit(updateMenu(&m_qPlaylists));
     
     // Set active
     if (m_pActivePlaylist)

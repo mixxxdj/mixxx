@@ -95,7 +95,7 @@ signals:
     /** A new track has been loaded in player 2 */
     void newTrackPlayer2(TrackInfoObject *);
     /** Signal to update playlists menu */
-    void updateMenu(const TrackPlaylistList &qPlaylists);
+    void updateMenu(TrackPlaylistList *);
     /** Signal to set active playlist */
     void activePlaylist(TrackPlaylist *);
 private:
