@@ -29,6 +29,7 @@
 #include "wslider.h"
 #include "wslidercomposed.h"
 #include "wdisplay.h"
+#include "wnumber.h"
 #ifdef __VISUALS__
   #include "wvisual.h"
 #endif
@@ -213,6 +214,16 @@ MixxxView::MixxxView(QWidget *parent, bool bVisuals) : QWidget(parent, "Mixxx")
     m_pCueCh2->setFixedSize(55,28);
     m_pCueCh2->move(832,267);
 
+    m_pBpmCh1 = new WNumber(main);
+    m_pBpmCh1->setFixedSize(40,15);
+    m_pBpmCh1->move(330,40);
+    m_pBpmCh1->setNumDigits(6);
+    
+    m_pBpmCh2 = new WNumber(main);
+    m_pBpmCh2->setFixedSize(40,15);
+    m_pBpmCh2->move(900,40);
+    m_pBpmCh2->setNumDigits(6);
+    
 #ifdef __WIN__
     // QPixmap fix needed on Windows 9x
     QPixmap::setDefaultOptimization(QPixmap::NormalOptim);
@@ -233,8 +244,8 @@ void MixxxView::assignWidgets(ControlObject *p)
 //    p->setWidget(playcontrol1->PushButtonCueGoto, ConfigKey("[Channel1]", "cue_goto"));
 //    p->setWidget(playcontrol2->PushButtonCueGoto, ConfigKey("[Channel2]", "cue_goto"));
 
-//    p->setWidget(playcontrol1->BPM, ConfigKey("[Channel1]", "bpm"));
-//    p->setWidget(playcontrol2->BPM, ConfigKey("[Channel2]", "bpm"));
+    p->setWidget(m_pBpmCh1, ConfigKey("[Channel1]", "bpm"));
+    p->setWidget(m_pBpmCh2, ConfigKey("[Channel2]", "bpm"));
 
     if (m_pVisualCh1)
     {
