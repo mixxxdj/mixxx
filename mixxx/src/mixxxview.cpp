@@ -22,6 +22,7 @@
 #include <qpixmap.h>
 #include <qtooltip.h>
 #include <qevent.h>
+#include <qsplitter.h>
 
 #include "wtreelist.h"
 #include "configobject.h"
@@ -75,6 +76,7 @@ MixxxView::MixxxView(QWidget *parent, bool bVisualsWaveform, QString qSkinPath, 
     m_pVisualCh2 = 0;
     m_bZoom = false;
     m_bVisualWaveform = false;
+    m_pSplitter = 0;
 
     m_pNumberPosCh1 = 0;
     m_pNumberPosCh2 = 0;
@@ -281,20 +283,46 @@ MixxxView::MixxxView(QWidget *parent, bool bVisualsWaveform, QString qSkinPath, 
                     m_pTextCh2 = p;
 
             }
+            else if (node.nodeName()=="Splitter")
+            {
+                m_pSplitter = new QSplitter(this);
+
+                // Set position
+                QString pos = WWidget::selectNodeQString(node, "Pos");
+                int x = pos.left(pos.find(",")).toInt();
+                int y = pos.mid(pos.find(",")+1).toInt();
+                m_pSplitter->move(x,y);
+
+                // Size
+                QString size = WWidget::selectNodeQString(node, "Size");
+                x = size.left(size.find(",")).toInt();
+                y = size.mid(size.find(",")+1).toInt();
+                m_pSplitter->setFixedSize(x,y);
+
+                m_qWidgetList.append(m_pSplitter);
+            }
             else if (node.nodeName()=="TrackTable")
             {
-                //qDebug("Constructing TrackTable");
-                m_pTrackTable = new WTrackTable(this);
-                m_pTrackTable->setup(node);
-                m_qWidgetList.append(m_pTrackTable);
+                if (m_pSplitter)
+                    m_pTrackTable = new WTrackTable(m_pSplitter);
+                else
+		{
+                    m_pTrackTable = new WTrackTable(this);
+                    m_qWidgetList.append(m_pTrackTable);
+		} 
+		m_pTrackTable->setup(node);
             }
-			else if (node.nodeName()=="TreeList")
-			{
-				qDebug("Constructing TreeList");
-				m_pTreeList = new WTreeList(this,tr("TreeList"));
-				m_pTreeList->setup(node);
-				//Here the TreeList view should be instantiated
-			}
+            else if (node.nodeName()=="TreeList")
+            {
+                if (m_pSplitter)
+                    m_pTreeList = new WTreeList(m_pSplitter, tr("TreeList"));
+                else
+                {
+                    m_pTreeList = new WTreeList(this, tr("TreeList"));
+		    m_qWidgetList.append(m_pTreeList);
+		}
+		m_pTreeList->setup(node);
+            }
 
         }
         node = node.nextSibling();

@@ -106,18 +106,28 @@ WTreeList::~WTreeList(){
 	
 }
 //General Setup of the Class
-void WTreeList::setup(QDomNode node){
-	// Position
-    QString pos = WWidget::selectNodeQString(node, "Pos");
-    int x = pos.left(pos.find(",")).toInt();
-    int y = pos.mid(pos.find(",")+1).toInt();
-    move(x,y);
-	// Size
-    QString size = WWidget::selectNodeQString(node, "Size");
-    x = size.left(size.find(",")).toInt();
-    y = size.mid(size.find(",")+1).toInt();
-    setFixedSize(x,y);
-	//Create the columns
+void WTreeList::setup(QDomNode node)
+{
+
+    // Position
+    if (!WWidget::selectNode(node, "Pos").isNull())
+    {
+        QString pos = WWidget::selectNodeQString(node, "Pos");
+        int x = pos.left(pos.find(",")).toInt();
+        int y = pos.mid(pos.find(",")+1).toInt();
+        move(x,y);
+    }
+
+    // Size
+    if (!WWidget::selectNode(node, "Size").isNull())
+    {
+        QString size = WWidget::selectNodeQString(node, "Size");
+        int x = size.left(size.find(",")).toInt();
+        int y = size.mid(size.find(",")+1).toInt();
+        setFixedSize(x,y);
+    }
+
+    //Create the columns
 	this->addColumn( tr( "Realtive Name" ) );
 	this->addColumn( tr( "Type") );
 	this->addColumn( tr( "Absolute Name") );
