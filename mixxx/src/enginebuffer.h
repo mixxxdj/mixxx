@@ -61,6 +61,8 @@ public:
     float visualRate;
 private:
     void seek(double);
+    void CueGoto();
+    void CueSet();
 //    void bpmChange(double);
     
     MixxxApp *mixxx;
@@ -90,6 +92,7 @@ private:
     DlgPlaycontrol *playcontrol;
 
     ControlEngine *playButton, *rateSlider, *wheel, *playposSlider, *bufferposSlider, *audioBeatMark;
+    ControlEngine *buttonCueSet, *buttonCueGoto;
     /** Control used to input desired playback BPM */
     ControlEngine *bpmControl;
     /** Control used to input beat. If this is used, only one beat is played, until a new beat mark is received from the ControlObject */
