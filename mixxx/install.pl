@@ -64,6 +64,6 @@ if ($#out<0)
 
 printf("Install finished\n");
 printf("\n");
-printf("Start Mixxx by writing mixxx at the command prompt. If you have 
+printf("Start Mixxx by writing mixxx at the command prompt. If you have\n");
 printf("the Jack sound server installed you can start Mixxx with mixxx-with-jack\n");
 printf("\n");
