@@ -197,8 +197,7 @@ void *ReaderExtractBeat::processChunk(const int _idx, const int start_idx, const
     {
         if (hfc[i%frameNo]>hfc[(i-1)%frameNo] && hfc[i%frameNo]>hfc[(i+1)%frameNo] /*&& hfc[i%frameNo]>threshold*/)
         {
-
-            /*
+/*
             // Perform second order interpolation
             CSAMPLE t, t1, t2, corr;
             t  = log(hfc[i]);
@@ -212,7 +211,7 @@ void *ReaderExtractBeat::processChunk(const int _idx, const int start_idx, const
 
             curr->amp =  afactor*exp(t-0.25*corr*(t1-t2));
             curr->freq = ((CSAMPLE) power_idx+corr)*SRATE/l;
-            */
+*/
             
             // Insert peak in peaks list
             if (it!=0)

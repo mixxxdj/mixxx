@@ -23,10 +23,10 @@
    <View0 Top="0" Width="757" Attach="1" Height="606" Left="0" Focus="0" Type="KWriteView" MinMaxMode="0" />
   </Doc5>
   <Doc6 CursorPosLine="103" Type="KWriteDoc" NumberOfViews="1" CursorPosCol="58" FileName="/home/haste/cvs/mixxx/src/wslidercomposed.cpp" >
-   <View0 Top="0" Width="757" Attach="1" Height="606" Left="0" Focus="1" Type="KWriteView" MinMaxMode="0" />
+   <View0 Top="0" Width="757" Attach="1" Height="606" Left="0" Focus="0" Type="KWriteView" MinMaxMode="0" />
   </Doc6>
   <Doc7 CursorPosLine="42" Type="KWriteDoc" NumberOfViews="1" CursorPosCol="0" FileName="/home/haste/cvs/mixxx/src/wslidercomposed.h" >
-   <View0 Top="0" Width="757" Attach="1" Height="606" Left="0" Focus="0" Type="KWriteView" MinMaxMode="0" />
+   <View0 Top="0" Width="757" Attach="1" Height="606" Left="0" Focus="1" Type="KWriteView" MinMaxMode="0" />
   </Doc7>
  </DocsAndViews>
 </KDevPrjSession>

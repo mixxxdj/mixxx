@@ -31,7 +31,7 @@ WSliderComposed::WSliderComposed(QWidget *parent, const char *name ) : WWidget(p
     m_iSliderLength=0;
     m_iHandleLength=0;
 
-    reset();
+    m_fValue = 63.;
 }
 
 WSliderComposed::~WSliderComposed()

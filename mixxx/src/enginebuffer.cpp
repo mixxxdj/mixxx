@@ -123,8 +123,11 @@ EngineBuffer::EngineBuffer(PowerMate *_powermate, const char *_group, WVisual *p
     // Construct scaling object
     scale = new EngineBufferScaleLinear(reader->getWavePtr());
     
-    playposUpdateCounter = 0;
     oldEvent = 0.;
+
+    // Used in update of playpos slider
+    m_iSamplesCalculated = 0;
+
 
     reader->start();
 }
@@ -154,7 +157,7 @@ void EngineBuffer::setNewPlaypos(double newpos)
     bufferposSlider->set((CSAMPLE)bufferpos_play);
 
     // Ensures that the playpos slider gets updated in next process call
-    playposUpdateCounter = 1000000;
+    m_iSamplesCalculated = 1000000;
 
     m_iBeatMarkSamplesLeft = 0;
 }
@@ -468,11 +471,11 @@ CSAMPLE *EngineBuffer::process(const CSAMPLE *, const int buf_size)
             //
 
             // Update playpos slider if necessary
-            playposUpdateCounter +=buf_size;
-            if (playposUpdateCounter>(int)(file_length_old/(127.*rate)))
+            m_iSamplesCalculated += buf_size;
+            if (m_iSamplesCalculated > (44100/UPDATE_RATE) )
             {
                 playposSlider->set(filepos_play/file_length_old);
-                playposUpdateCounter = 0;
+                m_iSamplesCalculated = 0;
             }
 
             // Update bufferposSlider
