@@ -18,6 +18,8 @@ const int READCHUNKSIZE = 1500000; // size of the chunk that's read in every rea
 const int READBUFFERSIZE = 3*READCHUNKSIZE; // size of read buffer must be at least three
                                             // times READCHUNKSIZE (one extra is needed in case of
                                             // "stop" is pressed.
+const int MAX_MIDI_CHANNELS = 50; // Maximum number of different midi channels in use at the same
+                                  // time.
 
 const int NO_CHANNELS  = 2;     // 2 for stereo
 

@@ -50,6 +50,6 @@ QString *ControlObject::print()
 
 void ControlObject::slotSetPositionMidi(int pos)
 {
-    slotSetPosition(pos);
+    //this->slotSetPosition(pos);
     emit updateGUI(pos);
 }

@@ -4,14 +4,18 @@
 #include "controlpushbutton.h"
 #include <algorithm>
 
+// Static member variable definition
+ConfigObject *MidiObject::config = 0;
+
 /* -------- ------------------------------------------------------
    Purpose: Initialize midi, and start parsing loop
    Input:   None. Automatically selects default midi input sound
             card and device.
    Output:  -
    -------- ------------------------------------------------------ */
-MidiObject::MidiObject()
+MidiObject::MidiObject(ConfigObject *c)
 {
+  config = c;
   no = 0;
 
 #ifdef __PORTMIDI__
@@ -169,7 +173,7 @@ void MidiObject::run()
         }
 #else
         /*
-        First read until we get at -79 event:
+        First read until we get a midi channel event:
         */
 #ifdef __ALSAMIDI__
         do
@@ -177,16 +181,16 @@ void MidiObject::run()
             int no = snd_rawmidi_read(handle,&buffer[0],1);
             if (no != 1)
                 qWarning("Warning: midiobject recieved %i bytes.", no);
-        } while (buffer[0] != -79);
+        } while (!config->midiChannelInUse(buffer[0]));
 #endif
 #ifdef __OSSMIDI__
         do
 		{
             int no = read(handle,&buffer[0],1);
-            //qDebug("midi: %i",(short int)buffer[0]);
+            qDebug("midi: %i",(short int)buffer[0]);
             if (no != 1)
                 qWarning("Warning: midiobject recieved %i bytes.", no);
-        } while (buffer[0] != -79); // -79 for MixxxBox
+        } while (!config->midiChannelInUse(buffer[0]));
 #endif
         /*
         and then get the following 2 bytes:
@@ -224,7 +228,8 @@ void MidiObject::run()
         // Check the potmeters:
         for (int i=0; i<no; i++)
         {
-            if (controlList[i]->cfgOption->val->midino == midicontrol)
+            if (controlList[i]->cfgOption->val->midino == midicontrol &
+                controlList[i]->cfgOption->val->midichannel == channel)
             {
                 // Check for possible bit mask
                 int midimask = controlList[i]->cfgOption->val->midimask;

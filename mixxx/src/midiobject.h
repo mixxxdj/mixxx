@@ -20,13 +20,14 @@
 #include <qthread.h>
 #include <qobject.h>
 #include "defs.h"
+#include "configobject.h"
 
 class ControlObject;
 
 class MidiObject : public QThread  {
 //  Q_OBJECT
 public:
-  MidiObject();
+  MidiObject(ConfigObject *c);
   ~MidiObject();
   void add(ControlObject* c);
   void remove(ControlObject* c);
@@ -45,6 +46,7 @@ protected:
 #endif
   void run();
 
+  static ConfigObject *config;
   int fd, count, size, no;
   std::vector<ControlObject*> controlList;
 };

@@ -29,7 +29,7 @@
 #include "filesave.xpm"
 #include "fileopen.xpm"
 #include "filenew.xpm"
-#include "controlpushbutton.h"
+#include "controlnull.h"
 #include "configmapping.h"
 
 #ifdef __ALSA__
@@ -72,10 +72,10 @@ MixxxApp::MixxxApp()
 
   // Initialize midi:
   qDebug("Init midi...");
-  midi = new MidiObject();
+  midi = new MidiObject(config);
 
   // Instantiate a ControlObject, and set the static midi and config pointer
-  control = new ControlObject();
+  control = new ControlNull();
   control->midi = midi;
   control->config = config;
 
