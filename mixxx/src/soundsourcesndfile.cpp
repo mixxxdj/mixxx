@@ -26,7 +26,7 @@ SoundSourceSndFile::SoundSourceSndFile( QString sFilename )
     fh = sf_open( sFilename.latin1(), SFM_READ, info );
     if (fh == 0 || !sf_format_check(info))
     {
-        qDebug("libsndfile: Error opening file.");
+        qDebug("libsndfile: ERR opening file.");
         filelength = 0;
         return;
     } else
@@ -56,7 +56,7 @@ long SoundSourceSndFile::seek(long filepos)
 {
     if (filelength > 0)
         if (sf_seek(fh, (sf_count_t)filepos, SEEK_SET) == -1)
-            qDebug("libsndfile: Seek error.");
+            qDebug("libsndfile: Seek ERR.");
     
     return filepos;
 }
@@ -77,15 +77,15 @@ unsigned SoundSourceSndFile::read(unsigned long size, const SAMPLE* destination)
     }
 }
 
-void SoundSourceSndFile::ParseHeader( TrackInfoObject *Track )
+int SoundSourceSndFile::ParseHeader( TrackInfoObject *Track )
 {
     SF_INFO info;
     QString location = Track->m_sFilepath+'/'+Track->m_sFilename;
     SNDFILE *fh = sf_open( location.ascii() ,SFM_READ, &info);
     if (fh == 0 || !sf_format_check(&info))
     {
-        qDebug("libsndfile: Error opening file.");
-        return;
+        qDebug("libsndfile: ERR opening file.");
+        return ERR;
     }
 
     Track->m_sType = "wav";
@@ -93,6 +93,7 @@ void SoundSourceSndFile::ParseHeader( TrackInfoObject *Track )
     Track->m_iDuration = Track->m_iLength/(4*info.samplerate);
 
     sf_close( fh );
+    return OK;
 }
 
 /*

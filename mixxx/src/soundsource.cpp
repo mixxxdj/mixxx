@@ -24,6 +24,10 @@
     seek()
     read()
     length()
+  In addition there must be a static member:
+    int ParseHeader(TrackInfoObject *Track)
+  which is used for parsing header information, like trackname,length etc. The
+  return type is int: 0 for OK, -1 for an error.
 */
 SoundSource::SoundSource()
 {

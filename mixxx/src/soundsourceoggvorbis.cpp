@@ -68,7 +68,7 @@ long SoundSourceOggVorbis::seek(long filepos)
         index = ov_pcm_seek(&vf, filepos/2);
         return filepos;
     }else{
-        qDebug("ogg vorbis: Seek error.");
+        qDebug("ogg vorbis: Seek ERR.");
         return 0;
     }
 }
@@ -117,7 +117,7 @@ unsigned SoundSourceOggVorbis::read(unsigned long size, const SAMPLE* destinatio
    Parse the the file to get metadata
 */
 
-void SoundSourceOggVorbis::ParseHeader( TrackInfoObject *Track )
+int SoundSourceOggVorbis::ParseHeader( TrackInfoObject *Track )
 {
     QString filename = Track->m_sFilepath+'/'+Track->m_sFilename;
     vorbis_comment *comment;
@@ -126,8 +126,8 @@ void SoundSourceOggVorbis::ParseHeader( TrackInfoObject *Track )
     FILE* vorbisfile = fopen(filename, "r");
             
     if (ov_open(vorbisfile, &vf, NULL, 0) < 0) {
-        qDebug("oggvorbis: Input does not appear to be an Ogg bitstream.\n");
-        return;
+        qWarning("oggvorbis: Input does not appear to be an Ogg bitstream.\n");
+        return ERR;
     }
 
     comment = ov_comment(&vf, -1);
@@ -139,6 +139,7 @@ void SoundSourceOggVorbis::ParseHeader( TrackInfoObject *Track )
     Track->m_sBitrate.setNum(ov_bitrate(&vf, -1)/1000);
 
     ov_clear(&vf);
+    return OK;
 }
 
 /*

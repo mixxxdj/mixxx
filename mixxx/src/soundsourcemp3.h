@@ -43,7 +43,7 @@ public:
     long seek(long);
     unsigned read(unsigned long size, const SAMPLE*);
     inline long unsigned length();
-    static void ParseHeader( TrackInfoObject * );
+    static int ParseHeader( TrackInfoObject * );
     
 private:
     /** Fills the string str with the content of the id3tag frame of frameid.
