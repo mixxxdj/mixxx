@@ -11,6 +11,7 @@
 
 #include "tracklist.h"
 #include "trackinfoobject.h"
+#include "soundsourcesndfile.h"
 #include "images/a.xpm"
 #include "images/b.xpm"
 
@@ -72,7 +73,7 @@ TrackList::TrackList( const QString sDirectory, QTable *ptableTracks )
 		m_ptableTracks->setText( iRow, 1, Track->m_sTitle );
 		m_ptableTracks->setText( iRow, 2, Track->m_sArtist );
 		m_ptableTracks->setText( iRow, 3, Track->m_sType );
-		m_ptableTracks->setText( iRow, 4, Track->m_sDuration );
+		m_ptableTracks->setText( iRow, 4, Track->Duration() );
 		m_ptableTracks->setText( iRow, 5, Track->m_sBitrate );
 		iRow ++;
 	}
@@ -181,10 +182,16 @@ bool TrackList::AddFiles(const char *path)
 			// Check if the file exists in the list:
 			if (!FileExistsInList( fi->fileName() ))
 			{
-				// Insert a new file:
-				TrackInfoObject *Track;
-				Track = new TrackInfoObject( fi->fileName() );
-				Track->Parse();
+				TrackInfoObject *Track = 
+					new TrackInfoObject( dir.absPath(), fi->fileName() );
+				// Add basic information:
+				Track->Parse(); 
+				// Find the type:
+				QString sType = fi->fileName().section(".",-1).lower();
+				// Parse it using the sound sources:
+				if (sType == "wav")
+					SoundSourceSndFile::ParseHeader( Track );
+				
 				// Append the track to the list of tracks:
 				m_lTracks.append( Track );
 				qDebug( "Found new track: %s", Track->m_sFilename.latin1() );

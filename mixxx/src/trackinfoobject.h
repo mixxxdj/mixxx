@@ -11,11 +11,12 @@ class TrackInfoObject : public QObject
 {
 	Q_OBJECT
 public:
-	TrackInfoObject( const QString );
+	TrackInfoObject( const QString, const QString );
 	TrackInfoObject( const QDomNode & );
 	~TrackInfoObject();
 	void WriteToXML( QDomDocument &, QDomElement & );
 	void Parse();
+	QString Duration(); // Returns the duration as a string
 
 	bool m_bExist; // Flag which determines if the file exist or not.
 	QString m_sFilename;
@@ -23,8 +24,10 @@ public:
 	QString m_sArtist;
 	QString m_sTitle;
 	QString m_sType;
-	QString m_sDuration;
+	int m_iDuration;
+	int m_iLength;
 	QString m_sBitrate;
+
 	int m_iTimesPlayed;
 
 private:
