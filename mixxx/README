@@ -20,6 +20,8 @@ New since 1.4:
 - Fixed error in latency calculation
 - Fixed glitches in decoding mp3 files at start of files or
   after seek.
+- Fixed window size when not in full screen mode
+- Fixed bug in remaining time display
 
 * INSTALL/USE **********************************************
 Please see manual, included in this directory, 
