@@ -144,4 +144,3 @@ void VisualDisplayBuffer::setBuffer(bufInfo i)
     // std::cout << "len1 " << bufferInfo.len1 << ", len2 " << bufferInfo.len2 << "\n";
 }
 
-

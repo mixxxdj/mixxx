@@ -17,7 +17,7 @@
 #ifndef DEFS_H
 #define DEFS_H
 
-#define VERSION "1.1pre6"
+#define VERSION "1.1"
 
 #include <math.h>
 #include <iostream>

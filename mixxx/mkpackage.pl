@@ -23,7 +23,13 @@ else
 }
 
 # Check if mixxx exists
-@out = `ls src/mixxx`;
+if ($arch =~ /i586/)
+{
+    @out = `ls src/mixxx`;
+} else {
+    @out = `ls src/mixxx.app`;
+}
+
 if ($#out<0)
 {
     die('You need to compile Mixxx first');
@@ -50,9 +56,9 @@ if ($arch =~ /i586/)
 `install -d $BASEMISC/skins/outline`;
 `install -d $BASEMISC/skins/traditional`;
 `install -d $BASEMISC/skins/outlineClose`;
-`install src/skins/outline/* $BASEMISC/skins/outline`;
-`install src/skins/outlineClose/* $BASEMISC/skins/outlineClose`;
-`install src/skins/traditional/* $BASEMISC/skins/traditional`;
+`cp src/skins/outline/* $BASEMISC/skins/outline`;
+`cp src/skins/outlineClose/* $BASEMISC/skins/outlineClose`;
+`cp src/skins/traditional/* $BASEMISC/skins/traditional`;
 
 # Copy midi config files
 `install -d $BASEMISC/midi`;
@@ -71,7 +77,7 @@ if ($arch =~ /i586/)
     `install install.pl $BASE`;
 } else {
     # Install bundle
-    `cp -r mixxx.app $BASE`;
+    `cp -R src/mixxx.app $BASE/.`;
 }
 
 # Copy doc files

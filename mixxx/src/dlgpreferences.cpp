@@ -54,7 +54,7 @@ DlgPreferences::DlgPreferences(MixxxApp *mixxx, MixxxView *view,
     setOkButton("Close");
 
     // Set size
-    resize(QSize(380,500));
+    resize(QSize(380,520));
 
     // Install event handler to generate closeDlg signal
     installEventFilter(this);
