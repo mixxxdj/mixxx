@@ -79,8 +79,13 @@ EngineBuffer::EngineBuffer(PowerMate *_powermate, const char *_group, WVisual *p
     bufferposSlider = new ControlEngine(controlbufferpos);
 
     // m_pTrackEnd is used to signal when at end of file during playback
-    p = new ControlPushButton(ConfigKey(group, "EndOfTrack"));
-    m_pTrackEnd = new ControlEngine(p);
+    ControlObject *p5 = new ControlObject(ConfigKey(group, "TrackEnd"));
+    m_pTrackEnd = new ControlEngine(p5);
+
+    // TrackEndMode determines what to do at the end of a track
+    p5 = new ControlObject(ConfigKey(group,"TrackEndMode"));
+    m_pTrackEndMode = new ControlEngine(p5);
+    m_pTrackEndMode->set((double)TRACK_END_MODE_STOP);
     
     // BPM control
     ControlBeat *p4 = new ControlBeat(ConfigKey(group, "bpm"));
@@ -488,13 +493,38 @@ CSAMPLE *EngineBuffer::process(const CSAMPLE *, const int buf_size)
             bufferposSlider->set((CSAMPLE)bufferpos_play);
         }
 
-        // If playbutton is pressed, check if we are at start or end of track. change trackend status
-        // if that is the case
+        // If playbutton is pressed, check if we are at start or end of track
         if (playButton->get()==1. && m_pTrackEnd->get()==0. &&
             ((filepos_play<=0. && backwards==true) ||
             ((int)filepos_play>=file_length_old && backwards==false)))
         {
-            m_pTrackEnd->set(1.);
+            // If end of track mode is set to next, signal EndOfTrack to TrackList,
+            // otherwise start looping, pingpong or stop the track
+            int m = (int)m_pTrackEndMode->get();
+            switch (m)
+            {
+            case TRACK_END_MODE_STOP:
+                playButton->set(0.);
+                break;
+            case TRACK_END_MODE_NEXT:
+                m_pTrackEnd->set(1.);
+                break;
+            case TRACK_END_MODE_LOOP:
+                filepos_play=0.;
+                break;
+            case TRACK_END_MODE_PING:
+                qDebug("Ping not implemented yet");
+/*
+                if (backwards)
+                    filepos_play=0.;
+                else
+                    filepos_play=file_length_old;                    
+                backwards = !backwards;
+*/
+                break;
+            default:
+                qDebug("Invalid track end mode: %i",m);
+            }
         }
 
         pause.unlock();

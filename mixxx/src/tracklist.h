@@ -23,11 +23,6 @@ const int COL_DURATION = 4;
 const int COL_BITRATE = 5;
 const int COL_INDEX = 6;
 
-// End of track mode constants
-const int END_OF_TRACK_MODE_STOP = 0;
-const int END_OF_TRACK_MODE_NEXT = 1;
-const int END_OF_TRACK_MODE_LOOP = 2;
-const int END_OF_TRACK_MODE_PING = 3;
 
 
 // This define sets the version of the tracklist. If any code is changed or
