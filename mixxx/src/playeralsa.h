@@ -14,14 +14,12 @@
  *   (at your option) any later version.                                   *
  *                                                                         *
  ***************************************************************************/
-#ifdef Q_WS_X11
 #ifndef PLAYERALSA_H
 #define PLAYERALSA_H
 
 #include <qthread.h>
 #include "player.h"
 #include <sys/asoundlib.h>
-//#include <pthread.h>
 #include <sched.h>
 #include "enginebuffer.h"
 
@@ -48,5 +46,4 @@ private:
 
 };
 
-#endif
 #endif

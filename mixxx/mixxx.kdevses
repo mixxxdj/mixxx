@@ -3,15 +3,21 @@
 <KDevPrjSession>
  <LastCompileConfig>(Default)</LastCompileConfig>
  <Mainframe MaximizeMode="1" />
- <DocsAndViews NumberOfDocuments="3" >
-  <Doc0 CursorPosLine="22" Type="KWriteDoc" NumberOfViews="1" CursorPosCol="5" FileName="/home/haste/cvs/mixxx/src/enginebuffer.cpp" >
+ <DocsAndViews NumberOfDocuments="5" >
+  <Doc0 CursorPosLine="51" Type="KWriteDoc" NumberOfViews="1" CursorPosCol="0" FileName="/home/haste/cvs/mixxx/src/enginebuffer.cpp" >
    <View0 Top="24" Width="400" Attach="1" Height="300" Left="3" Focus="0" Type="KWriteView" MinMaxMode="0" />
   </Doc0>
-  <Doc1 CursorPosLine="27" Type="KWriteDoc" NumberOfViews="1" CursorPosCol="2" FileName="/home/haste/cvs/mixxx/src/enginebuffer.h" >
-   <View0 Top="22" Width="764" Attach="1" Height="428" Left="22" Focus="1" Type="KWriteView" MinMaxMode="2" />
+  <Doc1 CursorPosLine="10" Type="KWriteDoc" NumberOfViews="1" CursorPosCol="0" FileName="/home/haste/cvs/mixxx/src/engineiirfilter.h" >
+   <View0 Top="46" Width="758" Attach="1" Height="609" Left="25" Focus="0" Type="KWriteView" MinMaxMode="0" />
   </Doc1>
-  <Doc2 Type="CDocBrowser" NumberOfViews="1" FileName="/usr/qt/3/doc/html/qsemaphore.html" >
-   <View Top="68" Width="124" Attach="1" Height="115" Left="47" Focus="0" Type="KHTMLView" MinMaxMode="0" />
+  <Doc2 CursorPosLine="22" Type="KWriteDoc" NumberOfViews="1" CursorPosCol="3" FileName="/home/haste/cvs/mixxx/src/midiobject.h" >
+   <View0 Top="68" Width="758" Attach="1" Height="426" Left="47" Focus="0" Type="KWriteView" MinMaxMode="0" />
   </Doc2>
+  <Doc3 CursorPosLine="14" Type="KWriteDoc" NumberOfViews="1" CursorPosCol="50" FileName="/home/haste/cvs/mixxx/src/midiobject.cpp" >
+   <View0 Top="112" Width="758" Attach="1" Height="586" Left="91" Focus="1" Type="KWriteView" MinMaxMode="0" />
+  </Doc3>
+  <Doc4 Type="CDocBrowser" NumberOfViews="1" FileName="/usr/qt/3/doc/html/qsemaphore.html" >
+   <View Top="88" Width="130" Attach="1" Height="142" Left="88" Focus="0" Type="KHTMLView" MinMaxMode="2" />
+  </Doc4>
  </DocsAndViews>
 </KDevPrjSession>
