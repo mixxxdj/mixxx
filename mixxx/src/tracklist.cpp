@@ -259,7 +259,7 @@ void TrackList::WriteXML()
 
     // Ensure UTF16 encoding
     domXML.appendChild(domXML.createProcessingInstruction("xml","version=\"1.0\" encoding=\"UTF-16\""));
-    
+
     // Set the document type
     QDomElement elementRoot = domXML.createElement( "Mixxx_Track_List" );
     domXML.appendChild(elementRoot);
@@ -422,7 +422,7 @@ void TrackList::slotChangePlay_1(int idx)
     if (idx==-1)
         m_iCurTrackIdxCh1 = m_pTableTracks->text(m_pTableTracks->currentRow(), COL_INDEX ).toInt();
     TrackInfoObject *track = m_lTracks.at(m_iCurTrackIdxCh1);
-    
+
     if (track)
     {
         // Update score:
@@ -444,7 +444,7 @@ void TrackList::slotChangePlay_2(int idx)
     if (idx==-1)
         m_iCurTrackIdxCh2 = m_pTableTracks->text(m_pTableTracks->currentRow(), COL_INDEX).toInt();
     TrackInfoObject *track = m_lTracks.at(m_iCurTrackIdxCh2);
-        
+
     if (track)
     {
         // Update score:
@@ -455,9 +455,26 @@ void TrackList::slotChangePlay_2(int idx)
 
         // Request a new track from the reader:
         m_pBuffer2->getReader()->requestNewTrack( track->Location() );
-    
+
         // Write info
         m_pText2->setText( track->getInfo() );
+    }
+}
+
+void TrackList::loadTrack1(QString name)
+{
+    if (QFile(name).exists())
+    {
+        m_pBuffer1->getReader()->requestNewTrack(name);
+        m_pText1->setText(name);
+    }
+}
+void TrackList::loadTrack2(QString name)
+{
+    if (QFile(name).exists())
+    {
+        m_pBuffer2->getReader()->requestNewTrack(name);
+        m_pText2->setText(name);
     }
 }
 

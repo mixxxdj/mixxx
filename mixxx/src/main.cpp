@@ -20,9 +20,10 @@
 #include <qstring.h>
 #include <qtextcodec.h>
 #include <qtranslator.h>
-#include <qmessagebox.h> 
+#include <qmessagebox.h>
 #include <qfile.h>
 #include <qtextstream.h>
+#include <qstringlist.h>
 #include <stdio.h>
 #include <math.h>
 #include "portaudio.h"
@@ -82,23 +83,25 @@ int main(int argc, char *argv[])
 #endif
 
     QApplication a(argc, argv);
-//  a.setFont(QFont("helvetica", 10));
     QTranslator tor( 0 );
     // set the location where your .qm files are in load() below as the last parameter instead of "."
     // for development, use "/" to use the english original as
     // .qm files are stored in the base project directory.
     tor.load( QString("mixxx.") + QTextCodec::locale(), "." );
-    a.installTranslator( &tor ); 
-    /* uncomment the following line, if you want a Windows 95 look*/
-    // a.setStyle(WindowsStyle);
+    a.installTranslator( &tor );
 
     // Check if one of the command line arguments is "--no-visuals"
 //    bool bVisuals = true;
 //    for (int i=0; i<argc; ++i)
 //        if(QString("--no-visuals")==argv[i])
 //            bVisuals = false;
-    
-    MixxxApp *mixxx=new MixxxApp(&a);
+
+    // Construct a list of strings based on the command line arguments
+    QStringList files;
+    for (int i=0; i<argc; ++i)
+        files += argv[i];
+
+    MixxxApp *mixxx=new MixxxApp(&a, files);
     a.setMainWidget(mixxx);
 
     mixxx->show();

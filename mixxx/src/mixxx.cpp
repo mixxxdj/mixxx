@@ -86,7 +86,7 @@
   #include "midiobjectwin.h"
 #endif
 
-MixxxApp::MixxxApp(QApplication *a)
+MixxxApp::MixxxApp(QApplication *a, QStringList files)
 {
     app = a;
 
@@ -250,7 +250,7 @@ MixxxApp::MixxxApp(QApplication *a)
 	        powermate2 = 0;
 		}
 	}
- 
+
     // Try initializing Joystick
     joystick1 = 0;
 #ifdef __LINUX__
@@ -322,7 +322,7 @@ MixxxApp::MixxxApp(QApplication *a)
         mb->setIcon(QMessageBox::Information);
         mb->setText("OpenGL cannot be initialized, which means that\nthe waveform displays won't work. A simple\nmode will be used instead where you can still\nuse the mouse to change speed.");
         mb->show();
-    }    
+    }
     setCentralWidget(view);
 
     // Tell EngineBuffer to notify the visuals if they are WVisualWaveform
@@ -340,7 +340,7 @@ MixxxApp::MixxxApp(QApplication *a)
             ControlObject::connectControls(ConfigKey("[Channel2]", "rate"), ConfigKey("[Channel2]", "VisualLengthScale-signal"));
         }
     }
-            
+
     // Initialize tracklist:
     m_pTracks = new TrackList(config->getValueString(ConfigKey("[Playlist]","Directory")), view->m_pTrackTable,
                               view->m_pTextCh1, view->m_pTextCh2, buffer1, buffer2);
@@ -362,6 +362,12 @@ MixxxApp::MixxxApp(QApplication *a)
     player->start();
 
     setFocusPolicy(QWidget::StrongFocus);
+
+    // Load tracks in files (command line arguments) into player 1 and 2:
+    if (files.count()>1)
+        m_pTracks->loadTrack1((*files.at(1)));
+    if (files.count()>2)
+        m_pTracks->loadTrack2((*files.at(2)));
 }
 
 MixxxApp::~MixxxApp()
