@@ -21,8 +21,8 @@
 #include "defs.h"
 #include "monitor.h"
 #include "soundsource.h"
-#include "mathstuff.h"
 #include "enginepreprocess.h"
+#include "windowkaiser.h"
 #include <qthread.h>
 #include <qevent.h>
 #include <qobject.h>
@@ -33,7 +33,7 @@
 
 class SoundBuffer {
 public: 
-    SoundBuffer(int _chunkSize, int _chunkNo, int _windowSize, int _stepSize);
+    SoundBuffer(int _chunkSize, int _chunkNo, int windowSize, int _stepSize);
     ~SoundBuffer();
     void setSoundSource(SoundSource *_file);
     void getchunk(CSAMPLE rate);
@@ -61,7 +61,8 @@ private:
     /** Pointer to visual vertex buffer */
     QObject *visualBuffer;
     /** Pointer to window and windowed samples of signal */
-    CSAMPLE *window, *windowedSamples;
+    WindowKaiser *window;
+    CSAMPLE *windowedSamples;
     /** Pointer to pre-processing object */
     EnginePreProcess *preprocess;
 
@@ -69,7 +70,6 @@ private:
     SoundSource *file;
     int chunkSize;
     int chunkNo;
-    int windowSize;
     int stepSize;
     int windowPerChunk;
     int windowNo;

@@ -3,36 +3,27 @@
 <KDevPrjSession>
  <LastCompileConfig>(Default)</LastCompileConfig>
  <Mainframe MaximizeMode="1" />
- <DocsAndViews NumberOfDocuments="10" >
-  <Doc0 CursorPosLine="49" Type="KWriteDoc" NumberOfViews="1" CursorPosCol="9" FileName="/home/haste/cvs/mixxx/src/enginebuffer.h" >
-   <View0 Top="68" Width="738" Attach="1" Height="370" Left="47" Focus="0" Type="KWriteView" MinMaxMode="0" />
-  </Doc0>
-  <Doc1 CursorPosLine="42" Type="KWriteDoc" NumberOfViews="1" CursorPosCol="0" FileName="/home/haste/cvs/mixxx/src/enginebuffer.cpp" >
+ <DocsAndViews NumberOfDocuments="7" >
+  <Doc0 CursorPosLine="35" Type="KWriteDoc" NumberOfViews="1" CursorPosCol="50" FileName="/home/haste/cvs/mixxx/src/soundbuffer.h" >
    <View0 Top="90" Width="738" Attach="1" Height="370" Left="69" Focus="0" Type="KWriteView" MinMaxMode="0" />
-  </Doc1>
-  <Doc2 CursorPosLine="38" Type="KWriteDoc" NumberOfViews="1" CursorPosCol="37" FileName="/home/haste/cvs/mixxx/src/enginespectralfwd.h" >
+  </Doc0>
+  <Doc1 CursorPosLine="26" Type="KWriteDoc" NumberOfViews="1" CursorPosCol="27" FileName="/home/haste/cvs/mixxx/src/defs.h" >
    <View0 Top="112" Width="738" Attach="1" Height="370" Left="91" Focus="0" Type="KWriteView" MinMaxMode="0" />
+  </Doc1>
+  <Doc2 CursorPosLine="187" Type="KWriteDoc" NumberOfViews="1" CursorPosCol="77" FileName="/home/haste/cvs/mixxx/src/soundbuffer.cpp" >
+   <View0 Top="134" Width="738" Attach="1" Height="370" Left="113" Focus="0" Type="KWriteView" MinMaxMode="0" />
   </Doc2>
-  <Doc3 CursorPosLine="65" Type="KWriteDoc" NumberOfViews="1" CursorPosCol="11" FileName="/home/haste/cvs/mixxx/src/soundbuffer.h" >
-   <View0 Top="156" Width="925" Attach="1" Height="870" Left="135" Focus="0" Type="KWriteView" MinMaxMode="0" />
+  <Doc3 CursorPosLine="34" Type="KWriteDoc" NumberOfViews="1" CursorPosCol="4" FileName="/home/haste/cvs/mixxx/src/enginepreprocess.h" >
+   <View0 Top="132" Width="931" Attach="1" Height="897" Left="132" Focus="1" Type="KWriteView" MinMaxMode="2" />
   </Doc3>
-  <Doc4 CursorPosLine="26" Type="KWriteDoc" NumberOfViews="1" CursorPosCol="27" FileName="/home/haste/cvs/mixxx/src/defs.h" >
-   <View0 Top="178" Width="738" Attach="1" Height="370" Left="157" Focus="0" Type="KWriteView" MinMaxMode="0" />
-  </Doc4>
-  <Doc5 CursorPosLine="191" Type="KWriteDoc" NumberOfViews="1" CursorPosCol="0" FileName="/home/haste/cvs/mixxx/src/soundbuffer.cpp" >
-   <View0 Top="176" Width="931" Attach="1" Height="897" Left="176" Focus="1" Type="KWriteView" MinMaxMode="2" />
-  </Doc5>
-  <Doc6 CursorPosLine="25" Type="KWriteDoc" NumberOfViews="1" CursorPosCol="18" FileName="/home/haste/cvs/mixxx/src/enginepreprocess.h" >
+  <Doc4 CursorPosLine="33" Type="KWriteDoc" NumberOfViews="1" CursorPosCol="45" FileName="/home/haste/cvs/mixxx/src/enginepreprocess.cpp" >
    <View0 Top="178" Width="925" Attach="1" Height="870" Left="157" Focus="0" Type="KWriteView" MinMaxMode="0" />
+  </Doc4>
+  <Doc5 CursorPosLine="85" Type="KWriteDoc" NumberOfViews="1" CursorPosCol="0" FileName="/home/haste/cvs/mixxx/src/enginespectralfwd.cpp" >
+   <View0 Top="200" Width="738" Attach="1" Height="614" Left="179" Focus="0" Type="KWriteView" MinMaxMode="0" />
+  </Doc5>
+  <Doc6 CursorPosLine="36" Type="KWriteDoc" NumberOfViews="1" CursorPosCol="66" FileName="/home/haste/cvs/mixxx/src/enginespectralfwd.h" >
+   <View0 Top="156" Width="738" Attach="1" Height="614" Left="135" Focus="0" Type="KWriteView" MinMaxMode="0" />
   </Doc6>
-  <Doc7 CursorPosLine="40" Type="KWriteDoc" NumberOfViews="1" CursorPosCol="10" FileName="/home/haste/cvs/mixxx/src/enginepreprocess.cpp" >
-   <View0 Top="200" Width="925" Attach="1" Height="870" Left="179" Focus="0" Type="KWriteView" MinMaxMode="0" />
-  </Doc7>
-  <Doc8 CursorPosLine="33" Type="KWriteDoc" NumberOfViews="1" CursorPosCol="54" FileName="/home/haste/cvs/mixxx/src/engineobject.h" >
-   <View0 Top="222" Width="925" Attach="1" Height="565" Left="201" Focus="0" Type="KWriteView" MinMaxMode="0" />
-  </Doc8>
-  <Doc9 CursorPosLine="96" Type="KWriteDoc" NumberOfViews="1" CursorPosCol="0" FileName="/home/haste/cvs/mixxx/src/enginespectralfwd.cpp" >
-   <View0 Top="222" Width="925" Attach="1" Height="591" Left="201" Focus="0" Type="KWriteView" MinMaxMode="0" />
-  </Doc9>
  </DocsAndViews>
 </KDevPrjSession>

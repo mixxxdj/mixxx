@@ -16,10 +16,12 @@
  ***************************************************************************/
 
 #include "enginepreprocess.h"
+#include "enginespectralfwd.h"
+#include "windowkaiser.h"
 #include "configobject.h"
 #include "soundbuffer.h"
 
-EnginePreProcess::EnginePreProcess(SoundBuffer *_soundbuffer, int _specNo, int windowSize)
+EnginePreProcess::EnginePreProcess(SoundBuffer *_soundbuffer, int _specNo, WindowKaiser *window)
 {
     specNo = _specNo;
     soundbuffer = _soundbuffer;
@@ -27,8 +29,13 @@ EnginePreProcess::EnginePreProcess(SoundBuffer *_soundbuffer, int _specNo, int w
     // Allocate list of EngineSpectralFwd objects, corresponding to one object for each
     // stepsize throughout the readbuffer of EngineBuffer
     specList.setAutoDelete(TRUE);
+
+    hfc = new CSAMPLE[specNo];
     for (int i=0; i<specNo; i++)
-        specList.append(new EngineSpectralFwd(true,false,windowSize));
+    {
+        specList.append(new EngineSpectralFwd(true,false,window));
+        hfc[i] = 0.;
+    }
 }
 
 EnginePreProcess::~EnginePreProcess()
@@ -39,17 +46,24 @@ void EnginePreProcess::update(int specFrom, int specTo)
 {
     if (specTo>specFrom)
         for (int i=specFrom; i<specTo; i++)
-            specList.at(i)->process(soundbuffer->getWindowPtr(i),0);
+            process(i);    
     else
     {
         for (int i=specFrom; i<specNo; i++)
-            specList.at(i)->process(soundbuffer->getWindowPtr(i),0);
+            process(i);
         for (int i=0; i<specTo; i++)
-            specList.at(i)->process(soundbuffer->getWindowPtr(i),0);
+            process(i);
     }
 }
 
 CSAMPLE *EnginePreProcess::process(const CSAMPLE *, const int)
 {
     return 0;
+}
+
+void EnginePreProcess::process(int idx)
+{
+    specList.at(idx)->process(soundbuffer->getWindowPtr(idx),0);
+    hfc[idx] = specList.at(idx)->getHFC();    
+    qDebug("hfc: %f",hfc[idx]);
 }

@@ -17,19 +17,17 @@
 
 #include "soundbuffer.h"
 
-SoundBuffer::SoundBuffer(int _chunkSize, int _chunkNo, int _windowSize, int _stepSize)
+SoundBuffer::SoundBuffer(int _chunkSize, int _chunkNo, int windowSize, int _stepSize)
 {
     // Setup variables for block based analysis
     chunkSize = _chunkSize;
     chunkNo = _chunkNo;
-    windowSize = _windowSize;
     stepSize = _stepSize;
     windowPerChunk = chunkSize/stepSize;
     windowNo = chunkNo*windowPerChunk;    
     
     // Allocate and calculate window
-    window = new CSAMPLE[windowSize];
-    wndKaiser(window, windowSize, 6.5);
+    window = new WindowKaiser(windowSize, 6.5);
 
     // Allocate memory for windowed portion of signal
     windowedSamples = new CSAMPLE[windowSize];
@@ -43,7 +41,7 @@ SoundBuffer::SoundBuffer(int _chunkSize, int _chunkNo, int _windowSize, int _ste
         read_buffer[i] = 0.;
 
     // Allocate pre processing object
-    preprocess = new EnginePreProcess(this, windowNo, windowSize);
+    preprocess = new EnginePreProcess(this, windowNo, window);
         
     visualBuffer = 0;
         
@@ -105,8 +103,8 @@ void SoundBuffer::getchunk(CSAMPLE rate)
 
         bufIdx = bufferpos_start;
 
-        // Do pre-processing...
-        preprocess->update(bufferpos_start/stepSize, ((preEnd-(windowSize/2)+READBUFFERSIZE)%READBUFFERSIZE)/stepSize);
+        // Do pre-processing.
+        preprocess->update((bufferpos_start/stepSize+1)%windowNo, (preEnd/stepSize-1+windowNo)%windowNo);
     }
     else
     {
@@ -124,7 +122,7 @@ void SoundBuffer::getchunk(CSAMPLE rate)
         }
 
         // Do pre-processing...
-        preprocess->update(preStart/stepSize, ((bufferpos_end-(windowSize/2)+READBUFFERSIZE)%READBUFFERSIZE)/stepSize);
+        preprocess->update((preStart/stepSize+1)%windowNo, (bufferpos_end/stepSize-1+windowNo)%windowNo);
     }
     filepos_start.write(filepos_start_new);
     filepos_end.write(filepos_end_new);
@@ -183,26 +181,29 @@ CSAMPLE *SoundBuffer::getChunkPtr(int chunkIdx)
 }
 
 // Get a pointer to a window centered around the sample at windowIdx*windowSize
-// Return 0 if window is illegal.
 CSAMPLE *SoundBuffer::getWindowPtr(int windowIdx)
 {
     // Start position of window
-    int windowPos = (windowIdx*stepSize-windowSize/2+READBUFFERSIZE)%READBUFFERSIZE;
+    int windowPos = (windowIdx*stepSize-window->getSize()/2+READBUFFERSIZE)%READBUFFERSIZE;
 
-    if (windowPos+windowSize>=bufferpos_end || windowPos<bufferpos_start)
-        return 0;
-    else
+//    qDebug("windowIdx %i, windowPos %i, bufferpos_end %i, bufferpos_start %i",windowIdx,windowPos,bufferpos_end, bufferpos_start);
+/*    if (windowPos+window->getSize()>=bufferpos_end || windowPos<bufferpos_start)
     {
-        if (windowPos+windowSize < chunkNo*chunkSize)
-            for (int i=windowPos; i<windowPos+windowSize; i++)
-                windowedSamples[i-windowPos] = read_buffer[i];        
+        return 0;
+    }
+    else
+*/
+    {
+        if (windowPos+window->getSize() < chunkNo*chunkSize)
+            for (int i=windowPos; i<windowPos+window->getSize(); i++)
+                windowedSamples[i-windowPos] = read_buffer[i];
         else
         {
             for (int i=windowPos; i<chunkNo*chunkSize; i++)
                 windowedSamples[i-windowPos] = read_buffer[i];
-            for (int i=0; i<(windowPos+windowSize)%READBUFFERSIZE; i++)
+            for (int i=0; i<(windowPos+window->getSize())%READBUFFERSIZE; i++)
                 windowedSamples[i-windowPos] = read_buffer[i];
-        }            
+        }
     }
     return windowedSamples;    
 }

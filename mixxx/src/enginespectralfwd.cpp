@@ -8,6 +8,7 @@
 
 
 #include "enginespectralfwd.h"
+#include "windowkaiser.h"
 #include "mathstuff.h"
 
 /* -------- -----------------------------------------------------------------
@@ -18,15 +19,15 @@
             size  - size of FFT to perform
    Output:  -
    -------- ----------------------------------------------------------------- */
-EngineSpectralFwd::EngineSpectralFwd(bool Power, bool Phase, int Length)
+EngineSpectralFwd::EngineSpectralFwd(bool Power, bool Phase, WindowKaiser *window)
 {
-    l  = Length;
-    //l2 = Length*2;
-    l_half = Length/2;
+    l  = window->getSize();
+    l_half = l/2;
+    wndNorm = window->getAFactor();
 
     power_calc = Power;
     phase_calc = Phase;
-
+    
     // Create plans for use in FFT calculations.
     plan_forward  = rfftw_create_plan(l,FFTW_REAL_TO_COMPLEX,FFTW_ESTIMATE);
 
@@ -94,6 +95,18 @@ CSAMPLE *EngineSpectralFwd::process(const CSAMPLE *p, const int)
     }
     else
         return tmp;
+}
+
+CSAMPLE EngineSpectralFwd::getHFC()
+{
+    // Calculate sum of power spectrum
+    CSAMPLE hfc = 0;
+
+    for (int i=0; i<l_half; ++i)
+        hfc += spectrum[i];
+    hfc *= (two_pi/l_half)*wndNorm;
+
+    return hfc;
 }
 
 /* -------- -----------------------------------------------------------------
