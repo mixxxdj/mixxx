@@ -82,7 +82,8 @@ void DlgPrefMidi::slotUpdate()
     ComboBoxMididevice->clear();
     QStringList *midiDeviceList = m_pMidi->getDeviceList();
     j=0;
-    for (QStringList::Iterator it = midiDeviceList->begin(); it != midiDeviceList->end(); ++it )
+	QStringList::Iterator it;
+    for (it = midiDeviceList->begin(); it != midiDeviceList->end(); ++it )
     {
         ComboBoxMididevice->insertItem(*it);
         if ((*it) == (*m_pMidi->getOpenDevice()))
@@ -104,7 +105,7 @@ void DlgPrefMidi::slotUpdate()
         {
             ComboBoxPowerMate1->clear();
             j=0;
-            for (QStringList::Iterator it = qPowerMateConfigList.begin(); it != qPowerMateConfigList.end(); ++it)
+            for (it = qPowerMateConfigList.begin(); it != qPowerMateConfigList.end(); ++it)
             {
                 ComboBoxPowerMate1->insertItem(*it);
                 if ((*it) == m_pConfig->getValueString(ConfigKey("[Controls]","PowerMateFunction1")))
@@ -123,7 +124,7 @@ void DlgPrefMidi::slotUpdate()
         {
             ComboBoxPowerMate2->clear();
             j=0;
-            for (QStringList::Iterator it = qPowerMateConfigList.begin(); it != qPowerMateConfigList.end(); ++it)
+            for (it = qPowerMateConfigList.begin(); it != qPowerMateConfigList.end(); ++it)
             {
                 ComboBoxPowerMate2->insertItem(*it);
                 if ((*it) == m_pConfig->getValueString(ConfigKey("[Controls]","PowerMateFunction2")))
@@ -148,7 +149,7 @@ void DlgPrefMidi::slotUpdate()
     QStringList qMouseDeviceList = Mouse::getDeviceList();
     ComboBoxMouseDevice1->clear();
     j=0;
-    for (QStringList::Iterator it = qMouseDeviceList.begin(); it != qMouseDeviceList.end(); ++it)
+    for (it = qMouseDeviceList.begin(); it != qMouseDeviceList.end(); ++it)
     {
         ComboBoxMouseDevice1->insertItem(*it);
         if ((*it) == m_pConfig->getValueString(ConfigKey("[Controls]","MouseDevice1")))
@@ -178,7 +179,7 @@ void DlgPrefMidi::slotUpdate()
 
     ComboBoxMouseDevice2->clear();
     j=0;
-    for (QStringList::Iterator it = qMouseDeviceList.begin(); it != qMouseDeviceList.end(); ++it)
+    for (it = qMouseDeviceList.begin(); it != qMouseDeviceList.end(); ++it)
     {
         ComboBoxMouseDevice2->insertItem(*it);
         if ((*it) == m_pConfig->getValueString(ConfigKey("[Controls]","MouseDevice2")))
@@ -191,7 +192,7 @@ void DlgPrefMidi::slotUpdate()
         ComboBoxMouseFunction2->setEnabled(true);
         pushButtonMouseCalibrate2->setEnabled(true);
         j=0;
-        for (QStringList::Iterator it = qMouseConfigList.begin(); it != qMouseConfigList.end(); ++it)
+        for (it = qMouseConfigList.begin(); it != qMouseConfigList.end(); ++it)
         {
             ComboBoxMouseFunction2->insertItem(*it);
             if ((*it) == m_pConfig->getValueString(ConfigKey("[Controls]","MouseFunction2")))

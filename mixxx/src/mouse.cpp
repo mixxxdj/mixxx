@@ -40,4 +40,7 @@ QStringList Mouse::getDeviceList()
 #ifdef __LINUX__
     return MouseLinux::getDeviceList();
 #endif
+#ifndef __LINUX__
+	return QStringList("None");
+#endif
 }
