@@ -531,15 +531,6 @@ void EngineBuffer::slotControlBeatSync(double)
 */
 }
 
-inline bool even(long n)
-{
-//    if ((n/2) != (n+1)/2)
-    if (n%2 != 0)
-        return false;
-    else
-        return true;
-}
-
 CSAMPLE *EngineBuffer::process(const CSAMPLE *, const int buf_size)
 {
     // pause can be locked if the reader is currently loading a new track.
