@@ -12,8 +12,14 @@
 
 #include "engineobject.h"
 #include <math.h>
+#ifndef __MACX__
 #include <sfftw.h>
 #include <srfftw.h>
+#endif
+#ifdef __MACX__
+#include <fftw.h>
+#include <rfftw.h>
+#endif
 
 /**
   * Perfoms an inverse FFT on data in polar coordinates.
