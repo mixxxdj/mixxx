@@ -1,4 +1,4 @@
-- GUI controls: wheel, new knob gfx
+- GUI controls: wheel and sliders
 - Reverse volume sliders
 - Tune bandwidth parameter of EngineFilterRBJ
 
@@ -6,4 +6,3 @@ Future options:
 - Headphone channel
 - Sound Effects
 - VU meters
-- Leds
