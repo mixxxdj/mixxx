@@ -101,6 +101,14 @@ void WPushButton::setValue(double v)
 {
     m_iState = (int)v;
 
+    if (m_iNoStates==1)
+    {
+        if (m_iState==1)
+            m_bPressed = true;
+        else
+            m_bPressed = false;
+    }
+
     update();
 }
 
