@@ -5,7 +5,6 @@
 #include <qmessagebox.h>
 #include <qdir.h>
 #include <qtextstream.h>
-#include <qtable.h>
 #include <qpopupmenu.h>
 #include <qpoint.h>
 #include <qtextcodec.h>
@@ -26,8 +25,10 @@
 #include "enginebuffer.h"
 #include "dlgplaycontrol.h"
 #include "reader.h"
+#include "wtracktable.h"
 
-TrackList::TrackList( const QString sDirectory, QTable *ptableTracks,
+
+TrackList::TrackList( const QString sDirectory, WTrackTable *ptableTracks,
                       DlgPlaycontrol *playcontrol1, DlgPlaycontrol *playcontrol2,
                       EngineBuffer *buffer1, EngineBuffer *buffer2)
 {

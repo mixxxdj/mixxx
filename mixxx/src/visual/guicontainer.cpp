@@ -21,7 +21,6 @@
 #include "guisignal.h"
 #include "visualsignal.h"
 #include "../defs.h"
-#include "../reader.h"
 #include "../readerextract.h"
 
 // Static members:
@@ -31,27 +30,25 @@ Material GUIContainer::dblue, GUIContainer::lblue, GUIContainer::purple, GUICont
 /**
  * Default Consructor.
  */
-GUIContainer::GUIContainer(Reader *reader)
+GUIContainer::GUIContainer(ReaderExtract *readerExtract, ControlPotmeter *playpos)
 {
+    qDebug("-1");
     setupScene();
     atBasepos = true;
     movement = false;
 
-    //**********************
-    ReaderExtract *readerExtract; // = reader->getSoundBuffer();
-    
     // Calculate resampling factor
     CSAMPLE signalRate = (CSAMPLE)readerExtract->getRate();
     CSAMPLE factor = DISPLAYRATE/signalRate;
 
     // Chunk size used in vertex buffer****************
-    int chunkSize; // = (int)(soundBuffer->getChunkSize()*factor);
+    int chunkSize = factor*readerExtract->getBufferSize()/READCHUNK_NO; // = (int)(soundBuffer->getChunkSize()*factor);
     
     vertex = new FastVertexArray();
     vertex->init(chunkSize, READCHUNK_NO);
 
     // Create objects
-    buffer = new SignalVertexBuffer(reader, vertex);
+    buffer = new SignalVertexBuffer(readerExtract, playpos, vertex);
     //***********************
     signal = new GUISignal(buffer,vertex,"" /*engineBuffer->getGroup()*/);
     
@@ -62,7 +59,6 @@ GUIContainer::GUIContainer(Reader *reader)
     signal->setPlayPosMarkerMaterial(&purple);
     signal->setFishEyeMode(true);
 }
-
 
 GUISignal *GUIContainer::getSignal()
 {
@@ -126,6 +122,7 @@ void GUIContainer::zoom(float ox, float oy, float oz, float _length, float _heig
     destl = _length;
     desth = _height;
     destd = _depth;
+    
     movement = true;
 }
 

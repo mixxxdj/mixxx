@@ -20,13 +20,17 @@
 #include "readerextracthfc.h"
 #include "readerextractbeat.h"
 #include "readerevent.h"
-#include "visual/signalvertexbuffer.h"
 #include <qapplication.h>
+#ifdef __VISUALS__
+#include "visual/signalvertexbuffer.h"
+#include "visual/guichannel.h"
+#endif
 
 ReaderExtractWave::ReaderExtractWave(QMutex *_enginelock) : ReaderExtract(0)
 {
     enginelock = _enginelock;
-
+    guichannel = 0;
+    
     // Allocate temporary buffer
     temp = new SAMPLE[READCHUNKSIZE*2]; 
 
@@ -43,7 +47,6 @@ ReaderExtractWave::ReaderExtractWave(QMutex *_enginelock) : ReaderExtract(0)
     bufferpos_start = 0;
     bufferpos_end = 0;
 
-    signalVertexBuffer = 0;
     file = 0;
     
     // Initialize extractor objects
@@ -65,6 +68,17 @@ ReaderExtractWave::~ReaderExtractWave()
     delete readerbeat;
     delete readerhfc;
     delete readerfft;
+#endif
+}
+
+void ReaderExtractWave::addVisual(GUIChannel *_guichannel)
+{
+    guichannel = _guichannel;
+    guichannel->add(this);
+#ifdef EXTRACT
+//    readerfft->addVisual(guichannel);
+//    readerhfc->addVisual(guichannel);
+//    readerbeat->addVisual(guichannel);
 #endif
 }
 
@@ -138,11 +152,6 @@ void ReaderExtractWave::setSoundSource(SoundSource *_file)
     bufferpos_start = 0;
     bufferpos_end = 0;
     reset();
-}
-
-void ReaderExtractWave::setSignalVertexBuffer(SignalVertexBuffer *_signalVertexBuffer)
-{
-    signalVertexBuffer = _signalVertexBuffer;
 }
 
 void ReaderExtractWave::getchunk(CSAMPLE rate)
@@ -231,8 +240,8 @@ void ReaderExtractWave::getchunk(CSAMPLE rate)
     enginelock->unlock();
 
     // Update vertex buffer by sending an event containing indexes of where to update.
-    if (signalVertexBuffer != 0)
-        QApplication::postEvent(signalVertexBuffer, new ReaderEvent(bufIdx, READCHUNKSIZE));
+    if (guichannel != 0)
+        QApplication::postEvent(guichannel, new ReaderEvent(bufIdx, READCHUNKSIZE));
 }
 
 long int ReaderExtractWave::seek(long int new_playpos)

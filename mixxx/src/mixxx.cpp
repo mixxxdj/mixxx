@@ -34,6 +34,7 @@
 #include "wslider.h"
 #include "wplayposslider.h"
 #include "wpushbutton.h"
+#include "wtracktable.h"
 #include "mixxx.h"
 #include "filesave.xpm"
 #include "fileopen.xpm"
@@ -248,8 +249,8 @@ MixxxApp::MixxxApp(QApplication *a)
 #endif
 
     // Init buffers/readers
-    buffer1 = new EngineBuffer(this, optionsBeatMark, view->playcontrol1, "[Channel1]");
-    buffer2 = new EngineBuffer(this, optionsBeatMark, view->playcontrol2, "[Channel2]");
+    buffer1 = new EngineBuffer(this, optionsBeatMark, powermate1, view->playcontrol1, "[Channel1]");
+    buffer2 = new EngineBuffer(this, optionsBeatMark, powermate2, view->playcontrol2, "[Channel2]");
 
     // Initialize tracklist:
     m_pTracks = new TrackList(config->getValueString(ConfigKey("[Playlist]","Directory")), view->tracklist->tableTracks,

@@ -26,10 +26,9 @@
 #include "monitor.h"
 
 class ReaderExtractWave;
-class ReaderExtractBeat;
+class ReaderExtractBeat;              
 class SoundSource;
 class EngineBuffer;
-class MixxxApp;
 class GUIChannel;
 
 /**
@@ -39,9 +38,10 @@ class GUIChannel;
 class Reader: public QThread
 {
 public: 
-    Reader(EngineBuffer *_enginebuffer, MixxxApp *mixxx, Monitor *_rate, QMutex *_pause);
+    Reader(EngineBuffer *_enginebuffer, Monitor *_rate, QMutex *_pause);
     ~Reader();
 
+    void addVisual(GUIChannel *guichannel);
     /** Request new track to be loaded. This method is thread safe, but may block */
     void requestNewTrack(QString name);
     /** Request seek. This method is thread safe, but may block */
@@ -49,7 +49,8 @@ public:
     /** Wake up reader thread. Thread safe, non-blocking */
     void wake();
     /** Get wave buffer pointer. This address is used by EngineBuffer. The method is
-      * not thread safe and should be called before the reader thread is started */
+      * not thread safe and should #ifdef __VISUALS__
+be called before the reader thread is started */
     CSAMPLE *getBufferWavePtr();
     /** Get pointer to beat extraction object */
     ReaderExtractBeat *getBeatPtr();

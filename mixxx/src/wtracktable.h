@@ -1,7 +1,7 @@
 /***************************************************************************
-                          readerextract.cpp  -  description
+                          wtracktable.h  -  description
                              -------------------
-    begin                : Tue Mar 18 2003
+    begin                : Sun May 4 2003
     copyright            : (C) 2003 by Tue & Ken Haste Andersen
     email                : haste@diku.dk
  ***************************************************************************/
@@ -15,25 +15,22 @@
  *                                                                         *
  ***************************************************************************/
 
-#include "readerextract.h"
-#ifdef __VISUALS__
-#include "visual/guichannel.h"
+#ifndef WTRACKTABLE_H
+#define WTRACKTABLE_H
+
+#include <qwidget.h>
+#include <qtable.h>
+
+/**
+  *@author Tue & Ken Haste Andersen
+  */
+
+class WTrackTable : public QTable  {
+    Q_OBJECT
+public: 
+    WTrackTable(QWidget *parent=0, const char *name=0);
+    ~WTrackTable();
+    void sortColumn(int col, bool ascending, bool);
+};
+
 #endif
-
-ReaderExtract::ReaderExtract(ReaderExtract *_input)
-{
-    input = _input;
-}
-
-ReaderExtract::~ReaderExtract()
-{
-}
-
-void ReaderExtract::addVisual(GUIChannel *guichannel)
-{
-#ifdef __VISUALS__
-    guichannel->add(this);
-#endif
-}
-
-

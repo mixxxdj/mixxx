@@ -16,6 +16,11 @@ Mac OS 10.2.
 New since 0.9.2:
 - Improved Stability 
 - OpenGL Visualization
+- Support for PowerMate controllers
+- Better MIDI key support
+- Better sound card support for MacOS X
+- Automatic beat synchronization
+- Better playlist interface with playlists in XML format 
 
 
 * REQUIREMENTS *********************************************

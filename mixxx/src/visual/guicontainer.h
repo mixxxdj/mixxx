@@ -14,7 +14,7 @@
  *   (at your option) any later version.                                   *
  *                                                                         *
  ***************************************************************************/
- 
+
 #ifndef GUICONTAINER_H
 #define GUICONTAINER_H
 
@@ -25,7 +25,8 @@
 class FastVertexArray;
 class SignalVertexBuffer;
 class GUISignal;
-class Reader;
+class ReaderExtract;
+class ControlPotmeter;
 
 
 const float baselength = 25.;
@@ -54,7 +55,7 @@ const float zoomdepth = 1.;
 class GUIContainer : public QObject
 {
 public:
-    GUIContainer(Reader *reader);
+    GUIContainer(ReaderExtract *readerExtract, ControlPotmeter *playpos);
     GUIContainer *getContainer(int id);
     GUISignal *getSignal();
     SignalVertexBuffer *getBuffer();

@@ -11,6 +11,7 @@ class QPopupMenu;
 class QPoint;
 class DlgPlaycontrol;
 class EngineBuffer;
+class WTrackTable;
 
 // Defines for the rows in the table. Should be made as simple
 // private consts, but it won't compile.
@@ -26,7 +27,7 @@ class TrackList : public QObject
 {
 	Q_OBJECT
 public:
-	TrackList( const QString, QTable *, DlgPlaycontrol *, DlgPlaycontrol *,
+	TrackList( const QString, WTrackTable *, DlgPlaycontrol *, DlgPlaycontrol *,
                EngineBuffer *, EngineBuffer * );
 	~TrackList();
 	void WriteXML( );
@@ -49,7 +50,7 @@ private:
 
 	QString m_sDirectory; // the directory where the music files are stored
 	QPtrList<TrackInfoObject> m_lTracks; // list of all tracks
-	QTable *m_ptableTracks;
+	WTrackTable *m_ptableTracks;
 	QPopupMenu *playSelectMenu;
     /** Pointers to the play controls */
     DlgPlaycontrol *m_pPlaycontrol1, *m_pPlaycontrol2;

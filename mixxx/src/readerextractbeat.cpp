@@ -453,7 +453,7 @@ void *ReaderExtractBeat::processChunk(const int idx, const int start_idx, const 
                         else
                             dist = cur-last;
                             
-                        qDebug("dist %f, interval %f",dist,histint);
+//                        qDebug("dist %f, interval %f",dist,histint);
                         // Check if the distance to last marked beat is ok
                         if (dist > histint)
                         {                            
@@ -598,8 +598,8 @@ void *ReaderExtractBeat::processChunk(const int idx, const int start_idx, const 
     }
 */
 
-    if (maxidx>-1)
-        qDebug("BPM: %f, maxidx: %i, maxval %f, srate: %i",60.*(1./(((CSAMPLE)maxidx*histInterval)+histMinInterval)),maxidx, hist[maxidx], input->getRate());
+//    if (maxidx>-1)
+//        qDebug("BPM: %f, maxidx: %i, maxval %f, srate: %i",60.*(1./(((CSAMPLE)maxidx*histInterval)+histMinInterval)),maxidx, hist[maxidx], input->getRate());
             
     return (void *)&hist[idx];
 }

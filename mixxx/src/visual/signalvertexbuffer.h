@@ -19,7 +19,7 @@
 #define SIGNALVERTEXBUFFER_H
 
 /** Display rate in Hz. This relates to the display resolution */
-const int DISPLAYRATE = 20;
+const int DISPLAYRATE = 2000;
 
 /**
  * A Signal Vertex Array Buffer.
@@ -38,9 +38,9 @@ const int DISPLAYRATE = 20;
 #include <qobject.h>
 #include <qgl.h>
 
-class Reader;
 class ReaderExtract;
 class FastVertexArray;
+class ControlPotmeter;
 
 typedef struct
 {
@@ -51,9 +51,10 @@ typedef struct
 class SignalVertexBuffer : public QObject
 {
 public:
-    SignalVertexBuffer(Reader *_reader, FastVertexArray *vertex);
+    SignalVertexBuffer(ReaderExtract *_readerExtract, ControlPotmeter *_playpos, FastVertexArray *vertex);
     virtual ~SignalVertexBuffer();
-    bool eventFilter(QObject *o, QEvent *e);
+    /** Update and resample signal vertex buffer */
+    void update(int len, int pos);
     
     bufInfo getVertexArray();
     int getBufferLength();
@@ -63,20 +64,21 @@ public:
     GLfloat *buffer;
 
 private:
-    /** Update and resample signal vertex buffer */
-    void update(int len, int pos);
+
+    /** Pointer to ControlPotmeter object containing relative playpos */
+    ControlPotmeter *playpos;
     /** The total number of samples in the buffer. */
     int len;
     /** Resample factor. An even integer determining the factor to reduce the incomming signal with */
     int resampleFactor;
     /** Number of samples to display (used in getVertexArray) */             
-    int displayLen;
-    /** Pointer to Reader */
-    Reader *reader;
+    int displaylen;
     /** Pounter to ReaderExtract */
     ReaderExtract *readerExtract;
     /** Pointer to CFastVertexArray */
     FastVertexArray *vertex;
 };
 #endif
+
+
 

@@ -82,6 +82,13 @@ void WWheel::mouseReleaseEvent(QMouseEvent *)
 void WWheel::paintEvent(QPaintEvent *)
 {
     int idx = (int)(((float)value-64.)*(99./127.))+50;
+
+    // Range check
+    if (idx>99)
+        idx = 99;
+    else if (idx<0)
+        idx = 0;
+    
     bitBlt(this, 0, 0, pix[idx]);
 }
 

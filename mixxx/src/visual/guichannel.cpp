@@ -18,6 +18,7 @@
 #include "guichannel.h"
 #include "../defs.h"
 #include "../reader.h"
+#include "../readerevent.h"
 #include "visualcontroller.h"
 #include "guicontainer.h"
 #include "guisignal.h"
@@ -27,9 +28,10 @@
  * Default Consructor.
  */
 
-GUIChannel::GUIChannel(Reader *_reader, VisualController *_controller)
+GUIChannel::GUIChannel(Reader *_reader, ControlPotmeter *_playpos, VisualController *_controller)
 {
     reader = _reader;
+    playpos = _playpos;
     controller = _controller;
     list.setAutoDelete(true);
 
@@ -42,14 +44,14 @@ GUIChannel::~GUIChannel()
 
 bool GUIChannel::eventFilter(QObject *o, QEvent *e)
 {
-    // Update playpos
-    if (e->type() == (QEvent::Type)10003)
+    // Update buffers
+    // If a user events are received, update containers
+    if (e->type() == (QEvent::Type)10002)
     {
-/*
+        ReaderEvent *re = (ReaderEvent *)e;
         GUIContainer *c;
         for (c = list.first(); c; c = list.next())
-            c->update();
-*/
+            c->getBuffer()->update(re->pos(), re->len());
     }
     else
     {
@@ -60,10 +62,10 @@ bool GUIChannel::eventFilter(QObject *o, QEvent *e)
 }
 
 
-SignalVertexBuffer *GUIChannel::add()
+SignalVertexBuffer *GUIChannel::add(ReaderExtract *readerExtract)
 {
     // Construct a new container
-    GUIContainer *c = new GUIContainer(reader);
+    GUIContainer *c = new GUIContainer(readerExtract, playpos);
 
     if (list.isEmpty())
     {

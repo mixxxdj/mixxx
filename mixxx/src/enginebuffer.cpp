@@ -29,9 +29,6 @@
 #include "wslider.h"
 #include "wplayposslider.h"
 #include "configobject.h"
-#include "mixxxvisual.h"
-#include "visual/guichannel.h"
-#include "visual/signalvertexbuffer.h"
 #include "mixxx.h"
 #include "controlpushbutton.h"
 #include "controlpotmeter.h"
@@ -42,13 +39,21 @@
 #include "reader.h"
 #include "readerextractbeat.h"
 #include "enginebufferscalelinear.h"
+#include "powermate.h"
 
-EngineBuffer::EngineBuffer(MixxxApp *_mixxx, QAction *actionAudioBeatMark, DlgPlaycontrol *_playcontrol, const char *_group)
+class GUIChannel;
+#ifdef __VISUALS__
+  #include "mixxxvisual.h"
+  #include "visual/guichannel.h"
+#endif
+
+EngineBuffer::EngineBuffer(MixxxApp *_mixxx, QAction *actionAudioBeatMark, PowerMate *_powermate, DlgPlaycontrol *_playcontrol, const char *_group)
 {
     mixxx = _mixxx;
     playcontrol = _playcontrol;
     group = _group;
-
+    powermate = _powermate;
+    
     // Play button
     ControlPushButton *p = new ControlPushButton(ConfigKey(group, "play"));
     p->setWidget(playcontrol->PushButtonPlay);
@@ -66,12 +71,16 @@ EngineBuffer::EngineBuffer(MixxxApp *_mixxx, QAction *actionAudioBeatMark, DlgPl
     wheel = new ControlEngine(p3);
 
     // Slider to show and change song position
-    p2 = new ControlPotmeter(ConfigKey(group, "playposition"), 0., 1.);
-    p2->setWidget(playcontrol->SliderPosition);
-    playposSlider = new ControlEngine(p2);
+    ControlPotmeter *controlplaypos = new ControlPotmeter(ConfigKey(group, "playposition"), 0., 1.);
+    controlplaypos->setWidget(playcontrol->SliderPosition);
+    playposSlider = new ControlEngine(controlplaypos);
 #ifdef __UNIX__
     playposSlider->setNotify(this,(void (EngineObject::*)(double))seek);
 #endif
+
+    // Potmeter used to communicate bufferpos_play to GUI thread
+    ControlPotmeter *controlbufferpos = new ControlPotmeter(ConfigKey(group, "bufferplayposition"), 0., READBUFFERSIZE);
+    bufferposSlider = new ControlEngine(controlbufferpos);
 
     // BPM control
     ControlBeat *p4 = new ControlBeat(ConfigKey(group, "bpm"));
@@ -90,12 +99,22 @@ EngineBuffer::EngineBuffer(MixxxApp *_mixxx, QAction *actionAudioBeatMark, DlgPl
     // Control file changed
 //    filechanged = new ControlEngine(controlfilechanged);
 //    filechanged->setNotify(this,(void (EngineObject::*)(double))newtrack);
-   
-    reader = new Reader(this, mixxx, &rate_exchange, &pause);
+
+    reader = new Reader(this, &rate_exchange, &pause);
     read_buffer_prt = reader->getBufferWavePtr();
     file_length_old = -1;
     file_srate_old = 0;
     rate_old = 0;
+
+
+    // Try setting up visuals
+    GUIChannel *guichannel = 0;
+#ifdef __VISUALS__
+    if (mixxx->getVisual())
+        // Add buffer as a visual channel
+        guichannel = mixxx->getVisual()->add(reader, controlbufferpos);
+    reader->addVisual(guichannel);
+#endif
                                                             
     // Allocate buffer for processing:
     buffer = new CSAMPLE[MAX_BUFFER_LEN];
@@ -117,6 +136,7 @@ EngineBuffer::~EngineBuffer()
     delete rateSlider;
     delete buffer;
     delete scale;
+    delete bufferposSlider;
 }
 
 Reader *EngineBuffer::getReader()
@@ -329,18 +349,21 @@ CSAMPLE *EngineBuffer::process(const CSAMPLE *, const int buf_size)
                 buffer[i] = output[i];
             double idx = scale->getNewPlaypos();
                 
-            // If a beat occours in current buffer, and if audio marking is enabled, mark it
-            if (audioBeatMark->get()==1.)
-            {
-                ReaderExtractBeat *readerbeat = reader->getBeatPtr();
-                bool *beatBuffer = (bool *)readerbeat->getBasePtr();
-                int chunkSizeDiff = READBUFFERSIZE/readerbeat->getBufferSize();
+            // If a beat occours in current buffer mark it by led or in audio
+            ReaderExtractBeat *readerbeat = reader->getBeatPtr();
+            bool *beatBuffer = (bool *)readerbeat->getBasePtr();
+            int chunkSizeDiff = READBUFFERSIZE/readerbeat->getBufferSize();
 
-                int from = ((bufferpos_play-audioBeatMarkLen)/chunkSizeDiff);
-                int to   = (idx                              /chunkSizeDiff);
-                for (int i=from; i<=to; i++)
-                    if (beatBuffer[i%readerbeat->getBufferSize()])
+            int from = ((bufferpos_play-audioBeatMarkLen)/chunkSizeDiff);
+            int to   = (idx                              /chunkSizeDiff);
+            for (int i=from; i<=to; i++)
+            {
+                if (beatBuffer[i%readerbeat->getBufferSize()])
+                {
+                    if (audioBeatMark->get()==1.)
                     {
+
+
                         int j_start = i*chunkSizeDiff;
                         int j_end   = j_start+audioBeatMarkLen;
 //                        qDebug("%i-%i, buffer: %f-%f",j_start,j_end,bufferpos_play,idx);
@@ -353,8 +376,11 @@ CSAMPLE *EngineBuffer::process(const CSAMPLE *, const int buf_size)
                                 buffer[j] = 30000.;
                         }
                     }
+		    if (powermate!=0)
+                        powermate->led();
+                }
             }
-
+            
             // Ensure valid range of idx
             if (idx>READBUFFERSIZE)
                 idx -= (double)READBUFFERSIZE;
@@ -393,9 +419,9 @@ CSAMPLE *EngineBuffer::process(const CSAMPLE *, const int buf_size)
             }
             else
 */
-            if (!backwards && filepos_end< file_length_old && (filepos_end - filepos_play < READCHUNKSIZE*(READCHUNK_NO/2-2)))
+            if (!backwards && filepos_end< file_length_old && (filepos_end - filepos_play < READCHUNKSIZE*(READCHUNK_NO/2-1)))
                 reader->wake();
-            else if (backwards && filepos_start>0. && (filepos_play - filepos_start < READCHUNKSIZE*(READCHUNK_NO/2-2)))
+            else if (backwards && filepos_start>0. && (filepos_play - filepos_start < READCHUNKSIZE*(READCHUNK_NO/2-1)))
                 reader->wake();
 
             //
@@ -410,6 +436,9 @@ CSAMPLE *EngineBuffer::process(const CSAMPLE *, const int buf_size)
                 playposSlider->set(filepos_play/file_length_old);
                 playposUpdateCounter = 0;
             }
+
+            // Update bufferposSlider
+            bufferposSlider->set((CSAMPLE)bufferpos_play);
         }
         pause.unlock();
 
@@ -422,3 +451,4 @@ CSAMPLE *EngineBuffer::process(const CSAMPLE *, const int buf_size)
 
     return buffer;
 }
+

@@ -21,6 +21,7 @@
 #include "visual/guicontainer.h"
 #include "visual/guichannel.h"
 
+
 MixxxVisual::MixxxVisual(QApplication *app, QWidget *parent, const char *name) : QGLWidget(parent,name)
 {
     controller = new VisualController(app);
@@ -28,7 +29,7 @@ MixxxVisual::MixxxVisual(QApplication *app, QWidget *parent, const char *name) :
 //    idCount = 0;
     installEventFilter(this);
     time.start();
-    startTimer(16);
+    startTimer(50);
 
     list.setAutoDelete(true);
 }
@@ -60,9 +61,9 @@ bool MixxxVisual::eventFilter(QObject *o, QEvent *e)
     return TRUE;
 }
 
-GUIChannel *MixxxVisual::add(Reader *reader)
+GUIChannel *MixxxVisual::add(Reader *reader, ControlPotmeter *playpos)
 {
-    GUIChannel *c = new GUIChannel(reader, controller);
+    GUIChannel *c = new GUIChannel(reader, playpos, controller);
 
     // Position coding... hack
     if (list.isEmpty())
