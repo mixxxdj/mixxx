@@ -94,7 +94,8 @@ void TrackList::UpdateTracklist()
                 tr( "Critical Error" ),
                 tr( "Parsing error for file %1" ).arg( m_sDirectory + "/tracklist.xml" ) );
         opmlFile.close();
-        return;
+        // Try writing a new file:
+        WriteXML();
     }
     opmlFile.close();
 

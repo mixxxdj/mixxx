@@ -20,6 +20,7 @@
 #include <qtable.h>
 #include <qdir.h>
 #include <qpixmap.h>
+#include <qtooltip.h>
 
 #include "controlobject.h"
 #include "wtracktable.h"
@@ -123,11 +124,13 @@ MixxxView::MixxxView(QWidget *parent, bool bVisuals) : QWidget(parent, "Mixxx")
     m_pSliderRateCh1->setPixmaps(false, getPath("sliders/pitchleft.png"), getPath("sliders/knob1.png"));
     m_pSliderRateCh1->move(73,255);
     m_pSliderRateCh1->setFixedSize(27,207);
+    QToolTip::add(m_pSliderRateCh1, "Rate. Right click to center");
 
     m_pSliderRateCh2 = new WSliderComposed(main);
     m_pSliderRateCh2->setPixmaps(false, getPath("sliders/pitchright.png"), getPath("sliders/knob1.png"));
     m_pSliderRateCh2->move(924,255);
     m_pSliderRateCh2->setFixedSize(27,207);
+    QToolTip::add(m_pSliderRateCh2, "Rate. Right click to center");
 
     m_pButtonRateUpCh1 = new WPushButtonInc(main);
     m_pButtonRateUpCh1->setPixmap(0, false, getPath("buttons/up0.png"));
