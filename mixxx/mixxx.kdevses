@@ -3,7 +3,7 @@
 <KDevPrjSession>
  <LastCompileConfig>(Default)</LastCompileConfig>
  <Mainframe MaximizeMode="1" />
- <DocsAndViews NumberOfDocuments="7" >
+ <DocsAndViews NumberOfDocuments="8" >
   <Doc0 CursorPosLine="134" Type="KWriteDoc" NumberOfViews="1" CursorPosCol="0" FileName="/home/haste/cvs/mixxx/src/mixxx.h" >
    <View0 Top="24" Width="400" Attach="1" Height="300" Left="3" Focus="0" Type="KWriteView" MinMaxMode="0" />
   </Doc0>
@@ -14,16 +14,19 @@
    <View0 Top="68" Width="738" Attach="1" Height="638" Left="47" Focus="0" Type="KWriteView" MinMaxMode="0" />
   </Doc2>
   <Doc3 CursorPosLine="120" Type="KWriteDoc" NumberOfViews="1" CursorPosCol="14" FileName="/home/haste/cvs/mixxx/src/midiobject.cpp" >
-   <View0 Top="90" Width="738" Attach="1" Height="401" Left="69" Focus="0" Type="KWriteView" MinMaxMode="0" />
+   <View0 Top="90" Width="738" Attach="1" Height="638" Left="69" Focus="0" Type="KWriteView" MinMaxMode="0" />
   </Doc3>
   <Doc4 CursorPosLine="0" Type="KWriteDoc" NumberOfViews="1" CursorPosCol="0" FileName="/home/haste/cvs/mixxx/src/midiobject.h" >
-   <View0 Top="112" Width="738" Attach="1" Height="638" Left="91" Focus="0" Type="KWriteView" MinMaxMode="0" />
+   <View0 Top="112" Width="738" Attach="1" Height="401" Left="91" Focus="0" Type="KWriteView" MinMaxMode="0" />
   </Doc4>
   <Doc5 CursorPosLine="54" Type="KWriteDoc" NumberOfViews="1" CursorPosCol="0" FileName="/home/haste/cvs/mixxx/src/controlobject.cpp" >
    <View0 Top="134" Width="738" Attach="1" Height="638" Left="113" Focus="0" Type="KWriteView" MinMaxMode="0" />
   </Doc5>
   <Doc6 CursorPosLine="107" Type="KWriteDoc" NumberOfViews="1" CursorPosCol="0" FileName="/home/haste/cvs/mixxx/src/midiobjectoss.cpp" >
-   <View0 Top="132" Width="744" Attach="1" Height="641" Left="132" Focus="1" Type="KWriteView" MinMaxMode="2" />
+   <View0 Top="156" Width="738" Attach="1" Height="614" Left="135" Focus="0" Type="KWriteView" MinMaxMode="0" />
   </Doc6>
+  <Doc7 CursorPosLine="22" Type="KWriteDoc" NumberOfViews="1" CursorPosCol="24" FileName="/home/haste/cvs/mixxx/src/wplayposslider.cpp" >
+   <View0 Top="154" Width="744" Attach="1" Height="383" Left="154" Focus="1" Type="KWriteView" MinMaxMode="2" />
+  </Doc7>
  </DocsAndViews>
 </KDevPrjSession>

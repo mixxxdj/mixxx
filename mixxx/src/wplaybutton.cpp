@@ -38,6 +38,8 @@ WPlayButton::WPlayButton(QWidget *parent, const char *name ) : QPushButton(paren
         buttonDownOff = new QPixmap(playbutton_down_off_xpm);
     }
     controlButton = 0;
+    
+    setBackgroundMode(NoBackground);
 }
 
 WPlayButton::~WPlayButton()
@@ -60,23 +62,3 @@ void WPlayButton::drawButton(QPainter *p)
     else
         p->drawPixmap(0,0,*buttonUpOn);
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

@@ -31,6 +31,7 @@ WKnob::WKnob(QWidget *parent, const char *name ) : QDial(0,127,1,64,parent,name)
         for (int i=0; i<32; i++)
             pix[i] = new QPixmap(knob[i]);
     }
+    setBackgroundMode(NoBackground);
 }
 
 WKnob::~WKnob()

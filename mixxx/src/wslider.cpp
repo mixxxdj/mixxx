@@ -50,6 +50,8 @@ WSlider::WSlider(QWidget *parent, const char *name ) : QWidget(parent,name)
 
     // Set default value
     setDefaultValue();
+
+    setBackgroundMode(NoBackground);
 }
 
 WSlider::~WSlider()
@@ -90,7 +92,7 @@ void WSlider::mousePressEvent(QMouseEvent *e)
 
 void WSlider::paintEvent(QPaintEvent *)
 {
-    QPainter paint(this);
+    //QPainter paint(this);
 
     // Ensure size_state has been set
     if (size_state == 0)
@@ -118,18 +120,24 @@ void WSlider::paintEvent(QPaintEvent *)
 
     if (size_state == 1)
     {
-        paint.drawPixmap(0,0,*smallv);
-        paint.drawPixmap(0,pos-handle_length/2,*smallv_h);
+        bitBlt(this, 0, 0, smallv);
+        bitBlt(this, 0, pos-handle_length/2, smallv_h);
+        //paint.drawPixmap(0,0,*smallv);
+        //paint.drawPixmap(0,pos-handle_length/2,*smallv_h);
     }
     else if (size_state == 2)
     {
-        paint.drawPixmap(0,0,*midv);
-        paint.drawPixmap(0,pos-handle_length/2,*midv_h);
+        bitBlt(this, 0, 0, midv);
+        bitBlt(this, 0, pos-handle_length/2, midv_h);
+        //paint.drawPixmap(0,0,*midv);
+        //paint.drawPixmap(0,pos-handle_length/2,*midv_h);
     }
     else if (size_state == 3)
     {
-        paint.drawPixmap(0,0,*largeh);
-        paint.drawPixmap(pos-handle_length/2,0,*largeh_h);
+        bitBlt(this, 0, 0, largeh);
+        bitBlt(this, pos-handle_length/2, 0, largeh_h);
+        //paint.drawPixmap(0,0,*largeh);
+        //paint.drawPixmap(pos-handle_length/2,0,*largeh_h);
     }
 }
 
