@@ -161,7 +161,7 @@ void TrackList::updateTracklist()
 {
     // Run through all the files and add the new ones to the xml file:
 	bool bFilesAdded = false;
-	
+
 	// Put information from all the tracks into the table:
 	/************************************************************
 	the following code has been added for debugging
@@ -170,7 +170,7 @@ void TrackList::updateTracklist()
 	anyhow (checks if files are existing in the tracklist allready, if so
 	they have to be existing as an Item in the tablelist by now)
 	************************************************************/
-	
+
 	int iRow=0;
     if(!m_sDirectory.endsWith(".xml"))
     {
@@ -192,11 +192,13 @@ void TrackList::updateTracklist()
 		iTrackCount = 0;
 	}
 
+    qDebug("inserting %i rows at pos %i",iTrackCount,m_pTableTracks->numRows());
     m_pTableTracks->insertRows(m_pTableTracks->numRows(), iTrackCount );
-	for (TrackInfoObject *Track = m_lTracks.first(); Track; Track = m_lTracks.next() )
+    for (TrackInfoObject *Track = m_lTracks.first(); Track; Track = m_lTracks.next() )
     {
         if (Track->exists())
         {
+            qDebug("insert track %i at row %i: %p",iTrackNo,iRow,m_pTableTracks);
             Track->insertInTrackTableRow(m_pTableTracks, iRow, iTrackNo);
             iRow ++;
         }
@@ -277,7 +279,7 @@ void TrackList::updateScores()
 {
     for (unsigned int iRow=0; iRow<m_lTracks.count(); iRow++)
     {
-        TrackInfoObject *pTrack = m_lTracks.at(m_pTableTracks->text(iRow, COL_INDEX).toInt());
+        TrackInfoObject *pTrack = m_lTracks.at(m_pTableTracks->item(iRow, COL_INDEX)->text().toInt());
         pTrack->setScore(99*pTrack->getTimesPlayed()/m_iMaxTimesPlayed);
     }
 }
@@ -923,19 +925,23 @@ void TrackList::slotUpdateTracklist( QString sDir )
     qDebug("Updating Tracklist: %s", sDir.latin1());
 
 
-    // Delete contents of tabletrack
-    m_pTableTracks->setNumRows(0);
-
     // Set the new directory:
     m_sDirectory = sDir;
-    if(sDir.endsWith(".xml"))
+    if (sDir.endsWith(".xml"))
     {
         while (m_lTracks.count() != 0)
         {
+            m_lTracks.getFirst()->removeFromTrackTable();
             m_lTracks.removeFirst(); //Delete All old Tracks
         }
+
+
         loadPlaylist( sDir );
     }
+
+    // Reset number of rows in tracktable
+    m_pTableTracks->setNumRows(0);
+
     // Make the newlist:
     updateTracklist();
 }
