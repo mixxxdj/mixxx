@@ -32,6 +32,8 @@ DlgPreferences::DlgPreferences(MixxxApp *mixxx, MidiObject *midi, Player *player
                                TrackList *tracklist, ConfigObject<ConfigValue> *config,
                                ConfigObject<ConfigValueMidi> *midiconfig) : QTabDialog(mixxx, "")
 {    
+    setCaption("Preferences");
+    
     // Construct widgets for use in tabs
     wsound = new DlgPrefSound(this, player, config);
     wmidi  = new DlgPrefMidi(this, midi, config, midiconfig);
