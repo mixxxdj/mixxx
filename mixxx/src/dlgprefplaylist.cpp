@@ -70,3 +70,4 @@ void DlgPrefPlaylist::slotApply()
     // Save preferences
     config->Save();
 }
+

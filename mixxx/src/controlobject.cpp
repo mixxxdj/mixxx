@@ -232,7 +232,7 @@ void ControlObject::updateApp()
     emit(signalUpdateApp(m_dValue));
 }
 
-void ControlObject::setValueFromMidi(MidiCategory c, int v)
+void ControlObject::setValueFromMidi(MidiCategory, int v)
 {
     m_dValue = (double)v;
     updateFromMidi();

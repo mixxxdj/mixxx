@@ -35,7 +35,7 @@ class ControlObject;
 
 class ControlEngine : public QObject
 {
-	Q_OBJECT
+    Q_OBJECT
 public: 
     ControlEngine(ControlObject *_controlObject);
     virtual ~ControlEngine();
@@ -43,8 +43,8 @@ public:
       * external ControlObject. In this way polling on ControlEngine objects can be avoided in
       * the player thread. */
     //void setNotify(EngineObject *, EngineMethod);
-	/** Returns the value of the object */
-    inline double get();
+    /** Returns the value of the object */
+    double get() { return value; };
     /** The value is changed by the engine, and the corresponding ControlObject is updated */
     void set(double v);
     /** Setting the value from an external controller. This happen when a ControlObject has
