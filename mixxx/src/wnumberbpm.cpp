@@ -22,6 +22,7 @@ WNumberBpm::WNumberBpm(const char *group, QWidget *parent, const char *name) : W
 {
     m_qsText = "BPM: ";
     m_pRateControl = ControlObject::getControl(ConfigKey(QString(group), QString("rate")));
+    m_pRateDirControl = ControlObject::getControl(ConfigKey(QString(group), QString("rate_dir")));
 }
 
 
@@ -31,5 +32,5 @@ WNumberBpm::~WNumberBpm()
 
 void WNumberBpm::setValue(double dValue)
 {
-    WNumber::setValue(dValue*(1.+m_pRateControl->getValue()));
+    WNumber::setValue(dValue*(1.+m_pRateControl->getValue()*m_pRateDirControl->getValue()));
 }
