@@ -39,14 +39,17 @@ PlayerPortAudio::PlayerPortAudio(int size, std::vector<EngineObject *> *engines,
             devInfo = Pa_GetDeviceInfo(i);
 
             // Add the device if it is an output device:
-            if (devInfo->maxOutputChannels != 0)
+            if (devInfo->maxOutputChannels > 0)
             {
+//              qDebug("PortAudio: Name: %s, ID: %i, MaxOutput %i",devInfo->name,i,devInfo->maxOutputChannels);
+
                 // Add new PlayerInfo object to devices list
                 Player::Info *p = new Player::Info;
                 devices.append(p);
 
-                // Name
+                // ID & Name
                 p->name = QString(devInfo->name);
+                p->id = i;
 
                 // Check for default device
                 if (p->name == device)
@@ -61,7 +64,7 @@ PlayerPortAudio::PlayerPortAudio(int size, std::vector<EngineObject *> *engines,
 
                         // Get minimum latency for sample rate
                         p->latency.append(minLatency((int)devInfo->sampleRates[j]));
-                        qDebug("SRATE: %i, Latency: %i",(int)devInfo->sampleRates[j],minLatency((int)devInfo->sampleRates[j]));
+//                        qDebug("SRATE: %i, Latency: %i",(int)devInfo->sampleRates[j],minLatency((int)devInfo->sampleRates[j]));
                     }
                 }
                 else
@@ -91,7 +94,9 @@ PlayerPortAudio::PlayerPortAudio(int size, std::vector<EngineObject *> *engines,
     // Get id of default playback device if ID of device was not found in previous loop
     if (id<0)
         id = Pa_GetDefaultOutputDeviceID();
+ 
     devInfo = Pa_GetDeviceInfo(id);
+//    qDebug("PortAudio: Device name %s",devInfo->name);
 
     // Ensure requested number of channels is supported
     int channels = devInfo->maxOutputChannels;
@@ -134,10 +139,13 @@ bool PlayerPortAudio::open(QString name, int srate, int bits, int bufferSize, in
     }
 
     // Extract device information
-    unsigned int id;
-    for (id=0; id<devices.count(); id++)
-        if (name == devices.at(id)->name)
+    unsigned int id = 0;
+    for (unsigned int i=0; i<devices.count(); i++)
+        if (name == devices.at(i)->name && chMaster+chHead <= devices.at(i)->noChannels)
+        {
+            id = devices.at(i)->id;
             break;
+	}
 
     // Get number of channels to open
     int chNo = max(chMaster,chHead)+1;
@@ -156,9 +164,6 @@ bool PlayerPortAudio::open(QString name, int srate, int bits, int bufferSize, in
     }
 
     // Try to open device 5 times before giving up!
-
-    qDebug("size: %i",bufferSize);
-    
     PaError err = 0;
     for (int i=0; i<5; i++)
     {

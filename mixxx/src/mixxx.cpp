@@ -776,8 +776,12 @@ void MixxxApp::slotOptionsPreferencesUpdateHeadDevice()
     {
         Player::Info *p = pInfo->at(j);
 
-        // Name of device.
-        pDlg->ComboBoxSoundcardHead->insertItem(p->name);
+        // Name of device. On macx playback can only happen on one device at a time
+#ifdef __MACX__
+        if (p->noChannels>=4 && p->name==pDlg->ComboBoxSoundcardMaster->currentText())
+#endif
+            pDlg->ComboBoxSoundcardHead->insertItem(p->name);
+
 
         if (p->name == config->getValueString(ConfigKey("[Soundcard]","DeviceHeadphone")) &&
             !(p->noChannels==2 && p->name==pDlg->ComboBoxSoundcardMaster->currentText()))
@@ -824,12 +828,13 @@ void MixxxApp::slotOptionsPreferencesUpdateMasterDeviceOptions()
 
             // Bits
             pDlg->ComboBoxBits->clear();
-            for (unsigned int i=0; i<p->bits.size(); i++)
-            {
-                pDlg->ComboBoxBits->insertItem(QString("%1").arg(p->bits[i]));
-                if (p->bits[i]==player->BITS)
-                    pDlg->ComboBoxBits->setCurrentItem(i);
-            }
+//            for (unsigned int i=0; i<p->bits.size(); i++)
+//            {
+//                pDlg->ComboBoxBits->insertItem(QString("%1").arg(p->bits[i]));
+//                if (p->bits[i]==player->BITS)
+//                    pDlg->ComboBoxBits->setCurrentItem(i);
+//            }
+            pDlg->ComboBoxBits->insertItem(QString("16"));
         }
         // Get next device
         p = pInfo->next();

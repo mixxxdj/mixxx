@@ -40,6 +40,7 @@ public:
     
     typedef struct
     {
+        int             id;
         QString         name;
         QValueList<int> sampleRates;
         QValueList<int> bits;
