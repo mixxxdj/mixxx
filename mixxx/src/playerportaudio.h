@@ -25,7 +25,7 @@
   *@author Tue and Ken Haste Andersen
   */
 
- class PlayerPortAudio : public Player  {
+class PlayerPortAudio : public Player  {
 public: 
 	PlayerPortAudio(int size, std::vector<EngineObject *> *);
 	~PlayerPortAudio();

@@ -29,25 +29,6 @@
     <property name="caption">
         <string>Form1</string>
     </property>
-    <widget class="QPushButton">
-        <property name="name">
-            <cstring>PushButtonPlay</cstring>
-        </property>
-        <property name="geometry">
-            <rect>
-                <x>150</x>
-                <y>160</y>
-                <width>60</width>
-                <height>40</height>
-            </rect>
-        </property>
-        <property name="backgroundOrigin">
-            <enum>WindowOrigin</enum>
-        </property>
-        <property name="text">
-            <string>Play</string>
-        </property>
-    </widget>
     <widget class="QLabel">
         <property name="name">
             <cstring>textLabelTrack</cstring>
@@ -77,50 +58,6 @@
         </property>
         <property name="alignment">
             <set>WordBreak|AlignVCenter</set>
-        </property>
-    </widget>
-    <widget class="QSlider">
-        <property name="name">
-            <cstring>SliderPlaycontrol</cstring>
-        </property>
-        <property name="geometry">
-            <rect>
-                <x>0</x>
-                <y>125</y>
-                <width>210</width>
-                <height>26</height>
-            </rect>
-        </property>
-        <property name="backgroundOrigin">
-            <enum>WindowOrigin</enum>
-        </property>
-        <property name="value">
-            <number>49</number>
-        </property>
-        <property name="orientation">
-            <enum>Horizontal</enum>
-        </property>
-    </widget>
-    <widget class="QSlider">
-        <property name="name">
-            <cstring>SliderPosition</cstring>
-        </property>
-        <property name="geometry">
-            <rect>
-                <x>45</x>
-                <y>0</y>
-                <width>160</width>
-                <height>24</height>
-            </rect>
-        </property>
-        <property name="backgroundOrigin">
-            <enum>WindowOrigin</enum>
-        </property>
-        <property name="tracking">
-            <bool>false</bool>
-        </property>
-        <property name="orientation">
-            <enum>Horizontal</enum>
         </property>
     </widget>
     <widget class="QLCDNumber">
@@ -196,6 +133,72 @@
         </property>
         <property name="orientation">
             <enum>Vertical</enum>
+        </property>
+    </widget>
+    <widget class="QPushButton">
+        <property name="name">
+            <cstring>PushButtonPlay</cstring>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>150</x>
+                <y>160</y>
+                <width>60</width>
+                <height>40</height>
+            </rect>
+        </property>
+        <property name="backgroundOrigin">
+            <enum>WindowOrigin</enum>
+        </property>
+        <property name="text">
+            <string>Play</string>
+        </property>
+    </widget>
+    <widget class="QSlider">
+        <property name="name">
+            <cstring>SliderPlaycontrol</cstring>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>0</x>
+                <y>125</y>
+                <width>210</width>
+                <height>26</height>
+            </rect>
+        </property>
+        <property name="backgroundOrigin">
+            <enum>WindowOrigin</enum>
+        </property>
+        <property name="maxValue">
+            <number>127</number>
+        </property>
+        <property name="value">
+            <number>63</number>
+        </property>
+        <property name="orientation">
+            <enum>Horizontal</enum>
+        </property>
+    </widget>
+    <widget class="QSlider">
+        <property name="name">
+            <cstring>SliderPosition</cstring>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>45</x>
+                <y>0</y>
+                <width>160</width>
+                <height>24</height>
+            </rect>
+        </property>
+        <property name="backgroundOrigin">
+            <enum>WindowOrigin</enum>
+        </property>
+        <property name="tracking">
+            <bool>false</bool>
+        </property>
+        <property name="orientation">
+            <enum>Horizontal</enum>
         </property>
     </widget>
 </widget>
