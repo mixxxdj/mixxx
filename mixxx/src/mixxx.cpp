@@ -62,10 +62,15 @@ MixxxApp::MixxxApp()
 
   initDoc();
   initView();
+
   qDebug("Init playlist");
+  playSelectMenu = new QPopupMenu(this);
+  playSelectMenu->insertItem("Channel 1",this, SLOT(slotChangePlay_1()));
+  playSelectMenu->insertItem("Channel 2",this, SLOT(slotChangePlay_2()));
+
   // Connect play list table selection with "play new file"
-  connect(view->playlist->ListPlaylist, SIGNAL(clicked(QListViewItem *)),
-          this,                         SLOT(slotChangePlay(QListViewItem *)));
+  connect(view->playlist->ListPlaylist, SIGNAL(pressed(QListViewItem *, const QPoint &, int)),
+          this,                         SLOT(slotSelectPlay(QListViewItem *, const QPoint &, int)));
 
   //viewToolBar->setOn(false);
   //viewStatusBar->setOn(true);
@@ -124,6 +129,7 @@ MixxxApp::~MixxxApp()
     delete channel1;
     delete channel2;
     delete master;
+    delete playSelectMenu;
 }
 
 /** initializes all QActions of the application */
@@ -488,6 +494,7 @@ void MixxxApp::slotHelpAbout()
                       tr("Mixxx\nVersion " VERSION "\n(c) 2002 by Tue and Ken Haste Andersen") );
 }
 
+/*
 void MixxxApp::slotChangePlay(int row,int col,int button, const QPoint &)
 {
   // stop playback and deallocate buffer
@@ -498,10 +505,36 @@ void MixxxApp::slotChangePlay(int row,int col,int button, const QPoint &)
   // Start buffer and playback
   player->start(master);
 }
+*/
 
-void MixxxApp::slotChangePlay(QListViewItem *item)
+void MixxxApp::slotChangePlay_1()
 {
-  // Tell the buffer to get a new file:
-  buffer1->newtrack(item->text(1));
+    buffer1->newtrack(selection.ascii());
 }
+
+void MixxxApp::slotChangePlay_2()
+{
+    buffer2->newtrack(selection.ascii());
+}
+
+void MixxxApp::slotSelectPlay(QListViewItem *item, const QPoint &pos, int)
+{
+    // Store the current selected track
+    selection = item->text(1);
+
+    // Display popup menu
+    playSelectMenu->exec(pos);
+}
+
+
+
+
+
+
+
+
+
+
+
+
 
