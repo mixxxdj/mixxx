@@ -98,7 +98,7 @@ bool PlayerALSA::open()
 // XXX: use pre-determined output until fixed
 #if 1
     int temp;
-    QRegExp rx("\(\\S+\) (ch \(\\d+\))");
+    QRegExp rx("(\\S+) \\(ch (\\d+)\\)");
     // XXX: crashing somewhere near here!
     // master left
     qDebug("Alsa opening...2.5");
@@ -434,10 +434,53 @@ QStringList PlayerALSA::getInterfaces()
     QStringList result;
 //   result.append("plug:front:0 (ch 1)");
 //   result.append("plug:front:0 (ch 2)");
+    
+    //
+    // Print out card and device names to std out. Nothing else is done here yet.
+    //
+    snd_ctl_t *ctl;
+    snd_pcm_info_t *info;
+    char *cardname;
+    char alsaname[100];
+    const char *devicename;
+    int device;
+    int card_idx = -1;
+    int device_idx;
+    snd_pcm_info_malloc(&info);
+    while( snd_card_next(&card_idx) == 0 && card_idx >= 0 ) 
+    {
+        snd_card_get_name(card_idx, &cardname);
+        printf("card %d: %s\n", card_idx, cardname);
+
+        device_idx = -1;
+        sprintf(alsaname, "hw:%d", card_idx);
+        snd_ctl_open(&ctl, alsaname, 0);
+        while( snd_ctl_pcm_next_device(ctl, &device_idx) == 0  && device_idx >= 0 ) 
+        {
+            snd_ctl_pcm_info(ctl, info);
+            
+            // Here we should somehow be able to test if it's a playback device.
+            // Unfortunately the following line does not compile because the type info of
+            // snd_pcm_info_t is not included in asoundlib.h and I can't seem to find 
+            // equivalent functions to get the same info...
+            //if (info.flags & SND_PCM_INFO_PLAYBACK)
+            //{
+            // If it is a playback device, check the number of channels, and add
+            // a line to result for each channel.
+            // We may have to keep a list internally in this object, that maps the 
+            // strings in result to device identifiers in the ALSA API.
+            
+            devicename = snd_pcm_info_get_name(info);
+            printf("\tdevice %d: %s\n", device_idx, devicename);
+            //}
+        }
+    }
+    
     result.append("plug:surround40:0 (ch 1)");
     result.append("plug:surround40:0 (ch 2)");
     result.append("plug:surround40:0 (ch 3)");
     result.append("plug:surround40:0 (ch 4)");
+    
     return result;
 }
 
