@@ -36,6 +36,7 @@
 #include <qpoint.h>
 #include <qapplication.h>
 #include <vector>
+#include <qstringlist.h>
 
 // application specific includes
 #include "defs.h"
@@ -65,10 +66,10 @@ class ControlEngine;
 class MixxxApp : public QMainWindow
 {
   Q_OBJECT
-  
+
   public:
-    /** Construtor */
-    MixxxApp(QApplication *app);
+    /** Construtor. files is a list of command line arguments */
+    MixxxApp(QApplication *app, QStringList files);
     /** destructor */
     ~MixxxApp();
     /** initializes all QActions of the application */
