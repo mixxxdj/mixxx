@@ -46,10 +46,12 @@ typedef enum {
 } MidiCategory;
 
 
-class MidiObject : public QThread {
+class MidiObject : public QThread
+{
 public:
     MidiObject(ConfigObject<ConfigValueMidi> *pMidiConfig, QString device);
     ~MidiObject();
+    void setMidiConfig(ConfigObject<ConfigValueMidi> *pMidiConfig);
     void reopen(QString device);
     virtual void devOpen(QString) = 0;
     virtual void devClose() = 0;

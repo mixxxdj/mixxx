@@ -40,7 +40,12 @@ MidiObject::MidiObject(ConfigObject<ConfigValueMidi> *pMidiConfig, QString)
    -------- ------------------------------------------------------ */
 MidiObject::~MidiObject()
 {
-};
+}
+
+void MidiObject::setMidiConfig(ConfigObject<ConfigValueMidi> *pMidiConfig)
+{
+    m_pMidiConfig = pMidiConfig;
+}
 
 void MidiObject::reopen(QString device)
 {
@@ -84,7 +89,7 @@ QStringList *MidiObject::getConfigList(QString path)
 {
     // Make sure list is empty
     configs.clear();
-    
+
     // Get list of available midi configurations
     QDir dir(path);
     dir.setFilter(QDir::Files);
@@ -120,9 +125,11 @@ void MidiObject::send(MidiCategory category, char channel, char control, char va
         type = MIDI_KEY;
     else if (category==CTRL_CHANGE)
         type = MIDI_CTRL;
-    
-    ConfigKey *pConfigKey = m_pMidiConfig->get(ConfigValueMidi(type,channel,control));
-        
+
+    Q_ASSERT(m_pMidiConfig);
+    ConfigKey *pConfigKey = m_pMidiConfig->get(ConfigValueMidi(type,control,channel));
+//     qDebug("ok %p",pConfigKey);
+
     if (pConfigKey)
         ControlObject::getControl(*pConfigKey)->queueFromMidi(category, value);
 }
