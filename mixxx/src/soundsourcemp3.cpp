@@ -568,3 +568,4 @@ inline signed int SoundSourceMp3::madScale (mad_fixed_t sample)
 
     return sample >> (MAD_F_FRACBITS + 1 - 16);
 }
+

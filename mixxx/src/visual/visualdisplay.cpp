@@ -216,7 +216,7 @@ void VisualDisplay::setSignalScaleLength(double scale)
 
 
     signalScaleLength = 1./(1.+(ControlObject::getControl(ConfigKey("[Channel1]","rate_dir"))->getValue()*scale));
-    qDebug("scale input %f, actual %f",scale, signalScaleLength);
+    //qDebug("scale input %f, actual %f",scale, signalScaleLength);
 }
 
 void VisualDisplay::setColorSignal(float r, float g, float b)
