@@ -30,10 +30,10 @@
 #include <qfileinfo.h>
 #include "soundsourcemp3.h"
 #ifdef __UNIX__
-  #include "soundsourceaflibfile.h"
+  #include "soundsourceaudiofile.h"
 #endif
 #ifdef __WIN__
-  #include "soundsourcewave.h"
+  #include "soundsourcesndfile.h"
 #endif
 
 EngineBuffer::EngineBuffer(QApplication *a, QWidget *m, DlgPlaycontrol *_playcontrol, const char *group, const char *filename)
@@ -131,57 +131,25 @@ void EngineBuffer::newtrack(const char* filename)
         {
             if (finfo.extension(false).upper() == "WAV")
 #ifdef __UNIX__
-                file = new SoundSourceAFlibfile(filename);
+                file = new SoundSourceAudioFile(filename);
 #endif
 #ifdef __WIN__
-                file = new SoundSourceWave(filename);
+                file = new SoundSourceSndFile(filename);
 #endif
             else if (finfo.extension(false).upper() == "MP3")
                 file = new SoundSourceMp3(filename);
         }
     } else
 #ifdef __UNIX__
-        file = new SoundSourceAFlibfile("/dev/null");
+        file = new SoundSourceAudioFile("/dev/null");
 #endif
 #ifdef __WIN__
-        file = new SoundSourceWave("/dev/null");
+        file = new SoundSourceSndFile("/dev/null");
 #endif  
 
     if (file==0)
         qFatal("Error opening %s", filename);
 
-
-
-
-/*
-        // Open the file:
-        int i=strlen(filename)-1;
-        while ((filename[i] != '.') && (i>0))
-            i--;
-        if (i == 0)
-            qFatal("Wrong filename: %s.",filename);
-
-        char ending[80];
-        strcpy(ending,&filename[i]);
-
-        //playcontrol->textLabelTrack->setText("Opening file...");
-
-#ifndef Q_WS_WIN
-        if (!strcmp(ending,".wav") || !strcmp(ending,".WAV"))
-            
-        else
-#endif
-        if (!strcmp(ending,".mp3") || !strcmp(ending,".MP3"))
-            
-
-        if (file==0)
-            qFatal("Error opening %s", filename);
-    } 
-#ifndef Q_WS_WIN
-	else
-        file = new SoundSourceWave("/dev/null");
-#endif
-*/
     // Initialize position in read buffer:
     lastread_file.write(0.);
     playpos_file.write(0.);
@@ -193,17 +161,17 @@ void EngineBuffer::newtrack(const char* filename)
     if (file != 0)
     {
         /*
-	  Write to playcontrol:
-	*/
-	QString title = filename;
-	// Prune path from filename:
-	title = title.section('/',-1);
-	//title = title.section('\\',-1);
-	// Prune last ending from filename:
-	title = title.section('.',0,-2);
-	// Finish the title string:
+        Write to playcontrol:
+        */
+        QString title = filename;
+        // Prune path from filename:
+        title = title.section('/',-1);
+        //title = title.section('\\',-1);
+        // Prune last ending from filename:
+        title = title.section('.',0,-2);
+        // Finish the title string:
         title = QString("Title : ") + title + "\n\n";
-	
+
         int seconds = file->length()/(2*SRATE);
         QString tmp;
         tmp.sprintf("Length : %02d:%02d\n\n", seconds/60, seconds - 60*(seconds/60));

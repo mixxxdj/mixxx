@@ -20,7 +20,7 @@ const int READBUFFERSIZE = 3*READCHUNKSIZE; // size of read buffer must be at le
                                             // "stop" is pressed.
 
 /** Maximum buffer length to each EObject::process call */
-const int MAX_BUFFER_LEN = 10000;
+const int MAX_BUFFER_LEN = 100000;
 
 // Various fixed constants
 // static CSAMPLE pi     = acos(-1.0); // Conflicts with macx headers

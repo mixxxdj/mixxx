@@ -1,13 +1,14 @@
-#ifdef __UNIX__
+#ifndef SOUNDSOURCEAUDIOFILE_H
+#define SOUNDSOURCEAUDIOFILE_H
 
 #include "soundsource.h"
 #include <audiofile.h>
 #include <stdio.h>
 
-class SoundSourceAFlibfile : public SoundSource {
+class SoundSourceAudioFile : public SoundSource {
  public:
-  SoundSourceAFlibfile(const char*);
-  ~SoundSourceAFlibfile();
+  SoundSourceAudioFile(const char*);
+  ~SoundSourceAudioFile();
   long seek(long);
   unsigned read(unsigned long size, const SAMPLE*);
   long unsigned length();

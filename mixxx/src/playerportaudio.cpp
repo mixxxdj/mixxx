@@ -127,6 +127,11 @@ PlayerPortAudio::~PlayerPortAudio()
 
 bool PlayerPortAudio::open(QString name, int srate, int bits, int bufferSize, int chMaster, int chHead)
 {
+    // Adjust bufferSize and number of buffers
+    int bufferNo   = 2;
+    bufferSize = bufferSize/bufferNo;
+
+
     // Extract bit information
     PaSampleFormat format = 0;
     switch (bits)
@@ -146,7 +151,7 @@ bool PlayerPortAudio::open(QString name, int srate, int bits, int bufferSize, in
         {
             id = devices.at(i)->id;
             break;
-	}
+        }
 
     // Get number of channels to open
     int chNo = max(chMaster,chHead)+1;
@@ -154,7 +159,7 @@ bool PlayerPortAudio::open(QString name, int srate, int bits, int bufferSize, in
     // Verify srate and bufferSize 
     unsigned int j = 0;
     while (j<devices.at(i)->sampleRates.count() && *devices.at(i)->sampleRates.at(j) != srate)
-{        j++; qDebug("j: %i",j); }
+    { j++; qDebug("j: %i",j); }
     if (j>=devices.at(i)->sampleRates.count())
     {
          j=0;
@@ -188,7 +193,7 @@ bool PlayerPortAudio::open(QString name, int srate, int bits, int bufferSize, in
                         NULL,
                         (double)srate,
                         bufferSize/chNo,    // frames per buffer per channel
-                        0,                  // number of buffers, if zero then use default minimum
+                        bufferNo,           // number of buffers, if zero then use default minimum
                         paClipOff,          // we won't output out of range samples so don't bother clipping them
                         callbackFunc,
                         this );
@@ -221,9 +226,9 @@ void PlayerPortAudio::close()
     deallocate();
 }
 
-void PlayerPortAudio::start(EngineObject *_reader)
+void PlayerPortAudio::start()
 {
-    Player::start(_reader);
+    Player::start();
 
     PaError err = Pa_StartStream(stream);
     if (err != paNoError)
@@ -236,8 +241,9 @@ void PlayerPortAudio::wait()
 
 void PlayerPortAudio::stop()
 {
-	PaError err = Pa_StopStream( stream );
-	if( err != paNoError ) exit(-1);
+    PaError err = Pa_StopStream( stream );
+    if( err != paNoError )
+        exit(-1);
 }
 
 int PlayerPortAudio::minLatency(int SRATE)
@@ -256,7 +262,7 @@ int PlayerPortAudio::minLatency(int SRATE)
 
 CSAMPLE *PlayerPortAudio::process(const CSAMPLE *, const int)
 {
-	return 0;
+    return 0;
 }
 
 /* -------- ------------------------------------------------------

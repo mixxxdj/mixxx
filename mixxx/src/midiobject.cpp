@@ -4,6 +4,7 @@
 #include "controlpushbutton.h"
 #include <qevent.h>
 #include <algorithm>
+#include <qdir.h>
 
 // Static member variable definition
 ConfigObject<ConfigValueMidi> *MidiObject::config = 0;
@@ -69,6 +70,30 @@ void MidiObject::remove(ControlObject* c)
 QStringList *MidiObject::getDeviceList()
 {
     return &devices;
+}
+
+QStringList *MidiObject::getConfigList(QString path)
+{
+    // Make sure list is empty
+    configs.clear();
+    
+    // Get list of available midi configurations
+    QDir dir(path);
+    dir.setFilter(QDir::Files);
+    dir.setNameFilter("*.midi.cfg *.MIDI.CFG");
+    const QFileInfoList *list = dir.entryInfoList();
+    if (list!=0)
+    {
+        QFileInfoListIterator it(*list);        // create list iterator
+        QFileInfo *fi;                          // pointer for traversing
+        while ((fi=it.current()))
+        {
+qDebug("..");
+            configs.append(fi->fileName());
+            ++it;   // goto next list element
+        }
+    }
+    return &configs;
 }
 
 QString *MidiObject::getOpenDevice()
