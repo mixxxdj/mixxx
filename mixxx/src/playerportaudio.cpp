@@ -22,27 +22,27 @@ PlayerPortAudio::PlayerPortAudio(int size, std::vector<EngineObject *> *engines)
     PaError err;
     err = Pa_Initialize();
     if( err != paNoError ) qFatal("PortAudio initialization error");
-
     err = Pa_OpenStream(&stream,
-                        paNoDevice,     /* default input device */
-                        0,              /* no input */
+                        paNoDevice,     // default input device
+                        0,              // no input
                         paInt16,      
                         NULL,
-                        Pa_GetDefaultOutputDeviceID(), /* default output device */
-                        2,              /* stereo output */
+                        Pa_GetDefaultOutputDeviceID(), // default output device
+                        NO_CHANNELS,              // stereo output
                         paInt16,    
                         NULL,
                         (double)SRATE,
-                        2048,    /* frames per buffer */
-                        0,              /* number of buffers, if zero then use default minimum */
-                        paClipOff,      /* we won't output out of range samples so don't bother clipping them */
+                        size/NO_CHANNELS, 	// frames per buffer per channel
+                        0,              // number of buffers, if zero then use default minimum
+                        paClipOff,      // we won't output out of range samples so don't bother clipping them
                         paCallback,
                         this );
+
     if( err != paNoError ) qFatal("PortAudio open stream error: %s",Pa_GetErrorText(err) );
 
-	buffer_size = 2048;
-    qDebug("Using PortAudio. Buffer size : %i samples.",buffer_size/2);
-	allocate();
+    buffer_size = size;
+    qDebug("Using PortAudio. Buffer size : %i samples.",buffer_size);
+    allocate();
 }
 
 PlayerPortAudio::~PlayerPortAudio()
@@ -52,7 +52,7 @@ PlayerPortAudio::~PlayerPortAudio()
 
 void PlayerPortAudio::start(EngineObject *_reader)
 {
-	Player::start(_reader);
+    Player::start(_reader);
     PaError err = Pa_StartStream( stream );
     if( err != paNoError ) qFatal("PortAudio start stream error: %s", Pa_GetErrorText(err));
 }
@@ -84,9 +84,7 @@ static int paCallback(void *inputBuffer, void *outputBuffer,
     Player *player = (Player *)_player;
     SAMPLE *out = (SAMPLE*)outputBuffer;
     player->prepareBuffer();
-    for (int i=0; i<framesPerBuffer; i+=2) {
+    for (int i=0; i<framesPerBuffer*NO_CHANNELS; i++) 
         *out++=player->out_buffer[i];
-		*out++=player->out_buffer[i+1];
-	}
     return 0;
 }
