@@ -2,18 +2,11 @@
 # Options, and path to libraries
 #
 
-# Use this define APIs to use in Mixxx:
-# __PORTAUDIO__: PortAudio. Available on all platforms. Library included in
-#                distribution
-# __JACK__:      Jack audio server. Only on Linux (and maybe MacOS X).
-DEFINES += __PORTAUDIO__
-DEFINES += __JACK__
-
 # On Windows, select between WMME, DIRECTSOUND and ASIO.
 # If ASIO is used, ensure that the path to the ASIO SDK 2 is set correctly below
 WINPA = DIRECTSOUND
 
-# Use this definition on Linux if Mixxx should be statically linked with libmad, 
+# Use this definition on Linux if Mixxx should be statically linked with libmad,
 # libid3tag, fftw, ogg, vorbis and audiofile
 #unix:LINLIBPATH = ../../mixxx-linlib
 
@@ -31,7 +24,7 @@ ASIOSDK_DIR   = $$WINLIBPATH/asiosdk2
 #
 
 # PortAudio
-contains(DEFINES, __PORTAUDIO__) {
+DEFINES += __PORTAUDIO__
 SOURCES += playerportaudio.cpp
 HEADERS += playerportaudio.h
 PORTAUDIO_DIR = ../lib/portaudio-v18
@@ -52,7 +45,7 @@ win32 {
         INCLUDEPATH += $$PORTAUDIO_DIR/pa_win_ds
     }
     contains(WINPA, ASIO) {
-        message("Compiling Mixxx using ASIO drivers")
+        message("Compiling Mixxx using ASIO drivers. Not tested.")
         SOURCES += $$PORTAUDIO_DIR/pa_asio/pa_asio.cpp $$ASIOSDK_DIR/common/asio.cpp $$ASIOSDK_DIR/host/asiodrivers.cpp $$ASIOSDK_DIR/host/pc/asiolist.cpp
         HEADERS += $$ASIOSDK_DIR/common/asio.h $$ASIOSDK_DIR/host/asiodrivers.h $$ASIOSDK_DIR/host/pc/asiolist.h
         INCLUDEPATH += $$PORTAUDIO_DIR/pa_asio $$ASIOSDK_DIR/common $$ASIOSDK_DIR/host $$ASIOSDK_DIR/host/pc
@@ -62,12 +55,20 @@ win32 {
         error("TO use WMME drivers add appropriate files to the mixxx.pro file first")
     }
 }
-}
 
-contains(DEFINES, __JACK__) {
-  SOURCES += playerjack.cpp
-  HEADERS += playerjack.h
-  LIBS += -ljack
+unix {
+    # Check if we can link against libjack:
+    system(ld -ljack 2> /dev/null):HAS_JACK=FALSE
+    count(HAS_JACK,1) {
+        DEFINES += __JACK__
+        SOURCES += playerjack.cpp
+        HEADERS += playerjack.h
+        LIBS += -ljack
+        message("Compiling with Jack support")
+    }
+    isEmpty(HAS_JACK) {
+        message("Did not find Jack libraries.")
+    }
 }
 
 # OSS Midi (Working good, Linux specific)
@@ -230,10 +231,42 @@ macx {
   LIBS += -lz -framework Carbon -framework QuickTime
   SETTINGS_FILE = \"mixxx.cfg\"
   RC_FILE = icon.icns
-  QMAKE_CXXFLAGS += -O3 -faltivec -mtune=G4 -mcpu=G4 -mdynamic-no-pic -funroll-loops -ffast-math -fstrict-aliasing  
-  QMAKE_CFLAGS += -O3 -faltivec -mtune=G4 -mcpu=G4 -mdynamic-no-pic -funroll-loops -ffast-math -fstrict-aliasing 
+  QMAKE_CXXFLAGS += -O3 -faltivec -mtune=G4 -mcpu=G4 -mdynamic-no-pic -funroll-loops -ffast-math -fstrict-aliasing
+  QMAKE_CFLAGS += -O3 -faltivec -mtune=G4 -mcpu=G4 -mdynamic-no-pic -funroll-loops -ffast-math -fstrict-aliasing
   QMAKE_LFLAGS += -O3 -faltivec -mtune=G4 -mcpu=G4 -mdynamic-no-pic -funroll-loops -ffast-math -fstrict-aliasing
 }
+
+# Install-phase for a traditional 'make install'
+unix {
+
+    # skins... (copy all)
+    skins.path = /usr/share/mixxx/skins
+    skins.files = skins/*
+
+    # midi conf... (copy all)
+    midi.path = /usr/share/mixxx/midi
+    midi.files = midi/*
+
+    # keyboard conf... (copy all)
+    keyb.path = /usr/share/mixxx/keyboard
+    keyb.files = keyboard/*
+
+    # doc files...
+    readme.path = /usr/share/doc/mixxx-1.1
+    readme.files = ../README
+    licence.path = /usr/share/doc/mixxx-1.1
+    licence.files = ../LICENCE
+    copying.path = /usr/share/doc/mixxx-1.1
+    copying.files = ../COPYING
+
+    # binary...
+    TARGET = mixxx
+    target.path = /usr/bin
+
+    # finally adding what we wanna install...
+    INSTALLS += skins midi keyb readme licence copying target
+}
+
 
 FORMS	= dlgprefsounddlg.ui dlgprefmididlg.ui dlgprefplaylistdlg.ui dlgprefcontrolsdlg.ui
 
@@ -244,7 +277,7 @@ IMAGES += icon.png
 DEFINES += SETTINGS_FILE=$$SETTINGS_FILE
 unix:TEMPLATE = app
 win32:TEMPLATE = vcapp
-CONFIG += qt thread warn_off release
-#CONFIG += qt thread warn_on debug
+#CONFIG += qt thread warn_off release
+CONFIG += qt thread warn_on debug
 DBFILE = mixxx.db
 LANGUAGE = C++
