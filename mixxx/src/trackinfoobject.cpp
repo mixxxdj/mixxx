@@ -189,25 +189,19 @@ void TrackInfoObject::insertInTrackTableRow(WTrackTable *pTableTrack, int iRow)
     pTableTrack->setItem(iRow, COL_DURATION, m_pTableItemDuration);
     pTableTrack->setItem(iRow, COL_BPM, m_pTableItemBpm);
     pTableTrack->setItem(iRow, COL_BITRATE, m_pTableItemBitrate);
-    qDebug("bpm %p",m_pTableItemBpm);
 
     m_pTableTrack = pTableTrack;
 }
 
 void TrackInfoObject::removeFromTrackTable()
 {
-    qDebug("remove");
+    //qDebug("remove");
     if (m_pTableTrack)
     {
-        m_pTableTrack->clearCell(m_pTableItemScore->row(),m_pTableItemScore->col());
-        m_pTableTrack->clearCell(m_pTableItemTitle->row(),m_pTableItemTitle->col());
-        m_pTableTrack->clearCell(m_pTableItemArtist->row(),m_pTableItemArtist->col());
-        m_pTableTrack->clearCell(m_pTableItemComment->row(),m_pTableItemComment->col());
-        m_pTableTrack->clearCell(m_pTableItemType->row(),m_pTableItemType->col());
-        m_pTableTrack->clearCell(m_pTableItemDuration->row(),m_pTableItemDuration->col());
-        m_pTableTrack->clearCell(m_pTableItemBpm->row(),m_pTableItemBpm->col());
-        m_pTableTrack->clearCell(m_pTableItemBitrate->row(),m_pTableItemBitrate->col());
+        // Remove the row from the table, and delete the table items
+        m_pTableTrack->removeRow(m_pTableItemScore->row());
 
+        // Reset pointers
         m_pTableItemScore = 0;
         m_pTableItemTitle = 0;
         m_pTableItemArtist = 0;

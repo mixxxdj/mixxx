@@ -40,8 +40,6 @@ public:
     void addTrack(TrackInfoObject *pTrack);
     /** Add a track to the playlist */
     void addTrack(QString qLocation);
-    /** Remove track from playlist */
-    void removeTrack(TrackInfoObject *pTrack);
     /** Add all tracks from the playlist to the WTrackTable */
     void activate(WTrackTable *pTable);
     /** Remove all tracks from the WTrackTable */
@@ -56,8 +54,8 @@ public:
 public slots:
     /** Decode drop event and calls addPath */
     void slotDrop(QDropEvent *e);
-    /** Delete a track from the playlist */
-    void slotDeleteTrack(int iRow);
+    /** Remove a track from the playlist */
+    void slotRemoveTrack(int iRow);
 
 private:
     /** List of pointers to TrackInfoObjects */

@@ -76,6 +76,4 @@ void ControlBeat::setValue(double)
         temp /= filterLength;
         m_dValue = temp;
     }
-    else
-        m_dValue = 0.;
 }
