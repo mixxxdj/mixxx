@@ -146,7 +146,7 @@ void EngineBuffer::run() {
 /*
   Called when the playbutten is pressed
 */
-void EngineBuffer::slotUpdatePlay(valueType newvalue) {
+void EngineBuffer::slotUpdatePlay(valueType) {
   static int start_seek;
   if (PlayButton->getPosition()==down) {
     qDebug("Entered seeking mode");
@@ -171,7 +171,7 @@ void EngineBuffer::slotUpdatePlay(valueType newvalue) {
   slotUpdateRate(rateSlider->getValue());
 }
 
-void EngineBuffer::slotUpdateRate(FLOAT r) {
+void EngineBuffer::slotUpdateRate(FLOAT) {
   if (PlayButton->getValue()==on)
       rate = rateSlider->getValue() + 4*wheel->getValue();
   else
@@ -233,7 +233,7 @@ void EngineBuffer::seek(FLOAT change) {
   qDebug("Seeking %g to %g",change, new_play_pos/file->length());
   file->seek(filepos);
   frontpos = chunk_size*(((int)floor(play_pos/chunk_size))%2);
-  qDebug("%d",frontpos);
+  qDebug("%li",frontpos);
   getchunk();
   getchunk();
   qDebug("done seeking.");

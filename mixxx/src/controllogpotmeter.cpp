@@ -45,8 +45,8 @@ void ControlLogpotmeter::slotSetPosition(int _newpos)
 {
   char newpos =(char)_newpos;
 
-  char static const maxPosition = 127;
-  char static const minPosition  = 0;
+  static char const maxPosition = 127;
+  static char const minPosition  = 0;
 
   // Ensure that the position is within bounds:
   position = std::max(minPosition,std::min(newpos, maxPosition));

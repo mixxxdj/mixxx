@@ -25,8 +25,14 @@
     read()
     length()
 */
-SoundSource::SoundSource() {}
-SoundSource::~SoundSource() {}
+SoundSource::SoundSource()
+{
+}
+
+SoundSource::~SoundSource()
+{
+}
+
 /*
   Class for reading files using libaudiofile
 */
@@ -108,7 +114,7 @@ mp3file::mp3file(const char* filename) {
   mad_stream_buffer(&Stream, inputbuf, mp3filelength);
   mad_frame_init(&Frame);
   mad_synth_init(&Synth);
-  qDebug("Opened file with length %i and bitrate %i.", filelength, bitrate);
+  qDebug("Opened file with length %li and bitrate %i.", filelength, bitrate);
 }
 
 mp3file::~mp3file() {
@@ -132,7 +138,7 @@ long mp3file::seek(long filepos) {
     mad_stream_buffer(&Stream, inputbuf+ftable[i], mp3filelength-ftable[i]);*/
 
   int i = max((long)0,filepos/2304-9);
-  qDebug("%i %i",i,2304*(filepos/2304-1));
+  qDebug("%i %li",i,2304*(filepos/2304-1));
   Stream.this_frame = inputbuf + ftable[i];
   for (i=0; i<8; i++)
     mad_frame_decode(&Frame, &Stream);

@@ -122,7 +122,7 @@ void MidiObject::run() {
 	  qWarning("Warning: midiobject recieved %i bytes.", no);
     }
     
-    char channel = buffer[0];
+    //char channel = buffer[0];
     char midicontrol = buffer[1];
     char midivalue = buffer[2];
 
