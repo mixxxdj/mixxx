@@ -930,9 +930,19 @@
   </Connection>
  </SliderComposed>
 
- <TrackTable>
+ <TreeList>
   <Pos>0,399</Pos>
-  <Size>750,310</Size>
+  <Size>200,310</Size>
+  <FgColor>#000000</FgColor>
+  <BgColor>#ffffff</BgColor>
+  <ColWidthName>20</ColWidthName>
+  <ColWidthType>20</ColWidthType>
+  <ColWidthFullPath>180</ColWidthFullPath>
+ </TreeList>
+
+ <TrackTable>
+  <Pos>200,399</Pos>
+  <Size>550,310</Size>
   <FgColor>#000000</FgColor>
   <BgColor>#ffffff</BgColor>
   <BgColorRowEven>#ffffff</BgColorRowEven>

@@ -715,9 +715,19 @@
   </Connection>
  </NumberPos>
 
- <TrackTable>
+ <TreeList>
   <Pos>76,490</Pos>
-  <Size>872,252</Size>
+  <Size>200,252</Size>
+  <FgColor>#000000</FgColor>
+  <BgColor>#ffffff</BgColor>
+  <ColWidthName>20</ColWidthName>
+  <ColWidthType>20</ColWidthType>
+  <ColWidthFullPath>180</ColWidthFullPath>
+ </TreeList>
+
+ <TrackTable>
+  <Pos>276,490</Pos>
+  <Size>672,252</Size>
   <FgColor>#000000</FgColor>
   <BgColor>#94abc2</BgColor>
   <BgColorRowEven>#9ab2c4</BgColorRowEven>
