@@ -110,7 +110,8 @@ private:
     ControlObject *m_pEndOfTrackCh1, *m_pEndOfTrackCh2;
     /** Pointer to ControlObject dertermining end of track mode */
     ControlObject *m_pEndOfTrackModeCh1, *m_pEndOfTrackModeCh2;
-
+    /** Pointer to ControlObject for play buttons */
+    ControlObject *m_pPlayButtonCh1, *m_pPlayButtonCh2;
 };
 
 #endif

@@ -73,6 +73,10 @@ Track::Track(QString location, MixxxView *pView, EngineBuffer *pBuffer1, EngineB
     m_pEndOfTrackCh2 = ControlObject::getControl(ConfigKey("[Channel2]","TrackEnd"));
     connect(m_pEndOfTrackCh1, SIGNAL(signalUpdateApp(double)), this, SLOT(slotEndOfTrackPlayer1(double)));
     connect(m_pEndOfTrackCh2, SIGNAL(signalUpdateApp(double)), this, SLOT(slotEndOfTrackPlayer2(double)));
+
+    // Get play buttons
+    m_pPlayButtonCh1 = ControlObject::getControl(ConfigKey("[Channel1]","play"));
+    m_pPlayButtonCh2 = ControlObject::getControl(ConfigKey("[Channel2]","play"));
 }
 
 Track::~Track()
@@ -377,6 +381,8 @@ void Track::slotEndOfTrackPlayer1(double)
         TrackInfoObject *pTrack = m_pTrackPlayer1->getNext();
         if (pTrack)
             slotLoadPlayer1(pTrack);
+        else
+            m_pPlayButtonCh1->setValueFromApp(0.);
         break;
     }
     m_pEndOfTrackCh1->setValueFromApp(0.);
@@ -390,6 +396,8 @@ void Track::slotEndOfTrackPlayer2(double)
         TrackInfoObject *pTrack = m_pTrackPlayer2->getNext();
         if (pTrack)
             slotLoadPlayer2(pTrack);
+        else
+            m_pPlayButtonCh2->setValueFromApp(0.);
         break;
     }
     m_pEndOfTrackCh2->setValueFromApp(0.);
