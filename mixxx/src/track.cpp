@@ -56,7 +56,8 @@ Track::Track(QString location, MixxxView *pView, EngineBuffer *pBuffer1, EngineB
 
     // Connect mouse events from the tree view
     connect(m_pView->m_pTreeView, SIGNAL(playlistPopup(QString)), this, SLOT(slotPlaylistPopup(QString)));
-
+    connect(m_pView->m_pTreeView, SIGNAL(activatePlaylist(QString)), this, SLOT(slotActivatePlaylist(QString)));
+    
     // Connect drop events to table
     connect(m_pView->m_pTrackTable, SIGNAL(dropped(QDropEvent *)), this, SLOT(slotDrop(QDropEvent *)));
 
@@ -193,6 +194,11 @@ void Track::slotDrop(QDropEvent *e)
 
     qDebug("name %s",name.latin1());
 
+    slotActivatePlaylist(name);
+}
+
+void Track::slotActivatePlaylist(QString name)
+{
     // Get pointer to requested playlist
     TrackPlaylist *pNewlist = getPlaylist(name);
 

@@ -36,3 +36,8 @@ void WTreeItemPlaylist::drag(QWidget *viewport)
     td->setSubtype(type);
     td->dragCopy();
 }
+
+QString WTreeItemPlaylist::name()
+{
+    return text(0);
+}

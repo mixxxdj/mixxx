@@ -60,10 +60,11 @@ public slots:
 signals:
     void folderSelected(const QString &);
     void playlistPopup(QString);
-
+    void activatePlaylist(QString);
 protected slots:
     void slotFolderSelected(QListViewItem *);
     void openFolder();
+    void slotRenameItem();
 
 protected:
     void contentsDragEnterEvent(QDragEnterEvent *e);
@@ -82,8 +83,13 @@ private:
     QListViewItem *oldCurrent;
     QListViewItem *dropItem;
     QTimer *autoopen_timer;
+    /** Timer used to determine if this was a rename click */
+    QTimer *clicked_timer;
+    /** Item of last clicked item */
+    WTreeItem *m_pClickedItem;
+
     QPoint presspos;
-    bool mousePressed;
+    bool mousePressed, mouseMoved;
 
     QPixmap *folderLocked;
     QPixmap *folderClosed;

@@ -19,14 +19,17 @@
 static const int autoopenTime = 750;
 
 WTreeView::WTreeView(QString qRootPath, QWidget *parent, const char *name, bool sdo) : QListView( parent, name ), dirsOnly( sdo ), oldCurrent( 0 ),
-      dropItem( 0 ), mousePressed( FALSE )
+      dropItem(0), mousePressed(false)
 {
     folderLocked = 0;
     folderClosed = 0;
     folderOpen = 0;
     fileNormal = 0;
+    m_pClickedItem = 0;
 
-    autoopen_timer = new QTimer( this );
+    autoopen_timer = new QTimer(this);
+    clicked_timer = new QTimer(this);
+
 /*
  * if (!folderLocked)
     {
@@ -38,6 +41,7 @@ WTreeView::WTreeView(QString qRootPath, QWidget *parent, const char *name, bool 
 */
     connect(this, SIGNAL(doubleClicked(QListViewItem *)), this, SLOT(slotFolderSelected(QListViewItem *)));
     connect(this, SIGNAL(returnPressed(QListViewItem *)), this, SLOT(slotFolderSelected(QListViewItem *)));
+    //connect(clicked_timer, SIGNAL(timeout()), this, SLOT(slotRenameItem()));
 
     // Set properties
     setAcceptDrops(false);
@@ -103,11 +107,25 @@ void WTreeView::setup(QDomNode node)
 
 void WTreeView::slotFolderSelected( QListViewItem *i )
 {
-    if (!i || !showDirsOnly())
+    // Abort any rename click which is about to be executed
+    clicked_timer->stop();
+    m_pClickedItem = 0;
+
+    if (!i)
         return;
 
-    WTreeItemDir *dir = (WTreeItemDir*)i;
-    emit folderSelected( dir->fullName() );
+    WTreeItem *t = (WTreeItem *)i;
+
+    if (t->type()=="WTreeItemDir" && showDirsOnly())
+    {
+        WTreeItemDir *dir = (WTreeItemDir*)t;
+        emit folderSelected( dir->fullName() );
+    }
+    else if (t->type() == "WTreeItemPlaylist")
+    {
+        WTreeItemPlaylist *list = (WTreeItemPlaylist*)t;
+        emit activatePlaylist(list->name());
+    }
 }
 
 void WTreeView::openFolder()
@@ -118,6 +136,17 @@ void WTreeView::openFolder()
         dropItem->setOpen( TRUE );
         dropItem->repaint();
     }
+}
+
+void WTreeView::slotRenameItem()
+{
+    //qDebug("rename %p",m_pClickedItem);
+    if (m_pClickedItem && !mouseMoved)
+    {
+        //qDebug("start");
+        m_pClickedItem->startRename(0);
+    }
+    m_pClickedItem = 0;
 }
 
 void WTreeView::updatePlaylists(QStrList qPlaylists)
@@ -273,6 +302,10 @@ QString WTreeView::fullPath(QListViewItem* item)
 
 void WTreeView::contentsMousePressEvent( QMouseEvent* e )
 {
+    // Stop the timer, so a rename click is not issued
+    clicked_timer->stop();
+    mouseMoved = false;
+
     QListView::contentsMousePressEvent(e);
     QPoint p( contentsToViewport( e->pos() ) );
     WTreeItem *i = (WTreeItem *)itemAt( p );
@@ -295,6 +328,7 @@ void WTreeView::contentsMousePressEvent( QMouseEvent* e )
             }
         }
     }
+    m_pClickedItem = i;
 }
 
 void WTreeView::contentsMouseMoveEvent( QMouseEvent* e )
@@ -306,11 +340,16 @@ void WTreeView::contentsMouseMoveEvent( QMouseEvent* e )
         if (item)
             item->drag(viewport());
     }
+    mouseMoved = true;
 }
 
-void WTreeView::contentsMouseReleaseEvent( QMouseEvent * )
+void WTreeView::contentsMouseReleaseEvent(QMouseEvent *e)
 {
-    mousePressed = FALSE;
+    if (!mouseMoved)
+        clicked_timer->singleShot(500, this, SLOT(slotRenameItem()));
+
+    mousePressed = false;
+    mouseMoved = false;
 }
 
 void WTreeView::setDir( const QString &s )

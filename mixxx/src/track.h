@@ -51,6 +51,8 @@ public:
 public slots:
     /** Decode playlist drops to WTrackTable, and loads corresponding playlist */
     void slotDrop(QDropEvent *e);
+    /** Activate a playlist of the given name */
+    void slotActivatePlaylist(QString name);
     /** Add a new playlist */
     void slotNewPlaylist();
     /** Delete a playlist */
