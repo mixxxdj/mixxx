@@ -28,6 +28,7 @@
 
 #include "defs.h"
 #include "monitor.h"
+#include "fakemonitor.h"
 #include "engineobject.h"
 #include "controlpushbutton.h"
 #include "controlpotmeter.h"

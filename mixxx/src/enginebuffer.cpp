@@ -275,10 +275,10 @@ void EngineBuffer::seek(FLOAT_TYPE change)
   buffersReadAhead->wakeAll();
   qDebug("done seeking.");
   rate.write(saved_rate);
+  readChunkLock.write(0.);
 } else {
 	qDebug("no seeking since getChunk is active!");
 }
-  readChunkLock.write(0.);
 }
 
 bool even(long n)
@@ -324,24 +324,31 @@ CSAMPLE *EngineBuffer::process(const CSAMPLE *, const int buf_size)
 	        buffer[i]=0.;
     } else {
         long prev;
+	FLOAT_TYPE myRate=rate.read();
+	FLOAT_TYPE myPlaypos_buffer = playpos_buffer.read();
+        FLOAT_TYPE myPlaypos_file = playpos_file.read();
+
 	for (int i=0; i<buf_size; i+=2)
         {
-            if (playpos_file.read() < file->length())
+            if (myPlaypos_file < file->length())
             {
-  	            prev = (long)floor(playpos_buffer.read())%read_buffer_size;
+  	            prev = (long)floor(myPlaypos_buffer)%read_buffer_size;
 	            if (!even(prev)) prev--;
                 long next = (prev+2)%read_buffer_size;
-	            FLOAT_TYPE frac = playpos_buffer.read() - floor(playpos_buffer.read());
+	            FLOAT_TYPE frac = myPlaypos_buffer - floor(myPlaypos_buffer);
                 buffer[i  ] = read_buffer[prev  ] +frac*(read_buffer[next  ]-read_buffer[prev  ]);
 	            buffer[i+1] = read_buffer[prev+1] +frac*(read_buffer[next+1]-read_buffer[prev+1]);
-                double rate_add = 2*rate.read();
-	            playpos_buffer.add(rate_add);
-                playpos_file.add(rate_add);
+                double rate_add = 2*myRate;
+	            myPlaypos_buffer +=rate_add;
+                myPlaypos_file += rate_add;
             } else {
                 buffer[i  ] = 0.;
 	            buffer[i+1] = 0.;
             }
         }
+
+	playpos_buffer.write(myPlaypos_buffer);
+	playpos_file.write(myPlaypos_file);
 
         checkread();
 
