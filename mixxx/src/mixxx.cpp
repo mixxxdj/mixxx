@@ -35,7 +35,6 @@
 #include "wplayposslider.h"
 #include "wpushbutton.h"
 #include "wtracktable.h"
-#include "wvumeter.h"
 #include "mixxx.h"
 #include "images/a.xpm"
 #include "images/b.xpm"
