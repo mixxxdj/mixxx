@@ -287,6 +287,7 @@ void Track::slotTrackPopup(TrackInfoObject *pTrackInfoObject, int)
 
     menu->insertItem("Player 1", this, SLOT(slotLoadPlayer1()));
     menu->insertItem("Player 2", this, SLOT(slotLoadPlayer2()));
+    menu->insertItem("Remove",   this, SLOT(slotRemoveFromPlaylist()));
 
     menu->exec(QCursor::pos());
 
@@ -350,6 +351,11 @@ void Track::slotLoadPlayer1()
 void Track::slotLoadPlayer2()
 {
     slotLoadPlayer2(m_pActivePopupTrack);
+}
+
+void Track::slotRemoveFromPlaylist()
+{
+    m_pActivePlaylist->slotRemoveTrack(m_pActivePopupTrack);
 }
 
 void Track::slotEndOfTrackPlayer1(double)

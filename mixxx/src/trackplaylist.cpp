@@ -212,9 +212,10 @@ void TrackPlaylist::addPath(QString qPath)
     }
 }
 
-void TrackPlaylist::slotRemoveTrack(int iRow)
+void TrackPlaylist::slotRemoveTrack(TrackInfoObject *pTrack)
 {
-//    m_qList.remove(pTrack);
+    m_qList.remove(pTrack);
+    pTrack->removeFromTrackTable();
 }
 
 
