@@ -29,8 +29,15 @@
 #include "fileopen.xpm"
 #include "filenew.xpm"
 #include "controlpushbutton.h"
-#include "playeralsa.h"
-#include "playerportaudio.h"
+
+#ifdef __ALSA__
+  #include "playeralsa.h"
+#endif
+
+#ifdef __PORTAUDIO__
+  #include "playerportaudio.h"
+#endif
+
 #include "enginepregain.h"
 #include "enginefilterlbh.h"
 
@@ -79,7 +86,11 @@ MixxxApp::MixxxApp()
   qDebug("Init player...");
 
 #ifndef Q_WS_WIN
-  player = new PlayerALSA(BUFFER_SIZE, &engines);
+  #ifdef __ALSA__
+    player = new PlayerALSA(BUFFER_SIZE, &engines);
+  #else
+    player = new PlayerPortAudio(BUFFER_SIZE, &engines);
+  #endif
 #else
   player = new PlayerPortAudio(BUFFER_SIZE, &engines);
 #endif

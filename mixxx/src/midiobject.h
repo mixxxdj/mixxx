@@ -1,9 +1,13 @@
 #ifndef MIDIOBJECT_H
 #define MIDIOBJECT_H
 
-#include "stdio.h"
-#include "stdlib.h"
-#include "portmidi.h"
+#include <stdio.h>
+#include <stdlib.h>
+
+#ifdef __PORTMIDI__
+  #include <portmidi.h>
+#endif
+
 #include <vector>
 #include "defs.h"
 #include <qthread.h>
@@ -11,6 +15,7 @@
 //#include <sched.h>
 #include "controlpushbutton.h"
 #include "controlpotmeter.h"
+
 class ControlPotmeter;
 class ControlPushButton;
 
