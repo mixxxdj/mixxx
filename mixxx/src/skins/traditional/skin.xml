@@ -253,6 +253,7 @@
  </PushButton>
 
  <PushButton>
+  <BackPath>vpredback.png</BackPath>
   <NumberStates>1</NumberStates>
   <State>
    <Number>0</Number>
@@ -278,6 +279,7 @@
  </PushButton>
 
  <PushButton>
+  <BackPath>zpetback.png</BackPath>
   <NumberStates>1</NumberStates>
   <State>
    <Number>0</Number>
@@ -303,6 +305,7 @@
  </PushButton>
 
  <PushButton>
+  <BackPath>vpredback.png</BackPath>
   <NumberStates>1</NumberStates>
   <State>
    <Number>0</Number>
@@ -328,6 +331,7 @@
  </PushButton>
 
  <PushButton>
+  <BackPath>zpetback.png</BackPath>
   <NumberStates>1</NumberStates>
   <State>
    <Number>0</Number>
