@@ -35,5 +35,10 @@ if ($#out<0)
 # Copy mixxx binary to $BASE/bin
 `install src/mixxx $BASE/bin`;
 
+# Copy doc files
+`install -d $BASE/share/doc/mixxx-1.0`;
+`install README $BASE/share/doc/mixxx-1.0`;
+`install LICENCE $BASE/share/doc/mixxx-1.0`;
+
 printf("Install finished\n");
 
