@@ -91,16 +91,21 @@ DlgPrefControls::~DlgPrefControls()
 void DlgPrefControls::slotUpdate()
 {
     ComboBoxRateRange->clear();
-    ComboBoxRateRange->insertItem("10% (Technics SL1210)");
+    ComboBoxRateRange->insertItem(" 8% (Technics SL1210)");
+    ComboBoxRateRange->insertItem("10% (Omnitronic 3xxx)");
     ComboBoxRateRange->insertItem("20%");
-    ComboBoxRateRange->insertItem("30%");
+    ComboBoxRateRange->insertItem("30% (Traktor)");
     ComboBoxRateRange->insertItem("40%");
     ComboBoxRateRange->insertItem("50%");
     ComboBoxRateRange->insertItem("60%");
     ComboBoxRateRange->insertItem("70%");
     ComboBoxRateRange->insertItem("80%");
     ComboBoxRateRange->insertItem("90%");
-    float idx = 10.*(1.-m_pControlRate1->getMin())-1.;
+
+    float idx = 10.*(fabs(1.-m_pControlRate1->getMin()));
+    if (fabs(1.-m_pControlRate1->getMin())==0.08)
+        idx = 0.;
+
     ComboBoxRateRange->setCurrentItem((int)idx);
 
     ComboBoxRateDir->clear();
@@ -111,13 +116,16 @@ void DlgPrefControls::slotUpdate()
 
 void DlgPrefControls::slotSetRateRange(int pos)
 {
-    float range = (float)(pos+1)/10.;
+    float range = (float)(pos)/10.;
+    if (pos==0)
+        range = 0.08;
+        
     float dir = 1.;
     if (ComboBoxRateDir->currentItem()==1)
         dir = -1.;
-        
-    m_pControlRate1->setRange(1.-(range*dir), 1.+range);
-    m_pControlRate2->setRange(1.-(range*dir), 1.+range);
+
+    m_pControlRate1->setRange(1.-(range*dir), 1.+(range*dir));
+    m_pControlRate2->setRange(1.-(range*dir), 1.+(range*dir));
 }
 
 void DlgPrefControls::slotSetSkin(int)
@@ -129,7 +137,10 @@ void DlgPrefControls::slotSetSkin(int)
 void DlgPrefControls::slotApply()
 {
     // Write rate range to config file
-    float idx = 10.*(1.-m_pControlRate1->getMin())-1.;
+    float idx = 10.*(fabs(1.-m_pControlRate1->getMin()));
+    if (fabs(1.-m_pControlRate1->getMin())==0.08)
+        idx = 0.;
+
     m_pConfig->set(ConfigKey("[Controls]","RateRange"), ConfigValue((int)idx));
 
     // Write rate direction to config file
