@@ -19,6 +19,7 @@
 #define WPIXMAPSTORE_H
 
 #include <qpixmap.h>
+#include <qptrlist.h>
 
 /**
   *
