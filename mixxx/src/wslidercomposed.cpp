@@ -159,7 +159,7 @@ void WSliderComposed::setValue(double fValue)
     // Calculate handle position
     if ((!m_bHorizontal && !m_bReverse) || (m_bHorizontal && m_bReverse))
         fValue = 127-fValue;
-    m_iPos = (int)((fValue/128.)*(double)(m_iSliderLength-m_iHandleLength))+m_iHandleLength/2;
+    m_iPos = (int)((fValue/127.)*(double)(m_iSliderLength-m_iHandleLength));
 
     repaint();
 }
