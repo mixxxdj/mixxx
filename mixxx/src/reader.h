@@ -85,8 +85,6 @@ public:
     /** Set rate. This method must only be called when holding the enginelock
       * mutex */
     void setRate(double dRate);
-    /** Cue point */
-    double f_dCuePoint;
 
 private:
     /** Main loop of the thread */
