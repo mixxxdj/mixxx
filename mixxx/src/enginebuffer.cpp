@@ -171,8 +171,8 @@ void EngineBuffer::newtrack(const char* filename)
     filepos_start.write(0.);
     filepos_end.write(0.);
     filepos_play.write(0.);
-    bufferpos_start = 0.;
-    bufferpos_end = 0.;
+    bufferpos_start = 0;
+    bufferpos_end = 0;
     bufferpos_play.write(0.);
 
     visualPlaypos = 0;
@@ -393,8 +393,8 @@ qDebug("seeking...");
     filepos_end.write(new_playpos);
 
     bufferpos_play.write(0.);
-    bufferpos_start = 0.;
-    bufferpos_end = 0.;
+    bufferpos_start = 0;
+    bufferpos_end = 0;
 
     for (int i=0; i<READBUFFERSIZE; i++)
         read_buffer[i] = 0.;
@@ -535,7 +535,7 @@ CSAMPLE *EngineBuffer::process(const CSAMPLE *, const int buf_size)
         filepos_play.add(myRate*(double)buf_size);
         
         // Update visual rate and playpos
-        visualPlaypos = idx;
+        visualPlaypos = floor(idx);
         visualRate = myRate;
     }
 

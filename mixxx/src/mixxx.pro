@@ -9,6 +9,7 @@ DEFINES += __PORTAUDIO__
 # For unix, choose between static or dynamic linking of PortAudio. If you
 # want dynamic use only the LIBS line, else use the two first lines.
 # PortAudio files needs to be placed in ../lib for the static to work.
+#unix:!macx:LIBS += -lportaudio
 unix:!macx:SOURCES += ../lib/pa_lib.c ../lib/pa_convert.c ../lib/pa_unix_oss.c
 unix:!macx:HEADERS += ../lib/portaudio.h ../lib/pa_host.h
 win32:SOURCES += ../lib/pa_lib.c ../lib/dsound_wrapper.c ../lib/pa_dsound.c
@@ -19,6 +20,7 @@ macx:HEADERS += ../../../libs/portaudio_v18/portaudio.h ../../../libs/portaudio_
 macx:LIBS += -framework CoreAudio
 macx:INCLUDEPATH += ../../../libs/portaudio_v18
 
+
 # OSS Midi (Working good, Linux specific)
 unix:!macx:SOURCES += midiobjectoss.cpp
 unix:!macx:HEADERS += midiobjectoss.h
@@ -28,6 +30,7 @@ unix:!macx:DEFINES += __OSSMIDI__
 win32:SOURCES += midiobjectwin.cpp
 win32:HEADERS += midiobjectwin.h
 win32:DEFINES += __WINMIDI__
+
 
 # PortMidi (Not really working, Linux ALSA, Windows and MacOS X)
 #SOURCES += midiobjectportmidi.cpp
