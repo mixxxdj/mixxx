@@ -62,7 +62,9 @@ EngineMaster::EngineMaster(DlgMaster *master_dlg, DlgCrossfader *crossfader_dlg,
     // Channel 1 and 2 head
     connect(channel1_dlg->CheckBoxHead, SIGNAL(stateChanged(int)), this, SLOT(slotChannelHead1(int)));
     connect(channel2_dlg->CheckBoxHead, SIGNAL(stateChanged(int)), this, SLOT(slotChannelHead2(int)));
-         
+    head1=false;
+    head2=false;
+
     out = new CSAMPLE[MAX_BUFFER_LEN];
 }
 

@@ -151,7 +151,7 @@ bool PlayerPortAudio::open(QString name, int srate, int bits, int bufferSize, in
     int chNo = max(chMaster,chHead)+1;
     
     // Size update
-    bufferSize = bufferSize*20;
+    //bufferSize = bufferSize*20;
 
     // Determine which callback function to use
     PortAudioCallback *callbackFunc;

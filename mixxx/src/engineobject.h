@@ -55,8 +55,8 @@ protected:
   static FLOAT_TYPE BASERATE;
 #ifdef __MACX__
   int get_bus_speed();
-#endif
   void rtThread();
+#endif
 private:
   static MixxxView *view;
 };
