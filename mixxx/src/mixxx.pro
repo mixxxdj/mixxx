@@ -5,13 +5,16 @@
 # ALSA
 SOURCES += playeralsa.cpp
 DEFINES += __ALSA__
+LIBS += -lasound
 
 # PortAudio
-SOURCES += playerportaudio.cpp
-DEFINES += __PORTAUDIO__
+#SOURCES += playerportaudio.cpp
+#DEFINES += __PORTAUDIO__
+#LIBS += -lportaudio
 
 # PortMidi
 DEFINES += __PORTMIDI__
+LIBS += -Llibportmidi.a
 
 #
 # End of options
@@ -23,7 +26,7 @@ unix {
   UI_DIR = .ui
   MOC_DIR = .moc
   OBJECTS_DIR = .obj
-  LIBS	+= -lportaudio -lmad -lasound -laudiofile
+  LIBS	+= -lmad -laudiofile
 }
 win32 {
   INCLUDEPATH += ../portmidi/
