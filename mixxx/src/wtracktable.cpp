@@ -37,6 +37,7 @@ WTrackTable::WTrackTable(QWidget *parent, const char *name) : QTable(10, 7, pare
     // Setup background color
     setPaletteBackgroundColor(QColor(168,181,164));
     setBackgroundMode(Qt::PaletteBackground);
+    setShowGrid(false);
     
     // Setup scrollbars
     setVScrollBarMode(AlwaysOn);

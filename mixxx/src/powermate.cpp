@@ -154,13 +154,11 @@ int PowerMate::opendev(int _id, int mode)
 
     if(fd < 0)
         return -1;
-
     if(ioctl(fd, EVIOCGNAME(sizeof(name)), name) < 0)
     {
         close(fd);
         return -1;
     }
-
     // it's the correct device if the prefix matches what we expect it to be:
     for(i=0; i<NUM_VALID_PREFIXES; i++)
         if(!strncasecmp(name, valid_prefix[i], strlen(valid_prefix[i])))
