@@ -51,7 +51,7 @@ public:
 
 protected:
     /** Pointer to QLibrary object */
-    QLibrary mLibJack;
+    //QLibrary mLibJack;
     /** Pointer to client info */
     jack_client_t *client;
     /** Null terminated array of port names */

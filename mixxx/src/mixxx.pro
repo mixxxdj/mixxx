@@ -1,13 +1,11 @@
 #
 # Qmake file for Mixxx.
 #
-# (C) 2002-2003 Tue Haste Andersen <haste@diku.dk>
+# (C) 2002-2004 Tue Haste Andersen <haste@diku.dk>
 #
 # Unix dependency code and configure script by Gianluca Romanin. See included
 # files for copyright details.
 #
-
-
 
 #
 # Options, and path to libraries
@@ -206,12 +204,12 @@ count(LINLIBPATH,1) {
 }
 
 # GCC Compiler optimization flags
-  QMAKE_CXXFLAGS += -pg -march=pentium3 -O3 -pipe
-  QMAKE_CFLAGS   += -pg -march=pentium3 -O3 -pipe
+#  QMAKE_CXXFLAGS += -pg -march=pentium3 -O3 -pipe
+#  QMAKE_CFLAGS   += -pg -march=pentium3 -O3 -pipe
 
 # gcc Profiling
-  QMAKE_CXXFLAGS_DEBUG += -pg
-  QMAKE_LFLAGS_DEBUG += -pg
+#  QMAKE_CXXFLAGS_DEBUG += -pg
+#  QMAKE_LFLAGS_DEBUG += -pg
 }
 
 win32 {
