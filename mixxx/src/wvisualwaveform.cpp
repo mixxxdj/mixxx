@@ -1,5 +1,5 @@
 /***************************************************************************
-                          wvisualwaveform.cpp  -  
+                          wvisualwaveform.cpp  -
                              -------------------
     begin                : Thu Oct 9 2003
     copyright            : (C) 2002 by Tue & Ken Haste Andersen
@@ -18,10 +18,11 @@
 #include "wvisualwaveform.h"
 #include "visual/visualchannel.h"
 #include "visual/visualdisplay.h"
+#include <qdragobject.h>
 
 WVisualWaveform::WVisualWaveform(QWidget *pParent, const char *pName, const QGLWidget *pShareWidget) : QGLWidget(pParent,pName,pShareWidget)
 {
-//    setAcceptDrops(true);
+    setAcceptDrops(true);
     m_pVisualController = new VisualController();
 
     installEventFilter(this);
@@ -53,17 +54,28 @@ WVisualWaveform::~WVisualWaveform()
     // Finally delete the VisualController
     delete m_pVisualController;
 }
-/*
+
 void WVisualWaveform::dragEnterEvent(QDragEnterEvent *event)
 {
-    event->accept();
+    event->accept(QUriDrag::canDecode(event));
 }
 
 void WVisualWaveform::dropEvent(QDropEvent *event)
 {
-    
+    QStringList lst;
+    if (!QUriDrag::canDecode(event))
+    {
+        event->ignore();
+        return;
+    }
+
+    event->accept();
+    QUriDrag::decodeLocalFiles(event, lst);
+    QString name = (*lst.begin());
+
+    emit(trackDropped(name));
 }
-*/
+
 void WVisualWaveform::setup(QDomNode node)
 {
     // Colors

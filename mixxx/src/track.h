@@ -67,6 +67,10 @@ public slots:
     void slotLoadPlayer1(TrackInfoObject *pTrackInfoObject);
     /** Load the given track in player 2 */
     void slotLoadPlayer2(TrackInfoObject *pTrackInfoObject);
+    /** Load the given track in player 1 if it exists*/
+    void slotLoadPlayer1(QString filename);
+    /** Load the given track in player 2 if it exists*/
+    void slotLoadPlayer2(QString filename);
     /** Slot used when playback reaches end of track */
     void slotEndOfTrackPlayer1(double);
     /** Slot used when playback reaches end of track */

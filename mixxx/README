@@ -18,6 +18,9 @@ New since 1.2.1:
 - Bug fixes in build system
 - Socket interface
 - Cue point visualization
+- Various optimizations
+- Drop files from tree view or external file manager to one
+  of the visuals, loads the track.
 
 * REQUIREMENTS *********************************************
 Mixxx is depends on the following libraries:

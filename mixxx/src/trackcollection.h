@@ -35,8 +35,8 @@ public:
       * not found */
     TrackInfoObject *getTrack(int id);
     /** Get a track from the database, identified by pathname. Returns 0 if
-      * the track was not found. If the track is not in the database, a TIO is
-      * created and added to the database */
+      * the track was not found. If the track is not in the database, a TIO is
+       * created and added to the database */
     TrackInfoObject *getTrack(QString location);
 protected:
     /** Used in binary search for an ID in the list */
