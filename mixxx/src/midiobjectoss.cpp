@@ -142,7 +142,7 @@ void abortRead(int)
     // Reinstall default handler
     signal(2,SIG_DFL);
 
-    qDebug("sig received");
+    //qDebug("sig received");
     // Empty signal handler. Installed on signal 2 (SIGINT)
     // in start of MidiObjectOSS:run(), and used to exit the
     // read function when reopening the midi device is necessary.

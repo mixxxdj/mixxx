@@ -47,7 +47,7 @@ public:
   EngineBuffer(QApplication *app, QWidget *mixxx, DlgPlaycontrol *, const char *group, const char *filename);
   ~EngineBuffer();
   void newtrack(const char *);
-  void start();
+//  void start();
   CSAMPLE *process(const CSAMPLE *, const int);
 
    /** Playpos slider values */

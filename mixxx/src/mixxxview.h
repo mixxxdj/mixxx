@@ -53,7 +53,6 @@ class MixxxView : public QWidget
     void slotDocumentChanged();
   private:
     QGridLayout *mainGrid;
-    void Addfiles(const char *);
 };
 
 #endif

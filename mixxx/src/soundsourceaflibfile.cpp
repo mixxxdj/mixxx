@@ -7,12 +7,12 @@
 SoundSourceAFlibfile::SoundSourceAFlibfile(const char* filename) {
   fh = afOpenFile(filename,"r",0);
   if (fh == AF_NULL_FILEHANDLE) {
-    cout << "Error opening file.\n";
-    exit(1);
-  }
-  channels = 2;
-  filelength = 2*afGetFrameCount(fh,AF_DEFAULT_TRACK);
+      qDebug("libaudiofile: Error opening file.");
+      filelength = 0;
+  } else
+      filelength = 2*afGetFrameCount(fh,AF_DEFAULT_TRACK);
 
+  channels = 2;
   type = "wav-file.";
 }
 

@@ -79,125 +79,132 @@ EngineBuffer::EngineBuffer(QApplication *a, QWidget *m, DlgPlaycontrol *_playcon
 
   // Open the track:
   file = 0;
-  pause = true;
-  if (filename != 0)
-      newtrack(filename);
+  newtrack(filename);
 
   // Allocate buffer for processing:
   buffer = new CSAMPLE[MAX_BUFFER_LEN];
 }
 
-EngineBuffer::~EngineBuffer(){
-  qDebug("EngineBuffer: dealloc buffer");
-  if (running())
-  {
-    qDebug("Stopping buffer");
-    stop();
-  }
-  qDebug("buffer waiting...");
+EngineBuffer::~EngineBuffer()
+{
+    if (running())
+        stop();
 
-  qDebug("buffer actual dealloc");
-  if (file != 0) delete file;
-  delete [] temp;
-  delete [] read_buffer;
+    if (file != 0)
+        delete file;
+    delete [] temp;
+    delete [] read_buffer;
 
-  delete buffersReadAhead;
-  delete requestStop;
+    delete buffersReadAhead;
+    delete requestStop;
 
-  delete PlayButton;
-  delete wheel;
-  delete rateSlider;
-  delete buffer;
+    delete PlayButton;
+    delete wheel;
+    delete rateSlider;
+    delete buffer;
 }
 
-void EngineBuffer::newtrack(const char* filename) {
-  // Start track in pause state
-  pause = true;
+void EngineBuffer::newtrack(const char* filename)
+{
+    // Start track in pause state
+    pause = true;
 
-  // If we are already playing a file, then get rid of it:
-  if (file != 0) delete file;
-  /*
-    Open the file:
-  */
-  int i=strlen(filename)-1;
-  while ((filename[i] != '.') && (i>0))
-    i--;
-  if (i == 0) {
-    qFatal("Wrong filename: %s.",filename);
-  }
-  char ending[80];
-  strcpy(ending,&filename[i]);
+    // If we are already playing a file, then get rid of it:
+    if (file != 0)
+        delete file;
 
-  //playcontrol->textLabelTrack->setText("Opening file...");
+    if (filename != 0)
+    {
+        // Open the file:
+        int i=strlen(filename)-1;
+        while ((filename[i] != '.') && (i>0))
+            i--;
+        if (i == 0)
+            qFatal("Wrong filename: %s.",filename);
+
+        char ending[80];
+        strcpy(ending,&filename[i]);
+
+        //playcontrol->textLabelTrack->setText("Opening file...");
+
 #ifndef Q_WS_WIN
-  if (!strcmp(ending,".wav"))
-    file = new SoundSourceAFlibfile(filename);
-  else 
+        if (!strcmp(ending,".wav"))
+            file = new SoundSourceAFlibfile(filename);
+        else
 #endif
-  if (!strcmp(ending,".mp3") || (!strcmp(ending,".MP3")))
-	file = new SoundSourceMp3(filename);
+        if (!strcmp(ending,".mp3") || (!strcmp(ending,".MP3")))
+            file = new SoundSourceMp3(filename);
 
-  if (file==0) {
-    qFatal("Error opening %s", filename);
-  }
-  // Initialize position in read buffer:
-  lastread_file.write(0.);
-  playpos_file.write(0.);
-  playpos_buffer.write(0.);
-  // ...and read one chunk to get started:
-  getchunk();
+        if (file==0)
+            qFatal("Error opening %s", filename);
+    } else
+        file = new SoundSourceAFlibfile("/dev/null");
 
-  // Write to playcontrol:
-  QString title = QString("Title :") + filename + "\n\n";
-  int seconds = file->length()/(2*SRATE);
-  QString tmp;
-  tmp.sprintf("Length : %02d:%02d\n\n", seconds/60, seconds - 60*(seconds/60));
-  title += tmp;
-  title += "Type  : " + file->type;
+    // Initialize position in read buffer:
+    lastread_file.write(0.);
+    playpos_file.write(0.);
+    playpos_buffer.write(0.);
 
-  playcontrol->textLabelTrack->setText(title);
+    // ...and read one chunk to get started:
+    getchunk();
 
-  pause = false;
+    if (file != 0)
+    {
+        // Write to playcontrol:
+        QString title = QString("Title :") + filename + "\n\n";
+        int seconds = file->length()/(2*SRATE);
+        QString tmp;
+        tmp.sprintf("Length : %02d:%02d\n\n", seconds/60, seconds - 60*(seconds/60));
+        title += tmp;
+        title += "Type  : " + file->type;
+
+        playcontrol->textLabelTrack->setText(title);
+        pause = false;
+    }
 }
 
-void EngineBuffer::start() {
-    qDebug("starting EngineBuffer...");
+/*
+void EngineBuffer::start()
+{
     QThread::start();
-    qDebug("started!");
 }
+*/
 
 void EngineBuffer::stop()
 {
-  buffersReadAhead->wakeAll();
+    buffersReadAhead->wakeAll();
 
-  requestStop->operator++(1);
-  wait();
-  requestStop->operator--(1);
+    requestStop->operator++(1);
+    wait();
+    requestStop->operator--(1);
 }
 
-void EngineBuffer::run() {
-  while(requestStop->available()) {
-    // Wait for playback if in buffer is filled.
-    buffersReadAhead->wait();
+void EngineBuffer::run()
+{
+    while(requestStop->available())
+    {
+        // Wait for playback if in buffer is filled.
+        buffersReadAhead->wait();
 
-    // Read a new chunk:
-    getchunk();
-  }
+        // Read a new chunk:
+        getchunk();
+    }
 };
 /*
   Called when the playbutten is pressed
 */
-void EngineBuffer::slotUpdatePlay(valueType) {
+void EngineBuffer::slotUpdatePlay(valueType)
+{
     if (PlayButton->getPosition()==down)
     {
-        qDebug("Entered seeking mode");
+        //qDebug("Entered seeking mode");
         rate.write(0);
         start_seek = wheel->getPosition();
     }
     else if (PlayButton->getPosition()==up)
     {
         seek((FLOAT_TYPE)(end_seek()-start_seek)/128);
-        qDebug("Ended seeking");
+        //qDebug("Ended seeking");
     }
     slotUpdateRate(rateSlider->getValue());
 }
@@ -249,14 +256,14 @@ void EngineBuffer::getchunk()
     {
         readChunkLock.write(1.);
 
-        qDebug("Reading...");
+        //qDebug("Reading...");
 
         // Read a chunk
         unsigned samples_read = file->read(chunk_size, temp);
 
         if (samples_read < chunk_size)
         {
-            qDebug("Didn't get as many samples as we asked for: %d:%d", chunk_size, samples_read);
+            //qDebug("Didn't get as many samples as we asked for: %d:%d", chunk_size, samples_read);
             if (samples_read == 0)
                 pause = true;
         }
@@ -280,7 +287,7 @@ void EngineBuffer::getchunk()
 
         // Update lastread_file position:
         lastread_file.add((double)samples_read);
-        qDebug("Done reading.");
+        //qDebug("Done reading.");
     
         readChunkLock.write(0.);
     } else
@@ -300,28 +307,30 @@ void EngineBuffer::slotPosition(int newvalue)
 */
 void EngineBuffer::seek(FLOAT_TYPE change)
 {
-    if (readChunkLock.read()==0.) {
+    if (readChunkLock.read()==0.)
+    {
         readChunkLock.write(1.);
 
-    qDebug("Entered seek");
-  pause = true;
-  qDebug("Set rate to zero");
-  double new_playpos = playpos_file.read() + change*file->length();
-  if (new_playpos > file->length()) new_playpos = file->length();
-  if (new_playpos < 0) new_playpos = 0;
-  playpos_file.write(new_playpos);
-  playpos_buffer.write(0.);
-  lastread_file.write(new_playpos);
-  qDebug("Seeking %g to %g",change, playpos_file.read());
-  file->seek((long unsigned)playpos_file.read());
-  //getchunk();
-  buffersReadAhead->wakeAll();
-  qDebug("done seeking.");
-  pause = false;
-  readChunkLock.write(0.);
-} else {
-	qDebug("no seeking since getChunk is active!");
-}
+        pause = true;
+        //qDebug("Set rate to zero");
+        double new_playpos = playpos_file.read() + change*file->length();
+        if (new_playpos > file->length())
+            new_playpos = file->length();
+        if (new_playpos < 0)
+            new_playpos = 0;
+        playpos_file.write(new_playpos);
+        playpos_buffer.write(0.);
+        lastread_file.write(new_playpos);
+        //qDebug("Seeking %g to %g",change, playpos_file.read());
+        file->seek((long unsigned)playpos_file.read());
+        //getchunk();
+        buffersReadAhead->wakeAll();
+        //qDebug("done seeking.");
+        pause = false;
+        readChunkLock.write(0.);
+    } else {
+        //qDebug("no seeking since getChunk is active!");
+    }
 }
 
 bool even(long n)
@@ -405,7 +414,6 @@ CSAMPLE *EngineBuffer::process(const CSAMPLE *, const int buf_size)
         // Write position to the gui:
         writepos();
     }
-    
     return buffer;
 }
 
