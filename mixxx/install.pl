@@ -33,6 +33,7 @@ if ($#out<0)
 `install src/midi/* $BASE/share/mixxx/midi`;
 
 # Copy mixxx binary to $BASE/bin
+`install -d $BASE/bin`;
 `install src/mixxx $BASE/bin`;
 
 # Copy doc files

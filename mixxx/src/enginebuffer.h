@@ -76,6 +76,8 @@ public slots:
     void slotControlCueGoto(double=0);
     void slotControlCueSet(double=0);
     void slotControlCuePreview(double);
+    void slotControlRateTempDown(double);
+    void slotControlRateTempUp(double);
 //    void bpmChange(double);
 
 private:
@@ -92,6 +94,8 @@ private:
     Monitor rate_exchange;
     /** Copy of rate_exchange, used to check if rate needs to be updated */
     double rate_old;
+    /** Temp rate, used for pitch temp buttons */
+    double temp_rate;
     /** Copy of length of file */
     int file_length_old;
     /** Copy of file sample rate*/
@@ -103,7 +107,7 @@ private:
     int m_iSamplesCalculated;
 
     ControlEngine *playButton, *rateSlider, *wheel, *playposSlider, *bufferposSlider, *audioBeatMark;
-    ControlEngine *buttonCueSet, *buttonCueGoto, *buttonCuePreview;
+    ControlEngine *buttonCueSet, *buttonCueGoto, *buttonCuePreview, *buttonRateTempDown, *buttonRateTempUp;
     /** Control used to signal when at end of file */
     ControlEngine *m_pTrackEnd, *m_pTrackEndMode;
     /** Control used to input desired playback BPM */
