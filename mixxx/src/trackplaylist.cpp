@@ -61,11 +61,11 @@ void TrackPlaylist::writeXML(QDomDocument &doc, QDomElement &header)
     XmlParse::addElement(doc, header, "Name", m_qName);
 
     QDomElement root = doc.createElement("List");
-    QPtrList<TrackInfoObject>::iterator it = m_qList.begin();
-    while (it!=m_qList.end())
+    TrackInfoObject *it = m_qList.first();
+    while (it)
     {
-        XmlParse::addElement(doc, root, "ID", QString("%1").arg((*it)->getId()));
-        ++it;
+        XmlParse::addElement(doc, root, "ID", QString("%1").arg(it->getId()));
+        it = m_qList.next();
     }
     header.appendChild(root);
 }
@@ -101,13 +101,13 @@ void TrackPlaylist::activate(WTrackTable *pTable)
     m_pTable->setNumRows(m_qList.count());
 
     int i=0;
-    QPtrList<TrackInfoObject>::iterator it = m_qList.begin();
-    while (it!=m_qList.end())
+    TrackInfoObject *it = m_qList.first();
+    while (it)
     {
         //qDebug("inserting in row %i",i);
-        (*it)->insertInTrackTableRow(m_pTable, i);
+        it->insertInTrackTableRow(m_pTable, i);
 
-        ++it;
+        it = m_qList.next();
         ++i;
     }
 
@@ -126,12 +126,12 @@ void TrackPlaylist::deactivate()
     {
         m_pTable->setNumRows(0);
 
-        QPtrList<TrackInfoObject>::iterator it = m_qList.begin();
-        while (it!=m_qList.end())
+        TrackInfoObject *it = m_qList.first();
+        while (it)
         {
 //            qDebug("remove");
-            (*it)->removeFromTrackTable();
-            ++it;
+            it->removeFromTrackTable();
+            it = m_qList.next();
         }
     }
 
@@ -239,11 +239,11 @@ void TrackPlaylist::slotRemoveTrack(TrackInfoObject *pTrack)
 void TrackPlaylist::updateScores()
 {
     // Update the score column for each track
-    QPtrList<TrackInfoObject>::iterator it = m_qList.begin();
-    while (it!=m_qList.end())
+    TrackInfoObject *it = m_qList.first();
+    while (it)
     {
-        (*it)->updateScore();
-        ++it;
+        it->updateScore();
+        it = m_qList.next();
     }
 }
 

@@ -50,14 +50,14 @@ void TrackCollection::writeXML(QDomDocument &domXML, QDomElement &root)
     //qDebug("ELEMENTS %i",m_qTrackList.count());
     QDomElement trackroot = domXML.createElement("TrackList");
 
-    QPtrList<TrackInfoObject>::iterator it = m_qTrackList.begin();
-    while (it!=m_qTrackList.end())
+    TrackInfoObject *it = m_qTrackList.first();
+    while (it)
     {
         QDomElement elementNew = domXML.createElement("Track");
-        (*it)->writeToXML(domXML, elementNew);
+        it->writeToXML(domXML, elementNew);
         trackroot.appendChild(elementNew);
 
-        ++it;
+        it = m_qTrackList.next();
     }
     root.appendChild(trackroot);
 }
@@ -120,17 +120,17 @@ TrackInfoObject *TrackCollection::getTrack(int id, int min, int mid, int max)
 TrackInfoObject *TrackCollection::getTrack(QString location)
 {
     // Search through list to find the track of the given filename
-    QPtrList<TrackInfoObject>::iterator it = m_qTrackList.begin();
-    while (it!=m_qTrackList.end())
+    TrackInfoObject *it = m_qTrackList.first();
+    while (it)
     {
-        if ((*it)->getLocation()==location)
+        if (it->getLocation()==location)
             break;
-        ++it;
+        it = m_qTrackList.next();
     }
-    if (it && (*it)->getLocation()==location)
-        return (*it);
+    if (it && it->getLocation()==location)
+        return it;
     else
-	{
+    {
         // We didn't find the track in the collection, so add a new entry
         QFileInfo file(location);
         if (file.exists())

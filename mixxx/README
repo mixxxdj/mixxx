@@ -1,4 +1,4 @@
-Mixxx - version 1.2.
+Mixxx - version 1.2.1.
 
 * HOMEPAGE *************************************************
 http://mixxx.sourceforge.net
@@ -14,6 +14,10 @@ at least G4 CPU).
 
 
 * NEWS *****************************************************
+New since 1.2:
+- Mixxx now compiles on QT 3.1.x again
+- Fix crash when no sound interfaces are available
+
 New since 1.1:
 - Sound card API structure updated. Now a normal stereo 
   soundcard can be used to hear both master and headphone

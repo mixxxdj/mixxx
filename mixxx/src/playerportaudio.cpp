@@ -348,7 +348,7 @@ QStringList PlayerPortAudio::getSampleRates()
     QStringList result;
 
     // Sample rates
-    if (devInfo->numSampleRates > 0)
+    if (devInfo && devInfo->numSampleRates > 0)
     {
         for (int j=0; j<devInfo->numSampleRates; j++)
             result.append(QString("%1").arg((int)devInfo->sampleRates[j]));
