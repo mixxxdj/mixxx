@@ -39,10 +39,13 @@
  </SliderComposed>
 
  <SliderComposed>
+  <Tooltip>Play position - Use mouse to seek</Tooltip>
+
   <Handle>playposmarker.png</Handle>
   <Slider>playposslider.png</Slider>
   <Pos>77,223</Pos>
   <Horizontal>true</Horizontal>
+  <EventWhileDrag>no</EventWhileDrag>
   <Connection>
    <ConfigKey>[Channel1],playposition</ConfigKey>
    <EmitOnDownPress>false</EmitOnDownPress>
@@ -54,6 +57,7 @@
   <Slider>playposslider.png</Slider>
   <Pos>644,223</Pos>
   <Horizontal>true</Horizontal>
+  <EventWhileDrag>no</EventWhileDrag>
   <Connection>
    <ConfigKey>[Channel2],playposition</ConfigKey>
    <EmitOnDownPress>false</EmitOnDownPress>
@@ -398,13 +402,13 @@
   <NumberStates>2</NumberStates>
   <State>
    <Number>0</Number>
-   <Pressed>cuec3.png</Pressed>
+   <Pressed>cuec0.png</Pressed>
    <Unpressed>cuec0.png</Unpressed>
   </State>
   <State>
    <Number>1</Number>
-   <Pressed>head-on-Ch1.png</Pressed>
-   <Unpressed>head-on-Ch1.png</Unpressed>
+   <Pressed>cuec3.png</Pressed>
+   <Unpressed>cuec3.png</Unpressed>
   </State>
   <Pos>477,218</Pos>
   <Connection>
@@ -417,13 +421,13 @@
   <NumberStates>2</NumberStates>
   <State>
    <Number>0</Number>
-   <Pressed>cuec3.png</Pressed>
+   <Pressed>cuec0.png</Pressed>
    <Unpressed>cuec0.png</Unpressed>
   </State>
   <State>
    <Number>1</Number>
-   <Pressed>head-on-Ch2.png</Pressed>
-   <Unpressed>head-on-Ch2.png</Unpressed>
+   <Pressed>cuec3.png</Pressed>
+   <Unpressed>cuec3.png</Unpressed>
   </State>
   <Pos>513,218</Pos>
   <Connection>
@@ -693,8 +697,9 @@
 
  <NumberPos>
   <Channel>1</Channel>
+  <Alignment>right</Alignment>
   <Pos>280,27</Pos>
-  <Size>85,20</Size>
+  <Size>100,20</Size>
   <NumberOfDigits>6</NumberOfDigits>
   <FgColor>#00fe00</FgColor>
   <BgColor>#000000</BgColor>
@@ -705,8 +710,9 @@
 
  <NumberPos>
   <Channel>2</Channel>
+  <Alignment>right</Alignment>
   <Pos>850,27</Pos>
-  <Size>85,20</Size>
+  <Size>100,20</Size>
   <NumberOfDigits>6</NumberOfDigits>
   <FgColor>#00fe00</FgColor>
   <BgColor>#000000</BgColor>
@@ -715,31 +721,36 @@
   </Connection>
  </NumberPos>
 
- <TreeList>
+
+
+ <Splitter>
   <Pos>76,490</Pos>
+  <Size>872,252</Size>
+ </Splitter>
+
+ <TreeView>
+  <InSplitter>Yes</InSplitter>
   <Size>200,252</Size>
   <FgColor>#000000</FgColor>
-  <BgColor>#ffffff</BgColor>
-  <ColWidthName>20</ColWidthName>
-  <ColWidthType>20</ColWidthType>
-  <ColWidthFullPath>180</ColWidthFullPath>
- </TreeList>
+  <BgColor>#94abc2</BgColor>
+ </TreeView>
 
  <TrackTable>
-  <Pos>276,490</Pos>
-  <Size>672,252</Size>
+  <InSplitter>Yes</InSplitter>
+  <Size>745,252</Size>
   <FgColor>#000000</FgColor>
   <BgColor>#94abc2</BgColor>
   <BgColorRowEven>#9ab2c4</BgColorRowEven>
   <BgColorRowUneven>#94abc2</BgColorRowUneven>
   <ColWidthScore>20</ColWidthScore>
-  <ColWidthTitle>220</ColWidthTitle>
-  <ColWidthArtist>200</ColWidthArtist>
-  <ColWidthComment>246</ColWidthComment>
+  <ColWidthTitle>206</ColWidthTitle>
+  <ColWidthArtist>160</ColWidthArtist>
+  <ColWidthComment>146</ColWidthComment>
   <ColWidthType>30</ColWidthType>
   <ColWidthDuration>50</ColWidthDuration>
   <ColWidthBpm>40</ColWidthBpm>
   <ColWidthBitrate>50</ColWidthBitrate>
  </TrackTable>
+
 
 </skin>
