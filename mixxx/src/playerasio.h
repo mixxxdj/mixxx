@@ -55,7 +55,7 @@ public:
     static QString getSoundApi() { return "ASIO"; }
     QString getSoundApiName() { return getSoundApi(); };
     /** Satisfy virtual declaration in EngineObject */
-    CSAMPLE *process(const CSAMPLE *, const int) { return 0; };
+    void process(const CSAMPLE *, const CSAMPLE *, const int) { };
 	void processCallback(long bufferIndex);
 
 private:

@@ -119,7 +119,7 @@ bool PlayerAsio::open() {
 	QString name; // name of the driver we want to open
 
 	// get it from the config and convert it to a usable form for the function we want to call
-	name = m_pConfig->getValueString(ConfigKey(CFG_SOUNDCARD,CFG_DEV_MASTER_LEFT));     	
+	name = m_pConfig->getValueString(ConfigKey("[Soundcard]","DeviceMasterLeft"));     	
 	char driverName[MAX_DRIVER_NAME_LENGTH];
 	strcpy(driverName, name.latin1());
 
@@ -139,7 +139,7 @@ bool PlayerAsio::open() {
 		return false;
     
     
-	int sampleRate = m_pConfig->getValueString(ConfigKey(CFG_SOUNDCARD, CFG_SAMPLE_RATE)).toInt();
+	int sampleRate = m_pConfig->getValueString(ConfigKey("[Soundcard]", "Samplerate")).toInt();
 
     // Update SRATE in EngineObject
     setPlaySrate(sampleRate);
