@@ -57,7 +57,7 @@ MixxxApp::MixxxApp()
   QStringList *list = configMap->getConfigurations();
   QStringList::Iterator it = list->begin();
   //for (; it != list->end(); ++it)
-  //    qDebug("%s",(*it).ascii());
+  qDebug("Using config %s",(*it).ascii());
   ConfigObject *config = configMap->setConfiguration((*it).ascii());
 
   initDoc();

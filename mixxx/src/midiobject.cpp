@@ -187,7 +187,7 @@ void MidiObject::run()
         do
 		{
             int no = read(handle,&buffer[0],1);
-            qDebug("midi: %i",(short int)buffer[0]);
+            //qDebug("midi: %i",(short int)buffer[0]);
             if (no != 1)
                 qWarning("Warning: midiobject recieved %i bytes.", no);
         } while (buffer[0] & 128 != 128); // Continue until we receive a status byte (bit 7 is set)
@@ -223,16 +223,16 @@ void MidiObject::run()
 
 #endif
 
-        qDebug("Received midi message: ch %i no %i val %i",(int)channel,(int)midicontrol,(int)midivalue);
+        //qDebug("Received midi message: ch %i no %i val %i",(int)channel,(int)midicontrol,(int)midivalue);
 
         // Check the potmeters:
         for (int i=0; i<no; i++)
         {
-            qDebug("(%i) checking: no %i ch %i",i,(int)controlList[i]->cfgOption->val->midino,(int)controlList[i]->cfgOption->val->midichannel);
+            //qDebug("(%i) checking: no %i ch %i",i,(int)controlList[i]->cfgOption->val->midino,(int)controlList[i]->cfgOption->val->midichannel);
             if (controlList[i]->cfgOption->val->midino == midicontrol &
                 controlList[i]->cfgOption->val->midichannel == channel)
             {
-              qDebug("gotit");
+		//qDebug("gotit");
                 // Check for possible bit mask
                 int midimask = controlList[i]->cfgOption->val->midimask;
                 if (midimask > 0)

@@ -47,7 +47,7 @@ EngineBuffer::EngineBuffer(DlgPlaycontrol *_playcontrol, const char *group, cons
   connect(playcontrol->SliderPlaycontrol, SIGNAL(sliderReleased()), this, SLOT(slotCenterWheel()));
 
   connect(wheel, SIGNAL(valueChanged(FLOAT_TYPE)), this, SLOT(slotUpdateRate(FLOAT_TYPE)));
-  connect(wheel, SIGNAL(updateGUI(int)), playcontrol->SliderPlaycontrol, SLOT(setValue(int)));
+//  connect(wheel, SIGNAL(updateGUI(int)), playcontrol->SliderPlaycontrol, SLOT(setValue(int)));
 
   connect(this, SIGNAL(position(int)), playcontrol->LCDposition, SLOT(display(int)));
 
@@ -200,13 +200,13 @@ void EngineBuffer::slotUpdateRate(FLOAT_TYPE)
         rate.write(rateSlider->getValue() + 4*wheel->getValue());
     else if (PlayButton->getPosition()==down)
     {
-	    // No rate while seeking:
+	// No rate while seeking:
         rate.write(0);
-	    emit position((int)(100*(FLOAT_TYPE)(end_seek()-start_seek)/128));
-	}
+	emit position((int)(100*(FLOAT_TYPE)(end_seek()-start_seek)/128));
+    }
     else
         rate.write(4*wheel->getValue());
-
+    
     qDebug("Rate value: %f, wheel value: %f",rate.read(),wheel->getValue());
 }
 
@@ -222,8 +222,10 @@ void EngineBuffer::getchunk() {
   // Read a chunk
   unsigned samples_read = file->read(chunk_size, temp);
 
-  if (samples_read < chunk_size)
+  if (samples_read < chunk_size) {
       qDebug("Didn't get as many samples as we asked for: %d:%d", chunk_size, samples_read);
+      if (samples_read == 0) pause = true;
+  }
 
   // Convert from SAMPLE to CSAMPLE. Should possibly be optimized
   // using assembler code from music-dsp archive.
@@ -326,37 +328,36 @@ CSAMPLE *EngineBuffer::process(const CSAMPLE *, const int buf_size)
 {
     if (rate.read()==0. || pause)
     {
-	    for (int i=0; i<buf_size; i++)
-	        buffer[i]=0.;
+	for (int i=0; i<buf_size; i++)
+	    buffer[i]=0.;
     } else {
         long prev;
-	FLOAT_TYPE myRate=rate.read();
-//qDebug("rate %f",myRate);
-	FLOAT_TYPE myPlaypos_buffer = playpos_buffer.read();
-        FLOAT_TYPE myPlaypos_file = playpos_file.read();
+	double myRate=rate.read();
+	double myPlaypos_buffer = playpos_buffer.read();
+        double myPlaypos_file = playpos_file.read();
 
 	for (int i=0; i<buf_size; i+=2)
         {
             if (myPlaypos_file < file->length())
             {
-  	            prev = (long)floor(myPlaypos_buffer)%read_buffer_size;
-	            if (!even(prev)) prev--;
+		prev = (long)floor(myPlaypos_buffer)%read_buffer_size;
+		if (!even(prev)) prev--;
                 long next = (prev+2)%read_buffer_size;
-	            FLOAT_TYPE frac = myPlaypos_buffer - floor(myPlaypos_buffer);
+		FLOAT_TYPE frac = myPlaypos_buffer - floor(myPlaypos_buffer);
                 buffer[i  ] = read_buffer[prev  ] +frac*(read_buffer[next  ]-read_buffer[prev  ]);
-	            buffer[i+1] = read_buffer[prev+1] +frac*(read_buffer[next+1]-read_buffer[prev+1]);
+		buffer[i+1] = read_buffer[prev+1] +frac*(read_buffer[next+1]-read_buffer[prev+1]);
                 double rate_add = 2*myRate;
-	            myPlaypos_buffer +=rate_add;
+		myPlaypos_buffer +=rate_add;
                 myPlaypos_file += rate_add;
             } else {
                 buffer[i  ] = 0.;
-	            buffer[i+1] = 0.;
+		buffer[i+1] = 0.;
             }
         }
-
+	
 	playpos_buffer.write(myPlaypos_buffer);
 	playpos_file.write(myPlaypos_file);
-
+	
         checkread();
 
         // Check the wheel:
