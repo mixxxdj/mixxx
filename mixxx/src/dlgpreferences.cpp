@@ -67,7 +67,7 @@ DlgPreferences::DlgPreferences(MixxxApp *mixxx, MixxxView *view,
 //    connect(this,        SIGNAL(closeDlg()),             wcontrols, SLOT(slotApply()));
     connect(this,        SIGNAL(closeDlg()),             this, SLOT(slotApply()));
     if (tracklist->wTree)
-        mconnect(wplaylist,   SIGNAL(apply(QString,QString)),         tracklist->wTree, SLOT(slotSetDirs(QString,QString)));
+        connect(wplaylist,   SIGNAL(apply(QString,QString)),         tracklist->wTree, SLOT(slotSetDirs(QString,QString)));
 }
 
 DlgPreferences::~DlgPreferences()
