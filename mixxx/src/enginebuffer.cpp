@@ -445,7 +445,11 @@ void EngineBuffer::checkread()
 // Called from process.
 void EngineBuffer::writepos()
 {
-    playposSliderNew = (filepos_play.read()/file->length())*100.;
+    // Avoid div by zero if length equals 0.
+    playposSliderNew = 0;
+    if (file->length()>0)
+        playposSliderNew = (filepos_play.read()/file->length())*100.;
+
     if (floor(fabs(playposSliderNew-playposSliderLast)) >= 1.)
     {
         // Send User event
