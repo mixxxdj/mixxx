@@ -18,7 +18,7 @@ MixxxMenuPlaylists::MixxxMenuPlaylists(QPopupMenu *pMenu, Track *pTrack)
 {
     m_pMenu = pMenu;
     m_pTrack = pTrack;
-    connect(m_pTrack, SIGNAL(updateMenu(const TrackPlaylistList &)), this, SLOT(slotUpdate(const TrackPlaylistList &)));
+    connect(m_pTrack, SIGNAL(updateMenu(const TrackPlaylistList &)), this, SLOT(slotUpdate(TrackPlaylistList *)));
     connect(m_pTrack, SIGNAL(activePlaylist(TrackPlaylist *)), this, SLOT(slotSetActive(TrackPlaylist *)));
     connect(m_pMenu, SIGNAL(activated(int)), this, SLOT(slotRequestActive(int)));
     m_pTrack->updatePlaylistViews();
