@@ -55,7 +55,6 @@ class Track;
 class TrackInfoObject;
 class PowerMate;
 class Joystick;
-class ControlEngine;
 class PlayerProxy;
 
 /**
@@ -112,8 +111,6 @@ class MixxxApp : public QMainWindow
     PlayerProxy *player;
     MidiObject *midi;
     ControlObject *control;
-    ControlEngine *m_pControlEngine;
-    std::vector<EngineObject *> engines;
     ConfigObject<ConfigValue> *config;
     /** Pointer to active midi configuration */
     ConfigObject<ConfigValueMidi> *midiconfig;

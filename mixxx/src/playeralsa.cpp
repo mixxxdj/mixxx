@@ -32,7 +32,7 @@ const int kiMaxFrameSize = 512;
 
 
 #ifndef PLAYERTEST
-PlayerALSA::PlayerALSA(ConfigObject<ConfigValue> *config, ControlObject *pControl) : Player(config, pControl)
+PlayerALSA::PlayerALSA(ConfigObject<ConfigValue> *config) : Player(config)
 #else
 PlayerALSA::PlayerALSA()
 #endif

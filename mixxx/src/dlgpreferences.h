@@ -31,7 +31,7 @@ class DlgPrefSound;
 class DlgPrefMidi;
 class DlgPrefPlaylist;
 class DlgPrefControls;
-class ControlObject;
+class PowerMate;
 
 /**
   *@author Tue & Ken Haste Andersen
@@ -40,12 +40,12 @@ class ControlObject;
 class DlgPreferences : public QTabDialog
 {
     Q_OBJECT
-public: 
+public:
     DlgPreferences(MixxxApp *mixxx, MixxxView *view,
                    MidiObject *midi, PlayerProxy *player,
                    Track *track, ConfigObject<ConfigValue> *config,
                    ConfigObject<ConfigValueMidi> *midiconfig,
-                   ControlObject *pControl);
+                   PowerMate *pPowerMate1, PowerMate *pPowerMate2);
     ~DlgPreferences();
 public slots:
     void slotUpdate();

@@ -29,8 +29,6 @@ class ControlNull : public ControlObject  {
 public:
     ControlNull();
     ~ControlNull();
-protected:
-    void setValueFromMidi(MidiCategory, int) {};
 };
 
 #endif

@@ -27,10 +27,9 @@ EngineMaster *Player::m_pMaster = 0;
    Input:   Size of the output buffer in samples
    Output:  Pointer to internal synthesis data structure.
    -------- ------------------------------------------------------ */
-Player::Player(ConfigObject<ConfigValue> *pConfig, ControlObject *pControl)
+Player::Player(ConfigObject<ConfigValue> *pConfig)
 {
     m_pConfig = pConfig;
-    m_pControl = pControl;
     m_pBuffer = new CSAMPLE[MAX_BUFFER_LEN];
 }
 
@@ -72,7 +71,7 @@ bool Player::open()
 CSAMPLE *Player::prepareBuffer(int iBufferSize)
 {
     // First, sync control parameters with changes from GUI thread
-    m_pControl->syncControlEngineObjects();
+    ControlObject::sync();
 
     // Process a block of samples for output. iBufferSize is the
     // number of samples for one channel, but the EngineObject

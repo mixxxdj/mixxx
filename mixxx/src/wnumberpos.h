@@ -13,7 +13,7 @@
 #define WNUMBERPOS_H
 
 #include "wnumber.h"
-class ControlObject;
+class ControlObjectThreadWidget;
 
 /**
 @author Tue Haste Andersen
@@ -35,7 +35,7 @@ private:
     /** True if remaining content is being shown */
     bool m_bRemain;
     /** Pointer to control object for rate */
-    ControlObject *m_pRateControl, *m_pRateDirControl;
+    ControlObjectThreadWidget *m_pRateControl, *m_pRateDirControl;
 };
 
 #endif

@@ -3,7 +3,7 @@
                              -------------------
     begin                : Mon Feb 18 09:48:17 CET 2002
     copyright            : (C) 2002 by Tue and Ken Haste Andersen
-    email                : 
+    email                :
  ***************************************************************************/
 
 /***************************************************************************
@@ -38,7 +38,6 @@
 #include "controlnull.h"
 #include "midiobjectnull.h"
 #include "readerextractwave.h"
-#include "controlengine.h"
 #include "controlpotmeter.h"
 #include "reader.h"
 #include "enginebuffer.h"
@@ -105,7 +104,6 @@ MixxxApp::MixxxApp(QApplication *a, QStringList files)
 
     // Instantiate a ControlObject, and set static parent widget
     control = new ControlNull();
-    control->setParentWidget(this);
 
     //
     // Find the config path, path where midi configuration files, skins etc. are stored.
@@ -145,27 +143,27 @@ MixxxApp::MixxxApp(QApplication *a, QStringList files)
     // Open midi
     midi = 0;
 #ifdef __ALSAMIDI__
-    midi = new MidiObjectALSA(midiconfig,app,config->getValueString(ConfigKey("[Midi]","Device")));
+    midi = new MidiObjectALSA(midiconfig,config->getValueString(ConfigKey("[Midi]","Device")));
 #endif
 #ifdef __PORTMIDI__
-    midi = new MidiObjectPortMidi(midiconfig,app,control,config->getValueString(ConfigKey("[Midi]","Device")));
+    midi = new MidiObjectPortMidi(midiconfig,config->getValueString(ConfigKey("[Midi]","Device")));
 #endif
 #ifdef __COREMIDI__
-    midi = new MidiObjectCoreMidi(midiconfig,app,control,config->getValueString(ConfigKey("[Midi]","Device")));
+    midi = new MidiObjectCoreMidi(midiconfig,config->getValueString(ConfigKey("[Midi]","Device")));
 #endif
 #ifdef __OSSMIDI__
-    midi = new MidiObjectOSS(midiconfig,app,control,config->getValueString(ConfigKey("[Midi]","Device")));
+    midi = new MidiObjectOSS(midiconfig,config->getValueString(ConfigKey("[Midi]","Device")));
 #endif
 #ifdef __WINMIDI__
-    midi = new MidiObjectWin(midiconfig,app,control,config->getValueString(ConfigKey("[Midi]","Device")));
+    midi = new MidiObjectWin(midiconfig,config->getValueString(ConfigKey("[Midi]","Device")));
 #endif
 
     if (midi == 0)
-        midi = new MidiObjectNull(midiconfig,app,control,config->getValueString(ConfigKey("[Midi]","Device")));
+        midi = new MidiObjectNull(midiconfig,config->getValueString(ConfigKey("[Midi]","Device")));
 
     // Store default midi device
-    config->set(ConfigKey("[Midi]","Device"), ConfigValue(midi->getOpenDevice()->latin1()));    
-        
+    config->set(ConfigKey("[Midi]","Device"), ConfigValue(midi->getOpenDevice()->latin1()));
+
     // Get list of available midi configurations, and read the default configuration. If no default
     // is given, use the first configuration found in the config directory.
     QStringList *midiConfigList = midi->getConfigList(QString(qConfigPath).append("midi/"));
@@ -187,29 +185,20 @@ MixxxApp::MixxxApp(QApplication *a, QStringList files)
         }
     }
 
-    // Set the static config pointer for the ControlObject
-    control->setMidiConfig(midiconfig);
-
     // Read keyboard configuration and set kdbConfig object in WWidget
     kbdconfig = new ConfigObject<ConfigValueKbd>(QString(qConfigPath).append("keyboard/").append("Standard.kbd.cfg"));
-
-    // Set the static config pointer for the ControlObject
-    control->setKbdConfig(kbdconfig);
-
-
-    // Configure ControlEngine object
-    m_pControlEngine = new ControlEngine(control);
+    WWidget::setKeyboardConfig(kbdconfig);
 
     // Try initializing PowerMates
     powermate1 = 0;
     powermate2 = 0;
 #ifdef __LINUX__
-    powermate1 = new PowerMateLinux(control);
-    powermate2 = new PowerMateLinux(control);
+    powermate1 = new PowerMateLinux();
+    powermate2 = new PowerMateLinux();
 #endif
 #ifdef __WIN__
-    powermate1 = new PowerMateWin(control);
-    powermate2 = new PowerMateWin(control);
+    powermate1 = new PowerMateWin();
+    powermate2 = new PowerMateWin();
 #endif
 
     if (powermate1!=0)
@@ -270,7 +259,7 @@ MixxxApp::MixxxApp(QApplication *a, QStringList files)
 
     // Initialize player device
     Player::setMaster(master);
-    player = new PlayerProxy(config,control);
+    player = new PlayerProxy(config);
 
     // Find path of skin
     QString qSkinPath(qConfigPath);
@@ -308,7 +297,7 @@ MixxxApp::MixxxApp(QApplication *a, QStringList files)
     bool bVisualsWaveform = true;
     if (config->getValueString(ConfigKey("[Controls]","Visuals")).toInt()==1)
         bVisualsWaveform = false;
-    view=new MixxxView(this, control, bVisualsWaveform, qSkinPath, config);
+    view=new MixxxView(this, kbdconfig, bVisualsWaveform, qSkinPath, config);
     if (bVisualsWaveform && !view->activeWaveform())
     {
         config->set(ConfigKey("[Controls]","Visuals"), ConfigValue(1));
@@ -347,7 +336,7 @@ MixxxApp::MixxxApp(QApplication *a, QStringList files)
     // Initialize track object:
     m_pTrack = new Track(config->getValueString(ConfigKey("[Playlist]","Listfile")), view, buffer1, buffer2);
     WTreeItem::setTrack(m_pTrack);
-    
+
     // Set up drag and drop to player visuals
     if (view->m_pVisualCh1)
         connect(view->m_pVisualCh1, SIGNAL(trackDropped(QString)), m_pTrack, SLOT(slotLoadPlayer1(QString)));
@@ -356,11 +345,11 @@ MixxxApp::MixxxApp(QApplication *a, QStringList files)
 
 
     // Setup state of End of track controls from config database
-    ControlObject::getControl(ConfigKey("[Channel1]","TrackEndMode"))->setValueFromApp(config->getValueString(ConfigKey("[Controls]","TrackEndModeCh1")).toDouble());
-    ControlObject::getControl(ConfigKey("[Channel2]","TrackEndMode"))->setValueFromApp(config->getValueString(ConfigKey("[Controls]","TrackEndModeCh2")).toDouble());
+    ControlObject::getControl(ConfigKey("[Channel1]","TrackEndMode"))->queueFromThread(config->getValueString(ConfigKey("[Controls]","TrackEndModeCh1")).toDouble());
+    ControlObject::getControl(ConfigKey("[Channel2]","TrackEndMode"))->queueFromThread(config->getValueString(ConfigKey("[Controls]","TrackEndModeCh2")).toDouble());
 
     // Initialize preference dialog
-    prefDlg = new DlgPreferences(this, view, midi, player, m_pTrack, config, midiconfig, control);
+    prefDlg = new DlgPreferences(this, view, midi, player, m_pTrack, config, midiconfig, powermate1, powermate2);
     prefDlg->setHidden(true);
 
     // Try open player device If that fails, the preference panel is opened.
@@ -379,9 +368,9 @@ MixxxApp::MixxxApp(QApplication *a, QStringList files)
 
     // Set up socket interface
 #ifndef __WIN__
-	new MixxxSocketServer(m_pTrack);
+    new MixxxSocketServer(m_pTrack);
 #endif
-    
+
     // Call inits to invoke all other construction parts
     initActions();
     initMenuBar();
@@ -391,12 +380,13 @@ MixxxApp::~MixxxApp()
 {
 //    qDebug("Destroying MixxxApp");
 
-    // Save state of End of track controls in config database
-    config->set(ConfigKey("[Controls]","TrackEndModeCh1"), ConfigValue((int)ControlObject::getControl(ConfigKey("[Channel1]","TrackEndMode"))->getValue()));
-    config->set(ConfigKey("[Controls]","TrackEndModeCh2"), ConfigValue((int)ControlObject::getControl(ConfigKey("[Channel2]","TrackEndMode"))->getValue()));
-
 //    qDebug("close player");
     player->close();
+
+    // Save state of End of track controls in config database
+    config->set(ConfigKey("[Controls]","TrackEndModeCh1"), ConfigValue((int)ControlObject::getControl(ConfigKey("[Channel1]","TrackEndMode"))->get()));
+    config->set(ConfigKey("[Controls]","TrackEndModeCh2"), ConfigValue((int)ControlObject::getControl(ConfigKey("[Channel2]","TrackEndMode"))->get()));
+
 //    qDebug("delete player");
     delete player;
 //    qDebug("delete master");
@@ -463,7 +453,7 @@ void MixxxApp::initActions()
     playlistsImport->setStatusTip(tr("Import playlist"));
     playlistsImport->setWhatsThis(tr("Import playlist"));
     connect(playlistsImport, SIGNAL(activated()), m_pTrack, SLOT(slotImportPlaylist()));
-    
+
     optionsBeatMark = new QAction(tr("Audio Beat Marks"), tr("&Audio Beat Marks"), 0, this, 0, true);
     optionsBeatMark->setOn(false);
     optionsBeatMark->setStatusTip(tr("Audio Beat Marks"));
@@ -508,9 +498,9 @@ void MixxxApp::initMenuBar()
     playlistsNew->addTo(playlistsMenu);
     playlistsImport->addTo(playlistsMenu);
     playlistsMenu->insertSeparator();
-    
+
     new MixxxMenuPlaylists(playlistsMenu, m_pTrack);
-    
+
     // menuBar entry viewMenu
     viewMenu=new QPopupMenu();
     viewMenu->setCheckable(true);
@@ -553,7 +543,7 @@ void MixxxApp::slotFileOpen()
                                              "Open file");
     TrackInfoObject *pTrack = m_pTrack->getTrackCollection()->getTrack(s);
     if (pTrack)
-    	m_pTrack->slotLoadPlayer1(pTrack);
+        m_pTrack->slotLoadPlayer1(pTrack);
 }
 
 void MixxxApp::slotFileQuit()

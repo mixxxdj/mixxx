@@ -16,7 +16,6 @@
 
 #include "enginevolume.h"
 #include "controllogpotmeter.h"
-#include "controlengine.h"
 #include "configobject.h"
 
 /*----------------------------------------------------------------
@@ -24,8 +23,7 @@
   ----------------------------------------------------------------*/
 EngineVolume::EngineVolume(ConfigKey key, double maxval)
 {
-    ControlLogpotmeter *p = new ControlLogpotmeter(key, maxval);
-    potmeter = new ControlEngine(p);
+    potmeter = new ControlLogpotmeter(key, maxval);
 }
 
 EngineVolume::~EngineVolume()

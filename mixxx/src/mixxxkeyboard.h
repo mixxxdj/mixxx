@@ -22,6 +22,7 @@
 #include <qevent.h>
 #include <qvaluelist.h>
 #include <qkeysequence.h>
+#include "configobject.h"
 
 /**
  * This class provides handling of keyboard events
@@ -33,17 +34,19 @@ class MixxxKeyboard : public QObject
 {
     Q_OBJECT
 public:
-    MixxxKeyboard(ControlObject *control, QObject *parent=0, const char *name=0);
+    MixxxKeyboard(ConfigObject<ConfigValueKbd> *pKbdConfigObject, QObject *parent=0, const char *name=0);
     ~MixxxKeyboard();
     /** Event filter */
     bool eventFilter(QObject *obj, QEvent *e);
+
 private:
+    bool kbdPress(QKeySequence k, bool release);
     /** Returns a valid QKeySequency with modifier keys from a QKeyEvent */
     QKeySequence getKeySeq(QKeyEvent *e);
     /** List containing keys which is currently pressed */
     QValueList<int> m_qActiveKeyList;
-    /** Pointer to control object */
-    ControlObject *m_pControl;
+    /** Pointer to keyboard config object */
+    ConfigObject<ConfigValueKbd> *m_pKbdConfigObject;
 };
 
 #endif

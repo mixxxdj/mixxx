@@ -15,7 +15,6 @@
  ***************************************************************************/
 
 #include "controlttrotary.h"
-#include "controlengine.h"
 
 /* -------- ------------------------------------------------------
    Purpose: Creates a new rotary encoder
@@ -25,30 +24,24 @@ ControlTTRotary::ControlTTRotary(ConfigKey key) : ControlObject(key)
 {
 }
 
-void ControlTTRotary::setValueFromWidget(double dValue)
+double ControlTTRotary::getValueFromWidget(double dValue)
 {
     // Non-linear scaling
     double temp = (((dValue-64.)*(dValue-64.))/64.)/100.;
     if ((dValue-64.)<0)
-        m_dValue = -temp;
+        return -temp;
     else
-        m_dValue = temp;
-        
-    updateFromWidget();
+        return temp;
+}
+
+double ControlTTRotary::getValueToWidget(double dValue)
+{
+    return dValue*200.+64.;
 }
 
 void ControlTTRotary::setValueFromMidi(MidiCategory, int v)
 {
-    double temp = ((((double)v-64.)*((double)v-64.))/64.)/100.;
-    if ((v-64)<0)
-        m_dValue = -temp;
-    else
-        m_dValue = temp;
-
-    updateFromMidi();        
+    m_dValue = getValueFromWidget(v);
+    emit(valueChanged(m_dValue));
 }
 
-void ControlTTRotary::updateWidget()
-{
-    emit(signalUpdateWidget(m_dValue*200.+64.));
-}

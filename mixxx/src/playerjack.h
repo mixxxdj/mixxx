@@ -28,7 +28,7 @@
 
 class PlayerJack : public Player  {
 public:
-    PlayerJack(ConfigObject<ConfigValue> *config, ControlObject *pControl);
+    PlayerJack(ConfigObject<ConfigValue> *config);
     ~PlayerJack();
     bool initialize();
     bool open();

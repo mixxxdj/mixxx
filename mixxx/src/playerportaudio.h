@@ -31,7 +31,7 @@ const int kiMaxFrameSize = 16;
 
 class PlayerPortAudio : public Player  {
 public:
-    PlayerPortAudio(ConfigObject<ConfigValue> *config, ControlObject *pControl);
+    PlayerPortAudio(ConfigObject<ConfigValue> *config);
     ~PlayerPortAudio();
     bool initialize();
     bool open();

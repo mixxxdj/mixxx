@@ -16,7 +16,6 @@
  ***************************************************************************/
 
 #include "controllogpotmeter.h"
-#include "controlengine.h"
 
 /* -------- ------------------------------------------------------
    Purpose: Creates a new logarithmic potmeter, where the value is
@@ -57,42 +56,43 @@ ControlLogpotmeter::ControlLogpotmeter(ConfigKey key, double dMaxValue) : Contro
     m_dValue = 1.;
 }
 
-void ControlLogpotmeter::setValueFromWidget(double dValue)
+double ControlLogpotmeter::getValueFromWidget(double dValue)
 {
+    double dResult = 0;
+    
     // Calculate the value linearly:
     if (!m_bTwoState)
     {
-        m_dValue = pow(10., (double)(m_fB1*dValue)) - 1;
+        dResult = pow(10., (double)(m_fB1*dValue)) - 1;
     }
     else
     {
         if (dValue <= middlePosition)
-            m_dValue = pow(10., m_fB1*dValue) - 1;
+            dResult = pow(10., m_fB1*dValue) - 1;
         else
-            m_dValue = pow(10., m_fB2*(dValue - middlePosition));
+            dResult = pow(10., m_fB2*(dValue - middlePosition));
     }
 
 //    qDebug("Midi: %f Value : %f", dValue, m_dValue);
-
-    updateFromWidget();
+    return dResult;
 }
 
-void ControlLogpotmeter::updateWidget()
+double ControlLogpotmeter::getValueToWidget(double dValue)
 {
     double pos;
 
     if (!m_bTwoState)
     {
-        pos = log10(m_dValue+1)/m_fB1;
+        pos = log10(dValue+1)/m_fB1;
     }
     else
     {
         if (m_dValue>1.)
-            pos = log10(m_dValue)/m_fB2 + middlePosition;
+            pos = log10(dValue)/m_fB2 + middlePosition;
         else
-            pos = log10(m_dValue+1)/m_fB1;    
+            pos = log10(dValue+1)/m_fB1;    
     }
     
-    emit(signalUpdateWidget(pos));
+    return pos;
 }
 

@@ -3,7 +3,7 @@
                              -------------------
     begin                : Wed Feb 20 2002
     copyright            : (C) 2002 by Tue and Ken Haste Andersen
-    email                : 
+    email                :
  ***************************************************************************/
 
 /***************************************************************************
@@ -27,13 +27,22 @@
 #include <qmutex.h>
 #include "configobject.h"
 #include "midiobject.h"
+#include "controlobjectthread.h"
 
-class ControlEngine;
+class ConfigKey;
 
-struct ControlQueueEngineItem
+struct QueueObjectThread
 {
-    ControlEngine *ptr;
+    ControlObjectThread *pControlObjectThread;
+    ControlObject *pControlObject;
     double value;
+};
+
+struct QueueObjectMidi
+{
+    ControlObject *pControlObject;
+    MidiCategory category;
+    int value;
 };
 
 /**
@@ -42,7 +51,7 @@ struct ControlQueueEngineItem
   * the emitValueChanged method is called which syncronizes the new value with the player thread
   * using the semaphore protected queue.
   *
-  * The player thread has a corresponding ControlEngine object for each ControlObject. The 
+  * The player thread has a corresponding ControlEngine object for each ControlObject. The
   * ControlEngine object updates the ControlObject by queueing the values, and sending them as an
   * event to the ControlObject.
   *
@@ -56,109 +65,72 @@ public:
     ControlObject();
     ControlObject(ConfigKey key);
     ~ControlObject();
-    /** Connect two control objects dest and src, so each time src is updated, so is dest */
+    /** Connect two control objects dest and src, so each time src is updated, so is dest. */
     static bool connectControls(ConfigKey src, ConfigKey dest);
+    /** Disonnect a control object. */
+    static bool disconnectControl(ConfigKey key);
     /** Returns a pointer to the ControlObject matching the given ConfigKey */
     static ControlObject *getControl(ConfigKey key);
-    /** Sets the midi config object */
-    static void setMidiConfig(ConfigObject<ConfigValueMidi> *pMidiConfig);
-    /** Sets the keyboard config object */
-    static void setKbdConfig(ConfigObject<ConfigValueKbd> *pKbdConfig);
-	/** Return a string of the keyboard shortcut associated with this ControlObject. For use in widget tooltips. */
-	QString getKbdConfigStr();
-    /** Associates a QWidget with the ControlObject identified by a given ConfigKey */
-    static void setWidget(QWidget *widget, ConfigKey key, bool emitOnDownPress=true, Qt::ButtonState state=Qt::NoButton);
-    /** Associates a QWidget with the ControlObject. */
-    void setWidget(QWidget *widget, bool emitOnDownPress=true, Qt::ButtonState state=Qt::NoButton);
-    /** Associates a the enabled/disabled state of a widget with the state of a ControlObject
-      * identified by a given ConfigKey */
-    static void setWidgetOnOff(QWidget *widget, ConfigKey key);
-    /** Associates a the enabled/disabled state of a widget with the state of a ControlObject. */
-    void setWidgetOnOff(QWidget *widget);
-
-
-
-    /** Used to set a pointer to the corresponding ControlEngine of this ControlObject */
-    void setControlEngine(ControlEngine *pControlEngine);
+    /** Used to add a pointer to the corresponding ControlObjectThread of this ControlObject */
+    void addProxy(ControlObjectThread *pControlObjectThread);
+    /** Update proxies, execep the one given a pointer to. Returns true if all updates
+      * happend, otherwise false. */
+    bool updateProxies(ControlObjectThread *pProxyNoUpdate=0);
+    /** Return the key of the object */
+    ConfigKey getKey();
     /** Return the value of the ControlObject */
-    double getValue();
-    /** Sets up parent widget. Used when setting up keyboard accelerators */
-    static void setParentWidget(QWidget *pParentWidget);
-    /** Syncronizes queue, by writing the values to ControlEngine objects. Non blocking.
-      * Should be called from player thread. */
-    static void syncControlEngineObjects();
-    /** Called from main widget, when a key is pressed or released. Returns true if
-      * the key press was handled */
-    bool kbdPress(QKeySequence k, bool release);
-
-signals:
-    /** Signal sent when the widget has to be updated with a given value */
-    void signalUpdateWidget(double);
-    /** Signal sent when the ControlObject value has changed by others that the main application
-      * thread */
-    void signalUpdateApp(double);
-
-protected:
-    /** Method called internally when the value has been updated by Midi */
-    void updateFromMidi();
-    /** Method called internally when the value has been updated by a ControlEngine */
-    void updateFromEngine();
-    /** Method called internally when the value has been updated by a graphical widget */
-    void updateFromWidget();
-    /** Method called internally when the value has been updated by the main application thread */
-    void updateFromApp();
-    /** Method called internally when the control value should be updated in all connected
-      * objects */
-    void updateAll();
-    /** Method called when the associated ControlEngine object needs to be updated */
-    virtual void updateEngine();
-    /** Method called when the associated widget needs to be updated */
-    virtual void updateWidget();
-    /** Method called when the application thread needs to be updated */
-    virtual void updateApp();
-    /** Called when a MIDI event associated with this object is received */
-    virtual void setValueFromMidi(MidiCategory c, int v);
+    double get();
+    /** Add to value. Not thread safe. */
+    void add(double dValue);
+    /** Subtract from value. Not thread safe. */
+    void sub(double dValue);
+    /** Syncronizes all ControlObjects with their corresponding proxies. */
+    static void sync();
+    /** Queue a control change from a widget. Thread safe. Blocking. */
+    void queueFromThread(double dValue, ControlObjectThread *pControlObjectThread=0);
+    /** Queue a control change from MIDI. Thread safe. Blocking. */
+    void queueFromMidi(MidiCategory c, int v);
+    /** Return a ControlObject value, corresponding to the widget input value. Thread safe. */
+    virtual double getValueFromWidget(double dValue);
+    /** Return a widget value corresponding to the ControlObject input value. Thread safe. */
+    virtual double getValueToWidget(double dValue);
 
 public slots:
-    /** Called when a event from an associated ControlEngine object is received */
-    virtual void setValueFromEngine(double dValue);
-    /** Called when a signal from the associated widget is received */
-    virtual void setValueFromWidget(double dValue);
-    /** Called when the value is changed by the main application thread */
-    virtual void setValueFromApp(double dValue);
+    /** Sets the value of the object and updates associated proxy objects. Not thread safe. */
+    void set(double dValue);
+
+signals:
+    void valueChanged(double);
 
 protected:
-    /** Return pointer to parent widget */
-    QWidget *getParentWidget();
+    /** Sets the value of the object. Not thread safe. */
+    virtual void setValueFromEngine(double dValue);
+    /** Called when a widget has changed value. Not thread safe. */
+    virtual void setValueFromMidi(MidiCategory, int v);
+    /** Called when another thread has changed value. Not thread safe. */
+    virtual void setValueFromThread(double dValue);
+
+protected:
     /** The actual value of the controller */
     double m_dValue;
-    /** Pointer to MIDI config */
-    static ConfigObject<ConfigValueMidi> *m_pMidiConfig;
-    /** Pointer to keyboard config */
-    static ConfigObject<ConfigValueKbd> *m_pKbdConfig;
-    /** Queue used in syncronizing the value with the Player thread */
-    static QPtrQueue<ControlQueueEngineItem> queue;
-    /** Pointer to midi config option */
-    ConfigOption<ConfigValueMidi> *m_pMidiConfigOption;
-    /** Pointer to keyboard config option */
-    ConfigOption<ConfigValueKbd> *m_pKbdConfigOption;
-    /** Pointer to associated ControlEngine object */
-    ControlEngine *m_pControlEngine;
+    /** Key of the object */
+    ConfigKey m_Key;
 
 private:
-    /** Called when a ControlEventMidi event is received */
-    static void midi(MidiCategory category, char channel, char control, char value);
-    /** Event filter. Used to receive ControlEventMidi and ControlEventEngine events */
-    bool eventFilter(QObject *, QEvent *);
-    /** Pointer to parent widget, used when setting up keyboard accelerators */
-    static QWidget *spParentWidget;
+    /** List of associated proxy objects */
+    QPtrList<ControlObjectThread> m_qProxyList;
     /** List of ControlObject instantiations */
-    static QPtrList<ControlObject> list;
-    /** Mutex protecting access to the queue */
-    static QMutex queueMutex;
-
+    static QPtrList<ControlObject> m_sqList;
+    /** Mutex protecting access to the queues */
+    static QMutex m_sqQueueMutexMidi, m_sqQueueMutexThread;
+    /** Queue holding control changes from MIDI */
+    static QPtrQueue<QueueObjectMidi> m_sqQueueMidi;
+    /** Queues holding control changes from other application threads and from widgets */
+    static QPtrQueue<QueueObjectThread> m_sqQueueThread;
+    /** Queue holding ControlObjects that has changed, but not been syncronized with it's
+     * associated ControlObjectProxy objects. */
+    static QPtrQueue<ControlObject> m_sqQueueChanges;
 };
 
 
 #endif
-

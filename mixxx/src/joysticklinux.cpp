@@ -81,10 +81,14 @@ void JoystickLinux::run()
                 // alternate between NOTE_ON and NOTE_OFF on each button event
                 if (buttonvalue[joystickEvent.number] != 0)
                 {
-                     QApplication::postEvent(m_pControl,new ControlEventMidi(NOTE_OFF, kiJoystickMidiChannel, joystickEvent.number,1));
+                     m_pControl->queueFromThread(1.);
+                     //QApplication::postEvent(m_pControl,new ControlEventMidi(NOTE_OFF, kiJoystickMidiChannel, joystickEvent.number,1));
                      buttonvalue[joystickEvent.number] = 0;
-                } else {
-                     QApplication::postEvent(m_pControl,new ControlEventMidi(NOTE_ON, kiJoystickMidiChannel, joystickEvent.number,1));
+                } 
+                else 
+                {
+                     m_pControl->queueFromThread(1.);
+                     //QApplication::postEvent(m_pControl,new ControlEventMidi(NOTE_ON, kiJoystickMidiChannel, joystickEvent.number,1));
                      buttonvalue[joystickEvent.number] = 1;
                 }
                 break;
@@ -97,7 +101,8 @@ void JoystickLinux::run()
                 if (axisvalue[joystickEvent.number] != value)
                 {
                     axisvalue[joystickEvent.number] = value;
-                    QApplication::postEvent(m_pControl,new ControlEventMidi(CTRL_CHANGE, kiJoystickMidiChannel, joystickEvent.number+20, value));
+                    m_pControl->queueFromThread(1.);
+                    //QApplication::postEvent(m_pControl,new ControlEventMidi(CTRL_CHANGE, kiJoystickMidiChannel, joystickEvent.number+20, value));
                 }
                 break;
       

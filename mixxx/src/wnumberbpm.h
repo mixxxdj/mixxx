@@ -19,7 +19,7 @@
 #define WNUMBERBPM_H
 
 #include "wnumber.h"
-class ControlObject;
+class ControlObjectThreadMain;
 
 /**
 @author Tue Haste Andersen
@@ -37,7 +37,7 @@ public:
 
 private:
     /** Pointer to control object for rate */
-    ControlObject *m_pRateControl, *m_pRateDirControl;
+    ControlObjectThreadMain *m_pRateControl, *m_pRateDirControl, *m_pRateRangeControl, *m_pBpmControl;
     static bool m_bScaleBpm;
 };
 

@@ -16,7 +16,8 @@
  ***************************************************************************/
 
 #include "visualdisplay.h"
-#include "../controlpotmeter.h"
+#include "controlpotmeter.h"
+#include "controlobjectthreadmain.h"
 #include <math.h>
 
 // Static members
@@ -28,7 +29,7 @@ VisualDisplay::VisualDisplay(VisualBuffer *pVisualBuffer, const char *type, cons
 
     idCount++;
     id = idCount;
-    
+
     // Rotation variables
     angle = 0; rx = 1;ry=0;rz=0;
 
@@ -90,9 +91,12 @@ VisualDisplay::VisualDisplay(VisualBuffer *pVisualBuffer, const char *type, cons
 
     QString id("VisualLengthScale-");
     id.append(type);
-    controlScaleLength = new ControlPotmeter(ConfigKey(group,id.latin1()),-5.f,5.f);
-    connect(controlScaleLength, SIGNAL(signalUpdateApp(double)), this, SLOT(setSignalScaleLength(double)));
 
+    ControlObjectThreadMain *controlScaleLength = new ControlObjectThreadMain(new ControlPotmeter(ConfigKey(group,id.latin1()),-5.f,5.f));
+    connect(controlScaleLength, SIGNAL(valueChanged(double)), this, SLOT(setSignalScaleLength(double)));
+
+    m_pControlRateDir = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey("[Channel1]","rate_dir")));
+    m_pControlRateRange = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey("[Channel1]","rateRange")));
 }
 
 VisualDisplay::~VisualDisplay()
@@ -215,7 +219,7 @@ void VisualDisplay::setSignalScaleLength(double scale)
 {
 
 
-    signalScaleLength = 1./(1.+(ControlObject::getControl(ConfigKey("[Channel1]","rate_dir"))->getValue()*scale));
+    signalScaleLength = 1./(1.+(m_pControlRateDir->get()*m_pControlRateRange->get()*scale));
     //qDebug("scale input %f, actual %f",scale, signalScaleLength);
 }
 
@@ -369,7 +373,7 @@ void VisualDisplay::doLayout()
         signal->setLength(kfVisualDisplayLength*signalScaleLength);
         signal->setHeight(kfVisualDisplayHeight*signalScaleHeight);
         signal->setRotation(angle,rx,ry,rz);
-    
+
         box->setOrigo(curOx,oy,oz);
         box->setLength(0.);
         box->setHeight(kfVisualDisplayHeight*2.);

@@ -20,13 +20,13 @@
 
 #include "engineobject.h"
 
-class ControlEngine;
 class EnginePregain;
 class EngineFilterBlock;
 class EngineClipping;
 class EngineVolume;
 class EngineFlanger;
 class EngineVuMeter;
+class ControlPushButton;
 
 /**
   *@author 
@@ -37,7 +37,7 @@ public:
     EngineChannel(const char *group);
     ~EngineChannel();
     void notify(double) {};
-    ControlEngine *getPFL();
+    ControlPushButton *getPFL();
     void process(const CSAMPLE *pIn, const CSAMPLE *pOut, const int iBufferSize);
 
 private:
@@ -46,7 +46,7 @@ private:
     EngineClipping *clipping;
     EngineVolume *volume;
     EngineVuMeter *vumeter;
-    ControlEngine *pfl;
+    ControlPushButton *pfl;
 };
 
 #endif

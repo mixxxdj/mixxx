@@ -23,7 +23,7 @@
 class PlayerProxy : public Player
 {
 public:
-    PlayerProxy(ConfigObject<ConfigValue> *pConfig, ControlObject *pControl);
+    PlayerProxy(ConfigObject<ConfigValue> *pConfig);
     ~PlayerProxy();
     bool initialize() { return false; };
     bool open();

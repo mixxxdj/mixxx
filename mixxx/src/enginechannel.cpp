@@ -16,7 +16,6 @@
  ***************************************************************************/
 
 #include "enginechannel.h"
-#include "controlengine.h"
 #include "controlpushbutton.h"
 #include "engineclipping.h"
 #include "enginepregain.h"
@@ -42,8 +41,7 @@ EngineChannel::EngineChannel(const char *group)
     vumeter = new EngineVuMeter(group);
 
     // PFL button
-    ControlPushButton *p = new ControlPushButton(ConfigKey(group, "pfl" ));
-    pfl = new ControlEngine(p);
+    pfl = new ControlPushButton(ConfigKey(group, "pfl" ));
 }
 
 EngineChannel::~EngineChannel()
@@ -52,9 +50,10 @@ EngineChannel::~EngineChannel()
     delete filter;
     delete clipping;
     delete volume;
+    delete pfl;
 }
 
-ControlEngine *EngineChannel::getPFL()
+ControlPushButton *EngineChannel::getPFL()
 {
     return pfl;
 }

@@ -1,7 +1,7 @@
 /***************************************************************************
                           visualbuffer.h  -  description
                              -------------------
-    copyright            : (C) 2002 by Tue and Ken Haste Andersen and Kenny 
+    copyright            : (C) 2002 by Tue and Ken Haste Andersen and Kenny
                                        Erleben
     email                :
  ***************************************************************************/
@@ -37,7 +37,6 @@ const int MAXDISPLAYRATE = 100;
 #include "material.h"
 
 class ReaderExtract;
-class ControlObject;
 class EngineBuffer;
 
 typedef struct
@@ -76,8 +75,6 @@ protected:
       * This is used to validate the error state of openGL.
       */
     void validate();
-    /** Pointer to rate control object */
-    ControlObject *m_pRate;
     /** Pointer to the actual buffer, an openGL vertex array */
     GLfloat *m_pBuffer;
     /** Pointer to source buffer from ReaderExtract */
@@ -96,7 +93,7 @@ protected:
     /** Factor used in convesion of position and length between ReaderExtractWave and
       * the associated ReaderExtract position and length*/
     CSAMPLE m_fReaderExtractFactor;
-    /** Number of samples of this buffer to display (used in getVertexArray) */             
+    /** Number of samples of this buffer to display (used in getVertexArray) */
     int m_iDisplayLen;
     /** Pounter to ReaderExtract */
     ReaderExtract *m_pReaderExtract;
@@ -106,8 +103,8 @@ protected:
     Material m_materialFg, m_materialBg;
     /** Buffer and absulute play position, read from EngineBuffer */
     double m_dBufferPlaypos, m_dAbsPlaypos;
-    
-    
+
+
 };
 #endif
 

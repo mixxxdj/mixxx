@@ -26,6 +26,7 @@
 #include "enginebuffer.h"
 #include "reader.h"
 #include "controlobject.h"
+#include "controlobjectthreadmain.h"
 #include "configobject.h"
 #include "trackimporter.h"
 
@@ -66,18 +67,18 @@ Track::Track(QString location, MixxxView *pView, EngineBuffer *pBuffer1, EngineB
     connect(m_pView->m_pTrackTable, SIGNAL(mousePressed(TrackInfoObject*, int )), this, SLOT(slotTrackPopup(TrackInfoObject*, int )));
 
     // Get ControlObject for determining end of track mode, and set default value to STOP.
-    m_pEndOfTrackModeCh1 = ControlObject::getControl(ConfigKey("[Channel1]","TrackEndMode"));
-    m_pEndOfTrackModeCh2 = ControlObject::getControl(ConfigKey("[Channel2]","TrackEndMode"));
+    m_pEndOfTrackModeCh1 = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey("[Channel1]","TrackEndMode")));
+    m_pEndOfTrackModeCh2 = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey("[Channel2]","TrackEndMode")));
 
     // Connect end-of-track signals to this object
-    m_pEndOfTrackCh1 = ControlObject::getControl(ConfigKey("[Channel1]","TrackEnd"));
-    m_pEndOfTrackCh2 = ControlObject::getControl(ConfigKey("[Channel2]","TrackEnd"));
-    connect(m_pEndOfTrackCh1, SIGNAL(signalUpdateApp(double)), this, SLOT(slotEndOfTrackPlayer1(double)));
-    connect(m_pEndOfTrackCh2, SIGNAL(signalUpdateApp(double)), this, SLOT(slotEndOfTrackPlayer2(double)));
+    m_pEndOfTrackCh1 = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey("[Channel1]","TrackEnd")));
+    m_pEndOfTrackCh2 = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey("[Channel2]","TrackEnd")));
+    connect(m_pEndOfTrackCh1, SIGNAL(valueChanged(double)), this, SLOT(slotEndOfTrackPlayer1(double)));
+    connect(m_pEndOfTrackCh2, SIGNAL(valueChanged(double)), this, SLOT(slotEndOfTrackPlayer2(double)));
 
     // Get play buttons
-    m_pPlayButtonCh1 = ControlObject::getControl(ConfigKey("[Channel1]","play"));
-    m_pPlayButtonCh2 = ControlObject::getControl(ConfigKey("[Channel2]","play"));
+    m_pPlayButtonCh1 = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey("[Channel1]","play")));
+    m_pPlayButtonCh2 = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey("[Channel2]","play")));
 
     TrackPlaylist::setTrack(this);
 }
@@ -391,7 +392,7 @@ void Track::slotRemoveFromPlaylist()
 
 void Track::slotEndOfTrackPlayer1(double)
 {
-    switch ((int)m_pEndOfTrackModeCh1->getValue())
+    switch ((int)m_pEndOfTrackModeCh1->get())
     {
     case TRACK_END_MODE_NEXT:
         if (m_pTrackPlayer1)
@@ -400,16 +401,16 @@ void Track::slotEndOfTrackPlayer1(double)
             if (pTrack)
                 slotLoadPlayer1(pTrack);
             else
-                m_pPlayButtonCh1->setValueFromApp(0.);
+                m_pPlayButtonCh1->slotSet(0.);
         }
         break;
     }
-    m_pEndOfTrackCh1->setValueFromApp(0.);
+    m_pEndOfTrackCh1->slotSet(0.);
 }
 
 void Track::slotEndOfTrackPlayer2(double)
 {
-    switch ((int)m_pEndOfTrackModeCh2->getValue())
+    switch ((int)m_pEndOfTrackModeCh2->get())
     {
     case TRACK_END_MODE_NEXT:
         if (m_pTrackPlayer2)
@@ -418,11 +419,11 @@ void Track::slotEndOfTrackPlayer2(double)
             if (pTrack)
                 slotLoadPlayer2(pTrack);
             else
-                m_pPlayButtonCh2->setValueFromApp(0.);
+                m_pPlayButtonCh2->slotSet(0.);
         }
         break;
     }
-    m_pEndOfTrackCh2->setValueFromApp(0.);
+    m_pEndOfTrackCh2->slotSet(0.);
 }
 
 void Track::updatePlaylistViews()

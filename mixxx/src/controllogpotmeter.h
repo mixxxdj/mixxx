@@ -31,10 +31,11 @@ class ControlLogpotmeter : public ControlPotmeter
     Q_OBJECT
 public:
     ControlLogpotmeter(ConfigKey key, double dMaxValue=5.);
-public slots:
-    void setValueFromWidget(double dValue);
+    
+    double getValueFromWidget(double dValue);
+    double getValueToWidget(double dValue);
+
 protected:
-    void updateWidget();
 
     // This is true, if the log potmeter is divided into two states, one from 0 to 1, and
     // the second from 1 to m_dMaxValue. Two states is often used with knobs where the first

@@ -3,7 +3,7 @@
                              -------------------
     begin                : Thu May 20 2004
     copyright            : (C) 2002 by Tue and Ken Haste Andersen
-    email                : 
+    email                :
  ***************************************************************************/
 
 /***************************************************************************
@@ -28,7 +28,7 @@
 
 class PlayerRtAudio : public Player  {
 public:
-    PlayerRtAudio(ConfigObject<ConfigValue> *config, ControlObject *pControl);
+    PlayerRtAudio(ConfigObject<ConfigValue> *config);
     ~PlayerRtAudio();
     bool initialize();
     bool open();

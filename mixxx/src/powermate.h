@@ -29,27 +29,27 @@
 
 class ControlObject;
 
-  
-// Parameters used to interface the PowerMate with the MIDI code
-const int kiPowermateMidiChannel=16;
-const int kiPowermateMidiDial = 1;
-const int kiPowermateMidiBtn = 2;
-
 const int kiPowermateBufferSize = 32;
-const int kiPowermateKnobIntegralLen = 25;
+const int kiPowermateKnobIntegralMaxLen = 25;
+
+static const char *kqPowerMateMappingP1Phase =   "Player 1, phase adjustment";
+static const char *kqPowerMateMappingP1Scratch = "Player 1, scratch";
+static const char *kqPowerMateMappingP2Phase =   "Player 2, phase adjustment";
+static const char *kqPowerMateMappingP2Scratch = "Player 2, scratch";
 
 class PowerMate : public QThread
 {
-public: 
-    PowerMate(ControlObject *pControl);
+public:
+    PowerMate();
     ~PowerMate();
     void led();
     /** Open a PowerMate device */
     virtual bool opendev() = 0;
     /** Close the device */
     virtual void closedev() = 0;
+    void selectMapping(QString mapping);
 protected:
-    /** Main thread loop */ 
+    /** Main thread loop */
     virtual void run() = 0;
     /** Change the led */
     virtual void led_write(int static_brightness, int speed, int table, int asleep, int awake) = 0;
@@ -59,8 +59,8 @@ protected:
 
     /** Instantiate number. Used in the calculation of MIDI controller id's */
     int m_iInstNo;
-    /** Pointer to ControlObject */
-    ControlObject *m_pControl;
+    /** Pointer to associated ControlObjects */
+    ControlObject *m_pControlObjectRotary, *m_pControlObjectButton;
     /** Variable used to indicate weather a knob event should be sent or not */
     bool m_bSendKnobEvent;
     /** Amplitude of knob */
@@ -69,6 +69,8 @@ protected:
     int m_iKnobVal;
     /** Pointer to knob integral buffer */
     int *m_pKnobIntegral;
+    /** Current length of integral buffer */
+    int m_iKnobIntegralLength;
     /** Pointer to semaphore used to control led */
     QSemaphore *m_pRequestLed;
 };

@@ -996,7 +996,7 @@
   <BgColor>#ffffff</BgColor>
   <FgColor>#606060</FgColor>
   <Connection>
-   <ConfigKey>[Channel1],rateDisplay</ConfigKey>
+   <ConfigKey>[Channel1],rate</ConfigKey>
   </Connection>
  </NumberRate>
 
@@ -1009,7 +1009,7 @@
   <BgColor>#ffffff</BgColor>
   <FgColor>#606060</FgColor>
   <Connection>
-   <ConfigKey>[Channel2],rateDisplay</ConfigKey>
+   <ConfigKey>[Channel2],rate</ConfigKey>
   </Connection>
  </NumberRate>
 

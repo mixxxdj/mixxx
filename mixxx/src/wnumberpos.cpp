@@ -12,14 +12,15 @@
 #include "wnumberpos.h"
 #include <math.h>
 #include "controlobject.h"
+#include "controlobjectthreadwidget.h"
 
 WNumberPos::WNumberPos(const char *group, QWidget *parent, const char *name) : WNumber(parent, name)
 {
     m_iDuration = 0;
     m_qsText = "Pos: ";
     m_bRemain = false;
-    m_pRateControl = ControlObject::getControl(ConfigKey(QString(group), QString("rate")));
-    m_pRateDirControl = ControlObject::getControl(ConfigKey(QString(group), QString("rate_dir")));
+    m_pRateControl = new ControlObjectThreadWidget(ControlObject::getControl(ConfigKey(group, "rate")));
+    m_pRateDirControl = new ControlObjectThreadWidget(ControlObject::getControl(ConfigKey(group, "rate_dir")));
 }
 
 WNumberPos::~WNumberPos()
@@ -35,7 +36,7 @@ void WNumberPos::setValue(double dValue)
 {
     double v = dValue*((float)m_iDuration/127.);
     if (m_bRemain)
-        v = ((float)m_iDuration-v)*(1.-m_pRateControl->getValue()*m_pRateDirControl->getValue());
+        v = ((float)m_iDuration-v)*(1.-m_pRateControl->get()*m_pRateDirControl->get());
 
     int min1=0,min2=0,sec1=0,sec2=0,msec1=0,msec2=0;
     if (v>0.)

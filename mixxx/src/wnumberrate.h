@@ -13,7 +13,7 @@
 #define WNUMBERRATE_H
 
 #include "wnumber.h"
-class ControlObject;
+class ControlObjectThreadMain;
 
 /**
 @author Tue Haste Andersen
@@ -29,7 +29,7 @@ public:
 
 private:
     /** Pointer to control object for rate */
-    ControlObject *m_pRateControl, *m_pRateDirControl;
+    ControlObjectThreadMain *m_pRateControl, *m_pRateRangeControl, *m_pRateDirControl;
 };
 
 #endif

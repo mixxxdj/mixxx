@@ -15,15 +15,13 @@
  ***************************************************************************/
 
 #include "enginevumeter.h"
-#include "controlengine.h"
 #include "controlpotmeter.h"
 
 EngineVuMeter::EngineVuMeter(const char *group)
 {
     // The VUmeter widget is controlled via a controlpotmeter, which means
     // that it should react on the setValue(int) signal.
-    ControlPotmeter *ctrlVuMeter = new ControlPotmeter(ConfigKey(group, "VuMeter"), 0., 1.);
-    m_ctrlVuMeter = new ControlEngine(ctrlVuMeter);
+    m_ctrlVuMeter = new ControlPotmeter(ConfigKey(group, "VuMeter"), 0., 1.);
     m_ctrlVuMeter->set(0);
 
     // Initialize the calculation:

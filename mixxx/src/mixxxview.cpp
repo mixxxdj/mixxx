@@ -3,7 +3,7 @@
                              -------------------
     begin                : Mon Feb 18 09:48:17 CET 2002
     copyright            : (C) 2002 by Tue and Ken .Haste Andersen
-    email                : 
+    email                :
  ***************************************************************************/
 
 /***************************************************************************
@@ -24,7 +24,6 @@
 #include <qevent.h>
 #include <qsplitter.h>
 
-#include "controlobject.h"
 #include "wtracktable.h"
 #include "wtreeview.h"
 #include "wwidget.h"
@@ -41,17 +40,19 @@
 #include "wvisualwaveform.h"
 #include "wvisualsimple.h"
 #include "mixxxkeyboard.h"
+#include "controlobject.h"
+#include "controlobjectthreadwidget.h"
 
-MixxxView::MixxxView(QWidget *parent, ControlObject *control, bool bVisualsWaveform, QString qSkinPath, ConfigObject<ConfigValue> *pConfig) : QWidget(parent, "Mixxx")
+MixxxView::MixxxView(QWidget *parent, ConfigObject<ConfigValueKbd> *kbdconfig, bool bVisualsWaveform, QString qSkinPath, ConfigObject<ConfigValue> *pConfig) : QWidget(parent, "Mixxx")
 {
     // Path to image files
     WWidget::setPixmapPath(qSkinPath.append("/"));
 
     m_qWidgetList.setAutoDelete(true);
 
-    m_pKeyboard = new MixxxKeyboard(control);
+    m_pKeyboard = new MixxxKeyboard(kbdconfig);
     installEventFilter(m_pKeyboard);
-    
+
     //qDebug("skin %s",qSkinPath.latin1());
 
     // Read XML file
@@ -235,7 +236,9 @@ MixxxView::MixxxView(QWidget *parent, ControlObject *control, bool bVisualsWavef
                         m_pVisualCh1->installEventFilter(m_pKeyboard);
                         m_qWidgetList.append(m_pVisualCh1);
                     }
-                    ControlObject::setWidget((QWidget *)m_pVisualCh1, ConfigKey("[Channel1]", "wheel"), true, Qt::LeftButton);
+                    ControlObjectThreadWidget *p = new ControlObjectThreadWidget(ControlObject::getControl(ConfigKey("[Channel1]", "wheel")));
+                    p->setWidget((QWidget *)m_pVisualCh1, true, Qt::LeftButton);
+                    //ControlObject::setWidget((QWidget *)m_pVisualCh1, ConfigKey("[Channel1]", "wheel"), true, Qt::LeftButton);
                 }
                 else if (WWidget::selectNodeInt(node, "Channel")==2 && m_pVisualCh1!=0 && m_pVisualCh2==0)
                 {
@@ -262,7 +265,9 @@ MixxxView::MixxxView(QWidget *parent, ControlObject *control, bool bVisualsWavef
                         m_pVisualCh2->installEventFilter(m_pKeyboard);
                         m_qWidgetList.append(m_pVisualCh2);
                     }
-                    ControlObject::setWidget((QWidget *)m_pVisualCh2, ConfigKey("[Channel2]", "wheel"), true, Qt::LeftButton);
+                    ControlObjectThreadWidget *p = new ControlObjectThreadWidget(ControlObject::getControl(ConfigKey("[Channel2]", "wheel")));
+                    p->setWidget((QWidget *)m_pVisualCh2, true, Qt::LeftButton);
+                    //ControlObject::setWidget((QWidget *)m_pVisualCh2, ConfigKey("[Channel2]", "wheel"), true, Qt::LeftButton);
                 }
 
                 if (!WWidget::selectNode(node, "Zoom").isNull() && WWidget::selectNodeQString(node, "Zoom")=="true")
@@ -332,7 +337,7 @@ MixxxView::MixxxView(QWidget *parent, ControlObject *control, bool bVisualsWavef
                 m_pSplitter->setFixedSize(x,y);
 
                 // This is QT 3.2 only
-		//m_pSplitter->setHandleWidth(2);
+        //m_pSplitter->setHandleWidth(2);
 
                 m_qWidgetList.append(m_pSplitter);
             }
@@ -402,5 +407,5 @@ bool MixxxView::compareConfigKeys(QDomNode node, QString key)
                 return true;
         }
     }
-    return false;    
+    return false;
 }

@@ -41,10 +41,11 @@ public:
     /** Sets the minimum and maximum allowed value. The control value is reset when calling
       * this method */
     void setRange(double dMinValue, double dMaxValue);
-
+    double getValueFromWidget(double dValue);
+    double getValueToWidget(double dValue);
+    
 public slots:
-    void setValueFromWidget(double dValue);
-    void setValueFromApp(double dValue);
+    void setValueFromThread(double dValue);
     void setValueFromEngine(double dValue);
     /** Increases the value. This method is called from an associated PushButton control */
     void incValue(double);
@@ -52,7 +53,6 @@ public slots:
     void decValue(double);
 
 protected:
-    void updateWidget();
     void setValueFromMidi(MidiCategory c, int v);
     
     double m_dMaxValue, m_dMinValue, m_dValueRange, m_dStep;

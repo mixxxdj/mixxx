@@ -17,27 +17,35 @@
 
 #include "wnumberbpm.h"
 #include "controlobject.h"
+#include "controlobjectthreadmain.h"
 
 bool WNumberBpm::m_bScaleBpm = true;
 
 WNumberBpm::WNumberBpm(const char *group, QWidget *parent, const char *name) : WNumber(parent, name)
 {
     m_qsText = "BPM: ";
-    m_pRateControl = ControlObject::getControl(ConfigKey(QString(group), QString("rate")));
-    m_pRateDirControl = ControlObject::getControl(ConfigKey(QString(group), QString("rate_dir")));
+    m_pRateControl = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey(group, "rate")));
+    m_pRateDirControl = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey(group, "rate_dir")));
+    m_pRateRangeControl = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey(group, "rateRange")));
+    m_pBpmControl = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey(group, "bpm")));
+
 }
 
 
 WNumberBpm::~WNumberBpm()
 {
+    delete m_pRateControl;
+    delete m_pRateDirControl;
+    delete m_pRateRangeControl;
+    delete m_pBpmControl;
 }
 
-void WNumberBpm::setValue(double dValue)
+void WNumberBpm::setValue(double)
 {
     if (m_bScaleBpm)
-        WNumber::setValue(dValue*(1.+m_pRateControl->getValue()*m_pRateDirControl->getValue()));
+        WNumber::setValue(m_pBpmControl->get()*(1.+m_pRateControl->get()*m_pRateDirControl->get()*m_pRateRangeControl->get()));
     else
-        WNumber::setValue(dValue);
+        WNumber::setValue(m_pBpmControl->get());
 }
 
 void WNumberBpm::setScaleBpm(bool bScaleBpm)

@@ -19,8 +19,6 @@
 
 #include "engineobject.h"
 
-class ControlEngine;
-
 class EngineClipping : public EngineObject 
 {
 public:

@@ -17,10 +17,12 @@
 
 #include "wwidget.h"
 #include "controlobject.h"
+#include "controlobjectthreadwidget.h"
 #include "qtooltip.h"
 
 // Static member variable definition
 QString WWidget::m_qPath;
+ConfigObject<ConfigValueKbd> *WWidget::m_spKbdConfigObject = 0;
 
 WWidget::WWidget(QWidget *parent, const char *name, WFlags flags) : QWidget(parent,name, flags|WStaticContents|WRepaintNoErase|WResizeNoErase)
 {
@@ -36,6 +38,11 @@ WWidget::WWidget(QWidget *parent, const char *name, WFlags flags) : QWidget(pare
 
 WWidget::~WWidget()
 {
+}
+
+void WWidget::setKeyboardConfig(ConfigObject<ConfigValueKbd> *pKbdConfigObject)
+{
+    m_spKbdConfigObject = pKbdConfigObject;
 }
 
 void WWidget::setup(QDomNode node)
@@ -62,7 +69,7 @@ void WWidget::setup(QDomNode node)
 
         if (!selectNode(con, "OnOff").isNull() && selectNodeQString(con, "OnOff")=="true")
         {
-            ControlObject::setWidgetOnOff(this, configKey);
+//            ControlObject::setWidgetOnOff(this, configKey);
         }
         else
         {
@@ -80,21 +87,21 @@ void WWidget::setup(QDomNode node)
                     state = Qt::RightButton;
             }
 
-            ControlObject::setWidget(this, configKey, bEmitOnDownPress, state);
+            // Connect control proxy to widget
+            (new ControlObjectThreadWidget(ControlObject::getControl(configKey)))->setWidget(this, bEmitOnDownPress, state);
 
             // Add keyboard shortcut info to tooltip string
             ControlObject *p = ControlObject::getControl(configKey);
             ASSERT(p!=0);
-
-            QString key = QString(" (%1)").arg(p->getKbdConfigStr());
-            if (!p->getKbdConfigStr().isEmpty() && !strTooltip.contains(key,false))
-                strTooltip += key;
+            QString shortcut = QString(" (%1)").arg(m_spKbdConfigObject->getValueString(configKey));
+            if (!m_spKbdConfigObject->getValueString(configKey).isEmpty() && !strTooltip.contains(shortcut,false))
+                strTooltip += shortcut;
         }
         con = con.nextSibling();
     }
 
     // Set tooltip if it exists
-	if (strTooltip != "") 
+    if (strTooltip != "") 
         QToolTip::add( this, strTooltip );
 
 }

@@ -20,6 +20,7 @@
 
 #include <qwidget.h>
 #include <qdom.h>
+#include "configobject.h"
 
 /**
   * Abstract class used in widgets connected to ControlObjects. Derived
@@ -36,6 +37,8 @@ class WWidget : public QWidget  {
 public:
     WWidget(QWidget *parent=0, const char *name=0, WFlags flags=0);
     ~WWidget();
+    /** Sets pointer to keyboard configuration */
+    static void setKeyboardConfig(ConfigObject<ConfigValueKbd> *pKbdConfigObject);
     /** Sets the path used to find pixmaps */
     static void setPixmapPath(QString qPath);
     /** Given an XML DOM node, initialize the widget */
@@ -65,6 +68,8 @@ protected:
     double m_fValue;
     /** Is true if widget is off */
     bool m_bOff;
+    /** Pointer to keyboard config object */
+    static ConfigObject<ConfigValueKbd> *m_spKbdConfigObject;
 
 private:
     /** Variable containing the path to the pixmaps */

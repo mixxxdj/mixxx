@@ -26,7 +26,7 @@
 
 class MidiObjectOSS : public MidiObject  {
 public: 
-    MidiObjectOSS(ConfigObject<ConfigValueMidi> *c, QApplication *app, ControlObject *control, QString device);
+    MidiObjectOSS(ConfigObject<ConfigValueMidi> *c, QString device);
     ~MidiObjectOSS();
     void devOpen(QString device);
     void devClose();
@@ -35,9 +35,8 @@ protected:
     void stop();
     int thread_pid;
 
-
-    int     handle;
-    unsigned char    *buffer;
+    int handle;
+    unsigned char *buffer;
 };
 
 #endif

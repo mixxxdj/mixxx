@@ -1,7 +1,7 @@
 /***************************************************************************
                           visualbuffer.cpp  -  description
                              -------------------
-    copyright            : (C) 2002 by Tue and Ken Haste Andersen and Kenny 
+    copyright            : (C) 2002 by Tue and Ken Haste Andersen and Kenny
                                        Erleben
     email                :
  ***************************************************************************/
@@ -32,11 +32,9 @@ VisualBuffer::VisualBuffer(ReaderExtract *pReaderExtract, EngineBuffer *pEngineB
 {
     m_pReaderExtract = pReaderExtract;
     m_pEngineBuffer = pEngineBuffer;
-    
-    m_pRate = ControlObject::getControl(ConfigKey(group, "rateEngine"));
-    
+
     Q_ASSERT(m_pReaderExtract);
-    
+
     // Get length and pointer to buffer in ReaderExtract
     m_pSource = (CSAMPLE *)m_pReaderExtract->getBasePtr();
     Q_ASSERT(m_pSource);
@@ -57,15 +55,15 @@ VisualBuffer::VisualBuffer(ReaderExtract *pReaderExtract, EngineBuffer *pEngineB
 
     // Determine conversion factor between ReaderExtractWave and the m_pReaderExtract object
     m_fReaderExtractFactor = READBUFFERSIZE/m_iSourceLen;
-    
-    // Length of this buffer. 
+
+    // Length of this buffer.
     m_iLen = (int)(floorf((float)m_iSourceLen/m_fResampleFactor));
     if (!even(m_iLen))
         m_iLen--;
-        
+
     // Readjust resample factor to actual length of display buffer
-    m_fResampleFactor = (float)m_pReaderExtract->getBufferSize()/(float)m_iLen;    
-        
+    m_fResampleFactor = (float)m_pReaderExtract->getBufferSize()/(float)m_iLen;
+
     // Number of samples from this buffer to display
     m_iDisplayLen = m_iLen-(2*m_iLen/READCHUNK_NO);
 
@@ -80,7 +78,7 @@ VisualBuffer::VisualBuffer(ReaderExtract *pReaderExtract, EngineBuffer *pEngineB
         *p++ = 0.;
         *p++ = 0.;
     }
-    
+
     installEventFilter(this);
 }
 
@@ -154,16 +152,16 @@ bufInfo VisualBuffer::getVertexArray()
     m_dAbsPlaypos = m_pEngineBuffer->getAbsPlaypos();
     m_dBufferPlaypos = m_pEngineBuffer->getBufferPlaypos();
     m_pEngineBuffer->unlockPlayposVars();
-    
+
     // Convert playpos (minus latency) to DISPLAYRATE
     float fPos = ((((m_dBufferPlaypos-Player::getBufferSize())/m_fReaderExtractFactor)/m_fResampleFactor)-(float)m_iDisplayLen/2.f);
-    
+
     //qDebug("pos %f, corrected %f", m_pPlaypos->getValue(), getCorrectedPlaypos());
-        
+
     //
     // Add to fPos based on current rate and time since m_pPlaypos was updated
     //
-    
+
     while (fPos<0)
         fPos += (float)m_iLen;
     int iPos = (int)fPos;
@@ -171,7 +169,7 @@ bufInfo VisualBuffer::getVertexArray()
     // Ensure the position is even
     if (!even(iPos))
         iPos--;
-        
+
     bufInfo i;
     i.p1 = &m_pBuffer[iPos*3];
     i.len1 = min(m_iDisplayLen, m_iLen-iPos);

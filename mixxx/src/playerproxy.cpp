@@ -35,7 +35,7 @@
 
 Player *PlayerProxy::m_pPlayer = 0;
 
-PlayerProxy::PlayerProxy(ConfigObject<ConfigValue> *pConfig, ControlObject *pControl) : Player(pConfig, pControl)
+PlayerProxy::PlayerProxy(ConfigObject<ConfigValue> *pConfig) : Player(pConfig)
 {
     // Set API based on info stored in config database
     setSoundApi(m_pConfig->getValueString(ConfigKey("[Soundcard]","SoundApi")));
@@ -126,7 +126,7 @@ QStringList PlayerProxy::getSoundApiList()
 #ifdef __ALSA__
         result.append(PlayerALSA::getSoundApi());
 #endif
-	
+    
     return result;
 }
 
@@ -138,27 +138,27 @@ bool PlayerProxy::setSoundApi(QString name)
 
 #ifdef __PORTAUDIO__
     if (name == PlayerPortAudio::getSoundApi())
-        m_pPlayer = new PlayerPortAudio(m_pConfig, m_pControl);
+        m_pPlayer = new PlayerPortAudio(m_pConfig);
 #endif
 
 #ifdef __JACK__
     if (name == PlayerJack::getSoundApi())
-        m_pPlayer = new PlayerJack(m_pConfig, m_pControl);
+        m_pPlayer = new PlayerJack(m_pConfig);
 #endif
 
 #ifdef __RTAUDIO__
     if (name == PlayerRtAudio::getSoundApi())
-        m_pPlayer = new PlayerRtAudio(m_pConfig, m_pControl);
+        m_pPlayer = new PlayerRtAudio(m_pConfig);
 #endif
 
 #ifdef __ASIO__
     if (name == PlayerAsio::getSoundApi())
-        m_pPlayer = new PlayerAsio(m_pConfig, m_pControl);
+        m_pPlayer = new PlayerAsio(m_pConfig);
 #endif
 
 #ifdef __ALSA__
     if (name == PlayerALSA::getSoundApi())
-        m_pPlayer = new PlayerALSA(m_pConfig, m_pControl);
+        m_pPlayer = new PlayerALSA(m_pConfig);
 #endif
 
     // Try initializing the selected API

@@ -29,7 +29,7 @@ class ControlObject;
 class Player : public EngineObject
 {
 public:
-    Player(ConfigObject<ConfigValue> *pConfig, ControlObject *pControl);
+    Player(ConfigObject<ConfigValue> *pConfig);
     virtual ~Player();
     /** Initialize the API. Returns true on success. No other methods in a Player
       * class can be called before this method returns true. Called by the proxy
@@ -61,8 +61,6 @@ protected:
     ConfigObject<ConfigValue> *m_pConfig;
     /** Pointer to EngineMaster object */
     static EngineMaster *m_pMaster;
-    /** Pointer to ControlObject used in syncronization between ControlObject and ControlEngines */
-    ControlObject *m_pControl;
     CSAMPLE *m_pBuffer;
     /** Current buffer size in use. */
     static short int m_iBufferSize;

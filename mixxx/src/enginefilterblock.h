@@ -19,10 +19,9 @@
 #define ENGINEFILTERBLOCK_H
 
 #include "engineobject.h"
-#include "enginefilterrbj.h"
-#include "enginefilteriir.h"
 
-class ControlEngine;
+class ControlLogpotmeter;
+class ControlPushButton;
 
 /**
   * Parallel processing of LP, BP and HP filters, and final mixing
@@ -30,7 +29,8 @@ class ControlEngine;
   *@author Tue and Ken Haste Andersen
   */
 
-class EngineFilterBlock : public EngineObject  {
+class EngineFilterBlock : public EngineObject  
+{
 public:
     EngineFilterBlock(const char *group);
     ~EngineFilterBlock();
@@ -38,8 +38,8 @@ public:
 private:
     CSAMPLE *m_pTemp1, *m_pTemp2, *m_pTemp3;
     EngineObject *low, *band, *high;
-    ControlEngine *filterpotLow, *filterpotMid, *filterpotHigh;
-    ControlEngine *filterKillLow, *filterKillMid, *filterKillHigh;
+    ControlLogpotmeter *filterpotLow, *filterpotMid, *filterpotHigh;
+    ControlPushButton *filterKillLow, *filterKillMid, *filterKillHigh;
 };
 
 #endif

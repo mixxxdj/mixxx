@@ -16,16 +16,12 @@
  ***************************************************************************/
 
 #include "enginefilterblock.h"
+#include "enginefilteriir.h"
 #include "controllogpotmeter.h"
 #include "controlpushbutton.h"
-#include "controlengine.h"
-#include "enginefilteriir.h"
 
 EngineFilterBlock::EngineFilterBlock(const char *group)
 {
-    ControlLogpotmeter *p;
-    ControlPushButton *pb;
-
     low = new EngineFilterIIR(bessel_lowpass4,4);
     band = new EngineFilterIIR(bessel_bandpass,8);
     high = new EngineFilterIIR(bessel_highpass4,4);
@@ -44,20 +40,14 @@ EngineFilterBlock::EngineFilterBlock(const char *group)
     highrbj->calc_filter_coeffs(1, 10000., 48000., 0.3., 0., false);
 */
     
-    p = new ControlLogpotmeter(ConfigKey(group, "filterLow"), 4.);
-    filterpotLow = new ControlEngine(p);
-    pb = new ControlPushButton(ConfigKey(group, "filterLowKill"),  true);
-    filterKillLow = new ControlEngine(pb);
+    filterpotLow = new ControlLogpotmeter(ConfigKey(group, "filterLow"), 4.);
+    filterKillLow = new ControlPushButton(ConfigKey(group, "filterLowKill"),  true);
 
-    p = new ControlLogpotmeter(ConfigKey(group, "filterMid"), 4.);
-    filterpotMid = new ControlEngine(p);
-    pb = new ControlPushButton(ConfigKey(group, "filterMidKill"),  true);
-    filterKillMid = new ControlEngine(pb);
+    filterpotMid = new ControlLogpotmeter(ConfigKey(group, "filterMid"), 4.);
+    filterKillMid = new ControlPushButton(ConfigKey(group, "filterMidKill"),  true);
 
-    p = new ControlLogpotmeter(ConfigKey(group, "filterHigh"), 4.);
-    filterpotHigh = new ControlEngine(p);
-    pb = new ControlPushButton(ConfigKey(group, "filterHighKill"),  true);
-    filterKillHigh = new ControlEngine(pb);
+    filterpotHigh = new ControlLogpotmeter(ConfigKey(group, "filterHigh"), 4.);
+    filterKillHigh = new ControlPushButton(ConfigKey(group, "filterHighKill"),  true);
     
     m_pTemp1 = new CSAMPLE[MAX_BUFFER_LEN];
     m_pTemp2 = new CSAMPLE[MAX_BUFFER_LEN];
@@ -98,7 +88,7 @@ void EngineFilterBlock::process(const CSAMPLE *pIn, const CSAMPLE *pOut, const i
     else if (pIn!=pOut)
     {
         low->process(pIn, m_pTemp1, iBufferSize);
-	band->process(pIn, m_pTemp2, iBufferSize);
+    band->process(pIn, m_pTemp2, iBufferSize);
         high->process(pIn, pOut, iBufferSize);
         
         for (int i=0; i<iBufferSize; ++i)

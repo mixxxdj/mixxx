@@ -26,7 +26,7 @@ class EngineBuffer;
 class MixxxView;
 class WTrackTable;
 class WTreeList;
-class ControlObject;
+class ControlObjectThreadMain;
 
 // This define sets the version of the tracklist. If any code is changed or
 // bugfixed, this number should be increased. If TRACK_VERSION is larger
@@ -117,11 +117,11 @@ private:
     /** Pointer to TrackInfoObject's of current loaded tracks */
     TrackInfoObject *m_pTrackPlayer1, *m_pTrackPlayer2;
     /** Pointer to ControlObject signalling end of track */
-    ControlObject *m_pEndOfTrackCh1, *m_pEndOfTrackCh2;
+    ControlObjectThreadMain *m_pEndOfTrackCh1, *m_pEndOfTrackCh2;
     /** Pointer to ControlObject dertermining end of track mode */
-    ControlObject *m_pEndOfTrackModeCh1, *m_pEndOfTrackModeCh2;
+    ControlObjectThreadMain *m_pEndOfTrackModeCh1, *m_pEndOfTrackModeCh2;
     /** Pointer to ControlObject for play buttons */
-    ControlObject *m_pPlayButtonCh1, *m_pPlayButtonCh2;
+    ControlObjectThreadMain *m_pPlayButtonCh1, *m_pPlayButtonCh2;
 };
 
 #endif

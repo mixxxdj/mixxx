@@ -28,24 +28,24 @@ DlgPreferences::DlgPreferences(MixxxApp *mixxx, MixxxView *view,
                                MidiObject *midi, PlayerProxy *player,
                                Track *, ConfigObject<ConfigValue> *_config,
                                ConfigObject<ConfigValueMidi> *midiconfig,
-                               ControlObject *pControl) : QTabDialog(mixxx, "")
-{    
+                               PowerMate *pPowerMate1, PowerMate *pPowerMate2) : QTabDialog(mixxx, "")
+{
     m_pMixxx = mixxx;
 
     setCaption("Preferences");
     config = _config;
-    
+
     // Construct widgets for use in tabs
     wsound = new DlgPrefSound(this, player, config);
-    wmidi  = new DlgPrefMidi(this, midi, config, midiconfig);
+    wmidi  = new DlgPrefMidi(this, midi, config, midiconfig, pPowerMate1, pPowerMate2);
     wplaylist = new DlgPrefPlaylist(this, config);
-    wcontrols = new DlgPrefControls(this, pControl, view, config);
-    
+    wcontrols = new DlgPrefControls(this, view, config);
+
     // Add tabs
     addTab(wsound,    "Sound output");
-    addTab(wmidi,     "MIDI");
+    addTab(wmidi,     "Input controllers");
     addTab(wcontrols, "GUI");
-    addTab(wplaylist, "Playlists");    
+    addTab(wplaylist, "Playlists");
 
     // Add closebutton
     setOkButton("Close");
@@ -55,7 +55,7 @@ DlgPreferences::DlgPreferences(MixxxApp *mixxx, MixxxView *view,
 
     // Install event handler to generate closeDlg signal
     installEventFilter(this);
-    
+
     // Connections
     connect(this,        SIGNAL(aboutToShow()),          this,      SLOT(slotUpdate()));
     connect(this,        SIGNAL(aboutToShow()),          wsound,    SLOT(slotUpdate()));

@@ -23,6 +23,7 @@
 #include <qstring.h>
 #include "configobject.h"
 #include <qptrlist.h>
+#include "configobject.h"
 
 class ControlObject;
 class WSlider;
@@ -48,7 +49,7 @@ class MixxxView : public QWidget
     Q_OBJECT
 public:
     /** Construtor. Tries to open visuals if bVisuals is true. */
-    MixxxView(QWidget *parent, ControlObject *control, bool bVisualsWaveform, QString qSkinPath, ConfigObject<ConfigValue> *pConfig);
+    MixxxView(QWidget *parent, ConfigObject<ConfigValueKbd> *kbdconfig, bool bVisualsWaveform, QString qSkinPath, ConfigObject<ConfigValue> *pConfig);
     ~MixxxView();
 
     /** Return true if WVisualWaveform has been instantiated. */
