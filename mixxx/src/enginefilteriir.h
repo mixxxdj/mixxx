@@ -4,6 +4,7 @@
 #include <qobject.h>
 
 #include "engineobject.h"
+#include "defs.h"
 
 class EngineFilterIIR : public EngineObject {
  public:
