@@ -16,6 +16,9 @@
 
 #include "soundsourcemp3.h"
 #include "trackinfoobject.h"
+extern "C" {
+#include <dxhead.h>
+}
 
 SoundSourceMp3::SoundSourceMp3( QString sFilename )
 {
@@ -242,11 +245,100 @@ void SoundSourceMp3::ParseHeader(TrackInfoObject *Track)
         id3_tag *tag = id3_file_tag(fh);
         if (tag!=0)
         {
-            fillField(tag,"TIT2",Track->m_sTitle);
-            fillField(tag,"TPE1",Track->m_sArtist);
+            getField(tag,"TIT2",Track->m_sTitle);
+            getField(tag,"TPE1",Track->m_sArtist);
+
+            QString dur;
+            getField(tag,"TLEN",dur);
+            if (dur.length()>0)
+                Track->m_iDuration = dur.toInt();
         }
         id3_file_close(fh);
     }
+
+    // Get file length. This has to be done by one of these options:
+    // 1) looking for the tag named TLEN (above),
+    // 2) See if the first frame contains a Xing header to get frame count
+    // 3) If file does not contain Xing header, find out if it is a variable frame size file
+    //    by looking at the size of the first 10 frames. If constant size, estimate frame number
+    //    from one frame size and file length in bytes
+    // 4) Count all the frames (slooow)
+
+    // Open file, initialize MAD and read beginnning of file
+
+    // Number of bytes to read from file to determine duration
+    const int READLENGTH = 5000;
+    mad_timer_t dur = mad_timer_zero;
+    QFile file(location.latin1());
+    if (!file.open(IO_ReadOnly))
+        qFatal("MAD: Open of %s failed.", location );
+    char *inputbuf = new char[READLENGTH];
+    unsigned int tmp = file.readBlock(inputbuf, READLENGTH);
+    if (tmp != READLENGTH)
+        qFatal("MAD: Error reading mp3-file: %s\nRead only %d bytes, but wanted %d bytes.",location ,tmp,READLENGTH);
+    mad_stream Stream;
+    mad_header Header;
+    mad_stream_init(&Stream);
+    mad_stream_buffer(&Stream, (unsigned char *) inputbuf, READLENGTH);
+
+    // Check for Xing header
+    XHEADDATA *xing = new XHEADDATA;
+    xing->toc = 0;
+    bool foundxing = false;
+    if (GetXingHeader(xing, (unsigned char *)Stream.this_frame)==1)
+    {
+        foundxing = true;
+
+        if (mad_header_decode (&Header, &Stream) != -1)
+        {
+            dur = Header.duration;
+            mad_timer_multiply(&dur,xing->frames);
+        }
+    }
+    delete xing;
+
+    if (foundxing)
+    {
+        Track->m_iDuration = dur.seconds;
+    }
+    else
+    {
+        // Check if file has constant bit rate by examining the rest of the buffer
+        unsigned long bitrate;
+        int i=0;
+        bool constantbitrate = true;
+        int frames = 0;
+        while ((Stream.bufend - Stream.this_frame) > 0)
+        {
+            if (mad_header_decode (&Header, &Stream) == -1)
+            {
+                if (!MAD_RECOVERABLE (Stream.error))
+                    break;
+            }
+            if (i==0)
+            {
+                bitrate = Header.bitrate;
+                dur = Header.duration;
+            }
+            else if (bitrate != Header.bitrate)
+                constantbitrate = false;
+
+            frames++;
+        }
+        if (constantbitrate && frames>1)
+        {
+            mad_timer_multiply(&dur, Track->m_iLength/((Stream.this_frame-Stream.buffer)/frames));
+            Track->m_iDuration = dur.seconds;
+            Track->m_sBitrate.setNum(Header.bitrate/1000);
+        }
+        else
+            qDebug("MAD: Count frames to get file duration!");
+    }
+    
+    mad_stream_finish(&Stream);
+    delete [] inputbuf;
+    file.close();
+
 }
 
 void SoundSourceMp3::getField(id3_tag *tag, const char *frameid, QString str)
