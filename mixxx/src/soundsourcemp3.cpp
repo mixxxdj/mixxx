@@ -381,6 +381,7 @@ int SoundSourceMp3::ParseHeader(TrackInfoObject *Track)
             getField(tag,"TIT2",&s);
             if (s.length()>2)
                 Track->setTitle(s);
+            s="";
             getField(tag,"TPE1",&s);
             if (s.length()>2)
                 Track->setArtist(s);
@@ -492,20 +493,15 @@ void SoundSourceMp3::getField(id3_tag *tag, const char *frameid, QString *str)
     id3_frame *frame = id3_tag_findframe(tag, frameid, 0);
     if (frame)
     {
-/*
-        // Latin1 handling
-        union id3_field const *field = &frame->fields[1];
-        const char *s = id3_ucs4_latin1duplicate(id3_field_getstrings(field, 0));
-        str = s;
-        delete [] s;
-*/
-
         // Unicode handling
-        id3_utf16_t *framestr = id3_ucs4_utf16duplicate(id3_field_getstrings(&frame->fields[1], 0));
-        int strlen = 0; while (framestr[strlen]!=0) strlen++;
-        if (strlen>0)
-            str->setUnicodeCodes((ushort *)framestr,strlen);
-        delete [] framestr;
+        if (id3_field_getnstrings(&frame->fields[1])>0)
+        {
+            id3_utf16_t *framestr = id3_ucs4_utf16duplicate(id3_field_getstrings(&frame->fields[1], 0));
+            int strlen = 0; while (framestr[strlen]!=0) strlen++;
+            if (strlen>0)
+                str->setUnicodeCodes((ushort *)framestr,strlen);
+            free(framestr);
+        }
     }
 }
 
