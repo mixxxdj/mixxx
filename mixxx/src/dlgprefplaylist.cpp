@@ -66,4 +66,7 @@ void DlgPrefPlaylist::slotApply()
         // Emit apply signal
         emit(apply(LineEditSongfiles->text()));
     }
+
+    // Save preferences
+    config->Save();
 }

@@ -34,10 +34,17 @@ public:
     ControlPotmeter(ConfigKey key, FLOAT_TYPE=0.0, FLOAT_TYPE=1.0);
     ~ControlPotmeter();
     FLOAT_TYPE getValue();
-//  char getPosition();
+
+    /** Returns the minimum allowed value */
+    float getMin();
+    /** Returns the maximum allowed value */
+    float getMax();
+    /** Sets the minimum and maximum allowed value. The control value is reset when calling
+      * this method */
+    void setRange(float fMin, float fMax);
     void setValue(int newpos);
-    void setAccelUp(const QKeySequence key) {};
-    void setAccelDown(const QKeySequence key) {};
+    void setAccelUp(const QKeySequence) {};
+    void setAccelDown(const QKeySequence) {};
 public slots:
     void slotSetPositionExtern(float);
     void slotSetPositionMidi(MidiCategory c, int v);

@@ -55,7 +55,7 @@ bool WVisual::eventFilter(QObject *o, QEvent *e)
     else if (e->type() == QEvent::MouseMove)
     {
         QMouseEvent *m = (QMouseEvent *)e;
-        int v = 64.+m->x()-m_iStartPosX;
+        int v = 64+m->x()-m_iStartPosX;
         if (v<0)
             v = 0;
         else if
@@ -64,7 +64,7 @@ bool WVisual::eventFilter(QObject *o, QEvent *e)
     }
     else if (e->type() == QEvent::MouseButtonRelease)
     {
-        QMouseEvent *m = (QMouseEvent *)e;
+//        QMouseEvent *m = (QMouseEvent *)e;
         emit(valueChangedLeftDown(64.));
     }
 
@@ -109,7 +109,7 @@ VisualChannel *WVisual::add(ControlPotmeter *pPlaypos)
 void WVisual::initializeGL()
 {
     m_pVisualController->init();
-    m_pVisualBackplane = new VisualBackplane();
+    //m_pVisualBackplane = new VisualBackplane();
 //    controller->add(m_pVisualBackplane);
 
     m_Picking.init(m_pVisualController);

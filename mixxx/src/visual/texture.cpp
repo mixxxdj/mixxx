@@ -24,7 +24,7 @@
 Texture::Texture()
 {
     loaded = 0;
-};
+}
 
 /**
  * Deconstructor.
@@ -32,7 +32,7 @@ Texture::Texture()
 Texture::~Texture()
 {
     unload();
-};
+}
 
 /**
  * Enables texturering an loads a bmp-file into this
@@ -90,7 +90,7 @@ int Texture::load(char * filename,const int & wrap,const int & decal)
     loaded = 1;
 
     return 1;
-};
+}
 
 /**
  * Unloads this texture from memory.
@@ -103,7 +103,7 @@ int Texture::unload(void)
         glDeleteTextures(1,&texture);
     loaded = 0;
     return 1;
-};
+}
 
 /**
  * Call this method to use a texture when you are
@@ -134,7 +134,7 @@ void Texture::use()
         glTexEnvf(GL_TEXTURE_ENV,GL_TEXTURE_ENV_MODE,GL_MODULATE);
         glTexEnvf(GL_TEXTURE_ENV,GL_TEXTURE_ENV_COLOR,GL_MODULATE);
     }
-};
+}
 
 /**
  * Explicitly disables texturemapping.
@@ -142,7 +142,7 @@ void Texture::use()
 void Texture::disable(void)
 {
     glDisable(GL_TEXTURE_2D);
-};
+}
 
 /**
  * Explicitly enables texturemapping.
@@ -150,7 +150,7 @@ void Texture::disable(void)
 void Texture::enable(void)
 {
     glEnable(GL_TEXTURE_2D);
-};
+}
 
 
 void Texture::validate()

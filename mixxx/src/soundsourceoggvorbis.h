@@ -17,9 +17,9 @@
 #ifndef SOUNDSOURCEOGGVORBIS_H
 #define SOUNDSOURCEOGGVORBIS_H
 
+#include <qstring.h>
 #include "soundsource.h"
 #include "trackinfoobject.h"
-#include <stdio.h>
 #include <vorbis/codec.h>
 #include <vorbis/vorbisfile.h>
 
@@ -28,7 +28,7 @@ class TrackInfoObject;
 
 class SoundSourceOggVorbis : public SoundSource {
  public:
-  SoundSourceOggVorbis(const char*);
+  SoundSourceOggVorbis(QString qFilename);
   ~SoundSourceOggVorbis();
   long seek(long);
   unsigned read(unsigned long size, const SAMPLE*);

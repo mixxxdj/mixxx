@@ -57,9 +57,6 @@ ReaderExtractWave::ReaderExtractWave(Reader *pReader) : ReaderExtract(0, "signal
     readerhfc  = new ReaderExtractHFC((ReaderExtract *)readerfft, WINDOWSIZE, STEPSIZE);
     readerbeat = new ReaderExtractBeat((ReaderExtract *)readerhfc, WINDOWSIZE, STEPSIZE, 200);
 #endif
-
-//    textout.setName("wave.txt");
-//    textout.open( IO_WriteOnly );
 }
 
 ReaderExtractWave::~ReaderExtractWave()
@@ -78,8 +75,8 @@ void ReaderExtractWave::addVisual(VisualChannel *pVisualChannel)
     ReaderExtract::addVisual(pVisualChannel);
 
 #ifdef EXTRACT
-//    readerfft->addVisual(m_pVisualChannel);
-//    readerhfc->addVisual(m_pVisualChannel);
+//    readerfft->addVisual(pVisualChannel);
+//    readerhfc->addVisual(pVisualChannel);
     readerbeat->addVisual(pVisualChannel);
 #endif
 }
@@ -104,14 +101,15 @@ void ReaderExtractWave::reset()
     // Reset extract objects
     readerfft->reset();
     readerhfc->reset();
+    readerhfc->newsource(file->getFilename());
     readerbeat->reset();
+    readerbeat->newsource(file->getFilename());
 #endif
 
 #ifdef __VISUALS__
     // Update vertex buffer by sending an event containing indexes of where to update.
     if (m_pVisualBuffer != 0)
-        for (int i=0; i<READBUFFERSIZE; i+=READCHUNKSIZE)
-            QApplication::postEvent(m_pVisualBuffer, new ReaderEvent(i, READCHUNKSIZE));
+        QApplication::postEvent(m_pVisualBuffer, new ReaderEvent(0, READBUFFERSIZE));
 #endif
 }
 
@@ -165,12 +163,6 @@ void ReaderExtractWave::setSoundSource(SoundSource *_file)
 
 void ReaderExtractWave::getchunk(CSAMPLE rate)
 {
-//    QTextStream stream( &textout );
-
-
-    //qDebug("Reading..., bufferpos_start %i",bufferpos_start);
-
-
     // Determine playback direction
     bool backwards;
     if (rate < 0.)
@@ -189,13 +181,11 @@ void ReaderExtractWave::getchunk(CSAMPLE rate)
     
     if (backwards)
     {        
-        int preEnd = bufferpos_start;
-
         filepos_start_new = max(0.,filepos_start-(double)READCHUNKSIZE);
         bufferpos_start = (bufferpos_start-READCHUNKSIZE+READBUFFERSIZE)%READBUFFERSIZE;
         file->seek((long int)filepos_start_new);
 
-        if ((filepos_end-filepos_start)/READCHUNKSIZE < READCHUNK_NO)
+        if ((filepos_end-filepos_start)/READCHUNKSIZE < (unsigned int)READCHUNK_NO)
             filepos_end_new = filepos_end;
         else
         {
@@ -209,12 +199,10 @@ void ReaderExtractWave::getchunk(CSAMPLE rate)
     }
     else
     {
-        int preStart = bufferpos_end;
-
         filepos_end_new = filepos_end+(double)READCHUNKSIZE;
         bufIdx = bufferpos_end;
         bufferpos_end   = (bufferpos_end+READCHUNKSIZE)%READBUFFERSIZE;
-        if ((filepos_end-filepos_start)/READCHUNKSIZE < READCHUNK_NO)
+        if ((filepos_end-filepos_start)/READCHUNKSIZE < (unsigned int)READCHUNK_NO)
             filepos_start_new = filepos_start;
         else
         {
@@ -226,8 +214,8 @@ void ReaderExtractWave::getchunk(CSAMPLE rate)
     chunkStart = bufferpos_start/READCHUNKSIZE;
     chunkEnd   = bufferpos_end/READCHUNKSIZE;
     
-    filepos_start = filepos_start_new;
-    filepos_end = filepos_end_new;
+    filepos_start = (long int)filepos_start_new;
+    filepos_end = (long int)filepos_end_new;
 
     // Read samples
     file->read(READCHUNKSIZE, temp);
@@ -242,13 +230,12 @@ void ReaderExtractWave::getchunk(CSAMPLE rate)
     for (unsigned int j=bufIdx; j<bufIdx+READCHUNKSIZE; j++)
         read_buffer[j] = (CSAMPLE)temp[i++];
 
-    // Write wave to text file
-//    for (int j=bufIdx; j<bufIdx+READCHUNKSIZE; j+=2)
-//        stream << read_buffer[j] << "\n";
-//    //stream << "\n";
-//    textout.flush();
+#ifdef __VISUALS__
+    // Update vertex buffer by sending an event containing indexes of where to update.
+    if (m_pVisualBuffer != 0)
+        QApplication::postEvent(m_pVisualBuffer, new ReaderEvent(bufIdx, READCHUNKSIZE));
+#endif
 
-        
 #ifdef EXTRACT
     // Do pre-processing...
 //    qDebug("curr %i, start %i, end %i",chunkCurr,chunkStart,chunkEnd);
@@ -257,12 +244,6 @@ void ReaderExtractWave::getchunk(CSAMPLE rate)
     readerbeat->processChunk(chunkCurr, chunkStart, chunkEnd, backwards);
 #endif
     m_pReader->unlock();
-
-#ifdef __VISUALS__
-    // Update vertex buffer by sending an event containing indexes of where to update.
-    if (m_pVisualBuffer != 0)
-        QApplication::postEvent(m_pVisualBuffer, new ReaderEvent(bufIdx, READCHUNKSIZE));
-#endif
 }
 
 long int ReaderExtractWave::seek(long int new_playpos)
@@ -273,7 +254,7 @@ long int ReaderExtractWave::seek(long int new_playpos)
 
     long int seekpos = file->seek((long int)filepos_start);
 
-    qDebug("seek: %i, %i",new_playpos, seekpos);
+    //qDebug("seek: %i, %i",new_playpos, seekpos);
     
     m_pReader->unlock();
 
@@ -283,6 +264,12 @@ long int ReaderExtractWave::seek(long int new_playpos)
     for (unsigned int i=0; i<READBUFFERSIZE; i++)
         read_buffer[i] = 0.;
 
+#ifdef __VISUALS__
+    // Update vertex buffer by sending an event containing indexes of where to update.
+    if (m_pVisualBuffer != 0)
+        QApplication::postEvent(m_pVisualBuffer, new ReaderEvent(0,READBUFFERSIZE));
+#endif
+
 #ifdef EXTRACT
     // Reset extract objects
     readerfft->reset();
@@ -290,12 +277,6 @@ long int ReaderExtractWave::seek(long int new_playpos)
     readerbeat->softreset(); // Only make a soft reset on beat estimation (keep histogram)
 #endif
 
-#ifdef __VISUALS__
-    // Update vertex buffer by sending an event containing indexes of where to update.
-    if (m_pVisualBuffer != 0)
-        for (int i=0; i<READBUFFERSIZE; i+=READCHUNKSIZE)
-            QApplication::postEvent(m_pVisualBuffer, new ReaderEvent(i,READCHUNKSIZE));
-#endif
 
     return seekpos;
 }

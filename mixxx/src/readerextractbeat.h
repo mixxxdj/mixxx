@@ -28,7 +28,7 @@ extern "C" {
 }
 #endif
 
-//#include <qfile.h>
+#include <qfile.h>
 
 /** Absolute feature threshold. Currently not used */
 const CSAMPLE threshold = 5.;
@@ -60,6 +60,8 @@ public:
     void reset();
     /** Reset buffers except histogram (BPM value) */
     void softreset();
+    /** Used only when writing output to text files */
+    void newsource(QString filename);
     void *getBasePtr();
     CSAMPLE *getBpmPtr();
     int getRate();
@@ -78,18 +80,25 @@ private:
     /** Buffer holding bpm values */
     CSAMPLE *bpmBuffer;
     /** Sorted list of peak indexes in HFC */
-    typedef QValueList<int> Tpeaks;
-    Tpeaks peaks;
+    typedef struct {
+        int i;
+        float corr;
+    } Tpeak;
+    typedef QValueList<Tpeak> Lpeaks;
+    Lpeaks peaks;
     /** Pointer to histogram */
     CSAMPLE *hist;
     /** Pointer to beat interval vector */
-    CSAMPLE *beatIntVector;
+//    CSAMPLE *beatIntVector;
     /** Size of histogram */
     int histSize;
-    /** Histogram interval size, and min and max interval in seconds*/
+    /** Histogram interval size, and min and max interval in seconds */
     CSAMPLE histInterval, histMinInterval, histMaxInterval;
     /** Index of maximum histogram value */
     int histMaxIdx;
+    /** Correction (second order interpolation) relative to histMaxIdx */
+    float histMaxCorr;
+    /** Total number of frames */
     int frameNo;
     int framePerChunk, framePerFrameSize;
     /** Pointer to HFC array */
@@ -105,7 +114,7 @@ private:
     plot_t *gnuplot_hfc;    
 #endif
 
-//    QFile textout;   
+    QFile textbpm, textconf, texthist, textbeat;   
 };
 
 #endif

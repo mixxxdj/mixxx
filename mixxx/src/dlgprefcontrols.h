@@ -1,7 +1,7 @@
 /***************************************************************************
-                          readerextracthfc.h  -  description
+                          dlgprefcontrols.h  -  description
                              -------------------
-    begin                : Tue Mar 18 2003
+    begin                : Sat Jul 5 2003
     copyright            : (C) 2003 by Tue & Ken Haste Andersen
     email                : haste@diku.dk
  ***************************************************************************/
@@ -15,42 +15,40 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef READEREXTRACTHFC_H
-#define READEREXTRACTHFC_H
+#ifndef DLGPREFCONTROLS_H
+#define DLGPREFCONTROLS_H
 
-#include "readerextract.h"
-#include "defs.h"
-#include <qptrlist.h>
+#include <qwidget.h>
+#include "dlgprefcontrolsdlg.h"
+#include "configobject.h"
 
-#include <qfile.h>
+class ControlObject;
+class ControlPotmeter;
+class MixxxView;
+class WSliderComposed;
 
-class EngineSpectralFwd;
 /**
-  * Calculates the High Frequency Content as used in ReaderExtractBeat.
-  *
-  *@author Tue Haste Andersen
+  *@author Tue & Ken Haste Andersen
   */
 
-class ReaderExtractHFC : public ReaderExtract
-{
+class DlgPrefControls : public DlgPrefControlsDlg  {
+    Q_OBJECT
 public: 
-    ReaderExtractHFC(ReaderExtract *input, int frameSize, int frameStep);
-    ~ReaderExtractHFC();
-    void reset();
-    void newsource(QString qFilename);
-    void *getBasePtr();
-    int getRate();
-    int getChannels();
-    int getBufferSize();
-    void *processChunk(const int idx, const int start_idx, const int end_idx, bool);
+    DlgPrefControls(QWidget *parent, ControlObject *pControl, MixxxView *pView,
+                    ConfigObject<ConfigValue> *pConfig);
+    ~DlgPrefControls();
+public slots:
+    void slotUpdate();
+    void slotSetRateRange(int pos);
+    void slotApply();
 private:
-    int frameNo;
-    int framePerChunk, framePerFrameSize;
-    /** Array of hfc and first derivative of hfc */
-    CSAMPLE *hfc, *dhfc;
-    QPtrList<EngineSpectralFwd> *specList;
-
-    QFile texthfc;    
+    /** Pointer to ConfigObject */
+    ConfigObject<ConfigValue> *m_pConfig;
+    /** Pointers to ControlObjects associated with rate sliders */
+    ControlPotmeter *m_pControlRate1, *m_pControlRate2;
+    /** Pointer to rate sliders */
+    WSliderComposed *m_pWidgetRate1, *m_pWidgetRate2;
+    
 };
 
 #endif

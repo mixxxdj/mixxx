@@ -36,8 +36,11 @@ public:
     void mouseMoveEvent(QMouseEvent *e);
     void mousePressEvent(QMouseEvent *e);
     void paintEvent(QPaintEvent *);
+    int getReverse();
 public slots:
     void setValue(float);
+    // Reverse the values output. 0 means up/right increases value, 1 down/left increases value.
+    void slotSetReverse(int iReverse);
 private:
     void reset();
     void unsetPixmaps();
@@ -50,6 +53,8 @@ private:
     int m_iHandleLength;
     /** True if it's a horizontal slider */
     bool m_bHorizontal;
+    /** false if up/right increases value, true if down/left increases */
+    bool m_bReverse;
     /** Pointer to double buffer */
     QPixmap *m_pDoubleBuffer;
     /** Pointer to pixmap of the slider */

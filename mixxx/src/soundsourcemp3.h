@@ -38,7 +38,7 @@ class TrackInfoObject;
   
 class SoundSourceMp3 : public SoundSource {
 public:
-    SoundSourceMp3( QString );
+    SoundSourceMp3(QString qFilename);
     ~SoundSourceMp3();
     long seek(long);
     unsigned read(unsigned long size, const SAMPLE*);

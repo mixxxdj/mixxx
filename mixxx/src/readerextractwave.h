@@ -24,8 +24,6 @@
 #include "soundsource.h"
 #include <qevent.h>
 
-//#include <qfile.h>
-
 class SignalVertexBuffer;
 class ReaderExtractFFT;
 class ReaderExtractHFC;
@@ -82,8 +80,6 @@ private:
     ReaderExtractFFT *readerfft;
     ReaderExtractHFC *readerhfc;
     ReaderExtractBeat *readerbeat;
-
-//    QFile textout;
 };
 
 #endif

@@ -103,6 +103,19 @@ void ControlObject::setControlEngine(ControlEngine *pControlEngine)
     m_pControlEngine = pControlEngine;
 }
 
+ControlObject *ControlObject::getControl(ConfigKey key)
+{
+    // Loop through the list of ConfigObjects to find one matching
+    // key
+    ControlObject *c;
+    for (c=list.first(); c; c=list.next())
+    {
+        if (c->cfgOption->key->group == key.group && c->cfgOption->key->item == key.item)
+            return c;
+    }
+    return 0;
+}
+
 void ControlObject::setWidget(QWidget *widget, ConfigKey key, bool emitOnDownPress, Qt::ButtonState state)
 {
     // Loop through the list of ConfigObjects to find one matching

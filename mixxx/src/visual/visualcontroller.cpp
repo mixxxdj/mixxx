@@ -153,10 +153,7 @@ void VisualController::drawScene(GLenum mode)
 {
     ObjectsIterator it = objects.begin();
     for(;it!=objects.end();++it)
-    {
-        VisualObject * obj = *it;
-        obj->draw(mode);
-    }
+        (*it)->draw(mode);
 };
 
 /**

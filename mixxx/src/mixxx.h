@@ -53,6 +53,7 @@ class WVisual;
 class TrackList;
 class TrackInfoObject;
 class PowerMate;
+class ControlEngine;
 
 /**
   * This Class is the base class for Mixxx. It sets up the main
@@ -108,6 +109,7 @@ class MixxxApp : public QMainWindow
     Player *player;
     MidiObject *midi;
     ControlObject *control;
+    ControlEngine *m_pControlEngine;
     std::vector<EngineObject *> engines;
     ConfigObject<ConfigValue> *config;
     ConfigObject<ConfigValueMidi> *midiconfig;

@@ -62,6 +62,8 @@ public:
     bool connectControls(ConfigKey src, ConfigKey dest);
     /** Returns a pointer to a QString containing the ConfigKey */
     QString *print();
+    /** Returns a pointer to the ControlObject matching the given ConfigKey */
+    ControlObject *getControl(ConfigKey key);
     /** Sets the config object */
     static void setConfig(ConfigObject<ConfigValueMidi> *_config);
     /** Associates a QWidget with the ControlObject identified by a given ConfigKey */

@@ -25,12 +25,15 @@
 #include "dlgprefsound.h"
 #include "dlgprefmidi.h"
 #include "dlgprefplaylist.h"
+#include "dlgprefcontrols.h"
 #include "mixxx.h"
 #include "tracklist.h"
 
-DlgPreferences::DlgPreferences(MixxxApp *mixxx, MidiObject *midi, Player *player,
+DlgPreferences::DlgPreferences(MixxxApp *mixxx, MixxxView *view,
+                               MidiObject *midi, Player *player,
                                TrackList *tracklist, ConfigObject<ConfigValue> *config,
-                               ConfigObject<ConfigValueMidi> *midiconfig) : QTabDialog(mixxx, "")
+                               ConfigObject<ConfigValueMidi> *midiconfig,
+                               ControlObject *pControl) : QTabDialog(mixxx, "")
 {    
     setCaption("Preferences");
     
@@ -38,10 +41,12 @@ DlgPreferences::DlgPreferences(MixxxApp *mixxx, MidiObject *midi, Player *player
     wsound = new DlgPrefSound(this, player, config);
     wmidi  = new DlgPrefMidi(this, midi, config, midiconfig);
     wplaylist = new DlgPrefPlaylist(this, config);
-
+    wcontrols = new DlgPrefControls(this, pControl, view, config);
+    
     // Add tabs
     addTab(wsound,    "Sound output");
     addTab(wmidi,     "MIDI");
+    addTab(wcontrols, "Controls");
     addTab(wplaylist, "Playlists");    
 
     // Add closebutton
@@ -57,9 +62,11 @@ DlgPreferences::DlgPreferences(MixxxApp *mixxx, MidiObject *midi, Player *player
     connect(this,        SIGNAL(aboutToShow()),          wsound,    SLOT(slotUpdate()));
     connect(this,        SIGNAL(aboutToShow()),          wmidi,     SLOT(slotUpdate()));
     connect(this,        SIGNAL(aboutToShow()),          wplaylist, SLOT(slotUpdate()));
+    connect(this,        SIGNAL(aboutToShow()),          wcontrols, SLOT(slotUpdate()));
     connect(this,        SIGNAL(closeDlg()),             wsound,    SLOT(slotApply()));
     connect(this,        SIGNAL(closeDlg()),             wmidi,     SLOT(slotApply()));
-    connect(this,        SIGNAL(closeDlg()),             wplaylist, SLOT(slotApply()));    
+    connect(this,        SIGNAL(closeDlg()),             wplaylist, SLOT(slotApply()));
+    connect(this,        SIGNAL(closeDlg()),             wcontrols, SLOT(slotApply()));
     connect(wplaylist,   SIGNAL(apply(QString)),         tracklist, SLOT(slotUpdateTracklist(QString)));
 }
 

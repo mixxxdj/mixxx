@@ -44,7 +44,7 @@ Light::Light()
     position[1] = 0.0f;
     position[2] = 250.0f;
     position[3] = 0.f;
-};
+}
 
 /**
  * Deconstructor.
@@ -52,9 +52,9 @@ Light::Light()
 Light::~Light()
 {
     glDisable(getLightIndex());
-};
+}
 
-	/**
+/**
  * Disables a light source.
  * This mehod disables this light. Note lighting is not disabled
  * only this single lightsource is disabled.
@@ -62,7 +62,7 @@ Light::~Light()
 void Light::disable()
 {
     glDisable(getLightIndex());
-};
+}
 
 /**
  * Enables a light source.
@@ -81,7 +81,7 @@ void Light::enable()
     glLightfv(getLightIndex(),GL_DIFFUSE,diffuse);
     glLightfv(getLightIndex(),GL_SPECULAR,specular);
     glLightfv(getLightIndex(),GL_POSITION,position);
-};
+}
 
 /**
  * Queries the openGL light index.
@@ -92,4 +92,4 @@ void Light::enable()
 int Light::getLightIndex()
 {
     return GL_LIGHT0 + i;
-};
+}

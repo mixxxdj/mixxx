@@ -403,7 +403,7 @@ CSAMPLE *EngineBuffer::process(const CSAMPLE *, const int buf_size)
                     // Check if we need to set samples from a previos beat mark
                     if (audioBeatMark->get()==1. && m_iBeatMarkSamplesLeft>0)
                     {
-                        int to = min(m_iBeatMarkSamplesLeft, idx-bufferpos_play);
+                        int to = (int)min(m_iBeatMarkSamplesLeft, idx-bufferpos_play);
                         for (int j=0; j<to; j++)
                             buffer[j] = 30000.;
                         m_iBeatMarkSamplesLeft = max(0,m_iBeatMarkSamplesLeft-to);
@@ -411,15 +411,15 @@ CSAMPLE *EngineBuffer::process(const CSAMPLE *, const int buf_size)
                     
                     float *beatBuffer = (float *)readerbeat->getBasePtr();
                     int chunkSizeDiff = READBUFFERSIZE/readerbeat->getBufferSize();
-                    for (i=floor(bufferpos_play); i<=floor(idx); i++)
+                    for (i=(int)floor(bufferpos_play); i<=(int)floor(idx); i++)
                     {
                         if (((i%chunkSizeDiff)==0) && (beatBuffer[i/chunkSizeDiff]==1))
                         {
                             // Audio beat mark
                             if (audioBeatMark->get()==1.)
                             {
-                                int from = i-bufferpos_play;
-                                int to = min(i-bufferpos_play+audioBeatMarkLen, idx-bufferpos_play);
+                                int from = (int)(i-bufferpos_play);
+                                int to = (int)min(i-bufferpos_play+audioBeatMarkLen, idx-bufferpos_play);
                                 for (int j=from; j<to; j++)
                                     buffer[j] = 30000.;
                                 m_iBeatMarkSamplesLeft = max(0,audioBeatMarkLen-(to-from));

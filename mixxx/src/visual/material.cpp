@@ -48,14 +48,14 @@ Material::Material()
 
     if (!glIsEnabled(GL_COLOR_MATERIAL))
         glEnable(GL_COLOR_MATERIAL);
-};
+}
 
 /**
  * Deconstructor.
  */
 Material::~Material()
 {
-};
+}
 
 /**
  * Uses the material.
@@ -69,4 +69,4 @@ void Material::use(){
   glMaterialfv(GL_FRONT_AND_BACK,GL_SPECULAR,specular);
 //  glMaterialfv(GL_FRONT_AND_BACK,GL_EMISSION,emission);
   glMaterialfv(GL_FRONT_AND_BACK,GL_SHININESS,&shininess);
-};
+}
