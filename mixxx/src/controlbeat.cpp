@@ -47,7 +47,7 @@ void ControlBeat::setValueFromMidi(MidiCategory, int v)
     updateFromMidi();
 }
 
-void ControlBeat::setValue(double dValue)
+void ControlBeat::setValue(double)
 {
     int elapsed = time.elapsed();
     time.restart();

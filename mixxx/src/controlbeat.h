@@ -42,8 +42,8 @@ class ControlBeat : public ControlObject
 public: 
     ControlBeat(ConfigKey key);
     ~ControlBeat();
-    void setAccelUp(const QKeySequence key) {};
-    void setAccelDown(const QKeySequence key) {};
+    void setAccelUp(const QKeySequence) {};
+    void setAccelDown(const QKeySequence) {};
 public slots:
     void setValueFromWidget(double dValue);
 protected:

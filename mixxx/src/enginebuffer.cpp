@@ -350,9 +350,9 @@ CSAMPLE *EngineBuffer::process(const CSAMPLE *, const int buf_size)
 
         double baserate = dir*bpmrate*((double)file_srate_old/(double)getPlaySrate());
         if (fwdButton->get()==1.)
-            baserate = abs(baserate)*5.;
+            baserate = fabs(baserate)*5.;
         else if (backButton->get()==1.)
-            baserate = abs(baserate)*-5.;
+            baserate = fabs(baserate)*-5.;
 
         double rate;
         if (playButton->get()==1. || fwdButton->get()==1. || backButton->get()==1.)

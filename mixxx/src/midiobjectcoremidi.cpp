@@ -37,7 +37,7 @@ MidiObjectCoreMidi::MidiObjectCoreMidi(ConfigObject<ConfigValueMidi> *c, QApplic
     // Fill in list of available devices
     bool device_valid = false; // Is true if device is a valid device name
     
-    for (int i=0; i<MIDIGetNumberOfSources(); i++)
+    for (unsigned int i=0; i<MIDIGetNumberOfSources(); i++)
     {
         MIDIEndpointRef endpoint = MIDIGetSource(i);
         CFStringRef name;
@@ -70,7 +70,7 @@ MidiObjectCoreMidi::~MidiObjectCoreMidi()
 void MidiObjectCoreMidi::devOpen(QString device)
 {
     // Select device. If not found, select default (first in list).
-    int i;
+    unsigned int i;
     for (i=0; i<MIDIGetNumberOfSources(); i++)
     {
         MIDIEndpointRef endpoint = MIDIGetSource(i);
@@ -115,7 +115,7 @@ void MidiObjectCoreMidi::handleMidi(const MIDIPacketList *packets)
     
     // Step through each packet
     packet = packets->packet;
-    for (int i=0; i<packets->numPackets; i++)
+    for (unsigned int i=0; i<packets->numPackets; i++)
     {
         for (int j=0; j< packet->length; j++)
         {
@@ -149,7 +149,7 @@ void MidiObjectCoreMidi::handleMidi(const MIDIPacketList *packets)
 }
 
 // C/C++ wrapper function
-static void midi_read_proc(const MIDIPacketList *packets, void *refCon, void *connRefCon)
+static void midi_read_proc(const MIDIPacketList *packets, void *refCon, void *)
 {
     MidiObjectCoreMidi *midi = (MidiObjectCoreMidi*)refCon;
     midi->handleMidi(packets);
