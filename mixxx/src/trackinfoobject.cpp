@@ -177,6 +177,19 @@ void TrackInfoObject::insertInTrackTableRow(WTrackTable *pTableTrack, int iRow, 
     pTableTrack->setItem(iRow, COL_INDEX, m_pTableItemIndex);
 }
 
+void TrackInfoObject::removeFromTrackTable()
+{
+    m_pTableItemScore = 0;
+    m_pTableItemTitle = 0;
+    m_pTableItemArtist = 0;
+    m_pTableItemComment = 0;
+    m_pTableItemType = 0;
+    m_pTableItemDuration = 0;
+    m_pTableItemBpm = 0;
+    m_pTableItemBitrate = 0;
+    m_pTableItemIndex = 0;
+}
+
 int TrackInfoObject::parse()
 {
     // Add basic information derived from the filename:

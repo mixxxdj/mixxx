@@ -699,7 +699,9 @@ CSAMPLE *EngineBuffer::process(const CSAMPLE *, const int buf_size)
         if (readerinfo)
         {
 //            qDebug("checking");
-            if (!backwards && filepos_end<file_length_old && (filepos_end - filepos_play < READCHUNKSIZE*(READCHUNK_NO/2-1)))
+            // Part of this if condition is commented out to ensure that more block is
+            // loaded at the end of an file to fill the buffer with zeros
+            if (!backwards && /*filepos_end<file_length_old &&*/ (filepos_end - filepos_play < READCHUNKSIZE*(READCHUNK_NO/2-1)))
             {
 //                qDebug("wake fwd");
                 reader->wake();

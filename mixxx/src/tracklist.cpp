@@ -38,6 +38,7 @@ TrackList::TrackList( const QString sDirectory, WTrackTable *pTableTracks,
     m_iCurTrackIdxCh2 = -1;
     m_pTrack1 = 0;
     m_pTrack2 = 0;
+    m_lTracks.setAutoDelete(false);
 
     // Get ControlObject for determining end of track mode, and set default value to STOP.
     m_pEndOfTrackModeCh1 = ControlObject::getControl(ConfigKey("[Channel1]","TrackEndMode"));
@@ -393,24 +394,24 @@ void TrackList::slotChangePlay_2(int idx)
 {
     if (idx==-1)
         m_iCurTrackIdxCh2 = m_pTableTracks->text(m_pTableTracks->currentRow(), COL_INDEX).toInt();
-    TrackInfoObject *track = m_lTracks.at(m_iCurTrackIdxCh2);
+    m_pTrack2 = m_lTracks.at(m_iCurTrackIdxCh2);
 
-    if (track)
+    if (m_pTrack2)
     {
         // Update score:
-        track->incTimesPlayed();
-        if (track->getTimesPlayed() > m_iMaxTimesPlayed)
-            m_iMaxTimesPlayed = track->getTimesPlayed();
+        m_pTrack2->incTimesPlayed();
+        if (m_pTrack2->getTimesPlayed() > m_iMaxTimesPlayed)
+            m_iMaxTimesPlayed = m_pTrack2->getTimesPlayed();
         updateScores();
 
         // Request a new track from the reader:
-        m_pBuffer2->getReader()->requestNewTrack(track);
+        m_pBuffer2->getReader()->requestNewTrack(m_pTrack2);
 
         // Write info
-        m_pText2->setText( track->getInfo() );
+        m_pText2->setText( m_pTrack2->getInfo() );
 
         // Set duration in playpos widget
-        m_pNumberPos2->setDuration(track->getDuration());
+        m_pNumberPos2->setDuration(m_pTrack2->getDuration());
     }
 }
 
@@ -461,7 +462,12 @@ void TrackList::slotUpdateTracklist( QString sDir )
     // Delete all "old" tracks:
     while (m_lTracks.count() != 0)
     {
-        delete m_lTracks.first();
+        // Do not delete the TrackInfoObject from memory if it is currently played. The Reader may write
+        // to it when unloading the track!
+        if (m_pTrack1!=m_lTracks.first() && m_pTrack2!=m_lTracks.first())
+            delete m_lTracks.first();
+        else
+            m_lTracks.first()->removeFromTrackTable();
         m_lTracks.removeFirst();
     }
 

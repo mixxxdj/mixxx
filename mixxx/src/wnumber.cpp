@@ -73,8 +73,8 @@ void WNumber::setNumDigits(int n)
 
 void WNumber::setValue(double dValue)
 {
-    int d1 = (int)((dValue-floor(dValue))*10.);
-    int d2 = (int)((dValue-floor(dValue))*100.)%10;
+    int d1 = (int)floor((dValue-floor(dValue))*10.);
+    int d2 = (int)floor((dValue-floor(dValue))*100.)%10;
 
     m_pLabel->setText(QString(m_qsText).append("%1.%2%3").arg((int)dValue,3,10).arg(d1,1,10).arg(d2,1,10));
 }
