@@ -16,7 +16,7 @@
 WINPA = WMME 
 
 # Include for unix dependencies. (19/12/2003, J_Zar)
-unix:include( main.qbas )
+unix:!macx:include( main.qbas )
 
 # Path to Macintosh libraries
 macx:MACLIBPATH = ../../mixxx-maclib
