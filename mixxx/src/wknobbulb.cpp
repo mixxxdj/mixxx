@@ -27,6 +27,7 @@ WKnobBulb::WKnobBulb(QWidget *parent, const char *name ) : WKnob(parent,name)
     off = new QPixmap(bulb_off_xpm);
 
     bulbState = false;
+    setBackgroundMode(NoBackground);
 }
 
 WKnobBulb::~WKnobBulb()

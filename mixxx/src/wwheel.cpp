@@ -35,6 +35,8 @@ WWheel::WWheel(QWidget *parent, const char *name ) : QWidget(parent,name)
         for (int i=0; i<100; i++)
             pix[i] = new QPixmap(wheel[i]);
     }
+
+    setBackgroundMode(NoBackground);
 }
 
 WWheel::~WWheel()
@@ -72,8 +74,7 @@ void WWheel::mouseReleaseEvent(QMouseEvent *)
 
 void WWheel::paintEvent(QPaintEvent *)
 {
-    QPainter p(this);
-    p.drawPixmap(0,0,*pix[value]);
+    bitBlt(this, 0, 0, pix[value]);
 }
 
 void WWheel::setValue(int v)

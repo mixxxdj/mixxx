@@ -33,6 +33,7 @@ WBulb::WBulb(QWidget *parent, const char *name ) : QRadioButton(parent,name)
         bulbOn  = new QPixmap(bulb_on_xpm);
         bulbOff = new QPixmap(bulb_off_xpm);
     }
+    setBackgroundMode(NoBackground);
 }
 
 WBulb::~WBulb()

@@ -28,7 +28,7 @@
   */
 
 class WPlayButton : public QPushButton  {
-   Q_OBJECT
+    Q_OBJECT
 public: 
     WPlayButton(QWidget *parent=0, const char *name=0);
     ~WPlayButton();

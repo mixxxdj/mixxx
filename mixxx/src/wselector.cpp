@@ -33,6 +33,8 @@ WSelector::WSelector(QWidget *parent, const char *name ) : QSlider(parent,name)
     }
     setMinValue(0);
     setMaxValue(1);
+
+    setBackgroundMode(NoBackground);
 }
 
 WSelector::~WSelector()

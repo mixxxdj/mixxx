@@ -31,6 +31,7 @@ WPFLButton::WPFLButton(QWidget *parent, const char *name ) : QCheckBox(parent,na
         buttonUp    = new QPixmap(pfl_off_xpm);
         buttonDown  = new QPixmap(pfl_on_xpm);
     }
+    setBackgroundMode(NoBackground);
 }
 
 WPFLButton::~WPFLButton()

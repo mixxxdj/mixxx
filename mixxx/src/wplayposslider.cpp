@@ -37,6 +37,8 @@ WPlayposSlider::WPlayposSlider(QWidget *parent, const char *name ) : QWidget(par
     value = 0;
     poss = 2;
     pix_length = 192; // Length of slider in pixels: len (202) - border(4) - marker len (6)
+
+    //setBackgroundMode(NoBackground);
 }
 
 WPlayposSlider::~WPlayposSlider()
@@ -83,8 +85,9 @@ void WPlayposSlider::setValue(int v)
 
 void WPlayposSlider::paintEvent(QPaintEvent *)
 {
-    QPainter paint(this);
-
-    paint.drawPixmap(0,0,*slider);
-    paint.drawPixmap(poss,2,*marker);
+    bitBlt(this, 0, 0, slider);
+    bitBlt(this, poss, 2, marker);
+    
+    //paint.drawPixmap(0,0,*slider);
+    //paint.drawPixmap(poss,2,*marker);
 }
