@@ -381,7 +381,7 @@
                 </font>
             </property>
             <property name="text">
-                <string>Slow CPU</string>
+                <string>Fast CPU</string>
             </property>
         </widget>
         <widget class="QLabel">
@@ -401,7 +401,7 @@
                 </font>
             </property>
             <property name="text">
-                <string>Fast CPU</string>
+                <string>Slow CPU</string>
             </property>
             <property name="alignment">
                 <set>AlignVCenter|AlignRight</set>

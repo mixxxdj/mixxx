@@ -21,6 +21,7 @@
 
 WVisualWaveform::WVisualWaveform(QWidget *pParent, const char *pName, const QGLWidget *pShareWidget) : QGLWidget(pParent,pName,pShareWidget)
 {
+    setAcceptDrops(true);
     m_pVisualController = new VisualController();
 
     installEventFilter(this);
@@ -51,6 +52,16 @@ WVisualWaveform::~WVisualWaveform()
 
     // Finally delete the VisualController
     delete m_pVisualController;
+}
+
+void WVisualWaveform::dragEnterEvent(QDragEnterEvent *event)
+{
+    event->accept();
+}
+
+void WVisualWaveform::dropEvent(QDropEvent *event)
+{
+    
 }
 
 void WVisualWaveform::setup(QDomNode node)
