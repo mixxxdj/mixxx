@@ -29,18 +29,18 @@ void ControlTTRotary::setValueFromWidget(double dValue)
 {
     // Non-linear scaling
     double temp = (((dValue-64.)*(dValue-64.))/64.)/100.;
-    if ((temp-64.)<0)
+    if ((dValue-64.)<0)
         m_dValue = -temp;
     else
         m_dValue = temp;
-
+        
     updateFromWidget();
 }
 
 void ControlTTRotary::setValueFromMidi(MidiCategory, int v)
 {
     double temp = ((((double)v-64.)*((double)v-64.))/64.)/100.;
-    if ((temp-64.)<0)
+    if ((v-64)<0)
         m_dValue = -temp;
     else
         m_dValue = temp;

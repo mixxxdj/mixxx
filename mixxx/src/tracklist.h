@@ -6,13 +6,13 @@
 #include "trackinfoobject.h"
 #include <qtable.h>
 #include <qlabel.h>
-#include "defs.h"
 
 class QString;
 class QPopupMenu;
 class QPoint;
 class EngineBuffer;
 class WTrackTable;
+class ControlObject;
 class ControlPotmeter;
 
 // Defines for the rows in the table.
@@ -25,10 +25,10 @@ const int COL_BITRATE = 5;
 const int COL_INDEX = 6;
 
 // End of track mode constants
-const float END_OF_TRACK_MODE_STOP = 1.;
-const float END_OF_TRACK_MODE_NEXT = 2.;
-const float END_OF_TRACK_MODE_LOOP = 3.;
-const float END_OF_TRACK_MODE_PING = 4.;
+const int END_OF_TRACK_MODE_STOP = 1;
+const int END_OF_TRACK_MODE_NEXT = 2;
+const int END_OF_TRACK_MODE_LOOP = 3;
+const int END_OF_TRACK_MODE_PING = 4;
 
 
 // This define sets the version of the tracklist. If any code is changed or
@@ -50,14 +50,17 @@ public slots:
     /** Can be called to update the whole tracklist with a new directory */
     void slotUpdateTracklist(QString);
     /** Slot used when playback reaches end of track */
-    void slotEndOfTrackCh1(FLOAT_TYPE);
+    void slotEndOfTrackCh1(double);
     /** Slot used when playback reaches end of track */
-    void slotEndOfTrackCh2(FLOAT_TYPE);
+    void slotEndOfTrackCh2(double);
     
 private slots:
-    /** For recieving signals from the pulldown menu */
-    void slotChangePlay_1(); 
-    void slotChangePlay_2();
+    /** Loads new track for channel 1. Idx refers to index in m_lTracks. If not given it loads the
+      * currently marked track in m_pTableTracks. */
+    void slotChangePlay_1(int idx=-1); 
+    /** Loads new track for channel 2. Idx refers to index in m_lTracks. If not given it loads the
+      * currently marked track in m_pTableTracks. */
+    void slotChangePlay_2(int idx=-1);
     void slotClick(int, int, int, const QPoint &);
     
 private:
@@ -68,6 +71,9 @@ private:
     void UpdateTracklist();
     int ParseHeader(TrackInfoObject *Track);
 
+    /** Index of current track in channel 1 and 2 */
+    int m_iCurTrackIdxCh1, m_iCurTrackIdxCh2;
+    
     /** The directory where the music files are stored */
     QString m_sDirectory; 
     /** list of all tracks */
@@ -83,6 +89,9 @@ private:
 
     /** Pointer to ControlObject dertermining end of track mode */
     ControlPotmeter *m_pEndOfTrackModeCh1, *m_pEndOfTrackModeCh2;
+    /** Pointer to ControlObjects for play buttons */
+    ControlObject *m_pPlayCh1, *m_pPlayCh2;
+    
 };
 
 #endif

@@ -26,8 +26,8 @@
 #include "reader.h"
 #include "wtracktable.h"
 #include "wtracktableitem.h"
+#include "controlobject.h"
 #include "controlpotmeter.h"
-#include "controlpushbutton.h"
 
 TrackList::TrackList( const QString sDirectory, WTrackTable *ptableTracks,
                       QLabel *text1, QLabel *text2,
@@ -40,18 +40,26 @@ TrackList::TrackList( const QString sDirectory, WTrackTable *ptableTracks,
     m_pBuffer1 = buffer1;
     m_pBuffer2 = buffer2;
 
-    // Construct controlpotmeter for determining end of track mode
+    m_iCurTrackIdxCh1 = -1;
+    m_iCurTrackIdxCh2 = -1;
+
+    // Construct controlpotmeter for determining end of track mode, and set default value to STOP.
     m_pEndOfTrackModeCh1 = new ControlPotmeter(ConfigKey("[Channel1]","EndOfTrackMode"), 1., 4.);
     m_pEndOfTrackModeCh2 = new ControlPotmeter(ConfigKey("[Channel2]","EndOfTrackMode"), 1., 4.);   
-    // ***make connections...
+    m_pEndOfTrackModeCh1->setValueFromApp((double)END_OF_TRACK_MODE_STOP);
+    m_pEndOfTrackModeCh2->setValueFromApp((double)END_OF_TRACK_MODE_STOP);
+
+    // Get pointers to ControlObjects for play buttons
+    ControlObject *c = (ControlObject *)m_pEndOfTrackModeCh1;
+    m_pPlayCh1 = c->getControl(ConfigKey("[Channel1]","play"));
+    m_pPlayCh2 = c->getControl(ConfigKey("[Channel2]","play"));
 
     // Connect end-of-track signals to this object
-    ControlObject *c = (ControlObject *)m_pEndOfTrackModeCh1;
-    ControlPushButton *p;
-    p = (ControlPushButton *)c->getControl(ConfigKey("[Channel1]","EndOfTrack"));
-//    connect(p, SIGNAL(valueChanged(FLOAT_TYPE)), this, SLOT(slotEndOfTrackCh1(FLOAT_TYPE)));
-    p = (ControlPushButton *)c->getControl(ConfigKey("[Channel2]","EndOfTrack"));
-//    connect(p, SIGNAL(valueChanged(FLOAT_TYPE)), this, SLOT(slotEndOfTrackCh2(FLOAT_TYPE)));    
+    ControlObject *p;
+    p = c->getControl(ConfigKey("[Channel1]","EndOfTrack"));
+    connect(p, SIGNAL(signalUpdateApp(double)), this, SLOT(slotEndOfTrackCh1(double)));
+    p = c->getControl(ConfigKey("[Channel2]","EndOfTrack"));
+    connect(p, SIGNAL(signalUpdateApp(double)), this, SLOT(slotEndOfTrackCh2(double)));    
     
     // Update the track list by reading the xml file, and adding new files:
     UpdateTracklist();
@@ -156,18 +164,56 @@ void TrackList::UpdateTracklist()
 	UpdateScores();
 }
 
-void TrackList::slotEndOfTrackCh1(FLOAT_TYPE)
+void TrackList::slotEndOfTrackCh1(double)
 {
-    qDebug("TrackList: end of track");
+    switch ((int)m_pEndOfTrackModeCh1->getValue())
+    {
+    case END_OF_TRACK_MODE_STOP:
+        m_pPlayCh1->setValueFromApp(0.);
+        break;
+    case END_OF_TRACK_MODE_NEXT:
+        // Load next track
+        m_iCurTrackIdxCh1++;
+        slotChangePlay_1(m_iCurTrackIdxCh1);
+        break;
+    case END_OF_TRACK_MODE_LOOP:
+        // Load same track
+        slotChangePlay_1(m_iCurTrackIdxCh1);
+        break;
+    case END_OF_TRACK_MODE_PING:
+        qDebug("EndOfTrack mode ping not yet implemented");
+        break;
+    default:
+        qDebug("Invalid EndOfTrack mode value");
+    }
 }
 
-void TrackList::slotEndOfTrackCh2(FLOAT_TYPE)
+void TrackList::slotEndOfTrackCh2(double)
 {
-    qDebug("TrackList: end of track");
+    switch ((int)m_pEndOfTrackModeCh2->getValue())
+    {
+    case END_OF_TRACK_MODE_STOP:
+        m_pPlayCh2->setValueFromApp(0.);
+        break;
+    case END_OF_TRACK_MODE_NEXT:
+        // Load next track
+        m_iCurTrackIdxCh2++;
+        slotChangePlay_2(m_iCurTrackIdxCh2);
+        break;
+    case END_OF_TRACK_MODE_LOOP:
+        // Load same track
+        slotChangePlay_2(m_iCurTrackIdxCh2);
+        break;
+    case END_OF_TRACK_MODE_PING:
+        qDebug("EndOfTrack mode ping not yet implemented");
+        break;
+    default:
+        qDebug("Invalid EndOfTrack mode value");
+    }
 }
 
 /*
-	Updates the score field (column 0) in the table.
+    Updates the score field (column 0) in the table.
 */
 void TrackList::UpdateScores()
 {
@@ -322,10 +368,12 @@ TrackInfoObject *TrackList::FileExistsInList( const QString sFilename )
     These two slots basically just routes information further, but adds
     track information.
 */
-void TrackList::slotChangePlay_1()
+void TrackList::slotChangePlay_1(int idx)
 {
-    TrackInfoObject *track = m_lTracks.at(m_ptableTracks->text(m_ptableTracks->currentRow(), COL_INDEX ).toInt());
-        
+    if (idx==-1)
+        m_iCurTrackIdxCh1 = m_ptableTracks->text(m_ptableTracks->currentRow(), COL_INDEX ).toInt();
+    TrackInfoObject *track = m_lTracks.at(m_iCurTrackIdxCh1);
+    
     // Update score:
     track->m_iTimesPlayed++;
     if (track->m_iTimesPlayed > m_iMaxTimesPlayed)
@@ -339,10 +387,11 @@ void TrackList::slotChangePlay_1()
     m_pText1->setText( track->getInfo() );
 }
 
-void TrackList::slotChangePlay_2()
+void TrackList::slotChangePlay_2(int idx)
 {
-    TrackInfoObject *track = m_lTracks.at(		
-        m_ptableTracks->text( m_ptableTracks->currentRow(), COL_INDEX ).toInt() );
+    if (idx==-1)
+        m_iCurTrackIdxCh2 = m_ptableTracks->text(m_ptableTracks->currentRow(), COL_INDEX).toInt();
+    TrackInfoObject *track = m_lTracks.at(m_iCurTrackIdxCh2);
         
     // Update score:
     track->m_iTimesPlayed++;
