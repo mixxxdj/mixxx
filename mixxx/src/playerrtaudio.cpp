@@ -17,7 +17,7 @@
 
 #include "playerrtaudio.h"
 
-/** Maximum frame size used with PortAudio. Used to determine no of buffers
+/** Maximum frame size used with RtAudio. Used to determine no of buffers
   * when setting latency */
 const int kiMaxFrameSize = 64;
 
@@ -159,9 +159,6 @@ bool PlayerRtAudio::open()
 
     // Frame size...    
     iFramesPerBuffer = iLatency/m_iNumberOfBuffers;
-
-    // Callback function to use
-    //PortAudioCallback *callback = paCallback;
 
     qDebug("id %i, sr %i, ch %i, bufsize %i, bufno %i", id, iSrate, iChannels, iFramesPerBuffer, m_iNumberOfBuffers);
 

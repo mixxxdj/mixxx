@@ -9,9 +9,10 @@ Mixxx is software for DJ'ing. You can use wave based
 audio files, Ogg Vorbis and MP3 files as audio input. Mixxx
 can be controlled through the GUI and with external 
 controllers including MIDI devices, joysticks and more.
-This release works on Linux (OSS Sound Drivers, Jack sound
-server), Windows and MacOS X (Recent version of MacOS X and 
-at least G4 CPU).
+This release works on Linux, Windows and MacOS X.
+
+Mixxx is released under GPL v2. See LICENSE file in this 
+directory for a copy of the licence.
 
 
 * NEWS *****************************************************
@@ -30,100 +31,16 @@ New since 1.2.1:
 - Correct feedback about actual used latency in sound card
   configuration. Support for WMME drivers under Windows, and 
   improved DirectSound support, ie. lower latency operation
-
-* REQUIREMENTS *********************************************
-Mixxx depends on the following libraries:
-QT >= 3.1 
-libmad
-libid3tag
-libAudioFile (MacOS X only)
-libSndFile (Linux and Windows only)
-vorbisfile
-pkg-config (Linux only)
+- User manual added.
 
 
-* INSTALL **************************************************
-You can either install Mixxx from binary, or from source.
+* INSTALL/USE **********************************************
+Please see manual, included in this directory, 
+Mixxx-Manual-1.3.pdf.
 
-*Linux:
-If you have downloaded the binary version of Mixxx (i586)
-you just need to unpack the file and run the install script:
-
-tar -xvzf mixxx-1.x-i586.tar.gz
-cd mixxx-1.x
-make install
-
-You will need to have QT installed already, but the other 
-libs mentioned above are included in this binary version
-(statically linked).
-
-The install script will install the program in /usr/bin 
-with midi configs and skins in /usr/share/mixxx. The 
-placement of the skin, keyboard and midi configs can be 
-changed in the users ~/.mixxx.cfg file created after the 
-first startup of the program.
-
-To compile and install from source use the following commands:
-cd src
-./configure
-make
-make install
-
-To compile with support for the Jack sound server, use
-./configure --enable-features=Jack
-
-*Mac and Windows:
-Extract the downloaded file to a folder and start the
-installation by double-clicking on the program.
-The midi configs and skins are placed in the application
-directory (application bundle on mac). A configuration
-file mixxx.cfg is written to the users home directory
-containing the Mixxx preferences as set in the preference
-panel. The Mac version requires a recent version of MacOS X
-and at least a G4 CPU.
-
-* RUN THE PROGRAM ******************************************
-Run the program by double clicking on the Mixxx application
-icon or typing mixxx at the prompt (Linux). On linux it is 
-important to run the program as root (eg. by using the
-sudo command) to avoid cracks in the sound output.
-
-Mixxx can use any midi controller for input. Also you can 
-make your own skins for Mixxx. Take a look at the skin.xml 
-file for each of the two skins provided if you want to make 
-your own.
-
-If you have any problems starting Mixxx, eg. after changeing
-options in the preference panel, you can reset the Mixxx
-configuration by deleting your mixxx.cfg file (.mixxx.cfg on
-Linux). If the program runs very slow, you can disable the
-waveform displays in the preference panel. Select "Simple"
-instead of "Waveform" under GUI/Visuals. If you hear
-cracks in the sound or the program stops for small periods
-this is often because your computer is not fast enough. Try
-increasing the latency.
-
-To configure the keyboard and MIDI, take a look at the
-Configuration.txt file in this directory.
-
-
-* DEVELOPMENT **********************************************
-If you are interested in joining the development team of
-Mixxx you are most welcome. Especially we are looking for
-people to help with adding support for various sound api's, 
-eg. native ALSA and Arts. Also we are interested in
-hearing about how you use Mixxx, what features you would 
-like, if you have used any special midi controllers,
-designed your own skin etc.
-
-We are currently looking for a maintainer of the MacOS X
-version of Mixxx, as we no longer have access to a Macintosh
-computer. Basically it's a matter of installing QT
-on a Mac with XCode, and compile the code once in a while,
-to check if things got broken, and to pack up releases.
-No strong skills in C++ is required.
-
-Send mail to tuehaste@users.sourceforge.net or subscribe to
-mixxx-devel@lists.sourceforge.net and send a message
-to the list.
+* CONTACT **************************************************
+To contact developer send mail to 
+tuehaste@users.sourceforge.net or subscribe to 
+mixxx-devel@lists.sourceforge.net and send a message to the 
+list.
 
