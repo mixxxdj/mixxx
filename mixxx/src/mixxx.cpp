@@ -123,8 +123,8 @@ MixxxApp::MixxxApp(QApplication *a, bool bVisuals)
 #endif
 #ifdef __WIN__
     // On Windows, set the config dir relative to the application dir
-    LPTSTR *str = new LPTSTR[200];
-    GetModuleFileName(NULL, str, 200);
+    char *str = new char[200];
+    GetModuleFileName(NULL, (unsigned short *)str, 200);
     qConfigPath = QFileInfo(str).dirPath();
 #endif
 #ifdef __MACX__
