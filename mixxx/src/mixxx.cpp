@@ -47,6 +47,8 @@
 #include "controlenginequeue.h"
 #include "controlpotmeter.h"
 #include "reader.h"
+#include "enginebuffer.h"
+#include "tracklist.h"
 
 #ifdef __ALSA__
   #include "playeralsa.h"
@@ -123,6 +125,9 @@ MixxxApp::MixxxApp(QApplication *a)
       }
   }
   addFiles(config->getValueString(PlaylistKey).latin1());
+
+  // Experimental new tracklist:
+  //TrackList Tracks( config->getValueString(PlaylistKey) );
 
   // Construct popup menu used to select playback channel on track selection
   playSelectMenu = new QPopupMenu(this);

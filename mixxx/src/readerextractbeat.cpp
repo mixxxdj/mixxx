@@ -253,7 +253,7 @@ void *ReaderExtractBeat::processChunk(const int idx, const int start_idx, const 
                 CSAMPLE bpm = 60./(((CSAMPLE)maxidx*histInterval)+histMinInterval);
                 Tpeaks::iterator it3 = it;
                 ++it3;
-                int start, end;
+                int start;
                 if (count==0)
                     start = chunkStart;
                 else
