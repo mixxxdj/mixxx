@@ -26,7 +26,8 @@
   *@author Tue and Ken Haste Andersen
   */
 
-class PlayerJack : public Player  {
+class PlayerJack : public Player  
+{
 public:
     PlayerJack(ConfigObject<ConfigValue> *config);
     ~PlayerJack();

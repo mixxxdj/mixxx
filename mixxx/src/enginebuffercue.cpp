@@ -56,12 +56,15 @@ EngineBufferCue::~EngineBufferCue()
 }
 
 // Set the cue point at the current play position:
-void EngineBufferCue::slotControlCueSet(double)
+void EngineBufferCue::slotControlCueSet(double v)
 {
-    double cue = max(0.,round(m_pEngineBuffer->getAbsPlaypos()));
-    if (!even((int)cue))
-        cue--;
-    cuePoint->set(cue);
+    if (v)
+    {
+        double cue = max(0.,round(m_pEngineBuffer->getAbsPlaypos()));
+        if (!even((int)cue))
+            cue--;
+        cuePoint->set(cue);
+    }
 }
 
 // Goto the cue point:
@@ -80,7 +83,7 @@ void EngineBufferCue::slotControlCueGoto(double pos)
         else
         {
             // Seek to cue point
-            m_pEngineBuffer->slotControlSeekAbs(cuePoint->get());
+            m_pEngineBuffer->slotControlSeekAbs(cuePoint->get(), false);
         }
     }
 }
@@ -96,7 +99,7 @@ void EngineBufferCue::slotControlCuePreview(double)
         // Stop playing (set playbutton to stoped) and seek to cue point
         playButton->set(0.);
         m_bCuePreview = false;
-        m_pEngineBuffer->slotControlSeekAbs(cuePoint->get());
+        m_pEngineBuffer->slotControlSeekAbs(cuePoint->get(), false);
     }
     else if (!m_bCuePreview)
     {
@@ -108,7 +111,7 @@ void EngineBufferCue::slotControlCuePreview(double)
         else
         {
             // Seek to cue point
-            m_pEngineBuffer->slotControlSeekAbs(cuePoint->get());
+            m_pEngineBuffer->slotControlSeekAbs(cuePoint->get(), false);
         }
     }
 }

@@ -50,7 +50,8 @@ typedef float CSAMPLE; // defines the CSAMPLE type used for intermediate calcula
  */
 
 #ifndef PLAYERTEST
-class PlayerALSA : public Player, public QThread {
+class PlayerALSA : public Player, public QThread 
+{
 public:
     PlayerALSA(ConfigObject<ConfigValue> *config);
 #else

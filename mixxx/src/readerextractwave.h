@@ -38,7 +38,8 @@ class Reader;
   *@author Tue Haste Andersen
   */
 
-class ReaderExtractWave : ReaderExtract {
+class ReaderExtractWave : ReaderExtract 
+{
 public:
     ReaderExtractWave(Reader *pReader, EngineBuffer *pEngineBuffer);
     ~ReaderExtractWave();

@@ -17,7 +17,7 @@
 
 #include "midiobjectcoremidi.h"
 
-MidiObjectCoreMidi::MidiObjectCoreMidi(ConfigObject<ConfigValueMidi> *pMidiConfig, QString device) : MidiObject(pMidiConfig, device)
+MidiObjectCoreMidi::MidiObjectCoreMidi(QString device) : MidiObject(device)
 {
     // Initialize CoreMidi
     MIDIClientCreate(CFSTR("Mixxx"), 0, 0, &midiClient);

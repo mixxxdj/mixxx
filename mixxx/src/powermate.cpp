@@ -42,6 +42,41 @@ PowerMate::~PowerMate()
     delete m_pRotary;
 }
 
+QStringList PowerMate::getMappings()
+{
+    QStringList mappings;
+    mappings << kqInputMappingPositionP1 << kqInputMappingPositionP2 << kqInputMappingSongP1 << kqInputMappingSongP2;
+    return mappings;
+}
+
+void PowerMate::selectMapping(QString mapping)
+{
+    if (mapping==kqInputMappingPositionP1)
+    {
+        m_pControlObjectRotary = ControlObject::getControl(ConfigKey("[Channel1]","wheel"));
+        m_pControlObjectButton = ControlObject::getControl(ConfigKey("[Channel1]","play"));
+        m_pRotary->setFilterLength(kiRotaryFilterMaxLen);
+    }
+    else if (mapping==kqInputMappingPositionP2)
+    {
+        m_pControlObjectRotary = ControlObject::getControl(ConfigKey("[Channel2]","wheel"));
+        m_pControlObjectButton = ControlObject::getControl(ConfigKey("[Channel2]","play"));
+        m_pRotary->setFilterLength(kiRotaryFilterMaxLen);
+    }
+    else if (mapping==kqInputMappingSongP1)
+    {
+        m_pControlObjectRotary = ControlObject::getControl(ConfigKey("[Channel1]","rateSearch"));
+        m_pControlObjectButton = ControlObject::getControl(ConfigKey("[Channel1]","play"));
+        m_pRotary->setFilterLength(kiRotaryFilterMaxLen);
+    }
+    else if (mapping==kqInputMappingSongP2)
+    {
+        m_pControlObjectRotary = ControlObject::getControl(ConfigKey("[Channel2]","realsearch"));
+        m_pControlObjectButton = ControlObject::getControl(ConfigKey("[Channel2]","play"));
+        m_pRotary->setFilterLength(kiRotaryFilterMaxLen);
+    }
+}
+
 void PowerMate::led()
 {
     m_pRequestLed->tryAccess(1);

@@ -37,7 +37,7 @@ WVisualWaveform::WVisualWaveform(QWidget *pParent, const char *pName, const QGLW
     startTimer(15);
 #endif
 #ifdef __LINUX__
-    startTimer(15);
+    startTimer(30);
 #endif
 
     m_qlList.setAutoDelete(false);
@@ -88,6 +88,7 @@ void WVisualWaveform::setup(QDomNode node)
     m_pVisualController->setBackgroundColor(colorBack);
     colorSignal.setNamedColor(WWidget::selectNodeQString(node, "SignalColor"));
     colorHfc.setNamedColor(WWidget::selectNodeQString(node, "HfcColor"));
+    colorCue.setNamedColor(WWidget::selectNodeQString(node, "CueColor"));
     colorMarker.setNamedColor(WWidget::selectNodeQString(node, "MarkerColor"));
     colorBeat.setNamedColor(WWidget::selectNodeQString(node, "BeatColor"));
     colorFisheye.setNamedColor(WWidget::selectNodeQString(node, "FisheyeColor"));
@@ -103,8 +104,6 @@ void WVisualWaveform::setup(QDomNode node)
     x = size.left(size.find(",")).toInt();
     y = size.mid(size.find(",")+1).toInt();
     setFixedSize(x,y);
-
-
 }
 
 bool WVisualWaveform::eventFilter(QObject *o, QEvent *e)
@@ -181,6 +180,7 @@ VisualChannel *WVisualWaveform::add(const char *group)
         c->setColorBack((float)colorBack.red()/255., (float)colorBack.green()/255., (float)colorBack.blue()/255.);
         c->setColorSignal((float)colorSignal.red()/255., (float)colorSignal.green()/255., (float)colorSignal.blue()/255.);
         c->setColorHfc((float)colorHfc.red()/255., (float)colorHfc.green()/255., (float)colorHfc.blue()/255.);
+        c->setColorCue((float)colorCue.red()/255., (float)colorCue.green()/255., (float)colorCue.blue()/255.);
         c->setColorMarker((float)colorMarker.red()/255., (float)colorMarker.green()/255., (float)colorMarker.blue()/255.);
         c->setColorBeat((float)colorBeat.red()/255., (float)colorBeat.green()/255., (float)colorBeat.blue()/255.);
         c->setColorFisheye((float)colorFisheye.red()/255., (float)colorFisheye.green()/255., (float)colorFisheye.blue()/255.);

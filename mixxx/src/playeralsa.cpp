@@ -43,19 +43,15 @@ PlayerALSA::PlayerALSA()
     handle = 0;
     err = snd_pcm_hw_params_malloc(&hwparams);
     if (err < 0)
-    {
-	qFatal("Couldn't allocate memory for hw params: %s\n", snd_strerror(err));
-    }
+        qFatal("Couldn't allocate memory for hw params: %s\n", snd_strerror(err));
+    
     err = snd_pcm_sw_params_malloc(&swparams);
     if (err < 0)
-    {
-	qFatal("Couldn't allocate memory for sw params: %s\n", snd_strerror(err));
-    }
+        qFatal("Couldn't allocate memory for sw params: %s\n", snd_strerror(err));
+    
     err = snd_pcm_sw_params_malloc(&swparams);
     if (err < 0)
-    {
-	qFatal("Couldn't allocate memory for sw params: %s\n", snd_strerror(err));
-    }
+        qFatal("Couldn't allocate memory for sw params: %s\n", snd_strerror(err));
 
     isopen = false;
     masterleft = masterright = -1;
@@ -103,12 +99,13 @@ bool PlayerALSA::open()
     name = m_pConfig->getValueString(ConfigKey("[Soundcard]", "DeviceMasterLeft"));
     if (name != "None")
     {
-	if (rx.search(name) < 0)
-	{
-	    qWarning("can't find device name or channel number in (%s)", name.latin1());
-	}
-	devname = rx.cap(1);
-    } else {
+        if (rx.search(name) < 0)
+            qWarning("can't find device name or channel number in (%s)", name.latin1());
+
+        devname = rx.cap(1);
+    } 
+    else 
+    {
         setDefaults(); // initialise defaults
         return open();
     }
@@ -124,21 +121,23 @@ bool PlayerALSA::open()
 
     if ((err = snd_pcm_open(&handle, devname.ascii(), SND_PCM_STREAM_PLAYBACK, 0)) < 0)
     {
-	qWarning("Playback open error: %s\n", snd_strerror(err));
-	return false;
+        qWarning("Playback open error: %s\n", snd_strerror(err));
+        return false;
     }
 
     qDebug("Alsa setting hw");
     if ((err = set_hwparams()) < 0)
     {
-	qWarning("Setting of hwparams failed: %s\n", snd_strerror(err));
-	return false;
+        qWarning("Setting of hwparams failed: %s\n", snd_strerror(err));
+        snd_pcm_close(handle);
+        return false;
     }
 
     qDebug("Alsa setting sw");
     if ((err = set_swparams()) < 0)
     {
         qWarning("Setting of swparams failed: %s\n", snd_strerror(err));
+        snd_pcm_close(handle);
         return false;
     }
 
@@ -153,16 +152,16 @@ bool PlayerALSA::open()
     qDebug("Alsa opening... %s", name.latin1());
     if (name != "None")
     {
-	if (rx.search(name) < 0)
-	{
-	    qWarning("can't find device name or channel number in (%s)", name.latin1());
-	}
-//	devname = rx.cap(1);
-	temp = rx.cap(2).toInt();
+        if (rx.search(name) < 0)
+        {
+            qWarning("can't find device name or channel number in (%s)", name.latin1());
+        }
+//      devname = rx.cap(1);
+        temp = rx.cap(2).toInt();
         if (temp > 0 && temp <= m_iChannels)
-	{
-	   masterleft = temp - 1;
-	}
+        {
+            masterleft = temp - 1;
+        }
     }
     qDebug("Alsa opening...ML %d", masterleft);
 
@@ -170,19 +169,19 @@ bool PlayerALSA::open()
     name = m_pConfig->getValueString(ConfigKey("[Soundcard]", "DeviceMasterRight"));
     if (name != "None")
     {
-	if (rx.search(name) < 0)
-	{
-	    qWarning("can't find device name or channel number in (%s)", name.latin1());
-	}
-	devtmp = rx.cap(1);
-	if (devname != devtmp)
-	{
-	    qWarning("device name mismatch, only one device supported");
-	}
-	temp = rx.cap(2).toInt();
-	if (temp > 0 && temp <= m_iChannels)
-	{
-	    masterright = temp - 1;
+        if (rx.search(name) < 0)
+        {
+            qWarning("can't find device name or channel number in (%s)", name.latin1());
+        }
+        devtmp = rx.cap(1);
+        if (devname != devtmp)
+        {
+            qWarning("device name mismatch, only one device supported");
+        }
+        temp = rx.cap(2).toInt();
+        if (temp > 0 && temp <= m_iChannels)
+        {
+            masterright = temp - 1;
         }
     }
     qDebug("Alsa opening...MR %d", masterright);
@@ -191,20 +190,20 @@ bool PlayerALSA::open()
     name = m_pConfig->getValueString(ConfigKey("[Soundcard]", "DeviceHeadLeft"));
     if (name != "None")
     {
-	if (rx.search(name) < 0)
-	{
-	    qWarning("can't find device name or channel number in (%s)", name.latin1());
-	}
-	devtmp = rx.cap(1);
-	if (devname != devtmp)
-	{
-	    qWarning("device name mismatch, only one device supported");
-	}
-	temp = rx.cap(2).toInt();
-	if (temp > 0 && temp <= m_iChannels)
-	{
-	    headleft = temp - 1;
-	}
+        if (rx.search(name) < 0)
+        {
+            qWarning("can't find device name or channel number in (%s)", name.latin1());
+        }
+        devtmp = rx.cap(1);
+        if (devname != devtmp)
+        {
+            qWarning("device name mismatch, only one device supported");
+        }
+        temp = rx.cap(2).toInt();
+        if (temp > 0 && temp <= m_iChannels)
+        {
+            headleft = temp - 1;
+        }
     }
     qDebug("Alsa opening...HL %d", headleft);
 
@@ -212,32 +211,32 @@ bool PlayerALSA::open()
     name = m_pConfig->getValueString(ConfigKey("[Soundcard]", "DeviceHeadRight"));
     if (name != "None")
     {
-	if (rx.search(name) < 0)
-	{
-	    qWarning("can't find device name or channel number in (%s)", name.latin1());
-	}
-	devtmp = rx.cap(1);
-	if (devname != devtmp)
-	{
-	    qWarning("device name mismatch, only one device supported");
-	}
-	temp = rx.cap(2).toInt();
-	if (temp > 0 && temp <= m_iChannels)
-	{
-	    headright = temp - 1;
-	}
+        if (rx.search(name) < 0)
+        {
+            qWarning("can't find device name or channel number in (%s)", name.latin1());
+        }
+        devtmp = rx.cap(1);
+        if (devname != devtmp)
+        {
+            qWarning("device name mismatch, only one device supported");
+        }
+        temp = rx.cap(2).toInt();
+        if (temp > 0 && temp <= m_iChannels)
+        {
+            headright = temp - 1;
+        }
     }
     
     qDebug("Alsa opening...HR %d", headright);
     // Check if any of the devices in the config database needs to be set to "None"
     if (masterleft < 0)
-	m_pConfig->set(ConfigKey("[Soundcard]", "DeviceMasterLeft"), ConfigValue("None"));
+        m_pConfig->set(ConfigKey("[Soundcard]", "DeviceMasterLeft"), ConfigValue("None"));
     if (masterright < 0)
-	m_pConfig->set(ConfigKey("[Soundcard]", "DeviceMasterRight"), ConfigValue("None"));
+        m_pConfig->set(ConfigKey("[Soundcard]", "DeviceMasterRight"), ConfigValue("None"));
     if (headleft < 0)
-	m_pConfig->set(ConfigKey("[Soundcard]", "DeviceHeadLeft"), ConfigValue("None"));
+        m_pConfig->set(ConfigKey("[Soundcard]", "DeviceHeadLeft"), ConfigValue("None"));
     if (headright < 0)
-	m_pConfig->set(ConfigKey("[Soundcard]", "DeviceHeadRight"), ConfigValue("None"));
+        m_pConfig->set(ConfigKey("[Soundcard]", "DeviceHeadRight"), ConfigValue("None"));
 
 #else
     masterleft = 0;
@@ -262,16 +261,19 @@ int PlayerALSA::xrun_recovery(int err)
     if (err == -EPIPE) {	/* under-run */
         err = snd_pcm_prepare(handle);
         if (err < 0)
-	    qWarning("Can't recovery from underrun, prepare failed: %s\n", snd_strerror(err));
+            qWarning("Can't recovery from underrun, prepare failed: %s\n", snd_strerror(err));
         return 0;
-    } else if (err == -ESTRPIPE) {
-	while ((err = snd_pcm_resume(handle)) == -EAGAIN)
-	    sleep(1);	/* wait until the suspend flag is released */
-        if (err < 0) {
-	    err = snd_pcm_prepare(handle);
-	    if (err < 0)
-	        qWarning("Can't recovery from suspend, prepare failed: %s\n", snd_strerror(err));
-	}
+    } 
+    else if (err == -ESTRPIPE) 
+    {
+        while ((err = snd_pcm_resume(handle)) == -EAGAIN)
+            sleep(1);   /* wait until the suspend flag is released */
+        if (err < 0) 
+        {
+            err = snd_pcm_prepare(handle);
+            if (err < 0)
+                qWarning("Can't recovery from suspend, prepare failed: %s\n", snd_strerror(err));
+        }
         return 0;
     }
     return err;
@@ -297,38 +299,43 @@ void PlayerALSA::run()
 
         while (twrite)
         {
-	    sptr = prepareBuffer((int) period_size);
-	    optr = output;
-	    for (int i = 0; i < (int) period_size; i++)
-	    {
-	        for (int j = 0; j < m_iChannels; j++) optr[j] = 0;
-	        if (masterleft >= 0)  optr[masterleft]  = *sptr / 32768.;
-	        sptr++;
-	        if (masterright >= 0) optr[masterright] = *sptr / 32768.;
-	        sptr++;
-	        if (headleft >= 0)  optr[headleft]  = *sptr / 32768.;
-	        sptr++;
-	        if (headright >= 0) optr[headright] = *sptr / 32768.;
-	        sptr++;
-	        optr += m_iChannels;
-	    }
-	    ctr = period_size;
-	    optr = output;
-	    while (ctr > 0) {
-	        err = snd_pcm_writei(handle, optr, ctr);
-	        if (err == -EAGAIN) continue;
-	        if (err < 0) {
-		    if (xrun_recovery(err) < 0) {
-		        qFatal("Write error: %s\n", snd_strerror(err));
-		    }
-		    break;
-		}
-	        optr += err*m_iChannels;
-	        ctr -= err;
-	    }
+            sptr = prepareBuffer((int) period_size);
+            optr = output;
+            for (int i = 0; i < (int) period_size; i++)
+            {
+                for (int j = 0; j < m_iChannels; j++) optr[j] = 0;
+                if (masterleft >= 0)  optr[masterleft]  = *sptr / 32768.;
+                sptr++;
+                if (masterright >= 0) optr[masterright] = *sptr / 32768.;
+                sptr++;
+                if (headleft >= 0)  optr[headleft]  = *sptr / 32768.;
+                sptr++;
+                if (headright >= 0) optr[headright] = *sptr / 32768.;
+                sptr++;
+                optr += m_iChannels;
+            }
+            ctr = period_size;
+            optr = output;
+            while (ctr > 0) 
+            {
+                err = snd_pcm_writei(handle, optr, ctr);
+                if (err == -EAGAIN) continue;
+                if (err < 0) 
+                {
+                    if (xrun_recovery(err) < 0)
+                        qFatal("Write error: %s\n", snd_strerror(err));
+                    
+                    break;
+                }
+                optr += err*m_iChannels;
+                ctr -= err;
+            }
         }
-        if (output) delete output;
-    } else {
+        if (output) 
+            delete output;
+    } 
+    else 
+    {
         short int *optr, *output;
 
         output = new short int[buffer_size * m_iChannels];
@@ -336,35 +343,36 @@ void PlayerALSA::run()
 
         while (twrite)
         {
-	    sptr = prepareBuffer((int) period_size);
-	    optr = output;
-	    for (int i = 0; i < (int) period_size; i++)
-	    {
-	       for (int j = 0; j < m_iChannels; j++) optr[j] = 0;
-	       if (masterleft >= 0)  optr[masterleft]  = (short int) *sptr;
-	       sptr++;
-	       if (masterright >= 0) optr[masterright] = (short int) *sptr;
-	       sptr++;
-	       if (headleft >= 0)  optr[headleft]  = (short int) *sptr;
-	       sptr++;
-	       if (headright >= 0) optr[headright] = (short int) *sptr;
-	       sptr++;
-	       optr += m_iChannels;
-	    }
-	    ctr = period_size;
-	    optr = output;
-	    while (ctr > 0) {
-	        err = snd_pcm_writei(handle, optr, ctr);
-	        if (err == -EAGAIN) continue;
-	        if (err < 0) {
-		    if (xrun_recovery(err) < 0) {
-		        qFatal("Write error: %s\n", snd_strerror(err));
-		    }
-		    break;
-		}
-	        optr += err*m_iChannels;
-	        ctr -= err;
-	    }
+            sptr = prepareBuffer((int) period_size);
+            optr = output;
+            for (int i = 0; i < (int) period_size; i++)
+            {
+                for (int j = 0; j < m_iChannels; j++) optr[j] = 0;
+                if (masterleft >= 0)  optr[masterleft]  = (short int) *sptr;
+                sptr++;
+                if (masterright >= 0) optr[masterright] = (short int) *sptr;
+                sptr++;
+                if (headleft >= 0)  optr[headleft]  = (short int) *sptr;
+                sptr++;
+                if (headright >= 0) optr[headright] = (short int) *sptr;
+                sptr++;
+                optr += m_iChannels;
+            }
+            ctr = period_size;
+            optr = output;
+            while (ctr > 0) 
+            {
+                err = snd_pcm_writei(handle, optr, ctr);
+                if (err == -EAGAIN) continue;
+                if (err < 0) 
+                {
+                    if (xrun_recovery(err) < 0) 
+                        qFatal("Write error: %s\n", snd_strerror(err));
+                    break;
+                }
+                optr += err*m_iChannels;
+                ctr -= err;
+            }
         }
         if (output) delete output;
     }
@@ -391,31 +399,31 @@ CSAMPLE *PlayerALSA::prepareBuffer(int count)
     static int ccount = 0;
 
     if (out == 0)
-	out = new CSAMPLE[80000];
+    out = new CSAMPLE[80000];
     sptr = out;
     while (count-- > 0)
     {
-	res = 32768. * sin((phase * 2 * M_PI) / max_phase - M_PI);
-	for (chn = 0; chn < alsa_channels; chn++)
-	{
-	    if (chn == channel)
-		*sptr = res;
-	    else
-		*sptr = 0;
-	    sptr++;
-	}
-	phase += step;
-	if (phase >= max_phase)
-	{
-	    phase -= max_phase;
-	    ccount++;
-	    if (ccount == (3 * 440))
-	    {
-		ccount = 0;
-		channel++;
-		if (channel == alsa_channels) channel = 0;
-	    }
-	}
+        res = 32768. * sin((phase * 2 * M_PI) / max_phase - M_PI);
+        for (chn = 0; chn < alsa_channels; chn++)
+        {
+            if (chn == channel)
+            *sptr = res;
+            else
+            *sptr = 0;
+            sptr++;
+        }
+        phase += step;
+        if (phase >= max_phase)
+        {
+            phase -= max_phase;
+            ccount++;
+            if (ccount == (3 * 440))
+            {
+                ccount = 0;
+                channel++;
+                if (channel == alsa_channels) channel = 0;
+            }
+        }
     }
     return out;
 }
@@ -447,16 +455,16 @@ void PlayerALSA::setDefaults()
     // Set first interfaces to master left
     QStringList::iterator it = interfaces.begin();
     if (*it)
-	m_pConfig->set(ConfigKey("[Soundcard]", "DeviceMasterLeft"), ConfigValue((*it)));
+        m_pConfig->set(ConfigKey("[Soundcard]", "DeviceMasterLeft"), ConfigValue((*it)));
     else
-	m_pConfig->set(ConfigKey("[Soundcard]", "DeviceMasterLeft"), ConfigValue("None"));
-
+        m_pConfig->set(ConfigKey("[Soundcard]", "DeviceMasterLeft"), ConfigValue("None"));
+    
     // Set second interface to master right
     ++it;
     if (*it)
-	m_pConfig->set(ConfigKey("[Soundcard]", "DeviceMasterRight"), ConfigValue((*it)));
+        m_pConfig->set(ConfigKey("[Soundcard]", "DeviceMasterRight"), ConfigValue((*it)));
     else
-	m_pConfig->set(ConfigKey("[Soundcard]", "DeviceMasterRight"), ConfigValue("None"));
+        m_pConfig->set(ConfigKey("[Soundcard]", "DeviceMasterRight"), ConfigValue("None"));
 
     // Set head left and right to none
     m_pConfig->set(ConfigKey("[Soundcard]", "DeviceHeadLeft"), ConfigValue("None"));
@@ -467,10 +475,10 @@ void PlayerALSA::setDefaults()
     it = srates.begin();
     while (*it)
     {
-	m_pConfig->set(ConfigKey("[Soundcard]", "Samplerate"), ConfigValue((*it)));
+        m_pConfig->set(ConfigKey("[Soundcard]", "Samplerate"), ConfigValue((*it)));
         if ((*it).toInt() >= 44100)
-	    break;
-	++it;
+            break;
+        ++it;
     }
 
     // Set currently used latency in config database
@@ -537,10 +545,11 @@ int PlayerALSA::set_hwparams()
         qWarning("Sample format (FLOAT) not available for playback: %s\n", snd_strerror(err));
         qWarning("Falling back to S16");
         err = snd_pcm_hw_params_set_format(handle, hwparams, SND_PCM_FORMAT_S16);
-        if (err < 0) {
-	    qWarning("Sample format (S16) not available for playback: %s\n", snd_strerror(err));
-	    return err;
-	}
+        if (err < 0) 
+        {
+            qWarning("Sample format (S16) not available for playback: %s\n", snd_strerror(err));
+            return err;
+        }
         isformatfloat = false;
     } else {
         isformatfloat = true;
@@ -566,8 +575,8 @@ int PlayerALSA::set_hwparams()
     err = snd_pcm_hw_params_set_channels(handle, hwparams, m_iChannels);
     if (err < 0)
     {
-	qWarning("Channels count (%i) not available for playbacks: %s\n", m_iChannels, snd_strerror(err));
-	return err;
+        qWarning("Channels count (%i) not available for playbacks: %s\n", m_iChannels, snd_strerror(err));
+        return err;
     }
     /* set the stream rate */
 #ifndef PLAYERTEST
@@ -579,13 +588,13 @@ int PlayerALSA::set_hwparams()
     err = snd_pcm_hw_params_set_rate_near(handle, hwparams, &rrate, 0);
     if (err < 0)
     {
-	qWarning("Rate %iHz not available for playback: %s\n", rate, snd_strerror(err));
-	return err;
+        qWarning("Rate %iHz not available for playback: %s\n", rate, snd_strerror(err));
+        return err;
     }
     if (rrate != rate)
     {
-	qWarning("Rate doesn't match (requested %iHz, get %iHz)\n", rate, err);
-	return -EINVAL;
+        qWarning("Rate doesn't match (requested %iHz, get %iHz)\n", rate, err);
+        return -EINVAL;
     }
 
 #ifndef PLAYERTEST
@@ -612,11 +621,10 @@ int PlayerALSA::set_hwparams()
     err = snd_pcm_hw_params_set_buffer_size(handle, hwparams, buffer_size);
     if (err < 0)
     {
-	qWarning("Unable to set buffer size for playback: %s\n", snd_strerror(err));
-	return err;
+        qWarning("Unable to set buffer size for playback: %s\n", snd_strerror(err));
+        return err;
     }
-    qWarning("Buffer %dus [actual %dus] (size: %d)", (int) buffer_time,
-	     (int) (1e6*buffer_size/rrate), buffer_size);
+    qWarning("Buffer %dus [actual %dus] (size: %d)", (int) buffer_time, (int) (1e6*buffer_size/rrate), buffer_size);
 
     /*
      * work out maximum number of periods so that only kiMaxFrameSize is
@@ -630,47 +638,49 @@ int PlayerALSA::set_hwparams()
 
     for (period_no = period_no_start; period_no > 1; period_no--)
     {
-	unsigned int period_time = buffer_time / period_no;
-	qWarning("Period %dus (no: %d)", (int) period_time, period_no);
-
-	int dir = 0;
-        err = snd_pcm_hw_params_test_periods(handle, hwparams, period_no, dir);
-	if (err < 0)
-	{
-	    qWarning("Unable to test periods %i (dir %d) for playback: %s\n", period_no, dir,
-		     snd_strerror(err));
-	} else {
-	    err = snd_pcm_hw_params_set_periods(handle, hwparams, period_no, dir);
-	    if (err < 0)
-	    {
-	        qWarning("Unable to set periods %i for playback: %s\n", period_no, snd_strerror(err));
-	        return err;
-	    }
-	    err = snd_pcm_hw_params_get_period_size(hwparams, &period_size, &dir);
-	    if (err < 0)
-	    {
-	        qWarning("Unable to get period size for playback: %s\n", snd_strerror(err));
-	        return err;
-	    }
-	    qWarning("Period %df, buffer %df", (int) period_size, (int) buffer_size);
-	    break;
-	}
+        unsigned int period_time = buffer_time / period_no;
+        qWarning("Period %dus (no: %d)", (int) period_time, period_no);
+        
+        int dir = 0;
+            err = snd_pcm_hw_params_test_periods(handle, hwparams, period_no, dir);
+        if (err < 0)
+        {
+            qWarning("Unable to test periods %i (dir %d) for playback: %s\n", period_no, dir,
+                    snd_strerror(err));
+        } 
+        else 
+        {
+            err = snd_pcm_hw_params_set_periods(handle, hwparams, period_no, dir);
+            if (err < 0)
+            {
+                qWarning("Unable to set periods %i for playback: %s\n", period_no, snd_strerror(err));
+                return err;
+            }
+            err = snd_pcm_hw_params_get_period_size(hwparams, &period_size, &dir);
+            if (err < 0)
+            {
+                qWarning("Unable to get period size for playback: %s\n", snd_strerror(err));
+                return err;
+            }
+            qWarning("Period %df, buffer %df", (int) period_size, (int) buffer_size);
+            break;
+        }
     }
     
     if (period_no == 1)
-	return -1;
+        return -1;
 
     /* write the parameters to device */
     err = snd_pcm_hw_params(handle, hwparams);
     if (err < 0)
     {
-	qWarning("Unable to set hw params for playback: %s\n", snd_strerror(err));
-	return err;
+        qWarning("Unable to set hw params for playback: %s\n", snd_strerror(err));
+        return err;
     }
     qWarning("Rate: %d, buf %df (%dus), per %df (%dus)", rrate,
-	     (int) buffer_size, (int) (buffer_size / (rrate * 1e-6)),
-	     (int) period_size, (int) (period_size / (rrate * 1e-6)));
-
+            (int) buffer_size, (int) (buffer_size / (rrate * 1e-6)),
+            (int) period_size, (int) (period_size / (rrate * 1e-6)));
+    
     m_iBufferSize = buffer_size; // send back latency value
     return 0;
 }
@@ -683,36 +693,36 @@ int PlayerALSA::set_swparams()
     err = snd_pcm_sw_params_current(handle, swparams);
     if (err < 0)
     {
-	qWarning("Unable to determine current swparams for playback: %s\n", snd_strerror(err));
-	return err;
+        qWarning("Unable to determine current swparams for playback: %s\n", snd_strerror(err));
+        return err;
     }
     /* start the transfer when the buffer is full */
     err = snd_pcm_sw_params_set_start_threshold(handle, swparams, (buffer_size/period_size)*period_size);
     if (err < 0)
     {
-	qWarning("Unable to set start threshold mode for playback: %s\n", snd_strerror(err));
-	return err;
+        qWarning("Unable to set start threshold mode for playback: %s\n", snd_strerror(err));
+        return err;
     }
     /* allow the transfer when at least period_size samples can be processed */
     err = snd_pcm_sw_params_set_avail_min(handle, swparams, period_size);
     if (err < 0)
     {
-	qWarning("Unable to set avail min for playback: %s\n", snd_strerror(err));
-	return err;
+        qWarning("Unable to set avail min for playback: %s\n", snd_strerror(err));
+        return err;
     }
     /* align all transfers to 1 sample */
     err = snd_pcm_sw_params_set_xfer_align(handle, swparams, 1);
     if (err < 0)
     {
-	qWarning("Unable to set transfer align for playback: %s\n", snd_strerror(err));
-	return err;
+        qWarning("Unable to set transfer align for playback: %s\n", snd_strerror(err));
+        return err;
     }
     /* write the parameters to the playback device */
     err = snd_pcm_sw_params(handle, swparams);
     if (err < 0)
     {
-	qWarning("Unable to set sw params for playback: %s\n", snd_strerror(err));
-	return err;
+        qWarning("Unable to set sw params for playback: %s\n", snd_strerror(err));
+        return err;
     }
     return 0;
 }

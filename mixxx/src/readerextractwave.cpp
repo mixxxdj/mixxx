@@ -342,6 +342,7 @@ void ReaderExtractWave::getchunk(CSAMPLE rate)
 
 #ifdef EXTRACT
     // Do pre-processing...
+    
 //    qDebug("curr %i, start %i, end %i",chunkCurr,chunkStart,chunkEnd);
     readerhfc->processChunk(chunkCurr, chunkStart, chunkEnd, backwards, filepos_start);
     readerbeat->processChunk(chunkCurr, chunkStart, chunkEnd, backwards, filepos_start);

@@ -21,13 +21,13 @@
 #include "engineobject.h"
 
 class EnginePregain;
+class EngineBuffer;
 class EngineFilterBlock;
 class EngineClipping;
 class EngineVolume;
 class EngineFlanger;
 class EngineVuMeter;
-class EngineRealSearch;
-class EngineBuffer;
+class EngineTemporal;
 class ControlPushButton;
 
 /**
@@ -37,19 +37,22 @@ class ControlPushButton;
 class EngineChannel : public EngineObject  
 {
 public:
-    EngineChannel(const char *group, EngineBuffer *pBuffer);
+    EngineChannel(const char *group);
     ~EngineChannel();
     void notify(double) {};
     ControlPushButton *getPFL();
+    void setVisual(EngineBuffer *pEngineBuffer);
     void process(const CSAMPLE *pIn, const CSAMPLE *pOut, const int iBufferSize);
 
 private:
+    EngineTemporal *m_pEngineTemporal;
+    EngineVolume *m_pEngineTemporalVolume;
+
     EnginePregain *pregain;
     EngineFilterBlock *filter;
     EngineClipping *clipping;
     EngineVolume *volume;
     EngineVuMeter *vumeter;
-    EngineRealSearch *m_pRealSearch;
     ControlPushButton *pfl;
 };
 

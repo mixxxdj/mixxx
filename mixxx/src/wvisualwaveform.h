@@ -80,7 +80,7 @@ protected:
 
     QPtrList <VisualChannel> m_qlList;
     /** Colors */
-    QColor colorBeat, colorSignal, colorHfc, colorMarker, colorFisheye, colorBack;
+    QColor colorBeat, colorSignal, colorHfc, colorMarker, colorFisheye, colorBack, colorCue;
 };
 
 #endif

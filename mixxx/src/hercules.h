@@ -27,9 +27,14 @@
   *@author Tue Haste Andersen
   */
 
+
+const QString kqInputMappingHerculesStandard = "Standard";
+const QString kqInputMappingHerculesInBeat = "InBeat";
+
 //const int kiPowermateBufferSize = 32;
 //const int kiPowermateKnobIntegralMaxLen = 25;
 class ControlObject;
+class ControlObjectThread;
 class Rotary;
 
 class Hercules : public Input
@@ -37,12 +42,19 @@ class Hercules : public Input
 public:
     Hercules();
     ~Hercules();
+    /** Return a list of available mappings */
+    static QStringList getMappings();
+    /** Select mapping */
+    virtual void selectMapping(QString qMapping);
     bool opendev(QString) { return opendev(); }
     virtual bool opendev() = 0;
-    void led();
+    void led(); //int iLedNo, bool bOn);
+
 protected:
+    /** Change jog mode */
+    void changeJogMode(int iLeftFxMode=0, int iRightFxMode=0);
     /** Change the led */
-    virtual void led_write(int static_brightness, int speed, int table, int asleep, int awake) = 0;
+    //virtual void led_write(int static_brightness, int speed, int table, int asleep, int awake) = 0;
     /** Instantiate number. Used in the calculation of MIDI controller id's */
     int m_iInstNo;
     /** Pointer to semaphore used to control led */
@@ -63,7 +75,21 @@ protected:
                   *m_pControlObjectRightBtnAutobeat, *m_pControlObjectRightBtnMasterTempo, *m_pControlObjectRightBtn1,
                   *m_pControlObjectRightBtn2, *m_pControlObjectRightBtn3, *m_pControlObjectRightBtnFx;
     ControlObject *m_pControlObjectCrossfade;   
+    ControlObjectThread *m_pControlObjectLeftBtnPlayProxy, *m_pControlObjectRightBtnPlayProxy,
+                        *m_pControlObjectLeftBtnLoopProxy, *m_pControlObjectRightBtnLoopProxy;
     Rotary *m_pRotaryLeft, *m_pRotaryRight; 
+    ControlObject *m_pControlObjectLeftBeatLoop, *m_pControlObjectRightBeatLoop;
+
+    QString m_qMapping;
+
+
+    // Various states maintained locally in this object:
+    int m_iLeftFxMode, m_iRightFxMode;
+    bool m_bPlayLeft, m_bPlayRight, m_bCueLeft, m_bCueRight, m_bLoopLeft, m_bLoopRight, 
+         m_bMasterTempoLeft, m_bMasterTempoRight, m_bHeadphoneLeft, m_bHeadphoneRight,
+         m_bSyncLeft, m_bSyncRight;
+
+    double m_dLeftVolumeOld, m_dRightVolumeOld;
 };
 
 #endif

@@ -19,7 +19,7 @@
 #include <qdir.h>
 #include <unistd.h>
 
-MidiObjectOSS::MidiObjectOSS(ConfigObject<ConfigValueMidi> *c, QString device) : MidiObject(c, device)
+MidiObjectOSS::MidiObjectOSS(QString device) : MidiObject(device)
 {
     // Allocate buffer
     buffer = new unsigned char[4096];

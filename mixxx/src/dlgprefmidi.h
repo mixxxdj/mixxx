@@ -25,6 +25,8 @@
 class MidiObject;
 class PowerMate;
 class Mouse;
+class Hercules;
+class Joystick;
 class QProgressDialog;
 class QTimer;
 
@@ -35,9 +37,7 @@ class QTimer;
 class DlgPrefMidi : public DlgPrefMidiDlg  {
     Q_OBJECT
 public:
-    DlgPrefMidi(QWidget *parent, MidiObject *pMidi, ConfigObject<ConfigValue> *pConfig,
-                ConfigObject<ConfigValueMidi> *pMidiConfig,
-                PowerMate *pPowerMate1, PowerMate *pPowerMate2);
+    DlgPrefMidi(QWidget *parent, ConfigObject<ConfigValue> *pConfig);
     ~DlgPrefMidi();
 public slots:
     void slotUpdate();
@@ -50,12 +50,20 @@ public slots:
 
 signals:
     void apply();
+
 private:
+/*    void setupPowerMates();
+    void setupMouse();
+    void setupJoystick();
+    void setupHercules();*/
+    
     MidiObject *m_pMidi;
     ConfigObject<ConfigValue> *m_pConfig;
     ConfigObject<ConfigValueMidi> *m_pMidiConfig;
     PowerMate *m_pPowerMate1, *m_pPowerMate2;
     Mouse *m_pMouse1, *m_pMouse2;
+    Hercules *m_pHercules;
+    Joystick *m_pJoystick;
     QProgressDialog *m_pProgressDialog;
     QTimer *m_pTimer;
     int m_iProgress;

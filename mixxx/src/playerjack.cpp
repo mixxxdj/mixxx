@@ -188,6 +188,9 @@ bool PlayerJack::open()
         }
     }
 
+    qDebug("channels %i, latency %i",m_iChannels,m_iBufferSize);
+    
+    
     // Update the config database with the used sample rate
     QStringList srates = getSampleRates();
     QStringList::iterator it = srates.begin();
@@ -196,7 +199,7 @@ bool PlayerJack::open()
         m_pConfig->set(ConfigKey("[Soundcard]","Samplerate"),ConfigValue((*it)));
 
         // Set currently used latency in config database
-        int msec = (int)(1000.*(float)m_iBufferSize/((float)(*it).toInt()*4));
+        int msec = (int)(1000.*(float)m_iBufferSize/((float)(*it).toInt()));
         m_pConfig->set(ConfigKey("[Soundcard]","Latency"), ConfigValue(msec));
     }
 
@@ -292,7 +295,7 @@ QString PlayerJack::getSoundApi()
 
 int PlayerJack::callbackProcess(int iBufferSize)
 {
-    //qDebug("master %i, slave %i",chMaster, chHead);
+//     qDebug("buffer size %i",iBufferSize);
     jack_default_audio_sample_t *out_ml = (jack_default_audio_sample_t *)jack_port_get_buffer(output_master_left, iBufferSize);
     jack_default_audio_sample_t *out_mr = (jack_default_audio_sample_t *)jack_port_get_buffer(output_master_right, iBufferSize);
     jack_default_audio_sample_t *out_hl = (jack_default_audio_sample_t *)jack_port_get_buffer(output_head_left, iBufferSize);
@@ -359,6 +362,3 @@ void jackBufferSize(jack_nframes_t nframes, void *arg)
 {
     ((PlayerJack *)arg)->callbackSetBufferSize(nframes);
 }
-
-
-

@@ -27,8 +27,16 @@ class Mouse : public Input
 public:
     Mouse();
     ~Mouse();
+    static QStringList getMappings();
+    void selectMapping(QString mapping);
     static void destroyAll();
     static QStringList getDeviceList();
+    /** Start calibration measurement */
+    void calibrateStart();
+    /** End calibration measurement */
+    double calibrateEnd();
+    /** Set calibration */
+    void setCalibration(double c);
 
 protected:
     static QPtrList<Mouse> m_sqInstanceList;

@@ -46,11 +46,11 @@ void WVuMeter::resetPositions()
 {
     if (m_pPixmapBack)
     {
-        delete m_pPixmapBack;
+        WPixmapStore::deletePixmap(m_pPixmapBack);
         m_pPixmapBack = 0;
-        delete m_pPixmapVu;
+        WPixmapStore::deletePixmap(m_pPixmapVu);
         m_pPixmapVu = 0;
-        delete m_pPixmapBuffer;
+        WPixmapStore::deletePixmap(m_pPixmapBuffer);
         m_pPixmapBuffer = 0;
     }
 }

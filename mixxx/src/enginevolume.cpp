@@ -39,7 +39,11 @@ void EngineVolume::process(const CSAMPLE *pIn, const CSAMPLE *pOut, const int iB
     if (volume == 1.)
     {
         if (pIn!=pOut)
-            memcpy(pOutput, pIn, sizeof(CSAMPLE) * iBufferSize);
+        {
+            for (int i=0; i<iBufferSize; ++i)
+                pOutput[i] = pIn[i]; 
+            //memcpy(pOutput, pIn, sizeof(CSAMPLE) * iBufferSize);
+        }
     }
     else
     {

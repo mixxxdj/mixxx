@@ -27,7 +27,6 @@
 #include "readerextractbeat.h"
 #include "readerextractwave.h"
 #include "enginebufferscalest.h"
-#include "powermate.h"
 #include "wvisualwaveform.h"
 #include "visual/visualchannel.h"
 #include "mathstuff.h"
@@ -41,10 +40,9 @@ double EngineBuffer::m_dTempSmall = 0.001;
 double EngineBuffer::m_dPerm = 0.01;
 double EngineBuffer::m_dPermSmall = 0.001;
 
-EngineBuffer::EngineBuffer(PowerMate *_powermate, const char *_group)
+EngineBuffer::EngineBuffer(const char *_group)
 {
     group = _group;
-    powermate = _powermate;
 
     m_pOtherEngineBuffer = 0;
 
@@ -52,10 +50,11 @@ EngineBuffer::EngineBuffer(PowerMate *_powermate, const char *_group)
 
     m_dAbsPlaypos = 0.;
     m_dBufferPlaypos = 0.;
-
-    // Set up temporary seek buffer
-    m_pTempSeekBuffer = new float[100000];
-    m_dTempSeekFilePos = 0.;
+    m_dAbsStartpos = 0.;
+    
+    // Set up temporary buffer for seeking and looping
+    m_pTempBuffer = new float[kiTempLength];
+    m_dTempFilePos = 0.;
     m_dSeekFilePos = 0.;
     m_bSeekBeat = false;
 
@@ -93,6 +92,8 @@ EngineBuffer::EngineBuffer(PowerMate *_powermate, const char *_group)
 
     // Playback rate slider
     rateSlider = new ControlPotmeter(ConfigKey(group, "rate"), -1.f, 1.f);
+    
+    m_pMasterRate = ControlObject::getControl(ConfigKey("[Master]", "rate"));
 
     // Search rate. Rate used when searching in sound. This overrules the playback rate
     m_pRateSearch = new ControlPotmeter(ConfigKey(group, "rateSearch"), -300., 300.); 
@@ -165,6 +166,15 @@ EngineBuffer::EngineBuffer(PowerMate *_powermate, const char *_group)
     // Audio beat mark toggle
     audioBeatMark = new ControlPushButton(ConfigKey(group, "audiobeatmarks"));
 
+    // Loop button
+    buttonLoop = new ControlPushButton(ConfigKey(group, "loop"), true);
+    m_pControlObjectBeatLoop = new ControlObject(ConfigKey(group, "beatloop"));
+        
+    m_bLoopActive = false;
+    m_bLoopMeasureTime = false;
+    connect(buttonLoop, SIGNAL(valueChanged(double)), this, SLOT(slotControlLoop(double)));
+
+    
     m_pEngineBufferCue = new EngineBufferCue(group, this);
     
     // Control file changed
@@ -197,15 +207,17 @@ EngineBuffer::EngineBuffer(PowerMate *_powermate, const char *_group)
     // Used in update of playpos slider
     m_iSamplesCalculated = 0;
 
+    m_pVisualChannel = 0;
     reader->start();
 }
 
 EngineBuffer::~EngineBuffer()
 {
-    delete [] m_pTempSeekBuffer;
+    delete [] m_pTempBuffer;
     delete playButton;
     delete wheel;
     delete m_pControlScratch;
+    delete m_pControlObjectBeatLoop;
     delete rateSlider;
     delete m_pScale;
     delete m_pTrackEnd;
@@ -232,6 +244,11 @@ double EngineBuffer::getAbsPlaypos()
     return m_dAbsPlaypos;
 }
 
+double EngineBuffer::getAbsStartpos()
+{
+    return m_dAbsStartpos;
+}
+
 void EngineBuffer::setPitchIndpTimeStretch(bool b)
 {
     // Change sound scale mode
@@ -240,13 +257,12 @@ void EngineBuffer::setPitchIndpTimeStretch(bool b)
 
 void EngineBuffer::setVisual(WVisualWaveform *pVisualWaveform)
 {
-    VisualChannel *pVisualChannel = 0;
     // Try setting up visuals
     if (pVisualWaveform)
     {
         // Add buffer as a visual channel
-        pVisualChannel = pVisualWaveform->add(group);
-        reader->addVisual(pVisualChannel);
+        m_pVisualChannel = pVisualWaveform->add(group);
+        reader->addVisual(m_pVisualChannel);
     }
 }
 
@@ -316,7 +332,7 @@ void EngineBuffer::setOtherEngineBuffer(EngineBuffer *pOtherEngineBuffer)
 
 void EngineBuffer::setNewPlaypos(double newpos)
 {
-    qDebug("engine new pos %f",newpos);
+    //qDebug("engine new pos %f",newpos);
     
     filepos_play = newpos;
     bufferpos_play = 0.;
@@ -375,7 +391,14 @@ void EngineBuffer::setPermSmall(double v)
 void EngineBuffer::slotControlSeek(double change, bool bBeatSync)
 {
 //     qDebug("seeking... %f",change);
-
+    
+    // If seeking, and in loop mode, disable loop
+    if (buttonLoop->get())
+    {
+        buttonLoop->set(0.);
+        slotControlLoop(0.);
+    }
+    
     // Find new playpos
     double new_playpos = round(change*file_length_old);
     if (new_playpos > file_length_old)
@@ -384,33 +407,33 @@ void EngineBuffer::slotControlSeek(double change, bool bBeatSync)
         new_playpos = 0.;
 
     // Seek using crossfade (and possible beat syncronized?)
-    if (0 && bBeatSync)
+    if (bBeatSync && m_pControlObjectBeatLoop->get() && playButton->get())
     {
         // Copy current buffer to temporary playback buffer
         // Store file index for start position of temporary buffer
         int pos = (int)bufferpos_play;
-        for (int i=0; i<100000; ++i)
+        for (int i=0; i<kiTempLength; ++i)
         {
-            m_pTempSeekBuffer[i] = m_pWaveBuffer[pos++];
+            m_pTempBuffer[i] = m_pWaveBuffer[pos++];
             pos = pos%READBUFFERSIZE;
         }
-        m_dTempSeekFilePos = filepos_play;
+        m_dTempFilePos = filepos_play;
         
         // Check if we have reliable beat information. If that is the case, perform beat syncronized seek
         if (m_dBeatFirst>=0. && m_dBeatInterval>0.)
         {
-            qDebug("sync, beat first %f",m_dBeatFirst);
-            qDebug("interval %f",m_dBeatInterval);
+            //qDebug("sync, beat first %f",m_dBeatFirst);
+            //qDebug("interval %f",m_dBeatInterval);
     
             // Distance to next beat from current playpos
-            double dBeatDistance = (m_dBeatFirst + m_dBeatInterval*ceil((filepos_play-m_dBeatFirst)/m_dBeatInterval))-filepos_play;
+            double dBeatDistance = (m_dBeatFirst + m_dBeatInterval*4.*ceil((filepos_play-m_dBeatFirst)/(m_dBeatInterval*4.)))-filepos_play;
     
-            qDebug("playpos %f, new play pos %f, beat dist %f",filepos_play,new_playpos,dBeatDistance);
+            //qDebug("playpos %f, new play pos %f, beat dist %f",filepos_play,new_playpos,dBeatDistance);
     
             // Adjust new seek position to beat syncronious with current play position
-            new_playpos = (m_dBeatFirst - dBeatDistance + m_dBeatInterval*ceil((new_playpos-m_dBeatFirst)/m_dBeatInterval));
+            new_playpos = (m_dBeatFirst - dBeatDistance + m_dBeatInterval*4.*ceil((new_playpos-m_dBeatFirst)/(m_dBeatInterval*4.)));
     
-            qDebug("adj new play pos %f",new_playpos);    
+            //qDebug("adj new play pos %f",new_playpos);    
         }
         
         // Ensure new playpos is in valid range
@@ -432,7 +455,7 @@ void EngineBuffer::slotControlSeek(double change, bool bBeatSync)
 
     setNewPlaypos(new_playpos);
 
-    if (0 && bBeatSync)
+    if (bBeatSync && m_pControlObjectBeatLoop->get())
     {    
         m_bSeekBeat = true;
         m_bSeekCrossfade = false;
@@ -442,6 +465,64 @@ void EngineBuffer::slotControlSeek(double change, bool bBeatSync)
 void EngineBuffer::slotControlSeekAbs(double abs, bool bBeatSync)
 {
     slotControlSeek(abs/file_length_old, bBeatSync);
+}
+
+void EngineBuffer::slotControlLoop(double v)
+{
+    if (m_pControlObjectBeatLoop->get())
+    {
+        // Automatic beat loop
+    
+        if (!m_bLoopActive && v && m_dBeatInterval>0.)
+        {
+            // Loop length include one beat before the actual loop and a lot of samples after 
+            m_dLoopLength = roundf(m_dBeatInterval*4.);
+            if (!even(m_dLoopLength))
+                m_dLoopLength++;
+        
+            if (m_dLoopLength>(double)kiTempLength)
+                m_dLoopLength = (double)kiTempLength;
+                
+            // Loop starting position
+            m_dTempFilePos = filepos_play;
+        
+            m_bLoopActive = false;
+        }
+        else if (v==0. && m_bLoopActive)
+        {
+            m_pScale->clear();
+            m_bLoopActive = false;
+        }
+    }
+    else
+    {
+        // Manual loop
+        if (!m_bLoopActive && v)
+        {
+            if (!m_bLoopMeasureTime)
+            {
+                // Loop starting position
+                m_dTempFilePos = filepos_play;
+                m_bLoopMeasureTime = true;        
+            }
+            else
+            {
+                m_dLoopLength = round(filepos_play-m_dTempFilePos);
+                if (!even(m_dLoopLength))
+                    m_dLoopLength++;
+                if (m_dLoopLength>(double)kiTempLength)
+                    m_dLoopLength = (double)kiTempLength;
+                m_bLoopMeasureTime = false;
+                //qDebug("start %f, length %f",m_dTempFilePos, m_dLoopLength);
+            }
+        }
+        else if (v==0. && m_bLoopActive)
+        {
+            m_pScale->clear();
+            m_bLoopActive = false;
+            m_bLoopMeasureTime = false;
+        }
+    }
 }
 
 void EngineBuffer::slotControlPlay(double)
@@ -468,7 +549,7 @@ void EngineBuffer::slotSetBpm(double bpm)
         CSAMPLE *bpmBuffer = beat->getBpmPtr();
         double filebpm = bpmBuffer[(int)(bufferpos_play*(beat->getBufferSize()/READCHUNKSIZE))];
 
-        qDebug("user %f, file %f, change %f",bpm, filebpm, bpm/filebpm);
+        //qDebug("user %f, file %f, change %f",bpm, filebpm, bpm/filebpm);
 
         // Change rate to match new bpm
         rateSlider->set(bpm/filebpm-1.);
@@ -607,10 +688,10 @@ void EngineBuffer::adjustPhase()
 
     //filepos_play += fOtherDistance-fThisDistance;
     bufferpos_play = bufferpos_play+fOtherDistance-fThisDistance;
-    if (bufferpos_play>(double)READBUFFERSIZE)
-    {
+    while (bufferpos_play<0.)
+        bufferpos_play += (double)READBUFFERSIZE;
+    while (bufferpos_play>(double)READBUFFERSIZE)
         bufferpos_play -= (double)READBUFFERSIZE;
-    }
 
     //qDebug("buffer pos %f, file pos %f",bufferpos_play,filepos_play);
 }
@@ -629,6 +710,11 @@ void EngineBuffer::slotControlFastBack(double v)
         m_pRateSearch->set(0.);
     else
         m_pRateSearch->set(-4.);
+}
+
+VisualChannel *EngineBuffer::getVisualChannel()
+{
+    return m_pVisualChannel;
 }
 
 void EngineBuffer::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBufferSize)
@@ -687,6 +773,7 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBuff
             dir = -1.;
 
         double baserate = ((double)file_srate_old/(double)getPlaySrate());
+//        qDebug("baserate %f",baserate);
         
         /*
         if (fwdButton->get()==1.)
@@ -700,6 +787,8 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBuff
         {
             rate=wheel->get()+(1.+rateSlider->get()*m_pRateRange->get()*m_pRateDir->get())*baserate;
 
+            //qDebug("wheel %f, slider %f, range %f, dir %f", wheel->get(),rateSlider->get(),m_pRateRange->get(),m_pRateDir->get());
+            
             // Apply scratch
             if (m_pControlScratch->get()<0.)
                 rate = rate * (m_pControlScratch->get()-1.);
@@ -708,10 +797,12 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBuff
         }
         else
         {
-            rate=(wheel->get()+m_pControlScratch->get())*baserate; //*10.;
+            rate=(wheel->get()*10.+m_pControlScratch->get())*baserate; //*10.;
         }
         
-        rate *= dir*bpmrate;
+        rate *= dir*bpmrate*(1.+m_pMasterRate->get()*m_pRateRange->get());
+        
+        //qDebug("bpmrate %f, master %f",bpmrate,m_pMasterRate->get());
         
         // If searching in progress...
         if (m_pRateSearch->get()!=0.)
@@ -833,7 +924,7 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBuff
             // Check if we are at the boundaries of the file
             if ((filepos_play<0. && backwards) || (filepos_play>file_length_old && !backwards))
             {
-                qDebug("buffer out of range, filepos_play %f, length %li", filepos_play, file_length_old);
+                //qDebug("buffer out of range, filepos_play %f, length %li", filepos_play, file_length_old);
 
                 rampOut(pOut, iBufferSize);
                 bCurBufferPaused = true;
@@ -844,12 +935,88 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBuff
                 CSAMPLE *output;
                 if (!m_bSeekBeat)
                 {
-                    // Perform scaling of Reader buffer into buffer. Even if we are in the process of doing a beat
-                    // syncronious seek, we do scaling of the playpos buffer here, to advance the playpos correctly.
-                    output = m_pScale->scale(bufferpos_play, iBufferSize);
-                    idx = m_pScale->getNewPlaypos();
-                    // qDebug("idx %f, buffer pos %f, play %f", idx, bufferpos_play, filepos_play);
-                    // If we are doing a beat syncronious seek...
+                    // Are we looping?
+                    if (buttonLoop->get() && !m_bLoopActive && !m_bLoopMeasureTime)
+                    {
+                        // If all loop samples are in the current buffer, copy them to temporary playback buffer
+//                         qDebug("temp file pos %f, loop len %f, added %f, filepos end %i",m_dTempFilePos,m_dLoopLength,m_dTempFilePos+m_dLoopLength,filepos_end);
+                        if (readerinfo && m_dTempFilePos+m_dLoopLength<(double)filepos_end)
+                        {
+                            // Copy loop
+                            int pos = (int)(bufferpos_play-(filepos_play-m_dTempFilePos));
+                            while (pos<0)
+                                pos += READBUFFERSIZE;
+                            for (int i=0; i<m_dLoopLength; ++i)
+                            {
+                                m_pTempBuffer[i] = m_pWaveBuffer[pos];
+                                pos = (pos+1)%READBUFFERSIZE;
+                            }
+                            m_pScale->clear();
+                            m_bLoopActive = true;
+                        }
+                    }
+                    
+                    if (buttonLoop->get() && m_bLoopActive)   
+                    {                    
+                        // Current position in temporaray buffer
+                        double dTempPlayPos = filepos_play-m_dTempFilePos;
+                    
+//                         qDebug("file playpos %f, loop file start %f, temp buffer pos %f, loop length %f",
+//                                 filepos_play, m_dTempFilePos,dTempPlayPos, m_dLoopLength);
+                                
+                        //Q_ASSERT(dTempPlayPos>=0. && dTempPlayPos<m_dLoopLength);
+                        
+                        while (dTempPlayPos>m_dLoopLength)
+                            dTempPlayPos -= m_dLoopLength;
+                        while (dTempPlayPos<0.)
+                            dTempPlayPos += m_dLoopLength;
+
+                        // Perform scaling of the temporary buffer into buffer
+                        int request = iBufferSize;
+                        
+                        //Q_ASSERT(request>0 && request<=iBufferSize);
+                        
+                        output = m_pScale->scale(dTempPlayPos, request, m_pTempBuffer, m_dLoopLength);
+                        
+                        double dNewPos = m_pScale->getNewPlaypos();
+                        if (dNewPos>=m_dLoopLength)
+                            dNewPos -= m_dLoopLength;
+                        
+                        idx = bufferpos_play + (dNewPos-dTempPlayPos);
+                        
+//                         qDebug("idx %f",idx);
+                        
+//                         int i;
+//                         for (i=0; i<request; i++)
+//                             pOutput[i] = output[i];
+                        
+                            /*
+                        if (request<iBufferSize)
+                        {
+                            
+                            output = m_pScale->scale(0, iBufferSize-request, m_pTempBuffer, m_dLoopLength);
+                        
+                            for (i=request; i<iBufferSize; i++)
+                                pOutput[i] = output[i-request];
+                        
+                            idx -= m_dLoopLength;
+                        }                                                 
+                              */                   
+                        
+                                                 
+                                                 
+//                         output = m_pScale->scale(dTempCurBufferPlayPos, iBufferSize, m_pTempBuffer, 100000);
+                        // "Correctly" advance playpos
+//                         idx = bufferpos_play + (m_pScale->getNewPlaypos()-dTempCurBufferPlayPos);
+                    }
+                    else
+                    {
+                    
+                        // Perform scaling of Reader buffer into buffer. 
+                        output = m_pScale->scale(bufferpos_play, iBufferSize);
+                        idx = m_pScale->getNewPlaypos();
+                        // qDebug("idx %f, buffer pos %f, play %f", idx, bufferpos_play, filepos_play);
+                    }
                 }
                 else
                 {
@@ -858,8 +1025,10 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBuff
                     {
                         m_bSeekBeat = false;
 
-                        qDebug("seek & crossfading done, play %f, cross end %f",filepos_play, m_dSeekCrossfadeEndFilePos);
+                        //qDebug("seek & crossfading done, play %f, cross end %f",filepos_play, m_dSeekCrossfadeEndFilePos);
                         
+                        // Even if we are in the process of doing a beat
+                        // syncronious seek, we do scaling of the playpos buffer here, to advance the playpos correctly.
                         output = m_pScale->scale(bufferpos_play, iBufferSize);
                         idx = m_pScale->getNewPlaypos();
 
@@ -871,17 +1040,18 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBuff
                         // Current play position in temporary buffer
                         double dTempCurBufferPlayPos = filepos_play-m_dSeekFilePos;
 
+                        // Do the crossfade and set number of buffers before we should switch to the non-temporary
+                        // buffer
+                        double dCrossfade = m_dBeatInterval/4.;
+                        if (dCrossfade==0)
+                            dCrossfade = 22050;
+                        
                         // Check if enough data has been read from disk, to do the crossfade in the temporary buffer
-                        if (readerinfo && filepos_play<filepos_end && !m_bSeekCrossfade)
+                        if (readerinfo && filepos_play<filepos_end-dCrossfade && !m_bSeekCrossfade)
                         {
 //                             qDebug("*play %f, end %i", filepos_play, (int)filepos_end);
-                             qDebug("Doing crossfade...");
+                            // qDebug("Doing crossfade...");
 
-                            // Do the crossfade and set number of buffers before we should switch to the non-temporary
-                            // buffer
-                            double dCrossfade = m_dBeatInterval;
-                            if (dCrossfade==0)
-                                dCrossfade = 22050;
                                 
                             // Distance to next beat from current play position
                             double dSeekStartCrossfade = (m_dBeatFirst + dCrossfade*ceil((filepos_play-m_dBeatFirst)/dCrossfade)) - filepos_play;
@@ -895,13 +1065,15 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBuff
                             // Do crossfade in temporary buffer
                             for (double i=0.; i<ceil(dCrossfade); ++i)
                             {
-                                m_pTempSeekBuffer[(int)(i+dTempCurBufferPlayPos+dSeekStartCrossfade)] = ((dCrossfade-i)/dCrossfade)*m_pTempSeekBuffer[(int)(i+dTempCurBufferPlayPos+dSeekStartCrossfade)] +
+                                m_pTempBuffer[(int)(i+dTempCurBufferPlayPos+dSeekStartCrossfade)] = ((dCrossfade-i)/dCrossfade)*m_pTempBuffer[(int)(i+dTempCurBufferPlayPos+dSeekStartCrossfade)] +
                                                                                                         (i/dCrossfade)*m_pWaveBuffer[(int)(i+bufferpos_play+dSeekStartCrossfade)];
+                                //qDebug("old %f*%f, new %f*%f", ((dCrossfade-i)/dCrossfade),m_pTempSeekBuffer[(int)(i+dTempCurBufferPlayPos+dSeekStartCrossfade)],
+                                //                               (i/dCrossfade)             ,m_pWaveBuffer[(int)(i+bufferpos_play+dSeekStartCrossfade)]);
                             }
                             m_bSeekCrossfade = true;
                         }
                         // Perform scaling of the temporary buffer into buffer
-                        output = m_pScale->scale(dTempCurBufferPlayPos, iBufferSize, m_pTempSeekBuffer, 100000);
+                        output = m_pScale->scale(dTempCurBufferPlayPos, iBufferSize, m_pTempBuffer, kiTempLength);
                         
                         // "Correctly" advance playpos
                         idx = bufferpos_play + (m_pScale->getNewPlaypos()-dTempCurBufferPlayPos);
@@ -911,9 +1083,12 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBuff
                 }
 
                 int i;
-                for (i=0; i<iBufferSize; i++)
-                    pOutput[i] = output[i];
-
+//                 if (!buttonLoop->get())
+                {
+                    for (i=0; i<iBufferSize; i++)
+                        pOutput[i] = output[i];
+                }
+                
                 // If a beat occours in current buffer mark it by led or in audio
                 // This code currently only works in forward playback.
                 ReaderExtractBeat *readerbeat = reader->getBeatPtr();
@@ -947,13 +1122,13 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBuff
                                     pOutput[j] = 30000.;
                                 m_iBeatMarkSamplesLeft = max(0,audioBeatMarkLen-(to-from));
 
-                                qDebug("audio beat mark");
+                                //qDebug("audio beat mark");
                                 //qDebug("mark %i: %i-%i", i2/chunkSizeDiff, (int)max(0,i-bufferpos_play),(int)min(i-bufferpos_play+audioBeatMarkLen, idx));
                             }
 #ifdef __UNIX__
                             // PowerMate led
-                            if (powermate!=0)
-                                powermate->led();
+//                            if (powermate!=0)
+//                                 powermate->led();
 #endif
                         }
                     }
@@ -1001,26 +1176,28 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBuff
             // Part of this if condition is commented out to ensure that more block is
             // loaded at the end of an file to fill the buffer with zeros
 
-            if (filepos_play>filepos_end || filepos_play<filepos_start)
+            if (!m_bLoopActive)
             {
-//                 qDebug("wake seek play %f, start %i, end %i",filepos_play, filepos_start, filepos_end);
-
-                // Ensure sane operation during too-fast-for-machine forward:
-                //reader->requestSeek(filepos_play);
-
-                reader->wake();
+                if (filepos_play>filepos_end || filepos_play<filepos_start)
+                {
+    //                 qDebug("wake seek play %f, start %i, end %i",filepos_play, filepos_start, filepos_end);
+    
+                    // Ensure sane operation during too-fast-for-machine forward:
+                    //reader->requestSeek(filepos_play);
+    
+                    reader->wake();
+                }
+                else if ((filepos_end - filepos_play < READCHUNKSIZE*(READCHUNK_NO/2-1)))
+                {
+    //                 qDebug("wake fwd play %f, start %i, end %i",filepos_play, filepos_start, filepos_end);
+                    reader->wake();
+                }
+                else if (fabs(filepos_play-filepos_start)<(float)(READCHUNKSIZE*(READCHUNK_NO/2-1)))
+                {
+                    //qDebug("wake back");
+                    reader->wake();
+                }
             }
-            else if ((filepos_end - filepos_play < READCHUNKSIZE*(READCHUNK_NO/2-1)))
-            {
-//                 qDebug("wake fwd play %f, start %i, end %i",filepos_play, filepos_start, filepos_end);
-                reader->wake();
-            }
-            else if (fabs(filepos_play-filepos_start)<(float)(READCHUNKSIZE*(READCHUNK_NO/2-1)))
-            {
-                //qDebug("wake back");
-                reader->wake();
-            }
-
 
 
             //
@@ -1054,6 +1231,7 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBuff
             {
                 m_dBufferPlaypos = bufferpos_play;
                 m_dAbsPlaypos = filepos_play;
+                m_dAbsStartpos = filepos_start;
                 m_qPlayposMutex.unlock();
             }
         }
@@ -1069,17 +1247,17 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBuff
             // If end of track mode is set to next, signal EndOfTrack to TrackList,
             // otherwise start looping, pingpong or stop the track
             int m = (int)m_pTrackEndMode->get();
-            qDebug("end mode %i",m);
+            //qDebug("end mode %i",m);
             switch (m)
             {
             case TRACK_END_MODE_STOP:
-                qDebug("stop");
+                //qDebug("stop");
                 playButton->set(0.);
                 break;
             case TRACK_END_MODE_NEXT:
                 //if (!backwards)
                 {
-                    qDebug("next");
+                    //qDebug("next");
                     m_pTrackEnd->set(1.);
                 }
                 /*
@@ -1093,7 +1271,7 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBuff
                 break;
                 
             case TRACK_END_MODE_LOOP:
-                qDebug("loop");
+                //qDebug("loop");
                 slotControlSeek(0.);
                 break;
 /*
@@ -1107,8 +1285,8 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBuff
 
                 break;
 */
-            default:
-                qDebug("Invalid track end mode: %i",m);
+            //default:
+                //qDebug("Invalid track end mode: %i",m);
             }
         }
 

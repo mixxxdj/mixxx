@@ -94,13 +94,12 @@ SoundSourceMp3::SoundSourceMp3(QString qFilename) : SoundSource(qFilename)
     framecount = currentframe;
     currentframe = 0;
 
-
-    /*
+/*
     qDebug("length  = %ld sec." , filelength.seconds);
     qDebug("frames  = %d" , framecount);
     qDebug("bitrate = %d" , bitrate/1000);
     qDebug("Size    = %d", length());
-    */
+*/
 
     Frame = new mad_frame;
 

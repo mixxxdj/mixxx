@@ -35,54 +35,6 @@ Rotary::~Rotary()
     delete [] m_pFilter;
 }
 
-/*
-void Rotary::selectMapping(QString mapping)
-{
-    if (mapping==kqRotaryMappingP1Phase)
-    {
-        m_pControlObjectRotary = ControlObject::getControl(ConfigKey("[Channel1]","wheel"));
-        m_pControlObjectButton = ControlObject::getControl(ConfigKey("[Channel1]","play"));
-        m_iFilterLength = kiRotaryFilterMaxLen;
-        m_iFilterPos = 0;
-    }
-    else if (mapping==kqRotaryMappingP2Phase)
-    {
-        m_pControlObjectRotary = ControlObject::getControl(ConfigKey("[Channel2]","wheel"));
-        m_pControlObjectButton = ControlObject::getControl(ConfigKey("[Channel2]","play"));
-        m_iFilterLength = kiRotaryFilterMaxLen;
-        m_iFilterPos = 0;
-    }
-    else if (mapping==kqRotaryMappingP1Scratch)
-    {
-        m_pControlObjectRotary = ControlObject::getControl(ConfigKey("[Channel1]","scratch"));
-        m_pControlObjectButton = ControlObject::getControl(ConfigKey("[Channel1]","play"));
-        m_iFilterLength = 5;
-        m_iFilterPos = 0;
-    }
-    else if (mapping==kqRotaryMappingP2Scratch)
-    {
-        m_pControlObjectRotary = ControlObject::getControl(ConfigKey("[Channel2]","scratch"));
-        m_pControlObjectButton = ControlObject::getControl(ConfigKey("[Channel2]","play"));
-        m_iFilterLength = 5;
-        m_iFilterPos = 0;
-    }
-    else if (mapping==kqRotaryMappingP1Search)
-    {
-        m_pControlObjectRotary = ControlObject::getControl(ConfigKey("[Channel1]","rateSearch"));
-        m_pControlObjectButton = ControlObject::getControl(ConfigKey("[Channel1]","play"));
-        m_iFilterLength = kiRotaryFilterMaxLen;
-        m_iFilterPos = 0;
-    }
-    else if (mapping==kqRotaryMappingP2Search)
-    {
-        m_pControlObjectRotary = ControlObject::getControl(ConfigKey("[Channel2]","realsearch"));
-        m_pControlObjectButton = ControlObject::getControl(ConfigKey("[Channel2]","play"));
-        m_iFilterLength = kiRotaryFilterMaxLen;
-        m_iFilterPos = 0;
-    }
-}
-*/
-
 double Rotary::filter(double dValue)
 {
     // Update filter buffer

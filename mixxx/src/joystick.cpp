@@ -23,9 +23,9 @@
 #include "joystick.h"
 
 
-Joystick::Joystick(ControlObject *pControl)
+Joystick::Joystick()
 {
-    m_pControl = pControl;
+//     m_pControl = pControl;
 }
 
 Joystick::~Joystick()

@@ -31,8 +31,8 @@ class ControlTTRotary;
 class ControlPotmeter;
 class Reader;
 class EngineBufferScale;
-class PowerMate;
 class WVisualWaveform;
+class VisualChannel;
 class EngineBufferCue;
 
 /**
@@ -41,6 +41,9 @@ class EngineBufferCue;
 
 // Length of audio beat marks in samples
 const int audioBeatMarkLen = 40;
+
+// Temporary buffer length
+const int kiTempLength = 200000;
 
 // Rate at which the playpos slider is updated (using a sample rate of 44100 Hz):
 const int UPDATE_RATE = 5;
@@ -60,7 +63,7 @@ class EngineBuffer : public EngineObject
 {
     Q_OBJECT
 public:
-    EngineBuffer(PowerMate *, const char *_group);
+    EngineBuffer(const char *_group);
     ~EngineBuffer();
     /** Reconfigures the EngineBufferScaleSRC objects with the sound scale mode written in the config database */
     void setPitchIndpTimeStretch(bool b);
@@ -79,7 +82,8 @@ public:
     /** Reset buffer playpos and set file playpos. This must only be called while holding the
       * pause mutex */
     void setNewPlaypos(double);
-    
+    /** Return VisualChannel pointer */
+    VisualChannel *getVisualChannel();
     void process(const CSAMPLE *pIn, const CSAMPLE *pOut, const int iBufferSize);
 
     CSAMPLE *update_visual();
@@ -93,7 +97,7 @@ public:
     /** Set rate change when perm rate small button is pressed */
     static void setPermSmall(double v);
     /** Notify used to call seek when playpos slider changes */
-    Monitor visualPlaypos;
+    //Monitor visualPlaypos;
     float visualRate;
 
     /** Lock abs and buffer playpos vars, so that they can be accessed through
@@ -106,6 +110,8 @@ public:
     double getBufferPlaypos();
     /** Returns the abs playpos. lockPlayposVars() must be called in advance */
     double getAbsPlaypos();
+    /** Returns the buffer startpos. lockPlayposVars() must be called in advance */    
+    double getAbsStartpos();
 
 
 public slots:
@@ -114,6 +120,7 @@ public slots:
     void slotControlEnd(double);
     void slotControlSeek(double, bool bBeatSync=true);
     void slotControlSeekAbs(double, bool bBeatSync=true);
+    void slotControlLoop(double);
     void slotControlRatePermDown(double);
     void slotControlRatePermDownSmall(double);
     void slotControlRatePermUp(double);
@@ -160,7 +167,10 @@ private:
     ControlPushButton *playButton, *audioBeatMark, *buttonBeatSync;
     ControlPushButton *buttonRateTempDown, *buttonRateTempDownSmall, *buttonRateTempUp, *buttonRateTempUpSmall;
     ControlPushButton *buttonRatePermDown, *buttonRatePermDownSmall, *buttonRatePermUp, *buttonRatePermUpSmall;
+    ControlPushButton *buttonLoop;
+    ControlObject *m_pControlObjectBeatLoop;
     ControlObject *rateEngine, *m_pRateDir, *m_pRateRange, *m_pRealSearch;
+    ControlObject *m_pMasterRate;
     ControlPotmeter *rateSlider, *m_pRateSearch;
     ControlTTRotary *wheel, *m_pControlScratch;
     ControlPotmeter *playposSlider;
@@ -168,7 +178,7 @@ private:
     /** Mutex used in sharing buffer and abs playpos */
     QMutex m_qPlayposMutex;
     /** Buffer and absolute playpos shared among threads */
-    double m_dBufferPlaypos, m_dAbsPlaypos;
+    double m_dBufferPlaypos, m_dAbsPlaypos, m_dAbsStartpos;
 
     /** Control used to signal when at end of file */
     ControlObject *m_pTrackEnd, *m_pTrackEndMode;
@@ -182,6 +192,8 @@ private:
     ControlPushButton *fwdButton, *backButton, *startButton, *endButton;
     /** Holds the name of the control group */
     const char *group;
+    /** Pointer to VisualChannel */
+    VisualChannel *m_pVisualChannel;
 
     CSAMPLE *read_buffer_prt;
 
@@ -192,8 +204,6 @@ private:
     double oldEvent;
     /** Object used to perform waveform scaling (sample rate conversion) */
     EngineBufferScale *m_pScale;
-    /** Pointer to PowerMate object */
-    PowerMate *powermate;
     /** Number of samples left in audio beat mark from last call to process */
     int m_iBeatMarkSamplesLeft;
     /** Holds the last sample value of the previous buffer. This is used when ramping to
@@ -201,14 +211,18 @@ private:
     float m_fLastSampleValue;
     /** Is true if the previous buffer was silent due to pausing */
     bool m_bLastBufferPaused;
-    /** Temporary seek buffer */
-    float *m_pTempSeekBuffer;
-    /** Temproray seek buffer position in file */
-    double m_dTempSeekFilePos;
+    /** Temporary buffer used when seeking and looping */
+    float *m_pTempBuffer;
+    /** Temproray buffer position in file */
+    double m_dTempFilePos;
     /** Seek position */
     double m_dSeekFilePos;
     /** True if currently performing a beat syncronious seek */
     bool m_bSeekBeat;
+    /** Length of loop */
+    double m_dLoopLength;
+    /** Is looping active, and is loop time being measured */
+    bool m_bLoopActive, m_bLoopMeasureTime;
     /** True if crossfade has been performed (is only used when m_bSeekBeat is true) */
     bool m_bSeekCrossfade;
     /** File position of cross fade end */

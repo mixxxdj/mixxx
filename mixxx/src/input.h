@@ -30,6 +30,10 @@
 
 class ControlObject;
 
+static QString kqInputMappingPositionP1 = "Player 1, position";
+static QString kqInputMappingSongP1     = "Player 1, song selection";
+static QString kqInputMappingPositionP2 = "Player 2, position";
+static QString kqInputMappingSongP2     = "Player 2, song selection";
 
 class Input : public QThread
 {
@@ -44,9 +48,9 @@ public:
     /** Wait for the next rotary event. Blocking call. */
     virtual void getNextEvent() = 0;
     /** Return a list of available mappings */
-    virtual QStringList getMappings();
+    //virtual QStringList getMappings();
     /** Select mapping */
-    virtual void setMapping(QString mapping);
+    //virtual void setMapping(QString mapping);
 
 protected:
     /** Main thread loop */

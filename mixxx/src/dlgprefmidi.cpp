@@ -29,25 +29,157 @@
 #include <qmessagebox.h>
 #include <qtimer.h>
 #include "controlobject.h"
+#include "midiobjectnull.h"
+#ifdef __ALSAMIDI__
+  #include "midiobjectalsa.h"
+#endif
+
+#ifdef __PORTMIDI__
+  #include "midiobjectportmidi.h"
+#endif
+
+#ifdef __COREMIDI__
+  #include "midiobjectcoremidi.h"
+#endif
+
+#ifdef __OSSMIDI__
+  #include "midiobjectoss.h"
+#endif
+
+#ifdef __WINMIDI__
+  #include "midiobjectwin.h"
+#endif
 #ifdef __LINUX__
 #include "mouselinux.h"
 #endif
+#ifdef __LINUX__
+#include "powermatelinux.h"
+#endif
+#ifdef __WIN__
+#include "powermatewin.h"
+#endif
 
-DlgPrefMidi::DlgPrefMidi(QWidget *parent, MidiObject *pMidi, ConfigObject<ConfigValue> *pConfig,
-                         ConfigObject<ConfigValueMidi> *pMidiConfig,
-                         PowerMate *pPowerMate1, PowerMate *pPowerMate2) : DlgPrefMidiDlg(parent,"")
+#ifdef __LINUX__
+#include "herculeslinux.h"
+#endif
+
+#ifdef __LINUX__
+#include "joysticklinux.h"
+#endif
+
+DlgPrefMidi::DlgPrefMidi(QWidget *parent, ConfigObject<ConfigValue> *pConfig) : DlgPrefMidiDlg(parent,"")
 {
-    m_pMidi = pMidi;
     m_pConfig = pConfig;
-    m_pMidiConfig = pMidiConfig;
     m_pProgressDialog = 0;
     m_pTimer = 0;
+    
+    // Open midi
+    m_pMidi = 0;
+#ifdef __ALSAMIDI__
+    m_pMidi = new MidiObjectALSA(m_pConfig->getValueString(ConfigKey("[Midi]","Device")));
+#endif
+#ifdef __PORTMIDI__
+    m_pMidi = new MidiObjectPortMidi(m_pConfig->getValueString(ConfigKey("[Midi]","Device")));
+#endif
+#ifdef __COREMIDI__
+    m_pMidi = new MidiObjectCoreMidi(m_pConfig->getValueString(ConfigKey("[Midi]","Device")));
+#endif
+#ifdef __OSSMIDI__
+    m_pMidi = new MidiObjectOSS(m_pConfig->getValueString(ConfigKey("[Midi]","Device")));
+#endif
+#ifdef __WINMIDI__
+    m_pMidi = new MidiObjectWin(m_pConfig->getValueString(ConfigKey("[Midi]","Device")));
+#endif
 
-    m_pPowerMate1 = pPowerMate1;
-    m_pPowerMate2 = pPowerMate2;
-//    m_pPowerMate1->selectMapping(ComboBoxPowerMate1->currentText());
-//    m_pPowerMate2->selectMapping(ComboBoxPowerMate2->currentText());
+    if (m_pMidi == 0)
+        m_pMidi = new MidiObjectNull(m_pConfig->getValueString(ConfigKey("[Midi]","Device")));
 
+    // Get list of available midi configurations, and read the default configuration. If no default
+    // is given, use the first configuration found in the config directory.
+    QString qConfigPath = m_pConfig->getConfigPath();
+    QStringList *midiConfigList = m_pMidi->getConfigList(qConfigPath.append("midi/"));
+    m_pMidiConfig = 0;
+    for (QStringList::Iterator it = midiConfigList->begin(); it != midiConfigList->end(); ++it )
+        if (*it == m_pConfig->getValueString(ConfigKey("[Midi]","File")))
+            m_pMidiConfig = new ConfigObject<ConfigValueMidi>(QString(qConfigPath).append(m_pConfig->getValueString(ConfigKey("[Midi]","File"))));
+    if (m_pMidiConfig == 0)
+    {
+        if (midiConfigList->empty())
+        {
+            m_pMidiConfig = new ConfigObject<ConfigValueMidi>("");
+            m_pConfig->set(ConfigKey("[Midi]","File"), ConfigValue(""));
+        }
+        else
+        {
+            m_pMidiConfig = new ConfigObject<ConfigValueMidi>(QString(qConfigPath).append((*midiConfigList->at(0)).latin1()));
+            m_pConfig->set(ConfigKey("[Midi]","File"), ConfigValue((*midiConfigList->at(0)).latin1()));
+        }
+    }
+    m_pMidi->setMidiConfig(m_pMidiConfig);
+    
+    // Store default midi device
+    m_pConfig->set(ConfigKey("[Midi]","Device"), ConfigValue(m_pMidi->getOpenDevice()->latin1()));
+        
+    // Try initializing PowerMates
+    m_pPowerMate1 = 0;
+    m_pPowerMate2 = 0;
+#ifdef __LINUX__
+    m_pPowerMate1 = new PowerMateLinux();
+    m_pPowerMate2 = new PowerMateLinux();
+#endif
+#ifdef __WIN__
+    m_pPowerMate1 = new PowerMateWin();
+    m_pPowerMate2 = new PowerMateWin();
+#endif
+    if (m_pPowerMate1)
+    {
+        if (!m_pPowerMate1->opendev())
+//             m_pPowerMate1->selectMapping(ComboBoxPowerMate1->currentText());
+//         else
+        {
+            delete m_pPowerMate1;
+            m_pPowerMate1 = 0;
+        }
+    }
+    if (m_pPowerMate2)
+    {
+        if (!m_pPowerMate2->opendev())
+//             m_pPowerMate2->selectMapping(ComboBoxPowerMate2->currentText());
+//         else
+        {
+            delete m_pPowerMate2;
+            m_pPowerMate2 = 0;
+        }
+    }
+    
+    // Try initializing Joystick
+    m_pJoystick = 0;
+#ifdef __LINUX__
+    m_pJoystick = new JoystickLinux();
+#endif
+    if (m_pJoystick)
+    {
+        if (!m_pJoystick->opendev())
+        {
+            delete m_pJoystick;
+            m_pJoystick = 0;
+        }
+    }
+    
+    // Try initializing Hercules DJ Console
+    m_pHercules = 0;
+#ifdef __LINUX__
+    m_pHercules = new HerculesLinux();
+#endif
+    if (m_pHercules)
+    {
+        if (!m_pHercules->opendev())
+        {
+            delete m_pHercules;
+            m_pHercules = 0;
+        }
+    }    
+    
     // Used in mouse calibration
     m_pProgressDialog = new QProgressDialog("Calibrating mouse turntable", "Cancel", 30, this, "Progress...", TRUE );
     m_pProgressDialog->setMinimumDuration(0);
@@ -56,10 +188,10 @@ DlgPrefMidi::DlgPrefMidi(QWidget *parent, MidiObject *pMidi, ConfigObject<Config
     connect(m_pProgressDialog, SIGNAL(canceled()), this, SLOT(slotCancelCalibrate()));
 
 #ifndef __LINUX__
-	groupBoxMice->setEnabled(false);
+    groupBoxMice->setEnabled(false);
 #endif
 
-
+    connect(ComboBoxHercules, SIGNAL(activated(int)), this, SLOT(slotApply()));
     connect(ComboBoxMouseDevice1, SIGNAL(activated(int)), this, SLOT(slotApply()));
     connect(ComboBoxMouseDevice2, SIGNAL(activated(int)), this, SLOT(slotApply()));
     connect(pushButtonMouseCalibrate1, SIGNAL(clicked()), this, SLOT(slotMouseCalibrate1()));
@@ -71,6 +203,14 @@ DlgPrefMidi::DlgPrefMidi(QWidget *parent, MidiObject *pMidi, ConfigObject<Config
 
 DlgPrefMidi::~DlgPrefMidi()
 {
+    if (m_pPowerMate1)
+        delete m_pPowerMate1;
+    if (m_pPowerMate2)
+        delete m_pPowerMate2;
+    if (m_pJoystick)
+        delete m_pJoystick;
+    if (m_pHercules)
+        delete m_pHercules;
 }
 
 void DlgPrefMidi::slotUpdate()
@@ -109,10 +249,7 @@ void DlgPrefMidi::slotUpdate()
 
 
     // PowerMates
-
-    QStringList qPowerMateConfigList;
-    qPowerMateConfigList << kqRotaryMappingP1Phase << kqRotaryMappingP1Scratch << kqRotaryMappingP1Search <<
-                            kqRotaryMappingP2Phase << kqRotaryMappingP2Scratch << kqRotaryMappingP2Search;
+    QStringList qPowerMateConfigList = PowerMate::getMappings();
 
     if (m_pPowerMate1 || m_pPowerMate2)
     {
@@ -157,10 +294,24 @@ void DlgPrefMidi::slotUpdate()
     else
         groupPowerMates->setEnabled(false);
 
+    // Hercules
+    if (m_pHercules)
+    {
+        ComboBoxHercules->clear();
+        j=0;
+        QStringList qHerculesMappingList = Hercules::getMappings();
+        for (it = qHerculesMappingList.begin(); it != qHerculesMappingList.end(); ++it)
+        {
+            ComboBoxHercules->insertItem(*it);
+            if ((*it) == m_pConfig->getValueString(ConfigKey("[Controls]","HerculesMapping")))
+                ComboBoxHercules->setCurrentItem(j);
+            j++;
+        }
+    }
+    
     // Mouse
     QStringList qMouseConfigList;
-    qMouseConfigList << kqRotaryMappingP1Phase << kqRotaryMappingP1Scratch << kqRotaryMappingP1Search <<
-                        kqRotaryMappingP2Phase << kqRotaryMappingP2Scratch << kqRotaryMappingP2Search;
+    qMouseConfigList = Mouse::getMappings();
 
     QStringList qMouseDeviceList = Mouse::getDeviceList();
     ComboBoxMouseDevice1->clear();
@@ -231,21 +382,28 @@ void DlgPrefMidi::slotApply()
     m_pConfig->set(ConfigKey("[Midi]","Device"), ConfigValue(ComboBoxMididevice->currentText()));
     m_pConfig->set(ConfigKey("[Controls]","PowerMateFunction1"), ConfigValue(ComboBoxPowerMate1->currentText()));
     m_pConfig->set(ConfigKey("[Controls]","PowerMateFunction2"), ConfigValue(ComboBoxPowerMate2->currentText()));
+    m_pConfig->set(ConfigKey("[Controls]","HerculesMapping"), ConfigValue(ComboBoxHercules->currentText()));
 
     // Close MIDI
     m_pMidi->devClose();
 
     // Change MIDI configuration
-    //midiconfig->clear(); // (is currently not implemented correctly)
+    //m_pMidiConfig->clear(); // (is currently not implemented correctly)
     m_pMidiConfig->reopen(m_pConfig->getValueString(ConfigKey("[Config]","Path")).append("midi/").append(m_pConfig->getValueString(ConfigKey("[Midi]","File"))));
 
     // Open MIDI device
     m_pMidi->devOpen(m_pConfig->getValueString(ConfigKey("[Midi]","Device")));
 
     // PowerMates
-//     m_pPowerMate1->selectMapping(ComboBoxPowerMate1->currentText());
-//     m_pPowerMate2->selectMapping(ComboBoxPowerMate2->currentText());
+    if (m_pPowerMate1)
+        m_pPowerMate1->selectMapping(ComboBoxPowerMate1->currentText());
+    if (m_pPowerMate2)
+        m_pPowerMate2->selectMapping(ComboBoxPowerMate2->currentText());
 
+    // Hercules
+    if (m_pHercules)
+        m_pHercules->selectMapping(ComboBoxHercules->currentText());
+    
     // Mice
     Mouse::destroyAll();
     if (ComboBoxMouseDevice1->currentText()!="None")
@@ -256,10 +414,10 @@ void DlgPrefMidi::slotApply()
 #endif
         if (p && p->opendev(ComboBoxMouseDevice1->currentText()))
         {
-//             p->selectMapping(ComboBoxMouseFunction1->currentText());
+            p->selectMapping(ComboBoxMouseFunction1->currentText());
             double c = m_pConfig->getValueString(ConfigKey("[Controls]","MouseCalibration1")).toDouble();
-//             if (c!=0.)
-//                 p->setCalibration(c);
+            if (c!=0.)
+                p->setCalibration(c);
         }
         else
             ComboBoxMouseDevice1->setCurrentItem(0);
@@ -272,10 +430,10 @@ void DlgPrefMidi::slotApply()
 #endif
         if (p && p->opendev(ComboBoxMouseDevice2->currentText()))
         {
-//             p->selectMapping(ComboBoxMouseFunction2->currentText());
+            p->selectMapping(ComboBoxMouseFunction2->currentText());
             double c = m_pConfig->getValueString(ConfigKey("[Controls]","MouseCalibration2")).toDouble();
-//             if (c!=0.)
-//                 p->setCalibration(c);
+            if (c!=0.)
+                p->setCalibration(c);
         }
         else
             ComboBoxMouseDevice2->setCurrentItem(0);
@@ -298,12 +456,10 @@ void DlgPrefMidi::slotMouseCalibrate1()
 #ifdef __LINUX__
         m_pMouseCalibrate = (Mouse *)new MouseLinux();
 #endif
-/*        
         if (m_pMouseCalibrate && m_pMouseCalibrate->opendev(ComboBoxMouseDevice1->currentText()))
             m_pMouseCalibrate->selectMapping(ComboBoxMouseFunction1->currentText());
         else
             ComboBoxMouseDevice1->setCurrentItem(0);
-*/
     }
 
     m_iProgress = 0;
@@ -312,7 +468,7 @@ void DlgPrefMidi::slotMouseCalibrate1()
     m_pTimer->start(100);
 
     // Start measurement
-//    m_pMouseCalibrate->calibrateStart();
+    m_pMouseCalibrate->calibrateStart();
 }
 
 void DlgPrefMidi::slotMouseCalibrate2()
@@ -342,8 +498,8 @@ void DlgPrefMidi::slotUpdateProgressBar()
     if (m_iProgress==30)
     {
         m_pTimer->stop();
-//        double c = m_pMouseCalibrate->calibrateEnd();
-//        m_pConfig->set(ConfigKey("[Controls]","MouseCalibration1"), ConfigValue(QString("%1").arg(c)));
+        double c = m_pMouseCalibrate->calibrateEnd();
+        m_pConfig->set(ConfigKey("[Controls]","MouseCalibration1"), ConfigValue(QString("%1").arg(c)));
 
         slotApply();
     }
@@ -354,3 +510,21 @@ void DlgPrefMidi::slotCancelCalibrate()
     m_pTimer->stop();
     slotApply();
 }
+
+/*
+void DlgPrefMidi::setupPowerMates()
+{
+}
+
+void DlgPrefMidi::setupMouse()
+{
+}
+
+void DlgPrefMidi::setupJoystick()
+{
+}
+
+void DlgPrefMidi::setupHercules()
+{
+}
+*/

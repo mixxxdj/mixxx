@@ -27,7 +27,6 @@
 #include <qlineedit.h>
 #include <qslider.h>
 #include <qlabel.h>
-#include <qdir.h>
 #include <qptrlist.h>
 #include <qsplashscreen.h>
 
@@ -38,14 +37,10 @@
 #include "woverview.h"
 #include "mixxx.h"
 #include "controlnull.h"
-#include "midiobjectnull.h"
 #include "readerextractwave.h"
 #include "controlpotmeter.h"
 #include "reader.h"
 #include "enginebuffer.h"
-#include "powermate.h"
-#include "hercules.h"
-#include "joystick.h"
 #include "enginevumeter.h"
 #include "track.h"
 #include "trackcollection.h"
@@ -55,41 +50,6 @@
 #include "wtreeitem.h"
 #include "wavesummary.h"
 #include "log.h"
-
-#ifdef __LINUX__
-#include "powermatelinux.h"
-#endif
-#ifdef __WIN__
-#include "powermatewin.h"
-#endif
-
-#ifdef __LINUX__
-#include "herculeslinux.h"
-#endif
-
-#ifdef __LINUX__
-#include "joysticklinux.h"
-#endif
-
-#ifdef __ALSAMIDI__
-  #include "midiobjectalsa.h"
-#endif
-
-#ifdef __PORTMIDI__
-  #include "midiobjectportmidi.h"
-#endif
-
-#ifdef __COREMIDI__
-  #include "midiobjectcoremidi.h"
-#endif
-
-#ifdef __OSSMIDI__
-  #include "midiobjectoss.h"
-#endif
-
-#ifdef __WINMIDI__
-  #include "midiobjectwin.h"
-#endif
 
 #include "playerproxy.h"
 
@@ -111,165 +71,41 @@ MixxxApp::MixxxApp(QApplication *a, QStringList files, QSplashScreen *pSplash, Q
 
     // Read the config file from home directory
     config = new ConfigObject<ConfigValue>(QDir::homeDirPath().append("/").append(SETTINGS_FILE));
-
+    QString qConfigPath = config->getConfigPath();
+    
+    // Store the path in the config database
+    config->set(ConfigKey("[Config]","Path"), ConfigValue(qConfigPath));
+    
     // Instantiate a ControlObject, and set static parent widget
     control = new ControlNull();
 
-    //
-    // Find the config path, path where midi configuration files, skins etc. are stored.
-    // On Linux the search order is whats listed in mixxx.cfg, then UNIX_SHARE_PATH
-    // On Windows and Mac it is always (and only) app dir.
-    //
-    QString qConfigPath;
-#ifdef __LINUX__
-    // On Linux, check if the path is stored in the configuration database.
-    if (config->getValueString(ConfigKey("[Config]","Path")).length()>0 && QDir(config->getValueString(ConfigKey("[Config]","Path"))).exists())
-        qConfigPath = config->getValueString(ConfigKey("[Config]","Path"));
-    else
-    {
-        // Set the path according to the compile time define, UNIX_SHARE_PATH
-        qConfigPath = UNIX_SHARE_PATH;
-    }
-#endif
-#ifdef __WIN__
-    // On Windows, set the config dir relative to the application dir
-    char *str = new char[200];
-    GetModuleFileName(NULL, (unsigned short *)str, 200);
-    qConfigPath = QFileInfo(str).dirPath();
-#endif
-#ifdef __MACX__
-    // Set the path relative to the bundle directory
-    CFURLRef pluginRef = CFBundleCopyBundleURL(CFBundleGetMainBundle());
-    CFStringRef macPath = CFURLCopyFileSystemPath(pluginRef, kCFURLPOSIXPathStyle);
-    qConfigPath = CFStringGetCStringPtr(macPath, CFStringGetSystemEncoding());
-#endif
-    // If the directory does not end with a "/", add one
-    if (!qConfigPath.endsWith("/"))
-        qConfigPath.append("/");
-    config->set(ConfigKey("[Config]","Path"), ConfigValue(qConfigPath));
-
+    
     if (pSplash)
         pSplash->message("Initializing control devices...",Qt::AlignLeft|Qt::AlignBottom);
-
-
-    // Open midi
-    midi = 0;
-#ifdef __ALSAMIDI__
-    midi = new MidiObjectALSA(midiconfig,config->getValueString(ConfigKey("[Midi]","Device")));
-#endif
-#ifdef __PORTMIDI__
-    midi = new MidiObjectPortMidi(midiconfig,config->getValueString(ConfigKey("[Midi]","Device")));
-#endif
-#ifdef __COREMIDI__
-    midi = new MidiObjectCoreMidi(midiconfig,config->getValueString(ConfigKey("[Midi]","Device")));
-#endif
-#ifdef __OSSMIDI__
-    midi = new MidiObjectOSS(midiconfig,config->getValueString(ConfigKey("[Midi]","Device")));
-#endif
-#ifdef __WINMIDI__
-    midi = new MidiObjectWin(midiconfig,config->getValueString(ConfigKey("[Midi]","Device")));
-#endif
-
-    if (midi == 0)
-        midi = new MidiObjectNull(midiconfig,config->getValueString(ConfigKey("[Midi]","Device")));
-
-    // Store default midi device
-    config->set(ConfigKey("[Midi]","Device"), ConfigValue(midi->getOpenDevice()->latin1()));
-
-    // Get list of available midi configurations, and read the default configuration. If no default
-    // is given, use the first configuration found in the config directory.
-    QStringList *midiConfigList = midi->getConfigList(QString(qConfigPath).append("midi/"));
-    midiconfig = 0;
-    for (QStringList::Iterator it = midiConfigList->begin(); it != midiConfigList->end(); ++it )
-        if (*it == config->getValueString(ConfigKey("[Midi]","File")))
-            midiconfig = new ConfigObject<ConfigValueMidi>(QString(qConfigPath).append("midi/").append(config->getValueString(ConfigKey("[Midi]","File"))));
-    if (midiconfig == 0)
-    {
-        if (midiConfigList->empty())
-        {
-            midiconfig = new ConfigObject<ConfigValueMidi>("");
-            config->set(ConfigKey("[Midi]","File"), ConfigValue(""));
-        }
-        else
-        {
-            midiconfig = new ConfigObject<ConfigValueMidi>(QString(qConfigPath).append("midi/").append((*midiConfigList->at(0)).latin1()));
-            config->set(ConfigKey("[Midi]","File"), ConfigValue((*midiConfigList->at(0)).latin1()));
-        }
-    }
-    midi->setMidiConfig(midiconfig);
         
     // Read keyboard configuration and set kdbConfig object in WWidget
     kbdconfig = new ConfigObject<ConfigValueKbd>(QString(qConfigPath).append("keyboard/").append("Standard.kbd.cfg"));
     WWidget::setKeyboardConfig(kbdconfig);
 
-    // Try initializing PowerMates
-    powermate1 = 0;
-    powermate2 = 0;
-#ifdef __LINUX__
-    powermate1 = new PowerMateLinux();
-    powermate2 = new PowerMateLinux();
-
-#endif
-#ifdef __WIN__
-    powermate1 = new PowerMateWin();
-    powermate2 = new PowerMateWin();
-#endif
-
-    if (powermate1!=0)
-    {
-        if (powermate1->opendev())
-        {
-            qDebug("Found PowerMate 1");
-        }
-        else
-        {
-            delete powermate1;
-            powermate1 = 0;
-        }
-
-        if (powermate2->opendev())
-            qDebug("Found PowerMate 2");
-        else
-        {
-            delete powermate2;
-            powermate2 = 0;
-        }
-    }
-
-    // Try initializing Joystick
-    joystick1 = 0;
-#ifdef __LINUX__
-    joystick1 = new JoystickLinux(control);
-#endif
-
-    if (joystick1!=0)
-    {
-        if (joystick1->opendev())
-        {
-            qDebug("Found Joystick 1");
-        }
-        else
-        {
-            delete joystick1;
-            joystick1 = 0;
-        }
-    }
 
     if (pSplash)
         pSplash->message("Setting up sound engine...",Qt::AlignLeft|Qt::AlignBottom);
     
     // Sample rate used by Player object
     new ControlObject(ConfigKey("[Master]","samplerate"));
-    
+
+    // Master rate
+    new ControlPotmeter(ConfigKey("[Master]","rate"),-1.,1.);
+        
     // Init buffers/readers
-    buffer1 = new EngineBuffer(powermate1, "[Channel1]");
-    buffer2 = new EngineBuffer(powermate2, "[Channel2]");
+    buffer1 = new EngineBuffer("[Channel1]");
+    buffer2 = new EngineBuffer("[Channel2]");
     buffer1->setOtherEngineBuffer(buffer2);
     buffer2->setOtherEngineBuffer(buffer1);
 
     // Starting channels:
-    channel1 = new EngineChannel("[Channel1]", buffer1);
-    channel2 = new EngineChannel("[Channel2]", buffer2);
+    channel1 = new EngineChannel("[Channel1]");
+    channel2 = new EngineChannel("[Channel2]");
 
     // Starting the master (mixing of the channels and effects):
     master = new EngineMaster(buffer1, buffer2, channel1, channel2, "[Master]");
@@ -385,7 +221,7 @@ MixxxApp::MixxxApp(QApplication *a, QStringList files, QSplashScreen *pSplash, Q
     ControlObject::getControl(ConfigKey("[Channel2]","TrackEndMode"))->queueFromThread(config->getValueString(ConfigKey("[Controls]","TrackEndModeCh2")).toDouble());
 
     // Initialize preference dialog
-    prefDlg = new DlgPreferences(this, view, midi, player, m_pTrack, config, midiconfig, powermate1, powermate2);
+    prefDlg = new DlgPreferences(this, view, player, m_pTrack, config);
     prefDlg->setHidden(true);
 
     // Try open player device If that fails, the preference panel is opened.
@@ -394,23 +230,6 @@ MixxxApp::MixxxApp(QApplication *a, QStringList files, QSplashScreen *pSplash, Q
 
     //setFocusPolicy(QWidget::StrongFocus);
     //grabKeyboard();
-
-    // Try initializing Hercules DJ Console
-    m_pHercules = 0;
-#ifdef __LINUX__
-    m_pHercules = new HerculesLinux();
-#endif
-    if (m_pHercules)
-    {
-        if (m_pHercules->opendev())
-            qDebug("Found Hercules DJ Console");
-        else
-        {
-            delete m_pHercules;
-            m_pHercules = 0;
-        }
-    }    
-
 
     // Load tracks in files (command line arguments) into player 1 and 2:
     if (files.count()>1)
@@ -423,6 +242,17 @@ MixxxApp::MixxxApp(QApplication *a, QStringList files, QSplashScreen *pSplash, Q
     new MixxxSocketServer(m_pTrack);
 #endif
 
+    // Initialize visualization of temporal effects
+    channel1->setVisual(buffer1);
+    channel2->setVisual(buffer2);
+
+    // Dynamic scaling of temporal effect curves
+    if (view->m_bZoom)
+    {
+        ControlObject::connectControls(ConfigKey("[Channel1]", "rate"), ConfigKey("[Channel1]", "VisualLengthScale-temporal"));
+        ControlObject::connectControls(ConfigKey("[Channel2]", "rate"), ConfigKey("[Channel2]", "VisualLengthScale-temporal"));
+    }
+    
     // Call inits to invoke all other construction parts
     initActions();
     initMenuBar();
@@ -461,12 +291,9 @@ MixxxApp::~MixxxApp()
 //    qDebug("delete buffer2");
     delete buffer2;
 //    qDebug("delete prefDlg");
-    delete prefDlg;
 //    delete m_pControlEngine;
 //    qDebug("delete midi");
-    delete midi;
 //    qDebug("delete midiconfig");
-    delete midiconfig;
 
     qDebug("Write track xml");
     m_pTrack->writeXML(config->getValueString(ConfigKey("[Playlist]","Listfile")));
@@ -476,17 +303,13 @@ MixxxApp::~MixxxApp()
     qDebug("delete view");
     delete view;
 
+    delete prefDlg;
+    
     qDebug("save config");
     config->Save();
     qDebug("delete config");
     delete config;
 
-#ifdef __UNIX__
-    if (powermate1!=0)
-        delete powermate1;
-    if (powermate2!=0)
-        delete powermate2;
-#endif
 }
 
 /** initializes all QActions of the application */

@@ -110,6 +110,7 @@ template <class ValueType> class ConfigObject
     void clear();
     void reopen(QString file);
     void Save();
+    QString getConfigPath();
 
   protected:
     QPtrList< ConfigOption<ValueType> > list;
