@@ -26,7 +26,18 @@ WVisual::WVisual(QWidget *pParent, const char *pName, const QGLWidget *pShareWid
 
     installEventFilter(this);
     m_qtTime.start();
+#ifdef __MACX__
+    // Hack to reduce load in GUI thread. This makes the system behave 
+    // "correctly" on MacOS X, where it would otherwise stall the system
+    // for some seconds now and then.
+    startTimer(100);
+#endif
+#ifdef __WIN__
     startTimer(25);
+#endif
+#ifdef __LINUX__
+    startTimer(25);
+#endif
 
     m_qlList.setAutoDelete(false);
 }
