@@ -19,6 +19,7 @@
 #define POWERMATE_H
 
 #include <qthread.h>
+#include <qvaluelist.h>
 
 /**
   * Linux code for handling the PowerMate. This is implemented as a separate thread.
@@ -31,9 +32,9 @@ class ControlObject;
 
   
 // Parameters used to interface the PowerMate with the MIDI code
-const char POWERMATE_MIDI_CHANNEL=16;
-const char POWERMATE_MIDI_DIAL_CTRL = 0;
-const char POWERMATE_MIDI_BTN_CTRL = 1;
+const int POWERMATE_MIDI_CHANNEL=16;
+const int POWERMATE_MIDI_DIAL_CTRL = 0;
+const int POWERMATE_MIDI_BTN_CTRL = 1;
 
 // Time before the controller is reset in 10 of microseconds
 const int RESET_TIME = 5; // 50ms
@@ -61,17 +62,32 @@ protected:
     void run();
 private:
     int find(int mode);
-    int opendev(const char *dev, int mode);
+    int opendev(int _id, int mode);
     void closedev();
     void led_write(int static_brightness, int speed, int table, int asleep, int awake);
     void process_event(struct input_event *ev);
 
+    /** This method is called every 50ms during an active period of the knob. The method sends
+      * knob events out, which has been interpolated and fitted to a certain function */
+    void knob_event();
     /** File handle of current open /dev/input/event device */
+    int fd;
+    /** ID of event interface */
     int id;
+    /** Instantiate number. Used in the calculation of MIDI controller id's */
+    int instno;
     /** Pointer to ControlObject */
     ControlObject *control;
-    /** Counter to keep track of when to reset controller */
-    int resetTimeCount;
+    /** Variable used to indicate weather a knob event should be sent or not */
+    bool sendKnobEvent;
+    /** Amplitude of knob */
+    float magnitude;
+    /** State of knob. true = fade in, false=fade out */
+    bool fadeIn;
+    /** Current value got from knob */
+    int knobval;
+    /** List of open devices */
+    static QValueList <int> openDevs;
 };
 
 #endif

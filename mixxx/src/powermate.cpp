@@ -27,18 +27,23 @@
 #include "controleventmidi.h"
 #include "qapplication.h"
 #include "midiobject.h"
+#include "mathstuff.h"
 
 #ifndef MSC_PULSELED
 /* this may not have made its way into the kernel headers yet ... */
 #define MSC_PULSELED 0x01
 #endif
 
+QValueList <int> PowerMate::openDevs;
 
 PowerMate::PowerMate(ControlObject *_control)
 {
     control = _control;
+    fd = -1;
     id = -1;
-    resetTimeCount = 0;
+    sendKnobEvent = false;
+    fadeIn = false;
+    magnitude=0;
 }
 
 PowerMate::~PowerMate()
@@ -50,14 +55,14 @@ PowerMate::~PowerMate()
 
 bool PowerMate::opendev()
 {
-    id = find(O_RDWR|O_NONBLOCK);
-    if (id>0)
+    fd = find(O_RDWR|O_NONBLOCK);
+    if (fd>0)
     {
         // Start thread
         start();
 
         // Turn off led
-        pulse_led(0,0,0,0,0);
+        led_write(0,0,0,0,0);
 
         return true;
     }
@@ -81,55 +86,48 @@ void PowerMate::run()
     timeval *waittime = new timeval;
     while (1)
     {
-        r = read(id, ibuffer, sizeof(struct input_event) * INPUT_BUFFER_SIZE);
+        r = read(fd, ibuffer, sizeof(struct input_event) * INPUT_BUFFER_SIZE);
         if(r > 0)
         {
             events = r / sizeof(struct input_event);
             for(i=0; i<events; i++)
                 process_event(&ibuffer[i]);
         }
-        else
-        {
-            // Sleep
-            waittime->tv_sec  = 0;
-            waittime->tv_usec = 10;
-            select(0,0,0,0,waittime);
-        }    
 
         //
         // Check if led queue is empty
         //
 
         // If last event was a knob event, send out zero value of knob
-        if (resetTimeCount>0)
-        {
-            resetTimeCount--;
-            if (resetTimeCount==0)
-                QApplication::postEvent(control,new ControlEventMidi(CTRL_CHANGE, POWERMATE_MIDI_CHANNEL, POWERMATE_MIDI_DIAL_CTRL,(char)64));
-        }
+        if (sendKnobEvent)
+            knob_event();
+
+        // Sleep
+        waittime->tv_sec  = 0;
+        waittime->tv_usec = 50;
+        select(0,0,0,0,waittime);
     }
 }
     
 int PowerMate::find(int mode)
 {
-    char devname[256];
-    int i, r;
-
-    for(i=0; i<NUM_EVENT_DEVICES; i++)
+    for(int i=0; i<NUM_EVENT_DEVICES; i++)
     {
-        qDebug("0");
-        sprintf(devname, "/dev/input/event%d", i);
-        r = opendev(devname, mode);
-        if(r >= 0)
-            return r;
+        if (openDevs.find(i)==openDevs.end())
+        {
+            int r = opendev(i, mode);
+            if(r >= 0)
+                return r;
+        }
     }
-
     return -1;
 }
 
-int PowerMate::opendev(const char *dev, int mode)
+int PowerMate::opendev(int _id, int mode)
 {
-    int fd = open(dev, mode);
+    char devname[256];
+    sprintf(devname, "/dev/input/event%d", _id);
+    int fd = open(devname, mode);
     int i;
     char name[255];
 
@@ -145,7 +143,15 @@ int PowerMate::opendev(const char *dev, int mode)
     // it's the correct device if the prefix matches what we expect it to be:
     for(i=0; i<NUM_VALID_PREFIXES; i++)
         if(!strncasecmp(name, valid_prefix[i], strlen(valid_prefix[i])))
+        {
+            id = _id;
+            instno = openDevs.count();
+
+            // Add id to list of open devices
+            openDevs.append(id);
+            
             return fd;
+        }
 
     close(fd);
     return -1;
@@ -153,8 +159,16 @@ int PowerMate::opendev(const char *dev, int mode)
 
 void PowerMate::closedev()
 {
-    if (id>0)
-        close(id);
+    if (fd>0)
+    {
+        close(fd);
+
+        // Remove id from list
+        QValueList<int>::iterator it = openDevs.find(id);
+        if (it!=openDevs.end())
+            openDevs.remove(it);
+    }
+    fd = -1;
     id = -1;
 }        
 
@@ -169,6 +183,7 @@ void PowerMate::led_write(int static_brightness, int speed, int table, int aslee
         speed = 0;
     if(speed > 510)
         speed = 510;
+    int direction = sign((float)knobval);
     if(table < 0)
         table = 0;
     if(table > 2)
@@ -180,7 +195,7 @@ void PowerMate::led_write(int static_brightness, int speed, int table, int aslee
     ev.code = MSC_PULSELED;
     ev.value = static_brightness | (speed << 8) | (table << 17) | (asleep << 19) | (awake << 20);
 
-    if(write(id, &ev, sizeof(struct input_event)) != sizeof(struct input_event))
+    if(write(fd, &ev, sizeof(struct input_event)) != sizeof(struct input_event))
         qDebug("PowerMate: write(): %s", strerror(errno));
 }
 
@@ -191,10 +206,9 @@ void PowerMate::process_event(struct input_event *ev)
     case EV_REL:
         if(ev->code == REL_DIAL)
         {
-            // Send event to GUI thread
-            QApplication::postEvent(control,new ControlEventMidi(CTRL_CHANGE, POWERMATE_MIDI_CHANNEL, POWERMATE_MIDI_DIAL_CTRL,(char)(ev->value*10)+64));
-            resetTimeCount = RESET_TIME;
-//            qDebug("PowerMate: Button was rotated %d units", (int)ev->value);
+            // Update knob variables
+            knobval = ev->value;
+            sendKnobEvent = true;
         }
         break;
     case EV_KEY:
@@ -202,13 +216,49 @@ void PowerMate::process_event(struct input_event *ev)
         {
             // Send event to GUI thread
             if (ev->value==1)
-                QApplication::postEvent(control,new ControlEventMidi(NOTE_ON, POWERMATE_MIDI_CHANNEL, POWERMATE_MIDI_BTN_CTRL,1));
+                QApplication::postEvent(control,new ControlEventMidi(NOTE_ON, POWERMATE_MIDI_CHANNEL, (char)(instno*2+POWERMATE_MIDI_BTN_CTRL),1));
             else
-                QApplication::postEvent(control,new ControlEventMidi(NOTE_OFF, POWERMATE_MIDI_CHANNEL, POWERMATE_MIDI_BTN_CTRL,1));
+                QApplication::postEvent(control,new ControlEventMidi(NOTE_OFF, POWERMATE_MIDI_CHANNEL, (char)(instno*2+POWERMATE_MIDI_BTN_CTRL),1));
 
 //            qDebug("PowerMate: Button was %s %i", ev->value? "pressed":"released",ev->value);
         }
         break;
     }
 }
+
+void PowerMate::knob_event()
+{
+    int direction = sign((float)knobval);
+    knobval *= 20*direction;
+
+    
+    // Find state
+    if (!fadeIn && knobval!=0)
+        fadeIn = true;
+    else if (fadeIn && knobval==0)
+        fadeIn = false;
+
+    // Set new magnitude
+    if (fadeIn)
+    {
+        if (magnitude < knobval)
+            magnitude = min(magnitude+0.5,knobval);
+    }
+    else
+    {
+        if (magnitude > 0)
+            magnitude = max(magnitude-0.5,0);
+    }        
+    
+    // Post event
+    //qDebug("knobval: %i, magnitude: %i, fadeIn: %i, midi ctrl: %i, instno: %i",knobval,magnitude,fadeIn,(instno*2),instno);
+    QApplication::postEvent(control,new ControlEventMidi(CTRL_CHANGE, POWERMATE_MIDI_CHANNEL, (char)(instno*2+POWERMATE_MIDI_DIAL_CTRL),(char)((int)(magnitude*direction)+64)));
+
+    if (magnitude==0)
+        sendKnobEvent = false;
+                                        
+    // Reset knob value
+    knobval = 0;
+}
+
 

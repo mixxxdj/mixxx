@@ -144,8 +144,8 @@ class MixxxApp : public QMainWindow
     ConfigObject<ConfigValueMidi> *midiconfig;
     /** Pointer to track list object */
     TrackList *m_pTracks;
-    /** Pointer to PowerMate object */
-    PowerMate *powermate;
+    /** Pointer to PowerMate objects */
+    PowerMate *powermate1, *powermate2;
     /** file_menu contains all items of the menubar entry "File" */
     QPopupMenu *fileMenu;
     /** edit_menu contains all items of the menubar entry "Edit" */

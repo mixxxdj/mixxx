@@ -225,15 +225,19 @@ MixxxApp::MixxxApp(QApplication *a)
         }
     }
 
-    // Try initializing the PowerMate
+    // Try initializing PowerMates
 #ifdef __UNIX__
-    powermate = new PowerMate(control);
-    if (powermate->opendev())
-    {
-        qDebug("Found PowerMate");
-    }
+    powermate1 = new PowerMate(control);
+    if (powermate1->opendev())
+        qDebug("Found PowerMate 1");
     else
-        powermate = 0;
+        powermate1 = 0;
+
+    powermate2 = new PowerMate(control);
+    if (powermate2->opendev())
+        qDebug("Found PowerMate 2");
+    else
+        powermate2 = 0;
 #endif    
   
     // Initialize player device
@@ -324,8 +328,10 @@ MixxxApp::~MixxxApp()
     delete m_pTracks;
 
 #ifdef __UNIX__
-    if (powermate!=0)
-        delete powermate;
+    if (powermate1!=0)
+        delete powermate1;
+    if (powermate2!=0)
+        delete powermate2;
 #endif
 }
 

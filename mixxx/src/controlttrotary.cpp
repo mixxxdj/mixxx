@@ -40,7 +40,7 @@ void ControlTTRotary::setValue(int v)
 void ControlTTRotary::slotSetPosition(int v)
 {
     value = ((float)v-64.)/200.;
-    qDebug("%f",value);
+//    qDebug("%f",value);
 
     emitValueChanged(value);
 /*    if (v==0)
