@@ -27,6 +27,7 @@ SoundSourceMp3::SoundSourceMp3(const char* filename)
     mad_header Header;
     filelength = mad_timer_zero;
     bitrate = 0;
+    currentframe = 0;
     pos = mad_timer_zero;
 
     while ((Stream.bufend - Stream.this_frame) > 0)
@@ -93,7 +94,7 @@ SoundSourceMp3::~SoundSourceMp3()
 
 long SoundSourceMp3::seek(long filepos)
 {
-    int newpos = inputbuf_len* ((float)filepos/(float)length());
+    int newpos = (int)(inputbuf_len * ((float)filepos/(float)length()));
     //qDebug("Seek to %d %d %d", filepos, inputbuf_len, newpos);
 
     // Go to an approximate position:

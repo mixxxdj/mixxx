@@ -1,0 +1,75 @@
+Mixxx - version 0.9.1.
+
+
+* HOMEPAGE *************************************************
+http://mixxx.sourceforge.net
+
+
+* ABOUT ****************************************************
+Mixxx is software for DJ'ing, using custom or 
+commercial MIDI controllers. You can use wave based
+audio files or MP3 files as audio input.
+Currently the software works on Linux using the
+OSS sound drivers, but work has been done on porting
+to other architectures.
+
+
+* REQUIREMENTS *********************************************
+Mixxx is based on the following libraries:
+QT >= 3 
+libMAD
+libAudioFile
+PortAudio
+
+Apart from PortAudio these libraries are included in most
+Linux distributions. PortAudio can either be installed
+from source (http://www.portaudio.com) or download as an
+RPM (we keep one in the download section of
+http://mixxx.sourceforge.net).
+
+
+* INSTALL **************************************************
+You can either install Mixxx from binary, using the RPM at
+the website, or from source. Be aware that no dependency 
+information is included in the RPM. If you cannot find an 
+RPM for PortAudio it's also available at the homepage. If 
+you are using Gentoo Linux you will most probably be able to 
+emerge mixxx, and having the needed libraries installed 
+automatically.
+
+To install Mixxx, edit mixxx.pro to use the drivers
+you want. You'll probably want to stick with the
+default since this is the only ones which is well
+tested.
+
+Then do the following commands to compile:
+qmake mixxx
+make
+
+Copy mixxx to /usr/bin and copy the content of the config
+directory to /usr/share/mixxx. These commands will do the
+job:
+cp mixxx /usr/bin
+mkdir -p /usr/share/mixxx
+cp config/* /usr/share/mixxx
+
+The files in /usr/share/mixxx is definitions for various
+MIDI controllers. You can change the placement of the
+default place to look for midi config files, by editing
+the variable CONFIG_PATH in mixxx.pro.
+
+
+* RUN THE PROGRAM ******************************************
+Run the program by typing mixxx. Mixxx uses text based 
+configuration files. The first time it is started it 
+will create a directory, ~/.mixxx containing the main 
+configuration file mixxx.cfg. Most of the options written
+to this file can be changed in the preference dialog.
+
+Mixxx can use any midi controller for input. More info 
+on the file format can be found on the home page. You can
+either place your definition files in /usr/share/mixxx or
+in another dir of own choice. The programs searches for
+midi config files in the directory listed in mixxx.cfg 
+under [Midi]Configdir.
+

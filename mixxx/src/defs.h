@@ -1,7 +1,7 @@
 #ifndef DEFS_H
 #define DEFS_H
 
-#define VERSION "0.9.0"
+#define VERSION "0.9.1"
 
 #include <math.h>
 #include <iostream>

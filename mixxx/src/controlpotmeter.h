@@ -32,7 +32,7 @@ class ControlPotmeter : public ControlObject
   Q_OBJECT
 public:
   ControlPotmeter();
-  ControlPotmeter(ConfigKey *key, FLOAT_TYPE=0.0, FLOAT_TYPE=1.0);
+  ControlPotmeter(ConfigKey key, FLOAT_TYPE=0.0, FLOAT_TYPE=1.0);
   ~ControlPotmeter();
   FLOAT_TYPE getValue();
   char getPosition();

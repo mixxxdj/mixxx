@@ -32,6 +32,10 @@ DEFINES += __OSSMIDI__
 #HEADERS += midiobjectalsa.h
 #DEFINES  += __ALSAMIDI__
 
+#
+# Config file path, default: /usr/share/mixxx
+#
+CONFIG_PATH = \"/usr/share/mixxx\"
 
 #
 # End of options
@@ -44,7 +48,7 @@ unix {
   UI_DIR = .ui
   MOC_DIR = .moc
   OBJECTS_DIR = .obj
-  LIBS	+= -lmad -laudiofile -lid3tag
+  LIBS += -lmad -laudiofile -lid3tag
   QMAKE_CXXFLAGS += -O
 }
 
@@ -63,9 +67,11 @@ win32 {
 #QMAKE_CXXFLAGS_DEBUG += -pg
 #QMAKE_LFLAGS_DEBUG += -pg
 
+DEFINES += CONFIG_PATH=$$CONFIG_PATH
+QMAKE_CXXFLAGS += -dD
 FORMS	= dlgchanneldlg.ui dlgplaycontroldlg.ui dlgplaylistdlg.ui dlgmasterdlg.ui dlgcrossfaderdlg.ui dlgsplitdlg.ui dlgpreferencesdlg.ui
 IMAGES	= filesave.xpm
 TEMPLATE	=app
-CONFIG	+= qt warn_on thread release
+CONFIG	+= qt warn_on thread release 
 DBFILE	= mixxx.db
 LANGUAGE	= C++

@@ -24,9 +24,8 @@
   *@author Tue and Ken Haste Andersen
   */
 
-static CSAMPLE ln_2   = (CSAMPLE) 0.6931472;
 
-  class EngineFilterRBJ : public EngineObject {
+class EngineFilterRBJ : public EngineObject {
 public:
     EngineFilterRBJ(bool low, CSAMPLE frequency, CSAMPLE bandwidth);
     ~EngineFilterRBJ();

@@ -34,13 +34,19 @@ ConfigOption<ValueType> *ConfigObject<ValueType>::set(ConfigKey k, ValueType v)
     for (it = list.first(); it; it = list.next())
         if (it->key->group == k.group & it->key->item == k.item)
         {
-            it->val->value = v.value;      // Should be done smarter using object copying
+            //qDebug("set found. %s,%s",k.group.latin1(),k.item.latin1());
+            //cout << "1: " << v.value << "\n";
+            //qDebug("configobject %p",it->val);
+            it->val->valCopy(v); // Should be done smarter using object copying
+            //qDebug("configobject %p",it->val);
+            //cout << "2: " << it->val->value << "\n";
             return it;
         }
 
     // If key is not found, insert it into the list of config objects
     ConfigKey *key = new ConfigKey(k.group, k.item);
     it = new ConfigOption<ValueType>(key, new ValueType(v.value));
+    //qDebug("new configobject %p",it->val);
     list.append(it);
     return it;
 }
@@ -53,7 +59,10 @@ ConfigOption<ValueType> *ConfigObject<ValueType>::get(ConfigKey k)
     {
         //qDebug("%s %s %s %s", it->key->group.ascii(), k->group.ascii(), it->key->item.ascii(), k->item.ascii());
         if (it->key->group == k.group & it->key->item == k.item)
+        {
+            //cout << it->key->group << ":" << it->key->item << ", val: " << it->val->value << "\n";
             return it;
+        }
     }
     // If key is not found, insert into list with null values
     ConfigKey *key = new ConfigKey(k.group, k.item);
@@ -68,12 +77,15 @@ QString ConfigObject<ValueType>::getValueString(ConfigKey k)
     return get(k)->val->value;
 }
 
-template <class ValueType> void ConfigObject<ValueType>::Parse()
+template <class ValueType> bool ConfigObject<ValueType>::Parse()
 {
     // Open file for reading
     FILE *handle = fopen(filename.ascii(),"r");
     if (handle == 0)
-        qDebug("Could not open file %s",filename.ascii());
+    {
+        qDebug("Could not open file %s, don't worry.",filename.ascii());
+        return false;
+    }
     else
     {
         // Parse the file
@@ -104,6 +116,7 @@ template <class ValueType> void ConfigObject<ValueType>::Parse()
         }
         fclose(handle);
     }
+    return true;
 }
 
 
@@ -117,8 +130,12 @@ template <class ValueType> void ConfigObject<ValueType>::clear()
 
 template <class ValueType> void ConfigObject<ValueType>::reopen(QString file)
 {
-    filename = "config/" + file;
     list.setAutoDelete(TRUE);
+
+    // First try to open the config file placed in the users .mixxx directory.
+    // If that fails, try the system wide CONFIG_PATH.
+
+    filename = file;
     Parse();
 }
 

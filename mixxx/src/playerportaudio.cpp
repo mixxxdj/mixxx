@@ -176,7 +176,7 @@ CSAMPLE *PlayerPortAudio::process(const CSAMPLE *, const int)
    Input:   .
    Output:  -
    -------- ------------------------------------------------------ */
-static int paCallback(void *, void *outputBuffer,
+int paCallback(void *, void *outputBuffer,
                       unsigned long framesPerBuffer,
                       PaTimestamp, void *_player)
 {

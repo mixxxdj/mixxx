@@ -12,7 +12,7 @@ class ControlRotary : public ControlPotmeter
 {
     Q_OBJECT
 public:
-    ControlRotary(ConfigKey *key, ControlPushButton *playbutton);
+    ControlRotary(ConfigKey key, ControlPushButton *playbutton);
     void updatecounter(int, int SRATE);
     short direction;
 public slots:

@@ -43,7 +43,8 @@ class ConfigValue
   public:
     ConfigValue() {};
     ConfigValue(QString _value) {value = _value;};
-    ConfigValue(int _value) { value = QString::number(_value);};
+    ConfigValue(int _value) { value = QString::number(_value); };
+    void valCopy(const ConfigValue _value) { value = _value.value; };
     QString value;
 };
 
@@ -60,14 +61,27 @@ class ConfigValueMidi : public ConfigValue
                              // while musicians operates on midi channels 1-16.
         else
             midichannel = 0; // Default to 0 (channel 1)
+        //qDebug("--1, midino: %i, midimask: %i, midichannel: %i",midino,midimask,midichannel);
     };
     ConfigValueMidi(int _midino, int _midimask, int _midichannel)
     {
+        //qDebug("--2");
         midino = _midino;
         midimask = _midimask;
         midichannel = _midichannel;
-        QTextIStream(&value) << midino << midimask << "ch" << midichannel;
-    }; 
+        QTextOStream(&value) << midino << " " << midimask << " ch " << midichannel;
+        //QTextIStream(&value) << midino << midimask << "ch" << midichannel;
+    };
+    void valCopy(const ConfigValueMidi v)
+    {
+        //qDebug("--1, midino: %i, midimask: %i, midichannel: %i",midino,midimask,midichannel);
+        midino = v.midino;
+        midimask = v.midimask;
+        midichannel = v.midichannel;
+        QTextOStream(&value) << midino << " " << midimask << " ch " << midichannel;
+        //qDebug("--1, midino: %i, midimask: %i, midichannel: %i",midino,midimask,midichannel);
+    }
+
     int   midino, midimask, midichannel;
 };
 
@@ -100,8 +114,10 @@ template <class ValueType> class ConfigObject
   protected:
     QPtrList< ConfigOption<ValueType> > list;
     QString filename;
-    
-    void Parse();
+
+    /** Loads and parses the configuration file. Returns false if the file could
+      * not be opened; otherwise true. */
+    bool Parse();
 };
 
 #endif

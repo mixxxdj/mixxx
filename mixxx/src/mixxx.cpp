@@ -65,6 +65,9 @@ MixxxApp::MixxxApp(QApplication *a)
 
   app = a;
 
+  // Ensure that a directory named ~/.mixxx exists
+  QDir().mkdir(QDir::homeDirPath().append("/.mixxx"));
+
   ///////////////////////////////////////////////////////////////////
   // call inits to invoke all other construction parts
   initActions();
@@ -76,23 +79,35 @@ MixxxApp::MixxxApp(QApplication *a)
   pDlg = 0;
 
   // Read the config file
-  config = new ConfigObject<ConfigValue>("mixxx.cfg"); 
+  config = new ConfigObject<ConfigValue>(QDir::homeDirPath().append("/.mixxx/mixxx.cfg"));
+
+  // Get directory where MIDI configurations are stored. If no is given, set to CONFIG_PATH
+  if (config->getValueString(ConfigKey("[Midi]","Configdir")).length() == 0)
+      config->set(ConfigKey("[Midi]","Configdir"),ConfigValue(CONFIG_PATH));
+
+  // If the diretory does not end with a "/" add one
+  if (!config->getValueString(ConfigKey("[Midi]","Configdir")).endsWith("/"))
+      config->set(ConfigKey("[Midi]","Configdir"),ConfigValue(config->getValueString(ConfigKey("[Midi]","Configdir")).append("/")));
+
 
   // Get list of available midi configurations, and read the default configuration. If no default
   // is given, use the first configuration found in the config directory.
-  QDir dir("config");
+  midiconfig = 0;
+  QDir dir(config->getValueString(ConfigKey("[Midi]","Configdir")));
   dir.setFilter(QDir::Files);
   dir.setNameFilter("*.midi.cfg *.MIDI.CFG");
   const QFileInfoList *list = dir.entryInfoList();
-  QFileInfoListIterator it(*list);        // create list iterator
-  QFileInfo *fi;                          // pointer for traversing
-  midiconfig = 0;
-  while ((fi=it.current()))
+  if (list!=0)
   {
-      midiConfigList.append(fi->fileName());
-      if (fi->fileName() == config->getValueString(ConfigKey("[Midi]","Configfile")))
-          midiconfig = new ConfigObject<ConfigValueMidi>(config->getValueString(ConfigKey("[Midi]","Configfile")));
-      ++it;   // goto next list element
+      QFileInfoListIterator it(*list);        // create list iterator
+      QFileInfo *fi;                          // pointer for traversing
+      while ((fi=it.current()))
+      {
+          midiConfigList.append(fi->fileName());
+          if (fi->fileName() == config->getValueString(ConfigKey("[Midi]","Configfile")))
+              midiconfig = new ConfigObject<ConfigValueMidi>(config->getValueString(ConfigKey("[Midi]","Configdir")).append(config->getValueString(ConfigKey("[Midi]","Configfile"))));
+          ++it;   // goto next list element
+      }
   }
   if (midiconfig == 0)
   {
@@ -103,7 +118,7 @@ MixxxApp::MixxxApp(QApplication *a)
       }
       else
       {
-          midiconfig = new ConfigObject<ConfigValueMidi>((*midiConfigList.at(0)).latin1());
+          midiconfig = new ConfigObject<ConfigValueMidi>(config->getValueString(ConfigKey("[Midi]","Configdir")).append((*midiConfigList.at(0)).latin1()));
           config->set(ConfigKey("[Midi]","Configfile"), ConfigValue((*midiConfigList.at(0)).latin1()));
       }
   }
@@ -112,7 +127,7 @@ MixxxApp::MixxxApp(QApplication *a)
 
   initView();
 
-  qDebug("Init playlist");
+  //qDebug("Init playlist");
   PlaylistKey = ConfigKey("[Playlist]","Directory");
   QDir d( config->getValueString(PlaylistKey ));
   if (config->getValueString(PlaylistKey ).length()<1 | !d.exists()) {
@@ -135,7 +150,7 @@ MixxxApp::MixxxApp(QApplication *a)
           this,                         SLOT(slotSelectPlay(QListViewItem *, const QPoint &, int)));
 
   // Open midi
-  qDebug("Init midi...");
+  //qDebug("Init midi...");
 #ifdef __ALSA__
   midi = new MidiObjectALSA(midiconfig,app,config->getValueString(ConfigKey("[Midi]","Device")));
 #endif
@@ -155,7 +170,7 @@ MixxxApp::MixxxApp(QApplication *a)
   control->config = midiconfig;
 
   // Initialize player with a desired buffer size
-  qDebug("Init player...");
+  //qDebug("Init player...");
 #ifdef __ALSA__
   player = new PlayerALSA(BUFFER_SIZE, &engines, config->getValueString(ConfigKey("[Soundcard]","Device")));
 #else
@@ -180,6 +195,9 @@ MixxxApp::MixxxApp(QApplication *a)
   // of a (temporary) stalled GUI thread.
   installEventFilter(this);
 
+  // Save main configuration file
+  config->Save();
+
   // Start engine
   engineStart();
 }
@@ -191,6 +209,8 @@ MixxxApp::~MixxxApp()
     delete control;
     delete midi;
     delete playSelectMenu;
+    delete config;
+    delete midiconfig;
 }
 
 bool MixxxApp::eventFilter(QObject *o, QEvent *e)
@@ -243,12 +263,12 @@ void MixxxApp::engineStart()
     master->slotChannelLeft(optionsLeft->isOn());
     master->slotChannelRight(optionsRight->isOn());
 
-    qDebug("Starting buffers...");
+    //qDebug("Starting buffers...");
     buffer1->start();
     buffer2->start();
 
     // Start audio
-    qDebug("Starting player...");
+    //qDebug("Starting player...");
     player->start(master);
 }
 
@@ -263,8 +283,8 @@ void MixxxApp::engineStop()
 }
 
 /** initializes all QActions of the application */
-void MixxxApp::initActions(){
-
+void MixxxApp::initActions()
+{
   QPixmap openIcon, saveIcon, newIcon;
   newIcon = QPixmap(filenew);
   openIcon = QPixmap(fileopen);
@@ -761,7 +781,7 @@ void MixxxApp::slotOptionsApplyPreferences()
     // Change MIDI configuration
     config->set(ConfigKey("[Midi]","Configfile"),pDlg->ComboBoxMidiconf->currentText().append(".midi.cfg"));
     //midiconfig->clear(); // (is currently not implemented correctly)
-    midiconfig->reopen(config->getValueString(ConfigKey("[Midi]","Configfile")));
+    midiconfig->reopen(config->getValueString(ConfigKey("[Midi]","Configdir")).append(config->getValueString(ConfigKey("[Midi]","Configfile"))));
 
     // Open MIDI device
     config->set(ConfigKey("[Midi]","Device"), pDlg->ComboBoxMididevice->currentText());

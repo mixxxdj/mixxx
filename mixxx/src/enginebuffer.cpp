@@ -35,18 +35,17 @@ EngineBuffer::EngineBuffer(QApplication *a, QWidget *m, DlgPlaycontrol *_playcon
 
   playposSliderLast = 0.;
   playcontrol = _playcontrol;
+  start_seek = 0;
 
   // Play button
-  ConfigKey k1(group, "play");
-  PlayButton = new ControlPushButton(&k1, simulated_latching);
+  PlayButton = new ControlPushButton(ConfigKey(group, "play"), simulated_latching);
   playcontrol->PushButtonPlay->controlButton = PlayButton;
   connect(playcontrol->PushButtonPlay, SIGNAL(pressed()), PlayButton, SLOT(pressed()));
   connect(playcontrol->PushButtonPlay, SIGNAL(released()), PlayButton, SLOT(released()));
   connect(PlayButton, SIGNAL(valueChanged(valueType)), this, SLOT(slotUpdatePlay(valueType)));
 
   // Playback rate slider
-  ConfigKey k2(group, "rate");
-  rateSlider = new ControlPotmeter(&k2, 0.9, 1.1);
+  rateSlider = new ControlPotmeter(ConfigKey(group, "rate"), 0.9, 1.1);
   rateSlider->slotSetPosition(64);
   rate.write(rateSlider->getValue());
   connect(playcontrol->SliderRate, SIGNAL(valueChanged(int)), rateSlider, SLOT(slotSetPosition(int)));
@@ -54,8 +53,7 @@ EngineBuffer::EngineBuffer(QApplication *a, QWidget *m, DlgPlaycontrol *_playcon
   connect(rateSlider, SIGNAL(updateGUI(int)), playcontrol->SliderRate, SLOT(setValue(int)));
 
   // Wheel to control playback position/speed
-  ConfigKey k3(group, "wheel");
-  wheel = new ControlRotary(&k3, PlayButton);
+  wheel = new ControlRotary(ConfigKey(group, "wheel"), PlayButton);
   connect(playcontrol->WheelPlaycontrol, SIGNAL(valueChanged(int)), wheel, SLOT(slotSetValue(int)));
   connect(wheel, SIGNAL(valueChanged(FLOAT_TYPE)), this, SLOT(slotUpdateRate(FLOAT_TYPE)));
   // Don't connect this, it results in an infinite loop:
@@ -304,8 +302,7 @@ void EngineBuffer::getchunk()
         //qDebug("Done reading.");
     
         readChunkLock.write(0.);
-    } else
-        qDebug("getchunk not processed");
+    }
 }
 
 /*

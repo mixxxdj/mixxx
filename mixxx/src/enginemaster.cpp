@@ -30,8 +30,7 @@ EngineMaster::EngineMaster(DlgMaster *master_dlg, DlgCrossfader *crossfader_dlg,
     channel2 = _channel2;
 
     // Crossfader
-    ConfigKey k(group, "crossfader");
-    crossfader = new ControlPotmeter(&k,-1.,1.);
+    crossfader = new ControlPotmeter(ConfigKey(group, "crossfader"),-1.,1.);
     connect(crossfader_dlg->SliderCrossfader, SIGNAL(valueChanged(int)), crossfader, SLOT(slotSetPosition(int)));
     connect(crossfader, SIGNAL(updateGUI(int)), crossfader_dlg->SliderCrossfader, SLOT(setValue(int)));
 
@@ -52,8 +51,8 @@ EngineMaster::~EngineMaster()
     delete crossfader;
     delete volume;
     delete clipping;
-    delete out;
-    delete out2;
+    delete [] out;
+    delete [] out2;
 }
 
 CSAMPLE *EngineMaster::process(const CSAMPLE *, const int buffer_size) {
@@ -62,7 +61,7 @@ CSAMPLE *EngineMaster::process(const CSAMPLE *, const int buffer_size) {
     if (left)
     {
         CSAMPLE *temp_1 = buffer1->process(0, buffer_size);
-	sampLeft = channel1->process(temp_1,buffer_size);
+        sampLeft = channel1->process(temp_1,buffer_size);
     } 
 
     if (right)
