@@ -12,21 +12,7 @@
 
 #include "engineobject.h"
 #include <math.h>
-
-#ifndef __KISSFFT__
-#ifndef __MACX__
-#include <sfftw.h>
-#include <srfftw.h>
-#endif
-#ifdef __MACX__
-#include <fftw.h>
-#include <rfftw.h>
-#endif
-#endif
-
-#ifdef __KISSFFT__
 #include "kiss_fftr.h"
-#endif
 
 class WindowKaiser;
 
@@ -65,19 +51,11 @@ public:
     CSAMPLE phase(int index);
 
 protected:
-#ifndef __KISSFFT__
-    /** Internal fftw plan */
-    rfftw_plan   plan_forward;
-    /** Internal fftw plans */
-    fftw_real   *tmp, *spectrum; // Temporary FFT buffers
-#endif
-#ifdef __KISSFFT__
     /** Kiss config */
     kiss_fftr_cfg kisscfg;
     /** Internal buffers */
     kiss_fft_scalar *spectrum;
     kiss_fft_cpx *tmp;
-#endif
     /** Length of the fft, and half the length of the fft */
     int    l, l_half; //l2
     /** Internal variables to determine if power and phase should be calculated

@@ -160,49 +160,6 @@ include( check.qbas )
 
 
 
-#   FFTW HEADERS (s) --------------------------------------------------
-OBJECT = sfftw.h
-TYPE = header
-DESCRIPTION =
-TIP_MESSAGE = "FFTW 2 headers needed for the Mixxx playback engine!"
-LINK_LIBS =
-OPTIONS =  exit_on_failure
-#----------------------------------------------------------------------
-# Check routines         (DON'T TOUCH!)
-include( check.qbas )
-#----------------------------------------------------------------------
-
-
-
-
-#   FFTW HEADERS (sr) -------------------------------------------------
-OBJECT = srfftw.h
-TYPE = header
-DESCRIPTION =
-TIP_MESSAGE = "FFTW 2 headers needed for the Mixxx playback engine!"
-LINK_LIBS =
-OPTIONS =  exit_on_failure
-#----------------------------------------------------------------------
-# Check routines         (DON'T TOUCH!)
-include( check.qbas )
-#----------------------------------------------------------------------
-
-
-
-
-#   FFTW --------------------------------------------------------------
-OBJECT = libsfftw.so
-TYPE = lib
-DESCRIPTION =  FFT version 2
-TIP_MESSAGE = "FFTW 2 lib needed for the Mixxx playback engine!"
-LINK_LIBS = -lsrfftw -lsfftw
-OPTIONS =  exit_on_failure    marked_static
-#----------------------------------------------------------------------
-# Check routines         (DON'T TOUCH!)
-include( check.qbas )
-#----------------------------------------------------------------------
-
-
 
 
 #   SNDFILE -----------------------------------------------------------
