@@ -40,7 +40,7 @@ private:
     ControlPotmeter *crossfader, *head_mix;
     EngineClipping *clipping, *head_clipping;
     CSAMPLE *out, *tmp, *tmp2, *tmp3;
-    bool left, right, head1, head2;
+    bool master1, master2, head1, head2;
 public:
     EngineMaster(DlgMaster *master_dlg, DlgCrossfader *crossfader_dlg,
                  DlgChannel *channel1_dlg, DlgChannel *channel2_dlg,
@@ -50,8 +50,8 @@ public:
     ~EngineMaster();
     CSAMPLE *process(const CSAMPLE *, const int);
 public slots:
-    void slotChannelLeft(bool toggle);
-    void slotChannelRight(bool toggle);
+    void slotChannelMaster1(bool toggle);
+    void slotChannelMaster2(bool toggle);
     void slotChannelHead1(int toggle);
     void slotChannelHead2(int toggle);
 };

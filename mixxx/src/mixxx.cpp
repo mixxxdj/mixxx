@@ -293,12 +293,12 @@ void MixxxApp::engineStart()
     //qDebug("Init master...");
     master = new EngineMaster(view->master, view->crossfader, view->channel1, view->channel2, buffer1, buffer2, channel1, channel2, "[Master]");
 
-    /** Connect signals from option menu, selecting processing of left and right channel, to
+    /** Connect signals from option menu, selecting processing of channel 1 & 2, to
         EngineMaster */
-    connect(optionsLeft, SIGNAL(toggled(bool)), master, SLOT(slotChannelLeft(bool)));
-    connect(optionsRight, SIGNAL(toggled(bool)), master, SLOT(slotChannelRight(bool)));
-    master->slotChannelLeft(optionsLeft->isOn());
-    master->slotChannelRight(optionsRight->isOn());
+    connect(optionsLeft, SIGNAL(toggled(bool)), master, SLOT(slotChannelMaster1(bool)));
+    connect(optionsRight, SIGNAL(toggled(bool)), master, SLOT(slotChannelMaster2(bool)));
+    master->slotChannelMaster1(optionsLeft->isOn());
+    master->slotChannelMaster2(optionsRight->isOn());
 
     //qDebug("Starting buffers...");
     buffer1->start();
@@ -687,49 +687,10 @@ void MixxxApp::slotOptionsPreferences()
     if (pDlg==0)
     {
         pDlg = new DlgPreferences(this);
-        QPtrList<Player::Info> *pInfo = player->getInfo();
 
         // Fill dialog with info
-
-        // Master sound card info
-        for (unsigned int j=0; j<pInfo->count(); j++)
-        {
-            Player::Info *p = pInfo->at(j);
-
-            // Name of device.
-            pDlg->ComboBoxSoundcardMaster->insertItem(p->name);
-
-            // If it's the first device, it becomes the default, if no device has been
-            // selected previously. Thus update its properties
-            slotOptionsPreferencesUpdateMasterDeviceOptions();
-
-            if (p->name == config->getValueString(ConfigKey("[Soundcard]","DeviceMaster")))
-            {
-                pDlg->ComboBoxSoundcardMaster->setCurrentItem(j);
-                slotOptionsPreferencesUpdateMasterDeviceOptions();
-            }
-        }
-
-        // Headphone soundcard info
-
-        // First device, "None"
-        pDlg->ComboBoxSoundcardHead->insertItem("None");
-        for (unsigned int j=0; j<pInfo->count(); j++)
-        {
-            Player::Info *p = pInfo->at(j);
-
-            // Name of device.
-            if (!(p->noChannels==2 && p->name==pDlg->ComboBoxSoundcardMaster->currentText()))
-            {    
-                pDlg->ComboBoxSoundcardHead->insertItem(p->name);
-
-                if (p->name == config->getValueString(ConfigKey("[Soundcard]","DeviceHeadphone")))
-                {
-                    pDlg->ComboBoxSoundcardHead->setCurrentItem(j);
-                    slotOptionsPreferencesUpdateHeadDeviceOptions();
-                }
-            }
-        }
+        slotOptionsPreferencesUpdateMasterDevice();
+        slotOptionsPreferencesUpdateHeadDevice();
 
         // Midi configuration
         int j=0;
@@ -761,14 +722,68 @@ void MixxxApp::slotOptionsPreferences()
         connect(pDlg->PushButtonOK,      SIGNAL(clicked()),      this, SLOT(slotOptionsSetPreferences()));
         connect(pDlg->PushButtonApply,   SIGNAL(clicked()),      this, SLOT(slotOptionsApplyPreferences()));
         connect(pDlg->PushButtonCancel,  SIGNAL(clicked()),      this, SLOT(slotOptionsClosePreferences()));
+        connect(pDlg->ComboBoxSoundcardMaster,  SIGNAL(activated(int)), this, SLOT(slotOptionsPreferencesUpdateHeadDevice()));
         connect(pDlg->ComboBoxSoundcardMaster,  SIGNAL(activated(int)), this, SLOT(slotOptionsPreferencesUpdateMasterDeviceOptions()));
-        connect(pDlg->ComboBoxSoundcardHead,    SIGNAL(activated(int)), this, SLOT(slotOptionsPreferencesUpdateHeadDeviceOptions()));
         connect(pDlg->ComboBoxSoundcardMaster,  SIGNAL(activated(int)), this, SLOT(slotOptionsPreferencesUpdateHeadDeviceOptions()));
+        connect(pDlg->ComboBoxSoundcardHead,    SIGNAL(activated(int)), this, SLOT(slotOptionsPreferencesUpdateMasterDevice()));
+        connect(pDlg->ComboBoxSoundcardHead,    SIGNAL(activated(int)), this, SLOT(slotOptionsPreferencesUpdateHeadDeviceOptions()));
         connect(pDlg->ComboBoxSoundcardHead,    SIGNAL(activated(int)), this, SLOT(slotOptionsPreferencesUpdateMasterDeviceOptions()));
         connect(pDlg->PushButtonBrowsePlaylist, SIGNAL(clicked()),this,SLOT(slotBrowsePlaylistDir()));
 
         // Show dialog
         pDlg->show();
+    }
+}
+
+void MixxxApp::slotOptionsPreferencesUpdateMasterDevice()
+{
+    // Master sound card info
+    pDlg->ComboBoxSoundcardMaster->clear();
+    
+    QPtrList<Player::Info> *pInfo = player->getInfo();
+    for (unsigned int j=0; j<pInfo->count(); j++)
+    {
+        Player::Info *p = pInfo->at(j);
+
+        // Name of device.
+        pDlg->ComboBoxSoundcardMaster->insertItem(p->name);
+
+        // If it's the first device, it becomes the default, if no device has been
+        // selected previously. Thus update its properties
+        slotOptionsPreferencesUpdateMasterDeviceOptions();
+
+        if (p->name == config->getValueString(ConfigKey("[Soundcard]","DeviceMaster")) &&
+            !(p->noChannels==2 && p->name==pDlg->ComboBoxSoundcardHead->currentText()))
+        {
+            pDlg->ComboBoxSoundcardMaster->setCurrentItem(j);
+            slotOptionsPreferencesUpdateMasterDeviceOptions();
+        }
+    }
+}
+
+void MixxxApp::slotOptionsPreferencesUpdateHeadDevice()
+{
+    // Headphone sound card info
+    pDlg->ComboBoxSoundcardHead->clear();
+
+    // First device, "None"
+    pDlg->ComboBoxSoundcardHead->insertItem("None");
+    slotOptionsPreferencesUpdateHeadDeviceOptions();
+
+    QPtrList<Player::Info> *pInfo = player->getInfo();
+    for (unsigned int j=0; j<pInfo->count(); j++)
+    {
+        Player::Info *p = pInfo->at(j);
+
+        // Name of device.
+        pDlg->ComboBoxSoundcardHead->insertItem(p->name);
+
+        if (p->name == config->getValueString(ConfigKey("[Soundcard]","DeviceHeadphone")) &&
+            !(p->noChannels==2 && p->name==pDlg->ComboBoxSoundcardMaster->currentText()))
+        {
+            pDlg->ComboBoxSoundcardHead->setCurrentItem(j+1);
+            slotOptionsPreferencesUpdateHeadDeviceOptions();
+        }
     }
 }
 
@@ -822,6 +837,9 @@ void MixxxApp::slotOptionsPreferencesUpdateMasterDeviceOptions()
 
 void MixxxApp::slotOptionsPreferencesUpdateHeadDeviceOptions()
 {
+    // Ensure sample rate list is contains all rates the master device supports
+    slotOptionsPreferencesUpdateMasterDeviceOptions();
+
     QPtrList<Player::Info> *pInfo = player->getInfo();
     Player::Info *p = pInfo->first();
 
@@ -846,6 +864,25 @@ void MixxxApp::slotOptionsPreferencesUpdateHeadDeviceOptions()
                     j++;
                 }
             }
+
+            // Limit sample rates to those provided by both cards. If no head card is selected, do nothing
+            if (pDlg->ComboBoxSoundcardHead->currentText() != "None")
+            {
+                {for (int i=0; i<pDlg->ComboBoxSamplerates->count(); i++)
+                {
+                    QString srateStr = pDlg->ComboBoxSamplerates->text(i);
+                    int srate = srateStr.left(srateStr.length()-3).toInt();
+
+                    bool foundSrate = false;
+                    for (unsigned int j=0; j<p->sampleRates.size(); j++)
+                    {
+                        if (p->sampleRates[j] == srate)
+                            foundSrate = true;
+                    }
+                    if (!foundSrate)
+                        pDlg->ComboBoxSamplerates->removeItem(i);
+                }}
+            }
         }
 
         // Get next device
@@ -867,8 +904,12 @@ void MixxxApp::slotOptionsApplyPreferences()
     
     int bufferSize = BUFFER_SIZE;
 
-    // Perform changes to master sound card setup
+    // Stop playback
+    if (playerSlave != 0)
+        playerSlave->stop();
     player->stop();
+
+    // Perform changes to master sound card setup
     player->reopen(config->getValueString(ConfigKey("[Soundcard]","DeviceMaster")),
            config->getValueString(ConfigKey("[Soundcard]","Samplerate")).toInt(),
            config->getValueString(ConfigKey("[Soundcard]","Bits")).toInt(),
@@ -878,9 +919,6 @@ void MixxxApp::slotOptionsApplyPreferences()
     player->start(master);
 
     // And the headphone card
-    if (playerSlave != 0)
-        playerSlave->stop();
-
     if (config->getValueString(ConfigKey("[Soundcard]","DeviceHeadphone")) != "None")
     {
         if (config->getValueString(ConfigKey("[Soundcard]","DeviceHeadphone")) != config->getValueString(ConfigKey("[Soundcard]","DeviceMaster")))
@@ -897,7 +935,7 @@ void MixxxApp::slotOptionsApplyPreferences()
                                                   0,
                                                   config->getValueString(ConfigKey("[Soundcard]","ChannelHeadphone")).toInt());
     }
-    else if (playerSlave == 0)
+    else if (playerSlave != 0)
     {
         delete playerSlave;
         playerSlave = 0;

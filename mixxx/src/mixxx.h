@@ -114,8 +114,11 @@ class MixxxApp : public QMainWindow
     /** Preference dialog */
     void slotOptionsPreferences();
     /** Update QComboBox values when devices are changed */
+    void slotOptionsPreferencesUpdateMasterDevice();
+    void slotOptionsPreferencesUpdateHeadDevice();
     void slotOptionsPreferencesUpdateMasterDeviceOptions();
     void slotOptionsPreferencesUpdateHeadDeviceOptions();
+
     /** Apply preferences */
     void slotOptionsApplyPreferences();
     /** Set preferences from dialog */
