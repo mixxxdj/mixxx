@@ -43,23 +43,23 @@ EngineBuffer::EngineBuffer(PowerMate *_powermate, const char *_group, WVisual *p
     // Play button
     ControlPushButton *p = new ControlPushButton(ConfigKey(group, "play"));
     playButton = new ControlEngine(p);
-    playButton->setNotify(this, (EngineMethod)&EngineBuffer::controlPlay);
+	connect(playButton, SIGNAL(valueChanged(double)), this, SLOT(slotControlPlay(double)));
     playButton->set(0);
 
     // Cue set button:
     p = new ControlPushButton(ConfigKey(group, "cue_set"));
     buttonCueSet = new ControlEngine(p);
-    buttonCueSet->setNotify(this, (EngineMethod)&EngineBuffer::controlCueSet);
+	connect(buttonCueSet, SIGNAL(valueChanged(double)), this, SLOT(slotControlCueSet(double)));
 
     // Cue goto button:
     p = new ControlPushButton(ConfigKey(group, "cue_goto"));
     buttonCueGoto = new ControlEngine(p);
-    buttonCueGoto->setNotify(this, (EngineMethod)&EngineBuffer::controlCueGoto);
+	connect(buttonCueGoto, SIGNAL(valueChanged(double)), this, SLOT(slotControlCueGoto(double)));
 
     // Cue preview button:
     p = new ControlPushButton(ConfigKey(group, "cue_preview"));
     buttonCuePreview = new ControlEngine(p);
-    buttonCuePreview->setNotify(this, (EngineMethod)&EngineBuffer::controlCuePreview);
+	connect(buttonCuePreview, SIGNAL(valueChanged(double)), this, SLOT(slotControlCuePreview(double)));
 
     // Playback rate slider
     ControlPotmeter *p2 = new ControlPotmeter(ConfigKey(group, "rate"), 0.9f, 1.1f);
@@ -72,7 +72,7 @@ EngineBuffer::EngineBuffer(PowerMate *_powermate, const char *_group, WVisual *p
     // Slider to show and change song position
     ControlPotmeter *controlplaypos = new ControlPotmeter(ConfigKey(group, "playposition"), 0., 1.);
     playposSlider = new ControlEngine(controlplaypos);
-    playposSlider->setNotify(this,(EngineMethod)&EngineBuffer::controlSeek);
+    connect(playposSlider, SIGNAL(valueChanged(double)), this, SLOT(slotControlSeek(double)));
 
     // Potmeter used to communicate bufferpos_play to GUI thread
     ControlPotmeter *controlbufferpos = new ControlPotmeter(ConfigKey(group, "bufferplayposition"), 0., READBUFFERSIZE);
@@ -171,7 +171,7 @@ int EngineBuffer::getPlaypos(int) // int Srate
 }
 
 
-void EngineBuffer::controlSeek(double change)
+void EngineBuffer::slotControlSeek(double change)
 {
 //    qDebug("seeking... %f",change);
 
@@ -192,13 +192,13 @@ void EngineBuffer::controlSeek(double change)
 }
 
 // Set the cue point at the current play position:
-void EngineBuffer::controlCueSet()
+void EngineBuffer::slotControlCueSet(double)
 {
     reader->f_dCuePoint = filepos_play;
 }
 
 // Goto the cue point:
-void EngineBuffer::controlCueGoto()
+void EngineBuffer::slotControlCueGoto(double)
 {
     // Seek to cue point
     reader->requestSeek(reader->f_dCuePoint);
@@ -208,7 +208,7 @@ void EngineBuffer::controlCueGoto()
     playButton->set(1.);
 }
 
-void EngineBuffer::controlCuePreview()
+void EngineBuffer::slotControlCuePreview(double)
 {
 //    qDebug("cue preview: %d",buttonCuePreview->get());
     if (buttonCuePreview->get()==0.)
@@ -221,15 +221,15 @@ void EngineBuffer::controlCuePreview()
     else
     {
         // Seek to cue point and start playing
-        controlCueGoto();
+        slotControlCueGoto();
     }
 }
 
-void EngineBuffer::controlPlay()
+void EngineBuffer::slotControlPlay(double)
 {
     // Set cue when play button is pressed for stopping the sound
     if (playButton->get()==0.)
-        controlCueSet();
+        slotControlCueSet();
 }
 
 /*
