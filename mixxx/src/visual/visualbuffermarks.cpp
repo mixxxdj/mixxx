@@ -20,6 +20,7 @@
 #include "controlobject.h"
 #include "configobject.h"
 #include "controlobjectthreadmain.h"
+#include "player.h"
 
 VisualBufferMarks::VisualBufferMarks(ReaderExtract *pReaderExtract, EngineBuffer *pEngineBuffer, const char *group) : VisualBuffer(pReaderExtract, pEngineBuffer, group)
 {
@@ -75,7 +76,7 @@ void VisualBufferMarks::slotUpdateCuePoint(double v)
         //qDebug("cue %f, play %f",m_pCuePoint->get(),m_pAbsPlaypos->get());
         float fCuediff = m_dAbsPlaypos-v;
         float fCuePos = m_dBufferPlaypos-fCuediff;
-        fCuePos = (fCuePos/m_fReaderExtractFactor)/m_fResampleFactor;
+        fCuePos = ((fCuePos-Player::getBufferSize())/m_fReaderExtractFactor)/m_fResampleFactor;
         while (fCuePos<0)
             fCuePos += (float)m_iLen;
         m_iCuePosition = (int)fCuePos;

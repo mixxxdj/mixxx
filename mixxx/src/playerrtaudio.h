@@ -52,8 +52,6 @@ protected:
     int getChannelNo(QString name);
     /** Id of currently open device. -1 if no device is open */
     int m_devId;
-    /** Number of open channels */
-    int m_iChannels;
     /** Channels used for each output from Mixxx. Set to -1 when not in use */
     int m_iMasterLeftCh, m_iMasterRigthCh, m_iHeadLeftCh, m_iHeadRightCh;
     /** True if RtAudio was sucessfully initialized */

@@ -61,7 +61,7 @@ PlayerALSA::PlayerALSA()
     masterleft = masterright = -1;
     headleft = headright = -1;
     twrite = false;
-    max_channels = alsa_channels;
+    m_iChannels = alsa_channels;
     qDebug("Alsa constructed");
 }
 
@@ -159,7 +159,7 @@ bool PlayerALSA::open()
 	}
 //	devname = rx.cap(1);
 	temp = rx.cap(2).toInt();
-        if (temp > 0 && temp <= max_channels)
+        if (temp > 0 && temp <= m_iChannels)
 	{
 	   masterleft = temp - 1;
 	}
@@ -180,7 +180,7 @@ bool PlayerALSA::open()
 	    qWarning("device name mismatch, only one device supported");
 	}
 	temp = rx.cap(2).toInt();
-	if (temp > 0 && temp <= max_channels)
+	if (temp > 0 && temp <= m_iChannels)
 	{
 	    masterright = temp - 1;
         }
@@ -201,7 +201,7 @@ bool PlayerALSA::open()
 	    qWarning("device name mismatch, only one device supported");
 	}
 	temp = rx.cap(2).toInt();
-	if (temp > 0 && temp <= max_channels)
+	if (temp > 0 && temp <= m_iChannels)
 	{
 	    headleft = temp - 1;
 	}
@@ -222,7 +222,7 @@ bool PlayerALSA::open()
 	    qWarning("device name mismatch, only one device supported");
 	}
 	temp = rx.cap(2).toInt();
-	if (temp > 0 && temp <= max_channels)
+	if (temp > 0 && temp <= m_iChannels)
 	{
 	    headright = temp - 1;
 	}
@@ -292,7 +292,7 @@ void PlayerALSA::run()
     if (isformatfloat) {
         float *optr, *output;
 
-        output = new float[buffer_size * max_channels];
+        output = new float[buffer_size * m_iChannels];
         qDebug("Alsa allocating output buffer (FLOAT) %p", output);
 
         while (twrite)
@@ -301,7 +301,7 @@ void PlayerALSA::run()
 	    optr = output;
 	    for (int i = 0; i < (int) period_size; i++)
 	    {
-	        for (int j = 0; j < max_channels; j++) optr[j] = 0;
+	        for (int j = 0; j < m_iChannels; j++) optr[j] = 0;
 	        if (masterleft >= 0)  optr[masterleft]  = *sptr / 32768.;
 	        sptr++;
 	        if (masterright >= 0) optr[masterright] = *sptr / 32768.;
@@ -310,7 +310,7 @@ void PlayerALSA::run()
 	        sptr++;
 	        if (headright >= 0) optr[headright] = *sptr / 32768.;
 	        sptr++;
-	        optr += max_channels;
+	        optr += m_iChannels;
 	    }
 	    ctr = period_size;
 	    optr = output;
@@ -323,7 +323,7 @@ void PlayerALSA::run()
 		    }
 		    break;
 		}
-	        optr += err*max_channels;
+	        optr += err*m_iChannels;
 	        ctr -= err;
 	    }
         }
@@ -331,7 +331,7 @@ void PlayerALSA::run()
     } else {
         short int *optr, *output;
 
-        output = new short int[buffer_size * max_channels];
+        output = new short int[buffer_size * m_iChannels];
         qDebug("Alsa allocating output buffer (S16) %p", output);
 
         while (twrite)
@@ -340,7 +340,7 @@ void PlayerALSA::run()
 	    optr = output;
 	    for (int i = 0; i < (int) period_size; i++)
 	    {
-	       for (int j = 0; j < max_channels; j++) optr[j] = 0;
+	       for (int j = 0; j < m_iChannels; j++) optr[j] = 0;
 	       if (masterleft >= 0)  optr[masterleft]  = (short int) *sptr;
 	       sptr++;
 	       if (masterright >= 0) optr[masterright] = (short int) *sptr;
@@ -349,7 +349,7 @@ void PlayerALSA::run()
 	       sptr++;
 	       if (headright >= 0) optr[headright] = (short int) *sptr;
 	       sptr++;
-	       optr += max_channels;
+	       optr += m_iChannels;
 	    }
 	    ctr = period_size;
 	    optr = output;
@@ -362,7 +362,7 @@ void PlayerALSA::run()
 		    }
 		    break;
 		}
-	        optr += err*max_channels;
+	        optr += err*m_iChannels;
 	        ctr -= err;
 	    }
         }
@@ -514,28 +514,27 @@ int PlayerALSA::set_hwparams()
     unsigned int buffer_time = 500000;	/* ring buffer length in us */
     unsigned int period_time = 100000;	/* period time in us */
 
-
     int err, dir;
 
     /* choose all parameters */
     err = snd_pcm_hw_params_any(handle, hwparams);
     if (err < 0)
     {
-	qWarning("Broken configuration for playback: no configurations available: %s\n", snd_strerror(err));
-	return err;
+        qWarning("Broken configuration for playback: no configurations available: %s\n", snd_strerror(err));
+        return err;
     }
     /* set the interleaved read/write format */
     err = snd_pcm_hw_params_set_access(handle, hwparams, alsa_access);
     if (err < 0)
     {
-	qWarning("Access type not available for playback: %s\n", snd_strerror(err));
-	return err;
+        qWarning("Access type not available for playback: %s\n", snd_strerror(err));
+        return err;
     }
     /* set the sample format */
     err = snd_pcm_hw_params_set_format(handle, hwparams, SND_PCM_FORMAT_FLOAT);
     if (err < 0)
     {
-	qWarning("Sample format (FLOAT) not available for playback: %s\n", snd_strerror(err));
+        qWarning("Sample format (FLOAT) not available for playback: %s\n", snd_strerror(err));
         qWarning("Falling back to S16");
         err = snd_pcm_hw_params_set_format(handle, hwparams, SND_PCM_FORMAT_S16);
         if (err < 0) {
@@ -551,23 +550,23 @@ int PlayerALSA::set_hwparams()
     err = snd_pcm_hw_params_get_channels_min(hwparams, &rate);
     if (err < 0)
     {
-	qWarning("Channels count (%i) not available for playbacks: %s\n", rate, snd_strerror(err));
+        qWarning("Channels count (%i) not available for playbacks: %s\n", rate, snd_strerror(err));
     }
     qDebug("Channels min %d", rate);
     err = snd_pcm_hw_params_get_channels_max(hwparams, &rate);
     if (err < 0)
     {
-	qWarning("Channels count (%i) not available for playbacks: %s\n", rate, snd_strerror(err));
+        qWarning("Channels count (%i) not available for playbacks: %s\n", rate, snd_strerror(err));
     }
     qDebug("Channels max %d", rate);
-    max_channels = min(rate, alsa_channels);
-    qDebug("Set channels = %d", max_channels);
+    m_iChannels = min(rate, alsa_channels);
+    qDebug("Set channels = %d", m_iChannels);
 
     /* set the count of channels */
-    err = snd_pcm_hw_params_set_channels(handle, hwparams, max_channels);
+    err = snd_pcm_hw_params_set_channels(handle, hwparams, m_iChannels);
     if (err < 0)
     {
-	qWarning("Channels count (%i) not available for playbacks: %s\n", max_channels, snd_strerror(err));
+	qWarning("Channels count (%i) not available for playbacks: %s\n", m_iChannels, snd_strerror(err));
 	return err;
     }
     /* set the stream rate */

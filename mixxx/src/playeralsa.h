@@ -86,8 +86,6 @@ protected:
 
     /** True if devices are open */
     bool isopen;
-    /** Channels used for each output from Mixxx. Set to -1 when not in use */
-    int max_channels;
     int masterleft, masterright, headleft, headright;
 
 #ifdef PLAYERTEST
