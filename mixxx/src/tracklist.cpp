@@ -26,7 +26,8 @@
 #include "reader.h"
 #include "wtracktable.h"
 #include "wtracktableitem.h"
-
+#include "controlpotmeter.h"
+#include "controlpushbutton.h"
 
 TrackList::TrackList( const QString sDirectory, WTrackTable *ptableTracks,
                       QLabel *text1, QLabel *text2,
@@ -39,6 +40,19 @@ TrackList::TrackList( const QString sDirectory, WTrackTable *ptableTracks,
     m_pBuffer1 = buffer1;
     m_pBuffer2 = buffer2;
 
+    // Construct controlpotmeter for determining end of track mode
+    m_pEndOfTrackModeCh1 = new ControlPotmeter(ConfigKey("[Channel1]","EndOfTrackMode"), 1., 4.);
+    m_pEndOfTrackModeCh2 = new ControlPotmeter(ConfigKey("[Channel2]","EndOfTrackMode"), 1., 4.);   
+    // ***make connections...
+
+    // Connect end-of-track signals to this object
+    ControlObject *c = (ControlObject *)m_pEndOfTrackModeCh1;
+    ControlPushButton *p;
+    p = (ControlPushButton *)c->getControl(ConfigKey("[Channel1]","EndOfTrack"));
+    connect(p, SIGNAL(valueChanged(FLOAT_TYPE)), this, SLOT(slotEndOfTrackCh1(FLOAT_TYPE)));
+    p = (ControlPushButton *)c->getControl(ConfigKey("[Channel2]","EndOfTrack"));
+    connect(p, SIGNAL(valueChanged(FLOAT_TYPE)), this, SLOT(slotEndOfTrackCh2(FLOAT_TYPE)));    
+    
     // Update the track list by reading the xml file, and adding new files:
     UpdateTracklist();
 
@@ -48,8 +62,8 @@ TrackList::TrackList( const QString sDirectory, WTrackTable *ptableTracks,
     playSelectMenu->insertItem(QIconSet(b_xpm), "Player B",this, SLOT(slotChangePlay_2()));
 
     // Connect the right click to the slot where the menu is shown:
-	connect( m_ptableTracks, SIGNAL( pressed( int, int, int, const QPoint &) ),
-		                     SLOT( slotClick( int, int, int, const QPoint &) ) );
+    connect(m_ptableTracks, SIGNAL(pressed(int, int, int, const QPoint &)),
+                            SLOT(slotClick(int, int, int, const QPoint &)));
 
 }
 
@@ -140,6 +154,16 @@ void TrackList::UpdateTracklist()
 
 	// Update the scores for all the tracks:
 	UpdateScores();
+}
+
+void TrackList::slotEndOfTrackCh1(FLOAT_TYPE)
+{
+    qDebug("TrackList: end of track");
+}
+
+void TrackList::slotEndOfTrackCh2(FLOAT_TYPE)
+{
+    qDebug("TrackList: end of track");
 }
 
 /*
@@ -300,7 +324,6 @@ TrackInfoObject *TrackList::FileExistsInList( const QString sFilename )
 */
 void TrackList::slotChangePlay_1()
 {
-    qDebug("Select track 1");
     TrackInfoObject *track = m_lTracks.at(m_ptableTracks->text(m_ptableTracks->currentRow(), COL_INDEX ).toInt());
         
     // Update score:

@@ -94,6 +94,8 @@ private:
 
     ControlEngine *playButton, *rateSlider, *wheel, *playposSlider, *bufferposSlider, *audioBeatMark;
     ControlEngine *buttonCueSet, *buttonCueGoto, *buttonCuePreview;
+    /** Control used to signal when at end of file */
+    ControlEngine *m_pTrackEnd;
     /** Control used to input desired playback BPM */
     ControlEngine *bpmControl;
     /** Control used to input beat. If this is used, only one beat is played, until a new beat mark is received from the ControlObject */

@@ -78,6 +78,10 @@ EngineBuffer::EngineBuffer(PowerMate *_powermate, const char *_group, WVisual *p
     ControlPotmeter *controlbufferpos = new ControlPotmeter(ConfigKey(group, "bufferplayposition"), 0., READBUFFERSIZE);
     bufferposSlider = new ControlEngine(controlbufferpos);
 
+    // m_pTrackEnd is used to signal when at end of file during playback
+    p = new ControlPushButton(ConfigKey(group, "EndOfTrack"));
+    m_pTrackEnd = new ControlEngine(p);
+    
     // BPM control
     ControlBeat *p4 = new ControlBeat(ConfigKey(group, "bpm"));
     bpmControl = new ControlEngine(p4);
@@ -141,6 +145,7 @@ EngineBuffer::~EngineBuffer()
     delete buffer;
     delete scale;
     delete bufferposSlider;
+    delete m_pTrackEnd;
 }
 
 Reader *EngineBuffer::getReader()
@@ -254,6 +259,7 @@ inline bool even(long n)
 
 CSAMPLE *EngineBuffer::process(const CSAMPLE *, const int buf_size)
 {    
+    // pause can be locked if the reader is currently loading a new track.
     if (pause.tryLock())
     {
         // Try to fetch info from the reader
@@ -480,6 +486,15 @@ CSAMPLE *EngineBuffer::process(const CSAMPLE *, const int buf_size)
 
             // Update bufferposSlider
             bufferposSlider->set((CSAMPLE)bufferpos_play);
+        }
+
+        // If playbutton is pressed, check if we are at start or end of track. change trackend status
+        // if that is the case
+        if (playButton->get()==1. && m_pTrackEnd->get()==0. &&
+            ((filepos_play<=0. && backwards==true) || (filepos_play>=file_length_old && backwards==false)))
+        {
+            qDebug("EngineBuffer: End of track");   
+            m_pTrackEnd->set(1.);
         }
 
         pause.unlock();
