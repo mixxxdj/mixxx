@@ -25,10 +25,50 @@
 #include "../enginebuffer.h"
 #include "../mathstuff.h"
 
-/**
- * Default Constructor.
- */
-VisualBuffer::VisualBuffer(ReaderExtract *pReaderExtract, EngineBuffer *pEngineBuffer, const char *)
+VisualBuffer::VisualBuffer(EngineBuffer *pEngineBuffer, const char *group)
+{
+    Q_ASSERT(pEngineBuffer);
+
+    m_pReaderExtract = 0;
+    m_pEngineBuffer = pEngineBuffer;
+    
+    m_pRate = ControlObject::getControl(ConfigKey(group, "rateEngine"));
+    
+    m_pSource = 0;
+
+    m_fResampleFactor = 1.f;
+    m_fDisplayRate = MAXDISPLAYRATE;
+
+    m_fDisplayFactor = 1.;
+    
+    // Length of this buffer. 
+    m_iLen = m_fDisplayRate*READBUFFERSIZE/(pEngineBuffer->getPlaySrate());
+    if (!even(m_iLen))
+        m_iLen--;
+    m_iSourceLen = m_iLen;
+        
+    // Determine conversion factor between ReaderExtractWave and the m_pReaderExtract object
+    m_fReaderExtractFactor = READBUFFERSIZE/m_iSourceLen;
+
+    // Number of samples from this buffer to display
+    m_iDisplayLen = m_iLen-(2*m_iLen/READCHUNK_NO);
+
+    // Allocate buffer in video memory
+    m_pBuffer = new GLfloat[3*m_iLen];
+
+    // Reset buffer
+    GLfloat *p = m_pBuffer;
+    for (int i=0; i<m_iLen; i++)
+    {
+        *p++ = (float)i;
+        *p++ = 0.;
+        *p++ = 0.;
+    }
+    
+    installEventFilter(this);
+}
+
+VisualBuffer::VisualBuffer(ReaderExtract *pReaderExtract, EngineBuffer *pEngineBuffer, const char *group)
 {
     m_pReaderExtract = pReaderExtract;
     m_pEngineBuffer = pEngineBuffer;
@@ -98,6 +138,8 @@ bufInfo VisualBuffer::getVertexArray()
     m_dBufferPlaypos = m_pEngineBuffer->getBufferPlaypos();
     m_pEngineBuffer->unlockPlayposVars();
 
+    Q_ASSERT(m_dBufferPlaypos>=0.);
+    
     // Convert playpos (minus latency) to DISPLAYRATE
     float fPos = ((((m_dBufferPlaypos-Player::getBufferSize())/m_fReaderExtractFactor)/m_fResampleFactor)-(float)m_iDisplayLen/2.f);
 
@@ -121,6 +163,9 @@ bufInfo VisualBuffer::getVertexArray()
     i.p2 = m_pBuffer;
     i.len2 = m_iDisplayLen-i.len1;
     i.corr = fPos-(float)iPos;
+
+	Q_ASSERT(i.len1>=0);
+	Q_ASSERT(i.len2>=0);
 
 //    qDebug("Total pos %i",i.len1+i.len2);
 //    std::cout << "playpos " << m_pPlaypos->getValue() << ", pos " << iPos << "\n"; //", len1 " << i.len1 << ", len2 " << i.len2 << ", displayLen " << m_iDisplayLen << "\n";

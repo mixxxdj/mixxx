@@ -188,9 +188,13 @@ void VisualController::resize(GLsizei _width,GLsizei _height)
   
 int VisualController::add(VisualObject * obj)
 {
-    objects.push_back(obj);
-    int id=idCount;
-//    qDebug("id %i",id);
+    // DIRTY HACK TO HAVE TEMPORALS (ID 4 and 5) DRAWN ABOVE WAVEFORMS!!!
+    if (idCount>=4)    
+        objects.push_front(obj);
+    else
+        objects.push_back(obj);
+    
+    int id=idCount;    
     idCount++;
 
     return id;

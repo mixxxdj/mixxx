@@ -34,6 +34,11 @@ public:
     void update(int iPos, int iLen);
     void draw(GLfloat *p, int iLen, float xscale);
 
+    void setMaterialCue(Material *pMaterial);
+
+protected:
+    Material *m_pMaterialCue; ///< The material of the cue points.
+
 protected slots:
     void slotUpdateCuePoint(double);
 

@@ -77,7 +77,15 @@ VisualDisplay::VisualDisplay(VisualBuffer *pVisualBuffer, const char *type, cons
     }
     else if (QString(type)=="hfc")
     {
-        qDebug("hfc");
+        fishEyeSignal->setMaterial(&m_materialHfc);
+        preSignal->setMaterial(&m_materialHfc);
+        postSignal->setMaterial(&m_materialHfc);
+        signal->setMaterial(&m_materialHfc);
+        box->setMaterial(&m_materialHfc);
+        playPosMarker = 0;
+    }
+    else if (QString(type)=="temporal")
+    {
         fishEyeSignal->setMaterial(&m_materialHfc);
         preSignal->setMaterial(&m_materialHfc);
         postSignal->setMaterial(&m_materialHfc);
@@ -259,6 +267,26 @@ void VisualDisplay::setColorHfc(float r, float g, float b)
     m_materialHfc.specular[3] = 1.0f;
 
     m_materialHfc.shininess = 128;
+}
+
+void VisualDisplay::setColorCue(float r, float g, float b)
+{
+    m_materialCue.ambient[0] = r;
+    m_materialCue.ambient[1] = g;
+    m_materialCue.ambient[2] = b;
+    m_materialCue.ambient[3] = 1.0f;
+
+    m_materialCue.diffuse[0] = r;
+    m_materialCue.diffuse[1] = g;
+    m_materialCue.diffuse[2] = b;
+    m_materialCue.diffuse[3] = 1.0f;
+
+    m_materialCue.specular[0] = r;
+    m_materialCue.specular[1] = g;
+    m_materialCue.specular[2] = b;
+    m_materialCue.specular[3] = 1.0f;
+
+    m_materialCue.shininess = 128;
 }
 
 void VisualDisplay::setColorBeat(float r, float g, float b)

@@ -98,10 +98,10 @@ void VisualBufferMarks::draw(GLfloat *p, int iLen, float xscale)
         {
             // Cue point
             float a[4];
-            a[0] = m_materialFg.ambient[0];
-            a[1] = m_materialFg.ambient[1];
-            a[2] = m_materialFg.ambient[2];
-            a[3] = m_materialFg.ambient[3];
+            a[0] = 0.; //m_materialFg.ambient[0];
+            a[1] = 0.; //m_materialFg.ambient[1];
+            a[2] = 0.; //m_materialFg.ambient[2];
+            a[3] = 1.; //m_materialFg.ambient[3];
             glMaterialfv(GL_FRONT_AND_BACK,GL_AMBIENT,a);
 
             glBegin(GL_POLYGON);
@@ -146,3 +146,8 @@ void VisualBufferMarks::draw(GLfloat *p, int iLen, float xscale)
         }
     }
 }
+
+void VisualBufferMarks::setMaterialCue(Material *pMaterial)
+{
+    m_pMaterialCue = pMaterial;
+};
