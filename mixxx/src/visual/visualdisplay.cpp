@@ -123,7 +123,7 @@ void VisualDisplay::draw(GLenum mode)
         i1.len2 = noutside-i1.len1;
         //std::cout << "i1: len1: " << i1.len1 << ", len2: " << i1.len2 << "\n";
 
-        i3.corr = b.corr;
+        i2.corr = 0.;//b.corr;
         i2.p1 = i1.p1+noutside*3;
         i2.p2 = i1.p2+(i1.len2*3);
         i2.len1 = max(0,min(b.len1-noutside,nfish));

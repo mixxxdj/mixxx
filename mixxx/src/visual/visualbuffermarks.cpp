@@ -60,7 +60,7 @@ void VisualBufferMarks::draw(GLfloat *p, int iLen, float xscale)
 //    glDrawArrays(GL_LINE_STRIP,0,iLen);
 
     // Ensures constant width of beat marks regardles for scaling
-    float kfWidth = 1.5*(1./xscale);
+    float kfWidth = 1.*(1./xscale);
 
     for (int i=0; i<iLen*3; i+=3)
     {
@@ -80,7 +80,7 @@ void VisualBufferMarks::draw(GLfloat *p, int iLen, float xscale)
             array[ 9] = p[i]+p[i+1]-kfWidth;
             array[10] = 1.;
             array[11] = p[i+2];
-            
+
             glVertexPointer(3, GL_FLOAT, 0, array);
             glEnableClientState(GL_VERTEX_ARRAY);
             glDrawArrays(GL_POLYGON, 0,4);
@@ -93,10 +93,16 @@ void VisualBufferMarks::draw(GLfloat *p, int iLen, float xscale)
 */
 
             glBegin(GL_POLYGON);
-            glVertex3f(p[i]+p[i+1]-kfWidth,-1.,0.);
-            glVertex3f(p[i]+p[i+1]+kfWidth,-1.,0.);
-            glVertex3f(p[i]+p[i+1]+kfWidth, 1.,0.);
-            glVertex3f(p[i]+p[i+1]-kfWidth, 1.,0.);
+            glVertex3f(p[i]-kfWidth,-1.  ,0.);
+            glVertex3f(p[i]+kfWidth,-1.  ,0.);
+            glVertex3f(p[i]+kfWidth,-0.8,0.);
+            glVertex3f(p[i]-kfWidth,-0.8,0.);
+            glEnd();
+            glBegin(GL_POLYGON);
+            glVertex3f(p[i]-kfWidth, 0.8 ,0.);
+            glVertex3f(p[i]+kfWidth, 0.8 ,0.);
+            glVertex3f(p[i]+kfWidth, 1.0 ,0.);
+            glVertex3f(p[i]-kfWidth, 1.0 ,0.);
             glEnd();
         }
     }
