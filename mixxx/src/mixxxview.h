@@ -52,6 +52,8 @@ public:
     MixxxView(QWidget *parent, ConfigObject<ConfigValueKbd> *kbdconfig, bool bVisualsWaveform, QString qSkinPath, ConfigObject<ConfigValue> *pConfig);
     ~MixxxView();
 
+    /** Check if direct rendering is not available, and display warning */
+    void checkDirectRendering();
     /** Return true if WVisualWaveform has been instantiated. */
     bool activeWaveform();
 
