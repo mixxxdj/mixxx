@@ -40,6 +40,7 @@ public slots:
     void slotUpdate();
     void slotSetRateRange(int pos);
     void slotSetRateDir(int pos);
+    void slotSetVisuals(int pos);
     void slotSetSkin(int);
     void slotApply();
 private:

@@ -43,18 +43,23 @@ class MixxxView : public QWidget
     Q_OBJECT
 public:
     /** Construtor. Tries to open visuals if bVisuals is true. */
-    MixxxView(QWidget *parent, bool bVisuals, QString qSkinPath);
+    MixxxView(QWidget *parent, bool bVisualsWaveform, QString qSkinPath);
     ~MixxxView();
+
+    /** Return true if WVisualWaveform has been instantiated. */
+    bool activeWaveform();
         
     WTrackTable *m_pTrackTable;
     QLabel *m_pTextCh1, *m_pTextCh2;
     /** Pointer to WVisual widgets */
-    WVisual *m_pVisualCh1, *m_pVisualCh2;
+    QObject *m_pVisualCh1, *m_pVisualCh2;
     WSliderComposed *m_pSliderRateCh1, *m_pSliderRateCh2;
     /** Allow dynamic zoom on visuals */
     bool m_bZoom;
     
 private:
+    // True if m_pVisualChX is instantiated as WVisualWaveform
+    bool m_bVisualWaveform;
     bool compareConfigKeys(QDomNode node, QString key);
 };
 

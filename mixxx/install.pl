@@ -6,7 +6,7 @@
 # August 2003, Tue Haste Andersen <haste@diku.dk>
 #
 
-$BASE='/usr'; 
+$BASE='/home/haste/m/usr'; 
 
 # Check if this is running on Linux
 $_ = `uname`;

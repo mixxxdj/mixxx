@@ -1,4 +1,4 @@
-<!DOCTYPE UI><UI version="3.1" stdsetdef="1">
+<!DOCTYPE UI><UI version="3.2" stdsetdef="1">
 <class>DlgPrefControlsDlg</class>
 <widget class="QWidget">
     <property name="name">
@@ -9,7 +9,7 @@
             <x>0</x>
             <y>0</y>
             <width>459</width>
-            <height>425</height>
+            <height>428</height>
         </rect>
     </property>
     <property name="caption">
@@ -105,7 +105,7 @@
         <property name="geometry">
             <rect>
                 <x>9</x>
-                <y>70</y>
+                <y>100</y>
                 <width>170</width>
                 <height>19</height>
             </rect>
@@ -121,6 +121,46 @@
     <widget class="QComboBox">
         <property name="name">
             <cstring>ComboBoxSkinconf</cstring>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>189</x>
+                <y>96</y>
+                <width>170</width>
+                <height>22</height>
+            </rect>
+        </property>
+        <property name="font">
+            <font>
+            </font>
+        </property>
+    </widget>
+    <widget class="QLabel">
+        <property name="name">
+            <cstring>TextLabel6_2_2_2</cstring>
+        </property>
+        <property name="enabled">
+            <bool>true</bool>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>10</x>
+                <y>70</y>
+                <width>170</width>
+                <height>19</height>
+            </rect>
+        </property>
+        <property name="font">
+            <font>
+            </font>
+        </property>
+        <property name="text">
+            <string>Visuals</string>
+        </property>
+    </widget>
+    <widget class="QComboBox">
+        <property name="name">
+            <cstring>ComboBoxVisuals</cstring>
         </property>
         <property name="geometry">
             <rect>
@@ -142,13 +182,13 @@
         <property name="geometry">
             <rect>
                 <x>10</x>
-                <y>131</y>
+                <y>161</y>
                 <width>341</width>
                 <height>70</height>
             </rect>
         </property>
         <property name="text">
-            <string> </string>
+            <string></string>
         </property>
     </widget>
 </widget>

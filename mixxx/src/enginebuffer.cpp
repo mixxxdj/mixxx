@@ -31,7 +31,7 @@
 
 class VisualChannel;
 #ifdef __VISUALS__
-  #include "wvisual.h"
+  #include "wvisualwaveform.h"
   #include "visual/visualchannel.h"
 #endif
 
@@ -202,15 +202,15 @@ EngineBuffer::~EngineBuffer()
     delete m_pTrackEnd;
 }
 
-void EngineBuffer::setVisual(WVisual *pVisual)
+void EngineBuffer::setVisual(WVisualWaveform *pVisualWaveform)
 {
     VisualChannel *pVisualChannel = 0;
     // Try setting up visuals
 #ifdef __VISUALS__
-    if (pVisual)
+    if (pVisualWaveform)
     {
         // Add buffer as a visual channel
-        pVisualChannel = pVisual->add((ControlPotmeter *)ControlObject::getControl(ConfigKey(group, "bufferplayposition")), group);
+        pVisualChannel = pVisualWaveform->add((ControlPotmeter *)ControlObject::getControl(ConfigKey(group, "bufferplayposition")), group);
         reader->addVisual(pVisualChannel);
     }
 #endif

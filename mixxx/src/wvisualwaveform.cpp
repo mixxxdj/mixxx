@@ -1,7 +1,7 @@
 /***************************************************************************
-                          wvisual.cpp  -  description
+                          wvisualwaveform.cpp  -  
                              -------------------
-    begin                : Thu Oct 10 2002
+    begin                : Thu Oct 9 2003
     copyright            : (C) 2002 by Tue & Ken Haste Andersen
     email                : haste@diku.dk
  ***************************************************************************/
@@ -15,12 +15,11 @@
  *                                                                         *
  ***************************************************************************/
 
-#include "wvisual.h"
-#include "wwidget.h"
+#include "wvisualwaveform.h"
 #include "visual/visualchannel.h"
 #include "visual/visualdisplay.h"
 
-WVisual::WVisual(QWidget *pParent, const char *pName, const QGLWidget *pShareWidget) : QGLWidget(pParent,pName,pShareWidget)
+WVisualWaveform::WVisualWaveform(QWidget *pParent, const char *pName, const QGLWidget *pShareWidget) : QGLWidget(pParent,pName,pShareWidget)
 {
     m_pVisualController = new VisualController();
 
@@ -42,7 +41,7 @@ WVisual::WVisual(QWidget *pParent, const char *pName, const QGLWidget *pShareWid
     m_qlList.setAutoDelete(false);
 }
 
-WVisual::~WVisual()
+WVisualWaveform::~WVisualWaveform()
 {
     // Stop timer
     killTimers();
@@ -54,7 +53,7 @@ WVisual::~WVisual()
     delete m_pVisualController;
 }
 
-void WVisual::setup(QDomNode node)
+void WVisualWaveform::setup(QDomNode node)
 {
     // Background color
     if (!WWidget::selectNode(node, "BgColor").isNull())
@@ -84,7 +83,7 @@ void WVisual::setup(QDomNode node)
     
 }
 
-bool WVisual::eventFilter(QObject *o, QEvent *e)
+bool WVisualWaveform::eventFilter(QObject *o, QEvent *e)
 {
     // Handle mouse press events
     if (e->type() == QEvent::MouseButtonPress)
@@ -143,7 +142,7 @@ bool WVisual::eventFilter(QObject *o, QEvent *e)
     return true;
 }
 
-VisualChannel *WVisual::add(ControlPotmeter *pPlaypos, const char *group)
+VisualChannel *WVisualWaveform::add(ControlPotmeter *pPlaypos, const char *group)
 {
     VisualChannel *c = new VisualChannel(pPlaypos, m_pVisualController, group);
 
@@ -169,7 +168,7 @@ VisualChannel *WVisual::add(ControlPotmeter *pPlaypos, const char *group)
     return c;
 }
     
-void WVisual::initializeGL()
+void WVisualWaveform::initializeGL()
 {
     m_pVisualController->init();
     //m_pVisualBackplane = new VisualBackplane();
@@ -179,7 +178,7 @@ void WVisual::initializeGL()
 }
 
 
-void WVisual::paintGL()
+void WVisualWaveform::paintGL()
 {
     // Get time since last paint, and reset timer
     int msec = m_qtTime.elapsed();
@@ -194,12 +193,12 @@ void WVisual::paintGL()
     m_pVisualController->display();
 }
 
-void WVisual::resizeGL(int width, int height)
+void WVisualWaveform::resizeGL(int width, int height)
 {
     m_pVisualController->resize((GLsizei)width,(GLsizei)height);
 }
 
-void WVisual::timerEvent(QTimerEvent*)
+void WVisualWaveform::timerEvent(QTimerEvent*)
 {
     updateGL();
 }
