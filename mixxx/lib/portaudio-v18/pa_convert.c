@@ -126,7 +126,7 @@ static void PaConvert_Float32_Int8_Clip(
 	int i;
 	for( i=0; i<numSamples; i++ )
 	{
-        long samp = *sourceBuffer * 127.0f;
+        long samp = (long) (*sourceBuffer * 127.0f);
         CLIP( samp, -0x80, 0x7F );
         *targetBuffer = (char) samp;
         sourceBuffer += sourceStride;
@@ -198,7 +198,7 @@ static void PaConvert_Float32_UInt8(
 	int i;
 	for( i=0; i<numSamples; i++ )
 	{
-        unsigned char samp = 128 + (unsigned char) (*sourceBuffer * (127.0));
+        unsigned char samp = (unsigned char)(128 + (*sourceBuffer * (127.0)));
         *targetBuffer = samp;
         sourceBuffer += sourceStride;
         targetBuffer += targetStride;
@@ -215,6 +215,57 @@ static void PaConvert_UInt8_Float32(
 	for( i=0; i<numSamples; i++ )
 	{
         float samp = (*sourceBuffer - 128) * (1.0f / 128.0f);
+        *targetBuffer = samp;
+        sourceBuffer += sourceStride;
+        targetBuffer += targetStride;
+    }
+}
+
+/*************************************************************************/
+static void PaConvert_Float32_Int32(
+    float *sourceBuffer, int sourceStride,
+    long *targetBuffer, int targetStride,
+    int numSamples )
+{
+	int i;
+	for( i=0; i<numSamples; i++ )
+	{
+        int samp = (int) (*sourceBuffer * 0x7FFFFFFF);
+        *targetBuffer = samp;
+        sourceBuffer += sourceStride;
+        targetBuffer += targetStride;
+    }
+}
+
+/*************************************************************************/
+static void PaConvert_Float32_Int32_Clip(
+    float *sourceBuffer, int sourceStride,
+    long *targetBuffer, int targetStride,
+    int numSamples )
+{
+	int i;
+	for( i=0; i<numSamples; i++ )
+	{
+        int samp;
+        float fs = *sourceBuffer;
+        CLIP( fs, -1.0, 0.999999 );
+        samp = (int) (*sourceBuffer * 0x7FFFFFFF);
+        *targetBuffer = samp;
+        sourceBuffer += sourceStride;
+        targetBuffer += targetStride;
+    }
+}
+
+/*************************************************************************/
+static void PaConvert_Int32_Float32(
+    long *sourceBuffer, int sourceStride,
+    float *targetBuffer, int targetStride,
+    int numSamples )
+{
+    int i;
+	for( i=0; i<numSamples; i++ )
+	{
+        float samp = *sourceBuffer * (1.0f / 0x7FFFFFFF);
         *targetBuffer = samp;
         sourceBuffer += sourceStride;
         targetBuffer += targetStride;
@@ -258,6 +309,18 @@ static PortAudioConverter *PaConvert_SelectProc( PaSampleFormat sourceFormat,
             break;
         }
         break;
+
+    case paInt32:
+        switch( targetFormat )
+        {
+        case paFloat32:
+            proc = (PortAudioConverter *) PaConvert_Int32_Float32;
+            break;
+        default:
+            break;
+        }
+        break;
+        
     case paFloat32:
         switch( targetFormat )
         {
@@ -275,6 +338,11 @@ static PortAudioConverter *PaConvert_SelectProc( PaSampleFormat sourceFormat,
             else if( ifClip ) proc = (PortAudioConverter *) PaConvert_Float32_Int16_Clip;
             else if( ifDither ) proc = (PortAudioConverter *) PaConvert_Float32_Int16_Dither;
             else proc = (PortAudioConverter *) PaConvert_Float32_Int16;
+            break;
+        case paInt32:
+            /* Don't bother dithering a 32 bit integer! */
+            if( ifClip ) proc = (PortAudioConverter *) PaConvert_Float32_Int32_Clip;
+            else proc = (PortAudioConverter *) PaConvert_Float32_Int32;
             break;
         default:
             break;

@@ -6,15 +6,15 @@
 SOURCES += playerportaudio.cpp
 HEADERS += playerportaudio.h
 DEFINES += __PORTAUDIO__
-unix:!macx:SOURCES += ../lib/portaudio-v18patch/ringbuffer.c ../lib/portaudio-v18patch/pa_lib.c ../lib/portaudio-v18patch/pa_convert.c ../lib/portaudio-v18patch/pa_unix.c ../lib/portaudio-v18patch/pa_unix_oss.c
-unix:!macx:HEADERS += ../lib/portaudio-v18patch/ringbuffer.h ../lib/portaudio-v18/portaudio.h ../lib/portaudio-v18/pa_host.h ./lib/portaudio-v18patch/pa_unix.h ../lib/portaudio-v18patch/pa_unix_oss.h
+unix:!macx:SOURCES += ../lib/portaudio-v18/ringbuffer.c ../lib/portaudio-v18/pa_lib.c ../lib/portaudio-v18/pa_convert.c ../lib/portaudio-v18/pa_unix.c ../lib/portaudio-v18/pa_unix_oss.c
+unix:!macx:HEADERS += ../lib/portaudio-v18/ringbuffer.h ../lib/portaudio-v18/portaudio.h ../lib/portaudio-v18/pa_host.h ./lib/portaudio-v18/pa_unix.h ../lib/portaudio-v18/pa_unix_oss.h
 win32:SOURCES += ../lib/portaudio-v18/pa_lib.c ../lib/portaudio-v18/dsound_wrapper.c ../lib/portaudio-v18/pa_dsound.c
 win32:HEADERS += ../lib/portaudio-v18/portaudio.h ../lib/portaudio-v18/pa_host.h
 win32:LIBS += dsound.lib
-macx:SOURCES += ../lib/portaudio-v18mac/ringbuffer.c ../lib/portaudio-v18mac/pa_lib.c ../lib/portaudio-v18mac/pa_mac_core.c ../lib/portaudio-v18mac/pa_convert.c
-macx:HEADERS += ../lib/portaudio-v18mac/ringbuffer.h ../lib/portaudio-v18mac/portaudio.h ../lib/portaudio-v18mac/pa_host.h
+macx:SOURCES += ../lib/portaudio-v18/ringbuffer.c ../lib/portaudio-v18/pa_lib.c ../lib/portaudio-v18/pa_mac_core.c ../lib/portaudio-v18/pa_convert.c
+macx:HEADERS += ../lib/portaudio-v18/ringbuffer.h ../lib/portaudio-v18/portaudio.h ../lib/portaudio-v18/pa_host.h
 macx:LIBS += -framework CoreAudio -framework AudioToolbox
-macx:INCLUDEPATH += ../lib/portaudio-v18mac
+macx:INCLUDEPATH += ../lib/portaudio-v18
 
 # OSS Midi (Working good, Linux specific)
 unix:!macx:SOURCES += midiobjectoss.cpp

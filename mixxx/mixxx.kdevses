@@ -3,36 +3,18 @@
 <KDevPrjSession>
  <LastCompileConfig>(Default)</LastCompileConfig>
  <Mainframe MaximizeMode="1" />
- <DocsAndViews NumberOfDocuments="10" >
-  <Doc0 CursorPosLine="41" Type="KWriteDoc" NumberOfViews="1" CursorPosCol="71" FileName="/home/haste/cvs/mixxx/src/soundbuffer.h" >
-   <View0 Top="0" Width="949" Attach="1" Height="834" Left="0" Focus="0" Type="KWriteView" MinMaxMode="0" />
+ <DocsAndViews NumberOfDocuments="4" >
+  <Doc0 CursorPosLine="19" Type="KWriteDoc" NumberOfViews="1" CursorPosCol="0" FileName="/home/haste/cvs/mixxx/src/controleventmidi.cpp" >
+   <View0 Top="0" Width="757" Attach="1" Height="578" Left="0" Focus="0" Type="KWriteView" MinMaxMode="0" />
   </Doc0>
-  <Doc1 CursorPosLine="167" Type="KWriteDoc" NumberOfViews="1" CursorPosCol="45" FileName="/home/haste/cvs/mixxx/src/soundbuffer.cpp" >
-   <View0 Top="0" Width="949" Attach="1" Height="834" Left="0" Focus="0" Type="KWriteView" MinMaxMode="0" />
+  <Doc1 CursorPosLine="157" Type="KWriteDoc" NumberOfViews="1" CursorPosCol="0" FileName="/home/haste/cvs/mixxx/src/controlobject.cpp" >
+   <View0 Top="0" Width="98" Attach="1" Height="28" Left="0" Focus="0" Type="KWriteView" MinMaxMode="0" />
   </Doc1>
-  <Doc2 CursorPosLine="94" Type="KWriteDoc" NumberOfViews="1" CursorPosCol="14" FileName="/home/haste/cvs/mixxx/src/reader.h" >
-   <View0 Top="0" Width="949" Attach="1" Height="834" Left="0" Focus="0" Type="KWriteView" MinMaxMode="0" />
+  <Doc2 CursorPosLine="46" Type="KWriteDoc" NumberOfViews="1" CursorPosCol="22" FileName="/home/haste/cvs/mixxx/src/enginebuffer.h" >
+   <View0 Top="0" Width="757" Attach="1" Height="578" Left="0" Focus="0" Type="KWriteView" MinMaxMode="0" />
   </Doc2>
-  <Doc3 CursorPosLine="196" Type="KWriteDoc" NumberOfViews="1" CursorPosCol="0" FileName="/home/haste/cvs/mixxx/src/reader.cpp" >
-   <View0 Top="0" Width="949" Attach="1" Height="834" Left="0" Focus="0" Type="KWriteView" MinMaxMode="0" />
+  <Doc3 CursorPosLine="24" Type="KWriteDoc" NumberOfViews="1" CursorPosCol="0" FileName="/home/haste/cvs/mixxx/src/wknob.cpp" >
+   <View0 Top="0" Width="757" Attach="1" Height="578" Left="0" Focus="1" Type="KWriteView" MinMaxMode="0" />
   </Doc3>
-  <Doc4 CursorPosLine="297" Type="KWriteDoc" NumberOfViews="1" CursorPosCol="111" FileName="/home/haste/cvs/mixxx/src/mixxx.cpp" >
-   <View0 Top="0" Width="949" Attach="1" Height="574" Left="0" Focus="1" Type="KWriteView" MinMaxMode="0" />
-  </Doc4>
-  <Doc5 CursorPosLine="37" Type="KWriteDoc" NumberOfViews="1" CursorPosCol="0" FileName="/home/haste/cvs/mixxx/src/enginebuffer.h" >
-   <View0 Top="0" Width="949" Attach="1" Height="834" Left="0" Focus="0" Type="KWriteView" MinMaxMode="0" />
-  </Doc5>
-  <Doc6 CursorPosLine="288" Type="KWriteDoc" NumberOfViews="1" CursorPosCol="0" FileName="/home/haste/cvs/mixxx/src/enginebuffer.cpp" >
-   <View0 Top="0" Width="949" Attach="1" Height="834" Left="0" Focus="0" Type="KWriteView" MinMaxMode="0" />
-  </Doc6>
-  <Doc7 CursorPosLine="108" Type="KWriteDoc" NumberOfViews="1" CursorPosCol="0" FileName="/home/haste/cvs/mixxx/src/soundsourcemp3.cpp" >
-   <View0 Top="0" Width="949" Attach="1" Height="834" Left="0" Focus="0" Type="KWriteView" MinMaxMode="0" />
-  </Doc7>
-  <Doc8 CursorPosLine="27" Type="KWriteDoc" NumberOfViews="1" CursorPosCol="0" FileName="/home/haste/cvs/mixxx/src/controlengine.cpp" >
-   <View0 Top="0" Width="949" Attach="1" Height="834" Left="0" Focus="0" Type="KWriteView" MinMaxMode="0" />
-  </Doc8>
-  <Doc9 CursorPosLine="134" Type="KWriteDoc" NumberOfViews="1" CursorPosCol="9" FileName="/home/haste/cvs/mixxx/src/mixxx.h" >
-   <View0 Top="0" Width="949" Attach="1" Height="574" Left="0" Focus="0" Type="KWriteView" MinMaxMode="0" />
-  </Doc9>
  </DocsAndViews>
 </KDevPrjSession>
