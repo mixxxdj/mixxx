@@ -21,16 +21,12 @@
 
 class ControlEngine;
 
-class EngineClipping : public EngineObject {
- public:
+class EngineClipping : public EngineObject 
+{
+public:
     EngineClipping(const char *group);
     ~EngineClipping();
-    void notify(double) {};
-    CSAMPLE *process(const CSAMPLE *, const int);
- private:
-    ControlEngine *bulb;
-
-    CSAMPLE *buffer;
+    void process(const CSAMPLE *pIn, const CSAMPLE *pOut, const int iBufferSize);
 };
 
 #endif

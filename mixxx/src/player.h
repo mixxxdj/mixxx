@@ -61,6 +61,7 @@ protected:
     static EngineMaster *m_pMaster;
     /** Pointer to ControlObject used in syncronization between ControlObject and ControlEngines */
     ControlObject *m_pControl;
+    CSAMPLE *m_pBuffer;
 };
 
 #endif

@@ -18,7 +18,6 @@
 #ifndef DLGPREFERENCES_H
 #define DLGPREFERENCES_H
 
-//#include "dlgpreferencesdlg.h"
 #include <qtabdialog.h>
 #include <qevent.h>
 #include "configobject.h"

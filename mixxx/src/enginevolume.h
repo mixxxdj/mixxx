@@ -18,16 +18,15 @@
 #define ENGINEVOLUME_H
 
 #include "engineobject.h"
-#include "configobject.h"
 
 class ControlEngine;
+class ConfigKey;
 
 class EngineVolume : public EngineObject {
 public:
     EngineVolume(ConfigKey key, double maxval=1.);
     ~EngineVolume();
-    CSAMPLE *process(const CSAMPLE*, const int);
-    void notify(double) {};
+    void process(const CSAMPLE *pIn, const CSAMPLE *pOut, const int iBufferSize);
 
 private:
     CSAMPLE *buffer;

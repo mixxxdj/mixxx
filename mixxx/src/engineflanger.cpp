@@ -31,7 +31,6 @@
 EngineFlanger::EngineFlanger(const char *group)
 {
     // Init. buffers:
-    process_buffer = new CSAMPLE[MAX_BUFFER_LEN];
     delay_buffer = new CSAMPLE[max_delay+1];
     for (int i=0; i<max_delay+1; ++i)
         delay_buffer[i] = 0.;
@@ -69,7 +68,6 @@ EngineFlanger::~EngineFlanger()
     delete potmeterLFOperiod;
     delete pushbuttonFlangerCh1;
     delete pushbuttonFlangerCh2;
-    delete [] process_buffer;
     delete [] delay_buffer;
 }
 
@@ -83,15 +81,16 @@ ControlEngine *EngineFlanger::getButtonCh2()
     return pushbuttonFlangerCh2;
 }
 
-CSAMPLE *EngineFlanger::process(const CSAMPLE *source, const int buffer_size)
+void EngineFlanger::process(const CSAMPLE *pIn, const CSAMPLE *pOut, const int iBufferSize)
 {
+    CSAMPLE *pOutput = (CSAMPLE *)pOut;
     CSAMPLE delayed_sample,prev,next;
     FLOAT_TYPE frac;
 
-    for (int i=0; i<buffer_size; i++) 
+    for (int i=0; i<iBufferSize; ++i) 
     {
         // put sample into delay buffer:
-        delay_buffer[delay_pos] = source[i];
+        delay_buffer[delay_pos] = pIn[i];
         delay_pos++;
         if (delay_pos >= max_delay)
             delay_pos=0;
@@ -108,8 +107,7 @@ CSAMPLE *EngineFlanger::process(const CSAMPLE *source, const int buffer_size)
         delayed_sample = prev + frac*(next-prev);
 
         // Take the sample from the delay buffer and mix it with the source buffer:
-        process_buffer[i] = source[i] + potmeterDepth->get()*delayed_sample;
+        pOutput[i] = pIn[i] + potmeterDepth->get()*delayed_sample;
     }
-    return process_buffer;
 }
 

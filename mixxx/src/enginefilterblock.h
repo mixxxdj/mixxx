@@ -34,14 +34,12 @@ class EngineFilterBlock : public EngineObject  {
 public:
     EngineFilterBlock(const char *group);
     ~EngineFilterBlock();
-    CSAMPLE *process(const CSAMPLE *source, const int buf_size);
+    void process(const CSAMPLE *pIn, const CSAMPLE *pOut, const int iBufferSize);
 private:
+    CSAMPLE *m_pTemp;
     EngineObject *low, *high;
-    EngineFilterRBJ *lowrbj, *midrbj, *highrbj;
     ControlEngine *filterpotLow, *filterpotMid, *filterpotHigh;
     ControlEngine *filterKillLow, *filterKillMid, *filterKillHigh;
-
-    CSAMPLE *buffer;
 };
 
 #endif

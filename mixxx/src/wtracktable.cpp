@@ -52,6 +52,9 @@ WTrackTable::WTrackTable(QWidget *parent, const char *name) : QTable(0, ROW_NO, 
     setAcceptDrops(true);
     setDragEnabled(true);
 
+    // Allow table reordering
+    setRowMovingEnabled(true);
+    
     // Font size
     QFont f("Helvetica");
     f.setPointSize(9);
@@ -134,8 +137,10 @@ void WTrackTable::sortColumn(int col, bool ascending, bool)
     QTable::sortColumn(col,ascending,true);
 }
 
-void WTrackTable::slotMousePressed(int row, int col, int button, const QPoint &)
+void WTrackTable::slotMousePressed(int row, int col, int button, const QPoint &p)
 {
+//    QTable::slotMousePressed(row, col, button, p);
+    
     if (col!=COL_COMMENT && button==Qt::RightButton)
     {
         WTrackTableItem *p = (WTrackTableItem *)item(row,col);

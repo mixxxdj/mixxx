@@ -36,14 +36,13 @@ EngineVuMeter::~EngineVuMeter()
     delete m_ctrlVuMeter;
 }
 
-CSAMPLE *EngineVuMeter::process(const CSAMPLE *source, const int buffer_size)
+void EngineVuMeter::process(const CSAMPLE *pIn, const CSAMPLE *, const int iBufferSize)
 {
     // Calculate the summed absolute volume
-    for (int i=0; i<buffer_size; i++)
-    {
-        m_fRMSvolume += fabs(source[i]);
-    }
-    m_iSamplesCalculated += buffer_size;
+    for (int i=0; i<iBufferSize; ++i)
+        m_fRMSvolume += fabs(pIn[i]);
+    
+    m_iSamplesCalculated += iBufferSize;
 
     // Are we ready to update the VU meter?:
     if (m_iSamplesCalculated > (44100/UPDATE_RATE) )
@@ -54,6 +53,4 @@ CSAMPLE *EngineVuMeter::process(const CSAMPLE *source, const int buffer_size)
         m_iSamplesCalculated = 0;
         m_fRMSvolume = 0;
     }
-
-    return 0;
 }

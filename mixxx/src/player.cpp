@@ -30,8 +30,7 @@ Player::Player(ConfigObject<ConfigValue> *pConfig, ControlObject *pControl)
 {
     m_pConfig = pConfig;
     m_pControl = pControl;
-
-//    qDebug("Player: init...");
+    m_pBuffer = new CSAMPLE[MAX_BUFFER_LEN];
 }
 
 /* -------- ------------------------------------------------------
@@ -41,6 +40,7 @@ Player::Player(ConfigObject<ConfigValue> *pConfig, ControlObject *pControl)
    -------- ------------------------------------------------------ */
 Player::~Player()
 {
+    delete [] m_pBuffer;
 }
 
 void Player::setMaster(EngineMaster *pMaster)
@@ -72,5 +72,6 @@ CSAMPLE *Player::prepareBuffer(int iBufferSize)
     // number of samples for one channel, but the EngineObject
     // architecture expects number of samples for two channels
     // as input so...
-    return m_pMaster->process(0, iBufferSize*2);
+    m_pMaster->process(0, m_pBuffer, iBufferSize*2);
+    return m_pBuffer;
 }

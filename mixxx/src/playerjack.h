@@ -39,7 +39,7 @@ public:
     static QString getSoundApi();
     QString getSoundApiName() { return getSoundApi(); };
     /** Satisfy virtual declaration in EngineObject */
-    CSAMPLE *process(const CSAMPLE *, const int) { return 0; };
+    void process(const CSAMPLE *, const CSAMPLE *, const int) {};
     /** Process samples. Called from jack callback */
     int callbackProcess(int iBufferSize);
     /** Used to set sample rate from Jack callback */

@@ -25,28 +25,24 @@ EnginePregain::EnginePregain(const char *group)
 {
     ControlLogpotmeter *p = new ControlLogpotmeter(ConfigKey(group, "pregain"), 4.);
     potmeterPregain = new ControlEngine(p);
-    buffer = new CSAMPLE[MAX_BUFFER_LEN];
 }
 
 EnginePregain::~EnginePregain()
 {
     delete potmeterPregain;
-    delete [] buffer;
 }
 
-CSAMPLE *EnginePregain::process(const CSAMPLE *source, const int buffer_size)
+void EnginePregain::process(const CSAMPLE *pIn, const CSAMPLE *pOut, const int iBufferSize)
 {
-    double gain=potmeterPregain->get();
-    //qDebug("gain %f",potmeterPregain->get());
+    CSAMPLE *pOutput = (CSAMPLE *)pOut;
+    float fGain=potmeterPregain->get();
 
-    if (gain == 1.)
+    if (fGain == 1.)
     {
-        memcpy(buffer, source, sizeof(CSAMPLE) * buffer_size);
-        return buffer;
+        if (pIn!=pOut)
+            memcpy(pOutput, pIn, sizeof(CSAMPLE) * iBufferSize);
     }
     
-    for (int i=0; i<buffer_size; i++)
-        buffer[i] = source[i]*gain;
-
-    return buffer;
+    for (int i=0; i<iBufferSize; ++i)
+        pOutput[i] = pIn[i]*fGain;
 }

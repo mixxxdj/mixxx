@@ -164,7 +164,7 @@ void ReaderExtractFFT::processFrame(int idx)
 //    stream2 << "\n";
 
     // Perform FFT
-    CSAMPLE *tmp = specList.at(idx%frameNo)->process(windowedSamples,0);
+    specList.at(idx%frameNo)->process(windowedSamples, 0, 0);
 //    qDebug("frame %i",idx%frameNo);
 //    // Write FFT to text file
 //    for (i=0; i<frameSize/2; i++)

@@ -23,43 +23,53 @@
   ----------------------------------------------------------------*/
 EngineClipping::EngineClipping(const char *group)
 {
-    ControlPushButton *p = new ControlPushButton(ConfigKey(group, "clipLed"));
-    bulb = new ControlEngine(p);
-    bulb->set(0);
-    buffer = new CSAMPLE[MAX_BUFFER_LEN];
 }
 
 EngineClipping::~EngineClipping()
 {
-    delete [] buffer;
 }
 
-CSAMPLE *EngineClipping::process(const CSAMPLE *source, const int buffer_size)
+void EngineClipping::process(const CSAMPLE *pIn, const CSAMPLE *pOut, const int iBufferSize)
 {
-    static const int lightswitch = 10;
-    static const FLOAT_TYPE max_amp = 32676.;
-    static const FLOAT_TYPE clip = 0.8*max_amp;
+    static const FLOAT_TYPE kfMaxAmp = 32676.;
+    static const FLOAT_TYPE kfClip = 0.8*kfMaxAmp;
 
-    int samples_clipped = 0; 
-    for (int i=0; i<buffer_size; i++) {
-        CSAMPLE tmp = source[i];
-        if ((tmp>clip) || (tmp<-clip)) {
-            FLOAT_TYPE sign = 1;
-            if (tmp<0) sign = -1;
-            buffer[i] = sign*(max_amp - ((max_amp-clip)*(max_amp-clip))/
-                        ((max_amp-2*clip)+sign*source[i]));
-            samples_clipped++;
-        } else
-            buffer[i] = source[i];
-    }
-
-    if (samples_clipped > lightswitch)
+    CSAMPLE *pOutput = (CSAMPLE *)pOut;
+    
+    int iSamplesClipped = 0; 
+    
+    if (pIn==pOut)
     {
-        if (bulb->get()==0.)
-            bulb->set(1.);
+        for (int i=0; i<iBufferSize; ++i) 
+        {
+            CSAMPLE fTmp = pIn[i];
+            if ((fTmp>kfClip) || (fTmp<-kfClip)) 
+            {
+                FLOAT_TYPE sign = 1;
+                if (fTmp<0) 
+                    sign = -1;
+                pOutput[i] = sign*(kfMaxAmp - ((kfMaxAmp-kfClip)*(kfMaxAmp-kfClip)) /
+                                   ((kfMaxAmp-2.*kfClip)+sign*pIn[i]));
+                iSamplesClipped++;
+            } 
+        }
     }
-    else if (bulb->get()>0.)
-        bulb->set(0.);
-
-    return buffer;
+    else
+    {
+        for (int i=0; i<iBufferSize; ++i) 
+        {
+            CSAMPLE fTmp = pIn[i];
+            if ((fTmp>kfClip) || (fTmp<-kfClip)) 
+            {
+                FLOAT_TYPE sign = 1;
+                if (fTmp<0) 
+                    sign = -1;
+                pOutput[i] = sign*(kfMaxAmp - ((kfMaxAmp-kfClip)*(kfMaxAmp-kfClip)) /
+                                   ((kfMaxAmp-2.*kfClip)+sign*pIn[i]));
+                iSamplesClipped++;
+            } 
+            else
+                pOutput[i] = pIn[i];
+        }
+    }
 }

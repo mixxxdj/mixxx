@@ -30,6 +30,11 @@ public:
     ~VisualBufferSignal();
     virtual void update(int iPos, int iLen);
     virtual void draw(GLfloat *p, int iLen, float);
+
+private:
+    /** Used in low pass filtering */
+    float m_fLastPositive, m_fLastNegative;
+
 };
 
 #endif

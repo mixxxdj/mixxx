@@ -37,7 +37,7 @@ public:
     /** Select active sound api */
     bool setSoundApi(QString name);
     /** Satisfy virtual declaration in EngineObject */
-    CSAMPLE *process(const CSAMPLE *, const int) { return 0; };
+    void process(const CSAMPLE *, const CSAMPLE *, const int) {};
 
 protected:
     /** Pointer to active Player class */

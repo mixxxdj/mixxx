@@ -23,23 +23,23 @@ class ControlEngine;
 
 const int max_delay = 5000;  
 
-class EngineFlanger : public EngineObject {
+class EngineFlanger : public EngineObject 
+{
 public:
-  EngineFlanger(const char *group);
-  ~EngineFlanger();
-    void notify(double) {};
-  CSAMPLE *process(const CSAMPLE *, const int);
-  ControlEngine *getButtonCh1();
-  ControlEngine *getButtonCh2();
+    EngineFlanger(const char *group);
+    ~EngineFlanger();
+    void process(const CSAMPLE *pIn, const CSAMPLE *pOut, const int iBufferSize);
+    ControlEngine *getButtonCh1();
+    ControlEngine *getButtonCh2();
 private:
-  ControlEngine *potmeterDepth, *potmeterDelay, *potmeterLFOperiod;
-  ControlEngine *pushbuttonFlangerCh1, *pushbuttonFlangerCh2;
-  CSAMPLE *process_buffer, *delay_buffer;
-  int  LFOamplitude;
-  int average_delay_length;
-  int time;
-  FLOAT_TYPE delay;
-  int delay_pos;
+    ControlEngine *potmeterDepth, *potmeterDelay, *potmeterLFOperiod;
+    ControlEngine *pushbuttonFlangerCh1, *pushbuttonFlangerCh2;
+    CSAMPLE *delay_buffer;
+    int  LFOamplitude;
+    int average_delay_length;
+    int time;
+    FLOAT_TYPE delay;
+    int delay_pos;
 };
 
 #endif

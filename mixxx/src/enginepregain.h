@@ -21,16 +21,15 @@
 
 class ControlEngine;
 
-class EnginePregain : public EngineObject {
+class EnginePregain : public EngineObject 
+{
 public:
-  EnginePregain(const char *group);
-  ~EnginePregain();
-    void notify(double) {};
-  CSAMPLE *process(const CSAMPLE*, const int);
+    EnginePregain(const char *group);
+    ~EnginePregain();
+    void process(const CSAMPLE *pIn, const CSAMPLE *pOut, const int iBufferSize);
 
 private:
-  ControlEngine* potmeterPregain;
-  CSAMPLE *buffer;
+    ControlEngine* potmeterPregain;
 };
 
 #endif

@@ -46,7 +46,7 @@ public:
     ~EngineSpectralFwd();
     void notify(double) {};
     /** Performs an fft opeation on the samples pointed to by p */
-    CSAMPLE *process(const CSAMPLE *p, const int);
+    void process(const CSAMPLE *pIn, const CSAMPLE *pOut, const int iBufferSize);
     /** Return the High Frequency Content (HFC) of the spectrum */
     CSAMPLE getHFC();
     /** Calculates the magnitude of the FFT at the bin at index. This function
