@@ -27,17 +27,21 @@
 
 class EngineFilterRBJ : public EngineObject {
 public:
-    EngineFilterRBJ(bool low, CSAMPLE frequency, CSAMPLE bandwidth);
+    EngineFilterRBJ();
     ~EngineFilterRBJ();
-    void notify(double) {};
+
+//    void notify(double) {};
     CSAMPLE *process(const CSAMPLE *source, const int buf_size);
+    void calc_filter_coeffs(int const type, double const frequency, double const sample_rate, double const q, double const db_gain, bool q_is_bandwidth);
+
 private:
-    CSAMPLE c0, c1, c2, c3, c4;
+    // Filter coeffs
+    float b0a0,b1a0,b2a0,a1a0,a2a0;
 
-    /** Block boundary values */
-    CSAMPLE x1, x2, y1, y2;
+    // In/out history
+    float ou1l, ou2l, in1l, in2l, ou1r, ou2r, in1r, in2r;
 
-	CSAMPLE *buffer;
+    CSAMPLE *buffer;
 };
 
 #endif
