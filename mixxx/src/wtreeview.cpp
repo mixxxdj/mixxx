@@ -15,6 +15,7 @@
 #include "wtreeitemdir.h"
 #include "wtreeitemplaylist.h"
 #include "wtreeitem.h"
+#include "trackplaylist.h"
 
 static const int autoopenTime = 750;
 
@@ -149,15 +150,15 @@ void WTreeView::slotRenameItem()
     m_pClickedItem = 0;
 }
 
-void WTreeView::updatePlaylists(QStrList qPlaylists)
+void WTreeView::updatePlaylists(QPtrList<TrackPlaylist> *pList)
 {
     // Clear current lists
     while (m_pRootPlaylist->childCount()>0)
         delete m_pRootPlaylist->firstChild();
 
     // Insert new entries
-    for (uint i=0; i<qPlaylists.count(); ++i)
-        new WTreeItemPlaylist(m_pRootPlaylist, qPlaylists.at(i));
+    for (uint i=0; i<pList->count(); ++i)
+        new WTreeItemPlaylist(m_pRootPlaylist, pList->at(i));
 }
 
 void WTreeView::contentsDragEnterEvent( QDragEnterEvent *e )
@@ -279,7 +280,7 @@ void WTreeView::contentsDropEvent( QDropEvent *e )
         str += QString( "\nTo\n\n   %1" )
                .arg( fullPath(item) );
 
-        QMessageBox::information( this, "Drop target", str, "Not implemented" );
+        //QMessageBox::information( this, "Drop target", str, "Not implemented" );
     }
     else
         e->ignore();
@@ -346,7 +347,7 @@ void WTreeView::contentsMouseMoveEvent( QMouseEvent* e )
 void WTreeView::contentsMouseReleaseEvent(QMouseEvent *e)
 {
     if (!mouseMoved)
-        clicked_timer->singleShot(500, this, SLOT(slotRenameItem()));
+        clicked_timer->singleShot(1000, this, SLOT(slotRenameItem()));
 
     mousePressed = false;
     mouseMoved = false;

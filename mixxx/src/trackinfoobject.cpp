@@ -134,7 +134,7 @@ void TrackInfoObject::checkFileExists()
 }
 
 /*
-	Writes information about the track to the xml file:
+    Writes information about the track to the xml file:
 */
 void TrackInfoObject::writeToXML( QDomDocument &doc, QDomElement &header )
 {

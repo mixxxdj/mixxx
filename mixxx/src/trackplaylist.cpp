@@ -17,6 +17,7 @@
 #include <qdragobject.h>
 #include <qcstring.h>
 #include <qdir.h>
+#include "trackplaylist.h"
 
 
 TrackPlaylist::TrackPlaylist(TrackCollection *pTrackCollection, QString qName)
@@ -113,6 +114,9 @@ void TrackPlaylist::activate(WTrackTable *pTable)
 
 void TrackPlaylist::deactivate()
 {
+    if (!m_pTable)
+        return;
+        
     disconnect(m_pTable, SIGNAL(dropped(QDropEvent *)), this, SLOT(slotDrop(QDropEvent *)));
 
     if (m_pTable)

@@ -14,6 +14,8 @@
 
 #include "wtreeitem.h"
 
+class TrackPlaylist;
+
 /**
 @author Tue Haste Andersen
 */
@@ -21,16 +23,19 @@ class WTreeItemPlaylist : public QObject, WTreeItem
 {
     Q_OBJECT
 public:
-    WTreeItemPlaylist(WTreeItem *parent, const QString &s1);
+    WTreeItemPlaylist(WTreeItem *parent, TrackPlaylist *pPlaylist);
+    //WTreeItemPlaylist(WTreeItem *parent, const QString &s1);
     ~WTreeItemPlaylist();
 
     QString type() { return "WTreeItemPlaylist"; };
     QString name();
 
+    void okRename(int col);
     void popupMenu();
     void drag(QWidget *viewport);
 signals:
     void playlistPopup();
+    TrackPlaylist *m_pPlaylist;
 };
 
 #endif
