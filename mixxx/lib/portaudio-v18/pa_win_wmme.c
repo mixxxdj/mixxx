@@ -1,5 +1,5 @@
 /*
- * $Id: pa_win_wmme.c 236 2003-01-19 17:32:10Z tuehaste $
+ * $Id: pa_win_wmme.c 285 2003-03-18 07:21:58Z tuehaste $
  * pa_win_wmme.c
  * Implementation of PortAudio for Windows MultiMedia Extensions (WMME)
  *
@@ -54,8 +54,9 @@
  RDB20020411 - various renaming cleanups, factored streamData alloc and cpu usage init
  RDB20020417 - stopped counting WAVE_MAPPER when there were no real devices
                refactoring, renaming and fixed a few edge case bugs
+ PLB20020612 - added 8000.0 Hz to custom sampling rates array
 */
-
+#pragma warning (disable: 4115)
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
@@ -114,7 +115,7 @@ static  gUnderCallbackCounter = 0;
 
 #define PRINT(x) { printf x; fflush(stdout); }
 #define ERR_RPT(x) PRINT(x)
-#define DBUG(x)  /* PRINT(x) /**/
+#define DBUG(x)  /* PRINT(x) */
 #define DBUGX(x) /* PRINT(x) */
 /************************************************* Definitions ********/
 /**************************************************************
@@ -355,15 +356,17 @@ int Pa_CountDevices()
  */
 const PaDeviceInfo* Pa_GetDeviceInfo( PaDeviceID id )
 {
-#define NUM_STANDARDSAMPLINGRATES   3   /* 11.025, 22.05, 44.1 */
-#define NUM_CUSTOMSAMPLINGRATES     5   /* must be the same number of elements as in the array below */
+#define NUM_STANDARDSAMPLINGRATES   3   /* 11025, 22050, 44100 */
+    static DWORD customSamplingRates[] = { 8000, 32000, 48000, 64000, 88200, 96000 };
+#define NUM_CUSTOMSAMPLINGRATES     (sizeof(customSamplingRates)/sizeof(DWORD))
 #define MAX_NUMSAMPLINGRATES        (NUM_STANDARDSAMPLINGRATES+NUM_CUSTOMSAMPLINGRATES)
-    static DWORD customSamplingRates[] = { 32000, 48000, 64000, 88200, 96000 };
+
     PaDeviceInfo *deviceInfo;
     double *sampleRates; /* non-const ptr */
     int i;
     char *s;
 
+    DBUG(( "Pa_GetDeviceInfo( %d )\n", id ));
     if( id < 0 || id >= sNumDevices )
         return NULL;
     if( sDevicePtrs[ id ] != NULL )
@@ -401,6 +404,7 @@ const PaDeviceInfo* Pa_GetDeviceInfo( PaDeviceID id )
         }
         deviceInfo->name = s;
         deviceInfo->maxInputChannels = wic.wChannels;
+        DBUG(( "Pa_GetDeviceInfo: input %s, maxChannels = %d\n", deviceInfo->name, deviceInfo->maxInputChannels ));
         /* Sometimes a device can return a rediculously large number of channels.
          * This happened with an SBLive card on a Windows ME box.
          * If that happens, then force it to 2 channels.  PLB20010413
@@ -458,6 +462,7 @@ const PaDeviceInfo* Pa_GetDeviceInfo( PaDeviceID id )
         }
         deviceInfo->name = s;
         deviceInfo->maxOutputChannels = woc.wChannels;
+        DBUG(( "Pa_GetDeviceInfo: output %s, maxChannels = %d\n", deviceInfo->name, deviceInfo->maxOutputChannels ));
         /* Sometimes a device can return a rediculously large number of channels.
          * This happened with an SBLive card on a Windows ME box.
          * It also happens on Win XP!
@@ -517,12 +522,14 @@ const PaDeviceInfo* Pa_GetDeviceInfo( PaDeviceID id )
             wfx.nChannels = (WORD)deviceInfo->maxOutputChannels;
             wfx.nAvgBytesPerSec = wfx.nChannels * wfx.nSamplesPerSec * sizeof(short);
             wfx.nBlockAlign = (WORD)(wfx.nChannels * sizeof(short));
+            DBUG(( "Pa_GetDeviceInfo: waveOutOpen( ... WAVE_FORMAT_QUERY at SR = %d\n", customSamplingRates[i] ));
             if( waveOutOpen( NULL, outputMmID, &wfx, 0, 0, WAVE_FORMAT_QUERY ) == MMSYSERR_NOERROR )
             {
                 sampleRates[ deviceInfo->numSampleRates++ ] = customSamplingRates[i];
             }
         }
     }
+    DBUG(( "Pa_GetDeviceInfo: done.\n" ));
     sDevicePtrs[ id ] = deviceInfo;
     return deviceInfo;
 

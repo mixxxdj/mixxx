@@ -1,5 +1,5 @@
 /*
- * $Id: pa_dsound.c 236 2003-01-19 17:32:10Z tuehaste $
+ * $Id: pa_dsound.c 285 2003-03-18 07:21:58Z tuehaste $
  * PortAudio Portable Real-Time Audio Library
  * Latest Version at: http://www.softsynth.com/portaudio/
  * DirectSound Implementation
@@ -802,11 +802,32 @@ PaError PaHost_StartEngine( internalPortAudioStream *past )
     {
         int msecPerBuffer;
         int resolution;
-        int bufsPerInterrupt = past->past_NumUserBuffers/4;
-        if( bufsPerInterrupt < 1 ) bufsPerInterrupt = 1;
-        msecPerBuffer = 1000 * (bufsPerInterrupt * past->past_FramesPerUserBuffer) / (int) past->past_SampleRate;
+        int bufsPerInterrupt;
+        
+        DBUG(("PaHost_StartEngine: past_NumUserBuffers = %d\n", past->past_NumUserBuffers));
+        /* Decide how often to wake up and fill the buffers. */
+        if( past->past_NumUserBuffers == 2 )
+        {
+            /* Generate two timer interrupts per user buffer. */
+            msecPerBuffer = (500 * past->past_FramesPerUserBuffer) / (int) past->past_SampleRate;
+        }
+        else
+        {
+            if ( past->past_NumUserBuffers >= 16 ) bufsPerInterrupt = past->past_NumUserBuffers/8; 
+            else if ( past->past_NumUserBuffers >= 8 ) bufsPerInterrupt = 2;
+            else bufsPerInterrupt = 1;
+                
+            msecPerBuffer = 1000 * (bufsPerInterrupt * past->past_FramesPerUserBuffer) / (int) past->past_SampleRate;
+
+            DBUG(("PaHost_StartEngine: bufsPerInterrupt = %d\n", bufsPerInterrupt));
+        }
+
+        DBUG(("PaHost_StartEngine: msecPerBuffer = %d\n", msecPerBuffer));
+
         if( msecPerBuffer < 10 ) msecPerBuffer = 10;
         else if( msecPerBuffer > 100 ) msecPerBuffer = 100;
+        DBUG(("PaHost_StartEngine: clipped msecPerBuffer = %d\n", msecPerBuffer));
+
         resolution = msecPerBuffer/4;
         pahsc->pahsc_TimerID = timeSetEvent( msecPerBuffer, resolution, (LPTIMECALLBACK) Pa_TimerCallback,
                                              (DWORD) past, TIME_PERIODIC );

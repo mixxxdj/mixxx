@@ -116,6 +116,9 @@ void EngineBuffer::setNewPlaypos(double newpos)
 {
     filepos_play = newpos;
     bufferpos_play = 0.;
+
+    // Ensures that the playpos slider gets updated in next process call
+    playposUpdateCounter = 1000000;
 }
 
 const char *EngineBuffer::getGroup()
