@@ -22,7 +22,7 @@ if ($#out<0)
 	die('You need to compile Mixxx first');
 }
 
-# Copy skins and configs to $BASE/share/mixxx
+# Copy skins to $BASE/share/mixxx
 `install -d $BASE/share/mixxx/skins/outline`;
 `install -d $BASE/share/mixxx/skins/traditional`;
 `install src/skins/outline/* $BASE/share/mixxx/skins/outline`;

@@ -185,7 +185,7 @@
  </VuMeter>
 
  <PushButton>
-  <NumberStates>4</NumberStates>
+  <NumberStates>3</NumberStates>
   <State>
    <Number>0</Number>
    <Pressed>endoftrack-stop-ch1.png</Pressed>
@@ -201,11 +201,6 @@
    <Pressed>endoftrack-loop-ch1.png</Pressed>
    <Unpressed>endoftrack-loop-ch1.png</Unpressed>
   </State>
-  <State>
-   <Number>3</Number>
-   <Pressed>endoftrack-ping-ch1.png</Pressed>
-   <Unpressed>endoftrack-ping-ch1.png</Unpressed>
-  </State>
   <Pos>408,356</Pos>
   <Connection>
    <ConfigKey>[Channel1],TrackEndMode</ConfigKey>
@@ -213,7 +208,7 @@
  </PushButton>
 
  <PushButton>
-  <NumberStates>4</NumberStates>
+  <NumberStates>3</NumberStates>
   <State>
    <Number>0</Number>
    <Pressed>endoftrack-stop-ch2.png</Pressed>
@@ -228,11 +223,6 @@
    <Number>2</Number>
    <Pressed>endoftrack-loop-ch2.png</Pressed>
    <Unpressed>endoftrack-loop-ch2.png</Unpressed>
-  </State>
-  <State>
-   <Number>3</Number>
-   <Pressed>endoftrack-ping-ch2.png</Pressed>
-   <Unpressed>endoftrack-ping-ch2.png</Unpressed>
   </State>
   <Pos>586,356</Pos>
   <Connection>

@@ -444,7 +444,7 @@
  </PushButton>
 
  <PushButton>
-  <NumberStates>4</NumberStates>
+  <NumberStates>3</NumberStates>
   <State>
    <Number>0</Number>
    <Pressed>endoftrackmode-stop.png</Pressed>
@@ -459,11 +459,6 @@
    <Number>2</Number>
    <Pressed>endoftrackmode-loop.png</Pressed>
    <Unpressed>endoftrackmode-loop.png</Unpressed>
-  </State>
-  <State>
-   <Number>3</Number>
-   <Pressed>endoftrackmode-ping.png</Pressed>
-   <Unpressed>endoftrackmode-ping.png</Unpressed>
   </State>
   <Pos>330,70</Pos>
   <Connection>
@@ -472,7 +467,7 @@
  </PushButton>
 
  <PushButton>
-  <NumberStates>4</NumberStates>
+  <NumberStates>3</NumberStates>
   <State>
    <Number>0</Number>
    <Pressed>endoftrackmode-stop.png</Pressed>
@@ -487,11 +482,6 @@
    <Number>2</Number>
    <Pressed>endoftrackmode-loop.png</Pressed>
    <Unpressed>endoftrackmode-loop.png</Unpressed>
-  </State>
-  <State>
-   <Number>3</Number>
-   <Pressed>endoftrackmode-ping.png</Pressed>
-   <Unpressed>endoftrackmode-ping.png</Unpressed>
   </State>
   <Pos>900,70</Pos>
   <Connection>

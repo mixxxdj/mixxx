@@ -1,5 +1,5 @@
 /*
- * $Id: pa_asio.cpp 329 2003-05-07 12:22:30Z tuehaste $
+ * $Id: pa_asio.cpp 479 2003-08-13 11:03:25Z tuehaste $
  * Portable Audio I/O Library for ASIO Drivers
  *
  * Author: Stephane Letz
@@ -64,6 +64,8 @@
         04-02-03 More robust ASIO driver buffer size initialization : some buggy drivers (like the Hoontech DSP24) give incorrect [min, preferred, max] values
        	   		 They should work with the preferred size value, thus if Pa_ASIO_CreateBuffers fails with the hostBufferSize computed in PaHost_CalcNumHostBuffers, 
        	   		 we try again with the preferred size. Fix an old (never detected?) bug in the buffer adapdation code : S Letz
+       	30-06-03 The audio callback was not protected against reentrancy : some drivers (like the Hoontech DSP24) seems to cause this behaviour 
+       			 that corrupted the buffer adapdation state and finally caused crashes. The reentrancy state is now checked in bufferSwitchTimeInfo : S Letz 
        	   		 
          TO DO :
         
@@ -178,6 +180,9 @@ typedef struct PaHostSoundControl
         PaTimestamp   pahsc_NumFramesDone;
         
         internalPortAudioStream   *past;
+        
+        int32 reenterCount; // Counter of audio callback reentrancy
+        int32 reenterError; // Counter of audio callback reentrancy detection
         
 } PaHostSoundControl;
 
@@ -680,9 +685,6 @@ static ASIOTime *bufferSwitchTimeInfo(ASIOTime *timeInfo, long index, ASIOBool p
         // Beware that this is normally in a seperate thread, hence be sure that you take care
         // about thread synchronization. This is omitted here for simplicity.
         
-       // static processedSamples = 0;
-        int  result = 0;
-        
         // store the timeInfo for later use
         asioDriverInfo.tInfo = *timeInfo;
 
@@ -719,42 +721,53 @@ static ASIOTime *bufferSwitchTimeInfo(ASIOTime *timeInfo, long index, ASIOBool p
 #endif
 
         // To avoid the callback accessing a desallocated stream
-        if( asioDriverInfo.past == NULL) return 0L;
-
-        // Keep sample position
-        asioDriverInfo.pahsc_NumFramesDone = timeInfo->timeInfo.samplePosition.lo;
-
-        /*  Has a user callback returned '1' to indicate finished at the last ASIO callback? */
-        if( asioDriverInfo.past->past_StopSoon ) {
+        if (asioDriverInfo.past == NULL) return 0L;
         
-                Pa_ASIO_Clear_Output(asioDriverInfo.bufferInfos, 
-                        asioDriverInfo.pahsc_channelInfos[0].type,
-                        asioDriverInfo.pahsc_NumInputChannels ,
-                        asioDriverInfo.pahsc_NumOutputChannels,
-                        index, 
-                        0, 
-                        asioDriverInfo.past_FramesPerHostBuffer);
-                
-                asioDriverInfo.past->past_IsActive = 0; 
-                
-                // Finally if the driver supports the ASIOOutputReady() optimization, do it here, all data are in place
-                if (asioDriverInfo.pahsc_postOutput) ASIOOutputReady();
-       
-        }else {
-                
-                /* CPU usage */
-                Pa_StartUsageCalculation(asioDriverInfo.past);
-                
-                Pa_ASIO_Callback_Input(index);
-                         
-                // Finally if the driver supports the ASIOOutputReady() optimization, do it here, all data are in place
-                if (asioDriverInfo.pahsc_postOutput) ASIOOutputReady();
-                
-                Pa_ASIO_Callback_End();
-                        
-                /* CPU usage */
-                Pa_EndUsageCalculation(asioDriverInfo.past);
+        // Keep sample position
+	    asioDriverInfo.pahsc_NumFramesDone = timeInfo->timeInfo.samplePosition.lo;
+        
+        // Reentrancy control
+        if( ++asioDriverInfo.reenterCount) {
+        	asioDriverInfo.reenterError++;
+        	DBUG(("bufferSwitchTimeInfo : reentrancy detection = %d\n", asioDriverInfo.reenterError));
+       		return 0L;
         }
+		
+		do {
+
+           	/*  Has a user callback returned '1' to indicate finished at the last ASIO callback? */
+	        if( asioDriverInfo.past->past_StopSoon ) {
+	        
+	                Pa_ASIO_Clear_Output(asioDriverInfo.bufferInfos, 
+	                        asioDriverInfo.pahsc_channelInfos[0].type,
+	                        asioDriverInfo.pahsc_NumInputChannels ,
+	                        asioDriverInfo.pahsc_NumOutputChannels,
+	                        index, 
+	                        0, 
+	                        asioDriverInfo.past_FramesPerHostBuffer);
+	                
+	                asioDriverInfo.past->past_IsActive = 0; 
+	                
+	                // Finally if the driver supports the ASIOOutputReady() optimization, do it here, all data are in place
+	                if (asioDriverInfo.pahsc_postOutput) ASIOOutputReady();
+	       
+	        }else {
+	                
+	                /* CPU usage */
+	                Pa_StartUsageCalculation(asioDriverInfo.past);
+	                
+	                Pa_ASIO_Callback_Input(index);
+	                         
+	                // Finally if the driver supports the ASIOOutputReady() optimization, do it here, all data are in place
+	                if (asioDriverInfo.pahsc_postOutput) ASIOOutputReady();
+	                
+	                Pa_ASIO_Callback_End();
+	                        
+	                /* CPU usage */
+	                Pa_EndUsageCalculation(asioDriverInfo.past);
+	        }
+        
+       	} while(asioDriverInfo.reenterCount--);
         
         return 0L;
 }
@@ -2670,6 +2683,9 @@ PaError PaHost_OpenStream( internalPortAudioStream   *past )
         memset(&asioDriverInfo, 0, sizeof(PaHostSoundControl));
         past->past_DeviceData = (void*) &asioDriverInfo;
         
+        /* Reentrancy counter initialisation */
+        asioDriverInfo.reenterCount = -1;
+        asioDriverInfo.reenterError = 0;
 
         /* FIXME */
         asioDriverInfo.past = past;
@@ -2749,7 +2765,7 @@ PaError PaHost_OpenStream( internalPortAudioStream   *past )
                 result = paBufferTooBig;
         else 
                 result = paHostError;
-                
+                 
 error:
         ASIOExit();
         return result;

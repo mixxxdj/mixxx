@@ -472,7 +472,7 @@ void VisualDisplay::setRotation(float angle, float rx,float ry,float rz)
 
 void VisualDisplay::setLength(float l)
 {
-    qDebug("l %f",l);
+//    qDebug("l %f",l);
     length = l;
 }
 

@@ -176,7 +176,7 @@ bool PlayerPortAudio::open(QString nameMaster, QString nameHead, int srate, int 
 bool PlayerPortAudio::open(int id, PortAudioStream **stream, int srate, PaSampleFormat format, int chNo, int bufferSize, int bufferNo, PortAudioCallback *callback)
 {
     // Try to open device 5 times before giving up!
-    qDebug("Device id: %i",id);
+//    qDebug("Device id: %i",id);
     PaError err = 0;
     {for (int i=0; i<5; i++)
     {

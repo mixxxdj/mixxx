@@ -1,5 +1,5 @@
 /*
- * $Id: ringbuffer.c 329 2003-05-07 12:22:30Z tuehaste $
+ * $Id: ringbuffer.c 479 2003-08-13 11:03:25Z tuehaste $
  * ringbuffer.c
  * Ring Buffer utility..
  *

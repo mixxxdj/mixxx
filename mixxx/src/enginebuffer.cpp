@@ -565,18 +565,19 @@ CSAMPLE *EngineBuffer::process(const CSAMPLE *, const int buf_size)
                 m_pTrackEnd->set(1.);
                 break;
             case TRACK_END_MODE_LOOP:
-                filepos_play=0.;
+                slotControlSeek(0.);
                 break;
+/*
             case TRACK_END_MODE_PING:
                 qDebug("Ping not implemented yet");
-/*
-                if (backwards)
-                    filepos_play=0.;
+
+                if (reverseButton->get()==1.)
+                    reverseButton->set(0.);
                 else
-                    filepos_play=file_length_old;                    
-                backwards = !backwards;
-*/
+                    reverseButton->set(1.);
+                
                 break;
+*/
             default:
                 qDebug("Invalid track end mode: %i",m);
             }
