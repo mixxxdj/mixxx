@@ -23,23 +23,23 @@ if ($#out<0)
 }
 
 # Copy skins to $BASE/share/mixxx
-`install -d $BASE/share/mixxx/skins/outline`;
-`install -d $BASE/share/mixxx/skins/traditional`;
-`install src/skins/outline/* $BASE/share/mixxx/skins/outline`;
-`install src/skins/traditional/* $BASE/share/mixxx/skins/traditional`;
+`install -m 644 -d $BASE/share/mixxx/skins/outline`;
+`install -m 644 -d $BASE/share/mixxx/skins/traditional`;
+`install -m 644 src/skins/outline/* $BASE/share/mixxx/skins/outline`;
+`install -m 644 src/skins/traditional/* $BASE/share/mixxx/skins/traditional`;
 
 # Copy midi config files
-`install -d $BASE/share/mixxx/midi`;
-`install src/midi/* $BASE/share/mixxx/midi`;
+`install -m 644 -d $BASE/share/mixxx/midi`;
+`install -m 644 src/midi/* $BASE/share/mixxx/midi`;
 
 # Copy mixxx binary to $BASE/bin
-`install -d $BASE/bin`;
-`install src/mixxx $BASE/bin`;
+`install -m 644 -d $BASE/bin`;
+`install -m 644 src/mixxx $BASE/bin`;
 
 # Copy doc files
-`install -d $BASE/share/doc/mixxx-1.0`;
-`install README $BASE/share/doc/mixxx-1.0`;
-`install LICENCE $BASE/share/doc/mixxx-1.0`;
+`install -m 644 -d $BASE/share/doc/mixxx-1.0`;
+`install -m 644 README $BASE/share/doc/mixxx-1.0`;
+`install -m 644 LICENCE $BASE/share/doc/mixxx-1.0`;
 
 printf("Install finished\n");
 

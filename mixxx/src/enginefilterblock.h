@@ -37,6 +37,7 @@ public:
     CSAMPLE *process(const CSAMPLE *source, const int buf_size);
 private:
     EngineObject *low, *high;
+    EngineFilterRBJ *lowrbj, *midrbj, *highrbj;
     ControlEngine *filterpotLow, *filterpotMid, *filterpotHigh;
 
     CSAMPLE *buffer;

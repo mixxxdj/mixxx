@@ -453,9 +453,9 @@ CSAMPLE *EngineBuffer::process(const CSAMPLE *, const int buf_size)
 
         double rate;
         if (playButton->get()==1. || fwdButton->get()==1. || backButton->get()==1.)
-            rate=temp_rate+wheel->get()+(1.+rateSlider->get()*m_pRateDir->get())*baserate;
+            rate=(temp_rate*m_pRateDir->get())+wheel->get()+(1.+rateSlider->get()*m_pRateDir->get())*baserate;
         else
-            rate=temp_rate+wheel->get()*baserate*20.;
+            rate=(temp_rate*m_pRateDir->get())+wheel->get()*baserate*20.;
 /*
         //
         // Beat event control. Assume forward play

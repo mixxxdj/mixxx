@@ -41,7 +41,6 @@ ControlLogpotmeter::ControlLogpotmeter(ConfigKey key, double dMaxValue) : Contro
     m_dValue = 1.;
 }
 
-//#define min(a,b)            (((a) < (b)) ? (a) : (b))
 void ControlLogpotmeter::setValueFromWidget(double dValue)
 {
     // Calculate the value linearly:
