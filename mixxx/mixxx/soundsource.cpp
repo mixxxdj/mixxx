@@ -106,6 +106,8 @@ mp3file::mp3file(const char* filename) {
   mad_stream_finish(&Stream);
   mad_stream_init(&Stream);
   mad_stream_buffer(&Stream, inputbuf, mp3filelength);
+  mad_frame_init(&Frame);
+  mad_synth_init(&Synth);
   qDebug("Opened file with length %i and bitrate %i.", filelength, bitrate);
 }
 
@@ -115,6 +117,7 @@ mp3file::~mp3file() {
   mad_stream_finish(&Stream);
   mad_frame_finish(&Frame);
   mad_synth_finish(&Synth);
+  qDebug("Freed mp3 file");
 }
 /*
    Seek towards filepos (in samples). Return the position which was actually
@@ -154,19 +157,20 @@ unsigned mp3file::read(unsigned long samples_wanted, const SAMPLE* _destination)
   unsigned Total_samples_decoded = 0;
   qDebug("Decoding");
   while (Total_samples_decoded < samples_wanted) {
-    if(mad_frame_decode(&Frame,&Stream))
-      if(MAD_RECOVERABLE(Stream.error))	{
-	qWarning("Recoverable frame level error (%s)",
-		 mad_stream_errorstr(&Stream));
-	continue;
-      } else
-	if(Stream.error==MAD_ERROR_BUFLEN)
-	  continue;
-	else {
-	  qWarning("Unrecoverable frame level error (%s).",
-		   mad_stream_errorstr(&Stream));
-	  break;
-	}
+      if(mad_frame_decode(&Frame,&Stream)) {
+	  if(MAD_RECOVERABLE(Stream.error))	{
+	      qWarning("Recoverable frame level error (%s)",
+		       mad_stream_errorstr(&Stream));
+	      continue;
+	  } else
+	      if(Stream.error==MAD_ERROR_BUFLEN)
+		  continue;
+	      else {
+		  qWarning("Unrecoverable frame level error (%s).",
+			   mad_stream_errorstr(&Stream));
+		  break;
+	      }
+      }
     /* Once decoded the frame is synthesized to PCM samples. No errors
      * are reported by mad_synth_frame();
      */
