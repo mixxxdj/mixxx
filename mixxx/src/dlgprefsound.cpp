@@ -178,6 +178,8 @@ int DlgPrefSound::getSliderLatencyVal(int val)
 
 void DlgPrefSound::slotApply()
 {
+    qDebug("Apply");
+
     // Update the config object with parameters from dialog
     config->set(ConfigKey("[Soundcard]","DeviceMasterLeft"), ConfigValue(ComboBoxSoundcardMasterLeft->currentText()));
     config->set(ConfigKey("[Soundcard]","DeviceMasterRight"), ConfigValue(ComboBoxSoundcardMasterRight->currentText()));
