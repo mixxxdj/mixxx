@@ -119,11 +119,9 @@ void VisualController::init(){
 
   glMatrixMode(GL_MODELVIEW);
   glLoadIdentity();
-  gluLookAt(
-	  eyex,eyey,eyez,
-	  centerx,centery,centerz,
-	  upx,upy,upz
-	);
+  gluLookAt(eyex,eyey,eyez,
+            centerx,centery,centerz,
+            upx,upy,upz);
 
 };
 
@@ -143,18 +141,17 @@ void VisualController::drawScene(GLenum mode)
 /**
  * Display Function.
  */
-void VisualController::display(){
-  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
-  glMatrixMode(GL_MODELVIEW);
-  glLoadIdentity();
-  gluLookAt(
-		  eyex,eyey,eyez,
-  	  centerx,centery,centerz,
-	    upx,upy,upz
-      );
-  glDrawBuffer(GL_BACK);
-  drawScene(GL_RENDER);
-  glFlush();
+void VisualController::display()
+{
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
+    gluLookAt(eyex,eyey,eyez,
+              centerx,centery,centerz,
+              upx,upy,upz);
+    glDrawBuffer(GL_BACK);
+    drawScene(GL_RENDER);
+    glFlush();
 };
 
 /**

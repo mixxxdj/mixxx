@@ -37,6 +37,8 @@ SignalVertexBuffer::SignalVertexBuffer(int _len, int _resampleFactor, EngineBuff
     playpos = 0;
     time.start();
 
+    qDebug("LEN %i",len);
+    
     buffer = vertex->getStartPtr(READCHUNK_NO);
 
     // Reset buffer
@@ -118,14 +120,14 @@ void SignalVertexBuffer::updateBuffer(float *source, int pos1, int len1, int pos
  */
 bufInfo SignalVertexBuffer::getVertexArray()
 {
-	// Calculate new playpos based on playpos, rate and time since 
-	int dt = time.elapsed();
-	time.restart();
-	int newPlaypos = playpos + (dt*enginebuffer->visualRate*enginebuffer->SRATE/1000);
+    // Calculate new playpos based on playpos, rate and time since 
+    int dt = time.elapsed();
+    time.restart();
+    int newPlaypos = playpos + (int)(dt*enginebuffer->visualRate*enginebuffer->SRATE/1000.);
     
-	playpos = enginebuffer->visualPlaypos/resampleFactor;
+    playpos = enginebuffer->visualPlaypos/resampleFactor;
 
-	int pos = playpos-(displayLen/2);
+    int pos = playpos-(displayLen/2);
     while (pos<0)
         pos += len;
 
@@ -134,8 +136,9 @@ bufInfo SignalVertexBuffer::getVertexArray()
     i.len1 = min(pos+displayLen,len)-pos;
     i.p2   = buffer;
     i.len2 = displayLen-i.len1;
-    
-//    std::cout << "pos " << pos << ", len1 " << i.len1 << ", len2 " << i.len2 << ", displayLen " << displayLen << "\n";
+
+    //qDebug("Total pos %i",i.len1+i.len2);
+    //std::cout << "pos " << pos << ", len1 " << i.len1 << ", len2 " << i.len2 << ", displayLen " << displayLen << "\n";
 
     return i;
 };
