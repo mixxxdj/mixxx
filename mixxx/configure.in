@@ -51,4 +51,4 @@ dnl PACKAGE set before
 KDE_CREATE_SUBDIRSLIST
 
 dnl add here all your Makefiles. This are created by configure
-AC_OUTPUT(Makefile mixxx/Makefile mixxx/docs/Makefile mixxx/docs/en/Makefile )
+AC_OUTPUT(Makefile mixxx/Makefile mixxx/docs/Makefile mixxx/docs/en/Makefile mixxx/qknob/Makefile )

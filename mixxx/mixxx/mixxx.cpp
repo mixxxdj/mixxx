@@ -22,7 +22,7 @@
 #include <qaccel.h>
 #include <qpushbutton.h>
 #include <qtable.h>
-#include <qdial.h>
+#include <qknob.h>
 
 #include "mixxx.h"
 #include "filesave.xpm"
@@ -80,7 +80,7 @@ MixxxApp::MixxxApp()
   //player = new PlayerPortAudio(BUFFER_SIZE);
 
   qDebug("Init engine...");
-  buffer = new EngineBuffer(view->playcontrol, view->channel, midi, "test.wav");
+  buffer = new EngineBuffer(view->playcontrol, view->channel, midi, view->playlist->TableList->item(1,1)->text());
   buffer->start();
 
   // Start audio

@@ -22,7 +22,7 @@
 #include <qpushbutton.h>
 #include <qmultilineedit.h>
 #include <qslider.h>
-#include <qdial.h>
+#include <qknob.h>
 #include <qstring.h>
 #include <qlcdnumber.h>
 #include <pthread.h>

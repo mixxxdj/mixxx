@@ -1,4 +1,4 @@
-# KDE tags expanded automatically by am_edit - $Revision: 30 $ 
+# KDE tags expanded automatically by am_edit - $Revision: 31 $ 
 # Makefile.in generated automatically by automake 1.4-p5 from Makefile.am
 
 # Copyright (C) 1994, 1995-8, 1999, 2001 Free Software Foundation, Inc.
@@ -228,9 +228,9 @@ TRANSLATIONS =
 KDE_OPTIONS = qtonly
 mixxx_LDADD = -laudiofile -lmad -lpthread -lasound -lportaudio $(LIB_QT) $(LIBSOCKET)
 
-SUBDIRS = docs 
+SUBDIRS = docs qknob 
 
-EXTRA_DIST = main.cpp mixxx.cpp mixxx.h mixxxdoc.cpp mixxxdoc.h mixxxview.cpp mixxxview.h lo32-app-mixxx.png lo16-app-mixxx.png filenew.xpm filesave.xpm fileopen.xpm dlgchanneldlg.ui dlgmessagesdlg.ui dlgplaycontroldlg.ui dlgchannel.cpp dlgchannel.h dlgmessages.cpp dlgmessages.h dlgplaycontrol.cpp dlgplaycontrol.h soundsource.cpp soundsource.h defs.h controlobject.cpp controlobject.h engineobject.cpp engineobject.h controlpushbutton.cpp controlpushbutton.h enginebuffer.cpp enginebuffer.h player.cpp player.h controlpotmeter.cpp controlpotmeter.h playeralsa.cpp playeralsa.h playerportaudio.cpp playerportaudio.h midiobject.h midiobject.cpp enginepregain.cpp enginepregain.h dlgplaylistdlg.ui dlgplaylist.h dlgplaylist.cpp soundsourcenull.cpp soundsourcenull.h qknob.cpp qknob.h controllogpotmeter.h controllogpotmeter.cpp controlrotary.h controlrotary.cpp engineiirfilter.h engineiirfilter.cpp enginehmlfilter.h enginehmlfilter.cpp knob000.xpm knob090.xpm knob180.xpm knob270.xpm soundsourceheavymp3.cpp soundsourceheavymp3.h
+EXTRA_DIST = main.cpp mixxx.cpp mixxx.h mixxxdoc.cpp mixxxdoc.h mixxxview.cpp mixxxview.h lo32-app-mixxx.png lo16-app-mixxx.png filenew.xpm filesave.xpm fileopen.xpm dlgchanneldlg.ui dlgmessagesdlg.ui dlgplaycontroldlg.ui dlgchannel.cpp dlgchannel.h dlgmessages.cpp dlgmessages.h dlgplaycontrol.cpp dlgplaycontrol.h soundsource.cpp soundsource.h defs.h controlobject.cpp controlobject.h engineobject.cpp engineobject.h controlpushbutton.cpp controlpushbutton.h enginebuffer.cpp enginebuffer.h player.cpp player.h controlpotmeter.cpp controlpotmeter.h playeralsa.cpp playeralsa.h playerportaudio.cpp playerportaudio.h midiobject.h midiobject.cpp enginepregain.cpp enginepregain.h dlgplaylistdlg.ui dlgplaylist.h dlgplaylist.cpp soundsourcenull.cpp soundsourcenull.h qknob.cpp qknob.h controllogpotmeter.h controllogpotmeter.cpp controlrotary.h controlrotary.cpp engineiirfilter.h engineiirfilter.cpp enginehmlfilter.h enginehmlfilter.cpp knob000.xpm knob090.xpm knob180.xpm knob270.xpm knob045.xpm knob135.xpm knob225.xpm knob315.xpm soundsourceheavymp3.cpp soundsourceheavymp3.h 
 
 ####### kdevelop will overwrite this part!!! (end)############
 
@@ -297,7 +297,7 @@ DIST_COMMON =  Makefile.am Makefile.in
 
 #>- DISTFILES = $(DIST_COMMON) $(SOURCES) $(HEADERS) $(TEXINFOS) $(EXTRA_DIST)
 #>+ 4
-KDE_DIST=dlgmessagesdlg.h knob045.xpm knob225.xpm mixxx knob135.xpm knob315.xpm dlgplaycontroldlg.h dlgchanneldlg.h dlgplaylistdlg.h 
+KDE_DIST=test.mp3 test.wav 
 
 DISTFILES= $(DIST_COMMON) $(SOURCES) $(HEADERS) $(TEXINFOS) $(EXTRA_DIST) $(KDE_DIST)
 
@@ -826,7 +826,7 @@ force-reedit:
 
 
 #>+ 11
-mixxx.all_cpp.cpp: $(srcdir)/Makefile.in $(srcdir)/soundsourceheavymp3.cpp $(srcdir)/enginehmlfilter.cpp $(srcdir)/engineiirfilter.cpp $(srcdir)/controlrotary.cpp $(srcdir)/controllogpotmeter.cpp $(srcdir)/qknob.cpp $(srcdir)/soundsourcenull.cpp $(srcdir)/dlgplaylist.cpp $(srcdir)/enginepregain.cpp $(srcdir)/midiobject.cpp $(srcdir)/playerportaudio.cpp $(srcdir)/playeralsa.cpp $(srcdir)/controlpotmeter.cpp $(srcdir)/player.cpp $(srcdir)/enginebuffer.cpp $(srcdir)/controlpushbutton.cpp $(srcdir)/engineobject.cpp $(srcdir)/controlobject.cpp $(srcdir)/soundsource.cpp $(srcdir)/dlgplaycontrol.cpp $(srcdir)/dlgmessages.cpp $(srcdir)/dlgchannel.cpp $(srcdir)/mixxxview.cpp $(srcdir)/mixxxdoc.cpp $(srcdir)/mixxx.cpp $(srcdir)/main.cpp $(srcdir)/dlgplaylistdlg.cpp $(srcdir)/dlgplaycontroldlg.cpp $(srcdir)/dlgmessagesdlg.cpp $(srcdir)/dlgchanneldlg.cpp  mixxxview.moc.cpp enginebuffer.moc.cpp controlpushbutton.moc.cpp engineiirfilter.moc.cpp dlgplaylist.moc.cpp mixxx.moc.cpp controlobject.moc.cpp dlgchannel.moc.cpp controlpotmeter.moc.cpp enginehmlfilter.moc.cpp controllogpotmeter.moc.cpp enginepregain.moc.cpp dlgplaycontrol.moc.cpp mixxxdoc.moc.cpp dlgmessages.moc.cpp qknob.moc.cpp engineobject.moc.cpp controlrotary.moc.cpp
+mixxx.all_cpp.cpp: $(srcdir)/Makefile.in $(srcdir)/soundsourceheavymp3.cpp $(srcdir)/enginehmlfilter.cpp $(srcdir)/engineiirfilter.cpp $(srcdir)/controlrotary.cpp $(srcdir)/controllogpotmeter.cpp $(srcdir)/qknob.cpp $(srcdir)/soundsourcenull.cpp $(srcdir)/dlgplaylist.cpp $(srcdir)/enginepregain.cpp $(srcdir)/midiobject.cpp $(srcdir)/playerportaudio.cpp $(srcdir)/playeralsa.cpp $(srcdir)/controlpotmeter.cpp $(srcdir)/player.cpp $(srcdir)/enginebuffer.cpp $(srcdir)/controlpushbutton.cpp $(srcdir)/engineobject.cpp $(srcdir)/controlobject.cpp $(srcdir)/soundsource.cpp $(srcdir)/dlgplaycontrol.cpp $(srcdir)/dlgmessages.cpp $(srcdir)/dlgchannel.cpp $(srcdir)/mixxxview.cpp $(srcdir)/mixxxdoc.cpp $(srcdir)/mixxx.cpp $(srcdir)/main.cpp dlgplaylistdlg.cpp dlgplaycontroldlg.cpp dlgmessagesdlg.cpp dlgchanneldlg.cpp  mixxxview.moc.cpp enginebuffer.moc.cpp controlpushbutton.moc.cpp engineiirfilter.moc.cpp dlgplaylist.moc.cpp mixxx.moc.cpp controlobject.moc.cpp dlgchannel.moc.cpp controlpotmeter.moc.cpp enginehmlfilter.moc.cpp controllogpotmeter.moc.cpp enginepregain.moc.cpp dlgplaycontrol.moc.cpp mixxxdoc.moc.cpp dlgmessages.moc.cpp qknob.moc.cpp engineobject.moc.cpp controlrotary.moc.cpp
 	@echo 'creating mixxx.all_cpp.cpp ...'; \
 	rm -f mixxx.all_cpp.files mixxx.all_cpp.final; \
 	echo "#define KDE_USE_FINAL 1" >> mixxx.all_cpp.final; \
