@@ -24,7 +24,7 @@ class ControlEngine;
 
 class EngineVolume : public EngineObject {
 public:
-  EngineVolume(ConfigKey key);
+  EngineVolume(ConfigKey key, double maxval=1.);
   ~EngineVolume();
   CSAMPLE *process(const CSAMPLE*, const int);
     void notify(double) {};

@@ -21,9 +21,9 @@
 /*----------------------------------------------------------------
   Volume effect.
   ----------------------------------------------------------------*/
-EngineVolume::EngineVolume(ConfigKey key)
+EngineVolume::EngineVolume(ConfigKey key, double maxval)
 {
-    ControlLogpotmeter *p = new ControlLogpotmeter(key, 5.);
+    ControlLogpotmeter *p = new ControlLogpotmeter(key, maxval);
     potmeterVolume = new ControlEngine(p);
 
     buffer = new CSAMPLE[MAX_BUFFER_LEN];
@@ -37,7 +37,6 @@ EngineVolume::~EngineVolume()
 
 CSAMPLE *EngineVolume::process(const CSAMPLE *source, const int buffer_size)
 {
-	qDebug("vol %f",potmeterVolume->get());
     for (int i=0; i<buffer_size; i++)
         buffer[i] = source[i]*potmeterVolume->get();
     return buffer;
