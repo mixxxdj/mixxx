@@ -22,7 +22,7 @@ EngineIIRfilter::~EngineIIRfilter() {
   delete [] buffer;
 }
 
-CSAMPLE *EngineIIRfilter::process(CSAMPLE *source, int buf_size) {
+CSAMPLE *EngineIIRfilter::process(const CSAMPLE *source, const int buf_size) {
   double GAIN =  coefs[0];
   for (int i=0; i<buf_size; i++) {
     xv[0] = xv[1]; xv[1] = xv[2]; xv[2] = xv[3]; xv[3] = xv[4];

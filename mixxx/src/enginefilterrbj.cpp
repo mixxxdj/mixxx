@@ -37,7 +37,7 @@ EngineFilterRBJ::~EngineFilterRBJ()
 	delete filterpot;
 }
 
-CSAMPLE *EngineFilterRBJ::process(CSAMPLE *source, int buf_size)
+CSAMPLE *EngineFilterRBJ::process(const CSAMPLE *source, const int buf_size)
 {
 	for (int i=0; i<buf_size; i++)
 	{

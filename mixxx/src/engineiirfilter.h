@@ -22,7 +22,7 @@ class EngineIIRfilter : public EngineObject {
   FLOAT gain;
   EngineIIRfilter(int, int , int , MidiObject*, const double *);
   ~EngineIIRfilter();
-  CSAMPLE *process(CSAMPLE*, int);
+  CSAMPLE *process(const CSAMPLE*, const int);
  public slots:
   void slotUpdate();
 };

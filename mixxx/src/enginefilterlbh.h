@@ -33,7 +33,7 @@ class EngineFilterLBH : public EngineObject  {
 public:
 	EngineFilterLBH(QKnob *, QKnob *, QKnob *, MidiObject *midi);
 	~EngineFilterLBH();
-	CSAMPLE *process(CSAMPLE *source, int buf_size);
+	CSAMPLE *process(const CSAMPLE *source, const int buf_size);
 private:
 	EngineIIRfilter *low, *band, *high;
 	CSAMPLE *buffer;

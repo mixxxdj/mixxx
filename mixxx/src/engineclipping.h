@@ -7,10 +7,12 @@
 class EngineClipping : public EngineObject {
  private:
     QRadioButton *bulb_clipping;
+
+    CSAMPLE *buffer;
  public:
     EngineClipping(QRadioButton *);
     ~EngineClipping();
-    CSAMPLE *process(CSAMPLE *, int);
+    CSAMPLE *process(const CSAMPLE *, const int);
 };
 
 #endif
