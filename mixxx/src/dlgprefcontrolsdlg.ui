@@ -1,4 +1,4 @@
-<!DOCTYPE UI><UI version="3.2" stdsetdef="1">
+<!DOCTYPE UI><UI version="3.1" stdsetdef="1">
 <class>DlgPrefControlsDlg</class>
 <widget class="QWidget">
     <property name="name">
@@ -273,23 +273,6 @@
             <string>Right</string>
         </property>
     </widget>
-    <widget class="QComboBox">
-        <property name="name">
-            <cstring>ComboBoxVisuals</cstring>
-        </property>
-        <property name="geometry">
-            <rect>
-                <x>189</x>
-                <y>140</y>
-                <width>170</width>
-                <height>22</height>
-            </rect>
-        </property>
-        <property name="font">
-            <font>
-            </font>
-        </property>
-    </widget>
     <widget class="QLabel">
         <property name="name">
             <cstring>TextLabel6_2_3_2</cstring>
@@ -558,6 +541,23 @@
         </property>
         <property name="text">
             <string></string>
+        </property>
+    </widget>
+    <widget class="QComboBox">
+        <property name="name">
+            <cstring>ComboBoxVisuals</cstring>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>189</x>
+                <y>140</y>
+                <width>170</width>
+                <height>22</height>
+            </rect>
+        </property>
+        <property name="font">
+            <font>
+            </font>
         </property>
     </widget>
 </widget>

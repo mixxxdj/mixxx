@@ -30,7 +30,7 @@ public:
     ControlNull();
     ~ControlNull();
 protected:
-    void setValueFromMidi(MidiCategory c, int v) {};
+    void setValueFromMidi(MidiCategory, int) {};
 };
 
 #endif

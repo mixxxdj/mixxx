@@ -31,7 +31,7 @@ SoundSourceOggVorbis::SoundSourceOggVorbis(QString qFilename) : SoundSource(qFil
     vorbisfile =  fopen(qFilename.latin1(), "r");
     if (!vorbisfile)
     {
-        qWarning("oggvorbis: cannot open %f", qFilename.latin1());
+        qWarning("oggvorbis: cannot open %s", qFilename.latin1());
         return;
     }
 

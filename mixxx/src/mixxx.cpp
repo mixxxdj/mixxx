@@ -202,7 +202,7 @@ MixxxApp::MixxxApp(QApplication *a, QStringList files)
 
 
     // Configure ControlEngine object
-    ControlEngine *m_pControlEngine = new ControlEngine(control);
+    m_pControlEngine = new ControlEngine(control);
 
     // Prepare the tracklist:
     QDir d(config->getValueString(ConfigKey("[Playlist]","Directory")));
@@ -384,8 +384,8 @@ MixxxApp::~MixxxApp()
 //    qDebug("Destroying MixxxApp");
 
     // Save state of End of track controls in config database
-    config->set(ConfigKey("[Controls]","TrackEndModeCh1"), ConfigValue(ControlObject::getControl(ConfigKey("[Channel1]","TrackEndMode"))->getValue()));
-    config->set(ConfigKey("[Controls]","TrackEndModeCh2"), ConfigValue(ControlObject::getControl(ConfigKey("[Channel2]","TrackEndMode"))->getValue()));
+    config->set(ConfigKey("[Controls]","TrackEndModeCh1"), ConfigValue((int)ControlObject::getControl(ConfigKey("[Channel1]","TrackEndMode"))->getValue()));
+    config->set(ConfigKey("[Controls]","TrackEndModeCh2"), ConfigValue((int)ControlObject::getControl(ConfigKey("[Channel2]","TrackEndMode"))->getValue()));
 
     qDebug("close player");
     player->close();

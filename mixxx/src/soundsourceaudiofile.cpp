@@ -93,7 +93,7 @@ int SoundSourceAudioFile::ParseHeader(TrackInfoObject *Track)
 
     Track->setType("wav");
     Track->setDuration((int)(afGetFrameCount(fh, AF_DEFAULT_TRACK)/afGetRate(fh, AF_DEFAULT_TRACK)));
-    Track->setBitrate((Track->getLength()/(Track->getDuration()*afGetRate(fh, AF_DEFAULT_TRACK))*afGetRate(fh, AF_DEFAULT_TRACK)*8.)/1000.);
+    Track->setBitrate((int)((Track->getLength()/(Track->getDuration()*afGetRate(fh, AF_DEFAULT_TRACK))*afGetRate(fh, AF_DEFAULT_TRACK)*8.)/1000.));
     afCloseFile(fh);
     return OK;
 }

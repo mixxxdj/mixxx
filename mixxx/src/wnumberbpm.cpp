@@ -44,3 +44,4 @@ void WNumberBpm::setScaleBpm(bool bScaleBpm)
 {
     m_bScaleBpm = bScaleBpm;
 }
+
