@@ -29,6 +29,7 @@ class WTrackTable;
 class WDisplay;
 class WKnob;
 class WVisual;
+class WNumber;
 
 /**
  * This class provides an incomplete base for your application view. 
@@ -63,6 +64,8 @@ private:
     WKnob *m_pVolume;
     WPushButton *m_pHeadCueCh1, *m_pHeadCueCh2;
     WPushButton *m_pCueCh1, *m_pCueCh2;
+    WNumber *m_pBpmCh1, *m_pBpmCh2;
+
     QString path;
 };
 

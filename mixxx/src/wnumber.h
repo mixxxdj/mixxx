@@ -1,5 +1,5 @@
 /***************************************************************************
-                          wbpmnumber.h  -  description
+                          wnumber.h  -  description
                              -------------------
     begin                : Wed Jun 18 2003
     copyright            : (C) 2003 by Tue & Ken Haste Andersen
@@ -15,25 +15,27 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef WBPMNUMBER_H
-#define WBPMNUMBER_H
+#ifndef WNUMBER_H
+#define WNUMBER_H
 
-#include <qwidget.h>
 #include <qlcdnumber.h>
-
+#include "wwidget.h"
 /**
   *@author Tue & Ken Haste Andersen
   */
 
-class WBPMNumber : public QLCDNumber  {
+class WNumber : public WWidget  {
     Q_OBJECT
 public: 
-    WBPMNumber(QWidget *parent=0, const char *name=0);
-    ~WBPMNumber();
-signals:
-    void valueChanged(int);
+    WNumber(QWidget *parent=0, const char *name=0);
+    ~WNumber();
+    void move(int, int);
+    void setFixedSize(int, int);
+    void setNumDigits(int);
 public slots:
-    void setValue(int);
+    void setValue(double dValue);
+private:
+    QLCDNumber *m_pLCD;
 };
 
 #endif
