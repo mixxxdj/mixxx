@@ -50,9 +50,10 @@ class MixxxView : public QWidget
   protected slots:
     void slotDocumentChanged();
   private:
-	//QHBoxLayout *hMainBox;
-	QGridLayout *mainGrid;
-
+    QGridLayout *mainGrid;
+    void Addfiles(const char *);
 };
 
 #endif
+
+
