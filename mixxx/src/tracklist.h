@@ -28,7 +28,7 @@ class WTrackTable;
 // than the version written in the current tracklist, the list will be
 // re-parsed.
 // - And yes, it should be a const member, but I don't know how to do that.
-#define TRACKLIST_VERSION 1
+#define TRACKLIST_VERSION 2
 
 class TrackList : public QObject
 {

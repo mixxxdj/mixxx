@@ -270,9 +270,14 @@ int TrackList::ParseHeader( TrackInfoObject *Track )
     iResult = SoundSourceAudioFile::ParseHeader(Track);
 #endif
      else if (sType == "mp3")
-    iResult = SoundSourceMp3::ParseHeader(Track);
+        iResult = SoundSourceMp3::ParseHeader(Track);
     else if (sType == "ogg")
-    iResult = SoundSourceOggVorbis::ParseHeader(Track);
+        iResult = SoundSourceOggVorbis::ParseHeader(Track);
+
+    // Try to sort out obviously erroneous parsings:
+    int iBitrate = Track->m_sBitrate.toInt();
+    if ((iBitrate <= 0) || (iBitrate > 5000))
+        Track->m_sBitrate = "?";
                     
     return iResult;
 }
