@@ -19,7 +19,7 @@
 
 ControlBeat::ControlBeat(ConfigKey key) : ControlObject(key)
 {
-    m_dValue = -1.;
+    m_dValue = 0.;
     time.start();
 
     // Filter buffer

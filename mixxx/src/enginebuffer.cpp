@@ -429,16 +429,13 @@ CSAMPLE *EngineBuffer::process(const CSAMPLE *, const int buf_size)
         // Find BPM adjustment factor
         ReaderExtractBeat *beat = reader->getBeatPtr();
         double bpmrate = 1.;
+        double filebpm = 0.;
         if (beat!=0)
         {
             CSAMPLE *bpmBuffer = beat->getBpmPtr();
-            double filebpm = bpmBuffer[(int)(bufferpos_play*(beat->getBufferSize()/READCHUNKSIZE))];
-//            if (bpmControl->get()>-1. && filebpm>-1.)
-//                bpmrate = bpmControl->get()/filebpm;
-            bpmControl->set(filebpm);
-//        qDebug("bpmrate %f, filebpm %f, midibpm %f",bpmrate,filebpm,bpmControl->get());
+            filebpm = bpmBuffer[(int)(bufferpos_play*(beat->getBufferSize()/READCHUNKSIZE))];
         }
-                                                
+
         // Determine direction of playback
         double dir = 1.;
         if (reverseButton->get()==1.)
@@ -634,7 +631,7 @@ CSAMPLE *EngineBuffer::process(const CSAMPLE *, const int buf_size)
             // if playmode is next file: set next in playlistcontrol
             //
 
-            // Update playpos slider if necessary
+            // Update playpos slider and bpm display if necessary
             m_iSamplesCalculated += buf_size;
             if (m_iSamplesCalculated > (44100/UPDATE_RATE) )
             {
@@ -642,6 +639,9 @@ CSAMPLE *EngineBuffer::process(const CSAMPLE *, const int buf_size)
                     playposSlider->set(filepos_play/file_length_old);
                 else
                     playposSlider->set(0.);
+
+                bpmControl->set(filebpm);
+
                 m_iSamplesCalculated = 0;
             }
 

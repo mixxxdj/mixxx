@@ -41,7 +41,7 @@ ReaderExtractBeat::ReaderExtractBeat(ReaderExtract *input, int frameSize, int fr
     {
         beatBuffer[i] = 0.;
         beatCorr[i] = 0.;
-        bpmBuffer[i] = -1.;
+        bpmBuffer[i] = 0.;
     }
     beatBufferLastIdx = 0;
     
@@ -85,7 +85,7 @@ void ReaderExtractBeat::softreset()
     {
         beatBuffer[i] = 0.;
         beatCorr[i] = 0.;
-        bpmBuffer[i] = -1.;
+        bpmBuffer[i] = 0.;
     }
     confidence = -1.;
 

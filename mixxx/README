@@ -16,8 +16,9 @@ Mac OS 10.2.
 New since 1.0.1:
 - Added support for mouse interaction when OpenGL is not
   available
-- Keyboard shortcuts
-- Beat estimation
+- Configurable keyboard shortcuts
+- Beat estimation, visual beat marks, bpm display
+- Absolute position/remaining time display
 
 * REQUIREMENTS *********************************************
 Mixxx is depends on the following libraries:
