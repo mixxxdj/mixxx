@@ -75,12 +75,24 @@ MixxxApp::MixxxApp(QApplication *a)
   // Reset pointer to preference dialog
   pDlg = 0;
 
-  // Read the config file:
+  // Read the config file
   config = new ConfigObject<ConfigValue>("mixxx.cfg"); 
 
-  // Read the midi configuration:
-  QString midifile = config->getValueString(ConfigKey("[Midi]","Configfile"));
-  midiconfig = new ConfigObject<ConfigValueMidi>(midifile);
+  // Get list of available midi configurations
+  QDir dir("config");
+  dir.setFilter(QDir::Files);
+  dir.setNameFilter("*.midi.cfg *.MIDI.CFG");
+  const QFileInfoList *list = dir.entryInfoList();
+  QFileInfoListIterator it(*list);        // create list iterator
+  QFileInfo *fi;                          // pointer for traversing
+  while ((fi=it.current()))
+  {
+      midiConfigList.append(fi->fileName());
+      ++it;   // goto next list element
+  }
+
+  // Read the midi configuration
+  midiconfig = new ConfigObject<ConfigValueMidi>(config->getValueString(ConfigKey("[Midi]","Configfile")));
 
   initDoc();
 
@@ -93,7 +105,7 @@ MixxxApp::MixxxApp(QApplication *a)
       QFileDialog* fd = new QFileDialog( this, "Choose directory with music files", TRUE );
       fd->setMode( QFileDialog::Directory );
       if ( fd->exec() == QDialog::Accepted ) {
-	 config->set(PlaylistKey, fd->selectedFile());
+          config->set(PlaylistKey, fd->selectedFile());
       }
   }
   addFiles(config->getValueString(PlaylistKey).latin1());
@@ -107,7 +119,7 @@ MixxxApp::MixxxApp(QApplication *a)
   connect(view->playlist->ListPlaylist, SIGNAL(pressed(QListViewItem *, const QPoint &, int)),
           this,                         SLOT(slotSelectPlay(QListViewItem *, const QPoint &, int)));
 
-  // Initialize midi:
+  // Initialize midi
   qDebug("Init midi...");
 #ifdef __ALSA__
   midi = new MidiObjectALSA(midiconfig,app);
@@ -428,101 +440,100 @@ bool MixxxApp::queryExit()
 
 void MixxxApp::slotFileNew()
 {
-  statusBar()->message(tr("Creating new file..."));
-  doc->newDoc();
-  statusBar()->message(tr("Ready."));
+    statusBar()->message(tr("Creating new file..."));
+    doc->newDoc();
+    statusBar()->message(tr("Ready."));
 }
 
 void MixxxApp::slotFileOpen()
 {
-  statusBar()->message(tr("Opening file..."));
+    statusBar()->message(tr("Opening file..."));
 
-  QString fileName = QFileDialog::getOpenFileName(0,0,this);
-  if (!fileName.isEmpty())
-  {
-    doc->load(fileName);
-    setCaption(fileName);
-    QString message=tr("Loaded document: ")+fileName;
-    statusBar()->message(message, 2000);
-  }
-  else
-  {
-    statusBar()->message(tr("Opening aborted"), 2000);
-  }
+    QString fileName = QFileDialog::getOpenFileName(0,0,this);
+    if (!fileName.isEmpty())
+    {
+        doc->load(fileName);
+        setCaption(fileName);
+        QString message=tr("Loaded document: ")+fileName;
+        statusBar()->message(message, 2000);
+    }
+    else
+    {
+        statusBar()->message(tr("Opening aborted"), 2000);
+    }
 }
 
 
 void MixxxApp::slotFileSave()
 {
-  statusBar()->message(tr("Saving file..."));
-  doc->save();
-  statusBar()->message(tr("Ready."));
+    statusBar()->message(tr("Saving file..."));
+    doc->save();
+    statusBar()->message(tr("Ready."));
 }
 
 void MixxxApp::slotFileSaveAs()
 {
-  statusBar()->message(tr("Saving file under new filename..."));
-  QString fn = QFileDialog::getSaveFileName(0, 0, this);
-  if (!fn.isEmpty())
-  {
-    doc->saveAs(fn);
-  }
-  else
-  {
-    statusBar()->message(tr("Saving aborted"), 2000);
-  }
+    statusBar()->message(tr("Saving file under new filename..."));
+    QString fn = QFileDialog::getSaveFileName(0, 0, this);
+    if (!fn.isEmpty())
+    {
+        doc->saveAs(fn);
+    }
+    else
+    {
+        statusBar()->message(tr("Saving aborted"), 2000);
+    }
 
-  statusBar()->message(tr("Ready."));
+    statusBar()->message(tr("Ready."));
 }
 
 void MixxxApp::slotFileClose()
 {
-  statusBar()->message(tr("Closing file..."));
+    statusBar()->message(tr("Closing file..."));
 
-  statusBar()->message(tr("Ready."));
+    statusBar()->message(tr("Ready."));
 }
 
 void MixxxApp::slotFilePrint()
 {
-  statusBar()->message(tr("Printing..."));
-  QPrinter printer;
-  if (printer.setup(this))
-  {
-    QPainter painter;
-    painter.begin(&printer);
+    statusBar()->message(tr("Printing..."));
+    QPrinter printer;
+    if (printer.setup(this))
+    {
+        QPainter painter;
+        painter.begin(&printer);
 
-    ///////////////////////////////////////////////////////////////////
-    // TODO: Define printing by using the QPainter methods here
+        ///////////////////////////////////////////////////////////////////
+        // TODO: Define printing by using the QPainter methods here
 
-    painter.end();
-  };
+        painter.end();
+    };
 
-  statusBar()->message(tr("Ready."));
+    statusBar()->message(tr("Ready."));
 }
 
 void MixxxApp::slotFileQuit()
 {
-  statusBar()->message(tr("Exiting application..."));
+    statusBar()->message(tr("Exiting application..."));
 
-  ///////////////////////////////////////////////////////////////////
-  // exits the Application
-  if(doc->isModified())
-  {
-    if(queryExit())
+    ///////////////////////////////////////////////////////////////////
+    // exits the Application
+    if(doc->isModified())
     {
-      qApp->quit();
+        if(queryExit())
+        {
+            qApp->quit();
+        }
+        else
+        {
+        };
     }
     else
     {
-
+        qApp->quit();
     };
-  }
-  else
-  {
-    qApp->quit();
-  };
 
-  statusBar()->message(tr("Ready."));
+    statusBar()->message(tr("Ready."));
 }
 
 void MixxxApp::slotEditCut()
@@ -605,18 +616,28 @@ void MixxxApp::slotOptionsPreferences()
         }
 
         // Midi configuration
-        pDlg->LineEditMidiconf->setText(config->getValueString(ConfigKey("[Midi]","Configfile")));
+        int j=0;
+        for (QStringList::Iterator it = midiConfigList.begin(); it != midiConfigList.end(); ++it )
+        {
+            // Insert the file name into the list, with ending (.midi.cfg) stripped
+            pDlg->ComboBoxMidiconf->insertItem((*it).left((*it).length()-9));
+
+            if ((*it) == config->getValueString(ConfigKey("[Midi]","Configfile")))
+                pDlg->ComboBoxMididevice->setCurrentItem(j);
+            j++;
+        }
 
         // Midi device
         QStringList *mididev = midi->getDeviceList();
-        {int j=0;
+
+        j=0;
         for (QStringList::Iterator it = mididev->begin(); it != mididev->end(); ++it )
         {
             pDlg->ComboBoxMididevice->insertItem(*it);
             if ((*it) == (*midi->getOpenDevice()))
                 pDlg->ComboBoxMididevice->setCurrentItem(j);
             j++;
-        }}
+        }
 
         // Song path
         pDlg->LineEditSongfiles->setText(config->getValueString(PlaylistKey));
@@ -626,7 +647,7 @@ void MixxxApp::slotOptionsPreferences()
         connect(pDlg->PushButtonApply,   SIGNAL(clicked()),      this, SLOT(slotOptionsApplyPreferences()));
         connect(pDlg->PushButtonCancel,  SIGNAL(clicked()),      this, SLOT(slotOptionsClosePreferences()));
         connect(pDlg->ComboBoxSoundcard, SIGNAL(activated(int)), this, SLOT(slotOptionsPreferencesUpdateDeviceOptions()));
-	connect(pDlg->PushButtonBrowsePlaylist, SIGNAL(clicked()),this,SLOT(slotBrowsePlaylistDir()));
+        connect(pDlg->PushButtonBrowsePlaylist, SIGNAL(clicked()),this,SLOT(slotBrowsePlaylistDir()));
 
         // Show dialog
         pDlg->show();
@@ -653,12 +674,12 @@ void MixxxApp::slotOptionsPreferencesUpdateDeviceOptions()
 
             // Bits
             pDlg->ComboBoxBits->clear();
-            {for (unsigned int i=0; i<p->bits.size(); i++)
+            for (unsigned int i=0; i<p->bits.size(); i++)
             {
                 pDlg->ComboBoxBits->insertItem(QString("%1").arg(p->bits[i]));
                 if (p->bits[i]==player->BITS)
                     pDlg->ComboBoxBits->setCurrentItem(i);
-            }}
+            }
         }
 
         // Get next device
@@ -694,13 +715,13 @@ void MixxxApp::slotOptionsApplyPreferences()
     // Perform changes to sound card setup
     player->stop();
     player->reopen(config->getValueString(ConfigKey("[Soundcard]","Device")),
-		   config->getValueString(ConfigKey("[Soundcard]","Samplerate")).toInt(),
-		   config->getValueString(ConfigKey("[Soundcard]","Bits")).toInt(),
-		   bufferSize);
+           config->getValueString(ConfigKey("[Soundcard]","Samplerate")).toInt(),
+           config->getValueString(ConfigKey("[Soundcard]","Bits")).toInt(),
+           bufferSize);
     player->start(master);
 
     // Perform changes to MIDI configuration
-    config->set(ConfigKey("[Midi]","Configfile"),pDlg->LineEditMidiconf->text());
+    config->set(ConfigKey("[Midi]","Configfile"),pDlg->ComboBoxMidiconf->currentText().append(".midi.cfg"));
     delete midiconfig;
     midiconfig = new ConfigObject<ConfigValueMidi>( config->getValueString(ConfigKey("[Midi]","Configfile")) );
 
@@ -711,8 +732,8 @@ void MixxxApp::slotOptionsApplyPreferences()
     // Update playlist if path has changed
     if (pDlg->LineEditSongfiles->text() != config->getValueString(PlaylistKey))
     {
-	config->set(ConfigKey("[Playlist]","Directory"), pDlg->LineEditSongfiles->text());
-	view->playlist->ListPlaylist->clear();
+        config->set(ConfigKey("[Playlist]","Directory"), pDlg->LineEditSongfiles->text());
+        view->playlist->ListPlaylist->clear();
         addFiles(config->getValueString(PlaylistKey).latin1());
     }
 }
@@ -733,8 +754,9 @@ void MixxxApp::slotBrowsePlaylistDir()
 {
     QFileDialog* fd = new QFileDialog( this, "Choose directory with music files", TRUE );
     fd->setMode( QFileDialog::Directory );
-    if ( fd->exec() == QDialog::Accepted ) {
-	pDlg->LineEditSongfiles->setText( fd->selectedFile() );
+    if ( fd->exec() == QDialog::Accepted )
+    {
+        pDlg->LineEditSongfiles->setText( fd->selectedFile() );
     }
 }
 

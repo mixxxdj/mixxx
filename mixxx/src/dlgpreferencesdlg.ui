@@ -139,22 +139,6 @@
             <string>Midi Device</string>
         </property>
     </widget>
-    <widget class="QComboBox">
-        <property name="name">
-            <cstring>ComboBoxMididevice</cstring>
-        </property>
-        <property name="enabled">
-            <bool>true</bool>
-        </property>
-        <property name="geometry">
-            <rect>
-                <x>144</x>
-                <y>189</y>
-                <width>210</width>
-                <height>22</height>
-            </rect>
-        </property>
-    </widget>
     <widget class="QLabel">
         <property name="name">
             <cstring>TextLabel6</cstring>
@@ -227,25 +211,6 @@
     </widget>
     <widget class="QLabel">
         <property name="name">
-            <cstring>TextLabel3_2</cstring>
-        </property>
-        <property name="enabled">
-            <bool>true</bool>
-        </property>
-        <property name="geometry">
-            <rect>
-                <x>12</x>
-                <y>124</y>
-                <width>128</width>
-                <height>21</height>
-            </rect>
-        </property>
-        <property name="text">
-            <string>Song files directory</string>
-        </property>
-    </widget>
-    <widget class="QLabel">
-        <property name="name">
             <cstring>TextLabel3</cstring>
         </property>
         <property name="enabled">
@@ -294,19 +259,6 @@
                 <x>146</x>
                 <y>85</y>
                 <width>85</width>
-                <height>22</height>
-            </rect>
-        </property>
-    </widget>
-    <widget class="QLineEdit">
-        <property name="name">
-            <cstring>LineEditMidiconf</cstring>
-        </property>
-        <property name="geometry">
-            <rect>
-                <x>144</x>
-                <y>155</y>
-                <width>210</width>
                 <height>22</height>
             </rect>
         </property>
@@ -376,6 +328,54 @@
         </property>
         <property name="text">
             <string>OK</string>
+        </property>
+    </widget>
+    <widget class="QComboBox">
+        <property name="name">
+            <cstring>ComboBoxMididevice</cstring>
+        </property>
+        <property name="enabled">
+            <bool>true</bool>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>144</x>
+                <y>189</y>
+                <width>210</width>
+                <height>22</height>
+            </rect>
+        </property>
+    </widget>
+    <widget class="QComboBox">
+        <property name="name">
+            <cstring>ComboBoxMidiconf</cstring>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>145</x>
+                <y>155</y>
+                <width>210</width>
+                <height>22</height>
+            </rect>
+        </property>
+    </widget>
+    <widget class="QLabel">
+        <property name="name">
+            <cstring>TextLabel3_2</cstring>
+        </property>
+        <property name="enabled">
+            <bool>true</bool>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>12</x>
+                <y>124</y>
+                <width>128</width>
+                <height>21</height>
+            </rect>
+        </property>
+        <property name="text">
+            <string>Song files directory</string>
         </property>
     </widget>
 </widget>
