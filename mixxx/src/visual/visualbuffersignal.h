@@ -28,7 +28,7 @@ class VisualBufferSignal : public VisualBuffer  {
 public: 
     VisualBufferSignal(ReaderExtract *pReaderExtract, ControlPotmeter *pPlaypos);
     ~VisualBufferSignal();
-    void update(int iPos);
+    void update(int iPos, int iLen);
     void draw(GLfloat *p, int iLen);
 };
 

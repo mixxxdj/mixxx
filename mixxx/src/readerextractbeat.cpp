@@ -16,13 +16,15 @@
  ***************************************************************************/
 
 #include "readerextractbeat.h"
+#include "visual/visualbuffer.h"
+#include "readerevent.h"
 
 #ifdef __GNUPLOT__
     // For sleep:
     #include <unistd.h>
 #endif
 
-ReaderExtractBeat::ReaderExtractBeat(ReaderExtract *input, int frameSize, int frameStep, int _histSize) : ReaderExtract(input, "mark")
+ReaderExtractBeat::ReaderExtractBeat(ReaderExtract *input, int frameSize, int frameStep, int _histSize) : ReaderExtract(input, "marks")
 {
     frameNo = input->getBufferSize(); ///frameStep;
     framePerChunk = frameNo/READCHUNK_NO;
@@ -88,7 +90,6 @@ void ReaderExtractBeat::reset()
     
     for (int i=0; i<histSize; i++)
         hist[i]=0.;
-    
 }
 
 void ReaderExtractBeat::softreset()
@@ -100,6 +101,14 @@ void ReaderExtractBeat::softreset()
         bpmBuffer[i] = -1.;
     }
     confidence = 0.;
+
+#ifdef __VISUALS__
+    // Update vertex buffer by sending an event containing indexes of where to update.
+    if (m_pVisualBuffer != 0)
+        for (int i=0; i<getBufferSize(); i+=getBufferSize()/READCHUNK_NO)
+            QApplication::postEvent(m_pVisualBuffer, new ReaderEvent(i, getBufferSize()/READCHUNK_NO));
+#endif
+
 }
 
 void *ReaderExtractBeat::getBasePtr()
@@ -583,6 +592,12 @@ void *ReaderExtractBeat::processChunk(const int _idx, const int start_idx, const
     //savePlot(gnuplot_hist, "hist.png", "png");
 #endif
 
+#ifdef __VISUALS__
+    // Update vertex buffer by sending an event containing indexes of where to update.
+    if (m_pVisualBuffer != 0)
+        QApplication::postEvent(m_pVisualBuffer, new ReaderEvent(frameFrom, frameTo+frameAdd-frameFrom));
+#endif
+
     return (void *)&hist[idx];
 }
 
@@ -630,7 +645,8 @@ void ReaderExtractBeat::updateConfidence(int curBeatIdx, int lastBeatIdx)
     if (confidence>0.9)
         confidence = 0.9;
 
-    qDebug("confidence :%f, beat %f, max %f, tmp %f",confidence,hfc[curBeatIdx%frameNo], max, tmp);
+    confidence=0.9;    
+    //qDebug("confidence :%f, beat %f, max %f, tmp %f",confidence,hfc[curBeatIdx%frameNo], max, tmp);
 }
 
 

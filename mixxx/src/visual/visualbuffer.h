@@ -19,7 +19,7 @@
 #define VISUALBUFFER_H
 
 /** Display rate in Hz. This relates to the display resolution */
-const int DISPLAYRATE = 2000;
+const int MAXDISPLAYRATE = 500;
 
 /**
   * A Signal Vertex Array Buffer.
@@ -49,8 +49,9 @@ class VisualBuffer : public QObject
 public:
     VisualBuffer(ReaderExtract *pReaderExtract, ControlPotmeter *pPlaypos);
     virtual ~VisualBuffer();
+    bool eventFilter(QObject *o, QEvent *e);
     /** Update and resample signal vertex buffer */
-    virtual void update(int iPos) = 0;
+    virtual void update(int iPos, int iLen) = 0;
     /** Draw the buffer */
     virtual void draw(GLfloat *p, int iLen) = 0;
 
@@ -82,10 +83,15 @@ protected:
     int m_iSourceLen;
     /** Resample factor determining the factor to reduce the incomming signal with */
     CSAMPLE m_fResampleFactor;
-    /** Factor used in convesion of position and length to the assigned ReaderExtract
-      * position */
-    CSAMPLE m_fPositionFactor;
-    /** Number of samples to display (used in getVertexArray) */             
+    /** Display rate. Rate at which this buffer represents. The x axis values of this buffer correspond to samples
+      * at MAXDISPLAYRATE positions */
+    CSAMPLE m_fDisplayRate;
+    /** Factor between this buffers sample rate, and MAXDISPLAYRATE */
+    CSAMPLE m_fDisplayFactor;
+    /** Factor used in convesion of position and length between ReaderExtractWave and
+      * the associated ReaderExtract position and length*/
+    CSAMPLE m_fReaderExtractFactor;
+    /** Number of samples of this buffer to display (used in getVertexArray) */             
     int m_iDisplayLen;
     /** Pounter to ReaderExtract */
     ReaderExtract *m_pReaderExtract;

@@ -56,15 +56,28 @@ VisualDisplay::VisualDisplay(VisualBuffer *pVisualBuffer, const char *group)
     postSignal    = new VisualDisplayBuffer(m_pVisualBuffer);
     signal        = new VisualDisplayBuffer(m_pVisualBuffer);
     box = new VisualBox(id);
-    playPosMarker = new VisualBox(id);
         
 //    setBoxWireMaterial(&lblue);
-    fishEyeSignal->setMaterial(&lgreen);
-    preSignal->setMaterial(&lgreen);
-    postSignal->setMaterial(&lgreen);
-    signal->setMaterial(&lgreen);
-    box->setMaterial(&lblue);
-    playPosMarker->setMaterial(&purple);    
+
+    if (QString(group)=="marks")
+    {
+        fishEyeSignal->setMaterial(&lblue);
+        preSignal->setMaterial(&lblue);
+        postSignal->setMaterial(&lblue);
+        signal->setMaterial(&lblue);
+        box->setMaterial(&lblue);
+        playPosMarker = 0;
+    }
+    else
+    {
+        fishEyeSignal->setMaterial(&lgreen);
+        preSignal->setMaterial(&lgreen);
+        postSignal->setMaterial(&lgreen);
+        signal->setMaterial(&lgreen);
+        box->setMaterial(&lblue);
+        playPosMarker = new VisualBox(id);
+        playPosMarker->setMaterial(&purple);
+    }
 
     setFishEyeMode(false);
 
@@ -83,7 +96,8 @@ VisualDisplay::VisualDisplay(VisualBuffer *pVisualBuffer, const char *group)
 VisualDisplay::~VisualDisplay()
 {
     delete box;
-    delete playPosMarker;
+    if (playPosMarker)
+        delete playPosMarker;
 }
 
 int VisualDisplay::getId()
@@ -151,9 +165,13 @@ void VisualDisplay::draw(GLenum mode)
     box->draw(mode);
 */
 //    if (playPosMarkerMaterial)
-        playPosMarker->setMaterial(&purple);
-    playPosMarker->setDrawMode(GL_POLYGON);
-    playPosMarker->draw(mode);
+
+    if (playPosMarker)
+    {
+//        playPosMarker->setMaterial(&purple);
+        playPosMarker->setDrawMode(GL_POLYGON);
+        playPosMarker->draw(mode);
+    }
 }
 
 void VisualDisplay::draw()
@@ -286,17 +304,17 @@ void VisualDisplay::setupScene()
 
     lblue.ambient[0] = 0.0f;
     lblue.ambient[1] = 0.0f;
-    lblue.ambient[2] = 0.0f;
+    lblue.ambient[2] = 255.0f;
     lblue.ambient[3] = 1.0f;
 
-    lblue.diffuse[0] = 10/255.f;
-    lblue.diffuse[1] = 20/255.f;
-    lblue.diffuse[2] = 130/255.f;
+    lblue.diffuse[0] = 0.f;
+    lblue.diffuse[1] = 0.f;
+    lblue.diffuse[2] = 255.f;
     lblue.diffuse[3] = 1.0f;
 
     lblue.specular[0] = 0.0f;
     lblue.specular[1] = 0.0f;
-    lblue.specular[2] = 0.01f;
+    lblue.specular[2] = 255.f;
     lblue.specular[3] = 1.0f;
 
     lblue.shininess = 0;
@@ -319,18 +337,18 @@ void VisualDisplay::setupScene()
     lgreen.shininess = 128;
 
     purple.ambient[0] = 255.f;
-    purple.ambient[1] = 50.0f;
-    purple.ambient[2] = 50.f;
+    purple.ambient[1] = 0.0f;
+    purple.ambient[2] = 0.f;
     purple.ambient[3] = 1.0f;
 
     purple.diffuse[0] = 255.f;
-    purple.diffuse[1] = 50.f;
-    purple.diffuse[2] = 50.f;
+    purple.diffuse[1] = 0.f;
+    purple.diffuse[2] = 0.f;
     purple.diffuse[3] = 1.0f;
 
     purple.specular[0] = 255.f;
-    purple.specular[1] = 50.0f;
-    purple.specular[2] = 50.f;
+    purple.specular[1] = 0.0f;
+    purple.specular[2] = 0.f;
     purple.specular[3] = 1.0f;
 
     purple.shininess = 128;
@@ -393,8 +411,8 @@ void VisualDisplay::doLayout()
         box->setRotation(angle,rx,ry,rz);
     }
 
-    float plength = length/300;
-    float pheight = height*1.05;
+    float plength = length/100;
+    float pheight = height*1.2;
     float pdepth = depth*1.05;
 
     float offset = (length-plength)/2.0f;
@@ -403,11 +421,14 @@ void VisualDisplay::doLayout()
     float py = oy + ny*offset;
     float pz = oz + nz*offset;
 
-    playPosMarker->setOrigo(px,py,pz);
-    playPosMarker->setLength(plength);
-    playPosMarker->setHeight(pheight);
-    playPosMarker->setDepth(pdepth);
-    playPosMarker->setRotation(angle,rx,ry,rz);
+    if (playPosMarker)
+    {
+        playPosMarker->setOrigo(px,py,pz);
+        playPosMarker->setLength(plength);
+        playPosMarker->setHeight(pheight);
+        playPosMarker->setDepth(pdepth);
+        playPosMarker->setRotation(angle,rx,ry,rz);
+    }
 }
 
 void VisualDisplay::zoom(float ox, float oy, float oz, float _length, float _height, float _depth)

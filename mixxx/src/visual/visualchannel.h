@@ -38,11 +38,11 @@ class VisualChannel : public QObject
 public:
     VisualChannel(ControlPotmeter *pPlaypos, VisualController *pVisualController);
     ~VisualChannel();
-    bool eventFilter(QObject *o, QEvent *e);
     /** Zoom/unzoom the signal of id */
     void zoom(int id);
-    /** Add a ReaderExtract buffer to object, and construct a corresponding display */
-    void add(ReaderExtract *pReaderExtract);
+    /** Add a ReaderExtract buffer to object, and construct a corresponding display. A
+      * pointer to the constructed VisualBuffer is returned */
+    VisualBuffer *add(ReaderExtract *pReaderExtract);
     void move(int msec);
     void setPosX(int x);
     void setZoomPosX(int x);    
