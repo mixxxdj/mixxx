@@ -98,8 +98,8 @@ TrackList::TrackList( const QString sDirectory,const QString sPlaylistdir ,WTrac
     playSelectMenu->insertItem("Player 1",this, SLOT(slotChangePlay_1()));
     playSelectMenu->insertItem("Player 2",this, SLOT(slotChangePlay_2()));
 	//playSelectMenu->insertItem("--------",this);
-	playSelectMenu->insertItem("Save Playlist", this, SLOT(WriteXML()));
-	playSelectMenu->insertItem("Save Playlist as", this, SLOT(slotBrowseDir()));
+	playSelectMenu->insertItem("Save Playlist", this, SLOT(slotSavePls()));
+	playSelectMenu->insertItem("Save Playlist as", this, SLOT(slotSavePlsAs()));
 	playSelectMenu->insertItem("Delete Track",this, SLOT(slotDeleteTrack()));
 	playSelectMenu->insertItem("Clear Playlist", this, SLOT(slotClearPlaylist()));
 	playSelectMenu->insertSeparator(2);
@@ -113,7 +113,7 @@ TrackList::TrackList( const QString sDirectory,const QString sPlaylistdir ,WTrac
 	//connect applyDir signal with the UpdateTracklist slot, as described in wTreeList
 	connect(m_pTableTracks, SIGNAL(applyDir(QString )), this, SLOT(slotUpdateTracklist( QString  )));
 	connect(wTree, SIGNAL(loadPls(QString)), this, SLOT(slotUpdateTracklistFake( QString) ) );
-	WriteXML();
+	//WriteXML();
 	
 	
 }
@@ -121,7 +121,8 @@ TrackList::TrackList( const QString sDirectory,const QString sPlaylistdir ,WTrac
 TrackList::~TrackList()
 {
     qDebug("destroying tracklist");
-		// Initialize xml file:
+	 /**	
+	// Initialize xml file:
     QFile opmlFile(wTree->m_sPlaylistdir);
 	QDomDocument domXML("Mixxx_Track_List");
     if (!domXML.setContent( &opmlFile))
@@ -141,7 +142,8 @@ TrackList::~TrackList()
 	
     // Get all the Playlists written in the xml file:
     QDomNode node = elementRoot.firstChild();
-    // Only write out the xml file if the current playlist is still contained in it(wasnt deleted beforehand but is still flagged aktive):
+   
+	// Only write out the xml file if the current playlist is still contained in it(wasnt deleted beforehand but is still flagged aktive):
 	while ( !node.isNull() )
     {
 		 if( node.isElement() && node.nodeName() == "Playlist" && node.toElement().attribute( "Name" ) == currentPlaylist){
@@ -150,7 +152,7 @@ TrackList::~TrackList()
 		 }
 		 node = node.nextSibling();
 	}
-    
+    **/
     
 	
     // Delete all the tracks:
@@ -162,7 +164,8 @@ void TrackList::UpdateTracklist(QDomDocument * domXML)
 {
     // Run through all the files and add the new ones to the xml file:
 	bool bFilesAdded = false;
-	
+	//Save the playlist
+	QPtrList<TrackInfoObject> tempTracks = m_lTracks;
 	// Put information from all the tracks into the table:
 	/************************************************************
 	the following code has been added for debugging
@@ -173,37 +176,37 @@ void TrackList::UpdateTracklist(QDomDocument * domXML)
 	************************************************************/
 	
 	int iRow=0;
-    if(!m_sDirectory.endsWith(".xml")){
-	    bFilesAdded = AddFiles(m_sDirectory.latin1(),domXML,TRUE);
+    
+	if(!m_sDirectory.endsWith(".xml")){
+	    bFilesAdded = AddFiles(m_sDirectory.latin1(),domXML);
 	    iRow= m_pTableTracks->numRows();
     }else{
 		bFilesAdded = TRUE;
 		}
 	
-	int iTrackno=0;
-	int iTrackCount=m_lTracks.count();
 	
-	if(!bFilesAdded && m_lTracks.count() == m_pTableTracks->numRows()){
-		
-		iRow = 0;
-		iTrackCount = 0;
-	}		
-	m_pTableTracks->insertRows(m_pTableTracks->numRows(), iTrackCount );
-	for (TrackInfoObject *Track = m_lTracks.first(); Track; Track = m_lTracks.next() )
-    {
-        if (Track->exists())
+	
+	
+	TrackInfoObject *Track;
+	for(Track = m_lTracks.first(); Track; Track = m_lTracks.next()){
+	bool trackExistsinTable = false;
+	for(int i = 0; i< m_pTableTracks->numRows();i++){	 
+		int idx = m_pTableTracks->text(i, COL_INDEX).toInt();
+		if(Track->m_iIndex == idx)
+		trackExistsinTable = true;
+	     
+		}
+    if(!trackExistsinTable){
+	m_pTableTracks->insertRows(m_pTableTracks->numRows(), 1);	
+	
+		if (Track->exists())
         {
-			m_pTableTracks->setItem(iRow, COL_TITLE, new WTrackTableItem(m_pTableTracks,QTableItem::Never, Track->getTitle(), typeText));
-    		m_pTableTracks->setItem(iRow, COL_ARTIST, new WTrackTableItem(m_pTableTracks,QTableItem::Never, Track->getArtist(), typeText));
-	    	m_pTableTracks->setItem(iRow, COL_COMMENT, new WTrackTableItem(m_pTableTracks,QTableItem::WhenCurrent, Track->getComment(), typeText));
-		    m_pTableTracks->setItem(iRow, COL_TYPE, new WTrackTableItem(m_pTableTracks,QTableItem::Never, Track->getType(), typeText));
-	    	m_pTableTracks->setItem(iRow, COL_DURATION, new WTrackTableItem(m_pTableTracks,QTableItem::Never, Track->getDurationStr(), typeDuration));
-		    m_pTableTracks->setItem(iRow, COL_BITRATE, new WTrackTableItem(m_pTableTracks,QTableItem::Never, Track->getBitrateStr(), typeNumber));
-    		m_pTableTracks->setItem(iRow, COL_INDEX, new WTrackTableItem(m_pTableTracks,QTableItem::Never, QString("%1").arg(Track->m_iIndex), typeText));
+			Track->insertInTrackTableRow(m_pTableTracks , iRow, Track->m_iIndex);
 	       	iRow ++;
 	    }
-        iTrackno ++;
-    }
+		
+	}
+	}
     
 	qDebug("Number of rows written: %d",iRow);
 
@@ -215,7 +218,10 @@ void TrackList::UpdateTracklist(QDomDocument * domXML)
 
 	// Update the scores for all the tracks:
 	UpdateScores();
-
+		WriteXML(&tempTracks);
+		
+	// Get the playlist back
+	m_lTracks = tempTracks;
 }
 void TrackList::loadTrack1(QString name)
 {
@@ -305,13 +311,10 @@ void TrackList::UpdateScores()
 /*
 	Write the xml tree to the file:
 */
-void TrackList::WriteXML()
+void TrackList::WriteXML(QPtrList<TrackInfoObject> * tempTracks)
 {
-	QPtrList<TrackInfoObject> tempTracks = m_lTracks;
-	
- 	bool newPlaylist = true;
 	bool newFile = false;
-	bool filesAdded = false;
+	
 	QFile opmlFile(wTree->m_sPlaylistdir);
 	QDomDocument domXML("Mixxx_Track_List");
 	//qDebug("PlaylistID is: %s", currentPlaylist.latin1());
@@ -331,16 +334,6 @@ void TrackList::WriteXML()
 	opmlFile.close();
 	
 	qDebug("Writing ID %s, %d tracks", currentPlaylist.latin1(),m_pTableTracks->numRows());
-    
-	/** First transfer information from the comment field from the table to the Track:
-    for (unsigned int iRow=0; iRow<m_pTableTracks->numRows(); iRow++)
-    {
-        if (m_pTableTracks->item(iRow, COL_INDEX))
-        {
-            m_lTracks.at( m_pTableTracks->item(iRow, COL_INDEX)->text().toUInt() )->m_sComment =
-                m_pTableTracks->item(iRow, COL_COMMENT)->text();
-        }
-    }**/
    	
 	// Ensure UTF16 encoding
 	if(newFile){
@@ -355,62 +348,40 @@ void TrackList::WriteXML()
     TrackInfoObject::addElement( domXML, elementRoot, "Version", QString("%1").arg( TRACKLIST_VERSION ) );
 	}	
 	//Try to find new files and add them in m_lTracks 
-	filesAdded = AddFiles(wTree->getRoot()->text(2).latin1(),&domXML,FALSE);
+	//filesAdded = AddFiles(wTree->getRoot()->text(2).latin1(),&domXML,FALSE);
 	QDomElement elementRoot = domXML.documentElement();
     // Get all the tracks written in the xml file:
     QDomNode node = elementRoot.firstChild();
 	
-	if(!filesAdded){
-		qDebug("No new files have been added to the global collection");	
-		}else{
-		// Append all the tracks:
-   		for (TrackInfoObject *Track = m_lTracks.first(); Track; Track = m_lTracks.next())
-    	{
-        QDomElement elementNew = domXML.createElement("Track");
-        // See if we should add information from the comment field:
-        Track->writeToXML(domXML, elementNew);
-		elementRoot.appendChild(elementNew);
-    	}
-			
-	}
-    
-	m_lTracks = tempTracks;	//Get the playlist back.
 	
-	while(!node.isNull()){
-	if( node.isElement() && node.nodeName() == "Playlist" && node.toElement().attribute( "Name" ) == currentPlaylist){
-            newPlaylist = false;			
-	//First delete all old childs
-		while(node.hasChildNodes())
-			node.removeChild(node.firstChild());
-		
-	// Insert all the tracks:
-    for (TrackInfoObject *Track = m_lTracks.first(); Track; Track = m_lTracks.next())
-    {
-        QDomElement elementNew = domXML.createElement("TrackPTR");
-        // See if we should add information from the comment field:
-        //Track->WriteToXML(domXML, elementNew);
-        elementNew.setAttribute("PTR_ID",Track->m_iIndex);
-		
-		node.appendChild(elementNew);
-    }
-  	}
-	node = node.nextSibling();
-	}		
-    
-	if(newPlaylist){
-	QDomElement playlistElement = domXML.createElement( "Playlist" );
-	playlistElement.setAttribute("Name",currentPlaylist);
 	for (TrackInfoObject *Track = m_lTracks.first(); Track; Track = m_lTracks.next())
-    {
-        QDomElement elementNew = domXML.createElement("TrackPTR");
-        elementNew.setAttribute("PTR_ID",Track->m_iIndex);
-		// See if we should add information from the comment field:
-        //Track->WriteToXML(domXML, elementNew);
-        playlistElement.appendChild(elementNew);
+    {	
+	bool fileFoundInXML = false;
+	bool fileFoundInTable = false;
+	while(!node.isNull()){
+	// Insert all the tracks:
+    if(node.isElement() && node.nodeName() == "Track" && WWidget::selectNodeQString(node, "Index").toInt() == Track->m_iIndex ){
+		fileFoundInXML=true;
+        break;
+	}	 
+ 	node = node.nextSibling();
+	}
+	if(!fileFoundInXML){
+			QDomElement elementTemp = domXML.createElement("Track");
+            Track->writeToXML(domXML,elementTemp);
+            elementRoot.appendChild(elementTemp);			
+	     }
+	 for (TrackInfoObject *Track2 = tempTracks->first();Track2;Track2 = tempTracks->next()){	 
+		 if(Track2->m_iIndex == Track->m_iIndex)
+			 fileFoundInTable = true;
+			 } 	
+	 if(!fileFoundInTable)
+		tempTracks->append(Track);		 
     }
-	elementRoot.appendChild(playlistElement);
-	}		
-	//Dont touch any other playlist items
+    
+	
+	
+    //Dont touch any other playlist items
 	if (!opmlFile.open(IO_WriteOnly))
     {
         QMessageBox::critical(0,
@@ -418,7 +389,7 @@ void TrackList::WriteXML()
                 tr("Cannot open file %1").arg(wTree->m_sPlaylistdir.latin1()));
         return;
     }
-
+	
     // Write to the file:
     QTextStream Xml(&opmlFile);
     Xml.setEncoding(QTextStream::Unicode);
@@ -426,7 +397,10 @@ void TrackList::WriteXML()
     opmlFile.close();
 	//Update the Treelist
 	refreshPlaylist();	
-}
+}	
+	 
+		
+	
 	
 
 /*
@@ -446,7 +420,7 @@ int TrackList::getTrackCount( QDomDocument * docXML ){
 	}
 	return count;
 }
-bool TrackList::AddFiles(const char *path, QDomDocument * docXML, bool parseRoot)
+bool TrackList::AddFiles(const char *path, QDomDocument * docXML)
 {    
 	QPtrList<TrackInfoObject> tempTracks = m_lTracks;
 	bool bFoundFiles = false;
@@ -485,37 +459,19 @@ bool TrackList::AddFiles(const char *path, QDomDocument * docXML, bool parseRoot
                 } 
                 else
                     qWarning("Could not parse %s", m_fileInfo.fileName().latin1());
-            } 
-            else
-			{	
-			if(parseRoot){
-				m_lTracks = tempTracks;
-				TrackInfoObject *Track2 = FileExistsInList( m_fileInfo.fileName(), NULL);
-				if(!Track2)
-				{
-				Track2 = new TrackInfoObject( dir.absPath(), m_fileInfo.fileName() );
-                Track2->m_iIndex = Track->m_iIndex;
-				
-                // Append the track to the list of tracks:
-                if (ParseHeader(Track) == OK)
-                {
-                    m_lTracks.append(Track);
-                    qDebug( "Found new track: %s", Track->getFilename().latin1() );
-                    bFoundFiles = true;
-                } 
-                else
-                    qWarning("Could not parse %s", m_fileInfo.fileName().latin1());
-				}
-            // If it exists in the list already, it might not have been found in the
-            // first place because it has been moved:
             if (!Track->exists())
             {
                 Track->setFilepath(m_fileInfo.dirPath());
                // Track->exists()= true;
                 qDebug("Refound %s", Track->getFilename().latin1() );
             }
-		 }
-	    }
+			}else {
+             if (ParseHeader(Track) == OK){
+				 m_lTracks.append(Track);
+			     bFoundFiles = true;
+				 }
+            }				
+            
 	}}
 	else
     {
@@ -527,7 +483,7 @@ bool TrackList::AddFiles(const char *path, QDomDocument * docXML, bool parseRoot
         while ((d=dir_it.current()))
         {
             //qDebug("Execing addfile: %s",d->filePath().latin1());
-			if (AddFiles(d->filePath(),docXML,false))
+			if (AddFiles(d->filePath(),docXML))
                 bFoundFiles = true;
             ++dir_it;
         }
@@ -564,45 +520,26 @@ bool TrackList::AddFiles(const char *path, QDomDocument * docXML, bool parseRoot
                 } 
                 else
                     qWarning("Could not parse while looking through dir nonuser: %s", fi->fileName().latin1());
-            } 
-            else
-            //User implied exec of function
-			if(parseRoot){
-				
-			    TrackInfoObject *Track2 = FileExistsInList( fi->fileName(), NULL);
-				if(!Track2)
-				{
-				Track2 = new TrackInfoObject( dir.absPath(), fi->fileName() );
-                Track2->m_iIndex = Track->m_iIndex;
-				
-                // Append the track to the list of tracks:
-                if (ParseHeader(Track) == OK)
-                {
-                    m_lTracks.append(Track);
-                    //qDebug( "Found new track while looking through dir user: %s", Track->getFilename().latin1() );
-                    bFoundFiles = true;
-                } 
-                else
-                    qWarning("Could not parse while looking through dir user: %s", fi->fileName().latin1());
-				}
-				
-			
-			// If it exists in the list already, it might not have been found in the
-            // first place because it has been moved:
-            if (!Track->exists())
-            {
-                Track->setFilepath(fi->dirPath());
-                //Track->m_bExist= true;
-                qDebug("Refound %s", Track->getFilename().latin1() );
-            }
-            }
+                    // If it exists in the list already, it might not have been found in the
+                    // first place because it has been moved:
+                    if (!Track->exists())
+                    {
+                     Track->setFilepath(fi->dirPath());
+                     //Track->m_bExist= true;
+                     qDebug("Refound %s", Track->getFilename().latin1() );
+                     }            
+				}else{
+                 if (ParseHeader(Track) == OK){
+				 m_lTracks.append(Track);
+			     bFoundFiles = true;
+				 }
+
+				}					
             ++it;   // goto next list element
         	++iTrackNumber;
 			}
     }
-    //if(parseRoot)
-		//m_lTracks = tempTracks;
-	return bFoundFiles;
+   return bFoundFiles;
 }
 
 /*
@@ -645,7 +582,7 @@ int TrackList::ParseHeader( TrackInfoObject *Track )
 TrackInfoObject *TrackList::FileExistsInList( const QString sFilename,QDomDocument * docXML)
 {
     //qDebug("Executing FileExistsInList");
-	TrackInfoObject *Track;
+	
 	if(docXML != NULL){
 	// Get the root object
     QDomElement elementRoot = docXML->documentElement();
@@ -855,24 +792,130 @@ void TrackList::loadPlaylist( QString sPlaylist , QDomDocument * domXML) {
 	}
 	
 }
-void TrackList::slotBrowseDir()
+void TrackList::slotSavePlsAs()
 {
-    const QString * playlistdir = new QString(wTree->m_sPlaylistdir);
-	/**
-	QFileDialog* fd = new QFileDialog(wTree->m_sPlaylistdir , QString::null , 0,QString::null , TRUE );
-    //fd->setMode( QFileDialog::Directory );
-    fd->setMode( QFileDialog::AnyFile );
-	fd->setCaption("Please choose a collection name for this collection:");
-    **/
+  
+	
+	QFile opmlFile(wTree->m_sPlaylistdir);
+	QDomDocument domXML("Mixxx_Track_List");
+	//qDebug("PlaylistID is: %s", currentPlaylist.latin1());
+	if (!opmlFile.exists()){
+        
+	qDebug("Could not open the default playlist file!");
+	
+		}
+    if (!domXML.setContent( &opmlFile))
+    {
+       
+        opmlFile.close();
+        
+        //WriteXML();
+    }
+    
+	opmlFile.close();
 	bool ok;
+	
 	QString text = QInputDialog::getText("Choose Collection name", "Please enter a Name for this collection:", QLineEdit::Normal,QString::null, &ok, m_pTableTracks,"textinput" );
     if ( ok && !text.isEmpty() ) {
         // user entered something and pressed OK
     	
 		currentPlaylist =  tr(text) + ".xml";
-		WriteXML();
-	} 
+		
+	}
 	
+	QDomElement elementRoot = domXML.documentElement();
+
+	QDomElement playlistElement = domXML.createElement( "Playlist" );
+	playlistElement.setAttribute("Name",currentPlaylist);
+	for (TrackInfoObject *Track = m_lTracks.first(); Track; Track = m_lTracks.next())
+    {
+        QDomElement elementNew = domXML.createElement("TrackPTR");
+        elementNew.setAttribute("PTR_ID",Track->m_iIndex);
+		// See if we should add information from the comment field:
+        //Track->WriteToXML(domXML, elementNew);
+         playlistElement.appendChild(elementNew);
+    }
+	elementRoot.appendChild(playlistElement);
+		
+	//Dont touch any other playlist items
+	if (!opmlFile.open(IO_WriteOnly))
+    {
+        QMessageBox::critical(0,
+                tr("Error"),
+                tr("Cannot open file %1").arg(wTree->m_sPlaylistdir.latin1()));
+        return;
+    }
+	
+    // Write to the file:
+    QTextStream Xml(&opmlFile);
+    Xml.setEncoding(QTextStream::Unicode);
+    Xml << domXML.toString();
+    opmlFile.close();
+	//Update the Treelist
+	refreshPlaylist();	
+}
+void TrackList::slotSavePls()
+{
+
+	
+	QFile opmlFile(wTree->m_sPlaylistdir);
+	QDomDocument domXML("Mixxx_Track_List");
+	//qDebug("PlaylistID is: %s", currentPlaylist.latin1());
+	if (!opmlFile.exists()){
+        
+	qDebug("Could not open the default playlist file!");
+	
+		}
+    if (!domXML.setContent( &opmlFile))
+    {
+       
+        opmlFile.close();
+        
+        //WriteXML();
+    }
+    
+	opmlFile.close();
+	
+	QDomElement elementRoot = domXML.documentElement();
+    // Get all the tracks written in the xml file:
+    QDomNode node = elementRoot.firstChild();
+	while(!node.isNull()){
+	
+		
+	if( node.isElement() && node.nodeName() == "Playlist" && node.toElement().attribute( "Name" ) == currentPlaylist){
+       		
+	//First delete all old childs
+		while(node.hasChildNodes())
+			node.removeChild(node.firstChild());
+		
+	for(TrackInfoObject *Track = m_lTracks.first();Track;Track = m_lTracks.next()){
+		QDomElement elementNew = domXML.createElement("TrackPTR");
+        // See if we should add information from the comment field:
+        //Track->WriteToXML(domXML, elementNew);
+        elementNew.setAttribute("PTR_ID",Track->m_iIndex);
+		node.appendChild(elementNew);
+    }
+		}
+  	node = node.nextSibling();
+	}
+	
+		
+	//Dont touch any other playlist items
+	if (!opmlFile.open(IO_WriteOnly))
+    {
+        QMessageBox::critical(0,
+                tr("Error"),
+                tr("Cannot open file %1").arg(wTree->m_sPlaylistdir.latin1()));
+        return;
+    }
+	
+    // Write to the file:
+    QTextStream Xml(&opmlFile);
+    Xml.setEncoding(QTextStream::Unicode);
+    Xml << domXML.toString();
+    opmlFile.close();
+	//Update the Treelist
+	refreshPlaylist();	
 }
 //Deletes all the tracks in the Tracktable
 void TrackList::slotClearPlaylist()
@@ -1044,7 +1087,7 @@ void TrackList::slotFindTrack()
                  {
           case 0: // The user clicked the Load Playlist button or pressed Enter
                   //load playlist
-                  WriteXML();
+                  //WriteXML();
 		          slotUpdateTracklist(node.toElement().attribute("Name"));
 		          wTree->mousePressed=false;
 		  return;
