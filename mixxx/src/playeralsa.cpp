@@ -16,6 +16,7 @@
  ***************************************************************************/
 
 #include "playeralsa.h"
+#include <qvalidator.h>
 
 // Tutorials /home/peter/pad-alsa-audio.html /home/peter/alsa090_howto.html
 // Docs      /usr/share/doc/alsa-lib-1.0.4/doxygen/html/index.html
@@ -95,20 +96,19 @@ bool PlayerALSA::open()
     qDebug("Alsa opening...2");
 //#ifndef PLAYERTEST
 // XXX: use pre-determined output until fixed
-#if 0
+#if 1
     int temp;
     QRegExp rx("\(\\S+\) (ch \(\\d+\))");
     // XXX: crashing somewhere near here!
     // master left
     qDebug("Alsa opening...2.5");
     name = m_pConfig->getValueString(ConfigKey("[Soundcard]", "DeviceMasterLeft"));
-    qDebug("Alsa opening...3 %s", name);
+    qDebug("Alsa opening...3 %s", name.latin1());
     if (name != "None")
     {
 	if (rx.search(name) < 0)
 	{
-	    qWarning("can't find device name or channel number in (%s)",
-		     name);
+	    qWarning("can't find device name or channel number in (%s)",name.latin1());
 	}
 	devname = rx.cap(1);
 	temp = rx.cap(2).toInt();
@@ -125,8 +125,7 @@ bool PlayerALSA::open()
     {
 	if (rx.search(name) < 0)
 	{
-	    qWarning("can't find device name or channel number in (%s)",
-		     name);
+	    qWarning("can't find device name or channel number in (%s)",name.latin1());
 	}
 	devtmp = rx.cap(1);
 	if (devname != devtmp)
@@ -147,8 +146,7 @@ bool PlayerALSA::open()
     {
 	if (rx.search(name) < 0)
 	{
-	    qWarning("can't find device name or channel number in (%s)",
-		     name);
+	    qWarning("can't find device name or channel number in (%s)",name.latin1());
 	}
 	devtmp = rx.cap(1);
 	if (devname != devtmp)
@@ -169,8 +167,7 @@ bool PlayerALSA::open()
     {
 	if (rx.search(name) < 0)
 	{
-	    qWarning("can't find device name or channel number in (%s)",
-		     name);
+	    qWarning("can't find device name or channel number in (%s)",name.latin1());
 	}
 	devtmp = rx.cap(1);
 	if (devname != devtmp)
