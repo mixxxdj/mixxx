@@ -198,5 +198,6 @@ void WSliderComposed::reset()
 {
     setValue(63.);
     emit(valueChangedLeftUp(m_fValue));
+    emit(valueChangedLeftDown(m_fValue));
 }
 

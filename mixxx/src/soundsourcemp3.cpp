@@ -341,8 +341,8 @@ int SoundSourceMp3::ParseHeader(TrackInfoObject *Track)
             Track->m_iDuration = dur.seconds;
             Track->m_sBitrate.setNum(Header.bitrate/1000);
         }
-        else
-            qDebug("MAD: Count frames to get file duration!");
+//        else
+//            qDebug("MAD: Count frames to get file duration!");
     }
     
     mad_stream_finish(&Stream);
