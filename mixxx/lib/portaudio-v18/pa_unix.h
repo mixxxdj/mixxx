@@ -78,7 +78,7 @@ PaDriverInfo;
 #define BAD_DEVICE_ID (-1)
 
 #define MIN_LATENCY_MSEC   (2)
-#define MIN_TIMEOUT_MSEC   (100)
+#define MIN_TIMEOUT_MSEC   (2)
 #define MAX_TIMEOUT_MSEC   (1000)
 
 /************************************************* Definitions ********/

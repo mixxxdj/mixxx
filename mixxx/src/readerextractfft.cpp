@@ -20,48 +20,88 @@
 #include "windowkaiser.h"
 #include "configobject.h"
 
-ReaderExtractFFT::ReaderExtractFFT(ReaderExtract *input, int _specNo, WindowKaiser *window) : ReaderExtract(input)
+ReaderExtractFFT::ReaderExtractFFT(ReaderExtract *input, int _frameSize, int _frameStep) : ReaderExtract(input)
 {
-    specNo = _specNo;
+    frameSize = _frameSize;
+    frameStep = _frameStep;
+    frameNo = (READBUFFERSIZE)/frameStep;
+    framePerChunk = frameNo/READCHUNK_NO;
+    
+    // Allocate and calculate window
+    window = new WindowKaiser(frameSize, 6.5);
+    windowPtr = window->getWindowPtr();
+    readbufferPtr = (CSAMPLE *)input->getChunkPtr(0);
+    
+    // Allocate memory for windowed portion of signal
+    windowedSamples = new CSAMPLE[frameSize];
 
     // Allocate list of EngineSpectralFwd objects, corresponding to one object for each
     // stepsize throughout the readbuffer of EngineBuffer
     specList.setAutoDelete(TRUE);
 
-    hfc = new CSAMPLE[specNo];
-    for (int i=0; i<specNo; i++)
-    {
+    for (int i=0; i<frameNo; i++)
         specList.append(new EngineSpectralFwd(true,false,window));
-        hfc[i] = 0.;
-    }
 }
 
 ReaderExtractFFT::~ReaderExtractFFT()
 {
+    delete window;
+    delete [] windowedSamples;
+
+    // Delete list
+    specList.clear();
 }
 
-/*
-void ReaderExtractFFT::update(int specFrom, int specTo)
+void ReaderExtractFFT::reset()
 {
-    if (specTo>specFrom)
-        for (int i=specFrom; i<specTo; i++)
-            process(i);    
+}
+    
+void *ReaderExtractFFT::getChunkPtr(const int idx)
+{
+    return 0;
+}
+
+int ReaderExtractFFT::getRate()
+{
+    return 0;
+}
+
+void *ReaderExtractFFT::processChunk(const int idx, const int start_idx, const int end_idx)
+{
+    int frameFrom  = idx*framePerChunk;
+    int frameTo    = (frameFrom+framePerChunk)%frameNo;
+
+    qDebug("no %i, from %i ,to %i",frameNo,frameFrom,frameTo);
+    
+    if (frameTo>frameFrom)
+        for (int i=frameFrom; i<frameTo; i++)
+            processFrame(i);
     else
     {
-        for (int i=specFrom; i<specNo; i++)
-            process(i);
-        for (int i=0; i<specTo; i++)
-            process(i);
+        for (int i=frameFrom; i<frameNo; i++)
+            processFrame(i);
+        for (int i=0; i<frameTo; i++)
+            processFrame(i);
     }
-}
-*/
-
-void *ReaderExtractFFT::processChunk(const int idx)
-{
-//    specList.at(idx)->process(input->getWindowPtr(idx),0);
-    hfc[idx] = specList.at(idx)->getHFC();    
-    //qDebug("hfc: %f",hfc[idx]);
 
     return 0;
 }
 
+void ReaderExtractFFT::processFrame(int idx)
+{
+    //
+    // Window samples
+    //
+    int framePos = (idx*frameStep-frameSize/2+READBUFFERSIZE)%READBUFFERSIZE;
+    if (framePos+frameSize < READBUFFERSIZE)
+        for (int i=framePos; i<framePos+frameSize; i++)
+            windowedSamples[i-framePos] = readbufferPtr[i];
+    else
+        for (int i=0; i<frameSize; i++)
+            windowedSamples[i] = readbufferPtr[(framePos+i)%READBUFFERSIZE]; // To optimize put % outside loop
+    
+    // Perform FFT
+    specList.at(idx)->process(windowedSamples,0);
+
+//    hfc[idx] = specList.at(idx)->getHFC();
+}
