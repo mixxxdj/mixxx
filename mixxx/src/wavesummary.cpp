@@ -72,7 +72,7 @@ void WaveSummary::run()
         
 //         qDebug("start generate for %s",pTrackInfoObject->getLocation().latin1());
         
-		//// Check if preview has been generated in the meantime
+		// Check if preview has been generated in the meantime
         QMemArray<char> *p = pTrackInfoObject->getWaveSummary();
         //if (!p || !p->size())
         {
@@ -108,6 +108,12 @@ void WaveSummary::run()
                 // Read a block of samples
                 int iRead = pSoundSource->read(iBlockSize, pBuffer);
 
+                // Windowing & FFT
+                
+                // Beat estimation
+                
+                
+                
 //                 qDebug("wanted %i, got %i",iBlockSize,iRead);
                 
                 // Seek to new position
@@ -135,6 +141,10 @@ void WaveSummary::run()
             }
             qDebug("read %i, len %i",pos, liLengthSamples);
                 
+//             pTrackInfoObject->setBeatFirst(0.);
+//             pTrackInfoObject->setBpm();
+//             pTrackInfoObject->setBpmConfidence();
+            
                             
             
 /*
