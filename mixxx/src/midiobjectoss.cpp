@@ -21,6 +21,8 @@
 
 MidiObjectOSS::MidiObjectOSS(ConfigObject *c, QApplication *a) : MidiObject(c, a)
 {
+    thread_pid = 0;
+
     // Allocate buffer
     buffer = new char[4096];
     if (buffer == 0)
@@ -66,36 +68,26 @@ MidiObjectOSS::~MidiObjectOSS()
 void MidiObjectOSS::devOpen(QString device)
 {
     // Open midi device
-   qDebug("5");
     handle = open(device.ascii(),0);
-   qDebug("6");
     if (handle == -1)
     {
         qDebug("Open of MIDI device %s failed.",device.ascii());
         return;
     }
-   qDebug("7");
     openDevice = device;
-   qDebug("8");
     start();
-   qDebug("9");
 }
 
 void MidiObjectOSS::devClose()
 {
-   qDebug("1");
     stop();
-   qDebug("2");
     close(handle);
-   qDebug("3");
     openDevice = QString("");
-   qDebug("4");
 }
 
 void MidiObjectOSS::run()
 {
     thread_pid = getpid();
-    signal(2,&abortRead);
     while(requestStop==false)
     {
         // First read until we get a midi channel event:
@@ -137,11 +129,21 @@ void MidiObjectOSS::stop()
     MidiObject::stop();
 
     // Raise signal to stop abort blocking read in main thread loop
-    kill(thread_pid,2);
+    if (thread_pid!=0)
+    {
+        // Install signal handler
+        signal(2,&abortRead);
+
+        kill(thread_pid,2);
+    }
+    thread_pid = 0;
 }
 
 void abortRead(int)
 {
+    // Reinstall default handler
+    signal(2,SIG_DFL);
+
     qDebug("sig received");
     // Empty signal handler. Installed on signal 2 (SIGINT)
     // in start of MidiObjectOSS:run(), and used to exit the
