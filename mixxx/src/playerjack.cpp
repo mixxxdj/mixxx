@@ -304,6 +304,7 @@ void PlayerJack::callbackSetBufferSize(int iBufferSize)
 
 void PlayerJack::callbackShutdown()
 {
+    jack_deactivate(client);
     client = 0;
     m_bOpen = false;
     m_pConfig->set(ConfigKey("[Soundcard]","SoundApi"), ConfigValue("None"));

@@ -79,18 +79,20 @@ void EngineBufferScaleSRC::setFastMode(bool bMode)
 {
     if (bMode)
     {
-        qDebug("fast");
+        //qDebug("fast");
         converterActive = converter4;
     }
     else
     {
-        qDebug("slow");
+        //qDebug("slow");
         setQuality(m_iQuality);
     }
 }
 
 double EngineBufferScaleSRC::setRate(double _rate)
 {
+    double rateold = rate;
+
     if (_rate==0.)
         rate = 0.;
     else if (_rate<0.)
@@ -103,6 +105,12 @@ double EngineBufferScaleSRC::setRate(double _rate)
         backwards = false;
         rate = 1./_rate;
     }
+    
+    // Force dirty interpolation if speed is above 2x
+    if (rate<0.5 && rateold>=0.5)
+        setFastMode(true);
+    else if (rate>=0.5 && rateold<0.5)
+	setFastMode(false);
 
     // Ensure valid range of rate
     if (rate==0.)
