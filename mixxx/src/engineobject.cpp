@@ -86,18 +86,16 @@ void EngineObject::rtThread()
     // assume that app deals in frame-sized chunks, e.g. 30 per second.
     //ttcpolicy.period=833333;
     ttcpolicy.period=(get_bus_speed() / 120);
-    ttcpolicy.computation=1000;
-    //ttcpolicy.computation=(get_bus_speed() / (800));
-    ttcpolicy.constraint=1500;
-    //ttcpolicy.constraint=(get_bus_speed() / (454));
+    //ttcpolicy.computation=1000;
+    ttcpolicy.computation=(get_bus_speed() / (30));
+    //ttcpolicy.constraint=1500;
+    ttcpolicy.constraint=(get_bus_speed() / (15));
     ttcpolicy.preemptible=1;
     theError = thread_policy_set(mach_thread_self(),
                THREAD_TIME_CONSTRAINT_POLICY, (int *)&ttcpolicy,
                THREAD_TIME_CONSTRAINT_POLICY_COUNT);
-#if SNDSTREAMCLIENT_DEBUG
     if (theError != KERN_SUCCESS)
         fprintf(stderr, "Can't do thread_policy_set\n");
-#endif
 }
 #endif
 
