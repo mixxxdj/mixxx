@@ -170,6 +170,7 @@ template <class ValueType> void ConfigObject<ValueType>::Save()
 
 template class ConfigObject<ConfigValue>;
 template class ConfigObject<ConfigValueMidi>;
+template class ConfigObject<ConfigValueKbd>;
 
 
 

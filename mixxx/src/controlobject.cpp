@@ -23,7 +23,8 @@
 
 
 // Static member variable definition
-ConfigObject<ConfigValueMidi> *ControlObject::config = 0;
+ConfigObject<ConfigValueMidi> *ControlObject::m_pMidiConfig = 0;
+ConfigObject<ConfigValueKbd> *ControlObject::m_pKbdConfig = 0;
 QPtrQueue<ControlQueueEngineItem> ControlObject::queue;
 QMutex ControlObject::queueMutex;
 QPtrList<ControlObject> ControlObject::list;
@@ -44,8 +45,11 @@ ControlObject::ControlObject(ConfigKey key)
     m_pControlEngine = 0;
     installEventFilter(this);
 
-    // Retreive configuration option object
-    cfgOption = config->get(key);
+    // Retreive midi configuration option object
+    m_pMidiConfigOption = m_pMidiConfig->get(key);
+
+    // Retreive keyboard configuration option object
+    m_pKbdConfigOption = m_pKbdConfig->get(key);
 
     list.append(this);
     m_pAccel = 0;
@@ -64,8 +68,8 @@ bool ControlObject::connectControls(ConfigKey src, ConfigKey dest)
     ControlObject *pSrc = 0;
     for (pSrc=list.first(); pSrc; pSrc=list.next())
     {
-//        qDebug("src (%s,%s) (%s,%s)",pSrc->cfgOption->key->group.latin1(),src.group.latin1(),pSrc->cfgOption->key->item.latin1(),src.item.latin1());
-        if ((pSrc->cfgOption->key->group == src.group) && (pSrc->cfgOption->key->item == src.item))
+//        qDebug("src (%s,%s) (%s,%s)",pSrc->m_pMidiConfigOption->key->group.latin1(),src.group.latin1(),pSrc->m_pMidiConfigOption->key->item.latin1(),src.item.latin1());
+        if ((pSrc->m_pMidiConfigOption->key->group == src.group) && (pSrc->m_pMidiConfigOption->key->item == src.item))
             break;
     }
     if (pSrc==0)
@@ -75,8 +79,8 @@ bool ControlObject::connectControls(ConfigKey src, ConfigKey dest)
     ControlObject *pDest = 0;
     for (pDest=list.first(); pDest; pDest=list.next())
     {
-//        qDebug("dest (%s,%s) (%s,%s)",pDest->cfgOption->key->group.latin1(),dest.group.latin1(),pDest->cfgOption->key->item.latin1(),dest.item.latin1());
-        if ((pDest->cfgOption->key->group == dest.group) && (pDest->cfgOption->key->item == dest.item))
+//        qDebug("dest (%s,%s) (%s,%s)",pDest->m_pMidiConfigOption->key->group.latin1(),dest.group.latin1(),pDest->m_pMidiConfigOption->key->item.latin1(),dest.item.latin1());
+        if ((pDest->m_pMidiConfigOption->key->group == dest.group) && (pDest->m_pMidiConfigOption->key->item == dest.item))
             break;
     }
     if (pDest==0)
@@ -87,9 +91,14 @@ bool ControlObject::connectControls(ConfigKey src, ConfigKey dest)
     return true;
 }
 
-void ControlObject::setConfig(ConfigObject<ConfigValueMidi> *_config)
+void ControlObject::setMidiConfig(ConfigObject<ConfigValueMidi> *pMidiConfig)
 {
-    config = _config;
+    m_pMidiConfig = pMidiConfig;
+}
+
+void ControlObject::setKbdConfig(ConfigObject<ConfigValueKbd> *pKbdConfig)
+{
+    m_pKbdConfig = pKbdConfig;
 }
 
 void ControlObject::setControlEngine(ControlEngine *pControlEngine)
@@ -103,7 +112,7 @@ ControlObject *ControlObject::getControl(ConfigKey key)
     ControlObject *c;
     for (c=list.first(); c; c=list.next())
     {
-        if (c->cfgOption->key->group == key.group && c->cfgOption->key->item == key.item)
+        if (c->m_pMidiConfigOption->key->group == key.group && c->m_pMidiConfigOption->key->item == key.item)
             return c;
     }
     return 0;
@@ -116,7 +125,7 @@ void ControlObject::setWidget(QWidget *widget, ConfigKey key, bool emitOnDownPre
     ControlObject *c;
     for (c=list.first(); c; c=list.next())
     {
-        if (c->cfgOption->key->group == key.group && c->cfgOption->key->item == key.item)
+        if (c->m_pMidiConfigOption->key->group == key.group && c->m_pMidiConfigOption->key->item == key.item)
         {
             c->setWidget(widget, emitOnDownPress, state);
             return;
@@ -259,8 +268,8 @@ void ControlObject::midi(MidiCategory category, char channel, char control, char
     ControlObject *c;
     for (c=list.first(); c; c=list.next())
     {
-        if ((c->cfgOption->val->midino == control) &
-            (c->cfgOption->val->midichannel == channel))
+        if ((c->m_pMidiConfigOption->val->midino == control) &
+            (c->m_pMidiConfigOption->val->midichannel == channel))
         {
             c->setValueFromMidi(category, (int)value);
             break;
@@ -282,11 +291,36 @@ bool ControlObject::eventFilter(QObject *o, QEvent *e)
         ControlEventEngine *cee = (ControlEventEngine *)e;
         setValueFromEngine(cee->value());
     }
+    else if (e->type() == QEvent::KeyPress)
+        qDebug("control Key press");
     else
         // Standard event processing
         return QObject::eventFilter(o,e);
 
     return TRUE;
+}
+
+void ControlObject::kbdPress(QKeySequence k, bool release)
+{
+    if (!k.isEmpty())
+    {
+//        qDebug("kbd %s, press %i",((QString)k).latin1(),release);
+
+        // Check the controls...
+        ControlObject *c;
+        for (c=list.first(); c; c=list.next())
+        {
+            if (c->m_pKbdConfigOption->val->m_qKey==k)
+            {
+                if (release)
+                    c->setValueFromMidi(NOTE_OFF, 0);
+                else
+                    c->setValueFromMidi(NOTE_ON, 1);
+            
+                break;
+            }
+        }
+    }        
 }
 
 void ControlObject::syncControlEngineObjects()

@@ -62,6 +62,7 @@ signals:
     void valueChangedRightUp(double);
 protected:
     double m_fValue;
+
 private:
     /** Variable containing the path to the pixmaps */
     static QString m_qPath;

@@ -299,7 +299,7 @@ void TrackList::WriteXML()
 */
 bool TrackList::AddFiles(const char *path)
 {    
-	bool bFoundFiles = false;
+    bool bFoundFiles = false;
     // First run through all directories:
     QDir dir(path);
     if (!dir.exists())

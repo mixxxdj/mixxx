@@ -60,8 +60,10 @@ public:
     static bool connectControls(ConfigKey src, ConfigKey dest);
     /** Returns a pointer to the ControlObject matching the given ConfigKey */
     static ControlObject *getControl(ConfigKey key);
-    /** Sets the config object */
-    static void setConfig(ConfigObject<ConfigValueMidi> *_config);
+    /** Sets the midi config object */
+    static void setMidiConfig(ConfigObject<ConfigValueMidi> *pMidiConfig);
+    /** Sets the keyboard config object */
+    static void setKbdConfig(ConfigObject<ConfigValueKbd> *pKbdConfig);
     /** Associates a QWidget with the ControlObject identified by a given ConfigKey */
     static void setWidget(QWidget *widget, ConfigKey key, bool emitOnDownPress=true, Qt::ButtonState state=Qt::NoButton);
     /** Associates a QWidget with the ControlObject. */
@@ -81,6 +83,8 @@ public:
     /** Syncronizes queue, by writing the values to ControlEngine objects. Non blocking.
       * Should be called from player thread. */
     static void syncControlEngineObjects();
+    /** Called from main widget, when a key is pressed or released */
+    void kbdPress(QKeySequence k, bool release);
 
 signals:
     /** Signal sent when the widget has to be updated with a given value */
@@ -125,11 +129,15 @@ protected:
     /** The actual value of the controller */
     double m_dValue;
     /** Pointer to MIDI config */
-    static ConfigObject<ConfigValueMidi> *config;
+    static ConfigObject<ConfigValueMidi> *m_pMidiConfig;
+    /** Pointer to keyboard config */
+    static ConfigObject<ConfigValueKbd> *m_pKbdConfig;
     /** Queue used in syncronizing the value with the Player thread */
     static QPtrQueue<ControlQueueEngineItem> queue;
-    /** Pointer to config option */
-    ConfigOption<ConfigValueMidi> *cfgOption;
+    /** Pointer to midi config option */
+    ConfigOption<ConfigValueMidi> *m_pMidiConfigOption;
+    /** Pointer to keyboard config option */
+    ConfigOption<ConfigValueKbd> *m_pKbdConfigOption;
     /** Pointer to associated ControlEngine object */
     ControlEngine *m_pControlEngine;
     /** Keyboard accelerator */

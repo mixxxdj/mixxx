@@ -23,6 +23,7 @@
 #include <qvaluelist.h>
 #include <qfile.h>
 #include <qtextstream.h>
+#include <qkeysequence.h>
 
 typedef enum {
     EMPTY            = 0,
@@ -115,6 +116,33 @@ public:
 
     MidiType miditype;
     int midino, midichannel;
+};
+
+class ConfigValueKbd : public ConfigValue
+{
+public:
+    ConfigValueKbd() {};
+    ConfigValueKbd(QString _value) : ConfigValue(_value)
+    {
+        QString key;
+
+        QTextIStream(&_value) >> key;
+        m_qKey = QKeySequence(key);
+    };
+
+    ConfigValueKbd(QKeySequence key)
+    {
+        m_qKey = key;
+        QTextOStream(&value) << (const QString &)m_qKey;
+    };
+
+    void valCopy(const ConfigValueKbd v)
+    {
+        m_qKey = v.m_qKey;
+        QTextOStream(&value) << (const QString &)m_qKey;
+    }
+    
+    QKeySequence m_qKey;
 };
 
 template <class ValueType> class ConfigOption

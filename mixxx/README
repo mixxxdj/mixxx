@@ -13,17 +13,9 @@ Mac OS 10.2.
 
 
 * NEWS *****************************************************
-New since 1.0:
-- Corrected rate configuration values, and added 8% option
-- Added temporary rate change buttons
-- Fullscreen support added for MacOS X
-- Linux install script fix
-- Volume range fixed
-- Crossfader fixed (linear mode)
-- Rate button factors adjusted
-- File name parsing, bug fix
-- Startup on some Windows XP machines fixed
-- Added example MIDI config file for standard MIDI keyboard
+New since 1.0.1:
+- Added support for mouse interaction when OpenGL is not
+  available
 
 * REQUIREMENTS *********************************************
 Mixxx is depends on the following libraries:

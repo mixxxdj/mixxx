@@ -46,6 +46,8 @@ public:
     MixxxView(QWidget *parent, bool bVisualsWaveform, QString qSkinPath);
     ~MixxxView();
 
+    //bool eventFilter(QObject *o, QEvent *e);
+    
     /** Return true if WVisualWaveform has been instantiated. */
     bool activeWaveform();
         
@@ -56,6 +58,9 @@ public:
     WSliderComposed *m_pSliderRateCh1, *m_pSliderRateCh2;
     /** Allow dynamic zoom on visuals */
     bool m_bZoom;
+
+protected:
+    //void keyPressEvent(QKeyEvent *e);
     
 private:
     // True if m_pVisualChX is instantiated as WVisualWaveform

@@ -113,7 +113,10 @@ class MixxxApp : public QMainWindow
     ControlEngine *m_pControlEngine;
     std::vector<EngineObject *> engines;
     ConfigObject<ConfigValue> *config;
+    /** Pointer to active midi configuration */
     ConfigObject<ConfigValueMidi> *midiconfig;
+    /** Pointer to active keyboard configuration */
+    ConfigObject<ConfigValueKbd> *kbdconfig;
     /** Pointer to track list object */
     TrackList *m_pTracks;
     /** Pointer to PowerMate objects */
