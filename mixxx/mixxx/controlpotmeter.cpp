@@ -37,7 +37,9 @@ ControlPotmeter::ControlPotmeter(char* n, short int _midino, MidiObject *_midi,
   maxvalue = _maxvalue;
   valuerange = maxvalue-minvalue;
   value = minvalue + 0.5*(maxvalue-minvalue);
-
+  /*
+    Register the potmeter at the midi controller:
+  */
   midi = _midi;
   midino = _midino;
   midi->addpotmeter(this);

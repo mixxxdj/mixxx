@@ -46,28 +46,23 @@ MixxxView::MixxxView(QWidget *parent, MixxxDoc *doc) : QWidget(parent)
 	// Add filenames in ./music/ to table
 	QDir d("music");
 	d.setFilter(QDir::Files);
-    if (!d.exists())
-		qWarning( "Cannot find the ./music directory" );
-    else {
-
-		int i=0;
-        const QFileInfoList *list = d.entryInfoList();
-        QFileInfoListIterator it(*list);        // create list iterator
-        QFileInfo *fi;                          // pointer for traversing
-
-        while ((fi=it.current()) && (i<playlist->TableList->numRows())) {             // for each file...
-			playlist->TableList->setItem(i,0,new QTableItem(playlist->TableList,QTableItem::Never,
-															fi->baseName()));
-			playlist->TableList->setItem(i,1,new QTableItem(playlist->TableList,QTableItem::Never,
-															fi->filePath()));
-
-            ++it;                               // goto next list element
-			i++;
-        }
-
-    }
-
-
+	if (!d.exists())
+	    qWarning( "Cannot find the ./music directory" );
+	else {
+	    int i=0;
+	    const QFileInfoList *list = d.entryInfoList();
+	    QFileInfoListIterator it(*list);        // create list iterator
+	    QFileInfo *fi;                          // pointer for traversing
+	    
+	    while ((fi=it.current()) && (i<playlist->TableList->numRows())) {             // for each file...
+		playlist->TableList->setItem(i,0,new QTableItem(playlist->TableList,QTableItem::Never,
+								fi->baseName()));
+		playlist->TableList->setItem(i,1,new QTableItem(playlist->TableList,QTableItem::Never,
+								fi->filePath()));
+		++it;                               // goto next list element
+		i++;
+	    }
+	}
 }
 
 MixxxView::~MixxxView()

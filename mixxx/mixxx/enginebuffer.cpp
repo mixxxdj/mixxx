@@ -32,7 +32,7 @@ EngineBuffer::EngineBuffer(DlgPlaycontrol *playcontrol, DlgChannel *channel, Mid
   connect(rateSlider, SIGNAL(valueChanged(FLOAT)), this, SLOT(slotUpdateRate(FLOAT)));
 
   wheel = new ControlRotary("wheel", PORT_D, midi);
-  //connect(playcontrol->DialPlaycontrol, SIGNAL(dialMoved(int)), wheel, SLOT(slotSetPosition(int)));
+  connect(playcontrol->DialPlaycontrol, SIGNAL(dialMoved(int)), wheel, SLOT(slotSetPosition(int)));
   connect(wheel, SIGNAL(valueChanged(FLOAT)), this, SLOT(slotUpdateRate(FLOAT)));
   /*
     Open the file:
