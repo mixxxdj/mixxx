@@ -37,6 +37,8 @@ class WVisual;
 // Length of audio beat marks in samples
 const int audioBeatMarkLen = 40;
 
+// Rate at which the playpos slider is updated (using a sample rate of 44100 Hz):
+const int UPDATE_RATE = 1;
 
 class EngineBuffer : public EngineObject
 {
@@ -87,6 +89,8 @@ private:
     /** Mutex controlling weather the process function is in pause mode. This happens
       * during seek and loading of a new track */
     QMutex pause;
+    /** Used in update of playpos slider */
+    int m_iSamplesCalculated;
 
     ControlEngine *playButton, *rateSlider, *wheel, *playposSlider, *bufferposSlider, *audioBeatMark;
     ControlEngine *buttonCueSet, *buttonCueGoto, *buttonCuePreview;
@@ -99,8 +103,6 @@ private:
 
     CSAMPLE *read_buffer_prt;
 
-    /** Counter; when to update playpos slider */
-    int playposUpdateCounter;
     /** Used to store if an event has happen in last iteration of event based playback */
     double oldEvent;
     /** Object used to perform waveform scaling (sample rate conversion) */
