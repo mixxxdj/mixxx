@@ -19,7 +19,7 @@ WINPA = DIRECTSOUND
 
 # Use this definition on Linux if Mixxx should be statically linked with libmad,
 # libid3tag, fftw, ogg, vorbis and audiofile
-#unix:LINLIBPATH = ../../mixxx-linlib
+unix:LINLIBPATH = ../../mixxx-linlib
 
 # Include for unix dependencies. (19/12/2003, J_Zar)
 include( mixxx.depend )
@@ -212,13 +212,11 @@ unix:!macx {
 
   # if PREFIX is defined by the user, we use it! ( 19/12/2003, J_Zar)
   !isEmpty( PREFIX ) {
-  	  UNIX_SHARE_PATH = $${PREFIX}/mixxx
-	  # dont know exactly why, but adopting the old solutions...
-	  DEFINES += UNIX_SHARE_PATH
+     UNIX_SHARE_PATH = $${PREFIX}/mixxx
   } else {
-  		UNIX_SHARE_PATH = /usr/share/mixxx
-  		DEFINES += UNIX_SHARE_PATH
-	}
+     UNIX_SHARE_PATH = /usr/share/mixxx
+  }
+  DEFINES += UNIX_SHARE_PATH=\"$$UNIX_SHARE_PATH\"
 
   SETTINGS_FILE = \".mixxx.cfg\"
   TRACK_FILE = \".mixxxtrack.xml\"

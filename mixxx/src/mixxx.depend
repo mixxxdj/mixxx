@@ -338,7 +338,7 @@ HEADERS_TO_SUBTRACT =
 CONFIG_TO_SUBTRACT =
 # --------------------------------------------------
 # Check routines         (DON'T TOUCH!)
-include( check.depend )
+#include( check.depend )
 # --------------------------------------------------
 
 

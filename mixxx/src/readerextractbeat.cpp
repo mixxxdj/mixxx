@@ -118,7 +118,6 @@ void ReaderExtractBeat::closeSource()
     // Update TrackInfoObject with new BPM value
     if (m_pTrack && bpv->getBestBpmConfidence()>m_pTrack->getBpmConfidence())
     {
-	    qDebug("write bpm");
         m_pTrack->setBpmConfidence(bpv->getBestBpmConfidence());
         m_pTrack->setBpm(bpv->getBestBpmValue());
     }

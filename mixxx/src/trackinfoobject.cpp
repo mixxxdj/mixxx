@@ -330,7 +330,6 @@ void TrackInfoObject::setBpm(float f)
 
     if (m_pTableItemBpm)
     {
-	    qDebug("update cell");
         m_pTableItemBpm->setText(getBpmStr());
         m_pTableItemBpm->table()->updateCell(m_pTableItemBpm->row(), m_pTableItemBpm->col());
     }

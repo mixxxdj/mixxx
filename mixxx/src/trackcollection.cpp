@@ -105,7 +105,7 @@ TrackInfoObject *TrackCollection::getTrack(int id)
 
 TrackInfoObject *TrackCollection::getTrack(int id, int min, int mid, int max)
 {
-    qDebug("id %i, min %i, mid %i, max %i",id,min,mid,max);
+    //qDebug("id %i, min %i, mid %i, max %i",id,min,mid,max);
     int midId = m_qTrackList.at(mid)->getId();
     if (midId==id)
         return m_qTrackList.at(mid);
