@@ -20,8 +20,12 @@
 
 #include <qmutex.h>
 #include <qptrlist.h>
+#include "engineobject.h"
 class ControlObject;
-class EngineObject;
+
+
+typedef void(EngineObject::* EngineMethod)(double);
+
 
 /**
   *@author Tue & Ken Haste Andersen
@@ -36,16 +40,17 @@ class ControlEngine
 {
 public: 
     ControlEngine(ControlObject *_controlObject);
-    ~ControlEngine();
+    virtual ~ControlEngine();
     QPtrList<ControlEngine> *getList();
 
-    void setNotify(EngineObject *, void (EngineObject::*_notifymethod)(double));
+    void setNotify(EngineObject *, EngineMethod);
             
     double get();
     void set(double v);
     void setExtern(double v);
     void add(double v);
     void sub(double v);
+    
 private:
     ControlObject *controlObject;
     static QPtrList<ControlEngine> *list;

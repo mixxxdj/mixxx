@@ -202,7 +202,6 @@ void PowerMate::led_write(int static_brightness, int speed, int table, int aslee
         speed = 0;
     if(speed > 510)
         speed = 510;
-    int direction = sign((float)knobval);
     if(table < 0)
         table = 0;
     if(table > 2)
@@ -247,7 +246,6 @@ void PowerMate::process_event(struct input_event *ev)
 
 void PowerMate::knob_event()
 {
-    int direction = sign((float)knobval);
 /*
     knobval *= 20*direction;
 
