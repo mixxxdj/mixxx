@@ -33,7 +33,7 @@ SoundSourceAudioFile::SoundSourceAudioFile(QString qFilename) : SoundSource(qFil
         buffer = new SAMPLE[MAX_BUFFER_LEN];
     else
         buffer = 0;
-    filelength = channels*afGetFrameCount(fh,AF_DEFAULT_TRACK);
+    filelength = 2*afGetFrameCount(fh,AF_DEFAULT_TRACK);
 
     SRATE = (int)afGetRate(fh,AF_DEFAULT_TRACK);
 }
