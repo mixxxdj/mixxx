@@ -6,6 +6,7 @@
  </Background>
 
  <SliderComposed>
+  <Tooltip>Test</Tooltip>
   <Handle>crosshandle-on-.png</Handle>
   <Slider>crossslider-off-.png</Slider>
   <Pos>400,462</Pos>

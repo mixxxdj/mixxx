@@ -17,11 +17,12 @@
 
 #include "wwidget.h"
 #include "controlobject.h"
+#include "qtooltip.h"
 
 // Static member variable definition
 QString WWidget::m_qPath;
 
-WWidget::WWidget(QWidget *parent, const char *name, WFlags flags) : QWidget(parent,name, flags|WStaticContents|WRepaintNoErase|WNoAutoErase)
+WWidget::WWidget(QWidget *parent, const char *name, WFlags flags) : QWidget(parent,name, flags|WStaticContents|WRepaintNoErase)
 {
     m_fValue = 0.;
     connect(this, SIGNAL(valueChangedLeftDown(double)), this, SLOT(slotReEmitValueDown(double)));
@@ -43,6 +44,11 @@ void WWidget::setup(QDomNode node)
     int x = pos.left(pos.find(",")).toInt();
     int y = pos.mid(pos.find(",")+1).toInt();
     move(x,y);
+
+    // Set tooltip (if it exists):
+    QString strTooltip = selectNodeQString(node, "Tooltip");
+    if (strTooltip != "") 
+        QToolTip::add( this, strTooltip );
 
     // For each connection
     QDomNode con = selectNode(node, "Connection");
@@ -105,7 +111,10 @@ QString WWidget::selectNodeQString(const QDomNode &nodeHeader, const QString sNo
 {
     QString ret;
     QDomNode node = selectNode(nodeHeader, sNode);
-    ret = node.toElement().text();
+    if (!node.isNull())
+        ret = node.toElement().text();
+    else
+        ret = "";
     return ret;
 }
 
