@@ -134,10 +134,10 @@ void TrackList::UpdateTracklist()
     }
 
     // Run through all the files and add the new ones to the xml file:
-	bool bFilesAdded = (AddFiles( m_sDirectory ));
+    bool bFilesAdded = AddFiles(m_sDirectory);
 
-	// Put information from all the tracks into the table:
-	int iRow=0;
+    // Put information from all the tracks into the table:
+    int iRow=0;
     int iTrackno=0;
 	m_pTableTracks->setNumRows( m_lTracks.count() );
 	for (TrackInfoObject *Track = m_lTracks.first(); Track; Track = m_lTracks.next() )
@@ -310,11 +310,14 @@ bool TrackList::AddFiles(const char *path)
         const QFileInfoList dir_list = *dir.entryInfoList();
         QFileInfoListIterator dir_it(dir_list);
         QFileInfo *d;
-        dir_it += 2; // Traverse past "." and ".."
         while ((d=dir_it.current()))
         {
-            if (AddFiles(d->filePath()))
-                bFoundFiles = true;
+	    if (!d->filePath().endsWith(".") && !d->filePath().endsWith(".."))
+            {
+		qDebug("dir %s",d->filePath().latin1());
+                if (AddFiles(d->filePath()))
+                    bFoundFiles = true;
+	    }
             ++dir_it;
         }
 
@@ -327,6 +330,8 @@ bool TrackList::AddFiles(const char *path)
 
         while ((fi=it.current()))
         {
+//qDebug("filename %s",fi->fileName().latin1());
+
             // Check if the file exists in the list:
             TrackInfoObject *Track = FileExistsInList( fi->fileName() ); 
             if (!Track)
@@ -337,7 +342,7 @@ bool TrackList::AddFiles(const char *path)
                 if (ParseHeader(Track) == OK)
                 {
                     m_lTracks.append(Track);
-//                    qDebug( "Found new track: %s", Track->m_sFilename.latin1() );
+                    qDebug( "Found new track: %s", Track->m_sFilename.latin1() );
                     bFoundFiles = true;
                 } 
                 else
@@ -352,10 +357,12 @@ bool TrackList::AddFiles(const char *path)
                 Track->m_bExist= true;
                 qDebug("Refound %s", Track->m_sFilename.latin1() );
             }
-
+//qDebug("1");
             ++it;   // goto next list element
-        }
+//qDebug("2");
+	}
     }
+//    qDebug("3");
     return bFoundFiles;
 }
 
