@@ -75,6 +75,8 @@ MixxxView::MixxxView(QWidget *parent, ControlObject *control, bool bVisualsWavef
 #endif
 
     // Default values for visuals
+    m_pTrackTable = 0;
+    m_pTreeList = 0;
     m_pTextCh1 = 0;
     m_pTextCh2 = 0;
     m_pVisualCh1 = 0;
