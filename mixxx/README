@@ -1,4 +1,4 @@
-Mixxx - version 1.4.1
+Mixxx - version 1.4.2
 
 * HOMEPAGE *************************************************
 http://mixxx.sourceforge.net
@@ -16,12 +16,9 @@ directory for a copy of the licence.
 
 
 * NEWS *****************************************************
-New since 1.4:
-- Fixed error in latency calculation
-- Removed audible glitches in decoding mp3 files at start of
-  files and after seek.
-- Fixed window size when not in full screen mode
-- Fixed bug in remaining time display
+New since 1.4.1:
+- Bug fixes: MIDI, beat syncronization, kill buttons,
+
 
 * INSTALL/USE **********************************************
 Please see manual, included in this directory, 

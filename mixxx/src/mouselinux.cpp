@@ -58,8 +58,10 @@ bool MouseLinux::opendev(QString name)
                 {
                     m_iFd = iFd;
 
-
-                    start(QThread::TimeCriticalPriority);
+		    // QT 3.3:
+                    //start(QThread::TimeCriticalPriority);
+		    
+		    start();
                     return true;
                 }
             }

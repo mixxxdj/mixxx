@@ -188,8 +188,10 @@ EngineBuffer::EngineBuffer(PowerMate *_powermate, const char *_group)
     // Used in update of playpos slider
     m_iSamplesCalculated = 0;
 
+    // Only for QT 3.3:
+    //reader->start(QThread::LowPriority);
 
-    reader->start(QThread::LowPriority);
+    reader->start();
 }
 
 EngineBuffer::~EngineBuffer()

@@ -69,7 +69,8 @@ void WWidget::setup(QDomNode node)
 
         if (!selectNode(con, "OnOff").isNull() && selectNodeQString(con, "OnOff")=="true")
         {
-//            ControlObject::setWidgetOnOff(this, configKey);
+            // Connect control proxy to widget
+            (new ControlObjectThreadWidget(ControlObject::getControl(configKey)))->setWidgetOnOff(this);
         }
         else
         {
@@ -101,7 +102,7 @@ void WWidget::setup(QDomNode node)
     }
 
     // Set tooltip if it exists
-    if (strTooltip != "") 
+    if (strTooltip != "")
         QToolTip::add( this, strTooltip );
 
 }
