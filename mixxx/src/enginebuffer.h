@@ -34,7 +34,7 @@
 #include "dlgchannel.h"
 #include "midiobject.h"
 #include "soundsourcemp3.h"
-#include "soundsourceaflibfile.h"
+#include "soundsourcewave.h"
 
 /**
   *@author Tue and Ken Haste Andersen

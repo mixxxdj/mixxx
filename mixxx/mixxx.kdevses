@@ -3,22 +3,34 @@
 <KDevPrjSession>
 <LastCompileConfig>(Default)</LastCompileConfig>
  <Mainframe MaximizeMode="1" />
- <DocsAndViews NumberOfDocuments="9" >
+ <DocsAndViews NumberOfDocuments="15" >
 <Doc0 CursorPosLine="120" Type="KWriteDoc" NumberOfViews="1" CursorPosCol="0" FileName="/home/haste/cvs/mixxx/src/mixxx.h" >
 <View0 Top="24" Width="400" Attach="1" Height="300" Left="3" Focus="0" Type="KWriteView" MinMaxMode="0" />  </Doc0>
-  <Doc1 CursorPosLine="870" Type="KWriteDoc" NumberOfViews="1" CursorPosCol="22" FileName="/home/haste/cvs/mixxx/src/mixxx.cpp" >
-<View0 Top="22" Width="995" Attach="1" Height="921" Left="22" Focus="1" Type="KWriteView" MinMaxMode="2" />  </Doc1>
+  <Doc1 CursorPosLine="896" Type="KWriteDoc" NumberOfViews="1" CursorPosCol="87" FileName="/home/haste/cvs/mixxx/src/mixxx.cpp" >
+<View0 Top="46" Width="989" Attach="1" Height="894" Left="25" Focus="0" Type="KWriteView" MinMaxMode="0" />  </Doc1>
   <Doc2 CursorPosLine="302" Type="KWriteDoc" NumberOfViews="1" CursorPosCol="0" FileName="/home/haste/cvs/mixxx/src/playerportaudio.cpp" >
-<View0 Top="68" Width="989" Attach="1" Height="894" Left="47" Focus="0" Type="KWriteView" MinMaxMode="0" />  </Doc2>
+<View0 Top="68" Width="989" Attach="1" Height="625" Left="47" Focus="0" Type="KWriteView" MinMaxMode="0" />  </Doc2>
   <Doc3 CursorPosLine="45" Type="KWriteDoc" NumberOfViews="1" CursorPosCol="31" FileName="/home/haste/cvs/mixxx/src/player.h" >
-<View0 Top="90" Width="989" Attach="1" Height="607" Left="69" Focus="0" Type="KWriteView" MinMaxMode="0" />  </Doc3>
-  <Doc4 CursorPosLine="32" Type="KWriteDoc" NumberOfViews="1" CursorPosCol="0" FileName="/home/haste/cvs/mixxx/src/enginechannel.h" >
-<View0 Top="156" Width="989" Attach="1" Height="894" Left="135" Focus="0" Type="KWriteView" MinMaxMode="0" />  </Doc4>
+<View0 Top="90" Width="989" Attach="1" Height="894" Left="69" Focus="0" Type="KWriteView" MinMaxMode="0" />  </Doc3>
+  <Doc4 CursorPosLine="19" Type="KWriteDoc" NumberOfViews="1" CursorPosCol="0" FileName="/home/haste/cvs/mixxx/src/enginechannel.h" >
+<View0 Top="112" Width="989" Attach="1" Height="607" Left="91" Focus="0" Type="KWriteView" MinMaxMode="0" />  </Doc4>
   <Doc5 CursorPosLine="61" Type="KWriteDoc" NumberOfViews="1" CursorPosCol="0" FileName="/home/haste/cvs/mixxx/src/enginechannel.cpp" >
-<View0 Top="178" Width="789" Attach="1" Height="638" Left="157" Focus="0" Type="KWriteView" MinMaxMode="0" />  </Doc5>
+<View0 Top="134" Width="989" Attach="1" Height="894" Left="113" Focus="0" Type="KWriteView" MinMaxMode="0" />  </Doc5>
   <Doc6 CursorPosLine="34" Type="KWriteDoc" NumberOfViews="1" CursorPosCol="34" FileName="/home/haste/cvs/mixxx/src/mixxxview.cpp" >
-<View0 Top="200" Width="789" Attach="1" Height="614" Left="179" Focus="0" Type="KWriteView" MinMaxMode="0" />  </Doc6>
+<View0 Top="156" Width="789" Attach="1" Height="638" Left="135" Focus="0" Type="KWriteView" MinMaxMode="0" />  </Doc6>
   <Doc7 CursorPosLine="46" Type="KWriteDoc" NumberOfViews="1" CursorPosCol="27" FileName="/home/haste/cvs/mixxx/src/mixxxview.h" >
-<View0 Top="222" Width="790" Attach="1" Height="614" Left="201" Focus="0" Type="KWriteView" MinMaxMode="0" />  </Doc7>
+<View0 Top="178" Width="789" Attach="1" Height="614" Left="157" Focus="0" Type="KWriteView" MinMaxMode="0" />  </Doc7>
   <Doc8 CursorPosLine="72" Type="KWriteDoc" NumberOfViews="1" CursorPosCol="14" FileName="/home/haste/cvs/mixxx/src/main.cpp" >
-<View0 Top="244" Width="790" Attach="1" Height="614" Left="223" Focus="0" Type="KWriteView" MinMaxMode="0" />  </Doc8> </DocsAndViews></KDevPrjSession>
+<View0 Top="200" Width="790" Attach="1" Height="614" Left="179" Focus="0" Type="KWriteView" MinMaxMode="0" />  </Doc8>
+  <Doc9 CursorPosLine="47" Type="KWriteDoc" NumberOfViews="1" CursorPosCol="12" FileName="/home/haste/cvs/mixxx/src/soundsourcewave.cpp" >
+<View0 Top="264" Width="995" Attach="1" Height="636" Left="264" Focus="1" Type="KWriteView" MinMaxMode="2" />  </Doc9>
+  <Doc10 CursorPosLine="15" Type="KWriteDoc" NumberOfViews="1" CursorPosCol="11" FileName="/home/haste/cvs/mixxx/src/soundsourcewave.h" >
+<View0 Top="310" Width="989" Attach="1" Height="609" Left="289" Focus="0" Type="KWriteView" MinMaxMode="0" />  </Doc10>
+  <Doc11 CursorPosLine="0" Type="KWriteDoc" NumberOfViews="1" CursorPosCol="0" FileName="/home/haste/cvs/mixxx/src/defs.h" >
+<View0 Top="266" Width="989" Attach="1" Height="609" Left="245" Focus="0" Type="KWriteView" MinMaxMode="0" />  </Doc11>
+  <Doc12 CursorPosLine="4" Type="KWriteDoc" NumberOfViews="1" CursorPosCol="0" FileName="/home/haste/cvs/mixxx/src/soundsourceaflibfile.cpp" >
+<View0 Top="288" Width="989" Attach="1" Height="609" Left="267" Focus="0" Type="KWriteView" MinMaxMode="0" />  </Doc12>
+  <Doc13 CursorPosLine="6" Type="KWriteDoc" NumberOfViews="1" CursorPosCol="0" FileName="/home/haste/cvs/mixxx/src/soundsourceaflibfile.h" >
+<View0 Top="310" Width="989" Attach="1" Height="609" Left="289" Focus="0" Type="KWriteView" MinMaxMode="0" />  </Doc13>
+  <Doc14 CursorPosLine="245" Type="KWriteDoc" NumberOfViews="1" CursorPosCol="0" FileName="/usr/local/include/sndfile.h" >
+<View0 Top="332" Width="989" Attach="1" Height="609" Left="311" Focus="0" Type="KWriteView" MinMaxMode="0" />  </Doc14> </DocsAndViews></KDevPrjSession>
