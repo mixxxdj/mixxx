@@ -30,8 +30,8 @@ DlgPrefControls::DlgPrefControls(QWidget *parent, ControlObject *pControl, Mixxx
     // Rate slider configuration
     //
 
-    m_pControlRate1 = pControl->getControl(ConfigKey("[Channel1]","rate"));
-    m_pControlRate2 = pControl->getControl(ConfigKey("[Channel2]","rate"));
+    m_pControlRate1 = (ControlPotmeter *)pControl->getControl(ConfigKey("[Channel1]","rate"));
+    m_pControlRate2 = (ControlPotmeter *)pControl->getControl(ConfigKey("[Channel2]","rate"));
     m_pControlRateDir1 = pControl->getControl(ConfigKey("[Channel1]","rate_dir"));
     m_pControlRateDir2 = pControl->getControl(ConfigKey("[Channel2]","rate_dir"));    
 
@@ -124,7 +124,7 @@ void DlgPrefControls::slotSetRateRange(int pos)
 {
     float range = (float)(pos)/10.;
     if (pos==0)
-        range = 0.08;
+        range = 0.08f;
 
     // Set the rate range
     m_pControlRate1->setRange(-range, range);
