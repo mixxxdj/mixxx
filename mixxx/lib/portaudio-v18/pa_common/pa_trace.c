@@ -1,5 +1,5 @@
 /*
- * $Id: pa_trace.c 329 2003-05-07 12:22:30Z tuehaste $
+ * $Id: pa_trace.c 479 2003-08-13 11:03:25Z tuehaste $
  * Portable Audio I/O Library Trace Facility
  * Store trace information in real-time for later printing.
  *

@@ -1,5 +1,5 @@
 /*
- * $Id: pa_lib.c 329 2003-05-07 12:22:30Z tuehaste $
+ * $Id: pa_lib.c 479 2003-08-13 11:03:25Z tuehaste $
  * Portable Audio I/O Library
  * Host Independant Layer
  *

@@ -36,6 +36,7 @@
        added by Augustus Saunders for Solaris compatibility.
    PLB20021018 - Fill device info table with actual sample rates instead of wished for rates.
                - Allow stream to open if sample rate within 10% of desired rate.
+   20030630 - Thomas Richter - eliminated unused variable warnings.
 */
 
 #include "pa_unix.h"
@@ -379,6 +380,6 @@ void Pa_UpdateStreamTime(PaHostSoundControl *pahsc)
 PaError Pa_FlushStream(int devHandle)
 {
   /* AS: This doesn't do anything under OSS; it was added for Solaris.*/
-
+  devHandle = devHandle; /* unused */
   return paNoError;
 }

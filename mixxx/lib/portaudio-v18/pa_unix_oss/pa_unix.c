@@ -76,6 +76,8 @@ Modification History
   20030206 - Martin Rohrbach - various mods for Solaris
   
   20030410 - Bjorn Dittmer-Roche - fixed numerous problems associated with pthread_t
+  
+  20030630 - Thomas Richter - eliminated unused variable warnings.
 
 TODO
 O- put semaphore lock around shared data?
@@ -887,12 +889,14 @@ error:
 /*************************************************************************/
 PaError PaHost_StartOutput( internalPortAudioStream *past )
 {
+    past = past; /* unused */
     return paNoError;
 }
 
 /*************************************************************************/
 PaError PaHost_StartInput( internalPortAudioStream *past )
 {
+    past = past; /* unused */
     return paNoError;
 }
 
@@ -973,12 +977,16 @@ PaError PaHost_StopEngine( internalPortAudioStream *past, int abort )
 /*************************************************************************/
 PaError PaHost_StopInput( internalPortAudioStream *past, int abort )
 {
+    past = past; /* unused */
+    abort = abort; /* unused */
     return paNoError;
 }
 
 /*************************************************************************/
 PaError PaHost_StopOutput( internalPortAudioStream *past, int abort )
 {
+    past = past; /* unused */
+    abort = abort; /* unused */
     return paNoError;
 }
 
@@ -1092,6 +1100,7 @@ void *PaHost_AllocateFastMemory( long numBytes )
  */
 void PaHost_FreeFastMemory( void *addr, long numBytes )
 {
+    numBytes = numBytes; /* unused */
     if( addr != NULL ) free( addr );
 }
 
