@@ -37,7 +37,7 @@ WVisualWaveform::WVisualWaveform(QWidget *pParent, const char *pName, const QGLW
     startTimer(15);
 #endif
 #ifdef __LINUX__
-    startTimer(25);
+    startTimer(15);
 #endif
 
     m_qlList.setAutoDelete(false);

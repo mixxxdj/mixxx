@@ -22,7 +22,10 @@ EngineFilterIIR::EngineFilterIIR(const float *coefs)
 
     // Reset the yv's:
     for (int i=0; i<=NPOLES; ++i)
-        yv[i]=xv[i]=0;
+    {
+        yv1[i]=xv1[i]=0;
+        yv2[i]=xv2[i]=0;
+    }
 }
 
 EngineFilterIIR::~EngineFilterIIR() 
@@ -34,33 +37,49 @@ void EngineFilterIIR::process(const CSAMPLE *pIn, const CSAMPLE *pOut, const int
     CSAMPLE *pOutput = (CSAMPLE *)pOut;
     float GAIN =  coefs[0];
     int i;
-    for (i=0; i<iBufferSize; ++i) 
+    for (i=0; i<iBufferSize; i+=2) 
     {
-        xv[0] = xv[1]; xv[1] = xv[2]; xv[2] = xv[3]; xv[3] = xv[4];
-        xv[4] = xv[5]; xv[5] = xv[6]; xv[6] = xv[7]; xv[7] = xv[8]; 
-        xv[8] = pIn[i]/GAIN;
-        yv[0] = yv[1]; yv[1] = yv[2]; yv[2] = yv[3]; yv[3] = yv[4];
-        yv[4] = yv[5]; yv[5] = yv[6]; yv[6] = yv[7]; yv[7] = yv[8]; 
-  
-        yv[8] =   (xv[0] + xv[8]) + coefs[1] * (xv[1] + xv[7]) + 
-                  coefs[2] * (xv[2] + xv[6]) + 
-                  coefs[3] * (xv[3] + xv[5]) + coefs[4] * xv[4] + 
-                  (coefs[5] * yv[0]) + ( coefs[6] * yv[1]) + 
-                  (coefs[7] * yv[2]) + ( coefs[8] * yv[3]) + 
-                  (coefs[9] * yv[4]) + ( coefs[10] * yv[5]) + 
-                  (coefs[11] * yv[6]) + ( coefs[12] * yv[7]);
-  
-        ASSERT(yv[8]<100000 || yv[8]>-100000);
-          
-        pOutput[i] = yv[8];
+        // Channel 1
+        xv1[0] = xv1[1]; xv1[1] = xv1[2]; xv1[2] = xv1[3]; xv1[3] = xv1[4];
+        xv1[4] = xv1[5]; xv1[5] = xv1[6]; xv1[6] = xv1[7]; xv1[7] = xv1[8]; 
+        xv1[8] = pIn[i]/GAIN;
+        yv1[0] = yv1[1]; yv1[1] = yv1[2]; yv1[2] = yv1[3]; yv1[3] = yv1[4];
+        yv1[4] = yv1[5]; yv1[5] = yv1[6]; yv1[6] = yv1[7]; yv1[7] = yv1[8]; 
+        yv1[8] =   (xv1[0] + xv1[8]) + coefs[1] * (xv1[1] + xv1[7]) + 
+                  coefs[2] * (xv1[2] + xv1[6]) + 
+                  coefs[3] * (xv1[3] + xv1[5]) + coefs[4] * xv1[4] + 
+                  (coefs[5] * yv1[0]) + ( coefs[6] * yv1[1]) + 
+                  (coefs[7] * yv1[2]) + ( coefs[8] * yv1[3]) + 
+                  (coefs[9] * yv1[4]) + ( coefs[10] * yv1[5]) + 
+                  (coefs[11] * yv1[6]) + ( coefs[12] * yv1[7]);
+        ASSERT(yv1[8]<100000 || yv1[8]>-100000);
+        pOutput[i] = yv1[8];
+
+        // Channel 2
+        xv2[0] = xv2[1]; xv2[1] = xv2[2]; xv2[2] = xv2[3]; xv2[3] = xv2[4];
+        xv2[4] = xv2[5]; xv2[5] = xv2[6]; xv2[6] = xv2[7]; xv2[7] = xv2[8]; 
+        xv2[8] = pIn[i+1]/GAIN;
+        yv2[0] = yv2[1]; yv2[1] = yv2[2]; yv2[2] = yv2[3]; yv2[3] = yv2[4];
+        yv2[4] = yv2[5]; yv2[5] = yv2[6]; yv2[6] = yv2[7]; yv2[7] = yv2[8]; 
+        yv2[8] =   (xv2[0] + xv2[8]) + coefs[1] * (xv2[1] + xv2[7]) + 
+                  coefs[2] * (xv2[2] + xv2[6]) + 
+                  coefs[3] * (xv2[3] + xv2[5]) + coefs[4] * xv2[4] + 
+                  (coefs[5] * yv2[0]) + ( coefs[6] * yv2[1]) + 
+                  (coefs[7] * yv2[2]) + ( coefs[8] * yv2[3]) + 
+                  (coefs[9] * yv2[4]) + ( coefs[10] * yv2[5]) + 
+                  (coefs[11] * yv2[6]) + ( coefs[12] * yv2[7]);
+        ASSERT(yv2[8]<100000 || yv2[8]>-100000);
+        pOutput[i+1] = yv2[8];
     }
 
     // Check for denormals
 #ifndef __MACX__
     for (i=0; i<9; ++i)
     {
-        xv[i] = zap_denormal(xv[i]);
-        yv[i] = zap_denormal(yv[i]);
+        xv1[i] = zap_denormal(xv1[i]);
+        yv1[i] = zap_denormal(yv1[i]);
+        xv2[i] = zap_denormal(xv2[i]);
+        yv2[i] = zap_denormal(yv2[i]);
     }
 #endif
 }

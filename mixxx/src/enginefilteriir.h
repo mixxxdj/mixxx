@@ -30,7 +30,8 @@ protected:
     const float *coefs;
     #define NZEROS 8
     #define NPOLES 8
-    float xv[NZEROS+1], yv[NPOLES+1];
+    float xv1[NZEROS+1], yv1[NPOLES+1];
+    float xv2[NZEROS+1], yv2[NPOLES+1];
 };
 
 //
