@@ -92,7 +92,8 @@ class MixxxApp : public QMainWindow
     /** Change of file to play */
     //void slotChangePlay(int,int,int, const QPoint &);
   protected:
-    bool eventFilter(QObject *, QEvent *);
+    void keyPressEvent(QKeyEvent *e);
+    void keyReleaseEvent(QKeyEvent *e);
   private:
     /** view is the main widget which represents your working area. The View
      * class should handle all events of the view widget.  It is kept empty so
@@ -100,7 +101,7 @@ class MixxxApp : public QMainWindow
      * changing the view class.
      */
     MixxxView *view;
-    
+
     QApplication *app;
     EngineObject *engine;
     EngineBuffer *buffer1, *buffer2;

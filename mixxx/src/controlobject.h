@@ -83,8 +83,9 @@ public:
     /** Syncronizes queue, by writing the values to ControlEngine objects. Non blocking.
       * Should be called from player thread. */
     static void syncControlEngineObjects();
-    /** Called from main widget, when a key is pressed or released */
-    void kbdPress(QKeySequence k, bool release);
+    /** Called from main widget, when a key is pressed or released. Returns true if
+      * the key press was handled */
+    bool kbdPress(QKeySequence k, bool release);
 
 signals:
     /** Signal sent when the widget has to be updated with a given value */

@@ -24,10 +24,14 @@
 
 WTrackTable::WTrackTable(QWidget *parent, const char *name) : QTable(10, 8, parent, name)
 {
-    setSorting(true);  
+    setSorting(true);
     setSelectionMode(QTable::SingleRow);
     setFocusStyle(QTable::FollowStyle);
-    
+
+    // Focus is only handled by MixxxApp
+    setFocusPolicy(QWidget::NoFocus);
+
+
     horizontalHeader()->setLabel(COL_SCORE, tr( "**" ) );
     horizontalHeader()->setLabel(COL_TITLE, tr( "Title" ) );
     horizontalHeader()->setLabel(COL_ARTIST, tr( "Artist" ) );

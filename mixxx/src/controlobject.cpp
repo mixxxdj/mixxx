@@ -300,8 +300,10 @@ bool ControlObject::eventFilter(QObject *o, QEvent *e)
     return TRUE;
 }
 
-void ControlObject::kbdPress(QKeySequence k, bool release)
+bool ControlObject::kbdPress(QKeySequence k, bool release)
 {
+    bool react = false;
+
     if (!k.isEmpty())
     {
 //        qDebug("kbd %s, press %i",((QString)k).latin1(),release);
@@ -316,11 +318,14 @@ void ControlObject::kbdPress(QKeySequence k, bool release)
                     c->setValueFromMidi(NOTE_OFF, 0);
                 else
                     c->setValueFromMidi(NOTE_ON, 1);
-            
+
+                react = true;
+
                 break;
             }
         }
-    }        
+    }
+    return react;
 }
 
 void ControlObject::syncControlEngineObjects()
