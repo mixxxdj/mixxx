@@ -26,8 +26,8 @@
 #include "visual/visualcontroller.h"
 #include "visual/picking.h"
 #include "visual/visualbackplane.h"
+#include "visual/visualchannel.h"
 
-class VisualChannel;
 class ControlPotmeter;
 
 #include "defs.h"

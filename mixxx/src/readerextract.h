@@ -21,8 +21,8 @@
 #include <qstring.h>
 #include <qapplication.h>
 
+#include "visual/visualbuffer.h"
 class VisualChannel;
-class VisualBuffer;
 
 /**
   * Abstract class for feature extraction. Each ReaderExtract object sets up its own buffer

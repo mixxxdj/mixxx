@@ -36,7 +36,13 @@
 MixxxView::MixxxView(QWidget *parent) : QWidget(parent)
 {
     // Path to image files
+#ifdef __UNIX__
     path = QDir::currentDirPath().append("/images/");
+#endif
+#ifdef __WIN__
+    path = QDir::currentDirPath().append("/images/");
+#endif
+
     qDebug("Image path %s",path.latin1());
 
     //
@@ -149,25 +155,26 @@ MixxxView::MixxxView(QWidget *parent) : QWidget(parent)
 
     m_pVUmeterCh1 = new WDisplay(main);
     m_pVUmeterCh1->setPositions(33);
-    for (int i=0; i<10; ++i)
+    int i;
+	for (i=0; i<10; ++i)
         m_pVUmeterCh1->setPixmap(i, getPath(QString("vu-left/vu0%1.png").arg(i).latin1()));
-    for (int i=10; i<33; ++i)
+    for (i=10; i<33; ++i)
         m_pVUmeterCh1->setPixmap(i, getPath(QString("vu-left/vu%1.png").arg(i).latin1()));
     m_pVUmeterCh1->setFixedSize(15,105);
     m_pVUmeterCh1->move(485,99);
 
     m_pVUmeterCh2 = new WDisplay(main);
     m_pVUmeterCh2->setPositions(33);
-    for (int i=0; i<10; ++i)
+    for (i=0; i<10; ++i)
         m_pVUmeterCh2->setPixmap(i, getPath(QString("vu-right/vu0%1.png").arg(i).latin1()));
-    for (int i=10; i<33; ++i)
+    for (i=10; i<33; ++i)
         m_pVUmeterCh2->setPixmap(i, getPath(QString("vu-right/vu%1.png").arg(i).latin1()));
     m_pVUmeterCh2->setFixedSize(15,105);
     m_pVUmeterCh2->move(524,99);
 
     m_pVolume = new WKnob(main);
     m_pVolume->setPositions(10);
-    for (int i=0; i<10; ++i)
+    for (i=0; i<10; ++i)
         m_pVolume->setPixmap(i, getPath(QString("knobs/knob%1.png").arg(i).latin1()));
     m_pVolume->setFixedSize(34,34);
     m_pVolume->move( 462,348);
@@ -294,7 +301,8 @@ void MixxxView::assignWidgets(ControlObject *p)
 
 const char *MixxxView::getPath(QString location)
 {
-    return location.prepend(path).latin1();
+    qDebug("getpath: %s\n\n",location.prepend(path).latin1());
+	return location.prepend(path).latin1();
 }
 
                                                                  

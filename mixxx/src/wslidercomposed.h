@@ -22,6 +22,8 @@
 #include <qstring.h>
 #include <qpixmap.h>
 /**
+  * A widget for a slider composed of a background pixmap and a handle.
+  *
   *@author Tue & Ken Haste Andersen
   */
 
