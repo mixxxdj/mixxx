@@ -110,6 +110,7 @@ void TrackInfoObject::AddElement( QDomDocument &doc, QDomElement &header,
 
 /*
 	Dummy method for parsing information from knowing only the file name.
+    It assumes that the filename is written like: "artist - trackname.xxx"
 */
 void TrackInfoObject::Parse()
 {
@@ -126,16 +127,38 @@ void TrackInfoObject::Parse()
 		m_sType = m_sFilename.section('.',-1); // Get the ending
 	}
 
+    // Sort out obvíously wrong parsings:
+    if ((m_sArtist.length() < 3) || (m_sTitle < 3))
+    {
+        m_sTitle = m_sFilename.section('.',0,-2);
+        m_sArtist = ' ';
+    }
+
 	// Find the length:
 	m_iLength = QFileInfo( m_sFilepath + '/' + m_sFilename ).size();
 }
 
+/*
+    Return the duration as a string with minutes and seconds: H:MM:SS
+*/
 QString TrackInfoObject::Duration()
 {
-//  Changed to sprintf() to get the right display of seconds
-//  it now writes "3:04" instead of "3: 4"
-    return QString().sprintf("%2d:%02d", (int) (m_iDuration/60), (int) (m_iDuration%60));
-
+    if (m_iDuration <=0)
+        return QString("?");
+    else
+    {
+        int iHours = m_iDuration/3600;
+        int iMinutes = (m_iDuration - 3600*iHours)/60;
+        int iSeconds = m_iDuration%60;
+        
+        // Sort out obviously wrong results:
+        if (iHours > 5)
+            return QString("??");
+        if (iHours >= 1)
+            return QString().sprintf("%2d:%2d:%02d", iHours, iMinutes, iSeconds);
+        else
+            return QString().sprintf("%2d:%02d", iMinutes, iSeconds);
+    }
 }
 
 QString TrackInfoObject::Location()
