@@ -34,11 +34,14 @@ QPixmap *WSlider::midv     = 0;
 QPixmap *WSlider::midv_h   = 0;
 QPixmap *WSlider::largeh   = 0;
 QPixmap *WSlider::largeh_h = 0;
+int WSlider::instantiateNo = 0;
 
 WSlider::WSlider(QWidget *parent, const char *name ) : QWidget(parent,name)
 {
+    instantiateNo++;
+    
     // Initialize static pointers to pixmaps
-    if (smallv == 0)
+    if (instantiateNo == 1)
     {
         smallv   = new QPixmap(slider_small_v_xpm);
         smallv_h = new QPixmap(slider_small_v_handle_xpm);
@@ -56,7 +59,16 @@ WSlider::WSlider(QWidget *parent, const char *name ) : QWidget(parent,name)
 
 WSlider::~WSlider()
 {
-    delete smallv; delete smallv_h;
+    instantiateNo--;
+    if (instantiateNo==0)
+    {
+        delete smallv;
+        delete smallv_h;
+        delete midv;
+        delete midv_h;
+        delete largeh;
+        delete largeh_h;
+    }
 }
 
 void WSlider::mouseMoveEvent(QMouseEvent *e)

@@ -58,6 +58,7 @@ private:
 
     /** Pixmaps used to draw slider */
     static QPixmap *smallv, *smallv_h, *midv, *midv_h, *largeh, *largeh_h;
+    static int instantiateNo;
 };
 
 #endif

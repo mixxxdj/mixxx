@@ -43,6 +43,7 @@ signals:
 private:
     int value, oldvalue, startval;
     static QPixmap **pix;
+    static int instantiateNo;
 };
 
 #endif

@@ -39,6 +39,7 @@ protected:
     QPixmap *getKnob();
 private:
     static QPixmap **pix;
+    static int instantiateNo;
 };
 
 #endif

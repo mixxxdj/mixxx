@@ -31,14 +31,14 @@ typedef CSAMPLE FLOAT_TYPE;       // Float type, used for non sample data
 const int BUFFER_SIZE  = 2048;  // Buffer size used both for input and output as default
                                             
 /** size of the chunk that's read in every read. */
-const unsigned int READCHUNKSIZE = 20480;
+const unsigned int READCHUNKSIZE = 40960;
 /** Number of readchunks. Should minimum be set to 5. In theory this should minimum be four, but
   * since it is possible that the sound sources return more samples than request, 5 is on the
   * safe side */
 const int READCHUNK_NO = 8;
 const unsigned int READBUFFERSIZE = READCHUNKSIZE*READCHUNK_NO;
 /** Window size used in EnginePreProcess */
-const int WINDOWSIZE = 2560; //4608; //512;
+const int WINDOWSIZE = 1024; //4608; //512;
 /** Step size used in block based processing (EnginePreProcess and others) */
 const int STEPSIZE = 512; //WINDOWSIZE/2;
 

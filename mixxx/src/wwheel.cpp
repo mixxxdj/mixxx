@@ -22,14 +22,17 @@
 
 // Static member variable definition
 QPixmap **WWheel::pix = 0;
+int WWheel::instantiateNo = 0;
 
 WWheel::WWheel(QWidget *parent, const char *name ) : QWidget(parent,name)
 {
+    instantiateNo++;
+    
     oldvalue = 64;
     value = 64;
 
     // Convert xpm's to pixmaps
-    if (pix == 0)
+    if (instantiateNo == 1)
     {
         pix = new QPixmap*[100];
         for (int i=0; i<100; i++)
@@ -41,9 +44,13 @@ WWheel::WWheel(QWidget *parent, const char *name ) : QWidget(parent,name)
 
 WWheel::~WWheel()
 {
-   for (int i=0; i<100; i++)
-       delete pix[i];
-   delete [] pix;
+    instantiateNo--;
+    if (instantiateNo==0)
+    {
+        for (int i=0; i<100; i++)
+            delete pix[i];
+        delete [] pix;
+    }
 }
 
 void WWheel::mouseMoveEvent(QMouseEvent *e)

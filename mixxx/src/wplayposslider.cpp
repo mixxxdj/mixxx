@@ -25,10 +25,12 @@
 // Static member variable definition
 QPixmap *WPlayposSlider::slider = 0;
 QPixmap *WPlayposSlider::marker = 0;
+int WPlayposSlider::instantiateNo = 0;
 
 WPlayposSlider::WPlayposSlider(QWidget *parent, const char *name ) : QWidget(parent,name)
 {
-    if (slider==0)
+    instantiateNo++;
+    if (instantiateNo==1)
     {
         slider = new QPixmap(playposslider_xpm);
         marker = new QPixmap(playposmarker_xpm);
@@ -43,7 +45,8 @@ WPlayposSlider::WPlayposSlider(QWidget *parent, const char *name ) : QWidget(par
 
 WPlayposSlider::~WPlayposSlider()
 {
-    if (slider)
+    instantiateNo--;
+    if (instantiateNo==0)
     {
         delete slider;
         delete marker;
