@@ -3,9 +3,5 @@
 <KDevPrjSession>
  <LastCompileConfig>(Default)</LastCompileConfig>
  <Mainframe MaximizeMode="1" />
- <DocsAndViews NumberOfDocuments="1" >
-  <Doc0 CursorPosLine="291" Type="KWriteDoc" NumberOfViews="1" CursorPosCol="6" FileName="/home/haste/cvs/mixxx/src/mixxx.cpp" >
-   <View0 Top="0" Width="759" Attach="1" Height="608" Left="0" Focus="1" Type="KWriteView" MinMaxMode="0" />
-  </Doc0>
- </DocsAndViews>
+ <DocsAndViews NumberOfDocuments="0" />
 </KDevPrjSession>

@@ -370,11 +370,11 @@ CSAMPLE *EngineBuffer::process(const CSAMPLE *, const int buf_size)
                     m_iBeatMarkSamplesLeft = max(0,m_iBeatMarkSamplesLeft-to);
                 }
                 
-                bool *beatBuffer = (bool *)readerbeat->getBasePtr();
+                float *beatBuffer = (float *)readerbeat->getBasePtr();
                 int chunkSizeDiff = READBUFFERSIZE/readerbeat->getBufferSize();
                 for (i=floor(bufferpos_play); i<=floor(idx); i++)
                 {
-                    if (i%chunkSizeDiff==0 & beatBuffer[i/chunkSizeDiff])
+                    if (i%chunkSizeDiff==0 & beatBuffer[i/chunkSizeDiff]==1)
                     {
                         // Audio beat mark
                         if (audioBeatMark->get()==1.)

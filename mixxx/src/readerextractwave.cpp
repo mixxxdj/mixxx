@@ -84,8 +84,8 @@ void ReaderExtractWave::addVisual(GUIChannel *_guichannel)
 
 #ifdef EXTRACT
 //    readerfft->addVisual(guichannel);
-    readerhfc->addVisual(guichannel);
-//    readerbeat->addVisual(guichannel);
+//    readerhfc->addVisual(guichannel);
+    readerbeat->addVisual(guichannel);
 #endif
 }
 

@@ -68,7 +68,7 @@ private:
     bool circularValidIndex(int idx, int start, int end, int len);
 
     /** Buffer indicating if a beat has occoured or not. */
-    bool *beatBuffer;
+    float *beatBuffer;
     /** Last updated index of beatBuffer containing a beat */
     int beatBufferLastIdx;
     /** Buffer holding bpm values */
