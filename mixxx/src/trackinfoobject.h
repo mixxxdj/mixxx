@@ -33,6 +33,8 @@ public:
     static void addElement( QDomDocument &, QDomElement &, QString, QString );
     /** Insert at the values in a WTrackTable at a given row */
     void insertInTrackTableRow(WTrackTable *pTableTrack, int iRow, int iTrackNo);
+    /** Reset pointers to table cells */
+    void removeFromTrackTable();
     /** Returns the duration in seconds */
     int getDuration();
     /** Returns the duration as a string: H:MM:SS */
