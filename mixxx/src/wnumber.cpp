@@ -52,6 +52,13 @@ void WNumber::setup(QDomNode node)
     int x = size.left(size.find(",")).toInt();
     int y = size.mid(size.find(",")+1).toInt();
     setFixedSize(x,y);
+
+    // Alignment
+    if (!selectNode(node, "Alignment").isNull())
+    {
+        if (selectNodeQString(node, "Alignment")=="right")
+            m_pLabel->setAlignment(Qt::AlignRight|Qt::AlignVCenter);
+    }
 }
 
 void WNumber::setFixedSize(int x,int y)
@@ -79,4 +86,8 @@ void WNumber::setValue(double dValue)
     m_pLabel->setText(QString(m_qsText).append("%1.%2%3").arg((int)dValue,3,10).arg(d1,1,10).arg(d2,1,10));
 }
 
+void WNumber::setAlignment(int i)
+{
+    m_pLabel->setAlignment(i);
+}
 

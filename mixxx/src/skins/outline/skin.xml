@@ -932,8 +932,9 @@
  <NumberPos>
   <Tooltip>Play position/remaining time</Tooltip>
   <Channel>1</Channel>
-  <Pos>310,355</Pos>
-  <Size>85,20</Size>
+  <Pos>281,355</Pos>
+  <Size>120,20</Size>
+  <Alignment>right</Alignment>
   <NumberOfDigits>6</NumberOfDigits>
   <BgColor>#ffffff</BgColor>
   <FgColor>#606060</FgColor>
@@ -945,8 +946,9 @@
  <NumberPos>
   <Tooltip>Play position/remaining time</Tooltip>
   <Channel>2</Channel>
-  <Pos>787,355</Pos>
-  <Size>85,20</Size>
+  <Pos>760,355</Pos>
+  <Size>120,20</Size>
+  <Alignment>right</Alignment>
   <NumberOfDigits>6</NumberOfDigits>
   <BgColor>#ffffff</BgColor>
   <FgColor>#606060</FgColor>
