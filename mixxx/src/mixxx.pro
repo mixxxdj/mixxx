@@ -76,10 +76,10 @@ unix {
 
 win32 {
   DEFINES += __WIN__
-  INCLUDEPATH += ../lib .
+  INCLUDEPATH += ../winlib ../lib/portaudio-v18 .
   SOURCES += soundsourcesndfile.cpp
   HEADERS += soundsourcesndfile.h
-  LIBS += ../lib/libmad.lib ../lib/libsndfile.lib
+  LIBS += ../winlib/libmad.lib ../winlib/libsndfile.lib
   QMAKE_CXXFLAGS += -GX
   QMAKE_LFLAGS += /NODEFAULTLIB:libcd /NODEFAULTLIB:libcmtd 
   #/NODEFAULTLIB:msvcrt.lib 
@@ -92,8 +92,8 @@ macx {
 }
 
 # gcc Profiling
-QMAKE_CXXFLAGS_DEBUG += -pg
-QMAKE_LFLAGS_DEBUG += -pg
+unix:QMAKE_CXXFLAGS_DEBUG += -pg
+unix:QMAKE_LFLAGS_DEBUG += -pg
 
 DEFINES += CONFIG_PATH=$$CONFIG_PATH
 FORMS	= dlgchanneldlg.ui dlgplaycontroldlg.ui dlgplaylistdlg.ui dlgmasterdlg.ui dlgcrossfaderdlg.ui dlgsplitdlg.ui dlgpreferencesdlg.ui dlgflangerdlg.ui
