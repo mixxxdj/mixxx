@@ -819,7 +819,7 @@
 <customwidgets>
     <customwidget>
         <class>WKnob</class>
-        <header location="local">../wknob.h</header>
+        <header location="local">wknob.h</header>
         <sizehint>
             <width>32</width>
             <height>32</height>

@@ -84,7 +84,7 @@ win32 {
   QMAKE_CXXFLAGS += -GX
   QMAKE_LFLAGS += /NODEFAULTLIB:libcd /NODEFAULTLIB:libcmtd 
   #/NODEFAULTLIB:msvcrt.lib 
-  CONFIG_PATH = \"./config/\"
+  CONFIG_PATH = \"config\"
 }
 
 macx {
