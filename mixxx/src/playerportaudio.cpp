@@ -26,23 +26,21 @@ PlayerPortAudio::PlayerPortAudio(int size, std::vector<EngineObject *> *engines)
     err = Pa_OpenStream(&stream,
                         paNoDevice,     /* default input device */
                         0,              /* no input */
-                        paFloat32,      /* 32 bit floating point input */
+                        paInt16,      
                         NULL,
                         Pa_GetDefaultOutputDeviceID(), /* default output device */
                         2,              /* stereo output */
-                        paFloat32,      /* 32 bit floating point output */
+                        paInt16,    
                         NULL,
-                        SRATE,
-                        SAMPLE_SIZE,    /* frames per buffer */
+                        (double)SRATE,
+                        2048,    /* frames per buffer */
                         0,              /* number of buffers, if zero then use default minimum */
                         paClipOff,      /* we won't output out of range samples so don't bother clipping them */
                         paCallback,
                         this );
-    if( err != paNoError ) qFatal("PortAudio open stream error");
+    if( err != paNoError ) qFatal("PortAudio open stream error: %s",Pa_GetErrorText(err) );
     err = Pa_StartStream( stream );
-    if( err != paNoError ) qFatal("PortAudio start stream error");
-
-    BUFFER_SIZE = SAMPLE_SIZE;
+    if( err != paNoError ) qFatal("PortAudio start stream error: %s", Pa_GetErrorText(err));
 
     qDebug("Using PortAudio. Buffer size : %i samples.",BUFFER_SIZE/2);
 	allocate();

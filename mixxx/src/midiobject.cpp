@@ -101,7 +101,7 @@ void MidiObject::run() {
   int stop = 0;
   PmError err;
   char channel, midicontrol, midivalue;
-  while(stop == 0) {
+ /* while(stop == 0) {
     err = Pm_Poll(midi);
     if (err == TRUE) {
           if (Pm_Read(midi, buffer, 1) > 0) {
@@ -143,5 +143,5 @@ void MidiObject::run() {
 	  break;
 	}
       }
-  }
+  }*/
 };
