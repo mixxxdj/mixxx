@@ -19,6 +19,7 @@
 #include <qdragobject.h>
 #include "wtracktable.h"
 #include "wtreeview.h"
+#include "wnumberpos.h"
 #include <qpopupmenu.h>
 #include <qcursor.h>
 #include <qcstring.h>
@@ -289,7 +290,7 @@ void Track::slotTrackPopup(TrackInfoObject *pTrackInfoObject, int)
 void Track::slotLoadPlayer1(TrackInfoObject *pTrackInfoObject)
 {
     m_pTrackPlayer1 = pTrackInfoObject;
-    //emit(signalNewTrack1(track));
+    emit(newTrackPlayer1(m_pTrackPlayer1));
 
 /*
     // Update score:
@@ -302,6 +303,10 @@ void Track::slotLoadPlayer1(TrackInfoObject *pTrackInfoObject)
     // Request a new track from the reader:
     m_pBuffer1->getReader()->requestNewTrack(m_pTrackPlayer1);
 
+    // Set duration in playpos widget
+    if (m_pView->m_pNumberPosCh1)
+        m_pView->m_pNumberPosCh1->setDuration(m_pTrackPlayer1->getDuration());
+
     // Write info to text display
     if (m_pView->m_pTextCh1)
         m_pView->m_pTextCh1->setText(m_pTrackPlayer1->getInfo());
@@ -310,7 +315,7 @@ void Track::slotLoadPlayer1(TrackInfoObject *pTrackInfoObject)
 void Track::slotLoadPlayer2(TrackInfoObject *pTrackInfoObject)
 {
     m_pTrackPlayer2 = pTrackInfoObject;
-    //emit(signalNewTrack2(track));
+    emit(newTrackPlayer2(m_pTrackPlayer2));
 
 /*
     // Update score:
@@ -322,6 +327,10 @@ void Track::slotLoadPlayer2(TrackInfoObject *pTrackInfoObject)
 
     // Request a new track from the reader:
     m_pBuffer2->getReader()->requestNewTrack(m_pTrackPlayer2);
+
+    // Set duration in playpos widget
+    if (m_pView->m_pNumberPosCh2)
+        m_pView->m_pNumberPosCh2->setDuration(m_pTrackPlayer2->getDuration());
 
     // Write info to text display
     if (m_pView->m_pTextCh2)
