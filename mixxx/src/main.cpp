@@ -73,10 +73,10 @@ void MessageToLogfile( QtMsgType type, const char *msg )
 int main(int argc, char *argv[])
 {
 #ifdef Q_WS_WIN
-    // For windows write all debug messages to a logfile:
-    Logfile.setName( "c:/mixxx.log" );
-    Logfile.open( IO_WriteOnly );
-    qInstallMsgHandler( MessageToLogfile );
+  // For windows write all debug messages to a logfile:
+  Logfile.setName( "mixxx.log" );
+  Logfile.open( IO_WriteOnly );
+  qInstallMsgHandler( MessageToLogfile );
 #else
     // For others, write to the console:
     qInstallMsgHandler( MessageOutput );
