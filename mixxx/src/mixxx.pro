@@ -22,10 +22,10 @@ DEFINES += __OSSMIDI__
 #win32:LIBS += ../lib/portmidi.lib ../lib/porttime.lib
 
 # ALSA PCM (Not currently working, Linux specific)
-SOURCES += playeralsa.cpp
-HEADERS += playeralsa.h
-DEFINES += __ALSA__
-unix:LIBS += -lasound
+#SOURCES += playeralsa.cpp
+#HEADERS += playeralsa.h
+#DEFINES += __ALSA__
+#unix:LIBS += -lasound
 
 # ALSA MIDI (Not currently working, Linux specific)
 #SOURCES += midiobjectalsa.cpp

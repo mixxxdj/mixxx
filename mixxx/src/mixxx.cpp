@@ -116,7 +116,8 @@ MixxxApp::MixxxApp(QApplication *a)
   PlaylistKey = ConfigKey("[Playlist]","Directory");
   QDir d( config->getValueString(PlaylistKey ));
   if (config->getValueString(PlaylistKey ).length()<1 | !d.exists()) {
-      QFileDialog* fd = new QFileDialog( this, "Choose directory with music files", TRUE );
+      QFileDialog* fd = new QFileDialog( this, QString::null, TRUE );
+      fd->setCaption("Choose directory with music files");
       fd->setMode( QFileDialog::Directory );
       if ( fd->exec() == QDialog::Accepted ) {
           config->set(PlaylistKey, fd->selectedFile());
@@ -162,11 +163,14 @@ MixxxApp::MixxxApp(QApplication *a)
 #endif
 
   // Ensure the correct configuration is chosen and stored in the config object
-  player->reopen(config->getValueString(ConfigKey("[Soundcard]","Device")),
-                 config->getValueString(ConfigKey("[Soundcard]","Samplerate")).toInt(),
-                 config->getValueString(ConfigKey("[Soundcard]","Bits")).toInt(),
-                 BUFFER_SIZE);
   config->set(ConfigKey("[Soundcard]","Device"),ConfigValue(player->NAME));
+  int srate = config->getValueString(ConfigKey("[Soundcard]","Samplerate")).toInt();
+  int bits  = config->getValueString(ConfigKey("[Soundcard]","Bits")).toInt();
+  if (srate == 0)
+      srate = player->SRATE;
+  if (bits == 0)
+      bits = player->BITS;
+  player->reopen(config->getValueString(ConfigKey("[Soundcard]","Device")),srate,bits,BUFFER_SIZE);
   config->set(ConfigKey("[Soundcard]","Samplerate"),ConfigValue(player->SRATE));
   config->set(ConfigKey("[Soundcard]","Bits"),ConfigValue(player->BITS));
 
@@ -786,8 +790,9 @@ void MixxxApp::slotOptionsSetPreferences()
 
 void MixxxApp::slotBrowsePlaylistDir()
 {
-    QFileDialog* fd = new QFileDialog( this, "Choose directory with music files", TRUE );
+    QFileDialog* fd = new QFileDialog( this, QString::null, TRUE );
     fd->setMode( QFileDialog::Directory );
+    fd->setCaption("Choose directory with music files");
     if ( fd->exec() == QDialog::Accepted )
     {
         pDlg->LineEditSongfiles->setText( fd->selectedFile() );

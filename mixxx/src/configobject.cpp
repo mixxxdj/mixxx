@@ -125,9 +125,7 @@ template <class ValueType> void ConfigObject<ValueType>::reopen(QString file)
 template <class ValueType> void ConfigObject<ValueType>::Save()
 {
     FILE *handle = fopen(filename.ascii(),"w");
-    if (handle == 0)
-        qDebug("Could not open file %s",filename.ascii());
-    else
+    if (handle != 0)
     {
         ConfigOption<ValueType> *it;
         QString grp = 0;
