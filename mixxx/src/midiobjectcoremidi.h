@@ -18,7 +18,7 @@
 #ifndef MIDIOBJECTCOREMIDI_H
 #define MIDIOBJECTCOREMIDI_H
 
-#include <midiobject.h>
+#include "midiobject.h"
 
 #include <CoreFoundation/CoreFoundation.h>
 // #include <CoreAudio/CoreAudio.h>

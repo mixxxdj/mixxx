@@ -17,8 +17,8 @@
 
 #include "enginemaster.h"
 #include "configobject.h"
-#include <wslider.h>
-#include <wpflbutton.h>
+#include "wslider.h"
+#include "wpflbutton.h"
 
 EngineMaster::EngineMaster(DlgMaster *master_dlg, DlgCrossfader *crossfader_dlg,
                            DlgChannel *channel1_dlg, DlgChannel *channel2_dlg,

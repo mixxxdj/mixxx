@@ -18,7 +18,7 @@
 #ifndef MIDIOBJECTOSS_H
 #define MIDIOBJECTOSS_H
 
-#include <midiobject.h>
+#include "midiobject.h"
 
 /**
   *@author Tue & Ken Haste Andersen

@@ -26,10 +26,10 @@
                      potmeter is changed.
             midicontroller - pointer to the midi controller.
    -------- ------------------------------------------------------ */
-ControlPotmeter::ControlPotmeter()
+ControlPotmeter::ControlPotmeter() : ControlObject()
 {
 }
-
+               
 ControlPotmeter::ControlPotmeter(ConfigKey key, FLOAT_TYPE _minvalue, FLOAT_TYPE _maxvalue) : ControlObject(key)
 {
   position = middlePosition;

@@ -108,7 +108,7 @@ QString *MidiObject::getOpenDevice()
    -------- ------------------------------------------------------ */
 void MidiObject::send(char channel, char midicontrol, char midivalue)
 {
-    //qDebug("Received midi message: ch %i no %i val %i",(int)channel,(int)midicontrol,(int)midivalue);
+    qDebug("Received midi message: ch %i no %i val %i",(int)channel,(int)midicontrol,(int)midivalue);
 
     // Check the potmeters:
     for (int i=0; i<no; i++)
@@ -122,11 +122,17 @@ void MidiObject::send(char channel, char midicontrol, char midivalue)
             // Check for possible bit mask
             int midimask = controlList[i]->cfgOption->val->midimask;
 
+            // Lock application before update gui signal is sent in call
+            // to ControlObject->slotSetPositionMidi
+            //app->lock();
+
             if (midimask > 0)
-                controlList[i]->slotSetPosition((int)(midimask & midivalue));
+                controlList[i]->slotSetPositionMidi((int)(midimask & midivalue));
             else
                 controlList[i]->slotSetPositionMidi((int)midivalue); // 127-midivalue
 
+            //app->unlock();
+            
             // Send User event, to force screen update
             postEvent(mixxx,new QEvent(QEvent::User));
 

@@ -22,7 +22,7 @@
 #include <qpushbutton.h>
 #include <qslider.h>
 #include <qlabel.h>
-#include <player.h>
+#include "player.h"
 #ifdef __ALSA__
   #include "playeralsa.h"
 #endif

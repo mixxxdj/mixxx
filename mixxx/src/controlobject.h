@@ -19,6 +19,7 @@
 #define CONTROLOBJECT_H
 
 #include <qobject.h>
+#include <qevent.h>
 #include "configobject.h"
 #include "defs.h"
 
@@ -47,6 +48,9 @@ public slots:
 signals:
   void updateGUI(int);
   void valueChanged(FLOAT_TYPE);
+protected:
+  bool eventFilter(QObject *, QEvent *);
+  int tmpPos;
 };
 
 #endif

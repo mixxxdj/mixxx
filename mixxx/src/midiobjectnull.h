@@ -18,7 +18,7 @@
 #ifndef MIDIOBJECTNULL_H
 #define MIDIOBJECTNULL_H
 
-#include <midiobject.h>
+#include "midiobject.h"
 
 /**
   *@author Tue & Ken Haste Andersen
