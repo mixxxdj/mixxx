@@ -6,7 +6,6 @@
 EnginePregain::EnginePregain(int potmeter_midi, MidiObject* midi)
 {
   pregainpot = new ControlLogpotmeter("pregainpot", potmeter_midi, midi, 5.0);
-  connect(pregainpot, SIGNAL(valueChanged(FLOAT_TYPE)), this, SLOT(slotUpdate(FLOAT_TYPE)));
   pregain = 1.0;
   buffer = new CSAMPLE[MAX_BUFFER_LEN];
 }

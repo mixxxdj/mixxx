@@ -51,6 +51,7 @@ CSAMPLE *EngineChannel::process(const CSAMPLE* source, const int buffer_size) {
   CSAMPLE *temp  = pregain->process(source, buffer_size);
   CSAMPLE *temp2 = filter->process(temp, buffer_size);
   temp = clipping->process(temp2, buffer_size);
-  //temp2 = volume->process(temp, buffer_size);
+  temp2 = volume->process(temp, buffer_size);
+
   return temp;
 }
