@@ -21,6 +21,11 @@ ControlBeat::ControlBeat(ConfigKey key) : ControlObject(key)
 {
     value = -1.;
     time.start();
+
+    // Filter buffer
+    buffer = new CSAMPLE[filterLength];
+    for (int i=0; i<filterLength; i++)
+        buffer[i] = 0.;
 }
 
 ControlBeat::~ControlBeat()
@@ -29,16 +34,28 @@ ControlBeat::~ControlBeat()
 
 void ControlBeat::slotSetPosition(int pos)
 {
-    qDebug("ControlBeat: %i",pos);
     int elapsed = time.elapsed();
     time.restart();
 
+    
     if (elapsed<=maxInterval)    
     {
-        value = 6000./elapsed;
+        // Move back in filter one sample
+        for (int i=1; i<filterLength; i++)
+            buffer[i-1] = buffer[i];
+            
+        buffer[filterLength-1] = 1000.*(60./elapsed);
+        if (buffer[filterLength-1]>maxBPM)
+            buffer[filterLength-1] = maxBPM;
+            
+        value = 0.;
+        for (int i=0; i<filterLength; i++)
+            value += buffer[i];
+        value /= filterLength;
     }
     else
         value = 0.;
+    qDebug("ControlBeat: %f",value);
 
     emitValueChanged(value);
 }

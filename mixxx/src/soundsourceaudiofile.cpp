@@ -50,8 +50,7 @@ long SoundSourceAudioFile::seek(long filepos)
 */
 unsigned SoundSourceAudioFile::read(unsigned long size, const SAMPLE* destination)
 {
-    return afReadFrames(fh,AF_DEFAULT_TRACK, (SAMPLE *)destination,
-                        size/channels)*channels;
+    return afReadFrames(fh,AF_DEFAULT_TRACK, (SAMPLE *)destination,size/channels)*channels;
 }
 
 /*

@@ -37,7 +37,6 @@ ControlObject::ControlObject()
 ControlObject::ControlObject(ConfigKey key)
 {
     controlEngineNo = -1;
-    widget = 0;
     installEventFilter(this);
 
     // Retreive configuration option object
@@ -75,9 +74,8 @@ void ControlObject::setControlEngine(int _controlEngineNo)
     controlEngineNo = _controlEngineNo;
 }
 
-void ControlObject::setWidget(QWidget *_widget)
+void ControlObject::setWidget(QWidget *widget)
 {
-    widget = _widget;
     connect(widget, SIGNAL(valueChanged(int)), this,   SLOT(slotSetPosition(int)));
     connect(this,   SIGNAL(updateGUI(int)),    widget, SLOT(setValue(int)));
 

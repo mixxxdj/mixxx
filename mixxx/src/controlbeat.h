@@ -30,9 +30,16 @@
   */
 
 /** Minimum allowed Beat per minute (BPM) */
-const int minBPM = 60;
+const int minBPM = 10;
+/** Maximum allowed bpm */
+const int maxBPM = 240;
 /** Maximum allowed interval between beats in milli seconds (calculated from minBPM) */
-const int maxInterval = 6000/minBPM;
+const int maxInterval = (int)(1000.*(60./(CSAMPLE)minBPM));
+
+
+
+/** Filter length */
+const int filterLength = 20;
   
 class ControlBeat : public ControlObject
 {
@@ -45,6 +52,7 @@ protected:
     void forceGUIUpdate();
 private:
     QTime time;
+    CSAMPLE *buffer;
 };
 
 #endif

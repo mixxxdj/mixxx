@@ -21,6 +21,7 @@
 #include "controlobject.h"
 #include "defs.h"
 #include "wbulb.h"
+#include <qaction.h>
 
 /**
   *@author Tue and Ken Haste Andersen
@@ -36,14 +37,18 @@ public:
     char *printValue();
     int getPosition();
     void setValue(int);
-    void setWidget(QWidget *_widget);
+    void setWidget(QWidget *widget);
+    void setAction(QAction *action);
 public slots:
     void slotSetPosition(int);
     void slotSetPositionOff();
 private slots:
     void slotClicked();
+    void slotSetPosition(bool);
+    void slotUpdateAction(int);
 signals:
     void valueChanged(int);
+    void updateAction(bool);
 protected:
     void forceGUIUpdate();
 //    char *name;            // The name of the button

@@ -30,10 +30,10 @@
 ControlPotmeter::ControlPotmeter(ConfigKey key, FLOAT_TYPE _minvalue, FLOAT_TYPE _maxvalue) : ControlObject(key)
 {
 //  position = middlePosition;
-  minvalue = _minvalue;
-  maxvalue = _maxvalue;
-  valuerange = maxvalue-minvalue;
-  value = minvalue + 0.5*valuerange;
+    minvalue = _minvalue;
+    maxvalue = _maxvalue;
+    valuerange = maxvalue-minvalue;
+    value = minvalue + 0.5*valuerange;
 }
 
 ControlPotmeter::~ControlPotmeter()

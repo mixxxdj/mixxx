@@ -297,8 +297,8 @@ void MixxxApp::engineStart()
     qDebug("starting engine...");
 
     // Init buffers/readers
-    buffer1 = new EngineBuffer(this, view->playcontrol1, "[Channel1]");
-    buffer2 = new EngineBuffer(this, view->playcontrol2, "[Channel2]");
+    buffer1 = new EngineBuffer(this, optionsBeatMark, view->playcontrol1, "[Channel1]");
+    buffer2 = new EngineBuffer(this, optionsBeatMark, view->playcontrol2, "[Channel2]");
 
     // Set track information in reader
     if (view->playlist->ListPlaylist->firstChild() != 0)
@@ -415,6 +415,12 @@ void MixxxApp::initActions()
   optionsRight = new QAction(tr("Right channel"), tr("&Right channel"), QAccel::stringToKey(tr("Ctrl+R")), this, 0, true);
   optionsRight->setOn(true);
 
+  optionsBeatMark = new QAction(tr("Audio Beat Marks"), tr("&Audio Beat Marks"), 0, this, 0, true);
+  optionsBeatMark->setOn(false);
+  optionsBeatMark->setStatusTip(tr("Audio Beat Marks"));
+  optionsBeatMark->setWhatsThis(tr("Audio Beat Marks\nMark beats by audio clicks"));
+  connect(optionsBeatMark, SIGNAL(toggled(bool)), this, SLOT(slotOptionsBeatMark(bool)));
+
   optionsPreferences = new QAction(tr("Preferences"), tr("&Preferences..."), 0, this);
   optionsPreferences->setStatusTip(tr("Preferences"));
   optionsPreferences->setWhatsThis(tr("Preferences\nPlayback and MIDI preferences"));
@@ -427,12 +433,11 @@ void MixxxApp::initActions()
   connect(viewToolBar, SIGNAL(toggled(bool)), this, SLOT(slotViewToolBar(bool)));
 */
 
-/*
   viewStatusBar = new QAction(tr("Statusbar"), tr("&Statusbar"), 0, this, 0, true);
   viewStatusBar->setStatusTip(tr("Enables/disables the statusbar"));
   viewStatusBar->setWhatsThis(tr("Statusbar\n\nEnables/disables the statusbar"));
   connect(viewStatusBar, SIGNAL(toggled(bool)), this, SLOT(slotViewStatusBar(bool)));
-*/
+
   helpAboutApp = new QAction(tr("About"), tr("&About..."), 0, this);
   helpAboutApp->setStatusTip(tr("About the application"));
   helpAboutApp->setWhatsThis(tr("About\n\nAbout the application"));
@@ -475,6 +480,7 @@ void MixxxApp::initMenuBar()
   optionsLeft->addTo(optionsMenu);
   optionsRight->addTo(optionsMenu);
   optionsMenu->insertSeparator();
+  optionsBeatMark->addTo(optionsMenu);
   optionsPreferences->addTo(optionsMenu);
 
   ///////////////////////////////////////////////////////////////////
@@ -719,6 +725,11 @@ void MixxxApp::slotViewStatusBar(bool toggle)
   }
 
   statusBar()->message(tr("Ready."));
+}
+
+void MixxxApp::slotOptionsBeatMark(bool toggle)
+{
+// BEAT MARK STUFF
 }
 
 void MixxxApp::slotOptionsPreferences()

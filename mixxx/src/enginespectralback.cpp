@@ -68,7 +68,8 @@ CSAMPLE *EngineSpectralBack::process(CSAMPLE *p, const int)
     tmp[0]      = sqrt(p2[0]);
     tmp[l_half] = sqrt(p2[l_half]);
 
-    for (int i=1; i<l_half; i++)
+    int i;
+    for (i=1; i<l_half; i++)
     {
         tmp[i]    = cos(p2[l-i])*p2[i];
         tmp[l-i]  = sin(p2[l-i])*p2[i];

@@ -43,7 +43,7 @@ public:
   static void setConfig(ConfigObject<ConfigValueMidi> *_config);
   static void setControlEngineQueue(ControlEngineQueue *_queue);
   void setControlEngine(int _controlEngineNo);
-  void setWidget(QWidget *_widget);
+  void setWidget(QWidget *widget);
   FLOAT_TYPE getValue();
 public slots:
   virtual void slotSetPosition(int) = 0;
@@ -64,8 +64,6 @@ protected:
   ConfigOption<ConfigValueMidi> *cfgOption;
   /** Internal number of associated ControlEngine object */
   int controlEngineNo;
-  /** Pointer to associated widget */
-  QWidget *widget;
 private:
   void midi(char channel, char control, char value);
   bool eventFilter(QObject *, QEvent *);
