@@ -2,7 +2,6 @@
 
 SoundSourceMp3::SoundSourceMp3(const char* filename)
 {
-    // Open the file:
     file = fopen(filename,"r");
     if (!file)
     {
@@ -77,6 +76,11 @@ SoundSourceMp3::SoundSourceMp3(const char* filename)
     mad_stream_buffer(&Stream, inputbuf, inputbuf_len);
     mad_frame_init(&Frame);
     mad_synth_init(&Synth);
+
+    // Set the type field:
+    QString tmp;
+    tmp.sprintf("mp3-file.");
+    type = tmp;
 }
 
 SoundSourceMp3::~SoundSourceMp3()

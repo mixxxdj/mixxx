@@ -41,6 +41,7 @@ public:
   static CSAMPLE norm;
 protected:
   void setParams(QString name, int srate, int bits, int bufferSize);
+  static FLOAT_TYPE BASERATE;
 
 private:
   static MixxxView *view;

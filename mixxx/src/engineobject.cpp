@@ -24,6 +24,7 @@ int EngineObject::BITS = 0;
 int EngineObject::BUFFERSIZE = 0;
 int EngineObject::NYQUIST = 0;
 CSAMPLE EngineObject::norm = 0.;
+FLOAT_TYPE EngineObject::BASERATE = 1.0;
 MixxxView *EngineObject::view = 0;
 
 EngineObject::EngineObject()
@@ -44,5 +45,7 @@ void EngineObject::setParams(QString name, int srate, int bits, int bufferSize)
 
     NYQUIST = SRATE/2;
     norm    = (2.*acos(-1.0))/SRATE;
+    BASERATE = FLOAT_TYPE(srate)/44100.0; // Set the basic rate.
+    //qDebug("%f %f",FLOAT_TYPE(srate),BASERATE);
 }
 

@@ -19,6 +19,7 @@
 #define SOUNDSOURCE_H
 
 #include "defs.h"
+#include <qstring.h>
 
 /**
   *@author Tue and Ken Haste Andersen
@@ -34,6 +35,7 @@ public:
   virtual long seek(long) = 0;
   virtual unsigned read(unsigned long size, const SAMPLE*) = 0;
   virtual long unsigned length() = 0;
+  QString type;
 };
 
 #endif
