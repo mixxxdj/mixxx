@@ -18,9 +18,14 @@ EngineFlanger::EngineFlanger(DlgFlanger *_dlg, const char *group)
     LFOamplitude = 240;
     average_delay_length = 250;
 
+    // Set initial values for vars
+    delay_pos=0;
+    time = 0;
+    depth = 0.;
+	    
     // Init. buffers:
     process_buffer = new CSAMPLE[MAX_BUFFER_LEN];
-    delay_buffer = new CSAMPLE[max_delay];
+    delay_buffer = new CSAMPLE[max_delay+1];
 
     // Init. potmeters
     potmeterDepth = new ControlPotmeter(ConfigKey(group, "depth"), 0., 1.);
@@ -47,6 +52,7 @@ EngineFlanger::EngineFlanger(DlgFlanger *_dlg, const char *group)
     connect(dlg->PushButtonChannelB, SIGNAL(released()), pushbuttonChannelB, SLOT(released()));
     connect(pushbuttonChannelB, SIGNAL(valueChanged(valueType)), this, SLOT(slotUpdateChannelSelectB(valueType)));
     channel_A = channel_B = off;
+}
 
 EngineFlanger::~EngineFlanger()
 {

@@ -12,20 +12,20 @@ win32:HEADERS += ../lib/portaudio.h ../lib/pa_host.h
 win32:LIBS += winmm.lib /DXSDK/lib/dsound.lib
 
 # OSS Midi (Working good, Linux specific)
-#SOURCES += midiobjectoss.cpp
-#HEADERS += midiobjectoss.h
-#DEFINES += __OSSMIDI__
+SOURCES += midiobjectoss.cpp
+HEADERS += midiobjectoss.h
+DEFINES += __OSSMIDI__
 
 # PortMidi (Alpha - Linux ALSA, Windows and MacOS X)
-SOURCES += midiobjectportmidi.cpp
-HEADERS += midiobjectportmidi.h
-DEFINES += __PORTMIDI__
-unix:LIBS += -lportmidi -lporttime
-macx:LIBS -= -lportmidi -lporttime
-macx:LIBS += -framework Carbon -framework CoreMIDI
-macx:SOURCES += ../../../portmidi-macosx-1.0/pmdarwin.c ../../../portmidi-macosx-1.0/pmmacosx.c ../../../portmidi-macosx-1.0/pmutil.c ../../../portmidi-macosx-1.0/portmidi.c ../../../portmidi-macosx-1.0/ptdarwin.c
-macx:HEADERS += ../../../portmidi-macosx-1.0/pminternal.h ../../../portmidi-macosx-1.0/pmmacosx.h ../../../portmidi-macosx-1.0/pmutil.h ../../../portmidi-macosx-1.0/portmidi.h ../../../portmidi-macosx-1.0/porttime.h 
-win32:LIBS += ../lib/pm_dll.lib
+#SOURCES += midiobjectportmidi.cpp
+#HEADERS += midiobjectportmidi.h
+#DEFINES += __PORTMIDI__
+#unix:LIBS += -lportmidi -lporttime
+#macx:LIBS -= -lportmidi -lporttime
+#macx:LIBS += -framework Carbon -framework CoreMIDI
+#macx:SOURCES += ../../../portmidi-macosx-1.0/pmdarwin.c ../../../portmidi-macosx-1.0/pmmacosx.c ../../../portmidi-macosx-1.0/pmutil.c ../../../portmidi-macosx-1.0/portmidi.c ../../../portmidi-macosx-1.0/ptdarwin.c
+#macx:HEADERS += ../../../portmidi-macosx-1.0/pminternal.h ../../../portmidi-macosx-1.0/pmmacosx.h ../../../portmidi-macosx-1.0/pmutil.h ../../../portmidi-macosx-1.0/portmidi.h ../../../portmidi-macosx-1.0/porttime.h 
+#win32:LIBS += ../lib/pm_dll.lib
 
 # ALSA PCM (Not currently working, Linux specific)
 #SOURCES += playeralsa.cpp

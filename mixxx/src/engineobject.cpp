@@ -75,7 +75,6 @@ int EngineObject::get_bus_speed()
     retval = sysctl(mib, miblen, &busspeed, &len, NULL, 0);
     return busspeed;
 }
-#endif
 
 void EngineObject::rtThread()
 {
@@ -100,4 +99,5 @@ void EngineObject::rtThread()
         fprintf(stderr, "Can't do thread_policy_set\n");
 #endif
 }
+#endif
 
