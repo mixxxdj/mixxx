@@ -350,11 +350,11 @@ void WTreeView::contentsMouseReleaseEvent(QMouseEvent *)
 void WTreeView::slotUpdateDir( const QString &s )
 {
     QString dir = s;
-    
+
     // Ensure that the dir ends with a separator
-    if (!dir.endsWith(QString(QChar(QDir::separator()))))
+    if (!(dir.endsWith(QString(QChar(QDir::separator()))) || dir.endsWith(QString("/"))))
         dir += QChar(QDir::separator());
-    
+        
     // Clear current dir
     if (m_pRootDir)
         delete m_pRootDir;

@@ -73,7 +73,9 @@ ReaderExtractWave::~ReaderExtractWave()
         delete file;
 #ifdef EXTRACT
     delete readerbeat;
+#ifndef __WIN__
     delete readerhfc;
+#endif
 #endif
 }
 

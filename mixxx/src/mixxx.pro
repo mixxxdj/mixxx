@@ -36,27 +36,30 @@ DEFINES += __PORTAUDIO__
 SOURCES += playerportaudio.cpp
 HEADERS += playerportaudio.h
 PORTAUDIO_DIR = ../lib/portaudio-v18
-SOURCES += $$PORTAUDIO_DIR/pa_common/pa_lib.c $$PORTAUDIO_DIR/pa_common/pa_convert.c
-HEADERS += $$PORTAUDIO_DIR/pa_common/portaudio.h $$PORTAUDIO_DIR/pa_common/pa_host.h
 INCLUDEPATH += $$PORTAUDIO_DIR/pa_common
+HEADERS += $$PORTAUDIO_DIR/pa_common/portaudio.h
+unix {
+SOURCES += $$PORTAUDIO_DIR/pa_common/pa_lib.c $$PORTAUDIO_DIR/pa_common/pa_convert.c
+HEADERS += $$PORTAUDIO_DIR/pa_common/pa_host.h
 unix:!macx:SOURCES += $$PORTAUDIO_DIR/pablio/ringbuffer.c $$PORTAUDIO_DIR/pa_unix_oss/pa_unix.c $$PORTAUDIO_DIR/pa_unix_oss/pa_unix_oss.c
 unix:!macx:HEADERS += $$PORTAUDIO_DIR/pablio/ringbuffer.h $$PORTAUDIO_DIR/pa_unix_oss/pa_unix.h
 unix:!macx:INCLUDEPATH += $$PORTAUDIO_DIR/pa_unix_oss
 macx:SOURCES += $$PORTAUDIO_DIR/pablio/ringbuffer.c $$PORTAUDIO_DIR/pa_mac_core/pa_mac_core.c
 macx:LIBS += -framework CoreAudio -framework AudioToolbox
 macx:INCLUDEPATH += $$PORTAUDIO_DIR/pa_mac_core $$PORTAUDIO_DIR/pablio 
+}
 win32 {
     contains(WINPA, DIRECTSOUND) {
         message("Compiling with PortAudio/DirectSound drivers")
-        SOURCES += $$PORTAUDIO_DIR/pa_win_ds/dsound_wrapper.c $$PORTAUDIO_DIR/pa_win_ds/pa_dsound.c
+        SOURCES += $$PORTAUDIO_DIR/pa_win_ds/dsound_wrapper.c $$PORTAUDIO_DIR/pa_win_ds/pa_dsound.c 
         LIBS += winmm.lib dsound.lib
         INCLUDEPATH += $$PORTAUDIO_DIR/pa_win_ds
     }
     contains(WINPA, WMME) {
-	message("Compiling with PortAudio/WMME drivers")
-        SOURCES += $$PORTAUDIO_DIR/pa_win_wmme/pa_win_wmme.c
+        message("Compiling with PortAudio/WMME drivers")
+        SOURCES += $$PORTAUDIO_DIR/pa_win_wmme/pa_win_wmme.c $$PORTAUDIO_DIR/pa_common/pa_lib.c
         LIBS += winmm.lib
-        INCLUDEPATH += $$PORTAUDIO_DIR/pa_win_ds
+        INCLUDEPATH += $$PORTAUDIO_DIR/pa_win_wmme
     }
 }
 

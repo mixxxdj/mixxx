@@ -19,7 +19,7 @@
 
 /** Maximum frame size used with PortAudio. Used to determine no of buffers
   * when setting latency */
-const int kiMaxFrameSize = 2048;
+const int kiMaxFrameSize = 64;
 
 
 PlayerRtAudio::PlayerRtAudio(ConfigObject<ConfigValue> *config, ControlObject *pControl) : Player(config,pControl)
@@ -288,6 +288,7 @@ QStringList PlayerRtAudio::getInterfaces()
         // Add the device if it is an output device:
         if (bGotInfo && info.outputChannels > 0)
         {
+            qDebug("name %s",info.name.c_str());
             for (int j=1; j<=info.outputChannels; ++j)
                 result.append(QString("%1 (channel %2)").arg(info.name.c_str()).arg(j));
         }
