@@ -38,13 +38,13 @@ EngineFilterBlock::EngineFilterBlock(const char *group)
     highrbj = new EngineFilterRBJ();
     highrbj->calc_filter_coeffs(1, 10000., 48000., 0.3., 0., false);
 */
-    p = new ControlLogpotmeter(ConfigKey(group, "filterLow"), 3.);
+    p = new ControlLogpotmeter(ConfigKey(group, "filterLow"), 4.);
     filterpotLow = new ControlEngine(p);
 
-    p = new ControlLogpotmeter(ConfigKey(group, "filterMid"), 3.);
+    p = new ControlLogpotmeter(ConfigKey(group, "filterMid"), 4.);
     filterpotMid = new ControlEngine(p);
 
-    p = new ControlLogpotmeter(ConfigKey(group, "filterHigh"), 3.);
+    p = new ControlLogpotmeter(ConfigKey(group, "filterHigh"), 4.);
     filterpotHigh = new ControlEngine(p);
 
     buffer = new CSAMPLE[MAX_BUFFER_LEN];
