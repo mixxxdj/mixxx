@@ -36,8 +36,8 @@ PlayerPortAudio::PlayerPortAudio(int size, std::vector<EngineObject *> *engines)
         p->name = QString(devInfo->name);
 
         // Sample rates
-        for (int i=0; i<devInfo->numSampleRates; i++)
-            p->sampleRates.append((int)devInfo->sampleRates[i]);
+        for (int j=0; j<devInfo->numSampleRates; j++)
+            p->sampleRates.append((int)devInfo->sampleRates[j]);
 
         // Bits
         if (devInfo->nativeSampleFormats & paInt8)        p->bits.append(8);
@@ -51,19 +51,19 @@ PlayerPortAudio::PlayerPortAudio(int size, std::vector<EngineObject *> *engines)
     PaDeviceID id = Pa_GetDefaultOutputDeviceID();
 
     // Ensure stereo is supported
-    const PaDeviceInfo *info = Pa_GetDeviceInfo(id);
-    if (info->maxOutputChannels < NO_CHANNELS)
-        qFatal("Not enough channels available on default output device: %i",info->maxOutputChannels);
+    devInfo = Pa_GetDeviceInfo(id);
+    if (devInfo->maxOutputChannels < NO_CHANNELS)
+        qFatal("Not enough channels available on default output device: %i",devInfo->maxOutputChannels);
 
     // Set sample rate to 44100 if possible, otherwise highest possible
     int temp_sr = 0;
-    for (int i=0; i<=info->numSampleRates; i++)
-        if (info->sampleRates[i] == 44100.)
+    for (int i=0; i<=devInfo->numSampleRates; i++)
+        if (devInfo->sampleRates[i] == 44100.)
         temp_sr = 44100;
     if (temp_sr == 0)
-        temp_sr = (int)info->sampleRates[info->numSampleRates-1];
+        temp_sr = (int)devInfo->sampleRates[devInfo->numSampleRates-1];
 
-    if (!open(QString(info->name),temp_sr,16,size))
+    if (!open(QString(devInfo->name),temp_sr,16,size))
         qFatal("PortAudio Error opening device");
 }
 
@@ -91,12 +91,16 @@ bool PlayerPortAudio::open(QString name, int srate, int bits, int bufferSize)
         if (name == devices.at(id)->name)
             break;
 
-    PaError err = Pa_OpenStream(&stream,
-                        paNoDevice,         // default input device
+    // Try to open device 5 times before giving up!
+    PaError err;
+    for (int i=0; i<5; i++)
+    {
+        err = Pa_OpenStream(&stream,
+                        paNoDevice,         // no input device
                         0,                  // no input
                         format,
                         NULL,
-                        id,                 // default output device
+                        id,                 // output device
                         NO_CHANNELS,        // stereo output
                         format,
                         NULL,
@@ -106,7 +110,9 @@ bool PlayerPortAudio::open(QString name, int srate, int bits, int bufferSize)
                         paClipOff,          // we won't output out of range samples so don't bother clipping them
                         paCallback,
                         this );
-
+        if (err == paNoError)
+            break;
+    }
     if( err != paNoError )
     {
         qDebug("PortAudio open stream error: %s", Pa_GetErrorText(err));

@@ -42,19 +42,19 @@ public:
       int   midino, midimask, midichannel;
     };
 
-private:
     class ConfigOption {
      public:
       ConfigOption(ConfigKey *_key, ConfigValue *_val) { key = _key ; val = _val; };
       ConfigValue *val;
       ConfigKey *key;
     };
-    QPtrList<ConfigObject::ConfigOption> list;
-public:
+
     ConfigObject();
     ~ConfigObject();
     ConfigObject::ConfigOption *set(ConfigObject::ConfigKey *key, ConfigObject::ConfigValue *val);
     ConfigObject::ConfigOption *get(ConfigObject::ConfigKey *key);
+private:
+    QPtrList<ConfigObject::ConfigOption> list;
 };
 
 #endif
