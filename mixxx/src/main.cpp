@@ -41,6 +41,7 @@ int main(int argc, char *argv[])
   mixxx->resize( 641, 450);
   mixxx->setFixedWidth(641);
   mixxx->setFixedHeight(450);
+  //mixxx->setIcon(QPixmap());
 
   mixxx->show();
   return a.exec();

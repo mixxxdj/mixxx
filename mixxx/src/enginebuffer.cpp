@@ -89,7 +89,8 @@ EngineBuffer::EngineBuffer(DlgPlaycontrol *_playcontrol, const char *group, cons
   // Open the track:
   file = 0;
   pause = true;
-  newtrack(filename);
+  if (filename != 0)
+      newtrack(filename);
 
   // Allocate buffer for processing:
   buffer = new CSAMPLE[MAX_BUFFER_LEN];
@@ -399,14 +400,15 @@ CSAMPLE *EngineBuffer::process(const CSAMPLE *, const int buf_size)
 
     }
     
-    if (!pause) {
-	checkread();
+    if (!pause)
+    {
+        checkread();
     
-	// Check the wheel:
-	wheel->updatecounter(buf_size,EngineObject::SRATE);
-	
-	// Write position to the gui:
-	writepos();
+        // Check the wheel:
+        wheel->updatecounter(buf_size,EngineObject::SRATE);
+
+        // Write position to the gui:
+        writepos();
     }
     
     return buffer;
