@@ -41,6 +41,47 @@ EngineBuffer::EngineBuffer(DlgPlaycontrol *playcontrol, DlgChannel *channel, Mid
   //connect(this, SIGNAL(position(int)), channel->SliderPosition, SLOT(setValue(int)));
 
   connect(channel->SliderPosition, SIGNAL(valueChanged(int)), this, SLOT(slotPosition(int)));
+  // Allocate temporary buffer
+  read_buffer_size = READBUFFERSIZE;
+  chunk_size = READCHUNKSIZE;
+  temp = new SAMPLE[2*chunk_size]; // Temporary buffer for the raw samples
+  // note that the temp buffer is made extra large.
+  readbuffer = new CSAMPLE[read_buffer_size];
+
+  // Allocate semaphore
+  buffers_read_ahead = new sem_t;
+  sem_init(buffers_read_ahead, 0, 1);
+
+  // Semaphore for stopping thread
+  requestStop = new QSemaphore(1);
+
+  // Open the track:
+  file = 0;
+  newtrack(filename);
+}
+
+EngineBuffer::~EngineBuffer(){
+  qDebug("dealloc buffer");
+  if (running())
+  {
+    qDebug("Stopping buffer");
+    stop();
+  }
+  qDebug("buffer waiting...");
+
+  qDebug("buffer actual dealloc");
+  if (file != 0) delete file;
+  delete [] temp;
+  delete [] readbuffer;
+  delete buffers_read_ahead;
+  delete PlayButton;
+  delete wheel;
+  delete rateSlider;
+}
+
+void EngineBuffer::newtrack(const char* filename) {
+  // If we are already playing a file, then get rid of it:
+   if (file != 0) delete file;
   /*
     Open the file:
   */
@@ -62,47 +103,13 @@ EngineBuffer::EngineBuffer(DlgPlaycontrol *playcontrol, DlgChannel *channel, Mid
     qFatal("Error opening %s", filename);
     std::exit(-1);
   }
-  // Allocate temporary buffer
-  read_buffer_size = READBUFFERSIZE;
-  chunk_size = READCHUNKSIZE;
-  temp = new SAMPLE[2*chunk_size]; // Temporary buffer for the raw samples
-  // note that the temp buffer is made extra large.
-  readbuffer = new CSAMPLE[read_buffer_size];
-
   // Initialize position in read buffer:
   filepos = 0;
   frontpos = 0;
   play_pos = 0;
   direction = 1;
-
-  // Allocate semaphore
-  buffers_read_ahead = new sem_t;
-  sem_init(buffers_read_ahead, 0, 1);
-
-  // Semaphore for stopping thread
-  requestStop = new QSemaphore(1);
-
   // ...and read one chunk to get started:
   getchunk();
-}
-
-EngineBuffer::~EngineBuffer(){
-  qDebug("dealloc buffer");
-  if (running())
-  {
-    qDebug("Stopping buffer");
-    stop();
-  }
-  qDebug("buffer waiting...");
-
-  qDebug("buffer actual dealloc");
-  if (file != 0) delete file;
-  delete [] temp;
-  delete [] readbuffer;
-  delete buffers_read_ahead;
-  delete PlayButton;
-  delete wheel;
-  delete rateSlider;
 }
 
 void EngineBuffer::start() {

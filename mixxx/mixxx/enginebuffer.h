@@ -48,6 +48,7 @@ class EngineBuffer : public EngineObject, public QThread  {
 public:
   EngineBuffer(DlgPlaycontrol *, DlgChannel *, MidiObject *, const char *);
   ~EngineBuffer();
+  void newtrack(const char *);
   void start();
   void process(CSAMPLE *, CSAMPLE *, int);
 public slots:
