@@ -343,7 +343,8 @@ CSAMPLE *EngineBuffer::process(const CSAMPLE *, const int buf_size)
 
             // Perform scaling of Reader buffer into buffer
             CSAMPLE *output = scale->scale(bufferpos_play, buf_size);
-            for (int i=0; i<buf_size; i++)
+            int i;
+            for (i=0; i<buf_size; i++)
                 buffer[i] = output[i];
             double idx = scale->getNewPlaypos();
                 
@@ -354,7 +355,7 @@ CSAMPLE *EngineBuffer::process(const CSAMPLE *, const int buf_size)
 
             int from = (int)((bufferpos_play-audioBeatMarkLen)/chunkSizeDiff);
             int to   = (int)(idx                              /chunkSizeDiff);
-            for (int i=from; i<=to; i++)
+            for (i=from; i<=to; i++)
             {
                 if (beatBuffer[i%readerbeat->getBufferSize()])
                 {
@@ -374,8 +375,10 @@ CSAMPLE *EngineBuffer::process(const CSAMPLE *, const int buf_size)
                                 buffer[j] = 30000.;
                         }
                     }
-		    if (powermate!=0)
+#ifdef __LINUX__
+                    if (powermate!=0)
                         powermate->led();
+#endif
                 }
             }
             

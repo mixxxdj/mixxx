@@ -25,7 +25,6 @@
 #include "mad.h"
 #include "errno.h"
 #include "soundsource.h"
-//#include "id3tag.h"
 #include <sys/types.h>
 #include <qfile.h>
 //#include <sys/stat.h>
