@@ -210,20 +210,14 @@ void PowerMateWin::process_event(char *pEv)
 {
     qDebug("process %i,%i,%i,%i,%i,%i", pEv[0],pEv[1],pEv[2],pEv[3],pEv[4],pEv[5]);
     if (pEv[1]>0 || pEv[1]<0)
-    {
-        // Update knob variables
-        m_iKnobVal = pEv[1];
-        m_bSendKnobEvent = true;
-    }
+		sendRotaryEvent(pEv[1]);
     else
     {
         // Send event to GUI thread
         if (pEv[0]==1)
-            if (m_pControlObjectButton)
-                m_pControlObjectButton->queueFromMidi(NOTE_ON, 1);
+			sendButtonEvent(true);
         else
-            if (m_pControlObjectButton)
-                m_pControlObjectButton->queueFromMidi(NOTE_OFF, 1);
+			sendButtonEvent(false);
 
 //      qDebug("PowerMate: Button was %s %i", pEv[1]? "pressed":"released",pEv[1]);
     }
