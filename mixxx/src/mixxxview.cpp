@@ -457,6 +457,10 @@ void MixxxView::assignWidgets(ControlObject *p)
     p->setWidget(m_pFilterHighCh1, ConfigKey("[Channel1]", "filterHigh"));
     p->setWidget(m_pFilterHighCh2, ConfigKey("[Channel2]", "filterHigh"));
 
+    // Vu meter
+    p->setWidget(m_pVUmeterCh1, ConfigKey("[Channel1]", "VUmeter"));
+    p->setWidget(m_pVUmeterCh2, ConfigKey("[Channel2]", "VUmeter"));
+    
 /*
     // EngineFlanger
     p->setWidget(flanger->DialDepth, ConfigKey("[Flanger]", "lfoDepth"));

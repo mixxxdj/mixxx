@@ -203,7 +203,6 @@ CSAMPLE *EngineMaster::process(const CSAMPLE *, const int buffer_size)
         float balright = 1.;
         float balleft = 1.;
         float bal = m_pBalance->get();
-        qDebug("bal %f",bal);
         if (bal>0.)
             balleft -= bal;
         else if (bal<0.)

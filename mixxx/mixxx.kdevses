@@ -3,18 +3,12 @@
 <KDevPrjSession>
  <LastCompileConfig>(Default)</LastCompileConfig>
  <Mainframe MaximizeMode="1" />
- <DocsAndViews NumberOfDocuments="4" >
+ <DocsAndViews NumberOfDocuments="2" >
   <Doc0 CursorPosLine="38" Type="KWriteDoc" NumberOfViews="1" CursorPosCol="35" FileName="/home/haste/cvs/mixxx/src/wknob.h" >
    <View0 Top="0" Width="757" Attach="1" Height="606" Left="0" Focus="0" Type="KWriteView" MinMaxMode="0" />
   </Doc0>
-  <Doc1 CursorPosLine="115" Type="KWriteDoc" NumberOfViews="1" CursorPosCol="18" FileName="/home/haste/cvs/mixxx/src/wknob.cpp" >
+  <Doc1 CursorPosLine="385" Type="KWriteDoc" NumberOfViews="1" CursorPosCol="2" FileName="/home/haste/cvs/mixxx/src/mixxx.cpp" >
    <View0 Top="0" Width="757" Attach="1" Height="606" Left="0" Focus="1" Type="KWriteView" MinMaxMode="0" />
   </Doc1>
-  <Doc2 CursorPosLine="29" Type="KWriteDoc" NumberOfViews="1" CursorPosCol="0" FileName="/home/haste/cvs/mixxx/src/wslidercomposed.h" >
-   <View0 Top="0" Width="757" Attach="1" Height="606" Left="0" Focus="0" Type="KWriteView" MinMaxMode="0" />
-  </Doc2>
-  <Doc3 CursorPosLine="180" Type="KWriteDoc" NumberOfViews="1" CursorPosCol="0" FileName="/home/haste/cvs/mixxx/src/wslidercomposed.cpp" >
-   <View0 Top="0" Width="757" Attach="1" Height="606" Left="0" Focus="0" Type="KWriteView" MinMaxMode="0" />
-  </Doc3>
  </DocsAndViews>
 </KDevPrjSession>
