@@ -17,11 +17,11 @@ ControlVUmeter::ControlVUmeter(ConfigKey key, DlgVUmeter *dlgVumeter) : ControlO
     m_aLeds[3] = dlgVumeter->Bulb3;
     m_aLeds[4] = dlgVumeter->Bulb4;
     m_aLeds[5] = dlgVumeter->Bulb5;
-};
+}
 
 ControlVUmeter::~ControlVUmeter()
 {
-};
+}
 
 void ControlVUmeter::setValue(FLOAT_TYPE fValue)
 {
