@@ -53,8 +53,6 @@ public slots:
     void slotDeletePlaylist(QString qName);
     /** Delete a playlist */
     void slotDeletePlaylist();
-    /** Delete a Track **/
-    void slotDeleteTIO(TrackInfoObject *pTrackInfoObject);
     /** Bring up playlist popup menu */
     void slotPlaylistPopup(QString qName);
     /** Bring up track popup menu */
@@ -69,14 +67,10 @@ private slots:
     void slotLoadPlayer1();
     /** Load the active track in player 1 */
     void slotLoadPlayer2();
-    /** Delete the active track **/
-    void slotDeleteTIO();
 
 private:
     /** Update tree view with playlist info */
     void updateTreeView();
-    /** Update the Trackview after playlist has been modified **/
-    void updateTrackView();
     /** Returns pointer to playlist by the given name */
     TrackPlaylist *getPlaylist(QString qName);
     /** List of pointers to TrackPlaylists */
