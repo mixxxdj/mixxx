@@ -19,28 +19,25 @@
 #include "qslider.h"
 #include "controllogpotmeter.h"
 
-EngineChannel::EngineChannel(DlgChannel *dlg, MidiObject *midi, int midiPregain, int midiLow,
-                             int midiBand, int midiHigh, int midiVolume)
+EngineChannel::EngineChannel(DlgChannel *dlg, const char *group)
 {
   // Pregain:
-  pregain = new EnginePregain(midiPregain, midi);
+  pregain = new EnginePregain(group);
   connect(dlg->DialGain, SIGNAL(valueChanged(int)), pregain->pregainpot, SLOT(slotSetPosition(int)));
-  connect(pregain->pregainpot, SIGNAL(recievedMidi(int)), dlg->DialGain, SLOT(setValue(int)));
-  connect(pregain->pregainpot, SIGNAL(valueChanged(FLOAT_TYPE)), pregain, SLOT(slotUpdate(FLOAT_TYPE)));
+  connect(pregain->pregainpot, SIGNAL(updateGUI(int)), dlg->DialGain, SLOT(setValue(int)));
 
   // Filters:
-  filter = new EngineFilterBlock(dlg->DialFilterLow, midiLow,
-                                 dlg->DialFilterMiddle, midiBand,
-                                 dlg->DialFilterHigh , midiHigh, midi);
+  filter = new EngineFilterBlock(dlg->DialFilterLow,
+                                 dlg->DialFilterMiddle,
+                                 dlg->DialFilterHigh, group);
 
   // Clipping:
   clipping = new EngineClipping(dlg->BulbClipping);
 
   // Volume control:
-  volume = new EnginePregain(midiVolume, midi);
-  connect(dlg->SliderVolume, SIGNAL(valueChanged(int)), volume->pregainpot, SLOT(slotSetPosition(int)));
-  connect(volume->pregainpot, SIGNAL(recievedMidi(int)), dlg->SliderVolume, SLOT(setValue(int)));
-  connect(volume->pregainpot, SIGNAL(valueChanged(FLOAT_TYPE)), volume, SLOT(slotUpdate(FLOAT_TYPE)));
+  volume = new EngineVolume(group);
+  connect(dlg->SliderVolume, SIGNAL(valueChanged(int)), volume->potmeter, SLOT(slotSetPosition(int)));
+  connect(volume->potmeter, SIGNAL(updateGUI(int)), dlg->SliderVolume, SLOT(setValue(int)));
 }
 
 EngineChannel::~EngineChannel(){

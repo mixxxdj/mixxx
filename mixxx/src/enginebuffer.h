@@ -39,6 +39,7 @@
 #include "soundsourceheavymp3.h"
 #include "soundsourcemp3.h"
 #include "soundsourceaflibfile.h"
+
 /**
   *@author Tue and Ken Haste Andersen
 */
@@ -46,7 +47,7 @@
 class EngineBuffer : public EngineObject, public QThread  {
  Q_OBJECT
 public:
-  EngineBuffer(DlgPlaycontrol *, int, int, int, MidiObject *, const char *);
+  EngineBuffer(DlgPlaycontrol *, const char *group, const char *filename);
   ~EngineBuffer();
   void newtrack(const char *);
   void start();

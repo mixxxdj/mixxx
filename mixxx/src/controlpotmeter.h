@@ -18,47 +18,39 @@
 #ifndef CONTROLPOTMETER_H
 #define CONTROLPOTMETER_H
 
+#include "configobject.h"
 #include "controlobject.h"
 #include "defs.h"
-#include "midiobject.h"
 #include <algorithm>
 
-class MidiObject;
 /**
   *@author Tue and Ken Haste Andersen
   */
 
-class ControlPotmeter : public ControlObject  {
+class ControlPotmeter : public ControlObject
+{
   Q_OBJECT
 public:
   ControlPotmeter();
-  ControlPotmeter(char* n, short int, MidiObject *, FLOAT_TYPE=0.0, FLOAT_TYPE=1.0);
+  ControlPotmeter(ConfigObject::ConfigKey *key, FLOAT_TYPE=0.0, FLOAT_TYPE=1.0);
   ~ControlPotmeter();
   void setValue(FLOAT_TYPE newvalue);
-  char* print();
-  char getmidino();
   FLOAT_TYPE getValue();
   char getPosition();
-  void midiEvent(int);
-
-  int midino;
 
 public slots:
   void slotSetPosition(int);
 signals:
   void valueChanged(FLOAT_TYPE);
-  void recievedMidi(int);
 
 protected:
-  char position;  // position of the controller.
-  char* name;        // The name of the controller
-  FLOAT_TYPE value;    // The actual value of the controller
+  char position;     // position of the controller.
+  FLOAT_TYPE value;  // The actual value of the controller
 #define maxPosition 127
 #define minPosition 0
 #define middlePosition ((maxPosition-minPosition)/2)
 #define positionrange (maxPosition-minPosition)
   FLOAT_TYPE maxvalue, minvalue, valuerange;
-  MidiObject *midi;
 };
 
 #endif

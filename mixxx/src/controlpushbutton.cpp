@@ -29,30 +29,27 @@
 	            attached. This control is acknowledged when the
 		    button is changed.
    -------- ------------------------------------------------------ */
-ControlPushButton::ControlPushButton(char* n, buttonType kindtype, 
-				     int _midino, int midibit,
-				     MidiObject* _midi) {
-  name = n;
+ControlPushButton::ControlPushButton(ConfigObject::ConfigKey *key, buttonType kindtype) : ControlObject(key)
+{
   kind = kindtype;
   position = up;
   value = off;
-  midi = _midi;
-  midino = _midino;
-  midimask = (int)pow(2,midibit);
-  midi->addbutton(this); // register the button at the midi controller.
+  //midimask = (int)pow(2,midibit);
 };
 
-ControlPushButton::~ControlPushButton() {
-  midi->removebutton(this);
+ControlPushButton::~ControlPushButton()
+{
+    //ControlObject();
 };
 
-char* ControlPushButton::print(){
-  return name;
-};
-
-short int ControlPushButton::getmidino() {
-  return midino;
+void ControlPushButton::slotSetPosition(int newpos)
+{
+    if (newpos == 0)
+        slotSetPosition(up);
+    else
+        slotSetPosition(down);
 }
+
 /* -------- ------------------------------------------------------
    Purpose: Set the position of the button, and change the
             value correspondingly.

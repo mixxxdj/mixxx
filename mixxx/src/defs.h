@@ -45,8 +45,8 @@ const short PORT_D = 3;
 // otherwise sets x equal to 0.
 inline CSAMPLE zap_denormal(CSAMPLE x)
 {
-  CSAMPLE absx = fabs(x);
-  return (absx > 1e-15 && absx < 1e15) ? x : 0.;
+    CSAMPLE absx = fabs(x);
+    return (absx > 1e-15 && absx < 1e15) ? x : 0.;
 }
 
 #ifndef max

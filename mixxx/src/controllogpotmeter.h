@@ -18,12 +18,8 @@
 #ifndef CONTROLLOGPOTMETER_H
 #define CONTROLLOGPOTMETER_H
 
-class MidiObject;
-class ControlPotmeter;
-#include "controlobject.h"
-#include "defs.h"
-#include "midiobject.h"
 #include "controlpotmeter.h"
+#include "configobject.h"
 #include <algorithm>
 #include "defs.h"
 
@@ -36,7 +32,7 @@ class ControlLogpotmeter : public ControlPotmeter  {
  protected:
   FLOAT_TYPE a,b,a2,b2;
  public:
-  ControlLogpotmeter(char*, int, MidiObject *, FLOAT_TYPE=5);
+  ControlLogpotmeter(ConfigObject::ConfigKey *key, FLOAT_TYPE=5);
  public slots:
   void slotSetPosition(int);
 };

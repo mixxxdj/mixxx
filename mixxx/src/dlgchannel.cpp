@@ -17,7 +17,10 @@
 
 #include "dlgchannel.h"
 
-DlgChannel::DlgChannel(QWidget *parent, const char *name ) : DlgChannelDlg(parent,name) {
+DlgChannel::DlgChannel(QWidget *parent, const char *name ) : DlgChannelDlg(parent,name)
+{
 }
-DlgChannel::~DlgChannel(){
+
+DlgChannel::~DlgChannel()
+{
 }

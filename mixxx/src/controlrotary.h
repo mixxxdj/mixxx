@@ -1,11 +1,10 @@
 #ifndef CONTROLROTARY_H
 #define CONTROLROTARY_H
 
-class MidiObject;
-#include "controlobject.h"
+#include "configobject.h"
 #include "controlpotmeter.h"
 #include "defs.h"
-#include "midiobject.h"
+#include <sys/timeb.h>
 #include <algorithm>
 
 class ControlRotary : public ControlPotmeter
@@ -17,12 +16,13 @@ class ControlRotary : public ControlPotmeter
   static const char graycodetable[256];
  public:
   short direction;
-  ControlRotary(char*, int, MidiObject*);
+  ControlRotary(ConfigObject::ConfigKey *key);
   void updatecounter(int, int SRATE);
   short sign(short);
-  void midiEvent(int);
  public slots:
   void slotSetPosition(int);
+  void slotSetPositionMidi(int);
+
 };
 
 #endif

@@ -46,6 +46,8 @@
 #include "enginemaster.h"
 #include "player.h"
 #include "midiobject.h"
+#include "controlobject.h"
+
 /**
   * This Class is the base class for your application. It sets up the main
   * window and providing a menubar, toolbar
@@ -130,6 +132,7 @@ class MixxxApp : public QMainWindow
     EngineMaster *master;
     Player *player;
     MidiObject *midi;
+    ControlObject *control;
 	std::vector<EngineObject *> engines;
 
     /** file_menu contains all items of the menubar entry "File" */

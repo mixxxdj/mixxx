@@ -556,21 +556,9 @@ install_location=
 type=SOURCE
 
 [src/Makefile.am]
-files=src/playerportaudio.h,src/soundsourcemp3.cpp,src/dlgcrossfaderdlg.ui,src/mixxx.cpp,src/mixxx.pro,src/qknob.h,src/controlpotmeter.cpp,src/dlgplaycontroldlg.ui,src/fakemonitor.h,src/enginefilteriir.h,src/enginefilterrbj.h,src/enginepregain.cpp,src/enginemaster.cpp,src/dlgplaylist.cpp,src/soundsourceheavymp3.h,src/soundsourceheavymp3.cpp,src/dlgcrossfader.h,src/midiobject.cpp,src/controlrotary.cpp,src/dlgchannel.h,src/engineclipping.cpp,src/fakemonitor.cpp,src/controlrotary.h,src/controlpotmeter.h,src/controlobject.cpp,src/filenew.xpm,src/controlobject.h,src/main.cpp,src/filesave.xpm,src/dlgmaster.cpp,src/engineclipping.h,src/mixxxdoc.h,src/dlgplaylist.h,src/mixxx.h,src/mixxxdoc.cpp,src/defs.h,src/engineobject.cpp,src/monitor.cpp,src/dlgplaycontrol.h,src/mixxxview.h,src/playerportaudio.cpp,src/soundsourcemp3.h,src/dlgchannel.cpp,src/controllogpotmeter.h,src/dlgplaylistdlg.ui,src/playeralsa.h,src/soundsourceaflibfile.cpp,src/controlpushbutton.cpp,src/soundsource.cpp,src/dlgcrossfader.cpp,src/enginefilterblock.cpp,src/enginefilteriir.cpp,src/enginemaster.h,src/mixxx.db,src/enginefilterblock.h,src/player.h,src/controlpushbutton.h,src/playeralsa.cpp,src/enginechannel.h,src/enginechannel.cpp,src/mixxxview.cpp,src/fileopen.xpm,src/enginepregain.h,src/dlgmaster.h,src/enginebuffer.h,src/dlgplaycontrol.cpp,src/controllogpotmeter.cpp,src/dlgchanneldlg.ui,src/dlgmasterdlg.ui,src/engineobject.h,src/enginebuffer.cpp,src/midiobject.h,src/enginefilterrbj.cpp,src/monitor.h,src/soundsourceaflibfile.h,src/soundsource.h,src/qknob.cpp,src/player.cpp,src/mwheel.cpp,src/mwheel.h,src/configfile.cpp,src/configfile.h,src/configmapping.cpp,src/configmapping.h,src/configobject.cpp,src/configobject.h
+files=src/playerportaudio.h,src/soundsourcemp3.cpp,src/dlgcrossfaderdlg.ui,src/mixxx.cpp,src/mixxx.pro,src/qknob.h,src/controlpotmeter.cpp,src/dlgplaycontroldlg.ui,src/fakemonitor.h,src/enginefilteriir.h,src/enginefilterrbj.h,src/enginepregain.cpp,src/enginemaster.cpp,src/dlgplaylist.cpp,src/soundsourceheavymp3.h,src/soundsourceheavymp3.cpp,src/dlgcrossfader.h,src/midiobject.cpp,src/controlrotary.cpp,src/dlgchannel.h,src/engineclipping.cpp,src/fakemonitor.cpp,src/controlrotary.h,src/controlpotmeter.h,src/controlobject.cpp,src/filenew.xpm,src/controlobject.h,src/main.cpp,src/filesave.xpm,src/dlgmaster.cpp,src/engineclipping.h,src/mixxxdoc.h,src/dlgplaylist.h,src/mixxx.h,src/mixxxdoc.cpp,src/defs.h,src/engineobject.cpp,src/monitor.cpp,src/dlgplaycontrol.h,src/mixxxview.h,src/playerportaudio.cpp,src/soundsourcemp3.h,src/dlgchannel.cpp,src/controllogpotmeter.h,src/dlgplaylistdlg.ui,src/playeralsa.h,src/soundsourceaflibfile.cpp,src/controlpushbutton.cpp,src/soundsource.cpp,src/dlgcrossfader.cpp,src/enginefilterblock.cpp,src/enginefilteriir.cpp,src/enginemaster.h,src/mixxx.db,src/enginefilterblock.h,src/player.h,src/controlpushbutton.h,src/playeralsa.cpp,src/enginechannel.h,src/enginechannel.cpp,src/mixxxview.cpp,src/fileopen.xpm,src/enginepregain.h,src/dlgmaster.h,src/enginebuffer.h,src/dlgplaycontrol.cpp,src/controllogpotmeter.cpp,src/dlgchanneldlg.ui,src/dlgmasterdlg.ui,src/engineobject.h,src/enginebuffer.cpp,src/midiobject.h,src/enginefilterrbj.cpp,src/monitor.h,src/soundsourceaflibfile.h,src/soundsource.h,src/qknob.cpp,src/player.cpp,src/mwheel.cpp,src/mwheel.h,src/configmapping.cpp,src/configmapping.h,src/configobject.cpp,src/configobject.h,src/enginevolume.cpp,src/enginevolume.h
 sub_dirs=music,qknob,images,
 type=prog_main
-
-[src/configfile.cpp]
-dist=true
-install=false
-install_location=
-type=SOURCE
-
-[src/configfile.h]
-dist=true
-install=false
-install_location=
-type=HEADER
 
 [src/configmapping.cpp]
 dist=true
@@ -855,6 +843,18 @@ install_location=
 type=SOURCE
 
 [src/enginepregain.h]
+dist=true
+install=false
+install_location=
+type=HEADER
+
+[src/enginevolume.cpp]
+dist=true
+install=false
+install_location=
+type=SOURCE
+
+[src/enginevolume.h]
 dist=true
 install=false
 install_location=

@@ -3,11 +3,13 @@
 /*----------------------------------------------------------------
   A pregaincontrol is ... a pregain.
   ----------------------------------------------------------------*/
-EnginePregain::EnginePregain(int potmeter_midi, MidiObject* midi)
+EnginePregain::EnginePregain(const char *group)
 {
-  pregainpot = new ControlLogpotmeter("pregainpot", potmeter_midi, midi, 5.0);
+  pregainpot = new ControlLogpotmeter(new ConfigObject::ConfigKey(group, "pregain"), 5.0);
   pregain = 1.0;
   buffer = new CSAMPLE[MAX_BUFFER_LEN];
+
+  connect(pregainpot, SIGNAL(valueChanged(FLOAT_TYPE)), this, SLOT(slotUpdate(FLOAT_TYPE)));
 }
 
 EnginePregain::~EnginePregain()
