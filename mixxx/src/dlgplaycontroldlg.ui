@@ -44,22 +44,6 @@
     </widget>
     <widget class="QSlider">
         <property name="name">
-            <cstring>SliderPosition</cstring>
-        </property>
-        <property name="geometry">
-            <rect>
-                <x>180</x>
-                <y>100</y>
-                <width>24</width>
-                <height>84</height>
-            </rect>
-        </property>
-        <property name="orientation">
-            <enum>Vertical</enum>
-        </property>
-    </widget>
-    <widget class="QSlider">
-        <property name="name">
             <cstring>SliderRate</cstring>
         </property>
         <property name="geometry">
@@ -142,6 +126,25 @@
                 <width>100</width>
                 <height>100</height>
             </rect>
+        </property>
+    </widget>
+    <widget class="QSlider">
+        <property name="name">
+            <cstring>SliderPosition</cstring>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>180</x>
+                <y>100</y>
+                <width>24</width>
+                <height>84</height>
+            </rect>
+        </property>
+        <property name="tracking">
+            <bool>false</bool>
+        </property>
+        <property name="orientation">
+            <enum>Vertical</enum>
         </property>
     </widget>
 </widget>

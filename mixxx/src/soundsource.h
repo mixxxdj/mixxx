@@ -18,26 +18,16 @@
 #ifndef SOUNDSOURCE_H
 #define SOUNDSOURCE_H
 
-#include <qobject.h>
 #include "defs.h"
-#ifndef Q_WS_WIN
-#include <audiofile.h>
-#endif
-#include <stdio.h>
-#include <fstream>
-#include <stdlib.h>
-#include <iostream>
-#include <sys/stat.h>
-#include <string.h>
-#include "mad.h"
-#include <vector>
-#include "errno.h"
 
 /**
   *@author Tue and Ken Haste Andersen
   */
 
-class SoundSource : public QObject {
+/*
+  Base class for sound sources.
+*/
+class SoundSource {
 public:
   SoundSource();
   virtual ~SoundSource();
@@ -45,40 +35,5 @@ public:
   virtual unsigned read(unsigned long size, const SAMPLE*) = 0;
   virtual long unsigned length() = 0;
 };
-
-#ifndef Q_WS_WIN
-class AFlibfile : public SoundSource {
- public:
-  AFlibfile(const char*);
-  ~AFlibfile();
-  long seek(long);
-  unsigned read(unsigned long size, const SAMPLE*);
-  long unsigned length();
- private:
-  int channels;
-  AFfilehandle fh;
-  unsigned long filelength, mp3filelength;
-};
-#endif
-
-class mp3file : public SoundSource {
- public:
-  mp3file(const char*);
-  ~mp3file();
-  long seek(long);
-  unsigned read(unsigned long size, const SAMPLE*);
-  long unsigned length();
- private:
-  FILE *file;
-  unsigned inputbuf_len;
-  unsigned char *inputbuf;
-  int bitrate;
-  long filelength, mp3filelength;
-  mad_stream Stream;
-  mad_frame Frame;
-  mad_synth Synth;
-  std::vector<long> ftable,sampletable;
-};
-
 
 #endif
