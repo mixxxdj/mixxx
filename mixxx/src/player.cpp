@@ -54,11 +54,11 @@ bool Player::open(bool useDefault)
         //
         // Open master using default device, and overwrite config data
         //
-        if (open(getDefaultDevice(),44100,16,BUFFER_SIZE,1,0))
+        if (open(getDefaultDevice(),QString(""),44100,16,BUFFER_SIZE,0,1,0))
             config->set(ConfigKey("[Soundcard]","Samplerate"),ConfigValue(44100));
-        else if (open(getDefaultDevice(),48000,16,BUFFER_SIZE,1,0))
+        else if (open(getDefaultDevice(),QString(""),48000,16,BUFFER_SIZE,0,1,0))
             config->set(ConfigKey("[Soundcard]","Samplerate"),ConfigValue(48000));
-        else if (open(getDefaultDevice(),22050,16,BUFFER_SIZE,1,0))
+        else if (open(getDefaultDevice(),QString(""),22050,16,BUFFER_SIZE,0,1,0))
             config->set(ConfigKey("[Soundcard]","Samplerate"),ConfigValue(22050));
         else
         {
@@ -85,18 +85,18 @@ bool Player::open(bool useDefault)
         // Open devices using information from config object. If anything fails return false.
         // Latency can be adjusted.
         //
-    
-        int chMaster = config->getValueString(ConfigKey("[Soundcard]","ChannelMaster")).toInt();
-        int chHead = 0;
-        if (config->getValueString(ConfigKey("[Soundcard]","DeviceMaster")) == config->getValueString(ConfigKey("[Soundcard]","DeviceHeadphone")))
-            chHead = config->getValueString(ConfigKey("[Soundcard]","ChannelHeadphone")).toInt();
 
-        // Open master device
+//        qDebug("Latency %i",(int)(config->getValueString(ConfigKey("[Soundcard]","LatencyMaster")).toInt()*config->getValueString(ConfigKey("[Soundcard]","Samplerate")).toInt()/1000.));
+
+        // Open device(s)
         if (!open(config->getValueString(ConfigKey("[Soundcard]","DeviceMaster")),
+                  config->getValueString(ConfigKey("[Soundcard]","DeviceHeadphone")),
                   config->getValueString(ConfigKey("[Soundcard]","Samplerate")).toInt(),
                   config->getValueString(ConfigKey("[Soundcard]","Bits")).toInt(),
                   (int)(config->getValueString(ConfigKey("[Soundcard]","LatencyMaster")).toInt()*config->getValueString(ConfigKey("[Soundcard]","Samplerate")).toInt()/1000.),
-                  chMaster,chHead))
+                  (int)(config->getValueString(ConfigKey("[Soundcard]","LatencyHeadphone")).toInt()*config->getValueString(ConfigKey("[Soundcard]","Samplerate")).toInt()/1000.),
+                  config->getValueString(ConfigKey("[Soundcard]","ChannelMaster")).toInt(),
+                  config->getValueString(ConfigKey("[Soundcard]","ChannelHeadphone")).toInt()))
         {
             // Reset config data for master and headphone
             config->set(ConfigKey("[Soundcard]","ChannelMaster"),ConfigValue(""));
@@ -107,29 +107,15 @@ bool Player::open(bool useDefault)
             return false;
         }
 
-        // Open headphone if necessary
-        if (config->getValueString(ConfigKey("[Soundcard]","DeviceMaster")) != config->getValueString(ConfigKey("[Soundcard]","DeviceHeadphone")) &&
-            config->getValueString(ConfigKey("[Soundcard]","ChannelHead")).toInt() > 0)
-        {
-            // Open slave device
-            if (!open(config->getValueString(ConfigKey("[Soundcard]","DeviceMaster")),
-                      config->getValueString(ConfigKey("[Soundcard]","Samplerate")).toInt(),
-                      config->getValueString(ConfigKey("[Soundcard]","Bits")).toInt(),
-                      (int)(config->getValueString(ConfigKey("[Soundcard]","LatencyHead")).toInt()*config->getValueString(ConfigKey("[Soundcard]","Samplerate")).toInt()/1000.),
-                      0,config->getValueString(ConfigKey("[Soundcard]","ChannelHeadphone")).toInt()))
-            {
-                // Reset config data for headphone
-                config->set(ConfigKey("[Soundcard]","ChannelHeadphone"),ConfigValue(""));
-                config->set(ConfigKey("[Soundcard]","DeviceHeadphone"),ConfigValue(""));
-
-                return false;
-            }
-        }
+//        qDebug("Master: %s, %i",config->getValueString(ConfigKey("[Soundcard]","DeviceMaster")).latin1(), config->getValueString(ConfigKey("[Soundcard]","ChannelMaster")).toInt());
+//        qDebug("Head:   %s, %i",config->getValueString(ConfigKey("[Soundcard]","DeviceHeadphone")).latin1()  , config->getValueString(ConfigKey("[Soundcard]","ChannelHeadphone")).toInt());
     }
+
+//    qDebug("Latency %i,%i",MasterBufferSize,(int)((MasterBufferSize*2)/((float)config->getValueString(ConfigKey("[Soundcard]","Samplerate")).toInt()/1000.)));
     
     // Write latency values back to config object
     config->set(ConfigKey("[Soundcard]","LatencyMaster"),ConfigValue((int)((MasterBufferSize*2)/((float)config->getValueString(ConfigKey("[Soundcard]","Samplerate")).toInt()/1000.))));
-    config->set(ConfigKey("[Soundcard]","LatencyHead"),ConfigValue((int)((MasterBufferSize*2*HeadPerMasterBuffer)/((float)config->getValueString(ConfigKey("[Soundcard]","Samplerate")).toInt()/1000.))));
+    config->set(ConfigKey("[Soundcard]","LatencyHeadphone"),ConfigValue((int)((MasterBufferSize*2*HeadPerMasterBuffer)/((float)config->getValueString(ConfigKey("[Soundcard]","Samplerate")).toInt()/1000.))));
     
     return true;
 }

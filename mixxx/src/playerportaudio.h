@@ -40,12 +40,20 @@ public:
     int minLatency(int SRATE);
     CSAMPLE *process(const CSAMPLE *, const int);
 protected:
+    /** Open a device stream */
+    bool open(int id, PortAudioStream **stream, int srate, PaSampleFormat format, int chNo, int bufferSize, int bufferNo, PortAudioCallback *callback);
     /** Get default device name */
     QString getDefaultDevice();
+    /** Get id of device with name name */
+    int getDeviceID(QString name);
     /** Open device */
-    bool open(QString name, int srate, int bits, int bufferSize, int chMaster, int chHead);
-    /** PortAudio stream */
-    PortAudioStream *stream;
+    bool open(QString nameMaster, QString nameHead, int srate, int bits, int bufferSizeMaster, int bufferSizeHead, int _chMaster, int _chHead);
+    /** PortAudio streams */
+    PortAudioStream *streamMaster, *streamHead;
+    /** true if streamHead is active */
+    bool headActive;
+    /** True if master device has been successfully opened */
+    bool opendev;
 };
 
 

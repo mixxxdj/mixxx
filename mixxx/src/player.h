@@ -70,7 +70,7 @@ protected:
     void allocate();
     void deallocate();
     virtual QString getDefaultDevice() = 0;
-    virtual bool open(QString name, int srate, int bits, int bufferSize, int chMaster, int chHead) = 0;
+    virtual bool open(QString nameMaster, QString nameHead, int srate, int bits, int bufferSizeMaster, int bufferSizeHead, int _chMaster, int _chHead) = 0;
 
     /** Configuration data */
     ConfigObject<ConfigValue> *config;
