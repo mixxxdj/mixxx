@@ -296,6 +296,10 @@ HEADERS += trackimporter.h parser.h parserpls.h parserm3u.h
 SOURCES += mixxxsocketserver.cpp mixxxsocketclient.cpp #mixxxsocketcli.cpp
 HEADERS += mixxxsocketserver.h mixxxsocketclient.h #mixxxsocket.cli.h
 
+# Waveform summary
+#SOURCES += wavesummary.cpp soundsourceproxy.cpp
+#HEADERS += wavesummary.h soundsourceproxy.h
+
 IMAGES += icon.png
 DEFINES += SETTINGS_FILE=$$SETTINGS_FILE TRACK_FILE=$$TRACK_FILE
 unix:TEMPLATE = app

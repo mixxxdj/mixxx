@@ -3,7 +3,7 @@
                              -------------------
     begin                : Wed Feb 20 2002
     copyright            : (C) 2002 by Tue and Ken Haste Andersen
-    email                : 
+    email                :
  ***************************************************************************/
 
 /***************************************************************************
@@ -30,7 +30,8 @@ class TrackInfoObject;
 /*
   Base class for sound sources.
 */
-class SoundSource {
+class SoundSource 
+{
 public:
     SoundSource(QString qFilename);
     virtual ~SoundSource();
@@ -38,10 +39,10 @@ public:
     virtual unsigned read(unsigned long size, const SAMPLE*) = 0;
     virtual long unsigned length() = 0;
     static int ParseHeader( TrackInfoObject * );
-    int getSrate();
+    virtual int getSrate();
     /** Returns filename */
-    QString getFilename();
-    
+    virtual QString getFilename();
+
 protected:
     /** Sample rate of the file */
     int SRATE;

@@ -23,6 +23,8 @@
 #include <qtooltip.h>
 #include <qevent.h>
 #include <qsplitter.h>
+#include <qmenubar.h>
+#include <qmainwindow.h>
 
 #include "wtracktable.h"
 #include "wtreeview.h"
@@ -180,8 +182,8 @@ MixxxView::MixxxView(QWidget *parent, ConfigObject<ConfigValueKbd> *kbdconfig, b
                 QString filename = WWidget::selectNodeQString(node, "Path");
                 QPixmap background(WWidget::getPath(filename));
                 this->setPaletteBackgroundPixmap(background);
-                this->setFixedSize(background.width(),background.height());
-                parent->setFixedSize(background.size());
+                this->setFixedSize(background.width(),background.height()+((QMainWindow *)parent)->menuBar()->height());
+                parent->setFixedSize(background.width(),background.height()+((QMainWindow *)parent)->menuBar()->height());
                 this->move(0,0);
             }
             else if (node.nodeName()=="SliderComposed")
