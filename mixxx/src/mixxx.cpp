@@ -67,20 +67,12 @@ MixxxApp::MixxxApp()
   qDebug("Init midi...");
   midi = new MidiObject();
 
-  // Initialize engines:
+  qDebug("Init engine...");
+  buffer = new EngineBuffer(view->playcontrol, 0, ADC3, PORT_D, midi,
+                            view->playlist->TableList->item(0,1)->text());
 
-  EnginePregain *pregain = new EnginePregain(ADC7, midi);
-  connect(view->channel->DialGain, SIGNAL(valueChanged(int)), pregain->pregainpot, SLOT(slotSetPosition(int)));
-  connect(pregain->pregainpot, SIGNAL(recievedMidi(int)), view->channel->DialGain, SLOT(setValue(int)));
-  engines.push_back(pregain);
-
-  EngineFilterLBH *lbh_filter = new EngineFilterLBH(view->channel->DialFilterLow,
-						    view->channel->DialFilterMiddle,
-						    view->channel->DialFilterHigh ,midi);
-  engines.push_back(lbh_filter);
-
-  EngineClipping *clipping = new EngineClipping(view->channel->BulbClipping);
-  engines.push_back(clipping);
+  channel = new EngineChannel(view->channel, midi, ADC7, ADC6, ADC5, ADC4, 0);
+  engines.push_back(channel);
 
   // Initialize player with a desired buffer size
   qDebug("Init player...");
@@ -94,10 +86,7 @@ MixxxApp::MixxxApp()
 #else
   player = new PlayerPortAudio(BUFFER_SIZE, &engines);
 #endif
-  //player = new PlayerPortAudio(BUFFER_SIZE);
 
-  qDebug("Init engine...");
-  buffer = new EngineBuffer(view->playcontrol, view->channel, midi, view->playlist->TableList->item(0,1)->text());
   buffer->start();
 
   // Start audio
@@ -109,8 +98,8 @@ MixxxApp::~MixxxApp()
 {
 	player->stop();
 	delete player;
-
-	delete buffer;
+    delete buffer;
+    delete channel;
 }
 
 /** initializes all QActions of the application */

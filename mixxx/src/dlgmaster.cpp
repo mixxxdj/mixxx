@@ -1,8 +1,8 @@
 /***************************************************************************
-                          enginefilterlbh.h  -  description
+                          dlgmaster.cpp  -  description
                              -------------------
-    begin                : Thu Apr 4 2002
-    copyright            : (C) 2002 by Tue and Ken Haste Andersen
+    begin                : Sun Apr 28 2002
+    copyright            : (C) 2002 by 
     email                : 
  ***************************************************************************/
 
@@ -15,28 +15,9 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef ENGINEFILTERLBH_H
-#define ENGINEFILTERLBH_H
+#include "dlgmaster.h"
 
-#include "engineobject.h"
-#include "engineiirfilter.h"
-#include "qknob.h"
-
-/**
-  * Parallel processing of LP, BP and HP filters, and final mixing
-  *
-  *@author Tue and Ken Haste Andersen
-  */
-
-class EngineFilterLBH : public EngineObject  {
-	Q_OBJECT
-public:
-	EngineFilterLBH(QKnob *, int, QKnob *, int, QKnob *, int, MidiObject *midi);
-	~EngineFilterLBH();
-	CSAMPLE *process(const CSAMPLE *source, const int buf_size);
-private:
-	EngineIIRfilter *low, *band, *high;
-	CSAMPLE *buffer;
-};
-
-#endif
+DlgMaster::DlgMaster(QWidget *parent, const char *name ) : DlgMasterDlg(parent,name) {
+}
+DlgMaster::~DlgMaster(){
+}

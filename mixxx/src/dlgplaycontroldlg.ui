@@ -1,217 +1,149 @@
-<!DOCTYPE UI><UI>
+<!DOCTYPE UI><UI version="3.0" stdsetdef="1">
 <class>DlgPlaycontrolDlg</class>
-<widget>
-    <class>QWidget</class>
-    <property stdset="1">
-        <name>name</name>
+<widget class="QWidget">
+    <property name="name">
         <cstring>DlgPlaycontrolDlg</cstring>
     </property>
-    <property stdset="1">
-        <name>geometry</name>
+    <property name="geometry">
         <rect>
             <x>0</x>
             <y>0</y>
-            <width>294</width>
-            <height>310</height>
+            <width>220</width>
+            <height>200</height>
         </rect>
     </property>
-    <property stdset="1">
-        <name>sizePolicy</name>
+    <property name="sizePolicy">
         <sizepolicy>
             <hsizetype>1</hsizetype>
             <vsizetype>1</vsizetype>
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
         </sizepolicy>
     </property>
-    <property stdset="1">
-        <name>caption</name>
+    <property name="caption">
         <string>Form1</string>
     </property>
-    <widget>
-        <class>QFrame</class>
-        <property stdset="1">
-            <name>name</name>
-            <cstring>Frame3</cstring>
+    <widget class="QLabel">
+        <property name="name">
+            <cstring>TextLabel1</cstring>
         </property>
-        <property stdset="1">
-            <name>geometry</name>
+        <property name="geometry">
             <rect>
-                <x>0</x>
-                <y>0</y>
-                <width>310</width>
-                <height>310</height>
+                <x>5</x>
+                <y>75</y>
+                <width>29</width>
+                <height>16</height>
             </rect>
         </property>
-        <property stdset="1">
-            <name>sizePolicy</name>
-            <sizepolicy>
-                <hsizetype>0</hsizetype>
-                <vsizetype>0</vsizetype>
-            </sizepolicy>
+        <property name="text">
+            <string>Rate</string>
         </property>
-        <property stdset="1">
-            <name>frameShape</name>
-            <enum>StyledPanel</enum>
+    </widget>
+    <widget class="QSlider">
+        <property name="name">
+            <cstring>SliderRate</cstring>
         </property>
-        <property stdset="1">
-            <name>frameShadow</name>
-            <enum>Raised</enum>
+        <property name="geometry">
+            <rect>
+                <x>10</x>
+                <y>100</y>
+                <width>24</width>
+                <height>84</height>
+            </rect>
         </property>
-        <widget>
-            <class>QSlider</class>
-            <property stdset="1">
-                <name>name</name>
-                <cstring>Slider1</cstring>
-            </property>
-            <property stdset="1">
-                <name>geometry</name>
-                <rect>
-                    <x>60</x>
-                    <y>260</y>
-                    <width>170</width>
-                    <height>40</height>
-                </rect>
-            </property>
-            <property stdset="1">
-                <name>maxValue</name>
-                <number>127</number>
-            </property>
-            <property stdset="1">
-                <name>orientation</name>
-                <enum>Horizontal</enum>
-            </property>
-            <property stdset="1">
-                <name>tickmarks</name>
-                <enum>Both</enum>
-            </property>
-        </widget>
-        <widget>
-            <class>QPushButton</class>
-            <property stdset="1">
-                <name>name</name>
-                <cstring>PushButtonPlay</cstring>
-            </property>
-            <property stdset="1">
-                <name>geometry</name>
-                <rect>
-                    <x>250</x>
-                    <y>260</y>
-                    <width>50</width>
-                    <height>40</height>
-                </rect>
-            </property>
-            <property stdset="1">
-                <name>text</name>
-                <string>Play</string>
-            </property>
-        </widget>
-        <widget>
-            <class>QPushButton</class>
-            <property stdset="1">
-                <name>name</name>
-                <cstring>PushButton1</cstring>
-            </property>
-            <property stdset="1">
-                <name>geometry</name>
-                <rect>
-                    <x>70</x>
-                    <y>10</y>
-                    <width>30</width>
-                    <height>30</height>
-                </rect>
-            </property>
-            <property stdset="1">
-                <name>text</name>
-                <string>1</string>
-            </property>
-        </widget>
-        <widget>
-            <class>QPushButton</class>
-            <property stdset="1">
-                <name>name</name>
-                <cstring>PushButton4</cstring>
-            </property>
-            <property stdset="1">
-                <name>geometry</name>
-                <rect>
-                    <x>190</x>
-                    <y>10</y>
-                    <width>30</width>
-                    <height>30</height>
-                </rect>
-            </property>
-            <property stdset="1">
-                <name>text</name>
-                <string>4</string>
-            </property>
-        </widget>
-        <widget>
-            <class>QPushButton</class>
-            <property stdset="1">
-                <name>name</name>
-                <cstring>PushButton3</cstring>
-            </property>
-            <property stdset="1">
-                <name>geometry</name>
-                <rect>
-                    <x>150</x>
-                    <y>10</y>
-                    <width>30</width>
-                    <height>30</height>
-                </rect>
-            </property>
-            <property stdset="1">
-                <name>text</name>
-                <string>3</string>
-            </property>
-        </widget>
-        <widget>
-            <class>QPushButton</class>
-            <property stdset="1">
-                <name>name</name>
-                <cstring>PushButton2</cstring>
-            </property>
-            <property stdset="1">
-                <name>geometry</name>
-                <rect>
-                    <x>110</x>
-                    <y>10</y>
-                    <width>30</width>
-                    <height>30</height>
-                </rect>
-            </property>
-            <property stdset="1">
-                <name>text</name>
-                <string>2</string>
-            </property>
-        </widget>
-        <widget>
-            <class>QDial</class>
-            <property stdset="1">
-                <name>name</name>
-                <cstring>DialPlaycontrol</cstring>
-            </property>
-            <property stdset="1">
-                <name>geometry</name>
-                <rect>
-                    <x>40</x>
-                    <y>40</y>
-                    <width>210</width>
-                    <height>210</height>
-                </rect>
-            </property>
-            <property stdset="1">
-                <name>wrapping</name>
-                <bool>true</bool>
-            </property>
-            <property stdset="1">
-                <name>notchesVisible</name>
-                <bool>true</bool>
-            </property>
-            <property stdset="1">
-                <name>maxValue</name>
-                <number>127</number>
-            </property>
-        </widget>
+        <property name="maxValue">
+            <number>127</number>
+        </property>
+        <property name="orientation">
+            <enum>Vertical</enum>
+        </property>
+    </widget>
+    <widget class="QPushButton">
+        <property name="name">
+            <cstring>PushButtonPlay</cstring>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>60</x>
+                <y>160</y>
+                <width>84</width>
+                <height>22</height>
+            </rect>
+        </property>
+        <property name="text">
+            <string>play</string>
+        </property>
+    </widget>
+    <widget class="QLCDNumber">
+        <property name="name">
+            <cstring>LCDposition</cstring>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>180</x>
+                <y>65</y>
+                <width>35</width>
+                <height>23</height>
+            </rect>
+        </property>
+        <property name="frameShape">
+            <enum>NoFrame</enum>
+        </property>
+        <property name="frameShadow">
+            <enum>Plain</enum>
+        </property>
+        <property name="numDigits">
+            <number>2</number>
+        </property>
+    </widget>
+    <widget class="QSlider">
+        <property name="name">
+            <cstring>SliderPosition</cstring>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>185</x>
+                <y>100</y>
+                <width>24</width>
+                <height>84</height>
+            </rect>
+        </property>
+        <property name="orientation">
+            <enum>Vertical</enum>
+        </property>
+    </widget>
+    <widget class="QDial">
+        <property name="name">
+            <cstring>DialPlaycontrol</cstring>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>60</x>
+                <y>55</y>
+                <width>100</width>
+                <height>100</height>
+            </rect>
+        </property>
+    </widget>
+    <widget class="QLabel">
+        <property name="name">
+            <cstring>textLabelTrack</cstring>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>15</x>
+                <y>5</y>
+                <width>200</width>
+                <height>45</height>
+            </rect>
+        </property>
+        <property name="text">
+            <string></string>
+        </property>
+        <property name="alignment">
+            <set>WordBreak|AlignVCenter</set>
+        </property>
     </widget>
 </widget>
+<layoutdefaults spacing="6" margin="11"/>
 </UI>

@@ -46,7 +46,7 @@ class EngineBuffer : public EngineObject, public QThread  {
  Q_OBJECT
 public:
   Monitor rate;
-  EngineBuffer(DlgPlaycontrol *, DlgChannel *, MidiObject *, const char *);
+  EngineBuffer(DlgPlaycontrol *, int, int, int, MidiObject *, const char *);
   ~EngineBuffer();
   void newtrack(const char *);
   void start();
@@ -69,6 +69,8 @@ private:
   CSAMPLE *read_buffer; // The buffer where the samples are read into
   unsigned long int read_buffer_size; // Length of buffer.
 
+  DlgPlaycontrol *playcontrol;
+
   void getchunk();
   void seek(FLOAT_TYPE);
   void checkread();
@@ -79,8 +81,6 @@ private:
   SoundSource *file;
   SAMPLE *temp;
   unsigned  chunk_size;
-  unsigned long int filepos;
-  FLOAT_TYPE filelength;
   CSAMPLE *buffer; // Buffer using in the processing.
 };
 #endif
