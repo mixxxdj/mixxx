@@ -143,7 +143,8 @@ MixxxApp::MixxxApp(QApplication *a, QStringList files, QSplashScreen *pSplash, Q
         qConfigPath.append("/");
     config->set(ConfigKey("[Config]","Path"), ConfigValue(qConfigPath));
 
-    pSplash->message("Initializing control devices...",Qt::AlignLeft|Qt::AlignBottom);
+    if (pSplash)
+        pSplash->message("Initializing control devices...",Qt::AlignLeft|Qt::AlignBottom);
 
 
     // Open midi
@@ -249,7 +250,8 @@ MixxxApp::MixxxApp(QApplication *a, QStringList files, QSplashScreen *pSplash, Q
         }
     }
 
-    pSplash->message("Setting up sound engine...",Qt::AlignLeft|Qt::AlignBottom);
+    if (pSplash)
+        pSplash->message("Setting up sound engine...",Qt::AlignLeft|Qt::AlignBottom);
     
     // Init buffers/readers
     buffer1 = new EngineBuffer(powermate1, "[Channel1]");
@@ -268,7 +270,8 @@ MixxxApp::MixxxApp(QApplication *a, QStringList files, QSplashScreen *pSplash, Q
     Player::setMaster(master);
     player = new PlayerProxy(config);
 
-    pSplash->message("Loading skin...",Qt::AlignLeft|Qt::AlignBottom);
+    if (pSplash)
+        pSplash->message("Loading skin...",Qt::AlignLeft|Qt::AlignBottom);
     
     // Find path of skin
     QString qSkinPath(qConfigPath);
@@ -348,7 +351,8 @@ MixxxApp::MixxxApp(QApplication *a, QStringList files, QSplashScreen *pSplash, Q
     // Initialize wavefrom summary generation
     m_pWaveSummary = new WaveSummary();
 
-    pSplash->message("Loading song database...",Qt::AlignLeft|Qt::AlignBottom);
+    if (pSplash)
+        pSplash->message("Loading song database...",Qt::AlignLeft|Qt::AlignBottom);
 
     // Initialize track object:
     m_pTrack = new Track(config->getValueString(ConfigKey("[Playlist]","Listfile")), view, buffer1, buffer2, m_pWaveSummary);

@@ -92,11 +92,14 @@ int main(int argc, char *argv[])
     a = new QApplication(argc, argv);
 
     // Show splash
+    QSplashScreen *pSplash = 0;
+    /*
     QPixmap pixmap("splash.png");
-    QSplashScreen *pSplash = new QSplashScreen(pixmap);
+    pSplash = new QSplashScreen(pixmap);
     pSplash->show();
     pSplash->message("Loading...",Qt::AlignLeft|Qt::AlignBottom);
-
+    */
+    
     QTranslator tor( 0 );
     // set the location where your .qm files are in load() below as the last parameter instead of "."
     // for development, use "/" to use the english original as
@@ -129,8 +132,11 @@ int main(int argc, char *argv[])
 
     mixxx->show();
     
-    pSplash->finish(mixxx);
-    delete pSplash;
+    if (pSplash)
+    {
+        pSplash->finish(mixxx);
+        delete pSplash;
+    }
 
     int result = a->exec();
     delete mixxx;
