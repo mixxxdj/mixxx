@@ -17,7 +17,7 @@
 
 #include "wpixmapstore.h"
 
-QPtrList<PixmapInfoType> WPixmapStore::list;
+QDict<PixmapInfoType> WPixmapStore::dictionary(251);
 
 WPixmapStore::WPixmapStore() 
 {
@@ -27,42 +27,45 @@ QPixmap *WPixmapStore::getPixmap(const QString &fileName)
 {
     // Search for pixmap in list
     PixmapInfoType *info;
-    for (info = list.first(); info; info = list.next())
+
+    info = dictionary[fileName];
+    if (info)
     {
-        if (fileName == info->path)
-        {
-            info->instCount++;
-            return info->pixmap;
-        }
+       info->instCount++;
+       return info->pixmap;
     }
 
     // Pixmap wasn't found, construct it
 //    qDebug("Loading pixmap %s",fileName.latin1());
     info = new PixmapInfoType;
-    info->path = QString(fileName);
     info->pixmap = new QPixmap(fileName);
     info->instCount = 1;
 
-    list.append(info);
-
+    dictionary.insert(fileName, info);
+  
     return info->pixmap;
 }
 
 void WPixmapStore::deletePixmap(QPixmap *p)
 {
     // Search for pixmap in list
-    PixmapInfoType *info;
-    for (info = list.first(); info; info = list.next())
+    QDictIterator<PixmapInfoType> it(dictionary);
+
+    for( ; it.current(); ++it ) 
     {
+        PixmapInfoType *info = it.current();
+
         if (p == info->pixmap)
         {
             info->instCount--;
             if (info->instCount<1)
             {
                 delete info->pixmap;
-                list.remove(info);
+                dictionary.remove(it.currentKey());
                 delete info;
             }
+
+            break;
         }
     }
 }

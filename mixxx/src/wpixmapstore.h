@@ -19,7 +19,7 @@
 #define WPIXMAPSTORE_H
 
 #include <qpixmap.h>
-#include <qptrlist.h>
+#include <qdict.h>
 
 /**
   *
@@ -29,7 +29,6 @@
 typedef struct
 {
     QPixmap *pixmap;
-    QString path;
     int instCount;
 } PixmapInfoType;
 
@@ -39,8 +38,8 @@ public:
     static QPixmap *getPixmap(const QString &fileName);
     static void deletePixmap(QPixmap *p);
 private:
-    /** List of pixmaps already instantiated */
-    static QPtrList<PixmapInfoType> list;
+    /** Dictionary of pixmaps already instantiated */
+    static QDict<PixmapInfoType> dictionary;
 };
 
 #endif
