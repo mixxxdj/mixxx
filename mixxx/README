@@ -20,7 +20,7 @@ New since 1.2.1:
 - Bug fixes in build system
 - Socket interface
 - Cue point visualization
-- Various speed optimizations
+- Various speed optimizations and bug fixes
 - Drop files, from playlist, treeview or external file
   manager to one of the visuals, loads the track.
 - New and improved keymap
