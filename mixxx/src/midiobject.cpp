@@ -47,7 +47,7 @@ void MidiObject::add(ControlObject* c)
 {
     controlList.push_back(c);
     no++;
-    //qDebug("Registered midi control %s (%p).", c->print()->ascii(),c);
+    qDebug("Registered midi control %s (%p).", c->print()->ascii(),c);
 }
 
 void MidiObject::remove(ControlObject* c)

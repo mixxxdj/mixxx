@@ -676,8 +676,6 @@ void MixxxApp::slotOptionsSetPreferences()
 
     config->set(ConfigKey("[Soundcard]","Bits"),pDlg->ComboBoxBits->currentText());
 
-    config->Save();
-
     int bufferSize = BUFFER_SIZE;
 
     // Perform changes to sound card setup
@@ -704,6 +702,9 @@ void MixxxApp::slotOptionsSetPreferences()
 	view->playlist->ListPlaylist->clear();
         addFiles(config->getValueString(PlaylistKey).latin1());
     }
+
+    // Save the preferences
+    config->Save();
 
     // Close dialog
     slotOptionsClosePreferences();
