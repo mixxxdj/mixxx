@@ -51,11 +51,16 @@ public:
     
     QPtrList<Info> *getInfo();
 
-    
     static SAMPLE *out_buffer, *out_buffer_offset;
     int prepareBuffer(); // Calculates one buffer of sound
-    int buffer_size;
     
+    /** MasterBufferSize is set when the master device is opened. If a head device is later opened
+      * HeadPerMasterBuffer is calculated, which equals HeadBufferSize/MasterBufferSize. When the
+      * master buffer is synthesized hereafter, a buffer three times MasterBufferSize*HeadPerMasterBuffer
+      * is used. The buffer is read by the head device using its own block size */
+    static int MasterBufferSize;
+    static int HeadPerMasterBuffer;
+
 protected:
     virtual bool open(QString name, int srate, int bits, int bufferSize, int chMaster, int chHead) = 0;
     virtual void close() = 0;
@@ -63,11 +68,11 @@ protected:
     void deallocate();
     
     std::vector<EngineObject *> *engines;
-    //CSAMPLE *process_buffer,*tmp1, *tmp2;
-    int index;    // Current playback frame in input buffer
     EngineObject* reader;
     QPtrList<Info>  devices;
 
+
+    /** Indicates where in the out_buffer the current synthesized frame is placed. */
     int bufferIdx;
 };
 

@@ -39,7 +39,7 @@ configure_args=\s--build=i386-linux --host=i386-linux --target=i386-linux\s
 dir_where_make_will_be_called=./src/
 email=haste@diku.dk
 kdevprj_version=1.3
-lfv_open_groups=GNU
+lfv_open_groups=GNU,User Interface
 make_options=\s-j1
 makefiles=./Makefile.am,mixxx/Makefile.am,mixxx/templates/Makefile.am,mixxx/qknob/Makefile.am,mixxx/docs/Makefile.am,mixxx/docs/en/Makefile.am,admin/Makefile.am,src/Makefile.am,src/music/Makefile.am,src/images/Makefile.am,src/qknob/Makefile.am,src/.obj/Makefile.am,src/.moc/Makefile.am,src/.ui/Makefile.am,asm/Makefile.am,asm/midiboxplus/Makefile.am,
 modifyMakefiles=false
