@@ -65,8 +65,8 @@ unix {
   OBJECTS_DIR = .obj
   SOURCES += soundsourceaudiofile.cpp
   HEADERS += soundsourceaudiofile.h
-  LIBS += /usr/local/lib/libmad.a 
-  !macx:LIBS += /usr/lib/libaudiofile.a
+  LIBS += -lmad #/usr/local/lib/libmad.a 
+  !macx:LIBS += -laudiofile #/usr/lib/libaudiofile.a
   INCLUDEPATH += .
 #  Intel Compiler optimization flags
 #  QMAKE_CXXFLAGS += -rcd -tpp6 -xiMK # icc pentium III
