@@ -105,7 +105,7 @@ bool PlayerPortAudio::open(QString nameMaster, QString nameHead, int srate, int 
     MasterBufferSize = bufferSizeMaster/bufferNo;
     
     // Extract bit information
-    PaSampleFormat format = 0;
+    PaSampleFormat format = 16;
     switch (bits)
     {
         case 8:  format = paInt8; break;

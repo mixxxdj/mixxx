@@ -666,26 +666,6 @@
         </widget>
         <widget class="QLabel">
             <property name="name">
-                <cstring>TextLabel8_2</cstring>
-            </property>
-            <property name="geometry">
-                <rect>
-                    <x>310</x>
-                    <y>70</y>
-                    <width>30</width>
-                    <height>16</height>
-                </rect>
-            </property>
-            <property name="font">
-                <font>
-                </font>
-            </property>
-            <property name="text">
-                <string>High</string>
-            </property>
-        </widget>
-        <widget class="QLabel">
-            <property name="name">
                 <cstring>TextLabelLatencyMaster</cstring>
             </property>
             <property name="geometry">
@@ -732,26 +712,6 @@
         </widget>
         <widget class="QLabel">
             <property name="name">
-                <cstring>TextLabel8_2_2</cstring>
-            </property>
-            <property name="geometry">
-                <rect>
-                    <x>310</x>
-                    <y>149</y>
-                    <width>30</width>
-                    <height>16</height>
-                </rect>
-            </property>
-            <property name="font">
-                <font>
-                </font>
-            </property>
-            <property name="text">
-                <string>High</string>
-            </property>
-        </widget>
-        <widget class="QLabel">
-            <property name="name">
                 <cstring>TextLabel8_3</cstring>
             </property>
             <property name="geometry">
@@ -788,6 +748,46 @@
             </property>
             <property name="text">
                 <string>Headphone output</string>
+            </property>
+        </widget>
+        <widget class="QLabel">
+            <property name="name">
+                <cstring>TextLabel8_2</cstring>
+            </property>
+            <property name="geometry">
+                <rect>
+                    <x>310</x>
+                    <y>70</y>
+                    <width>36</width>
+                    <height>20</height>
+                </rect>
+            </property>
+            <property name="font">
+                <font>
+                </font>
+            </property>
+            <property name="text">
+                <string>High</string>
+            </property>
+        </widget>
+        <widget class="QLabel">
+            <property name="name">
+                <cstring>TextLabel8_2_2</cstring>
+            </property>
+            <property name="geometry">
+                <rect>
+                    <x>310</x>
+                    <y>149</y>
+                    <width>36</width>
+                    <height>18</height>
+                </rect>
+            </property>
+            <property name="font">
+                <font>
+                </font>
+            </property>
+            <property name="text">
+                <string>High</string>
             </property>
         </widget>
     </widget>

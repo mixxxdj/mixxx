@@ -81,14 +81,46 @@
     </widget>
     <widget class="QLabel">
         <property name="name">
+            <cstring>TextLabel1</cstring>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>20</x>
+                <y>62</y>
+                <width>50</width>
+                <height>20</height>
+            </rect>
+        </property>
+        <property name="paletteForegroundColor">
+            <color>
+                <red>80</red>
+                <green>80</green>
+                <blue>80</blue>
+            </color>
+        </property>
+        <property name="font">
+            <font>
+                <family>Helvetica</family>
+                <pointsize>9</pointsize>
+            </font>
+        </property>
+        <property name="text">
+            <string>MASTER</string>
+        </property>
+        <property name="alignment">
+            <set>AlignCenter</set>
+        </property>
+    </widget>
+    <widget class="QLabel">
+        <property name="name">
             <cstring>TextLabel1_3</cstring>
         </property>
         <property name="geometry">
             <rect>
-                <x>23</x>
+                <x>16</x>
                 <y>142</y>
-                <width>52</width>
-                <height>18</height>
+                <width>60</width>
+                <height>20</height>
             </rect>
         </property>
         <property name="paletteForegroundColor">
@@ -111,36 +143,20 @@
             <set>AlignCenter</set>
         </property>
     </widget>
-    <widget class="QLabel">
+    <widget class="WKnob">
         <property name="name">
-            <cstring>TextLabel1</cstring>
+            <cstring>KnobHeadVol</cstring>
         </property>
         <property name="geometry">
             <rect>
-                <x>24</x>
-                <y>62</y>
-                <width>44</width>
-                <height>18</height>
+                <x>30</x>
+                <y>112</y>
+                <width>32</width>
+                <height>32</height>
             </rect>
         </property>
-        <property name="paletteForegroundColor">
-            <color>
-                <red>80</red>
-                <green>80</green>
-                <blue>80</blue>
-            </color>
-        </property>
-        <property name="font">
-            <font>
-                <family>Helvetica</family>
-                <pointsize>9</pointsize>
-            </font>
-        </property>
-        <property name="text">
-            <string>MASTER</string>
-        </property>
-        <property name="alignment">
-            <set>AlignCenter</set>
+        <property name="backgroundOrigin">
+            <enum>WindowOrigin</enum>
         </property>
     </widget>
     <widget class="QLabel">
@@ -177,38 +193,6 @@
     </widget>
     <widget class="WKnob">
         <property name="name">
-            <cstring>KnobHeadLR</cstring>
-        </property>
-        <property name="geometry">
-            <rect>
-                <x>30</x>
-                <y>161</y>
-                <width>32</width>
-                <height>32</height>
-            </rect>
-        </property>
-        <property name="backgroundOrigin">
-            <enum>WindowOrigin</enum>
-        </property>
-    </widget>
-    <widget class="WKnob">
-        <property name="name">
-            <cstring>KnobHeadVol</cstring>
-        </property>
-        <property name="geometry">
-            <rect>
-                <x>30</x>
-                <y>112</y>
-                <width>32</width>
-                <height>32</height>
-            </rect>
-        </property>
-        <property name="backgroundOrigin">
-            <enum>WindowOrigin</enum>
-        </property>
-    </widget>
-    <widget class="WKnob">
-        <property name="name">
             <cstring>KnobVolume</cstring>
         </property>
         <property name="geometry">
@@ -236,11 +220,27 @@
             </rect>
         </property>
     </widget>
+    <widget class="WKnob">
+        <property name="name">
+            <cstring>KnobHeadLR</cstring>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>30</x>
+                <y>161</y>
+                <width>32</width>
+                <height>32</height>
+            </rect>
+        </property>
+        <property name="backgroundOrigin">
+            <enum>WindowOrigin</enum>
+        </property>
+    </widget>
 </widget>
 <customwidgets>
     <customwidget>
         <class>WKnob</class>
-        <header location="local">../wknob.h</header>
+        <header location="global">wknob.h</header>
         <sizehint>
             <width>32</width>
             <height>32</height>
@@ -274,17 +274,17 @@
 </customwidgets>
 <images>
     <image name="image0">
-        <data format="XPM.GZ" length="3264">789ca596576fe2401080dff91528bc45a7495c166c9dee8154924b0352484ef7b02eb414083669a7fbef37de196f0c9896d304892fb3fb79cbec9aadcd62ebe2b4b8b955886219f7fca2df95a3e266307e7c7cfff5fbc79fc2866516f1af2c8ae6c6b7c2065c16fd62c936cc6dc351fc3361616abe512ccb86908aebcc82b804cc2ee78f132e9b42d8c44d629defa65ca6e747cc01f3ae62693aa6ab788758b882f2cfc4babd4f5c319803cdf43c8f59305f255cb1b4df26d67993d9650e99838aa558103b06b3c32c985f147b966d198a47c4bafd07b3a8788a2bcc01f349c28ea5fbdf12ebf63d66975932a7fd87293bf4bc32b16b70de4a99f3778a3ded1b13eb7c8b5930d73453fb36b3cb7c9fb06bebfed79a295f654edbc7cc01733f65d7567c412c0de627c5beee3f20d6f96dcdbe62975970fe4833e51bcc92f9216169ebfa39674eeba3432c436e6f107b267389b92cd5f3ea6a7ed24f194e13f66c919e873de680f99158d7db21b193eedf6bc2bed0edcf88f5f97c4f380cf5fcdf126eb77dd30b141f304b5f28de670efd80c63b1b5002091ef810a84f80df4368e7b5acc7790ee8608f2ef4a08f710f0ff0084f30c018c233663acb1d308208da1063f4610c2ff00a6ff0ce9601fe2f808f450e1c41844fab62c42a766017f6601f0ee0901d49d470949d7c071c61ae8d51d59663f80927700a67700e1719cb00ead09875e0189aca90b5f4e0122d5738a36b744c5b3a338e1b68e128a72db7389f1db853eb9bb56ce3a73be9c09dfb508e594bacfaf7732c35e87d3ad43c5a2ad6b38460688709163bb2f3596e19c0881c58939136ac66f974d850a2bb1344661cad9cb59d6f19029d4f0f0d16d6e4224b3cd7c2ef40e5f8aa85ee85263bd6b3a46b1b4c39262df9fb3c6d491de5b52c93fbfce9c85a5a6b59025e53f91f9680f7562eb12caa394fd7d8572d3d1872ad37956335cbe40e3d53ade399f3a19263595e2d5530f5b96de0ad24bf600992bb4cdf411e38b9f3596419d20d9fb90bf34732bfe6da10e5dcc9eb59bcd93b192d6e09e658a66bae862b91f36ed063c95f97aca537ff1dc51e0f3d95b996319e8c708577760347da54b53b6911d8df5ce59d3df1db214257121186877b59cafdedf0f77be11fade4372e</data>
+        <data format="XPM.GZ" length="1875">789c7dd4cb72a2401480e1bd4f41c9ce9a3263bca0959a8531114942627653959a453770d0844b7b8b3153f3ee43f7398d284893cd97fe41ae7dd5327ecf5da375d5d86cd976e919de82ad8d96bf8be3c3db9f5f7f1bcdeeb591fdf5fa46a7f9a3d17c303cc3ec42077e82e444b297d346f6a1a7f88a1c58c84fc93e5c5b1dc55b640fba8a3b649f6207a9f705cdbe222702f25172901f7945cc36c967a48e5da44587f234078a09119073e49066ef24adfcc84f481d33a48e634d4bf18548b1d0c4591f39a2782139cc6753a49e0d35878a5322209792a3fc7a3f907adf8848f15873a43843320b191069d644729add4bb2fc91bd23f59dfc26d2f5b6917adfb524cff7bd27d29bb3950cf2b3da4802f06c933c203d0bf945cc36f543f93019c7e1f9c77fb68b4dc08185e162f9fe114531f0a0a249c04fd350acd69b6d1645214fce9b00e2548edde7feebf01dc921203869c6e0fbaab99ddcedef97531545f6acd0048eef63c41e268fabc55447c1b1b185d0d1d36e979d3946e308f2c64bc4314a433928128c9ac011e252e405d8b8226f4a5194a8c604511da9e6d9545f44220a517a16c5427dcb42d445aefafc456dc4d58a212e46f2bccb4d39c2e6a53aa23b404d6da41a60b5916a383b8b4eef25c77b5817b1583d0b8755457471a09e459bcf6b22179ffbcc6617234eef469b27a586a23839beabe503e18943e19dbf10f1c23bdf8e5e2b22c167a7dfa05d3a2776f60d6683dbf39308bc8a3561c69d444709b8556b02ae2de0384eb628c566616df977d3f80f874f2aac</data>
     </image>
     <image name="image1">
-        <data format="XPM.GZ" length="2208">789c4dd5514fdb301007f0773e45c5bda1e996a4491a6bda032db4638c0db6b1759bf69038495b4a5b0a6d814efbee3bdf9dcd3048fcf03fb6639fcbeba3cef8f2a273f4fae061536e66b663a7e57de7a8de2e16cfbf7ebffd737018e71dfa36a6931cbe3a388475c776208ee2348ed85376e19a330ed4560c7be7240afd1fd5da8f6bb16bec1b752a8621db84fe7bb5ef5fa98bc470ff5c6dc5b073eec67e7ed888fdf368c5dda81bb36b75aa3e6187f9e159ed9fbf15778baeccbf575b75254e2375e39cc6699acaf877ea42cde3a725b9647f73ce92e0637196657c1ed8571b31dcaa6bed9fb1cb3ccee4f90be73cc922ed2fc579a6fd0bef5cfa5bb51103f7f7aa709edfc5617f787d4537f43f88c3799cb25ff25bb1c98a8a3d521bf5d2d9a4e17c9fc47e3fe04e6c6ac9e3c4dba46c1097b13a65dbd4ea7ef2f8655a36c6b257e22a514fbd4b7efe8aeba7b4552e06de5f5b877acec4a15e37625f5fc0f55b6721ff491cf2a76affbe8fe2f0bee226d4f38938ece793dadf8fb9d8d73380d8bf3ff0f9347998ef83388ff5bcb93e9a97f1b9deda3cdcef8138ac7f2bf6f50fb5d8d73bf0fd6edbf07c230ecf8fd5fe7e5daafdfa7ea8b59e70280ef7f7a7dadfdf5cedefe748edd7d78ad348efdf4eedefe73bb5dfff4aedebe74aecef234cd446efd399ba56f7c47e7ff1bddae4d27faeaed59fc53dd393fabe1617bede0bb1f1f51da9333158b5d17afe22ae924afa519d8bf1abbaa96a76576c139bb18db8499a9c1d8bdbbc15276afa92fb220d014bacd0628d0db638f17ff7199ce20c6fa8cd2951e32db7052e5f32b8c23b5ce33d3ee006b7b8c3477cc267dce3b14b69a68f033cc1531ce208dfe119bec773fc8017946a2583134a7cc44f78c9992bfc8c5ff02b5e53ea1ba526f2994999ef38c61ff893e639c308634cb04b63a5b4aa56fe4f5026e351729aa987051a8c01f11c80c669e47f19aea1a48c1b670415ade61a2ccd7806ee1de79a1940098dcc062d5430a1d1ae68cc6dc8d4308519dc50cacd4763d1aa76d0620e73daaf5bf9dca7cc8233639ed1e55c1bc212563893cf4a5853ea5e5392a3060fb0a1956e750f8f29b3834797d2dc189ee099f6be1ff679897b1a6b0fc7345a1f067002a730a41db9c3d57f67bac43e8dc58dde927ea8f55de225e31a8c28b7e2fe39fdb60db5f1f7cdc13fdfc4eb0c</data>
+        <data format="XPM.GZ" length="1760">789c55d4c952db401006e0bb9f42c5dca8d48fe56dec4ae560ccbedaec90ca41d682170c186cb355de3d3dd3dd234273f027fd6acd56da588f6efac7d1fa46e575912cc669948e9297683d5bce661fbffffcfaaaacc5ad88fe6d1cd5d67e54d660a33432d5c295f78a1d5bf18e735c7a2ca6f29eb06b966de05c2bf36f62cda76c57de5376dd8a8762bd9f39d70b57de3376c38a4f9c1ba517622aef25bb69c523b1dedf766e96f9841dee3fa89bec9cddb2e28673ab9cefa958e66bfc7c6cb86f32b1aec7235bd70f1d76bbb09ccfd91dcb46d3b95de65fd961fe2d76c817ea36db880bf18573a77cfe9e9d50c279e0d7332986968dd8392de7bb2bd6f9bcb3c3f89ec4ba9f2f6c7d9ff1e3c9caf549c4daafcd0efdea62ed77c30ee3df62eb7e197fdef272bcb762edffcc0ee7af2ad6f356732ecae7fb627d7e8f1dc6f721d6f17db243ffb958fb77d961fcfb623d7f9bec707e2fc57a1e7bec701e0fd8d6b6d8c7ecb69e878158f7ff8eddd1fd3d642754ded7eca1151f89a9bcafd81995f719bbb039fb5c4c7f7c9eb860906088942a438e42af6b06f718614c35f199a9af07dc97194acc7ce2114f78c61c2f78a52b532c5c4a324bacf086777ce0135d6ca247b5856d4ae59c4141891dec62cf67f67180431ce198522794926f06654ed1f799397519e00ce794eae1c275e2ef1a65b44b179794b9a2d435656e2893f1b793ea96329aead17beee88d9ba8d2f313c9ac28d30f6f73a3bea47175698e9a71ef8a51938ceb35f7f5893aadd794bf7b9469f84c5fdea8d5a4cc88bf15b0a193e65cb569cdc6e8c81a2eb0323026a4a84ce213cb6f7b31a55e3b6688d8a4b83589c9fc4c66e55ef8941bd5ffb5fcbea75c26a7ab137f7742bf3ae16cfcfd59f907160ba6c6</data>
     </image>
 </images>
 <layoutdefaults spacing="6" margin="11"/>
 <includehints>
     <includehint>wknob.h</includehint>
     <includehint>wknob.h</includehint>
-    <includehint>wknob.h</includehint>
     <includehint>wbulb.h</includehint>
+    <includehint>wknob.h</includehint>
 </includehints>
 </UI>
