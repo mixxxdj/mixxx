@@ -32,7 +32,6 @@
 
 #include "wknob.h"
 #include "wslider.h"
-#include "wplayposslider.h"
 #include "wpushbutton.h"
 #include "wtracktable.h"
 #include "mixxx.h"
@@ -46,7 +45,6 @@
 #include "reader.h"
 #include "enginebuffer.h"
 #include "tracklist.h"
-#include "dlgplaycontrol.h"
 #include "powermate.h"
 #include "enginevumeter.h"
 
