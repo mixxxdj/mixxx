@@ -312,216 +312,223 @@ void *ReaderExtractBeat::processChunk(const int _idx, const int start_idx, const
     PeakList::iterator it = peaks->getFirstInRange(frameFrom, frameTo+frameAdd-frameFrom);
     i= frameFrom;
 
-    while (i<frameTo+frameAdd)
+    qDebug("frameTo %i",frameTo);
+    //qDebug("%i, %i",(*it), (peaks->begin()==peaks->end()));
+    
+    // Check if peak list is empty (may not be necessary)
+    if (peaks->count()>0)
     {
-        // Is this sample a peak?
-        if ((i%frameNo)==(*it).i)
+        while (i<frameTo+frameAdd)
         {
-            //
-            // Peak
-            //
-
-            //
-            // Consider distance to previous peaks (it2) in the range between histMinBPM and histMaxBPM
-            PeakList::iterator it2 = it;
-            if (it2==peaks->begin())
-                it2 = peaks->end();
-            --it2;
-
-            // Interval in seconds between current peak (it) and a previous peak (it2)
-            float interval = peaks->getDistance(it2,it)/(float)input->getRate();
-
-            // Interval in seconds between current peak (it) and a previous beat mark
-            float beatint = peaks->getDistance(beatBufferLastIdx, it)/(float)input->getRate();
-
-            // This variable is set to true, if there exists a peak which is 1.5 times larger than the current
-            // peak from this peak and histMaxIdx back in time.
-            bool maxPeakInHistMaxInterval = false;
-
-            //
-            // For each previous peak in maximum beat range, update the bpv
-            PeakList::iterator it3 = it2;
-            while(interval>0. && interval<=60.f/histMinBPM && it2!=it)
+            // Is this sample a peak?
+            if (it!=peaks->end() && (i%frameNo)==(*it).i)
             {
-//                qDebug("cur(%i,%p)=%f, prev(%i,%p)=%f, interval %f",(*it).i, it, hfc[(*it).i],(*it2).i, it2, hfc[(*it2).i], interval);
-
-                // Update beat probability vector
-                bpv->add(interval, hfc[(*it).i]*hfc[(*it2).i]);
-
-                // Determine if (it2) is within maximum beat distance from current peak, and if it is
-                // larger than the current peak.
-                if (interval<beatint && hfc[(*it2).i]>hfc[(*it).i])
-                {
-                    maxPeakInHistMaxInterval = true;
-//                    qDebug("max in interval");
-                }
-
-                // Get next previous peak and calculate its distance (interval) to current peak
+                //
+                // Peak
+                //
+    
+                //
+                // Consider distance to previous peaks (it2) in the range between histMinBPM and histMaxBPM
+                PeakList::iterator it2 = it;
                 if (it2==peaks->begin())
                     it2 = peaks->end();
                 --it2;
-
-                // Workaround for possible bug in QT or gcc. When there seems to be only one element in the
-                // list, there may be a difference between it and it2!!!
-                if (it2==it3)
-                    break;
-
-                // Update interval
-                interval = peaks->getDistance(it2,it)/(float)input->getRate();
-            }
-
-            //
-            // Is the current peak (it) a beat?
-//            qDebug("max in interval %i",maxPeakInHistMaxInterval);
-
-
-//            qDebug("peak beatint %f, interval %f",beatint, bpv->getCurrMaxInterval());
-
-//            qDebug("int %f, min %f, max %f",beatint, bpv->getCurrMaxInterval()-kfBeatRange, bpv->getCurrMaxInterval()+kfBeatRange);
-
-            if (m_dBeatFirst<=0. && !backwards && beatint>bpv->getCurrMaxInterval()-kfBeatRange && beatint<bpv->getCurrMaxInterval()+kfBeatRange)
-            {
-                if (!maxPeakInHistMaxInterval)
+    
+                // Interval in seconds between current peak (it) and a previous peak (it2)
+                float interval = peaks->getDistance(it2,it)/(float)input->getRate();
+    
+                // Interval in seconds between current peak (it) and a previous beat mark
+                float beatint = peaks->getDistance(beatBufferLastIdx, it)/(float)input->getRate();
+    
+                // This variable is set to true, if there exists a peak which is 1.5 times larger than the current
+                // peak from this peak and histMaxIdx back in time.
+                bool maxPeakInHistMaxInterval = false;
+    
+                //
+                // For each previous peak in maximum beat range, update the bpv
+                PeakList::iterator it3 = it2;
+                while(interval>0. && interval<=60.f/histMinBPM && it2!=it)
                 {
-
-                    updateConfidence((*it).i, beatBufferLastIdx);
-
-                    //qDebug("set beat at %i, conf %f, bpv %f, int %f",(*it).i,confidence, bpv->getCurrMaxInterval(), beatint*input->getRate());
-                    markBeat((*it).i);
-                    beatCorr[(*it).i] = (*it).corr;
-                    beatBufferLastIdx = (*it).i;
-                }
-//                else
-//                    qDebug("maxPeakInHistMaxInterval");
-            }
-            ++it;
-            if (it==peaks->end())
-                it = peaks->begin();
-        }
-        else if (!backwards && m_dBeatFirst<=0.)
-        {
-            //
-            // No peak
-            //
-
-            if (bpv->getCurrMaxInterval()>0.)
-            {
-                int idx = i%frameNo;
-
-                // interval to last marked beat in seconds
-                float beatint;
-                if (beatBufferLastIdx>idx)
-                    beatint = (float)((idx+frameNo)-beatBufferLastIdx);
-                else
-                    beatint = (float)(idx-beatBufferLastIdx);
-                beatint /= input->getRate();
-
-//                qDebug("no peak beatint %f, interval %f",beatint, bpv->getCurrMaxInterval());
-
-
-//                qDebug("beatint %i",beatint);
-//                qDebug("idx %i, int beat: %i, hist %i", idx, beatint, histMaxIdx+(int)(histMinInterval/histInterval));
-//                qDebug("beatint %i, histint %i",beatint,histMaxIdx+(int)(histMinInterval/histInterval));
-
-
-                // If distance to last marked beat is larger than the current beat interval + kfBeatRange,
-                // consider marking a beat even though no peak is around...
-                if (beatint > bpv->getCurrMaxInterval()+kfBeatRange)
-                {
-                    bool beat = false;
-
-                    if (confidence<kfBeatConfThreshold)
+    //                qDebug("cur(%i,%p)=%f, prev(%i,%p)=%f, interval %f",(*it).i, it, hfc[(*it).i],(*it2).i, it2, hfc[(*it2).i], interval);
+    
+                    // Update beat probability vector
+                    bpv->add(interval, hfc[(*it).i]*hfc[(*it2).i]);
+    
+                    // Determine if (it2) is within maximum beat distance from current peak, and if it is
+                    // larger than the current peak.
+                    if (interval<beatint && hfc[(*it2).i]>hfc[(*it).i])
                     {
-                        //
-                        // Confidence is low, thus we try to resync to find a valid beat mark
-
-                        // Search from current sample and hist interval back in time for the largest peak
-                        int from = (idx-(int)(bpv->getCurrMaxInterval()*input->getRate())+frameNo)%frameNo;
-                        PeakList::iterator itmax = peaks->getMaxInRange(from, (int)bpv->getCurrMaxInterval()*input->getRate());
-
-                        //qDebug("curr block %i-%i, search from %i-%i, max at %i",frameFrom,frameTo+frameAdd,from,idx, (*itmax).i);
-
-                        // If a peak, itmax, was found, ensure that there is no larger peak between itmax and the current
-                        // bpv interval back in time
-                        if (itmax != peaks->end())
+                        maxPeakInHistMaxInterval = true;
+    //                    qDebug("max in interval");
+                    }
+    
+                    // Get next previous peak and calculate its distance (interval) to current peak
+                    if (it2==peaks->begin())
+                        it2 = peaks->end();
+                    --it2;
+    
+                    // Workaround for possible bug in QT or gcc. When there seems to be only one element in the
+                    // list, there may be a difference between it and it2!!!
+                    if (it2==it3)
+                        break;
+    
+                    // Update interval
+                    interval = peaks->getDistance(it2,it)/(float)input->getRate();
+                }
+    
+                //
+                // Is the current peak (it) a beat?
+    //            qDebug("max in interval %i",maxPeakInHistMaxInterval);
+    
+    
+    //            qDebug("peak beatint %f, interval %f",beatint, bpv->getCurrMaxInterval());
+    
+    //            qDebug("int %f, min %f, max %f",beatint, bpv->getCurrMaxInterval()-kfBeatRange, bpv->getCurrMaxInterval()+kfBeatRange);
+    
+                if (m_dBeatFirst<=0. && !backwards && beatint>bpv->getCurrMaxInterval()-kfBeatRange && beatint<bpv->getCurrMaxInterval()+kfBeatRange)
+                {
+                    if (!maxPeakInHistMaxInterval)
+                    {
+    
+                        updateConfidence((*it).i, beatBufferLastIdx);
+    
+                        //qDebug("set beat at %i, conf %f, bpv %f, int %f",(*it).i,confidence, bpv->getCurrMaxInterval(), beatint*input->getRate());
+                        markBeat((*it).i);
+                        beatCorr[(*it).i] = (*it).corr;
+                        beatBufferLastIdx = (*it).i;
+                    }
+    //                else
+    //                    qDebug("maxPeakInHistMaxInterval");
+                }
+                ++it;
+                if (it==peaks->end())
+                    it = peaks->begin();
+            }
+            else if (!backwards && m_dBeatFirst<=0.)
+            {
+                //
+                // No peak
+                //
+    
+                if (bpv->getCurrMaxInterval()>0.)
+                {
+                    int idx = i%frameNo;
+    
+                    // interval to last marked beat in seconds
+                    float beatint;
+                    if (beatBufferLastIdx>idx)
+                        beatint = (float)((idx+frameNo)-beatBufferLastIdx);
+                    else
+                        beatint = (float)(idx-beatBufferLastIdx);
+                    beatint /= input->getRate();
+    
+    //                qDebug("no peak beatint %f, interval %f",beatint, bpv->getCurrMaxInterval());
+    
+    
+    //                qDebug("beatint %i",beatint);
+    //                qDebug("idx %i, int beat: %i, hist %i", idx, beatint, histMaxIdx+(int)(histMinInterval/histInterval));
+    //                qDebug("beatint %i, histint %i",beatint,histMaxIdx+(int)(histMinInterval/histInterval));
+    
+    
+                    // If distance to last marked beat is larger than the current beat interval + kfBeatRange,
+                    // consider marking a beat even though no peak is around...
+                    if (beatint > bpv->getCurrMaxInterval()+kfBeatRange)
+                    {
+                        bool beat = false;
+    
+                        if (confidence<kfBeatConfThreshold)
                         {
-                            // Find maximum peak between itmax and hist interval back in time
-                            int from = ((*itmax).i-1-(int)(bpv->getCurrMaxInterval()*input->getRate())+frameNo)%frameNo;
-                            PeakList::iterator itmax2 = peaks->getMaxInRange(from, (int)bpv->getCurrMaxInterval()*input->getRate());
-                            //qDebug("max found %i, from %i-%i, len %i",(*itmax).i,oldfrom,from, (int)(bpv->getCurrMaxInterval()*input->getRate()));
-
-//                            if (itmax2!=peaks->end())
-//                                qDebug("max1(%i) %f, max2(%i) %f",(*itmax).i,hfc[(*itmax).i],(*itmax2).i,hfc[(*itmax2).i]);
-//                            else
-//                                qDebug("no max2");
-
-                            // If it exists ensure that it's less than itmax
-                            if (itmax2==peaks->end() || hfc[(*itmax2).i] < hfc[(*itmax).i])
+                            //
+                            // Confidence is low, thus we try to resync to find a valid beat mark
+    
+                            // Search from current sample and hist interval back in time for the largest peak
+                            int from = (idx-(int)(bpv->getCurrMaxInterval()*input->getRate())+frameNo)%frameNo;
+                            PeakList::iterator itmax = peaks->getMaxInRange(from, (int)bpv->getCurrMaxInterval()*input->getRate());
+    
+                            //qDebug("curr block %i-%i, search from %i-%i, max at %i",frameFrom,frameTo+frameAdd,from,idx, (*itmax).i);
+    
+                            // If a peak, itmax, was found, ensure that there is no larger peak between itmax and the current
+                            // bpv interval back in time
+                            if (itmax != peaks->end())
                             {
-                                confidence = 0.;
-                                markBeat((*itmax).i);
-                                beatBufferLastIdx = (*itmax).i;
-                                beatCorr[(*itmax).i] = (*itmax).corr;
-
-                                //qDebug("resync at %i, cur %i, conf %f",(*itmax).i,idx,confidence);
-
-                                if ((*itmax).i<updateFrom)
-                                    updateFrom = (*itmax).i;
-
-                                // Delete everything from resync point to frameTo+frameAdd
-                                for (int j=(*itmax).i+1; j<frameTo+frameAdd; ++j)
-                                    beatBuffer[j%frameNo] = 0.;
-
-#ifdef FILEOUTPUT
-                                QTextStream streamconf(&textconf);
-                                streamconf << confidence << "\n";
-                                textconf.flush();
-#endif
-
-                                beat = true;
+                                // Find maximum peak between itmax and hist interval back in time
+                                int from = ((*itmax).i-1-(int)(bpv->getCurrMaxInterval()*input->getRate())+frameNo)%frameNo;
+                                PeakList::iterator itmax2 = peaks->getMaxInRange(from, (int)bpv->getCurrMaxInterval()*input->getRate());
+                                //qDebug("max found %i, from %i-%i, len %i",(*itmax).i,oldfrom,from, (int)(bpv->getCurrMaxInterval()*input->getRate()));
+    
+    //                            if (itmax2!=peaks->end())
+    //                                qDebug("max1(%i) %f, max2(%i) %f",(*itmax).i,hfc[(*itmax).i],(*itmax2).i,hfc[(*itmax2).i]);
+    //                            else
+    //                                qDebug("no max2");
+    
+                                // If it exists ensure that it's less than itmax
+                                if (itmax2==peaks->end() || hfc[(*itmax2).i] < hfc[(*itmax).i])
+                                {
+                                    confidence = 0.;
+                                    markBeat((*itmax).i);
+                                    beatBufferLastIdx = (*itmax).i;
+                                    beatCorr[(*itmax).i] = (*itmax).corr;
+    
+                                    //qDebug("resync at %i, cur %i, conf %f",(*itmax).i,idx,confidence);
+    
+                                    if ((*itmax).i<updateFrom)
+                                        updateFrom = (*itmax).i;
+    
+                                    // Delete everything from resync point to frameTo+frameAdd
+                                    for (int j=(*itmax).i+1; j<frameTo+frameAdd; ++j)
+                                        beatBuffer[j%frameNo] = 0.;
+    
+    #ifdef FILEOUTPUT
+                                    QTextStream streamconf(&textconf);
+                                    streamconf << confidence << "\n";
+                                    textconf.flush();
+    #endif
+    
+                                    beat = true;
+                                }
                             }
                         }
-                    }
-
-                    if (!beat)
-                    {
-                        // The confidence is either high, or the resync failed. Thus a beat mark
-                        // is forced near the predicted position
-                        int beatidx = (beatBufferLastIdx + (int)(bpv->getCurrMaxInterval()*input->getRate()))%frameNo;
-                        for (int i=beatidx; i<beatidx+kfBeatRangeForce*input->getRate(); ++i)
+    
+                        if (!beat)
                         {
-                            if (hfc[i%frameNo]>hfc[(i-1+frameNo)%frameNo] && hfc[i%frameNo]>hfc[(i+1)%frameNo])
+                            // The confidence is either high, or the resync failed. Thus a beat mark
+                            // is forced near the predicted position
+                            int beatidx = (beatBufferLastIdx + (int)(bpv->getCurrMaxInterval()*input->getRate()))%frameNo;
+                            for (int i=beatidx; i<beatidx+kfBeatRangeForce*input->getRate(); ++i)
                             {
-                                beatidx = i;
-                                break;
+                                if (hfc[i%frameNo]>hfc[(i-1+frameNo)%frameNo] && hfc[i%frameNo]>hfc[(i+1)%frameNo])
+                                {
+                                    beatidx = i;
+                                    break;
+                                }
                             }
+                            updateConfidence(beatidx, beatBufferLastIdx);
+    
+                            float interval;
+                            if (beatBufferLastIdx>beatidx)
+                                interval = (float)(beatidx+frameNo-beatBufferLastIdx);
+                            else
+                                interval = (float)(beatidx-beatBufferLastIdx);
+                            //qDebug("force peak at %i, beatint %f, conf %f, bpv %f, interval %f",beatidx,beatint,confidence,bpv->getCurrMaxInterval(), interval);
+    
+                            markBeat(beatidx);
+                            beatBufferLastIdx = beatidx;
+    
+                            if (beatidx<updateFrom)
+                                updateFrom = beatidx;
                         }
-                        updateConfidence(beatidx, beatBufferLastIdx);
-
-                        float interval;
-                        if (beatBufferLastIdx>beatidx)
-                            interval = (float)(beatidx+frameNo-beatBufferLastIdx);
-                        else
-                            interval = (float)(beatidx-beatBufferLastIdx);
-                        //qDebug("force peak at %i, beatint %f, conf %f, bpv %f, interval %f",beatidx,beatint,confidence,bpv->getCurrMaxInterval(), interval);
-
-                        markBeat(beatidx);
-                        beatBufferLastIdx = beatidx;
-
-                        if (beatidx<updateFrom)
-                            updateFrom = beatidx;
                     }
                 }
             }
+            else
+                // Going backwards set confidence very low
+                confidence = -1.;
+    
+    
+            ++i;
         }
-        else
-            // Going backwards set confidence very low
-            confidence = -1.;
-
-
-        ++i;
     }
-
+    
     // Mark beat based on beatFirst (position of first beat)
     if (m_dBeatFirst>0.)
     {
