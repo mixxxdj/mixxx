@@ -56,10 +56,11 @@ void PeakList::update(int idx, int len)
     else
     {
         // The buffer is wrapped
-        for (int i=(idx+len)%m_iIdxSize; i>=0; --i)
+        int i;
+		for (i=(idx+len)%m_iIdxSize; i>=0; --i)
             it = insertIfPeak(i, it);
         it = end();
-        for (int i=m_iIdxSize; i>=idx; --i)
+        for (i=m_iIdxSize; i>=idx; --i)
             it = insertIfPeak(i, it);
     }
 }
