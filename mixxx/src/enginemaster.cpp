@@ -50,7 +50,7 @@ EngineMaster::EngineMaster(EngineBuffer *_buffer1, EngineBuffer *_buffer2,
     m_pBalance = new ControlEngine(p);
             
     // Master volume
-    volume = new EngineVolume(ConfigKey(group,"volume"));
+    volume = new EngineVolume(ConfigKey(group,"volume"), 5.);
 
     // Clipping
     clipping = new EngineClipping(group);
@@ -59,7 +59,7 @@ EngineMaster::EngineMaster(EngineBuffer *_buffer1, EngineBuffer *_buffer2,
     vumeter = new EngineVuMeter(group);
 
     // Headphone volume
-    head_volume = new EngineVolume(ConfigKey(group, "headVolume"));
+    head_volume = new EngineVolume(ConfigKey(group, "headVolume"), 5.);
 
     // Headphone mix (left/right)
     p = new ControlPotmeter(ConfigKey(group, "headMix"),-1.,1.);

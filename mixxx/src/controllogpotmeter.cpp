@@ -29,13 +29,26 @@
    -------- ------------------------------------------------------ */
 ControlLogpotmeter::ControlLogpotmeter(ConfigKey key, double dMaxValue) : ControlPotmeter(key)
 {
-    a = 1.;
-    b = log10(2.)/middlePosition;
-    b2 = log10((dMaxValue+1.)/2.)/middlePosition;
-    a2 = 2.*pow(10., -middlePosition*b);
-
     m_dMinValue = 0.;
     m_dMaxValue = dMaxValue;
+
+    if (m_dMaxValue==1.)
+    {
+        m_bTwoState = false;
+
+        a = 1.;
+        b = log10(2.)/maxPosition;
+    }
+    else
+    {
+        m_bTwoState = true;
+
+        a = 1.;
+        b = log10(2.)/middlePosition;
+        b2 = log10((dMaxValue+1.)/2.)/middlePosition;
+        a2 = 2.*pow(10., -middlePosition*b);
+    }
+    
     m_dValueRange = m_dMaxValue-m_dMinValue;
         
     m_dValue = 1.;
@@ -44,22 +57,36 @@ ControlLogpotmeter::ControlLogpotmeter(ConfigKey key, double dMaxValue) : Contro
 void ControlLogpotmeter::setValueFromWidget(double dValue)
 {
     // Calculate the value linearly:
-    if (dValue <= middlePosition)
+    if (!m_bTwoState)
+    {
         m_dValue = a*pow(10., b*dValue) - 1.;
+    }
     else
-        m_dValue = a2*pow(10., b2*dValue) - 2.;
-
+    {
+        if (dValue <= middlePosition)
+            m_dValue = a*pow(10., b*dValue) - 1.;
+        else
+            m_dValue = a2*pow(10., b2*dValue) - 2.;
+    }
     updateFromWidget();
 }
 
 void ControlLogpotmeter::updateWidget()
 {
     double pos;
-    if (m_dValue>1.)
-        pos = log10(m_dValue+2./a2)/b2;
-    else
-        pos = log10(m_dValue+1./a)/b;    
 
+    if (!m_bTwoState)
+    {
+        pos = log10(m_dValue+1./a)/b;
+    }
+    else
+    {
+        if (m_dValue>1.)
+            pos = log10(m_dValue+2./a2)/b2;
+        else
+            pos = log10(m_dValue+1./a)/b;    
+    }
+    
     emit(signalUpdateWidget(pos));
 }
 

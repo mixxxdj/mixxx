@@ -331,28 +331,28 @@ void EngineBuffer::slotControlRatePermDown(double)
 {
     // Adjusts temp rate down if button pressed
     if (buttonRatePermDown->get()==1.)
-        rateSlider->sub(0.001);
+        rateSlider->sub(0.005);
 }
 
 void EngineBuffer::slotControlRatePermDownSmall(double)
 {
     // Adjusts temp rate down if button pressed
     if (buttonRatePermDownSmall->get()==1.)
-        rateSlider->sub(0.0001);
+        rateSlider->sub(0.001);
 }
 
 void EngineBuffer::slotControlRatePermUp(double)
 {
     // Adjusts temp rate up if button pressed
     if (buttonRatePermUp->get()==1.)
-        rateSlider->add(0.001);
+        rateSlider->add(0.005);
 }
 
 void EngineBuffer::slotControlRatePermUpSmall(double)
 {
     // Adjusts temp rate up if button pressed
     if (buttonRatePermUpSmall->get()==1.)
-        rateSlider->add(0.0001);
+        rateSlider->add(0.001);
 }
 
 void EngineBuffer::slotControlRateTempDown(double)

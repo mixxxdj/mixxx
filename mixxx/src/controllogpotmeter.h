@@ -36,6 +36,12 @@ public slots:
 protected:
     void updateWidget();
 
+    // This is true, if the log potmeter is divided into two states, one from 0 to 1, and
+    // the second from 1 to m_dMaxValue. Two states is often used with knobs where the first
+    // half rotation is used to control a value between 0 and 1, and the second half between
+    // 1 and some bigger value.
+    bool m_bTwoState;
+    
     double a,b,a2,b2;
 };
 
