@@ -29,7 +29,7 @@
 #include "engineobject.h"
 #include "controlpushbutton.h"
 #include "controlpotmeter.h"
-#include "controlrotary.h"
+#include "controlttrotary.h"
 #include "dlgplaycontrol.h"
 #include "dlgchannel.h"
 #include "midiobject.h"
@@ -97,7 +97,7 @@ private:
    void writepos();
    ControlPushButton *PlayButton;
    ControlPotmeter *rateSlider;
-   ControlRotary *wheel;
+   ControlTTRotary *wheel;
    SoundSource *file;
    SAMPLE *temp;
    const char *group;

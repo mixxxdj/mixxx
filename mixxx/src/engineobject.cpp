@@ -18,51 +18,32 @@
 #include "engineobject.h"
 
 #ifdef __WIN__
-#include "windows.h"
-//using namespace System;
-//using namespace System::Threading; 
+  #include "windows.h"
 #endif
 
 
 // Static member variable definition
-QString EngineObject::NAME_MASTER = 0;
-QString EngineObject::NAME_HEAD = 0;
+//QString EngineObject::NAME_MASTER = 0;
+//QString EngineObject::NAME_HEAD = 0;
 int EngineObject::SRATE = 0;
-int EngineObject::BITS = 0;
-int EngineObject::BUFFERSIZE = 0;
-int EngineObject::CH_MASTER = 0;
-int EngineObject::CH_HEAD = 0;
-int EngineObject::NYQUIST = 0;
-CSAMPLE EngineObject::norm = 0.;
+//int EngineObject::BITS = 0;
+//int EngineObject::BUFFERSIZE = 0;
+//int EngineObject::CH_MASTER = 0;
+//int EngineObject::CH_HEAD = 0;
 FLOAT_TYPE EngineObject::BASERATE = 1.0;
-MixxxView *EngineObject::view = 0;
+//MixxxView *EngineObject::view = 0;
 
 EngineObject::EngineObject()
 {
-    //view = v;
 }
 
 EngineObject::~EngineObject()
 {
 }
 
-void EngineObject::setParams(QString name, int srate, int bits, int bufferSize, int chMaster, int chHead)
+void EngineObject::setSrate(int srate)
 {
-    if (chMaster>0)
-    {
-        NAME_MASTER = name;
-        CH_MASTER   = chMaster;
-        CH_HEAD     = chHead;
-    } else {
-        NAME_HEAD   = name;
-        CH_HEAD     = chHead;
-    }
     SRATE      = srate;
-    BITS       = bits;
-    BUFFERSIZE = bufferSize;
-
-    NYQUIST = SRATE/2;
-    norm    = (2.*acos(-1.0))/SRATE;
     BASERATE = 44100.0/FLOAT_TYPE(SRATE); // Set the basic rate.
 }
 

@@ -64,12 +64,12 @@ EngineBuffer::EngineBuffer(QApplication *a, QWidget *m, DlgPlaycontrol *_playcon
   connect(rateSlider, SIGNAL(updateGUI(int)), playcontrol->SliderRate, SLOT(setValue(int)));
 
   // Wheel to control playback position/speed
-  wheel = new ControlRotary(ConfigKey(group, "wheel"), PlayButton);
-  connect(playcontrol->WheelPlaycontrol, SIGNAL(valueChanged(int)), wheel, SLOT(slotSetValue(int)));
+  wheel = new ControlTTRotary(ConfigKey(group, "wheel"));
+  //connect(playcontrol->WheelPlaycontrol, SIGNAL(valueChanged(int)), wheel, SLOT(slotSetValue(int)));
   connect(wheel, SIGNAL(valueChanged(FLOAT_TYPE)), this, SLOT(slotUpdateRate(FLOAT_TYPE)));
   // Don't connect this, it results in an infinite loop:
 //  connect(wheel, SIGNAL(updateGUI(int)), playcontrol->WheelPlaycontrol, SLOT(setValue(int)));
-  connect(wheel, SIGNAL(updateGUI(int)), wheel, SLOT(slotSetPosition(int)));
+  //connect(wheel, SIGNAL(updateGUI(int)), wheel, SLOT(slotSetPosition(int)));
 
   // Slider to show and change song position
   connect(playcontrol->SliderPosition, SIGNAL(valueChanged(int)), this, SLOT(slotPosition(int)));
@@ -237,11 +237,12 @@ void EngineBuffer::slotUpdatePlay(valueType)
     {
         //qDebug("Entered seeking mode");
         rate.write(0);
-        start_seek = wheel->getPosition();
+        start_seek = 0; //wheel->getPosition();
     }
     else if (PlayButton->getPosition()==up && start_seek>=0)
     {
-        int end_seek = wheel->getPosition();
+        int end_seek = 0; //wheel->getPosition();
+/*
         if (abs(start_seek - end_seek) > 2)
         {
             // A seek has occured. Find new filepos:
@@ -255,6 +256,7 @@ void EngineBuffer::slotUpdatePlay(valueType)
         }
         start_seek = -1;
         //qDebug("Ended seeking");
+*/
     }
     slotUpdateRate(rateSlider->getValue());
 }
@@ -543,7 +545,7 @@ CSAMPLE *EngineBuffer::process(const CSAMPLE *, const int buf_size)
     {
         checkread();
         // Check the wheel:
-        wheel->updatecounter(buf_size,EngineObject::SRATE);
+        //wheel->updatecounter(buf_size,EngineObject::SRATE);
         // Write position to the gui:
         writepos();
     }

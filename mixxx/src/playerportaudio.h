@@ -27,10 +27,8 @@
 
 class PlayerPortAudio : public Player  {
 public: 
-    PlayerPortAudio(int size, std::vector<EngineObject *> *, QString device, int chMaster, int chHead);
+    PlayerPortAudio(ConfigObject<ConfigValue> *config);
     ~PlayerPortAudio();
-    /** Open device */
-    bool open(QString name, int srate, int bits, int bufferSize, int chMaster, int chHead);
     /** Close device */
     void close();
     /** Stop playback */
@@ -42,6 +40,11 @@ public:
     int minLatency(int SRATE);
     CSAMPLE *process(const CSAMPLE *, const int);
 protected:
+    /** Get default device name */
+    QString getDefaultDevice();
+    /** Open device */
+    bool open(QString name, int srate, int bits, int bufferSize, int chMaster, int chHead);
+    /** PortAudio stream */
     PortAudioStream *stream;
 };
 
