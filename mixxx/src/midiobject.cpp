@@ -198,9 +198,10 @@ void MidiObject::run()
         do
 		{
             int no = read(handle,&buffer[0],1);
+            qDebug("midi: %i",no);
             if (no != 1)
                 qWarning("Warning: midiobject recieved %i bytes.", no);
-		} while (buffer[0] != -79);
+        } while (buffer[0] != -80); // -79 for MixxxBox
 #endif
         /*
         and then get the following 2 bytes:
@@ -241,6 +242,7 @@ void MidiObject::run()
             {
                 //potmeters[i]->slotSetPosition((int)midivalue);
                 potmeters[i]->midiEvent(127-(int)midivalue);
+
                 //qDebug("Changed potmeter %s to %i",potmeters[i]->print(),
                 //       (int)potmeters[i]->getValue());
                 break;

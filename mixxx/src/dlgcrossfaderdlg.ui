@@ -83,6 +83,9 @@
         <property name="maxValue">
             <number>127</number>
         </property>
+        <property name="value">
+            <number>63</number>
+        </property>
         <property name="orientation">
             <enum>Horizontal</enum>
         </property>

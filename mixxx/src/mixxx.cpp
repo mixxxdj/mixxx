@@ -70,14 +70,14 @@ MixxxApp::MixxxApp()
                              view->playlist->ListPlaylist->firstChild()->text(1));
 
   qDebug("Init buffer 2...");
-  buffer2 = new EngineBuffer(view->playcontrol2, 0, 0, 0, midi,
+  buffer2 = new EngineBuffer(view->playcontrol2, 0, 14, 15, midi,
                              view->playlist->ListPlaylist->firstChild()->nextSibling()->text(1));
 
   channel1 = new EngineChannel(view->channel1, midi, ADC7, ADC4, ADC5, ADC6, 0);
   channel2 = new EngineChannel(view->channel2, midi, 0, 0, 0, 0, 0);
 
   qDebug("Init master...");
-  master = new EngineMaster(view->master, view->crossfader, buffer1, buffer2, channel1, channel2, 0, 0, midi);
+  master = new EngineMaster(view->master, view->crossfader, buffer1, buffer2, channel1, channel2, 13, 10, midi);
 
   /** Connect signals from option menu, selecting processing of left and right channel, to
       EngineMaster */
@@ -489,13 +489,7 @@ void MixxxApp::slotChangePlay(int row,int col,int button, const QPoint &)
 
 void MixxxApp::slotChangePlay(QListViewItem *item)
 {
-  // stop playback and deallocate buffer
-  player->stop();
-
   // Tell the buffer to get a new file:
   buffer1->newtrack(item->text(1));
-
-  // Start buffer and playback
-  player->start(master);
 }
 

@@ -60,6 +60,7 @@ public slots:
 signals:
    void position(int);   
 private:
+   bool pause;
    int start_seek;
    Monitor rate;
    Monitor readChunkLock;

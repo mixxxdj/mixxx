@@ -36,7 +36,7 @@ EngineFilterBlock::EngineFilterBlock(QKnob *DialFilterLow, int midiLow,
     connect(filterpotMid, SIGNAL(recievedMidi(int)), DialFilterMid, SLOT(setValue(int)));
   	
     //high = new EngineFilterRBJ(true,700.,1.);
-    high = new EngineFilterIIR(bessel_highpass_5000);
+    high = new EngineFilterIIR(bessel_highpass);
     filterpotHigh = new ControlLogpotmeter("filterpot", midiHigh, midi, 5.);
     connect(filterpotHigh,  SIGNAL(valueChanged(FLOAT_TYPE)), this, SLOT(slotUpdateHigh(FLOAT_TYPE)));
     connect(DialFilterHigh, SIGNAL(valueChanged(int)), filterpotHigh, SLOT(slotSetPosition(int)));

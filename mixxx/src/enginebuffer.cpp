@@ -64,6 +64,7 @@ EngineBuffer::EngineBuffer(DlgPlaycontrol *_playcontrol, int midiPlaybutton, int
 
   // Open the track:
   file = 0;
+  pause = true;
   newtrack(filename);
 
   // Allocate buffer for processing:
@@ -94,6 +95,9 @@ EngineBuffer::~EngineBuffer(){
 }
 
 void EngineBuffer::newtrack(const char* filename) {
+  // Start track in pause state
+  pause = true;
+
   // If we are already playing a file, then get rid of it:
   if (file != 0) delete file;
   /*
@@ -127,6 +131,8 @@ void EngineBuffer::newtrack(const char* filename) {
   playpos_buffer.write(0.);
   // ...and read one chunk to get started:
   getchunk();
+
+  pause = false;
 }
 
 void EngineBuffer::start() {
@@ -212,17 +218,13 @@ void EngineBuffer::getchunk() {
   // Read a chunk
   unsigned samples_read = file->read(chunk_size, temp);
 
-qDebug("1");
-
   if (samples_read < chunk_size)
       qDebug("Didn't get as many samples as we asked for: %d:%d", chunk_size, samples_read);
 
-qDebug("2");
   // Convert from SAMPLE to CSAMPLE. Should possibly be optimized
   // using assembler code from music-dsp archive.
   unsigned long lastread_buffer = ((unsigned long)(playpos_buffer.read() + lastread_file.read() -
          playpos_file.read()))%read_buffer_size;
-qDebug("3");
 
    /* qDebug("lastread_buffer: %f", (double)lastread_buffer);
     qDebug("playpos_buffer: %f",playpos_buffer.read());
@@ -230,14 +232,11 @@ qDebug("3");
     qDebug("lastread_file: %f",lastread_file.read()); */
 
   unsigned i = 0;
-  qDebug("p: %p,%p, j=%i to %i",read_buffer,temp,lastread_buffer,min(read_buffer_size,lastread_buffer+samples_read));
   for (unsigned long j=lastread_buffer; j<min(read_buffer_size,lastread_buffer+samples_read); j++)
     read_buffer[j] = temp[i++];
-qDebug("4");
   //qDebug("%i",lastread_buffer+samples_read-read_buffer_size);
   for (signed long j=0; j<(signed long)(lastread_buffer+samples_read-read_buffer_size); j++)
     read_buffer[j] = temp[i++];
-qDebug("5");
 
   // Update lastread_file position:
   lastread_file.add((double)samples_read);
@@ -264,8 +263,7 @@ void EngineBuffer::seek(FLOAT_TYPE change)
         readChunkLock.write(1.);
 
     qDebug("Entered seek");
-  double saved_rate = rate.read();
-  rate.write(0);
+  pause = true;
   qDebug("Set rate to zero");
   double new_playpos = playpos_file.read() + change*file->length();
   if (new_playpos > file->length()) new_playpos = file->length();
@@ -278,7 +276,7 @@ void EngineBuffer::seek(FLOAT_TYPE change)
   //getchunk();
   buffersReadAhead->wakeAll();
   qDebug("done seeking.");
-  rate.write(saved_rate);
+  pause = false;
   readChunkLock.write(0.);
 } else {
 	qDebug("no seeking since getChunk is active!");
@@ -322,7 +320,7 @@ void EngineBuffer::writepos()
 
 CSAMPLE *EngineBuffer::process(const CSAMPLE *, const int buf_size)
 {
-    if (rate.read()==0.)
+    if (rate.read()==0. || pause)
     {
 	    for (int i=0; i<buf_size; i++)
 	        buffer[i]=0.;
@@ -370,7 +368,7 @@ CSAMPLE *EngineBuffer::process(const CSAMPLE *, const int buf_size)
 /** Method connected to wheels sliderRelease signal, to center the wheel after an interaction */
 void EngineBuffer::slotCenterWheel()
 {
-    playcontrol->SliderPlaycontrol->setValue(49);
+    playcontrol->SliderPlaycontrol->setValue(63);
     wheel->setValue(0);
 }
 
