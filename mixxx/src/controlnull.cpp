@@ -17,7 +17,7 @@
 
 #include "controlnull.h"
 
-ControlNull::ControlNull() //: ControlObject(key)
+ControlNull::ControlNull() : ControlObject()
 {
 }
 

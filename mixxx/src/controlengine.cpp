@@ -19,7 +19,9 @@
 #include "controlengine.h"
 #include "controleventengine.h"
 #include "engineobject.h"
-#include <qthread.h>
+#include <qapplication.h>
+
+
 
 QPtrList<ControlEngine> *ControlEngine::list = new QPtrList<ControlEngine>;
 
@@ -48,9 +50,10 @@ ControlEngine::~ControlEngine()
     delete controlObject;
 }
 
-void ControlEngine::setNotify(EngineObject *_notifyobj)
+void ControlEngine::setNotify(EngineObject *_notifyobj, void (EngineObject::*_notifymethod)(double))
 {
     notifyobj = _notifyobj;
+    notifymethod = _notifymethod;
 }
 
 double ControlEngine::get()
@@ -63,14 +66,14 @@ void ControlEngine::set(double v)
     value = v;
  
     ControlEventEngine *e = new ControlEventEngine(v);
-    QThread::postEvent(controlObject,e);
+    QApplication::postEvent(controlObject,e);
 }
 
 void ControlEngine::setExtern(double v)
 {
     value = v;
     if (notifyobj!=0)
-        notifyobj->notify(v);
+        (notifyobj->*notifymethod)(v);
 }
 
 void ControlEngine::add(double v)
@@ -78,14 +81,13 @@ void ControlEngine::add(double v)
     value += v;
 
     ControlEventEngine *e = new ControlEventEngine(v);
-    QThread::postEvent(controlObject,e);
+    QApplication::postEvent(controlObject,e);
 }
 
 void ControlEngine::sub(double v)
 {
-    qDebug("sub");
     value -= v;
 
     ControlEventEngine *e = new ControlEventEngine(v);
-    QThread::postEvent(controlObject,e);
+    QApplication::postEvent(controlObject,e);
 }

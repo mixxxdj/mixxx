@@ -17,11 +17,10 @@
 
 #ifndef VISUALCONTROLLER_H
 #define VISUALCONTROLLER_H
-#if defined(WIN32)
-#include <windows.h>
-#endif
+
 #include <list>
-#include <GL/gl.h>
+#include <qapplication.h>
+#include <qgl.h>
 
 /**
  * Forward Declaration.
@@ -40,7 +39,7 @@ typedef std::list<VisualObject *>::iterator ObjectsIterator;
 class VisualController
 {
 public: 
-  VisualController();
+  VisualController(QApplication *_app);
 
 private:
   void setupBackfaceCulling();
@@ -64,6 +63,7 @@ public:
   GLsizei width,height;
 
 private:
+  QApplication *app;
   Objects objects;
   static int idCount;
 };

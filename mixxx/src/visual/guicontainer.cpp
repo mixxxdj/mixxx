@@ -166,12 +166,6 @@ void GUIContainer::move(int msec)
     }
 }
 
-void GUIContainer::update()
-{
-    buffer->update();
-}
-
-
 void GUIContainer::setupScene()
 {
     mylight.ambient[0]  = 1.f;

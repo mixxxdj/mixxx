@@ -29,13 +29,14 @@
 #include <qvaluelist.h>
 #include <qptrlist.h>
 #include <qstring.h>
+#include <qapplication.h>
 
 class ControlEngineQueue;
 
 class Player : public EngineObject
 {
 public:
-    Player(ConfigObject<ConfigValue> *_config, ControlEngineQueue *queue);
+    Player(ConfigObject<ConfigValue> *_config, ControlEngineQueue *queue, QApplication *_app);
     virtual ~Player();      // Deallocate
     void notify(double) {};
     bool open(bool useDefault);
@@ -86,6 +87,8 @@ protected:
     /** Pointer to ControlEngineQueue taking care of syncing control parameters
         from GUI (main) thread to player thread */
     ControlEngineQueue *queue;
+    /** Pointer to qapp */
+    QApplication *app;
 };
 
 #endif

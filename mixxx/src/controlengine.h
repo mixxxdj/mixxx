@@ -39,7 +39,7 @@ public:
     ~ControlEngine();
     QPtrList<ControlEngine> *getList();
 
-    void setNotify(EngineObject *);
+    void setNotify(EngineObject *, void (EngineObject::*_notifymethod)(double));
             
     double get();
     void set(double v);
@@ -52,6 +52,7 @@ private:
     double value;
     /** Set to an EngineObject to notify when control value changes by call to setExtern */
     EngineObject *notifyobj;
+    void (EngineObject::*notifymethod) (double);
 };
 
 #endif

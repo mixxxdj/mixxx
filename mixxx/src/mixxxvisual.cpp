@@ -21,12 +21,14 @@
 #include "visual/guicontainer.h"
 #include "visual/guichannel.h"
 
-MixxxVisual::MixxxVisual(QWidget *parent, const char *name) : QGLWidget(parent,name)
+MixxxVisual::MixxxVisual(QApplication *app, QWidget *parent, const char *name) : QGLWidget(parent,name)
 {
+    controller = new VisualController(app);
+
 //    idCount = 0;
     installEventFilter(this);
     time.start();
-    startTimer(50);
+    startTimer(16);
 
     list.setAutoDelete(true);
 }
@@ -42,10 +44,6 @@ bool MixxxVisual::eventFilter(QObject *o, QEvent *e)
     {
         QMouseEvent *m = (QMouseEvent *)e;
         int id = picking.pick(m->x(),m->y());
-        if (id==1) id=1;
-        if (id==2) id=1;
-        if (id==3) id=2;
-        if (id==4) id=2;
 /*
         GUIContainer *c = getContainer(id);
         if (c!=0)
@@ -64,7 +62,7 @@ bool MixxxVisual::eventFilter(QObject *o, QEvent *e)
 
 GUIChannel *MixxxVisual::add(EngineBuffer *engineBuffer)
 {
-    GUIChannel *c = new GUIChannel(engineBuffer,&controller);
+    GUIChannel *c = new GUIChannel(engineBuffer,controller);
 
     // Position coding... hack
     if (list.isEmpty())
@@ -78,8 +76,6 @@ GUIChannel *MixxxVisual::add(EngineBuffer *engineBuffer)
         c->setZoomPosX(-50);
     }
         
-    //buffer1->getSoundBuffer()->setVisual(container->getBuffer());
-    
     list.append(c);
     return c;
 }
@@ -97,11 +93,11 @@ GUIContainer *MixxxVisual::getContainer(int id)
     
 void MixxxVisual::initializeGL()
 {
-    controller.init();
+    controller->init();
     backplane = new VisualBackplane();
-    controller.add(backplane);
+    controller->add(backplane);
 
-    picking.init(&controller);
+    //picking.init(controller);
 }
 
 
@@ -112,17 +108,19 @@ void MixxxVisual::paintGL()
     time.restart();
 
     // Update position of each channel
+/*
     GUIChannel *c;
     for (c = list.first(); c; c = list.next())
         c->move(msec);
+*/
 
     // Display stuff
-    controller.display();
+    controller->display();
 }
 
 void MixxxVisual::resizeGL(int width, int height)
 {
-    controller.resize((GLsizei)width,(GLsizei)height);
+    controller->resize((GLsizei)width,(GLsizei)height);
 }
 
 void MixxxVisual::timerEvent(QTimerEvent*)

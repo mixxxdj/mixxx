@@ -25,7 +25,6 @@
 
 class GUIContainer;
 class EngineBuffer;
-class SoundBuffer;
 class VisualController;
 class SignalVertexBuffer;
 
@@ -41,7 +40,7 @@ public:
     GUIChannel(EngineBuffer *_engineBuffer, VisualController *_controller);
     ~GUIChannel();
     bool eventFilter(QObject *o, QEvent *e);
-    SignalVertexBuffer *add(SoundBuffer *soundBuffer);
+    SignalVertexBuffer *add();
     void move(int msec);
     void setPosX(int x);
     void setZoomPosX(int x);    

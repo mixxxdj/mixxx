@@ -18,7 +18,6 @@
 #include "guichannel.h"
 #include "../defs.h"
 #include "../enginebuffer.h"
-#include "../soundbuffer.h"
 #include "visualcontroller.h"
 #include "guicontainer.h"
 #include "guisignal.h"
@@ -43,12 +42,14 @@ GUIChannel::~GUIChannel()
 
 bool GUIChannel::eventFilter(QObject *o, QEvent *e)
 {
-    // If a user events are received, update containers
-    if (e->type() == (QEvent::Type)1001)
+    // Update playpos
+    if (e->type() == (QEvent::Type)10003)
     {
+/*
         GUIContainer *c;
         for (c = list.first(); c; c = list.next())
             c->update();
+*/
     }
     else
     {
@@ -59,7 +60,7 @@ bool GUIChannel::eventFilter(QObject *o, QEvent *e)
 }
 
 
-SignalVertexBuffer *GUIChannel::add(SoundBuffer *soundBuffer)
+SignalVertexBuffer *GUIChannel::add()
 {
     // Construct a new container
     GUIContainer *c = new GUIContainer(engineBuffer);

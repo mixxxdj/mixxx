@@ -20,6 +20,7 @@
 
 #include "player.h"
 #include <portaudio.h>
+#include <qapplication.h>
 
 class ControlEngineQueue;
 
@@ -29,7 +30,7 @@ class ControlEngineQueue;
 
 class PlayerPortAudio : public Player  {
 public: 
-    PlayerPortAudio(ConfigObject<ConfigValue> *config, ControlEngineQueue *queue);
+    PlayerPortAudio(ConfigObject<ConfigValue> *config, ControlEngineQueue *queue, QApplication *app);
     ~PlayerPortAudio();
     /** Close device */
     void close();

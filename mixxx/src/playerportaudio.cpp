@@ -20,7 +20,7 @@
 int bufferIdxSlave = 0;
 
 
-PlayerPortAudio::PlayerPortAudio(ConfigObject<ConfigValue> *config, ControlEngineQueue *queue) : Player(config,queue)
+PlayerPortAudio::PlayerPortAudio(ConfigObject<ConfigValue> *config, ControlEngineQueue *queue, QApplication *app) : Player(config,queue,app)
 {
     opendev = false;
     
@@ -54,7 +54,7 @@ PlayerPortAudio::PlayerPortAudio(ConfigObject<ConfigValue> *config, ControlEngin
                 p->id = i;
 
                 // Sample rates and latency
-                if (devInfo->numSampleRates != -1)
+                if (devInfo->numSampleRates > 0)
                 {
                     for (int j=0; j<devInfo->numSampleRates; j++)
                     {
@@ -207,7 +207,7 @@ bool PlayerPortAudio::open(int id, PortAudioStream **stream, int srate, PaSample
         return false;
     }
 
-    // Update SRATE and BASERATE in EngineObject
+    // Update SRATE in EngineObject
     setPlaySrate(srate);
 
     return true;

@@ -22,6 +22,7 @@
 #include <qptrlist.h>
 #include <qevent.h>
 #include <qdatetime.h>
+#include <qapplication.h>
 
 #include "visual/visualcontroller.h"
 #include "visual/picking.h"
@@ -42,7 +43,7 @@ class MixxxVisual : public QGLWidget
 {
     Q_OBJECT
 public: 
-    MixxxVisual(QWidget *parent=0, const char *name=0);
+    MixxxVisual(QApplication *app, QWidget *parent=0, const char *name=0);
     ~MixxxVisual();
     bool eventFilter(QObject *o, QEvent *e);
     /** Add a GUIChannel */
@@ -53,7 +54,7 @@ protected:
     void paintGL();
     void timerEvent(QTimerEvent *);
 
-    VisualController controller;
+    VisualController *controller;
     Picking picking;
 
     int screenx;

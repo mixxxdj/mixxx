@@ -18,13 +18,6 @@
 #ifndef VISUALOBJECT_H
 #define VISUALOBJECT_H
 
-/*
-#if defined(WIN32)
-#include <windows.h>
-#endif
-#include <GL/gl.h>
-*/
-
 #include <qobject.h>
 #include <qgl.h>
 

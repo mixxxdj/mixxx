@@ -1,4 +1,4 @@
-/***************************************************************************
+/**************************************************************************
                           soundsourceaudiofile.cpp  -  description
                              -------------------
     copyright            : (C) 2002 by Tue and Ken Haste Andersen
@@ -51,7 +51,7 @@ long SoundSourceAudioFile::seek(long filepos)
 unsigned SoundSourceAudioFile::read(unsigned long size, const SAMPLE* destination)
 {
     return afReadFrames(fh,AF_DEFAULT_TRACK, (SAMPLE *)destination,
-            size/channels)*channels;
+                        size/channels)*channels;
 }
 
 /*

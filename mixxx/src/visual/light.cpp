@@ -16,36 +16,33 @@
  ***************************************************************************/
 
 #include "light.h"
-#if defined(WIN32)
-#include <windows.h>
-#endif
-#include <GL/gl.h>
-#include <GL/glu.h>
+#include <qgl.h>
 
 int Light::nextLight = 1;
 
 /**
  * Default constructor.
  */
-Light::Light(){
-  i = nextLight;
-  nextLight++;
+Light::Light()
+{
+    i = nextLight;
+    nextLight++;
 
-  ambient[0]  = 0.5f;
-  ambient[1]  = 0.5f;
-  ambient[2]  = 0.5f;
-  ambient[3]  = 1.0f;
-  diffuse[0]  = 0.35f;
-  diffuse[1]  = 0.35f;
-  diffuse[2]  = 0.35f;
-  diffuse[3]  = 1.0f;
-  specular[0] = 1.0f;
-  specular[1] = 1.0f;
-  specular[2] = 1.0f;
-  specular[3] = 1.0f;
-  position[0] = 0.0f;
-  position[1] = 0.0f;
-  position[2] = 250.0f;
+    ambient[0]  = 0.5f;
+    ambient[1]  = 0.5f;
+    ambient[2]  = 0.5f;
+    ambient[3]  = 1.0f;
+    diffuse[0]  = 0.35f;
+    diffuse[1]  = 0.35f;
+    diffuse[2]  = 0.35f;
+    diffuse[3]  = 1.0f;
+    specular[0] = 1.0f;
+    specular[1] = 1.0f;
+    specular[2] = 1.0f;
+    specular[3] = 1.0f;
+    position[0] = 0.0f;
+    position[1] = 0.0f;
+    position[2] = 250.0f;
 };
 
 /**
@@ -72,24 +69,23 @@ void Light::disable()
  */
 void Light::enable()
 {
-  glMatrixMode(GL_MODELVIEW);
-  glPushMatrix();
-  glLoadIdentity();
+    glMatrixMode(GL_MODELVIEW);
+    glPushMatrix();
+    glLoadIdentity();
 
-
-  glShadeModel(GL_SMOOTH);
+    glShadeModel(GL_SMOOTH);
   
-  if(!glIsEnabled(GL_LIGHTING))
-    glEnable(GL_LIGHTING);
-  if(!glIsEnabled(getLightIndex()))
-    glEnable(getLightIndex());
+    if (!glIsEnabled(GL_LIGHTING))
+        glEnable(GL_LIGHTING);
+    if (!glIsEnabled(getLightIndex()))
+        glEnable(getLightIndex());
 
-  glLightfv(getLightIndex(),GL_AMBIENT,ambient);
-  glLightfv(getLightIndex(),GL_DIFFUSE,diffuse);
-  glLightfv(getLightIndex(),GL_SPECULAR,specular);
-  glLightfv(getLightIndex(),GL_POSITION,position);
+    glLightfv(getLightIndex(),GL_AMBIENT,ambient);
+    glLightfv(getLightIndex(),GL_DIFFUSE,diffuse);
+    glLightfv(getLightIndex(),GL_SPECULAR,specular);
+    glLightfv(getLightIndex(),GL_POSITION,position);
 
-  glPopMatrix();
+    glPopMatrix();
 };
 
 /**

@@ -53,37 +53,43 @@ int Texture::load(char * filename,const int & wrap,const int & decal)
     glBindTexture(GL_TEXTURE_2D,texture);
 
     validate();
-  if(wrap==1){
-    glTexParameterf(GL_TEXTURE_2D,GL_TEXTURE_WRAP_S,GL_REPEAT);
-    glTexParameterf(GL_TEXTURE_2D,GL_TEXTURE_WRAP_T,GL_REPEAT);
-  }else{
-    glTexParameterf(GL_TEXTURE_2D,GL_TEXTURE_WRAP_S,GL_CLAMP);
-    glTexParameterf(GL_TEXTURE_2D,GL_TEXTURE_WRAP_T,GL_CLAMP);
-  }
-  (*this).decal = decal;
-validate();
+
+    if(wrap==1)
+    {
+        glTexParameterf(GL_TEXTURE_2D,GL_TEXTURE_WRAP_S,GL_REPEAT);
+        glTexParameterf(GL_TEXTURE_2D,GL_TEXTURE_WRAP_T,GL_REPEAT);
+    }
+    else
+    {
+        glTexParameterf(GL_TEXTURE_2D,GL_TEXTURE_WRAP_S,GL_CLAMP);
+        glTexParameterf(GL_TEXTURE_2D,GL_TEXTURE_WRAP_T,GL_CLAMP);
+    }
+    (*this).decal = decal;
+    validate();
   
-  glTexParameterf(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-  glTexParameterf(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-validate();
+    glTexParameterf(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameterf(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-  if(!glIsEnabled(GL_TEXTURE_2D))
-    glEnable(GL_TEXTURE_2D);
+    validate();
 
-  QImage buf, tex;
-  if (!buf.load(filename))
-  {
-	  qDebug("Backplane not loaded");
-	  return 0;
-  }
-  tex = QGLWidget::convertToGLFormat(buf); // Flipped 3dbit RGBA
+    if(!glIsEnabled(GL_TEXTURE_2D))
+        glEnable(GL_TEXTURE_2D);
 
-  glTexImage2D(GL_TEXTURE_2D, 0, 3, tex.width(), tex.height(), 0, GL_RGBA, GL_UNSIGNED_BYTE, tex.bits());
-validate();
+    QImage buf, tex;
+    if (!buf.load(filename))
+    {
+        qDebug("Backplane not loaded");
+        return 0;
+    }
+    tex = QGLWidget::convertToGLFormat(buf); // Flipped 3dbit RGBA
 
-  loaded = 1;
+    glTexImage2D(GL_TEXTURE_2D, 0, 3, tex.width(), tex.height(), 0, GL_RGBA, GL_UNSIGNED_BYTE, tex.bits());
 
-  return 1;
+    validate();
+
+    loaded = 1;
+
+    return 1;
 };
 
 /**
@@ -103,26 +109,31 @@ int Texture::unload(void)
  * Call this method to use a texture when you are
  * drawing.
  */
-void Texture::use(){
-  if(!loaded){
-    glDisable(GL_TEXTURE_2D);
-    return;
-  }
+void Texture::use()
+{
+    if(!loaded)
+    {
+        glDisable(GL_TEXTURE_2D);
+        return;
+    }
 
-  if(!glIsEnabled(GL_TEXTURE_2D))
-    glEnable(GL_TEXTURE_2D);
+    if(!glIsEnabled(GL_TEXTURE_2D))
+        glEnable(GL_TEXTURE_2D);
 
-  glBindTexture(GL_TEXTURE_2D,texture);
+    glBindTexture(GL_TEXTURE_2D,texture);
 
-  //DECAL -> Overfør textur direkte
-  //MODULATE ->Bland textur med objects materiale
-  if(decal==1){
-    glTexEnvf(GL_TEXTURE_ENV,GL_TEXTURE_ENV_MODE,GL_DECAL);
-    glTexEnvf(GL_TEXTURE_ENV,GL_TEXTURE_ENV_COLOR,GL_DECAL);
-  }else{
-    glTexEnvf(GL_TEXTURE_ENV,GL_TEXTURE_ENV_MODE,GL_MODULATE);
-    glTexEnvf(GL_TEXTURE_ENV,GL_TEXTURE_ENV_COLOR,GL_MODULATE);
-  }
+    //DECAL -> Overfør textur direkte
+    //MODULATE ->Bland textur med objects materiale
+    if(decal==1)
+    {
+        glTexEnvf(GL_TEXTURE_ENV,GL_TEXTURE_ENV_MODE,GL_DECAL);
+        glTexEnvf(GL_TEXTURE_ENV,GL_TEXTURE_ENV_COLOR,GL_DECAL);
+    }
+    else
+    {
+        glTexEnvf(GL_TEXTURE_ENV,GL_TEXTURE_ENV_MODE,GL_MODULATE);
+        glTexEnvf(GL_TEXTURE_ENV,GL_TEXTURE_ENV_COLOR,GL_MODULATE);
+    }
 };
 
 /**

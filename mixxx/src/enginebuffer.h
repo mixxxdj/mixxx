@@ -18,66 +18,52 @@
 #ifndef ENGINEBUFFER_H
 #define ENGINEBUFFER_H
 
-#include <qthread.h>
-#include <qwaitcondition.h>
-#include <qmutex.h>
-#include <qwidget.h>
+#include <qapplication.h>
 
 #include "defs.h"
 #include "engineobject.h"
 #include "monitor.h"
 
 class MixxxApp;
-class SoundBuffer;
 class GUIChannel;
-class ControlEngine;
 class DlgPlaycontrol;
-class SoundSource;
-
-// #include "controlpushbutton.h"
-// #include "controlpotmeter.h"
-// #include "controlttrotary.h"
+class ControlEngine;
+class ControlObject;
+class Reader;
 
 /**
   *@author Tue and Ken Haste Andersen
 */
 
-class EngineBuffer : public EngineObject, public QThread {
+class EngineBuffer : public EngineObject
+{
 public:
-    EngineBuffer(MixxxApp *_mixxx, DlgPlaycontrol *_playcontrol, const char *_group, const char *filename);
+    EngineBuffer(MixxxApp *_mixxx, DlgPlaycontrol *_playcontrol, const char *_group);
     ~EngineBuffer();
-    void newtrack(const char *);
-    CSAMPLE *update_visual();
+    /** Returns pointer to Reader object. Used in MixxxApp. */
+    Reader *getReader();
+    /** Reset buffer playpos and set file playpos. This must only be called while holding the
+      * pause mutex */
+    void setNewPlaypos(double);
     CSAMPLE *process(const CSAMPLE *, const int);
+
+    CSAMPLE *update_visual();
     const char *getGroup();
-    SoundBuffer *getSoundBuffer();
     /** Get the relative playpos in a buffer sampled at Srate hz*/
     int getPlaypos(int Srate);
     /** Notify used to call seek when playpos slider changes */
-    void notify(double change);
-        
-    /** Buffer used in the process() */
-    CSAMPLE *buffer;
-
-    int visualPlaypos;
+    Monitor visualPlaypos;
     float visualRate;
 private:
-    void run();
-    void stop();
-    void seek(FLOAT_TYPE);
-    void checkread(bool backwards);
-    
-    QSemaphore *requestStop;
-    QWaitCondition *buffersReadAhead;
-    QSemaphore *readChunkLock;
+    void seek(double);
 
     MixxxApp *mixxx;
-    int start_seek;
+    QApplication *app;
 
-    
-
-    SoundBuffer *soundbuffer;
-   
+    /** Pointer to reader */
+    Reader *reader;    
+    /** Buffer used in the process() */
+    CSAMPLE *buffer;
     /** The current sample to play in the file. */
     double filepos_play;
     /** Sample in the buffer relative to filepos_play. */
@@ -85,21 +71,28 @@ private:
     /** Holds the rate as calculated in process. This is used in the
       * reader thread when calling soundbuffer->getchunk() */
     Monitor rate_exchange;
+    /** Copy of rate_exchange, used to check if rate needs to be updated */
+    double rate_old;
+    /** Copy of length of file */
+    int file_length_old;
+    /** Copy of file sample rate*/
+    int file_srate_old;
+
     /** Fileposition used in communication with file reader and main thread */
     //Monitor filepos_play_exchange;
     /** Mutex controlling weather the process function is in pause mode. This happens
       * during seek and loading of a new track */
     QMutex pause;
+    /** Pointer to DlgPlaycontrol dialog. Used when updating file info window */
     DlgPlaycontrol *playcontrol;
    
     ControlEngine *playButton, *rateSlider, *wheel, *playposSlider;
-    SoundSource *file;
     const char *group;
 
     CSAMPLE *read_buffer_prt;
 
     /** Rate factor between player and sound source sample rates */
-    FLOAT_TYPE BASERATE;
+    //FLOAT_TYPE BASERATE;
     /** Pointer to GUIChannel */
     GUIChannel *guichannel;
     /** Counter; when to update playpos slider */

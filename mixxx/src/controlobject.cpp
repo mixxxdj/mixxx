@@ -22,10 +22,17 @@
 #include "controleventengine.h"
 #include "midiobject.h"
 
+#include <pthread.h>
+
 // Static member variable definition
 ConfigObject<ConfigValueMidi> *ControlObject::config = 0;
 ControlEngineQueue *ControlObject::queue = 0;
 QPtrList<ControlObject> ControlObject::list;
+
+ControlObject::ControlObject()
+{
+    value = 0.;
+}
 
 ControlObject::ControlObject(ConfigKey key)
 {
@@ -79,23 +86,31 @@ void ControlObject::setWidget(QWidget *_widget)
 
 void ControlObject::slotSetPositionMidi(int v)
 {
+    //qDebug("thread id: %p",pthread_self());
+
     slotSetPosition(v);
     emit(updateGUI(v));
 }
 
 void ControlObject::setValue(FLOAT_TYPE v)
 {
+    //qDebug("thread id: %p",pthread_self());
+
     value = v;
     forceGUIUpdate();
 }
 
 FLOAT_TYPE ControlObject::getValue()
 {
+    //qDebug("thread id: %p",pthread_self());
+
     return value;
 }
 
 void ControlObject::emitValueChanged(FLOAT_TYPE value)
 {
+    //qDebug("thread id: %p",pthread_self());
+
     if (controlEngineNo>-1)
     {
         ControlEngineQueueItem *item = new ControlEngineQueueItem;

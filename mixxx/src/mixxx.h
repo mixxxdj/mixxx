@@ -126,11 +126,13 @@ class MixxxApp : public QMainWindow
     /** shows an about dlg*/
     void slotHelpAbout();
 
-	/** Change of file to play */
-	//void slotChangePlay(int,int,int, const QPoint &);
+    /** Change of file to play */
+    //void slotChangePlay(int,int,int, const QPoint &);
     void slotChangePlay_1();
     void slotChangePlay_2();
     void slotSelectPlay(QListViewItem *item, const QPoint &pos, int);
+  private slots:
+    void slotSetTitle(QString filename, DlgPlaycontrol *dlg);
   protected:
     bool eventFilter(QObject *, QEvent *);
   private:

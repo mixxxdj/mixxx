@@ -125,7 +125,7 @@ QString *MidiObject::getOpenDevice()
 void MidiObject::send(char channel, char midicontrol, char midivalue)
 {
     // Send event to GUI thread
-    QThread::postEvent(mixxx,new ControlEventMidi(channel,midicontrol,midivalue));
+    QApplication::postEvent(mixxx,new ControlEventMidi(channel,midicontrol,midivalue));
 };
 
 void MidiObject::stop()

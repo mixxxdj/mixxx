@@ -37,7 +37,8 @@ void MessageOutput( QtMsgType type, const char *msg )
             case QtFatalMsg:
                 fprintf( stderr, "Fatal: %s\n", msg );
                 QMessageBox::warning(0, "Mixxx", msg);
-                abort();                        // dump core on purpose
+                exit(-1);
+                //abort();                        // dump core on purpose
     }
 }
 

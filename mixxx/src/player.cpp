@@ -29,10 +29,11 @@ int Player::MasterBufferSize = 0;
    Input:   Size of the output buffer in samples
    Output:  Pointer to internal synthesis data structure.
    -------- ------------------------------------------------------ */
-Player::Player(ConfigObject<ConfigValue> *_config, ControlEngineQueue *_queue)
+Player::Player(ConfigObject<ConfigValue> *_config, ControlEngineQueue *_queue, QApplication *_app)
 {
     config = _config;
     queue = _queue;
+    app = _app;
     allocate();
 
 //    qDebug("Player: init...");
@@ -150,6 +151,7 @@ int Player::prepareBuffer()
   // Do the processing.                         
   // ----------------------------------------------------
 
+  
   // First, sync control parameters with changes from GUI thread
   queue->sync();
   

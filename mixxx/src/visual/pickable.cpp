@@ -17,10 +17,7 @@
 
 #include "pickable.h"
 #include "material.h"
-#if defined(WIN32)
-#include <windows.h>
-#endif
-#include <GL/gl.h>
+#include <qgl.h>
 
 
 int PickableObject::next = 1;   ///< Next free avaible index.
