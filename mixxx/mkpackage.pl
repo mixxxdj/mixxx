@@ -54,10 +54,12 @@ if ($arch =~ /i586/)
 
 # Copy skins to $BASE/share/mixxx
 `install -d $BASEMISC/skins/outline`;
-`install -d $BASEMISC/skins/traditional`;
 `install -d $BASEMISC/skins/outlineClose`;
+`install -d $BASEMISC/skins/outlineSmall`;
+`install -d $BASEMISC/skins/traditional`;
 `cp src/skins/outline/* $BASEMISC/skins/outline`;
 `cp src/skins/outlineClose/* $BASEMISC/skins/outlineClose`;
+`cp src/skins/outlineSmall/* $BASEMISC/skins/outlineSmall`;
 `cp src/skins/traditional/* $BASEMISC/skins/traditional`;
 
 # Copy midi config files
