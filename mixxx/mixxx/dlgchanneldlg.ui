@@ -11,7 +11,7 @@
         <rect>
             <x>0</x>
             <y>0</y>
-            <width>146</width>
+            <width>142</width>
             <height>310</height>
         </rect>
     </property>
@@ -56,38 +56,6 @@
             <name>frameShadow</name>
             <enum>Raised</enum>
         </property>
-        <widget>
-            <class>QDial</class>
-            <property stdset="1">
-                <name>name</name>
-                <cstring>DialEffect</cstring>
-            </property>
-            <property stdset="1">
-                <name>geometry</name>
-                <rect>
-                    <x>50</x>
-                    <y>250</y>
-                    <width>50</width>
-                    <height>50</height>
-                </rect>
-            </property>
-            <property stdset="1">
-                <name>mouseTracking</name>
-                <bool>true</bool>
-            </property>
-            <property stdset="1">
-                <name>wrapping</name>
-                <bool>true</bool>
-            </property>
-            <property stdset="1">
-                <name>notchesVisible</name>
-                <bool>true</bool>
-            </property>
-            <property stdset="1">
-                <name>maxValue</name>
-                <number>127</number>
-            </property>
-        </widget>
         <widget>
             <class>QSlider</class>
             <property stdset="1">
@@ -180,45 +148,13 @@
             <class>QDial</class>
             <property stdset="1">
                 <name>name</name>
-                <cstring>DialFilterLow</cstring>
+                <cstring>DialGain</cstring>
             </property>
             <property stdset="1">
                 <name>geometry</name>
                 <rect>
                     <x>50</x>
-                    <y>185</y>
-                    <width>50</width>
-                    <height>60</height>
-                </rect>
-            </property>
-            <property stdset="1">
-                <name>mouseTracking</name>
-                <bool>true</bool>
-            </property>
-            <property stdset="1">
-                <name>wrapping</name>
-                <bool>true</bool>
-            </property>
-            <property stdset="1">
-                <name>notchesVisible</name>
-                <bool>true</bool>
-            </property>
-            <property stdset="1">
-                <name>maxValue</name>
-                <number>127</number>
-            </property>
-        </widget>
-        <widget>
-            <class>QDial</class>
-            <property stdset="1">
-                <name>name</name>
-                <cstring>DialFilterMiddle</cstring>
-            </property>
-            <property stdset="1">
-                <name>geometry</name>
-                <rect>
-                    <x>50</x>
-                    <y>130</y>
+                    <y>10</y>
                     <width>50</width>
                     <height>50</height>
                 </rect>
@@ -229,7 +165,7 @@
             </property>
             <property stdset="1">
                 <name>wrapping</name>
-                <bool>true</bool>
+                <bool>false</bool>
             </property>
             <property stdset="1">
                 <name>notchesVisible</name>
@@ -261,7 +197,7 @@
             </property>
             <property stdset="1">
                 <name>wrapping</name>
-                <bool>true</bool>
+                <bool>false</bool>
             </property>
             <property stdset="1">
                 <name>notchesVisible</name>
@@ -276,13 +212,13 @@
             <class>QDial</class>
             <property stdset="1">
                 <name>name</name>
-                <cstring>DialGain</cstring>
+                <cstring>DialFilterMiddle</cstring>
             </property>
             <property stdset="1">
                 <name>geometry</name>
                 <rect>
                     <x>50</x>
-                    <y>10</y>
+                    <y>130</y>
                     <width>50</width>
                     <height>50</height>
                 </rect>
@@ -293,7 +229,71 @@
             </property>
             <property stdset="1">
                 <name>wrapping</name>
+                <bool>false</bool>
+            </property>
+            <property stdset="1">
+                <name>notchesVisible</name>
                 <bool>true</bool>
+            </property>
+            <property stdset="1">
+                <name>maxValue</name>
+                <number>127</number>
+            </property>
+        </widget>
+        <widget>
+            <class>QDial</class>
+            <property stdset="1">
+                <name>name</name>
+                <cstring>DialFilterLow</cstring>
+            </property>
+            <property stdset="1">
+                <name>geometry</name>
+                <rect>
+                    <x>50</x>
+                    <y>185</y>
+                    <width>50</width>
+                    <height>60</height>
+                </rect>
+            </property>
+            <property stdset="1">
+                <name>mouseTracking</name>
+                <bool>true</bool>
+            </property>
+            <property stdset="1">
+                <name>wrapping</name>
+                <bool>false</bool>
+            </property>
+            <property stdset="1">
+                <name>notchesVisible</name>
+                <bool>true</bool>
+            </property>
+            <property stdset="1">
+                <name>maxValue</name>
+                <number>127</number>
+            </property>
+        </widget>
+        <widget>
+            <class>QDial</class>
+            <property stdset="1">
+                <name>name</name>
+                <cstring>DialEffect</cstring>
+            </property>
+            <property stdset="1">
+                <name>geometry</name>
+                <rect>
+                    <x>50</x>
+                    <y>250</y>
+                    <width>50</width>
+                    <height>50</height>
+                </rect>
+            </property>
+            <property stdset="1">
+                <name>mouseTracking</name>
+                <bool>true</bool>
+            </property>
+            <property stdset="1">
+                <name>wrapping</name>
+                <bool>false</bool>
             </property>
             <property stdset="1">
                 <name>notchesVisible</name>

@@ -10,8 +10,8 @@
 class EnginePregain : public EngineObject {
   Q_OBJECT
 private:
-  ControlPotmeter* pregainpot;
  public:
+  ControlPotmeter* pregainpot;
   FLOAT pregain;
   EnginePregain(int, MidiObject*);
   ~EnginePregain();

@@ -12,12 +12,12 @@ class EngineIIRfilter : public EngineObject {
  Q_OBJECT
  private:
   ControlPushButton* killbutton;
-  ControlLogpotmeter* filterpot;
   const double *coefs;
   static const int NZEROS = 8;
   static const int NPOLES = 8;
   double xv[NZEROS+1], yv[NPOLES+1];
  public:
+  ControlLogpotmeter* filterpot;
   FLOAT gain;
   EngineIIRfilter(int, int , int , MidiObject*, const double *);
   ~EngineIIRfilter();

@@ -22,6 +22,7 @@
 #include <qaccel.h>
 #include <qpushbutton.h>
 #include <qtable.h>
+#include <qdial.h>
 
 #include "mixxx.h"
 #include "filesave.xpm"
@@ -60,12 +61,15 @@ MixxxApp::MixxxApp()
 
   // Initialize engines:
   EnginePregain *pregain = new EnginePregain(ADC7, midi);
+  connect(view->channel->DialGain, SIGNAL(valueChanged(int)), pregain->pregainpot, SLOT(slotSetPosition(int)));
   engines.push_back(pregain);
 
   //EngineHMLfilter *filters = new EngineHMLfilter(ADC4, ADC5, ADC6, midi, bessel_highpass_15000, 
 //						 bessel_lowpass_60);
   EngineIIRfilter *highpass = new EngineIIRfilter(ADC6,PORT_B, 4, midi,bessel_highpass);
   EngineIIRfilter *lowpass = new EngineIIRfilter(ADC4,PORT_B, 4, midi,bessel_lowpass);
+  connect(view->channel->DialFilterHigh, SIGNAL(valueChanged(int)), highpass->filterpot, SLOT(slotSetPosition(int)));
+  connect(view->channel->DialFilterLow,  SIGNAL(valueChanged(int)), lowpass->filterpot,  SLOT(slotSetPosition(int)));
   engines.push_back(highpass);
   engines.push_back(lowpass);
 
