@@ -16,31 +16,35 @@
  ***************************************************************************/
 
 #include "enginebuffer.h"
+#include <qlabel.h>
 
-EngineBuffer::EngineBuffer(DlgPlaycontrol *playcontrol, DlgChannel *channel, MidiObject *midi, const char *filename)
+EngineBuffer::EngineBuffer(DlgPlaycontrol *_playcontrol, int midiPlaybutton, int midiRateslider,
+                           int midiWheel, MidiObject *midi, const char *filename)
 {
-  PlayButton = new ControlPushButton("playbutton", simulated_latching, PORT_B, 0, midi);
+  playcontrol = _playcontrol;
+
+  PlayButton = new ControlPushButton("playbutton", simulated_latching, PORT_B, midiPlaybutton, midi);
   PlayButton->setValue(on);
   connect(playcontrol->PushButtonPlay, SIGNAL(pressed()), PlayButton, SLOT(pressed()));
   connect(playcontrol->PushButtonPlay, SIGNAL(released()), PlayButton, SLOT(released()));
   connect(PlayButton, SIGNAL(valueChanged(valueType)), this, SLOT(slotUpdatePlay(valueType)));
 
-  rateSlider = new ControlPotmeter("rateslider", ADC3, midi, 0.9,1.1);
+  rateSlider = new ControlPotmeter("rateslider", midiRateslider, midi, 0.9,1.1);
   rateSlider->slotSetPosition(64);
   rate.write(rateSlider->getValue());
-  connect(channel->SliderRate, SIGNAL(valueChanged(int)), rateSlider, SLOT(slotSetPosition(int)));
+  connect(playcontrol->SliderRate, SIGNAL(valueChanged(int)), rateSlider, SLOT(slotSetPosition(int)));
   connect(rateSlider, SIGNAL(valueChanged(FLOAT_TYPE)), this, SLOT(slotUpdateRate(FLOAT_TYPE)));
-  connect(rateSlider, SIGNAL(recievedMidi(int)), channel->SliderRate, SLOT(setValue(int)));
+  connect(rateSlider, SIGNAL(recievedMidi(int)), playcontrol->SliderRate, SLOT(setValue(int)));
 
-  wheel = new ControlRotary("wheel", PORT_D, midi);
+  wheel = new ControlRotary("wheel", midiWheel, midi);
   connect(playcontrol->DialPlaycontrol, SIGNAL(valueChanged(int)), wheel, SLOT(slotSetPosition(int)));
   connect(wheel, SIGNAL(valueChanged(FLOAT_TYPE)), this, SLOT(slotUpdateRate(FLOAT_TYPE)));
   connect(wheel, SIGNAL(recievedMidi(int)), playcontrol->DialPlaycontrol, SLOT(setValue(int)));
 
-  connect(this, SIGNAL(position(int)), channel->LCDposition, SLOT(display(int)));
-  //connect(this, SIGNAL(position(int)), channel->SliderPosition, SLOT(setValue(int)));
+  connect(this, SIGNAL(position(int)), playcontrol->LCDposition, SLOT(display(int)));
 
-  connect(channel->SliderPosition, SIGNAL(valueChanged(int)), this, SLOT(slotPosition(int)));
+  //connect(this, SIGNAL(position(int)), playcontrol->SliderPosition, SLOT(setValue(int)));
+  connect(playcontrol->SliderPosition, SIGNAL(valueChanged(int)), this, SLOT(slotPosition(int)));
 
   // Allocate temporary buffer
   read_buffer_size = READBUFFERSIZE;
@@ -63,7 +67,7 @@ EngineBuffer::EngineBuffer(DlgPlaycontrol *playcontrol, DlgChannel *channel, Mid
 }
 
 EngineBuffer::~EngineBuffer(){
-  qDebug("dealloc buffer");
+  qDebug("EngineBuffer: dealloc buffer");
   if (running())
   {
     qDebug("Stopping buffer");
@@ -110,6 +114,8 @@ void EngineBuffer::newtrack(const char* filename) {
   if (file==0) {
     qFatal("Error opening %s", filename);
   }
+  // Write to playcontrol:
+  playcontrol->textLabelTrack->setText(filename);
 
   // Initialize position in read buffer:
   lastread_file.write(0.);
@@ -196,10 +202,10 @@ void EngineBuffer::getchunk() {
   unsigned long lastread_buffer = ((unsigned long)(playpos_buffer.read() + lastread_file.read() -
          playpos_file.read()))%read_buffer_size;
 
-    qDebug("lastread_buffer: %f", (double)lastread_buffer);
+   /* qDebug("lastread_buffer: %f", (double)lastread_buffer);
     qDebug("playpos_buffer: %f",playpos_buffer.read());
     qDebug("playpos_file: %f",playpos_file.read());
-    qDebug("lastread_file: %f",lastread_file.read());
+    qDebug("lastread_file: %f",lastread_file.read()); */
 
   unsigned i = 0;
   for (unsigned long j=lastread_buffer; j<min(read_buffer_size,lastread_buffer+samples_read); j++)

@@ -3,33 +3,57 @@
 <KDevPrjSession>
  <LastCompileConfig>(Default)</LastCompileConfig>
  <Mainframe MaximizeMode="1" />
- <DocsAndViews NumberOfDocuments="9" >
+ <DocsAndViews NumberOfDocuments="17" >
   <Doc0 CursorPosLine="27" Type="KWriteDoc" NumberOfViews="1" CursorPosCol="49" FileName="/home/haste/cvs/mixxx/src/playeralsa.cpp" >
-   <View0 Top="46" Width="758" Attach="1" Height="369" Left="25" Focus="0" Type="KWriteView" MinMaxMode="0" />
+   <View0 Top="24" Width="400" Attach="1" Height="300" Left="3" Focus="0" Type="KWriteView" MinMaxMode="0" />
   </Doc0>
-  <Doc1 CursorPosLine="10" Type="KWriteDoc" NumberOfViews="1" CursorPosCol="0" FileName="/home/haste/cvs/mixxx/src/soundsourceheavymp3.h" >
-   <View0 Top="68" Width="758" Attach="1" Height="369" Left="47" Focus="0" Type="KWriteView" MinMaxMode="0" />
+  <Doc1 CursorPosLine="11" Type="KWriteDoc" NumberOfViews="1" CursorPosCol="14" FileName="/home/haste/cvs/mixxx/src/defs.h" >
+   <View0 Top="46" Width="758" Attach="1" Height="609" Left="25" Focus="0" Type="KWriteView" MinMaxMode="0" />
   </Doc1>
-  <Doc2 CursorPosLine="20" Type="KWriteDoc" NumberOfViews="1" CursorPosCol="83" FileName="/home/haste/cvs/mixxx/src/soundsourceheavymp3.cpp" >
-   <View0 Top="90" Width="758" Attach="1" Height="369" Left="69" Focus="0" Type="KWriteView" MinMaxMode="0" />
+  <Doc2 CursorPosLine="70" Type="KWriteDoc" NumberOfViews="1" CursorPosCol="30" FileName="/home/haste/cvs/mixxx/src/mixxx.cpp" >
+   <View0 Top="68" Width="758" Attach="1" Height="586" Left="47" Focus="0" Type="KWriteView" MinMaxMode="0" />
   </Doc2>
-  <Doc3 CursorPosLine="67" Type="KWriteDoc" NumberOfViews="1" CursorPosCol="9" FileName="/home/haste/cvs/mixxx/src/enginebuffer.h" >
-   <View0 Top="112" Width="758" Attach="1" Height="586" Left="91" Focus="0" Type="KWriteView" MinMaxMode="0" />
+  <Doc3 CursorPosLine="41" Type="KWriteDoc" NumberOfViews="1" CursorPosCol="22" FileName="/home/haste/cvs/mixxx/src/enginechannel.h" >
+   <View0 Top="90" Width="758" Attach="1" Height="369" Left="69" Focus="0" Type="KWriteView" MinMaxMode="0" />
   </Doc3>
-  <Doc4 CursorPosLine="200" Type="KWriteDoc" NumberOfViews="1" CursorPosCol="57" FileName="/home/haste/cvs/mixxx/src/enginebuffer.cpp" >
-   <View0 Top="110" Width="764" Attach="1" Height="613" Left="110" Focus="1" Type="KWriteView" MinMaxMode="2" />
+  <Doc4 CursorPosLine="61" Type="KWriteDoc" NumberOfViews="1" CursorPosCol="0" FileName="/home/haste/cvs/mixxx/src/enginechannel.cpp" >
+   <View0 Top="112" Width="758" Attach="1" Height="586" Left="91" Focus="0" Type="KWriteView" MinMaxMode="0" />
   </Doc4>
-  <Doc5 CursorPosLine="11" Type="KWriteDoc" NumberOfViews="1" CursorPosCol="14" FileName="/home/haste/cvs/mixxx/src/defs.h" >
-   <View0 Top="156" Width="758" Attach="1" Height="586" Left="135" Focus="0" Type="KWriteView" MinMaxMode="0" />
+  <Doc5 CursorPosLine="22" Type="KWriteDoc" NumberOfViews="1" CursorPosCol="0" FileName="/home/haste/cvs/mixxx/src/mixxxview.cpp" >
+   <View0 Top="244" Width="758" Attach="1" Height="586" Left="223" Focus="0" Type="KWriteView" MinMaxMode="0" />
   </Doc5>
-  <Doc6 CursorPosLine="19" Type="KWriteDoc" NumberOfViews="1" CursorPosCol="0" FileName="/home/haste/cvs/mixxx/mixxx/monitor.cpp" >
-   <View0 Top="178" Width="758" Attach="1" Height="369" Left="157" Focus="0" Type="KWriteView" MinMaxMode="0" />
+  <Doc6 CursorPosLine="52" Type="KWriteDoc" NumberOfViews="1" CursorPosCol="0" FileName="/home/haste/cvs/mixxx/src/mixxx.h" >
+   <View0 Top="156" Width="758" Attach="1" Height="609" Left="135" Focus="0" Type="KWriteView" MinMaxMode="0" />
   </Doc6>
-  <Doc7 CursorPosLine="32" Type="KWriteDoc" NumberOfViews="1" CursorPosCol="12" FileName="/home/haste/cvs/mixxx/mixxx/monitor.h" >
-   <View0 Top="200" Width="758" Attach="1" Height="369" Left="179" Focus="0" Type="KWriteView" MinMaxMode="0" />
+  <Doc7 CursorPosLine="28" Type="KWriteDoc" NumberOfViews="1" CursorPosCol="0" FileName="/home/haste/cvs/mixxx/src/controllogpotmeter.cpp" >
+   <View0 Top="178" Width="758" Attach="1" Height="586" Left="157" Focus="0" Type="KWriteView" MinMaxMode="0" />
   </Doc7>
-  <Doc8 Type="CDocBrowser" NumberOfViews="1" FileName="/usr/qt/3/doc/html/qmutex.html" >
-   <View Top="112" Width="124" Attach="1" Height="115" Left="91" Focus="0" Type="KHTMLView" MinMaxMode="0" />
+  <Doc8 CursorPosLine="28" Type="KWriteDoc" NumberOfViews="1" CursorPosCol="0" FileName="/home/haste/cvs/mixxx/src/controlpotmeter.cpp" >
+   <View0 Top="200" Width="758" Attach="1" Height="586" Left="179" Focus="0" Type="KWriteView" MinMaxMode="0" />
   </Doc8>
+  <Doc9 CursorPosLine="5" Type="KWriteDoc" NumberOfViews="1" CursorPosCol="0" FileName="/home/haste/cvs/mixxx/src/enginepregain.cpp" >
+   <View0 Top="222" Width="758" Attach="1" Height="586" Left="201" Focus="0" Type="KWriteView" MinMaxMode="0" />
+  </Doc9>
+  <Doc10 CursorPosLine="9" Type="KWriteDoc" NumberOfViews="1" CursorPosCol="0" FileName="/home/haste/cvs/mixxx/src/enginepregain.h" >
+   <View0 Top="244" Width="758" Attach="1" Height="586" Left="223" Focus="0" Type="KWriteView" MinMaxMode="0" />
+  </Doc10>
+  <Doc11 CursorPosLine="27" Type="KWriteDoc" NumberOfViews="1" CursorPosCol="0" FileName="/home/haste/cvs/mixxx/src/dlgchannel.h" >
+   <View0 Top="266" Width="758" Attach="1" Height="586" Left="245" Focus="0" Type="KWriteView" MinMaxMode="0" />
+  </Doc11>
+  <Doc12 CursorPosLine="34" Type="KWriteDoc" NumberOfViews="1" CursorPosCol="0" FileName="/home/haste/cvs/mixxx/src/mixxxview.h" >
+   <View0 Top="288" Width="758" Attach="1" Height="369" Left="267" Focus="0" Type="KWriteView" MinMaxMode="0" />
+  </Doc12>
+  <Doc13 CursorPosLine="0" Type="KWriteDoc" NumberOfViews="1" CursorPosCol="0" FileName="/home/haste/cvs/mixxx/src/enginebuffer.cpp" >
+   <View0 Top="332" Width="758" Attach="1" Height="586" Left="311" Focus="0" Type="KWriteView" MinMaxMode="0" />
+  </Doc13>
+  <Doc14 CursorPosLine="0" Type="KWriteDoc" NumberOfViews="1" CursorPosCol="0" FileName="/home/haste/cvs/mixxx/mixxx/dlgmaster.cpp" >
+   <View0 Top="354" Width="758" Attach="1" Height="586" Left="333" Focus="0" Type="KWriteView" MinMaxMode="0" />
+  </Doc14>
+  <Doc15 CursorPosLine="27" Type="KWriteDoc" NumberOfViews="1" CursorPosCol="0" FileName="/home/haste/cvs/mixxx/mixxx/dlgmaster.h" >
+   <View0 Top="352" Width="764" Attach="1" Height="613" Left="352" Focus="1" Type="KWriteView" MinMaxMode="2" />
+  </Doc15>
+  <Doc16 Type="CDocBrowser" NumberOfViews="1" FileName="/usr/qt/3/doc/html/qmutex.html" >
+   <View Top="310" Width="124" Attach="1" Height="115" Left="289" Focus="0" Type="KHTMLView" MinMaxMode="0" />
+  </Doc16>
  </DocsAndViews>
 </KDevPrjSession>

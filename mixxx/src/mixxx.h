@@ -42,9 +42,9 @@
 #include "mixxxview.h"
 #include "mixxxdoc.h"
 #include "enginebuffer.h"
+#include "enginechannel.h"
 #include "player.h"
 #include "midiobject.h"
-#include "engineclipping.h"
 /**
   * This Class is the base class for your application. It sets up the main
   * window and providing a menubar, toolbar
@@ -125,6 +125,7 @@ class MixxxApp : public QMainWindow
      */
     MixxxDoc *doc;
     EngineBuffer *buffer;
+    EngineChannel *channel;
     Player *player;
     MidiObject *midi;
 	std::vector<EngineObject *> engines;

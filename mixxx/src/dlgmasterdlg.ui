@@ -1,15 +1,15 @@
 <!DOCTYPE UI><UI version="3.0" stdsetdef="1">
-<class>DlgChannelDlg</class>
+<class>DlgPlaycontrolDlg</class>
 <widget class="QWidget">
     <property name="name">
-        <cstring>DlgChannelDlg</cstring>
+        <cstring>DlgPlaycontrolDlg</cstring>
     </property>
     <property name="geometry">
         <rect>
             <x>0</x>
             <y>0</y>
-            <width>124</width>
-            <height>345</height>
+            <width>300</width>
+            <height>60</height>
         </rect>
     </property>
     <property name="sizePolicy">
@@ -23,103 +23,71 @@
     <property name="caption">
         <string>Form1</string>
     </property>
-    <widget class="QRadioButton">
-        <property name="name">
-            <cstring>BulbClipping</cstring>
-        </property>
-        <property name="enabled">
-            <bool>true</bool>
-        </property>
-        <property name="geometry">
-            <rect>
-                <x>55</x>
-                <y>15</y>
-                <width>50</width>
-                <height>26</height>
-            </rect>
-        </property>
-        <property name="text">
-            <string>Clip</string>
-        </property>
-    </widget>
-    <widget class="QKnob">
-        <property name="name">
-            <cstring>DialFilterMiddle</cstring>
-        </property>
-        <property name="geometry">
-            <rect>
-                <x>15</x>
-                <y>95</y>
-                <width>32</width>
-                <height>32</height>
-            </rect>
-        </property>
-    </widget>
-    <widget class="QKnob">
-        <property name="name">
-            <cstring>DialFilterHigh</cstring>
-        </property>
-        <property name="geometry">
-            <rect>
-                <x>15</x>
-                <y>55</y>
-                <width>32</width>
-                <height>32</height>
-            </rect>
-        </property>
-    </widget>
-    <widget class="QKnob">
-        <property name="name">
-            <cstring>DialFilterLow</cstring>
-        </property>
-        <property name="geometry">
-            <rect>
-                <x>15</x>
-                <y>135</y>
-                <width>32</width>
-                <height>32</height>
-            </rect>
-        </property>
-    </widget>
-    <widget class="QKnob">
-        <property name="name">
-            <cstring>DialGain</cstring>
-        </property>
-        <property name="geometry">
-            <rect>
-                <x>15</x>
-                <y>15</y>
-                <width>32</width>
-                <height>32</height>
-            </rect>
-        </property>
-    </widget>
     <widget class="QSlider">
         <property name="name">
-            <cstring>SliderVolume</cstring>
+            <cstring>SliderCrossfader</cstring>
         </property>
         <property name="geometry">
             <rect>
-                <x>15</x>
-                <y>180</y>
-                <width>45</width>
-                <height>150</height>
+                <x>10</x>
+                <y>15</y>
+                <width>170</width>
+                <height>40</height>
             </rect>
         </property>
-        <property name="minValue">
-            <number>0</number>
-        </property>
         <property name="maxValue">
-            <number>0</number>
-        </property>
-        <property name="lineStep">
-            <number>1</number>
+            <number>127</number>
         </property>
         <property name="orientation">
-            <enum>Vertical</enum>
+            <enum>Horizontal</enum>
         </property>
         <property name="tickmarks">
             <enum>Both</enum>
+        </property>
+    </widget>
+    <widget class="QKnob">
+        <property name="name">
+            <cstring>Knob1</cstring>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>200</x>
+                <y>20</y>
+                <width>32</width>
+                <height>32</height>
+            </rect>
+        </property>
+    </widget>
+    <widget class="QLabel">
+        <property name="name">
+            <cstring>TextLabel1</cstring>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>195</x>
+                <y>5</y>
+                <width>42</width>
+                <height>16</height>
+            </rect>
+        </property>
+        <property name="text">
+            <string>Master</string>
+        </property>
+    </widget>
+    <widget class="QRadioButton">
+        <property name="name">
+            <cstring>RadioButtonClipping</cstring>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>245</x>
+                <y>25</y>
+                <width>45</width>
+                <height>19</height>
+            </rect>
+        </property>
+        <property name="text">
+            <string>clip</string>
         </property>
     </widget>
 </widget>

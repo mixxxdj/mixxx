@@ -17,13 +17,15 @@
 
 #include "enginefilterlbh.h"
 
-EngineFilterLBH::EngineFilterLBH(QKnob *DialFilterLow, QKnob *DialFilterMiddle, QKnob *DialFilterHigh, MidiObject *midi)
+EngineFilterLBH::EngineFilterLBH(QKnob *DialFilterLow, int midiLow,
+                                 QKnob *DialFilterMiddle, int midiBand,
+                                 QKnob *DialFilterHigh, int midiHigh, MidiObject *midi)
 {
-	low = new EngineIIRfilter(ADC6,PORT_B, 4, midi,bessel_lowpass);
+	low = new EngineIIRfilter(midiLow, PORT_B, 4, midi,bessel_lowpass);
 	connect(DialFilterLow,  SIGNAL(valueChanged(int)), low->filterpot,  SLOT(slotSetPosition(int)));
-	band = new EngineIIRfilter(ADC5,PORT_B, 4, midi,bessel_bandpass);
+	band = new EngineIIRfilter(midiBand, PORT_B, 4, midi,bessel_bandpass);
 	connect(DialFilterMiddle,  SIGNAL(valueChanged(int)), band->filterpot,  SLOT(slotSetPosition(int)));
-	high = new EngineIIRfilter(ADC4,PORT_B, 4, midi,bessel_highpass);
+	high = new EngineIIRfilter(midiHigh, PORT_B, 4, midi,bessel_highpass);
 	connect(DialFilterHigh,  SIGNAL(valueChanged(int)), high->filterpot,  SLOT(slotSetPosition(int)));
 
 	buffer = new CSAMPLE[MAX_BUFFER_LEN];
