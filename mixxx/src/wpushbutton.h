@@ -37,6 +37,7 @@ public slots:
     void setValue(int);
 signals:
     void valueChanged(int);
+    void valueOn();
 private slots:
     void emitValueChanged(bool);
 };

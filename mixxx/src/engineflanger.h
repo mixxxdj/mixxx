@@ -30,6 +30,8 @@ public:
   ~EngineFlanger();
     void notify(double) {};
   CSAMPLE *process(const CSAMPLE *, const int);
+  ControlEngine *getButtonA();
+  ControlEngine *getButtonB();
 private:
   ControlEngine *potmeterDepth, *potmeterDelay, *potmeterLFOperiod;
   ControlEngine *pushbuttonChannelA, *pushbuttonChannelB;

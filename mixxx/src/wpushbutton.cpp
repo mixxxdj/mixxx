@@ -39,7 +39,10 @@ void WPushButton::setValue(int v)
 void WPushButton::emitValueChanged(bool v)
 {
     if (v)
+    {
         emit(valueChanged(1));
+        emit(valueOn());
+    }
     else
         emit(valueChanged(0));
 }

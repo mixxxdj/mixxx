@@ -310,8 +310,6 @@ CSAMPLE *EngineBuffer::process(const CSAMPLE *, const int buf_size)
                 playposSlider->set(filepos_play/file_length_old);
                 playposUpdateCounter = 0;
             }
-
-            reader->enginelock.unlock();
         }
         pause.unlock();
 

@@ -33,6 +33,7 @@
 #include "wknob.h"
 #include "wslider.h"
 #include "wplayposslider.h"
+#include "wpushbutton.h"
 #include "mixxx.h"
 #include "filesave.xpm"
 #include "fileopen.xpm"
@@ -236,6 +237,12 @@ MixxxApp::MixxxApp(QApplication *a)
   // Save main configuration file .... well, maybe only in the pref panel!!
   //config->Save();
 
+
+  // Ensure that only one of the flanger buttons are pushed at a time.
+  //connect(dlg_flanger->PushButtonChA, SIGNAL(valueOn()), flanger_b, SLOT(slotSetPositionOff()));
+  //connect(dlg_flanger->PushButtonChB, SIGNAL(valueOn()), flanger_a, SLOT(slotSetPositionOff()));
+
+  
   // Start engine
   engineStart();
 }
