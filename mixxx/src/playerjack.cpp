@@ -69,8 +69,6 @@ bool PlayerJack::open()
     if (jack_activate(client))
         qFatal("Jack: Cannot activate client");
 
-    qDebug("");
-
     // Connect to the ports
     QString name;
 

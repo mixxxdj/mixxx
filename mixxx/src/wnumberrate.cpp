@@ -26,7 +26,7 @@ void WNumberRate::setValue(double)
 {
     double vsign = m_pRateControl->getValue()*m_pRateDirControl->getValue();
     double v = fabs(vsign);
-    int v1=0,v2=0,v3=0,v4=0;
+    int v1=0,v2=0,v3=0;
 
     v1 = (int)floor((v-floor(v))*10.);
     v2 = (int)(floor((v-floor(v))*100.))%10;
