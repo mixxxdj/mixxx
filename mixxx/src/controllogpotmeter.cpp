@@ -41,6 +41,7 @@ ControlLogpotmeter::ControlLogpotmeter(char* n, int _midino, MidiObject *_midi,
    Input:   The (new) position.
    Output:  The value is updated.
    -------- ------------------------------------------------------ */
+#define min(a,b)            (((a) < (b)) ? (a) : (b))
 void ControlLogpotmeter::slotSetPosition(int _newpos)
 {
   char newpos =(char)_newpos;
