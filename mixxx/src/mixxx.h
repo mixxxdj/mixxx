@@ -46,6 +46,7 @@
 #include "enginebuffer.h"
 #include "enginechannel.h"
 #include "enginemaster.h"
+#include "engineflanger.h"
 #include "player.h"
 #include "midiobject.h"
 #include "controlobject.h"
@@ -157,6 +158,7 @@ class MixxxApp : public QMainWindow
     EngineBuffer *buffer1, *buffer2;
     EngineChannel *channel1, *channel2;
     EngineMaster *master;
+    EngineFlanger *flanger;
     Player *player, *playerSlave;
     MidiObject *midi;
     ControlObject *control;

@@ -115,7 +115,7 @@
         </widget>
         <widget class="WKnob">
             <property name="name">
-                <cstring>DialFlangerDelay</cstring>
+                <cstring>DialFlangerDepth</cstring>
             </property>
             <property name="geometry">
                 <rect>

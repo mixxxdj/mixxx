@@ -9,7 +9,7 @@
             <x>0</x>
             <y>0</y>
             <width>666</width>
-            <height>148</height>
+            <height>204</height>
         </rect>
     </property>
     <property name="paletteBackgroundColor">
@@ -56,7 +56,7 @@
                 <x>3</x>
                 <y>0</y>
                 <width>660</width>
-                <height>148</height>
+                <height>298</height>
             </rect>
         </property>
         <property name="sizePolicy">
