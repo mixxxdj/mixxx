@@ -38,7 +38,7 @@
   </Connection>
  </SliderComposed>
 
- <PushButtonInc>
+ <PushButton>
   <NumberStates>1</NumberStates>
   <State>
    <Number>0</Number>
@@ -47,22 +47,18 @@
   </State>
   <Pos>51,328</Pos>
   <Connection>
-   <ConfigKey>[Channel1],rate</ConfigKey>
+   <ConfigKey>[Channel1],rate_perm_up</ConfigKey>
    <EmitOnDownPress>true</EmitOnDownPress>
    <ButtonState>LeftButton</ButtonState>
-   <UseSetFromApp>false</UseSetFromApp>
-   <Inc>0.001</Inc>
   </Connection>
   <Connection>
-   <ConfigKey>[Channel1],rate</ConfigKey>
+   <ConfigKey>[Channel1],rate_perm_up_small</ConfigKey>
    <EmitOnDownPress>true</EmitOnDownPress>
    <ButtonState>RightButton</ButtonState>
-   <UseSetFromApp>false</UseSetFromApp>
-   <Inc>0.0001</Inc>
   </Connection>
- </PushButtonInc>
+ </PushButton>
 
- <PushButtonInc>
+ <PushButton>
   <NumberStates>1</NumberStates>
   <State>
    <Number>0</Number>
@@ -71,22 +67,18 @@
   </State>
   <Pos>938,328</Pos>
   <Connection>
-   <ConfigKey>[Channel2],rate</ConfigKey>
+   <ConfigKey>[Channel2],rate_perm_up</ConfigKey>
    <EmitOnDownPress>true</EmitOnDownPress>
    <ButtonState>LeftButton</ButtonState>
-   <UseSetFromApp>false</UseSetFromApp>
-   <Inc>0.001</Inc>
   </Connection>
   <Connection>
-   <ConfigKey>[Channel2],rate</ConfigKey>
+   <ConfigKey>[Channel2],rate_perm_up_small</ConfigKey>
    <EmitOnDownPress>true</EmitOnDownPress>
    <ButtonState>RightButton</ButtonState>
-   <UseSetFromApp>false</UseSetFromApp>
-   <Inc>0.0001</Inc>
   </Connection>
- </PushButtonInc>
+ </PushButton>
 
- <PushButtonInc>
+ <PushButton>
   <NumberStates>1</NumberStates>
   <State>
    <Number>0</Number>
@@ -95,22 +87,18 @@
   </State>
   <Pos>51,359</Pos>
   <Connection>
-   <ConfigKey>[Channel1],rate</ConfigKey>
+   <ConfigKey>[Channel1],rate_perm_down</ConfigKey>
    <EmitOnDownPress>true</EmitOnDownPress>
    <ButtonState>LeftButton</ButtonState>
-   <UseSetFromApp>false</UseSetFromApp>
-   <Inc>-0.001</Inc>
   </Connection>
   <Connection>
-   <ConfigKey>[Channel1],rate</ConfigKey>
+   <ConfigKey>[Channel1],rate_perm_down_small</ConfigKey>
    <EmitOnDownPress>true</EmitOnDownPress>
    <ButtonState>RightButton</ButtonState>
-   <UseSetFromApp>false</UseSetFromApp>
-   <Inc>-0.0001</Inc>
   </Connection>
- </PushButtonInc>
+ </PushButton>
 
- <PushButtonInc>
+ <PushButton>
   <NumberStates>1</NumberStates>
   <State>
    <Number>0</Number>
@@ -119,20 +107,16 @@
   </State>
   <Pos>938,359</Pos>
   <Connection>
-   <ConfigKey>[Channel2],rate</ConfigKey>
+   <ConfigKey>[Channel2],rate_perm_down</ConfigKey>
    <EmitOnDownPress>true</EmitOnDownPress>
    <ButtonState>LeftButton</ButtonState>
-   <UseSetFromApp>false</UseSetFromApp>
-   <Inc>-0.001</Inc>
   </Connection>
   <Connection>
-   <ConfigKey>[Channel2],rate</ConfigKey>
+   <ConfigKey>[Channel2],rate_perm_down_small</ConfigKey>
    <EmitOnDownPress>true</EmitOnDownPress>
    <ButtonState>RightButton</ButtonState>
-   <UseSetFromApp>false</UseSetFromApp>
-   <Inc>-0.0001</Inc>
   </Connection>
- </PushButtonInc>
+ </PushButton>
 
  <PushButton>
   <NumberStates>1</NumberStates>

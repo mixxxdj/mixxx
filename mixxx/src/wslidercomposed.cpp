@@ -31,7 +31,6 @@ WSliderComposed::WSliderComposed(QWidget *parent, const char *name ) : WWidget(p
     m_iSliderLength=0;
     m_iHandleLength=0;
 
-    m_bReverse = false;
     m_fValue = 63.;
 }
 
@@ -115,7 +114,7 @@ void WSliderComposed::mouseMoveEvent(QMouseEvent *e)
 
     // value ranges from 0 to 127
     m_fValue = (double)m_iPos*(127./(double)(m_iSliderLength-m_iHandleLength));
-    if ((!m_bHorizontal && !m_bReverse) || (m_bHorizontal && m_bReverse))
+    if (!m_bHorizontal)
         m_fValue = 127.-m_fValue;
 
     // Emit valueChanged signal
@@ -163,35 +162,17 @@ void WSliderComposed::paintEvent(QPaintEvent *)
     }
 }
 
-int WSliderComposed::getReverse()
-{
-    if (m_bReverse)
-        return 1;
-    else
-        return 0;
-}
-
 void WSliderComposed::setValue(double fValue)
 {
     // Set value without emitting a valueChanged signal, and force display update
     m_fValue = fValue;
 
     // Calculate handle position
-    if ((!m_bHorizontal && !m_bReverse) || (m_bHorizontal && m_bReverse))
+    if (!m_bHorizontal)
         fValue = 127-fValue;
     m_iPos = (int)((fValue/127.)*(double)(m_iSliderLength-m_iHandleLength));
 
     repaint();
-}
-
-void WSliderComposed::slotSetReverse(int iReverse)
-{
-    if (iReverse==0)
-        m_bReverse = false;
-    else
-        m_bReverse = true;
-        
-    reset();    
 }
 
 void WSliderComposed::reset()

@@ -20,7 +20,6 @@
 #include "configobject.h"
 #include "controlpotmeter.h"
 #include "mixxxview.h"
-#include "wslidercomposed.h"
 #include <qdir.h>
 
 DlgPrefControls::DlgPrefControls(QWidget *parent, ControlObject *pControl, MixxxView *pView, ConfigObject<ConfigValue> *pConfig) : DlgPrefControlsDlg(parent,"")
@@ -30,28 +29,31 @@ DlgPrefControls::DlgPrefControls(QWidget *parent, ControlObject *pControl, Mixxx
     //
     // Rate slider configuration
     //
-    m_pControlRate1 = (ControlPotmeter *)pControl->getControl(ConfigKey("[Channel1]","rate"));
-    m_pControlRate2 = (ControlPotmeter *)pControl->getControl(ConfigKey("[Channel2]","rate"));    
 
-    m_pWidgetRate1 = pView->m_pSliderRateCh1;
-    m_pWidgetRate2 = pView->m_pSliderRateCh2;
-    
-    // Set default values as stored in config file
+    m_pControlRate1 = pControl->getControl(ConfigKey("[Channel1]","rate"));
+    m_pControlRate2 = pControl->getControl(ConfigKey("[Channel2]","rate"));
+    m_pControlRateDir1 = pControl->getControl(ConfigKey("[Channel1]","rate_dir"));
+    m_pControlRateDir2 = pControl->getControl(ConfigKey("[Channel2]","rate_dir"));    
+
+    // Set default direction as stored in config file
     if (m_pConfig->getValueString(ConfigKey("[Controls]","RateDir")).length() == 0)
         m_pConfig->set(ConfigKey("[Controls]","RateDir"),ConfigValue(0));
     else
     {
-        m_pWidgetRate1->slotSetReverse(m_pConfig->getValueString(ConfigKey("[Controls]","RateDir")).toInt());
-        m_pWidgetRate2->slotSetReverse(m_pConfig->getValueString(ConfigKey("[Controls]","RateDir")).toInt());
+        float dir = 1.;
+        if (m_pConfig->getValueString(ConfigKey("[Controls]","RateDir")).toInt()==1.)
+            dir = -1.;
+        m_pControlRateDir1->setValueFromApp(dir);
+        m_pControlRateDir2->setValueFromApp(dir);
     }
+    connect(ComboBoxRateDir,   SIGNAL(activated(int)), this, SLOT(slotSetRateDir(int)));
+
+    // Set default range as stored in config file
     if (m_pConfig->getValueString(ConfigKey("[Controls]","RateRange")).length() == 0)
         m_pConfig->set(ConfigKey("[Controls]","RateRange"),ConfigValue(1));
     else
         slotSetRateRange(m_pConfig->getValueString(ConfigKey("[Controls]","RateRange")).toInt());
-    
     connect(ComboBoxRateRange, SIGNAL(activated(int)), this, SLOT(slotSetRateRange(int)));
-    connect(ComboBoxRateDir,   SIGNAL(activated(int)), m_pWidgetRate1, SLOT(slotSetReverse(int)));
-    connect(ComboBoxRateDir,   SIGNAL(activated(int)), m_pWidgetRate2, SLOT(slotSetReverse(int)));
 
     //
     // Skin configurations
@@ -102,8 +104,8 @@ void DlgPrefControls::slotUpdate()
     ComboBoxRateRange->insertItem("80%");
     ComboBoxRateRange->insertItem("90%");
 
-    float idx = 10.*(fabs(1.-m_pControlRate1->getMin()));
-    if (fabs(1.-m_pControlRate1->getMin())==0.08)
+    float idx = 10.*m_pControlRate1->getMax();
+    if (m_pControlRate1->getMin()==0.08)
         idx = 0.;
 
     ComboBoxRateRange->setCurrentItem((int)idx);
@@ -111,7 +113,11 @@ void DlgPrefControls::slotUpdate()
     ComboBoxRateDir->clear();
     ComboBoxRateDir->insertItem("Up increase speed");
     ComboBoxRateDir->insertItem("Down increase speed (Technics SL1210)");
-    ComboBoxRateDir->setCurrentItem(m_pWidgetRate1->getReverse());
+
+    if (m_pControlRateDir1->getValue()==1)
+        ComboBoxRateDir->setCurrentItem(0);
+    else
+        ComboBoxRateDir->setCurrentItem(1);
 }
 
 void DlgPrefControls::slotSetRateRange(int pos)
@@ -119,13 +125,21 @@ void DlgPrefControls::slotSetRateRange(int pos)
     float range = (float)(pos)/10.;
     if (pos==0)
         range = 0.08;
-        
+
+    // Set the rate range
+    m_pControlRate1->setRange(-range, range);
+    m_pControlRate2->setRange(-range, range);
+}
+
+void DlgPrefControls::slotSetRateDir(int)
+{
     float dir = 1.;
     if (ComboBoxRateDir->currentItem()==1)
         dir = -1.;
 
-    m_pControlRate1->setRange(1.-(range*dir), 1.+(range*dir));
-    m_pControlRate2->setRange(1.-(range*dir), 1.+(range*dir));
+    // Set rate dir
+    m_pControlRateDir1->setValueFromApp(dir);
+    m_pControlRateDir2->setValueFromApp(dir);
 }
 
 void DlgPrefControls::slotSetSkin(int)
@@ -137,14 +151,16 @@ void DlgPrefControls::slotSetSkin(int)
 void DlgPrefControls::slotApply()
 {
     // Write rate range to config file
-    float idx = 10.*(fabs(1.-m_pControlRate1->getMin()));
-    if (fabs(1.-m_pControlRate1->getMin())==0.08)
+    float idx = 10.*m_pControlRate1->getMax();
+    if (m_pControlRate1->getMin()==0.08)
         idx = 0.;
-
     m_pConfig->set(ConfigKey("[Controls]","RateRange"), ConfigValue((int)idx));
 
     // Write rate direction to config file
-    m_pConfig->set(ConfigKey("[Controls]","RateDir"), ConfigValue(m_pWidgetRate1->getReverse()));
+    if (m_pControlRateDir1->getValue()==1)
+        m_pConfig->set(ConfigKey("[Controls]","RateDir"), ConfigValue(0));
+    else
+        m_pConfig->set(ConfigKey("[Controls]","RateDir"), ConfigValue(1));
 
     // Save preferences
     m_pConfig->Save();

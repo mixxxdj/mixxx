@@ -28,7 +28,6 @@
 #include "wwidget.h"
 #include "wknob.h"
 #include "wpushbutton.h"
-#include "wpushbuttoninc.h"
 #include "wslider.h"
 #include "wslidercomposed.h"
 #include "wdisplay.h"
@@ -78,11 +77,6 @@ MixxxView::MixxxView(QWidget *parent, bool bVisuals, QString qSkinPath) : QWidge
             if (node.nodeName()=="PushButton")
             {
                 WPushButton *p = new WPushButton(this);
-                p->setup(node);
-            }
-            else if (node.nodeName()=="PushButtonInc")
-            {
-                WPushButtonInc *p = new WPushButtonInc(this);
                 p->setup(node);
             }
             else if (node.nodeName()=="Knob")

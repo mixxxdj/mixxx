@@ -68,11 +68,7 @@ void WWidget::setup(QDomNode node)
                 state = Qt::RightButton;
         }
 
-        bool bUseSetFromApp = true;
-        if (selectNodeQString(con, "UseSetFromApp").contains("false",false))
-            bUseSetFromApp = false;
-
-        ControlObject::setWidget(this, configKey, bEmitOnDownPress, state, bUseSetFromApp);
+        ControlObject::setWidget(this, configKey, bEmitOnDownPress, state);
 
         con = con.nextSibling();
     }     
