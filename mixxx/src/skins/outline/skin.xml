@@ -43,12 +43,27 @@
   <NumberStates>1</NumberStates>
   <State>
    <Number>0</Number>
-   <Pressed>rateup-on-Ch1.png</Pressed>
-   <Unpressed>rateup-off-Ch1.png</Unpressed>
+   <Pressed>sync-on-Ch1.png</Pressed>
+   <Unpressed>sync-off-Ch1.png</Unpressed>
   </State>
-  <Pos>51,170</Pos>
+  <Pos>51,180</Pos>
   <Connection>
    <ConfigKey>[Channel1],beatsync</ConfigKey>
+   <EmitOnDownPress>true</EmitOnDownPress>
+   <ButtonState>LeftButton</ButtonState>
+  </Connection>
+ </PushButton>
+
+ <PushButton>
+  <NumberStates>1</NumberStates>
+  <State>
+   <Number>0</Number>
+   <Pressed>sync-on-Ch2.png</Pressed>
+   <Unpressed>sync-off-Ch2.png</Unpressed>
+  </State>
+  <Pos>938,180</Pos>
+  <Connection>
+   <ConfigKey>[Channel2],beatsync</ConfigKey>
    <EmitOnDownPress>true</EmitOnDownPress>
    <ButtonState>LeftButton</ButtonState>
   </Connection>

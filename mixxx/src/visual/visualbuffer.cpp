@@ -179,4 +179,44 @@ GLfloat *VisualBuffer::getBasePtr()
     return m_pBuffer;
 }
 
+void VisualBuffer::setColorFg(float r, float g, float b)
+{
+    m_materialFg.ambient[0] = r;
+    m_materialFg.ambient[1] = g;
+    m_materialFg.ambient[2] = b;
+    m_materialFg.ambient[3] = 1.0f;
+
+    m_materialFg.diffuse[0] = r;
+    m_materialFg.diffuse[1] = g;
+    m_materialFg.diffuse[2] = b;
+    m_materialFg.diffuse[3] = 1.0f;
+
+    m_materialFg.specular[0] = r;
+    m_materialFg.specular[1] = g;
+    m_materialFg.specular[2] = b;
+    m_materialFg.specular[3] = 1.0f;
+
+    m_materialFg.shininess = 128;
+}
+
+void VisualBuffer::setColorBg(float r, float g, float b)
+{
+    m_materialBg.ambient[0] = r;
+    m_materialBg.ambient[1] = g;
+    m_materialBg.ambient[2] = b;
+    m_materialBg.ambient[3] = 1.0f;
+
+    m_materialBg.diffuse[0] = r;
+    m_materialBg.diffuse[1] = g;
+    m_materialBg.diffuse[2] = b;
+    m_materialBg.diffuse[3] = 1.0f;
+
+    m_materialBg.specular[0] = r;
+    m_materialBg.specular[1] = g;
+    m_materialBg.specular[2] = b;
+    m_materialBg.specular[3] = 1.0f;
+
+    m_materialBg.shininess = 128;
+}
+
 

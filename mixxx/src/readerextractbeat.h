@@ -86,11 +86,12 @@ public:
 private:
     /** Updates the confidence variable. */
     void updateConfidence(int curBeatIdx, int lastBeatIdx);
+    /** Mark beat at the given index */
+    void markBeat(int i);
     /** HFC peak list */
     PeakList *peaks;
     /** Beat probability vector histogram */
     ProbabilityVector *bpv;
-
     /** Buffer indicating if a beat has occoured or not. */
     float *beatBuffer;
     /** Buffer holding the interpolated beat position for the beats marked in beatBuffer */

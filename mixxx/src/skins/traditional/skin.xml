@@ -665,6 +665,54 @@
   <BgColor>#000000</BgColor>
  </Text>
 
+ <Number>
+  <Pos>144,355</Pos>
+  <Size>100,20</Size>
+  <Text>BPM: </Text>
+  <NumberOfDigits>6</NumberOfDigits>
+  <FgColor>#00fe00</FgColor>
+  <BgColor>#000000</BgColor>
+  <Connection>
+   <ConfigKey>[Channel1],bpm</ConfigKey>
+  </Connection>
+ </Number>
+
+ <Number>
+  <Pos>623,355</Pos>
+  <Size>100,20</Size>
+  <Text>BPM: </Text>
+  <NumberOfDigits>6</NumberOfDigits>
+  <FgColor>#00fe00</FgColor>
+  <BgColor>#000000</BgColor>
+  <Connection>
+   <ConfigKey>[Channel2],bpm</ConfigKey>
+  </Connection>
+ </Number>
+
+ <NumberPos>
+  <Channel>1</Channel>
+  <Pos>320,355</Pos>
+  <Size>85,20</Size>
+  <NumberOfDigits>6</NumberOfDigits>
+  <FgColor>#00fe00</FgColor>
+  <BgColor>#000000</BgColor>
+  <Connection>
+   <ConfigKey>[Channel1],playposition</ConfigKey>
+  </Connection>
+ </NumberPos>
+
+ <NumberPos>
+  <Channel>2</Channel>
+  <Pos>798,355</Pos>
+  <Size>85,20</Size>
+  <NumberOfDigits>6</NumberOfDigits>
+  <FgColor>#00fe00</FgColor>
+  <BgColor>#000000</BgColor>
+  <Connection>
+   <ConfigKey>[Channel2],playposition</ConfigKey>
+  </Connection>
+ </NumberPos>
+
  <TrackTable>
   <Pos>76,490</Pos>
   <Size>872,252</Size>
@@ -673,11 +721,12 @@
   <BgColorRowEven>#9ab2c4</BgColorRowEven>
   <BgColorRowUneven>#94abc2</BgColorRowUneven>
   <ColWidthScore>20</ColWidthScore>
-  <ColWidthTitle>240</ColWidthTitle>
-  <ColWidthArtist>220</ColWidthArtist>
+  <ColWidthTitle>220</ColWidthTitle>
+  <ColWidthArtist>200</ColWidthArtist>
   <ColWidthComment>246</ColWidthComment>
   <ColWidthType>30</ColWidthType>
   <ColWidthDuration>50</ColWidthDuration>
+  <ColWidthBpm>40</ColWidthBpm>
   <ColWidthBitrate>50</ColWidthBitrate>
  </TrackTable>
 

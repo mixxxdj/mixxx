@@ -46,18 +46,18 @@ TrackInfoObject::TrackInfoObject(const QString sPath, const QString sFile) : m_s
 
 TrackInfoObject::TrackInfoObject(const QDomNode &nodeHeader)
 {
-    m_sFilename = selectNode( nodeHeader, "Filename").toElement().text();
-    m_sFilepath = selectNode( nodeHeader, "Filepath").toElement().text();
-    m_sTitle = selectNode( nodeHeader, "Title").toElement().text();
-    m_sArtist = selectNode( nodeHeader, "Artist").toElement().text();
-    m_sType = selectNode( nodeHeader, "Type").toElement().text();
-    m_sComment = selectNode( nodeHeader, "Comment").toElement().text();
-    m_iDuration = selectNode( nodeHeader, "Duration").toElement().text().toInt();
-    m_iBitrate = selectNode( nodeHeader, "Bitrate").toElement().text().toInt();
-    m_iLength = selectNode( nodeHeader, "Length").toElement().text().toInt();
-    m_iTimesPlayed = selectNode( nodeHeader, "TimesPlayed").toElement().text().toInt();
-    m_fBpm = selectNode( nodeHeader, "Bpm").toElement().text().toFloat();
-    m_fBpmConfidence = selectNode( nodeHeader, "BpmConfidence").toElement().text().toFloat();
+    m_sFilename = selectNodeStr( nodeHeader, "Filename");
+    m_sFilepath = selectNodeStr( nodeHeader, "Filepath");
+    m_sTitle = selectNodeStr( nodeHeader, "Title");
+    m_sArtist = selectNodeStr( nodeHeader, "Artist");
+    m_sType = selectNodeStr( nodeHeader, "Type");
+    m_sComment = selectNodeStr( nodeHeader, "Comment");
+    m_iDuration = selectNodeStr( nodeHeader, "Duration").toInt();
+    m_iBitrate = selectNodeStr( nodeHeader, "Bitrate").toInt();
+    m_iLength = selectNodeStr( nodeHeader, "Length").toInt();
+    m_iTimesPlayed = selectNodeStr( nodeHeader, "TimesPlayed").toInt();
+    m_fBpm = selectNodeStr( nodeHeader, "Bpm").toFloat();
+    m_fBpmConfidence = selectNodeStr( nodeHeader, "BpmConfidence").toFloat();
     m_iScore = 0;
 
     m_pTableItemScore = 0;
@@ -85,6 +85,15 @@ QDomNode TrackInfoObject::selectNode( const QDomNode &nodeHeader, const QString 
         node = node.nextSibling();
     }
     return node;
+}
+
+QString TrackInfoObject::selectNodeStr( const QDomNode &nodeHeader, const QString sNode )
+{
+    QString s = "";
+    QDomNode node = selectNode(nodeHeader, sNode);
+    if (!node.isNull())
+        s = node.toElement().text();
+    return s;
 }
 
 TrackInfoObject::~TrackInfoObject()

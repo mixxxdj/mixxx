@@ -26,6 +26,9 @@ public:
     void writeToXML( QDomDocument &, QDomElement & );
     /** Utility function to get a node from an xml file: */
     static QDomNode selectNode( const QDomNode &, const QString );
+    /** Utility function to get a the text of an element in a node from an xml file: */
+    static QString selectNodeStr( const QDomNode &, const QString );
+
     /** Utility function to add a node: */
     static void addElement( QDomDocument &, QDomElement &, QString, QString );
     /** Insert at the values in a WTrackTable at a given row */

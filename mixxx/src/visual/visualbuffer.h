@@ -34,6 +34,7 @@ const int MAXDISPLAYRATE = 500;
 #include "../defs.h"
 #include <qobject.h>
 #include <qgl.h>
+#include "material.h"
 
 class ReaderExtract;
 class ControlPotmeter;
@@ -60,6 +61,8 @@ public:
     int getBufferLength();
     int getDisplayLength();
     GLfloat *getBasePtr();
+    void setColorFg(float r, float g, float b);
+    void setColorBg(float r, float g, float b);
 
 protected:
     /** Memory Allocation Routine.
@@ -96,6 +99,8 @@ protected:
     int m_iDisplayLen;
     /** Pounter to ReaderExtract */
     ReaderExtract *m_pReaderExtract;
+    /** Material */
+    Material m_materialFg, m_materialBg;
 };
 #endif
 

@@ -225,15 +225,20 @@ void EngineBuffer::setVisual(WVisualWaveform *pVisualWaveform)
 float EngineBuffer::getDistanceNextBeatMark()
 {
     float *p = (float *)reader->getBeatPtr()->getBasePtr();
+    int size = reader->getBeatPtr()->getBufferSize();
+
+    int pos = bufferpos_play*size/READBUFFERSIZE;
+
+    qDebug("s1 %i s2 %i",size,READBUFFERSIZE);
 
     int i;
     bool found = false;
-    for (i=0; i<100 && !found; ++i)
-        if (p[((int)bufferpos_play+i)%READBUFFERSIZE]>0)
+    for (i=0; i<10 && !found; ++i)
+        if (p[(pos+i)%size]>0)
             found = true;
 
     if (found)
-        return (float)i-(bufferpos_play-floor(bufferpos_play));
+        return (float)(i%size)*(float)READBUFFERSIZE/(float)size;
     else
         return 0.f;
 }
@@ -446,16 +451,20 @@ void EngineBuffer::slotControlBeatSync(double)
     // Adjust the rate:
     rateSlider->set(fRateScale-1);
 
-    
+/*
     // Search for distance from playpos to beat mark of both buffers
-    float fThisDistance = getDistanceNextBeatMark();
-    float fOtherDistance = m_pOtherEngineBuffer->getDistanceNextBeatMark();
+    float fThisDistance = 2.; //getDistanceNextBeatMark();
+    float fOtherDistance = 20.; //m_pOtherEngineBuffer->getDistanceNextBeatMark();
+
+    qDebug("this %f, other %f",fThisDistance, fOtherDistance);
 
     filepos_play += fOtherDistance-fThisDistance;
     bufferpos_play = bufferpos_play+fOtherDistance-fThisDistance;
     if (bufferpos_play>(double)READBUFFERSIZE)
         bufferpos_play -= (double)READBUFFERSIZE;
 
+    qDebug("buffer pos %f, file pos %f",bufferpos_play,filepos_play);
+*/
 }
 
 inline bool even(long n)
