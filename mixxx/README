@@ -79,11 +79,15 @@ to make your own.
 If you have any problems starting Mixxx, eg. after changeing
 options in the preference panel, you can reset the Mixxx
 configuration by deleting your mixxx.cfg file (.mixxx.cfg on
-Linux).
+Linux). If the program runs very slow, you can disable the
+waveform displays. This is done by running Mixxx from the
+command line using the option --disable-visuals.
 
 * DEVELOPMENT **********************************************
 If you are interested in joining the development team of
-Mixxx you are most welcome. Also we are interested in
+Mixxx you are most welcome. Especially we are looking for
+people to help with adding support for various sound api's, 
+eg. ALSA, ASIO, Jack, Arts etc. Also we are interested in
 hearing about how you use Mixxx, what features you would 
 like, if you have used any special midi controllers,
 designed your own skin etc.
