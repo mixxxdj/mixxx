@@ -1,3 +1,20 @@
+/***************************************************************************
+                          guicontainer.h  -  description
+                             -------------------
+    copyright            : (C) 2002 by Tue and Ken Haste Andersen and Kenny 
+                                       Erleben
+    email                :
+ ***************************************************************************/
+
+/***************************************************************************
+ *                                                                         *
+ *   This program is free software; you can redistribute it and/or modify  *
+ *   it under the terms of the GNU General Public License as published by  *
+ *   the Free Software Foundation; either version 2 of the License, or     *
+ *   (at your option) any later version.                                   *
+ *                                                                         *
+ ***************************************************************************/
+ 
 #ifndef GUICONTAINER_H
 #define GUICONTAINER_H
 
@@ -5,9 +22,9 @@
 #include "material.h"
 #include "light.h"
 
-class CFastVertexArray;
-class CSignalVertexBuffer;
-class CGUISignal;
+class FastVertexArray;
+class SignalVertexBuffer;
+class GUISignal;
 class EngineBuffer;
 
 
@@ -37,11 +54,11 @@ const float zoomdepth = 1.;
 class GUIContainer : public QObject
 {
 public:
-    GUIContainer(CFastVertexArray *vertex, EngineBuffer *engineBuffer);
+    GUIContainer(FastVertexArray *vertex, EngineBuffer *engineBuffer);
 
     GUIContainer *getContainer(int id);
-    CGUISignal *getSignal();
-    CSignalVertexBuffer *getBuffer();
+    GUISignal *getSignal();
+    SignalVertexBuffer *getBuffer();
 
     void setBasepos(float x, float y, float z);
     void setZoompos(float x, float y, float z);
@@ -54,9 +71,9 @@ private:
 
     static int          idCount;
     int                 id;
-    CSignalVertexBuffer *buffer;
-    CFastVertexArray    *vertex;
-    CGUISignal          *signal;
+    SignalVertexBuffer *buffer;
+    FastVertexArray    *vertex;
+    GUISignal          *signal;
 
     /** Base position */
     float               basex, basey, basez;
@@ -69,7 +86,7 @@ private:
     /** True if the container is currently moving */
     bool                movement;
 
-    static CLight mylight;
-    static CMaterial dblue, lblue, purple, lgreen;
+    static Light mylight;
+    static Material dblue, lblue, purple, lgreen;
 };
 #endif

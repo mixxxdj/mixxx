@@ -1,5 +1,5 @@
 /***************************************************************************
-                          texture.h  -  description
+                          visualcontroller.h  -  description
                              -------------------
     copyright            : (C) 2002 by Tue and Ken Haste Andersen and Kenny 
                                        Erleben
@@ -15,36 +15,56 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef TEXTURE_H
-#define TEXTURE_H
-//#include <GL/gl.h>
-//#include <GL/glu.h>
-#include <qgl.h>
+#ifndef VISUALCONTROLLER_H
+#define VISUALCONTROLLER_H
+#if defined(WIN32)
+#include <windows.h>
+#endif
+#include <list>
+#include <GL/gl.h>
 
 /**
- * A texture.
- * This class represents a texture map. The map
- * corresponds to a stored bmp-file.
+ * Forward Declaration.
  */
-class Texture
+class VisualObject;
+
+/**
+ * Common Data Types.
+ */
+typedef std::list<VisualObject *> Objects;
+typedef std::list<VisualObject *>::iterator ObjectsIterator;
+
+/**
+ *
+ */
+class VisualController
 {
+public: 
+  VisualController();
+
+private:
+  void setupBackfaceCulling();
+  void setupZBuffer();
+  void setupBlending();
+
 public:
+  void init();
+  void drawScene(GLenum mode);
+  void display();
+  void resize(GLsizei _width,GLsizei _height);
+  void add(VisualObject * obj);
+  void remove(VisualObject * obj);
 
-  Texture();
-  virtual ~Texture();
+  GLdouble fov,aspect,znear,zfar;
+  GLdouble eyex,eyey,eyez;
+  GLdouble centerx,centery,centerz;
+  GLdouble upx,upy,upz;
 
-  int load(char * filename,const int & wrap,const int & decal);
-  int unload(void);
-  void use();
+  GLint x,y;
+  GLsizei width,height;
 
-  static void disable(void);
-  static void enable(void);
-
-protected:
-  GLuint texture; ///< A texture object.
-  int loaded;     ///< If true then m_texture is a valid texture object
-  int decal;      ///< Remembers how the texture should be rendered.
-  void validate();
+private:
+  Objects objects;
 
 };
 #endif

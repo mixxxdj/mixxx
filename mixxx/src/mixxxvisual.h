@@ -23,11 +23,11 @@
 #include <qevent.h>
 #include <qdatetime.h>
 
-#include "visual/controller.h"
-#include "visual/pick.h"
+#include "visual/visualcontroller.h"
+#include "visual/picking.h"
 #include "visual/visualbackplane.h"
 
-class CFastVertexArray;
+class FastVertexArray;
 class EngineBuffer;
 class GUIContainer;
 
@@ -59,18 +59,18 @@ protected:
     void paintGL();
     void timerEvent( QTimerEvent * );
 
-	CVisualController controller;
+    VisualController controller;
 
-    CPicking picking;
+    Picking picking;
 
     int screenx;
     int screeny;
     int selObjIdx;
 
-	/** Vertex buffer */
-	CFastVertexArray *vertex;
+    /** Vertex buffer */
+    FastVertexArray *vertex;
 
-	VisualBackplane *backplane;
+    VisualBackplane *backplane;
 
     typedef struct {
         int          id;

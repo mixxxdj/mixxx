@@ -1,5 +1,5 @@
 /***************************************************************************
-                          texture.h  -  description
+                          picking.h  -  description
                              -------------------
     copyright            : (C) 2002 by Tue and Ken Haste Andersen and Kenny 
                                        Erleben
@@ -15,37 +15,52 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef TEXTURE_H
-#define TEXTURE_H
-//#include <GL/gl.h>
-//#include <GL/glu.h>
-#include <qgl.h>
+#ifndef PICKING_H
+#define PICKING_H
+#if defined(WIN32)
+#include <windows.h>
+#endif
+#include <GL/gl.h>
 
 /**
- * A texture.
- * This class represents a texture map. The map
- * corresponds to a stored bmp-file.
+ * Forward Declaration.
  */
-class Texture
+class VisualController;
+
+#define BUFSIZE 512
+
+/**
+ * Picking Support Class.
+ * This class can be used to pick objects.
+ *
+ * You use it by invoking the method pick(...), which
+ * return a unique index of a pickable object.
+ */
+class Picking
 {
 public:
+  Picking();
+  void init(VisualController * controller);
 
-  Texture();
-  virtual ~Texture();
+private:
+  void processHits(GLint hits, GLuint buffer[]);
+  GLuint inFront(GLint hits, GLuint buffer[]);
 
-  int load(char * filename,const int & wrap,const int & decal);
-  int unload(void);
-  void use();
+public:
+  int pick(int x,int y);
 
-  static void disable(void);
-  static void enable(void);
+private:
+    GLuint selectBuf[BUFSIZE];
+    GLint i,hits;
+    GLint viewport[4];
+    GLuint    j, num_names, picked;
+    GLuint*   p;
+    GLboolean save;
+    GLuint    depth;
 
-protected:
-  GLuint texture; ///< A texture object.
-  int loaded;     ///< If true then m_texture is a valid texture object
-  int decal;      ///< Remembers how the texture should be rendered.
-  void validate();
+    VisualController *controller;
 
 };
 #endif
+
 

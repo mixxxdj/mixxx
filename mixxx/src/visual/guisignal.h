@@ -1,13 +1,30 @@
-#ifndef __GUI_SIGNAL_INCLUDED__
-#define __GUI_SIGNAL_INCLUDED__
-#include "visual.h"
-#include "signal.h"
-#include "box.h"
-#include "buffer.h"
+/***************************************************************************
+                          guisignal.h  -  description
+                             -------------------
+    copyright            : (C) 2002 by Tue and Ken Haste Andersen and Kenny 
+                                       Erleben
+    email                :
+ ***************************************************************************/
+
+/***************************************************************************
+ *                                                                         *
+ *   This program is free software; you can redistribute it and/or modify  *
+ *   it under the terms of the GNU General Public License as published by  *
+ *   the Free Software Foundation; either version 2 of the License, or     *
+ *   (at your option) any later version.                                   *
+ *                                                                         *
+ ***************************************************************************/
+
+#ifndef GUISIGNAL_H
+#define GUISIGNAL_H
+#include "visualobject.h"
+#include "visualsignal.h"
+#include "visualbox.h"
+#include "signalvertexbuffer.h"
 
 
-class CFastVertexArray;
-class CSignalVertexBuffer;
+class FastVertexArray;
+class SignalVertexBuffer;
 class ControlPotmeter;
 
 /**
@@ -17,11 +34,11 @@ class ControlPotmeter;
  *
  *
  */
-class CGUISignal : public CVisualObject
+class GUISignal : public VisualObject
 {
   Q_OBJECT
 public:
-  CGUISignal(CSignalVertexBuffer *buffer,CFastVertexArray * vertex, const char *group);
+  GUISignal(SignalVertexBuffer *buffer, FastVertexArray * vertex, const char *group);
 public:
 
   void update(float * signal,int samples);
@@ -43,33 +60,25 @@ public:
   float getDepth();
 
 
-  void setPlayPosMarkerMaterial(CMaterial * material);
-  void setBoxMaterial(CMaterial * material);
-  void setBoxWireMaterial(CMaterial *material);
-  void setSignalMaterial(CMaterial * material);
+  void setPlayPosMarkerMaterial(Material *material);
+  void setBoxMaterial(Material *material);
+  void setBoxWireMaterial(Material *material);
+  void setSignalMaterial(Material *material);
 
 public slots:
-
-
-  void setFishEyeSignalMaterial(CMaterial * material);
+  void setFishEyeSignalMaterial(Material *material);
   void setFishEyeMode(bool value);
   void setFishEyeLengthScale(FLOAT_TYPE scale);
   void setFishEyeSignalFraction(FLOAT_TYPE fraction);
   void setSignalScale(float scale);
-
-
   void setRotation(float angle, float rx,float ry,float rz);
 
 private:
-
   void doLayout();
 
   float ox,oy,oz;   ///< Origio of visual signal (from where signal propagates from)
-
-  
   float angle;      ///< Rotation angle in radians.
   float rx,ry,rz;   ///< Rotation Axe.
-  
 
   float fishEyeLengthScale;
   float signalScale;
@@ -80,19 +89,20 @@ private:
   float height;
   float depth;
 
-  CVisualBox box;
-  CVisualBox playPosMarker;
+  VisualBox box;
+  VisualBox playPosMarker;
 
-  CVisualSignal preSignal,fishEyeSignal,postSignal;
-  CVisualSignal signal;
-  CSignalVertexBuffer *buffer;
-  CMaterial *boxMaterial, *boxWireMaterial;
+  VisualSignal preSignal,fishEyeSignal,postSignal;
+  VisualSignal signal;
+  SignalVertexBuffer *buffer;
+  Material *boxMaterial, *boxWireMaterial;
 
-  CMaterial * playPosMarkerMaterial;
+  Material * playPosMarkerMaterial;
   
   ControlPotmeter *sliderFishEyeSignalFraction;
   ControlPotmeter *sliderFishEyeLengthScale;
 
-};/*End class CGUISignal*/
-#endif //__GUI_SIGNAL_INCLUDED__
+};
+#endif
+
 

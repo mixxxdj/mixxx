@@ -1,8 +1,25 @@
-#ifndef __FAST_VERTEX_ARRAY_INCLUDED__
-#define __FAST_VERTEX_ARRAY_INCLUDED__
+/***************************************************************************
+                          fastvertexarray.h  -  description
+                             -------------------
+    copyright            : (C) 2002 by Tue and Ken Haste Andersen and Kenny 
+                                       Erleben
+    email                :
+ ***************************************************************************/
+
+/***************************************************************************
+ *                                                                         *
+ *   This program is free software; you can redistribute it and/or modify  *
+ *   it under the terms of the GNU General Public License as published by  *
+ *   the Free Software Foundation; either version 2 of the License, or     *
+ *   (at your option) any later version.                                   *
+ *                                                                         *
+ ***************************************************************************/
+
+#ifndef FASTVERTEXARRAY_H
+#define FASTVERTEXARRAY_H
 
 #include <iostream>
-#include "buffer.h"
+#include "signalvertexbuffer.h"
 
 #include <qgl.h>
 
@@ -15,18 +32,18 @@
  * array, according to the white papers, the memory used by the
  * vertex array is uncached and therefore slow to read from.
  */
-class CFastVertexArray
+class FastVertexArray
 {
 public:
 
   /**
    * Default Constructor.
    */
-  CFastVertexArray();
+  FastVertexArray();
   /**
    * Deconstructor.
    */
-  virtual ~CFastVertexArray();
+  virtual ~FastVertexArray();
 
   /**
    * Initialize Vertex Array.
@@ -91,6 +108,6 @@ public:
 
   GLfloat *pointer; ///<  A pointer to the "entire" vertex array.
 
-};/*End of class CFastVertexArray*/
-#endif //__FAST_VERTEX_ARRAY_INCLUDED__
+};
+#endif
 

@@ -1,27 +1,44 @@
+/***************************************************************************
+                          guicontainer.cpp  -  description
+                             -------------------
+    copyright            : (C) 2002 by Tue and Ken Haste Andersen and Kenny 
+                                       Erleben
+    email                :
+ ***************************************************************************/
+
+/***************************************************************************
+ *                                                                         *
+ *   This program is free software; you can redistribute it and/or modify  *
+ *   it under the terms of the GNU General Public License as published by  *
+ *   the Free Software Foundation; either version 2 of the License, or     *
+ *   (at your option) any later version.                                   *
+ *                                                                         *
+ ***************************************************************************/
+
 #include "guicontainer.h"
 #include "fastvertexarray.h"
-#include "buffer.h"
+#include "signalvertexbuffer.h"
 #include "guisignal.h"
-#include "signal.h"
+#include "visualsignal.h"
 #include "../defs.h"
 #include "../enginebuffer.h"
 
 // Static members:
-CLight GUIContainer::mylight;
-CMaterial GUIContainer::dblue, GUIContainer::lblue, GUIContainer::purple, GUIContainer::lgreen;
+Light GUIContainer::mylight;
+Material GUIContainer::dblue, GUIContainer::lblue, GUIContainer::purple, GUIContainer::lgreen;
 
 /**
  * Default Consructor.
  */
-GUIContainer::GUIContainer(CFastVertexArray *vertex, EngineBuffer *engineBuffer)
+GUIContainer::GUIContainer(FastVertexArray *vertex, EngineBuffer *engineBuffer)
 {
     setupScene();
     atBasepos = true;
     movement = false;
 
     // Create objects
-    buffer = new CSignalVertexBuffer(READBUFFERSIZE, 42, engineBuffer, vertex);
-    signal = new CGUISignal(buffer,vertex,engineBuffer->getGroup());
+    buffer = new SignalVertexBuffer(READBUFFERSIZE, 42, engineBuffer, vertex);
+    signal = new GUISignal(buffer,vertex,engineBuffer->getGroup());
     
     signal->setBoxMaterial(&dblue);
     signal->setBoxWireMaterial(&lblue);
@@ -32,12 +49,12 @@ GUIContainer::GUIContainer(CFastVertexArray *vertex, EngineBuffer *engineBuffer)
 }
 
 
-CGUISignal *GUIContainer::getSignal()
+GUISignal *GUIContainer::getSignal()
 {
     return signal;
 }
 
-CSignalVertexBuffer *GUIContainer::getBuffer()
+SignalVertexBuffer *GUIContainer::getBuffer()
 {
     return buffer;
 }
@@ -231,3 +248,4 @@ void GUIContainer::setupScene()
     
 	lgreen.shininess = 128;
 };
+

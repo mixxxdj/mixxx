@@ -1,5 +1,5 @@
 /***************************************************************************
-                          texture.h  -  description
+                          visualsignal.h  -  description
                              -------------------
     copyright            : (C) 2002 by Tue and Ken Haste Andersen and Kenny 
                                        Erleben
@@ -15,36 +15,45 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef TEXTURE_H
-#define TEXTURE_H
-//#include <GL/gl.h>
-//#include <GL/glu.h>
-#include <qgl.h>
+#ifndef VISUALSIGNAL_H
+#define VISUALSIGNAL_H
+
+#include "visualobject.h"
+#include "signalvertexbuffer.h"
+
+class FastVertexArray;
 
 /**
- * A texture.
- * This class represents a texture map. The map
- * corresponds to a stored bmp-file.
+ * A Visual Signal.
  */
-class Texture
+class VisualSignal : public VisualObject
 {
 public:
+  VisualSignal(GLfloat *,FastVertexArray *);
+  ~VisualSignal();
 
-  Texture();
-  virtual ~Texture();
+public:
+  void draw(GLenum mode);
+  void draw();
 
-  int load(char * filename,const int & wrap,const int & decal);
-  int unload(void);
-  void use();
+  void setOrigo(float ox, float oy,float oz);
+  void setLength(float length);
+  void setHeight(float height);
+  void setRotation(float angle, float rx,float ry,float rz);
+  void setVertexArray(bufInfo i);
 
-  static void disable(void);
-  static void enable(void);
+private:
+  float ox,oy,oz;   ///< Origio of visual signal (from where signal propagates from).
+  float angle;      ///< Rotation angle in radians.
+  float rx,ry,rz;   ///< Rotation Axe.
 
-protected:
-  GLuint texture; ///< A texture object.
-  int loaded;     ///< If true then m_texture is a valid texture object
-  int decal;      ///< Remembers how the texture should be rendered.
-  void validate();
+  bufInfo bufferInfo; ///< Pointers to vertex array
+
+  float length;     ///< Signal Length.
+  float height;     ///< Signal Heigth.
+
+  FastVertexArray *vertex;
+  GLfloat *buffer;
 
 };
 #endif

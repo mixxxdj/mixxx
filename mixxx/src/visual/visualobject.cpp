@@ -1,7 +1,8 @@
 /***************************************************************************
-                          enginepregain.h  -  description
+                          visualobject.cpp  -  description
                              -------------------
-    copyright            : (C) 2002 by Tue and Ken Haste Andersen
+    copyright            : (C) 2002 by Tue and Ken Haste Andersen and Kenny 
+                                       Erleben
     email                :
  ***************************************************************************/
 
@@ -14,29 +15,35 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef ENGINEPREGAIN_H
-#define ENGINEPREGAIN_H
+#include "visualobject.h"
+#include "material.h"
+#if defined(WIN32)
+#include <windows.h>
+#endif
+#include <GL/gl.h>
 
-#include <qobject.h>
 
-#include "engineobject.h"
-#include "midiobject.h"
-#include "controllogpotmeter.h"
-
-class EnginePregain : public EngineObject {
-  Q_OBJECT
-public:
-  EnginePregain(const char *group);
-  ~EnginePregain();
-  CSAMPLE *process(const CSAMPLE*, const int);
-
-  ControlLogpotmeter* potmeter;
-public slots:
-  void slotUpdate(FLOAT_TYPE);
-
-private:
-  CSAMPLE *buffer;
-  FLOAT_TYPE pregain;
+/**
+ * Specialized Drawing Method.
+ *
+ * @param mode    The rendering mode.
+ */
+void VisualObject::draw(GLenum mode)
+{
+    if(mode==GL_SELECT)
+        return;
+    if(material)
+        material->use();
+    draw();
 };
 
-#endif
+/**
+ * Assign Material.
+ * 
+ * @param material   A pointer to the material you want
+ *                   to use on the object.
+ */
+void VisualObject::setMaterial(Material *material)
+{
+    this->material = material;
+};

@@ -1,5 +1,22 @@
-#ifndef __SIGNAL_VERTEX_BUFFER_INCLUDED__
-#define __SIGNAL_VERTEX_BUFFER_INCLUDED__
+/***************************************************************************
+                          vertexbuffer.h  -  description
+                             -------------------
+    copyright            : (C) 2002 by Tue and Ken Haste Andersen and Kenny 
+                                       Erleben
+    email                :
+ ***************************************************************************/
+
+/***************************************************************************
+ *                                                                         *
+ *   This program is free software; you can redistribute it and/or modify  *
+ *   it under the terms of the GNU General Public License as published by  *
+ *   the Free Software Foundation; either version 2 of the License, or     *
+ *   (at your option) any later version.                                   *
+ *                                                                         *
+ ***************************************************************************/
+
+#ifndef SIGNALVERTEXBUFFER_H
+#define SIGNALVERTEXBUFFER_H
 
 /**
  * A Signal Vertex Array Buffer.
@@ -22,7 +39,7 @@
 
 class EngineBuffer;
 class SoundBuffer;
-class CFastVertexArray;
+class FastVertexArray;
 
 typedef struct
 {
@@ -30,11 +47,11 @@ typedef struct
     int             len1, len2;
 } bufInfo;
 
-class CSignalVertexBuffer : public QObject
+class SignalVertexBuffer : public QObject
 {
 public:
-    CSignalVertexBuffer(int len, int resampleFactor, EngineBuffer *engineBuffer, CFastVertexArray *vertex);
-    virtual ~CSignalVertexBuffer();
+    SignalVertexBuffer(int len, int resampleFactor, EngineBuffer *engineBuffer, FastVertexArray *vertex);
+    virtual ~SignalVertexBuffer();
     bool eventFilter(QObject *o, QEvent *e);
 
     void updateBuffer(float *source, int pos1, int len1, int pos2, int len2);
@@ -44,6 +61,7 @@ public:
     
     /** An openGL vertex array of a "unaltered" signal. */
     GLfloat *buffer;
+
 private:
     /** Playpos */
     int playpos;       
@@ -60,9 +78,7 @@ private:
     /** Pounter to SoundBuffer */
     SoundBuffer *soundbuffer;
     /** Pointer to CFastVertexArray */
-    CFastVertexArray *vertex;
-    
-
-};/* End class CSignalVertexBuffer */
-#endif // __SIGNAL_BUFFER_INCLUDED__
+    FastVertexArray *vertex;
+};
+#endif
 
