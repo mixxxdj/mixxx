@@ -90,7 +90,7 @@ win32 {
 macx {
   DEFINES += __MACX__
   LIBS += /usr/local/lib/libaudiofile.a -lz -framework Carbon -framework QuickTime
-  CONFIG_PATH = \"./config/\" 
+  CONFIG_PATH = \"./Mixxx.app/Contents/Resources/config/\" 
 }
 
 # gcc Profiling
