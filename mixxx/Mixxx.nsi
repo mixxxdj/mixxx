@@ -12,7 +12,7 @@
 Name "Mixxx"
 
 ; The file to write
-OutFile "mixxx-1.3-win.exe"
+OutFile "mixxx-1.3.1-win.exe"
 
 ; The default installation directory
 InstallDir $PROGRAMFILES\Mixxx
@@ -1244,6 +1244,7 @@ Section "Uninstall"
 
   ; Remove files and uninstaller
   Delete $INSTDIR\mixxx.exe
+  Delete $INSTDIR\mixxx.log
   Delete $INSTDIR\libsndfile.dll
   Delete $INSTDIR\uninstall.exe
   Delete $INSTDIR\Mixxx-Manual.pdf
