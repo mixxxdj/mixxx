@@ -48,10 +48,10 @@ FastVertexArray::~FastVertexArray()
             glXFreeMemoryNV(pointer);
     #endif
         else
-            delete pointer;
+            delete [] pointer;
         pointer = 0;
     #else
-        delete pointer;
+        delete [] pointer;
         pointer = 0;
     #endif
     }
@@ -101,7 +101,7 @@ void FastVertexArray::draw(GLfloat *p, int vlen)
 {
     glVertexPointer(3, GL_FLOAT, 0, p);
     if (!nv_fence)
-		glEnableClientState(GL_VERTEX_ARRAY);
+        glEnableClientState(GL_VERTEX_ARRAY);
     glDrawArrays(GL_LINE_STRIP,0,vlen);
 };
 
@@ -137,8 +137,7 @@ GLfloat *FastVertexArray::allocate(int size)
     {
         qDebug("Visuals: Unable to allocate %f megabytes of fast video memory. Reverting to standard OpenGL.",megabytes);
         nv_fence = false;
-
-        array = new GLfloat[size*sizeof(GLfloat)];
+        array = new GLfloat[size];
     }
     
     return array;

@@ -112,6 +112,8 @@ void GUISignal::draw(GLenum mode)
   
     if(fishEyeMode)
     {
+        // TOTAL LENGTH SHOULD EQUAL b.len1+b.len2 but seems to give b-1!!!!
+    
         int nfish =     (b.len1+b.len2)*fishEyeSignalFraction;
         int noutside = ((b.len1+b.len2)-nfish)/2;
 //      int n = ((b.len1+b.len2)/3)+1;

@@ -31,7 +31,7 @@ class FastVertexArray;
 class EngineBuffer;
 class GUIContainer;
 
-const int RESAMPLE_FACTOR = 42;
+const int RESAMPLE_FACTOR = 32;
 
 #include "defs.h"
 
@@ -48,16 +48,16 @@ public:
 
     bool eventFilter(QObject *o, QEvent *e);
 
-	/** Add a visual, and return a unique id */
-	GUIContainer *add(EngineBuffer *engineBuffer);
-	/** Removes a visual based on its unique id. Returns 0 on success */
-	int remove(int id);
+    /** Add a visual, and return a unique id */
+    GUIContainer *add(EngineBuffer *engineBuffer);
+    /** Removes a visual based on its unique id. Returns 0 on success */
+    int remove(int id);
 protected:
     GUIContainer *getContainer(int id);
     void initializeGL();
-    void resizeGL( int, int );
+    void resizeGL(int, int);
     void paintGL();
-    void timerEvent( QTimerEvent * );
+    void timerEvent(QTimerEvent *);
 
     VisualController controller;
 

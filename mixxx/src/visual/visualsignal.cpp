@@ -25,7 +25,7 @@
 VisualSignal::VisualSignal(GLfloat *_buffer, FastVertexArray *_vertex)
 {
     buffer = _buffer;
-	vertex = _vertex;
+    vertex = _vertex;
     
     ox = oy = oz = 0;
     angle = 0;
@@ -39,7 +39,9 @@ VisualSignal::VisualSignal(GLfloat *_buffer, FastVertexArray *_vertex)
 /**
  * Deconstructor.
  */
-VisualSignal::~VisualSignal(){};
+VisualSignal::~VisualSignal()
+{
+};
 
 /**
  * Specialized Drawing Method.
@@ -57,8 +59,8 @@ void VisualSignal::draw(GLenum mode)
  * before to this method. If not the signal will not
  * change!!!
  */
-void VisualSignal::draw(){
-
+void VisualSignal::draw()
+{
     glDisable(GL_BLEND);
     //--- matrix mode must be  GL_MODEL
     glPushMatrix();
@@ -68,12 +70,13 @@ void VisualSignal::draw(){
         glRotatef(angle,rx,ry,rz);
     float yscale = height/2.0f;
 
-    //cout << "len1 " << bufferInfo.len1 << ", len2 " << bufferInfo.len2  << "\n";
+    //std::cout << "len1 " << bufferInfo.len1 << ", len2 " << bufferInfo.len2  << "\n";
+    //qDebug("LENGTH: %i",bufferInfo.len1+bufferInfo.len2);
+
     float xscale = length/(bufferInfo.len1+bufferInfo.len2-1);
     glScalef(xscale,yscale,1);
 
     //--- Now draw the mother fucker:-)
-
     if (bufferInfo.len1>0)
     {
         glTranslatef(-bufferInfo.p1[0],0,0);
@@ -83,7 +86,7 @@ void VisualSignal::draw(){
     if (bufferInfo.len2>0)
     {
         if (bufferInfo.len1==0)
-            glTranslatef(-bufferInfo.p2[0],0,0);
+           glTranslatef(-bufferInfo.p2[0],0,0);
         else
             glTranslatef(bufferInfo.p1[0]+bufferInfo.len1,0,0);
         vertex->draw(bufferInfo.p2, bufferInfo.len2);
@@ -91,7 +94,7 @@ void VisualSignal::draw(){
   
     //--- Clean up after us
     glPopMatrix();
-	glEnable(GL_BLEND);
+    glEnable(GL_BLEND);
 };
 
 /**
