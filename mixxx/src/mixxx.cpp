@@ -383,7 +383,7 @@ void MixxxApp::initMenuBar()
   // menuBar entry optionsMenu
   optionsMenu=new QPopupMenu();
   optionsMenu->setCheckable(true);
-  optionsBeatMark->addTo(optionsMenu);
+//  optionsBeatMark->addTo(optionsMenu);
   optionsFullScreen->addTo(optionsMenu);
   optionsPreferences->addTo(optionsMenu);
 
