@@ -7,7 +7,7 @@
 WINPA = DIRECTSOUND
 
 # Use this define if the visual subsystem should be included
-#DEFINES += __VISUALS__
+DEFINES += __VISUALS__
 
 # Path to ASIO SDK
 ASIOSDK_DIR   = ../winlib/asiosdk2
@@ -164,9 +164,9 @@ win32 {
   INCLUDEPATH += ../winlib ../winlib/id3lib ../lib/portaudio-v18 ../lib . 
   SOURCES += soundsourcesndfile.cpp
   HEADERS += soundsourcesndfile.h ../winlib/fftw.h ../winlib/rfftw.h
-  LIBS += ../winlib/libmad.lib ../winlib/libid3tag.lib ../winlib/rfftw2st.lib ../winlib/fftw2st.lib ../winlib/libsndfile.lib ../winlib/vorbisfile_static_d.lib ../winlib/vorbis_static_d.lib ../winlib/ogg_static_d.lib
+  LIBS += libmad.lib libid3tag.lib rfftw2st.lib fftw2st.lib libsndfile.lib vorbisfile_static_d.lib vorbis_static_d.lib ogg_static_d.lib
   QMAKE_CXXFLAGS += -GX
-  QMAKE_LFLAGS += /NODEFAULTLIB:libcd /NODEFAULTLIB:libcmtd /NODEFAULTLIB:libc #/NODEFAULTLIB:msvcrt /NODEFAULTLIB:library
+  QMAKE_LFLAGS += /libpath:..\winlib /NODEFAULTLIB:libcd /NODEFAULTLIB:libcmtd /NODEFAULTLIB:libc /NODEFAULTLIB:msvcrt #/NODEFAULTLIB:library
   CONFIG_PATH = \"config\"
 }
 

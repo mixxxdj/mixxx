@@ -16,6 +16,10 @@
 
 
 #include "soundsourceoggvorbis.h"
+#ifdef __WIN__
+#include <io.h>
+#include <fcntl.h>
+#endif
 
 /*
   Class for reading Ogg Vorbis 
@@ -23,7 +27,17 @@
 
 SoundSourceOggVorbis::SoundSourceOggVorbis(const char* filename)
 {
+  
     vorbisfile =  fopen(filename, "r");
+    if (!vorbisfile) {
+        qWarning("oggvorbis: file cannot be opened.\n");
+        return;
+    }
+
+    // Apparently this is needed to make windows happy:
+    #ifdef __WIN__
+        _setmode( _fileno( vorbisfile ), _O_BINARY );
+    #endif
 
     if(ov_open(vorbisfile, &vf, NULL, 0) < 0) {
        qDebug("oggvorbis: Input does not appear to be an Ogg bitstream.\n");
@@ -124,6 +138,15 @@ int SoundSourceOggVorbis::ParseHeader( TrackInfoObject *Track )
     OggVorbis_File vf;
        
     FILE* vorbisfile = fopen(filename, "r");
+    if (!vorbisfile) {
+        qWarning("oggvorbis: file cannot be opened.\n");
+        return ERR;
+    }
+
+    // Apparently this is needed to make windows happy:
+    #ifdef __WIN__
+        _setmode( _fileno( vorbisfile ), _O_BINARY );
+    #endif
             
     if (ov_open(vorbisfile, &vf, NULL, 0) < 0) {
         qWarning("oggvorbis: Input does not appear to be an Ogg bitstream.\n");
