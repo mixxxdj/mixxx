@@ -109,9 +109,11 @@ void ReaderExtractWave::reset()
     readerbeat->reset();
 #endif
 
+#ifdef __VISUALS__
     // Update vertex buffer by sending an event containing indexes of where to update.
     if (guichannel != 0)
         QApplication::postEvent(guichannel, new ReaderEvent(0, READBUFFERSIZE));
+#endif
 }
 
 void *ReaderExtractWave::getBasePtr()
@@ -247,9 +249,11 @@ void ReaderExtractWave::getchunk(CSAMPLE rate)
 #endif
     m_pReader->unlock();
 
+#ifdef __VISUALS__
     // Update vertex buffer by sending an event containing indexes of where to update.
     if (guichannel != 0)
         QApplication::postEvent(guichannel, new ReaderEvent(bufIdx, READCHUNKSIZE));
+#endif
 }
 
 long int ReaderExtractWave::seek(long int new_playpos)
