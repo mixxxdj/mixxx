@@ -29,25 +29,6 @@
     <property name="caption">
         <string>Form1</string>
     </property>
-    <widget class="QLabel">
-        <property name="name">
-            <cstring>TextLabel1</cstring>
-        </property>
-        <property name="geometry">
-            <rect>
-                <x>5</x>
-                <y>160</y>
-                <width>29</width>
-                <height>16</height>
-            </rect>
-        </property>
-        <property name="backgroundOrigin">
-            <enum>WindowOrigin</enum>
-        </property>
-        <property name="text">
-            <string>Rate</string>
-        </property>
-    </widget>
     <widget class="QPushButton">
         <property name="name">
             <cstring>PushButtonPlay</cstring>
@@ -65,53 +46,6 @@
         </property>
         <property name="text">
             <string>Play</string>
-        </property>
-    </widget>
-    <widget class="QSlider">
-        <property name="name">
-            <cstring>SliderRate</cstring>
-        </property>
-        <property name="geometry">
-            <rect>
-                <x>5</x>
-                <y>180</y>
-                <width>24</width>
-                <height>84</height>
-            </rect>
-        </property>
-        <property name="backgroundOrigin">
-            <enum>ParentOrigin</enum>
-        </property>
-        <property name="maxValue">
-            <number>127</number>
-        </property>
-        <property name="orientation">
-            <enum>Vertical</enum>
-        </property>
-    </widget>
-    <widget class="QLCDNumber">
-        <property name="name">
-            <cstring>LCDposition</cstring>
-        </property>
-        <property name="geometry">
-            <rect>
-                <x>5</x>
-                <y>0</y>
-                <width>35</width>
-                <height>23</height>
-            </rect>
-        </property>
-        <property name="backgroundOrigin">
-            <enum>WindowOrigin</enum>
-        </property>
-        <property name="frameShape">
-            <enum>NoFrame</enum>
-        </property>
-        <property name="frameShadow">
-            <enum>Plain</enum>
-        </property>
-        <property name="numDigits">
-            <number>2</number>
         </property>
     </widget>
     <widget class="QLabel">
@@ -147,6 +81,28 @@
     </widget>
     <widget class="QSlider">
         <property name="name">
+            <cstring>SliderPlaycontrol</cstring>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>0</x>
+                <y>125</y>
+                <width>210</width>
+                <height>26</height>
+            </rect>
+        </property>
+        <property name="backgroundOrigin">
+            <enum>WindowOrigin</enum>
+        </property>
+        <property name="value">
+            <number>49</number>
+        </property>
+        <property name="orientation">
+            <enum>Horizontal</enum>
+        </property>
+    </widget>
+    <widget class="QSlider">
+        <property name="name">
             <cstring>SliderPosition</cstring>
         </property>
         <property name="geometry">
@@ -167,23 +123,79 @@
             <enum>Horizontal</enum>
         </property>
     </widget>
-    <widget class="QSlider">
+    <widget class="QLCDNumber">
         <property name="name">
-            <cstring>SliderPlaycontrol</cstring>
+            <cstring>LCDposition</cstring>
         </property>
         <property name="geometry">
             <rect>
-                <x>0</x>
-                <y>125</y>
-                <width>210</width>
-                <height>26</height>
+                <x>5</x>
+                <y>0</y>
+                <width>35</width>
+                <height>23</height>
             </rect>
         </property>
         <property name="backgroundOrigin">
             <enum>WindowOrigin</enum>
         </property>
+        <property name="frameShape">
+            <enum>NoFrame</enum>
+        </property>
+        <property name="frameShadow">
+            <enum>Plain</enum>
+        </property>
+        <property name="numDigits">
+            <number>2</number>
+        </property>
+    </widget>
+    <widget class="QLabel">
+        <property name="name">
+            <cstring>TextLabel1</cstring>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>5</x>
+                <y>160</y>
+                <width>29</width>
+                <height>16</height>
+            </rect>
+        </property>
+        <property name="backgroundOrigin">
+            <enum>WindowOrigin</enum>
+        </property>
+        <property name="frameShape">
+            <enum>MShape</enum>
+        </property>
+        <property name="frameShadow">
+            <enum>Plain</enum>
+        </property>
+        <property name="text">
+            <string>Rate</string>
+        </property>
+    </widget>
+    <widget class="QSlider">
+        <property name="name">
+            <cstring>SliderRate</cstring>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>5</x>
+                <y>180</y>
+                <width>24</width>
+                <height>84</height>
+            </rect>
+        </property>
+        <property name="backgroundOrigin">
+            <enum>ParentOrigin</enum>
+        </property>
+        <property name="maxValue">
+            <number>127</number>
+        </property>
+        <property name="value">
+            <number>63</number>
+        </property>
         <property name="orientation">
-            <enum>Horizontal</enum>
+            <enum>Vertical</enum>
         </property>
     </widget>
 </widget>
