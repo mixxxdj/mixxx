@@ -16,6 +16,13 @@
 
 class WindowKaiser;
 
+// Table for equal loudness contour used in PSF calculation
+static const int kiEqualLoudnessLen = 15;
+static const float kfEqualLoudness[kiEqualLoudnessLen] = {0.0000f, 0.9934f, 0.9501f, 0.8812f, 
+                                                          0.7975f, 0.7218f, 0.6385f, 0.5637f, 
+                                                          0.4976f, 0.4393f, 0.3878f, 0.3615f,
+                                                          0.3405f, 0.3207f, 0.3020f};
+
 /**
   * Performs FFT on a buffer of samples. Upon instantiazion it is possible
   * to select if the output should contain polar or rectangular corrdinates,
@@ -24,8 +31,7 @@ class WindowKaiser;
   * has been calculated by a tick() operation.
   *
   *@author Tue Haste Andersen
-  */
-
+  */  
 class EngineSpectralFwd : public EngineObject
 {
 public:
@@ -41,6 +47,8 @@ public:
     void process(const CSAMPLE *pIn, const CSAMPLE *pOut, const int iBufferSize);
     /** Return the High Frequency Content (HFC) of the spectrum */
     CSAMPLE getHFC();
+    /** Return the Perceptual Spectral Flux (PSF) of the spectrum */
+    CSAMPLE getPSF();
     /** Calculates the magnitude of the FFT at the bin at index. This function
       * only returns a valid result if both Power and Phase was set to false
       * upon initialization. */

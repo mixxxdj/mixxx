@@ -11,7 +11,7 @@
 #include "windowkaiser.h"
 #include "mathstuff.h"
 
-/* -------- -----------------------------------------------------------------
+/* -------- -------------------------------cff----------------------------------
    Purpose: Initializes EngineSpectralFwd object, for performing fft's using the
             FFTW library.
    Input:   power - if true calculates power spectrum when performing tick()
@@ -98,6 +98,19 @@ CSAMPLE EngineSpectralFwd::getHFC()
 //     qDebug("hfc %f",hfc);
     //hfc *= (two_pi/l_half)*wndNorm;
     return hfc;
+}
+
+CSAMPLE EngineSpectralFwd::getPSF()
+{
+    ASSERT(power_calc);
+
+    CSAMPLE psf = 0.;
+    for (int i=0; i<l_half; ++i)
+    {
+        float w = kfEqualLoudness[(int)((float)(i*kiEqualLoudnessLen)/(float)l_half)];
+        psf += w * powf(spectrum[i],(1./3.));
+    }
+    return psf;
 }
 
 /* -------- -----------------------------------------------------------------

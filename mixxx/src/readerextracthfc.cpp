@@ -139,7 +139,7 @@ void *ReaderExtractHFC::processChunk(const int _idx, const int start_idx, const 
         for (int i=frameFrom; i<=frameTo; i++)
         {
             processFftFrame(i);
-            hfc[i] = m_pEngineSpectralFwd->getHFC();
+            hfc[i] = m_pEngineSpectralFwd->getPSF();
         }
 //        qDebug("HFC vals 1 : %i",j);
     }
@@ -149,12 +149,12 @@ void *ReaderExtractHFC::processChunk(const int _idx, const int start_idx, const 
         for (i=frameFrom; i<frameNo; i++)
         {
             processFftFrame(i);
-            hfc[i] = m_pEngineSpectralFwd->getHFC();
+            hfc[i] = m_pEngineSpectralFwd->getPSF();
         }
         for (i=0; i<=frameTo; i++)
         {
             processFftFrame(i);
-            hfc[i] = m_pEngineSpectralFwd->getHFC();
+            hfc[i] = m_pEngineSpectralFwd->getPSF();
         }
 //        qDebug("HFC vals 2 : %i",j);
     }
