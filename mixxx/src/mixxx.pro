@@ -2,7 +2,7 @@
 # Options (comment out what's not wanted)
 #
 
-# ALSA
+# ALSA PCM
 #SOURCES += playeralsa.cpp
 #HEADERS += playeralsa.h
 #DEFINES += __ALSA__
@@ -13,12 +13,15 @@ SOURCES += playerportaudio.cpp
 HEADERS += playerportaudio.h
 DEFINES += __PORTAUDIO__
 unix:LIBS += -lportaudio
-win32:LIBS += ../lib/PAstaticDSD.lib dsound.lib 
+win32:LIBS += ../lib/PAstaticDSD.lib dsound.lib
 
 # PortMidi
-DEFINES += __PORTMIDI__
-unix:LIBS += -lportmidi -lporttime
-win32:LIBS += ../lib/portmidi.lib ../lib/porttime.lib ../lib/libmad.lib
+#DEFINES += __PORTMIDI__
+#unix:LIBS += -lportmidi -lporttime
+#win32:LIBS += ../lib/portmidi.lib ../lib/porttime.lib ../lib/libmad.lib
+
+# OSS Midi
+DEFINES += __OSSMIDI__
 
 #
 # End of options
