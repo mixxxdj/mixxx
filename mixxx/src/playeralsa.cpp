@@ -589,6 +589,8 @@ int PlayerALSA::set_hwparams()
     // choices so work backwards from a maximum number of periods per buffer of 4
     
     int period_no_start = 2;
+    //int iMinPeriodSize = 
+    
     if (buffer_size/kiMaxFrameSize>2)
         period_no_start = buffer_size/kiMaxFrameSize;
 
@@ -645,7 +647,8 @@ int PlayerALSA::set_swparams()
 	return err;
     }
     /* start the transfer when the buffer is full */
-    err = snd_pcm_sw_params_set_start_threshold(handle, swparams, buffer_size);
+    qDebug("buffer_size %i, period_size %i",buffer_size,period_size);
+    err = snd_pcm_sw_params_set_start_threshold(handle, swparams, (buffer_size/period_size)*period_size);
     if (err < 0)
     {
 	qWarning("Unable to set start threshold mode for playback: %s\n", snd_strerror(err));
