@@ -241,7 +241,7 @@ bool TrackList::AddFiles(const char *path)
                         bFoundFiles = true;
                     } 
                     else
-                        qWarning("Could not parse %s", fi->fileName() );
+                        qWarning("Could not parse %s", fi->fileName().latin1());
 
 			}
             ++it;   // goto next list element
