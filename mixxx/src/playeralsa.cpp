@@ -26,6 +26,11 @@
 // Example   /usr/share/doc/alsa-lib-1.0.4/doxygen/html/_2test_2pcm_8c-example.html
 // QT        /usr/share/doc/qt-devel-3.1.1/html/index.html
 
+/** Maximum frame size used with ALSA. Used to determine no of buffers
+ *   * when setting latency */
+const int kiMaxFrameSize = 64;
+
+
 #ifndef PLAYERTEST
 PlayerALSA::PlayerALSA(ConfigObject<ConfigValue> *config, ControlObject *pControl) : Player(config, pControl)
 #else
@@ -582,7 +587,13 @@ int PlayerALSA::set_hwparams()
     /* set the period size */
     // the config space seems to reduce in extent as as we try out possible
     // choices so work backwards from a maximum number of periods per buffer of 4
-    for (period_no = 4; period_no > 1; period_no--)
+    
+    int period_no_start = 2;
+    if (buffer_size/kiMaxFrameSize>2)
+        period_no_start = buffer_size/kiMaxFrameSize;
+
+    
+    for (period_no = period_no_start; period_no > 1; period_no--)
     {
 	period_time = buffer_time / period_no;
 	qWarning("Period %dus (no: %d)", (int) period_time, period_no);
