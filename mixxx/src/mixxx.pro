@@ -13,7 +13,7 @@
 
 # On Windows, select between WMME, DIRECTSOUND and ASIO.
 # If ASIO is used, ensure that the path to the ASIO SDK 2 is set correctly below
-WINPA = DIRECTSOUND
+WINPA = WMME 
 
 # Include for unix dependencies. (19/12/2003, J_Zar)
 unix:include( main.qbas )
@@ -47,21 +47,28 @@ macx:LIBS += -framework CoreAudio -framework AudioToolbox
 macx:INCLUDEPATH += $$PORTAUDIO_DIR/pa_mac_core $$PORTAUDIO_DIR/pablio 
 win32 {
     contains(WINPA, DIRECTSOUND) {
-        message("Compiling Mixxx using DirectSound drivers")
+        message("Compiling with PortAudio/DirectSound drivers")
         SOURCES += $$PORTAUDIO_DIR/pa_win_ds/dsound_wrapper.c $$PORTAUDIO_DIR/pa_win_ds/pa_dsound.c
-        LIBS += dsound.lib
+        LIBS += winmm.lib dsound.lib
         INCLUDEPATH += $$PORTAUDIO_DIR/pa_win_ds
     }
-    contains(WINPA, ASIO) {
-        message("Compiling Mixxx using ASIO drivers. Not tested.")
-        SOURCES += $$PORTAUDIO_DIR/pa_asio/pa_asio.cpp $$ASIOSDK_DIR/common/asio.cpp $$ASIOSDK_DIR/host/asiodrivers.cpp $$ASIOSDK_DIR/host/pc/asiolist.cpp
-        HEADERS += $$ASIOSDK_DIR/common/asio.h $$ASIOSDK_DIR/host/asiodrivers.h $$ASIOSDK_DIR/host/pc/asiolist.h
-        INCLUDEPATH += $$PORTAUDIO_DIR/pa_asio $$ASIOSDK_DIR/common $$ASIOSDK_DIR/host $$ASIOSDK_DIR/host/pc
-        LIBS += winmm.lib
-    }
     contains(WINPA, WMME) {
-        error("TO use WMME drivers add appropriate files to the mixxx.pro file first")
+	message("Compiling with PortAudio/WMME drivers")
+        SOURCES += $$PORTAUDIO_DIR/pa_win_wmme/pa_win_wmme.c
+        LIBS += winmm.lib
+        INCLUDEPATH += $$PORTAUDIO_DIR/pa_win_ds
     }
+}
+
+# RTAudio (Windows DirectSound)
+win32 {
+    message("Compiling with RtAudio/DirectSound drivers")
+    DEFINES += __RTAUDIO__ __WINDOWS_DS__
+    RTAUDIO_DIR = ../lib/rtaudio
+    INCLUDEPATH += $$RTAUDIO_DIR
+    HEADERS += playerrtaudio.h $$RTAUDIO_DIR/RtAudio.h $$RTAUDIO_DIR/RtError.h
+    SOURCES += playerrtaudio.cpp $$RTAUDIO_DIR/RtAudio.cpp
+    LIBS += dsound.lib 
 }
 
 # OSS Midi (Working good, Linux specific)
