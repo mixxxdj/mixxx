@@ -45,7 +45,7 @@ public:
     void setup(QDomNode node);
     bool eventFilter(QObject *o, QEvent *e);
     /** Add a VisualChannel */
-    VisualChannel *add(ControlPotmeter *pPlaypos);
+    VisualChannel *add(ControlPotmeter *pPlaypos, const char *group);
 
 public slots:
     void setValue(double) {};

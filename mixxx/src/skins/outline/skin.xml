@@ -464,6 +464,7 @@
   <BeatColor>#0000ff</BeatColor>
   <MarkerColor>#ff0000</MarkerColor>
   <FisheyeColor>#ffffff</FisheyeColor>
+  <Zoom>true</Zoom>
  </Visual>
 
  <Visual>
@@ -475,6 +476,7 @@
   <BeatColor>#0000ff</BeatColor>
   <MarkerColor>#ff0000</MarkerColor>
   <FisheyeColor>#ffffff</FisheyeColor>
+  <Zoom>true</Zoom>
  </Visual>
 
  <Text>

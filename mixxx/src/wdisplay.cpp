@@ -66,9 +66,9 @@ void WDisplay::resetPositions()
     {
         for (int i=0; i<m_iNoPos; i++)
             if (m_pPixmaps[i])
-                delete m_pPixmaps[i];
+                WPixmapStore::deletePixmap(m_pPixmaps[i]);
 
-        delete m_pPixmaps;
+        WPixmapStore::deletePixmap(m_pPixmaps);
         m_pPixmaps = 0;
     }
 }

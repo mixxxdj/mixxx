@@ -68,7 +68,6 @@ void VisualBufferSignal::update(int iPos, int iLen)
 
 void VisualBufferSignal::draw(GLfloat *p, int iLen)
 {
-//    qDebug("draw %p",this);
     glVertexPointer(3, GL_FLOAT, 0, p);
     glEnableClientState(GL_VERTEX_ARRAY);
     glDrawArrays(GL_LINE_STRIP,0,iLen);

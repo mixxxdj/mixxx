@@ -91,11 +91,11 @@ void WSliderComposed::setPixmaps(bool bHorizontal, const QString &filenameSlider
 void WSliderComposed::unsetPixmaps()
 {
     if (m_pSlider)
-        delete m_pSlider;
+        WPixmapStore::deletePixmap(m_pSlider);
     if (m_pHandle)
-        delete m_pHandle;
+        WPixmapStore::deletePixmap(m_pHandle);
     if (m_pDoubleBuffer)
-        delete m_pDoubleBuffer;
+        WPixmapStore::deletePixmap(m_pDoubleBuffer);
     m_pSlider = 0;
     m_pHandle = 0;
     m_pDoubleBuffer = 0;

@@ -132,9 +132,9 @@ bool WVisual::eventFilter(QObject *o, QEvent *e)
     return true;
 }
 
-VisualChannel *WVisual::add(ControlPotmeter *pPlaypos)
+VisualChannel *WVisual::add(ControlPotmeter *pPlaypos, const char *group)
 {
-    VisualChannel *c = new VisualChannel(pPlaypos, m_pVisualController);
+    VisualChannel *c = new VisualChannel(pPlaypos, m_pVisualController, group);
 
     // Position coding... hack
     if (m_qlList.isEmpty())

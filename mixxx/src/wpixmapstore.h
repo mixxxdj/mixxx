@@ -26,18 +26,21 @@
   *@author Tue & Ken Haste Andersen
   */
 
-typedef struct {
-	QPixmap *pixmap;
-	QString path;
+typedef struct
+{
+    QPixmap *pixmap;
+    QString path;
+    int instCount;
 } PixmapInfoType;
 
 class WPixmapStore {
 public: 
     WPixmapStore();
     static QPixmap *getPixmap(const QString &fileName);
+    static void deletePixmap(QPixmap *p);
 private:
-	/** List of pixmaps already instantiated */
-	static QPtrList<PixmapInfoType> list;
+    /** List of pixmaps already instantiated */
+    static QPtrList<PixmapInfoType> list;
 };
 
 #endif

@@ -52,7 +52,9 @@ public:
     /** Pointer to WVisual widgets */
     WVisual *m_pVisualCh1, *m_pVisualCh2;
     WSliderComposed *m_pSliderRateCh1, *m_pSliderRateCh2;
-
+    /** Allow dynamic zoom on visuals */
+    bool m_bZoom;
+    
 private:
     bool compareConfigKeys(QDomNode node, QString key);
 };

@@ -43,7 +43,7 @@ public:
     /**
       * Default Consructor.
       */
-    VisualDisplay(VisualBuffer *pVisualBuffer, const char *group, bool drawBox=false);
+    VisualDisplay(VisualBuffer *pVisualBuffer, const char *type, const char *group, bool drawBox=false);
     ~VisualDisplay();
     /** Returns unique id of signal */
     int getId();
@@ -83,16 +83,17 @@ public slots:
       * @param scale    A non zero value indicating how long the fish
       *                 eye box should be stretched. 0 means no fisheye, 1 means full length fish eye
       */
-    void setFishEyeLengthScale(FLOAT_TYPE scale);
+    void setFishEyeLengthScale(double scale);
     /** Controls the fraction of the signal display in fish eye */
-    void setFishEyeSignalFraction(FLOAT_TYPE fraction);
+    void setFishEyeSignalFraction(double fraction);
     /**
       * Set Signal Scale
       *
       * @param scale   A non zero value indicating how heigh signals
       *                in the fish eye box should stretched.
       */
-    void setSignalScale(float scale);
+    void setSignalScaleHeight(double scale);
+    void setSignalScaleLength(double scale);
     /**
       * Set Rotation.
       * Rotations are currently not fully implemented.
@@ -110,7 +111,8 @@ protected:
     float rx,ry,rz;   ///< Rotation Axe.
 
     float fishEyeLengthScale;
-    float signalScale;
+    float signalScaleHeight;
+    float signalScaleLength;
     bool  fishEyeMode;
     float fishEyeSignalFraction;
 
@@ -123,8 +125,7 @@ protected:
     VisualDisplayBuffer *preSignal, *fishEyeSignal, *postSignal, *signal;
     VisualBuffer *m_pVisualBuffer;
   
-    ControlPotmeter *sliderFishEyeSignalFraction;
-    ControlPotmeter *sliderFishEyeLengthScale;
+    ControlPotmeter *controlScaleLength;
 
     /** Materials */
     Material m_materialSignal, m_materialMarker, m_materialBeat, m_materialFisheye;

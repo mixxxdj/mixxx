@@ -57,16 +57,45 @@ void VisualBufferMarks::update(int iPos, int iLen)
 
 void VisualBufferMarks::draw(GLfloat *p, int iLen)
 {
+//    glDrawArrays(GL_LINE_STRIP,0,iLen);
+
+
     for (int i=0; i<iLen*3; i+=3)
     {
-        if (p[i+1]>=1)
+        if (p[i+1]>0.)
         {
-	    const float kfWidth = 0.5;
+            const float kfWidth = 0.5;
+/*
+            float array[12];
+            array[ 0] = p[i]+p[i+1]-kfWidth;
+            array[ 1] = -1.;
+            array[ 2] = p[i+2];
+            array[ 3] = p[i]+p[i+1]+kfWidth;
+            array[ 4] = -1.;
+            array[ 5] = p[i+2];
+            array[ 6] = p[i]+p[i+1]+kfWidth;
+            array[ 7] = 1.;
+            array[ 8] = p[i+2];
+            array[ 9] = p[i]+p[i+1]-kfWidth;
+            array[10] = 1.;
+            array[11] = p[i+2];
+            
+            glVertexPointer(3, GL_FLOAT, 0, array);
+            glEnableClientState(GL_VERTEX_ARRAY);
+            glDrawArrays(GL_POLYGON, 0,4);
+*/
+/*
+            glVertex3f(array[ 0], array[ 1], array[ 2]);
+            glVertex3f(array[ 3], array[ 4], array[ 5]);
+            glVertex3f(array[ 6], array[ 7], array[ 8]);
+            glVertex3f(array[ 9], array[10], array[11]);
+*/
+
             glBegin(GL_POLYGON);
-            glVertex3f(p[i]-kfWidth,-1.,0.);
-            glVertex3f(p[i]+kfWidth,-1.,0.);
-            glVertex3f(p[i]+kfWidth, 1.,0.);
-            glVertex3f(p[i]-kfWidth, 1.,0.);
+            glVertex3f(p[i]+p[i+1]-kfWidth,-1.,0.);
+            glVertex3f(p[i]+p[i+1]+kfWidth,-1.,0.);
+            glVertex3f(p[i]+p[i+1]+kfWidth, 1.,0.);
+            glVertex3f(p[i]+p[i+1]-kfWidth, 1.,0.);
             glEnd();
         }
     }
