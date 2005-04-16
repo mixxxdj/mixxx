@@ -51,9 +51,12 @@ private:
     EngineClipping *clipping, *head_clipping;
     EngineFlanger *flanger;
     EngineVuMeter *vumeter;
+    EngineVolume *volume1, *volume2;
+    EngineVuMeter *vumeter1, *vumeter2;
+
 //     EngineBufferMasterRate *m_pEngineBufferMasterRate;
         
-    ControlObject *m_pControlObjectHeadphoneMute;
+//     ControlObject *m_pControlObjectHeadphoneMute;
     ControlPotmeter *crossfader, *head_mix, *m_pBalance;
     ControlPushButton *pfl1, *pfl2, *flanger1, *flanger2;
     CSAMPLE *m_pMaster, *m_pHead, *m_pTemp1, *m_pTemp2;

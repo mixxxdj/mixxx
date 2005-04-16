@@ -326,8 +326,16 @@ void Track::slotTrackPopup(TrackInfoObject *pTrackInfoObject, int)
 
     m_pActivePopupTrack = pTrackInfoObject;
 
-    menu->insertItem("Player 1", this, SLOT(slotLoadPlayer1()));
-    menu->insertItem("Player 2", this, SLOT(slotLoadPlayer2()));
+    int id;
+
+    id = menu->insertItem("Player 1", this, SLOT(slotLoadPlayer1()));
+    if (ControlObject::getControl(ConfigKey("[Channel1]","play"))->get()==1.)
+        menu->setItemEnabled(id, false);
+    
+    id = menu->insertItem("Player 2", this, SLOT(slotLoadPlayer2()));
+    if (ControlObject::getControl(ConfigKey("[Channel2]","play"))->get()==1.)
+        menu->setItemEnabled(id, false);
+    
     menu->insertItem("Remove",   this, SLOT(slotRemoveFromPlaylist()));
 
     menu->exec(QCursor::pos());
@@ -399,7 +407,7 @@ void Track::slotLoadPlayer2(TrackInfoObject *pTrackInfoObject, bool bStartFromEn
     // VisualTemporalBuffer. HACK.
     ControlObject *p = ControlObject::getControl(ConfigKey("[Channel2]","temporalBeatFirst"));
     if (p) 
-        p->queueFromThread(m_pTrackPlayer1->getBeatFirst());
+        p->queueFromThread(m_pTrackPlayer2->getBeatFirst());
     
     // Set duration in playpos widget
     if (m_pView->m_pNumberPosCh2)

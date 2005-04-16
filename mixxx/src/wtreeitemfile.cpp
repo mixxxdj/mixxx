@@ -15,6 +15,7 @@
 #include "track.h"
 #include "wtreeitemfile.h"
 #include "wtreeview.h"
+#include "controlobject.h"
 
 WTreeItemFile::WTreeItemFile(WTreeItem *parent, const QString &s1, const QString &s2) : WTreeItem( parent, s1, s2 )
 {
@@ -27,8 +28,16 @@ WTreeItemFile::~WTreeItemFile()
 void WTreeItemFile::popupMenu()
 {
     QPopupMenu *menu = new QPopupMenu();
-    menu->insertItem("Player 1", this, SLOT(slotLoadPlayer1()));
-    menu->insertItem("Player 2", this, SLOT(slotLoadPlayer2()));
+    int id;
+    
+    id = menu->insertItem("Player 1", this, SLOT(slotLoadPlayer1()));
+    if (ControlObject::getControl(ConfigKey("[Channel1]","play"))->get()==1.)
+        menu->setItemEnabled(id, false);
+		    
+    id = menu->insertItem("Player 2", this, SLOT(slotLoadPlayer2()));
+    if (ControlObject::getControl(ConfigKey("[Channel2]","play"))->get()==1.)
+        menu->setItemEnabled(id, false);
+
     menu->exec(QCursor::pos());
 }
 

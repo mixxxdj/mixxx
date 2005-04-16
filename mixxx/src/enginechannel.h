@@ -51,8 +51,6 @@ private:
     EnginePregain *pregain;
     EngineFilterBlock *filter;
     EngineClipping *clipping;
-    EngineVolume *volume;
-    EngineVuMeter *vumeter;
     ControlPushButton *pfl;
 };
 
