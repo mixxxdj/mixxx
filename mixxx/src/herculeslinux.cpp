@@ -235,7 +235,7 @@ void HerculesLinux::getNextEvent()
                         iDiff -= 256;
                     m_iJogLeft = ev.value;
 //                     qDebug("idiff %i",iDiff);
-                    dDiff = m_pRotaryLeft->filter((double)iDiff/4.);
+                    dDiff = m_pRotaryLeft->filter((double)iDiff/16.);
                     
                     sendEvent(dDiff, m_pControlObjectLeftJog);
                     break;
@@ -270,7 +270,7 @@ void HerculesLinux::getNextEvent()
                     else if (iDiff>200)
                         iDiff -= 256;
                     m_iJogRight = ev.value;
-                    dDiff = m_pRotaryRight->filter((double)iDiff/4.);
+                    dDiff = m_pRotaryRight->filter((double)iDiff/16.);
                     sendEvent(dDiff, m_pControlObjectRightJog);
                     break;
                 case kiHerculesCrossfade:

@@ -47,7 +47,7 @@ private slots:
     void slotLatencySliderClick();
     void slotLatencySliderRelease();
     void slotLatencySliderChange(int);
-    void slotHeadphoneMute(int);
+//     void slotHeadphoneMute(int);
 signals:
     void apply();
 private:
@@ -63,7 +63,7 @@ private:
     /** Pointer to config object */
     ConfigObject<ConfigValue> *config;
     /** Pointer to headphone mute control object */
-    ControlObject *m_pControlObjectHeadphoneMute;
+//     ControlObject *m_pControlObjectHeadphoneMute;
     /** True if the mouse is currently dragging the latency slider */
     bool m_bLatencySliderDrag; 
     /** Last value of the latency slider. Used to determine when to update the slider */

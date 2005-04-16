@@ -321,6 +321,7 @@ HEADERS += mixxxsocketserver.h mixxxsocketclient.h #mixxxsocket.cli.h
 # Temporal effect processing
 SOURCES += enginetemporal.cpp visual/visualbuffertemporal.cpp
 HEADERS += enginetemporal.h visual/visualbuffertemporal.h
+DEFINES += TEMPORAL
 
 # RECORDING SOUND
 unix:LIBS += -laudiofile
@@ -345,8 +346,8 @@ IMAGES += icon.png
 DEFINES += SETTINGS_FILE=$$SETTINGS_FILE TRACK_FILE=$$TRACK_FILE
 unix:TEMPLATE = app
 win32:TEMPLATE = vcapp
-CONFIG += qt thread warn_off release
-DEFINES += QT_NO_CHECK
-#CONFIG += qt thread warn_on debug
+#CONFIG += qt thread warn_off release
+#DEFINES += QT_NO_CHECK
+CONFIG += qt thread warn_on debug
 DBFILE = mixxx.db
 LANGUAGE = C++

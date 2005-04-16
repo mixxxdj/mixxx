@@ -797,7 +797,7 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBuff
         }
         else
         {
-            rate=(wheel->get()*10.+m_pControlScratch->get())*baserate; //*10.;
+            rate=(wheel->get()*40.+m_pControlScratch->get())*baserate; //*10.;
         }
         
         rate *= dir*bpmrate*(1.+m_pMasterRate->get()*m_pRateRange->get());

@@ -36,12 +36,6 @@ EngineChannel::EngineChannel(const char *group)
     // Clipping:
     clipping = new EngineClipping(group);
 
-    // Volume control:
-    volume = new EngineVolume(ConfigKey(group,"volume"));
-
-    // VU meter:
-    vumeter = new EngineVuMeter(group);
-
     // PFL button
     pfl = new ControlPushButton(ConfigKey(group, "pfl"), true);
 
@@ -55,7 +49,6 @@ EngineChannel::~EngineChannel()
     delete pregain;
     delete filter;
     delete clipping;
-    delete volume;
     delete pfl;
     delete m_pEngineTemporalVolume;
     delete m_pEngineTemporal;
@@ -79,8 +72,6 @@ void EngineChannel::process(const CSAMPLE *pIn, const CSAMPLE *pOut, const int i
     pregain->process(pIn, pOut, iBufferSize);
     clipping->process(pOut, pOut, iBufferSize);
     filter->process(pOut, pOut, iBufferSize); 
-    volume->process(pOut, pOut, iBufferSize);
-    vumeter->process(pOut, pOut, iBufferSize);
 
 #ifdef TEMPORAL
     // Temporal filtering

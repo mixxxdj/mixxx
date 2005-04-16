@@ -486,25 +486,6 @@
             <string>Pitch independent time stretch</string>
         </property>
     </widget>
-    <widget class="QCheckBox">
-        <property name="name">
-            <cstring>checkBoxHeadphoneMute</cstring>
-        </property>
-        <property name="geometry">
-            <rect>
-                <x>11</x>
-                <y>291</y>
-                <width>329</width>
-                <height>28</height>
-            </rect>
-        </property>
-        <property name="text">
-            <string>Headphone button mute master out</string>
-        </property>
-        <property name="checked">
-            <bool>true</bool>
-        </property>
-    </widget>
 </widget>
 <layoutdefaults spacing="6" margin="11"/>
 </UI>

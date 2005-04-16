@@ -138,7 +138,7 @@ inline float EngineTemporal::temporalWindow(float fShape, float fPos)
 
 void EngineTemporal::slotShapeUpdate(double v)
 {
-    float fShape = m_pControlShape->get();
+    float fShape = m_pControlShape->get()*4.;
     fShape += (v/100.);
     while (fShape>=1.)
         fShape-=1.;
@@ -150,7 +150,7 @@ void EngineTemporal::slotShapeUpdate(double v)
 
 void EngineTemporal::slotPhaseUpdate(double v)
 {
-    float fPhase = m_pControlPhase->get();
+    float fPhase = m_pControlPhase->get()*4.;
     fPhase += (v/100.);
     while (fPhase>1.)
         fPhase-=1.;

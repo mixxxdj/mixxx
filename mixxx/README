@@ -26,8 +26,7 @@ New since 1.4.2:
 - Bug fixes: Simple visual display works again, crash at
   exit, sane default setting of sample rate.
 - Loading tracks with left-clicking in playlist.
-- Added preference option to select if headphone buttons
-  should mute master output when active
+- Fixed headphone channel
 
 * INSTALL/USE **********************************************
 Please see manual, included in this directory, 
