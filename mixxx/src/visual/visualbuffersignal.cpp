@@ -18,8 +18,10 @@
 #include "visualbuffersignal.h"
 #include "../readerextract.h"
 #include "../mathstuff.h"
+#include "../controlobjectthreadmain.h"
 #include "../controlobject.h"
 #include "../enginebuffer.h"
+#include "../configobject.h"
 
 VisualBufferSignal::VisualBufferSignal(ReaderExtract *pReaderExtract, EngineBuffer *pEngineBuffer, const char *group) : VisualBuffer(pReaderExtract, pEngineBuffer, group)
 {
@@ -71,22 +73,35 @@ VisualBufferSignal::VisualBufferSignal(ReaderExtract *pReaderExtract, EngineBuff
         *p++ = 0.;
     }
     
-    // Used for temporal (secondary buffer)
-    m_pControlPhase = ControlObject::getControl(ConfigKey(group, "temporalPhase"));
-    m_pControlShape = ControlObject::getControl(ConfigKey(group, "temporalShape"));
-    m_pControlBeatFirst = ControlObject::getControl(ConfigKey(group, "temporalBeatFirst"));
-    m_pControlRate = ControlObject::getControl(ConfigKey(group, "rate"));
-    m_pControlBpm = ControlObject::getControl(ConfigKey(group, "bpm"));
+    // Control objects for beat info
+    m_pControlBpm = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey(group, "file_bpm")));
+//     m_pControlBeatFirst = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey(group, "BeatFirst")));
+
+    connect(m_pControlBpm, SIGNAL(valueChanged(double)), this, SLOT(slotUpdateBpm(double)));
+//     connect(m_pControlBeatFirst, SIGNAL(valueChanged(double)), this, SLOT(slotUpdateBeatFirst(double)));
 }
 
 VisualBufferSignal::~VisualBufferSignal()
 {
 }
 
-void VisualBufferSignal::update(int iPos, int iLen)
+void VisualBufferSignal::slotUpdateBpm(double v)
+{
+    m_dBpm = v;
+    m_dBeatDistance = (float)MAXDISPLAYRATE/(m_dBpm/(60.*2.)); // *2 because it is rectified sinusoid
+
+//     qDebug("display rate %f",m_fDisplayRate);
+}
+
+void VisualBufferSignal::slotUpdateBeatFirst(double v)
+{
+    m_dBeatFirst = v;
+}
+
+void VisualBufferSignal::update(int iPos, int iLen, long int liFileStartPos, int iBufferStartPos)
 {
     // Update resample factor
-    //m_fResampleFactor = (float)m_pReaderExtract->getRate()/(float)MAXDISPLAYRATE;
+//    m_fResampleFactor = (float)m_pReaderExtract->getRate()/(float)MAXDISPLAYRATE;
 
     int iStart = (int)floorf((float)iPos/m_fResampleFactor);
     int iEnd   = min((int)ceilf((float)(iPos+iLen)/m_fResampleFactor), m_iLen-1);
@@ -146,126 +161,81 @@ void VisualBufferSignal::update(int iPos, int iLen)
         m_fWrapBuffer[ 7] = m_pBuffer[1];
         m_fWrapBuffer[10] = m_pBuffer[4];
     }
-/*    
-    //
-    // Fill secondary buffer with temporal curve * buffer    int iPlaypos = (int)(m_dBufferPlaypos/m_fReaderExtractFactor);
-    //
     
-    //int iPlaypos = (int)(m_dBufferPlaypos/m_fReaderExtractFactor);
-    int iPlaypos = iStart;
-
-    // Update abs and buffer playpos
-    m_pEngineBuffer->lockPlayposVars();
-    m_dAbsPlaypos = m_pEngineBuffer->getAbsPlaypos();
-    m_dBufferPlaypos = m_pEngineBuffer->getBufferPlaypos();
-    m_dAbsStartpos = m_pEngineBuffer->getAbsStartpos();
-    m_pEngineBuffer->unlockPlayposVars();
-        
-    // Find out file position of the sample at iStart
-    qDebug("start abs %f, abs play %f",m_dAbsStartpos, m_dAbsPlaypos);
-    float bufferPlayposDist = m_dAbsPlaypos-m_dAbsStartpos;
-            
-    float fStartFilePos = (m_dAbsPlaypos-bufferPlayposDist)/m_fReaderExtractFactor;
-    
-    float fPhaseOffset = m_pControlPhase->getValue();
-    float fPeriod = m_pControlBpm->getValue()/(60.*2.); // *2 because it is rectified sinusoid
-    float fShape = m_pControlShape->getValue();
-
-    qDebug("abs %f, dist %f, startfilepos %f, iPlaypos %i, total %f", m_dAbsPlaypos, bufferPlayposDist, fStartFilePos, iPlaypos, fStartFilePos+iPlaypos);
-                
-    // Update from m_dBufferPlaypos and iLen/2 forward
-    float fPhaseInc = fPeriod/m_fDisplayRate;
-    
-    
-    int iAbsStartpos = m_dAbsStartpos/m_fResampleFactor;
-    int iStartAbs;
-    if (iAbsStartpos<iStart)
-        iStartAbs = iStart-iAbsStartpos;
-    else
-        iStartAbs = iStart+iLen-iAbsStartpos;
-    
-    float fPhase = (iStartAbs+(m_pControlBeatFirst->getValue()/m_fReaderExtractFactor))*fPhaseInc;
-    
-    // Difference between iPos and iPlaypos
-    int i;
-    for (i=iStart; i<iEnd; ++i)
-    {
-        float temp = fPhase-floor((fPhase)/1.);
-        m_pBuffer2[((i)*3+1)] = m_pBuffer[((i)*3+1)] *  temp; //wndKaiserSample(256, fShape, temp*256.);
-
-        fPhase += fPhaseInc;
-    }
-    
-    */
-    /*
-    for (i=iPlaypos; i<iPlaypos+iLen/2; ++i)
-    {
-        float temp = (fPhase+fPhaseInc)-floor((fPhase+fPhaseInc)/1.);
-        m_pBuffer2[((i%m_iLen)*3+1)] = m_pBuffer[((i%m_iLen)*3+1)] * wndKaiserSample(256, fShape, temp*256.);
-
-        fPhase += fPhaseInc;
-    }
-
-    // Update from m_dBufferPlaypos and iLen/2 backward
-    fPhase = (fStartFilePos+m_pControlBeatFirst->getValue()+(float)iPlaypos)*fPhaseInc;
-    for (i=iPlaypos-1; i>iPlaypos-iLen/2; --i)
-    {
-        float temp = (fPhase+fPhaseInc)-floor((fPhase+fPhaseInc)/1.);
-        m_pBuffer2[(((i+m_iLen)%m_iLen)*3+1)] = m_pBuffer[(((i+m_iLen)%m_iLen)*3+1)] * wndKaiserSample(256, fShape, temp*256.);
-        
-        fPhase -= fPhaseInc;
-    }
-*/
-/*
-    // Wrap stuff
-    if (iEnd>=m_iLen-1)
-    {
-        m_fWrapBuffer2[ 1] = m_pBuffer2[((m_iLen-2)*3)+1];
-        m_fWrapBuffer2[ 4] = m_pBuffer2[((m_iLen-1)*3)+1];
-    }    
-    if (iStart<2)
-    {    
-        m_fWrapBuffer2[ 7] = m_pBuffer2[1];
-        m_fWrapBuffer2[10] = m_pBuffer2[4];
-    }
-*/
+    // Store start positions
+    m_liFileStartPos = (int)(floorf((float)liFileStartPos)/m_fResampleFactor);
+    m_iBufferStartPos = (int)(floorf((float)iBufferStartPos)/m_fResampleFactor);
 }
 
-void VisualBufferSignal::draw(GLfloat *p, int iLen, float)
+void VisualBufferSignal::draw(GLfloat *p, int iLen, float xscale)
 {
     glEnableClientState(GL_VERTEX_ARRAY);
     
-/*
-    if (p==m_pBuffer || p== m_pBuffer+sizeof(float)*3)
-    {
-        glVertexPointer(3, GL_FLOAT, 0, &m_fWrapBuffer2);
-        glDrawArrays(GL_LINE_STRIP,0,4);
-    }
+    //
+    // Draw waveform
+    //    
     
-    GLfloat *p2 = m_pBuffer2 + (p-m_pBuffer);
-    glVertexPointer(3, GL_FLOAT, 0, p2);
-    glDrawArrays(GL_LINE_STRIP,0,iLen);
-    
-    // Draw secondary, using another color
-    float a[4];
-    a[0] = 0.5;
-    a[1] = 0.5;
-    a[2] = 0.5;
-    a[3] = 0.5;
-    glMaterialfv(GL_FRONT_AND_BACK,GL_AMBIENT,a);
-*/    
-    
-
     // If we draw from start of array, remember to draw two triangles using the coordinates from end of buffer
     if (p==m_pBuffer || p== m_pBuffer+sizeof(float)*3)
     {
         glVertexPointer(3, GL_FLOAT, 0, &m_fWrapBuffer);
         glDrawArrays(GL_TRIANGLE_STRIP,0,4);
     }
-//     for (int i=0; i<4; ++i)
-//         qDebug("i %i, idx %f, p %f", i, m_fWrapBuffer[i*3], m_fWrapBuffer[(i*3)+1]);
 
     glVertexPointer(3, GL_FLOAT, 0, p);
     glDrawArrays(GL_TRIANGLE_STRIP,0,iLen);
-      
+
+    //
+    // Draw beat marks
+    //
+    
+    // Ensures constant width of beat marks regardles for scaling
+    float kfWidthBeat = 0.05*(1./xscale);
+
+    if (m_dBpm==0.)
+        return;
+        
+    for (int i=0; i<iLen*3; i+=3)
+    {
+        double fpos = m_liFileStartPos;
+        if (p[i]<m_iBufferStartPos)
+            fpos += m_iLen-m_iBufferStartPos+p[i];
+        else
+            fpos += p[i]-m_iBufferStartPos;
+
+        // Is it time to draw a beat mark?
+        double pos = fpos/m_dBeatDistance;
+        if (fabs(pos-round(pos))<0.01)
+        {
+            // Color is defined from confidence (between -0.2 and 0.3)
+            //float v = 1.-(0.1+max(-0.2,min(p[i+1],0.3)))/0.5;
+
+            //qDebug("v %f, c %f",p[i+1], v);
+
+            // Interpolate ambient of fg and bg using the value at p[i+1]
+/*
+            float a[4];
+            a[0] = m_materialBg.ambient[0]-(m_materialBg.ambient[0]-m_materialFg.ambient[0])*p[i+1];
+            a[1] = m_materialBg.ambient[1]-(m_materialBg.ambient[1]-m_materialFg.ambient[1])*p[i+1];
+            a[2] = m_materialBg.ambient[2]-(m_materialBg.ambient[2]-m_materialFg.ambient[2])*p[i+1];
+            a[3] = m_materialBg.ambient[3]-(m_materialBg.ambient[3]-m_materialFg.ambient[3])*p[i+1];
+            glMaterialfv(GL_FRONT_AND_BACK,GL_AMBIENT,a);
+*/
+
+            glBegin(GL_POLYGON);
+            glVertex3f(p[i]-kfWidthBeat,-1.  ,0.);
+            glVertex3f(p[i]+kfWidthBeat,-1.  ,0.);
+            glVertex3f(p[i]+kfWidthBeat,-0.8f,0.);
+            glVertex3f(p[i]-kfWidthBeat,-0.8f,0.);
+            glEnd();
+            glBegin(GL_POLYGON);
+            glVertex3f(p[i]-kfWidthBeat, 0.8f,0.);
+            glVertex3f(p[i]+kfWidthBeat, 0.8f,0.);
+            glVertex3f(p[i]+kfWidthBeat, 1.0f,0.);
+            glVertex3f(p[i]-kfWidthBeat, 1.0f,0.);
+            glEnd();
+        }
+    }
+          
 }
+

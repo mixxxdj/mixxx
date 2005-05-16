@@ -40,7 +40,7 @@ TrackInfoObject::TrackInfoObject(const QString sPath, const QString sFile) : m_s
     m_iBitrate = 0;
     m_iTimesPlayed = 0;
     m_fBpm = 0.;
-    m_fBpmConfidence = 0.;
+    m_bBpmConfirm = false;
     m_fBeatFirst = -1.;
     m_iScore = 0;
     m_iId = 0;
@@ -88,7 +88,7 @@ TrackInfoObject::TrackInfoObject(const QDomNode &nodeHeader)
     m_iLength = XmlParse::selectNodeQString(nodeHeader, "Length").toInt();
     m_iTimesPlayed = XmlParse::selectNodeQString(nodeHeader, "TimesPlayed").toInt();
     m_fBpm = XmlParse::selectNodeQString(nodeHeader, "Bpm").toFloat();
-    m_fBpmConfidence = XmlParse::selectNodeQString(nodeHeader, "BpmConfidence").toFloat();
+    m_bBpmConfirm = XmlParse::selectNodeQString(nodeHeader, "BpmConfirm").toInt();
     m_fBeatFirst = XmlParse::selectNodeQString(nodeHeader, "BeatFirst").toFloat();
     m_iScore = 0;
     m_iId = XmlParse::selectNodeQString(nodeHeader, "ID").toInt();
@@ -174,7 +174,7 @@ void TrackInfoObject::writeToXML( QDomDocument &doc, QDomElement &header )
     XmlParse::addElement( doc, header, "Length", QString("%1").arg(m_iLength) );
     XmlParse::addElement( doc, header, "TimesPlayed", QString("%1").arg(m_iTimesPlayed) );
     XmlParse::addElement( doc, header, "Bpm", QString("%1").arg(m_fBpm) );
-    XmlParse::addElement( doc, header, "BpmConfidence", QString("%1").arg(m_fBpmConfidence) );
+    XmlParse::addElement( doc, header, "BpmConfirm", QString("%1").arg(m_bBpmConfirm) );
     XmlParse::addElement( doc, header, "BeatFirst", QString("%1").arg(m_fBeatFirst) );
     XmlParse::addElement( doc, header, "Id", QString("%1").arg(m_iId) );
     if (m_pWave)
@@ -212,7 +212,7 @@ void TrackInfoObject::insertInTrackTableRow(WTrackTable *pTableTrack, int iRow)
     if (!m_pTableItemDuration)
         m_pTableItemDuration = new WTrackTableItem(this, pTableTrack,QTableItem::Never, getDurationStr(), typeDuration);
     if (!m_pTableItemBpm)
-        m_pTableItemBpm = new WTrackTableItem(this, pTableTrack,QTableItem::Never, getBpmStr(), typeNumber);
+        m_pTableItemBpm = new WTrackTableItem(this, pTableTrack,QTableItem::WhenCurrent, getBpmStr(), typeNumber);
     if (!m_pTableItemBitrate)
         m_pTableItemBitrate = new WTrackTableItem(this, pTableTrack,QTableItem::Never, getBitrateStr(), typeNumber);
 
@@ -389,22 +389,22 @@ QString TrackInfoObject::getBpmStr()
     float fBpm = m_fBpm;
     m_qMutex.unlock();
 
-    return QString("%1").arg(fBpm, 3,'f',1);
+    return QString("%1").arg(fBpm); //, 3,'f',1);
 }
 
-float TrackInfoObject::getBpmConfidence()
+bool TrackInfoObject::getBpmConfirm()
 {
     m_qMutex.lock();
-    float fBpmConfidence = m_fBpmConfidence;
+    bool bBpmConfirm = m_bBpmConfirm;
     m_qMutex.unlock();
 
-    return fBpmConfidence;
+    return bBpmConfirm;
 }
 
-void TrackInfoObject::setBpmConfidence(float f)
+void TrackInfoObject::setBpmConfirm(bool confirm)
 {
     m_qMutex.lock();
-    m_fBpmConfidence = f;
+    m_bBpmConfirm = confirm;
     m_qMutex.unlock();
 }
 

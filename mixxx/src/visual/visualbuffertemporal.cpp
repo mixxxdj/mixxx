@@ -29,7 +29,7 @@ VisualBufferTemporal::VisualBufferTemporal(EngineBuffer *pEngineBuffer, const ch
     m_pControlShape = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey(group, "temporalShape")));
     m_pControlBeatFirst = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey(group, "temporalBeatFirst")));
     m_pControlRate = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey(group, "rate")));
-    m_pControlBpm = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey(group, "bpm")));
+    m_pControlBpm = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey(group, "bpm_control")));
     
     // Ensure a horizontal line is visible
     //for (int i=0; i<m_iLen; i+=2)
@@ -72,7 +72,7 @@ void VisualBufferTemporal::update()
     m_iTimesCalled++;
     if (m_bPlayposChanged || m_bTemporalChanged || m_iTimesCalled>10)
     {
-        update(0, m_iLen);
+        update(0, m_iLen, 0,0 );
         m_bPlayposChanged = false;
         m_bTemporalChanged = false;
         m_iTimesCalled = 0;
@@ -90,7 +90,7 @@ void VisualBufferTemporal::slotTemporalChanged()
     m_bTemporalChanged = true;
 }
 
-void VisualBufferTemporal::update(int iPos, int iLen)
+void VisualBufferTemporal::update(int iPos, int iLen, long int, int)
 {
     Q_ASSERT(m_fResampleFactor=1);
     Q_ASSERT(iPos==0);
@@ -104,7 +104,7 @@ void VisualBufferTemporal::update(int iPos, int iLen)
     float fPeriod = 1./(44100./48000.)*m_pControlBpm->get()/(60.*2.); // *2 because it is rectified sinusoid
             
     // Update from m_dBufferPlaypos and iLen/2 forward
-    float fPhaseInc = fPeriod/m_fDisplayRate;
+    float fPhaseInc = fPeriod/(float)MAXDISPLAYRATE;
     float fPhase = fPhaseOffset+(fStartFilePos+m_pControlBeatFirst->get()+(float)iPlaypos)*fPhaseInc;
     int i;
     for (i=iPlaypos; i<iPlaypos+iLen/2; ++i)

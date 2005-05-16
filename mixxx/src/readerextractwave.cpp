@@ -145,7 +145,7 @@ void ReaderExtractWave::reset()
 
     // Update vertex buffer by sending an event containing indexes of where to update.
     if (m_pVisualBuffer != 0)
-        QApplication::postEvent(m_pVisualBuffer, new ReaderEvent(0, READBUFFERSIZE, getBufferSize(), getRate()));
+        QApplication::postEvent(m_pVisualBuffer, new ReaderEvent(0, READBUFFERSIZE, filepos_start, bufferpos_start, getBufferSize(), getRate()));
 }
 
 void *ReaderExtractWave::getBasePtr()
@@ -338,7 +338,7 @@ void ReaderExtractWave::getchunk(CSAMPLE rate)
 
     // Update vertex buffer by sending an event containing indexes of where to update.
     if (m_pVisualBuffer != 0)
-        QApplication::postEvent(m_pVisualBuffer, new ReaderEvent(bufIdx, READCHUNKSIZE, getBufferSize(), getRate()));
+        QApplication::postEvent(m_pVisualBuffer, new ReaderEvent(bufIdx, READCHUNKSIZE, filepos_start, bufferpos_start, getBufferSize(), getRate()));
 
 #ifdef EXTRACT
     // Do pre-processing...
@@ -403,7 +403,7 @@ long int ReaderExtractWave::seek(long int new_playpos)
 
         // Update vertex buffer by sending an event containing indexes of where to update.
         if (m_pVisualBuffer != 0)
-            QApplication::postEvent(m_pVisualBuffer, new ReaderEvent(0,READBUFFERSIZE, getBufferSize(), getRate()));
+            QApplication::postEvent(m_pVisualBuffer, new ReaderEvent(0, READBUFFERSIZE, filepos_start, bufferpos_start, getBufferSize(), getRate()));
     }
     else
         seekpos = 0;

@@ -17,7 +17,7 @@
 
 #include "readerevent.h"
 
-ReaderEvent::ReaderEvent(int bpos, int blen, int flen, int srate) : QCustomEvent(10002), bufferPosition(bpos), bufferLength(blen), fileLength(flen), sampleRate(srate)
+ReaderEvent::ReaderEvent(int bpos, int blen, long int fspos, int bspos, int flen, int srate) : QCustomEvent(10002), bufferPosition(bpos), bufferLength(blen), fileStartPosition(fspos), bufferStartPosition(bspos), fileLength(flen), sampleRate(srate)
 {
 }
 
@@ -33,6 +33,16 @@ int ReaderEvent::bufferPos() const
 int ReaderEvent::bufferLen() const
 {
     return bufferLength;
+}
+
+long int ReaderEvent::fileStartPos() const
+{
+    return fileStartPosition;
+}
+
+int ReaderEvent::bufferStartPos() const
+{
+    return bufferStartPosition;
 }
 
 int ReaderEvent::fileLen() const

@@ -416,7 +416,7 @@ void MixxxView::checkDirectRendering()
     if ((m_pVisualCh1 && !((WVisualWaveform *)m_pVisualCh1)->directRendering()) ||
         (m_pVisualCh2 && !((WVisualWaveform *)m_pVisualCh2)->directRendering()))
         QMessageBox::warning(0, "OpenGL Direct Rendering",
-                                "Direct redering is not enabled on your machine.\n\nThis means that the waveform displays will be very\nslow and take a lot of CPU time. Either update your\nconfiguration to enable direct rendering, or disable\nthe waveform displays in the control panel by\nselecting \"Simple\" under waveform displays.\nNOTE: In case you run on NVidia hardware, direct rendering may not be present, but you will not experience a degradation in performance.");
+                                "Direct redering is not enabled on your machine.\n\nThis means that the waveform displays will be very\nslow and take a lot of CPU time. Either update your\nconfiguration to enable direct rendering, or disable\nthe waveform displays in the control panel by\nselecting \"Simple\" under waveform displays.\nNOTE: In case you run on NVidia hardware,\ndirect rendering may not be present, but you will\nnot experience a degradation in performance.");
 }
 
 bool MixxxView::activeWaveform()

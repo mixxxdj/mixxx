@@ -56,7 +56,7 @@ public:
     virtual ~VisualBuffer();
     bool eventFilter(QObject *o, QEvent *e);
     /** Update and resample signal vertex buffer */
-    virtual void update(int iPos, int iLen) = 0;
+    virtual void update(int iPos, int iLen, long int liFileStartPos, int iBufferStartPos) = 0;
     /** Draw the buffer */
     virtual void draw(GLfloat *p, int iLen, float xscale) = 0;
 
@@ -88,7 +88,7 @@ protected:
     CSAMPLE m_fResampleFactor;
     /** Display rate. Rate at which this buffer represents. The x axis values of this buffer correspond to samples
      *       * at MAXDISPLAYRATE positions */
-    CSAMPLE m_fDisplayRate;
+//     CSAMPLE m_fDisplayRate;
     /** Factor between this buffers sample rate, and MAXDISPLAYRATE */
     CSAMPLE m_fDisplayFactor;
 

@@ -22,6 +22,7 @@
 #include <qmutex.h>
 #include <qwaitcondition.h>
 #include <qptrqueue.h>
+#include "defs.h"
 
 class TrackInfoObject;
 class ControlObjectThread;
@@ -33,8 +34,12 @@ class ControlObjectThread;
   */
 
 const int kiBlockSize = 2048;
-const int kiSummaryBufferSize = 2000;
+const int kiBeatBlockNo = 2000;
+const int kiSummaryBufferSize = 2100;
 const float kfFeatureStepSize = 0.01;
+
+class WindowKaiser;
+class EngineSpectralFwd;
 
 class WaveSummary : public QThread
 {
@@ -54,6 +59,13 @@ protected:
     QMutex m_qMutex;
     /** Wait condition */
     QWaitCondition m_qWait;
+    /** Pointer to window and windowed samples of signal */
+    WindowKaiser *window;
+    /** Pointer to samples containing one windowed frame of samples */
+    CSAMPLE *windowedSamples;
+    /** Pointer to array containing window */
+    CSAMPLE *windowPtr;
+    EngineSpectralFwd *m_pEngineSpectralFwd;
 };
 
 #endif

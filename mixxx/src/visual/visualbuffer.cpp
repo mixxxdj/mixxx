@@ -37,12 +37,12 @@ VisualBuffer::VisualBuffer(EngineBuffer *pEngineBuffer, const char *group)
     m_pSource = 0;
 
     m_fResampleFactor = 1.f;
-    m_fDisplayRate = MAXDISPLAYRATE;
+    //m_fDisplayRate = (float)MAXDISPLAYRATE;
 
     m_fDisplayFactor = 1.;
     
     // Length of this buffer. 
-    m_iLen = m_fDisplayRate*READBUFFERSIZE/(pEngineBuffer->getPlaySrate());
+    m_iLen = MAXDISPLAYRATE*READBUFFERSIZE/(pEngineBuffer->getPlaySrate());
     if (!even(m_iLen))
         m_iLen--;
     m_iSourceLen = m_iLen;
@@ -101,7 +101,7 @@ bool VisualBuffer::eventFilter(QObject *o, QEvent *e)
     if (e->type() == (QEvent::Type)10002)
     {
         ReaderEvent *re = (ReaderEvent *)e;
-        update(re->bufferPos(), re->bufferLen());
+        update(re->bufferPos(), re->bufferLen(), re->fileStartPos(), re->bufferStartPos());
         slotSetupBuffer(re->fileLen(), re->srate());
     }
     else
@@ -243,10 +243,6 @@ void VisualBuffer::slotSetupBuffer(int bufferlen, int srate)
     //qDebug("srate %i",srate);
 
     m_iSourceLen = bufferlen;
-
-
-
-
 
     // Set resample factor and display rate and display factor
     //Q_ASSERT(srate<MAXDISPLAYRATE);

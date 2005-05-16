@@ -21,18 +21,33 @@
 #include "soundsourceproxy.h"
 #include "mathstuff.h"
 #include "enginespectralfwd.h"
+#include "peaklist.h"
+#include "probabilityvector.h"
 #include "windowkaiser.h"
 #include "wavesegmentation.h"
+#include "readerextractbeat.h"
 #include <qmemarray.h>
 #include <qapplication.h>
 
 WaveSummary::WaveSummary()
 {
+    // Allocate and calculate window
+    window = new WindowKaiser(kiBlockSize, 6.5);
+    windowPtr = window->getWindowPtr();
+
+    // Allocate memory for windowed portion of signal
+    windowedSamples = new CSAMPLE[kiBlockSize];
+
+    // Allocate FFT object
+    m_pEngineSpectralFwd = new EngineSpectralFwd(true, false, window);
+
     start(QThread::IdlePriority);
 }
 
 WaveSummary::~WaveSummary()
 {
+    delete windowedSamples;
+    delete m_pEngineSpectralFwd;
 }
 
 void WaveSummary::enqueue(TrackInfoObject *pTrackInfoObject)
@@ -66,13 +81,7 @@ void WaveSummary::run()
         // Track processing
         //
 
-        // Length of track in samples
-        //long liSamplesPerSecond = pTrackInfoObject->getSampleRate()*pTrackInfoObject->getChannels();
-        //qDebug("sample per second %li",liSamplesPerSecond);
-        
-//         qDebug("start generate for %s",pTrackInfoObject->getLocation().latin1());
-        
-		// Check if preview has been generated in the meantime
+        // Check if preview has been generated in the meantime
         QMemArray<char> *p = pTrackInfoObject->getWaveSummary();
         //if (!p || !p->size())
         {
@@ -83,200 +92,138 @@ void WaveSummary::run()
             // Open sound file
             SoundSourceProxy *pSoundSource = new SoundSourceProxy(pTrackInfoObject->getLocation());
 
-            // Length of file in samples
-            long liLengthSamples = pSoundSource->length();
-
-            // Block and hop size
-            int iHopSize = liLengthSamples/(kiSummaryBufferSize/3);
-            if (!even(iHopSize))
-                iHopSize--;
-            int iBlockSize = iHopSize;
-                
-//          qDebug("len %i samples %i ch %i srate %i",liSamplesPerSecond, liLengthSeconds,pTrackInfoObject->getChannels(),pTrackInfoObject->getSampleRate());
-            
             // Allocate and reset buffer used to store summary data: max and min amplitude for block, and HFC value
             QMemArray<char> *pData = new QMemArray<char>(kiSummaryBufferSize);
             unsigned int i;
             for (i=0; i<pData->size(); ++i)
                 pData->at(i) = 0;
 
-            SAMPLE *pBuffer = new SAMPLE[iBlockSize*2];
-            long int pos = 0;
+            SAMPLE *pBuffer = new SAMPLE[kiBlockSize*2];
+
             
-            for (i=0; i<pData->size()-2; i+=3)
+            //
+            // Extract volume profile
+            //
+            
+            // Length of file in samples
+            long liLengthSamples = pSoundSource->length();
+
+            // Seek length used when extracting volume profile
+            int iSeekLength = (int)ceilf((float)liLengthSamples/((float)kiSummaryBufferSize/3.));
+            
+            // Beat is extracted from the middle region of the sound file. Here the 
+            // min and max indexes are the boundaries of that region.
+            int iBeatLength = min(liLengthSamples, kiBeatBlockNo*kiBlockSize);
+            int iBeatBlockLength = iBeatLength/kiBlockSize;
+            
+            int iBeatPosStart = liLengthSamples/2-iBeatLength/2;
+            int iBeatPosEnd = iBeatPosStart+iBeatLength;
+  
+            // Allocate buffer for first derivative of the PSF vector          
+            float *pDPsf = new float[iBeatBlockLength];
+            
+            long liPos = 0;
+            i=0;
+            int j = 0;
+            while (liPos<liLengthSamples)
             {
                 // Read a block of samples
-                int iRead = pSoundSource->read(iBlockSize, pBuffer);
+                liPos += pSoundSource->read(kiBlockSize, pBuffer);
 
-                // Windowing & FFT
-                
-                // Beat estimation
-                
-                
-                
-//                 qDebug("wanted %i, got %i",iBlockSize,iRead);
-                
-                // Seek to new position
-                pos += iHopSize;
-                if (iHopSize!=iBlockSize)
-                    pSoundSource->seek(pos);
-            
-                // Find min and max value
-                int iMin=0, iMax=0;
-                for (int j=0; j<iBlockSize; ++j)
+                // Check if it's time to extract max and min
+                if (liPos>i/3*iSeekLength)
                 {
-                    if (pBuffer[j]<iMin)
-                        iMin = pBuffer[j];
-                    if (pBuffer[j]>iMax)
-                        iMax = pBuffer[j];
+                    // Find min and max value
+                    int iMin=0, iMax=0;
+                    for (int j=0; j<kiBlockSize; ++j)
+                    {
+                        if (pBuffer[j]<iMin)
+                            iMin = pBuffer[j];
+                        if (pBuffer[j]>iMax)
+                            iMax = pBuffer[j];
+                    }
+    
+                    // Store max and min amplitude
+                    pData->at(i) = (char)max((iMin/256.),-127);
+                    pData->at(i+1) = (char)min((iMax/256.),127);
+                    pData->at(i+2) = 0;
+                    
+                    // Store summary in TrackInfoObject
+                    QApplication::postEvent(pTrackInfoObject, new WaveSummaryEvent(pData, 0));            
+                    
+                    i+=3;
                 }
                 
-                // Store max and min amplitude
-                pData->at(i) = max((iMin/256.),-127);
-                pData->at(i+1) = min((iMax/256.),127);
-                pData->at(i+2) = 0;
-            
-                // Store summary in TrackInfoObject
-                QApplication::postEvent(pTrackInfoObject, new WaveSummaryEvent(pData, 0));            
-            }
-            qDebug("read %i, len %i",pos, liLengthSamples);
+                // Check if this is the middle region of the file, then extract PSF
+                if (liPos>=iBeatPosStart && liPos<iBeatPosEnd)
+                {
+                    // Mix to mono and window samples
+                    for (int m=0; m<kiBlockSize; ++m)
+                        windowedSamples[m] = (pBuffer[m*2]+pBuffer[m*2+1])*0.5*windowPtr[m];
+
+                    // Perform FFT
+                    m_pEngineSpectralFwd->process(windowedSamples, 0, kiBlockSize);
+
+                    // Get PSF
+                    pDPsf[j] = m_pEngineSpectralFwd->getPSF();
                 
-//             pTrackInfoObject->setBeatFirst(0.);
-//             pTrackInfoObject->setBpm();
-//             pTrackInfoObject->setBpmConfidence();
+                    j++;
+                }
+            }
             
-                            
+            //
+            // Extract beat
+            //
             
-/*
-            // Initialize objects for extrating PSF values
-            float *pSpectralBuffer = new float[kiBlockSize];
-            WindowKaiser *pWindow = new WindowKaiser(kiBlockSize, 6.5);
-            EngineSpectralFwd *pSpectral = new EngineSpectralFwd(true, false, pWindow);
-
-			// Prepare segmentation psf
-			int sr=pSoundSource->getSrate();
-			int sStepSizeFrames=sr*kfFeatureStepSize;
-			int sStepSizeSamples=sStepSizeFrames*2;
-			int sStepsCount=pSoundSource->length()/sStepSizeSamples;
-			int FileSizeSteps=(pSoundSource->length()-1)/sStepSizeSamples+1;
-
-			
-			double *sPSF_vector = new double[sStepsCount];
-
-
-			bool BlockAhead=false;
-
-			int BufferSize=2*(4*sStepSizeSamples+kiBlockSize);
-
-			// Allocate temporary wave buffer
-			SAMPLE *pBuffer = new SAMPLE[BufferSize*2];
+            // Take derivate of PSF
+            for (int i=0; i<iBeatBlockLength-1; ++i)
+                pDPsf[i+1] = max(0.,pDPsf[i+1]-pDPsf[i]);
+            pDPsf[0] = 0.;
             
-			// Allocate and reset buffer used to store summary data: max and min amplitude for block, and HFC value
-			QMemArray<char> *pData = new QMemArray<char>(kiSummaryBufferSize);
-            unsigned int i;
-			for (i=0; i<pData->size(); ++i)
-                pData->at(i) = 0;
-
-            // Read a block of samples
-			int r=pSoundSource->read(BufferSize, pBuffer);
-			int Cursor=0;
-
-//         qDebug("len %i req %i, got %i",pSoundSource->length(), iStepSize, r);
-
-			int no=0; 
-			int sI=0;
-			int Other=0;
-            while (r==BufferSize && sI<FileSizeSteps)
+            // Construct list of peaks
+            PeakList *pPeaks = new PeakList(iBeatBlockLength, pDPsf);
+            pPeaks->update(0, iBeatBlockLength);
+            
+            // Initialize beat probability vector
+            ProbabilityVector *bpv = new ProbabilityVector(60.f/histMaxBPM, 60.f/histMinBPM, 1000);
+            
+            // Calculate BPM
+            PeakList::iterator it1 = pPeaks->begin();
+            
+            if (it1!=pPeaks->end())
+                it1++;
+            
+            while (it1!=pPeaks->end())
             {
-                // Find min and max in buffer
-				bool DoSummary=(no<(long)sI*(long)300/(long)FileSizeSteps);
-				if (DoSummary)
-				{
-					int iMin=0, iMax=0;
-					for (int j=0; j<BufferSize; ++j)
-					{
-						if (pBuffer[j]<0)
-							iMin += pBuffer[j];
-						if (pBuffer[j]>0)
-							iMax += pBuffer[j];
-					}
-
-                    // Store max and min amplitude
-                    pData->at(no) = max(iMin/((BufferSize/5)*256),-127);
-                    pData->at(no+1) = min(iMax/((BufferSize/5)*256),127);
-				}
-
-                // Find HFC value
-                for (i=0; i<kiBlockSize; ++i)
-				{
-                    pSpectralBuffer[i] = pBuffer[Other * BufferSize + Cursor];
-					if(++Cursor == BufferSize)
-					{
-						Other = 1 - Other;
-						if (BlockAhead)
-							BlockAhead=false;
-						else
-							r=pSoundSource->read(BufferSize, &pBuffer[Other*BufferSize]);
-						Cursor=0;
-					}
-				}
-                pSpectral->process(pSpectralBuffer, 0, kiBlockSize);
-				//pSpectral->process(&pBuffer[i], 0, kiBlockSize);
-				float psf=pSpectral->getPSF();
-				sPSF_vector[sI]=psf;
-                
-                 //qDebug("PSF[%i]=%f",sI,psf);
-                
-                // Low pass filter HFC
-				if(DoSummary)
-				{
-					int lp = (short int)(min(psf,70000)*(256./70000.)-128);
-					for (int k=no+1; k>(max(no-9,0)); --k)
-						lp += pData->at(k);
-					lp /= 4;
-
-					// Store HFC
-					pData->at(no+2) = max(min(lp,127),-127);
-					//qDebug("hfc extract %f, store %i",pSpectral->getPSF(), pData->at(no+2));
-					no+=3;
-					// Store summary in TrackInfoObject
-					QApplication::postEvent(pTrackInfoObject, new WaveSummaryEvent(pData, 0));
-				}
-				sI++;
-				Cursor = (Cursor+sStepSizeSamples-kiBlockSize) ;
-				if (Cursor<0)
-				{
-					Cursor += BufferSize;
-					Other = 1 - Other;
-					BlockAhead=true;
-				}
-            }
+                PeakList::iterator it2 = it1;
+                it2--;
+                bool bInRange = true;
+                while (bInRange)
+                {
+                    // Interval in seconds between current peak (it) and a previous peak (it2)
+                    float interval = pPeaks->getDistance(it2,it1)/((float)pSoundSource->getSrate()/float(kiBlockSize));
+                    
+                    // Update beat probability vector
+                    if (interval<60.f/histMinBPM)
+                        bpv->add(interval, pDPsf[(*it1).i]*pDPsf[(*it2).i]);
+                  
+                    if (it2==pPeaks->begin() || interval>=60.f/histMinBPM)
+                        bInRange = false;
+                    else
+                        it2--;
+                }
+                it1++;
+            }           
             
-            // Find segmentation points
-			WaveSegmentation *seg=new WaveSegmentation();
-			float sgPoints[30];
-			int segCount=seg->Process(sPSF_vector,sStepsCount,sgPoints,30);
-            QValueList<long> *segpoints = new QValueList<long>;
-            for (i=0; i<segCount; i++)
-            {
-                    segpoints->append((long)sgPoints[i]*liSamplesPerSecond);
-					qDebug("Segment boundary at %d seconds (%li samples)",(int)sgPoints[i],(long)sgPoints[i]*liSamplesPerSecond);
-
-            }
+            // Set BPM
+            if (!pTrackInfoObject->getBpmConfirm())
+                pTrackInfoObject->setBpm(bpv->getBestBpmValue());
             
-            // Store summary in TrackInfoObject
-            QApplication::postEvent(pTrackInfoObject, new WaveSummaryEvent(pData, segpoints));
-*/
-            
-            
-
-            //qDebug("segpoints %i", segpoints->size());
-
             delete [] pBuffer;
+            delete [] pDPsf;
+            delete pPeaks;
+            delete bpv;
             delete pSoundSource;
-//            delete pSpectral;
-//             delete pWindow;
-//             delete [] pSpectralBuffer;
 
 //         qDebug("generate successful for %s",pTrackInfoObject->getFilename().latin1());
 

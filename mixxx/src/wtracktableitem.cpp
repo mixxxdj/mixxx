@@ -26,8 +26,8 @@
 
 QColor WTrackTableItem::kqRowColor1;
 QColor WTrackTableItem::kqRowColor2;
-QColor WTrackTableItem::kqBpmConfidenceColor1;
-QColor WTrackTableItem::kqBpmConfidenceColor2;
+QColor WTrackTableItem::kqBpmBgColor1;
+QColor WTrackTableItem::kqBpmBgColor2;
 
 WTrackTableItem::WTrackTableItem(TrackInfoObject *pTrackInfoObject, QTable *table, EditType et, const QString &text, enumType eType) : QTableItem(table, et, text)
 {
@@ -45,10 +45,10 @@ void WTrackTableItem::setRowColors(QColor r1, QColor r2)
     kqRowColor2 = r2;
 }
 
-void WTrackTableItem::setBpmConfidenceColors(QColor c1, QColor c2)
+void WTrackTableItem::setBpmBgColors(QColor c1, QColor c2)
 {
-    kqBpmConfidenceColor1 = c1;
-    kqBpmConfidenceColor2 = c2;
+    kqBpmBgColor1 = c1;
+    kqBpmBgColor2 = c2;
 }
 
 void WTrackTableItem::paint(QPainter *p, const QColorGroup &cg, const QRect &cr, bool selected)
@@ -67,17 +67,13 @@ void WTrackTableItem::paint(QPainter *p, const QColorGroup &cg, const QRect &cr,
     // Set background color on BPM field based on coinfidence
     if (col()==COL_BPM)
     {
-        float scale = max(0., min(1., m_pTrackInfoObject->getBpmConfidence()/(float)1e10));
-
-        QColor conf;
-        conf.setRgb((int)(kqBpmConfidenceColor1.red()+scale*(kqBpmConfidenceColor2.red()-kqBpmConfidenceColor1.red())),
-                    (int)(kqBpmConfidenceColor1.green()+scale*(kqBpmConfidenceColor2.green()-kqBpmConfidenceColor1.green())),
-                    (int)(kqBpmConfidenceColor1.blue()+scale*(kqBpmConfidenceColor2.blue()-kqBpmConfidenceColor1.blue())));
-
-        g.setColor(QColorGroup::Base, conf);
+        if (m_pTrackInfoObject->getBpmConfirm())
+            g.setColor(QColorGroup::Base, kqBpmBgColor2);
+        else
+            g.setColor(QColorGroup::Base, kqBpmBgColor1);        
     }
 
-    QTableItem::paint( p, g, cr, selected);
+    QTableItem::paint(p, g, cr, selected);
 }
 /*
     Returns a key which is used for sorting of the table.
@@ -108,9 +104,11 @@ void WTrackTableItem::setContentFromEditor(QWidget *w)
     // Update cell
     QTableItem::setContentFromEditor(w);
 
-    // If this is a comment column, update TrackInfoObject
+    // If this is a comment column or bpm, update TrackInfoObject
     if (col()==COL_COMMENT)
         m_pTrackInfoObject->setComment(text());
+    else if (col()==COL_BPM)
+        m_pTrackInfoObject->setBpm(text().toFloat());
 }
 
 int WTrackTableItem::alignment() const

@@ -19,7 +19,7 @@ VisualBufferSignalHFC::~VisualBufferSignalHFC()
 {
 }
 
-void VisualBufferSignalHFC::update(int iPos, int iLen)
+void VisualBufferSignalHFC::update(int iPos, int iLen, long int, int)
 {
     //qDebug("signal upd pos %i, len %i, total len %i",iPos,iLen,m_iSourceLen);
 

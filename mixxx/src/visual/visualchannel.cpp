@@ -59,7 +59,6 @@ VisualBuffer *VisualChannel::add(ReaderExtract *pReaderExtract, EngineBuffer *pE
 {
     VisualBuffer *b = 0;
 
-
     // Determine type.... A hack, yes!
     if (!pReaderExtract)
     {

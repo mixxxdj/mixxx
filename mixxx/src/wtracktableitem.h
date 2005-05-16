@@ -39,7 +39,7 @@ public:
     WTrackTableItem(TrackInfoObject *pTrackInfoObject, QTable *table, EditType et, const QString &text, enumType eType);
     ~WTrackTableItem();
     static void setRowColors(QColor r1, QColor r2);
-    static void setBpmConfidenceColors(QColor c1, QColor c2);
+    static void setBpmBgColors(QColor c1, QColor c2);
     void paint(QPainter *p, const QColorGroup &cg, const QRect &cr, bool selected);
     /** Return pointer to corresponding TrackInfoObject */
     TrackInfoObject *getTrackInfoObject();
@@ -47,7 +47,7 @@ public:
     void setContentFromEditor(QWidget *w);
 
 private:
-    static QColor kqRowColor1, kqRowColor2, kqBpmConfidenceColor1, kqBpmConfidenceColor2;
+    static QColor kqRowColor1, kqRowColor2, kqBpmBgColor1, kqBpmBgColor2;
     QString key() const;
     int alignment() const;
 

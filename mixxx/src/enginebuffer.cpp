@@ -152,8 +152,11 @@ EngineBuffer::EngineBuffer(const char *_group)
     // TrackEndMode determines what to do at the end of a track
     m_pTrackEndMode = new ControlObject(ConfigKey(group,"TrackEndMode"));
 
+    // BPM of the file
+    m_pFileBpm = new ControlObject(ConfigKey(group, "file_bpm"));
+    
     // BPM control
-    bpmControl = new ControlBeat(ConfigKey(group, "bpm"), true);
+    bpmControl = new ControlBeat(ConfigKey(group, "bpm_control"), true);
     connect(bpmControl, SIGNAL(valueChanged(double)), this, SLOT(slotSetBpm(double)));
 
     // Beat event control
@@ -268,6 +271,8 @@ void EngineBuffer::setVisual(WVisualWaveform *pVisualWaveform)
 
 float EngineBuffer::getDistanceNextBeatMark()
 {
+    return 0.;
+    /*
     float *p = (float *)reader->getBeatPtr()->getBasePtr();
     int size = reader->getBeatPtr()->getBufferSize();
 
@@ -289,18 +294,6 @@ float EngineBuffer::getDistanceNextBeatMark()
         }
     }
 
-    /*
-    for (i=0; i<(size-pos) && !found; ++i) {
-
-        //qDebug("p[%i] = %f ",(pos+i)%size,p[(pos+i)%size]);
-        if (p[(pos+i)%size] > 0.0) {
-            qDebug("found: p[%i] = %f ",(pos+i)%size,p[(pos+i)%size]);
-            found = true;
-        }
-    }
-    if( !found )
-    */
-
     if (found)
     {
         //qDebug("found" );
@@ -310,6 +303,7 @@ float EngineBuffer::getDistanceNextBeatMark()
     }
     else
         return 0.f;
+    */
 }
 
 Reader *EngineBuffer::getReader()
@@ -477,7 +471,7 @@ void EngineBuffer::slotControlLoop(double v)
         {
             // Loop length include one beat before the actual loop and a lot of samples after 
             m_dLoopLength = roundf(m_dBeatInterval*4.);
-            if (!even(m_dLoopLength))
+            if (!even((long)m_dLoopLength))
                 m_dLoopLength++;
         
             if (m_dLoopLength>(double)kiTempLength)
@@ -508,7 +502,7 @@ void EngineBuffer::slotControlLoop(double v)
             else
             {
                 m_dLoopLength = round(filepos_play-m_dTempFilePos);
-                if (!even(m_dLoopLength))
+                if (!even((long)m_dLoopLength))
                     m_dLoopLength++;
                 if (m_dLoopLength>(double)kiTempLength)
                     m_dLoopLength = (double)kiTempLength;
@@ -542,18 +536,10 @@ void EngineBuffer::slotControlEnd(double)
 
 void EngineBuffer::slotSetBpm(double bpm)
 {
-    ReaderExtractBeat *beat = reader->getBeatPtr();
-    if (beat!=0)
-    {
-        // Get file BPM
-        CSAMPLE *bpmBuffer = beat->getBpmPtr();
-        double filebpm = bpmBuffer[(int)(bufferpos_play*(beat->getBufferSize()/READCHUNKSIZE))];
-
-        //qDebug("user %f, file %f, change %f",bpm, filebpm, bpm/filebpm);
-
-        // Change rate to match new bpm
+    double filebpm = reader->getBpm();
+    
+    if (filebpm!=0.)
         rateSlider->set(bpm/filebpm-1.);
-    }
 }
 
 void EngineBuffer::slotControlRatePermDown(double)
@@ -758,14 +744,8 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBuff
         //
 
         // Find BPM adjustment factor
-        ReaderExtractBeat *beat = reader->getBeatPtr();
         double bpmrate = 1.;
-        double filebpm = 0.;
-        if (beat!=0)
-        {
-            CSAMPLE *bpmBuffer = beat->getBpmPtr();
-            filebpm = bpmBuffer[(int)(bufferpos_play*(beat->getBufferSize()/READCHUNKSIZE))];
-        }
+        double filebpm = reader->getBpm();
 
         // Determine direction of playback from reverse button
         double dir = 1.;
@@ -976,7 +956,7 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBuff
                         
                         //Q_ASSERT(request>0 && request<=iBufferSize);
                         
-                        output = m_pScale->scale(dTempPlayPos, request, m_pTempBuffer, m_dLoopLength);
+                        output = m_pScale->scale(dTempPlayPos, request, m_pTempBuffer, (int)m_dLoopLength);
                         
                         double dNewPos = m_pScale->getNewPlaypos();
                         if (dNewPos>=m_dLoopLength)
@@ -1089,6 +1069,7 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBuff
                         pOutput[i] = output[i];
                 }
                 
+/*
                 // If a beat occours in current buffer mark it by led or in audio
                 // This code currently only works in forward playback.
                 ReaderExtractBeat *readerbeat = reader->getBeatPtr();
@@ -1133,6 +1114,7 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBuff
                         }
                     }
                 }
+*/
 
                 // Write file playpos
 //                 qDebug("filepos_play %f, idx %f, bufferpos_play %f, oldlen %li",filepos_play,idx,bufferpos_play,file_length_old);
