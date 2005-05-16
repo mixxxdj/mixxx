@@ -26,7 +26,7 @@ ControlObjectThreadMain::~ControlObjectThreadMain()
 
 bool ControlObjectThreadMain::eventFilter(QObject *o, QEvent *e)
 {
-    // Handle mouse press events
+    // Handle events
     if (e->type() == 10000)
     {
         ControlEvent *ce = (ControlEvent *)e;

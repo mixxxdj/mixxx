@@ -35,7 +35,7 @@ VisualBufferMarks::~VisualBufferMarks()
 {
 }
 
-void VisualBufferMarks::update(int iPos, int iLen)
+void VisualBufferMarks::update(int iPos, int iLen, long int, int)
 {
 //    qDebug("mark upd pos %i, len %i",iPos,iLen);
 

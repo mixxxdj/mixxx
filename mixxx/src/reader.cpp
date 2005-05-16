@@ -30,6 +30,7 @@ Reader::Reader(EngineBuffer *_enginebuffer, QMutex *_pause)
 {
     enginebuffer = _enginebuffer;
     m_dRate = 0.;
+    m_pTrack = 0;
     pause = _pause;
     m_pVisualChannel = 0;
 
@@ -126,11 +127,6 @@ int Reader::getFileSrate()
     return file_srate;
 }
 
-ReaderExtractBeat *Reader::getBeatPtr()
-{
-    return readerwave->getExtractBeat();
-}
-
 ReaderExtractWave *Reader::getWavePtr()
 {
     return readerwave;
@@ -159,12 +155,26 @@ void Reader::setRate(double dRate)
 
 double Reader::getBeatFirst()
 {
-    return getBeatPtr()->getFirstBeat();
+    if (m_pTrack)
+        return m_pTrack->getBeatFirst();
+    else
+        return 0.;
 }
 
 double Reader::getBeatInterval()
 {
-    return getBeatPtr()->getBeatInterval()*readerwave->getRate()*2.;
+    if (m_pTrack)
+        return (m_pTrack->getBpm()/60.)*readerwave->getRate()*2.;
+    else
+        return 0.;
+}
+
+double Reader::getBpm()
+{
+    if (m_pTrack)
+        return m_pTrack->getBpm();
+    else
+        return 0.;
 }
 
 bool Reader::tryLock()
@@ -192,14 +202,13 @@ void Reader::newtrack()
 // qDebug("newtrack, got pause lock");
 
     // Get filename
-    TrackInfoObject *pTrack;
     bool bStartAtEndPos;
     
     trackqueuemutex.lock();
     if (!trackqueue.isEmpty())
     {
         TrackQueueType *p = trackqueue.first();
-        pTrack = p->pTrack;
+        m_pTrack = p->pTrack;
         bStartAtEndPos = p->bStartAtEndPos;
         trackqueue.remove();
         delete p;
@@ -207,13 +216,13 @@ void Reader::newtrack()
     trackqueuemutex.unlock();
 
     // Exit if no track info was in queue
-    if (pTrack==0)
+    if (m_pTrack==0)
     {
         pause->unlock();
         return;
     }
 
-    readerwave->newSource(pTrack);
+    readerwave->newSource(m_pTrack);
 
 //     qDebug("newtrack, new source set");
     

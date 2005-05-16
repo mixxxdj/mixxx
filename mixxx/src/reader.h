@@ -58,8 +58,6 @@ public:
     /** Get wave buffer pointer. This address is used by EngineBuffer. The method is
       * not thread safe and should be called before the reader thread is started */
     CSAMPLE *getBufferWavePtr();
-    /** Get pointer to beat extraction object */
-    ReaderExtractBeat *getBeatPtr();
     /** Get pointer to wave extraction object */
     ReaderExtractWave *getWavePtr();
     /** Tries to lock mutex controlling access to file_srate, file_length and filepos_start. Non-blocking */
@@ -92,6 +90,9 @@ public:
     /** Get beat interval in samples. This method must only be called when holding the enginelock
       * mutex */
     double getBeatInterval();
+    /** Get BPM. This method must only be called when holding the enginelock
+      * mutex */
+    double getBpm();
 
 
 private:
@@ -135,6 +136,8 @@ private:
     typedef QValueList<double> TSeekQueue;
     /** Seek queue used in communication with reader from other threads */
     TSeekQueue seekqueue;
+    /** Current loaded track */
+    TrackInfoObject *m_pTrack;
     /** Mutex used when accessing queues */
     QMutex trackqueuemutex, seekqueuemutex;
     /** Local copy of file sample rate */

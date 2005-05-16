@@ -354,7 +354,7 @@
    <Pressed>endoftrack-loop-ch1.png</Pressed>
    <Unpressed>endoftrack-loop-ch1.png</Unpressed>
   </State>
-  <Pos>570,98</Pos>
+  <Pos>319,162</Pos>
   <Connection>
    <ConfigKey>[Channel1],TrackEndMode</ConfigKey>
   </Connection>
@@ -893,7 +893,7 @@
  <Visual>
   <Tooltip>Drag with mouse to control sound playback. Drop tracks from external file manager here</Tooltip>
   <Channel>1</Channel>
-  <Pos>108,39</Pos>
+  <Pos>109,39</Pos>
   <Size>584,58</Size>
   <BgColor>#ffffff</BgColor>
   <SignalColor>#00ff00</SignalColor>
@@ -903,10 +903,10 @@
   <Zoom>true</Zoom>
  </Visual>
 
- <XVisual>
+ <Visual>
   <Tooltip>Drag with mouse to control sound playback. Drop tracks from external file manager here</Tooltip>
   <Channel>2</Channel>
-  <Pos>108,128</Pos>
+  <Pos>109,98</Pos>
   <Size>584,58</Size>
   <BgColor>#ffffff</BgColor>
   <SignalColor>#00ff00</SignalColor>
@@ -914,7 +914,7 @@
   <MarkerColor>#ff0000</MarkerColor>
   <FisheyeColor>#ffffff</FisheyeColor>
   <Zoom>true</Zoom>
- </XVisual>
+ </Visual>
 
  <Text>
   <Channel>1</Channel>
@@ -936,36 +936,34 @@
  <NumberBpm>
   <Tooltip>Tempo display (Beat Per Minute)</Tooltip>
   <Channel>1</Channel>
-  <Pos>594,114</Pos>
-  <Size>94,16</Size>
-  <Alignment>right</Alignment>
+  <Pos>112,162</Pos>
+  <Size>78,16</Size>
   <NumberOfDigits>6</NumberOfDigits>
   <BgColor>#ffffff</BgColor>
   <FgColor>#606060</FgColor>
   <Connection>
-   <ConfigKey>[Channel1],bpm</ConfigKey>
+   <ConfigKey>[Channel1],bpm_control</ConfigKey>
   </Connection>
  </NumberBpm>
 
- <XNumberBpm>
+ <NumberBpm>
   <Tooltip>Tempo display (Beat Per Minute)</Tooltip>
   <Channel>2</Channel>
   <Pos>487,162</Pos>
   <Size>78,16</Size>
-  <Alignment>right</Alignment>
   <NumberOfDigits>6</NumberOfDigits>
   <BgColor>#ffffff</BgColor>
   <FgColor>#606060</FgColor>
   <Connection>
-   <ConfigKey>[Channel2],bpm</ConfigKey>
+   <ConfigKey>[Channel2],bpm_control</ConfigKey>
   </Connection>
- </XNumberBpm>
+ </NumberBpm>
 
  <NumberPos>
   <Tooltip>Play position/remaining time</Tooltip>
   <Channel>1</Channel>
-  <Pos>680,148</Pos>
-  <Size>124,16</Size>
+  <Pos>220,162</Pos>
+  <Size>94,16</Size>
   <Alignment>right</Alignment>
   <NumberOfDigits>6</NumberOfDigits>
   <BgColor>#ffffff</BgColor>
@@ -975,7 +973,7 @@
   </Connection>
  </NumberPos>
 
- <XNumberPos>
+ <NumberPos>
   <Tooltip>Play position/remaining time</Tooltip>
   <Channel>2</Channel>
   <Pos>594,162</Pos>
@@ -987,7 +985,7 @@
   <Connection>
    <ConfigKey>[Channel2],playposition</ConfigKey>
   </Connection>
- </XNumberPos>
+ </NumberPos>
 
  <NumberRate>
   <Tooltip>Playback rate factor</Tooltip>
@@ -1002,7 +1000,7 @@
   </Connection>
  </NumberRate>
 
- <XNumberRate>
+ <NumberRate>
   <Tooltip>Playback rate factor</Tooltip>
   <Channel>2</Channel>
   <Pos>733,212</Pos>
@@ -1013,35 +1011,7 @@
   <Connection>
    <ConfigKey>[Channel2],rate</ConfigKey>
   </Connection>
- </XNumberRate>
-
- <Overview>
-  <Tooltip>Overview display of waveform</Tooltip>
-  <Channel>1</Channel>
-  <Pos>113,98</Pos>
-  <Size>452,90</Size>
-  <BgColor>#fafafa</BgColor>
-  <SignalColor>#00ff00</SignalColor>
-  <MarkerColor>#0000ff</MarkerColor>
-  <Connection>
-   <ConfigKey>[Channel1],playposition</ConfigKey>
-   <EmitOnDownPress>false</EmitOnDownPress>
-  </Connection>
- </Overview>
-
- <XOverview>
-  <Tooltip>Overview display of waveform</Tooltip>
-  <Channel>2</Channel>
-  <Pos>487,177</Pos>
-  <Size>201,13</Size>
-  <BgColor>#ffffff</BgColor>
-  <SignalColor>#00ff00</SignalColor>
-  <MarkerColor>#ff0000</MarkerColor>
-  <Connection>
-   <ConfigKey>[Channel2],playposition</ConfigKey>
-   <EmitOnDownPress>false</EmitOnDownPress>
-  </Connection>
- </XOverview>
+ </NumberRate>
 
  <XSliderComposed>
   <Tooltip>Play position - Use mouse to seek</Tooltip>
@@ -1069,6 +1039,36 @@
   </Connection>
  </XSliderComposed>
  
+ <Overview>
+	 <Tooltip>Overview display of waveform</Tooltip>
+	 <Channel>1</Channel>
+	 <Pos>112,177</Pos>
+	 <Size>201,13</Size>
+	 <BgColor>#fafafa</BgColor>
+	 <SignalColor>#00ff00</SignalColor>
+	 <MarkerColor>#0000ff</MarkerColor>
+	 <Connection>
+		 <ConfigKey>[Channel1],playposition</ConfigKey>
+		 <EmitOnDownPress>false</EmitOnDownPress>
+	 </Connection>
+ </Overview>
+
+ <Overview>
+	 <Tooltip>Overview display of waveform</Tooltip>
+	 <Channel>2</Channel>
+	 <Pos>487,177</Pos>
+	 <Size>201,13</Size>
+	 <BgColor>#fafafa</BgColor>
+	 <SignalColor>#00ff00</SignalColor>
+	 <MarkerColor>#ff0000</MarkerColor>
+	 <Connection>
+		 <ConfigKey>[Channel2],playposition</ConfigKey>
+		 <EmitOnDownPress>false</EmitOnDownPress>
+	 </Connection>
+ </Overview>
+
+ 
+ 
  <Splitter>
   <Pos>109,284</Pos>
   <Size>582,315</Size>
@@ -1087,15 +1087,15 @@
   <BgColor>#ffffff</BgColor>
   <BgColorRowEven>#ffffff</BgColorRowEven>
   <BgColorRowUneven>#ffffff</BgColorRowUneven>
-  <BgColorBpmConfidenceLow>#ffffff</BgColorBpmConfidenceLow>
-  <BgColorBpmConfidenceHigh>#9EFF75</BgColorBpmConfidenceHigh>
+  <BgColorBpmNoConfirm>#ffffff</BgColorBpmNoConfirm>
+  <BgColorBpmConfirm>#9EFF75</BgColorBpmConfirm>
   <ColWidthScore>20</ColWidthScore>
   <ColWidthTitle>190</ColWidthTitle>
   <ColWidthArtist>180</ColWidthArtist>
   <ColWidthComment>166</ColWidthComment>
   <ColWidthType>30</ColWidthType>
   <ColWidthDuration>50</ColWidthDuration>
-  <ColWidthBpm>40</ColWidthBpm>
+  <ColWidthBpm>60</ColWidthBpm>
   <ColWidthBitrate>50</ColWidthBitrate>
   <Size>567,315</Size>
  </TrackTable>

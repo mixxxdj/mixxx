@@ -24,23 +24,30 @@
   *@author Tue & Ken Haste Andersen
   */
 
-class ControlObject;
+class ControlObjectThreadMain;
   
 // Sample rate in Hertz at which the sound buffer is resampled
 const int kiVisualResampleRate = 1000;
 const float kfWaveshapeFactor = 0.99f;
 
-class VisualBufferSignal : public VisualBuffer  {
+class VisualBufferSignal : public VisualBuffer  
+{
+    Q_OBJECT
 public:
     VisualBufferSignal(ReaderExtract *pReaderExtract, EngineBuffer *pEngineBuffer, const char *group);
     ~VisualBufferSignal();
-    virtual void update(int iPos, int iLen);
+    virtual void update(int iPos, int iLen, long int liFileStartPos, int iBufferStartPos);
     virtual void draw(GLfloat *p, int iLen, float);
 
-private:
-    /** Pointer to phase, period controls, and rate slider */
-    ControlObject *m_pControlPhase, *m_pControlShape, *m_pControlBpm, *m_pControlRate, *m_pControlBeatFirst;
+public slots:
+    void slotUpdateBpm(double v);
+    void slotUpdateBeatFirst(double v);
 
+private:
+    /** Pointer to control object holding beat info */
+    ControlObjectThreadMain *m_pControlBpm, *m_pControlBeatFirst;
+    /** Local copies of beat info */
+    double m_dBeatFirst, m_dBpm, m_dBeatDistance;
     /** Used in low pass filtering */
     float m_fLastPositive, m_fLastNegative;
     /** Buffer used when drawing around start and end of buffer */
@@ -48,7 +55,10 @@ private:
     /** Pointer to the secondary buffer, an openGL vertex array */
     GLfloat *m_pBuffer2;
     double m_dAbsStartpos;
-    
+    /** Absoulte start file position */
+    long int m_liFileStartPos;
+    /** Buffer start position */
+    int m_iBufferStartPos;    
 };
 
 #endif

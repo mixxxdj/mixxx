@@ -1013,7 +1013,7 @@
   </Connection>
  </NumberRate>
 
- <SliderComposed>
+ <XSliderComposed>
   <Tooltip>Play position - Use mouse to seek</Tooltip>
   <Handle>playpos-marker1.png</Handle>
   <Slider>playpos-slider.png</Slider>
@@ -1024,9 +1024,9 @@
    <ConfigKey>[Channel1],playposition</ConfigKey>
    <EmitOnDownPress>false</EmitOnDownPress>
   </Connection>
- </SliderComposed>
+ </XSliderComposed>
 
- <SliderComposed>
+ <XSliderComposed>
   <Tooltip>Play position - Use mouse to seek</Tooltip>
   <Handle>playpos-marker2.png</Handle>
   <Slider>playpos-slider.png</Slider>
@@ -1037,7 +1037,35 @@
    <ConfigKey>[Channel2],playposition</ConfigKey>
    <EmitOnDownPress>false</EmitOnDownPress>
   </Connection>
- </SliderComposed>
+ </XSliderComposed>
+ 
+ <Overview>
+	 <Tooltip>Overview display of waveform</Tooltip>
+	 <Channel>1</Channel>
+	 <Pos>144,227</Pos>
+	 <Size>257,17</Size>
+	 <BgColor>#fafafa</BgColor>
+	 <SignalColor>#00ff00</SignalColor>
+	 <MarkerColor>#0000ff</MarkerColor>
+	 <Connection>
+		 <ConfigKey>[Channel1],playposition</ConfigKey>
+		 <EmitOnDownPress>false</EmitOnDownPress>
+	 </Connection>
+ </Overview>
+ 
+ <Overview>
+	 <Tooltip>Overview display of waveform</Tooltip>
+	 <Channel>2</Channel>
+	 <Pos>623,227</Pos>
+	 <Size>257,17</Size>
+	 <BgColor>#fafafa</BgColor>
+	 <SignalColor>#00ff00</SignalColor>
+	 <MarkerColor>#ff0000</MarkerColor>
+	 <Connection>
+		 <ConfigKey>[Channel2],playposition</ConfigKey>
+		 <EmitOnDownPress>false</EmitOnDownPress>
+	 </Connection>
+ </Overview>
  
  <Splitter>
   <Pos>139,364</Pos>

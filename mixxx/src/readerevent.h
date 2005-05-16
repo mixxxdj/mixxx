@@ -27,15 +27,20 @@
 class ReaderEvent : public QCustomEvent
 {
 public:
-    ReaderEvent(int bpos, int blen, int flen, int srate);
+    ReaderEvent(int bpos, int blen, long int fspos, int bspos, int flen, int srate);
     ~ReaderEvent();
     int bufferPos() const;
     int bufferLen() const;
     int fileLen() const;
+    long int fileStartPos() const;
+    int bufferStartPos() const;
     int srate() const;
+    
 private:
     int bufferPosition;
     int bufferLength;
+    long int fileStartPosition;
+    int bufferStartPosition;
     int fileLength;
     int sampleRate;
 };

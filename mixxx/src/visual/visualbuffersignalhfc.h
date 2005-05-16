@@ -23,7 +23,7 @@ public:
     VisualBufferSignalHFC(ReaderExtract *pReaderExtract, EngineBuffer *pEngineBuffer, const char *group);
     ~VisualBufferSignalHFC();
 
-    void update(int iPos, int iLen);
+    void update(int iPos, int iLen, long int, int);
     void draw(GLfloat *p, int iLen, float);
 };
 

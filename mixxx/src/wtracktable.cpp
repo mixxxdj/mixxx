@@ -55,17 +55,11 @@ WTrackTable::WTrackTable(QWidget *parent, const char *name) : QTable(0, ROW_NO, 
     // Allow table reordering
     setRowMovingEnabled(true);
     
-    // Font size
-//    QFont f("Helvetica");
-//    f.setPointSize(10);
-//    setFont(f);
-
     // Setup scrollbars
     setVScrollBarMode(AlwaysOn);
     setHScrollBarMode(AlwaysOff);
 
     connect(this, SIGNAL(pressed(int, int, int, const QPoint &)), this, SLOT(slotMousePressed(int, int, int, const QPoint &)));
-    connect(this, SIGNAL(clicked(int, int, int, const QPoint &)), this, SLOT(slotMouseClicked(int, int, int, const QPoint &)));
 }
 
 
@@ -121,13 +115,13 @@ void WTrackTable::setup(QDomNode node)
     }
 
     // BPM confidence colors
-    if (!WWidget::selectNode(node, "BgColorBpmConfidenceLow").isNull())
+    if (!WWidget::selectNode(node, "BgColorBpmNoConfirm").isNull())
     {
         QColor c1;
-        c1.setNamedColor(WWidget::selectNodeQString(node, "BgColorBpmConfidenceLow"));
+        c1.setNamedColor(WWidget::selectNodeQString(node, "BgColorBpmNoConfirm"));
         QColor c2;
-        c2.setNamedColor(WWidget::selectNodeQString(node, "BgColorBpmConfidenceHigh"));
-        WTrackTableItem::setBpmConfidenceColors(c1, c2);
+        c2.setNamedColor(WWidget::selectNodeQString(node, "BgColorBpmConfirm"));
+        WTrackTableItem::setBpmBgColors(c1, c2);
     }
     
     // Setup column widths
@@ -150,7 +144,7 @@ void WTrackTable::setup(QDomNode node)
     if (!WWidget::selectNode(node, "ColWidthBpm").isNull())
     {
         int width = WWidget::selectNodeQString(node, "ColWidthBpm").toInt();
-	setColumnWidth(COL_BPM,width);
+        setColumnWidth(COL_BPM,width);
     }				
 }
 
@@ -161,21 +155,7 @@ void WTrackTable::sortColumn(int col, bool ascending, bool)
 
 void WTrackTable::slotMousePressed(int row, int col, int button, const QPoint &)
 {
-    if (col!=COL_COMMENT && button==Qt::RightButton)
-    {
-        WTrackTableItem *p = (WTrackTableItem *)item(row,col);
-        if (p)
-        {
-            TrackInfoObject *pTrackInfoObject = p->getTrackInfoObject();
-            if (pTrackInfoObject)
-                emit(mousePressed(pTrackInfoObject, button));
-        }
-    }
-}
-
-void WTrackTable::slotMouseClicked(int row, int col, int button, const QPoint &)
-{
-    if (col!=COL_COMMENT)
+    if (col!=COL_COMMENT && col!=COL_BPM)
     {
         WTrackTableItem *p = (WTrackTableItem *)item(row,col);
         if (p)

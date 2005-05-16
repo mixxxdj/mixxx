@@ -65,10 +65,10 @@ public:
     void setBpm(float);
     /** Returns BPM as a string */
     QString getBpmStr();
-    /** Retruns BPM confidence */
-    float getBpmConfidence();
+    /** Retruns if BPM was confirmed (edited or verified manually) */
+    bool getBpmConfirm();
     /** Set BPM confidence */
-    void setBpmConfidence(float f);
+    void setBpmConfirm(bool confirm=true);
     /** Returns the user comment */
     QString getComment();
     /** Sets the user commnet */
@@ -174,8 +174,8 @@ private:
     int m_iTimesPlayed;
     /** Beat per minutes (BPM) */
     float m_fBpm;
-    /** Confidence measure of BPM */
-    float m_fBpmConfidence;
+    /** True if BPM is confirmed */
+    bool m_bBpmConfirm;
     /** Position of first beat in song */
     float m_fBeatFirst;
     /** Score. Reflects the relative number of times the track has been played */

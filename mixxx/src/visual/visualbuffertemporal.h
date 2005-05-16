@@ -32,7 +32,7 @@ class VisualBufferTemporal : public VisualBuffer  {
 public:
     VisualBufferTemporal(EngineBuffer *pEngineBuffer, const char *group);
     ~VisualBufferTemporal();
-    virtual void update(int iPos, int iLen);
+    virtual void update(int iPos, int iLen, long int, int);
     virtual void draw(GLfloat *p, int iLen, float);
 
 private slots:
