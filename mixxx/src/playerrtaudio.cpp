@@ -314,7 +314,7 @@ QStringList PlayerRtAudio::getSampleRates()
     catch (RtError &error)
     {
         error.printMessage();
-        return result;
+        return QStringList();
     }
 
     // Sample rates

@@ -418,7 +418,7 @@ void Track::slotLoadPlayer2(TrackInfoObject *pTrackInfoObject, bool bStartFromEn
     // Set file BPM for use in engine
     p = ControlObject::getControl(ConfigKey("[Channel2]","file_bpm"));
     if (p) 
-        p->queueFromThread(m_pTrackPlayer1->getBpm());
+        p->queueFromThread(m_pTrackPlayer2->getBpm());
     
     // Set duration in playpos widget
     if (m_pView->m_pNumberPosCh2)

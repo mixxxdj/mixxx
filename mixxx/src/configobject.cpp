@@ -18,6 +18,10 @@
 #include "configobject.h"
 #include <qdir.h>
 
+#ifdef __WIN__
+#include <windows.h>
+#endif
+
 ConfigKey::ConfigKey()
 {
 }

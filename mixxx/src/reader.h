@@ -68,7 +68,7 @@ public:
     void unlock();
     /** Returns file length. This method must only be called when holding the enginelock
       * mutex */
-    int getFileLength();
+    long int getFileLength();
     /** Returns file sample rate. This method must only be called when holding the enginelock
       * mutex */
     int getFileSrate();

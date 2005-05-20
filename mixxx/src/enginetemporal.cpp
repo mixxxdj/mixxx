@@ -56,7 +56,10 @@ EngineTemporal::~EngineTemporal()
 
 void EngineTemporal::process(const CSAMPLE *pIn, const CSAMPLE *pOut, const int iBufferSize)
 {
-    float *pOutput = (float *)pOut;
+    pOut = pIn;
+    return;
+
+	float *pOutput = (float *)pOut;
 
     m_pEffect->process(pIn, m_pTemp, iBufferSize);
     
@@ -77,12 +80,17 @@ void EngineTemporal::process(const CSAMPLE *pIn, const CSAMPLE *pOut, const int 
         fAbsPos = m_pEngineBuffer->getAbsPlaypos();
     }
     float fPhaseInc = (fBpm/(60.*2.))/rate;
+    while (fPhaseInc>1.)
+		fPhaseInc--;
     float fPhase = fAbsPos*fPhaseInc+m_pControlPhase->get();
     
     for (int i=0; i<iBufferSize; ++i)
     {
-        float temp = fPhase-floorf(fPhase/1.);
-        float f = temporalWindow(m_pControlShape->get(), temp);
+        while (fPhase>1.)
+			fPhase--;
+		
+		//float temp = fPhase-(floor)(int)fPhase;
+        float f = temporalWindow(m_pControlShape->get(), fPhase);
 
         pOutput[i] = (f*m_pTemp[i]);
 
@@ -102,8 +110,10 @@ void EngineTemporal::addVisual(EngineBuffer *pEngineBuffer)
         pVisualChannel->add(0, m_pEngineBuffer);
 }
 
-inline float EngineTemporal::temporalWindow(float fShape, float fPos)
+float EngineTemporal::temporalWindow(float fShape, float fPos)
 {
+	return 1.;
+
     Q_ASSERT(fPos>=0.   && fPos<1.);
     Q_ASSERT(fShape>=0. && fShape<=1.);
 
@@ -111,20 +121,20 @@ inline float EngineTemporal::temporalWindow(float fShape, float fPos)
         fPos -= 1.;
         
     //fShape *= (float)kiTempWindowNo;
-    fShape *= ((float)kiTempWindowNo/2.);
+    float fShapePos = fShape*((float)kiTempWindowNo/2.);
     
     // Find indexes of two influential windows for the given shape value
     int iWndIdx1, iWndIdx2;
-    iWndIdx1 = (int)floor(fShape*2.);
+    iWndIdx1 = (int)(fShapePos*2.);
     iWndIdx2 = (iWndIdx1-1+kiTempWindowNo)%kiTempWindowNo;
     
-    fShape *= 2.;
-    while (fShape>=1.)
-        fShape -= 1.;    
+    //fShape *= 2.;
+    //while (fShape>=1.)
+    //    fShape -= 1.;    
                 
     float fIdx = fPos*(float)kiTempWindowLength;
-    int iIdx1 = (int)floor(fIdx);
-    int iIdx2 = (int)ceil(fIdx);
+    int iIdx1 = (int)(fIdx);
+    int iIdx2 = iIdx1+1;
     float fFraction = fIdx-(float)iIdx1;
     
     float fReturnValue = 0.;

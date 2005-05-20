@@ -117,7 +117,7 @@ CSAMPLE *Reader::getBufferWavePtr()
 }
 
 
-int Reader::getFileLength()
+long int Reader::getFileLength()
 {
     return file_length;
 }

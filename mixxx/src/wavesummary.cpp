@@ -60,7 +60,7 @@ void WaveSummary::enqueue(TrackInfoObject *pTrackInfoObject)
 
 void WaveSummary::run()
 {
-    while (1)
+	while (1)
     {
         // Check if there is a new track to process in the queue...
         m_qMutex.lock();

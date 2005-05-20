@@ -59,10 +59,12 @@
 #include "powermatewin.h"
 #endif
 
+#include "hercules.h"
 #ifdef __LINUX__
 #include "herculeslinux.h"
 #endif
 
+#include "joystick.h"
 #ifdef __LINUX__
 #include "joysticklinux.h"
 #endif
@@ -128,8 +130,8 @@ DlgPrefMidi::DlgPrefMidi(QWidget *parent, ConfigObject<ConfigValue> *pConfig) : 
     m_pPowerMate2 = new PowerMateLinux();
 #endif
 #ifdef __WIN__
-    m_pPowerMate1 = new PowerMateWin();
-    m_pPowerMate2 = new PowerMateWin();
+//    m_pPowerMate1 = new PowerMateWin();
+//    m_pPowerMate2 = new PowerMateWin();
 #endif
     if (m_pPowerMate1)
     {
