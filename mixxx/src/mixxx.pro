@@ -146,9 +146,9 @@ SOURCES += powermate.cpp
 HEADERS += powermate.h
 unix:!macx:SOURCES += powermatelinux.cpp
 unix:!macx:HEADERS += powermatelinux.h
-win32:SOURCES += powermatewin.cpp
-win32:HEADERS += powermatewin.h
-win32:LIBS += setupapi.lib
+#win32:SOURCES += powermatewin.cpp
+#win32:HEADERS += powermatewin.h
+#win32:LIBS += setupapi.lib
 
 # Hercules DJ Console
 SOURCES += hercules.cpp
@@ -187,7 +187,7 @@ SOURCES += enginebufferscalest.cpp ../lib/soundtouch/SoundTouch.cpp ../lib/sound
 HEADERS += enginebufferscalest.h ../lib/soundtouch/TDStretch.h ../lib/soundtouch/RateTransposer.h ../lib/soundtouch/cpu_detect.h ../lib/soundtouch/STTypes.h ../lib/soundtouch/SoundTouch.h ../lib/soundtouch/FIFOSamplePipe.h ../lib/soundtouch/FIFOSampleBuffer.h ../lib/soundtouch/AAFilter.h ../lib/soundtouch/FIRFilter.h ../lib/soundtouch/config.h
 unix:!macx:SOURCES += ../lib/soundtouch/mmx_gcc.cpp
 unix:SOURCES += ../lib/soundtouch/cpu_detect_x86_gcc.cpp
-win32:SOURCES += ../lib/soundtouch/cpu_detect_x86_win.cpp ../lib/soundtouch/mmx_win.cpp sse_win.cpp ../lib/soundtouch/3dnow_win.cpp
+win32:SOURCES += ../lib/soundtouch/cpu_detect_x86_win.cpp ../lib/soundtouch/mmx_win.cpp ../lib/soundtouch/sse_win.cpp ../lib/soundtouch/3dnow_win.cpp
 
 # Debug plotting through gplot API
 #unix:DEFINES += __GNUPLOT__
@@ -346,8 +346,8 @@ IMAGES += icon.png
 DEFINES += SETTINGS_FILE=$$SETTINGS_FILE TRACK_FILE=$$TRACK_FILE
 unix:TEMPLATE = app
 win32:TEMPLATE = vcapp
-CONFIG += qt thread warn_off release
-DEFINES += QT_NO_CHECK
-#CONFIG += qt thread warn_on debug
+#CONFIG += qt thread warn_off release
+#DEFINES += QT_NO_CHECK
+CONFIG += qt thread warn_on debug
 DBFILE = mixxx.db
 LANGUAGE = C++

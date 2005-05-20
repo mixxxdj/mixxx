@@ -31,11 +31,11 @@ static const int kiTempWindowNo = 5;
 //static const float kfTempWindows[kiTempWindowLength*kiTempWindowNo] = {1.0, 0.9, 0.8, 0.7, 0.6, 0.5, 0.4, 0.3, 0.2, 0.1, 0.0,
 //                                                                        0.0, 0.2, 0.4, 0.6, 0.8, 1.0, 0.8, 0.6, 0.4, 0.2, 0.0};
 
-static const float kfTempWindows[kiTempWindowLength*kiTempWindowNo] = {1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0,
-                                                                       1.0, 0.9, 0.8, 0.7, 0.6, 0.5, 0.4, 0.3, 0.2, 0.1, 0.0,
-                                                                       1.0, 0.5, 0.2, 0.1, 0.05, 0.02, 0.01, 0., 0., 0., 0.,
-                                                                       1.0, 0.1, 0.05, 0.01, 0.001, 0., 0.0, 0.0, 0.0, 0.0, 0.0,
-                                                                       0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0};
+static const float kfTempWindows[kiTempWindowLength*kiTempWindowNo] = {1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f,
+                                                                       1.0f, 0.9f, 0.8f, 0.7f, 0.6f, 0.5f, 0.4f, 0.3f, 0.2f, 0.1f, 0.0f,
+                                                                       1.0f, 0.5f, 0.2f, 0.1f, 0.05f, 0.02f, 0.01f, 0.f, 0.f, 0.f, 0.f,
+                                                                       1.0f, 0.1f, 0.05f, 0.01f, 0.001f, 0.f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f,
+                                                                       0.0f, 0.1f, 0.2f, 0.3f, 0.4f, 0.5f, 0.6f, 0.7f, 0.8f, 0.9f, 1.0f};
 
 /**
   *@author Tue Haste Andersen
@@ -50,7 +50,7 @@ public:
     void addVisual(EngineBuffer *pEngineBuffer);
     void process(const CSAMPLE *pIn, const CSAMPLE *pOut, const int iBufferSize);
 
-    static inline float temporalWindow(float fShape, float fPos);
+    static float temporalWindow(float fShape, float fPos);
     
 public slots:
     void slotShapeUpdate(double v);    
