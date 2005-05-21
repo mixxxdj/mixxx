@@ -38,9 +38,6 @@ EngineFilterIIR::~EngineFilterIIR()
 
 void EngineFilterIIR::process(const CSAMPLE *pIn, const CSAMPLE *pOut, const int iBufferSize) 
 {
-	pOut = pIn;
-	return;
-
 	CSAMPLE *pOutput = (CSAMPLE *)pOut;
     double GAIN =  coefs[0];
     int i;

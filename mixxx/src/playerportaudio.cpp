@@ -29,7 +29,6 @@ PlayerPortAudio::PlayerPortAudio(ConfigObject<ConfigValue> *config) : Player(con
     m_iHeadRightCh = -1;
     m_pStream = 0;
     m_bInit = false;
-
 }
 
 PlayerPortAudio::~PlayerPortAudio()
@@ -128,37 +127,36 @@ bool PlayerPortAudio::open()
     // Sample rate
     int iSrate = m_pConfig->getValueString(ConfigKey("[Soundcard]","Samplerate")).toInt();
 
-    // Setup latency
-    int iFramesPerBuffer;
-    int iLatency = (int)((float)iSrate*2*(m_pConfig->getValueString(ConfigKey("[Soundcard]","Latency")).toFloat()/1000.));
-	
-	// This turns out to be really really slow on windows, wonder what's wrong?
-	//int iLatency = (int)((float)iSrate*(m_pConfig->getValueString(ConfigKey("[Soundcard]","Latency")).toFloat()/1000.));
+    // Get latency in msec
+    int iLatencyMSec = m_pConfig->getValueString(ConfigKey("[Soundcard]","Latency")).toInt();
+
+    // Latency in samples
+    int iLatencySamples = (int)((float)(iSrate*iChannels)/1000.f*(float)iLatencyMSec);
 
     // Apply simple rule to determine number of buffers
-    if (iLatency/kiMaxFrameSize<2)
+    if (iLatencySamples/kiMaxFrameSize<2)
         m_iNumberOfBuffers = 2;
     else
-        m_iNumberOfBuffers = iLatency/kiMaxFrameSize;
+        m_iNumberOfBuffers = iLatencySamples/kiMaxFrameSize;
 
     // Frame size...    
-    iFramesPerBuffer = iLatency/m_iNumberOfBuffers;
+    int iFramesPerBuffer = iLatencySamples/m_iNumberOfBuffers;
+
+    
 
     // Ensure the chosen configuration is valid
     if (m_iNumberOfBuffers<Pa_GetMinNumBuffers(iFramesPerBuffer,iSrate))
     {
         m_iNumberOfBuffers = Pa_GetMinNumBuffers(iFramesPerBuffer,iSrate);
-        iFramesPerBuffer = iLatency/m_iNumberOfBuffers;
     
-        // Check again. If still no match the requested latency cannot be satisfied
-        if (m_iNumberOfBuffers<Pa_GetMinNumBuffers(iFramesPerBuffer,iSrate))
-            m_iNumberOfBuffers = Pa_GetMinNumBuffers(iFramesPerBuffer,iSrate);
+        iLatencyMSec = (1000*iFramesPerBuffer*m_iNumberOfBuffers)/(iSrate*iChannels);
+        m_pConfig->set(ConfigKey("[Soundcard]","Latency"), ConfigValue(iLatencyMSec));
     }
 
     // Callback function to use
     PortAudioCallback *callback = paCallback;
 
-    qDebug("id %i, sr %i, ch %i, bufsize %i, bufno %i", id, iSrate, iChannels, iFramesPerBuffer, m_iNumberOfBuffers);
+    qDebug("PortAudio: id %i, sr %i, ch %i, bufsize %i, bufno %i, req. latency %i msec", id, iSrate, iChannels, iFramesPerBuffer, m_iNumberOfBuffers, iLatencyMSec);
 
     if (id<0)
         return false;
@@ -258,6 +256,8 @@ bool PlayerPortAudio::open()
     setPlaySrate(iSrate);
     m_pControlObjectSampleRate->queueFromThread((double)iSrate);
     
+    m_iBufferSize = 0;
+
     // Start stream
     err = Pa_StartStream(m_pStream);
     if (err != paNoError)
@@ -447,7 +447,8 @@ PaDeviceID PlayerPortAudio::getChannelNo(QString name)
 
 int PlayerPortAudio::callbackProcess(int iBufferSize, float *out)
 {
-    m_iBufferSize = iBufferSize*m_iNumberOfBuffers;
+    if (m_iBufferSize==0)
+        m_iBufferSize = iBufferSize*m_iNumberOfBuffers;
     
     float *tmp = prepareBuffer(iBufferSize);
     float *output = out;
