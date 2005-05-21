@@ -33,35 +33,11 @@ DlgPrefSound::DlgPrefSound(QWidget *parent, PlayerProxy *_player,
     player = _player;
     config = _config;
     
-/*
-    // Headphone mute
-    m_pControlObjectHeadphoneMute = ControlObject::getControl(ConfigKey("[Master]","HeadphoneMute"));
-    if (config->getValueString(ConfigKey("[Soundcard]","HeadphoneMute")).length() == 0)
-        config->set(ConfigKey("[Soundcard]","HeadphoneMute"),ConfigValue(1));
-    if (config->getValueString(ConfigKey("[Soundcard]","HeadphoneMute")).toInt()>0)
-    {
-        checkBoxHeadphoneMute->setChecked(true);
-        m_pControlObjectHeadphoneMute->queueFromThread(1.);
-    }
-    else
-    {
-        checkBoxHeadphoneMute->setChecked(false);
-        m_pControlObjectHeadphoneMute->queueFromThread(0.);
-    }
-*/
-     
     // Update of latency label, when latency slider is updated
     connect(SliderLatency,                SIGNAL(sliderMoved(int)),  this, SLOT(slotLatency()));
     connect(SliderLatency,                SIGNAL(sliderReleased()),  this, SLOT(slotLatency()));
     connect(SliderLatency,                SIGNAL(valueChanged(int)), this, SLOT(slotLatency()));
 
-    // Set default sound quality as stored in config file if not already set
-//    if (config->getValueString(ConfigKey("[Soundcard]","SoundQuality")).length() == 0)
-//        config->set(ConfigKey("[Soundcard]","SoundQuality"),ConfigValue(4));
-
-    // Sound quality slider updates
-//    SliderSoundQuality->setValue(2+4-config->getValueString(ConfigKey("[Soundcard]","SoundQuality")).toInt());
-    
     // Pitch-indp. time stretch disabled on mac
 #ifdef __MACX__
     checkBoxPitchIndp->setChecked(false);
@@ -84,14 +60,9 @@ DlgPrefSound::DlgPrefSound(QWidget *parent, PlayerProxy *_player,
     connect(ComboBoxSamplerates,          SIGNAL(activated(int)),    this, SLOT(slotApply()));
     connect(ComboBoxSoundApi,             SIGNAL(activated(int)),    this, SLOT(slotApplyApi()));
     connect(checkBoxPitchIndp,            SIGNAL(stateChanged(int)), this, SLOT(slotApply()));
-//    connect(checkBoxHeadphoneMute,        SIGNAL(stateChanged(int)), this, SLOT(slotHeadphoneMute(int)));
     connect(SliderLatency,                SIGNAL(sliderPressed()),   this, SLOT(slotLatencySliderClick()));
     connect(SliderLatency,                SIGNAL(sliderReleased()),  this, SLOT(slotLatencySliderRelease()));
     connect(SliderLatency,                SIGNAL(valueChanged(int)), this, SLOT(slotLatencySliderChange(int)));
-//    connect(SliderSoundQuality,           SIGNAL(valueChanged(int)), this, SLOT(slotApply()));
-
-    // Connect timer to latency query slot
-    connect(&m_qTimer, SIGNAL(timeout()), this, SLOT(slotQueryLatency()));
 }
 
 DlgPrefSound::~DlgPrefSound()
@@ -174,8 +145,10 @@ void DlgPrefSound::slotUpdate()
         ++it;
     }
 
-    // Latency
+    // Latency. Disconnect slider slot when updating...
+    disconnect(SliderLatency,                SIGNAL(valueChanged(int)), this, SLOT(slotLatencySliderChange(int)));
     SliderLatency->setValue(getSliderLatencyVal(config->getValueString(ConfigKey("[Soundcard]","Latency")).toInt()));
+    connect(SliderLatency,                SIGNAL(valueChanged(int)), this, SLOT(slotLatencySliderChange(int)));
 
     // API's
     ComboBoxSoundApi->clear();
@@ -225,21 +198,15 @@ void DlgPrefSound::slotApply()
     config->set(ConfigKey("[Soundcard]","DeviceMasterRight"), ConfigValue(ComboBoxSoundcardMasterRight->currentText()));
     config->set(ConfigKey("[Soundcard]","DeviceHeadLeft"), ConfigValue(ComboBoxSoundcardHeadLeft->currentText()));
     config->set(ConfigKey("[Soundcard]","DeviceHeadRight"), ConfigValue(ComboBoxSoundcardHeadRight->currentText()));
-
-    QString temp = ComboBoxSamplerates->currentText();
-    //temp.truncate(temp.length()-3);
-    config->set(ConfigKey("[Soundcard]","Samplerate"), ConfigValue(temp));
-    //config->set(ConfigKey("[Soundcard]","Bits"), ConfigValue(ComboBoxBits->currentText()));
-     config->set(ConfigKey("[Soundcard]","Latency"), ConfigValue(getSliderLatencyMsec(SliderLatency->value())));
-//    config->set(ConfigKey("[Soundcard]","SoundQuality"), ConfigValue(2+4-SliderSoundQuality->value()));
+    config->set(ConfigKey("[Soundcard]","Samplerate"), ConfigValue(ComboBoxSamplerates->currentText()));
+    config->set(ConfigKey("[Soundcard]","Latency"), ConfigValue(getSliderLatencyMsec(SliderLatency->value())));
     
     if (checkBoxPitchIndp->isChecked())
         config->set(ConfigKey("[Soundcard]","PitchIndpTimeStretch"), ConfigValue(1));
     else
         config->set(ConfigKey("[Soundcard]","PitchIndpTimeStretch"), ConfigValue(0));
      
-        
-    //qDebug("request msec %i", getSliderLatencyMsec(SliderLatency->value()));
+    qDebug("request msec %i", getSliderLatencyMsec(SliderLatency->value()));
     
     // Close devices, and open using config data
     player->close();
@@ -247,33 +214,7 @@ void DlgPrefSound::slotApply()
     if (config->getValueString(ConfigKey("[Soundcard]","SoundApi"))=="None" || !player->open())
         QMessageBox::warning(0, "Configuration error","Audio device could not be opened");
     else
-    {
-        // Because the latency value configured with PortAudio, is not necessary what is actually
-        // used, it is read again 500 msec after the open
-        m_qTimer.start(500, true);
-        
-        // Configuration values might have changed after the opening of the player,
-        // so ensure the form is updated...
         slotUpdate();
-    }
-    
-}
-
-void DlgPrefSound::slotQueryLatency()
-{
-    int iLatencyMsec = (int)ceil(1000.*((float)Player::getBufferSize()/((float)EngineObject::getPlaySrate())));
-    qDebug("got latency msec %i, buffer size %i, config latency %i",iLatencyMsec,Player::getBufferSize(), 
-           config->getValueString(ConfigKey("[Soundcard]","Latency")).toInt());
-    
-    // Only correct latency slider if it's more than two milliseconds off the actual value.
-    // By changing the latency sliders value, the device is closed and opened again, and this
-    // function will thus be called again, resulting in a loop
-    if (config->getValueString(ConfigKey("[Soundcard]","SoundApi"))!="None" &&
-        abs(iLatencyMsec-config->getValueString(ConfigKey("[Soundcard]","Latency")).toInt())>2)
-    {
-        config->set(ConfigKey("[Soundcard]","Latency"), ConfigValue(iLatencyMsec));
-        slotUpdate();
-    }
 }
 
 void DlgPrefSound::slotApplyApi()
@@ -306,11 +247,3 @@ void DlgPrefSound::slotLatencySliderChange(int)
     if (!m_bLatencySliderDrag)
         slotApply();
 }
-
-/*
-void DlgPrefSound::slotHeadphoneMute(int state)
-{
-    config->set(ConfigKey("[Soundcard]","HeadphoneMute"),ConfigValue(state));
-    m_pControlObjectHeadphoneMute->queueFromThread(state);
-}
-*/

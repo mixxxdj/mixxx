@@ -651,7 +651,7 @@ void EngineBuffer::slotControlBeatSync(double)
             fRateScale = (fOtherBpm*(1.+m_pOtherEngineBuffer->getRate()))/fThisBpm;
 
         // Ensure the rate is within resonable boundaries
-        if (fRateScale<2. & fRateScale>0.5)
+        if (fRateScale<2. && fRateScale>0.5)
         {
             // Adjust the rate:
             fRateScale = (fRateScale-1.)/m_pRateRange->get();
@@ -896,10 +896,9 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBuff
         //qDebug("rate: %f, filepos_play: %f, file_length_old %i",rate, filepos_play, file_length_old);
 
         if ((rate==0.) || (filepos_play==0. && backwards) ||
-            (file_length_old!=0 && filepos_play==(float)file_length_old && !backwards))
+            (filepos_play==(float)file_length_old && !backwards))
         {
-			if (!m_bLastBufferPaused)
-				rampOut(pOut, iBufferSize);
+    		rampOut(pOut, iBufferSize);
             bCurBufferPaused = true;
         }
         else
@@ -1299,7 +1298,7 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBuff
     m_bLastBufferPaused = bCurBufferPaused;
 
     m_fLastSampleValue = pOutput[iBufferSize-1];
-    qDebug("last %f",m_fLastSampleValue);
+//    qDebug("last %f",m_fLastSampleValue);
 
     //for (int i=0; i<iBufferSize; ++i)
     //    qDebug("%f", pOutput[i]);

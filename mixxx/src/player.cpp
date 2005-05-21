@@ -61,6 +61,9 @@ Player::~Player()
     //
     // HACK: Write recorded sound
     //
+
+    qDebug("Writing output to file... please wait!");
+
     // Setup file format
     AFfilesetup outputSetup = afNewFileSetup();
     afInitFileFormat(outputSetup, AF_FILE_WAVE);
