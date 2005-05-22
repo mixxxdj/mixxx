@@ -26,7 +26,8 @@
 
 /** Fragment length in seconds */
 const float kfRealSearchFragmentLength = 1.;
-  
+
+class ControlObject;
   
 class EngineBufferScaleReal : public EngineBufferScale  
 {
@@ -40,6 +41,7 @@ public:
     CSAMPLE *scale(double playpos, int buf_size, float *pBase=0, int iBaseLength=0);
 
 private:
+    ControlObject *m_pControlObjectSampleRate;
     /** Buffer to hold fragment */
     float *m_pFragmentBuffer;
     int m_iFragmentPlaypos;

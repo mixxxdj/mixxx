@@ -92,7 +92,8 @@ MixxxApp::MixxxApp(QApplication *a, QStringList files, QSplashScreen *pSplash, Q
         pSplash->message("Setting up sound engine...",Qt::AlignLeft|Qt::AlignBottom);
     
     // Sample rate used by Player object
-    new ControlObject(ConfigKey("[Master]","samplerate"));
+    ControlObject *p = new ControlObject(ConfigKey("[Master]","samplerate"));
+    p->set(44100.);
 
     // Master rate
     new ControlPotmeter(ConfigKey("[Master]","rate"),-1.,1.);

@@ -36,7 +36,7 @@ public:
       * class. */
     virtual bool initialize() = 0;
     /** Returns the current buffer size (total latency) used by the playback system */
-    static short int getBufferSize();
+    //static short int getBufferSize();
     /** Set EngineMaster object */
     static void setMaster(EngineMaster *pMaster);
     /** Open devices according to config database, and start audio stream.
@@ -68,10 +68,8 @@ protected:
     static short int m_iChannels;
     /** Pointer to object holding sample rate */
     ControlObject *m_pControlObjectSampleRate;
+    /** Pointer to object holding latency */
+    ControlObject *m_pControlObjectLatency;
 };
 
 #endif
-
-
-
-

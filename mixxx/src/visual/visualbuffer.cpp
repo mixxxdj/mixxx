@@ -19,11 +19,13 @@
 #include "../readerextract.h"
 #include "../readerevent.h"
 #include "../controlobject.h"
+#include "../controlobjectthreadmain.h"
 #include "../defs.h"
 #include "../engineobject.h"
 #include "player.h"
 #include "../enginebuffer.h"
 #include "../mathstuff.h"
+
 
 VisualBuffer::VisualBuffer(EngineBuffer *pEngineBuffer, const char *group)
 {
@@ -32,7 +34,9 @@ VisualBuffer::VisualBuffer(EngineBuffer *pEngineBuffer, const char *group)
     m_pReaderExtract = 0;
     m_pEngineBuffer = pEngineBuffer;
     
-    m_pRate = ControlObject::getControl(ConfigKey(group, "rateEngine"));
+
+    m_pSampleRate = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey("[Master]","samplerate")));
+    m_pLatency = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey("[Master]","latency")));
     
     m_pSource = 0;
 
@@ -42,7 +46,7 @@ VisualBuffer::VisualBuffer(EngineBuffer *pEngineBuffer, const char *group)
     m_fDisplayFactor = 1.;
     
     // Length of this buffer. 
-    m_iLen = MAXDISPLAYRATE*READBUFFERSIZE/(pEngineBuffer->getPlaySrate());
+    m_iLen = MAXDISPLAYRATE*READBUFFERSIZE/(m_pSampleRate->get());
     if (!even(m_iLen))
         m_iLen--;
     m_iSourceLen = m_iLen;
@@ -73,6 +77,9 @@ VisualBuffer::VisualBuffer(ReaderExtract *pReaderExtract, EngineBuffer *pEngineB
     m_pReaderExtract = pReaderExtract;
     m_pEngineBuffer = pEngineBuffer;
 
+    m_pSampleRate = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey("[Master]","samplerate")));
+    m_pLatency = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey("[Master]","latency")));
+
     Q_ASSERT(m_pReaderExtract);
 
     // Get length and pointer to buffer in ReaderExtract
@@ -91,6 +98,8 @@ VisualBuffer::VisualBuffer(ReaderExtract *pReaderExtract, EngineBuffer *pEngineB
  */
 VisualBuffer::~VisualBuffer()
 {
+    delete m_pSampleRate;
+    delete m_pEngineBuffer;
     delete [] m_pBuffer;
 }
 
@@ -141,7 +150,7 @@ bufInfo VisualBuffer::getVertexArray()
     Q_ASSERT(m_dBufferPlaypos>=0.);
     
     // Convert playpos (minus latency) to DISPLAYRATE
-    float fPos = ((((m_dBufferPlaypos-Player::getBufferSize())/m_fReaderExtractFactor)/m_fResampleFactor)-(float)m_iDisplayLen/2.f);
+    float fPos = ((((m_dBufferPlaypos/m_fReaderExtractFactor)/m_fResampleFactor)-m_pLatency->get()*MAXDISPLAYRATE)-(float)m_iDisplayLen/2.f);
 
     //qDebug("pos %f, corrected %f", m_pPlaypos->getValue(), getCorrectedPlaypos());
 

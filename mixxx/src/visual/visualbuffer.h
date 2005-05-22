@@ -38,7 +38,7 @@ const int MAXDISPLAYRATE = 100;
 
 class ReaderExtract;
 class EngineBuffer;
-class ControlObject;
+class ControlObjectThreadMain;
 
 typedef struct
 {
@@ -74,8 +74,10 @@ public slots:
 protected:
     /** This is used to validate the error state of openGL. */
     void validate();
-    /** Pointer to rate control object */
-    ControlObject *m_pRate;
+    /** Pointer to sample rate control object */
+    ControlObjectThreadMain *m_pSampleRate;
+    /** Pointer to latency control object */
+    ControlObjectThreadMain *m_pLatency;
     /** Pointer to the actual buffer, an openGL vertex array */
     GLfloat *m_pBuffer;
     /** Pointer to source buffer from ReaderExtract */

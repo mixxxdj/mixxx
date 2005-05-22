@@ -31,13 +31,13 @@ public:
     EngineObject();
     virtual ~EngineObject();
     virtual void process(const CSAMPLE *pIn, const CSAMPLE *pOut, const int iLen) = 0;
-    static int getPlaySrate();
+//    static int getPlaySrate();
 
-protected:
-    void setPlaySrate(int srate);
+//protected:
+//    void setPlaySrate(int srate);
 
-private:
-    static int PLAY_SRATE;
+//private:
+//    static int PLAY_SRATE;
 };
 
 

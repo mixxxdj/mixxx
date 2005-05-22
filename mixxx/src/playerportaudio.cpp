@@ -252,11 +252,9 @@ bool PlayerPortAudio::open()
 
     m_devId = id;
 
-    // Update SRATE in EngineObject
-    setPlaySrate(iSrate);
+    // Update SRATE and Latency ControlObjects
     m_pControlObjectSampleRate->queueFromThread((double)iSrate);
-    
-    m_iBufferSize = 0;
+    m_pControlObjectLatency->queueFromThread((double)iLatencyMSec);
 
     // Start stream
     err = Pa_StartStream(m_pStream);
@@ -447,8 +445,8 @@ PaDeviceID PlayerPortAudio::getChannelNo(QString name)
 
 int PlayerPortAudio::callbackProcess(int iBufferSize, float *out)
 {
-    if (m_iBufferSize==0)
-        m_iBufferSize = iBufferSize*m_iNumberOfBuffers;
+    //if (m_iBufferSize==0)
+    //    m_iBufferSize = iBufferSize*m_iNumberOfBuffers;
     
     float *tmp = prepareBuffer(iBufferSize);
     float *output = out;

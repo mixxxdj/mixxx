@@ -114,22 +114,22 @@ void EngineFilterIIR::process(const CSAMPLE *pIn, const CSAMPLE *pOut, const int
 		}
     }
 
-    // Check for denormals
+// Check for denormals
 #ifndef __MACX__
     for (i=0; i<=order; ++i)
     {
-		xv1[i] = xv1[i] + id;
+        /*
+        xv1[i] = xv1[i] + id;
 		yv1[i] = yv1[i] + id;
 		xv2[i] = xv2[i] + id;
 		yv2[i] = yv2[i] + id;
 		id = -id;
+        */
 
-	/*
         xv1[i] = zap_denormal(xv1[i]);
         yv1[i] = zap_denormal(yv1[i]);
         xv2[i] = zap_denormal(xv2[i]);
         yv2[i] = zap_denormal(yv2[i]);
-	*/
     }
 #endif
 }

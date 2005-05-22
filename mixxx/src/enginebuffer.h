@@ -174,7 +174,7 @@ private:
     ControlPotmeter *rateSlider, *m_pRateSearch;
     ControlTTRotary *wheel, *m_pControlScratch;
     ControlPotmeter *playposSlider;
-    ControlObject *m_pFileBpm;
+    ControlObject *m_pFileBpm, *m_pSampleRate;
                         
     /** Mutex used in sharing buffer and abs playpos */
     QMutex m_qPlayposMutex;

@@ -46,6 +46,7 @@ Player::Player(ConfigObject<ConfigValue> *pConfig)
     m_pConfig = pConfig;
     m_pBuffer = new CSAMPLE[MAX_BUFFER_LEN];
     m_pControlObjectSampleRate = ControlObject::getControl(ConfigKey("[Master]","samplerate"));
+    m_pControlObjectLatency = new ControlObject(ConfigKey("[Master]","latency"));;
 }
 
 /* -------- ------------------------------------------------------
@@ -67,7 +68,7 @@ Player::~Player()
     // Setup file format
     AFfilesetup outputSetup = afNewFileSetup();
     afInitFileFormat(outputSetup, AF_FILE_WAVE);
-    afInitRate(outputSetup, AF_DEFAULT_TRACK, getPlaySrate());
+    afInitRate(outputSetup, AF_DEFAULT_TRACK, m_pControlObjectSampleRate->get());
     afInitChannels(outputSetup, AF_DEFAULT_TRACK, 2);
     afInitSampleFormat (outputSetup, AF_DEFAULT_TRACK, AF_SAMPFMT_TWOSCOMP, 16);
     //afInitByteOrder (outputSetup, AF_DEFAULT_TRACK, AF_BYTEORDER_BIGENDIAN);
@@ -85,6 +86,7 @@ Player::~Player()
 #endif
 }
 
+/*
 short int Player::getBufferSize()
 {
 //     if (m_iChannels>0)
@@ -92,6 +94,7 @@ short int Player::getBufferSize()
 //     else
         return m_iBufferSize;
 }
+*/
 
 void Player::setMaster(EngineMaster *pMaster)
 {
