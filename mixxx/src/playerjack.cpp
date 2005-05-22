@@ -201,6 +201,11 @@ bool PlayerJack::open()
         // Set currently used latency in config database
         int msec = (int)(1000.*(float)m_iBufferSize/((float)(*it).toInt()));
         m_pConfig->set(ConfigKey("[Soundcard]","Latency"), ConfigValue(msec));
+
+        // Update SRATE and Latency ControlObjects
+        m_pControlObjectSampleRate->queueFromThread((double)ConfigValue((*it)));
+        m_pControlObjectLatency->queueFromThread((double)msec);
+
     }
 
     m_bOpen = true;

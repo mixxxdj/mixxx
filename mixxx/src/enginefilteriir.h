@@ -23,7 +23,7 @@
 class EngineFilterIIR : public EngineObject 
 {
 public:
-    EngineFilterIIR(const double *coefs, int order);
+    EngineFilterIIR(const double *pCoefs, int iOrder);
     ~EngineFilterIIR();
     void process(const CSAMPLE *pIn, const CSAMPLE *pOut, const int iBufferSize);
 protected:

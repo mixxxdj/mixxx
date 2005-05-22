@@ -142,8 +142,6 @@ bool PlayerPortAudio::open()
     // Frame size...    
     int iFramesPerBuffer = iLatencySamples/m_iNumberOfBuffers;
 
-    
-
     // Ensure the chosen configuration is valid
     if (m_iNumberOfBuffers<Pa_GetMinNumBuffers(iFramesPerBuffer,iSrate))
     {
