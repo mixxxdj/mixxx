@@ -681,7 +681,10 @@ int PlayerALSA::set_hwparams()
             (int) buffer_size, (int) (buffer_size / (rrate * 1e-6)),
             (int) period_size, (int) (period_size / (rrate * 1e-6)));
     
-    m_iBufferSize = buffer_size; // send back latency value
+    // Update SRATE and Latency ControlObjects
+    m_pControlObjectSampleRate->queueFromThread((double)rrate);
+    m_pControlObjectLatency->queueFromThread((double)buffer_time/1000.);
+
     return 0;
 }
 

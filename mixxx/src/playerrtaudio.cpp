@@ -148,20 +148,22 @@ bool PlayerRtAudio::open()
     // Sample rate
     int iSrate = m_pConfig->getValueString(ConfigKey("[Soundcard]","Samplerate")).toInt();
 
-    // Setup latency
-    int iFramesPerBuffer;
-    int iLatency = (int)((float)iSrate*iChannels*(m_pConfig->getValueString(ConfigKey("[Soundcard]","Latency")).toFloat()/1000.));
+    // Get latency in msec
+    int iLatencyMSec = m_pConfig->getValueString(ConfigKey("[Soundcard]","Latency")).toInt();
+
+    // Latency in samples
+    int iLatencySamples = (int)((float)(iSrate*iChannels)/1000.f*(float)iLatencyMSec);
 
     // Apply simple rule to determine number of buffers
-    if (iLatency/kiMaxFrameSize<2)
+    if (iLatencySamples/kiMaxFrameSize<2)
         m_iNumberOfBuffers = 2;
     else
-        m_iNumberOfBuffers = iLatency/kiMaxFrameSize;
+        m_iNumberOfBuffers = iLatencySamples/kiMaxFrameSize;
 
     // Frame size...
-    iFramesPerBuffer = iLatency/m_iNumberOfBuffers;
+    int iFramesPerBuffer = iLatencySamples/m_iNumberOfBuffers;
 
-    qDebug("id %i, sr %i, ch %i, bufsize %i, bufno %i", id, iSrate, iChannels, iFramesPerBuffer, m_iNumberOfBuffers);
+    qDebug("RtAudio: id %i, sr %i, ch %i, bufsize %i, bufno %i", id, iSrate, iChannels, iFramesPerBuffer, m_iNumberOfBuffers);
 
     if (id<1)
     {
@@ -172,6 +174,10 @@ bool PlayerRtAudio::open()
     // Start playback
     try
     {
+        // Update SRATE and Latency ControlObjects
+        m_pControlObjectSampleRate->queueFromThread((double)iSrate);
+        m_pControlObjectLatency->queueFromThread((double)iLatencyMSec);
+
         // Open stream
         m_pRtAudio->openStream(id, iChannels, 0, 0, RTAUDIO_FLOAT32, iSrate, &iFramesPerBuffer, m_iNumberOfBuffers);
 
@@ -180,12 +186,6 @@ bool PlayerRtAudio::open()
 
         m_iChannels = iChannels;
         m_devId = id;
-
-        // Update SRATE ControlObject
-        //setPlaySrate(iSrate);
-        m_pControlObjectSampleRate->set((double)iSrate);
-        m_pControlObjectLatency->set((double)iLatency);
-
 
         // Start playback
         m_pRtAudio->startStream();

@@ -16,13 +16,10 @@
 
 #include "enginefilteriir.h"
 
-EngineFilterIIR::EngineFilterIIR(const double *coefs, int order)
+EngineFilterIIR::EngineFilterIIR(const double *pCoefs, int iOrder)
 {
-	// Used to avoid denormalization on Intel CPUs
-    id = 1.0e-18;
-
-	this->order = order;
-    this->coefs = coefs;
+	order = iOrder;
+    coefs = pCoefs;
 
     // Reset the yv's:
     for (int i=0; i<=order; ++i)
