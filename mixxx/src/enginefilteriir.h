@@ -29,7 +29,7 @@ public:
 protected:
     int order;
 	/** Used to avoid denormalization on Intel CPUs */
-	double id;
+	float id;
     const double *coefs;
     #define MAXNZEROS 8 
     #define MAXNPOLES 8 

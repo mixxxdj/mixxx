@@ -27,7 +27,7 @@
 
 /** Maximum frame size used with PortAudio. Used to determine no of buffers
   * when setting latency */
-const int kiMaxFrameSize = 16;
+const int kiMaxFrameSize = 1024;
 
 class PlayerPortAudio : public Player  {
 public:

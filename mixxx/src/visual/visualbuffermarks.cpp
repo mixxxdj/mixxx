@@ -76,7 +76,7 @@ void VisualBufferMarks::slotUpdateCuePoint(double v)
         //qDebug("cue %f, play %f",m_pCuePoint->get(),m_pAbsPlaypos->get());
         float fCuediff = m_dAbsPlaypos-v;
         float fCuePos = m_dBufferPlaypos-fCuediff;
-        fCuePos = ((fCuePos-Player::getBufferSize())/m_fReaderExtractFactor)/m_fResampleFactor;
+        fCuePos = ((fCuePos/m_fReaderExtractFactor)/m_fResampleFactor)-m_pLatency->get()*MAXDISPLAYRATE;
         while (fCuePos<0)
             fCuePos += (float)m_iLen;
         m_iCuePosition = (int)fCuePos;

@@ -181,9 +181,11 @@ bool PlayerRtAudio::open()
         m_iChannels = iChannels;
         m_devId = id;
 
-        // Update SRATE in EngineObject
-        setPlaySrate(iSrate);
-        m_pControlObjectSampleRate->queueFromThread((double)iSrate);
+        // Update SRATE ControlObject
+        //setPlaySrate(iSrate);
+        m_pControlObjectSampleRate->set((double)iSrate);
+        m_pControlObjectLatency->set((double)iLatency);
+
 
         // Start playback
         m_pRtAudio->startStream();
@@ -401,7 +403,7 @@ int PlayerRtAudio::getChannelNo(QString name)
 
 int PlayerRtAudio::callbackProcess(int iBufferSize, float *out)
 {
-    m_iBufferSize = iBufferSize*m_iNumberOfBuffers;
+    //m_iBufferSize = iBufferSize*m_iNumberOfBuffers;
 
     float *tmp = prepareBuffer(iBufferSize);
     float *output = out;

@@ -180,6 +180,9 @@ EngineBuffer::EngineBuffer(const char *_group)
     
     m_pEngineBufferCue = new EngineBufferCue(group, this);
     
+    // Sample rate
+    m_pSampleRate = ControlObject::getControl(ConfigKey("[Master]","samplerate"));
+
     // Control file changed
 //    filechanged = new ControlEngine(controlfilechanged);
 //    filechanged->setNotify(this,(EngineMethod)&EngineBuffer::newtrack);
@@ -754,7 +757,7 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBuff
         if (reverseButton->get()==1.)
             dir = -1.;
 
-        double baserate = ((double)file_srate_old/(double)getPlaySrate());
+        double baserate = ((double)file_srate_old/m_pSampleRate->get());
         //qDebug("baserate %f",baserate);
         
         /*
@@ -1192,7 +1195,7 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBuff
 
             // Update playpos slider and bpm display if necessary
             m_iSamplesCalculated += iBufferSize;
-            if (m_iSamplesCalculated > (getPlaySrate()/UPDATE_RATE))
+            if (m_iSamplesCalculated > (m_pSampleRate->get()/UPDATE_RATE))
             {
                 if (file_length_old!=0.)
                 {

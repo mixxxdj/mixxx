@@ -19,9 +19,11 @@
 #include "mathstuff.h"
 #include "readerextractwave.h"
 #include "engineobject.h"
+#include "controlobject.h"
 
 EngineBufferScaleReal::EngineBufferScaleReal(ReaderExtractWave *wave) : EngineBufferScale(wave)
 {
+    m_pControlObjectSampleRate = ControlObject::getControl(ConfigKey("[Master]","samplerate"));
     m_pFragmentBuffer = new float[(int)(96000.*2.*kfRealSearchFragmentLength)];
     m_dBaseRate = 1.;
     m_dTempo = 1.;
@@ -72,7 +74,7 @@ CSAMPLE *EngineBufferScaleReal::scale(double playpos, int buf_size, float *pBase
     }
 
     // Copy samples to fragment buffer if necessary
-    int iWantedFragmentLength = (int)((float)EngineObject::getPlaySrate()*kfRealSearchFragmentLength)*2;
+    int iWantedFragmentLength = (int)(m_pControlObjectSampleRate->get()*kfRealSearchFragmentLength)*2;
     
     //qDebug("len %i, want %i, pos %i, tempo %f", m_iFragmentLength, iWantedFragmentLength, m_iFragmentPlaypos, m_dTempo);
     
