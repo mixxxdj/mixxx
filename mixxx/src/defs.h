@@ -57,7 +57,13 @@ static CSAMPLE two_pi = (2.f*acos(-1.f));
 // otherwise sets x equal to 0.
 inline double zap_denormal(double x)
 {
-    double absx = fabs(x);
+    // fabs too slow on Windows...
+    double absx;
+    if (x<0)
+        absx = -x;
+    else
+        absx = x;
+
     return (absx > 1e-15f && absx < 1e15f) ? x : 0.f;
 }
 

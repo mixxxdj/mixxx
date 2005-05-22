@@ -28,8 +28,6 @@ public:
     void process(const CSAMPLE *pIn, const CSAMPLE *pOut, const int iBufferSize);
 protected:
     int order;
-	/** Used to avoid denormalization on Intel CPUs */
-	float id;
     const double *coefs;
     #define MAXNZEROS 8 
     #define MAXNPOLES 8 
