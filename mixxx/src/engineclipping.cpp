@@ -34,12 +34,11 @@ void EngineClipping::process(const CSAMPLE *pIn, const CSAMPLE *pOut, const int 
 
     CSAMPLE *pOutput = (CSAMPLE *)pOut;
     
-    int iSamplesClipped = 0; 
-    
     if (pIn==pOut)
     {
         for (int i=0; i<iBufferSize; ++i) 
         {
+/*
             CSAMPLE fTmp = pIn[i];
             if ((fTmp>kfClip) || (fTmp<-kfClip)) 
             {
@@ -48,14 +47,20 @@ void EngineClipping::process(const CSAMPLE *pIn, const CSAMPLE *pOut, const int 
                     sign = -1;
                 pOutput[i] = sign*(kfMaxAmp - ((kfMaxAmp-kfClip)*(kfMaxAmp-kfClip)) /
                                    ((kfMaxAmp-2.*kfClip)+sign*pIn[i]));
-                iSamplesClipped++;
             } 
+*/
+
+            if (pIn[i]>kfMaxAmp)
+                pOutput[i] = kfMaxAmp;
+            else if (pIn[i]<-kfMaxAmp)
+                pOutput[i] = -kfMaxAmp;
         }
     }
     else
     {
         for (int i=0; i<iBufferSize; ++i) 
         {
+/*
             CSAMPLE fTmp = pIn[i];
             if ((fTmp>kfClip) || (fTmp<-kfClip)) 
             {
@@ -64,8 +69,14 @@ void EngineClipping::process(const CSAMPLE *pIn, const CSAMPLE *pOut, const int 
                     sign = -1;
                 pOutput[i] = sign*(kfMaxAmp - ((kfMaxAmp-kfClip)*(kfMaxAmp-kfClip)) /
                                    ((kfMaxAmp-2.*kfClip)+sign*pIn[i]));
-                iSamplesClipped++;
             } 
+            else
+                pOutput[i] = pIn[i];
+*/
+            if (pIn[i]>kfMaxAmp)
+                pOutput[i] = kfMaxAmp;
+            else if (pIn[i]<-kfMaxAmp)
+                pOutput[i] = -kfMaxAmp;
             else
                 pOutput[i] = pIn[i];
         }

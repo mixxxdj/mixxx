@@ -19,7 +19,7 @@
 EngineFilterIIR::EngineFilterIIR(const double *coefs, int order)
 {
 	// Used to avoid denormalization on Intel CPUs
-    id = 1.0e-25;
+    id = 1.0e-18;
 
 	this->order = order;
     this->coefs = coefs;
@@ -118,14 +118,6 @@ void EngineFilterIIR::process(const CSAMPLE *pIn, const CSAMPLE *pOut, const int
 #ifndef __MACX__
     for (i=0; i<=order; ++i)
     {
-        /*
-        xv1[i] = xv1[i] + id;
-		yv1[i] = yv1[i] + id;
-		xv2[i] = xv2[i] + id;
-		yv2[i] = yv2[i] + id;
-		id = -id;
-        */
-
         xv1[i] = zap_denormal(xv1[i]);
         yv1[i] = zap_denormal(yv1[i]);
         xv2[i] = zap_denormal(xv2[i]);
