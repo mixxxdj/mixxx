@@ -155,7 +155,7 @@ void Track::writeXML(QString location)
     QDomDocument domXML( "Mixxx_Track_List" );
 
     // Ensure UTF16 encoding
-    domXML.appendChild(domXML.createProcessingInstruction("xml","version=\" 1.0 \" encoding=\"UTF-16\""));
+    domXML.appendChild(domXML.createProcessingInstruction("xml","version=\"1.0\" encoding=\"UTF-16\""));
 
     // Set the document type
     QDomElement elementRoot = domXML.createElement( "Mixxx_Track_List" );
