@@ -35,7 +35,7 @@ ParserPls::~ParserPls()
 
 QPtrList<QString> * ParserPls::parse(QString sFilename)
 {
-    long numEntries =0;
+    //long numEntries =0;
     QFile * file = new QFile(sFilename);
 
     clearLocations();
@@ -44,16 +44,24 @@ QPtrList<QString> * ParserPls::parse(QString sFilename)
 
         QTextStream * textstream = new QTextStream( file );
 
-        numEntries = getNumEntries(textstream);
+        //numEntries = getNumEntries(textstream);
 
-        while(numEntries!=0){
+        //delete textstream;
+
+        //textstream = new QTextStream( file );
+
+        while(true){
 
             QString * psLine = new QString(getFilepath(textstream));
-
-            if((*psLine) != "NULL" || !psLine->isNull())
+            
+            const char * test = psLine->latin1();
+            
+            if(!(psLine->contains("NULL")))
                 m_psLocations->append(psLine);
+            else
+                break;
 
-            --numEntries;
+            //--numEntries;
         }
 
         file->close();
@@ -77,7 +85,9 @@ long ParserPls::getNumEntries(QTextStream * stream)
 
     if(textline.contains("[playlist]")){
 
-        textline = stream->readLine();
+        while(!textline.contains("NumberOfEntries"))
+            textline = stream->readLine();
+        
         QString temp = textline.section("=",-1,-1);
 
         return temp.toLong();
@@ -92,18 +102,19 @@ long ParserPls::getNumEntries(QTextStream * stream)
 
 QString ParserPls::getFilepath(QTextStream * stream)
 {
-    QString textline = "";
+    QString textline,filename = "";
 
-    while(!(textline = stream->readLine()).contains("File"));
+    while(!(textline = stream->readLine()).isNull())
 
+        if(textline.contains("File"))
+        {
 
-    int iPos = textline.find("=",0);
-    ++iPos;
+            int iPos = textline.find("=",0);
+            ++iPos;
 
-    QString filename = "";
-
-
-    filename = textline.right(textline.length()-iPos);
+            filename = textline.right(textline.length()-iPos);
+            break;
+        }
 
     if(isFilepath(filename))
         return filename;
