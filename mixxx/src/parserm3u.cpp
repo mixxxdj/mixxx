@@ -84,11 +84,17 @@ QPtrList<QString> * ParserM3u::parse(QString sFilename)
 
 QString ParserM3u::getFilepath(QTextStream * stream)
 {
-    QString textline = "";
+    QString textline,filename = "";
 
-    while((textline = stream->readLine()).contains("#"));
-
-    QString filename = textline;
+    while(textline = stream->readLine()){
+        if(textline.isNull())
+            break;
+        
+        if(!textline.contains("#")){
+            filename = textline;
+            break;
+        }
+    }
 
     if(isFilepath(filename))
         return filename;
