@@ -598,8 +598,13 @@ int PlayerALSA::set_hwparams()
     }
 
 #ifndef PLAYERTEST
-    setPlaySrate(rrate);
+//     setPlaySrate(rrate);
+//     m_pControlObjectSampleRate->queueFromThread((double)rrate);
+
+    // Update SRATE and Latency ControlObjects
     m_pControlObjectSampleRate->queueFromThread((double)rrate);
+//     m_pControlObjectLatency->queueFromThread((double)iLatencyMSec);
+// 
 #endif
 
     /* set the buffer time */

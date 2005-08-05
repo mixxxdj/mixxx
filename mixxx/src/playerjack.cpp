@@ -203,7 +203,7 @@ bool PlayerJack::open()
         m_pConfig->set(ConfigKey("[Soundcard]","Latency"), ConfigValue(msec));
 
         // Update SRATE and Latency ControlObjects
-        m_pControlObjectSampleRate->queueFromThread((double)ConfigValue((*it)));
+        m_pControlObjectSampleRate->queueFromThread((double)((*it).toInt()));
         m_pControlObjectLatency->queueFromThread((double)msec);
 
     }
@@ -324,7 +324,7 @@ int PlayerJack::callbackProcess(int iBufferSize)
 
 void PlayerJack::callbackSetSrate(int srate)
 {
-    setPlaySrate(srate);
+//    setPlaySrate(srate);
     m_pControlObjectSampleRate->queueFromThread((double)srate);
 }
 
