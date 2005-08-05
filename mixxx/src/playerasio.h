@@ -1,110 +1,133 @@
-/***************************************************************************
-                          playerasio.h  -  description
-                             -------------------
-    begin                : Sat Dec 6 2003
-    copyright            : (C) 2003 by Beranger Enselme-Trichard
-    email                : 
- ***************************************************************************/
+// PlayerAsio.h: interface for the PlayerAsio class.
+//
+//////////////////////////////////////////////////////////////////////
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
-
-
-#ifndef PLAYERASIO_H
-#define PLAYERASIO_H
-
+#include <qobject.h>
+#include <qmutex.h>
+#include <qsignal.h>
+#include <vector>
+#include <stdlib.h>
+#include <stdio.h>
 #include "player.h"
-#include <asiosys.h>
-#include <asio.h>
-#ifdef UNICODE
-  #undef UNICODE
-  #define WAS_UNICODE
-#endif
-#include <asiodrivers.h>
-#ifdef WAS_UNICODE
-  #define UNICODE
-  #undef WAS_UNICODE
-#endif
+#include "asiosys.h"
+#include "asio.h"
+#include "asiodrivers.h"
 
 
-#define MAX_ASIO_DRIVERS = 32;
+
+#if !defined(PlayerAsio_H)
+#define PlayerAsio_H
+
+void __cdecl bufferSwitch(long index, ASIOBool processNow);
+long __cdecl asioMessages(long selector, long value, void* message, double* opt);
+void __cdecl sampleRateChanged(ASIOSampleRate sRate);
+ASIOTime* __cdecl bufferSwitchTimeInfo(ASIOTime *timeInfo, long index, ASIOBool processNow);
 
 enum {
-	// number of input and outputs supported by the host application
-	kMaxInputChannels = 0,
-	kMaxOutputChannels = 4
+    // number of input and outputs supported by the host application
+    // you can change these to higher or lower values
+    kMaxInputChannels = 0,
+    kMaxOutputChannels = 4
 };
 
 
-class PlayerAsio : public Player  {
+// internal data storage
+typedef struct DriverInfo
+{
+    
+    ASIODriverInfo driverInfo;
+    
+    
+    long           inputChannels;
+    long           outputChannels;
+    
+    
+    long           minSize;
+    long           maxSize;
+    long           preferredSize;
+    long           granularity;
+    
+    
+    ASIOSampleRate sampleRate;
+    
+    
+    bool           postOutput;
+    
+    
+    long           inputLatency;
+    long           outputLatency;
+    
+   
+    long inputBuffers;  // becomes number of actual created input buffers
+    long outputBuffers; // becomes number of actual created output buffers
+    ASIOBufferInfo bufferInfos[kMaxInputChannels + kMaxOutputChannels]; // buffer info's
+    
+    // ASIOGetChannelInfo()
+    ASIOChannelInfo channelInfos[kMaxInputChannels + kMaxOutputChannels]; // channel info's
+    
+    
+    double         nanoSeconds;
+    double         samples;
+    double         tcSamples;   // time code samples
+    
+    
+    ASIOTime       tInfo;           // time info state
+    unsigned long  sysRefTime;      // system reference time, when bufferSwitch() was called
+    
+  
+} DriverInfo;
+
+
+class PlayerAsio : public Player 
+{
+    
 public:
-    PlayerAsio(ConfigObject<ConfigValue> *config, ControlObject *pControl);
-    ~PlayerAsio();
+    
+    
+    PlayerAsio(ConfigObject<ConfigValue> *config);
+    virtual ~PlayerAsio();
+    
     bool initialize();
     bool open();
     void close();
-    void setDefaults();
+    void startAsio();
+    
+    int getBufferSize(void);
+    int getSampleRate(void);
+    int getChannelCount(void);
+    
     QStringList getInterfaces();
     QStringList getSampleRates();
+    
+    void setDefaults();
+    
     static QString getSoundApi() { return "ASIO"; }
     QString getSoundApiName() { return getSoundApi(); };
-    /** Satisfy virtual declaration in EngineObject */
+    
     void process(const CSAMPLE *, const CSAMPLE *, const int) { };
-	void processCallback(long bufferIndex);
-
+    void processCallback(long bufferIndex);
+    
+    
 private:
-    bool createBuffers();
-	void Output_Float32_Int16(int channelNumber, float* inputBuffer, short* outputBuffer, bool swap); 
-	void Output_Float32_Int32(int channelNumber, float* inputBuffer, long* outputBuffer, bool swap); 
-	void Output_Float32_Float32(int channelNumber, float* inputBuffer, float* outputBuffer, bool swap); 
+    bool initDriver(void);
 
-
-	// data...
-
+    void Output_Float32_Int16(int channelNumber, float* inputBuffer, short* outputBuffer, bool swap); 
+    void Output_Float32_Int32(int channelNumber, float* inputBuffer, float* outputBuffer, bool swap); 
+    void Output_Float32_Int24(int channelNumber, float* inputBuffer, float* outputBuffer, bool swap); 
+    void float32toInt24inPlace(float* buffer, long frames, bool swap);
+    void float32toInt32inPlace(float* buffer, long frames, bool swap);
+    void SwapBuffer(short* buffer);
+    
+    ASIOError create_asio_buffers (DriverInfo *asioDriverInfo);
+    long init_asio_static_data (DriverInfo *asioDriverInfo);
+    
+    AsioDrivers* driver;
     int m_reenter;
-
-	// ASIOInit()
-	ASIODriverInfo driverInfo;
-	// ASIOGetChannels()
-	long m_inputChannels;
-	long m_outputChannels;
-	// ASIOGetBufferSize()
-	long m_minBufferSize;
-	long m_maxBufferSize;
-	long m_preferredBufferSize;
-	long m_bufferGranularity;
-	// ASIOOutputReady()
-	bool m_postOutput;
-	// ASIOGetLatencies ()
-	long m_inputLatency;
-	long m_outputLatency;
-	// ASIOCreateBuffers ()
-	ASIOCallbacks m_asioCallbacks;
-	long m_inputBuffers;	// becomes number of actual created input buffers
-	long m_outputBuffers;   	// becomes number of actual created output buffers
-	ASIOBufferInfo m_bufferInfos[kMaxInputChannels + kMaxOutputChannels]; // buffer info's
-	// ASIOGetChannelInfo()
-	ASIOChannelInfo m_channelInfos[kMaxInputChannels + kMaxOutputChannels]; // channel info's
-	// The above two arrays share the same indexing, as the data in them are linked together
-    bool m_started;
-    bool m_buffersCreated;
+    bool driverIsLoaded;
+    int drvNum;
+    int bufferLength;
+    char* driverList[32];
+     
 };
 
-
-// ASIO callbacks
-static void bufferSwitch(long index, ASIOBool processNow);
-static ASIOTime *bufferSwitchTimeInfo(ASIOTime *timeInfo, long index, ASIOBool processNow);
-static void sampleRateChanged(ASIOSampleRate sRate);
-static long asioMessages(long selector, long value, void* message, double* opt);
-
-extern AsioDrivers* asioDrivers;
-
-
-
-#endif
+#endif 
