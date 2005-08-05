@@ -185,6 +185,9 @@ void VisualBufferSignal::draw(GLfloat *p, int iLen, float xscale)
     glVertexPointer(3, GL_FLOAT, 0, p);
     glDrawArrays(GL_TRIANGLE_STRIP,0,iLen);
 
+    // The following code for drawing beat marks is currently very slow and thus disabled 
+    return;
+
     //
     // Draw beat marks
     //
