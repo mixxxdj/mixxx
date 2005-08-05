@@ -30,7 +30,7 @@ class QDomNode;
 class WTrackTable;
 class WTrackTableItem;
 class WOverview;
-
+class ControlObject;
 
 class TrackInfoObject : public QObject
 {
@@ -139,6 +139,8 @@ public:
     TrackInfoObject *getPrev();
     /** Set corresponding overview widget */
     void setOverviewWidget(WOverview *p);
+    /** Set pointer to ControlObject holding BPM value in engine */
+    void setBpmControlObject(ControlObject *p);
 
 protected:
     bool eventFilter(QObject *o, QEvent *e);
@@ -201,6 +203,8 @@ private:
     WOverview *m_pOverviewWidget;
     /** True if object contains valid information */
     bool m_bIsValid;
+    /** Pointer to ControlObject of BPM value (only set when the track is loaded in a player */
+    ControlObject *m_pControlObjectBpm;
 };
 
 #endif

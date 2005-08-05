@@ -84,16 +84,6 @@ public:
     /** Set rate. This method must only be called when holding the enginelock
       * mutex */
     void setRate(double dRate);
-    /** Get beat first. This method must only be called when holding the enginelock
-      * mutex */
-    double getBeatFirst();
-    /** Get beat interval in samples. This method must only be called when holding the enginelock
-      * mutex */
-    double getBeatInterval();
-    /** Get BPM. This method must only be called when holding the enginelock
-      * mutex */
-    double getBpm();
-
 
 private:
     /** Main loop of the thread */

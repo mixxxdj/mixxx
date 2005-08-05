@@ -539,7 +539,7 @@ void EngineBuffer::slotControlEnd(double)
 
 void EngineBuffer::slotSetBpm(double bpm)
 {
-    double filebpm = reader->getBpm();
+    double filebpm = m_pFileBpm->get(); //reader->getBpm();
     
     if (filebpm!=0.)
         rateSlider->set(bpm/filebpm-1.);
@@ -729,10 +729,11 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBuff
             reader->setFileposPlay((long int)filepos_play);
             reader->setRate(rate_old);
 
-            m_dBeatFirst = reader->getBeatFirst();
-            m_dBeatInterval = reader->getBeatInterval();
-
             reader->unlock();
+
+            m_dBeatFirst = 0.;
+            m_dBeatInterval = (m_pFileBpm->get()/60.)*file_srate_old*2.;
+
             readerinfo = true;
         }
         //else
@@ -749,8 +750,7 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBuff
         // Find BPM adjustment factor
         double bpmrate = 1.;
 
-		// We can't afford to call getBpm here for every buffer (needs semaphor check in TrackInfoObject)
-        double filebpm = 120.; //reader->getBpm();
+        double filebpm = m_pFileBpm->get();
 
         // Determine direction of playback from reverse button
         double dir = 1.;

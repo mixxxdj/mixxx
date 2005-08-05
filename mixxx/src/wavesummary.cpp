@@ -215,10 +215,10 @@ void WaveSummary::run()
                 it1++;
             }           
             
-            // Set BPM
+            // Update BPM value in TrackInfoObject
             if (!pTrackInfoObject->getBpmConfirm())
                 pTrackInfoObject->setBpm(bpv->getBestBpmValue());
-            
+
             delete [] pBuffer;
             delete [] pDPsf;
             delete pPeaks;

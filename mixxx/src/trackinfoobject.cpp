@@ -26,6 +26,7 @@
 #include "xmlparse.h"
 #include <qdom.h>
 #include "wavesummaryevent.h"
+#include "controlobject.h"
 
 int TrackInfoObject::siMaxTimesPlayed = 1;
 
@@ -381,6 +382,8 @@ void TrackInfoObject::setBpm(float f)
         m_pTableItemBpm->setText(getBpmStr());
         m_pTableItemBpm->table()->updateCell(m_pTableItemBpm->row(), m_pTableItemBpm->col());
     }
+
+    setBpmControlObject(m_pControlObjectBpm);
 }
 
 QString TrackInfoObject::getBpmStr()
@@ -751,4 +754,12 @@ void TrackInfoObject::setOverviewWidget(WOverview *p)
 
     if (m_pOverviewWidget)
         p->setData(getWaveSummary(), getSegmentationSummary(), getDuration()*getSampleRate()*getChannels());
+}
+
+void TrackInfoObject::setBpmControlObject(ControlObject *p)
+{
+    m_pControlObjectBpm = p;
+
+    if (m_pControlObjectBpm)
+        p->queueFromThread(getBpm());
 }

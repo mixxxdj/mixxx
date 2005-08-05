@@ -153,30 +153,6 @@ void Reader::setRate(double dRate)
     m_dRate = dRate;
 }
 
-double Reader::getBeatFirst()
-{
-    if (m_pTrack)
-        return m_pTrack->getBeatFirst();
-    else
-        return 0.;
-}
-
-double Reader::getBeatInterval()
-{
-    if (m_pTrack)
-        return (m_pTrack->getBpm()/60.)*readerwave->getRate()*2.;
-    else
-        return 0.;
-}
-
-double Reader::getBpm()
-{
-    if (m_pTrack)
-        return m_pTrack->getBpm();
-    else
-        return 0.;
-}
-
 bool Reader::tryLock()
 {
     return enginelock.tryLock();

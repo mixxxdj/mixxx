@@ -345,7 +345,10 @@ void Track::slotTrackPopup(TrackInfoObject *pTrackInfoObject, int)
 void Track::slotLoadPlayer1(TrackInfoObject *pTrackInfoObject, bool bStartFromEndPos)
 {
     if (m_pTrackPlayer1)
+    {
         m_pTrackPlayer1->setOverviewWidget(0);
+        m_pTrackPlayer1->setBpmControlObject(0);
+    }
 
     m_pTrackPlayer1 = pTrackInfoObject;
 
@@ -370,11 +373,8 @@ void Track::slotLoadPlayer1(TrackInfoObject *pTrackInfoObject, bool bStartFromEn
     if (p) 
         p->queueFromThread(m_pTrackPlayer1->getBeatFirst());
     
-    // Set file BPM for use in engine
-    p = ControlObject::getControl(ConfigKey("[Channel1]","file_bpm"));
-    if (p) 
-        p->queueFromThread(m_pTrackPlayer1->getBpm());
-    
+    // Set Engine file BPM ControlObject
+    m_pTrackPlayer1->setBpmControlObject(ControlObject::getControl(ConfigKey("[Channel1]","file_bpm")));    
     
     // Set duration in playpos widget
     if (m_pView->m_pNumberPosCh1)
@@ -390,7 +390,10 @@ void Track::slotLoadPlayer1(TrackInfoObject *pTrackInfoObject, bool bStartFromEn
 void Track::slotLoadPlayer2(TrackInfoObject *pTrackInfoObject, bool bStartFromEndPos)
 {
     if (m_pTrackPlayer2)
+    {
         m_pTrackPlayer2->setOverviewWidget(0);
+        m_pTrackPlayer2->setBpmControlObject(0);
+    }
 
     m_pTrackPlayer2 = pTrackInfoObject;
 
@@ -415,10 +418,8 @@ void Track::slotLoadPlayer2(TrackInfoObject *pTrackInfoObject, bool bStartFromEn
     if (p) 
         p->queueFromThread(m_pTrackPlayer2->getBeatFirst());
     
-    // Set file BPM for use in engine
-    p = ControlObject::getControl(ConfigKey("[Channel2]","file_bpm"));
-    if (p) 
-        p->queueFromThread(m_pTrackPlayer2->getBpm());
+    // Set Engine file BPM ControlObject
+    m_pTrackPlayer2->setBpmControlObject(ControlObject::getControl(ConfigKey("[Channel2]","file_bpm")));    
     
     // Set duration in playpos widget
     if (m_pView->m_pNumberPosCh2)
