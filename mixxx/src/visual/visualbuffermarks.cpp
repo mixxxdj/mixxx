@@ -85,7 +85,6 @@ void VisualBufferMarks::slotUpdateCuePoint(double v)
 
 void VisualBufferMarks::draw(GLfloat *p, int iLen, float xscale)
 {
-//    return;
 //    glDrawArrays(GL_LINE_STRIP,0,iLen);
 
     // Ensures constant width of beat marks regardles for scaling
