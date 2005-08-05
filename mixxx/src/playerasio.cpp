@@ -50,7 +50,7 @@ const int MAX_DRIVER_NAME_LENGTH = 32;
 PlayerAsio::PlayerAsio(ConfigObject<ConfigValue> *config): Player(config)
 
 {
-    
+    m_pTempBuffer = 0;
     m_reenter = 0;
     bufferLength = 0;
     driverIsLoaded = false;
@@ -117,35 +117,25 @@ void PlayerAsio::float32toInt24inPlace(float* buffer, long frames, bool swap)
 
 void PlayerAsio::Output_Float32_Int24(int channelNumber, float* inputBuffer, float* outputBuffer, bool swap) 
 {
-    
-    float* tempBuffer;
-
-    tempBuffer = static_cast<float*>(malloc(bufferLength*4));
-
     for(int i=0; i < bufferLength; i++)
     {
-        tempBuffer[i] = inputBuffer[i*sizeof(float) + channelNumber];
+        m_pTempBuffer[i] = inputBuffer[i*sizeof(float) + channelNumber];
     }
     
-    float32toInt24inPlace(tempBuffer,bufferLength,swap);
-    memcpy(outputBuffer,tempBuffer,bufferLength*3);
+    float32toInt24inPlace(m_pTempBuffer,bufferLength,swap);
+    memcpy(outputBuffer,m_pTempBuffer,bufferLength*3);
 
 }
 
 void PlayerAsio::Output_Float32_Int32(int channelNumber, float* inputBuffer, float* outputBuffer, bool swap) 
 {
-
-    float* tempBuffer;
-    
-    tempBuffer = static_cast<float*>(malloc(bufferLength*4));
-
     for(int i=0; i < bufferLength; i++)
     {
-        tempBuffer[i] = inputBuffer[i*sizeof(float) + channelNumber];
+        m_pTempBuffer[i] = inputBuffer[i*sizeof(float) + channelNumber];
     }
     
-    float32toInt32inPlace(static_cast<float*>(tempBuffer),bufferLength,swap);
-    memcpy(outputBuffer,tempBuffer,bufferLength*4);
+    float32toInt32inPlace(static_cast<float*>(m_pTempBuffer),bufferLength,swap);
+    memcpy(outputBuffer,m_pTempBuffer,bufferLength*4);
 
 }
 
@@ -249,7 +239,6 @@ int PlayerAsio::getSampleRate(void)
 QStringList PlayerAsio::getSampleRates() {
     QStringList result;
     result.append("44100");
-    result.append("48000");
     return result;
 }
 
@@ -343,7 +332,8 @@ ASIOError PlayerAsio::create_asio_buffers (DriverInfo *asioDriverInfo)
     ASIOError result;
     
     bufferLength = asioDriverInfo->preferredSize;
-    
+    m_pTempBuffer = static_cast<float*>(malloc(bufferLength*4));
+
     // fill the bufferInfos from the start without a gap
     ASIOBufferInfo *info = asioDriverInfo->bufferInfos;
     

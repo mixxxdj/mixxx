@@ -127,6 +127,8 @@ private:
     int drvNum;
     int bufferLength;
     char* driverList[32];
+    /** Used in sample convertion */
+    float *m_pTempBuffer;
      
 };
 
