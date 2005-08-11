@@ -293,7 +293,7 @@ void PlayerPortAudio::setDefaults()
 
     // Set first interfaces to master left
     QStringList::iterator it = interfaces.begin();
-    if (*it)
+    if (it!=interfaces.end())
     {
         m_pConfig->set(ConfigKey("[Soundcard]","DeviceMasterLeft"),ConfigValue((*it)));
     }
@@ -302,7 +302,7 @@ void PlayerPortAudio::setDefaults()
 
     // Set second interface to master right
     ++it;
-    if (*it)
+    if (it!=interfaces.end())
         m_pConfig->set(ConfigKey("[Soundcard]","DeviceMasterRight"),ConfigValue((*it)));
     else
         m_pConfig->set(ConfigKey("[Soundcard]","DeviceMasterRight"),ConfigValue("None"));
@@ -314,7 +314,7 @@ void PlayerPortAudio::setDefaults()
     // Set default sample rate
     QStringList srates = getSampleRates();
     it = srates.begin();
-    while (*it)
+    while (it!=srates.end())
     {
         m_pConfig->set(ConfigKey("[Soundcard]","Samplerate"),ConfigValue((*it)));
         if ((*it).toInt()>=44100)
