@@ -15,9 +15,9 @@
  *                                                                         *
  ***************************************************************************/
 
+#include "qapplication.h"
 #include "probabilityvector.h"
 #include "mathstuff.h"
-#include "qapplication.h"
 
 ProbabilityVector::ProbabilityVector(float fMinInterval, float fMaxInterval, int iBins)
 {

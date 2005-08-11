@@ -58,7 +58,7 @@ protected:
     /** Instantiate number. Used in the calculation of MIDI controller id's */
     int m_iInstNo;
     /** Pointer to semaphore used to control led */
-    QSemaphore *m_pRequestLed;
+    QSemaphore m_qRequestLed;
     
     ControlObject *m_pControlObjectLeftTreble, *m_pControlObjectLeftMiddle, *m_pControlObjectLeftBass,
                   *m_pControlObjectLeftVolume, *m_pControlObjectLeftPitch, *m_pControlObjectLeftJog,

@@ -15,6 +15,7 @@
  *                                                                         *
  ***************************************************************************/
 
+#include <qgl.h>
 #include "visualbuffermarks.h"
 #include "readerextract.h"
 #include "controlobject.h"
@@ -22,7 +23,6 @@
 #include "controlobjectthreadmain.h"
 #include "player.h"
 #include "mathstuff.h"
-#include <qgl.h>
 
 VisualBufferMarks::VisualBufferMarks(ReaderExtract *pReaderExtract, EngineBuffer *pEngineBuffer, const char *group) : VisualBuffer(pReaderExtract, pEngineBuffer, group)
 {

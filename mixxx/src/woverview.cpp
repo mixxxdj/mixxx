@@ -24,7 +24,6 @@ WOverview::WOverview(QWidget *pParent, const char *pName) : WWidget(pParent, pNa
     m_bDrag = false;
     m_pScreenBuffer = 0;
     setBackgroundMode(Qt::NoBackground);
-
 }
 
 WOverview::~WOverview()

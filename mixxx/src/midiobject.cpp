@@ -14,12 +14,12 @@
  *                                                                         *
  ***************************************************************************/
 
+#include <qdir.h>
+#include <qwidget.h>
 #include "midiobject.h"
 #include "configobject.h"
 #include "controlobject.h"
 #include <algorithm>
-#include <qdir.h>
-#include <qwidget.h>
 
 
 /* -------- ------------------------------------------------------
@@ -96,6 +96,7 @@ QStringList *MidiObject::getConfigList(QString path)
     QDir dir(path);
     dir.setFilter(QDir::Files);
     dir.setNameFilter("*.midi.cfg *.MIDI.CFG");
+#ifndef QT3_SUPPORT
     const QFileInfoList *list = dir.entryInfoList();
     if (list!=0)
     {
@@ -107,6 +108,12 @@ QStringList *MidiObject::getConfigList(QString path)
             ++it;   // goto next list element
         }
     }
+#else
+    QList<QFileInfo> list = dir.entryInfoList();
+    for (int i=0; i<list.size(); ++i)
+        configs.append(list.at(i).fileName());
+#endif
+
     return &configs;
 }
 
@@ -152,7 +159,9 @@ void abortRead(int)
     // Reinstall default handler
     signal(SIGINT,SIG_DFL);
 
+#ifndef QT3_SUPPORT
     // End thread execution
     QThread::exit();
+#endif
 }
 

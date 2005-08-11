@@ -14,9 +14,9 @@
  *                                                                         *
  ***************************************************************************/
 
-#include "engineflanger.h"
-#include "controlpotmeter.h"
 #include "controlpushbutton.h"
+#include "controlpotmeter.h"
+#include "engineflanger.h"
 
 
 /*----------------------------------------------------------------

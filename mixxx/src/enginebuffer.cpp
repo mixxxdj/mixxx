@@ -15,16 +15,16 @@
  *                                                                         *
  ***************************************************************************/
 
+#include "controlpushbutton.h"
 #include "enginebuffer.h"
 
 #include <qevent.h>
 #include "configobject.h"
-#include "controlpushbutton.h"
 #include "controlpotmeter.h"
 #include "controlttrotary.h"
 #include "controlbeat.h"
 #include "reader.h"
-#include "readerextractbeat.h"
+//#include "readerextractbeat.h"
 #include "readerextractwave.h"
 #include "enginebufferscalest.h"
 #include "wvisualwaveform.h"

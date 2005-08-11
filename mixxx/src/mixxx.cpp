@@ -61,7 +61,9 @@ MixxxApp::MixxxApp(QApplication *a, QStringList files, QSplashScreen *pSplash, Q
     qDebug("Starting up...");
     setCaption(tr("Mixxx " VERSION));
 #ifndef __MACX__
+#ifndef QT3_SUPPORT
     setIcon(QPixmap::fromMimeSource("icon.png"));
+#endif
 #endif
 
     // Reset pointer to players
@@ -140,7 +142,7 @@ MixxxApp::MixxxApp(QApplication *a, QStringList files, QSplashScreen *pSplash, Q
     QDir dir(config->getValueString(ConfigKey("[Playlist]","Directory")));
     if ((config->getValueString(ConfigKey("[Playlist]","Directory")).length()<1) | (!dir.exists()))
     {
-        QFileDialog* fd = new QFileDialog(this, QString::null, true);
+        QFileDialog* fd = new QFileDialog(this, "", true);
         fd->setCaption(QString("Choose directory with music files"));
         fd->setMode( QFileDialog::Directory );
         if ( fd->exec() == QDialog::Accepted )
@@ -233,10 +235,17 @@ MixxxApp::MixxxApp(QApplication *a, QStringList files, QSplashScreen *pSplash, Q
     //grabKeyboard();
 
     // Load tracks in files (command line arguments) into player 1 and 2:
+#ifndef QT3_SUPPORT
     if (files.count()>1)
         m_pTrack->slotLoadPlayer1((*files.at(1)));
     if (files.count()>2)
         m_pTrack->slotLoadPlayer2((*files.at(2)));
+#else
+    if (files.count()>1)
+        m_pTrack->slotLoadPlayer1(files.at(1));
+    if (files.count()>2)
+        m_pTrack->slotLoadPlayer2(files.at(2));
+#endif
 
     // Set up socket interface
 #ifndef __WIN__

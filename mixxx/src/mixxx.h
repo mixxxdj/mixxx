@@ -28,7 +28,6 @@
 #include <qstring.h>
 #include <qstringlist.h>
 #include <qpixmap.h>
-#include <qmsgbox.h>
 #include <qfiledialog.h>
 #include <qprinter.h>
 #include <qpainter.h>

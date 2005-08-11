@@ -81,7 +81,7 @@ void DlgPrefSound::slotUpdate()
     ComboBoxSoundcardMasterLeft->insertItem("None");
     it = interfaces.begin();
     j = 1;
-    while ((*it))
+    while (it!=interfaces.end())
     {
         ComboBoxSoundcardMasterLeft->insertItem((*it));
         if ((*it)==config->getValueString(ConfigKey("[Soundcard]","DeviceMasterLeft")))
@@ -95,7 +95,7 @@ void DlgPrefSound::slotUpdate()
     ComboBoxSoundcardMasterRight->insertItem("None");
     it = interfaces.begin();
     j = 1;
-    while ((*it))
+    while (it!=interfaces.end())
     {
         ComboBoxSoundcardMasterRight->insertItem((*it));
         if ((*it)==config->getValueString(ConfigKey("[Soundcard]","DeviceMasterRight")))
@@ -109,7 +109,7 @@ void DlgPrefSound::slotUpdate()
     ComboBoxSoundcardHeadLeft->insertItem("None");
     it = interfaces.begin();
     j = 1;
-    while ((*it))
+    while (it!=interfaces.end())
     {
         ComboBoxSoundcardHeadLeft->insertItem((*it));
         if ((*it)==config->getValueString(ConfigKey("[Soundcard]","DeviceHeadLeft")))
@@ -123,7 +123,7 @@ void DlgPrefSound::slotUpdate()
     ComboBoxSoundcardHeadRight->insertItem("None");
     it = interfaces.begin();
     j = 1;
-    while ((*it))
+    while (it!=interfaces.end())
     {
         ComboBoxSoundcardHeadRight->insertItem((*it));
         if ((*it)==config->getValueString(ConfigKey("[Soundcard]","DeviceHeadRight")))
@@ -137,7 +137,7 @@ void DlgPrefSound::slotUpdate()
     QStringList srates = player->getSampleRates();
     it = srates.begin();
     j = 0;
-    while ((*it))
+    while (it!=srates.end())
     {
         ComboBoxSamplerates->insertItem((*it));
         if ((*it)==config->getValueString(ConfigKey("[Soundcard]","Samplerate")))
@@ -157,7 +157,7 @@ void DlgPrefSound::slotUpdate()
     QStringList api = player->getSoundApiList();
     it = api.begin();
     j = 1;
-    while ((*it))
+    while (it!=api.end())
     {
         ComboBoxSoundApi->insertItem((*it));
         if ((*it)==config->getValueString(ConfigKey("[Soundcard]","SoundApi")))

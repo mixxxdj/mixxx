@@ -93,7 +93,7 @@ void WWidget::setup(QDomNode node)
 
             // Add keyboard shortcut info to tooltip string
             ControlObject *p = ControlObject::getControl(configKey);
-            ASSERT(p!=0);
+            Q_ASSERT(p!=0);
             QString shortcut = QString(" (%1)").arg(m_spKbdConfigObject->getValueString(configKey));
             if (!m_spKbdConfigObject->getValueString(configKey).isEmpty() && !strTooltip.contains(shortcut,false))
                 strTooltip += shortcut;

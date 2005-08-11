@@ -133,13 +133,14 @@ DlgPrefControls::DlgPrefControls(QWidget *parent, MixxxView *pView, ConfigObject
     QString qSkinPath(pConfig->getValueString(ConfigKey("[Config]","Path")));
     QDir dir(qSkinPath.append("skins/"));
     dir.setFilter(QDir::Dirs);
+#ifndef QT3_SUPPORT
     const QFileInfoList *list = dir.entryInfoList();
     if (list!=0)
     {
         QFileInfoListIterator it(*list);        // create list iterator
-        QFileInfo *fi;                          // pointer for traversing
+        QFileInfo *fi;                   // pointer for traversing
         int j=0;
-        while ((fi=it.current()))
+        while ((fi=(*it)))
         {
             if (fi->fileName()!="." && fi->fileName()!="..")
             {
@@ -151,6 +152,21 @@ DlgPrefControls::DlgPrefControls(QWidget *parent, MixxxView *pView, ConfigObject
             ++it;
         }
     }
+#else
+    QList<QFileInfo> list = dir.entryInfoList(); 
+    int j=0;
+    for (int i=0; i<list.size(); ++i)
+    {
+        if (list.at(i).fileName()!="." && list.at(i).fileName()!="..")
+        {
+            ComboBoxSkinconf->insertItem(list.at(i).fileName());
+            if (list.at(i).fileName() == pConfig->getValueString(ConfigKey("[Config]","Skin")))
+                ComboBoxSkinconf->setCurrentItem(j);
+            ++j;
+        }
+    }
+#endif
+
     connect(ComboBoxSkinconf, SIGNAL(activated(int)), this, SLOT(slotSetSkin(int)));
 
     //
@@ -258,11 +274,14 @@ void DlgPrefControls::slotSetScaleBpm(int)
 
 void DlgPrefControls::slotSetTooltips(int)
 {
+// setGloballyEnabled currently not implemented in QT4
+#ifndef QT3_SUPPORT
     m_pConfig->set(ConfigKey("[Controls]","Tooltips"), ConfigValue((ComboBoxTooltips->currentItem()+1)%2));
     if (ComboBoxTooltips->currentItem()==0)
         QToolTip::setGloballyEnabled(true);
     else
         QToolTip::setGloballyEnabled(false);
+#endif
 }
 
 void DlgPrefControls::slotSetSkin(int)

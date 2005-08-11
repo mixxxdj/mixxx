@@ -19,7 +19,6 @@
 
 #include <qstring.h>
 #include "soundsource.h"
-#include "trackinfoobject.h"
 #include <vorbis/codec.h>
 #include <vorbis/vorbisfile.h>
 

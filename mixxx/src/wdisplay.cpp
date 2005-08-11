@@ -22,7 +22,7 @@ WDisplay::WDisplay(QWidget *parent, const char *name) : WWidget(parent,name)
 {
     m_pPixmaps = 0;
     setPositions(0);
-    setBackgroundMode(NoBackground);
+    setBackgroundMode(Qt::NoBackground);
 }
 
 WDisplay::~WDisplay()

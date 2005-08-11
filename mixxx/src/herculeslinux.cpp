@@ -540,9 +540,9 @@ void HerculesLinux::getNextEvent()
     //
     
     // Check if we have to turn on led
-    //if (m_pRequestLed->available()==0)
+    //if (m_qRequestLed.available()==0)
 //     {
-      //  (*m_pRequestLed)--;
+      //  m_qRequestLed--;
 //         led_write(ki);
 
 //         msleep(5);

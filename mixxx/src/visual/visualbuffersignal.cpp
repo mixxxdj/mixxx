@@ -15,6 +15,7 @@
  *                                                                         *
  ***************************************************************************/
 
+#include <qgl.h>
 #include "visualbuffersignal.h"
 #include "../readerextract.h"
 #include "../mathstuff.h"
@@ -22,7 +23,6 @@
 #include "../controlobject.h"
 #include "../enginebuffer.h"
 #include "../configobject.h"
-#include <qgl.h>
 
 VisualBufferSignal::VisualBufferSignal(ReaderExtract *pReaderExtract, EngineBuffer *pEngineBuffer, const char *group) : VisualBuffer(pReaderExtract, pEngineBuffer, group)
 {

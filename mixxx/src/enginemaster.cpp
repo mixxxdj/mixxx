@@ -15,6 +15,9 @@
  *                                                                         *
  ***************************************************************************/
 
+#include "controlpushbutton.h"
+#include "configobject.h"
+#include "controlpotmeter.h"
 #include "enginemaster.h"
 #include "enginebuffer.h"
 #include "enginevolume.h"
@@ -22,9 +25,6 @@
 #include "engineclipping.h"
 #include "engineflanger.h"
 #include "enginevumeter.h"
-#include "configobject.h"
-#include "controlpotmeter.h"
-#include "controlpushbutton.h"
 // #include "enginebuffermasterrate.h"
 
 EngineMaster::EngineMaster(EngineBuffer *_buffer1, EngineBuffer *_buffer2,

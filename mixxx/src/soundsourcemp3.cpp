@@ -14,8 +14,8 @@
  *                                                                         *
  ***************************************************************************/
 
-#include "soundsourcemp3.h"
 #include "trackinfoobject.h"
+#include "soundsourcemp3.h"
 extern "C" {
 #include <dxhead.h>
 }

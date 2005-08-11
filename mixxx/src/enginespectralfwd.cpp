@@ -98,7 +98,7 @@ void EngineSpectralFwd::process(const CSAMPLE *pIn, const CSAMPLE *, const int)
 
 CSAMPLE EngineSpectralFwd::getHFC()
 {
-    ASSERT(power_calc);
+    Q_ASSERT(power_calc);
 
     // Calculate sum of power spectrum
     CSAMPLE hfc = 0;
@@ -115,7 +115,7 @@ CSAMPLE EngineSpectralFwd::getHFC()
 
 CSAMPLE EngineSpectralFwd::getPSF()
 {
-    ASSERT(power_calc);
+    Q_ASSERT(power_calc);
 
     CSAMPLE psf = 0.;
     for (int i=1; i<l_half; ++i)

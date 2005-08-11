@@ -48,8 +48,8 @@ protected:
     virtual void led_write(int static_brightness, int speed, int table, int asleep, int awake) = 0;
     /** Instantiate number. Used in the calculation of MIDI controller id's */
     int m_iInstNo;
-    /** Pointer to semaphore used to control led */
-    QSemaphore *m_pRequestLed;
+    /** Semaphore used to control led */
+    QSemaphore m_qRequestLed;
     /** Pointer to rotary object */
     Rotary *m_pRotary;
     /** Pointer to control objects connected to the PowerMate */

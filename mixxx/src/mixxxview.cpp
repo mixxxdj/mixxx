@@ -74,8 +74,10 @@ MixxxView::MixxxView(QWidget *parent, ConfigObject<ConfigValueKbd> *kbdconfig, b
     QDomElement docElem = skin.documentElement();
 
 #ifdef __WIN__
+#ifndef QT3_SUPPORT
     // QPixmap fix needed on Windows 9x
     QPixmap::setDefaultOptimization(QPixmap::MemoryOptim);
+#endif
 #endif
 
     // Default values for visuals
@@ -399,8 +401,10 @@ MixxxView::MixxxView(QWidget *parent, ConfigObject<ConfigValueKbd> *kbdconfig, b
     }
 
 #ifdef __WIN__
+#ifndef QT3_SUPPORT
     // QPixmap fix needed on Windows 9x
     QPixmap::setDefaultOptimization(QPixmap::NormalOptim);
+#endif
 #endif
 
 }
