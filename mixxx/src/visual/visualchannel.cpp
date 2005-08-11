@@ -16,14 +16,14 @@
  ***************************************************************************/
 
 #include "visualchannel.h"
-#include "../defs.h"
-#include "../readerextract.h"
 #include "visualcontroller.h"
 #include "visualbuffersignal.h"
 #include "visualbuffersignalhfc.h"
 #include "visualbuffertemporal.h"
 #include "visualbuffermarks.h"
 #include "visualdisplay.h"
+#include "../readerextract.h"
+#include "../defs.h"
 
 int VisualChannel::siChannelTotal = 0;
 

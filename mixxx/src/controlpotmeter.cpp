@@ -15,8 +15,8 @@
  *                                                                         *
  ***************************************************************************/
 
-#include "controlpotmeter.h"
 #include "controlpushbutton.h"
+#include "controlpotmeter.h"
 
 /* -------- ------------------------------------------------------
    Purpose: Creates a new potmeter

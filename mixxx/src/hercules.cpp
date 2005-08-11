@@ -15,15 +15,15 @@
  *                                                                         *
  ***************************************************************************/
 
+#include "qapplication.h"
 #include "hercules.h"
 #include "controlobject.h"
 #include "controleventmidi.h"
-#include "qapplication.h"
 #include "midiobject.h"
 #include "mathstuff.h"
 #include "rotary.h"
 
-Hercules::Hercules() : Input()
+Hercules::Hercules() : Input(), m_qRequestLed(5)
 {
     m_bCueLeft = false;
     m_bCueRight = false;
@@ -58,9 +58,7 @@ Hercules::Hercules() : Input()
     Q_ASSERT(m_pControlObjectRightBeatLoop!=0);
     
     selectMapping(kqInputMappingHerculesStandard);
-    
-    m_pRequestLed = new QSemaphore(5);
-    
+        
     m_pRotaryLeft = new Rotary();
     m_pRotaryRight = new Rotary();
 }
@@ -72,7 +70,6 @@ Hercules::~Hercules()
         terminate();
         wait();
     }
-    delete m_pRequestLed;
     delete m_pRotaryLeft;
     delete m_pRotaryRight;
 }
@@ -188,5 +185,5 @@ void Hercules::changeJogMode(int iLeftFxMode, int iRightFxMode)
 
 void Hercules::led()
 {
-    m_pRequestLed->tryAccess(1);
+    m_qRequestLed.tryAccess(1);
 }

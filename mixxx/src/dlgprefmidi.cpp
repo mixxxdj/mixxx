@@ -114,8 +114,13 @@ DlgPrefMidi::DlgPrefMidi(QWidget *parent, ConfigObject<ConfigValue> *pConfig) : 
         }
         else
         {
-            m_pMidiConfig = new ConfigObject<ConfigValueMidi>(QString(qConfigPath).append((*midiConfigList->at(0)).latin1()));
-            m_pConfig->set(ConfigKey("[Midi]","File"), ConfigValue((*midiConfigList->at(0)).latin1()));
+#ifndef QT3_SUPPORT
+            QString name = (*midiConfigList->at(0));
+#else
+            QString name = midiConfigList->at(0);
+#endif
+            m_pMidiConfig = new ConfigObject<ConfigValueMidi>(QString(qConfigPath).append(name.latin1()));
+            m_pConfig->set(ConfigKey("[Midi]","File"), ConfigValue(name.latin1()));
         }
     }
     m_pMidi->setMidiConfig(m_pMidiConfig);

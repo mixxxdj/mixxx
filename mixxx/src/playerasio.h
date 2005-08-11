@@ -5,7 +5,6 @@
 #include <qobject.h>
 #include <qmutex.h>
 #include <qsignal.h>
-#include <vector>
 #include <stdlib.h>
 #include <stdio.h>
 #include "player.h"

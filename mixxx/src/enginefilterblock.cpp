@@ -15,10 +15,10 @@
  *                                                                         *
  ***************************************************************************/
 
+#include "controlpushbutton.h"
+#include "controllogpotmeter.h"
 #include "enginefilterblock.h"
 #include "enginefilteriir.h"
-#include "controllogpotmeter.h"
-#include "controlpushbutton.h"
 
 EngineFilterBlock::EngineFilterBlock(const char *group)
 {

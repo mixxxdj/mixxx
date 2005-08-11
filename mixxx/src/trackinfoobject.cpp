@@ -28,6 +28,10 @@
 #include "wavesummaryevent.h"
 #include "controlobject.h"
 
+#ifdef QT3_SUPPORT
+#include <qtime>
+#endif
+
 int TrackInfoObject::siMaxTimesPlayed = 1;
 
 TrackInfoObject::TrackInfoObject(const QString sPath, const QString sFile) : m_sFilename(sFile), m_sFilepath(sPath)
@@ -303,7 +307,7 @@ void TrackInfoObject::parseFilename()
 
 
     // Sort out obviously wrong parsings:
-    if ((m_sArtist.length() < 3) || (m_sTitle < 3))
+    if ((m_sArtist.length() < 3) || (m_sTitle.length() < 3))
     {
         m_sTitle = m_sFilename.section('.',0,-2);
         m_sArtist = "";
@@ -673,7 +677,7 @@ QString TrackInfoObject::getScoreStr()
 void TrackInfoObject::updateScore()
 {
     m_qMutex.lock();
-    ASSERT(siMaxTimesPlayed!=0);
+    Q_ASSERT(siMaxTimesPlayed!=0);
     m_iScore = 99*m_iTimesPlayed/siMaxTimesPlayed;
     m_qMutex.unlock();
 

@@ -19,7 +19,7 @@
 
 #include "enginebuffer.h"
 #include "readerextractwave.h"
-#include "readerextractbeat.h"
+//#include "readerextractbeat.h"
 #include "rtthread.h"
 #include "visual/visualchannel.h"
 #include "controlobjectthread.h"
@@ -39,9 +39,6 @@ Reader::Reader(EngineBuffer *_enginebuffer, QMutex *_pause)
     // Allocate reader extract objects
     readerwave = new ReaderExtractWave(this, enginebuffer);
 
-    // Allocate semaphore
-    readAhead = new QWaitCondition();
-
     // Open the track:
     file_srate = 44100;
     file_length = 0;
@@ -55,7 +52,6 @@ Reader::~Reader()
         stop();
 
     delete readerwave;
-    delete readAhead;
     delete m_pTrackEnd;
 }
 
@@ -108,7 +104,7 @@ void Reader::requestSeek(double new_playpos)
 void Reader::wake()
 {    
     // Wakeup reader
-    readAhead->wakeAll();
+    readAhead.wakeAll();
 }
 
 CSAMPLE *Reader::getBufferWavePtr()
@@ -235,7 +231,8 @@ void Reader::run()
     {
 // qDebug("wait");        
         // Wait for playback if in buffer is filled.
-        readAhead->wait();
+        readAheadMutex.tryLock();
+        readAhead.wait(&readAheadMutex);
 // qDebug("woke");
         
         m_qReaderMutex.lock();
@@ -274,7 +271,7 @@ void Reader::run()
 void Reader::stop()
 {
     requestStop.lock();
-    readAhead->wakeAll();
+    readAhead.wakeAll();
     wait();
     requestStop.unlock();
 }

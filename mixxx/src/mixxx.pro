@@ -23,6 +23,12 @@ win32:WINLIBPATH = ../../mixxx-winlib
 # Path to ASIO SDK
 ASIOSDK_DIR   = $$WINLIBPATH/asiosdk2
 
+# Define if compiling using QT4
+#CONFIG += qt3support
+
+# Windows: Set to 1 if using Visual Studio, otherwise 0
+win32:VISUALSTUDIO = 1
+
 #
 # End of options
 #
@@ -50,15 +56,15 @@ win32 {
 }
 
 # RTAudio (Windows DirectSound)
-win32 {
-    message("Compiling with RtAudio/DirectSound drivers")
-    DEFINES += __RTAUDIO__ __WINDOWS_DS__
-    RTAUDIO_DIR = ../lib/rtaudio
-    INCLUDEPATH += $$RTAUDIO_DIR
-    HEADERS += playerrtaudio.h $$RTAUDIO_DIR/RtAudio.h $$RTAUDIO_DIR/RtError.h
-    SOURCES += playerrtaudio.cpp $$RTAUDIO_DIR/RtAudio.cpp
-    LIBS += dsound.lib
-}
+#win32 {
+#    message("Compiling with RtAudio/DirectSound drivers")
+#    DEFINES += __RTAUDIO__ __WINDOWS_DS__
+#    RTAUDIO_DIR = ../lib/rtaudio
+#    INCLUDEPATH += $$RTAUDIO_DIR
+#    HEADERS += playerrtaudio.h $$RTAUDIO_DIR/RtAudio.h $$RTAUDIO_DIR/RtError.h
+#    SOURCES += playerrtaudio.cpp $$RTAUDIO_DIR/RtAudio.cpp
+#    LIBS += dsound.lib
+#}
 
 # ASIO (Windows)
 win32 {
@@ -188,7 +194,14 @@ SOURCES += enginebufferscalest.cpp ../lib/soundtouch/SoundTouch.cpp ../lib/sound
 HEADERS += enginebufferscalest.h ../lib/soundtouch/TDStretch.h ../lib/soundtouch/RateTransposer.h ../lib/soundtouch/cpu_detect.h ../lib/soundtouch/STTypes.h ../lib/soundtouch/SoundTouch.h ../lib/soundtouch/FIFOSamplePipe.h ../lib/soundtouch/FIFOSampleBuffer.h ../lib/soundtouch/AAFilter.h ../lib/soundtouch/FIRFilter.h ../lib/soundtouch/config.h
 unix:!macx:SOURCES += ../lib/soundtouch/mmx_gcc.cpp
 unix:SOURCES += ../lib/soundtouch/cpu_detect_x86_gcc.cpp
-win32:SOURCES += ../lib/soundtouch/cpu_detect_x86_win.cpp ../lib/soundtouch/mmx_win.cpp ../lib/soundtouch/sse_win.cpp ../lib/soundtouch/3dnow_win.cpp
+win32 {
+  contains(VISUALSTUDIO, 1) {
+    SOURCES += ../lib/soundtouch/cpu_detect_x86_win.cpp ../lib/soundtouch/mmx_win.cpp ../lib/soundtouch/sse_win.cpp ../lib/soundtouch/3dnow_win.cpp
+  }
+  contains(VISUALSTUDIO, 0) {
+    SOURCES += ../lib/soundtouch/cpu_detect_x86_gcc.cpp
+  }
+}
 
 # Debug plotting through gplot API
 #unix:DEFINES += __GNUPLOT__
@@ -345,10 +358,21 @@ SOURCES += enginebufferscalereal.cpp
 
 IMAGES += icon.png
 DEFINES += SETTINGS_FILE=$$SETTINGS_FILE TRACK_FILE=$$TRACK_FILE
-unix:TEMPLATE = app
-win32:TEMPLATE = vcapp
 CONFIG += qt thread warn_off release
 DEFINES += QT_NO_CHECK
 #CONFIG += qt thread warn_on debug
+unix:TEMPLATE = app
+
+win32 {
+  contains(VISUALSTUDIO, 0) {
+    message("Using mingw")
+	TEMPLATE = app
+  }
+  contains(VISUALSTUDIO, 1) {
+    message("Using Visual Studio")
+	TEMPLATE = vcapp
+  }
+}
+
 DBFILE = mixxx.db
 LANGUAGE = C++

@@ -42,7 +42,7 @@ void DlgPrefPlaylist::slotUpdate()
 
 void DlgPrefPlaylist::slotBrowseDir()
 {
-    QFileDialog* fd = new QFileDialog(config->getValueString(ConfigKey("[Playlist]","Directory")),QString::null, this, QString::null, TRUE );
+    QFileDialog* fd = new QFileDialog(config->getValueString(ConfigKey("[Playlist]","Directory")),"", this, "", TRUE );
     fd->setMode( QFileDialog::Directory );
     fd->setCaption("Choose directory with music files");
     if ( fd->exec() == QDialog::Accepted )

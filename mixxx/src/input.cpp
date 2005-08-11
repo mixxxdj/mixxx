@@ -15,10 +15,10 @@
  *                                                                         *
  ***************************************************************************/
 
+#include "qapplication.h"
 #include "input.h"
 #include "controlobject.h"
 #include "controlobjectthreadmain.h"
-#include "qapplication.h"
 #include "midiobject.h"
 #include "mathstuff.h"
 

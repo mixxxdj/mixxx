@@ -15,17 +15,17 @@
  *                                                                         *
  ***************************************************************************/
 
+#include <qfileinfo.h>
+#include <qapplication.h>
 #include "reader.h"
 #include "readerextractwave.h"
-#include "readerextracthfc.h"
-#include "readerextractbeat.h"
+//#include "readerextracthfc.h"
+//#include "readerextractbeat.h"
 #include "readerevent.h"
 #include "visual/visualchannel.h"
 #include "visual/visualbuffer.h"
 #include "soundsource.h"
 #include "soundsourceproxy.h"
-#include <qfileinfo.h>
-#include <qapplication.h>
 
 ReaderExtractWave::ReaderExtractWave(Reader *pReader, EngineBuffer *pEngineBuffer) : ReaderExtract(0, pEngineBuffer, "signal")
 {
@@ -87,7 +87,7 @@ void ReaderExtractWave::newSource(TrackInfoObject *pTrack)
     }
 
     QString filename = pTrack->getLocation();
-    if (filename != 0)
+    if (!filename.isEmpty())
     {
         // Check if filename is valid
         QFileInfo finfo(filename);

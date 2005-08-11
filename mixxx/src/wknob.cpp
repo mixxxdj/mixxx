@@ -25,7 +25,7 @@ WKnob::WKnob(QWidget *parent, const char *name) : WWidget(parent,name)
     m_pPixmapBuffer = 0;
     m_bDisabledLoaded = false;
     setPositions(0);
-    setBackgroundMode(NoBackground);
+    setBackgroundMode(Qt::NoBackground);
 }
 
 WKnob::~WKnob()

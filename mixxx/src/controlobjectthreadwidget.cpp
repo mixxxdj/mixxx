@@ -9,8 +9,9 @@
 // Copyright: See COPYING file that comes with this distribution
 //
 //
-#include "controlobjectthreadwidget.h"
+
 #include <qapplication.h>
+#include "controlobjectthreadwidget.h"
 #include "controlobject.h"
 #include "controlevent.h"
 

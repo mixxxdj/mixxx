@@ -23,7 +23,7 @@ WVuMeter::WVuMeter(QWidget *parent, const char *name) : WWidget(parent,name)
     m_pPixmapBack = 0;
     m_pPixmapVu = 0;
     m_pPixmapBuffer = 0;
-    setBackgroundMode(NoBackground);
+    setBackgroundMode(Qt::NoBackground);
 }
 
 WVuMeter::~WVuMeter()

@@ -10,14 +10,14 @@
 //
 //
 
+#include "trackinfoobject.h"
+#include "trackplaylistlist.h"
+#include "track.h"
 #include "log.h"
 #include <qtextstream.h>
 #include "controlobject.h"
 #include "configobject.h"
 #include "controlobjectthreadmain.h"
-#include "track.h"
-#include "trackinfoobject.h"
-#include "trackplaylistlist.h"
 
 Log::Log(QString qFilename, Track *pTrack) : m_qFile(qFilename)
 {

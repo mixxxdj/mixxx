@@ -23,9 +23,9 @@
 #include <qmutex.h>
 #include <qvaluelist.h>
 #include <qptrlist.h>
+#include "trackinfoobject.h"
 #include "defs.h"
 #include "monitor.h"
-#include "trackinfoobject.h"
 
 class ReaderExtractWave;
 class ReaderExtractBeat;
@@ -115,7 +115,8 @@ private:
     int m_iReaderAccess;
     
     /** Wait condition to make thread sleep when not needed */
-    QWaitCondition *readAhead;
+    QWaitCondition readAhead;
+    QMutex readAheadMutex;
     typedef struct TrackQueueType {
         TrackInfoObject *pTrack;
         bool bStartAtEndPos;

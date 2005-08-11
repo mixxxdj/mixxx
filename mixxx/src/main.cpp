@@ -21,6 +21,7 @@
 #include <qtextcodec.h>
 #include <qtranslator.h>
 #include <qmessagebox.h>
+#include <qiodevice.h>
 #include <qfile.h>
 #include <qtextstream.h>
 #include <qstringlist.h>
@@ -82,7 +83,11 @@ int main(int argc, char *argv[])
 #ifdef Q_WS_WIN
   // For windows write all debug messages to a logfile:
   Logfile.setName( "mixxx.log" );
+#ifndef QT3_SUPPORT
   Logfile.open(IO_WriteOnly | IO_Translate);
+#else
+  Logfile.open(QIODevice::WriteOnly | QIODevice::Text);
+#endif
   qInstallMsgHandler( MessageToLogfile );
 #else
     // For others, write to the console:

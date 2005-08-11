@@ -45,7 +45,7 @@ PlayerProxy::PlayerProxy(ConfigObject<ConfigValue> *pConfig) : Player(pConfig)
         // No valid API is stored in the database, so select the default
         QStringList api = getSoundApiList();
         QStringList::iterator it = api.begin();
-        while (!m_pPlayer && (*it))
+        while (!m_pPlayer && it!=api.end())
         {
             if (setSoundApi((*it)))
             {

@@ -15,6 +15,7 @@
  *                                                                         *
  ***************************************************************************/
 
+#include <qgl.h>
 #include "visualbuffer.h"
 #include "../readerextract.h"
 #include "../readerevent.h"
@@ -25,7 +26,6 @@
 #include "player.h"
 #include "../enginebuffer.h"
 #include "../mathstuff.h"
-#include <qgl.h>
 
 
 VisualBuffer::VisualBuffer(EngineBuffer *pEngineBuffer, const char *group)

@@ -15,8 +15,8 @@
  *                                                                         *
  ***************************************************************************/
 
-#include "enginechannel.h"
 #include "controlpushbutton.h"
+#include "enginechannel.h"
 #include "engineclipping.h"
 #include "enginepregain.h"
 #include "enginevolume.h"

@@ -208,12 +208,20 @@ void Track::slotDrop(QDropEvent *e)
     //qDebug("track drop");
 
     QString name;
+#ifndef QT3_SUPPORT
     QCString type("playlist");
     if (!QTextDrag::decode(e, name, type))
+#else
+    if (!e->mimeData()->hasFormat("playlist"))
+#endif
     {
         e->ignore();
         return;
     }
+
+#ifdef QT3_SUPPORT
+    name = e->mimeData()->text();
+#endif
 
     e->accept();
 

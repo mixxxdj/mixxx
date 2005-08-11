@@ -113,7 +113,7 @@ PeakList::iterator PeakList::insertIfPeak(int idx, PeakList::iterator it)
             p.corr = 0.;
 
         // Insert peak in peaks list
-        if (it!=0)
+        if (it!=end())
             it = insert(it, p);
         else
             it = append(p);

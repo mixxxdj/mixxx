@@ -14,9 +14,9 @@
  *                                                                         *
  ***************************************************************************/
 
+#include "trackinfoobject.h"
 #include "soundsourcesndfile.h"
 #include <qstring.h>
-#include "trackinfoobject.h"
 /*
   Class for reading files using libsndfile
 */

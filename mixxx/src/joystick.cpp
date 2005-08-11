@@ -15,9 +15,9 @@
  *                                                                         *
  ***************************************************************************/
 
+#include "qapplication.h"
 #include "controlobject.h"
 #include "controleventmidi.h"
-#include "qapplication.h"
 #include "midiobject.h"
  
 #include "joystick.h"

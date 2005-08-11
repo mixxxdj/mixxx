@@ -9,8 +9,9 @@
 // Copyright: See COPYING file that comes with this distribution
 //
 //
-#include "visualbuffersignalhfc.h"
+
 #include <qgl.h>
+#include "visualbuffersignalhfc.h"
 
 VisualBufferSignalHFC::VisualBufferSignalHFC(ReaderExtract *pReaderExtract, EngineBuffer *pEngineBuffer, const char *group) : VisualBufferSignal(pReaderExtract, pEngineBuffer, group)
 {

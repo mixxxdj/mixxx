@@ -15,17 +15,16 @@
  *                                                                         *
  ***************************************************************************/
 
+#include "qapplication.h"
 #include "powermate.h"
 #include "rotary.h"
 #include "controlobject.h"
 #include "controleventmidi.h"
-#include "qapplication.h"
 #include "midiobject.h"
 #include "mathstuff.h"
 
-PowerMate::PowerMate() : Input()
+PowerMate::PowerMate() : Input(), m_qRequestLed(5)
 {
-    m_pRequestLed = new QSemaphore(5);
     m_pRotary = new Rotary();
     m_pControlObjectButton = 0;
     m_pControlObjectRotary = 0;
@@ -38,7 +37,6 @@ PowerMate::~PowerMate()
         terminate();
         wait();
     }
-    delete m_pRequestLed;
     delete m_pRotary;
 }
 
@@ -79,5 +77,5 @@ void PowerMate::selectMapping(QString mapping)
 
 void PowerMate::led()
 {
-    m_pRequestLed->tryAccess(1);
+    m_qRequestLed.tryAccess(1);
 }

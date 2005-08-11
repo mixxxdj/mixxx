@@ -9,10 +9,11 @@
 // Copyright: See COPYING file that comes with this distribution
 //
 //
+
+#include <qapplication.h>
 #include "controlobjectthreadmain.h"
 #include "controlobject.h"
 #include "controlevent.h"
-#include <qapplication.h>
 
 
 ControlObjectThreadMain::ControlObjectThreadMain(ControlObject *pControlObject) : ControlObjectThread(pControlObject)

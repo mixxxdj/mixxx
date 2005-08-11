@@ -14,9 +14,9 @@
  *                                                                         *
  ***************************************************************************/
 
-#include "enginebuffercue.h"
-#include "controlobject.h"
 #include "controlpushbutton.h"
+#include "controlobject.h"
+#include "enginebuffercue.h"
 #include "enginebuffer.h"
 #include "player.h"
 #include "mathstuff.h"

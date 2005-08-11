@@ -23,9 +23,8 @@
 #include <qobject.h>
 #include <qevent.h>
 
-#include "visualbuffer.h"
-#include "visualdisplay.h"
-
+class VisualBuffer;
+class VisualDisplay;
 class ReaderExtract;
 class VisualController;
 class ControlPotmeter;

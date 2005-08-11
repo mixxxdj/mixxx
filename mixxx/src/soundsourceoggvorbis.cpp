@@ -14,7 +14,7 @@
  *                                                                         *
  ***************************************************************************/
 
-
+#include "trackinfoobject.h"
 #include "soundsourceoggvorbis.h"
 #ifdef __WIN__
 #include <io.h>

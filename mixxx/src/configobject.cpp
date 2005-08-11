@@ -22,6 +22,8 @@
 #include <windows.h>
 #endif
 
+#include <qiodevice.h>
+
 ConfigKey::ConfigKey()
 {
 }
@@ -235,7 +237,7 @@ template <class ValueType> bool ConfigObject<ValueType>::Parse()
         int group = 0;
         QString groupStr, line;
         QTextStream text(&configfile);
-        while (!text.eof())
+        while (!text.atEnd())
         {
             line = text.readLine().stripWhiteSpace();
 
@@ -286,7 +288,11 @@ template <class ValueType> void ConfigObject<ValueType>::reopen(QString file)
 template <class ValueType> void ConfigObject<ValueType>::Save()
 {
     QFile file(filename);
-    if (!file.open(IO_WriteOnly| IO_Translate))
+#ifndef QT3_SUPPORT 
+    if (!file.open(IO_WriteOnly | IO_Translate))
+#else
+    if (!file.open(QIODevice::WriteOnly | QIODevice::Text))
+#endif
     {
         qDebug("Could not write file %s, don't worry.",filename.ascii());
         return;
@@ -335,7 +341,7 @@ QString ConfigObject<ValueType>::getConfigPath()
 #ifdef __WIN__
     // On Windows, set the config dir relative to the application dir
     char *str = new char[200];
-    GetModuleFileName(NULL, (unsigned short *)str, 200);
+    GetModuleFileName(NULL, (WCHAR *)str, 200);
     qConfigPath = QFileInfo(str).dirPath();
 #endif
 #ifdef __MACX__

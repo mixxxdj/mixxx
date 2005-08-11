@@ -169,9 +169,9 @@ void PowerMateLinux::getNextEvent()
     // Check if led queue is empty
     //
     // Check if we have to turn on led
-    if (m_pRequestLed->available()==0)
+    if (m_qRequestLed.available()==0)
     {
-        (*m_pRequestLed)--;
+        m_qRequestLed--;
         led_write(255, 0, 0, 0, 1);
 
         msleep(5);

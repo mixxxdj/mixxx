@@ -15,10 +15,10 @@
  *                                                                         *
  ***************************************************************************/
 
+#include <qapplication.h>
 #include "controlobjectthread.h"
 #include "controlobject.h"
 #include "engineobject.h"
-#include <qapplication.h>
 
 QWaitCondition ControlObjectThread::m_sqWait;
 QMutex ControlObjectThread::m_sqMutex;

@@ -18,9 +18,9 @@
 #ifndef CONTROLPUSHBUTTON_H
 #define CONTROLPUSHBUTTON_H
 
+#include <qaction.h>
 #include "controlobject.h"
 #include "defs.h"
-#include <qaction.h>
 
 /**
   *@author Tue and Ken Haste Andersen
