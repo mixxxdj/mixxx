@@ -18,10 +18,10 @@
 #ifndef DLGPREFPLAYLIST_H
 #define DLGPREFPLAYLIST_H
 
-#include <qwidget.h>
 #include "dlgprefplaylistdlg.h"
 #include "configobject.h"
 
+class QWidget;
 /**
   *@author Tue & Ken Haste Andersen
   */

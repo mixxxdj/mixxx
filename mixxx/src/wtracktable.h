@@ -18,10 +18,11 @@
 #ifndef WTRACKTABLE_H
 #define WTRACKTABLE_H
 
-#include <qwidget.h>
 #include <qtable.h>
 #include <qdom.h>
 #include <qevent.h>
+
+class QWidget;
 
 // Defines for the rows in the table.
 const int COL_SCORE = 0;

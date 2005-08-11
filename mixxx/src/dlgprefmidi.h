@@ -18,10 +18,10 @@
 #ifndef DLGPREFMIDI_H
 #define DLGPREFMIDI_H
 
-#include <qwidget.h>
 #include "dlgprefmididlg.h"
 #include "configobject.h"
 
+class QWidget;
 class MidiObject;
 class PowerMate;
 class Mouse;

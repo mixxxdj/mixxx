@@ -27,6 +27,7 @@
 #include <qtooltip.h>
 #include "enginebuffer.h"
 #include <qspinbox.h>
+#include <qwidget.h>
 
 DlgPrefControls::DlgPrefControls(QWidget *parent, MixxxView *pView, ConfigObject<ConfigValue> *pConfig) : DlgPrefControlsDlg(parent,"")
 {

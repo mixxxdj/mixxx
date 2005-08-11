@@ -25,6 +25,7 @@
 #include <qmessagebox.h>
 #include <qthread.h>
 #include "controlobject.h"
+#include <qwidget.h>
 
 DlgPrefSound::DlgPrefSound(QWidget *parent, PlayerProxy *_player,
                            ConfigObject<ConfigValue> *_config) : DlgPrefSoundDlg(parent,"")

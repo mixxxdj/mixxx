@@ -26,6 +26,7 @@
 #include <qstringlist.h>
 #include <qmime.h>
 #include "trackinfoobject.h"
+#include <qwidget.h>
 
 WTrackTable::WTrackTable(QWidget *parent, const char *name) : QTable(0, ROW_NO, parent, name)
 {

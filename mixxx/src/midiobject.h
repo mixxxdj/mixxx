@@ -28,11 +28,10 @@
 #include <qobject.h>
 #include <qstringlist.h>
 #include <qstring.h>
-#include <qwidget.h>
 #include "defs.h"
 #include "configobject.h"
 class ControlObject;
-
+class QWidget;
 
 // These enums are used in the decoding of the status message into voice categories
 typedef enum {
