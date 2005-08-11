@@ -474,7 +474,7 @@ void MixxxApp::slotHelpAbout()
                          "<tr><td>Ogg vorbis support:</td><td>Svein Magne Bang</td></tr>"
                          "<tr><td>Beat tracking:</td><td>Tue Haste Andersen</td></tr>"
                          "<tr><td></td><td>Kristoffer Jensen</td></tr>"
-                         "<tr><td>Playlist import:</td><td>Ingo Kossyk</td></tr>"
+                         "<tr><td>Playlist import & ASIO:</td><td>Ingo Kossyk</td></tr>"
              "<tr><td>Beat phase sync:</td><td>Torben Hohn</td></tr>"
              "<tr><td>ALSA support:</td><td>Peter Chang</td></tr>"
              "<tr><td>SoundTouch support:</td><td>Mads Holm</td></tr>"

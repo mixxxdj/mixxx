@@ -8,10 +8,10 @@
 ///
 ////////////////////////////////////////////////////////////////////////////////
 //
-// Last changed  : $Date: 2005-02-10 13:17:01 +0000 (Thu, 10 Feb 2005) $
-// File revision : $Revision: 858 $
+// Last changed  : $Date: 2005-08-11 10:31:26 +0100 (Thu, 11 Aug 2005) $
+// File revision : $Revision: 898 $
 //
-// $Id: STTypes.h 858 2005-02-10 13:17:01Z tuehaste $
+// $Id: STTypes.h 898 2005-08-11 09:31:26Z tuehaste $
 //
 ////////////////////////////////////////////////////////////////////////////////
 //
@@ -45,7 +45,7 @@ typedef unsigned long   ulong;
 #ifndef _WINDEF_
     // if these aren't defined already by Windows headers, define now
 
-    typedef unsigned int    BOOL;
+    typedef  int    BOOL;
 
     #define FALSE   0
     #define TRUE    1

@@ -33,12 +33,13 @@ const int MAXDISPLAYRATE = 100;
 
 #include "../defs.h"
 #include <qobject.h>
-#include <qgl.h>
 #include "material.h"
 
 class ReaderExtract;
 class EngineBuffer;
 class ControlObjectThreadMain;
+
+typedef float GLfloat;
 
 typedef struct
 {

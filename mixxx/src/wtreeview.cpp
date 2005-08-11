@@ -51,10 +51,11 @@ WTreeView::WTreeView(QString qRootPath, QWidget *parent, const char *name, bool 
     addColumn("Name", -1);
     setSelectionMode(QListView::Extended);
     setResizeMode(QListView::AllColumns);
-    header()->hide();
+//    header()->hide();
     
-    //setColumnWidthMode(1, QListView::Maximum);
-    //setTreeStepSize(20);
+    setColumnWidthMode(1, QListView::Maximum);
+    setTreeStepSize(20);
+    
     setFrameStyle(QFrame::NoFrame);
     connect(autoopen_timer, SIGNAL(timeout()), this, SLOT(openFolder()));
 

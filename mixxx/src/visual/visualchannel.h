@@ -43,7 +43,7 @@ public:
     void setupBuffer();
     /** Add a ReaderExtract buffer to object, and construct a corresponding display. A
       * pointer to the constructed VisualBuffer is returned */
-    VisualBuffer *add(ReaderExtract *pReaderExtract, EngineBuffer *pEngineBuffer);
+    VisualBuffer *add(ReaderExtract *pReaderExtract, EngineBuffer *pEngineBuffer, QString qType="");
     void setColorSignal(float r, float g, float b);
     void setColorHfc(float r, float g, float b);
     void setColorCue(float r, float g, float b);

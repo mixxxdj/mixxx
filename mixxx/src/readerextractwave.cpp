@@ -25,10 +25,12 @@
 #include "soundsource.h"
 #include "soundsourceproxy.h"
 #include <qfileinfo.h>
+#include <qapplication.h>
 
 ReaderExtractWave::ReaderExtractWave(Reader *pReader, EngineBuffer *pEngineBuffer) : ReaderExtract(0, pEngineBuffer, "signal")
 {
     m_pReader = pReader;
+    m_pVisualBufferMarks = 0;
 
     // Allocate temporary buffer
     temp = new SAMPLE[READCHUNKSIZE*2];
@@ -117,6 +119,8 @@ void ReaderExtractWave::newSource(TrackInfoObject *pTrack)
 void ReaderExtractWave::addVisual(VisualChannel *pVisualChannel)
 {
     ReaderExtract::addVisual(pVisualChannel);
+    m_pVisualBufferMarks = pVisualChannel->add(this, m_pEngineBuffer, "marks");
+
 #ifdef EXTRACT
 //    readerhfc->addVisual(pVisualChannel);
     readerbeat->addVisual(pVisualChannel);
@@ -146,6 +150,8 @@ void ReaderExtractWave::reset()
     // Update vertex buffer by sending an event containing indexes of where to update.
     if (m_pVisualBuffer != 0)
         QApplication::postEvent(m_pVisualBuffer, new ReaderEvent(0, READBUFFERSIZE, filepos_start, bufferpos_start, getBufferSize(), getRate()));
+    if (m_pVisualBufferMarks != 0)
+        QApplication::postEvent(m_pVisualBufferMarks, new ReaderEvent(0, READBUFFERSIZE, filepos_start, bufferpos_start, getBufferSize(), getRate()));
 }
 
 void *ReaderExtractWave::getBasePtr()
@@ -339,6 +345,8 @@ void ReaderExtractWave::getchunk(CSAMPLE rate)
     // Update vertex buffer by sending an event containing indexes of where to update.
     if (m_pVisualBuffer != 0)
         QApplication::postEvent(m_pVisualBuffer, new ReaderEvent(bufIdx, READCHUNKSIZE, filepos_start, bufferpos_start, getBufferSize(), getRate()));
+    if (m_pVisualBufferMarks != 0)
+        QApplication::postEvent(m_pVisualBufferMarks, new ReaderEvent(bufIdx, READCHUNKSIZE, filepos_start, bufferpos_start, getBufferSize(), getRate()));
 
 #ifdef EXTRACT
     // Do pre-processing...

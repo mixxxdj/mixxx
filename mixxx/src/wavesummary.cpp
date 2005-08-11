@@ -114,22 +114,21 @@ void WaveSummary::run()
             // Beat is extracted from the middle region of the sound file. Here the 
             // min and max indexes are the boundaries of that region.
             int iBeatLength = min(liLengthSamples, kiBeatBlockNo*kiBlockSize);
-            int iBeatBlockLength = iBeatLength/kiBlockSize;
+            int iBeatBlockLength = iBeatLength/(kiBlockSize/2);
             
-            int iBeatPosStart = liLengthSamples/2-iBeatLength/2;
-            int iBeatPosEnd = iBeatPosStart+iBeatLength;
+            // ***REMEMBER RANGE CHECK ***
+            int iBeatPosStart = max(0,liLengthSamples/2-iBeatLength/2);
+            int iBeatPosEnd = min(liLengthSamples, iBeatPosStart+iBeatLength);
   
             // Allocate buffer for first derivative of the PSF vector          
             float *pDPsf = new float[iBeatBlockLength];
             
-            long liPos = 0;
+            long liPos = pSoundSource->read(kiBlockSize, pBuffer);
             i=0;
             int j = 0;
+
             while (liPos<liLengthSamples)
             {
-                // Read a block of samples
-                liPos += pSoundSource->read(kiBlockSize, pBuffer);
-
                 // Check if it's time to extract max and min
                 if (liPos>i/3*iSeekLength)
                 {
@@ -168,7 +167,25 @@ void WaveSummary::run()
                     pDPsf[j] = m_pEngineSpectralFwd->getPSF();
                 
                     j++;
+
+
+                    //
+                    // Read only half a block of samples
+                    //
+
+                    // Copy block of samples
+                    for (int i=0; i<kiBlockSize; ++i)
+                        pBuffer[i] = pBuffer[i+kiBlockSize];
+
+                    // Read half a block of new samples
+                    liPos += pSoundSource->read(kiBlockSize/2, &pBuffer[kiBlockSize]);
                 }
+                else
+                {
+                    // Read a new block of samples
+                    liPos += pSoundSource->read(kiBlockSize, pBuffer);
+                }
+
             }
             
             //
@@ -185,7 +202,7 @@ void WaveSummary::run()
             pPeaks->update(0, iBeatBlockLength);
             
             // Initialize beat probability vector
-            ProbabilityVector *bpv = new ProbabilityVector(60.f/histMaxBPM, 60.f/histMinBPM, 1000);
+            ProbabilityVector *bpv = new ProbabilityVector(60.f/histMaxBPM, 60.f/histMinBPM, kiBeatBins);
             
             // Calculate BPM
             PeakList::iterator it1 = pPeaks->begin();

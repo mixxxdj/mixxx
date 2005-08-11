@@ -32,10 +32,5 @@ ReaderExtract::~ReaderExtract()
 
 void ReaderExtract::addVisual(VisualChannel *pVisualChannel)
 {
-    m_pVisualBuffer = pVisualChannel->add(this, m_pEngineBuffer);
-}
-
-QString ReaderExtract::getVisualDataType()
-{
-    return m_qsVisualDataType;
+    m_pVisualBuffer = pVisualChannel->add(this, m_pEngineBuffer, m_qsVisualDataType);
 }

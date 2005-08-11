@@ -381,8 +381,10 @@ QStringList PlayerPortAudio::getSampleRates()
     }
 
     // Sort list
+#ifndef QT3_SUPPORT
     qHeapSort(srlist);
-    
+#endif
+
     // Convert srlist to stringlist
     QStringList result;
     for (unsigned int i=0; i<srlist.count(); ++i)

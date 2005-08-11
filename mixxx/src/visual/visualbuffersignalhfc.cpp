@@ -10,6 +10,7 @@
 //
 //
 #include "visualbuffersignalhfc.h"
+#include <qgl.h>
 
 VisualBufferSignalHFC::VisualBufferSignalHFC(ReaderExtract *pReaderExtract, EngineBuffer *pEngineBuffer, const char *group) : VisualBufferSignal(pReaderExtract, pEngineBuffer, group)
 {

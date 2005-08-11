@@ -47,6 +47,7 @@ TrackInfoObject::TrackInfoObject(const QString sPath, const QString sFile) : m_s
     m_iId = 0;
     m_pWave = 0;
     m_pSegmentation = 0;
+    m_pControlObjectBpm = 0;
     m_fBeatFirst = -1.;
     m_iSampleRate = 0;
     m_iChannels = 0;
@@ -96,6 +97,7 @@ TrackInfoObject::TrackInfoObject(const QDomNode &nodeHeader)
     m_pWave = XmlParse::selectNodeCharArray(nodeHeader, QString("WaveSummary"));
     m_pSegmentation = XmlParse::selectNodeLongList(nodeHeader, QString("SegmentationSummary"));
     m_pTableTrack = 0;
+    m_pControlObjectBpm = 0;
 
     m_pTableItemScore = 0;
     m_pTableItemTitle = 0;

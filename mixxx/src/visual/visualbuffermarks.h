@@ -41,13 +41,23 @@ protected:
 
 protected slots:
     void slotUpdateCuePoint(double);
+    void slotUpdateBpm(double v);
+    void slotUpdateBeatFirst(double v);
 
 private:
     /** Pointer to cue point position */
     ControlObjectThreadMain *m_pCuePoint;
+    /** Pointer to control object holding beat info */
+    ControlObjectThreadMain *m_pControlBpm, *m_pControlBeatFirst;
+    /** Local copies of beat info */
+    double m_dBeatFirst, m_dBpm, m_dBeatDistance;
     /** Index in visual buffer where cue point is set. Is -1 if the cue point
      *  is currently not visible */
     int m_iCuePosition;
+    /** Absoulte start file position */
+    long int m_liFileStartPos;
+    /** Buffer start position */
+    int m_iBufferStartPos;    
 };
 
 #endif

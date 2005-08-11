@@ -39,26 +39,10 @@ public:
     virtual void update(int iPos, int iLen, long int liFileStartPos, int iBufferStartPos);
     virtual void draw(GLfloat *p, int iLen, float);
 
-public slots:
-    void slotUpdateBpm(double v);
-    void slotUpdateBeatFirst(double v);
-
 private:
-    /** Pointer to control object holding beat info */
-    ControlObjectThreadMain *m_pControlBpm, *m_pControlBeatFirst;
-    /** Local copies of beat info */
-    double m_dBeatFirst, m_dBpm, m_dBeatDistance;
-    /** Used in low pass filtering */
-    float m_fLastPositive, m_fLastNegative;
     /** Buffer used when drawing around start and end of buffer */
-    GLfloat m_fWrapBuffer[12], m_fWrapBuffer2[12];
-    /** Pointer to the secondary buffer, an openGL vertex array */
-    GLfloat *m_pBuffer2;
+    GLfloat m_fWrapBuffer[12];
     double m_dAbsStartpos;
-    /** Absoulte start file position */
-    long int m_liFileStartPos;
-    /** Buffer start position */
-    int m_iBufferStartPos;    
 };
 
 #endif

@@ -21,6 +21,8 @@ WTreeItemDir::WTreeItemDir(QListView *parent, const QString& filename) : WTreeIt
     fileNormal = 0;
     p = 0;
     readable = QDir(fullName()).isReadable();
+
+    setPixmap(new QPixmap(QString("C:\Documents and Settings\Tue\My Documents\cvs\mixxx\src\icons\unknown.png")));
 }
 
 WTreeItemDir::WTreeItemDir(WTreeItemDir *parent, const QString& filename, const QString &col2) : WTreeItem( parent, filename, col2 )
@@ -29,6 +31,8 @@ WTreeItemDir::WTreeItemDir(WTreeItemDir *parent, const QString& filename, const 
     folderClosed = 0;
     folderOpen = 0;
     fileNormal = 0;
+
+    setPixmap(new QPixmap(QString("C:\Documents and Settings\Tue\My Documents\cvs\mixxx\src\icons\unknown.png")));
 }
 
 WTreeItemDir::WTreeItemDir(WTreeItemDir *parent, const QString& filename) : WTreeItem( parent ), f(filename), showDirsOnly(parent->showDirsOnly)
@@ -46,6 +50,7 @@ WTreeItemDir::WTreeItemDir(WTreeItemDir *parent, const QString& filename) : WTre
     else
         setPixmap(folderClosed);
 */
+    setPixmap(new QPixmap(QString("C:\Documents and Settings\Tue\My Documents\cvs\mixxx\src\icons\unknown.png")));
 }
 
 WTreeItemDir::~WTreeItemDir()

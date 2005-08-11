@@ -55,7 +55,7 @@ void VisualChannel::setupBuffer()
 //        b->slotSetupBuffer();
 }
 
-VisualBuffer *VisualChannel::add(ReaderExtract *pReaderExtract, EngineBuffer *pEngineBuffer)
+VisualBuffer *VisualChannel::add(ReaderExtract *pReaderExtract, EngineBuffer *pEngineBuffer, QString qType)
 {
     VisualBuffer *b = 0;
 
@@ -65,17 +65,17 @@ VisualBuffer *VisualChannel::add(ReaderExtract *pReaderExtract, EngineBuffer *pE
         // Temporal
         b = new VisualBufferTemporal(pEngineBuffer, group);
     }
-    else if (pReaderExtract->getVisualDataType()=="signal")
+    else if (qType=="signal")
     {
         // Construct a new buffer
         b = new VisualBufferSignal(pReaderExtract, pEngineBuffer, group);
     }
-    else if (pReaderExtract->getVisualDataType()=="hfc")
+    else if (qType=="hfc")
     {
         // Construct a new buffer
         b = new VisualBufferSignalHFC(pReaderExtract, pEngineBuffer, group);
     }
-    else if (pReaderExtract->getVisualDataType()=="marks")
+    else if (qType=="marks")
     {
         // Construct a new buffer
         b = new VisualBufferMarks(pReaderExtract, pEngineBuffer, group);
@@ -91,14 +91,14 @@ VisualBuffer *VisualChannel::add(ReaderExtract *pReaderExtract, EngineBuffer *pE
     if (m_qlListDisplay.isEmpty())
 	{
 		if (pReaderExtract)
-			d = new VisualDisplay(b, pReaderExtract->getVisualDataType(), group, true);
+			d = new VisualDisplay(b, qType, group, true);
 		else
 			d = new VisualDisplay(b, "temporal", group, true);
 	}
 	else
     {
 		if (pReaderExtract)
-			d = new VisualDisplay(b, pReaderExtract->getVisualDataType(), group, false);
+			d = new VisualDisplay(b, qType, group, false);
 		else
 			d = new VisualDisplay(b, "temporal", group, false);
 	}

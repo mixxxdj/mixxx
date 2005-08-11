@@ -19,7 +19,6 @@
 #define READEREXTRACT_H
 
 #include <qstring.h>
-#include <qapplication.h>
 #include "visual/visualbuffer.h"
 
 class VisualChannel;
@@ -57,8 +56,6 @@ public:
     virtual void *processChunk(const int idx, const int start_idx, const int end_idx, bool backwards, const long signed int filepos_start) = 0;
     /** Add visual to GUI Channel */
     virtual void addVisual(VisualChannel *pVisualChannel);
-    /** Get associated visual signal type */
-    QString getVisualDataType();
 protected:
     /** Pointer to input object */
     ReaderExtract *input;
