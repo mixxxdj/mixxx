@@ -18,6 +18,7 @@
 #include "dlgprefplaylist.h"
 #include <qlineedit.h>
 #include <qfiledialog.h>
+#include <qwidget.h>
 #include <qpushbutton.h>
 
 DlgPrefPlaylist::DlgPrefPlaylist(QWidget *parent, ConfigObject<ConfigValue> *_config) : DlgPrefPlaylistDlg(parent,"")

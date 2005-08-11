@@ -19,6 +19,8 @@
 #include "controlobject.h"
 #include <algorithm>
 #include <qdir.h>
+#include <qwidget.h>
+
 
 /* -------- ------------------------------------------------------
    Purpose: Initialize midi, and start parsing loop

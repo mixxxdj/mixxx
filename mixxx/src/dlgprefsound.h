@@ -18,10 +18,10 @@
 #ifndef DLGPREFSOUND_H
 #define DLGPREFSOUND_H
 
-#include <qwidget.h>
 #include "dlgprefsounddlg.h"
 #include "configobject.h"
 
+class QWidget;
 class PlayerProxy;
 class ControlObject;
 

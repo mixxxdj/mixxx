@@ -18,10 +18,10 @@
 #ifndef DLGPREFCONTROLS_H
 #define DLGPREFCONTROLS_H
 
-#include <qwidget.h>
 #include "dlgprefcontrolsdlg.h"
 #include "configobject.h"
 
+class QWidget;
 class ControlObjectThreadMain;
 class ControlPotmeter;
 class MixxxView;

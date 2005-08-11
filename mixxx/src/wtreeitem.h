@@ -13,10 +13,9 @@
 #define WTREEITEM_H
 
 #include <qlistview.h>
-#include <qwidget.h>
 #include <qobject.h>
 class Track;
-
+class QWidget;
 /**
 @author Tue Haste Andersen
 */
@@ -36,8 +35,17 @@ public:
     virtual QString drag();
     static void setTrack(Track *pTrack);
     
+    const QPixmap *pixmap( int i ) const;
+#if !defined(Q_NO_USING_KEYWORD)
+    using QListViewItem::setPixmap;
+#endif
+    void setPixmap( QPixmap *p );
+
 protected:
     static Track *spTrack;
+
+private:
+    QPixmap *pix;
 };
 
 #endif

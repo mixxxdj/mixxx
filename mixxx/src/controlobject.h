@@ -19,7 +19,6 @@
 #define CONTROLOBJECT_H
 
 #include <qobject.h>
-#include <qwidget.h>
 #include <qevent.h>
 #include <qptrlist.h>
 //#include <qaccel.h>
@@ -29,6 +28,7 @@
 #include "midiobject.h"
 #include "controlobjectthread.h"
 
+class QWidget;
 class ConfigKey;
 
 struct QueueObjectThread

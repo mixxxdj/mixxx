@@ -28,6 +28,7 @@
 #include <qprogressdialog.h>
 #include <qmessagebox.h>
 #include <qtimer.h>
+#include <qwidget.h>
 #include "controlobject.h"
 #include "midiobjectnull.h"
 #ifdef __ALSAMIDI__

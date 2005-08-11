@@ -17,6 +17,7 @@
 
 #include "controlobject.h"
 #include "controlevent.h"
+#include <qwidget.h>
 
 // Static member variable definition
 QPtrList<ControlObject> ControlObject::m_sqList;
