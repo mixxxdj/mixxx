@@ -361,7 +361,7 @@ void Track::slotLoadPlayer1(TrackInfoObject *pTrackInfoObject, bool bStartFromEn
     m_pBuffer1->getReader()->requestNewTrack(m_pTrackPlayer1, bStartFromEndPos);
 
     // Generate waveform summary
-    if (m_pWaveSummary && (m_pTrackPlayer1->getWaveSummary()==0 || m_pTrackPlayer1->getWaveSummary()->size()==0))
+    if (m_pTrackPlayer1->getBpm()==0. || (m_pWaveSummary && (m_pTrackPlayer1->getWaveSummary()==0 || m_pTrackPlayer1->getWaveSummary()->size()==0)))
         m_pWaveSummary->enqueue(m_pTrackPlayer1);
 
     // Set waveform summary display
@@ -406,7 +406,7 @@ void Track::slotLoadPlayer2(TrackInfoObject *pTrackInfoObject, bool bStartFromEn
     m_pBuffer2->getReader()->requestNewTrack(m_pTrackPlayer2, bStartFromEndPos);
 
     // Generate waveform summary
-    if (m_pWaveSummary && (m_pTrackPlayer2->getWaveSummary()==0 || m_pTrackPlayer2->getWaveSummary()->size()==0))
+    if (m_pTrackPlayer2->getBpm()==0. || (m_pWaveSummary && (m_pTrackPlayer2->getWaveSummary()==0 || m_pTrackPlayer2->getWaveSummary()->size()==0)))
         m_pWaveSummary->enqueue(m_pTrackPlayer2);
 
     // Set waveform summary display

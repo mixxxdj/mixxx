@@ -22,6 +22,7 @@
 #include "../controlobject.h"
 #include "../controlobjectthreadmain.h"
 #include "../enginetemporal.h"
+#include <qgl.h>
 
 VisualBufferTemporal::VisualBufferTemporal(EngineBuffer *pEngineBuffer, const char *group) : VisualBuffer(pEngineBuffer, group)
 {

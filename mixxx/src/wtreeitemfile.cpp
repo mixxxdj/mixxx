@@ -19,6 +19,7 @@
 
 WTreeItemFile::WTreeItemFile(WTreeItem *parent, const QString &s1, const QString &s2) : WTreeItem( parent, s1, s2 )
 {
+    setPixmap(new QPixmap(QString("C:\Documents and Settings\Tue\My Documents\cvs\mixxx\src\icons\unknown.png")));
 }
 
 WTreeItemFile::~WTreeItemFile()

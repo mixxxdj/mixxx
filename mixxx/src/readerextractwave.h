@@ -57,6 +57,7 @@ public:
     void getchunk(CSAMPLE rate);
     /** Seek to a new play position. Returns positon actually seeked to */
     long int seek(long int new_playpos);
+
     /** The first read sample in the file, currently in read_buffer. This should only be
       * accessed while holding the enginelock from the reader class. */
     long signed int filepos_start;
@@ -84,6 +85,8 @@ private:
     ReaderExtractHFC *readerhfc;
     /** Pointer to beat extractor */
     ReaderExtractBeat *readerbeat;
+    /** Pointer to associated VisualBuffer for beat marks */
+    VisualBuffer *m_pVisualBufferMarks;
 };
 
 #endif

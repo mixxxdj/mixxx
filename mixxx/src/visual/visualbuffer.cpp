@@ -25,6 +25,7 @@
 #include "player.h"
 #include "../enginebuffer.h"
 #include "../mathstuff.h"
+#include <qgl.h>
 
 
 VisualBuffer::VisualBuffer(EngineBuffer *pEngineBuffer, const char *group)
@@ -88,6 +89,7 @@ VisualBuffer::VisualBuffer(ReaderExtract *pReaderExtract, EngineBuffer *pEngineB
 
     // Set resample factor, length of this buffer etc.
     m_pBuffer = 0;
+    m_iLen = 0;
     slotSetupBuffer(m_pReaderExtract->getBufferSize(), m_pReaderExtract->getRate());
 
     installEventFilter(this);

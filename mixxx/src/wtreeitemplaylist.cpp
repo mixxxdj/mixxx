@@ -23,6 +23,16 @@ WTreeItemPlaylist::WTreeItemPlaylist(WTreeItem *parent, TrackPlaylist *pPlaylist
     setRenameEnabled(0, true);
     m_pPlaylist = pPlaylist;
     setText(0, m_pPlaylist->getListName());
+
+    QPixmap *p = new QPixmap(QString("C:\Documents and Settings\Tue\My Documents\cvs\mixxx\src\icons\unknown.png"));
+
+    setPixmap(p);
+
+    setup();
+    widthChanged( 0 );
+    invalidateHeight();
+    repaint();
+
 }
 
 /*
