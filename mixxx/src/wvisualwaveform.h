@@ -75,6 +75,8 @@ protected:
 
     /** Used in mouse event handler */
     int m_iStartPosX;
+    /** Timer id */
+    int m_iTimerID;
     /** Backplane */
     VisualBackplane *m_pVisualBackplane;
 
