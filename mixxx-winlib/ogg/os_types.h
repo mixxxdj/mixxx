@@ -11,7 +11,7 @@
  ********************************************************************
 
  function: #ifdef jail to whip a few platforms into the UNIX ideal.
- last mod: $Id: os_types.h 363 2003-06-10 15:29:38Z tuehaste $
+ last mod: $Id: os_types.h 901 2005-08-12 17:42:48Z tuehaste $
 
  ********************************************************************/
 #ifndef _OS_TYPES_H
@@ -34,11 +34,21 @@
    typedef __int16 ogg_int16_t;
 #  else
    /* Cygwin */
-   #include <_G_config.h>
+/*
+   #include "_G_config.h"
    typedef _G_int64_t ogg_int64_t;
    typedef _G_int32_t ogg_int32_t;
    typedef _G_uint32_t ogg_uint32_t;
    typedef _G_int16_t ogg_int16_t;
+*/
+   /* MinGW32 */
+   typedef short ogg_int16_t;
+   typedef unsigned short ogg_uint16_t;
+   typedef int ogg_int32_t;
+   typedef unsigned int ogg_uint32_t;
+   typedef long long ogg_int64_t;
+   typedef unsigned long long ogg_uint64_t;
+
 #  endif
 
 #elif defined(__MACOS__)
