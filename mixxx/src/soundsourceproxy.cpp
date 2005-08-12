@@ -15,6 +15,7 @@
  *                                                                         *
  ***************************************************************************/
 
+#include "trackinfoobject.h"
 #include "soundsourceproxy.h"
 #include "soundsourcemp3.h"
 #include "soundsourceoggvorbis.h"
