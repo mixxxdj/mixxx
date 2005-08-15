@@ -18,7 +18,22 @@
 #ifndef POWERMATE_H
 #define POWERMATE_H
 
+#ifdef __WIN__
+#ifndef _MSC_VER
+/* Not MSVC, one of these:
+   __MINGW32__
+   __CYGWIN__ 
+*/
+#include <windows.h>
+#endif
+#endif
+
+#ifdef QT3_SUPPORT
+#include <q3semaphore.h>
+#else
 #include <qsemaphore.h>
+#endif
+
 #include "input.h"
 
 class Rotary;
@@ -49,7 +64,11 @@ protected:
     /** Instantiate number. Used in the calculation of MIDI controller id's */
     int m_iInstNo;
     /** Semaphore used to control led */
+    #ifdef QT3_SUPPORT
+    Q3Semaphore m_qRequestLed;
+    #else
     QSemaphore m_qRequestLed;
+    #endif
     /** Pointer to rotary object */
     Rotary *m_pRotary;
     /** Pointer to control objects connected to the PowerMate */
