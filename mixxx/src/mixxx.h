@@ -17,18 +17,13 @@
 
 #ifndef MIXXX_H
 #define MIXXX_H
-
 // include files for QT
-#include <qmainwindow.h>
 #include <qaction.h>
 #include <qmenubar.h>
-#include <qpopupmenu.h>
 #include <qtoolbutton.h>
-#include <qwhatsthis.h>
 #include <qstring.h>
 #include <qstringlist.h>
 #include <qpixmap.h>
-#include <qfiledialog.h>
 #include <qprinter.h>
 #include <qpainter.h>
 #include <qpoint.h>
@@ -36,6 +31,18 @@
 #include <vector>
 #include <qstringlist.h>
 
+#ifdef QT3_SUPPORT
+#include <Q3Action>
+#include <q3mainwindow.h>
+#include <q3popupmenu.h>
+#include <q3whatsthis.h>
+#include <q3filedialog.h>
+#else
+#include <qmainwindow.h>
+#include <qpopupmenu.h>
+#include <qwhatsthis.h>
+#include <qfiledialog.h>
+#endif
 // application specific includes
 #include "defs.h"
 #include "mixxxview.h"
@@ -59,7 +66,11 @@ class QSplashScreen;
   * For the main view, an instance of class MixxxView is
   * created which creates your view.
   */
+#ifdef QT3_SUPPORT
+class MixxxApp : public Q3MainWindow
+#else
 class MixxxApp : public QMainWindow
+#endif
 {
   Q_OBJECT
 
@@ -115,20 +126,61 @@ class MixxxApp : public QMainWindow
     ConfigObject<ConfigValueKbd> *kbdconfig;
     /** Pointer to track object */
     Track *m_pTrack;
+    
+    #ifdef QT3_SUPPORT
     /** file_menu contains all items of the menubar entry "File" */
-    QPopupMenu *fileMenu;
+    Q3PopupMenu *fileMenu;
     /** edit_menu contains all items of the menubar entry "Edit" */
-    QPopupMenu *editMenu;
+    Q3PopupMenu *editMenu;
     /** playlist menu */
-    QPopupMenu *playlistsMenu;
+    Q3PopupMenu *playlistsMenu;
     /** options_menu contains all items of the menubar entry "Options" */
-    QPopupMenu *optionsMenu;
+    Q3PopupMenu *optionsMenu;
     /** view_menu contains all items of the menubar entry "View" */
-    QPopupMenu *viewMenu;
+    Q3PopupMenu *viewMenu;
     /** view_menu contains all items of the menubar entry "Help" */
-    QPopupMenu *helpMenu;
+    Q3PopupMenu *helpMenu;
+   #else
+   /** file_menu contains all items of the menubar entry "File" */
+   QPopupMenu *fileMenu;
+   /** edit_menu contains all items of the menubar entry "Edit" */
+   QPopupMenu *editMenu;
+   /** playlist menu */
+   QPopupMenu *playlistsMenu;
+   /** options_menu contains all items of the menubar entry "Options" */
+   QPopupMenu *optionsMenu;
+   /** view_menu contains all items of the menubar entry "View" */
+   QPopupMenu *viewMenu;
+   /** view_menu contains all items of the menubar entry "Help" */
+   QPopupMenu *helpMenu;
+   #endif
+
     /** actions for the application initialized in initActions() and used to en/disable them
       * according to your needs during the program */
+
+    #ifdef QT3_SUPPORT
+    Q3Action *fileNew;
+    Q3Action *fileOpen;
+    Q3Action *fileSave;
+    Q3Action *fileSaveAs;
+    Q3Action *fileClose;
+    Q3Action *filePrint;
+    Q3Action *fileQuit;
+
+    Q3Action *editCut;
+    Q3Action *editCopy;
+    Q3Action *editPaste;
+
+    Q3Action *playlistsNew;
+    Q3Action *playlistsImport;
+    Q3Action **playlistsList;
+
+    Q3Action *optionsBeatMark;
+    Q3Action *optionsFullScreen;
+    Q3Action *optionsPreferences;
+
+    Q3Action *helpAboutApp;
+    #else
     QAction *fileNew;
     QAction *fileOpen;
     QAction *fileSave;
@@ -144,15 +196,17 @@ class MixxxApp : public QMainWindow
     QAction *playlistsNew;
     QAction *playlistsImport;
     QAction **playlistsList;
-    int m_iNoPlaylists;
 
     QAction *optionsBeatMark;
     QAction *optionsFullScreen;
     QAction *optionsPreferences;
-    /** Pointer to preference dialog */
-    DlgPreferences *prefDlg;
 
     QAction *helpAboutApp;
+    #endif
+    int m_iNoPlaylists;
+
+    /** Pointer to preference dialog */
+    DlgPreferences *prefDlg;
 };
 #endif
 
