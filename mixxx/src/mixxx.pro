@@ -255,7 +255,17 @@ unix {
 win32 {
   DEFINES += __WIN__
   INCLUDEPATH += $$WINLIBPATH ../lib .
-  QMAKE_CXXFLAGS += -GX
+  VISUALSTUDIO { 
+    QMAKE_CXXFLAGS += -GX
+  }
+  contains(CONFIG, qt3support) {
+    !VISUALSTUDIO {
+       QMAKE_CXXFLAGS += -UQT_NO_CAST_TO_ASCII -UQ_NO_DECLARED_NOT_DEFINED -UQT_NO_ASCII_CAST
+    }
+    # QT3 SUPPORT stuff
+    QT += network xml opengl qt3support
+    CONFIG += uic3
+  }
   QMAKE_LFLAGS += /VERBOSE:LIB /LIBPATH:$$WINLIBPATH /NODEFAULTLIB:library /NODEFAULTLIB:libcd /NODEFAULTLIB:libcmt /NODEFAULTLIB:libc
   SETTINGS_FILE = \"mixxx.cfg\"
   TRACK_FILE = \"mixxxtrack.xml\"
