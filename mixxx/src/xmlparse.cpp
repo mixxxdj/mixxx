@@ -11,6 +11,10 @@
 //
 
 #include "xmlparse.h"
+#ifdef QT3_SUPPORT
+#include <Q3ValueList>
+#include <Q3MemArray>
+#endif
 
 XmlParse::XmlParse()
 {
@@ -53,7 +57,11 @@ QString XmlParse::selectNodeQString(const QDomNode &nodeHeader, const QString sN
     return ret;
 }
 
+#ifdef QT3_SUPPORT
+Q3MemArray<long> *XmlParse::selectNodeLongArray(const QDomNode &nodeHeader, const QString sNode)
+#else
 QMemArray<long> *XmlParse::selectNodeLongArray(const QDomNode &nodeHeader, const QString sNode)
+#endif
 {
     QString s;
     QDomNode node = selectNode(nodeHeader, sNode);
@@ -63,8 +71,11 @@ QMemArray<long> *XmlParse::selectNodeLongArray(const QDomNode &nodeHeader, const
         if (!node2.isNull())
             s = node2.toCDATASection().data();
     }
-
+#ifdef QT3_SUPPORT
+    Q3MemArray<long> *data = new Q3MemArray<long>(s.length()/4);
+#else
     QMemArray<long> *data = new QMemArray<long>(s.length()/4);
+#endif
     for (unsigned int i=0; i<s.length()/4; ++i)
     {    
         QChar c4 = s.at(i*4);
@@ -72,14 +83,22 @@ QMemArray<long> *XmlParse::selectNodeLongArray(const QDomNode &nodeHeader, const
         QChar c2 = s.at(i*4+2);
         QChar c1 = s.at(i*4+3);
 
+#ifdef QT3_SUPPORT
+ 	long v = (long)((unsigned char)c1.latin1()) + (long)((unsigned char)c2.latin1())*0x100 + (long)((unsigned char)c3.latin1())*0x10000 + (long)((unsigned char)c4.latin1())*0x1000000;
+#else
 	long v = (long)((unsigned char)c1) + (long)((unsigned char)c2)*0x100 + (long)((unsigned char)c3)*0x10000 + (long)((unsigned char)c4)*0x1000000;
+#endif
 
         data->at(i) = v;
     }
     return data;
 }
 
+#ifdef QT3_SUPPORT
+Q3MemArray<char> *XmlParse::selectNodeCharArray(const QDomNode &nodeHeader, const QString sNode)
+#else
 QMemArray<char> *XmlParse::selectNodeCharArray(const QDomNode &nodeHeader, const QString sNode)
+#endif
 {
     QString s;
     QDomNode node = selectNode(nodeHeader, sNode);
@@ -89,18 +108,31 @@ QMemArray<char> *XmlParse::selectNodeCharArray(const QDomNode &nodeHeader, const
         if (!node2.isNull())
             s = node2.toCDATASection().data();
     }
-
+#ifdef QT3_SUPPORT
+    Q3MemArray<char> *data = new Q3MemArray<char>(s.length());
+    for (unsigned int i=0; i<s.length(); ++i)
+        data->at(i) = s.at(i).latin1();
+#else
     QMemArray<char> *data = new QMemArray<char>(s.length());
     for (unsigned int i=0; i<s.length(); ++i)
         data->at(i) = (QChar)(s.at(i));
+#endif
     return data;
 }
 
+#ifdef QT3_SUPPORT
+Q3ValueList<long> *XmlParse::selectNodeLongList(const QDomNode &nodeHeader, const QString sNode)
+#else
 QValueList<long> *XmlParse::selectNodeLongList(const QDomNode &nodeHeader, const QString sNode)
+#endif
 {
-    QMemArray<long> *p = selectNodeLongArray(nodeHeader, sNode);
-    
+#ifdef QT3_SUPPORT
+    Q3MemArray<long> *p = selectNodeLongArray(nodeHeader, sNode);    
+    Q3ValueList<long> *data = new Q3ValueList<long>;
+#else
+    QMemArray<long> *p = selectNodeLongArray(nodeHeader, sNode);    
     QValueList<long> *data = new QValueList<long>;
+#endif
     for (unsigned int i=0; i<p->size(); ++i)
         data->append(p->at(i));
     return data;
@@ -114,7 +146,11 @@ QDomElement XmlParse::addElement(QDomDocument &doc, QDomElement &header, QString
     return element;
 }
 
+#ifdef QT3_SUPPORT
+QDomElement XmlParse::addElement(QDomDocument &doc, QDomElement &header, QString sElementName, Q3ValueList<long> *pData)
+#else
 QDomElement XmlParse::addElement(QDomDocument &doc, QDomElement &header, QString sElementName, QValueList<long> *pData)
+#endif
 {
     // Create a string, binstring, that contains the data contained pointet to by pData, and save it in XML
     // by use of QDomCDATASection
@@ -141,7 +177,11 @@ QDomElement XmlParse::addElement(QDomDocument &doc, QDomElement &header, QString
     return element;
 }
 
+#ifdef QT3_SUPPORT
+QDomElement XmlParse::addElement(QDomDocument &doc, QDomElement &header, QString sElementName, Q3MemArray<char> *pData)
+#else
 QDomElement XmlParse::addElement(QDomDocument &doc, QDomElement &header, QString sElementName, QMemArray<char> *pData)
+#endif
 {
     // Create a string, binstring, that contains the data contained pointet to by pData, and save it in XML
     // by use of QDomCDATASection
