@@ -18,7 +18,22 @@
 #ifndef HERCULES_H
 #define HERCULES_H
 
+#ifdef __WIN__
+#ifndef _MSC_VER
+/* Not MSVC, one of these:
+   __MINGW32__
+   __CYGWIN__ 
+*/
+#include <windows.h>
+#endif
+#endif
+
+#ifdef QT3_SUPPORT
+#include <q3semaphore.h>
+#else
 #include <qsemaphore.h>
+#endif
+
 #include "input.h"
 
 /**
@@ -58,7 +73,11 @@ protected:
     /** Instantiate number. Used in the calculation of MIDI controller id's */
     int m_iInstNo;
     /** Pointer to semaphore used to control led */
+    #ifdef QT3_SUPPORT
+    Q3Semaphore m_qRequestLed;
+    #else
     QSemaphore m_qRequestLed;
+    #endif
     
     ControlObject *m_pControlObjectLeftTreble, *m_pControlObjectLeftMiddle, *m_pControlObjectLeftBass,
                   *m_pControlObjectLeftVolume, *m_pControlObjectLeftPitch, *m_pControlObjectLeftJog,
