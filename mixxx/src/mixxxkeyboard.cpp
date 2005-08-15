@@ -17,6 +17,11 @@
 
 #include "mixxxkeyboard.h"
 #include "controlobject.h"
+#ifdef QT3_SUPPORT
+#include <Q3ValueList>
+#include <QKeyEvent>
+#include <QEvent>
+#endif
 
 MixxxKeyboard::MixxxKeyboard(ConfigObject<ConfigValueKbd> *pKbdConfigObject, QObject *parent, const char *name) : QObject(parent, name)
 {
@@ -50,7 +55,11 @@ bool MixxxKeyboard::eventFilter(QObject *, QEvent *e)
         QKeyEvent *ke = (QKeyEvent *)e;
 
         // Run through list of active keys to see if the released key is active
+        #ifdef QT3_SUPPORT
+        Q3ValueList<int>::iterator it = m_qActiveKeyList.begin();
+        #else
         QValueList<int>::iterator it = m_qActiveKeyList.begin();
+		#endif
         while (it!=m_qActiveKeyList.end())
         {
             if ((*it) == ke->key())
@@ -101,13 +110,21 @@ bool MixxxKeyboard::kbdPress(QKeySequence k, bool release)
 QKeySequence MixxxKeyboard::getKeySeq(QKeyEvent *e)
 {
     QString s = QKeySequence(e->key());
-
-    if (e->state() & ShiftButton)
+	#ifdef QT3_SUPPORT
+    if (e->state() & Qt::ShiftButton)
+        s = "Shift+" + s;    
+    if (e->state() & Qt::ControlButton)
+        s = "Ctrl+" + s;
+    if (e->state() & Qt::AltButton)
+        s = "Alt+" + s;
+    #else
+	if (e->state() & ShiftButton)
         s = "Shift+" + s;
     if (e->state() & ControlButton)
         s = "Ctrl+" + s;
     if (e->state() & AltButton)
         s = "Alt+" + s;
+    #endif
 
 //     qDebug("key %s",s.latin1());
 
