@@ -15,19 +15,29 @@
  *                                                                         *
  ***************************************************************************/
 
-#include <qaccel.h>
 #include <qpushbutton.h>
-#include <qtable.h>
-#include <qlistview.h>
-#include <qiconset.h>
-#include <qptrlist.h>
 #include <qcombobox.h>
 #include <qmessagebox.h>
-#include <signal.h>
+
+#ifdef QT3_SUPPORT
+#include <q3accel.h>
+#include <Q3PopupMenu>
+#include <q3table.h>
+#include <q3listview.h>
+#include <q3ptrlist.h>
+#include <Q3Action>
+#include <QPixmap>
+#include <qicon.h>
+#else
+#include <qaccel.h>
+#include <qtable.h>
+#include <qptrlist.h>
+#endif
+#include <qlistview.h>
+#include <qiconset.h>
 #include <qlineedit.h>
 #include <qslider.h>
 #include <qlabel.h>
-#include <qptrlist.h>
 #include <qsplashscreen.h>
 
 #include "wknob.h"
@@ -142,9 +152,14 @@ MixxxApp::MixxxApp(QApplication *a, QStringList files, QSplashScreen *pSplash, Q
     QDir dir(config->getValueString(ConfigKey("[Playlist]","Directory")));
     if ((config->getValueString(ConfigKey("[Playlist]","Directory")).length()<1) | (!dir.exists()))
     {
+    	  #ifdef QT3_SUPPORT
+        Q3FileDialog* fd = new Q3FileDialog(this, "", true);
+        fd->setMode( Q3FileDialog::Directory );
+        #else
         QFileDialog* fd = new QFileDialog(this, "", true);
-        fd->setCaption(QString("Choose directory with music files"));
         fd->setMode( QFileDialog::Directory );
+        #endif
+        fd->setCaption(QString("Choose directory with music files"));
         if ( fd->exec() == QDialog::Accepted )
         {
             config->set(ConfigKey("[Playlist]","Directory"), fd->selectedFile());
@@ -325,44 +340,57 @@ MixxxApp::~MixxxApp()
 /** initializes all QActions of the application */
 void MixxxApp::initActions()
 {
+	#ifdef QT3_SUPPORT
+    fileOpen = new Q3Action(tr("Open..."), tr("&Open"), Q3Accel::stringToKey(tr("Ctrl+O")), this);
+    fileQuit = new Q3Action(tr("Exit"), tr("E&xit"), Q3Accel::stringToKey(tr("Ctrl+Q")), this);
+    playlistsNew = new Q3Action(tr("Add new playlist"), tr("&New playlist"), Q3Accel::stringToKey(tr("Ctrl+N")), this, 0, this);
+    playlistsImport = new Q3Action(tr("Import playlist"), tr("&Import playlist"), Q3Accel::stringToKey(tr("Ctrl+I")), this, 0, this);
+    optionsBeatMark = new Q3Action(tr("Audio Beat Marks"), tr("&Audio Beat Marks"), 0, this, 0, true);
+    optionsPreferences = new Q3Action(tr("Preferences"), tr("&Preferences..."), Q3Accel::stringToKey(tr("Ctrl+P")), this);
+    helpAboutApp = new Q3Action(tr("About"), tr("&About..."), 0, this);
+
+    #else
     fileOpen = new QAction(tr("Open..."), tr("&Open"), QAccel::stringToKey(tr("Ctrl+O")), this);
+    fileQuit = new QAction(tr("Exit"), tr("E&xit"), QAccel::stringToKey(tr("Ctrl+Q")), this);
+    playlistsNew = new QAction(tr("Add new playlist"), tr("&New playlist"), QAccel::stringToKey(tr("Ctrl+N")), this, 0, this);
+    playlistsImport = new QAction(tr("Import playlist"), tr("&Import playlist"), QAccel::stringToKey(tr("Ctrl+I")), this, 0, this);
+    optionsBeatMark = new QAction(tr("Audio Beat Marks"), tr("&Audio Beat Marks"), 0, this, 0, true);
+    optionsPreferences = new QAction(tr("Preferences"), tr("&Preferences..."), QAccel::stringToKey(tr("Ctrl+P")), this);
+    helpAboutApp = new QAction(tr("About"), tr("&About..."), 0, this);
+    #endif
+
     fileOpen->setStatusTip(tr("Opens a file in player 1"));
     fileOpen->setWhatsThis(tr("Open\n\nOpens a file in player 1"));
     connect(fileOpen, SIGNAL(activated()), this, SLOT(slotFileOpen()));
 
-    fileQuit = new QAction(tr("Exit"), tr("E&xit"), QAccel::stringToKey(tr("Ctrl+Q")), this);
+
+    
     fileQuit->setStatusTip(tr("Quits the application"));
     fileQuit->setWhatsThis(tr("Exit\n\nQuits the application"));
     connect(fileQuit, SIGNAL(activated()), this, SLOT(slotFileQuit()));
-
-    playlistsNew = new QAction(tr("Add new playlist"), tr("&New playlist"), QAccel::stringToKey(tr("Ctrl+N")), this, 0, this);
+    
     playlistsNew->setStatusTip(tr("Add new playlist"));
     playlistsNew->setWhatsThis(tr("Add a new playlist"));
     connect(playlistsNew, SIGNAL(activated()), m_pTrack, SLOT(slotNewPlaylist()));
 
-    playlistsImport = new QAction(tr("Import playlist"), tr("&Import playlist"), QAccel::stringToKey(tr("Ctrl+I")), this, 0, this);
     playlistsImport->setStatusTip(tr("Import playlist"));
     playlistsImport->setWhatsThis(tr("Import playlist"));
     connect(playlistsImport, SIGNAL(activated()), m_pTrack, SLOT(slotImportPlaylist()));
 
-    optionsBeatMark = new QAction(tr("Audio Beat Marks"), tr("&Audio Beat Marks"), 0, this, 0, true);
     optionsBeatMark->setOn(false);
     optionsBeatMark->setStatusTip(tr("Audio Beat Marks"));
     optionsBeatMark->setWhatsThis(tr("Audio Beat Marks\nMark beats by audio clicks"));
     connect(optionsBeatMark, SIGNAL(toggled(bool)), this, SLOT(slotOptionsBeatMark(bool)));
 
-    optionsFullScreen = new QAction(tr("Full Screen"), tr("&Full Screen"), QAccel::stringToKey(tr("Esc")), this, 0, this);
     optionsFullScreen->setOn(false);
     optionsFullScreen->setStatusTip(tr("Full Screen"));
     optionsFullScreen->setWhatsThis(tr("Display Mixxx using the full screen"));
     connect(optionsFullScreen, SIGNAL(toggled(bool)), this, SLOT(slotOptionsFullScreen(bool)));
 
-    optionsPreferences = new QAction(tr("Preferences"), tr("&Preferences..."), QAccel::stringToKey(tr("Ctrl+P")), this);
     optionsPreferences->setStatusTip(tr("Preferences"));
     optionsPreferences->setWhatsThis(tr("Preferences\nPlayback and MIDI preferences"));
     connect(optionsPreferences, SIGNAL(activated()), this, SLOT(slotOptionsPreferences()));
 
-    helpAboutApp = new QAction(tr("About"), tr("&About..."), 0, this);
     helpAboutApp->setStatusTip(tr("About the application"));
     helpAboutApp->setWhatsThis(tr("About\n\nAbout the application"));
     connect(helpAboutApp, SIGNAL(activated()), this, SLOT(slotHelpAbout()));
@@ -372,19 +400,30 @@ void MixxxApp::initMenuBar()
 {
     // MENUBAR
 
-    // menuBar entry fileMenu
+    #ifdef QT3_SUPPORT
+    fileMenu=new Q3PopupMenu();
+    optionsMenu=new Q3PopupMenu();
+    playlistsMenu=new Q3PopupMenu();
+    viewMenu=new Q3PopupMenu();
+    helpMenu=new Q3PopupMenu();
+    #else
     fileMenu=new QPopupMenu();
+    optionsMenu=new QPopupMenu();
+    playlistsMenu=new QPopupMenu();
+    viewMenu=new QPopupMenu();
+    helpMenu=new QPopupMenu();
+    #endif
+
+    // menuBar entry fileMenu
     fileOpen->addTo(fileMenu);
     fileQuit->addTo(fileMenu);
 
     // menuBar entry optionsMenu
-    optionsMenu=new QPopupMenu();
     optionsMenu->setCheckable(true);
     //  optionsBeatMark->addTo(optionsMenu);
     optionsFullScreen->addTo(optionsMenu);
     optionsPreferences->addTo(optionsMenu);
 
-    playlistsMenu = new QPopupMenu();
     playlistsMenu->setCheckable(true);
     playlistsNew->addTo(playlistsMenu);
     playlistsImport->addTo(playlistsMenu);
@@ -393,11 +432,9 @@ void MixxxApp::initMenuBar()
     new MixxxMenuPlaylists(playlistsMenu, m_pTrack);
 
     // menuBar entry viewMenu
-    viewMenu=new QPopupMenu();
     viewMenu->setCheckable(true);
 
     // menuBar entry helpMenu
-    helpMenu=new QPopupMenu();
     helpAboutApp->addTo(helpMenu);
 
     // MENUBAR CONFIGURATION
@@ -428,10 +465,17 @@ bool MixxxApp::queryExit()
 
 void MixxxApp::slotFileOpen()
 {
+	#ifdef QT3_SUPPORT
+    QString s = Q3FileDialog::getOpenFileName(config->getValueString(ConfigKey("[Playlist]","Directory")),
+                                             "Audio (*.wav *.ogg *.mp3 *.aiff)",
+                                             this,
+                                             "Open file");
+    #else
     QString s = QFileDialog::getOpenFileName(config->getValueString(ConfigKey("[Playlist]","Directory")),
                                              "Audio (*.wav *.ogg *.mp3 *.aiff)",
                                              this,
                                              "Open file");
+    #endif
     TrackInfoObject *pTrack = m_pTrack->getTrackCollection()->getTrack(s);
     if (pTrack)
         m_pTrack->slotLoadPlayer1(pTrack);
