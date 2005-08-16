@@ -255,11 +255,11 @@ unix {
 win32 {
   DEFINES += __WIN__
   INCLUDEPATH += $$WINLIBPATH ../lib .
-  VISUALSTUDIO { 
+  contains(VISUALSTUDIO, 1) {
     QMAKE_CXXFLAGS += -GX
   }
   contains(CONFIG, qt3support) {
-    !VISUALSTUDIO {
+    contains(VISUALSTUDIO, 0) {
        QMAKE_CXXFLAGS += -UQT_NO_CAST_TO_ASCII -UQ_NO_DECLARED_NOT_DEFINED -UQT_NO_ASCII_CAST
     }
     # QT3 SUPPORT stuff
@@ -368,9 +368,9 @@ SOURCES += enginebufferscalereal.cpp
 
 IMAGES += icon.png
 DEFINES += SETTINGS_FILE=$$SETTINGS_FILE TRACK_FILE=$$TRACK_FILE
-CONFIG += qt thread warn_off release
-DEFINES += QT_NO_CHECK
-#CONFIG += qt thread warn_on debug
+#CONFIG += qt thread warn_off release
+#DEFINES += QT_NO_CHECK
+CONFIG += qt thread warn_on debug
 unix:TEMPLATE = app
 
 win32 {
