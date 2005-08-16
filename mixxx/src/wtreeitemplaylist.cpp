@@ -24,9 +24,9 @@ WTreeItemPlaylist::WTreeItemPlaylist(WTreeItem *parent, TrackPlaylist *pPlaylist
     m_pPlaylist = pPlaylist;
     setText(0, m_pPlaylist->getListName());
 
-    QPixmap *p = new QPixmap(QString("C:\Documents and Settings\Tue\My Documents\cvs\mixxx\src\icons\unknown.png"));
+//    QPixmap *p = new QPixmap(QString("C:\Documents and Settings\Tue\My Documents\cvs\mixxx\src\icons\unknown.png"));
 
-    setPixmap(p);
+//    setPixmap(p);
 
     setup();
     widthChanged( 0 );
