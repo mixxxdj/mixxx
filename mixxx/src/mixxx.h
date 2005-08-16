@@ -66,11 +66,11 @@ class QSplashScreen;
   * For the main view, an instance of class MixxxView is
   * created which creates your view.
   */
-#ifdef QT3_SUPPORT
-class MixxxApp : public Q3MainWindow
-#else
+//#ifndef QT3_SUPPORT
 class MixxxApp : public QMainWindow
-#endif
+//#else
+//class MixxxApp : public Q3MainWindow
+//#endif
 {
   Q_OBJECT
 
