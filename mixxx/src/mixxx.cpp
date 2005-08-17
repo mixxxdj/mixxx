@@ -340,30 +340,29 @@ MixxxApp::~MixxxApp()
 /** initializes all QActions of the application */
 void MixxxApp::initActions()
 {
-	#ifdef QT3_SUPPORT
+#ifdef QT3_SUPPORT
     fileOpen = new Q3Action(tr("Open..."), tr("&Open"), Q3Accel::stringToKey(tr("Ctrl+O")), this);
     fileQuit = new Q3Action(tr("Exit"), tr("E&xit"), Q3Accel::stringToKey(tr("Ctrl+Q")), this);
     playlistsNew = new Q3Action(tr("Add new playlist"), tr("&New playlist"), Q3Accel::stringToKey(tr("Ctrl+N")), this, 0, this);
     playlistsImport = new Q3Action(tr("Import playlist"), tr("&Import playlist"), Q3Accel::stringToKey(tr("Ctrl+I")), this, 0, this);
     optionsBeatMark = new Q3Action(tr("Audio Beat Marks"), tr("&Audio Beat Marks"), 0, this, 0, true);
+    optionsFullScreen = new Q3Action(tr("Full Screen"), tr("&Full Screen"), Q3Accel::stringToKey(tr("Esc")), this, 0, this);
     optionsPreferences = new Q3Action(tr("Preferences"), tr("&Preferences..."), Q3Accel::stringToKey(tr("Ctrl+P")), this);
     helpAboutApp = new Q3Action(tr("About"), tr("&About..."), 0, this);
-
-    #else
+#else
     fileOpen = new QAction(tr("Open..."), tr("&Open"), QAccel::stringToKey(tr("Ctrl+O")), this);
     fileQuit = new QAction(tr("Exit"), tr("E&xit"), QAccel::stringToKey(tr("Ctrl+Q")), this);
     playlistsNew = new QAction(tr("Add new playlist"), tr("&New playlist"), QAccel::stringToKey(tr("Ctrl+N")), this, 0, this);
     playlistsImport = new QAction(tr("Import playlist"), tr("&Import playlist"), QAccel::stringToKey(tr("Ctrl+I")), this, 0, this);
     optionsBeatMark = new QAction(tr("Audio Beat Marks"), tr("&Audio Beat Marks"), 0, this, 0, true);
+    optionsFullScreen = new QAction(tr("Full Screen"), tr("&Full Screen"), QAccel::stringToKey(tr("Esc")), this, 0, this);
     optionsPreferences = new QAction(tr("Preferences"), tr("&Preferences..."), QAccel::stringToKey(tr("Ctrl+P")), this);
     helpAboutApp = new QAction(tr("About"), tr("&About..."), 0, this);
-    #endif
+#endif
 
     fileOpen->setStatusTip(tr("Opens a file in player 1"));
     fileOpen->setWhatsThis(tr("Open\n\nOpens a file in player 1"));
     connect(fileOpen, SIGNAL(activated()), this, SLOT(slotFileOpen()));
-
-
     
     fileQuit->setStatusTip(tr("Quits the application"));
     fileQuit->setWhatsThis(tr("Exit\n\nQuits the application"));
