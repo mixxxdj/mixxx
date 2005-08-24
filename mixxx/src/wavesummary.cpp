@@ -29,6 +29,8 @@
 #include <qmemarray.h>
 #include <qapplication.h>
 
+#include <qdatetime.h>
+
 WaveSummary::WaveSummary()
 {
     // Allocate and calculate window
@@ -83,14 +85,14 @@ void WaveSummary::run()
 
         // Check if preview has been generated in the meantime
         QMemArray<char> *p = pTrackInfoObject->getWaveSummary();
-        //if (!p || !p->size())
+        if (!p || p->size()==0 || pTrackInfoObject->getBpm()==0)
         {
             //
             // Generate summary
             //
 
             // Open sound file
-            SoundSourceProxy *pSoundSource = new SoundSourceProxy(pTrackInfoObject->getLocation());
+            SoundSourceProxy *pSoundSource = new SoundSourceProxy(pTrackInfoObject);
 
             // Allocate and reset buffer used to store summary data: max and min amplitude for block, and HFC value
             QMemArray<char> *pData = new QMemArray<char>(kiSummaryBufferSize);
@@ -192,18 +194,28 @@ void WaveSummary::run()
             // Extract beat
             //
             
+            QTime qTime;
+            qTime.start();
+qDebug("File loaded");
+
             // Take derivate of PSF
             for (int i=0; i<iBeatBlockLength-1; ++i)
                 pDPsf[i+1] = max(0.,pDPsf[i+1]-pDPsf[i]);
             pDPsf[0] = 0.;
             
+qDebug("make peak list %i",qTime.elapsed());
+
             // Construct list of peaks
             PeakList *pPeaks = new PeakList(iBeatBlockLength, pDPsf);
             pPeaks->update(0, iBeatBlockLength);
             
-            // Initialize beat probability vector
+qDebug("make bpv %i",qTime.elapsed());
+
+// Initialize beat probability vector
             ProbabilityVector *bpv = new ProbabilityVector(60.f/histMaxBPM, 60.f/histMinBPM, kiBeatBins);
             
+qDebug("calc bpm %i",qTime.elapsed());
+
             // Calculate BPM
             PeakList::iterator it1 = pPeaks->begin();
             
@@ -232,6 +244,8 @@ void WaveSummary::run()
                 it1++;
             }           
             
+qDebug("update bpm %i",qTime.elapsed());
+
             // Update BPM value in TrackInfoObject
             if (!pTrackInfoObject->getBpmConfirm())
                 pTrackInfoObject->setBpm(bpv->getBestBpmValue());
@@ -242,7 +256,7 @@ void WaveSummary::run()
             delete bpv;
             delete pSoundSource;
 
-//         qDebug("generate successful for %s",pTrackInfoObject->getFilename().latin1());
+            qDebug("generate successful for %s",pTrackInfoObject->getFilename().latin1());
 
         }
     }

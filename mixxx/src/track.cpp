@@ -381,12 +381,13 @@ void Track::slotLoadPlayer1(TrackInfoObject *pTrackInfoObject, bool bStartFromEn
     if (p) 
         p->queueFromThread(m_pTrackPlayer1->getBeatFirst());
     
-    // Set Engine file BPM ControlObject
-    m_pTrackPlayer1->setBpmControlObject(ControlObject::getControl(ConfigKey("[Channel1]","file_bpm")));    
+    // Set Engine file BPM and duration ControlObjects
+    m_pTrackPlayer1->setBpmControlObject(ControlObject::getControl(ConfigKey("[Channel1]","file_bpm")));
+    m_pTrackPlayer1->setDurationControlObject(ControlObject::getControl(ConfigKey("[Channel1]","duration")));
     
     // Set duration in playpos widget
-    if (m_pView->m_pNumberPosCh1)
-        m_pView->m_pNumberPosCh1->setDuration(m_pTrackPlayer1->getDuration());
+//    if (m_pView->m_pNumberPosCh1)
+//        m_pView->m_pNumberPosCh1->setDuration(m_pTrackPlayer1->getDuration());
 
     // Write info to text display
     if (m_pView->m_pTextCh1)
@@ -419,6 +420,7 @@ void Track::slotLoadPlayer2(TrackInfoObject *pTrackInfoObject, bool bStartFromEn
 
     // Set waveform summary display
     m_pTrackPlayer2->setOverviewWidget(m_pView->m_pOverviewCh2);
+    m_pTrackPlayer2->setDurationControlObject(ControlObject::getControl(ConfigKey("[Channel2]","duration")));
 
     // Set control for beat start position for use in EngineTemporal and
     // VisualTemporalBuffer. HACK.
@@ -430,8 +432,8 @@ void Track::slotLoadPlayer2(TrackInfoObject *pTrackInfoObject, bool bStartFromEn
     m_pTrackPlayer2->setBpmControlObject(ControlObject::getControl(ConfigKey("[Channel2]","file_bpm")));    
     
     // Set duration in playpos widget
-    if (m_pView->m_pNumberPosCh2)
-        m_pView->m_pNumberPosCh2->setDuration(m_pTrackPlayer2->getDuration());
+//    if (m_pView->m_pNumberPosCh2)
+//        m_pView->m_pNumberPosCh2->setDuration(m_pTrackPlayer2->getDuration());
 
     // Write info to text display
     if (m_pView->m_pTextCh2)

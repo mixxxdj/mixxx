@@ -141,6 +141,8 @@ public:
     void setOverviewWidget(WOverview *p);
     /** Set pointer to ControlObject holding BPM value in engine */
     void setBpmControlObject(ControlObject *p);
+    /** Set pointer to ControlObject holding duration value in engine */
+    void setDurationControlObject(ControlObject *p);
 
 protected:
     bool eventFilter(QObject *o, QEvent *e);
@@ -203,8 +205,10 @@ private:
     WOverview *m_pOverviewWidget;
     /** True if object contains valid information */
     bool m_bIsValid;
-    /** Pointer to ControlObject of BPM value (only set when the track is loaded in a player */
+    /** Pointer to ControlObject of BPM value (only set when the track is loaded in a player) */
     ControlObject *m_pControlObjectBpm;
+    /** Pointer to ControlObject of duration value (only set when the track is loaded in a player) */
+    ControlObject *m_pControlObjectDuration;
 };
 
 #endif

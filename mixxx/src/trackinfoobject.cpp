@@ -52,6 +52,7 @@ TrackInfoObject::TrackInfoObject(const QString sPath, const QString sFile) : m_s
     m_pWave = 0;
     m_pSegmentation = 0;
     m_pControlObjectBpm = 0;
+    m_pControlObjectDuration = 0;
     m_fBeatFirst = -1.;
     m_iSampleRate = 0;
     m_iChannels = 0;
@@ -102,6 +103,7 @@ TrackInfoObject::TrackInfoObject(const QDomNode &nodeHeader)
     m_pSegmentation = XmlParse::selectNodeLongList(nodeHeader, QString("SegmentationSummary"));
     m_pTableTrack = 0;
     m_pControlObjectBpm = 0;
+    m_pControlObjectDuration = 0;
 
     m_pTableItemScore = 0;
     m_pTableItemTitle = 0;
@@ -446,6 +448,8 @@ void TrackInfoObject::setDuration(int i)
         m_pTableItemDuration->setText(getDurationStr());
         m_pTableItemDuration->table()->updateCell(m_pTableItemDuration->row(), m_pTableItemDuration->col());
     }
+
+    setDurationControlObject(m_pControlObjectDuration);
 }
 
 QString TrackInfoObject::getTitle()
@@ -768,4 +772,12 @@ void TrackInfoObject::setBpmControlObject(ControlObject *p)
 
     if (m_pControlObjectBpm)
         p->queueFromThread(getBpm());
+}
+
+void TrackInfoObject::setDurationControlObject(ControlObject *p)
+{
+    m_pControlObjectDuration = p;
+
+    if (m_pControlObjectDuration)
+        p->queueFromThread(getDuration());
 }
