@@ -91,12 +91,13 @@ void WVisualSimple::mouseMoveEvent(QMouseEvent *e)
     // Only process mouse move if it was initiated by a left click
     if (m_iStartPosX!=-1)
     {
-        m_iValue = 64+e->x()-m_iStartPosX;
-        if (m_iValue<0)
-            m_iValue = 0;
-        else if (m_iValue>127)
-            m_iValue = 127;
-        emit(valueChangedLeftDown((double)m_iValue));
+        double v = 64.+(double)(e->x()-m_iStartPosX)/10.;
+        if (v<0.)
+            v = 0.;
+        else if (v>127.)
+            v = 127.;
+        emit(valueChangedLeftDown(v));
+        m_iValue = (int)v;
     }
     update();
 }
