@@ -20,6 +20,8 @@
 
 #include "soundsource.h"
 
+class TrackInfoObject;
+
 /**
   *@author Tue Haste Andersen
   */
@@ -31,6 +33,7 @@ class SoundSourceProxy : public SoundSource
 {
 public:
     SoundSourceProxy(QString qFilename);
+    SoundSourceProxy(TrackInfoObject *pTrack);
     ~SoundSourceProxy();
     long seek(long);
     unsigned read(unsigned long size, const SAMPLE*);

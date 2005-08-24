@@ -25,17 +25,20 @@ class WNumberPos : public WNumber
 public:
     WNumberPos(const char *group, QWidget *parent=0, const char *name=0);
     ~WNumberPos();
-    void setDuration(int iDuration);
     void setValue(double dValue);
     /** Set if the display shows remaining time (true) or position (false) */
     void setRemain(bool bRemain);
+public slots:
+    void slotSetDuration(double dDuration);
 private:
     /** Duration in seconds */
-    int m_iDuration;
+    double m_dDuration;
+    /** Old value set */
+    double m_dOldValue;
     /** True if remaining content is being shown */
     bool m_bRemain;
-    /** Pointer to control object for rate */
-    ControlObjectThreadWidget *m_pRateControl, *m_pRateDirControl;
+    /** Pointer to control object for rate and duration*/
+    ControlObjectThreadWidget *m_pRateControl, *m_pRateDirControl, *m_pDurationControl;
 };
 
 #endif

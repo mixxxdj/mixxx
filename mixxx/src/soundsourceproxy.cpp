@@ -41,6 +41,25 @@ SoundSourceProxy::SoundSourceProxy(QString qFilename) : SoundSource(qFilename)
 #endif
 }
 
+SoundSourceProxy::SoundSourceProxy(TrackInfoObject *pTrack) : SoundSource(pTrack->getLocation())
+{
+    QString qFilename = pTrack->getLocation();
+
+    if (qFilename.lower().endsWith(".mp3"))
+        m_pSoundSource = new SoundSourceMp3(qFilename);
+    else if (qFilename.lower().endsWith(".ogg"))
+        m_pSoundSource = new SoundSourceOggVorbis(qFilename);
+    else
+#ifdef __SNDFILE__
+        m_pSoundSource = new SoundSourceSndFile(qFilename);
+#endif
+#ifdef __AUDIOFILE__
+        m_pSoundSource = new SoundSourceAudioFile(qFilename);
+#endif
+
+    pTrack->setDuration(length()/(2*getSrate()));
+}
+
 SoundSourceProxy::~SoundSourceProxy()
 {
     delete m_pSoundSource;

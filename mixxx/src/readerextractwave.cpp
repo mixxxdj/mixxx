@@ -92,7 +92,7 @@ void ReaderExtractWave::newSource(TrackInfoObject *pTrack)
         // Check if filename is valid
         QFileInfo finfo(filename);
         if (finfo.exists())
-            file = new SoundSourceProxy(filename);
+            file = new SoundSourceProxy(pTrack);
     }
     else
         file = new SoundSourceProxy(QString("/dev/null"));

@@ -170,6 +170,10 @@ MixxxApp::MixxxApp(QApplication *a, QStringList files, QSplashScreen *pSplash, Q
     // Needed for Search class and Simple skin
     new ControlPotmeter(ConfigKey("[Channel1]","virtualplayposition"),0.,1.);
     
+    // Needed for updating widgets with track duration info
+    new ControlObject(ConfigKey("[Channel1]","duration"));
+    new ControlObject(ConfigKey("[Channel2]","duration"));
+
     // Initialize widgets
     bool bVisualsWaveform = true;
     if (config->getValueString(ConfigKey("[Controls]","Visuals")).toInt()==1)
