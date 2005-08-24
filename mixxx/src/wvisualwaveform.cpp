@@ -136,12 +136,12 @@ bool WVisualWaveform::eventFilter(QObject *o, QEvent *e)
         if (m_iStartPosX!=-1)
         {
             QMouseEvent *m = (QMouseEvent *)e;
-            int v = 64+m->x()-m_iStartPosX;
-            if (v<0)
-                v = 0;
-            else if (v>127)
-                v= 127;
-            emit(valueChangedLeftDown((double)v));
+            double v = 64.+(double)(m->x()-m_iStartPosX)/10.;
+            if (v<0.)
+                v = 0.;
+            else if (v>127.)
+                v= 127.;
+            emit(valueChangedLeftDown(v));
         }
     }
     else if (e->type() == QEvent::MouseButtonRelease)
