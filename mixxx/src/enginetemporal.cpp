@@ -104,7 +104,7 @@ void EngineTemporal::addVisual(EngineBuffer *pEngineBuffer)
     
     Q_ASSERT(m_pEngineBuffer);
     VisualChannel *pVisualChannel = m_pEngineBuffer->getVisualChannel();
-    Q_ASSERT(pVisualChannel);
+    //Q_ASSERT(pVisualChannel);
     
     if (pVisualChannel)
         pVisualChannel->add(0, m_pEngineBuffer);
