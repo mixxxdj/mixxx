@@ -31,6 +31,7 @@
 #include "trackimporter.h"
 #include "wavesummary.h"
 #include "woverview.h"
+#include <qprogressdialog.h> 
 
 Track::Track(QString location, MixxxView *pView, EngineBuffer *pBuffer1, EngineBuffer *pBuffer2, WaveSummary *pWaveSummary)
 {
@@ -151,6 +152,11 @@ void Track::readXML(QString location)
 
 void Track::writeXML(QString location)
 {
+    QProgressDialog progress( "Writing song database...", 0, m_qPlaylists.count()+5,
+                              0, "progress", TRUE );
+    progress.show();
+    int i = 0;
+
     // Create the xml document:
     QDomDocument domXML( "Mixxx_Track_List" );
 
@@ -164,8 +170,14 @@ void Track::writeXML(QString location)
     // Add version information:
     XmlParse::addElement(domXML, elementRoot, "Version", QString("%1").arg(TRACK_VERSION));
 
+    progress.setProgress(++i);
+    qApp->processEvents();
+
     // Write collection of tracks
     m_pTrackCollection->writeXML(domXML, elementRoot);
+
+    progress.setProgress(++i);
+    qApp->processEvents();
 
     // Write playlists
     QDomElement playlistsroot = domXML.createElement("Playlists");
@@ -173,13 +185,20 @@ void Track::writeXML(QString location)
     TrackPlaylist *it = m_qPlaylists.first();
     while (it)
     {
+        progress.setProgress(++i);
+        qApp->processEvents();
+
         QDomElement elementNew = domXML.createElement("Playlist");
         it->writeXML(domXML, elementNew);
         playlistsroot.appendChild(elementNew);
 
         it = m_qPlaylists.next();
+
     }
     elementRoot.appendChild(playlistsroot);
+
+    progress.setProgress(++i);
+    qApp->processEvents();
 
     // Open the file:
     QFile opmlFile(location);
@@ -191,11 +210,18 @@ void Track::writeXML(QString location)
         return;
     }
 
+    progress.setProgress(++i);
+    qApp->processEvents();
+
     // Write to the file:
     QTextStream Xml(&opmlFile);
     Xml.setEncoding(QTextStream::Unicode);
     Xml << domXML.toString();
     opmlFile.close();
+
+    progress.setProgress(++i);
+    qApp->processEvents();
+
 }
 
 TrackCollection *Track::getTrackCollection()

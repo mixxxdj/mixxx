@@ -33,12 +33,14 @@
 #include <qtable.h>
 #include <qptrlist.h>
 #endif
+
 #include <qlistview.h>
 #include <qiconset.h>
 #include <qlineedit.h>
 #include <qslider.h>
 #include <qlabel.h>
 #include <qsplashscreen.h>
+#include <qdatetime.h>
 
 #include "wknob.h"
 #include "wslider.h"
@@ -298,45 +300,50 @@ MixxxApp::MixxxApp(QApplication *a, QStringList files, QSplashScreen *pSplash, Q
 
 MixxxApp::~MixxxApp()
 {
-//    qDebug("Destroying MixxxApp");
+    QTime qTime;
+    qTime.start();
 
-//    qDebug("close player");
+    qDebug("Destroying MixxxApp");
+
+    qDebug("close player, %i",qTime.elapsed());
     player->close();
 
     // Save state of End of track controls in config database
     config->set(ConfigKey("[Controls]","TrackEndModeCh1"), ConfigValue((int)ControlObject::getControl(ConfigKey("[Channel1]","TrackEndMode"))->get()));
     config->set(ConfigKey("[Controls]","TrackEndModeCh2"), ConfigValue((int)ControlObject::getControl(ConfigKey("[Channel2]","TrackEndMode"))->get()));
 
-//    qDebug("delete player");
+    qDebug("delete player, %i",qTime.elapsed());
     delete player;
-//    qDebug("delete master");
+    qDebug("delete master, %i",qTime.elapsed());
     delete master;
-//    qDebug("delete channel1");
+    qDebug("delete channel1, %i",qTime.elapsed());
     delete channel1;
-//    qDebug("delete channel2");
+    qDebug("delete channel2, %i",qTime.elapsed());
     delete channel2;
-//    qDebug("delete buffer1");
+    qDebug("delete buffer1, %i",qTime.elapsed());
     delete buffer1;
-//    qDebug("delete buffer2");
+    qDebug("delete buffer2, %i",qTime.elapsed());
     delete buffer2;
 //    qDebug("delete prefDlg");
 //    delete m_pControlEngine;
 //    qDebug("delete midi");
 //    qDebug("delete midiconfig");
 
-    qDebug("Write track xml");
+
+    qDebug("Write track xml, %i",qTime.elapsed());
     m_pTrack->writeXML(config->getValueString(ConfigKey("[Playlist]","Listfile")));
 
-    qDebug("delete tracks");
+    qDebug("delete tracks, %i",qTime.elapsed());
     delete m_pTrack;
-    qDebug("delete view");
+
+    qDebug("delete view, %i",qTime.elapsed());
     delete view;
 
     delete prefDlg;
     
-    qDebug("save config");
+    qDebug("save config, %i",qTime.elapsed());
     config->Save();
-    qDebug("delete config");
+    qDebug("delete config, %i",qTime.elapsed());
     delete config;
 
 }
