@@ -329,15 +329,14 @@ MixxxApp::~MixxxApp()
 //    qDebug("delete midi");
 //    qDebug("delete midiconfig");
 
+    qDebug("delete view, %i",qTime.elapsed());
+    delete view;
 
     qDebug("Write track xml, %i",qTime.elapsed());
     m_pTrack->writeXML(config->getValueString(ConfigKey("[Playlist]","Listfile")));
 
     qDebug("delete tracks, %i",qTime.elapsed());
     delete m_pTrack;
-
-    qDebug("delete view, %i",qTime.elapsed());
-    delete view;
 
     delete prefDlg;
     
