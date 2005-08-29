@@ -22,6 +22,10 @@
 #include <windows.h>
 #endif
 
+#ifdef __MACX__
+#include <CoreFoundation/CoreFoundation.h>
+#endif
+
 #include <qiodevice.h>
 
 ConfigKey::ConfigKey()
