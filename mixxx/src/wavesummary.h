@@ -34,8 +34,8 @@ class ControlObjectThread;
   */
 
 const int kiBlockSize = 2048;
-const int kiBeatBlockNo = 20000;
-const int kiBeatBins = 10000;
+const int kiBeatBlockNo = 1000;
+const int kiBeatBins = 100;
 const int kiSummaryBufferSize = 2100;
 const float kfFeatureStepSize = 0.01f;
 
