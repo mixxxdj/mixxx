@@ -48,6 +48,7 @@ WaveSummary::WaveSummary()
 
 WaveSummary::~WaveSummary()
 {
+    terminate();
     delete windowedSamples;
     delete m_pEngineSpectralFwd;
 }
@@ -87,135 +88,63 @@ void WaveSummary::run()
         QMemArray<char> *p = pTrackInfoObject->getWaveSummary();
         if (!p || p->size()==0 || pTrackInfoObject->getBpm()==0)
         {
-            //
-            // Generate summary
-            //
-
             // Open sound file
             SoundSourceProxy *pSoundSource = new SoundSourceProxy(pTrackInfoObject);
 
-            // Allocate and reset buffer used to store summary data: max and min amplitude for block, and HFC value
-            QMemArray<char> *pData = new QMemArray<char>(kiSummaryBufferSize);
-            unsigned int i;
-            for (i=0; i<pData->size(); ++i)
-                pData->at(i) = 0;
-
+            // Allocate temp buffer
             SAMPLE *pBuffer = new SAMPLE[kiBlockSize*2];
 
-            
-            //
-            // Extract volume profile
-            //
-            
             // Length of file in samples
             long liLengthSamples = pSoundSource->length();
 
-            // Seek length used when extracting volume profile
-            int iSeekLength = (int)ceilf((float)liLengthSamples/((float)kiSummaryBufferSize/3.));
+
+            //
+            // Extract beat
+            //
             
             // Beat is extracted from the middle region of the sound file. Here the 
             // min and max indexes are the boundaries of that region.
             int iBeatLength = min(liLengthSamples, kiBeatBlockNo*kiBlockSize);
             int iBeatBlockLength = iBeatLength/(kiBlockSize/2);
-            
-            // ***REMEMBER RANGE CHECK ***
             int iBeatPosStart = max(0,liLengthSamples/2-iBeatLength/2);
             int iBeatPosEnd = min(liLengthSamples, iBeatPosStart+iBeatLength);
   
             // Allocate buffer for first derivative of the PSF vector          
             float *pDPsf = new float[iBeatBlockLength];
-            
-            long liPos = pSoundSource->read(kiBlockSize, pBuffer);
-            i=0;
+
+            long liPos = pSoundSource->seek(iBeatPosStart);
+            liPos += pSoundSource->read(kiBlockSize, pBuffer);
             int j = 0;
-
-            while (liPos<liLengthSamples)
+            while (liPos<=iBeatPosEnd)
             {
-                // Check if it's time to extract max and min
-                if (liPos>i/3*iSeekLength)
-                {
-                    // Find min and max value
-                    int iMin=0, iMax=0;
-                    for (int j=0; j<kiBlockSize; ++j)
-                    {
-                        if (pBuffer[j]<iMin)
-                            iMin = pBuffer[j];
-                        if (pBuffer[j]>iMax)
-                            iMax = pBuffer[j];
-                    }
-    
-                    // Store max and min amplitude
-                    pData->at(i) = (char)max((iMin/256.),-127);
-                    pData->at(i+1) = (char)min((iMax/256.),127);
-                    pData->at(i+2) = 0;
-                    
-                    // Store summary in TrackInfoObject
-                    QApplication::postEvent(pTrackInfoObject, new WaveSummaryEvent(pData, 0));            
-                    
-                    i+=3;
-                }
-                
-                // Check if this is the middle region of the file, then extract PSF
-                if (liPos>=iBeatPosStart && liPos<iBeatPosEnd)
-                {
-                    // Mix to mono and window samples
-                    for (int m=0; m<kiBlockSize; ++m)
-                        windowedSamples[m] = (pBuffer[m*2]+pBuffer[m*2+1])*0.5*windowPtr[m];
+                // Mix to mono, rectangular window
+                for (int m=0; m<kiBlockSize; ++m)
+                    windowedSamples[m] = (pBuffer[m*2]+pBuffer[m*2+1])*0.5; //*windowPtr[m];
 
-                    // Perform FFT
-                    m_pEngineSpectralFwd->process(windowedSamples, 0, kiBlockSize);
+                // Perform FFT
+                m_pEngineSpectralFwd->process(windowedSamples, 0, kiBlockSize);
 
-                    // Get PSF
-                    pDPsf[j] = m_pEngineSpectralFwd->getPSF();
-                
-                    j++;
+                // Get PSF
+                pDPsf[j] = m_pEngineSpectralFwd->getPSF();
+            
+                j++;
 
-
-                    //
-                    // Read only half a block of samples
-                    //
-
-                    // Copy block of samples
-                    for (int i=0; i<kiBlockSize; ++i)
-                        pBuffer[i] = pBuffer[i+kiBlockSize];
-
-                    // Read half a block of new samples
-                    liPos += pSoundSource->read(kiBlockSize/2, &pBuffer[kiBlockSize]);
-                }
-                else
-                {
-                    // Read a new block of samples
-                    liPos += pSoundSource->read(kiBlockSize, pBuffer);
-                }
-
+                // Read a new block of samples
+                liPos += pSoundSource->read(kiBlockSize, pBuffer);
             }
-            
-            //
-            // Extract beat
-            //
-            
-            QTime qTime;
-            qTime.start();
-qDebug("File loaded");
 
             // Take derivate of PSF
             for (int i=0; i<iBeatBlockLength-1; ++i)
                 pDPsf[i+1] = max(0.,pDPsf[i+1]-pDPsf[i]);
             pDPsf[0] = 0.;
             
-qDebug("make peak list %i",qTime.elapsed());
-
             // Construct list of peaks
             PeakList *pPeaks = new PeakList(iBeatBlockLength, pDPsf);
             pPeaks->update(0, iBeatBlockLength);
             
-qDebug("make bpv %i",qTime.elapsed());
-
-// Initialize beat probability vector
+            // Initialize beat probability vector
             ProbabilityVector *bpv = new ProbabilityVector(60.f/histMaxBPM, 60.f/histMinBPM, kiBeatBins);
             
-qDebug("calc bpm %i",qTime.elapsed());
-
             // Calculate BPM
             PeakList::iterator it1 = pPeaks->begin();
             
@@ -244,12 +173,59 @@ qDebug("calc bpm %i",qTime.elapsed());
                 it1++;
             }           
             
-qDebug("update bpm %i",qTime.elapsed());
-
             // Update BPM value in TrackInfoObject
             if (!pTrackInfoObject->getBpmConfirm())
                 pTrackInfoObject->setBpm(bpv->getBestBpmValue());
 
+
+            //
+            // Extract volume profile
+            //
+            
+            // Allocate and reset buffer used to store summary data: max and min amplitude for block, and HFC value
+            QMemArray<char> *pData = new QMemArray<char>(kiSummaryBufferSize);
+            for (i=0; i<pData->size(); ++i)
+                pData->at(i) = 0;
+
+            // Seek length used when extracting volume profile
+            int iSeekLength = (int)ceilf((float)liLengthSamples/((float)kiSummaryBufferSize/3.));
+            if (iSeekLength%2!=0)
+                iSeekLength--;
+
+            liPos = pSoundSource->seek(0);
+            liPos += pSoundSource->read(kiBlockSize, pBuffer);
+            i=0;
+            j = 0;
+
+            while (liPos<liLengthSamples && i<kiSummaryBufferSize-2)
+            {
+                // Find min and max value
+                int iMin=0, iMax=0;
+                for (int j=0; j<kiBlockSize; ++j)
+                {
+                    if (pBuffer[j]<iMin)
+                        iMin = pBuffer[j];
+                    if (pBuffer[j]>iMax)
+                        iMax = pBuffer[j];
+                }
+
+                // Store max and min amplitude
+                pData->at(i) = (char)max((iMin/256.),-127);
+                pData->at(i+1) = (char)min((iMax/256.),127);
+                pData->at(i+2) = 0;
+                
+                // Store summary in TrackInfoObject
+                QApplication::postEvent(pTrackInfoObject, new WaveSummaryEvent(pData, 0));            
+                
+                i+=3;
+
+                // Seek to new pos
+                liPos = pSoundSource->seek(iSeekLength*(i/3));
+
+                // Read a new block of samples
+                liPos += pSoundSource->read(kiBlockSize, pBuffer);
+            }
+            
             delete [] pBuffer;
             delete [] pDPsf;
             delete pPeaks;
