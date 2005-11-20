@@ -63,6 +63,7 @@ void WaveSummary::enqueue(TrackInfoObject *pTrackInfoObject)
 
 void WaveSummary::run()
 {
+	int i = 0;
 	while (1)
     {
         // Check if there is a new track to process in the queue...
@@ -134,7 +135,7 @@ void WaveSummary::run()
             }
 
             // Take derivate of PSF
-            for (int i=0; i<iBeatBlockLength-1; ++i)
+            for (i=0; i<iBeatBlockLength-1; ++i)
                 pDPsf[i+1] = max(0.,pDPsf[i+1]-pDPsf[i]);
             pDPsf[0] = 0.;
             
