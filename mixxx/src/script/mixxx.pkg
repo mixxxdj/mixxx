@@ -1,0 +1,14 @@
+$#include "luainterface.h"
+$#include "scriptengine.h"
+
+class LuaInterface {
+	void test();
+	void stop(int channel);
+	void play(int channel);
+	void setFader(double fade);
+	
+	void startFadeCrossfader();
+	void startFade(const char* group, const char* name);
+	void fadePoint(int time, double value);
+	void endFade();
+};
