@@ -65,7 +65,6 @@
 
 #include "playerproxy.h"
 
-
 MixxxApp::MixxxApp(QApplication *a, QStringList files, QSplashScreen *pSplash, QString qLogFileName)
 {
     app = a;
@@ -292,10 +291,15 @@ MixxxApp::MixxxApp(QApplication *a, QStringList files, QSplashScreen *pSplash, Q
     if (bVisualsWaveform)
         view->checkDirectRendering();
     
+#ifdef __SCRIPT__
+    scriptEng = new ScriptEngine(this);
+#endif
+
     // Initialize the log if a log file name was given on the command line
     Log *pLog = 0;
     if (qLogFileName.length()>0)
         pLog = new Log(qLogFileName, m_pTrack);
+
 }
 
 MixxxApp::~MixxxApp()

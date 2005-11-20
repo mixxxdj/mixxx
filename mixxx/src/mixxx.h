@@ -53,13 +53,17 @@
 #include "dlgpreferences.h"
 #include "trackplaylist.h"
 
+#ifdef __SCRIPT__
+#include "script/scriptengine.h"
+#endif
+
 class WVisual;
 class Track;
 class TrackInfoObject;
 class PlayerProxy;
 class WaveSummary;
 class QSplashScreen;
-
+class ScriptEngine;
 /**
   * This Class is the base class for Mixxx. It sets up the main
   * window and providing a menubar.
@@ -207,6 +211,10 @@ class MixxxApp : public QMainWindow
 
     /** Pointer to preference dialog */
     DlgPreferences *prefDlg;
+
+#ifdef __SCRIPT__
+    ScriptEngine *scriptEng;
+#endif
 };
 #endif
 
