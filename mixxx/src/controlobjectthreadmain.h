@@ -10,7 +10,7 @@
 //
 //
 #ifndef CONTROLOBJECTTHREADMAIN_H
-#define CONTROLOBJECTTHREADMaiN_H
+#define CONTROLOBJECTTHREADMAIN_H
 
 #include "controlobjectthread.h"
 
