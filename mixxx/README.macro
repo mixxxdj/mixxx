@@ -1,0 +1,68 @@
+This is the documentation for the very preliminary support for recording and
+playing back macros.
+
+0. What is this?
+At the moment it's pretty much a demo of the capabilities but it's fun to play
+with.
+
+It can record and play back one macro controlling:
+
+	- The crossfader
+	- Channel volumes
+	- Channel low, mid and high pass filters
+
+1. Prerequisites
+
+You need lua and tolua installed. They provide the interpreter for the macros.
+
+On gentoo you can:
+
+	emerge lua tolua
+
+No particular version is required as far as I know, but if you run into problems
+then I'm using:
+
+ 	lua-5.0.2
+	tolua-5.0
+
+2. Compiling
+
+Do a:
+
+cd src/
+./configure --enable-script
+
+You should see "script => yes" go past at some point. If you see "script => no"
+then it means the configure script couldn't find your tolua headers. If this
+happens, post on mixxx-devel and let me know.
+
+Then do a:
+
+make clean
+make
+
+Everything should work.
+
+3. Using
+
+When you run mixxx, an extra little window should pop up.
+
+The important buttons are:
+
+	- Record starts recording a macro
+	- Stop finishes recording a macro
+	- Play plays back the recorded macro
+	- Clear clears the recorded macro so you can record a new one
+
+Also:
+	- Dump prints the macro code to stderr
+	- Execute executes the macro in the text box above
+		(not very useful until I document the macro commands)
+
+4. Problems
+
+There probably will be.
+
+Bug reports should be directed at the mixxx-devel mailing list on sf.net
+
+Hopefully I (adam_d) will be able to fix your problem.
