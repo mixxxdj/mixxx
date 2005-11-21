@@ -63,5 +63,5 @@ void ScriptTest::clear() {
 	m_play->setEnabled(false);
 	m_dump->setEnabled(false);
 	m_record->setEnabled(true);
-	
+	m_clear->setEnabled(false);
 }
