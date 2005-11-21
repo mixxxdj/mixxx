@@ -21,6 +21,12 @@
 #include <fcntl.h>
 #endif
 
+#ifdef __MACX__
+  #define OV_ENDIAN_ARG 1
+#else
+  #define OV_ENDIAN_ARG 0
+#endif
+
 /*
   Class for reading Ogg Vorbis 
 */
@@ -104,7 +110,7 @@ unsigned SoundSourceOggVorbis::read(unsigned long size, const SAMPLE* destinatio
     while (needed > 0)
     {
         // read samples into buffer
-        ret = ov_read(&vf,(char*) dest+index,needed, 0, 2, 1, &current_section);
+	ret = ov_read(&vf,(char*) dest+index,needed, OV_ENDIAN_ARG, 2, 1, &current_section);
         // if eof we fill the rest with zero
         if (ret == 0) 
         {
