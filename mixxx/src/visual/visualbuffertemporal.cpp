@@ -30,7 +30,7 @@ VisualBufferTemporal::VisualBufferTemporal(EngineBuffer *pEngineBuffer, const ch
     m_pControlShape = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey(group, "temporalShape")));
     m_pControlBeatFirst = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey(group, "temporalBeatFirst")));
     m_pControlRate = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey(group, "rate")));
-    m_pControlBpm = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey(group, "bpm_control")));
+    m_pControlBpm = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey(group, "bpm")));
     
     // Ensure a horizontal line is visible
     //for (int i=0; i<m_iLen; i+=2)

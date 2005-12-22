@@ -942,7 +942,7 @@
   <BgColor>#ffffff</BgColor>
   <FgColor>#606060</FgColor>
   <Connection>
-   <ConfigKey>[Channel1],bpm_control</ConfigKey>
+   <ConfigKey>[Channel1],bpm</ConfigKey>
   </Connection>
  </NumberBpm>
 
@@ -955,7 +955,7 @@
   <BgColor>#ffffff</BgColor>
   <FgColor>#606060</FgColor>
   <Connection>
-   <ConfigKey>[Channel2],bpm_control</ConfigKey>
+   <ConfigKey>[Channel2],bpm</ConfigKey>
   </Connection>
  </NumberBpm>
 

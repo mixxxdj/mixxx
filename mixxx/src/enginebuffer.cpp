@@ -156,7 +156,7 @@ EngineBuffer::EngineBuffer(const char *_group)
     m_pFileBpm = new ControlObject(ConfigKey(group, "file_bpm"));
     
     // BPM control
-    bpmControl = new ControlBeat(ConfigKey(group, "bpm_control"), true);
+    bpmControl = new ControlBeat(ConfigKey(group, "bpm"), true);
     connect(bpmControl, SIGNAL(valueChanged(double)), this, SLOT(slotSetBpm(double)));
 
     // Beat event control
