@@ -18,7 +18,8 @@ ScriptStudio::ScriptStudio(ScriptEngine* model, QWidget* parent,
 	m_edit->setFocus();
 
 	m_rec = ScriptRecorder();
-	
+
+	m_edit->setEnabled(false);
 	setCentralWidget(m_edit);
 	resize(600,400);
 	
@@ -62,6 +63,7 @@ void ScriptStudio::changeScript() {
 	}
 	m_current = item->getMacro();
 	m_edit->setText(m_current->getScript());
+	m_edit->setEnabled(true);
 }
 
 void ScriptStudio::editScript() {
