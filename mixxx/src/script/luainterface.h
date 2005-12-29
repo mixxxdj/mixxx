@@ -20,6 +20,9 @@ class LuaInterface {
 		void play(int channel);
 		void setFader(double fade);
 		void test();
+
+		double getFader();
+		double getValue(const char* group, const char* name);
 		
 		void executeScript(const char *script);
 		

@@ -1,6 +1,7 @@
 #include "luainterface.h"
 #include "scriptengine.h"
 #include <tolua.h>
+#include <string.h>
 
 #include "../controlobject.h"
 #include "../controlpotmeter.h"
@@ -47,6 +48,7 @@ LuaInterface::~LuaInterface() {
 }
 
 void LuaInterface::executeScript(const char *script) {
+
 	int error = luaL_loadbuffer(m_L, script, strlen(script), "line") ||
                 lua_pcall(m_L, 0, 0, 0);
 	
@@ -83,6 +85,20 @@ void LuaInterface::play(int channel) {
 	} else {
 		qDebug("LuaInterface: No such channel %i to play", channel);
 	}
+}
+
+double LuaInterface::getFader() {
+	ControlObject *pot = ControlObject::getControl(ConfigKey("[Master]", "crossfader"));
+	return pot->get();
+}
+
+double LuaInterface::getValue(const char* group, const char* name) {
+	ControlObject *pot = ControlObject::getControl(ConfigKey(group, name));
+	if (pot == NULL) {
+		qDebug("Unknown control %s:%s", group, name);
+		return 0.0;
+	}
+	return pot->get();
 }
 
 void LuaInterface::setFader(double fade) {

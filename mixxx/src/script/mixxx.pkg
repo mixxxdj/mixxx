@@ -6,7 +6,10 @@ class LuaInterface {
 	void stop(int channel);
 	void play(int channel);
 	void setFader(double fade);
-	
+
+	double getFader();
+	double getValue(const char* group, const char* name);
+
 	void startFadeCrossfader();
 	void startFade(const char* group, const char* name);
 	void fadePoint(int time, double value);

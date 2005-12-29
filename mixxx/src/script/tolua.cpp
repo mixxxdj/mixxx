@@ -1,6 +1,6 @@
 /*
 ** Lua binding: mixxx
-** Generated automatically by tolua 5.0a on Fri Nov 11 20:57:44 2005.
+** Generated automatically by tolua 5.0a on Tue Dec 27 18:02:25 2005.
 */
 
 #ifndef __cplusplus
@@ -144,6 +144,70 @@ static int tolua_mixxx_LuaInterface_setFader00(lua_State* tolua_S)
 #endif
 }
 
+/* method: getFader of class  LuaInterface */
+static int tolua_mixxx_LuaInterface_getFader00(lua_State* tolua_S)
+{
+#ifndef TOLUA_RELEASE
+ tolua_Error tolua_err;
+ if (
+ !tolua_isusertype(tolua_S,1,"LuaInterface",0,&tolua_err) ||
+ !tolua_isnoobj(tolua_S,2,&tolua_err)
+ )
+ goto tolua_lerror;
+ else
+#endif
+ {
+  LuaInterface* self = (LuaInterface*)  tolua_tousertype(tolua_S,1,0);
+#ifndef TOLUA_RELEASE
+ if (!self) tolua_error(tolua_S,"invalid 'self' in function 'getFader'",NULL);
+#endif
+ {
+  double tolua_ret = (double)  self->getFader();
+ tolua_pushnumber(tolua_S,(lua_Number)tolua_ret);
+ }
+ }
+ return 1;
+#ifndef TOLUA_RELEASE
+ tolua_lerror:
+ tolua_error(tolua_S,"#ferror in function 'getFader'.",&tolua_err);
+ return 0;
+#endif
+}
+
+/* method: getValue of class  LuaInterface */
+static int tolua_mixxx_LuaInterface_getValue00(lua_State* tolua_S)
+{
+#ifndef TOLUA_RELEASE
+ tolua_Error tolua_err;
+ if (
+ !tolua_isusertype(tolua_S,1,"LuaInterface",0,&tolua_err) ||
+ !tolua_isstring(tolua_S,2,0,&tolua_err) ||
+ !tolua_isstring(tolua_S,3,0,&tolua_err) ||
+ !tolua_isnoobj(tolua_S,4,&tolua_err)
+ )
+ goto tolua_lerror;
+ else
+#endif
+ {
+  LuaInterface* self = (LuaInterface*)  tolua_tousertype(tolua_S,1,0);
+  const char* group = ((const char*)  tolua_tostring(tolua_S,2,0));
+  const char* name = ((const char*)  tolua_tostring(tolua_S,3,0));
+#ifndef TOLUA_RELEASE
+ if (!self) tolua_error(tolua_S,"invalid 'self' in function 'getValue'",NULL);
+#endif
+ {
+  double tolua_ret = (double)  self->getValue(group,name);
+ tolua_pushnumber(tolua_S,(lua_Number)tolua_ret);
+ }
+ }
+ return 1;
+#ifndef TOLUA_RELEASE
+ tolua_lerror:
+ tolua_error(tolua_S,"#ferror in function 'getValue'.",&tolua_err);
+ return 0;
+#endif
+}
+
 /* method: startFadeCrossfader of class  LuaInterface */
 static int tolua_mixxx_LuaInterface_startFadeCrossfader00(lua_State* tolua_S)
 {
@@ -281,6 +345,8 @@ TOLUA_API int tolua_mixxx_open (lua_State* tolua_S)
  tolua_function(tolua_S,"stop",tolua_mixxx_LuaInterface_stop00);
  tolua_function(tolua_S,"play",tolua_mixxx_LuaInterface_play00);
  tolua_function(tolua_S,"setFader",tolua_mixxx_LuaInterface_setFader00);
+ tolua_function(tolua_S,"getFader",tolua_mixxx_LuaInterface_getFader00);
+ tolua_function(tolua_S,"getValue",tolua_mixxx_LuaInterface_getValue00);
  tolua_function(tolua_S,"startFadeCrossfader",tolua_mixxx_LuaInterface_startFadeCrossfader00);
  tolua_function(tolua_S,"startFade",tolua_mixxx_LuaInterface_startFade00);
  tolua_function(tolua_S,"fadePoint",tolua_mixxx_LuaInterface_fadePoint00);
