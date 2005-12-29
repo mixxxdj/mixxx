@@ -103,6 +103,7 @@ MixxxView::MixxxView(QWidget *parent, ConfigObject<ConfigValueKbd> *kbdconfig, b
     {
         if (node.isElement())
         {
+	//printf("%s\n", node.nodeName());
             if (node.nodeName()=="PushButton")
             {
                 WPushButton *p = new WPushButton(this);

@@ -144,6 +144,10 @@ class MixxxApp : public QMainWindow
     Q3PopupMenu *viewMenu;
     /** view_menu contains all items of the menubar entry "Help" */
     Q3PopupMenu *helpMenu;
+
+#ifdef __SCRIPT__
+    Q3PopupMenu *macroMenu;
+#endif
    #else
    /** file_menu contains all items of the menubar entry "File" */
    QPopupMenu *fileMenu;
@@ -157,6 +161,9 @@ class MixxxApp : public QMainWindow
    QPopupMenu *viewMenu;
    /** view_menu contains all items of the menubar entry "Help" */
    QPopupMenu *helpMenu;
+#ifdef __SCRIPT__
+   QPopupMenu *macroMenu;
+#endif
    #endif
 
     /** actions for the application initialized in initActions() and used to en/disable them
@@ -184,6 +191,10 @@ class MixxxApp : public QMainWindow
     Q3Action *optionsPreferences;
 
     Q3Action *helpAboutApp;
+
+#ifdef __SCRIPT__
+    Q3Action *macroStudio;
+#endif
     #else
     QAction *fileNew;
     QAction *fileOpen;
@@ -206,6 +217,9 @@ class MixxxApp : public QMainWindow
     QAction *optionsPreferences;
 
     QAction *helpAboutApp;
+#ifdef __SCRIPT__
+    QAction *macroStudio;
+#endif
     #endif
     int m_iNoPlaylists;
 

@@ -282,7 +282,10 @@ MixxxApp::MixxxApp(QApplication *a, QStringList files, QSplashScreen *pSplash, Q
         ControlObject::connectControls(ConfigKey("[Channel1]", "rate"), ConfigKey("[Channel1]", "VisualLengthScale-temporal"));
         ControlObject::connectControls(ConfigKey("[Channel2]", "rate"), ConfigKey("[Channel2]", "VisualLengthScale-temporal"));
     }
-    
+   
+#ifdef __SCRIPT__
+    scriptEng = new ScriptEngine(this);
+#endif
     // Call inits to invoke all other construction parts
     initActions();
     initMenuBar();
@@ -290,10 +293,6 @@ MixxxApp::MixxxApp(QApplication *a, QStringList files, QSplashScreen *pSplash, Q
     // Check direct rendering
     if (bVisualsWaveform)
         view->checkDirectRendering();
-    
-#ifdef __SCRIPT__
-    scriptEng = new ScriptEngine(this);
-#endif
 
     // Initialize the log if a log file name was given on the command line
     Log *pLog = 0;
@@ -309,6 +308,13 @@ MixxxApp::~MixxxApp()
 
     qDebug("Destroying MixxxApp");
 
+// Moved this up to insulate macros you've worked hard on from being lost in
+// a segfault that happens sometimes somewhere below here
+#ifdef __SCRIPT__
+    scriptEng->saveMacros();
+    delete scriptEng;
+#endif
+    
     qDebug("close player, %i",qTime.elapsed());
     player->close();
 
@@ -348,7 +354,6 @@ MixxxApp::~MixxxApp()
     config->Save();
     qDebug("delete config, %i",qTime.elapsed());
     delete config;
-
 }
 
 /** initializes all QActions of the application */
@@ -363,6 +368,11 @@ void MixxxApp::initActions()
     optionsFullScreen = new Q3Action(tr("Full Screen"), tr("&Full Screen"), Q3Accel::stringToKey(tr("Esc")), this, 0, this);
     optionsPreferences = new Q3Action(tr("Preferences"), tr("&Preferences..."), Q3Accel::stringToKey(tr("Ctrl+P")), this);
     helpAboutApp = new Q3Action(tr("About"), tr("&About..."), 0, this);
+
+#ifdef __SCRIPT__
+    macroStudio = new Q3Action(tr("Show Studio"), tr("&Show Studio"), 0, this);
+#endif
+
 #else
     fileOpen = new QAction(tr("Open..."), tr("&Open"), QAccel::stringToKey(tr("Ctrl+O")), this);
     fileQuit = new QAction(tr("Exit"), tr("E&xit"), QAccel::stringToKey(tr("Ctrl+Q")), this);
@@ -372,6 +382,11 @@ void MixxxApp::initActions()
     optionsFullScreen = new QAction(tr("Full Screen"), tr("&Full Screen"), QAccel::stringToKey(tr("Esc")), this, 0, this);
     optionsPreferences = new QAction(tr("Preferences"), tr("&Preferences..."), QAccel::stringToKey(tr("Ctrl+P")), this);
     helpAboutApp = new QAction(tr("About"), tr("&About..."), 0, this);
+
+#ifdef __SCRIPT__
+    macroStudio = new QAction(tr("Show Studio"), tr("&Show Studio"), 0, this);
+#endif
+
 #endif
 
     fileOpen->setStatusTip(tr("Opens a file in player 1"));
@@ -407,6 +422,12 @@ void MixxxApp::initActions()
     helpAboutApp->setStatusTip(tr("About the application"));
     helpAboutApp->setWhatsThis(tr("About\n\nAbout the application"));
     connect(helpAboutApp, SIGNAL(activated()), this, SLOT(slotHelpAbout()));
+
+#ifdef __SCRIPT__
+    macroStudio->setStatusTip(tr("Shows the macro studio window"));
+    macroStudio->setWhatsThis(tr("Show Studio\n\nMakes the macro studio visible"));
+    connect(macroStudio, SIGNAL(activated()), scriptEng->getStudio(), SLOT(showStudio()));
+#endif
 }
 
 void MixxxApp::initMenuBar()
@@ -419,12 +440,18 @@ void MixxxApp::initMenuBar()
     playlistsMenu=new Q3PopupMenu();
     viewMenu=new Q3PopupMenu();
     helpMenu=new Q3PopupMenu();
+    	#ifdef __SCRIPT__
+    	macroMenu=new Q3PopupMenu();
+	#endif
     #else
     fileMenu=new QPopupMenu();
     optionsMenu=new QPopupMenu();
     playlistsMenu=new QPopupMenu();
     viewMenu=new QPopupMenu();
     helpMenu=new QPopupMenu();
+    	#ifdef __SCRIPT__
+    	macroMenu=new QPopupMenu();
+	#endif
     #endif
 
     // menuBar entry fileMenu
@@ -450,12 +477,19 @@ void MixxxApp::initMenuBar()
     // menuBar entry helpMenu
     helpAboutApp->addTo(helpMenu);
 
+#ifdef __SCRIPT__
+    macroStudio->addTo(macroMenu);
+#endif
+    
     // MENUBAR CONFIGURATION
     menuBar()->insertItem(tr("&File"), fileMenu);
     //menuBar()->insertItem(tr("&Edit"), editMenu);
     menuBar()->insertItem(tr("&Playlists"), playlistsMenu);
     menuBar()->insertItem(tr("&Options"), optionsMenu);
     //menuBar()->insertItem(tr("&View"), viewMenu);
+#ifdef __SCRIPT__
+    menuBar()->insertItem(tr("&Macro"), macroMenu);
+#endif
     menuBar()->insertSeparator();
     menuBar()->insertItem(tr("&Help"), helpMenu);
 }
