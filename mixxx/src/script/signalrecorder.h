@@ -6,6 +6,7 @@
 #include "../controlobjectthreadmain.h"
 
 #include <qvaluelist.h>
+#include <qvaluevector.h>
 #include <qobject.h>
 #include <qtimer.h>
 
@@ -25,10 +26,14 @@ class SignalRecorder : public QObject {
 		void valueCaught(double);
 		
 	private:
+		void simplify();
+		int findFurthest(int start);
+		bool tryLineFit(int start, int len);
+	
 		const char* m_group;
 		const char* m_name;
-		QValueList<int>* m_times;
-		QValueList<double>* m_values;
+		QValueVector<int> m_times;
+		QValueVector<double> m_values;
 		SDateTime *m_base;
 		int m_evcount;
 
