@@ -1,6 +1,6 @@
 /*
 ** Lua binding: mixxx
-** Generated automatically by tolua 5.0a on Tue Dec 27 18:02:25 2005.
+** Generated automatically by tolua 5.0a on Fri Jan  6 17:11:00 2006.
 */
 
 #ifndef __cplusplus
@@ -237,6 +237,39 @@ static int tolua_mixxx_LuaInterface_startFadeCrossfader00(lua_State* tolua_S)
 #endif
 }
 
+/* method: startList of class  LuaInterface */
+static int tolua_mixxx_LuaInterface_startList00(lua_State* tolua_S)
+{
+#ifndef TOLUA_RELEASE
+ tolua_Error tolua_err;
+ if (
+ !tolua_isusertype(tolua_S,1,"LuaInterface",0,&tolua_err) ||
+ !tolua_isstring(tolua_S,2,0,&tolua_err) ||
+ !tolua_isstring(tolua_S,3,0,&tolua_err) ||
+ !tolua_isnoobj(tolua_S,4,&tolua_err)
+ )
+ goto tolua_lerror;
+ else
+#endif
+ {
+  LuaInterface* self = (LuaInterface*)  tolua_tousertype(tolua_S,1,0);
+  const char* group = ((const char*)  tolua_tostring(tolua_S,2,0));
+  const char* name = ((const char*)  tolua_tostring(tolua_S,3,0));
+#ifndef TOLUA_RELEASE
+ if (!self) tolua_error(tolua_S,"invalid 'self' in function 'startList'",NULL);
+#endif
+ {
+  self->startList(group,name);
+ }
+ }
+ return 0;
+#ifndef TOLUA_RELEASE
+ tolua_lerror:
+ tolua_error(tolua_S,"#ferror in function 'startList'.",&tolua_err);
+ return 0;
+#endif
+}
+
 /* method: startFade of class  LuaInterface */
 static int tolua_mixxx_LuaInterface_startFade00(lua_State* tolua_S)
 {
@@ -266,6 +299,39 @@ static int tolua_mixxx_LuaInterface_startFade00(lua_State* tolua_S)
 #ifndef TOLUA_RELEASE
  tolua_lerror:
  tolua_error(tolua_S,"#ferror in function 'startFade'.",&tolua_err);
+ return 0;
+#endif
+}
+
+/* method: point of class  LuaInterface */
+static int tolua_mixxx_LuaInterface_point00(lua_State* tolua_S)
+{
+#ifndef TOLUA_RELEASE
+ tolua_Error tolua_err;
+ if (
+ !tolua_isusertype(tolua_S,1,"LuaInterface",0,&tolua_err) ||
+ !tolua_isnumber(tolua_S,2,0,&tolua_err) ||
+ !tolua_isnumber(tolua_S,3,0,&tolua_err) ||
+ !tolua_isnoobj(tolua_S,4,&tolua_err)
+ )
+ goto tolua_lerror;
+ else
+#endif
+ {
+  LuaInterface* self = (LuaInterface*)  tolua_tousertype(tolua_S,1,0);
+  int time = ((int)  tolua_tonumber(tolua_S,2,0));
+  double value = ((double)  tolua_tonumber(tolua_S,3,0));
+#ifndef TOLUA_RELEASE
+ if (!self) tolua_error(tolua_S,"invalid 'self' in function 'point'",NULL);
+#endif
+ {
+  self->point(time,value);
+ }
+ }
+ return 0;
+#ifndef TOLUA_RELEASE
+ tolua_lerror:
+ tolua_error(tolua_S,"#ferror in function 'point'.",&tolua_err);
  return 0;
 #endif
 }
@@ -332,6 +398,35 @@ static int tolua_mixxx_LuaInterface_endFade00(lua_State* tolua_S)
 #endif
 }
 
+/* method: endList of class  LuaInterface */
+static int tolua_mixxx_LuaInterface_endList00(lua_State* tolua_S)
+{
+#ifndef TOLUA_RELEASE
+ tolua_Error tolua_err;
+ if (
+ !tolua_isusertype(tolua_S,1,"LuaInterface",0,&tolua_err) ||
+ !tolua_isnoobj(tolua_S,2,&tolua_err)
+ )
+ goto tolua_lerror;
+ else
+#endif
+ {
+  LuaInterface* self = (LuaInterface*)  tolua_tousertype(tolua_S,1,0);
+#ifndef TOLUA_RELEASE
+ if (!self) tolua_error(tolua_S,"invalid 'self' in function 'endList'",NULL);
+#endif
+ {
+  self->endList();
+ }
+ }
+ return 0;
+#ifndef TOLUA_RELEASE
+ tolua_lerror:
+ tolua_error(tolua_S,"#ferror in function 'endList'.",&tolua_err);
+ return 0;
+#endif
+}
+
 /* Open function */
 TOLUA_API int tolua_mixxx_open (lua_State* tolua_S)
 {
@@ -348,9 +443,12 @@ TOLUA_API int tolua_mixxx_open (lua_State* tolua_S)
  tolua_function(tolua_S,"getFader",tolua_mixxx_LuaInterface_getFader00);
  tolua_function(tolua_S,"getValue",tolua_mixxx_LuaInterface_getValue00);
  tolua_function(tolua_S,"startFadeCrossfader",tolua_mixxx_LuaInterface_startFadeCrossfader00);
+ tolua_function(tolua_S,"startList",tolua_mixxx_LuaInterface_startList00);
  tolua_function(tolua_S,"startFade",tolua_mixxx_LuaInterface_startFade00);
+ tolua_function(tolua_S,"point",tolua_mixxx_LuaInterface_point00);
  tolua_function(tolua_S,"fadePoint",tolua_mixxx_LuaInterface_fadePoint00);
  tolua_function(tolua_S,"endFade",tolua_mixxx_LuaInterface_endFade00);
+ tolua_function(tolua_S,"endList",tolua_mixxx_LuaInterface_endList00);
  tolua_endmodule(tolua_S);
  tolua_endmodule(tolua_S);
  return 1;

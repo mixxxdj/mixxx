@@ -27,9 +27,13 @@ class LuaInterface {
 		void executeScript(const char *script);
 		
 		void startFadeCrossfader();
+		void startList(const char* group, const char* name);
 		void startFade(const char* group, const char* name);
+		void startFade(const char* group, const char* name, int interp);
+		void point(int time, double value);
 		void fadePoint(int time, double value);
 		void endFade();
+		void endList();
 	private:
 		ScriptControlQueue* m_q;
 		lua_State* m_L;
@@ -40,6 +44,7 @@ class LuaInterface {
 		
 		const char* m_group;
 		const char* m_name;
+		int m_interp;
 };
 
 #endif

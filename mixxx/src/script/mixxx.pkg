@@ -11,7 +11,10 @@ class LuaInterface {
 	double getValue(const char* group, const char* name);
 
 	void startFadeCrossfader();
+	void startList(const char* group, const char* name);
 	void startFade(const char* group, const char* name);
+	void point(int time, double value);
 	void fadePoint(int time, double value);
 	void endFade();
+	void endList();
 };
