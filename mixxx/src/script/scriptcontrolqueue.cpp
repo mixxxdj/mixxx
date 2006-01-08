@@ -107,7 +107,7 @@ void ScriptControlQueue::schedule(const char* group, const char* name, double va
 	}
 	
 	QDateTime* when = new QDateTime(base->date().addDays(days), base->time().addMSecs(offset));
-	
+	//qDebug("+%i->%i:%f", offset, when, (float)value);
 	schedule(new ScriptControlEvent(group, name, value, when));
 }
 

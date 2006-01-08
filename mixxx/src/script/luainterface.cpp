@@ -8,6 +8,9 @@
 #include <qapplication.h>
 #include <qdatetime.h>
 
+#define INTERP_NONE	0
+#define INTERP_LINEAR	1
+
 extern int tolua_mixxx_open(lua_State*);
 
 LuaInterface::LuaInterface(ScriptControlQueue* q) {
@@ -110,7 +113,15 @@ void LuaInterface::startFadeCrossfader() {
 	startFade("[Master]", "crossfader");
 }
 
+void LuaInterface::startList(const char* group, const char* name) {
+	startFade(group, name, INTERP_NONE);
+}
+
 void LuaInterface::startFade(const char* group, const char* name) {
+	startFade(group, name, INTERP_LINEAR);
+}
+
+void LuaInterface::startFade(const char* group, const char* name, int interp) {
 	if (m_group != 0) { 
 		qDebug("startFade before endFade");
 	}
@@ -119,12 +130,20 @@ void LuaInterface::startFade(const char* group, const char* name) {
 	m_times = new QValueList<int>();
 	m_values = new QValueList<double>();
 	m_time = QDateTime::currentDateTime();
+
+	m_interp = interp;
 }
 
 void LuaInterface::fadePoint(int time, double value) {
 	m_times->append(time);
 	m_values->append(value);
 }
+
+void LuaInterface::point(int time, double value) {
+	fadePoint(time, value);
+}
+
+void LuaInterface::endList() { endFade(); }
 
 void LuaInterface::endFade() {
 	
@@ -134,9 +153,19 @@ void LuaInterface::endFade() {
 	int last = *ti;
 	double value = *vi;
 	ti++; vi++;
+
+	if (m_interp == INTERP_NONE) {
+		qDebug("Hello %i", last);
+		m_q->schedule(m_group, m_name, value, &m_time, last);
+	}
 	
 	while(ti != m_times->end()) {
-		m_q->interpolate(m_group, m_name, &m_time, last, value, *ti, *vi, TRUE);
+		if (m_interp == INTERP_LINEAR) {
+			m_q->interpolate(m_group, m_name, &m_time, 
+					last, value, *ti, *vi, TRUE);
+		} else {
+			m_q->schedule(m_group, m_name, *vi, &m_time, *ti);
+		}
 			
 		last = *ti;
 		value = *vi;

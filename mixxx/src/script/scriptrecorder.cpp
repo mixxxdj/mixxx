@@ -5,8 +5,15 @@ ScriptRecorder::ScriptRecorder() {
 
 	m_all = new QPtrList<SignalRecorder>();
 	install("[Master]", "crossfader");
+	install("[Master]", "balance");
+	install("[Master]", "volume");
+
 	install("[Channel1]", "volume");
 	install("[Channel2]", "volume");
+	install("[Channel1]", "pregain");
+	install("[Channel2]", "pregain");
+	install("[Channel1]", "rate");
+	install("[Channel2]", "rate");
 	install("[Channel1]", "filterLow");
 	install("[Channel1]", "filterMid");
 	install("[Channel1]", "filterHigh");
