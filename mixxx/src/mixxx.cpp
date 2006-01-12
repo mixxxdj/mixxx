@@ -284,7 +284,7 @@ MixxxApp::MixxxApp(QApplication *a, QStringList files, QSplashScreen *pSplash, Q
     }
    
 #ifdef __SCRIPT__
-    scriptEng = new ScriptEngine(this);
+    scriptEng = new ScriptEngine(this, m_pTrack);
 #endif
     // Call inits to invoke all other construction parts
     initActions();
@@ -314,6 +314,9 @@ MixxxApp::~MixxxApp()
     scriptEng->saveMacros();
     delete scriptEng;
 #endif
+   
+    qDebug("Write track xml, %i",qTime.elapsed());
+    m_pTrack->writeXML(config->getValueString(ConfigKey("[Playlist]","Listfile")));
     
     qDebug("close player, %i",qTime.elapsed());
     player->close();
@@ -341,9 +344,6 @@ MixxxApp::~MixxxApp()
 
     qDebug("delete view, %i",qTime.elapsed());
     delete view;
-
-    qDebug("Write track xml, %i",qTime.elapsed());
-    m_pTrack->writeXML(config->getValueString(ConfigKey("[Playlist]","Listfile")));
 
     qDebug("delete tracks, %i",qTime.elapsed());
     delete m_pTrack;
