@@ -8,17 +8,32 @@
 #include <qfile.h>
 #include <qdom.h>
 
-ScriptEngine::ScriptEngine(MixxxApp* parent) {
-	ScriptControlQueue* q = new ScriptControlQueue();
+ScriptEngine::ScriptEngine(MixxxApp* parent, Track* track) {
+	ScriptControlQueue* q = new ScriptControlQueue(this);
+
+	m_parent = parent;
+	m_track = track;
+	
 	m_lua = new LuaInterface(q); 
 
 	m_macros = new QPtrList<Macro>();
 
 	loadMacros();
+	m_rec = new ScriptRecorder(track);
 	
 	//ScriptTest* stest = new ScriptTest(this);
 	m_studio = new ScriptStudio(this);
-	ScriptRecorder* bobby = new ScriptRecorder();
+}
+
+void ScriptEngine::playTrack(int channel, QString filename) {
+	if (channel == 1) {
+		m_track->slotLoadPlayer1(filename);
+	} else if (channel == 2) { 
+		m_track->slotLoadPlayer2(filename);
+	} else {
+		// This shouldn't happen
+		qDebug("Asked for channel %i which doesn't exist", channel);
+	}
 }
 
 ScriptStudio* ScriptEngine::getStudio() {
@@ -35,6 +50,10 @@ void ScriptEngine::newMacro() {
 
 int ScriptEngine::macroCount() {
 	return m_macros->count();
+}
+
+ScriptRecorder* ScriptEngine::getRecorder() {
+	return m_rec;
 }
 
 Macro* ScriptEngine::getMacro(int index) {

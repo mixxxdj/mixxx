@@ -1,7 +1,11 @@
 #include "scriptcontrolqueue.h"
+#include "numbercontrolevent.h"
+#include "trackcontrolevent.h"
 
-ScriptControlQueue::ScriptControlQueue() : QObject() {
+ScriptControlQueue::ScriptControlQueue(ScriptEngine* parent) : QObject() {
 	connect(&m_timer, SIGNAL(timeout()), this, SLOT(timerCallback()));
+
+	m_parent = parent;
 }
 
 ScriptControlQueue::~ScriptControlQueue() {
@@ -34,6 +38,7 @@ void ScriptControlQueue::setupCallbacks() {
 		//qDebug("Test: %i %i", evtime->time().msec(), now.time().msec());
 		//qDebug("Test: %f", ev->getValue());
 		m_q.removeFirst();
+		//qDebug("Ptr: %x", ev);
 		ev->execute();
 		delete ev;
 	} else {
@@ -96,19 +101,33 @@ void ScriptControlQueue::schedule(ScriptControlEvent *event) {
 	m_timer.start(0, TRUE);
 }
 
+QDateTime ScriptControlQueue::getWhen(const QDateTime* base, int offset) {
+	int days = 0;
+	//qDebug(base->toString());
+	//qDebug("+ %i", offset);
+	if (base->time().addMSecs(offset) < base->time()) {
+		days = 1;
+	}
+
+        QDateTime when(base->date().addDays(days), base->time().addMSecs(offset));
+	return when;
+}
+
+
+void ScriptControlQueue::schedule(int channel, QString path, 
+		QDateTime base, int offset) {
+	TrackControlEvent* ev = new TrackControlEvent(m_parent, channel, path,
+			getWhen(&base, offset));
+	schedule(ev);
+}
+
 void ScriptControlQueue::schedule(const char* group, const char* name, double value, const QDateTime *base, int offset) {
 	// This is wierd code, that's because QDateTime does wierd things, like deallocate memory
 	// you're still using
 	
 	// TODO: For now this doesn't support macros longer than 1 day (not an immediate problem :)
-	int days = 0;
-	if (base->time().addMSecs(offset) < base->time()) {
-		days = 1;
-	}
-	
-	QDateTime* when = new QDateTime(base->date().addDays(days), base->time().addMSecs(offset));
 	//qDebug("+%i->%i:%f", offset, when, (float)value);
-	schedule(new ScriptControlEvent(group, name, value, when));
+	schedule(new NumberControlEvent(group, name, value, getWhen(base, offset)));
 }
 
 void ScriptControlQueue::interpolate(const char* group, const char* name, const QDateTime *base,

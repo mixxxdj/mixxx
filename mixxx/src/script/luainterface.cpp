@@ -8,8 +8,7 @@
 #include <qapplication.h>
 #include <qdatetime.h>
 
-#define INTERP_NONE	0
-#define INTERP_LINEAR	1
+#include "interp.h"
 
 extern int tolua_mixxx_open(lua_State*);
 
@@ -177,4 +176,12 @@ void LuaInterface::endFade() {
 
 	m_group = 0;
 	m_name = 0;
+}
+
+void LuaInterface::playChannel1(int time, char* path) {
+	m_q->schedule(1, path, QDateTime::currentDateTime(), time);
+}
+
+void LuaInterface::playChannel2(int time, char* path) {
+	m_q->schedule(2, path, QDateTime::currentDateTime(), time);
 }

@@ -17,7 +17,7 @@ ScriptStudio::ScriptStudio(ScriptEngine* model, QWidget* parent,
 	m_edit = new QTextEdit(this, "Editor Pane");
 	m_edit->setFocus();
 
-	m_rec = ScriptRecorder();
+	m_rec = model->getRecorder();
 
 	m_edit->setEnabled(false);
 	setCentralWidget(m_edit);
@@ -78,17 +78,17 @@ void ScriptStudio::editScript() {
 void ScriptStudio::recordScript() {
 	menuBar()->setItemEnabled(ID_REC, false);
 	menuBar()->setItemEnabled(ID_STOP, true);
-	m_rec.startRecord();
+	m_rec->startRecord();
 }
 
 void ScriptStudio::stopRecord() {
-	m_rec.stopRecord();
+	m_rec->stopRecord();
 	menuBar()->setItemEnabled(ID_REC, true);
 	menuBar()->setItemEnabled(ID_STOP, false);
-	Macro* nmacro = new Macro("Recorded Macro", *m_rec.getMacro());
+	Macro* nmacro = new Macro("Recorded Macro", *(m_rec->getMacro()));
 	m_model->addMacro(nmacro);
 	m_mlist->repaint();
-	m_rec.reset();
+	m_rec->reset();
 	m_model->saveMacros();
 }
 
