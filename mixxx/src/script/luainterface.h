@@ -34,6 +34,9 @@ class LuaInterface {
 		void fadePoint(int time, double value);
 		void endFade();
 		void endList();
+
+		void playChannel1(int time, char* path);
+		void playChannel2(int time, char* path);
 	private:
 		ScriptControlQueue* m_q;
 		lua_State* m_L;

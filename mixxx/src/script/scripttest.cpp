@@ -4,7 +4,7 @@ ScriptTest::ScriptTest(ScriptEngine *peng, QWidget *parent, const char* name)
 	: QVBox(parent, name) {
 	m_parent = peng;
 
-	m_rec = new ScriptRecorder();
+	m_rec = peng->getRecorder();
 	
 	m_text = new QLineEdit(this);
 	m_exec = new QPushButton("Execute", this);

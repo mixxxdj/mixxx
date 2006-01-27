@@ -1,44 +1,22 @@
 #ifndef SCRIPT_SIGNALRECORDER_H
 #define SCRIPT_SIGNALRECORDER_H
 
+#include <qobject.h>
+
 #include "sdatetime.h"
 #include "luarecorder.h"
-#include "../controlobjectthreadmain.h"
-
-#include <qvaluelist.h>
-#include <qvaluevector.h>
-#include <qobject.h>
-#include <qtimer.h>
 
 class SignalRecorder : public QObject {
-	Q_OBJECT
-	
 	public:
-		SignalRecorder(const char* group, const char* name);
-		~SignalRecorder();
-	
-		void startRecord(SDateTime *base);
-		void stopRecord();
-	
-		void writeToScript(LuaRecorder *rec);
-		void reset();
-	public slots:
-		void valueCaught(double);
-		
-	private:
-		void simplify();
-		int findFurthest(int start);
-		bool tryLineFit(int start, int len);
-	
-		const char* m_group;
-		const char* m_name;
-		QValueVector<int> m_times;
-		QValueVector<double> m_values;
-		SDateTime *m_base;
-		int m_evcount;
+		SignalRecorder();
+		virtual ~SignalRecorder();
 
-		ControlObjectThreadMain* m_p;
+		// TODO: This should be SDateTime not SDateTime*
+		// will fix a memory leak (20 bytes per record or something?)
+                virtual void startRecord(SDateTime *base) = 0;
+                virtual void stopRecord() = 0;
+
+                virtual void writeToScript(LuaRecorder *rec) = 0;
+                virtual void reset() = 0;
 };
-
-
 #endif

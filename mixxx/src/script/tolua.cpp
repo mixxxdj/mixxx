@@ -1,6 +1,6 @@
 /*
 ** Lua binding: mixxx
-** Generated automatically by tolua 5.0a on Fri Jan  6 17:11:00 2006.
+** Generated automatically by tolua 5.0a on Mon Jan  9 20:07:39 2006.
 */
 
 #ifndef __cplusplus
@@ -427,6 +427,72 @@ static int tolua_mixxx_LuaInterface_endList00(lua_State* tolua_S)
 #endif
 }
 
+/* method: playChannel1 of class  LuaInterface */
+static int tolua_mixxx_LuaInterface_playChannel100(lua_State* tolua_S)
+{
+#ifndef TOLUA_RELEASE
+ tolua_Error tolua_err;
+ if (
+ !tolua_isusertype(tolua_S,1,"LuaInterface",0,&tolua_err) ||
+ !tolua_isnumber(tolua_S,2,0,&tolua_err) ||
+ !tolua_isstring(tolua_S,3,0,&tolua_err) ||
+ !tolua_isnoobj(tolua_S,4,&tolua_err)
+ )
+ goto tolua_lerror;
+ else
+#endif
+ {
+  LuaInterface* self = (LuaInterface*)  tolua_tousertype(tolua_S,1,0);
+  int time = ((int)  tolua_tonumber(tolua_S,2,0));
+  char* path = ((char*)  tolua_tostring(tolua_S,3,0));
+#ifndef TOLUA_RELEASE
+ if (!self) tolua_error(tolua_S,"invalid 'self' in function 'playChannel1'",NULL);
+#endif
+ {
+  self->playChannel1(time,path);
+ }
+ }
+ return 0;
+#ifndef TOLUA_RELEASE
+ tolua_lerror:
+ tolua_error(tolua_S,"#ferror in function 'playChannel1'.",&tolua_err);
+ return 0;
+#endif
+}
+
+/* method: playChannel2 of class  LuaInterface */
+static int tolua_mixxx_LuaInterface_playChannel200(lua_State* tolua_S)
+{
+#ifndef TOLUA_RELEASE
+ tolua_Error tolua_err;
+ if (
+ !tolua_isusertype(tolua_S,1,"LuaInterface",0,&tolua_err) ||
+ !tolua_isnumber(tolua_S,2,0,&tolua_err) ||
+ !tolua_isstring(tolua_S,3,0,&tolua_err) ||
+ !tolua_isnoobj(tolua_S,4,&tolua_err)
+ )
+ goto tolua_lerror;
+ else
+#endif
+ {
+  LuaInterface* self = (LuaInterface*)  tolua_tousertype(tolua_S,1,0);
+  int time = ((int)  tolua_tonumber(tolua_S,2,0));
+  char* path = ((char*)  tolua_tostring(tolua_S,3,0));
+#ifndef TOLUA_RELEASE
+ if (!self) tolua_error(tolua_S,"invalid 'self' in function 'playChannel2'",NULL);
+#endif
+ {
+  self->playChannel2(time,path);
+ }
+ }
+ return 0;
+#ifndef TOLUA_RELEASE
+ tolua_lerror:
+ tolua_error(tolua_S,"#ferror in function 'playChannel2'.",&tolua_err);
+ return 0;
+#endif
+}
+
 /* Open function */
 TOLUA_API int tolua_mixxx_open (lua_State* tolua_S)
 {
@@ -449,6 +515,8 @@ TOLUA_API int tolua_mixxx_open (lua_State* tolua_S)
  tolua_function(tolua_S,"fadePoint",tolua_mixxx_LuaInterface_fadePoint00);
  tolua_function(tolua_S,"endFade",tolua_mixxx_LuaInterface_endFade00);
  tolua_function(tolua_S,"endList",tolua_mixxx_LuaInterface_endList00);
+ tolua_function(tolua_S,"playChannel1",tolua_mixxx_LuaInterface_playChannel100);
+ tolua_function(tolua_S,"playChannel2",tolua_mixxx_LuaInterface_playChannel200);
  tolua_endmodule(tolua_S);
  tolua_endmodule(tolua_S);
  return 1;

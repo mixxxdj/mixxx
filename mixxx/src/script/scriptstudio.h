@@ -32,6 +32,6 @@ class ScriptStudio : public QMainWindow {
 		MacroList* m_mlist;
 		Macro* m_current;
 
-		ScriptRecorder m_rec;
+		ScriptRecorder* m_rec;
 };
 #endif
