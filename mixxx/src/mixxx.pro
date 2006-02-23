@@ -386,3 +386,37 @@ win32 {
 
 DBFILE = mixxx.db
 LANGUAGE = C++
+
+contains(ENABLED_FEATURES, lua) {
+	ENABLED_FEATURES += script
+} else:contains(ENABLED_FEATURES, python) {
+	ENABLED_FEATURES += script
+}
+
+contains(ENABLED_FEATURES, script) {
+	HEADERS += script/*.h
+	SOURCES += script/*.cpp
+	DEFINES += __SCRIPT__
+}
+
+contains(ENABLED_FEATURES, lua) {
+	HEADERS += script/lua/*.h
+	SOURCES += script/lua/*.cpp
+	LIBS+=-llua -llualib -ltolua
+	DEFINES += __LUA__
+}
+
+contains(ENABLED_FEATURES, python) {
+	HEADERS += script/python/*.h
+	SOURCES += script/python/*.cpp
+	DEFINES += __PYTHON__
+
+	LIBS += $$system(python-config)
+	exists(/usr/include/python2.4/Python.h) {
+		INCLUDEPATH += /usr/include/python2.4/
+	} else:exists(/usr/include/python2.3/Python.h) {
+		INCLUDEPATH += /usr/include/python2.3/
+	} else:exists(/usr/include/python2.2/Python.h) {
+		INCLUDEPATH += /usr/include/python2.2/
+	}
+}

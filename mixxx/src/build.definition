@@ -8,7 +8,7 @@ contains( CONFIG, debug ) {
 #----------------------------------------------------------------------
 
 # Configure Help facilities -------------------------------------------
-CONFIGURE_SCRIPT_FEATURES = jack alsa script
+CONFIGURE_SCRIPT_FEATURES = jack alsa lua python
 CONFIGURE_SCRIPT_PACKAGE_LIST =  libmad jack id3tag vorbisfile vorbis oggvorbis libsndfile
 #----------------------------------------------------------------------
 
@@ -276,12 +276,16 @@ include( check.qbas )
 OBJECT=tolua.h
 TYPE=header
 OPTIONS=disable_feature
-DESCRIPTION=Scripting Engine
-FEATURE=script
-ADD_DEFINES=__SCRIPT__
-ADD_HEADERS=script/*.h
-ADD_SOURCES=script/*.cpp
-LINK_LIBS=-llua -llualib -ltolua
+DESCRIPTION=Lua Support
+FEATURE=lua
+
+include(check.qbas)
+# --- Yeah yeah...
+OBJECT=python
+TYPE=bin
+OPTIONS=disable_feature
+DESCRIPTION=Python Support
+FEATURE=python
 #----
 include( check.qbas )
 #----
