@@ -1,4 +1,7 @@
-#include "luainterface.h"
+#ifdef __PYTHON__
+#include "python/pythoninterface.h"
+#endif
+
 #include "scriptengine.h"
 #include "scripttest.h"
 #include "scriptcontrolqueue.h"
@@ -11,11 +14,19 @@
 ScriptEngine::ScriptEngine(MixxxApp* parent, Track* track) {
 	ScriptControlQueue* q = new ScriptControlQueue(this);
 
+	m_pcount = 0;
 	m_parent = parent;
 	m_track = track;
-	
-	m_lua = new LuaInterface(q); 
 
+	m_pi = new PlayInterface(q);
+#ifdef __LUA__
+	m_lua = new LuaInterface(m_pi); 
+#endif
+
+#ifdef __PYTHON__
+	PythonInterface::initInterface(m_pi);	
+#endif
+	
 	m_macros = new QPtrList<Macro>();
 
 	loadMacros();
@@ -44,8 +55,8 @@ void ScriptEngine::addMacro(Macro* macro) {
 	m_macros->append(macro);
 }
 
-void ScriptEngine::newMacro() {
-	addMacro(new Macro("New Macro"));
+void ScriptEngine::newMacro(int lang) {
+	addMacro(new Macro(lang, "New Macro"));
 }
 
 int ScriptEngine::macroCount() {
@@ -63,14 +74,38 @@ Macro* ScriptEngine::getMacro(int index) {
 ScriptEngine::~ScriptEngine() {
 }
 
+void ScriptEngine::executeMacro(Macro* macro) {
+	if (macro->getLang() == Macro::LANG_LUA) {
+#ifdef __LUA__
+		m_lua->executeScript(macro->getScript(), m_pcount);
+#else
+		qDebug("Lua support not available!");
+#endif
+	} else if (macro->getLang() == Macro::LANG_PYTHON) {
+#ifdef __PYTHON__
+		PythonInterface::executeScript(macro->getScript(), m_pcount);
+#else
+		qDebug("Python support not available!");
+#endif
+	} else {
+		return;
+	}
+	m_pcount++;
+}
+
 void ScriptEngine::executeScript(const char* script) {
 	// Don't execute a null script
+	qDebug("This function is obsolete and breaks everything!");
 	if (script == 0x0) {
 		return;
 	}
 	// For now just call lua, but this layer is here in anticipation of not
 	// necessarily wanting to use it
-	m_lua->executeScript(script);
+#ifdef __LUA__
+	m_lua->executeScript(script, -1);
+#else
+	qDebug("Lua support not available!");
+#endif
 }
 
 void ScriptEngine::deleteMacro(Macro* macro) {
@@ -103,13 +138,23 @@ void ScriptEngine::loadMacros() {
 
 	QDomNode n = docElem.firstChild();
 	while (!n.isNull()) {
-		QDomNode name = n.firstChild();
+		int lang = Macro::LANG_LUA;
+		QDomNode lnode = n.firstChild();
+		QDomNode name = lnode.nextSibling();
+		if (lnode.nodeName() == "Name") {
+			qDebug("Converting from old macro file format...");
+			name = lnode;
+		} else {
+			QDomText ltext = lnode.firstChild().toText();
+			QString lstr = ltext.data();
+			lang = lstr.toInt();
+		}
 		QDomNode script = name.nextSibling();
 		QDomText ntext = name.firstChild().toText();
 		QDomText stext = script.firstChild().toText();
 		QString nstr = ntext.data();
 		QString sstr = stext.data();
-		Macro* macro = new Macro(nstr, sstr);
+		Macro* macro = new Macro(lang, nstr, sstr);
 		addMacro(macro);
 		n = n.nextSibling();
 	}
@@ -126,14 +171,19 @@ void ScriptEngine::saveMacros() {
 	for (int i = 0; i < macroCount(); i++) {
 		Macro* m = getMacro(i);
 		QDomElement macro = doc.createElement("Macro");
+		QDomElement lang = doc.createElement("Lang");
 		QDomElement name = doc.createElement("Name");
 		QDomElement script = doc.createElement("Script");
 		QDomText ntext = doc.createTextNode(m->getName());
 		QDomText stext = doc.createTextNode(m->getScript());
+		QDomText ltext = doc.createTextNode(QString::number(\
+					m->getLang()));
+		macro.appendChild(lang);
 		macro.appendChild(name);
 		macro.appendChild(script);
 		name.appendChild(ntext);
 		script.appendChild(stext);
+		lang.appendChild(ltext);
 		root.appendChild(macro);
 	}
 

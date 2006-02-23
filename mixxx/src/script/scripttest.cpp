@@ -43,11 +43,11 @@ void ScriptTest::record() {
 }
 
 void ScriptTest::dump() {
-	qDebug(*m_rec->getMacro());
+	qDebug(m_rec->getMacro()->getScript());
 }
 
 void ScriptTest::play() {
-	m_parent->executeScript(*m_rec->getMacro());
+	m_parent->executeScript(m_rec->getMacro()->getScript());
 }
 
 void ScriptTest::stop() {

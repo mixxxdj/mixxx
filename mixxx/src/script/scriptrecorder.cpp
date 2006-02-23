@@ -4,6 +4,10 @@
 #include "trackrecorder.h"
 #include "interp.h"
 
+#ifdef __LUA__
+#include "lua/luarecorder.h"
+#endif
+
 ScriptRecorder::ScriptRecorder(Track* track) {
 	m_track = track;
 	
@@ -87,17 +91,27 @@ void ScriptRecorder::stopRecord() {
         }
 }
 
-QString* ScriptRecorder::getMacro() {
+Macro* ScriptRecorder::getMacro() {
+#ifdef __LUA__
+	Macro* rmacro = new Macro(Macro::LANG_LUA, "Recorded Macro");
 	QString *macro = new QString();
 	LuaRecorder *rec = new LuaRecorder(macro);
+#else
+	qDebug("Lua support required for recording macros");
+	return NULL;
+#endif
 
+#ifdef __LUA__
         SignalRecorder *ptr;
         for (ptr = m_all->first(); ptr; ptr = m_all->next()) {
                 ptr->writeToScript(rec);
         }
 
 	delete rec;
-	return macro;
+	rmacro->setScript(*macro);
+	delete macro;
+	return rmacro;
+#endif
 }
 
 void ScriptRecorder::reset() {

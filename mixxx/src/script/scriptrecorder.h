@@ -1,8 +1,8 @@
 #ifndef SCRIPT_SCRIPTRECORDER_H
 #define SCRIPT_SCRIPTRECORDER_H
 
-#include "luarecorder.h"
 #include "signalrecorder.h"
+#include "macro.h"
 #include "../track.h"
 
 #include <qstring.h>
@@ -15,7 +15,7 @@ class ScriptRecorder {
 
 		void startRecord();
 		void stopRecord();
-		QString* getMacro();
+		Macro* getMacro();
 		void reset();
 		
 	private:

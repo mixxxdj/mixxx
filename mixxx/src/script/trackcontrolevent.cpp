@@ -1,7 +1,8 @@
 #include "trackcontrolevent.h"
 
 TrackControlEvent::TrackControlEvent(ScriptEngine* parent, int channel,
-		QString path, QDateTime time) : ScriptControlEvent(time) {
+		QString path, QDateTime time, int process, int tag) \
+		: ScriptControlEvent(time, process, tag) {
 	m_parent = parent;
 	m_channel = channel;
 	m_path = path;

@@ -2,7 +2,7 @@
 #define SCRIPT_TRACKRECORDER_H
 
 #include "signalrecorder.h"
-#include "luarecorder.h"
+#include "recorder.h"
 #include "../track.h"
 
 #include <qvaluevector.h>
@@ -16,7 +16,7 @@ class TrackRecorder : public SignalRecorder {
 		virtual void startRecord(SDateTime* base);
 		virtual void stopRecord();
 
-		virtual void writeToScript(LuaRecorder* rec);
+		virtual void writeToScript(Recorder* rec);
 		virtual void reset();
 	public slots:
 		void logTrack(TrackInfoObject* track);

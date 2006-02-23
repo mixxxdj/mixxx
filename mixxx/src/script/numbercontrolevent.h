@@ -10,8 +10,9 @@
 */
 class NumberControlEvent : public ScriptControlEvent {
 public:
-    NumberControlEvent(const char* group, const char* name, double value, QDateTime time);
-    NumberControlEvent(ControlObject *obj, double value, QDateTime time);
+    NumberControlEvent(const char* group, const char* name, double value, QDateTime time, int process, int tag = -1);
+    NumberControlEvent(ControlObject *obj, double value, QDateTime time, \
+		    int process, int tag = -1);
 
     virtual ~NumberControlEvent();
     virtual void execute();

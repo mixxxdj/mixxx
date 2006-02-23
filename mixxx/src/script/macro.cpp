@@ -2,7 +2,8 @@
 
 #include <qobject.h>
 
-Macro::Macro(QString name, QString script) {
+Macro::Macro(int lang, QString name, QString script) {
+	m_lang = lang;
 	m_name = name;
 	m_script = script;
 }
@@ -24,4 +25,22 @@ void Macro::setScript(QString script) {
 
 QString Macro::getScript() {
 	return m_script;
+}
+
+void Macro::setLang(int lang) {
+	m_lang = lang;
+}
+
+int Macro::getLang() {
+	return m_lang;
+}
+
+QString Macro::getLangName() {
+	if (m_lang == LANG_PYTHON) {
+		return "Python";
+	} else if (m_lang == LANG_LUA) {
+		return "Lua";
+	} else {
+		return "Unknown";
+	}
 }

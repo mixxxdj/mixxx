@@ -10,6 +10,9 @@
 #define ID_REC 1000
 #define ID_STOP 1001
 
+#define ID_LUA 2000
+#define ID_PYTHON 2001
+
 ScriptStudio::ScriptStudio(ScriptEngine* model, QWidget* parent,
 			const char* name) : QMainWindow(parent, name) {
 	m_model = model;
@@ -24,14 +27,36 @@ ScriptStudio::ScriptStudio(ScriptEngine* model, QWidget* parent,
 	resize(600,400);
 	
 	QPopupMenu* script = new QPopupMenu(this);
+	QPopupMenu* newtype = new QPopupMenu(script);
+	QPopupMenu* lang = new QPopupMenu(this);
+
+	lang->setCheckable(true);
 	menuBar()->insertItem("&Macro", script);
-	script->insertItem("&New", this, SLOT(newScript()));
+//	script->insertItem("&New", this, SLOT(newScript()));
+	script->insertItem("&New", newtype);
+#ifdef __LUA__
 	script->insertItem("&Record", this, SLOT(recordScript()), 0, ID_REC);
 	script->insertItem("&Stop Record", this, SLOT(stopRecord()), 0, ID_STOP);
+#endif
 	script->insertItem("&Play", this, SLOT(playMacro()));
 	script->insertItem("&Delete", this, SLOT(deleteMacro()));
+
+	menuBar()->insertItem("&Language", lang);
+#ifdef __LUA__
+	lang->insertItem("&Lua", this, SLOT(setLangLua()), 0, ID_LUA);
+#endif
+#ifdef __PYTHON__
+	lang->insertItem("&Python", this, SLOT(setLangPython()), 0, ID_PYTHON);
+#endif
 	
 	menuBar()->setItemEnabled(ID_STOP, false);
+	menuBar()->setItemChecked(ID_LUA, false);
+#ifdef __LUA__
+	newtype->insertItem("&Lua Macro", this, SLOT(newLuaScript()));
+#endif
+#ifdef __PYTHON__
+	newtype->insertItem("&Python Macro", this, SLOT(newPythonScript()));
+#endif
 	
 	QDockWindow* left = new QDockWindow(this);
 	m_mlist = new MacroList(m_model, left);
@@ -47,10 +72,21 @@ ScriptStudio::ScriptStudio(ScriptEngine* model, QWidget* parent,
 ScriptStudio::~ScriptStudio() {
 }
 
-void ScriptStudio::newScript() {
-	m_model->newMacro();
+void ScriptStudio::newPythonScript() {
+#ifdef __PYTHON__
+        m_model->newMacro(Macro::LANG_PYTHON);
+        m_mlist->repaint();
+        m_model->saveMacros();
+#endif
+}
+
+// Can't comment out whole function, the moc thing is a bit too naive
+void ScriptStudio::newLuaScript() {
+#ifdef __LUA__
+	m_model->newMacro(Macro::LANG_LUA);
 	m_mlist->repaint();
 	m_model->saveMacros();
+#endif
 }
 
 void ScriptStudio::changeScript() {
@@ -59,18 +95,19 @@ void ScriptStudio::changeScript() {
 	m_model->saveMacros();
 	MacroListItem* item = (MacroListItem*)m_mlist->selectedItem();
 	if (item == NULL) {
+		m_current = 0;
+		m_edit->setText("");
+		m_edit->setEnabled(false);
 		return;
 	}
 	m_current = item->getMacro();
 	m_edit->setText(m_current->getScript());
 	m_edit->setEnabled(true);
+	updateLangMenu();
 }
 
 void ScriptStudio::editScript() {
 	if (m_current != NULL) {
-		m_current->setScript(m_edit->text());
-	} else {
-		newScript();
 		m_current->setScript(m_edit->text());
 	}
 }
@@ -85,7 +122,7 @@ void ScriptStudio::stopRecord() {
 	m_rec->stopRecord();
 	menuBar()->setItemEnabled(ID_REC, true);
 	menuBar()->setItemEnabled(ID_STOP, false);
-	Macro* nmacro = new Macro("Recorded Macro", *(m_rec->getMacro()));
+	Macro* nmacro = m_rec->getMacro();
 	m_model->addMacro(nmacro);
 	m_mlist->repaint();
 	m_rec->reset();
@@ -99,7 +136,7 @@ void ScriptStudio::playMacro() {
                 return;
         }
         m_current = item->getMacro();
-        m_model->executeScript(m_current->getScript());
+        m_model->executeMacro(m_current);
 }
 
 void ScriptStudio::deleteMacro() {
@@ -122,4 +159,36 @@ void ScriptStudio::deleteMacro() {
 
 void ScriptStudio::showStudio() {
 	show();
+}
+
+void ScriptStudio::setLangLua() {
+#ifdef __LUA__
+	if (m_current != NULL) {
+		m_current->setLang(Macro::LANG_LUA);
+	}
+	updateLangMenu();
+#endif
+}
+
+void ScriptStudio::setLangPython() {
+#ifdef __PYTHON__
+	if (m_current != NULL) {
+		m_current->setLang(Macro::LANG_PYTHON);
+	}
+	updateLangMenu();
+#endif
+}
+
+void ScriptStudio::updateLangMenu() {
+	menuBar()->setItemChecked(ID_LUA, false);
+	menuBar()->setItemChecked(ID_PYTHON, false);
+	if (m_current == NULL) {
+		return;
+	}
+	int lang = m_current->getLang();
+	if (lang == Macro::LANG_LUA) {
+		menuBar()->setItemChecked(ID_LUA, true);
+	} else if (lang == Macro::LANG_PYTHON) {
+		menuBar()->setItemChecked(ID_PYTHON, true);
+	}
 }

@@ -115,23 +115,28 @@ QDateTime ScriptControlQueue::getWhen(const QDateTime* base, int offset) {
 
 
 void ScriptControlQueue::schedule(int channel, QString path, 
-		QDateTime base, int offset) {
-	TrackControlEvent* ev = new TrackControlEvent(m_parent, channel, path,
-			getWhen(&base, offset));
+		QDateTime base, int offset, int process, int tag) {
+	TrackControlEvent* ev = new TrackControlEvent(m_parent, channel, path,\
+			getWhen(&base, offset), process, tag);
 	schedule(ev);
 }
 
-void ScriptControlQueue::schedule(const char* group, const char* name, double value, const QDateTime *base, int offset) {
-	// This is wierd code, that's because QDateTime does wierd things, like deallocate memory
-	// you're still using
+void ScriptControlQueue::schedule(const char* group, const char* name, \
+		double value, const QDateTime *base, int offset, \
+		int process, int tag) {
+	// This is wierd code, that's because QDateTime does wierd things, like 
+	// deallocate memory you're still using
 	
-	// TODO: For now this doesn't support macros longer than 1 day (not an immediate problem :)
+	// TODO: For now this doesn't support macros longer than 1 day 
+	// (not an immediate problem :)
 	//qDebug("+%i->%i:%f", offset, when, (float)value);
-	schedule(new NumberControlEvent(group, name, value, getWhen(base, offset)));
+	schedule(new NumberControlEvent(group, name, value, \
+				getWhen(base, offset), process, tag));
 }
 
-void ScriptControlQueue::interpolate(const char* group, const char* name, const QDateTime *base,
-		int time1, double val1, int time2, double val2, bool addLast, int minres) {
+void ScriptControlQueue::interpolate(const char* group, const char* name, \
+		const QDateTime *base, int time1, double val1, int time2, \
+		double val2, int process, int tag, bool addLast, int minres) {
 	
 	//qDebug("%i %f -> %i %f", time1, val1, time2, val2);
 			
@@ -147,8 +152,34 @@ void ScriptControlQueue::interpolate(const char* group, const char* name, const 
 		//qDebug("At time %i", time);
 		//qDebug("%f", ((double)i/(double)max));
 		double val = val1 + (((double)i/(double)chunks) * dv);
-		schedule(group, name, val, base, time);
+		schedule(group, name, val, base, time, process, tag);
 		//qDebug("Schedule at %i => %f", time, val);
 		//qDebug("Value %f", val);
+	}
+}
+
+void ScriptControlQueue::killProcess(int process) {
+	ScriptControlEvent *ev = m_q.first();
+	while (ev != 0) {
+		if (ev->getProcess() == process) {
+			m_q.remove();
+			delete ev;
+			ev = m_q.current();
+		} else {
+			ev = m_q.next();
+		}
+	}
+}
+
+void ScriptControlQueue::killTag(int process, int tag) {
+	ScriptControlEvent *ev = m_q.first();
+	while (ev != 0) {
+		if (ev->getProcess() == process && ev->getTag() == tag) {
+			m_q.remove();
+			delete ev;
+			ev = m_q.current();
+		} else {
+			ev = m_q.next();
+		}
 	}
 }
