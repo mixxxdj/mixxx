@@ -2,7 +2,7 @@
 #define SCRIPT_NUMBERRECORDER_H
 
 #include "sdatetime.h"
-#include "luarecorder.h"
+#include "recorder.h"
 #include "signalrecorder.h"
 #include "../controlobjectthreadmain.h"
 
@@ -23,7 +23,7 @@ class NumberRecorder : public SignalRecorder {
 		virtual void startRecord(SDateTime *base);
 		virtual void stopRecord();
 	
-		virtual void writeToScript(LuaRecorder *rec);
+		virtual void writeToScript(Recorder *rec);
 		virtual void reset();
 	public slots:
 		void valueCaught(double);

@@ -4,7 +4,7 @@
 #include <qobject.h>
 
 #include "sdatetime.h"
-#include "luarecorder.h"
+#include "recorder.h"
 
 class SignalRecorder : public QObject {
 	public:
@@ -16,7 +16,7 @@ class SignalRecorder : public QObject {
                 virtual void startRecord(SDateTime *base) = 0;
                 virtual void stopRecord() = 0;
 
-                virtual void writeToScript(LuaRecorder *rec) = 0;
+                virtual void writeToScript(Recorder *rec) = 0;
                 virtual void reset() = 0;
 };
 #endif

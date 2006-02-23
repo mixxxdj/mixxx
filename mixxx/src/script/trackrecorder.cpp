@@ -43,7 +43,7 @@ void TrackRecorder::logTrack(TrackInfoObject* track) {
 
 }
 
-void TrackRecorder::writeToScript(LuaRecorder* rec) {
+void TrackRecorder::writeToScript(Recorder* rec) {
 	if (m_times.empty()) {
 		return;
 	}

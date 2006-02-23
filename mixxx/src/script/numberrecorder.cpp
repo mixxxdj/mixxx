@@ -69,7 +69,7 @@ void NumberRecorder::valueCaught(double value) {
 	}
 }
 
-void NumberRecorder::writeToScript(LuaRecorder* rec) {
+void NumberRecorder::writeToScript(Recorder* rec) {
 	if (m_values.empty()) {
 		return;
 	}

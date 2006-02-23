@@ -17,7 +17,8 @@ class ScriptStudio : public QMainWindow {
 		~ScriptStudio();
 
 	public slots:
-		void newScript();
+		void newLuaScript();
+		void newPythonScript();
 		void changeScript();
 		void editScript();
 		void recordScript();
@@ -26,6 +27,8 @@ class ScriptStudio : public QMainWindow {
 		void deleteMacro();
 
 		void showStudio();
+		void setLangLua();
+		void setLangPython();
 	private:
 		ScriptEngine* m_model;
 		QTextEdit* m_edit;
@@ -33,5 +36,7 @@ class ScriptStudio : public QMainWindow {
 		Macro* m_current;
 
 		ScriptRecorder* m_rec;
+
+		void updateLangMenu();
 };
 #endif

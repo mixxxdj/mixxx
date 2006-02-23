@@ -16,9 +16,19 @@ class ScriptControlQueue : public QObject {
 		ScriptControlQueue(ScriptEngine* parent);
 		~ScriptControlQueue();
 		void schedule(ScriptControlEvent *event);
-		void schedule(int channel, QString path, QDateTime base, int offset);
-		void schedule(const char* group, const char* name, double value, const QDateTime *base, int offset);
-		void interpolate(const char* group, const char* name, const QDateTime *base, int time1, double val1, int time2, double val2, bool addLast = TRUE, int minres = 50);
+		void schedule(int channel, QString path, QDateTime base, \
+				int offset, int process, int tag = -1);
+		void schedule(const char* group, const char* name, \
+				double value, const QDateTime *base, \
+				int offset, int process, int tag = -1);
+		void interpolate(const char* group, const char* name, \
+				const QDateTime *base, int time1, double val1, \
+				int time2, double val2, int process, \
+				int tag = -1, bool addLast = TRUE, \
+				int minres = 50);
+
+		void killProcess(int process);
+		void killTag(int process, int tag);
 	public slots:
 		void timerCallback();
 		
