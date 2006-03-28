@@ -392,7 +392,10 @@ void DlgPrefMidi::slotApply()
     m_pConfig->set(ConfigKey("[Controls]","PowerMateFunction2"), ConfigValue(ComboBoxPowerMate2->currentText()));
     m_pConfig->set(ConfigKey("[Controls]","HerculesMapping"), ConfigValue(ComboBoxHercules->currentText()));
 
-    // Close MIDI
+    // Since things can go wrong during this midi code (like hangs) move it
+    // into another thread so we can do something sensible if it breaks
+    
+    /*// Close MIDI
     m_pMidi->devClose();
 
     // Change MIDI configuration
@@ -400,8 +403,19 @@ void DlgPrefMidi::slotApply()
     m_pMidiConfig->reopen(m_pConfig->getValueString(ConfigKey("[Config]","Path")).append("midi/").append(m_pConfig->getValueString(ConfigKey("[Midi]","File"))));
 
     // Open MIDI device
-    m_pMidi->devOpen(m_pConfig->getValueString(ConfigKey("[Midi]","Device")));
+    m_pMidi->devOpen(m_pConfig->getValueString(ConfigKey("[Midi]","Device")));*/
 
+    MidiWorkaround mw(m_pMidi, m_pConfig, m_pMidiConfig);
+    mw.start();
+    if (mw.wait(2000)) {
+	    qDebug("Midi OK (Workaround not required)");
+    } else {
+	    qDebug("ERROR: Midi driver not responding");
+	    // I Apologise for what happens now, I don't understand the code well enough to better (yet):
+	    delete m_pMidi;
+            m_pMidi = new MidiObjectNull(m_pConfig->getValueString(ConfigKey("[Midi]","Device")));	    
+    }
+    
     // PowerMates
     if (m_pPowerMate1)
         m_pPowerMate1->selectMapping(ComboBoxPowerMate1->currentText());
@@ -536,3 +550,23 @@ void DlgPrefMidi::setupHercules()
 {
 }
 */
+
+MidiWorkaround::MidiWorkaround(MidiObject* pMidi, \
+            ConfigObject<ConfigValue>* pConfig, \
+	    ConfigObject<ConfigValueMidi>* pMidiConfig) {
+	
+    m_pMidi = pMidi;
+    m_pConfig = pConfig;
+    m_pMidiConfig = pMidiConfig;
+}
+
+void MidiWorkaround::run() {
+	
+     // Close MIDI
+     m_pMidi->devClose();
+     // Change MIDI configuration
+     //m_pMidiConfig->clear(); // (is currently not implemented correctly)
+     m_pMidiConfig->reopen(m_pConfig->getValueString(ConfigKey("[Config]","Path")).append("midi/").append(m_pConfig->getValueString(ConfigKey("[Midi]","File"))));
+     // Open MIDI device
+     m_pMidi->devOpen(m_pConfig->getValueString(ConfigKey("[Midi]","Device")));
+}
