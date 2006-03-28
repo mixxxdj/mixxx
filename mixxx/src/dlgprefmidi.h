@@ -21,6 +21,8 @@
 #include "dlgprefmididlg.h"
 #include "configobject.h"
 
+#include <qthread.h>
+
 class QWidget;
 class MidiObject;
 class PowerMate;
@@ -56,7 +58,7 @@ private:
     void setupMouse();
     void setupJoystick();
     void setupHercules();*/
-    
+   
     MidiObject *m_pMidi;
     ConfigObject<ConfigValue> *m_pConfig;
     ConfigObject<ConfigValueMidi> *m_pMidiConfig;
@@ -68,6 +70,21 @@ private:
     QTimer *m_pTimer;
     int m_iProgress;
     Mouse *m_pMouseCalibrate;
+};
+
+class MidiWorkaround : public QThread {
+
+    public:
+        MidiWorkaround(MidiObject* pMidi, \
+                 ConfigObject<ConfigValue>* pConfig, \
+		 ConfigObject<ConfigValueMidi>* pMidiConfig);
+	
+        virtual void run();
+	
+    private:
+	MidiObject* m_pMidi;
+	ConfigObject<ConfigValue>* m_pConfig;
+	ConfigObject<ConfigValueMidi>* m_pMidiConfig;
 };
 
 #endif
