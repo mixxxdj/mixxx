@@ -20,13 +20,17 @@ macx:MACLIBPATH = ../../mixxx-maclib
 # Path to Windows libraries
 win32:WINLIBPATH = ../../mixxx-winlib
 
-# Path to ASIO SDK
+# Path to ASIO SDK. ASIO SDK can be downloaded from Steinbergs
+# homepage, or from here: http://www.irf.se/~ionogram/ionogram/SDK/ASIO%20SDK/asiosdk2.zip 
 ASIOSDK_DIR   = $$WINLIBPATH/asiosdk2
 
-# Define if compiling using QT4
+# Define if compiling using QT4. Not currently working.
 #CONFIG += qt3support
 
-# Windows: Set to 1 if using Visual Studio, otherwise 0
+# Define if compiling using QT3
+CONFIG += qt3
+
+# Windows: Set to 1 if using Visual Studio, 0 if using MinGw
 win32:VISUALSTUDIO = 1
 
 #
@@ -52,7 +56,16 @@ macx:INCLUDEPATH += $$PORTAUDIO_DIR/pa_mac_core $$PORTAUDIO_DIR/pablio
 }
 win32 {
     message("Compiling with PortAudio/WMME drivers")
-    LIBS += winmm.lib PAStaticWMME.lib
+    contains(VISUALSTUDIO, 1) {
+	    LIBS += winmm.lib PAStaticWMME.lib
+    }
+    contains(VISUALSTUDIO, 0) {
+		SOURCES += $$PORTAUDIO_DIR/pa_common/pa_lib.c $$PORTAUDIO_DIR/pa_common/pa_convert.c
+		HEADERS += $$PORTAUDIO_DIR/pa_common/pa_host.h
+		SOURCES += $$PORTAUDIO_DIR/pablio/ringbuffer.c $$PORTAUDIO_DIR/pa_win_wmme/pa_win_wmme.c
+		INCLUDEPATH += $$PORTAUDIO_DIR/pablio 
+		LIBS += -lwinmm
+    }
 }
 
 # RTAudio (Windows DirectSound)
@@ -73,6 +86,9 @@ win32 {
     SOURCES += playerasio.cpp $$ASIOSDK_DIR/common/asio.cpp $$ASIOSDK_DIR/host/asiodrivers.cpp $$ASIOSDK_DIR/host/pc/asiolist.cpp
     HEADERS += playerasio.h $$ASIOSDK_DIR/common/asio.h $$ASIOSDK_DIR/host/asiodrivers.h $$ASIOSDK_DIR/host/pc/asiolist.h
     INCLUDEPATH += $$ASIOSDK_DIR/common $$ASIOSDK_DIR/host $$ASIOSDK_DIR/host/pc
+    contains(VISUALSTUDIO, 0) {
+		LIBS += -lole32
+	}
 }
 
 # RTAudio (Linux ALSA)
@@ -126,7 +142,14 @@ HEADERS += wvisualsimple.h wvisualwaveform.h visual/visualbackplane.h  visual/te
 CONFIG += opengl
 
 # MP3
-win32:LIBS += libmad-release.lib libid3tag-release.lib
+win32 {
+    contains(VISUALSTUDIO, 1) {
+  		LIBS += libmad-release.lib libid3tag-release.lib
+	}
+    contains(VISUALSTUDIO, 0) {
+		LIBS += -lmad -lid3tag
+	}
+}
 macx:LIBS += $$MACLIBPATH/lib/libmad.a $$MACLIBPATH/lib/libid3tag.a
 
 # MP3 vbrheadersdk from Xing Technology
@@ -135,17 +158,31 @@ SOURCES += ../lib/vbrheadersdk/dxhead.c
 HEADERS += ../lib/vbrheadersdk/dxhead.h
 
 # Wave files
-win32:SOURCES += soundsourcesndfile.cpp
-win32:HEADERS += soundsourcesndfile.h
-win32:DEFINES += __SNDFILE__
-win32:LIBS += libsndfile.lib
+win32 {
+    SOURCES += soundsourcesndfile.cpp
+    HEADERS += soundsourcesndfile.h
+    DEFINES += __SNDFILE__
+	contains(VISUALSTUDIO, 1) {
+	    LIBS += libsndfile.lib
+	}
+	contains(VISUALSTUDIO, 0) {
+	    LIBS += libsndfile.dll
+	}
+}
 macx:SOURCES += soundsourceaudiofile.cpp
 macx:HEADERS += soundsourceaudiofile.h
 macx:DEFINES += __AUDIOFILE__
 macx:LIBS += $$MACLIBPATH/lib/libaudiofile.a
 
 # Ogg Vorbis
-win32:LIBS += vorbisfile_static.lib vorbis_static.lib ogg_static.lib
+win32 {
+	contains(VISUALSTUDIO, 1) {
+		LIBS += vorbisfile_static.lib vorbis_static.lib ogg_static.lib
+	}
+	contains(VISUALSTUDIO, 0) {
+		LIBS += ..\..\mixxx-winlib\vorbisfile.dll ..\..\mixxx-winlib\vorbis.dll ..\..\mixxx-winlib\ogg.dll
+	}
+}
 macx:LIBS += $$MACLIBPATH/lib/libvorbis.a $$MACLIBPATH/lib/libvorbisfile.a $$MACLIBPATH/lib/libogg.a
 
 # PowerMate
@@ -189,18 +226,27 @@ INCLUDEPATH += $$KISSFFT_DIR
 #HEADERS += enginebufferscalesrc.h ../lib/libsamplerate/samplerate.h ../lib/libsamplerate/config.h ../lib/libsamplerate/common.h ../lib/libsamplerate/float_cast.h ../lib/libsamplerate/fastest_coeffs.h ../lib/libsamplerate/high_qual_coeffs.h ../lib/libsamplerate/mid_qual_coeffs.h
 
 # SoundTouch scaling
-INCLUDEPATH += ../lib/soundtouch
-SOURCES += enginebufferscalest.cpp ../lib/soundtouch/SoundTouch.cpp ../lib/soundtouch/TDStretch.cpp ../lib/soundtouch/RateTransposer.cpp ../lib/soundtouch/AAFilter.cpp ../lib/soundtouch/FIFOSampleBuffer.cpp ../lib/soundtouch/FIRFilter.cpp
-HEADERS += enginebufferscalest.h ../lib/soundtouch/TDStretch.h ../lib/soundtouch/RateTransposer.h ../lib/soundtouch/cpu_detect.h ../lib/soundtouch/STTypes.h ../lib/soundtouch/SoundTouch.h ../lib/soundtouch/FIFOSamplePipe.h ../lib/soundtouch/FIFOSampleBuffer.h ../lib/soundtouch/AAFilter.h ../lib/soundtouch/FIRFilter.h ../lib/soundtouch/config.h
-unix:!macx:SOURCES += ../lib/soundtouch/mmx_gcc.cpp
-unix:SOURCES += ../lib/soundtouch/cpu_detect_x86_gcc.cpp
+unix {
+	INCLUDEPATH += ../lib/soundtouch
+	SOURCES += enginebufferscalest.cpp ../lib/soundtouch/SoundTouch.cpp ../lib/soundtouch/TDStretch.cpp ../lib/soundtouch/RateTransposer.cpp ../lib/soundtouch/AAFilter.cpp ../lib/soundtouch/FIFOSampleBuffer.cpp ../lib/soundtouch/FIRFilter.cpp
+	HEADERS += enginebufferscalest.h ../lib/soundtouch/TDStretch.h ../lib/soundtouch/RateTransposer.h ../lib/soundtouch/cpu_detect.h ../lib/soundtouch/STTypes.h ../lib/soundtouch/SoundTouch.h ../lib/soundtouch/FIFOSamplePipe.h ../lib/soundtouch/FIFOSampleBuffer.h ../lib/soundtouch/AAFilter.h ../lib/soundtouch/FIRFilter.h ../lib/soundtouch/config.h
+	!macx:SOURCES += ../lib/soundtouch/mmx_gcc.cpp
+	SOURCES += ../lib/soundtouch/cpu_detect_x86_gcc.cpp
+}
 win32 {
-  contains(VISUALSTUDIO, 1) {
-    SOURCES += ../lib/soundtouch/cpu_detect_x86_win.cpp ../lib/soundtouch/mmx_win.cpp ../lib/soundtouch/sse_win.cpp ../lib/soundtouch/3dnow_win.cpp
-  }
-  contains(VISUALSTUDIO, 0) {
-    SOURCES += ../lib/soundtouch/cpu_detect_x86_gcc.cpp
-  }
+    INCLUDEPATH += ../lib/soundtouch
+    SOURCES += enginebufferscalest.cpp
+    HEADERS += enginebufferscalest.h
+    contains(VISUALSTUDIO, 1) {
+        INCLUDEPATH += ../lib/soundtouch
+        SOURCES += ../lib/soundtouch/SoundTouch.cpp ../lib/soundtouch/TDStretch.cpp ../lib/soundtouch/RateTransposer.cpp ../lib/soundtouch/AAFilter.cpp ../lib/soundtouch/FIFOSampleBuffer.cpp ../lib/soundtouch/FIRFilter.cpp
+        HEADERS += ../lib/soundtouch/TDStretch.h ../lib/soundtouch/RateTransposer.h ../lib/soundtouch/cpu_detect.h ../lib/soundtouch/STTypes.h ../lib/soundtouch/SoundTouch.h ../lib/soundtouch/FIFOSamplePipe.h ../lib/soundtouch/FIFOSampleBuffer.h ../lib/soundtouch/AAFilter.h ../lib/soundtouch/FIRFilter.h ../lib/soundtouch/config.h
+        SOURCES += ../lib/soundtouch/cpu_detect_x86_win.cpp ../lib/soundtouch/mmx_win.cpp ../lib/soundtouch/sse_win.cpp ../lib/soundtouch/3dnow_win.cpp
+    }
+    contains(VISUALSTUDIO, 0) {
+        INCLUDEPATH += ../../mixxx-winlib/soundtouch
+	    LIBS += -L..\..\mixxx-winlib -lsoundtouch
+    }
 }
 
 # Debug plotting through gplot API
@@ -257,16 +303,19 @@ win32 {
   INCLUDEPATH += $$WINLIBPATH ../lib .
   contains(VISUALSTUDIO, 1) {
     QMAKE_CXXFLAGS += -GX
+    QMAKE_LFLAGS += /VERBOSE:LIB /LIBPATH:$$WINLIBPATH /NODEFAULTLIB:library /NODEFAULTLIB:libcd /NODEFAULTLIB:libcmt /NODEFAULTLIB:libc
   }
-  contains(CONFIG, qt3support) {
-    contains(VISUALSTUDIO, 0) {
-       QMAKE_CXXFLAGS += -UQT_NO_CAST_TO_ASCII -UQ_NO_DECLARED_NOT_DEFINED -UQT_NO_ASCII_CAST
-    }
-    # QT3 SUPPORT stuff
-    QT += network xml opengl qt3support
-    CONFIG += uic3
+  contains(VISUALSTUDIO, 0) {
+      QMAKE_CXXFLAGS += -UQT_NO_CAST_TO_ASCII -UQ_NO_DECLARED_NOT_DEFINED -UQT_NO_ASCII_CAST
+      QMAKE_LFLAGS += -mwindows -lwinmm     
   }
-  QMAKE_LFLAGS += /VERBOSE:LIB /LIBPATH:$$WINLIBPATH /NODEFAULTLIB:library /NODEFAULTLIB:libcd /NODEFAULTLIB:libcmt /NODEFAULTLIB:libc
+  contains(VISUALSTUDIO,0) {
+      LIBS += -L..\..\mixxx-winlib
+  }
+
+  QT += network xml opengl qt3support
+  CONFIG += uic3
+
   SETTINGS_FILE = \"mixxx.cfg\"
   TRACK_FILE = \"mixxxtrack.xml\"
   RC_FILE = mixxx.rc
@@ -324,8 +373,12 @@ unix {
    INSTALLS += skino skinoc skinos skint midi keyb readme licence copying manual target
 }
 
-
-FORMS	= dlgprefsounddlg.ui dlgprefmididlg.ui dlgprefplaylistdlg.ui dlgprefcontrolsdlg.ui
+contains(CONFIG, qt3support) {
+	FORMS3	= dlgprefsounddlg.ui dlgprefmididlg.ui dlgprefplaylistdlg.ui dlgprefcontrolsdlg.ui
+}
+contains(CONFIG, qt3) {
+	FORMS	= dlgprefsounddlg.ui dlgprefmididlg.ui dlgprefplaylistdlg.ui dlgprefcontrolsdlg.ui
+}
 
 SOURCES += enginebuffercue.cpp input.cpp mixxxmenuplaylists.cpp trackplaylistlist.cpp mixxxkeyboard.cpp configobject.cpp controlobjectthread.cpp controlobjectthreadwidget.cpp controlobjectthreadmain.cpp controlevent.cpp controllogpotmeter.cpp controlobject.cpp controlnull.cpp controlpotmeter.cpp controlpushbutton.cpp controlttrotary.cpp controlbeat.cpp dlgpreferences.cpp dlgprefsound.cpp dlgprefmidi.cpp dlgprefplaylist.cpp dlgprefcontrols.cpp enginebuffer.cpp enginebufferscale.cpp engineclipping.cpp enginefilterblock.cpp enginefilteriir.cpp engineobject.cpp enginepregain.cpp enginevolume.cpp main.cpp midiobject.cpp midiobjectnull.cpp mixxx.cpp mixxxview.cpp player.cpp playerproxy.cpp soundsource.cpp soundsourcemp3.cpp soundsourceoggvorbis.cpp enginechannel.cpp enginemaster.cpp wwidget.cpp wpixmapstore.cpp wlabel.cpp wnumber.cpp wnumberpos.cpp wnumberrate.cpp wnumberbpm.cpp wknob.cpp wdisplay.cpp wvumeter.cpp wpushbutton.cpp wslidercomposed.cpp wslider.cpp wtracktable.cpp wtracktableitem.cpp enginedelay.cpp engineflanger.cpp enginespectralfwd.cpp mathstuff.cpp readerextract.cpp readerextractwave.cpp readerevent.cpp rtthread.cpp windowkaiser.cpp probabilityvector.cpp reader.cpp trackinfoobject.cpp enginevumeter.cpp peaklist.cpp rotary.cpp log.cpp
 HEADERS += enginebuffercue.h input.h mixxxmenuplaylists.h trackplaylistlist.h mixxxkeyboard.h configobject.h controlobjectthread.h controlobjectthreadwidget.h controlobjectthreadmain.h controlevent.h controllogpotmeter.h controlobject.h controlnull.h controlpotmeter.h controlpushbutton.h controlttrotary.h controlbeat.h defs.h dlgpreferences.h dlgprefsound.h dlgprefmidi.h dlgprefplaylist.h dlgprefcontrols.h enginebuffer.h enginebufferscale.h engineclipping.h enginefilterblock.h enginefilteriir.h engineobject.h enginepregain.h enginevolume.h midiobject.h midiobjectnull.h mixxx.h mixxxview.h player.h playerproxy.h soundsource.h soundsourcemp3.h soundsourceoggvorbis.h enginechannel.h enginemaster.h wwidget.h wpixmapstore.h wlabel.h wnumber.h wnumberpos.h wnumberrate.h wnumberbpm.h wknob.h wdisplay.h wvumeter.h wpushbutton.h wslidercomposed.h wslider.h wtracktable.h wtracktableitem.h enginedelay.h engineflanger.h enginespectralfwd.h mathstuff.h readerextract.h readerextractwave.h readerevent.h rtthread.h windowkaiser.h probabilityvector.h reader.h trackinfoobject.h enginevumeter.h peaklist.h rotary.h log.h
@@ -364,7 +417,6 @@ SOURCES += enginebufferscalereal.cpp
 
 # Hack to save waveform output to wav file at exit
 #DEFINES += RECORD_OUTPUT
-
 
 IMAGES += icon.png
 DEFINES += SETTINGS_FILE=$$SETTINGS_FILE TRACK_FILE=$$TRACK_FILE
