@@ -11,7 +11,8 @@ NumberRecorder::NumberRecorder(const char* group, const char* name
 	m_name = name;
 	m_interp = interp;
 	m_evcount = 0;
-
+	m_p = 0;
+	
 	m_times = QValueVector<int>();
 	m_values = QValueVector<double>();
 }
@@ -36,14 +37,22 @@ void NumberRecorder::reset() {
 void NumberRecorder::startRecord(SDateTime *base) {
 	m_base = base;
 
-        ControlObject *obj = ControlObject::getControl(ConfigKey(m_group, m_name));
-        m_p = new ControlObjectThreadMain(obj);
+	if (m_p == 0) {
+	        ControlObject *obj = ControlObject::getControl(\
+				ConfigKey(m_group, m_name));
+		m_p = new ControlObjectThreadMain(obj);
+		qDebug("Created cotm %x", m_p);
+	}
+	qDebug("Connecting...");
         connect(m_p, SIGNAL(valueChanged(double)), this, SLOT(valueCaught(double)));
         //qDebug("Started recorder for %s:%s", m_group, m_name);
 }
 
 void NumberRecorder::stopRecord() {
+	if (!m_p) { return; }
+	qDebug("Stopping %s:%s", m_group, m_name);
 	m_p->disconnect(this);
+	qDebug("Stopped successfully");
 	simplify();
 }
 
@@ -94,7 +103,7 @@ void NumberRecorder::writeToScript(Recorder* rec) {
  */
 
 void NumberRecorder::simplify() {
-	if (m_times.count() == 0) {
+	if (m_times.count() < 3) {
 		return;
 	}
 	for (int i = 0; i < m_times.count() - 2; i++) {

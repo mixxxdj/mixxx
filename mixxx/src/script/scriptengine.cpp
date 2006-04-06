@@ -116,7 +116,7 @@ void ScriptEngine::deleteMacro(Macro* macro) {
 
 void ScriptEngine::loadMacros() {
 	QDomDocument doc("MacroStore");
-	QFile *file = getMacroFile();
+	QFile* file = getMacroFile();
 	
 	
 	if (!file->open(IO_ReadOnly)) {
@@ -130,9 +130,11 @@ void ScriptEngine::loadMacros() {
 		file->close();
 		qDebug("Problem loading macros from disk (xml)");
 		qDebug("At %i, %i: %s", line, col, (const char*)(*errorMsg));
+		delete file;
 		return;
 	}
 	file->close();
+	delete file;
 	delete errorMsg;
 	QDomElement docElem = doc.documentElement();
 
@@ -196,6 +198,7 @@ void ScriptEngine::saveMacros() {
 	} else {
 		qDebug("Everything went horribly wrong writing macros to disk");
 	}
+	delete file;
 	
 }
 

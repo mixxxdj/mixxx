@@ -119,14 +119,23 @@ void ScriptStudio::recordScript() {
 }
 
 void ScriptStudio::stopRecord() {
+	qDebug("1");
 	m_rec->stopRecord();
+	qDebug("2");
 	menuBar()->setItemEnabled(ID_REC, true);
+	qDebug("3");
 	menuBar()->setItemEnabled(ID_STOP, false);
+	qDebug("4");
 	Macro* nmacro = m_rec->getMacro();
+	qDebug("5");
 	m_model->addMacro(nmacro);
+	qDebug("6");
 	m_mlist->repaint();
+	qDebug("7");
 	m_rec->reset();
+	qDebug("8");
 	m_model->saveMacros();
+	qDebug("9");
 }
 
 void ScriptStudio::playMacro() {
