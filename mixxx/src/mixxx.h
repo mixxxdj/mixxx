@@ -115,6 +115,10 @@ class MixxxApp : public QMainWindow
     /** Pointer to waveform summary generator */
     WaveSummary *m_pWaveSummary;
 
+    // FWI: Begin of fullscreen patch
+    QFrame *frame;
+    // FWI: End of fullscreen patch
+
     QApplication *app;
     EngineObject *engine;
     EngineBuffer *buffer1, *buffer2;
@@ -229,6 +233,10 @@ class MixxxApp : public QMainWindow
 #ifdef __SCRIPT__
     ScriptEngine *scriptEng;
 #endif
+
+    // Fullscreen patch
+    QPoint winpos;
+    QSize winsize;
 };
 #endif
 
