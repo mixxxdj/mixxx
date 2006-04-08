@@ -179,7 +179,18 @@ MixxxApp::MixxxApp(QApplication *a, QStringList files, QSplashScreen *pSplash, Q
     bool bVisualsWaveform = true;
     if (config->getValueString(ConfigKey("[Controls]","Visuals")).toInt()==1)
         bVisualsWaveform = false;
-    view=new MixxxView(this, kbdconfig, bVisualsWaveform, qSkinPath, config);
+
+    // FWI: Begin of fullscreen patch
+    // Use frame as container for view, needed for fullscreen display
+    frame = new QFrame(this,"Mixxx");
+    //frame->setPaletteBackgroundColor(QColor(255,0,0));
+    setCentralWidget(frame);
+    //setPaletteBackgroundColor(QColor(0,255,0));
+    move(10,10);
+    // FWI: End of fullscreen patch
+
+    view=new MixxxView(frame, kbdconfig, bVisualsWaveform, qSkinPath, config);
+
     if (bVisualsWaveform && !view->activeWaveform())
     {
         config->set(ConfigKey("[Controls]","Visuals"), ConfigValue(1));
@@ -189,7 +200,10 @@ MixxxApp::MixxxApp(QApplication *a, QStringList files, QSplashScreen *pSplash, Q
         mb->setText("OpenGL cannot be initialized, which means that\nthe waveform displays won't work. A simple\nmode will be used instead where you can still\nuse the mouse to change speed.");
         mb->show();
     }
-    setCentralWidget(view);
+
+    // FWI: Begin of fullscreen patch
+    // setCentralWidget(view);
+    // FWI: End of fullscreen patch
 
     // Tell EngineBuffer to notify the visuals if they are WVisualWaveform
     if (view->activeWaveform())
@@ -354,6 +368,10 @@ MixxxApp::~MixxxApp()
     config->Save();
     qDebug("delete config, %i",qTime.elapsed());
     delete config;
+
+    // FWI: Begin of fullscreen patch
+    delete frame;
+    // FWI: End of fullscreen patch
 }
 
 /** initializes all QActions of the application */
@@ -542,13 +560,37 @@ void MixxxApp::slotOptionsFullScreen(bool toggle)
 {
     if (toggle)
     {
+	winpos = pos();
+	winsize = view->size();
         menuBar()->hide();
-        showFullScreen();
+	showFullScreen();
+        // FWI: Beginn of fullscreen patch
+#ifdef __LINUX__
+	// Crazy X window managers break this so I'm told by Qt docs
+	int deskw = app->desktop()->width();
+	int deskh = app->desktop()->height();
+#else
+	int deskw = width();
+	int deskh = height();
+#endif
+        frame->setMaximumSize(deskw,deskh);
+	frame->resize(deskw,deskh);
+        view->move( (deskw-view->width())/2, (deskh-view->height())/2 );
+        // FWI: End of fullscreen patch
     }
     else
     {
+        // FWI: Begin of fullscreen patch
+        view->move(0,0);
         menuBar()->show();
-        showNormal();
+	showNormal();
+	// More bizarre code here working around Qt wierdness
+	frame->setMaximumSize(winsize);
+	frame->setMinimumSize(winsize);
+	frame->resize(winsize);
+	frame->move(winpos);
+	
+        // FWI: End of fullscreen patch
     }
 }
 
