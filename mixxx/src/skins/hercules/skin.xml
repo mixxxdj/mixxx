@@ -362,8 +362,8 @@
   <BgColor>#ffffff</BgColor>
   <BgColorRowEven>#ffffff</BgColorRowEven>
   <BgColorRowUneven>#ffffff</BgColorRowUneven>
-  <BgColorBpmConfidenceLow>#ffffff</BgColorBpmConfidenceLow>
-  <BgColorBpmConfidenceHigh>#9EFF75</BgColorBpmConfidenceHigh>
+  <BgColorBpmNoConfirm>#ffffff</BgColorBpmNoConfirm>
+  <BgColorBpmConfirm>#9EFF75</BgColorBpmConfirm>
   <ColWidthScore>20</ColWidthScore>
   <ColWidthTitle>190</ColWidthTitle>
   <ColWidthArtist>180</ColWidthArtist>
