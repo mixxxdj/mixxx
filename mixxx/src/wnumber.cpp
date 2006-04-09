@@ -54,11 +54,22 @@ void WNumber::setup(QDomNode node)
     int y = size.mid(size.find(",")+1).toInt();
     setFixedSize(x,y);
 
+    // FWI: Begin of font size patch                                                    // FWI
+    int fontsize = 9;
+    if (!selectNode(node, "FontSize").isNull())
+       fontsize = selectNodeQString(node, "FontSize").toInt();
+    m_pLabel->setFont( QFont("Helvetica",fontsize,QFont::Normal) );
+    // FWI: End of font size patch
+
     // Alignment
     if (!selectNode(node, "Alignment").isNull())
     {
         if (selectNodeQString(node, "Alignment")=="right")
             m_pLabel->setAlignment(Qt::AlignRight|Qt::AlignVCenter);
+        // FWI: Begin of font alignment patch
+        else if (selectNodeQString(node, "Alignment")=="center")
+            m_pLabel->setAlignment(Qt::AlignHCenter|Qt::AlignVCenter);
+        // FWI: End of font alignment patch
     }
 
     // Constant factor

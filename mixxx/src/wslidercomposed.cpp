@@ -34,7 +34,7 @@ WSliderComposed::WSliderComposed(QWidget *parent, const char *name ) : WWidget(p
     m_iSliderLength=0;
     m_iHandleLength=0;
 
-    m_fValue = 63.;
+    m_fValue = 63.5; // FWI: Fixed slider default positon
 }
 
 WSliderComposed::~WSliderComposed()
@@ -229,7 +229,7 @@ void WSliderComposed::setValue(double fValue)
 
 void WSliderComposed::reset()
 {
-    setValue(63.);
+    setValue(63.5); // FWI: Fixed slider default Position
     emit(valueChangedLeftUp(m_fValue));
     emit(valueChangedLeftDown(m_fValue));
 }
