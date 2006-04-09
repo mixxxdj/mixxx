@@ -18,6 +18,8 @@
 #include <qpushbutton.h>
 #include <qcombobox.h>
 #include <qmessagebox.h>
+#include <qlayout.h>
+#include <qhbox.h>
 
 #ifdef QT3_SUPPORT
 #include <q3accel.h>
@@ -183,9 +185,9 @@ MixxxApp::MixxxApp(QApplication *a, QStringList files, QSplashScreen *pSplash, Q
     // FWI: Begin of fullscreen patch
     // Use frame as container for view, needed for fullscreen display
     frame = new QFrame(this,"Mixxx");
-    //frame->setPaletteBackgroundColor(QColor(255,0,0));
+    
     setCentralWidget(frame);
-    //setPaletteBackgroundColor(QColor(0,255,0));
+   
     move(10,10);
     // FWI: End of fullscreen patch
 
@@ -200,10 +202,6 @@ MixxxApp::MixxxApp(QApplication *a, QStringList files, QSplashScreen *pSplash, Q
         mb->setText("OpenGL cannot be initialized, which means that\nthe waveform displays won't work. A simple\nmode will be used instead where you can still\nuse the mouse to change speed.");
         mb->show();
     }
-
-    // FWI: Begin of fullscreen patch
-    // setCentralWidget(view);
-    // FWI: End of fullscreen patch
 
     // Tell EngineBuffer to notify the visuals if they are WVisualWaveform
     if (view->activeWaveform())
@@ -312,6 +310,9 @@ MixxxApp::MixxxApp(QApplication *a, QStringList files, QSplashScreen *pSplash, Q
     Log *pLog = 0;
     if (qLogFileName.length()>0)
         pLog = new Log(qLogFileName, m_pTrack);
+
+    // Fullscreen patch
+    setFixedSize(width(), height());
 
 }
 
@@ -561,9 +562,11 @@ void MixxxApp::slotOptionsFullScreen(bool toggle)
     if (toggle)
     {
 	winpos = pos();
-	winsize = view->size();
-        menuBar()->hide();
+	winsize = size();
+	// Can't set max to -1,-1 or 0,0 for unbounded?
+	setMaximumSize(32767,32767);
 	showFullScreen();
+        menuBar()->hide();
         // FWI: Beginn of fullscreen patch
 #ifdef __LINUX__
 	// Crazy X window managers break this so I'm told by Qt docs
@@ -573,8 +576,6 @@ void MixxxApp::slotOptionsFullScreen(bool toggle)
 	int deskw = width();
 	int deskh = height();
 #endif
-        frame->setMaximumSize(deskw,deskh);
-	frame->resize(deskw,deskh);
         view->move( (deskw-view->width())/2, (deskh-view->height())/2 );
         // FWI: End of fullscreen patch
     }
@@ -584,11 +585,9 @@ void MixxxApp::slotOptionsFullScreen(bool toggle)
         view->move(0,0);
         menuBar()->show();
 	showNormal();
-	// More bizarre code here working around Qt wierdness
-	frame->setMaximumSize(winsize);
-	frame->setMinimumSize(winsize);
-	frame->resize(winsize);
-	frame->move(winpos);
+
+	setFixedSize(winsize);
+	move(winpos);
 	
         // FWI: End of fullscreen patch
     }

@@ -199,7 +199,7 @@ MixxxView::MixxxView(QWidget *parent, ConfigObject<ConfigValueKbd> *kbdconfig, b
                 // this->setFixedSize(background.width(),background.height()+((QMainWindow *)parent)->menuBar()->height());
                 // parent->setFixedSize(background.width(),background.height()+((QMainWindow *)parent)->menuBar()->height());
                 this->setFixedSize(background.width(),background.height());
-                parent->setFixedSize(background.width(),background.height());
+                parent->setMinimumSize(background.width(),background.height());
                 // FWI: End of fullscreen patch
                 this->move(0,0);
             }
