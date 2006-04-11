@@ -290,8 +290,8 @@ unix {
   OBJECTS_DIR = .obj
 
 # GCC Compiler optimization flags
-#  QMAKE_CXXFLAGS += -pg -march=pentium3 -O3 -pipe
-#  QMAKE_CFLAGS   += -pg -march=pentium3 -O3 -pipe
+QMAKE_CXXFLAGS += -pg -march=pentium3 -O3 -pipe
+QMAKE_CFLAGS   += -pg -march=pentium3 -O3 -pipe
 
 # gcc Profiling
 #QMAKE_CXXFLAGS += -pg
