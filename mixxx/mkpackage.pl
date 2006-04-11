@@ -37,6 +37,11 @@ if ($#out<0)
 
 # Get version
 ($_, $_, $version) = split(' ',`grep VERSION src/defs.h`);
+# Strip off quotes
+print $version;
+$version =~ s/\"//g;
+print $version;
+print $BASE;
 
 # Add version to base
 $BASE = $BASE . "/mixxx-$version";
