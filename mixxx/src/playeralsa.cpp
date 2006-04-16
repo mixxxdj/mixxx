@@ -615,7 +615,22 @@ int PlayerALSA::set_hwparams()
 #endif
     /* figure out size and make it even */
     buffer_size = (int) rrate*(1e-6*buffer_time) + 1;
+   
+    snd_pcm_uframes_t max = 0;
+    snd_pcm_uframes_t min = 0;
+    
+    // FIXME: Should check return values to be on the safe side
+    snd_pcm_hw_params_get_buffer_size_max(hwparams, &max);
+    snd_pcm_hw_params_get_buffer_size_min(hwparams, &min);
+    qDebug("Allowed buffer size range: %li -> %li", min, max);
+  
+    // Make sure buffer size we're aiming for is really allowed
+    if (buffer_size < min) { buffer_size = (int)min; }
+    if (buffer_size > max) { buffer_size = (int)max; }
+    
     buffer_size -= (buffer_size & 1);
+
+    if (buffer_size < min) { buffer_size += 2; }
 
     /* test buffer size first */
     err = snd_pcm_hw_params_test_buffer_size(handle, hwparams, buffer_size);
