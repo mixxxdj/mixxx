@@ -400,7 +400,7 @@ QString TrackInfoObject::getBpmStr()
     float fBpm = m_fBpm;
     m_qMutex.unlock();
 
-    return QString("%1").arg(fBpm); //, 3,'f',1);
+    return QString("%1").arg(fBpm, 3,'f',1);
 }
 
 bool TrackInfoObject::getBpmConfirm()
