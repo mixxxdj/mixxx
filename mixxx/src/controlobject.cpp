@@ -218,10 +218,22 @@ void ControlObject::sync()
         while(!m_sqQueueMidi.isEmpty())
         {
             obj = m_sqQueueMidi.dequeue();
-
-            obj->pControlObject->setValueFromMidi(obj->category, obj->value);
-            obj->pControlObject->updateProxies(0);
-            delete obj;
+	    if (obj == NULL) {
+	        qDebug("Midi sent us a bad object!");
+	    } else if (obj->pControlObject == NULL) {
+		qDebug("Midi object with null control object!");
+		delete obj;
+	    } else if (obj->category == NULL) {
+		qDebug("Midi object with null category!");
+		delete obj;
+	    } else if (obj->value == NULL) {
+	        qDebug("Midi object with null value!");
+		delete obj;
+	    } else {
+                obj->pControlObject->setValueFromMidi(obj->category, obj->value);
+                obj->pControlObject->updateProxies(0);
+                delete obj;
+	    }
         }
 
         //
