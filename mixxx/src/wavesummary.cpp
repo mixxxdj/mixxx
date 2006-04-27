@@ -175,9 +175,22 @@ void WaveSummary::run()
             }           
             
             // Update BPM value in TrackInfoObject
-            if (!pTrackInfoObject->getBpmConfirm())
-                pTrackInfoObject->setBpm(bpv->getBestBpmValue());
+            if (!pTrackInfoObject->getBpmConfirm()) {
+	        pTrackInfoObject->setBpm(bpv->getBestBpmValue());
 
+		float conf = bpv->getBestBpmConfidence() / (float)1e10;
+
+		// FIXME: This is in the wrong file
+		if (conf > 1000.0f || conf < 0.0f) {
+		    // Something went pretty wrong there...
+		    conf = 0.0f;
+		}
+		
+		conf = max(0., min(1., conf));
+		
+		if (conf > 0.75f)
+		    pTrackInfoObject->setBpmConfirm(true);
+	    }
 
             //
             // Extract volume profile
