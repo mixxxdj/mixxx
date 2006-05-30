@@ -156,7 +156,7 @@ void WTrackTable::sortColumn(int col, bool ascending, bool)
 
 void WTrackTable::slotMousePressed(int row, int col, int button, const QPoint &)
 {
-    if (col!=COL_COMMENT && col!=COL_BPM)
+    if (col!=COL_COMMENT && col!=COL_BPM && button==Qt::RightButton)
     {
         WTrackTableItem *p = (WTrackTableItem *)item(row,col);
         if (p)
