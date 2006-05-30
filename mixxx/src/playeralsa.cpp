@@ -119,10 +119,16 @@ bool PlayerALSA::open()
         
     qDebug("Alsa opening pcm_open: %s", devname.ascii());
 
-    if ((err = snd_pcm_open(&handle, devname.ascii(), SND_PCM_STREAM_PLAYBACK, 0)) < 0)
-    {
-        qWarning("Playback open error: %s\n", snd_strerror(err));
-        return false;
+    if ((err = snd_pcm_open(&handle, devname.ascii(),
+		    SND_PCM_STREAM_PLAYBACK, 0)) < 0) {
+	// AD: Try for default device instead
+	if ((err = snd_pcm_open(&handle, "default",
+			SND_PCM_STREAM_PLAYBACK, 0)) < 0) {
+            qWarning("Playback open error: %s\n", snd_strerror(err));
+            return false;
+	} else {
+	    qWarning("Using default ALSA device, you may want to set up a ~/.asoundrc to enable all the features of your sound card");
+	}
     }
 
     qDebug("Alsa setting hw");
