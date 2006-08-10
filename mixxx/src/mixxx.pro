@@ -80,16 +80,17 @@ win32 {
 #}
 
 # ASIO (Windows)
-win32 {
-    message("Compiling with ASIO drivers")
-    DEFINES += __ASIO__
-    SOURCES += playerasio.cpp $$ASIOSDK_DIR/common/asio.cpp $$ASIOSDK_DIR/host/asiodrivers.cpp $$ASIOSDK_DIR/host/pc/asiolist.cpp
-    HEADERS += playerasio.h $$ASIOSDK_DIR/common/asio.h $$ASIOSDK_DIR/host/asiodrivers.h $$ASIOSDK_DIR/host/pc/asiolist.h
-    INCLUDEPATH += $$ASIOSDK_DIR/common $$ASIOSDK_DIR/host $$ASIOSDK_DIR/host/pc
-    contains(VISUALSTUDIO, 0) {
-		LIBS += -lole32
-	}
-}
+#win32 {
+#    message("Compiling with ASIO drivers")
+#    DEFINES += __ASIO__
+#    SOURCES += playerasio.cpp $$ASIOSDK_DIR/common/asio.cpp $$ASIOSDK_DIR/host/asiodrivers.cpp $$ASIOSDK_DIR/host/pc/asiolist.cpp
+#    HEADERS += playerasio.h $$ASIOSDK_DIR/common/asio.h $$ASIOSDK_DIR/host/asiodrivers.h $$ASIOSDK_DIR/host/pc/asiolist.h
+#    INCLUDEPATH += $$ASIOSDK_DIR/common $$ASIOSDK_DIR/host $$ASIOSDK_DIR/host/pc
+#    contains(VISUALSTUDIO, 0) {
+#		LIBS += -lole32
+#	}
+#}
+
 
 # RTAudio (Linux ALSA)
 #unix:!macx {
