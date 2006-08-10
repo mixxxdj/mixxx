@@ -108,7 +108,9 @@ private:
     /** Pointer to EngineBuffer */
     EngineBuffer *enginebuffer;
     /** Mutex used in termination of the thread */
+	// FIXME: This mutex doesn't work on windows?!?!? using a boolean instead for now
     QMutex requestStop;
+	bool readerExiting;
     /** Mutex used to sync this thread (reader) with other threads */
     QMutex m_qReaderMutex;
     /** Variable used with readerMutex to sync thread. Must only be modified when holding readerMutex */
