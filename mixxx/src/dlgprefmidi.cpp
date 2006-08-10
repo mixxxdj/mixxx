@@ -394,17 +394,22 @@ void DlgPrefMidi::slotApply()
 
     // Since things can go wrong during this midi code (like hangs) move it
     // into another thread so we can do something sensible if it breaks
+
+	// On Linux having the midi init in a different thread seems to fix things
+	// for a number of buggy drivers, however it causes extra problems for windows
+	// go figure...
     
-    /*// Close MIDI
-    m_pMidi->devClose();
+    // Close MIDI
+#ifdef __WIN__
+	m_pMidi->devClose();
 
     // Change MIDI configuration
     //m_pMidiConfig->clear(); // (is currently not implemented correctly)
     m_pMidiConfig->reopen(m_pConfig->getValueString(ConfigKey("[Config]","Path")).append("midi/").append(m_pConfig->getValueString(ConfigKey("[Midi]","File"))));
 
     // Open MIDI device
-    m_pMidi->devOpen(m_pConfig->getValueString(ConfigKey("[Midi]","Device")));*/
-
+    m_pMidi->devOpen(m_pConfig->getValueString(ConfigKey("[Midi]","Device")));
+#else
     MidiWorkaround mw(m_pMidi, m_pConfig, m_pMidiConfig);
     mw.start();
     if (mw.wait(2000)) {
@@ -415,6 +420,7 @@ void DlgPrefMidi::slotApply()
 	    delete m_pMidi;
             m_pMidi = new MidiObjectNull(m_pConfig->getValueString(ConfigKey("[Midi]","Device")));	    
     }
+#endif
     
     // PowerMates
     if (m_pPowerMate1)
