@@ -41,10 +41,10 @@
 ///
 ////////////////////////////////////////////////////////////////////////////////
 //
-// Last changed  : $Date: 2005-02-10 13:11:55 +0000 (Thu, 10 Feb 2005) $
-// File revision : $Revision: 857 $
+// Last changed  : $Date: 2006-08-10 20:32:06 +0100 (Thu, 10 Aug 2006) $
+// File revision : $Revision: 975 $
 //
-// $Id: SoundTouch.h 857 2005-02-10 13:11:55Z tuehaste $
+// $Id: SoundTouch.h 975 2006-08-10 19:32:06Z adam_d $
 //
 ////////////////////////////////////////////////////////////////////////////////
 //
@@ -159,7 +159,7 @@ public:
     static const char *getVersionString();
 
     /// Get SoundTouch library version Id
-    static uint SoundTouch::getVersionId();
+    static uint getVersionId();
 
     /// Sets new rate control value. Normal rate = 1.0, smaller values
     /// represent slower rate, larger faster rates.
