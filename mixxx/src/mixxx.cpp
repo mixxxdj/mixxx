@@ -153,7 +153,7 @@ MixxxApp::MixxxApp(QApplication *a, QStringList files, QSplashScreen *pSplash, Q
 
     // Get Music dir
     QDir dir(config->getValueString(ConfigKey("[Playlist]","Directory")));
-    if ((config->getValueString(ConfigKey("[Playlist]","Directory")).length()<1) | (!dir.exists()))
+    if ((config->getValueString(ConfigKey("[Playlist]","Directory")).length()<1) || (!dir.exists()))
     {
     	  #ifdef QT3_SUPPORT
         Q3FileDialog* fd = new Q3FileDialog(this, "", true);
@@ -221,7 +221,7 @@ MixxxApp::MixxxApp(QApplication *a, QStringList files, QSplashScreen *pSplash, Q
 
     // Verify path for xml track file.
     QFile trackfile(config->getValueString(ConfigKey("[Playlist]","Listfile")));
-    if ((config->getValueString(ConfigKey("[Playlist]","Listfile")).length()<1) | (!trackfile.exists()))
+    if ((config->getValueString(ConfigKey("[Playlist]","Listfile")).length()<1) || (!trackfile.exists()))
     {
         config->set(ConfigKey("[Playlist]","Listfile"), QDir::homeDirPath().append("/").append(TRACK_FILE));
         config->Save();
@@ -312,7 +312,7 @@ MixxxApp::MixxxApp(QApplication *a, QStringList files, QSplashScreen *pSplash, Q
         pLog = new Log(qLogFileName, m_pTrack);
 
     // Fullscreen patch
-    setFixedSize(width(), height());
+    setFixedSize(view->width(), view->height());
 
 }
 
@@ -348,10 +348,12 @@ MixxxApp::~MixxxApp()
     delete channel1;
     qDebug("delete channel2, %i",qTime.elapsed());
     delete channel2;
+
     qDebug("delete buffer1, %i",qTime.elapsed());
-    delete buffer1;
-    qDebug("delete buffer2, %i",qTime.elapsed());
-    delete buffer2;
+	delete buffer1;
+	qDebug("delete buffer2, %i",qTime.elapsed());
+	delete buffer2;
+
 //    qDebug("delete prefDlg");
 //    delete m_pControlEngine;
 //    qDebug("delete midi");
@@ -559,22 +561,25 @@ void MixxxApp::slotOptionsBeatMark(bool)
 
 void MixxxApp::slotOptionsFullScreen(bool toggle)
 {
+	// Making a fullscreen window on linux and windows is harder than you could possibly imagine...
     if (toggle)
     {
-	winpos = pos();
-	winsize = size();
-	// Can't set max to -1,-1 or 0,0 for unbounded?
-	setMaximumSize(32767,32767);
-	showFullScreen();
-        menuBar()->hide();
-        // FWI: Beginn of fullscreen patch
 #ifdef __LINUX__
-	// Crazy X window managers break this so I'm told by Qt docs
-	int deskw = app->desktop()->width();
-	int deskh = app->desktop()->height();
+		winpos = pos();
+		winsize = size();
+		// Can't set max to -1,-1 or 0,0 for unbounded?
+		setMaximumSize(32767,32767);
+#endif
+		showFullScreen();
+        menuBar()->hide();
+        // FWI: Begin of fullscreen patch
+#ifdef __LINUX__
+		// Crazy X window managers break this so I'm told by Qt docs
+		int deskw = app->desktop()->width();
+		int deskh = app->desktop()->height();
 #else
-	int deskw = width();
-	int deskh = height();
+		int deskw = width();
+		int deskh = height();
 #endif
         view->move( (deskw-view->width())/2, (deskh-view->height())/2 );
         // FWI: End of fullscreen patch
@@ -584,10 +589,12 @@ void MixxxApp::slotOptionsFullScreen(bool toggle)
         // FWI: Begin of fullscreen patch
         view->move(0,0);
         menuBar()->show();
-	showNormal();
+		showNormal();
 
-	setFixedSize(winsize);
-	move(winpos);
+#ifdef __LINUX__
+		setFixedSize(winsize);
+		move(winpos);
+#endif
 	
         // FWI: End of fullscreen patch
     }
