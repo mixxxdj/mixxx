@@ -28,6 +28,7 @@
 
 Reader::Reader(EngineBuffer *_enginebuffer, QMutex *_pause)
 {
+	readerExiting = false;
     enginebuffer = _enginebuffer;
     m_dRate = 0.;
     m_pTrack = 0;
@@ -227,18 +228,15 @@ void Reader::run()
     rtThread();
 #endif
 
-    while(!requestStop.locked())
-    {
-// qDebug("wait");        
+    while(!readerExiting)
+	{
         // Wait for playback if in buffer is filled.
         readAheadMutex.tryLock();
         readAhead.wait(&readAheadMutex);
-// qDebug("woke");
         
         m_qReaderMutex.lock();
         m_iReaderAccess++;
         m_qReaderMutex.unlock();
-
         // Check if a new track is requested
         trackqueuemutex.lock();
         bool requeststate = trackqueue.isEmpty();
@@ -263,17 +261,15 @@ void Reader::run()
         m_qReaderMutex.lock();
         m_iReaderAccess--;
         m_qReaderMutex.unlock();
-        
     }
     //qDebug("reader stopping");
 }
 
 void Reader::stop()
 {
-    requestStop.lock();
+	readerExiting = true;
     readAhead.wakeAll();
     wait();
-    requestStop.unlock();
 }
 
 void Reader::seek()
