@@ -228,14 +228,6 @@ EngineBuffer::~EngineBuffer()
     delete m_pScale;
     delete m_pTrackEnd;
 	delete reader;
-	
-	/*ReaderDeleter rd(reader);
-	rd.start();
-	if (!rd.wait(1000)) {
-		reader->terminate();
-		rd.terminate();
-		qDebug("FIXME: EngineBuffer::~EngineBuffer couldn't delete it's reader object!");
-	}*/
 }
 
 void EngineBuffer::lockPlayposVars()
@@ -1341,12 +1333,4 @@ void EngineBuffer::rampOut(const CSAMPLE *pOut, int iBufferSize)
         pOutput[i]=0.;
         ++i;
     }
-}
-
-ReaderDeleter::ReaderDeleter(Reader *rdr) {
-	m_rdr = rdr;
-}
-
-void ReaderDeleter::run() {
-	delete m_rdr;
 }
