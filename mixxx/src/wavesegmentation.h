@@ -45,7 +45,7 @@ public:
 	double * column(int c);
 
 	~Rhythmogram();
-	static void Rhythmogram::acf(double *wav, int nwav, double *acf, int nacf);
+	static void acf(double *wav, int nwav, double *acf, int nacf);
 };
 
 
