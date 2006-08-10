@@ -544,9 +544,11 @@ void MixxxApp::slotFileOpen()
                                              this,
                                              "Open file");
     #endif
-    TrackInfoObject *pTrack = m_pTrack->getTrackCollection()->getTrack(s);
-    if (pTrack)
-        m_pTrack->slotLoadPlayer1(pTrack);
+	if (!(s == QString::null)) {
+		TrackInfoObject *pTrack = m_pTrack->getTrackCollection()->getTrack(s);
+		if (pTrack)
+			m_pTrack->slotLoadPlayer1(pTrack);
+	}
 }
 
 void MixxxApp::slotFileQuit()
