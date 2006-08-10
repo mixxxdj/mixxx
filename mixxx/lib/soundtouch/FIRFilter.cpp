@@ -11,10 +11,10 @@
 ///
 ////////////////////////////////////////////////////////////////////////////////
 //
-// Last changed  : $Date: 2005-02-10 13:11:55 +0000 (Thu, 10 Feb 2005) $
-// File revision : $Revision: 857 $
+// Last changed  : $Date: 2006-08-10 13:08:06 +0100 (Thu, 10 Aug 2006) $
+// File revision : $Revision: 967 $
 //
-// $Id: FIRFilter.cpp 857 2005-02-10 13:11:55Z tuehaste $
+// $Id: FIRFilter.cpp 967 2006-08-10 12:08:06Z adam_d $
 //
 ////////////////////////////////////////////////////////////////////////////////
 //
@@ -177,7 +177,7 @@ void FIRFilter::setCoefficients(const SAMPLETYPE *coeffs, uint newLength, uint u
     assert(length == newLength);
 
     resultDivFactor = uResultDivFactor;
-    resultDivider = (uint)pow(2, resultDivFactor);
+    resultDivider = pow(2., (int)resultDivFactor);
 
     delete[] filterCoeffs;
     filterCoeffs = new SAMPLETYPE[length];
