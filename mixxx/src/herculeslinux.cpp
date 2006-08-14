@@ -81,14 +81,15 @@ bool HerculesLinux::opendev()
     {
         if (sqlOpenDevs.find(i)==sqlOpenDevs.end())
         {
+            qDebug("Looking for a Hercules DJ Console on /dev/input/event%d ...", i);
             m_iFd = opendev(i);
             if(m_iFd >= 0)
                 break;
         }
     }
-
     if (m_iFd>0)
     {
+        qDebug("Hercules device @ %d", m_iFd);
         // Start thread
         start();
 
@@ -105,6 +106,7 @@ bool HerculesLinux::opendev()
         return true;
     }
     else
+        qDebug("Hercules device not found!", m_iFd);
         return false;
 }
 
@@ -131,15 +133,21 @@ int HerculesLinux::opendev(int iId)
     int i;
     char rgcName[255];
 
-    if(iFd < 0)
+    if(iFd < 0) {
+        qDebug("Could not open Hercules at /dev/input/event%d [%s]",iId, strerror(errno));
+        if (errno==13) {
+          qDebug("If you have a Hercules device plugged into USB, you'll need to either execute 'sudo chmod o+rw- /dev/input/event?' or run mixxx as root.");
+        }         
         return -1;
+    }
     if(ioctl(iFd, EVIOCGNAME(sizeof(rgcName)), rgcName) < 0)
     {
+        qDebug("EVIOCGNAME got negative size at /dev/input/event%d",iId);
         close(iFd);
         return -1;
     }
     // it's the correct device if the prefix matches what we expect it to be:
-    for(i=0; i<kiHerculesNumValidPrefixes; i++)
+    for(i=0; i<kiHerculesNumValidPrefixes; i++) {
         if (kqHerculesValidPrefix[i]==rgcName)
         {
             m_iId = iId;
@@ -148,10 +156,13 @@ int HerculesLinux::opendev(int iId)
             // Add id to list of open devices
             sqlOpenDevs.append(iId);
 
-//             qDebug("pm id %i",iId);
+            qDebug("pm id %i",iId);
 
             return iFd;
-        }
+        } 
+        qDebug("  %d. rgcName = [%s]",i,(const char*)rgcName);
+        qDebug("  %d. kqHerculesValidPrefix[i] = [%s]",i, kqHerculesValidPrefix[i].data());
+    }
 
     close(iFd);
     return -1;

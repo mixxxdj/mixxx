@@ -179,6 +179,7 @@ DlgPrefMidi::DlgPrefMidi(QWidget *parent, ConfigObject<ConfigValue> *pConfig) : 
 #ifdef __LINUX__
     m_pHercules = new HerculesLinux();
 #endif
+    qDebug("m_pHercules init: %d",m_pHercules);
     if (m_pHercules)
     {
         if (!m_pHercules->opendev())

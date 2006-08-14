@@ -30,10 +30,12 @@
   *@author Tue Haste Andersen
   */
 
-const int kiHerculesNumValidPrefixes = 1;
+const int kiHerculesNumValidPrefixes = 3;
 static QString kqHerculesValidPrefix[kiHerculesNumValidPrefixes] =
 {
-    "Hercules Hercules DJ Console"
+    "Hercules Hercules DJ Console",
+    "Hercules Hercules DJ Console Mk2",
+    "Hercules Hercules DJ Control MP3" // Not sure about this one
 };
 const int kiHerculesNumEventDevices = 16;
 
