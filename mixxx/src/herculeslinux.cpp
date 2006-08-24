@@ -15,6 +15,18 @@
  *                                                                         *
  ***************************************************************************/
 
+/*
+ * =========Version History=============
+ * Version 1.5.0 Wed Aug 23 2006 - modfications by Garth Dahlstrom <ironstorm@users.sf.net>
+ * - works with Hercule DJ Console MK2
+ * - fixed control scale to be 0..255 on bass, mid, treb, etc
+ * - reverted pitch control back to pitch knob, added PitchChange method to limit pitch change
+ * - fixed volume sliders, crossfader
+ * - TODO: fix the JogDials to do something like a scratch (they do a temporary pitch bend now :\)
+ * - TODO: reset m_iPitchOffsetLeft or m_iPitchOffsetRight value to -9999 when mouse/keyboard adjusts pitch slider (see PitchChange method header)
+ * - TODO: figure out how to get the LEDs working 
+ */
+
 #include "herculeslinux.h"
 #include <string.h>
 #include <errno.h>
@@ -38,8 +50,13 @@ HerculesLinux::HerculesLinux() : Hercules()
     m_iId = -1;
     m_iJogLeft = -1;
     m_iJogRight = -1;
+
     m_dJogLeftOld = 0.;
     m_dJogRightOld = 0.;
+    m_iPitchOffsetLeft=-9999;
+    m_iPitchOffsetRight=-9999;
+    m_iPitchLeft = 127;
+    m_iPitchRight = 127;
 }
 
 HerculesLinux::~HerculesLinux()
@@ -203,6 +220,7 @@ void HerculesLinux::getNextEvent()
         double v = 127.*(double)ev.value/256.;
         
         //qDebug("type %i, code %i, value %i",ev.type,ev.code,ev.value);
+        //qDebug("type %i, code %i, value %i, v is %5.3f",ev.type,ev.code,ev.value,v);
         
         switch(ev.type)
         {
@@ -223,18 +241,12 @@ void HerculesLinux::getNextEvent()
                     sendEvent(v, m_pControlObjectLeftBass);
                     break;
                 case kiHerculesLeftVolume:
-                    //v=v*4.;
-                    dDiff = v-m_dLeftVolumeOld;
-                    // qDebug("v %f, diff %f",v,dDiff);
-                    if (dDiff>100.)
-                        v = 0.;
-                    else if (dDiff<-100.)
-                        v = 127.;
-                    m_dLeftVolumeOld = v;
-                    sendEvent(v*4, m_pControlObjectLeftVolume);
+                    m_dLeftVolumeOld = ev.value/2.;
+                    sendEvent(ev.value/2., m_pControlObjectLeftVolume);
                     break;
                 case kiHerculesLeftPitch:
-                    sendEvent(v, m_pControlObjectLeftPitch);
+                    //qDebug("");
+                    sendEvent(PitchChange("Left", ev.value, m_iPitchLeft, m_iPitchOffsetLeft), m_pControlObjectLeftPitch);
                     break;
                 case kiHerculesLeftJog:
                     iDiff = 0;
@@ -244,10 +256,9 @@ void HerculesLinux::getNextEvent()
                         iDiff += 256;
                     else if (iDiff>200)
                         iDiff -= 256;
-                    m_iJogLeft = ev.value;
-//                     qDebug("idiff %i",iDiff);
                     dDiff = m_pRotaryLeft->filter((double)iDiff/16.);
-                    
+//                    qDebug("Left Jog - ev.value %i, m_iJogLeft %i, idiff %i, dDiff %5.3f",ev.value, m_iJogLeft, iDiff, dDiff);
+                    m_iJogLeft = ev.value;
                     sendEvent(dDiff, m_pControlObjectLeftJog);
                     break;
                 case kiHerculesRightTreble:
@@ -260,17 +271,13 @@ void HerculesLinux::getNextEvent()
                     sendEvent(v, m_pControlObjectRightBass);
                     break;
                 case kiHerculesRightVolume:
-                    //v=v*4.;
-                    dDiff = v-m_dRightVolumeOld;
-                    if (dDiff>100.)
-                        v = 0.;
-                    else if (dDiff<-100.)
-                        v = 127.;
-                    m_dRightVolumeOld = v;
-                    sendEvent(v*4, m_pControlObjectRightVolume);
+                    m_dRightVolumeOld = ev.value/2.;
+                    //qDebug("R Volume %5.3f",ev.value/2.);
+                    sendEvent(ev.value/2., m_pControlObjectRightVolume);
                     break;
                 case kiHerculesRightPitch:
-                    sendEvent(v, m_pControlObjectRightPitch);
+                    //qDebug("");
+                    sendEvent(PitchChange("Right", ev.value, m_iPitchRight, m_iPitchOffsetRight), m_pControlObjectRightPitch);
                     break;
                 case kiHerculesRightJog:
                     iDiff = 0;
@@ -280,8 +287,9 @@ void HerculesLinux::getNextEvent()
                         iDiff += 256;
                     else if (iDiff>200)
                         iDiff -= 256;
+                    dDiff = m_pRotaryRight->filter((double)iDiff/16.); 
+//                    qDebug("Right Jog - ev.value %i, m_iJogRight %i, idiff %i, dDiff %5.3f",ev.value, m_iJogRight, iDiff, dDiff);
                     m_iJogRight = ev.value;
-                    dDiff = m_pRotaryRight->filter((double)iDiff/16.);
                     sendEvent(dDiff, m_pControlObjectRightJog);
                     break;
                 case kiHerculesCrossfade:
@@ -598,3 +606,44 @@ void HerculesLinux::selectMapping(QString qMapping)
         led_write(kiHerculesLedRightSync, false);
     }    
 }
+
+
+
+double HerculesLinux::PitchChange(const QString ControlSide, const int ev_value, int &m_iPitchPrevious, int &m_iPitchOffset) {
+	// Note: Calling this function with m_iPitchPrevious having a value of -9999 should result in 
+	// resetting the pitch offset (this should be when mouse changes or resets the pitch)
+	//
+	// TODO: 
+	//  i) Pitch range should be .25 to 127, as implemented currently it does -.25 to 127.25.
+	// ii) On my dev machine P3-800, it is possible to spin the pitch knob fast enough to change by 2, if this happens at 
+	//	min/max or rollover, the checks may be skipped resulting in changes to the pitch way outside the allowed 
+	//	range (i.e. -33.04). This could be a USB latency problem or it could be normal for the Consoles, test on a 
+	//	faster PC, if it happens on a faster PC then try to figure out a fix.
+	//iii) Not sure if checks will work properly if the hardware pitch value is on 0 or 255 when mixxx is started, should test this.
+	// iv) In the future this function might be moved to hercules.cpp as it might prove useful to a Windows implementation as well (Windows MIDI signals a bit differently though).
+
+//	qDebug("%s ENTER --> ev.value %i, m_iPitchOffset %i, m_iPitchPrevious %i, last calc: %i, next calc: %i",ControlSide.data(), ev_value, m_iPitchOffset, m_iPitchPrevious, (m_iPitchPrevious + m_iPitchOffset), (ev_value + m_iPitchOffset));
+	if (m_iPitchOffset==-9999) {
+		m_iPitchOffset = 127 - ev_value;
+//		qDebug("%s PITCH OFFSET INIT/RESET ev_value %i, m_iPitchOffset %i",ControlSide.data(), ev_value, m_iPitchOffset);
+	}
+
+	if ((m_iPitchPrevious + m_iPitchOffset) == 255  && m_iPitchPrevious < ev_value) {
+		m_iPitchOffset = (255 - ev_value);
+//		qDebug("%s MAX + ROLLOVER",ControlSide.data());
+	} else if (m_iPitchPrevious == 255 && ev_value == 0) {
+		m_iPitchOffset = (255 + m_iPitchOffset);
+//		qDebug("%s MAX",ControlSide.data());
+	} else if (ev_value == 255 && m_iPitchPrevious == 0 && m_iPitchOffset >= 0) {
+		m_iPitchOffset = (m_iPitchOffset - 255);
+//		qDebug("%s ROLL DOWN",ControlSide.data());
+	} else if (ev_value < m_iPitchPrevious && m_iPitchPrevious + m_iPitchOffset == 0) {
+		m_iPitchOffset = (- ev_value);
+//		qDebug("%s MIN ROLLDOWN #1",ControlSide.data());
+	} 
+
+	m_iPitchPrevious = ev_value;
+//	qDebug("%s ADJUSTED m_iPitchOffset %i, m_iPitchPrevious %i, Resulting Pitch %5.3f", ControlSide.data(), m_iPitchOffset, m_iPitchPrevious, (((m_iPitchPrevious + m_iPitchOffset)-.5)/2.));
+	return (((m_iPitchPrevious + m_iPitchOffset)-.5)/2.);
+}
+
