@@ -40,7 +40,7 @@
   *@author Tue Haste Andersen
   *@author Garth Dahlstrom <ironstorm@users.sf.net>
   *  - Added Hercules DJ Console MK2 support to Mixxx 1.5.0 (see also herculeslinux.cpp)
-  *  - Applied Hercules Control codes orginially mapped out by Eric J. Shattow <shadow@serverart.org> & Oliver M. Bolzer <oliver@fakeroot.net> in their DJConsole-mod.rb ruby script
+  *  - Applied Hercules Control codes originally mapped out by Eric J. Shattow <shadow@serverart.org> & Oliver M. Bolzer <oliver@fakeroot.net> in their DJConsole-mod.rb ruby script
   */
 
 const int kiHerculesNumValidPrefixes = 3;
