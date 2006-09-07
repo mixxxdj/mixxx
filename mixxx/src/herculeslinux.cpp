@@ -217,8 +217,8 @@ void HerculesLinux::getNextEvent()
     int iR = read(m_iFd, &ev, sizeof(struct input_event));
     if (iR == sizeof(struct input_event))
     {
-        double v = 127.*(double)ev.value/256.;
-        
+        //double v = 127.*(double)ev.value/256.;
+        double v = ((ev.value+1)/(4.- ((ev.value>((7/8.)*256))*((ev.value-((7/8.)*256))*1/16.)))); // GED's formula, might need some work
         //qDebug("type %i, code %i, value %i",ev.type,ev.code,ev.value);
         //qDebug("type %i, code %i, value %i, v is %5.3f",ev.type,ev.code,ev.value,v);
         
