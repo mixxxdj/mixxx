@@ -249,7 +249,7 @@ void HerculesLinux::getNextEvent()
                     sendEvent(PitchChange("Left", ev.value, m_iPitchLeft, m_iPitchOffsetLeft), m_pControlObjectLeftPitch);
                     break;
                 case kiHerculesLeftJog:
-                    iDiff = 0;
+/*                    iDiff = 0;
                     if (m_iJogLeft>=0)
                         iDiff = ev.value-m_iJogLeft;
                     if (iDiff<-200)
@@ -260,7 +260,7 @@ void HerculesLinux::getNextEvent()
 //                    qDebug("Left Jog - ev.value %i, m_iJogLeft %i, idiff %i, dDiff %5.3f",ev.value, m_iJogLeft, iDiff, dDiff);
                     m_iJogLeft = ev.value;
                     sendEvent(dDiff, m_pControlObjectLeftJog);
-                    break;
+*/                    break;
                 case kiHerculesRightTreble:
                     sendEvent(v, m_pControlObjectRightTreble);
                     break;
@@ -280,7 +280,7 @@ void HerculesLinux::getNextEvent()
                     sendEvent(PitchChange("Right", ev.value, m_iPitchRight, m_iPitchOffsetRight), m_pControlObjectRightPitch);
                     break;
                 case kiHerculesRightJog:
-                    iDiff = 0;
+/*                    iDiff = 0;
                     if (m_iJogRight>=0)
                         iDiff = ev.value-m_iJogRight;
                     if (iDiff<-200)
@@ -291,7 +291,7 @@ void HerculesLinux::getNextEvent()
 //                    qDebug("Right Jog - ev.value %i, m_iJogRight %i, idiff %i, dDiff %5.3f",ev.value, m_iJogRight, iDiff, dDiff);
                     m_iJogRight = ev.value;
                     sendEvent(dDiff, m_pControlObjectRightJog);
-                    break;
+*/                    break;
                 case kiHerculesCrossfade:
                     sendEvent((ev.value+1)/2., m_pControlObjectCrossfade);
                     break;                
