@@ -293,7 +293,7 @@ void HerculesLinux::getNextEvent()
                     sendEvent(dDiff, m_pControlObjectRightJog);
                     break;
                 case kiHerculesCrossfade:
-                    sendEvent(v, m_pControlObjectCrossfade);
+                    sendEvent((ev.value+1)/2., m_pControlObjectCrossfade);
                     break;                
 //                 default:
 //                     sendEvent(0., m_pControlObjectLeftJog);
