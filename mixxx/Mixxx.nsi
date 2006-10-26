@@ -12,7 +12,7 @@
 Name "Mixxx"
 
 ; The file to write
-OutFile "mixxx-1.4.2-win.exe"
+OutFile "mixxx-1.5.0-beta1-win.exe"
 
 ; The default installation directory
 InstallDir $PROGRAMFILES\Mixxx
@@ -49,6 +49,11 @@ Section "Mixxx (required)" SecMixxx
   ; Put binary files there
   File "src\Release\mixxx.exe"
   File "..\mixxx-winlib\libsndfile.dll"
+  File "..\mixxx-winlib\qt-mt3.dll"
+  File "..\mixxx-winlib\msvcm80.dll"
+  File "..\mixxx-winlib\msvcp80.dll"
+  File "..\mixxx-winlib\msvcr80.dll"
+  File "..\mixxx-winlib\Microsoft.VC80.CRT.manifest"
 
   ; And documentation, licence etc.
   File "Mixxx-Manual.pdf"
@@ -1250,6 +1255,12 @@ Section "Uninstall"
   Delete $INSTDIR\LICENSE
   Delete $INSTDIR\README
   Delete $INSTDIR\COPYING
+
+  Delete $INSTDIR\qt-mt3.dll
+  Delete $INSTDIR\msvcm80.dll
+  Delete $INSTDIR\msvcp80.dll
+  Delete $INSTDIR\msvcr80.dll
+  Delete $INSTDIR\Microsoft.VC80.CRT.manifest
 
   ; Remove skins, keyboard, midi defs
   Delete $INSTDIR\skins\outline\*.*

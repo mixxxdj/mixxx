@@ -68,16 +68,16 @@ win32 {
     }
 }
 
-# RTAudio (Windows DirectSound)
-#win32 {
-#    message("Compiling with RtAudio/DirectSound drivers")
-#    DEFINES += __RTAUDIO__ __WINDOWS_DS__
-#    RTAUDIO_DIR = ../lib/rtaudio
-#    INCLUDEPATH += $$RTAUDIO_DIR
-#    HEADERS += playerrtaudio.h $$RTAUDIO_DIR/RtAudio.h $$RTAUDIO_DIR/RtError.h
-#    SOURCES += playerrtaudio.cpp $$RTAUDIO_DIR/RtAudio.cpp
-#    LIBS += dsound.lib
-#}
+ RTAudio (Windows DirectSound)
+win32 {
+    message("Compiling with RtAudio/DirectSound drivers")
+    DEFINES += __RTAUDIO__ __WINDOWS_DS__
+    RTAUDIO_DIR = ../lib/rtaudio
+    INCLUDEPATH += $$RTAUDIO_DIR
+    HEADERS += playerrtaudio.h $$RTAUDIO_DIR/RtAudio.h $$RTAUDIO_DIR/RtError.h
+    SOURCES += playerrtaudio.cpp $$RTAUDIO_DIR/RtAudio.cpp
+    LIBS += dsound.lib
+}
 
 # ASIO (Windows)
 #win32 {

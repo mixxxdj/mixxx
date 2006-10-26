@@ -38,3 +38,16 @@ tuehaste@users.sourceforge.net or subscribe to
 mixxx-devel@lists.sourceforge.net and send a message to the 
 list.
 
+* QT *******************************************************
+On some platforms, Mixxx may come with a pre-built copy of 
+Qt, built from sources provided by the Q../Free project.
+This code is licensed under the GPL and source for this
+library may be obtained from:
+
+    http://sourceforge.net/projects/qtwin
+
+* Microsoft Runtimes ***************************************
+On Microsoft platforms, Mixxx may come with runtime dlls
+copyright of Microsoft. These are distributed for the
+purpose of allowing Mixxx to run only as per the license
+agreement for Visual Studio 2005.
