@@ -15,7 +15,7 @@
 unix:!macx:include( main.qbas )
 
 # Path to Macintosh libraries
-macx:MACLIBPATH = ../../mixxx-maclib
+macx:MACLIBPATH = ../../mixxx-maclib/x86
 
 # Path to Windows libraries
 win32:WINLIBPATH = ../../mixxx-winlib
@@ -291,8 +291,8 @@ unix {
   OBJECTS_DIR = .obj
 
 # GCC Compiler optimization flags
-QMAKE_CXXFLAGS += -pg -march=pentium3 -O3 -pipe
-QMAKE_CFLAGS   += -pg -march=pentium3 -O3 -pipe
+QMAKE_CXXFLAGS += -pg -O3 -pipe
+QMAKE_CFLAGS   += -pg -O3 -pipe
 
 # gcc Profiling
 #QMAKE_CXXFLAGS += -pg
@@ -329,9 +329,13 @@ macx {
   SETTINGS_FILE = \"mixxx.cfg\"
   TRACK_FILE = \"mixxxtrack.xml\"
   RC_FILE = icon.icns
-  QMAKE_CXXFLAGS += -O3 -faltivec -mtune=G4 -mcpu=G4 -mdynamic-no-pic -funroll-loops -ffast-math -fstrict-aliasing
-  QMAKE_CFLAGS += -O3 -faltivec -mtune=G4 -mcpu=G4 -mdynamic-no-pic -funroll-loops -ffast-math -fstrict-aliasing
-  QMAKE_LFLAGS += -O3 -faltivec -mtune=G4 -mcpu=G4 -mdynamic-no-pic -funroll-loops -ffast-math -fstrict-aliasing
+  QMAKE_CXXFLAGS += -O3 -mdynamic-no-pic -funroll-loops -ffast-math -fstrict-aliasing
+  QMAKE_CFLAGS += -O3 -mdynamic-no-pic -funroll-loops -ffast-math -fstrict-aliasing
+  QMAKE_LFLAGS += -O3 -mdynamic-no-pic -funroll-loops -ffast-math -fstrict-aliasing 
+  #Old flags for PPC Macs (above ones work for both Intel and PPC)
+  #QMAKE_CXXFLAGS += -O3 -faltivec -mtune=G4 -mcpu=G4 -mdynamic-no-pic -funroll-loops -ffast-math -fstrict-aliasing
+  #QMAKE_CFLAGS += -O3 -faltivec -mtune=G4 -mcpu=G4 -mdynamic-no-pic -funroll-loops -ffast-math -fstrict-aliasing
+  #QMAKE_LFLAGS += -O3 -faltivec -mtune=G4 -mcpu=G4 -mdynamic-no-pic -funroll-loops -ffast-math -fstrict-aliasing
 }
 
 # Install-phase for a traditional 'make install'
