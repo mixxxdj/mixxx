@@ -33,7 +33,7 @@ VisualBackplane::VisualBackplane()
 
   //texture.load("c:\\mixxx\\peter.png", 1, 1);
   texture.load("/home/haste/white.png", 1, 1);
-	int texsize;
+	GLint texsize;
 	glGetIntegerv(GL_MAX_TEXTURE_SIZE,&texsize);
 
 
