@@ -17,7 +17,7 @@
 #ifndef DEFS_H
 #define DEFS_H
 
-#define VERSION "1.5.0-beta1"
+#define VERSION "1.5.0-beta2"
 
 #include <math.h>
 #include <iostream>
