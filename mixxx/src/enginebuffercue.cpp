@@ -37,6 +37,14 @@ EngineBufferCue::EngineBufferCue(const char *group, EngineBuffer *pEngineBuffer)
     // Cue goto button:
     buttonCueGoto = new ControlPushButton(ConfigKey(group, "cue_goto"));
     connect(buttonCueGoto, SIGNAL(valueChanged(double)), this, SLOT(slotControlCueGoto(double)));
+    
+    // Cue goto and stop button:
+    buttonCueGotoAndStop = new ControlPushButton(ConfigKey(group, "cue_gotoandstop"));
+	connect(buttonCueGotoAndStop, SIGNAL(valueChanged(double)), this, SLOT(slotControlCueGotoAndStop(double)));
+
+	// Cue "simple-style" button:
+	buttonCueSimple = new ControlPushButton(ConfigKey(group, "cue_simple"));
+	connect(buttonCueSimple, SIGNAL(valueChanged(double)), this, SLOT(slotControlCueSimple(double)));
 
     // Cue point
     cuePoint = new ControlObject(ConfigKey(group, "cue_point"));
@@ -51,13 +59,16 @@ EngineBufferCue::~EngineBufferCue()
 {
     delete buttonCueSet;
     delete buttonCueGoto;
+    delete buttonCueGotoAndStop;
     delete buttonCuePreview;
+    delete buttonCueSimple;
     delete cuePoint;
 }
 
 // Set the cue point at the current play position:
 void EngineBufferCue::slotControlCueSet(double v)
 {
+qDebug("***slotControlCueSet!!");
     if (v)
     {
         double cue = max(0.,round(m_pEngineBuffer->getAbsPlaypos()));
@@ -88,6 +99,16 @@ void EngineBufferCue::slotControlCueGoto(double pos)
     }
 }
 
+// Goto the cue point and stop, regardless of playback status:
+void EngineBufferCue::slotControlCueGotoAndStop(double pos)
+{
+	//Seek to the cue point...
+	m_pEngineBuffer->slotControlSeekAbs(cuePoint->get(), false);
+	
+	//... and stop.
+	playButton->set(0.);
+}
+
 void EngineBufferCue::slotControlCuePreview(double)
 {
     // Set cue point if play is not pressed
@@ -113,6 +134,22 @@ void EngineBufferCue::slotControlCuePreview(double)
             // Seek to cue point
             m_pEngineBuffer->slotControlSeekAbs(cuePoint->get(), false);
         }
+    }
+}
+//Simple" method for using cue points (Thread's idea):
+void EngineBufferCue::slotControlCueSimple(double v)
+{
+    if (v) //Left-clicked on cue button
+    {
+    	if (playButton->get() == 0.) //If playback is stopped, set a cue-point.
+    	{
+        	double cue = max(0.,round(m_pEngineBuffer->getAbsPlaypos()));
+        	if (!even((int)cue))
+        	    cue--;
+        	cuePoint->set(cue);
+        }
+        else //If playback is ongoing, then jump to the cue-point.
+        	m_pEngineBuffer->slotControlSeekAbs(cuePoint->get(), false);
     }
 }
 
