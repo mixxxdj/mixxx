@@ -33,13 +33,17 @@ public:
 
 public slots:
     void slotControlCueGoto(double=0);
+    void slotControlCueGotoAndStop(double=0);
     void slotControlCueSet(double=0);
     void slotControlCuePreview(double);
+    void slotControlCueSimple(double);
     void slotControlPlay(double);
 
 private:
     /** Controls used to manipulate the cue point */
-    ControlPushButton *buttonCueSet, *buttonCueGoto, *buttonCuePreview;
+    ControlPushButton *buttonCueSet, *buttonCueGoto, *buttonCueGotoAndStop, *buttonCuePreview;
+    /** A single control to manipulate the cue point (suggested by Thread) */
+    ControlPushButton *buttonCueSimple;
     /** Pointer to play button */
     ControlObject *playButton;
     /** Storage of cue point */
