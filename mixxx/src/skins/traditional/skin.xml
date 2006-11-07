@@ -355,20 +355,15 @@
   </State>
   <Pos>137,267</Pos>
   <Connection>
-   <ConfigKey>[Channel1],cue_preview</ConfigKey>
+   <ConfigKey>[Channel1],cue_simple</ConfigKey>
    <EmitOnDownPress>true</EmitOnDownPress>
    <ButtonState>LeftButton</ButtonState>
   </Connection>
   <Connection>
-   <ConfigKey>[Channel1],cue_preview</ConfigKey>
-   <EmitOnDownPress>false</EmitOnDownPress>
-   <ButtonState>LeftButton</ButtonState>
-  </Connection>
-  <Connection>
-   <ConfigKey>[Channel1],cue_goto</ConfigKey>
+   <ConfigKey>[Channel1],cue_gotoandstop</ConfigKey>
    <EmitOnDownPress>true</EmitOnDownPress>
    <ButtonState>RightButton</ButtonState>
-  </Connection>
+  </Connection>  
  </PushButton>
 
  <PushButton>
@@ -381,20 +376,15 @@
   </State>
   <Pos>832,267</Pos>
   <Connection>
-   <ConfigKey>[Channel2],cue_preview</ConfigKey>
+   <ConfigKey>[Channel2],cue_simple</ConfigKey>
    <EmitOnDownPress>true</EmitOnDownPress>
    <ButtonState>LeftButton</ButtonState>
   </Connection>
   <Connection>
-   <ConfigKey>[Channel2],cue_preview</ConfigKey>
-   <EmitOnDownPress>false</EmitOnDownPress>
-   <ButtonState>LeftButton</ButtonState>
-  </Connection>
-  <Connection>
-   <ConfigKey>[Channel2],cue_goto</ConfigKey>
+   <ConfigKey>[Channel2],cue_gotoandstop</ConfigKey>
    <EmitOnDownPress>true</EmitOnDownPress>
    <ButtonState>RightButton</ButtonState>
-  </Connection>
+  </Connection>  
  </PushButton>
 
  <PushButton>

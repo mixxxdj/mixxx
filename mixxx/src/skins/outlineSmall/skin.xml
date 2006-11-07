@@ -437,7 +437,7 @@
  </PushButton>
 
  <PushButton>
-  <Tooltip>Left click: Cue preview, Right click: Cue goto</Tooltip>
+  <Tooltip>Go to and play (while playing), Set cue point (while stopped), Go to and stop (right-click)</Tooltip>
   <NumberStates>1</NumberStates>
   <State>
    <Number>0</Number>
@@ -446,24 +446,19 @@
   </State>
   <Pos>56,50</Pos>
   <Connection>
-   <ConfigKey>[Channel1],cue_preview</ConfigKey>
+   <ConfigKey>[Channel1],cue_simple</ConfigKey>
    <EmitOnDownPress>true</EmitOnDownPress>
    <ButtonState>LeftButton</ButtonState>
   </Connection>
   <Connection>
-   <ConfigKey>[Channel1],cue_preview</ConfigKey>
-   <EmitOnDownPress>false</EmitOnDownPress>
-   <ButtonState>LeftButton</ButtonState>
-  </Connection>
-  <Connection>
-   <ConfigKey>[Channel1],cue_goto</ConfigKey>
+   <ConfigKey>[Channel1],cue_gotoandstop</ConfigKey>
    <EmitOnDownPress>true</EmitOnDownPress>
    <ButtonState>RightButton</ButtonState>
-  </Connection>
+  </Connection>  
  </PushButton>
 
  <PushButton>
-  <Tooltip>Left click: Cue preview, Right click: Cue goto</Tooltip>
+  <Tooltip>Go to and play (while playing), Set cue point (while stopped), Go to and stop (right-click)</Tooltip>
   <NumberStates>1</NumberStates>
   <State>
    <Number>0</Number>
@@ -472,20 +467,15 @@
   </State>
   <Pos>749,49</Pos>
   <Connection>
-   <ConfigKey>[Channel2],cue_preview</ConfigKey>
+   <ConfigKey>[Channel2],cue_simple</ConfigKey>
    <EmitOnDownPress>true</EmitOnDownPress>
    <ButtonState>LeftButton</ButtonState>
   </Connection>
   <Connection>
-   <ConfigKey>[Channel2],cue_preview</ConfigKey>
-   <EmitOnDownPress>false</EmitOnDownPress>
-   <ButtonState>LeftButton</ButtonState>
-  </Connection>
-  <Connection>
-   <ConfigKey>[Channel2],cue_goto</ConfigKey>
+   <ConfigKey>[Channel2],cue_gotoandstop</ConfigKey>
    <EmitOnDownPress>true</EmitOnDownPress>
    <ButtonState>RightButton</ButtonState>
-  </Connection>
+  </Connection>  
  </PushButton>
 
  <PushButton>
