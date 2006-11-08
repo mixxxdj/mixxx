@@ -211,9 +211,19 @@ void Reader::newtrack()
         readerwave->seek(file_length);
         enginebuffer->setNewPlaypos(file_length);
     }
-    else
-        enginebuffer->setNewPlaypos(0);
-    
+    else {
+    	enginebuffer->setNewPlaypos(0);
+
+		//Reset the cue point to the beginning of the track:
+		ControlObject* buttonCueSet = ControlObject::getControl(ConfigKey(enginebuffer->getGroup(), "cue_set"));
+		buttonCueSet->queueFromThread(1.0);            
+		//Reset the play button (I'm not sure why this is necessary, but it is...
+		//If you don't believe me, uncomment it and notice that you'll have to click
+		//play twice to start playback when you load a new track.)
+		ControlObject* playButton = ControlObject::getControl(ConfigKey(enginebuffer->getGroup(), "play"));
+		playButton->queueFromThread(0.0);
+    }
+        
     // Not at track end anymore
     m_pTrackEnd->slotSet(0.);      
     
