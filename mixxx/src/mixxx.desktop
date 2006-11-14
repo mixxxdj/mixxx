@@ -1,0 +1,11 @@
+[Desktop Entry]
+Version=1.0
+Encoding=UTF-8
+Name=Mixxx
+Comment=A digital DJ interface
+Exec=mixxx
+Terminal=false
+Icon=mixxx-icon.png
+Type=Application
+Categories=AudioVideo;Audio;
+GenericName[en_CA]=

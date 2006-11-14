@@ -68,7 +68,7 @@ win32 {
     }
 }
 
- RTAudio (Windows DirectSound)
+# RTAudio (Windows DirectSound)
 win32 {
     message("Compiling with RtAudio/DirectSound drivers")
     DEFINES += __RTAUDIO__ __WINDOWS_DS__
@@ -369,13 +369,20 @@ unix {
    manual.path = $${PREFIX}/share/doc/mixxx-1.3
    manual.files = ../Mixxx-Manual.pdf
 
+    # .desktop file for KDE/GNOME menu entry
+   desktop.path = $${PREFIX}/share/applications
+   desktop.files = mixxx.desktop
+    
+    # icon file for Mixxx menu icon
+   icon.path = $${PREFIX}/share/pixmaps
+   icon.files = mixxx-icon.png
 
     # binary...
    TARGET = mixxx
    target.path = $${PREFIX}/bin
 
     # finally adding what we wanna install...
-   INSTALLS += skino skinoc skinos skint midi keyb readme licence copying manual target
+   INSTALLS += skino skinoc skinos skint midi keyb readme licence copying manual desktop icon target
 }
 
 contains(CONFIG, qt3support) {
