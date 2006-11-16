@@ -17,6 +17,8 @@
 
 #include "wpushbutton.h"
 #include "wpixmapstore.h"
+#include "controlobject.h"
+#include "controlpushbutton.h"
 
 WPushButton::WPushButton(QWidget *parent, const char *name ) : WWidget(parent,name)
 {
@@ -35,7 +37,8 @@ WPushButton::~WPushButton()
 void WPushButton::setup(QDomNode node)
 {
     // Number of states
-    setStates(selectNodeInt(node, "NumberStates"));
+    int iNumStates = selectNodeInt(node, "NumberStates");
+    setStates(iNumStates);
 
     // Set background pixmap if available
     if (!selectNode(node, "BackPath").isNull())
@@ -52,6 +55,43 @@ void WPushButton::setup(QDomNode node)
         }
         state = state.nextSibling();
     }
+
+	//--------
+	//This next big block allows each ControlPushButton to know whether or not it's
+	//a "toggle" button.
+		
+    // For each connection
+    QDomNode con = selectNode(node, "Connection");
+    while (!con.isNull())
+    {
+    	// Get ConfigKey
+        QString key = selectNodeQString(con, "ConfigKey");
+
+        ConfigKey configKey;
+        configKey.group = key.left(key.find(","));
+        configKey.item = key.mid(key.find(",")+1);
+
+		ControlPushButton *p = (ControlPushButton*)ControlObject::getControl(configKey);
+		
+        //Find out if we're a push button...
+        if (node.nodeName()=="PushButton")
+        {
+            //qDebug(configKey.item);
+            //qDebug("Number of States: %i", iStates);
+            
+            //If we have 2 states, tell my controlpushbutton object that we're a toggle button.
+            if (iNumStates == 2)
+            	p->setToggleButton(true);
+           	else
+           		p->setToggleButton(false);
+        }
+            
+   	con = con.nextSibling();         
+	}
+
+	//End of toggle button stuff.
+	//--------
+
 
     // Setup position
     WWidget::setup(node);
