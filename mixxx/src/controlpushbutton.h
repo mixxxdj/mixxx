@@ -32,12 +32,14 @@ class ControlPushButton : public ControlObject
 public:
     ControlPushButton(ConfigKey key, bool bMidiSimulateLatching=false);
     ~ControlPushButton();
+    void setToggleButton(bool bIsToggleButton);
 
 protected:
     void setValueFromMidi(MidiCategory c, double v);
 
 private:
     bool m_bMidiSimulateLatching;
+    bool m_bIsToggleButton;
 };
 
 #endif
