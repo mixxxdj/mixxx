@@ -35,6 +35,9 @@ MidiObjectWin::MidiObjectWin(QString device) : MidiObject(device)
             device_valid = true;
     }
 
+	/*
+	// Don't open the device yet, it gets opened via dlgprefmidi soon
+	// This is how the ALSA one does it anyway... -Adam
     // Open device
     if (device_valid)
         devOpen(device);
@@ -42,7 +45,7 @@ MidiObjectWin::MidiObjectWin(QString device) : MidiObject(device)
         if (devices.count()==0)
             qDebug("MIDI: No MIDI devices available.");
         else
-            devOpen(devices.first());
+            devOpen(devices.first());*/
 }
 
 MidiObjectWin::~MidiObjectWin()

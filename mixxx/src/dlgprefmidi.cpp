@@ -401,9 +401,11 @@ void DlgPrefMidi::slotApply()
 	// go figure...
     
     // Close MIDI
-#ifdef __WIN__
+#ifndef __LINUX__
+#ifndef __WIN__
+	// Deadly hack attack
 	m_pMidi->devClose();
-
+#endif
     // Change MIDI configuration
     //m_pMidiConfig->clear(); // (is currently not implemented correctly)
     m_pMidiConfig->reopen(m_pConfig->getValueString(ConfigKey("[Config]","Path")).append("midi/").append(m_pConfig->getValueString(ConfigKey("[Midi]","File"))));
