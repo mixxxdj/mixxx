@@ -375,6 +375,10 @@ MixxxApp::~MixxxApp()
     // FWI: Begin of fullscreen patch
     delete frame;
     // FWI: End of fullscreen patch
+
+#ifdef __WIN__
+	_exit(0);
+#endif
 }
 
 /** initializes all QActions of the application */
