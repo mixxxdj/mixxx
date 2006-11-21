@@ -12,7 +12,7 @@
 Name "Mixxx"
 
 ; The file to write
-OutFile "mixxx-1.5.0-beta1-win.exe"
+OutFile "mixxx-1.5.0-beta2-win.exe"
 
 ; The default installation directory
 InstallDir $PROGRAMFILES\Mixxx
