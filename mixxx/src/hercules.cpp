@@ -129,8 +129,8 @@ void Hercules::selectMapping(QString qMapping)
     }
 
     // Generic mappings
-    // General note: The prev/next track buttons should eventually be mapped onto the proper commands
-    //				 (ie. not cue-related stuff)
+    // Note: The prev/next track buttons should eventually be mapped onto the proper commands
+    //		 (ie. not cue-related stuff)
     m_pControlObjectLeftBtnTrackPrev = ControlObject::getControl(ConfigKey("[Channel1]","cue_set"));
     m_pControlObjectRightBtnTrackPrev = ControlObject::getControl(ConfigKey("[Channel2]","cue_set"));
     m_pControlObjectLeftBtnTrackNext = ControlObject::getControl(ConfigKey("[Channel1]","cue_preview"));
@@ -143,6 +143,16 @@ void Hercules::selectMapping(QString qMapping)
     m_pControlObjectRightBass = ControlObject::getControl(ConfigKey("[Channel2]","filterLow"));
     m_pControlObjectLeftBtnHeadphone = ControlObject::getControl(ConfigKey("[Channel1]","pfl"));
     m_pControlObjectRightBtnHeadphone = ControlObject::getControl(ConfigKey("[Channel2]","pfl"));
+    
+    
+	//Albert's hack:
+	//(These are supposed to be binding specific (ie. handled in the above if-else block).
+	m_pControlObjectLeftBtnPitchBendMinus = ControlObject::getControl(ConfigKey("[Channel1]","rate_temp_down"));
+	m_pControlObjectRightBtnPitchBendMinus = ControlObject::getControl(ConfigKey("[Channel2]","rate_temp_down"));
+	m_pControlObjectLeftBtnPitchBendPlus = ControlObject::getControl(ConfigKey("[Channel1]","rate_temp_up"));
+	m_pControlObjectRightBtnPitchBendPlus = ControlObject::getControl(ConfigKey("[Channel2]","rate_temp_up"));
+	m_pControlObjectLeftBtnMasterTempo = ControlObject::getControl(ConfigKey("[Channel1]","pfl"));
+	m_pControlObjectRightBtnMasterTempo =  ControlObject::getControl(ConfigKey("[Channel2]","pfl"));
     
     m_pControlObjectLeftBtn1 = new ControlObject(ConfigKey("[Channel1]","Hercules1"));
     m_pControlObjectLeftBtn2 = new ControlObject(ConfigKey("[Channel1]","Hercules2"));
