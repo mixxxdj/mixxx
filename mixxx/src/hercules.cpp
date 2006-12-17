@@ -95,8 +95,8 @@ void Hercules::selectMapping(QString qMapping)
         m_pControlObjectRightBtnPitchBendMinus = ControlObject::getControl(ConfigKey("[Channel2]","rate_temp_down"));
         m_pControlObjectLeftBtnPitchBendPlus = ControlObject::getControl(ConfigKey("[Channel1]","rate_temp_up"));
         m_pControlObjectRightBtnPitchBendPlus = ControlObject::getControl(ConfigKey("[Channel2]","rate_temp_up"));
-        m_pControlObjectLeftBtnMasterTempo = ControlObject::getControl(ConfigKey("[Channel1]","rate"));
-        m_pControlObjectRightBtnMasterTempo = ControlObject::getControl(ConfigKey("[Channel2]","rate"));
+        m_pControlObjectLeftBtnMasterTempo = ControlObject::getControl(ConfigKey("[Channel1]","pfl"));
+        m_pControlObjectRightBtnMasterTempo = ControlObject::getControl(ConfigKey("[Channel2]","pfl"));
         m_pControlObjectLeftVolume = ControlObject::getControl(ConfigKey("[Channel1]","pregain"));
         m_pControlObjectRightVolume = ControlObject::getControl(ConfigKey("[Channel2]","pregain"));
         m_pControlObjectCrossfade = ControlObject::getControl(ConfigKey("[Master]","rate"));
