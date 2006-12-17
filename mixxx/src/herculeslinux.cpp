@@ -123,7 +123,7 @@ bool HerculesLinux::opendev()
         return true;
     }
     else
-        qDebug("Hercules device not found!", m_iFd);
+        qDebug("Hercules device (%d) not found!", m_iFd);
         return false;
 }
 
@@ -307,9 +307,11 @@ void HerculesLinux::getNextEvent()
                 {
                 case kiHerculesLeftBtnPitchBendMinus:
                     sendButtonEvent(true, m_pControlObjectLeftBtnPitchBendMinus);
+                    qDebug("Hercules left minus pitch bend pressed");
                     break;
                 case kiHerculesLeftBtnPitchBendPlus:
                     sendButtonEvent(true, m_pControlObjectLeftBtnPitchBendPlus);
+                    qDebug("Hercules left plus pitch bend pressed");
                     break;
                 case kiHerculesLeftBtnTrackNext:
                     sendButtonEvent(true, m_pControlObjectLeftBtnTrackNext);
@@ -333,8 +335,8 @@ void HerculesLinux::getNextEvent()
 //                     led_write(kiHerculesLedLeftSync, m_bSyncLeft);
                     break;
                 case kiHerculesLeftBtnMasterTempo:
-//                     sendEvent(0, m_pControlObjectLeftBtnMasterTempo);
-//                     m_bMasterTempoLeft = !m_bMasterTempoLeft;
+                     sendEvent(true, m_pControlObjectLeftBtnMasterTempo);
+                     m_bMasterTempoLeft = !m_bMasterTempoLeft;
 //                     led_write(kiHerculesLedLeftMasterTempo, m_bMasterTempoLeft);
                     break;
                 case kiHerculesLeftBtn1:
@@ -396,8 +398,8 @@ void HerculesLinux::getNextEvent()
 //                     led_write(kiHerculesLedRightSync, m_bSyncRight);
                     break;
                 case kiHerculesRightBtnMasterTempo:
-//                     sendEvent(1., m_pControlObjectRightBtnMasterTempo);
-//                     m_bMasterTempoRight = !m_bMasterTempoRight;
+                    sendEvent(true, m_pControlObjectRightBtnMasterTempo);
+                    m_bMasterTempoRight = !m_bMasterTempoRight;
 //                     led_write(kiHerculesLedRightMasterTempo, m_bMasterTempoRight);
                     break;
                 case kiHerculesRightBtn1:
@@ -450,9 +452,11 @@ void HerculesLinux::getNextEvent()
                 {
                 case kiHerculesLeftBtnPitchBendMinus:
                     sendButtonEvent(false, m_pControlObjectLeftBtnPitchBendMinus);
+                    qDebug("Hercules left minus pitch bend released");
                     break;
                 case kiHerculesLeftBtnPitchBendPlus:
                     sendButtonEvent(false, m_pControlObjectLeftBtnPitchBendPlus);
+                    qDebug("Hercules left plus pitch bend released");
                     break;
                 case kiHerculesLeftBtnTrackNext:
                     sendButtonEvent(false, m_pControlObjectLeftBtnTrackNext);
@@ -472,7 +476,7 @@ void HerculesLinux::getNextEvent()
                     sendButtonEvent(false, m_pControlObjectLeftBtnAutobeat);
                     break;
                 case kiHerculesLeftBtnMasterTempo:
-//                     sendButtonEvent(false, m_pControlObjectLeftBtnMasterTempo);
+                     sendButtonEvent(false, m_pControlObjectLeftBtnMasterTempo);
                     break;
                 case kiHerculesLeftBtn1:
                     m_iLeftFxMode = 0;
@@ -518,7 +522,7 @@ void HerculesLinux::getNextEvent()
                     sendButtonEvent(false, m_pControlObjectRightBtnAutobeat);
                     break;
                 case kiHerculesRightBtnMasterTempo:
-//                     sendButtonEvent(false, m_pControlObjectRightBtnMasterTempo);
+                     sendButtonEvent(false, m_pControlObjectRightBtnMasterTempo);
                     break;
                 case kiHerculesRightBtn1:
                     m_iRightFxMode = 0;
