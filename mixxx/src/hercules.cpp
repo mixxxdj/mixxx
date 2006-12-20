@@ -91,12 +91,12 @@ void Hercules::selectMapping(QString qMapping)
         m_pControlObjectRightPitch = ControlObject::getControl(ConfigKey("[Channel2]","volume"));
         m_pControlObjectLeftBtnAutobeat = ControlObject::getControl(ConfigKey("[Channel1]","beatsync"));
         m_pControlObjectRightBtnAutobeat = ControlObject::getControl(ConfigKey("[Channel2]","beatsync"));
-        m_pControlObjectLeftBtnPitchBendMinus = ControlObject::getControl(ConfigKey("[Channel1]","rate_temp_down"));
-        m_pControlObjectRightBtnPitchBendMinus = ControlObject::getControl(ConfigKey("[Channel2]","rate_temp_down"));
-        m_pControlObjectLeftBtnPitchBendPlus = ControlObject::getControl(ConfigKey("[Channel1]","rate_temp_up"));
-        m_pControlObjectRightBtnPitchBendPlus = ControlObject::getControl(ConfigKey("[Channel2]","rate_temp_up"));
-        m_pControlObjectLeftBtnMasterTempo = ControlObject::getControl(ConfigKey("[Channel1]","pfl"));
-        m_pControlObjectRightBtnMasterTempo = ControlObject::getControl(ConfigKey("[Channel2]","pfl"));
+        m_pControlObjectLeftBtnPitchBendMinus = 0;
+        m_pControlObjectRightBtnPitchBendMinus = 0;
+        m_pControlObjectLeftBtnPitchBendPlus = 0;
+        m_pControlObjectRightBtnPitchBendPlus = 0;
+        m_pControlObjectLeftBtnMasterTempo = ControlObject::getControl(ConfigKey("[Channel1]","rate"));
+        m_pControlObjectRightBtnMasterTempo = ControlObject::getControl(ConfigKey("[Channel2]","rate"));
         m_pControlObjectLeftVolume = ControlObject::getControl(ConfigKey("[Channel1]","pregain"));
         m_pControlObjectRightVolume = ControlObject::getControl(ConfigKey("[Channel2]","pregain"));
         m_pControlObjectCrossfade = ControlObject::getControl(ConfigKey("[Master]","rate"));
@@ -112,12 +112,12 @@ void Hercules::selectMapping(QString qMapping)
         m_pControlObjectRightPitch = ControlObject::getControl(ConfigKey("[Channel2]","rate"));
         m_pControlObjectLeftBtnAutobeat = 0;
         m_pControlObjectRightBtnAutobeat = 0;
-        m_pControlObjectLeftBtnPitchBendMinus = ControlObject::getControl(ConfigKey("[Channel1]","rate_temp_down"));
-        m_pControlObjectRightBtnPitchBendMinus = ControlObject::getControl(ConfigKey("[Channel2]","rate_temp_down"));
-        m_pControlObjectLeftBtnPitchBendPlus = ControlObject::getControl(ConfigKey("[Channel1]","rate_temp_up"));
-        m_pControlObjectRightBtnPitchBendPlus = ControlObject::getControl(ConfigKey("[Channel2]","rate_temp_up"));
-        m_pControlObjectLeftBtnMasterTempo = ControlObject::getControl(ConfigKey("[Channel1]","pfl"));
-        m_pControlObjectRightBtnMasterTempo =  ControlObject::getControl(ConfigKey("[Channel2]","pfl"));
+        m_pControlObjectLeftBtnPitchBendMinus = ControlObject::getControl(ConfigKey("[Channel1]","rate_perm_down_small"));
+        m_pControlObjectRightBtnPitchBendMinus = ControlObject::getControl(ConfigKey("[Channel2]","rate_perm_down_small"));
+        m_pControlObjectLeftBtnPitchBendPlus = ControlObject::getControl(ConfigKey("[Channel1]","rate_perm_up_small"));
+        m_pControlObjectRightBtnPitchBendPlus = ControlObject::getControl(ConfigKey("[Channel2]","rate_perm_up_small"));
+        m_pControlObjectLeftBtnMasterTempo = 0;
+        m_pControlObjectRightBtnMasterTempo = 0;
         m_pControlObjectLeftVolume = ControlObject::getControl(ConfigKey("[Channel1]","volume"));
         m_pControlObjectRightVolume = ControlObject::getControl(ConfigKey("[Channel2]","volume"));
         m_pControlObjectCrossfade = ControlObject::getControl(ConfigKey("[Master]","crossfader"));
@@ -129,8 +129,6 @@ void Hercules::selectMapping(QString qMapping)
     }
 
     // Generic mappings
-    // Note: The prev/next track buttons should eventually be mapped onto the proper commands
-    //		 (ie. not cue-related stuff)
     m_pControlObjectLeftBtnTrackPrev = ControlObject::getControl(ConfigKey("[Channel1]","cue_set"));
     m_pControlObjectRightBtnTrackPrev = ControlObject::getControl(ConfigKey("[Channel2]","cue_set"));
     m_pControlObjectLeftBtnTrackNext = ControlObject::getControl(ConfigKey("[Channel1]","cue_preview"));
@@ -143,16 +141,6 @@ void Hercules::selectMapping(QString qMapping)
     m_pControlObjectRightBass = ControlObject::getControl(ConfigKey("[Channel2]","filterLow"));
     m_pControlObjectLeftBtnHeadphone = ControlObject::getControl(ConfigKey("[Channel1]","pfl"));
     m_pControlObjectRightBtnHeadphone = ControlObject::getControl(ConfigKey("[Channel2]","pfl"));
-    
-    
-	//Albert's hack:
-	//(These are supposed to be binding specific (ie. handled in the above if-else block).
-	m_pControlObjectLeftBtnPitchBendMinus = ControlObject::getControl(ConfigKey("[Channel1]","rate_temp_down"));
-	m_pControlObjectRightBtnPitchBendMinus = ControlObject::getControl(ConfigKey("[Channel2]","rate_temp_down"));
-	m_pControlObjectLeftBtnPitchBendPlus = ControlObject::getControl(ConfigKey("[Channel1]","rate_temp_up"));
-	m_pControlObjectRightBtnPitchBendPlus = ControlObject::getControl(ConfigKey("[Channel2]","rate_temp_up"));
-	m_pControlObjectLeftBtnMasterTempo = ControlObject::getControl(ConfigKey("[Channel1]","pfl"));
-	m_pControlObjectRightBtnMasterTempo =  ControlObject::getControl(ConfigKey("[Channel2]","pfl"));
     
     m_pControlObjectLeftBtn1 = new ControlObject(ConfigKey("[Channel1]","Hercules1"));
     m_pControlObjectLeftBtn2 = new ControlObject(ConfigKey("[Channel1]","Hercules2"));
