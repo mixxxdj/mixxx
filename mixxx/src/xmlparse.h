@@ -33,6 +33,7 @@ public:
     static QString selectNodeQString(const QDomNode &nodeHeader, const QString sNode);
     static QMemArray<long> *selectNodeLongArray(const QDomNode &nodeHeader, const QString sNode);
     static QMemArray<char> *selectNodeCharArray(const QDomNode &nodeHeader, const QString sNode);
+	static QMemArray<char> *selectNodeHexCharArray(const QDomNode &nodeHeader, const QString sNode);
     static QValueList<long> *selectNodeLongList(const QDomNode &nodeHeader, const QString sNode);
     /** Add a node. Used to write xml document */
     static QDomElement addElement(QDomDocument &, QDomElement &, QString, QString);
@@ -40,6 +41,8 @@ public:
     static QDomElement addElement(QDomDocument &, QDomElement &, QString, QValueList<long> *pData);
     /** Add a binary node of chars. Used to write xml document */
     static QDomElement addElement(QDomDocument &, QDomElement &, QString, QMemArray<char> *pData);
+	// Take a binary char array, encode as hex pairs write to xml
+	static QDomElement addHexElement(QDomDocument &, QDomElement &, QString, QMemArray<char> *pData);
 };
 
 #endif

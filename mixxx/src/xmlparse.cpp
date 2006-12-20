@@ -121,6 +121,34 @@ QMemArray<char> *XmlParse::selectNodeCharArray(const QDomNode &nodeHeader, const
 }
 
 #ifdef QT3_SUPPORT
+Q3MemArray<char> *XmlParse::selectNodeHexCharArray(const QDomNode &nodeHeader, const QString sNode)
+#else
+QMemArray<char> *XmlParse::selectNodeHexCharArray(const QDomNode &nodeHeader, const QString sNode)
+#endif
+{
+    QString hexdata;
+    QDomNode node = selectNode(nodeHeader, sNode);
+	if (node.isNull()) { return 0; }
+
+    hexdata = node.toElement().text();
+	int wavebytes = hexdata.length() / 2;
+	if (wavebytes == 0) { return 0; }
+
+#ifdef QT3_SUPPORT
+    Q3MemArray<char> *data = new Q3MemArray<char>(wavebytes);
+#else
+	QMemArray<char> *data = new QMemArray<char>(wavebytes);
+#endif
+
+	bool ok = true;
+	for (int i=0; i<wavebytes; ++i) {
+		int byte = hexdata.mid(i*2, 2).toInt(&ok, 16);
+        data->at(i) = (char)byte;
+	}
+    return data;
+}
+
+#ifdef QT3_SUPPORT
 Q3ValueList<long> *XmlParse::selectNodeLongList(const QDomNode &nodeHeader, const QString sNode)
 #else
 QValueList<long> *XmlParse::selectNodeLongList(const QDomNode &nodeHeader, const QString sNode)
@@ -195,6 +223,30 @@ QDomElement XmlParse::addElement(QDomDocument &doc, QDomElement &header, QString
     return element;
 }
 
+#ifdef QT3_SUPPORT
+QDomElement XmlParse::addHexElement(QDomDocument &doc, QDomElement &header, QString sElementName, Q3MemArray<char> *pData)
+#else
+QDomElement XmlParse::addHexElement(QDomDocument &doc, QDomElement &header, QString sElementName, QMemArray<char> *pData)
+#endif
+{
+    QDomElement element = doc.createElement(sElementName);
+
+	QString hexdata("");
+#ifdef QT3_SUPPORT
+	Q3MemArray<char>::ConstIterator ci;
+#else
+	QMemArray<char>::ConstIterator ci;
+#endif
+	for (ci = pData->begin(); ci != pData->end(); ci++) {
+		char raw = *ci;
+		hexdata.append(QString::number((raw & 0xf0) >> 4, 16));
+		hexdata.append(QString::number(raw & 0x0f, 16));
+	}
+
+    element.appendChild(doc.createTextNode(hexdata));
+    header.appendChild(element);
+    return element;
+}
 /*
 QDomElement XmlParse::addElement(QDomDocument &doc, QDomElement &header, QString sElementName, QValueList<int> *pData)
 {

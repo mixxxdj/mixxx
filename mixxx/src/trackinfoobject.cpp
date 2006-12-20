@@ -99,7 +99,9 @@ TrackInfoObject::TrackInfoObject(const QDomNode &nodeHeader)
     m_fBeatFirst = XmlParse::selectNodeQString(nodeHeader, "BeatFirst").toFloat();
     m_iScore = 0;
     m_iId = XmlParse::selectNodeQString(nodeHeader, "ID").toInt();
-    m_pWave = XmlParse::selectNodeCharArray(nodeHeader, QString("WaveSummary"));
+    
+	m_pWave = XmlParse::selectNodeHexCharArray(nodeHeader, QString("WaveSummaryHex"));
+
     m_pSegmentation = XmlParse::selectNodeLongList(nodeHeader, QString("SegmentationSummary"));
     m_pTableTrack = 0;
     m_pControlObjectBpm = 0;
@@ -186,8 +188,9 @@ void TrackInfoObject::writeToXML( QDomDocument &doc, QDomElement &header )
     XmlParse::addElement( doc, header, "BpmConfirm", QString("%1").arg(m_bBpmConfirm) );
     XmlParse::addElement( doc, header, "BeatFirst", QString("%1").arg(m_fBeatFirst) );
     XmlParse::addElement( doc, header, "Id", QString("%1").arg(m_iId) );
-    if (m_pWave)
-        XmlParse::addElement(doc, header, "WaveSummary", m_pWave);
+	if (m_pWave) {
+        XmlParse::addHexElement(doc, header, "WaveSummaryHex", m_pWave);
+	}
     if (m_pSegmentation)
         XmlParse::addElement(doc, header, "SegmentationSummary", m_pSegmentation);
 
