@@ -212,24 +212,32 @@ void DlgPrefSound::slotApply()
     // Close devices, and open using config data
     player->close();
 
-    if (config->getValueString(ConfigKey("[Soundcard]","SoundApi"))=="None" || !player->open())
-        QMessageBox::warning(0, "Configuration error","Audio device could not be opened");
-    else
-        slotUpdate();
+	// Not much to do if the API is None...
+	if (config->getValueString(ConfigKey("[Soundcard]","SoundApi"))!="None") {
+		if (!player->open())
+	        QMessageBox::warning(0, "Configuration error","Audio device could not be opened");
+	    else
+			slotUpdate();
+	}
 }
 
 void DlgPrefSound::slotApplyApi()
 {
     config->set(ConfigKey("[Soundcard]","SoundApi"), ConfigValue(ComboBoxSoundApi->currentText()));
-    if (!player->setSoundApi(ComboBoxSoundApi->currentText()))
-    {
-        QMessageBox::warning(0, "Configuration problem","Sound API could not be initialized");
-        config->set(ConfigKey("[Soundcard]","SoundApi"), ConfigValue("None"));
-    } else if (!player->open()) {
+
+	if (!player->setSoundApi(ComboBoxSoundApi->currentText()))
+	{
+		// Did they select the null api?
+		if (ComboBoxSoundApi->currentText() != "None") {
+			QMessageBox::warning(0, "Configuration problem","Sound API could not be initialized");
+			config->set(ConfigKey("[Soundcard]","SoundApi"), ConfigValue("None"));
+		}
+	} else if (!player->open()) {
 		// Maybe the api changed and the channel names aren't valid any more:
 		player->setDefaults();
-
+	
 		if (!player->open()) {
+		
 			QMessageBox::warning(0, "Configuration error","Audio device could not be opened");
 		}
 	}
