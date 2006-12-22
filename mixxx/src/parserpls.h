@@ -29,7 +29,7 @@ private:
     /**Returns the Number of entries in the pls file**/
     long getNumEntries(QTextStream * );
     /**Reads a line from the file and returns filepath**/
-    QString getFilepath(QTextStream * );
+    QString getFilepath(QTextStream *, QString&);
 
 };
 
