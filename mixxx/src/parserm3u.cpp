@@ -49,6 +49,7 @@ QPtrList<QString> * ParserM3u::parse(QString sFilename)
 
 
     QFile * file = new QFile(sFilename);
+	QString basepath = sFilename.section('/', 0, -2);
 
     clearLocations();
     //qDebug("ParserM3u: Starting to parse.");
@@ -58,7 +59,7 @@ QPtrList<QString> * ParserM3u::parse(QString sFilename)
 
 
 
-        while(QString * psLine = new QString(getFilepath(textstream))){
+        while(QString * psLine = new QString(getFilepath(textstream, basepath))){
 
             if(psLine->isNull() || (*psLine) == "NULL")
                 break;
@@ -82,23 +83,30 @@ QPtrList<QString> * ParserM3u::parse(QString sFilename)
 }
 
 
-QString ParserM3u::getFilepath(QTextStream * stream)
+QString ParserM3u::getFilepath(QTextStream * stream, QString& basepath)
 {
     QString textline,filename = "";
 
     while(textline = stream->readLine()){
         if(textline.isNull())
             break;
-        
-        if(!textline.contains("#")){
-            filename = textline;
-            break;
-        }
-    }
 
-    if(isFilepath(filename))
-        return filename;
-    else
-        return QString("NULL");
+		if(!textline.contains("#") && !textline.isEmpty()){
+            filename = textline;
+			if(isFilepath(filename)) {
+				return filename;
+			} else {
+				// Try relative to m3u dir
+				QString rel = basepath + "/" + filename;
+				if (isFilepath(rel)) {
+					return rel;
+				}
+				// We couldn't match this to a real file so ignore it
+			}
+        }
+	}
+
+	// Signal we reached the end
+	return 0;
 
 }

@@ -26,7 +26,7 @@ public:
 
 private:
     /**Reads a line from the file and returns filepath if a valid file**/
-    QString getFilepath(QTextStream * );
+    QString getFilepath(QTextStream *, QString&);
 
 
 };

@@ -37,8 +37,9 @@ QPtrList<QString> * ParserPls::parse(QString sFilename)
 {
     //long numEntries =0;
     QFile * file = new QFile(sFilename);
-
-    clearLocations();
+	QString basepath = sFilename.section('/', 0, -2);
+    
+	clearLocations();
 
     if (file->open(IO_ReadOnly) && !isBinary(sFilename) ) {
 
@@ -50,16 +51,13 @@ QPtrList<QString> * ParserPls::parse(QString sFilename)
 
         //textstream = new QTextStream( file );
 
-        while(true){
-
-            QString * psLine = new QString(getFilepath(textstream));
+        while(QString * psLine = new QString(getFilepath(textstream, basepath))){
             
-            const char * test = psLine->latin1();
-            
-            if(!(psLine->contains("NULL")))
+			if(psLine->isNull() || (*psLine) == "NULL") {
+				break;
+			} else {
                 m_psLocations->append(psLine);
-            else
-                break;
+			}
 
             //--numEntries;
         }
@@ -100,25 +98,34 @@ long ParserPls::getNumEntries(QTextStream * stream)
 }
 
 
-QString ParserPls::getFilepath(QTextStream * stream)
+QString ParserPls::getFilepath(QTextStream * stream, QString& basepath)
 {
     QString textline,filename = "";
 
-    while(!(textline = stream->readLine()).isNull())
+	while(textline = stream->readLine()){
+        if(textline.isNull())
+            break;
 
-        if(textline.contains("File"))
-        {
-
+		if(textline.contains("File")) {
             int iPos = textline.find("=",0);
             ++iPos;
 
             filename = textline.right(textline.length()-iPos);
-            break;
-        }
 
-    if(isFilepath(filename))
-        return filename;
-    else
-        return QString("NULL");
+			if(isFilepath(filename)) {
+				return filename;
+			} else {
+				// Try relative to m3u dir
+				QString rel = basepath + "/" + filename;
+				if (isFilepath(rel)) {
+					return rel;
+				}
+				// We couldn't match this to a real file so ignore it
+			}
+        }
+	}
+
+	// Signal we reached the end
+	return 0;
 
 }
