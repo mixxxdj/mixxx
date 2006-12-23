@@ -662,10 +662,6 @@
 				>
 			</File>
 			<File
-				RelativePath="wavesummaryevent.cpp"
-				>
-			</File>
-			<File
 				RelativePath="wdisplay.cpp"
 				>
 			</File>
@@ -2068,10 +2064,6 @@
 			</File>
 			<File
 				RelativePath="wavesummary.h"
-				>
-			</File>
-			<File
-				RelativePath="wavesummaryevent.h"
 				>
 			</File>
 			<File

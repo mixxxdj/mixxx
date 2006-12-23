@@ -25,7 +25,6 @@
 #include "woverview.h"
 #include "xmlparse.h"
 #include <qdom.h>
-#include "wavesummaryevent.h"
 #include "controlobject.h"
 
 #ifdef QT3_SUPPORT
@@ -135,21 +134,6 @@ TrackInfoObject::~TrackInfoObject()
 bool TrackInfoObject::isValid()
 {
     return m_bIsValid;
-}
-
-bool TrackInfoObject::eventFilter(QObject *, QEvent *e)
-{
-    if (e->type() == 10001)
-    {
-        WaveSummaryEvent *we = (WaveSummaryEvent *)e;
-        setWaveSummary(we->wave(), we->segmentation());
-        return true; // eat event
-    }
-    else
-    {
-        // standard event processing
-        return false;
-    }
 }
 
 bool TrackInfoObject::checkFileExists()

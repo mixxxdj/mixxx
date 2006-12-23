@@ -16,7 +16,6 @@
  ***************************************************************************/
 
 #include "wavesummary.h"
-#include "wavesummaryevent.h"
 #include "trackinfoobject.h"
 #include "soundsourceproxy.h"
 #include "mathstuff.h"
@@ -227,10 +226,7 @@ void WaveSummary::run()
                 pData->at(i) = (char)max((iMin/256.),-127);
                 pData->at(i+1) = (char)min((iMax/256.),127);
                 pData->at(i+2) = 0;
-                
-                // Store summary in TrackInfoObject
-                QApplication::postEvent(pTrackInfoObject, new WaveSummaryEvent(pData, 0));            
-                
+
                 i+=3;
 
                 // Seek to new pos
@@ -240,6 +236,8 @@ void WaveSummary::run()
                 liPos += pSoundSource->read(kiBlockSize, pBuffer);
             }
             
+			pTrackInfoObject->setWaveSummary(pData, 0);
+
             delete [] pBuffer;
             delete [] pDPsf;
             delete pPeaks;

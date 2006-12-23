@@ -144,8 +144,6 @@ public:
     /** Set pointer to ControlObject holding duration value in engine */
     void setDurationControlObject(ControlObject *p);
 
-protected:
-    bool eventFilter(QObject *o, QEvent *e);
 private:
     /** Method for parsing information from knowing only the file name.
         It assumes that the filename is written like: "artist - trackname.xxx" */
