@@ -416,8 +416,8 @@ DEFINES += TEMPORAL
 unix:LIBS += -laudiofile
 
 # Waveform summary
-SOURCES += wavesummary.cpp wavesummaryevent.cpp wavesegmentation.cpp soundsourceproxy.cpp woverview.cpp
-HEADERS += wavesummary.h wavesummaryevent.h wavesegmentation.h soundsourceproxy.h woverview.h
+SOURCES += wavesummary.cpp wavesegmentation.cpp soundsourceproxy.cpp woverview.cpp
+HEADERS += wavesummary.h wavesegmentation.h soundsourceproxy.h woverview.h
 
 # Beat seek
 SOURCES += enginebeatseek.cpp
