@@ -484,3 +484,8 @@ contains(ENABLED_FEATURES, python) {
 		INCLUDEPATH += /usr/include/python2.2/
 	}
 }
+
+contains(ENABLED_FEATURES, djconsole) {
+	INCLUDEPATH += /usr/include/libdjconsole/
+	DEFINES += __LIBDJCONSOLE__
+}

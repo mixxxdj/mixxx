@@ -8,8 +8,8 @@ contains( CONFIG, debug ) {
 #----------------------------------------------------------------------
 
 # Configure Help facilities -------------------------------------------
-CONFIGURE_SCRIPT_FEATURES = jack alsa lua python
-CONFIGURE_SCRIPT_PACKAGE_LIST =  libmad jack id3tag vorbisfile vorbis oggvorbis libsndfile
+CONFIGURE_SCRIPT_FEATURES = jack alsa lua python djconsole
+CONFIGURE_SCRIPT_PACKAGE_LIST =  libmad jack id3tag vorbisfile vorbis oggvorbis libsndfile djconsole
 #----------------------------------------------------------------------
 
 
@@ -236,6 +236,38 @@ OPTIONS =  disable_feature
 include( check.qbas )
 #----------------------------------------------------------------------
 
+
+
+#   LIBDJCONSOLE HEADERS ----------------------------------------------
+OBJECT = libdjconsole/djconsole.h
+TYPE = header
+DESCRIPTION = libdjconsole headers
+TIP_MESSAGE = "libdjconsole headers needed to compile with Hercules DJConsole Mk1/Mk2/MP3 support!"
+LINK_LIBS = 
+OPTIONS =
+#----------------------------------------------------------------------
+# Check routines         (DON'T TOUCH!)
+include( check.qbas )
+#----------------------------------------------------------------------
+
+
+#   LIBDJCONSOLE ------------------------------------------------------
+OBJECT = pkg-config --exists 'libdjconsole >= 0.1.0'
+TYPE = command
+DESCRIPTION = libdjconsole >= 0.1.0
+FEATURE = djconsole
+PACKAGE = djconsole
+TIP_MESSAGE = "libdjconsole not found!"
+LINK_LIBS = -I/usr/include/libdjconsole  -ldjconsole
+# LINK_LIBS = `pkg-config --silence-errors --cflags --libs libdjconsole` # looks like a bug in the QBASystem only parses last `` command properly :(
+# ADD_SOURCES =
+# ADD_HEADERS =
+ADD_DEFINES = __LIBDJCONSOLE__
+OPTIONS =     disable_feature
+#----------------------------------------------------------------------
+# Check routines         (DON'T TOUCH!)
+include( check.qbas )
+#----------------------------------------------------------------------
 
 
 
