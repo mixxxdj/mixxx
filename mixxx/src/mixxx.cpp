@@ -87,17 +87,17 @@ MixxxApp::MixxxApp(QApplication *a, QStringList files, QSplashScreen *pSplash, Q
     // Read the config file from home directory
     config = new ConfigObject<ConfigValue>(QDir::homeDirPath().append("/").append(SETTINGS_FILE));
     QString qConfigPath = config->getConfigPath();
-    
+
     // Store the path in the config database
     config->set(ConfigKey("[Config]","Path"), ConfigValue(qConfigPath));
-    
+
     // Instantiate a ControlObject, and set static parent widget
     control = new ControlNull();
 
-    
+
     if (pSplash)
         pSplash->message("Initializing control devices...",Qt::AlignLeft|Qt::AlignBottom);
-        
+
     // Read keyboard configuration and set kdbConfig object in WWidget
     kbdconfig = new ConfigObject<ConfigValueKbd>(QString(qConfigPath).append("keyboard/").append("Standard.kbd.cfg"));
     WWidget::setKeyboardConfig(kbdconfig);
@@ -105,14 +105,14 @@ MixxxApp::MixxxApp(QApplication *a, QStringList files, QSplashScreen *pSplash, Q
 
     if (pSplash)
         pSplash->message("Setting up sound engine...",Qt::AlignLeft|Qt::AlignBottom);
-    
+
     // Sample rate used by Player object
     ControlObject *p = new ControlObject(ConfigKey("[Master]","samplerate"));
     p->set(44100.);
 
     // Master rate
     new ControlPotmeter(ConfigKey("[Master]","rate"),-1.,1.);
-        
+
     // Init buffers/readers
     buffer1 = new EngineBuffer("[Channel1]");
     buffer2 = new EngineBuffer("[Channel2]");
@@ -132,7 +132,7 @@ MixxxApp::MixxxApp(QApplication *a, QStringList files, QSplashScreen *pSplash, Q
 
     if (pSplash)
         pSplash->message("Loading skin...",Qt::AlignLeft|Qt::AlignBottom);
-    
+
     // Find path of skin
     QString qSkinPath(qConfigPath);
     qSkinPath.append("skins/");
@@ -172,7 +172,7 @@ MixxxApp::MixxxApp(QApplication *a, QStringList files, QSplashScreen *pSplash, Q
 
     // Needed for Search class and Simple skin
     new ControlPotmeter(ConfigKey("[Channel1]","virtualplayposition"),0.,1.);
-    
+
     // Needed for updating widgets with track duration info
     new ControlObject(ConfigKey("[Channel1]","duration"));
     new ControlObject(ConfigKey("[Channel2]","duration"));
@@ -185,9 +185,9 @@ MixxxApp::MixxxApp(QApplication *a, QStringList files, QSplashScreen *pSplash, Q
     // FWI: Begin of fullscreen patch
     // Use frame as container for view, needed for fullscreen display
     frame = new QFrame(this,"Mixxx");
-    
+
     setCentralWidget(frame);
-   
+
     move(10,10);
     // FWI: End of fullscreen patch
 
@@ -294,7 +294,7 @@ MixxxApp::MixxxApp(QApplication *a, QStringList files, QSplashScreen *pSplash, Q
         ControlObject::connectControls(ConfigKey("[Channel1]", "rate"), ConfigKey("[Channel1]", "VisualLengthScale-temporal"));
         ControlObject::connectControls(ConfigKey("[Channel2]", "rate"), ConfigKey("[Channel2]", "VisualLengthScale-temporal"));
     }
-   
+
 #ifdef __SCRIPT__
     scriptEng = new ScriptEngine(this, m_pTrack);
 #endif
@@ -329,10 +329,10 @@ MixxxApp::~MixxxApp()
     scriptEng->saveMacros();
     delete scriptEng;
 #endif
-   
+
     qDebug("Write track xml, %i",qTime.elapsed());
     m_pTrack->writeXML(config->getValueString(ConfigKey("[Playlist]","Listfile")));
-    
+
     qDebug("close player, %i",qTime.elapsed());
     player->close();
 
@@ -366,7 +366,7 @@ MixxxApp::~MixxxApp()
     delete m_pTrack;
 
     delete prefDlg;
-    
+
     qDebug("save config, %i",qTime.elapsed());
     config->Save();
     qDebug("delete config, %i",qTime.elapsed());
@@ -417,11 +417,11 @@ void MixxxApp::initActions()
     fileOpen->setStatusTip(tr("Opens a file in player 1"));
     fileOpen->setWhatsThis(tr("Open\n\nOpens a file in player 1"));
     connect(fileOpen, SIGNAL(activated()), this, SLOT(slotFileOpen()));
-    
+
     fileQuit->setStatusTip(tr("Quits the application"));
     fileQuit->setWhatsThis(tr("Exit\n\nQuits the application"));
     connect(fileQuit, SIGNAL(activated()), this, SLOT(slotFileQuit()));
-    
+
     playlistsNew->setStatusTip(tr("Add new playlist"));
     playlistsNew->setWhatsThis(tr("Add a new playlist"));
     connect(playlistsNew, SIGNAL(activated()), m_pTrack, SLOT(slotNewPlaylist()));
@@ -505,7 +505,7 @@ void MixxxApp::initMenuBar()
 #ifdef __SCRIPT__
     macroStudio->addTo(macroMenu);
 #endif
-    
+
     // MENUBAR CONFIGURATION
     menuBar()->insertItem(tr("&File"), fileMenu);
     //menuBar()->insertItem(tr("&Edit"), editMenu);
@@ -601,7 +601,7 @@ void MixxxApp::slotOptionsFullScreen(bool toggle)
 		setFixedSize(winsize);
 		move(winpos);
 #endif
-	
+
         // FWI: End of fullscreen patch
     }
 }
@@ -621,7 +621,8 @@ void MixxxApp::slotHelpAbout()
                          "<tr><td><a href=\"http://mixxx.sourceforge.net/\">http://mixxx.sourceforge.net/</a></td></tr>"
                          "</table><br><br>"
                          "<table cellspacing=0 cellpadding=0>"
-                         "<tr><td>Design and programming:</td><td>Tue Haste Andersen</td></tr>"
+                         "<tr><td>Lead developer/Maintainer:</td><td>Adam Davison</td></tr>"
+                         "<tr><td>Original developers</td><td>Tue Haste Andersen</td></tr>"
                          "<tr><td></td><td>Ken Haste Andersen</td></tr>"
                          "<tr><td>Skins:</td><td>Ludek Horácek (Traditional)</td></tr>"
                          "<tr><td></td><td>Tue Haste Andersen (Outline)</td></tr>"
@@ -632,9 +633,12 @@ void MixxxApp::slotHelpAbout()
              "<tr><td>Beat phase sync:</td><td>Torben Hohn</td></tr>"
              "<tr><td>ALSA support:</td><td>Peter Chang</td></tr>"
              "<tr><td>SoundTouch support:</td><td>Mads Holm</td></tr>"
-                         "<tr><td>Other contributions:</td><td>Lukas Zapletal</td></tr>"
-                         "<tr><td></td><td>Jeremie Zimmermann</td></tr>"
-                         "<tr><td></td><td>Gianluca Romanin</td></tr>"
+			"<tr><td>Other contributions:</td><td>Lukas Zapletal</td><td>Garth Dahlstrom</td></tr>"
+			"<tr><td></td><td>Jeremie Zimmermann</td><td>Ben Wheeler</td></tr>"
+			"<tr><td></td><td>Gianluca Romanin</td><td>Tim Jackson</td></tr>"
+			"<tr><td></td><td>Jan Jockusch</td><td>Albert Santoni</td></tr>"
+			"<tr><td></td><td>Frank Willascheck</td><td></td></tr>"
+                         "<tr><td>Special thanks to:</td><td>Adam Bellinson</td><td></td></tr>"
                          "</table><br><br>"
                          "<table cellspacing=0 cellpadding=0>"
                          "<tr><td>Thanks to all DJ's and musicians giving feedback.</td></tr>"
