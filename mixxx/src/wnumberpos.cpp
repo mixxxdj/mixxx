@@ -40,7 +40,7 @@ void WNumberPos::setValue(double dValue)
 {
     m_dOldValue = dValue;
 
-    double v = dValue*(m_dDuration/127.);
+    double v  = dValue*(m_dDuration/127.);
     double v2 = m_dDuration;
 
     if (m_bRemain)
@@ -50,7 +50,7 @@ void WNumberPos::setValue(double dValue)
     int minv21=0,minv22=0,secv21=0,secv22=0;
     if (v>0.)
     {
-        min1 = (int)(floor(v/600.))%10;
+        min1 = (int)(floor(v/600.))%100;
         min2 = (int)(floor(v/60.))%10;
         sec1 = (int)(floor(v/10.))%6;
 	sec2 = (int)(floor(v))%10;
@@ -60,10 +60,10 @@ void WNumberPos::setValue(double dValue)
 
     if (v2>0.)
     {
-        minv21 = (int)(floor(v2/600.))%10;
-	    minv22 = (int)(floor(v2/60.))%10;
+        minv21 = (int)(floor(v2/600.))%100;
+	minv22 = (int)(floor(v2/60.))%10;
         secv21 = (int)(floor(v2/10.))%6;
-	    secv22 = (int)(floor(v2))%10;
+	secv22 = (int)(floor(v2))%10;
     }
 
 /*
@@ -73,7 +73,9 @@ void WNumberPos::setValue(double dValue)
         m_pLabel->setPaletteForegroundColor(m_qFgColor);
 */
 
-    m_pLabel->setText(QString(m_qsText).append("%1%2:%3%4, Dur: %5%6:%7%8").arg(min1,1,10).arg(min2,1,10).arg(sec1,1,10).arg(sec2,1,10).arg(minv21,1,10).arg(minv22,1,10).arg(secv21,1,10).arg(secv22,1,10));
+    m_pLabel->setText(QString(m_qsText).append("%1%2:%3%4, Dur: %5%6:%7%8")
+                      .arg(min1,1,100).arg(min2,1,10).arg(sec1,1,10).arg(sec2,1,10)
+                      .arg(minv21,1,100).arg(minv22,1,10).arg(secv21,1,10).arg(secv22,1,10));
 }
 
 void WNumberPos::setRemain(bool bRemain)
@@ -90,3 +92,5 @@ void WNumberPos::setRemain(bool bRemain)
 
 
 
+
+ 	  	 
