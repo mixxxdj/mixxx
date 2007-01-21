@@ -22,16 +22,16 @@ extern "C" {
 
 SoundSourceMp3::SoundSourceMp3(QString qFilename) : SoundSource(qFilename)
 {
-    QFile file( qFilename.latin1() );
+    QFile file( qFilename );
     if (!file.open(IO_ReadOnly))
-        qFatal("MAD: Open of %s failed.", qFilename.latin1());
+        qFatal("MAD: Open of %s failed.", qstrdup(qFilename.local8Bit()));
 
     // Read the whole file into inputbuf:
     inputbuf_len = file.size();
     inputbuf = new char[inputbuf_len];
     unsigned int tmp = file.readBlock(inputbuf, inputbuf_len);
     if (tmp != inputbuf_len)
-        qFatal("MAD: ERR reading mp3-file: %s\nRead only %d bytes, but wanted %d bytes.",qFilename.latin1() ,tmp,inputbuf_len);
+        qFatal("MAD: ERR reading mp3-file: %s\nRead only %d bytes, but wanted %d bytes.",qstrdup(qFilename.local8Bit()) ,tmp,inputbuf_len);
 
     // Transfer it to the mad stream-buffer:
     mad_stream_init(&Stream);
@@ -375,7 +375,7 @@ int SoundSourceMp3::ParseHeader(TrackInfoObject *Track)
 
     Track->setType("mp3");
 
-    id3_file *fh = id3_file_open(location.latin1(), ID3_FILE_MODE_READONLY);
+    id3_file *fh = id3_file_open(qstrdup(location.local8Bit()), ID3_FILE_MODE_READONLY);
     if (fh!=0)
     {
         id3_tag *tag = id3_file_tag(fh);
@@ -416,9 +416,9 @@ int SoundSourceMp3::ParseHeader(TrackInfoObject *Track)
     // Number of bytes to read from file to determine duration
     const unsigned int READLENGTH = 5000;
     mad_timer_t dur = mad_timer_zero;
-    QFile file(location.latin1());
+    QFile file(location);
     if (!file.open(IO_ReadOnly)) {
-        qDebug("MAD: Open of %s failed.", location.latin1());
+        qDebug("MAD: Open of %s failed.", qstrdup(location.local8Bit()));
         return ERR;
     }
     
@@ -430,7 +430,7 @@ int SoundSourceMp3::ParseHeader(TrackInfoObject *Track)
     char *inputbuf = new char[READLENGTH];
     unsigned int tmp = file.readBlock(inputbuf, READLENGTH);
     if (tmp != READLENGTH) {
-        qDebug("MAD: ERR reading mp3-file: %s\nRead only %d bytes, but wanted %d bytes.",location.latin1() ,tmp,READLENGTH);
+        qDebug("MAD: ERR reading mp3-file: %s\nRead only %d bytes, but wanted %d bytes.",qstrdup(location.local8Bit()) ,tmp,READLENGTH);
         return ERR;
     }
     mad_stream Stream;
