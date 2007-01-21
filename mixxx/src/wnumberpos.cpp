@@ -74,8 +74,8 @@ void WNumberPos::setValue(double dValue)
 */
 
     m_pLabel->setText(QString(m_qsText).append("%1%2:%3%4, Dur: %5%6:%7%8")
-                      .arg(min1,1,100).arg(min2,1,10).arg(sec1,1,10).arg(sec2,1,10)
-                      .arg(minv21,1,100).arg(minv22,1,10).arg(secv21,1,10).arg(secv22,1,10));
+                      .arg(min1,1,10).arg(min2,1,10).arg(sec1,1,10).arg(sec2,1,10)
+                      .arg(minv21,1,10).arg(minv22,1,10).arg(secv21,1,10).arg(secv22,1,10));
 }
 
 void WNumberPos::setRemain(bool bRemain)
