@@ -21,6 +21,8 @@
 #include <qvaluelist.h>
 #include "powermate.h"
 #include <sys/select.h>
+#include "controlobject.h"
+//#include "controlpotmeter.h"
 
 /**
   * Linux code for handling the PowerMate.
@@ -57,6 +59,9 @@ protected:
     /** File set used in select() call */
     fd_set fdset;
     int oldv;
+    
+    ControlObject* m_LED;
+    ControlObject *m_ctrlVuMeter;
 };
 
 #endif
