@@ -98,7 +98,7 @@ bool HerculesLinux::opendev()
     {
         if (sqlOpenDevs.find(i)==sqlOpenDevs.end())
         {
-            qDebug("Looking for a Hercules DJ Console on /dev/input/event%d ...", i);
+//            qDebug("Looking for a Hercules DJ Console on /dev/input/event%d ...", i);
             m_iFd = opendev(i);
             if(m_iFd >= 0)
                 break;
@@ -151,7 +151,7 @@ int HerculesLinux::opendev(int iId)
     char rgcName[255];
 
     if(iFd < 0) {
-        qDebug("Could not open Hercules at /dev/input/event%d [%s]",iId, strerror(errno));
+//        qDebug("Could not open Hercules at /dev/input/event%d [%s]",iId, strerror(errno));
         if (errno==13) {
           qDebug("If you have a Hercules device plugged into USB, you'll need to either execute 'sudo chmod o+rw- /dev/input/event?' or run mixxx as root.");
         }         
