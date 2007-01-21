@@ -51,13 +51,13 @@ void PowerMate::selectMapping(QString mapping)
 {
     if (mapping==kqInputMappingPositionP1)
     {
-        m_pControlObjectRotary = ControlObject::getControl(ConfigKey("[Channel1]","wheel"));
+        m_pControlObjectRotary = ControlObject::getControl(ConfigKey("[Channel1]","scratch"));
         m_pControlObjectButton = ControlObject::getControl(ConfigKey("[Channel1]","play"));
         m_pRotary->setFilterLength(kiRotaryFilterMaxLen);
     }
     else if (mapping==kqInputMappingPositionP2)
     {
-        m_pControlObjectRotary = ControlObject::getControl(ConfigKey("[Channel2]","wheel"));
+        m_pControlObjectRotary = ControlObject::getControl(ConfigKey("[Channel2]","scratch"));
         m_pControlObjectButton = ControlObject::getControl(ConfigKey("[Channel2]","play"));
         m_pRotary->setFilterLength(kiRotaryFilterMaxLen);
     }
