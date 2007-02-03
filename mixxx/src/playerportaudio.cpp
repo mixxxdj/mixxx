@@ -1,8 +1,9 @@
 /***************************************************************************
-                          playerportaudio.cpp  -  description
+                          playerportaudiov19.cpp  -  description
                              -------------------
     begin                : Wed Feb 20 2002
     copyright            : (C) 2002 by Tue and Ken Haste Andersen
+    					   (C) 2006 by Albert Santoni
     email                : 
  ***************************************************************************/
 
@@ -18,7 +19,7 @@
 #include "playerportaudio.h"
 #include "controlobject.h"
 
-PlayerPortAudio::PlayerPortAudio(ConfigObject<ConfigValue> *config) : Player(config)
+PlayerPortAudio::PlayerPortAudio(ConfigObject<ConfigValue> *config, QString api_name) : Player(config)
 {
     m_devId = -1;
     m_iNumberOfBuffers = 2;
@@ -28,6 +29,7 @@ PlayerPortAudio::PlayerPortAudio(ConfigObject<ConfigValue> *config) : Player(con
     m_iHeadLeftCh = -1;
     m_iHeadRightCh = -1;
     m_pStream = 0;
+    m_HostAPI = api_name;
     m_bInit = false;
 }
 
@@ -43,7 +45,10 @@ bool PlayerPortAudio::initialize()
 {
     PaError err = Pa_Initialize();
     if (err!=paNoError)
+    {
+        qDebug("PortAudio error: %s", Pa_GetErrorText(err));
         m_bInit = false;
+    }
     else
         m_bInit = true;
 
@@ -57,8 +62,8 @@ bool PlayerPortAudio::open()
     // Find out which device to open. Select the first one listed as either Master Left,
     // Master Right, Head Left, Head Right. If other devices are requested for opening
     // than the one selected here, set them to "None" in the config database
-    PaDeviceID id = -1;
-    PaDeviceID temp = -1;
+    PaDeviceIndex id = -1;
+    PaDeviceIndex temp = -1;
     QString name;
     /** Maximum number of channels needed */
     int iChannelMax = -1;
@@ -87,7 +92,7 @@ bool PlayerPortAudio::open()
     if (getChannelNo(name)>=0 && ((id==-1 && temp>=0) || (temp!=-1 && id==temp)))
     {
         id = temp;
-        iChannelMax = max(iChannelMax, getChannelNo(name));
+        iChannelMax = math_max(iChannelMax, getChannelNo(name));
         m_iMasterRigthCh = getChannelNo(name)-1;
     }
 
@@ -97,7 +102,7 @@ bool PlayerPortAudio::open()
     if (getChannelNo(name)>=0 && ((id==-1 && temp>=0) || (temp!=-1 && id==temp)))
     {
         id = temp;
-        iChannelMax = max(iChannelMax, getChannelNo(name));
+        iChannelMax = math_max(iChannelMax, getChannelNo(name));
         m_iHeadLeftCh = getChannelNo(name)-1;
     }
 
@@ -107,7 +112,7 @@ bool PlayerPortAudio::open()
     if (getChannelNo(name)>=0 && ((id==-1 && temp>=0) || (temp!=-1 && id==temp)))
     {
         id = temp;
-        iChannelMax = max(iChannelMax, getChannelNo(name));
+        iChannelMax = math_max(iChannelMax, getChannelNo(name));
         m_iHeadRightCh = getChannelNo(name)-1;
     }
 
@@ -126,9 +131,14 @@ bool PlayerPortAudio::open()
 
     // Sample rate
     int iSrate = m_pConfig->getValueString(ConfigKey("[Soundcard]","Samplerate")).toInt();
+	if (iSrate <= 0)
+		iSrate = 44100;
 
     // Get latency in msec
     int iLatencyMSec = m_pConfig->getValueString(ConfigKey("[Soundcard]","Latency")).toInt();
+
+	if (iLatencyMSec <= 0) //Make sure we don't get a crazy latency value.
+		iLatencyMSec = 150;
 
     // Latency in samples
     int iLatencySamples = (int)((float)(iSrate*iChannels)/1000.f*(float)iLatencyMSec);
@@ -143,6 +153,9 @@ bool PlayerPortAudio::open()
     int iFramesPerBuffer = iLatencySamples/m_iNumberOfBuffers;
 
     // Ensure the chosen configuration is valid
+    //TODO: Fix this in our PortAudio-v19 implementation. PA19 ditches the Pa_GetMinNumBuffers() function, as it's
+    //		not needed anymore. 
+    /*
     if (m_iNumberOfBuffers<Pa_GetMinNumBuffers(iFramesPerBuffer,iSrate))
     {
         m_iNumberOfBuffers = Pa_GetMinNumBuffers(iFramesPerBuffer,iSrate);
@@ -150,19 +163,38 @@ bool PlayerPortAudio::open()
         iLatencyMSec = (1000*iFramesPerBuffer*m_iNumberOfBuffers)/(iSrate*iChannels);
         m_pConfig->set(ConfigKey("[Soundcard]","Latency"), ConfigValue(iLatencyMSec));
     }
+    */
 
     // Callback function to use
-    PortAudioCallback *callback = paCallback;
-
+    PaStreamCallback *callback = paV19Callback;
+	qDebug("PortAudio: kiMaxFrameSize: %i, iLatencyMSec: %i", kiMaxFrameSize, iLatencyMSec);
     qDebug("PortAudio: id %i, sr %i, ch %i, bufsize %i, bufno %i, req. latency %i msec", id, iSrate, iChannels, iFramesPerBuffer, m_iNumberOfBuffers, iLatencyMSec);
 
     if (id<0)
         return false;
 
+	PaStreamParameters outputParams;
+	outputParams.device = id;
+	outputParams.channelCount = iChannels;
+	outputParams.sampleFormat = paFloat32;
+	outputParams.suggestedLatency = ((float)iLatencyMSec) / 1000.0f; //Latency in seconds.
+	outputParams.hostApiSpecificStreamInfo = NULL;
+
     PaError err = paNoError;
+       
+	// Try open device using iChannelMax
+    err = Pa_OpenStream(&m_pStream,
+    					NULL,				// Input parameters
+    					&outputParams, 		// Output parameters
+    					iSrate,				// Sample rate
+    					iFramesPerBuffer,	// Frames per buffer
+    					paClipOff,			// Stream flags
+    					callback,			// Stream callback
+    					this);              // Pointer passed to the callback function
+
 
     // Try open device using iChannelMax
-    err = Pa_OpenStream(&m_pStream, paNoDevice, 0, paFloat32, 0,
+    /*err = Pa_OpenStream(&m_pStream, paNoDevice, 0, paFloat32, 0,
                         id,                 // Id of output device
                         iChannels,          // Number of output channels
                         paFloat32,          // Output sample format
@@ -173,23 +205,22 @@ bool PlayerPortAudio::open()
                         paClipOff,          // we won't output out of range samples so don't bother clipping them
                         callback,           // Callback function
                         this);              // Pointer passed to the callback function
+    */
     if (err == paNoError)
         m_iChannels = iChannels;
     else
     {
         // Try open device using maximum supported channels by soundcard
         iChannels = Pa_GetDeviceInfo(id)->maxOutputChannels;
-        err = Pa_OpenStream(&m_pStream, paNoDevice, 0, paFloat32, 0,
-                        id,                 // Id of output device
-                        iChannels,          // Number of output channels
-                        paFloat32,          // Output sample format
-                        0,                  // Extra info. Not used.
-                        iSrate,             // Sample rate
-                        iFramesPerBuffer,   // Frames per buffer
-                        m_iNumberOfBuffers,   // Number of buffers
-                        paClipOff,          // we won't output out of range samples so don't bother clipping them
-                        callback,           // Callback function
-                        this);              // Pointer passed to the callback function
+        outputParams.channelCount = iChannels;
+	    err = Pa_OpenStream(&m_pStream,
+	    					NULL,				// Input parameters
+	    					&outputParams, 		// Output parameters
+	    					iSrate,				// Sample rate
+	    					iFramesPerBuffer,	// Frames per buffer
+	    					paClipOff,			// Stream flags
+	    					callback,			// Stream callback
+	    					this);              // Pointer passed to the callback function
         if (err==paNoError)
             m_iChannels = iChannels;
     }
@@ -197,17 +228,15 @@ bool PlayerPortAudio::open()
     if( err != paNoError )
     {
         // Try open device using only two channels
-        err = Pa_OpenStream(&m_pStream, paNoDevice, 0, paFloat32, 0,
-                        id,                 // Id of output device
-                        2,                  // Number of output channels
-                        paFloat32,          // Output sample format
-                        0,                  // Extra info. Not used.
-                        iSrate,             // Sample rate
-                        iFramesPerBuffer,   // Frames per buffer
-                        m_iNumberOfBuffers,   // Number of buffers
-                        paClipOff,          // we won't output out of range samples so don't bother clipping them
-                        callback,           // Callback function
-                        this);              // Pointer passed to the callback function
+        outputParams.channelCount = 2;
+	    err = Pa_OpenStream(&m_pStream,
+	    					NULL,				// Input parameters
+	    					&outputParams, 		// Output parameters
+	    					iSrate,				// Sample rate
+	    					iFramesPerBuffer,	// Frames per buffer
+	    					paClipOff,			// Stream flags
+	    					callback,			// Stream callback
+	    					this);              // Pointer passed to the callback function
         if (err==paNoError)
         {
             m_iChannels = 2;
@@ -240,7 +269,8 @@ bool PlayerPortAudio::open()
     if( err != paNoError )
     {
         qDebug("PortAudio: Open stream error: %s", Pa_GetErrorText(err));
-        err = Pa_GetHostError();
+        //err = Pa_GetLastHostErrorInfo();
+		qDebug("PortAudio: More error info: %s", Pa_GetLastHostErrorInfo()->errorText);
 
         m_devId = -1;
         m_iChannels = -1;
@@ -331,103 +361,187 @@ void PlayerPortAudio::setDefaults()
 
 QStringList PlayerPortAudio::getInterfaces()
 {
+	qDebug("PortAudio: getInterfaces()");
+	
     QStringList result;
+	const PaHostApiInfo* apiInfo = NULL;
+	const PaDeviceInfo* devInfo = NULL;
+	QString api;
 
-    int no = Pa_CountDevices();
-    for (int i=0; i<no; i++)
+	if (m_HostAPI == "None")
+		return result;
+	
+    PaDeviceIndex numDevices = Pa_GetDeviceCount();
+    
+    for (int i = 0; i < numDevices; i++)
     {
-        const PaDeviceInfo *devInfo = Pa_GetDeviceInfo(i);
-
+        devInfo = Pa_GetDeviceInfo(i);
+        
         // Add the device if it is an output device:
-        if (devInfo!=0 && devInfo->maxOutputChannels > 0)
+        //if (devInfo != NULL && devInfo->maxOutputChannels > 0)
+        if (devInfo != NULL)
         {
-            qDebug("name %s",devInfo->name);
-            for (int j=1; j<=devInfo->maxOutputChannels; ++j)
-                result.append(QString("%1 (channel %2)").arg(devInfo->name).arg(j));
+        	apiInfo = Pa_GetHostApiInfo(devInfo->hostApi);
+        	//api = apiInfo->name;
+			qDebug("Api name: %s", apiInfo->name);
+			qDebug(devInfo->name);
+        	//qDebug("m_HostAPI: " + m_HostAPI + "devInfo->hostApi: " + new QString(devInfo->hostApi));
+        
+        	//... and make sure the interface matches the API we've selected.
+        	if (m_HostAPI == apiInfo->name)
+        	{
+            	qDebug("name %s, API %i, maxOutputChannels: %i", devInfo->name, devInfo->hostApi, devInfo->maxOutputChannels);
+				
+            	for (int j=1; j <= devInfo->maxOutputChannels; ++j)
+                	result.append(QString("%1 (channel %2)").arg(devInfo->name).arg(j));
+            }
         }
     }
-
+	qDebug("PortAudio: getInterfaces() end");
     return result;
 }
 
 QStringList PlayerPortAudio::getSampleRates()
 {
-
     // Returns a sorted list of supported sample rates of the currently opened device.
     // If no device is open, return the list of sample rates supported by the
     // default device
-    PaDeviceID id = m_devId;
+    qDebug("PortAudio: getSampleRates()");
+    
+    PaError err;
+    PaDeviceIndex id = m_devId;
+    qDebug("m_devId: %d", m_devId);
     if (id<0)
-        id = Pa_GetDefaultOutputDeviceID();
+        id = Pa_GetDefaultOutputDevice();
 
     const PaDeviceInfo *devInfo = Pa_GetDeviceInfo(id);
 
-    QValueList<int> srlist;
+	PaStreamParameters outputParams;
+	outputParams.device = id;
+	outputParams.channelCount = 2;
+	outputParams.sampleFormat = paFloat32;
+	outputParams.suggestedLatency = .150; //Latency in seconds.
+	outputParams.hostApiSpecificStreamInfo = NULL;
+
+    QValueList<double> desiredSampleRates; //A list of all the sample rates we're going to suggest.
+    QValueList<double> validSampleRates; //A list containing all the supported sample rates.
+    
+    //Here's all the sample rates we're going to suggest to PortAudio. We check which ones
+    //are actually supported below.
+    desiredSampleRates.append(11025.0);
+    desiredSampleRates.append(22050.0);
+    desiredSampleRates.append(44100.0);
+    desiredSampleRates.append(48000.0); 
+    desiredSampleRates.append(96000.0);
     
     // Sample rates
-    if (devInfo && devInfo->numSampleRates > 0)
+    if (devInfo)
     {
-        for (int j=0; j<devInfo->numSampleRates; j++)
-            srlist.append((int)devInfo->sampleRates[j]);
+        for (unsigned int j=0; j < desiredSampleRates.count(); j++)
+        {
+        	//Check if each sample rate is supported, if so, add them to the list of supported sample rates.
+        	qDebug("PortAudio: checking if sample rate is supported...");
+        	err = Pa_IsFormatSupported(NULL, &outputParams, desiredSampleRates[j]);
+        	if (err == paFormatIsSupported) //The format IS supported.
+        	{
+        		validSampleRates.append(desiredSampleRates[j]);
+        		qDebug("Supported...");
+			}
+			else
+			{
+				qDebug("PortAudio: %s, id was: %d", Pa_GetErrorText(err), id);
+			}
+		}
     }
-    else
-    {
-        // If we're just given a range of samplerates, then just
-        // assume some standard rates:
-        srlist.append(11025);
-        srlist.append(22050);
-        srlist.append(44100);
-        srlist.append(48000);
-    }
+
+	//If for some reason our enumeration of the sample rates failed, throw
+	//in some default values. (PortAudio might be being sketchy...)
+	if (validSampleRates.count() == 0)
+	{
+		validSampleRates.append(44100.0);
+		validSampleRates.append(96000.0);
+	}
 
     // Sort list
 #ifndef QT3_SUPPORT
-    qHeapSort(srlist);
+    qHeapSort(validSampleRates);
 #endif
 
     // Convert srlist to stringlist
     QStringList result;
-    for (unsigned int i=0; i<srlist.count(); ++i)
-        result.append(QString("%1").arg((*srlist.at(i))));    
+    for (unsigned int i = 0; i < validSampleRates.count(); ++i)
+        result.append(QString("%1").arg((*validSampleRates.at(i))));    
     
+    qDebug("PortAudio: getSampleRates() end");
+        
     return result;
 }
 
-QString PlayerPortAudio::getSoundApi()
+QStringList PlayerPortAudio::getSoundApiList()
 {
+	//Note: Need to put the active API at the top of the list.
+	QStringList apiList;
+	const PaHostApiInfo* apiInfo = NULL;
+
+	//We need to initialize PortAudio before we find out what APIs are present.
+	//Even if this gets called while PortAudio is already initialized, the docs
+	//say this is OK (I think...).
+    PaError err = Pa_Initialize();
+    if (err == paNoError)
+    {
+		for (int i = 0; i < Pa_GetHostApiCount(); i++)
+		{
+			apiInfo = Pa_GetHostApiInfo(i);
+			qDebug("Api name: %s", apiInfo->name);
+			apiList.append(apiInfo->name);
+		}
+		Pa_Terminate();
+    }
+    else
+        qDebug("PortAudio error: %s", Pa_GetErrorText(err));
+	
+	return apiList;
+	
+	/*
 #ifdef __LINUX__
-    return QString("OSS");
+    return QStringList("OSS (PA)");
 #endif
 #ifdef __MACX__
-    return QString("CoreAudio");
+    return QStringList("CoreAudio (PA)");
 #endif
 #ifdef __WIN__
-    return QString("WMME");
+    return QStringList("WMME (PA)");
 #endif
+*/
+	
 }
 
 
-PaDeviceID PlayerPortAudio::getDeviceID(QString name)
+PaDeviceIndex PlayerPortAudio::getDeviceID(QString name)
 {
-    int no = Pa_CountDevices();
+	qDebug("PortAudio: getDeviceID(" + name + ")");
+    PaDeviceIndex no = Pa_GetDeviceCount();
     for (int i=0; i<no; i++)
     {
         const PaDeviceInfo *devInfo = Pa_GetDeviceInfo(i);
 
         // Add the device if it is an output device:
-        if (devInfo!=0 && devInfo->maxOutputChannels > 0)
+        if (devInfo != 0 && devInfo->maxOutputChannels > 0)
         {
-            for (int j=1; j<=devInfo->maxOutputChannels; ++j)
+            for (int j = 1; j <= devInfo->maxOutputChannels; ++j)
                 if (QString("%1 (channel %2)").arg(devInfo->name).arg(j) == name)
+                {
+                	qDebug("PortAudio: getDeviceID(" + name + "), returning device id %i", i);
                     return i;
+                }
         }
     }
     return -1;
 }
 
-PaDeviceID PlayerPortAudio::getChannelNo(QString name)
+PaDeviceIndex PlayerPortAudio::getChannelNo(QString name)
 {
-    int no = Pa_CountDevices();
+    PaDeviceIndex no = Pa_GetDeviceCount();
     for (int i=0; i<no; i++)
     {
         const PaDeviceInfo *devInfo = Pa_GetDeviceInfo(i);
@@ -479,9 +593,12 @@ int PlayerPortAudio::callbackProcess(int iBufferSize, float *out)
    Input:   .
    Output:  -
    -------- ------------------------------------------------------ */
-int paCallback(void *, void *outputBuffer,
+int paV19Callback(const void *inputBuffer, void *outputBuffer,
                       unsigned long framesPerBuffer,
-                      PaTimestamp, void *pPlayer)
+                      const PaStreamCallbackTimeInfo* timeInfo,
+                      PaStreamCallbackFlags statusFlags,
+                      void *_player)
 {
-    return ((PlayerPortAudio *)pPlayer)->callbackProcess(framesPerBuffer, (float *)outputBuffer);
+    return ((PlayerPortAudio *)_player)->callbackProcess(framesPerBuffer, (float *)outputBuffer);
 }
+
