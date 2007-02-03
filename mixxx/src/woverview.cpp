@@ -150,7 +150,7 @@ void WOverview::setData(QMemArray<char> *pWaveformSummary, QValueList<long> *pSe
             while (idxStart%3!=0 && idxStart>0)
                 idxStart--;
 
-            int idxEnd = (int)min((i+1)*xscale,m_pWaveformSummary->size());
+            int idxEnd = (int)math_min((i+1)*xscale,m_pWaveformSummary->size());
             while (idxEnd%3!=0 && idxEnd>0)
                 idxEnd--;
 
@@ -248,7 +248,7 @@ void WOverview::paintEvent(QPaintEvent *)
         // Draw virtual pos pointer
         if (m_iVirtualPos>=0)
         {
-            int dist = min(10,abs(m_iVirtualPos-m_iPos));
+            int dist = math_min(10,abs(m_iVirtualPos-m_iPos));
             //qDebug("dist %i",dist);
             paint.drawLine(m_iPos, height()/2,   m_iVirtualPos, height()/2);
             paint.drawLine(m_iPos, height()/2+1, m_iVirtualPos, height()/2+1);

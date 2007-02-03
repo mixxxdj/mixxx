@@ -168,7 +168,7 @@ void *ReaderExtractHFC::processChunk(const int _idx, const int start_idx, const 
         frameToDHFC+=frameNo;
 
     for (int i=frameFromDHFC; i<=frameToDHFC; i++)
-        dhfc[i%frameNo] = max(0.,hfc[(i+1)%frameNo]-hfc[i%frameNo]);
+        dhfc[i%frameNo] = math_max(0.,hfc[(i+1)%frameNo]-hfc[i%frameNo]);
 
     // Update vertex buffer by sending an event containing indexes of where to update.
     if (m_pVisualBuffer != 0)

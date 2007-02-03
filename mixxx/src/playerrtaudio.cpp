@@ -108,7 +108,7 @@ bool PlayerRtAudio::open()
     if (getChannelNo(name)>=0 && ((id==-1 && temp>=0) || (temp!=-1 && id==temp)))
     {
         id = temp;
-        iChannelMax = max(iChannelMax, getChannelNo(name));
+        iChannelMax = math_max(iChannelMax, getChannelNo(name));
         m_iMasterRigthCh = getChannelNo(name)-1;
     }
 
@@ -118,7 +118,7 @@ bool PlayerRtAudio::open()
     if (getChannelNo(name)>=0 && ((id==-1 && temp>=0) || (temp!=-1 && id==temp)))
     {
         id = temp;
-        iChannelMax = max(iChannelMax, getChannelNo(name));
+        iChannelMax = math_max(iChannelMax, getChannelNo(name));
         m_iHeadLeftCh = getChannelNo(name)-1;
     }
 
@@ -128,7 +128,7 @@ bool PlayerRtAudio::open()
     if (getChannelNo(name)>=0 && ((id==-1 && temp>=0) || (temp!=-1 && id==temp)))
     {
         id = temp;
-        iChannelMax = max(iChannelMax, getChannelNo(name));
+        iChannelMax = math_max(iChannelMax, getChannelNo(name));
         m_iHeadRightCh = getChannelNo(name)-1;
     }
 

@@ -273,7 +273,7 @@ CSAMPLE *EngineBufferScaleST::scale(double playpos, int buf_size, float *pBase, 
 
         {
 
-            int iLen = min(kiSoundTouchReadAheadLength, m_iReadAheadPos/2);
+            int iLen = math_min(kiSoundTouchReadAheadLength, m_iReadAheadPos/2);
 
             int j=0;
 
@@ -309,7 +309,7 @@ CSAMPLE *EngineBufferScaleST::scale(double playpos, int buf_size, float *pBase, 
 
         {
 
-            int iLen = min(kiSoundTouchReadAheadLength,(iBaseLength-m_iReadAheadPos)/2);
+            int iLen = math_min(kiSoundTouchReadAheadLength,(iBaseLength-m_iReadAheadPos)/2);
 
             m_pSoundTouch->putSamples((const SAMPLETYPE *)&pBase[m_iReadAheadPos], iLen);
 

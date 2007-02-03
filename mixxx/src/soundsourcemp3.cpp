@@ -341,7 +341,7 @@ unsigned SoundSourceMp3::read(unsigned long samples_wanted, const SAMPLE* _desti
 
 
 //         qDebug("synthlen %i, remain %i",Synth.pcm.length,(samples_wanted-Total_samples_decoded));
-        no = min(Synth.pcm.length,(samples_wanted-Total_samples_decoded)/2);
+        no = math_min(Synth.pcm.length,(samples_wanted-Total_samples_decoded)/2);
         for (int i=0; i<no; i++)
         {
             // Left channel
@@ -524,7 +524,7 @@ void SoundSourceMp3::getField(id3_tag *tag, const char *frameid, QString *str)
 int SoundSourceMp3::findFrame(int pos)
 {
     // Guess position of frame in m_qSeekList based on average frame size
-    MadSeekFrameType *temp = m_qSeekList.at(min(m_qSeekList.count()-1, (unsigned int)(pos/m_iAvgFrameSize)));
+    MadSeekFrameType *temp = m_qSeekList.at(math_min(m_qSeekList.count()-1, (unsigned int)(pos/m_iAvgFrameSize)));
 
 /*
     if (temp!=0)

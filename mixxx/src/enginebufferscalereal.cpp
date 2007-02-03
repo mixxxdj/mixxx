@@ -80,7 +80,7 @@ CSAMPLE *EngineBufferScaleReal::scale(double playpos, int buf_size, float *pBase
     
     if (m_iFragmentLength<iWantedFragmentLength)
     {
-        int iTo = (int)min(iWantedFragmentLength,m_iFragmentLength+buf_size*m_dTempo*m_dBaseRate);
+        int iTo = (int)math_min(iWantedFragmentLength,m_iFragmentLength+buf_size*m_dTempo*m_dBaseRate);
         for (int i=m_iFragmentLength; i<iTo; ++i)
             m_pFragmentBuffer[i] = pBase[((int)playpos+i)%iBaseLength];
         m_iFragmentLength = iTo;

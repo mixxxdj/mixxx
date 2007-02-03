@@ -64,6 +64,7 @@ win32 {
     message("Compiling with PortAudio drivers")
     contains(VISUALSTUDIO, 1) {
 	    LIBS += portaudio.lib
+	    HEADERS += $$WINLIBPATH/portaudio.h
     }
     contains(VISUALSTUDIO, 0) {
 		#Now insanely broken:

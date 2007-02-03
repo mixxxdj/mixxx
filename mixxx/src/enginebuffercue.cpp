@@ -71,7 +71,7 @@ void EngineBufferCue::slotControlCueSet(double v)
 	//qDebug("***slotControlCueSet!!");
     if (v)
     {
-        double cue = max(0.,round(m_pEngineBuffer->getAbsPlaypos()));
+        double cue = math_max(0.,round(m_pEngineBuffer->getAbsPlaypos()));
         if (!even((int)cue))
             cue--;
         cuePoint->set(cue);
@@ -143,7 +143,7 @@ void EngineBufferCue::slotControlCueSimple(double v)
     {
     	if (playButton->get() == 0.) //If playback is stopped, set a cue-point.
     	{
-        	double cue = max(0.,round(m_pEngineBuffer->getAbsPlaypos()));
+        	double cue = math_max(0.,round(m_pEngineBuffer->getAbsPlaypos()));
         	if (!even((int)cue))
         	    cue--;
         	cuePoint->set(cue);

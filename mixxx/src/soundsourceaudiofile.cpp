@@ -50,7 +50,7 @@ long SoundSourceAudioFile::seek(long filepos)
 //    if (filelength>0)
     {
 //	   qDebug("seek %i, len %i, channels %i",filepos,filelength,channels);
-//        filepos = max(0, min(filepos,filelength));
+//        filepos = math_max(0, math_min(filepos,filelength));
     
         if (afSeekFrame(fh, AF_DEFAULT_TRACK, (AFframecount) (filepos/2))<0)
             qDebug("libaudiofile: Seek ERR.");
