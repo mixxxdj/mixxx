@@ -67,12 +67,12 @@ inline double zap_denormal(double x)
     return (absx > 1e-15f && absx < 1e15f) ? x : 0.f;
 }
 
-#ifndef max
-#define max(a,b)            (((a) > (b)) ? (a) : (b))
+#ifndef math_max
+#define math_max(a,b)            (((a) > (b)) ? (a) : (b))
 #endif
 
-#ifndef min
-#define min(a,b)            (((a) < (b)) ? (a) : (b))
+#ifndef math_min
+#define math_min(a,b)            (((a) < (b)) ? (a) : (b))
 #endif
 
 #endif

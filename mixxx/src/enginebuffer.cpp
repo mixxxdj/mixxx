@@ -1084,10 +1084,10 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBuff
                     // Check if we need to set samples from a previos beat mark
                     if (audioBeatMark->get()==1. && m_iBeatMarkSamplesLeft>0)
                     {
-                        int to = (int)min(m_iBeatMarkSamplesLeft, idx-bufferpos_play);
+                        int to = (int)math_min(m_iBeatMarkSamplesLeft, idx-bufferpos_play);
                         for (int j=0; j<to; j++)
                             pOutput[j] = 30000.;
-                        m_iBeatMarkSamplesLeft = max(0,m_iBeatMarkSamplesLeft-to);
+                        m_iBeatMarkSamplesLeft = math_max(0,m_iBeatMarkSamplesLeft-to);
                     }
 
                     float *beatBuffer = (float *)readerbeat->getBasePtr();
@@ -1104,13 +1104,13 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBuff
                             if (audioBeatMark->get()==1.)
                             {
                                 int from = (int)(i-bufferpos_play);
-                                int to = (int)min(i-bufferpos_play+audioBeatMarkLen, idx-bufferpos_play);
+                                int to = (int)math_min(i-bufferpos_play+audioBeatMarkLen, idx-bufferpos_play);
                                 for (int j=from; j<to; j++)
                                     pOutput[j] = 30000.;
-                                m_iBeatMarkSamplesLeft = max(0,audioBeatMarkLen-(to-from));
+                                m_iBeatMarkSamplesLeft = math_max(0,audioBeatMarkLen-(to-from));
 
                                 //qDebug("audio beat mark");
-                                //qDebug("mark %i: %i-%i", i2/chunkSizeDiff, (int)max(0,i-bufferpos_play),(int)min(i-bufferpos_play+audioBeatMarkLen, idx));
+                                //qDebug("mark %i: %i-%i", i2/chunkSizeDiff, (int)math_max(0,i-bufferpos_play),(int)math_min(i-bufferpos_play+audioBeatMarkLen, idx));
                             }
 #ifdef __UNIX__
                             // PowerMate led
@@ -1199,7 +1199,7 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBuff
             {
                 if (file_length_old!=0.)
                 {
-                    double f = max(0.,min(filepos_play,file_length_old));
+                    double f = math_max(0.,math_min(filepos_play,file_length_old));
                     playposSlider->set(f/file_length_old);
                 
 //                         qDebug("f %f, len %li, %f",f,file_length_old,f/file_length_old);
@@ -1292,7 +1292,7 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBuff
     {
          //qDebug("ramp in");
         // Ramp from zero
-        int iLen = min(iBufferSize, kiRampLength);
+        int iLen = math_min(iBufferSize, kiRampLength);
         float fStep = pOutput[iLen-1]/(float)iLen;
         for (int i=0; i<iLen; ++i)
             pOutput[i] = fStep*i;
@@ -1318,7 +1318,7 @@ void EngineBuffer::rampOut(const CSAMPLE *pOut, int iBufferSize)
     int i=0;
     if (m_fLastSampleValue!=0.)
     {
-        int iLen = min(iBufferSize, kiRampLength);
+        int iLen = math_min(iBufferSize, kiRampLength);
         float fStep = m_fLastSampleValue/(float)iLen;
         while (i<iLen)
         {

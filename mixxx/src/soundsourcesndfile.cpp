@@ -57,7 +57,7 @@ long SoundSourceSndFile::seek(long filepos)
     unsigned long filepos2 = (unsigned long)filepos;
     if (filelength>0)
     {
-        filepos2 = min(filepos2,filelength);
+        filepos2 = math_min(filepos2,filelength);
         if (sf_seek(fh, (sf_count_t)filepos2/2, SEEK_SET) == -1)
             qDebug("libsndfile: Seek ERR.");
         return filepos2;

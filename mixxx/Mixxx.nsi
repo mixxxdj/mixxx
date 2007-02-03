@@ -54,6 +54,7 @@ Section "Mixxx (required)" SecMixxx
   File "..\mixxx-winlib\msvcp80.dll"
   File "..\mixxx-winlib\msvcr80.dll"
   File "..\mixxx-winlib\Microsoft.VC80.CRT.manifest"
+  File "..\mixxx-winlib\libmixxxasio.dll"
 
   ; And documentation, licence etc.
   File "Mixxx-Manual.pdf"

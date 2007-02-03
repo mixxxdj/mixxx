@@ -710,7 +710,7 @@ void ReaderExtractBeat::markBeat(int i)
     i = (i+getBufferSize())%getBufferSize();
     
     // Color is defined from confidence (between -0.2 and 0.3)
-    float v = (0.2+max(-0.2,min(confidence,0.3)))/0.5;
+    float v = (0.2+math_max(-0.2,math_min(confidence,0.3)))/0.5;
 
     if (v==0.)
         beatBuffer[i] = 0.0001f;

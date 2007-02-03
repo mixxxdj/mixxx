@@ -267,7 +267,7 @@ void ReaderExtractWave::getchunk(CSAMPLE rate)
         //qDebug("filepos %f",filepos_start_new);
         {
 //            qDebug("seek back");
-            file->seek((long int)max(0,filepos_start_new));
+            file->seek((long int)math_max(0,filepos_start_new));
             seek = true;
         }
         if ((filepos_end-filepos_start)/READCHUNKSIZE < (unsigned int)READCHUNK_NO)
@@ -312,7 +312,7 @@ void ReaderExtractWave::getchunk(CSAMPLE rate)
     {
         //qDebug("d1 filepos %i-%i",filepos_start,filepos_end);
         int i;
-        for (i=0; i<min((signed int)READCHUNKSIZE,-filepos_start); ++i)
+        for (i=0; i<math_min((signed int)READCHUNKSIZE,-filepos_start); ++i)
             temp[i] = 0;
         //qDebug("i %i",i);
         chunksize += filepos_start;

@@ -53,7 +53,7 @@ void EngineVuMeter::process(const CSAMPLE *pIn, const CSAMPLE *, const int iBuff
     if (m_iSamplesCalculated > (44100/UPDATE_RATE) )
     {
         m_fRMSvolume = log10(m_fRMSvolume/(m_iSamplesCalculated*1000)+1);
-        m_ctrlVuMeter->set( min(1.0, max(0.0, m_fRMSvolume)) ); 
+        m_ctrlVuMeter->set( math_min(1.0, math_max(0.0, m_fRMSvolume)) ); 
         // Reset calculation:
         m_iSamplesCalculated = 0;
         m_fRMSvolume = 0;

@@ -104,10 +104,10 @@ void WaveSummary::run()
             
             // Beat is extracted from the middle region of the sound file. Here the 
             // min and max indexes are the boundaries of that region.
-            int iBeatLength = min(liLengthSamples, kiBeatBlockNo*kiBlockSize);
+            int iBeatLength = math_min(liLengthSamples, kiBeatBlockNo*kiBlockSize);
             int iBeatBlockLength = iBeatLength/(kiBlockSize/2);
-            int iBeatPosStart = max(0,liLengthSamples/2-iBeatLength/2);
-            int iBeatPosEnd = min(liLengthSamples, iBeatPosStart+iBeatLength);
+            int iBeatPosStart = math_max(0,liLengthSamples/2-iBeatLength/2);
+            int iBeatPosEnd = math_min(liLengthSamples, iBeatPosStart+iBeatLength);
   
             // Allocate buffer for first derivative of the PSF vector          
             float *pDPsf = new float[iBeatBlockLength];
@@ -135,7 +135,7 @@ void WaveSummary::run()
 
             // Take derivate of PSF
             for (i=0; i<iBeatBlockLength-1; ++i)
-                pDPsf[i+1] = max(0.,pDPsf[i+1]-pDPsf[i]);
+                pDPsf[i+1] = math_max(0.,pDPsf[i+1]-pDPsf[i]);
             pDPsf[0] = 0.;
             
             // Construct list of peaks
@@ -185,7 +185,7 @@ void WaveSummary::run()
 		    conf = 0.0f;
 		}
 		
-		conf = max(0., min(1., conf));
+		conf = math_max(0., math_min(1., conf));
 		
 		if (conf > 0.75f)
 		    pTrackInfoObject->setBpmConfirm(true);
@@ -223,8 +223,8 @@ void WaveSummary::run()
                 }
 
                 // Store max and min amplitude
-                pData->at(i) = (char)max((iMin/256.),-127);
-                pData->at(i+1) = (char)min((iMax/256.),127);
+                pData->at(i) = (char)math_max((iMin/256.),-127);
+                pData->at(i+1) = (char)math_min((iMax/256.),127);
                 pData->at(i+2) = 0;
 
                 i+=3;
