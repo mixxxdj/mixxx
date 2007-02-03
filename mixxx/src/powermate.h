@@ -73,6 +73,7 @@ protected:
     Rotary *m_pRotary;
     /** Pointer to control objects connected to the PowerMate */
     ControlObject *m_pControlObjectRotary, *m_pControlObjectButton;
+    ControlObject *m_ctrlVuMeter; //A pointer to a VuMeter, so we can sync the powermate's LED with the music.
 };
 
 #endif
