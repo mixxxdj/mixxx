@@ -37,7 +37,6 @@ PowerMateLinux::PowerMateLinux() : PowerMate()
 {
     m_iFd = -1;
     m_iId = -1;
-    m_ctrlVuMeter = ControlObject::getControl(ConfigKey("[Channel2]","VuMeter"));
 }
 
 PowerMateLinux::~PowerMateLinux()

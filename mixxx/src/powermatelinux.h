@@ -59,9 +59,7 @@ protected:
     /** File set used in select() call */
     fd_set fdset;
     int oldv;
-    
-    ControlObject* m_LED;
-    ControlObject *m_ctrlVuMeter;
+   
 };
 
 #endif
