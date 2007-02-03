@@ -36,8 +36,7 @@
 // External Declarations
 //////////////////////////////////////////////////////////////////////
 
-extern AsioDrivers* asioDrivers;
-bool loadAsioDriver(char *name);
+__declspec(dllimport) AsioDrivers* asioDrivers;
 ASIOCallbacks asioCallbacks;
 DriverInfo asioDriverInfo;
 
@@ -465,7 +464,26 @@ void PlayerAsio::close()
 
 void PlayerAsio::setDefaults()
 {
-    //nothing yet
+    // Get list of interfaces
+    QStringList interfaces = getInterfaces();
+
+    // Set first interfaces to master left
+    QStringList::iterator it = interfaces.begin();
+    if (it!=interfaces.end())
+    {
+        m_pConfig->set(ConfigKey("[Soundcard]","DeviceMasterLeft"),ConfigValue((*it)));
+        m_pConfig->set(ConfigKey("[Soundcard]","DeviceMasterRight"),ConfigValue((*it)));
+    }
+    else
+	{
+        m_pConfig->set(ConfigKey("[Soundcard]","DeviceMasterLeft"),ConfigValue("None"));
+        m_pConfig->set(ConfigKey("[Soundcard]","DeviceMasterRight"),ConfigValue("None"));
+	}
+
+    // Set head left and right to none
+    m_pConfig->set(ConfigKey("[Soundcard]","DeviceHeadLeft"),ConfigValue("None"));
+    m_pConfig->set(ConfigKey("[Soundcard]","DeviceHeadRight"),ConfigValue("None"));
+
 }
 
 /*******

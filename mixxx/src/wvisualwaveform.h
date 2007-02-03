@@ -83,6 +83,8 @@ protected:
     QPtrList <VisualChannel> m_qlList;
     /** Colors */
     QColor colorBeat, colorSignal, colorHfc, colorMarker, colorFisheye, colorBack, colorCue;
+
+	bool m_painting;
 };
 
 #endif

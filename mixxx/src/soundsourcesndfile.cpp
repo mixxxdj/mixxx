@@ -111,7 +111,8 @@ int SoundSourceSndFile::ParseHeader( TrackInfoObject *Track )
 {
     SF_INFO info;
     QString location = Track->getLocation();
-    SNDFILE *fh = sf_open( location.latin1() ,SFM_READ, &info);
+    SNDFILE *fh = sf_open( location ,SFM_READ, &info);
+	//const char* err = sf_strerror(0);
     if (fh == 0 || !sf_format_check(&info))
     {
         qDebug("libsndfile: ERR opening file.");

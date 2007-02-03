@@ -1,3002 +1,2311 @@
-<?xml version="1.0" encoding="Windows-1252"?>
+<?xml version="1.0" encoding = "Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="8.00"
+	Version="7.00"
 	Name="mixxx"
-	ProjectGUID="{F2F38BF8-0169-3303-A1C9-E722C85E983B}"
-	>
+	ProjectGUID="{1F7A66A1-ABD0-3A95-A09E-733C3DED2680}">
 	<Platforms>
 		<Platform
-			Name="Win32"
-		/>
+			Name="Win32"/>
 	</Platforms>
-	<ToolFiles>
-	</ToolFiles>
 	<Configurations>
 		<Configuration
 			Name="Release|Win32"
 			OutputDirectory="."
-			IntermediateDirectory="Release\"
+			ATLMinimizesCRunTimeLibraryUsage="FALSE"
 			ConfigurationType="1"
-			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC70.vsprops"
-			UseOfMFC="0"
-			ATLMinimizesCRunTimeLibraryUsage="false"
-			>
-			<Tool
-				Name="VCPreBuildEventTool"
-			/>
-			<Tool
-				Name="VCCustomBuildTool"
-			/>
-			<Tool
-				Name="VCXMLDataGeneratorTool"
-			/>
-			<Tool
-				Name="VCWebServiceProxyGeneratorTool"
-			/>
-			<Tool
-				Name="VCMIDLTool"
-				WarningLevel="0"
-				DefaultCharType="0"
-				EnableErrorChecks="1"
-			/>
+			IntermediateDirectory="Release\"
+			UseOfMfc="0">
 			<Tool
 				Name="VCCLCompilerTool"
+				AdditionalIncludeDirectories="..\lib\vbrheadersdk,..\lib\kissfft,..\lib\soundtouch,..\lib\soundtouch,..\..\mixxx-winlib,..\lib,.,$(QTDIR)\include,.,D:\qt\mkspecs\win32-msvc2005"
 				AdditionalOptions="-Zm200 -GX -EHsc -EHsc -w34100 -w34189"
-				Optimization="2"
-				AdditionalIncludeDirectories="..\lib\portaudio-v18\pa_common,..\lib\rtaudio,..\lib\vbrheadersdk,..\lib\kissfft,..\lib\soundtouch,..\lib\soundtouch,..\..\mixxx-winlib,..\lib,.,$(QTDIR)\include,.,D:\qt\mkspecs\win32-msvc2005"
-				PreprocessorDefinitions="_WINDOWS,UNICODE,WIN32,__PORTAUDIO__,__RTAUDIO__,__WINDOWS_DS__,__WINMIDI__,__SNDFILE__,__WIN__,TEMPORAL,SETTINGS_FILE=\&quot;mixxx.cfg\&quot;,TRACK_FILE=\&quot;mixxxtrack.xml\&quot;,QT_THREAD_SUPPORT,NDEBUG,QT_NO_DEBUG"
-				GeneratePreprocessedFile="0"
-				MinimalRebuild="true"
-				ExceptionHandling="1"
-				RuntimeLibrary="0"
-				BufferSecurityCheck="false"
-				RuntimeTypeInfo="true"
 				AssemblerListingLocation="Release\"
-				ObjectFile="Release\"
-				ProgramDataBaseFileName=".\"
-				WarningLevel="3"
-				SuppressStartupBanner="true"
+				BufferSecurityCheck="FALSE"
 				DebugInformationFormat="3"
 				DisableSpecificWarnings="4996"
-			/>
+				ExceptionHandling="TRUE"
+				GeneratePreprocessedFile="0"
+				MinimalRebuild="TRUE"
+				ObjectFile="Release\"
+				Optimization ="2"
+				PreprocessorDefinitions="_WINDOWS,UNICODE,WIN32,__PORTAUDIO__,__WINMIDI__,__SNDFILE__,__WIN__,TEMPORAL,SETTINGS_FILE=\&quot;mixxx.cfg\&quot;,TRACK_FILE=\&quot;mixxxtrack.xml\&quot;,QT_THREAD_SUPPORT,NDEBUG,QT_NO_DEBUG"
+				ProgramDataBaseFileName=".\"
+				RuntimeLibrary="3"
+				RuntimeTypeInfo="TRUE"
+				SuppressStartupBanner="TRUE"
+				WarningLevel="3"/>
 			<Tool
-				Name="VCManagedResourceCompilerTool"
-			/>
-			<Tool
-				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="NDEBUG"
-			/>
-			<Tool
-				Name="VCPreLinkEventTool"
-			/>
+				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLinkerTool"
-				IgnoreImportLibrary="true"
-				AdditionalDependencies="qt-mt.lib qtmain.lib opengl32.lib glu32.lib winmm.lib PAStaticWMME.lib dsound.lib libmad-release.lib libid3tag-release.lib libsndfile.lib vorbisfile_static.lib vorbis_static.lib ogg_static.lib kernel32.lib user32.lib gdi32.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib imm32.lib wsock32.lib winspool.lib delayimp.lib"
-				ShowProgress="1"
-				OutputFile="Release\\mixxx.exe"
-				SuppressStartupBanner="true"
+				AdditionalDependencies="qt-mt.lib qtmain.lib opengl32.lib glu32.lib portaudio.lib libmad-release.lib libid3tag-release.lib libsndfile.lib vorbisfile_static.lib vorbis_static.lib ogg_static.lib kernel32.lib user32.lib gdi32.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib imm32.lib winmm.lib wsock32.lib winspool.lib delayimp.lib"
 				AdditionalLibraryDirectories="../../mixxx-winlib,$(QTDIR)\lib"
-				IgnoreDefaultLibraryNames="library,libcd,libcmt,libc"
 				DelayLoadDLLs="opengl32.dll,comdlg32.dll,oleaut32.dll,winmm.dll,wsock32.dll,winspool.dll"
-				GenerateDebugInformation="false"
+				GenerateDebugInformation="FALSE"
+				IgnoreDefaultLibraryNames="library,libcd,libcmt,libc"
+				IgnoreImportLibrary="TRUE"
+				OutputFile="Release\\mixxx.exe"
 				ProgramDatabaseFile=""
+				ShowProgress="1"
 				SubSystem="2"
-			/>
+				SuppressStartupBanner="TRUE"/>
 			<Tool
-				Name="VCALinkTool"
-			/>
+				Name="VCMIDLTool"
+				DefaultCharType="0"
+				EnableErrorChecks="1"
+				WarningLevel="0"/>
 			<Tool
-				Name="VCManifestTool"
-			/>
+				Name="VCPostBuildEventTool"/>
 			<Tool
-				Name="VCXDCMakeTool"
-			/>
+				Name="VCPreBuildEventTool"/>
 			<Tool
-				Name="VCBscMakeTool"
-			/>
+				Name="VCPreLinkEventTool"/>
 			<Tool
-				Name="VCFxCopTool"
-			/>
-			<Tool
-				Name="VCAppVerifierTool"
-			/>
-			<Tool
-				Name="VCWebDeploymentTool"
-			/>
-			<Tool
-				Name="VCPostBuildEventTool"
-			/>
+				Name="VCResourceCompilerTool"
+				PreprocessorDefinitions="NDEBUG"/>
 		</Configuration>
 		<Configuration
 			Name="Debug|Win32"
 			OutputDirectory="."
-			IntermediateDirectory="$(ConfigurationName)"
+			ATLMinimizesCRunTimeLibraryUsage="FALSE"
 			ConfigurationType="1"
-			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC70.vsprops"
-			UseOfMFC="0"
-			ATLMinimizesCRunTimeLibraryUsage="false"
-			>
-			<Tool
-				Name="VCPreBuildEventTool"
-			/>
-			<Tool
-				Name="VCCustomBuildTool"
-			/>
-			<Tool
-				Name="VCXMLDataGeneratorTool"
-			/>
-			<Tool
-				Name="VCWebServiceProxyGeneratorTool"
-			/>
-			<Tool
-				Name="VCMIDLTool"
-				WarningLevel="0"
-				DefaultCharType="0"
-				EnableErrorChecks="1"
-			/>
+			UseOfMfc="0">
 			<Tool
 				Name="VCCLCompilerTool"
+				AdditionalIncludeDirectories="..\lib\vbrheadersdk,..\lib\kissfft,..\lib\soundtouch,..\lib\soundtouch,..\..\mixxx-winlib,..\lib,.,$(QTDIR)\include,.,D:\qt\mkspecs\win32-msvc2005"
 				AdditionalOptions="-Zm200 -GX -EHsc -EHsc -w34100 -w34189"
-				Optimization="4"
-				AdditionalIncludeDirectories="..\lib\portaudio-v18\pa_common,..\lib\rtaudio,..\lib\vbrheadersdk,..\lib\kissfft,..\lib\soundtouch,..\lib\soundtouch,..\..\mixxx-winlib,..\lib,.,$(QTDIR)\include,.,D:\qt\mkspecs\win32-msvc2005"
-				PreprocessorDefinitions="_WINDOWS,UNICODE,WIN32,__PORTAUDIO__,__RTAUDIO__,__WINDOWS_DS__,__WINMIDI__,__SNDFILE__,__WIN__,TEMPORAL,SETTINGS_FILE=\&quot;mixxx.cfg\&quot;,TRACK_FILE=\&quot;mixxxtrack.xml\&quot;,QT_THREAD_SUPPORT"
-				GeneratePreprocessedFile="0"
-				MinimalRebuild="true"
-				ExceptionHandling="1"
-				RuntimeLibrary="3"
-				BufferSecurityCheck="false"
-				RuntimeTypeInfo="true"
 				AssemblerListingLocation=".\"
-				ObjectFile=".\"
-				ProgramDataBaseFileName=".\"
-				WarningLevel="3"
-				SuppressStartupBanner="true"
+				BufferSecurityCheck="FALSE"
 				DebugInformationFormat="3"
 				DisableSpecificWarnings="4996"
-			/>
+				ExceptionHandling="TRUE"
+				GeneratePreprocessedFile="0"
+				MinimalRebuild="TRUE"
+				ObjectFile=".\"
+				Optimization ="4"
+				PreprocessorDefinitions="_WINDOWS,UNICODE,WIN32,__PORTAUDIO__,__WINMIDI__,__SNDFILE__,__WIN__,TEMPORAL,SETTINGS_FILE=\&quot;mixxx.cfg\&quot;,TRACK_FILE=\&quot;mixxxtrack.xml\&quot;,QT_THREAD_SUPPORT"
+				ProgramDataBaseFileName=".\"
+				RuntimeLibrary="3"
+				RuntimeTypeInfo="TRUE"
+				SuppressStartupBanner="TRUE"
+				WarningLevel="3"/>
 			<Tool
-				Name="VCManagedResourceCompilerTool"
-			/>
-			<Tool
-				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="NDEBUG"
-			/>
-			<Tool
-				Name="VCPreLinkEventTool"
-			/>
+				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLinkerTool"
-				IgnoreImportLibrary="true"
-				AdditionalDependencies="qt-mt.lib qtmain.lib opengl32.lib glu32.lib winmm.lib PAStaticWMME.lib dsound.lib libmad-release.lib libid3tag-release.lib libsndfile.lib vorbisfile_static.lib vorbis_static.lib ogg_static.lib kernel32.lib user32.lib gdi32.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib imm32.lib wsock32.lib winspool.lib delayimp.lib"
-				ShowProgress="1"
-				OutputFile=".\mixxx.exe"
-				SuppressStartupBanner="true"
+				AdditionalDependencies="qt-mt.lib qtmain.lib opengl32.lib glu32.lib portaudio.lib libmad-release.lib libid3tag-release.lib libsndfile.lib vorbisfile_static.lib vorbis_static.lib ogg_static.lib kernel32.lib user32.lib gdi32.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib imm32.lib winmm.lib wsock32.lib winspool.lib delayimp.lib"
 				AdditionalLibraryDirectories="../../mixxx-winlib,$(QTDIR)\lib"
-				IgnoreDefaultLibraryNames="library,libcd,libcmt,libc"
 				DelayLoadDLLs="opengl32.dll"
-				GenerateDebugInformation="true"
+				GenerateDebugInformation="TRUE"
+				IgnoreDefaultLibraryNames="library,libcd,libcmt,libc"
+				IgnoreImportLibrary="TRUE"
+				OutputFile=".\mixxx.exe"
 				ProgramDatabaseFile=""
+				ShowProgress="1"
 				SubSystem="2"
-			/>
+				SuppressStartupBanner="TRUE"/>
 			<Tool
-				Name="VCALinkTool"
-			/>
+				Name="VCMIDLTool"
+				DefaultCharType="0"
+				EnableErrorChecks="1"
+				WarningLevel="0"/>
 			<Tool
-				Name="VCManifestTool"
-			/>
+				Name="VCPostBuildEventTool"/>
 			<Tool
-				Name="VCXDCMakeTool"
-			/>
+				Name="VCPreBuildEventTool"/>
 			<Tool
-				Name="VCBscMakeTool"
-			/>
+				Name="VCPreLinkEventTool"/>
 			<Tool
-				Name="VCFxCopTool"
-			/>
-			<Tool
-				Name="VCAppVerifierTool"
-			/>
-			<Tool
-				Name="VCWebDeploymentTool"
-			/>
-			<Tool
-				Name="VCPostBuildEventTool"
-			/>
+				Name="VCResourceCompilerTool"
+				PreprocessorDefinitions="NDEBUG"/>
 		</Configuration>
 	</Configurations>
-	<References>
-	</References>
 	<Files>
 		<Filter
 			Name="Source Files"
-			Filter="cpp;c;cxx;rc;def;r;odl;idl;hpj;bat"
-			>
+			Filter="cpp;c;cxx;rc;def;r;odl;idl;hpj;bat">
 			<File
-				RelativePath="..\lib\soundtouch\3dnow_win.cpp"
-				>
+				RelativePath="..\lib\soundtouch\3dnow_win.cpp">
 			</File>
 			<File
-				RelativePath="..\lib\soundtouch\AAFilter.cpp"
-				>
+				RelativePath="..\lib\soundtouch\AAFilter.cpp">
 			</File>
 			<File
-				RelativePath="configobject.cpp"
-				>
+				RelativePath="..\lib\soundtouch\FIFOSampleBuffer.cpp">
 			</File>
 			<File
-				RelativePath="controlbeat.cpp"
-				>
+				RelativePath="..\lib\soundtouch\FIRFilter.cpp">
 			</File>
 			<File
-				RelativePath="controlevent.cpp"
-				>
+				RelativePath="..\lib\soundtouch\RateTransposer.cpp">
 			</File>
 			<File
-				RelativePath="controllogpotmeter.cpp"
-				>
+				RelativePath="..\lib\soundtouch\SoundTouch.cpp">
 			</File>
 			<File
-				RelativePath="controlnull.cpp"
-				>
+				RelativePath="..\lib\soundtouch\TDStretch.cpp">
 			</File>
 			<File
-				RelativePath="controlobject.cpp"
-				>
+				RelativePath="configobject.cpp">
 			</File>
 			<File
-				RelativePath="controlobjectthread.cpp"
-				>
+				RelativePath="controlbeat.cpp">
 			</File>
 			<File
-				RelativePath="controlobjectthreadmain.cpp"
-				>
+				RelativePath="controlevent.cpp">
 			</File>
 			<File
-				RelativePath="controlobjectthreadwidget.cpp"
-				>
+				RelativePath="controllogpotmeter.cpp">
 			</File>
 			<File
-				RelativePath="controlpotmeter.cpp"
-				>
+				RelativePath="controlnull.cpp">
 			</File>
 			<File
-				RelativePath="controlpushbutton.cpp"
-				>
+				RelativePath="controlobject.cpp">
 			</File>
 			<File
-				RelativePath="controlttrotary.cpp"
-				>
+				RelativePath="controlobjectthread.cpp">
 			</File>
 			<File
-				RelativePath="..\lib\soundtouch\cpu_detect_x86_win.cpp"
-				>
+				RelativePath="controlobjectthreadmain.cpp">
 			</File>
 			<File
-				RelativePath="dlgprefcontrols.cpp"
-				>
+				RelativePath="controlobjectthreadwidget.cpp">
 			</File>
 			<File
-				RelativePath="dlgpreferences.cpp"
-				>
+				RelativePath="controlpotmeter.cpp">
 			</File>
 			<File
-				RelativePath="dlgprefmidi.cpp"
-				>
+				RelativePath="controlpushbutton.cpp">
 			</File>
 			<File
-				RelativePath="dlgprefplaylist.cpp"
-				>
+				RelativePath="controlttrotary.cpp">
 			</File>
 			<File
-				RelativePath="dlgprefsound.cpp"
-				>
+				RelativePath="..\lib\soundtouch\cpu_detect_x86_win.cpp">
 			</File>
 			<File
-				RelativePath="..\lib\vbrheadersdk\dxhead.c"
-				>
+				RelativePath="dlgprefcontrols.cpp">
 			</File>
 			<File
-				RelativePath="enginebeatseek.cpp"
-				>
+				RelativePath="dlgpreferences.cpp">
 			</File>
 			<File
-				RelativePath="enginebuffer.cpp"
-				>
+				RelativePath="dlgprefmidi.cpp">
 			</File>
 			<File
-				RelativePath="enginebuffercue.cpp"
-				>
+				RelativePath="dlgprefplaylist.cpp">
 			</File>
 			<File
-				RelativePath="enginebufferscale.cpp"
-				>
+				RelativePath="dlgprefsound.cpp">
 			</File>
 			<File
-				RelativePath="enginebufferscalereal.cpp"
-				>
+				RelativePath="..\lib\vbrheadersdk\dxhead.c">
 			</File>
 			<File
-				RelativePath="enginebufferscalest.cpp"
-				>
+				RelativePath="enginebeatseek.cpp">
 			</File>
 			<File
-				RelativePath="enginechannel.cpp"
-				>
+				RelativePath="enginebuffer.cpp">
 			</File>
 			<File
-				RelativePath="engineclipping.cpp"
-				>
+				RelativePath="enginebuffercue.cpp">
 			</File>
 			<File
-				RelativePath="enginedelay.cpp"
-				>
+				RelativePath="enginebufferscale.cpp">
 			</File>
 			<File
-				RelativePath="enginefilterblock.cpp"
-				>
+				RelativePath="enginebufferscalereal.cpp">
 			</File>
 			<File
-				RelativePath="enginefilteriir.cpp"
-				>
+				RelativePath="enginebufferscalest.cpp">
 			</File>
 			<File
-				RelativePath="engineflanger.cpp"
-				>
+				RelativePath="enginechannel.cpp">
 			</File>
 			<File
-				RelativePath="enginemaster.cpp"
-				>
+				RelativePath="engineclipping.cpp">
 			</File>
 			<File
-				RelativePath="engineobject.cpp"
-				>
+				RelativePath="enginedelay.cpp">
 			</File>
 			<File
-				RelativePath="enginepregain.cpp"
-				>
+				RelativePath="enginefilterblock.cpp">
 			</File>
 			<File
-				RelativePath="enginespectralfwd.cpp"
-				>
+				RelativePath="enginefilteriir.cpp">
 			</File>
 			<File
-				RelativePath="enginetemporal.cpp"
-				>
+				RelativePath="engineflanger.cpp">
 			</File>
 			<File
-				RelativePath="enginevolume.cpp"
-				>
+				RelativePath="enginemaster.cpp">
 			</File>
 			<File
-				RelativePath="enginevumeter.cpp"
-				>
+				RelativePath="engineobject.cpp">
 			</File>
 			<File
-				RelativePath="..\lib\soundtouch\FIFOSampleBuffer.cpp"
-				>
+				RelativePath="enginepregain.cpp">
 			</File>
 			<File
-				RelativePath="..\lib\soundtouch\FIRFilter.cpp"
-				>
+				RelativePath="enginespectralfwd.cpp">
 			</File>
 			<File
-				RelativePath="hercules.cpp"
-				>
+				RelativePath="enginetemporal.cpp">
 			</File>
 			<File
-				RelativePath="input.cpp"
-				>
+				RelativePath="enginevolume.cpp">
 			</File>
 			<File
-				RelativePath="joystick.cpp"
-				>
+				RelativePath="enginevumeter.cpp">
 			</File>
 			<File
-				RelativePath="..\lib\kissfft\kiss_fft.c"
-				>
+				RelativePath="hercules.cpp">
 			</File>
 			<File
-				RelativePath="..\lib\kissfft\kiss_fftr.c"
-				>
+				RelativePath="input.cpp">
 			</File>
 			<File
-				RelativePath="visual\light.cpp"
-				>
+				RelativePath="joystick.cpp">
 			</File>
 			<File
-				RelativePath="log.cpp"
-				>
+				RelativePath="..\lib\kissfft\kiss_fft.c">
 			</File>
 			<File
-				RelativePath="main.cpp"
-				>
+				RelativePath="..\lib\kissfft\kiss_fftr.c">
 			</File>
 			<File
-				RelativePath="visual\material.cpp"
-				>
+				RelativePath="visual\light.cpp">
 			</File>
 			<File
-				RelativePath="mathstuff.cpp"
-				>
+				RelativePath="log.cpp">
 			</File>
 			<File
-				RelativePath="midiobject.cpp"
-				>
+				RelativePath="main.cpp">
 			</File>
 			<File
-				RelativePath="midiobjectnull.cpp"
-				>
+				RelativePath="visual\material.cpp">
 			</File>
 			<File
-				RelativePath="midiobjectwin.cpp"
-				>
+				RelativePath="mathstuff.cpp">
 			</File>
 			<File
-				RelativePath="mixxx.cpp"
-				>
+				RelativePath="midiobject.cpp">
 			</File>
 			<File
-				RelativePath="mixxxkeyboard.cpp"
-				>
+				RelativePath="midiobjectnull.cpp">
 			</File>
 			<File
-				RelativePath="mixxxmenuplaylists.cpp"
-				>
+				RelativePath="midiobjectwin.cpp">
 			</File>
 			<File
-				RelativePath="mixxxsocketclient.cpp"
-				>
+				RelativePath="mixxx.cpp">
 			</File>
 			<File
-				RelativePath="mixxxsocketserver.cpp"
-				>
+				RelativePath="mixxxkeyboard.cpp">
 			</File>
 			<File
-				RelativePath="mixxxview.cpp"
-				>
+				RelativePath="mixxxmenuplaylists.cpp">
 			</File>
 			<File
-				RelativePath="..\lib\soundtouch\mmx_win.cpp"
-				>
+				RelativePath="mixxxsocketclient.cpp">
 			</File>
 			<File
-				RelativePath="mouse.cpp"
-				>
+				RelativePath="mixxxsocketserver.cpp">
 			</File>
 			<File
-				RelativePath="parser.cpp"
-				>
+				RelativePath="mixxxview.cpp">
 			</File>
 			<File
-				RelativePath="parserm3u.cpp"
-				>
+				RelativePath="..\lib\soundtouch\mmx_win.cpp">
 			</File>
 			<File
-				RelativePath="parserpls.cpp"
-				>
+				RelativePath="mouse.cpp">
 			</File>
 			<File
-				RelativePath="peaklist.cpp"
-				>
+				RelativePath="parser.cpp">
 			</File>
 			<File
-				RelativePath="visual\pickable.cpp"
-				>
+				RelativePath="parserm3u.cpp">
 			</File>
 			<File
-				RelativePath="visual\picking.cpp"
-				>
+				RelativePath="parserpls.cpp">
 			</File>
 			<File
-				RelativePath="player.cpp"
-				>
+				RelativePath="peaklist.cpp">
 			</File>
 			<File
-				RelativePath="playerportaudio.cpp"
-				>
+				RelativePath="visual\pickable.cpp">
 			</File>
 			<File
-				RelativePath="playerproxy.cpp"
-				>
+				RelativePath="visual\picking.cpp">
 			</File>
 			<File
-				RelativePath="playerrtaudio.cpp"
-				>
+				RelativePath="player.cpp">
 			</File>
 			<File
-				RelativePath="powermate.cpp"
-				>
+				RelativePath="playerportaudio.cpp">
 			</File>
 			<File
-				RelativePath="probabilityvector.cpp"
-				>
+				RelativePath="playerproxy.cpp">
 			</File>
 			<File
-				RelativePath="..\lib\soundtouch\RateTransposer.cpp"
-				>
+				RelativePath="powermate.cpp">
 			</File>
 			<File
-				RelativePath="reader.cpp"
-				>
+				RelativePath="probabilityvector.cpp">
 			</File>
 			<File
-				RelativePath="readerevent.cpp"
-				>
+				RelativePath="reader.cpp">
 			</File>
 			<File
-				RelativePath="readerextract.cpp"
-				>
+				RelativePath="readerevent.cpp">
 			</File>
 			<File
-				RelativePath="readerextractwave.cpp"
-				>
+				RelativePath="readerextract.cpp">
 			</File>
 			<File
-				RelativePath="rotary.cpp"
-				>
+				RelativePath="readerextractwave.cpp">
 			</File>
 			<File
-				RelativePath="..\lib\rtaudio\RtAudio.cpp"
-				>
+				RelativePath="rotary.cpp">
 			</File>
 			<File
-				RelativePath="rtthread.cpp"
-				>
+				RelativePath="rtthread.cpp">
 			</File>
 			<File
-				RelativePath="soundsource.cpp"
-				>
+				RelativePath="soundsource.cpp">
 			</File>
 			<File
-				RelativePath="soundsourcemp3.cpp"
-				>
+				RelativePath="soundsourcemp3.cpp">
 			</File>
 			<File
-				RelativePath="soundsourceoggvorbis.cpp"
-				>
+				RelativePath="soundsourceoggvorbis.cpp">
 			</File>
 			<File
-				RelativePath="soundsourceproxy.cpp"
-				>
+				RelativePath="soundsourceproxy.cpp">
 			</File>
 			<File
-				RelativePath="soundsourcesndfile.cpp"
-				>
+				RelativePath="soundsourcesndfile.cpp">
 			</File>
 			<File
-				RelativePath="..\lib\soundtouch\SoundTouch.cpp"
-				>
+				RelativePath="..\lib\soundtouch\sse_win.cpp">
 			</File>
 			<File
-				RelativePath="..\lib\soundtouch\sse_win.cpp"
-				>
+				RelativePath="visual\texture.cpp">
 			</File>
 			<File
-				RelativePath="..\lib\soundtouch\TDStretch.cpp"
-				>
+				RelativePath="track.cpp">
 			</File>
 			<File
-				RelativePath="visual\texture.cpp"
-				>
+				RelativePath="trackcollection.cpp">
 			</File>
 			<File
-				RelativePath="track.cpp"
-				>
+				RelativePath="trackimporter.cpp">
 			</File>
 			<File
-				RelativePath="trackcollection.cpp"
-				>
+				RelativePath="trackinfoobject.cpp">
 			</File>
 			<File
-				RelativePath="trackimporter.cpp"
-				>
+				RelativePath="trackplaylist.cpp">
 			</File>
 			<File
-				RelativePath="trackinfoobject.cpp"
-				>
+				RelativePath="trackplaylistlist.cpp">
 			</File>
 			<File
-				RelativePath="trackplaylist.cpp"
-				>
+				RelativePath="visual\visualbackplane.cpp">
 			</File>
 			<File
-				RelativePath="trackplaylistlist.cpp"
-				>
+				RelativePath="visual\visualbox.cpp">
 			</File>
 			<File
-				RelativePath="visual\visualbackplane.cpp"
-				>
+				RelativePath="visual\visualbuffer.cpp">
 			</File>
 			<File
-				RelativePath="visual\visualbox.cpp"
-				>
+				RelativePath="visual\visualbuffermarks.cpp">
 			</File>
 			<File
-				RelativePath="visual\visualbuffer.cpp"
-				>
+				RelativePath="visual\visualbuffersignal.cpp">
 			</File>
 			<File
-				RelativePath="visual\visualbuffermarks.cpp"
-				>
+				RelativePath="visual\visualbuffersignalhfc.cpp">
 			</File>
 			<File
-				RelativePath="visual\visualbuffersignal.cpp"
-				>
+				RelativePath="visual\visualbuffertemporal.cpp">
 			</File>
 			<File
-				RelativePath="visual\visualbuffersignalhfc.cpp"
-				>
+				RelativePath="visual\visualchannel.cpp">
 			</File>
 			<File
-				RelativePath="visual\visualbuffertemporal.cpp"
-				>
+				RelativePath="visual\visualcontroller.cpp">
 			</File>
 			<File
-				RelativePath="visual\visualchannel.cpp"
-				>
+				RelativePath="visual\visualdisplay.cpp">
 			</File>
 			<File
-				RelativePath="visual\visualcontroller.cpp"
-				>
+				RelativePath="visual\visualdisplaybuffer.cpp">
 			</File>
 			<File
-				RelativePath="visual\visualdisplay.cpp"
-				>
+				RelativePath="visual\visualobject.cpp">
 			</File>
 			<File
-				RelativePath="visual\visualdisplaybuffer.cpp"
-				>
+				RelativePath="wavesegmentation.cpp">
 			</File>
 			<File
-				RelativePath="visual\visualobject.cpp"
-				>
+				RelativePath="wavesummary.cpp">
 			</File>
 			<File
-				RelativePath="wavesegmentation.cpp"
-				>
+				RelativePath="wdisplay.cpp">
 			</File>
 			<File
-				RelativePath="wavesummary.cpp"
-				>
+				RelativePath="windowkaiser.cpp">
 			</File>
 			<File
-				RelativePath="wdisplay.cpp"
-				>
+				RelativePath="wknob.cpp">
 			</File>
 			<File
-				RelativePath="windowkaiser.cpp"
-				>
+				RelativePath="wlabel.cpp">
 			</File>
 			<File
-				RelativePath="wknob.cpp"
-				>
+				RelativePath="wnumber.cpp">
 			</File>
 			<File
-				RelativePath="wlabel.cpp"
-				>
+				RelativePath="wnumberbpm.cpp">
 			</File>
 			<File
-				RelativePath="wnumber.cpp"
-				>
+				RelativePath="wnumberpos.cpp">
 			</File>
 			<File
-				RelativePath="wnumberbpm.cpp"
-				>
+				RelativePath="wnumberrate.cpp">
 			</File>
 			<File
-				RelativePath="wnumberpos.cpp"
-				>
+				RelativePath="woverview.cpp">
 			</File>
 			<File
-				RelativePath="wnumberrate.cpp"
-				>
+				RelativePath="wpixmapstore.cpp">
 			</File>
 			<File
-				RelativePath="woverview.cpp"
-				>
+				RelativePath="wpushbutton.cpp">
 			</File>
 			<File
-				RelativePath="wpixmapstore.cpp"
-				>
+				RelativePath="wslider.cpp">
 			</File>
 			<File
-				RelativePath="wpushbutton.cpp"
-				>
+				RelativePath="wslidercomposed.cpp">
 			</File>
 			<File
-				RelativePath="wslider.cpp"
-				>
+				RelativePath="wtracktable.cpp">
 			</File>
 			<File
-				RelativePath="wslidercomposed.cpp"
-				>
+				RelativePath="wtracktableitem.cpp">
 			</File>
 			<File
-				RelativePath="wtracktable.cpp"
-				>
+				RelativePath="wtreeitem.cpp">
 			</File>
 			<File
-				RelativePath="wtracktableitem.cpp"
-				>
+				RelativePath="wtreeitemdir.cpp">
 			</File>
 			<File
-				RelativePath="wtreeitem.cpp"
-				>
+				RelativePath="wtreeitemfile.cpp">
 			</File>
 			<File
-				RelativePath="wtreeitemdir.cpp"
-				>
+				RelativePath="wtreeitemplaylist.cpp">
 			</File>
 			<File
-				RelativePath="wtreeitemfile.cpp"
-				>
+				RelativePath="wtreeitemplaylistroot.cpp">
 			</File>
 			<File
-				RelativePath="wtreeitemplaylist.cpp"
-				>
+				RelativePath="wtreeview.cpp">
 			</File>
 			<File
-				RelativePath="wtreeitemplaylistroot.cpp"
-				>
+				RelativePath="wvisualsimple.cpp">
 			</File>
 			<File
-				RelativePath="wtreeview.cpp"
-				>
+				RelativePath="wvisualwaveform.cpp">
 			</File>
 			<File
-				RelativePath="wvisualsimple.cpp"
-				>
+				RelativePath="wvumeter.cpp">
 			</File>
 			<File
-				RelativePath="wvisualwaveform.cpp"
-				>
+				RelativePath="wwidget.cpp">
 			</File>
 			<File
-				RelativePath="wvumeter.cpp"
-				>
-			</File>
-			<File
-				RelativePath="wwidget.cpp"
-				>
-			</File>
-			<File
-				RelativePath="xmlparse.cpp"
-				>
+				RelativePath="xmlparse.cpp">
 			</File>
 		</Filter>
 		<Filter
 			Name="Header Files"
-			Filter="h;hpp;hxx;hm;inl"
-			>
+			Filter="h;hpp;hxx;hm;inl">
 			<File
-				RelativePath="..\lib\kissfft\_kiss_fft_guts.h"
-				>
+				RelativePath="..\lib\soundtouch\AAFilter.h">
 			</File>
 			<File
-				RelativePath="..\lib\soundtouch\AAFilter.h"
-				>
+				RelativePath="..\lib\soundtouch\FIFOSampleBuffer.h">
 			</File>
 			<File
-				RelativePath="..\lib\soundtouch\config.h"
-				>
+				RelativePath="..\lib\soundtouch\FIFOSamplePipe.h">
 			</File>
 			<File
-				RelativePath="configobject.h"
-				>
+				RelativePath="..\lib\soundtouch\FIRFilter.h">
 			</File>
 			<File
-				RelativePath="controlbeat.h"
-				>
+				RelativePath="..\lib\soundtouch\RateTransposer.h">
 			</File>
 			<File
-				RelativePath="controlevent.h"
-				>
+				RelativePath="..\lib\soundtouch\STTypes.h">
 			</File>
 			<File
-				RelativePath="controllogpotmeter.h"
-				>
+				RelativePath="..\lib\soundtouch\SoundTouch.h">
+			</File>
+			<File
+				RelativePath="..\lib\soundtouch\TDStretch.h">
+			</File>
+			<File
+				RelativePath="..\lib\kissfft\_kiss_fft_guts.h">
+			</File>
+			<File
+				RelativePath="..\lib\soundtouch\config.h">
+			</File>
+			<File
+				RelativePath="configobject.h">
+			</File>
+			<File
+				RelativePath="controlbeat.h">
+			</File>
+			<File
+				RelativePath="controlevent.h">
+			</File>
+			<File
+				RelativePath="controllogpotmeter.h">
 				<FileConfiguration
-					Name="Release|Win32"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-						Description="Moc&apos;ing controllogpotmeter.h..."
-						CommandLine="$(QTDIR)\bin\moc.exe controllogpotmeter.h -o moc_controllogpotmeter.cpp&#x0D;&#x0A;"
-						AdditionalDependencies="$(QTDIR)\bin\moc.exe"
-						Outputs="moc_controllogpotmeter.cpp"
-					/>
+					Name="Release|Win32">
+			<Tool
+				Name="VCCustomBuildTool"
+				AdditionalDependencies="$(QTDIR)\bin\moc.exe"
+				CommandLine="$(QTDIR)\bin\moc.exe controllogpotmeter.h -o moc_controllogpotmeter.cpp"
+				Description="Moc&apos;ing controllogpotmeter.h..."
+				Outputs="moc_controllogpotmeter.cpp"/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Debug|Win32"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-						Description="Moc&apos;ing controllogpotmeter.h..."
-						CommandLine="$(QTDIR)\bin\moc.exe controllogpotmeter.h -o moc_controllogpotmeter.cpp&#x0D;&#x0A;"
-						AdditionalDependencies="$(QTDIR)\bin\moc.exe"
-						Outputs="moc_controllogpotmeter.cpp"
-					/>
+					Name="Debug|Win32">
+			<Tool
+				Name="VCCustomBuildTool"
+				AdditionalDependencies="$(QTDIR)\bin\moc.exe"
+				CommandLine="$(QTDIR)\bin\moc.exe controllogpotmeter.h -o moc_controllogpotmeter.cpp"
+				Description="Moc&apos;ing controllogpotmeter.h..."
+				Outputs="moc_controllogpotmeter.cpp"/>
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="controlnull.h"
-				>
+				RelativePath="controlnull.h">
 				<FileConfiguration
-					Name="Release|Win32"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-						Description="Moc&apos;ing controlnull.h..."
-						CommandLine="$(QTDIR)\bin\moc.exe controlnull.h -o moc_controlnull.cpp&#x0D;&#x0A;"
-						AdditionalDependencies="$(QTDIR)\bin\moc.exe"
-						Outputs="moc_controlnull.cpp"
-					/>
+					Name="Release|Win32">
+			<Tool
+				Name="VCCustomBuildTool"
+				AdditionalDependencies="$(QTDIR)\bin\moc.exe"
+				CommandLine="$(QTDIR)\bin\moc.exe controlnull.h -o moc_controlnull.cpp"
+				Description="Moc&apos;ing controlnull.h..."
+				Outputs="moc_controlnull.cpp"/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Debug|Win32"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-						Description="Moc&apos;ing controlnull.h..."
-						CommandLine="$(QTDIR)\bin\moc.exe controlnull.h -o moc_controlnull.cpp&#x0D;&#x0A;"
-						AdditionalDependencies="$(QTDIR)\bin\moc.exe"
-						Outputs="moc_controlnull.cpp"
-					/>
+					Name="Debug|Win32">
+			<Tool
+				Name="VCCustomBuildTool"
+				AdditionalDependencies="$(QTDIR)\bin\moc.exe"
+				CommandLine="$(QTDIR)\bin\moc.exe controlnull.h -o moc_controlnull.cpp"
+				Description="Moc&apos;ing controlnull.h..."
+				Outputs="moc_controlnull.cpp"/>
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="controlobject.h"
-				>
+				RelativePath="controlobject.h">
+				<FileConfiguration
+					Name="Release|Win32">
+			<Tool
+				Name="VCCustomBuildTool"
+				AdditionalDependencies="$(QTDIR)\bin\moc.exe"
+				CommandLine="$(QTDIR)\bin\moc.exe controlobject.h -o moc_controlobject.cpp"
+				Description="Moc&apos;ing controlobject.h..."
+				Outputs="moc_controlobject.cpp"/>
+				</FileConfiguration>
 				<FileConfiguration
-					Name="Release|Win32"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-						Description="Moc&apos;ing controlobject.h..."
-						CommandLine="$(QTDIR)\bin\moc.exe controlobject.h -o moc_controlobject.cpp&#x0D;&#x0A;"
-						AdditionalDependencies="$(QTDIR)\bin\moc.exe"
-						Outputs="moc_controlobject.cpp"
-					/>
+					Name="Debug|Win32">
+			<Tool
+				Name="VCCustomBuildTool"
+				AdditionalDependencies="$(QTDIR)\bin\moc.exe"
+				CommandLine="$(QTDIR)\bin\moc.exe controlobject.h -o moc_controlobject.cpp"
+				Description="Moc&apos;ing controlobject.h..."
+				Outputs="moc_controlobject.cpp"/>
 				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="controlobjectthread.h">
 				<FileConfiguration
-					Name="Debug|Win32"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-						Description="Moc&apos;ing controlobject.h..."
-						CommandLine="$(QTDIR)\bin\moc.exe controlobject.h -o moc_controlobject.cpp&#x0D;&#x0A;"
-						AdditionalDependencies="$(QTDIR)\bin\moc.exe"
-						Outputs="moc_controlobject.cpp"
-					/>
-				</FileConfiguration>
-			</File>
-			<File
-				RelativePath="controlobjectthread.h"
-				>
-				<FileConfiguration
-					Name="Release|Win32"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-						Description="Moc&apos;ing controlobjectthread.h..."
-						CommandLine="$(QTDIR)\bin\moc.exe controlobjectthread.h -o moc_controlobjectthread.cpp&#x0D;&#x0A;"
-						AdditionalDependencies="$(QTDIR)\bin\moc.exe"
-						Outputs="moc_controlobjectthread.cpp"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Debug|Win32"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-						Description="Moc&apos;ing controlobjectthread.h..."
-						CommandLine="$(QTDIR)\bin\moc.exe controlobjectthread.h -o moc_controlobjectthread.cpp&#x0D;&#x0A;"
-						AdditionalDependencies="$(QTDIR)\bin\moc.exe"
-						Outputs="moc_controlobjectthread.cpp"
-					/>
-				</FileConfiguration>
-			</File>
-			<File
-				RelativePath="controlobjectthreadmain.h"
-				>
-				<FileConfiguration
-					Name="Release|Win32"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-						Description="Moc&apos;ing controlobjectthreadmain.h..."
-						CommandLine="$(QTDIR)\bin\moc.exe controlobjectthreadmain.h -o moc_controlobjectthreadmain.cpp&#x0D;&#x0A;"
-						AdditionalDependencies="$(QTDIR)\bin\moc.exe"
-						Outputs="moc_controlobjectthreadmain.cpp"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Debug|Win32"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-						Description="Moc&apos;ing controlobjectthreadmain.h..."
-						CommandLine="$(QTDIR)\bin\moc.exe controlobjectthreadmain.h -o moc_controlobjectthreadmain.cpp&#x0D;&#x0A;"
-						AdditionalDependencies="$(QTDIR)\bin\moc.exe"
-						Outputs="moc_controlobjectthreadmain.cpp"
-					/>
-				</FileConfiguration>
-			</File>
-			<File
-				RelativePath="controlobjectthreadwidget.h"
-				>
-				<FileConfiguration
-					Name="Release|Win32"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-						Description="Moc&apos;ing controlobjectthreadwidget.h..."
-						CommandLine="$(QTDIR)\bin\moc.exe controlobjectthreadwidget.h -o moc_controlobjectthreadwidget.cpp&#x0D;&#x0A;"
-						AdditionalDependencies="$(QTDIR)\bin\moc.exe"
-						Outputs="moc_controlobjectthreadwidget.cpp"
-					/>
+					Name="Release|Win32">
+			<Tool
+				Name="VCCustomBuildTool"
+				AdditionalDependencies="$(QTDIR)\bin\moc.exe"
+				CommandLine="$(QTDIR)\bin\moc.exe controlobjectthread.h -o moc_controlobjectthread.cpp"
+				Description="Moc&apos;ing controlobjectthread.h..."
+				Outputs="moc_controlobjectthread.cpp"/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Debug|Win32"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-						Description="Moc&apos;ing controlobjectthreadwidget.h..."
-						CommandLine="$(QTDIR)\bin\moc.exe controlobjectthreadwidget.h -o moc_controlobjectthreadwidget.cpp&#x0D;&#x0A;"
-						AdditionalDependencies="$(QTDIR)\bin\moc.exe"
-						Outputs="moc_controlobjectthreadwidget.cpp"
-					/>
-				</FileConfiguration>
-			</File>
-			<File
-				RelativePath="controlpotmeter.h"
-				>
-				<FileConfiguration
-					Name="Release|Win32"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-						Description="Moc&apos;ing controlpotmeter.h..."
-						CommandLine="$(QTDIR)\bin\moc.exe controlpotmeter.h -o moc_controlpotmeter.cpp&#x0D;&#x0A;"
-						AdditionalDependencies="$(QTDIR)\bin\moc.exe"
-						Outputs="moc_controlpotmeter.cpp"
-					/>
+					Name="Debug|Win32">
+			<Tool
+				Name="VCCustomBuildTool"
+				AdditionalDependencies="$(QTDIR)\bin\moc.exe"
+				CommandLine="$(QTDIR)\bin\moc.exe controlobjectthread.h -o moc_controlobjectthread.cpp"
+				Description="Moc&apos;ing controlobjectthread.h..."
+				Outputs="moc_controlobjectthread.cpp"/>
 				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="controlobjectthreadmain.h">
 				<FileConfiguration
-					Name="Debug|Win32"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-						Description="Moc&apos;ing controlpotmeter.h..."
-						CommandLine="$(QTDIR)\bin\moc.exe controlpotmeter.h -o moc_controlpotmeter.cpp&#x0D;&#x0A;"
-						AdditionalDependencies="$(QTDIR)\bin\moc.exe"
-						Outputs="moc_controlpotmeter.cpp"
-					/>
-				</FileConfiguration>
-			</File>
-			<File
-				RelativePath="controlpushbutton.h"
-				>
-				<FileConfiguration
-					Name="Release|Win32"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-						Description="Moc&apos;ing controlpushbutton.h..."
-						CommandLine="$(QTDIR)\bin\moc.exe controlpushbutton.h -o moc_controlpushbutton.cpp&#x0D;&#x0A;"
-						AdditionalDependencies="$(QTDIR)\bin\moc.exe"
-						Outputs="moc_controlpushbutton.cpp"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Debug|Win32"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-						Description="Moc&apos;ing controlpushbutton.h..."
-						CommandLine="$(QTDIR)\bin\moc.exe controlpushbutton.h -o moc_controlpushbutton.cpp&#x0D;&#x0A;"
-						AdditionalDependencies="$(QTDIR)\bin\moc.exe"
-						Outputs="moc_controlpushbutton.cpp"
-					/>
-				</FileConfiguration>
-			</File>
-			<File
-				RelativePath="controlttrotary.h"
-				>
-				<FileConfiguration
-					Name="Release|Win32"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-						Description="Moc&apos;ing controlttrotary.h..."
-						CommandLine="$(QTDIR)\bin\moc.exe controlttrotary.h -o moc_controlttrotary.cpp&#x0D;&#x0A;"
-						AdditionalDependencies="$(QTDIR)\bin\moc.exe"
-						Outputs="moc_controlttrotary.cpp"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Debug|Win32"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-						Description="Moc&apos;ing controlttrotary.h..."
-						CommandLine="$(QTDIR)\bin\moc.exe controlttrotary.h -o moc_controlttrotary.cpp&#x0D;&#x0A;"
-						AdditionalDependencies="$(QTDIR)\bin\moc.exe"
-						Outputs="moc_controlttrotary.cpp"
-					/>
-				</FileConfiguration>
-			</File>
-			<File
-				RelativePath="..\lib\soundtouch\cpu_detect.h"
-				>
-			</File>
-			<File
-				RelativePath="defs.h"
-				>
-			</File>
-			<File
-				RelativePath="dlgprefcontrols.h"
-				>
-				<FileConfiguration
-					Name="Release|Win32"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-						Description="Moc&apos;ing dlgprefcontrols.h..."
-						CommandLine="$(QTDIR)\bin\moc.exe dlgprefcontrols.h -o moc_dlgprefcontrols.cpp&#x0D;&#x0A;"
-						AdditionalDependencies="$(QTDIR)\bin\moc.exe"
-						Outputs="moc_dlgprefcontrols.cpp"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Debug|Win32"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-						Description="Moc&apos;ing dlgprefcontrols.h..."
-						CommandLine="$(QTDIR)\bin\moc.exe dlgprefcontrols.h -o moc_dlgprefcontrols.cpp&#x0D;&#x0A;"
-						AdditionalDependencies="$(QTDIR)\bin\moc.exe"
-						Outputs="moc_dlgprefcontrols.cpp"
-					/>
-				</FileConfiguration>
-			</File>
-			<File
-				RelativePath="dlgpreferences.h"
-				>
-				<FileConfiguration
-					Name="Release|Win32"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-						Description="Moc&apos;ing dlgpreferences.h..."
-						CommandLine="$(QTDIR)\bin\moc.exe dlgpreferences.h -o moc_dlgpreferences.cpp&#x0D;&#x0A;"
-						AdditionalDependencies="$(QTDIR)\bin\moc.exe"
-						Outputs="moc_dlgpreferences.cpp"
-					/>
+					Name="Release|Win32">
+			<Tool
+				Name="VCCustomBuildTool"
+				AdditionalDependencies="$(QTDIR)\bin\moc.exe"
+				CommandLine="$(QTDIR)\bin\moc.exe controlobjectthreadmain.h -o moc_controlobjectthreadmain.cpp"
+				Description="Moc&apos;ing controlobjectthreadmain.h..."
+				Outputs="moc_controlobjectthreadmain.cpp"/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Debug|Win32"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-						Description="Moc&apos;ing dlgpreferences.h..."
-						CommandLine="$(QTDIR)\bin\moc.exe dlgpreferences.h -o moc_dlgpreferences.cpp&#x0D;&#x0A;"
-						AdditionalDependencies="$(QTDIR)\bin\moc.exe"
-						Outputs="moc_dlgpreferences.cpp"
-					/>
-				</FileConfiguration>
-			</File>
-			<File
-				RelativePath="dlgprefmidi.h"
-				>
-				<FileConfiguration
-					Name="Release|Win32"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-						Description="Moc&apos;ing dlgprefmidi.h..."
-						CommandLine="$(QTDIR)\bin\moc.exe dlgprefmidi.h -o moc_dlgprefmidi.cpp&#x0D;&#x0A;"
-						AdditionalDependencies="$(QTDIR)\bin\moc.exe"
-						Outputs="moc_dlgprefmidi.cpp"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Debug|Win32"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-						Description="Moc&apos;ing dlgprefmidi.h..."
-						CommandLine="$(QTDIR)\bin\moc.exe dlgprefmidi.h -o moc_dlgprefmidi.cpp&#x0D;&#x0A;"
-						AdditionalDependencies="$(QTDIR)\bin\moc.exe"
-						Outputs="moc_dlgprefmidi.cpp"
-					/>
-				</FileConfiguration>
-			</File>
-			<File
-				RelativePath="dlgprefplaylist.h"
-				>
-				<FileConfiguration
-					Name="Release|Win32"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-						Description="Moc&apos;ing dlgprefplaylist.h..."
-						CommandLine="$(QTDIR)\bin\moc.exe dlgprefplaylist.h -o moc_dlgprefplaylist.cpp&#x0D;&#x0A;"
-						AdditionalDependencies="$(QTDIR)\bin\moc.exe"
-						Outputs="moc_dlgprefplaylist.cpp"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Debug|Win32"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-						Description="Moc&apos;ing dlgprefplaylist.h..."
-						CommandLine="$(QTDIR)\bin\moc.exe dlgprefplaylist.h -o moc_dlgprefplaylist.cpp&#x0D;&#x0A;"
-						AdditionalDependencies="$(QTDIR)\bin\moc.exe"
-						Outputs="moc_dlgprefplaylist.cpp"
-					/>
+					Name="Debug|Win32">
+			<Tool
+				Name="VCCustomBuildTool"
+				AdditionalDependencies="$(QTDIR)\bin\moc.exe"
+				CommandLine="$(QTDIR)\bin\moc.exe controlobjectthreadmain.h -o moc_controlobjectthreadmain.cpp"
+				Description="Moc&apos;ing controlobjectthreadmain.h..."
+				Outputs="moc_controlobjectthreadmain.cpp"/>
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="dlgprefsound.h"
-				>
+				RelativePath="controlobjectthreadwidget.h">
+				<FileConfiguration
+					Name="Release|Win32">
+			<Tool
+				Name="VCCustomBuildTool"
+				AdditionalDependencies="$(QTDIR)\bin\moc.exe"
+				CommandLine="$(QTDIR)\bin\moc.exe controlobjectthreadwidget.h -o moc_controlobjectthreadwidget.cpp"
+				Description="Moc&apos;ing controlobjectthreadwidget.h..."
+				Outputs="moc_controlobjectthreadwidget.cpp"/>
+				</FileConfiguration>
 				<FileConfiguration
-					Name="Release|Win32"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-						Description="Moc&apos;ing dlgprefsound.h..."
-						CommandLine="$(QTDIR)\bin\moc.exe dlgprefsound.h -o moc_dlgprefsound.cpp&#x0D;&#x0A;"
-						AdditionalDependencies="$(QTDIR)\bin\moc.exe"
-						Outputs="moc_dlgprefsound.cpp"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Debug|Win32"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-						Description="Moc&apos;ing dlgprefsound.h..."
-						CommandLine="$(QTDIR)\bin\moc.exe dlgprefsound.h -o moc_dlgprefsound.cpp&#x0D;&#x0A;"
-						AdditionalDependencies="$(QTDIR)\bin\moc.exe"
-						Outputs="moc_dlgprefsound.cpp"
-					/>
+					Name="Debug|Win32">
+			<Tool
+				Name="VCCustomBuildTool"
+				AdditionalDependencies="$(QTDIR)\bin\moc.exe"
+				CommandLine="$(QTDIR)\bin\moc.exe controlobjectthreadwidget.h -o moc_controlobjectthreadwidget.cpp"
+				Description="Moc&apos;ing controlobjectthreadwidget.h..."
+				Outputs="moc_controlobjectthreadwidget.cpp"/>
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\lib\vbrheadersdk\dxhead.h"
-				>
+				RelativePath="controlpotmeter.h">
+				<FileConfiguration
+					Name="Release|Win32">
+			<Tool
+				Name="VCCustomBuildTool"
+				AdditionalDependencies="$(QTDIR)\bin\moc.exe"
+				CommandLine="$(QTDIR)\bin\moc.exe controlpotmeter.h -o moc_controlpotmeter.cpp"
+				Description="Moc&apos;ing controlpotmeter.h..."
+				Outputs="moc_controlpotmeter.cpp"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Debug|Win32">
+			<Tool
+				Name="VCCustomBuildTool"
+				AdditionalDependencies="$(QTDIR)\bin\moc.exe"
+				CommandLine="$(QTDIR)\bin\moc.exe controlpotmeter.h -o moc_controlpotmeter.cpp"
+				Description="Moc&apos;ing controlpotmeter.h..."
+				Outputs="moc_controlpotmeter.cpp"/>
+				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="enginebeatseek.h"
-				>
+				RelativePath="controlpushbutton.h">
+				<FileConfiguration
+					Name="Release|Win32">
+			<Tool
+				Name="VCCustomBuildTool"
+				AdditionalDependencies="$(QTDIR)\bin\moc.exe"
+				CommandLine="$(QTDIR)\bin\moc.exe controlpushbutton.h -o moc_controlpushbutton.cpp"
+				Description="Moc&apos;ing controlpushbutton.h..."
+				Outputs="moc_controlpushbutton.cpp"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Debug|Win32">
+			<Tool
+				Name="VCCustomBuildTool"
+				AdditionalDependencies="$(QTDIR)\bin\moc.exe"
+				CommandLine="$(QTDIR)\bin\moc.exe controlpushbutton.h -o moc_controlpushbutton.cpp"
+				Description="Moc&apos;ing controlpushbutton.h..."
+				Outputs="moc_controlpushbutton.cpp"/>
+				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="enginebuffer.h"
-				>
+				RelativePath="controlttrotary.h">
 				<FileConfiguration
-					Name="Release|Win32"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-						Description="Moc&apos;ing enginebuffer.h..."
-						CommandLine="$(QTDIR)\bin\moc.exe enginebuffer.h -o moc_enginebuffer.cpp&#x0D;&#x0A;"
-						AdditionalDependencies="$(QTDIR)\bin\moc.exe"
-						Outputs="moc_enginebuffer.cpp"
-					/>
+					Name="Release|Win32">
+			<Tool
+				Name="VCCustomBuildTool"
+				AdditionalDependencies="$(QTDIR)\bin\moc.exe"
+				CommandLine="$(QTDIR)\bin\moc.exe controlttrotary.h -o moc_controlttrotary.cpp"
+				Description="Moc&apos;ing controlttrotary.h..."
+				Outputs="moc_controlttrotary.cpp"/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Debug|Win32"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-						Description="Moc&apos;ing enginebuffer.h..."
-						CommandLine="$(QTDIR)\bin\moc.exe enginebuffer.h -o moc_enginebuffer.cpp&#x0D;&#x0A;"
-						AdditionalDependencies="$(QTDIR)\bin\moc.exe"
-						Outputs="moc_enginebuffer.cpp"
-					/>
+					Name="Debug|Win32">
+			<Tool
+				Name="VCCustomBuildTool"
+				AdditionalDependencies="$(QTDIR)\bin\moc.exe"
+				CommandLine="$(QTDIR)\bin\moc.exe controlttrotary.h -o moc_controlttrotary.cpp"
+				Description="Moc&apos;ing controlttrotary.h..."
+				Outputs="moc_controlttrotary.cpp"/>
 				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="..\lib\soundtouch\cpu_detect.h">
+			</File>
+			<File
+				RelativePath="defs.h">
 			</File>
 			<File
-				RelativePath="enginebuffercue.h"
-				>
+				RelativePath="dlgprefcontrols.h">
 				<FileConfiguration
-					Name="Release|Win32"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-						Description="Moc&apos;ing enginebuffercue.h..."
-						CommandLine="$(QTDIR)\bin\moc.exe enginebuffercue.h -o moc_enginebuffercue.cpp&#x0D;&#x0A;"
-						AdditionalDependencies="$(QTDIR)\bin\moc.exe"
-						Outputs="moc_enginebuffercue.cpp"
-					/>
+					Name="Release|Win32">
+			<Tool
+				Name="VCCustomBuildTool"
+				AdditionalDependencies="$(QTDIR)\bin\moc.exe"
+				CommandLine="$(QTDIR)\bin\moc.exe dlgprefcontrols.h -o moc_dlgprefcontrols.cpp"
+				Description="Moc&apos;ing dlgprefcontrols.h..."
+				Outputs="moc_dlgprefcontrols.cpp"/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Debug|Win32"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-						Description="Moc&apos;ing enginebuffercue.h..."
-						CommandLine="$(QTDIR)\bin\moc.exe enginebuffercue.h -o moc_enginebuffercue.cpp&#x0D;&#x0A;"
-						AdditionalDependencies="$(QTDIR)\bin\moc.exe"
-						Outputs="moc_enginebuffercue.cpp"
-					/>
+					Name="Debug|Win32">
+			<Tool
+				Name="VCCustomBuildTool"
+				AdditionalDependencies="$(QTDIR)\bin\moc.exe"
+				CommandLine="$(QTDIR)\bin\moc.exe dlgprefcontrols.h -o moc_dlgprefcontrols.cpp"
+				Description="Moc&apos;ing dlgprefcontrols.h..."
+				Outputs="moc_dlgprefcontrols.cpp"/>
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="enginebufferscale.h"
-				>
+				RelativePath="dlgpreferences.h">
+				<FileConfiguration
+					Name="Release|Win32">
+			<Tool
+				Name="VCCustomBuildTool"
+				AdditionalDependencies="$(QTDIR)\bin\moc.exe"
+				CommandLine="$(QTDIR)\bin\moc.exe dlgpreferences.h -o moc_dlgpreferences.cpp"
+				Description="Moc&apos;ing dlgpreferences.h..."
+				Outputs="moc_dlgpreferences.cpp"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Debug|Win32">
+			<Tool
+				Name="VCCustomBuildTool"
+				AdditionalDependencies="$(QTDIR)\bin\moc.exe"
+				CommandLine="$(QTDIR)\bin\moc.exe dlgpreferences.h -o moc_dlgpreferences.cpp"
+				Description="Moc&apos;ing dlgpreferences.h..."
+				Outputs="moc_dlgpreferences.cpp"/>
+				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="enginebufferscalereal.h"
-				>
+				RelativePath="dlgprefmidi.h">
+				<FileConfiguration
+					Name="Release|Win32">
+			<Tool
+				Name="VCCustomBuildTool"
+				AdditionalDependencies="$(QTDIR)\bin\moc.exe"
+				CommandLine="$(QTDIR)\bin\moc.exe dlgprefmidi.h -o moc_dlgprefmidi.cpp"
+				Description="Moc&apos;ing dlgprefmidi.h..."
+				Outputs="moc_dlgprefmidi.cpp"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Debug|Win32">
+			<Tool
+				Name="VCCustomBuildTool"
+				AdditionalDependencies="$(QTDIR)\bin\moc.exe"
+				CommandLine="$(QTDIR)\bin\moc.exe dlgprefmidi.h -o moc_dlgprefmidi.cpp"
+				Description="Moc&apos;ing dlgprefmidi.h..."
+				Outputs="moc_dlgprefmidi.cpp"/>
+				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="enginebufferscalest.h"
-				>
+				RelativePath="dlgprefplaylist.h">
 				<FileConfiguration
-					Name="Release|Win32"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-						Description="Moc&apos;ing enginebufferscalest.h..."
-						CommandLine="$(QTDIR)\bin\moc.exe enginebufferscalest.h -o moc_enginebufferscalest.cpp&#x0D;&#x0A;"
-						AdditionalDependencies="$(QTDIR)\bin\moc.exe"
-						Outputs="moc_enginebufferscalest.cpp"
-					/>
+					Name="Release|Win32">
+			<Tool
+				Name="VCCustomBuildTool"
+				AdditionalDependencies="$(QTDIR)\bin\moc.exe"
+				CommandLine="$(QTDIR)\bin\moc.exe dlgprefplaylist.h -o moc_dlgprefplaylist.cpp"
+				Description="Moc&apos;ing dlgprefplaylist.h..."
+				Outputs="moc_dlgprefplaylist.cpp"/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Debug|Win32"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-						Description="Moc&apos;ing enginebufferscalest.h..."
-						CommandLine="$(QTDIR)\bin\moc.exe enginebufferscalest.h -o moc_enginebufferscalest.cpp&#x0D;&#x0A;"
-						AdditionalDependencies="$(QTDIR)\bin\moc.exe"
-						Outputs="moc_enginebufferscalest.cpp"
-					/>
+					Name="Debug|Win32">
+			<Tool
+				Name="VCCustomBuildTool"
+				AdditionalDependencies="$(QTDIR)\bin\moc.exe"
+				CommandLine="$(QTDIR)\bin\moc.exe dlgprefplaylist.h -o moc_dlgprefplaylist.cpp"
+				Description="Moc&apos;ing dlgprefplaylist.h..."
+				Outputs="moc_dlgprefplaylist.cpp"/>
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="enginechannel.h"
-				>
+				RelativePath="dlgprefsound.h">
+				<FileConfiguration
+					Name="Release|Win32">
+			<Tool
+				Name="VCCustomBuildTool"
+				AdditionalDependencies="$(QTDIR)\bin\moc.exe"
+				CommandLine="$(QTDIR)\bin\moc.exe dlgprefsound.h -o moc_dlgprefsound.cpp"
+				Description="Moc&apos;ing dlgprefsound.h..."
+				Outputs="moc_dlgprefsound.cpp"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Debug|Win32">
+			<Tool
+				Name="VCCustomBuildTool"
+				AdditionalDependencies="$(QTDIR)\bin\moc.exe"
+				CommandLine="$(QTDIR)\bin\moc.exe dlgprefsound.h -o moc_dlgprefsound.cpp"
+				Description="Moc&apos;ing dlgprefsound.h..."
+				Outputs="moc_dlgprefsound.cpp"/>
+				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="engineclipping.h"
-				>
+				RelativePath="..\lib\vbrheadersdk\dxhead.h">
 			</File>
 			<File
-				RelativePath="enginedelay.h"
-				>
+				RelativePath="enginebeatseek.h">
 			</File>
 			<File
-				RelativePath="enginefilterblock.h"
-				>
+				RelativePath="enginebuffer.h">
+				<FileConfiguration
+					Name="Release|Win32">
+			<Tool
+				Name="VCCustomBuildTool"
+				AdditionalDependencies="$(QTDIR)\bin\moc.exe"
+				CommandLine="$(QTDIR)\bin\moc.exe enginebuffer.h -o moc_enginebuffer.cpp"
+				Description="Moc&apos;ing enginebuffer.h..."
+				Outputs="moc_enginebuffer.cpp"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Debug|Win32">
+			<Tool
+				Name="VCCustomBuildTool"
+				AdditionalDependencies="$(QTDIR)\bin\moc.exe"
+				CommandLine="$(QTDIR)\bin\moc.exe enginebuffer.h -o moc_enginebuffer.cpp"
+				Description="Moc&apos;ing enginebuffer.h..."
+				Outputs="moc_enginebuffer.cpp"/>
+				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="enginefilteriir.h"
-				>
+				RelativePath="enginebuffercue.h">
+				<FileConfiguration
+					Name="Release|Win32">
+			<Tool
+				Name="VCCustomBuildTool"
+				AdditionalDependencies="$(QTDIR)\bin\moc.exe"
+				CommandLine="$(QTDIR)\bin\moc.exe enginebuffercue.h -o moc_enginebuffercue.cpp"
+				Description="Moc&apos;ing enginebuffercue.h..."
+				Outputs="moc_enginebuffercue.cpp"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Debug|Win32">
+			<Tool
+				Name="VCCustomBuildTool"
+				AdditionalDependencies="$(QTDIR)\bin\moc.exe"
+				CommandLine="$(QTDIR)\bin\moc.exe enginebuffercue.h -o moc_enginebuffercue.cpp"
+				Description="Moc&apos;ing enginebuffercue.h..."
+				Outputs="moc_enginebuffercue.cpp"/>
+				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="engineflanger.h"
-				>
+				RelativePath="enginebufferscale.h">
 			</File>
 			<File
-				RelativePath="enginemaster.h"
-				>
+				RelativePath="enginebufferscalereal.h">
 			</File>
 			<File
-				RelativePath="engineobject.h"
-				>
+				RelativePath="enginebufferscalest.h">
 				<FileConfiguration
-					Name="Release|Win32"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-						Description="Moc&apos;ing engineobject.h..."
-						CommandLine="$(QTDIR)\bin\moc.exe engineobject.h -o moc_engineobject.cpp&#x0D;&#x0A;"
-						AdditionalDependencies="$(QTDIR)\bin\moc.exe"
-						Outputs="moc_engineobject.cpp"
-					/>
+					Name="Release|Win32">
+			<Tool
+				Name="VCCustomBuildTool"
+				AdditionalDependencies="$(QTDIR)\bin\moc.exe"
+				CommandLine="$(QTDIR)\bin\moc.exe enginebufferscalest.h -o moc_enginebufferscalest.cpp"
+				Description="Moc&apos;ing enginebufferscalest.h..."
+				Outputs="moc_enginebufferscalest.cpp"/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Debug|Win32"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-						Description="Moc&apos;ing engineobject.h..."
-						CommandLine="$(QTDIR)\bin\moc.exe engineobject.h -o moc_engineobject.cpp&#x0D;&#x0A;"
-						AdditionalDependencies="$(QTDIR)\bin\moc.exe"
-						Outputs="moc_engineobject.cpp"
-					/>
+					Name="Debug|Win32">
+			<Tool
+				Name="VCCustomBuildTool"
+				AdditionalDependencies="$(QTDIR)\bin\moc.exe"
+				CommandLine="$(QTDIR)\bin\moc.exe enginebufferscalest.h -o moc_enginebufferscalest.cpp"
+				Description="Moc&apos;ing enginebufferscalest.h..."
+				Outputs="moc_enginebufferscalest.cpp"/>
 				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="enginechannel.h">
+			</File>
+			<File
+				RelativePath="engineclipping.h">
+			</File>
+			<File
+				RelativePath="enginedelay.h">
+			</File>
+			<File
+				RelativePath="enginefilterblock.h">
+			</File>
+			<File
+				RelativePath="enginefilteriir.h">
 			</File>
 			<File
-				RelativePath="enginepregain.h"
-				>
+				RelativePath="engineflanger.h">
 			</File>
 			<File
-				RelativePath="enginespectralfwd.h"
-				>
+				RelativePath="enginemaster.h">
 			</File>
 			<File
-				RelativePath="enginetemporal.h"
-				>
+				RelativePath="engineobject.h">
 				<FileConfiguration
-					Name="Release|Win32"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-						Description="Moc&apos;ing enginetemporal.h..."
-						CommandLine="$(QTDIR)\bin\moc.exe enginetemporal.h -o moc_enginetemporal.cpp&#x0D;&#x0A;"
-						AdditionalDependencies="$(QTDIR)\bin\moc.exe"
-						Outputs="moc_enginetemporal.cpp"
-					/>
+					Name="Release|Win32">
+			<Tool
+				Name="VCCustomBuildTool"
+				AdditionalDependencies="$(QTDIR)\bin\moc.exe"
+				CommandLine="$(QTDIR)\bin\moc.exe engineobject.h -o moc_engineobject.cpp"
+				Description="Moc&apos;ing engineobject.h..."
+				Outputs="moc_engineobject.cpp"/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Debug|Win32"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-						Description="Moc&apos;ing enginetemporal.h..."
-						CommandLine="$(QTDIR)\bin\moc.exe enginetemporal.h -o moc_enginetemporal.cpp&#x0D;&#x0A;"
-						AdditionalDependencies="$(QTDIR)\bin\moc.exe"
-						Outputs="moc_enginetemporal.cpp"
-					/>
+					Name="Debug|Win32">
+			<Tool
+				Name="VCCustomBuildTool"
+				AdditionalDependencies="$(QTDIR)\bin\moc.exe"
+				CommandLine="$(QTDIR)\bin\moc.exe engineobject.h -o moc_engineobject.cpp"
+				Description="Moc&apos;ing engineobject.h..."
+				Outputs="moc_engineobject.cpp"/>
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="enginevolume.h"
-				>
+				RelativePath="enginepregain.h">
 			</File>
 			<File
-				RelativePath="enginevumeter.h"
-				>
+				RelativePath="enginespectralfwd.h">
 			</File>
 			<File
-				RelativePath="..\lib\soundtouch\FIFOSampleBuffer.h"
-				>
+				RelativePath="enginetemporal.h">
+				<FileConfiguration
+					Name="Release|Win32">
+			<Tool
+				Name="VCCustomBuildTool"
+				AdditionalDependencies="$(QTDIR)\bin\moc.exe"
+				CommandLine="$(QTDIR)\bin\moc.exe enginetemporal.h -o moc_enginetemporal.cpp"
+				Description="Moc&apos;ing enginetemporal.h..."
+				Outputs="moc_enginetemporal.cpp"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Debug|Win32">
+			<Tool
+				Name="VCCustomBuildTool"
+				AdditionalDependencies="$(QTDIR)\bin\moc.exe"
+				CommandLine="$(QTDIR)\bin\moc.exe enginetemporal.h -o moc_enginetemporal.cpp"
+				Description="Moc&apos;ing enginetemporal.h..."
+				Outputs="moc_enginetemporal.cpp"/>
+				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\lib\soundtouch\FIFOSamplePipe.h"
-				>
+				RelativePath="enginevolume.h">
 			</File>
 			<File
-				RelativePath="..\lib\soundtouch\FIRFilter.h"
-				>
+				RelativePath="enginevumeter.h">
 			</File>
 			<File
-				RelativePath="hercules.h"
-				>
+				RelativePath="hercules.h">
 			</File>
 			<File
-				RelativePath="input.h"
-				>
+				RelativePath="input.h">
 			</File>
 			<File
-				RelativePath="joystick.h"
-				>
+				RelativePath="joystick.h">
 			</File>
 			<File
-				RelativePath="..\lib\kissfft\kiss_fft.h"
-				>
+				RelativePath="..\lib\kissfft\kiss_fft.h">
 			</File>
 			<File
-				RelativePath="..\lib\kissfft\kiss_fftr.h"
-				>
+				RelativePath="..\lib\kissfft\kiss_fftr.h">
 			</File>
 			<File
-				RelativePath="visual\light.h"
-				>
+				RelativePath="visual\light.h">
 			</File>
 			<File
-				RelativePath="log.h"
-				>
+				RelativePath="log.h">
 				<FileConfiguration
-					Name="Release|Win32"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-						Description="Moc&apos;ing log.h..."
-						CommandLine="$(QTDIR)\bin\moc.exe log.h -o moc_log.cpp&#x0D;&#x0A;"
-						AdditionalDependencies="$(QTDIR)\bin\moc.exe"
-						Outputs="moc_log.cpp"
-					/>
+					Name="Release|Win32">
+			<Tool
+				Name="VCCustomBuildTool"
+				AdditionalDependencies="$(QTDIR)\bin\moc.exe"
+				CommandLine="$(QTDIR)\bin\moc.exe log.h -o moc_log.cpp"
+				Description="Moc&apos;ing log.h..."
+				Outputs="moc_log.cpp"/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Debug|Win32"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-						Description="Moc&apos;ing log.h..."
-						CommandLine="$(QTDIR)\bin\moc.exe log.h -o moc_log.cpp&#x0D;&#x0A;"
-						AdditionalDependencies="$(QTDIR)\bin\moc.exe"
-						Outputs="moc_log.cpp"
-					/>
+					Name="Debug|Win32">
+			<Tool
+				Name="VCCustomBuildTool"
+				AdditionalDependencies="$(QTDIR)\bin\moc.exe"
+				CommandLine="$(QTDIR)\bin\moc.exe log.h -o moc_log.cpp"
+				Description="Moc&apos;ing log.h..."
+				Outputs="moc_log.cpp"/>
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="visual\material.h"
-				>
+				RelativePath="visual\material.h">
 			</File>
 			<File
-				RelativePath="mathstuff.h"
-				>
+				RelativePath="mathstuff.h">
 			</File>
 			<File
-				RelativePath="midiobject.h"
-				>
+				RelativePath="midiobject.h">
 			</File>
 			<File
-				RelativePath="midiobjectnull.h"
-				>
+				RelativePath="midiobjectnull.h">
 			</File>
 			<File
-				RelativePath="midiobjectwin.h"
-				>
+				RelativePath="midiobjectwin.h">
 			</File>
 			<File
-				RelativePath="mixxx.h"
-				>
+				RelativePath="mixxx.h">
 				<FileConfiguration
-					Name="Release|Win32"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-						Description="Moc&apos;ing mixxx.h..."
-						CommandLine="$(QTDIR)\bin\moc.exe mixxx.h -o moc_mixxx.cpp&#x0D;&#x0A;"
-						AdditionalDependencies="$(QTDIR)\bin\moc.exe"
-						Outputs="moc_mixxx.cpp"
-					/>
+					Name="Release|Win32">
+			<Tool
+				Name="VCCustomBuildTool"
+				AdditionalDependencies="$(QTDIR)\bin\moc.exe"
+				CommandLine="$(QTDIR)\bin\moc.exe mixxx.h -o moc_mixxx.cpp"
+				Description="Moc&apos;ing mixxx.h..."
+				Outputs="moc_mixxx.cpp"/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Debug|Win32"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-						Description="Moc&apos;ing mixxx.h..."
-						CommandLine="$(QTDIR)\bin\moc.exe mixxx.h -o moc_mixxx.cpp&#x0D;&#x0A;"
-						AdditionalDependencies="$(QTDIR)\bin\moc.exe"
-						Outputs="moc_mixxx.cpp"
-					/>
+					Name="Debug|Win32">
+			<Tool
+				Name="VCCustomBuildTool"
+				AdditionalDependencies="$(QTDIR)\bin\moc.exe"
+				CommandLine="$(QTDIR)\bin\moc.exe mixxx.h -o moc_mixxx.cpp"
+				Description="Moc&apos;ing mixxx.h..."
+				Outputs="moc_mixxx.cpp"/>
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="mixxxkeyboard.h"
-				>
+				RelativePath="mixxxkeyboard.h">
 				<FileConfiguration
-					Name="Release|Win32"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-						Description="Moc&apos;ing mixxxkeyboard.h..."
-						CommandLine="$(QTDIR)\bin\moc.exe mixxxkeyboard.h -o moc_mixxxkeyboard.cpp&#x0D;&#x0A;"
-						AdditionalDependencies="$(QTDIR)\bin\moc.exe"
-						Outputs="moc_mixxxkeyboard.cpp"
-					/>
+					Name="Release|Win32">
+			<Tool
+				Name="VCCustomBuildTool"
+				AdditionalDependencies="$(QTDIR)\bin\moc.exe"
+				CommandLine="$(QTDIR)\bin\moc.exe mixxxkeyboard.h -o moc_mixxxkeyboard.cpp"
+				Description="Moc&apos;ing mixxxkeyboard.h..."
+				Outputs="moc_mixxxkeyboard.cpp"/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Debug|Win32"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-						Description="Moc&apos;ing mixxxkeyboard.h..."
-						CommandLine="$(QTDIR)\bin\moc.exe mixxxkeyboard.h -o moc_mixxxkeyboard.cpp&#x0D;&#x0A;"
-						AdditionalDependencies="$(QTDIR)\bin\moc.exe"
-						Outputs="moc_mixxxkeyboard.cpp"
-					/>
+					Name="Debug|Win32">
+			<Tool
+				Name="VCCustomBuildTool"
+				AdditionalDependencies="$(QTDIR)\bin\moc.exe"
+				CommandLine="$(QTDIR)\bin\moc.exe mixxxkeyboard.h -o moc_mixxxkeyboard.cpp"
+				Description="Moc&apos;ing mixxxkeyboard.h..."
+				Outputs="moc_mixxxkeyboard.cpp"/>
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="mixxxmenuplaylists.h"
-				>
+				RelativePath="mixxxmenuplaylists.h">
 				<FileConfiguration
-					Name="Release|Win32"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-						Description="Moc&apos;ing mixxxmenuplaylists.h..."
-						CommandLine="$(QTDIR)\bin\moc.exe mixxxmenuplaylists.h -o moc_mixxxmenuplaylists.cpp&#x0D;&#x0A;"
-						AdditionalDependencies="$(QTDIR)\bin\moc.exe"
-						Outputs="moc_mixxxmenuplaylists.cpp"
-					/>
+					Name="Release|Win32">
+			<Tool
+				Name="VCCustomBuildTool"
+				AdditionalDependencies="$(QTDIR)\bin\moc.exe"
+				CommandLine="$(QTDIR)\bin\moc.exe mixxxmenuplaylists.h -o moc_mixxxmenuplaylists.cpp"
+				Description="Moc&apos;ing mixxxmenuplaylists.h..."
+				Outputs="moc_mixxxmenuplaylists.cpp"/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Debug|Win32"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-						Description="Moc&apos;ing mixxxmenuplaylists.h..."
-						CommandLine="$(QTDIR)\bin\moc.exe mixxxmenuplaylists.h -o moc_mixxxmenuplaylists.cpp&#x0D;&#x0A;"
-						AdditionalDependencies="$(QTDIR)\bin\moc.exe"
-						Outputs="moc_mixxxmenuplaylists.cpp"
-					/>
+					Name="Debug|Win32">
+			<Tool
+				Name="VCCustomBuildTool"
+				AdditionalDependencies="$(QTDIR)\bin\moc.exe"
+				CommandLine="$(QTDIR)\bin\moc.exe mixxxmenuplaylists.h -o moc_mixxxmenuplaylists.cpp"
+				Description="Moc&apos;ing mixxxmenuplaylists.h..."
+				Outputs="moc_mixxxmenuplaylists.cpp"/>
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="mixxxsocketclient.h"
-				>
+				RelativePath="mixxxsocketclient.h">
 				<FileConfiguration
-					Name="Release|Win32"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-						Description="Moc&apos;ing mixxxsocketclient.h..."
-						CommandLine="$(QTDIR)\bin\moc.exe mixxxsocketclient.h -o moc_mixxxsocketclient.cpp&#x0D;&#x0A;"
-						AdditionalDependencies="$(QTDIR)\bin\moc.exe"
-						Outputs="moc_mixxxsocketclient.cpp"
-					/>
+					Name="Release|Win32">
+			<Tool
+				Name="VCCustomBuildTool"
+				AdditionalDependencies="$(QTDIR)\bin\moc.exe"
+				CommandLine="$(QTDIR)\bin\moc.exe mixxxsocketclient.h -o moc_mixxxsocketclient.cpp"
+				Description="Moc&apos;ing mixxxsocketclient.h..."
+				Outputs="moc_mixxxsocketclient.cpp"/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Debug|Win32"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-						Description="Moc&apos;ing mixxxsocketclient.h..."
-						CommandLine="$(QTDIR)\bin\moc.exe mixxxsocketclient.h -o moc_mixxxsocketclient.cpp&#x0D;&#x0A;"
-						AdditionalDependencies="$(QTDIR)\bin\moc.exe"
-						Outputs="moc_mixxxsocketclient.cpp"
-					/>
+					Name="Debug|Win32">
+			<Tool
+				Name="VCCustomBuildTool"
+				AdditionalDependencies="$(QTDIR)\bin\moc.exe"
+				CommandLine="$(QTDIR)\bin\moc.exe mixxxsocketclient.h -o moc_mixxxsocketclient.cpp"
+				Description="Moc&apos;ing mixxxsocketclient.h..."
+				Outputs="moc_mixxxsocketclient.cpp"/>
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="mixxxsocketserver.h"
-				>
+				RelativePath="mixxxsocketserver.h">
 				<FileConfiguration
-					Name="Release|Win32"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-						Description="Moc&apos;ing mixxxsocketserver.h..."
-						CommandLine="$(QTDIR)\bin\moc.exe mixxxsocketserver.h -o moc_mixxxsocketserver.cpp&#x0D;&#x0A;"
-						AdditionalDependencies="$(QTDIR)\bin\moc.exe"
-						Outputs="moc_mixxxsocketserver.cpp"
-					/>
+					Name="Release|Win32">
+			<Tool
+				Name="VCCustomBuildTool"
+				AdditionalDependencies="$(QTDIR)\bin\moc.exe"
+				CommandLine="$(QTDIR)\bin\moc.exe mixxxsocketserver.h -o moc_mixxxsocketserver.cpp"
+				Description="Moc&apos;ing mixxxsocketserver.h..."
+				Outputs="moc_mixxxsocketserver.cpp"/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Debug|Win32"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-						Description="Moc&apos;ing mixxxsocketserver.h..."
-						CommandLine="$(QTDIR)\bin\moc.exe mixxxsocketserver.h -o moc_mixxxsocketserver.cpp&#x0D;&#x0A;"
-						AdditionalDependencies="$(QTDIR)\bin\moc.exe"
-						Outputs="moc_mixxxsocketserver.cpp"
-					/>
+					Name="Debug|Win32">
+			<Tool
+				Name="VCCustomBuildTool"
+				AdditionalDependencies="$(QTDIR)\bin\moc.exe"
+				CommandLine="$(QTDIR)\bin\moc.exe mixxxsocketserver.h -o moc_mixxxsocketserver.cpp"
+				Description="Moc&apos;ing mixxxsocketserver.h..."
+				Outputs="moc_mixxxsocketserver.cpp"/>
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="mixxxview.h"
-				>
+				RelativePath="mixxxview.h">
 				<FileConfiguration
-					Name="Release|Win32"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-						Description="Moc&apos;ing mixxxview.h..."
-						CommandLine="$(QTDIR)\bin\moc.exe mixxxview.h -o moc_mixxxview.cpp&#x0D;&#x0A;"
-						AdditionalDependencies="$(QTDIR)\bin\moc.exe"
-						Outputs="moc_mixxxview.cpp"
-					/>
+					Name="Release|Win32">
+			<Tool
+				Name="VCCustomBuildTool"
+				AdditionalDependencies="$(QTDIR)\bin\moc.exe"
+				CommandLine="$(QTDIR)\bin\moc.exe mixxxview.h -o moc_mixxxview.cpp"
+				Description="Moc&apos;ing mixxxview.h..."
+				Outputs="moc_mixxxview.cpp"/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Debug|Win32"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-						Description="Moc&apos;ing mixxxview.h..."
-						CommandLine="$(QTDIR)\bin\moc.exe mixxxview.h -o moc_mixxxview.cpp&#x0D;&#x0A;"
-						AdditionalDependencies="$(QTDIR)\bin\moc.exe"
-						Outputs="moc_mixxxview.cpp"
-					/>
+					Name="Debug|Win32">
+			<Tool
+				Name="VCCustomBuildTool"
+				AdditionalDependencies="$(QTDIR)\bin\moc.exe"
+				CommandLine="$(QTDIR)\bin\moc.exe mixxxview.h -o moc_mixxxview.cpp"
+				Description="Moc&apos;ing mixxxview.h..."
+				Outputs="moc_mixxxview.cpp"/>
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="mouse.h"
-				>
+				RelativePath="mouse.h">
 			</File>
 			<File
-				RelativePath="parser.h"
-				>
+				RelativePath="parser.h">
 				<FileConfiguration
-					Name="Release|Win32"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-						Description="Moc&apos;ing parser.h..."
-						CommandLine="$(QTDIR)\bin\moc.exe parser.h -o moc_parser.cpp&#x0D;&#x0A;"
-						AdditionalDependencies="$(QTDIR)\bin\moc.exe"
-						Outputs="moc_parser.cpp"
-					/>
+					Name="Release|Win32">
+			<Tool
+				Name="VCCustomBuildTool"
+				AdditionalDependencies="$(QTDIR)\bin\moc.exe"
+				CommandLine="$(QTDIR)\bin\moc.exe parser.h -o moc_parser.cpp"
+				Description="Moc&apos;ing parser.h..."
+				Outputs="moc_parser.cpp"/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Debug|Win32"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-						Description="Moc&apos;ing parser.h..."
-						CommandLine="$(QTDIR)\bin\moc.exe parser.h -o moc_parser.cpp&#x0D;&#x0A;"
-						AdditionalDependencies="$(QTDIR)\bin\moc.exe"
-						Outputs="moc_parser.cpp"
-					/>
+					Name="Debug|Win32">
+			<Tool
+				Name="VCCustomBuildTool"
+				AdditionalDependencies="$(QTDIR)\bin\moc.exe"
+				CommandLine="$(QTDIR)\bin\moc.exe parser.h -o moc_parser.cpp"
+				Description="Moc&apos;ing parser.h..."
+				Outputs="moc_parser.cpp"/>
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="parserm3u.h"
-				>
+				RelativePath="parserm3u.h">
 				<FileConfiguration
-					Name="Release|Win32"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-						Description="Moc&apos;ing parserm3u.h..."
-						CommandLine="$(QTDIR)\bin\moc.exe parserm3u.h -o moc_parserm3u.cpp&#x0D;&#x0A;"
-						AdditionalDependencies="$(QTDIR)\bin\moc.exe"
-						Outputs="moc_parserm3u.cpp"
-					/>
+					Name="Release|Win32">
+			<Tool
+				Name="VCCustomBuildTool"
+				AdditionalDependencies="$(QTDIR)\bin\moc.exe"
+				CommandLine="$(QTDIR)\bin\moc.exe parserm3u.h -o moc_parserm3u.cpp"
+				Description="Moc&apos;ing parserm3u.h..."
+				Outputs="moc_parserm3u.cpp"/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Debug|Win32"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-						Description="Moc&apos;ing parserm3u.h..."
-						CommandLine="$(QTDIR)\bin\moc.exe parserm3u.h -o moc_parserm3u.cpp&#x0D;&#x0A;"
-						AdditionalDependencies="$(QTDIR)\bin\moc.exe"
-						Outputs="moc_parserm3u.cpp"
-					/>
+					Name="Debug|Win32">
+			<Tool
+				Name="VCCustomBuildTool"
+				AdditionalDependencies="$(QTDIR)\bin\moc.exe"
+				CommandLine="$(QTDIR)\bin\moc.exe parserm3u.h -o moc_parserm3u.cpp"
+				Description="Moc&apos;ing parserm3u.h..."
+				Outputs="moc_parserm3u.cpp"/>
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="parserpls.h"
-				>
+				RelativePath="parserpls.h">
 				<FileConfiguration
-					Name="Release|Win32"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-						Description="Moc&apos;ing parserpls.h..."
-						CommandLine="$(QTDIR)\bin\moc.exe parserpls.h -o moc_parserpls.cpp&#x0D;&#x0A;"
-						AdditionalDependencies="$(QTDIR)\bin\moc.exe"
-						Outputs="moc_parserpls.cpp"
-					/>
+					Name="Release|Win32">
+			<Tool
+				Name="VCCustomBuildTool"
+				AdditionalDependencies="$(QTDIR)\bin\moc.exe"
+				CommandLine="$(QTDIR)\bin\moc.exe parserpls.h -o moc_parserpls.cpp"
+				Description="Moc&apos;ing parserpls.h..."
+				Outputs="moc_parserpls.cpp"/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Debug|Win32"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-						Description="Moc&apos;ing parserpls.h..."
-						CommandLine="$(QTDIR)\bin\moc.exe parserpls.h -o moc_parserpls.cpp&#x0D;&#x0A;"
-						AdditionalDependencies="$(QTDIR)\bin\moc.exe"
-						Outputs="moc_parserpls.cpp"
-					/>
+					Name="Debug|Win32">
+			<Tool
+				Name="VCCustomBuildTool"
+				AdditionalDependencies="$(QTDIR)\bin\moc.exe"
+				CommandLine="$(QTDIR)\bin\moc.exe parserpls.h -o moc_parserpls.cpp"
+				Description="Moc&apos;ing parserpls.h..."
+				Outputs="moc_parserpls.cpp"/>
 				</FileConfiguration>
-			</File>
-			<File
-				RelativePath="peaklist.h"
-				>
-			</File>
-			<File
-				RelativePath="visual\pickable.h"
-				>
-			</File>
-			<File
-				RelativePath="visual\picking.h"
-				>
-			</File>
-			<File
-				RelativePath="player.h"
-				>
-			</File>
-			<File
-				RelativePath="playerportaudio.h"
-				>
-			</File>
-			<File
-				RelativePath="playerproxy.h"
-				>
-			</File>
-			<File
-				RelativePath="playerrtaudio.h"
-				>
-			</File>
-			<File
-				RelativePath="..\lib\portaudio-v18\pa_common\portaudio.h"
-				>
 			</File>
 			<File
-				RelativePath="powermate.h"
-				>
+				RelativePath="peaklist.h">
 			</File>
 			<File
-				RelativePath="probabilityvector.h"
-				>
+				RelativePath="visual\pickable.h">
 			</File>
 			<File
-				RelativePath="..\lib\soundtouch\RateTransposer.h"
-				>
+				RelativePath="visual\picking.h">
 			</File>
 			<File
-				RelativePath="reader.h"
-				>
+				RelativePath="player.h">
 			</File>
 			<File
-				RelativePath="readerevent.h"
-				>
+				RelativePath="playerportaudio.h">
 			</File>
 			<File
-				RelativePath="readerextract.h"
-				>
+				RelativePath="playerproxy.h">
 			</File>
 			<File
-				RelativePath="readerextractwave.h"
-				>
+				RelativePath="powermate.h">
 			</File>
 			<File
-				RelativePath="rotary.h"
-				>
+				RelativePath="probabilityvector.h">
 			</File>
 			<File
-				RelativePath="..\lib\rtaudio\RtAudio.h"
-				>
+				RelativePath="reader.h">
 			</File>
 			<File
-				RelativePath="..\lib\rtaudio\RtError.h"
-				>
+				RelativePath="readerevent.h">
 			</File>
 			<File
-				RelativePath="rtthread.h"
-				>
+				RelativePath="readerextract.h">
 			</File>
 			<File
-				RelativePath="soundsource.h"
-				>
+				RelativePath="readerextractwave.h">
 			</File>
 			<File
-				RelativePath="soundsourcemp3.h"
-				>
+				RelativePath="rotary.h">
 			</File>
 			<File
-				RelativePath="soundsourceoggvorbis.h"
-				>
+				RelativePath="rtthread.h">
 			</File>
 			<File
-				RelativePath="soundsourceproxy.h"
-				>
+				RelativePath="soundsource.h">
 			</File>
 			<File
-				RelativePath="soundsourcesndfile.h"
-				>
+				RelativePath="soundsourcemp3.h">
 			</File>
 			<File
-				RelativePath="..\lib\soundtouch\SoundTouch.h"
-				>
+				RelativePath="soundsourceoggvorbis.h">
 			</File>
 			<File
-				RelativePath="..\lib\soundtouch\STTypes.h"
-				>
+				RelativePath="soundsourceproxy.h">
 			</File>
 			<File
-				RelativePath="..\lib\soundtouch\TDStretch.h"
-				>
+				RelativePath="soundsourcesndfile.h">
 			</File>
 			<File
-				RelativePath="visual\texture.h"
-				>
+				RelativePath="visual\texture.h">
 			</File>
 			<File
-				RelativePath="track.h"
-				>
+				RelativePath="track.h">
 				<FileConfiguration
-					Name="Release|Win32"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-						Description="Moc&apos;ing track.h..."
-						CommandLine="$(QTDIR)\bin\moc.exe track.h -o moc_track.cpp&#x0D;&#x0A;"
-						AdditionalDependencies="$(QTDIR)\bin\moc.exe"
-						Outputs="moc_track.cpp"
-					/>
+					Name="Release|Win32">
+			<Tool
+				Name="VCCustomBuildTool"
+				AdditionalDependencies="$(QTDIR)\bin\moc.exe"
+				CommandLine="$(QTDIR)\bin\moc.exe track.h -o moc_track.cpp"
+				Description="Moc&apos;ing track.h..."
+				Outputs="moc_track.cpp"/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Debug|Win32"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-						Description="Moc&apos;ing track.h..."
-						CommandLine="$(QTDIR)\bin\moc.exe track.h -o moc_track.cpp&#x0D;&#x0A;"
-						AdditionalDependencies="$(QTDIR)\bin\moc.exe"
-						Outputs="moc_track.cpp"
-					/>
+					Name="Debug|Win32">
+			<Tool
+				Name="VCCustomBuildTool"
+				AdditionalDependencies="$(QTDIR)\bin\moc.exe"
+				CommandLine="$(QTDIR)\bin\moc.exe track.h -o moc_track.cpp"
+				Description="Moc&apos;ing track.h..."
+				Outputs="moc_track.cpp"/>
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="trackcollection.h"
-				>
+				RelativePath="trackcollection.h">
 			</File>
 			<File
-				RelativePath="trackimporter.h"
-				>
+				RelativePath="trackimporter.h">
 				<FileConfiguration
-					Name="Release|Win32"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-						Description="Moc&apos;ing trackimporter.h..."
-						CommandLine="$(QTDIR)\bin\moc.exe trackimporter.h -o moc_trackimporter.cpp&#x0D;&#x0A;"
-						AdditionalDependencies="$(QTDIR)\bin\moc.exe"
-						Outputs="moc_trackimporter.cpp"
-					/>
+					Name="Release|Win32">
+			<Tool
+				Name="VCCustomBuildTool"
+				AdditionalDependencies="$(QTDIR)\bin\moc.exe"
+				CommandLine="$(QTDIR)\bin\moc.exe trackimporter.h -o moc_trackimporter.cpp"
+				Description="Moc&apos;ing trackimporter.h..."
+				Outputs="moc_trackimporter.cpp"/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Debug|Win32"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-						Description="Moc&apos;ing trackimporter.h..."
-						CommandLine="$(QTDIR)\bin\moc.exe trackimporter.h -o moc_trackimporter.cpp&#x0D;&#x0A;"
-						AdditionalDependencies="$(QTDIR)\bin\moc.exe"
-						Outputs="moc_trackimporter.cpp"
-					/>
+					Name="Debug|Win32">
+			<Tool
+				Name="VCCustomBuildTool"
+				AdditionalDependencies="$(QTDIR)\bin\moc.exe"
+				CommandLine="$(QTDIR)\bin\moc.exe trackimporter.h -o moc_trackimporter.cpp"
+				Description="Moc&apos;ing trackimporter.h..."
+				Outputs="moc_trackimporter.cpp"/>
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="trackinfoobject.h"
-				>
+				RelativePath="trackinfoobject.h">
 				<FileConfiguration
-					Name="Release|Win32"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-						Description="Moc&apos;ing trackinfoobject.h..."
-						CommandLine="$(QTDIR)\bin\moc.exe trackinfoobject.h -o moc_trackinfoobject.cpp&#x0D;&#x0A;"
-						AdditionalDependencies="$(QTDIR)\bin\moc.exe"
-						Outputs="moc_trackinfoobject.cpp"
-					/>
+					Name="Release|Win32">
+			<Tool
+				Name="VCCustomBuildTool"
+				AdditionalDependencies="$(QTDIR)\bin\moc.exe"
+				CommandLine="$(QTDIR)\bin\moc.exe trackinfoobject.h -o moc_trackinfoobject.cpp"
+				Description="Moc&apos;ing trackinfoobject.h..."
+				Outputs="moc_trackinfoobject.cpp"/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Debug|Win32"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-						Description="Moc&apos;ing trackinfoobject.h..."
-						CommandLine="$(QTDIR)\bin\moc.exe trackinfoobject.h -o moc_trackinfoobject.cpp&#x0D;&#x0A;"
-						AdditionalDependencies="$(QTDIR)\bin\moc.exe"
-						Outputs="moc_trackinfoobject.cpp"
-					/>
+					Name="Debug|Win32">
+			<Tool
+				Name="VCCustomBuildTool"
+				AdditionalDependencies="$(QTDIR)\bin\moc.exe"
+				CommandLine="$(QTDIR)\bin\moc.exe trackinfoobject.h -o moc_trackinfoobject.cpp"
+				Description="Moc&apos;ing trackinfoobject.h..."
+				Outputs="moc_trackinfoobject.cpp"/>
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="trackplaylist.h"
-				>
+				RelativePath="trackplaylist.h">
 				<FileConfiguration
-					Name="Release|Win32"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-						Description="Moc&apos;ing trackplaylist.h..."
-						CommandLine="$(QTDIR)\bin\moc.exe trackplaylist.h -o moc_trackplaylist.cpp&#x0D;&#x0A;"
-						AdditionalDependencies="$(QTDIR)\bin\moc.exe"
-						Outputs="moc_trackplaylist.cpp"
-					/>
+					Name="Release|Win32">
+			<Tool
+				Name="VCCustomBuildTool"
+				AdditionalDependencies="$(QTDIR)\bin\moc.exe"
+				CommandLine="$(QTDIR)\bin\moc.exe trackplaylist.h -o moc_trackplaylist.cpp"
+				Description="Moc&apos;ing trackplaylist.h..."
+				Outputs="moc_trackplaylist.cpp"/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Debug|Win32"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-						Description="Moc&apos;ing trackplaylist.h..."
-						CommandLine="$(QTDIR)\bin\moc.exe trackplaylist.h -o moc_trackplaylist.cpp&#x0D;&#x0A;"
-						AdditionalDependencies="$(QTDIR)\bin\moc.exe"
-						Outputs="moc_trackplaylist.cpp"
-					/>
+					Name="Debug|Win32">
+			<Tool
+				Name="VCCustomBuildTool"
+				AdditionalDependencies="$(QTDIR)\bin\moc.exe"
+				CommandLine="$(QTDIR)\bin\moc.exe trackplaylist.h -o moc_trackplaylist.cpp"
+				Description="Moc&apos;ing trackplaylist.h..."
+				Outputs="moc_trackplaylist.cpp"/>
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="trackplaylistlist.h"
-				>
+				RelativePath="trackplaylistlist.h">
 			</File>
 			<File
-				RelativePath="visual\visualbackplane.h"
-				>
+				RelativePath="visual\visualbackplane.h">
 			</File>
 			<File
-				RelativePath="visual\visualbox.h"
-				>
+				RelativePath="visual\visualbox.h">
 			</File>
 			<File
-				RelativePath="visual\visualbuffer.h"
-				>
+				RelativePath="visual\visualbuffer.h">
 				<FileConfiguration
-					Name="Release|Win32"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-						Description="Moc&apos;ing visual\visualbuffer.h..."
-						CommandLine="$(QTDIR)\bin\moc.exe visual\visualbuffer.h -o visual\moc_visualbuffer.cpp&#x0D;&#x0A;"
-						AdditionalDependencies="$(QTDIR)\bin\moc.exe"
-						Outputs="visual\moc_visualbuffer.cpp"
-					/>
+					Name="Release|Win32">
+			<Tool
+				Name="VCCustomBuildTool"
+				AdditionalDependencies="$(QTDIR)\bin\moc.exe"
+				CommandLine="$(QTDIR)\bin\moc.exe visual\visualbuffer.h -o visual\moc_visualbuffer.cpp"
+				Description="Moc&apos;ing visual\visualbuffer.h..."
+				Outputs="visual\moc_visualbuffer.cpp"/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Debug|Win32"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-						Description="Moc&apos;ing visual\visualbuffer.h..."
-						CommandLine="$(QTDIR)\bin\moc.exe visual\visualbuffer.h -o visual\moc_visualbuffer.cpp&#x0D;&#x0A;"
-						AdditionalDependencies="$(QTDIR)\bin\moc.exe"
-						Outputs="visual\moc_visualbuffer.cpp"
-					/>
+					Name="Debug|Win32">
+			<Tool
+				Name="VCCustomBuildTool"
+				AdditionalDependencies="$(QTDIR)\bin\moc.exe"
+				CommandLine="$(QTDIR)\bin\moc.exe visual\visualbuffer.h -o visual\moc_visualbuffer.cpp"
+				Description="Moc&apos;ing visual\visualbuffer.h..."
+				Outputs="visual\moc_visualbuffer.cpp"/>
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="visual\visualbuffermarks.h"
-				>
+				RelativePath="visual\visualbuffermarks.h">
 				<FileConfiguration
-					Name="Release|Win32"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-						Description="Moc&apos;ing visual\visualbuffermarks.h..."
-						CommandLine="$(QTDIR)\bin\moc.exe visual\visualbuffermarks.h -o visual\moc_visualbuffermarks.cpp&#x0D;&#x0A;"
-						AdditionalDependencies="$(QTDIR)\bin\moc.exe"
-						Outputs="visual\moc_visualbuffermarks.cpp"
-					/>
+					Name="Release|Win32">
+			<Tool
+				Name="VCCustomBuildTool"
+				AdditionalDependencies="$(QTDIR)\bin\moc.exe"
+				CommandLine="$(QTDIR)\bin\moc.exe visual\visualbuffermarks.h -o visual\moc_visualbuffermarks.cpp"
+				Description="Moc&apos;ing visual\visualbuffermarks.h..."
+				Outputs="visual\moc_visualbuffermarks.cpp"/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Debug|Win32"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-						Description="Moc&apos;ing visual\visualbuffermarks.h..."
-						CommandLine="$(QTDIR)\bin\moc.exe visual\visualbuffermarks.h -o visual\moc_visualbuffermarks.cpp&#x0D;&#x0A;"
-						AdditionalDependencies="$(QTDIR)\bin\moc.exe"
-						Outputs="visual\moc_visualbuffermarks.cpp"
-					/>
+					Name="Debug|Win32">
+			<Tool
+				Name="VCCustomBuildTool"
+				AdditionalDependencies="$(QTDIR)\bin\moc.exe"
+				CommandLine="$(QTDIR)\bin\moc.exe visual\visualbuffermarks.h -o visual\moc_visualbuffermarks.cpp"
+				Description="Moc&apos;ing visual\visualbuffermarks.h..."
+				Outputs="visual\moc_visualbuffermarks.cpp"/>
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="visual\visualbuffersignal.h"
-				>
+				RelativePath="visual\visualbuffersignal.h">
 				<FileConfiguration
-					Name="Release|Win32"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-						Description="Moc&apos;ing visual\visualbuffersignal.h..."
-						CommandLine="$(QTDIR)\bin\moc.exe visual\visualbuffersignal.h -o visual\moc_visualbuffersignal.cpp&#x0D;&#x0A;"
-						AdditionalDependencies="$(QTDIR)\bin\moc.exe"
-						Outputs="visual\moc_visualbuffersignal.cpp"
-					/>
+					Name="Release|Win32">
+			<Tool
+				Name="VCCustomBuildTool"
+				AdditionalDependencies="$(QTDIR)\bin\moc.exe"
+				CommandLine="$(QTDIR)\bin\moc.exe visual\visualbuffersignal.h -o visual\moc_visualbuffersignal.cpp"
+				Description="Moc&apos;ing visual\visualbuffersignal.h..."
+				Outputs="visual\moc_visualbuffersignal.cpp"/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Debug|Win32"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-						Description="Moc&apos;ing visual\visualbuffersignal.h..."
-						CommandLine="$(QTDIR)\bin\moc.exe visual\visualbuffersignal.h -o visual\moc_visualbuffersignal.cpp&#x0D;&#x0A;"
-						AdditionalDependencies="$(QTDIR)\bin\moc.exe"
-						Outputs="visual\moc_visualbuffersignal.cpp"
-					/>
+					Name="Debug|Win32">
+			<Tool
+				Name="VCCustomBuildTool"
+				AdditionalDependencies="$(QTDIR)\bin\moc.exe"
+				CommandLine="$(QTDIR)\bin\moc.exe visual\visualbuffersignal.h -o visual\moc_visualbuffersignal.cpp"
+				Description="Moc&apos;ing visual\visualbuffersignal.h..."
+				Outputs="visual\moc_visualbuffersignal.cpp"/>
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="visual\visualbuffersignalhfc.h"
-				>
+				RelativePath="visual\visualbuffersignalhfc.h">
 			</File>
 			<File
-				RelativePath="visual\visualbuffertemporal.h"
-				>
+				RelativePath="visual\visualbuffertemporal.h">
 				<FileConfiguration
-					Name="Release|Win32"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-						Description="Moc&apos;ing visual\visualbuffertemporal.h..."
-						CommandLine="$(QTDIR)\bin\moc.exe visual\visualbuffertemporal.h -o visual\moc_visualbuffertemporal.cpp&#x0D;&#x0A;"
-						AdditionalDependencies="$(QTDIR)\bin\moc.exe"
-						Outputs="visual\moc_visualbuffertemporal.cpp"
-					/>
+					Name="Release|Win32">
+			<Tool
+				Name="VCCustomBuildTool"
+				AdditionalDependencies="$(QTDIR)\bin\moc.exe"
+				CommandLine="$(QTDIR)\bin\moc.exe visual\visualbuffertemporal.h -o visual\moc_visualbuffertemporal.cpp"
+				Description="Moc&apos;ing visual\visualbuffertemporal.h..."
+				Outputs="visual\moc_visualbuffertemporal.cpp"/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Debug|Win32"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-						Description="Moc&apos;ing visual\visualbuffertemporal.h..."
-						CommandLine="$(QTDIR)\bin\moc.exe visual\visualbuffertemporal.h -o visual\moc_visualbuffertemporal.cpp&#x0D;&#x0A;"
-						AdditionalDependencies="$(QTDIR)\bin\moc.exe"
-						Outputs="visual\moc_visualbuffertemporal.cpp"
-					/>
+					Name="Debug|Win32">
+			<Tool
+				Name="VCCustomBuildTool"
+				AdditionalDependencies="$(QTDIR)\bin\moc.exe"
+				CommandLine="$(QTDIR)\bin\moc.exe visual\visualbuffertemporal.h -o visual\moc_visualbuffertemporal.cpp"
+				Description="Moc&apos;ing visual\visualbuffertemporal.h..."
+				Outputs="visual\moc_visualbuffertemporal.cpp"/>
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="visual\visualchannel.h"
-				>
+				RelativePath="visual\visualchannel.h">
 			</File>
 			<File
-				RelativePath="visual\visualcontroller.h"
-				>
+				RelativePath="visual\visualcontroller.h">
 			</File>
 			<File
-				RelativePath="visual\visualdisplay.h"
-				>
+				RelativePath="visual\visualdisplay.h">
 				<FileConfiguration
-					Name="Release|Win32"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-						Description="Moc&apos;ing visual\visualdisplay.h..."
-						CommandLine="$(QTDIR)\bin\moc.exe visual\visualdisplay.h -o visual\moc_visualdisplay.cpp&#x0D;&#x0A;"
-						AdditionalDependencies="$(QTDIR)\bin\moc.exe"
-						Outputs="visual\moc_visualdisplay.cpp"
-					/>
+					Name="Release|Win32">
+			<Tool
+				Name="VCCustomBuildTool"
+				AdditionalDependencies="$(QTDIR)\bin\moc.exe"
+				CommandLine="$(QTDIR)\bin\moc.exe visual\visualdisplay.h -o visual\moc_visualdisplay.cpp"
+				Description="Moc&apos;ing visual\visualdisplay.h..."
+				Outputs="visual\moc_visualdisplay.cpp"/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Debug|Win32"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-						Description="Moc&apos;ing visual\visualdisplay.h..."
-						CommandLine="$(QTDIR)\bin\moc.exe visual\visualdisplay.h -o visual\moc_visualdisplay.cpp&#x0D;&#x0A;"
-						AdditionalDependencies="$(QTDIR)\bin\moc.exe"
-						Outputs="visual\moc_visualdisplay.cpp"
-					/>
+					Name="Debug|Win32">
+			<Tool
+				Name="VCCustomBuildTool"
+				AdditionalDependencies="$(QTDIR)\bin\moc.exe"
+				CommandLine="$(QTDIR)\bin\moc.exe visual\visualdisplay.h -o visual\moc_visualdisplay.cpp"
+				Description="Moc&apos;ing visual\visualdisplay.h..."
+				Outputs="visual\moc_visualdisplay.cpp"/>
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="visual\visualdisplaybuffer.h"
-				>
+				RelativePath="visual\visualdisplaybuffer.h">
 			</File>
 			<File
-				RelativePath="visual\visualobject.h"
-				>
+				RelativePath="visual\visualobject.h">
 			</File>
 			<File
-				RelativePath="wavesegmentation.h"
-				>
+				RelativePath="wavesegmentation.h">
 			</File>
 			<File
-				RelativePath="wavesummary.h"
-				>
+				RelativePath="wavesummary.h">
 			</File>
 			<File
-				RelativePath="wdisplay.h"
-				>
+				RelativePath="wdisplay.h">
 				<FileConfiguration
-					Name="Release|Win32"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-						Description="Moc&apos;ing wdisplay.h..."
-						CommandLine="$(QTDIR)\bin\moc.exe wdisplay.h -o moc_wdisplay.cpp&#x0D;&#x0A;"
-						AdditionalDependencies="$(QTDIR)\bin\moc.exe"
-						Outputs="moc_wdisplay.cpp"
-					/>
+					Name="Release|Win32">
+			<Tool
+				Name="VCCustomBuildTool"
+				AdditionalDependencies="$(QTDIR)\bin\moc.exe"
+				CommandLine="$(QTDIR)\bin\moc.exe wdisplay.h -o moc_wdisplay.cpp"
+				Description="Moc&apos;ing wdisplay.h..."
+				Outputs="moc_wdisplay.cpp"/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Debug|Win32"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-						Description="Moc&apos;ing wdisplay.h..."
-						CommandLine="$(QTDIR)\bin\moc.exe wdisplay.h -o moc_wdisplay.cpp&#x0D;&#x0A;"
-						AdditionalDependencies="$(QTDIR)\bin\moc.exe"
-						Outputs="moc_wdisplay.cpp"
-					/>
+					Name="Debug|Win32">
+			<Tool
+				Name="VCCustomBuildTool"
+				AdditionalDependencies="$(QTDIR)\bin\moc.exe"
+				CommandLine="$(QTDIR)\bin\moc.exe wdisplay.h -o moc_wdisplay.cpp"
+				Description="Moc&apos;ing wdisplay.h..."
+				Outputs="moc_wdisplay.cpp"/>
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="windowkaiser.h"
-				>
+				RelativePath="windowkaiser.h">
 			</File>
 			<File
-				RelativePath="wknob.h"
-				>
+				RelativePath="wknob.h">
 				<FileConfiguration
-					Name="Release|Win32"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-						Description="Moc&apos;ing wknob.h..."
-						CommandLine="$(QTDIR)\bin\moc.exe wknob.h -o moc_wknob.cpp&#x0D;&#x0A;"
-						AdditionalDependencies="$(QTDIR)\bin\moc.exe"
-						Outputs="moc_wknob.cpp"
-					/>
+					Name="Release|Win32">
+			<Tool
+				Name="VCCustomBuildTool"
+				AdditionalDependencies="$(QTDIR)\bin\moc.exe"
+				CommandLine="$(QTDIR)\bin\moc.exe wknob.h -o moc_wknob.cpp"
+				Description="Moc&apos;ing wknob.h..."
+				Outputs="moc_wknob.cpp"/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Debug|Win32"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-						Description="Moc&apos;ing wknob.h..."
-						CommandLine="$(QTDIR)\bin\moc.exe wknob.h -o moc_wknob.cpp&#x0D;&#x0A;"
-						AdditionalDependencies="$(QTDIR)\bin\moc.exe"
-						Outputs="moc_wknob.cpp"
-					/>
+					Name="Debug|Win32">
+			<Tool
+				Name="VCCustomBuildTool"
+				AdditionalDependencies="$(QTDIR)\bin\moc.exe"
+				CommandLine="$(QTDIR)\bin\moc.exe wknob.h -o moc_wknob.cpp"
+				Description="Moc&apos;ing wknob.h..."
+				Outputs="moc_wknob.cpp"/>
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="wlabel.h"
-				>
+				RelativePath="wlabel.h">
 				<FileConfiguration
-					Name="Release|Win32"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-						Description="Moc&apos;ing wlabel.h..."
-						CommandLine="$(QTDIR)\bin\moc.exe wlabel.h -o moc_wlabel.cpp&#x0D;&#x0A;"
-						AdditionalDependencies="$(QTDIR)\bin\moc.exe"
-						Outputs="moc_wlabel.cpp"
-					/>
+					Name="Release|Win32">
+			<Tool
+				Name="VCCustomBuildTool"
+				AdditionalDependencies="$(QTDIR)\bin\moc.exe"
+				CommandLine="$(QTDIR)\bin\moc.exe wlabel.h -o moc_wlabel.cpp"
+				Description="Moc&apos;ing wlabel.h..."
+				Outputs="moc_wlabel.cpp"/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Debug|Win32"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-						Description="Moc&apos;ing wlabel.h..."
-						CommandLine="$(QTDIR)\bin\moc.exe wlabel.h -o moc_wlabel.cpp&#x0D;&#x0A;"
-						AdditionalDependencies="$(QTDIR)\bin\moc.exe"
-						Outputs="moc_wlabel.cpp"
-					/>
+					Name="Debug|Win32">
+			<Tool
+				Name="VCCustomBuildTool"
+				AdditionalDependencies="$(QTDIR)\bin\moc.exe"
+				CommandLine="$(QTDIR)\bin\moc.exe wlabel.h -o moc_wlabel.cpp"
+				Description="Moc&apos;ing wlabel.h..."
+				Outputs="moc_wlabel.cpp"/>
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="wnumber.h"
-				>
+				RelativePath="wnumber.h">
 				<FileConfiguration
-					Name="Release|Win32"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-						Description="Moc&apos;ing wnumber.h..."
-						CommandLine="$(QTDIR)\bin\moc.exe wnumber.h -o moc_wnumber.cpp&#x0D;&#x0A;"
-						AdditionalDependencies="$(QTDIR)\bin\moc.exe"
-						Outputs="moc_wnumber.cpp"
-					/>
+					Name="Release|Win32">
+			<Tool
+				Name="VCCustomBuildTool"
+				AdditionalDependencies="$(QTDIR)\bin\moc.exe"
+				CommandLine="$(QTDIR)\bin\moc.exe wnumber.h -o moc_wnumber.cpp"
+				Description="Moc&apos;ing wnumber.h..."
+				Outputs="moc_wnumber.cpp"/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Debug|Win32"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-						Description="Moc&apos;ing wnumber.h..."
-						CommandLine="$(QTDIR)\bin\moc.exe wnumber.h -o moc_wnumber.cpp&#x0D;&#x0A;"
-						AdditionalDependencies="$(QTDIR)\bin\moc.exe"
-						Outputs="moc_wnumber.cpp"
-					/>
+					Name="Debug|Win32">
+			<Tool
+				Name="VCCustomBuildTool"
+				AdditionalDependencies="$(QTDIR)\bin\moc.exe"
+				CommandLine="$(QTDIR)\bin\moc.exe wnumber.h -o moc_wnumber.cpp"
+				Description="Moc&apos;ing wnumber.h..."
+				Outputs="moc_wnumber.cpp"/>
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="wnumberbpm.h"
-				>
+				RelativePath="wnumberbpm.h">
 				<FileConfiguration
-					Name="Release|Win32"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-						Description="Moc&apos;ing wnumberbpm.h..."
-						CommandLine="$(QTDIR)\bin\moc.exe wnumberbpm.h -o moc_wnumberbpm.cpp&#x0D;&#x0A;"
-						AdditionalDependencies="$(QTDIR)\bin\moc.exe"
-						Outputs="moc_wnumberbpm.cpp"
-					/>
+					Name="Release|Win32">
+			<Tool
+				Name="VCCustomBuildTool"
+				AdditionalDependencies="$(QTDIR)\bin\moc.exe"
+				CommandLine="$(QTDIR)\bin\moc.exe wnumberbpm.h -o moc_wnumberbpm.cpp"
+				Description="Moc&apos;ing wnumberbpm.h..."
+				Outputs="moc_wnumberbpm.cpp"/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Debug|Win32"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-						Description="Moc&apos;ing wnumberbpm.h..."
-						CommandLine="$(QTDIR)\bin\moc.exe wnumberbpm.h -o moc_wnumberbpm.cpp&#x0D;&#x0A;"
-						AdditionalDependencies="$(QTDIR)\bin\moc.exe"
-						Outputs="moc_wnumberbpm.cpp"
-					/>
+					Name="Debug|Win32">
+			<Tool
+				Name="VCCustomBuildTool"
+				AdditionalDependencies="$(QTDIR)\bin\moc.exe"
+				CommandLine="$(QTDIR)\bin\moc.exe wnumberbpm.h -o moc_wnumberbpm.cpp"
+				Description="Moc&apos;ing wnumberbpm.h..."
+				Outputs="moc_wnumberbpm.cpp"/>
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="wnumberpos.h"
-				>
+				RelativePath="wnumberpos.h">
 				<FileConfiguration
-					Name="Release|Win32"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-						Description="Moc&apos;ing wnumberpos.h..."
-						CommandLine="$(QTDIR)\bin\moc.exe wnumberpos.h -o moc_wnumberpos.cpp&#x0D;&#x0A;"
-						AdditionalDependencies="$(QTDIR)\bin\moc.exe"
-						Outputs="moc_wnumberpos.cpp"
-					/>
+					Name="Release|Win32">
+			<Tool
+				Name="VCCustomBuildTool"
+				AdditionalDependencies="$(QTDIR)\bin\moc.exe"
+				CommandLine="$(QTDIR)\bin\moc.exe wnumberpos.h -o moc_wnumberpos.cpp"
+				Description="Moc&apos;ing wnumberpos.h..."
+				Outputs="moc_wnumberpos.cpp"/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Debug|Win32"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-						Description="Moc&apos;ing wnumberpos.h..."
-						CommandLine="$(QTDIR)\bin\moc.exe wnumberpos.h -o moc_wnumberpos.cpp&#x0D;&#x0A;"
-						AdditionalDependencies="$(QTDIR)\bin\moc.exe"
-						Outputs="moc_wnumberpos.cpp"
-					/>
+					Name="Debug|Win32">
+			<Tool
+				Name="VCCustomBuildTool"
+				AdditionalDependencies="$(QTDIR)\bin\moc.exe"
+				CommandLine="$(QTDIR)\bin\moc.exe wnumberpos.h -o moc_wnumberpos.cpp"
+				Description="Moc&apos;ing wnumberpos.h..."
+				Outputs="moc_wnumberpos.cpp"/>
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="wnumberrate.h"
-				>
+				RelativePath="wnumberrate.h">
 				<FileConfiguration
-					Name="Release|Win32"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-						Description="Moc&apos;ing wnumberrate.h..."
-						CommandLine="$(QTDIR)\bin\moc.exe wnumberrate.h -o moc_wnumberrate.cpp&#x0D;&#x0A;"
-						AdditionalDependencies="$(QTDIR)\bin\moc.exe"
-						Outputs="moc_wnumberrate.cpp"
-					/>
+					Name="Release|Win32">
+			<Tool
+				Name="VCCustomBuildTool"
+				AdditionalDependencies="$(QTDIR)\bin\moc.exe"
+				CommandLine="$(QTDIR)\bin\moc.exe wnumberrate.h -o moc_wnumberrate.cpp"
+				Description="Moc&apos;ing wnumberrate.h..."
+				Outputs="moc_wnumberrate.cpp"/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Debug|Win32"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-						Description="Moc&apos;ing wnumberrate.h..."
-						CommandLine="$(QTDIR)\bin\moc.exe wnumberrate.h -o moc_wnumberrate.cpp&#x0D;&#x0A;"
-						AdditionalDependencies="$(QTDIR)\bin\moc.exe"
-						Outputs="moc_wnumberrate.cpp"
-					/>
+					Name="Debug|Win32">
+			<Tool
+				Name="VCCustomBuildTool"
+				AdditionalDependencies="$(QTDIR)\bin\moc.exe"
+				CommandLine="$(QTDIR)\bin\moc.exe wnumberrate.h -o moc_wnumberrate.cpp"
+				Description="Moc&apos;ing wnumberrate.h..."
+				Outputs="moc_wnumberrate.cpp"/>
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="woverview.h"
-				>
+				RelativePath="woverview.h">
 				<FileConfiguration
-					Name="Release|Win32"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-						Description="Moc&apos;ing woverview.h..."
-						CommandLine="$(QTDIR)\bin\moc.exe woverview.h -o moc_woverview.cpp&#x0D;&#x0A;"
-						AdditionalDependencies="$(QTDIR)\bin\moc.exe"
-						Outputs="moc_woverview.cpp"
-					/>
+					Name="Release|Win32">
+			<Tool
+				Name="VCCustomBuildTool"
+				AdditionalDependencies="$(QTDIR)\bin\moc.exe"
+				CommandLine="$(QTDIR)\bin\moc.exe woverview.h -o moc_woverview.cpp"
+				Description="Moc&apos;ing woverview.h..."
+				Outputs="moc_woverview.cpp"/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Debug|Win32"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-						Description="Moc&apos;ing woverview.h..."
-						CommandLine="$(QTDIR)\bin\moc.exe woverview.h -o moc_woverview.cpp&#x0D;&#x0A;"
-						AdditionalDependencies="$(QTDIR)\bin\moc.exe"
-						Outputs="moc_woverview.cpp"
-					/>
+					Name="Debug|Win32">
+			<Tool
+				Name="VCCustomBuildTool"
+				AdditionalDependencies="$(QTDIR)\bin\moc.exe"
+				CommandLine="$(QTDIR)\bin\moc.exe woverview.h -o moc_woverview.cpp"
+				Description="Moc&apos;ing woverview.h..."
+				Outputs="moc_woverview.cpp"/>
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="wpixmapstore.h"
-				>
+				RelativePath="wpixmapstore.h">
 			</File>
 			<File
-				RelativePath="wpushbutton.h"
-				>
+				RelativePath="wpushbutton.h">
 				<FileConfiguration
-					Name="Release|Win32"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-						Description="Moc&apos;ing wpushbutton.h..."
-						CommandLine="$(QTDIR)\bin\moc.exe wpushbutton.h -o moc_wpushbutton.cpp&#x0D;&#x0A;"
-						AdditionalDependencies="$(QTDIR)\bin\moc.exe"
-						Outputs="moc_wpushbutton.cpp"
-					/>
+					Name="Release|Win32">
+			<Tool
+				Name="VCCustomBuildTool"
+				AdditionalDependencies="$(QTDIR)\bin\moc.exe"
+				CommandLine="$(QTDIR)\bin\moc.exe wpushbutton.h -o moc_wpushbutton.cpp"
+				Description="Moc&apos;ing wpushbutton.h..."
+				Outputs="moc_wpushbutton.cpp"/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Debug|Win32"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-						Description="Moc&apos;ing wpushbutton.h..."
-						CommandLine="$(QTDIR)\bin\moc.exe wpushbutton.h -o moc_wpushbutton.cpp&#x0D;&#x0A;"
-						AdditionalDependencies="$(QTDIR)\bin\moc.exe"
-						Outputs="moc_wpushbutton.cpp"
-					/>
+					Name="Debug|Win32">
+			<Tool
+				Name="VCCustomBuildTool"
+				AdditionalDependencies="$(QTDIR)\bin\moc.exe"
+				CommandLine="$(QTDIR)\bin\moc.exe wpushbutton.h -o moc_wpushbutton.cpp"
+				Description="Moc&apos;ing wpushbutton.h..."
+				Outputs="moc_wpushbutton.cpp"/>
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="wslider.h"
-				>
+				RelativePath="wslider.h">
 			</File>
 			<File
-				RelativePath="wslidercomposed.h"
-				>
+				RelativePath="wslidercomposed.h">
 				<FileConfiguration
-					Name="Release|Win32"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-						Description="Moc&apos;ing wslidercomposed.h..."
-						CommandLine="$(QTDIR)\bin\moc.exe wslidercomposed.h -o moc_wslidercomposed.cpp&#x0D;&#x0A;"
-						AdditionalDependencies="$(QTDIR)\bin\moc.exe"
-						Outputs="moc_wslidercomposed.cpp"
-					/>
+					Name="Release|Win32">
+			<Tool
+				Name="VCCustomBuildTool"
+				AdditionalDependencies="$(QTDIR)\bin\moc.exe"
+				CommandLine="$(QTDIR)\bin\moc.exe wslidercomposed.h -o moc_wslidercomposed.cpp"
+				Description="Moc&apos;ing wslidercomposed.h..."
+				Outputs="moc_wslidercomposed.cpp"/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Debug|Win32"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-						Description="Moc&apos;ing wslidercomposed.h..."
-						CommandLine="$(QTDIR)\bin\moc.exe wslidercomposed.h -o moc_wslidercomposed.cpp&#x0D;&#x0A;"
-						AdditionalDependencies="$(QTDIR)\bin\moc.exe"
-						Outputs="moc_wslidercomposed.cpp"
-					/>
+					Name="Debug|Win32">
+			<Tool
+				Name="VCCustomBuildTool"
+				AdditionalDependencies="$(QTDIR)\bin\moc.exe"
+				CommandLine="$(QTDIR)\bin\moc.exe wslidercomposed.h -o moc_wslidercomposed.cpp"
+				Description="Moc&apos;ing wslidercomposed.h..."
+				Outputs="moc_wslidercomposed.cpp"/>
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="wtracktable.h"
-				>
+				RelativePath="wtracktable.h">
 				<FileConfiguration
-					Name="Release|Win32"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-						Description="Moc&apos;ing wtracktable.h..."
-						CommandLine="$(QTDIR)\bin\moc.exe wtracktable.h -o moc_wtracktable.cpp&#x0D;&#x0A;"
-						AdditionalDependencies="$(QTDIR)\bin\moc.exe"
-						Outputs="moc_wtracktable.cpp"
-					/>
+					Name="Release|Win32">
+			<Tool
+				Name="VCCustomBuildTool"
+				AdditionalDependencies="$(QTDIR)\bin\moc.exe"
+				CommandLine="$(QTDIR)\bin\moc.exe wtracktable.h -o moc_wtracktable.cpp"
+				Description="Moc&apos;ing wtracktable.h..."
+				Outputs="moc_wtracktable.cpp"/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Debug|Win32"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-						Description="Moc&apos;ing wtracktable.h..."
-						CommandLine="$(QTDIR)\bin\moc.exe wtracktable.h -o moc_wtracktable.cpp&#x0D;&#x0A;"
-						AdditionalDependencies="$(QTDIR)\bin\moc.exe"
-						Outputs="moc_wtracktable.cpp"
-					/>
+					Name="Debug|Win32">
+			<Tool
+				Name="VCCustomBuildTool"
+				AdditionalDependencies="$(QTDIR)\bin\moc.exe"
+				CommandLine="$(QTDIR)\bin\moc.exe wtracktable.h -o moc_wtracktable.cpp"
+				Description="Moc&apos;ing wtracktable.h..."
+				Outputs="moc_wtracktable.cpp"/>
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="wtracktableitem.h"
-				>
+				RelativePath="wtracktableitem.h">
 			</File>
 			<File
-				RelativePath="wtreeitem.h"
-				>
+				RelativePath="wtreeitem.h">
 			</File>
 			<File
-				RelativePath="wtreeitemdir.h"
-				>
+				RelativePath="wtreeitemdir.h">
 			</File>
 			<File
-				RelativePath="wtreeitemfile.h"
-				>
+				RelativePath="wtreeitemfile.h">
 				<FileConfiguration
-					Name="Release|Win32"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-						Description="Moc&apos;ing wtreeitemfile.h..."
-						CommandLine="$(QTDIR)\bin\moc.exe wtreeitemfile.h -o moc_wtreeitemfile.cpp&#x0D;&#x0A;"
-						AdditionalDependencies="$(QTDIR)\bin\moc.exe"
-						Outputs="moc_wtreeitemfile.cpp"
-					/>
+					Name="Release|Win32">
+			<Tool
+				Name="VCCustomBuildTool"
+				AdditionalDependencies="$(QTDIR)\bin\moc.exe"
+				CommandLine="$(QTDIR)\bin\moc.exe wtreeitemfile.h -o moc_wtreeitemfile.cpp"
+				Description="Moc&apos;ing wtreeitemfile.h..."
+				Outputs="moc_wtreeitemfile.cpp"/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Debug|Win32"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-						Description="Moc&apos;ing wtreeitemfile.h..."
-						CommandLine="$(QTDIR)\bin\moc.exe wtreeitemfile.h -o moc_wtreeitemfile.cpp&#x0D;&#x0A;"
-						AdditionalDependencies="$(QTDIR)\bin\moc.exe"
-						Outputs="moc_wtreeitemfile.cpp"
-					/>
+					Name="Debug|Win32">
+			<Tool
+				Name="VCCustomBuildTool"
+				AdditionalDependencies="$(QTDIR)\bin\moc.exe"
+				CommandLine="$(QTDIR)\bin\moc.exe wtreeitemfile.h -o moc_wtreeitemfile.cpp"
+				Description="Moc&apos;ing wtreeitemfile.h..."
+				Outputs="moc_wtreeitemfile.cpp"/>
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="wtreeitemplaylist.h"
-				>
+				RelativePath="wtreeitemplaylist.h">
 				<FileConfiguration
-					Name="Release|Win32"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-						Description="Moc&apos;ing wtreeitemplaylist.h..."
-						CommandLine="$(QTDIR)\bin\moc.exe wtreeitemplaylist.h -o moc_wtreeitemplaylist.cpp&#x0D;&#x0A;"
-						AdditionalDependencies="$(QTDIR)\bin\moc.exe"
-						Outputs="moc_wtreeitemplaylist.cpp"
-					/>
+					Name="Release|Win32">
+			<Tool
+				Name="VCCustomBuildTool"
+				AdditionalDependencies="$(QTDIR)\bin\moc.exe"
+				CommandLine="$(QTDIR)\bin\moc.exe wtreeitemplaylist.h -o moc_wtreeitemplaylist.cpp"
+				Description="Moc&apos;ing wtreeitemplaylist.h..."
+				Outputs="moc_wtreeitemplaylist.cpp"/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Debug|Win32"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-						Description="Moc&apos;ing wtreeitemplaylist.h..."
-						CommandLine="$(QTDIR)\bin\moc.exe wtreeitemplaylist.h -o moc_wtreeitemplaylist.cpp&#x0D;&#x0A;"
-						AdditionalDependencies="$(QTDIR)\bin\moc.exe"
-						Outputs="moc_wtreeitemplaylist.cpp"
-					/>
+					Name="Debug|Win32">
+			<Tool
+				Name="VCCustomBuildTool"
+				AdditionalDependencies="$(QTDIR)\bin\moc.exe"
+				CommandLine="$(QTDIR)\bin\moc.exe wtreeitemplaylist.h -o moc_wtreeitemplaylist.cpp"
+				Description="Moc&apos;ing wtreeitemplaylist.h..."
+				Outputs="moc_wtreeitemplaylist.cpp"/>
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="wtreeitemplaylistroot.h"
-				>
+				RelativePath="wtreeitemplaylistroot.h">
 			</File>
 			<File
-				RelativePath="wtreeview.h"
-				>
+				RelativePath="wtreeview.h">
 				<FileConfiguration
-					Name="Release|Win32"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-						Description="Moc&apos;ing wtreeview.h..."
-						CommandLine="$(QTDIR)\bin\moc.exe wtreeview.h -o moc_wtreeview.cpp&#x0D;&#x0A;"
-						AdditionalDependencies="$(QTDIR)\bin\moc.exe"
-						Outputs="moc_wtreeview.cpp"
-					/>
+					Name="Release|Win32">
+			<Tool
+				Name="VCCustomBuildTool"
+				AdditionalDependencies="$(QTDIR)\bin\moc.exe"
+				CommandLine="$(QTDIR)\bin\moc.exe wtreeview.h -o moc_wtreeview.cpp"
+				Description="Moc&apos;ing wtreeview.h..."
+				Outputs="moc_wtreeview.cpp"/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Debug|Win32"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-						Description="Moc&apos;ing wtreeview.h..."
-						CommandLine="$(QTDIR)\bin\moc.exe wtreeview.h -o moc_wtreeview.cpp&#x0D;&#x0A;"
-						AdditionalDependencies="$(QTDIR)\bin\moc.exe"
-						Outputs="moc_wtreeview.cpp"
-					/>
+					Name="Debug|Win32">
+			<Tool
+				Name="VCCustomBuildTool"
+				AdditionalDependencies="$(QTDIR)\bin\moc.exe"
+				CommandLine="$(QTDIR)\bin\moc.exe wtreeview.h -o moc_wtreeview.cpp"
+				Description="Moc&apos;ing wtreeview.h..."
+				Outputs="moc_wtreeview.cpp"/>
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="wvisualsimple.h"
-				>
+				RelativePath="wvisualsimple.h">
 				<FileConfiguration
-					Name="Release|Win32"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-						Description="Moc&apos;ing wvisualsimple.h..."
-						CommandLine="$(QTDIR)\bin\moc.exe wvisualsimple.h -o moc_wvisualsimple.cpp&#x0D;&#x0A;"
-						AdditionalDependencies="$(QTDIR)\bin\moc.exe"
-						Outputs="moc_wvisualsimple.cpp"
-					/>
+					Name="Release|Win32">
+			<Tool
+				Name="VCCustomBuildTool"
+				AdditionalDependencies="$(QTDIR)\bin\moc.exe"
+				CommandLine="$(QTDIR)\bin\moc.exe wvisualsimple.h -o moc_wvisualsimple.cpp"
+				Description="Moc&apos;ing wvisualsimple.h..."
+				Outputs="moc_wvisualsimple.cpp"/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Debug|Win32"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-						Description="Moc&apos;ing wvisualsimple.h..."
-						CommandLine="$(QTDIR)\bin\moc.exe wvisualsimple.h -o moc_wvisualsimple.cpp&#x0D;&#x0A;"
-						AdditionalDependencies="$(QTDIR)\bin\moc.exe"
-						Outputs="moc_wvisualsimple.cpp"
-					/>
+					Name="Debug|Win32">
+			<Tool
+				Name="VCCustomBuildTool"
+				AdditionalDependencies="$(QTDIR)\bin\moc.exe"
+				CommandLine="$(QTDIR)\bin\moc.exe wvisualsimple.h -o moc_wvisualsimple.cpp"
+				Description="Moc&apos;ing wvisualsimple.h..."
+				Outputs="moc_wvisualsimple.cpp"/>
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="wvisualwaveform.h"
-				>
+				RelativePath="wvisualwaveform.h">
 				<FileConfiguration
-					Name="Release|Win32"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-						Description="Moc&apos;ing wvisualwaveform.h..."
-						CommandLine="$(QTDIR)\bin\moc.exe wvisualwaveform.h -o moc_wvisualwaveform.cpp&#x0D;&#x0A;"
-						AdditionalDependencies="$(QTDIR)\bin\moc.exe"
-						Outputs="moc_wvisualwaveform.cpp"
-					/>
+					Name="Release|Win32">
+			<Tool
+				Name="VCCustomBuildTool"
+				AdditionalDependencies="$(QTDIR)\bin\moc.exe"
+				CommandLine="$(QTDIR)\bin\moc.exe wvisualwaveform.h -o moc_wvisualwaveform.cpp"
+				Description="Moc&apos;ing wvisualwaveform.h..."
+				Outputs="moc_wvisualwaveform.cpp"/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Debug|Win32"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-						Description="Moc&apos;ing wvisualwaveform.h..."
-						CommandLine="$(QTDIR)\bin\moc.exe wvisualwaveform.h -o moc_wvisualwaveform.cpp&#x0D;&#x0A;"
-						AdditionalDependencies="$(QTDIR)\bin\moc.exe"
-						Outputs="moc_wvisualwaveform.cpp"
-					/>
+					Name="Debug|Win32">
+			<Tool
+				Name="VCCustomBuildTool"
+				AdditionalDependencies="$(QTDIR)\bin\moc.exe"
+				CommandLine="$(QTDIR)\bin\moc.exe wvisualwaveform.h -o moc_wvisualwaveform.cpp"
+				Description="Moc&apos;ing wvisualwaveform.h..."
+				Outputs="moc_wvisualwaveform.cpp"/>
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="wvumeter.h"
-				>
+				RelativePath="wvumeter.h">
 				<FileConfiguration
-					Name="Release|Win32"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-						Description="Moc&apos;ing wvumeter.h..."
-						CommandLine="$(QTDIR)\bin\moc.exe wvumeter.h -o moc_wvumeter.cpp&#x0D;&#x0A;"
-						AdditionalDependencies="$(QTDIR)\bin\moc.exe"
-						Outputs="moc_wvumeter.cpp"
-					/>
+					Name="Release|Win32">
+			<Tool
+				Name="VCCustomBuildTool"
+				AdditionalDependencies="$(QTDIR)\bin\moc.exe"
+				CommandLine="$(QTDIR)\bin\moc.exe wvumeter.h -o moc_wvumeter.cpp"
+				Description="Moc&apos;ing wvumeter.h..."
+				Outputs="moc_wvumeter.cpp"/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Debug|Win32"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-						Description="Moc&apos;ing wvumeter.h..."
-						CommandLine="$(QTDIR)\bin\moc.exe wvumeter.h -o moc_wvumeter.cpp&#x0D;&#x0A;"
-						AdditionalDependencies="$(QTDIR)\bin\moc.exe"
-						Outputs="moc_wvumeter.cpp"
-					/>
+					Name="Debug|Win32">
+			<Tool
+				Name="VCCustomBuildTool"
+				AdditionalDependencies="$(QTDIR)\bin\moc.exe"
+				CommandLine="$(QTDIR)\bin\moc.exe wvumeter.h -o moc_wvumeter.cpp"
+				Description="Moc&apos;ing wvumeter.h..."
+				Outputs="moc_wvumeter.cpp"/>
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="wwidget.h"
-				>
+				RelativePath="wwidget.h">
 				<FileConfiguration
-					Name="Release|Win32"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-						Description="Moc&apos;ing wwidget.h..."
-						CommandLine="$(QTDIR)\bin\moc.exe wwidget.h -o moc_wwidget.cpp&#x0D;&#x0A;"
-						AdditionalDependencies="$(QTDIR)\bin\moc.exe"
-						Outputs="moc_wwidget.cpp"
-					/>
+					Name="Release|Win32">
+			<Tool
+				Name="VCCustomBuildTool"
+				AdditionalDependencies="$(QTDIR)\bin\moc.exe"
+				CommandLine="$(QTDIR)\bin\moc.exe wwidget.h -o moc_wwidget.cpp"
+				Description="Moc&apos;ing wwidget.h..."
+				Outputs="moc_wwidget.cpp"/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Debug|Win32"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-						Description="Moc&apos;ing wwidget.h..."
-						CommandLine="$(QTDIR)\bin\moc.exe wwidget.h -o moc_wwidget.cpp&#x0D;&#x0A;"
-						AdditionalDependencies="$(QTDIR)\bin\moc.exe"
-						Outputs="moc_wwidget.cpp"
-					/>
+					Name="Debug|Win32">
+			<Tool
+				Name="VCCustomBuildTool"
+				AdditionalDependencies="$(QTDIR)\bin\moc.exe"
+				CommandLine="$(QTDIR)\bin\moc.exe wwidget.h -o moc_wwidget.cpp"
+				Description="Moc&apos;ing wwidget.h..."
+				Outputs="moc_wwidget.cpp"/>
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="xmlparse.h"
-				>
+				RelativePath="xmlparse.h">
 			</File>
 		</Filter>
 		<Filter
 			Name="Generated MOC Files"
-			Filter="cpp;c;cxx;moc"
-			>
+			Filter="cpp;c;cxx;moc">
 			<File
-				RelativePath="moc_controllogpotmeter.cpp"
-				>
+				RelativePath="moc_controllogpotmeter.cpp">
 			</File>
 			<File
-				RelativePath="moc_controlnull.cpp"
-				>
+				RelativePath="moc_controlnull.cpp">
 			</File>
 			<File
-				RelativePath="moc_controlobject.cpp"
-				>
+				RelativePath="moc_controlobject.cpp">
 			</File>
 			<File
-				RelativePath="moc_controlobjectthread.cpp"
-				>
+				RelativePath="moc_controlobjectthread.cpp">
 			</File>
 			<File
-				RelativePath="moc_controlobjectthreadmain.cpp"
-				>
+				RelativePath="moc_controlobjectthreadmain.cpp">
 			</File>
 			<File
-				RelativePath="moc_controlobjectthreadwidget.cpp"
-				>
+				RelativePath="moc_controlobjectthreadwidget.cpp">
 			</File>
 			<File
-				RelativePath="moc_controlpotmeter.cpp"
-				>
+				RelativePath="moc_controlpotmeter.cpp">
 			</File>
 			<File
-				RelativePath="moc_controlpushbutton.cpp"
-				>
+				RelativePath="moc_controlpushbutton.cpp">
 			</File>
 			<File
-				RelativePath="moc_controlttrotary.cpp"
-				>
+				RelativePath="moc_controlttrotary.cpp">
 			</File>
 			<File
-				RelativePath="moc_dlgprefcontrols.cpp"
-				>
+				RelativePath="moc_dlgprefcontrols.cpp">
 			</File>
 			<File
-				RelativePath="moc_dlgprefcontrolsdlg.cpp"
-				>
+				RelativePath="moc_dlgprefcontrolsdlg.cpp">
 			</File>
 			<File
-				RelativePath="moc_dlgpreferences.cpp"
-				>
+				RelativePath="moc_dlgpreferences.cpp">
 			</File>
 			<File
-				RelativePath="moc_dlgprefmidi.cpp"
-				>
+				RelativePath="moc_dlgprefmidi.cpp">
 			</File>
 			<File
-				RelativePath="moc_dlgprefmididlg.cpp"
-				>
+				RelativePath="moc_dlgprefmididlg.cpp">
 			</File>
 			<File
-				RelativePath="moc_dlgprefplaylist.cpp"
-				>
+				RelativePath="moc_dlgprefplaylist.cpp">
 			</File>
 			<File
-				RelativePath="moc_dlgprefplaylistdlg.cpp"
-				>
+				RelativePath="moc_dlgprefplaylistdlg.cpp">
 			</File>
 			<File
-				RelativePath="moc_dlgprefsound.cpp"
-				>
+				RelativePath="moc_dlgprefsound.cpp">
 			</File>
 			<File
-				RelativePath="moc_dlgprefsounddlg.cpp"
-				>
+				RelativePath="moc_dlgprefsounddlg.cpp">
 			</File>
 			<File
-				RelativePath="moc_enginebuffer.cpp"
-				>
+				RelativePath="moc_enginebuffer.cpp">
 			</File>
 			<File
-				RelativePath="moc_enginebuffercue.cpp"
-				>
+				RelativePath="moc_enginebuffercue.cpp">
 			</File>
 			<File
-				RelativePath="moc_enginebufferscalest.cpp"
-				>
+				RelativePath="moc_enginebufferscalest.cpp">
 			</File>
 			<File
-				RelativePath="moc_engineobject.cpp"
-				>
+				RelativePath="moc_engineobject.cpp">
 			</File>
 			<File
-				RelativePath="moc_enginetemporal.cpp"
-				>
+				RelativePath="moc_enginetemporal.cpp">
 			</File>
 			<File
-				RelativePath="moc_log.cpp"
-				>
+				RelativePath="moc_log.cpp">
 			</File>
 			<File
-				RelativePath="moc_mixxx.cpp"
-				>
+				RelativePath="moc_mixxx.cpp">
 			</File>
 			<File
-				RelativePath="moc_mixxxkeyboard.cpp"
-				>
+				RelativePath="moc_mixxxkeyboard.cpp">
 			</File>
 			<File
-				RelativePath="moc_mixxxmenuplaylists.cpp"
-				>
+				RelativePath="moc_mixxxmenuplaylists.cpp">
 			</File>
 			<File
-				RelativePath="moc_mixxxsocketclient.cpp"
-				>
+				RelativePath="moc_mixxxsocketclient.cpp">
 			</File>
 			<File
-				RelativePath="moc_mixxxsocketserver.cpp"
-				>
+				RelativePath="moc_mixxxsocketserver.cpp">
 			</File>
 			<File
-				RelativePath="moc_mixxxview.cpp"
-				>
+				RelativePath="moc_mixxxview.cpp">
 			</File>
 			<File
-				RelativePath="moc_parser.cpp"
-				>
+				RelativePath="moc_parser.cpp">
 			</File>
 			<File
-				RelativePath="moc_parserm3u.cpp"
-				>
+				RelativePath="moc_parserm3u.cpp">
 			</File>
 			<File
-				RelativePath="moc_parserpls.cpp"
-				>
+				RelativePath="moc_parserpls.cpp">
 			</File>
 			<File
-				RelativePath="moc_track.cpp"
-				>
+				RelativePath="moc_track.cpp">
 			</File>
 			<File
-				RelativePath="moc_trackimporter.cpp"
-				>
+				RelativePath="moc_trackimporter.cpp">
 			</File>
 			<File
-				RelativePath="moc_trackinfoobject.cpp"
-				>
+				RelativePath="moc_trackinfoobject.cpp">
 			</File>
 			<File
-				RelativePath="moc_trackplaylist.cpp"
-				>
+				RelativePath="moc_trackplaylist.cpp">
 			</File>
 			<File
-				RelativePath="visual\moc_visualbuffer.cpp"
-				>
+				RelativePath="visual\moc_visualbuffer.cpp">
 			</File>
 			<File
-				RelativePath="visual\moc_visualbuffermarks.cpp"
-				>
+				RelativePath="visual\moc_visualbuffermarks.cpp">
 			</File>
 			<File
-				RelativePath="visual\moc_visualbuffersignal.cpp"
-				>
+				RelativePath="visual\moc_visualbuffersignal.cpp">
 			</File>
 			<File
-				RelativePath="visual\moc_visualbuffertemporal.cpp"
-				>
+				RelativePath="visual\moc_visualbuffertemporal.cpp">
 			</File>
 			<File
-				RelativePath="visual\moc_visualdisplay.cpp"
-				>
+				RelativePath="visual\moc_visualdisplay.cpp">
 			</File>
 			<File
-				RelativePath="moc_wdisplay.cpp"
-				>
+				RelativePath="moc_wdisplay.cpp">
 			</File>
 			<File
-				RelativePath="moc_wknob.cpp"
-				>
+				RelativePath="moc_wknob.cpp">
 			</File>
 			<File
-				RelativePath="moc_wlabel.cpp"
-				>
+				RelativePath="moc_wlabel.cpp">
 			</File>
 			<File
-				RelativePath="moc_wnumber.cpp"
-				>
+				RelativePath="moc_wnumber.cpp">
 			</File>
 			<File
-				RelativePath="moc_wnumberbpm.cpp"
-				>
+				RelativePath="moc_wnumberbpm.cpp">
 			</File>
 			<File
-				RelativePath="moc_wnumberpos.cpp"
-				>
+				RelativePath="moc_wnumberpos.cpp">
 			</File>
 			<File
-				RelativePath="moc_wnumberrate.cpp"
-				>
+				RelativePath="moc_wnumberrate.cpp">
 			</File>
 			<File
-				RelativePath="moc_woverview.cpp"
-				>
+				RelativePath="moc_woverview.cpp">
 			</File>
 			<File
-				RelativePath="moc_wpushbutton.cpp"
-				>
+				RelativePath="moc_wpushbutton.cpp">
 			</File>
 			<File
-				RelativePath="moc_wslidercomposed.cpp"
-				>
+				RelativePath="moc_wslidercomposed.cpp">
 			</File>
 			<File
-				RelativePath="moc_wtracktable.cpp"
-				>
+				RelativePath="moc_wtracktable.cpp">
 			</File>
 			<File
-				RelativePath="moc_wtreeitemfile.cpp"
-				>
+				RelativePath="moc_wtreeitemfile.cpp">
 			</File>
 			<File
-				RelativePath="moc_wtreeitemplaylist.cpp"
-				>
+				RelativePath="moc_wtreeitemplaylist.cpp">
 			</File>
 			<File
-				RelativePath="moc_wtreeview.cpp"
-				>
+				RelativePath="moc_wtreeview.cpp">
 			</File>
 			<File
-				RelativePath="moc_wvisualsimple.cpp"
-				>
+				RelativePath="moc_wvisualsimple.cpp">
 			</File>
 			<File
-				RelativePath="moc_wvisualwaveform.cpp"
-				>
+				RelativePath="moc_wvisualwaveform.cpp">
 			</File>
 			<File
-				RelativePath="moc_wvumeter.cpp"
-				>
+				RelativePath="moc_wvumeter.cpp">
 			</File>
 			<File
-				RelativePath="moc_wwidget.cpp"
-				>
+				RelativePath="moc_wwidget.cpp">
 			</File>
 		</Filter>
 		<Filter
 			Name="Generated Form Files"
-			Filter="cpp;c;cxx;h;hpp;hxx;"
-			>
+			Filter="cpp;c;cxx;h;hpp;hxx;">
 			<File
-				RelativePath="dlgprefcontrolsdlg.cpp"
-				>
+				RelativePath="dlgprefcontrolsdlg.cpp">
 			</File>
 			<File
-				RelativePath="dlgprefcontrolsdlg.h"
-				>
+				RelativePath="dlgprefcontrolsdlg.h">
 			</File>
 			<File
-				RelativePath="dlgprefmididlg.cpp"
-				>
+				RelativePath="dlgprefmididlg.cpp">
 			</File>
 			<File
-				RelativePath="dlgprefmididlg.h"
-				>
+				RelativePath="dlgprefmididlg.h">
 			</File>
 			<File
-				RelativePath="dlgprefplaylistdlg.cpp"
-				>
+				RelativePath="dlgprefplaylistdlg.cpp">
 			</File>
 			<File
-				RelativePath="dlgprefplaylistdlg.h"
-				>
+				RelativePath="dlgprefplaylistdlg.h">
 			</File>
 			<File
-				RelativePath="dlgprefsounddlg.cpp"
-				>
+				RelativePath="dlgprefsounddlg.cpp">
 			</File>
 			<File
-				RelativePath="dlgprefsounddlg.h"
-				>
+				RelativePath="dlgprefsounddlg.h">
 			</File>
 		</Filter>
 		<Filter
 			Name="Forms"
-			Filter="ui"
-			ParseFiles="false"
-			>
+			ParseFiles="FALSE"
+			Filter="ui">
 			<File
-				RelativePath="dlgprefcontrolsdlg.ui"
-				>
+				RelativePath="dlgprefcontrolsdlg.ui">
 				<FileConfiguration
-					Name="Release|Win32"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-						Description="Uic&apos;ing dlgprefcontrolsdlg.ui..."
-						CommandLine="$(QTDIR)\bin\uic.exe dlgprefcontrolsdlg.ui -o .\dlgprefcontrolsdlg.h&#x0D;&#x0A;$(QTDIR)\bin\uic.exe dlgprefcontrolsdlg.ui -i dlgprefcontrolsdlg.h -o .\dlgprefcontrolsdlg.cpp&#x0D;&#x0A;$(QTDIR)\bin\moc.exe .\dlgprefcontrolsdlg.h -o .\moc_dlgprefcontrolsdlg.cpp&#x0D;&#x0A;"
-						AdditionalDependencies="$(QTDIR)\bin\moc.exe;$(QTDIR)\bin\uic.exe"
-						Outputs=".\dlgprefcontrolsdlg.h;.\dlgprefcontrolsdlg.cpp;.\moc_dlgprefcontrolsdlg.cpp"
-					/>
+					Name="Release|Win32">
+			<Tool
+				Name="VCCustomBuildTool"
+				AdditionalDependencies="$(QTDIR)\bin\moc.exe;$(QTDIR)\bin\uic.exe"
+				CommandLine="$(QTDIR)\bin\uic.exe dlgprefcontrolsdlg.ui -o .\dlgprefcontrolsdlg.h
+$(QTDIR)\bin\uic.exe dlgprefcontrolsdlg.ui -i dlgprefcontrolsdlg.h -o .\dlgprefcontrolsdlg.cpp
+$(QTDIR)\bin\moc.exe .\dlgprefcontrolsdlg.h -o .\moc_dlgprefcontrolsdlg.cpp"
+				Description="Uic'ing dlgprefcontrolsdlg.ui..."
+				Outputs=".\dlgprefcontrolsdlg.h;.\dlgprefcontrolsdlg.cpp;.\moc_dlgprefcontrolsdlg.cpp"/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Debug|Win32"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-						Description="Uic&apos;ing dlgprefcontrolsdlg.ui..."
-						CommandLine="$(QTDIR)\bin\uic.exe dlgprefcontrolsdlg.ui -o .\dlgprefcontrolsdlg.h&#x0D;&#x0A;$(QTDIR)\bin\uic.exe dlgprefcontrolsdlg.ui -i dlgprefcontrolsdlg.h -o .\dlgprefcontrolsdlg.cpp&#x0D;&#x0A;$(QTDIR)\bin\moc.exe .\dlgprefcontrolsdlg.h -o .\moc_dlgprefcontrolsdlg.cpp&#x0D;&#x0A;"
-						AdditionalDependencies="$(QTDIR)\bin\moc.exe;$(QTDIR)\bin\uic.exe"
-						Outputs=".\dlgprefcontrolsdlg.h;.\dlgprefcontrolsdlg.cpp;.\moc_dlgprefcontrolsdlg.cpp"
-					/>
+					Name="Debug|Win32">
+			<Tool
+				Name="VCCustomBuildTool"
+				AdditionalDependencies="$(QTDIR)\bin\moc.exe;$(QTDIR)\bin\uic.exe"
+				CommandLine="$(QTDIR)\bin\uic.exe dlgprefcontrolsdlg.ui -o .\dlgprefcontrolsdlg.h
+$(QTDIR)\bin\uic.exe dlgprefcontrolsdlg.ui -i dlgprefcontrolsdlg.h -o .\dlgprefcontrolsdlg.cpp
+$(QTDIR)\bin\moc.exe .\dlgprefcontrolsdlg.h -o .\moc_dlgprefcontrolsdlg.cpp"
+				Description="Uic'ing dlgprefcontrolsdlg.ui..."
+				Outputs=".\dlgprefcontrolsdlg.h;.\dlgprefcontrolsdlg.cpp;.\moc_dlgprefcontrolsdlg.cpp"/>
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="dlgprefmididlg.ui"
-				>
+				RelativePath="dlgprefmididlg.ui">
 				<FileConfiguration
-					Name="Release|Win32"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-						Description="Uic&apos;ing dlgprefmididlg.ui..."
-						CommandLine="$(QTDIR)\bin\uic.exe dlgprefmididlg.ui -o .\dlgprefmididlg.h&#x0D;&#x0A;$(QTDIR)\bin\uic.exe dlgprefmididlg.ui -i dlgprefmididlg.h -o .\dlgprefmididlg.cpp&#x0D;&#x0A;$(QTDIR)\bin\moc.exe .\dlgprefmididlg.h -o .\moc_dlgprefmididlg.cpp&#x0D;&#x0A;"
-						AdditionalDependencies="$(QTDIR)\bin\moc.exe;$(QTDIR)\bin\uic.exe"
-						Outputs=".\dlgprefmididlg.h;.\dlgprefmididlg.cpp;.\moc_dlgprefmididlg.cpp"
-					/>
+					Name="Release|Win32">
+			<Tool
+				Name="VCCustomBuildTool"
+				AdditionalDependencies="$(QTDIR)\bin\moc.exe;$(QTDIR)\bin\uic.exe"
+				CommandLine="$(QTDIR)\bin\uic.exe dlgprefmididlg.ui -o .\dlgprefmididlg.h
+$(QTDIR)\bin\uic.exe dlgprefmididlg.ui -i dlgprefmididlg.h -o .\dlgprefmididlg.cpp
+$(QTDIR)\bin\moc.exe .\dlgprefmididlg.h -o .\moc_dlgprefmididlg.cpp"
+				Description="Uic'ing dlgprefmididlg.ui..."
+				Outputs=".\dlgprefmididlg.h;.\dlgprefmididlg.cpp;.\moc_dlgprefmididlg.cpp"/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Debug|Win32"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-						Description="Uic&apos;ing dlgprefmididlg.ui..."
-						CommandLine="$(QTDIR)\bin\uic.exe dlgprefmididlg.ui -o .\dlgprefmididlg.h&#x0D;&#x0A;$(QTDIR)\bin\uic.exe dlgprefmididlg.ui -i dlgprefmididlg.h -o .\dlgprefmididlg.cpp&#x0D;&#x0A;$(QTDIR)\bin\moc.exe .\dlgprefmididlg.h -o .\moc_dlgprefmididlg.cpp&#x0D;&#x0A;"
-						AdditionalDependencies="$(QTDIR)\bin\moc.exe;$(QTDIR)\bin\uic.exe"
-						Outputs=".\dlgprefmididlg.h;.\dlgprefmididlg.cpp;.\moc_dlgprefmididlg.cpp"
-					/>
-				</FileConfiguration>
-			</File>
-			<File
-				RelativePath="dlgprefplaylistdlg.ui"
-				>
-				<FileConfiguration
-					Name="Release|Win32"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-						Description="Uic&apos;ing dlgprefplaylistdlg.ui..."
-						CommandLine="$(QTDIR)\bin\uic.exe dlgprefplaylistdlg.ui -o .\dlgprefplaylistdlg.h&#x0D;&#x0A;$(QTDIR)\bin\uic.exe dlgprefplaylistdlg.ui -i dlgprefplaylistdlg.h -o .\dlgprefplaylistdlg.cpp&#x0D;&#x0A;$(QTDIR)\bin\moc.exe .\dlgprefplaylistdlg.h -o .\moc_dlgprefplaylistdlg.cpp&#x0D;&#x0A;"
-						AdditionalDependencies="$(QTDIR)\bin\moc.exe;$(QTDIR)\bin\uic.exe"
-						Outputs=".\dlgprefplaylistdlg.h;.\dlgprefplaylistdlg.cpp;.\moc_dlgprefplaylistdlg.cpp"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Debug|Win32"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-						Description="Uic&apos;ing dlgprefplaylistdlg.ui..."
-						CommandLine="$(QTDIR)\bin\uic.exe dlgprefplaylistdlg.ui -o .\dlgprefplaylistdlg.h&#x0D;&#x0A;$(QTDIR)\bin\uic.exe dlgprefplaylistdlg.ui -i dlgprefplaylistdlg.h -o .\dlgprefplaylistdlg.cpp&#x0D;&#x0A;$(QTDIR)\bin\moc.exe .\dlgprefplaylistdlg.h -o .\moc_dlgprefplaylistdlg.cpp&#x0D;&#x0A;"
-						AdditionalDependencies="$(QTDIR)\bin\moc.exe;$(QTDIR)\bin\uic.exe"
-						Outputs=".\dlgprefplaylistdlg.h;.\dlgprefplaylistdlg.cpp;.\moc_dlgprefplaylistdlg.cpp"
-					/>
+					Name="Debug|Win32">
+			<Tool
+				Name="VCCustomBuildTool"
+				AdditionalDependencies="$(QTDIR)\bin\moc.exe;$(QTDIR)\bin\uic.exe"
+				CommandLine="$(QTDIR)\bin\uic.exe dlgprefmididlg.ui -o .\dlgprefmididlg.h
+$(QTDIR)\bin\uic.exe dlgprefmididlg.ui -i dlgprefmididlg.h -o .\dlgprefmididlg.cpp
+$(QTDIR)\bin\moc.exe .\dlgprefmididlg.h -o .\moc_dlgprefmididlg.cpp"
+				Description="Uic'ing dlgprefmididlg.ui..."
+				Outputs=".\dlgprefmididlg.h;.\dlgprefmididlg.cpp;.\moc_dlgprefmididlg.cpp"/>
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="dlgprefsounddlg.ui"
-				>
+				RelativePath="dlgprefplaylistdlg.ui">
 				<FileConfiguration
-					Name="Release|Win32"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-						Description="Uic&apos;ing dlgprefsounddlg.ui..."
-						CommandLine="$(QTDIR)\bin\uic.exe dlgprefsounddlg.ui -o .\dlgprefsounddlg.h&#x0D;&#x0A;$(QTDIR)\bin\uic.exe dlgprefsounddlg.ui -i dlgprefsounddlg.h -o .\dlgprefsounddlg.cpp&#x0D;&#x0A;$(QTDIR)\bin\moc.exe .\dlgprefsounddlg.h -o .\moc_dlgprefsounddlg.cpp&#x0D;&#x0A;"
-						AdditionalDependencies="$(QTDIR)\bin\moc.exe;$(QTDIR)\bin\uic.exe"
-						Outputs=".\dlgprefsounddlg.h;.\dlgprefsounddlg.cpp;.\moc_dlgprefsounddlg.cpp"
-					/>
+					Name="Release|Win32">
+			<Tool
+				Name="VCCustomBuildTool"
+				AdditionalDependencies="$(QTDIR)\bin\moc.exe;$(QTDIR)\bin\uic.exe"
+				CommandLine="$(QTDIR)\bin\uic.exe dlgprefplaylistdlg.ui -o .\dlgprefplaylistdlg.h
+$(QTDIR)\bin\uic.exe dlgprefplaylistdlg.ui -i dlgprefplaylistdlg.h -o .\dlgprefplaylistdlg.cpp
+$(QTDIR)\bin\moc.exe .\dlgprefplaylistdlg.h -o .\moc_dlgprefplaylistdlg.cpp"
+				Description="Uic'ing dlgprefplaylistdlg.ui..."
+				Outputs=".\dlgprefplaylistdlg.h;.\dlgprefplaylistdlg.cpp;.\moc_dlgprefplaylistdlg.cpp"/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Debug|Win32"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-						Description="Uic&apos;ing dlgprefsounddlg.ui..."
-						CommandLine="$(QTDIR)\bin\uic.exe dlgprefsounddlg.ui -o .\dlgprefsounddlg.h&#x0D;&#x0A;$(QTDIR)\bin\uic.exe dlgprefsounddlg.ui -i dlgprefsounddlg.h -o .\dlgprefsounddlg.cpp&#x0D;&#x0A;$(QTDIR)\bin\moc.exe .\dlgprefsounddlg.h -o .\moc_dlgprefsounddlg.cpp&#x0D;&#x0A;"
-						AdditionalDependencies="$(QTDIR)\bin\moc.exe;$(QTDIR)\bin\uic.exe"
-						Outputs=".\dlgprefsounddlg.h;.\dlgprefsounddlg.cpp;.\moc_dlgprefsounddlg.cpp"
-					/>
+					Name="Debug|Win32">
+			<Tool
+				Name="VCCustomBuildTool"
+				AdditionalDependencies="$(QTDIR)\bin\moc.exe;$(QTDIR)\bin\uic.exe"
+				CommandLine="$(QTDIR)\bin\uic.exe dlgprefplaylistdlg.ui -o .\dlgprefplaylistdlg.h
+$(QTDIR)\bin\uic.exe dlgprefplaylistdlg.ui -i dlgprefplaylistdlg.h -o .\dlgprefplaylistdlg.cpp
+$(QTDIR)\bin\moc.exe .\dlgprefplaylistdlg.h -o .\moc_dlgprefplaylistdlg.cpp"
+				Description="Uic'ing dlgprefplaylistdlg.ui..."
+				Outputs=".\dlgprefplaylistdlg.h;.\dlgprefplaylistdlg.cpp;.\moc_dlgprefplaylistdlg.cpp"/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="dlgprefsounddlg.ui">
+				<FileConfiguration
+					Name="Release|Win32">
+			<Tool
+				Name="VCCustomBuildTool"
+				AdditionalDependencies="$(QTDIR)\bin\moc.exe;$(QTDIR)\bin\uic.exe"
+				CommandLine="$(QTDIR)\bin\uic.exe dlgprefsounddlg.ui -o .\dlgprefsounddlg.h
+$(QTDIR)\bin\uic.exe dlgprefsounddlg.ui -i dlgprefsounddlg.h -o .\dlgprefsounddlg.cpp
+$(QTDIR)\bin\moc.exe .\dlgprefsounddlg.h -o .\moc_dlgprefsounddlg.cpp"
+				Description="Uic'ing dlgprefsounddlg.ui..."
+				Outputs=".\dlgprefsounddlg.h;.\dlgprefsounddlg.cpp;.\moc_dlgprefsounddlg.cpp"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Debug|Win32">
+			<Tool
+				Name="VCCustomBuildTool"
+				AdditionalDependencies="$(QTDIR)\bin\moc.exe;$(QTDIR)\bin\uic.exe"
+				CommandLine="$(QTDIR)\bin\uic.exe dlgprefsounddlg.ui -o .\dlgprefsounddlg.h
+$(QTDIR)\bin\uic.exe dlgprefsounddlg.ui -i dlgprefsounddlg.h -o .\dlgprefsounddlg.cpp
+$(QTDIR)\bin\moc.exe .\dlgprefsounddlg.h -o .\moc_dlgprefsounddlg.cpp"
+				Description="Uic'ing dlgprefsounddlg.ui..."
+				Outputs=".\dlgprefsounddlg.h;.\dlgprefsounddlg.cpp;.\moc_dlgprefsounddlg.cpp"/>
 				</FileConfiguration>
 			</File>
 		</Filter>
 		<Filter
 			Name="Resources"
-			Filter="cpp;ico;png;jpg;jpeg;gif;xpm;bmp;rc;ts"
-			ParseFiles="false"
-			>
+			ParseFiles="FALSE"
+			Filter="cpp;ico;png;jpg;jpeg;gif;xpm;bmp;rc;ts">
 			<File
-				RelativePath="icon.png"
-				>
+				RelativePath="icon.png">
 				<FileConfiguration
-					Name="Release|Win32"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-						Description="Generate imagecollection"
-						CommandLine="echo icon.png &gt; .imgcol&#x0D;&#x0A;$(QTDIR)\bin\uic.exe -embed mixxx -f .imgcol -o qmake_image_collection.cpp&#x0D;&#x0A;"
-						AdditionalDependencies="$(QTDIR)\bin\uic.exe;icon.png"
-						Outputs="qmake_image_collection.cpp;.imgcol"
-					/>
+					Name="Release|Win32">
+			<Tool
+				Name="VCCustomBuildTool"
+				AdditionalDependencies="$(QTDIR)\bin\uic.exe;icon.png"
+				CommandLine="echo icon.png > .imgcol
+$(QTDIR)\bin\uic.exe -embed mixxx -f .imgcol -o qmake_image_collection.cpp"
+				Description="Generate imagecollection"
+				Outputs="qmake_image_collection.cpp;.imgcol"/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Debug|Win32"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-						Description="Generate imagecollection"
-						CommandLine="echo icon.png &gt; .imgcol&#x0D;&#x0A;$(QTDIR)\bin\uic.exe -embed mixxx -f .imgcol -o qmake_image_collection.cpp&#x0D;&#x0A;"
-						AdditionalDependencies="$(QTDIR)\bin\uic.exe;icon.png"
-						Outputs="qmake_image_collection.cpp;.imgcol"
-					/>
+					Name="Debug|Win32">
+			<Tool
+				Name="VCCustomBuildTool"
+				AdditionalDependencies="$(QTDIR)\bin\uic.exe;icon.png"
+				CommandLine="echo icon.png > .imgcol
+$(QTDIR)\bin\uic.exe -embed mixxx -f .imgcol -o qmake_image_collection.cpp"
+				Description="Generate imagecollection"
+				Outputs="qmake_image_collection.cpp;.imgcol"/>
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="mixxx.rc"
-				>
+				RelativePath="mixxx.rc">
 			</File>
 			<File
-				RelativePath="qmake_image_collection.cpp"
-				>
+				RelativePath="qmake_image_collection.cpp">
 			</File>
 		</Filter>
 	</Files>
