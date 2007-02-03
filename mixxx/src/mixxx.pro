@@ -41,19 +41,25 @@ win32:VISUALSTUDIO = 1
 DEFINES += __PORTAUDIO__
 SOURCES += playerportaudio.cpp
 HEADERS += playerportaudio.h
-PORTAUDIO_DIR = ../lib/portaudio-v18
-INCLUDEPATH += $$PORTAUDIO_DIR/pa_common
-HEADERS += $$PORTAUDIO_DIR/pa_common/portaudio.h
+#PORTAUDIO_DIR = ../lib/portaudio-v19
+#INCLUDEPATH += $$PORTAUDIO_DIR/include
+#HEADERS += $$PORTAUDIO_DIR/include/portaudio.h
 unix {
-SOURCES += $$PORTAUDIO_DIR/pa_common/pa_lib.c $$PORTAUDIO_DIR/pa_common/pa_convert.c
-HEADERS += $$PORTAUDIO_DIR/pa_common/pa_host.h
-unix:!macx:SOURCES += $$PORTAUDIO_DIR/pablio/ringbuffer.c $$PORTAUDIO_DIR/pa_unix_oss/pa_unix.c $$PORTAUDIO_DIR/pa_unix_oss/pa_unix_oss.c
-unix:!macx:HEADERS += $$PORTAUDIO_DIR/pablio/ringbuffer.h $$PORTAUDIO_DIR/pa_unix_oss/pa_unix.h
-unix:!macx:INCLUDEPATH += $$PORTAUDIO_DIR/pa_unix_oss
-macx:SOURCES += $$PORTAUDIO_DIR/pablio/ringbuffer.c $$PORTAUDIO_DIR/pa_mac_core/pa_mac_core.c
-macx:LIBS += -framework CoreAudio -framework AudioToolbox
-macx:INCLUDEPATH += $$PORTAUDIO_DIR/pa_mac_core $$PORTAUDIO_DIR/pablio 
+	#SOURCES += $$PORTAUDIO_DIR/pa_common/pa_lib.c $$PORTAUDIO_DIR/pa_common/pa_convert.c
+	#HEADERS += $$PORTAUDIO_DIR/pa_common/pa_host.h
+	#unix:!macx:SOURCES += $$PORTAUDIO_DIR/pablio/ringbuffer.c $$PORTAUDIO_DIR/pa_unix_oss/pa_unix.c $$PORTAUDIO_DIR/pa_unix_oss/pa_unix_oss.c
+	#unix:!macx:HEADERS += $$PORTAUDIO_DIR/pablio/ringbuffer.h $$PORTAUDIO_DIR/pa_unix_oss/pa_unix.h
+	#unix:!macx:INCLUDEPATH += $$PORTAUDIO_DIR/pa_unix_oss
+	#macx:SOURCES += $$PORTAUDIO_DIR/pablio/ringbuffer.c $$PORTAUDIO_DIR/pa_mac_core/pa_mac_core.c
+	#macx:LIBS += -framework CoreAudio -framework AudioToolbox
+	#macx:INCLUDEPATH += $$PORTAUDIO_DIR/pa_mac_core $$PORTAUDIO_DIR/pablio 
+	
+	#Hacked for PortAudio-v19
+	unix:!macx:LIBS += -lportaudio -lasound -ljack -lrt
+	#unix:!macx:LIBS += ../lib/portaudio-v19/lib/.libs/libportaudio.a -lasound -ljack -lrt
+	macx:LIBS += $$MACLIBPATH/lib/libportaudio.a
 }
+
 win32 {
     message("Compiling with PortAudio/WMME drivers")
     contains(VISUALSTUDIO, 1) {
@@ -386,14 +392,14 @@ unix {
 }
 
 contains(CONFIG, qt3support) {
-	FORMS3	= dlgprefsounddlg.ui dlgprefmididlg.ui dlgprefplaylistdlg.ui dlgprefcontrolsdlg.ui
+	FORMS3	= dlgprefvinyldlg.ui dlgprefsounddlg.ui dlgprefmididlg.ui dlgprefplaylistdlg.ui dlgprefcontrolsdlg.ui
 }
 contains(CONFIG, qt3) {
-	FORMS	= dlgprefsounddlg.ui dlgprefmididlg.ui dlgprefplaylistdlg.ui dlgprefcontrolsdlg.ui
+	FORMS	= dlgprefvinyldlg.ui dlgprefsounddlg.ui dlgprefmididlg.ui dlgprefplaylistdlg.ui dlgprefcontrolsdlg.ui
 }
 
-SOURCES += enginebuffercue.cpp input.cpp mixxxmenuplaylists.cpp trackplaylistlist.cpp mixxxkeyboard.cpp configobject.cpp controlobjectthread.cpp controlobjectthreadwidget.cpp controlobjectthreadmain.cpp controlevent.cpp controllogpotmeter.cpp controlobject.cpp controlnull.cpp controlpotmeter.cpp controlpushbutton.cpp controlttrotary.cpp controlbeat.cpp dlgpreferences.cpp dlgprefsound.cpp dlgprefmidi.cpp dlgprefplaylist.cpp dlgprefcontrols.cpp enginebuffer.cpp enginebufferscale.cpp engineclipping.cpp enginefilterblock.cpp enginefilteriir.cpp engineobject.cpp enginepregain.cpp enginevolume.cpp main.cpp midiobject.cpp midiobjectnull.cpp mixxx.cpp mixxxview.cpp player.cpp playerproxy.cpp soundsource.cpp soundsourcemp3.cpp soundsourceoggvorbis.cpp enginechannel.cpp enginemaster.cpp wwidget.cpp wpixmapstore.cpp wlabel.cpp wnumber.cpp wnumberpos.cpp wnumberrate.cpp wnumberbpm.cpp wknob.cpp wdisplay.cpp wvumeter.cpp wpushbutton.cpp wslidercomposed.cpp wslider.cpp wtracktable.cpp wtracktableitem.cpp enginedelay.cpp engineflanger.cpp enginespectralfwd.cpp mathstuff.cpp readerextract.cpp readerextractwave.cpp readerevent.cpp rtthread.cpp windowkaiser.cpp probabilityvector.cpp reader.cpp trackinfoobject.cpp enginevumeter.cpp peaklist.cpp rotary.cpp log.cpp
-HEADERS += enginebuffercue.h input.h mixxxmenuplaylists.h trackplaylistlist.h mixxxkeyboard.h configobject.h controlobjectthread.h controlobjectthreadwidget.h controlobjectthreadmain.h controlevent.h controllogpotmeter.h controlobject.h controlnull.h controlpotmeter.h controlpushbutton.h controlttrotary.h controlbeat.h defs.h dlgpreferences.h dlgprefsound.h dlgprefmidi.h dlgprefplaylist.h dlgprefcontrols.h enginebuffer.h enginebufferscale.h engineclipping.h enginefilterblock.h enginefilteriir.h engineobject.h enginepregain.h enginevolume.h midiobject.h midiobjectnull.h mixxx.h mixxxview.h player.h playerproxy.h soundsource.h soundsourcemp3.h soundsourceoggvorbis.h enginechannel.h enginemaster.h wwidget.h wpixmapstore.h wlabel.h wnumber.h wnumberpos.h wnumberrate.h wnumberbpm.h wknob.h wdisplay.h wvumeter.h wpushbutton.h wslidercomposed.h wslider.h wtracktable.h wtracktableitem.h enginedelay.h engineflanger.h enginespectralfwd.h mathstuff.h readerextract.h readerextractwave.h readerevent.h rtthread.h windowkaiser.h probabilityvector.h reader.h trackinfoobject.h enginevumeter.h peaklist.h rotary.h log.h
+SOURCES += enginebuffercue.cpp input.cpp mixxxmenuplaylists.cpp trackplaylistlist.cpp mixxxkeyboard.cpp configobject.cpp controlobjectthread.cpp controlobjectthreadwidget.cpp controlobjectthreadmain.cpp controlevent.cpp controllogpotmeter.cpp controlobject.cpp controlnull.cpp controlpotmeter.cpp controlpushbutton.cpp controlttrotary.cpp controlbeat.cpp dlgpreferences.cpp dlgprefsound.cpp dlgprefvinyl.cpp dlgprefmidi.cpp dlgprefplaylist.cpp dlgprefcontrols.cpp enginebuffer.cpp enginebufferscale.cpp engineclipping.cpp enginefilterblock.cpp enginefilteriir.cpp engineobject.cpp enginepregain.cpp enginevolume.cpp main.cpp midiobject.cpp midiobjectnull.cpp mixxx.cpp mixxxview.cpp player.cpp playerproxy.cpp soundsource.cpp soundsourcemp3.cpp soundsourceoggvorbis.cpp enginechannel.cpp enginemaster.cpp wwidget.cpp wpixmapstore.cpp wlabel.cpp wnumber.cpp wnumberpos.cpp wnumberrate.cpp wnumberbpm.cpp wknob.cpp wdisplay.cpp wvumeter.cpp wpushbutton.cpp wslidercomposed.cpp wslider.cpp wtracktable.cpp wtracktableitem.cpp enginedelay.cpp engineflanger.cpp enginespectralfwd.cpp mathstuff.cpp readerextract.cpp readerextractwave.cpp readerevent.cpp rtthread.cpp windowkaiser.cpp probabilityvector.cpp reader.cpp trackinfoobject.cpp enginevumeter.cpp peaklist.cpp rotary.cpp log.cpp
+HEADERS += enginebuffercue.h input.h mixxxmenuplaylists.h trackplaylistlist.h mixxxkeyboard.h configobject.h controlobjectthread.h controlobjectthreadwidget.h controlobjectthreadmain.h controlevent.h controllogpotmeter.h controlobject.h controlnull.h controlpotmeter.h controlpushbutton.h controlttrotary.h controlbeat.h defs.h dlgpreferences.h dlgprefsound.h dlgprefvinyl.h dlgprefmidi.h dlgprefplaylist.h dlgprefcontrols.h enginebuffer.h enginebufferscale.h engineclipping.h enginefilterblock.h enginefilteriir.h engineobject.h enginepregain.h enginevolume.h midiobject.h midiobjectnull.h mixxx.h mixxxview.h player.h playerproxy.h soundsource.h soundsourcemp3.h soundsourceoggvorbis.h enginechannel.h enginemaster.h wwidget.h wpixmapstore.h wlabel.h wnumber.h wnumberpos.h wnumberrate.h wnumberbpm.h wknob.h wdisplay.h wvumeter.h wpushbutton.h wslidercomposed.h wslider.h wtracktable.h wtracktableitem.h enginedelay.h engineflanger.h enginespectralfwd.h mathstuff.h readerextract.h readerextractwave.h readerevent.h rtthread.h windowkaiser.h probabilityvector.h reader.h trackinfoobject.h enginevumeter.h peaklist.h rotary.h log.h
 
 # New track code:
 SOURCES += track.cpp trackcollection.cpp trackplaylist.cpp xmlparse.cpp wtreeview.cpp wtreeitem.cpp wtreeitemfile.cpp wtreeitemdir.cpp wtreeitemplaylist.cpp wtreeitemplaylistroot.cpp
@@ -485,7 +491,20 @@ contains(ENABLED_FEATURES, python) {
 	}
 }
 
+# Vinyl Control
+contains(ENABLED_FEATURES, vinylcontrol) {
+	SOURCES += dscratch.cpp inverseriaafilter.cpp vinylcontrol.cpp readeraudio.cpp readerportaudio.cpp
+	HEADERS += dscratch.h vinylcontrol.h readerportaudio.h readeraudio.h
+	DEFINES += __VINYLCONTROL__ __DSCRATCH_USE_RTAUDIO__ __LINUX_ALSA__
+	RTAUDIO_DIR = ../lib/rtaudio
+	INCLUDEPATH += $$RTAUDIO_DIR
+	HEADERS += $$RTAUDIO_DIR/RtAudio.h $$RTAUDIO_DIR/RtError.h
+	SOURCES += $$RTAUDIO_DIR/RtAudio.cpp
+	LIBS += -lscratch -lasound -lqt
+}
+
 contains(ENABLED_FEATURES, djconsole) {
 	INCLUDEPATH += /usr/include/libdjconsole/
 	DEFINES += __LIBDJCONSOLE__
 }
+

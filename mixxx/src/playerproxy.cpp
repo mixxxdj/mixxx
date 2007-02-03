@@ -112,7 +112,7 @@ QStringList PlayerProxy::getSoundApiList()
 {
     QStringList result;
 #ifdef __PORTAUDIO__
-    result.append(PlayerPortAudio::getSoundApi());
+    result += PlayerPortAudio::getSoundApiList();
 #endif
 #ifdef __JACK__
     result.append(PlayerJack::getSoundApi());
@@ -124,7 +124,7 @@ QStringList PlayerProxy::getSoundApiList()
     result.append(PlayerAsio::getSoundApi());
 #endif
 #ifdef __ALSA__
-        result.append(PlayerALSA::getSoundApi());
+	result.append(PlayerALSA::getSoundApi());
 #endif
     
     return result;
@@ -137,8 +137,8 @@ bool PlayerProxy::setSoundApi(QString name)
     m_pPlayer = 0;
 
 #ifdef __PORTAUDIO__
-    if (name == PlayerPortAudio::getSoundApi())
-        m_pPlayer = new PlayerPortAudio(m_pConfig);
+    if (PlayerPortAudio::getSoundApiList().contains(name))
+        m_pPlayer = new PlayerPortAudio(m_pConfig, name);
 #endif
 
 #ifdef __JACK__

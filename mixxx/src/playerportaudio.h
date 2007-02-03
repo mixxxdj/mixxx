@@ -1,5 +1,5 @@
 /***************************************************************************
-                          playerportaudio.h  -  description
+                          playerportaudiov19.h  -  description
                              -------------------
     begin                : Wed Feb 20 2002
     copyright            : (C) 2002 by Tue and Ken Haste Andersen
@@ -19,7 +19,7 @@
 #define PLAYERPORTAUDIO_H
 
 #include "player.h"
-#include <portaudio.h>
+#include "portaudio.h"
 
 /**
   *@author Tue and Ken Haste Andersen
@@ -31,7 +31,7 @@ const int kiMaxFrameSize = 1024;
 
 class PlayerPortAudio : public Player  {
 public:
-    PlayerPortAudio(ConfigObject<ConfigValue> *config);
+    PlayerPortAudio(ConfigObject<ConfigValue> *config, QString api_name);
     ~PlayerPortAudio();
     bool initialize();
     bool open();
@@ -39,8 +39,8 @@ public:
     void setDefaults();
     QStringList getInterfaces();
     QStringList getSampleRates();
-    static QString getSoundApi();
-    QString getSoundApiName() { return getSoundApi(); };
+    static QStringList getSoundApiList();
+    QString getSoundApiName() { return getSoundApiList().front(); };
     /** Satisfy virtual declaration in EngineObject */
     void process(const CSAMPLE *, const CSAMPLE *, const int) {};
     /** Process samples. Called from PortAudio callback */
@@ -48,24 +48,29 @@ public:
 
 protected:
     /** Get id of device with a given name. Returns -1 if device is not found */
-    PaDeviceID getDeviceID(QString name);
+    PaDeviceIndex getDeviceID(QString name);
     /** Get channel number of device with a given name. Returns -1 if device is no found */
     int getChannelNo(QString name);
 
     /** PortAudio stream */
-    PortAudioStream *m_pStream;
+    PaStream *m_pStream;
     /** Id of currently open device. -1 if no device is open */
-    PaDeviceID m_devId;
+    PaDeviceIndex m_devId;
     /** Channels used for each output from Mixxx. Set to -1 when not in use */
     int m_iMasterLeftCh, m_iMasterRigthCh, m_iHeadLeftCh, m_iHeadRightCh;
     /** True if PortAudio was sucessfully initialized */
     bool m_bInit;
     /** Number of buffers */
     int m_iNumberOfBuffers;
+    /** Name of the current audio API inside PortAudio **/
+    QString m_HostAPI;
+    
 };
 
 
-int paCallback(void *inputBuffer, void *outputBuffer,
+int paV19Callback(const void *inputBuffer, void *outputBuffer,
                       unsigned long framesPerBuffer,
-                      PaTimestamp outTime, void *_player);
+                      const PaStreamCallbackTimeInfo* timeInfo,
+                      PaStreamCallbackFlags statusFlags,
+                      void *_player);
 #endif
