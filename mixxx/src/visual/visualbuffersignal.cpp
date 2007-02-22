@@ -58,7 +58,7 @@ void VisualBufferSignal::update(int iPos, int iLen, long int, int)
 //    m_fResampleFactor = (float)m_pReaderExtract->getRate()/(float)MAXDISPLAYRATE;
 
     int iStart = (int)floorf((float)iPos/m_fResampleFactor);
-    int iEnd   = min((int)ceilf((float)(iPos+iLen)/m_fResampleFactor), m_iLen-1);
+    int iEnd   = math_min((int)ceilf((float)(iPos+iLen)/m_fResampleFactor), m_iLen-1);
 
     Q_ASSERT(iStart>=0);
     Q_ASSERT(iStart<m_iLen);
@@ -99,7 +99,7 @@ void VisualBufferSignal::update(int iPos, int iLen, long int, int)
             }
         }
         if (even(i))
-            m_pBuffer[i*3+1] = max(fPositive/32768.,0.05);
+            m_pBuffer[i*3+1] = math_max(fPositive/32768.,0.05);
         else
             m_pBuffer[i*3+1] = fNegative/32768.;
     }

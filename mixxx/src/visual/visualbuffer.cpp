@@ -170,7 +170,7 @@ bufInfo VisualBuffer::getVertexArray()
 
     bufInfo i;
     i.p1 = &m_pBuffer[iPos*3];
-    i.len1 = min(m_iDisplayLen, m_iLen-iPos);
+    i.len1 = math_min(m_iDisplayLen, m_iLen-iPos);
     i.p2 = m_pBuffer;
     i.len2 = m_iDisplayLen-i.len1;
     i.corr = fPos-(float)iPos;
