@@ -28,7 +28,7 @@ void VisualBufferSignalHFC::update(int iPos, int iLen, long int, int)
     CSAMPLE *pSource = &m_pSource[iPos];
     GLfloat *pDest = &m_pBuffer[(int)(iPos/m_fResampleFactor)*3];
 
-    float temp = min(iLen, m_iSourceLen-iPos-1);
+    float temp = math_min(iLen, m_iSourceLen-iPos-1);
 //    qDebug("upd1: %i-%f, temp: %f",iPos,iPos+temp, temp);
     for (float i=0; i<=temp-m_fResampleFactor; i+=m_fResampleFactor)
     {
