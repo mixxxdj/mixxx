@@ -31,7 +31,11 @@ WVisualWaveform::WVisualWaveform(QWidget *pParent, const char *pName, const QGLW
     // Hack to reduce load in GUI thread. This makes the system behave
     // "correctly" on MacOS X, where it would otherwise stall the system
     // for some seconds now and then.
-    m_iTimerID = startTimer(100);
+    //m_iTimerID = startTimer(100);
+    
+    //The above hack makes Mixxx feel like it's running on a 386 on OS X Intel.
+    //I'm going to experiment a bit with the timings - Albert:
+    m_iTimerID = startTimer(30);
 #endif
 #ifdef __WIN__
     m_iTimerID = startTimer(15);
