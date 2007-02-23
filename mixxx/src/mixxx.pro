@@ -57,7 +57,12 @@ unix {
 	#Hacked for PortAudio-v19
 	unix:!macx:LIBS += -lportaudio -lasound -ljack -lrt
 	#unix:!macx:LIBS += ../lib/portaudio-v19/lib/.libs/libportaudio.a -lasound -ljack -lrt
-	macx:LIBS += $$MACLIBPATH/lib/libportaudio.a
+}
+
+#Stuff for PortAudio
+macx {
+	LIBS += $$MACLIBPATH/lib/libportaudio.a
+	LIBS += -framework CoreAudio -framework AudioToolbox -framework AudioUnit
 }
 
 win32 {
