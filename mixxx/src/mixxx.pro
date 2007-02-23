@@ -61,7 +61,9 @@ unix {
 
 #Stuff for PortAudio
 macx {
-	LIBS += $$MACLIBPATH/lib/libportaudio.a
+	#You should install PortAudio system-wide if you're building Mixxx, otherwise you'd want to uncomment the following line:
+	#LIBS += $$MACLIBPATH/lib/libportaudio.a
+	LIBS += -lportaudio
 	LIBS += -framework CoreAudio -framework AudioToolbox -framework AudioUnit
 }
 
