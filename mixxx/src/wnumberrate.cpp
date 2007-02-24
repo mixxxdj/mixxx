@@ -30,19 +30,7 @@ WNumberRate::~WNumberRate()
 void WNumberRate::setValue(double)
 {    
     double vsign = m_pRateControl->get()*m_pRateRangeControl->get()*m_pRateDirControl->get();
-    
-    double v = fabs(vsign);
-    int v1=0,v2=0,v3=0,v4=0;
 
-    v1 = (int)floor((v-floor(v))*10.);
-    v2 = (int)(floor((v-floor(v))*100.))%10;
-    v3 = (int)(floor((v-floor(v))*1000.))%10;
-    v4 = (int)(floor((v-floor(v))*10000.))%10;
-
-    QString sign = "+";
-    if (vsign<0.)
-        sign = "-";
-
-    m_pLabel->setText(QString(m_qsText).append("%1%2%3.%4%5").arg(sign).arg(v1,1,10).arg(v2,1,10).arg(v3,1,10).arg(v4,1,10));
+	m_pLabel->setText(QString(m_qsText).append("%1").arg(vsign*100., 0, 'f', 2));
 }
 
