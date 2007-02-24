@@ -50,11 +50,11 @@ Section "Mixxx (required)" SecMixxx
   File "src\Release\mixxx.exe"
   File "..\mixxx-winlib\libsndfile.dll"
   File "..\mixxx-winlib\qt-mt3.dll"
+  File "..\mixxx-winlib\portaudio.dll"
   File "..\mixxx-winlib\msvcm80.dll"
   File "..\mixxx-winlib\msvcp80.dll"
   File "..\mixxx-winlib\msvcr80.dll"
   File "..\mixxx-winlib\Microsoft.VC80.CRT.manifest"
-  File "..\mixxx-winlib\libmixxxasio.dll"
 
   ; And documentation, licence etc.
   File "Mixxx-Manual.pdf"
