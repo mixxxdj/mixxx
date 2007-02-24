@@ -1,6 +1,18 @@
 Mixxx version 1.5.0, Digital DJ'ing software.
 Copyright (C) 2001-2004 Haste Andersen and Mixxx developers
 
+Depending on your platform, you may receive a copy of PortAudio 
+(http://www.portaudio.com/) which is distributed under the 
+PortAudio as-is license which can be found on their website.
+
+This may also be in turn compiled with ASIO support
+(http://www.steinberg.de) which is provided by the ASIO SDK, the
+license for which can currently be found at:
+	
+	http://www.steinberg.de/534+M52087573ab0.html
+
+The source code for Mixxx itself is licensed under the GPL as follows:
+
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation; either version 2 of the License, or
