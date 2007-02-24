@@ -232,12 +232,9 @@ void DlgPrefSound::slotApplyApi()
 			QMessageBox::warning(0, "Configuration problem","Sound API could not be initialized");
 			config->set(ConfigKey("[Soundcard]","SoundApi"), ConfigValue("None"));
 		}
-	} else if (!player->open()) {
-		// Maybe the api changed and the channel names aren't valid any more:
+	} else {
 		player->setDefaults();
-	
 		if (!player->open()) {
-		
 			QMessageBox::warning(0, "Configuration error","Audio device could not be opened");
 		}
 	}

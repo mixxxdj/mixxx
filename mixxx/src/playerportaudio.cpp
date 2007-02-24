@@ -354,7 +354,8 @@ void PlayerPortAudio::setDefaults()
 
     
     // Set currently used latency in config database
-    int msec = (int)(1000.*(2.*1024.)/(2.*(float)(*it).toInt()));
+//    int msec = (int)(1000.*(2.*1024.)/(2.*(float)(*it).toInt()));
+	int msec = 100; // More conservative defaults
     
     m_pConfig->set(ConfigKey("[Soundcard]","Latency"), ConfigValue(msec));
 }
