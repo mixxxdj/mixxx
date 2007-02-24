@@ -31,6 +31,11 @@ void WNumberRate::setValue(double)
 {    
     double vsign = m_pRateControl->get()*m_pRateRangeControl->get()*m_pRateDirControl->get();
 
-	m_pLabel->setText(QString(m_qsText).append("%1").arg(vsign*100., 0, 'f', 2));
+	char sign = '+';
+	if (vsign < -0.00000001) {
+		sign = '-';
+	}
+
+	m_pLabel->setText(QString(m_qsText).append(sign).append("%1").arg(fabs(vsign)*100., 0, 'f', 2));
 }
 
