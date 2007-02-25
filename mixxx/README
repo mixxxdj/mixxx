@@ -41,7 +41,10 @@ Mixxx has the following dependencies:
 - libaudiofile
 - PortAudio-v19 (new for Mixxx 1.5.0)
 - QT3
-- libjack (optional)
+- libjack (now required)
+
+NOTE: If you want JACK support in Mixxx, make sure you 
+compile PortAudio-v19 with JACK support first.
 
 To build on Linux, you usually need to set your QTDIR first.
 Eg. 
