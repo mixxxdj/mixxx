@@ -1,11 +1,11 @@
-Mixxx - version 1.5
+Mixxx - version 1.5.0
 
 * HOMEPAGE *************************************************
 http://mixxx.sourceforge.net
 
 
 * ABOUT ****************************************************
-Mixxx is software for DJ'ing. You can use wave based
+Mixxx is software created for DJ'ing. You can use wave based
 audio files, Ogg Vorbis and MP3 files as audio input. Mixxx
 can be controlled through the GUI and with external 
 controllers including MIDI devices, joysticks and more.
@@ -27,8 +27,39 @@ New since 1.4.2:
   exit, sane default setting of sample rate.
 - Loading tracks with left-clicking in playlist.
 - Fixed headphone channel
+- Overhauled audio code using PortAudio-v19
+- Cue button is easier to use now
 
-* INSTALL/USE **********************************************
+* INSTALL **************************************************
+Mixxx has the following dependencies:
+- fftw
+- libid3tag
+- libmad
+- libogg
+- libvorbis
+- libvorbisfile
+- libaudiofile
+- PortAudio-v19 (new for Mixxx 1.5.0)
+- QT3
+- libjack (optional)
+
+To build on Linux, you usually need to set your QTDIR first.
+Eg. 
+   $ export QTDIR=/usr/share/qt3
+
+Then you'd run something like:
+
+   $ cd src
+   $ ./configure --prefix=/usr
+or
+   $ ./configure --prefix=/usr --enable-jack
+
+then
+
+   $ make
+   $ ../install.pl
+
+* USAGE ****************************************************
 Please see manual, included in this directory, 
 Mixxx-Manual.pdf.
 
