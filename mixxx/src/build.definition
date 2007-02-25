@@ -91,8 +91,6 @@ OPTIONS =   exit_on_failure    marked_static
 include( check.qbas )
 #----------------------------------------------------------------------
 
-
-
 #   AUDIOFILE ---------------------------------------------------------
 #OBJECT = libaudiofile.a
 #TYPE = lib
@@ -206,12 +204,12 @@ include( check.qbas )
 
 
 #   ALSA HEADERS ------------------------------------------------------
-OBJECT = alsa/asoundlib.h
-TYPE = header
-DESCRIPTION = Alsa Asoundlib
-TIP_MESSAGE =
-LINK_LIBS =
-OPTIONS =
+#OBJECT = alsa/asoundlib.h
+#TYPE = header
+#DESCRIPTION = Alsa Asoundlib
+#TIP_MESSAGE =
+#LINK_LIBS =
+#OPTIONS =
 #----------------------------------------------------------------------
 # Check routines         (DON'T TOUCH!)
 include( check.qbas )
@@ -221,16 +219,18 @@ include( check.qbas )
 
 
 #   ALSA LIBRARY ------------------------------------------------------
-OBJECT = libasound.a
-TYPE = lib
-DESCRIPTION = Alsa library
-FEATURE = alsa
-TIP_MESSAGE =
-ADD_DEFINES = __ALSA__
-ADD_SOURCES = playeralsa.cpp
-ADD_HEADERS = playeralsa.h
-LINK_LIBS = -lasound 
-OPTIONS =  disable_feature
+# Deprecated thanks to PortAudio-v19. :) - ~asantoni Feb 25, 2007
+
+#OBJECT = libasound.a
+#TYPE = lib
+#DESCRIPTION = Alsa library
+#FEATURE = alsa
+#TIP_MESSAGE =
+#ADD_DEFINES = __ALSA__
+#ADD_SOURCES = playeralsa.cpp
+#ADD_HEADERS = playeralsa.h
+#LINK_LIBS = -lasound 
+#OPTIONS =  disable_feature
 #----------------------------------------------------------------------
 # Check routines         (DON'T TOUCH!)
 include( check.qbas )
@@ -269,15 +269,23 @@ OPTIONS =     disable_feature
 include( check.qbas )
 #----------------------------------------------------------------------
 
-
+#   PortAudio-v19
+OBJECT = pkg-config --exists 'portaudio-2.0 >= 19'
+PACKAGE = portaudio
+TIP_MESSAGE = "PortAudio-v19 not found!"
+OPTIONS = exit_on_failure
+#----------------------------------------------------------------------
+# Check routines         (DON'T TOUCH!)
+include( check.qbas )
+#----------------------------------------------------------------------
 
 #   JACK HEADERS ------------------------------------------------------
-OBJECT = jack/jack.h
-TYPE = header
-DESCRIPTION = Jack headers
-TIP_MESSAGE = "Jack headers needed to compile with Jack support!"
-LINK_LIBS =
-OPTIONS =
+#OBJECT = jack/jack.h
+#TYPE = header
+#DESCRIPTION = Jack headers
+#TIP_MESSAGE = "Jack headers needed to compile with Jack support!"
+#LINK_LIBS =
+#OPTIONS =
 #----------------------------------------------------------------------
 # Check routines         (DON'T TOUCH!)
 include( check.qbas )
@@ -287,17 +295,20 @@ include( check.qbas )
 
 
 #   JACK --------------------------------------------------------------
+# Changed to require JACK libraries, for PortAudio-v19... ~asantoni Feb 25, 2007
+
 OBJECT = pkg-config --exists 'jack >= 0.61.0'
 TYPE = command
 DESCRIPTION = Jack >= 0.61.0
-FEATURE = jack
-PACKAGE = jack
+#FEATURE = jack
+#PACKAGE = jack
 TIP_MESSAGE = "Jack not found!"
-LINK_LIBS = `pkg-config --silence-errors --cflags --libs jack`
-ADD_DEFINES = __JACK__
-ADD_SOURCES = playerjack.cpp
-ADD_HEADERS = playerjack.h
-OPTIONS =     disable_feature
+#LINK_LIBS = `pkg-config --silence-errors --cflags --libs jack`
+#ADD_DEFINES = __JACK__
+#ADD_SOURCES = playerjack.cpp
+#ADD_HEADERS = playerjack.h
+OPTIONS = exit_on_failure
+#OPTIONS =     disable_feature
 #----------------------------------------------------------------------
 # Check routines         (DON'T TOUCH!)
 include( check.qbas )
