@@ -46,6 +46,7 @@ public:
     /** Process samples. Called from PortAudio callback */
     int callbackProcess(int iBufferSize, float *out);
 
+    static bool m_painited;
 protected:
     /** Get id of device with a given name. Returns -1 if device is not found */
     PaDeviceIndex getDeviceID(QString name);
@@ -64,11 +65,7 @@ protected:
     int m_iNumberOfBuffers;
     /** Name of the current audio API inside PortAudio **/
     QString m_HostAPI;
-   
-    // True if PortAudio has been initialized (tidy up this stuff)
-    bool m_inited; 
 };
-
 
 int paV19Callback(const void *inputBuffer, void *outputBuffer,
                       unsigned long framesPerBuffer,
