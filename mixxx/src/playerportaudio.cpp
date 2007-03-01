@@ -19,6 +19,8 @@
 #include "playerportaudio.h"
 #include "controlobject.h"
 
+bool PlayerPortAudio::m_painited = false;
+
 PlayerPortAudio::PlayerPortAudio(ConfigObject<ConfigValue> *config, QString api_name) : Player(config)
 {
     m_devId = -1;
@@ -37,8 +39,10 @@ PlayerPortAudio::~PlayerPortAudio()
 {
     if (m_devId>=0)
         close();
-    if (m_bInit)
+    if (m_bInit) {
         Pa_Terminate();
+	m_painited = false;
+    }
 }
 
 bool PlayerPortAudio::initialize()
@@ -491,9 +495,9 @@ QStringList PlayerPortAudio::getSoundApiList()
     PaError err = paNoError;
 
     // So this little hackfest saves buggy drivers from being really buggy - AD
-    if (!m_inited) {
-        PaError err = Pa_Initialize();
-	m_inited = true;
+    if (!m_painited) {
+        err = Pa_Initialize();
+	m_painited = true;
     }
     
     if (err == paNoError)
@@ -504,7 +508,7 @@ QStringList PlayerPortAudio::getSoundApiList()
 			qDebug("Api name: %s", apiInfo->name);
 			apiList.append(apiInfo->name);
 		}
-		Pa_Terminate();
+//		Pa_Terminate();
     }
     else
         qDebug("PortAudio error: %s", Pa_GetErrorText(err));
