@@ -487,7 +487,15 @@ QStringList PlayerPortAudio::getSoundApiList()
 	//We need to initialize PortAudio before we find out what APIs are present.
 	//Even if this gets called while PortAudio is already initialized, the docs
 	//say this is OK (I think...).
-    PaError err = Pa_Initialize();
+
+    PaError err = paNoError;
+
+    // So this little hackfest saves buggy drivers from being really buggy - AD
+    if (!m_inited) {
+        PaError err = Pa_Initialize();
+	m_inited = true;
+    }
+    
     if (err == paNoError)
     {
 		for (int i = 0; i < Pa_GetHostApiCount(); i++)

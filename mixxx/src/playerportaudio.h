@@ -64,7 +64,9 @@ protected:
     int m_iNumberOfBuffers;
     /** Name of the current audio API inside PortAudio **/
     QString m_HostAPI;
-    
+   
+    // True if PortAudio has been initialized (tidy up this stuff)
+    bool m_inited; 
 };
 
 
