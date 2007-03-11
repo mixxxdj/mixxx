@@ -52,6 +52,7 @@ protected:
     /** Pointer to screen buffer */
     QPixmap *m_pScreenBuffer;
     QColor m_qColorMarker;
+    QColor m_qColorSignal;
 };
 
 #endif
