@@ -63,7 +63,7 @@ void WOverview::setup(QDomNode node)
     m_pScreenBuffer = new QPixmap(this->size());
     m_pScreenBuffer->fill(this->backgroundColor());
 
-//    colorSignal.setNamedColor(selectNodeQString(node, "SignalColor"));
+    m_qColorSignal.setNamedColor(selectNodeQString(node, "SignalColor"));
     m_qColorMarker.setNamedColor(selectNodeQString(node, "MarkerColor"));
 }
 
@@ -115,7 +115,8 @@ void WOverview::setData(QMemArray<char> *pWaveformSummary, QValueList<long> *pSe
     // Draw waveform using hfc to determine color
     for (int i=0; i<width(); ++i)
     {
-        const QColor kqLightColor("#2bff00");
+        //const QColor kqLightColor("#2bff00");
+        const QColor kqLightColor = m_qColorSignal;
         const QColor kqDarkColor("#1ba200");
 
         float fMin = 0.;
