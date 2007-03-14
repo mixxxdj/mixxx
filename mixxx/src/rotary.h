@@ -22,6 +22,7 @@
 
 /**
   * Virtual class for handling the PowerMate. This is implemented as a separate thread.
+  * Also handles the Hercules...
   *
   *@author Tue Haste Andersen
   */
