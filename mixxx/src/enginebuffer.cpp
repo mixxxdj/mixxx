@@ -742,6 +742,11 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBuff
         //qDebug("filepos_play %f,\tstart %i,\tend %i\t info %i, len %i",filepos_play, filepos_start, filepos_end, readerinfo,file_length_old);
 
 
+		//Clamp the wheel value (workaround for rotary bug that crops up with the Hercules controllers)
+		//The downside to this is that you can't use the jogwheels at their "lowest" possible speed...
+		if (fabs(wheel->get()) <= 0.001250)
+			wheel->set(0.0f);
+
 
         //
         // Calculate rate
