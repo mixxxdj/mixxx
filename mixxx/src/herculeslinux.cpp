@@ -456,10 +456,10 @@ void HerculesLinux::getNextEvent()
                     sendButtonEvent(false, m_pControlObjectLeftBtnPitchBendPlus);
                     break;
                 case kiHerculesLeftBtnTrackNext:
-                    sendButtonEvent(false, m_pControlObjectLeftBtnTrackNext);
+                    //sendButtonEvent(false, m_pControlObjectLeftBtnTrackNext);
                     break;
                 case kiHerculesLeftBtnTrackPrev:
-                    sendButtonEvent(false, m_pControlObjectLeftBtnTrackPrev);
+                    //sendButtonEvent(false, m_pControlObjectLeftBtnTrackPrev);
                     break;
                 case kiHerculesLeftBtnCue:
 //                     m_bCueLeft = !m_bCueLeft;
@@ -502,10 +502,10 @@ void HerculesLinux::getNextEvent()
                     sendButtonEvent(false, m_pControlObjectRightBtnPitchBendPlus);
                     break;
                 case kiHerculesRightBtnTrackNext:
-                    sendButtonEvent(false, m_pControlObjectRightBtnTrackNext);
+                    //sendButtonEvent(false, m_pControlObjectRightBtnTrackNext);
                     break;
                 case kiHerculesRightBtnTrackPrev:
-                    sendButtonEvent(false, m_pControlObjectRightBtnTrackPrev);
+                    //sendButtonEvent(false, m_pControlObjectRightBtnTrackPrev);
                     break;
                 case kiHerculesRightBtnCue:
 //                     m_bCueRight = !m_bCueRight;
