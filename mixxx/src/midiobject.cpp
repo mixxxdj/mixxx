@@ -141,6 +141,11 @@ void MidiObject::send(MidiCategory category, char channel, char control, double 
     ConfigKey *pConfigKey = m_pMidiConfig->get(ConfigValueMidi(type,control,channel));
 //     qDebug("ok %p",pConfigKey);
 
+	//NOTE_OFF values do nothing if they're 0.0 inside Mixxx for some reason,
+	//so we just set their value to 1.0. - Albert (March 16, 2007) 
+	if (category==NOTE_OFF)
+		value = 1.0;
+
     if (pConfigKey)
     {
         ControlObject *p = ControlObject::getControl(*pConfigKey);
