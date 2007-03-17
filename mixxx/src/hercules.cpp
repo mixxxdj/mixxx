@@ -110,8 +110,8 @@ void Hercules::selectMapping(QString qMapping)
     {
         m_pControlObjectLeftPitch = ControlObject::getControl(ConfigKey("[Channel1]","rate"));
         m_pControlObjectRightPitch = ControlObject::getControl(ConfigKey("[Channel2]","rate"));
-        m_pControlObjectLeftBtnAutobeat = 0;
-        m_pControlObjectRightBtnAutobeat = 0;
+        m_pControlObjectLeftBtnAutobeat = ControlObject::getControl(ConfigKey("[Channel1]","beatsync"));
+        m_pControlObjectRightBtnAutobeat = ControlObject::getControl(ConfigKey("[Channel2]","beatsync"));
         m_pControlObjectLeftBtnPitchBendMinus = ControlObject::getControl(ConfigKey("[Channel1]","rate_perm_down_small"));
         m_pControlObjectRightBtnPitchBendMinus = ControlObject::getControl(ConfigKey("[Channel2]","rate_perm_down_small"));
         m_pControlObjectLeftBtnPitchBendPlus = ControlObject::getControl(ConfigKey("[Channel1]","rate_perm_up_small"));
@@ -129,10 +129,10 @@ void Hercules::selectMapping(QString qMapping)
     }
 
     // Generic mappings
-    m_pControlObjectLeftBtnTrackPrev = ControlObject::getControl(ConfigKey("[Channel1]","cue_set"));
-    m_pControlObjectRightBtnTrackPrev = ControlObject::getControl(ConfigKey("[Channel2]","cue_set"));
-    m_pControlObjectLeftBtnTrackNext = ControlObject::getControl(ConfigKey("[Channel1]","cue_preview"));
-    m_pControlObjectRightBtnTrackNext = ControlObject::getControl(ConfigKey("[Channel2]","cue_preview"));
+    m_pControlObjectLeftBtnTrackPrev = ControlObject::getControl(ConfigKey("[Channel1]","PrevTrack"));
+    m_pControlObjectRightBtnTrackPrev = ControlObject::getControl(ConfigKey("[Channel2]","PrevTrack"));
+    m_pControlObjectLeftBtnTrackNext = ControlObject::getControl(ConfigKey("[Channel1]","NextTrack"));
+    m_pControlObjectRightBtnTrackNext = ControlObject::getControl(ConfigKey("[Channel2]","NextTrack"));
     m_pControlObjectLeftTreble = ControlObject::getControl(ConfigKey("[Channel1]","filterHigh"));
     m_pControlObjectRightTreble = ControlObject::getControl(ConfigKey("[Channel2]","filterHigh"));
     m_pControlObjectLeftMiddle = ControlObject::getControl(ConfigKey("[Channel1]","filterMid"));
