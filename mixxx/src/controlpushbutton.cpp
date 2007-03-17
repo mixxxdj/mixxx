@@ -63,7 +63,7 @@ void ControlPushButton::setValueFromMidi(MidiCategory c, double v)
     	if (c == NOTE_ON)
     		m_dValue = v;
     	else if (c == NOTE_OFF)
-    		m_dValue = 0;
+    		m_dValue = 0.0;
     }
     if (c==NOTE_OFF)
         {
