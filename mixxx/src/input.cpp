@@ -65,6 +65,6 @@ void Input::sendButtonEvent(bool bPressed, ControlObject *pControlObject)
         if (bPressed)
             pControlObject->queueFromMidi(NOTE_ON, 1);
         else
-            pControlObject->queueFromMidi(NOTE_OFF, 0);
+            pControlObject->queueFromMidi(NOTE_OFF, 1);
     }
 }
