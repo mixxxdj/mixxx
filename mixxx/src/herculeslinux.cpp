@@ -293,7 +293,8 @@ void HerculesLinux::getNextEvent()
                     sendEvent(dDiff, m_pControlObjectRightJog);
                     break;
                 case kiHerculesCrossfade:
-                    sendEvent((ev.value+1)/2., m_pControlObjectCrossfade);
+                	//qDebug("(ev.value+1)/2.0f: %f", (ev.value+1)/2.0f);
+                    sendEvent((ev.value+1)/2.0f, m_pControlObjectCrossfade);
                     break;                
 //              default:
 //                  sendEvent(0., m_pControlObjectLeftJog);
@@ -509,7 +510,7 @@ void HerculesLinux::getNextEvent()
                 case kiHerculesRightBtnCue:
 //                     m_bCueRight = !m_bCueRight;
 //                     led_write(kiHerculesLedRightCueBtn, m_bCueRight);
-//                     sendButtonEvent(false, m_pControlObjectRightBtnCue);
+                     sendButtonEvent(false, m_pControlObjectRightBtnCue);
                     break;
                 case kiHerculesRightBtnPlay:
                     sendButtonEvent(false, m_pControlObjectRightBtnPlay);
