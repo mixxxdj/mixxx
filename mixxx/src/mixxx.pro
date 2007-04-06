@@ -118,9 +118,9 @@ win32 {
 #}
 
 # OSS Midi (Works good, but doesn't support newer devices - Linux specific)
-#unix:!macx:SOURCES += midiobjectoss.cpp
-#unix:!macx:HEADERS += midiobjectoss.h
-#unix:!macx:DEFINES += __OSSMIDI__
+unix:!macx:SOURCES += midiobjectoss.cpp
+unix:!macx:HEADERS += midiobjectoss.h
+unix:!macx:DEFINES += __OSSMIDI__
 
 # Jack (for MacOS X)
 # macx:HEADERS += ../../mixxx-maclib/includes/jack/jack.h
@@ -142,10 +142,10 @@ macx:DEFINES += __COREMIDI__
 macx:LIBS    += -framework CoreMIDI -framework CoreFoundation
 
 # ALSA Sequencer Midi (Working best, Linux specific)
-unix:SOURCES += midiobjectalsaseq.cpp
-unix:HEADERS += midiobjectalsaseq.h
-unix:DEFINES += __ALSASEQMIDI__
-unix:LIBS += -lasound
+#unix:SOURCES += midiobjectalsaseq.cpp
+#unix:HEADERS += midiobjectalsaseq.h
+#unix:DEFINES += __ALSASEQMIDI__
+#unix:LIBS += -lasound
 
 # ALSA PCM (Not currently working, Linux specific)
 #SOURCES += playeralsa.cpp
