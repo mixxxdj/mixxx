@@ -32,6 +32,13 @@ typedef enum {
     MIDI_PITCH            = 3
 } MidiType;
 
+typedef enum {
+    MIDI_OPT_NORMAL           = 0,
+    MIDI_OPT_INVERT           = 1,
+    MIDI_OPT_ROT64            = 2,
+    MIDI_OPT_ROT64_INV        = 3,
+    MIDI_OPT_ROT64_FAST       = 4
+} MidiOption;
 
 /*
   Class for the key for a specific configuration element. A key consists of a
@@ -59,6 +66,7 @@ public:
     void valCopy(const ConfigValue _value);
 
     QString value;
+    friend bool operator==(const ConfigValue & s1, const ConfigValue & s2);
 };
 
 class ConfigValueMidi : public ConfigValue
@@ -68,9 +76,12 @@ public:
     ConfigValueMidi(QString _value);
     ConfigValueMidi(MidiType _miditype, int _midino, int _midichannel);
     void valCopy(const ConfigValueMidi v);
+    double ComputeValue(MidiType _miditype, double _prevmidivalue, double _newmidivalue);
+    friend bool operator==(const ConfigValueMidi & s1, const ConfigValueMidi & s2);
 
     MidiType miditype;
     int midino, midichannel;
+    MidiOption midioption;
 };
 
 class ConfigValueKbd : public ConfigValue
@@ -80,6 +91,7 @@ public:
     ConfigValueKbd(QString _value);
     ConfigValueKbd(QKeySequence key);
     void valCopy(const ConfigValueKbd v);
+    friend bool operator==(const ConfigValueKbd & s1, const ConfigValueKbd & s2);
 
     QKeySequence m_qKey;
 };

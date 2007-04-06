@@ -72,6 +72,11 @@ double ControlPotmeter::getValueToWidget(double dValue)
     return 127.*(dValue-m_dMinValue)/m_dValueRange;
 }
 
+double ControlPotmeter::GetMidiValue()
+{
+    return 127.*(m_dValue-m_dMinValue)/m_dValueRange;
+}
+
 double ControlPotmeter::getValueFromWidget(double dValue)
 {
     return m_dMinValue + (dValue/127.)*m_dValueRange;

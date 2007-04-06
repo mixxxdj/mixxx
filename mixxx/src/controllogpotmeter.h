@@ -35,6 +35,8 @@ public:
     double getValueFromWidget(double dValue);
     double getValueToWidget(double dValue);
 
+    double GetMidiValue();
+    
 protected:
 
     // This is true, if the log potmeter is divided into two states, one from 0 to 1, and

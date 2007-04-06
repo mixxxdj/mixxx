@@ -43,6 +43,7 @@ public:
     void setRange(double dMinValue, double dMaxValue);
     double getValueFromWidget(double dValue);
     double getValueToWidget(double dValue);
+    double GetMidiValue();
     
 public slots:
     void setValueFromThread(double dValue);
