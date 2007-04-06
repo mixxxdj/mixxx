@@ -38,7 +38,7 @@ WVisualWaveform::WVisualWaveform(QWidget *pParent, const char *pName, const QGLW
     m_iTimerID = startTimer(30);
 #endif
 #ifdef __WIN__
-    m_iTimerID = startTimer(15);
+    m_iTimerID = startTimer(30);
 #endif
 #ifdef __LINUX__
     m_iTimerID = startTimer(30);
@@ -215,6 +215,7 @@ void WVisualWaveform::paintGL()
     // Display stuff
     makeCurrent();
     m_pVisualController->display();
+	m_painting = false;
 }
 
 void WVisualWaveform::resizeGL(int width, int height)
@@ -228,6 +229,5 @@ void WVisualWaveform::timerEvent(QTimerEvent*)
 	if (!m_painting) {
 		m_painting = true;
 		updateGL();
-		m_painting = false;
 	}
 }
