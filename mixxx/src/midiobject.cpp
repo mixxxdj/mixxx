@@ -149,6 +149,11 @@ void MidiObject::send(MidiCategory category, char channel, char control, double 
     if (pConfigKey)
     {
         ControlObject *p = ControlObject::getControl(*pConfigKey);
+        ConfigOption<ConfigValueMidi> *c = m_pMidiConfig->get(*pConfigKey);
+        if (c && p)
+        {
+            value = ((ConfigValueMidi *)c->val)->ComputeValue(type, p->GetMidiValue(), value);
+        }
         if (p)
             p->queueFromMidi(category, value);
     }

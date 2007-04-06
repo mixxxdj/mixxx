@@ -94,6 +94,8 @@ public:
     virtual double getValueFromWidget(double dValue);
     /** Return a widget value corresponding to the ControlObject input value. Thread safe. */
     virtual double getValueToWidget(double dValue);
+    /** get value (range 0..127) **/
+    virtual double GetMidiValue();
 
 public slots:
     /** Sets the value of the object and updates associated proxy objects. Not thread safe. */

@@ -271,6 +271,7 @@ include( check.qbas )
 
 #   PortAudio-v19
 OBJECT = pkg-config --exists 'portaudio-2.0 >= 19'
+LINK_LIBS = `pkg-config --cflags portaudio-2.0`
 PACKAGE = portaudio
 TIP_MESSAGE = "PortAudio-v19 not found!"
 OPTIONS = exit_on_failure

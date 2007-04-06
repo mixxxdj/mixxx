@@ -65,8 +65,9 @@ ConfigValueMidi::ConfigValueMidi(QString _value)
 {
         QString channelMark;
         QString type;
+        QString option;
 
-        QTextIStream(&_value) >> type >> midino >> channelMark >> midichannel;
+        QTextIStream(&_value) >> type >> midino >> channelMark >> midichannel >> option;
         if (type.contains("Key",false))
             miditype = MIDI_KEY;
         else if (type.contains("Ctrl",false))
@@ -87,6 +88,16 @@ ConfigValueMidi::ConfigValueMidi(QString _value)
             midino = -1;
 //        qDebug("miditype: %s, midino: %i, midichannel: %i",type.latin1(),midino,midichannel);
 
+        if (option.contains("Invert", false))
+            midioption = MIDI_OPT_INVERT;
+        else if (option.contains("Rot64Inv", false))
+            midioption = MIDI_OPT_ROT64_INV;
+        else if (option.contains("Rot64Fast", false))
+            midioption = MIDI_OPT_ROT64_FAST;
+        else if (option.contains("Rot64", false))
+            midioption = MIDI_OPT_ROT64;
+        else
+            midioption = MIDI_OPT_NORMAL;
         // Store string with corrected config value
         //value="";
         //QTextOStream(&value) << type << " " << midino << " ch " << midichannel;
@@ -105,6 +116,7 @@ ConfigValueMidi::ConfigValueMidi(MidiType _miditype, int _midino, int _midichann
             value.prepend("Ctrl ");
         else if (miditype==MIDI_PITCH)
             value.prepend("Pitch ");
+        midioption = MIDI_OPT_NORMAL;
 
         //QTextIStream(&value) << midino << midimask << "ch" << midichannel;
 }
@@ -115,6 +127,8 @@ void ConfigValueMidi::valCopy(const ConfigValueMidi v)
         miditype = v.miditype;
         midino = v.midino;
         midichannel = v.midichannel;
+        midioption = v.midioption;
+        value = "";
         QTextOStream(&value) << midino << " ch " << midichannel;
         if (miditype==MIDI_KEY)
             value.prepend("Key ");
@@ -122,9 +136,51 @@ void ConfigValueMidi::valCopy(const ConfigValueMidi v)
             value.prepend("Ctrl ");
         else if (miditype==MIDI_PITCH)
             value.prepend("Pitch ");
-        
+        if (midioption == MIDI_OPT_INVERT)
+            value.append(" Invert");            
+        else if (midioption == MIDI_OPT_ROT64)
+            value.append(" Rot64");
+        else if (midioption == MIDI_OPT_ROT64_INV)
+            value.append(" Rot64Inv");
+        else if (midioption == MIDI_OPT_ROT64_FAST)
+            value.append(" Rot64Fast");
+                        
+        qDebug("Config value: %s", value.ascii());
         //qDebug("--1, midino: %i, midimask: %i, midichannel: %i",midino,midimask,midichannel);
 }
+
+double ConfigValueMidi::ComputeValue(MidiType /*_miditype*/, double _prevmidivalue, double _newmidivalue)
+{
+    double tempval = 0.;
+    double diff = 0.;
+    
+    if (midioption == MIDI_OPT_INVERT)
+        return 127. - _newmidivalue;
+    else if (midioption == MIDI_OPT_ROT64 || midioption == MIDI_OPT_ROT64_INV)
+    {
+        tempval = _prevmidivalue;
+        diff = _newmidivalue - 64.;
+	if (diff == -1 || diff == 1)
+	   diff /= 16;
+	else
+	   diff += (diff > 0 ? -1 : +1);
+        if (midioption == MIDI_OPT_ROT64)
+            tempval += diff;
+        else
+            tempval -= diff;
+        return (tempval < 0. ? 0. : (tempval > 127. ? 127.0 : tempval));
+    }
+    else if (midioption == MIDI_OPT_ROT64_FAST)
+    {
+        tempval = _prevmidivalue;
+        diff = _newmidivalue - 64.;
+        diff *= 1.5;
+        tempval += diff;
+        return (tempval < 0. ? 0. : (tempval > 127. ? 127.0 : tempval));
+    }
+    return _newmidivalue;
+}
+
 
 ConfigValueKbd::ConfigValueKbd()
 {
@@ -149,6 +205,21 @@ void ConfigValueKbd::valCopy(const ConfigValueKbd v)
 {
         m_qKey = v.m_qKey;
         QTextOStream(&value) << (const QString &)m_qKey;
+}
+
+bool operator==(const ConfigValue & s1, const ConfigValue & s2)
+{
+    return (s1.value.upper() == s2.value.upper());
+}
+
+bool operator==(const ConfigValueMidi & s1, const ConfigValueMidi & s2)
+{
+    return (s1.midichannel == s2.midichannel) && (s1.midino == s2.midino) && (s1.miditype == s2.miditype);
+}
+
+bool operator==(const ConfigValueKbd & s1, const ConfigValueKbd & s2)
+{
+    return (s1.value.upper() == s2.value.upper());
 }
 
 template <class ValueType> ConfigObject<ValueType>::ConfigObject(QString file)
@@ -212,7 +283,8 @@ ConfigKey *ConfigObject<ValueType>::get(ValueType v)
     for (it = list.first(); it; it = list.next())
     {
 //          qDebug("match %s with %s", it->val->value.upper().latin1(), v.value.upper().latin1());
-        if (it->val->value.upper() == v.value.upper())
+//        if (it->val->value.upper() == v.value.upper())
+        if (((ValueType)*it->val) == ((ValueType)v))
         {
             return it->key;
         }

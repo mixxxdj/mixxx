@@ -192,6 +192,7 @@ void EngineMaster::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBuff
 
     // Crossfader
     cf_val = crossfader->get();
+    //qDebug("cf_val: %f", cf_val);
     FLOAT_TYPE c1_gain, c2_gain;
     if (cf_val>0)
     {

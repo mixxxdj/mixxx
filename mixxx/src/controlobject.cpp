@@ -145,6 +145,11 @@ void ControlObject::setValueFromMidi(MidiCategory, double v)
     emit(valueChanged(m_dValue));
 }
 
+double ControlObject::GetMidiValue()
+{
+    return m_dValue;
+}
+
 void ControlObject::setValueFromThread(double dValue)
 {
     m_dValue = dValue;
@@ -226,9 +231,9 @@ void ControlObject::sync()
 	    } else if (obj->category == NULL) {
 		qDebug("Midi object with null category!");
 		delete obj;
-	    } else if (obj->value == NULL) {
+	    /*} else if (obj->value == NULL) {
 	        qDebug("Midi object with null value!");
-		delete obj;
+		delete obj;*/
 	    } else {
                 obj->pControlObject->setValueFromMidi(obj->category, obj->value);
                 obj->pControlObject->updateProxies(0);

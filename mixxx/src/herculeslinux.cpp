@@ -581,12 +581,15 @@ void HerculesLinux::led_write(int iLed, bool bOn)
     struct input_event ev;
     memset(&ev, 0, sizeof(struct input_event));
 
-    ev.type = EV_LED;
+    //ev.type = EV_LED;
+    ev.type = 0x0000;
     ev.code = iLed;
     if (bOn)
         ev.value = 3;
     else
         ev.value = 0;
+
+	//qDebug("Hercules: led_write(iLed=%d, bOn=%d)", iLed, bOn);
 
     if (write(m_iFd, &ev, sizeof(struct input_event)) != sizeof(struct input_event))
         qDebug("Hercules: write(): %s", strerror(errno));

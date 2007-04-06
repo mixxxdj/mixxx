@@ -96,3 +96,7 @@ double ControlLogpotmeter::getValueToWidget(double dValue)
     return pos;
 }
 
+double ControlLogpotmeter::GetMidiValue()
+{
+    return 127.*(m_dValue-m_dMinValue)/m_dValueRange;
+}
