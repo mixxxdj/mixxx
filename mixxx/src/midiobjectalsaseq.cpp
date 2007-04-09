@@ -29,7 +29,7 @@ MidiObjectALSASeq::MidiObjectALSASeq() : MidiObject("")
     if (err != 0)
     {
       	qDebug("Open of midi failed: %s.", snd_strerror(err));
-	qDebug("have you the snd-seq-midi kernel module loaded?");
+	qDebug("Do you have the snd-seq-midi kernel module loaded?");
 	qDebug("If not, launch modprobe snd-seq-midi as root");
 	return;
     }
@@ -39,7 +39,7 @@ MidiObjectALSASeq::MidiObjectALSASeq() : MidiObject("")
     m_queue = snd_seq_alloc_named_queue(m_handle, "Mixxx_queue");
     if (m_queue != 0)
     {
-        qDebug("Creation of the midi queue failed.");
+        qDebug("Creation of the midi queue failed. %s", snd_strerror(m_queue));
         return;
     }
 
@@ -52,10 +52,11 @@ MidiObjectALSASeq::MidiObjectALSASeq() : MidiObject("")
     snd_seq_port_info_set_timestamp_queue(pinfo, m_queue);
     snd_seq_port_info_set_name(pinfo, "input");
     m_input = snd_seq_create_port(m_handle, pinfo);
+    
     if (m_input != 0)
     {
         qDebug("Creation of the input port failed" );
-	return;
+		return;
     }
 
     err = snd_seq_connect_from(m_handle, m_input, SND_SEQ_CLIENT_SYSTEM, SND_SEQ_PORT_SYSTEM_ANNOUNCE);
