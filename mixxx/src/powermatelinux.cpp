@@ -42,7 +42,8 @@ PowerMateLinux::PowerMateLinux() : PowerMate()
 PowerMateLinux::~PowerMateLinux()
 {
 	//Turn off blue LED.
-	led_write(0, 0, 0, 0, 0);
+	if (m_iFd < 0)
+		led_write(0, 0, 0, 0, 0);
 }
 
 bool PowerMateLinux::opendev()
