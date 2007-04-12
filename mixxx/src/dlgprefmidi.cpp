@@ -86,7 +86,7 @@ DlgPrefMidi::DlgPrefMidi(QWidget *parent, ConfigObject<ConfigValue> *pConfig) : 
     m_pMidi = new MidiObjectALSA(m_pConfig->getValueString(ConfigKey("[Midi]","Device")));
 #endif
 #ifdef __ALSASEQMIDI__
-    m_pMidi = new MidiObjectALSASeq();
+    m_pMidi = new MidiObjectALSASeq(m_pConfig->getValueString(ConfigKey("[Midi]","Device")));
 #endif
 #ifdef __PORTMIDI__
     m_pMidi = new MidiObjectPortMidi(m_pConfig->getValueString(ConfigKey("[Midi]","Device")));
