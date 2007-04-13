@@ -64,7 +64,7 @@ MidiObjectALSASeq::MidiObjectALSASeq(QString device) : MidiObject(device)
     if (err != 0)
     {
       	qDebug("snd_seq_connect_from failed" );
-	return;
+		return;
     }
    
 	//List all the ALSA sequencer clients as the "devices"
