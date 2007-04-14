@@ -267,7 +267,43 @@ long SoundSourceMp3::seek(long filepos)
 
 inline long unsigned SoundSourceMp3::length()
 {
-    return (long unsigned) 2*mad_timer_count(filelength, MAD_UNITS_44100_HZ);
+	enum mad_units units;
+	
+	//qDebug("SRATE: %i", SRATE);
+	switch (SRATE)
+	{
+		case 8000:
+			units = MAD_UNITS_8000_HZ;
+			break;
+		case 11025:
+			units = MAD_UNITS_11025_HZ;
+			break;
+		case 12000:
+			units = MAD_UNITS_12000_HZ;
+			break;
+		case 16000:
+			units = MAD_UNITS_16000_HZ;
+			break;
+		case 22050:
+			units = MAD_UNITS_22050_HZ;
+			break;
+		case 24000:
+			units = MAD_UNITS_24000_HZ;
+			break;
+		case 32000:
+			units = MAD_UNITS_32000_HZ;
+			break;
+		case 44100:
+			units = MAD_UNITS_44100_HZ;
+			break;
+		case 48000:
+			units = MAD_UNITS_48000_HZ;
+			break;
+		default: //By the MP3 specs, an MP3 _has_ to have one of the above samplerates...
+			units = MAD_UNITS_44100_HZ;
+	}
+
+    return (long unsigned) 2*mad_timer_count(filelength, units);
 }
 
 /*
