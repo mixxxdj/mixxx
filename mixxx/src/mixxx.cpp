@@ -43,6 +43,7 @@
 #include <qlabel.h>
 #include <qsplashscreen.h>
 #include <qdatetime.h>
+#include <qpalette.h>
 
 #include "wknob.h"
 #include "wslider.h"
@@ -71,6 +72,17 @@ MixxxApp::MixxxApp(QApplication *a, QStringList files, QSplashScreen *pSplash, Q
 {
     app = a;
 
+	//Next, let's set up the colour palette for Mixxx.
+	//For what color controls what, see this reference:
+	//http://doc.trolltech.com/3.3/qcolorgroup.html#ColorRole-enum
+	
+	/*
+	QPalette palette;
+	palette.setColor(QColorGroup::HighlightedText, QColor("darkBlue"));
+	palette.setColor(QColorGroup::Text, QColor("white"));
+	setPalette(palette);
+	*/
+    
     qDebug("Starting up...");
     setCaption(tr("Mixxx " VERSION));
 #ifndef __MACX__
