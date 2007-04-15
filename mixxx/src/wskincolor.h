@@ -1,9 +1,9 @@
 /***************************************************************************
-                          wpixmapstore.h  -  description
+                          wskincolor.h  -  description
                              -------------------
-    begin                : Mon Jun 28 2003
-    copyright            : (C) 2003 by Tue & Ken Haste Andersen
-    email                : haste@diku.dk
+    begin                : 14 April 2007
+    copyright            : (C) 2007 by Adam Davison
+    email                : adamdavison@gmail.com
  ***************************************************************************/
 
 /***************************************************************************
@@ -15,34 +15,17 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef WPIXMAPSTORE_H
-#define WPIXMAPSTORE_H
-
-#include <qpixmap.h>
-#include <qdict.h>
+#ifndef WSKINCOLOR_H
+#define WSKINCOLOR_H
 
 #include "imgsource.h"
 
-/**
-  *
-  *@author Tue & Ken Haste Andersen
-  */
+class WSkinColor {
 
-typedef struct
-{
-    QPixmap *pixmap;
-    int instCount;
-} PixmapInfoType;
-
-class WPixmapStore {
-public: 
-    WPixmapStore();
-    static QPixmap *getPixmap(const QString &fileName);
-    static void deletePixmap(QPixmap *p);
+public:
+	static QColor getCorrectColor(QColor c);
 	static void setLoader(ImgSource* ld);
 private:
-    /** Dictionary of pixmaps already instantiated */
-    static QDict<PixmapInfoType> dictionary;
 	static ImgSource* loader;
 };
 

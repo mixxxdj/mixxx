@@ -24,6 +24,7 @@
 #include "configobject.h"
 #include <qptrlist.h>
 #include "configobject.h"
+#include "imgsource.h"
 
 class ControlObject;
 class WSlider;
@@ -76,6 +77,8 @@ public:
     WOverview *m_pOverviewCh1, *m_pOverviewCh2;
 
 private:
+	ImgSource* parseFilters(QDomNode filt);
+
     // True if m_pVisualChX is instantiated as WVisualWaveform
     bool m_bVisualWaveform;
     bool compareConfigKeys(QDomNode node, QString key);

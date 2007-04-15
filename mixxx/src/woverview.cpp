@@ -10,6 +10,7 @@
 //
 //
 #include "woverview.h"
+#include "wskincolor.h"
 #include <qpainter.h>
 #include <qpixmap.h>
 #include "mathstuff.h"
@@ -52,19 +53,21 @@ void WOverview::setup(QDomNode node)
 */
 
     // Background color
+	QColor c(255,255,255);
     if (!selectNode(node, "BgColor").isNull())
     {
-        QColor c;
         c.setNamedColor(selectNodeQString(node, "BgColor"));
-            setBackgroundColor(c);
     }
+	setBackgroundColor(WSkinColor::getCorrectColor(c));
 
     // Setup screen buffer
     m_pScreenBuffer = new QPixmap(this->size());
     m_pScreenBuffer->fill(this->backgroundColor());
 
     m_qColorSignal.setNamedColor(selectNodeQString(node, "SignalColor"));
+	m_qColorSignal = WSkinColor::getCorrectColor(m_qColorSignal);
     m_qColorMarker.setNamedColor(selectNodeQString(node, "MarkerColor"));
+	m_qColorMarker = WSkinColor::getCorrectColor(m_qColorMarker);
 }
 
 void WOverview::setValue(double fValue)

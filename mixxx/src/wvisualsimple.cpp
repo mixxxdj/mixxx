@@ -16,6 +16,7 @@
  ***************************************************************************/
 
 #include "wvisualsimple.h"
+#include "wskincolor.h"
 #include <qpainter.h>
 #include <qpixmap.h>
 #include <qdragobject.h>
@@ -71,15 +72,17 @@ void WVisualSimple::setup(QDomNode node)
     m_qMousePos.setY(y/2);
     
     // Background color
+	QColor c(255,255,255);
     if (!selectNode(node, "BgColor").isNull())
-    {
-        QColor c;
+	{
         c.setNamedColor(selectNodeQString(node, "BgColor"));
-            setBackgroundColor(c);
     }
+	setBackgroundColor(WSkinColor::getCorrectColor(c));
 
     colorSignal.setNamedColor(selectNodeQString(node, "SignalColor"));
+	colorSignal = WSkinColor::getCorrectColor(colorSignal);
     colorMarker.setNamedColor(selectNodeQString(node, "MarkerColor"));
+	colorMarker = WSkinColor::getCorrectColor(colorMarker);
 }
 
 void WVisualSimple::slotNewTrack()

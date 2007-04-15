@@ -49,7 +49,7 @@
 				GeneratePreprocessedFile="0"
 				MinimalRebuild="true"
 				ExceptionHandling="1"
-				RuntimeLibrary="3"
+				RuntimeLibrary="0"
 				BufferSecurityCheck="false"
 				RuntimeTypeInfo="true"
 				AssemblerListingLocation="Release\"
@@ -386,6 +386,18 @@
 				>
 			</File>
 			<File
+				RelativePath=".\imgcolor.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\imginvert.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\imgloader.cpp"
+				>
+			</File>
+			<File
 				RelativePath="input.cpp"
 				>
 			</File>
@@ -695,6 +707,10 @@
 			</File>
 			<File
 				RelativePath="wpushbutton.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\wskincolor.cpp"
 				>
 			</File>
 			<File
@@ -1362,6 +1378,22 @@
 			</File>
 			<File
 				RelativePath="hercules.h"
+				>
+			</File>
+			<File
+				RelativePath=".\imgcolor.h"
+				>
+			</File>
+			<File
+				RelativePath=".\imginvert.h"
+				>
+			</File>
+			<File
+				RelativePath=".\imgloader.h"
+				>
+			</File>
+			<File
+				RelativePath=".\imgsource.h"
 				>
 			</File>
 			<File
@@ -2287,6 +2319,10 @@
 						Outputs="moc_wpushbutton.cpp"
 					/>
 				</FileConfiguration>
+			</File>
+			<File
+				RelativePath=".\wskincolor.h"
+				>
 			</File>
 			<File
 				RelativePath="wslider.h"

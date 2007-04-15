@@ -40,12 +40,18 @@
 #include "wnumberpos.h"
 #include "wnumberbpm.h"
 #include "wnumberrate.h"
+#include "wpixmapstore.h"
 #include "wvisualwaveform.h"
 #include "wvisualsimple.h"
 #include "woverview.h"
 #include "mixxxkeyboard.h"
 #include "controlobject.h"
 #include "controlobjectthreadwidget.h"
+
+#include "imgloader.h"
+#include "imginvert.h"
+#include "imgcolor.h"
+#include "wskincolor.h"
 
 MixxxView::MixxxView(QWidget *parent, ConfigObject<ConfigValueKbd> *kbdconfig, bool bVisualsWaveform, QString qSkinPath, ConfigObject<ConfigValue> *pConfig) : QWidget(parent, "Mixxx")
 {
@@ -70,7 +76,8 @@ MixxxView::MixxxView(QWidget *parent, ConfigObject<ConfigValueKbd> *kbdconfig, b
     {
         qFatal("Error parsing skin definition file: %s",file.name().latin1());
     }
-    file.close();
+
+	file.close();
     QDomElement docElem = skin.documentElement();
 
 #ifdef __WIN__
@@ -96,6 +103,28 @@ MixxxView::MixxxView(QWidget *parent, ConfigObject<ConfigValueKbd> *kbdconfig, b
     m_bVisualWaveform = false;
     m_pOverviewCh1 = 0;
     m_pOverviewCh2 = 0;
+
+	QDomNode colsch = docElem.namedItem("Schemes");
+	if (!colsch.isNull() && colsch.isElement()) {
+		QString schname = pConfig->getValueString(ConfigKey("[Config]","Scheme"));
+		QDomNode sch = colsch.firstChild();
+
+		bool found = false;
+		while (!sch.isNull() && !found) {
+			QString thisname = WWidget::selectNodeQString(sch, "Name");
+			if (thisname == schname) {
+				found = true;
+			} else {
+				sch = sch.nextSibling();
+			}
+		}
+
+		if (found) {
+			ImgSource* imsrc = parseFilters(sch.namedItem("Filters"));
+			WPixmapStore::setLoader(imsrc);
+			WSkinColor::setLoader(imsrc);
+		}
+	}
 
     // Load all widgets defined in the XML file
     QDomNode node = docElem.firstChild();
@@ -193,21 +222,22 @@ MixxxView::MixxxView(QWidget *parent, ConfigObject<ConfigValueKbd> *kbdconfig, b
             else if (node.nodeName()=="Background")
             {
                 QString filename = WWidget::selectNodeQString(node, "Path");
-                QPixmap background(WWidget::getPath(filename));
-                this->setPaletteBackgroundPixmap(background);
+				QPixmap* background = WPixmapStore::getPixmap(WWidget::getPath(filename));
+                this->setPaletteBackgroundPixmap(*background);
+				// TODO: Delete background from pixmap store to save memory?
                 // FWI: Begin of fullscreen patch
                 // this->setFixedSize(background.width(),background.height()+((QMainWindow *)parent)->menuBar()->height());
                 // parent->setFixedSize(background.width(),background.height()+((QMainWindow *)parent)->menuBar()->height());
-                this->setFixedSize(background.width(),background.height());
-                parent->setMinimumSize(background.width(),background.height());
+                this->setFixedSize(background->width(),background->height());
+                parent->setMinimumSize(background->width(),background->height());
                 // FWI: End of fullscreen patch
                 this->move(0,0);
 				
+				QColor c(255,255,255);
 				if (!WWidget::selectNode(node, "BgColor").isNull()) {
-					QColor c;
 					c.setNamedColor(WWidget::selectNodeQString(node, "BgColor"));
-					parent->setEraseColor(c);
 				}
+				parent->setEraseColor(WSkinColor::getCorrectColor(c));
             }
             else if (node.nodeName()=="SliderComposed")
             {
@@ -328,20 +358,18 @@ MixxxView::MixxxView(QWidget *parent, ConfigObject<ConfigValueKbd> *kbdconfig, b
                 p->setFixedSize(x,y);
 
                 // Background color
-                if (!WWidget::selectNode(node, "BgColor").isNull())
-                {
-                    QColor c;
-                    c.setNamedColor(WWidget::selectNodeQString(node, "BgColor"));
-                    p->setPaletteBackgroundColor(c);
+				QColor bgc(255,255,255);
+				if (!WWidget::selectNode(node, "BgColor").isNull()) {
+                    bgc.setNamedColor(WWidget::selectNodeQString(node, "BgColor"));
                 }
+				p->setPaletteBackgroundColor(WSkinColor::getCorrectColor(bgc));
 
                 // Foreground color
-                if (!WWidget::selectNode(node, "FgColor").isNull())
-                {
-                    QColor c;
-                    c.setNamedColor(WWidget::selectNodeQString(node, "FgColor"));
-                    p->setPaletteForegroundColor(c);
+				QColor fgc(0,0,0);
+				if (!WWidget::selectNode(node, "FgColor").isNull()) {
+                    fgc.setNamedColor(WWidget::selectNodeQString(node, "FgColor"));
                 }
+				p->setPaletteForegroundColor(WSkinColor::getCorrectColor(fgc));
 
                 // Alignment
                 if (!WWidget::selectNode(node, "Align").isNull() && WWidget::selectNodeQString(node, "Align")=="right")
@@ -454,4 +482,32 @@ bool MixxxView::compareConfigKeys(QDomNode node, QString key)
         }
     }
     return false;
+}
+
+ImgSource* MixxxView::parseFilters(QDomNode filt) {
+	if (!filt.hasChildNodes()) {
+		return 0;
+	}
+
+	ImgSource* ret = new ImgLoader();
+
+	QDomNode f = filt.firstChild();
+
+	while (!f.isNull()) {
+		QString name = f.nodeName().lower();
+		if (name == "invert") {
+			ret = new ImgInvert(ret);
+		} else if (name == "hueinv") {
+			ret = new ImgHueInv(ret);
+		} else if (name == "add") {
+			ret = new ImgAdd(ret, WWidget::selectNodeInt(f, "Amount"));
+		} else if (name == "scalewhite") {
+			ret = new ImgScaleWhite(ret, WWidget::selectNodeFloat(f, "Amount"));
+		} else {
+			qDebug("Unkown image filter: %s\n", name);
+		}
+		f = f.nextSibling();
+	}
+
+	return ret;
 }
