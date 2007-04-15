@@ -16,6 +16,7 @@
  ***************************************************************************/
 
 #include "wnumber.h"
+#include "wskincolor.h"
 #include <math.h>
 #include <qfont.h>
 
@@ -40,9 +41,9 @@ void WNumber::setup(QDomNode node)
 
     // Colors
     m_qBgColor.setNamedColor(WWidget::selectNodeQString(node, "BgColor"));
-    m_pLabel->setPaletteBackgroundColor(m_qBgColor);
+	m_pLabel->setPaletteBackgroundColor(WSkinColor::getCorrectColor(m_qBgColor));
     m_qFgColor.setNamedColor(WWidget::selectNodeQString(node, "FgColor"));
-    m_pLabel->setPaletteForegroundColor(m_qFgColor);
+	m_pLabel->setPaletteForegroundColor(WSkinColor::getCorrectColor(m_qFgColor));
 
     // Text
     if (!selectNode(node, "Text").isNull())

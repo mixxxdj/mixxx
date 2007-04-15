@@ -448,6 +448,10 @@ HEADERS += enginebeatseek.h
 HEADERS += enginebufferscalereal.h
 SOURCES += enginebufferscalereal.cpp
 
+# Some stuff, image processing for skins
+HEADERS += imgsource.h imgloader.h imgcolor.h imginvert.h wskincolor.h
+SOURCES += imgsource.cpp imgloader.cpp imgcolor.cpp wskincolor.cpp
+
 # Hack to save waveform output to wav file at exit
 #DEFINES += RECORD_OUTPUT
 

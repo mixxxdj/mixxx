@@ -16,6 +16,7 @@
  ***************************************************************************/
 
 #include "wvisualwaveform.h"
+#include "wskincolor.h"
 #include "visual/visualchannel.h"
 #include "visual/visualdisplay.h"
 #include <qdragobject.h>
@@ -90,13 +91,20 @@ void WVisualWaveform::setup(QDomNode node)
 {
     // Colors
     colorBack.setNamedColor(WWidget::selectNodeQString(node, "BgColor"));
-    m_pVisualController->setBackgroundColor(colorBack);
+	colorBack = WSkinColor::getCorrectColor(colorBack);
+	m_pVisualController->setBackgroundColor(colorBack);
     colorSignal.setNamedColor(WWidget::selectNodeQString(node, "SignalColor"));
+	colorSignal = WSkinColor::getCorrectColor(colorSignal);
     colorHfc.setNamedColor(WWidget::selectNodeQString(node, "HfcColor"));
+	colorHfc = WSkinColor::getCorrectColor(colorHfc);
     colorCue.setNamedColor(WWidget::selectNodeQString(node, "CueColor"));
+	colorCue = WSkinColor::getCorrectColor(colorCue);
     colorMarker.setNamedColor(WWidget::selectNodeQString(node, "MarkerColor"));
+	colorMarker = WSkinColor::getCorrectColor(colorMarker);
     colorBeat.setNamedColor(WWidget::selectNodeQString(node, "BeatColor"));
+	colorBeat = WSkinColor::getCorrectColor(colorBeat);
     colorFisheye.setNamedColor(WWidget::selectNodeQString(node, "FisheyeColor"));
+	colorFisheye = WSkinColor::getCorrectColor(colorFisheye);
 
     // Set position
     QString pos = WWidget::selectNodeQString(node, "Pos");

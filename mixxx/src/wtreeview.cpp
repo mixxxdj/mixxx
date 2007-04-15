@@ -17,6 +17,7 @@
 #include "wtreeitemplaylistroot.h"
 #include "wtreeitem.h"
 #include "trackplaylist.h"
+#include "wskincolor.h"
 #include <qdragobject.h>
 
 static const int autoopenTime = 750;
@@ -95,20 +96,20 @@ void WTreeView::setup(QDomNode node)
     }
 
     // Background color
+	QColor bgc(255,255,255);
     if (!XmlParse::selectNode(node, "BgColor").isNull())
     {
-        QColor c;
-        c.setNamedColor(XmlParse::selectNodeQString(node, "BgColor"));
-        setPaletteBackgroundColor(c);
+        bgc.setNamedColor(XmlParse::selectNodeQString(node, "BgColor"));
     }
+	setPaletteBackgroundColor(WSkinColor::getCorrectColor(bgc));
 
     // Foreground color
+	QColor fgc(0,0,0);
     if (!XmlParse::selectNode(node, "FgColor").isNull())
     {
-        QColor c;
-        c.setNamedColor(XmlParse::selectNodeQString(node, "FgColor"));
-        setPaletteForegroundColor(c);
+        fgc.setNamedColor(XmlParse::selectNodeQString(node, "FgColor"));
     }
+	setPaletteForegroundColor(WSkinColor::getCorrectColor(fgc));
 }
 
 void WTreeView::slotFolderSelected( QListViewItem *i )

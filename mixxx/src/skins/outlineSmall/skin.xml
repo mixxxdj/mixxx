@@ -1,6 +1,30 @@
 <!DOCTYPE skin>
 <skin>
 
+ <Schemes>
+  <Scheme>
+   <Name>5pm</Name>
+   <Filters>
+   </Filters>
+  </Scheme>
+  <Scheme>
+   <Name>11pm</Name>
+   <Filters>
+    <Invert/>
+    <HueInv/>
+    <Add>
+     <Amount>50</Amount>
+    </Add>
+    <ScaleWhite>
+     <Amount>1.5</Amount>
+    </ScaleWhite>
+    <Add>
+     <Amount>-50</Amount>
+    </Add>
+   </Filters>
+  </Scheme>
+ </Schemes>
+
  <Background>
   <Path>scene.png</Path>
  </Background>

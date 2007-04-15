@@ -19,6 +19,8 @@
 
 QDict<PixmapInfoType> WPixmapStore::dictionary(251);
 
+ImgSource* WPixmapStore::loader = 0;
+
 WPixmapStore::WPixmapStore() 
 {
 }
@@ -38,7 +40,15 @@ QPixmap *WPixmapStore::getPixmap(const QString &fileName)
     // Pixmap wasn't found, construct it
 //    qDebug("Loading pixmap %s",fileName.latin1());
     info = new PixmapInfoType;
-    info->pixmap = new QPixmap(fileName);
+	if (loader != 0) {
+		QImage* img = loader->getImage(fileName);
+
+		info->pixmap = new QPixmap(*img);
+		// No longer need the original QImage (I hope...) - adam_d
+		delete img;
+	} else {
+		info->pixmap = new QPixmap(fileName);
+	}
     info->instCount = 1;
 
     dictionary.insert(fileName, info);
@@ -70,3 +80,6 @@ void WPixmapStore::deletePixmap(QPixmap *p)
     }
 }
     
+void WPixmapStore::setLoader(ImgSource* ld) {
+	loader = ld;
+}

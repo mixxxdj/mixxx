@@ -18,6 +18,7 @@
 #include "wtracktable.h"
 #include "wtracktableitem.h"
 #include "wwidget.h"
+#include "wskincolor.h"
 #include <qfont.h>
 #include <qcolor.h>
 #include <qdragobject.h>
@@ -90,20 +91,20 @@ void WTrackTable::setup(QDomNode node)
     }
 
     // Background color
+	QColor bgc(255,255,255);
     if (!WWidget::selectNode(node, "BgColor").isNull())
     {
-        QColor c;
-        c.setNamedColor(WWidget::selectNodeQString(node, "BgColor"));
-        setPaletteBackgroundColor(c);
+        bgc.setNamedColor(WWidget::selectNodeQString(node, "BgColor"));
     }
+	setPaletteBackgroundColor(WSkinColor::getCorrectColor(bgc));
 
     // Foreground color
+	QColor fgc(0,0,0);
     if (!WWidget::selectNode(node, "FgColor").isNull())
     {
-        QColor c;
-        c.setNamedColor(WWidget::selectNodeQString(node, "FgColor"));
-        setPaletteForegroundColor(c);
+        fgc.setNamedColor(WWidget::selectNodeQString(node, "FgColor"));
     }
+	setPaletteForegroundColor(WSkinColor::getCorrectColor(fgc));
 
     // Row colors
     if (!WWidget::selectNode(node, "BgColorRowEven").isNull())
@@ -112,7 +113,8 @@ void WTrackTable::setup(QDomNode node)
         r1.setNamedColor(WWidget::selectNodeQString(node, "BgColorRowEven"));
         QColor r2;
         r2.setNamedColor(WWidget::selectNodeQString(node, "BgColorRowUneven"));
-        WTrackTableItem::setRowColors(r1, r2);
+		WTrackTableItem::setRowColors(WSkinColor::getCorrectColor(r1),
+			WSkinColor::getCorrectColor(r2));
     }
 
     // BPM confidence colors
@@ -122,7 +124,8 @@ void WTrackTable::setup(QDomNode node)
         c1.setNamedColor(WWidget::selectNodeQString(node, "BgColorBpmNoConfirm"));
         QColor c2;
         c2.setNamedColor(WWidget::selectNodeQString(node, "BgColorBpmConfirm"));
-        WTrackTableItem::setBpmBgColors(c1, c2);
+		WTrackTableItem::setBpmBgColors(WSkinColor::getCorrectColor(c1), 
+			WSkinColor::getCorrectColor(c2));
     }
     
     // Setup column widths
