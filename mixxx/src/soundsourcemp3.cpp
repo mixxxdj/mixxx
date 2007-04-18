@@ -213,8 +213,8 @@ long SoundSourceMp3::seek(long filepos)
         // Synthesize the the samples from the frame which should be discard to reach the requested position
         SAMPLE *temp = new SAMPLE[READCHUNKSIZE];
         read(filepos-cur->pos, temp);
-//         qDebug("try read %i,...frame pos %i, filepos %i",filepos-cur->pos,cur->pos,filepos);
-//         qDebug("ok");
+        // qDebug("try read %i,...frame pos %i, filepos %i",filepos-cur->pos,cur->pos,filepos);
+        // qDebug("ok");
         delete [] temp;
     }
 /*
@@ -343,18 +343,18 @@ unsigned SoundSourceMp3::read(unsigned long samples_wanted, const SAMPLE* _desti
     int frames = 0;
     while (Total_samples_decoded < samples_wanted)
     {
-//         qDebug("no %i",Total_samples_decoded);
+        // qDebug("no %i",Total_samples_decoded);
         if(mad_frame_decode(Frame,&Stream))
         {
             if(MAD_RECOVERABLE(Stream.error))
             {
-//                 qDebug("MAD: Recoverable frame level ERR (%s)",mad_stream_errorstr(&Stream));
+                // qDebug("MAD: Recoverable frame level ERR (%s)",mad_stream_errorstr(&Stream));
                 continue;
             } else if(Stream.error==MAD_ERROR_BUFLEN) {
-//                 qDebug("MAD: buflen ERR");
+                // qDebug("MAD: buflen ERR");
                 break;
             } else {
-//                 qDebug("MAD: Unrecoverable frame level ERR (%s).",mad_stream_errorstr(&Stream));
+                // qDebug("MAD: Unrecoverable frame level ERR (%s).",mad_stream_errorstr(&Stream));
                 break;
             }
         }
@@ -392,7 +392,7 @@ unsigned SoundSourceMp3::read(unsigned long samples_wanted, const SAMPLE* _desti
         }
         Total_samples_decoded += 2*no;
 
-//         qDebug("decoded: %i, wanted: %i",Total_samples_decoded,samples_wanted);
+        // qDebug("decoded: %i, wanted: %i",Total_samples_decoded,samples_wanted);
     }
 
     // If samples are still left in buffer, set rest to the index of the unused samples
@@ -401,7 +401,7 @@ unsigned SoundSourceMp3::read(unsigned long samples_wanted, const SAMPLE* _desti
     else
         rest = -1;
 
-//     qDebug("decoded %i samples in %i frames, rest: %i, chan %i", Total_samples_decoded, frames, rest, m_iChannels);
+    // qDebug("decoded %i samples in %i frames, rest: %i, chan %i", Total_samples_decoded, frames, rest, m_iChannels);
     return Total_samples_decoded;
 }
 

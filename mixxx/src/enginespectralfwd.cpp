@@ -116,15 +116,17 @@ CSAMPLE EngineSpectralFwd::getHFC()
 CSAMPLE EngineSpectralFwd::getPSF()
 {
     Q_ASSERT(power_calc);
-
+	float w;
     CSAMPLE psf = 0.;
     for (int i=1; i<l_half; ++i)
     {
-        float w = kfEqualLoudness[(int)((float)(i*kiEqualLoudnessLen)/(float)l_half)];
+        w = kfEqualLoudness[(int)((float)(i*kiEqualLoudnessLen)/(float)l_half)];
         //psf += w * sqrtf(spectrum[i]);
         psf += w * (spectrum[i]-spectrumOld[i]);
     }
-    psf /= l_half;
+    if (l_half != 0) //Safety first
+    	psf /= l_half;
+    	
     return psf;
 }
 
