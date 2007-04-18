@@ -1,0 +1,171 @@
+#EXAMPLES of random stuff that might be useful later in Mixxx's SConstruct file
+#==============================================================================
+"""
+#Example: Checking for a C header
+if not conf.CheckCHeader('math.h'):
+    print 'Math.h must be installed!'
+    Exit(1)
+if conf.CheckCHeader('foo.h'):
+    conf.env.Append('-DHAS_FOO_H')
+"""
+
+"""
+#Example: Checking for a C++ header
+if not conf.CheckCXXHeader('vector.h'):
+    print 'vector.h must be installed!'
+    Exit(1)
+"""
+
+"""
+#Example: Checking for a library
+if not conf.CheckLib('m'):
+    print 'Did not find libm.a or m.lib, exiting!'
+    Exit(1)
+"""
+
+"""
+#Example: Checking for a library AND a header (probably what we want to do)
+if not conf.CheckLibWithHeader('m', 'math.h'):
+    print 'Did not find libm.a or m.lib, exiting!'
+    Exit(1)
+"""
+
+
+#Start of Mixxx's real SConstruct file
+#=======================================
+
+#Get the platform/OS that we're building on:
+#TODO: FILL ME IN
+
+#Set up our environment, tell SCONS to use it's QT tools, and set some enviroment variables for it.
+env = Environment(tools=['default','qt'], QTDIR='/usr/share/qt3', QT_LIB='qt-mt')
+
+#env.Append(CPPPATH='.')
+
+#Mixxx sources to build
+sources = Split("""enginebuffercue.cpp input.cpp mixxxmenuplaylists.cpp trackplaylistlist.cpp mixxxkeyboard.cpp configobject.cpp controlobjectthread.cpp controlobjectthreadwidget.cpp controlobjectthreadmain.cpp controlevent.cpp controllogpotmeter.cpp controlobject.cpp controlnull.cpp controlpotmeter.cpp controlpushbutton.cpp controlttrotary.cpp controlbeat.cpp dlgpreferences.cpp dlgprefsound.cpp dlgprefmidi.cpp dlgprefplaylist.cpp dlgprefcontrols.cpp enginebuffer.cpp enginebufferscale.cpp engineclipping.cpp enginefilterblock.cpp enginefilteriir.cpp engineobject.cpp enginepregain.cpp enginevolume.cpp main.cpp midiobject.cpp midiobjectnull.cpp mixxx.cpp mixxxview.cpp player.cpp playerproxy.cpp playerportaudio.cpp soundsource.cpp soundsourcemp3.cpp soundsourceoggvorbis.cpp enginechannel.cpp enginemaster.cpp wwidget.cpp wpixmapstore.cpp wlabel.cpp wnumber.cpp wnumberpos.cpp wnumberrate.cpp wnumberbpm.cpp wknob.cpp wdisplay.cpp wvumeter.cpp wpushbutton.cpp wslidercomposed.cpp wslider.cpp wtracktable.cpp wtracktableitem.cpp enginedelay.cpp engineflanger.cpp enginespectralfwd.cpp mathstuff.cpp readerextract.cpp readerextractwave.cpp readerevent.cpp rtthread.cpp windowkaiser.cpp probabilityvector.cpp reader.cpp trackinfoobject.cpp enginevumeter.cpp peaklist.cpp rotary.cpp log.cpp track.cpp trackcollection.cpp trackplaylist.cpp xmlparse.cpp wtreeview.cpp wtreeitem.cpp wtreeitemfile.cpp wtreeitemdir.cpp wtreeitemplaylist.cpp wtreeitemplaylistroot.cpp trackimporter.cpp parser.cpp parserpls.cpp parserm3u.cpp mixxxsocketserver.cpp mixxxsocketclient.cpp
+ enginetemporal.cpp visual/visualbuffertemporal.cpp wavesummary.cpp wavesegmentation.cpp soundsourceproxy.cpp woverview.cpp enginebeatseek.cpp
+ enginebufferscalereal.cpp powermate.cpp powermatelinux.cpp hercules.cpp herculeslinux.cpp joystick.cpp joysticklinux.cpp mouse.cpp mouselinux.cpp 
+ wvisualsimple.cpp wvisualwaveform.cpp visual/visualbackplane.cpp visual/texture.cpp visual/visualbox.cpp visual/visualbuffer.cpp visual/visualbuffersignal.cpp visual/visualbuffersignalhfc.cpp visual/visualbuffermarks.cpp visual/visualchannel.cpp visual/visualcontroller.cpp visual/visualdisplay.cpp visual/visualdisplaybuffer.cpp visual/light.cpp visual/material.cpp visual/picking.cpp visual/pickable.cpp visual/visualobject.cpp
+ imginvert.cpp imgloader.cpp imgcolor.cpp wskincolor.cpp""")
+
+#TODO: Make Powermate stuff OS specific
+#TODO: Make Hercules stuff OS specific
+#TODO: Make Joystick stuff OS specific
+#TODO: Make Mouse stuff OS specific
+
+#Check for dependencies if we're not doing a clean...
+if not env.GetOption('clean'):
+	conf = Configure(env)
+
+	if not conf.CheckLibWithHeader('portaudio', 'portaudio.h', 'C'):
+		print 'Did not find libportaudio.a or portaudio.lib, exiting!'
+		Exit(1)
+
+	if not conf.CheckLib('qt-mt'):
+		print 'Did not find libqt-mt.a or libqt-mt.lib, exiting!'
+		Exit(1)
+
+	if not conf.CheckLib('mad'):
+		print 'Did not find libmad.a or libmad.lib, exiting!'
+		Exit(1)
+
+	if not conf.CheckLib('id3tag'):
+		print 'Did not find libid3tag.a or libid3tag.lib, exiting!'
+		Exit(1)
+
+	if not conf.CheckLib('vorbisfile'):
+		print 'Did not find libvorbisfile.a or libvorbisfile.lib, exiting!'
+		Exit(1)
+
+	if not conf.CheckLib('ogg'):
+		print 'Did not find libogg.a or libogg.lib, exiting!'
+		Exit(1)
+
+	if not conf.CheckLib('GL'):
+		print 'Did not find libGL.a or libGL.lib, exiting!'
+		Exit(1)
+
+	if not conf.CheckLib('GLU'):
+		print 'Did not find libGLU.a or libGLU.lib, exiting!'
+		Exit(1)
+
+	#TODO: libsndfile is used only on Linux...
+	if not conf.CheckLib('sndfile'):
+		print 'Did not find libsndfile.a or libsndfile.lib, exiting!'
+		Exit(1)
+	else:
+		env.Append(CXXFLAGS = ' -D__SNDFILE__')
+		sources.append('soundsourcesndfile.cpp')
+		
+	#TODO: Add Mac check for libaudiofile (or maybe make Mac use libsndfile?)
+
+	#Another check for PortAudio-v19
+	env.ParseConfig('pkg-config --cflags --libs portaudio-2.0')
+
+	env = conf.Finish()
+
+#Declare the flags for Mixxx's config/track listing files:
+#env.Append(CXXFLAGS = ' -DSETTINGS_FILE=\\".mixxx.cfg\\" -DTRACK_FILE=\\".mixxxtrack.xml\\"')
+#env.Append(CXXFLAGS = ' -DUNIX_SHARE_PATH=\"/usr/share/mixxx\"')
+#... and yes, we need to double-escape those quotes (maybe not actually... I dunno, something weird here probably)
+
+env.Append(CXXFLAGS = ' -D__UNIX__ -D__LINUX__ -DSETTINGS_FILE=\\".mixxx.cfg\\" -DTRACK_FILE=\\".mixxxtrack.xml\\"')
+env.Append(CXXFLAGS = ' -DUNIX_SHARE_PATH=\\"/usr/share/mixxx\\"')
+env.Append(CXXFLAGS = ' -D__PORTAUDIO__'); #Turn on PortAudio support in Mixxx
+env.Append(CPPPATH = ['.', '../', '../../']) #Fun fun fun with paths
+#env.Append(UI_DIR = '.ui')
+#env.Append(MOC_DIR = '.moc')
+#evn.Append(DEFINES = 'QT3_SUPPORT')
+#env.Append(OBJECTS_DIR = '.obj')
+
+env.Append(LIBS = 'qt-mt')
+env.Append(CXXFLAGS = ' -DQT_THREAD_SUPPORT -DQT_SHARED -DQT_TABLET_SUPPORT') #Stolen from Mixxx's build output
+env.Append(CXXFLAGS = ' -pipe -pg -O3 -pipe -Wall -W -g -D_REENTRANT') # omghax
+
+#Uic these guys (they're moc'd automatically after this)
+env.Uic('dlgprefsounddlg.ui')
+env.Uic('dlgprefmididlg.ui')
+env.Uic('dlgprefplaylistdlg.ui')
+env.Uic('dlgprefcontrolsdlg.ui')
+
+#Add these uic/moc generated files to the list of stuff we need to build:
+sources.append(Split("""uic_dlgprefsounddlg.cc 		moc_dlgprefsounddlg.cc
+						uic_dlgprefcontrolsdlg.cc	moc_dlgprefcontrolsdlg.cc
+						uic_dlgprefmididlg.cc		moc_dlgprefmididlg.cc
+						uic_dlgprefplaylistdlg.cc	moc_dlgprefplaylistdlg.cc
+					  	"""))
+
+#More complicated way of doing Uic (gives us control over the filenames, but doesn't really matter...)
+#env.Uic(target = Split('dlgprefcontrolsdlg.h .ui/dlgprefcontrolsdlg.cpp .moc/dlgprefcontrolsdlg.cpp'),
+#        source = 'dlgprefcontrolsdlg.ui')
+
+#Tell SCons to build libraries that are bundled with Mixxx
+#===================================================
+
+#SoundTouch
+#TODO: Windows-ify this (see mixxx.pro)
+env.Append(CPPPATH=['../../lib/soundtouch']) #Needed two ../../'s because we're compiling from "src/.obj"
+sources += Split("""enginebufferscalest.cpp ../../lib/soundtouch/SoundTouch.cpp ../../lib/soundtouch/TDStretch.cpp ../../lib/soundtouch/RateTransposer.cpp ../../lib/soundtouch/AAFilter.cpp ../../lib/soundtouch/FIFOSampleBuffer.cpp ../../lib/soundtouch/FIRFilter.cpp ../../lib/soundtouch/cpu_detect_x86_gcc.cpp""")
+
+#KissFFT
+env.Append(CPPPATH=['../../lib/kissfft'])
+#env.Append(INCLUDEPATH='#/lib/kissfft')
+sources += Split("""../../lib/kissfft/kiss_fft.c ../../lib/kissfft/kiss_fftr.c""")
+
+#Xing's non-free VBR header SDK thing (we need to get rid of this!)
+env.Append(CPPPATH='../../lib/vbrheadersdk/')
+#env.Append(INCLUDEPATH='#/lib/vbrheadersdk/')
+sources += Split("""../../lib/vbrheadersdk/dxhead.c""")
+
+#libsamplerate
+env.Append(CPPPATH='../../lib/libsamplerate')
+sources += Split("""enginebufferscalesrc.cpp ../../lib/libsamplerate/samplerate.c ../../lib/libsamplerate/src_linear.c ../../lib/libsamplerate/src_sinc.c ../../lib/libsamplerate/src_zoh.c""")
+
+
+#Tell SCons to build Mixxx
+#=========================
+
+env.Program('mixxx', sources)
+
+Copy("mixxx", "../") #Copy mixxx from the .obj directory to the src directory.
