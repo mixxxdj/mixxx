@@ -75,11 +75,12 @@ void WaveSummary::run()
         {
             // Wait for track to be requested
             m_qWait.wait();
+
             m_qMutex.lock();
             pTrackInfoObject = m_qQueue.dequeue();
             m_qMutex.unlock();
         }
-
+        
         //
         // Track processing
         //
@@ -115,7 +116,7 @@ void WaveSummary::run()
             long liPos = pSoundSource->seek(iBeatPosStart);
             liPos += pSoundSource->read(kiBlockSize, pBuffer);
             int j = 0;
-            while (liPos<=iBeatPosEnd)
+            while (liPos<iBeatPosEnd)
             {
                 // Mix to mono, rectangular window
                 for (int m=0; m<kiBlockSize; ++m)
@@ -131,6 +132,8 @@ void WaveSummary::run()
 
                 // Read a new block of samples
                 liPos += pSoundSource->read(kiBlockSize, pBuffer);
+                
+                //qDebug("liPos, iBeatPosEnd: %i, %i", liPos, iBeatPosEnd);
             }
 
             // Take derivate of PSF
