@@ -142,10 +142,10 @@ macx:DEFINES += __COREMIDI__
 macx:LIBS    += -framework CoreMIDI -framework CoreFoundation
 
 # ALSA Sequencer Midi (Working best, Linux specific)
-unix:SOURCES += midiobjectalsaseq.cpp
-unix:HEADERS += midiobjectalsaseq.h
-unix:DEFINES += __ALSASEQMIDI__
-unix:LIBS += -lasound
+unix:!macx:SOURCES += midiobjectalsaseq.cpp
+unix:!macx:HEADERS += midiobjectalsaseq.h
+unix:!macx:DEFINES += __ALSASEQMIDI__
+unix:!macx:LIBS += -lasound
 
 # ALSA PCM (Not currently working, Linux specific)
 #SOURCES += playeralsa.cpp
