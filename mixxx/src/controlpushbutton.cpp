@@ -47,7 +47,7 @@ void ControlPushButton::setValueFromMidi(MidiCategory c, double v)
         
     if (m_bIsToggleButton) //This block makes push-buttons act as toggle buttons.
     { 
-        qDebug("Is a toggle button!");
+        //qDebug("Is a toggle button!");
         if (c==NOTE_ON && v>0.) //Only react to "NOTE_ON" midi events.
         {
         	//qDebug("NOTE_ON caught!");
@@ -59,7 +59,7 @@ void ControlPushButton::setValueFromMidi(MidiCategory c, double v)
     }
     else //Not a toggle button (trigger only when button pushed)
     {
-        qDebug("Is NOT a toggle button!");
+        //qDebug("Is NOT a toggle button!");
     	if (c == NOTE_ON)
     		m_dValue = v;
     	else if (c == NOTE_OFF)
