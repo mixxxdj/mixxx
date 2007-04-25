@@ -106,18 +106,11 @@ if not env.GetOption('clean'):
 	env = conf.Finish()
 
 #Declare the flags for Mixxx's config/track listing files:
-#env.Append(CXXFLAGS = ' -DSETTINGS_FILE=\\".mixxx.cfg\\" -DTRACK_FILE=\\".mixxxtrack.xml\\"')
-#env.Append(CXXFLAGS = ' -DUNIX_SHARE_PATH=\"/usr/share/mixxx\"')
-#... and yes, we need to double-escape those quotes (maybe not actually... I dunno, something weird here probably)
-
 env.Append(CXXFLAGS = ' -D__UNIX__ -D__LINUX__ -DSETTINGS_FILE=\\".mixxx.cfg\\" -DTRACK_FILE=\\".mixxxtrack.xml\\"')
 env.Append(CXXFLAGS = ' -DUNIX_SHARE_PATH=\\"/usr/share/mixxx\\"')
+#... and yes, we need to double-escape those quotes
 env.Append(CXXFLAGS = ' -D__PORTAUDIO__'); #Turn on PortAudio support in Mixxx
 env.Append(CPPPATH = ['.', '../', '../../']) #Fun fun fun with paths
-#env.Append(UI_DIR = '.ui')
-#env.Append(MOC_DIR = '.moc')
-#evn.Append(DEFINES = 'QT3_SUPPORT')
-#env.Append(OBJECTS_DIR = '.obj')
 
 env.Append(LIBS = 'qt-mt')
 env.Append(CXXFLAGS = ' -DQT_THREAD_SUPPORT -DQT_SHARED -DQT_TABLET_SUPPORT') #Stolen from Mixxx's build output
@@ -165,7 +158,8 @@ sources += Split("""enginebufferscalesrc.cpp ../../lib/libsamplerate/samplerate.
 
 #Tell SCons to build Mixxx
 #=========================
-
 env.Program('mixxx', sources)
 
-Copy("mixxx", "../") #Copy mixxx from the .obj directory to the src directory.
+#Copy mixxx from the .obj directory to the mixxx directory.
+#Command("../../mixxx", ".obj/mixxx", Copy("$TARGET", "$SOURCE")) 
+
