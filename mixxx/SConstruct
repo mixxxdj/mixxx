@@ -1,2 +1,3 @@
 #Build the SConscript file in /src, and make it us src/.obj for storing obj output.
 SConscript('src/SConscript', build_dir='src/.obj', duplicate=0) 
+Command("mixxx", "src/.obj/mixxx", Copy("$TARGET", "$SOURCE")) 
