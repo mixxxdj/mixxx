@@ -79,6 +79,8 @@ void WNumber::setup(QDomNode node)
         m_dConstFactor = selectNodeQString(node, "ConstFactor").toDouble();
         setValue(0.);
     }
+
+	m_pLabel->show();
 }
 
 void WNumber::setFixedSize(int x,int y)

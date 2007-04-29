@@ -192,3 +192,21 @@ void VisualChannel::setColorFisheye(float r, float g, float b)
     m_fColorFisheyeB = b;
 }
 
+void VisualChannel::resetColors() {
+
+	VisualBuffer* vb;
+	for (vb = m_qlListBuffer.first(); vb; vb = m_qlListBuffer.next()) {
+		vb->setColorFg(m_fColorBeatR, m_fColorBeatG, m_fColorBeatB);
+        vb->setColorBg(m_fColorBackR, m_fColorBackG, m_fColorBackB);
+	}
+
+	VisualDisplay* vd;
+	for (vd = m_qlListDisplay.first(); vd; vd = m_qlListDisplay.next()) {
+		vd->setColorSignal(m_fColorSignalR, m_fColorSignalG, m_fColorSignalB);
+		vd->setColorHfc(m_fColorHfcR, m_fColorHfcG, m_fColorHfcB);
+		vd->setColorCue(m_fColorCueR, m_fColorCueG, m_fColorCueB);
+		vd->setColorMarker(m_fColorMarkerR, m_fColorMarkerG, m_fColorMarkerB);
+		vd->setColorBeat(m_fColorBeatR, m_fColorBeatG, m_fColorBeatB);
+		vd->setColorFisheye(m_fColorFisheyeR, m_fColorFisheyeG, m_fColorFisheyeB);
+	}
+}

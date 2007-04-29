@@ -55,6 +55,7 @@ public:
     bool eventFilter(QObject *o, QEvent *e);
     /** Add a VisualChannel */
     VisualChannel *add(const char *group);
+	void resetColors();
 
 public slots:
     void setValue(double) {};

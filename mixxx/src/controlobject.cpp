@@ -78,6 +78,10 @@ void ControlObject::addProxy(ControlObjectThread *pControlObjectThread)
     m_qProxyList.append(pControlObjectThread);
 }
 
+void ControlObject::removeProxy(ControlObjectThread *pControlObjectThread) {
+	m_qProxyList.removeRef(pControlObjectThread);
+}
+
 bool ControlObject::updateProxies(ControlObjectThread *pProxyNoUpdate)
 {
     ControlObjectThread *obj;

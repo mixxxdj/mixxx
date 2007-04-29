@@ -20,6 +20,7 @@
 
 #include "dlgprefcontrolsdlg.h"
 #include "configobject.h"
+#include "mixxx.h"
 
 class QWidget;
 class ControlObjectThreadMain;
@@ -33,7 +34,7 @@ class MixxxView;
 class DlgPrefControls : public DlgPrefControlsDlg  {
     Q_OBJECT
 public: 
-    DlgPrefControls(QWidget *parent, MixxxView *pView, ConfigObject<ConfigValue> *pConfig);
+    DlgPrefControls(QWidget *parent, MixxxView *pView, MixxxApp *mixxx, ConfigObject<ConfigValue> *pConfig);
     ~DlgPrefControls();
 public slots:
     void slotUpdate();
@@ -58,6 +59,7 @@ private:
     ControlObjectThreadMain *m_pControlRateDir1, *m_pControlRateDir2;
     /** Pointer to MixxxView */
     MixxxView *m_pView;
+	MixxxApp *m_mixxx;
 };
 
 #endif
