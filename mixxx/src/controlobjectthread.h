@@ -63,6 +63,10 @@ public slots:
     /** The value is changed by the engine, and the corresponding ControlObject is updated.
       * Thread safe, blocking. */
     void slotSet(double v);
+
+	// The danger signal! This is for safety in wierd shutdown scenarios where the
+	// ControlObject dies to avoid segfaults.
+	void slotParentDead();
     
 signals:
     void valueChanged(double);

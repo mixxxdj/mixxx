@@ -29,10 +29,11 @@
 #include <qspinbox.h>
 #include <qwidget.h>
 
-DlgPrefControls::DlgPrefControls(QWidget *parent, MixxxView *pView, ConfigObject<ConfigValue> *pConfig) : DlgPrefControlsDlg(parent,"")
+DlgPrefControls::DlgPrefControls(QWidget *parent, MixxxView *pView, MixxxApp *mixxx, ConfigObject<ConfigValue> *pConfig) : DlgPrefControlsDlg(parent,"")
 {
     m_pView = pView;
     m_pConfig = pConfig;
+	m_mixxx = mixxx;
     
     //
     // Rate slider configuration
@@ -287,7 +288,8 @@ void DlgPrefControls::slotSetTooltips(int)
 void DlgPrefControls::slotSetSkin(int)
 {
     m_pConfig->set(ConfigKey("[Config]","Skin"), ComboBoxSkinconf->currentText());
-    textLabel->setText("Restart Mixxx before the new skin will be loaded.");
+    //textLabel->setText("Restart Mixxx before the new skin will be loaded.");
+	m_mixxx->rebootMixxxView();
 }
 
 void DlgPrefControls::slotSetPositionDisplay(int)

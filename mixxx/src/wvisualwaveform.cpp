@@ -239,3 +239,19 @@ void WVisualWaveform::timerEvent(QTimerEvent*)
 		updateGL();
 	}
 }
+
+void WVisualWaveform::resetColors() {
+
+	VisualChannel* vc;
+	for (vc = m_qlList.first(); vc; vc = m_qlList.next()) {
+		vc->setColorBack((float)colorBack.red()/255., (float)colorBack.green()/255., (float)colorBack.blue()/255.);
+        vc->setColorSignal((float)colorSignal.red()/255., (float)colorSignal.green()/255., (float)colorSignal.blue()/255.);
+        vc->setColorHfc((float)colorHfc.red()/255., (float)colorHfc.green()/255., (float)colorHfc.blue()/255.);
+        vc->setColorCue((float)colorCue.red()/255., (float)colorCue.green()/255., (float)colorCue.blue()/255.);
+        vc->setColorMarker((float)colorMarker.red()/255., (float)colorMarker.green()/255., (float)colorMarker.blue()/255.);
+        vc->setColorBeat((float)colorBeat.red()/255., (float)colorBeat.green()/255., (float)colorBeat.blue()/255.);
+        vc->setColorFisheye((float)colorFisheye.red()/255., (float)colorFisheye.green()/255., (float)colorFisheye.blue()/255.);
+
+		vc->resetColors();
+	}
+}

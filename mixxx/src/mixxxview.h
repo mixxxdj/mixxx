@@ -38,6 +38,7 @@ class WVisual;
 class WOverview;
 class WNumberPos;
 class QDomNode;
+class QDomElement;
 class QSplitter;
 class MixxxKeyboard;
 
@@ -76,8 +77,15 @@ public:
     /** Pointer to overview displays */
     WOverview *m_pOverviewCh1, *m_pOverviewCh2;
 
+	void rebootGUI(QWidget* parent, bool bVisualsWaveform, ConfigObject<ConfigValue> *pConfig, QString qSkinPath);
+
 private:
+	void setupColorScheme(QDomElement docElem, ConfigObject<ConfigValue> *pConfig);
+	void createAllWidgets(QDomElement docElem, QWidget* parent, bool bVisualsWaveform, ConfigObject<ConfigValue> *pConfig);
+	
+
 	ImgSource* parseFilters(QDomNode filt);
+	QDomElement openSkin(QString qSkinPath);
 
     // True if m_pVisualChX is instantiated as WVisualWaveform
     bool m_bVisualWaveform;

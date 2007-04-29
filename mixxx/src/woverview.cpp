@@ -96,7 +96,11 @@ void WOverview::setData(QMemArray<char> *pWaveformSummary, QValueList<long> *pSe
     m_pSegmentation = pSegmentation;
     m_liSampleDuration = liSampleDuration;
 
-    if (!pWaveformSummary || !pWaveformSummary->size())
+	repaint();
+}
+
+void WOverview::repaint() {
+    if (!m_pWaveformSummary || !m_pWaveformSummary->size())
         return;
 
     QPainter paint;

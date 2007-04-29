@@ -32,6 +32,8 @@ ControlObjectThread::ControlObjectThread(ControlObject *pControlObject)
     Q_ASSERT(m_pControlObject);
     m_pControlObject->addProxy(this);
 
+	connect(m_pControlObject, SIGNAL(destroyed()), this, SLOT(slotParentDead()));
+
     // Initialize value
     m_dValue = m_pControlObject->get();
     emitValueChanged();
@@ -39,6 +41,10 @@ ControlObjectThread::ControlObjectThread(ControlObject *pControlObject)
 
 ControlObjectThread::~ControlObjectThread()
 {
+	if (m_pControlObject) {
+		// Our parent is still around, make sure it doesn't send us any more events
+		m_pControlObject->removeProxy(this);
+	}
 }
 
 double ControlObjectThread::get()
@@ -112,4 +118,11 @@ void ControlObjectThread::sub(double v)
 void ControlObjectThread::updateControlObject()
 {
     m_pControlObject->queueFromThread(get(), this);
+}
+
+void ControlObjectThread::slotParentDead() {
+
+	// Now we've got a chance of avoiding segfaults with judicious
+	// use of if(m_pControlObject)
+	m_pControlObject = 0;
 }

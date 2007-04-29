@@ -40,6 +40,7 @@ public:
     static QPixmap *getPixmap(const QString &fileName);
     static void deletePixmap(QPixmap *p);
 	static void setLoader(ImgSource* ld);
+	static void emptyStore();
 private:
     /** Dictionary of pixmaps already instantiated */
     static QDict<PixmapInfoType> dictionary;

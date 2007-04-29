@@ -53,6 +53,8 @@ public:
 
     /** Toggle fish eye mode on all connected VisualDisplays */
     void toggleFishEyeMode();
+
+	void resetColors();
 private:
     VisualController        *m_pVisualController;
     /** List of buffers associated with this channel */

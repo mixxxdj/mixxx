@@ -60,6 +60,9 @@ void VisualController::setBackgroundColor(QColor qBackground)
     bg_r = qBackground.red()/255.;
     bg_g = qBackground.green()/255.;
     bg_b = qBackground.blue()/255.;
+
+	// Slight duplication here allows bg color to be changed while running
+	glClearColor(bg_r, bg_g, bg_b, 0.f);
 }
 
 /**

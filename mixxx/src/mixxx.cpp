@@ -146,22 +146,7 @@ MixxxApp::MixxxApp(QApplication *a, QStringList files, QSplashScreen *pSplash, Q
         pSplash->message("Loading skin...",Qt::AlignLeft|Qt::AlignBottom);
 
     // Find path of skin
-    QString qSkinPath(qConfigPath);
-    qSkinPath.append("skins/");
-    if (QDir(qSkinPath).exists())
-    {
-        // Is the skin listed in the config database there? If not, use default (outlineSmall) skin
-        if ((config->getValueString(ConfigKey("[Config]","Skin")).length()>0 && QDir(QString(qSkinPath).append(config->getValueString(ConfigKey("[Config]","Skin")))).exists()))
-            qSkinPath.append(config->getValueString(ConfigKey("[Config]","Skin")));
-        else
-        {
-            config->set(ConfigKey("[Config]","Skin"), ConfigValue("outlineSmall"));
-            config->Save();
-            qSkinPath.append(config->getValueString(ConfigKey("[Config]","Skin")));
-        }
-    }
-    else
-        qFatal("Skin directory does not exist: %s",qSkinPath.latin1());
+    QString qSkinPath = getSkinPath();
 
     // Get Music dir
     QDir dir(config->getValueString(ConfigKey("[Playlist]","Directory")));
@@ -656,4 +641,47 @@ void MixxxApp::slotHelpAbout()
                          "<tr><td>Thanks to all DJ's and musicians giving feedback.</td></tr>"
                          "<tr><td>Released under the GNU General Public Licence version 2.</td></tr>"
                          "</table></qt>") );
+}
+
+void MixxxApp::rebootMixxxView() {
+
+	// Ok, so wierdly if you call setFixedSize with the same value twice, Qt breaks
+	// So we check and if the size hasn't changed we don't make the call
+	int oldh = view->height();
+	int oldw = view->width();
+
+	bool bVisualsWaveform = true;
+    if (config->getValueString(ConfigKey("[Controls]","Visuals")).toInt()==1)
+        bVisualsWaveform = false;
+
+	QString qSkinPath = getSkinPath();
+
+	view->rebootGUI(frame, bVisualsWaveform, config, qSkinPath);
+
+	if (oldw != view->width() || oldh != view->height()) {
+		setFixedSize(view->width(), view->height());
+	}
+}
+
+QString MixxxApp::getSkinPath() {
+	QString qConfigPath = config->getConfigPath();
+
+	QString qSkinPath(qConfigPath);
+    qSkinPath.append("skins/");
+    if (QDir(qSkinPath).exists())
+    {
+        // Is the skin listed in the config database there? If not, use default (outlineSmall) skin
+        if ((config->getValueString(ConfigKey("[Config]","Skin")).length()>0 && QDir(QString(qSkinPath).append(config->getValueString(ConfigKey("[Config]","Skin")))).exists()))
+            qSkinPath.append(config->getValueString(ConfigKey("[Config]","Skin")));
+        else
+        {
+            config->set(ConfigKey("[Config]","Skin"), ConfigValue("outlineSmall"));
+            config->Save();
+            qSkinPath.append(config->getValueString(ConfigKey("[Config]","Skin")));
+        }
+    }
+    else
+        qFatal("Skin directory does not exist: %s",qSkinPath.latin1());
+
+	return qSkinPath;
 }

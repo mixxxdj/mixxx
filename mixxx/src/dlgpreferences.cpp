@@ -37,7 +37,7 @@ DlgPreferences::DlgPreferences(MixxxApp *mixxx, MixxxView *view,
     wsound = new DlgPrefSound(this, player, config);
     wmidi  = new DlgPrefMidi(this, config);
     wplaylist = new DlgPrefPlaylist(this, config);
-    wcontrols = new DlgPrefControls(this, view, config);
+    wcontrols = new DlgPrefControls(this, view, mixxx, config);
 
     // Add tabs
     addTab(wsound,    "Sound output");

@@ -89,6 +89,8 @@ class MixxxApp : public QMainWindow
     void initMenuBar();
     /** overloaded for Message box on last window exit */
     bool queryExit();
+
+	void rebootMixxxView();
   public slots:
 
     /** Opens a file in player 1 */
@@ -106,6 +108,7 @@ class MixxxApp : public QMainWindow
     /** Change of file to play */
     //void slotChangePlay(int,int,int, const QPoint &);
   private:
+    QString getSkinPath();
     /** view is the main widget which represents your working area. The View
      * class should handle all events of the view widget.  It is kept empty so
      * you can create your view according to your application's needs by

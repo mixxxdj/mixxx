@@ -55,30 +55,14 @@
 
 MixxxView::MixxxView(QWidget *parent, ConfigObject<ConfigValueKbd> *kbdconfig, bool bVisualsWaveform, QString qSkinPath, ConfigObject<ConfigValue> *pConfig) : QWidget(parent, "Mixxx")
 {
-    // Path to image files
-    WWidget::setPixmapPath(qSkinPath.append("/"));
 
     m_qWidgetList.setAutoDelete(true);
 
     m_pKeyboard = new MixxxKeyboard(kbdconfig);
     installEventFilter(m_pKeyboard);
 
-    //qDebug("skin %s",qSkinPath.latin1());
-
-    // Read XML file
-    QDomDocument skin("skin");
-    QFile file(WWidget::getPath("skin.xml"));
-    if (!file.open(IO_ReadOnly))
-    {
-        qFatal("Could not open skin definition file: %s",file.name().latin1());
-    }
-    if (!skin.setContent(&file))
-    {
-        qFatal("Error parsing skin definition file: %s",file.name().latin1());
-    }
-
-	file.close();
-    QDomElement docElem = skin.documentElement();
+	// Try to open the file pointed to by qSkinPath
+    QDomElement docElem = openSkin(qSkinPath);
 
 #ifdef __WIN__
 #ifndef QT3_SUPPORT
@@ -104,6 +88,107 @@ MixxxView::MixxxView(QWidget *parent, ConfigObject<ConfigValueKbd> *kbdconfig, b
     m_pOverviewCh1 = 0;
     m_pOverviewCh2 = 0;
 
+	setupColorScheme(docElem, pConfig);
+
+    // Load all widgets defined in the XML file
+	createAllWidgets(docElem, parent, bVisualsWaveform, pConfig);
+
+#ifdef __WIN__
+#ifndef QT3_SUPPORT
+    // QPixmap fix needed on Windows 9x
+    QPixmap::setDefaultOptimization(QPixmap::NormalOptim);
+#endif
+#endif
+
+}
+
+MixxxView::~MixxxView()
+{
+    //m_qWidgetList.clear();
+}
+
+void MixxxView::checkDirectRendering()
+{
+    // Check if DirectRendering is enabled and display warning
+    if ((m_pVisualCh1 && !((WVisualWaveform *)m_pVisualCh1)->directRendering()) ||
+        (m_pVisualCh2 && !((WVisualWaveform *)m_pVisualCh2)->directRendering()))
+        QMessageBox::warning(0, "OpenGL Direct Rendering",
+                                "Direct redering is not enabled on your machine.\n\nThis means that the waveform displays will be very\nslow and take a lot of CPU time. Either update your\nconfiguration to enable direct rendering, or disable\nthe waveform displays in the control panel by\nselecting \"Simple\" under waveform displays.\nNOTE: In case you run on NVidia hardware,\ndirect rendering may not be present, but you will\nnot experience a degradation in performance.");
+}
+
+bool MixxxView::activeWaveform()
+{
+    return m_bVisualWaveform;
+}
+
+bool MixxxView::compareConfigKeys(QDomNode node, QString key)
+{
+    QDomNode n = node;
+
+    // Loop over each <Connection>, check if it's ConfigKey matches key
+    while (!n.isNull())
+    {
+        n = WWidget::selectNode(n, "Connection");
+        if (!n.isNull())
+        {
+            if  (WWidget::selectNodeQString(n, "ConfigKey").contains(key))
+                return true;
+        }
+    }
+    return false;
+}
+
+ImgSource* MixxxView::parseFilters(QDomNode filt) {
+	if (!filt.hasChildNodes()) {
+		return 0;
+	}
+
+	ImgSource* ret = new ImgLoader();
+
+	QDomNode f = filt.firstChild();
+
+	while (!f.isNull()) {
+		QString name = f.nodeName().lower();
+		if (name == "invert") {
+			ret = new ImgInvert(ret);
+		} else if (name == "hueinv") {
+			ret = new ImgHueInv(ret);
+		} else if (name == "add") {
+			ret = new ImgAdd(ret, WWidget::selectNodeInt(f, "Amount"));
+		} else if (name == "scalewhite") {
+			ret = new ImgScaleWhite(ret, WWidget::selectNodeFloat(f, "Amount"));
+		} else {
+			qDebug("Unkown image filter: %s\n", name);
+		}
+		f = f.nextSibling();
+	}
+
+	return ret;
+}
+
+QDomElement MixxxView::openSkin(QString qSkinPath) {
+	
+    // Path to image files
+    WWidget::setPixmapPath(qSkinPath.append("/"));
+
+	// Read XML file
+    QDomDocument skin("skin");
+    QFile file(WWidget::getPath("skin.xml"));
+    if (!file.open(IO_ReadOnly))
+    {
+        qFatal("Could not open skin definition file: %s",file.name().latin1());
+    }
+    if (!skin.setContent(&file))
+    {
+        qFatal("Error parsing skin definition file: %s",file.name().latin1());
+    }
+
+	file.close();
+    return skin.documentElement();
+}
+
+void MixxxView::setupColorScheme(QDomElement docElem, ConfigObject<ConfigValue> *pConfig) {
+	
 	QDomNode colsch = docElem.namedItem("Schemes");
 	if (!colsch.isNull() && colsch.isElement()) {
 		QString schname = pConfig->getValueString(ConfigKey("[Config]","Scheme"));
@@ -123,11 +208,19 @@ MixxxView::MixxxView(QWidget *parent, ConfigObject<ConfigValueKbd> *kbdconfig, b
 			ImgSource* imsrc = parseFilters(sch.namedItem("Filters"));
 			WPixmapStore::setLoader(imsrc);
 			WSkinColor::setLoader(imsrc);
+		} else {
+			WPixmapStore::setLoader(0);
+			WSkinColor::setLoader(0);
 		}
+	} else {
+		WPixmapStore::setLoader(0);
+		WSkinColor::setLoader(0);
 	}
+}
 
-    // Load all widgets defined in the XML file
-    QDomNode node = docElem.firstChild();
+void MixxxView::createAllWidgets(QDomElement docElem, QWidget* parent, bool bVisualsWaveform, ConfigObject<ConfigValue> *pConfig) {
+
+	QDomNode node = docElem.firstChild();
     while (!node.isNull())
     {
         if (node.isElement())
@@ -438,76 +531,274 @@ MixxxView::MixxxView(QWidget *parent, ConfigObject<ConfigValueKbd> *kbdconfig, b
         }
         node = node.nextSibling();
     }
-
-#ifdef __WIN__
-#ifndef QT3_SUPPORT
-    // QPixmap fix needed on Windows 9x
-    QPixmap::setDefaultOptimization(QPixmap::NormalOptim);
-#endif
-#endif
-
 }
 
-MixxxView::~MixxxView()
-{
-    m_qWidgetList.clear();
-}
+void MixxxView::rebootGUI(QWidget* parent, bool bVisualsWaveform, ConfigObject<ConfigValue> *pConfig, QString qSkinPath) {
 
-void MixxxView::checkDirectRendering()
-{
-    // Check if DirectRendering is enabled and display warning
-    if ((m_pVisualCh1 && !((WVisualWaveform *)m_pVisualCh1)->directRendering()) ||
-        (m_pVisualCh2 && !((WVisualWaveform *)m_pVisualCh2)->directRendering()))
-        QMessageBox::warning(0, "OpenGL Direct Rendering",
-                                "Direct redering is not enabled on your machine.\n\nThis means that the waveform displays will be very\nslow and take a lot of CPU time. Either update your\nconfiguration to enable direct rendering, or disable\nthe waveform displays in the control panel by\nselecting \"Simple\" under waveform displays.\nNOTE: In case you run on NVidia hardware,\ndirect rendering may not be present, but you will\nnot experience a degradation in performance.");
-}
+	// This function is the really ghetto part of the skin change code
+	// It's quite fantastic in a terrible kind of way
 
-bool MixxxView::activeWaveform()
-{
-    return m_bVisualWaveform;
-}
+	// Basically it tries to save as many components of the old skin
+	// as possible and then deletes everything else before recreating
+	// them from scratch
 
-bool MixxxView::compareConfigKeys(QDomNode node, QString key)
-{
-    QDomNode n = node;
+	// TODO: Some of this code should be shared in an intelligent way
+	// between createAllWidgets and here, this is quite messy at the
+	// moment
 
-    // Loop over each <Connection>, check if it's ConfigKey matches key
-    while (!n.isNull())
-    {
-        n = WWidget::selectNode(n, "Connection");
-        if (!n.isNull())
-        {
-            if  (WWidget::selectNodeQString(n, "ConfigKey").contains(key))
-                return true;
-        }
-    }
-    return false;
-}
+	QObject* obj;
+	// This isn't thread safe, does anything else hack on this object?
+	for (obj = m_qWidgetList.first(); obj;) {
+		if (!(obj == m_pTextCh1 || obj == m_pTextCh2 || obj == m_pVisualCh1 
+			|| obj == m_pVisualCh2
+			|| obj == m_pNumberPosCh1
+			|| obj == m_pNumberPosCh2 || obj == m_pSliderRateCh1
+			|| obj == m_pSliderRateCh2 || obj == m_pSplitter
+			|| obj == m_pOverviewCh1 || obj == m_pOverviewCh2)) {
 
-ImgSource* MixxxView::parseFilters(QDomNode filt) {
-	if (!filt.hasChildNodes()) {
-		return 0;
-	}
-
-	ImgSource* ret = new ImgLoader();
-
-	QDomNode f = filt.firstChild();
-
-	while (!f.isNull()) {
-		QString name = f.nodeName().lower();
-		if (name == "invert") {
-			ret = new ImgInvert(ret);
-		} else if (name == "hueinv") {
-			ret = new ImgHueInv(ret);
-		} else if (name == "add") {
-			ret = new ImgAdd(ret, WWidget::selectNodeInt(f, "Amount"));
-		} else if (name == "scalewhite") {
-			ret = new ImgScaleWhite(ret, WWidget::selectNodeFloat(f, "Amount"));
+			bool ret = m_qWidgetList.remove();
+			obj = m_qWidgetList.current();
 		} else {
-			qDebug("Unkown image filter: %s\n", name);
+			obj = m_qWidgetList.next();
 		}
-		f = f.nextSibling();
 	}
 
-	return ret;
+	QDomElement docElem = openSkin(qSkinPath);
+	setupColorScheme(docElem, pConfig);
+	//createAllWidgets(docElem, parent, bVisualsWaveform, pConfig);
+	
+	QDomNode node = docElem.firstChild();
+	while (!node.isNull())
+    {
+        if (node.isElement())
+        {
+	//printf("%s\n", node.nodeName());
+            if (node.nodeName()=="PushButton")
+            {
+                WPushButton *p = new WPushButton(this);
+                p->setup(node);
+                p->installEventFilter(m_pKeyboard);
+                m_qWidgetList.append(p);
+				p->show();
+            }
+            else if (node.nodeName()=="Knob")
+            {
+                WKnob *p = new WKnob(this);
+                p->setup(node);
+                p->installEventFilter(m_pKeyboard);
+                m_qWidgetList.append(p);
+				p->show();
+            }
+			else if (node.nodeName()=="Label")
+            {
+                WLabel *p = new WLabel(this);
+                p->setup(node);
+
+                m_qWidgetList.append(p);
+				p->show();
+            }
+            else if (node.nodeName()=="Number")
+            {
+                WNumber *p = new WNumber(this);
+                p->setup(node);
+                p->installEventFilter(m_pKeyboard);
+                m_qWidgetList.append(p);
+				p->show();
+            }
+            else if (node.nodeName()=="NumberBpm")
+            {
+                if (WWidget::selectNodeInt(node, "Channel")==1)
+                {
+                    WNumberBpm *p = new WNumberBpm("[Channel1]", this);
+                    p->setup(node);
+                    p->installEventFilter(m_pKeyboard);
+                    m_qWidgetList.append(p);
+					p->show();
+                }
+                else if (WWidget::selectNodeInt(node, "Channel")==2)
+                {
+                    WNumberBpm *p = new WNumberBpm("[Channel2]", this);
+                    p->setup(node);
+                    p->installEventFilter(m_pKeyboard);
+                    m_qWidgetList.append(p);
+					p->show();
+                }
+            }
+			else if (node.nodeName()=="NumberPos")
+            {
+                if (WWidget::selectNodeInt(node, "Channel")==1)
+                {
+                    m_pNumberPosCh1->setup(node);
+                }
+                else if (WWidget::selectNodeInt(node, "Channel")==2)
+                {
+                    m_pNumberPosCh2->setup(node);
+                }
+            }
+            else if (node.nodeName()=="NumberRate")
+            {
+                if (WWidget::selectNodeInt(node, "Channel")==1)
+                {
+                    WNumberRate *p = new WNumberRate("[Channel1]", this);
+                    p->setup(node);
+                    p->installEventFilter(m_pKeyboard);
+                    m_qWidgetList.append(p);
+					p->show();
+                }
+                else if (WWidget::selectNodeInt(node, "Channel")==2)
+                {
+                    WNumberRate *p = new WNumberRate("[Channel2]", this);
+                    p->setup(node);
+                    p->installEventFilter(m_pKeyboard);
+                    m_qWidgetList.append(p);
+					p->show();
+                }
+            }
+			else if (node.nodeName()=="Display")
+            {
+                WDisplay *p = new WDisplay(this);
+                p->setup(node);
+                p->installEventFilter(m_pKeyboard);
+                m_qWidgetList.append(p);
+				p->show();
+            }
+            else if (node.nodeName()=="Background")
+            {
+                QString filename = WWidget::selectNodeQString(node, "Path");
+				QPixmap* background = WPixmapStore::getPixmap(WWidget::getPath(filename));
+                this->setPaletteBackgroundPixmap(*background);
+				// TODO: Delete background from pixmap store to save memory?
+                // FWI: Begin of fullscreen patch
+                // this->setFixedSize(background.width(),background.height()+((QMainWindow *)parent)->menuBar()->height());
+                // parent->setFixedSize(background.width(),background.height()+((QMainWindow *)parent)->menuBar()->height());
+                this->setFixedSize(background->width(),background->height());
+                parent->setMinimumSize(background->width(),background->height());
+                // FWI: End of fullscreen patch
+                this->move(0,0);
+				
+				QColor c(255,255,255);
+				if (!WWidget::selectNode(node, "BgColor").isNull()) {
+					c.setNamedColor(WWidget::selectNodeQString(node, "BgColor"));
+				}
+				parent->setEraseColor(WSkinColor::getCorrectColor(c));
+            }
+            else if (node.nodeName()=="SliderComposed")
+            {
+                // If rate slider...
+                if (compareConfigKeys(node, "[Channel1],rate"))
+                    m_pSliderRateCh1->setup(node);
+                else if (compareConfigKeys(node, "[Channel2],rate"))
+                    m_pSliderRateCh2->setup(node);
+				else {
+					WSliderComposed *p = new WSliderComposed(this);
+					p->setup(node);
+					p->installEventFilter(m_pKeyboard);
+					m_qWidgetList.append(p);
+					p->show();
+				}
+            }
+			else if (node.nodeName()=="VuMeter")
+            {
+                WVuMeter *p = new WVuMeter(this);
+                m_qWidgetList.append(p);
+                p->setup(node);
+                p->installEventFilter(m_pKeyboard);
+				p->show();
+            }
+            else if (node.nodeName()=="Overview")
+            {
+                if (WWidget::selectNodeInt(node, "Channel")==1)
+                {
+                    m_pOverviewCh1->setup(node);
+					m_pOverviewCh1->repaint();
+                }
+                else if (WWidget::selectNodeInt(node, "Channel")==2)
+                {
+                    m_pOverviewCh2->setup(node);
+					m_pOverviewCh2->repaint();
+                }
+            }
+			else if (node.nodeName()=="Visual")
+            {
+                if (WWidget::selectNodeInt(node, "Channel")==1)
+                {
+					((WVisualWaveform*)m_pVisualCh1)->setup(node);
+					((WVisualWaveform*)m_pVisualCh1)->resetColors();
+                }
+                else if (WWidget::selectNodeInt(node, "Channel")==2)
+                {
+					((WVisualWaveform*)m_pVisualCh2)->setup(node);
+					((WVisualWaveform*)m_pVisualCh2)->resetColors();
+                }
+            }
+			else if (node.nodeName()=="Text")
+            {
+				QLabel* p = 0;
+                // Associate pointers
+                if (WWidget::selectNodeInt(node, "Channel")==1)
+                    p = m_pTextCh1;
+                else if (WWidget::selectNodeInt(node, "Channel")==2)
+					p = m_pTextCh2;
+				else {
+					p = new QLabel(this);
+					m_qWidgetList.append(p);
+					p->show();
+				}	
+
+                // Set position
+                QString pos = WWidget::selectNodeQString(node, "Pos");
+                int x = pos.left(pos.find(",")).toInt();
+                int y = pos.mid(pos.find(",")+1).toInt();
+                p->move(x,y);
+
+                // Size
+                QString size = WWidget::selectNodeQString(node, "Size");
+                x = size.left(size.find(",")).toInt();
+                y = size.mid(size.find(",")+1).toInt();
+                p->setFixedSize(x,y);
+
+                // Background color
+				QColor bgc(255,255,255);
+				if (!WWidget::selectNode(node, "BgColor").isNull()) {
+                    bgc.setNamedColor(WWidget::selectNodeQString(node, "BgColor"));
+                }
+				p->setPaletteBackgroundColor(WSkinColor::getCorrectColor(bgc));
+
+                // Foreground color
+				QColor fgc(0,0,0);
+				if (!WWidget::selectNode(node, "FgColor").isNull()) {
+                    fgc.setNamedColor(WWidget::selectNodeQString(node, "FgColor"));
+                }
+				p->setPaletteForegroundColor(WSkinColor::getCorrectColor(fgc));
+
+                // Alignment
+                if (!WWidget::selectNode(node, "Align").isNull() && WWidget::selectNodeQString(node, "Align")=="right")
+                    p->setAlignment(Qt::AlignRight);
+
+            }
+            else if (node.nodeName()=="Splitter")
+            {
+                // Set position
+                QString pos = WWidget::selectNodeQString(node, "Pos");
+                int x = pos.left(pos.find(",")).toInt();
+                int y = pos.mid(pos.find(",")+1).toInt();
+                m_pSplitter->move(x,y);
+
+                // Size
+                QString size = WWidget::selectNodeQString(node, "Size");
+                x = size.left(size.find(",")).toInt();
+                y = size.mid(size.find(",")+1).toInt();
+                m_pSplitter->setFixedSize(x,y);
+            }
+            else if (node.nodeName()=="TrackTable")
+            {
+                m_pTrackTable->setup(node);
+            }
+            else if (node.nodeName()=="TreeView")
+            {
+                m_pTreeView->setup(node);
+            }
+		}
+		node = node.nextSibling();
+	}
 }
