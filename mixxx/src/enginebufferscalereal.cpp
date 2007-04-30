@@ -97,7 +97,7 @@ CSAMPLE *EngineBufferScaleReal::scale(double playpos, int buf_size, float *pBase
         clear();
         
 /*
-        int iTo = (int)min(iWantedFragmentLength,m_iFragmentLength+buf_size*m_dTempo*m_dBaseRate);
+        int iTo = (int)math_min(iWantedFragmentLength,m_iFragmentLength+buf_size*m_dTempo*m_dBaseRate);
         double new_playpos = playpos+(double)i*m_dTempo;
         for (int j=m_iFragmentLength; j<iTo; ++i)
             m_pFragmentBuffer[j] = pBase[((int)new_playpos+j)%iBaseLength];

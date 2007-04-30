@@ -566,7 +566,7 @@ int SoundSourceMp3::findFrame(int pos)
     if (temp!=0)
         qDebug("find %i, got %i",pos, temp->pos);
     else
-        qDebug("find %i, tried idx %i, total %i",pos, min(m_qSeekList.count()-1, pos/m_iAvgFrameSize),m_qSeekList.count());
+        qDebug("find %i, tried idx %i, total %i",pos, math_min(m_qSeekList.count()-1, pos/m_iAvgFrameSize),m_qSeekList.count());
 */
 
     // Ensure that the list element is not at a greater position than pos
