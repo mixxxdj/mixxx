@@ -34,6 +34,10 @@
 #include <linux/input.h>
 #include <qobject.h>
 
+#ifdef __LIBDJCONSOLE__
+#include <libdjconsole/djconsole.h>
+#endif
+
 /**
   * Linux code for handling the Hercules DJ console.
   *
@@ -120,8 +124,14 @@ public:
     void closedev();
     void getNextEvent();
     void selectMapping(QString qMapping);
-
+#ifdef __LIBDJCONSOLE__
+    void consoleEvent(int first, int second);
+#endif
 protected:
+#ifdef __LIBDJCONSOLE__
+    DJConsole *djc;
+#endif
+
     void run();  // main thread loop
     int opendev(int iId);
     void led_write(int iLed, bool bOn);
@@ -138,6 +148,8 @@ protected:
 
     int m_iPitchOffsetLeft, m_iPitchOffsetRight;
     int m_iPitchLeft, m_iPitchRight;
+
+
     double m_dJogLeftOld, m_dJogRightOld;
 
     double PitchChange(const QString ControlSide, const int ev_value, int &m_iPitchPrevious, int &m_iPitchOffset);

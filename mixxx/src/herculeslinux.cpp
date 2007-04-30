@@ -37,6 +37,218 @@
 #include "mathstuff.h"
 #include "rotary.h"
 
+#ifdef __LIBDJCONSOLE__
+static void console_event(void *c, int code, int value)
+{
+        HerculesLinux *f=(HerculesLinux *)c;
+        f->consoleEvent(code, value);
+}
+
+HerculesLinux::HerculesLinux() : Hercules()
+{
+    djc = 0; // set to zero to force detection on the first run through.
+    m_iPitchLeft = -1;
+    m_iPitchRight = -1;
+
+    qDebug("HerculesLinux: Constructor called");
+
+    m_iFd = -1;
+    m_iId = -1;
+    m_iJogLeft = -1;
+    m_iJogRight = -1;
+
+    m_dJogLeftOld = 0.;
+    m_dJogRightOld = 0.;
+
+    m_bHeadphoneLeft = false;
+    m_bHeadphoneRight = false;
+}
+
+HerculesLinux::~HerculesLinux() {}
+void HerculesLinux::closedev() {}
+void HerculesLinux::run() {}
+
+bool HerculesLinux::opendev()
+{
+    qDebug("Starting Hercules DJ Console detection");
+    if (djc == 0) {
+        djc = new DJConsole();
+        if(djc && djc->detected()) {
+            qDebug("A Hercules DJ Console was detected.");
+        } else {
+            qDebug("Sorry, no love.");
+        }
+
+        djc->loadData();
+        djc->setCallback(console_event, this);
+
+        return djc->ready();
+
+    } else {
+        qDebug("Already completed detection.");
+        return 1;
+    }
+}
+
+int HerculesLinux::opendev(int iId)
+{
+  return opendev();
+}
+
+void HerculesLinux::consoleEvent(int first, int second) {
+  if (second == 0) {
+      djc->Leds.setBit(first, false);
+      return;
+  }
+
+  //qDebug("x Button %i = %i", first, second);
+  if(first != 0) {
+    bool on = (second == 0 ? false : true);
+    int led = 0;
+    switch(first) {
+      case LEFT_PLAY:
+      case LEFT_CUE:
+      case LEFT_MASTER_TEMPO:
+      case LEFT_AUTO_BEAT:
+      case LEFT_MONITOR:
+      case RIGHT_PLAY:
+      case RIGHT_CUE:
+      case RIGHT_MASTER_TEMPO:
+      case RIGHT_AUTO_BEAT:
+      case RIGHT_MONITOR:
+        led = first;
+        break;
+      case LEFT_1:  led = LEFT_FX;      break;
+      case LEFT_2:  led = LEFT_FX_CUE;  break; 
+      case LEFT_3:  led = LEFT_LOOP;    break;
+      case RIGHT_1: led = RIGHT_FX;     break;
+      case RIGHT_2: led = RIGHT_FX_CUE; break;
+      case RIGHT_3: led = RIGHT_LOOP;   break;
+
+      default:
+        break;
+    }
+
+    double v = ((second+1)/(4.- ((second>((7/8.)*256))*((second-((7/8.)*256))*1/16.)))); // GED's magic formula
+    switch(first) {
+	case LEFT_VOL: sendEvent(second/2., m_pControlObjectLeftVolume); break;
+	case RIGHT_VOL: sendEvent(second/2., m_pControlObjectRightVolume); break;
+	case LEFT_PLAY: sendButtonEvent(true, m_pControlObjectLeftBtnPlay); break;
+	case RIGHT_PLAY: sendButtonEvent(true, m_pControlObjectRightBtnPlay); break;
+	case XFADER: sendEvent((second+1)/2., m_pControlObjectCrossfade); break;
+	case RIGHT_HIGH: sendEvent(v, m_pControlObjectRightTreble); break;
+	case RIGHT_MID: sendEvent(v, m_pControlObjectRightMiddle); break;
+	case RIGHT_BASS: sendEvent(v, m_pControlObjectRightBass); break;
+	case LEFT_HIGH: sendEvent(v, m_pControlObjectLeftTreble); break;
+	case LEFT_MID: sendEvent(v, m_pControlObjectLeftMiddle); break;
+	case LEFT_BASS: sendEvent(v, m_pControlObjectLeftBass); break;
+	case LEFT_PITCH_DOWN: sendButtonEvent(true, m_pControlObjectLeftBtnPitchBendMinus); break;
+	case LEFT_PITCH_UP: sendButtonEvent(true, m_pControlObjectLeftBtnPitchBendPlus); break;
+	case RIGHT_PITCH_DOWN: sendButtonEvent(true, m_pControlObjectRightBtnPitchBendMinus); break;
+	case RIGHT_PITCH_UP: sendButtonEvent(true, m_pControlObjectRightBtnPitchBendPlus); break;
+	case LEFT_SKIP_BACK: sendButtonEvent(true, m_pControlObjectLeftBtnTrackPrev); break;
+	case LEFT_SKIP_FORWARD: sendButtonEvent(true, m_pControlObjectLeftBtnTrackNext); break;
+	case RIGHT_SKIP_BACK: sendButtonEvent(true, m_pControlObjectRightBtnTrackPrev); break;
+	case RIGHT_SKIP_FORWARD: sendButtonEvent(true, m_pControlObjectRightBtnTrackNext); break;
+	case LEFT_CUE: sendButtonEvent(true, m_pControlObjectLeftBtnCue); break;
+	case RIGHT_CUE: sendButtonEvent(true, m_pControlObjectRightBtnCue); break;
+	case LEFT_MASTER_TEMPO: sendEvent(0, m_pControlObjectLeftBtnMasterTempo); m_bMasterTempoLeft = !m_bMasterTempoLeft; break;
+	case RIGHT_MASTER_TEMPO: sendEvent(0, m_pControlObjectRightBtnMasterTempo); m_bMasterTempoRight = !m_bMasterTempoRight; break;
+	
+	case RIGHT_MONITOR: sendButtonEvent(true, m_pControlObjectRightBtnHeadphone); m_bHeadphoneRight = !m_bHeadphoneRight; break;
+	case LEFT_MONITOR: sendButtonEvent(true, m_pControlObjectLeftBtnHeadphone); m_bHeadphoneLeft = !m_bHeadphoneLeft; break;
+
+/*	
+	case HEADPHONE_DECK_A: 
+		qDebug("Deck A");
+		if (m_bHeadphoneRight) {
+		   sendButtonEvent(true, m_pControlObjectRightBtnHeadphone); m_bHeadphoneRight = !m_bHeadphoneRight;
+		} 
+		if (!m_bHeadphoneLeft) {
+		   sendButtonEvent(true, m_pControlObjectLeftBtnHeadphone); m_bHeadphoneLeft = !m_bHeadphoneLeft; 
+		}
+	break;
+	
+	case HEADPHONE_DECK_B: 
+		qDebug("Deck B");
+		if (!m_bHeadphoneRight) {
+		   sendButtonEvent(true, m_pControlObjectRightBtnHeadphone); m_bHeadphoneRight = !m_bHeadphoneRight;
+		} 
+		if (m_bHeadphoneLeft) {
+		   sendButtonEvent(true, m_pControlObjectLeftBtnHeadphone); m_bHeadphoneLeft = !m_bHeadphoneLeft ; 
+		}
+
+	break;	
+	
+	case HEADPHONE_MIX: 
+		qDebug("Deck MIX"); 	
+		if (!m_bHeadphoneRight) {
+		   sendButtonEvent(true, m_pControlObjectRightBtnHeadphone); m_bHeadphoneRight = !m_bHeadphoneRight;
+		} 
+		if (!m_bHeadphoneLeft) {
+		   sendButtonEvent(true, m_pControlObjectLeftBtnHeadphone); m_bHeadphoneLeft = !m_bHeadphoneLeft; 
+		}
+	break;
+*/		
+	case LEFT_PITCH: sendEvent(PitchChange("Left", second, m_iPitchLeft, m_iPitchOffsetLeft), m_pControlObjectLeftPitch); break;
+	case RIGHT_PITCH: sendEvent(PitchChange("Right", second, m_iPitchRight, m_iPitchOffsetRight), m_pControlObjectRightPitch); break;
+
+	case LEFT_AUTO_BEAT: sendButtonEvent(false, m_pControlObjectLeftBtnAutobeat); break;
+	case RIGHT_AUTO_BEAT: sendButtonEvent(false, m_pControlObjectRightBtnAutobeat); break;
+
+      default: 
+        qDebug("Button %i = %i - v value: %5.3f", first, second, v);
+        break;
+    }
+
+    if(led != 0)
+      djc->Leds.setBit(led, on);
+  }
+}
+
+void HerculesLinux::getNextEvent(){}
+void HerculesLinux::led_write(int iLed, bool bOn){}
+void HerculesLinux::selectMapping(QString qMapping) {}
+
+double HerculesLinux::PitchChange(const QString ControlSide, const int ev_value, int &m_iPitchPrevious, int &m_iPitchOffset) {
+	// Handle the initial event from the Hercules and set pitch to default of 0% change
+	if (m_iPitchPrevious < 0) {
+          m_iPitchOffset = ev_value;
+          m_iPitchPrevious = 64;
+	  return m_iPitchPrevious;
+	}
+
+	int delta = ev_value - m_iPitchOffset; 
+        if (delta >= 240) {
+	  delta = (255 - delta) * -1;
+	}
+        if (delta <= -240) {
+	  delta = 255 + delta;
+	}
+        m_iPitchOffset = ev_value;
+
+	int pitchAdjustStep = delta * 3;
+
+	if ((pitchAdjustStep > 0 && m_iPitchPrevious+pitchAdjustStep < 128) || (pitchAdjustStep < 0 && m_iPitchPrevious+pitchAdjustStep > 0)) { 
+	  m_iPitchPrevious = m_iPitchPrevious+pitchAdjustStep;
+	} else if (pitchAdjustStep > 0) {
+	  m_iPitchPrevious = 127;
+	} else if (pitchAdjustStep < 0) {
+	  m_iPitchPrevious = 0;
+        }
+
+	qDebug("%s PitchAdjust %i -> new Pitch %i",ControlSide.data(),pitchAdjustStep, m_iPitchPrevious );
+
+	return m_iPitchPrevious;
+}
+
+#endif
+
+
+// Below this line is the original non-libdjconsole implementation.
+
+#ifndef __LIBDJCONSOLE__
+
 #ifndef MSC_PULSELED
   // this may not have made its way into the kernel headers yet ...
   #define MSC_PULSELED 0x01
@@ -651,3 +863,4 @@ double HerculesLinux::PitchChange(const QString ControlSide, const int ev_value,
 	return (((m_iPitchPrevious + m_iPitchOffset)-.5)/2.);
 }
 
+#endif

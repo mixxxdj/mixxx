@@ -574,7 +574,7 @@ int PlayerALSA::set_hwparams()
         qWarning("Channels count (%i) not available for playbacks: %s\n", rate, snd_strerror(err));
     }
     qDebug("Channels max %d", rate);
-    m_iChannels = min(rate, alsa_channels);
+    m_iChannels = math_min(rate, alsa_channels);
     qDebug("Set channels = %d", m_iChannels);
 
     /* set the count of channels */

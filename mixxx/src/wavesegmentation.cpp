@@ -4,7 +4,7 @@
 
 #include "wavesegmentation.h"
 #include "float.h"
-
+#include "defs.h"
 
 //////////////////////////////////////////////////////////////////////
 // Main class for algorithm : Segmentation
@@ -22,7 +22,7 @@ int WaveSegmentation::Process(double *psdf,int count,float *segPoints,int maxPoi
 	selfsim *ss=new selfsim(rg);
 	ShortestPath *sp=new ShortestPath(ss,10);
 	
-	int RetPoints = min(sp->length(),maxPoints);
+	int RetPoints = math_min(sp->length(),maxPoints);
 
 	for(int i=0;i<RetPoints;i++)
 		segPoints[i]=sp->getPoint(i);
@@ -110,7 +110,7 @@ selfsim::selfsim(Rhythmogram *rg)
 	s_size = rg->width();
 	_selfsim = new double[s_size*s_size];
 	for (int j=0;j<s_size;j++){
-		for (int k=j;k<min(j+MAX_SEGMENT_SIZE+1,s_size);k++){
+		for (int k=j;k<math_min(j+MAX_SEGMENT_SIZE+1,s_size);k++){
 			double *colJ = rg->column(j);
 			double *colK = rg->column(k);
 			double rowsum=0;
@@ -124,7 +124,7 @@ selfsim::selfsim(Rhythmogram *rg)
 	}
 	// Change to sums (weights to use for shortest path)
 	int n;
-	for (int k=0;k<min(s_size-2,MAX_SEGMENT_SIZE+2);k++)
+	for (int k=0;k<math_min(s_size-2,MAX_SEGMENT_SIZE+2);k++)
 		for(int m=k+2;m<s_size;m++){
 			n=m-k-2;
 			column(m)[n]+=column(m-1)[n] + column(m)[n+1] -column(m-1)[n+1];
@@ -180,7 +180,7 @@ ShortestPath::ShortestPath(selfsim *ss,double Threshold,double  HorzStepSize )
 
 	for (int i=0;i<I-1;i++)
 	{
-		int limit=min(MAX_SEGMENT_SIZE+i,I-1);
+		int limit=math_min(MAX_SEGMENT_SIZE+i,I-1);
 		for (int j=i+1;j<=limit;j++)
 		{
 			double sum=ss->column(j)[i]*2;

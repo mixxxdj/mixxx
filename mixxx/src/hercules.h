@@ -65,20 +65,6 @@ public:
     virtual bool opendev() = 0;
     void led(); //int iLedNo, bool bOn);
 
-protected:
-    /** Change jog mode */
-    void changeJogMode(int iLeftFxMode=0, int iRightFxMode=0);
-    /** Change the led */
-    //virtual void led_write(int static_brightness, int speed, int table, int asleep, int awake) = 0;
-    /** Instantiate number. Used in the calculation of MIDI controller id's */
-    int m_iInstNo;
-    /** Pointer to semaphore used to control led */
-    #ifdef QT3_SUPPORT
-    Q3Semaphore m_qRequestLed;
-    #else
-    QSemaphore m_qRequestLed;
-    #endif
-    
     ControlObject *m_pControlObjectLeftTreble, *m_pControlObjectLeftMiddle, *m_pControlObjectLeftBass,
                   *m_pControlObjectLeftVolume, *m_pControlObjectLeftPitch, *m_pControlObjectLeftJog,
                   *m_pControlObjectLeftBtnHeadphone, *m_pControlObjectLeftBtnPitchBendMinus, 
@@ -94,6 +80,22 @@ protected:
                   *m_pControlObjectRightBtnAutobeat, *m_pControlObjectRightBtnMasterTempo, *m_pControlObjectRightBtn1,
                   *m_pControlObjectRightBtn2, *m_pControlObjectRightBtn3, *m_pControlObjectRightBtnFx;
     ControlObject *m_pControlObjectCrossfade;   
+
+
+protected:
+    /** Change jog mode */
+    void changeJogMode(int iLeftFxMode=0, int iRightFxMode=0);
+    /** Change the led */
+    //virtual void led_write(int static_brightness, int speed, int table, int asleep, int awake) = 0;
+    /** Instantiate number. Used in the calculation of MIDI controller id's */
+    int m_iInstNo;
+    /** Pointer to semaphore used to control led */
+    #ifdef QT3_SUPPORT
+    Q3Semaphore m_qRequestLed;
+    #else
+    QSemaphore m_qRequestLed;
+    #endif
+    
     ControlObjectThread *m_pControlObjectLeftBtnPlayProxy, *m_pControlObjectRightBtnPlayProxy,
                         *m_pControlObjectLeftBtnLoopProxy, *m_pControlObjectRightBtnLoopProxy;
     Rotary *m_pRotaryLeft, *m_pRotaryRight; 
