@@ -30,8 +30,9 @@
   QPtrList<recordObject> m_qRecordList;
 #endif
 
+//Static variable memory allocation
 short int Player::m_iBufferSize = 0;
-short int Player::m_iChannels = 0;
+short int Player::m_iChannels[MAX_AUDIODEVICES];
 EngineMaster *Player::m_pMaster = 0;
 
 
@@ -47,6 +48,11 @@ Player::Player(ConfigObject<ConfigValue> *pConfig)
     m_pBuffer = new CSAMPLE[MAX_BUFFER_LEN];
     m_pControlObjectSampleRate = ControlObject::getControl(ConfigKey("[Master]","samplerate"));
     m_pControlObjectLatency = new ControlObject(ConfigKey("[Master]","latency"));;
+    
+    for (int i = 0; i < MAX_AUDIODEVICES; i++)
+    {
+    	m_iChannels[i] = 0;
+	}
 }
 
 /* -------- ------------------------------------------------------
