@@ -23,6 +23,8 @@
 #include "engineobject.h"
 #include <qstringlist.h>
 
+#define MAX_AUDIODEVICES 2
+
 class EngineMaster;
 class ControlObject;
 
@@ -65,7 +67,7 @@ protected:
     /** Current buffer size in use. */
     static short int m_iBufferSize;
     /** Current number of channels in use */
-    static short int m_iChannels;
+    static short int m_iChannels[MAX_AUDIODEVICES];
     /** Pointer to object holding sample rate */
     ControlObject *m_pControlObjectSampleRate;
     /** Pointer to object holding latency */
