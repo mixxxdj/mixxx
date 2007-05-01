@@ -8,8 +8,8 @@ contains( CONFIG, debug ) {
 #----------------------------------------------------------------------
 
 # Configure Help facilities -------------------------------------------
-CONFIGURE_SCRIPT_FEATURES = jack alsa lua python djconsole
-CONFIGURE_SCRIPT_PACKAGE_LIST =  libmad jack id3tag vorbisfile vorbis oggvorbis libsndfile djconsole
+CONFIGURE_SCRIPT_FEATURES = alsa lua python djconsole
+CONFIGURE_SCRIPT_PACKAGE_LIST =  libmad id3tag vorbisfile vorbis oggvorbis libsndfile djconsole
 #----------------------------------------------------------------------
 
 
