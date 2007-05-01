@@ -21,10 +21,13 @@
 
 class EngineClipping : public EngineObject 
 {
+private:
+    bool clipped;
 public:
     EngineClipping(const char *group);
     ~EngineClipping();
     void process(const CSAMPLE *pIn, const CSAMPLE *pOut, const int iBufferSize);
+    bool hasClipped();
 };
 
 #endif
