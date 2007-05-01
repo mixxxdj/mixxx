@@ -18,6 +18,8 @@
 #ifndef PLAYERPORTAUDIO_H
 #define PLAYERPORTAUDIO_H
 
+#include <qsemaphore.h>
+#include <qthread.h>
 #include "player.h"
 #include "portaudio.h"
 
@@ -28,6 +30,15 @@
 /** Maximum frame size used with PortAudio. Used to determine no of buffers
   * when setting latency */
 const int kiMaxFrameSize = 1024;
+
+class PlayerPortAudio; //Forward declaration
+
+/** A struct to some stuff we need to pass along to the callback through PortAudio **/
+struct PAPlayerCallbackStuff
+{
+	PlayerPortAudio* player;
+	int devIndex;
+};
 
 class PlayerPortAudio : public Player  {
 public:
@@ -41,10 +52,11 @@ public:
     QStringList getSampleRates();
     static QStringList getSoundApiList();
     QString getSoundApiName() { return getSoundApiList().front(); };
+    void calculateNumActiveDevices();
     /** Satisfy virtual declaration in EngineObject */
     void process(const CSAMPLE *, const CSAMPLE *, const int) {};
     /** Process samples. Called from PortAudio callback */
-    int callbackProcess(int iBufferSize, float *out);
+    int callbackProcess(int iBufferSize, float *out, int devIndex);
 
     static bool m_painited;
 protected:
@@ -54,17 +66,25 @@ protected:
     int getChannelNo(QString name);
 
     /** PortAudio stream */
-    PaStream *m_pStream;
+    PaStream *m_pStream[MAX_AUDIODEVICES];
     /** Id of currently open device. -1 if no device is open */
-    PaDeviceIndex m_devId;
+    PaDeviceIndex m_devId[MAX_AUDIODEVICES];
     /** Channels used for each output from Mixxx. Set to -1 when not in use */
     int m_iMasterLeftCh, m_iMasterRigthCh, m_iHeadLeftCh, m_iHeadRightCh;
     /** True if PortAudio was sucessfully initialized */
     bool m_bInit;
+    /** A struct to hold some information/pointers we need to pass to our callback function */
+    PAPlayerCallbackStuff callbackStuff[MAX_AUDIODEVICES];
     /** Number of buffers */
     int m_iNumberOfBuffers;
+    /** Number of active/open soundcards **/
+    int m_iNumActiveDevices;
     /** Name of the current audio API inside PortAudio **/
     QString m_HostAPI;
+    /** Mutex so that two threads don't try to prepare a new buffer full of samples from Mixxx at the same time */
+    QMutex lockSamples; 
+    /** Wait condition that forces multiple PortAudio callbacks in separate threads to play nicely */
+    QWaitCondition waitForNextOutput;
 };
 
 int paV19Callback(const void *inputBuffer, void *outputBuffer,
