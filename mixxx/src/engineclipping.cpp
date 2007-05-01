@@ -33,7 +33,7 @@ void EngineClipping::process(const CSAMPLE *pIn, const CSAMPLE *pOut, const int 
     static const FLOAT_TYPE kfClip = 0.8*kfMaxAmp;
 
     CSAMPLE *pOutput = (CSAMPLE *)pOut;
-    
+    clipped = false;
     if (pIn==pOut)
     {
         for (int i=0; i<iBufferSize; ++i) 
@@ -50,10 +50,15 @@ void EngineClipping::process(const CSAMPLE *pIn, const CSAMPLE *pOut, const int 
             } 
 */
 
-            if (pIn[i]>kfMaxAmp)
+            if (pIn[i]>kfMaxAmp){
                 pOutput[i] = kfMaxAmp;
+				clipped = true;
+	    	}
             else if (pIn[i]<-kfMaxAmp)
+	    	{
                 pOutput[i] = -kfMaxAmp;
+				clipped = true;
+	    	}
         }
     }
     else
@@ -73,12 +78,22 @@ void EngineClipping::process(const CSAMPLE *pIn, const CSAMPLE *pOut, const int 
             else
                 pOutput[i] = pIn[i];
 */
-            if (pIn[i]>kfMaxAmp)
+            if (pIn[i]>kfMaxAmp){
                 pOutput[i] = kfMaxAmp;
-            else if (pIn[i]<-kfMaxAmp)
+				clipped = true;
+	    	}
+            else if (pIn[i]<-kfMaxAmp){
                 pOutput[i] = -kfMaxAmp;
+				clipped = true;
+	    	}
             else
                 pOutput[i] = pIn[i];
         }
     }
+}
+
+//returns true if the last buffer processed clipped
+bool EngineClipping::hasClipped()
+{
+    return clipped;
 }
