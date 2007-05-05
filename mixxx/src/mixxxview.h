@@ -79,13 +79,15 @@ public:
 
 	void rebootGUI(QWidget* parent, bool bVisualsWaveform, ConfigObject<ConfigValue> *pConfig, QString qSkinPath);
 
+	static QValueList<QString> getSchemeList(QString qSkinPath);
+
 private:
 	void setupColorScheme(QDomElement docElem, ConfigObject<ConfigValue> *pConfig);
 	void createAllWidgets(QDomElement docElem, QWidget* parent, bool bVisualsWaveform, ConfigObject<ConfigValue> *pConfig);
 	
 
 	ImgSource* parseFilters(QDomNode filt);
-	QDomElement openSkin(QString qSkinPath);
+	static QDomElement openSkin(QString qSkinPath);
 
     // True if m_pVisualChX is instantiated as WVisualWaveform
     bool m_bVisualWaveform;

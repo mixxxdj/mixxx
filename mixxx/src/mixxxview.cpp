@@ -139,6 +139,8 @@ bool MixxxView::compareConfigKeys(QDomNode node, QString key)
 }
 
 ImgSource* MixxxView::parseFilters(QDomNode filt) {
+
+	// TODO: Move this code into ImgSource
 	if (!filt.hasChildNodes()) {
 		return 0;
 	}
@@ -157,6 +159,37 @@ ImgSource* MixxxView::parseFilters(QDomNode filt) {
 			ret = new ImgAdd(ret, WWidget::selectNodeInt(f, "Amount"));
 		} else if (name == "scalewhite") {
 			ret = new ImgScaleWhite(ret, WWidget::selectNodeFloat(f, "Amount"));
+		} else if (name == "hsvtweak") {
+			int hmin = 0;
+			int hmax = 255;
+			int smin = 0;
+			int smax = 255;
+			int vmin = 0;
+			int vmax = 255;
+			float hfact = 1.0f;
+			float sfact = 1.0f;
+			float vfact = 1.0f;
+			int hconst = 0;
+			int sconst = 0;
+			int vconst = 0;
+
+			if (!f.namedItem("HMin").isNull()) { hmin = WWidget::selectNodeInt(f, "HMin"); }
+			if (!f.namedItem("HMax").isNull()) { hmax = WWidget::selectNodeInt(f, "HMax"); }
+			if (!f.namedItem("SMin").isNull()) { smin = WWidget::selectNodeInt(f, "SMin"); }
+			if (!f.namedItem("SMax").isNull()) { smax = WWidget::selectNodeInt(f, "SMax"); }
+			if (!f.namedItem("VMin").isNull()) { vmin = WWidget::selectNodeInt(f, "VMin"); }
+			if (!f.namedItem("VMax").isNull()) { vmax = WWidget::selectNodeInt(f, "VMax"); }
+
+			if (!f.namedItem("HConst").isNull()) { hconst = WWidget::selectNodeInt(f, "HConst"); }
+			if (!f.namedItem("SConst").isNull()) { sconst = WWidget::selectNodeInt(f, "SConst"); }
+			if (!f.namedItem("VConst").isNull()) { vconst = WWidget::selectNodeInt(f, "VConst"); }
+
+			if (!f.namedItem("HFact").isNull()) { hfact = WWidget::selectNodeFloat(f, "HFact"); }
+			if (!f.namedItem("SFact").isNull()) { sfact = WWidget::selectNodeFloat(f, "SFact"); }
+			if (!f.namedItem("VFact").isNull()) { vfact = WWidget::selectNodeFloat(f, "VFact"); }
+
+			ret = new ImgHSVTweak(ret, hmin, hmax, smin, smax, vmin, vmax, hfact, hconst,
+				sfact, sconst, vfact, vconst);
 		} else {
 			qDebug("Unkown image filter: %s\n", name);
 		}
@@ -315,9 +348,8 @@ void MixxxView::createAllWidgets(QDomElement docElem, QWidget* parent, bool bVis
             else if (node.nodeName()=="Background")
             {
                 QString filename = WWidget::selectNodeQString(node, "Path");
-				QPixmap* background = WPixmapStore::getPixmap(WWidget::getPath(filename));
+				QPixmap* background = WPixmapStore::getPixmapNoCache(WWidget::getPath(filename));
                 this->setPaletteBackgroundPixmap(*background);
-				// TODO: Delete background from pixmap store to save memory?
                 // FWI: Begin of fullscreen patch
                 // this->setFixedSize(background.width(),background.height()+((QMainWindow *)parent)->menuBar()->height());
                 // parent->setFixedSize(background.width(),background.height()+((QMainWindow *)parent)->menuBar()->height());
@@ -665,9 +697,9 @@ void MixxxView::rebootGUI(QWidget* parent, bool bVisualsWaveform, ConfigObject<C
             else if (node.nodeName()=="Background")
             {
                 QString filename = WWidget::selectNodeQString(node, "Path");
-				QPixmap* background = WPixmapStore::getPixmap(WWidget::getPath(filename));
+				QPixmap* background = WPixmapStore::getPixmapNoCache(WWidget::getPath(filename));
                 this->setPaletteBackgroundPixmap(*background);
-				// TODO: Delete background from pixmap store to save memory?
+				// TODO: We leak memory at the size of the old bg pixmap (FIXME)
                 // FWI: Begin of fullscreen patch
                 // this->setFixedSize(background.width(),background.height()+((QMainWindow *)parent)->menuBar()->height());
                 // parent->setFixedSize(background.width(),background.height()+((QMainWindow *)parent)->menuBar()->height());
@@ -801,4 +833,23 @@ void MixxxView::rebootGUI(QWidget* parent, bool bVisualsWaveform, ConfigObject<C
 		}
 		node = node.nextSibling();
 	}
+}
+
+QValueList<QString> MixxxView::getSchemeList(QString qSkinPath) {
+
+	QDomElement docElem = openSkin(qSkinPath);
+	QValueList<QString> schlist;
+
+	QDomNode colsch = docElem.namedItem("Schemes");
+	if (!colsch.isNull() && colsch.isElement()) {
+		QDomNode sch = colsch.firstChild();
+
+		while (!sch.isNull()) {
+			QString thisname = WWidget::selectNodeQString(sch, "Name");
+			schlist.append(thisname);
+			sch = sch.nextSibling();
+		}
+	}
+
+	return schlist;
 }

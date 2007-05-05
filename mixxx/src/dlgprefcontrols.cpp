@@ -170,6 +170,9 @@ DlgPrefControls::DlgPrefControls(QWidget *parent, MixxxView *pView, MixxxApp *mi
 
     connect(ComboBoxSkinconf, SIGNAL(activated(int)), this, SLOT(slotSetSkin(int)));
 
+	slotUpdateSchemes();
+
+	connect(ComboBoxSchemeconf, SIGNAL(activated(int)), this, SLOT(slotSetScheme(int)));
     //
     // Scale BPM configuration
     //
@@ -200,6 +203,29 @@ DlgPrefControls::DlgPrefControls(QWidget *parent, MixxxView *pView, MixxxApp *mi
 
 DlgPrefControls::~DlgPrefControls()
 {
+}
+
+void DlgPrefControls::slotUpdateSchemes()
+{
+	// Since this involves opening a file we won't do this as part of regular slotUpdate
+	QValueList<QString> schlist = MixxxView::getSchemeList(m_mixxx->getSkinPath());
+
+	ComboBoxSchemeconf->clear();
+
+	if (schlist.size() == 0) {
+		ComboBoxSchemeconf->setEnabled(false);
+		ComboBoxSchemeconf->insertItem("This skin does not support schemes", 0);
+		ComboBoxSchemeconf->setCurrentItem(0);
+	} else {
+		ComboBoxSchemeconf->setEnabled(true);
+		for (unsigned int i = 0; i < schlist.size(); i++) {
+			ComboBoxSchemeconf->insertItem(schlist[i]);
+
+			if (schlist[i] == m_pConfig->getValueString(ConfigKey("[Config]","Scheme"))) {
+                    ComboBoxSchemeconf->setCurrentItem(i);
+			}
+		}
+	}
 }
 
 void DlgPrefControls::slotUpdate()
@@ -285,11 +311,18 @@ void DlgPrefControls::slotSetTooltips(int)
 #endif
 }
 
+void DlgPrefControls::slotSetScheme(int)
+{
+	m_pConfig->set(ConfigKey("[Config]", "Scheme"), ComboBoxSchemeconf->currentText());
+	m_mixxx->rebootMixxxView();
+}
+
 void DlgPrefControls::slotSetSkin(int)
 {
     m_pConfig->set(ConfigKey("[Config]","Skin"), ComboBoxSkinconf->currentText());
     //textLabel->setText("Restart Mixxx before the new skin will be loaded.");
 	m_mixxx->rebootMixxxView();
+	slotUpdateSchemes();
 }
 
 void DlgPrefControls::slotSetPositionDisplay(int)

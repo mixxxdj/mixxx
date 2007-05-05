@@ -32,6 +32,12 @@ WPushButton::WPushButton(QWidget *parent, const char *name ) : WWidget(parent,na
 
 WPushButton::~WPushButton()
 {
+	for (int i = 0; i < 2*m_iNoStates; i++) {
+		WPixmapStore::deletePixmap(m_pPixmaps[i]);
+	}
+
+	WPixmapStore::deletePixmap(m_pPixmapBack);
+	WPixmapStore::deletePixmap(m_pPixmapBuffer);
 }
 
 void WPushButton::setup(QDomNode node)

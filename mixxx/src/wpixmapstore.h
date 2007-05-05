@@ -38,6 +38,7 @@ class WPixmapStore {
 public: 
     WPixmapStore();
     static QPixmap *getPixmap(const QString &fileName);
+	static QPixmap *getPixmapNoCache(const QString &fileName);
     static void deletePixmap(QPixmap *p);
 	static void setLoader(ImgSource* ld);
 	static void emptyStore();

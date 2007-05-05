@@ -48,6 +48,8 @@ public slots:
     void slotSetScaleBpm(int pos);
     void slotSetTooltips(int pos);
     void slotSetSkin(int);
+	void slotSetScheme(int);
+	void slotUpdateSchemes();
     void slotSetPositionDisplay(int);
     void slotApply();
 private:

@@ -33,8 +33,8 @@ QPixmap *WPixmapStore::getPixmap(const QString &fileName)
     info = dictionary[fileName];
     if (info)
     {
-       info->instCount++;
-       return info->pixmap;
+		info->instCount++;
+		return info->pixmap;
     }
 
     // Pixmap wasn't found, construct it
@@ -54,6 +54,16 @@ QPixmap *WPixmapStore::getPixmap(const QString &fileName)
     dictionary.insert(fileName, info);
   
     return info->pixmap;
+}
+
+QPixmap* WPixmapStore::getPixmapNoCache(const QString& fileName) {
+	if (loader != 0) {
+		QImage* img = loader->getImage(fileName);
+		return new QPixmap(*img);
+		delete img;
+	} else {
+		return new QPixmap(fileName);
+	}
 }
 
 void WPixmapStore::deletePixmap(QPixmap *p)
