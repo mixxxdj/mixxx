@@ -20,6 +20,9 @@
 #include "playerportaudio.h"
 #include "controlobject.h"
 
+// Mathstuff required for Win32
+#include "mathstuff.h"
+
 bool PlayerPortAudio::m_painited = false;
 
 PlayerPortAudio::PlayerPortAudio(ConfigObject<ConfigValue> *config, QString api_name) : Player(config)

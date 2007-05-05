@@ -16,19 +16,23 @@
  ***************************************************************************/
 
 #include "midiobjectwin.h"
+#include <atlconv.h>
 
 MidiObjectWin::MidiObjectWin(QString device) : MidiObject(device)
 {
+    USES_CONVERSION; // enable WCHAR to char macro conversion
     // Fill in list of available devices
     bool device_valid = false; // Is true if device is a valid device name
     
     MIDIINCAPS info;
     for (unsigned int i=0; i<midiInGetNumDevs(); i++)
     {
-        MMRESULT res = midiInGetDevCaps(i, &info, sizeof(info));
+        MMRESULT res = midiInGetDevCaps(i, &info, sizeof(MIDIINCAPS));
 
-        if (res>8)
-            devices.append((const char *)info.szPname);
+        qDebug("Midi Device '%s' found.", W2A(info.szPname));
+
+        if (strlen(W2A(info.szPname))>0)
+            devices.append(W2A(info.szPname));
         else
             devices.append(QString("Device %1").arg(i));
         if (devices.last() == device)
@@ -56,18 +60,16 @@ MidiObjectWin::~MidiObjectWin()
 
 void MidiObjectWin::devOpen(QString device)
 {
+    USES_CONVERSION; // enable WCHAR to char macro conversion
     // Select device. If not found, select default (first in list).
     unsigned int i;
     MIDIINCAPS info;
     for (i=0; i<midiInGetNumDevs(); i++)
     {
         MMRESULT res = midiInGetDevCaps(i, &info, sizeof(MIDIINCAPS));
-        if (res>8)
+        if (strlen(W2A(info.szPname))>0 && ((QString(W2A(info.szPname)) == device) || (QString("Device %1").arg(i) == device)))
         {
-            if ((const char *)info.szPname == device)
-                break;
-        } else {
-            if (QString("Device %1").arg(i) == device)
+                qDebug("Using Midi Device #%i: %s", i, W2A(info.szPname));
                 break;
         }
     }
@@ -103,7 +105,7 @@ void MidiObjectWin::run()
 
 void MidiObjectWin::handleMidi(char channel, char midicontrol, char midivalue)
 {
-//  qDebug("midi ch: %i, ctrl: %i, val: %i",channel,midicontrol,midivalue);
+    qDebug("midi ch: %i, ctrl: %i, val: %i",channel,midicontrol,midivalue);
     send((MidiCategory)(channel & 240), channel&15, midicontrol, midivalue);
 }
 
