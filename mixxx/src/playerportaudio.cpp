@@ -180,7 +180,8 @@ bool PlayerPortAudio::open()
     int iLatencySamples = (int)((float)(iSrate*math_max(iChannels[0], iChannels[1]))/1000.f*(float)iLatencyMSec);
     
     // Round to the nearest multiple of 4.
-    iLatencySamples = (int)(round(iLatencySamples/((float)4.0f)) * 4) + 4;
+    iLatencySamples -= (iLatencySamples % 4);
+	iLatencySamples += 4;
 
 	qDebug("iLatencySamples: %i", iLatencySamples);
 

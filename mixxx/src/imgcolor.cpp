@@ -61,3 +61,30 @@ QColor ImgMax::doColorCorrection(QColor c) {
 	if (b > m_amt) { b = m_amt; }
 	return QColor(r, g, b);
 }
+
+QColor ImgHSVTweak::doColorCorrection(QColor c) {
+	int h, s, v;
+	c.getHsv(&h, &s, &v);
+
+	if (h == -1) { h = 0; }
+
+	if (h >= m_hmin && h <= m_hmax && s >= m_smin && s <= m_smax &&
+		v >= m_vmin && v <= m_vmax) {
+			h *= m_hfact;
+			s *= m_sfact;
+			v *= m_vfact;
+			h += m_hconst;
+			s += m_sconst;
+			v += m_vconst;
+
+			h = h % 256;
+			if (h < 0) { h += 256; }
+			if (s < 0) { s = 0; }
+			if (s > 255) { s = 255; }
+			if (v < 0) { v = 0; }
+			if (v > 255) { v = 255; }
+			
+			c.setHsv(h, s, v);
+	}
+	return c;
+}

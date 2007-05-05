@@ -1,4 +1,4 @@
-<!DOCTYPE UI><UI version="3.1" stdsetdef="1">
+<!DOCTYPE UI><UI version="3.3" stdsetdef="1">
 <class>DlgPrefControlsDlg</class>
 <widget class="QWidget">
     <property name="name">
@@ -24,9 +24,9 @@
         </property>
         <property name="geometry">
             <rect>
-                <x>9</x>
-                <y>174</y>
-                <width>170</width>
+                <x>10</x>
+                <y>10</y>
+                <width>110</width>
                 <height>19</height>
             </rect>
         </property>
@@ -38,26 +38,9 @@
             <string>Skin</string>
         </property>
     </widget>
-    <widget class="QComboBox">
-        <property name="name">
-            <cstring>ComboBoxRateRange</cstring>
-        </property>
-        <property name="geometry">
-            <rect>
-                <x>189</x>
-                <y>10</y>
-                <width>170</width>
-                <height>22</height>
-            </rect>
-        </property>
-        <property name="font">
-            <font>
-            </font>
-        </property>
-    </widget>
     <widget class="QLabel">
         <property name="name">
-            <cstring>TextLabel6_2</cstring>
+            <cstring>TextLabel6_2_2_3_3</cstring>
         </property>
         <property name="enabled">
             <bool>true</bool>
@@ -65,7 +48,7 @@
         <property name="geometry">
             <rect>
                 <x>9</x>
-                <y>44</y>
+                <y>269</y>
                 <width>170</width>
                 <height>19</height>
             </rect>
@@ -75,7 +58,7 @@
             </font>
         </property>
         <property name="text">
-            <string>Pitch/Rate slider direction</string>
+            <string>Scale BPM display</string>
         </property>
     </widget>
     <widget class="QLabel">
@@ -87,8 +70,8 @@
         </property>
         <property name="geometry">
             <rect>
-                <x>275</x>
-                <y>70</y>
+                <x>276</x>
+                <y>136</y>
                 <width>30</width>
                 <height>19</height>
             </rect>
@@ -103,78 +86,15 @@
     </widget>
     <widget class="QLabel">
         <property name="name">
-            <cstring>TextLabel6_2_3_3</cstring>
+            <cstring>TextLabel6_2_3_2_2_2</cstring>
         </property>
         <property name="enabled">
             <bool>true</bool>
         </property>
         <property name="geometry">
             <rect>
-                <x>9</x>
-                <y>100</y>
-                <width>170</width>
-                <height>19</height>
-            </rect>
-        </property>
-        <property name="font">
-            <font>
-            </font>
-        </property>
-        <property name="text">
-            <string>Permanent rate buttons</string>
-        </property>
-    </widget>
-    <widget class="QComboBox">
-        <property name="name">
-            <cstring>ComboBoxRateDir</cstring>
-        </property>
-        <property name="geometry">
-            <rect>
-                <x>189</x>
-                <y>40</y>
-                <width>170</width>
-                <height>22</height>
-            </rect>
-        </property>
-        <property name="font">
-            <font>
-            </font>
-        </property>
-    </widget>
-    <widget class="QLabel">
-        <property name="name">
-            <cstring>TextLabel6</cstring>
-        </property>
-        <property name="enabled">
-            <bool>true</bool>
-        </property>
-        <property name="geometry">
-            <rect>
-                <x>9</x>
-                <y>14</y>
-                <width>170</width>
-                <height>19</height>
-            </rect>
-        </property>
-        <property name="font">
-            <font>
-            </font>
-        </property>
-        <property name="text">
-            <string>Pitch/Rate slider range</string>
-        </property>
-    </widget>
-    <widget class="QLabel">
-        <property name="name">
-            <cstring>TextLabel6_2_3_2_3</cstring>
-        </property>
-        <property name="enabled">
-            <bool>true</bool>
-        </property>
-        <property name="geometry">
-            <rect>
-                <x>188</x>
-                <y>100</y>
+                <x>276</x>
+                <y>166</y>
                 <width>30</width>
                 <height>19</height>
             </rect>
@@ -184,47 +104,7 @@
             </font>
         </property>
         <property name="text">
-            <string>Left</string>
-        </property>
-    </widget>
-    <widget class="QComboBox">
-        <property name="name">
-            <cstring>ComboBoxSkinconf</cstring>
-        </property>
-        <property name="geometry">
-            <rect>
-                <x>189</x>
-                <y>170</y>
-                <width>170</width>
-                <height>22</height>
-            </rect>
-        </property>
-        <property name="font">
-            <font>
-            </font>
-        </property>
-    </widget>
-    <widget class="QLabel">
-        <property name="name">
-            <cstring>TextLabel6_2_2_2</cstring>
-        </property>
-        <property name="enabled">
-            <bool>true</bool>
-        </property>
-        <property name="geometry">
-            <rect>
-                <x>10</x>
-                <y>144</y>
-                <width>170</width>
-                <height>19</height>
-            </rect>
-        </property>
-        <property name="font">
-            <font>
-            </font>
-        </property>
-        <property name="text">
-            <string>Visuals</string>
+            <string>Right</string>
         </property>
     </widget>
     <widget class="QLabel">
@@ -237,7 +117,7 @@
         <property name="geometry">
             <rect>
                 <x>9</x>
-                <y>204</y>
+                <y>239</y>
                 <width>170</width>
                 <height>19</height>
             </rect>
@@ -252,38 +132,31 @@
     </widget>
     <widget class="QLabel">
         <property name="name">
-            <cstring>TextLabel6_2_3_2_2_2</cstring>
-        </property>
-        <property name="enabled">
-            <bool>true</bool>
+            <cstring>textLabel</cstring>
         </property>
         <property name="geometry">
             <rect>
-                <x>275</x>
-                <y>100</y>
-                <width>30</width>
-                <height>19</height>
+                <x>10</x>
+                <y>340</y>
+                <width>341</width>
+                <height>40</height>
             </rect>
         </property>
-        <property name="font">
-            <font>
-            </font>
-        </property>
         <property name="text">
-            <string>Right</string>
+            <string></string>
         </property>
     </widget>
     <widget class="QLabel">
         <property name="name">
-            <cstring>TextLabel6_2_3_2</cstring>
+            <cstring>TextLabel6_2_3_2_3</cstring>
         </property>
         <property name="enabled">
             <bool>true</bool>
         </property>
         <property name="geometry">
             <rect>
-                <x>188</x>
-                <y>70</y>
+                <x>189</x>
+                <y>166</y>
                 <width>30</width>
                 <height>19</height>
             </rect>
@@ -296,21 +169,27 @@
             <string>Left</string>
         </property>
     </widget>
-    <widget class="QComboBox">
+    <widget class="QLabel">
         <property name="name">
-            <cstring>ComboBoxPosition</cstring>
+            <cstring>TextLabel6_2_3_3</cstring>
+        </property>
+        <property name="enabled">
+            <bool>true</bool>
         </property>
         <property name="geometry">
             <rect>
-                <x>189</x>
-                <y>200</y>
+                <x>10</x>
+                <y>166</y>
                 <width>170</width>
-                <height>22</height>
+                <height>19</height>
             </rect>
         </property>
         <property name="font">
             <font>
             </font>
+        </property>
+        <property name="text">
+            <string>Permanent rate buttons</string>
         </property>
     </widget>
     <widget class="QLabel">
@@ -322,8 +201,8 @@
         </property>
         <property name="geometry">
             <rect>
-                <x>9</x>
-                <y>70</y>
+                <x>10</x>
+                <y>136</y>
                 <width>170</width>
                 <height>19</height>
             </rect>
@@ -342,8 +221,8 @@
         </property>
         <property name="geometry">
             <rect>
-                <x>218</x>
-                <y>70</y>
+                <x>219</x>
+                <y>136</y>
                 <width>50</width>
                 <height>21</height>
             </rect>
@@ -356,118 +235,6 @@
         </property>
         <property name="toolTip" stdset="0">
             <string>Temporary rate change (between 1 and 100) when left clicking</string>
-        </property>
-    </widget>
-    <widget class="QSpinBox">
-        <property name="name">
-            <cstring>spinBoxTempRateRight</cstring>
-        </property>
-        <property name="geometry">
-            <rect>
-                <x>309</x>
-                <y>70</y>
-                <width>50</width>
-                <height>21</height>
-            </rect>
-        </property>
-        <property name="maxValue">
-            <number>100</number>
-        </property>
-        <property name="minValue">
-            <number>1</number>
-        </property>
-        <property name="toolTip" stdset="0">
-            <string>Temporary rate change (between 1 and 100) when right clicking</string>
-        </property>
-    </widget>
-    <widget class="QSpinBox">
-        <property name="name">
-            <cstring>spinBoxPermRateLeft</cstring>
-        </property>
-        <property name="geometry">
-            <rect>
-                <x>218</x>
-                <y>100</y>
-                <width>50</width>
-                <height>21</height>
-            </rect>
-        </property>
-        <property name="maxValue">
-            <number>100</number>
-        </property>
-        <property name="minValue">
-            <number>1</number>
-        </property>
-        <property name="toolTip" stdset="0">
-            <string>Permanent rate change (between 1 and 100) when left clicking</string>
-        </property>
-    </widget>
-    <widget class="QSpinBox">
-        <property name="name">
-            <cstring>spinBoxPermRateRight</cstring>
-        </property>
-        <property name="geometry">
-            <rect>
-                <x>309</x>
-                <y>100</y>
-                <width>50</width>
-                <height>21</height>
-            </rect>
-        </property>
-        <property name="maxValue">
-            <number>100</number>
-        </property>
-        <property name="minValue">
-            <number>1</number>
-        </property>
-        <property name="toolTip" stdset="0">
-            <string>Permanent rate change (between 1 and 100) when right clicking</string>
-        </property>
-    </widget>
-    <widget class="QLabel">
-        <property name="name">
-            <cstring>TextLabel6_2_2_3_2</cstring>
-        </property>
-        <property name="enabled">
-            <bool>true</bool>
-        </property>
-        <property name="geometry">
-            <rect>
-                <x>9</x>
-                <y>264</y>
-                <width>170</width>
-                <height>19</height>
-            </rect>
-        </property>
-        <property name="font">
-            <font>
-            </font>
-        </property>
-        <property name="text">
-            <string>Tool tips</string>
-        </property>
-    </widget>
-    <widget class="QLabel">
-        <property name="name">
-            <cstring>TextLabel6_2_2_3_3</cstring>
-        </property>
-        <property name="enabled">
-            <bool>true</bool>
-        </property>
-        <property name="geometry">
-            <rect>
-                <x>9</x>
-                <y>234</y>
-                <width>170</width>
-                <height>19</height>
-            </rect>
-        </property>
-        <property name="font">
-            <font>
-            </font>
-        </property>
-        <property name="text">
-            <string>Scale BPM display</string>
         </property>
     </widget>
     <widget class="QComboBox">
@@ -487,7 +254,7 @@
         <property name="geometry">
             <rect>
                 <x>189</x>
-                <y>260</y>
+                <y>295</y>
                 <width>170</width>
                 <height>22</height>
             </rect>
@@ -495,6 +262,51 @@
         <property name="font">
             <font>
             </font>
+        </property>
+    </widget>
+    <widget class="QLabel">
+        <property name="name">
+            <cstring>TextLabel6_2_3_2</cstring>
+        </property>
+        <property name="enabled">
+            <bool>true</bool>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>189</x>
+                <y>136</y>
+                <width>30</width>
+                <height>19</height>
+            </rect>
+        </property>
+        <property name="font">
+            <font>
+            </font>
+        </property>
+        <property name="text">
+            <string>Left</string>
+        </property>
+    </widget>
+    <widget class="QSpinBox">
+        <property name="name">
+            <cstring>spinBoxTempRateRight</cstring>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>310</x>
+                <y>136</y>
+                <width>50</width>
+                <height>21</height>
+            </rect>
+        </property>
+        <property name="maxValue">
+            <number>100</number>
+        </property>
+        <property name="minValue">
+            <number>1</number>
+        </property>
+        <property name="toolTip" stdset="0">
+            <string>Temporary rate change (between 1 and 100) when right clicking</string>
         </property>
     </widget>
     <widget class="QComboBox">
@@ -514,7 +326,7 @@
         <property name="geometry">
             <rect>
                 <x>189</x>
-                <y>230</y>
+                <y>265</y>
                 <width>170</width>
                 <height>22</height>
             </rect>
@@ -529,18 +341,167 @@
     </widget>
     <widget class="QLabel">
         <property name="name">
-            <cstring>textLabel</cstring>
+            <cstring>TextLabel6_2_2_2</cstring>
+        </property>
+        <property name="enabled">
+            <bool>true</bool>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>11</x>
+                <y>210</y>
+                <width>170</width>
+                <height>19</height>
+            </rect>
+        </property>
+        <property name="font">
+            <font>
+            </font>
+        </property>
+        <property name="text">
+            <string>Visuals</string>
+        </property>
+    </widget>
+    <widget class="QComboBox">
+        <property name="name">
+            <cstring>ComboBoxPosition</cstring>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>189</x>
+                <y>235</y>
+                <width>170</width>
+                <height>22</height>
+            </rect>
+        </property>
+        <property name="font">
+            <font>
+            </font>
+        </property>
+    </widget>
+    <widget class="QLabel">
+        <property name="name">
+            <cstring>TextLabel6</cstring>
+        </property>
+        <property name="enabled">
+            <bool>true</bool>
         </property>
         <property name="geometry">
             <rect>
                 <x>10</x>
-                <y>305</y>
-                <width>341</width>
-                <height>70</height>
+                <y>80</y>
+                <width>170</width>
+                <height>19</height>
             </rect>
         </property>
+        <property name="font">
+            <font>
+            </font>
+        </property>
         <property name="text">
-            <string></string>
+            <string>Pitch/Rate slider range</string>
+        </property>
+    </widget>
+    <widget class="QSpinBox">
+        <property name="name">
+            <cstring>spinBoxPermRateRight</cstring>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>310</x>
+                <y>166</y>
+                <width>50</width>
+                <height>21</height>
+            </rect>
+        </property>
+        <property name="maxValue">
+            <number>100</number>
+        </property>
+        <property name="minValue">
+            <number>1</number>
+        </property>
+        <property name="toolTip" stdset="0">
+            <string>Permanent rate change (between 1 and 100) when right clicking</string>
+        </property>
+    </widget>
+    <widget class="QComboBox">
+        <property name="name">
+            <cstring>ComboBoxRateRange</cstring>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>190</x>
+                <y>76</y>
+                <width>170</width>
+                <height>22</height>
+            </rect>
+        </property>
+        <property name="font">
+            <font>
+            </font>
+        </property>
+    </widget>
+    <widget class="QLabel">
+        <property name="name">
+            <cstring>TextLabel6_2_2_3_2</cstring>
+        </property>
+        <property name="enabled">
+            <bool>true</bool>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>9</x>
+                <y>299</y>
+                <width>170</width>
+                <height>19</height>
+            </rect>
+        </property>
+        <property name="font">
+            <font>
+            </font>
+        </property>
+        <property name="text">
+            <string>Tool tips</string>
+        </property>
+    </widget>
+    <widget class="QComboBox">
+        <property name="name">
+            <cstring>ComboBoxRateDir</cstring>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>190</x>
+                <y>106</y>
+                <width>170</width>
+                <height>22</height>
+            </rect>
+        </property>
+        <property name="font">
+            <font>
+            </font>
+        </property>
+    </widget>
+    <widget class="QLabel">
+        <property name="name">
+            <cstring>TextLabel6_2</cstring>
+        </property>
+        <property name="enabled">
+            <bool>true</bool>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>10</x>
+                <y>110</y>
+                <width>170</width>
+                <height>19</height>
+            </rect>
+        </property>
+        <property name="font">
+            <font>
+            </font>
+        </property>
+        <property name="text">
+            <string>Pitch/Rate slider direction</string>
         </property>
     </widget>
     <widget class="QComboBox">
@@ -549,9 +510,88 @@
         </property>
         <property name="geometry">
             <rect>
-                <x>189</x>
-                <y>140</y>
+                <x>190</x>
+                <y>206</y>
                 <width>170</width>
+                <height>22</height>
+            </rect>
+        </property>
+        <property name="font">
+            <font>
+            </font>
+        </property>
+    </widget>
+    <widget class="QSpinBox">
+        <property name="name">
+            <cstring>spinBoxPermRateLeft</cstring>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>219</x>
+                <y>166</y>
+                <width>50</width>
+                <height>21</height>
+            </rect>
+        </property>
+        <property name="maxValue">
+            <number>100</number>
+        </property>
+        <property name="minValue">
+            <number>1</number>
+        </property>
+        <property name="toolTip" stdset="0">
+            <string>Permanent rate change (between 1 and 100) when left clicking</string>
+        </property>
+    </widget>
+    <widget class="QLabel">
+        <property name="name">
+            <cstring>TextLabel6_2_2_4</cstring>
+        </property>
+        <property name="enabled">
+            <bool>true</bool>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>10</x>
+                <y>40</y>
+                <width>100</width>
+                <height>19</height>
+            </rect>
+        </property>
+        <property name="font">
+            <font>
+            </font>
+        </property>
+        <property name="text">
+            <string>Scheme</string>
+        </property>
+    </widget>
+    <widget class="QComboBox">
+        <property name="name">
+            <cstring>ComboBoxSkinconf</cstring>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>120</x>
+                <y>6</y>
+                <width>240</width>
+                <height>22</height>
+            </rect>
+        </property>
+        <property name="font">
+            <font>
+            </font>
+        </property>
+    </widget>
+    <widget class="QComboBox">
+        <property name="name">
+            <cstring>ComboBoxSchemeconf</cstring>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>120</x>
+                <y>36</y>
+                <width>240</width>
                 <height>22</height>
             </rect>
         </property>
