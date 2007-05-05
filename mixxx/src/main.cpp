@@ -33,6 +33,33 @@
 #include "qsplashscreen.h"
 #include "log.h"
 
+#ifdef Q_WS_WIN
+#include<io.h> // Debug Console
+#include<windows.h>
+
+void InitDebugConsole() { // Open a Debug Console so we can printf
+	int fd;
+	FILE *fp;
+
+        FreeConsole();
+	if (AllocConsole()) {
+          SetConsoleTitleA("Mixxx Debug Messages");
+
+	  fd = _open_osfhandle( (long)GetStdHandle( STD_OUTPUT_HANDLE ), 0);
+	  fp = _fdopen( fd, "w" );
+
+	  *stdout = *fp;
+	  setvbuf( stdout, NULL, _IONBF, 0 );
+
+	  fd = _open_osfhandle( (long)GetStdHandle( STD_ERROR_HANDLE ), 0);
+	  fp = _fdopen( fd, "w" );
+
+	  *stderr = *fp;
+	  setvbuf( stderr, NULL, _IONBF, 0 );
+        }
+}
+#endif
+
 QApplication *a;
 
 void qInitImages_mixxx();
@@ -41,6 +68,11 @@ void MessageOutput( QtMsgType type, const char *msg )
 {
         switch ( type ) {
             case QtDebugMsg:
+#ifdef Q_WS_WIN
+        if (strstr(msg, "doneCurrent")) {
+                break;
+        }
+#endif
                 fprintf( stderr, "Debug: %s\n", msg );
                 break;
             case QtWarningMsg:
@@ -80,6 +112,7 @@ int main(int argc, char *argv[])
 {
     // Check if an instance of Mixxx is already running
 
+
 #ifdef Q_WS_WIN
   // For windows write all debug messages to a logfile:
   Logfile.setName( "mixxx.log" );
@@ -88,7 +121,12 @@ int main(int argc, char *argv[])
 #else
   Logfile.open(QIODevice::WriteOnly | QIODevice::Text);
 #endif
+  #ifdef _DEBUG
+  InitDebugConsole();
+  qInstallMsgHandler( MessageOutput );
+  #else 
   qInstallMsgHandler( MessageToLogfile );
+  #endif
 #else
     // For others, write to the console:
     qInstallMsgHandler( MessageOutput );
