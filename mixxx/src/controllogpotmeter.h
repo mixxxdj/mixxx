@@ -37,6 +37,8 @@ public:
 
     double GetMidiValue();
     
+	void setValueFromMidi(MidiCategory c, double v);
+
 protected:
 
     // This is true, if the log potmeter is divided into two states, one from 0 to 1, and

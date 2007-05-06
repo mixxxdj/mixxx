@@ -140,4 +140,3 @@ void ControlPotmeter::decValue(double keypos)
     }
 }
 
-

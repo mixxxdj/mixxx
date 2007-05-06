@@ -464,7 +464,7 @@
             </rect>
         </property>
         <property name="text">
-            <string>Stretching beyond +-10% with pitch independent time stretch is not adviced, and is likely to result in bad sound quality.</string>
+            <string>Stretching beyond +-10% with pitch independent time stretch is not advised, and is likely to result in bad sound quality.</string>
         </property>
         <property name="alignment">
             <set>WordBreak|AlignTop</set>
