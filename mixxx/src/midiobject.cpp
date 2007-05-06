@@ -129,34 +129,44 @@ QString *MidiObject::getOpenDevice()
    -------- ------------------------------------------------------ */
 void MidiObject::send(MidiCategory category, char channel, char control, double value)
 {
+    qDebug("MidiObject::send midi miditype: %X ch: %X, ctrl: %X, val: %g",category, channel, control, value);
+    
+
     MidiType type = MIDI_EMPTY;
-    if ((category==NOTE_ON) | (category==NOTE_OFF))
+    
+    switch (category) {
+      case NOTE_OFF:
+        qDebug("NOTE_OFF");
+        value = 1.0;
+      case NOTE_ON:
         type = MIDI_KEY;
-    else if (category==CTRL_CHANGE)
+        break;
+      case CTRL_CHANGE:
+        qDebug("CTRL_CHANGE");
         type = MIDI_CTRL;
-    else if (category==PITCH_WHEEL)
+        break;
+      case PITCH_WHEEL:
         type = MIDI_PITCH;
+        break;
+      default:
+        type = MIDI_EMPTY;
+    }
 
     Q_ASSERT(m_pMidiConfig);
     ConfigKey *pConfigKey = m_pMidiConfig->get(ConfigValueMidi(type,control,channel));
-//     qDebug("ok %p",pConfigKey);
 
-	//NOTE_OFF values do nothing if they're 0.0 inside Mixxx for some reason,
-	//so we just set their value to 1.0. - Albert (March 16, 2007) 
-	if (category==NOTE_OFF)
-		value = 1.0;
-
-    if (pConfigKey)
+    if (!pConfigKey) return; // No configuration was retrieved for this input event, eject.
+    qDebug("MidiObject::send ok %X",pConfigKey);
+    
+    ControlObject *p = ControlObject::getControl(*pConfigKey);
+    ConfigOption<ConfigValueMidi> *c = m_pMidiConfig->get(*pConfigKey);
+    if (c && p)
     {
-        ControlObject *p = ControlObject::getControl(*pConfigKey);
-        ConfigOption<ConfigValueMidi> *c = m_pMidiConfig->get(*pConfigKey);
-        if (c && p)
-        {
-            value = ((ConfigValueMidi *)c->val)->ComputeValue(type, p->GetMidiValue(), value);
-        }
-        if (p)
-            p->queueFromMidi(category, value);
+        value = ((ConfigValueMidi *)c->val)->ComputeValue(type, p->GetMidiValue(), value);
     }
+    if (p)
+        p->queueFromMidi(category, value);
+
 }   
 
 void MidiObject::stop()
