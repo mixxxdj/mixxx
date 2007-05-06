@@ -37,7 +37,8 @@ typedef enum {
     MIDI_OPT_INVERT           = 1,
     MIDI_OPT_ROT64            = 2,
     MIDI_OPT_ROT64_INV        = 3,
-    MIDI_OPT_ROT64_FAST       = 4
+    MIDI_OPT_ROT64_FAST       = 4,
+	MIDI_OPT_DIFF			  = 5
 } MidiOption;
 
 /*

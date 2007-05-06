@@ -96,6 +96,8 @@ ConfigValueMidi::ConfigValueMidi(QString _value)
             midioption = MIDI_OPT_ROT64_FAST;
         else if (option.contains("Rot64", false))
             midioption = MIDI_OPT_ROT64;
+		else if (option.contains("Diff", false))
+			midioption = MIDI_OPT_DIFF;
         else
             midioption = MIDI_OPT_NORMAL;
         // Store string with corrected config value
@@ -144,6 +146,8 @@ void ConfigValueMidi::valCopy(const ConfigValueMidi v)
             value.append(" Rot64Inv");
         else if (midioption == MIDI_OPT_ROT64_FAST)
             value.append(" Rot64Fast");
+		else if (midioption == MIDI_OPT_DIFF)
+			value.append(" Diff");
                         
         qDebug("Config value: %s", value.ascii());
         //qDebug("--1, midino: %i, midimask: %i, midichannel: %i",midino,midimask,midichannel);
@@ -178,6 +182,14 @@ double ConfigValueMidi::ComputeValue(MidiType /*_miditype*/, double _prevmidival
         tempval += diff;
         return (tempval < 0. ? 0. : (tempval > 127. ? 127.0 : tempval));
     }
+	else if (midioption == MIDI_OPT_DIFF)
+	{
+		if (_newmidivalue > 64.) {
+			_newmidivalue = _prevmidivalue - 128. + _newmidivalue;
+		} else {
+			_newmidivalue = _prevmidivalue + _newmidivalue;
+		}
+	}
     return _newmidivalue;
 }
 
