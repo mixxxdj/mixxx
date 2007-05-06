@@ -105,19 +105,23 @@ void MidiObjectWin::run()
 
 void MidiObjectWin::handleMidi(char channel, char midicontrol, char midivalue)
 {
-    qDebug("midi ch: %i, ctrl: %i, val: %i",channel,midicontrol,midivalue);
+    qDebug("midi miditype: %X ch: %X, ctrl: %X, val: %X",(channel& 240) ,channel&15,midicontrol,midivalue);
     send((MidiCategory)(channel & 240), channel&15, midicontrol, midivalue);
 }
 
 // C/C++ wrapper function
 void CALLBACK MidiInProc(HMIDIIN hMidiIn, UINT wMsg, DWORD dwInstance, DWORD dwParam1, DWORD dwParam2)
 {
-	if (wMsg == MIM_DATA)
-	{
-		MidiObjectWin *midi = (MidiObjectWin*)dwInstance;
-		midi->handleMidi(dwParam1&0x000000ff, (dwParam1&0x0000ff00)>>8, (dwParam1&0x00ff0000)>>16);
-	}
+	MidiObjectWin *midi = (MidiObjectWin*)dwInstance;
+  switch (wMsg) { 
+    case MIM_DATA: 
+      qDebug("MIM_DATA");
+      midi->handleMidi(dwParam1&0x000000ff, (dwParam1&0x0000ff00)>>8, (dwParam1&0x00ff0000)>>16);
+      break;
+    case MIM_LONGDATA: 
+      qDebug("MIM_LONGDATA");
+      // for a MIM_LONGDATA implementation example refer to "void CALLBACK MidiInProc" @ http://www.csee.umbc.edu/help/sound/TiMidity++-2.13.2/interface/rtsyn_winmm.c
+      break;
+  }
 }
-    
-    
-    
+

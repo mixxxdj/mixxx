@@ -86,7 +86,7 @@ ConfigValueMidi::ConfigValueMidi(QString _value)
         // If empty string, default midino should be below 0.
         if (_value.length()==0)
             midino = -1;
-//        qDebug("miditype: %s, midino: %i, midichannel: %i",type.latin1(),midino,midichannel);
+        qDebug("miditype: %s, midino: %i, midichannel: %i",type.latin1(),midino,midichannel);
 
         if (option.contains("Invert", false))
             midioption = MIDI_OPT_INVERT;
@@ -282,7 +282,7 @@ ConfigKey *ConfigObject<ValueType>::get(ValueType v)
     ConfigOption<ValueType> *it;
     for (it = list.first(); it; it = list.next())
     {
-//          qDebug("match %s with %s", it->val->value.upper().latin1(), v.value.upper().latin1());
+          qDebug("match --%s-- with --%s--", it->val->value.upper().latin1(), v.value.upper().latin1());
 //        if (it->val->value.upper() == v.value.upper())
         if (((ValueType)*it->val) == ((ValueType)v))
         {
