@@ -100,3 +100,8 @@ double ControlLogpotmeter::GetMidiValue()
 {
     return 127.*(m_dValue-m_dMinValue)/m_dValueRange;
 }
+
+void ControlLogpotmeter::setValueFromMidi(MidiCategory c, double v) {
+	m_dValue = getValueFromWidget(v);
+	emit(valueChanged(m_dValue));
+}
