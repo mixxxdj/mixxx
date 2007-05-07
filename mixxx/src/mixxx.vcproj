@@ -13,6 +13,115 @@
 	<ToolFiles>
 	</ToolFiles>
 	<Configurations>
+    <!--
+      Where $(Confguration).VCCLCompilerTool.RuntimeLibrary is:
+        "0" - /MT  Multithreded
+        "1" - /MTd Multithreded debug
+        "2" - /MD  Multithreded dll
+        "3" - /MDd Multithreded dll debug
+      the value $(Confguration).VCLinkerTool.IgnoreDefaultLibraryNames must be set as:
+       RTL value                                         IgnoreDefaultLibraryNames value
+        0 Multithreaded (libcmt.lib)                  -> "library,libcd,libcmtd,libc"
+        1 Multithreaded using DLL (msvcrt.lib)        -> "library,libc,libcd,libcmtd,libcmt,msvcrtd"
+        2 Debug Multithreaded (libcmtd.lib)           -> "library,libcd,libcmt,libc"
+        3 Debug Multithreaded using DLL (msvcrtd.lib) -> "library,libc,libcd,libcmtd,libcmt,msvcrt"
+    -->
+  <Configuration
+			Name="Release-Static|Win32"
+			OutputDirectory="."
+			IntermediateDirectory="Release\"
+			ConfigurationType="1"
+			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC70.vsprops"
+			UseOfMFC="0"
+			ATLMinimizesCRunTimeLibraryUsage="false"
+			>
+			<Tool
+				Name="VCPreBuildEventTool"
+			/>
+			<Tool
+				Name="VCCustomBuildTool"
+			/>
+			<Tool
+				Name="VCXMLDataGeneratorTool"
+			/>
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool"
+			/>
+			<Tool
+				Name="VCMIDLTool"
+				WarningLevel="0"
+				DefaultCharType="0"
+				EnableErrorChecks="1"
+			/>
+			<Tool
+				Name="VCCLCompilerTool"
+				AdditionalOptions="-Zm200 -GX -EHsc -EHsc -w34100 -w34189"
+				Optimization="2"
+				AdditionalIncludeDirectories="$(VCInstallDir)include\atl,..\lib\vbrheadersdk,..\lib\kissfft,..\lib\soundtouch,..\lib\soundtouch,..\..\mixxx-winlib,..\lib,.,$(QTDIR)\include,.,D:\qt\mkspecs\win32-msvc2005"
+				PreprocessorDefinitions="_WINDOWS,UNICODE,WIN32,__PORTAUDIO__,__WINMIDI__,__SNDFILE__,__WIN__,TEMPORAL,SETTINGS_FILE=\&quot;mixxx.cfg\&quot;,TRACK_FILE=\&quot;mixxxtrack.xml\&quot;,QT_THREAD_SUPPORT,NDEBUG,QT_NO_DEBUG"
+				GeneratePreprocessedFile="0"
+				MinimalRebuild="true"
+				ExceptionHandling="1"
+				RuntimeLibrary="0"
+				BufferSecurityCheck="false"
+				RuntimeTypeInfo="true"
+				AssemblerListingLocation="Release\"
+				ObjectFile="Release\"
+				ProgramDataBaseFileName=".\"
+				WarningLevel="3"
+				SuppressStartupBanner="true"
+				DebugInformationFormat="3"
+				DisableSpecificWarnings="4996"
+			/>
+			<Tool
+				Name="VCManagedResourceCompilerTool"
+			/>
+			<Tool
+				Name="VCResourceCompilerTool"
+				PreprocessorDefinitions="NDEBUG"
+			/>
+			<Tool
+				Name="VCPreLinkEventTool"
+			/>
+			<Tool
+				Name="VCLinkerTool"
+				IgnoreImportLibrary="true"
+				AdditionalDependencies="qt-mt.lib qtmain.lib opengl32.lib glu32.lib portaudio.lib libmad-release.lib libid3tag-release.lib libsndfile.lib vorbisfile_static.lib vorbis_static.lib ogg_static.lib kernel32.lib user32.lib gdi32.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib imm32.lib winmm.lib wsock32.lib winspool.lib delayimp.lib"
+				ShowProgress="1"
+				OutputFile="Release\\mixxx.exe"
+				SuppressStartupBanner="true"
+				AdditionalLibraryDirectories="../../mixxx-winlib,$(QTDIR)\lib"
+				IgnoreDefaultLibraryNames="library,libcd,libcmt,libc"
+				DelayLoadDLLs="opengl32.dll,comdlg32.dll,oleaut32.dll,winmm.dll,wsock32.dll,winspool.dll"
+				GenerateDebugInformation="false"
+				ProgramDatabaseFile=""
+				SubSystem="2"
+			/>
+			<Tool
+				Name="VCALinkTool"
+			/>
+			<Tool
+				Name="VCManifestTool"
+			/>
+			<Tool
+				Name="VCXDCMakeTool"
+			/>
+			<Tool
+				Name="VCBscMakeTool"
+			/>
+			<Tool
+				Name="VCFxCopTool"
+			/>
+			<Tool
+				Name="VCAppVerifierTool"
+			/>
+			<Tool
+				Name="VCWebDeploymentTool"
+			/>
+			<Tool
+				Name="VCPostBuildEventTool"
+			/>
+		</Configuration>
 		<Configuration
 			Name="Release|Win32"
 			OutputDirectory="."
@@ -806,6 +915,17 @@
 				RelativePath="controllogpotmeter.h"
 				>
 				<FileConfiguration
+					Name="Release-Static|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+						Description="Moc&apos;ing controllogpotmeter.h..."
+						CommandLine="$(QTDIR)\bin\moc.exe controllogpotmeter.h -o moc_controllogpotmeter.cpp&#x0D;&#x0A;"
+						AdditionalDependencies="$(QTDIR)\bin\moc.exe"
+						Outputs="moc_controllogpotmeter.cpp"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
 					Name="Release|Win32"
 					>
 					<Tool
@@ -831,6 +951,17 @@
 			<File
 				RelativePath="controlnull.h"
 				>
+				<FileConfiguration
+					Name="Release-Static|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+						Description="Moc&apos;ing controlnull.h..."
+						CommandLine="$(QTDIR)\bin\moc.exe controlnull.h -o moc_controlnull.cpp&#x0D;&#x0A;"
+						AdditionalDependencies="$(QTDIR)\bin\moc.exe"
+						Outputs="moc_controlnull.cpp"
+					/>
+				</FileConfiguration>
 				<FileConfiguration
 					Name="Release|Win32"
 					>
@@ -858,6 +989,17 @@
 				RelativePath="controlobject.h"
 				>
 				<FileConfiguration
+					Name="Release-Static|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+						Description="Moc&apos;ing controlobject.h..."
+						CommandLine="$(QTDIR)\bin\moc.exe controlobject.h -o moc_controlobject.cpp&#x0D;&#x0A;"
+						AdditionalDependencies="$(QTDIR)\bin\moc.exe"
+						Outputs="moc_controlobject.cpp"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
 					Name="Release|Win32"
 					>
 					<Tool
@@ -883,6 +1025,17 @@
 			<File
 				RelativePath="controlobjectthread.h"
 				>
+				<FileConfiguration
+					Name="Release-Static|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+						Description="Moc&apos;ing controlobjectthread.h..."
+						CommandLine="$(QTDIR)\bin\moc.exe controlobjectthread.h -o moc_controlobjectthread.cpp&#x0D;&#x0A;"
+						AdditionalDependencies="$(QTDIR)\bin\moc.exe"
+						Outputs="moc_controlobjectthread.cpp"
+					/>
+				</FileConfiguration>
 				<FileConfiguration
 					Name="Release|Win32"
 					>
@@ -910,6 +1063,17 @@
 				RelativePath="controlobjectthreadmain.h"
 				>
 				<FileConfiguration
+					Name="Release-Static|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+						Description="Moc&apos;ing controlobjectthreadmain.h..."
+						CommandLine="$(QTDIR)\bin\moc.exe controlobjectthreadmain.h -o moc_controlobjectthreadmain.cpp&#x0D;&#x0A;"
+						AdditionalDependencies="$(QTDIR)\bin\moc.exe"
+						Outputs="moc_controlobjectthreadmain.cpp"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
 					Name="Release|Win32"
 					>
 					<Tool
@@ -935,6 +1099,17 @@
 			<File
 				RelativePath="controlobjectthreadwidget.h"
 				>
+				<FileConfiguration
+					Name="Release-Static|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+						Description="Moc&apos;ing controlobjectthreadwidget.h..."
+						CommandLine="$(QTDIR)\bin\moc.exe controlobjectthreadwidget.h -o moc_controlobjectthreadwidget.cpp&#x0D;&#x0A;"
+						AdditionalDependencies="$(QTDIR)\bin\moc.exe"
+						Outputs="moc_controlobjectthreadwidget.cpp"
+					/>
+				</FileConfiguration>
 				<FileConfiguration
 					Name="Release|Win32"
 					>
@@ -962,6 +1137,17 @@
 				RelativePath="controlpotmeter.h"
 				>
 				<FileConfiguration
+					Name="Release-Static|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+						Description="Moc&apos;ing controlpotmeter.h..."
+						CommandLine="$(QTDIR)\bin\moc.exe controlpotmeter.h -o moc_controlpotmeter.cpp&#x0D;&#x0A;"
+						AdditionalDependencies="$(QTDIR)\bin\moc.exe"
+						Outputs="moc_controlpotmeter.cpp"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
 					Name="Release|Win32"
 					>
 					<Tool
@@ -988,6 +1174,17 @@
 				RelativePath="controlpushbutton.h"
 				>
 				<FileConfiguration
+					Name="Release-Static|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+						Description="Moc&apos;ing controlpushbutton.h..."
+						CommandLine="$(QTDIR)\bin\moc.exe controlpushbutton.h -o moc_controlpushbutton.cpp&#x0D;&#x0A;"
+						AdditionalDependencies="$(QTDIR)\bin\moc.exe"
+						Outputs="moc_controlpushbutton.cpp"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
 					Name="Release|Win32"
 					>
 					<Tool
@@ -1013,6 +1210,17 @@
 			<File
 				RelativePath="controlttrotary.h"
 				>
+				<FileConfiguration
+					Name="Release-Static|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+						Description="Moc&apos;ing controlttrotary.h..."
+						CommandLine="$(QTDIR)\bin\moc.exe controlttrotary.h -o moc_controlttrotary.cpp&#x0D;&#x0A;"
+						AdditionalDependencies="$(QTDIR)\bin\moc.exe"
+						Outputs="moc_controlttrotary.cpp"
+					/>
+				</FileConfiguration>
 				<FileConfiguration
 					Name="Release|Win32"
 					>
@@ -1048,6 +1256,17 @@
 				RelativePath="dlgprefcontrols.h"
 				>
 				<FileConfiguration
+					Name="Release-Static|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+						Description="Moc&apos;ing dlgprefcontrols.h..."
+						CommandLine="$(QTDIR)\bin\moc.exe dlgprefcontrols.h -o moc_dlgprefcontrols.cpp&#x0D;&#x0A;"
+						AdditionalDependencies="$(QTDIR)\bin\moc.exe"
+						Outputs="moc_dlgprefcontrols.cpp"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
 					Name="Release|Win32"
 					>
 					<Tool
@@ -1073,6 +1292,17 @@
 			<File
 				RelativePath="dlgpreferences.h"
 				>
+				<FileConfiguration
+					Name="Release-Static|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+						Description="Moc&apos;ing dlgpreferences.h..."
+						CommandLine="$(QTDIR)\bin\moc.exe dlgpreferences.h -o moc_dlgpreferences.cpp&#x0D;&#x0A;"
+						AdditionalDependencies="$(QTDIR)\bin\moc.exe"
+						Outputs="moc_dlgpreferences.cpp"
+					/>
+				</FileConfiguration>
 				<FileConfiguration
 					Name="Release|Win32"
 					>
@@ -1100,6 +1330,17 @@
 				RelativePath="dlgprefmidi.h"
 				>
 				<FileConfiguration
+					Name="Release-Static|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+						Description="Moc&apos;ing dlgprefmidi.h..."
+						CommandLine="$(QTDIR)\bin\moc.exe dlgprefmidi.h -o moc_dlgprefmidi.cpp&#x0D;&#x0A;"
+						AdditionalDependencies="$(QTDIR)\bin\moc.exe"
+						Outputs="moc_dlgprefmidi.cpp"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
 					Name="Release|Win32"
 					>
 					<Tool
@@ -1126,6 +1367,17 @@
 				RelativePath="dlgprefplaylist.h"
 				>
 				<FileConfiguration
+					Name="Release-Static|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+						Description="Moc&apos;ing dlgprefplaylist.h..."
+						CommandLine="$(QTDIR)\bin\moc.exe dlgprefplaylist.h -o moc_dlgprefplaylist.cpp&#x0D;&#x0A;"
+						AdditionalDependencies="$(QTDIR)\bin\moc.exe"
+						Outputs="moc_dlgprefplaylist.cpp"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
 					Name="Release|Win32"
 					>
 					<Tool
@@ -1151,6 +1403,17 @@
 			<File
 				RelativePath="dlgprefsound.h"
 				>
+				<FileConfiguration
+					Name="Release-Static|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+						Description="Moc&apos;ing dlgprefsound.h..."
+						CommandLine="$(QTDIR)\bin\moc.exe dlgprefsound.h -o moc_dlgprefsound.cpp&#x0D;&#x0A;"
+						AdditionalDependencies="$(QTDIR)\bin\moc.exe"
+						Outputs="moc_dlgprefsound.cpp"
+					/>
+				</FileConfiguration>
 				<FileConfiguration
 					Name="Release|Win32"
 					>
@@ -1186,6 +1449,17 @@
 				RelativePath="enginebuffer.h"
 				>
 				<FileConfiguration
+					Name="Release-Static|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+						Description="Moc&apos;ing enginebuffer.h..."
+						CommandLine="$(QTDIR)\bin\moc.exe enginebuffer.h -o moc_enginebuffer.cpp&#x0D;&#x0A;"
+						AdditionalDependencies="$(QTDIR)\bin\moc.exe"
+						Outputs="moc_enginebuffer.cpp"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
 					Name="Release|Win32"
 					>
 					<Tool
@@ -1211,6 +1485,17 @@
 			<File
 				RelativePath="enginebuffercue.h"
 				>
+				<FileConfiguration
+					Name="Release-Static|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+						Description="Moc&apos;ing enginebuffercue.h..."
+						CommandLine="$(QTDIR)\bin\moc.exe enginebuffercue.h -o moc_enginebuffercue.cpp&#x0D;&#x0A;"
+						AdditionalDependencies="$(QTDIR)\bin\moc.exe"
+						Outputs="moc_enginebuffercue.cpp"
+					/>
+				</FileConfiguration>
 				<FileConfiguration
 					Name="Release|Win32"
 					>
@@ -1245,6 +1530,17 @@
 			<File
 				RelativePath="enginebufferscalest.h"
 				>
+				<FileConfiguration
+					Name="Release-Static|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+						Description="Moc&apos;ing enginebufferscalest.h..."
+						CommandLine="$(QTDIR)\bin\moc.exe enginebufferscalest.h -o moc_enginebufferscalest.cpp&#x0D;&#x0A;"
+						AdditionalDependencies="$(QTDIR)\bin\moc.exe"
+						Outputs="moc_enginebufferscalest.cpp"
+					/>
+				</FileConfiguration>
 				<FileConfiguration
 					Name="Release|Win32"
 					>
@@ -1300,6 +1596,17 @@
 				RelativePath="engineobject.h"
 				>
 				<FileConfiguration
+					Name="Release-Static|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+						Description="Moc&apos;ing engineobject.h..."
+						CommandLine="$(QTDIR)\bin\moc.exe engineobject.h -o moc_engineobject.cpp&#x0D;&#x0A;"
+						AdditionalDependencies="$(QTDIR)\bin\moc.exe"
+						Outputs="moc_engineobject.cpp"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
 					Name="Release|Win32"
 					>
 					<Tool
@@ -1333,6 +1640,17 @@
 			<File
 				RelativePath="enginetemporal.h"
 				>
+				<FileConfiguration
+					Name="Release-Static|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+						Description="Moc&apos;ing enginetemporal.h..."
+						CommandLine="$(QTDIR)\bin\moc.exe enginetemporal.h -o moc_enginetemporal.cpp&#x0D;&#x0A;"
+						AdditionalDependencies="$(QTDIR)\bin\moc.exe"
+						Outputs="moc_enginetemporal.cpp"
+					/>
+				</FileConfiguration>
 				<FileConfiguration
 					Name="Release|Win32"
 					>
@@ -1420,6 +1738,17 @@
 				RelativePath="log.h"
 				>
 				<FileConfiguration
+					Name="Release-Static|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+						Description="Moc&apos;ing log.h..."
+						CommandLine="$(QTDIR)\bin\moc.exe log.h -o moc_log.cpp&#x0D;&#x0A;"
+						AdditionalDependencies="$(QTDIR)\bin\moc.exe"
+						Outputs="moc_log.cpp"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
 					Name="Release|Win32"
 					>
 					<Tool
@@ -1466,6 +1795,17 @@
 				RelativePath="mixxx.h"
 				>
 				<FileConfiguration
+					Name="Release-Static|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+						Description="Moc&apos;ing mixxx.h..."
+						CommandLine="$(QTDIR)\bin\moc.exe mixxx.h -o moc_mixxx.cpp&#x0D;&#x0A;"
+						AdditionalDependencies="$(QTDIR)\bin\moc.exe"
+						Outputs="moc_mixxx.cpp"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
 					Name="Release|Win32"
 					>
 					<Tool
@@ -1491,6 +1831,17 @@
 			<File
 				RelativePath="mixxxkeyboard.h"
 				>
+				<FileConfiguration
+					Name="Release-Static|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+						Description="Moc&apos;ing mixxxkeyboard.h..."
+						CommandLine="$(QTDIR)\bin\moc.exe mixxxkeyboard.h -o moc_mixxxkeyboard.cpp&#x0D;&#x0A;"
+						AdditionalDependencies="$(QTDIR)\bin\moc.exe"
+						Outputs="moc_mixxxkeyboard.cpp"
+					/>
+				</FileConfiguration>
 				<FileConfiguration
 					Name="Release|Win32"
 					>
@@ -1518,6 +1869,17 @@
 				RelativePath="mixxxmenuplaylists.h"
 				>
 				<FileConfiguration
+					Name="Release-Static|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+						Description="Moc&apos;ing mixxxmenuplaylists.h..."
+						CommandLine="$(QTDIR)\bin\moc.exe mixxxmenuplaylists.h -o moc_mixxxmenuplaylists.cpp&#x0D;&#x0A;"
+						AdditionalDependencies="$(QTDIR)\bin\moc.exe"
+						Outputs="moc_mixxxmenuplaylists.cpp"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
 					Name="Release|Win32"
 					>
 					<Tool
@@ -1543,6 +1905,17 @@
 			<File
 				RelativePath="mixxxsocketclient.h"
 				>
+				<FileConfiguration
+					Name="Release-Static|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+						Description="Moc&apos;ing mixxxsocketclient.h..."
+						CommandLine="$(QTDIR)\bin\moc.exe mixxxsocketclient.h -o moc_mixxxsocketclient.cpp&#x0D;&#x0A;"
+						AdditionalDependencies="$(QTDIR)\bin\moc.exe"
+						Outputs="moc_mixxxsocketclient.cpp"
+					/>
+				</FileConfiguration>
 				<FileConfiguration
 					Name="Release|Win32"
 					>
@@ -1570,6 +1943,17 @@
 				RelativePath="mixxxsocketserver.h"
 				>
 				<FileConfiguration
+					Name="Release-Static|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+						Description="Moc&apos;ing mixxxsocketserver.h..."
+						CommandLine="$(QTDIR)\bin\moc.exe mixxxsocketserver.h -o moc_mixxxsocketserver.cpp&#x0D;&#x0A;"
+						AdditionalDependencies="$(QTDIR)\bin\moc.exe"
+						Outputs="moc_mixxxsocketserver.cpp"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
 					Name="Release|Win32"
 					>
 					<Tool
@@ -1595,6 +1979,17 @@
 			<File
 				RelativePath="mixxxview.h"
 				>
+				<FileConfiguration
+					Name="Release-Static|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+						Description="Moc&apos;ing mixxxview.h..."
+						CommandLine="$(QTDIR)\bin\moc.exe mixxxview.h -o moc_mixxxview.cpp&#x0D;&#x0A;"
+						AdditionalDependencies="$(QTDIR)\bin\moc.exe"
+						Outputs="moc_mixxxview.cpp"
+					/>
+				</FileConfiguration>
 				<FileConfiguration
 					Name="Release|Win32"
 					>
@@ -1626,6 +2021,17 @@
 				RelativePath="parser.h"
 				>
 				<FileConfiguration
+					Name="Release-Static|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+						Description="Moc&apos;ing parser.h..."
+						CommandLine="$(QTDIR)\bin\moc.exe parser.h -o moc_parser.cpp&#x0D;&#x0A;"
+						AdditionalDependencies="$(QTDIR)\bin\moc.exe"
+						Outputs="moc_parser.cpp"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
 					Name="Release|Win32"
 					>
 					<Tool
@@ -1652,6 +2058,17 @@
 				RelativePath="parserm3u.h"
 				>
 				<FileConfiguration
+					Name="Release-Static|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+						Description="Moc&apos;ing parserm3u.h..."
+						CommandLine="$(QTDIR)\bin\moc.exe parserm3u.h -o moc_parserm3u.cpp&#x0D;&#x0A;"
+						AdditionalDependencies="$(QTDIR)\bin\moc.exe"
+						Outputs="moc_parserm3u.cpp"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
 					Name="Release|Win32"
 					>
 					<Tool
@@ -1677,6 +2094,17 @@
 			<File
 				RelativePath="parserpls.h"
 				>
+				<FileConfiguration
+					Name="Release-Static|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+						Description="Moc&apos;ing parserpls.h..."
+						CommandLine="$(QTDIR)\bin\moc.exe parserpls.h -o moc_parserpls.cpp&#x0D;&#x0A;"
+						AdditionalDependencies="$(QTDIR)\bin\moc.exe"
+						Outputs="moc_parserpls.cpp"
+					/>
+				</FileConfiguration>
 				<FileConfiguration
 					Name="Release|Win32"
 					>
@@ -1804,6 +2232,17 @@
 				RelativePath="track.h"
 				>
 				<FileConfiguration
+					Name="Release-Static|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+						Description="Moc&apos;ing track.h..."
+						CommandLine="$(QTDIR)\bin\moc.exe track.h -o moc_track.cpp&#x0D;&#x0A;"
+						AdditionalDependencies="$(QTDIR)\bin\moc.exe"
+						Outputs="moc_track.cpp"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
 					Name="Release|Win32"
 					>
 					<Tool
@@ -1834,6 +2273,17 @@
 				RelativePath="trackimporter.h"
 				>
 				<FileConfiguration
+					Name="Release-Static|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+						Description="Moc&apos;ing trackimporter.h..."
+						CommandLine="$(QTDIR)\bin\moc.exe trackimporter.h -o moc_trackimporter.cpp&#x0D;&#x0A;"
+						AdditionalDependencies="$(QTDIR)\bin\moc.exe"
+						Outputs="moc_trackimporter.cpp"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
 					Name="Release|Win32"
 					>
 					<Tool
@@ -1860,6 +2310,17 @@
 				RelativePath="trackinfoobject.h"
 				>
 				<FileConfiguration
+					Name="Release-Static|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+						Description="Moc&apos;ing trackinfoobject.h..."
+						CommandLine="$(QTDIR)\bin\moc.exe trackinfoobject.h -o moc_trackinfoobject.cpp&#x0D;&#x0A;"
+						AdditionalDependencies="$(QTDIR)\bin\moc.exe"
+						Outputs="moc_trackinfoobject.cpp"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
 					Name="Release|Win32"
 					>
 					<Tool
@@ -1885,6 +2346,17 @@
 			<File
 				RelativePath="trackplaylist.h"
 				>
+				<FileConfiguration
+					Name="Release-Static|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+						Description="Moc&apos;ing trackplaylist.h..."
+						CommandLine="$(QTDIR)\bin\moc.exe trackplaylist.h -o moc_trackplaylist.cpp&#x0D;&#x0A;"
+						AdditionalDependencies="$(QTDIR)\bin\moc.exe"
+						Outputs="moc_trackplaylist.cpp"
+					/>
+				</FileConfiguration>
 				<FileConfiguration
 					Name="Release|Win32"
 					>
@@ -1924,6 +2396,17 @@
 				RelativePath="visual\visualbuffer.h"
 				>
 				<FileConfiguration
+					Name="Release-Static|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+						Description="Moc&apos;ing visual\visualbuffer.h..."
+						CommandLine="$(QTDIR)\bin\moc.exe visual\visualbuffer.h -o visual\moc_visualbuffer.cpp&#x0D;&#x0A;"
+						AdditionalDependencies="$(QTDIR)\bin\moc.exe"
+						Outputs="visual\moc_visualbuffer.cpp"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
 					Name="Release|Win32"
 					>
 					<Tool
@@ -1950,6 +2433,17 @@
 				RelativePath="visual\visualbuffermarks.h"
 				>
 				<FileConfiguration
+					Name="Release-Static|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+						Description="Moc&apos;ing visual\visualbuffermarks.h..."
+						CommandLine="$(QTDIR)\bin\moc.exe visual\visualbuffermarks.h -o visual\moc_visualbuffermarks.cpp&#x0D;&#x0A;"
+						AdditionalDependencies="$(QTDIR)\bin\moc.exe"
+						Outputs="visual\moc_visualbuffermarks.cpp"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
 					Name="Release|Win32"
 					>
 					<Tool
@@ -1975,6 +2469,17 @@
 			<File
 				RelativePath="visual\visualbuffersignal.h"
 				>
+				<FileConfiguration
+					Name="Release-Static|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+						Description="Moc&apos;ing visual\visualbuffersignal.h..."
+						CommandLine="$(QTDIR)\bin\moc.exe visual\visualbuffersignal.h -o visual\moc_visualbuffersignal.cpp&#x0D;&#x0A;"
+						AdditionalDependencies="$(QTDIR)\bin\moc.exe"
+						Outputs="visual\moc_visualbuffersignal.cpp"
+					/>
+				</FileConfiguration>
 				<FileConfiguration
 					Name="Release|Win32"
 					>
@@ -2005,6 +2510,17 @@
 			<File
 				RelativePath="visual\visualbuffertemporal.h"
 				>
+				<FileConfiguration
+					Name="Release-Static|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+						Description="Moc&apos;ing visual\visualbuffertemporal.h..."
+						CommandLine="$(QTDIR)\bin\moc.exe visual\visualbuffertemporal.h -o visual\moc_visualbuffertemporal.cpp&#x0D;&#x0A;"
+						AdditionalDependencies="$(QTDIR)\bin\moc.exe"
+						Outputs="visual\moc_visualbuffertemporal.cpp"
+					/>
+				</FileConfiguration>
 				<FileConfiguration
 					Name="Release|Win32"
 					>
@@ -2039,6 +2555,17 @@
 			<File
 				RelativePath="visual\visualdisplay.h"
 				>
+				<FileConfiguration
+					Name="Release-Static|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+						Description="Moc&apos;ing visual\visualdisplay.h..."
+						CommandLine="$(QTDIR)\bin\moc.exe visual\visualdisplay.h -o visual\moc_visualdisplay.cpp&#x0D;&#x0A;"
+						AdditionalDependencies="$(QTDIR)\bin\moc.exe"
+						Outputs="visual\moc_visualdisplay.cpp"
+					/>
+				</FileConfiguration>
 				<FileConfiguration
 					Name="Release|Win32"
 					>
@@ -2082,6 +2609,17 @@
 				RelativePath="wdisplay.h"
 				>
 				<FileConfiguration
+					Name="Release-Static|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+						Description="Moc&apos;ing wdisplay.h..."
+						CommandLine="$(QTDIR)\bin\moc.exe wdisplay.h -o moc_wdisplay.cpp&#x0D;&#x0A;"
+						AdditionalDependencies="$(QTDIR)\bin\moc.exe"
+						Outputs="moc_wdisplay.cpp"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
 					Name="Release|Win32"
 					>
 					<Tool
@@ -2111,6 +2649,17 @@
 			<File
 				RelativePath="wknob.h"
 				>
+				<FileConfiguration
+					Name="Release-Static|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+						Description="Moc&apos;ing wknob.h..."
+						CommandLine="$(QTDIR)\bin\moc.exe wknob.h -o moc_wknob.cpp&#x0D;&#x0A;"
+						AdditionalDependencies="$(QTDIR)\bin\moc.exe"
+						Outputs="moc_wknob.cpp"
+					/>
+				</FileConfiguration>
 				<FileConfiguration
 					Name="Release|Win32"
 					>
@@ -2149,6 +2698,17 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
+					Name="Release-Static|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+						Description="Moc&apos;ing wlabel.h..."
+						CommandLine="$(QTDIR)\bin\moc.exe wlabel.h -o moc_wlabel.cpp&#x0D;&#x0A;"
+						AdditionalDependencies="$(QTDIR)\bin\moc.exe"
+						Outputs="moc_wlabel.cpp"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
 					Name="Debug|Win32"
 					>
 					<Tool
@@ -2163,6 +2723,17 @@
 			<File
 				RelativePath="wnumber.h"
 				>
+				<FileConfiguration
+					Name="Release-Static|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+						Description="Moc&apos;ing wnumber.h..."
+						CommandLine="$(QTDIR)\bin\moc.exe wnumber.h -o moc_wnumber.cpp&#x0D;&#x0A;"
+						AdditionalDependencies="$(QTDIR)\bin\moc.exe"
+						Outputs="moc_wnumber.cpp"
+					/>
+				</FileConfiguration>
 				<FileConfiguration
 					Name="Release|Win32"
 					>
@@ -2190,6 +2761,17 @@
 				RelativePath="wnumberbpm.h"
 				>
 				<FileConfiguration
+					Name="Release-Static|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+						Description="Moc&apos;ing wnumberbpm.h..."
+						CommandLine="$(QTDIR)\bin\moc.exe wnumberbpm.h -o moc_wnumberbpm.cpp&#x0D;&#x0A;"
+						AdditionalDependencies="$(QTDIR)\bin\moc.exe"
+						Outputs="moc_wnumberbpm.cpp"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
 					Name="Release|Win32"
 					>
 					<Tool
@@ -2215,6 +2797,17 @@
 			<File
 				RelativePath="wnumberpos.h"
 				>
+				<FileConfiguration
+					Name="Release-Static|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+						Description="Moc&apos;ing wnumberpos.h..."
+						CommandLine="$(QTDIR)\bin\moc.exe wnumberpos.h -o moc_wnumberpos.cpp&#x0D;&#x0A;"
+						AdditionalDependencies="$(QTDIR)\bin\moc.exe"
+						Outputs="moc_wnumberpos.cpp"
+					/>
+				</FileConfiguration>
 				<FileConfiguration
 					Name="Release|Win32"
 					>
@@ -2242,6 +2835,17 @@
 				RelativePath="wnumberrate.h"
 				>
 				<FileConfiguration
+					Name="Release-Static|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+						Description="Moc&apos;ing wnumberrate.h..."
+						CommandLine="$(QTDIR)\bin\moc.exe wnumberrate.h -o moc_wnumberrate.cpp&#x0D;&#x0A;"
+						AdditionalDependencies="$(QTDIR)\bin\moc.exe"
+						Outputs="moc_wnumberrate.cpp"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
 					Name="Release|Win32"
 					>
 					<Tool
@@ -2267,6 +2871,17 @@
 			<File
 				RelativePath="woverview.h"
 				>
+				<FileConfiguration
+					Name="Release-Static|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+						Description="Moc&apos;ing woverview.h..."
+						CommandLine="$(QTDIR)\bin\moc.exe woverview.h -o moc_woverview.cpp&#x0D;&#x0A;"
+						AdditionalDependencies="$(QTDIR)\bin\moc.exe"
+						Outputs="moc_woverview.cpp"
+					/>
+				</FileConfiguration>
 				<FileConfiguration
 					Name="Release|Win32"
 					>
@@ -2297,6 +2912,17 @@
 			<File
 				RelativePath="wpushbutton.h"
 				>
+				<FileConfiguration
+					Name="Release-Static|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+						Description="Moc&apos;ing wpushbutton.h..."
+						CommandLine="$(QTDIR)\bin\moc.exe wpushbutton.h -o moc_wpushbutton.cpp&#x0D;&#x0A;"
+						AdditionalDependencies="$(QTDIR)\bin\moc.exe"
+						Outputs="moc_wpushbutton.cpp"
+					/>
+				</FileConfiguration>
 				<FileConfiguration
 					Name="Release|Win32"
 					>
@@ -2332,6 +2958,17 @@
 				RelativePath="wslidercomposed.h"
 				>
 				<FileConfiguration
+					Name="Release-Static|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+						Description="Moc&apos;ing wslidercomposed.h..."
+						CommandLine="$(QTDIR)\bin\moc.exe wslidercomposed.h -o moc_wslidercomposed.cpp&#x0D;&#x0A;"
+						AdditionalDependencies="$(QTDIR)\bin\moc.exe"
+						Outputs="moc_wslidercomposed.cpp"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
 					Name="Release|Win32"
 					>
 					<Tool
@@ -2357,6 +2994,17 @@
 			<File
 				RelativePath="wtracktable.h"
 				>
+				<FileConfiguration
+					Name="Release-Static|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+						Description="Moc&apos;ing wtracktable.h..."
+						CommandLine="$(QTDIR)\bin\moc.exe wtracktable.h -o moc_wtracktable.cpp&#x0D;&#x0A;"
+						AdditionalDependencies="$(QTDIR)\bin\moc.exe"
+						Outputs="moc_wtracktable.cpp"
+					/>
+				</FileConfiguration>
 				<FileConfiguration
 					Name="Release|Win32"
 					>
@@ -2396,6 +3044,17 @@
 				RelativePath="wtreeitemfile.h"
 				>
 				<FileConfiguration
+					Name="Release-Static|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+						Description="Moc&apos;ing wtreeitemfile.h..."
+						CommandLine="$(QTDIR)\bin\moc.exe wtreeitemfile.h -o moc_wtreeitemfile.cpp&#x0D;&#x0A;"
+						AdditionalDependencies="$(QTDIR)\bin\moc.exe"
+						Outputs="moc_wtreeitemfile.cpp"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
 					Name="Release|Win32"
 					>
 					<Tool
@@ -2421,6 +3080,17 @@
 			<File
 				RelativePath="wtreeitemplaylist.h"
 				>
+				<FileConfiguration
+					Name="Release-Static|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+						Description="Moc&apos;ing wtreeitemplaylist.h..."
+						CommandLine="$(QTDIR)\bin\moc.exe wtreeitemplaylist.h -o moc_wtreeitemplaylist.cpp&#x0D;&#x0A;"
+						AdditionalDependencies="$(QTDIR)\bin\moc.exe"
+						Outputs="moc_wtreeitemplaylist.cpp"
+					/>
+				</FileConfiguration>
 				<FileConfiguration
 					Name="Release|Win32"
 					>
@@ -2452,6 +3122,17 @@
 				RelativePath="wtreeview.h"
 				>
 				<FileConfiguration
+					Name="Release-Static|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+						Description="Moc&apos;ing wtreeview.h..."
+						CommandLine="$(QTDIR)\bin\moc.exe wtreeview.h -o moc_wtreeview.cpp&#x0D;&#x0A;"
+						AdditionalDependencies="$(QTDIR)\bin\moc.exe"
+						Outputs="moc_wtreeview.cpp"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
 					Name="Release|Win32"
 					>
 					<Tool
@@ -2477,6 +3158,17 @@
 			<File
 				RelativePath="wvisualsimple.h"
 				>
+				<FileConfiguration
+					Name="Release-Static|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+						Description="Moc&apos;ing wvisualsimple.h..."
+						CommandLine="$(QTDIR)\bin\moc.exe wvisualsimple.h -o moc_wvisualsimple.cpp&#x0D;&#x0A;"
+						AdditionalDependencies="$(QTDIR)\bin\moc.exe"
+						Outputs="moc_wvisualsimple.cpp"
+					/>
+				</FileConfiguration>
 				<FileConfiguration
 					Name="Release|Win32"
 					>
@@ -2504,6 +3196,17 @@
 				RelativePath="wvisualwaveform.h"
 				>
 				<FileConfiguration
+					Name="Release-Static|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+						Description="Moc&apos;ing wvisualwaveform.h..."
+						CommandLine="$(QTDIR)\bin\moc.exe wvisualwaveform.h -o moc_wvisualwaveform.cpp&#x0D;&#x0A;"
+						AdditionalDependencies="$(QTDIR)\bin\moc.exe"
+						Outputs="moc_wvisualwaveform.cpp"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
 					Name="Release|Win32"
 					>
 					<Tool
@@ -2530,6 +3233,17 @@
 				RelativePath="wvumeter.h"
 				>
 				<FileConfiguration
+					Name="Release-Static|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+						Description="Moc&apos;ing wvumeter.h..."
+						CommandLine="$(QTDIR)\bin\moc.exe wvumeter.h -o moc_wvumeter.cpp&#x0D;&#x0A;"
+						AdditionalDependencies="$(QTDIR)\bin\moc.exe"
+						Outputs="moc_wvumeter.cpp"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
 					Name="Release|Win32"
 					>
 					<Tool
@@ -2555,6 +3269,17 @@
 			<File
 				RelativePath="wwidget.h"
 				>
+				<FileConfiguration
+					Name="Release-Static|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+						Description="Moc&apos;ing wwidget.h..."
+						CommandLine="$(QTDIR)\bin\moc.exe wwidget.h -o moc_wwidget.cpp&#x0D;&#x0A;"
+						AdditionalDependencies="$(QTDIR)\bin\moc.exe"
+						Outputs="moc_wwidget.cpp"
+					/>
+				</FileConfiguration>
 				<FileConfiguration
 					Name="Release|Win32"
 					>
@@ -2874,6 +3599,17 @@
 				RelativePath="dlgprefcontrolsdlg.ui"
 				>
 				<FileConfiguration
+					Name="Release-Static|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+						Description="Uic&apos;ing dlgprefcontrolsdlg.ui..."
+						CommandLine="$(QTDIR)\bin\uic.exe dlgprefcontrolsdlg.ui -o .\dlgprefcontrolsdlg.h&#x0D;&#x0A;$(QTDIR)\bin\uic.exe dlgprefcontrolsdlg.ui -i dlgprefcontrolsdlg.h -o .\dlgprefcontrolsdlg.cpp&#x0D;&#x0A;$(QTDIR)\bin\moc.exe .\dlgprefcontrolsdlg.h -o .\moc_dlgprefcontrolsdlg.cpp&#x0D;&#x0A;"
+						AdditionalDependencies="$(QTDIR)\bin\moc.exe;$(QTDIR)\bin\uic.exe"
+						Outputs=".\dlgprefcontrolsdlg.h;.\dlgprefcontrolsdlg.cpp;.\moc_dlgprefcontrolsdlg.cpp"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
 					Name="Release|Win32"
 					>
 					<Tool
@@ -2899,6 +3635,17 @@
 			<File
 				RelativePath="dlgprefmididlg.ui"
 				>
+				<FileConfiguration
+					Name="Release-Static|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+						Description="Uic&apos;ing dlgprefmididlg.ui..."
+						CommandLine="$(QTDIR)\bin\uic.exe dlgprefmididlg.ui -o .\dlgprefmididlg.h&#x0D;&#x0A;$(QTDIR)\bin\uic.exe dlgprefmididlg.ui -i dlgprefmididlg.h -o .\dlgprefmididlg.cpp&#x0D;&#x0A;$(QTDIR)\bin\moc.exe .\dlgprefmididlg.h -o .\moc_dlgprefmididlg.cpp&#x0D;&#x0A;"
+						AdditionalDependencies="$(QTDIR)\bin\moc.exe;$(QTDIR)\bin\uic.exe"
+						Outputs=".\dlgprefmididlg.h;.\dlgprefmididlg.cpp;.\moc_dlgprefmididlg.cpp"
+					/>
+				</FileConfiguration>
 				<FileConfiguration
 					Name="Release|Win32"
 					>
@@ -2926,6 +3673,17 @@
 				RelativePath="dlgprefplaylistdlg.ui"
 				>
 				<FileConfiguration
+					Name="Release-Static|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+						Description="Uic&apos;ing dlgprefplaylistdlg.ui..."
+						CommandLine="$(QTDIR)\bin\uic.exe dlgprefplaylistdlg.ui -o .\dlgprefplaylistdlg.h&#x0D;&#x0A;$(QTDIR)\bin\uic.exe dlgprefplaylistdlg.ui -i dlgprefplaylistdlg.h -o .\dlgprefplaylistdlg.cpp&#x0D;&#x0A;$(QTDIR)\bin\moc.exe .\dlgprefplaylistdlg.h -o .\moc_dlgprefplaylistdlg.cpp&#x0D;&#x0A;"
+						AdditionalDependencies="$(QTDIR)\bin\moc.exe;$(QTDIR)\bin\uic.exe"
+						Outputs=".\dlgprefplaylistdlg.h;.\dlgprefplaylistdlg.cpp;.\moc_dlgprefplaylistdlg.cpp"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
 					Name="Release|Win32"
 					>
 					<Tool
@@ -2951,6 +3709,17 @@
 			<File
 				RelativePath="dlgprefsounddlg.ui"
 				>
+				<FileConfiguration
+					Name="Release-Static|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+						Description="Uic&apos;ing dlgprefsounddlg.ui..."
+						CommandLine="$(QTDIR)\bin\uic.exe dlgprefsounddlg.ui -o .\dlgprefsounddlg.h&#x0D;&#x0A;$(QTDIR)\bin\uic.exe dlgprefsounddlg.ui -i dlgprefsounddlg.h -o .\dlgprefsounddlg.cpp&#x0D;&#x0A;$(QTDIR)\bin\moc.exe .\dlgprefsounddlg.h -o .\moc_dlgprefsounddlg.cpp&#x0D;&#x0A;"
+						AdditionalDependencies="$(QTDIR)\bin\moc.exe;$(QTDIR)\bin\uic.exe"
+						Outputs=".\dlgprefsounddlg.h;.\dlgprefsounddlg.cpp;.\moc_dlgprefsounddlg.cpp"
+					/>
+				</FileConfiguration>
 				<FileConfiguration
 					Name="Release|Win32"
 					>
@@ -2983,6 +3752,17 @@
 			<File
 				RelativePath="icon.png"
 				>
+				<FileConfiguration
+					Name="Release-Static|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+						Description="Generate imagecollection"
+						CommandLine="echo icon.png &gt; .imgcol&#x0D;&#x0A;$(QTDIR)\bin\uic.exe -embed mixxx -f .imgcol -o qmake_image_collection.cpp&#x0D;&#x0A;"
+						AdditionalDependencies="$(QTDIR)\bin\uic.exe;icon.png"
+						Outputs="qmake_image_collection.cpp;.imgcol"
+					/>
+				</FileConfiguration>
 				<FileConfiguration
 					Name="Release|Win32"
 					>
