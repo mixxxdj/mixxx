@@ -162,7 +162,15 @@ void MidiObject::send(MidiCategory category, char channel, char control, double 
     ConfigOption<ConfigValueMidi> *c = m_pMidiConfig->get(*pConfigKey);
     if (c && p)
     {
-        value = ((ConfigValueMidi *)c->val)->ComputeValue(type, p->GetMidiValue(), value);
+       value = ((ConfigValueMidi *)c->val)->ComputeValue(type, p->GetMidiValue(), value);
+
+       // Assume value jumps from 0,1->127 are a "Button down" event 
+       if (value == 127 && p->GetMidiValue() <= 1) { // Button Down
+          value = !(p->get());
+          p->set(value);
+       }
+       // Button up would be value = 0, p->GetMidiValue() = 1, this is far too likely to occur with sliders/knobs to be usable
+       qDebug("New Control Value: %g ",value);
     }
     if (p)
         p->queueFromMidi(category, value);
