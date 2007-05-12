@@ -165,7 +165,7 @@ void MidiObject::send(MidiCategory category, char channel, char control, double 
        value = ((ConfigValueMidi *)c->val)->ComputeValue(type, p->GetMidiValue(), value);
 
        // Assume value jumps from 0,1->127 are a "Button down" event 
-       if (value == 127 && p->GetMidiValue() <= 1) { // Button Down
+       if (value == 127 && (p->GetMidiValue() == 0 || p->GetMidiValue() == 1)) { // Button Down
           value = !(p->get());
           p->set(value);
        }
