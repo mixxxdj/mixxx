@@ -130,7 +130,6 @@ QString *MidiObject::getOpenDevice()
 void MidiObject::send(MidiCategory category, char channel, char control, double value)
 {
     qDebug("MidiObject::send midi miditype: %X ch: %X, ctrl: %X, val: %g",category, channel, control, value);
-    
 
     MidiType type = MIDI_EMPTY;
     
@@ -162,12 +161,33 @@ void MidiObject::send(MidiCategory category, char channel, char control, double 
     ConfigOption<ConfigValueMidi> *c = m_pMidiConfig->get(*pConfigKey);
     if (c && p)
     {
-       value = ((ConfigValueMidi *)c->val)->ComputeValue(type, p->GetMidiValue(), value);
-
-       // Assume value jumps from 0,1->127 are a "Button down" event 
-       if (value == 127 && (p->GetMidiValue() == 0 || p->GetMidiValue() == 1)) { // Button Down
+        value = ((ConfigValueMidi *)c->val)->ComputeValue(type, p->GetMidiValue(), value);
+        
+        // Assume value jumps from 0,1->127 are a "Button down" event 
+        if (value == 127 && (p->GetMidiValue() == 0 || p->GetMidiValue() == 1)) { // Button Down
           value = !(p->get());
           p->set(value);
+<<<<<<< .mine
+        }
+        // "Button up" would be value == 0 with p->GetMidiValue() == 1, this is far too likely to occur with sliders/knobs to be usable
+
+        // Pitch bend should be 14-bit control, so both values are multiplexed
+        // and passed as a double within the 0-127 range, but with decimal info
+        if (type == MIDI_PITCH) {
+          int _14bit = value;
+          _14bit <<= 7;
+          _14bit |= (unsigned short) control;
+          qDebug("-- 14 bit pitch %i", _14bit);
+
+          if (_14bit == 8192) {
+            value = 63.5;
+          } else {
+            value = 127. * ((double) _14bit / 16383.);
+          }
+        }
+
+        qDebug("New Control Value: %g ",value);
+=======
        }
 
        // Pitch bend should be 14-bit control, so both values are multiplexed
@@ -187,11 +207,12 @@ void MidiObject::send(MidiCategory category, char channel, char control, double 
 
        // Button up would be value = 0, p->GetMidiValue() = 1, this is far too likely to occur with sliders/knobs to be usable
        qDebug("New Control Value: %g ",value);
+>>>>>>> .theirs
     }
     if (p)
         p->queueFromMidi(category, value);
 
-}   
+}
 
 void MidiObject::stop()
 {
