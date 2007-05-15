@@ -226,7 +226,8 @@ bool operator==(const ConfigValue & s1, const ConfigValue & s2)
 
 bool operator==(const ConfigValueMidi & s1, const ConfigValueMidi & s2)
 {
-    return (s1.midichannel == s2.midichannel) && (s1.midino == s2.midino) && (s1.miditype == s2.miditype);
+    return ((s1.midichannel == s2.midichannel) && (s1.midino == s2.midino) && ( s1.miditype == s2.miditype)) ||
+              ((s1.midichannel == s2.midichannel) && (s1.miditype == MIDI_PITCH) && (s1.miditype == s2.miditype));
 }
 
 bool operator==(const ConfigValueKbd & s1, const ConfigValueKbd & s2)
