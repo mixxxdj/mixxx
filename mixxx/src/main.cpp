@@ -69,9 +69,9 @@ void MessageOutput( QtMsgType type, const char *msg )
         switch ( type ) {
             case QtDebugMsg:
 #ifdef Q_WS_WIN
-        if (strstr(msg, "doneCurrent")) {
-                break;
-        }
+                if (strstr(msg, "doneCurrent")) {
+                        break;
+                }
 #endif
                 fprintf( stderr, "Debug: %s\n", msg );
                 break;
@@ -121,7 +121,7 @@ int main(int argc, char *argv[])
 #else
   Logfile.open(QIODevice::WriteOnly | QIODevice::Text);
 #endif
-  #ifdef _DEBUG
+  #ifdef DEBUGCONSOLE
   InitDebugConsole();
   qInstallMsgHandler( MessageOutput );
   #else 

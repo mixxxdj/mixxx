@@ -162,13 +162,12 @@ void MidiObject::send(MidiCategory category, char channel, char control, double 
     if (c && p)
     {
         value = ((ConfigValueMidi *)c->val)->ComputeValue(type, p->GetMidiValue(), value);
-        
-        // Assume value jumps from 0,1->127 are a "Button down" event 
-        if (value == 127 && (p->GetMidiValue() == 0 || p->GetMidiValue() == 1)) { // Button Down
-          value = !(p->get());
-          p->set(value);
+
+        if (((ConfigValueMidi *)c->val)->midioption == MIDI_OPT_BUTTON || ((ConfigValueMidi *)c->val)->midioption == MIDI_OPT_SWITCH) {
+           p->set(value);
+           qDebug("New Control Value: %g (skipping queueFromMidi call)",value);
+           return;
         }
-        // "Button up" would be value == 0 with p->GetMidiValue() == 1, this is far too likely to occur with sliders/knobs to be usable
 
         // Pitch bend should be 14-bit control, so both values are multiplexed
         // and passed as a double within the 0-127 range, but with decimal info
@@ -187,7 +186,6 @@ void MidiObject::send(MidiCategory category, char channel, char control, double 
 
         qDebug("New Control Value: %g ",value);
 
-       }
     }
     if (p)
         p->queueFromMidi(category, value);

@@ -38,7 +38,9 @@ typedef enum {
     MIDI_OPT_ROT64            = 2,
     MIDI_OPT_ROT64_INV        = 3,
     MIDI_OPT_ROT64_FAST       = 4,
-	MIDI_OPT_DIFF			  = 5
+	  MIDI_OPT_DIFF			        = 5,
+    MIDI_OPT_BUTTON		        = 6, // Button Down (7F) and Button Up (00) events happen together
+    MIDI_OPT_SWITCH           = 7  // Button Down (7F) and Button Up (00) events happen seperately
 } MidiOption;
 
 /*

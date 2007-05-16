@@ -96,8 +96,12 @@ ConfigValueMidi::ConfigValueMidi(QString _value)
             midioption = MIDI_OPT_ROT64_FAST;
         else if (option.contains("Rot64", false))
             midioption = MIDI_OPT_ROT64;
-		else if (option.contains("Diff", false))
-			midioption = MIDI_OPT_DIFF;
+        else if (option.contains("Diff", false))
+            midioption = MIDI_OPT_DIFF;
+        else if (option.contains("Button", false))
+            midioption = MIDI_OPT_BUTTON;
+        else if (option.contains("Switch", false))
+            midioption = MIDI_OPT_SWITCH;
         else
             midioption = MIDI_OPT_NORMAL;
         // Store string with corrected config value
@@ -138,8 +142,9 @@ void ConfigValueMidi::valCopy(const ConfigValueMidi v)
             value.prepend("Ctrl ");
         else if (miditype==MIDI_PITCH)
             value.prepend("Pitch ");
+
         if (midioption == MIDI_OPT_INVERT)
-            value.append(" Invert");            
+            value.append(" Invert");
         else if (midioption == MIDI_OPT_ROT64)
             value.append(" Rot64");
         else if (midioption == MIDI_OPT_ROT64_INV)
@@ -148,7 +153,7 @@ void ConfigValueMidi::valCopy(const ConfigValueMidi v)
             value.append(" Rot64Fast");
 		else if (midioption == MIDI_OPT_DIFF)
 			value.append(" Diff");
-                        
+
         qDebug("Config value: %s", value.ascii());
         //qDebug("--1, midino: %i, midimask: %i, midichannel: %i",midino,midimask,midichannel);
 }
@@ -190,6 +195,19 @@ double ConfigValueMidi::ComputeValue(MidiType /*_miditype*/, double _prevmidival
 			_newmidivalue = _prevmidivalue + _newmidivalue;
 		}
 	}
+	else if (midioption == MIDI_OPT_BUTTON)
+	{
+		if (_newmidivalue == 127.) {
+				_newmidivalue = !_prevmidivalue;
+		} else {
+				_newmidivalue = _prevmidivalue;
+		}
+	}
+	else if (midioption == MIDI_OPT_SWITCH)
+	{
+		_newmidivalue = (_newmidivalue == 127);
+	}
+
     return _newmidivalue;
 }
 
