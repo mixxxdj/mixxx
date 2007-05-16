@@ -56,8 +56,8 @@
 		copy /y ..\..\mixxx-winlib\portaudio.dll .
 		.\mixxx-Release.exe
 
-		*** - Note: it is recommended, especially for qt3 static builds that you comment out the QT3 examples build target as shown in this patch:
-			--- C:\qt3-debug\Makefile.win32-msvc.old	Tue Jan 16 13:08:12 2007
+		*** - Note: it is recommended, especially for qt3 static builds that you comment out the QT3 examples build target as shown in this patch (remove the _'s): 
+			-_-_- C:\qt3-debug\Makefile.win32-msvc.old	Tue Jan 16 13:08:12 2007
 			+++ C:\qt3-debug\Makefile.win32-msvc	Sun May 06 21:18:26 2007
 			@@ -9,7 +9,7 @@
 			 install: FORCE
