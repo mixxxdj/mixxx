@@ -385,13 +385,13 @@ void MixxxView::createAllWidgets(QDomElement docElem, QWidget* parent, bool bVis
                 p->setup(node);
                 p->installEventFilter(m_pKeyboard);
             }
-	    else if (node.nodeName()=="StatusLight")
-	    {
-		WStatusLight *p = new WStatusLight(this);
-		m_qWidgetList.append(p);
-		p->setup(node);
-		p->installEventFilter(m_pKeyboard);
-	    }
+            else if (node.nodeName()=="StatusLight")
+            {
+                WStatusLight *p = new WStatusLight(this);
+                m_qWidgetList.append(p);
+                p->setup(node);
+                p->installEventFilter(m_pKeyboard);
+            }
             else if (node.nodeName()=="Overview")
             {
                 if (WWidget::selectNodeInt(node, "Channel")==1 && m_pOverviewCh1==0)
@@ -694,6 +694,14 @@ void MixxxView::rebootGUI(QWidget* parent, bool bVisualsWaveform, ConfigObject<C
 					p->show();
                 }
             }
+            else if (node.nodeName()=="StatusLight")
+            {
+                WStatusLight *p = new WStatusLight(this);
+                m_qWidgetList.append(p);
+                p->setup(node);
+                p->installEventFilter(m_pKeyboard);
+                p->show();
+            }            
 			else if (node.nodeName()=="Display")
             {
                 WDisplay *p = new WDisplay(this);
