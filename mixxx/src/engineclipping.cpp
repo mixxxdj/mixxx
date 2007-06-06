@@ -15,16 +15,21 @@
  ***************************************************************************/
 
 #include "engineclipping.h"
+#include "controlpotmeter.h"
 
 /*----------------------------------------------------------------
   A pregaincontrol is ... a pregain.
   ----------------------------------------------------------------*/
-EngineClipping::EngineClipping(const char *)
+EngineClipping::EngineClipping(const char *group)
 {
+    //Used controlpotmeter as the example used it :/ perhaps someone with more knowledge could use something more suitable...
+    m_ctrlClipping = new ControlPotmeter(ConfigKey(group, "PeakIndicator"), 0., 1.);
+    m_ctrlClipping->set(0);
 }
 
 EngineClipping::~EngineClipping()
 {
+    delete m_ctrlClipping;
 }
 
 void EngineClipping::process(const CSAMPLE *pIn, const CSAMPLE *pOut, const int iBufferSize)
@@ -90,6 +95,10 @@ void EngineClipping::process(const CSAMPLE *pIn, const CSAMPLE *pOut, const int 
                 pOutput[i] = pIn[i];
         }
     }
+    if(clipped == true)
+	m_ctrlClipping->set(1.);
+    else
+	m_ctrlClipping->set(0);
 }
 
 //returns true if the last buffer processed clipped

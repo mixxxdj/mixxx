@@ -1,64 +1,6 @@
 <!DOCTYPE skin>
 <skin>
 
- <Schemes>
-  <Scheme>
-   <Name>5pm (Classic Mixxx)</Name>
-   <Filters>
-   </Filters>
-  </Scheme>
-	 <Scheme>
-		 <Name>8pm (Summer Sunset Mixxx)</Name>
-		 <Filters>
-			 <HSVTweak>
-				 <SMin>100</SMin>
-				 <VFact>0.7</VFact>
-				 <HFact>0.3</HFact>
-			 </HSVTweak>
-			 
-			 <HSVTweak>
-				 <SMax>50</SMax>
-				 <HFact>0</HFact>
-				 <HConst>50</HConst>
-				 <SConst>120</SConst>
-				 <VConst>-10</VConst>
-			 </HSVTweak>
-			 
-		 </Filters>
-	 </Scheme>
-  <Scheme>
-   <Name>11pm (Dark Mixxx)</Name>
-   <Filters>
-    <Invert/>
-	<HueInv/>
-    <Add>
-     <Amount>50</Amount>
-    </Add>
-    <ScaleWhite>
-     <Amount>1.5</Amount>
-    </ScaleWhite>
-    <Add>
-     <Amount>-50</Amount>
-    </Add>
-   </Filters>
-  </Scheme>
-	 <Scheme>
-		 <Name>3am (Still Awake Mixxx)</Name>
-		 <Filters>
-			 <Invert/>
-			 <Add>
-				 <Amount>50</Amount>
-			 </Add>
-			 <ScaleWhite>
-				 <Amount>1.5</Amount>
-			 </ScaleWhite>
-			 <Add>
-				 <Amount>-50</Amount>
-			 </Add>
-		 </Filters>
-	 </Scheme>
- </Schemes>
-
  <Background>
   <Path>scene.png</Path>
  </Background>
@@ -394,6 +336,36 @@
   </Connection>
  </VuMeter>
 
+ <StatusLight>
+  <Tooltip>Peak Indicator</Tooltip>
+  <PathStatusLight>peak-indicator-on.png</PathStatusLight>
+  <PathBack>peak-indicator-off.png</PathBack>
+  <Pos>18, 495</Pos>
+  <Connection>
+   <ConfigKey>[Channel1],PeakIndicator</ConfigKey>
+  </Connection>
+ </StatusLight>
+ 
+ <StatusLight>
+  <Tooltip>Peak Indicator</Tooltip>
+  <PathStatusLight>peak-indicator-on.png</PathStatusLight>
+  <PathBack>peak-indicator-off.png</PathBack>
+  <Pos>905, 495</Pos>
+  <Connection>
+   <ConfigKey>[Channel2],PeakIndicator</ConfigKey>
+  </Connection>
+ </StatusLight>
+
+ <StatusLight>
+  <Tooltip>Peak Indicator</Tooltip>
+  <PathStatusLight>peak-indicator-on.png</PathStatusLight>
+  <PathBack>peak-indicator-off.png</PathBack>
+  <Pos>639,257</Pos>
+  <Connection>
+   <ConfigKey>[Master],PeakIndicator</ConfigKey>
+  </Connection>
+ </StatusLight>
+ 
  <PushButton>
   <Tooltip>End of track mode</Tooltip>
   <NumberStates>3</NumberStates>

@@ -34,7 +34,7 @@ void EnginePregain::process(const CSAMPLE *pIn, const CSAMPLE *pOut, const int i
 {
     CSAMPLE *pOutput = (CSAMPLE *)pOut;
     float fGain=potmeterPregain->get();
-
+    fGain = fGain/2;
     if (fGain == 1.)
     {
         if (pIn!=pOut)
