@@ -184,10 +184,10 @@ void EngineMaster::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBuff
     }
 
     // Volume and vu meters for each channel
-    volume1->process(m_pTemp1, m_pTemp1, iBufferSize);
     vumeter1->process(m_pTemp1, m_pTemp1, iBufferSize);
-    volume2->process(m_pTemp2, m_pTemp2, iBufferSize);
+    volume1->process(m_pTemp1, m_pTemp1, iBufferSize);
     vumeter2->process(m_pTemp2, m_pTemp2, iBufferSize);
+    volume2->process(m_pTemp2, m_pTemp2, iBufferSize);
 
 
     // Crossfader

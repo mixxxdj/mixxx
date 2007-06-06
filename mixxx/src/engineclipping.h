@@ -18,11 +18,13 @@
 #define ENGINECLIPPING_H
 
 #include "engineobject.h"
+#include "controlpotmeter.h"
 
 class EngineClipping : public EngineObject 
 {
 private:
     bool clipped;
+    ControlPotmeter *m_ctrlClipping;
 public:
     EngineClipping(const char *group);
     ~EngineClipping();
