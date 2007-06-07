@@ -155,7 +155,7 @@ void WaveSummary::run()
 				}
 				break;
 			}
-			pTrackInfoObject->setBpm(b);
+			pTrackInfoObject->setBpm(66.6);
 		
 			//*************************************************************
 			//*************************************************************
@@ -231,7 +231,7 @@ void WaveSummary::run()
             
             // Update BPM value in TrackInfoObject
             if (!pTrackInfoObject->getBpmConfirm()) {
-	        //pTrackInfoObject->setBpm(bpv->getBestBpmValue());
+	        pTrackInfoObject->setBpm(bpv->getBestBpmValue());
 
 			float conf = bpv->getBestBpmConfidence() / (float)1e10;
 
