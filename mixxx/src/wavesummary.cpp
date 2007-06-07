@@ -126,7 +126,7 @@ void WaveSummary::run()
 			int bound=0, current=0;
 			double pp=0.0;
 
-			Bpm* bpmDetect = new Bpm(pSoundSource->getSrate());
+			BpmDetect* bpmDetect = new BpmDetect(pSoundSource->getSrate());
 			int count;
 			
 			
@@ -155,12 +155,13 @@ void WaveSummary::run()
 				}
 				break;
 			}
+
 			pTrackInfoObject->setBpm(66.6);
 		
 			//*************************************************************
 			//*************************************************************
   
-#else
+#endif
 			
 
             // Allocate buffer for first derivative of the PSF vector          
@@ -229,6 +230,7 @@ void WaveSummary::run()
                 it1++;
             }           
             
+#ifndef __EXPERIMENTAL_BPM__
             // Update BPM value in TrackInfoObject
             if (!pTrackInfoObject->getBpmConfirm()) {
 	        pTrackInfoObject->setBpm(bpv->getBestBpmValue());
