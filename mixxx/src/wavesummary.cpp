@@ -16,8 +16,8 @@
  ***************************************************************************/
 
 #include "wavesummary.h"
-#include "trackinfoobject.h"
 #include "soundsourceproxy.h"
+#include "trackinfoobject.h"
 #include "mathstuff.h"
 #include "enginespectralfwd.h"
 #include "peaklist.h"
@@ -27,6 +27,10 @@
 #include "readerextractbeat.h"
 #include <qmemarray.h>
 #include <qapplication.h>
+
+#ifdef __EXPERIMENTAL_BPM__
+#include "bpmdetect.h"
+#endif
 
 #include <qdatetime.h>
 
@@ -109,7 +113,56 @@ void WaveSummary::run()
             int iBeatBlockLength = iBeatLength/(kiBlockSize/2);
             int iBeatPosStart = math_max(0,liLengthSamples/2-iBeatLength/2);
             int iBeatPosEnd = math_min(liLengthSamples, iBeatPosStart+iBeatLength);
+
+#ifdef __EXPERIMENTAL_BPM__
+
+			//***********************************************************
+			// New Bpm Implementation [GSOC]
+			//***********************************************************
+				
+			SAMPLE buffer[4096];
+			float fbuffer[4096];
+			double b=0;
+			int bound=0, current=0;
+			double pp=0.0;
+
+			Bpm* bpmDetect = new Bpm(pSoundSource->getSrate());
+			int count;
+			
+			
+
+			while(1)
+			{
+				pSoundSource->seek(0);
+				int max=pSoundSource->read(2056, buffer);
+			
+				for(count = 0; count < max; count++)
+				{
+					fbuffer[count] = buffer[count]/(float)SHRT_MAX;
+				}
+				if(max <= 0)
+					break;
+
+				b=bpmDetect->run(fbuffer, max, &current, &bound);
+				if(b == INDETERMINATE)
+					break;
+				if(b == NEED_MORE_DATA)
+				{
+					if(current == 0 && bound == 0)
+						continue;
+
+					continue;
+				}
+				break;
+			}
+			pTrackInfoObject->setBpm(b);
+		
+			//*************************************************************
+			//*************************************************************
   
+#else
+			
+
             // Allocate buffer for first derivative of the PSF vector          
             float *pDPsf = new float[iBeatBlockLength];
 
@@ -178,21 +231,24 @@ void WaveSummary::run()
             
             // Update BPM value in TrackInfoObject
             if (!pTrackInfoObject->getBpmConfirm()) {
-	        pTrackInfoObject->setBpm(bpv->getBestBpmValue());
+	        //pTrackInfoObject->setBpm(bpv->getBestBpmValue());
 
-		float conf = bpv->getBestBpmConfidence() / (float)1e10;
+			float conf = bpv->getBestBpmConfidence() / (float)1e10;
 
-		// FIXME: This is in the wrong file
-		if (conf > 1000.0f || conf < 0.0f) {
-		    // Something went pretty wrong there...
-		    conf = 0.0f;
-		}
+			// FIXME: This is in the wrong file
+			if (conf > 1000.0f || conf < 0.0f) {
+				// Something went pretty wrong there...
+				conf = 0.0f;
+			}
 		
 		conf = math_max(0., math_min(1., conf));
 		
 		if (conf > 0.75f)
 		    pTrackInfoObject->setBpmConfirm(true);
 	    }
+
+#endif
+
 
             //
             // Extract volume profile
