@@ -510,3 +510,11 @@ contains(ENABLED_FEATURES, python) {
 	}
 }
 
+contains(ENABLED_FEATURES, experimentalbpm) {
+	HEADERS += bpmdetect.h
+	SOURCES += bpmdetect.cpp
+	LIBS+=-lfftw3
+	DEFINES += __EXPERIMENTAL_BMP__
+}
+
+
