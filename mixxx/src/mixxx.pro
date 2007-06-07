@@ -514,7 +514,7 @@ contains(ENABLED_FEATURES, experimentalbpm) {
 	HEADERS += bpmdetect.h
 	SOURCES += bpmdetect.cpp
 	LIBS+=-lfftw3
-	DEFINES += __EXPERIMENTAL_BMP__
+	DEFINES += __EXPERIMENTAL_BPM__
 }
 
 
