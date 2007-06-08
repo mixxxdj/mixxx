@@ -19,13 +19,32 @@
 #include "controllogpotmeter.h"
 #include "enginefilterblock.h"
 #include "enginefilteriir.h"
-
+#include "enginefilter.h"
+#include <inttypes.h>
 EngineFilterBlock::EngineFilterBlock(const char *group)
-{
+{   
+#ifdef __LOFI__
     low = new EngineFilterIIR(bessel_lowpass4_DJM800,4);
     band = new EngineFilterIIR(bessel_bandpass8_DJM800,8);
     high = new EngineFilterIIR(bessel_highpass4_DJM800,4);
+    qDebug("Using LoFi EQs");
+#else 
+    low = new EngineFilter("LpBe4/70");
+    band = new EngineFilter("BpBe4/70-13000");
+    high = new EngineFilter("HpBe4/13000");
 
+    //EngineFilter doesn't have any denormal handling so we add a slight amount of noise
+    //don't worry this will all be filtered out long before it gets to the output, and is
+    //far below the audible level
+    uint32_t   rand_state = 1; // Needs 32-bit int
+    for(int i=0; i < SIZE_NOISE_BUF; i++){
+        rand_state = rand_state * 1234567UL + 890123UL;
+	int    mantissa = rand_state & 0x807F0000; // Keep only most significant bits
+        int   flt_rnd = mantissa | 0x1E000000;           // Set exponent
+	whiteNoiseBuf[i] = *reinterpret_cast <const float *> (&flt_rnd);
+    }
+    
+#endif
     /*
     lowrbj = new EngineFilterRBJ();
     lowrbj->calc_filter_coeffs(6, 100., 44100., 0.3, 0., true);
@@ -97,6 +116,14 @@ void EngineFilterBlock::process(const CSAMPLE *pIn, const CSAMPLE *pOut, const i
     else
 */
 
+#ifndef __LOFI__
+    //Add white noise to kill denormals
+    //CSAMPLE *buf = (CSAMPLE *) pIn;
+    //for(int i=0; i<iBufferSize; i++)
+    //{
+//	buf[i] = buf[i] + whiteNoiseBuf[ ++noiseCount % SIZE_NOISE_BUF ];
+  //  }
+#endif
     low->process(pIn, m_pTemp1, iBufferSize);
     band->process(pIn, m_pTemp2, iBufferSize);
     high->process(pIn, m_pTemp3, iBufferSize);
