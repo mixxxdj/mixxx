@@ -23,6 +23,7 @@
 class ControlLogpotmeter;
 class ControlPushButton;
 
+#define SIZE_NOISE_BUF 40
 /**
   * Parallel processing of LP, BP and HP filters, and final mixing
   *
@@ -40,6 +41,8 @@ private:
     EngineObject *low, *band, *high;
     ControlLogpotmeter *filterpotLow, *filterpotMid, *filterpotHigh;
     ControlPushButton *filterKillLow, *filterKillMid, *filterKillHigh;
+    CSAMPLE whiteNoiseBuf[SIZE_NOISE_BUF];
+    int noiseCount;
 };
 
 #endif
