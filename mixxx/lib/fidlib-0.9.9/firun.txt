@@ -1,0 +1,120 @@
+Firun
+=====
+
+Firun is a tool to run one or more fidlib filters on a piped stream of
+raw or ASCII data.  It also allows testing impulse response, step
+response and frequency response.
+
+The tool is pretty fast, but if you are using the same filter
+parameters all the time, it is probably a good idea to use Fiview to
+generate custom optimised code and then write your own stdin/stdout
+processing wrapper.  On one example filter, double the speed could be
+achieved with special-purpose code like this.
+
+
+Usage
+-----
+
+Usage: firun [options] <sampling_rate> <in_out_formats> <filter-specs> ...
+
+Reads ASCII or raw data from STDIN, filters it, and writes ASCII or
+raw data to STDOUT.  Filter spec may contain several fidlib filters in
+a chain, and doesn't normally need to be quoted from the shell as all
+the trailing args are joined into one string before parsing.  If more
+than one filter is provided (separated by commas), then the number
+should be the same as the number of input channels.  One filter will
+be used on each channel, allowing different processing of left/right
+channels, for example.
+
+The <in_out_formats> specify the input and output data formats.  Raw
+formats are specified with a list of [a_bwWcsSf] characters below:
+
+  a    ASCII-encoded value (with surrounding white space/commas/semicolons)
+  _    Dummy input byte (byte is skipped and ignored)
+  b    Unsigned byte
+  w,W  Little and big-endian unsigned 16-bit words
+  c    Signed byte ('char' in C)
+  s,S  Little and big-endian signed 16-bit words ('short' in C)
+  f    Machine-format 32-bit floating point number
+
+Each character except '_' indicates one input/output channel.  Each
+character may be followed digits indicating a count, so "s4" is
+equivalent to "ssss".  The entire list of characters and counts
+defines a block of data which will be read or written as one
+multi-channel sample.  Integer types are mapped to/from the range -1.0
+to 1.0 on input and output (e.g. -32768 <-> -1.0, 0 <-> 0.0, 32767 <->
+0.99997).  Overflows are clipped to the limit values.  
+
+The 'a' ASCII type reads and writes text-formatted floating-point
+values.  On writing, each value is terminated by either a space or a
+newline, depending on whether it is the last format in the spec (so
+'aaaa' gives four values per line, one line per sample).
+
+There are also special input format specifiers to handle special cases:
+
+  %I  Ignore STDIN and generate an impulse as input: 1 0 0 0 0 ...
+  %S  Ignore STDIN and generate a step as input: 1 1 1 1 1 ...
+
+The <in_out_formats> may either take the form <format> or
+<in_format>/<out_format>.  The first form is when input and output
+formats are the same, the second for different in/out formats.  The
+second form must be used with %I and %S to specify the output format,
+for example '%I/a'.
+
+For details of the <filter-specs>, see the fidlib documentation and
+the output of the -L option.
+
+Options:
+
+  -d <len>  Limit output to duration <len>.  Length may be specified as
+	    [<hours>h][<minutes>m][<seconds>s][<samples>], for example:
+	    '1h20m' or '250s' or '45m' or '88200' (samples).  Important 
+	    for %I and %S.
+
+  -D	    Dump filters along with brief analysis (signal delay in samples).
+
+  -r <cnt>  Ignore STDIN and calculate the response of the filter(s)
+	    and output that.  Response is calculated at <cnt>+1 points
+	    from 0Hz to the Nyquist frequency.  If output format has
+	    one more channel than the number of filters, then the
+	    first channel is used to contain the frequency.
+
+  -rp <cnt> As -r, except phase is also included.  The output format
+	    should have 2n or 2n+1 channels, where n is the number of
+	    filters.
+
+  -L        Ignore all following arguments, output a list of 
+	    available filters to STDOUT and exit.
+
+See the fidlib.txt documentation for details of the <filter_specs>;
+you can use an extended filter spec on the command line (i.e. a chain
+of predefined filters and/or raw FIR/IIR coefficients).
+
+
+Examples
+========
+
+firun 44100 ss BsBu10/239-247 x HsBq/0.8/-15/12000 <in.raw >out.raw
+
+  Applies a band-stop and shelving filter to a raw 16-bit audio stream.
+
+firun -r 10000 44100 aa BsBu10/239-247 x HsBq/0.8/-15/12000 >resp.txt
+
+  Checks the frequency response, dumping it in ASCII
+
+firun -d 10s 44100 %I/a BsBu10/239-247 x HsBq/0.8/-15/12000 >impulse.txt
+
+  Tests the impulse response (the first 10 seconds)
+
+firun 44100 ss BsBu10/239-247 x HsBq/0.8/-15/12000, HsBq/0.8/-15/12000 <in.raw >out.raw
+
+  Applies the band-stop to one channel only, but the shelving filter
+  to both channels.
+
+firun -D 44100 a HsBq/0.8/-15/12000 >filter-coef.txt
+
+  Dumps out the shelving filter coefficients in fidlib/Fiview format
+
+
+
+--------------------------------------------------------------------------------
