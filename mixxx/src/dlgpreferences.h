@@ -30,6 +30,7 @@ class DlgPrefSound;
 class DlgPrefMidi;
 class DlgPrefPlaylist;
 class DlgPrefControls;
+class DlgPrefMixer;
 class PowerMate;
 
 /**
@@ -56,6 +57,7 @@ private:
     DlgPrefMidi *wmidi;
     DlgPrefPlaylist *wplaylist;
     DlgPrefControls *wcontrols;
+    DlgPrefMixer *wmixer;
     ConfigObject<ConfigValue> *config;
     MixxxApp *m_pMixxx;
 };
