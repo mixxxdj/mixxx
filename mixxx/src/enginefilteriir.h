@@ -79,4 +79,24 @@ static const double bessel_lowpass4[7] = {6.943736360e+04, 4, 6, -0.6673458737, 
 // 4th order highpass, corner 4000Hz
 static const double bessel_highpass4[7] = {1.807553687e+00, -4, 6, -0.2898387148, 1.5497144728, -3.1422295239, 2.8699599032};
 
+
+/* Mixer Based EQ curves by John */
+
+/* Pioneer DJM-800 */
+// 4th order highpass, 13000Hz
+static const double bessel_highpass4_DJM800[7] = { 7.008002645e+00, -4,6, -0.0055179324, 0.0231872663, -0.2820220774, 0.3036711584};
+
+//8th order bandpass, 70Hz - 1300Hz
+static const double bessel_bandpass8_DJM800[13] = {6.433626341e+00, 0,-4, 0, 6, -0.0268312520, -0.0457103934, -0.1683239580, 1.0127019818, -1.4501742764, 2.2058243400, -3.8082264201, 3.2807399531};
+
+// 4th order lowpass, 70Hz
+static const double bessel_lowpass4_DJM800[7] = {1.638353272e+09, 4, 6, -0.9742750319, 3.9224911601, -5.9221546753, 3.9739385374};
+
+
+/* Mackie D2 */
+// 4th order highpass, 4000Hz
+static const double bessel_highpass4D2[7] = {1.807553687e+00, -4, 6, -0.2898387148, 1.5497144728, -3.1422295239, 2.8699599032};
+
+
+
 #endif
