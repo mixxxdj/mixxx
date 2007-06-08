@@ -25,7 +25,6 @@
 #include <qlabel.h>
 #include <qstring.h>
 #include <qpushbutton.h>
-#include "../lib/fidlib-0.9.9/fidlib.h"
 
 #define CONFIG_KEY "[Mixer Profile]"
 
@@ -68,12 +67,6 @@ void DlgPrefMixer::slotUpdateHiEQ()
     config->set(ConfigKey(CONFIG_KEY, "HiEQFrequency"), ConfigValue(SliderHiEQ->value()));
     setMidEQ();
 
-    double coef[MAX_COEF + 1];
-    char spec_buf[12];
-    sprintf(spec_buf, "HpBe4/%d", SliderHiEQ->value());
-    coef[0] = fid_design_coef(coef + 1, 4, spec_buf, 44100., -1., -1., true);
-
-    qDebug("Hi coefs %f:%f:%f:%f:%f:%dHz", (float) coef[0], (float) coef[1], (float) coef[2], (float) coef[3], (float) coef[4], SliderHiEQ->value());
 }
 
 void DlgPrefMixer::slotUpdateLoEQ()
