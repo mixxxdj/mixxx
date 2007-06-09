@@ -255,3 +255,4 @@ void WVisualWaveform::resetColors() {
 		vc->resetColors();
 	}
 }
+
