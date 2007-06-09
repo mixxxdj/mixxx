@@ -20,7 +20,10 @@
 #include "enginefilterblock.h"
 #include "enginefilteriir.h"
 #include "enginefilter.h"
+
+#ifndef __NO_INTTYPES__
 #include <inttypes.h>
+#endif
 EngineFilterBlock::EngineFilterBlock(const char *group)
 {   
 #ifdef __LOFI__
@@ -36,7 +39,11 @@ EngineFilterBlock::EngineFilterBlock(const char *group)
     //EngineFilter doesn't have any denormal handling so we add a slight amount of noise
     //don't worry this will all be filtered out long before it gets to the output, and is
     //far below the audible level
+#ifndef __NO_INTTYPES__
     uint32_t   rand_state = 1; // Needs 32-bit int
+#else
+    int rand_state = 1;
+#endif
     for(int i=0; i < SIZE_NOISE_BUF; i++){
         rand_state = rand_state * 1234567UL + 890123UL;
 	int    mantissa = rand_state & 0x807F0000; // Keep only most significant bits
