@@ -8,7 +8,7 @@ contains( CONFIG, debug ) {
 #----------------------------------------------------------------------
 
 # Configure Help facilities -------------------------------------------
-CONFIGURE_SCRIPT_FEATURES = alsa lua python djconsole experimentalbpm
+CONFIGURE_SCRIPT_FEATURES = alsa lua python djconsole experimentalbpm hifi
 CONFIGURE_SCRIPT_PACKAGE_LIST =  libmad id3tag vorbisfile vorbis oggvorbis libsndfile djconsole
 #----------------------------------------------------------------------
 
@@ -341,3 +341,14 @@ OPTIONS=disable_feature
 DESCRIPTION=Experimental BPM Detection
 FEATURE=experimentalbpm
 include( check.qbas)
+
+# --- Yeah yeah...
+#OBJECT=
+#TYPE=header
+OPTIONS=disable_feature
+DESCRIPTION=High quality EQ support
+FEATURE=hifi
+#----
+include( check.qbas )
+#----
+
