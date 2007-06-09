@@ -23,7 +23,6 @@
 #include "../lib/fidlib-0.9.9/fidlib.h"
 #include "defs.h"
 
-#define BUF_SIZE
 class EngineFilter : public EngineObject
 {
 public:
@@ -35,7 +34,6 @@ protected:
     double iir;
     double fir;
     double tmp;
-    double buf[BUF_SIZE];
 private:
     double processSample(const double sample, void *buf);
     FidFilter *ff;
