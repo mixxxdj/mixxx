@@ -519,6 +519,7 @@ contains(ENABLED_FEATURES, experimentalbpm) {
 
 #fidlib
 DEFINES += __LOFI__
+DEFINES += __NO_INTTYPES__
 #contains(ENABLED_FEATURES, lofi){
 #   DEFINES += __LOFI__ #this disables fidlib and uses original filters
 #}
@@ -531,6 +532,7 @@ SOURCES += ../lib/fidlib-0.9.9/fidlib.c
 
 unix {
     DEFINES += T_LINUX
+    DEFINES -= __NO_INTTYPES__
 }
 win32 {
     DEFINES += T_MSVC
