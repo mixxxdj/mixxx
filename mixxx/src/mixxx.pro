@@ -530,6 +530,7 @@ contains(ENABLED_FEATURES, hifi){
 INCLUDES += ../lib/fidlib-0.9.9/fidlib.h
 SOURCES += ../lib/fidlib-0.9.9/fidlib.c
 
+#Also needed for fidlib
 unix {
     DEFINES += T_LINUX
 }
