@@ -30,31 +30,64 @@ if not conf.CheckLibWithHeader('m', 'math.h'):
     Exit(1)
 """
 
+import os
+import sys
 
+# BIG FAT WARNING:
+# Make sure you use TABS for indentation, NOT spaces! (Python doesn't like spaces, be forewarned!)
+#
+#   ####       ####  ##########  #####    #####  #####    #####  #####    #####
+#   ######   ######     ####      #####  #####    #####  #####    #####  #####
+#   #### ## ## ####     ####        ########        ########        ########
+#   ####   #   ####     ####      #####  #####    #####  #####    #####  #####
+#   ####       ####  ##########  #####    #####  #####    #####  #####    #####
+#
+#  #############################################################################
+#    #########################################################################
+#  
 #Start of Mixxx's real SConstruct file
 #=======================================
 
 #Get the platform/OS that we're building on:
 #TODO: FILL ME IN
+#if os.name == 'posix':
+#    print 'posix'
+if os.name == 'nt':
+	print 'Platform: Windows'
+	platform = 'win32'
+elif sys.platform == 'linux2':
+	print 'Platform: Linux'
+	platform = 'linux'
+elif sys.platform == 'darwin':
+	print 'Platform: OS X'
+	platform = 'osx'
+else:
+	print 'Platform: Unknown (assuming Linux-like)'
+	platform = 'linux'
 
+	
 #Set up our environment, tell SCONS to use it's QT tools, and set some enviroment variables for it.
 env = Environment(tools=['default','qt'], QTDIR='/usr/share/qt3', QT_LIB='qt-mt')
 
 #env.Append(CPPPATH='.')
 
 #Mixxx sources to build
-sources = Split("""enginebuffercue.cpp input.cpp mixxxmenuplaylists.cpp trackplaylistlist.cpp mixxxkeyboard.cpp configobject.cpp controlobjectthread.cpp controlobjectthreadwidget.cpp controlobjectthreadmain.cpp controlevent.cpp controllogpotmeter.cpp controlobject.cpp controlnull.cpp controlpotmeter.cpp controlpushbutton.cpp controlttrotary.cpp controlbeat.cpp dlgpreferences.cpp dlgprefsound.cpp dlgprefmidi.cpp dlgprefplaylist.cpp dlgprefcontrols.cpp enginebuffer.cpp enginebufferscale.cpp engineclipping.cpp enginefilterblock.cpp enginefilteriir.cpp engineobject.cpp enginepregain.cpp enginevolume.cpp main.cpp midiobject.cpp midiobjectnull.cpp mixxx.cpp mixxxview.cpp player.cpp playerproxy.cpp playerportaudio.cpp soundsource.cpp soundsourcemp3.cpp soundsourceoggvorbis.cpp enginechannel.cpp enginemaster.cpp wwidget.cpp wpixmapstore.cpp wlabel.cpp wnumber.cpp wnumberpos.cpp wnumberrate.cpp wnumberbpm.cpp wknob.cpp wdisplay.cpp wvumeter.cpp wpushbutton.cpp wslidercomposed.cpp wslider.cpp wtracktable.cpp wtracktableitem.cpp enginedelay.cpp engineflanger.cpp enginespectralfwd.cpp mathstuff.cpp readerextract.cpp readerextractwave.cpp readerevent.cpp rtthread.cpp windowkaiser.cpp probabilityvector.cpp reader.cpp trackinfoobject.cpp enginevumeter.cpp peaklist.cpp rotary.cpp log.cpp track.cpp trackcollection.cpp trackplaylist.cpp xmlparse.cpp wtreeview.cpp wtreeitem.cpp wtreeitemfile.cpp wtreeitemdir.cpp wtreeitemplaylist.cpp wtreeitemplaylistroot.cpp trackimporter.cpp parser.cpp parserpls.cpp parserm3u.cpp mixxxsocketserver.cpp mixxxsocketclient.cpp
+sources = Split("""enginebuffercue.cpp input.cpp mixxxmenuplaylists.cpp trackplaylistlist.cpp mixxxkeyboard.cpp configobject.cpp controlobjectthread.cpp controlobjectthreadwidget.cpp controlobjectthreadmain.cpp controlevent.cpp controllogpotmeter.cpp controlobject.cpp controlnull.cpp controlpotmeter.cpp controlpushbutton.cpp controlttrotary.cpp controlbeat.cpp dlgpreferences.cpp dlgprefsound.cpp dlgprefmidi.cpp dlgprefplaylist.cpp dlgprefcontrols.cpp dlgprefmixer.cpp enginebuffer.cpp enginebufferscale.cpp engineclipping.cpp enginefilterblock.cpp enginefilteriir.cpp  enginefilter.cpp engineobject.cpp enginepregain.cpp enginevolume.cpp main.cpp midiobject.cpp midiobjectnull.cpp mixxx.cpp mixxxview.cpp player.cpp playerproxy.cpp playerportaudio.cpp soundsource.cpp soundsourcemp3.cpp soundsourceoggvorbis.cpp enginechannel.cpp enginemaster.cpp wwidget.cpp wpixmapstore.cpp wlabel.cpp wnumber.cpp wnumberpos.cpp wnumberrate.cpp wnumberbpm.cpp wknob.cpp wdisplay.cpp wvumeter.cpp wpushbutton.cpp wslidercomposed.cpp wslider.cpp wtracktable.cpp wtracktableitem.cpp wstatuslight.cpp enginedelay.cpp engineflanger.cpp enginespectralfwd.cpp mathstuff.cpp readerextract.cpp readerextractwave.cpp readerevent.cpp rtthread.cpp windowkaiser.cpp probabilityvector.cpp reader.cpp trackinfoobject.cpp enginevumeter.cpp peaklist.cpp rotary.cpp log.cpp track.cpp trackcollection.cpp trackplaylist.cpp xmlparse.cpp wtreeview.cpp wtreeitem.cpp wtreeitemfile.cpp wtreeitemdir.cpp wtreeitemplaylist.cpp wtreeitemplaylistroot.cpp trackimporter.cpp parser.cpp parserpls.cpp parserm3u.cpp mixxxsocketserver.cpp mixxxsocketclient.cpp
  enginetemporal.cpp visual/visualbuffertemporal.cpp wavesummary.cpp wavesegmentation.cpp soundsourceproxy.cpp woverview.cpp enginebeatseek.cpp
- enginebufferscalereal.cpp powermate.cpp powermatelinux.cpp hercules.cpp herculeslinux.cpp joystick.cpp joysticklinux.cpp mouse.cpp mouselinux.cpp 
+ enginebufferscalereal.cpp powermate.cpp  hercules.cpp joystick.cpp mouse.cpp 
  wvisualsimple.cpp wvisualwaveform.cpp visual/visualbackplane.cpp visual/texture.cpp visual/visualbox.cpp visual/visualbuffer.cpp visual/visualbuffersignal.cpp visual/visualbuffersignalhfc.cpp visual/visualbuffermarks.cpp visual/visualchannel.cpp visual/visualcontroller.cpp visual/visualdisplay.cpp visual/visualdisplaybuffer.cpp visual/light.cpp visual/material.cpp visual/picking.cpp visual/pickable.cpp visual/visualobject.cpp
- imginvert.cpp imgloader.cpp imgcolor.cpp wskincolor.cpp""")
+ imginvert.cpp imgloader.cpp imgcolor.cpp wskincolor.cpp """)
 
-#TODO: Make Powermate stuff OS specific
-#TODO: Make Hercules stuff OS specific
-#TODO: Make Joystick stuff OS specific
-#TODO: Make Mouse stuff OS specific
+
+#Compile platform specific hardware support
+if platform == 'linux':
+	sources += Split("""powermatelinux.cpp herculeslinux.cpp joysticklinux.cpp mouselinux.cpp """)
+#elif platform == 'win32':
+#	sources += Split("""powermatewin.cpp mousewin.cpp """)
+
 
 #Check for dependencies if we're not doing a clean...
+
 if not env.GetOption('clean'):
 	conf = Configure(env)
 
@@ -74,8 +107,8 @@ if not env.GetOption('clean'):
 		print 'Did not find libid3tag.a or libid3tag.lib, exiting!'
 		Exit(1)
 
-	if not conf.CheckLib('vorbisfile'):
-		print 'Did not find libvorbisfile.a or libvorbisfile.lib, exiting!'
+	if not conf.CheckLibWithHeader('vorbisfile', 'vorbis/codec.h', 'C'):
+		print 'Did not find libvorbisfile.a, libvorbisfile.lib, or the libvorbisfile development headers, exiting!'
 		Exit(1)
 
 	if not conf.CheckLib('ogg'):
@@ -90,20 +123,41 @@ if not env.GetOption('clean'):
 		print 'Did not find libGLU.a or libGLU.lib, exiting!'
 		Exit(1)
 
-	#TODO: libsndfile is used only on Linux...
-	if not conf.CheckLib('sndfile'):
-		print 'Did not find libsndfile.a or libsndfile.lib, exiting!'
-		Exit(1)
-	else:
-		env.Append(CXXFLAGS = ' -D__SNDFILE__')
-		sources.append('soundsourcesndfile.cpp')
-		
-	#TODO: Add Mac check for libaudiofile (or maybe make Mac use libsndfile?)
+	
 
-	#Another check for PortAudio-v19
-	env.ParseConfig('pkg-config --cflags --libs portaudio-2.0')
+	#TODO: libsndfile is used only on Linux...
+	if platform == 'linux':
+		if not conf.CheckLibWithHeader('sndfile', 'sndfile.h', 'C'):
+			print 'Did not find libsndfile or it\'s development headers, exiting!'
+			Exit(1)
+		else:
+			env.Append(CXXFLAGS = ' -D__SNDFILE__')
+			sources.append('soundsourcesndfile.cpp')
+			
+		#Check for libdjconsole, if it was passed as a flag
+		flags_djconsole = ARGUMENTS.get('djconsole', 0)
+		if int(flags_djconsole):
+			if not conf.CheckLibWithHeader('djconsole', 'libdjconsole/djconsole.h', 'C++'):
+				print 'Did not find libdjconsole or it\'s development headers, exiting!'
+				Exit(1)
+			env.ParseConfig('pkg-config libdjconsole --silence-errors --cflags --libs')
+			env.Append(CXXFLAGS = '-D__LIBDJCONSOLE__')         
+
+		#Another check for PortAudio-v19
+		env.ParseConfig('pkg-config --cflags --libs portaudio-2.0')
+		#If the above line looks like magic, it's because it really is. (Read about ParseConfig, it's nifty)
+    
+	#Check for libaudiofile on OS X
+	if platform == 'osx':
+		if not conf.CheckLibWithHeader('audiofile', 'audiofile.h', 'C'):
+			print 'Did not find libaudiofile or it\'s development headers, exiting!'
+			Exit(1)
+		else:
+			env.Append(CXXFLAGS = ' -D__AUDIOFILE__')
+			sources.append('soundsourceaudiofile.cpp')
 
 	env = conf.Finish()
+
 
 #Declare the flags for Mixxx's config/track listing files:
 env.Append(CXXFLAGS = ' -D__UNIX__ -D__LINUX__ -DSETTINGS_FILE=\\".mixxx.cfg\\" -DTRACK_FILE=\\".mixxxtrack.xml\\"')
@@ -114,19 +168,21 @@ env.Append(CPPPATH = ['.', '../', '../../']) #Fun fun fun with paths
 
 env.Append(LIBS = 'qt-mt')
 env.Append(CXXFLAGS = ' -DQT_THREAD_SUPPORT -DQT_SHARED -DQT_TABLET_SUPPORT') #Stolen from Mixxx's build output
-env.Append(CXXFLAGS = ' -pipe -pg -O3 -pipe -Wall -W -g -D_REENTRANT') # omghax
+env.Append(CXXFLAGS = ' -pipe -O3 -pipe -Wall -W -g -D_REENTRANT') # omghax
 
-#Uic these guys (they're moc'd automatically after this)
+#Uic these guys (they're moc'd automatically after this) - Generates the code for the QT UI forms
 env.Uic('dlgprefsounddlg.ui')
 env.Uic('dlgprefmididlg.ui')
 env.Uic('dlgprefplaylistdlg.ui')
 env.Uic('dlgprefcontrolsdlg.ui')
+env.Uic('dlgprefmixerdlg.ui')
 
 #Add these uic/moc generated files to the list of stuff we need to build:
 sources.append(Split("""uic_dlgprefsounddlg.cc 		moc_dlgprefsounddlg.cc
 						uic_dlgprefcontrolsdlg.cc	moc_dlgprefcontrolsdlg.cc
 						uic_dlgprefmididlg.cc		moc_dlgprefmididlg.cc
 						uic_dlgprefplaylistdlg.cc	moc_dlgprefplaylistdlg.cc
+						uic_dlgprefmixerdlg.cc	    moc_dlgprefmixerdlg.cc
 					  	"""))
 
 #More complicated way of doing Uic (gives us control over the filenames, but doesn't really matter...)
@@ -154,6 +210,44 @@ sources += Split("""../../lib/vbrheadersdk/dxhead.c""")
 #libsamplerate
 env.Append(CPPPATH='../../lib/libsamplerate')
 sources += Split("""enginebufferscalesrc.cpp ../../lib/libsamplerate/samplerate.c ../../lib/libsamplerate/src_linear.c ../../lib/libsamplerate/src_sinc.c ../../lib/libsamplerate/src_zoh.c""")
+
+#fidlib (for EQs)
+env.Append(CPPPATH='../../lib/fidlib-0.9.9/')
+sources += Split("""../../lib/fidlib-0.9.9/fidlib.c""")
+#Platform-specific defines needed for fidlib
+if platform == 'linux' or platform == 'osx':
+	env.Append(CCFLAGS = '-DT_LINUX')
+elif platform == 'win32':
+	env.Append(CCFLAGS = '-DT_MSVC')
+
+
+#Parse command-line build flags
+
+#Python/lua scripting
+#flags_script = ARGUMENTS.get('script', 0) #Default value is 0
+#if int(flags_script):
+#    env.Append(CXXFLAGS = '-D__SCRIPT__ -D__LUA__ -D__PYTHON__')
+#    sources += Split("""script/*.cpp script/lua/*.cpp script/python/*.cpp""")
+#    env.ParseConfig('python-config --include --ldflags')
+#    env.Append(LIBS = 'lua')
+#    env.Append(LIBS = 'lualib')
+#    env.Append(LIBS = 'tulua')
+ #TODO: FINISH THIS! 
+        
+        
+#High quality EQs
+flags_hifieq = ARGUMENTS.get('hifieq', 0)
+if int(flags_hifieq) == 0:
+	env.Append(CXXFLAGS = '-D__LOFI__ -D__NO_INTTYPES__') #Enables old crappy EQs
+
+#Experimental BPM detection
+flags_experimentalbpm = ARGUMENTS.get('experimentalbpm', 0)
+if int(flags_experimentalbpm):
+	env.Append(CXXFLAGS = '-D__EXPERIMENTAL_BPM__')
+	env.Append(LIBS = 'fftw3')
+	sources += "bpmdetect.cpp"
+
+#TODO: Print summary of compile flags.
 
 
 #Tell SCons to build Mixxx
