@@ -49,9 +49,6 @@ import sys
 #=======================================
 
 #Get the platform/OS that we're building on:
-#TODO: FILL ME IN
-#if os.name == 'posix':
-#    print 'posix'
 if os.name == 'nt':
 	print 'Platform: Windows'
 	platform = 'win32'
@@ -65,9 +62,20 @@ else:
 	print 'Platform: Unknown (assuming Linux-like)'
 	platform = 'linux'
 
-	
+
+#Figure out what the QT path is
+flags_qtdir = ARGUMENTS.get('qtdir', '/usr/share/qt3')
+if not os.path.exists(flags_qtdir):
+	print "Error: QT path does not exist."
+	print "Please specify your QT path by running \"scons qtdir=[path]\""
+	Exit(1)
+else:
+	print "QTDIR: " + flags_qtdir
+
+
 #Set up our environment, tell SCONS to use it's QT tools, and set some enviroment variables for it.
-env = Environment(tools=['default','qt'], QTDIR='/usr/share/qt3', QT_LIB='qt-mt')
+env = Environment(tools=['default','qt'], QTDIR=flags_qtdir, QT_LIB='qt-mt')
+        
 
 #env.Append(CPPPATH='.')
 
@@ -84,6 +92,17 @@ if platform == 'linux':
 	sources += Split("""powermatelinux.cpp herculeslinux.cpp joysticklinux.cpp mouselinux.cpp """)
 #elif platform == 'win32':
 #	sources += Split("""powermatewin.cpp mousewin.cpp """)
+
+#Compile platform specific MIDI support
+if platform == 'linux':
+	sources += Split("""midiobjectalsaseq.cpp """)  #ALSA Sequencer MIDI support for Linux
+	env.Append(CXXFLAGS = '-D__ALSASEQMIDI__')
+elif platform == 'win32':
+	sources += Split("""midiobjectwin.cpp """)      #Windows MIDI support
+	env.Append(CXXFLAGS = '-D__WINMIDI__')
+elif platform == 'osx':
+	sources += Split("""midiobjectcoremidi.cpp """) #CoreMidi support for OS X
+	env.Append(CXXFLAGS = '-D__COREMIDI__')
 
 
 #Check for dependencies if we're not doing a clean...
@@ -107,23 +126,22 @@ if not env.GetOption('clean'):
 		print 'Did not find libid3tag.a or libid3tag.lib, exiting!'
 		Exit(1)
 
-	if not conf.CheckLibWithHeader('vorbisfile', 'vorbis/codec.h', 'C'):
-		print 'Did not find libvorbisfile.a, libvorbisfile.lib, or the libvorbisfile development headers, exiting!'
-		Exit(1)
+#	if not conf.CheckLib('vorbisfile'):
+#		print 'Did not find libvorbisfile.a, libvorbisfile.lib, or the libvorbisfile development headers, exiting!'
+#		Exit(1)
 
 	if not conf.CheckLib('ogg'):
 		print 'Did not find libogg.a or libogg.lib, exiting!'
 		Exit(1)
 
-	if not conf.CheckLib('GL'):
-		print 'Did not find libGL.a or libGL.lib, exiting!'
-		Exit(1)
+#	if not conf.CheckLib('GL'):
+#		print 'Did not find libGL.a or libGL.lib, exiting!'
+#		Exit(1)
 
-	if not conf.CheckLib('GLU'):
-		print 'Did not find libGLU.a or libGLU.lib, exiting!'
-		Exit(1)
+#	if not conf.CheckLib('GLU'):
+#		print 'Did not find libGLU.a or libGLU.lib, exiting!'
+#		Exit(1)
 
-	
 
 	#TODO: libsndfile is used only on Linux...
 	if platform == 'linux':
@@ -156,12 +174,24 @@ if not env.GetOption('clean'):
 			env.Append(CXXFLAGS = ' -D__AUDIOFILE__')
 			sources.append('soundsourceaudiofile.cpp')
 
+		if not conf.CheckCHeader('/System/Library/Frameworks/CoreMIDI.framework/Headers/CoreMIDI.h'):
+			print 'Did not find CoreMIDI framework, exiting! (Please install it)'
+			Exit(1)
+		else:
+			#env.Append(LIBS = ['z'])
+			env.Append(LINKFLAGS = '-framework CoreMIDI -framework CoreFoundation -framework CoreAudio -framework Carbon -framework Quicktime -framework AudioToolbox -framework AudioUnit -framework Ogg -framework Vorbis -framework OpenGL')
+
 	env = conf.Finish()
 
 
 #Declare the flags for Mixxx's config/track listing files:
-env.Append(CXXFLAGS = ' -D__UNIX__ -D__LINUX__ -DSETTINGS_FILE=\\".mixxx.cfg\\" -DTRACK_FILE=\\".mixxxtrack.xml\\"')
-env.Append(CXXFLAGS = ' -DUNIX_SHARE_PATH=\\"/usr/share/mixxx\\"')
+if platform == 'linux':
+	env.Append(CXXFLAGS = ' -D__UNIX__ -D__LINUX__ -DSETTINGS_FILE=\\".mixxx.cfg\\" -DTRACK_FILE=\\".mixxxtrack.xml\\"')
+	env.Append(CXXFLAGS = ' -DUNIX_SHARE_PATH=\\"/usr/share/mixxx\\"')
+elif platform == 'osx':
+	env.Append(CXXFLAGS = ' -D__MACX__ -DSETTINGS_FILE=\\"mixxx.cfg\\" -DTRACK_FILE=\\"mixxxtrack.xml\\"')
+
+
 #... and yes, we need to double-escape those quotes
 env.Append(CXXFLAGS = ' -D__PORTAUDIO__'); #Turn on PortAudio support in Mixxx
 env.Append(CPPPATH = ['.', '../', '../../']) #Fun fun fun with paths
