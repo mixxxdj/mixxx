@@ -54,7 +54,7 @@ def CheckOpenGL():
 		print 'Did not find OpenGL development files, exiting!'
 		Exit(1)
 
-	if not conf.CheckLib('GLU')  and not conf.CheckLib('glu32') and not conf.CheckCHeader('/System/Library/Frameworks/OpenGL.framework/Versions/A/Headers/glu.h'):
+	if not conf.CheckLib('GLU') and not conf.CheckLib('glu32') and not conf.CheckCHeader('/System/Library/Frameworks/OpenGL.framework/Versions/A/Headers/glu.h'):
 		print 'Did not find GLU development files, exiting!'
 		Exit(1)
 	#Workaround for SCONS not detecting frameworks on OS X
@@ -113,7 +113,7 @@ if not os.path.exists(flags_qtdir):
 	print "Please specify your QT path by running \"scons qtdir=[path]\""
 	Exit(1)
 else:
-	print "QTDIR: " + flags_qtdir
+	print "QT path: " + flags_qtdir
 
 
 #Set up our environment, tell SCONS to use it's QT tools, and set some enviroment variables for it.
@@ -258,18 +258,19 @@ sources.append(Split("""uic_dlgprefsounddlg.cc 		moc_dlgprefsounddlg.cc
 #===================================================
 
 #SoundTouch
-#TODO: Windows-ify this (see mixxx.pro)
 env.Append(CPPPATH=['../../lib/soundtouch']) #Needed two ../../'s because we're compiling from "src/.obj"
-sources += Split("""enginebufferscalest.cpp ../../lib/soundtouch/SoundTouch.cpp ../../lib/soundtouch/TDStretch.cpp ../../lib/soundtouch/RateTransposer.cpp ../../lib/soundtouch/AAFilter.cpp ../../lib/soundtouch/FIFOSampleBuffer.cpp ../../lib/soundtouch/FIRFilter.cpp ../../lib/soundtouch/cpu_detect_x86_gcc.cpp""")
+sources += Split("""enginebufferscalest.cpp ../../lib/soundtouch/SoundTouch.cpp ../../lib/soundtouch/TDStretch.cpp ../../lib/soundtouch/RateTransposer.cpp ../../lib/soundtouch/AAFilter.cpp ../../lib/soundtouch/FIFOSampleBuffer.cpp ../../lib/soundtouch/FIRFilter.cpp """)
+if platform == 'win32':
+	sources += Split("""../../lib/soundtouch/cpu_detect_x86_win.cpp ../../lib/soundtouch/mmx_win.cpp ../../lib/soundtouch/sse_win.cpp ../../lib/soundtouch/3dnow_win.cpp""")
+else:
+	sources += Split("""../../lib/soundtouch/cpu_detect_x86_gcc.cpp""")
 
 #KissFFT
 env.Append(CPPPATH=['../../lib/kissfft'])
-#env.Append(INCLUDEPATH='#/lib/kissfft')
 sources += Split("""../../lib/kissfft/kiss_fft.c ../../lib/kissfft/kiss_fftr.c""")
 
 #Xing's non-free VBR header SDK thing (we need to get rid of this!)
 env.Append(CPPPATH='../../lib/vbrheadersdk/')
-#env.Append(INCLUDEPATH='#/lib/vbrheadersdk/')
 sources += Split("""../../lib/vbrheadersdk/dxhead.c""")
 
 #libsamplerate
@@ -288,15 +289,21 @@ elif platform == 'win32':
 
 #Parse command-line build flags
 
+
+print "\nFeatures:\n=========="
+
 #Python/lua scripting
 #flags_script = ARGUMENTS.get('script', 0) #Default value is 0
 #if int(flags_script):
-#    env.Append(CXXFLAGS = '-D__SCRIPT__ -D__LUA__ -D__PYTHON__')
-#    sources += Split("""script/*.cpp script/lua/*.cpp script/python/*.cpp""")
-#    env.ParseConfig('python-config --include --ldflags')
-#    env.Append(LIBS = 'lua')
-#    env.Append(LIBS = 'lualib')
-#    env.Append(LIBS = 'tulua')
+#	env.Append(CXXFLAGS = '-D__SCRIPT__ -D__LUA__ -D__PYTHON__')
+#	sources += Split("""script/*.cpp script/lua/*.cpp script/python/*.cpp""")
+#	env.ParseConfig('python-config --include --ldflags')
+#	env.Append(LIBS = 'lua')
+#	env.Append(LIBS = 'lualib')
+#	env.Append(LIBS = 'tulua')
+#	print "Python and Lua scripting... enabled"
+#else:
+#	print "Python and Lua scripting... disabled"
  #TODO: FINISH THIS! 
         
         
@@ -304,6 +311,9 @@ elif platform == 'win32':
 flags_hifieq = ARGUMENTS.get('hifieq', 0)
 if int(flags_hifieq) == 0:
 	env.Append(CXXFLAGS = '-D__LOFI__ -D__NO_INTTYPES__') #Enables old crappy EQs
+	print "High quality EQs... disabled"
+else:
+	print "High quality EQs... enabled"
 
 #Experimental BPM detection
 flags_experimentalbpm = ARGUMENTS.get('experimentalbpm', 0)
@@ -311,9 +321,11 @@ if int(flags_experimentalbpm):
 	env.Append(CXXFLAGS = '-D__EXPERIMENTAL_BPM__')
 	env.Append(LIBS = 'fftw3')
 	sources += "bpmdetect.cpp"
-
-#TODO: Print summary of compile flags.
-
+	print "Experimental BPM detection... enabled"
+else:
+	print "Experimental BPM dection... disabled"
+	
+print "==========\n"
 
 #Tell SCons to build Mixxx
 #=========================
