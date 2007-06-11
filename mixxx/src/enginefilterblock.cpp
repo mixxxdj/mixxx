@@ -35,15 +35,9 @@ EngineFilterBlock::EngineFilterBlock(const char *group)
 
     //EngineFilter doesn't have any denormal handling so we add a slight amount of noise
     //don't worry this will all be filtered out long before it gets to the output, and is
-    //far below the audible level
-    int rand_state = 1;
-
+    //far below the audible level.  Check enginefilterblock.h for SNR ratio.
     for(int i=0; i < SIZE_NOISE_BUF; i++){
-        rand_state = rand_state * 1234567UL + 890123UL;
-	rand_state = rand_state & 0x0FFFFFFFF;
-	int    mantissa = rand_state & 0x807F0000; // Keep only most significant bits
-        int   flt_rnd = mantissa | 0x1E000000;           // Set exponent
-	whiteNoiseBuf[i] = *reinterpret_cast <const float *> (&flt_rnd);
+	whiteNoiseBuf[i] = (CSAMPLE) ((double) mrand48() * NOISE_FACTOR);
     }
     
 #endif
@@ -120,11 +114,12 @@ void EngineFilterBlock::process(const CSAMPLE *pIn, const CSAMPLE *pOut, const i
 
 #ifndef __LOFI__
     //Add white noise to kill denormals
-    //CSAMPLE *buf = (CSAMPLE *) pIn;
-    //for(int i=0; i<iBufferSize; i++)
-    //{
-//	buf[i] = buf[i] + whiteNoiseBuf[ ++noiseCount % SIZE_NOISE_BUF ];
-  //  }
+    CSAMPLE *buf = (CSAMPLE *) pIn;
+    for(int i=0; i<iBufferSize; i++)
+    {
+	buf[i] = buf[i] + whiteNoiseBuf[ noiseCount ];
+	noiseCount = (noiseCount + 1) % SIZE_NOISE_BUF;
+    }
 #endif
     low->process(pIn, m_pTemp1, iBufferSize);
     band->process(pIn, m_pTemp2, iBufferSize);
