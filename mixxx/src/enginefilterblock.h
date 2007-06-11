@@ -24,6 +24,10 @@ class ControlLogpotmeter;
 class ControlPushButton;
 
 #define SIZE_NOISE_BUF 40
+#define NOISE_FACTOR 116.415321827e-12 // 1/4 bit of noise (99db SNR)
+                                       // this is necessary to prevent denormals
+                                       // from consuming too much CPU resources
+                                       // and is well below being audible.
 /**
   * Parallel processing of LP, BP and HP filters, and final mixing
   *
