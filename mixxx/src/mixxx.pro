@@ -518,13 +518,9 @@ contains(ENABLED_FEATURES, experimentalbpm) {
 }
 
 #fidlib
-DEFINES += __LOFI__
 DEFINES += __NO_INTTYPES__
-#contains(ENABLED_FEATURES, lofi){
-#   DEFINES += __LOFI__ #this disables fidlib and uses original filters
-#}
-contains(ENABLED_FEATURES, hifi){
-    DEFINES -= __LOFI__
+contains(ENABLED_FEATURES, oldeq){
+   DEFINES += __LOFI__ #this disables fidlib and uses original filters
 }
 
 INCLUDES += ../lib/fidlib-0.9.9/fidlib.h
