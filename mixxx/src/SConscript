@@ -32,6 +32,7 @@ if not conf.CheckLibWithHeader('m', 'math.h'):
 
 import os
 import sys
+import SCons
 
 # BIG FAT WARNING:
 # Make sure you use TABS for indentation, NOT spaces! (Python doesn't like spaces, be forewarned!)
@@ -60,9 +61,10 @@ def CheckOpenGL():
 	#Workaround for SCONS not detecting frameworks on OS X
 	if platform == 'osx':
 		env.Append(LINKFLAGS = '-framework OpenGL')
-	
-	return
 
+	return
+	
+#Checks for OpenGL on all three platforms
 def CheckOggVorbis():
 	#Check for Ogg and Vorbis on Linux and Win32
 	if platform == 'linux' or platform == 'win32':
@@ -91,6 +93,29 @@ def CheckOggVorbis():
 				
 	return
 
+def flatten(x):
+	"""flatten(sequence) -> list
+
+	Returns a single, flat list which contains all elements retrieved
+	from the sequence and all recursively contained sub-sequences
+    (iterables).
+
+    Examples:
+    >>> [1, 2, [3,4], (5,6)]
+    [1, 2, [3, 4], (5, 6)]
+    >>> flatten([[[1,2,3], (42,None)], [4,5], [6], 7, MyVector(8,9,10)])
+    [1, 2, 3, 42, None, 4, 5, 6, 7, 8, 9, 10]"""
+
+	result = []
+	for el in x:
+		#if isinstance(el, (list, tuple)):
+		if hasattr(el, "__iter__"):
+			result.extend(flatten(el))
+		else:
+			result.append(el)
+	return result
+
+
 #Get the platform/OS that we're building on:
 if os.name == 'nt':
 	print 'Platform: Windows'
@@ -117,8 +142,8 @@ else:
 
 
 #Set up our environment, tell SCONS to use it's QT tools, and set some enviroment variables for it.
-env = Environment(tools=['default','qt'], QTDIR=flags_qtdir, QT_LIB='qt-mt')
-        
+env = Environment(tools=['default','qt', 'msvs'], QTDIR=flags_qtdir, QT_LIB='qt-mt')
+       
 
 #env.Append(CPPPATH='.')
 
@@ -150,7 +175,7 @@ elif platform == 'osx':
 
 #Check for dependencies if we're not doing a clean...
 
-if not env.GetOption('clean'):
+if not env.GetOption('clean') and not SCons.Util.containsAny(os.sys.argv, ['-h', '--help']):
 	conf = Configure(env)
 
 	if not conf.CheckLibWithHeader('portaudio', 'portaudio.h', 'C'):
@@ -290,7 +315,7 @@ elif platform == 'win32':
 #Parse command-line build flags
 
 
-print "\nFeatures:\n=========="
+print "\nFeatures Summary:\n================"
 
 #Python/lua scripting
 #flags_script = ARGUMENTS.get('script', 0) #Default value is 0
@@ -323,13 +348,32 @@ if int(flags_experimentalbpm):
 	sources += "bpmdetect.cpp"
 	print "Experimental BPM detection... enabled"
 else:
-	print "Experimental BPM dection... disabled"
+	print "Experimental BPM detection... disabled"
 	
-print "==========\n"
+print "================\n"
+
+#Hijack scons -h and --help
+opts = Options('custom.py')
+opts.Add('djconsole', 'Set to 1 to enable Hercules support through libdjconsole', 0)
+opts.Add('hifieq', 'Set to 1 to enable high quality EQs', 0)
+opts.Add('experimentalbpm', 'Set to 1 to enable experimental BPM detection', 0)
+#env = Environment(options = opts)
+Help(opts.GenerateHelpText(env))
+
+
+#if 'msvc' in COMMAND_LINE_TARGETS:
+#	includes = os.listdir("src")
+#	includes = os.listdir("src/visual")
+#	env.MSVSProject(target = 'Mixxx' + env['MSVSPROJECTSUFFIX'], srcs = flatten(sources), incs = ['*.h', 'visual/*.h'], variant = 'Debug')
+
+
 
 #Tell SCons to build Mixxx
 #=========================
 env.Program('mixxx', sources)
+
+
+				
 
 #Copy mixxx from the .obj directory to the mixxx directory.
 #Command("../../mixxx", ".obj/mixxx", Copy("$TARGET", "$SOURCE")) 
