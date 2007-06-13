@@ -112,6 +112,12 @@ void WaveSummary::run()
             int iBeatLength = math_min(liLengthSamples, kiBeatBlockNo*kiBlockSize);
             int iBeatBlockLength = iBeatLength/(kiBlockSize/2);
             int iBeatPosStart = math_max(0,liLengthSamples/2-iBeatLength/2);
+	    if(iBeatPosStart %2 != 0)
+	    {
+		//Bug Fix: above formula allows iBeatPosStart
+		//to be odd (which is illegal)
+		iBeatPosStart--;
+	    }
             int iBeatPosEnd = math_min(liLengthSamples, iBeatPosStart+iBeatLength);
 
 #ifdef __EXPERIMENTAL_BPM__
