@@ -60,12 +60,30 @@
 #include "STTypes.h"
 #include "FIFOSampleBuffer.h"
 
+#ifdef __WIN__
+typedef signed char int8_t;
+typedef unsigned char uint8_t;
+typedef short int16_t;
+typedef unsigned short uint16_t;
+typedef long int32_t;
+typedef unsigned long uint32_t;
+typedef long long int64_t;
+typedef unsigned long long uint64_t;
+#endif
+
 /// Minimum allowed BPM rate. Used to restrict accepted result above a reasonable limit.
 #define MIN_BPM 45
 
 /// Maximum allowed BPM rate. Used to restrict accepted result below a reasonable limit.
 #define MAX_BPM 230
 
+/**
+ * @brief Correct BPM
+ * if value is lower than MINIMUM_BPM or higher than MAXIMUM_BPM
+ * @param BPM BPM to correct
+ * @return corrected BPM
+ */
+float Correct_BPM( float BPM );
 
 /// Class for calculating BPM rate for audio data.
 class BPMDetect
