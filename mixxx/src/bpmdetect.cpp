@@ -58,8 +58,8 @@
 #include <assert.h>
 #include <string.h>
 #include "FIFOSampleBuffer.h"
-#include "PeakFinder.h"
-#include "bpmDetect.h"
+#include "peakfinder.h"
+#include "bpmdetect.h"
 
 using namespace soundtouch;
 
