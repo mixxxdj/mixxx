@@ -511,14 +511,8 @@ contains(ENABLED_FEATURES, python) {
 }
 
 contains(ENABLED_FEATURES, experimentalbpm) {
-	HEADERS += bpmdetect.h
-	SOURCES += bpmdetect.cpp
-	unix{
-		LIBS+=-lfftw3
-	}
-	win32{
-		LIBS+=-llibfftw3-3
-	}
+	HEADERS += bpmdetect.h peakfinder.h
+	SOURCES += bpmdetect.cpp peakfinder.cpp
 	DEFINES += __EXPERIMENTAL_BPM__
 }
 
