@@ -126,43 +126,64 @@ void WaveSummary::run()
 			// New Bpm Implementation [GSOC]
 			//***********************************************************
 				
-			SAMPLE buffer[4096];
-			float fbuffer[4096];
-			double b=0;
-			int bound=0, current=0;
-			double pp=0.0;
+			//#define CHUNKSIZE 4096
+			//int16_t data16[ CHUNKSIZE / 2 ];  // for 16 bit samples
+			//int8_t  data8[ CHUNKSIZE ];       // for 8 bit samples
+			//SAMPLE samples[ CHUNKSIZE / 2 ];
+			//unsigned int length = 0, read, totalsteps = 0;
+			//int channels = 2, bits = 16;
+			//float frequency = 44100;
+			//length = pSoundSource->length();
+			//totalsteps = ( length / CHUNKSIZE );
+			//
+			//if(pTrackInfoObject->getSampleRate())
+			//{
+			//	frequency = pTrackInfoObject->getSampleRate();
+			//}
+			//if(pTrackInfoObject->getChannels())
+			//{
+			//	channels = pTrackInfoObject->getChannels();
+			//}
+			//if(pTrackInfoObject->getBitrate())
+			//{
+			//	bits = pTrackInfoObject->getBitrate();
+			//}
 
-			BpmDetect* bpmDetect = new BpmDetect(pSoundSource->getSrate());
-			int count;
-			
-			
+			//if ( bits != 16 && bits != 8 ) {
+			//  // TODO: Decide what to do here
+			//  //cerr << bits << " bit samples are not supported!" << endl;
+			//  return ;
+			//}
 
-			while(1)
-			{
-				pSoundSource->seek(0);
-				int max=pSoundSource->read(2056, buffer);
-			
-				for(count = 0; count < max; count++)
-				{
-					fbuffer[count] = buffer[count]/(float)SHRT_MAX;
-				}
-				if(max <= 0)
-					break;
+			////BPMDetect bpmd( channels, ( int ) frequency );
 
-				b=bpmDetect->run(fbuffer, max, &current, &bound);
-				if(b == INDETERMINATE)
-					break;
-				if(b == NEED_MORE_DATA)
-				{
-					if(current == 0 && bound == 0)
-						continue;
+			//int cprogress = 0;
+			//do {
+			//  if ( bits == 16 ) {
+			//	result = FMOD_Sound_ReadData( sound, data16, CHUNKSIZE, &read );
+			//	for ( unsigned int i = 0; i < read / 2; i++ ) {
+			//	  samples[ i ] = ( float ) data16[ i ] / 32768;
+			//	}
+			//	bpmd.inputSamples( samples, read / ( 2 * channels ) );
+			//  } else if ( bits == 8 ) {
+			//	result = FMOD_Sound_ReadData( sound, data8, CHUNKSIZE, &read );
+			//	for ( unsigned int i = 0; i < read; i++ ) {
+			//	  samples[ i ] = ( float ) data8[ i ] / 128;
+			//	}
+			//	bpmd.inputSamples( samples, read / channels );
+			//  }
+			//  cprogress++;
+			//  if ( cprogress % 250 == 0 ) {
+			//	/// @todo printing status (cprogress/totalsteps)
+			//  }
+			//} while ( result == FMOD_OK && read == CHUNKSIZE );
+			//FMOD_Sound_Release(sound); sound = 0;
 
-					continue;
-				}
-				break;
-			}
-
-			pTrackInfoObject->setBpm(66.6);
+			//float BPM = bpmd.getBpm();
+			//if ( BPM != 0. ) {
+			//  BPM = Correct_BPM( BPM );
+			//
+			//pTrackInfoObject->setBpm(BPM);
 		
 			//*************************************************************
 			//*************************************************************
