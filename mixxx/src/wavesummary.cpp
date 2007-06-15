@@ -30,6 +30,7 @@
 
 #ifdef __EXPERIMENTAL_BPM__
 #include "bpmdetect.h"
+#include <STTypes.h>
 #endif
 
 #include <qdatetime.h>
@@ -123,67 +124,77 @@ void WaveSummary::run()
 #ifdef __EXPERIMENTAL_BPM__
 
 			//***********************************************************
-			// New Bpm Implementation [GSOC]
+			// Experimental Bpm Implementation [GSOC]
 			//***********************************************************
 				
-			//#define CHUNKSIZE 4096
-			//int16_t data16[ CHUNKSIZE / 2 ];  // for 16 bit samples
-			//int8_t  data8[ CHUNKSIZE ];       // for 8 bit samples
-			//SAMPLE samples[ CHUNKSIZE / 2 ];
-			//unsigned int length = 0, read, totalsteps = 0;
-			//int channels = 2, bits = 16;
-			//float frequency = 44100;
-			//length = pSoundSource->length();
-			//totalsteps = ( length / CHUNKSIZE );
-			//
-			//if(pTrackInfoObject->getSampleRate())
-			//{
-			//	frequency = pTrackInfoObject->getSampleRate();
-			//}
-			//if(pTrackInfoObject->getChannels())
-			//{
-			//	channels = pTrackInfoObject->getChannels();
-			//}
-			//if(pTrackInfoObject->getBitrate())
-			//{
-			//	bits = pTrackInfoObject->getBitrate();
-			//}
+			#define CHUNKSIZE 4096
+			int16_t data16[ CHUNKSIZE / 2 ];  // for 16 bit samples
+			int8_t  data8[ CHUNKSIZE ];       // for 8 bit samples
+			soundtouch::SAMPLETYPE samples[ CHUNKSIZE / 2 ];
+			unsigned int length = 0, read, totalsteps = 0;
+			int channels = 2, bits = 16;
+			float frequency = 44100;
+			length = pSoundSource->length();
+			totalsteps = ( length / CHUNKSIZE );
+			
+			if(pTrackInfoObject->getSampleRate())
+			{
+				frequency = pTrackInfoObject->getSampleRate();
+			}
+			if(pTrackInfoObject->getChannels())
+			{
+				channels = pTrackInfoObject->getChannels();
+			}
+			if(pTrackInfoObject->getBitrate())
+			{
+				bits = pTrackInfoObject->getBitrate();
+			}
 
-			//if ( bits != 16 && bits != 8 ) {
-			//  // TODO: Decide what to do here
-			//  //cerr << bits << " bit samples are not supported!" << endl;
-			//  return ;
-			//}
+			if ( bits != 16 && bits != 8 ) {
+			  // TODO: Decide what to do here
+			  //cerr << bits << " bit samples are not supported!" << endl;
+			  return ;
+			}
 
-			////BPMDetect bpmd( channels, ( int ) frequency );
+			BPMDetect bpmd( channels, ( int ) frequency );
 
-			//int cprogress = 0;
-			//do {
-			//  if ( bits == 16 ) {
-			//	result = FMOD_Sound_ReadData( sound, data16, CHUNKSIZE, &read );
-			//	for ( unsigned int i = 0; i < read / 2; i++ ) {
-			//	  samples[ i ] = ( float ) data16[ i ] / 32768;
-			//	}
-			//	bpmd.inputSamples( samples, read / ( 2 * channels ) );
-			//  } else if ( bits == 8 ) {
-			//	result = FMOD_Sound_ReadData( sound, data8, CHUNKSIZE, &read );
-			//	for ( unsigned int i = 0; i < read; i++ ) {
-			//	  samples[ i ] = ( float ) data8[ i ] / 128;
-			//	}
-			//	bpmd.inputSamples( samples, read / channels );
-			//  }
-			//  cprogress++;
-			//  if ( cprogress % 250 == 0 ) {
-			//	/// @todo printing status (cprogress/totalsteps)
-			//  }
-			//} while ( result == FMOD_OK && read == CHUNKSIZE );
-			//FMOD_Sound_Release(sound); sound = 0;
+			int cprogress = 0;
+			do {
+			  if ( bits == 16 ) {
 
-			//float BPM = bpmd.getBpm();
-			//if ( BPM != 0. ) {
-			//  BPM = Correct_BPM( BPM );
-			//
-			//pTrackInfoObject->setBpm(BPM);
+			    //****************************************************
+			    // Replace:
+				//result = FMOD_Sound_ReadData( sound, data16, CHUNKSIZE, &read );
+
+		        //****************************************************
+				for ( unsigned int i = 0; i < read / 2; i++ ) {
+				  samples[ i ] = ( float ) data16[ i ] / 32768;
+				}
+				bpmd.inputSamples( samples, read / ( 2 * channels ) );
+			  } else if ( bits == 8 ) {
+
+				//****************************************************
+				// Replace:
+				//result = FMOD_Sound_ReadData( sound, data8, CHUNKSIZE, &read );
+				//****************************************************
+				
+				  for ( unsigned int i = 0; i < read; i++ ) {
+				  samples[ i ] = ( float ) data8[ i ] / 128;
+				}
+				bpmd.inputSamples( samples, read / channels );
+			  }
+			  cprogress++;
+			  if ( cprogress % 250 == 0 ) {
+				/// @todo printing status (cprogress/totalsteps)
+			  }
+			} while ( /*result == FMOD_OK &&*/ read == CHUNKSIZE );
+
+			float BPM = bpmd.getBpm();
+			if ( BPM != 0. ) {
+			  BPM = Correct_BPM( BPM );
+			}
+			
+			pTrackInfoObject->setBpm(BPM);
 		
 			//*************************************************************
 			//*************************************************************

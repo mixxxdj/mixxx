@@ -75,6 +75,17 @@ const float avgdecay = 0.99986f;
 /// Normalization coefficient for calculating RMS sliding average approximation.
 const float avgnorm = (1 - avgdecay);
 
+float Correct_BPM( float BPM ) {
+  if ( BPM == 0. )
+    return BPM;
+
+  while ( BPM > MAX_BPM )
+    BPM /= 2;
+  while ( BPM < MIN_BPM )
+    BPM *= 2;
+
+  return BPM;
+}
 
 
 BPMDetect::BPMDetect(int numChannels, int sampleRate)
