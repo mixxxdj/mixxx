@@ -42,7 +42,7 @@
 #include <math.h>
 #include <assert.h>
 
-#include "PeakFinder.h"
+#include "peakfinder.h"
 
 
 PeakFinder::PeakFinder()
