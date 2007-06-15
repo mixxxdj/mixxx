@@ -335,7 +335,7 @@ include( check.qbas )
 #----
 
 #    EXPERIMENTAL BPM
-OBJECT=fftw3.h
+#OBJECT=fftw3.h
 TYPE=header
 OPTIONS=disable_feature
 DESCRIPTION=Experimental BPM Detection
