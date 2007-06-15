@@ -49,6 +49,7 @@ public:
     ~WaveSummary();
     /** Puts an TrackInfoObject into the queue of summary generation. Thread safe, blocking. */
     void enqueue(TrackInfoObject *pTrackInfoObject);
+	void extractBeat(TrackInfoObject *pTrackInfoObject);
 
 protected:
     /** Main thread loop */
