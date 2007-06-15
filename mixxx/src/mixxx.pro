@@ -513,7 +513,12 @@ contains(ENABLED_FEATURES, python) {
 contains(ENABLED_FEATURES, experimentalbpm) {
 	HEADERS += bpmdetect.h
 	SOURCES += bpmdetect.cpp
-	LIBS+=-lfftw3
+	unix{
+		LIBS+=-lfftw3
+	}
+	win32{
+		LIBS+=-llibfftw3-3
+	}
 	DEFINES += __EXPERIMENTAL_BPM__
 }
 
