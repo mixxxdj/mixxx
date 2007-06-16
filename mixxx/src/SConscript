@@ -304,7 +304,7 @@ sources += Split("""enginebufferscalesrc.cpp ../../lib/libsamplerate/samplerate.
 
 #fidlib (for EQs)
 env.Append(CPPPATH='../../lib/fidlib-0.9.9/')
-sources += Split("""../../lib/fidlib-0.9.9/fidlib.c""")
+sources += Split("""../../lib/fidlib-0.9.9/fidlib.c """)
 #Platform-specific defines needed for fidlib
 if platform == 'linux' or platform == 'osx':
 	env.Append(CCFLAGS = '-DT_LINUX')
@@ -344,11 +344,11 @@ else:
 flags_experimentalbpm = ARGUMENTS.get('experimentalbpm', 0)
 if int(flags_experimentalbpm):
 	env.Append(CXXFLAGS = '-D__EXPERIMENTAL_BPM__')
-	sources += "bpmdetect.cpp"
+	sources += Split("""bpmdetect.cpp """)
 	print "Experimental BPM detection... enabled"
 else:
 	print "Experimental BPM detection... disabled"
-	
+
 print "================\n"
 
 #Hijack scons -h and --help
@@ -356,6 +356,8 @@ opts = Options('custom.py')
 opts.Add('djconsole', 'Set to 1 to enable Hercules support through libdjconsole', 0)
 opts.Add('hifieq', 'Set to 1 to enable high quality EQs', 0)
 opts.Add('experimentalbpm', 'Set to 1 to enable experimental BPM detection', 0)
+opts.Add('qtdir', 'Set to your QT3 directory', '/usr/share/qt3')
+opts.Add('prefix', 'Set to your install prefix', '/usr/local')
 #env = Environment(options = opts)
 Help(opts.GenerateHelpText(env))
 
@@ -369,11 +371,39 @@ Help(opts.GenerateHelpText(env))
 
 #Tell SCons to build Mixxx
 #=========================
-env.Program('mixxx', sources)
+mixxx_bin = env.Program('mixxx', sources)
 
 
-				
+#Set up the install targets
+#=========================
+"""
+flags_prefix = ARGUMENTS.get('prefix', '/usr/local')
+if not os.path.exists(flags_prefix):
+	print "Error: Prefix path does not exist!"
+	Exit(1)
+else:
+	unix_share_path = flags_prefix + "/share"
+	unix_bin_path   = flags_prefix + "/bin"
+	
+	env.Install(unix_bin_path, mixxx_bin) #Mixxx binary
+	
+	#Skins
+	env.Install(unix_share_path+ "/skins/outline", "skins/outline/*"
+	#MIDI mappings
+	
+	#Keyboard mapping(s)
+	
+	#Documentation
+	
+	#.desktop file for KDE/GNOME menu
+	
+	#Icon file for menu entry
 
+	#env.Install(prefix, goodbye)
+	#env.Alias('install', prefix)
+
+"""
 #Copy mixxx from the .obj directory to the mixxx directory.
-#Command("../../mixxx", ".obj/mixxx", Copy("$TARGET", "$SOURCE")) 
+#Command("../../mixxx", ".obj/mixxx", Copy("$TARGET", "$SOURCE"))
+
 
