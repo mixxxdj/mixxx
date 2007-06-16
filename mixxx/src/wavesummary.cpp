@@ -92,7 +92,7 @@ void WaveSummary::run()
 
 		// Check if preview has been generated in the meantime
 		QMemArray<char> *p = pTrackInfoObject->getWaveSummary();
-		if (!p || p->size()==0 || pTrackInfoObject->getBpm()==0)
+		if (!p || p->size()==0 || pTrackInfoObject->getBpmConfirm() == false)
 		{
 			// Open sound file
 			SoundSourceProxy *pSoundSource = new SoundSourceProxy(pTrackInfoObject);
@@ -286,7 +286,21 @@ void WaveSummary::extractBeat(TrackInfoObject *pTrackInfoObject)
 	unsigned int length = 0, read = 0, totalsteps = 0, pos = 0;
 	int channels = 2, bits = 16;
 	float frequency = 44100;
-	length = pSoundSource->length();
+
+	if(pTrackInfoObject->getType() == "ogg")
+	{
+		length = pTrackInfoObject->getLength();
+	}
+	else if(pTrackInfoObject->getType() == "mp3")
+	{
+		length = pSoundSource->length();
+	}
+	else
+	{
+		length = pSoundSource->length();
+	}
+
+
 	totalsteps = ( length / CHUNKSIZE );
 
 	if(pTrackInfoObject->getSampleRate())
@@ -302,20 +316,11 @@ void WaveSummary::extractBeat(TrackInfoObject *pTrackInfoObject)
 		bits = pTrackInfoObject->getBitrate();
 	}
 
-	if ( bits != 16 && bits != 8 ) {
-		// TODO: Decide what to do here
-		qDebug("%d bit samples are not supported!",pTrackInfoObject->getFilename().latin1());
-		return ;
-	}
-
 	BPMDetect bpmd( channels, ( int ) frequency );
 
 	int cprogress = 0;
-	pos += pSoundSource->seek(pos);
+	pSoundSource->seek(pos);
 	do {
-		if ( bits == 16 ) {
-
-
 			read = pSoundSource->read(CHUNKSIZE, data16);
 			pos += read;
 
@@ -324,7 +329,7 @@ void WaveSummary::extractBeat(TrackInfoObject *pTrackInfoObject)
 			//result = FMOD_Sound_ReadData( sound, data16, CHUNKSIZE, &read );
 
 			//****************************************************
-			for ( unsigned int i = 0; i < read / 2; i++ ) {
+			for ( unsigned int i = 0; i < read/2 ; i++ ) {
 				int16_t test = data16[i];
 				if(test > 0)
 				{
@@ -333,33 +338,151 @@ void WaveSummary::extractBeat(TrackInfoObject *pTrackInfoObject)
 				samples[ i ] = ( float ) data16[ i ] / 32768;
 			}
 			bpmd.inputSamples( samples, read / ( 2 * channels ) );
-		} else if ( bits == 8 ) {
-
-
-			read = pSoundSource->read(CHUNKSIZE, (SAMPLE*)data8);
-			pos += read;
-			//****************************************************
-			// Replace:
-			//result = FMOD_Sound_ReadData( sound, data8, CHUNKSIZE, &read );
-			//****************************************************
-
-			for ( unsigned int i = 0; i < read; i++ ) {
-				samples[ i ] = ( float ) data8[ i ] / 128;
-			}
-			bpmd.inputSamples( samples, read / channels );
-		}
+		
 		cprogress++;
 		if ( cprogress % 250 == 0 ) {
 			/// @todo printing status (cprogress/totalsteps)
 		}
-	} while ( /*result == FMOD_OK &&*/ (pos + CHUNKSIZE) < length );
+	} while ( /*result == FMOD_OK &&*/ pos < length );
 
 	float BPM = bpmd.getBpm();
 	if ( BPM != 0. ) {
 		BPM = Correct_BPM( BPM );
+		pTrackInfoObject->setBpm(BPM);
+		pTrackInfoObject->setBpmConfirm();
+		delete pSoundSource;
+		return;
 	}
 
-	pTrackInfoObject->setBpm(BPM);
+	qDebug("BPM detection failed the first time. Trying old version.");
+	
+	// *********************************************************************
+	// At this point the new BPM detection failed to extract a BPM. So,
+	// we will fallback to the old detection algorithm in hopes of obtaining
+	// a usable BPM estimation. If this also fails, then it is likely there
+	// isn't a way with existing BPM detection algorithms to accurately 
+	// estimate the BPM for this song. In that case the user will need to
+	// manually enter the bpm or tap it.
+	// *********************************************************************
+
+
+	// Allocate temp buffer
+			SAMPLE *pBuffer = new SAMPLE[kiBlockSize*2];
+
+	// Beat is extracted from the middle region of the sound file. Here the 
+	// min and max indexes are the boundaries of that region.
+	int iBeatLength = math_min(length, kiBeatBlockNo*kiBlockSize);
+	int iBeatBlockLength = iBeatLength/(kiBlockSize/2);
+	int iBeatPosStart = math_max(0,length/2-iBeatLength/2);
+
+	if(iBeatPosStart %2 != 0)
+	{
+		//Bug Fix: above formula allows iBeatPosStart
+		//to be odd (which is illegal)
+		iBeatPosStart--;
+	}
+	int iBeatPosEnd = math_min(length, iBeatPosStart+iBeatLength);
+
+
+	// Allocate buffer for first derivative of the PSF vector          
+	float *pDPsf = new float[iBeatBlockLength];
+
+	long liPos = pSoundSource->seek(iBeatPosStart);
+	liPos += pSoundSource->read(kiBlockSize, pBuffer);
+	int j = 0;
+	while (liPos<iBeatPosEnd)
+	{
+		// Mix to mono, rectangular window
+		for (int m=0; m<kiBlockSize; ++m)
+			windowedSamples[m] = (pBuffer[m*2]+pBuffer[m*2+1])*0.5; //*windowPtr[m];
+
+		// Perform FFT
+		m_pEngineSpectralFwd->process(windowedSamples, 0, kiBlockSize);
+
+		// Get PSF
+		pDPsf[j] = m_pEngineSpectralFwd->getPSF();
+
+		j++;
+
+		// Read a new block of samples
+		liPos += pSoundSource->read(kiBlockSize, pBuffer);
+
+		//qDebug("liPos, iBeatPosEnd: %i, %i", liPos, iBeatPosEnd);
+	}
+
+	int i;
+	// Take derivate of PSF
+	for (i=0; i<iBeatBlockLength-1; ++i)
+		pDPsf[i+1] = math_max(0.,pDPsf[i+1]-pDPsf[i]);
+	pDPsf[0] = 0.;
+
+	// Construct list of peaks
+	PeakList *pPeaks = new PeakList(iBeatBlockLength, pDPsf);
+	pPeaks->update(0, iBeatBlockLength);
+
+	// Initialize beat probability vector
+	ProbabilityVector *bpv = new ProbabilityVector(60.f/histMaxBPM, 60.f/histMinBPM, kiBeatBins);
+
+	// Calculate BPM
+	PeakList::iterator it1 = pPeaks->begin();
+
+	if (it1!=pPeaks->end())
+		it1++;
+
+	while (it1!=pPeaks->end())
+	{
+		PeakList::iterator it2 = it1;
+		it2--;
+		bool bInRange = true;
+		while (bInRange)
+		{
+			// Interval in seconds between current peak (it) and a previous peak (it2)
+			float interval = pPeaks->getDistance(it2,it1)/((float)pSoundSource->getSrate()/float(kiBlockSize));
+
+			// Update beat probability vector
+			if (interval<60.f/histMinBPM)
+				bpv->add(interval, pDPsf[(*it1).i]*pDPsf[(*it2).i]);
+
+			if (it2==pPeaks->begin() || interval>=60.f/histMinBPM)
+				bInRange = false;
+			else
+				it2--;
+		}
+		it1++;
+	}           
+
+	// Update BPM value in TrackInfoObject
+	if (!pTrackInfoObject->getBpmConfirm()) {
+		pTrackInfoObject->setBpm(bpv->getBestBpmValue());
+
+		float conf = bpv->getBestBpmConfidence() / (float)1e10;
+
+		// FIXME: This is in the wrong file
+		if (conf > 1000.0f || conf < 0.0f) {
+			// Something went pretty wrong there...
+			conf = 0.0f;
+		}
+
+		conf = math_max(0., math_min(1., conf));
+
+		if (conf > 0.75f)
+		{
+			pTrackInfoObject->setBpmConfirm(true);
+		}
+		else
+		{
+			// Let the user know we can't accurately detect the BPM and that they'd better tap it.
+			qDebug("BPM detection failed!");
+		}
+	}
+
+	delete [] pBuffer;
+	delete [] pDPsf;
+	delete pPeaks;
+	delete bpv;
+	delete pSoundSource;
+
+
 #endif
 }
 
