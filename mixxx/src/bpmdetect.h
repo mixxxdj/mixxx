@@ -72,10 +72,10 @@ typedef unsigned long long uint64_t;
 #endif
 
 /// Minimum allowed BPM rate. Used to restrict accepted result above a reasonable limit.
-#define MIN_BPM 45
+#define MIN_BPM 75
 
 /// Maximum allowed BPM rate. Used to restrict accepted result below a reasonable limit.
-#define MAX_BPM 230
+#define MAX_BPM 170
 
 /**
  * @brief Correct BPM
