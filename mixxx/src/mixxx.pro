@@ -436,6 +436,10 @@ DEFINES += TEMPORAL
 # RECORDING SOUND
 unix:LIBS += -laudiofile
 
+# BPM Extraction
+SOURCES += bpmdetect.cpp peakfinder.cpp
+HEADERS += bpmdetect.h peakfinder.h
+
 # Waveform summary
 SOURCES += wavesummary.cpp wavesegmentation.cpp soundsourceproxy.cpp woverview.cpp
 HEADERS += wavesummary.h wavesegmentation.h soundsourceproxy.h woverview.h
@@ -511,9 +515,7 @@ contains(ENABLED_FEATURES, python) {
 }
 
 contains(ENABLED_FEATURES, experimentalbpm) {
-	HEADERS += bpmdetect.h peakfinder.h
-	SOURCES += bpmdetect.cpp peakfinder.cpp
-	DEFINES += __EXPERIMENTAL_BPM__
+    DEFINES += __EXPERIMENTAL_BPM__
 }
 
 #fidlib
