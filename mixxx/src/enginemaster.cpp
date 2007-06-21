@@ -25,9 +25,11 @@
 #include "engineclipping.h"
 #include "engineflanger.h"
 #include "enginevumeter.h"
+#include "enginerecord.h"
 // #include "enginebuffermasterrate.h"
 
-EngineMaster::EngineMaster(EngineBuffer *_buffer1, EngineBuffer *_buffer2,
+EngineMaster::EngineMaster(ConfigObject<ConfigValue> *_config,
+			   EngineBuffer *_buffer1, EngineBuffer *_buffer2,
                            EngineChannel *_channel1, EngineChannel *_channel2,
                            const char *group)
 {
@@ -96,10 +98,13 @@ EngineMaster::EngineMaster(EngineBuffer *_buffer1, EngineBuffer *_buffer2,
     m_pTemp2 = new CSAMPLE[MAX_BUFFER_LEN];
     m_pHead = new CSAMPLE[MAX_BUFFER_LEN];
     m_pMaster = new CSAMPLE[MAX_BUFFER_LEN];
+
+    rec = new EngineRecord(_config);
 }
 
 EngineMaster::~EngineMaster()
 {
+    qDebug("in ~EngineMaster()");
     delete crossfader;
     delete m_pBalance;
     delete head_mix;
@@ -113,6 +118,7 @@ EngineMaster::~EngineMaster()
     delete [] m_pTemp2;
     delete [] m_pHead;
     delete [] m_pMaster;
+    delete rec;
 }
 
 void EngineMaster::setPitchIndpTimeStretch(bool b)
@@ -241,7 +247,8 @@ void EngineMaster::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBuff
         balleft -= bal;
     else if (bal<0.)
         balright += bal;
-
+    
+    rec->process(m_pMaster, m_pMaster, iBufferSize);
     for (int i=0; i<iBufferSize; i+=2)
     {
         // Interleave the output and the headphone channels, and perform balancing on main out

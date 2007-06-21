@@ -136,7 +136,7 @@ MixxxApp::MixxxApp(QApplication *a, QStringList files, QSplashScreen *pSplash, Q
     channel2 = new EngineChannel("[Channel2]");
 
     // Starting the master (mixing of the channels and effects):
-    master = new EngineMaster(buffer1, buffer2, channel1, channel2, "[Master]");
+    master = new EngineMaster(config, buffer1, buffer2, channel1, channel2, "[Master]");
 
     // Initialize player device
     Player::setMaster(master);
@@ -332,7 +332,7 @@ MixxxApp::~MixxxApp()
 
     qDebug("close player, %i",qTime.elapsed());
     player->close();
-
+    qDebug("player->close() done");
     // Save state of End of track controls in config database
     config->set(ConfigKey("[Controls]","TrackEndModeCh1"), ConfigValue((int)ControlObject::getControl(ConfigKey("[Channel1]","TrackEndMode"))->get()));
     config->set(ConfigKey("[Controls]","TrackEndModeCh2"), ConfigValue((int)ControlObject::getControl(ConfigKey("[Channel2]","TrackEndMode"))->get()));
@@ -372,7 +372,7 @@ MixxxApp::~MixxxApp()
     // FWI: Begin of fullscreen patch
     delete frame;
     // FWI: End of fullscreen patch
-
+    delete master;
 #ifdef __WIN__
 	_exit(0);
 #endif

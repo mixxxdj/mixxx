@@ -15,6 +15,7 @@
  *                                                                         *
  ***************************************************************************/
 
+#include "dlgprefrecord.h"
 #include "dlgpreferences.h"
 #include "dlgprefsound.h"
 #include "dlgprefmidi.h"
@@ -40,6 +41,7 @@ DlgPreferences::DlgPreferences(MixxxApp *mixxx, MixxxView *view,
     wplaylist = new DlgPrefPlaylist(this, config);
     wcontrols = new DlgPrefControls(this, view, mixxx, config);
     wmixer = new DlgPrefMixer(this, config);
+    wrecord = new DlgPrefRecord(this, config);
 
     // Add tabs
     addTab(wsound,    "Sound output");
@@ -47,6 +49,7 @@ DlgPreferences::DlgPreferences(MixxxApp *mixxx, MixxxView *view,
     addTab(wcontrols, "GUI");
     addTab(wplaylist, "Playlists");
     addTab(wmixer,    "Mixer Profile");
+    addTab(wrecord,   "Recording");
 
     // Add closebutton
     setOkButton("Close");
@@ -64,12 +67,14 @@ DlgPreferences::DlgPreferences(MixxxApp *mixxx, MixxxView *view,
     connect(this,        SIGNAL(aboutToShow()),          wplaylist, SLOT(slotUpdate()));
     connect(this,        SIGNAL(aboutToShow()),          wcontrols, SLOT(slotUpdate()));
     connect(this,	 SIGNAL(aboutToShow()),		 wmixer,    SLOT(slotUpdate()));
+    connect(this,	 SIGNAL(aboutToShow()),		 wrecord,   SLOT(slotUpdate()));
 //    connect(this,        SIGNAL(closeDlg()),             wsound,    SLOT(slotApply()));
     connect(this,        SIGNAL(closeDlg()),             wmidi,     SLOT(slotApply()));
     connect(this,        SIGNAL(closeDlg()),             wplaylist, SLOT(slotApply()));
     connect(this,        SIGNAL(closeDlg()),             wcontrols, SLOT(slotApply()));
     connect(this,        SIGNAL(closeDlg()),             this, SLOT(slotApply()));
     connect(this,	 SIGNAL(closeDlg()),		 wmixer,    SLOT(slotApply()));
+    connect(this,	 SIGNAL(closeDlg()),		 wrecord,   SLOT(slotApply()));
 
 //    if (tracklist->wTree)
 //        connect(wplaylist,   SIGNAL(apply(QString,QString)),         tracklist->wTree, SLOT(slotSetDirs(QString,QString)));
