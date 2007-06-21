@@ -29,6 +29,7 @@ class EngineVuMeter;
 class ControlPotmeter;
 class ControlPushButton;
 class ControlObject;
+class EngineRecord;
 // class EngineBufferMasterRate;
 
 /**
@@ -38,7 +39,8 @@ class ControlObject;
 class EngineMaster : public EngineObject
 {
 public:
-    EngineMaster(EngineBuffer *buffer1, EngineBuffer *buffer2,
+    EngineMaster(ConfigObject<ConfigValue> *_config,
+                 EngineBuffer *buffer1, EngineBuffer *buffer2,
                  EngineChannel *, EngineChannel *, const char *group);
     ~EngineMaster();
     /** Reconfigures the EngineBufferScaleSRC objects with the sound quality written in the config database */
@@ -53,6 +55,7 @@ private:
     EngineVuMeter *vumeter;
     EngineVolume *volume1, *volume2;
     EngineVuMeter *vumeter1, *vumeter2;
+    EngineRecord *rec;
 
 //     EngineBufferMasterRate *m_pEngineBufferMasterRate;
         
