@@ -29,7 +29,7 @@ EngineRecord::EngineRecord(ConfigObject<ConfigValue> *_config)
     curBuf1 = true;
     config = _config;
     fOut = new WriteAudioFile(_config);
-    QThread::start();
+    //QThread::start();
 }
 
 EngineRecord::~EngineRecord()
@@ -43,6 +43,8 @@ EngineRecord::~EngineRecord()
 void EngineRecord::process(const CSAMPLE *pIn, const CSAMPLE *pOut, const int iBufferSize)
 {
     CSAMPLE *Out = (CSAMPLE*) pOut;
+    fOut->write(pIn, iBufferSize);
+/*
     if(curBuf1)
     {
 	mutex1.lock();
@@ -81,6 +83,7 @@ void EngineRecord::process(const CSAMPLE *pIn, const CSAMPLE *pOut, const int iB
 	mutex2.unlock();
 	waitCond2.wakeAll();
     }
+*/
 }
 
 
