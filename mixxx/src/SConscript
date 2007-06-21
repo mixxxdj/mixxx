@@ -355,6 +355,12 @@ if int(flags_experimentalbpm):
 else:
 	print "Experimental BPM detection... disabled"
 
+#Experimental Recording
+flags_experimentalrecording = ARGUMENTS.get('experimentalrecord', 0)
+if int(flags_experimentalrecording):
+	env.Append(CXXFLAGS = '-D__EXPERIMENTAL_RECORDING__')
+
+
 print "================\n"
 
 #Hijack scons -h and --help
@@ -364,6 +370,7 @@ opts.Add('hifieq', 'Set to 1 to enable high quality EQs', 0)
 opts.Add('experimentalbpm', 'Set to 1 to enable experimental BPM detection', 0)
 opts.Add('qtdir', 'Set to your QT3 directory', '/usr/share/qt3')
 opts.Add('prefix', 'Set to your install prefix', '/usr/local')
+opts.Add('experimentalrecord', 'Set to 1 to enable experimental recording feature')
 #env = Environment(options = opts)
 Help(opts.GenerateHelpText(env))
 

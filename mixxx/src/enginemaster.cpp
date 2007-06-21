@@ -98,8 +98,9 @@ EngineMaster::EngineMaster(ConfigObject<ConfigValue> *_config,
     m_pTemp2 = new CSAMPLE[MAX_BUFFER_LEN];
     m_pHead = new CSAMPLE[MAX_BUFFER_LEN];
     m_pMaster = new CSAMPLE[MAX_BUFFER_LEN];
-
+#ifdef __EXPERIMENTAL_RECORDING__
     rec = new EngineRecord(_config);
+#endif
 }
 
 EngineMaster::~EngineMaster()
@@ -247,8 +248,9 @@ void EngineMaster::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBuff
         balleft -= bal;
     else if (bal<0.)
         balright += bal;
-    
+#ifdef __EXPERIMENTAL_RECORDING__
     rec->process(m_pMaster, m_pMaster, iBufferSize);
+#endif
     for (int i=0; i<iBufferSize; i+=2)
     {
         // Interleave the output and the headphone channels, and perform balancing on main out

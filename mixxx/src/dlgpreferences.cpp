@@ -41,7 +41,9 @@ DlgPreferences::DlgPreferences(MixxxApp *mixxx, MixxxView *view,
     wplaylist = new DlgPrefPlaylist(this, config);
     wcontrols = new DlgPrefControls(this, view, mixxx, config);
     wmixer = new DlgPrefMixer(this, config);
+#ifdef __EXPERIMENTAL_RECORDING__
     wrecord = new DlgPrefRecord(this, config);
+#endif
 
     // Add tabs
     addTab(wsound,    "Sound output");
@@ -49,7 +51,9 @@ DlgPreferences::DlgPreferences(MixxxApp *mixxx, MixxxView *view,
     addTab(wcontrols, "GUI");
     addTab(wplaylist, "Playlists");
     addTab(wmixer,    "Mixer Profile");
+#ifdef __EXPERIMENTAL_RECORDING__
     addTab(wrecord,   "Recording");
+#endif
 
     // Add closebutton
     setOkButton("Close");
@@ -67,15 +71,18 @@ DlgPreferences::DlgPreferences(MixxxApp *mixxx, MixxxView *view,
     connect(this,        SIGNAL(aboutToShow()),          wplaylist, SLOT(slotUpdate()));
     connect(this,        SIGNAL(aboutToShow()),          wcontrols, SLOT(slotUpdate()));
     connect(this,	 SIGNAL(aboutToShow()),		 wmixer,    SLOT(slotUpdate()));
+#ifdef __EXPERIMENTAL_RECORDING__
     connect(this,	 SIGNAL(aboutToShow()),		 wrecord,   SLOT(slotUpdate()));
+#endif
 //    connect(this,        SIGNAL(closeDlg()),             wsound,    SLOT(slotApply()));
     connect(this,        SIGNAL(closeDlg()),             wmidi,     SLOT(slotApply()));
     connect(this,        SIGNAL(closeDlg()),             wplaylist, SLOT(slotApply()));
     connect(this,        SIGNAL(closeDlg()),             wcontrols, SLOT(slotApply()));
     connect(this,        SIGNAL(closeDlg()),             this, SLOT(slotApply()));
     connect(this,	 SIGNAL(closeDlg()),		 wmixer,    SLOT(slotApply()));
-    connect(this,	 SIGNAL(closeDlg()),		 wrecord,   SLOT(slotApply()));
-
+#ifdef __EXPERIMENTAL_RECORDING__
+   connect(this,	 SIGNAL(closeDlg()),		 wrecord,   SLOT(slotApply()));
+#endif
 //    if (tracklist->wTree)
 //        connect(wplaylist,   SIGNAL(apply(QString,QString)),         tracklist->wTree, SLOT(slotSetDirs(QString,QString)));
     if (view->m_pTreeView)
