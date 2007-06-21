@@ -17,6 +17,7 @@
 #include "enginerecord.h"
 #include "controllogpotmeter.h"
 #include "configobject.h"
+#include "dlgprefrecord.h"
 
 EngineRecord::EngineRecord(ConfigObject<ConfigValue> *_config)
 {
@@ -34,7 +35,7 @@ EngineRecord::EngineRecord(ConfigObject<ConfigValue> *_config)
     write->size = DEFAULT_BUFSIZE;
     write->data = new CSAMPLE[fill->size];
     write->valid = 0;
-    //QThread::start();
+    QThread::start();
 }
 
 EngineRecord::~EngineRecord()
@@ -63,6 +64,15 @@ void EngineRecord::process(const CSAMPLE *pIn, const CSAMPLE *pOut, const int iB
 	if(pIn != pOut)
 	    Out[i] = pIn[i];
 	fill->data[i] = pIn[i];
+
+	if(config->getValueString(ConfigKey(PREF_KEY, "Record")).compare("READY") == 0 && pIn[i] > THRESHOLD_REC)
+	{
+	    //If we are waiting for a track to start before recording
+	    //and the audio is high enough (a track is playing)
+	    //then we can set the record flag to TRUE
+	    qDebug("Setting Record flag to: TRUE");
+	    config->set(ConfigKey(PREF_KEY, "Record"), QString("TRUE"));
+	}
     }
     fill->valid = iBufferSize;
     mutexFill.unlock();
