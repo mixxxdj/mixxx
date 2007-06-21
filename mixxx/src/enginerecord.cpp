@@ -20,22 +20,29 @@
 
 EngineRecord::EngineRecord(ConfigObject<ConfigValue> *_config)
 {
-    bufSize1 = DEFAULT_BUFSIZE;
-    bufSize2 = DEFAULT_BUFSIZE;
-    buffer1 = new CSAMPLE[ bufSize1 ];
-    buffer2 = new CSAMPLE[ bufSize2 ];
-    validBuf1 = 0;
-    validBuf2 = 0;
     curBuf1 = true;
     config = _config;
     fOut = new WriteAudioFile(_config);
+    
+    //Allocate Buffers
+    fill = new Buffer;
+    fill->size = DEFAULT_BUFSIZE;
+    fill->data = new CSAMPLE[fill->size];
+    fill->valid = 0;
+
+    write = new Buffer;
+    write->size = DEFAULT_BUFSIZE;
+    write->data = new CSAMPLE[fill->size];
+    write->valid = 0;
     //QThread::start();
 }
 
 EngineRecord::~EngineRecord()
 {
-    delete buffer1;
-    delete buffer2;
+    delete fill->data;
+    delete fill;
+    delete write->data;
+    delete write;
     QThread::terminate();
     qDebug("rec thread terminated");
 }
@@ -43,81 +50,46 @@ EngineRecord::~EngineRecord()
 void EngineRecord::process(const CSAMPLE *pIn, const CSAMPLE *pOut, const int iBufferSize)
 {
     CSAMPLE *Out = (CSAMPLE*) pOut;
-    fOut->write(pIn, iBufferSize);
-/*
-    if(curBuf1)
+    
+    mutexFill.lock();
+    if(fill->size < iBufferSize)
     {
-	mutex1.lock();
-	if(bufSize1 < iBufferSize)
-	{
-	    bufSize1 = iBufferSize;
-	    delete buffer1;
-	    buffer1 = new CSAMPLE[ bufSize1 ];
-	}
-	validBuf1 = iBufferSize;
-	for(int i=0; i<iBufferSize; i++)
-	{
-	    if(pIn != pOut)
-		Out[i] = pIn[i];
-	    buffer1[i] = pIn[i];
-	}
-	mutex1.unlock();
-	waitCond1.wakeAll();
+	delete fill->data;
+	fill->size = iBufferSize;
+	fill->data = new CSAMPLE[ fill->size ];
     }
-    else
+    for(int i=0; i<iBufferSize; i++)
     {
-	mutex2.lock();
-	if(bufSize2 < iBufferSize)
-	{
-	    bufSize2 = iBufferSize;
-	    delete buffer2;
-	    buffer2 = new CSAMPLE[bufSize2];
-	}
-	validBuf2 = iBufferSize;
-	for(int i=0; i<iBufferSize; i++)
-	{
-	    if(pIn != pOut)
-		Out[i] = pIn[i];
-	    buffer2[i] = pIn[i];
-	}
-	mutex2.unlock();
-	waitCond2.wakeAll();
+	if(pIn != pOut)
+	    Out[i] = pIn[i];
+	fill->data[i] = pIn[i];
     }
-*/
+    fill->valid = iBufferSize;
+    mutexFill.unlock();
+    waitCondFill.wakeAll();
 }
 
 
 void EngineRecord::run()
 {
     //Method will record the buffer to file
+    //fOut->write(buffer1, validBuf1);
+    Buffer *temp;
     while(1)
     {
-	if(curBuf1)
-	{
-	    mutex1.lock();
-	    waitCond1.wait(&mutex1);
-	    for(int i=0; i<validBuf1; i+=2)
-	    {
-		//qDebug("buf1: %f, %f", buffer1[i], buffer1[i+1]);
-		fOut->write(buffer1, validBuf1);
-	    }
-	    validBuf1 = 0;
-	    curBuf1 = !curBuf1;
-	    mutex1.unlock();
-	}
-	else
-	{
-	    mutex2.lock();
-	    waitCond2.wait(&mutex2);
-	    for(int i=0; i<validBuf2; i+=2)
-	    {
-		//qDebug("buf2: %f, %f", buffer2[i], buffer2[i+1]);
-		fOut->write(buffer2, validBuf2);
-	    }
-	    validBuf2 = 0;
-	    curBuf1 = !curBuf1;
-	    mutex2.unlock();
-	}
+	mutexFill.lock();
+	waitCondFill.wait(&mutexFill);
+	
+	//swap buffers
+	temp = fill;
+	fill = write;
+	write = temp;
+
+	mutexFill.unlock();
+	
+	//write record buffer to file
+	fOut->write(write->data, write->valid);
+	write->valid = 0;
     }
 }
 

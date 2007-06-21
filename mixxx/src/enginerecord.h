@@ -27,6 +27,13 @@
 class ControlLogpotmeter;
 class ConfigKey;
 
+typedef struct
+{
+    CSAMPLE *data;
+    int size ;
+    int valid;  //how much of the buffer is valid
+} Buffer;
+
 class EngineRecord : public EngineObject, public QThread {
 public:
     EngineRecord(ConfigObject<ConfigValue> *_config);
@@ -35,12 +42,10 @@ public:
     void run();
 private:
     void resizeBuf(int buf, int size);
-    CSAMPLE *buffer1, *buffer2;
-    int bufSize1, bufSize2;
-    int validBuf1, validBuf2;
+    Buffer *fill, *write;   //fill buffer is written to by mixxx, write is written to file
     bool curBuf1;
-    QWaitCondition waitCond1, waitCond2;
-    QMutex mutex1, mutex2;
+    QWaitCondition waitCondFill, waitCond2;
+    QMutex mutexFill, mutexWrite;
     WriteAudioFile *fOut;
     ConfigObject<ConfigValue> *config;
 };
