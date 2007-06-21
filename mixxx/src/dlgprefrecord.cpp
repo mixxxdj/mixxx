@@ -32,7 +32,8 @@
 DlgPrefRecord::DlgPrefRecord(QWidget *parent, ConfigObject<ConfigValue> *_config) : DlgPrefRecordDlg(parent,"")
 {
     config = _config;
-    
+    confirmOverwrite = false;
+
     //Fill up encoding list
     comboBoxEncoding->insertItem("WAVE", IDEX_WAVE);
     comboBoxEncoding->insertItem("FLAC", IDEX_FLAC);
@@ -44,7 +45,7 @@ DlgPrefRecord::DlgPrefRecord(QWidget *parent, ConfigObject<ConfigValue> *_config
     //Connections
     connect(PushButtonBrowse, SIGNAL(clicked()),	this,	SLOT(slotBrowseSave()));
     connect(LineEditRecPath,  SIGNAL(returnPressed()),  this,	SLOT(slotApply()));
-    connect(comboBoxEncoding, SIGNAL(activated(int)),	this,	SLOT(slotEncoding()));
+    connect(comboBoxEncoding, SIGNAL(activated(int)),	this,	SLOT(slotRecordPathChange()));
     connect(SliderQuality,    SIGNAL(valueChanged(int)), this,	SLOT(slotSliderQuality()));
     connect(SliderQuality,    SIGNAL(sliderMoved(int)),	this,	SLOT(slotSliderQuality()));
     connect(SliderQuality,    SIGNAL(sliderReleased()), this,	SLOT(slotSliderQuality()));
@@ -53,6 +54,7 @@ DlgPrefRecord::DlgPrefRecord(QWidget *parent, ConfigObject<ConfigValue> *_config
 
 
     slotApply();
+    config->set(ConfigKey(PREF_KEY, "Record"), QString("FALSE"));//make sure a corrupt config file won't cause us to record constantly
 }
 
 void DlgPrefRecord::slotBrowseSave()
@@ -149,25 +151,47 @@ DlgPrefRecord::~DlgPrefRecord()
 {
 
 }
+void DlgPrefRecord::slotRecordPathChange()
+{
+    confirmOverwrite = false;
+    CheckBoxRecord->setChecked(false);
+    slotApply();
+}
 
 void DlgPrefRecord::slotApply()
 {
-    int result = 0;
-    if(QFile::exists(LineEditRecPath->text()))
-	result = QMessageBox::warning( this, "Mixxx Recording", "The selected file already exists, would you like to overwrite it?\n\n\tNote: Selecting No will abort the recording", "Yes", "No", 0, 0, 1);
-    if(result == 0)
-    {
-	config->set(ConfigKey(PREF_KEY, "Path"), LineEditRecPath->text());
-    }
+
+    config->set(ConfigKey(PREF_KEY, "Path"), LineEditRecPath->text());
+    
 
     slotEncoding();
 
     if(CheckBoxRecord->isOn())
     {
-	config->set(ConfigKey(PREF_KEY, "Record"), QString("READY"));
+	int result = 0;
+	if(QFile::exists(LineEditRecPath->text()) && !confirmOverwrite){
+	    result = QMessageBox::warning( this, "Mixxx Recording", "The selected file already exists, would you like to overwrite it?\n\n\tNote: Selecting No will abort the recording", "Yes", "No", 0, 0, 1);
+	}
+	if(result == 0)
+	{
+	    qDebug("Setting record status: READY");
+	    config->set(ConfigKey(PREF_KEY, "Record"), QString("READY"));
+	    /*
+	     * Note: setting the Record value to READY does not start the
+	     * recording.  The READY flag signals code elsewhere that when
+	     * its condition is met (first track is played), the flag can
+	     * be set to TRUE
+	     *
+	     */
+	}
+	else
+	{
+	    CheckBoxRecord->setChecked(false);
+	}
     }
     else
     {
+	qDebug("Setting record status: FALSE");
 	config->set(ConfigKey(PREF_KEY, "Record"), QString("FALSE"));
     }
 }

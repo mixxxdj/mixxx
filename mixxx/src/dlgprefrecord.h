@@ -44,6 +44,7 @@ public slots:
     void slotBrowseSave();
     void slotEncoding();
     void slotSliderQuality();
+    void slotRecordPathChange();
     int getSliderQualityVal();
     void updateTextQuality();
 signals:
@@ -51,6 +52,7 @@ signals:
 private:
     /** Pointer to config object */
     ConfigObject<ConfigValue> *config;
+    bool confirmOverwrite;
 };
 
 #endif

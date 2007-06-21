@@ -23,6 +23,7 @@
 #include "writeaudiofile.h"
 
 #define DEFAULT_BUFSIZE 512
+#define THRESHOLD_REC 2. //high enough that its not triggered by white noise
 
 class ControlLogpotmeter;
 class ConfigKey;
@@ -44,8 +45,8 @@ private:
     void resizeBuf(int buf, int size);
     Buffer *fill, *write;   //fill buffer is written to by mixxx, write is written to file
     bool curBuf1;
-    QWaitCondition waitCondFill, waitCond2;
-    QMutex mutexFill, mutexWrite;
+    QWaitCondition waitCondFill;
+    QMutex mutexFill;
     WriteAudioFile *fOut;
     ConfigObject<ConfigValue> *config;
 };

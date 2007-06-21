@@ -20,7 +20,7 @@ void WriteAudioFile::open()
     int format = config->getValueString(ConfigKey(PREF_KEY, "Encoding")).toInt();
 
     ready = false;
-    if(config->getValueString(ConfigKey(PREF_KEY, "Record")).compare("READY") == 0)
+    if(config->getValueString(ConfigKey(PREF_KEY, "Record")).compare("TRUE") == 0)
     {
 	//if the record flag is set
 	
@@ -35,7 +35,11 @@ void WriteAudioFile::open()
 	    case IDEX_AIFF:
 		sfInfo.format = SF_FORMAT_AIFF | SF_FORMAT_PCM_16;
 		break;
+	    case IDEX_FLAC:
+		sfInfo.format = SF_FORMAT_FLAC | SF_FORMAT_PCM_16;
+		break;
 	    default:
+		qDebug("Corrupt record section in preference file");
 		return;
 	}
 
@@ -57,13 +61,20 @@ void WriteAudioFile::open()
 void WriteAudioFile::write(const CSAMPLE *pIn, int iBufferSize)
 {
     Q_ASSERT(iBufferSize % 2 == 0);
-    if(ready == true)
+    if(config->getValueString(ConfigKey(PREF_KEY, "Record")).compare("TRUE") == 0)
     {
-	sf_write_float(sf, pIn, iBufferSize);
+	if(ready == true)
+	{
+	    sf_write_float(sf, pIn, iBufferSize);
+	}
+	else
+	{
+	    open();
+	}
     }
     else
     {
-	open();
+	close();
     }
 }
 
