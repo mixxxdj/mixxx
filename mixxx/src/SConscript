@@ -32,6 +32,7 @@ if not conf.CheckLibWithHeader('m', 'math.h'):
 
 import os
 import sys
+import glob
 import SCons
 
 # BIG FAT WARNING:
@@ -144,7 +145,7 @@ else:
 
 #Set up our environment, tell SCONS to use it's QT tools, and set some enviroment variables for it.
 env = Environment(tools=['default','qt', 'msvs'], QTDIR=flags_qtdir, QT_LIB='qt-mt')
-       
+env.Replace(QT_UIC = '$QT_BINPATH/uic')
 
 #env.Append(CPPPATH='.')
 
@@ -252,7 +253,8 @@ if platform == 'linux':
 	env.Append(CXXFLAGS = ' -DUNIX_SHARE_PATH=\\"/usr/share/mixxx\\"')
 elif platform == 'osx':
 	env.Append(CXXFLAGS = ' -D__MACX__ -DSETTINGS_FILE=\\"mixxx.cfg\\" -DTRACK_FILE=\\"mixxxtrack.xml\\"')
-
+elif platform == 'win32':
+    env.Append(CXXFLAGS = '-D__WIN32__')
 
 #... and yes, we need to double-escape those quotes
 env.Append(CXXFLAGS = ' -D__PORTAUDIO__'); #Turn on PortAudio support in Mixxx
@@ -375,11 +377,11 @@ opts.Add('experimentalrecord', 'Set to 1 to enable experimental recording featur
 Help(opts.GenerateHelpText(env))
 
 
-#if 'msvc' in COMMAND_LINE_TARGETS:
-#	includes = os.listdir("src")
-#	includes = os.listdir("src/visual")
-#	env.MSVSProject(target = 'Mixxx' + env['MSVSPROJECTSUFFIX'], srcs = flatten(sources), incs = ['*.h', 'visual/*.h'], variant = 'Debug')
-
+if 'msvc' in COMMAND_LINE_TARGETS:
+	includes = glob.glob('./*.h')
+	includes += glob.glob('./visual/*.h')
+	env.MSVSProject(target = 'mixxx' + env['MSVSPROJECTSUFFIX'], srcs = flatten(sources), incs = flatten(includes), variant = 'Debug')
+	env.Alias('msvc', 'mixxx')
 
 
 #Tell SCons to build Mixxx
