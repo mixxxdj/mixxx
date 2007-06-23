@@ -175,6 +175,11 @@ elif platform == 'osx':
 	env.Append(CXXFLAGS = '-D__COREMIDI__')
 
 
+#Set up the library path on Windows:
+if platform == 'win32':
+	env.Append(LIBPATH = '../../../mixxx-winlib')  #If you add more directories, separate them with a semicolon (;)
+
+
 #Check for dependencies if we're not doing a clean...
 
 if not env.GetOption('clean') and not SCons.Util.containsAny(os.sys.argv, ['-h', '--help']):
@@ -202,8 +207,8 @@ if not env.GetOption('clean') and not SCons.Util.containsAny(os.sys.argv, ['-h',
 	#Check for OpenGL (it's messy to do it for all three platforms)
 	CheckOpenGL()
 
-	#Platform-specific checks for Linux...
-	if platform == 'linux':
+	#Platform-specific checks for Linux and Win32...
+	if platform == 'linux' or platform == 'win32':
 	    #Check for libsndfile
 		if not conf.CheckLibWithHeader('sndfile', 'sndfile.h', 'C'):
 			print 'Did not find libsndfile or it\'s development headers, exiting!'
@@ -212,6 +217,8 @@ if not env.GetOption('clean') and not SCons.Util.containsAny(os.sys.argv, ['-h',
 			env.Append(CXXFLAGS = ' -D__SNDFILE__')
 			sources.append('soundsourcesndfile.cpp')
 			
+	#Platform-specific checks for Linux...
+	if platform == 'linux':	
 		#Check for libdjconsole, if it was passed as a flag
 		flags_djconsole = ARGUMENTS.get('djconsole', 0)
 		if int(flags_djconsole):
