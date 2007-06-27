@@ -135,7 +135,14 @@ void WWidget::slotReEmitValueUp(double fValue)
 
 int WWidget::selectNodeInt(const QDomNode &nodeHeader, const QString sNode)
 {
-    return selectNode(nodeHeader, sNode).toElement().text().toInt();
+	QString text = selectNode(nodeHeader, sNode).toElement().text();
+	bool ok;
+    int conv = text.toInt(&ok, 0);
+	if (ok) {
+		return conv;
+	} else {
+		return 0;
+	}
 }
 
 float WWidget::selectNodeFloat(const QDomNode &nodeHeader, const QString sNode)
@@ -177,5 +184,22 @@ void WWidget::setPixmapPath(QString qPath)
     m_qPath = qPath;
 }
 
+QDomElement WWidget::openXMLFile(QString path, QString name) {
+    QDomDocument doc(name);
+    QFile file(path);
+    if (!file.open(IO_ReadOnly))
+    {
+        qDebug("Could not open xml file: %s",file.name().latin1());
+		return QDomElement();
+    }
+    if (!doc.setContent(&file))
+    {
+        qDebug("Error parsing xml file: %s",file.name().latin1());
+		return QDomElement();
+    }
+
+	file.close();
+    return doc.documentElement();
+}
 
 
