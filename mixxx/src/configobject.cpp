@@ -17,6 +17,7 @@
 
 #include "configobject.h"
 #include <qdir.h>
+#include "wwidget.h"
 
 #ifdef __WIN__
 #include <windows.h>
@@ -61,6 +62,54 @@ ConfigValueMidi::ConfigValueMidi()
 {
 }
 
+ConfigValueMidi::ConfigValueMidi(QDomNode node) {
+	QString type = WWidget::selectNodeQString(node, "miditype");
+	midino = WWidget::selectNodeInt(node, "midino");
+	midichannel = WWidget::selectNodeInt(node, "midichan");
+
+	if (midichannel == 0) { midichannel = 1; }
+	// Apparently you need to subtract 1, see comments in old QStr constructor
+	midichannel--;
+
+	type = type.lower();
+
+	if (type == "key") {
+		miditype = MIDI_KEY;
+	} else if (type == "ctrl") {
+		miditype = MIDI_CTRL;
+	} else if (type == "pitch") {
+		miditype = MIDI_PITCH;
+	} else {
+		miditype = MIDI_EMPTY;
+	}
+
+	QDomNode opts = node.namedItem("options");
+	QDomNode opt = opts.firstChild();
+	if (!opt.nextSibling().isNull()) {
+		qFatal("Multiple option elements in midi mapping not supported yet");
+	}
+
+	QString optname = opt.nodeName().lower();
+	if (optname == "invert")
+		midioption = MIDI_OPT_INVERT;
+    else if (optname == "rot64inv")
+        midioption = MIDI_OPT_ROT64_INV;
+    else if (optname == "rot64fast")
+        midioption = MIDI_OPT_ROT64_FAST;
+    else if (optname == "rot64")
+        midioption = MIDI_OPT_ROT64;
+    else if (optname == "diff")
+        midioption = MIDI_OPT_DIFF;
+    else if (optname == "button")
+        midioption = MIDI_OPT_BUTTON;
+    else if (optname == "switch")
+        midioption = MIDI_OPT_SWITCH;
+	else if (optname == "hercjog")
+		midioption = MIDI_HERC_JOG;
+    else
+        midioption = MIDI_OPT_NORMAL;
+}
+
 ConfigValueMidi::ConfigValueMidi(QString _value)
 {
         QString channelMark;
@@ -102,6 +151,8 @@ ConfigValueMidi::ConfigValueMidi(QString _value)
             midioption = MIDI_OPT_BUTTON;
         else if (option.contains("Switch", false))
             midioption = MIDI_OPT_SWITCH;
+		else if (option.contains("HercJog", false))
+			midioption = MIDI_HERC_JOG;
         else
             midioption = MIDI_OPT_NORMAL;
         // Store string with corrected config value
@@ -206,6 +257,10 @@ double ConfigValueMidi::ComputeValue(MidiType /*_miditype*/, double _prevmidival
 	else if (midioption == MIDI_OPT_SWITCH)
 	{
 		_newmidivalue = (_newmidivalue == 127);
+	}
+	else if (midioption == MIDI_HERC_JOG)
+	{
+		if (_newmidivalue > 64.) { _newmidivalue -= 128.; }
 	}
 
     return _newmidivalue;
@@ -469,5 +524,18 @@ template class ConfigObject<ConfigValue>;
 template class ConfigObject<ConfigValueMidi>;
 template class ConfigObject<ConfigValueKbd>;
 
+template <class ValueType> ConfigObject<ValueType>::ConfigObject(QDomNode node) {
 
-
+	if (!node.isNull() && node.isElement()) {
+		QDomNode ctrl = node.firstChild();
+		
+		while (!ctrl.isNull()) {
+			QString group = WWidget::selectNodeQString(ctrl, "group");
+			QString key = WWidget::selectNodeQString(ctrl, "key");
+			ConfigKey k(group, key);
+			ValueType m(ctrl);
+            set(k, m);
+			ctrl = ctrl.nextSibling();
+		}
+	}
+}

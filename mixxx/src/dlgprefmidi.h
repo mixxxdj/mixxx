@@ -50,6 +50,8 @@ public slots:
     void slotUpdateProgressBar();
     void slotCancelCalibrate();
 
+	void setupMappings(QString path);
+
 signals:
     void apply();
 
@@ -77,7 +79,8 @@ class MidiWorkaround : public QThread {
     public:
         MidiWorkaround(MidiObject* pMidi, \
                  ConfigObject<ConfigValue>* pConfig, \
-		 ConfigObject<ConfigValueMidi>* pMidiConfig);
+		 ConfigObject<ConfigValueMidi>* pMidiConfig, \
+		 DlgPrefMidi* parent);
 	
         virtual void run();
 	
@@ -85,6 +88,7 @@ class MidiWorkaround : public QThread {
 	MidiObject* m_pMidi;
 	ConfigObject<ConfigValue>* m_pConfig;
 	ConfigObject<ConfigValueMidi>* m_pMidiConfig;
+	DlgPrefMidi* m_parent;
 };
 
 #endif

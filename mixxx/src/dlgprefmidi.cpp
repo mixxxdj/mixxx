@@ -31,6 +31,8 @@
 #include <qwidget.h>
 #include "controlobject.h"
 #include "midiobjectnull.h"
+#include "midiledhandler.h"
+#include "wwidget.h"
 #ifdef __ALSAMIDI__
   #include "midiobjectalsa.h"
 #endif
@@ -109,9 +111,14 @@ DlgPrefMidi::DlgPrefMidi(QWidget *parent, ConfigObject<ConfigValue> *pConfig) : 
     QString qConfigPath = m_pConfig->getConfigPath();
     QStringList *midiConfigList = m_pMidi->getConfigList(qConfigPath.append("midi/"));
     m_pMidiConfig = 0;
-    for (QStringList::Iterator it = midiConfigList->begin(); it != midiConfigList->end(); ++it )
-        if (*it == m_pConfig->getValueString(ConfigKey("[Midi]","File")))
-            m_pMidiConfig = new ConfigObject<ConfigValueMidi>(QString(qConfigPath).append(m_pConfig->getValueString(ConfigKey("[Midi]","File"))));
+	for (QStringList::Iterator it = midiConfigList->begin(); it != midiConfigList->end(); ++it ) {
+		if (*it == m_pConfig->getValueString(ConfigKey("[Midi]","File"))) {
+            //m_pMidiConfig = new ConfigObject<ConfigValueMidi>(QString(qConfigPath).append(m_pConfig->getValueString(ConfigKey("[Midi]","File"))));
+			QString xmlpath = qConfigPath;
+			xmlpath.append(m_pConfig->getValueString(ConfigKey("[Midi]","File")));
+			setupMappings(xmlpath);
+		}
+	}
     if (m_pMidiConfig == 0)
     {
         if (midiConfigList->empty())
@@ -126,7 +133,7 @@ DlgPrefMidi::DlgPrefMidi(QWidget *parent, ConfigObject<ConfigValue> *pConfig) : 
 #else
             QString name = midiConfigList->at(0);
 #endif
-            m_pMidiConfig = new ConfigObject<ConfigValueMidi>(QString(qConfigPath).append(name.latin1()));
+            setupMappings(QString(qConfigPath).append(name.latin1()));
             m_pConfig->set(ConfigKey("[Midi]","File"), ConfigValue(name.latin1()));
         }
     }
@@ -415,12 +422,12 @@ void DlgPrefMidi::slotApply()
 #endif
     // Change MIDI configuration
     //m_pMidiConfig->clear(); // (is currently not implemented correctly)
-    m_pMidiConfig->reopen(m_pConfig->getValueString(ConfigKey("[Config]","Path")).append("midi/").append(m_pConfig->getValueString(ConfigKey("[Midi]","File"))));
+    setupMappings(m_pConfig->getValueString(ConfigKey("[Config]","Path")).append("midi/").append(m_pConfig->getValueString(ConfigKey("[Midi]","File"))));
 
     // Open MIDI device
     m_pMidi->devOpen(m_pConfig->getValueString(ConfigKey("[Midi]","Device")));
 #else
-    MidiWorkaround mw(m_pMidi, m_pConfig, m_pMidiConfig);
+    MidiWorkaround mw(m_pMidi, m_pConfig, m_pMidiConfig, this);
     mw.start();
     if (mw.wait(2000)) {
 	    qDebug("Midi OK (Workaround not required)");
@@ -569,11 +576,13 @@ void DlgPrefMidi::setupHercules()
 
 MidiWorkaround::MidiWorkaround(MidiObject* pMidi, \
             ConfigObject<ConfigValue>* pConfig, \
-	    ConfigObject<ConfigValueMidi>* pMidiConfig) {
+	    ConfigObject<ConfigValueMidi>* pMidiConfig, \
+		DlgPrefMidi* parent) {
 	
     m_pMidi = pMidi;
     m_pConfig = pConfig;
     m_pMidiConfig = pMidiConfig;
+	m_parent = parent;
 }
 
 void MidiWorkaround::run() {
@@ -582,7 +591,14 @@ void MidiWorkaround::run() {
      m_pMidi->devClose();
      // Change MIDI configuration
      //m_pMidiConfig->clear(); // (is currently not implemented correctly)
-     m_pMidiConfig->reopen(m_pConfig->getValueString(ConfigKey("[Config]","Path")).append("midi/").append(m_pConfig->getValueString(ConfigKey("[Midi]","File"))));
+     m_parent->setupMappings(m_pConfig->getValueString(ConfigKey("[Config]","Path")).append("midi/").append(m_pConfig->getValueString(ConfigKey("[Midi]","File"))));
      // Open MIDI device
      m_pMidi->devOpen(m_pConfig->getValueString(ConfigKey("[Midi]","Device")));
+}
+
+void DlgPrefMidi::setupMappings(QString path) {
+	QDomElement doc = WWidget::openXMLFile(path, "controller");
+	m_pMidiConfig = new ConfigObject<ConfigValueMidi>(doc.namedItem("controls"));
+	MidiLedHandler::destroyHandlers();
+	MidiLedHandler::createHandlers(doc.namedItem("lights"), m_pMidi);
 }

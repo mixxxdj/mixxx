@@ -92,3 +92,7 @@ void DlgPrefMixer::setMidEQ()
 void DlgPrefMixer::slotApply()
 {
 }
+
+void DlgPrefMixer::slotUpdate()
+{
+}

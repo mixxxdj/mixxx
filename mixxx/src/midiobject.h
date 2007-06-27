@@ -63,6 +63,10 @@ public:
     /** Returns a list of available configurations. Takes as input the directory path
       * containing the configuration files */
     QStringList *getConfigList(QString path);
+
+	// Stuff for sending messages to control leds etc
+	void sendShortMsg(unsigned char status, unsigned char byte1, unsigned char byte2);
+	virtual void sendShortMsg(unsigned int word);
 protected:
     void run() {};
     void stop();
