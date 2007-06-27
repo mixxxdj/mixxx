@@ -23,6 +23,7 @@
 #include "defs.h"
 #include "engineobject.h"
 #include "monitor.h"
+#include "rotary.h"
 
 class ControlObject;
 class ControlPushButton;
@@ -171,6 +172,7 @@ private:
     ControlObject *m_pControlObjectBeatLoop;
     ControlObject *rateEngine, *m_pRateDir, *m_pRateRange, *m_pRealSearch;
     ControlObject *m_pMasterRate;
+	ControlObject *m_pJog;
     ControlPotmeter *rateSlider, *m_pRateSearch;
     ControlTTRotary *wheel, *m_pControlScratch;
     ControlPotmeter *playposSlider;
@@ -236,5 +238,7 @@ private:
       * value it has been increased with when the temp button was pressed, because there is a fixed limit on the range of the pitch slider */
     double m_dOldRate;
 
+	// Filter jog wheel data to smooth it:
+	Rotary* m_jogfilter;
 };
 #endif

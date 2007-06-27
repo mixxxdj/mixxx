@@ -33,11 +33,13 @@ public:
     void devOpen(QString device);
     void devClose();
     void handleMidi(char channel, char midicontrol, char midivalue);
+	void sendShortMsg(unsigned int word);
 protected:
     void run();
     void stop();
 
     HMIDIIN         handle;
+	HMIDIOUT		outhandle;
 };
 
 void CALLBACK MidiInProc(HMIDIIN hMidiIn, UINT wMsg, DWORD dwInstance, DWORD dwParam1, DWORD dwParam2);

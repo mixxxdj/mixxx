@@ -39,6 +39,7 @@ public slots:
     void slotUpdateLoEQ();
     /** Apply changes to widget */
     void slotApply();
+	void slotUpdate();
 signals:
     void apply(const QString &);
 private:

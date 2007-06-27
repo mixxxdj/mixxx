@@ -135,6 +135,11 @@ EngineBuffer::EngineBuffer(const char *_group)
     // Scratch controller
     m_pControlScratch = new ControlTTRotary(ConfigKey(group, "scratch"));
 
+	m_pJog = new ControlObject(ConfigKey(group, "jog"));
+	m_jogfilter = new Rotary();
+	// FIXME: This should be dependent on sample rate/block size or something
+	m_jogfilter->setFilterLength(10);
+
     // Slider to show and change song position
     playposSlider = new ControlPotmeter(ConfigKey(group, "playposition"), 0., 1.);
     connect(playposSlider, SIGNAL(valueChanged(double)), this, SLOT(slotControlSeek(double)));
@@ -784,6 +789,13 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBuff
                 rate = rate * (m_pControlScratch->get()-1.);
             else if (m_pControlScratch->get()>0.)
                 rate = rate * (m_pControlScratch->get()+1.);
+
+			// Apply jog
+			// FIXME: Sensitivity should be configurable
+			const double fact = 0.5;
+			double val = m_jogfilter->filter(m_pJog->get());
+			rate += val * fact;
+			m_pJog->set(0.);
         }
         else
         {

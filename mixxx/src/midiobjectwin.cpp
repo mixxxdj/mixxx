@@ -16,6 +16,7 @@
  ***************************************************************************/
 
 #include "midiobjectwin.h"
+#include "midiledhandler.h"
 #include <atlconv.h>
 
 MidiObjectWin::MidiObjectWin(QString device) : MidiObject(device)
@@ -78,10 +79,18 @@ void MidiObjectWin::devOpen(QString device)
     
 //  handle = new HMIDIIN;
     MMRESULT res = midiInOpen(&handle, i, (DWORD)MidiInProc, (DWORD)this, CALLBACK_FUNCTION);
-	if (res == MMSYSERR_NOERROR)
+	if (res == MMSYSERR_NOERROR) {
 		// Should follow selected device !!!! 
 		openDevice = device;
-	
+	} else {
+		qDebug("Error opening midi device");
+		return;
+	}
+
+	res = midiOutOpen(&outhandle, i, NULL, NULL, CALLBACK_NULL);
+	if (res != MMSYSERR_NOERROR)
+		qDebug("Error opening midi output for light control"); // Not so important
+
 	res = midiInStart(handle);
 	if (res != MMSYSERR_NOERROR)
 		qDebug("Error starting midi.");
@@ -125,3 +134,8 @@ void CALLBACK MidiInProc(HMIDIIN hMidiIn, UINT wMsg, DWORD dwInstance, DWORD dwP
   }
 }
 
+void MidiObjectWin::sendShortMsg(unsigned int word) {
+	// This checks your compiler isn't assigning some wierd type hopefully
+	DWORD raw = word;
+	midiOutShortMsg(outhandle, word);
+}

@@ -24,6 +24,7 @@
 #include <qfile.h>
 #include <qtextstream.h>
 #include <qkeysequence.h>
+#include <qdom.h>
 
 typedef enum {
     MIDI_EMPTY            = 0,
@@ -40,7 +41,8 @@ typedef enum {
     MIDI_OPT_ROT64_FAST       = 4,
 	  MIDI_OPT_DIFF			        = 5,
     MIDI_OPT_BUTTON		        = 6, // Button Down (7F) and Button Up (00) events happen together
-    MIDI_OPT_SWITCH           = 7  // Button Down (7F) and Button Up (00) events happen seperately
+    MIDI_OPT_SWITCH           = 7,  // Button Down (7F) and Button Up (00) events happen seperately
+	MIDI_HERC_JOG			  = 8   // Generic hercules wierd range correction
 } MidiOption;
 
 /*
@@ -66,6 +68,7 @@ public:
     ConfigValue();
     ConfigValue(QString _value);
     ConfigValue(int _value);
+	inline ConfigValue(QDomNode node) { qFatal("ConfigValue from QDomNode not implemented here"); }
     void valCopy(const ConfigValue _value);
 
     QString value;
@@ -78,6 +81,7 @@ public:
     ConfigValueMidi();
     ConfigValueMidi(QString _value);
     ConfigValueMidi(MidiType _miditype, int _midino, int _midichannel);
+	ConfigValueMidi(QDomNode node);
     void valCopy(const ConfigValueMidi v);
     double ComputeValue(MidiType _miditype, double _prevmidivalue, double _newmidivalue);
     friend bool operator==(const ConfigValueMidi & s1, const ConfigValueMidi & s2);
@@ -93,6 +97,7 @@ public:
     ConfigValueKbd();
     ConfigValueKbd(QString _value);
     ConfigValueKbd(QKeySequence key);
+	inline ConfigValueKbd(QDomNode node) { qFatal("ConfigValueKbd from QDomNode not implemented here"); }
     void valCopy(const ConfigValueKbd v);
     friend bool operator==(const ConfigValueKbd & s1, const ConfigValueKbd & s2);
 
@@ -116,6 +121,7 @@ template <class ValueType> class ConfigObject
     ConfigOption<ValueType> option;
 
     ConfigObject(QString file);
+	ConfigObject(QDomNode node);
     ~ConfigObject();
     ConfigOption<ValueType> *set(ConfigKey, ValueType);
     ConfigOption<ValueType> *get(ConfigKey key);

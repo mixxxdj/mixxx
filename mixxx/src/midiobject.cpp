@@ -95,7 +95,7 @@ QStringList *MidiObject::getConfigList(QString path)
     // Get list of available midi configurations
     QDir dir(path);
     dir.setFilter(QDir::Files);
-    dir.setNameFilter("*.midi.cfg *.MIDI.CFG");
+    dir.setNameFilter("*.midi.xml *.MIDI.XML");
 #ifndef QT3_SUPPORT
     const QFileInfoList *list = dir.entryInfoList();
     if (list!=0)
@@ -208,3 +208,12 @@ void abortRead(int)
 #endif
 }
 
+void MidiObject::sendShortMsg(unsigned char status, unsigned char byte1, unsigned char byte2) {
+	unsigned int word = (((unsigned int)byte2) << 16) |
+		(((unsigned int)byte1) << 8) | status;
+	sendShortMsg(word);
+}
+
+void MidiObject::sendShortMsg(unsigned int word) {
+	qDebug("MIDI message sending not implemented yet on this platform");
+}
