@@ -365,7 +365,7 @@ else:
 flags_experimentalbpm = ARGUMENTS.get('experimentalbpm', 0)
 if int(flags_experimentalbpm):
 	env.Append(CXXFLAGS = '-D__EXPERIMENTAL_BPM__')
-	sources += Split("""bpmdetect.cpp """)
+	#sources += Split("""bpmdetect.cpp """)
 	print "Experimental BPM detection... enabled"
 else:
 	print "Experimental BPM detection... disabled"
