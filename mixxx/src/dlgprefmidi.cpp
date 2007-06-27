@@ -111,33 +111,21 @@ DlgPrefMidi::DlgPrefMidi(QWidget *parent, ConfigObject<ConfigValue> *pConfig) : 
     QString qConfigPath = m_pConfig->getConfigPath();
     QStringList *midiConfigList = m_pMidi->getConfigList(qConfigPath.append("midi/"));
     m_pMidiConfig = 0;
-	for (QStringList::Iterator it = midiConfigList->begin(); it != midiConfigList->end(); ++it ) {
-		if (*it == m_pConfig->getValueString(ConfigKey("[Midi]","File"))) {
-            //m_pMidiConfig = new ConfigObject<ConfigValueMidi>(QString(qConfigPath).append(m_pConfig->getValueString(ConfigKey("[Midi]","File"))));
-			QString xmlpath = qConfigPath;
-			xmlpath.append(m_pConfig->getValueString(ConfigKey("[Midi]","File")));
-			setupMappings(xmlpath);
-		}
-	}
-    if (m_pMidiConfig == 0)
+	// Config is read in in slotApply too...
+    if (midiConfigList->empty())
     {
-        if (midiConfigList->empty())
-        {
-            m_pMidiConfig = new ConfigObject<ConfigValueMidi>("");
-            m_pConfig->set(ConfigKey("[Midi]","File"), ConfigValue(""));
-        }
-        else
-        {
-#ifndef QT3_SUPPORT
-            QString name = (*midiConfigList->at(0));
-#else
-            QString name = midiConfigList->at(0);
-#endif
-            setupMappings(QString(qConfigPath).append(name.latin1()));
-            m_pConfig->set(ConfigKey("[Midi]","File"), ConfigValue(name.latin1()));
-        }
+        m_pMidiConfig = new ConfigObject<ConfigValueMidi>("");
+        m_pConfig->set(ConfigKey("[Midi]","File"), ConfigValue(""));
     }
-    m_pMidi->setMidiConfig(m_pMidiConfig);
+    else
+    {
+#ifndef QT3_SUPPORT
+        QString name = (*midiConfigList->at(0));
+#else
+        QString name = midiConfigList->at(0);
+#endif
+        m_pConfig->set(ConfigKey("[Midi]","File"), ConfigValue(name.latin1()));
+    }
     
     // Store default midi device
     m_pConfig->set(ConfigKey("[Midi]","Device"), ConfigValue(m_pMidi->getOpenDevice()->latin1()));
@@ -401,7 +389,7 @@ void DlgPrefMidi::slotApply()
 {
 //    qDebug("apply");
 
-    m_pConfig->set(ConfigKey("[Midi]","File"), ConfigValue(ComboBoxMidiconf->currentText().append(".midi.cfg")));
+    m_pConfig->set(ConfigKey("[Midi]","File"), ConfigValue(ComboBoxMidiconf->currentText().append(".midi.xml")));
     m_pConfig->set(ConfigKey("[Midi]","Device"), ConfigValue(ComboBoxMididevice->currentText()));
     m_pConfig->set(ConfigKey("[Controls]","PowerMateFunction1"), ConfigValue(ComboBoxPowerMate1->currentText()));
     m_pConfig->set(ConfigKey("[Controls]","PowerMateFunction2"), ConfigValue(ComboBoxPowerMate2->currentText()));
@@ -423,6 +411,7 @@ void DlgPrefMidi::slotApply()
     // Change MIDI configuration
     //m_pMidiConfig->clear(); // (is currently not implemented correctly)
     setupMappings(m_pConfig->getValueString(ConfigKey("[Config]","Path")).append("midi/").append(m_pConfig->getValueString(ConfigKey("[Midi]","File"))));
+	m_pMidi->setMidiConfig(m_pMidiConfig);
 
     // Open MIDI device
     m_pMidi->devOpen(m_pConfig->getValueString(ConfigKey("[Midi]","Device")));

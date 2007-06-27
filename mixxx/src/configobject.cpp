@@ -108,6 +108,14 @@ ConfigValueMidi::ConfigValueMidi(QDomNode node) {
 		midioption = MIDI_HERC_JOG;
     else
         midioption = MIDI_OPT_NORMAL;
+
+	QTextOStream(&value) << midino << " ch " << midichannel;
+    if (miditype==MIDI_KEY)
+        value.prepend("Key ");
+    else if (miditype==MIDI_CTRL)
+        value.prepend("Ctrl ");
+    else if (miditype==MIDI_PITCH)
+        value.prepend("Pitch ");
 }
 
 ConfigValueMidi::ConfigValueMidi(QString _value)
@@ -336,7 +344,7 @@ ConfigOption<ValueType> *ConfigObject<ValueType>::set(ConfigKey k, ValueType v)
 
     // If key is not found, insert it into the list of config objects
     ConfigKey *key = new ConfigKey(k.group, k.item);
-    it = new ConfigOption<ValueType>(key, new ValueType(v.value));
+    it = new ConfigOption<ValueType>(key, new ValueType(v));
     //qDebug("new configobject %p",it->val);
     list.append(it);
     return it;
