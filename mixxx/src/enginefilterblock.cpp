@@ -40,6 +40,7 @@ EngineFilterBlock::EngineFilterBlock(const char *group)
 	//whiteNoiseBuf[i] = (CSAMPLE) ((double) mrand48() * NOISE_FACTOR);
 	whiteNoiseBuf[i] = (CSAMPLE) ((double) ((long) rand() * (0xFFFFFFFFFFFFFFFF  / RAND_MAX)) * NOISE_FACTOR);
     }
+    noiseCount = 0;
     
 #endif
     /*
