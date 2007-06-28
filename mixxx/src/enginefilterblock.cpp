@@ -38,8 +38,7 @@ EngineFilterBlock::EngineFilterBlock(const char *group)
     //far below the audible level.  Check enginefilterblock.h for SNR ratio.
     for(int i=0; i < SIZE_NOISE_BUF; i++){
 	//whiteNoiseBuf[i] = (CSAMPLE) ((double) mrand48() * NOISE_FACTOR);
-	whiteNoiseBuf[i] = (CSAMPLE) ((double) ((unsigned long) rand() *
-				(((unsigned long)0xFFFFFFFFFFFFFFFF) / RAND_MAX)) * NOISE_FACTOR);
+	whiteNoiseBuf[i] = (CSAMPLE) ( (double) rand() / RAND_MAX) * NOISE_FACTOR;
     }
     noiseCount = 0;
     
