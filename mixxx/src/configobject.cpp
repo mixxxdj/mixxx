@@ -528,9 +528,6 @@ QString ConfigObject<ValueType>::getConfigPath()
 }
 
 
-template class ConfigObject<ConfigValue>;
-template class ConfigObject<ConfigValueMidi>;
-template class ConfigObject<ConfigValueKbd>;
 
 template <class ValueType> ConfigObject<ValueType>::ConfigObject(QDomNode node) {
 
@@ -547,3 +544,8 @@ template <class ValueType> ConfigObject<ValueType>::ConfigObject(QDomNode node) 
 		}
 	}
 }
+
+
+template class ConfigObject<ConfigValue>;
+template class ConfigObject<ConfigValueMidi>;
+template class ConfigObject<ConfigValueKbd>;
