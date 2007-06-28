@@ -1,0 +1,76 @@
+#!/usr/bin/perl
+## Convert old mixxx MIDI mapping files to new XML format
+## Usage:
+## convert *.cfg
+
+use strict;
+use warnings;
+
+foreach my $infile (@ARGV) {
+  unless (open IN, '<', $infile) {
+    warn "Can't open $infile for reading: $!\n";
+    next;
+  }
+  (my $outfile = $infile) =~ s/\.cfg$/.xml/;
+  if (-f $outfile) {
+    warn "$outfile exists, skipping\n";
+    next;
+  }
+  print "Converting $infile to $outfile\n";
+  open OUT, '>', $outfile or die "Can't open $outfile for writing: $!";
+  select OUT;
+  print "<!DOCTYPE controller>\n";
+  print "<controller>\n";
+  print "  <controls>\n";
+  my $groupname;
+  while(<IN>) {
+    chomp;
+    s/^\s+//;
+    s/\s+$//;
+    next unless (/\S/);
+    if (/^\[(.*?)\]$/) {
+      if ($groupname) {
+        # print "  </group>\n";
+      }
+      ($groupname = $1) =~ s/\[(.*?)\]/$1/;
+      # print "  <group id=\"$groupname\">\n";
+      next;
+    } else {
+      warn "No group in effect at line $.\n" unless ($groupname);
+      my ($key, $miditype, $midinum, $isch, $midichannel, $options) = split;
+      ## A couple of the files omit Ctrl for controller numbers
+      if ($miditype =~ /\d/) {
+        ## Shift everything across. Not that these files tend to have
+	## anything after the controller, but let's be safe.
+	($miditype, $midinum, $isch, $midichannel, $options) = 
+	("Ctrl", $miditype, $midinum, $isch, $midichannel);
+      }
+      print "    <control>\n";
+      print "      <group>[$groupname]</group>\n";
+      print "      <key>$key</key>\n";
+      print "      <miditype>$miditype</miditype>\n";
+      print "      <midinum>$midinum</midinum>\n";
+      ## There might be a "ch nn", or there might not.
+      if ($isch) {
+        if ($isch eq 'ch') {
+          print "      <midichan>$midichannel</midichan>\n";
+        } else {
+          $options = $isch;
+	}
+      }
+      if ($options) {
+        $options = lc $options;
+        print "      <options>\n";
+	print "        <$options/>\n";
+	print "      </options>\n";
+      }
+      print "    </control>\n";
+    }
+  }
+  # print "  </group>\n" if ($groupname);
+  print "  </controls>\n";
+  print "</controller>\n";
+  select STDOUT;
+  close OUT or die "Can't close $outfile: $!";
+}
+
