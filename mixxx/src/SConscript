@@ -160,7 +160,7 @@ sources = Split("""enginebuffercue.cpp input.cpp mixxxmenuplaylists.cpp trackpla
  enginetemporal.cpp visual/visualbuffertemporal.cpp wavesummary.cpp bpmdetect.cpp peakfinder.cpp wavesegmentation.cpp soundsourceproxy.cpp woverview.cpp enginebeatseek.cpp
  enginebufferscalereal.cpp powermate.cpp  hercules.cpp joystick.cpp mouse.cpp 
  wvisualsimple.cpp wvisualwaveform.cpp visual/visualbackplane.cpp visual/texture.cpp visual/visualbox.cpp visual/visualbuffer.cpp visual/visualbuffersignal.cpp visual/visualbuffersignalhfc.cpp visual/visualbuffermarks.cpp visual/visualchannel.cpp visual/visualcontroller.cpp visual/visualdisplay.cpp visual/visualdisplaybuffer.cpp visual/light.cpp visual/material.cpp visual/picking.cpp visual/pickable.cpp visual/visualobject.cpp
- imginvert.cpp imgloader.cpp imgcolor.cpp wskincolor.cpp """)
+ imginvert.cpp imgloader.cpp imgcolor.cpp wskincolor.cpp midiledhandler.cpp""")
 
 
 #Compile platform specific hardware support
