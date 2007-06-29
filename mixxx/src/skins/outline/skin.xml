@@ -320,7 +320,7 @@
   <Tooltip>Channel VuMeter</Tooltip>
   <PathVu>vumeter-on-Ch1.png</PathVu>
   <PathBack>vumeter-off-Ch1.png</PathBack>
-  <Pos>107,529</Pos>
+  <Pos>107,525</Pos>
   <Connection>
    <ConfigKey>[Channel1],VuMeter</ConfigKey>
   </Connection>
@@ -340,7 +340,7 @@
   <Tooltip>Peak Indicator</Tooltip>
   <PathStatusLight>peak-indicator-on.png</PathStatusLight>
   <PathBack>peak-indicator-off.png</PathBack>
-  <Pos>18, 495</Pos>
+  <Pos>107, 500</Pos>
   <Connection>
    <ConfigKey>[Channel1],PeakIndicator</ConfigKey>
   </Connection>
@@ -350,7 +350,7 @@
   <Tooltip>Peak Indicator</Tooltip>
   <PathStatusLight>peak-indicator-on.png</PathStatusLight>
   <PathBack>peak-indicator-off.png</PathBack>
-  <Pos>905, 495</Pos>
+  <Pos>995, 500</Pos>
   <Connection>
    <ConfigKey>[Channel2],PeakIndicator</ConfigKey>
   </Connection>
