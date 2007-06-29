@@ -340,7 +340,7 @@
   <Tooltip>Peak Indicator</Tooltip>
   <PathStatusLight>peak-indicator-on.png</PathStatusLight>
   <PathBack>peak-indicator-off.png</PathBack>
-  <Pos>107, 500</Pos>
+  <Pos>108, 500</Pos>
   <Connection>
    <ConfigKey>[Channel1],PeakIndicator</ConfigKey>
   </Connection>
@@ -350,7 +350,7 @@
   <Tooltip>Peak Indicator</Tooltip>
   <PathStatusLight>peak-indicator-on.png</PathStatusLight>
   <PathBack>peak-indicator-off.png</PathBack>
-  <Pos>995, 500</Pos>
+  <Pos>996, 500</Pos>
   <Connection>
    <ConfigKey>[Channel2],PeakIndicator</ConfigKey>
   </Connection>
