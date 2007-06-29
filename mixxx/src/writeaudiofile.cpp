@@ -54,6 +54,22 @@ void WriteAudioFile::open()
 	{
 	    sf_command (sf, SFC_SET_NORM_FLOAT, NULL, SF_FALSE) ;
 	    ready = true;
+
+	    //set meta data
+	    int ret;
+	    ret = sf_set_string(sf, SF_STR_TITLE, config->getValueString(ConfigKey(PREF_KEY, "Title")).ascii());
+	    if(ret != 0)
+		qDebug("libsndfile: %s", sf_error_number(ret));
+	    ret = sf_set_string(sf, SF_STR_ARTIST, config->getValueString(ConfigKey(PREF_KEY, "Author")).ascii());
+	    if(ret != 0)
+		qDebug("libsndfile: %s", sf_error_number(ret));
+	    ret = sf_set_string(sf, SF_STR_COMMENT, config->getValueString(ConfigKey(PREF_KEY, "Comment")).ascii());
+	    if(ret != 0)
+		qDebug("libsndfile: %s", sf_error_number(ret));
+
+	    ret = sf_set_string(sf, SF_STR_TITLE, "Testing");
+	    if(ret != 0)
+		qDebug("libsndfile: %s", sf_error_number(ret));
 	}
     }
 }

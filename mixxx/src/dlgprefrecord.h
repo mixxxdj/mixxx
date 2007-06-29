@@ -50,9 +50,13 @@ public slots:
 signals:
     void apply(const QString &);
 private:
+    void setMetaData();
+    void loadMetaData();
+    
     /** Pointer to config object */
     ConfigObject<ConfigValue> *config;
     bool confirmOverwrite;
+    QString fileTypeExtension;
 };
 
 #endif

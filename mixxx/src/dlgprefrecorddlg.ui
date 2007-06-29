@@ -61,202 +61,6 @@
             <string>Encoding</string>
         </property>
     </widget>
-    <widget class="QGroupBox">
-        <property name="name">
-            <cstring>groupBox1</cstring>
-        </property>
-        <property name="geometry">
-            <rect>
-                <x>10</x>
-                <y>170</y>
-                <width>345</width>
-                <height>180</height>
-            </rect>
-        </property>
-        <property name="title">
-            <string>Tags</string>
-        </property>
-        <widget class="QLabel">
-            <property name="name">
-                <cstring>TextLabel3_2_3</cstring>
-            </property>
-            <property name="enabled">
-                <bool>true</bool>
-            </property>
-            <property name="geometry">
-                <rect>
-                    <x>10</x>
-                    <y>20</y>
-                    <width>105</width>
-                    <height>21</height>
-                </rect>
-            </property>
-            <property name="font">
-                <font>
-                </font>
-            </property>
-            <property name="text">
-                <string>Title</string>
-            </property>
-        </widget>
-        <widget class="QLabel">
-            <property name="name">
-                <cstring>TextLabel3_2_3_3</cstring>
-            </property>
-            <property name="enabled">
-                <bool>true</bool>
-            </property>
-            <property name="geometry">
-                <rect>
-                    <x>10</x>
-                    <y>79</y>
-                    <width>105</width>
-                    <height>21</height>
-                </rect>
-            </property>
-            <property name="font">
-                <font>
-                </font>
-            </property>
-            <property name="text">
-                <string>Album</string>
-            </property>
-        </widget>
-        <widget class="QLabel">
-            <property name="name">
-                <cstring>TextLabel3_2_3_2</cstring>
-            </property>
-            <property name="enabled">
-                <bool>true</bool>
-            </property>
-            <property name="geometry">
-                <rect>
-                    <x>10</x>
-                    <y>49</y>
-                    <width>105</width>
-                    <height>21</height>
-                </rect>
-            </property>
-            <property name="font">
-                <font>
-                </font>
-            </property>
-            <property name="text">
-                <string>Author</string>
-            </property>
-        </widget>
-        <widget class="QLabel">
-            <property name="name">
-                <cstring>TextLabel3_2_3_3_2</cstring>
-            </property>
-            <property name="enabled">
-                <bool>true</bool>
-            </property>
-            <property name="geometry">
-                <rect>
-                    <x>10</x>
-                    <y>109</y>
-                    <width>105</width>
-                    <height>21</height>
-                </rect>
-            </property>
-            <property name="font">
-                <font>
-                </font>
-            </property>
-            <property name="text">
-                <string>Genre</string>
-            </property>
-        </widget>
-        <widget class="QLabel">
-            <property name="name">
-                <cstring>TextLabel3_2_3_3_2_2</cstring>
-            </property>
-            <property name="enabled">
-                <bool>true</bool>
-            </property>
-            <property name="geometry">
-                <rect>
-                    <x>10</x>
-                    <y>139</y>
-                    <width>105</width>
-                    <height>21</height>
-                </rect>
-            </property>
-            <property name="font">
-                <font>
-                </font>
-            </property>
-            <property name="text">
-                <string>Comments</string>
-            </property>
-        </widget>
-        <widget class="QLineEdit">
-            <property name="name">
-                <cstring>LineEditTitle</cstring>
-            </property>
-            <property name="geometry">
-                <rect>
-                    <x>120</x>
-                    <y>15</y>
-                    <width>211</width>
-                    <height>26</height>
-                </rect>
-            </property>
-        </widget>
-        <widget class="QLineEdit">
-            <property name="name">
-                <cstring>LineEditAuthor</cstring>
-            </property>
-            <property name="geometry">
-                <rect>
-                    <x>120</x>
-                    <y>45</y>
-                    <width>211</width>
-                    <height>26</height>
-                </rect>
-            </property>
-        </widget>
-        <widget class="QLineEdit">
-            <property name="name">
-                <cstring>LineEditAlbum</cstring>
-            </property>
-            <property name="geometry">
-                <rect>
-                    <x>120</x>
-                    <y>75</y>
-                    <width>211</width>
-                    <height>26</height>
-                </rect>
-            </property>
-        </widget>
-        <widget class="QLineEdit">
-            <property name="name">
-                <cstring>LineEditComments</cstring>
-            </property>
-            <property name="geometry">
-                <rect>
-                    <x>120</x>
-                    <y>135</y>
-                    <width>211</width>
-                    <height>26</height>
-                </rect>
-            </property>
-        </widget>
-        <widget class="QLineEdit">
-            <property name="name">
-                <cstring>LineEditGenre</cstring>
-            </property>
-            <property name="geometry">
-                <rect>
-                    <x>120</x>
-                    <y>105</y>
-                    <width>211</width>
-                    <height>26</height>
-                </rect>
-            </property>
-        </widget>
-    </widget>
     <widget class="QPushButton">
         <property name="name">
             <cstring>PushButtonBrowse</cstring>
@@ -426,6 +230,130 @@
             </property>
         </widget>
     </widget>
+    <widget class="QGroupBox">
+        <property name="name">
+            <cstring>groupBox1</cstring>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>10</x>
+                <y>170</y>
+                <width>345</width>
+                <height>115</height>
+            </rect>
+        </property>
+        <property name="title">
+            <string>Tags</string>
+        </property>
+        <widget class="QLabel">
+            <property name="name">
+                <cstring>TextLabel3_2_3</cstring>
+            </property>
+            <property name="enabled">
+                <bool>true</bool>
+            </property>
+            <property name="geometry">
+                <rect>
+                    <x>10</x>
+                    <y>20</y>
+                    <width>105</width>
+                    <height>21</height>
+                </rect>
+            </property>
+            <property name="font">
+                <font>
+                </font>
+            </property>
+            <property name="text">
+                <string>Title</string>
+            </property>
+        </widget>
+        <widget class="QLabel">
+            <property name="name">
+                <cstring>TextLabel3_2_3_3</cstring>
+            </property>
+            <property name="enabled">
+                <bool>true</bool>
+            </property>
+            <property name="geometry">
+                <rect>
+                    <x>10</x>
+                    <y>79</y>
+                    <width>105</width>
+                    <height>21</height>
+                </rect>
+            </property>
+            <property name="font">
+                <font>
+                </font>
+            </property>
+            <property name="text">
+                <string>Album</string>
+            </property>
+        </widget>
+        <widget class="QLabel">
+            <property name="name">
+                <cstring>TextLabel3_2_3_2</cstring>
+            </property>
+            <property name="enabled">
+                <bool>true</bool>
+            </property>
+            <property name="geometry">
+                <rect>
+                    <x>10</x>
+                    <y>49</y>
+                    <width>105</width>
+                    <height>21</height>
+                </rect>
+            </property>
+            <property name="font">
+                <font>
+                </font>
+            </property>
+            <property name="text">
+                <string>Author</string>
+            </property>
+        </widget>
+        <widget class="QLineEdit">
+            <property name="name">
+                <cstring>LineEditAlbum</cstring>
+            </property>
+            <property name="geometry">
+                <rect>
+                    <x>120</x>
+                    <y>75</y>
+                    <width>211</width>
+                    <height>26</height>
+                </rect>
+            </property>
+        </widget>
+        <widget class="QLineEdit">
+            <property name="name">
+                <cstring>LineEditTitle</cstring>
+            </property>
+            <property name="geometry">
+                <rect>
+                    <x>120</x>
+                    <y>15</y>
+                    <width>211</width>
+                    <height>26</height>
+                </rect>
+            </property>
+        </widget>
+        <widget class="QLineEdit">
+            <property name="name">
+                <cstring>LineEditAuthor</cstring>
+            </property>
+            <property name="geometry">
+                <rect>
+                    <x>120</x>
+                    <y>45</y>
+                    <width>211</width>
+                    <height>26</height>
+                </rect>
+            </property>
+        </widget>
+    </widget>
     <widget class="QCheckBox">
         <property name="name">
             <cstring>CheckBoxRecord</cstring>
@@ -433,7 +361,7 @@
         <property name="geometry">
             <rect>
                 <x>10</x>
-                <y>360</y>
+                <y>295</y>
                 <width>344</width>
                 <height>22</height>
             </rect>

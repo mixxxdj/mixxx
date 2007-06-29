@@ -53,6 +53,7 @@ DlgPrefRecord::DlgPrefRecord(QWidget *parent, ConfigObject<ConfigValue> *_config
     connect(CheckBoxRecord,            SIGNAL(stateChanged(int)), this, SLOT(slotApply()));
 
 
+    loadMetaData();
     slotApply();
     config->set(ConfigKey(PREF_KEY, "Record"), QString("FALSE"));//make sure a corrupt config file won't cause us to record constantly
 }
@@ -64,7 +65,12 @@ void DlgPrefRecord::slotBrowseSave()
     fd->setCaption("Save As");
     if ( fd->exec() == QDialog::Accepted )
     {
-	LineEditRecPath->setText( fd->selectedFile() );
+	QString selectedFile = fd->selectedFile();
+	if(!selectedFile.endsWith("." + fileTypeExtension))
+	{
+	    selectedFile.append("." + fileTypeExtension);
+	}
+	LineEditRecPath->setText( selectedFile );
     }
 }
 
@@ -129,23 +135,44 @@ void DlgPrefRecord::slotEncoding()
     {
 	case IDEX_WAVE:
 	    groupBoxQuality->setEnabled(false);
+	    fileTypeExtension = QString("wav");
 	    break;
 	
 	case IDEX_FLAC:
 	    groupBoxQuality->setEnabled(false);
+	    fileTypeExtension = QString("flac");
 	    break;
 
 	case IDEX_OGG:
 	    SliderQuality->setValue( config->getValueString(ConfigKey(PREF_KEY, "OGG_Quality")).toInt());
+	    fileTypeExtension = QString("ogg");
 	    break;
 
 	case IDEX_MP3:
 	    SliderQuality->setValue( config->getValueString(ConfigKey(PREF_KEY, "MP3_Quality")).toInt());
+	    fileTypeExtension = QString("mp3");
 	    break;
 
+	case IDEX_AIFF:
+	    groupBoxQuality->setEnabled(false);
+	    fileTypeExtension = QString("aiff");
+	    break;
     }
 }
-    
+   
+void DlgPrefRecord::setMetaData()
+{
+    config->set(ConfigKey(PREF_KEY, "Title"), ConfigValue(LineEditTitle->text()));
+    config->set(ConfigKey(PREF_KEY, "Author"), ConfigValue(LineEditTitle->text()));
+    config->set(ConfigKey(PREF_KEY, "Album"), ConfigValue(LineEditAlbum->text()));
+}
+
+void DlgPrefRecord::loadMetaData()
+{
+    LineEditTitle->setText( config->getValueString(ConfigKey(PREF_KEY, "Title")));
+    LineEditAuthor->setText( config->getValueString(ConfigKey(PREF_KEY, "Author")));
+    LineEditAlbum->setText( config->getValueString(ConfigKey(PREF_KEY, "Album")));
+}
 
 DlgPrefRecord::~DlgPrefRecord()
 {
@@ -162,6 +189,7 @@ void DlgPrefRecord::slotApply()
 {
 
     config->set(ConfigKey(PREF_KEY, "Path"), LineEditRecPath->text());
+    setMetaData();
     
 
     slotEncoding();
@@ -175,6 +203,7 @@ void DlgPrefRecord::slotApply()
 	if(result == 0)
 	{
 	    qDebug("Setting record status: READY");
+	    confirmOverwrite = true;
 	    config->set(ConfigKey(PREF_KEY, "Record"), QString("READY"));
 	    /*
 	     * Note: setting the Record value to READY does not start the

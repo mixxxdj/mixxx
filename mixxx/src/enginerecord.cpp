@@ -55,8 +55,9 @@ EngineRecord::~EngineRecord()
     delete fill;
     delete write->data;
     delete write;
-    QThread::terminate();
-    qDebug("rec thread terminated");
+    //QThread::terminate();
+    //qDebug("rec thread terminated");
+    delete fOut;
 }
 
 void EngineRecord::process(const CSAMPLE *pIn, const CSAMPLE *pOut, const int iBufferSize)
