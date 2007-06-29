@@ -19,6 +19,17 @@
 #include "configobject.h"
 #include "dlgprefrecord.h"
 
+/***************************************************************************
+ *									   *
+ * Notice To Future Developpers:					   *
+ * 	There is code here to write the file in a seperate thread	   *
+ * 	however it is unstable and has been abondoned.  Its only use	   *
+ * 	was to support low priority recording, however I don't think its   *
+ * 	worth the trouble.						   *
+ * 									   *
+ ***************************************************************************/
+
+
 EngineRecord::EngineRecord(ConfigObject<ConfigValue> *_config)
 {
     curBuf1 = true;
@@ -35,7 +46,7 @@ EngineRecord::EngineRecord(ConfigObject<ConfigValue> *_config)
     write->size = DEFAULT_BUFSIZE;
     write->data = new CSAMPLE[fill->size];
     write->valid = 0;
-    QThread::start();
+    //QThread::start();
 }
 
 EngineRecord::~EngineRecord()
@@ -52,7 +63,7 @@ void EngineRecord::process(const CSAMPLE *pIn, const CSAMPLE *pOut, const int iB
 {
     CSAMPLE *Out = (CSAMPLE*) pOut;
     
-    mutexFill.lock();
+    //mutexFill.lock();
     if(fill->size < iBufferSize)
     {
 	delete fill->data;
@@ -75,8 +86,17 @@ void EngineRecord::process(const CSAMPLE *pIn, const CSAMPLE *pOut, const int iB
 	}
     }
     fill->valid = iBufferSize;
-    mutexFill.unlock();
-    waitCondFill.wakeAll();
+
+    //High Priority Record (Record blocks playback thread)
+    //if(config->getValueString(ConfigKey(PREF_KEY, "Priority")).compare("Low") != 0)
+    //{
+	//write record buffer to file
+	fOut->write(fill->data, fill->valid);
+	fill->valid = 0;
+    //}
+
+    //mutexFill.unlock();
+    //waitCondFill.wakeAll();
 }
 
 
