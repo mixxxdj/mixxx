@@ -280,9 +280,9 @@ void WaveSummary::extractBeat(TrackInfoObject *pTrackInfoObject)
 #define CHUNKSIZE 4096
 
 	SoundSourceProxy *pSoundSource = new SoundSourceProxy(pTrackInfoObject);
-	int16_t data16[ CHUNKSIZE / 2 ];  // for 16 bit samples
+	int16_t data16[ CHUNKSIZE];  // for 16 bit samples
 	int8_t  data8[ CHUNKSIZE ];       // for 8 bit samples
-	soundtouch::SAMPLETYPE samples[ CHUNKSIZE / 2 ];
+	soundtouch::SAMPLETYPE samples[ CHUNKSIZE];
 	unsigned int length = 0, read = 0, totalsteps = 0, pos = 0;
 	int channels = 2, bits = 16;
 	float frequency = 44100;
