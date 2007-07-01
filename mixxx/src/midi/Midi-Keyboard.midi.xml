@@ -5,147 +5,147 @@
       <group>[Master]</group>
       <key>crossfader</key>
       <miditype>Ctrl</miditype>
-      <midinum>1</midinum>
+      <midino>1</midino>
       <midichan>1</midichan>
     </control>
     <control>
       <group>[Channel1]</group>
       <key>play</key>
       <miditype>Key</miditype>
-      <midinum>36</midinum>
+      <midino>36</midino>
       <midichan>1</midichan>
     </control>
     <control>
       <group>[Channel1]</group>
       <key>reverse</key>
       <miditype>Key</miditype>
-      <midinum>38</midinum>
+      <midino>38</midino>
       <midichan>1</midichan>
     </control>
     <control>
       <group>[Channel1]</group>
       <key>back</key>
       <miditype>Key</miditype>
-      <midinum>40</midinum>
+      <midino>40</midino>
       <midichan>1</midichan>
     </control>
     <control>
       <group>[Channel1]</group>
       <key>fwd</key>
       <miditype>Key</miditype>
-      <midinum>41</midinum>
+      <midino>41</midino>
       <midichan>1</midichan>
     </control>
     <control>
       <group>[Channel1]</group>
       <key>rate_perm_down</key>
       <miditype>Key</miditype>
-      <midinum>43</midinum>
+      <midino>43</midino>
       <midichan>1</midichan>
     </control>
     <control>
       <group>[Channel1]</group>
       <key>rate_perm_up</key>
       <miditype>Key</miditype>
-      <midinum>44</midinum>
+      <midino>44</midino>
       <midichan>1</midichan>
     </control>
     <control>
       <group>[Channel1]</group>
       <key>rate_temp_down</key>
       <miditype>Key</miditype>
-      <midinum>45</midinum>
+      <midino>45</midino>
       <midichan>1</midichan>
     </control>
     <control>
       <group>[Channel1]</group>
       <key>rate_temp_up</key>
       <miditype>Key</miditype>
-      <midinum>46</midinum>
+      <midino>46</midino>
       <midichan>1</midichan>
     </control>
     <control>
       <group>[Channel1]</group>
       <key>cue_simple</key>
       <miditype>Key</miditype>
-      <midinum>47</midinum>
+      <midino>47</midino>
       <midichan>1</midichan>
     </control>
     <control>
       <group>[Channel1]</group>
       <key>flanger</key>
       <miditype>Key</miditype>
-      <midinum>52</midinum>
+      <midino>52</midino>
       <midichan>1</midichan>
     </control>
     <control>
       <group>[Channel2]</group>
       <key>play</key>
       <miditype>Key</miditype>
-      <midinum>60</midinum>
+      <midino>60</midino>
       <midichan>1</midichan>
     </control>
     <control>
       <group>[Channel2]</group>
       <key>reverse</key>
       <miditype>Key</miditype>
-      <midinum>62</midinum>
+      <midino>62</midino>
       <midichan>1</midichan>
     </control>
     <control>
       <group>[Channel2]</group>
       <key>back</key>
       <miditype>Key</miditype>
-      <midinum>64</midinum>
+      <midino>64</midino>
       <midichan>1</midichan>
     </control>
     <control>
       <group>[Channel2]</group>
       <key>fwd</key>
       <miditype>Key</miditype>
-      <midinum>65</midinum>
+      <midino>65</midino>
       <midichan>1</midichan>
     </control>
     <control>
       <group>[Channel2]</group>
       <key>rate_perm_down</key>
       <miditype>Key</miditype>
-      <midinum>67</midinum>
+      <midino>67</midino>
       <midichan>1</midichan>
     </control>
     <control>
       <group>[Channel2]</group>
       <key>rate_perm_up</key>
       <miditype>Key</miditype>
-      <midinum>68</midinum>
+      <midino>68</midino>
       <midichan>1</midichan>
     </control>
     <control>
       <group>[Channel2]</group>
       <key>rate_temp_down</key>
       <miditype>Key</miditype>
-      <midinum>69</midinum>
+      <midino>69</midino>
       <midichan>1</midichan>
     </control>
     <control>
       <group>[Channel2]</group>
       <key>rate_temp_up</key>
       <miditype>Key</miditype>
-      <midinum>70</midinum>
+      <midino>70</midino>
       <midichan>1</midichan>
     </control>
     <control>
       <group>[Channel2]</group>
       <key>cue_simple</key>
       <miditype>Key</miditype>
-      <midinum>71</midinum>
+      <midino>71</midino>
       <midichan>1</midichan>
     </control>
     <control>
       <group>[Channel2]</group>
       <key>flanger</key>
       <miditype>Key</miditype>
-      <midinum>76</midinum>
+      <midino>76</midino>
       <midichan>1</midichan>
     </control>
   </controls>

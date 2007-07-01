@@ -5,14 +5,14 @@
       <group>[Master]</group>
       <key>crossfader</key>
       <miditype>Ctrl</miditype>
-      <midinum>164</midinum>
+      <midino>164</midino>
       <midichan>1</midichan>
     </control>
     <control>
       <group>[Master]</group>
       <key>headVolume</key>
       <miditype>Ctrl</miditype>
-      <midinum>76</midinum>
+      <midino>76</midino>
       <midichan>1</midichan>
       <options>
         <rot64/>
@@ -22,7 +22,7 @@
       <group>[Master]</group>
       <key>headMix</key>
       <miditype>Ctrl</miditype>
-      <midinum>77</midinum>
+      <midino>77</midino>
       <midichan>1</midichan>
       <options>
         <rot64/>
@@ -32,35 +32,35 @@
       <group>[Channel1]</group>
       <key>volume</key>
       <miditype>Ctrl</miditype>
-      <midinum>64</midinum>
+      <midino>64</midino>
       <midichan>1</midichan>
     </control>
     <control>
       <group>[Channel1]</group>
       <key>filterLow</key>
       <miditype>Ctrl</miditype>
-      <midinum>66</midinum>
+      <midino>66</midino>
       <midichan>1</midichan>
     </control>
     <control>
       <group>[Channel1]</group>
       <key>filterMid</key>
       <miditype>Ctrl</miditype>
-      <midinum>67</midinum>
+      <midino>67</midino>
       <midichan>1</midichan>
     </control>
     <control>
       <group>[Channel1]</group>
       <key>filterHigh</key>
       <miditype>Ctrl</miditype>
-      <midinum>68</midinum>
+      <midino>68</midino>
       <midichan>1</midichan>
     </control>
     <control>
       <group>[Channel1]</group>
       <key>rate</key>
       <miditype>Ctrl</miditype>
-      <midinum>72</midinum>
+      <midino>72</midino>
       <midichan>1</midichan>
       <options>
         <rot64/>
@@ -70,7 +70,7 @@
       <group>[Channel1]</group>
       <key>pregain</key>
       <miditype>Ctrl</miditype>
-      <midinum>74</midinum>
+      <midino>74</midino>
       <midichan>1</midichan>
       <options>
         <rot64/>
@@ -80,49 +80,49 @@
       <group>[Channel1]</group>
       <key>play</key>
       <miditype>Key</miditype>
-      <midinum>62</midinum>
+      <midino>62</midino>
       <midichan>1</midichan>
     </control>
     <control>
       <group>[Channel1]</group>
       <key>cue_goto</key>
       <miditype>Key</miditype>
-      <midinum>63</midinum>
+      <midino>63</midino>
       <midichan>1</midichan>
     </control>
     <control>
       <group>[Channel1]</group>
       <key>cue_set</key>
       <miditype>Key</miditype>
-      <midinum>64</midinum>
+      <midino>64</midino>
       <midichan>1</midichan>
     </control>
     <control>
       <group>[Channel1]</group>
       <key>pfl</key>
       <miditype>key</miditype>
-      <midinum>51</midinum>
+      <midino>51</midino>
       <midichan>1</midichan>
     </control>
     <control>
       <group>[Channel1]</group>
       <key>flanger</key>
       <miditype>Key</miditype>
-      <midinum>102</midinum>
+      <midino>102</midino>
       <midichan>1</midichan>
     </control>
     <control>
       <group>[Channel1]</group>
       <key>reverse</key>
       <miditype>Key</miditype>
-      <midinum>110</midinum>
+      <midino>110</midino>
       <midichan>1</midichan>
     </control>
     <control>
       <group>[Channel1]</group>
       <key>playposition</key>
       <miditype>Ctrl</miditype>
-      <midinum>96</midinum>
+      <midino>96</midino>
       <midichan>1</midichan>
       <options>
         <rot64/>
@@ -132,49 +132,49 @@
       <group>[Channel1]</group>
       <key>slowback</key>
       <miditype>Key</miditype>
-      <midinum>60</midinum>
+      <midino>60</midino>
       <midichan>1</midichan>
     </control>
     <control>
       <group>[Channel1]</group>
       <key>slowfwd</key>
       <miditype>Key</miditype>
-      <midinum>61</midinum>
+      <midino>61</midino>
       <midichan>1</midichan>
     </control>
     <control>
       <group>[Channel2]</group>
       <key>volume</key>
       <miditype>Ctrl</miditype>
-      <midinum>65</midinum>
+      <midino>65</midino>
       <midichan>1</midichan>
     </control>
     <control>
       <group>[Channel2]</group>
       <key>filterLow</key>
       <miditype>Ctrl</miditype>
-      <midinum>69</midinum>
+      <midino>69</midino>
       <midichan>1</midichan>
     </control>
     <control>
       <group>[Channel2]</group>
       <key>filterMid</key>
       <miditype>Ctrl</miditype>
-      <midinum>70</midinum>
+      <midino>70</midino>
       <midichan>1</midichan>
     </control>
     <control>
       <group>[Channel2]</group>
       <key>filterHigh</key>
       <miditype>Ctrl</miditype>
-      <midinum>71</midinum>
+      <midino>71</midino>
       <midichan>1</midichan>
     </control>
     <control>
       <group>[Channel2]</group>
       <key>rate</key>
       <miditype>Ctrl</miditype>
-      <midinum>73</midinum>
+      <midino>73</midino>
       <midichan>1</midichan>
       <options>
         <rot64/>
@@ -184,7 +184,7 @@
       <group>[Channel2]</group>
       <key>pregain</key>
       <miditype>Ctrl</miditype>
-      <midinum>75</midinum>
+      <midino>75</midino>
       <midichan>1</midichan>
       <options>
         <rot64/>
@@ -194,49 +194,49 @@
       <group>[Channel2]</group>
       <key>preplay</key>
       <miditype>Key</miditype>
-      <midinum>62</midinum>
+      <midino>62</midino>
       <midichan>2</midichan>
     </control>
     <control>
       <group>[Channel2]</group>
       <key>cue_goto</key>
       <miditype>Key</miditype>
-      <midinum>63</midinum>
+      <midino>63</midino>
       <midichan>2</midichan>
     </control>
     <control>
       <group>[Channel2]</group>
       <key>cue_set</key>
       <miditype>Key</miditype>
-      <midinum>64</midinum>
+      <midino>64</midino>
       <midichan>2</midichan>
     </control>
     <control>
       <group>[Channel2]</group>
       <key>pfl</key>
       <miditype>key</miditype>
-      <midinum>51</midinum>
+      <midino>51</midino>
       <midichan>2</midichan>
     </control>
     <control>
       <group>[Channel2]</group>
       <key>flanger</key>
       <miditype>Key</miditype>
-      <midinum>103</midinum>
+      <midino>103</midino>
       <midichan>1</midichan>
     </control>
     <control>
       <group>[Channel2]</group>
       <key>reverse</key>
       <miditype>Key</miditype>
-      <midinum>111</midinum>
+      <midino>111</midino>
       <midichan>1</midichan>
     </control>
     <control>
       <group>[Channel2]</group>
       <key>playposition</key>
       <miditype>Ctrl</miditype>
-      <midinum>96</midinum>
+      <midino>96</midino>
       <midichan>2</midichan>
       <options>
         <rot64/>
@@ -246,21 +246,21 @@
       <group>[Channel2]</group>
       <key>slowback</key>
       <miditype>Key</miditype>
-      <midinum>60</midinum>
+      <midino>60</midino>
       <midichan>2</midichan>
     </control>
     <control>
       <group>[Channel2]</group>
       <key>slowfwd</key>
       <miditype>Key</miditype>
-      <midinum>61</midinum>
+      <midino>61</midino>
       <midichan>2</midichan>
     </control>
     <control>
       <group>[Flanger]</group>
       <key>lfoDepth</key>
       <miditype>Ctrl</miditype>
-      <midinum>80</midinum>
+      <midino>80</midino>
       <midichan>1</midichan>
       <options>
         <rot64fast/>
@@ -270,7 +270,7 @@
       <group>[Flanger]</group>
       <key>lfoDelay</key>
       <miditype>Ctrl</miditype>
-      <midinum>81</midinum>
+      <midino>81</midino>
       <midichan>1</midichan>
       <options>
         <rot64fast/>
@@ -280,7 +280,7 @@
       <group>[Flanger]</group>
       <key>lfoPeriod</key>
       <miditype>Ctrl</miditype>
-      <midinum>82</midinum>
+      <midino>82</midino>
       <midichan>1</midichan>
       <options>
         <rot64fast/>
