@@ -37,19 +37,19 @@ foreach my $infile (@ARGV) {
       next;
     } else {
       warn "No group in effect at line $.\n" unless ($groupname);
-      my ($key, $miditype, $midinum, $isch, $midichannel, $options) = split;
+      my ($key, $miditype, $midino, $isch, $midichannel, $options) = split;
       ## A couple of the files omit Ctrl for controller numbers
       if ($miditype =~ /\d/) {
         ## Shift everything across. Not that these files tend to have
 	## anything after the controller, but let's be safe.
-	($miditype, $midinum, $isch, $midichannel, $options) = 
-	("Ctrl", $miditype, $midinum, $isch, $midichannel);
+	($miditype, $midino, $isch, $midichannel, $options) = 
+	("Ctrl", $miditype, $midino, $isch, $midichannel);
       }
       print "    <control>\n";
       print "      <group>[$groupname]</group>\n";
       print "      <key>$key</key>\n";
       print "      <miditype>$miditype</miditype>\n";
-      print "      <midinum>$midinum</midinum>\n";
+      print "      <midino>$midino</midino>\n";
       ## There might be a "ch nn", or there might not.
       if ($isch) {
         if ($isch eq 'ch') {
