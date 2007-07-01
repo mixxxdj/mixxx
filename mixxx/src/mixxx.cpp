@@ -372,7 +372,8 @@ MixxxApp::~MixxxApp()
     // FWI: Begin of fullscreen patch
     delete frame;
     // FWI: End of fullscreen patch
-    delete master;
+    // BJW: master is already deleted above, so this was causing a segfault on exit
+    // delete master;
 #ifdef __WIN__
 	_exit(0);
 #endif
