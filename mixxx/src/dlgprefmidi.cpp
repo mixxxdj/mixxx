@@ -591,3 +591,4 @@ void DlgPrefMidi::setupMappings(QString path) {
 	MidiLedHandler::destroyHandlers();
 	MidiLedHandler::createHandlers(doc.namedItem("lights"), m_pMidi);
 }
+

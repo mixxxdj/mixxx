@@ -126,3 +126,4 @@ void ControlObjectThread::slotParentDead() {
 	// use of if(m_pControlObject)
 	m_pControlObject = 0;
 }
+

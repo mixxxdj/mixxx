@@ -88,3 +88,4 @@ QColor ImgHSVTweak::doColorCorrection(QColor c) {
 	}
 	return c;
 }
+

@@ -5,3 +5,4 @@ QColor ImgInvert::doColorCorrection(QColor c) {
 		0xff - c.green(),
 		0xff - c.blue());
 }
+

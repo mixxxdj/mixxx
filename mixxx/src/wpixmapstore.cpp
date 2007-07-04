@@ -97,3 +97,4 @@ void WPixmapStore::emptyStore() {
 void WPixmapStore::setLoader(ImgSource* ld) {
 	loader = ld;
 }
+

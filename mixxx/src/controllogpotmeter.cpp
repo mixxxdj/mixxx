@@ -105,3 +105,4 @@ void ControlLogpotmeter::setValueFromMidi(MidiCategory c, double v) {
 	m_dValue = getValueFromWidget(v);
 	emit(valueChanged(m_dValue));
 }
+

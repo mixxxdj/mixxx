@@ -154,4 +154,4 @@ QString WTreeItemDir::text( int column ) const
 void WTreeItemDir::popupMenu()
 {
 }
-    
+

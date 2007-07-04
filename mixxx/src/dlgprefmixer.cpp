@@ -96,3 +96,4 @@ void DlgPrefMixer::slotApply()
 void DlgPrefMixer::slotUpdate()
 {
 }
+
