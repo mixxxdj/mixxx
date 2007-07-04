@@ -232,7 +232,7 @@ void ControlObject::sync()
 	    } else if (obj->pControlObject == NULL) {
 		qDebug("Midi object with null control object!");
 		delete obj;
-	    } else if (obj->category == NULL) {
+	    } else if (! obj->category) {
 		qDebug("Midi object with null category!");
 		delete obj;
 	    /*} else if (obj->value == NULL) {
