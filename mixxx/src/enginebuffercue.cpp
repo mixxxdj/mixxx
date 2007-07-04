@@ -100,7 +100,7 @@ void EngineBufferCue::slotControlCueGoto(double pos)
 }
 
 // Goto the cue point and stop, regardless of playback status:
-void EngineBufferCue::slotControlCueGotoAndStop(double pos)
+void EngineBufferCue::slotControlCueGotoAndStop(double /* pos */)
 {
 	//Seek to the cue point...
 	m_pEngineBuffer->slotControlSeekAbs(cuePoint->get(), false);

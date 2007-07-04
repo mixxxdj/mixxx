@@ -85,3 +85,4 @@ private:
 	float m_hfact, m_sfact, m_vfact;
 };
 #endif
+

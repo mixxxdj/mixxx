@@ -68,7 +68,7 @@ public:
     ConfigValue();
     ConfigValue(QString _value);
     ConfigValue(int _value);
-	inline ConfigValue(QDomNode node) { qFatal("ConfigValue from QDomNode not implemented here"); }
+    inline ConfigValue(QDomNode /* node */) { qFatal("ConfigValue from QDomNode not implemented here"); }
     void valCopy(const ConfigValue _value);
 
     QString value;
@@ -81,7 +81,7 @@ public:
     ConfigValueMidi();
     ConfigValueMidi(QString _value);
     ConfigValueMidi(MidiType _miditype, int _midino, int _midichannel);
-	ConfigValueMidi(QDomNode node);
+    ConfigValueMidi(QDomNode node);
     void valCopy(const ConfigValueMidi v);
     double ComputeValue(MidiType _miditype, double _prevmidivalue, double _newmidivalue);
     friend bool operator==(const ConfigValueMidi & s1, const ConfigValueMidi & s2);
@@ -97,7 +97,7 @@ public:
     ConfigValueKbd();
     ConfigValueKbd(QString _value);
     ConfigValueKbd(QKeySequence key);
-	inline ConfigValueKbd(QDomNode node) { qFatal("ConfigValueKbd from QDomNode not implemented here"); }
+    inline ConfigValueKbd(QDomNode /* node */) { qFatal("ConfigValueKbd from QDomNode not implemented here"); }
     void valCopy(const ConfigValueKbd v);
     friend bool operator==(const ConfigValueKbd & s1, const ConfigValueKbd & s2);
 
