@@ -210,3 +210,4 @@ void VisualChannel::resetColors() {
 		vd->setColorFisheye(m_fColorFisheyeR, m_fColorFisheyeG, m_fColorFisheyeB);
 	}
 }
+
