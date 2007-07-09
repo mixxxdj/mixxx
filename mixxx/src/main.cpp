@@ -139,7 +139,7 @@ int main(int argc, char *argv[])
     a = new QApplication(argc, argv);
 
 #ifdef __LADSPA__
-    LADSPALoader ladspaloader;
+    //LADSPALoader ladspaloader;
 #endif
 
     // Show splash
