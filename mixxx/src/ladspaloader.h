@@ -20,6 +20,7 @@ public:
     ~LADSPALoader();
         
     const LADSPAPlugin * getByIndex(uint index);
+    LADSPAPlugin * getByLabel(const char * label);
 
 protected:
     LADSPAPluginVector m_Plugins;

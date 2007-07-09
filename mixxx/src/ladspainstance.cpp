@@ -22,6 +22,7 @@ LADSPAInstance::LADSPAInstance(const LADSPA_Descriptor * descriptor)
 
     for (unsigned long port = 0; port < m_pDescriptor->PortCount; port++)
     {
+        fprintf(stderr, "Port %lu: %s\n", port, m_pDescriptor->PortNames[port]); // DEBUG
         if (LADSPA_IS_PORT_AUDIO (m_pDescriptor->PortDescriptors [port]))
         {
             if (LADSPA_IS_PORT_INPUT (m_pDescriptor->PortDescriptors [port]))
@@ -34,6 +35,8 @@ LADSPAInstance::LADSPAInstance(const LADSPA_Descriptor * descriptor)
             }
         }
     }
+    fprintf(stderr, "Input: %lu\n", m_InputPort); // DEBUG
+    fprintf(stderr, "Output: %lu\n", m_OutputPort); // DEBUG
 }
 
 LADSPAInstance::~LADSPAInstance()

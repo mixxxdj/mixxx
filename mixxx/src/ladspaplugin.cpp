@@ -24,3 +24,8 @@ LADSPAInstance * LADSPAPlugin::instantiate()
     LADSPAInstance * instance = new LADSPAInstance(m_pDescriptor);
     return instance;
 }
+
+const char * LADSPAPlugin::getLabel()
+{
+    return m_pDescriptor->Label;
+}

@@ -7,33 +7,25 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef ENGINELADSPA_H
-#define ENGINELADSPA_H
+#ifndef LADSPACONTROL_H
+#define LADSPACONTROL_H
 
-#include "engineobject.h"
+#define LADSPA_MAX_BUFFER_SIZE 1024
 
-#include "ladspainstance.h"
-#include "ladspaloader.h"
-#include "ladspaplugin.h"
+#include <ladspa.h>
 
-class ControlPotmeter;
-class LADSPAControl;
+class LADSPAControl {
 
-class EngineLADSPA : public EngineObject 
-{
 public:
-    EngineLADSPA();
-    ~EngineLADSPA();
+    LADSPAControl();
+    ~LADSPAControl();
 
-    void process(const CSAMPLE *pIn, const CSAMPLE *pOut, const int iBufferSize);
-    void addInstance(LADSPAInstance * instance);
-
-private:
-    LADSPAInstanceList m_Instances;
-    LADSPALoader * m_Loader;
-    ControlPotmeter * m_pPot1;
-    LADSPAControl * delayControl;
-    LADSPAControl * wetControl;
+    LADSPA_Data * getBuffer();
+    void setValue(LADSPA_Data value);
+    
+protected:
+    LADSPA_Data m_Value;
+    LADSPA_Data * m_pBuffer;
 };
 
 #endif

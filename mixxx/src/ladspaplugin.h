@@ -24,6 +24,7 @@ public:
     ~LADSPAPlugin();
     
     LADSPAInstance * instantiate();
+    const char * getLabel();
 
 protected:
     const LADSPA_Descriptor * m_pDescriptor;
