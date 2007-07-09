@@ -32,8 +32,13 @@ private:
     LADSPAInstanceList m_Instances;
     LADSPALoader * m_Loader;
     ControlPotmeter * m_pPot1;
-    LADSPAControl * delayControl;
-    LADSPAControl * wetControl;
+    ControlPotmeter * m_pPot2;
+    ControlPotmeter * m_pPot3;
+    ControlPotmeter * m_pPot4;
+    LADSPAControl * m_pControl1;
+    LADSPAControl * m_pControl2;
+    LADSPAControl * m_pControl3;
+    LADSPAControl * m_pControl4;
 };
 
 #endif
