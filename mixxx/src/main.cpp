@@ -33,6 +33,10 @@
 #include "qsplashscreen.h"
 #include "log.h"
 
+#ifdef __LADSPA__
+#include <ladspaloader.h>
+#endif
+
 #ifdef Q_WS_WIN
 #include<io.h> // Debug Console
 #include<windows.h>
@@ -133,6 +137,10 @@ int main(int argc, char *argv[])
 #endif
 
     a = new QApplication(argc, argv);
+
+#ifdef __LADSPA__
+    LADSPALoader ladspaloader;
+#endif
 
     // Show splash
     QSplashScreen *pSplash = 0;

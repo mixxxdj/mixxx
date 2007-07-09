@@ -26,6 +26,9 @@
 #include "engineflanger.h"
 #include "enginevumeter.h"
 #include "enginerecord.h"
+#ifdef __LADSPA__
+#include "engineladspa.h"
+#endif
 // #include "enginebuffermasterrate.h"
 
 EngineMaster::EngineMaster(ConfigObject<ConfigValue> *_config,
@@ -44,6 +47,11 @@ EngineMaster::EngineMaster(ConfigObject<ConfigValue> *_config,
 
     // Flanger   
     flanger = new EngineFlanger("[Flanger]");    
+
+#ifdef __LADSPA__
+    // LADSPA
+    ladspa = new EngineLADSPA();
+#endif
     
     // Crossfader
     crossfader = new ControlPotmeter(ConfigKey(group, "crossfader"),-1.,1.);
@@ -218,6 +226,10 @@ void EngineMaster::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBuff
 
     // Master volume
     volume->process(m_pMaster, m_pMaster, iBufferSize);
+
+#ifdef __LADSPA__
+    ladspa->process(m_pMaster, m_pMaster, iBufferSize);
+#endif
 
     // Process the flanger on master if flanger is enabled on both channels
     if (flanger1->get()==1. && flanger2->get()==1.)

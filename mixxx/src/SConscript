@@ -375,6 +375,14 @@ flags_experimentalrecording = ARGUMENTS.get('experimentalrecord', 0)
 if int(flags_experimentalrecording):
 	env.Append(CXXFLAGS = '-D__EXPERIMENTAL_RECORDING__')
 
+#LADSPA
+flags_ladspa = ARGUMENTS.get('ladspa', 0)
+if int(flags_ladspa):
+	env.Append(CXXFLAGS = '-D__LADSPA__')
+	sources += Split("""engineladspa.cpp ladspaloader.cpp ladspalibrary.cpp ladspaplugin.cpp ladspainstance.cpp""")
+	print "LADSPA... enabled"
+else:
+	print "LADSPA... disabled"
 
 print "================\n"
 

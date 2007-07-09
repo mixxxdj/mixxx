@@ -25,6 +25,9 @@ class EngineVolume;
 class EngineChannel;
 class EngineClipping;
 class EngineFlanger;
+#ifdef __LADSPA__
+class EngineLADSPA;
+#endif
 class EngineVuMeter;
 class ControlPotmeter;
 class ControlPushButton;
@@ -52,6 +55,9 @@ private:
     EngineVolume *volume, *head_volume; 
     EngineClipping *clipping, *head_clipping;
     EngineFlanger *flanger;
+#ifdef __LADSPA__
+    EngineLADSPA *ladspa;
+#endif
     EngineVuMeter *vumeter;
     EngineVolume *volume1, *volume2;
     EngineVuMeter *vumeter1, *vumeter2;
