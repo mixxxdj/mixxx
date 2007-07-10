@@ -88,8 +88,11 @@ void WPushButton::setup(QDomNode node)
             //If we have 2 states, tell my controlpushbutton object that we're a toggle button.
             if (iNumStates == 2)
             	p->setToggleButton(true);
-           	else
-           		p->setToggleButton(false);
+                // BJW: Removed this so that buttons that are hardcoded as toggle in the source
+                // don't get overridden if a skin fails to set them to 2-state. Buttons still
+                // default to non-toggle otherwise.
+           	// else
+           	//	p->setToggleButton(false);
         }
             
    	con = con.nextSibling();         
