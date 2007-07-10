@@ -590,5 +590,6 @@ void DlgPrefMidi::setupMappings(QString path) {
 	m_pMidiConfig = new ConfigObject<ConfigValueMidi>(doc.namedItem("controls"));
 	MidiLedHandler::destroyHandlers();
 	MidiLedHandler::createHandlers(doc.namedItem("lights"), m_pMidi);
+	m_pMidi->setMidiConfig(m_pMidiConfig);
 }
 
