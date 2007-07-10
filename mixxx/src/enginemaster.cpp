@@ -127,7 +127,9 @@ EngineMaster::~EngineMaster()
     delete [] m_pTemp2;
     delete [] m_pHead;
     delete [] m_pMaster;
+#ifdef __EXPERIMENTAL_RECORDING__
     delete rec;
+#endif
 }
 
 void EngineMaster::setPitchIndpTimeStretch(bool b)
