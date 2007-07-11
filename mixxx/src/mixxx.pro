@@ -189,10 +189,10 @@ win32 {
     HEADERS += soundsourcesndfile.h
     DEFINES += __SNDFILE__
 	contains(VISUALSTUDIO, 1) {
-	    LIBS += libsndfile.lib
+	    LIBS += sndfile.lib
 	}
 	contains(VISUALSTUDIO, 0) {
-	    LIBS += libsndfile.dll
+	    LIBS += sndfile.dll
 	}
 }
 macx:SOURCES += soundsourceaudiofile.cpp
