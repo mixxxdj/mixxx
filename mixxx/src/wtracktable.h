@@ -47,6 +47,7 @@ class QDropEvent;
 class QTable;
 class QWidget;
 class TrackInfoObject;
+class DlgBPMTap;
 
 class WTrackTable : public QTable
 {
@@ -58,9 +59,13 @@ public:
     void sortColumn(int col, bool ascending, bool);
 protected slots:
     void slotMousePressed(int row, int col, int button, const QPoint &);
+    void slotMouseDoubleClicked(int row, int col, int button, const QPoint &);
     QDragObject *dragObject();
 signals:
     void mousePressed(TrackInfoObject *pTrackInfoObject, int button);
+
+protected:
+    DlgBPMTap *bpmTapDlg;
 };
 
 #endif

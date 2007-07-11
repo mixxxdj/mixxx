@@ -27,6 +27,7 @@
 #include <qstringlist.h>
 #include <qmime.h>
 #include "trackinfoobject.h"
+#include "dlgbpmtap.h"
 #include <qwidget.h>
 
 WTrackTable::WTrackTable(QWidget *parent, const char *name) : QTable(0, ROW_NO, parent, name)
@@ -62,11 +63,16 @@ WTrackTable::WTrackTable(QWidget *parent, const char *name) : QTable(0, ROW_NO, 
     setHScrollBarMode(AlwaysOff);
 
     connect(this, SIGNAL(pressed(int, int, int, const QPoint &)), this, SLOT(slotMousePressed(int, int, int, const QPoint &)));
+   connect(this, SIGNAL(doubleClicked(int, int, int, const QPoint &)), this, SLOT(slotMouseDoubleClicked(int, int, int, const QPoint &)));
+
+    bpmTapDlg = 0;
 }
 
 
 WTrackTable::~WTrackTable()
 {
+    if(bpmTapDlg)
+        delete bpmTapDlg;
 }
 
 void WTrackTable::setup(QDomNode node)
@@ -159,7 +165,7 @@ void WTrackTable::sortColumn(int col, bool ascending, bool)
 
 void WTrackTable::slotMousePressed(int row, int col, int button, const QPoint &)
 {
-    if (col!=COL_COMMENT && col!=COL_BPM && button==Qt::RightButton)
+    if (col!=COL_COMMENT && button==Qt::RightButton)
     {
         WTrackTableItem *p = (WTrackTableItem *)item(row,col);
         if (p)
@@ -167,6 +173,27 @@ void WTrackTable::slotMousePressed(int row, int col, int button, const QPoint &)
             TrackInfoObject *pTrackInfoObject = p->getTrackInfoObject();
             if (pTrackInfoObject)
                 emit(mousePressed(pTrackInfoObject, button));
+        }
+    }
+}
+
+void WTrackTable::slotMouseDoubleClicked(int row, int col, int button, const QPoint &)
+{
+    if(col == COL_BPM && button==Qt::LeftButton)
+    {
+        WTrackTableItem *p = (WTrackTableItem *)item(row,col);
+    
+        if(p)
+        {
+            TrackInfoObject *pTrackInfoObject = p->getTrackInfoObject();
+            if(pTrackInfoObject)
+            {
+                if(bpmTapDlg)
+                    delete bpmTapDlg;
+
+                bpmTapDlg = new DlgBPMTap(NULL, pTrackInfoObject);
+                bpmTapDlg->show();
+            }
         }
     }
 }

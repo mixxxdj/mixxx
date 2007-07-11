@@ -208,7 +208,7 @@ void TrackInfoObject::insertInTrackTableRow(WTrackTable *pTableTrack, int iRow)
     if (!m_pTableItemDuration)
         m_pTableItemDuration = new WTrackTableItem(this, pTableTrack,QTableItem::Never, getDurationStr(), typeDuration);
     if (!m_pTableItemBpm)
-        m_pTableItemBpm = new WTrackTableItem(this, pTableTrack,QTableItem::WhenCurrent, getBpmStr(), typeNumber);
+        m_pTableItemBpm = new WTrackTableItem(this, pTableTrack,QTableItem::Never, getBpmStr(), typeNumber);
     if (!m_pTableItemBitrate)
         m_pTableItemBitrate = new WTrackTableItem(this, pTableTrack,QTableItem::Never, getBitrateStr(), typeNumber);
 
