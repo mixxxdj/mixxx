@@ -250,38 +250,6 @@
             </rect>
         </property>
     </widget>
-    <widget class="QLabel">
-        <property name="name">
-            <cstring>lblTime</cstring>
-        </property>
-        <property name="geometry">
-            <rect>
-                <x>30</x>
-                <y>150</y>
-                <width>67</width>
-                <height>20</height>
-            </rect>
-        </property>
-        <property name="text">
-            <string>textLabel1</string>
-        </property>
     </widget>
-    <widget class="QLabel">
-        <property name="name">
-            <cstring>lblBeats</cstring>
-        </property>
-        <property name="geometry">
-            <rect>
-                <x>290</x>
-                <y>150</y>
-                <width>67</width>
-                <height>20</height>
-            </rect>
-        </property>
-        <property name="text">
-            <string>textLabel2</string>
-        </property>
-    </widget>
-</widget>
 <layoutdefaults spacing="6" margin="11"/>
 </UI>

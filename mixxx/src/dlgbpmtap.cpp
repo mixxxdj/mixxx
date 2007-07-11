@@ -79,9 +79,14 @@ bool DlgBPMTap::eventFilter(QObject *o, QEvent *e)
 
 void DlgBPMTap::slotTapBPM()
 {
-    if(m_TapCount <=0)
+	if(m_Time->elapsed() > 2000)
+	{
+		m_TapCount = 0;
+	}
+
+	if(m_TapCount <=0)
     {
-        m_Time->start();
+        m_Time->restart();
     }
         
     if(m_TapCount > 0)
@@ -91,8 +96,6 @@ void DlgBPMTap::slotTapBPM()
         float bpm = (float)m_TapCount / (float)elapsedTime;
         m_CurrentTrack->setBpm(bpm);
         txtBPM->setText(QString("%1").arg(bpm, 3,'f',1));
-        lblTime->setText(QString("%1").arg(elapsedTime, 3, 'f', 1));
-        lblBeats->setText(QString("%1").arg(m_TapCount, 3, 'd', 1)); 
     }
 
     m_TapCount += 1;
