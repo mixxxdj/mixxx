@@ -45,7 +45,7 @@
     </control>
     <control>
       <group>[Channel1]</group>
-      <key>reverse</key>
+      <key>back</key>
       <miditype>Key</miditype>
       <midino>46</midino>
       <midichan>1</midichan>
@@ -122,7 +122,7 @@
     </control>
     <control>
       <group>[Channel2]</group>
-      <key>reverse</key>
+      <key>back</key>
       <miditype>Key</miditype>
       <midino>56</midino>
       <midichan>1</midichan>
