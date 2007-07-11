@@ -123,25 +123,26 @@ QString *MidiObject::getOpenDevice()
 }
 
 /* -------- ------------------------------------------------------
-   Purpose: Loop for parsing midi events
-   Input:   -
+   Purpose: Receive a MIDI event from the backend, do value conversion as required, and queue event to mixxx control
+   Input:   Values as received from MIDI
    Output:  -
    -------- ------------------------------------------------------ */
-void MidiObject::send(MidiCategory category, char channel, char control, double value)
+void MidiObject::send(MidiCategory category, char channel, char control, char value)
 {
-    qDebug("MidiObject::send midi miditype: %X ch: %X, ctrl: %X, val: %g",category, channel, control, value);
-
-    MidiType type = MIDI_EMPTY;
+    // BJW: From this point onwards, use human (1-based) channel numbers
+    channel++;
+    // qDebug("MidiObject::send() miditype: %d ch: %d, ctrl: %d, val: %d",category, channel, control, value);
     
+    MidiType type = MIDI_EMPTY;
     switch (category) {
       case NOTE_OFF:
-        qDebug("NOTE_OFF");
-        value = 1.0;
+        // BJW: Not clear why this is done.
+        value = 1;
+        // NB Fall-through
       case NOTE_ON:
         type = MIDI_KEY;
         break;
       case CTRL_CHANGE:
-        qDebug("CTRL_CHANGE");
         type = MIDI_CTRL;
         break;
       case PITCH_WHEEL:
@@ -152,43 +153,57 @@ void MidiObject::send(MidiCategory category, char channel, char control, double 
     }
 
     Q_ASSERT(m_pMidiConfig);
+    // qDebug("Querying action for MIDI message type=%x control=%d channel=%d", type, control, channel);
     ConfigKey *pConfigKey = m_pMidiConfig->get(ConfigValueMidi(type,control,channel));
 
     if (!pConfigKey) return; // No configuration was retrieved for this input event, eject.
-    qDebug("MidiObject::send ok %X",pConfigKey);
+    // qDebug("MidiObject::send ok - %s %s ",pConfigKey->group.latin1(), pConfigKey->item.latin1());
     
     ControlObject *p = ControlObject::getControl(*pConfigKey);
     ConfigOption<ConfigValueMidi> *c = m_pMidiConfig->get(*pConfigKey);
+
+    // BJW: Apply any mapped (7-bit integer) translations
+    if (c && p) {
+        value = ((ConfigValueMidi *)c->val)->translateValue(value);
+    }
+
+    // BJW: newValue is the post-processed value, which may be floating point.
+    double newValue = (double) value;
+
+    // This is done separately from the switch above because it needs to go after translateValue()
+    if (type == MIDI_PITCH) {
+        unsigned int _14bit; 
+        // Pitch bend should be 14-bit control, so control and value are multiplexed
+        // (value is the MSB, control the LSB)
+        // and passed as a double within the 0-127 range, but with decimal info
+        // BJW: Moved here from below so that the right numbers go into ComputeValue
+        _14bit = value;
+        _14bit <<= 7;
+        _14bit |= (unsigned char) control;
+        // qDebug("-- 14 bit pitch %i", _14bit);
+        // Need to force the centre point, otherwise the conversion formula maps it very slightly off-centre
+        if (_14bit == 8192) 
+            newValue = 63.5;
+        else
+            newValue = (double) _14bit * 127. / 16383.;
+        // qDebug("-- converted to %f", newValue);
+    }
+
     if (c && p)
     {
-        value = ((ConfigValueMidi *)c->val)->ComputeValue(type, p->GetMidiValue(), value);
+    	// qDebug("value going into ComputeValue: %f", newValue);
+	newValue = ((ConfigValueMidi *)c->val)->ComputeValue(type, p->GetMidiValue(), newValue);
+    	// qDebug("value coming out ComputeValue: %f", newValue);
 
         if (((ConfigValueMidi *)c->val)->midioption == MIDI_OPT_BUTTON || ((ConfigValueMidi *)c->val)->midioption == MIDI_OPT_SWITCH) {
-           p->set(value);
-           qDebug("New Control Value: %g (skipping queueFromMidi call)",value);
+           p->set(newValue);
+           // qDebug("New Control Value: %g (skipping queueFromMidi call)", newValue);
            return;
         }
 
-        // Pitch bend should be 14-bit control, so both values are multiplexed
-        // and passed as a double within the 0-127 range, but with decimal info
-        if (type == MIDI_PITCH) {
-          int _14bit = value;
-          _14bit <<= 7;
-          _14bit |= (unsigned short) control;
-          qDebug("-- 14 bit pitch %i", _14bit);
-
-          if (_14bit == 8192) {
-            value = 63.5;
-          } else {
-            value = 127. * ((double) _14bit / 16383.);
-          }
-        }
-
-        qDebug("New Control Value: %g ",value);
-
+        // qDebug("New Control Value: %g ", newValue);
+        p->queueFromMidi(category, newValue);
     }
-    if (p)
-        p->queueFromMidi(category, value);
 
 }
 
@@ -214,6 +229,6 @@ void MidiObject::sendShortMsg(unsigned char status, unsigned char byte1, unsigne
 	sendShortMsg(word);
 }
 
-void MidiObject::sendShortMsg(unsigned int word) {
+void MidiObject::sendShortMsg(unsigned int /* word */) {
 	qDebug("MIDI message sending not implemented yet on this platform");
 }

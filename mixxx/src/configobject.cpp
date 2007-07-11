@@ -28,6 +28,7 @@
 #endif
 
 #include <qiodevice.h>
+#include <math.h>
 
 ConfigKey::ConfigKey()
 {
@@ -63,106 +64,178 @@ ConfigValueMidi::ConfigValueMidi()
 }
 
 ConfigValueMidi::ConfigValueMidi(QDomNode node) {
-	QString type = WWidget::selectNodeQString(node, "miditype");
-	midino = WWidget::selectNodeInt(node, "midino");
-	midichannel = WWidget::selectNodeInt(node, "midichan");
+    QString key = WWidget::selectNodeQString(node, "key");
+    QString type = WWidget::selectNodeQString(node, "miditype");
+    midino = WWidget::selectNodeInt(node, "midino");
+    midichannel = WWidget::selectNodeInt(node, "midichan");
 
-	if (midichannel == 0) { midichannel = 1; }
-	// Apparently you need to subtract 1, see comments in old QStr constructor
-	midichannel--;
+    // BJW: Jog/scratch sensitivity adjustment
+    sensitivity = WWidget::selectNodeInt(node, "sensitivity");
+    if (sensitivity) {
+      qDebug("Setting %s sensitivity to %d", key.latin1(), sensitivity);
+    } else if (key == "wheel" || key == "scratch" || key == "jog") {
+      sensitivity = 50;
+      qDebug("Defaulting %s sensitivity to %d", key.latin1(), sensitivity);
+    }
 
-	type = type.lower();
+    // BJW: MIDI Value Translations
+    QDomNode translations = node.namedItem("translations");
+    if (! translations.isNull()) {
+        QDomNode translation = translations.firstChild();
+        while (! translation.isNull()) {
+            QDomNamedNodeMap attrs = translation.attributes();
+            if (translation.nodeName() == "single") {
+                if (attrs.namedItem("value").isNull()) {
+                    qWarning("MIDI Map: Missing 'value' attribute in <translations><single>");
+                } else {
+                    int from = attrs.namedItem("value").toAttr().value().toInt();
+                    int newval = translation.toElement().text().toInt();
+                    if (from < -128 || from > 127 || newval < -128 || newval > 127) {
+                        qWarning("MIDI Map: Illegal values in <translations><single>");
+                    } else { 
+                        translateMidiValues[(char) from] = (char) newval;
+                        qDebug("MIDI Map: Value Translation: Single value %d -> %d", from, newval);
+                    }
+                }
+            } else if (translation.nodeName() == "range") {
+                if (attrs.namedItem("lower").isNull() || attrs.namedItem("upper").isNull()) {
+                    qWarning("MIDI Map: Missing 'lower' and/or 'upper' attribute in <translations><range>");
+                } else {
+                    int lower = attrs.namedItem("lower").toAttr().value().toInt();
+                    int upper = attrs.namedItem("upper").toAttr().value().toInt();
+                    int newval = translation.toElement().text().toInt();
+                    if (lower < -128 || lower > 127 || upper < -128 || upper > 127 || upper < lower || newval < -128 || newval > 127) {
+                        qWarning("MIDI Map: Illegal values in <translations><range>");
+                    } else {
+                        for (char c = lower; c <= upper; c++) {
+                          translateMidiValues[c] = (char) newval;
+                        }
+                        qDebug("MIDI Map: Value Translation: Range of values %d-%d -> %d", lower, upper, newval);
+                    }
+                }
+            } else {
+                qWarning("MIDI Map: Unknown translation element: %s", translation.nodeName().latin1());
+            }
+            translation = translation.nextSibling();
+        }
+    }
 
-	if (type == "key") {
-		miditype = MIDI_KEY;
-	} else if (type == "ctrl") {
-		miditype = MIDI_CTRL;
-	} else if (type == "pitch") {
-		miditype = MIDI_PITCH;
-	} else {
-		miditype = MIDI_EMPTY;
-	}
+    if (midichannel == 0) { midichannel = 1; }
 
-	QDomNode opts = node.namedItem("options");
-	QDomNode opt = opts.firstChild();
-	if (!opt.nextSibling().isNull()) {
-		qFatal("Multiple option elements in midi mapping not supported yet");
+    QTextOStream(&value) << midino << " ch " << midichannel;
+
+    type = type.lower();
+
+    // BJW: Try to spot missing XML blocks. I don't know how to make these warnings
+    // more useful by adding the line number of the input file.
+    if (! key || ! type) 
+      qWarning("Missing <key> or <type> in MIDI map node <%s>", node.nodeName().latin1());
+    if (! midino && type != "pitch")
+      qWarning("No <midino> defined in MIDI map node <%s>", node.nodeName().latin1());
+
+    if (type == "key" || type == "note") {
+        miditype = MIDI_KEY;
+        value.prepend("Key ");
+    } else if (type == "ctrl") {
+        miditype = MIDI_CTRL;
+        value.prepend("Ctrl ");
+    } else if (type == "pitch") {
+        miditype = MIDI_PITCH;
+        value.prepend("Pitch ");
+    } else {
+        miditype = MIDI_EMPTY;
+    }
+
+    QDomNode opts = node.namedItem("options");
+    if (! opts.isNull()) {
+        QDomNode opt = opts.firstChild();
+        if (!opt.nextSibling().isNull()) {
+            qFatal("Multiple option elements in midi mapping not supported yet");
 	}
 
 	QString optname = opt.nodeName().lower();
+	qDebug("Found option %s", optname.latin1());
 	if (optname == "invert")
-		midioption = MIDI_OPT_INVERT;
-    else if (optname == "rot64inv")
-        midioption = MIDI_OPT_ROT64_INV;
-    else if (optname == "rot64fast")
-        midioption = MIDI_OPT_ROT64_FAST;
-    else if (optname == "rot64")
-        midioption = MIDI_OPT_ROT64;
-    else if (optname == "diff")
-        midioption = MIDI_OPT_DIFF;
-    else if (optname == "button")
-        midioption = MIDI_OPT_BUTTON;
-    else if (optname == "switch")
-        midioption = MIDI_OPT_SWITCH;
-	else if (optname == "hercjog")
-		midioption = MIDI_HERC_JOG;
-    else
-        midioption = MIDI_OPT_NORMAL;
+            midioption = MIDI_OPT_INVERT;
+        else if (optname == "rot64inv")
+            midioption = MIDI_OPT_ROT64_INV;
+        else if (optname == "rot64fast")
+            midioption = MIDI_OPT_ROT64_FAST;
+        else if (optname == "rot64")
+            midioption = MIDI_OPT_ROT64;
+        else if (optname == "diff")
+            midioption = MIDI_OPT_DIFF;
+        else if (optname == "button")
+            midioption = MIDI_OPT_BUTTON;
+        else if (optname == "switch")
+            midioption = MIDI_OPT_SWITCH;
+        else if (optname == "hercjog")
+            midioption = MIDI_OPT_HERC_JOG;
+        else if (optname == "spread64")
+            midioption = MIDI_OPT_SPREAD64;
+        else {
+	    qWarning("Unknown option %s", optname.latin1());
+	    midioption = MIDI_OPT_NORMAL;
+	}
 
-	QTextOStream(&value) << midino << " ch " << midichannel;
-    if (miditype==MIDI_KEY)
-        value.prepend("Key ");
-    else if (miditype==MIDI_CTRL)
-        value.prepend("Ctrl ");
-    else if (miditype==MIDI_PITCH)
-        value.prepend("Pitch ");
+	qDebug("Option: %d", midioption);
+    } else {
+        midioption = MIDI_OPT_NORMAL;
+    }
+
+    // qDebug("MIDI Config: %s = %s (option %d)", key.latin1(), value.latin1(), midioption);
+
 }
 
 ConfigValueMidi::ConfigValueMidi(QString _value)
 {
-        QString channelMark;
-        QString type;
-        QString option;
+    qDebug("ConfigValueMidi(QString)");
+    QString channelMark;
+    QString type;
+    QString option;
 
-        QTextIStream(&_value) >> type >> midino >> channelMark >> midichannel >> option;
-        if (type.contains("Key",false))
-            miditype = MIDI_KEY;
-        else if (type.contains("Ctrl",false))
-            miditype = MIDI_CTRL;
-        else if (type.contains("Pitch",false))
-            miditype = MIDI_PITCH;
-        else
-            miditype = MIDI_EMPTY;
+    QTextIStream(&_value) >> type >> midino >> channelMark >> midichannel >> option;
+    if (type.contains("Key",false))
+        miditype = MIDI_KEY;
+    else if (type.contains("Ctrl",false))
+        miditype = MIDI_CTRL;
+    else if (type.contains("Pitch",false))
+        miditype = MIDI_PITCH;
+    else
+        miditype = MIDI_EMPTY;
 
-        if (channelMark.endsWith("h"))
-            midichannel--;   // Internally midi channels are form 0-15,
-                             // while musicians operates on midi channels 1-16.
-        else
-            midichannel = 0; // Default to 0 (channel 1)
+    if (! channelMark.endsWith("h")) {
+        // No channel specified; default to channel 1 and parse this field as an option instead
+        option = channelMark;
+        midichannel = 1;
+    }
 
-        // If empty string, default midino should be below 0.
-        if (_value.length()==0)
-            midino = -1;
-        qDebug("miditype: %s, midino: %i, midichannel: %i",type.latin1(),midino,midichannel);
 
-        if (option.contains("Invert", false))
-            midioption = MIDI_OPT_INVERT;
-        else if (option.contains("Rot64Inv", false))
-            midioption = MIDI_OPT_ROT64_INV;
-        else if (option.contains("Rot64Fast", false))
-            midioption = MIDI_OPT_ROT64_FAST;
-        else if (option.contains("Rot64", false))
-            midioption = MIDI_OPT_ROT64;
-        else if (option.contains("Diff", false))
-            midioption = MIDI_OPT_DIFF;
-        else if (option.contains("Button", false))
-            midioption = MIDI_OPT_BUTTON;
-        else if (option.contains("Switch", false))
-            midioption = MIDI_OPT_SWITCH;
-		else if (option.contains("HercJog", false))
-			midioption = MIDI_HERC_JOG;
-        else
-            midioption = MIDI_OPT_NORMAL;
+    // If empty string, default midino should be below 0.
+    if (_value.length()==0)
+        midino = -1;
+    qDebug("miditype: %s, midino: %i, midichannel: %i",type.latin1(),midino,midichannel);
+
+    if (option.contains("Invert", false))
+        midioption = MIDI_OPT_INVERT;
+    else if (option.contains("Rot64Inv", false))
+        midioption = MIDI_OPT_ROT64_INV;
+    else if (option.contains("Rot64Fast", false))
+        midioption = MIDI_OPT_ROT64_FAST;
+    else if (option.contains("Rot64", false))
+        midioption = MIDI_OPT_ROT64;
+    else if (option.contains("Diff", false))
+        midioption = MIDI_OPT_DIFF;
+    else if (option.contains("Button", false))
+        midioption = MIDI_OPT_BUTTON;
+    else if (option.contains("Switch", false))
+        midioption = MIDI_OPT_SWITCH;
+    else if (option.contains("HercJog", false))
+        midioption = MIDI_OPT_HERC_JOG;
+    else if (option.contains("Spread64", false))
+        midioption = MIDI_OPT_SPREAD64;
+    else
+        midioption = MIDI_OPT_NORMAL;
         // Store string with corrected config value
         //value="";
         //QTextOStream(&value) << type << " " << midino << " ch " << midichannel;
@@ -210,20 +283,48 @@ void ConfigValueMidi::valCopy(const ConfigValueMidi v)
             value.append(" Rot64Inv");
         else if (midioption == MIDI_OPT_ROT64_FAST)
             value.append(" Rot64Fast");
-		else if (midioption == MIDI_OPT_DIFF)
-			value.append(" Diff");
+	else if (midioption == MIDI_OPT_DIFF)
+  	    value.append(" Diff");
+	else if (midioption == MIDI_OPT_SPREAD64) 
+	    value.append(" Spread64");
 
         qDebug("Config value: %s", value.ascii());
         //qDebug("--1, midino: %i, midimask: %i, midichannel: %i",midino,midimask,midichannel);
 }
 
-double ConfigValueMidi::ComputeValue(MidiType /*_miditype*/, double _prevmidivalue, double _newmidivalue)
+
+// BJW: Apply value translations defined in MIDI map file. Done separately to ComputeValue() as these need
+// to be done prior to any midioption-related activity which might change the original MIDI value (and outputs
+// a double rather than a char)
+char ConfigValueMidi::translateValue(char value)
+{
+    if (! translateMidiValues.isEmpty()) {
+        MidiValueMap::Iterator it;
+        if ((it = translateMidiValues.find(value)) != translateMidiValues.end()) {
+            // qDebug("MIDI value %d translated to %d", value, it.data());
+            return it.data();
+        }
+    }
+    return value;
+}
+
+
+// BJW: Note: _prevmidivalue is not the previous MIDI value. It's the
+// current controller value, scaled to 0-127 but only in the case of pots.
+// (See Control*::GetMidiValue())
+double ConfigValueMidi::ComputeValue(MidiType /* _miditype */, double _prevmidivalue, double _newmidivalue)
 {
     double tempval = 0.;
     double diff = 0.;
-    
-    if (midioption == MIDI_OPT_INVERT)
+
+    // qDebug("ComputeValue: option %d, MIDI value %f, current control value %f", midioption, _newmidivalue, _prevmidivalue);
+    if (midioption == MIDI_OPT_NORMAL) {
+        return _newmidivalue;
+    }
+    else if (midioption == MIDI_OPT_INVERT)
+    {
         return 127. - _newmidivalue;
+    }
     else if (midioption == MIDI_OPT_ROT64 || midioption == MIDI_OPT_ROT64_INV)
     {
         tempval = _prevmidivalue;
@@ -246,30 +347,45 @@ double ConfigValueMidi::ComputeValue(MidiType /*_miditype*/, double _prevmidival
         tempval += diff;
         return (tempval < 0. ? 0. : (tempval > 127. ? 127.0 : tempval));
     }
-	else if (midioption == MIDI_OPT_DIFF)
-	{
-		if (_newmidivalue > 64.) {
-			_newmidivalue = _prevmidivalue - 128. + _newmidivalue;
-		} else {
-			_newmidivalue = _prevmidivalue + _newmidivalue;
-		}
-	}
-	else if (midioption == MIDI_OPT_BUTTON)
-	{
-		if (_newmidivalue == 127.) {
-				_newmidivalue = !_prevmidivalue;
-		} else {
-				_newmidivalue = _prevmidivalue;
-		}
-	}
-	else if (midioption == MIDI_OPT_SWITCH)
-	{
-		_newmidivalue = (_newmidivalue == 127);
-	}
-	else if (midioption == MIDI_HERC_JOG)
-	{
-		if (_newmidivalue > 64.) { _newmidivalue -= 128.; }
-	}
+    else if (midioption == MIDI_OPT_DIFF)
+    {
+        if (_newmidivalue > 64.) {
+            _newmidivalue = _prevmidivalue - 128. + _newmidivalue;
+        } else {
+            _newmidivalue = _prevmidivalue + _newmidivalue;
+        }
+    }
+    else if (midioption == MIDI_OPT_BUTTON)
+    {
+        if (_newmidivalue == 127.) {
+            _newmidivalue = !_prevmidivalue;
+        } else {
+            _newmidivalue = _prevmidivalue;
+        }
+    }
+    else if (midioption == MIDI_OPT_SWITCH)
+    {
+         _newmidivalue = (_newmidivalue == 127);
+    }
+    else if (midioption == MIDI_OPT_SPREAD64)
+    {
+        // BJW: Spread64: Distance away from centre point (aka "relative CC")
+        // Uses a similar non-linear scaling formula as ControlTTRotary::getValueFromWidget()
+        // but with added sensitivity adjustment. This formula is still experimental.
+        double distance = _newmidivalue - 64.;
+        _newmidivalue = distance * distance * sensitivity / 50000.;
+        if (distance < 0.)
+            _newmidivalue = -_newmidivalue;
+        // qDebug("Spread64: in %f  out %f", distance, _newmidivalue);
+    }
+    else if (midioption == MIDI_OPT_HERC_JOG)
+    {
+        if (_newmidivalue > 64.) { _newmidivalue -= 128.; }
+    }
+    else
+    {
+        qWarning("Unknown MIDI option %d", midioption);
+    }
 
     return _newmidivalue;
 }
@@ -376,13 +492,15 @@ ConfigKey *ConfigObject<ValueType>::get(ValueType v)
     ConfigOption<ValueType> *it;
     for (it = list.first(); it; it = list.next())
     {
-          qDebug("match --%s-- with --%s--", it->val->value.upper().latin1(), v.value.upper().latin1());
+          // qDebug("match --%s-- with --%s--", it->val->value.upper().latin1(), v.value.upper().latin1());
 //        if (it->val->value.upper() == v.value.upper())
         if (((ValueType)*it->val) == ((ValueType)v))
         {
+	    // qDebug("ConfigObject matched key %s %s", it->key->group.latin1(), it->key->item.latin1());
             return it->key;
         }
     }
+    qDebug("Warning: No match for ConfigObject %s", v.value.latin1());
     return 0;
 }
 
@@ -528,7 +646,6 @@ QString ConfigObject<ValueType>::getConfigPath()
 }
 
 
-
 template <class ValueType> ConfigObject<ValueType>::ConfigObject(QDomNode node) {
 
 	if (!node.isNull() && node.isElement()) {
@@ -549,3 +666,4 @@ template <class ValueType> ConfigObject<ValueType>::ConfigObject(QDomNode node) 
 template class ConfigObject<ConfigValue>;
 template class ConfigObject<ConfigValueMidi>;
 template class ConfigObject<ConfigValueKbd>;
+

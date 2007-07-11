@@ -111,20 +111,35 @@ DlgPrefMidi::DlgPrefMidi(QWidget *parent, ConfigObject<ConfigValue> *pConfig) : 
     QString qConfigPath = m_pConfig->getConfigPath();
     QStringList *midiConfigList = m_pMidi->getConfigList(qConfigPath.append("midi/"));
     m_pMidiConfig = 0;
-	// Config is read in in slotApply too...
-    if (midiConfigList->empty())
-    {
-        m_pMidiConfig = new ConfigObject<ConfigValueMidi>("");
-        m_pConfig->set(ConfigKey("[Midi]","File"), ConfigValue(""));
+    QString mappingfile = m_pConfig->getValueString(ConfigKey("[Midi]", "File"));
+    bool foundmap = false;
+    for (QStringList::Iterator it = midiConfigList->begin(); it != midiConfigList->end(); ++it ) {
+        if (*it == mappingfile) {
+	    foundmap = true;
+	    break;
+	}
     }
-    else
-    {
+    if (! foundmap) {
+       if (midiConfigList->empty())
+       {
+           qDebug("No MIDI mapping files found");
+           m_pConfig->set(ConfigKey("[Midi]","File"), ConfigValue(""));
+	   mappingfile = "";
+       }
+       else
+       {
+           QString notfound = mappingfile;          
 #ifndef QT3_SUPPORT
-        QString name = (*midiConfigList->at(0));
+           mappingfile = (*midiConfigList->at(0));
 #else
-        QString name = midiConfigList->at(0);
+           mappingfile = midiConfigList->at(0);
 #endif
-        m_pConfig->set(ConfigKey("[Midi]","File"), ConfigValue(name.latin1()));
+           qWarning("Requested MIDI mapping file %s not found; defaulting to %s", notfound.latin1(), mappingfile.latin1());
+           m_pConfig->set(ConfigKey("[Midi]","File"), ConfigValue(mappingfile.latin1()));
+
+           // setupMappings(m_pConfig->getValueString(ConfigKey("[Config]","Path")).append("midi/").append(m_pConfig->getValueString(ConfigKey("[Midi]","File"))));
+           // m_pMidi->setMidiConfig(m_pMidiConfig);
+      }
     }
     
     // Store default midi device
@@ -236,7 +251,7 @@ void DlgPrefMidi::slotUpdate()
     {
         for (QStringList::Iterator it = midiConfigList->begin(); it != midiConfigList->end(); ++it )
         {
-            // Insert the file name into the list, with ending (.midi.cfg) stripped
+            // Insert the file name into the list, with ending (.midi.xml) stripped
             ComboBoxMidiconf->insertItem((*it).left((*it).length()-9));
 
             if ((*it) == m_pConfig->getValueString(ConfigKey("[Midi]","File")))
@@ -410,8 +425,6 @@ void DlgPrefMidi::slotApply()
 #endif
     // Change MIDI configuration
     //m_pMidiConfig->clear(); // (is currently not implemented correctly)
-    setupMappings(m_pConfig->getValueString(ConfigKey("[Config]","Path")).append("midi/").append(m_pConfig->getValueString(ConfigKey("[Midi]","File"))));
-	m_pMidi->setMidiConfig(m_pMidiConfig);
 
     // Open MIDI device
     m_pMidi->devOpen(m_pConfig->getValueString(ConfigKey("[Midi]","Device")));
@@ -428,6 +441,10 @@ void DlgPrefMidi::slotApply()
     }
 #endif
     
+    // Apply the MIDI controller mappings
+    setupMappings(m_pConfig->getValueString(ConfigKey("[Config]","Path")).append("midi/").append(m_pConfig->getValueString(ConfigKey("[Midi]","File"))));
+    m_pMidi->setMidiConfig(m_pMidiConfig);
+
     // PowerMates
     if (m_pPowerMate1)
         m_pPowerMate1->selectMapping(ComboBoxPowerMate1->currentText());
@@ -571,7 +588,7 @@ MidiWorkaround::MidiWorkaround(MidiObject* pMidi, \
     m_pMidi = pMidi;
     m_pConfig = pConfig;
     m_pMidiConfig = pMidiConfig;
-	m_parent = parent;
+    m_parent = parent;
 }
 
 void MidiWorkaround::run() {
@@ -580,12 +597,14 @@ void MidiWorkaround::run() {
      m_pMidi->devClose();
      // Change MIDI configuration
      //m_pMidiConfig->clear(); // (is currently not implemented correctly)
-     m_parent->setupMappings(m_pConfig->getValueString(ConfigKey("[Config]","Path")).append("midi/").append(m_pConfig->getValueString(ConfigKey("[Midi]","File"))));
+     // BJW: Don't think this is necessary (or effective) here
+     // m_parent->setupMappings(m_pConfig->getValueString(ConfigKey("[Config]","Path")).append("midi/").append(m_pConfig->getValueString(ConfigKey("[Midi]","File"))));
      // Open MIDI device
      m_pMidi->devOpen(m_pConfig->getValueString(ConfigKey("[Midi]","Device")));
 }
 
 void DlgPrefMidi::setupMappings(QString path) {
+	qDebug("setupMappings(%s)", path.latin1());
 	QDomElement doc = WWidget::openXMLFile(path, "controller");
 	m_pMidiConfig = new ConfigObject<ConfigValueMidi>(doc.namedItem("controls"));
 	MidiLedHandler::destroyHandlers();

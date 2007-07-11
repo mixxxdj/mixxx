@@ -95,6 +95,8 @@ void MidiObjectPortMidi::run()
 {
     requestStop = false;
     PmError err;
+    MidiCategory midicategory;
+    char midichannel = 0;
     char midicontrol = 0;
     char midivalue = 0;
 
@@ -105,11 +107,15 @@ void MidiObjectPortMidi::run()
         {
             if (Pm_Read(midi, buffer, 1) > 0)
             {
+                char statusbyte = Pm_MessageStatus(buffer[0].message);
+                // BJW: Presuming the status byte works the same way as for other backends
+                midicategory = statusbyte & 0xF0;
+                midichannel = statusbyte & 0x0F; 
                 midicontrol = Pm_MessageData1(buffer[0].message);
                 midivalue = Pm_MessageData2(buffer[0].message);
 
-//                qDebug("midi ch: %i, ctrl: %i, val: %i",0,midicontrol,midivalue);
-                send(0,midicontrol,midivalue);
+//                qDebug("midi ch: %i, ctrl: %i, val: %i", midichannel, midicontrol, midivalue);
+                send(midicategory, midichannel, midicontrol, midivalue);
             } else {
                 qDebug("Error in Pm_Read: %s\n", Pm_GetErrorText(err));
                 break;

@@ -84,6 +84,7 @@ public:
     /** Toggle pitch independent time stretch */
 
     void setPitchIndpTimeStretch(bool b);
+    bool getPitchIndpTimeStretch(void);
 
     /** Scale buffer */
 

@@ -70,7 +70,7 @@ public:
 protected:
     void run() {};
     void stop();
-    void send(MidiCategory category, char channel, char control, double value);
+    void send(MidiCategory category, char channel, char control, char value);
 
     bool requestStop;
 

@@ -68,6 +68,7 @@ public:
     ~EngineBuffer();
     /** Reconfigures the EngineBufferScaleSRC objects with the sound scale mode written in the config database */
     void setPitchIndpTimeStretch(bool b);
+    bool getPitchIndpTimeStretch(void);
     /** Pointer to visual widget */
     void setVisual(WVisualWaveform *pVisualWaveform);
     /** Returns pointer to Reader object. Used in MixxxApp. */
@@ -175,6 +176,7 @@ private:
 	ControlObject *m_pJog;
     ControlPotmeter *rateSlider, *m_pRateSearch;
     ControlTTRotary *wheel, *m_pControlScratch;
+    ControlPushButton *wheelTouchSensor, *wheelTouchSwitch;
     ControlPotmeter *playposSlider;
     ControlObject *m_pFileBpm, *m_pSampleRate;
                         
@@ -234,6 +236,8 @@ private:
     float *m_pWaveBuffer;
     /** Variables used to calculate safe beat info. Automatically updated during process() */
     double m_dBeatFirst, m_dBeatInterval;
+    /** Whether Pitch-Independent Time Stretch should be re-enabled when we start playing post-scratch **/
+    bool m_bResetPitchIndpTimeStretch;
     /** Old playback rate. Stored in this variable while a temp pitch change buttons is in effect. It does not work to just decrease the pitch slider by the 
       * value it has been increased with when the temp button was pressed, because there is a fixed limit on the range of the pitch slider */
     double m_dOldRate;

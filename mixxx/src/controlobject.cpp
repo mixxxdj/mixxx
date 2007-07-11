@@ -235,9 +235,6 @@ void ControlObject::sync()
 	    } else if (! obj->category) {
 		qDebug("Midi object with null category!");
 		delete obj;
-	    /*} else if (obj->value == NULL) {
-	        qDebug("Midi object with null value!");
-		delete obj;*/
 	    } else {
                 obj->pControlObject->setValueFromMidi(obj->category, obj->value);
                 obj->pControlObject->updateProxies(0);
