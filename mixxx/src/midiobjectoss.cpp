@@ -121,9 +121,9 @@ void MidiObjectOSS::run()
             {
                 // and then get the following 2 bytes:
                 MidiCategory midicategory;
-                unsigned char midichannel;
-                unsigned char midicontrol;
-                double midivalue;
+                char midichannel;
+                char midicontrol;
+                char midivalue;
                 int i;
                 for (i=1; i<3; i++)
                 {
@@ -146,27 +146,8 @@ void MidiObjectOSS::run()
 //           qDebug("midi oss received %i, %i, %i",buffer[0], buffer[1], buffer[2]);
                     midicategory = (MidiCategory)(buffer[0] & 0xF0);
                     midichannel = buffer[0] & 0x0F; // The channel is stored in the lower 4 bits of the status byte received
-                    
-                    if (midicategory==PITCH_WHEEL)
-                    {
-                        midicontrol = 0;
-                        
-                        unsigned short _14bit;
-                        _14bit = (unsigned short)buffer[2];
-                        _14bit <<= 7;
-                        _14bit |= (unsigned short)buffer[1];
-                    
-//                         qDebug("pitch %i",_14bit);
-                        if (_14bit==8192)
-                            midivalue = 63.5;
-                        else
-                            midivalue = 127.*((double)_14bit/16383.);
-                    }
-                    else
-                    {
-                        midicontrol = buffer[1];
-                        midivalue = (double)buffer[2];
-                    }
+                    midicontrol = buffer[1];
+                    midivalue = buffer[2];
 //                     qDebug("MidiObjectOSS: midi category %i, ch: %i, ctrl: %i, val: %f",midicategory,midichannel,midicontrol,midivalue);
                     send(midicategory, midichannel, midicontrol, midivalue);
                 }

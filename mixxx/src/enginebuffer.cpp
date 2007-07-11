@@ -69,6 +69,7 @@ EngineBuffer::EngineBuffer(const char *_group)
     // Reverse button
     reverseButton = new ControlPushButton(ConfigKey(group, "reverse"));
     reverseButton->set(0);
+    reverseButton->setToggleButton(true);
 
     // Fwd button
     fwdButton = new ControlPushButton(ConfigKey(group, "fwd"));
@@ -134,6 +135,14 @@ EngineBuffer::EngineBuffer(const char *_group)
 
     // Scratch controller
     m_pControlScratch = new ControlTTRotary(ConfigKey(group, "scratch"));
+
+    // BJW Wheel touch sensor (makes wheel act as scratch)
+    wheelTouchSensor = new ControlPushButton(ConfigKey(group, "wheel_touch_sensor"));
+    // BJW Wheel touch-sens switch (toggles ignoring touch sensor)
+    wheelTouchSwitch = new ControlPushButton(ConfigKey(group, "wheel_touch_switch"));
+    wheelTouchSwitch->setToggleButton(true);
+    // BJW Whether to revert to PitchIndpTimeStretch after scratching
+    m_bResetPitchIndpTimeStretch = false;
 
 	m_pJog = new ControlObject(ConfigKey(group, "jog"));
 	m_jogfilter = new Rotary();
@@ -264,6 +273,12 @@ void EngineBuffer::setPitchIndpTimeStretch(bool b)
 {
     // Change sound scale mode
     ((EngineBufferScaleST *)m_pScale)->setPitchIndpTimeStretch(b);
+}
+
+bool EngineBuffer::getPitchIndpTimeStretch(void)
+{
+    // Get current sound scale mode
+    return ((EngineBufferScaleST *)m_pScale)->getPitchIndpTimeStretch();
 }
 
 void EngineBuffer::setVisual(WVisualWaveform *pVisualWaveform)
@@ -553,41 +568,41 @@ void EngineBuffer::slotSetBpm(double bpm)
 void EngineBuffer::slotControlRatePermDown(double)
 {
     // Adjusts temp rate down if button pressed
-    if (buttonRatePermDown->get()==1.)
+    if (buttonRatePermDown->get())
         rateSlider->sub(m_dPerm);
 }
 
 void EngineBuffer::slotControlRatePermDownSmall(double)
 {
     // Adjusts temp rate down if button pressed
-    if (buttonRatePermDownSmall->get()==1.)
+    if (buttonRatePermDownSmall->get())
         rateSlider->sub(m_dPermSmall);
 }
 
 void EngineBuffer::slotControlRatePermUp(double)
 {
     // Adjusts temp rate up if button pressed
-    if (buttonRatePermUp->get()==1.)
+    if (buttonRatePermUp->get())
         rateSlider->add(m_dPerm);
 }
 
 void EngineBuffer::slotControlRatePermUpSmall(double)
 {
     // Adjusts temp rate up if button pressed
-    if (buttonRatePermUpSmall->get()==1.)
+    if (buttonRatePermUpSmall->get())
         rateSlider->add(m_dPermSmall);
 }
 
 void EngineBuffer::slotControlRateTempDown(double)
 {
     // Adjusts temp rate down if button pressed, otherwise set to 0.
-    if (buttonRateTempDown->get()==1. && !m_bTempPress)
+    if (buttonRateTempDown->get() && !m_bTempPress)
     {
         m_bTempPress = true;
         m_dOldRate = rateSlider->get();
         rateSlider->sub(m_dTemp);
     }
-    else if (buttonRateTempDown->get()==0.)
+    else if (! buttonRateTempDown->get())
     {
         m_bTempPress = false;
         rateSlider->set(m_dOldRate);
@@ -597,13 +612,13 @@ void EngineBuffer::slotControlRateTempDown(double)
 void EngineBuffer::slotControlRateTempDownSmall(double)
 {
     // Adjusts temp rate down if button pressed, otherwise set to 0.
-    if (buttonRateTempDownSmall->get()==1. && !m_bTempPress)
+    if (buttonRateTempDownSmall->get() && !m_bTempPress)
     {
         m_bTempPress = true;
         m_dOldRate = rateSlider->get();
         rateSlider->sub(m_dTempSmall);
     }
-    else if (buttonRateTempDownSmall->get()==0.)
+    else if (! buttonRateTempDownSmall->get())
     {
         m_bTempPress = false;
         rateSlider->set(m_dOldRate);
@@ -613,13 +628,13 @@ void EngineBuffer::slotControlRateTempDownSmall(double)
 void EngineBuffer::slotControlRateTempUp(double)
 {
     // Adjusts temp rate up if button pressed, otherwise set to 0.
-    if (buttonRateTempUp->get()==1. && !m_bTempPress)
+    if (buttonRateTempUp->get() && !m_bTempPress)
     {
         m_bTempPress = true;
         m_dOldRate = rateSlider->get();
         rateSlider->add(m_dTemp);
     }
-    else if (buttonRateTempUp->get()==0.)
+    else if (! buttonRateTempUp->get())
     {
         m_bTempPress = false;
         rateSlider->set(m_dOldRate);
@@ -629,13 +644,13 @@ void EngineBuffer::slotControlRateTempUp(double)
 void EngineBuffer::slotControlRateTempUpSmall(double)
 {
     // Adjusts temp rate up if button pressed, otherwise set to 0.
-    if (buttonRateTempUpSmall->get()==1. && !m_bTempPress)
+    if (buttonRateTempUpSmall->get() && !m_bTempPress)
     {
         m_bTempPress = true;
         m_dOldRate = rateSlider->get();
         rateSlider->add(m_dTempSmall);
     }
-    else if (buttonRateTempUpSmall->get()==0.)
+    else if (! buttonRateTempUpSmall->get())
     {
         m_bTempPress = false;
         rateSlider->set(m_dOldRate);
@@ -692,6 +707,7 @@ void EngineBuffer::adjustPhase()
 
 void EngineBuffer::slotControlFastFwd(double v)
 {
+    qDebug("slotControlFastFwd(%f)", v);
     if (v==0.)
         m_pRateSearch->set(0.);
     else
@@ -700,6 +716,7 @@ void EngineBuffer::slotControlFastFwd(double v)
 
 void EngineBuffer::slotControlFastBack(double v)
 {
+    qDebug("slotControlFastBack(%f)", v);
     if (v==0.)
         m_pRateSearch->set(0.);
     else
@@ -719,7 +736,7 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBuff
 
     //Q_ASSERT( scale->getNewPlaypos() == 0);
     // pause can be locked if the reader is currently loading a new track.
-    if (m_pTrackEnd->get()==0 && pause.tryLock())
+    if (! m_pTrackEnd->get() && pause.tryLock())
     {
         // Try to fetch info from the reader
         bool readerinfo = false;
@@ -749,8 +766,10 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBuff
 
 		//Clamp the wheel value (workaround for rotary bug that crops up with the Hercules controllers)
 		//The downside to this is that you can't use the jogwheels at their "lowest" possible speed...
-		if (fabs(wheel->get()) <= 0.001250)
-			wheel->set(0.0f);
+		// BJW: Commented out -- should no longer be required as ControlTTRotary now regards 63-65 as zero.
+                // If this is insufficient for Hercules, suggest modifying the HERC_JOG value calculation in configobject.cpp?
+		// if (fabs(wheel->get()) <= 0.001250)
+		//	wheel->set(0.0f);
 
 
         //
@@ -758,31 +777,64 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBuff
         //
 
         // Find BPM adjustment factor
-        double bpmrate = 1.;
+        // BJW: Unused?
+        // double bpmrate = 1.;
 
         double filebpm = m_pFileBpm->get();
 
         // Determine direction of playback from reverse button
-        double dir = 1.;
-        if (reverseButton->get()==1.)
-            dir = -1.;
+        // BJW: Moved so it only takes effect during playback, not scratching
+        // double dir = 1.;
+        // if (reverseButton->get()==1.)
+        //    dir = -1.;
 
         double baserate = ((double)file_srate_old/m_pSampleRate->get());
         //qDebug("baserate %f",baserate);
         
-        /*
-        if (fwdButton->get()==1.)
-            baserate = fabs(baserate)*5.;
-        else if (backButton->get()==1.)
-            baserate = fabs(baserate)*-5.;
-        */
-        
         double rate;
-        if (playButton->get()==1.)
+        // BJW: Touch sensitive wheels: If enabled via the Switch, while the top of the wheel is touched it acts
+        // as a "vinyl-like" scratch controller. Playback stops, pitch-independent time stretch is disabled, and
+        // the wheel's motion is amplified to produce a scrub effect. Also note that playback speed factors like 
+        // rateSlider and reverseButton are ignored so that the feel of the wheel is always consistent.
+        // TODO: Configurable vinyl stop effect.
+        if (wheelTouchSwitch->get() && wheelTouchSensor->get()) {
+            // Act as scratch controller
+            if (getPitchIndpTimeStretch()) {
+                // Use vinyl-style pitch bending
+                // qDebug("Disabling Pitch-Independent Time Stretch for scratching");
+                m_bResetPitchIndpTimeStretch = true;
+                setPitchIndpTimeStretch(false);
+            }
+            // Experimental formula
+            rate = wheel->get() * 40. * baserate;
+        } 
+        // BJW: Enabled fwd and back buttons, and made independent of playback
+        // BJW: Except that this should be handled by m_pRateSearch etc
+        // else if (fwdButton->get())
+        // {
+        //     rate = baserate * 5.;
+        // }
+        // else if (backButton->get())
+        // {
+        //     rate = baserate * -5.;
+        // }
+        else if (playButton->get())
         {
-            rate=wheel->get()+(1.+rateSlider->get()*m_pRateRange->get()*m_pRateDir->get())*baserate;
+            // BJW: Reset timestretch mode if required. NB it's intentional that this should not 
+            // get reset until playing; this enables released spinbacks in stop mode.
+            if (m_bResetPitchIndpTimeStretch) {
+                setPitchIndpTimeStretch(true);
+                m_bResetPitchIndpTimeStretch = false;
+                // qDebug("Re-enabling Pitch-Independent Time Stretch");
+            }
+            // BJW: Split up initial rate setting from any wheel influence
+            // rate=wheel->get()+(1.+rateSlider->get()*m_pRateRange->get()*m_pRateDir->get())*baserate;
+            rate = (1. + rateSlider->get() * m_pRateRange->get() * m_pRateDir->get()) * baserate;
+            // Apply jog wheel 
+            rate += wheel->get(); // / 40.;
+            // rate = wheel->get() / 40 + (1. + rateSlider->get() * m_pRateRange->get() * m_pRateDir->get()) * baserate;
 
-            //qDebug("wheel %f, slider %f, range %f, dir %f", wheel->get(),rateSlider->get(),m_pRateRange->get(),m_pRateDir->get());
+            // qDebug("wheel %f, slider %f, range %f, dir %f", wheel->get(),rateSlider->get(),m_pRateRange->get(),m_pRateDir->get());
             
             // Apply scratch
             if (m_pControlScratch->get()<0.)
@@ -796,13 +848,21 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBuff
 			double val = m_jogfilter->filter(m_pJog->get());
 			rate += val * fact;
 			m_pJog->set(0.);
+
+            // BJW: Apply reverse button (moved from above)
+            if (reverseButton->get()) {
+                rate = -rate;
+            }
         }
         else
         {
+            // Stopped. Wheel and scratch controller both scrub through audio.
             rate=(wheel->get()*40.+m_pControlScratch->get())*baserate; //*10.;
         }
         
-        rate *= dir*bpmrate*(1.+m_pMasterRate->get()*m_pRateRange->get());
+        // BJW: Disabled this. bpmrate was always 1. [Master],rate doesn't appear to be useable.
+        // And we don't want the reverse button to influence direction in non-playback modes.
+        // rate *= dir*bpmrate*(1.+m_pMasterRate->get()*m_pRateRange->get());
         
         //qDebug("bpmrate %f, master %f",bpmrate,m_pMasterRate->get());
         
@@ -810,7 +870,7 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBuff
         if (m_pRateSearch->get()!=0.)
         {
             // If RealSearch is enabled, set playback rate to baserate
-            if (m_pRealSearch->get()==1.)
+            if (m_pRealSearch->get())
             {
                 rate = baserate;
 //                 m_pScale->setFastMode(false);
@@ -1168,6 +1228,7 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBuff
                 bufferpos_play = idx;
 
                 //qDebug("bufferpos_play %f, old %f",idx,oldidx);
+
             }
         }
 
@@ -1244,8 +1305,8 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBuff
 //          qDebug("filepos_play %f, len %i, back %i, play %f",filepos_play,file_length_old, backwards, playButton->get());
         
         // If playbutton is pressed, check if we are at start or end of track
-        if ((playButton->get()==1. || (m_pRealSearch->get()==0 && (fwdButton->get()==1. || backButton->get()==1.))) && 
-            m_pTrackEnd->get()==0. && readerinfo &&
+        if ((playButton->get() || (! m_pRealSearch->get() && (fwdButton->get() || backButton->get()))) && 
+            ! m_pTrackEnd->get() && readerinfo &&
             ((filepos_play<=0. && backwards) ||
              ((int)filepos_play>=file_length_old && !backwards)))
         {
@@ -1283,7 +1344,7 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBuff
             case TRACK_END_MODE_PING:
                 qDebug("Ping not implemented yet");
 
-                if (reverseButton->get()==1.)
+                if (reverseButton->get())
                 reverseButton->set(0.);
                 else
                 reverseButton->set(1.);

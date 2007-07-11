@@ -47,7 +47,7 @@ VisualBuffer::VisualBuffer(EngineBuffer *pEngineBuffer, const char *group)
     m_fDisplayFactor = 1.;
     
     // Length of this buffer. 
-    m_iLen = MAXDISPLAYRATE*READBUFFERSIZE/(m_pSampleRate->get());
+    m_iLen = MAXDISPLAYRATE*READBUFFERSIZE/(int)m_pSampleRate->get();
     if (!even(m_iLen))
         m_iLen--;
     m_iSourceLen = m_iLen;

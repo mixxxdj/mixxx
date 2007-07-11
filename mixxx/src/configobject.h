@@ -25,6 +25,7 @@
 #include <qtextstream.h>
 #include <qkeysequence.h>
 #include <qdom.h>
+#include <qmap.h>
 
 typedef enum {
     MIDI_EMPTY            = 0,
@@ -39,11 +40,14 @@ typedef enum {
     MIDI_OPT_ROT64            = 2,
     MIDI_OPT_ROT64_INV        = 3,
     MIDI_OPT_ROT64_FAST       = 4,
-	  MIDI_OPT_DIFF			        = 5,
-    MIDI_OPT_BUTTON		        = 6, // Button Down (7F) and Button Up (00) events happen together
-    MIDI_OPT_SWITCH           = 7,  // Button Down (7F) and Button Up (00) events happen seperately
-	MIDI_HERC_JOG			  = 8   // Generic hercules wierd range correction
+    MIDI_OPT_DIFF             = 5,
+    MIDI_OPT_BUTTON           = 6, // Button Down (7F) and Button Up (00) events happen together
+    MIDI_OPT_SWITCH           = 7, // Button Down (7F) and Button Up (00) events happen seperately
+    MIDI_OPT_HERC_JOG         = 8, // Generic hercules wierd range correction
+    MIDI_OPT_SPREAD64         = 9  // Accelerated difference from 64
 } MidiOption;
+
+typedef QMap<char,char> MidiValueMap;
 
 /*
   Class for the key for a specific configuration element. A key consists of a
@@ -83,12 +87,16 @@ public:
     ConfigValueMidi(MidiType _miditype, int _midino, int _midichannel);
     ConfigValueMidi(QDomNode node);
     void valCopy(const ConfigValueMidi v);
+    char translateValue(char value);
     double ComputeValue(MidiType _miditype, double _prevmidivalue, double _newmidivalue);
     friend bool operator==(const ConfigValueMidi & s1, const ConfigValueMidi & s2);
 
     MidiType miditype;
     int midino, midichannel;
+    unsigned int sensitivity;
     MidiOption midioption;
+    // BJW: Static translation of MIDI values for this object, defined in the mapping file.
+    MidiValueMap translateMidiValues;
 };
 
 class ConfigValueKbd : public ConfigValue

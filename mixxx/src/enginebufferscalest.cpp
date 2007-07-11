@@ -117,6 +117,11 @@ void EngineBufferScaleST::setPitchIndpTimeStretch(bool b)
 
 }
 
+bool EngineBufferScaleST::getPitchIndpTimeStretch(void)
+{
+    return m_bPitchIndpTimeStretch;
+}
+
 
 
 void EngineBufferScaleST::setBaseRate(double dBaseRate)

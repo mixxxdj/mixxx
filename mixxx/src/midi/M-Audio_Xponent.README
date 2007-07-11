@@ -1,0 +1,116 @@
+M-Audio Xponent + Linux
+^^^^^^^^^^^^^^^^^^^^^^^
+Ben Wheeler 2007/07/11
+
+Tested with snd_usb_audio ALSA driver. These console messages appear:
+
+usb 1-1: new full speed USB device using ohci_hcd and address 2
+usb 1-1: configuration #1 chosen from 1 choice
+2:1:1: cannot get freq at ep 0x4
+2:2:1: cannot get freq at ep 0x5
+usbcore: registered new interface driver snd-usb-audio
+
+Then 'amidi -l' shows two ports for the Xponent. In my case they
+are on hw:1 because I already have a soundcard on hw:0
+Dir Device    Name
+IO  hw:0,0    EMU10K1 MPU-401 (UART)
+IO  hw:0,1    Emu10k1 Synth MIDI (16 subdevices)
+IO  hw:0,2    Emu10k1 Synth MIDI (16 subdevices)
+IO  hw:1,0,0  Xponent MIDI 1
+IO  hw:1,0,1  Xponent MIDI 2
+
+"Xponent MIDI 1" seems to be the messages from the console's controllers.
+I guess "Xponent MIDI 2" is forwarded from the Xponent's MIDI IN port.
+
+Audiowise, hw1,1 ("Xponent Audio #1") is the main out, hw1,0 ("Xponent Audio") 
+is the headphones out. There doesn't appear to be a mixer device, which 
+makes sense as there are hardware controls for the levels, but may also
+be the reason why Portaudio complains that it can't get the supported
+sample rates (or it may not). Anyway, only 44.1kHz seems to be supported.
+
+Controls
+^^^^^^^^
+The following controls are "real" volume controls so do not transmit MIDI:
+* Master
+* Booth
+* Headphone Vol
+
+The "Bank" switch on the front changes the MIDI channel numbers from
+1,2,3 to 6,7,8 respectively when in the B position. The channel numbers
+below are for the A position.
+
+The "MIDI" button is a switch which tells the trackpad and the two buttons
+below it to transmit MIDI messages rather than acting as a mouse. 
+! At the moment I don't know how to use it in "mouse" mode. 
+
+Here are the rest of the controls:
+(# = Appropriate channel number, 1 or 2)
+(% = When MIDI button is illuminated)
+
+Controller		Ch	Message
+---- Master section
+Trackpad X value* 	3	Ctrl 8
+Trackpad Y value*	3	Ctrl 9
+Trackpad left button*	3	Note 0
+Trackpad right button*	3	Note 1
+Left shift		1	Note 44
+Right shift		2	Note 44
+Crossfader		3	Ctrl 7
+Headphone Cue Mix	3	Ctrl 13
+---- Per channel mixer section
+Gain pot		#	Ctrl 11
+High pot		#	Ctrl 10
+Mid pot			#	Ctrl 9
+Low pot			#	Ctrl 8
+Gain button		#	Note 11
+High button		#	Note 10
+Mid button		#	Note 9
+Low button		#	Note 8
+Channel fader		#	Ctrl 7
+Sync button		#	Note 2
+Transform button	#	Note 7
+---- Per channel deck section
+Jog wheel touch		#	Note 22
+Jog wheel turn		#	Ctrl 22 (>63 = clockwise, <63 = a/c, velocity dependent)
+Touch sens button	#	Note 21
+Headphone cue button	#	Note 20
+X button		#	Note 18
+- button		#	Note 19
+Speed nudge left	#	Note 16
+Speed nudge right	#	Note 17
+Speed fader		#	Pitch bend (fader resolution approx 500 steps; value jumps by 32-40, though not always to the same absolute values... either way it's about 4 times more resolution than a standard CC-based fader)
+Pot 1			#	Ctrl 12
+Pot 2			#	Ctrl 13
+Pot 3			#	Ctrl 14
+Pot 4			#	Ctrl 15
+Onoff 1			#	Note 12
+Onoff 2			#	Note 13
+Onoff 3			#	Note 14
+Onoff 4			#	Note 15
+Search left		#	Note 33
+Search right		#	Note 34
+Button 1		#	Note 23
+Button 2		#	Note 24
+Button 3		#	Note 25
+Button 4		#	Note 26
+Button 5		#	Note 27
+Jump left		#	Note 28
+Jump right		#	Note 29
+Lock			#	Note 30
++			#	Note 31
+-			#	Note 32
+Cue			#	Note 35
+Play/Pause		#	Note 36
+Loop 1			#	Note 37
+Loop 2			#	Note 38
+Loop 4			#	Note 39
+Loop 8			#	Note 40
+Reloop			#	Note 42
+Loop In			#	Note 41
+Loop Out		#	Note 43
+
+Lights
+^^^^^^
+No dice with these yet; I've fired just about every controller
+I could think of at it and nothing lit up. 
+

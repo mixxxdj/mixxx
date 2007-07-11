@@ -67,9 +67,10 @@ MidiObjectALSASeq::MidiObjectALSASeq(QString device) : MidiObject(device)
 		return;
     }
    
-	//List all the ALSA sequencer clients as the "devices"
-	getClientPortsList();
-    
+    // BJW Actually open the requested device (otherwise it won't be opened
+    // until reconfigured via the Preferences dialog!)
+    devOpen(device);
+
     start();
 }
 
@@ -263,6 +264,19 @@ void MidiObjectALSASeq::run()
                    midicontrol = ev->data.note.note;
                    midivalue = ev->data.note.velocity;
                    send(NOTE_OFF, channel, midicontrol, midivalue);
+                } else if (ev->type == SND_SEQ_EVENT_PITCHBEND)
+                {
+                   channel = ev->data.control.channel;
+                   // BJW: Uniquely among the MIDI backends, ALSA SEQ "cooks" the pitchbend event
+                   // into a number between -8192 and +8191. Here we convert it back to how the raw MIDI
+                   // message would look (using the ALSA function pitchbend_decode()), because that's what 
+                   // the other backends supply. It then gets cooked again in MidiObject::send(). 
+                   // qDebug("ALSA SEQ PITCH BEND: Cooked value: %d", ev->data.control.value);
+                   int temp = ev->data.control.value + 8192;
+                   midicontrol = temp & 0x7f;
+                   midivalue = (temp >> 7) & 0x7f;
+                   // qDebug("`-- Decooked to %d %d", midicontrol, midivalue);
+		   send(PITCH_WHEEL, channel, midicontrol, midivalue);
                 } else if (ev->type == SND_SEQ_EVENT_NOTE)
                 {
                   //what is a note event (a combinaison of a note on and a note off?)
@@ -277,3 +291,4 @@ void MidiObjectALSASeq::run()
          while (snd_seq_event_input_pending(m_handle, 0) > 0);
     }
 }
+
