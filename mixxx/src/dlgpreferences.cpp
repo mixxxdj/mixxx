@@ -42,7 +42,11 @@ DlgPreferences::DlgPreferences(MixxxApp *mixxx, MixxxView *view,
     wplaylist = new DlgPrefPlaylist(this, config);
     wcontrols = new DlgPrefControls(this, view, mixxx, config);
     wmixer = new DlgPrefMixer(this, config);
+
+#ifdef __EXPERIMENTAL_BPM__
     wbpm = new DlgPrefBPM(this, config);
+#endif
+
 #ifdef __EXPERIMENTAL_RECORDING__
     wrecord = new DlgPrefRecord(this, config);
 #endif
@@ -53,7 +57,11 @@ DlgPreferences::DlgPreferences(MixxxApp *mixxx, MixxxView *view,
     addTab(wcontrols, "GUI");
     addTab(wplaylist, "Playlists");
     addTab(wmixer,    "Mixer Profile");
+
+#ifdef __EXPERIMENTAL_BPM__
     addTab(wbpm, "BPM");
+#endif
+
 #ifdef __EXPERIMENTAL_RECORDING__
     addTab(wrecord,   "Recording");
 #endif
@@ -74,7 +82,11 @@ DlgPreferences::DlgPreferences(MixxxApp *mixxx, MixxxView *view,
     connect(this,        SIGNAL(aboutToShow()),          wplaylist, SLOT(slotUpdate()));
     connect(this,        SIGNAL(aboutToShow()),          wcontrols, SLOT(slotUpdate()));
     connect(this,	     SIGNAL(aboutToShow()),		     wmixer,    SLOT(slotUpdate()));
+
+#ifdef __EXPERIMENTAL_BPM__
     connect(this,        SIGNAL(aboutToShow()),           wbpm,      SLOT(slotUpdate()));
+#endif
+
 #ifdef __EXPERIMENTAL_RECORDING__
     connect(this,	     SIGNAL(aboutToShow()),		     wrecord,   SLOT(slotUpdate()));
 #endif
@@ -82,7 +94,9 @@ DlgPreferences::DlgPreferences(MixxxApp *mixxx, MixxxView *view,
     connect(this,        SIGNAL(closeDlg()),             wmidi,     SLOT(slotApply()));
     connect(this,        SIGNAL(closeDlg()),             wplaylist, SLOT(slotApply()));
     connect(this,        SIGNAL(closeDlg()),             wcontrols, SLOT(slotApply()));
+#ifdef __EXPERIMENTAL_BPM__
     connect(this,        SIGNAL(closeDlg()),             wbpm,      SLOT(slotApply()));
+#endif
     connect(this,        SIGNAL(closeDlg()),             this,      SLOT(slotApply()));
     connect(this,	     SIGNAL(closeDlg()),		     wmixer,    SLOT(slotApply()));
 #ifdef __EXPERIMENTAL_RECORDING__
