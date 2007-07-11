@@ -1,0 +1,188 @@
+<!DOCTYPE UI><UI version="3.3" stdsetdef="1">
+<class>DlgPrefBPMDlg</class>
+<widget class="QWidget">
+    <property name="name">
+        <cstring>DlgPrefBPMDlg</cstring>
+    </property>
+    <property name="geometry">
+        <rect>
+            <x>0</x>
+            <y>0</y>
+            <width>600</width>
+            <height>510</height>
+        </rect>
+    </property>
+    <property name="caption">
+        <string>BPM Detection Settings</string>
+    </property>
+    <widget class="QGroupBox">
+        <property name="name">
+            <cstring>GroupBox1</cstring>
+        </property>
+        <property name="enabled">
+            <bool>true</bool>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>10</x>
+                <y>15</y>
+                <width>345</width>
+                <height>170</height>
+            </rect>
+        </property>
+        <property name="font">
+            <font>
+            </font>
+        </property>
+        <property name="title">
+            <string>BPM Detection</string>
+        </property>
+        
+        <widget class="QLabel">
+        <property name="name">
+            <cstring>textLabelSoundScaling</cstring>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>29</x>
+                <y>40</y>
+                <width>300</width>
+                <height>76</height>
+            </rect>
+        </property>
+        <property name="text">
+            <string>Determines whether or not to analyze the entire song or only the middle portion to detect the BPM. It is advisable to leave this turned off unless you are getting inaccurate results and you have plenty of CPU Power. </string>
+        </property>
+        <property name="alignment">
+            <set>WordBreak|AlignTop</set>
+        </property>
+    </widget>
+    <widget class="QCheckBox">
+        <property name="name">
+            <cstring>chkAnalyzeEntireSong</cstring>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>11</x>
+                <y>20</y>
+                <width>200</width>
+                <height>22</height>
+            </rect>
+        </property>
+        <property name="text">
+            <string>Analyze Entire Song</string>
+        </property>
+    </widget>
+        <widget class="QLabel">
+            <property name="name">
+                <cstring>TextLabel8</cstring>
+            </property>
+            <property name="geometry">
+                <rect>
+                    <x>11</x>
+                    <y>140</y>
+                    <width>150</width>
+                    <height>16</height>
+                </rect>
+            </property>
+            <property name="font">
+                <font>
+                </font>
+            </property>
+            <property name="text">
+                <string>BPM Detection Range:</string>
+            </property>
+        </widget>
+
+  <widget class="QLabel">
+            <property name="name">
+                <cstring>TextLabel9</cstring>
+            </property>
+            <property name="geometry">
+                <rect>
+                    <x>160</x>
+                    <y>140</y>
+                    <width>50</width>
+                    <height>16</height>
+                </rect>
+            </property>
+            <property name="font">
+                <font>
+                </font>
+            </property>
+            <property name="text">
+                <string>Start</string>
+            </property>
+        </widget>
+
+  <widget class="QLabel">
+            <property name="name">
+                <cstring>TextLabel10</cstring>
+            </property>
+            <property name="geometry">
+                <rect>
+                    <x>257</x>
+                    <y>140</y>
+                    <width>50</width>
+                    <height>16</height>
+                </rect>
+            </property>
+            <property name="font">
+                <font>
+                </font>
+            </property>
+            <property name="text">
+                <string>End</string>
+            </property>
+        </widget>
+        <widget class="QSpinBox">
+        <property name="name">
+            <cstring>spinBoxBPMRangeStart</cstring>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>200</x>
+                <y>135</y>
+                <width>50</width>
+                <height>21</height>
+            </rect>
+        </property>
+        <property name="maxValue">
+            <number>220</number>
+        </property>
+        <property name="minValue">
+            <number>1</number>
+        </property>
+        <property name="toolTip" stdset="0">
+            <string>BPM detection range start (between 1 and 220)</string>
+        </property>
+    </widget>
+    <widget class="QSpinBox">
+        <property name="name">
+            <cstring>spinBoxBPMRangeEnd</cstring>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>290</x>
+                <y>135</y>
+                <width>50</width>
+                <height>21</height>
+            </rect>
+        </property>
+        <property name="maxValue">
+            <number>220</number>
+        </property>
+        <property name="minValue">
+            <number>1</number>
+        </property>
+        <property name="toolTip" stdset="0">
+            <string>BPM detection range end (between 1 and 220)</string>
+        </property>
+    </widget>
+
+    </widget>
+
+    
+</widget>
+<layoutdefaults spacing="6" margin="11"/>
+</UI>
