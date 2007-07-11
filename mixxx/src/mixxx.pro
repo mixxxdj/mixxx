@@ -79,7 +79,7 @@ win32 {
 		HEADERS += $$PORTAUDIO_DIR/pa_common/pa_host.h
 		SOURCES += $$PORTAUDIO_DIR/pablio/ringbuffer.c $$PORTAUDIO_DIR/pa_win_wmme/pa_win_wmme.c
 		INCLUDEPATH += $$PORTAUDIO_DIR/pablio 
-		LIBS += -lwinmm
+		LIBS += -lwinmm -latls
     }
 }
 
