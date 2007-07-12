@@ -67,10 +67,18 @@ void WWidget::setup(QDomNode node)
         configKey.group = key.left(key.find(","));
         configKey.item = key.mid(key.find(",")+1);
 
+        // Check that the control exists
+        ControlObject *control = ControlObject::getControl(configKey);
+        if (control == NULL) {
+            qWarning("Requested control '%s' does not exist!", key.latin1());
+            con = con.nextSibling();
+            continue;
+        }
+
         if (!selectNode(con, "OnOff").isNull() && selectNodeQString(con, "OnOff")=="true")
         {
             // Connect control proxy to widget
-            (new ControlObjectThreadWidget(ControlObject::getControl(configKey)))->setWidgetOnOff(this);
+            (new ControlObjectThreadWidget(control))->setWidgetOnOff(this);
         }
         else
         {
@@ -89,11 +97,9 @@ void WWidget::setup(QDomNode node)
             }
 
             // Connect control proxy to widget
-            (new ControlObjectThreadWidget(ControlObject::getControl(configKey)))->setWidget(this, bEmitOnDownPress, state);
+            (new ControlObjectThreadWidget(control))->setWidget(this, bEmitOnDownPress, state);
 
             // Add keyboard shortcut info to tooltip string
-            ControlObject *p = ControlObject::getControl(configKey);
-            Q_ASSERT(p!=0);
             QString shortcut = QString(" (%1)").arg(m_spKbdConfigObject->getValueString(configKey));
             if (!m_spKbdConfigObject->getValueString(configKey).isEmpty() && !strTooltip.contains(shortcut,false))
                 strTooltip += shortcut;
