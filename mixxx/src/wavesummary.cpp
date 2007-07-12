@@ -35,7 +35,7 @@ email                : haste@diku.dk
 
 #include <qdatetime.h>
 
-WaveSummary::WaveSummary()
+WaveSummary::WaveSummary(ConfigObject<ConfigValue> *_config)
 {
 	// Allocate and calculate window
 	window = new WindowKaiser(kiBlockSize, 6.5);
@@ -46,6 +46,9 @@ WaveSummary::WaveSummary()
 
 	// Allocate FFT object
 	m_pEngineSpectralFwd = new EngineSpectralFwd(true, false, window);
+
+	// Store config object
+	m_Config = _config;
 
 	start(QThread::IdlePriority);
 }
@@ -125,14 +128,17 @@ void WaveSummary::run()
 			// Experimental Bpm Implementation [GSOC]
 			//***********************************************************		
 			extractBeat(pTrackInfoObject);  
+			long liPos;
+			int j;
 
+#ifndef __EXPERIMENTAL_BPM__
 
 			// Allocate buffer for first derivative of the PSF vector          
 			float *pDPsf = new float[iBeatBlockLength];
 
-			long liPos = pSoundSource->seek(iBeatPosStart);
+			liPos = pSoundSource->seek(iBeatPosStart);
 			liPos += pSoundSource->read(kiBlockSize, pBuffer);
-			int j = 0;
+			j = 0;
 			while (liPos<iBeatPosEnd)
 			{
 				// Mix to mono, rectangular window
@@ -193,7 +199,7 @@ void WaveSummary::run()
 				it1++;
 			}           
 
-#ifndef __EXPERIMENTAL_BPM__
+
 			// Update BPM value in TrackInfoObject
 			if (!pTrackInfoObject->getBpmConfirm()) {
 				pTrackInfoObject->setBpm(bpv->getBestBpmValue());
@@ -263,9 +269,11 @@ void WaveSummary::run()
 			pTrackInfoObject->setWaveSummary(pData, 0);
 
 			delete [] pBuffer;
+#ifndef __EXPERIMENTAL_BPM__
 			delete [] pDPsf;
 			delete pPeaks;
 			delete bpv;
+#endif
 			delete pSoundSource;
 
 			qDebug("generate successful for %s",pTrackInfoObject->getFilename().latin1());
@@ -279,11 +287,24 @@ void WaveSummary::extractBeat(TrackInfoObject *pTrackInfoObject)
 #ifdef __EXPERIMENTAL_BPM__
 #define CHUNKSIZE 4096
 
+	m_qMutex.lock();
+	int analyzeEntireSong = m_Config->getValueString(ConfigKey("[BPM]","AnalyzeEntireSong")).toInt();
+	m_qMutex.unlock();
+
+	m_qMutex.lock();
+	int minBpm = m_Config->getValueString(ConfigKey("[BPM]","BPMRangeStart")).toInt();
+	m_qMutex.unlock();
+
+	m_qMutex.lock();
+	int maxBpm = m_Config->getValueString(ConfigKey("[BPM]","BPMRangeEnd")).toInt();
+	m_qMutex.unlock();
+	
+
 	SoundSourceProxy *pSoundSource = new SoundSourceProxy(pTrackInfoObject);
 	int16_t data16[ CHUNKSIZE];  // for 16 bit samples
 	int8_t  data8[ CHUNKSIZE ];       // for 8 bit samples
 	soundtouch::SAMPLETYPE samples[ CHUNKSIZE];
-	unsigned int length = 0, read = 0, totalsteps = 0, pos = 0;
+	unsigned int length = 0, read = 0, totalsteps = 0, pos = 0, end = 0;
 	int channels = 2, bits = 16;
 	float frequency = 44100;
 
@@ -299,9 +320,22 @@ void WaveSummary::extractBeat(TrackInfoObject *pTrackInfoObject)
 	{
 		length = pSoundSource->length();
 	}
-
+	
+	if(analyzeEntireSong < 1)
+	{
+		length = length / 2;
+		pos = length / 2;
+		
+	}
+	if(pos %2 != 0)
+	{
+		//Bug Fix: above formula allows iBeatPosStart
+		//to be odd (which is illegal)
+		pos--;
+	}
 
 	totalsteps = ( length / CHUNKSIZE );
+	end = pos + length;
 
 	if(pTrackInfoObject->getSampleRate())
 	{
@@ -316,38 +350,42 @@ void WaveSummary::extractBeat(TrackInfoObject *pTrackInfoObject)
 		bits = pTrackInfoObject->getBitrate();
 	}
 
-	BPMDetect bpmd( channels, ( int ) frequency );
+	BPMDetect bpmd( channels, ( int ) frequency, maxBpm, minBpm );
 
 	int cprogress = 0;
 	pSoundSource->seek(pos);
 	do {
 			read = pSoundSource->read(CHUNKSIZE, data16);
+
+			if(read >= 2)
+			{
 			pos += read;
 
-			//****************************************************
-			// Replace:
-			//result = FMOD_Sound_ReadData( sound, data16, CHUNKSIZE, &read );
+				//****************************************************
+				// Replace:
+				//result = FMOD_Sound_ReadData( sound, data16, CHUNKSIZE, &read );
 
-			//****************************************************
-			for ( unsigned int i = 0; i < read/2 ; i++ ) {
-				int16_t test = data16[i];
-				if(test > 0)
-				{
-					test = 0;
+				//****************************************************
+				for ( unsigned int i = 0; i < read/2 ; i++ ) {
+					int16_t test = data16[i];
+					if(test > 0)
+					{
+						test = 0;
+					}
+					samples[ i ] = ( float ) data16[ i ] / 32768;
 				}
-				samples[ i ] = ( float ) data16[ i ] / 32768;
+				bpmd.inputSamples( samples, read / ( 2 * channels ) );
+			
+				cprogress++;
+				if ( cprogress % 250 == 0 ) {
+					/// @todo printing status (cprogress/totalsteps)
+				}
 			}
-			bpmd.inputSamples( samples, read / ( 2 * channels ) );
-		
-		cprogress++;
-		if ( cprogress % 250 == 0 ) {
-			/// @todo printing status (cprogress/totalsteps)
-		}
-	} while ( /*result == FMOD_OK &&*/ pos < length );
+	} while ( /*result == FMOD_OK &&*/ read == CHUNKSIZE );
 
 	float BPM = bpmd.getBpm();
 	if ( BPM != 0. ) {
-		BPM = Correct_BPM( BPM );
+		BPM = Correct_BPM( BPM, maxBpm, minBpm );
 		pTrackInfoObject->setBpm(BPM);
 		pTrackInfoObject->setBpmConfirm();
 		delete pSoundSource;
@@ -421,7 +459,7 @@ void WaveSummary::extractBeat(TrackInfoObject *pTrackInfoObject)
 	pPeaks->update(0, iBeatBlockLength);
 
 	// Initialize beat probability vector
-	ProbabilityVector *bpv = new ProbabilityVector(60.f/histMaxBPM, 60.f/histMinBPM, kiBeatBins);
+	ProbabilityVector *bpv = new ProbabilityVector(60.f/maxBpm, 60.f/minBpm, kiBeatBins);
 
 	// Calculate BPM
 	PeakList::iterator it1 = pPeaks->begin();
@@ -440,10 +478,10 @@ void WaveSummary::extractBeat(TrackInfoObject *pTrackInfoObject)
 			float interval = pPeaks->getDistance(it2,it1)/((float)pSoundSource->getSrate()/float(kiBlockSize));
 
 			// Update beat probability vector
-			if (interval<60.f/histMinBPM)
+			if (interval<60.f/minBpm)
 				bpv->add(interval, pDPsf[(*it1).i]*pDPsf[(*it2).i]);
 
-			if (it2==pPeaks->begin() || interval>=60.f/histMinBPM)
+			if (it2==pPeaks->begin() || interval>=60.f/minBpm)
 				bInRange = false;
 			else
 				it2--;
