@@ -67,7 +67,7 @@ private:
         
 //     ControlObject *m_pControlObjectHeadphoneMute;
     ControlPotmeter *crossfader, *head_mix, *m_pBalance;
-    ControlPushButton *pfl1, *pfl2, *flanger1, *flanger2;
+    ControlPushButton *pfl1, *pfl2, *flanger1, *flanger2, *transform1, *transform2;
     CSAMPLE *m_pMaster, *m_pHead, *m_pTemp1, *m_pTemp2;
     bool master1, master2;
 };

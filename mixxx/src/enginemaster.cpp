@@ -56,6 +56,10 @@ EngineMaster::EngineMaster(ConfigObject<ConfigValue> *_config,
     // Crossfader
     crossfader = new ControlPotmeter(ConfigKey(group, "crossfader"),-1.,1.);
 
+    // Transform buttons
+    transform1 = new ControlPushButton(ConfigKey("[Channel1]", "transform"));
+    transform2 = new ControlPushButton(ConfigKey("[Channel2]", "transform"));
+
     // Balance
     m_pBalance = new ControlPotmeter(ConfigKey(group, "balance"), -1., 1.);
             
@@ -207,19 +211,30 @@ void EngineMaster::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBuff
     volume2->process(m_pTemp2, m_pTemp2, iBufferSize);
 
 
-    // Crossfader
+    // Crossfader and Transform buttons
     cf_val = crossfader->get();
     //qDebug("cf_val: %f", cf_val);
     FLOAT_TYPE c1_gain, c2_gain;
     if (cf_val>0)
     {
-        c2_gain = 1.;
-        c1_gain = 1.-cf_val;
+        if (transform2->get()) {
+            c1_gain = 1.;
+            c2_gain = 1.-cf_val;
+        } else {
+            c1_gain = 1.-cf_val;
+            c2_gain = 1.;
+        }
+            
     }
     else
     {
-        c1_gain = 1.;
-        c2_gain = 1.+cf_val;
+        if (transform1->get()) {
+            c1_gain = 1.+cf_val;
+            c2_gain = 1.;
+        } else {
+            c1_gain = 1.;
+            c2_gain = 1.+cf_val;
+        }
     }
 
     for (int i=0; i<iBufferSize; ++i)
