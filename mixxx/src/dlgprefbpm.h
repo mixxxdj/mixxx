@@ -24,6 +24,8 @@ public:
     ~DlgPrefBPM();
 public slots:
     
+	void slotSetBPMDetectOnImport();
+	void slotSetWriteID3Tag();
     void slotSetAnalyzeMode();
     void slotSetBPMRangeStart(int);
     void slotSetBPMRangeEnd(int);
