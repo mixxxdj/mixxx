@@ -382,7 +382,7 @@ if int(flags_experimentalrecording):
 flags_ladspa = ARGUMENTS.get('ladspa', 0)
 if int(flags_ladspa):
 	env.Append(CXXFLAGS = '-D__LADSPA__')
-	sources += Split("""engineladspa.cpp ladspaloader.cpp ladspalibrary.cpp ladspaplugin.cpp ladspainstance.cpp""")
+	sources += Split("""engineladspa.cpp ladspaloader.cpp ladspalibrary.cpp ladspaplugin.cpp ladspainstance.cpp ladspacontrol.cpp""")
 	print "LADSPA... enabled"
 else:
 	print "LADSPA... disabled"
@@ -391,12 +391,13 @@ print "================\n"
 
 #Hijack scons -h and --help
 opts = Options('custom.py')
-opts.Add('djconsole', 'Set to 1 to enable Hercules support through libdjconsole', 0)
-opts.Add('hifieq', 'Set to 1 to enable high quality EQs', 0)
-opts.Add('experimentalbpm', 'Set to 1 to enable experimental BPM detection', 0)
 opts.Add('qtdir', 'Set to your QT3 directory', '/usr/share/qt3')
 opts.Add('prefix', 'Set to your install prefix', '/usr/local')
-opts.Add('experimentalrecord', 'Set to 1 to enable experimental recording feature')
+opts.Add('djconsole', 'Set to 1 to enable Hercules support through libdjconsole', 0)
+opts.Add('experimentalbpm', '(EXPERIMENTAL) Set to 1 to enable new BPM detection', 0)
+opts.Add('experimentalrecord', '(EXPERIMENTAL) Set to 1 to enable output recording feature', 0)
+opts.Add('hifieq', '(EXPERIMENTAL) Set to 1 to enable high quality EQs', 0)
+opts.Add('ladspa', '(EXPERIMENTAL) Set to 1 to enable LADSPA plugin support', 0)
 #env = Environment(options = opts)
 Help(opts.GenerateHelpText(env))
 
