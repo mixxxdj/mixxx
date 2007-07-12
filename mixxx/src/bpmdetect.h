@@ -83,7 +83,7 @@ typedef unsigned long long uint64_t;
  * @param BPM BPM to correct
  * @return corrected BPM
  */
-float Correct_BPM( float BPM );
+float Correct_BPM( float BPM, int max, int min );
 
 /// Class for calculating BPM rate for audio data.
 class BPMDetect
@@ -115,6 +115,12 @@ protected:
 
     /// sample rate
     int sampleRate;
+
+	/// Maximum acceptable bpm
+	int maxBpm;
+
+	/// Minumum acceptable bpm
+	int minBpm;
 
     /// Beginning of auto-correlation window: Autocorrelation isn't being updated for
     /// the first these many correlation bins.
@@ -149,8 +155,10 @@ protected:
 public:
     /// Constructor.
     BPMDetect(int numChannels,  ///< Number of channels in sample data.
-              int sampleRate    ///< Sample rate in Hz.
-              );
+              int sampleRate,   ///< Sample rate in Hz.
+              int _maxBpm,
+			  int _minBpm
+			  );
 
     /// Destructor.
     virtual ~BPMDetect();

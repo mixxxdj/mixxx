@@ -75,20 +75,20 @@ const float avgdecay = 0.99986f;
 /// Normalization coefficient for calculating RMS sliding average approximation.
 const float avgnorm = (1 - avgdecay);
 
-float Correct_BPM( float BPM ) {
+float Correct_BPM( float BPM , int max, int min) {
   if ( BPM == 0. )
     return BPM;
 
-  while ( BPM > MAX_BPM )
+  while ( BPM > max )
     BPM /= 2;
-  while ( BPM < MIN_BPM )
+  while ( BPM < min )
     BPM *= 2;
 
   return BPM;
 }
 
 
-BPMDetect::BPMDetect(int numChannels, int sampleRate)
+BPMDetect::BPMDetect(int numChannels, int sampleRate, int _maxBpm, int _minBpm)
 {
     xcorr = NULL;
 
@@ -102,6 +102,9 @@ BPMDetect::BPMDetect(int numChannels, int sampleRate)
     this->channels = numChannels;
 
     envelopeAccu = 0;
+
+	maxBpm = _maxBpm;
+	minBpm = _minBpm;
 
     // Initialize RMS volume accumulator to RMS level of 3000 (out of 32768) that's
     // a typical RMS signal level value for song data. This value is then adapted
@@ -290,8 +293,8 @@ void BPMDetect::init(int numChannels, int sampleRate)
     assert(INPUT_BLOCK_SAMPLES < decimateBy * DECIMATED_BLOCK_SAMPLES);
 
     // Calculate window length & starting item according to desired min & max bpms
-    windowLen = (60 * sampleRate) / (decimateBy * MIN_BPM);
-    windowStart = (60 * sampleRate) / (decimateBy * MAX_BPM);
+    windowLen = (60 * sampleRate) / (decimateBy * minBpm);
+    windowStart = (60 * sampleRate) / (decimateBy * maxBpm);
 
     assert(windowLen > windowStart);
 

@@ -225,7 +225,7 @@ MixxxApp::MixxxApp(QApplication *a, QStringList files, QSplashScreen *pSplash, Q
     }
 
     // Initialize wavefrom summary generation
-    m_pWaveSummary = new WaveSummary();
+    m_pWaveSummary = new WaveSummary(config);
 
     if (pSplash)
         pSplash->message("Loading song database...",Qt::AlignLeft|Qt::AlignBottom);

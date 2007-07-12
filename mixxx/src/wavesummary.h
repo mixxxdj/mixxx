@@ -23,6 +23,7 @@
 #include <qwaitcondition.h>
 #include <qptrqueue.h>
 #include "defs.h"
+#include "configobject.h"
 
 class TrackInfoObject;
 class ControlObjectThread;
@@ -45,7 +46,7 @@ class EngineSpectralFwd;
 class WaveSummary : public QThread
 {
 public:
-    WaveSummary();
+    WaveSummary(ConfigObject<ConfigValue> *_config);
     ~WaveSummary();
     /** Puts an TrackInfoObject into the queue of summary generation. Thread safe, blocking. */
     void enqueue(TrackInfoObject *pTrackInfoObject);
@@ -67,7 +68,9 @@ protected:
     CSAMPLE *windowedSamples;
     /** Pointer to array containing window */
     CSAMPLE *windowPtr;
-    EngineSpectralFwd *m_pEngineSpectralFwd;
+    EngineSpectralFwd *m_pEngineSpectralFwd;	
+	/** Pointer to config object **/
+	ConfigObject<ConfigValue> *m_Config;
 };
 
 #endif
