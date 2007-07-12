@@ -35,6 +35,8 @@ DlgPrefBPM::DlgPrefBPM(QWidget *parent, ConfigObject<ConfigValue> *_config) : Dl
     
 
     // Connection
+	connect(chkDetectOnImport,		SIGNAL(stateChanged(int)), this, SLOT(slotSetBPMDetectOnImport()));
+	connect(chkWriteID3,			SIGNAL(stateChanged(int)), this, SLOT(slotSetWriteID3Tag()));
     connect(chkAnalyzeEntireSong,   SIGNAL(stateChanged(int)), this, SLOT(slotSetAnalyzeMode()));
     connect(spinBoxBPMRangeStart,   SIGNAL(valueChanged(int)), this, SLOT(slotSetBPMRangeStart(int)));
     connect(spinBoxBPMRangeEnd,     SIGNAL(valueChanged(int)), this, SLOT(slotSetBPMRangeEnd(int)));
@@ -45,6 +47,23 @@ DlgPrefBPM::DlgPrefBPM(QWidget *parent, ConfigObject<ConfigValue> *_config) : Dl
         chkAnalyzeEntireSong->setChecked(true);
     else
         chkAnalyzeEntireSong->setChecked(false);
+
+	// Set default value for detect BPM on import check box
+    int iDetectBPMOnImport = config->getValueString(ConfigKey("[BPM]","DetectBPMOnImport")).toInt();
+    if (iDetectBPMOnImport)
+        chkDetectOnImport->setChecked(true);
+    else
+        chkDetectOnImport->setChecked(false);
+
+	// Set default value for write ID3 tag check box
+    int iWriteID3Tag = config->getValueString(ConfigKey("[BPM]","WriteID3Tag")).toInt();
+    if (iWriteID3Tag)
+        chkWriteID3->setChecked(true);
+    else
+        chkWriteID3->setChecked(false);
+
+	chkWriteID3->setEnabled(false);
+	chkDetectOnImport->setEnabled(false);
        
 
     //Load BPM Range Values
@@ -64,6 +83,22 @@ DlgPrefBPM::DlgPrefBPM(QWidget *parent, ConfigObject<ConfigValue> *_config) : Dl
 
 DlgPrefBPM::~DlgPrefBPM()
 {
+}
+
+void DlgPrefBPM::slotSetBPMDetectOnImport()
+{
+	 if (chkDetectOnImport->isChecked())
+        config->set(ConfigKey("[BPM]","DetectBPMOnImport"), ConfigValue(1));
+    else
+        config->set(ConfigKey("[BPM]","DetectBPMOnImport"), ConfigValue(0));
+}
+
+void DlgPrefBPM::slotSetWriteID3Tag()
+{
+	 if (chkWriteID3->isChecked())
+        config->set(ConfigKey("[BPM]","WriteID3Tag"), ConfigValue(1));
+    else
+        config->set(ConfigKey("[BPM]","WriteID3Tag"), ConfigValue(0));
 }
 
 void DlgPrefBPM::slotSetAnalyzeMode()
