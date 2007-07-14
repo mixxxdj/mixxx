@@ -32,7 +32,7 @@ New since 1.4.2:
 
 * INSTALL **************************************************
 Mixxx has the following dependencies:
-- fftw
+- fftw3
 - libid3tag
 - libmad
 - libogg
@@ -42,6 +42,7 @@ Mixxx has the following dependencies:
 - PortAudio-v19 (new for Mixxx 1.5.0)
 - QT3
 - libjack (now required)
+- scons
 
 NOTE: If you want JACK support in Mixxx, make sure you 
 compile PortAudio-v19 with JACK support first.
