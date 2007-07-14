@@ -355,6 +355,14 @@ print "\nFeatures Summary:\n================"
  #TODO: FINISH THIS! 
 
 
+#Hercules support through libdjconsole on Linux
+#(handled somewhere else above this in the file...
+# just printing the summary here)
+flags_djconsole = ARGUMENTS.get('djconsole', 0)
+if int(flags_djconsole) == 0:
+	print "libdjconsole support... disabled"
+else
+	print "libdjconsole support... enabled"
       
 #High quality EQs
 flags_hifieq = ARGUMENTS.get('hifieq', 0)
@@ -377,6 +385,9 @@ else:
 flags_experimentalrecording = ARGUMENTS.get('experimentalrecord', 0)
 if int(flags_experimentalrecording):
 	env.Append(CXXFLAGS = '-D__EXPERIMENTAL_RECORDING__')
+	print "Experimental recording... enabled"
+else:
+    print "Experimental recording... disabled"
 
 #LADSPA
 flags_ladspa = ARGUMENTS.get('ladspa', 0)
