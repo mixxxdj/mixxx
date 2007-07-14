@@ -44,7 +44,7 @@ WTreeView::WTreeView(QString qRootPath, QWidget *parent, const char *name, bool 
     }
 */
     connect(this, SIGNAL(doubleClicked(QListViewItem *)), this, SLOT(slotFolderSelected(QListViewItem *)));
-    connect(this, SIGNAL(returnPressed(QListViewItem *)), this, SLOT(slotFolderSelected(QListViewItem *)));
+	connect(this, SIGNAL(returnPressed(QListViewItem *)), this, SLOT(slotFolderSelected(QListViewItem *)));
 
     // Set properties
     setAcceptDrops(false);
@@ -64,7 +64,7 @@ WTreeView::WTreeView(QString qRootPath, QWidget *parent, const char *name, bool 
     // Load information into the view
     //
     slotUpdateDir(qRootPath);
-
+	
     // Insert root playlist
     m_pRootPlaylist = new WTreeItemPlaylistRoot(this, "Playlists");
     m_pRootPlaylist->setOpen(true); // be interesting

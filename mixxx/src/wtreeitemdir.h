@@ -13,6 +13,8 @@
 #define WTREEITEMDIR_H
 
 #include <qdir.h>
+#include <qpopupmenu.h>
+#include <qcursor.h>
 #include "wtreeitem.h"
 /**
 @author Tue Haste Andersen

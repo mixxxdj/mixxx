@@ -91,6 +91,7 @@ class MixxxApp : public QMainWindow
     bool queryExit();
 
 	void rebootMixxxView();
+
   public slots:
 
     /** Opens a file in player 1 */

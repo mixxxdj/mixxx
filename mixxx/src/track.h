@@ -15,6 +15,7 @@
 #include <qstring.h>
 #include <qdom.h>
 #include <qptrlist.h>
+#include <qpopupmenu.h>
 #include <qobject.h>
 #include "trackplaylist.h"
 #include "trackplaylistlist.h"
@@ -28,6 +29,7 @@ class WTrackTable;
 class WTreeList;
 class ControlObjectThreadMain;
 class WaveSummary;
+class QLineEdit;
 
 // This define sets the version of the tracklist. If any code is changed or
 // bugfixed, this number should be increased. If TRACK_VERSION is larger
@@ -42,22 +44,28 @@ class Track : public QObject
 {
     Q_OBJECT
 public:
-    Track(QString location, MixxxView *pView, EngineBuffer *pBuffer1, EngineBuffer *pBuffer2, WaveSummary *pWaveSummary);
+    Track(QString location, MixxxView *pView, EngineBuffer *pBuffer1, EngineBuffer *pBuffer2, WaveSummary *pWaveSummary, QString musiclocation);
     ~Track();
     /** Read xml file */
-    void readXML(QString location);
+    bool readXML(QString location);
     /** Write content to XML file */
     void writeXML(QString location);
     /** Get pointer to TrackCollection */
     TrackCollection *getTrackCollection();
+	/** Current active playlist */
+    TrackPlaylist *m_pActivePlaylist;
     /** Force an update of menu and tree view */
-    void updatePlaylistViews();
+    //void updatePlaylistViews();
+	/**location of new music files*/
+	QString musicDir;
 
 public slots:
     /** Decode playlist drops to WTrackTable, and loads corresponding playlist */
     void slotDrop(QDropEvent *e);
     /** Activate a playlist of the given name */
     void slotActivatePlaylist(QString name);
+	/**Activate a Playlist from ComboBox*/
+	void slotActivatePlaylist(int index);
     /** Add a new playlist */
     void slotNewPlaylist();
     /** Delete a playlist */
@@ -87,8 +95,12 @@ public slots:
     /** Slot for loading previous track in player 1 */
     void slotPrevTrackPlayer2(double);
     /** Returns pointer to active playlist */
-    TrackPlaylist *getActivePlaylist();    
-        
+    TrackPlaylist *getActivePlaylist();
+	/**sends track to Playqueue*/
+	void slotSendToPlayqueue();
+    /**search function*/
+	//void slotSearch();
+
 private slots:
     /** Load the active popup track in player 1 */
     void slotLoadPlayer1();
@@ -112,8 +124,7 @@ private:
     TrackImporter *m_pTrackImporter;
     /** List of pointers to TrackPlaylists */
     TrackPlaylistList m_qPlaylists;
-    /** Current active playlist */
-    TrackPlaylist *m_pActivePlaylist;
+    
     /** Pointer to playlist for which a popup menu is currently displayed */
     TrackPlaylist *m_pActivePopupPlaylist;
     /** Pointer to TrackInfoObject for which a popup menu is currently displayed */
@@ -138,6 +149,12 @@ private:
     ControlObjectThreadMain *m_pPlayPositionCh1, *m_pPlayPositionCh2;
     /** Pointer to waveform summary generator */
     WaveSummary *m_pWaveSummary;
+	/**used to add tracks from music Dir automatically*/
+	void librarycheckexists(QString qPath);
+	/**used to limit popup menu choices*/
+	QPopupMenu *menu;
+	TrackPlaylist *tempPlaylist;
+
 };
 
 #endif

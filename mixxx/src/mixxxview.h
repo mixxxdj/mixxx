@@ -21,8 +21,10 @@
 #include <qwidget.h>
 #include <qlabel.h>
 #include <qstring.h>
-#include "configobject.h"
 #include <qptrlist.h>
+#include <qpushbutton.h>
+
+#include "configobject.h"
 #include "configobject.h"
 #include "imgsource.h"
 
@@ -31,7 +33,6 @@ class WSlider;
 class WSliderComposed;
 class WPushButton;
 class WTrackTable;
-class WTreeView;
 class WDisplay;
 class WKnob;
 class WVisual;
@@ -39,9 +40,11 @@ class WOverview;
 class WNumberPos;
 class QDomNode;
 class QDomElement;
-class QSplitter;
 class MixxxKeyboard;
-
+/*new classes for new visual layout*/
+class QComboBox;
+class QLineEdit;
+class QPushButton;
 /**
  * This class provides an incomplete base for your application view.
  */
@@ -61,7 +64,6 @@ public:
     bool activeWaveform();
 
     WTrackTable *m_pTrackTable;
-    WTreeView *m_pTreeView;
 
     QLabel *m_pTextCh1, *m_pTextCh2;
     /** Pointer to WVisual widgets */
@@ -72,11 +74,15 @@ public:
     WSliderComposed *m_pSliderRateCh1, *m_pSliderRateCh2;
     /** Allow dynamic zoom on visuals */
     bool m_bZoom;
-    /** Pointer to splitter widget. May be used to split tree and track list */
-    QSplitter *m_pSplitter;
+	/** Pointer to ComboBox*/
+	QComboBox *m_pComboBox;
+	/** Pointer to SearchBox */
+	QLineEdit *m_pLineEditSearch;
+	/** Pointer to Search PushButton*/
+	QPushButton *m_pPushButton;
     /** Pointer to overview displays */
     WOverview *m_pOverviewCh1, *m_pOverviewCh2;
-
+	
 	void rebootGUI(QWidget* parent, bool bVisualsWaveform, ConfigObject<ConfigValue> *pConfig, QString qSkinPath);
 
 	static QValueList<QString> getSchemeList(QString qSkinPath);
@@ -85,10 +91,14 @@ private:
 	void setupColorScheme(QDomElement docElem, ConfigObject<ConfigValue> *pConfig);
 	void createAllWidgets(QDomElement docElem, QWidget* parent, bool bVisualsWaveform, ConfigObject<ConfigValue> *pConfig);
 	
+	/*temp to change view*/
+	WTrackTable *m_pTmpPlaylist;
+	WTrackTable *m_pTmpPlaylist2;
 
 	ImgSource* parseFilters(QDomNode filt);
 	static QDomElement openSkin(QString qSkinPath);
-
+	/**Used for comboBox change*/
+	int view;
     // True if m_pVisualChX is instantiated as WVisualWaveform
     bool m_bVisualWaveform;
     bool compareConfigKeys(QDomNode node, QString key);

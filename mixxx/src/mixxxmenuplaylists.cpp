@@ -21,7 +21,7 @@ MixxxMenuPlaylists::MixxxMenuPlaylists(QPopupMenu *pMenu, Track *pTrack)
     connect(m_pTrack, SIGNAL(updateMenu(TrackPlaylistList *)), this, SLOT(slotUpdate(TrackPlaylistList *)));
     connect(m_pTrack, SIGNAL(activePlaylist(TrackPlaylist *)), this, SLOT(slotSetActive(TrackPlaylist *)));
     connect(m_pMenu, SIGNAL(activated(int)), this, SLOT(slotRequestActive(int)));
-    m_pTrack->updatePlaylistViews();
+    //m_pTrack->updatePlaylistViews();
 }
 
 MixxxMenuPlaylists::~MixxxMenuPlaylists()
@@ -30,7 +30,7 @@ MixxxMenuPlaylists::~MixxxMenuPlaylists()
 
 void MixxxMenuPlaylists::slotUpdate(TrackPlaylistList *pPlaylists)
 {
-    //qDebug("update menu");
+    qDebug("update menu");
     
     // Delete all items currently in the menu
     menuItem_t *it = m_qMenuList.first();

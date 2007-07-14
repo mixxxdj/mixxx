@@ -166,7 +166,6 @@ MixxxApp::MixxxApp(QApplication *a, QStringList files, QSplashScreen *pSplash, Q
             config->Save();
         }
     }
-
     // Needed for Search class and Simple skin
     new ControlPotmeter(ConfigKey("[Channel1]","virtualplayposition"),0.,1.);
 
@@ -231,10 +230,10 @@ MixxxApp::MixxxApp(QApplication *a, QStringList files, QSplashScreen *pSplash, Q
         pSplash->message("Loading song database...",Qt::AlignLeft|Qt::AlignBottom);
 
     // Initialize track object:
-    m_pTrack = new Track(config->getValueString(ConfigKey("[Playlist]","Listfile")), view, buffer1, buffer2, m_pWaveSummary);
-    WTreeItem::setTrack(m_pTrack);
-
-    // Set up drag and drop to player visuals
+	m_pTrack = new Track(config->getValueString(ConfigKey("[Playlist]","Listfile")), view, buffer1, buffer2, m_pWaveSummary,config->getValueString(ConfigKey("[Playlist]","Directory")));
+	
+	//WTreeItem::setTrack(m_pTrack);
+	// Set up drag and drop to player visuals
     if (view->m_pVisualCh1)
         connect(view->m_pVisualCh1, SIGNAL(trackDropped(QString)), m_pTrack, SLOT(slotLoadPlayer1(QString)));
     if (view->m_pVisualCh2)
