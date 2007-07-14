@@ -34,6 +34,8 @@ DlgPrefRecord::DlgPrefRecord(QWidget *parent, ConfigObject<ConfigValue> *_config
     config = _config;
     confirmOverwrite = false;
 
+    recordControl = ControlObject::getControl(ConfigKey("[Master]", "Record")); //See RECORD_* #defines in dlgprefrecord.h
+
     //Fill up encoding list
     comboBoxEncoding->insertItem("WAVE", IDEX_WAVE);
     comboBoxEncoding->insertItem("FLAC", IDEX_FLAC);
@@ -55,7 +57,7 @@ DlgPrefRecord::DlgPrefRecord(QWidget *parent, ConfigObject<ConfigValue> *_config
 
     loadMetaData();
     slotApply();
-    config->set(ConfigKey(PREF_KEY, "Record"), QString("FALSE"));//make sure a corrupt config file won't cause us to record constantly
+    recordControl->queueFromThread(RECORD_OFF); //make sure a corrupt config file won't cause us to record constantly
 }
 
 void DlgPrefRecord::slotBrowseSave()
@@ -204,12 +206,12 @@ void DlgPrefRecord::slotApply()
 	{
 	    qDebug("Setting record status: READY");
 	    confirmOverwrite = true;
-	    config->set(ConfigKey(PREF_KEY, "Record"), QString("READY"));
+	    recordControl->queueFromThread(RECORD_READY);
 	    /*
-	     * Note: setting the Record value to READY does not start the
-	     * recording.  The READY flag signals code elsewhere that when
+	     * Note: setting the recordControl value to RECORD_READY does not start the
+	     * recording.  The RECORD_READY flag signals code elsewhere that when
 	     * its condition is met (first track is played), the flag can
-	     * be set to TRUE
+	     * be set to RECORD_ON
 	     *
 	     */
 	}
@@ -220,7 +222,7 @@ void DlgPrefRecord::slotApply()
     }
     else
     {
-	qDebug("Setting record status: FALSE");
-	config->set(ConfigKey(PREF_KEY, "Record"), QString("FALSE"));
+	    qDebug("Setting record status: OFF");
+	    recordControl->queueFromThread(RECORD_OFF);
     }
 }

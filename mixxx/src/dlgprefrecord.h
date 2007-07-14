@@ -19,6 +19,7 @@
 #define DLGPREFRECORD_H
 
 #include "dlgprefrecorddlg.h"
+#include "controlobject.h"
 #include "configobject.h"
 
 #define PREF_KEY "[Recording]"
@@ -27,6 +28,10 @@
 #define IDEX_AIFF 2
 #define IDEX_OGG  3
 #define IDEX_MP3  4
+
+#define RECORD_READY 0.50f
+#define RECORD_ON 1.0f
+#define RECORD_OFF 0.0f
 
 class QWidget;
 /**
@@ -55,6 +60,7 @@ private:
     
     /** Pointer to config object */
     ConfigObject<ConfigValue> *config;
+    ControlObject* recordControl;
     bool confirmOverwrite;
     QString fileTypeExtension;
 };

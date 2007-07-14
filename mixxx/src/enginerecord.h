@@ -20,6 +20,7 @@
 #include "engineobject.h"
 #include "qthread.h"
 #include "configobject.h"
+#include "controlobject.h"
 #include "writeaudiofile.h"
 
 #define DEFAULT_BUFSIZE 512
@@ -49,6 +50,7 @@ private:
     QMutex mutexFill;
     WriteAudioFile *fOut;
     ConfigObject<ConfigValue> *config;
+    ControlObject* recReady;
 };
 
 #endif

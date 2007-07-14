@@ -20,7 +20,7 @@ void WriteAudioFile::open()
     int format = config->getValueString(ConfigKey(PREF_KEY, "Encoding")).toInt();
 
     ready = false;
-    if(config->getValueString(ConfigKey(PREF_KEY, "Record")).compare("TRUE") == 0)
+    if(ControlObject::getControl(ConfigKey("[Master]", "Record"))->get() == RECORD_ON)
     {
 	//if the record flag is set
 	
@@ -77,7 +77,7 @@ void WriteAudioFile::open()
 void WriteAudioFile::write(const CSAMPLE *pIn, int iBufferSize)
 {
     Q_ASSERT(iBufferSize % 2 == 0);
-    if(config->getValueString(ConfigKey(PREF_KEY, "Record")).compare("TRUE") == 0)
+    if(ControlObject::getControl(ConfigKey("[Master]", "Record"))->get() == RECORD_ON)
     {
 	if(ready == true)
 	{
