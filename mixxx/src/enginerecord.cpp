@@ -34,6 +34,7 @@ EngineRecord::EngineRecord(ConfigObject<ConfigValue> *_config)
 {
     curBuf1 = true;
     config = _config;
+    recReady = new ControlObject(ConfigKey("[Master]", "Record"));
     fOut = new WriteAudioFile(_config);
     
     //Allocate Buffers
@@ -77,13 +78,13 @@ void EngineRecord::process(const CSAMPLE *pIn, const CSAMPLE *pOut, const int iB
 	    Out[i] = pIn[i];
 	fill->data[i] = pIn[i];
 
-	if(config->getValueString(ConfigKey(PREF_KEY, "Record")).compare("READY") == 0 && pIn[i] > THRESHOLD_REC)
+	if(recReady->get() == RECORD_READY && pIn[i] > THRESHOLD_REC)
 	{
 	    //If we are waiting for a track to start before recording
 	    //and the audio is high enough (a track is playing)
 	    //then we can set the record flag to TRUE
-	    qDebug("Setting Record flag to: TRUE");
-	    config->set(ConfigKey(PREF_KEY, "Record"), QString("TRUE"));
+	    qDebug("Setting Record flag to: ON");
+	    recReady->queueFromThread(RECORD_ON);
 	}
     }
     fill->valid = iBufferSize;
