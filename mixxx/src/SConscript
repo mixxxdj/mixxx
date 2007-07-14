@@ -361,7 +361,7 @@ print "\nFeatures Summary:\n================"
 flags_djconsole = ARGUMENTS.get('djconsole', 0)
 if int(flags_djconsole) == 0:
 	print "libdjconsole support... disabled"
-else
+else:
 	print "libdjconsole support... enabled"
       
 #High quality EQs
@@ -387,16 +387,16 @@ if int(flags_experimentalrecording):
 	env.Append(CXXFLAGS = '-D__EXPERIMENTAL_RECORDING__')
 	print "Experimental recording... enabled"
 else:
-    print "Experimental recording... disabled"
+	print "Experimental recording... disabled"
 
 #LADSPA
 flags_ladspa = ARGUMENTS.get('ladspa', 0)
 if int(flags_ladspa):
 	env.Append(CXXFLAGS = '-D__LADSPA__')
 	sources += Split("""engineladspa.cpp ladspaloader.cpp ladspalibrary.cpp ladspaplugin.cpp ladspainstance.cpp ladspacontrol.cpp""")
-	print "LADSPA... enabled"
+	print "LADSPA support... enabled"
 else:
-	print "LADSPA... disabled"
+	print "LADSPA support... disabled"
 
 print "================\n"
 
