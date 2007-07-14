@@ -230,7 +230,7 @@ void TrackInfoObject::insertInTrackTableRow(WTrackTable *pTableTrack, int iRow)
 
 void TrackInfoObject::removeFromTrackTable()
 {
-    //qDebug("remove");
+    qDebug("remove");
     if (m_pTableTrack)
     {
         // Remove the row from the table, and delete the table items
@@ -526,6 +526,10 @@ void TrackInfoObject::setFilepath(QString s)
     m_qMutex.unlock();
 }
 
+QString TrackInfoObject::getFilepath()
+{
+	return m_sFilepath;
+}
 QString TrackInfoObject::getComment()
 {
     m_qMutex.lock();

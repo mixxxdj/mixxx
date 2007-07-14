@@ -38,6 +38,7 @@ public:
       * the track was not found. If the track is not in the database, a TIO is
        * created and added to the database */
     TrackInfoObject *getTrack(QString location);
+	int getSize();
 protected:
     /** Used in binary search for an ID in the list */
     TrackInfoObject *getTrack(int id, int min, int mid, int max);

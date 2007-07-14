@@ -25,6 +25,8 @@
 #include <qsplitter.h>
 #include <qmenubar.h>
 #include <qmainwindow.h>
+#include <qlineedit.h>
+#include <qcombobox.h>
 
 #include "wtracktable.h"
 #include "wtreeview.h"
@@ -56,7 +58,7 @@
 
 MixxxView::MixxxView(QWidget *parent, ConfigObject<ConfigValueKbd> *kbdconfig, bool bVisualsWaveform, QString qSkinPath, ConfigObject<ConfigValue> *pConfig) : QWidget(parent, "Mixxx")
 {
-
+	view = 0;
     m_qWidgetList.setAutoDelete(true);
 
     m_pKeyboard = new MixxxKeyboard(kbdconfig);
@@ -73,8 +75,7 @@ MixxxView::MixxxView(QWidget *parent, ConfigObject<ConfigValueKbd> *kbdconfig, b
 #endif
 
     // Default values for visuals
-    m_pTrackTable = 0;
-    m_pTreeView = 0;
+    //m_pTrackTable = 0;
     m_pTextCh1 = 0;
     m_pTextCh2 = 0;
     m_pVisualCh1 = 0;
@@ -84,7 +85,6 @@ MixxxView::MixxxView(QWidget *parent, ConfigObject<ConfigValueKbd> *kbdconfig, b
     m_pSliderRateCh1 = 0;
     m_pSliderRateCh2 = 0;
     m_bZoom = false;
-    m_pSplitter = 0;
     m_bVisualWaveform = false;
     m_pOverviewCh1 = 0;
     m_pOverviewCh2 = 0;
@@ -220,7 +220,6 @@ QDomElement MixxxView::openSkin(QString qSkinPath) {
 	file.close();
     return skin.documentElement();
 }
-
 void MixxxView::setupColorScheme(QDomElement docElem, ConfigObject<ConfigValue> *pConfig) {
 	
 	QDomNode colsch = docElem.namedItem("Schemes");
@@ -515,59 +514,66 @@ void MixxxView::createAllWidgets(QDomElement docElem, QWidget* parent, bool bVis
                     m_pTextCh2 = p;
 
             }
-            else if (node.nodeName()=="Splitter")
-            {
-                m_pSplitter = new QSplitter(this);
-                m_pSplitter->installEventFilter(m_pKeyboard);
-
-                // Set position
+			else if (node.nodeName()=="ComboBox")
+			{
+				m_pComboBox = new QComboBox( FALSE, parent, "ComboBox" );
+				 // Set position
                 QString pos = WWidget::selectNodeQString(node, "Pos");
                 int x = pos.left(pos.find(",")).toInt();
                 int y = pos.mid(pos.find(",")+1).toInt();
-                m_pSplitter->move(x,y);
+                m_pComboBox->move(x,y);
 
-                // Size
+				// Size
                 QString size = WWidget::selectNodeQString(node, "Size");
                 x = size.left(size.find(",")).toInt();
                 y = size.mid(size.find(",")+1).toInt();
-                m_pSplitter->setFixedSize(x,y);
+                m_pComboBox->setFixedSize(x,y);
+				
+				/**Initialize items */
+				m_pComboBox->insertItem( "Library" );
+				m_pComboBox->insertItem( "Play Queue" );
+				
+				//m_qWidgetList.append(m_pComboBox);
+			}
+			else if (node.nodeName()=="Search")
+			{
+				m_pLineEditSearch = new QLineEdit( parent, "lineEdit" );
+				QLabel *m_pSearchLabel = new QLabel( "Search:", parent );
+				m_pPushButton = new QPushButton(parent, "Search");
 
-                // This is QT 3.2 only
-                //m_pSplitter->setHandleWidth(2);
+				// Set position
+                QString pos = WWidget::selectNodeQString(node, "Pos");
+                int x = pos.left(pos.find(",")).toInt();
+                int y = pos.mid(pos.find(",")+1).toInt();
+				m_pSearchLabel->move(x-10,y);
+                m_pLineEditSearch->move(x+35,y);
+				m_pPushButton->move(x+365,y);
 
-                m_qWidgetList.append(m_pSplitter);
-            }
+				// Size
+                QString size = WWidget::selectNodeQString(node, "Size");
+                x = size.left(size.find(",")).toInt();
+                y = size.mid(size.find(",")+1).toInt();
+				m_pSearchLabel->setFixedSize(x-285,y);
+                m_pLineEditSearch->setFixedSize(x,y);
+				m_pPushButton->setFixedSize(x-285,y);
+				//Color for Label
+				QColor bgc(255,255,255);
+				if (!WWidget::selectNode(node, "BgColor").isNull()) {
+                    bgc.setNamedColor(WWidget::selectNodeQString(node, "BgColor"));
+                }
+				m_pSearchLabel->setBackgroundColor(WSkinColor::getCorrectColor(bgc));
+				
+				m_pPushButton->setText("Search");
+				m_qWidgetList.append(m_pSearchLabel);
+				m_qWidgetList.append(m_pLineEditSearch);
+			}
             else if (node.nodeName()=="TrackTable")
             {
-                if (m_pSplitter)
-                {
-                    m_pTrackTable = new WTrackTable(m_pSplitter);
-                    m_pSplitter->setResizeMode(m_pTrackTable, QSplitter::Stretch);
-                }
-                else
-                {
-                    m_pTrackTable = new WTrackTable(this);
-                    m_qWidgetList.append(m_pTrackTable);
-                }
+                m_pTrackTable = new WTrackTable(this);
+                m_qWidgetList.append(m_pTrackTable);
                 m_pTrackTable->setup(node);
                 m_pTrackTable->installEventFilter(m_pKeyboard);
             }
-            else if (node.nodeName()=="TreeView")
-            {
-                if (m_pSplitter)
-                {
-                    m_pTreeView = new WTreeView(pConfig->getValueString(ConfigKey("[Playlist]","Directory")), m_pSplitter, tr("TreeView"));
-                    m_pSplitter->setResizeMode(m_pTreeView, QSplitter::Stretch);
-                }
-                else
-                {
-                    m_pTreeView = new WTreeView(pConfig->getValueString(ConfigKey("[Playlist]","Directory")), this, tr("TreeView"));
-                    m_qWidgetList.append(m_pTreeView);
-                }
-                m_pTreeView->setup(node);
-                m_pTreeView->installEventFilter(m_pKeyboard);
-            }
-
         }
         node = node.nextSibling();
     }
@@ -593,7 +599,7 @@ void MixxxView::rebootGUI(QWidget* parent, bool bVisualsWaveform, ConfigObject<C
 			|| obj == m_pVisualCh2
 			|| obj == m_pNumberPosCh1
 			|| obj == m_pNumberPosCh2 || obj == m_pSliderRateCh1
-			|| obj == m_pSliderRateCh2 || obj == m_pSplitter
+			|| obj == m_pSliderRateCh2 //|| obj == m_pSplitter
 			|| obj == m_pOverviewCh1 || obj == m_pOverviewCh2)) {
 
 			bool ret = m_qWidgetList.remove();
@@ -824,28 +830,16 @@ void MixxxView::rebootGUI(QWidget* parent, bool bVisualsWaveform, ConfigObject<C
                     p->setAlignment(Qt::AlignRight);
 
             }
-            else if (node.nodeName()=="Splitter")
-            {
-                // Set position
-                QString pos = WWidget::selectNodeQString(node, "Pos");
-                int x = pos.left(pos.find(",")).toInt();
-                int y = pos.mid(pos.find(",")+1).toInt();
-                m_pSplitter->move(x,y);
-
-                // Size
-                QString size = WWidget::selectNodeQString(node, "Size");
-                x = size.left(size.find(",")).toInt();
-                y = size.mid(size.find(",")+1).toInt();
-                m_pSplitter->setFixedSize(x,y);
-            }
+            
             else if (node.nodeName()=="TrackTable")
             {
                 m_pTrackTable->setup(node);
             }
-            else if (node.nodeName()=="TreeView")
+
+            /*else if (node.nodeName()=="TreeView")
             {
                 m_pTreeView->setup(node);
-            }
+            }*/
 		}
 		node = node.nextSibling();
 	}

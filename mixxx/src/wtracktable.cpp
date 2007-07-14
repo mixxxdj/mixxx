@@ -19,6 +19,8 @@
 #include "wtracktableitem.h"
 #include "wwidget.h"
 #include "wskincolor.h"
+#include "trackinfoobject.h"
+
 #include <qfont.h>
 #include <qcolor.h>
 #include <qdragobject.h>
@@ -26,10 +28,10 @@
 #include <qstring.h>
 #include <qstringlist.h>
 #include <qmime.h>
-#include "trackinfoobject.h"
 #include "dlgbpmtap.h"
 #include <qwidget.h>
 
+/*Constructor, sets up attributes in playlist*/
 WTrackTable::WTrackTable(QWidget *parent, const char *name) : QTable(0, ROW_NO, parent, name)
 {
     setSorting(true);
@@ -75,25 +77,27 @@ WTrackTable::~WTrackTable()
         delete bpmTapDlg;
 }
 
+/*Graphically sets up playlist and library directory*/
 void WTrackTable::setup(QDomNode node)
 {
-    // Position
-    if (!WWidget::selectNode(node, "Pos").isNull())
+	// Position
+	if (!WWidget::selectNode(node, "Pos").isNull())
     {
-        QString pos = WWidget::selectNodeQString(node, "Pos");
-        int x = pos.left(pos.find(",")).toInt();
-        int y = pos.mid(pos.find(",")+1).toInt();
-        move(x,y);
-    }
+		QString pos = WWidget::selectNodeQString(node, "Pos");
+		int x = pos.left(pos.find(",")).toInt();
+		int y = pos.mid(pos.find(",")+1).toInt();
+		move(x,y);
+	}
 
-    // Size
-    if (!WWidget::selectNode(node, "Size").isNull())
+	if (!WWidget::selectNode(node, "Size").isNull())
     {
-        QString size = WWidget::selectNodeQString(node, "Size");
-        int x = size.left(size.find(",")).toInt();
-        int y = size.mid(size.find(",")+1).toInt();
-        setBaseSize(x,y);
-        resizeContents(x,y);
+		// Size
+		QString size = WWidget::selectNodeQString(node, "Size");
+		int x = size.left(size.find(",")).toInt();
+		int y = size.mid(size.find(",")+1).toInt();
+		setFixedSize(x,y);
+		//setBaseSize(x,y);
+        //resizeContents(x,y);
     }
 
     // Background color
@@ -158,11 +162,13 @@ void WTrackTable::setup(QDomNode node)
     }				
 }
 
+/*sorts a given column*/
 void WTrackTable::sortColumn(int col, bool ascending, bool)
 {
     QTable::sortColumn(col,ascending,true);
 }
 
+/*checks for Mouse action*/
 void WTrackTable::slotMousePressed(int row, int col, int button, const QPoint &)
 {
     if (col!=COL_COMMENT && button==Qt::RightButton)
@@ -177,6 +183,9 @@ void WTrackTable::slotMousePressed(int row, int col, int button, const QPoint &)
     }
 }
 
+<<<<<<< .mine
+/*enables contents to be dragable*/
+=======
 void WTrackTable::slotMouseDoubleClicked(int row, int col, int button, const QPoint &)
 {
     if(col == COL_BPM && button==Qt::LeftButton)
@@ -198,6 +207,7 @@ void WTrackTable::slotMouseDoubleClicked(int row, int col, int button, const QPo
     }
 }
 
+>>>>>>> .r1322
 QDragObject *WTrackTable::dragObject()
 {
     WTrackTableItem *p = (WTrackTableItem *)item(currentRow(),currentColumn());

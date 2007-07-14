@@ -104,8 +104,9 @@ DlgPreferences::DlgPreferences(MixxxApp *mixxx, MixxxView *view,
 #endif
 //    if (tracklist->wTree)
 //        connect(wplaylist,   SIGNAL(apply(QString,QString)),         tracklist->wTree, SLOT(slotSetDirs(QString,QString)));
-    if (view->m_pTreeView)
+    /*if (view->m_pTreeView)
         connect(wplaylist,   SIGNAL(apply(const QString &)), view->m_pTreeView, SLOT(slotUpdateDir(const QString &)));
+	*/
 }
 
 DlgPreferences::~DlgPreferences()

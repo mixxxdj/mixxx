@@ -27,6 +27,7 @@ TrackPlaylist::TrackPlaylist(TrackCollection *pTrackCollection, QString qName)
     m_pTrackCollection = pTrackCollection;
     m_pTable = 0;
     m_qName = qName;
+	iCounter = 0;
 }
 
 TrackPlaylist::TrackPlaylist(TrackCollection *pTrackCollection, QDomNode node)
@@ -65,17 +66,21 @@ void TrackPlaylist::setTrack(Track *pTrack)
 
 void TrackPlaylist::writeXML(QDomDocument &doc, QDomElement &header)
 {
-    XmlParse::addElement(doc, header, "Name", m_qName);
+	TrackInfoObject *it = m_qList.first();
+	
+		XmlParse::addElement(doc, header, "Name", m_qName);
 
-    QDomElement root = doc.createElement("List");
-    TrackInfoObject *it = m_qList.first();
-    while (it)
-    {
-        XmlParse::addElement(doc, root, "ID", QString("%1").arg(it->getId()));
-        it = m_qList.next();
-    }
-    header.appendChild(root);
+		QDomElement root = doc.createElement("List");
+		
+		while (it)
+		{
+			XmlParse::addElement(doc, root, "ID", QString("%1").arg(it->getId()));
+			it = m_qList.next();
+		}
+		header.appendChild(root);
+	
 }
+
 
 void TrackPlaylist::addTrack(TrackInfoObject *pTrack)
 {
@@ -84,8 +89,9 @@ void TrackPlaylist::addTrack(TrackInfoObject *pTrack)
         return;
 
     m_qList.append(pTrack);
-
+	++iCounter;
     //qDebug("insert in table");
+
     // If this playlist is active, update WTableTrack
     if (m_pTable)
         pTrack->insertInTrackTableRow(m_pTable, m_pTable->numRows());
@@ -94,7 +100,7 @@ void TrackPlaylist::addTrack(TrackInfoObject *pTrack)
 
 void TrackPlaylist::addTrack(QString qLocation)
 {
-    //qDebug("Add track %s",qLocation.latin1());
+    qDebug("Add track %s",qLocation.latin1());
     TrackInfoObject *pTrack = m_pTrackCollection->getTrack(qLocation);
 
     if (pTrack)
@@ -155,8 +161,8 @@ void TrackPlaylist::setListName(QString name)
     m_qName = name;
 
     // Update views
-    if (spTrack)
-        spTrack->updatePlaylistViews();
+    //if (spTrack)
+    //    spTrack->updatePlaylistViews();
 }
 
 void TrackPlaylist::slotDrop(QDropEvent *e)
@@ -210,6 +216,7 @@ void TrackPlaylist::addPath(QString qPath)
         {
             if (!d->filePath().endsWith(".") && !d->filePath().endsWith(".."))
                 addPath(d->filePath());
+			qDebug(d->fileName());
             ++dir_it;
         }
 
@@ -263,4 +270,9 @@ QString TrackPlaylist::getName()
 TrackInfoObject *TrackPlaylist::getFirstTrack()
 {
     return m_qList.first();    
+}
+
+int TrackPlaylist::getSongNum()
+{
+	return iCounter;
 }

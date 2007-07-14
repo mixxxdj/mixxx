@@ -59,6 +59,7 @@ public:
     QString getName();
     /** Get TrackInfoObject of first track in playlist */
     TrackInfoObject *getFirstTrack();
+	int getSongNum();
     
 public slots:
     /** Decode drop event and calls addPath */
@@ -77,6 +78,7 @@ private:
     WTrackTable *m_pTable;
     /** Static pointer to Track */
     static Track *spTrack;
+	int iCounter;
 };
 
 #endif

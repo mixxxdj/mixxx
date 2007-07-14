@@ -35,7 +35,7 @@ void TrackCollection::readXML(QDomNode node)
         if (tracknode.isElement() && tracknode.nodeName()=="Track")
         {
             TrackInfoObject *pTrack = new TrackInfoObject(tracknode);
-            addTrack(pTrack);
+			addTrack(pTrack);
 
             // Update counter
             if (pTrack->getId()>m_iCounter)
@@ -140,12 +140,12 @@ TrackInfoObject *TrackCollection::getTrack(QString location)
             if (pTrack->isValid())
             {
                 addTrack(pTrack);
-                //qDebug("Found new track: %s", pTrack->getFilename().latin1());
+                qDebug("Found new track: %s", pTrack->getFilename().latin1());
                 return pTrack;
             }
             else
             {
-                //qDebug("Could not parse %s", file.fileName().latin1());
+                qDebug("Could not parse %s", file.fileName().latin1());
                 delete pTrack;
             }
         }
@@ -153,3 +153,7 @@ TrackInfoObject *TrackCollection::getTrack(QString location)
     return 0;
 }
 
+int TrackCollection::getSize()
+{
+	return m_iCounter;
+}

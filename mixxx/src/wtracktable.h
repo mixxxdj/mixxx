@@ -24,7 +24,7 @@
 
 class QWidget;
 
-// Defines for the rows in the table.
+// Defines the rows in the table.
 const int COL_SCORE = 0;
 const int COL_TITLE = 1;
 const int COL_ARTIST = 2;

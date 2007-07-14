@@ -143,7 +143,7 @@ public:
     void setBpmControlObject(ControlObject *p);
     /** Set pointer to ControlObject holding duration value in engine */
     void setDurationControlObject(ControlObject *p);
-
+	QString getFilepath();
 private:
     /** Method for parsing information from knowing only the file name.
         It assumes that the filename is written like: "artist - trackname.xxx" */
