@@ -131,10 +131,20 @@
 #ifndef FIDMK_H
 #define FIDMK_H
 
-#ifdef HUGE_VAL
- #define INF HUGE_VAL
-#else
- #define INF (1.0/0.0)
+
+#ifndef T_MSVC
+  #ifdef HUGE_VAL
+    #define INF HUGE_VAL
+  #else
+    #define INF (1.0/0.0)
+  #endif
+#endif
+
+//Hacks for crappy linker error in MSVC... - Albert
+#ifdef T_MSVC
+  #undef HUGE_VAL
+  #define HUGE_VAL 1.797693134862315E+308
+  #define INF HUGE_VAL
 #endif
 
 #define TWOPI (2*M_PI)
