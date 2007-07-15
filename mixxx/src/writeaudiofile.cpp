@@ -35,9 +35,12 @@ void WriteAudioFile::open()
 	    case IDEX_AIFF:
 		sfInfo.format = SF_FORMAT_AIFF | SF_FORMAT_PCM_16;
 		break;
+    # TODO: Fix code SF_FORMAT_FLAC block below to work on Windows
+    #ifdef SF_FORMAT_FLAC
 	    case IDEX_FLAC:
 		sfInfo.format = SF_FORMAT_FLAC | SF_FORMAT_PCM_16;
 		break;
+    #endif
 	    default:
 		qDebug("Corrupt record section in preference file");
 		return;
@@ -81,7 +84,9 @@ void WriteAudioFile::write(const CSAMPLE *pIn, int iBufferSize)
     {
 	if(ready == true)
 	{
+      #ifdef SF_FORMAT_FLAC
 	    sf_write_float(sf, pIn, iBufferSize);
+      #endif
 	}
 	else
 	{
