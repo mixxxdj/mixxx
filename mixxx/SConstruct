@@ -1,3 +1,5 @@
 #Build the SConscript file in /src, and make it us src/.obj for storing obj output.
 SConscript(File('src/SConscript'), build_dir=Dir('src/.obj'), duplicate=0) 
-Command("mixxx", "src/.obj/mixxx", Copy("$TARGET", "$SOURCE")) 
+#wtf doesn't this work on win32:
+#Command("mixxx", "#src/.obj/mixxx", Copy("$TARGET", "$SOURCE"))
+Copy("mixxx", "#src/.obj/mixxx")
