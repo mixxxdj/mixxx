@@ -183,9 +183,6 @@ void WTrackTable::slotMousePressed(int row, int col, int button, const QPoint &)
     }
 }
 
-<<<<<<< .mine
-/*enables contents to be dragable*/
-=======
 void WTrackTable::slotMouseDoubleClicked(int row, int col, int button, const QPoint &)
 {
     if(col == COL_BPM && button==Qt::LeftButton)
@@ -207,7 +204,7 @@ void WTrackTable::slotMouseDoubleClicked(int row, int col, int button, const QPo
     }
 }
 
->>>>>>> .r1322
+/*enables contents to be dragable*/
 QDragObject *WTrackTable::dragObject()
 {
     WTrackTableItem *p = (WTrackTableItem *)item(currentRow(),currentColumn());
