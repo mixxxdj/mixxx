@@ -15,6 +15,7 @@
  *                                                                         *
  ***************************************************************************/
 
+#ifdef __EXPERIMENTAL_BPM__
 #include <qlabel.h>
 #include <qstring.h>
 #include <qpushbutton.h>
@@ -127,3 +128,4 @@ void DlgBPMTap::slotApply()
 //    m_pMixxx->grabKeyboard();
 }
 
+#endif

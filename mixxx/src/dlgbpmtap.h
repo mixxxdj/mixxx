@@ -15,6 +15,7 @@
  *                                                                         *
  ***************************************************************************/
 
+#ifdef __EXPERIMENTAL_BPM__
 #ifndef DLGBPMTAP_H
 #define DLGBPMTAP_H
 
@@ -57,3 +58,4 @@ private:
 };
 
 #endif
+#endif __EXPERIMENTAL_BPM__

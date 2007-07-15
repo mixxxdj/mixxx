@@ -15,14 +15,21 @@
  *                                                                         *
  ***************************************************************************/
 
-#include "dlgprefrecord.h"
+#ifdef __EXPERIMENTAL_RECORDING__
+  #include "dlgprefrecord.h"
+#endif
+
 #include "dlgpreferences.h"
 #include "dlgprefsound.h"
 #include "dlgprefmidi.h"
 #include "dlgprefplaylist.h"
 #include "dlgprefcontrols.h"
 #include "dlgprefmixer.h"
-#include "dlgprefbpm.h"
+
+#ifdef __EXPERIMENTAL_BPM__
+  #include "dlgprefbpm.h"
+#endif
+
 #include "mixxx.h"
 #include "track.h"
 #include "wtreeview.h"
