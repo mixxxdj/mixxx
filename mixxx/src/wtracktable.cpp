@@ -28,7 +28,11 @@
 #include <qstring.h>
 #include <qstringlist.h>
 #include <qmime.h>
-#include "dlgbpmtap.h"
+
+#ifdef __EXPERIMENTAL_BPM__
+  #include "dlgbpmtap.h"
+#endif
+
 #include <qwidget.h>
 
 /*Constructor, sets up attributes in playlist*/
@@ -65,16 +69,19 @@ WTrackTable::WTrackTable(QWidget *parent, const char *name) : QTable(0, ROW_NO, 
     setHScrollBarMode(AlwaysOff);
 
     connect(this, SIGNAL(pressed(int, int, int, const QPoint &)), this, SLOT(slotMousePressed(int, int, int, const QPoint &)));
-   connect(this, SIGNAL(doubleClicked(int, int, int, const QPoint &)), this, SLOT(slotMouseDoubleClicked(int, int, int, const QPoint &)));
-
-    bpmTapDlg = 0;
+    #ifdef __EXPERIMENTAL_BPM__
+      connect(this, SIGNAL(doubleClicked(int, int, int, const QPoint &)), this, SLOT(slotMouseDoubleClicked(int, int, int, const QPoint &)));
+      bpmTapDlg = 0;
+    #endif
 }
 
 
 WTrackTable::~WTrackTable()
 {
+    #ifdef __EXPERIMENTAL_BPM__
     if(bpmTapDlg)
         delete bpmTapDlg;
+    #endif
 }
 
 /*Graphically sets up playlist and library directory*/
@@ -185,6 +192,7 @@ void WTrackTable::slotMousePressed(int row, int col, int button, const QPoint &)
 
 void WTrackTable::slotMouseDoubleClicked(int row, int col, int button, const QPoint &)
 {
+    #ifdef __EXPERIMENTAL_BPM__
     if(col == COL_BPM && button==Qt::LeftButton)
     {
         WTrackTableItem *p = (WTrackTableItem *)item(row,col);
@@ -202,6 +210,7 @@ void WTrackTable::slotMouseDoubleClicked(int row, int col, int button, const QPo
             }
         }
     }
+    #endif
 }
 
 /*enables contents to be dragable*/

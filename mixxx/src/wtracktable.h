@@ -58,14 +58,16 @@ public:
     void setup(QDomNode node);
     void sortColumn(int col, bool ascending, bool);
 protected slots:
-    void slotMousePressed(int row, int col, int button, const QPoint &);
+    void slotMousePressed(int row, int col, int button, const QPoint &);    
     void slotMouseDoubleClicked(int row, int col, int button, const QPoint &);
     QDragObject *dragObject();
 signals:
     void mousePressed(TrackInfoObject *pTrackInfoObject, int button);
 
 protected:
+    #ifdef __EXPERIMENTAL_BPM__
     DlgBPMTap *bpmTapDlg;
+    #endif
 };
 
 #endif
