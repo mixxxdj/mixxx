@@ -103,6 +103,7 @@ void MessageToLogfile( QtMsgType type, const char *msg )
         a->lock();
         QMessageBox::warning(0, "Mixxx", msg);
         a->unlock();
+        break;
     case QtFatalMsg:
         fprintf( stderr, "Fatal: %s\n", msg );
         QMessageBox::warning(0, "Mixxx", msg);
