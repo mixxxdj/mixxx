@@ -17,6 +17,8 @@
 
 #include "dlgprefcontrols.h"
 #include "qcombobox.h"
+//Added by qt3to4:
+#include <Q3ValueList>
 #include "configobject.h"
 #include "controlobject.h"
 #include "controlobjectthreadmain.h"
@@ -29,12 +31,14 @@
 #include <qspinbox.h>
 #include <qwidget.h>
 
-DlgPrefControls::DlgPrefControls(QWidget *parent, MixxxView *pView, MixxxApp *mixxx, ConfigObject<ConfigValue> *pConfig) : DlgPrefControlsDlg(parent,"")
+DlgPrefControls::DlgPrefControls(QWidget *parent, MixxxView *pView, MixxxApp *mixxx, ConfigObject<ConfigValue> *pConfig) :  QWidget(parent), Ui::DlgPrefControlsDlg()
 {
     m_pView = pView;
     m_pConfig = pConfig;
 	m_mixxx = mixxx;
     
+    setupUi(this);
+        
     //
     // Rate slider configuration
     //
@@ -199,6 +203,9 @@ DlgPrefControls::DlgPrefControls(QWidget *parent, MixxxView *pView, MixxxApp *mi
 
     connect(ComboBoxTooltips,   SIGNAL(activated(int)), this, SLOT(slotSetTooltips(int)));
     slotSetTooltips(0);
+    
+    slotUpdateSchemes();
+    slotUpdate();
 }
 
 DlgPrefControls::~DlgPrefControls()
@@ -208,7 +215,7 @@ DlgPrefControls::~DlgPrefControls()
 void DlgPrefControls::slotUpdateSchemes()
 {
 	// Since this involves opening a file we won't do this as part of regular slotUpdate
-	QValueList<QString> schlist = MixxxView::getSchemeList(m_mixxx->getSkinPath());
+	Q3ValueList<QString> schlist = MixxxView::getSchemeList(m_mixxx->getSkinPath());
 
 	ComboBoxSchemeconf->clear();
 

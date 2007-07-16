@@ -11,6 +11,8 @@
 //
 #include "parser.h"
 #include "parserpls.h"
+//Added by qt3to4:
+#include <Q3PtrList>
 
 /**
 @author Ingo Kossyk (kossyki@cs.tu-berlin.de)
@@ -24,7 +26,7 @@ ToDo:
 
 ParserPls::ParserPls()
 {
-    m_psLocations = new QPtrList<QString>;
+    m_psLocations = new Q3PtrList<QString>;
 }
 
 ParserPls::~ParserPls()
@@ -33,17 +35,17 @@ ParserPls::~ParserPls()
     delete m_psLocations;
 }
 
-QPtrList<QString> * ParserPls::parse(QString sFilename)
+Q3PtrList<QString> * ParserPls::parse(QString sFilename)
 {
     //long numEntries =0;
     QFile * file = new QFile(sFilename);
 	QString basepath = sFilename.section('/', 0, -2);
-    
+
 	clearLocations();
 
-    if (file->open(IO_ReadOnly) && !isBinary(sFilename) ) {
+    if (file->open(QIODevice::ReadOnly) && !isBinary(sFilename) ) {
 
-        QTextStream * textstream = new QTextStream( file );
+        Q3TextStream * textstream = new Q3TextStream( file );
 
         //numEntries = getNumEntries(textstream);
 
@@ -52,7 +54,7 @@ QPtrList<QString> * ParserPls::parse(QString sFilename)
         //textstream = new QTextStream( file );
 
         while(QString * psLine = new QString(getFilepath(textstream, basepath))){
-            
+
 			if(psLine->isNull() || (*psLine) == "NULL") {
 				break;
 			} else {
@@ -74,7 +76,7 @@ QPtrList<QString> * ParserPls::parse(QString sFilename)
     return 0; //if we get here something went wrong :D
 }
 
-long ParserPls::getNumEntries(QTextStream * stream)
+long ParserPls::getNumEntries(Q3TextStream * stream)
 {
 
     QString textline;
@@ -85,7 +87,7 @@ long ParserPls::getNumEntries(QTextStream * stream)
 
         while(!textline.contains("NumberOfEntries"))
             textline = stream->readLine();
-        
+
         QString temp = textline.section("=",-1,-1);
 
         return temp.toLong();
@@ -98,11 +100,11 @@ long ParserPls::getNumEntries(QTextStream * stream)
 }
 
 
-QString ParserPls::getFilepath(QTextStream * stream, QString& basepath)
+QString ParserPls::getFilepath(Q3TextStream * stream, QString& basepath)
 {
     QString textline,filename = "";
-
-	while(textline = stream->readLine()){
+    textline = stream->readLine();
+    while(!textline.isEmpty()){
         if(textline.isNull())
             break;
 
@@ -123,7 +125,8 @@ QString ParserPls::getFilepath(QTextStream * stream, QString& basepath)
 				// We couldn't match this to a real file so ignore it
 			}
         }
-	}
+                textline = stream->readLine();
+    }
 
 	// Signal we reached the end
 	return 0;

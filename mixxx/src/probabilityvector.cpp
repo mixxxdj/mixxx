@@ -121,7 +121,7 @@ float ProbabilityVector::getCurrMaxInterval()
 void ProbabilityVector::downWrite(float fFactor)
 {
 #ifdef FILEOUTPUT
-    QTextStream streamhist(&texthist);
+    Q3TextStream streamhist(&texthist);
 #endif
 
     for (int i=0; i<m_iBins; ++i)
@@ -154,7 +154,7 @@ void ProbabilityVector::newsource(QString qFilename)
 #ifdef FILEOUTPUT
     texthist.close();
     texthist.setName(QString(qFilename).append(".hist"));
-    texthist.open(IO_WriteOnly);
+    texthist.open(QIODevice::WriteOnly);
 #endif
 }
 

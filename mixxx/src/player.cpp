@@ -22,12 +22,12 @@
 #ifdef RECORD_OUTPUT
   // HACK TO RECORD OUTPUT. WRITTEN TO FILE AT PROGRAM EXIT
   #include <audiofile.h>
-  #include <qptrlist.h>
+  #include <q3ptrlist.h>
   typedef struct {
       short int *pBuffer;
       int size;
   } recordObject;
-  QPtrList<recordObject> m_qRecordList;
+  Q3PtrList<recordObject> m_qRecordList;
 #endif
 
 //Static variable memory allocation

@@ -19,7 +19,7 @@
 #define MIXXX
 #include "enginefilteriir.h"
 #include <qlineedit.h>
-#include <qfiledialog.h>
+#include <q3filedialog.h>
 #include <qwidget.h>
 #include <qslider.h>
 #include <qlabel.h>
@@ -32,10 +32,15 @@ extern "C" {
     double fid_design_coef(double *coef, int n_coef, char *spec, double rate, double freq0, double freq1, int adj);
 }
 
-DlgPrefMixer::DlgPrefMixer(QWidget *parent, ConfigObject<ConfigValue> *_config) : DlgPrefMixerDlg(parent,"")
+DlgPrefMixer::DlgPrefMixer(QWidget *parent, ConfigObject<ConfigValue> *_config) :  QWidget(parent), Ui::DlgPrefMixerDlg()
 {
     config = _config;
 
+    setupUi(this);
+    slotUpdateHiEQ();
+    slotUpdateLoEQ();
+    setMidEQ();
+    
     // Connection
     connect(SliderHiEQ,		SIGNAL(valueChanged(int)), this, SLOT(slotUpdateHiEQ()));
     connect(SliderHiEQ,		SIGNAL(sliderMoved(int)), this, SLOT(slotUpdateHiEQ()));

@@ -28,6 +28,8 @@
 #include <qpainter.h>
 #include <qpoint.h>
 #include <qapplication.h>
+//Added by qt3to4:
+#include <Q3Frame>
 #include <vector>
 #include <qstringlist.h>
 
@@ -38,10 +40,10 @@
 #include <q3whatsthis.h>
 #include <q3filedialog.h>
 #else
-#include <qmainwindow.h>
-#include <qpopupmenu.h>
-#include <qwhatsthis.h>
-#include <qfiledialog.h>
+#include <q3mainwindow.h>
+#include <q3popupmenu.h>
+#include <q3whatsthis.h>
+#include <q3filedialog.h>
 #endif
 // application specific includes
 #include "defs.h"
@@ -71,7 +73,7 @@ class ScriptEngine;
   * created which creates your view.
   */
 //#ifndef QT3_SUPPORT
-class MixxxApp : public QMainWindow
+class MixxxApp : public Q3MainWindow
 //#else
 //class MixxxApp : public Q3MainWindow
 //#endif
@@ -120,7 +122,7 @@ class MixxxApp : public QMainWindow
     WaveSummary *m_pWaveSummary;
 
     // FWI: Begin of fullscreen patch
-    QFrame *frame;
+    Q3Frame *frame;
     // FWI: End of fullscreen patch
 
     QApplication *app;
@@ -158,19 +160,19 @@ class MixxxApp : public QMainWindow
 #endif
    #else
    /** file_menu contains all items of the menubar entry "File" */
-   QPopupMenu *fileMenu;
+   Q3PopupMenu *fileMenu;
    /** edit_menu contains all items of the menubar entry "Edit" */
-   QPopupMenu *editMenu;
+   Q3PopupMenu *editMenu;
    /** playlist menu */
-   QPopupMenu *playlistsMenu;
+   Q3PopupMenu *playlistsMenu;
    /** options_menu contains all items of the menubar entry "Options" */
-   QPopupMenu *optionsMenu;
+   Q3PopupMenu *optionsMenu;
    /** view_menu contains all items of the menubar entry "View" */
-   QPopupMenu *viewMenu;
+   Q3PopupMenu *viewMenu;
    /** view_menu contains all items of the menubar entry "Help" */
-   QPopupMenu *helpMenu;
+   Q3PopupMenu *helpMenu;
 #ifdef __SCRIPT__
-   QPopupMenu *macroMenu;
+   Q3PopupMenu *macroMenu;
 #endif
    #endif
 

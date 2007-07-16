@@ -25,7 +25,7 @@ email                : haste@diku.dk
 #include "windowkaiser.h"
 #include "wavesegmentation.h"
 #include "readerextractbeat.h"
-#include <qmemarray.h>
+#include <q3memarray.h>
 #include <qapplication.h>
 
 #ifdef __EXPERIMENTAL_BPM__
@@ -82,7 +82,7 @@ void WaveSummary::run()
 		if (!pTrackInfoObject)
 		{
 			// Wait for track to be requested
-			m_qWait.wait();
+			m_qWait.wait(&m_qWaitMutex);
 
 			m_qMutex.lock();
 			pTrackInfoObject = m_qQueue.dequeue();
@@ -94,7 +94,7 @@ void WaveSummary::run()
 		//
 
 		// Check if preview has been generated in the meantime
-		QMemArray<char> *p = pTrackInfoObject->getWaveSummary();
+		Q3MemArray<char> *p = pTrackInfoObject->getWaveSummary();
 		if (!p || p->size()==0 || pTrackInfoObject->getBpmConfirm() == false)
 		{
 			// Open sound file
@@ -226,7 +226,7 @@ void WaveSummary::run()
 			//
 
 			// Allocate and reset buffer used to store summary data: max and min amplitude for block, and HFC value
-			QMemArray<char> *pData = new QMemArray<char>(kiSummaryBufferSize);
+			Q3MemArray<char> *pData = new Q3MemArray<char>(kiSummaryBufferSize);
 			for (i=0; i<pData->size(); ++i)
 				pData->at(i) = 0;
 

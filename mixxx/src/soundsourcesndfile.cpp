@@ -17,6 +17,8 @@
 #include "trackinfoobject.h"
 #include "soundsourcesndfile.h"
 #include <qstring.h>
+//Added by qt3to4:
+#include <Q3ValueList>
 /*
   Class for reading files using libsndfile
 */
@@ -137,7 +139,7 @@ inline long unsigned SoundSourceSndFile::length()
     return filelength;
 }
 
-QValueList<long> *SoundSourceSndFile::getCuePoints()
+Q3ValueList<long> *SoundSourceSndFile::getCuePoints()
 {
     // Ensure that the file ends with ".wav"
     if (!m_qFilename.endsWith(".wav"))
@@ -179,7 +181,7 @@ QValueList<long> *SoundSourceSndFile::getCuePoints()
         return 0;
     
     // Allocate cue point list
-    QValueList<long> *pCueList = new QValueList<long>;    
+    Q3ValueList<long> *pCueList = new Q3ValueList<long>;    
         
     // Read each cue point
     for (int i=0; i<no; ++i)

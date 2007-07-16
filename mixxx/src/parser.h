@@ -21,8 +21,8 @@ it afterwards fro proper functioning
 #include <qobject.h>
 #include <qstring.h>
 #include <qfile.h>
-#include <qptrlist.h>
-#include <qtextstream.h>
+#include <q3ptrlist.h>
+#include <q3textstream.h>
 
 #ifndef PARSER_H
 #define PARSER_H
@@ -37,12 +37,12 @@ public:
     Note for developers:
     This function should return an empty PtrList
      or 0 in order for the trackimporter to function**/
-    virtual QPtrList<QString> * parse(QString) = 0;
+    virtual Q3PtrList<QString> * parse(QString) = 0;
 
 
 protected:
     /**Pointer to the parsed Filelocations**/
-    QPtrList<QString> * m_psLocations;
+    Q3PtrList<QString> * m_psLocations;
     /**Returns the number of parsed locations**/
     long countParsed();
     /**Clears m_psLocations**/

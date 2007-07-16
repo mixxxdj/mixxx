@@ -1,491 +1,480 @@
-<!DOCTYPE UI><UI version="3.3" stdsetdef="1">
-<class>DlgPrefSoundDlg</class>
-<widget class="QWidget">
-    <property name="name">
-        <cstring>DlgPrefSoundDlg</cstring>
+<ui version="4.0" >
+ <class>DlgPrefSoundDlg</class>
+ <widget class="QWidget" name="DlgPrefSoundDlg" >
+  <property name="geometry" >
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>601</width>
+    <height>451</height>
+   </rect>
+  </property>
+  <property name="windowTitle" >
+   <string>Form1</string>
+  </property>
+  <widget class="QCheckBox" name="checkBoxPitchIndp" >
+   <property name="geometry" >
+    <rect>
+     <x>10</x>
+     <y>240</y>
+     <width>231</width>
+     <height>22</height>
+    </rect>
+   </property>
+   <property name="text" >
+    <string>Pitch independent time stretch</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="textLabelSoundScaling_2" >
+   <property name="geometry" >
+    <rect>
+     <x>360</x>
+     <y>330</y>
+     <width>231</width>
+     <height>111</height>
+    </rect>
+   </property>
+   <property name="text" >
+    <string>Tips:&lt;ul>&lt;li>Increase your latency if you hear pops during playback&lt;/li>&lt;li>Reduce your latency to improve Mixxx's responsiveness&lt;/li>&lt;/ul></string>
+   </property>
+   <property name="alignment" >
+    <set>Qt::AlignTop</set>
+   </property>
+   <property name="wordWrap" >
+    <bool>true</bool>
+   </property>
+  </widget>
+  <widget class="Q3GroupBox" name="GroupBox1" >
+   <property name="enabled" >
+    <bool>true</bool>
+   </property>
+   <property name="geometry" >
+    <rect>
+     <x>10</x>
+     <y>325</y>
+     <width>331</width>
+     <height>111</height>
+    </rect>
+   </property>
+   <property name="font" >
+    <font/>
+   </property>
+   <property name="title" >
+    <string>Latency</string>
+   </property>
+   <property name="orientation" >
+    <enum>Qt::Vertical</enum>
+   </property>
+   <widget class="QLabel" name="TextLabel8" >
+    <property name="geometry" >
+     <rect>
+      <x>15</x>
+      <y>65</y>
+      <width>30</width>
+      <height>16</height>
+     </rect>
     </property>
-    <property name="geometry">
-        <rect>
-            <x>0</x>
-            <y>0</y>
-            <width>600</width>
-            <height>510</height>
-        </rect>
+    <property name="font" >
+     <font/>
     </property>
-    <property name="caption">
-        <string>Form1</string>
+    <property name="text" >
+     <string>Low</string>
     </property>
-    <widget class="QLabel">
-        <property name="name">
-            <cstring>TextLabel2</cstring>
-        </property>
-        <property name="enabled">
-            <bool>true</bool>
-        </property>
-        <property name="geometry">
-            <rect>
-                <x>10</x>
-                <y>151</y>
-                <width>90</width>
-                <height>20</height>
-            </rect>
-        </property>
-        <property name="font">
-            <font>
-            </font>
-        </property>
-        <property name="text">
-            <string>Sample rate</string>
-        </property>
-    </widget>
-    <widget class="QLabel">
-        <property name="name">
-            <cstring>TextLabel1</cstring>
-        </property>
-        <property name="enabled">
-            <bool>true</bool>
-        </property>
-        <property name="geometry">
-            <rect>
-                <x>10</x>
-                <y>11</y>
-                <width>140</width>
-                <height>19</height>
-            </rect>
-        </property>
-        <property name="font">
-            <font>
-            </font>
-        </property>
-        <property name="text">
-            <string>Master (left channel)</string>
-        </property>
-    </widget>
-    <widget class="QLabel">
-        <property name="name">
-            <cstring>TextLabel1_2</cstring>
-        </property>
-        <property name="enabled">
-            <bool>true</bool>
-        </property>
-        <property name="geometry">
-            <rect>
-                <x>10</x>
-                <y>46</y>
-                <width>140</width>
-                <height>19</height>
-            </rect>
-        </property>
-        <property name="font">
-            <font>
-            </font>
-        </property>
-        <property name="frameShape">
-            <enum>NoFrame</enum>
-        </property>
-        <property name="frameShadow">
-            <enum>Plain</enum>
-        </property>
-        <property name="text">
-            <string>Master (right channel)</string>
-        </property>
-    </widget>
-    <widget class="QLabel">
-        <property name="name">
-            <cstring>TextLabel1_3</cstring>
-        </property>
-        <property name="enabled">
-            <bool>true</bool>
-        </property>
-        <property name="geometry">
-            <rect>
-                <x>10</x>
-                <y>81</y>
-                <width>140</width>
-                <height>19</height>
-            </rect>
-        </property>
-        <property name="font">
-            <font>
-            </font>
-        </property>
-        <property name="text">
-            <string>Headphone (left channel)</string>
-        </property>
-    </widget>
-    <widget class="QLabel">
-        <property name="name">
-            <cstring>TextLabel1_2_2</cstring>
-        </property>
-        <property name="enabled">
-            <bool>true</bool>
-        </property>
-        <property name="geometry">
-            <rect>
-                <x>10</x>
-                <y>116</y>
-                <width>147</width>
-                <height>19</height>
-            </rect>
-        </property>
-        <property name="font">
-            <font>
-            </font>
-        </property>
-        <property name="frameShape">
-            <enum>NoFrame</enum>
-        </property>
-        <property name="frameShadow">
-            <enum>Plain</enum>
-        </property>
-        <property name="text">
-            <string>Headphone (right channel)</string>
-        </property>
-    </widget>
-    <widget class="QComboBox">
-        <property name="name">
-            <cstring>ComboBoxSoundcardMasterLeft</cstring>
-        </property>
-        <property name="enabled">
-            <bool>true</bool>
-        </property>
-        <property name="geometry">
-            <rect>
-                <x>164</x>
-                <y>6</y>
-                <width>195</width>
-                <height>22</height>
-            </rect>
-        </property>
-        <property name="font">
-            <font>
-            </font>
-        </property>
-    </widget>
-    <widget class="QComboBox">
-        <property name="name">
-            <cstring>ComboBoxSoundcardMasterRight</cstring>
-        </property>
-        <property name="enabled">
-            <bool>true</bool>
-        </property>
-        <property name="geometry">
-            <rect>
-                <x>164</x>
-                <y>41</y>
-                <width>195</width>
-                <height>22</height>
-            </rect>
-        </property>
-        <property name="font">
-            <font>
-            </font>
-        </property>
-    </widget>
-    <widget class="QComboBox">
-        <property name="name">
-            <cstring>ComboBoxSoundcardHeadLeft</cstring>
-        </property>
-        <property name="enabled">
-            <bool>true</bool>
-        </property>
-        <property name="geometry">
-            <rect>
-                <x>164</x>
-                <y>76</y>
-                <width>195</width>
-                <height>22</height>
-            </rect>
-        </property>
-        <property name="font">
-            <font>
-            </font>
-        </property>
-    </widget>
-    <widget class="QComboBox">
-        <property name="name">
-            <cstring>ComboBoxSoundcardHeadRight</cstring>
-        </property>
-        <property name="enabled">
-            <bool>true</bool>
-        </property>
-        <property name="geometry">
-            <rect>
-                <x>164</x>
-                <y>111</y>
-                <width>195</width>
-                <height>22</height>
-            </rect>
-        </property>
-        <property name="font">
-            <font>
-            </font>
-        </property>
-    </widget>
-    <widget class="QComboBox">
-        <property name="name">
-            <cstring>ComboBoxSamplerates</cstring>
-        </property>
-        <property name="enabled">
-            <bool>true</bool>
-        </property>
-        <property name="geometry">
-            <rect>
-                <x>164</x>
-                <y>146</y>
-                <width>86</width>
-                <height>22</height>
-            </rect>
-        </property>
-        <property name="font">
-            <font>
-            </font>
-        </property>
-    </widget>
-    <widget class="QLabel">
-        <property name="name">
-            <cstring>TextLabel3_2</cstring>
-        </property>
-        <property name="enabled">
-            <bool>true</bool>
-        </property>
-        <property name="geometry">
-            <rect>
-                <x>10</x>
-                <y>186</y>
-                <width>84</width>
-                <height>19</height>
-            </rect>
-        </property>
-        <property name="font">
-            <font>
-            </font>
-        </property>
-        <property name="text">
-            <string>Sound API</string>
-        </property>
-    </widget>
-    <widget class="QGroupBox">
-        <property name="name">
-            <cstring>GroupBox1</cstring>
-        </property>
-        <property name="enabled">
-            <bool>true</bool>
-        </property>
-        <property name="geometry">
-            <rect>
-                <x>10</x>
-                <y>325</y>
-                <width>345</width>
-                <height>105</height>
-            </rect>
-        </property>
-        <property name="font">
-            <font>
-            </font>
-        </property>
-        <property name="title">
-            <string>Latency</string>
-        </property>
-        <widget class="QLabel">
-            <property name="name">
-                <cstring>TextLabel8</cstring>
-            </property>
-            <property name="geometry">
-                <rect>
-                    <x>15</x>
-                    <y>65</y>
-                    <width>30</width>
-                    <height>16</height>
-                </rect>
-            </property>
-            <property name="font">
-                <font>
-                </font>
-            </property>
-            <property name="text">
-                <string>Low</string>
-            </property>
-        </widget>
-        <widget class="QSlider">
-            <property name="name">
-                <cstring>SliderLatency</cstring>
-            </property>
-            <property name="geometry">
-                <rect>
-                    <x>15</x>
-                    <y>35</y>
-                    <width>315</width>
-                    <height>29</height>
-                </rect>
-            </property>
-            <property name="minValue">
-                <number>2</number>
-            </property>
-            <property name="maxValue">
-                <number>32</number>
-            </property>
-            <property name="lineStep">
-                <number>1</number>
-            </property>
-            <property name="pageStep">
-                <number>1</number>
-            </property>
-            <property name="value">
-                <number>28</number>
-            </property>
-            <property name="orientation">
-                <enum>Horizontal</enum>
-            </property>
-            <property name="tickmarks">
-                <enum>NoMarks</enum>
-            </property>
-            <property name="tickInterval">
-                <number>5</number>
-            </property>
-        </widget>
-        <widget class="QLabel">
-            <property name="name">
-                <cstring>TextLabelLatency</cstring>
-            </property>
-            <property name="geometry">
-                <rect>
-                    <x>265</x>
-                    <y>20</y>
-                    <width>65</width>
-                    <height>14</height>
-                </rect>
-            </property>
-            <property name="font">
-                <font>
-                </font>
-            </property>
-            <property name="text">
-                <string>256 ms</string>
-            </property>
-            <property name="alignment">
-                <set>AlignVCenter|AlignRight</set>
-            </property>
-        </widget>
-        <widget class="QLabel">
-            <property name="name">
-                <cstring>TextLabel1_4_3_2</cstring>
-            </property>
-            <property name="geometry">
-                <rect>
-                    <x>15</x>
-                    <y>83</y>
-                    <width>125</width>
-                    <height>16</height>
-                </rect>
-            </property>
-            <property name="font">
-                <font>
-                </font>
-            </property>
-            <property name="text">
-                <string>Fast CPU</string>
-            </property>
-        </widget>
-        <widget class="QLabel">
-            <property name="name">
-                <cstring>TextLabel8_2</cstring>
-            </property>
-            <property name="geometry">
-                <rect>
-                    <x>301</x>
-                    <y>65</y>
-                    <width>36</width>
-                    <height>20</height>
-                </rect>
-            </property>
-            <property name="font">
-                <font>
-                </font>
-            </property>
-            <property name="text">
-                <string>High</string>
-            </property>
-        </widget>
-        <widget class="QLabel">
-            <property name="name">
-                <cstring>TextLabelLatencyMaster_3_2</cstring>
-            </property>
-            <property name="geometry">
-                <rect>
-                    <x>264</x>
-                    <y>84</y>
-                    <width>65</width>
-                    <height>14</height>
-                </rect>
-            </property>
-            <property name="font">
-                <font>
-                </font>
-            </property>
-            <property name="text">
-                <string>Slow CPU</string>
-            </property>
-            <property name="alignment">
-                <set>AlignVCenter|AlignRight</set>
-            </property>
-        </widget>
-    </widget>
-    <widget class="QComboBox">
-        <property name="name">
-            <cstring>ComboBoxSoundApi</cstring>
-        </property>
-        <property name="enabled">
-            <bool>true</bool>
-        </property>
-        <property name="geometry">
-            <rect>
-                <x>164</x>
-                <y>181</y>
-                <width>195</width>
-                <height>22</height>
-            </rect>
-        </property>
-        <property name="font">
-            <font>
-            </font>
-        </property>
-    </widget>
-    <widget class="QLabel">
-        <property name="name">
-            <cstring>textLabelSoundScaling</cstring>
-        </property>
-        <property name="geometry">
-            <rect>
-                <x>29</x>
-                <y>241</y>
-                <width>327</width>
-                <height>76</height>
-            </rect>
-        </property>
-        <property name="text">
-            <string>Stretching beyond +-10% with pitch independent time stretch is not advised, and is likely to result in bad sound quality.</string>
-        </property>
-        <property name="alignment">
-            <set>WordBreak|AlignTop</set>
-        </property>
-    </widget>
-    <widget class="QCheckBox">
-        <property name="name">
-            <cstring>checkBoxPitchIndp</cstring>
-        </property>
-        <property name="geometry">
-            <rect>
-                <x>11</x>
-                <y>213</y>
-                <width>344</width>
-                <height>22</height>
-            </rect>
-        </property>
-        <property name="text">
-            <string>Pitch independent time stretch</string>
-        </property>
-    </widget>
-</widget>
-<layoutdefaults spacing="6" margin="11"/>
-</UI>
+    <property name="wordWrap" >
+     <bool>false</bool>
+    </property>
+   </widget>
+   <widget class="QLabel" name="TextLabel1_4_3_2" >
+    <property name="geometry" >
+     <rect>
+      <x>15</x>
+      <y>83</y>
+      <width>125</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="font" >
+     <font/>
+    </property>
+    <property name="text" >
+     <string>Fast CPU</string>
+    </property>
+    <property name="wordWrap" >
+     <bool>false</bool>
+    </property>
+   </widget>
+   <widget class="QSlider" name="SliderLatency" >
+    <property name="geometry" >
+     <rect>
+      <x>15</x>
+      <y>35</y>
+      <width>301</width>
+      <height>29</height>
+     </rect>
+    </property>
+    <property name="minimum" >
+     <number>2</number>
+    </property>
+    <property name="maximum" >
+     <number>32</number>
+    </property>
+    <property name="singleStep" >
+     <number>1</number>
+    </property>
+    <property name="pageStep" >
+     <number>1</number>
+    </property>
+    <property name="value" >
+     <number>28</number>
+    </property>
+    <property name="orientation" >
+     <enum>Qt::Horizontal</enum>
+    </property>
+    <property name="tickInterval" >
+     <number>5</number>
+    </property>
+   </widget>
+   <widget class="QLabel" name="TextLabelLatency" >
+    <property name="geometry" >
+     <rect>
+      <x>250</x>
+      <y>20</y>
+      <width>65</width>
+      <height>14</height>
+     </rect>
+    </property>
+    <property name="font" >
+     <font/>
+    </property>
+    <property name="text" >
+     <string>256 ms</string>
+    </property>
+    <property name="alignment" >
+     <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+    </property>
+    <property name="wordWrap" >
+     <bool>false</bool>
+    </property>
+   </widget>
+   <widget class="QLabel" name="TextLabel8_2" >
+    <property name="geometry" >
+     <rect>
+      <x>290</x>
+      <y>60</y>
+      <width>36</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="font" >
+     <font/>
+    </property>
+    <property name="text" >
+     <string>High</string>
+    </property>
+    <property name="wordWrap" >
+     <bool>false</bool>
+    </property>
+   </widget>
+   <widget class="QLabel" name="TextLabelLatencyMaster_3_2" >
+    <property name="geometry" >
+     <rect>
+      <x>250</x>
+      <y>80</y>
+      <width>65</width>
+      <height>14</height>
+     </rect>
+    </property>
+    <property name="font" >
+     <font/>
+    </property>
+    <property name="text" >
+     <string>Slow CPU</string>
+    </property>
+    <property name="alignment" >
+     <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+    </property>
+    <property name="wordWrap" >
+     <bool>false</bool>
+    </property>
+   </widget>
+  </widget>
+  <widget class="QLabel" name="textLabelSoundScaling" >
+   <property name="geometry" >
+    <rect>
+     <x>20</x>
+     <y>270</y>
+     <width>411</width>
+     <height>51</height>
+    </rect>
+   </property>
+   <property name="text" >
+    <string>Stretching beyond +-10% with pitch independent time stretch is not advised, and is likely to result in bad sound quality.</string>
+   </property>
+   <property name="alignment" >
+    <set>Qt::AlignTop</set>
+   </property>
+   <property name="wordWrap" >
+    <bool>true</bool>
+   </property>
+  </widget>
+  <widget class="QGroupBox" name="audioGroupBox" >
+   <property name="geometry" >
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>601</width>
+     <height>231</height>
+    </rect>
+   </property>
+   <property name="title" >
+    <string>Audio Output</string>
+   </property>
+   <widget class="QWidget" name="" >
+    <property name="geometry" >
+     <rect>
+      <x>10</x>
+      <y>150</y>
+      <width>371</width>
+      <height>60</height>
+     </rect>
+    </property>
+    <layout class="QGridLayout" >
+     <property name="margin" >
+      <number>0</number>
+     </property>
+     <property name="spacing" >
+      <number>6</number>
+     </property>
+     <item row="1" column="1" >
+      <widget class="QComboBox" name="ComboBoxSoundApi" >
+       <property name="enabled" >
+        <bool>true</bool>
+       </property>
+       <property name="font" >
+        <font/>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="0" >
+      <widget class="QLabel" name="TextLabel3_2" >
+       <property name="enabled" >
+        <bool>true</bool>
+       </property>
+       <property name="font" >
+        <font/>
+       </property>
+       <property name="text" >
+        <string>Sound API</string>
+       </property>
+       <property name="wordWrap" >
+        <bool>false</bool>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="1" >
+      <widget class="QComboBox" name="ComboBoxSamplerates" >
+       <property name="enabled" >
+        <bool>true</bool>
+       </property>
+       <property name="font" >
+        <font/>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="0" >
+      <widget class="QLabel" name="TextLabel2" >
+       <property name="enabled" >
+        <bool>true</bool>
+       </property>
+       <property name="font" >
+        <font/>
+       </property>
+       <property name="text" >
+        <string>Sample rate (Hz)</string>
+       </property>
+       <property name="wordWrap" >
+        <bool>false</bool>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </widget>
+   <widget class="QComboBox" name="ComboBoxSoundcardHeadRight" >
+    <property name="enabled" >
+     <bool>true</bool>
+    </property>
+    <property name="geometry" >
+     <rect>
+      <x>200</x>
+      <y>110</y>
+      <width>391</width>
+      <height>26</height>
+     </rect>
+    </property>
+    <property name="font" >
+     <font/>
+    </property>
+   </widget>
+   <widget class="QComboBox" name="ComboBoxSoundcardHeadLeft" >
+    <property name="enabled" >
+     <bool>true</bool>
+    </property>
+    <property name="geometry" >
+     <rect>
+      <x>200</x>
+      <y>80</y>
+      <width>391</width>
+      <height>26</height>
+     </rect>
+    </property>
+    <property name="font" >
+     <font/>
+    </property>
+   </widget>
+   <widget class="QComboBox" name="ComboBoxSoundcardMasterRight" >
+    <property name="enabled" >
+     <bool>true</bool>
+    </property>
+    <property name="geometry" >
+     <rect>
+      <x>200</x>
+      <y>50</y>
+      <width>391</width>
+      <height>26</height>
+     </rect>
+    </property>
+    <property name="font" >
+     <font/>
+    </property>
+   </widget>
+   <widget class="QLabel" name="TextLabel1" >
+    <property name="enabled" >
+     <bool>true</bool>
+    </property>
+    <property name="geometry" >
+     <rect>
+      <x>10</x>
+      <y>20</y>
+      <width>140</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="font" >
+     <font/>
+    </property>
+    <property name="text" >
+     <string>Master (left channel)</string>
+    </property>
+    <property name="wordWrap" >
+     <bool>false</bool>
+    </property>
+   </widget>
+   <widget class="QComboBox" name="ComboBoxSoundcardMasterLeft" >
+    <property name="enabled" >
+     <bool>true</bool>
+    </property>
+    <property name="geometry" >
+     <rect>
+      <x>200</x>
+      <y>20</y>
+      <width>391</width>
+      <height>26</height>
+     </rect>
+    </property>
+    <property name="font" >
+     <font/>
+    </property>
+   </widget>
+   <widget class="QLabel" name="TextLabel1_2_2" >
+    <property name="enabled" >
+     <bool>true</bool>
+    </property>
+    <property name="geometry" >
+     <rect>
+      <x>10</x>
+      <y>110</y>
+      <width>181</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="font" >
+     <font/>
+    </property>
+    <property name="frameShape" >
+     <enum>QFrame::NoFrame</enum>
+    </property>
+    <property name="frameShadow" >
+     <enum>QFrame::Plain</enum>
+    </property>
+    <property name="text" >
+     <string>Headphones (right channel)</string>
+    </property>
+    <property name="wordWrap" >
+     <bool>false</bool>
+    </property>
+   </widget>
+   <widget class="QLabel" name="TextLabel1_3" >
+    <property name="enabled" >
+     <bool>true</bool>
+    </property>
+    <property name="geometry" >
+     <rect>
+      <x>10</x>
+      <y>80</y>
+      <width>181</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="font" >
+     <font/>
+    </property>
+    <property name="text" >
+     <string>Headphones (left channel)</string>
+    </property>
+    <property name="wordWrap" >
+     <bool>false</bool>
+    </property>
+   </widget>
+   <widget class="QLabel" name="TextLabel1_2" >
+    <property name="enabled" >
+     <bool>true</bool>
+    </property>
+    <property name="geometry" >
+     <rect>
+      <x>10</x>
+      <y>50</y>
+      <width>140</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="font" >
+     <font/>
+    </property>
+    <property name="frameShape" >
+     <enum>QFrame::NoFrame</enum>
+    </property>
+    <property name="frameShadow" >
+     <enum>QFrame::Plain</enum>
+    </property>
+    <property name="text" >
+     <string>Master (right channel)</string>
+    </property>
+    <property name="wordWrap" >
+     <bool>false</bool>
+    </property>
+   </widget>
+  </widget>
+ </widget>
+ <layoutdefault spacing="6" margin="11" />
+ <pixmapfunction>qPixmapFromMimeSource</pixmapfunction>
+ <customwidgets>
+  <customwidget>
+   <class>Q3GroupBox</class>
+   <extends>QGroupBox</extends>
+   <header>Qt3Support/Q3GroupBox</header>
+   <container>1</container>
+  </customwidget>
+ </customwidgets>
+ <resources/>
+ <connections/>
+</ui>

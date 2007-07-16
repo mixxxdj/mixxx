@@ -21,8 +21,10 @@
 //#include <fstream.h>
 #include <string>
 #include <iostream>
+//Added by qt3to4:
+#include <Q3ValueList>
 
-PeakList::PeakList(int iIdxSize, float *pBuffer) : QValueList<PeakType>()
+PeakList::PeakList(int iIdxSize, float *pBuffer) : Q3ValueList<PeakType>()
 {
     m_iIdxSize = iIdxSize;
     m_pBuffer = pBuffer;

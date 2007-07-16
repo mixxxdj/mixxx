@@ -18,7 +18,7 @@
 #ifndef DLGPREFPLAYLIST_H
 #define DLGPREFPLAYLIST_H
 
-#include "dlgprefplaylistdlg.h"
+#include "ui_dlgprefplaylistdlg.h"
 #include "configobject.h"
 
 class QWidget;
@@ -26,7 +26,7 @@ class QWidget;
   *@author Tue & Ken Haste Andersen
   */
 
-class DlgPrefPlaylist : public DlgPrefPlaylistDlg  {
+class DlgPrefPlaylist : public QWidget, public Ui::DlgPrefPlaylistDlg  {
     Q_OBJECT
 public: 
     DlgPrefPlaylist(QWidget *parent, ConfigObject<ConfigValue> *_config);

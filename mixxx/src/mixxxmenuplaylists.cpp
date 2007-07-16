@@ -10,11 +10,11 @@
 //
 //
 #include "mixxxmenuplaylists.h"
-#include <qpopupmenu.h>
+#include <q3popupmenu.h>
 #include "track.h"
 #include "trackplaylistlist.h"
 
-MixxxMenuPlaylists::MixxxMenuPlaylists(QPopupMenu *pMenu, Track *pTrack)
+MixxxMenuPlaylists::MixxxMenuPlaylists(Q3PopupMenu *pMenu, Track *pTrack)
 {
     m_pMenu = pMenu;
     m_pTrack = pTrack;

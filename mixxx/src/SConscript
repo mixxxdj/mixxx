@@ -134,11 +134,10 @@ else:
 
 
 #Figure out what the QT path is
-if platform == 'linux' or platform == 'osx':	
-	flags_qtdir = ARGUMENTS.get('qtdir', '/usr/share/qt3')
+if platform == 'linux' or platform == 'osx':
+	default_qtdir = '/usr/share/qt4'
 elif platform == 'win32':
-	flags_qtdir = ARGUMENTS.get('qtdir', 'C:\\qt3')
-default_qtdir = flags_qtdir
+	default_qtdir = 'C:\\qt\\4.3.0'
 
 #Read the qtdir flag, if it was set explicitly
 flags_qtdir = ARGUMENTS.get('qtdir', default_qtdir)
@@ -146,16 +145,19 @@ if not os.path.exists(flags_qtdir):
 	print "Error: QT path does not exist."
 	print "Please specify your QT path by running 'scons qtdir=[path]'"
 	Exit(1)
+elif flags_qtdir.find("qt3") != -1:
+	print "Error: Mixxx now requires QT4 instead of QT3 - please use your QT4 path instead."
+	Exit(1)
 else:
 	print "QT path: " + flags_qtdir
 
 #Set up our environment, tell SCONS to use it's QT tools, and set some enviroment variables for it.
 # qt4ToolLocation='.'
 if platform == 'linux' or platform == 'osx':
-	env = Environment(tools=['default','qt', 'msvs'], QTDIR=flags_qtdir, QT_LIB='qt-mt')
+	env = Environment(tools=['default','qt4', 'msvs'], toolpath=['../'], QTDIR=flags_qtdir, QT_LIB='')
 elif platform == 'win32':
-	env = Environment(tools=['default','qt', 'msvs'], toolpath=['../'], QTDIR=flags_qtdir, QT_LIB=['qt-mt3'], VCINSTALLDIR = os.getenv('VCInstallDir'), ENV = os.environ)
-env.Replace(QT_UIC = '$QT_BINPATH/uic')
+	#Pull in the environment's variables for win32...
+	env = Environment(tools=['default','qt4', 'msvs'], toolpath=['../'], QTDIR=flags_qtdir, QT_LIB='', VCINSTALLDIR = os.getenv('VCInstallDir'), ENV = os.environ)
 
 #env.Append(CPPPATH='.')
 
@@ -217,9 +219,9 @@ if not env.GetOption('clean') and not SCons.Util.containsAny(os.sys.argv, ['-h',
 		print 'Did not find libportaudio.a, portaudio.lib, or the PortAudio-v19 development header files - exiting!'
 		Exit(1)
 
- 	if not conf.CheckLib(['$QTDIR/lib/qt-mt','$QTDIR/lib/qt-mt3']):
-		print 'Did not find libqt-mt.a or libqt-mt.lib, exiting!'
-		Exit(1)
+# 	if not conf.CheckLib(['$QTDIR/lib/qt-mt','$QTDIR/lib/qt-mt3']):
+# 		print 'Did not find libqt-mt.a or libqt-mt.lib, exiting!'
+# 		Exit(1)
 
 	if not conf.CheckLib(['mad','libmad']):
 		print 'Did not find libmad.a, libmad.lib, or the libmad development header files - exiting!'
@@ -299,19 +301,19 @@ env.Append(CXXFLAGS = ' -D__PORTAUDIO__'); #Turn on PortAudio support in Mixxx
 env.Append(CPPPATH = ['.', '../', '../../']) #Fun fun fun with paths
 
 
-#if not platform == 'win32':
-#	env.Append(LIBS = 'Qt3Support');
-#	env.Append(LIBS = 'QtXml');
-#	env.Append(LIBS = 'QtGui');
-#	env.Append(LIBS = 'QtCore');
-#	env.Append(LIBS = 'QtOpenGL');
+if not platform == 'win32':
+	env.Append(LIBS = 'Qt3Support');
+	env.Append(LIBS = 'QtXml');
+	env.Append(LIBS = 'QtGui');
+	env.Append(LIBS = 'QtCore');
+	env.Append(LIBS = 'QtOpenGL');
 
 if platform == 'win32':
-#	env.Append(LIBS = 'Qt3Support4'); #Win32 needs this instead of 'Qt3Support'
-#	env.Append(LIBS = 'QtXml4');
-#	env.Append(LIBS = 'QtGui4');
-#	env.Append(LIBS = 'QtCore4');
-#	env.Append(LIBS = 'QtOpenGL4');
+	env.Append(LIBS = 'Qt3Support4'); #Win32 needs this instead of 'Qt3Support'
+	env.Append(LIBS = 'QtXml4');
+	env.Append(LIBS = 'QtGui4');
+	env.Append(LIBS = 'QtCore4');
+	env.Append(LIBS = 'QtOpenGL4');
 	env.Append(LIBS = 'WinMM'); #Needed for Midi stuff
 	env.Append(LIBS = 'ogg_static')
 	env.Append(LIBS = 'vorbis_static')
@@ -322,9 +324,8 @@ if platform == 'win32':
 	env.Append(LIBS = 'winspool')
 	env.Append(LIBS = 'shell32')
 
-env.Append(CXXFLAGS = ' -DQT_THREAD_SUPPORT -DQT_SHARED -DQT_TABLET_SUPPORT -I$QTDIR/include/Qt -I"$VCINSTALLDIR/include/atl"') #Stolen from Mixxx's build output
-# env.Append(CXXFLAGS = ' -DQT3_SUPPORT -DQT3_SUPPORT_WARNINGS -DQT_THREAD_SUPPORT -DQT_SHARED -DQT_TABLET_SUPPORT') #Stolen from Mixxx's build output
-# env.Append(CXXFLAGS = ' -I$QTDIR/include/Qt3Support -I$QTDIR/include/QtCore -I$QTDIR/include/QtGui -I$QTDIR/include/QtXml -I$QTDIR/include/QtOpenGl -I$QTDIR/include/Qt -I"$VCINSTALLDIR/include/atl"')
+env.Append(CXXFLAGS = ' -DQT3_SUPPORT -DQT3_SUPPORT_WARNINGS -DQT_THREAD_SUPPORT -DQT_SHARED -DQT_TABLET_SUPPORT') #Stolen from Mixxx's build output
+env.Append(CXXFLAGS = ' -I$QTDIR/include/Qt3Support -I$QTDIR/include/QtCore -I$QTDIR/include/QtGui -I$QTDIR/include/QtXml -I$QTDIR/include/QtOpenGl -I$QTDIR/include/Qt -I"$VCINSTALLDIR/include/atl"')
 
 if not platform == 'win32':
 	env.Append(CXXFLAGS = ' -pipe -O3 -pipe -Wall -W -g -D_REENTRANT') # omghax
@@ -333,21 +334,24 @@ if platform == 'win32':
 	env.Append(CCFLAGS  = '-DWIN32 -D__WIN__ -DUNICODE -D_WINDOWS') #for soundtouch
 
 #Uic these guys (they're moc'd automatically after this) - Generates the code for the QT UI forms
-env.Uic('dlgprefsounddlg.ui')
-env.Uic('dlgprefmididlg.ui')
-env.Uic('dlgprefplaylistdlg.ui')
-env.Uic('dlgprefcontrolsdlg.ui')
-env.Uic('dlgprefmixerdlg.ui')	
-env.Uic('dlgprefrecorddlg.ui')
+env.Uic4('dlgpreferencesdlg.ui')
+env.Uic4('dlgprefsounddlg.ui')
+env.Uic4('dlgprefmididlg.ui')
+env.Uic4('dlgprefplaylistdlg.ui')
+env.Uic4('dlgprefcontrolsdlg.ui')
+env.Uic4('dlgprefmixerdlg.ui')	
+env.Uic4('dlgprefrecorddlg.ui')
+env.Uic4('dlgprefbpmdlg.ui')
+env.Uic4('dlgbpmtapdlg.ui')
 
-#Add these uic/moc generated files to the list of stuff we need to build:
-sources.append(Split("""uic_dlgprefsounddlg.cc 		moc_dlgprefsounddlg.cc
-						uic_dlgprefcontrolsdlg.cc	moc_dlgprefcontrolsdlg.cc
-						uic_dlgprefmididlg.cc		moc_dlgprefmididlg.cc
-						uic_dlgprefplaylistdlg.cc	moc_dlgprefplaylistdlg.cc
-						uic_dlgprefmixerdlg.cc	    moc_dlgprefmixerdlg.cc
-						uic_dlgprefrecorddlg.cc	    moc_dlgprefrecorddlg.cc
-					  	"""))
+# Uic4 does not need this --> Add these uic/moc generated files to the list of stuff we need to build:
+#sources.append(Split("""uic_dlgprefsounddlg.cc 		moc_dlgprefsounddlg.cc
+#						uic_dlgprefcontrolsdlg.cc	moc_dlgprefcontrolsdlg.cc
+#						uic_dlgprefmididlg.cc		moc_dlgprefmididlg.cc
+#						uic_dlgprefplaylistdlg.cc	moc_dlgprefplaylistdlg.cc
+#						uic_dlgprefmixerdlg.cc	    moc_dlgprefmixerdlg.cc
+#						uic_dlgprefrecorddlg.cc	    moc_dlgprefrecorddlg.cc
+#					  	"""))
 
 #More complicated way of doing Uic (gives us control over the filenames, but doesn't really matter...)
 #env.Uic(target = Split('dlgprefcontrolsdlg.h .ui/dlgprefcontrolsdlg.cpp .moc/dlgprefcontrolsdlg.cpp'),
@@ -429,12 +433,14 @@ else:
 flags_experimentalbpm = ARGUMENTS.get('experimentalbpm', 0)
 if int(flags_experimentalbpm):
 	env.Append(CXXFLAGS = '-D__EXPERIMENTAL_BPM__')	
-	env.Uic('dlgprefbpmdlg.ui')
-	env.Uic('dlgbpmtapdlg.ui')
-	sources += Split("""
-                        uic_dlgprefbpmdlg.cc        moc_dlgprefbpmdlg.cc
-                        uic_dlgbpmtapdlg.cc         moc_dlgbpmtapdlg.cc
-	""")
+	env.Uic4('dlgprefbpmdlg.ui')
+	env.Uic4('dlgbpmtapdlg.ui')
+	sources += Split(""" dlgbpmtap.cpp dlgprefbpm.cpp """)
+#Garth, you bastard, this broke Linux! :)
+#	sources += Split("""
+#                        uic_dlgprefbpmdlg.cc        moc_dlgprefbpmdlg.cc
+#                        uic_dlgbpmtapdlg.cc         moc_dlgbpmtapdlg.cc
+#	""")
 	print "Experimental BPM detection... enabled"
 else:
 	print "Experimental BPM detection... disabled"
@@ -443,6 +449,7 @@ else:
 flags_experimentalrecording = ARGUMENTS.get('experimentalrecord', 0)
 if int(flags_experimentalrecording):
 	env.Append(CXXFLAGS = '-D__EXPERIMENTAL_RECORDING__')
+	sources += Split(""" dlgprefrecord.cpp enginerecord.cpp writeaudiofile.cpp""" )
 	print "Experimental recording... enabled"
 else:
 	print "Experimental recording... disabled"
@@ -483,7 +490,7 @@ print "================\n"
 
 #Hijack scons -h and --help
 opts = Options('custom.py')
-opts.Add('qtdir', 'Set to your QT3 directory', '/usr/share/qt3')
+opts.Add('qtdir', 'Set to your QT4 directory', '/usr/share/qt4')
 opts.Add('djconsole', 'Set to 1 to enable Hercules support through libdjconsole', 0)
 opts.Add('experimentalbpm', '(EXPERIMENTAL) Set to 1 to enable new BPM detection', 0)
 opts.Add('experimentalrecord', '(EXPERIMENTAL) Set to 1 to enable output recording feature', 0)
@@ -497,7 +504,10 @@ Help(opts.GenerateHelpText(env))
 
 #Tell SCons to build Mixxx
 #=========================
-mixxx_bin = env.Program('mixxx', sources, LINKCOM  = [env['LINKCOM'], 'mt.exe -nologo -manifest ${TARGET}.manifest -outputresource:$TARGET;1'])
+if platform == 'win32':
+	mixxx_bin = env.Program('mixxx', sources, LINKCOM  = [env['LINKCOM'], 'mt.exe -nologo -manifest ${TARGET}.manifest -outputresource:$TARGET;1'])
+else:
+	mixxx_bin = env.Program('mixxx', sources)
 
 #Set up the MSVC target to build a Visual Studio project/solution file
 if 'msvc' in COMMAND_LINE_TARGETS:
@@ -547,7 +557,7 @@ image_files = glob.glob('../images/preferences/*')
 #Windows DLLs
 dll_files = glob.glob('../../../mixxx-winlib/*.dll') # TODO: Use reference to SharedLibrary for libsndfile and others, glob only gets all files on 2+ builds after a clean.
 # dll_files = libsndfile
-# dll_files += Split("""$QTDIR/lib/Qt3Support4.dll $QTDIR/lib/QtCore4.dll $QTDIR/lib/QtGui4.dll $QTDIR/lib/QtNetwork4.dll $QTDIR/lib/QtOpenGL4.dll $QTDIR/lib/QtSql4.dll $QTDIR/lib/QtXml4.dll """)
+dll_files += Split("""$QTDIR/lib/Qt3Support4.dll $QTDIR/lib/QtCore4.dll $QTDIR/lib/QtGui4.dll $QTDIR/lib/QtNetwork4.dll $QTDIR/lib/QtOpenGL4.dll $QTDIR/lib/QtSql4.dll $QTDIR/lib/QtXml4.dll """)
 
 if platform == 'linux' or platform == 'osx':
 	flags_prefix = ARGUMENTS.get('prefix', '/usr/local')

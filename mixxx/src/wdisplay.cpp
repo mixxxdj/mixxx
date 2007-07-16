@@ -17,6 +17,9 @@
 
 #include "wdisplay.h"
 #include "wpixmapstore.h"
+//Added by qt3to4:
+#include <QPaintEvent>
+#include <QPixmap>
 
 WDisplay::WDisplay(QWidget *parent, const char *name) : WWidget(parent,name)
 {

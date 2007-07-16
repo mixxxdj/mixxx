@@ -21,6 +21,9 @@
 #include "wwidget.h"
 #include <qstring.h>
 #include <qpixmap.h>
+//Added by qt3to4:
+#include <QPaintEvent>
+#include <QMouseEvent>
 /**
   * A widget for a slider composed of a background pixmap and a handle.
   *

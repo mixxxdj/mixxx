@@ -13,6 +13,8 @@
 #define CONTROLOBJECTTHREADMAIN_H
 
 #include "controlobjectthread.h"
+//Added by qt3to4:
+#include <QEvent>
 
 class ControlObject;
 

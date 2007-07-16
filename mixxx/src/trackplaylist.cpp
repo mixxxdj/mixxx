@@ -14,9 +14,12 @@
 #include "trackcollection.h"
 #include "xmlparse.h"
 #include "wtracktable.h"
-#include <qdragobject.h>
-#include <qcstring.h>
+#include <q3dragobject.h>
+#include <q3cstring.h>
 #include <qdir.h>
+//Added by qt3to4:
+#include <Q3StrList>
+#include <QDropEvent>
 #include "trackplaylist.h"
 #include "track.h"
 
@@ -66,21 +69,17 @@ void TrackPlaylist::setTrack(Track *pTrack)
 
 void TrackPlaylist::writeXML(QDomDocument &doc, QDomElement &header)
 {
-	TrackInfoObject *it = m_qList.first();
-	
-		XmlParse::addElement(doc, header, "Name", m_qName);
+    XmlParse::addElement(doc, header, "Name", m_qName);
 
-		QDomElement root = doc.createElement("List");
-		
-		while (it)
-		{
-			XmlParse::addElement(doc, root, "ID", QString("%1").arg(it->getId()));
-			it = m_qList.next();
-		}
-		header.appendChild(root);
-	
+    QDomElement root = doc.createElement("List");
+    TrackInfoObject *it = m_qList.first();
+    while (it)
+    {
+        XmlParse::addElement(doc, root, "ID", QString("%1").arg(it->getId()));
+        it = m_qList.next();
+    }
+    header.appendChild(root);
 }
-
 
 void TrackPlaylist::addTrack(TrackInfoObject *pTrack)
 {
@@ -169,26 +168,27 @@ void TrackPlaylist::slotDrop(QDropEvent *e)
 {
     // Check if this drag is a playlist subtype
     QString s;
-    QCString type("playlist");
-    if (QTextDrag::decode(e, s, type))
-    {
-        e->ignore();
-        return;
-    }
+    Q3CString type("playlist");
+    //TODO: PORT TO QT4
+    // if (Q3TextDrag::decode(e, s, type))
+//     {
+//         e->ignore();
+//         return;
+//     }
 
-    if (!QUriDrag::canDecode(e))
+    if (!Q3UriDrag::canDecode(e))
     {
         e->ignore();
         return;
     }
 
     e->accept();
-    QStrList lst;
-    QUriDrag::decode(e, lst);
-    
+    Q3StrList lst;
+    Q3UriDrag::decode(e, lst);
+
     // For each drop element...
     for (uint i=0; i<lst.count(); ++i )
-        addPath(QUriDrag::uriToLocalFile(lst.at(i)));
+        addPath(Q3UriDrag::uriToLocalFile(lst.at(i)));
 }
 
 void TrackPlaylist::addPath(QString qPath)
@@ -204,20 +204,14 @@ void TrackPlaylist::addPath(QString qPath)
         dir.setFilter(QDir::Dirs);
 
         // Check if the dir is empty
-        if (dir.entryInfoList()==0)
+        if (dir.entryInfoList().isEmpty())
             return;
 
-        const QFileInfoList dir_list = *dir.entryInfoList();
-
-        // Call addPath on subdirectories
-        QFileInfoListIterator dir_it(dir_list);
-        QFileInfo *d;
-        while ((d=dir_it.current()))
-        {
-            if (!d->filePath().endsWith(".") && !d->filePath().endsWith(".."))
-                addPath(d->filePath());
-			qDebug(d->fileName());
-            ++dir_it;
+        QFileInfoList dir_list = dir.entryInfoList();
+        for (int i = 0; i < dir_list.size(); ++i) {
+          QFileInfo fi = dir_list.at(i);
+          if (!fi.filePath().endsWith(".") && !fi.filePath().endsWith(".."))
+              addPath(fi.filePath());
         }
 
         //
@@ -226,14 +220,13 @@ void TrackPlaylist::addPath(QString qPath)
 
 		// Resize the table
 	    //m_pTable->setNumRows(m_pTable->numRows()+dir.count());
-		
-		dir.setFilter(QDir::Files);
+        dir.setFilter(QDir::Files);
         dir.setNameFilter("*.wav *.Wav *.WAV *.mp3 *.Mp3 *.MP3 *.ogg *.Ogg *.OGG *.aiff *.Aiff *.AIFF *.aif *.Aif *.AIF");
-        const QFileInfoList *list = dir.entryInfoList();
-        QFileInfoListIterator it(*list);        // create list iterator
+        //        const QFileInfoList list = dir.entryInfoList();
+        QFileInfoListIterator it(dir.entryInfoList().begin());        // create list iterator
         QFileInfo *fi;                          // pointer for traversing
 
-        while ((fi=it.current()))
+        while ((fi=&(*it)))
         {
             //qDebug("add %s",fi->filePath().latin1());
             addTrack(fi->filePath());

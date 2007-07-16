@@ -24,8 +24,8 @@
 #include <qlabel.h>
 #include <qcheckbox.h>
 #include <qpushbutton.h>
-#include <qgroupbox.h>
-#include <qprogressdialog.h>
+#include <q3groupbox.h>
+#include <q3progressdialog.h>
 #include <qmessagebox.h>
 #include <qtimer.h>
 #include <qwidget.h>
@@ -76,11 +76,13 @@
 #include "joysticklinux.h"
 #endif
 
-DlgPrefMidi::DlgPrefMidi(QWidget *parent, ConfigObject<ConfigValue> *pConfig) : DlgPrefMidiDlg(parent,"")
+DlgPrefMidi::DlgPrefMidi(QWidget *parent, ConfigObject<ConfigValue> *pConfig) :  QWidget(parent), Ui::DlgPrefMidiDlg()
 {
     m_pConfig = pConfig;
     m_pProgressDialog = 0;
     m_pTimer = 0;
+    
+    setupUi(this);
     
     // Open midi
     m_pMidi = 0;
@@ -207,7 +209,7 @@ DlgPrefMidi::DlgPrefMidi(QWidget *parent, ConfigObject<ConfigValue> *pConfig) : 
     }    
     
     // Used in mouse calibration
-    m_pProgressDialog = new QProgressDialog("Calibrating mouse turntable", "Cancel", 30, this, "Progress...", TRUE );
+    m_pProgressDialog = new Q3ProgressDialog("Calibrating mouse turntable", "Cancel", 30, this, "Progress...", TRUE );
     m_pProgressDialog->setMinimumDuration(0);
     m_pTimer = new QTimer(this);
     connect(m_pTimer, SIGNAL(timeout()), this, SLOT(slotUpdateProgressBar()));

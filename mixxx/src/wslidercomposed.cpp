@@ -18,6 +18,9 @@
 #include "wslidercomposed.h"
 #include <qpixmap.h>
 #include <qpainter.h>
+//Added by qt3to4:
+#include <QMouseEvent>
+#include <QPaintEvent>
 #include "defs.h"
 #include "wpixmapstore.h"
 

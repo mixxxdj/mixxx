@@ -16,8 +16,10 @@
  ***************************************************************************/
 
 #include "wpixmapstore.h"
+//Added by qt3to4:
+#include <QPixmap>
 
-QDict<PixmapInfoType> WPixmapStore::dictionary(251);
+Q3Dict<PixmapInfoType> WPixmapStore::dictionary(251);
 
 ImgSource* WPixmapStore::loader = 0;
 
@@ -69,7 +71,7 @@ QPixmap* WPixmapStore::getPixmapNoCache(const QString& fileName) {
 void WPixmapStore::deletePixmap(QPixmap *p)
 {
     // Search for pixmap in list
-    QDictIterator<PixmapInfoType> it(dictionary);
+    Q3DictIterator<PixmapInfoType> it(dictionary);
 
     for( ; it.current(); ++it ) 
     {
@@ -97,4 +99,3 @@ void WPixmapStore::emptyStore() {
 void WPixmapStore::setLoader(ImgSource* ld) {
 	loader = ld;
 }
-

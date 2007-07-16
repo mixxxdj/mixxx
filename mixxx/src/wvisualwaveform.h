@@ -23,10 +23,14 @@
 #define WVISUALWAVEFORM_H
 
 #include <qgl.h>
-#include <qptrlist.h>
+#include <q3ptrlist.h>
 #include <qevent.h>
 #include <qdatetime.h>
 #include <qdom.h>
+//Added by qt3to4:
+#include <QDragEnterEvent>
+#include <QDropEvent>
+#include <QTimerEvent>
 #include "wwidget.h"
 #include "visual/visualcontroller.h"
 #include "visual/picking.h"
@@ -81,7 +85,7 @@ protected:
     /** Backplane */
     VisualBackplane *m_pVisualBackplane;
 
-    QPtrList <VisualChannel> m_qlList;
+    Q3PtrList <VisualChannel> m_qlList;
     /** Colors */
     QColor colorBeat, colorSignal, colorHfc, colorMarker, colorFisheye, colorBack, colorCue;
 

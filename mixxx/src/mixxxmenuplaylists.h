@@ -12,12 +12,14 @@
 #ifndef MIXXXMENUPLAYLISTS_H
 #define MIXXXMENUPLAYLISTS_H
 
-#include <qptrlist.h>
+#include <q3ptrlist.h>
+//Added by qt3to4:
+#include <Q3PopupMenu>
 #include "trackplaylist.h"
 #include <qobject.h>
 #include <qaction.h>
 
-class QPopupMenu;
+class Q3PopupMenu;
 class Track;
 class TrackPlaylistList;
 
@@ -36,7 +38,7 @@ class MixxxMenuPlaylists : public QObject
     } menuItem_t;
 
 public:
-    MixxxMenuPlaylists(QPopupMenu *pMenu, Track *pTrack);
+    MixxxMenuPlaylists(Q3PopupMenu *pMenu, Track *pTrack);
     ~MixxxMenuPlaylists();
     
 public slots:
@@ -47,9 +49,9 @@ public slots:
     void slotSetActive(TrackPlaylist *pTrackPlaylist);
     
 private:
-    QPopupMenu *m_pMenu;
+    Q3PopupMenu *m_pMenu;
     Track *m_pTrack;
-    QPtrList<menuItem_t> m_qMenuList;
+    Q3PtrList<menuItem_t> m_qMenuList;
 };
 
 #endif

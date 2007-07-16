@@ -19,8 +19,8 @@
 #define TRACKINFOOBJECT_H
 
 #include <qobject.h>
-#include <qmemarray.h>
-#include <qvaluelist.h>
+#include <q3memarray.h>
+#include <q3valuelist.h>
 #include <qmutex.h>
 
 class QString;
@@ -128,11 +128,11 @@ public:
     /** Set id */
     void setId(int iId);
     /** Set pointer to waveform summary */
-    void setWaveSummary(QMemArray<char> *pWave, QValueList<long> *pSegmentation);
+    void setWaveSummary(Q3MemArray<char> *pWave, Q3ValueList<long> *pSegmentation);
     /** Returns a pointer to waveform summary */
-    QMemArray<char> *getWaveSummary();
+    Q3MemArray<char> *getWaveSummary();
     /** Returns a pointer to segmentation summary */
-    QValueList<long> *getSegmentationSummary();
+    Q3ValueList<long> *getSegmentationSummary();
     /** Return the next track as listed in WTrackTable */
     TrackInfoObject *getNext();
     /** Return the previous track as listed in WTrackTable */
@@ -185,9 +185,9 @@ private:
     /** Id. Unique ID of track */
     int m_iId;
     /** Pointer to summary wave info */
-    QMemArray<char> *m_pWave;
+    Q3MemArray<char> *m_pWave;
     /** Pointer to summary segmentation */
-    QValueList<long> *m_pSegmentation;
+    Q3ValueList<long> *m_pSegmentation;
     /** WTrackTableItems are representations of the values actually shown in the WTrackTable */
     WTrackTableItem *m_pTableItemScore, *m_pTableItemTitle, *m_pTableItemArtist, *m_pTableItemComment, *m_pTableItemType,
                     *m_pTableItemDuration, *m_pTableItemBpm, *m_pTableItemBitrate;

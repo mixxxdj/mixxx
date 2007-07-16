@@ -18,7 +18,7 @@
 #ifndef DLGPREFMIDI_H
 #define DLGPREFMIDI_H
 
-#include "dlgprefmididlg.h"
+#include "ui_dlgprefmididlg.h"
 #include "configobject.h"
 
 #include <qthread.h>
@@ -29,14 +29,14 @@ class PowerMate;
 class Mouse;
 class Hercules;
 class Joystick;
-class QProgressDialog;
+class Q3ProgressDialog;
 class QTimer;
 
 /**
   *@author Tue & Ken Haste Andersen
   */
 
-class DlgPrefMidi : public DlgPrefMidiDlg  {
+class DlgPrefMidi : public QWidget, public Ui::DlgPrefMidiDlg  {
     Q_OBJECT
 public:
     DlgPrefMidi(QWidget *parent, ConfigObject<ConfigValue> *pConfig);
@@ -68,7 +68,7 @@ private:
     Mouse *m_pMouse1, *m_pMouse2;
     Hercules *m_pHercules;
     Joystick *m_pJoystick;
-    QProgressDialog *m_pProgressDialog;
+    Q3ProgressDialog *m_pProgressDialog;
     QTimer *m_pTimer;
     int m_iProgress;
     Mouse *m_pMouseCalibrate;

@@ -18,7 +18,7 @@
 #include "trackcollection.h"
 #include "trackinfoobject.h"
 
-MixxxSocketClient::MixxxSocketClient(Track *pTrack, int sock, QObject *parent, const char *name) : QSocket(parent, name)
+MixxxSocketClient::MixxxSocketClient(Track *pTrack, int sock, QObject *parent, const char *name) : Q3Socket(parent, name)
 {
     m_pTrack = pTrack;
 

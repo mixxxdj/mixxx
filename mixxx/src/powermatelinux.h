@@ -18,7 +18,7 @@
 #ifndef POWERMATELINUX_H
 #define POWERMATELINUX_H
 
-#include <qvaluelist.h>
+#include <q3valuelist.h>
 #include "powermate.h"
 #include <sys/select.h>
 #include "controlobject.h"
@@ -55,7 +55,7 @@ protected:
     /** ID of event interface */
     int m_iId;
     /** List of open devices */
-    static QValueList <int> sqlOpenDevs;
+    static Q3ValueList <int> sqlOpenDevs;
     /** File set used in select() call */
     fd_set fdset;
     int oldv;

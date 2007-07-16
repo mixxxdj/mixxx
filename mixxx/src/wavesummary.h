@@ -21,7 +21,7 @@
 #include <qthread.h>
 #include <qmutex.h>
 #include <qwaitcondition.h>
-#include <qptrqueue.h>
+#include <q3ptrqueue.h>
 #include "defs.h"
 #include "configobject.h"
 
@@ -57,11 +57,12 @@ protected:
     void run();
 
     /** Queue holding files to generate a summary for */
-    QPtrQueue<TrackInfoObject> m_qQueue;
+    Q3PtrQueue<TrackInfoObject> m_qQueue;
     /** Mutex controlling access to m_qQueue */
     QMutex m_qMutex;
     /** Wait condition */
     QWaitCondition m_qWait;
+    QMutex m_qWaitMutex;
     /** Pointer to window and windowed samples of signal */
     WindowKaiser *window;
     /** Pointer to samples containing one windowed frame of samples */

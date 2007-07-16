@@ -18,7 +18,7 @@
 #ifndef DLGPREFMIXER_H
 #define DLGPREFMIXER_H
 
-#include "dlgprefmixerdlg.h"
+#include "ui_dlgprefmixerdlg.h"
 #include "configobject.h"
 #include "enginefilterblock.h"
 
@@ -27,7 +27,7 @@ class QWidget;
   *@author John Sully
   */
 
-class DlgPrefMixer : public DlgPrefMixerDlg  {
+class DlgPrefMixer : public QWidget, public Ui::DlgPrefMixerDlg  {
     Q_OBJECT
 public: 
     DlgPrefMixer(QWidget *parent, ConfigObject<ConfigValue> *_config);

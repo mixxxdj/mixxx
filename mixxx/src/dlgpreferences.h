@@ -18,9 +18,16 @@
 #ifndef DLGPREFERENCES_H
 #define DLGPREFERENCES_H
 
-#include <qtabdialog.h>
+ #include <QDialog>
+
 #include <qevent.h>
+#include <QtGui>
+#include "ui_dlgpreferencesdlg.h"
 #include "configobject.h"
+
+class QListWidget;
+class QListWidgetItem;
+class QStackedWidget;
 
 class MixxxApp;
 class MixxxView;
@@ -39,7 +46,7 @@ class PowerMate;
   *@author Tue & Ken Haste Andersen
   */
 
-class DlgPreferences : public QTabDialog
+class DlgPreferences : public QDialog, public Ui::DlgPreferencesDlg
 {
     Q_OBJECT
 public:
@@ -47,11 +54,14 @@ public:
                    PlayerProxy *player,
                    Track *track, ConfigObject<ConfigValue> *config);
     ~DlgPreferences();
+    void createIcons();
 public slots:
     void slotUpdate();
     void slotApply();
+    void changePage(QListWidgetItem *current, QListWidgetItem *previous);
 signals:
     void closeDlg();
+    void showDlg();
 protected:
     bool eventFilter(QObject *, QEvent *);
 private:
@@ -61,7 +71,8 @@ private:
     DlgPrefControls *wcontrols;
     DlgPrefMixer *wmixer;
     DlgPrefRecord *wrecord;
-    DlgPrefBPM  *wbpm;
+    DlgPrefBPM *wbpm;
+    
     ConfigObject<ConfigValue> *config;
     MixxxApp *m_pMixxx;
 };

@@ -61,7 +61,7 @@ VisualBufferTemporal::VisualBufferTemporal(EngineBuffer *pEngineBuffer, const ch
     m_bTemporalChanged = false;
     
     m_iTimesCalled = 0;
-    m_qTimer.startTimer(50);
+    m_qTimer.start(50);
 }
 
 VisualBufferTemporal::~VisualBufferTemporal()

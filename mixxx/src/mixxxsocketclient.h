@@ -12,15 +12,15 @@
 #ifndef MIXXXSOCKETCLIENT_H
 #define MIXXXSOCKETCLIENT_H
 
-#include <qsocket.h>
-#include <qtextstream.h>
+#include <q3socket.h>
+#include <q3textstream.h>
 
 class Track;
 
 /**
 @author Tue Haste Andersen
 */
-class MixxxSocketClient : public QSocket
+class MixxxSocketClient : public Q3Socket
 {
     Q_OBJECT
 public:
@@ -35,7 +35,7 @@ private slots:
 
 private:
     Track *m_pTrack;
-    QTextStream ts;
+    Q3TextStream ts;
 };
 
 #endif

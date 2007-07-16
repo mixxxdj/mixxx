@@ -11,6 +11,8 @@
 //
 
 #include "parserm3u.h"
+//Added by qt3to4:
+#include <Q3PtrList>
 
 /**
 @author Ingo Kossyk (kossyki@cs.tu-berlin.de)
@@ -20,8 +22,8 @@
 ToDo:
     - parse ALL informations from the pls file if available ,
 	  not only the filepath;
-	  
-	  Userinformation : 
+
+	  Userinformation :
 	  The M3U format is just a headerless plaintext format
 	  where every line of text either represents
 	  a file location or a comment. comments are being
@@ -33,7 +35,7 @@ ToDo:
 
 ParserM3u::ParserM3u()
 {
-    m_psLocations = new QPtrList<QString>;
+    m_psLocations = new Q3PtrList<QString>;
 }
 
 ParserM3u::~ParserM3u()
@@ -44,7 +46,7 @@ ParserM3u::~ParserM3u()
 }
 
 
-QPtrList<QString> * ParserM3u::parse(QString sFilename)
+Q3PtrList<QString> * ParserM3u::parse(QString sFilename)
 {
 
 
@@ -53,9 +55,9 @@ QPtrList<QString> * ParserM3u::parse(QString sFilename)
 
     clearLocations();
     //qDebug("ParserM3u: Starting to parse.");
-    if (file->open(IO_ReadOnly) && !isBinary(sFilename)) {
+    if (file->open(QIODevice::ReadOnly) && !isBinary(sFilename)) {
 
-        QTextStream * textstream = new QTextStream( file );
+        Q3TextStream * textstream = new Q3TextStream( file );
 
 
 
@@ -83,11 +85,12 @@ QPtrList<QString> * ParserM3u::parse(QString sFilename)
 }
 
 
-QString ParserM3u::getFilepath(QTextStream * stream, QString& basepath)
+QString ParserM3u::getFilepath(Q3TextStream * stream, QString& basepath)
 {
     QString textline,filename = "";
 
-    while(textline = stream->readLine()){
+    textline = stream->readLine();
+    while(!textline.isEmpty()){
         if(textline.isNull())
             break;
 
@@ -104,6 +107,7 @@ QString ParserM3u::getFilepath(QTextStream * stream, QString& basepath)
 				// We couldn't match this to a real file so ignore it
 			}
         }
+                textline = stream->readLine();
 	}
 
 	// Signal we reached the end

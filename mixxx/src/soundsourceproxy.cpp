@@ -1,3 +1,4 @@
+/* -*- mode:C++; indent-tabs-mode:t; tab-width:8; c-basic-offset:4; -*- */
 /***************************************************************************
                           soundsourceproxy.cpp  -  description
                              -------------------
@@ -25,11 +26,22 @@
 #ifdef __AUDIOFILE__
 #include "soundsourceaudiofile.h"
 #endif
+#ifdef __FFMPEGFILE__
+#include "soundsourceffmpeg.h"
+#endif
+
+//Added by qt3to4:
+#include <Q3ValueList>
+
 
 SoundSourceProxy::SoundSourceProxy(QString qFilename) : SoundSource(qFilename)
 {
+#ifdef __FFMPEGFILE__
+    m_pSoundSource = new SoundSourceFFmpeg(qFilename);
+    return;
+#endif
     if (qFilename.lower().endsWith(".mp3"))
-        m_pSoundSource = new SoundSourceMp3(qFilename);
+	m_pSoundSource = new SoundSourceMp3(qFilename);
     else if (qFilename.lower().endsWith(".ogg"))
         m_pSoundSource = new SoundSourceOggVorbis(qFilename);
     else
@@ -45,17 +57,24 @@ SoundSourceProxy::SoundSourceProxy(TrackInfoObject *pTrack) : SoundSource(pTrack
 {
     QString qFilename = pTrack->getLocation();
 
+#ifdef __FFMPEGFILE__
+    m_pSoundSource = new SoundSourceFFmpeg(qFilename);
+    return;
+#endif
+
     if (qFilename.lower().endsWith(".mp3"))
         m_pSoundSource = new SoundSourceMp3(qFilename);
     else if (qFilename.lower().endsWith(".ogg"))
         m_pSoundSource = new SoundSourceOggVorbis(qFilename);
     else
+	{
 #ifdef __SNDFILE__
-        m_pSoundSource = new SoundSourceSndFile(qFilename);
+	    m_pSoundSource = new SoundSourceSndFile(qFilename);
 #endif
 #ifdef __AUDIOFILE__
-        m_pSoundSource = new SoundSourceAudioFile(qFilename);
+	    m_pSoundSource = new SoundSourceAudioFile(qFilename);
 #endif
+	}
 
     pTrack->setDuration(length()/(2*getSrate()));
 }
@@ -82,21 +101,24 @@ long unsigned SoundSourceProxy::length()
 
 int SoundSourceProxy::ParseHeader(TrackInfoObject *p)
 {
-    QString qFilename = p->getFilename();
+  QString qFilename = p->getFilename();
+#ifdef __FFMPEGFILE__
+    return SoundSourceFFmpeg::ParseHeader(p);;
+#endif
     if (qFilename.lower().endsWith(".mp3"))
-        return SoundSourceMp3::ParseHeader(p);
+      return SoundSourceMp3::ParseHeader(p);
     else if (qFilename.lower().endsWith(".ogg"))
-        return SoundSourceOggVorbis::ParseHeader(p);
-    else if (qFilename.lower().endsWith(".wav") || qFilename.lower().endsWith(".aif") || qFilename.lower().endsWith(".flac") ||
+      return SoundSourceOggVorbis::ParseHeader(p);
+    else if (qFilename.lower().endsWith(".wav") || qFilename.lower().endsWith(".aif") ||
              qFilename.lower().endsWith(".aiff"))
 #ifdef __SNDFILE__
         return SoundSourceSndFile::ParseHeader(p);
 #endif
 #ifdef __AUDIOFILE__
-        return SoundSourceAudioFile::ParseHeader(p);
+    return SoundSourceAudioFile::ParseHeader(p);
 #endif
 
-    return ERR;
+        return ERR;
 }
 
 
@@ -105,7 +127,7 @@ int SoundSourceProxy::getSrate()
     return m_pSoundSource->getSrate();
 }
 
-QValueList<long> *SoundSourceProxy::getCuePoints()
+Q3ValueList<long> *SoundSourceProxy::getCuePoints()
 {
     return m_pSoundSource->getCuePoints();
 }

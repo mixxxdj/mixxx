@@ -18,12 +18,12 @@
 #ifndef CONTROLOBJECT_H
 #define CONTROLOBJECT_H
 
-#include <qobject.h>
-#include <qevent.h>
-#include <qptrlist.h>
+#include <QObject>
+#include <QEvent>
+#include <q3ptrlist.h>
 //#include <qaccel.h>
-#include <qptrqueue.h>
-#include <qmutex.h>
+#include <q3ptrqueue.h>
+#include <QMutex>
 #include "configobject.h"
 #include "midiobject.h"
 #include "controlobjectthread.h"
@@ -123,18 +123,18 @@ protected:
 
 private:
     /** List of associated proxy objects */
-    QPtrList<ControlObjectThread> m_qProxyList;
+    Q3PtrList<ControlObjectThread> m_qProxyList;
     /** List of ControlObject instantiations */
-    static QPtrList<ControlObject> m_sqList;
+    static Q3PtrList<ControlObject> m_sqList;
     /** Mutex protecting access to the queues */
     static QMutex m_sqQueueMutexMidi, m_sqQueueMutexThread;
     /** Queue holding control changes from MIDI */
-    static QPtrQueue<QueueObjectMidi> m_sqQueueMidi;
+    static Q3PtrQueue<QueueObjectMidi> m_sqQueueMidi;
     /** Queues holding control changes from other application threads and from widgets */
-    static QPtrQueue<QueueObjectThread> m_sqQueueThread;
+    static Q3PtrQueue<QueueObjectThread> m_sqQueueThread;
     /** Queue holding ControlObjects that has changed, but not been syncronized with it's
      * associated ControlObjectProxy objects. */
-    static QPtrQueue<ControlObject> m_sqQueueChanges;
+    static Q3PtrQueue<ControlObject> m_sqQueueChanges;
 };
 
 

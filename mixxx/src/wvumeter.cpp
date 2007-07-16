@@ -17,6 +17,9 @@
 
 #include "wvumeter.h"
 #include "wpixmapstore.h"
+//Added by qt3to4:
+#include <QPaintEvent>
+#include <QPixmap>
 
 WVuMeter::WVuMeter(QWidget *parent, const char *name) : WWidget(parent,name)
 {

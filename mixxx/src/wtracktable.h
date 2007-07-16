@@ -18,9 +18,14 @@
 #ifndef WTRACKTABLE_H
 #define WTRACKTABLE_H
 
-#include <qtable.h>
+#include <q3table.h>
 #include <qdom.h>
 #include <qevent.h>
+//Added by qt3to4:
+#include <QDragMoveEvent>
+#include <QDragLeaveEvent>
+#include <QDropEvent>
+#include <QDragEnterEvent>
 
 class QWidget;
 
@@ -44,12 +49,12 @@ class QDragEnterEvent;
 class QDragMoveEvent;
 class QDragLeaveEvent;
 class QDropEvent;
-class QTable;
+class Q3Table;
 class QWidget;
 class TrackInfoObject;
 class DlgBPMTap;
 
-class WTrackTable : public QTable
+class WTrackTable : public Q3Table
 {
     Q_OBJECT
 public:
@@ -60,7 +65,7 @@ public:
 protected slots:
     void slotMousePressed(int row, int col, int button, const QPoint &);    
     void slotMouseDoubleClicked(int row, int col, int button, const QPoint &);
-    QDragObject *dragObject();
+    Q3DragObject *dragObject();
 signals:
     void mousePressed(TrackInfoObject *pTrackInfoObject, int button);
 

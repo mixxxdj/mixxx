@@ -19,52 +19,89 @@
   #include "dlgprefrecord.h"
 #endif
 
+#ifdef __EXPERIMENTAL_BPM__
+  #include "dlgprefbpm.h"
+#endif
+
 #include "dlgpreferences.h"
 #include "dlgprefsound.h"
 #include "dlgprefmidi.h"
 #include "dlgprefplaylist.h"
 #include "dlgprefcontrols.h"
 #include "dlgprefmixer.h"
-
-#ifdef __EXPERIMENTAL_BPM__
-  #include "dlgprefbpm.h"
-#endif
-
 #include "mixxx.h"
 #include "track.h"
 #include "wtreeview.h"
+#include <QTabWidget>
+
+#include <QTabBar>
+#include <QDialog>
+#include <QtGui>
+//Added by qt3to4:
+#include <QEvent>
 
 DlgPreferences::DlgPreferences(MixxxApp *mixxx, MixxxView *view,
                                PlayerProxy *player,
-                               Track *, ConfigObject<ConfigValue> *_config) : QTabDialog(mixxx, "")
+                               Track *, ConfigObject<ConfigValue> *_config) :  QDialog(), Ui::DlgPreferencesDlg()
 {
     m_pMixxx = mixxx;
+    //QDialog* foo = new QDialog();
 
-    setCaption("Preferences");
+    setupUi(this);
+
+    setWindowTitle(tr("Preferences"));
     config = _config;
 
+    //Heavily based on the QT4 Config Dialog Example: http://doc.trolltech.com/4.3/dialogs-configdialog.html
+
+    /*contentsWidget = new QListWidget;
+    contentsWidget->setViewMode(QListView::IconMode);
+    contentsWidget->setIconSize(QSize(96, 84));
+    contentsWidget->setMovement(QListView::Static);
+    contentsWidget->setMaximumWidth(128);
+    contentsWidget->setSpacing(12);
+    */
+    
+    createIcons();
+    //contentsWidget->setCurrentRow(0);    
+    
     // Construct widgets for use in tabs
     wsound = new DlgPrefSound(this, player, config);
     wmidi  = new DlgPrefMidi(this, config);
     wplaylist = new DlgPrefPlaylist(this, config);
     wcontrols = new DlgPrefControls(this, view, mixxx, config);
     wmixer = new DlgPrefMixer(this, config);
-
 #ifdef __EXPERIMENTAL_BPM__
     wbpm = new DlgPrefBPM(this, config);
 #endif
-
 #ifdef __EXPERIMENTAL_RECORDING__
     wrecord = new DlgPrefRecord(this, config);
 #endif
+    //pagesWidget = new QStackedWidget;
+    while (pagesWidget->count() > 0)
+    {
+        pagesWidget->removeWidget(pagesWidget->currentWidget());
+    }
+       
+    pagesWidget->addWidget(wsound);
+    pagesWidget->addWidget(wmidi);
+    pagesWidget->addWidget(wplaylist);  
+    pagesWidget->addWidget(wcontrols);  
+    pagesWidget->addWidget(wmixer);  
+#ifdef __EXPERIMENTAL_BPM__
+    pagesWidget->addWidget(wbpm);  
+#endif
+#ifdef __EXPERIMENTAL_RECORDING__
+    pagesWidget->addWidget(wrecord);
+#endif    
 
     // Add tabs
+    /*
     addTab(wsound,    "Sound output");
     addTab(wmidi,     "Input controllers");
     addTab(wcontrols, "GUI");
     addTab(wplaylist, "Playlists");
     addTab(wmixer,    "Mixer Profile");
-
 #ifdef __EXPERIMENTAL_BPM__
     addTab(wbpm, "BPM");
 #endif
@@ -72,52 +109,113 @@ DlgPreferences::DlgPreferences(MixxxApp *mixxx, MixxxView *view,
 #ifdef __EXPERIMENTAL_RECORDING__
     addTab(wrecord,   "Recording");
 #endif
+*/
 
     // Add closebutton
-    setOkButton("Close");
+    //setOkButton("Close");
 
     // Set size
-    resize(QSize(380,520));
+    //resize(QSize(380,520));
 
     // Install event handler to generate closeDlg signal
     installEventFilter(this);
 
+
+
     // Connections
-    connect(this,        SIGNAL(aboutToShow()),          this,      SLOT(slotUpdate()));
-    connect(this,        SIGNAL(aboutToShow()),          wsound,    SLOT(slotUpdate()));
-    connect(this,        SIGNAL(aboutToShow()),          wmidi,     SLOT(slotUpdate()));
-    connect(this,        SIGNAL(aboutToShow()),          wplaylist, SLOT(slotUpdate()));
-    connect(this,        SIGNAL(aboutToShow()),          wcontrols, SLOT(slotUpdate()));
-    connect(this,	     SIGNAL(aboutToShow()),		     wmixer,    SLOT(slotUpdate()));
-
+    
+    connect(this, SIGNAL(showDlg()), this,      SLOT(slotUpdate()));
+    connect(this, SIGNAL(showDlg()), wsound,    SLOT(slotUpdate()));
+    connect(this, SIGNAL(showDlg()), wmidi,     SLOT(slotUpdate()));
+    connect(this, SIGNAL(showDlg()), wplaylist, SLOT(slotUpdate()));
+    connect(this, SIGNAL(showDlg()), wcontrols, SLOT(slotUpdate()));
+    connect(this, SIGNAL(showDlg()), wmixer,    SLOT(slotUpdate()));
 #ifdef __EXPERIMENTAL_BPM__
-    connect(this,        SIGNAL(aboutToShow()),           wbpm,      SLOT(slotUpdate()));
+    connect(this, SIGNAL(showDlg()), wbpm,    SLOT(slotUpdate()));
+#endif
+#ifdef __EXPERIMENTAL_RECORDING__
+    connect(this, SIGNAL(showDlg()), wrecord,    SLOT(slotUpdate()));
 #endif
 
-#ifdef __EXPERIMENTAL_RECORDING__
-    connect(this,	     SIGNAL(aboutToShow()),		     wrecord,   SLOT(slotUpdate()));
-#endif
-//    connect(this,        SIGNAL(closeDlg()),             wsound,    SLOT(slotApply()));
-    connect(this,        SIGNAL(closeDlg()),             wmidi,     SLOT(slotApply()));
-    connect(this,        SIGNAL(closeDlg()),             wplaylist, SLOT(slotApply()));
-    connect(this,        SIGNAL(closeDlg()),             wcontrols, SLOT(slotApply()));
+    connect(buttonBox, SIGNAL(accepted()), wsound,    SLOT(slotApply()));
+    //connect(buttonBox, SIGNAL(accepted()), wsound,    SLOT(slotApplyApi())); //TODO: Fix this
+    connect(buttonBox, SIGNAL(accepted()), wmidi,     SLOT(slotApply()));
+    connect(buttonBox, SIGNAL(accepted()), wplaylist, SLOT(slotApply()));
+    connect(buttonBox, SIGNAL(accepted()), wcontrols, SLOT(slotApply()));
+    connect(buttonBox, SIGNAL(accepted()), wmixer,    SLOT(slotApply()));  
+    connect(buttonBox, SIGNAL(accepted()), this,      SLOT(slotApply()));
 #ifdef __EXPERIMENTAL_BPM__
-    connect(this,        SIGNAL(closeDlg()),             wbpm,      SLOT(slotApply()));
+    connect(buttonBox, SIGNAL(accepted()), wbpm,    SLOT(slotApply()));
 #endif
-    connect(this,        SIGNAL(closeDlg()),             this,      SLOT(slotApply()));
-    connect(this,	     SIGNAL(closeDlg()),		     wmixer,    SLOT(slotApply()));
 #ifdef __EXPERIMENTAL_RECORDING__
-   connect(this,	 SIGNAL(closeDlg()),		 wrecord,   SLOT(slotApply()));
+    connect(buttonBox, SIGNAL(accepted()), wrecord,    SLOT(slotApply()));
 #endif
+    
+    /*
+    connect(this,        SIGNAL(buttonbox.accepted()),             wsound,    SLOT(slotApply()));
+    connect(this,        SIGNAL(buttonbox.accepted()),             wsound,    SLOT(slotApplyApi()));
+    connect(this,        SIGNAL(buttonbox.accepted()),             wmidi,     SLOT(slotApply()));
+    connect(this,        SIGNAL(buttonbox.accepted()),             wplaylist, SLOT(slotApply()));
+    connect(this,        SIGNAL(buttonbox.accepted()),             wcontrols, SLOT(slotApply()));
+    connect(this,        SIGNAL(buttonbox.accepted()),             this,      SLOT(slotApply()));
+    connect(this,        SIGNAL(buttonbox.accepted()),		     wmixer,    SLOT(slotApply()));*/
+    //Note: The above buttonbox.accepted() things used to just be closeDlg()) - Albert June 19, 2007
+
 //    if (tracklist->wTree)
 //        connect(wplaylist,   SIGNAL(apply(QString,QString)),         tracklist->wTree, SLOT(slotSetDirs(QString,QString)));
-    /*if (view->m_pTreeView)
-        connect(wplaylist,   SIGNAL(apply(const QString &)), view->m_pTreeView, SLOT(slotUpdateDir(const QString &)));
-	*/
+    
+    //TODO: Update the library when you change the options
+    //if (view->m_pTreeView)
+    //    connect(wplaylist,   SIGNAL(apply(const QString &)), view->m_pTreeView, SLOT(slotUpdateDir(const QString &)));
 }
 
 DlgPreferences::~DlgPreferences()
 {
+}
+
+void DlgPreferences::createIcons()
+{
+    QListWidgetItem *soundButton = new QListWidgetItem(contentsWidget);
+    soundButton->setIcon(QIcon(":/images/preferences/soundhardware.svg"));
+    soundButton->setText(tr("Sound Hardware"));
+    soundButton->setTextAlignment(Qt::AlignLeft | Qt::AlignVCenter);
+    soundButton->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
+
+    QListWidgetItem *midiButton = new QListWidgetItem(contentsWidget);
+    midiButton->setIcon(QIcon(":/images/preferences/controllers.svg"));
+    midiButton->setText(tr("Input Controllers"));
+    midiButton->setTextAlignment(Qt::AlignLeft | Qt::AlignVCenter);
+    midiButton->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
+
+    QListWidgetItem *playlistButton = new QListWidgetItem(contentsWidget);
+    playlistButton->setIcon(QIcon(":/images/preferences/library.svg"));
+    playlistButton->setText(tr("Library and Playlists"));
+    playlistButton->setTextAlignment(Qt::AlignLeft | Qt::AlignVCenter);
+    playlistButton->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
+
+    QListWidgetItem *controlsButton = new QListWidgetItem(contentsWidget);
+    controlsButton->setIcon(QIcon(":/images/preferences/interface.svg"));
+    controlsButton->setText(tr("Interface"));
+    controlsButton->setTextAlignment(Qt::AlignLeft | Qt::AlignVCenter);
+    controlsButton->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
+
+    QListWidgetItem *mixerButton = new QListWidgetItem(contentsWidget);
+    mixerButton->setIcon(QIcon(":/images/preferences/generic.svg"));
+    mixerButton->setText(tr("Mixer"));
+    mixerButton->setTextAlignment(Qt::AlignLeft | Qt::AlignVCenter);
+    mixerButton->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
+
+    connect(contentsWidget,
+            SIGNAL(currentItemChanged(QListWidgetItem *, QListWidgetItem *)),
+            this, SLOT(changePage(QListWidgetItem *, QListWidgetItem*)));
+}
+
+void DlgPreferences::changePage(QListWidgetItem *current, QListWidgetItem *previous)
+{
+    if (!current)
+        current = previous;
+
+    pagesWidget->setCurrentIndex(contentsWidget->row(current));
 }
 
 bool DlgPreferences::eventFilter(QObject *o, QEvent *e)
@@ -125,6 +223,9 @@ bool DlgPreferences::eventFilter(QObject *o, QEvent *e)
     // Send a close signal if dialog is closing
     if (e->type() == QEvent::Hide)
         emit(closeDlg());
+
+    if (e->type() == QEvent::Show)
+        emit(showDlg());
 
     // Standard event processing
     return QWidget::eventFilter(o,e);

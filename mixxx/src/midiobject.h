@@ -20,7 +20,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include <qptrvector.h>
+#include <q3ptrvector.h>
 #include <fcntl.h>
 #include <stdio.h>
 #include <signal.h>
@@ -75,7 +75,7 @@ protected:
     bool requestStop;
 
     int fd, count, size, no;
-    QPtrVector<ControlObject> controlList;
+    Q3PtrVector<ControlObject> controlList;
 
     /** List of available midi devices */
     QStringList devices;

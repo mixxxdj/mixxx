@@ -25,13 +25,15 @@
 #include <fcntl.h>
 #include "controlobject.h"
 #include "mathstuff.h"
+//Added by qt3to4:
+#include <Q3ValueList>
 
 #ifndef MSC_PULSELED
   // this may not have made its way into the kernel headers yet ...
   #define MSC_PULSELED 0x01
 #endif
 
-QValueList <int> PowerMateLinux::sqlOpenDevs;
+Q3ValueList <int> PowerMateLinux::sqlOpenDevs;
 
 PowerMateLinux::PowerMateLinux() : PowerMate()
 {
@@ -79,7 +81,7 @@ void PowerMateLinux::closedev()
         close(m_iFd);
 
         // Remove id from list
-        QValueList<int>::iterator it = sqlOpenDevs.find(m_iId);
+        Q3ValueList<int>::iterator it = sqlOpenDevs.find(m_iId);
         if (it!=sqlOpenDevs.end())
             sqlOpenDevs.remove(it);
     }

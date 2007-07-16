@@ -28,6 +28,7 @@
 #endif
 
 #include <qiodevice.h>
+#include <QTextIStream>
 #include <math.h>
 
 ConfigKey::ConfigKey()
@@ -128,11 +129,12 @@ ConfigValueMidi::ConfigValueMidi(QDomNode node) {
 
     // BJW: Try to spot missing XML blocks. I don't know how to make these warnings
     // more useful by adding the line number of the input file.
-    if (! key || ! type) 
+    if (key.isEmpty() || type.isEmpty()) 
       qWarning("Missing <key> or <type> in MIDI map node <%s>", node.nodeName().latin1());
     if (! midino && type != "pitch")
       qWarning("No <midino> defined in MIDI map node <%s>", node.nodeName().latin1());
-
+    
+    
     if (type == "key" || type == "note") {
         miditype = MIDI_KEY;
         value.prepend("Key ");
@@ -514,7 +516,7 @@ template <class ValueType> bool ConfigObject<ValueType>::Parse()
 {
     // Open file for reading
     QFile configfile(filename);
-    if (filename.length()<1 || !configfile.open(IO_ReadOnly))
+    if (filename.length()<1 || !configfile.open(QIODevice::ReadOnly))
     {
         qDebug("Could not read %s",filename.latin1());
         return false;
@@ -524,7 +526,7 @@ template <class ValueType> bool ConfigObject<ValueType>::Parse()
         // Parse the file
         int group = 0;
         QString groupStr, line;
-        QTextStream text(&configfile);
+        Q3TextStream text(&configfile);
         while (!text.atEnd())
         {
             line = text.readLine().stripWhiteSpace();
@@ -576,8 +578,8 @@ template <class ValueType> void ConfigObject<ValueType>::reopen(QString file)
 template <class ValueType> void ConfigObject<ValueType>::Save()
 {
     QFile file(filename);
-#ifndef QT3_SUPPORT 
-    if (!file.open(IO_WriteOnly | IO_Translate))
+#ifndef QT3_SUPPORT
+    if (!file.open(QIODevice::WriteOnly | QIODevice::Text))
 #else
     if (!file.open(QIODevice::WriteOnly | QIODevice::Text))
 #endif
@@ -587,7 +589,7 @@ template <class ValueType> void ConfigObject<ValueType>::Save()
     }
     else
     {
-        QTextStream stream(&file);
+        Q3TextStream stream(&file);
 
         ConfigOption<ValueType> *it;
         QString grp = "";

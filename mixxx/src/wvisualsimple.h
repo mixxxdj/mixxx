@@ -21,6 +21,11 @@
 #include "wwidget.h"
 #include <qpoint.h>
 #include <qrect.h>
+//Added by qt3to4:
+#include <QPaintEvent>
+#include <QMouseEvent>
+#include <QDropEvent>
+#include <QDragEnterEvent>
 
 /**
   *@author Tue & Ken Haste Andersen

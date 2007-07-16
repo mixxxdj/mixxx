@@ -19,6 +19,7 @@
 #define IMGSOURCE_H
 
 #include <qimage.h>
+#include <qcolor.h>
 
 class ImgSource {
 

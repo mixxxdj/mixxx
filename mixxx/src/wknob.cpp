@@ -17,6 +17,10 @@
 
 #include "wknob.h"
 #include "wpixmapstore.h"
+//Added by qt3to4:
+#include <QPixmap>
+#include <QMouseEvent>
+#include <QPaintEvent>
 
 WKnob::WKnob(QWidget *parent, const char *name) : WWidget(parent,name)
 {

@@ -19,6 +19,8 @@
 #define SOUNDSOURCEPROXY_H
 
 #include "soundsource.h"
+//Added by qt3to4:
+#include <Q3ValueList>
 
 class TrackInfoObject;
 
@@ -40,7 +42,7 @@ public:
     long unsigned length();
     static int ParseHeader(TrackInfoObject *p);
     int getSrate();
-    QValueList<long> *getCuePoints();
+    Q3ValueList<long> *getCuePoints();
     /** Returns filename */
     QString getFilename();
 

@@ -16,6 +16,8 @@
  ***************************************************************************/
 
 #include <qgl.h>
+//Added by qt3to4:
+#include <QEvent>
 #include "visualbuffer.h"
 #include "../readerextract.h"
 #include "../readerevent.h"

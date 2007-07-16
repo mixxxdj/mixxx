@@ -12,7 +12,7 @@
 #ifndef WTREEVIEW_H
 #define WTREEVIEW_H
 
-#include <qlistview.h>
+#include <q3listview.h>
 #include <qstring.h>
 #include <qfile.h>
 #include <qfileinfo.h>
@@ -23,12 +23,18 @@
 #include <qevent.h>
 #include <qpoint.h>
 #include <qmessagebox.h>
-#include <qdragobject.h>
+#include <q3dragobject.h>
 #include <qmime.h>
-#include <qptrlist.h>
+#include <q3ptrlist.h>
 #include <qstringlist.h>
 #include <qapplication.h>
-#include <qheader.h>
+#include <q3header.h>
+//Added by qt3to4:
+#include <QDragEnterEvent>
+#include <QDropEvent>
+#include <QMouseEvent>
+#include <QDragMoveEvent>
+#include <QDragLeaveEvent>
 
 
 class QWidget;
@@ -43,7 +49,7 @@ class TrackPlaylist;
 @author Tue Haste Andersen
 */
 
-class WTreeView : public QListView
+class WTreeView : public Q3ListView
 {
     Q_OBJECT
 public:
@@ -53,8 +59,8 @@ public:
     void setup(QDomNode node);
     bool showDirsOnly() { return dirsOnly; }
     /** Updates the playlists entries to match the names given in the string list */
-    void updatePlaylists(QPtrList<TrackPlaylist> *pList);
-    static QString fullPath(QListViewItem* item);
+    void updatePlaylists(Q3PtrList<TrackPlaylist> *pList);
+    static QString fullPath(Q3ListViewItem* item);
 public slots:
     void slotUpdateDir(const QString &);
     void slotHighlightPlaylist(TrackPlaylist *);
@@ -65,7 +71,7 @@ signals:
     void activatePlaylist(QString);
 
 protected slots:
-    void slotFolderSelected(QListViewItem *);
+    void slotFolderSelected(Q3ListViewItem *);
     void openFolder();
    
 protected:
@@ -83,8 +89,8 @@ private:
     /** Root item for directory structure */
     WTreeItem *m_pRootDir;    
     bool dirsOnly;
-    QListViewItem *oldCurrent;
-    QListViewItem *dropItem;
+    Q3ListViewItem *oldCurrent;
+    Q3ListViewItem *dropItem;
     QTimer *autoopen_timer;
     /** Item of last clicked item */
     WTreeItem *m_pClickedItem;

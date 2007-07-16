@@ -22,7 +22,7 @@
 
 QWaitCondition ControlObjectThread::m_sqWait;
 QMutex ControlObjectThread::m_sqMutex;
-QPtrQueue<ControlObjectThread> ControlObjectThread::m_sqQueue;
+Q3PtrQueue<ControlObjectThread> ControlObjectThread::m_sqQueue;
 
 ControlObjectThread::ControlObjectThread(ControlObject *pControlObject)
 {

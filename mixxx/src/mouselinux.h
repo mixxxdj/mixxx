@@ -19,7 +19,7 @@
 #define MOUSELINUX_H
 
 #include "mouse.h"
-#include <qvaluelist.h>
+#include <q3valuelist.h>
 #include <sys/select.h>
 
 /**

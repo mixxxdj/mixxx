@@ -14,9 +14,12 @@
 
 #include <qstring.h>
 #include <qdom.h>
-#include <qptrlist.h>
-#include <qpopupmenu.h>
+#include <q3ptrlist.h>
 #include <qobject.h>
+//Added by qt3to4:
+#include <QDropEvent>
+//Added by qt3to4:
+#include <Q3PopupMenu>
 #include "trackplaylist.h"
 #include "trackplaylistlist.h"
 
@@ -152,7 +155,7 @@ private:
 	/**used to add tracks from music Dir automatically*/
 	void librarycheckexists(QString qPath);
 	/**used to limit popup menu choices*/
-	QPopupMenu *menu;
+	Q3PopupMenu *menu;
 	TrackPlaylist *tempPlaylist;
 
 };

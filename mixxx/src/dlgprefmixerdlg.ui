@@ -1,427 +1,438 @@
-<!DOCTYPE UI><UI version="3.3" stdsetdef="1">
-<class>DlgPrefMixerDlg</class>
-<widget class="QWidget">
-    <property name="name">
-        <cstring>DlgPrefMixerDlg</cstring>
+<ui version="4.0" >
+ <class>DlgPrefMixerDlg</class>
+ <widget class="QWidget" name="DlgPrefMixerDlg" >
+  <property name="geometry" >
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>601</width>
+    <height>451</height>
+   </rect>
+  </property>
+  <property name="windowTitle" >
+   <string>Form1</string>
+  </property>
+  <widget class="Q3GroupBox" name="GroupBox1" >
+   <property name="enabled" >
+    <bool>true</bool>
+   </property>
+   <property name="geometry" >
+    <rect>
+     <x>10</x>
+     <y>240</y>
+     <width>581</width>
+     <height>90</height>
+    </rect>
+   </property>
+   <property name="font" >
+    <font/>
+   </property>
+   <property name="title" >
+    <string>X-fader Curve</string>
+   </property>
+   <property name="orientation" >
+    <enum>Qt::Vertical</enum>
+   </property>
+   <widget class="QLabel" name="TextLabel8" >
+    <property name="geometry" >
+     <rect>
+      <x>15</x>
+      <y>65</y>
+      <width>50</width>
+      <height>16</height>
+     </rect>
     </property>
-    <property name="geometry">
-        <rect>
-            <x>0</x>
-            <y>0</y>
-            <width>600</width>
-            <height>510</height>
-        </rect>
+    <property name="font" >
+     <font/>
     </property>
-    <property name="caption">
-        <string>Form1</string>
+    <property name="text" >
+     <string>Linear</string>
     </property>
-    <widget class="QLabel">
-        <property name="name">
-            <cstring>TextLabel1</cstring>
-        </property>
-        <property name="enabled">
-            <bool>true</bool>
-        </property>
-        <property name="geometry">
-            <rect>
-                <x>10</x>
-                <y>11</y>
-                <width>140</width>
-                <height>19</height>
-            </rect>
-        </property>
-        <property name="font">
-            <font>
-            </font>
-        </property>
-        <property name="text">
-            <string>Preset</string>
-        </property>
-    </widget>
-    <widget class="QGroupBox">
-        <property name="name">
-            <cstring>GroupBox1_2</cstring>
-        </property>
-        <property name="enabled">
-            <bool>true</bool>
-        </property>
-        <property name="geometry">
-            <rect>
-                <x>10</x>
-                <y>40</y>
-                <width>345</width>
-                <height>90</height>
-            </rect>
-        </property>
-        <property name="font">
-            <font>
-            </font>
-        </property>
-        <property name="title">
-            <string>Hi Shelf EQ</string>
-        </property>
-        <widget class="QLabel">
-            <property name="name">
-                <cstring>TextLabel8_3</cstring>
-            </property>
-            <property name="geometry">
-                <rect>
-                    <x>15</x>
-                    <y>65</y>
-                    <width>40</width>
-                    <height>16</height>
-                </rect>
-            </property>
-            <property name="font">
-                <font>
-                </font>
-            </property>
-            <property name="text">
-                <string>20Hz</string>
-            </property>
-        </widget>
-        <widget class="QLabel">
-            <property name="name">
-                <cstring>TextLabel8_2_2</cstring>
-            </property>
-            <property name="geometry">
-                <rect>
-                    <x>276</x>
-                    <y>60</y>
-                    <width>60</width>
-                    <height>20</height>
-                </rect>
-            </property>
-            <property name="font">
-                <font>
-                </font>
-            </property>
-            <property name="text">
-                <string>22.05kHz</string>
-            </property>
-        </widget>
-        <widget class="QSlider">
-            <property name="name">
-                <cstring>SliderHiEQ</cstring>
-            </property>
-            <property name="geometry">
-                <rect>
-                    <x>15</x>
-                    <y>35</y>
-                    <width>315</width>
-                    <height>29</height>
-                </rect>
-            </property>
-            <property name="minValue">
-                <number>20</number>
-            </property>
-            <property name="maxValue">
-                <number>22050</number>
-            </property>
-            <property name="lineStep">
-                <number>1</number>
-            </property>
-            <property name="pageStep">
-                <number>1</number>
-            </property>
-            <property name="value">
-                <number>28</number>
-            </property>
-            <property name="orientation">
-                <enum>Horizontal</enum>
-            </property>
-            <property name="tickmarks">
-                <enum>NoMarks</enum>
-            </property>
-            <property name="tickInterval">
-                <number>5</number>
-            </property>
-        </widget>
-        <widget class="QLabel">
-            <property name="name">
-                <cstring>TextHiEQ</cstring>
-            </property>
-            <property name="geometry">
-                <rect>
-                    <x>270</x>
-                    <y>10</y>
-                    <width>67</width>
-                    <height>21</height>
-                </rect>
-            </property>
-            <property name="text">
-                <string>textLabel1</string>
-            </property>
-        </widget>
-    </widget>
-    <widget class="QGroupBox">
-        <property name="name">
-            <cstring>GroupBox1</cstring>
-        </property>
-        <property name="enabled">
-            <bool>true</bool>
-        </property>
-        <property name="geometry">
-            <rect>
-                <x>10</x>
-                <y>240</y>
-                <width>345</width>
-                <height>90</height>
-            </rect>
-        </property>
-        <property name="font">
-            <font>
-            </font>
-        </property>
-        <property name="title">
-            <string>X-fader Curve</string>
-        </property>
-        <widget class="QLabel">
-            <property name="name">
-                <cstring>TextLabel8</cstring>
-            </property>
-            <property name="geometry">
-                <rect>
-                    <x>15</x>
-                    <y>65</y>
-                    <width>50</width>
-                    <height>16</height>
-                </rect>
-            </property>
-            <property name="font">
-                <font>
-                </font>
-            </property>
-            <property name="text">
-                <string>Linear</string>
-            </property>
-        </widget>
-        <widget class="QLabel">
-            <property name="name">
-                <cstring>TextLabel8_2</cstring>
-            </property>
-            <property name="geometry">
-                <rect>
-                    <x>263</x>
-                    <y>65</y>
-                    <width>74</width>
-                    <height>20</height>
-                </rect>
-            </property>
-            <property name="font">
-                <font>
-                </font>
-            </property>
-            <property name="text">
-                <string>Logarithmic</string>
-            </property>
-        </widget>
-        <widget class="QLabel">
-            <property name="name">
-                <cstring>textLabel3</cstring>
-            </property>
-            <property name="geometry">
-                <rect>
-                    <x>271</x>
-                    <y>10</y>
-                    <width>70</width>
-                    <height>21</height>
-                </rect>
-            </property>
-            <property name="text">
-                <string>textLabel3</string>
-            </property>
-        </widget>
-        <widget class="QSlider">
-            <property name="name">
-                <cstring>SliderXFader</cstring>
-            </property>
-            <property name="geometry">
-                <rect>
-                    <x>15</x>
-                    <y>35</y>
-                    <width>315</width>
-                    <height>29</height>
-                </rect>
-            </property>
-            <property name="minValue">
-                <number>0</number>
-            </property>
-            <property name="maxValue">
-                <number>100</number>
-            </property>
-            <property name="lineStep">
-                <number>1</number>
-            </property>
-            <property name="pageStep">
-                <number>1</number>
-            </property>
-            <property name="value">
-                <number>50</number>
-            </property>
-            <property name="orientation">
-                <enum>Horizontal</enum>
-            </property>
-            <property name="tickmarks">
-                <enum>NoMarks</enum>
-            </property>
-            <property name="tickInterval">
-                <number>5</number>
-            </property>
-        </widget>
-    </widget>
-    <widget class="QPushButton">
-        <property name="name">
-            <cstring>pushButton1</cstring>
-        </property>
-        <property name="geometry">
-            <rect>
-                <x>261</x>
-                <y>340</y>
-                <width>90</width>
-                <height>21</height>
-            </rect>
-        </property>
-        <property name="text">
-            <string>Save</string>
-        </property>
-    </widget>
-    <widget class="QComboBox">
-        <property name="name">
-            <cstring>ComboBoxSoundcardMasterLeft</cstring>
-        </property>
-        <property name="enabled">
-            <bool>true</bool>
-        </property>
-        <property name="geometry">
-            <rect>
-                <x>164</x>
-                <y>6</y>
-                <width>195</width>
-                <height>22</height>
-            </rect>
-        </property>
-        <property name="font">
-            <font>
-            </font>
-        </property>
-    </widget>
-    <widget class="QGroupBox">
-        <property name="name">
-            <cstring>GroupBox1_2_2</cstring>
-        </property>
-        <property name="enabled">
-            <bool>true</bool>
-        </property>
-        <property name="geometry">
-            <rect>
-                <x>10</x>
-                <y>140</y>
-                <width>345</width>
-                <height>90</height>
-            </rect>
-        </property>
-        <property name="font">
-            <font>
-            </font>
-        </property>
-        <property name="title">
-            <string>Low Shelf EQ</string>
-        </property>
-        <widget class="QLabel">
-            <property name="name">
-                <cstring>TextLabel8_2_2_2</cstring>
-            </property>
-            <property name="geometry">
-                <rect>
-                    <x>276</x>
-                    <y>60</y>
-                    <width>60</width>
-                    <height>20</height>
-                </rect>
-            </property>
-            <property name="font">
-                <font>
-                </font>
-            </property>
-            <property name="text">
-                <string>22.05kHz</string>
-            </property>
-        </widget>
-        <widget class="QLabel">
-            <property name="name">
-                <cstring>TextLabel8_3_2</cstring>
-            </property>
-            <property name="geometry">
-                <rect>
-                    <x>15</x>
-                    <y>65</y>
-                    <width>40</width>
-                    <height>16</height>
-                </rect>
-            </property>
-            <property name="font">
-                <font>
-                </font>
-            </property>
-            <property name="text">
-                <string>20Hz</string>
-            </property>
-        </widget>
-        <widget class="QSlider">
-            <property name="name">
-                <cstring>SliderLoEQ</cstring>
-            </property>
-            <property name="geometry">
-                <rect>
-                    <x>15</x>
-                    <y>35</y>
-                    <width>315</width>
-                    <height>29</height>
-                </rect>
-            </property>
-            <property name="minValue">
-                <number>20</number>
-            </property>
-            <property name="maxValue">
-                <number>22050</number>
-            </property>
-            <property name="lineStep">
-                <number>1</number>
-            </property>
-            <property name="pageStep">
-                <number>1</number>
-            </property>
-            <property name="value">
-                <number>28</number>
-            </property>
-            <property name="orientation">
-                <enum>Horizontal</enum>
-            </property>
-            <property name="tickmarks">
-                <enum>NoMarks</enum>
-            </property>
-            <property name="tickInterval">
-                <number>5</number>
-            </property>
-        </widget>
-        <widget class="QLabel">
-            <property name="name">
-                <cstring>TextLoEQ</cstring>
-            </property>
-            <property name="geometry">
-                <rect>
-                    <x>271</x>
-                    <y>10</y>
-                    <width>70</width>
-                    <height>21</height>
-                </rect>
-            </property>
-            <property name="text">
-                <string>textLabel2</string>
-            </property>
-        </widget>
-    </widget>
-</widget>
-<layoutdefaults spacing="6" margin="11"/>
-</UI>
+    <property name="wordWrap" >
+     <bool>false</bool>
+    </property>
+   </widget>
+   <widget class="QSlider" name="SliderXFader" >
+    <property name="geometry" >
+     <rect>
+      <x>15</x>
+      <y>35</y>
+      <width>551</width>
+      <height>29</height>
+     </rect>
+    </property>
+    <property name="minimum" >
+     <number>0</number>
+    </property>
+    <property name="maximum" >
+     <number>100</number>
+    </property>
+    <property name="singleStep" >
+     <number>1</number>
+    </property>
+    <property name="pageStep" >
+     <number>1</number>
+    </property>
+    <property name="value" >
+     <number>50</number>
+    </property>
+    <property name="orientation" >
+     <enum>Qt::Horizontal</enum>
+    </property>
+    <property name="tickInterval" >
+     <number>5</number>
+    </property>
+   </widget>
+   <widget class="QLabel" name="textLabel3" >
+    <property name="geometry" >
+     <rect>
+      <x>500</x>
+      <y>10</y>
+      <width>70</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="text" >
+     <string>textLabel3</string>
+    </property>
+    <property name="wordWrap" >
+     <bool>false</bool>
+    </property>
+   </widget>
+   <widget class="QLabel" name="TextLabel8_2" >
+    <property name="geometry" >
+     <rect>
+      <x>500</x>
+      <y>60</y>
+      <width>74</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="font" >
+     <font/>
+    </property>
+    <property name="text" >
+     <string>Logarithmic</string>
+    </property>
+    <property name="wordWrap" >
+     <bool>false</bool>
+    </property>
+   </widget>
+  </widget>
+  <widget class="QPushButton" name="pushButton1" >
+   <property name="geometry" >
+    <rect>
+     <x>400</x>
+     <y>340</y>
+     <width>191</width>
+     <height>31</height>
+    </rect>
+   </property>
+   <property name="text" >
+    <string>Save</string>
+   </property>
+  </widget>
+  <widget class="QComboBox" name="ComboBoxSoundcardMasterLeft" >
+   <property name="enabled" >
+    <bool>true</bool>
+   </property>
+   <property name="geometry" >
+    <rect>
+     <x>164</x>
+     <y>6</y>
+     <width>421</width>
+     <height>31</height>
+    </rect>
+   </property>
+   <property name="font" >
+    <font/>
+   </property>
+  </widget>
+  <widget class="Q3GroupBox" name="GroupBox1_2_2" >
+   <property name="enabled" >
+    <bool>true</bool>
+   </property>
+   <property name="geometry" >
+    <rect>
+     <x>10</x>
+     <y>140</y>
+     <width>581</width>
+     <height>90</height>
+    </rect>
+   </property>
+   <property name="font" >
+    <font/>
+   </property>
+   <property name="title" >
+    <string>Low Shelf EQ</string>
+   </property>
+   <property name="orientation" >
+    <enum>Qt::Vertical</enum>
+   </property>
+   <widget class="QLabel" name="TextLabel8_3_2" >
+    <property name="geometry" >
+     <rect>
+      <x>15</x>
+      <y>65</y>
+      <width>40</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="font" >
+     <font/>
+    </property>
+    <property name="text" >
+     <string>20Hz</string>
+    </property>
+    <property name="wordWrap" >
+     <bool>false</bool>
+    </property>
+   </widget>
+   <widget class="QSlider" name="SliderLoEQ" >
+    <property name="geometry" >
+     <rect>
+      <x>15</x>
+      <y>35</y>
+      <width>551</width>
+      <height>29</height>
+     </rect>
+    </property>
+    <property name="minimum" >
+     <number>20</number>
+    </property>
+    <property name="maximum" >
+     <number>22050</number>
+    </property>
+    <property name="singleStep" >
+     <number>1</number>
+    </property>
+    <property name="pageStep" >
+     <number>1</number>
+    </property>
+    <property name="value" >
+     <number>28</number>
+    </property>
+    <property name="orientation" >
+     <enum>Qt::Horizontal</enum>
+    </property>
+    <property name="tickInterval" >
+     <number>5</number>
+    </property>
+   </widget>
+   <widget class="QLabel" name="TextLoEQ" >
+    <property name="geometry" >
+     <rect>
+      <x>500</x>
+      <y>20</y>
+      <width>70</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="text" >
+     <string>textLabel2</string>
+    </property>
+    <property name="wordWrap" >
+     <bool>false</bool>
+    </property>
+   </widget>
+   <widget class="QLabel" name="TextLabel8_2_2_2" >
+    <property name="geometry" >
+     <rect>
+      <x>510</x>
+      <y>60</y>
+      <width>60</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="font" >
+     <font/>
+    </property>
+    <property name="text" >
+     <string>22.05 kHz</string>
+    </property>
+    <property name="wordWrap" >
+     <bool>false</bool>
+    </property>
+   </widget>
+   <widget class="QLabel" name="TextLabel8_2_4" >
+    <property name="geometry" >
+     <rect>
+      <x>270</x>
+      <y>60</y>
+      <width>60</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="font" >
+     <font/>
+    </property>
+    <property name="text" >
+     <string>10 kHz</string>
+    </property>
+    <property name="wordWrap" >
+     <bool>false</bool>
+    </property>
+   </widget>
+  </widget>
+  <widget class="QLabel" name="TextLabel1" >
+   <property name="enabled" >
+    <bool>true</bool>
+   </property>
+   <property name="geometry" >
+    <rect>
+     <x>20</x>
+     <y>10</y>
+     <width>141</width>
+     <height>21</height>
+    </rect>
+   </property>
+   <property name="font" >
+    <font/>
+   </property>
+   <property name="text" >
+    <string>Preset</string>
+   </property>
+   <property name="wordWrap" >
+    <bool>false</bool>
+   </property>
+  </widget>
+  <widget class="Q3GroupBox" name="GroupBox1_2" >
+   <property name="enabled" >
+    <bool>true</bool>
+   </property>
+   <property name="geometry" >
+    <rect>
+     <x>10</x>
+     <y>40</y>
+     <width>581</width>
+     <height>91</height>
+    </rect>
+   </property>
+   <property name="font" >
+    <font/>
+   </property>
+   <property name="title" >
+    <string>High Shelf EQ</string>
+   </property>
+   <property name="orientation" >
+    <enum>Qt::Vertical</enum>
+   </property>
+   <widget class="QLabel" name="TextLabel8_3" >
+    <property name="geometry" >
+     <rect>
+      <x>15</x>
+      <y>65</y>
+      <width>40</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="font" >
+     <font/>
+    </property>
+    <property name="text" >
+     <string>20 Hz</string>
+    </property>
+    <property name="wordWrap" >
+     <bool>false</bool>
+    </property>
+   </widget>
+   <widget class="QSlider" name="SliderHiEQ" >
+    <property name="geometry" >
+     <rect>
+      <x>15</x>
+      <y>35</y>
+      <width>551</width>
+      <height>29</height>
+     </rect>
+    </property>
+    <property name="minimum" >
+     <number>20</number>
+    </property>
+    <property name="maximum" >
+     <number>22050</number>
+    </property>
+    <property name="singleStep" >
+     <number>1</number>
+    </property>
+    <property name="pageStep" >
+     <number>1</number>
+    </property>
+    <property name="value" >
+     <number>28</number>
+    </property>
+    <property name="orientation" >
+     <enum>Qt::Horizontal</enum>
+    </property>
+    <property name="tickInterval" >
+     <number>5</number>
+    </property>
+   </widget>
+   <widget class="QLabel" name="TextHiEQ" >
+    <property name="geometry" >
+     <rect>
+      <x>500</x>
+      <y>20</y>
+      <width>67</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="text" >
+     <string>textLabel1</string>
+    </property>
+    <property name="wordWrap" >
+     <bool>false</bool>
+    </property>
+   </widget>
+   <widget class="QLabel" name="TextLabel8_2_2" >
+    <property name="geometry" >
+     <rect>
+      <x>510</x>
+      <y>60</y>
+      <width>60</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="font" >
+     <font/>
+    </property>
+    <property name="text" >
+     <string>22.05 kHz</string>
+    </property>
+    <property name="wordWrap" >
+     <bool>false</bool>
+    </property>
+   </widget>
+   <widget class="QLabel" name="TextLabel8_2_3" >
+    <property name="geometry" >
+     <rect>
+      <x>270</x>
+      <y>60</y>
+      <width>60</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="font" >
+     <font/>
+    </property>
+    <property name="text" >
+     <string>10 kHz</string>
+    </property>
+    <property name="wordWrap" >
+     <bool>false</bool>
+    </property>
+   </widget>
+  </widget>
+ </widget>
+ <layoutdefault spacing="6" margin="11" />
+ <pixmapfunction>qPixmapFromMimeSource</pixmapfunction>
+ <customwidgets>
+  <customwidget>
+   <class>Q3GroupBox</class>
+   <extends>QGroupBox</extends>
+   <header>Qt3Support/Q3GroupBox</header>
+   <container>1</container>
+  </customwidget>
+ </customwidgets>
+ <resources/>
+ <connections/>
+</ui>

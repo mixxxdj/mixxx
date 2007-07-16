@@ -18,8 +18,10 @@
 #ifndef PLAYERPORTAUDIO_H
 #define PLAYERPORTAUDIO_H
 
-#include <qsemaphore.h>
+#include <q3semaphore.h>
 #include <qthread.h>
+#include <QMutex>
+#include <QWaitCondition>
 #include "player.h"
 #include "portaudio.h"
 
@@ -85,6 +87,7 @@ protected:
     QMutex lockSamples; 
     /** Wait condition that forces multiple PortAudio callbacks in separate threads to play nicely */
     QWaitCondition waitForNextOutput;
+    QMutex waitMutex;
 };
 
 int paV19Callback(const void *inputBuffer, void *outputBuffer,

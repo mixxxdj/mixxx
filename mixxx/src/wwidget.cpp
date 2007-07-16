@@ -24,7 +24,7 @@
 QString WWidget::m_qPath;
 ConfigObject<ConfigValueKbd> *WWidget::m_spKbdConfigObject = 0;
 
-WWidget::WWidget(QWidget *parent, const char *name, WFlags flags) : QWidget(parent,name, flags|WStaticContents|WRepaintNoErase|WResizeNoErase)
+WWidget::WWidget(QWidget *parent, const char *name, Qt::WFlags flags) : QWidget(parent,name, flags|Qt::WStaticContents|Qt::WNoAutoErase|Qt::WResizeNoErase)
 {
     m_fValue = 0.;
     m_bOff = false;

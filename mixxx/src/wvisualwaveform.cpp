@@ -19,7 +19,13 @@
 #include "wskincolor.h"
 #include "visual/visualchannel.h"
 #include "visual/visualdisplay.h"
-#include <qdragobject.h>
+#include <q3dragobject.h>
+//Added by qt3to4:
+#include <QDropEvent>
+#include <QTimerEvent>
+#include <QMouseEvent>
+#include <QEvent>
+#include <QDragEnterEvent>
 
 WVisualWaveform::WVisualWaveform(QWidget *pParent, const char *pName, const QGLWidget *pShareWidget) : QGLWidget(pParent,pName,pShareWidget)
 {
@@ -68,20 +74,20 @@ bool WVisualWaveform::directRendering()
 
 void WVisualWaveform::dragEnterEvent(QDragEnterEvent *event)
 {
-    event->accept(QUriDrag::canDecode(event));
+    event->accept(Q3UriDrag::canDecode(event));
 }
 
 void WVisualWaveform::dropEvent(QDropEvent *event)
 {
     QStringList lst;
-    if (!QUriDrag::canDecode(event))
+    if (!Q3UriDrag::canDecode(event))
     {
         event->ignore();
         return;
     }
 
     event->accept();
-    QUriDrag::decodeLocalFiles(event, lst);
+    Q3UriDrag::decodeLocalFiles(event, lst);
     QString name = (*lst.begin());
 
     emit(trackDropped(name));

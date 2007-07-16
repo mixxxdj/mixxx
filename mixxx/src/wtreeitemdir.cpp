@@ -13,7 +13,7 @@
 #include "wtreeitemfile.h"
 #include "wtreeview.h"
 
-WTreeItemDir::WTreeItemDir(QListView *parent, const QString& filename) : WTreeItem(parent), f(filename), showDirsOnly(((WTreeView*)parent)->showDirsOnly())
+WTreeItemDir::WTreeItemDir(Q3ListView *parent, const QString& filename) : WTreeItem(parent), f(filename), showDirsOnly(((WTreeView*)parent)->showDirsOnly())
 {
     folderLocked = 0;
     folderClosed = 0;
@@ -59,6 +59,7 @@ WTreeItemDir::~WTreeItemDir()
 
 void WTreeItemDir::setOpen(bool o)
 {
+    int i;
 /*
     if ( o )
         setPixmap( folderOpen );
@@ -76,55 +77,55 @@ void WTreeItemDir::setOpen(bool o)
         }
 
         listView()->setUpdatesEnabled( FALSE );
-        const QFileInfoList * files = thisDir.entryInfoList();
-        if ( files ) {
-            QFileInfoListIterator it( *files );
-            QFileInfo * fi;
-            while( (fi=it.current()) != 0 ) {
-                ++it;
-                if ( fi->fileName() == "." || fi->fileName() == ".." )
+        //        const QFileInfoList * files = thisDir.entryInfoList();
+
+        if (!thisDir.entryInfoList().isEmpty()) {
+          QFileInfoList list = thisDir.entryInfoList();
+
+            for (int i = 0; i < list.size(); ++i) {
+                QFileInfo fi = list.at(i);
+                if ( fi.fileName() == "." || fi.fileName() == ".." )
                     ; // nothing
-                else if ( fi->isSymLink() && !showDirsOnly ) {
-                     WTreeItemFile *item = new WTreeItemFile( this, fi->fileName(),
-                                                      "Symbolic Link" );
+                else if ( fi.isSymLink() && !showDirsOnly ) {
+                     WTreeItemFile *item = new WTreeItemFile( this, fi.fileName(),
+                                                              "Symbolic Link" );
 //                    item->setPixmap( fileNormal );
                 }
-                else if ( fi->isDir() )
-                    (void)new WTreeItemDir( this, fi->fileName() );
+                else if ( fi.isDir() )
+                    (void)new WTreeItemDir( this, fi.fileName() );
                 else if (!showDirsOnly &&
-                         (fi->fileName().endsWith(".mp3") ||
-                          fi->fileName().endsWith(".ogg") ||
-                          fi->fileName().endsWith(".wav") ||
-						  fi->fileName().endsWith(".aif") ||
-						  fi->fileName().endsWith(".aiff") ||
-						  fi->fileName().endsWith(".Mp3") ||
-                          fi->fileName().endsWith(".Ogg") ||
-                          fi->fileName().endsWith(".Wav") ||
-                          fi->fileName().endsWith(".Aif") ||
-                          fi->fileName().endsWith(".Aiff") ||
-                          fi->fileName().endsWith(".MP3") ||
-                          fi->fileName().endsWith(".OGG") ||
-                          fi->fileName().endsWith(".WAV") ||
-						  fi->fileName().endsWith(".AIF") ||
-						  fi->fileName().endsWith(".AIFF")))
+                         (fi.fileName().endsWith(".mp3") ||
+                          fi.fileName().endsWith(".ogg") ||
+                          fi.fileName().endsWith(".wav") ||
+			  fi.fileName().endsWith(".aif") ||
+			  fi.fileName().endsWith(".aiff") ||
+			  fi.fileName().endsWith(".Mp3") ||
+                          fi.fileName().endsWith(".Ogg") ||
+                          fi.fileName().endsWith(".Wav") ||
+                          fi.fileName().endsWith(".Aif") ||
+                          fi.fileName().endsWith(".Aiff") ||
+                          fi.fileName().endsWith(".MP3") ||
+                          fi.fileName().endsWith(".OGG") ||
+                          fi.fileName().endsWith(".WAV") ||
+			  fi.fileName().endsWith(".AIF") ||
+			  fi.fileName().endsWith(".AIFF")))
                 {
-                     WTreeItemFile *item = new WTreeItemFile(this, fi->fileName(),
-                                                             fi->isFile()?"File":"Special" );
-					 qDebug("name" + fi->fileName());
+                     WTreeItemFile *item = new WTreeItemFile(this, fi.fileName(),
+                                                             fi.isFile()?"File":"Special" );
 //                    item->setPixmap( fileNormal );
                 }
             }
         }
         listView()->setUpdatesEnabled( TRUE );
     }
-    QListViewItem::setOpen( o );
+    Q3ListViewItem::setOpen( o );
 }
 
 
 void WTreeItemDir::setup()
 {
     setExpandable(true);
-    QListViewItem::setup();
+    Q3ListViewItem::setup();
 }
 
 
@@ -151,7 +152,6 @@ QString WTreeItemDir::text( int column ) const
     else
         return "Unreadable Directory";
 }
-
 
 void WTreeItemDir::popupMenu()
 {

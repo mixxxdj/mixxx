@@ -18,7 +18,7 @@
 #ifndef DLGPREFCONTROLS_H
 #define DLGPREFCONTROLS_H
 
-#include "dlgprefcontrolsdlg.h"
+#include "ui_dlgprefcontrolsdlg.h"
 #include "configobject.h"
 #include "mixxx.h"
 
@@ -31,7 +31,7 @@ class MixxxView;
   *@author Tue & Ken Haste Andersen
   */
 
-class DlgPrefControls : public DlgPrefControlsDlg  {
+class DlgPrefControls : public QWidget, public Ui::DlgPrefControlsDlg  {
     Q_OBJECT
 public: 
     DlgPrefControls(QWidget *parent, MixxxView *pView, MixxxApp *mixxx, ConfigObject<ConfigValue> *pConfig);

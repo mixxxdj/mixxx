@@ -28,7 +28,7 @@
 #ifndef HERCULESLINUX_H
 #define HERCULESLINUX_H
 
-#include <qvaluelist.h>
+#include <q3valuelist.h>
 #include "hercules.h"
 #include <sys/select.h>
 #include <linux/input.h>
@@ -141,7 +141,7 @@ protected:
     /** ID of event interface */
     int m_iId;
     /** List of open devices */
-    static QValueList <int> sqlOpenDevs;
+    static Q3ValueList <int> sqlOpenDevs;
     /** File set used in select() call */
     fd_set fdset;
     int m_iJogLeft, m_iJogRight;

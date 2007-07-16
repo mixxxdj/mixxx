@@ -20,7 +20,7 @@
 
 #include "readerextract.h"
 #include "defs.h"
-#include <qvaluelist.h>
+#include <q3valuelist.h>
 
 #ifdef __GNUPLOT__
 extern "C" {

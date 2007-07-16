@@ -21,8 +21,8 @@
 #include <qthread.h>
 #include <qwaitcondition.h>
 #include <qmutex.h>
-#include <qvaluelist.h>
-#include <qptrlist.h>
+#include <q3valuelist.h>
+#include <q3ptrlist.h>
 #include "trackinfoobject.h"
 #include "defs.h"
 #include "monitor.h"
@@ -123,10 +123,10 @@ private:
         TrackInfoObject *pTrack;
         bool bStartAtEndPos;
     } TrackQueueType;
-    typedef QPtrList<TrackQueueType> TTrackQueue;
+    typedef Q3PtrList<TrackQueueType> TTrackQueue;
     /** Track queue used in communication with reader from other threads */
     TTrackQueue trackqueue;
-    typedef QValueList<double> TSeekQueue;
+    typedef Q3ValueList<double> TSeekQueue;
     /** Seek queue used in communication with reader from other threads */
     TSeekQueue seekqueue;
     /** Current loaded track */
