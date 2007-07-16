@@ -1,0 +1,10 @@
+<!DOCTYPE RCC><RCC version="1.0">
+<qresource>
+    <file>images/preferences/controllers.svg</file>
+    <file>images/preferences/generic.svg</file>
+    <file>images/preferences/interface.svg</file>
+    <file>images/preferences/library.svg</file>
+    <file>images/preferences/soundhardware.svg</file>
+    <file>mixxx-icon.png</file>      
+</qresource>
+</RCC>
