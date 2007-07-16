@@ -13,7 +13,7 @@
 #include <ladspaplugin.h>
 
 #include <qlibrary.h>
-#include <qptrlist.h>
+#include <q3ptrlist.h>
 #include <qstring.h>
 
 #include <ladspa.h>
@@ -35,6 +35,6 @@ protected:
     LADSPA_Descriptor_Function m_descriptorFunction;
 };
 
-typedef QPtrList<LADSPALibrary> LADSPALibraryList;
+typedef Q3PtrList<LADSPALibrary> LADSPALibraryList;
 
 #endif
