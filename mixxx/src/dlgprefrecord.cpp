@@ -25,7 +25,7 @@
 #include <qstring.h>
 #include <qpushbutton.h>
 #include <qmessagebox.h>
-#include <qcombobox.h>
+#include <QComboBox>
 #include <q3groupbox.h>
 #include <qcheckbox.h>
 
@@ -37,9 +37,9 @@ DlgPrefRecord::DlgPrefRecord(QWidget *parent, ConfigObject<ConfigValue> *_config
     recordControl = ControlObject::getControl(ConfigKey("[Master]", "Record")); //See RECORD_* #defines in dlgprefrecord.h
 
     //Fill up encoding list 
-    comboBoxEncoding->addItem("WAVE", IDEX_WAVE);
-    comboBoxEncoding->addItem("FLAC", IDEX_FLAC);
-    comboBoxEncoding->addItem("AIFF", IDEX_AIFF);
+    comboBoxEncoding->insertItem(IDEX_WAVE, "WAVE");
+    comboBoxEncoding->insertItem(IDEX_FLAC, "FLAC");
+    comboBoxEncoding->insertItem(IDEX_AIFF, "AIFF");
     //comboBoxEncoding->insertItem("OGG",  IDEX_OGG);
     //comboBoxEncoding->insertItem("MP3",  IDEX_MP3);
 

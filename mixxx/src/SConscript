@@ -449,7 +449,7 @@ else:
 flags_experimentalrecording = ARGUMENTS.get('experimentalrecord', 0)
 if int(flags_experimentalrecording):
 	env.Append(CXXFLAGS = '-D__EXPERIMENTAL_RECORDING__')
-	sources += Split(""" dlgprefrecord.cpp enginerecord.cpp writeaudiofile.cpp""" )
+	sources += Split(""" dlgprefrecord.cpp enginerecord.cpp writeaudiofile.cpp """ )
 	print "Experimental recording... enabled"
 else:
 	print "Experimental recording... disabled"
