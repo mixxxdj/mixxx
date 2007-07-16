@@ -36,7 +36,7 @@ LADSPALoader::LADSPALoader()
         QFileInfoList files = dir.entryInfoList();
 
         // entryInfoList returns 0 if the directory is unreadable or does not exist
-        if (files.isEmpty() == NULL)
+        if (files.isEmpty())
         {
             continue;
         }
