@@ -1,0 +1,88 @@
+<ui version="4.0" >
+ <class>DlgPreferencesDlg</class>
+ <widget class="QDialog" name="DlgPreferencesDlg" >
+  <property name="geometry" >
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>834</width>
+    <height>512</height>
+   </rect>
+  </property>
+  <property name="windowTitle" >
+   <string>Dialog</string>
+  </property>
+  <widget class="QDialogButtonBox" name="buttonBox" >
+   <property name="geometry" >
+    <rect>
+     <x>480</x>
+     <y>470</y>
+     <width>341</width>
+     <height>32</height>
+    </rect>
+   </property>
+   <property name="orientation" >
+    <enum>Qt::Horizontal</enum>
+   </property>
+   <property name="standardButtons" >
+    <set>QDialogButtonBox::Cancel|QDialogButtonBox::NoButton|QDialogButtonBox::Ok</set>
+   </property>
+  </widget>
+  <widget class="QListWidget" name="contentsWidget" >
+   <property name="geometry" >
+    <rect>
+     <x>10</x>
+     <y>10</y>
+     <width>211</width>
+     <height>491</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QStackedWidget" name="pagesWidget" >
+   <property name="geometry" >
+    <rect>
+     <x>230</x>
+     <y>10</y>
+     <width>601</width>
+     <height>451</height>
+    </rect>
+   </property>
+   <widget class="QWidget" name="page_2" />
+  </widget>
+ </widget>
+ <resources/>
+ <connections>
+  <connection>
+   <sender>buttonBox</sender>
+   <signal>accepted()</signal>
+   <receiver>DlgPreferencesDlg</receiver>
+   <slot>accept()</slot>
+   <hints>
+    <hint type="sourcelabel" >
+     <x>330</x>
+     <y>470</y>
+    </hint>
+    <hint type="destinationlabel" >
+     <x>157</x>
+     <y>274</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>buttonBox</sender>
+   <signal>rejected()</signal>
+   <receiver>DlgPreferencesDlg</receiver>
+   <slot>reject()</slot>
+   <hints>
+    <hint type="sourcelabel" >
+     <x>330</x>
+     <y>470</y>
+    </hint>
+    <hint type="destinationlabel" >
+     <x>286</x>
+     <y>274</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+</ui>
