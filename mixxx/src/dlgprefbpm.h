@@ -12,12 +12,12 @@
 #ifndef DLGPREFBPM_H
 #define DLGPREFBPM_H
 
-#include "dlgprefbpmdlg.h"
+#include "ui_dlgprefbpmdlg.h"
 #include "configobject.h"
 
 class QWidget;
 
-class DlgPrefBPM : public DlgPrefBPMDlg  {
+class DlgPrefBPM : public QWidget, Ui::DlgPrefBPMDlg  {
     Q_OBJECT
 public: 
     DlgPrefBPM(QWidget *parent, ConfigObject<ConfigValue> *_config);

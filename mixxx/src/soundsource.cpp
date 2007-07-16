@@ -16,6 +16,8 @@
  ***************************************************************************/
 
 #include "soundsource.h"
+//Added by qt3to4:
+#include <Q3ValueList>
 
    /*
   SoundSource is an Uber-class for the reading and decoding of audio-files.
@@ -44,7 +46,7 @@ int SoundSource::getSrate()
     return SRATE;
 }
 
-QValueList<long> *SoundSource::getCuePoints()
+Q3ValueList<long> *SoundSource::getCuePoints()
 {
     return 0;
 }

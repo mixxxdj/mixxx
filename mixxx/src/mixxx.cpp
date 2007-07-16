@@ -19,8 +19,8 @@
 #include <qcombobox.h>
 #include <qmessagebox.h>
 #include <qlayout.h>
-#include <qhbox.h>
-
+#include <q3hbox.h>
+#include <qdesktopwidget.h>
 #ifdef QT3_SUPPORT
 #include <q3accel.h>
 #include <Q3PopupMenu>
@@ -31,19 +31,21 @@
 #include <QPixmap>
 #include <qicon.h>
 #else
-#include <qaccel.h>
-#include <qtable.h>
-#include <qptrlist.h>
+#include <q3accel.h>
+#include <q3table.h>
+#include <q3ptrlist.h>
 #endif
 
-#include <qlistview.h>
-#include <qiconset.h>
+#include <q3listview.h>
+#include <qicon.h>
 #include <qlineedit.h>
 #include <qslider.h>
 #include <qlabel.h>
 #include <qsplashscreen.h>
 #include <qdatetime.h>
 #include <qpalette.h>
+//Added by qt3to4:
+#include <Q3Frame>
 
 #include "wknob.h"
 #include "wslider.h"
@@ -152,13 +154,8 @@ MixxxApp::MixxxApp(QApplication *a, QStringList files, QSplashScreen *pSplash, Q
     QDir dir(config->getValueString(ConfigKey("[Playlist]","Directory")));
     if ((config->getValueString(ConfigKey("[Playlist]","Directory")).length()<1) || (!dir.exists()))
     {
-    	  #ifdef QT3_SUPPORT
         Q3FileDialog* fd = new Q3FileDialog(this, "", true);
         fd->setMode( Q3FileDialog::Directory );
-        #else
-        QFileDialog* fd = new QFileDialog(this, "", true);
-        fd->setMode( QFileDialog::Directory );
-        #endif
         fd->setCaption(QString("Choose directory with music files"));
         if ( fd->exec() == QDialog::Accepted )
         {
@@ -180,7 +177,7 @@ MixxxApp::MixxxApp(QApplication *a, QStringList files, QSplashScreen *pSplash, Q
 
     // FWI: Begin of fullscreen patch
     // Use frame as container for view, needed for fullscreen display
-    frame = new QFrame(this,"Mixxx");
+    frame = new Q3Frame(this,"Mixxx");
 
     setCentralWidget(frame);
 
@@ -276,9 +273,9 @@ MixxxApp::MixxxApp(QApplication *a, QStringList files, QSplashScreen *pSplash, Q
 #endif
 
     // Set up socket interface
-#ifndef __WIN__
-    new MixxxSocketServer(m_pTrack);
-#endif
+//#ifndef __WIN__
+//    new MixxxSocketServer(m_pTrack);
+//#endif
 
     // Initialize visualization of temporal effects
     channel1->setVisual(buffer1);
@@ -396,13 +393,13 @@ void MixxxApp::initActions()
 #endif
 
 #else
-    fileOpen = new QAction(tr("Open..."), tr("&Open"), QAccel::stringToKey(tr("Ctrl+O")), this);
-    fileQuit = new QAction(tr("Exit"), tr("E&xit"), QAccel::stringToKey(tr("Ctrl+Q")), this);
-    playlistsNew = new QAction(tr("Add new playlist"), tr("&New playlist"), QAccel::stringToKey(tr("Ctrl+N")), this, 0, this);
-    playlistsImport = new QAction(tr("Import playlist"), tr("&Import playlist"), QAccel::stringToKey(tr("Ctrl+I")), this, 0, this);
+    fileOpen = new QAction(tr("Open..."), tr("&Open"), Q3Accel::stringToKey(tr("Ctrl+O")), this);
+    fileQuit = new QAction(tr("Exit"), tr("E&xit"), Q3Accel::stringToKey(tr("Ctrl+Q")), this);
+    playlistsNew = new QAction(tr("Add new playlist"), tr("&New playlist"), Q3Accel::stringToKey(tr("Ctrl+N")), this, 0, this);
+    playlistsImport = new QAction(tr("Import playlist"), tr("&Import playlist"), Q3Accel::stringToKey(tr("Ctrl+I")), this, 0, this);
     optionsBeatMark = new QAction(tr("Audio Beat Marks"), tr("&Audio Beat Marks"), 0, this, 0, true);
-    optionsFullScreen = new QAction(tr("Full Screen"), tr("&Full Screen"), QAccel::stringToKey(tr("Esc")), this, 0, this);
-    optionsPreferences = new QAction(tr("Preferences"), tr("&Preferences..."), QAccel::stringToKey(tr("Ctrl+P")), this);
+    optionsFullScreen = new QAction(tr("Full Screen"), tr("&Full Screen"), Q3Accel::stringToKey(tr("Esc")), this, 0, this);
+    optionsPreferences = new QAction(tr("Preferences"), tr("&Preferences..."), Q3Accel::stringToKey(tr("Ctrl+P")), this);
     helpAboutApp = new QAction(tr("About"), tr("&About..."), 0, this);
 
 #ifdef __SCRIPT__
@@ -466,13 +463,13 @@ void MixxxApp::initMenuBar()
     	macroMenu=new Q3PopupMenu();
 	#endif
     #else
-    fileMenu=new QPopupMenu();
-    optionsMenu=new QPopupMenu();
-    playlistsMenu=new QPopupMenu();
-    viewMenu=new QPopupMenu();
-    helpMenu=new QPopupMenu();
+    fileMenu=new Q3PopupMenu();
+    optionsMenu=new Q3PopupMenu();
+    playlistsMenu=new Q3PopupMenu();
+    viewMenu=new Q3PopupMenu();
+    helpMenu=new Q3PopupMenu();
     	#ifdef __SCRIPT__
-    	macroMenu=new QPopupMenu();
+    	macroMenu=new Q3PopupMenu();
 	#endif
     #endif
 
@@ -540,7 +537,7 @@ void MixxxApp::slotFileOpen()
                                              this,
                                              "Open file");
     #else
-    QString s = QFileDialog::getOpenFileName(config->getValueString(ConfigKey("[Playlist]","Directory")),
+    QString s = Q3FileDialog::getOpenFileName(config->getValueString(ConfigKey("[Playlist]","Directory")),
                                              "Audio (*.wav *.ogg *.mp3 *.aiff)",
                                              this,
                                              "Open file");

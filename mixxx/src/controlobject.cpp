@@ -16,16 +16,18 @@
  ***************************************************************************/
 
 #include <qwidget.h>
+//Added by qt3to4:
+#include <Q3PtrList>
 #include "controlobject.h"
 #include "controlevent.h"
 
 // Static member variable definition
-QPtrList<ControlObject> ControlObject::m_sqList;
+Q3PtrList<ControlObject> ControlObject::m_sqList;
 QMutex ControlObject::m_sqQueueMutexMidi;
 QMutex ControlObject::m_sqQueueMutexThread;
-QPtrQueue<QueueObjectMidi> ControlObject::m_sqQueueMidi;
-QPtrQueue<QueueObjectThread> ControlObject::m_sqQueueThread;
-QPtrQueue<ControlObject> ControlObject::m_sqQueueChanges;
+Q3PtrQueue<QueueObjectMidi> ControlObject::m_sqQueueMidi;
+Q3PtrQueue<QueueObjectThread> ControlObject::m_sqQueueThread;
+Q3PtrQueue<ControlObject> ControlObject::m_sqQueueChanges;
 
 ControlObject::ControlObject()
 {

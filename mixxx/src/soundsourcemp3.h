@@ -30,7 +30,7 @@
 //#include <sys/stat.h>
 //#include <unistd.h>
 #include <id3tag.h>
-#include <qptrlist.h>
+#include <q3ptrlist.h>
 
 /** Struct used to store mad frames for seeking */
 typedef struct MadSeekFrameType {
@@ -86,7 +86,7 @@ private:
       * of past decodeded frame, and their exact position. If a seek occours and it is within the
       * range of frames we keep track of a precise seek occours, otherwise an unprecise seek is performed
       */
-    QPtrList<MadSeekFrameType> m_qSeekList;
+    Q3PtrList<MadSeekFrameType> m_qSeekList;
     /** Average frame size used when searching for a frame*/
     int m_iAvgFrameSize;
 };

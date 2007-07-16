@@ -12,13 +12,15 @@
 #include "mouse.h"
 #include "rotary.h"
 #include <qstringlist.h>
+//Added by qt3to4:
+#include <Q3PtrList>
 #include "controlobject.h"
 
 #ifdef __LINUX__
 #include "mouselinux.h"
 #endif
 
-QPtrList<Mouse> Mouse::m_sqInstanceList;
+Q3PtrList<Mouse> Mouse::m_sqInstanceList;
 
 Mouse::Mouse() : Input()
 {

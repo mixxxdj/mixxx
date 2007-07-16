@@ -17,13 +17,15 @@
 //Parsers are going below here
 #include "parserpls.h"
 #include "parserm3u.h"
+//Added by qt3to4:
+#include <Q3PtrList>
 
 TrackImporter::TrackImporter(QWidget * parent,TrackCollection * pCollection)
 {
 
     m_pwParent = parent;
     m_pCollection = pCollection;
-    m_psLocations = new QPtrList<QString>;
+    m_psLocations = new Q3PtrList<QString>;
     this->setup();
 }
 
@@ -56,7 +58,7 @@ void TrackImporter::clearTracks()
 /**Displays a file chooser dialog for the user**/
 QString TrackImporter::showChooser()
 {
-    QString sFilename = QFileDialog::getOpenFileName(
+    QString sFilename = Q3FileDialog::getOpenFileName(
                             QDir::currentDirPath(),
                             "Winamp Playlists (*.pls *.m3u)",
                             m_pwParent,
@@ -94,7 +96,7 @@ QString TrackImporter::splitFilepath(QString sFilepath)
 }
 
 /**Being called to set the tracks from the parser to the StringList**/
-void TrackImporter::setTracks(QPtrList<QString> * pLocations)
+void TrackImporter::setTracks(Q3PtrList<QString> * pLocations)
 {
     m_psLocations = pLocations;
 }
@@ -106,7 +108,7 @@ TrackPlaylist * TrackImporter::importPlaylist(QString sName)
     TrackInfoObject * pTrack;
 
     QString sFilename = showChooser();
-    if (!sFilename)
+    if (sFilename.isEmpty())
         return 0;
 
     if(!m_psLocations ==0)

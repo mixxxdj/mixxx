@@ -10,12 +10,12 @@
 //
 //
 
-#include <qpopupmenu.h>
+#include <q3popupmenu.h>
 #include <qcursor.h>
 #include "wtreeitemplaylistroot.h"
 #include "track.h"
 
-WTreeItemPlaylistRoot::WTreeItemPlaylistRoot(QListView *parent, const QString &s1) : WTreeItem(parent, s1)
+WTreeItemPlaylistRoot::WTreeItemPlaylistRoot(Q3ListView *parent, const QString &s1) : WTreeItem(parent, s1)
 {
 }
 
@@ -25,7 +25,7 @@ WTreeItemPlaylistRoot::~WTreeItemPlaylistRoot()
 
 void WTreeItemPlaylistRoot::popupMenu()
 {
-    QPopupMenu *menu = new QPopupMenu();
+    Q3PopupMenu *menu = new Q3PopupMenu();
     menu->insertItem("New", spTrack, SLOT(slotNewPlaylist()));
     menu->insertItem("Import", spTrack, SLOT(slotImportPlaylist()));
     menu->exec(QCursor::pos());

@@ -14,7 +14,12 @@
 
 #include <wwidget.h>
 #include <qcolor.h>
-#include <qvaluelist.h>
+#include <q3valuelist.h>
+//Added by qt3to4:
+#include <QPaintEvent>
+#include <QMouseEvent>
+#include <Q3MemArray>
+#include <QPixmap>
 /**
 Waveform overview display
 
@@ -29,7 +34,7 @@ public:
     WOverview(QWidget *pParent=0, const char *pName=0);
     ~WOverview();
     void setup(QDomNode node);
-    void setData(QMemArray<char> *pWaveformSummary, QValueList<long> *pSegmentation, long liSampleDuration);
+    void setData(Q3MemArray<char> *pWaveformSummary, Q3ValueList<long> *pSegmentation, long liSampleDuration);
     void mouseMoveEvent(QMouseEvent *e);
     void mouseReleaseEvent(QMouseEvent *e);
     void mousePressEvent(QMouseEvent *e);
@@ -41,9 +46,9 @@ public slots:
 protected:
 
     /** Pointer to array containing waveform summary */
-    QMemArray<char> *m_pWaveformSummary;
+    Q3MemArray<char> *m_pWaveformSummary;
     /** Pointer to list of segmentation points */
-    QValueList<long> *m_pSegmentation;
+    Q3ValueList<long> *m_pSegmentation;
     /** Duration of current track in samples */
     int m_liSampleDuration;
     /** True if slider is dragged. Only used when m_bEventWhileDrag is false */

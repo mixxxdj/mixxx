@@ -25,7 +25,7 @@
   */
 
 
-#include <qsemaphore.h>
+#include <q3semaphore.h>
 #include <qthread.h>
  
 class ControlObject;

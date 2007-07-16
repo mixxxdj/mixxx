@@ -19,7 +19,12 @@
 #include "wskincolor.h"
 #include <qpainter.h>
 #include <qpixmap.h>
-#include <qdragobject.h>
+#include <q3dragobject.h>
+//Added by qt3to4:
+#include <QDragEnterEvent>
+#include <QDropEvent>
+#include <QMouseEvent>
+#include <QPaintEvent>
 
 WVisualSimple::WVisualSimple(QWidget *pParent, const char *pName) : WWidget(pParent, pName)
 {
@@ -33,20 +38,20 @@ WVisualSimple::~WVisualSimple()
 
 void WVisualSimple::dragEnterEvent(QDragEnterEvent *event)
 {
-    event->accept(QUriDrag::canDecode(event));
+    event->accept(Q3UriDrag::canDecode(event));
 }
 
 void WVisualSimple::dropEvent(QDropEvent *event)
 {
     QStringList lst;
-    if (!QUriDrag::canDecode(event))
+    if (!Q3UriDrag::canDecode(event))
     {
         event->ignore();
         return;
     }
 
     event->accept();
-    QUriDrag::decodeLocalFiles(event, lst);
+    Q3UriDrag::decodeLocalFiles(event, lst);
     QString name = (*lst.begin());
 
     emit(trackDropped(name));

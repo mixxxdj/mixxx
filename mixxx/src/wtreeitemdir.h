@@ -13,8 +13,8 @@
 #define WTREEITEMDIR_H
 
 #include <qdir.h>
-#include <qpopupmenu.h>
-#include <qcursor.h>
+//Added by qt3to4:
+#include <QPixmap>
 #include "wtreeitem.h"
 /**
 @author Tue Haste Andersen
@@ -22,7 +22,7 @@
 class WTreeItemDir : public WTreeItem
 {
 public:
-    WTreeItemDir(QListView *parent, const QString& filename);
+    WTreeItemDir(Q3ListView *parent, const QString& filename);
     WTreeItemDir(WTreeItemDir *parent, const QString& filename, const QString &col2);
     WTreeItemDir(WTreeItemDir *parent, const QString& filename);
     ~WTreeItemDir();

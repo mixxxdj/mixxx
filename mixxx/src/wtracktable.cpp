@@ -23,11 +23,14 @@
 
 #include <qfont.h>
 #include <qcolor.h>
-#include <qdragobject.h>
+#include <q3dragobject.h>
 #include <qpoint.h>
 #include <qstring.h>
 #include <qstringlist.h>
 #include <qmime.h>
+//Added by qt3to4:
+#include <Q3Frame>
+#include "trackinfoobject.h"
 
 #ifdef __EXPERIMENTAL_BPM__
   #include "dlgbpmtap.h"
@@ -36,11 +39,11 @@
 #include <qwidget.h>
 
 /*Constructor, sets up attributes in playlist*/
-WTrackTable::WTrackTable(QWidget *parent, const char *name) : QTable(0, ROW_NO, parent, name)
+WTrackTable::WTrackTable(QWidget *parent, const char *name) : Q3Table(0, ROW_NO, parent, name)
 {
     setSorting(true);
-    setSelectionMode(QTable::SingleRow);
-    setFocusStyle(QTable::FollowStyle);
+    setSelectionMode(Q3Table::SingleRow);
+    setFocusStyle(Q3Table::FollowStyle);
 
     horizontalHeader()->setLabel(COL_SCORE, tr( "**" ) );
     horizontalHeader()->setLabel(COL_TITLE, tr( "Title" ) );
@@ -54,7 +57,7 @@ WTrackTable::WTrackTable(QWidget *parent, const char *name) : QTable(0, ROW_NO, 
 
     // Setup table properties
     setShowGrid(false);
-    setFrameStyle(QFrame::NoFrame);
+    setFrameStyle(Q3Frame::NoFrame);
 
     //Accept Drops
     viewport()->setAcceptDrops(true);
@@ -96,15 +99,14 @@ void WTrackTable::setup(QDomNode node)
 		move(x,y);
 	}
 
+    // Size
 	if (!WWidget::selectNode(node, "Size").isNull())
     {
-		// Size
 		QString size = WWidget::selectNodeQString(node, "Size");
 		int x = size.left(size.find(",")).toInt();
 		int y = size.mid(size.find(",")+1).toInt();
-		setFixedSize(x,y);
-		//setBaseSize(x,y);
-        //resizeContents(x,y);
+        setBaseSize(x,y);
+        resizeContents(x,y);
     }
 
     // Background color
@@ -172,7 +174,7 @@ void WTrackTable::setup(QDomNode node)
 /*sorts a given column*/
 void WTrackTable::sortColumn(int col, bool ascending, bool)
 {
-    QTable::sortColumn(col,ascending,true);
+    Q3Table::sortColumn(col,ascending,true);
 }
 
 /*checks for Mouse action*/
@@ -214,12 +216,12 @@ void WTrackTable::slotMouseDoubleClicked(int row, int col, int button, const QPo
 }
 
 /*enables contents to be dragable*/
-QDragObject *WTrackTable::dragObject()
+Q3DragObject *WTrackTable::dragObject()
 {
     WTrackTableItem *p = (WTrackTableItem *)item(currentRow(),currentColumn());
     TrackInfoObject *pTrackInfoObject = p->getTrackInfoObject();
 
-    QUriDrag *ud = new QUriDrag(this);
+    Q3UriDrag *ud = new Q3UriDrag(this);
     ud->setFileNames(QStringList(pTrackInfoObject->getLocation()));
 
     return ud;

@@ -1,7 +1,9 @@
 #include "midiledhandler.h"
 #include "wwidget.h"
+//Added by qt3to4:
+#include <Q3PtrList>
 
-QPtrList<MidiLedHandler> MidiLedHandler::allhandlers = QPtrList<MidiLedHandler>();
+Q3PtrList<MidiLedHandler> MidiLedHandler::allhandlers = Q3PtrList<MidiLedHandler>();
 
 MidiLedHandler::MidiLedHandler(QString group, QString name, MidiObject* midi, double threshold,
 							   unsigned char status, unsigned char byte1)

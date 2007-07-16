@@ -13,6 +13,11 @@
 #include "wskincolor.h"
 #include <qpainter.h>
 #include <qpixmap.h>
+//Added by qt3to4:
+#include <Q3MemArray>
+#include <QMouseEvent>
+#include <Q3ValueList>
+#include <QPaintEvent>
 #include "mathstuff.h"
 
 WOverview::WOverview(QWidget *pParent, const char *pName) : WWidget(pParent, pName)
@@ -90,7 +95,7 @@ void WOverview::setVirtualPos(double fValue)
     }
 }
 
-void WOverview::setData(QMemArray<char> *pWaveformSummary, QValueList<long> *pSegmentation, long liSampleDuration)
+void WOverview::setData(Q3MemArray<char> *pWaveformSummary, Q3ValueList<long> *pSegmentation, long liSampleDuration)
 {
     m_pWaveformSummary = pWaveformSummary;
     m_pSegmentation = pSegmentation;

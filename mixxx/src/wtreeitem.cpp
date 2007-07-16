@@ -13,31 +13,33 @@
 #include "wtreeitem.h"
 #include "wtreeview.h"
 #include <qwidget.h>
+//Added by qt3to4:
+#include <QPixmap>
 
 
 Track *WTreeItem::spTrack = 0;
 
-WTreeItem::WTreeItem(QListView *parent) : QListViewItem(parent)
+WTreeItem::WTreeItem(Q3ListView *parent) : Q3ListViewItem(parent)
 {
     pix = 0;
 }
 
-WTreeItem::WTreeItem(QListView *parent, const QString &s1) : QListViewItem(parent, s1)
+WTreeItem::WTreeItem(Q3ListView *parent, const QString &s1) : Q3ListViewItem(parent, s1)
 {
     pix = 0;
 }
 
-WTreeItem::WTreeItem(WTreeItem *parent) : QListViewItem(parent)
+WTreeItem::WTreeItem(WTreeItem *parent) : Q3ListViewItem(parent)
 {
     pix = 0;
 }
 
-WTreeItem::WTreeItem(WTreeItem *parent, const QString &s1) : QListViewItem(parent, s1)
+WTreeItem::WTreeItem(WTreeItem *parent, const QString &s1) : Q3ListViewItem(parent, s1)
 {
     pix = 0;
 }
 
-WTreeItem::WTreeItem(WTreeItem *parent, const QString &s1, const QString &s2) : QListViewItem(parent, s1, s2)
+WTreeItem::WTreeItem(WTreeItem *parent, const QString &s1, const QString &s2) : Q3ListViewItem(parent, s1, s2)
 {
     pix = 0;
 }
@@ -48,7 +50,7 @@ WTreeItem::~WTreeItem()
 
 QString WTreeItem::drag()
 {
-    return QUriDrag::localFileToUri(WTreeView::fullPath(this));
+    return Q3UriDrag::localFileToUri(WTreeView::fullPath(this));
 }
 
 void WTreeItem::setTrack(Track *pTrack)

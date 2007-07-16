@@ -13,7 +13,7 @@
 #define TRACKCOLLECTION_H
 
 #include <qdom.h>
-#include <qptrlist.h>
+#include <q3ptrlist.h>
 
 class TrackInfoObject;
 
@@ -43,7 +43,7 @@ protected:
     /** Used in binary search for an ID in the list */
     TrackInfoObject *getTrack(int id, int min, int mid, int max);
     /** List of TrackInfoObjects. This is the actual database */
-    QPtrList <TrackInfoObject> m_qTrackList;
+    Q3PtrList <TrackInfoObject> m_qTrackList;
     /** Counter used to assign unique id's to tracks in database */
     long int m_iCounter;
 };

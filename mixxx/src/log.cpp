@@ -14,7 +14,7 @@
 #include "trackplaylistlist.h"
 #include "track.h"
 #include "log.h"
-#include <qtextstream.h>
+#include <q3textstream.h>
 #include "controlobject.h"
 #include "configobject.h"
 #include "controlobjectthreadmain.h"
@@ -24,7 +24,7 @@ Log::Log(QString qFilename, Track *pTrack) : m_qFile(qFilename)
     if (QFile::exists(qFilename))
         qFatal("Log file exists: %s",qFilename.latin1());
      
-    if (!m_qFile.open(IO_WriteOnly))
+    if (!m_qFile.open(QIODevice::WriteOnly))
         qFatal("Could not write to file: %s",qFilename.latin1());
     
     qDebug("Logging to %s",qFilename.latin1());
@@ -155,7 +155,7 @@ Log::~Log()
 
 void Log::slotLogEvent(QString type, QString arg)
 {
-    QTextStream stream(&m_qFile);
+    Q3TextStream stream(&m_qFile);
     stream << m_qTime.elapsed() << " " << type << ", " << arg << "\n";  
 //    m_qFile.flush();  
 }

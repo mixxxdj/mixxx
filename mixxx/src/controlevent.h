@@ -19,6 +19,8 @@
 #define CONTROLEVENT_H
 
 #include <qevent.h>
+//Added by qt3to4:
+#include <QCustomEvent>
 
 /**
   *@author Tue Haste Andersen

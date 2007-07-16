@@ -19,7 +19,7 @@
 #define VISUALCHANNEL_H
 
 #include <qobject.h>
-#include <qptrlist.h>
+#include <q3ptrlist.h>
 #include <qobject.h>
 #include <qevent.h>
 #include "visualdisplay.h"
@@ -58,9 +58,9 @@ public:
 private:
     VisualController        *m_pVisualController;
     /** List of buffers associated with this channel */
-    QPtrList<VisualBuffer>  m_qlListBuffer;
+    Q3PtrList<VisualBuffer>  m_qlListBuffer;
     /** List of displays associated with this channel */
-    QPtrList<VisualDisplay>  m_qlListDisplay;
+    Q3PtrList<VisualDisplay>  m_qlListDisplay;
     /** channel number */
     int m_iChannelNo;
     /** Total number of channels */

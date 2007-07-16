@@ -19,6 +19,10 @@
 #include "wpixmapstore.h"
 #include "controlobject.h"
 #include "controlpushbutton.h"
+//Added by qt3to4:
+#include <QPixmap>
+#include <QMouseEvent>
+#include <QPaintEvent>
 
 WPushButton::WPushButton(QWidget *parent, const char *name ) : WWidget(parent,name)
 {

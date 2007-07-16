@@ -23,7 +23,7 @@
 #include <qmessagebox.h>
 #include <qiodevice.h>
 #include <qfile.h>
-#include <qtextstream.h>
+#include <q3textstream.h>
 #include <qstringlist.h>
 #include <stdio.h>
 #include <math.h>
@@ -93,7 +93,7 @@ QFile Logfile; // global logfile variable
 
 void MessageToLogfile( QtMsgType type, const char *msg )
 {
-    QTextStream Log( &Logfile );
+    Q3TextStream Log( &Logfile );
     switch ( type ) {
     case QtDebugMsg:
         Log << "Debug: " << msg << "\n";

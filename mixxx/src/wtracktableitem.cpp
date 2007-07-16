@@ -29,7 +29,7 @@ QColor WTrackTableItem::kqRowColor2;
 QColor WTrackTableItem::kqBpmBgColor1;
 QColor WTrackTableItem::kqBpmBgColor2;
 
-WTrackTableItem::WTrackTableItem(TrackInfoObject *pTrackInfoObject, QTable *table, EditType et, const QString &text, enumType eType) : QTableItem(table, et, text)
+WTrackTableItem::WTrackTableItem(TrackInfoObject *pTrackInfoObject, Q3Table *table, EditType et, const QString &text, enumType eType) : Q3TableItem(table, et, text)
 {
     m_eType = eType;
     m_pTrackInfoObject = pTrackInfoObject;
@@ -73,7 +73,7 @@ void WTrackTableItem::paint(QPainter *p, const QColorGroup &cg, const QRect &cr,
             g.setColor(QColorGroup::Base, kqBpmBgColor1);        
     }
 
-    QTableItem::paint(p, g, cr, selected);
+    Q3TableItem::paint(p, g, cr, selected);
 }
 /*
     Returns a key which is used for sorting of the table.
@@ -102,7 +102,7 @@ TrackInfoObject *WTrackTableItem::getTrackInfoObject()
 void WTrackTableItem::setContentFromEditor(QWidget *w)
 {
     // Update cell
-    QTableItem::setContentFromEditor(w);
+    Q3TableItem::setContentFromEditor(w);
 
     // If this is a comment column or bpm, update TrackInfoObject
     if (col()==COL_COMMENT)

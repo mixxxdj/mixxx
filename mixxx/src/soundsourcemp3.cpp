@@ -23,7 +23,7 @@ extern "C" {
 SoundSourceMp3::SoundSourceMp3(QString qFilename) : SoundSource(qFilename)
 {
     QFile file( qFilename );
-    if (!file.open(IO_ReadOnly))
+    if (!file.open(QIODevice::ReadOnly))
         qFatal("MAD: Open of %s failed.", qstrdup(qFilename.local8Bit()));
 
     // Read the whole file into inputbuf:
@@ -453,7 +453,7 @@ int SoundSourceMp3::ParseHeader(TrackInfoObject *Track)
     const unsigned int READLENGTH = 5000;
     mad_timer_t dur = mad_timer_zero;
     QFile file(location);
-    if (!file.open(IO_ReadOnly)) {
+    if (!file.open(QIODevice::ReadOnly)) {
         qDebug("MAD: Open of %s failed.", qstrdup(location.local8Bit()));
         return ERR;
     }

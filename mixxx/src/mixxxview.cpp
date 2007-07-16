@@ -17,16 +17,20 @@
 
 #include "mixxxview.h"
 
-#include <qtable.h>
+#include <q3table.h>
 #include <qdir.h>
 #include <qpixmap.h>
 #include <qtooltip.h>
 #include <qevent.h>
 #include <qsplitter.h>
 #include <qmenubar.h>
-#include <qmainwindow.h>
-#include <qlineedit.h>
-#include <qcombobox.h>
+#include <q3mainwindow.h>
+//Added by qt3to4:
+#include <Q3ValueList>
+#include <QLabel>
+#include <QComboBox>
+#include <QLineEdit>
+#include <QPushButton>
 
 #include "wtracktable.h"
 #include "wtreeview.h"
@@ -114,7 +118,7 @@ void MixxxView::checkDirectRendering()
     if ((m_pVisualCh1 && !((WVisualWaveform *)m_pVisualCh1)->directRendering()) ||
         (m_pVisualCh2 && !((WVisualWaveform *)m_pVisualCh2)->directRendering()))
         QMessageBox::warning(0, "OpenGL Direct Rendering",
-                                "Direct redering is not enabled on your machine.\n\nThis means that the waveform displays will be very\nslow and take a lot of CPU time. Either update your\nconfiguration to enable direct rendering, or disable\nthe waveform displays in the control panel by\nselecting \"Simple\" under waveform displays.\nNOTE: In case you run on NVidia hardware,\ndirect rendering may not be present, but you will\nnot experience a degradation in performance.");
+                                "Direct rendering is not enabled on your machine.\n\nThis means that the waveform displays will be very\nslow and take a lot of CPU time. Either update your\nconfiguration to enable direct rendering, or disable\nthe waveform displays in the control panel by\nselecting \"Simple\" under waveform displays.\nNOTE: In case you run on NVidia hardware,\ndirect rendering may not be present, but you will\nnot experience a degradation in performance.");
 }
 
 bool MixxxView::activeWaveform()
@@ -192,7 +196,7 @@ ImgSource* MixxxView::parseFilters(QDomNode filt) {
 			ret = new ImgHSVTweak(ret, hmin, hmax, smin, smax, vmin, vmax, hfact, hconst,
 				sfact, sconst, vfact, vconst);
 		} else {
-			qDebug("Unkown image filter: %s\n", name.latin1());
+                    qDebug("Unkown image filter: %s\n", name);
 		}
 		f = f.nextSibling();
 	}
@@ -208,7 +212,7 @@ QDomElement MixxxView::openSkin(QString qSkinPath) {
 	// Read XML file
     QDomDocument skin("skin");
     QFile file(WWidget::getPath("skin.xml"));
-    if (!file.open(IO_ReadOnly))
+    if (!file.open(QIODevice::ReadOnly))
     {
         qFatal("Could not open skin definition file: %s",file.name().latin1());
     }
@@ -322,13 +326,27 @@ void MixxxView::createAllWidgets(QDomElement docElem, QWidget* parent, bool bVis
                 }
             }
             else if (node.nodeName()=="NumberRate")
-            {
+            {       
+                QColor c(255,255,255);
+                if (!WWidget::selectNode(node, "BgColor").isNull()) {
+                    c.setNamedColor(WWidget::selectNodeQString(node, "BgColor"));
+                }
+               
+                QPalette palette;    
+                                 
                 if (WWidget::selectNodeInt(node, "Channel")==1)
                 {
                     WNumberRate *p = new WNumberRate("[Channel1]", this);
                     p->setup(node);
                     p->installEventFilter(m_pKeyboard);
                     m_qWidgetList.append(p);
+                    
+                    //palette.setBrush(QPalette::Background, WSkinColor::getCorrectColor(c));
+                    palette.setBrush(QPalette::Button, Qt::NoBrush);
+                    //p->setBackgroundRole(QPalette::Window);
+                    p->setPalette(palette);  
+                    p->setAutoFillBackground(true);                   
+
                 }
                 else if (WWidget::selectNodeInt(node, "Channel")==2)
                 {
@@ -348,21 +366,37 @@ void MixxxView::createAllWidgets(QDomElement docElem, QWidget* parent, bool bVis
             else if (node.nodeName()=="Background")
             {
                 QString filename = WWidget::selectNodeQString(node, "Path");
-				QPixmap* background = WPixmapStore::getPixmapNoCache(WWidget::getPath(filename));
-                this->setPaletteBackgroundPixmap(*background);
+                QPixmap* background = WPixmapStore::getPixmapNoCache(WWidget::getPath(filename));
+                
+                QLabel* bg = new QLabel(this);
+                bg->move(0, 0);
+                bg->setPixmap(*background);
+                bg->lower();
+                m_qWidgetList.append(bg);
+                
+                //this->setPaletteBackgroundPixmap(*background);
                 // FWI: Begin of fullscreen patch
                 // this->setFixedSize(background.width(),background.height()+((QMainWindow *)parent)->menuBar()->height());
                 // parent->setFixedSize(background.width(),background.height()+((QMainWindow *)parent)->menuBar()->height());
                 this->setFixedSize(background->width(),background->height());
+ 
                 parent->setMinimumSize(background->width(),background->height());
+ 
                 // FWI: End of fullscreen patch
                 this->move(0,0);
-				
-				QColor c(255,255,255);
-				if (!WWidget::selectNode(node, "BgColor").isNull()) {
-					c.setNamedColor(WWidget::selectNodeQString(node, "BgColor"));
-				}
-				parent->setEraseColor(WSkinColor::getCorrectColor(c));
+                QColor c(255,255,255);
+                if (!WWidget::selectNode(node, "BgColor").isNull()) {
+                    c.setNamedColor(WWidget::selectNodeQString(node, "BgColor"));
+                }
+               
+                QPalette palette;
+                palette.setBrush(QPalette::Window, WSkinColor::getCorrectColor(c));
+                parent->setBackgroundRole(QPalette::Window);
+                //this->setBackgroundRole(QPalette::Window);
+                parent->setPalette(palette);
+                       
+                //parent->setEraseColor(WSkinColor::getCorrectColor(c));
+                parent->setAutoFillBackground(true);
             }
             else if (node.nodeName()=="SliderComposed")
             {
@@ -494,14 +528,21 @@ void MixxxView::createAllWidgets(QDomElement docElem, QWidget* parent, bool bVis
 				if (!WWidget::selectNode(node, "BgColor").isNull()) {
                     bgc.setNamedColor(WWidget::selectNodeQString(node, "BgColor"));
                 }
-				p->setPaletteBackgroundColor(WSkinColor::getCorrectColor(bgc));
-
+				//p->setPaletteBackgroundColor(WSkinColor::getCorrectColor(bgc)); 
+                QPalette palette;
+                palette.setBrush(p->backgroundRole(), WSkinColor::getCorrectColor(bgc));
+                p->setPalette(palette);
+                p->setAutoFillBackground(true);
+                
                 // Foreground color
 				QColor fgc(0,0,0);
 				if (!WWidget::selectNode(node, "FgColor").isNull()) {
                     fgc.setNamedColor(WWidget::selectNodeQString(node, "FgColor"));
                 }
 				p->setPaletteForegroundColor(WSkinColor::getCorrectColor(fgc));
+                //QPalette palette;
+                palette.setBrush(p->foregroundRole(), WSkinColor::getCorrectColor(fgc));
+                p->setPalette(palette);
 
                 // Alignment
                 if (!WWidget::selectNode(node, "Align").isNull() && WWidget::selectNodeQString(node, "Align")=="right")
@@ -720,7 +761,14 @@ void MixxxView::rebootGUI(QWidget* parent, bool bVisualsWaveform, ConfigObject<C
             {
                 QString filename = WWidget::selectNodeQString(node, "Path");
 				QPixmap* background = WPixmapStore::getPixmapNoCache(WWidget::getPath(filename));
-                this->setPaletteBackgroundPixmap(*background);
+                //this->setPaletteBackgroundPixmap(*background);
+
+                QLabel* bg = new QLabel(this);
+                bg->move(0, 0);
+                bg->setPixmap(*background);
+                bg->lower();
+                m_qWidgetList.append(bg);
+             
 				// TODO: We leak memory at the size of the old bg pixmap (FIXME)
                 // FWI: Begin of fullscreen patch
                 // this->setFixedSize(background.width(),background.height()+((QMainWindow *)parent)->menuBar()->height());
@@ -734,7 +782,13 @@ void MixxxView::rebootGUI(QWidget* parent, bool bVisualsWaveform, ConfigObject<C
 				if (!WWidget::selectNode(node, "BgColor").isNull()) {
 					c.setNamedColor(WWidget::selectNodeQString(node, "BgColor"));
 				}
-				parent->setEraseColor(WSkinColor::getCorrectColor(c));
+				//parent->setEraseColor(WSkinColor::getCorrectColor(c));
+                QPalette palette;
+                palette.setBrush(QPalette::Window, WSkinColor::getCorrectColor(c));
+                parent->setBackgroundRole(QPalette::Window);
+                this->setBackgroundRole(QPalette::Window);
+                parent->setPalette(palette);
+                
             }
             else if (node.nodeName()=="SliderComposed")
             {
@@ -816,15 +870,22 @@ void MixxxView::rebootGUI(QWidget* parent, bool bVisualsWaveform, ConfigObject<C
 				if (!WWidget::selectNode(node, "BgColor").isNull()) {
                     bgc.setNamedColor(WWidget::selectNodeQString(node, "BgColor"));
                 }
-				p->setPaletteBackgroundColor(WSkinColor::getCorrectColor(bgc));
-
+				//p->setPaletteBackgroundColor(WSkinColor::getCorrectColor(bgc)); 
+                QPalette palette;
+                palette.setBrush(p->backgroundRole(), WSkinColor::getCorrectColor(bgc));
+                //p->setPalette(palette);
+                p->setAutoFillBackground(true);
+                
                 // Foreground color
 				QColor fgc(0,0,0);
 				if (!WWidget::selectNode(node, "FgColor").isNull()) {
                     fgc.setNamedColor(WWidget::selectNodeQString(node, "FgColor"));
                 }
-				p->setPaletteForegroundColor(WSkinColor::getCorrectColor(fgc));
-
+				//p->setPaletteForegroundColor(WSkinColor::getCorrectColor(fgc));
+                //QPalette palette;
+                palette.setBrush(p->foregroundRole(), WSkinColor::getCorrectColor(fgc));
+                p->setPalette(palette);
+                
                 // Alignment
                 if (!WWidget::selectNode(node, "Align").isNull() && WWidget::selectNodeQString(node, "Align")=="right")
                     p->setAlignment(Qt::AlignRight);
@@ -845,10 +906,10 @@ void MixxxView::rebootGUI(QWidget* parent, bool bVisualsWaveform, ConfigObject<C
 	}
 }
 
-QValueList<QString> MixxxView::getSchemeList(QString qSkinPath) {
+Q3ValueList<QString> MixxxView::getSchemeList(QString qSkinPath) {
 
 	QDomElement docElem = openSkin(qSkinPath);
-	QValueList<QString> schlist;
+	Q3ValueList<QString> schlist;
 
 	QDomNode colsch = docElem.namedItem("Schemes");
 	if (!colsch.isNull() && colsch.isElement()) {

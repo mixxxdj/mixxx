@@ -11,9 +11,9 @@
 //
 
 #include "wtreeitemplaylist.h"
-#include <qpopupmenu.h>
-#include <qdragobject.h>
-#include <qcstring.h>
+#include <q3popupmenu.h>
+#include <q3dragobject.h>
+#include <q3cstring.h>
 #include "trackplaylist.h"
 #include "track.h"
 #include <qcursor.h>
@@ -48,7 +48,7 @@ WTreeItemPlaylist::~WTreeItemPlaylist()
 
 void WTreeItemPlaylist::popupMenu()
 {
-    QPopupMenu *menu = new QPopupMenu();
+    Q3PopupMenu *menu = new Q3PopupMenu();
     menu->insertItem("Rename", this, SLOT(slotRename()));
     menu->insertItem("Delete", this, SLOT(slotDelete()));
     menu->exec(QCursor::pos());
@@ -76,6 +76,6 @@ void WTreeItemPlaylist::slotDelete()
 
 void WTreeItemPlaylist::okRename(int col)
 {
-    QListViewItem::okRename(col);
+    Q3ListViewItem::okRename(col);
     m_pPlaylist->setListName(text(0));
 }

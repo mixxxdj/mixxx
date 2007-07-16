@@ -19,8 +19,9 @@
 #ifndef DLGBPMTAP_H
 #define DLGBPMTAP_H
 
-#include <dlgbpmtapdlg.h>
-#include <qevent.h>
+#include <ui_dlgbpmtapdlg.h>
+#include <QEvent>
+#include <QtGui>
 #include "configobject.h"
 
 class MixxxApp;
@@ -30,7 +31,7 @@ class TrackInfoObject;
   *@author Micah Lee
   */
 
-class DlgBPMTap : public DlgBPMTapDlg
+class DlgBPMTap : public QDialog, public Ui::DlgBPMTapDlg
 {
     Q_OBJECT
 public:

@@ -17,13 +17,15 @@
 
 #include "dlgprefplaylist.h"
 #include <qlineedit.h>
-#include <qfiledialog.h>
+#include <q3filedialog.h>
 #include <qwidget.h>
 #include <qpushbutton.h>
 
-DlgPrefPlaylist::DlgPrefPlaylist(QWidget *parent, ConfigObject<ConfigValue> *_config) : DlgPrefPlaylistDlg(parent,"")
+DlgPrefPlaylist::DlgPrefPlaylist(QWidget *parent, ConfigObject<ConfigValue> *_config) :  QWidget(parent), Ui::DlgPrefPlaylistDlg()
 {
     config = _config;
+    setupUi(this);
+    slotUpdate();
 
     // Connection
     connect(PushButtonBrowsePlaylist, SIGNAL(clicked()),       this,      SLOT(slotBrowseDir()));
@@ -42,8 +44,8 @@ void DlgPrefPlaylist::slotUpdate()
 
 void DlgPrefPlaylist::slotBrowseDir()
 {
-    QFileDialog* fd = new QFileDialog(config->getValueString(ConfigKey("[Playlist]","Directory")),"", this, "", TRUE );
-    fd->setMode( QFileDialog::Directory );
+    Q3FileDialog* fd = new Q3FileDialog(config->getValueString(ConfigKey("[Playlist]","Directory")),"", this, "", TRUE );
+    fd->setMode( Q3FileDialog::Directory );
     fd->setCaption("Choose directory with music files");
     if ( fd->exec() == QDialog::Accepted )
     {

@@ -31,7 +31,7 @@
 #ifdef QT3_SUPPORT
 #include <q3semaphore.h>
 #else
-#include <qsemaphore.h>
+#include <q3semaphore.h>
 #endif
 
 #include "input.h"

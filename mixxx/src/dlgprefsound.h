@@ -18,7 +18,7 @@
 #ifndef DLGPREFSOUND_H
 #define DLGPREFSOUND_H
 
-#include "dlgprefsounddlg.h"
+#include "ui_dlgprefsounddlg.h"
 #include "configobject.h"
 
 class QWidget;
@@ -29,7 +29,7 @@ class ControlObject;
   *@author Tue & Ken Haste Andersen
   */
 
-class DlgPrefSound : public DlgPrefSoundDlg  {
+class DlgPrefSound : public QWidget, public Ui::DlgPrefSoundDlg  {
     Q_OBJECT
 public:
     DlgPrefSound(QWidget *parent, PlayerProxy *_player, ConfigObject<ConfigValue> *_config);

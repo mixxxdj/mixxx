@@ -18,11 +18,21 @@
 #include "wtreeitem.h"
 #include "trackplaylist.h"
 #include "wskincolor.h"
-#include <qdragobject.h>
+#include <q3dragobject.h>
+//Added by qt3to4:
+#include <QDragMoveEvent>
+#include <Q3CString>
+#include <QDropEvent>
+#include <QDragLeaveEvent>
+#include <Q3Frame>
+#include <QMouseEvent>
+#include <Q3StrList>
+#include <Q3PtrList>
+#include <QDragEnterEvent>
 
 static const int autoopenTime = 750;
 
-WTreeView::WTreeView(QString qRootPath, QWidget *parent, const char *name, bool sdo) : QListView( parent, name ), dirsOnly( sdo ), oldCurrent( 0 ),
+WTreeView::WTreeView(QString qRootPath, QWidget *parent, const char *name, bool sdo) : Q3ListView( parent, name ), dirsOnly( sdo ), oldCurrent( 0 ),
       dropItem(0), mousePressed(false)
 {
     folderLocked = 0;
@@ -43,28 +53,28 @@ WTreeView::WTreeView(QString qRootPath, QWidget *parent, const char *name, bool 
         fileNormal = new QPixmap( pix_file );
     }
 */
-    connect(this, SIGNAL(doubleClicked(QListViewItem *)), this, SLOT(slotFolderSelected(QListViewItem *)));
-	connect(this, SIGNAL(returnPressed(QListViewItem *)), this, SLOT(slotFolderSelected(QListViewItem *)));
+    connect(this, SIGNAL(doubleClicked(Q3ListViewItem *)), this, SLOT(slotFolderSelected(Q3ListViewItem *)));
+    connect(this, SIGNAL(returnPressed(Q3ListViewItem *)), this, SLOT(slotFolderSelected(Q3ListViewItem *)));
 
     // Set properties
     setAcceptDrops(false);
     //viewport()->setAcceptDrops(true);
     addColumn("Name", -1);
-    setSelectionMode(QListView::Extended);
-    setResizeMode(QListView::AllColumns);
+    setSelectionMode(Q3ListView::Extended);
+    setResizeMode(Q3ListView::AllColumns);
 //    header()->hide();
     
-    setColumnWidthMode(1, QListView::Maximum);
+    setColumnWidthMode(1, Q3ListView::Maximum);
     setTreeStepSize(20);
     
-    setFrameStyle(QFrame::NoFrame);
+    setFrameStyle(Q3Frame::NoFrame);
     connect(autoopen_timer, SIGNAL(timeout()), this, SLOT(openFolder()));
 
     //
     // Load information into the view
     //
     slotUpdateDir(qRootPath);
-	
+
     // Insert root playlist
     m_pRootPlaylist = new WTreeItemPlaylistRoot(this, "Playlists");
     m_pRootPlaylist->setOpen(true); // be interesting
@@ -112,7 +122,7 @@ void WTreeView::setup(QDomNode node)
 	setPaletteForegroundColor(WSkinColor::getCorrectColor(fgc));
 }
 
-void WTreeView::slotFolderSelected( QListViewItem *i )
+void WTreeView::slotFolderSelected( Q3ListViewItem *i )
 {
     // Abort any rename click which is about to be executed
     m_pClickedItem = 0;
@@ -144,7 +154,7 @@ void WTreeView::openFolder()
     }
 }
 
-void WTreeView::updatePlaylists(QPtrList<TrackPlaylist> *pList)
+void WTreeView::updatePlaylists(Q3PtrList<TrackPlaylist> *pList)
 {
     // Clear current lists
     while (m_pRootPlaylist->childCount()>0)
@@ -157,7 +167,7 @@ void WTreeView::updatePlaylists(QPtrList<TrackPlaylist> *pList)
 
 void WTreeView::contentsDragEnterEvent( QDragEnterEvent *e )
 {
-    if (!QUriDrag::canDecode(e))
+    if (!Q3UriDrag::canDecode(e))
     {
         e->ignore();
         return;
@@ -165,7 +175,7 @@ void WTreeView::contentsDragEnterEvent( QDragEnterEvent *e )
 
     oldCurrent = currentItem();
 
-    QListViewItem *i = itemAt(contentsToViewport(e->pos()));
+    Q3ListViewItem *i = itemAt(contentsToViewport(e->pos()));
     if (i)
     {
         dropItem = i;
@@ -176,14 +186,14 @@ void WTreeView::contentsDragEnterEvent( QDragEnterEvent *e )
 
 void WTreeView::contentsDragMoveEvent( QDragMoveEvent *e )
 {
-    if ( !QUriDrag::canDecode(e) )
+    if ( !Q3UriDrag::canDecode(e) )
     {
         e->ignore();
         return;
     }
 
     QPoint vp = contentsToViewport( ( (QDragMoveEvent*)e )->pos() );
-    QListViewItem *i = itemAt( vp );
+    Q3ListViewItem *i = itemAt( vp );
     if ( i )
     {
         setSelected( i, TRUE );
@@ -229,19 +239,19 @@ void WTreeView::contentsDropEvent( QDropEvent *e )
 {
     autoopen_timer->stop();
 
-    if ( !QUriDrag::canDecode(e) )
+    if ( !Q3UriDrag::canDecode(e) )
     {
         e->ignore();
         return;
     }
 
-    QListViewItem *item = itemAt( contentsToViewport(e->pos()) );
+    Q3ListViewItem *item = itemAt( contentsToViewport(e->pos()) );
     if ( item )
     {
 
-        QStrList lst;
+        Q3StrList lst;
 
-        QUriDrag::decode( e, lst );
+        Q3UriDrag::decode( e, lst );
 
         QString str;
 
@@ -282,7 +292,7 @@ void WTreeView::contentsDropEvent( QDropEvent *e )
 }
 
 
-QString WTreeView::fullPath(QListViewItem* item)
+QString WTreeView::fullPath(Q3ListViewItem* item)
 {
     QString fullpath = item->text(0);
     while ( (item=item->parent()) )
@@ -300,7 +310,7 @@ void WTreeView::contentsMousePressEvent( QMouseEvent* e )
     // Stop the timer, so a rename click is not issued
     mouseMoved = false;
 
-    QListView::contentsMousePressEvent(e);
+    Q3ListView::contentsMousePressEvent(e);
     QPoint p( contentsToViewport( e->pos() ) );
     
     WTreeItem *i = (WTreeItem *)itemAt( p );
@@ -336,14 +346,14 @@ void WTreeView::contentsMouseMoveEvent( QMouseEvent* e )
         WTreeItem *item = (WTreeItem *)itemAt(contentsToViewport(presspos));
         if (item && item->type()=="WTreeItemPlaylist")
         {
-            QTextDrag *td = new QTextDrag(item->drag(), viewport());
-            const QCString type("Playlist");
+            Q3TextDrag *td = new Q3TextDrag(item->drag(), viewport());
+            const Q3CString type("Playlist");
             td->setSubtype(type);
             td->dragCopy();
         }
         else
         {
-            QStrList lst;
+            Q3StrList lst;
             item = (WTreeItem *)m_pRootDir;
             while (item)
             {
@@ -351,7 +361,7 @@ void WTreeView::contentsMouseMoveEvent( QMouseEvent* e )
                     lst.append(item->drag());
                 item = (WTreeItem *)item->itemBelow();
             }
-            QUriDrag *ud = new QUriDrag(viewport());
+            Q3UriDrag *ud = new Q3UriDrag(viewport());
             ud->setUris(lst);
             ud->dragCopy();
         }
@@ -383,7 +393,7 @@ void WTreeView::slotUpdateDir( const QString &s )
 void WTreeView::slotHighlightPlaylist(TrackPlaylist *p)
 {
     // Find playlist and highlight
-    QListViewItem *it = m_pRootPlaylist->firstChild();
+    Q3ListViewItem *it = m_pRootPlaylist->firstChild();
     while (it)
     {
         if (it->text(0)==p->getListName())

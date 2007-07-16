@@ -22,6 +22,9 @@
 
 // Mathstuff required for Win32
 #include "mathstuff.h"
+//Added by qt3to4:
+#include <Q3ValueList>
+#include <QWaitCondition>
 
 bool PlayerPortAudio::m_painited = false;
 
@@ -538,9 +541,9 @@ QStringList PlayerPortAudio::getSampleRates()
 	outputParams.suggestedLatency = .150; //Latency in seconds.
 	outputParams.hostApiSpecificStreamInfo = NULL;
 
-    QValueList<double> desiredSampleRates; //A list of all the sample rates we're going to suggest.
-    QValueList<double> validSampleRates; //A list containing all the supported sample rates.
-    
+    Q3ValueList<double> desiredSampleRates; //A list of all the sample rates we're going to suggest.
+    Q3ValueList<double> validSampleRates; //A list containing all the supported sample rates.
+
     //Here's all the sample rates we're going to suggest to PortAudio. We check which ones
     //are actually supported below.
     desiredSampleRates.append(11025.0);
@@ -580,7 +583,7 @@ QStringList PlayerPortAudio::getSampleRates()
 
     // Sort list
 #ifndef QT3_SUPPORT
-    qHeapSort(validSampleRates);
+    qSort(validSampleRates);
 #endif
 
     // Convert srlist to stringlist
@@ -699,7 +702,7 @@ int PlayerPortAudio::callbackProcess(int iBufferSize, float *out, int devIndex)
     int i;
 
     if (previousDevIndex == devIndex && m_iNumActiveDevices > 1)
-    	waitForNextOutput.wait();
+    	waitForNextOutput.wait(&waitMutex);
     
     //Only fill the buffer with sound data from Mixxx once.
     lockSamples.lock();

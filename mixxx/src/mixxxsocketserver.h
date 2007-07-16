@@ -12,14 +12,14 @@
 #ifndef MIXXXSOCKETSERVER_H
 #define MIXXXSOCKETSERVER_H
 
-#include <qserversocket.h>
+#include <q3serversocket.h>
 
 class Track;
 
 /**
 @author Tue Haste Andersen
 */
-class MixxxSocketServer : public QServerSocket
+class MixxxSocketServer : public Q3ServerSocket
 {
     Q_OBJECT
 public:

@@ -18,7 +18,7 @@
 #ifndef PEAKLIST_H
 #define PEAKLIST_H
 
-#include <qvaluelist.h>
+#include <q3valuelist.h>
 
 
 /** Struct used to store peaks as index (i) and interpolated correction (corr) */
@@ -31,7 +31,7 @@ typedef struct PeakType {
   *@author Tue & Ken Haste Andersen
   */
 
-class PeakList : public QValueList<PeakType> {
+class PeakList : public Q3ValueList<PeakType> {
 public: 
     PeakList(int iIdxSize, float *pBuffer);
     ~PeakList();

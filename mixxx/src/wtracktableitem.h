@@ -18,7 +18,7 @@
 #ifndef WTRACKTABLEITEM_H
 #define WTRACKTABLEITEM_H
 
-#include <qtable.h>
+#include <q3table.h>
 #include <qcolor.h>
 
 /**
@@ -30,13 +30,13 @@ class TrackInfoObject;
 
 enum enumType { typeText, typeNumber, typeDuration };
 
-class WTrackTableItem : public QTableItem
+class WTrackTableItem : public Q3TableItem
 {
    // Q_OBJECT
 private:
     enumType m_eType; // Wether an item is text or a number. Used for sorting.
 public: 
-    WTrackTableItem(TrackInfoObject *pTrackInfoObject, QTable *table, EditType et, const QString &text, enumType eType);
+    WTrackTableItem(TrackInfoObject *pTrackInfoObject, Q3Table *table, EditType et, const QString &text, enumType eType);
     ~WTrackTableItem();
     static void setRowColors(QColor r1, QColor r2);
     static void setBpmBgColors(QColor c1, QColor c2);

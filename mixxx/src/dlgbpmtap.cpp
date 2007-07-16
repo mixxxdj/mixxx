@@ -21,15 +21,18 @@
 #include <qpushbutton.h>
 #include <qlineedit.h>
 #include <qradiobutton.h>
-#include <qprogressbar.h>
+#include <q3progressbar.h>
 #include <qspinbox.h>
 #include <qdatetime.h>
+//Added by qt3to4:
+#include <QEvent>
+#include <QtGui>
 #include "dlgbpmtap.h"
 #include "mixxx.h"
 #include "trackinfoobject.h"
 
 
-DlgBPMTap::DlgBPMTap(QWidget *mixxx, TrackInfoObject *tio) : DlgBPMTapDlg(mixxx, "")
+DlgBPMTap::DlgBPMTap(QWidget *mixxx, TrackInfoObject *tio) : QDialog(), Ui::DlgBPMTapDlg()
 {
     //m_pMixxx = mixxx;
     m_CurrentTrack = tio;
@@ -61,19 +64,22 @@ DlgBPMTap::DlgBPMTap(QWidget *mixxx, TrackInfoObject *tio) : DlgBPMTapDlg(mixxx,
 
 }
 
+/*
 DlgBPMTap::~DlgBPMTap()
 {
-}
+}*/
 
 bool DlgBPMTap::eventFilter(QObject *o, QEvent *e)
 {
     // Send a close signal if dialog is closing
+    /*
+//FIXME: These are borked with QT4 (linker error, wtf?)
     if (e->type() == QEvent::Hide)
         emit(closeDlg());
 
     if(e->type() == QEvent::Show)
         emit(aboutToShow());
-
+*/
     // Standard event processing
     return QWidget::eventFilter(o,e);
 }

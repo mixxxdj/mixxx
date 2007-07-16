@@ -21,10 +21,11 @@
 #include <qwidget.h>
 #include <qlabel.h>
 #include <qstring.h>
-#include <qptrlist.h>
-#include <qpushbutton.h>
-
+#include <QComboBox>
+//Added by qt3to4:
+#include <Q3ValueList>
 #include "configobject.h"
+#include <q3ptrlist.h>
 #include "configobject.h"
 #include "imgsource.h"
 
@@ -85,7 +86,7 @@ public:
 	
 	void rebootGUI(QWidget* parent, bool bVisualsWaveform, ConfigObject<ConfigValue> *pConfig, QString qSkinPath);
 
-	static QValueList<QString> getSchemeList(QString qSkinPath);
+	static Q3ValueList<QString> getSchemeList(QString qSkinPath);
 
 private:
 	void setupColorScheme(QDomElement docElem, ConfigObject<ConfigValue> *pConfig);
@@ -102,7 +103,7 @@ private:
     // True if m_pVisualChX is instantiated as WVisualWaveform
     bool m_bVisualWaveform;
     bool compareConfigKeys(QDomNode node, QString key);
-    QPtrList<QObject> m_qWidgetList;
+    Q3PtrList<QObject> m_qWidgetList;
     /** Pointer to keyboard handler */
     MixxxKeyboard *m_pKeyboard;
 };

@@ -20,8 +20,10 @@
 
 #include <qobject.h>
 #include <qevent.h>
-#include <qvaluelist.h>
+#include <q3valuelist.h>
 #include <qkeysequence.h>
+//Added by qt3to4:
+#include <QKeyEvent>
 #include "configobject.h"
 
 /**
@@ -44,7 +46,7 @@ private:
     /** Returns a valid QKeySequency with modifier keys from a QKeyEvent */
     QKeySequence getKeySeq(QKeyEvent *e);
     /** List containing keys which is currently pressed */
-    QValueList<int> m_qActiveKeyList;
+    Q3ValueList<int> m_qActiveKeyList;
     /** Pointer to keyboard config object */
     ConfigObject<ConfigValueKbd> *m_pKbdConfigObject;
 };

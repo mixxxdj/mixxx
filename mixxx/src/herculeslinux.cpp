@@ -36,6 +36,8 @@
 #include "controlobject.h"
 #include "mathstuff.h"
 #include "rotary.h"
+//Added by qt3to4:
+#include <Q3ValueList>
 
 #ifdef __LIBDJCONSOLE__
 static void console_event(void *c, int code, int value)
@@ -254,7 +256,7 @@ double HerculesLinux::PitchChange(const QString ControlSide, const int ev_value,
   #define MSC_PULSELED 0x01
 #endif
 
-QValueList <int> HerculesLinux::sqlOpenDevs;
+Q3ValueList <int> HerculesLinux::sqlOpenDevs;
 
 HerculesLinux::HerculesLinux() : Hercules()
 {
@@ -346,7 +348,7 @@ void HerculesLinux::closedev()
         close(m_iFd);
 
         // Remove id from list
-        QValueList<int>::iterator it = sqlOpenDevs.find(m_iId);
+        Q3ValueList<int>::iterator it = sqlOpenDevs.find(m_iId);
         if (it!=sqlOpenDevs.end())
             sqlOpenDevs.remove(it);
     }

@@ -12,18 +12,20 @@
 #ifndef WTREEITEM_H
 #define WTREEITEM_H
 
-#include <qlistview.h>
+#include <q3listview.h>
 #include <qobject.h>
+//Added by qt3to4:
+#include <QPixmap>
 class Track;
 class QWidget;
 /**
 @author Tue Haste Andersen
 */
-class WTreeItem : public QListViewItem
+class WTreeItem : public Q3ListViewItem
 {
 public:
-    WTreeItem(QListView *parent);
-    WTreeItem(QListView *parent, const QString &s1);
+    WTreeItem(Q3ListView *parent);
+    WTreeItem(Q3ListView *parent, const QString &s1);
     WTreeItem(WTreeItem *parent);
     WTreeItem(WTreeItem *parent, const QString &s1);
     WTreeItem(WTreeItem *parent, const QString &s1, const QString &s2);
@@ -37,7 +39,7 @@ public:
     
     const QPixmap *pixmap( int i ) const;
 #if !defined(Q_NO_USING_KEYWORD)
-    using QListViewItem::setPixmap;
+    using Q3ListViewItem::setPixmap;
 #endif
     void setPixmap( QPixmap *p );
 

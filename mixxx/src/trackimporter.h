@@ -15,8 +15,8 @@
 
 #include <qobject.h>
 #include <qstring.h>
-#include <qptrlist.h>
-#include <qfiledialog.h>
+#include <q3ptrlist.h>
+#include <q3filedialog.h>
 #include <qmessagebox.h>
 #include "parserpls.h"
 #include "parserm3u.h"
@@ -46,7 +46,7 @@ private:
     /**Being called to parse the tracks corresponding to the file's extension**/
     void parseTracks(QString);
     /**Being called to set the tracks from the parser to the StringList**/
-    void setTracks(QPtrList<QString> *);
+    void setTracks(Q3PtrList<QString> *);
 
     /**Displays a file chooser dialog for the user**/
     QString showChooser();
@@ -57,7 +57,7 @@ private:
     QString splitFilepath(QString);
 
     /**Pointer to a list of the tracklocations**/
-    QPtrList<QString> *m_psLocations;
+    Q3PtrList<QString> *m_psLocations;
     /**Pointer to the Main Collection class**/
     TrackCollection * m_pCollection;
 

@@ -17,7 +17,7 @@
 
 #include "dlgprefsound.h"
 #include "playerproxy.h"
-#include <qcombobox.h>
+#include <qcombobox.h> 
 #include <qcheckbox.h>
 #include <qpushbutton.h>
 #include <qslider.h>
@@ -28,11 +28,15 @@
 #include <qwidget.h>
 
 DlgPrefSound::DlgPrefSound(QWidget *parent, PlayerProxy *_player,
-                           ConfigObject<ConfigValue> *_config) : DlgPrefSoundDlg(parent,"")
+                           ConfigObject<ConfigValue> *_config) : QWidget(parent), Ui::DlgPrefSoundDlg()
 {
     m_bLatencySliderDrag = false;
     player = _player;
     config = _config;
+    
+    setupUi(this);
+    slotUpdate();
+    slotLatency();
     
     // Update of latency label, when latency slider is updated
     connect(SliderLatency,                SIGNAL(sliderMoved(int)),  this, SLOT(slotLatency()));
@@ -54,6 +58,7 @@ DlgPrefSound::DlgPrefSound(QWidget *parent, PlayerProxy *_player,
         checkBoxPitchIndp->setChecked(false);
 
     // Apply changes whenever apply signal is emitted
+    /*
     connect(ComboBoxSoundcardMasterLeft,  SIGNAL(activated(int)),    this, SLOT(slotApply()));
     connect(ComboBoxSoundcardMasterRight, SIGNAL(activated(int)),    this, SLOT(slotApply()));
     connect(ComboBoxSoundcardHeadLeft,    SIGNAL(activated(int)),    this, SLOT(slotApply()));
@@ -64,6 +69,11 @@ DlgPrefSound::DlgPrefSound(QWidget *parent, PlayerProxy *_player,
     connect(SliderLatency,                SIGNAL(sliderPressed()),   this, SLOT(slotLatencySliderClick()));
     connect(SliderLatency,                SIGNAL(sliderReleased()),  this, SLOT(slotLatencySliderRelease()));
     connect(SliderLatency,                SIGNAL(valueChanged(int)), this, SLOT(slotLatencySliderChange(int)));
+    */
+    
+    connect(SliderLatency,                SIGNAL(sliderReleased()),  this, SLOT(slotLatencySliderRelease()));
+    connect(ComboBoxSoundApi,             SIGNAL(activated(int)),    this, SLOT(slotApplyApi()));
+       
 }
 
 DlgPrefSound::~DlgPrefSound()
@@ -78,58 +88,58 @@ void DlgPrefSound::slotUpdate()
 
     // Master left sound card info
     ComboBoxSoundcardMasterLeft->clear();
-    ComboBoxSoundcardMasterLeft->insertItem("None");
+    ComboBoxSoundcardMasterLeft->insertItem(0, "None");
     it = interfaces.begin();
     j = 1;
     while (it!=interfaces.end())
     {
-        ComboBoxSoundcardMasterLeft->insertItem((*it));
+        ComboBoxSoundcardMasterLeft->insertItem(j, (*it));
         if ((*it)==config->getValueString(ConfigKey("[Soundcard]","DeviceMasterLeft")))
-            ComboBoxSoundcardMasterLeft->setCurrentItem(j);
+            ComboBoxSoundcardMasterLeft->setCurrentIndex(j);
         ++j;
         ++it;
     }
 
     // Master right sound card info
     ComboBoxSoundcardMasterRight->clear();
-    ComboBoxSoundcardMasterRight->insertItem("None");
+    ComboBoxSoundcardMasterRight->insertItem(0, "None");
     it = interfaces.begin();
     j = 1;
     while (it!=interfaces.end())
     {
-        ComboBoxSoundcardMasterRight->insertItem((*it));
+        ComboBoxSoundcardMasterRight->insertItem(j, (*it));
         if ((*it)==config->getValueString(ConfigKey("[Soundcard]","DeviceMasterRight")))
-            ComboBoxSoundcardMasterRight->setCurrentItem(j);
+            ComboBoxSoundcardMasterRight->setCurrentIndex(j);
         ++j;
         ++it;
     }
 
     // Head left sound card info
     ComboBoxSoundcardHeadLeft->clear();
-    ComboBoxSoundcardHeadLeft->insertItem("None");
+    ComboBoxSoundcardHeadLeft->insertItem(0, "None");
     it = interfaces.begin();
     j = 1;
     while (it!=interfaces.end())
     {
-        ComboBoxSoundcardHeadLeft->insertItem((*it));
+        ComboBoxSoundcardHeadLeft->insertItem(j, (*it));
         if ((*it)==config->getValueString(ConfigKey("[Soundcard]","DeviceHeadLeft")))
-            ComboBoxSoundcardHeadLeft->setCurrentItem(j);
+            ComboBoxSoundcardHeadLeft->setCurrentIndex(j);
         ++j;
         ++it;
     }
 
     // Head right sound card info
     ComboBoxSoundcardHeadRight->clear();
-    ComboBoxSoundcardHeadRight->insertItem("None");
+    ComboBoxSoundcardHeadRight->insertItem(0, "None");
     it = interfaces.begin();
     j = 1;
     while (it!=interfaces.end())
     {
-        ComboBoxSoundcardHeadRight->insertItem((*it));
+        ComboBoxSoundcardHeadRight->insertItem(j, (*it));
         if ((*it)==config->getValueString(ConfigKey("[Soundcard]","DeviceHeadRight")))
-            ComboBoxSoundcardHeadRight->setCurrentItem(j);
+            ComboBoxSoundcardHeadRight->setCurrentIndex(j);
         ++j;
-        ++it;
+        ++it; 
     }
 
     // Sample rate
@@ -139,9 +149,9 @@ void DlgPrefSound::slotUpdate()
     j = 0;
     while (it!=srates.end())
     {
-        ComboBoxSamplerates->insertItem((*it));
+        ComboBoxSamplerates->insertItem(j, (*it));
         if ((*it)==config->getValueString(ConfigKey("[Soundcard]","Samplerate")))
-            ComboBoxSamplerates->setCurrentItem(j);
+            ComboBoxSamplerates->setCurrentIndex(j);
         ++j;
         ++it;
     }
@@ -153,15 +163,15 @@ void DlgPrefSound::slotUpdate()
 
     // API's
     ComboBoxSoundApi->clear();
-    ComboBoxSoundApi->insertItem("None");
+    ComboBoxSoundApi->insertItem(0, "None");
     QStringList api = player->getSoundApiList();
     it = api.begin();
     j = 1;
     while (it!=api.end())
     {
-        ComboBoxSoundApi->insertItem((*it));
+        ComboBoxSoundApi->insertItem(j, (*it));
         if ((*it)==config->getValueString(ConfigKey("[Soundcard]","SoundApi")))
-            ComboBoxSoundApi->setCurrentItem(j);
+            ComboBoxSoundApi->setCurrentIndex(j);
         ++j;
         ++it;
     }
@@ -255,6 +265,6 @@ void DlgPrefSound::slotLatencySliderRelease()
 
 void DlgPrefSound::slotLatencySliderChange(int)
 {
-    if (!m_bLatencySliderDrag)
-        slotApply();
+    //if (!m_bLatencySliderDrag)
+    //    slotApply();
 }

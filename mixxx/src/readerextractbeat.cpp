@@ -22,7 +22,7 @@
 #include "peaklist.h"
 #include "probabilityvector.h"
 #include "trackinfoobject.h"
-
+#include "qvaluelist.h"
 #ifdef __GNUPLOT__
     // For sleep:
     #include <unistd.h>

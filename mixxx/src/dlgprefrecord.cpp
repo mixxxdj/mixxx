@@ -18,7 +18,7 @@
 #include "dlgprefrecord.h"
 #define MIXXX
 #include <qlineedit.h>
-#include <qfiledialog.h>
+#include <q3filedialog.h>
 #include <qwidget.h>
 #include <qslider.h>
 #include <qlabel.h>
@@ -26,24 +26,24 @@
 #include <qpushbutton.h>
 #include <qmessagebox.h>
 #include <qcombobox.h>
-#include <qgroupbox.h>
+#include <q3groupbox.h>
 #include <qcheckbox.h>
 
-DlgPrefRecord::DlgPrefRecord(QWidget *parent, ConfigObject<ConfigValue> *_config) : DlgPrefRecordDlg(parent,"")
+DlgPrefRecord::DlgPrefRecord(QWidget *parent, ConfigObject<ConfigValue> *_config) : QWidget(parent), Ui::DlgPrefRecordDlg()
 {
     config = _config;
     confirmOverwrite = false;
 
     recordControl = ControlObject::getControl(ConfigKey("[Master]", "Record")); //See RECORD_* #defines in dlgprefrecord.h
 
-    //Fill up encoding list
-    comboBoxEncoding->insertItem("WAVE", IDEX_WAVE);
-    comboBoxEncoding->insertItem("FLAC", IDEX_FLAC);
-    comboBoxEncoding->insertItem("AIFF", IDEX_AIFF);
+    //Fill up encoding list 
+    comboBoxEncoding->addItem("WAVE", IDEX_WAVE);
+    comboBoxEncoding->addItem("FLAC", IDEX_FLAC);
+    comboBoxEncoding->addItem("AIFF", IDEX_AIFF);
     //comboBoxEncoding->insertItem("OGG",  IDEX_OGG);
     //comboBoxEncoding->insertItem("MP3",  IDEX_MP3);
 
-
+ 
     //Connections
     connect(PushButtonBrowse, SIGNAL(clicked()),	this,	SLOT(slotBrowseSave()));
     connect(LineEditRecPath,  SIGNAL(returnPressed()),  this,	SLOT(slotApply()));
@@ -62,9 +62,9 @@ DlgPrefRecord::DlgPrefRecord(QWidget *parent, ConfigObject<ConfigValue> *_config
 
 void DlgPrefRecord::slotBrowseSave()
 {
-    QFileDialog* fd = new QFileDialog(config->getValueString(ConfigKey(PREF_KEY,"Path")),"", this, "", TRUE );
-    fd->setMode( QFileDialog::AnyFile );
-    fd->setCaption("Save As");
+    Q3FileDialog* fd = new Q3FileDialog(config->getValueString(ConfigKey(PREF_KEY,"Path")),"", this, "Save As", TRUE );
+    fd->setMode( Q3FileDialog::AnyFile );
+    //fd->setCaption("Save As");
     if ( fd->exec() == QDialog::Accepted )
     {
 	QString selectedFile = fd->selectedFile();
@@ -79,7 +79,7 @@ void DlgPrefRecord::slotBrowseSave()
 void DlgPrefRecord::slotSliderQuality()
 {
     updateTextQuality();
-    switch(comboBoxEncoding->currentItem())
+    switch(comboBoxEncoding->currentIndex())
     {
 	case IDEX_OGG:
 	    config->set(ConfigKey(PREF_KEY, "OGG_Quality"), ConfigValue(SliderQuality->value()));
@@ -92,7 +92,7 @@ void DlgPrefRecord::slotSliderQuality()
 
 int DlgPrefRecord::getSliderQualityVal()
 {
-    switch(comboBoxEncoding->currentItem())
+    switch(comboBoxEncoding->currentIndex())
     {
 	case IDEX_OGG:
 	    return SliderQuality->value();
@@ -117,7 +117,7 @@ int DlgPrefRecord::getSliderQualityVal()
 void DlgPrefRecord::updateTextQuality()
 {
     int quality = getSliderQualityVal();
-    switch(comboBoxEncoding->currentItem())
+    switch(comboBoxEncoding->currentIndex())
     {
 	case IDEX_MP3:
 	    TextQuality->setText(QString( QString::number(quality) + "kbps"));
@@ -132,8 +132,8 @@ void DlgPrefRecord::slotEncoding()
 {
     //set defaults
     groupBoxQuality->setEnabled(true);
-    config->set(ConfigKey(PREF_KEY, "Encoding"), ConfigValue(comboBoxEncoding->currentItem()));
-    switch(comboBoxEncoding->currentItem())
+    config->set(ConfigKey(PREF_KEY, "Encoding"), ConfigValue(comboBoxEncoding->currentIndex()));
+    switch(comboBoxEncoding->currentIndex())
     {
 	case IDEX_WAVE:
 	    groupBoxQuality->setEnabled(false);
@@ -196,7 +196,7 @@ void DlgPrefRecord::slotApply()
 
     slotEncoding();
 
-    if(CheckBoxRecord->isOn())
+    if(CheckBoxRecord->isChecked())
     {
 	int result = 0;
 	if(QFile::exists(LineEditRecPath->text()) && !confirmOverwrite){

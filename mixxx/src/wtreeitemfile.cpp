@@ -10,8 +10,8 @@
 //
 //
 #include <qcursor.h>
-#include <qpopupmenu.h>
-#include <qdragobject.h>
+#include <q3popupmenu.h>
+#include <q3dragobject.h>
 #include "track.h"
 #include "wtreeitemfile.h"
 #include "wtreeview.h"
@@ -28,7 +28,7 @@ WTreeItemFile::~WTreeItemFile()
 
 void WTreeItemFile::popupMenu()
 {
-    QPopupMenu *menu = new QPopupMenu();
+    Q3PopupMenu *menu = new Q3PopupMenu();
     int id;
     
     id = menu->insertItem("Player 1", this, SLOT(slotLoadPlayer1()));

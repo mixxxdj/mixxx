@@ -58,7 +58,7 @@ bool MixxxKeyboard::eventFilter(QObject *, QEvent *e)
         #ifdef QT3_SUPPORT
         Q3ValueList<int>::iterator it = m_qActiveKeyList.begin();
         #else
-        QValueList<int>::iterator it = m_qActiveKeyList.begin();
+        Q3ValueList<int>::iterator it = m_qActiveKeyList.begin();
 		#endif
         while (it!=m_qActiveKeyList.end())
         {
@@ -119,11 +119,11 @@ QKeySequence MixxxKeyboard::getKeySeq(QKeyEvent *e)
 {
     QString s = QKeySequence(e->key());
 	#ifdef QT3_SUPPORT
-    if (e->state() & Qt::ShiftButton)
+    if (e->state() & Qt::ShiftModifier)
         s = "Shift+" + s;    
-    if (e->state() & Qt::ControlButton)
+    if (e->state() & Qt::ControlModifier)
         s = "Ctrl+" + s;
-    if (e->state() & Qt::AltButton)
+    if (e->state() & Qt::AltModifier)
         s = "Alt+" + s;
     #else
 	if (e->state() & ShiftButton)

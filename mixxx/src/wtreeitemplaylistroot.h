@@ -21,7 +21,7 @@
 class WTreeItemPlaylistRoot : public WTreeItem
 {
 public:
-    WTreeItemPlaylistRoot(QListView *parent, const QString &s1);
+    WTreeItemPlaylistRoot(Q3ListView *parent, const QString &s1);
     ~WTreeItemPlaylistRoot();
 
     void popupMenu();

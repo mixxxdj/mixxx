@@ -12,20 +12,20 @@
 #ifndef TRACKPLAYLISTLIST_H
 #define TRACKPLAYLISTLIST_H
 
-#include <qptrlist.h>
+#include <q3ptrlist.h>
 #include "trackplaylist.h"
 
 /**
 @author Tue Haste Andersen
 */
-class TrackPlaylistList : public QPtrList<TrackPlaylist>
+class TrackPlaylistList : public Q3PtrList<TrackPlaylist>
 {
 public:
     TrackPlaylistList();
     ~TrackPlaylistList();
 
 protected:
-    int compareItems(QPtrCollection::Item item1, QPtrCollection::Item item2);
+    int compareItems(Q3PtrCollection::Item item1, Q3PtrCollection::Item item2);
 };
 
 #endif

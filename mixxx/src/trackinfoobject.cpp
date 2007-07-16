@@ -18,6 +18,9 @@
 #include "qstring.h"
 #include "qdom.h"
 #include <qfileinfo.h>
+//Added by qt3to4:
+#include <Q3ValueList>
+#include <Q3MemArray>
 #include "trackinfoobject.h"
 #include "soundsourceproxy.h"
 #include "wtracktable.h"
@@ -28,7 +31,7 @@
 #include "controlobject.h"
 
 #ifdef QT3_SUPPORT
-#include <qtime>
+#include <QTime>
 #endif
 
 int TrackInfoObject::siMaxTimesPlayed = 1;
@@ -196,21 +199,21 @@ void TrackInfoObject::insertInTrackTableRow(WTrackTable *pTableTrack, int iRow)
 
     // Construct elements to insert into the table, if they are not already allocated
     if (!m_pTableItemScore)
-        m_pTableItemScore = new WTrackTableItem(this, pTableTrack,QTableItem::Never, getScoreStr(), typeNumber);
+        m_pTableItemScore = new WTrackTableItem(this, pTableTrack,Q3TableItem::Never, getScoreStr(), typeNumber);
     if (!m_pTableItemTitle)
-        m_pTableItemTitle = new WTrackTableItem(this, pTableTrack,QTableItem::Never, getTitle(), typeText);
+        m_pTableItemTitle = new WTrackTableItem(this, pTableTrack,Q3TableItem::Never, getTitle(), typeText);
     if (!m_pTableItemArtist)
-        m_pTableItemArtist = new WTrackTableItem(this, pTableTrack,QTableItem::Never, getArtist(), typeText);
+        m_pTableItemArtist = new WTrackTableItem(this, pTableTrack,Q3TableItem::Never, getArtist(), typeText);
     if (!m_pTableItemComment)
-        m_pTableItemComment = new WTrackTableItem(this, pTableTrack,QTableItem::WhenCurrent, getComment(), typeText);
+        m_pTableItemComment = new WTrackTableItem(this, pTableTrack,Q3TableItem::WhenCurrent, getComment(), typeText);
     if (!m_pTableItemType)
-        m_pTableItemType = new WTrackTableItem(this, pTableTrack,QTableItem::Never, getType(), typeText);
+        m_pTableItemType = new WTrackTableItem(this, pTableTrack,Q3TableItem::Never, getType(), typeText);
     if (!m_pTableItemDuration)
-        m_pTableItemDuration = new WTrackTableItem(this, pTableTrack,QTableItem::Never, getDurationStr(), typeDuration);
+        m_pTableItemDuration = new WTrackTableItem(this, pTableTrack,Q3TableItem::Never, getDurationStr(), typeDuration);
     if (!m_pTableItemBpm)
-        m_pTableItemBpm = new WTrackTableItem(this, pTableTrack,QTableItem::Never, getBpmStr(), typeNumber);
+        m_pTableItemBpm = new WTrackTableItem(this, pTableTrack,Q3TableItem::WhenCurrent, getBpmStr(), typeNumber);
     if (!m_pTableItemBitrate)
-        m_pTableItemBitrate = new WTrackTableItem(this, pTableTrack,QTableItem::Never, getBitrateStr(), typeNumber);
+        m_pTableItemBitrate = new WTrackTableItem(this, pTableTrack,Q3TableItem::Never, getBitrateStr(), typeNumber);
 
     //qDebug("inserting.. %p",pTableTrack->item(iRow, COL_SCORE));
 
@@ -699,25 +702,25 @@ void TrackInfoObject::setId(int iId)
     m_qMutex.unlock();
 }
 
-QMemArray<char> *TrackInfoObject::getWaveSummary()
+Q3MemArray<char> *TrackInfoObject::getWaveSummary()
 {
     m_qMutex.lock();
-    QMemArray<char> *pWaveSummary = m_pWave;
+    Q3MemArray<char> *pWaveSummary = m_pWave;
     m_qMutex.unlock();
 
     return pWaveSummary;
 }
 
-QValueList<long> *TrackInfoObject::getSegmentationSummary()
+Q3ValueList<long> *TrackInfoObject::getSegmentationSummary()
 {
     m_qMutex.lock();
-    QValueList<long> *pSegmentationSummary = m_pSegmentation;
+    Q3ValueList<long> *pSegmentationSummary = m_pSegmentation;
     m_qMutex.unlock();
 
     return pSegmentationSummary;
 }
 
-void TrackInfoObject::setWaveSummary(QMemArray<char> *pWave, QValueList<long> *pSegmentation)
+void TrackInfoObject::setWaveSummary(Q3MemArray<char> *pWave, Q3ValueList<long> *pSegmentation)
 {
     m_qMutex.lock();
     m_pWave = pWave;

@@ -19,6 +19,8 @@
 #include "wskincolor.h"
 #include <math.h>
 #include <qfont.h>
+//Added by qt3to4:
+#include <QLabel>
 
 WLabel::WLabel(QWidget *parent, const char *name ) : WWidget(parent,name)
 {

@@ -12,7 +12,7 @@
 #ifndef MOUSE_H
 #define MOUSE_H
 
-#include <qptrlist.h>
+#include <q3ptrlist.h>
 #include "input.h"
 
 class QStringList;
@@ -39,7 +39,7 @@ public:
     void setCalibration(double c);
 
 protected:
-    static QPtrList<Mouse> m_sqInstanceList;
+    static Q3PtrList<Mouse> m_sqInstanceList;
     /** Pointer to rotary filtering object */
     Rotary *m_pRotary;
     /** Pointer to control objects connected to the PowerMate */

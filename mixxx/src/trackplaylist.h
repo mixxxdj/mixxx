@@ -15,8 +15,10 @@
 #include <qobject.h>
 #include <qstring.h>
 #include <qdom.h>
-#include <qptrlist.h>
+#include <q3ptrlist.h>
 #include <qevent.h>
+//Added by qt3to4:
+#include <QDropEvent>
 #include "trackinfoobject.h"
 class TrackCollection;
 class WTrackTable;
@@ -69,7 +71,7 @@ public slots:
 
 private:
     /** List of pointers to TrackInfoObjects */
-    QPtrList<TrackInfoObject> m_qList;
+    Q3PtrList<TrackInfoObject> m_qList;
     /** Pointer to TrackCollection */
     TrackCollection *m_pTrackCollection;
     /** Name of list */

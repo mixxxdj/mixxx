@@ -20,7 +20,7 @@ TrackPlaylistList::~TrackPlaylistList()
 {
 }
 
-int TrackPlaylistList::compareItems(QPtrCollection::Item item1, QPtrCollection::Item item2)
+int TrackPlaylistList::compareItems(Q3PtrCollection::Item item1, Q3PtrCollection::Item item2)
 {
     TrackPlaylist *p1 = (TrackPlaylist *)item1;
     TrackPlaylist *p2 = (TrackPlaylist *)item2;

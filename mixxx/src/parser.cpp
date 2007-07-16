@@ -11,6 +11,8 @@
 //
 
 #include "parser.h"
+//Added by qt3to4:
+#include <Q3PtrList>
 
 /**
 @author Ingo Kossyk (kossyki@cs.tu-berlin.de)
@@ -19,7 +21,7 @@
 
 Parser::Parser()
 {
-    m_psLocations = new QPtrList<QString>;
+    m_psLocations = new Q3PtrList<QString>;
 }
 
 Parser::~Parser()
@@ -56,7 +58,7 @@ bool Parser::isBinary(QString filename){
     int i = 0;
 
 
-    if(file->open(IO_ReadOnly)){
+    if(file->open(QIODevice::ReadOnly)){
         if(( i = file->getch())<33){ //Starting byte is no character
             file->close();
             return true;

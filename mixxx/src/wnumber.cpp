@@ -19,6 +19,8 @@
 #include "wskincolor.h"
 #include <math.h>
 #include <qfont.h>
+//Added by qt3to4:
+#include <QLabel>
 
 WNumber::WNumber(QWidget *parent, const char *name ) : WWidget(parent,name)
 {
@@ -80,7 +82,12 @@ void WNumber::setup(QDomNode node)
         setValue(0.);
     }
 
-	m_pLabel->show();
+    QString pos = selectNodeQString(node, "Pos");
+    int px = pos.left(pos.find(",")).toInt();
+    int py = pos.mid(pos.find(",")+1).toInt();
+    move(px,py);
+    m_pLabel->setAutoFillBackground(true);
+    m_pLabel->show();
 }
 
 void WNumber::setFixedSize(int x,int y)
@@ -111,7 +118,7 @@ void WNumber::setValue(double dValue)
 
 void WNumber::setAlignment(int i)
 {
-    m_pLabel->setAlignment(i);
+  //m_pLabel->setAlignment(i);
 }
 
 void WNumber::setConstFactor(double c)

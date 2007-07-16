@@ -35,7 +35,7 @@ void WriteAudioFile::open()
 	    case IDEX_AIFF:
 		sfInfo.format = SF_FORMAT_AIFF | SF_FORMAT_PCM_16;
 		break;
-    # TODO: Fix code SF_FORMAT_FLAC block below to work on Windows
+    //# TODO: Fix code SF_FORMAT_FLAC block below to work on Windows
     #ifdef SF_FORMAT_FLAC
 	    case IDEX_FLAC:
 		sfInfo.format = SF_FORMAT_FLAC | SF_FORMAT_PCM_16;

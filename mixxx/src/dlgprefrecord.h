@@ -18,7 +18,7 @@
 #ifndef DLGPREFRECORD_H
 #define DLGPREFRECORD_H
 
-#include "dlgprefrecorddlg.h"
+#include "ui_dlgprefrecorddlg.h"
 #include "controlobject.h"
 #include "configobject.h"
 
@@ -38,7 +38,7 @@ class QWidget;
   *@author John Sully
   */
 
-class DlgPrefRecord : public DlgPrefRecordDlg  {
+class DlgPrefRecord : public QWidget, public Ui::DlgPrefRecordDlg  {
     Q_OBJECT
 public: 
     DlgPrefRecord(QWidget *parent, ConfigObject<ConfigValue> *_config);

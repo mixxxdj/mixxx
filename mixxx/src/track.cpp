@@ -16,14 +16,16 @@
 #include "xmlparse.h"
 #include <qfile.h>
 #include <qcombobox.h>
+//Added by qt3to4:
+#include <QDropEvent>
 #include "mixxxview.h"
-#include <qdragobject.h>
+#include <q3dragobject.h>
 #include "wtracktable.h"
 #include "wtreeview.h"
 #include "wnumberpos.h"
-
+#include <q3popupmenu.h>
 #include <qcursor.h>
-#include <qcstring.h>
+#include <q3cstring.h>
 #include "enginebuffer.h"
 #include "reader.h"
 #include "controlobject.h"
@@ -32,7 +34,7 @@
 #include "trackimporter.h"
 #include "wavesummary.h"
 #include "woverview.h"
-#include <qprogressdialog.h> 
+#include <q3progressdialog.h> 
 
 Track::Track(QString location, MixxxView *pView, EngineBuffer *pBuffer1, EngineBuffer *pBuffer2, WaveSummary *pWaveSummary, QString musiclocation)
 {
@@ -46,7 +48,7 @@ Track::Track(QString location, MixxxView *pView, EngineBuffer *pBuffer1, EngineB
     m_pWaveSummary = pWaveSummary;
 	
 	musicDir = musiclocation;
-	menu = new QPopupMenu();
+	menu = new Q3PopupMenu();
 	
 	menu->insertItem("Play Queue", this, SLOT(slotSendToPlayqueue()));
 	menu->insertItem("Player 1", this, SLOT(slotLoadPlayer1()));
@@ -186,7 +188,7 @@ bool Track::readXML(QString location)
 
 void Track::writeXML(QString location)
 {
-    QProgressDialog progress( "Writing song database...", 0, m_qPlaylists.count()+5,
+    Q3ProgressDialog progress( "Writing song database...", 0, m_qPlaylists.count()+5,
                               0, "progress", TRUE );
     progress.show();
     int i = 0;
@@ -236,7 +238,7 @@ void Track::writeXML(QString location)
 
     // Open the file:
     QFile opmlFile(location);
-    if (!opmlFile.open(IO_WriteOnly))
+    if (!opmlFile.open(QIODevice::WriteOnly))
     {
         QMessageBox::critical(0,
                 tr("Error"),
@@ -248,8 +250,8 @@ void Track::writeXML(QString location)
     qApp->processEvents();
 
     // Write to the file:
-    QTextStream Xml(&opmlFile);
-    Xml.setEncoding(QTextStream::Unicode);
+    Q3TextStream Xml(&opmlFile);
+    Xml.setEncoding(Q3TextStream::Unicode);
     Xml << domXML.toString();
     opmlFile.close();
 
@@ -269,8 +271,8 @@ void Track::slotDrop(QDropEvent *e)
 
     QString name;
 #ifndef QT3_SUPPORT
-    QCString type("playlist");
-    if (!QTextDrag::decode(e, name, type))
+    Q3CString type("playlist");
+    if (!Q3TextDrag::decode(e, name, type))
 #else
     if (!e->mimeData()->hasFormat("playlist"))
 #endif
@@ -417,17 +419,21 @@ TrackPlaylist *Track::getPlaylist(QString qName)
 
 void Track::slotTrackPopup(TrackInfoObject *pTrackInfoObject, int)
 {
+    Q3PopupMenu *menu = new Q3PopupMenu();
+
     m_pActivePopupTrack = pTrackInfoObject;
     int id;
 
-	id = menu->idAt(0);
+    id = menu->insertItem("Player 1", this, SLOT(slotLoadPlayer1()));
     if (ControlObject::getControl(ConfigKey("[Channel1]","play"))->get()==1.)
         menu->setItemEnabled(id, false);
     
-	id = menu->idAt(1);
+    id = menu->insertItem("Player 2", this, SLOT(slotLoadPlayer2()));
     if (ControlObject::getControl(ConfigKey("[Channel2]","play"))->get()==1.)
         menu->setItemEnabled(id, false);
-	
+    
+    menu->insertItem("Remove",   this, SLOT(slotRemoveFromPlaylist()));
+
     menu->exec(QCursor::pos());
 
 }
@@ -714,26 +720,29 @@ void Track::librarycheckexists(QString qPath)
 			m_qPlaylists.at(0)->addTrack(qPath);
 		}
 	 }
-     else
+   /*  else
      {
           dir.setFilter(QDir::Dirs);
 
           // Check if the dir is empty
-          if (dir.entryInfoList()==0)
+          if (dir.entryInfoList().isEmpty())
               return;
 
-          const QFileInfoList dir_list = *dir.entryInfoList();
+          const QFileInfoList dir_list = dir.entryInfoList();
 
           // Call librarycheck on subdirectories
-          QFileInfoListIterator dir_it(dir_list);
+          // TODO: Make this QT4 compatible
+          
+          QFileInfoListIterator dir_it;
+          dir_it = dir_list.begin();
           QFileInfo *d;
-          while ((d=dir_it.current()))
+          while ((d=dir_it.hasNext()))
           {
               if (!d->filePath().endsWith(".") && !d->filePath().endsWith(".."))
                   librarycheckexists(d->filePath());
   			  qDebug("!! %s",d->filePath());
               ++dir_it;
-          }
+          } 
 
           //
   		// And then add all the files
@@ -742,8 +751,8 @@ void Track::librarycheckexists(QString qPath)
 
   		  dir.setFilter(QDir::Files);
           dir.setNameFilter("*.wav *.Wav *.WAV *.mp3 *.Mp3 *.MP3 *.ogg *.Ogg *.OGG *.aiff *.Aiff *.AIFF *.aif *.Aif *.AIF");
-          const QFileInfoList *list = dir.entryInfoList();
-          QFileInfoListIterator it(*list);        // create list iterator
+          const QFileInfoList list = dir.entryInfoList();
+          QFileInfoListIterator it(&list);        // create list iterator
           QFileInfo *fi;                          // pointer for traversing
 
           while ((fi=it.current()))
@@ -766,6 +775,7 @@ void Track::librarycheckexists(QString qPath)
               ++it;   // goto next list element
           }
      }
+     */
 }
 
 /*
