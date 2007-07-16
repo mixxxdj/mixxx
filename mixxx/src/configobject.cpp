@@ -359,7 +359,7 @@ double ConfigValueMidi::ComputeValue(MidiType /* _miditype */, double _prevmidiv
     }
     else if (midioption == MIDI_OPT_BUTTON)
     {
-        if (_newmidivalue == 127.) {
+        if (_newmidivalue != 0.) {
             _newmidivalue = !_prevmidivalue;
         } else {
             _newmidivalue = _prevmidivalue;
@@ -367,7 +367,7 @@ double ConfigValueMidi::ComputeValue(MidiType /* _miditype */, double _prevmidiv
     }
     else if (midioption == MIDI_OPT_SWITCH)
     {
-         _newmidivalue = (_newmidivalue == 127);
+         _newmidivalue = (_newmidivalue != 0);
     }
     else if (midioption == MIDI_OPT_SPREAD64)
     {
@@ -494,14 +494,16 @@ ConfigKey *ConfigObject<ValueType>::get(ValueType v)
     ConfigOption<ValueType> *it;
     for (it = list.first(); it; it = list.next())
     {
-          // qDebug("match --%s-- with --%s--", it->val->value.upper().latin1(), v.value.upper().latin1());
-//        if (it->val->value.upper() == v.value.upper())
         if (((ValueType)*it->val) == ((ValueType)v))
         {
-	    // qDebug("ConfigObject matched key %s %s", it->key->group.latin1(), it->key->item.latin1());
+            qDebug("match --%s-- with --%s--", it->val->value.upper().latin1(), v.value.upper().latin1());
             return it->key;
         }
-    }
+        
+        if (it == list.getLast()) {
+          qDebug("last match attempted --%s-- with --%s--", it->val->value.upper().latin1(), v.value.upper().latin1());
+        }
+    }    
     qDebug("Warning: No match for ConfigObject %s", v.value.latin1());
     return 0;
 }
