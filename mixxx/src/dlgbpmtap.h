@@ -3,7 +3,7 @@
                              -------------------
     begin                : Wed Jul 11 2007
     copyright            : (C) 2007 by Micah Lee
-    email                : mtl@clemson.edu  
+    email                : mtl@clemson.edu
  ***************************************************************************/
 
 /***************************************************************************
@@ -15,11 +15,11 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifdef __EXPERIMENTAL_BPM__
+//#ifdef __EXPERIMENTAL_BPM__
 #ifndef DLGBPMTAP_H
 #define DLGBPMTAP_H
 
-#include <ui_dlgbpmtapdlg.h>
+#include "ui_dlgbpmtapdlg.h"
 #include <QEvent>
 #include <QtGui>
 #include "configobject.h"
@@ -30,13 +30,13 @@ class TrackInfoObject;
 /**
   *@author Micah Lee
   */
-
 class DlgBPMTap : public QDialog, public Ui::DlgBPMTapDlg
 {
     Q_OBJECT
 public:
     DlgBPMTap(QWidget *mixxx, TrackInfoObject *tio);
     ~DlgBPMTap();
+
 public slots:
     void slotTapBPM();
     void slotDetectBPM();
@@ -44,13 +44,17 @@ public slots:
     void slotOK();
     void slotUpdate();
     void slotApply();
+
 signals:
     void closeDlg();
     void aboutToShow();
+
 public:
    // void setTrack(Track *track);
+
 protected:
     bool eventFilter(QObject *, QEvent *);
+
 private:
     MixxxApp *m_pMixxx;
     TrackInfoObject *m_CurrentTrack;
@@ -59,4 +63,4 @@ private:
 };
 
 #endif
-#endif __EXPERIMENTAL_BPM__
+//#endif //__EXPERIMENTAL_BPM__
