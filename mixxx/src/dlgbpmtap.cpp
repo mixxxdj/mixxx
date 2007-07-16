@@ -16,6 +16,8 @@
  ***************************************************************************/
 
 #ifdef __EXPERIMENTAL_BPM__
+#include "dlgbpmtap.h"
+
 #include <qlabel.h>
 #include <qstring.h>
 #include <qpushbutton.h>
@@ -27,9 +29,10 @@
 //Added by qt3to4:
 #include <QEvent>
 #include <QtGui>
-#include "dlgbpmtap.h"
 #include "mixxx.h"
 #include "trackinfoobject.h"
+
+
 
 
 DlgBPMTap::DlgBPMTap(QWidget *mixxx, TrackInfoObject *tio) : QDialog(), Ui::DlgBPMTapDlg()
@@ -40,7 +43,7 @@ DlgBPMTap::DlgBPMTap(QWidget *mixxx, TrackInfoObject *tio) : QDialog(), Ui::DlgB
     //Give focus to the tap button so that the tempo can be tapped with
     //the space bar
     btnTap->setFocus();
-    
+
     //Create time object
     m_Time = new QTime(0,0);
     m_TapCount = 0;
@@ -64,10 +67,9 @@ DlgBPMTap::DlgBPMTap(QWidget *mixxx, TrackInfoObject *tio) : QDialog(), Ui::DlgB
 
 }
 
-/*
 DlgBPMTap::~DlgBPMTap()
 {
-}*/
+}
 
 bool DlgBPMTap::eventFilter(QObject *o, QEvent *e)
 {
@@ -95,7 +97,7 @@ void DlgBPMTap::slotTapBPM()
     {
         m_Time->restart();
     }
-        
+
     if(m_TapCount > 0)
     {
         float elapsedTime = m_Time->elapsed() / (float)60000;
@@ -133,5 +135,7 @@ void DlgBPMTap::slotApply()
 {
 //    m_pMixxx->grabKeyboard();
 }
+
+
 
 #endif
