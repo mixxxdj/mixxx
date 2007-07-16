@@ -223,14 +223,15 @@ void TrackPlaylist::addPath(QString qPath)
         dir.setFilter(QDir::Files);
         dir.setNameFilter("*.wav *.Wav *.WAV *.mp3 *.Mp3 *.MP3 *.ogg *.Ogg *.OGG *.aiff *.Aiff *.AIFF *.aif *.Aif *.AIF");
         //        const QFileInfoList list = dir.entryInfoList();
-        QFileInfoListIterator it(dir.entryInfoList().begin());        // create list iterator
-        QFileInfo *fi;                          // pointer for traversing
+        //QFileInfoListIterator it(dir.entryInfoList());        // create list iterator
+        QListIterator<QFileInfo> it(dir.entryInfoList());        // create list iterator
+        QFileInfo fi;                          // pointer for traversing
 
-        while ((fi=&(*it)))
+        while (it.hasNext())
         {
+            fi = it.next(); // goto next list element
             //qDebug("add %s",fi->filePath().latin1());
-            addTrack(fi->filePath());
-            ++it;   // goto next list element
+            addTrack(fi.filePath()); 
         }
 
 		// Set the size of table to the actual number of items
