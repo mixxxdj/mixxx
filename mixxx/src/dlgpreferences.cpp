@@ -16,11 +16,11 @@
  ***************************************************************************/
 
 #ifdef __EXPERIMENTAL_RECORDING__
-  #include "dlgprefrecord.h"
+#include "dlgprefrecord.h"
 #endif
 
 #ifdef __EXPERIMENTAL_BPM__
-  #include "dlgprefbpm.h"
+#include "dlgprefbpm.h"
 #endif
 
 #include "dlgpreferences.h"

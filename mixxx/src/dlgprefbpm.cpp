@@ -34,6 +34,7 @@ DlgPrefBPM::DlgPrefBPM(QWidget *parent, ConfigObject<ConfigValue> *_config) : QW
 {
     config = _config;
 
+    setupUi(this);
 
     // Connection
 	connect(chkDetectOnImport,		SIGNAL(stateChanged(int)), this, SLOT(slotSetBPMDetectOnImport()));
