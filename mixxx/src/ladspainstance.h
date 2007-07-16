@@ -21,7 +21,7 @@ class LADSPAInstance {
 public:
     LADSPAInstance(const LADSPA_Descriptor * descriptor);
     ~LADSPAInstance();
-    
+
     void process(const CSAMPLE * pIn, const CSAMPLE * pOut, const int iBufferSize);
     void connect(unsigned long port, LADSPA_Data * buffer);
 
