@@ -10,8 +10,8 @@
 #ifndef LADSPAPLUGIN_H
 #define LADSPAPLUGIN_H
 
-#include <qptrlist.h>
-#include <qptrvector.h>
+#include <q3ptrlist.h>
+#include <q3ptrvector.h>
 
 #include <ladspa.h>
 
@@ -30,7 +30,7 @@ protected:
     const LADSPA_Descriptor * m_pDescriptor;
 };
 
-typedef QPtrList<LADSPAPlugin> LADSPAPluginList;
-typedef QPtrVector<LADSPAPlugin> LADSPAPluginVector;
+typedef Q3PtrList<LADSPAPlugin> LADSPAPluginList;
+typedef Q3PtrVector<LADSPAPlugin> LADSPAPluginVector;
 
 #endif

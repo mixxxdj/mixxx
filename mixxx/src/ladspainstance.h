@@ -10,7 +10,7 @@
 #ifndef LADSPAINSTANCE_H
 #define LADSPAINSTANCE_H
 
-#include <qptrlist.h>
+#include <q3ptrlist.h>
 
 #include <ladspa.h>
 
@@ -32,6 +32,6 @@ protected:
     unsigned long m_OutputPort;
 };
 
-typedef QPtrList<LADSPAInstance> LADSPAInstanceList;
+typedef Q3PtrList<LADSPAInstance> LADSPAInstanceList;
 
 #endif
