@@ -33,21 +33,21 @@ LADSPALoader::LADSPALoader()
         QDir dir(*path);
 
         // get the list of files in the directory
-        const QFileInfoList * files = dir.entryInfoList();
+        QFileInfoList files = dir.entryInfoList();
 
         // entryInfoList returns 0 if the directory is unreadable or does not exist
-        if (files == NULL)
+        if (files.isEmpty() == NULL)
         {
             continue;
         }
 
         // load each file in the directory
-        for (QFileInfoList::iterator file = files->begin(); file != files->end(); file++)
+        for (QFileInfoList::iterator file = files.begin(); file != files.end(); file++)
         {
-            if ((*file)->isDir()) {
+            if ((*file).isDir()) {
                 continue;
             }
-            LADSPALibrary *library = new LADSPALibrary ((*file)->absFilePath());
+            LADSPALibrary *library = new LADSPALibrary ((*file).absFilePath());
 
             // add the library to the list of all libraries
             m_Libraries.append (library);

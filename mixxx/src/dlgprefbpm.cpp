@@ -16,7 +16,7 @@
  ***************************************************************************/
 
 #include "dlgprefbpm.h"
-#define MIXXX
+//define MIXXX
 #include <qlineedit.h>
 #include <qfiledialog.h>
 #include <qwidget.h>
@@ -32,7 +32,7 @@
 DlgPrefBPM::DlgPrefBPM(QWidget *parent, ConfigObject<ConfigValue> *_config) : QWidget(parent), Ui::DlgPrefBPMDlg()
 {
     config = _config;
-    
+
 
     // Connection
 	connect(chkDetectOnImport,		SIGNAL(stateChanged(int)), this, SLOT(slotSetBPMDetectOnImport()));
@@ -40,7 +40,7 @@ DlgPrefBPM::DlgPrefBPM(QWidget *parent, ConfigObject<ConfigValue> *_config) : QW
     connect(chkAnalyzeEntireSong,   SIGNAL(stateChanged(int)), this, SLOT(slotSetAnalyzeMode()));
     connect(spinBoxBPMRangeStart,   SIGNAL(valueChanged(int)), this, SLOT(slotSetBPMRangeStart(int)));
     connect(spinBoxBPMRangeEnd,     SIGNAL(valueChanged(int)), this, SLOT(slotSetBPMRangeEnd(int)));
-   
+
     // Set default value for analyze mode check box
     int iAnalyzeEntireSong = config->getValueString(ConfigKey("[BPM]","AnalyzeEntireSong")).toInt();
     if (iAnalyzeEntireSong)
@@ -64,7 +64,7 @@ DlgPrefBPM::DlgPrefBPM(QWidget *parent, ConfigObject<ConfigValue> *_config) : QW
 
 	chkWriteID3->setEnabled(false);
 	chkDetectOnImport->setEnabled(false);
-       
+
 
     //Load BPM Range Values
     int iRangeStart = config->getValueString(ConfigKey("[BPM]","BPMRangeStart")).toInt();
@@ -72,7 +72,7 @@ DlgPrefBPM::DlgPrefBPM(QWidget *parent, ConfigObject<ConfigValue> *_config) : QW
         spinBoxBPMRangeStart->setValue(iRangeStart);
     else
         spinBoxBPMRangeStart->setValue(60);
-    
+
     int iRangeEnd = config->getValueString(ConfigKey("[BPM]","BPMRangeEnd")).toInt();
     if(iRangeEnd > 0 && iRangeEnd <=220)
         spinBoxBPMRangeEnd->setValue(iRangeEnd);

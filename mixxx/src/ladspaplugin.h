@@ -22,7 +22,7 @@ class LADSPAPlugin {
 public:
     LADSPAPlugin(const LADSPA_Descriptor * descriptor);
     ~LADSPAPlugin();
-    
+
     LADSPAInstance * instantiate();
     const char * getLabel();
 
