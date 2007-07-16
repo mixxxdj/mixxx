@@ -344,6 +344,7 @@ env.Uic4('dlgprefrecorddlg.ui')
 env.Uic4('dlgprefbpmdlg.ui')
 env.Uic4('dlgbpmtapdlg.ui')
 
+
 # Uic4 does not need this --> Add these uic/moc generated files to the list of stuff we need to build:
 #sources.append(Split("""uic_dlgprefsounddlg.cc 		moc_dlgprefsounddlg.cc
 #						uic_dlgprefcontrolsdlg.cc	moc_dlgprefcontrolsdlg.cc
@@ -433,8 +434,6 @@ else:
 flags_experimentalbpm = ARGUMENTS.get('experimentalbpm', 0)
 if int(flags_experimentalbpm):
 	env.Append(CXXFLAGS = '-D__EXPERIMENTAL_BPM__')
-	env.Uic4('dlgprefbpmdlg.ui')
-	env.Uic4('dlgbpmtapdlg.ui')
 	sources += Split(""" dlgbpmtap.cpp dlgprefbpm.cpp """)
 #Garth, you bastard, this broke Linux! :)
 #	sources += Split("""

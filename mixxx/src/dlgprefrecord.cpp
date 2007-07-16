@@ -34,6 +34,8 @@ DlgPrefRecord::DlgPrefRecord(QWidget *parent, ConfigObject<ConfigValue> *_config
     config = _config;
     confirmOverwrite = false;
 
+    setupUi(this);
+
     recordControl = ControlObject::getControl(ConfigKey("[Master]", "Record")); //See RECORD_* #defines in dlgprefrecord.h
 
     //Fill up encoding list 
