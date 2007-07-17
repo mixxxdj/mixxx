@@ -1,14 +1,14 @@
-Mixxx - version 1.5.0
+Mixxx - version 1.6.0
 
 * HOMEPAGE *************************************************
 http://mixxx.sourceforge.net
 
 
 * ABOUT ****************************************************
-Mixxx is software created for DJ'ing. You can use wave based
-audio files, Ogg Vorbis and MP3 files as audio input. Mixxx
+Mixxx is software created for DJ'ing. You can use MP3s, 
+Ogg Vorbis files, and other formats as audio input. Mixxx
 can be controlled through the GUI and with external 
-controllers including MIDI devices, joysticks and more.
+controllers including MIDI devices, and more.
 This release works on Linux, Windows and MacOS X.
 
 Mixxx is released under GPL v2. See LICENSE file in this 
@@ -16,19 +16,10 @@ directory for a copy of the licence.
 
 
 * NEWS *****************************************************
-New since 1.4.2:
-- Splash screen
-- Support for manual beat marks
-- Waveform overview displays
-- Pitch independent time stretch using SoundTouch
-- Faster parsing of MP3 files, and correct handling of MP3
-  files with embedded images
-- Bug fixes: Simple visual display works again, crash at
-  exit, sane default setting of sample rate.
-- Loading tracks with left-clicking in playlist.
-- Fixed headphone channel
-- Overhauled audio code using PortAudio-v19
-- Cue button is easier to use now
+New since 1.5.0:
+
+<Paste the changelog from the wiki in here>
+
 
 * INSTALL **************************************************
 Mixxx has the following dependencies:
@@ -39,7 +30,7 @@ Mixxx has the following dependencies:
 - libvorbis
 - libvorbisfile
 - libaudiofile
-- PortAudio-v19 (new for Mixxx 1.5.0)
+- PortAudio-v19
 - QT3
 - libjack (now required)
 - scons
@@ -47,21 +38,23 @@ Mixxx has the following dependencies:
 NOTE: If you want JACK support in Mixxx, make sure you 
 compile PortAudio-v19 with JACK support first.
 
-To build on Linux, you usually need to set your QTDIR first.
-Eg. 
-   $ export QTDIR=/usr/share/qt3
+Mixxx's build system is now SCONS as of Mixxx 1.6.0. 
+To compile Mixxx using SCONS, go into the "mixxx"
+directory and run:
 
-Then you'd run something like:
+   $ scons
+  
+SCONS does both dependency checking and building, so it will
+tell you if you're missing any of the dependencies listed above.
+It's also possible to specify a prefix path and additional
+build flags, for example:
 
-   $ cd src
-   $ ./configure --prefix=/usr
-or
-   $ ./configure --prefix=/usr --enable-jack
+   $ scons prefix=/usr experimentalbpm=1
+   
+To install Mixxx after compilation, run:
 
-then
+   $ scons install
 
-   $ make
-   $ ../install.pl
 
 * USAGE ****************************************************
 Please see manual, included in this directory, 
