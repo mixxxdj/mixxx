@@ -86,13 +86,14 @@ MixxxApp::MixxxApp(QApplication *a, QStringList files, QSplashScreen *pSplash, Q
 	*/
     
     qDebug("Starting up...");
-    setCaption(tr("Mixxx " VERSION));
-#ifndef __MACX__
-#ifndef QT3_SUPPORT
-    setIcon(QPixmap::fromMimeSource("icon.png"));
+    setWindowTitle(tr("Mixxx " VERSION));
+#ifdef __MACX__
+    setWindowIcon(QIcon(":icon.svg")); 
+#else
+    setWindowIcon(QIcon(":icon.svg")); 
+    //setWindowIcon(QIcon(":iconsmall.png")); //This is a smaller 16x16 icon, looks cleaner...
 #endif
-#endif
-
+        
     // Reset pointer to players
     player = 0;
     m_pTrack = 0;
@@ -156,7 +157,7 @@ MixxxApp::MixxxApp(QApplication *a, QStringList files, QSplashScreen *pSplash, Q
     {
         Q3FileDialog* fd = new Q3FileDialog(this, "", true);
         fd->setMode( Q3FileDialog::Directory );
-        fd->setCaption(QString("Choose directory with music files"));
+        fd->setWindowTitle(QString("Choose directory with music files"));
         if ( fd->exec() == QDialog::Accepted )
         {
             config->set(ConfigKey("[Playlist]","Directory"), fd->selectedFile());
@@ -190,7 +191,7 @@ MixxxApp::MixxxApp(QApplication *a, QStringList files, QSplashScreen *pSplash, Q
     {
         config->set(ConfigKey("[Controls]","Visuals"), ConfigValue(1));
         QMessageBox* mb = new QMessageBox(this);
-        mb->setCaption(QString("Wavform displays"));
+        mb->setWindowTitle(QString("Wavform displays"));
         mb->setIcon(QMessageBox::Information);
         mb->setText("OpenGL cannot be initialized, which means that\nthe waveform displays won't work. A simple\nmode will be used instead where you can still\nuse the mouse to change speed.");
         mb->show();
