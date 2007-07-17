@@ -205,6 +205,22 @@ void DlgPreferences::createIcons()
     mixerButton->setTextAlignment(Qt::AlignLeft | Qt::AlignVCenter);
     mixerButton->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
 
+#ifdef __EXPERIMENTAL_RECORD__
+    QListWidgetItem *recordingButton = new QListWidgetItem(contentsWidget);
+    recordingButton->setIcon(QIcon(":/images/preferences/recording.svg"));
+    recordingButton->setText(tr("Recording"));
+    recordingButton->setTextAlignment(Qt::AlignLeft | Qt::AlignVCenter);
+    recordingButton->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
+#endif
+
+#ifdef __EXPERIMENTAL_BPM__
+    QListWidgetItem *bpmdetectButton = new QListWidgetItem(contentsWidget);
+    bpmdetectButton->setIcon(QIcon(":/images/preferences/bpmdetect.svg"));
+    bpmdetectButton->setText(tr("BPM Detection"));
+    bpmdetectButton->setTextAlignment(Qt::AlignLeft | Qt::AlignVCenter);
+    bpmdetectButton->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
+#endif
+
     connect(contentsWidget,
             SIGNAL(currentItemChanged(QListWidgetItem *, QListWidgetItem *)),
             this, SLOT(changePage(QListWidgetItem *, QListWidgetItem*)));

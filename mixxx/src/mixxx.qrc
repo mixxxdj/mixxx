@@ -5,6 +5,8 @@
     <file>images/preferences/interface.svg</file>
     <file>images/preferences/library.svg</file>
     <file>images/preferences/soundhardware.svg</file>
+    <file>images/preferences/recording.svg</file>
+    <file>images/preferences/bpmdetect.svg</file>
     <file>mixxx-icon.png</file>      
 </qresource>
 </RCC>
