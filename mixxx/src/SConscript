@@ -344,6 +344,9 @@ env.Uic4('dlgprefrecorddlg.ui')
 env.Uic4('dlgprefbpmdlg.ui')
 env.Uic4('dlgbpmtapdlg.ui')
 
+#Add the QRC file which compiles in some extra resources (prefs icons, etc.)
+env.Qrc(Split(""" mixxx.qrc """))
+sources += Split(""" qrc_mixxx.cc """)
 
 # Uic4 does not need this --> Add these uic/moc generated files to the list of stuff we need to build:
 #sources.append(Split("""uic_dlgprefsounddlg.cc 		moc_dlgprefsounddlg.cc
