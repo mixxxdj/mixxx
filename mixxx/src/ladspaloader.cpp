@@ -18,8 +18,7 @@ LADSPALoader::LADSPALoader()
     m_PluginCount = 0;
 
     // get the list of directories containing LADSPA plugins
-    QStringList paths = QStringList::split(':',
-                                           QString(getenv("LADSPA_PATH")));
+    QStringList paths = QString(getenv("LADSPA_PATH")).split(':');
 
     // add default path if LADSPA_PATH is not set
     if (paths.isEmpty())
@@ -35,19 +34,14 @@ LADSPALoader::LADSPALoader()
         // get the list of files in the directory
         QFileInfoList files = dir.entryInfoList();
 
-        // entryInfoList returns 0 if the directory is unreadable or does not exist
-        if (files.isEmpty())
-        {
-            continue;
-        }
-
         // load each file in the directory
         for (QFileInfoList::iterator file = files.begin(); file != files.end(); file++)
         {
-            if ((*file).isDir()) {
+            if ((*file).isDir())
+            {
                 continue;
             }
-            LADSPALibrary *library = new LADSPALibrary ((*file).absFilePath());
+            LADSPALibrary *library = new LADSPALibrary ((*file).absoluteFilePath());
 
             // add the library to the list of all libraries
             m_Libraries.append (library);
