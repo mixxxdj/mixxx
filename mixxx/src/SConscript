@@ -516,6 +516,7 @@ else:
 if 'msvc' in COMMAND_LINE_TARGETS:
 	includes = glob.glob('../*.h')
 	includes += glob.glob('../visual/*.h')
+	env.Append(MSVSSCONSFLAGS = ' qtdir=' + flags_qtdir)
 	msvc = env.MSVSProject(target = 'mixxx' + env['MSVSPROJECTSUFFIX'], srcs = flatten(sources), incs = flatten(includes), variant = 'Debug')
 	env.Alias('msvc', msvc)
 
