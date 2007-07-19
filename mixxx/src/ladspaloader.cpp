@@ -17,13 +17,31 @@ LADSPALoader::LADSPALoader()
 {
     m_PluginCount = 0;
 
-    // get the list of directories containing LADSPA plugins
-    QStringList paths = QString(getenv("LADSPA_PATH")).split(':');
+    QString ladspaPath = QString(getenv("LADSPA_PATH"));
+    QStringList paths;
 
-    // add default path if LADSPA_PATH is not set
-    if (paths.isEmpty())
+    if (!ladspaPath.isEmpty())
     {
-        paths.push_back ("/usr/lib/ladspa/"); // TODO: portability
+        // get the list of directories containing LADSPA plugins
+#ifdef __WIN32__
+        paths = ladspaPath.split(';');
+#else
+        paths = ladspaPath.split(':');
+#endif
+    }
+    else
+    {
+        // add default path if LADSPA_PATH is not set
+#ifdef __LINUX__
+        paths.push_back ("/usr/lib/ladspa/");
+#elif __MACX__
+        paths.push_back ("/Library/Audio/Plug-ins/LADSPA");
+#elif __WIN32__
+        // not tested yet but should work:
+        QString programFiles = QString(getenv("ProgramFiles"));
+        paths.push_back (programFiles+"\\LADSPA Plugins");
+        paths.push_back (programFiles+"\\Audacity\\Plug-Ins");
+#endif
     }
 
     // load each directory
