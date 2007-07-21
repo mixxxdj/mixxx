@@ -592,8 +592,8 @@ if platform == 'linux' or platform == 'osx':
 if platform == 'win32':
 	skins = env.Install("../../dist/skins", skin_files)
 	midimappings = env.Install("../../dist/midi", midimappings_files)
-	keyboardmappings = env.Install("../../dist/mixxx/keyboard", keyboardmappings_files)
-	docs = env.Install("../../dist/doc/mixxx", docs_files)
+	keyboardmappings = env.Install("../../dist/keyboard", keyboardmappings_files)
+	docs = env.Install("../../dist/doc/", docs_files)
 	#icon = env.Install("../../dist", icon_files)
 	dlls = env.Install("../../dist/", dll_files)
 	binary = env.Install("../../dist/", binary_files)
