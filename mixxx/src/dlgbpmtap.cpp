@@ -37,8 +37,11 @@
 
 DlgBPMTap::DlgBPMTap(QWidget *mixxx, TrackInfoObject *tio) : QDialog(), Ui::DlgBPMTapDlg()
 {
-    //m_pMixxx = mixxx;
+    // m_pMixxx = mixxx;
     m_CurrentTrack = tio;
+
+	// This must be called before setFocus or setEnabled.
+	setupUi(this); 
 
     //Give focus to the tap button so that the tempo can be tapped with
     //the space bar
@@ -51,7 +54,7 @@ DlgBPMTap::DlgBPMTap(QWidget *mixxx, TrackInfoObject *tio) : QDialog(), Ui::DlgB
     progressBPMDetect->setEnabled(false);
     radioBtnFast->setEnabled(false);
     radioBtnComplete->setEnabled(false);
-    spinBoxBPMRangeStart->setEnabled(false);
+	spinBoxBPMRangeStart->setEnabled(false);
     spinBoxBPMRangeEnd->setEnabled(false);
     btnGo->setEnabled(false);
 

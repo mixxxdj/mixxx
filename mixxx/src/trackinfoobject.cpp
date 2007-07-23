@@ -211,7 +211,11 @@ void TrackInfoObject::insertInTrackTableRow(WTrackTable *pTableTrack, int iRow)
     if (!m_pTableItemDuration)
         m_pTableItemDuration = new WTrackTableItem(this, pTableTrack,Q3TableItem::Never, getDurationStr(), typeDuration);
     if (!m_pTableItemBpm)
-        m_pTableItemBpm = new WTrackTableItem(this, pTableTrack,Q3TableItem::WhenCurrent, getBpmStr(), typeNumber);
+		#ifdef __EXPERIMENTAL_BPM__
+        m_pTableItemBpm = new WTrackTableItem(this, pTableTrack,Q3TableItem::Never, getBpmStr(), typeNumber); // Force use of BPM tapper dialog
+		#else
+		m_pTableItemBpm = new WTrackTableItem(this, pTableTrack,Q3TableItem::WhenCurrent, getBpmStr(), typeNumber); // Use old-style keyboard entry for BPM
+		#endif
     if (!m_pTableItemBitrate)
         m_pTableItemBitrate = new WTrackTableItem(this, pTableTrack,Q3TableItem::Never, getBitrateStr(), typeNumber);
 
