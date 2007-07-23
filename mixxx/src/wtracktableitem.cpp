@@ -107,8 +107,10 @@ void WTrackTableItem::setContentFromEditor(QWidget *w)
     // If this is a comment column or bpm, update TrackInfoObject
     if (col()==COL_COMMENT)
         m_pTrackInfoObject->setComment(text());
+	#ifndef __EXPERIMENTAL_BPM__
     else if (col()==COL_BPM)
         m_pTrackInfoObject->setBpm(text().toFloat());
+	#endif
 }
 
 int WTrackTableItem::alignment() const
