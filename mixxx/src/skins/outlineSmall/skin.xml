@@ -1135,13 +1135,13 @@
   <BgColorBpmNoConfirm>#ffffff</BgColorBpmNoConfirm>
   <BgColorBpmConfirm>#9EFF75</BgColorBpmConfirm>
   <ColWidthScore>20</ColWidthScore>
-  <ColWidthTitle>190</ColWidthTitle>
-  <ColWidthArtist>180</ColWidthArtist>
-  <ColWidthComment>166</ColWidthComment>
+  <ColWidthTitle>150</ColWidthTitle>
+  <ColWidthArtist>100</ColWidthArtist>
+  <ColWidthComment>85</ColWidthComment>
   <ColWidthType>30</ColWidthType>
-  <ColWidthDuration>50</ColWidthDuration>
-  <ColWidthBpm>60</ColWidthBpm>
-  <ColWidthBitrate>50</ColWidthBitrate>
+  <ColWidthDuration>55</ColWidthDuration>
+  <ColWidthBpm>35</ColWidthBpm>
+  <ColWidthBitrate>40</ColWidthBitrate>
   <Size>582,290</Size>
  </TrackTable>
 </skin>
