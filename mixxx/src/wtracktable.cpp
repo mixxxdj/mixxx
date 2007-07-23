@@ -105,8 +105,10 @@ void WTrackTable::setup(QDomNode node)
 		QString size = WWidget::selectNodeQString(node, "Size");
 		int x = size.left(size.find(",")).toInt();
 		int y = size.mid(size.find(",")+1).toInt();
-        setBaseSize(x,y);
-        resizeContents(x,y);
+        // setBaseSize(x,y);
+        // resizeContents(x,y);
+		setMaximumWidth(x);
+		setMaximumHeight(y);
     }
 
     // Background color
@@ -148,27 +150,42 @@ void WTrackTable::setup(QDomNode node)
     }
     
     // Setup column widths
-    setLeftMargin(0);
-    hideColumn(COL_INDEX);
+    setLeftMargin(0);    
+	hideColumn(COL_INDEX);
     adjustColumn(COL_SCORE);
-    //setColumnStretchable(COL_TITLE, true);
+    
+	//setColumnStretchable(COL_TITLE, true);
     //setColumnStretchable(COL_ARTIST, true);
-    //setColumnStretchable(COL_COMMENT, true);
-    adjustColumn(COL_TYPE);
-    adjustColumn(COL_DURATION);
-//    adjustColumn(COL_BPM);
+    setColumnStretchable(COL_COMMENT, true);
+   	adjustColumn(COL_TYPE);
+    adjustColumn(COL_DURATION);	
+    adjustColumn(COL_BPM);
     adjustColumn(COL_BITRATE);
-    //setColumnStretchable(COL_SCORE,true);
-    setColumnStretchable(COL_TYPE,true);
-    setColumnStretchable(COL_DURATION,true);
-//    setColumnStretchable(COL_BPM,true);
-    setColumnStretchable(COL_BITRATE,true);
+    setColumnStretchable(COL_SCORE,false);
+    setColumnStretchable(COL_TYPE,false);
+    setColumnStretchable(COL_DURATION,false);
+    setColumnStretchable(COL_BPM, false);
+    setColumnStretchable(COL_BITRATE,false);
 
-    if (!WWidget::selectNode(node, "ColWidthBpm").isNull())
-    {
-        int width = WWidget::selectNodeQString(node, "ColWidthBpm").toInt();
-        setColumnWidth(COL_BPM,width);
-    }				
+	typedef QMap<int,QString> ColMap;
+	ColMap ColumnMap;
+	ColumnMap[COL_SCORE] = "ColWidthScore";	
+	ColumnMap[COL_TITLE] = "ColWidthTitle";
+	ColumnMap[COL_ARTIST] = "ColWidthArtist";
+	ColumnMap[COL_COMMENT] = "ColWidthComment";
+	ColumnMap[COL_TYPE] = "ColWidthType";
+	ColumnMap[COL_DURATION] = "ColWidthDuration";
+	ColumnMap[COL_BITRATE] = "ColWidthBitrate";
+	ColumnMap[COL_BPM] = "ColWidthBpm";
+
+	QMapIterator<int,QString> i(ColumnMap);
+	while (i.hasNext()) {
+		i.next();
+		if (!WWidget::selectNode(node, i.value()).isNull() && WWidget::selectNodeQString(node, i.value()).toInt() != columnWidth(i.key())) {
+			qDebug("Correcting Column Width from %i to %i",columnWidth(i.key()),WWidget::selectNodeQString(node, i.value()).toInt());
+			setColumnWidth(i.key(),WWidget::selectNodeQString(node, i.value()).toInt());
+		}
+	}	
 }
 
 /*sorts a given column*/

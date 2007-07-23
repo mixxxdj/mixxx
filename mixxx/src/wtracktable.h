@@ -30,6 +30,7 @@
 class QWidget;
 
 // Defines the rows in the table.
+/*
 const int COL_SCORE = 0;
 const int COL_TITLE = 1;
 const int COL_ARTIST = 2;
@@ -38,6 +39,17 @@ const int COL_TYPE = 6;
 const int COL_DURATION = 4;
 const int COL_BITRATE = 7;
 const int COL_BPM = 5;
+const int COL_INDEX = 8;
+*/
+// GED's new column order -- 2007-07-23
+const int COL_SCORE = 0;
+const int COL_ARTIST = 1;
+const int COL_TITLE = 2;
+const int COL_BPM = 3;
+const int COL_DURATION = 4;
+const int COL_BITRATE = 5;
+const int COL_TYPE = 6;
+const int COL_COMMENT = 7;
 const int COL_INDEX = 8;
 
 const int ROW_NO = 9;
