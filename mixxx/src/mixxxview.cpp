@@ -92,7 +92,8 @@ MixxxView::MixxxView(QWidget *parent, ConfigObject<ConfigValueKbd> *kbdconfig, b
     m_bVisualWaveform = false;
     m_pOverviewCh1 = 0;
     m_pOverviewCh2 = 0;
-
+	m_pComboBox = 0;
+	
 	setupColorScheme(docElem, pConfig);
 
     // Load all widgets defined in the XML file
@@ -611,7 +612,7 @@ void MixxxView::createAllWidgets(QDomElement docElem, QWidget* parent, bool bVis
             else if (node.nodeName()=="TrackTable")
             {
                 m_pTrackTable = new WTrackTable(this);
-                m_qWidgetList.append(m_pTrackTable);
+                //m_qWidgetList.append(m_pTrackTable); // Do not autodelete as this crashes on Win32
                 m_pTrackTable->setup(node);
                 m_pTrackTable->installEventFilter(m_pKeyboard);
             }
@@ -653,13 +654,13 @@ void MixxxView::rebootGUI(QWidget* parent, bool bVisualsWaveform, ConfigObject<C
 	QDomElement docElem = openSkin(qSkinPath);
 	setupColorScheme(docElem, pConfig);
 	//createAllWidgets(docElem, parent, bVisualsWaveform, pConfig);
-	
+
 	QDomNode node = docElem.firstChild();
 	while (!node.isNull())
     {
         if (node.isElement())
         {
-	//printf("%s\n", node.nodeName());
+	//printf("node: %s\n", node.nodeName().toAscii().constData());
             if (node.nodeName()=="PushButton")
             {
                 WPushButton *p = new WPushButton(this);
@@ -875,7 +876,7 @@ void MixxxView::rebootGUI(QWidget* parent, bool bVisualsWaveform, ConfigObject<C
                 palette.setBrush(p->backgroundRole(), WSkinColor::getCorrectColor(bgc));
                 //p->setPalette(palette);
                 p->setAutoFillBackground(true);
-                
+
                 // Foreground color
 				QColor fgc(0,0,0);
 				if (!WWidget::selectNode(node, "FgColor").isNull()) {
@@ -885,7 +886,7 @@ void MixxxView::rebootGUI(QWidget* parent, bool bVisualsWaveform, ConfigObject<C
                 //QPalette palette;
                 palette.setBrush(p->foregroundRole(), WSkinColor::getCorrectColor(fgc));
                 p->setPalette(palette);
-                
+
                 // Alignment
                 if (!WWidget::selectNode(node, "Align").isNull() && WWidget::selectNodeQString(node, "Align")=="right")
                     p->setAlignment(Qt::AlignRight);
@@ -902,7 +903,7 @@ void MixxxView::rebootGUI(QWidget* parent, bool bVisualsWaveform, ConfigObject<C
                 m_pTreeView->setup(node);
             }*/
 		}
-		node = node.nextSibling();
+			node = node.nextSibling();
 	}
 }
 
