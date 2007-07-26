@@ -5,64 +5,48 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>438</width>
-    <height>367</height>
+    <width>337</width>
+    <height>88</height>
    </rect>
   </property>
   <property name="windowTitle" >
    <string>Form3</string>
   </property>
-  <widget class="QLabel" name="TextLabel3_2" >
-   <property name="enabled" >
-    <bool>true</bool>
-   </property>
-   <property name="geometry" >
-    <rect>
-     <x>11</x>
-     <y>11</y>
-     <width>121</width>
-     <height>29</height>
-    </rect>
-   </property>
-   <property name="font" >
-    <font/>
-   </property>
-   <property name="text" >
-    <string>Songs directory</string>
-   </property>
-   <property name="wordWrap" >
-    <bool>false</bool>
-   </property>
-  </widget>
-  <widget class="QPushButton" name="PushButtonBrowsePlaylist" >
-   <property name="geometry" >
-    <rect>
-     <x>350</x>
-     <y>12</y>
-     <width>80</width>
-     <height>27</height>
-    </rect>
-   </property>
-   <property name="font" >
-    <font/>
-   </property>
-   <property name="text" >
-    <string>Browse...</string>
-   </property>
-  </widget>
-  <widget class="QLineEdit" name="LineEditSongfiles" >
-   <property name="geometry" >
-    <rect>
-     <x>143</x>
-     <y>11</y>
-     <width>201</width>
-     <height>29</height>
-    </rect>
-   </property>
-   <property name="font" >
-    <font/>
-   </property>
-  </widget>
+  <layout class="QHBoxLayout" >
+   <item>
+    <widget class="QLabel" name="TextLabel3_2" >
+     <property name="enabled" >
+      <bool>true</bool>
+     </property>
+     <property name="font" >
+      <font/>
+     </property>
+     <property name="text" >
+      <string>Songs directory</string>
+     </property>
+     <property name="wordWrap" >
+      <bool>false</bool>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QLineEdit" name="LineEditSongfiles" >
+     <property name="font" >
+      <font/>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QPushButton" name="PushButtonBrowsePlaylist" >
+     <property name="font" >
+      <font/>
+     </property>
+     <property name="text" >
+      <string>Browse...</string>
+     </property>
+    </widget>
+   </item>
+  </layout>
  </widget>
  <layoutdefault spacing="6" margin="11" />
  <pixmapfunction>qPixmapFromMimeSource</pixmapfunction>
