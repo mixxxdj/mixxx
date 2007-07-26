@@ -142,7 +142,7 @@ elif platform == 'win32':
 #Read the qtdir flag, if it was set explicitly
 flags_qtdir = ARGUMENTS.get('qtdir', default_qtdir)
 if not os.path.exists(flags_qtdir):
-	print "Error: QT path does not exist."
+	print "Error: QT path does not exist or QT4 is not installed."
 	print "Please specify your QT path by running 'scons qtdir=[path]'"
 	Exit(1)
 elif flags_qtdir.find("qt3") != -1:
