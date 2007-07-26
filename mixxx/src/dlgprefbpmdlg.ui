@@ -1,190 +1,225 @@
-<ui version="4.0" stdsetdef="1" >
-  <author></author>
-  <comment></comment>
-  <exportmacro></exportmacro>
-  <class>DlgPrefBPMDlg</class>
-  <widget class="QWidget" name="DlgPrefBPMDlg" >
-    <property name="geometry" >
-      <rect>
-        <x>0</x>
-        <y>0</y>
-        <width>600</width>
-        <height>510</height>
-      </rect>
-    </property>
-    <property name="windowTitle" >
-      <string>BPM Detection Settings</string>
-    </property>
+<ui version="4.0" >
+ <class>DlgPrefBPMDlg</class>
+ <widget class="QWidget" name="DlgPrefBPMDlg" >
+  <property name="geometry" >
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>445</width>
+    <height>356</height>
+   </rect>
+  </property>
+  <property name="windowTitle" >
+   <string>BPM Detection Settings</string>
+  </property>
+  <layout class="QGridLayout" >
+   <item row="0" column="0" >
     <widget class="Q3GroupBox" name="GroupBox1" >
-      <property name="enabled" >
-        <bool>true</bool>
-      </property>
+     <property name="enabled" >
+      <bool>true</bool>
+     </property>
+     <property name="minimumSize" >
+      <size>
+       <width>240</width>
+       <height>220</height>
+      </size>
+     </property>
+     <property name="font" >
+      <font/>
+     </property>
+     <property name="title" >
+      <string>BPM Detection</string>
+     </property>
+     <widget class="QCheckBox" name="chkAnalyzeEntireSong" >
       <property name="geometry" >
-        <rect>
-          <x>10</x>
-          <y>10</y>
-          <width>345</width>
-          <height>270</height>
-        </rect>
+       <rect>
+        <x>10</x>
+        <y>13</y>
+        <width>150</width>
+        <height>20</height>
+       </rect>
+      </property>
+      <property name="text" >
+       <string>Analyze Entire Song</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="TextLabel8" >
+      <property name="geometry" >
+       <rect>
+        <x>10</x>
+        <y>114</y>
+        <width>102</width>
+        <height>22</height>
+       </rect>
       </property>
       <property name="font" >
-        <font/>
+       <font/>
       </property>
-      <property name="title" >
-        <string>BPM Detection</string>
+      <property name="text" >
+       <string>BPM Detection Range:</string>
       </property>
-      <widget class="QCheckBox" name="chkAnalyzeEntireSong" >
-        <property name="geometry" >
-          <rect>
-            <x>11</x>
-            <y>20</y>
-            <width>200</width>
-            <height>22</height>
-          </rect>
-        </property>
-        <property name="text" >
-          <string>Analyze Entire Song</string>
-        </property>
-      </widget>
-      <widget class="QLabel" name="TextLabel8" >
-        <property name="geometry" >
-          <rect>
-            <x>11</x>
-            <y>140</y>
-            <width>150</width>
-            <height>16</height>
-          </rect>
-        </property>
-        <property name="font" >
-          <font/>
-        </property>
-        <property name="text" >
-          <string>BPM Detection Range:</string>
-        </property>
-        <property name="wordWrap" >
-          <bool>false</bool>
-        </property>
-      </widget>
-      <widget class="QSpinBox" name="spinBoxBPMRangeStart" >
-        <property name="geometry" >
-          <rect>
-            <x>160</x>
-            <y>138</y>
-            <width>50</width>
-            <height>21</height>
-          </rect>
-        </property>
-        <property name="maximum" >
-          <number>220</number>
-        </property>
-        <property name="minimum" >
-          <number>1</number>
-        </property>
-        <property name="toolTip" stdset="0" >
-          <string>BPM detection range start (between 1 and 220)</string>
-        </property>
-      </widget>
-      <widget class="QSpinBox" name="spinBoxBPMRangeEnd" >
-        <property name="geometry" >
-          <rect>
-            <x>240</x>
-            <y>138</y>
-            <width>50</width>
-            <height>21</height>
-          </rect>
-        </property>
-        <property name="maximum" >
-          <number>220</number>
-        </property>
-        <property name="minimum" >
-          <number>1</number>
-        </property>
-        <property name="toolTip" stdset="0" >
-          <string>BPM detection range end (between 1 and 220)</string>
-        </property>
-      </widget>
-      <widget class="QLabel" name="TextLabel10" >
-        <property name="geometry" >
-          <rect>
-            <x>215</x>
-            <y>140</y>
-            <width>20</width>
-            <height>16</height>
-          </rect>
-        </property>
-        <property name="font" >
-          <font/>
-        </property>
-        <property name="text" >
-          <string>to</string>
-        </property>
-        <property name="wordWrap" >
-          <bool>false</bool>
-        </property>
-      </widget>
-      <widget class="QLabel" name="textLabelSoundScaling" >
-        <property name="geometry" >
-          <rect>
-            <x>29</x>
-            <y>40</y>
-            <width>300</width>
-            <height>80</height>
-          </rect>
-        </property>
-        <property name="text" >
-          <string>Determines whether or not to analyze the entire song or only the middle portion to detect the BPM. It is advisable to leave this turned off unless you are getting inaccurate results and you have plenty of CPU Power. </string>
-        </property>
-        <property name="alignment" >
-          <set>Qt::AlignTop</set>
-        </property>
-        <property name="wordWrap" >
-          <bool>true</bool>
-        </property>
-      </widget>
-      <widget class="Line" name="line1" >
-        <property name="geometry" >
-          <rect>
-            <x>10</x>
-            <y>170</y>
-            <width>320</width>
-            <height>20</height>
-          </rect>
-        </property>
-        <property name="frameShape" >
-          <enum>QFrame::HLine</enum>
-        </property>
-        <property name="frameShadow" >
-          <enum>QFrame::Sunken</enum>
-        </property>
-      </widget>
-      <widget class="QCheckBox" name="chkDetectOnImport" >
-        <property name="geometry" >
-          <rect>
-            <x>10</x>
-            <y>190</y>
-            <width>210</width>
-            <height>20</height>
-          </rect>
-        </property>
-        <property name="text" >
-          <string>Detect Song BPM on Import</string>
-        </property>
-      </widget>
-      <widget class="QCheckBox" name="chkWriteID3" >
-        <property name="geometry" >
-          <rect>
-            <x>10</x>
-            <y>220</y>
-            <width>200</width>
-            <height>20</height>
-          </rect>
-        </property>
-        <property name="text" >
-          <string>Write BPM to ID3 Tag</string>
-        </property>
-      </widget>
+      <property name="wordWrap" >
+       <bool>false</bool>
+      </property>
+     </widget>
+     <widget class="QSpinBox" name="spinBoxBPMRangeStart" >
+      <property name="geometry" >
+       <rect>
+        <x>123</x>
+        <y>114</y>
+        <width>37</width>
+        <height>22</height>
+       </rect>
+      </property>
+      <property name="toolTip" >
+       <string>BPM detection range start (between 1 and 220)</string>
+      </property>
+      <property name="minimum" >
+       <number>1</number>
+      </property>
+      <property name="maximum" >
+       <number>220</number>
+      </property>
+     </widget>
+     <widget class="QSpinBox" name="spinBoxBPMRangeEnd" >
+      <property name="geometry" >
+       <rect>
+        <x>190</x>
+        <y>114</y>
+        <width>37</width>
+        <height>22</height>
+       </rect>
+      </property>
+      <property name="toolTip" >
+       <string>BPM detection range end (between 1 and 220)</string>
+      </property>
+      <property name="minimum" >
+       <number>1</number>
+      </property>
+      <property name="maximum" >
+       <number>220</number>
+      </property>
+     </widget>
+     <widget class="QLabel" name="TextLabel10" >
+      <property name="geometry" >
+       <rect>
+        <x>171</x>
+        <y>114</y>
+        <width>15</width>
+        <height>22</height>
+       </rect>
+      </property>
+      <property name="font" >
+       <font/>
+      </property>
+      <property name="text" >
+       <string>to</string>
+      </property>
+      <property name="wordWrap" >
+       <bool>false</bool>
+      </property>
+     </widget>
+     <widget class="QLabel" name="textLabelSoundScaling" >
+      <property name="geometry" >
+       <rect>
+        <x>10</x>
+        <y>38</y>
+        <width>224</width>
+        <height>72</height>
+       </rect>
+      </property>
+      <property name="text" >
+       <string>Determines whether or not to analyze the entire song or only the middle portion to detect the BPM. It is advisable to leave this turned off unless you are getting inaccurate results and you have plenty of CPU Power. </string>
+      </property>
+      <property name="alignment" >
+       <set>Qt::AlignTop</set>
+      </property>
+      <property name="wordWrap" >
+       <bool>true</bool>
+      </property>
+     </widget>
+     <widget class="Line" name="line1" >
+      <property name="geometry" >
+       <rect>
+        <x>10</x>
+        <y>140</y>
+        <width>224</width>
+        <height>18</height>
+       </rect>
+      </property>
+      <property name="frameShape" >
+       <enum>QFrame::HLine</enum>
+      </property>
+      <property name="frameShadow" >
+       <enum>QFrame::Sunken</enum>
+      </property>
+     </widget>
+     <widget class="QCheckBox" name="chkDetectOnImport" >
+      <property name="geometry" >
+       <rect>
+        <x>10</x>
+        <y>150</y>
+        <width>176</width>
+        <height>20</height>
+       </rect>
+      </property>
+      <property name="text" >
+       <string>Detect Song BPM on Import</string>
+      </property>
+     </widget>
+     <widget class="QCheckBox" name="chkWriteID3" >
+      <property name="geometry" >
+       <rect>
+        <x>10</x>
+        <y>176</y>
+        <width>150</width>
+        <height>20</height>
+       </rect>
+      </property>
+      <property name="text" >
+       <string>Write BPM to ID3 Tag</string>
+      </property>
+     </widget>
     </widget>
-  </widget>
-  <layoutdefault spacing="6" margin="11" />
-  <pixmapfunction>qPixmapFromMimeSource</pixmapfunction>
+   </item>
+   <item row="0" column="1" >
+    <spacer>
+     <property name="orientation" >
+      <enum>Qt::Horizontal</enum>
+     </property>
+     <property name="sizeHint" >
+      <size>
+       <width>40</width>
+       <height>20</height>
+      </size>
+     </property>
+    </spacer>
+   </item>
+   <item row="1" column="0" >
+    <spacer>
+     <property name="orientation" >
+      <enum>Qt::Vertical</enum>
+     </property>
+     <property name="sizeHint" >
+      <size>
+       <width>20</width>
+       <height>40</height>
+      </size>
+     </property>
+    </spacer>
+   </item>
+  </layout>
+ </widget>
+ <layoutdefault spacing="6" margin="11" />
+ <pixmapfunction>qPixmapFromMimeSource</pixmapfunction>
+ <customwidgets>
+  <customwidget>
+   <class>Q3GroupBox</class>
+   <extends>QGroupBox</extends>
+   <header>Qt3Support/Q3GroupBox</header>
+   <container>1</container>
+  </customwidget>
+ </customwidgets>
+ <resources/>
+ <connections/>
 </ui>
