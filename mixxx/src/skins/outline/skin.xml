@@ -1146,20 +1146,19 @@
 	 </Connection>
  </Overview>
  
- <Splitter>
+ <ComboBox>
   <Pos>139,364</Pos>
-  <Size>745,403</Size>
- </Splitter>
+  <Size>164,25</Size>
+ </ComboBox>
 
- <TreeView>
-  <InSplitter>Yes</InSplitter>
-  <FgColor>#000000</FgColor>
+ <Search>
+  <Pos>315,364</Pos>
+  <Size>535,25</Size>
   <BgColor>#ffffff</BgColor>
-  <Size>250,403</Size>
- </TreeView>
+ </Search>
 
  <TrackTable>
-  <InSplitter>Yes</InSplitter>
+  <Pos>139,389</Pos>
   <FgColor>#000000</FgColor>
   <BgColor>#ffffff</BgColor>
   <BgColorRowEven>#ffffff</BgColorRowEven>
@@ -1174,7 +1173,7 @@
   <ColWidthDuration>50</ColWidthDuration>
   <ColWidthBpm>40</ColWidthBpm>
   <ColWidthBitrate>50</ColWidthBitrate>
-  <Size>726,403</Size>
+  <Size>746,374</Size>
  </TrackTable>
 
 </skin>

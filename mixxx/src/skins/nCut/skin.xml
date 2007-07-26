@@ -1,4 +1,4 @@
-<!-- 
+<!--
 
    nCut v1.1, Skin for Mixxx 1.5.0
    Copyright (C) 2007 Frank Willascheck; fw74@gmx.de
@@ -1289,30 +1289,29 @@
    ****************************************
 -->
 
- <Splitter>
-  <Tooltip>Left: Distribute size of tree view and track table</Tooltip>
+ <ComboBox>
   <Pos>15,430</Pos>
-  <Size>994,323</Size>
- </Splitter>
+  <Size>164,25</Size>
+ </ComboBox>
 
- <TreeView>
-  <Tooltip>Audio file explorer</Tooltip>
-  <InSplitter>Yes</InSplitter>
-  <Size>500,323</Size>
-  <BgColor>#000000</BgColor>
-  <FgColor>#c0c0c0</FgColor>
- </TreeView>
+ <Search>
+  <Pos>191,430</Pos>
+  <Size>783,25</Size>
+  <BgColor>#ffffff</BgColor>
+ </Search>
 
  <TrackTable>
   <Tooltip>User defined track table</Tooltip>
-  <InSplitter>Yes</InSplitter>
-  <Size>500,323</Size>
-  <BgColor>#000000</BgColor>
+  <Pos>15,460</Pos>
+  <Size>994,293</Size>
+  <BgColor>#ffffff</BgColor>
   <FgColor>#c0c0c0</FgColor>
-  <BgColorRowEven>#000000</BgColorRowEven>
-  <BgColorRowUneven>#000000</BgColorRowUneven>
-  <BgColorBpmConfidenceLow>#c00000</BgColorBpmConfidenceLow>
-  <BgColorBpmConfidenceHigh>#00c000</BgColorBpmConfidenceHigh>
+  <BgColorRowEven>#ffffff</BgColorRowEven>
+  <BgColorRowUneven>#ffffff</BgColorRowUneven>
+  <!--<BgColorBpmConfidenceLow>#CC0000</BgColorBpmConfidenceLow>
+  <BgColorBpmConfidenceHigh>#0000CC</BgColorBpmConfidenceHigh>-->
+  <BgColorBpmNoConfirm>#ffffff</BgColorBpmNoConfirm>
+  <BgColorBpmConfirm>#9EFF75</BgColorBpmConfirm>
   <ColWidthScore>0</ColWidthScore>
   <ColWidthTitle>200</ColWidthTitle>
   <ColWidthArtist>200</ColWidthArtist>
