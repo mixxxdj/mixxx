@@ -12,9 +12,10 @@
 #ifndef TRACK_H
 #define TRACK_H
 
-#include <qstring.h>
+#include <QtCore>
 #include <qdom.h>
 #include <q3ptrlist.h>
+#include <q3popupmenu.h>
 #include <qobject.h>
 //Added by qt3to4:
 #include <QDropEvent>
@@ -32,7 +33,8 @@ class WTrackTable;
 class WTreeList;
 class ControlObjectThreadMain;
 class WaveSummary;
-class QLineEdit;
+//class QLineEdit;
+class QSortFilterProxyModel;
 
 // This define sets the version of the tracklist. If any code is changed or
 // bugfixed, this number should be increased. If TRACK_VERSION is larger
@@ -50,7 +52,7 @@ public:
     Track(QString location, MixxxView *pView, EngineBuffer *pBuffer1, EngineBuffer *pBuffer2, WaveSummary *pWaveSummary, QString musiclocation);
     ~Track();
     /** Read xml file */
-    bool readXML(QString location);
+    void readXML(QString location);
     /** Write content to XML file */
     void writeXML(QString location);
     /** Get pointer to TrackCollection */
@@ -102,7 +104,7 @@ public slots:
 	/**sends track to Playqueue*/
 	void slotSendToPlayqueue();
     /**search function*/
-	//void slotSearch();
+	
 
 private slots:
     /** Load the active popup track in player 1 */
@@ -157,7 +159,11 @@ private:
 	/**used to limit popup menu choices*/
 	Q3PopupMenu *menu;
 	TrackPlaylist *tempPlaylist;
-
+	//Binary Search
+	TrackPlaylist Binary(TrackCollection tempCollection);
+	//used to find typed string
+	TrackCollection *tempCollection;
+	//QSortFilterProxyModel *proxyModel;
 };
 
 #endif
