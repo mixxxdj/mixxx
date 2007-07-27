@@ -43,7 +43,7 @@ class QDomNode;
 class QDomElement;
 class MixxxKeyboard;
 /*new classes for new visual layout*/
-class WComboBox;
+class QComboBox;
 class QLineEdit;
 class QPushButton;
 /**
