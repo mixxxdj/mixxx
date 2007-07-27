@@ -69,17 +69,21 @@ void TrackPlaylist::setTrack(Track *pTrack)
 
 void TrackPlaylist::writeXML(QDomDocument &doc, QDomElement &header)
 {
-    XmlParse::addElement(doc, header, "Name", m_qName);
+	TrackInfoObject *it = m_qList.first();
+	
+		XmlParse::addElement(doc, header, "Name", m_qName);
 
-    QDomElement root = doc.createElement("List");
-    TrackInfoObject *it = m_qList.first();
-    while (it)
-    {
-        XmlParse::addElement(doc, root, "ID", QString("%1").arg(it->getId()));
-        it = m_qList.next();
-    }
-    header.appendChild(root);
+		QDomElement root = doc.createElement("List");
+		
+		while (it)
+		{
+			XmlParse::addElement(doc, root, "ID", QString("%1").arg(it->getId()));
+			it = m_qList.next();
+		}
+		header.appendChild(root);
+	
 }
+
 
 void TrackPlaylist::addTrack(TrackInfoObject *pTrack)
 {
@@ -99,7 +103,7 @@ void TrackPlaylist::addTrack(TrackInfoObject *pTrack)
 
 void TrackPlaylist::addTrack(QString qLocation)
 {
-    qDebug("Add track %s",qLocation.latin1());
+    qDebug("Add track %s",qLocation);//.latin1());
     TrackInfoObject *pTrack = m_pTrackCollection->getTrack(qLocation);
 
     if (pTrack)
@@ -124,7 +128,7 @@ void TrackPlaylist::activate(WTrackTable *pTable)
     }
 
     // Connect drop events to table to this playlist
-    connect(m_pTable, SIGNAL(dropped(QDropEvent *)), this, SLOT(slotDrop(QDropEvent *)));
+    //connect(m_pTable, SIGNAL(dropped(QDropEvent *)), this, SLOT(slotDrop(QDropEvent *)));
 }
 
 void TrackPlaylist::deactivate()
@@ -132,8 +136,7 @@ void TrackPlaylist::deactivate()
     if (!m_pTable)
         return;
         
-    disconnect(m_pTable, SIGNAL(dropped(QDropEvent *)), this, SLOT(slotDrop(QDropEvent *)));
-
+    //disconnect(m_pTable, SIGNAL(dropped(QDropEvent *)), this, SLOT(slotDrop(QDropEvent *)));
     if (m_pTable)
     {
         m_pTable->setNumRows(0);
@@ -141,7 +144,6 @@ void TrackPlaylist::deactivate()
         TrackInfoObject *it = m_qList.first();
         while (it)
         {
-//            qDebug("remove");
             it->removeFromTrackTable();
             it = m_qList.next();
         }
@@ -266,6 +268,10 @@ TrackInfoObject *TrackPlaylist::getFirstTrack()
     return m_qList.first();    
 }
 
+TrackCollection *TrackPlaylist::getCollection()
+{
+	return m_pTrackCollection;
+}
 int TrackPlaylist::getSongNum()
 {
 	return iCounter;

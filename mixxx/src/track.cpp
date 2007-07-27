@@ -49,27 +49,19 @@ Track::Track(QString location, MixxxView *pView, EngineBuffer *pBuffer1, EngineB
     m_pWaveSummary = pWaveSummary;
 	
 	musicDir = musiclocation;
-	qDebug("music location: %s",musicDir);
-	qDebug("xml location: %s",location);
 	tempCollection = new TrackCollection();
 	menu = new Q3PopupMenu();
 	
-	menu->insertItem("Play Queue", this, SLOT(slotSendToPlayqueue()));
-	menu->insertItem("Player 1", this, SLOT(slotLoadPlayer1()));
-	menu->insertItem("Player 2", this, SLOT(slotLoadPlayer2()));
-	menu->insertItem("Remove",   this, SLOT(slotRemoveFromPlaylist()));
+	//menu->insertItem("Play Queue", this, SLOT(slotSendToPlayqueue()));
+	//menu->insertItem("Player 1", this, SLOT(slotLoadPlayer1()));
+	//menu->insertItem("Player 2", this, SLOT(slotLoadPlayer2()));
+	//menu->insertItem("Remove",   this, SLOT(slotRemoveFromPlaylist()));
 	
     m_pTrackCollection = new TrackCollection();
     m_pTrackImporter = new TrackImporter(m_pView,m_pTrackCollection);
 
     // Read the XML file
 	readXML(location);
-    /*if(readXML(location))
-	{
-		//make sure files in musicdir are present in the list
-		//qDebug("readXML successful");
-		librarycheckexists(musicDir);
-	}*/
 
 	// Ensure that two playlists are present
 	if(m_qPlaylists.count()<2)
@@ -315,24 +307,20 @@ void Track::slotActivatePlaylist(int index)
 {
 	if (m_pActivePlaylist)
             m_pActivePlaylist->deactivate();
-	if(tempPlaylist)
+	switch(index)
 	{
-		m_pActivePlaylist->deactivate();
-		slotDeletePlaylist("temp");
-	}
-	if (index == 0)
-	{
+	case 0:
 		menu->clear();
 		menu->insertItem("Play Queue", this, SLOT(slotSendToPlayqueue()));
 		menu->insertItem("Player 1", this, SLOT(slotLoadPlayer1()));
 		menu->insertItem("Player 2", this, SLOT(slotLoadPlayer2()));
-	}
-	if (index == 1)
-	{
+		break;
+	case 1:
 		menu->clear();
 		menu->insertItem("Player 1", this, SLOT(slotLoadPlayer1()));
 		menu->insertItem("Player 2", this, SLOT(slotLoadPlayer2()));
 		menu->insertItem("Remove",   this, SLOT(slotRemoveFromPlaylist()));
+		break;
 	}
 	
 	// Insert playlist according to ComboBox index
@@ -425,7 +413,7 @@ void Track::slotTrackPopup(TrackInfoObject *pTrackInfoObject, int)
 
     m_pActivePopupTrack = pTrackInfoObject;
     int id;
-
+	menu->insertItem("Play Queue", this, SLOT(slotSendToPlayqueue()));
     id = menu->insertItem("Player 1", this, SLOT(slotLoadPlayer1()));
     if (ControlObject::getControl(ConfigKey("[Channel1]","play"))->get()==1.)
         menu->setItemEnabled(id, false);
@@ -434,7 +422,7 @@ void Track::slotTrackPopup(TrackInfoObject *pTrackInfoObject, int)
     if (ControlObject::getControl(ConfigKey("[Channel2]","play"))->get()==1.)
         menu->setItemEnabled(id, false);
     
-    menu->insertItem("Remove",   this, SLOT(slotRemoveFromPlaylist()));
+    //menu->insertItem("Remove",   this, SLOT(slotRemoveFromPlaylist()));
 
     menu->exec(QCursor::pos());
 
@@ -702,7 +690,6 @@ void Track::slotPrevTrackPlayer2(double v)
 void Track::librarycheckexists(QString qPath)
 {
 	// Is this a file or directory?
-	qDebug("In librarycheckexists...");
 	bool bexists = false;
 	TrackCollection *tempCollection = m_qPlaylists.at(0)->getCollection();
     QDir dir(qPath);
@@ -711,10 +698,8 @@ void Track::librarycheckexists(QString qPath)
 	{
 		for(int i = 1;i < tempCollection->getSize();i++)
 		{
-			//qDebug("in for loop #1");
 			if(tempCollection->getTrack(i)->getLocation() == qPath)
 			{
-				//addTrack(musicDir);
 				bexists = true;
 				//qDebug("Track exists");
 			}
@@ -753,18 +738,18 @@ void Track::librarycheckexists(QString qPath)
 			  fi = it.next();
 			  for(int i = 1; i < m_pTrackCollection->getSize(); ++i)
 			  {
-				  qDebug("Checking: %s",tempCollection->getTrack(i)->getFilename());
+				  /*qDebug("Checking: %s",tempCollection->getTrack(i)->getFilename());*/
 				  if(tempCollection->getTrack(i)->getFilename() == fi.fileName())
 				  {
 					  bexists = true;
 					  
 				  }				  
 			  }
-			  if(bexists==true)
-				  qDebug("track exists!");
+			  /*if(bexists==true)
+				  qDebug("track exists!");*/
 			  if((bexists == false)&&(m_qPlaylists.count()>=2))
 			  {
-				  qDebug("all tracks searched, file does not exist, adding...");
+				  /*qDebug("all tracks searched, file does not exist, adding...");*/
 				  m_qPlaylists.at(0)->addTrack(fi.filePath());
 			  }
           }
