@@ -80,6 +80,7 @@ TrackInfoObject::TrackInfoObject(const QString sPath, const QString sFile) : m_s
         m_bIsValid = false;
 
     installEventFilter(this);
+	iTemp = 0;
 }
 
 TrackInfoObject::TrackInfoObject(const QDomNode &nodeHeader)
@@ -237,11 +238,13 @@ void TrackInfoObject::insertInTrackTableRow(WTrackTable *pTableTrack, int iRow)
 
 void TrackInfoObject::removeFromTrackTable()
 {
-    qDebug("remove");
+    //qDebug("remove %i",iTemp);
+	++iTemp;
     if (m_pTableTrack)
     {
         // Remove the row from the table, and delete the table items
         int row = m_pTableTrack->currentRow();
+		//qDebug("remove from row %i",row);
         m_pTableTrack->removeRow(m_pTableItemScore->row());
 
         // Set a new active row

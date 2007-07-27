@@ -21,7 +21,7 @@
 #include <qwidget.h>
 #include <qlabel.h>
 #include <qstring.h>
-#include <QComboBox>
+#include "wcombobox.h"
 //Added by qt3to4:
 #include <Q3ValueList>
 #include "configobject.h"
@@ -43,7 +43,7 @@ class QDomNode;
 class QDomElement;
 class MixxxKeyboard;
 /*new classes for new visual layout*/
-class QComboBox;
+class WComboBox;
 class QLineEdit;
 class QPushButton;
 /**

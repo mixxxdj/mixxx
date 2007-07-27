@@ -207,6 +207,7 @@ private:
     ControlObject *m_pControlObjectBpm;
     /** Pointer to ControlObject of duration value (only set when the track is loaded in a player) */
     ControlObject *m_pControlObjectDuration;
+	int iTemp;
 };
 
 #endif

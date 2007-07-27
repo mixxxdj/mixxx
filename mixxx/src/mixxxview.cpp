@@ -31,6 +31,8 @@
 #include <QComboBox>
 #include <QLineEdit>
 #include <QPushButton>
+#include <qlineedit.h>
+#include <qcombobox.h>
 
 #include "wtracktable.h"
 #include "wtreeview.h"
@@ -559,7 +561,7 @@ void MixxxView::createAllWidgets(QDomElement docElem, QWidget* parent, bool bVis
 			else if (node.nodeName()=="ComboBox")
 			{
 				m_pComboBox = new QComboBox( FALSE, parent, "ComboBox" );
-				 // Set position
+				// Set position
                 QString pos = WWidget::selectNodeQString(node, "Pos");
                 int x = pos.left(pos.find(",")).toInt();
                 int y = pos.mid(pos.find(",")+1).toInt();
@@ -571,25 +573,25 @@ void MixxxView::createAllWidgets(QDomElement docElem, QWidget* parent, bool bVis
                 y = size.mid(size.find(",")+1).toInt();
                 m_pComboBox->setFixedSize(x,y);
 				
-				/**Initialize items */
+				
 				m_pComboBox->insertItem( "Library" );
 				m_pComboBox->insertItem( "Play Queue" );
 				
-				//m_qWidgetList.append(m_pComboBox);
+				m_qWidgetList.append(m_pComboBox);
 			}
 			else if (node.nodeName()=="Search")
 			{
 				m_pLineEditSearch = new QLineEdit( parent, "lineEdit" );
-				QLabel *m_pSearchLabel = new QLabel( "Search:", parent );
-				m_pPushButton = new QPushButton(parent, "Search");
-
+				QLabel *m_pSearchLabel = new QLabel();
+				
 				// Set position
                 QString pos = WWidget::selectNodeQString(node, "Pos");
                 int x = pos.left(pos.find(",")).toInt();
                 int y = pos.mid(pos.find(",")+1).toInt();
 				m_pSearchLabel->move(x-10,y);
                 m_pLineEditSearch->move(x+35,y);
-				m_pPushButton->move(x+365,y);
+				m_pLineEditSearch->setText(" ");
+				QString temp = m_pLineEditSearch->text();
 
 				// Size
                 QString size = WWidget::selectNodeQString(node, "Size");
@@ -597,15 +599,13 @@ void MixxxView::createAllWidgets(QDomElement docElem, QWidget* parent, bool bVis
                 y = size.mid(size.find(",")+1).toInt();
 				m_pSearchLabel->setFixedSize(x-285,y);
                 m_pLineEditSearch->setFixedSize(x,y);
-				m_pPushButton->setFixedSize(x-285,y);
 				//Color for Label
 				QColor bgc(255,255,255);
 				if (!WWidget::selectNode(node, "BgColor").isNull()) {
                     bgc.setNamedColor(WWidget::selectNodeQString(node, "BgColor"));
                 }
 				m_pSearchLabel->setBackgroundColor(WSkinColor::getCorrectColor(bgc));
-				
-				m_pPushButton->setText("Search");
+	
 				m_qWidgetList.append(m_pSearchLabel);
 				m_qWidgetList.append(m_pLineEditSearch);
 			}
@@ -892,7 +892,52 @@ void MixxxView::rebootGUI(QWidget* parent, bool bVisualsWaveform, ConfigObject<C
                     p->setAlignment(Qt::AlignRight);
 
             }
-            
+            else if (node.nodeName()=="ComboBox")
+			{
+				m_pComboBox = new QComboBox( FALSE, parent, "ComboBox" );
+				 // Set position
+                QString pos = WWidget::selectNodeQString(node, "Pos");
+                int x = pos.left(pos.find(",")).toInt();
+                int y = pos.mid(pos.find(",")+1).toInt();
+                m_pComboBox->move(x,y);
+
+				// Size
+                QString size = WWidget::selectNodeQString(node, "Size");
+                x = size.left(size.find(",")).toInt();
+                y = size.mid(size.find(",")+1).toInt();
+                m_pComboBox->setFixedSize(x,y);
+				
+				m_pComboBox->insertItem( "Library" );
+				m_pComboBox->insertItem( "Play Queue" );
+				
+				//m_pComboBox->setup(node);
+			}
+			else if (node.nodeName()=="Search")
+			{
+				m_pLineEditSearch = new QLineEdit( parent, "lineEdit" );
+				QLabel *m_pSearchLabel = new QLabel("Search",parent);
+				// Set position
+                QString pos = WWidget::selectNodeQString(node, "Pos");
+                int x = pos.left(pos.find(",")).toInt();
+                int y = pos.mid(pos.find(",")+1).toInt();
+				m_pSearchLabel->move(x-10,y);
+                m_pLineEditSearch->move(x+35,y);
+				m_pLineEditSearch->setText(" ");
+				QString temp = m_pLineEditSearch->text();
+
+				// Size
+                QString size = WWidget::selectNodeQString(node, "Size");
+                x = size.left(size.find(",")).toInt();
+                y = size.mid(size.find(",")+1).toInt();
+				m_pSearchLabel->setFixedSize(x-285,y);
+                m_pLineEditSearch->setFixedSize(x,y);
+				//Color for Label
+				QColor bgc(255,255,255);
+				if (!WWidget::selectNode(node, "BgColor").isNull()) {
+                    bgc.setNamedColor(WWidget::selectNodeQString(node, "BgColor"));
+                }
+				m_pSearchLabel->setBackgroundColor(WSkinColor::getCorrectColor(bgc));
+			}
             else if (node.nodeName()=="TrackTable")
             {
                 m_pTrackTable->setup(node);
@@ -903,7 +948,7 @@ void MixxxView::rebootGUI(QWidget* parent, bool bVisualsWaveform, ConfigObject<C
                 m_pTreeView->setup(node);
             }*/
 		}
-			node = node.nextSibling();
+		node = node.nextSibling();
 	}
 }
 
