@@ -21,7 +21,7 @@
 #include <qwidget.h>
 #include <qlabel.h>
 #include <qstring.h>
-#include "wcombobox.h"
+
 //Added by qt3to4:
 #include <Q3ValueList>
 #include "configobject.h"
