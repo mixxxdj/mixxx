@@ -158,7 +158,6 @@ private:
 	void librarycheckexists(QString qPath);
 	/**used to limit popup menu choices*/
 	Q3PopupMenu *menu;
-	TrackPlaylist *tempPlaylist;
 	//Binary Search
 	TrackPlaylist Binary(TrackCollection tempCollection);
 	//used to find typed string

@@ -105,10 +105,11 @@ void WTrackTable::setup(QDomNode node)
 		QString size = WWidget::selectNodeQString(node, "Size");
 		int x = size.left(size.find(",")).toInt();
 		int y = size.mid(size.find(",")+1).toInt();
-        // setBaseSize(x,y);
-        // resizeContents(x,y);
-		setMaximumWidth(x);
-		setMaximumHeight(y);
+        //setBaseSize(x,y);
+		setFixedSize(x,y);
+		//setMaximumWidth(x);
+		//setMaximumHeight(y);
+		resizeContents(x,y);
     }
 
     // Background color

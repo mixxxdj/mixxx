@@ -62,6 +62,7 @@ public:
     /** Get TrackInfoObject of first track in playlist */
     TrackInfoObject *getFirstTrack();
 	int getSongNum();
+	TrackCollection *getCollection();
     
 public slots:
     /** Decode drop event and calls addPath */
