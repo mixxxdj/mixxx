@@ -34,6 +34,7 @@
 #include <qlineedit.h>
 #include <qcombobox.h>
 
+#include "wcombobox.h"
 #include "wtracktable.h"
 #include "wtreeview.h"
 #include "wwidget.h"
@@ -561,6 +562,7 @@ void MixxxView::createAllWidgets(QDomElement docElem, QWidget* parent, bool bVis
 			else if (node.nodeName()=="ComboBox")
 			{
 				m_pComboBox = new QComboBox( FALSE, parent, "ComboBox" );
+				
 				// Set position
                 QString pos = WWidget::selectNodeQString(node, "Pos");
                 int x = pos.left(pos.find(",")).toInt();
@@ -577,37 +579,25 @@ void MixxxView::createAllWidgets(QDomElement docElem, QWidget* parent, bool bVis
 				m_pComboBox->insertItem( "Library" );
 				m_pComboBox->insertItem( "Play Queue" );
 				
-				m_qWidgetList.append(m_pComboBox);
 			}
 			else if (node.nodeName()=="Search")
 			{
 				m_pLineEditSearch = new QLineEdit( parent, "lineEdit" );
-				QLabel *m_pSearchLabel = new QLabel();
 				
 				// Set position
                 QString pos = WWidget::selectNodeQString(node, "Pos");
                 int x = pos.left(pos.find(",")).toInt();
                 int y = pos.mid(pos.find(",")+1).toInt();
-				m_pSearchLabel->move(x-10,y);
                 m_pLineEditSearch->move(x+35,y);
-				m_pLineEditSearch->setText(" ");
-				QString temp = m_pLineEditSearch->text();
+				//m_pLineEditSearch->setText(" ");
+				//QString temp = m_pLineEditSearch->text();
 
 				// Size
                 QString size = WWidget::selectNodeQString(node, "Size");
                 x = size.left(size.find(",")).toInt();
                 y = size.mid(size.find(",")+1).toInt();
-				m_pSearchLabel->setFixedSize(x-285,y);
                 m_pLineEditSearch->setFixedSize(x,y);
-				//Color for Label
-				QColor bgc(255,255,255);
-				if (!WWidget::selectNode(node, "BgColor").isNull()) {
-                    bgc.setNamedColor(WWidget::selectNodeQString(node, "BgColor"));
-                }
-				m_pSearchLabel->setBackgroundColor(WSkinColor::getCorrectColor(bgc));
-	
-				m_qWidgetList.append(m_pSearchLabel);
-				m_qWidgetList.append(m_pLineEditSearch);
+				
 			}
             else if (node.nodeName()=="TrackTable")
             {
@@ -650,7 +640,7 @@ void MixxxView::rebootGUI(QWidget* parent, bool bVisualsWaveform, ConfigObject<C
 			obj = m_qWidgetList.next();
 		}
 	}
-
+	qDebug("checkpoint 1");
 	QDomElement docElem = openSkin(qSkinPath);
 	setupColorScheme(docElem, pConfig);
 	//createAllWidgets(docElem, parent, bVisualsWaveform, pConfig);
@@ -663,6 +653,7 @@ void MixxxView::rebootGUI(QWidget* parent, bool bVisualsWaveform, ConfigObject<C
 	//printf("node: %s\n", node.nodeName().toAscii().constData());
             if (node.nodeName()=="PushButton")
             {
+				qDebug("checkpoint 2");
                 WPushButton *p = new WPushButton(this);
                 p->setup(node);
                 p->installEventFilter(m_pKeyboard);
@@ -671,6 +662,7 @@ void MixxxView::rebootGUI(QWidget* parent, bool bVisualsWaveform, ConfigObject<C
             }
             else if (node.nodeName()=="Knob")
             {
+				qDebug("checkpoint 3");
                 WKnob *p = new WKnob(this);
                 p->setup(node);
                 p->installEventFilter(m_pKeyboard);
@@ -679,6 +671,7 @@ void MixxxView::rebootGUI(QWidget* parent, bool bVisualsWaveform, ConfigObject<C
             }
 			else if (node.nodeName()=="Label")
             {
+				qDebug("checkpoint 4");
                 WLabel *p = new WLabel(this);
                 p->setup(node);
 
@@ -687,6 +680,7 @@ void MixxxView::rebootGUI(QWidget* parent, bool bVisualsWaveform, ConfigObject<C
             }
             else if (node.nodeName()=="Number")
             {
+				qDebug("checkpoint 5");
                 WNumber *p = new WNumber(this);
                 p->setup(node);
                 p->installEventFilter(m_pKeyboard);
@@ -695,6 +689,7 @@ void MixxxView::rebootGUI(QWidget* parent, bool bVisualsWaveform, ConfigObject<C
             }
             else if (node.nodeName()=="NumberBpm")
             {
+				qDebug("checkpoint 6");
                 if (WWidget::selectNodeInt(node, "Channel")==1)
                 {
                     WNumberBpm *p = new WNumberBpm("[Channel1]", this);
@@ -714,6 +709,7 @@ void MixxxView::rebootGUI(QWidget* parent, bool bVisualsWaveform, ConfigObject<C
             }
 			else if (node.nodeName()=="NumberPos")
             {
+				qDebug("checkpoint 7");
                 if (WWidget::selectNodeInt(node, "Channel")==1)
                 {
                     m_pNumberPosCh1->setup(node);
@@ -725,6 +721,7 @@ void MixxxView::rebootGUI(QWidget* parent, bool bVisualsWaveform, ConfigObject<C
             }
             else if (node.nodeName()=="NumberRate")
             {
+				qDebug("checkpoint 8");
                 if (WWidget::selectNodeInt(node, "Channel")==1)
                 {
                     WNumberRate *p = new WNumberRate("[Channel1]", this);
@@ -744,6 +741,7 @@ void MixxxView::rebootGUI(QWidget* parent, bool bVisualsWaveform, ConfigObject<C
             }
             else if (node.nodeName()=="StatusLight")
             {
+				qDebug("checkpoint 9");
                 WStatusLight *p = new WStatusLight(this);
                 m_qWidgetList.append(p);
                 p->setup(node);
@@ -752,6 +750,7 @@ void MixxxView::rebootGUI(QWidget* parent, bool bVisualsWaveform, ConfigObject<C
             }            
 			else if (node.nodeName()=="Display")
             {
+				qDebug("checkpoint 10");
                 WDisplay *p = new WDisplay(this);
                 p->setup(node);
                 p->installEventFilter(m_pKeyboard);
@@ -760,6 +759,7 @@ void MixxxView::rebootGUI(QWidget* parent, bool bVisualsWaveform, ConfigObject<C
             }
             else if (node.nodeName()=="Background")
             {
+				qDebug("checkpoint 11");
                 QString filename = WWidget::selectNodeQString(node, "Path");
 				QPixmap* background = WPixmapStore::getPixmapNoCache(WWidget::getPath(filename));
                 //this->setPaletteBackgroundPixmap(*background);
@@ -793,6 +793,7 @@ void MixxxView::rebootGUI(QWidget* parent, bool bVisualsWaveform, ConfigObject<C
             }
             else if (node.nodeName()=="SliderComposed")
             {
+				qDebug("checkpoint 12");
                 // If rate slider...
                 if (compareConfigKeys(node, "[Channel1],rate"))
                     m_pSliderRateCh1->setup(node);
@@ -808,6 +809,7 @@ void MixxxView::rebootGUI(QWidget* parent, bool bVisualsWaveform, ConfigObject<C
             }
 			else if (node.nodeName()=="VuMeter")
             {
+				qDebug("checkpoint 13");
                 WVuMeter *p = new WVuMeter(this);
                 m_qWidgetList.append(p);
                 p->setup(node);
@@ -820,15 +822,18 @@ void MixxxView::rebootGUI(QWidget* parent, bool bVisualsWaveform, ConfigObject<C
                 {
                     m_pOverviewCh1->setup(node);
 					m_pOverviewCh1->repaint();
+					qDebug("Channel 1");
                 }
                 else if (WWidget::selectNodeInt(node, "Channel")==2)
                 {
                     m_pOverviewCh2->setup(node);
 					m_pOverviewCh2->repaint();
                 }
+				qDebug("checkpoint 14");
             }
 			else if (node.nodeName()=="Visual")
             {
+				qDebug("checkpoint 15");
                 if (WWidget::selectNodeInt(node, "Channel")==1)
                 {
 					((WVisualWaveform*)m_pVisualCh1)->setup(node);
@@ -842,6 +847,7 @@ void MixxxView::rebootGUI(QWidget* parent, bool bVisualsWaveform, ConfigObject<C
             }
 			else if (node.nodeName()=="Text")
             {
+				qDebug("checkpoint 16");
 				QLabel* p = 0;
                 // Associate pointers
                 if (WWidget::selectNodeInt(node, "Channel")==1)
@@ -894,7 +900,6 @@ void MixxxView::rebootGUI(QWidget* parent, bool bVisualsWaveform, ConfigObject<C
             }
             else if (node.nodeName()=="ComboBox")
 			{
-				m_pComboBox = new QComboBox( FALSE, parent, "ComboBox" );
 				 // Set position
                 QString pos = WWidget::selectNodeQString(node, "Pos");
                 int x = pos.left(pos.find(",")).toInt();
@@ -907,40 +912,31 @@ void MixxxView::rebootGUI(QWidget* parent, bool bVisualsWaveform, ConfigObject<C
                 y = size.mid(size.find(",")+1).toInt();
                 m_pComboBox->setFixedSize(x,y);
 				
-				m_pComboBox->insertItem( "Library" );
-				m_pComboBox->insertItem( "Play Queue" );
-				
-				//m_pComboBox->setup(node);
+				qDebug("checkpoint 17");
 			}
 			else if (node.nodeName()=="Search")
 			{
-				m_pLineEditSearch = new QLineEdit( parent, "lineEdit" );
-				QLabel *m_pSearchLabel = new QLabel("Search",parent);
 				// Set position
                 QString pos = WWidget::selectNodeQString(node, "Pos");
                 int x = pos.left(pos.find(",")).toInt();
                 int y = pos.mid(pos.find(",")+1).toInt();
-				m_pSearchLabel->move(x-10,y);
                 m_pLineEditSearch->move(x+35,y);
-				m_pLineEditSearch->setText(" ");
-				QString temp = m_pLineEditSearch->text();
 
+				//m_pLineEditSearch->setText(" ");
+				//QString temp = m_pLineEditSearch->text();
+				
 				// Size
                 QString size = WWidget::selectNodeQString(node, "Size");
                 x = size.left(size.find(",")).toInt();
                 y = size.mid(size.find(",")+1).toInt();
-				m_pSearchLabel->setFixedSize(x-285,y);
+				//m_pSearchLabel->setFixedSize(x-285,y);
                 m_pLineEditSearch->setFixedSize(x,y);
-				//Color for Label
-				QColor bgc(255,255,255);
-				if (!WWidget::selectNode(node, "BgColor").isNull()) {
-                    bgc.setNamedColor(WWidget::selectNodeQString(node, "BgColor"));
-                }
-				m_pSearchLabel->setBackgroundColor(WSkinColor::getCorrectColor(bgc));
+				qDebug("checkpoint 18");
 			}
             else if (node.nodeName()=="TrackTable")
             {
                 m_pTrackTable->setup(node);
+				qDebug("checkpoint 19");
             }
 
             /*else if (node.nodeName()=="TreeView")
