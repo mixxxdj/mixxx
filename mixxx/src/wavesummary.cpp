@@ -82,12 +82,15 @@ void WaveSummary::run()
 		if (!pTrackInfoObject)
 		{
 			// Wait for track to be requested
-			m_qWait.wait(&m_qWaitMutex);
-
 			m_qMutex.lock();
+			m_qWait.wait(&m_qMutex);
+			//m_qWait.wait(&m_qWaitMutex);
+
+			//m_qMutex.lock();
 			pTrackInfoObject = m_qQueue.dequeue();
 			m_qMutex.unlock();
 		}
+		Q_ASSERT(pTrackInfoObject != NULL);
 
 		//
 		// Track processing
