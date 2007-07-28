@@ -647,7 +647,7 @@ void MixxxApp::rebootMixxxView() {
 	// So we check and if the size hasn't changed we don't make the call
 	int oldh = view->height();
 	int oldw = view->width();
-
+	qDebug("Now in Rebootmixxview...");
 	bool bVisualsWaveform = true;
     if (config->getValueString(ConfigKey("[Controls]","Visuals")).toInt()==1)
         bVisualsWaveform = false;
@@ -655,7 +655,7 @@ void MixxxApp::rebootMixxxView() {
 	QString qSkinPath = getSkinPath();
 
 	view->rebootGUI(frame, bVisualsWaveform, config, qSkinPath);
-
+	qDebug("rebootgui DONE");
 	if (oldw != view->width() || oldh != view->height()) {
 		setFixedSize(view->width(), view->height());
 	}

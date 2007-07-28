@@ -44,6 +44,7 @@ class QDomElement;
 class MixxxKeyboard;
 /*new classes for new visual layout*/
 class QComboBox;
+class WComboBox;
 class QLineEdit;
 class QPushButton;
 /**
@@ -77,7 +78,9 @@ public:
     bool m_bZoom;
 	/** Pointer to ComboBox*/
 	QComboBox *m_pComboBox;
+	//WComboBox *m_pComboBox;
 	/** Pointer to SearchBox */
+	QLabel *m_pSearchLabel;
 	QLineEdit *m_pLineEditSearch;
 	/** Pointer to Search PushButton*/
 	QPushButton *m_pPushButton;

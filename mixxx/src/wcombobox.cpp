@@ -1,7 +1,7 @@
 #include "wcombobox.h"
 #include <qwidget.h>
 #include <qstring.h>
-WComboBox::WComboBox(QWidget *parent) : QComboBox(parent)
+WComboBox::WComboBox(QWidget *parent, QString name) : QComboBox(parent, name)
 {
      insertItem( "Library" );
      insertItem( "Play Queue" );
