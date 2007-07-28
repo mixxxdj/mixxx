@@ -156,8 +156,6 @@ private:
     WaveSummary *m_pWaveSummary;
 	/**used to add tracks from music Dir automatically*/
 	void librarycheckexists(QString qPath);
-	/**used to limit popup menu choices*/
-	Q3PopupMenu *menu;
 	//Binary Search
 	TrackPlaylist Binary(TrackCollection tempCollection);
 	//used to find typed string

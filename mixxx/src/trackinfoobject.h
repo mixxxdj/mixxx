@@ -53,6 +53,8 @@ public:
     void insertInTrackTableRow(WTrackTable *pTableTrack, int iRow);
     /** Reset pointers to table cells */
     void removeFromTrackTable();
+	/** Assists in clearing the table*/
+	void clearTrackTableRow();
     /** Returns the duration in seconds */
     int getDuration();
     /** Returns the duration as a string: H:MM:SS */

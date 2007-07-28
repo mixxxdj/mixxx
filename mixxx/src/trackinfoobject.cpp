@@ -238,8 +238,6 @@ void TrackInfoObject::insertInTrackTableRow(WTrackTable *pTableTrack, int iRow)
 
 void TrackInfoObject::removeFromTrackTable()
 {
-    //qDebug("remove %i",iTemp);
-	++iTemp;
     if (m_pTableTrack)
     {
         // Remove the row from the table, and delete the table items
@@ -248,7 +246,7 @@ void TrackInfoObject::removeFromTrackTable()
         m_pTableTrack->removeRow(m_pTableItemScore->row());
 
         // Set a new active row
-        if (row<m_pTableTrack->numRows())
+        if (row < m_pTableTrack->numRows())
             m_pTableTrack->setCurrentCell(row, 0);
         else if (m_pTableTrack->numRows())
             m_pTableTrack->setCurrentCell(m_pTableTrack->numRows()-1, 0);
@@ -266,7 +264,34 @@ void TrackInfoObject::removeFromTrackTable()
         m_pTableTrack = 0;
     }
 }
+void TrackInfoObject::clearTrackTableRow()
+{
+	if (m_pTableTrack)
+    {
+        // Remove all contents of first row
+        //int row = m_pTableTrack->currentRow();
+		//qDebug("remove from row %i",row);
+        m_pTableTrack->removeRow(1);//m_pTableItemScore->row());
 
+        // Set a new active row
+        if (1 < m_pTableTrack->numRows())
+            m_pTableTrack->setCurrentCell(1, 0);
+        else if (m_pTableTrack->numRows())
+            m_pTableTrack->setCurrentCell(m_pTableTrack->numRows()-1, 0);
+
+        // Reset pointers
+        m_pTableItemScore = 0;
+        m_pTableItemTitle = 0;
+        m_pTableItemArtist = 0;
+        m_pTableItemComment = 0;
+        m_pTableItemType = 0;
+        m_pTableItemDuration = 0;
+        m_pTableItemBpm = 0;
+        m_pTableItemBitrate = 0;
+
+        m_pTableTrack = 0;
+	}
+}
 int TrackInfoObject::parse()
 {
     // Add basic information derived from the filename:
