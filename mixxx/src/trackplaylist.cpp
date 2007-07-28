@@ -144,7 +144,8 @@ void TrackPlaylist::deactivate()
         TrackInfoObject *it = m_qList.first();
         while (it)
         {
-            it->removeFromTrackTable();
+            it->clearTrackTableRow();
+			qDebug("removing: %s",it->getFilename());
             it = m_qList.next();
         }
     }

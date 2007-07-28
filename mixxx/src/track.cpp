@@ -50,7 +50,6 @@ Track::Track(QString location, MixxxView *pView, EngineBuffer *pBuffer1, EngineB
 	
 	musicDir = musiclocation;
 	tempCollection = new TrackCollection();
-	menu = new Q3PopupMenu();
 	
 	//menu->insertItem("Play Queue", this, SLOT(slotSendToPlayqueue()));
 	//menu->insertItem("Player 1", this, SLOT(slotLoadPlayer1()));
@@ -307,21 +306,6 @@ void Track::slotActivatePlaylist(int index)
 {
 	if (m_pActivePlaylist)
             m_pActivePlaylist->deactivate();
-	switch(index)
-	{
-	case 0:
-		menu->clear();
-		menu->insertItem("Play Queue", this, SLOT(slotSendToPlayqueue()));
-		menu->insertItem("Player 1", this, SLOT(slotLoadPlayer1()));
-		menu->insertItem("Player 2", this, SLOT(slotLoadPlayer2()));
-		break;
-	case 1:
-		menu->clear();
-		menu->insertItem("Player 1", this, SLOT(slotLoadPlayer1()));
-		menu->insertItem("Player 2", this, SLOT(slotLoadPlayer2()));
-		menu->insertItem("Remove",   this, SLOT(slotRemoveFromPlaylist()));
-		break;
-	}
 	
 	// Insert playlist according to ComboBox index
     m_pActivePlaylist = m_qPlaylists.at(index);
@@ -409,21 +393,36 @@ TrackPlaylist *Track::getPlaylist(QString qName)
 
 void Track::slotTrackPopup(TrackInfoObject *pTrackInfoObject, int)
 {
-    Q3PopupMenu *menu = new Q3PopupMenu();
-
+	Q3PopupMenu *menu = new Q3PopupMenu();
     m_pActivePopupTrack = pTrackInfoObject;
     int id;
-	menu->insertItem("Play Queue", this, SLOT(slotSendToPlayqueue()));
-    id = menu->insertItem("Player 1", this, SLOT(slotLoadPlayer1()));
-    if (ControlObject::getControl(ConfigKey("[Channel1]","play"))->get()==1.)
-        menu->setItemEnabled(id, false);
-    
-    id = menu->insertItem("Player 2", this, SLOT(slotLoadPlayer2()));
-    if (ControlObject::getControl(ConfigKey("[Channel2]","play"))->get()==1.)
-        menu->setItemEnabled(id, false);
-    
-    //menu->insertItem("Remove",   this, SLOT(slotRemoveFromPlaylist()));
 
+	if(m_pActivePlaylist->getName()== m_qPlaylists.at(0)->getName())
+	{
+		menu->insertItem("Play Queue", this, SLOT(slotSendToPlayqueue()));
+		
+		id = menu->insertItem("Player 1", this, SLOT(slotLoadPlayer1()));
+		if (ControlObject::getControl(ConfigKey("[Channel1]","play"))->get()==1.)
+			menu->setItemEnabled(id, false);
+	    
+		id = menu->insertItem("Player 2", this, SLOT(slotLoadPlayer2()));
+		if (ControlObject::getControl(ConfigKey("[Channel2]","play"))->get()==1.)
+			menu->setItemEnabled(id, false);
+	    
+		menu->insertItem("Remove",   this, SLOT(slotRemoveFromPlaylist()));
+	}
+	else
+	{
+		id = menu->insertItem("Player 1", this, SLOT(slotLoadPlayer1()));
+		if (ControlObject::getControl(ConfigKey("[Channel1]","play"))->get()==1.)
+			menu->setItemEnabled(id, false);
+	    
+		id = menu->insertItem("Player 2", this, SLOT(slotLoadPlayer2()));
+		if (ControlObject::getControl(ConfigKey("[Channel2]","play"))->get()==1.)
+			menu->setItemEnabled(id, false);
+	    
+		menu->insertItem("Remove",   this, SLOT(slotRemoveFromPlaylist()));
+	}
     menu->exec(QCursor::pos());
 
 }
@@ -701,7 +700,7 @@ void Track::librarycheckexists(QString qPath)
 			if(tempCollection->getTrack(i)->getLocation() == qPath)
 			{
 				bexists = true;
-				//qDebug("Track exists");
+				break;
 			}
 		}
 		if((bexists == false) && (m_qPlaylists.count()>=2))
@@ -742,7 +741,7 @@ void Track::librarycheckexists(QString qPath)
 				  if(tempCollection->getTrack(i)->getFilename() == fi.fileName())
 				  {
 					  bexists = true;
-					  
+					  break;
 				  }				  
 			  }
 			  /*if(bexists==true)
