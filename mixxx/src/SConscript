@@ -374,7 +374,7 @@ else:
 
 #KissFFT
 env.Append(CPPPATH=['../../lib/kissfft'])
-sources += Split("""../../lib/kissfft/kiss_fft.c ../../lib/kissfft/kiss_fftr.c""")
+sources += Split("""../../lib/kissfft/kiss_fft.c""")
 
 #Xing's non-free VBR header SDK thing (we need to get rid of this!)
 env.Append(CPPPATH='../../lib/vbrheadersdk/')

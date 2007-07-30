@@ -26,7 +26,8 @@ static size_t ntmpbuf=0;
 #define CHECKBUF(buf,nbuf,n) \
     do { \
         if ( nbuf < (size_t)(n) ) {\
-            buf = (kiss_fft_cpx*)realloc(buf,sizeof(kiss_fft_cpx)*(n)); \
+            free(buf); \
+            buf = (kiss_fft_cpx*)KISS_FFT_MALLOC(sizeof(kiss_fft_cpx)*(n)); \
             nbuf = (size_t)(n); \
         } \
    }while(0)
@@ -129,8 +130,8 @@ static void kf_bfly3(
          tw1 += fstride;
          tw2 += fstride*2;
 
-         Fout[m].r = Fout->r - scratch[3].r/2;
-         Fout[m].i = Fout->i - scratch[3].i/2;
+         Fout[m].r = Fout->r - HALF_OF(scratch[3].r);
+         Fout[m].i = Fout->i - HALF_OF(scratch[3].i);
 
          C_MULBYSCALAR( scratch[0] , epi3.i );
 
@@ -326,9 +327,9 @@ kiss_fft_cfg kiss_fft_alloc(int nfft,int inverse_fft,void * mem,size_t * lenmem 
         + sizeof(kiss_fft_cpx)*(nfft-1); /* twiddle factors*/
 
     if ( lenmem==NULL ) {
-        st = ( kiss_fft_cfg)malloc( memneeded );
+        st = ( kiss_fft_cfg)KISS_FFT_MALLOC( memneeded );
     }else{
-        if (*lenmem >= memneeded)
+        if (mem != NULL && *lenmem >= memneeded)
             st = (kiss_fft_cfg)mem;
         *lenmem = memneeded;
     }
@@ -338,8 +339,8 @@ kiss_fft_cfg kiss_fft_alloc(int nfft,int inverse_fft,void * mem,size_t * lenmem 
         st->inverse = inverse_fft;
 
         for (i=0;i<nfft;++i) {
-            const double pi=3.14159265358979323846264338327;
-            double phase = ( -2*pi /nfft ) * i;
+            const double pi=3.141592653589793238462643383279502884197169399375105820974944;
+            double phase = -2*pi*i / nfft;
             if (st->inverse)
                 phase *= -1;
             kf_cexp(st->twiddles+i, phase );
@@ -369,3 +370,30 @@ void kiss_fft(kiss_fft_cfg cfg,const kiss_fft_cpx *fin,kiss_fft_cpx *fout)
     kiss_fft_stride(cfg,fin,fout,1);
 }
 
+
+/* not really necessary to call, but if someone is doing in-place ffts, they may want to free the 
+   buffers from CHECKBUF
+ */ 
+void kiss_fft_cleanup(void)
+{
+    free(scratchbuf);
+    scratchbuf = NULL;
+    nscratchbuf=0;
+    free(tmpbuf);
+    tmpbuf=NULL;
+    ntmpbuf=0;
+}
+
+int kiss_fft_next_fast_size(int n)
+{
+    while(1) {
+        int m=n;
+        while ( (m%2) == 0 ) m/=2;
+        while ( (m%3) == 0 ) m/=3;
+        while ( (m%5) == 0 ) m/=5;
+        if (m<=1)
+            break; /* n is completely factorable by twos, threes, and fives */
+        n++;
+    }
+    return n;
+}

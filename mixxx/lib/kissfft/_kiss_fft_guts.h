@@ -17,7 +17,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
    and defines
    typedef struct { kiss_fft_scalar r; kiss_fft_scalar i; }kiss_fft_cpx; */
 #include "kiss_fft.h"
-
+#include <limits.h>
 
 #define MAXFACTORS 32
 /* e.g. an fft of length 128 has 4 factors 
@@ -42,9 +42,27 @@ struct kiss_fft_state{
    C_ADDTO( res , a)    : res += a
  * */
 #ifdef FIXED_POINT
+#if (FIXED_POINT==32)
+# define FRACBITS 31
+# define SAMPPROD int64_t
+#define SAMP_MAX 2147483647
+#else
+# define FRACBITS 15
+# define SAMPPROD int32_t 
+#define SAMP_MAX 32767
+#endif
 
-#   define smul(a,b) ( (long)(a)*(b) )
-#   define sround( x )  (short)( ( (x) + (1<<14) ) >>15 )
+#define SAMP_MIN -SAMP_MAX
+
+#if defined(CHECK_OVERFLOW)
+#  define CHECK_OVERFLOW_OP(a,op,b)  \
+	if ( (SAMPPROD)(a) op (SAMPPROD)(b) > SAMP_MAX || (SAMPPROD)(a) op (SAMPPROD)(b) < SAMP_MIN ) { \
+		fprintf(stderr,"WARNING:overflow @ " __FILE__ "(%d): (%d " #op" %d) = %ld\n",__LINE__,(a),(b),(SAMPPROD)(a) op (SAMPPROD)(b) );  }
+#endif
+
+
+#   define smul(a,b) ( (SAMPPROD)(a)*(b) )
+#   define sround( x )  (kiss_fft_scalar)( ( (x) + (1<<(FRACBITS-1)) ) >> FRACBITS )
 
 #   define S_MUL(a,b) sround( smul(a,b) )
 
@@ -52,8 +70,12 @@ struct kiss_fft_state{
       do{ (m).r = sround( smul((a).r,(b).r) - smul((a).i,(b).i) ); \
           (m).i = sround( smul((a).r,(b).i) + smul((a).i,(b).r) ); }while(0)
 
+#   define DIVSCALAR(x,k) \
+	(x) = sround( smul(  x, SAMP_MAX/k ) )
+
 #   define C_FIXDIV(c,div) \
-    do{ (c).r /= div; (c).i /=div; }while(0)
+	do {    DIVSCALAR( (c).r , div);  \
+		DIVSCALAR( (c).i  , div); }while (0)
 
 #   define C_MULBYSCALAR( c, s ) \
     do{ (c).r =  sround( smul( (c).r , s ) ) ;\
@@ -71,26 +93,57 @@ struct kiss_fft_state{
         (c).i *= (s); }while(0)
 #endif
 
-#define  C_ADD( res, a,b)\
-    do {    (res).r=(a).r+(b).r;  (res).i=(a).i+(b).i;  }while(0)
-#define  C_SUB( res, a,b)\
-    do {    (res).r=(a).r-(b).r;  (res).i=(a).i-(b).i;  }while(0)
-#define C_ADDTO( res , a)\
-    do {    (res).r += (a).r;  (res).i += (a).i;  }while(0)
-#define C_SUBFROM( res , a)\
-    do {    (res).r -= (a).r;  (res).i -= (a).i;  }while(0)
-
-static 
-void kf_cexp(kiss_fft_cpx * x,double phase) /* returns e ** (j*phase)   */
-{
-#ifdef FIXED_POINT
-    x->r = (kiss_fft_scalar) (32767 * cos (phase));
-    x->i = (kiss_fft_scalar) (32767 * sin (phase));
-#else
-    x->r = cos (phase);
-    x->i = sin (phase);
+#ifndef CHECK_OVERFLOW_OP
+#  define CHECK_OVERFLOW_OP(a,op,b) /* noop */
 #endif
-}
+
+#define  C_ADD( res, a,b)\
+    do { \
+	    CHECK_OVERFLOW_OP((a).r,+,(b).r)\
+	    CHECK_OVERFLOW_OP((a).i,+,(b).i)\
+	    (res).r=(a).r+(b).r;  (res).i=(a).i+(b).i; \
+    }while(0)
+#define  C_SUB( res, a,b)\
+    do { \
+	    CHECK_OVERFLOW_OP((a).r,-,(b).r)\
+	    CHECK_OVERFLOW_OP((a).i,-,(b).i)\
+	    (res).r=(a).r-(b).r;  (res).i=(a).i-(b).i; \
+    }while(0)
+#define C_ADDTO( res , a)\
+    do { \
+	    CHECK_OVERFLOW_OP((res).r,+,(a).r)\
+	    CHECK_OVERFLOW_OP((res).i,+,(a).i)\
+	    (res).r += (a).r;  (res).i += (a).i;\
+    }while(0)
+
+#define C_SUBFROM( res , a)\
+    do {\
+	    CHECK_OVERFLOW_OP((res).r,-,(a).r)\
+	    CHECK_OVERFLOW_OP((res).i,-,(a).i)\
+	    (res).r -= (a).r;  (res).i -= (a).i; \
+    }while(0)
+
+
+#ifdef FIXED_POINT
+#  define KISS_FFT_COS(phase)  floor(.5+SAMP_MAX * cos (phase))
+#  define KISS_FFT_SIN(phase)  floor(.5+SAMP_MAX * sin (phase))
+#  define HALF_OF(x) ((x)>>1)
+#elif defined(USE_SIMD)
+#  define KISS_FFT_COS(phase) _mm_set1_ps( cos(phase) )
+#  define KISS_FFT_SIN(phase) _mm_set1_ps( sin(phase) )
+#  define HALF_OF(x) ((x)*_mm_set1_ps(.5))
+#else
+#  define KISS_FFT_COS(phase) (kiss_fft_scalar) cos(phase)
+#  define KISS_FFT_SIN(phase) (kiss_fft_scalar) sin(phase)
+#  define HALF_OF(x) ((x)*.5)
+#endif
+
+#define  kf_cexp(x,phase) \
+	do{ \
+		(x)->r = KISS_FFT_COS(phase);\
+		(x)->i = KISS_FFT_SIN(phase);\
+	}while(0)
+
 
 /* a debugging function */
 #define pcpx(c)\
