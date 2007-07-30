@@ -205,7 +205,7 @@ void DlgPreferences::createIcons()
     mixerButton->setTextAlignment(Qt::AlignLeft | Qt::AlignVCenter);
     mixerButton->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
 
-#ifdef __EXPERIMENTAL_RECORD__
+#ifdef __EXPERIMENTAL_RECORDING__
     QListWidgetItem *recordingButton = new QListWidgetItem(contentsWidget);
     recordingButton->setIcon(QIcon(":/images/preferences/recording.svg"));
     recordingButton->setText(tr("Recording"));
