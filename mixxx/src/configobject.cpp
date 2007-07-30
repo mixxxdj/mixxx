@@ -496,7 +496,7 @@ ConfigKey *ConfigObject<ValueType>::get(ValueType v)
     {
         if (((ValueType)*it->val) == ((ValueType)v))
         {
-            qDebug("match --%s-- with --%s--", it->val->value.upper().latin1(), v.value.upper().latin1());
+            // qDebug("match --%s-- with --%s--", it->val->value.upper().latin1(), v.value.upper().latin1());
             return it->key;
         }
         
