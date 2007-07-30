@@ -572,22 +572,22 @@ if platform == 'linux' or platform == 'osx':
 		unix_share_path = flags_prefix + "/share"
 		unix_bin_path   = flags_prefix + "/bin"
 
+		binary = env.Install(unix_bin_path, binary_files)
 		skins = env.Install(unix_share_path + "/mixxx/skins", skin_files)
 		midimappings = env.Install(unix_share_path + "/mixxx/midi", midimappings_files)
 		keyboardmappings = env.Install(unix_share_path + "/mixxx/keyboard", keyboardmappings_files)
 		docs = env.Install(unix_share_path + "/doc/mixxx", docs_files)
 		dotdesktop = env.Install(unix_share_path + "/applications", dotdesktop_files)
 		icon = env.Install(unix_share_path + "/pixmaps", icon_files)
-		binary = env.Install(unix_bin_path, binary_files)
 
         #Makes each of those Install builders get fired off when you run "scons install" :)
+		env.Alias('install', binary)
 		env.Alias('install', skins)
 		env.Alias('install', midimappings)
 		env.Alias('install', keyboardmappings)
 		env.Alias('install', docs)
 		env.Alias('install', dotdesktop)
 		env.Alias('install', icon)
-		env.Alias('install', binary)
 
 if platform == 'win32':
 	skins = env.Install("../../dist/skins", skin_files)
