@@ -17,6 +17,7 @@
 #include <qfile.h>
 #include <QLabel>
 #include <qcombobox.h>
+#include <qlineedit.h>
 //Added by qt3to4:
 #include <QDropEvent>
 #include "mixxxview.h"
@@ -49,23 +50,18 @@ Track::Track(QString location, MixxxView *pView, EngineBuffer *pBuffer1, EngineB
     m_pWaveSummary = pWaveSummary;
 	
 	musicDir = musiclocation;
-	tempCollection = new TrackCollection();
-	
-	//menu->insertItem("Play Queue", this, SLOT(slotSendToPlayqueue()));
-	//menu->insertItem("Player 1", this, SLOT(slotLoadPlayer1()));
-	//menu->insertItem("Player 2", this, SLOT(slotLoadPlayer2()));
-	//menu->insertItem("Remove",   this, SLOT(slotRemoveFromPlaylist()));
 	
     m_pTrackCollection = new TrackCollection();
     m_pTrackImporter = new TrackImporter(m_pView,m_pTrackCollection);
 
+	
     // Read the XML file
 	readXML(location);
 
 	// Ensure that two playlists are present
-	if(m_qPlaylists.count()<2)
+	if(m_qPlaylists.count() < 2)
 	{
-		for(int i = 0; i<2; ++i)
+		for(int i = m_qPlaylists.count(); i<2; ++i)
 		{
 			m_qPlaylists.append(new TrackPlaylist(m_pTrackCollection,(QString("Default %1").arg(i))));	
 		}
@@ -88,7 +84,7 @@ Track::Track(QString location, MixxxView *pView, EngineBuffer *pBuffer1, EngineB
 	connect(m_pView->m_pComboBox, SIGNAL(activated(int)), this, SLOT(slotActivatePlaylist(int)));
 
 	// Connect Search to table
-	
+	connect(m_pView->m_pLineEditSearch, SIGNAL(textChanged(const QString &)), this, SLOT(slotFindTracks()));
 	// Connect drop events to table
     connect(m_pView->m_pTrackTable, SIGNAL(dropped(QDropEvent *)), this, SLOT(slotDrop(QDropEvent *)));
 	
@@ -176,7 +172,8 @@ void Track::readXML(QString location)
 
         node = node.nextSibling();
     }
-	librarycheckexists(musicDir);
+	if(m_qPlaylists.count() >= 2)
+		m_qPlaylists.at(0)->addPath(musicDir);
 }
 
 void Track::writeXML(QString location)
@@ -397,10 +394,8 @@ void Track::slotTrackPopup(TrackInfoObject *pTrackInfoObject, int)
     m_pActivePopupTrack = pTrackInfoObject;
     int id;
 
-	if(m_pActivePlaylist->getName()== m_qPlaylists.at(0)->getName())
-	{
-		menu->insertItem("Play Queue", this, SLOT(slotSendToPlayqueue()));
-		
+	if(m_pActivePlaylist->getName()== m_qPlaylists.at(1)->getName())
+	{	
 		id = menu->insertItem("Player 1", this, SLOT(slotLoadPlayer1()));
 		if (ControlObject::getControl(ConfigKey("[Channel1]","play"))->get()==1.)
 			menu->setItemEnabled(id, false);
@@ -413,6 +408,8 @@ void Track::slotTrackPopup(TrackInfoObject *pTrackInfoObject, int)
 	}
 	else
 	{
+		menu->insertItem("Play Queue", this, SLOT(slotSendToPlayqueue()));
+
 		id = menu->insertItem("Player 1", this, SLOT(slotLoadPlayer1()));
 		if (ControlObject::getControl(ConfigKey("[Channel1]","play"))->get()==1.)
 			menu->setItemEnabled(id, false);
@@ -686,71 +683,22 @@ void Track::slotPrevTrackPlayer2(double v)
         emit(activePlaylist(m_pActivePlaylist));
 }*/
 
-void Track::librarycheckexists(QString qPath)
+void Track::slotFindTracks()
 {
-	// Is this a file or directory?
-	bool bexists = false;
-	TrackCollection *tempCollection = m_qPlaylists.at(0)->getCollection();
-    QDir dir(qPath);
-	
-    if (!dir.exists())
+	TrackCollection *tempCollection = new TrackCollection();
+	TrackCollection *sourceCollection = m_pActivePlaylist->getCollection();
+	QString searchText = m_pView->m_pLineEditSearch->text();
+
+	for(int i = 1; i < sourceCollection->getSize(); i++)
 	{
-		for(int i = 1;i < tempCollection->getSize();i++)
-		{
-			if(tempCollection->getTrack(i)->getLocation() == qPath)
-			{
-				bexists = true;
-				break;
-			}
-		}
-		if((bexists == false) && (m_qPlaylists.count()>=2))
-		{
-			m_qPlaylists.at(0)->addTrack(qPath);
-		}
-	 }
-     else
-     {
-          dir.setFilter(QDir::Dirs);
-
-          // Check if the dir is empty
-          if (dir.entryInfoList().isEmpty())
-              return;
-
-          QListIterator<QFileInfo> dir_it(dir.entryInfoList());
-          QFileInfo d;
-          while (dir_it.hasNext())
-          {
-			  d = dir_it.next();
-              if (!d.filePath().endsWith(".") && !d.filePath().endsWith(".."))
-                  librarycheckexists(d.filePath());
-          } 
-
-  		  // And then add all the files
-
-  		  dir.setFilter(QDir::Files);
-          dir.setNameFilter("*.wav *.Wav *.WAV *.mp3 *.Mp3 *.MP3 *.ogg *.Ogg *.OGG *.aiff *.Aiff *.AIFF *.aif *.Aif *.AIF");
-          QListIterator<QFileInfo> it(dir.entryInfoList());        // create list iterator
-          QFileInfo fi;// pointer for traversing
-
-          while (it.hasNext())
-          {
-			  fi = it.next();
-			  for(int i = 1; i < m_pTrackCollection->getSize(); ++i)
-			  {
-				  /*qDebug("Checking: %s",tempCollection->getTrack(i)->getFilename());*/
-				  if(tempCollection->getTrack(i)->getFilename() == fi.fileName())
-				  {
-					  bexists = true;
-					  break;
-				  }				  
-			  }
-			  /*if(bexists==true)
-				  qDebug("track exists!");*/
-			  if((bexists == false)&&(m_qPlaylists.count()>=2))
-			  {
-				  /*qDebug("all tracks searched, file does not exist, adding...");*/
-				  m_qPlaylists.at(0)->addTrack(fi.filePath());
-			  }
-          }
-     }
+		if(sourceCollection->getTrack(i)->getArtist().contains(searchText))
+			tempCollection->addTrack(sourceCollection->getTrack(i));
+		else if(sourceCollection->getTrack(i)->getFilename().contains(searchText))
+			tempCollection->addTrack(sourceCollection->getTrack(i));
+		else if(sourceCollection->getTrack(i)->getComment().contains(searchText))
+			tempCollection->addTrack(sourceCollection->getTrack(i));
+	}
+	TrackPlaylist *tempPlaylist = new TrackPlaylist(tempCollection,"Temp");
+	m_pActivePlaylist = tempPlaylist;
+	m_pActivePlaylist->activate(m_pView->m_pTrackTable);
 }
