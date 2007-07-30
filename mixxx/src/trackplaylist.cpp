@@ -196,50 +196,72 @@ void TrackPlaylist::slotDrop(QDropEvent *e)
 
 void TrackPlaylist::addPath(QString qPath)
 {
-    //qDebug("path %s",qPath.latin1());
-
-    // Is this a file or directory?
+	// Is this a file or directory?
+	bool bexists = false;
+	TrackCollection *tempCollection = getCollection();
     QDir dir(qPath);
+
     if (!dir.exists())
-        addTrack(qPath);
+	{
+		for(int i = 1; i < tempCollection->getSize(); i++)
+		{
+			if(tempCollection->getTrack(i)->getLocation() == qPath)
+			{
+				bexists = true;
+				break;
+			}
+		}
+		if(bexists == false)
+		{
+			addTrack(qPath);
+		}
+	 }
     else
-    {
-        dir.setFilter(QDir::Dirs);
+     {
+          dir.setFilter(QDir::Dirs);
 
-        // Check if the dir is empty
-        if (dir.entryInfoList().isEmpty())
-            return;
+          // Check if the dir is empty
+          if (dir.entryInfoList().isEmpty())
+              return;
+		  
+		  QListIterator<QFileInfo> dir_it(dir.entryInfoList());
+		  QFileInfo d;
+          while (dir_it.hasNext())
+          {
+			  d = dir_it.next();
+              if (!d.filePath().endsWith(".") && !d.filePath().endsWith(".."))
+                  addPath(d.filePath());
+          } 
 
-        QFileInfoList dir_list = dir.entryInfoList();
-        for (int i = 0; i < dir_list.size(); ++i) {
-          QFileInfo fi = dir_list.at(i);
-          if (!fi.filePath().endsWith(".") && !fi.filePath().endsWith(".."))
-              addPath(fi.filePath());
-        }
+        // And then add all the files
 
-        //
-		// And then add all the files
-		//
+  		  dir.setFilter(QDir::Files);
+          dir.setNameFilter("*.wav *.Wav *.WAV *.mp3 *.Mp3 *.MP3 *.ogg *.Ogg *.OGG *.aiff *.Aiff *.AIFF *.aif *.Aif *.AIF");
+          QListIterator<QFileInfo> it(dir.entryInfoList());        // create list iterator
+          QFileInfo  fi;// pointer for traversing
 
-		// Resize the table
-	    //m_pTable->setNumRows(m_pTable->numRows()+dir.count());
-        dir.setFilter(QDir::Files);
-        dir.setNameFilter("*.wav *.Wav *.WAV *.mp3 *.Mp3 *.MP3 *.ogg *.Ogg *.OGG *.aiff *.Aiff *.AIFF *.aif *.Aif *.AIF");
-        //        const QFileInfoList list = dir.entryInfoList();
-        //QFileInfoListIterator it(dir.entryInfoList());        // create list iterator
-        QListIterator<QFileInfo> it(dir.entryInfoList());        // create list iterator
-        QFileInfo fi;                          // pointer for traversing
-
-        while (it.hasNext())
-        {
-            fi = it.next(); // goto next list element
-            //qDebug("add %s",fi->filePath().latin1());
-            addTrack(fi.filePath()); 
-        }
-
-		// Set the size of table to the actual number of items
-		//m_pTable->setNumRows(m_qList.count());
-	}
+          while (it.hasNext())
+          {
+			  fi = it.next();
+			  for(int i = 1; i < getCollection()->getSize(); ++i)
+			  {
+				  /*qDebug("Checking: %s",tempCollection->getTrack(i)->getFilename());*/
+				  if(tempCollection->getTrack(i)->getFilename() == fi.fileName())
+				  {
+					  bexists = true;
+					  break;
+				  }				  
+			  }
+			  /*if(bexists==true)
+				  qDebug("track exists!");*/
+			  if(bexists == false)
+			  {
+				  /*qDebug("all tracks searched, file does not exist, adding...");*/
+				  addTrack(fi.filePath());
+			  }
+			  
+          }
+     }
 }
 
 void TrackPlaylist::slotRemoveTrack(TrackInfoObject *pTrack)

@@ -33,7 +33,6 @@ class WTrackTable;
 class WTreeList;
 class ControlObjectThreadMain;
 class WaveSummary;
-//class QLineEdit;
 class QSortFilterProxyModel;
 
 // This define sets the version of the tracklist. If any code is changed or
@@ -113,6 +112,7 @@ private slots:
     void slotLoadPlayer2();
     /** Remove active popup track from active playlist */
     void slotRemoveFromPlaylist();
+	void slotFindTracks();
 signals:
     /** A new track has been loaded in player 1 */
     void newTrackPlayer1(TrackInfoObject *);
@@ -154,13 +154,6 @@ private:
     ControlObjectThreadMain *m_pPlayPositionCh1, *m_pPlayPositionCh2;
     /** Pointer to waveform summary generator */
     WaveSummary *m_pWaveSummary;
-	/**used to add tracks from music Dir automatically*/
-	void librarycheckexists(QString qPath);
-	//Binary Search
-	TrackPlaylist Binary(TrackCollection tempCollection);
-	//used to find typed string
-	TrackCollection *tempCollection;
-	//QSortFilterProxyModel *proxyModel;
 };
 
 #endif
