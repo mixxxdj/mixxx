@@ -29,7 +29,7 @@ EngineSpectralFwd::EngineSpectralFwd(bool Power, bool Phase, WindowKaiser *windo
     phase_calc = Phase;
     
     // Create plans for use in FFT calculations.
-    kisscfg = kiss_fftr_alloc(l, 0, 0, 0);
+    kisscfg = kiss_fft_alloc(l, 0, 0, 0);
     tmp = new kiss_fft_cpx[l/2+1];
     spectrum = new kiss_fft_scalar[l];
     spectrumOld = new kiss_fft_scalar[l];
@@ -66,11 +66,19 @@ EngineSpectralFwd::~EngineSpectralFwd()
             phase_calc is true, a pointer to tmp is returned instead, giving
             the complex result of the fft.
    -------- ----------------------------------------------------------------- */
-void EngineSpectralFwd::process(const CSAMPLE *pIn, const CSAMPLE *, const int)
+void EngineSpectralFwd::process(const CSAMPLE *pIn, const CSAMPLE *, const int iBufferSize)
 {
+    kiss_fft_cpx complexInput[iBufferSize];
+    
+    for (int i = 0; i < iBufferSize; i++)
+    {
+        complexInput[i].r = pIn[i];
+        complexInput[i].i = 0.0f;
+    }
+    
     // Perform FFT
     kiss_fft_scalar *pInput = (kiss_fft_scalar *)pIn;
-    kiss_fftr(kisscfg, pInput, tmp);
+    kiss_fft(kisscfg, complexInput, tmp);
 
     // Shift pointers (spectrum/spectrumOld)
     kiss_fft_scalar *temp = spectrum;
