@@ -12,7 +12,7 @@
 
 #include "engineobject.h"
 #include <math.h>
-#include "kiss_fftr.h"
+#include "kiss_fft.h"
 
 class WindowKaiser;
 
@@ -62,7 +62,7 @@ public:
 
 protected:
     /** Kiss config */
-    kiss_fftr_cfg kisscfg;
+    kiss_fft_cfg kisscfg;
     /** Internal buffers */
     kiss_fft_scalar *spectrum, *spectrumOld;
     kiss_fft_cpx *tmp;
