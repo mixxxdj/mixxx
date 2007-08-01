@@ -20,6 +20,7 @@
 //Added by qt3to4:
 #include <Q3StrList>
 #include <QDropEvent>
+#include <QtDebug>
 #include "trackplaylist.h"
 #include "track.h"
 
@@ -103,7 +104,7 @@ void TrackPlaylist::addTrack(TrackInfoObject *pTrack)
 
 void TrackPlaylist::addTrack(QString qLocation)
 {
-    qDebug("Add track %s",qLocation);//.latin1());
+    qDebug() << "Add track" << qLocation;
     TrackInfoObject *pTrack = m_pTrackCollection->getTrack(qLocation);
 
     if (pTrack)
@@ -145,7 +146,7 @@ void TrackPlaylist::deactivate()
         while (it)
         {
             it->clearTrackTableRow();
-			qDebug("removing: %s",it->getFilename());
+            qDebug() << "removing:" << it->getFilename();
             it = m_qList.next();
         }
     }
@@ -245,7 +246,7 @@ void TrackPlaylist::addPath(QString qPath)
 			  fi = it.next();
 			  for(int i = 1; i < getCollection()->getSize(); ++i)
 			  {
-				  /*qDebug("Checking: %s",tempCollection->getTrack(i)->getFilename());*/
+				  /*qDebug() << "Checking:" << tempCollection->getTrack(i)->getFilename();*/
 				  if(tempCollection->getTrack(i)->getFilename() == fi.fileName())
 				  {
 					  bexists = true;
@@ -253,10 +254,10 @@ void TrackPlaylist::addPath(QString qPath)
 				  }				  
 			  }
 			  /*if(bexists==true)
-				  qDebug("track exists!");*/
+                          qDebug() << "track exists!";*/
 			  if(bexists == false)
 			  {
-				  /*qDebug("all tracks searched, file does not exist, adding...");*/
+				  /*qDebug() << "all tracks searched, file does not exist, adding...";*/
 				  addTrack(fi.filePath());
 			  }
 			  
