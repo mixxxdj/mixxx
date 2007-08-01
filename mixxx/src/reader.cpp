@@ -241,7 +241,7 @@ void Reader::run()
     while(!readerExiting)
 	{
         // Wait for playback if in buffer is filled.
-        readAheadMutex.tryLock();
+        readAheadMutex.lock();
         readAhead.wait(&readAheadMutex);
         
         m_qReaderMutex.lock();
@@ -271,6 +271,8 @@ void Reader::run()
         m_qReaderMutex.lock();
         m_iReaderAccess--;
         m_qReaderMutex.unlock();
+
+        readAheadMutex.unlock();
     }
     //qDebug("reader stopping");
 }
