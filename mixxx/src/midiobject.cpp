@@ -15,6 +15,7 @@
  ***************************************************************************/
 
 #include <qdir.h>
+#include <QtDebug>
 #include <qwidget.h>
 #include "midiobject.h"
 #include "configobject.h"
@@ -67,7 +68,7 @@ void MidiObject::add(ControlObject* c)
     no++;
     controlList.resize(no);
     controlList.insert(no-1,(const ControlObject *)c);
-//    qDebug("Registered midi control %s (%p).", c->print()->ascii(),c);
+    // qDebug() << "Registered midi control" << c->print();
 }
 
 void MidiObject::remove(ControlObject* c)
@@ -117,9 +118,9 @@ QStringList *MidiObject::getConfigList(QString path)
     return &configs;
 }
 
-QString *MidiObject::getOpenDevice()
+QString MidiObject::getOpenDevice()
 {
-    return &openDevice;
+    return openDevice;
 }
 
 /* -------- ------------------------------------------------------
@@ -157,7 +158,7 @@ void MidiObject::send(MidiCategory category, char channel, char control, char va
     ConfigKey *pConfigKey = m_pMidiConfig->get(ConfigValueMidi(type,control,channel));
 
     if (!pConfigKey) return; // No configuration was retrieved for this input event, eject.
-    // qDebug("MidiObject::send ok - %s %s ",pConfigKey->group.latin1(), pConfigKey->item.latin1());
+    // qDebug() << "MidiObject::send ok" << pConfigKey->group << pConfigKey->item;
     
     ControlObject *p = ControlObject::getControl(*pConfigKey);
     ConfigOption<ConfigValueMidi> *c = m_pMidiConfig->get(*pConfigKey);

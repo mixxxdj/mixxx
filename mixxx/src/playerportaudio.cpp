@@ -24,6 +24,7 @@
 #include "mathstuff.h"
 //Added by qt3to4:
 #include <Q3ValueList>
+#include <QtDebug>
 #include <QWaitCondition>
 
 bool PlayerPortAudio::m_painited = false;

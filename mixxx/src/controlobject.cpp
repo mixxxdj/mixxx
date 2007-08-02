@@ -16,6 +16,7 @@
  ***************************************************************************/
 
 #include <qwidget.h>
+#include <QtDebug>
 //Added by qt3to4:
 #include <Q3PtrList>
 #include "controlobject.h"
@@ -88,13 +89,12 @@ bool ControlObject::updateProxies(ControlObjectThread *pProxyNoUpdate)
 {
     ControlObjectThread *obj;
     bool bUpdateSuccess = true;
-//     qDebug("Key %s,%s",m_Key.group.latin1(), m_Key.item.latin1());
+    // qDebug() << "updateProxies: Group" << m_Key.group << "/ Item" << m_Key.item;
     for (obj = m_qProxyList.first(); obj; obj = m_qProxyList.next())
     {
         if (obj!=pProxyNoUpdate)
         {
-//             const char *thisname = this->getKey().item.latin1();
-// 	    qDebug("upd %s",thisname);
+            // qDebug() << "upd" << this->getKey().item;
             bUpdateSuccess = obj->setExtern(m_dValue);
         }
     }
@@ -103,7 +103,7 @@ bool ControlObject::updateProxies(ControlObjectThread *pProxyNoUpdate)
 
 ControlObject *ControlObject::getControl(ConfigKey key)
 {
-//    qDebug("trying to get group %s, item %s",key.group.latin1(), key.item.latin1());
+    // qDebug() << "trying to get group" << key.group << "item" << key.item;
     
     // Loop through the list of ConfigObjects to find one matching key
     ControlObject *c;

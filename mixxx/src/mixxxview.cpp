@@ -18,6 +18,7 @@
 #include "mixxxview.h"
 
 #include <q3table.h>
+#include <QtDebug>
 #include <qdir.h>
 #include <qpixmap.h>
 #include <qtooltip.h>
@@ -200,7 +201,7 @@ ImgSource* MixxxView::parseFilters(QDomNode filt) {
 			ret = new ImgHSVTweak(ret, hmin, hmax, smin, smax, vmin, vmax, hfact, hconst,
 				sfact, sconst, vfact, vconst);
 		} else {
-                    qDebug("Unkown image filter: %s\n", name);
+                    qDebug() << "Unkown image filter:" << name << "\n";
 		}
 		f = f.nextSibling();
 	}
@@ -213,21 +214,22 @@ QDomElement MixxxView::openSkin(QString qSkinPath) {
     // Path to image files
     WWidget::setPixmapPath(qSkinPath.append("/"));
 
-	// Read XML file
+    // Read XML file
     QDomDocument skin("skin");
     QFile file(WWidget::getPath("skin.xml"));
     if (!file.open(QIODevice::ReadOnly))
     {
-        qFatal("Could not open skin definition file: %s",file.name().latin1());
+        qCritical() << "Could not open skin definition file:" << file.name();
     }
     if (!skin.setContent(&file))
     {
-        qFatal("Error parsing skin definition file: %s",file.name().latin1());
+        qCritical() << "Error parsing skin definition file:" << file.name();
     }
 
-	file.close();
+    file.close();
     return skin.documentElement();
 }
+
 void MixxxView::setupColorScheme(QDomElement docElem, ConfigObject<ConfigValue> *pConfig) {
 	
 	QDomNode colsch = docElem.namedItem("Schemes");

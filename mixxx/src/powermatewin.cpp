@@ -20,6 +20,7 @@
 #include "controlobject.h"
 #include "mathstuff.h"
 #include <setupapi.h>
+#include <QtDebug>
 #include <initguid.h>
 #include <qstring.h>
 

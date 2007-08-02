@@ -8,6 +8,7 @@
  ***************************************************************************/
 
 #include <ladspalibrary.h>
+#include <QtDebug>
 
 LADSPALibrary::LADSPALibrary(QString file)
 {

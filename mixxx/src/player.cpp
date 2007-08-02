@@ -82,7 +82,7 @@ Player::~Player()
     // Open file handle
     AFfilehandle fh = afOpenFile("output.wav","w",outputSetup);
     if (!fh)
-        qFatal("Could not write wave output file");
+        qCritical("Could not write wave output file");
     recordObject *r;
     for (r = m_qRecordList.first(); r; r=m_qRecordList.next())
     {

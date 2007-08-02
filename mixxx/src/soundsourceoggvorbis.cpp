@@ -16,6 +16,7 @@
 
 #include "trackinfoobject.h"
 #include "soundsourceoggvorbis.h"
+#include <QtDebug>
 #ifdef __WIN__
 #include <io.h>
 #include <fcntl.h>
@@ -46,7 +47,7 @@ SoundSourceOggVorbis::SoundSourceOggVorbis(QString qFilename) : SoundSource(qFil
     vorbisfile =  fopen(qFilename.latin1(), "r");
     if (!vorbisfile)
     {
-        qDebug("oggvorbis: cannot open %s", qFilename.latin1());
+        qDebug() << "oggvorbis: cannot open" << qFilename;
         return;
     }
 

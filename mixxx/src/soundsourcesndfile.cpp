@@ -17,6 +17,7 @@
 #include "trackinfoobject.h"
 #include "soundsourcesndfile.h"
 #include <qstring.h>
+#include <QtDebug>
 //Added by qt3to4:
 #include <Q3ValueList>
 /*
@@ -28,7 +29,7 @@ SoundSourceSndFile::SoundSourceSndFile(QString qFilename) : SoundSource(qFilenam
     fh = sf_open( qFilename.latin1(), SFM_READ, info );
     if (fh == 0 || !sf_format_check(info))
     {
-        qDebug("libsndfile: Error opening file %s",qFilename.latin1());
+        qDebug() << "libsndfile: Error opening file" << qFilename;
         filelength = 0;
         return;
     }

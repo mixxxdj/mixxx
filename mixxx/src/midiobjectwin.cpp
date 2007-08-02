@@ -18,6 +18,7 @@
 #include "midiobjectwin.h"
 #include "midiledhandler.h"
 #include <atlconv.h>
+#include <QtDebug>
 
 MidiObjectWin::MidiObjectWin(QString device) : MidiObject(device)
 {

@@ -18,6 +18,7 @@
 #include "powermatelinux.h"
 #include "rotary.h"
 #include <linux/input.h>
+#include <QtDebug>
 #include <string.h>
 #include <errno.h>
 #include <stdio.h>

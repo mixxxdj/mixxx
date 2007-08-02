@@ -26,6 +26,7 @@ email                : haste@diku.dk
 #include "wavesegmentation.h"
 #include "readerextractbeat.h"
 #include <q3memarray.h>
+#include <QtDebug>
 #include <qapplication.h>
 
 #ifdef __EXPERIMENTAL_BPM__
@@ -279,7 +280,7 @@ void WaveSummary::run()
 #endif
 			delete pSoundSource;
 
-			qDebug("generate successful for %s",pTrackInfoObject->getFilename().latin1());
+			qDebug() << "WaveSummary generation successful for" << pTrackInfoObject->getFilename();
 
 		}
 	}

@@ -18,6 +18,7 @@
 #include "peaklist.h"
 
 #include <stdio.h>
+#include <QtDebug>
 //#include <fstream.h>
 #include <string>
 #include <iostream>

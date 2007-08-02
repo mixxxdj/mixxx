@@ -15,6 +15,7 @@
 #include "track.h"
 #include "log.h"
 #include <q3textstream.h>
+#include <QtDebug>
 #include "controlobject.h"
 #include "configobject.h"
 #include "controlobjectthreadmain.h"
@@ -22,12 +23,12 @@
 Log::Log(QString qFilename, Track *pTrack) : m_qFile(qFilename)
 {
     if (QFile::exists(qFilename))
-        qFatal("Log file exists: %s",qFilename.latin1());
+        qCritical() << "Log file exists:" << qFilename;
      
     if (!m_qFile.open(QIODevice::WriteOnly))
-        qFatal("Could not write to file: %s",qFilename.latin1());
+        qCritical() << "Could not write to file:" << qFilename;
     
-    qDebug("Logging to %s",qFilename.latin1());
+    qDebug() << "Logging to" << qFilename;
             
     m_qTime.start();
 

@@ -172,7 +172,7 @@ CSAMPLE *EngineBufferScaleSRC::scale(double playpos, int buf_size, float *pBase,
     // Perform conversion
     int error = src_process(converterActive, data);
     if (error!=0)
-        qFatal("EngineBufferScaleSRC: %s",src_strerror(error));
+        qCritical("EngineBufferScaleSRC: %s",src_strerror(error));
 
     consumed += data->input_frames_used;
 

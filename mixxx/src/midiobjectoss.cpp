@@ -17,6 +17,7 @@
 
 #include "midiobjectoss.h"
 #include <qdir.h>
+#include <QtDebug>
 #include <unistd.h>
 
 MidiObjectOSS::MidiObjectOSS(QString device) : MidiObject(device)
@@ -78,7 +79,7 @@ void MidiObjectOSS::devOpen(QString device)
     handle = open(device.latin1(),O_RDONLY|O_NONBLOCK);
     if (handle == -1)
     {
-        qDebug("MidiObjectOSS: Open of MIDI device %s failed.",device.ascii());
+        qDebug() << "MidiObjectOSS: Open of MIDI device" << device << "failed.";
         return;
     }
     openDevice = device;

@@ -19,6 +19,7 @@
 #include "controlobject.h"
 #ifdef QT3_SUPPORT
 #include <Q3ValueList>
+#include <QtDebug>
 #include <QKeyEvent>
 #include <QEvent>
 #endif
@@ -134,7 +135,7 @@ QKeySequence MixxxKeyboard::getKeySeq(QKeyEvent *e)
         s = "Alt+" + s;
     #endif
 
-//     qDebug("key %s",s.latin1());
+//     qDebug() << "key" << s;
 
     return QKeySequence(s);
 }

@@ -59,7 +59,7 @@ public:
     /** Returns a list of available devices */
     QStringList *getDeviceList();
     /** Returns the name of the current open device */
-    QString *getOpenDevice();
+    QString getOpenDevice();
     /** Returns a list of available configurations. Takes as input the directory path
       * containing the configuration files */
     QStringList *getConfigList(QString path);

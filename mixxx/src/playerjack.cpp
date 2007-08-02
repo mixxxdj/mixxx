@@ -18,6 +18,7 @@
 #include "playerjack.h"
 #include "controlobject.h"
 #include <qmessagebox.h>
+#include <QtDebug>
 #include <qapplication.h>
 #include "controlobject.h"
 
@@ -29,7 +30,7 @@ PlayerJack::PlayerJack(ConfigObject<ConfigValue> *config) : Player(config) //, m
 /*
     //mLibJack = new QLibrary("jack");
     if (!mLibJack.load())
-        qDebug("lib path %s",mLibJack.library().latin1());
+        qDebug() << "JACK lib path" << mLibJack.library();
 
     //if (mLibJack.isLoaded())
     {
@@ -139,7 +140,7 @@ bool PlayerJack::open()
     name = m_pConfig->getValueString(ConfigKey("[Soundcard]","DeviceMasterLeft"));
     if (name != "None")
     {
-        qDebug("connecting %s to master left",name.latin1());
+        qDebug() << "connecting" << name << "to master left";
         if (jack_connect(client, jack_port_name(output_master_left), name.latin1()))
             m_pConfig->set(ConfigKey("[Soundcard]","DeviceMasterLeft"),ConfigValue("None"));
         else
@@ -152,7 +153,7 @@ bool PlayerJack::open()
     name = m_pConfig->getValueString(ConfigKey("[Soundcard]","DeviceMasterRight"));
     if (name != "None")
     {
-        qDebug("connecting %s to master right",name.latin1());
+        qDebug() << "connecting" << name << "to master right";
         if (jack_connect(client, jack_port_name(output_master_right), name.latin1()))
             m_pConfig->set(ConfigKey("[Soundcard]","DeviceMasterRight"),ConfigValue("None"));
         else
@@ -165,7 +166,7 @@ bool PlayerJack::open()
     name = m_pConfig->getValueString(ConfigKey("[Soundcard]","DeviceHeadLeft"));
     if (name != "None")
     {
-        qDebug("connecting %s to head left",name.latin1());
+        qDebug() << "connecting" << name << "to head left";
         if (jack_connect(client, jack_port_name(output_head_left), name.latin1()))
             m_pConfig->set(ConfigKey("[Soundcard]","DeviceHeadLeft"),ConfigValue("None"));
         else
@@ -178,7 +179,7 @@ bool PlayerJack::open()
     name = m_pConfig->getValueString(ConfigKey("[Soundcard]","DeviceHeadRight"));
     if (name != "None")
     {
-        qDebug("connecting %s to head right",name.latin1());
+        qDebug() << "connecting" << name << "to head right";
         if (jack_connect(client, jack_port_name(output_head_right), name.latin1()))
             m_pConfig->set(ConfigKey("[Soundcard]","DeviceHeadRight"),ConfigValue("None"));
         else
@@ -342,7 +343,7 @@ void PlayerJack::callbackShutdown()
 
 void jackError(const char *desc)
 {
-    qDebug("Jack experienced an error: %s", desc);
+    qDebug() << "Jack experienced an error:" << desc;
 }
 
 int jackProcess(jack_nframes_t nframes, void *arg)

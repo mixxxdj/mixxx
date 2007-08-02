@@ -18,6 +18,7 @@
 #include "qstring.h"
 #include "qdom.h"
 #include <qfileinfo.h>
+#include <QtDebug>
 //Added by qt3to4:
 #include <Q3ValueList>
 #include <Q3MemArray>
@@ -148,7 +149,7 @@ bool TrackInfoObject::checkFileExists()
     else
     {
         m_bExists = false;
-        qDebug("The track %s was not found", getLocation().latin1());
+        qDebug() << "Playlist track not found:" << getLocation();
     }
     return m_bExists;
 }
