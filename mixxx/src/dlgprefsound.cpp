@@ -18,6 +18,7 @@
 #include "dlgprefsound.h"
 #include "playerproxy.h"
 #include <qcombobox.h> 
+#include <QtDebug>
 #include <qcheckbox.h>
 #include <qpushbutton.h>
 #include <qslider.h>

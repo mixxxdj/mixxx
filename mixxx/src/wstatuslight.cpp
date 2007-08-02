@@ -20,6 +20,7 @@
 #include "wpixmapstore.h"
 //Added by qt3to4:
 #include <QPaintEvent>
+#include <QtDebug>
 #include <QPixmap>
 
 WStatusLight::WStatusLight(QWidget *parent, const char *name) : WWidget(parent,name)
@@ -63,10 +64,10 @@ void WStatusLight::setPixmaps(const QString &backFilename, const QString &vuFile
 {
     m_pPixmapBack = WPixmapStore::getPixmap(backFilename);
     if (!m_pPixmapBack || m_pPixmapBack->size()==QSize(0,0))
-        qDebug("WStatusLight: Error loading back pixmap %s",backFilename.latin1());
+        qDebug() << "WStatusLight: Error loading back pixmap" << backFilename;
     m_pPixmapSL = WPixmapStore::getPixmap(vuFilename);
     if (!m_pPixmapSL || m_pPixmapSL->size()==QSize(0,0))
-        qDebug("WStatusLight: Error loading statuslight pixmap %s",vuFilename.latin1());
+        qDebug() << "WStatusLight: Error loading statuslight pixmap" << vuFilename;
 
     m_pPixmapBuffer = new QPixmap(m_pPixmapBack->size());
         

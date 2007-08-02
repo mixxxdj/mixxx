@@ -19,6 +19,7 @@
 #include "wpixmapstore.h"
 //Added by qt3to4:
 #include <QPaintEvent>
+#include <QtDebug>
 #include <QPixmap>
 
 WDisplay::WDisplay(QWidget *parent, const char *name) : WWidget(parent,name)
@@ -80,7 +81,7 @@ void WDisplay::setPixmap(int iPos, const QString &filename)
 {
     m_pPixmaps[iPos] = WPixmapStore::getPixmap(filename);
     if (!m_pPixmaps[iPos])
-        qDebug("WDisplay: Error loading pixmap %s",filename.latin1());
+        qDebug() << "WDisplay: Error loading pixmap" << filename;
     else
         setFixedSize(m_pPixmaps[iPos]->size());
 }

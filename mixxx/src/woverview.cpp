@@ -12,6 +12,7 @@
 #include "woverview.h"
 #include "wskincolor.h"
 #include <qpainter.h>
+#include <QtDebug>
 #include <qpixmap.h>
 //Added by qt3to4:
 #include <Q3MemArray>

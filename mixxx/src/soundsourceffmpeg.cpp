@@ -58,7 +58,7 @@ SoundSourceFFmpeg::SoundSourceFFmpeg(QString qFilename) : SoundSource(qFilename)
   fname = qFilename.toLatin1();
   FFmpegInit();
 
-  qDebug("New SoundSourceFFmpeg : %s", fname.constData());
+  qDebug() << "New SoundSourceFFmpeg :" << fname;
 
   /* initialize param to something so av_open_input_file works for raw */
   memset(&param, 0, sizeof(AVFormatParameters));
@@ -68,13 +68,13 @@ SoundSourceFFmpeg::SoundSourceFFmpeg(QString qFilename) : SoundSource(qFilename)
   iformat = av_find_input_format(fname.constData());
   // Open audio file
   if(av_open_input_file(&pFormatCtx, fname.constData(), iformat, 0, &param)!=0) {
-    qDebug("av_open_input_file: cannot open %s", fname.constData());
+    qDebug() << "av_open_input_file: cannot open" << fname;
     return;
   }
 
   // Retrieve stream information
   if(av_find_stream_info(pFormatCtx)<0) {
-    qDebug("av_find_stream_info: cannot open %s", fname.constData());
+    qDebug() << "av_find_stream_info: cannot open" << fname;
     return;
   }
   //debug only
@@ -89,7 +89,7 @@ SoundSourceFFmpeg::SoundSourceFFmpeg(QString qFilename) : SoundSource(qFilename)
       break;
     }
   if(audioStream==-1) {
-    qDebug("cannot find an audio stream: cannot open %s", fname.constData());
+    qDebug() << "cannot find an audio stream: cannot open" << fname;
     return;
   }
 
@@ -98,7 +98,7 @@ SoundSourceFFmpeg::SoundSourceFFmpeg(QString qFilename) : SoundSource(qFilename)
 
   // Find the decoder for the audio stream
   if(!(pCodec=avcodec_find_decoder(pCodecCtx->codec_id))) {
-    qDebug("cannot find a decoder for %s", fname.constData());
+    qDebug() << "cannot find a decoder for" << fname;
     return;
   }
 
@@ -106,7 +106,7 @@ SoundSourceFFmpeg::SoundSourceFFmpeg(QString qFilename) : SoundSource(qFilename)
   //avcodec_open is not thread safe
   lock();
   if(avcodec_open(pCodecCtx, pCodec)<0) {
-    qDebug("avcodec: cannot open %s", fname.constData());
+    qDebug() << "avcodec: cannot open" << fname;
     return;
   }
   unlock();
@@ -371,16 +371,16 @@ int SoundSourceFFmpeg::ParseHeader( TrackInfoObject *Track )
 
   fname = location.toAscii();
   FFmpegInit();
-  qDebug("ffmpeg: pqrsing file: %s", fname.constData());
+  qDebug() << "ffmpeg: pqrsing file:" << fname;
   if(av_open_input_file(&FmtCtx, fname.constData(), NULL, 0, NULL)!=0)
     {
-      qDebug("av_open_input_file: cannot open %s", fname.constData());
+      qDebug() << "av_open_input_file: cannot open" << fname;
       return ERR;
     }
   // Retrieve stream information
   if(av_find_stream_info(FmtCtx)<0)
     {
-      qDebug("av_find_stream_info: cannot open %s", fname.constData());
+      qDebug() << "av_find_stream_info: cannot open" << fname;
       return ERR;
     }
   for(i=0; i<FmtCtx->nb_streams; i++)
@@ -391,7 +391,7 @@ int SoundSourceFFmpeg::ParseHeader( TrackInfoObject *Track )
       }
   if(audioStream==-1)
     {
-      qDebug("cannot find an audio stream: cannot open %s", location.latin1());
+      qDebug() << "cannot find an audio stream: cannot open" << location;
       return ERR;
     }
   // Get a pointer to the codec context for the video stream

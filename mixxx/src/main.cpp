@@ -82,10 +82,15 @@ void MessageOutput( QtMsgType type, const char *msg )
             case QtWarningMsg:
                 fprintf( stderr, "Warning: %s\n", msg);
                 break;
+            case QtCriticalMsg:
+                fprintf( stderr, "Critical: %s\n", msg );
+                QMessageBox::warning(0, "Mixxx", msg);
+                exit(-1);
+                break;
             case QtFatalMsg:
                 fprintf( stderr, "Fatal: %s\n", msg );
                 QMessageBox::warning(0, "Mixxx", msg);
-                exit(-1);
+                abort();
     }
 }
 
@@ -104,10 +109,15 @@ void MessageToLogfile( QtMsgType type, const char *msg )
         QMessageBox::warning(0, "Mixxx", msg);
         a->unlock();
         break;
+    case QtCriticalMsg:
+        fprintf( stderr, "Critical: %s\n", msg );
+        QMessageBox::warning(0, "Mixxx", msg);
+        exit(-1);
+        break;
     case QtFatalMsg:
         fprintf( stderr, "Fatal: %s\n", msg );
         QMessageBox::warning(0, "Mixxx", msg);
-        exit(-1);
+        abort();
     }
     Logfile.flush();
 }

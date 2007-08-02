@@ -21,6 +21,7 @@
 #include "controlpushbutton.h"
 //Added by qt3to4:
 #include <QPixmap>
+#include <QtDebug>
 #include <QMouseEvent>
 #include <QPaintEvent>
 
@@ -133,7 +134,7 @@ void WPushButton::setPixmap(int iState, bool bPressed, const QString &filename)
     int pixIdx = (iState*2)+bPressed;
     m_pPixmaps[pixIdx] = WPixmapStore::getPixmap(filename);
     if (!m_pPixmaps[pixIdx])
-        qDebug("WPushButton: Error loading pixmap: %s",filename.latin1());
+        qDebug() << "WPushButton: Error loading pixmap:" << filename;
 
     // Set size of widget equal to pixmap size
     setFixedSize(m_pPixmaps[pixIdx]->size());
@@ -144,7 +145,7 @@ void WPushButton::setPixmapBackground(const QString &filename)
     // Load background pixmap
     m_pPixmapBack = WPixmapStore::getPixmap(filename);
     if (!m_pPixmapBack)
-        qDebug("WPushButton: Error loading background pixmap: %s",filename.latin1());
+        qDebug() << "WPushButton: Error loading background pixmap:" << filename;
 
     // Construct corresponding double buffer
     m_pPixmapBuffer = new QPixmap(m_pPixmapBack->size());

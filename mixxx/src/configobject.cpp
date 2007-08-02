@@ -17,6 +17,7 @@
 
 #include "configobject.h"
 #include <qdir.h>
+#include <QtDebug>
 #include "wwidget.h"
 
 #ifdef __WIN__
@@ -73,10 +74,10 @@ ConfigValueMidi::ConfigValueMidi(QDomNode node) {
     // BJW: Jog/scratch sensitivity adjustment
     sensitivity = WWidget::selectNodeInt(node, "sensitivity");
     if (sensitivity) {
-      qDebug("Setting %s sensitivity to %d", key.latin1(), sensitivity);
+      qDebug() << "Setting" << key << "sensitivity to" << sensitivity;
     } else if (key == "wheel" || key == "scratch" || key == "jog") {
       sensitivity = 50;
-      qDebug("Defaulting %s sensitivity to %d", key.latin1(), sensitivity);
+      qDebug() << "Defaulting" << key << "sensitivity to" << sensitivity;
     }
 
     // BJW: MIDI Value Translations
@@ -115,7 +116,7 @@ ConfigValueMidi::ConfigValueMidi(QDomNode node) {
                     }
                 }
             } else {
-                qWarning("MIDI Map: Unknown translation element: %s", translation.nodeName().latin1());
+                qWarning() << "MIDI Map: Unknown translation element:" << translation.nodeName();
             }
             translation = translation.nextSibling();
         }
@@ -130,10 +131,9 @@ ConfigValueMidi::ConfigValueMidi(QDomNode node) {
     // BJW: Try to spot missing XML blocks. I don't know how to make these warnings
     // more useful by adding the line number of the input file.
     if (key.isEmpty() || type.isEmpty()) 
-      qWarning("Missing <key> or <type> in MIDI map node <%s>", node.nodeName().latin1());
+      qWarning() << "Missing <key> or <type> in MIDI map node:" << node.nodeName();
     if (! midino && type != "pitch")
-      qWarning("No <midino> defined in MIDI map node <%s>", node.nodeName().latin1());
-    
+      qWarning() << "No <midino> defined in MIDI map node:" << node.nodeName();
     
     if (type == "key" || type == "note") {
         miditype = MIDI_KEY;
@@ -152,11 +152,11 @@ ConfigValueMidi::ConfigValueMidi(QDomNode node) {
     if (! opts.isNull()) {
         QDomNode opt = opts.firstChild();
         if (!opt.nextSibling().isNull()) {
-            qFatal("Multiple option elements in midi mapping not supported yet");
+            qCritical("Multiple option elements in midi mapping not supported yet");
 	}
 
 	QString optname = opt.nodeName().lower();
-	qDebug("Found option %s", optname.latin1());
+	qDebug() << "Found option" << optname;
 	if (optname == "invert")
             midioption = MIDI_OPT_INVERT;
         else if (optname == "rot64inv")
@@ -176,7 +176,7 @@ ConfigValueMidi::ConfigValueMidi(QDomNode node) {
         else if (optname == "spread64")
             midioption = MIDI_OPT_SPREAD64;
         else {
-	    qWarning("Unknown option %s", optname.latin1());
+	    qWarning() << "Unknown option:" << optname;
 	    midioption = MIDI_OPT_NORMAL;
 	}
 
@@ -185,7 +185,7 @@ ConfigValueMidi::ConfigValueMidi(QDomNode node) {
         midioption = MIDI_OPT_NORMAL;
     }
 
-    // qDebug("MIDI Config: %s = %s (option %d)", key.latin1(), value.latin1(), midioption);
+    // qDebug() << "MIDI Config:" << key << "=" << value << "option" << midioption;
 
 }
 
@@ -216,7 +216,7 @@ ConfigValueMidi::ConfigValueMidi(QString _value)
     // If empty string, default midino should be below 0.
     if (_value.length()==0)
         midino = -1;
-    qDebug("miditype: %s, midino: %i, midichannel: %i",type.latin1(),midino,midichannel);
+    qDebug() << "miditype:" << type << "midino" << midino << "midichannel" << midichannel;
 
     if (option.contains("Invert", false))
         midioption = MIDI_OPT_INVERT;
@@ -290,7 +290,7 @@ void ConfigValueMidi::valCopy(const ConfigValueMidi v)
 	else if (midioption == MIDI_OPT_SPREAD64) 
 	    value.append(" Spread64");
 
-        qDebug("Config value: %s", value.ascii());
+        qDebug() << "Config value:" << value;
         //qDebug("--1, midino: %i, midimask: %i, midichannel: %i",midino,midimask,midichannel);
 }
 
@@ -409,7 +409,7 @@ ConfigValueKbd::ConfigValueKbd(QKeySequence key)
 {
         m_qKey = key;
         QTextOStream(&value) << (const QString)m_qKey;
-//          qDebug("value %s",value.latin1());
+//          qDebug() << "value" << value;
 }
 
 void ConfigValueKbd::valCopy(const ConfigValueKbd v)
@@ -420,7 +420,7 @@ void ConfigValueKbd::valCopy(const ConfigValueKbd v)
 
 bool operator==(const ConfigValue & s1, const ConfigValue & s2)
 {
-    return (s1.value.upper() == s2.value.upper());
+    return (s1.value.toUpper() == s2.value.toUpper());
 }
 
 bool operator==(const ConfigValueMidi & s1, const ConfigValueMidi & s2)
@@ -431,7 +431,7 @@ bool operator==(const ConfigValueMidi & s1, const ConfigValueMidi & s2)
 
 bool operator==(const ConfigValueKbd & s1, const ConfigValueKbd & s2)
 {
-    return (s1.value.upper() == s2.value.upper());
+    return (s1.value.toUpper() == s2.value.toUpper());
 }
 
 template <class ValueType> ConfigObject<ValueType>::ConfigObject(QString file)
@@ -451,7 +451,7 @@ ConfigOption<ValueType> *ConfigObject<ValueType>::set(ConfigKey k, ValueType v)
     for (it = list.first(); it; it = list.next())
         if (it->key->group == k.group & it->key->item == k.item)
         {
-            //qDebug("set found. %s,%s",k.group.latin1(),k.item.latin1());
+            //qDebug() << "set found." << group << "," << item;
             //cout << "1: " << v.value << "\n";
             //qDebug("configobject %p",it->val);
             it->val->valCopy(v); // Should be done smarter using object copying
@@ -474,7 +474,7 @@ ConfigOption<ValueType> *ConfigObject<ValueType>::get(ConfigKey k)
     ConfigOption<ValueType> *it;
     for (it = list.first(); it; it = list.next())
     {
-        //qDebug("%s %s %s %s", it->key->group.ascii(), k->group.ascii(), it->key->item.ascii(), k->item.ascii());
+        //qDebug() << it->key->group << k->group << it->key->item << k->item;
         if (it->key->group == k.group & it->key->item == k.item)
         {
             //cout << it->key->group << ":" << it->key->item << ", val: " << it->val->value << "\n";
@@ -496,15 +496,15 @@ ConfigKey *ConfigObject<ValueType>::get(ValueType v)
     {
         if (((ValueType)*it->val) == ((ValueType)v))
         {
-            // qDebug("match --%s-- with --%s--", it->val->value.upper().latin1(), v.value.upper().latin1());
+            // qDebug() << "match" << it->val->value.toUpper() << "with" << v.value.toUpper();
             return it->key;
         }
         
         if (it == list.getLast()) {
-          qDebug("last match attempted --%s-- with --%s--", it->val->value.upper().latin1(), v.value.upper().latin1());
+          // qDebug() << "last match attempted" << it->val->value.toUpper() << "with" << v.value.toUpper();
         }
     }    
-    qDebug("Warning: No match for ConfigObject %s", v.value.latin1());
+    qWarning() << "No match for ConfigObject:" << v.value;
     return 0;
 }
 
@@ -520,7 +520,7 @@ template <class ValueType> bool ConfigObject<ValueType>::Parse()
     QFile configfile(filename);
     if (filename.length()<1 || !configfile.open(QIODevice::ReadOnly))
     {
-        qDebug("Could not read %s",filename.latin1());
+        qDebug() << "Could not read" << filename;
         return false;
     }
     else
@@ -538,7 +538,7 @@ template <class ValueType> bool ConfigObject<ValueType>::Parse()
                 {
                     group++;
                     groupStr = line;
-                    //qDebug("Group : %s", groupStr.ascii());
+                    //qDebug() << "Group :" << groupStr;
                 }
                 else if (group>0)
                 {
@@ -546,7 +546,7 @@ template <class ValueType> bool ConfigObject<ValueType>::Parse()
                     QTextIStream(&line) >> key;
                     QString val = line.right(line.length() - key.length()); // finds the value string
                     val = val.stripWhiteSpace();
-                    //qDebug("control: %s, value: %s",key.ascii(), val.ascii());
+                    //qDebug() << "control:" << key << "value:" << val;
                     ConfigKey k(groupStr, key);
                     ValueType m(val);
                     set(k, m);
@@ -586,7 +586,7 @@ template <class ValueType> void ConfigObject<ValueType>::Save()
     if (!file.open(QIODevice::WriteOnly | QIODevice::Text))
 #endif
     {
-        qDebug("Could not write file %s, don't worry.",filename.ascii());
+        qDebug() << "Could not write file" << filename << ", don't worry.";
         return;
     }
     else
@@ -597,7 +597,7 @@ template <class ValueType> void ConfigObject<ValueType>::Save()
         QString grp = "";
         for (it = list.first(); it; it = list.next())
         {
-//            qDebug("group: %s, item %s, val %s",it->key->group.latin1(), it->key->item.latin1(),it->val->value.latin1());
+//            qDebug() << "group:" << it->key->group << "item" << it->key->item << "val" << it->val->value;
             if (it->key->group != grp)
             {
                 grp = it->key->group;

@@ -16,6 +16,7 @@
  ***************************************************************************/
 
 #include <qpushbutton.h>
+#include <QtDebug>
 #include <qcombobox.h>
 #include <qmessagebox.h>
 #include <qlayout.h>
@@ -679,7 +680,7 @@ QString MixxxApp::getSkinPath() {
         }
     }
     else
-        qFatal("Skin directory does not exist: %s",qSkinPath.latin1());
+        qCritical() << "Skin directory does not exist:" << qSkinPath;
 
-	return qSkinPath;
+    return qSkinPath;
 }

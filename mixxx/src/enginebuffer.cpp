@@ -19,6 +19,7 @@
 #include "enginebuffer.h"
 
 #include <qevent.h>
+#include <QtDebug>
 #include "configobject.h"
 #include "controlpotmeter.h"
 #include "controlttrotary.h"
@@ -344,7 +345,7 @@ void EngineBuffer::setOtherEngineBuffer(EngineBuffer *pOtherEngineBuffer)
     if (!m_pOtherEngineBuffer)
         m_pOtherEngineBuffer = pOtherEngineBuffer;
     else
-        qFatal("EngineBuffer: Other engine buffer already set!");
+        qCritical("EngineBuffer: Other engine buffer already set!");
 }
 
 void EngineBuffer::setNewPlaypos(double newpos)

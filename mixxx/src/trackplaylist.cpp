@@ -15,6 +15,7 @@
 #include "xmlparse.h"
 #include "wtracktable.h"
 #include <q3dragobject.h>
+#include <QtDebug>
 #include <q3cstring.h>
 #include <qdir.h>
 //Added by qt3to4:
@@ -41,7 +42,7 @@ TrackPlaylist::TrackPlaylist(TrackCollection *pTrackCollection, QDomNode node)
 
     // Set name of list
     m_qName = XmlParse::selectNodeQString(node, "Name");
-    qDebug("playlist name %s",m_qName.latin1());
+    qDebug() << "playlist name" << m_qName;
 
     // For each track...
     QDomNode idnode = XmlParse::selectNode(node, "List").firstChild();

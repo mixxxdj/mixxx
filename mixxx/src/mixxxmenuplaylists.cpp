@@ -11,6 +11,7 @@
 //
 #include "mixxxmenuplaylists.h"
 #include <q3popupmenu.h>
+#include <QtDebug>
 #include "track.h"
 #include "trackplaylistlist.h"
 
@@ -76,7 +77,7 @@ void MixxxMenuPlaylists::slotSetActive(TrackPlaylist *pTrackPlaylist)
     m_pMenu->setItemChecked(m_pMenu->idAt(0), false);
     m_pMenu->setItemChecked(m_pMenu->idAt(1), false);
     
-    //qDebug("set active %s",pTrackPlaylist->getListName().latin1());
+    //qDebug() << "set active" << pTrackPlaylist->getListName();
        
     menuItem_t *it = m_qMenuList.first();
     while (it)

@@ -15,6 +15,7 @@
 #include "trackcollection.h"
 #include "xmlparse.h"
 #include <qfile.h>
+#include <QtDebug>
 #include <QLabel>
 #include <qcombobox.h>
 #include <qlineedit.h>
@@ -136,7 +137,7 @@ void Track::readXML(QString location)
     // Check if we can open the file
     if (!file.exists())
     {
-        //qDebug("Track: %s does not exist.",location.latin1());
+        //qDebug() << "Track:" << location << "does not exist.";
         file.close();
         return;
     }
@@ -144,7 +145,7 @@ void Track::readXML(QString location)
     // Check if there is a parsing problem
     if (!domXML.setContent(&file))
     {
-        //qDebug("Track: Parse error in %s",location.latin1());
+        //qDebug() << "Track: Parse error in" << location;
         file.close();
         return;
     }
@@ -277,7 +278,7 @@ void Track::slotDrop(QDropEvent *e)
 
     e->accept();
 
-    qDebug("name %s",name.latin1());
+    qDebug() << "name" << name;
 
     slotActivatePlaylist(name);
 }

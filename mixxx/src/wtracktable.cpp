@@ -22,6 +22,7 @@
 #include "trackinfoobject.h"
 
 #include <qfont.h>
+#include <QtDebug>
 #include <qcolor.h>
 #include <q3dragobject.h>
 #include <qpoint.h>

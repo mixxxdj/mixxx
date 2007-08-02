@@ -17,6 +17,7 @@
 
 #include "wslidercomposed.h"
 #include <qpixmap.h>
+#include <QtDebug>
 #include <qpainter.h>
 //Added by qt3to4:
 #include <QMouseEvent>
@@ -71,10 +72,10 @@ void WSliderComposed::setPixmaps(bool bHorizontal, const QString &filenameSlider
     unsetPixmaps();
     m_pSlider = WPixmapStore::getPixmap(filenameSlider);
     if (!m_pSlider)
-        qDebug("WSliderComposed: Error loading slider pixmap: %s",filenameSlider.latin1());
+        qDebug() << "WSliderComposed: Error loading slider pixmap:" << filenameSlider;
     m_pHandle = WPixmapStore::getPixmap(filenameHandle);
     if (!m_pHandle)
-        qDebug("WSliderComposed: Error loading handle pixmap: %s",filenameHandle.latin1());
+        qDebug() << "WSliderComposed: Error loading handle pixmap:" << filenameHandle;
     m_pDoubleBuffer = new QPixmap(m_pSlider->size());
     
     if (m_bHorizontal)

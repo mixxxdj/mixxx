@@ -43,15 +43,15 @@ PlayerALSA::PlayerALSA()
     handle = 0;
     err = snd_pcm_hw_params_malloc(&hwparams);
     if (err < 0)
-        qFatal("Couldn't allocate memory for hw params: %s\n", snd_strerror(err));
+        qCritical("Couldn't allocate memory for hw params: %s\n", snd_strerror(err));
     
     err = snd_pcm_sw_params_malloc(&swparams);
     if (err < 0)
-        qFatal("Couldn't allocate memory for sw params: %s\n", snd_strerror(err));
+        qCritical("Couldn't allocate memory for sw params: %s\n", snd_strerror(err));
     
     err = snd_pcm_sw_params_malloc(&swparams);
     if (err < 0)
-        qFatal("Couldn't allocate memory for sw params: %s\n", snd_strerror(err));
+        qCritical("Couldn't allocate memory for sw params: %s\n", snd_strerror(err));
 
     isopen = false;
     masterleft = masterright = -1;
@@ -100,7 +100,7 @@ bool PlayerALSA::open()
     if (name != "None")
     {
         if (rx.search(name) < 0)
-            qWarning("can't find device name or channel number in (%s)", name.latin1());
+            qWarning() << "can't find device name or channel number in" << name;
 
         devname = rx.cap(1);
     } 
@@ -117,7 +117,7 @@ bool PlayerALSA::open()
     if (!devname)
         return false;
         
-    qDebug("Alsa opening pcm_open: %s", devname.ascii());
+    qDebug() << "Alsa opening pcm_open:" << devname;
 
     if ((err = snd_pcm_open(&handle, devname.ascii(),
 		    SND_PCM_STREAM_PLAYBACK, 0)) < 0) {
@@ -155,12 +155,12 @@ bool PlayerALSA::open()
 
     // master left
     name = m_pConfig->getValueString(ConfigKey("[Soundcard]", "DeviceMasterLeft"));
-    qDebug("Alsa opening... %s", name.latin1());
+    qDebug() << "Alsa opening..." << name;
     if (name != "None")
     {
         if (rx.search(name) < 0)
         {
-            qWarning("can't find device name or channel number in (%s)", name.latin1());
+            qWarning() << "can't find device name or channel number in" << name;
         }
 //      devname = rx.cap(1);
         temp = rx.cap(2).toInt();
@@ -177,7 +177,7 @@ bool PlayerALSA::open()
     {
         if (rx.search(name) < 0)
         {
-            qWarning("can't find device name or channel number in (%s)", name.latin1());
+            qWarning() << "can't find device name or channel number in" << name;
         }
         devtmp = rx.cap(1);
         if (devname != devtmp)
@@ -198,7 +198,7 @@ bool PlayerALSA::open()
     {
         if (rx.search(name) < 0)
         {
-            qWarning("can't find device name or channel number in (%s)", name.latin1());
+            qWarning() << "can't find device name or channel number in" << name;
         }
         devtmp = rx.cap(1);
         if (devname != devtmp)
@@ -219,7 +219,7 @@ bool PlayerALSA::open()
     {
         if (rx.search(name) < 0)
         {
-            qWarning("can't find device name or channel number in (%s)", name.latin1());
+            qWarning() << "can't find device name or channel number in" << name;
         }
         devtmp = rx.cap(1);
         if (devname != devtmp)
@@ -329,7 +329,7 @@ void PlayerALSA::run()
                 if (err < 0) 
                 {
                     if (xrun_recovery(err) < 0)
-                        qFatal("Write error: %s\n", snd_strerror(err));
+                        qCritical("Write error: %s\n", snd_strerror(err));
                     
                     break;
                 }
@@ -373,7 +373,7 @@ void PlayerALSA::run()
                 if (err < 0) 
                 {
                     if (xrun_recovery(err) < 0) 
-                        qFatal("Write error: %s\n", snd_strerror(err));
+                        qCritical("Write error: %s\n", snd_strerror(err));
                     break;
                 }
                 optr += err*m_iChannels;

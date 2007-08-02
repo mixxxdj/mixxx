@@ -16,6 +16,7 @@
 
 #include "trackinfoobject.h"
 #include "soundsourcemp3.h"
+#include <QtDebug>
 extern "C" {
 #include <dxhead.h>
 }
@@ -24,14 +25,14 @@ SoundSourceMp3::SoundSourceMp3(QString qFilename) : SoundSource(qFilename)
 {
     QFile file( qFilename );
     if (!file.open(QIODevice::ReadOnly))
-        qFatal("MAD: Open of %s failed.", qstrdup(qFilename.local8Bit()));
+        qCritical() << "MAD: Open failed:" << qFilename;
 
     // Read the whole file into inputbuf:
     inputbuf_len = file.size();
     inputbuf = new char[inputbuf_len];
     unsigned int tmp = file.readBlock(inputbuf, inputbuf_len);
-    if (tmp != inputbuf_len)
-        qFatal("MAD: ERR reading mp3-file: %s\nRead only %d bytes, but wanted %d bytes.",qstrdup(qFilename.local8Bit()) ,tmp,inputbuf_len);
+    if (tmp != inputbuf_len) 
+        qCritical() << "MAD: ERR reading mp3-file: " << qFilename << "\nRead only " << tmp << "bytes, but wanted" << inputbuf_len << "bytes";
 
     // Transfer it to the mad stream-buffer:
     mad_stream_init(&Stream);
@@ -454,7 +455,7 @@ int SoundSourceMp3::ParseHeader(TrackInfoObject *Track)
     mad_timer_t dur = mad_timer_zero;
     QFile file(location);
     if (!file.open(QIODevice::ReadOnly)) {
-        qDebug("MAD: Open of %s failed.", qstrdup(location.local8Bit()));
+        qDebug() << "MAD: Open failed:" << location;
         return ERR;
     }
     
@@ -466,7 +467,7 @@ int SoundSourceMp3::ParseHeader(TrackInfoObject *Track)
     char *inputbuf = new char[READLENGTH];
     unsigned int tmp = file.readBlock(inputbuf, READLENGTH);
     if (tmp != READLENGTH) {
-        qDebug("MAD: ERR reading mp3-file: %s\nRead only %d bytes, but wanted %d bytes.",qstrdup(location.local8Bit()) ,tmp,READLENGTH);
+        qWarning() << "MAD: ERR reading mp3-file:" << location << "\nRead only" << tmp << "bytes, but wanted" << READLENGTH << "bytes";
         return ERR;
     }
     mad_stream Stream;

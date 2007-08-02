@@ -13,6 +13,7 @@
 #include "parser.h"
 //Added by qt3to4:
 #include <Q3PtrList>
+#include <QtDebug>
 
 /**
 @author Ingo Kossyk (kossyki@cs.tu-berlin.de)

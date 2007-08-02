@@ -29,6 +29,7 @@
 
 #include "herculeslinux.h"
 #include <string.h>
+#include <QtDebug>
 #include <errno.h>
 #include <stdio.h>
 #include <unistd.h>
@@ -848,16 +849,16 @@ double HerculesLinux::PitchChange(const QString ControlSide, const int ev_value,
 
 	if ((m_iPitchPrevious + m_iPitchOffset) == 255  && m_iPitchPrevious < ev_value) {
 		m_iPitchOffset = (255 - ev_value);
-//		qDebug("%s MAX + ROLLOVER",ControlSide.data());
+//		qDebug() << "" << ControlSide << "MAX + ROLLOVER";
 	} else if (m_iPitchPrevious == 255 && ev_value == 0) {
 		m_iPitchOffset = (255 + m_iPitchOffset);
-//		qDebug("%s MAX",ControlSide.data());
+//		qDebug() << "" << ControlSide << "MAX";
 	} else if (ev_value == 255 && m_iPitchPrevious == 0 && m_iPitchOffset >= 0) {
 		m_iPitchOffset = (m_iPitchOffset - 255);
-//		qDebug("%s ROLL DOWN",ControlSide.data());
+//		qDebug() << "" << ControlSide << "ROLL DOWN";
 	} else if (ev_value < m_iPitchPrevious && m_iPitchPrevious + m_iPitchOffset == 0) {
 		m_iPitchOffset = (- ev_value);
-//		qDebug("%s MIN ROLLDOWN #1",ControlSide.data());
+//		qDebug() << "" << ControlSide << "MIN ROLLDOWN #1";
 	} 
 
 	m_iPitchPrevious = ev_value;

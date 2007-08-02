@@ -21,6 +21,7 @@
 #include "mouse.h"
 #include "rotary.h"
 #include <qcombobox.h>
+#include <QtDebug>
 #include <qlabel.h>
 #include <qcheckbox.h>
 #include <qpushbutton.h>
@@ -136,8 +137,8 @@ DlgPrefMidi::DlgPrefMidi(QWidget *parent, ConfigObject<ConfigValue> *pConfig) : 
 #else
            mappingfile = midiConfigList->at(0);
 #endif
-           qWarning("Requested MIDI mapping file %s not found; defaulting to %s", notfound.latin1(), mappingfile.latin1());
-           m_pConfig->set(ConfigKey("[Midi]","File"), ConfigValue(mappingfile.latin1()));
+           qWarning() << "Requested MIDI mapping file" << notfound << "not found; defaulting to" << mappingfile;
+           m_pConfig->set(ConfigKey("[Midi]","File"), ConfigValue(mappingfile));
 
            // setupMappings(m_pConfig->getValueString(ConfigKey("[Config]","Path")).append("midi/").append(m_pConfig->getValueString(ConfigKey("[Midi]","File"))));
            // m_pMidi->setMidiConfig(m_pMidiConfig);
@@ -145,7 +146,7 @@ DlgPrefMidi::DlgPrefMidi(QWidget *parent, ConfigObject<ConfigValue> *pConfig) : 
     }
     
     // Store default midi device
-    m_pConfig->set(ConfigKey("[Midi]","Device"), ConfigValue(m_pMidi->getOpenDevice()->latin1()));
+    m_pConfig->set(ConfigKey("[Midi]","Device"), ConfigValue(m_pMidi->getOpenDevice()));
         
     // Try initializing PowerMates
     m_pPowerMate1 = 0;
@@ -270,7 +271,7 @@ void DlgPrefMidi::slotUpdate()
     for (it = midiDeviceList->begin(); it != midiDeviceList->end(); ++it )
     {
         ComboBoxMididevice->insertItem(*it);
-        if ((*it) == (*m_pMidi->getOpenDevice()))
+        if ((*it) == m_pMidi->getOpenDevice())
             ComboBoxMididevice->setCurrentItem(j);
         j++;
     }
@@ -606,7 +607,7 @@ void MidiWorkaround::run() {
 }
 
 void DlgPrefMidi::setupMappings(QString path) {
-	qDebug("setupMappings(%s)", path.latin1());
+	qDebug() << "setupMappings(" << path << ")";
 	QDomElement doc = WWidget::openXMLFile(path, "controller");
 	m_pMidiConfig = new ConfigObject<ConfigValueMidi>(doc.namedItem("controls"));
 	MidiLedHandler::destroyHandlers();

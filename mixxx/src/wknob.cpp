@@ -19,6 +19,7 @@
 #include "wpixmapstore.h"
 //Added by qt3to4:
 #include <QPixmap>
+#include <QtDebug>
 #include <QMouseEvent>
 #include <QPaintEvent>
 
@@ -103,7 +104,7 @@ void WKnob::setPixmap(int iPos, const QString &filename)
 {
     m_pPixmaps[iPos] = WPixmapStore::getPixmap(filename);
     if (!m_pPixmaps[iPos])
-        qDebug("WKnob: Error loading pixmap %s",filename.latin1());
+        qDebug() << "WKnob: Error loading pixmap" << filename;
     setFixedSize(m_pPixmaps[iPos]->size());
 }
 
@@ -112,7 +113,7 @@ void WKnob::setPixmapBackground(const QString &filename)
     // Load background pixmap
     m_pPixmapBack = WPixmapStore::getPixmap(filename);
     if (!m_pPixmapBack)
-        qDebug("WKnob: Error loading background pixmap: %s",filename.latin1());
+        qDebug() << "WKnob: Error loading background pixmap:" << filename;
 
     // Construct corresponding double buffer
     m_pPixmapBuffer = new QPixmap(m_pPixmapBack->size());

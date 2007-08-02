@@ -1,6 +1,7 @@
 #include "writeaudiofile.h"
 #include "dlgprefrecord.h"
 #include <sndfile.h>
+#include <QtDebug>
 
 WriteAudioFile::WriteAudioFile(ConfigObject<ConfigValue> *_config)
 {

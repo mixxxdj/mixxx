@@ -15,6 +15,7 @@
  *                                                                         *
  ***************************************************************************/
 
+#include <QtDebug>
 #include "wwidget.h"
 #include "controlobject.h"
 #include "controlobjectthreadwidget.h"
@@ -70,7 +71,7 @@ void WWidget::setup(QDomNode node)
         // Check that the control exists
         ControlObject *control = ControlObject::getControl(configKey);
         if (control == NULL) {
-            qWarning("Requested control '%s' does not exist!", key.latin1());
+            qWarning() << "Requested control does not exist:" << key;
             con = con.nextSibling();
             continue;
         }
@@ -190,21 +191,23 @@ void WWidget::setPixmapPath(QString qPath)
     m_qPath = qPath;
 }
 
-QDomElement WWidget::openXMLFile(QString path, QString name) {
+QDomElement WWidget::openXMLFile(QString path, QString name) 
+{
     QDomDocument doc(name);
     QFile file(path);
     if (!file.open(IO_ReadOnly))
     {
-        qDebug("Could not open xml file: %s",file.name().latin1());
-		return QDomElement();
+        qDebug() << "Could not open xml file:" << file.name();
+        return QDomElement();
     }
     if (!doc.setContent(&file))
     {
-        qDebug("Error parsing xml file: %s",file.name().latin1());
-		return QDomElement();
+        qWarning() << "Error parsing xml file:" << file.name();
+        file.close();
+        return QDomElement();
     }
 
-	file.close();
+    file.close();
     return doc.documentElement();
 }
 

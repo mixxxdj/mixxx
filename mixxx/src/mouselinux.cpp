@@ -19,6 +19,7 @@
 #include "rotary.h"
 #include "powermatelinux.h"
 #include <sys/time.h>
+#include <QtDebug>
 #include <sys/types.h>
 #include <string.h>
 #include <errno.h>
@@ -42,7 +43,7 @@ MouseLinux::~MouseLinux()
 
 bool MouseLinux::opendev(QString name)
 {
-//    qDebug("try open %s",name.latin1());
+//    qDebug() << "try open" << name;
     for(int iId=0; iId<kiMouseNumDevices; iId++)
     {
         char rgcDevName[256];

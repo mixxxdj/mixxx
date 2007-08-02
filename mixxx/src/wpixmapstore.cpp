@@ -18,6 +18,7 @@
 #include "wpixmapstore.h"
 //Added by qt3to4:
 #include <QPixmap>
+#include <QtDebug>
 
 Q3Dict<PixmapInfoType> WPixmapStore::dictionary(251);
 
@@ -40,7 +41,7 @@ QPixmap *WPixmapStore::getPixmap(const QString &fileName)
     }
 
     // Pixmap wasn't found, construct it
-//    qDebug("Loading pixmap %s",fileName.latin1());
+//    qDebug() << "Loading pixmap" << fileName;
     info = new PixmapInfoType;
 	if (loader != 0) {
 		QImage* img = loader->getImage(fileName);

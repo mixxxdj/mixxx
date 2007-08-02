@@ -16,6 +16,7 @@
  ***************************************************************************/
 
 #include <qfileinfo.h>
+#include <QtDebug>
 #include <qapplication.h>
 #include "reader.h"
 #include "readerextractwave.h"
@@ -98,7 +99,7 @@ void ReaderExtractWave::newSource(TrackInfoObject *pTrack)
         file = new SoundSourceProxy(QString("/dev/null"));
 
     if (file==0)
-        qFatal("Error opening %s", filename.latin1());
+        qCritical() << "Error opening" << filename;
 
     // Initialize position in read buffer
     m_pReader->lock();

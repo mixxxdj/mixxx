@@ -64,7 +64,7 @@ void Reader::addVisual(VisualChannel *pVisualChannel)
 
 void Reader::requestNewTrack(TrackInfoObject *pTrack, bool bStartAtEndPos)
 {
-//    qDebug("request: %s",name->latin1());
+    // qDebug() << "request:" << name;
 
     TrackQueueType *p = new TrackQueueType;
     p->pTrack = pTrack;
