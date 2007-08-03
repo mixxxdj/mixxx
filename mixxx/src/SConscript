@@ -503,7 +503,8 @@ if not platform == 'win32':
         if int(flags_tuned):
 		ccv = env['CCVERSION'].split('.')
 		if int(ccv[0]) >= 4 and int(ccv[1]) >= 2:
-			env.MergeFlags('-march=native')
+			env.Append(CCFLAGS = '-march=native')
+                        env.Append(LINKFLAGS = '-march=native')
 			print "Optimizing for this CPU... yes"
                 else:
 			print "Optimizing for this CPU... no (requires gcc >= 4.2.0)"
