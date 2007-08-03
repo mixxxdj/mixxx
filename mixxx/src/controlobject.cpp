@@ -26,6 +26,7 @@
 Q3PtrList<ControlObject> ControlObject::m_sqList;
 QMutex ControlObject::m_sqQueueMutexMidi;
 QMutex ControlObject::m_sqQueueMutexThread;
+QMutex ControlObject::m_sqQueueMutexChanges;
 Q3PtrQueue<QueueObjectMidi> ControlObject::m_sqQueueMidi;
 Q3PtrQueue<QueueObjectThread> ControlObject::m_sqQueueThread;
 Q3PtrQueue<ControlObject> ControlObject::m_sqQueueChanges;
@@ -165,19 +166,25 @@ void ControlObject::setValueFromThread(double dValue)
 void ControlObject::set(double dValue)
 {
     setValueFromEngine(dValue);
+    m_sqQueueMutexChanges.lock();
     m_sqQueueChanges.enqueue(this);
+    m_sqQueueMutexChanges.unlock();
 }
 
 void ControlObject::add(double dValue)
 {
     setValueFromEngine(m_dValue+dValue);
+    m_sqQueueMutexChanges.lock();
     m_sqQueueChanges.enqueue(this);
+    m_sqQueueMutexChanges.unlock();
 }
 
 void ControlObject::sub(double dValue)
 {
     setValueFromEngine(m_dValue-dValue);
+    m_sqQueueMutexChanges.lock();
     m_sqQueueChanges.enqueue(this);
+    m_sqQueueMutexChanges.unlock();
 }
 
 double ControlObject::getValueFromWidget(double v)
@@ -255,13 +262,17 @@ void ControlObject::sync()
     // ControlObjects. These updates should only occour if no changes has been in the object
     // from widgets, midi og application threads.
     ControlObject *obj;
-    while(!m_sqQueueChanges.isEmpty())
+    if(m_sqQueueMutexChanges.tryLock())
     {
-        obj = m_sqQueueChanges.dequeue();
+	while(!m_sqQueueChanges.isEmpty())
+	{
+	    obj = m_sqQueueChanges.dequeue();
 
-        // If update is not successful, enqueue again
-        if (!obj->updateProxies())
-            m_sqQueueChanges.enqueue(obj);
+	    // If update is not successful, enqueue again
+	    if (!obj->updateProxies())
+		m_sqQueueChanges.enqueue(obj);
 
+	}
+	m_sqQueueMutexChanges.unlock();
     }
 }

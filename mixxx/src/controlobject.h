@@ -127,7 +127,7 @@ private:
     /** List of ControlObject instantiations */
     static Q3PtrList<ControlObject> m_sqList;
     /** Mutex protecting access to the queues */
-    static QMutex m_sqQueueMutexMidi, m_sqQueueMutexThread;
+    static QMutex m_sqQueueMutexMidi, m_sqQueueMutexThread, m_sqQueueMutexChanges;
     /** Queue holding control changes from MIDI */
     static Q3PtrQueue<QueueObjectMidi> m_sqQueueMidi;
     /** Queues holding control changes from other application threads and from widgets */
