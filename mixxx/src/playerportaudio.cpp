@@ -433,18 +433,18 @@ void PlayerPortAudio::setDefaults()
     QStringList interfaces = getInterfaces();
 
     // Set first interfaces to master left
-    QStringList::iterator it = interfaces.begin();
-    if (it!=interfaces.end())
+    QStringListIterator it(interfaces);
+   
+    if (it.hasNext())
     {
-        m_pConfig->set(ConfigKey("[Soundcard]","DeviceMasterLeft"),ConfigValue((*it)));
+        m_pConfig->set(ConfigKey("[Soundcard]","DeviceMasterLeft"),ConfigValue((it.next())));
     }
     else
         m_pConfig->set(ConfigKey("[Soundcard]","DeviceMasterLeft"),ConfigValue("None"));
 
     // Set second interface to master right
-    ++it;
-    if (it!=interfaces.end())
-        m_pConfig->set(ConfigKey("[Soundcard]","DeviceMasterRight"),ConfigValue((*it)));
+    if (it.hasNext())
+        m_pConfig->set(ConfigKey("[Soundcard]","DeviceMasterRight"),ConfigValue((it.next())));
     else
         m_pConfig->set(ConfigKey("[Soundcard]","DeviceMasterRight"),ConfigValue("None"));
 
@@ -454,13 +454,14 @@ void PlayerPortAudio::setDefaults()
 
     // Set default sample rate
     QStringList srates = getSampleRates();
-    it = srates.begin();
-    while (it!=srates.end())
+    QStringListIterator itSRates(srates);
+    while (it.hasNext())
     {
-        m_pConfig->set(ConfigKey("[Soundcard]","Samplerate"),ConfigValue((*it)));
-        if ((*it).toInt()>=44100)
+        QString s;
+        s = itSRates.next();
+        m_pConfig->set(ConfigKey("[Soundcard]","Samplerate"),ConfigValue(s));
+        if ((s).toInt()>=44100)
             break;
-        ++it;
     }
 
     
@@ -703,7 +704,11 @@ int PlayerPortAudio::callbackProcess(int iBufferSize, float *out, int devIndex)
     int i;
 
     if (previousDevIndex == devIndex && m_iNumActiveDevices > 1)
-    	waitForNextOutput.wait(&waitMutex);
+    {
+        lockSamples.lock();
+    	waitForNextOutput.wait(&lockSamples);
+    	lockSamples.unlock();
+    }
     
     //Only fill the buffer with sound data from Mixxx once.
     lockSamples.lock();
