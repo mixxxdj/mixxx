@@ -328,7 +328,8 @@ env.Append(CXXFLAGS = ' -DQT3_SUPPORT -DQT3_SUPPORT_WARNINGS -DQT_THREAD_SUPPORT
 env.Append(CXXFLAGS = ' -I$QTDIR/include/Qt3Support -I$QTDIR/include/QtCore -I$QTDIR/include/QtGui -I$QTDIR/include/QtXml -I$QTDIR/include/QtOpenGl -I$QTDIR/include/Qt -I"$VCINSTALLDIR/include/atl"')
 
 if not platform == 'win32':
-	env.MergeFlags('-pipe -O3 -Wall -W -g -D_REENTRANT') # omghax 
+	env.Append(CCFLAGS = Split(""" -pipe -O3 -Wall -W -g -D_REENTRANT """)) # omghax 
+	env.Append(LINKFLAGS = Split(""" -pipe -O3 -Wall -W -g """))
 if platform == 'win32':
 	env.Append(CXXFLAGS = '-DWIN32 -D__WIN__ -DUNICODE -D_WINDOWS') #for soundtouch
 	env.Append(CCFLAGS  = '-DWIN32 -D__WIN__ -DUNICODE -D_WINDOWS') #for soundtouch
