@@ -328,7 +328,7 @@ env.Append(CXXFLAGS = ' -DQT3_SUPPORT -DQT3_SUPPORT_WARNINGS -DQT_THREAD_SUPPORT
 env.Append(CXXFLAGS = ' -I$QTDIR/include/Qt3Support -I$QTDIR/include/QtCore -I$QTDIR/include/QtGui -I$QTDIR/include/QtXml -I$QTDIR/include/QtOpenGl -I$QTDIR/include/Qt -I"$VCINSTALLDIR/include/atl"')
 
 if not platform == 'win32':
-	env.Append(CXXFLAGS = ' -pipe -O3 -pipe -Wall -W -g -D_REENTRANT') # omghax
+	env.MergeFlags('-pipe -O3 -Wall -W -g -D_REENTRANT') # omghax 
 if platform == 'win32':
 	env.Append(CXXFLAGS = '-DWIN32 -D__WIN__ -DUNICODE -D_WINDOWS') #for soundtouch
 	env.Append(CCFLAGS  = '-DWIN32 -D__WIN__ -DUNICODE -D_WINDOWS') #for soundtouch
@@ -489,18 +489,41 @@ if int(flags_ffmpeg):
 else:
 	print "Experimental FFMPEG support... disabled"
 
+# Profiling and Optimization
+if not platform == 'win32':
+	flags_gprof = ARGUMENTS.get('gprof', 0)
+	if int(flags_gprof):
+		env.Append(CCFLAGS = '-pg')
+		env.Append(LINKFLAGS = '-pg')
+		print "gprof profiling support... enabled"
+	else:
+		print "gprof profiling support... disabled"
+	flags_tuned = ARGUMENTS.get('tuned', 0)
+        if int(flags_tuned):
+		ccv = env['CCVERSION'].split('.')
+		if int(ccv[0]) >= 4 and int(ccv[1]) >= 2:
+			env.MergeFlags('-march=native')
+			print "Optimizing for this CPU... yes"
+                else:
+			print "Optimizing for this CPU... no (requires gcc >= 4.2.0)"
+	else:
+		print "Optimizing for this CPU... no"
+
 print "================\n"
 
 #Hijack scons -h and --help
 opts = Options('custom.py')
+opts.Add('prefix', 'Set to your install prefix', '/usr/local')
 opts.Add('qtdir', 'Set to your QT4 directory', '/usr/share/qt4')
 opts.Add('djconsole', 'Set to 1 to enable Hercules support through libdjconsole', 0)
 opts.Add('experimentalbpm', '(EXPERIMENTAL) Set to 1 to enable new BPM detection', 0)
 opts.Add('experimentalrecord', '(EXPERIMENTAL) Set to 1 to enable output recording feature', 0)
 opts.Add('hifieq', '(EXPERIMENTAL) Set to 1 to enable high quality EQs', 0)
 opts.Add('ladspa', '(EXPERIMENTAL) Set to 1 to enable LADSPA plugin support', 0)
-opts.Add('ffmpeg', 'Set to 1 to enable experimental ffmpeg support', 0)
-opts.Add('prefix', 'Set to your install prefix', '/usr/local')
+opts.Add('ffmpeg', '(EXPERIMENTAL) Set to 1 to enable FFMPEG support', 0)
+if not platform == 'win32':
+	opts.Add('gprof', '(DEVELOPER) Set to 1 to enable profiling using gprof', 0)
+	opts.Add('tuned', '(EXPERIMENTAL) Set to 1 to optimise mixxx for this CPU', 0)
 #env = Environment(options = opts)
 Help(opts.GenerateHelpText(env))
 
