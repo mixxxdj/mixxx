@@ -18,7 +18,7 @@
 #include "mixxxview.h"
 
 #include <q3table.h>
-#include <QtDebug>
+
 #include <qdir.h>
 #include <qpixmap.h>
 #include <qtooltip.h>
@@ -28,14 +28,16 @@
 #include <q3mainwindow.h>
 //Added by qt3to4:
 #include <Q3ValueList>
+#include <QTableView>
 #include <QLabel>
 #include <QComboBox>
 #include <QLineEdit>
 #include <QPushButton>
+#include <QTableView>
 #include <qlineedit.h>
 #include <qcombobox.h>
 
-#include "wcombobox.h"
+
 #include "wtracktable.h"
 #include "wtreeview.h"
 #include "wwidget.h"
@@ -201,7 +203,7 @@ ImgSource* MixxxView::parseFilters(QDomNode filt) {
 			ret = new ImgHSVTweak(ret, hmin, hmax, smin, smax, vmin, vmax, hfact, hconst,
 				sfact, sconst, vfact, vconst);
 		} else {
-                    qDebug() << "Unkown image filter:" << name << "\n";
+                    qDebug("Unkown image filter: %s\n", name);
 		}
 		f = f.nextSibling();
 	}
@@ -214,22 +216,21 @@ QDomElement MixxxView::openSkin(QString qSkinPath) {
     // Path to image files
     WWidget::setPixmapPath(qSkinPath.append("/"));
 
-    // Read XML file
+	// Read XML file
     QDomDocument skin("skin");
     QFile file(WWidget::getPath("skin.xml"));
     if (!file.open(QIODevice::ReadOnly))
     {
-        qCritical() << "Could not open skin definition file:" << file.name();
+        qFatal("Could not open skin definition file: %s",file.name().latin1());
     }
     if (!skin.setContent(&file))
     {
-        qCritical() << "Error parsing skin definition file:" << file.name();
+        qFatal("Error parsing skin definition file: %s",file.name().latin1());
     }
 
-    file.close();
+	file.close();
     return skin.documentElement();
 }
-
 void MixxxView::setupColorScheme(QDomElement docElem, ConfigObject<ConfigValue> *pConfig) {
 	
 	QDomNode colsch = docElem.namedItem("Schemes");
@@ -563,6 +564,10 @@ void MixxxView::createAllWidgets(QDomElement docElem, QWidget* parent, bool bVis
             }
 			else if (node.nodeName()=="ComboBox")
 			{
+				/*
+				m_pComboBox = new WComboBox(parent, "ComboBox");
+				m_pComboBox->setup(node);
+				*/
 				m_pComboBox = new QComboBox( FALSE, parent, "ComboBox" );
 				
 				// Set position
@@ -582,6 +587,7 @@ void MixxxView::createAllWidgets(QDomElement docElem, QWidget* parent, bool bVis
 				m_pComboBox->insertItem( "Play Queue" );
 				
 			}
+			
 			else if (node.nodeName()=="Search")
 			{
 				m_pLineEditSearch = new QLineEdit( parent, "lineEdit" );
@@ -608,6 +614,12 @@ void MixxxView::createAllWidgets(QDomElement docElem, QWidget* parent, bool bVis
                 m_pTrackTable->setup(node);
                 m_pTrackTable->installEventFilter(m_pKeyboard);
             }
+			/*
+			else if (node.nodeName()=="TableView")
+			{
+				m_pTrackTableView = new WTrackTableView(this);
+				m_pTrackTableView->setup(node);
+			}*/
         }
         node = node.nextSibling();
     }
@@ -822,16 +834,22 @@ void MixxxView::rebootGUI(QWidget* parent, bool bVisualsWaveform, ConfigObject<C
             {
                 if (WWidget::selectNodeInt(node, "Channel")==1)
                 {
-                    m_pOverviewCh1->setup(node);
+					if(!m_pOverviewCh1)
+					{
+						m_pOverviewCh1 = new WOverview(this);
+					}
+					m_pOverviewCh1->setup(node);
 					m_pOverviewCh1->repaint();
-					qDebug("Channel 1");
                 }
                 else if (WWidget::selectNodeInt(node, "Channel")==2)
                 {
+					if(!m_pOverviewCh2)
+					{
+						m_pOverviewCh2 = new WOverview(this);
+					}
                     m_pOverviewCh2->setup(node);
 					m_pOverviewCh2->repaint();
                 }
-				qDebug("checkpoint 14");
             }
 			else if (node.nodeName()=="Visual")
             {
@@ -902,6 +920,8 @@ void MixxxView::rebootGUI(QWidget* parent, bool bVisualsWaveform, ConfigObject<C
             }
             else if (node.nodeName()=="ComboBox")
 			{
+				//m_pComboBox->setup(node);
+				
 				 // Set position
                 QString pos = WWidget::selectNodeQString(node, "Pos");
                 int x = pos.left(pos.find(",")).toInt();
@@ -940,8 +960,14 @@ void MixxxView::rebootGUI(QWidget* parent, bool bVisualsWaveform, ConfigObject<C
                 m_pTrackTable->setup(node);
 				qDebug("checkpoint 19");
             }
-
-            /*else if (node.nodeName()=="TreeView")
+			/*
+			else if (node.nodeName() == "TrackView")
+			{
+				m_pTrackTableView = new WTrackTableView(parent);
+				m_pTrackTableVIew->setup();
+			}
+			
+            else if (node.nodeName()=="TreeView")
             {
                 m_pTreeView->setup(node);
             }*/
