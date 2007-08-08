@@ -120,6 +120,7 @@ void VisualController::init()
     glDisable(GL_LINE_SMOOTH);
     glDisable(GL_POINT_SMOOTH);
     glDisable(GL_POLYGON_SMOOTH);
+
 /*
     glHint(GL_FOG_HINT,GL_FASTEST);
     glHint(GL_LINE_SMOOTH_HINT,GL_FASTEST);
@@ -146,9 +147,12 @@ void VisualController::init()
  */
 void VisualController::drawScene(GLenum mode)
 {
-    ObjectsIterator it = objects.begin();
-    for(;it!=objects.end();++it)
-        (*it)->draw(mode);
+    //ObjectsIterator it = objects.begin();
+    //for(;it!=objects.end();++it)
+    //    (*it)->draw(mode);
+    QListIterator<VisualObject*> it(objects);
+    while (it.hasNext())
+        it.next()->draw(mode);
 };
 
 /**
