@@ -33,6 +33,7 @@ class WTrackTable;
 class WTreeList;
 class ControlObjectThreadMain;
 class WaveSummary;
+class BpmDetector;
 class QSortFilterProxyModel;
 
 // This define sets the version of the tracklist. If any code is changed or
@@ -48,7 +49,7 @@ class Track : public QObject
 {
     Q_OBJECT
 public:
-    Track(QString location, MixxxView *pView, EngineBuffer *pBuffer1, EngineBuffer *pBuffer2, WaveSummary *pWaveSummary, QString musiclocation);
+    Track(QString location, MixxxView *pView, EngineBuffer *pBuffer1, EngineBuffer *pBuffer2, WaveSummary *pWaveSummary, BpmDetector *pBpmDetector, QString musiclocation);
     ~Track();
     /** Read xml file */
     void readXML(QString location);
@@ -154,6 +155,8 @@ private:
     ControlObjectThreadMain *m_pPlayPositionCh1, *m_pPlayPositionCh2;
     /** Pointer to waveform summary generator */
     WaveSummary *m_pWaveSummary;
+    /** Pointer to BPM detection queue */
+    BpmDetector *m_pBpmDetector;
 };
 
 #endif

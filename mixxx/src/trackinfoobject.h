@@ -32,6 +32,10 @@ class WTrackTableItem;
 class WOverview;
 class ControlObject;
 
+#define NumBpmFactors 4
+
+const float Factors[NumBpmFactors]={0.33, 0.5, 2, 0.25};
+
 class TrackInfoObject : public QObject
 {
     Q_OBJECT
@@ -65,6 +69,10 @@ public:
     float getBpm();
     /** Set BPM */
     void setBpm(float);
+    /** Set BPM Correction Factors */
+    void generateBpmFactors();
+    /** Get BPM Correction Factors */
+    void getBpmFactors(float*);
     /** Returns BPM as a string */
     QString getBpmStr();
     /** Retruns if BPM was confirmed (edited or verified manually) */
@@ -178,6 +186,8 @@ private:
     int m_iTimesPlayed;
     /** Beat per minutes (BPM) */
     float m_fBpm;
+    /** Bpm Correction Factors */
+    float* m_fBpmFactors;
     /** True if BPM is confirmed */
     bool m_bBpmConfirm;
     /** Position of first beat in song */

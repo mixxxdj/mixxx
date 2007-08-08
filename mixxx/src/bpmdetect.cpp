@@ -1,3 +1,20 @@
+/***************************************************************************
+bpmdetect.cpp  -  adaption of the soundtouch bpm detection code
+-------------------
+begin                : Sat, Aug 4., 2007
+copyright            : (C) 2007 by Micah Lee
+email                : snipexv@gmail.com
+***************************************************************************/
+
+/***************************************************************************
+*                                                                         *
+*   This program is free software; you can redistribute it and/or modify  *
+*   it under the terms of the GNU General Public License as published by  *
+*   the Free Software Foundation; either version 2 of the License, or     *
+*   (at your option) any later version.                                   *
+*                                                                         *
+***************************************************************************/
+
 ////////////////////////////////////////////////////////////////////////////////
 ///
 /// Beats-per-minute (BPM) detection routine.
@@ -88,7 +105,7 @@ float Correct_BPM( float BPM , int max, int min) {
 }
 
 
-BPMDetect::BPMDetect(int numChannels, int sampleRate, int _maxBpm, int _minBpm)
+BpmDetect::BpmDetect(int numChannels, int sampleRate, int _maxBpm, int _minBpm)
 {
     xcorr = NULL;
 
@@ -122,7 +139,7 @@ BPMDetect::BPMDetect(int numChannels, int sampleRate, int _maxBpm, int _minBpm)
 
 
 
-BPMDetect::~BPMDetect()
+BpmDetect::~BpmDetect()
 {
     delete[] xcorr;
     delete buffer;
@@ -139,7 +156,7 @@ BPMDetect::~BPMDetect()
 /// poor-man's anti-alias filtering, but it's not so critical in this kind of application
 /// (it'd also be difficult to design a high-quality filter with steep cut-off at very 
 /// narrow band)
-int BPMDetect::decimate(SAMPLETYPE *dest, const SAMPLETYPE *src, int numsamples)
+int BpmDetect::decimate(SAMPLETYPE *dest, const SAMPLETYPE *src, int numsamples)
 {
     int count, outcount;
     LONG_SAMPLETYPE out;
@@ -178,7 +195,7 @@ int BPMDetect::decimate(SAMPLETYPE *dest, const SAMPLETYPE *src, int numsamples)
 
 
 // Calculates autocorrelation function of the sample history buffer
-void BPMDetect::updateXCorr(int process_samples)
+void BpmDetect::updateXCorr(int process_samples)
 {
     int offs;
     SAMPLETYPE *pBuffer;
@@ -209,7 +226,7 @@ void BPMDetect::updateXCorr(int process_samples)
 
 
 // Calculates envelope of the sample data
-void BPMDetect::calcEnvelope(SAMPLETYPE *samples, int numsamples) 
+void BpmDetect::calcEnvelope(SAMPLETYPE *samples, int numsamples) 
 {
     const float decay = 0.7f;               // decay constant for smoothing the envelope
     const float norm = (1 - decay);
@@ -245,7 +262,7 @@ void BPMDetect::calcEnvelope(SAMPLETYPE *samples, int numsamples)
 
 
 
-void BPMDetect::inputSamples(SAMPLETYPE *samples, int numSamples)
+void BpmDetect::inputSamples(SAMPLETYPE *samples, int numSamples)
 {
     SAMPLETYPE decimated[DECIMATED_BLOCK_SAMPLES];
 
@@ -283,7 +300,7 @@ void BPMDetect::inputSamples(SAMPLETYPE *samples, int numSamples)
 }
 
 
-void BPMDetect::init(int numChannels, int sampleRate)
+void BpmDetect::init(int numChannels, int sampleRate)
 {
     this->sampleRate = sampleRate;
 
@@ -309,7 +326,7 @@ void BPMDetect::init(int numChannels, int sampleRate)
 
 
 
-float BPMDetect::getBpm()
+float BpmDetect::getBpm()
 {
     float peakPos;
     PeakFinder peakFinder;

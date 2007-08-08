@@ -59,6 +59,9 @@ TrackInfoObject::TrackInfoObject(const QString sPath, const QString sFile) : m_s
     m_fBeatFirst = -1.;
     m_iSampleRate = 0;
     m_iChannels = 0;
+
+    m_fBpmFactors = (float*)malloc(sizeof(float) * NumBpmFactors);
+    generateBpmFactors();   
     
     m_pTableItemScore = 0;
     m_pTableItemTitle = 0;
@@ -103,7 +106,10 @@ TrackInfoObject::TrackInfoObject(const QDomNode &nodeHeader)
     m_fBeatFirst = XmlParse::selectNodeQString(nodeHeader, "BeatFirst").toFloat();
     m_iScore = 0;
     m_iId = XmlParse::selectNodeQString(nodeHeader, "ID").toInt();
-    
+
+    m_fBpmFactors = (float*)malloc(sizeof(float) * NumBpmFactors);
+    generateBpmFactors();    
+
 	m_pWave = XmlParse::selectNodeHexCharArray(nodeHeader, QString("WaveSummaryHex"));
 
     m_pSegmentation = XmlParse::selectNodeLongList(nodeHeader, QString("SegmentationSummary"));
@@ -134,6 +140,7 @@ TrackInfoObject::TrackInfoObject(const QDomNode &nodeHeader)
 TrackInfoObject::~TrackInfoObject()
 {
     removeFromTrackTable();
+    delete m_fBpmFactors;
 }
 
 bool TrackInfoObject::isValid()
@@ -213,11 +220,10 @@ void TrackInfoObject::insertInTrackTableRow(WTrackTable *pTableTrack, int iRow)
     if (!m_pTableItemDuration)
         m_pTableItemDuration = new WTrackTableItem(this, pTableTrack,Q3TableItem::Never, getDurationStr(), typeDuration);
     if (!m_pTableItemBpm)
-		#ifdef __EXPERIMENTAL_BPM__
-        m_pTableItemBpm = new WTrackTableItem(this, pTableTrack,Q3TableItem::Never, getBpmStr(), typeNumber); // Force use of BPM tapper dialog
-		#else
-		m_pTableItemBpm = new WTrackTableItem(this, pTableTrack,Q3TableItem::WhenCurrent, getBpmStr(), typeNumber); // Use old-style keyboard entry for BPM
-		#endif
+		        m_pTableItemBpm = new WTrackTableItem(this, pTableTrack,Q3TableItem::Never, getBpmStr(), typeNumber); // Force use of BPM tapper dialog
+		
+		//m_pTableItemBpm = new WTrackTableItem(this, pTableTrack,Q3TableItem::WhenCurrent, getBpmStr(), typeNumber); // Use old-style keyboard entry for BPM
+		
     if (!m_pTableItemBitrate)
         m_pTableItemBitrate = new WTrackTableItem(this, pTableTrack,Q3TableItem::Never, getBitrateStr(), typeNumber);
 
@@ -408,6 +414,8 @@ void TrackInfoObject::setBpm(float f)
     m_fBpm = f;
     m_qMutex.unlock();
 
+    generateBpmFactors();
+
     if (m_pTableItemBpm)
     {
         m_pTableItemBpm->setText(getBpmStr());
@@ -415,6 +423,30 @@ void TrackInfoObject::setBpm(float f)
     }
 
     setBpmControlObject(m_pControlObjectBpm);
+}
+
+void TrackInfoObject::generateBpmFactors()
+{
+    m_qMutex.lock();
+    for(int i = 0; i < NumBpmFactors; i++)
+    {
+        m_fBpmFactors[i] = m_fBpm * Factors[i];
+    }
+    m_qMutex.unlock();
+}
+
+void TrackInfoObject::getBpmFactors(float* f)
+{
+    m_qMutex.lock();
+    if(f)
+    {
+        for(int i = 0; i < NumBpmFactors; i++)
+        {
+            f[i] = m_fBpmFactors[i];
+        }
+    }
+    
+    m_qMutex.unlock();
 }
 
 QString TrackInfoObject::getBpmStr()
