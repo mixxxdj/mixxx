@@ -173,7 +173,7 @@ sources = Split("""enginebuffercue.cpp input.cpp mixxxmenuplaylists.cpp trackpla
  readerevent.cpp rtthread.cpp windowkaiser.cpp probabilityvector.cpp reader.cpp enginevumeter.cpp peaklist.cpp rotary.cpp log.cpp
  track.cpp trackcollection.cpp trackplaylist.cpp xmlparse.cpp wtreeview.cpp wtreeitem.cpp wtreeitemfile.cpp wtreeitemdir.cpp wtreeitemplaylist.cpp
  wtreeitemplaylistroot.cpp trackimporter.cpp parser.cpp parserpls.cpp parserm3u.cpp
- enginetemporal.cpp visual/visualbuffertemporal.cpp wavesummary.cpp bpmdetect.cpp peakfinder.cpp wavesegmentation.cpp soundsourceproxy.cpp woverview.cpp enginebeatseek.cpp
+ enginetemporal.cpp visual/visualbuffertemporal.cpp wavesummary.cpp bpmdetector.cpp bpmdetect.cpp peakfinder.cpp wavesegmentation.cpp soundsourceproxy.cpp woverview.cpp enginebeatseek.cpp
  enginebufferscalereal.cpp powermate.cpp  hercules.cpp joystick.cpp mouse.cpp
  wvisualsimple.cpp wvisualwaveform.cpp visual/visualbackplane.cpp visual/texture.cpp visual/visualbox.cpp visual/visualbuffer.cpp visual/visualbuffersignal.cpp
  visual/visualbuffersignalhfc.cpp visual/visualbuffermarks.cpp visual/visualchannel.cpp visual/visualcontroller.cpp visual/visualdisplay.cpp visual/visualdisplaybuffer.cpp
@@ -435,7 +435,7 @@ else:
 	print "High quality EQs... enabled"
 
 #Experimental BPM detection
-flags_experimentalbpm = ARGUMENTS.get('experimentalbpm', 0)
+flags_experimentalbpm = ARGUMENTS.get('experimentalbpm', 1)
 if int(flags_experimentalbpm):
 	env.Append(CXXFLAGS = '-D__EXPERIMENTAL_BPM__')
 	sources += Split(""" dlgbpmtap.cpp dlgprefbpm.cpp """)
@@ -518,7 +518,7 @@ opts = Options('custom.py')
 opts.Add('prefix', 'Set to your install prefix', '/usr/local')
 opts.Add('qtdir', 'Set to your QT4 directory', '/usr/share/qt4')
 opts.Add('djconsole', 'Set to 1 to enable Hercules support through libdjconsole', 0)
-opts.Add('experimentalbpm', '(EXPERIMENTAL) Set to 1 to enable new BPM detection', 0)
+opts.Add('experimentalbpm', '(EXPERIMENTAL) Set to 1 to enable new BPM detection', 1)
 opts.Add('experimentalrecord', '(EXPERIMENTAL) Set to 1 to enable output recording feature', 0)
 opts.Add('hifieq', '(EXPERIMENTAL) Set to 1 to enable high quality EQs', 0)
 opts.Add('ladspa', '(EXPERIMENTAL) Set to 1 to enable LADSPA plugin support', 0)

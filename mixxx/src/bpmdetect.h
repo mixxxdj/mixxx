@@ -1,3 +1,20 @@
+/***************************************************************************
+bpmdetect.h  -  adaption of the soundtouch bpm detection code
+-------------------
+begin                : Sat, Aug 4., 2007
+copyright            : (C) 2007 by Micah Lee
+email                : snipexv@gmail.com
+***************************************************************************/
+
+/***************************************************************************
+*                                                                         *
+*   This program is free software; you can redistribute it and/or modify  *
+*   it under the terms of the GNU General Public License as published by  *
+*   the Free Software Foundation; either version 2 of the License, or     *
+*   (at your option) any later version.                                   *
+*                                                                         *
+***************************************************************************/
+
 ////////////////////////////////////////////////////////////////////////////////
 ///
 /// Beats-per-minute (BPM) detection routine.
@@ -86,7 +103,7 @@ typedef unsigned long long uint64_t;
 float Correct_BPM( float BPM, int max, int min );
 
 /// Class for calculating BPM rate for audio data.
-class BPMDetect
+class BpmDetect
 {
 protected:
     /// Auto-correlation accumulator bins.
@@ -154,14 +171,14 @@ protected:
 
 public:
     /// Constructor.
-    BPMDetect(int numChannels,  ///< Number of channels in sample data.
+    BpmDetect(int numChannels,  ///< Number of channels in sample data.
               int sampleRate,   ///< Sample rate in Hz.
               int _maxBpm,
 			  int _minBpm
 			  );
 
     /// Destructor.
-    virtual ~BPMDetect();
+    virtual ~BpmDetect();
 
     /// Inputs a block of samples for analyzing: Envelopes the samples and then
     /// updates the autocorrelation estimation. When whole song data has been input

@@ -47,8 +47,8 @@
       <property name="geometry" >
        <rect>
         <x>10</x>
-        <y>114</y>
-        <width>102</width>
+        <y>120</y>
+        <width>141</width>
         <height>22</height>
        </rect>
       </property>
@@ -65,10 +65,10 @@
      <widget class="QSpinBox" name="spinBoxBPMRangeStart" >
       <property name="geometry" >
        <rect>
-        <x>123</x>
-        <y>114</y>
-        <width>37</width>
-        <height>22</height>
+        <x>160</x>
+        <y>117</y>
+        <width>55</width>
+        <height>27</height>
        </rect>
       </property>
       <property name="toolTip" >
@@ -84,10 +84,10 @@
      <widget class="QSpinBox" name="spinBoxBPMRangeEnd" >
       <property name="geometry" >
        <rect>
-        <x>190</x>
-        <y>114</y>
-        <width>37</width>
-        <height>22</height>
+        <x>240</x>
+        <y>117</y>
+        <width>61</width>
+        <height>27</height>
        </rect>
       </property>
       <property name="toolTip" >
@@ -103,8 +103,8 @@
      <widget class="QLabel" name="TextLabel10" >
       <property name="geometry" >
        <rect>
-        <x>171</x>
-        <y>114</y>
+        <x>220</x>
+        <y>120</y>
         <width>15</width>
         <height>22</height>
        </rect>
@@ -124,7 +124,7 @@
        <rect>
         <x>10</x>
         <y>38</y>
-        <width>224</width>
+        <width>391</width>
         <height>72</height>
        </rect>
       </property>
@@ -142,8 +142,8 @@
       <property name="geometry" >
        <rect>
         <x>10</x>
-        <y>140</y>
-        <width>224</width>
+        <y>150</y>
+        <width>381</width>
         <height>18</height>
        </rect>
       </property>
@@ -158,7 +158,7 @@
       <property name="geometry" >
        <rect>
         <x>10</x>
-        <y>150</y>
+        <y>170</y>
         <width>176</width>
         <height>20</height>
        </rect>
@@ -171,7 +171,7 @@
       <property name="geometry" >
        <rect>
         <x>10</x>
-        <y>176</y>
+        <y>200</y>
         <width>150</width>
         <height>20</height>
        </rect>
@@ -181,32 +181,6 @@
       </property>
      </widget>
     </widget>
-   </item>
-   <item row="0" column="1" >
-    <spacer>
-     <property name="orientation" >
-      <enum>Qt::Horizontal</enum>
-     </property>
-     <property name="sizeHint" >
-      <size>
-       <width>40</width>
-       <height>20</height>
-      </size>
-     </property>
-    </spacer>
-   </item>
-   <item row="1" column="0" >
-    <spacer>
-     <property name="orientation" >
-      <enum>Qt::Vertical</enum>
-     </property>
-     <property name="sizeHint" >
-      <size>
-       <width>20</width>
-       <height>40</height>
-      </size>
-     </property>
-    </spacer>
    </item>
   </layout>
  </widget>

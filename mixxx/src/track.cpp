@@ -36,10 +36,11 @@
 #include "configobject.h"
 #include "trackimporter.h"
 #include "wavesummary.h"
+#include "bpmdetector.h"
 #include "woverview.h"
 #include <q3progressdialog.h> 
 
-Track::Track(QString location, MixxxView *pView, EngineBuffer *pBuffer1, EngineBuffer *pBuffer2, WaveSummary *pWaveSummary, QString musiclocation)
+Track::Track(QString location, MixxxView *pView, EngineBuffer *pBuffer1, EngineBuffer *pBuffer2, WaveSummary *pWaveSummary, BpmDetector *pBpmDetector, QString musiclocation)
 {
     m_pView = pView;
     m_pBuffer1 = pBuffer1;
@@ -49,6 +50,7 @@ Track::Track(QString location, MixxxView *pView, EngineBuffer *pBuffer1, EngineB
     m_pTrackPlayer1 = 0;
     m_pTrackPlayer2 = 0;
     m_pWaveSummary = pWaveSummary;
+    m_pBpmDetector = pBpmDetector;
 	
 	musicDir = musiclocation;
 	
@@ -446,8 +448,12 @@ void Track::slotLoadPlayer1(TrackInfoObject *pTrackInfoObject, bool bStartFromEn
     // Request a new track from the reader:
     m_pBuffer1->getReader()->requestNewTrack(m_pTrackPlayer1, bStartFromEndPos);
 
+    // Detect BPM if required
+    if (m_pTrackPlayer1->getBpmConfirm()== false || m_pTrackPlayer1->getBpm() == 0.)
+        m_pBpmDetector->enqueue(m_pTrackPlayer1);
+
     // Generate waveform summary
-    if (m_pTrackPlayer1->getBpm()==0. || (m_pWaveSummary && (m_pTrackPlayer1->getWaveSummary()==0 || m_pTrackPlayer1->getWaveSummary()->size()==0)))
+    if ((m_pWaveSummary && (m_pTrackPlayer1->getWaveSummary()==0 || m_pTrackPlayer1->getWaveSummary()->size()==0)))
         m_pWaveSummary->enqueue(m_pTrackPlayer1);
 
     // Set waveform summary display
@@ -492,8 +498,11 @@ void Track::slotLoadPlayer2(TrackInfoObject *pTrackInfoObject, bool bStartFromEn
     // Request a new track from the reader:
     m_pBuffer2->getReader()->requestNewTrack(m_pTrackPlayer2, bStartFromEndPos);
 
+    // Detect BPM if required
+    if (m_pTrackPlayer2->getBpmConfirm()== false || m_pTrackPlayer2->getBpm() == 0.)       m_pBpmDetector->enqueue(m_pTrackPlayer2);
+
     // Generate waveform summary
-    if (m_pTrackPlayer2->getBpm()==0. || (m_pWaveSummary && (m_pTrackPlayer2->getWaveSummary()==0 || m_pTrackPlayer2->getWaveSummary()->size()==0)))
+    if ((m_pWaveSummary && (m_pTrackPlayer2->getWaveSummary()==0 || m_pTrackPlayer2->getWaveSummary()->size()==0)))
         m_pWaveSummary->enqueue(m_pTrackPlayer2);
 
     // Set waveform summary display

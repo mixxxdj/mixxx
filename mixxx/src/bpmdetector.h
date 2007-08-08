@@ -1,22 +1,22 @@
 /***************************************************************************
-                          wavesummary.h  -  description
-                             -------------------
-    begin                : Wed Oct 13 2004
-    copyright            : (C) 2004 by Tue Haste Andersen
-    email                : haste@diku.dk
- ***************************************************************************/
+bpmdetector.h  -  The bpm detection queue
+-------------------
+begin                : Sat, Aug 4., 2007
+copyright            : (C) 2007 by Micah Lee
+email                : snipexv@gmail.com
+***************************************************************************/
 
 /***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+*                                                                         *
+*   This program is free software; you can redistribute it and/or modify  *
+*   it under the terms of the GNU General Public License as published by  *
+*   the Free Software Foundation; either version 2 of the License, or     *
+*   (at your option) any later version.                                   *
+*                                                                         *
+***************************************************************************/
 
-#ifndef WAVESUMMARY_H
-#define WAVESUMMARY_H
+#ifndef BPMDETECTOR_H
+#define BPMDETECTOR_H
 
 #include <qthread.h>
 #include <qmutex.h>
@@ -27,12 +27,6 @@
 
 class TrackInfoObject;
 class ControlObjectThread;
-
-/**
-  * Class for generating waveform summaries
-  *
-  *@author Tue Haste Andersen
-  */
 
 #ifndef WAVESUMMARYCONSTANTS
 const int kiBlockSize = 2048;
@@ -46,14 +40,19 @@ const float kfFeatureStepSize = 0.01f;
 class WindowKaiser;
 class EngineSpectralFwd;
 
-class WaveSummary : public QThread
+/**
+  * Class for detecting the BPM for a TrackInfoObject
+  *
+  *@author Micah Lee
+  */
+
+class BpmDetector : public QThread
 {
 public:
-    WaveSummary(ConfigObject<ConfigValue> *_config);
-    ~WaveSummary();
-    /** Puts an TrackInfoObject into the queue of summary generation. Thread safe, blocking. */
+    BpmDetector(ConfigObject<ConfigValue> *_config);
+    ~BpmDetector();
+    /** Puts an TrackInfoObject into the queue of BPM detection. Thread safe, blocking. */
     void enqueue(TrackInfoObject *pTrackInfoObject);
-	void extractBeat(TrackInfoObject *pTrackInfoObject);
 
 protected:
     /** Main thread loop */

@@ -67,6 +67,7 @@
 #include "mixxxmenuplaylists.h"
 #include "wtreeitem.h"
 #include "wavesummary.h"
+#include "bpmdetector.h"
 #include "log.h"
 
 #include "playerproxy.h"
@@ -225,11 +226,14 @@ MixxxApp::MixxxApp(QApplication *a, QStringList files, QSplashScreen *pSplash, Q
     // Initialize wavefrom summary generation
     m_pWaveSummary = new WaveSummary(config);
 
+    // Initialize Bpm detection queue
+    m_pBpmDetector = new BpmDetector(config);
+
     if (pSplash)
         pSplash->message("Loading song database...",Qt::AlignLeft|Qt::AlignBottom);
 
     // Initialize track object:
-	m_pTrack = new Track(config->getValueString(ConfigKey("[Playlist]","Listfile")), view, buffer1, buffer2, m_pWaveSummary,config->getValueString(ConfigKey("[Playlist]","Directory")));
+	m_pTrack = new Track(config->getValueString(ConfigKey("[Playlist]","Listfile")), view, buffer1, buffer2, m_pWaveSummary, m_pBpmDetector,config->getValueString(ConfigKey("[Playlist]","Directory")));
 	
 	//WTreeItem::setTrack(m_pTrack);
 	// Set up drag and drop to player visuals
@@ -361,6 +365,9 @@ MixxxApp::~MixxxApp()
     delete m_pTrack;
 
     delete prefDlg;
+
+    //   delete m_pBpmDetector;
+    //   delete m_pWaveSummary;
 
     qDebug("save config, %i",qTime.elapsed());
     config->Save();
