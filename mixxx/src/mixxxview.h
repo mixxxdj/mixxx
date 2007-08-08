@@ -22,6 +22,7 @@
 #include <qlabel.h>
 #include <qstring.h>
 
+
 //Added by qt3to4:
 #include <Q3ValueList>
 #include "configobject.h"
@@ -47,6 +48,7 @@ class QComboBox;
 class WComboBox;
 class QLineEdit;
 class QPushButton;
+class WTrackTableView;
 /**
  * This class provides an incomplete base for your application view.
  */
@@ -64,9 +66,10 @@ public:
     void checkDirectRendering();
     /** Return true if WVisualWaveform has been instantiated. */
     bool activeWaveform();
-
+	//old tracktable
     WTrackTable *m_pTrackTable;
-
+	//NEW trackView
+	WTrackTableView *m_pTrackTableView;
     QLabel *m_pTextCh1, *m_pTextCh2;
     /** Pointer to WVisual widgets */
     QObject *m_pVisualCh1, *m_pVisualCh2;
