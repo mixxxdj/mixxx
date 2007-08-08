@@ -32,8 +32,8 @@ class VisualObject;
 /**
  * Common Data Types.
  */
-typedef std::list<VisualObject *> Objects;
-typedef std::list<VisualObject *>::iterator ObjectsIterator;
+//typedef QList<VisualObject *> Objects;
+//typedef QList<VisualObject *>::iterator ObjectsIterator;
 
 /**
  *
@@ -65,7 +65,7 @@ public:
   GLsizei width,height;
 
 private:
-  Objects objects;
+  QList<VisualObject*> objects;
   static int idCount;
   Light mylight;
 
