@@ -35,7 +35,6 @@
 #include <QPushButton>
 #include <QTableView>
 #include <qlineedit.h>
-#include <qcombobox.h>
 
 
 #include "wtracktable.h"
@@ -407,16 +406,28 @@ void MixxxView::createAllWidgets(QDomElement docElem, QWidget* parent, bool bVis
             }
             else if (node.nodeName()=="SliderComposed")
             {
-                WSliderComposed *p = new WSliderComposed(this);
-                p->setup(node);
-                p->installEventFilter(m_pKeyboard);
-                m_qWidgetList.append(p);
+                //WSliderComposed *p = new WSliderComposed(this);
+                //p->setup(node);
+                //p->installEventFilter(m_pKeyboard);
+                //m_qWidgetList.append(p);
 
                 // If rate slider...
                 if (compareConfigKeys(node, "[Channel1],rate"))
-                    m_pSliderRateCh1 = p;
+				{
+					//m_pSliderRateCh1 = p;
+                    m_pSliderRateCh1 = new WSliderComposed(this);
+					m_pSliderRateCh1->setup(node);
+					m_pSliderRateCh1->installEventFilter(m_pKeyboard);
+					m_qWidgetList.append(m_pSliderRateCh1);
+				}
                 else if (compareConfigKeys(node, "[Channel2],rate"))
-                    m_pSliderRateCh2 = p;
+				{
+                    //m_pSliderRateCh2 = p;
+					m_pSliderRateCh2 = new WSliderComposed(this);
+					m_pSliderRateCh2->setup(node);
+					m_pSliderRateCh2->installEventFilter(m_pKeyboard);
+					m_qWidgetList.append(m_pSliderRateCh2);
+				}
             }
             else if (node.nodeName()=="VuMeter")
             {
@@ -437,13 +448,13 @@ void MixxxView::createAllWidgets(QDomElement docElem, QWidget* parent, bool bVis
                 if (WWidget::selectNodeInt(node, "Channel")==1 && m_pOverviewCh1==0)
                 {
                     m_pOverviewCh1 = new WOverview(this);
-                    m_qWidgetList.append(m_pOverviewCh1);
+                    //m_qWidgetList.append(m_pOverviewCh1);
                     m_pOverviewCh1->setup(node);
                 }
                 else if (WWidget::selectNodeInt(node, "Channel")==2 && m_pOverviewCh2==0)
                 {
                     m_pOverviewCh2 = new WOverview(this);
-                    m_qWidgetList.append(m_pOverviewCh2);
+                    //m_qWidgetList.append(m_pOverviewCh2);
                     m_pOverviewCh2->setup(node);
                 }
             }
@@ -569,7 +580,7 @@ void MixxxView::createAllWidgets(QDomElement docElem, QWidget* parent, bool bVis
 				m_pComboBox->setup(node);
 				*/
 				m_pComboBox = new QComboBox( FALSE, parent, "ComboBox" );
-				
+				//m_pWComboBox = new WComboBox(parent,"ComboBox");
 				// Set position
                 QString pos = WWidget::selectNodeQString(node, "Pos");
                 int x = pos.left(pos.find(",")).toInt();
@@ -654,7 +665,6 @@ void MixxxView::rebootGUI(QWidget* parent, bool bVisualsWaveform, ConfigObject<C
 			obj = m_qWidgetList.next();
 		}
 	}
-	qDebug("checkpoint 1");
 	QDomElement docElem = openSkin(qSkinPath);
 	setupColorScheme(docElem, pConfig);
 	//createAllWidgets(docElem, parent, bVisualsWaveform, pConfig);
@@ -667,8 +677,7 @@ void MixxxView::rebootGUI(QWidget* parent, bool bVisualsWaveform, ConfigObject<C
 	//printf("node: %s\n", node.nodeName().toAscii().constData());
             if (node.nodeName()=="PushButton")
             {
-				qDebug("checkpoint 2");
-                WPushButton *p = new WPushButton(this);
+				WPushButton *p = new WPushButton(this);
                 p->setup(node);
                 p->installEventFilter(m_pKeyboard);
                 m_qWidgetList.append(p);
@@ -676,8 +685,7 @@ void MixxxView::rebootGUI(QWidget* parent, bool bVisualsWaveform, ConfigObject<C
             }
             else if (node.nodeName()=="Knob")
             {
-				qDebug("checkpoint 3");
-                WKnob *p = new WKnob(this);
+				WKnob *p = new WKnob(this);
                 p->setup(node);
                 p->installEventFilter(m_pKeyboard);
                 m_qWidgetList.append(p);
@@ -685,7 +693,6 @@ void MixxxView::rebootGUI(QWidget* parent, bool bVisualsWaveform, ConfigObject<C
             }
 			else if (node.nodeName()=="Label")
             {
-				qDebug("checkpoint 4");
                 WLabel *p = new WLabel(this);
                 p->setup(node);
 
@@ -694,7 +701,6 @@ void MixxxView::rebootGUI(QWidget* parent, bool bVisualsWaveform, ConfigObject<C
             }
             else if (node.nodeName()=="Number")
             {
-				qDebug("checkpoint 5");
                 WNumber *p = new WNumber(this);
                 p->setup(node);
                 p->installEventFilter(m_pKeyboard);
@@ -703,7 +709,6 @@ void MixxxView::rebootGUI(QWidget* parent, bool bVisualsWaveform, ConfigObject<C
             }
             else if (node.nodeName()=="NumberBpm")
             {
-				qDebug("checkpoint 6");
                 if (WWidget::selectNodeInt(node, "Channel")==1)
                 {
                     WNumberBpm *p = new WNumberBpm("[Channel1]", this);
@@ -723,7 +728,6 @@ void MixxxView::rebootGUI(QWidget* parent, bool bVisualsWaveform, ConfigObject<C
             }
 			else if (node.nodeName()=="NumberPos")
             {
-				qDebug("checkpoint 7");
                 if (WWidget::selectNodeInt(node, "Channel")==1)
                 {
                     m_pNumberPosCh1->setup(node);
@@ -735,7 +739,6 @@ void MixxxView::rebootGUI(QWidget* parent, bool bVisualsWaveform, ConfigObject<C
             }
             else if (node.nodeName()=="NumberRate")
             {
-				qDebug("checkpoint 8");
                 if (WWidget::selectNodeInt(node, "Channel")==1)
                 {
                     WNumberRate *p = new WNumberRate("[Channel1]", this);
@@ -755,7 +758,6 @@ void MixxxView::rebootGUI(QWidget* parent, bool bVisualsWaveform, ConfigObject<C
             }
             else if (node.nodeName()=="StatusLight")
             {
-				qDebug("checkpoint 9");
                 WStatusLight *p = new WStatusLight(this);
                 m_qWidgetList.append(p);
                 p->setup(node);
@@ -764,7 +766,6 @@ void MixxxView::rebootGUI(QWidget* parent, bool bVisualsWaveform, ConfigObject<C
             }            
 			else if (node.nodeName()=="Display")
             {
-				qDebug("checkpoint 10");
                 WDisplay *p = new WDisplay(this);
                 p->setup(node);
                 p->installEventFilter(m_pKeyboard);
@@ -773,7 +774,6 @@ void MixxxView::rebootGUI(QWidget* parent, bool bVisualsWaveform, ConfigObject<C
             }
             else if (node.nodeName()=="Background")
             {
-				qDebug("checkpoint 11");
                 QString filename = WWidget::selectNodeQString(node, "Path");
 				QPixmap* background = WPixmapStore::getPixmapNoCache(WWidget::getPath(filename));
                 //this->setPaletteBackgroundPixmap(*background);
@@ -807,12 +807,20 @@ void MixxxView::rebootGUI(QWidget* parent, bool bVisualsWaveform, ConfigObject<C
             }
             else if (node.nodeName()=="SliderComposed")
             {
-				qDebug("checkpoint 12");
                 // If rate slider...
+
                 if (compareConfigKeys(node, "[Channel1],rate"))
+				{
+					if(!m_pSliderRateCh1)
+						m_pSliderRateCh1 = new WSliderComposed(this);
                     m_pSliderRateCh1->setup(node);
+				}
                 else if (compareConfigKeys(node, "[Channel2],rate"))
+				{
+					if(!m_pSliderRateCh2)
+						m_pSliderRateCh2 = new WSliderComposed(this);
                     m_pSliderRateCh2->setup(node);
+				}
 				else {
 					WSliderComposed *p = new WSliderComposed(this);
 					p->setup(node);
@@ -823,7 +831,6 @@ void MixxxView::rebootGUI(QWidget* parent, bool bVisualsWaveform, ConfigObject<C
             }
 			else if (node.nodeName()=="VuMeter")
             {
-				qDebug("checkpoint 13");
                 WVuMeter *p = new WVuMeter(this);
                 m_qWidgetList.append(p);
                 p->setup(node);
@@ -853,7 +860,6 @@ void MixxxView::rebootGUI(QWidget* parent, bool bVisualsWaveform, ConfigObject<C
             }
 			else if (node.nodeName()=="Visual")
             {
-				qDebug("checkpoint 15");
                 if (WWidget::selectNodeInt(node, "Channel")==1)
                 {
 					((WVisualWaveform*)m_pVisualCh1)->setup(node);
@@ -867,7 +873,6 @@ void MixxxView::rebootGUI(QWidget* parent, bool bVisualsWaveform, ConfigObject<C
             }
 			else if (node.nodeName()=="Text")
             {
-				qDebug("checkpoint 16");
 				QLabel* p = 0;
                 // Associate pointers
                 if (WWidget::selectNodeInt(node, "Channel")==1)
@@ -933,8 +938,6 @@ void MixxxView::rebootGUI(QWidget* parent, bool bVisualsWaveform, ConfigObject<C
                 x = size.left(size.find(",")).toInt();
                 y = size.mid(size.find(",")+1).toInt();
                 m_pComboBox->setFixedSize(x,y);
-				
-				qDebug("checkpoint 17");
 			}
 			else if (node.nodeName()=="Search")
 			{
@@ -958,7 +961,6 @@ void MixxxView::rebootGUI(QWidget* parent, bool bVisualsWaveform, ConfigObject<C
             else if (node.nodeName()=="TrackTable")
             {
                 m_pTrackTable->setup(node);
-				qDebug("checkpoint 19");
             }
 			/*
 			else if (node.nodeName() == "TrackView")
