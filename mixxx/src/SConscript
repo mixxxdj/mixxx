@@ -206,7 +206,7 @@ if platform == 'win32':
 	env.Append(CPPPATH='../../../mixxx-winlib') #If you add more directories, separate them with a semicolon (;)
 	env.Append(LIBPATH='../../../mixxx-winlib')
 	env.Append(LINKFLAGS = ['/nodefaultlib:libc.lib', '/nodefaultlib:libcd.lib'])
-
+	env.Append(CCPDBFLAGS = ['/Zi', '/Fd${TARGET}.pdb'])
 
 #Check for dependencies if we're not doing a clean...
 
@@ -539,8 +539,8 @@ else:
 
 #Set up the MSVC target to build a Visual Studio project/solution file
 if 'msvc' in COMMAND_LINE_TARGETS:
-	includes = glob.glob('../*.h')
-	includes += glob.glob('../visual/*.h')
+	includes = glob.glob('*.h')
+	includes += glob.glob('visual/*.h')
 	env.Append(MSVSSCONSFLAGS = ' qtdir=' + flags_qtdir)
 	msvc = env.MSVSProject(target = 'mixxx' + env['MSVSPROJECTSUFFIX'], srcs = flatten(sources), incs = flatten(includes), variant = 'Debug', runfile = '../dist/mixxx')
 	env.Alias('msvc', msvc)
