@@ -20,6 +20,10 @@
 #include <atlconv.h>
 #include <QtDebug>
 
+#ifdef __WIN__
+#pragma comment (lib, "atls.lib")
+#endif
+
 MidiObjectWin::MidiObjectWin(QString device) : MidiObject(device)
 {
     USES_CONVERSION; // enable WCHAR to char macro conversion
