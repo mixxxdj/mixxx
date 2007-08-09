@@ -206,7 +206,8 @@ if platform == 'win32':
 	env.Append(CPPPATH='../../../mixxx-winlib') #If you add more directories, separate them with a semicolon (;)
 	env.Append(LIBPATH='../../../mixxx-winlib')
 	env.Append(LINKFLAGS = ['/nodefaultlib:libc.lib', '/nodefaultlib:libcd.lib'])
-	env.Append(CCPDBFLAGS = ['/Zi', '/Fd${TARGET}.pdb'])
+	env['CCPDBFLAGS'] = SCons.Util.CLVar(['${(PDB and "/Zi /Fd%s" % File(PDB)) or ""}'])
+	#env.Append(CCPDBFLAGS = ['/Zi', '/Fd${TARGET}.pdb'])
 
 #Check for dependencies if we're not doing a clean...
 
