@@ -9,9 +9,12 @@
 
 #include <ladspacontrol.h>
 
+// static variable
+int LADSPAControl::m_bufferSize = LADSPA_MAX_BUFFER_SIZE;
+
 LADSPAControl::LADSPAControl()
 {
-    m_pBuffer = new LADSPA_Data [LADSPA_MAX_BUFFER_SIZE];
+    m_pBuffer = new LADSPA_Data [m_bufferSize];
 }
 
 LADSPAControl::~LADSPAControl()
@@ -26,9 +29,33 @@ LADSPA_Data * LADSPAControl::getBuffer()
 
 void LADSPAControl::setValue(LADSPA_Data value)
 {
+#ifdef __LADSPA_SIMPLE_CONTROL__
     m_Value = value;
-    for (int i = 0; i < LADSPA_MAX_BUFFER_SIZE; i++)
+#else
+    if (m_Value != value)
     {
-        m_pBuffer[i] = value;
+        // value has changed
+        LADSPA_Data step = (value - m_Value) / m_bufferSize;
+        m_Value -= step;
+        // phase 1: fill the buffer with smoothly changing values
+        for (int i = 0; i < m_bufferSize; i++)
+        {
+            m_Value += step;
+            m_pBuffer[i] = m_Value;
+        }
     }
+    else if (m_pBuffer[0] != value)
+#endif
+    {
+        // phase 2: the buffer is not filled with constant values yet
+        for (int i = 0; i < m_bufferSize; i++)
+        {
+            m_pBuffer[i] = m_Value;
+        }        
+    }
+}
+
+void LADSPAControl::setBufferSize(int size)
+{
+    m_bufferSize = size;
 }

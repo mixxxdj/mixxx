@@ -10,7 +10,8 @@
 #ifndef LADSPACONTROL_H
 #define LADSPACONTROL_H
 
-#define LADSPA_MAX_BUFFER_SIZE 1024
+// won't be used unless LADSPAControl is instantiated before a call to setBufferSize
+#define LADSPA_MAX_BUFFER_SIZE 4096
 
 #include <ladspa.h>
 
@@ -22,10 +23,12 @@ public:
 
     LADSPA_Data * getBuffer();
     void setValue(LADSPA_Data value);
+    static void setBufferSize(int size);
     
-protected:
+private:
     LADSPA_Data m_Value;
     LADSPA_Data * m_pBuffer;
+    static int m_bufferSize;
 };
 
 #endif

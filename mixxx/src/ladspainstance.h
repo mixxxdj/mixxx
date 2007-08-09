@@ -15,6 +15,7 @@
 #include <ladspa.h>
 
 #include <defs.h>
+#include <controlobject.h>
 
 class LADSPAInstance {
 
@@ -25,11 +26,12 @@ public:
     void process(const CSAMPLE * pIn, const CSAMPLE * pOut, const int iBufferSize);
     void connect(unsigned long port, LADSPA_Data * buffer);
 
-protected:
+private:
     const LADSPA_Descriptor * m_pDescriptor;
     LADSPA_Handle m_Handle;
     unsigned long m_InputPort;
     unsigned long m_OutputPort;
+    static ControlObject *m_pControlObjectSampleRate;
 };
 
 typedef Q3PtrList<LADSPAInstance> LADSPAInstanceList;

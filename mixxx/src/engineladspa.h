@@ -31,6 +31,7 @@ public:
 private:
     LADSPAInstanceList m_Instances;
     LADSPALoader * m_Loader;
+    int m_bufferSize;
     ControlPotmeter * m_pPot1;
     ControlPotmeter * m_pPot2;
     ControlPotmeter * m_pPot3;
