@@ -13,9 +13,9 @@
 LADSPALibrary::LADSPALibrary(QString file)
 {
 #ifdef __LINUX__
-    qDebug("Loading LADSPA Library \e[91m%s\e[0m:", file.toAscii().constData());
+    //qDebug("LADSPA: Loading library \e[91m%s\e[0m:", file.toAscii().constData());
 #else
-    qDebug("Loading LADSPA Library %s:", file.toAscii().constData());
+    //qDebug("LADSPA: Loading library %s:", file.toAscii().constData());
 #endif
     m_pLibrary = new QLibrary(file);
     m_qFilePath = file;
@@ -30,9 +30,9 @@ LADSPALibrary::LADSPALibrary(QString file)
         {
             LADSPAPlugin * plugin = new LADSPAPlugin(descriptor);
 #ifdef __LINUX__
-            qDebug(" %lu - \e[92m%s\e[0m", index, plugin->getLabel());
+            //qDebug("LADSPA:  %lu - \e[92m%s\e[0m", index, plugin->getLabel());
 #else
-            qDebug(" %lu - %s", index, plugin->getLabel());
+            //qDebug("LADSPA:  %lu - %s", index, plugin->getLabel());
 #endif
             m_Plugins.append(plugin);
         }

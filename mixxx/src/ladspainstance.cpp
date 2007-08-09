@@ -9,11 +9,20 @@
 
 #include <ladspainstance.h>
 
+ControlObject * LADSPAInstance::m_pControlObjectSampleRate = NULL;
+
 LADSPAInstance::LADSPAInstance(const LADSPA_Descriptor * descriptor)
 {
     m_pDescriptor = descriptor;
 
-    m_Handle = m_pDescriptor->instantiate(m_pDescriptor, 44100); // TODO: get the sample rate (no idea how though)
+    if (m_pControlObjectSampleRate == NULL)
+    {
+        m_pControlObjectSampleRate = ControlObject::getControl(ConfigKey("[Master]", "samplerate"));
+    }
+    int sampleRate = (int)m_pControlObjectSampleRate->get();
+    qDebug("LADSPA: Sample rate: %d", sampleRate);
+
+    m_Handle = m_pDescriptor->instantiate(m_pDescriptor, sampleRate);
 
     if (m_pDescriptor->activate)
     {
@@ -22,7 +31,7 @@ LADSPAInstance::LADSPAInstance(const LADSPA_Descriptor * descriptor)
 
     for (unsigned long port = 0; port < m_pDescriptor->PortCount; port++)
     {
-        qDebug("Port %lu: %s", port, m_pDescriptor->PortNames[port]);
+        qDebug("LADSPA: Port %lu: %s", port, m_pDescriptor->PortNames[port]);
         if (LADSPA_IS_PORT_AUDIO (m_pDescriptor->PortDescriptors [port]))
         {
             if (LADSPA_IS_PORT_INPUT (m_pDescriptor->PortDescriptors [port]))
@@ -35,8 +44,8 @@ LADSPAInstance::LADSPAInstance(const LADSPA_Descriptor * descriptor)
             }
         }
     }
-    qDebug("Input: %lu", m_InputPort);
-    qDebug("Output: %lu", m_OutputPort);
+    qDebug("LADSPA: Input: %lu", m_InputPort);
+    qDebug("LADSPA: Output: %lu", m_OutputPort);
 }
 
 LADSPAInstance::~LADSPAInstance()
