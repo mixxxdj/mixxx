@@ -462,7 +462,7 @@ else:
 flags_ladspa = ARGUMENTS.get('ladspa', 0)
 if int(flags_ladspa):
 	env.Append(CXXFLAGS = '-D__LADSPA__')
-	sources += Split("""engineladspa.cpp ladspaloader.cpp ladspalibrary.cpp ladspaplugin.cpp ladspainstance.cpp ladspacontrol.cpp""")
+	sources += Split("""engineladspa.cpp ladspaloader.cpp ladspalibrary.cpp ladspaplugin.cpp ladspainstance.cpp ladspacontrol.cpp ladspainstancestereo.cpp ladspainstancemono.cpp""")
 	print "LADSPA support... enabled"
 else:
 	print "LADSPA support... disabled"

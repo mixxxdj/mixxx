@@ -7,8 +7,8 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef LADSPAINSTANCE_H
-#define LADSPAINSTANCE_H
+#ifndef LADSPAINSTANCEMONO_H
+#define LADSPAINSTANCEMONO_H
 
 #include <q3ptrlist.h>
 
@@ -17,23 +17,23 @@
 #include <defs.h>
 #include <controlobject.h>
 
-class LADSPAInstance {
+#include <ladspainstance.h>
+
+class LADSPAInstanceMono : public LADSPAInstance
+{
 
 public:
-    LADSPAInstance(const LADSPA_Descriptor * descriptor);
-    ~LADSPAInstance();
+    LADSPAInstanceMono(const LADSPA_Descriptor * descriptor);
+    ~LADSPAInstanceMono();
 
-    virtual void process(const CSAMPLE * pInLeft, const CSAMPLE * pInRight, const CSAMPLE * pOutLeft, const CSAMPLE * pOutRight, const int iBufferSize) = 0;
-    virtual void connect(unsigned long port, LADSPA_Data * buffer) = 0;
-
-    const LADSPA_Descriptor * getDescriptor();
-    int getSampleRate();
+    void process(const CSAMPLE * pInLeft, const CSAMPLE * pInRight, const CSAMPLE * pOutLeft, const CSAMPLE * pOutRight, const int iBufferSize);
+    void connect(unsigned long port, LADSPA_Data * buffer);
 
 private:
-    const LADSPA_Descriptor * m_pDescriptor;
-    static ControlObject *m_pControlObjectSampleRate;
+    LADSPA_Handle m_HandleLeft;
+    LADSPA_Handle m_HandleRight;
+    unsigned long m_InputPort;
+    unsigned long m_OutputPort;
 };
-
-typedef Q3PtrList<LADSPAInstance> LADSPAInstanceList;
 
 #endif

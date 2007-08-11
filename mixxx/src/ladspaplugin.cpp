@@ -9,6 +9,9 @@
 
 #include <ladspaplugin.h>
 
+#include <ladspainstancestereo.h>
+#include <ladspainstancemono.h>
+
 LADSPAPlugin::LADSPAPlugin(const LADSPA_Descriptor * descriptor)
 {
     m_pDescriptor = descriptor;
@@ -21,8 +24,59 @@ LADSPAPlugin::~LADSPAPlugin()
 
 LADSPAInstance * LADSPAPlugin::instantiate()
 {
-    LADSPAInstance * instance = new LADSPAInstance(m_pDescriptor);
-    return instance;
+    int inputs = 0;
+    int outputs = 0;
+    for (unsigned long port = 0; port < m_pDescriptor->PortCount; port++)
+    {
+        if (LADSPA_IS_PORT_AUDIO(m_pDescriptor->PortDescriptors [port]))
+        {
+            if (LADSPA_IS_PORT_INPUT(m_pDescriptor->PortDescriptors [port]))
+            {
+                inputs++;
+            }
+            else
+            {
+                outputs++;
+            }
+        }
+    }
+
+    if (inputs == 2)
+    {
+        if (outputs == 2)
+        {
+            return new LADSPAInstanceStereo(m_pDescriptor);
+        }
+        else if (outputs == 1)
+        {
+            qDebug("LADSPA: 2 inputs + 1 output not supported yet!");
+        }
+        else
+        {
+            qDebug("LADSPA: unsupported number of outputs (%d)!", outputs);
+        }
+    }
+    else if (inputs == 1)
+    {
+        if (outputs == 1)
+        {
+            return new LADSPAInstanceMono(m_pDescriptor);
+        }
+        else if (outputs == 2)
+        {
+            qDebug("LADSPA: 1 input + 2 outputs not supported yet!");
+        }
+        else
+        {
+            qDebug("LADSPA: unsupported number of outputs (%d)!", outputs);
+        }
+    }
+    else
+    {
+        qDebug("LADSPA: unsupported number of inputs (%d)!", inputs);
+    }
+
+    return NULL;
 }
 
 const char * LADSPAPlugin::getLabel()
