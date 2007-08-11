@@ -57,5 +57,6 @@ void LADSPAControl::setValue(LADSPA_Data value)
 
 void LADSPAControl::setBufferSize(int size)
 {
+    // FIX: may crash after changing buffer size from smaller to bigger
     m_bufferSize = size;
 }
