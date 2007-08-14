@@ -31,6 +31,7 @@ class WTrackTable;
 class WTrackTableItem;
 class WOverview;
 class ControlObject;
+class BpmDetector;
 
 #define NumBpmFactors 4
 
@@ -41,9 +42,9 @@ class TrackInfoObject : public QObject
     Q_OBJECT
 public:
     /** Initialize a new track with the filename. */
-    TrackInfoObject(const QString sPath, const QString sFile);
+    TrackInfoObject(const QString sPath, const QString sFile, BpmDetector *bpmDetector);
     /** Creates a new track given information from the xml file. */
-    TrackInfoObject(const QDomNode &);
+    TrackInfoObject(const QDomNode &, BpmDetector *bpmDetector);
     ~TrackInfoObject();
     /** Returns true if the object contains valid information */    
     bool isValid();
@@ -65,6 +66,8 @@ public:
     QString getDurationStr();
     /** Returns the location of the file, included path */
     QString getLocation();
+    /** Add this TrackInfoObject instance to the BPM detection queue */
+    void sendToBpmQueue();
     /** Returns BPM */
     float getBpm();
     /** Set BPM */
@@ -220,6 +223,9 @@ private:
     /** Pointer to ControlObject of duration value (only set when the track is loaded in a player) */
     ControlObject *m_pControlObjectDuration;
 	int iTemp;
+
+    /** Bpm Detection Queue */
+    BpmDetector *m_BpmDetector;
 };
 
 #endif
