@@ -13,14 +13,16 @@
 #include "trackcollection.h"
 #include "xmlparse.h"
 #include "trackinfoobject.h"
+#include "bpmdetector.h"
 #include <qfileinfo.h>
 #include <QtDebug>
 #include "defs.h"
 
 
-TrackCollection::TrackCollection()
+TrackCollection::TrackCollection(BpmDetector *bpmDetector)
 {
     m_iCounter = 0;
+    m_BpmDetector = bpmDetector;
 }
 
 TrackCollection::~TrackCollection()
@@ -35,7 +37,7 @@ void TrackCollection::readXML(QDomNode node)
     {
         if (tracknode.isElement() && tracknode.nodeName()=="Track")
         {
-            TrackInfoObject *pTrack = new TrackInfoObject(tracknode);
+            TrackInfoObject *pTrack = new TrackInfoObject(tracknode, m_BpmDetector);
 			addTrack(pTrack);
 
             // Update counter
@@ -136,7 +138,7 @@ TrackInfoObject *TrackCollection::getTrack(QString location)
         QFileInfo file(location);
         if (file.exists())
         {
-            TrackInfoObject *pTrack = new TrackInfoObject(file.dirPath(), file.fileName());
+            TrackInfoObject *pTrack = new TrackInfoObject(file.dirPath(), file.fileName(), m_BpmDetector );
             // Add track to the collection
             if (pTrack->isValid())
             {

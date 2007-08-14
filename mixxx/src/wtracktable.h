@@ -65,6 +65,7 @@ class Q3Table;
 class QWidget;
 class TrackInfoObject;
 class DlgBPMTap;
+class BpmDetector;
 
 class WTrackTable : public Q3Table
 {
@@ -82,9 +83,7 @@ signals:
     void mousePressed(TrackInfoObject *pTrackInfoObject, int button);
 
 protected:
-    #ifdef __EXPERIMENTAL_BPM__
     DlgBPMTap *bpmTapDlg;
-    #endif
 };
 
 #endif

@@ -54,7 +54,7 @@ Track::Track(QString location, MixxxView *pView, EngineBuffer *pBuffer1, EngineB
 	
 	musicDir = musiclocation;
 	
-    m_pTrackCollection = new TrackCollection();
+    m_pTrackCollection = new TrackCollection(m_pBpmDetector);
     m_pTrackImporter = new TrackImporter(m_pView,m_pTrackCollection);
 
 	
@@ -450,7 +450,7 @@ void Track::slotLoadPlayer1(TrackInfoObject *pTrackInfoObject, bool bStartFromEn
 
     // Detect BPM if required
     if (m_pTrackPlayer1->getBpmConfirm()== false || m_pTrackPlayer1->getBpm() == 0.)
-        m_pBpmDetector->enqueue(m_pTrackPlayer1);
+        m_pTrackPlayer1->sendToBpmQueue();
 
     // Generate waveform summary
     if ((m_pWaveSummary && (m_pTrackPlayer1->getWaveSummary()==0 || m_pTrackPlayer1->getWaveSummary()->size()==0)))
@@ -499,7 +499,8 @@ void Track::slotLoadPlayer2(TrackInfoObject *pTrackInfoObject, bool bStartFromEn
     m_pBuffer2->getReader()->requestNewTrack(m_pTrackPlayer2, bStartFromEndPos);
 
     // Detect BPM if required
-    if (m_pTrackPlayer2->getBpmConfirm()== false || m_pTrackPlayer2->getBpm() == 0.)       m_pBpmDetector->enqueue(m_pTrackPlayer2);
+    if (m_pTrackPlayer2->getBpmConfirm()== false || m_pTrackPlayer2->getBpm() == 0.)       
+         m_pTrackPlayer2->sendToBpmQueue();
 
     // Generate waveform summary
     if ((m_pWaveSummary && (m_pTrackPlayer2->getWaveSummary()==0 || m_pTrackPlayer2->getWaveSummary()->size()==0)))
@@ -695,7 +696,7 @@ void Track::slotPrevTrackPlayer2(double v)
 
 void Track::slotFindTracks()
 {
-	TrackCollection *tempCollection = new TrackCollection();
+	TrackCollection *tempCollection = new TrackCollection(m_pBpmDetector);
 	TrackCollection *sourceCollection = m_pActivePlaylist->getCollection();
 	QString searchText = m_pView->m_pLineEditSearch->text();
 

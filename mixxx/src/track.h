@@ -63,6 +63,7 @@ public:
     //void updatePlaylistViews();
 	/**location of new music files*/
 	QString musicDir;
+    
 
 public slots:
     /** Decode playlist drops to WTrackTable, and loads corresponding playlist */

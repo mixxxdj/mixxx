@@ -23,6 +23,7 @@
 #include <Q3ValueList>
 #include <Q3MemArray>
 #include "trackinfoobject.h"
+#include "bpmdetector.h"
 #include "soundsourceproxy.h"
 #include "wtracktable.h"
 #include "wtracktableitem.h"
@@ -37,7 +38,7 @@
 
 int TrackInfoObject::siMaxTimesPlayed = 1;
 
-TrackInfoObject::TrackInfoObject(const QString sPath, const QString sFile) : m_sFilename(sFile), m_sFilepath(sPath)
+TrackInfoObject::TrackInfoObject(const QString sPath, const QString sFile, BpmDetector *bpmDetector) : m_sFilename(sFile), m_sFilepath(sPath)
 {
     m_sArtist = "";
     m_sTitle = "";
@@ -59,6 +60,8 @@ TrackInfoObject::TrackInfoObject(const QString sPath, const QString sFile) : m_s
     m_fBeatFirst = -1.;
     m_iSampleRate = 0;
     m_iChannels = 0;
+
+    m_BpmDetector = bpmDetector;
 
     m_fBpmFactors = (float*)malloc(sizeof(float) * NumBpmFactors);
     generateBpmFactors();   
@@ -87,7 +90,7 @@ TrackInfoObject::TrackInfoObject(const QString sPath, const QString sFile) : m_s
 	iTemp = 0;
 }
 
-TrackInfoObject::TrackInfoObject(const QDomNode &nodeHeader)
+TrackInfoObject::TrackInfoObject(const QDomNode &nodeHeader, BpmDetector *bpmDetector)
 {
     m_sFilename = XmlParse::selectNodeQString(nodeHeader, "Filename");
     m_sFilepath = XmlParse::selectNodeQString(nodeHeader, "Filepath");
@@ -109,6 +112,8 @@ TrackInfoObject::TrackInfoObject(const QDomNode &nodeHeader)
 
     m_fBpmFactors = (float*)malloc(sizeof(float) * NumBpmFactors);
     generateBpmFactors();    
+
+    m_BpmDetector = bpmDetector;
 
 	m_pWave = XmlParse::selectNodeHexCharArray(nodeHeader, QString("WaveSummaryHex"));
 
@@ -397,6 +402,11 @@ QString TrackInfoObject::getLocation()
     QString qLocation = m_sFilepath + "/" + m_sFilename;
     m_qMutex.unlock();
     return qLocation;
+}
+
+void TrackInfoObject::sendToBpmQueue()
+{
+    m_BpmDetector->enqueue(this);
 }
 
 float TrackInfoObject::getBpm()

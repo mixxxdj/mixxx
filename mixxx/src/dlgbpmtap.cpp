@@ -56,7 +56,7 @@ DlgBPMTap::DlgBPMTap(QWidget *mixxx, TrackInfoObject *tio) : QDialog(), Ui::DlgB
     radioBtnComplete->setEnabled(false);
 	spinBoxBPMRangeStart->setEnabled(false);
     spinBoxBPMRangeEnd->setEnabled(false);
-    btnGo->setEnabled(false);
+    btnGo->setEnabled(true);
 
     // Install event handler to generate closeDlg signal
     installEventFilter(this);
@@ -115,6 +115,7 @@ void DlgBPMTap::slotTapBPM()
 
 void DlgBPMTap::slotDetectBPM()
 {
+    m_CurrentTrack->sendToBpmQueue();
 }
 
 void DlgBPMTap::slotLoadDialog()

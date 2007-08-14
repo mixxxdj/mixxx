@@ -16,6 +16,7 @@
 #include <q3ptrlist.h>
 
 class TrackInfoObject;
+class BpmDetector;
 
 /**
 @author Tue Haste Andersen
@@ -23,7 +24,7 @@ class TrackInfoObject;
 class TrackCollection
 {
 public:
-    TrackCollection();
+    TrackCollection(BpmDetector *bpmDetector);
     ~TrackCollection();
     /** Read database content from XML file */
     void readXML(QDomNode node);
@@ -46,6 +47,8 @@ protected:
     Q3PtrList <TrackInfoObject> m_qTrackList;
     /** Counter used to assign unique id's to tracks in database */
     long int m_iCounter;
+    /** Bpm detection queue being passed through for the TrackInfoObject */
+    BpmDetector *m_BpmDetector;
 };
 
 #endif
