@@ -24,10 +24,10 @@ email                : snipexv@gmail.com
 #include <q3ptrqueue.h>
 #include "defs.h"
 #include "configobject.h"
+#include "bpmreceiver.h"
 
 class TrackInfoObject;
 class ControlObjectThread;
-class DlgBpmTap;
 
 #ifndef WAVESUMMARYCONSTANTS
 const int kiBlockSize = 2048;
@@ -47,10 +47,13 @@ class EngineSpectralFwd;
   *@author Micah Lee
   */
 
-struct BpmDetectionPackage
+class BpmDetectionPackage
 {
+    public:
+    BpmDetectionPackage(){}
+    ~BpmDetectionPackage(){}
     TrackInfoObject *_TrackInfoObject;
-    DlgBpmTap *_DlgBpmTap;
+    BpmReceiver *_BpmReceiver;
 };
 
 class BpmDetector : public QThread
@@ -59,14 +62,14 @@ public:
     BpmDetector(ConfigObject<ConfigValue> *_config);
     ~BpmDetector();
     /** Puts an TrackInfoObject into the queue of BPM detection. Thread safe, blocking. */
-    void enqueue(TrackInfoObject *pTrackInfoObject);
+    void enqueue(TrackInfoObject *pTrackInfoObject, BpmReceiver *pBpmReceiver=NULL);
 
 protected:
     /** Main thread loop */
     void run();
 
     /** Queue holding files to generate a summary for */
-    Q3PtrQueue<TrackInfoObject> m_qQueue;
+    Q3PtrQueue<BpmDetectionPackage> m_qQueue;
     /** Mutex controlling access to m_qQueue */
     QMutex m_qMutex;
     /** Wait condition */

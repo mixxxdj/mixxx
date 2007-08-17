@@ -143,6 +143,13 @@ void DlgBpmTap::slotApply()
 //    m_pMixxx->grabKeyboard();
 }
 
+void DlgBpmTap::setProgress(TrackInfoObject *tio, double progress)
+{
+}
+
+void DlgBpmTap::setComplete(TrackInfoObject *tio, bool failed)
+{
+}
 
 
 #endif

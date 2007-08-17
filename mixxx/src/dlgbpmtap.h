@@ -23,6 +23,7 @@
 #include <QEvent>
 #include <QtGui>
 #include "configobject.h"
+#include "bpmreceiver.h"
 
 class MixxxApp;
 class TrackInfoObject;
@@ -30,7 +31,7 @@ class TrackInfoObject;
 /**
   *@author Micah Lee
   */
-class DlgBpmTap : public QDialog, public Ui::DlgBpmTapDlg
+class DlgBpmTap : public QDialog, public Ui::DlgBpmTapDlg, public BpmReceiver
 {
     Q_OBJECT
 public:
@@ -51,6 +52,10 @@ signals:
 
 public:
    // void setTrack(Track *track);
+
+    // Inherited methods from BpmReceiver.
+    void setProgress(TrackInfoObject *tio, double progress);
+    void setComplete(TrackInfoObject *tio, bool failed);
 
 protected:
     bool eventFilter(QObject *, QEvent *);
