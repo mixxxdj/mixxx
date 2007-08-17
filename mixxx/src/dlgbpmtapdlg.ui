@@ -1,6 +1,6 @@
 <ui version="4.0">
-  <class>DlgBPMTapDlg</class>
-  <widget class="QDialog" name="DlgBPMTapDlg">
+  <class>DlgBpmTapDlg</class>
+  <widget class="QDialog" name="DlgBpmTapDlg">
     <property name="geometry">
       <rect>
         <x>0</x>
@@ -17,7 +17,7 @@
     </property>
     <layout class="QGridLayout">
       <item row="0" column="0" colspan="3">
-        <widget class="Q3GroupBox" name="groupBox1">
+        <widget class="Q3GroupBox" name="grpBoxDetection">
           <property name="title">
             <string>BPM Detection</string>
           </property>

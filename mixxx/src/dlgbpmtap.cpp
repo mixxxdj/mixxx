@@ -35,7 +35,7 @@
 
 
 
-DlgBPMTap::DlgBPMTap(QWidget *mixxx, TrackInfoObject *tio) : QDialog(), Ui::DlgBPMTapDlg()
+DlgBpmTap::DlgBpmTap(QWidget *mixxx, TrackInfoObject *tio) : QDialog(), Ui::DlgBpmTapDlg()
 {
     // m_pMixxx = mixxx;
     m_CurrentTrack = tio;
@@ -54,9 +54,12 @@ DlgBPMTap::DlgBPMTap(QWidget *mixxx, TrackInfoObject *tio) : QDialog(), Ui::DlgB
     progressBPMDetect->setEnabled(false);
     radioBtnFast->setEnabled(false);
     radioBtnComplete->setEnabled(false);
+
 	spinBoxBPMRangeStart->setEnabled(false);
     spinBoxBPMRangeEnd->setEnabled(false);
     btnGo->setEnabled(true);
+
+    grpBoxDetection->setTitle(tio->getTitle());
 
     // Install event handler to generate closeDlg signal
     installEventFilter(this);
@@ -70,11 +73,11 @@ DlgBPMTap::DlgBPMTap(QWidget *mixxx, TrackInfoObject *tio) : QDialog(), Ui::DlgB
 
 }
 
-DlgBPMTap::~DlgBPMTap()
+DlgBpmTap::~DlgBpmTap()
 {
 }
 
-bool DlgBPMTap::eventFilter(QObject *o, QEvent *e)
+bool DlgBpmTap::eventFilter(QObject *o, QEvent *e)
 {
     // Send a close signal if dialog is closing
     /*
@@ -89,7 +92,7 @@ bool DlgBPMTap::eventFilter(QObject *o, QEvent *e)
     return QWidget::eventFilter(o,e);
 }
 
-void DlgBPMTap::slotTapBPM()
+void DlgBpmTap::slotTapBPM()
 {
 	if(m_Time->elapsed() > 2000)
 	{
@@ -113,29 +116,29 @@ void DlgBPMTap::slotTapBPM()
     m_TapCount += 1;
 }
 
-void DlgBPMTap::slotDetectBPM()
+void DlgBpmTap::slotDetectBPM()
 {
     m_CurrentTrack->sendToBpmQueue();
 }
 
-void DlgBPMTap::slotLoadDialog()
+void DlgBpmTap::slotLoadDialog()
 {
     qDebug(m_CurrentTrack->getBpmStr());
     txtBPM->setText(m_CurrentTrack->getBpmStr());
 }
 
-void DlgBPMTap::slotOK()
+void DlgBpmTap::slotOK()
 {
     m_CurrentTrack->setBpm(txtBPM->text().toFloat());
     setHidden(true);
 }
 
-void DlgBPMTap::slotUpdate()
+void DlgBpmTap::slotUpdate()
 {
 //    m_pMixxx->releaseKeyboard();
 }
 
-void DlgBPMTap::slotApply()
+void DlgBpmTap::slotApply()
 {
 //    m_pMixxx->grabKeyboard();
 }

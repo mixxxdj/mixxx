@@ -29,6 +29,7 @@ email                : snipexv@gmail.com
 #include <q3memarray.h>
 #include <QtDebug>
 #include <qapplication.h>
+#include "dlgbpmtap.h"
 
 #include "bpmdetect.h"
 #include <STTypes.h>

@@ -30,12 +30,12 @@ class TrackInfoObject;
 /**
   *@author Micah Lee
   */
-class DlgBPMTap : public QDialog, public Ui::DlgBPMTapDlg
+class DlgBpmTap : public QDialog, public Ui::DlgBpmTapDlg
 {
     Q_OBJECT
 public:
-    DlgBPMTap(QWidget *mixxx, TrackInfoObject *tio);
-    ~DlgBPMTap();
+    DlgBpmTap(QWidget *mixxx, TrackInfoObject *tio);
+    ~DlgBpmTap();
 
 public slots:
     void slotTapBPM();

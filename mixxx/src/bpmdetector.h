@@ -27,6 +27,7 @@ email                : snipexv@gmail.com
 
 class TrackInfoObject;
 class ControlObjectThread;
+class DlgBpmTap;
 
 #ifndef WAVESUMMARYCONSTANTS
 const int kiBlockSize = 2048;
@@ -45,6 +46,12 @@ class EngineSpectralFwd;
   *
   *@author Micah Lee
   */
+
+struct BpmDetectionPackage
+{
+    TrackInfoObject *_TrackInfoObject;
+    DlgBpmTap *_DlgBpmTap;
+};
 
 class BpmDetector : public QThread
 {

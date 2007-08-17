@@ -64,7 +64,7 @@ class QDropEvent;
 class Q3Table;
 class QWidget;
 class TrackInfoObject;
-class DlgBPMTap;
+class DlgBpmTap;
 class BpmDetector;
 
 class WTrackTable : public Q3Table
@@ -83,7 +83,7 @@ signals:
     void mousePressed(TrackInfoObject *pTrackInfoObject, int button);
 
 protected:
-    DlgBPMTap *bpmTapDlg;
+    DlgBpmTap *bpmTapDlg;
 };
 
 #endif
