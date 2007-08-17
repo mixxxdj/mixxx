@@ -62,10 +62,14 @@ BpmDetector::~BpmDetector()
 	delete m_pEngineSpectralFwd;
 }
 
-void BpmDetector::enqueue(TrackInfoObject *pTrackInfoObject)
+void BpmDetector::enqueue(TrackInfoObject *pTrackInfoObject, BpmReceiver *pBpmReceiver)
 {
+    BpmDetectionPackage* package = new BpmDetectionPackage();
+    package->_TrackInfoObject = pTrackInfoObject;
+    package->_BpmReceiver = pBpmReceiver;
+
   	m_qMutex.lock();
-	m_qQueue.enqueue(pTrackInfoObject);
+	m_qQueue.enqueue(package);
 	m_qMutex.unlock();
 	m_qWait.wakeAll();
 }
@@ -73,14 +77,28 @@ void BpmDetector::enqueue(TrackInfoObject *pTrackInfoObject)
 void BpmDetector::run()
 {
 	int i = 0;
+    
+    
+    
 	while (1)
 	{
+        TrackInfoObject *pTrackInfoObject = NULL;
+        BpmReceiver *pBpmReceiver = NULL;
+
 		// Check if there is a new track to process in the queue...
        
 		m_qMutex.lock();
-		TrackInfoObject *pTrackInfoObject = m_qQueue.dequeue();
+		BpmDetectionPackage* package = m_qQueue.dequeue();
+        
 		m_qMutex.unlock();
 
+        if(package != NULL)
+        {
+            pTrackInfoObject = package->_TrackInfoObject;
+            pBpmReceiver = package->_BpmReceiver;
+            delete package;
+        }
+       
 		// If that's not the case...
 		if (!pTrackInfoObject)
 		{
@@ -90,8 +108,15 @@ void BpmDetector::run()
 			//m_qWait.wait(&m_qWaitMutex);
 
 			//m_qMutex.lock();
-			pTrackInfoObject = m_qQueue.dequeue();
+			package = m_qQueue.dequeue();
 			m_qMutex.unlock();
+
+            if(package != NULL)
+            {
+                pTrackInfoObject = package->_TrackInfoObject;
+                pBpmReceiver = package->_BpmReceiver;
+                delete package;
+            }  
 		}
 		Q_ASSERT(pTrackInfoObject != NULL);
 
@@ -326,6 +351,7 @@ void BpmDetector::run()
         	delete pPeaks;
         	delete bpv;
         	delete pSoundSource;
+  
 
 			qDebug() << "BPM detection successful for" << pTrackInfoObject->getFilename();
 
