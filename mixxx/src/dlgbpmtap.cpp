@@ -52,15 +52,19 @@ DlgBpmTap::DlgBpmTap(QWidget *mixxx, TrackInfoObject *tio) : QDialog(), Ui::DlgB
     m_TapCount = 0;
 
     progressBPMDetect->setEnabled(true);
-    progressBPMDetect->setTotalSteps(100);
+    progressBPMDetect->setMaximum(100);
+    progressBPMDetect->setMinimum(0);
     radioBtnFast->setEnabled(false);
     radioBtnComplete->setEnabled(false);
+    btnTap->setEnabled(true);
 
 	spinBoxBPMRangeStart->setEnabled(false);
     spinBoxBPMRangeEnd->setEnabled(false);
     btnGo->setEnabled(true);
 
     grpBoxDetection->setTitle(tio->getTitle());
+    txtBPM->setText(QString("%1").arg(tio->getBpm(), 3,'f',1));
+    
 
     // Install event handler to generate closeDlg signal
     installEventFilter(this);
@@ -95,30 +99,38 @@ bool DlgBpmTap::eventFilter(QObject *o, QEvent *e)
 
 void DlgBpmTap::slotTapBPM()
 {
-	if(m_Time->elapsed() > 2000)
-	{
-		m_TapCount = 0;
-	}
-
-	if(m_TapCount <=0)
+    if(btnTap->text() != "Detecting BPM...")
     {
-        m_Time->restart();
+    	if(m_Time->elapsed() > 2000)
+    	{
+    		m_TapCount = 0;
+    	}
+
+    	if(m_TapCount <=0)
+        {
+            m_Time->restart();
+        }
+
+        if(m_TapCount > 0)
+        {
+            float elapsedTime = m_Time->elapsed() / (float)60000;
+
+            float bpm = (float)m_TapCount / (float)elapsedTime;
+            m_CurrentTrack->setBpm(bpm);
+            txtBPM->setText(QString("%1").arg(bpm, 3,'f',1));
+        }
+
+        m_TapCount += 1;
     }
-
-    if(m_TapCount > 0)
-    {
-        float elapsedTime = m_Time->elapsed() / (float)60000;
-
-        float bpm = (float)m_TapCount / (float)elapsedTime;
-        m_CurrentTrack->setBpm(bpm);
-        txtBPM->setText(QString("%1").arg(bpm, 3,'f',1));
-    }
-
-    m_TapCount += 1;
 }
 
 void DlgBpmTap::slotDetectBPM()
 {
+    progressBPMDetect->setValue(0);
+    progressBPMDetect->setMinimum(0);
+    progressBPMDetect->setMaximum(0);
+    btnTap->setText("Detecting BPM...");
+    //btnTap->setEnabled(false);
     m_CurrentTrack->setBpmConfirm(false);
     m_CurrentTrack->sendToBpmQueue(this);
 }
@@ -147,14 +159,18 @@ void DlgBpmTap::slotApply()
 
 void DlgBpmTap::setProgress(TrackInfoObject *tio, int progress)
 {
-    qDebug() << "We have made progress:" << progress;
-    //progressBPMDetect->setProgress(progress);
+// txtBPM->setText(QString("%1").arg(progress)); 
 }
 
 void DlgBpmTap::setComplete(TrackInfoObject *tio, bool failed, float returnBpm)
 {
-    qDebug("DlgBpmTap COMPLETE!!!!!");
+    progressBPMDetect->setMaximum(100);
+    progressBPMDetect->setValue(0);
+    //progressBPMDetect->reset();
+    btnTap->setText("&Push to tap tempo");
+    //btnTap->setEnabled(true);
     txtBPM->setText(QString("%1").arg(returnBpm, 3,'f',1));
+    
 }
 
 
