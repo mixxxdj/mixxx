@@ -77,7 +77,7 @@ void EngineLADSPA::process(const CSAMPLE *pIn, const CSAMPLE *pOut, const int iB
         qDebug("LADSPA: setBufferSize: %d (%d)", m_monoBufferSize, m_bufferSize);
         LADSPAControl::setBufferSize(m_monoBufferSize);
         
-        if (m_pBufferLeft != NULL)
+        if (m_pBufferLeft[0] != NULL)
         {
             delete [] m_pBufferLeft[0];
             delete [] m_pBufferLeft[1];
@@ -108,7 +108,15 @@ void EngineLADSPA::process(const CSAMPLE *pIn, const CSAMPLE *pOut, const int iB
 
     for (LADSPAInstanceList::iterator instance = m_Instances.begin(); instance != m_Instances.end(); instance++)
     {
-        (*instance)->process(m_pBufferLeft[bufferNo], m_pBufferRight[bufferNo], m_pBufferLeft[bufferNo], m_pBufferRight[bufferNo], m_monoBufferSize); // FIX: inplace broken plugins
+        if ((*instance)->isInplaceBroken())
+        {
+            (*instance)->process(m_pBufferLeft[bufferNo], m_pBufferRight[bufferNo], m_pBufferLeft[1 - bufferNo], m_pBufferRight[1 - bufferNo], m_monoBufferSize);
+            bufferNo = 1 - bufferNo;
+        }
+        else
+        {
+            (*instance)->process(m_pBufferLeft[bufferNo], m_pBufferRight[bufferNo], m_pBufferLeft[bufferNo], m_pBufferRight[bufferNo], m_monoBufferSize);
+        }
     }
 
     CSAMPLE *pOutput = (CSAMPLE *)pOut;
