@@ -64,11 +64,11 @@ BpmDetector::~BpmDetector()
 
 void BpmDetector::enqueue(TrackInfoObject *pTrackInfoObject, BpmReceiver *pBpmReceiver)
 {
+    m_qMutex.lock();
     BpmDetectionPackage* package = new BpmDetectionPackage();
     package->_TrackInfoObject = pTrackInfoObject;
-    package->_BpmReceiver = pBpmReceiver;
-
-  	m_qMutex.lock();
+    package->_BpmReceiver = pBpmReceiver;  	
+    qDebug() << package;
 	m_qQueue.enqueue(package);
 	m_qMutex.unlock();
 	m_qWait.wakeAll();
@@ -76,9 +76,7 @@ void BpmDetector::enqueue(TrackInfoObject *pTrackInfoObject, BpmReceiver *pBpmRe
 
 void BpmDetector::run()
 {
-	int i = 0;
-    
-    
+	int i = 0;   
     
 	while (1)
 	{
@@ -87,21 +85,21 @@ void BpmDetector::run()
 
 		// Check if there is a new track to process in the queue...
        
+        qDebug() << "Unloading from queue";
 		m_qMutex.lock();
-		BpmDetectionPackage* package = m_qQueue.dequeue();
-        
+		BpmDetectionPackage* package = m_qQueue.dequeue();        
 		m_qMutex.unlock();
 
         if(package != NULL)
         {
+            qDebug() << "Found BPM package for " << package->_TrackInfoObject->getTitle();
             pTrackInfoObject = package->_TrackInfoObject;
             pBpmReceiver = package->_BpmReceiver;
             delete package;
         }
-       
-		// If that's not the case...
-		if (!pTrackInfoObject)
+        else
 		{
+            qDebug() << "That was apparently not the case...";
 			// Wait for track to be requested
 			m_qMutex.lock();
 			m_qWait.wait(&m_qMutex);
@@ -109,20 +107,25 @@ void BpmDetector::run()
 
 			//m_qMutex.lock();
 			package = m_qQueue.dequeue();
-			m_qMutex.unlock();
-
             if(package != NULL)
             {
+                qDebug() << "Attempt 2 was not null";
                 pTrackInfoObject = package->_TrackInfoObject;
                 pBpmReceiver = package->_BpmReceiver;
                 delete package;
             }  
+			m_qMutex.unlock();
+
+            
+            
 		}
 		Q_ASSERT(pTrackInfoObject != NULL);
 
 		//
 		// Track processing
 		//
+
+        qDebug() << "Moving right along...";            
 
 		// Check if BPM has been detected in the meantime
 		if (pTrackInfoObject->getBpmConfirm() == false || pTrackInfoObject->getBpm() == 0.)
@@ -209,7 +212,12 @@ void BpmDetector::run()
         			
         				cprogress++;
         				if ( cprogress % 250 == 0 ) {
-        					//qDebug() << "BPM Progress: " << cprogress;
+        					if(pBpmReceiver)
+                            {
+                                m_qMutex.lock();
+                                pBpmReceiver->setProgress(pTrackInfoObject, cprogress/10);
+                                m_qMutex.unlock();                               
+                            }
         				}
         			}
         	} while (read == CHUNKSIZE && pos <= length);
@@ -219,6 +227,9 @@ void BpmDetector::run()
         		BPM = Correct_BPM( BPM, maxBpm, minBpm );
         		pTrackInfoObject->setBpm(BPM);
         		pTrackInfoObject->setBpmConfirm();
+                if(pBpmReceiver){
+                    pBpmReceiver->setComplete(pTrackInfoObject, false, BPM);
+                }
                 qDebug() << "BPM detection successful for" << pTrackInfoObject->getFilename();
         		delete pSoundSource;
         		continue;
@@ -321,30 +332,12 @@ void BpmDetector::run()
         		it1++;
         	}           
 
-        	// Update BPM value in TrackInfoObject
-        	if (!pTrackInfoObject->getBpmConfirm()) {
-        		pTrackInfoObject->setBpm(bpv->getBestBpmValue());
+        	pTrackInfoObject->setBpm(bpv->getBestBpmValue());
+            
+            if(pBpmReceiver){
+                pBpmReceiver->setComplete(pTrackInfoObject, true, bpv->getBestBpmValue());
+            }
 
-        		float conf = bpv->getBestBpmConfidence() / (float)1e10;
-
-        		// FIXME: This is in the wrong file
-        		if (conf > 1000.0f || conf < 0.0f) {
-        			// Something went pretty wrong there...
-        			conf = 0.0f;
-        		}
-
-        		conf = math_max(0., math_min(1., conf));
-
-        		if (conf > 0.75f)
-        		{
-        			pTrackInfoObject->setBpmConfirm(true);
-        		}
-        		else
-        		{
-        			// Let the user know we can't accurately detect the BPM and that they'd better tap it.
-        			qDebug("BPM detection failed!");
-        		}
-        	}
 
         	delete [] pBuffer;
         	delete [] pDPsf;
