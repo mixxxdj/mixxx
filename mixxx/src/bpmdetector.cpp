@@ -85,21 +85,18 @@ void BpmDetector::run()
 
 		// Check if there is a new track to process in the queue...
        
-        qDebug() << "Unloading from queue";
 		m_qMutex.lock();
 		BpmDetectionPackage* package = m_qQueue.dequeue();        
 		m_qMutex.unlock();
 
         if(package != NULL)
         {
-            qDebug() << "Found BPM package for " << package->_TrackInfoObject->getTitle();
             pTrackInfoObject = package->_TrackInfoObject;
             pBpmReceiver = package->_BpmReceiver;
             delete package;
         }
         else
 		{
-            qDebug() << "That was apparently not the case...";
 			// Wait for track to be requested
 			m_qMutex.lock();
 			m_qWait.wait(&m_qMutex);
@@ -109,7 +106,6 @@ void BpmDetector::run()
 			package = m_qQueue.dequeue();
             if(package != NULL)
             {
-                qDebug() << "Attempt 2 was not null";
                 pTrackInfoObject = package->_TrackInfoObject;
                 pBpmReceiver = package->_BpmReceiver;
                 delete package;
@@ -123,9 +119,7 @@ void BpmDetector::run()
 
 		//
 		// Track processing
-		//
-
-        qDebug() << "Moving right along...";            
+		//          
 
 		// Check if BPM has been detected in the meantime
 		if (pTrackInfoObject->getBpmConfirm() == false || pTrackInfoObject->getBpm() == 0.)

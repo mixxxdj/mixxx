@@ -25,7 +25,7 @@
             <item>
               <layout class="QGridLayout">
                 <item row="0" column="0">
-                  <widget class="Q3ProgressBar" name="progressBPMDetect"/>
+                  <widget class="QProgressBar" name="progressBPMDetect"/>
                 </item>
                 <item row="0" column="1">
                   <widget class="QPushButton" name="btnGo">
