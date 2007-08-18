@@ -39,3 +39,8 @@ int LADSPAInstance::getSampleRate()
 LADSPAInstance::~LADSPAInstance()
 {
 }
+
+bool LADSPAInstance::isInplaceBroken()
+{
+    return LADSPA_IS_INPLACE_BROKEN(getDescriptor()->Properties);
+}

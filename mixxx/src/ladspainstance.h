@@ -28,6 +28,7 @@ public:
 
     const LADSPA_Descriptor * getDescriptor();
     int getSampleRate();
+    bool isInplaceBroken();
 
 private:
     const LADSPA_Descriptor * m_pDescriptor;
