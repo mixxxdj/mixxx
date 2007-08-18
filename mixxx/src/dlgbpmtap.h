@@ -54,8 +54,8 @@ public:
    // void setTrack(Track *track);
 
     // Inherited methods from BpmReceiver.
-    void setProgress(TrackInfoObject *tio, double progress);
-    void setComplete(TrackInfoObject *tio, bool failed);
+    void setProgress(TrackInfoObject *tio, int progress);
+    void setComplete(TrackInfoObject *tio, bool failed, float returnBpm);
 
 protected:
     bool eventFilter(QObject *, QEvent *);

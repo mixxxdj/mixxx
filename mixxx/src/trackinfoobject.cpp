@@ -24,6 +24,7 @@
 #include <Q3MemArray>
 #include "trackinfoobject.h"
 #include "bpmdetector.h"
+#include "bpmreceiver.h"
 #include "soundsourceproxy.h"
 #include "wtracktable.h"
 #include "wtracktableitem.h"
@@ -407,6 +408,11 @@ QString TrackInfoObject::getLocation()
 void TrackInfoObject::sendToBpmQueue()
 {
     m_BpmDetector->enqueue(this);
+}
+
+void TrackInfoObject::sendToBpmQueue(BpmReceiver *pBpmReceiver)
+{
+    m_BpmDetector->enqueue(this, pBpmReceiver);
 }
 
 float TrackInfoObject::getBpm()

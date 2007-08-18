@@ -51,7 +51,8 @@ DlgBpmTap::DlgBpmTap(QWidget *mixxx, TrackInfoObject *tio) : QDialog(), Ui::DlgB
     m_Time = new QTime(0,0);
     m_TapCount = 0;
 
-    progressBPMDetect->setEnabled(false);
+    progressBPMDetect->setEnabled(true);
+    progressBPMDetect->setTotalSteps(100);
     radioBtnFast->setEnabled(false);
     radioBtnComplete->setEnabled(false);
 
@@ -118,7 +119,8 @@ void DlgBpmTap::slotTapBPM()
 
 void DlgBpmTap::slotDetectBPM()
 {
-    m_CurrentTrack->sendToBpmQueue();
+    m_CurrentTrack->setBpmConfirm(false);
+    m_CurrentTrack->sendToBpmQueue(this);
 }
 
 void DlgBpmTap::slotLoadDialog()
@@ -143,12 +145,16 @@ void DlgBpmTap::slotApply()
 //    m_pMixxx->grabKeyboard();
 }
 
-void DlgBpmTap::setProgress(TrackInfoObject *tio, double progress)
+void DlgBpmTap::setProgress(TrackInfoObject *tio, int progress)
 {
+    qDebug() << "We have made progress:" << progress;
+    //progressBPMDetect->setProgress(progress);
 }
 
-void DlgBpmTap::setComplete(TrackInfoObject *tio, bool failed)
+void DlgBpmTap::setComplete(TrackInfoObject *tio, bool failed, float returnBpm)
 {
+    qDebug("DlgBpmTap COMPLETE!!!!!");
+    txtBPM->setText(QString("%1").arg(returnBpm, 3,'f',1));
 }
 
 

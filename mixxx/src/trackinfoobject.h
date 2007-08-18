@@ -32,6 +32,7 @@ class WTrackTableItem;
 class WOverview;
 class ControlObject;
 class BpmDetector;
+class BpmReceiver;
 
 #define NumBpmFactors 4
 
@@ -68,6 +69,7 @@ public:
     QString getLocation();
     /** Add this TrackInfoObject instance to the BPM detection queue */
     void sendToBpmQueue();
+    void sendToBpmQueue(BpmReceiver *pBpmReceiver);
     /** Returns BPM */
     float getBpm();
     /** Set BPM */

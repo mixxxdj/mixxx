@@ -34,14 +34,14 @@ public:
     virtual ~BpmReceiver(){}
     /** Sent from the bpm detection when the detection progress has changed for a 
         particular TrackInfoObject. */
-    virtual void setProgress(TrackInfoObject *tio, double progress) = 0;
+    virtual void setProgress(TrackInfoObject *tio, int progress) = 0;
 
     /** Sent from the bpm detection when processing of this TrackInfoObject is complete.
         Also notifies whether or not the detection was succesful. */
 
     /** NOTE: The TrackInfoObject will already have the new BPM and confirm status before
               this method is called.*/
-    virtual void setComplete(TrackInfoObject *tio, bool failed) = 0;
+    virtual void setComplete(TrackInfoObject *tio, bool failed, float rBpm) = 0;
 };
 
 #endif
