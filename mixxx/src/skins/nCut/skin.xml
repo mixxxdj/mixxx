@@ -1321,5 +1321,14 @@
   <ColWidthBpm>50</ColWidthBpm>
   <ColWidthBitrate>0</ColWidthBitrate>
  </TrackTable>
+ 
+ <TableView>
+  <Pos>15,460</Pos>
+  <Size>994,293</Size>
+  <BgColor>#ffffff</BgColor>
+  <FgColor>#c0c0c0</FgColor>
+  <BgColorRowEven>#ffffff</BgColorRowEven>
+  <BgColorRowUneven>#ffffff</BgColorRowUneven>
+ </TableView>
 
 </skin>
