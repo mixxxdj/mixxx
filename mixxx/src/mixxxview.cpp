@@ -38,6 +38,8 @@
 
 
 #include "wtracktable.h"
+#include "wtracktablemodel.h"
+#include "wtracktableview.h"
 #include "wtreeview.h"
 #include "wwidget.h"
 #include "wknob.h"
@@ -618,6 +620,7 @@ void MixxxView::createAllWidgets(QDomElement docElem, QWidget* parent, bool bVis
                 m_pLineEditSearch->setFixedSize(x,y);
 				
 			}
+			/*
             else if (node.nodeName()=="TrackTable")
             {
                 m_pTrackTable = new WTrackTable(this);
@@ -625,12 +628,12 @@ void MixxxView::createAllWidgets(QDomElement docElem, QWidget* parent, bool bVis
                 m_pTrackTable->setup(node);
                 m_pTrackTable->installEventFilter(m_pKeyboard);
             }
-			/*
+			*/
 			else if (node.nodeName()=="TableView")
 			{
 				m_pTrackTableView = new WTrackTableView(this);
 				m_pTrackTableView->setup(node);
-			}*/
+			}
         }
         node = node.nextSibling();
     }
@@ -957,18 +960,16 @@ void MixxxView::rebootGUI(QWidget* parent, bool bVisualsWaveform, ConfigObject<C
 				//m_pSearchLabel->setFixedSize(x-285,y);
                 m_pLineEditSearch->setFixedSize(x,y);
 				qDebug("checkpoint 18");
-			}
+			}/*
             else if (node.nodeName()=="TrackTable")
             {
                 m_pTrackTable->setup(node);
-            }
-			/*
-			else if (node.nodeName() == "TrackView")
+            }*/
+			else if (node.nodeName() == "TableView")
 			{
-				m_pTrackTableView = new WTrackTableView(parent);
-				m_pTrackTableVIew->setup();
+				m_pTrackTableView->setup(node);
 			}
-			
+			/*
             else if (node.nodeName()=="TreeView")
             {
                 m_pTreeView->setup(node);

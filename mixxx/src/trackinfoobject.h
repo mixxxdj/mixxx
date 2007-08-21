@@ -27,12 +27,13 @@ class QString;
 class QDomElement;
 class QDomDocument;
 class QDomNode;
-class WTrackTable;
-class WTrackTableItem;
+//class WTrackTable;
+//class WTrackTableItem;
 class WOverview;
 class ControlObject;
 class BpmDetector;
 class BpmReceiver;
+class TrackPlaylist;
 
 #define NumBpmFactors 4
 
@@ -56,11 +57,11 @@ public:
     bool checkFileExists();
     void writeToXML( QDomDocument &, QDomElement & );
     /** Insert at the values in a WTrackTable at a given row */
-    void insertInTrackTableRow(WTrackTable *pTableTrack, int iRow);
+    //void insertInTrackTableRow(WTrackTable *pTableTrack, int iRow);
     /** Reset pointers to table cells */
-    void removeFromTrackTable();
+    //void removeFromTrackTable();
 	/** Assists in clearing the table*/
-	void clearTrackTableRow();
+	//void clearTrackTableRow();
     /** Returns the duration in seconds */
     int getDuration();
     /** Returns the duration as a string: H:MM:SS */
@@ -149,9 +150,9 @@ public:
     /** Returns a pointer to segmentation summary */
     Q3ValueList<long> *getSegmentationSummary();
     /** Return the next track as listed in WTrackTable */
-    TrackInfoObject *getNext();
+    TrackInfoObject *getNext(TrackPlaylist *pPlaylist);
     /** Return the previous track as listed in WTrackTable */
-    TrackInfoObject *getPrev();
+    TrackInfoObject *getPrev(TrackPlaylist *pPlaylist);
     /** Set corresponding overview widget */
     void setOverviewWidget(WOverview *p);
     /** Set pointer to ControlObject holding BPM value in engine */
@@ -206,10 +207,10 @@ private:
     /** Pointer to summary segmentation */
     Q3ValueList<long> *m_pSegmentation;
     /** WTrackTableItems are representations of the values actually shown in the WTrackTable */
-    WTrackTableItem *m_pTableItemScore, *m_pTableItemTitle, *m_pTableItemArtist, *m_pTableItemComment, *m_pTableItemType,
-                    *m_pTableItemDuration, *m_pTableItemBpm, *m_pTableItemBitrate;
+    //WTrackTableItem *m_pTableItemScore, *m_pTableItemTitle, *m_pTableItemArtist, *m_pTableItemComment, *m_pTableItemType,
+    //                *m_pTableItemDuration, *m_pTableItemBpm, *m_pTableItemBitrate;
     /** Pointer to WTrackTable where the current item was inserted last */
-    WTrackTable *m_pTableTrack;
+    //WTrackTable *m_pTableTrack;
 
     /** Maximum number of times any one track have been played */
     static int siMaxTimesPlayed;

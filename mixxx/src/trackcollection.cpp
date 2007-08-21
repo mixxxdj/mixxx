@@ -15,7 +15,6 @@
 #include "trackinfoobject.h"
 #include "bpmdetector.h"
 #include <qfileinfo.h>
-#include <QtDebug>
 #include "defs.h"
 
 
@@ -143,12 +142,12 @@ TrackInfoObject *TrackCollection::getTrack(QString location)
             if (pTrack->isValid())
             {
                 addTrack(pTrack);
-                qDebug() << "Found new track:" << pTrack->getFilename();
+                qDebug("Found new track: %s", pTrack->getFilename().latin1());
                 return pTrack;
             }
             else
             {
-                qDebug() << "Could not parse:" << file.fileName();
+                qDebug("Could not parse %s", file.fileName().latin1());
                 delete pTrack;
             }
         }

@@ -62,6 +62,7 @@ public:
     /** Get TrackInfoObject of first track in playlist */
     TrackInfoObject *getFirstTrack();
 	int getSongNum();
+	TrackInfoObject *getTrackAt(int index);
 	TrackCollection *getCollection();
     
 public slots:
@@ -75,10 +76,11 @@ private:
     Q3PtrList<TrackInfoObject> m_qList;
     /** Pointer to TrackCollection */
     TrackCollection *m_pTrackCollection;
+	TrackCollection *personalTrackCollection;
     /** Name of list */
     QString m_qName;
     /** Pointer to WTrackTable. This is 0 if the playlist is not displayed in a table */
-    WTrackTable *m_pTable;
+    //WTrackTable *m_pTable;
     /** Static pointer to Track */
     static Track *spTrack;
 	int iCounter;

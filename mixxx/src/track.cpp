@@ -15,7 +15,6 @@
 #include "trackcollection.h"
 #include "xmlparse.h"
 #include <qfile.h>
-#include <QtDebug>
 #include <QLabel>
 #include <qcombobox.h>
 #include <qlineedit.h>
@@ -24,6 +23,10 @@
 #include "mixxxview.h"
 #include <q3dragobject.h>
 #include "wtracktable.h"
+/*used for new model/view interface*/
+#include "wtracktablemodel.h"
+#include "wtracktableview.h"
+
 #include "wtreeview.h"
 #include "wnumberpos.h"
 #include <q3popupmenu.h>
@@ -56,8 +59,9 @@ Track::Track(QString location, MixxxView *pView, EngineBuffer *pBuffer1, EngineB
 	
     m_pTrackCollection = new TrackCollection(m_pBpmDetector);
     m_pTrackImporter = new TrackImporter(m_pView,m_pTrackCollection);
+	m_pLibraryModel = new WTrackTableModel(m_pView->m_pTrackTableView);
+	m_pPlayQueueModel = new WTrackTableModel(m_pView->m_pTrackTableView);
 
-	
     // Read the XML file
 	readXML(location);
 
@@ -77,8 +81,15 @@ Track::Track(QString location, MixxxView *pView, EngineBuffer *pBuffer1, EngineB
 
     // Insert the first playlist in the list
     m_pActivePlaylist = m_qPlaylists.at(0);
-    m_pActivePlaylist->activate(m_pView->m_pTrackTable);
+    //m_pActivePlaylist->activate(m_pView->m_pTrackTable);
 
+	m_pLibraryModel->setTrackPlaylist(m_qPlaylists.at(0));
+	m_pPlayQueueModel->setTrackPlaylist(m_qPlaylists.at(1));
+
+	m_pView->m_pTrackTableView->setSearchSource(m_pLibraryModel);
+	m_pView->m_pTrackTableView->resizeColumnsToContents();
+	m_pView->m_pTrackTableView->setTrack(this);
+	
     // Connect mouse events from the tree view
     //connect(m_pView->m_pTreeView, SIGNAL(activatePlaylist(QString)), this, SLOT(slotActivatePlaylist(QString)));
     //connect(this, SIGNAL(activePlaylist(TrackPlaylist *)), m_pView->m_pTreeView, SLOT(slotHighlightPlaylist(TrackPlaylist *)));
@@ -87,13 +98,11 @@ Track::Track(QString location, MixxxView *pView, EngineBuffer *pBuffer1, EngineB
 	connect(m_pView->m_pComboBox, SIGNAL(activated(int)), this, SLOT(slotActivatePlaylist(int)));
 
 	// Connect Search to table
-	connect(m_pView->m_pLineEditSearch, SIGNAL(textChanged(const QString &)), this, SLOT(slotFindTracks()));
-	// Connect drop events to table
-    connect(m_pView->m_pTrackTable, SIGNAL(dropped(QDropEvent *)), this, SLOT(slotDrop(QDropEvent *)));
+	connect( m_pView->m_pLineEditSearch, SIGNAL( textChanged( const QString & )),m_pView->m_pTrackTableView->m_pSearchFilter, SLOT( setFilterFixedString( const QString & )));
 	
-    // Connect mouse events from WTrackTable
-    connect(m_pView->m_pTrackTable, SIGNAL(mousePressed(TrackInfoObject*, int )), this, SLOT(slotTrackPopup(TrackInfoObject*, int )));
-
+	// Connect drop events to table
+    //connect(m_pView->m_pTrackTable, SIGNAL(dropped(QDropEvent *)), this, SLOT(slotDrop(QDropEvent *)));
+	
     // Get ControlObject for determining end of track mode, and set default value to STOP.
     m_pEndOfTrackModeCh1 = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey("[Channel1]","TrackEndMode")));
     m_pEndOfTrackModeCh2 = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey("[Channel2]","TrackEndMode")));
@@ -121,7 +130,7 @@ Track::Track(QString location, MixxxView *pView, EngineBuffer *pBuffer1, EngineB
     connect(m_pPrevTrackCh1, SIGNAL(valueChanged(double)), this, SLOT(slotPrevTrackPlayer1(double)));
     connect(m_pNextTrackCh2, SIGNAL(valueChanged(double)), this, SLOT(slotNextTrackPlayer2(double)));
     connect(m_pPrevTrackCh2, SIGNAL(valueChanged(double)), this, SLOT(slotPrevTrackPlayer2(double)));
-	//QString temp = m_pView->m_pLineEditSearch->text();
+
     TrackPlaylist::setTrack(this);
 }
 
@@ -139,7 +148,7 @@ void Track::readXML(QString location)
     // Check if we can open the file
     if (!file.exists())
     {
-        //qDebug() << "Track:" << location << "does not exist.";
+        //qDebug("Track: %s does not exist.",location.latin1());
         file.close();
         return;
     }
@@ -147,7 +156,7 @@ void Track::readXML(QString location)
     // Check if there is a parsing problem
     if (!domXML.setContent(&file))
     {
-        //qDebug() << "Track: Parse error in" << location;
+        //qDebug("Track: Parse error in %s",location.latin1());
         file.close();
         return;
     }
@@ -280,7 +289,7 @@ void Track::slotDrop(QDropEvent *e)
 
     e->accept();
 
-    qDebug() << "name" << name;
+    qDebug("name %s",name.latin1());
 
     slotActivatePlaylist(name);
 }
@@ -293,23 +302,39 @@ void Track::slotActivatePlaylist(QString name)
     if (pNewlist)
     {
         // Deactivate current playlist
-        if (m_pActivePlaylist)
-            m_pActivePlaylist->deactivate();
+        //if (m_pActivePlaylist)
+            //m_pActivePlaylist->deactivate();
 
         // Activate new playlist
         m_pActivePlaylist = pNewlist;
-        m_pActivePlaylist->activate(m_pView->m_pTrackTable);
+		m_pLibraryModel->setTrackPlaylist(m_pActivePlaylist);
+        //m_pActivePlaylist->activate(m_pView->m_pTrackTable);
         emit(activePlaylist(pNewlist));
     }
 }
 void Track::slotActivatePlaylist(int index)
 {
-	if (m_pActivePlaylist)
-            m_pActivePlaylist->deactivate();
+	switch(index)
+	{
+	case 0:
+		m_pView->m_pTrackTableView->reset();
+		m_pView->m_pTrackTableView->setSearchSource(m_pLibraryModel);
+		m_pView->m_pTrackTableView->resizeColumnsToContents();
+		m_pView->m_pTrackTableView->setTrack(this);
+		break;
+	case 1:
+		m_pView->m_pTrackTableView->reset();
+		m_pView->m_pTrackTableView->setSearchSource(m_pPlayQueueModel);
+		m_pView->m_pTrackTableView->resizeColumnsToContents();
+		m_pView->m_pTrackTableView->setTrack(this);
+		break;	
+	}
+	//if (m_pActivePlaylist)
+            //m_pActivePlaylist->deactivate();
 	
 	// Insert playlist according to ComboBox index
     m_pActivePlaylist = m_qPlaylists.at(index);
-    m_pActivePlaylist->activate(m_pView->m_pTrackTable);
+    //m_pActivePlaylist->activate(m_pView->m_pTrackTable);
 }
 void Track::slotNewPlaylist()
 {
@@ -341,12 +366,10 @@ void Track::slotDeletePlaylist(QString qName)
         if (list==m_pActivePlaylist)
         {
             // Deactivate the list
-            list->deactivate();
+            //list->deactivate();
             m_pActivePlaylist = 0;
-
             bActivateOtherList = true;
         }
-
         m_qPlaylists.remove(list);
         delete list;
     }
@@ -391,44 +414,9 @@ TrackPlaylist *Track::getPlaylist(QString qName)
     return 0;
 }
 
-void Track::slotTrackPopup(TrackInfoObject *pTrackInfoObject, int)
+void Track::slotSendToPlayqueue(TrackInfoObject *pTrackInfoObject)
 {
-	Q3PopupMenu *menu = new Q3PopupMenu();
-    m_pActivePopupTrack = pTrackInfoObject;
-    int id;
-
-	if(m_pActivePlaylist->getName()== m_qPlaylists.at(1)->getName())
-	{	
-		id = menu->insertItem("Player 1", this, SLOT(slotLoadPlayer1()));
-		if (ControlObject::getControl(ConfigKey("[Channel1]","play"))->get()==1.)
-			menu->setItemEnabled(id, false);
-	    
-		id = menu->insertItem("Player 2", this, SLOT(slotLoadPlayer2()));
-		if (ControlObject::getControl(ConfigKey("[Channel2]","play"))->get()==1.)
-			menu->setItemEnabled(id, false);
-	    
-		menu->insertItem("Remove",   this, SLOT(slotRemoveFromPlaylist()));
-	}
-	else
-	{
-		menu->insertItem("Play Queue", this, SLOT(slotSendToPlayqueue()));
-
-		id = menu->insertItem("Player 1", this, SLOT(slotLoadPlayer1()));
-		if (ControlObject::getControl(ConfigKey("[Channel1]","play"))->get()==1.)
-			menu->setItemEnabled(id, false);
-	    
-		id = menu->insertItem("Player 2", this, SLOT(slotLoadPlayer2()));
-		if (ControlObject::getControl(ConfigKey("[Channel2]","play"))->get()==1.)
-			menu->setItemEnabled(id, false);
-	    
-		menu->insertItem("Remove",   this, SLOT(slotRemoveFromPlaylist()));
-	}
-    menu->exec(QCursor::pos());
-
-}
-void Track::slotSendToPlayqueue()
-{
-	m_qPlaylists.at(1)->addTrack(m_pActivePopupTrack);
+	m_qPlaylists.at(1)->addTrack(pTrackInfoObject);
 }
 void Track::slotLoadPlayer1(TrackInfoObject *pTrackInfoObject, bool bStartFromEndPos)
 {
@@ -530,16 +518,6 @@ void Track::slotLoadPlayer2(TrackInfoObject *pTrackInfoObject, bool bStartFromEn
     emit(newTrackPlayer2(m_pTrackPlayer2));
 }
 
-void Track::slotLoadPlayer1()
-{
-    slotLoadPlayer1(m_pActivePopupTrack);
-}
-
-void Track::slotLoadPlayer2()
-{
-    slotLoadPlayer2(m_pActivePopupTrack);
-}
-
 void Track::slotLoadPlayer1(QString filename)
 {
     TrackInfoObject *pTrack = m_pTrackCollection->getTrack(filename);
@@ -559,11 +537,6 @@ TrackPlaylist *Track::getActivePlaylist()
     return m_pActivePlaylist;
 }
 
-void Track::slotRemoveFromPlaylist()
-{
-    m_pActivePlaylist->slotRemoveTrack(m_pActivePopupTrack);
-}
-
 void Track::slotEndOfTrackPlayer1(double val)
 {
 //    qDebug("end of track %f",val);
@@ -580,10 +553,10 @@ void Track::slotEndOfTrackPlayer1(double val)
             bool bStartFromEndPos = false;
             
             if (m_pPlayPositionCh1->get()>0.5)
-                pTrack = m_pTrackPlayer1->getNext();
+                pTrack = m_pTrackPlayer1->getNext(m_pActivePlaylist);
             else
             {
-                pTrack = m_pTrackPlayer1->getPrev();
+                pTrack = m_pTrackPlayer1->getPrev(m_pActivePlaylist);
                 bStartFromEndPos = true;
             }
 
@@ -617,10 +590,10 @@ void Track::slotEndOfTrackPlayer2(double val)
             bool bStartFromEndPos = false;
             
             if (m_pPlayPositionCh2->get()>0.5)
-                pTrack = m_pTrackPlayer2->getNext();
+                pTrack = m_pTrackPlayer2->getNext(m_pActivePlaylist);
             else
             {
-                pTrack = m_pTrackPlayer2->getPrev();
+                pTrack = m_pTrackPlayer2->getPrev(m_pActivePlaylist);
                 bStartFromEndPos = true;
             }
                 
@@ -641,7 +614,7 @@ void Track::slotNextTrackPlayer1(double v)
 {
     if (v && m_pTrackPlayer1)
     {
-        TrackInfoObject *pTrack = m_pTrackPlayer1->getNext();
+        TrackInfoObject *pTrack = m_pTrackPlayer1->getNext(m_pActivePlaylist);
         if (pTrack)
             slotLoadPlayer1(pTrack);
     }
@@ -651,7 +624,7 @@ void Track::slotPrevTrackPlayer1(double v)
 {
     if (v && m_pTrackPlayer1)
     {
-        TrackInfoObject *pTrack = m_pTrackPlayer1->getPrev();
+        TrackInfoObject *pTrack = m_pTrackPlayer1->getPrev(m_pActivePlaylist);
         if (pTrack)
             slotLoadPlayer1(pTrack);
     }
@@ -661,7 +634,7 @@ void Track::slotNextTrackPlayer2(double v)
 {
     if (v && m_pTrackPlayer2)
     {
-        TrackInfoObject *pTrack = m_pTrackPlayer2->getNext();
+        TrackInfoObject *pTrack = m_pTrackPlayer2->getNext(m_pActivePlaylist);
         if (pTrack)
             slotLoadPlayer2(pTrack);
     }
@@ -671,7 +644,7 @@ void Track::slotPrevTrackPlayer2(double v)
 {
     if (v && m_pTrackPlayer2)
     {
-        TrackInfoObject *pTrack = m_pTrackPlayer2->getPrev();
+        TrackInfoObject *pTrack = m_pTrackPlayer2->getPrev(m_pActivePlaylist);
         if (pTrack)
             slotLoadPlayer2(pTrack);
     }
@@ -694,22 +667,3 @@ void Track::slotPrevTrackPlayer2(double v)
         emit(activePlaylist(m_pActivePlaylist));
 }*/
 
-void Track::slotFindTracks()
-{
-	TrackCollection *tempCollection = new TrackCollection(m_pBpmDetector);
-	TrackCollection *sourceCollection = m_pActivePlaylist->getCollection();
-	QString searchText = m_pView->m_pLineEditSearch->text();
-
-	for(int i = 1; i < sourceCollection->getSize(); i++)
-	{
-		if(sourceCollection->getTrack(i)->getArtist().contains(searchText))
-			tempCollection->addTrack(sourceCollection->getTrack(i));
-		else if(sourceCollection->getTrack(i)->getFilename().contains(searchText))
-			tempCollection->addTrack(sourceCollection->getTrack(i));
-		else if(sourceCollection->getTrack(i)->getComment().contains(searchText))
-			tempCollection->addTrack(sourceCollection->getTrack(i));
-	}
-	TrackPlaylist *tempPlaylist = new TrackPlaylist(tempCollection,"Temp");
-	m_pActivePlaylist = tempPlaylist;
-	m_pActivePlaylist->activate(m_pView->m_pTrackTable);
-}
