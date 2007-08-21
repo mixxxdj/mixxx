@@ -1007,6 +1007,14 @@
   <Size>750,220</Size>
  </TrackTable>
 
+ <TableView>
+  <Pos>0,489</Pos>
+  <Size>750,220</Size>
+  <FgColor>#000000</FgColor>
+  <BgColor>#ffffff</BgColor>
+  <BgColorRowEven>#ffffff</BgColorRowEven>
+  <BgColorRowUneven>#ffffff</BgColorRowUneven>
+ </TableView>
 
  <VuMeter>
   <Tooltip>Master VuMeter</Tooltip>
