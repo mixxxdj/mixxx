@@ -15,13 +15,11 @@
 #include "xmlparse.h"
 #include "wtracktable.h"
 #include <q3dragobject.h>
-#include <QtDebug>
 #include <q3cstring.h>
 #include <qdir.h>
 //Added by qt3to4:
 #include <Q3StrList>
 #include <QDropEvent>
-#include <QtDebug>
 #include "trackplaylist.h"
 #include "track.h"
 
@@ -30,7 +28,7 @@ Track *TrackPlaylist::spTrack = 0;
 TrackPlaylist::TrackPlaylist(TrackCollection *pTrackCollection, QString qName)
 {
     m_pTrackCollection = pTrackCollection;
-    m_pTable = 0;
+    //m_pTable = 0;
     m_qName = qName;
 	iCounter = 0;
 }
@@ -38,11 +36,11 @@ TrackPlaylist::TrackPlaylist(TrackCollection *pTrackCollection, QString qName)
 TrackPlaylist::TrackPlaylist(TrackCollection *pTrackCollection, QDomNode node)
 {
     m_pTrackCollection = pTrackCollection;
-    m_pTable = 0;
+    //m_pTable = 0;
 
     // Set name of list
     m_qName = XmlParse::selectNodeQString(node, "Name");
-    qDebug() << "playlist name" << m_qName;
+    qDebug("playlist name %s",m_qName.latin1());
 
     // For each track...
     QDomNode idnode = XmlParse::selectNode(node, "List").firstChild();
@@ -95,23 +93,23 @@ void TrackPlaylist::addTrack(TrackInfoObject *pTrack)
 
     m_qList.append(pTrack);
 	++iCounter;
-    //qDebug("insert in table");
 
     // If this playlist is active, update WTableTrack
-    if (m_pTable)
-        pTrack->insertInTrackTableRow(m_pTable, m_pTable->numRows());
+    //if (m_pTable)
+        //pTrack->insertInTrackTableRow(m_pTable, m_pTable->numRows());
 
 }
 
 void TrackPlaylist::addTrack(QString qLocation)
 {
-    qDebug() << "Add track" << qLocation;
+    qDebug("Add track %s",qLocation);//.latin1());
     TrackInfoObject *pTrack = m_pTrackCollection->getTrack(qLocation);
 
     if (pTrack)
         addTrack(pTrack);
 }
 
+/*
 void TrackPlaylist::activate(WTrackTable *pTable)
 {
     m_pTable = pTable;
@@ -136,7 +134,7 @@ void TrackPlaylist::activate(WTrackTable *pTable)
 void TrackPlaylist::deactivate()
 {
     if (!m_pTable)
-        return;
+        //return;
         
     //disconnect(m_pTable, SIGNAL(dropped(QDropEvent *)), this, SLOT(slotDrop(QDropEvent *)));
     if (m_pTable)
@@ -147,14 +145,14 @@ void TrackPlaylist::deactivate()
         while (it)
         {
             it->clearTrackTableRow();
-            qDebug() << "removing:" << it->getFilename();
+			qDebug("removing: %s",it->getFilename());
             it = m_qList.next();
         }
     }
 
     m_pTable = 0;
 }
-
+*/
 QString TrackPlaylist::getListName()
 {
     return m_qName;
@@ -247,7 +245,7 @@ void TrackPlaylist::addPath(QString qPath)
 			  fi = it.next();
 			  for(int i = 1; i < getCollection()->getSize(); ++i)
 			  {
-				  /*qDebug() << "Checking:" << tempCollection->getTrack(i)->getFilename();*/
+				  /*qDebug("Checking: %s",tempCollection->getTrack(i)->getFilename());*/
 				  if(tempCollection->getTrack(i)->getFilename() == fi.fileName())
 				  {
 					  bexists = true;
@@ -255,10 +253,10 @@ void TrackPlaylist::addPath(QString qPath)
 				  }				  
 			  }
 			  /*if(bexists==true)
-                          qDebug() << "track exists!";*/
+				  qDebug("track exists!");*/
 			  if(bexists == false)
 			  {
-				  /*qDebug() << "all tracks searched, file does not exist, adding...";*/
+				  /*qDebug("all tracks searched, file does not exist, adding...");*/
 				  addTrack(fi.filePath());
 			  }
 			  
@@ -269,7 +267,6 @@ void TrackPlaylist::addPath(QString qPath)
 void TrackPlaylist::slotRemoveTrack(TrackInfoObject *pTrack)
 {
     m_qList.remove(pTrack);
-    pTrack->removeFromTrackTable();
 }
 
 void TrackPlaylist::updateScores()
@@ -297,7 +294,13 @@ TrackCollection *TrackPlaylist::getCollection()
 {
 	return m_pTrackCollection;
 }
+
+TrackInfoObject *TrackPlaylist::getTrackAt(int index)
+{
+	return m_qList.at(index);
+}
 int TrackPlaylist::getSongNum()
 {
-	return iCounter;
+	
+	return m_qList.count();
 }

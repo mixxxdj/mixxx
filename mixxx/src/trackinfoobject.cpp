@@ -18,7 +18,6 @@
 #include "qstring.h"
 #include "qdom.h"
 #include <qfileinfo.h>
-#include <QtDebug>
 //Added by qt3to4:
 #include <Q3ValueList>
 #include <Q3MemArray>
@@ -26,8 +25,9 @@
 #include "bpmdetector.h"
 #include "bpmreceiver.h"
 #include "soundsourceproxy.h"
-#include "wtracktable.h"
-#include "wtracktableitem.h"
+#include "trackplaylist.h"
+//#include "wtracktable.h"
+//#include "wtracktableitem.h"
 #include "woverview.h"
 #include "xmlparse.h"
 #include <qdom.h>
@@ -67,16 +67,16 @@ TrackInfoObject::TrackInfoObject(const QString sPath, const QString sFile, BpmDe
     m_fBpmFactors = (float*)malloc(sizeof(float) * NumBpmFactors);
     generateBpmFactors();   
     
-    m_pTableItemScore = 0;
-    m_pTableItemTitle = 0;
-    m_pTableItemArtist = 0;
-    m_pTableItemComment = 0;
-    m_pTableItemType = 0;
-    m_pTableItemDuration = 0;
-    m_pTableItemBpm = 0;
-    m_pTableItemBitrate = 0;
+    //m_pTableItemScore = 0;
+    //m_pTableItemTitle = 0;
+    //m_pTableItemArtist = 0;
+    //m_pTableItemComment = 0;
+    //m_pTableItemType = 0;
+    //m_pTableItemDuration = 0;
+    //m_pTableItemBpm = 0;
+    //m_pTableItemBitrate = 0;
 
-    m_pTableTrack = 0;
+    //m_pTableTrack = 0;
 
     
     // Check that the file exists:
@@ -119,18 +119,18 @@ TrackInfoObject::TrackInfoObject(const QDomNode &nodeHeader, BpmDetector *bpmDet
 	m_pWave = XmlParse::selectNodeHexCharArray(nodeHeader, QString("WaveSummaryHex"));
 
     m_pSegmentation = XmlParse::selectNodeLongList(nodeHeader, QString("SegmentationSummary"));
-    m_pTableTrack = 0;
+    //m_pTableTrack = 0;
     m_pControlObjectBpm = 0;
     m_pControlObjectDuration = 0;
 
-    m_pTableItemScore = 0;
-    m_pTableItemTitle = 0;
-    m_pTableItemArtist = 0;
-    m_pTableItemComment = 0;
-    m_pTableItemType = 0;
-    m_pTableItemDuration = 0;
-    m_pTableItemBpm = 0;
-    m_pTableItemBitrate = 0;
+    //m_pTableItemScore = 0;
+    //m_pTableItemTitle = 0;
+    //m_pTableItemArtist = 0;
+    //m_pTableItemComment = 0;
+    //m_pTableItemType = 0;
+    //m_pTableItemDuration = 0;
+    //m_pTableItemBpm = 0;
+    //m_pTableItemBitrate = 0;
     
     m_bIsValid = true;
     
@@ -145,7 +145,7 @@ TrackInfoObject::TrackInfoObject(const QDomNode &nodeHeader, BpmDetector *bpmDet
 
 TrackInfoObject::~TrackInfoObject()
 {
-    removeFromTrackTable();
+    //removeFromTrackTable();
     delete m_fBpmFactors;
 }
 
@@ -162,7 +162,7 @@ bool TrackInfoObject::checkFileExists()
     else
     {
         m_bExists = false;
-        qDebug() << "Playlist track not found:" << getLocation();
+        qDebug("The track %s was not found", getLocation().latin1());
     }
     return m_bExists;
 }
@@ -199,6 +199,7 @@ void TrackInfoObject::writeToXML( QDomDocument &doc, QDomElement &header )
     m_qMutex.unlock();
 }
 
+/*
 void TrackInfoObject::insertInTrackTableRow(WTrackTable *pTableTrack, int iRow)
 {
     // Return if no WTrackTable is instantiated
@@ -304,7 +305,7 @@ void TrackInfoObject::clearTrackTableRow()
 
         m_pTableTrack = 0;
 	}
-}
+}*/
 int TrackInfoObject::parse()
 {
     // Add basic information derived from the filename:
@@ -431,13 +432,13 @@ void TrackInfoObject::setBpm(float f)
     m_qMutex.unlock();
 
     generateBpmFactors();
-
+/*
     if (m_pTableItemBpm)
     {
         m_pTableItemBpm->setText(getBpmStr());
         m_pTableItemBpm->table()->updateCell(m_pTableItemBpm->row(), m_pTableItemBpm->col());
     }
-
+*/
     setBpmControlObject(m_pControlObjectBpm);
 }
 
@@ -513,13 +514,13 @@ void TrackInfoObject::setDuration(int i)
     m_qMutex.lock();
     m_iDuration = i;
     m_qMutex.unlock();
-
+/*
     if (m_pTableItemDuration)
     {
         m_pTableItemDuration->setText(getDurationStr());
         m_pTableItemDuration->table()->updateCell(m_pTableItemDuration->row(), m_pTableItemDuration->col());
     }
-
+*/
     setDurationControlObject(m_pControlObjectDuration);
 }
 
@@ -537,12 +538,13 @@ void TrackInfoObject::setTitle(QString s)
     m_qMutex.lock();
     m_sTitle = s;
     m_qMutex.unlock();
-
+/*
     if (m_pTableItemTitle)
     {
         m_pTableItemTitle->setText(s);
         m_pTableItemTitle->table()->updateCell(m_pTableItemTitle->row(), m_pTableItemTitle->col());
     }
+*/
 }
 
 QString TrackInfoObject::getArtist()
@@ -559,12 +561,13 @@ void TrackInfoObject::setArtist(QString s)
     m_qMutex.lock();
     m_sArtist = s;
     m_qMutex.unlock();
-
+/*
     if (m_pTableItemArtist)
     {
         m_pTableItemArtist->setText(s);
         m_pTableItemArtist->table()->updateCell(m_pTableItemArtist->row(), m_pTableItemArtist->col());
     }
+*/
 }
 
 QString TrackInfoObject::getFilename()
@@ -628,12 +631,13 @@ void TrackInfoObject::setComment(QString s)
     m_qMutex.lock();
     m_sComment = s;
     m_qMutex.unlock();
-
+/*
     if (m_pTableItemComment)
     {
         m_pTableItemComment->setText(s);
         m_pTableItemComment->table()->updateCell(m_pTableItemComment->row(), m_pTableItemComment->col());
     }
+*/
 }
 
 QString TrackInfoObject::getType()
@@ -650,12 +654,13 @@ void TrackInfoObject::setType(QString s)
     m_qMutex.lock();
     m_sType = s;
     m_qMutex.unlock();
-
+/*
     if (m_pTableItemType)
     {
         m_pTableItemType->setText(s);
         m_pTableItemType->table()->updateCell(m_pTableItemType->row(), m_pTableItemType->col());
     }
+*/
 }
 
 void TrackInfoObject::setSampleRate(int iSampleRate)
@@ -720,12 +725,13 @@ void TrackInfoObject::setBitrate(int i)
     m_qMutex.lock();
     m_iBitrate = i;
     m_qMutex.unlock();
-
+/*
     if (m_pTableItemBitrate)
     {
         m_pTableItemBitrate->setText(getBitrateStr());
         m_pTableItemBitrate->table()->updateCell(m_pTableItemBitrate->row(), m_pTableItemBitrate->col());
     }
+*/
 }
 
 void TrackInfoObject::setBeatFirst(float fBeatFirstPos)
@@ -759,12 +765,13 @@ void TrackInfoObject::updateScore()
     Q_ASSERT(siMaxTimesPlayed!=0);
     m_iScore = 99*m_iTimesPlayed/siMaxTimesPlayed;
     m_qMutex.unlock();
-
+/*
     if (m_pTableItemScore)
     {
         m_pTableItemScore->setText(getScoreStr());
         m_pTableItemScore->table()->updateCell(m_pTableItemScore->row(), m_pTableItemScore->col());
     }
+*/
 }
 
 int TrackInfoObject::getId()
@@ -811,26 +818,14 @@ void TrackInfoObject::setWaveSummary(Q3MemArray<char> *pWave, Q3ValueList<long> 
     setOverviewWidget(m_pOverviewWidget);
 }
 
-TrackInfoObject *TrackInfoObject::getNext()
+TrackInfoObject *TrackInfoObject::getNext(TrackPlaylist *pPlaylist)
 {
-    if (m_pTableTrack)
-    {
-        WTrackTableItem *p = (WTrackTableItem *)m_pTableTrack->item(m_pTableItemArtist->row()+1,0);
-        if (p)
-            return p->getTrackInfoObject();
-    }
-    return 0;
+	return pPlaylist->getTrackAt(getId()+1);
 }
 
-TrackInfoObject *TrackInfoObject::getPrev()
+TrackInfoObject *TrackInfoObject::getPrev(TrackPlaylist *pPlaylist)
 {
-    if (m_pTableTrack)
-    {
-        WTrackTableItem *p = (WTrackTableItem *)m_pTableTrack->item(m_pTableItemArtist->row()-1,0);
-        if (p)
-            return p->getTrackInfoObject();
-    }
-    return 0;
+    return pPlaylist->getTrackAt(getId()-1);
 }
 
 void TrackInfoObject::setOverviewWidget(WOverview *p)

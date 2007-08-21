@@ -30,6 +30,7 @@ class TrackCollection;
 class EngineBuffer;
 class MixxxView;
 class WTrackTable;
+class WTrackTableModel;
 class WTreeList;
 class ControlObjectThreadMain;
 class WaveSummary;
@@ -78,8 +79,6 @@ public slots:
     void slotDeletePlaylist(QString qName);
     /** Import a Playlist from a different format */
     void slotImportPlaylist();
-    /** Bring up track popup menu */
-    void slotTrackPopup(TrackInfoObject *pTrackInfoObject, int button);
     /** Load the given track in player 1 */
     void slotLoadPlayer1(TrackInfoObject *pTrackInfoObject, bool bStartFromEndPos = false);
     /** Load the given track in player 2 */
@@ -103,18 +102,7 @@ public slots:
     /** Returns pointer to active playlist */
     TrackPlaylist *getActivePlaylist();
 	/**sends track to Playqueue*/
-	void slotSendToPlayqueue();
-    /**search function*/
-	
-
-private slots:
-    /** Load the active popup track in player 1 */
-    void slotLoadPlayer1();
-    /** Load the active popup track in player 1 */
-    void slotLoadPlayer2();
-    /** Remove active popup track from active playlist */
-    void slotRemoveFromPlaylist();
-	void slotFindTracks();
+	void slotSendToPlayqueue(TrackInfoObject *pTrackInfoObject);  
 signals:
     /** A new track has been loaded in player 1 */
     void newTrackPlayer1(TrackInfoObject *);
@@ -131,7 +119,10 @@ private:
     TrackImporter *m_pTrackImporter;
     /** List of pointers to TrackPlaylists */
     TrackPlaylistList m_qPlaylists;
-    
+	/** Model for Library information*/
+    WTrackTableModel *m_pLibraryModel;
+	/**Model for Playqueue information*/
+	WTrackTableModel *m_pPlayQueueModel;
     /** Pointer to playlist for which a popup menu is currently displayed */
     TrackPlaylist *m_pActivePopupPlaylist;
     /** Pointer to TrackInfoObject for which a popup menu is currently displayed */

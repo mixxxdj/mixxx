@@ -45,7 +45,6 @@ class QDomElement;
 class MixxxKeyboard;
 /*new classes for new visual layout*/
 class QComboBox;
-class WComboBox;
 class QLineEdit;
 class QPushButton;
 class WTrackTableView;
@@ -67,7 +66,7 @@ public:
     /** Return true if WVisualWaveform has been instantiated. */
     bool activeWaveform();
 	//old tracktable
-    WTrackTable *m_pTrackTable;
+    //WTrackTable *m_pTrackTable;
 	//NEW trackView
 	WTrackTableView *m_pTrackTableView;
     QLabel *m_pTextCh1, *m_pTextCh2;
