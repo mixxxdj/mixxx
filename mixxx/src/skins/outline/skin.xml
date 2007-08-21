@@ -1175,5 +1175,13 @@
   <ColWidthBitrate>50</ColWidthBitrate>
   <Size>746,374</Size>
  </TrackTable>
-
+ 
+ <TableView>
+  <Pos>139,389</Pos>
+  <Size>746,374</Size>
+  <FgColor>#000000</FgColor>
+  <BgColor>#ffffff</BgColor>
+  <BgColorRowEven>#ffffff</BgColorRowEven>
+  <BgColorRowUneven>#ffffff</BgColorRowUneven>
+ </TableView>
 </skin>
