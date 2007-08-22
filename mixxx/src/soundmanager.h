@@ -18,7 +18,6 @@
 #ifndef SOUNDMANAGER_H
 #define SOUNDMANAGER_H
 
-#include "soundmanager_enums.h"
 #include "configobject.h"
 #include "controlobject.h"
 #include "defs.h"
