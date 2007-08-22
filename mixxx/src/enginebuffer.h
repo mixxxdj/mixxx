@@ -22,6 +22,7 @@
 #include <qmutex.h>
 #include "defs.h"
 #include "engineobject.h"
+#include "configobject.h"
 #include "monitor.h"
 #include "rotary.h"
 
@@ -64,7 +65,7 @@ class EngineBuffer : public EngineObject
 {
     Q_OBJECT
 public:
-    EngineBuffer(const char *_group);
+    EngineBuffer(const char *_group, ConfigObject<ConfigValue> *_config);
     ~EngineBuffer();
     /** Reconfigures the EngineBufferScaleSRC objects with the sound scale mode written in the config database */
     void setPitchIndpTimeStretch(bool b);
@@ -179,7 +180,8 @@ private:
     ControlPushButton *wheelTouchSensor, *wheelTouchSwitch;
     ControlPotmeter *playposSlider;
     ControlObject *m_pFileBpm, *m_pSampleRate;
-                        
+    ConfigObject<ConfigValue> *m_pConfig; 
+                 
     /** Mutex used in sharing buffer and abs playpos */
     QMutex m_qPlayposMutex;
     /** Buffer and absolute playpos shared among threads */

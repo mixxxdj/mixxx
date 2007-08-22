@@ -29,6 +29,9 @@
 #ifdef __LADSPA__
 #include "engineladspa.h"
 #endif
+#ifdef __VINYLCONTROL__
+#include "enginevinylcontrol.h"
+#endif
 // #include "enginebuffermasterrate.h"
 
 EngineMaster::EngineMaster(ConfigObject<ConfigValue> *_config,

@@ -28,6 +28,9 @@
 //#include "readerextractbeat.h"
 #include "readerextractwave.h"
 #include "enginebufferscalest.h"
+#include "enginebufferscalelinear.h"
+#include "enginebufferscalereal.h"
+#include "enginebufferscalesrc.h"
 #include "wvisualwaveform.h"
 #include "visual/visualchannel.h"
 #include "mathstuff.h"
@@ -41,9 +44,10 @@ double EngineBuffer::m_dTempSmall = 0.001;
 double EngineBuffer::m_dPerm = 0.01;
 double EngineBuffer::m_dPermSmall = 0.001;
 
-EngineBuffer::EngineBuffer(const char *_group)
+EngineBuffer::EngineBuffer(const char *_group, ConfigObject<ConfigValue> *_config)
 {
     group = _group;
+    m_pConfig = _config;
 
     m_pOtherEngineBuffer = 0;
 
@@ -192,6 +196,12 @@ EngineBuffer::EngineBuffer(const char *_group)
     m_bLoopMeasureTime = false;
     connect(buttonLoop, SIGNAL(valueChanged(double)), this, SLOT(slotControlLoop(double)));
 
+ 
+#ifdef __VINYLCONTROL__
+	// Vinyl Control status indicator
+	//Disabled because it's not finished yet
+    //m_pVinylControlIndicator = new ControlObject(ConfigKey(group, "VinylControlIndicator"));
+#endif 
     
     m_pEngineBufferCue = new EngineBufferCue(group, this);
     
@@ -221,7 +231,8 @@ EngineBuffer::EngineBuffer(const char *_group)
     m_pWaveBuffer = (float *)reader->getWavePtr()->getBasePtr();
 
     // Construct scaling object
-    m_pScale = new EngineBufferScaleST(reader->getWavePtr());
+    int iPitchIndpTimeStretch = _config->getValueString(ConfigKey("[Soundcard]","PitchIndpTimeStretch")).toInt();
+    this->setPitchIndpTimeStretch(iPitchIndpTimeStretch);
     
     oldEvent = 0.;
 
@@ -273,13 +284,18 @@ double EngineBuffer::getAbsStartpos()
 void EngineBuffer::setPitchIndpTimeStretch(bool b)
 {
     // Change sound scale mode
-    ((EngineBufferScaleST *)m_pScale)->setPitchIndpTimeStretch(b);
-}
-
-bool EngineBuffer::getPitchIndpTimeStretch(void)
-{
-    // Get current sound scale mode
-    return ((EngineBufferScaleST *)m_pScale)->getPitchIndpTimeStretch();
+    if (m_pScale)
+        delete m_pScale;
+    
+    if (b == true)
+    {
+        m_pScale = new EngineBufferScaleST(reader->getWavePtr());
+        ((EngineBufferScaleST *)m_pScale)->setPitchIndpTimeStretch(b);
+    }
+    else
+    {
+        m_pScale = new EngineBufferScaleSRC(reader->getWavePtr());    
+    }
 }
 
 void EngineBuffer::setVisual(WVisualWaveform *pVisualWaveform)
@@ -800,7 +816,7 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBuff
         // TODO: Configurable vinyl stop effect.
         if (wheelTouchSwitch->get() && wheelTouchSensor->get()) {
             // Act as scratch controller
-            if (getPitchIndpTimeStretch()) {
+            if (m_pConfig->getValueString(ConfigKey("[Soundcard]","PitchIndpTimeStretch")).toInt()) {
                 // Use vinyl-style pitch bending
                 // qDebug("Disabling Pitch-Independent Time Stretch for scratching");
                 m_bResetPitchIndpTimeStretch = true;

@@ -31,11 +31,12 @@ bool PlayerPortAudio::m_painited = false;
 
 PlayerPortAudio::PlayerPortAudio(ConfigObject<ConfigValue> *config, QString api_name) : Player(config)
 {
-	for (int i = 0; i < MAX_AUDIODEVICES; i++)
-	{
-    	m_devId[i]     = -1;
-    	m_pStream[i]   =  0;
-    	m_iChannels[i] = -1;
+    for (int i = 0; i < MAX_AUDIODEVICES; i++)
+    {
+    	m_devId[i]      = -1;
+    	m_inputDevId[i] = -1;
+    	m_pStream[i]    =  0;
+    	m_iChannels[i]  = -1;
     }
         
     m_iNumberOfBuffers = 2;
@@ -44,6 +45,11 @@ PlayerPortAudio::PlayerPortAudio(ConfigObject<ConfigValue> *config, QString api_
     m_iHeadLeftCh = -1;
     m_iHeadRightCh = -1;
     m_iNumActiveDevices = 0;
+    m_iPreviousDevIndex = -1;
+#ifdef __VINYLCONTROL__    
+    m_VinylControl[0] = NULL;
+    m_VinylControl[1] = NULL;
+#endif       
     
     m_HostAPI = api_name;
     m_bInit = false;
@@ -78,6 +84,16 @@ bool PlayerPortAudio::open()
 {
     Player::open();
 
+#ifdef __VINYLCONTROL__
+	//Create a new VinylControl object so that it updates it's settings.
+	//TODO: FIX THIS SAMPLERATE HACKAGE
+    int iTempSrate = m_pConfig->getValueString(ConfigKey("[Soundcard]","Samplerate")).toInt();
+	if (iTempSrate <= 0)
+		iTempSrate = 44100;	
+    m_VinylControl[0] = new VinylControlProxy(m_pConfig, "[Channel1]", iTempSrate);
+    m_VinylControl[1] = new VinylControlProxy(m_pConfig, "[Channel2]", 44100);
+#endif
+
     // Find out which device to open. Select the first one listed as either Master Left,
     // Master Right, Head Left, Head Right. If other devices are requested for opening
     // than the one selected here, set them to "None" in the config database
@@ -86,6 +102,7 @@ bool PlayerPortAudio::open()
     // Master Left/Right as device 1 and Headphones as device 2 (unless Master and
     // Headphones are on the same device, then we only use device 1.)
     PaDeviceIndex id[MAX_AUDIODEVICES];
+    PaDeviceIndex id_input[MAX_AUDIODEVICES];
     int iChannelMax[MAX_AUDIODEVICES]; /** Maximum number of channels needed */
     PaDeviceIndex temp_id = -1;
     QString name;
@@ -94,6 +111,7 @@ bool PlayerPortAudio::open()
 	{
 		iChannelMax[i] = -1;
 		id[i] = -1;
+		id_input[i] = -1;
 	}
 	
     m_iMasterLeftCh = -1;
@@ -147,6 +165,17 @@ bool PlayerPortAudio::open()
         iChannelMax[1] = math_max(iChannelMax[1], getChannelNo(name));
         m_iHeadRightCh = getChannelNo(name)-1;
     }
+
+	// Inputs
+    name = m_pConfig->getValueString(ConfigKey("[VinylControl]","DeviceInputDeck1"));
+    temp_id = getInputDeviceID(name);
+    if (temp_id != -1)
+    	id_input[0] = temp_id;
+
+    name = m_pConfig->getValueString(ConfigKey("[VinylControl]","DeviceInputDeck2"));
+    temp_id = getInputDeviceID(name);
+    if (temp_id != -1)
+    	id_input[1] = temp_id;
 
     // Check if any of the devices in the config database needs to be set to "None"
     if (m_iMasterLeftCh<0)
@@ -219,15 +248,17 @@ bool PlayerPortAudio::open()
 	qDebug("PortAudio: kiMaxFrameSize: %i, iLatencyMSec: %i", kiMaxFrameSize, iLatencyMSec);
     qDebug("PortAudio: id[0] %i, sr %i, ch[0] %i, bufsize %i, bufno %i, req. latency %i msec", id[0], iSrate, iChannels[0], iFramesPerBuffer, m_iNumberOfBuffers, iLatencyMSec);
     qDebug("PortAudio: id[1] %i, sr %i, ch[1] %i, bufsize %i, bufno %i, req. latency %i msec", id[1], iSrate, iChannels[1], iFramesPerBuffer, m_iNumberOfBuffers, iLatencyMSec);
+
+    qDebug("Device 1 indices (id[0]: %i, id_input[0]: %i)", id[0], id_input[0]);
+    qDebug("Device 2 indices (id[1]: %i, id_input[1]: %i)", id[1], id_input[1]);
     
-    //qDebug("Device 1 index (id[0]: %i", id[0]);
-    //qDebug("Device 2 index (id[1]: %i", id[1]);
      
     //If all devices are set to "None", then just return.
     if ((id[0] < 0) && (id[1] < 0))
         return false;
 
 	PaStreamParameters outputParams[MAX_AUDIODEVICES];
+	PaStreamParameters inputParams[MAX_AUDIODEVICES];
 	bool bDeviceAlreadyOpened = false;
 		
 	//Set up and open each soundcard that we need!
@@ -237,18 +268,43 @@ bool PlayerPortAudio::open()
 		
 		for (int j = 0; j < i; j++) //Check to see if we've already opened this device (eg. Maybe we're already using it for Master output)
 		{
-			if (id[j] == id[i] && id[j] != -1) {
-				bDeviceAlreadyOpened = true;
-			}
+		    if (j != i)
+		    {
+    			if (id[j] == id[i] && id[j] != -1) {
+    				bDeviceAlreadyOpened = true;
+    			}
+            }
 		}		
-		if (id[i] != -1 && !bDeviceAlreadyOpened) //Make sure we're supposed to open this device...
+		if (((id[i] != -1) && !bDeviceAlreadyOpened) || (id_input[i] != -1)) //Make sure we're supposed to open this device...
 		{		
 			qDebug("PortAudio: Trying to open device id %i, with channels %i at samplerate %i", id[i], iChannels[i], iSrate);
+			PaStreamParameters* p_outputParams;
 			outputParams[i].device = id[i];
 			outputParams[i].channelCount = iChannels[i];
 			outputParams[i].sampleFormat = paFloat32;
 			outputParams[i].suggestedLatency = ((float)iLatencyMSec) / 1000.0f; //Latency in seconds.
 			outputParams[i].hostApiSpecificStreamInfo = NULL;
+
+			PaStreamParameters* p_inputParams; //TODO: Does this need to be made an array like inputParams?
+			inputParams[i].device = id_input[i]; //TODO: Isn't the "input" device always the same as the output device? (if there is an output device?)
+												 //	     Maybe that should be restricted in the preferences GUI...
+												 // NO, it's not always the same as the output device! Consider using 4 outputs on your
+												 // master soundcard, and a different soundcard for input. The master's id is the same as the first
+												 // for the second stream, but the input id for the second stream is something different.
+			inputParams[i].channelCount = 2;
+			inputParams[i].sampleFormat = paInt16; //As needed by scratchlib
+			inputParams[i].suggestedLatency = ((float)iLatencyMSec) / 1000.0f; //Latency in seconds.
+			inputParams[i].hostApiSpecificStreamInfo = NULL;
+
+			if (id[i] < 0 || (i > 0 && (id[1] == id[0]))) //TODO: comment this the same as the below input one.... kinda
+				p_outputParams = NULL;
+			else
+				p_outputParams = &(outputParams[i]);
+			
+			if (id_input[i] < 0) //If we're not supposed to open an input device, set the pointer to be null.
+				p_inputParams = NULL; //NULL input params in Pa_OpenStream means don't open the device for input.
+			else
+				p_inputParams = &(inputParams[i]);
 
 		    PaError err = paNoError;
 		       
@@ -258,8 +314,8 @@ bool PlayerPortAudio::open()
 		       
 			// Try open device using iChannelMax
 		    err = Pa_OpenStream(&m_pStream[i],
-		    					NULL,				// Input parameters
-		    					&outputParams[i], 		// Output parameters
+		    					p_inputParams,		// Input parameters 
+		    					p_outputParams, 	// Output parameters
 		    					iSrate,				// Sample rate
 		    					iFramesPerBuffer,	// Frames per buffer
 		    					paClipOff,			// Stream flags
@@ -274,8 +330,8 @@ bool PlayerPortAudio::open()
 		        iChannels[i] = Pa_GetDeviceInfo(id[i])->maxOutputChannels;
 		        outputParams[i].channelCount = iChannels[i];
 			    err = Pa_OpenStream(&m_pStream[i],
-			    					NULL,				// Input parameters
-			    					&outputParams[i], 	// Output parameters
+    		    					p_inputParams,		// Input parameters 
+    		    					p_outputParams, 	// Output parameters
 			    					iSrate,				// Sample rate
 			    					iFramesPerBuffer,	// Frames per buffer
 			    					paClipOff,			// Stream flags
@@ -290,8 +346,8 @@ bool PlayerPortAudio::open()
 		        // Try open device using only two channels
 		        outputParams[i].channelCount = 2;
 			    err = Pa_OpenStream(&m_pStream[i],
-			    					NULL,				// Input parameters
-			    					&outputParams[i],	// Output parameters
+    		    					p_inputParams,		// Input parameters 
+    		    					p_outputParams, 	// Output parameters
 			    					iSrate,				// Sample rate
 			    					iFramesPerBuffer,	// Frames per buffer
 			    					paClipOff,			// Stream flags
@@ -331,12 +387,14 @@ bool PlayerPortAudio::open()
 				qDebug("PortAudio: More error info: %s", Pa_GetLastHostErrorInfo()->errorText);
 
 		        m_devId[i] = -1;
+		        m_inputDevId[i] = -1;
 		        m_iChannels[i] = -1;
 				
 		        return false;
 	    	}
 	    	
 		   	m_devId[i] = id[i];
+		   	m_inputDevId[i] = id_input[i];
 			
 		    // Update SRATE and Latency ControlObjects
 		    m_pControlObjectSampleRate->queueFromThread((double)iSrate);
@@ -464,7 +522,6 @@ void PlayerPortAudio::setDefaults()
             break;
     }
 
-    
     // Set currently used latency in config database
     //int msec = (int)(1000.*(2.*1024.)/(2.*(float)(*it).toInt()));
 	int msec = 100; // More conservative defaults
@@ -513,6 +570,54 @@ QStringList PlayerPortAudio::getInterfaces()
 	//qDebug("PortAudio: getInterfaces() end");
     return result;
 }
+
+/**
+ * Get the audio input/capture interfaces from PortAudio
+ */
+QStringList PlayerPortAudio::getInputInterfaces()
+{
+	qDebug("PortAudio: getInputInterfaces()");
+	
+    QStringList result;
+	const PaHostApiInfo* apiInfo = NULL;
+	const PaDeviceInfo* devInfo = NULL;
+	QString api;
+
+	if (m_HostAPI == "None")
+		return result;
+	
+    PaDeviceIndex numDevices = Pa_GetDeviceCount();
+    
+    for (int i = 0; i < numDevices; i++)
+    {
+        devInfo = Pa_GetDeviceInfo(i);
+        
+        // Add the device if it is an input device:
+        //if (devInfo != NULL && devInfo->maxOutputChannels > 0)
+        if (devInfo != NULL && (devInfo->maxInputChannels > 0))
+        {
+        	apiInfo = Pa_GetHostApiInfo(devInfo->hostApi);
+        	//api = apiInfo->name;
+			qDebug("Api name: %s", apiInfo->name);
+			qDebug(devInfo->name);
+        	//qDebug("m_HostAPI: " + m_HostAPI + "devInfo->hostApi: " + new QString(devInfo->hostApi));
+        
+        	//... and make sure the interface matches the API we've selected.
+        	if (m_HostAPI == apiInfo->name )
+        	{
+            	qDebug("name %s, API %i, maxInputChannels: %i", devInfo->name, devInfo->hostApi, devInfo->maxInputChannels);
+				
+				result.append(QString("%1").arg(devInfo->name));
+				
+            	//for (int j=1; j <= devInfo->maxInputChannels; ++j)
+               // 	result.append(QString("%1 (channel %2)").arg(devInfo->name).arg(j));
+            }
+        }
+    }
+	qDebug("PortAudio: getInputInterfaces() end");
+    return result;
+}
+
 
 QStringList PlayerPortAudio::getSampleRates()
 {
@@ -668,6 +773,34 @@ PaDeviceIndex PlayerPortAudio::getDeviceID(QString name)
     return -1;
 }
 
+
+PaDeviceIndex PlayerPortAudio::getInputDeviceID(QString name)
+{
+	qDebug("PortAudio: getInputDeviceID(" + name + ")");
+    PaDeviceIndex no = Pa_GetDeviceCount();
+    for (int i=0; i<no; i++)
+    {
+        const PaDeviceInfo *devInfo = Pa_GetDeviceInfo(i);
+
+        // Add the device if it is an input device:
+        if (devInfo != 0 && devInfo->maxOutputChannels > 0)
+        {
+            for (int j = 1; j <= devInfo->maxInputChannels; ++j)
+            {
+            	//qDebug("Comparing: " + QString("%1").arg(devInfo->name));
+            	//qDebug("and: " + name);
+                if (QString("%1").arg(devInfo->name) == name)
+                {
+                	qDebug("PortAudio: getInputDeviceID(" + name + "), returning device id %i", i);
+                    return i;
+                }
+        	}
+        }
+    }
+    qDebug("PortAudio: getInputDeviceID(" + name + "), returning device id -1");
+    return -1;
+}
+
 PaDeviceIndex PlayerPortAudio::getChannelNo(QString name)
 {
     PaDeviceIndex no = Pa_GetDeviceCount();
@@ -693,17 +826,31 @@ PaDeviceIndex PlayerPortAudio::getChannelNo(QString name)
 			 take place.
 	-------- ------------------------------------------------------
 */ 
-int PlayerPortAudio::callbackProcess(int iBufferSize, float *out, int devIndex)
+int PlayerPortAudio::callbackProcess(unsigned long framesPerBuffer, float *out, short *in, int devIndex)
 {
     //if (m_iBufferSize==0)
     //    m_iBufferSize = iBufferSize*m_iNumberOfBuffers;
     
-    static float *tmp;
+    static float *tmp; //Leave this as static - it's shared between two threads.
     float *output = out;
-    static int previousDevIndex = -1;
     int i;
-
-    if (previousDevIndex == devIndex && m_iNumActiveDevices > 1)
+    
+    /*
+    if (!out)
+    {
+        qDebug() << "output is NULL!";
+    prevDevice.lock();
+    m_iPreviousDevIndex = devIndex; //Save this devIndex as the previous one
+	prevDevice.unlock();
+	waitForNextOutput.wakeAll(); //Allow the other thread to give at 'er        
+        return 0;
+    }*/
+    
+    prevDevice.lock();
+    int iPreviousDevIndex = m_iPreviousDevIndex;
+    prevDevice.unlock();
+    
+    if (iPreviousDevIndex == devIndex && m_iNumActiveDevices > 1)
     {
         lockSamples.lock();
     	waitForNextOutput.wait(&lockSamples);
@@ -717,9 +864,9 @@ int PlayerPortAudio::callbackProcess(int iBufferSize, float *out, int devIndex)
     	tmp = prepareBuffer(iBufferSize);
 	}
 	lockSamples.unlock();
-
+	    
     // Reset sample for each open channel
-    for (i=0; i<iBufferSize*m_iChannels[devIndex]; i++)
+    for (i=0; i<framesPerBuffer*m_iChannels[devIndex]; i++)
         output[i] = 0.;
 
     // Copy to output buffer
@@ -736,6 +883,7 @@ int PlayerPortAudio::callbackProcess(int iBufferSize, float *out, int devIndex)
 		{
 		    //if (m_iMasterLeftCh>=0  && m_iChannels[devIndex]>=1) { output[m_iMasterLeftCh]  += tmp[(i*4)  ]/32768.;}
 	        //if (m_iMasterRigthCh>=0 && m_iChannels[devIndex]>=2) output[m_iMasterRigthCh] += tmp[(i*4)+1]/32768.;
+	        //qDebug() << "m_iHeadLeftCh:" << m_iHeadLeftCh << "devIndex: " << devIndex << "tmp[blah]" << tmp[(i*4)+2]/32768.;
 	        if (m_iHeadLeftCh>=0    && m_iChannels[devIndex]>=1) output[m_iHeadLeftCh]    += tmp[(i*4)+2]/32768.;
 	        if (m_iHeadRightCh>=0   && m_iChannels[devIndex]>=2) output[m_iHeadRightCh]   += tmp[(i*4)+3]/32768.;		
 	        //qDebug("headphones!");
@@ -743,8 +891,17 @@ int PlayerPortAudio::callbackProcess(int iBufferSize, float *out, int devIndex)
         for (int j=0; j < m_iChannels[devIndex]; ++j)
             *output++;
     }
-    
-    previousDevIndex = devIndex; //Save this devIndex as the previous one
+ 
+    if (in)
+    {
+#ifdef __VINYLCONTROL__		
+	    m_VinylControl[devIndex]->AnalyseSamples(in, iBufferSize);
+#endif
+	}
+
+    prevDevice.lock();
+    m_iPreviousDevIndex = devIndex; //Save this devIndex as the previous one
+	prevDevice.unlock();
 	waitForNextOutput.wakeAll(); //Allow the other thread to give at 'er
 
     return 0;
@@ -765,7 +922,7 @@ int paV19Callback(const void *inputBuffer, void *outputBuffer,
                       void *_callbackStuff)
 {
 	/*
-	//Variables that are used in the human-readable form of function call from hell.
+	//Variables that are used in the human-readable form of function call from hell (below).
 	static PlayerPortAudio* _player;
 	static int devIndex;
 	_player = ((PAPlayerCallbackStuff*)_callbackStuff)->player;
@@ -776,6 +933,6 @@ int paV19Callback(const void *inputBuffer, void *outputBuffer,
 	//return _player->callbackProcess(framesPerBuffer, (float *)outputBuffer, devIndex);
 	
 	//Function call from hell (might provide a little bit of cheapo thread safety to do it this way):
-	return ((PAPlayerCallbackStuff*)_callbackStuff)->player->callbackProcess(framesPerBuffer, (float *)outputBuffer, ((PAPlayerCallbackStuff*)_callbackStuff)->devIndex);
+	return ((PAPlayerCallbackStuff*)_callbackStuff)->player->callbackProcess(framesPerBuffer, (float *)outputBuffer, (short*)inputBuffer, ((PAPlayerCallbackStuff*)_callbackStuff)->devIndex);
 }
 

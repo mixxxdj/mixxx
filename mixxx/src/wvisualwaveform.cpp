@@ -240,10 +240,16 @@ void WVisualWaveform::resizeGL(int width, int height)
 void WVisualWaveform::timerEvent(QTimerEvent*)
 {
 	// FIXME: This should be done with a QMutex deal
+	// Update: I added the mutex, but I'm not totally sure
+	// of the consequences of having it, so I'm leaving it
+	// out for now. Someone should look at this closer.
+	// - Albert Aug 19/07
+	//m_paintMutex.lock();
 	if (!m_painting) {
 		m_painting = true;
 		updateGL();
 	}
+	//m_paintMutex.unlock();
 }
 
 void WVisualWaveform::resetColors() {

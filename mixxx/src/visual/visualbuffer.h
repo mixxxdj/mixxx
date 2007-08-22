@@ -40,6 +40,7 @@ const int MAXDISPLAYRATE = 100;
 class ReaderExtract;
 class EngineBuffer;
 class ControlObjectThreadMain;
+class ControlObject;
 
 typedef float GLfloat;
 

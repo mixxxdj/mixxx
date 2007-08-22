@@ -24,6 +24,9 @@
 #include <QWaitCondition>
 #include "player.h"
 #include "portaudio.h"
+#ifdef __VINYLCONTROL__
+#include "vinylcontrolproxy.h"
+#endif
 
 /**
   *@author Tue and Ken Haste Andersen
@@ -51,6 +54,7 @@ public:
     void close();
     void setDefaults();
     QStringList getInterfaces();
+    QStringList getInputInterfaces();
     QStringList getSampleRates();
     static QStringList getSoundApiList();
     QString getSoundApiName() { return getSoundApiList().front(); };
@@ -58,19 +62,21 @@ public:
     /** Satisfy virtual declaration in EngineObject */
     void process(const CSAMPLE *, const CSAMPLE *, const int) {};
     /** Process samples. Called from PortAudio callback */
-    int callbackProcess(int iBufferSize, float *out, int devIndex);
+    int callbackProcess(int iBufferSize, float *out, short *in, int devIndex);
 
     static bool m_painited;
 protected:
     /** Get id of device with a given name. Returns -1 if device is not found */
     PaDeviceIndex getDeviceID(QString name);
-    /** Get channel number of device with a given name. Returns -1 if device is no found */
+    PaDeviceIndex getInputDeviceID(QString name);
+    /** Get channel number of device with a given name. Returns -1 if device is not found */
     int getChannelNo(QString name);
 
     /** PortAudio stream */
     PaStream *m_pStream[MAX_AUDIODEVICES];
     /** Id of currently open device. -1 if no device is open */
     PaDeviceIndex m_devId[MAX_AUDIODEVICES];
+    PaDeviceIndex m_inputDevId[MAX_AUDIODEVICES]; //For input devices
     /** Channels used for each output from Mixxx. Set to -1 when not in use */
     int m_iMasterLeftCh, m_iMasterRigthCh, m_iHeadLeftCh, m_iHeadRightCh;
     /** True if PortAudio was sucessfully initialized */
@@ -88,6 +94,11 @@ protected:
     /** Wait condition that forces multiple PortAudio callbacks in separate threads to play nicely */
     QWaitCondition waitForNextOutput;
     QMutex waitMutex;
+    int m_iPreviousDevIndex;
+    QMutex prevDevice; 
+#ifdef __VINYLCONTROL__
+    VinylControlProxy *m_VinylControl[2];
+#endif
 };
 
 int paV19Callback(const void *inputBuffer, void *outputBuffer,

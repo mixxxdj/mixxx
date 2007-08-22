@@ -54,6 +54,9 @@
 #include "controlobject.h"
 #include "dlgpreferences.h"
 #include "trackplaylist.h"
+#ifdef __VINYLCONTROL__
+#include "vinylcontrol.h"
+#endif
 
 #ifdef __SCRIPT__
 #include "script/scriptengine.h"
@@ -74,7 +77,7 @@ class ScriptEngine;
   * created which creates your view.
   */
 //#ifndef QT3_SUPPORT
-class MixxxApp : public Q3MainWindow
+class MixxxApp : public QMainWindow
 //#else
 //class MixxxApp : public Q3MainWindow
 //#endif
@@ -103,6 +106,8 @@ class MixxxApp : public Q3MainWindow
     void slotFileQuit();
     /** toggle audio beat marks */
     void slotOptionsBeatMark(bool toggle);
+    /** toggle vinyl control **/
+    void slotOptionsVinylControl(bool toggle);
     /** toogle full screen mode */
     void slotOptionsFullScreen(bool toggle);
     /** Preference dialog */
@@ -133,7 +138,8 @@ class MixxxApp : public Q3MainWindow
     EngineBuffer *buffer1, *buffer2;
     EngineChannel *channel1, *channel2;
     EngineMaster *master;
-    PlayerProxy *player;
+    //PlayerProxy *player;
+    SoundManager *soundmanager;
     MidiObject *midi;
     ControlObject *control;
     ConfigObject<ConfigValue> *config;
@@ -200,6 +206,7 @@ class MixxxApp : public Q3MainWindow
     Q3Action **playlistsList;
 
     Q3Action *optionsBeatMark;
+    Q3Action *optionsVinylControl;
     Q3Action *optionsFullScreen;
     Q3Action *optionsPreferences;
 
@@ -226,6 +233,7 @@ class MixxxApp : public Q3MainWindow
     QAction **playlistsList;
 
     QAction *optionsBeatMark;
+    QAction *optionsVinylControl;
     QAction *optionsFullScreen;
     QAction *optionsPreferences;
 

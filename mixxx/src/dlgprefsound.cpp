@@ -16,7 +16,7 @@
  ***************************************************************************/
 
 #include "dlgprefsound.h"
-#include "playerproxy.h"
+//#include "playerproxy.h"
 #include <qcombobox.h> 
 #include <QtDebug>
 #include <qcheckbox.h>
@@ -26,13 +26,16 @@
 #include <qmessagebox.h>
 #include <qthread.h>
 #include "controlobject.h"
+#include "sounddevice.h"
+#include "soundmanager.h"
 #include <qwidget.h>
 
-DlgPrefSound::DlgPrefSound(QWidget *parent, PlayerProxy *_player,
+DlgPrefSound::DlgPrefSound(QWidget *parent, SoundManager *_soundman,
                            ConfigObject<ConfigValue> *_config) : QWidget(parent), Ui::DlgPrefSoundDlg()
 {
     m_bLatencySliderDrag = false;
-    player = _player;
+    //player = _player;
+    m_pSoundManager = _soundman;
     config = _config;
     
     setupUi(this);
@@ -74,7 +77,7 @@ DlgPrefSound::DlgPrefSound(QWidget *parent, PlayerProxy *_player,
     
     connect(SliderLatency,                SIGNAL(sliderReleased()),  this, SLOT(slotLatencySliderRelease()));
     connect(ComboBoxSoundApi,             SIGNAL(activated(int)),    this, SLOT(slotApplyApi()));
-       
+    
 }
 
 DlgPrefSound::~DlgPrefSound()
@@ -83,78 +86,103 @@ DlgPrefSound::~DlgPrefSound()
 
 void DlgPrefSound::slotUpdate()
 {
-    QStringList interfaces = player->getInterfaces();
-    QStringList::iterator it;
-    int j;
+    // API's
+    ComboBoxSoundApi->clear();
+    ComboBoxSoundApi->insertItem(0, "None");
+    //QStringList api = player->getSoundApiList();
+    QList<QString> apis = m_pSoundManager->getHostAPIList();
+    QListIterator<QString> api_it(apis);
+    QString api;
+    int j = 1;
+    while (api_it.hasNext())
+    {
+        api = api_it.next();
+        ComboBoxSoundApi->insertItem(j, api);
+        if (api==config->getValueString(ConfigKey("[Soundcard]","SoundApi")))
+            ComboBoxSoundApi->setCurrentIndex(j);
+        ++j;
+    }
+
+    //Get the currently selected API (just like we did above kinda)
+    QString selectedAPI = config->getValueString(ConfigKey("[Soundcard]","SoundApi"));
+
+    //QStringList interfaces = player->getInterfaces();
+    //QStringList::iterator it;
+
+    QList<SoundDevice*> devices = m_pSoundManager->getDeviceList(selectedAPI);
+    SoundDevice* dev;
 
     // Master left sound card info
     ComboBoxSoundcardMasterLeft->clear();
     ComboBoxSoundcardMasterLeft->insertItem(0, "None");
-    it = interfaces.begin();
+    QListIterator<SoundDevice*> it(devices);
+    //it = devices.begin();
     j = 1;
-    while (it!=interfaces.end())
+    while (it.hasNext())
     {
-        ComboBoxSoundcardMasterLeft->insertItem(j, (*it));
-        if ((*it)==config->getValueString(ConfigKey("[Soundcard]","DeviceMasterLeft")))
+        dev = it.next();
+        ComboBoxSoundcardMasterLeft->insertItem(j, dev->getName());
+        if (dev->getName()==config->getValueString(ConfigKey("[Soundcard]","DeviceMasterLeft")))
             ComboBoxSoundcardMasterLeft->setCurrentIndex(j);
         ++j;
-        ++it;
     }
 
     // Master right sound card info
     ComboBoxSoundcardMasterRight->clear();
     ComboBoxSoundcardMasterRight->insertItem(0, "None");
-    it = interfaces.begin();
+    it.toFront();
     j = 1;
-    while (it!=interfaces.end())
+    while (it.hasNext())
     {
-        ComboBoxSoundcardMasterRight->insertItem(j, (*it));
-        if ((*it)==config->getValueString(ConfigKey("[Soundcard]","DeviceMasterRight")))
+        dev = it.next();
+        ComboBoxSoundcardMasterRight->insertItem(j, dev->getName());
+        if (dev->getName()==config->getValueString(ConfigKey("[Soundcard]","DeviceMasterRight")))
             ComboBoxSoundcardMasterRight->setCurrentIndex(j);
         ++j;
-        ++it;
     }
 
     // Head left sound card info
     ComboBoxSoundcardHeadLeft->clear();
     ComboBoxSoundcardHeadLeft->insertItem(0, "None");
-    it = interfaces.begin();
+    it.toFront();
     j = 1;
-    while (it!=interfaces.end())
+    while (it.hasNext())
     {
-        ComboBoxSoundcardHeadLeft->insertItem(j, (*it));
-        if ((*it)==config->getValueString(ConfigKey("[Soundcard]","DeviceHeadLeft")))
+        dev = it.next();
+        ComboBoxSoundcardHeadLeft->insertItem(j, dev->getName());
+        if (dev->getName()==config->getValueString(ConfigKey("[Soundcard]","DeviceHeadLeft")))
             ComboBoxSoundcardHeadLeft->setCurrentIndex(j);
         ++j;
-        ++it;
     }
 
     // Head right sound card info
     ComboBoxSoundcardHeadRight->clear();
     ComboBoxSoundcardHeadRight->insertItem(0, "None");
-    it = interfaces.begin();
+    it.toFront();
     j = 1;
-    while (it!=interfaces.end())
+    while (it.hasNext())
     {
-        ComboBoxSoundcardHeadRight->insertItem(j, (*it));
-        if ((*it)==config->getValueString(ConfigKey("[Soundcard]","DeviceHeadRight")))
+        dev = it.next();
+        ComboBoxSoundcardHeadRight->insertItem(j, dev->getName());
+        if (dev->getName()==config->getValueString(ConfigKey("[Soundcard]","DeviceHeadRight")))
             ComboBoxSoundcardHeadRight->setCurrentIndex(j);
         ++j;
-        ++it; 
     }
 
     // Sample rate
     ComboBoxSamplerates->clear();
-    QStringList srates = player->getSampleRates();
-    it = srates.begin();
+    //QStringList srates = player->getSampleRates();
+    QList<QString> srates = m_pSoundManager->getSamplerateList();
+    QListIterator<QString> srate_it(srates);
+    QString srate;
     j = 0;
-    while (it!=srates.end())
+    while (srate_it.hasNext())
     {
-        ComboBoxSamplerates->insertItem(j, (*it));
-        if ((*it)==config->getValueString(ConfigKey("[Soundcard]","Samplerate")))
+        srate = srate_it.next();
+        ComboBoxSamplerates->insertItem(j, srate);
+        if (srate==config->getValueString(ConfigKey("[Soundcard]","Samplerate")))
             ComboBoxSamplerates->setCurrentIndex(j);
         ++j;
-        ++it;
     }
 
     // Latency. Disconnect slider slot when updating...
@@ -162,20 +190,7 @@ void DlgPrefSound::slotUpdate()
     SliderLatency->setValue(getSliderLatencyVal(config->getValueString(ConfigKey("[Soundcard]","Latency")).toInt()));
     connect(SliderLatency,                SIGNAL(valueChanged(int)), this, SLOT(slotLatencySliderChange(int)));
 
-    // API's
-    ComboBoxSoundApi->clear();
-    ComboBoxSoundApi->insertItem(0, "None");
-    QStringList api = player->getSoundApiList();
-    it = api.begin();
-    j = 1;
-    while (it!=api.end())
-    {
-        ComboBoxSoundApi->insertItem(j, (*it));
-        if ((*it)==config->getValueString(ConfigKey("[Soundcard]","SoundApi")))
-            ComboBoxSoundApi->setCurrentIndex(j);
-        ++j;
-        ++it;
-    }
+
 }
 
 void DlgPrefSound::slotLatency()
@@ -203,7 +218,7 @@ int DlgPrefSound::getSliderLatencyVal(int val)
 
 void DlgPrefSound::slotApply()
 {
-    qDebug("Apply");
+    qDebug() << "DlgPrefSound::Apply";
 
     // Update the config object with parameters from dialog
     config->set(ConfigKey("[Soundcard]","DeviceMasterLeft"), ConfigValue(ComboBoxSoundcardMasterLeft->currentText()));
@@ -221,11 +236,13 @@ void DlgPrefSound::slotApply()
     qDebug("request msec %i", getSliderLatencyMsec(SliderLatency->value()));
     
     // Close devices, and open using config data
-    player->close();
+    //player->close();
+    m_pSoundManager->closeDevices();
 
 	// Not much to do if the API is None...
-	if (config->getValueString(ConfigKey("[Soundcard]","SoundApi"))!="None") {
-		if (!player->open())
+	if (config->getValueString(ConfigKey("[Soundcard]","SoundApi"))!="None") 
+	{
+		if (m_pSoundManager->setupDevices() != 0)
 	        QMessageBox::warning(0, "Configuration error","Audio device could not be opened");
 	    else
 			slotUpdate();
@@ -234,9 +251,11 @@ void DlgPrefSound::slotApply()
 
 void DlgPrefSound::slotApplyApi()
 {
+    qDebug() << "DlgPrefSound::slotApplyApi";
+    
     config->set(ConfigKey("[Soundcard]","SoundApi"), ConfigValue(ComboBoxSoundApi->currentText()));
 
-	if (!player->setSoundApi(ComboBoxSoundApi->currentText()))
+	if (m_pSoundManager->setHostAPI(ComboBoxSoundApi->currentText()) != 0)
 	{
 		// Did they select the null api?
 		if (ComboBoxSoundApi->currentText() != "None") {
@@ -244,12 +263,15 @@ void DlgPrefSound::slotApplyApi()
 			config->set(ConfigKey("[Soundcard]","SoundApi"), ConfigValue("None"));
 		}
 	} else {
-		player->setDefaults();
-		if (!player->open()) {
+		//player->setDefaults();
+		m_pSoundManager->setDefaults();
+		if (m_pSoundManager->setupDevices() != 0)
+		{
 			QMessageBox::warning(0, "Configuration error","Audio device could not be opened");
 		}
 	}
-
+    m_pSoundManager->closeDevices();
+	emit(apiUpdated());    
     slotUpdate();
 }
 
@@ -269,3 +291,4 @@ void DlgPrefSound::slotLatencySliderChange(int)
     //if (!m_bLatencySliderDrag)
     //    slotApply();
 }
+
