@@ -106,8 +106,10 @@ class MixxxApp : public QMainWindow
     void slotFileQuit();
     /** toggle audio beat marks */
     void slotOptionsBeatMark(bool toggle);
+#ifdef __VINYLCONTROL__
     /** toggle vinyl control **/
     void slotOptionsVinylControl(bool toggle);
+#endif
     /** toogle full screen mode */
     void slotOptionsFullScreen(bool toggle);
     /** Preference dialog */
@@ -206,7 +208,9 @@ class MixxxApp : public QMainWindow
     Q3Action **playlistsList;
 
     Q3Action *optionsBeatMark;
+#ifdef __VINYLCONTROL__
     Q3Action *optionsVinylControl;
+#endif
     Q3Action *optionsFullScreen;
     Q3Action *optionsPreferences;
 
@@ -233,7 +237,9 @@ class MixxxApp : public QMainWindow
     QAction **playlistsList;
 
     QAction *optionsBeatMark;
+#ifdef __VINYLCONTROL__
     QAction *optionsVinylControl;
+#endif
     QAction *optionsFullScreen;
     QAction *optionsPreferences;
 

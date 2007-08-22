@@ -468,7 +468,7 @@ else:
 	print "LADSPA support... disabled"
 
 #Vinyl Control
-flags_vinylcontrol = ARGUMENTS.get('vinylcontrol', 1)
+flags_vinylcontrol = ARGUMENTS.get('vinylcontrol', 0)
 if int(flags_vinylcontrol):
 	env.Append(CXXFLAGS = '-D__VINYLCONTROL__')
 	sources += Split(""" vinylcontrol.cpp vinylcontrolproxy.cpp vinylcontrolscratchlib.cpp vinylcontrolxwax.cpp dlgprefvinyl.cpp 

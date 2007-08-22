@@ -523,7 +523,9 @@ void MixxxApp::initMenuBar()
     // menuBar entry optionsMenu
     optionsMenu->setCheckable(true);
     //  optionsBeatMark->addTo(optionsMenu);
+#ifdef __VINYLCONTROL__
     optionsVinylControl->addTo(optionsMenu);
+#endif
     optionsFullScreen->addTo(optionsMenu);
     optionsPreferences->addTo(optionsMenu);
 
