@@ -19,7 +19,6 @@
 #include <QtCore> 
 #include "soundmanager.h"
 #include "sounddevice.h"
-#include "soundmanager_enums.h"
 
 SoundDevice::SoundDevice(ConfigObject<ConfigValue> *config, SoundManager* sm)
 {
