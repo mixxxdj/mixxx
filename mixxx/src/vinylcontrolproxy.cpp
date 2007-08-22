@@ -88,5 +88,7 @@ void VinylControlProxy::run()
 float VinylControlProxy::getSpeed()
 {
     if (m_pVinylControl)
-        m_pVinylControl->getSpeed();
+        return m_pVinylControl->getSpeed();
+    else 
+        return 0.0f;
 }
