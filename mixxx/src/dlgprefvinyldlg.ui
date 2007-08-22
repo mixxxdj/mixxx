@@ -1,0 +1,467 @@
+<ui version="4.0" >
+ <class>DlgPrefVinylDlg</class>
+ <widget class="QWidget" name="DlgPrefVinylDlg" >
+  <property name="geometry" >
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>598</width>
+    <height>510</height>
+   </rect>
+  </property>
+  <property name="windowTitle" >
+   <string>Form1</string>
+  </property>
+  <widget class="Q3GroupBox" name="Input" >
+   <property name="geometry" >
+    <rect>
+     <x>10</x>
+     <y>10</y>
+     <width>340</width>
+     <height>150</height>
+    </rect>
+   </property>
+   <property name="title" >
+    <string>Input</string>
+   </property>
+   <widget class="QLabel" name="TextLabel1_2" >
+    <property name="enabled" >
+     <bool>true</bool>
+    </property>
+    <property name="geometry" >
+     <rect>
+      <x>20</x>
+      <y>50</y>
+      <width>50</width>
+      <height>19</height>
+     </rect>
+    </property>
+    <property name="font" >
+     <font/>
+    </property>
+    <property name="frameShape" >
+     <enum>QFrame::NoFrame</enum>
+    </property>
+    <property name="frameShadow" >
+     <enum>QFrame::Plain</enum>
+    </property>
+    <property name="text" >
+     <string>Deck 1</string>
+    </property>
+    <property name="wordWrap" >
+     <bool>false</bool>
+    </property>
+   </widget>
+   <widget class="QLabel" name="TextLabel1_2_3" >
+    <property name="enabled" >
+     <bool>true</bool>
+    </property>
+    <property name="geometry" >
+     <rect>
+      <x>20</x>
+      <y>80</y>
+      <width>50</width>
+      <height>19</height>
+     </rect>
+    </property>
+    <property name="font" >
+     <font/>
+    </property>
+    <property name="frameShape" >
+     <enum>QFrame::NoFrame</enum>
+    </property>
+    <property name="frameShadow" >
+     <enum>QFrame::Plain</enum>
+    </property>
+    <property name="text" >
+     <string>Deck 2</string>
+    </property>
+    <property name="wordWrap" >
+     <bool>false</bool>
+    </property>
+   </widget>
+   <widget class="QComboBox" name="ComboBoxDeviceDeck2" >
+    <property name="enabled" >
+     <bool>true</bool>
+    </property>
+    <property name="geometry" >
+     <rect>
+      <x>70</x>
+      <y>80</y>
+      <width>251</width>
+      <height>26</height>
+     </rect>
+    </property>
+    <property name="font" >
+     <font/>
+    </property>
+   </widget>
+   <widget class="QCheckBox" name="EnableRIAA" >
+    <property name="geometry" >
+     <rect>
+      <x>20</x>
+      <y>110</y>
+      <width>200</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="text" >
+     <string>Enable RIAA correction</string>
+    </property>
+   </widget>
+   <widget class="QComboBox" name="ComboBoxDeviceDeck1" >
+    <property name="enabled" >
+     <bool>true</bool>
+    </property>
+    <property name="geometry" >
+     <rect>
+      <x>70</x>
+      <y>50</y>
+      <width>251</width>
+      <height>26</height>
+     </rect>
+    </property>
+    <property name="font" >
+     <font/>
+    </property>
+   </widget>
+   <widget class="QLabel" name="TextLabel1" >
+    <property name="enabled" >
+     <bool>true</bool>
+    </property>
+    <property name="geometry" >
+     <rect>
+      <x>10</x>
+      <y>20</y>
+      <width>310</width>
+      <height>19</height>
+     </rect>
+    </property>
+    <property name="font" >
+     <font/>
+    </property>
+    <property name="text" >
+     <string>Select the recording devices and channels</string>
+    </property>
+    <property name="wordWrap" >
+     <bool>false</bool>
+    </property>
+   </widget>
+  </widget>
+  <widget class="Q3GroupBox" name="VinylOptions" >
+   <property name="geometry" >
+    <rect>
+     <x>10</x>
+     <y>170</y>
+     <width>340</width>
+     <height>240</height>
+    </rect>
+   </property>
+   <property name="title" >
+    <string>Vinyl Control</string>
+   </property>
+   <widget class="QCheckBox" name="RelativeMode" >
+    <property name="geometry" >
+     <rect>
+      <x>20</x>
+      <y>90</y>
+      <width>110</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="text" >
+     <string>Relative mode</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="TextLabel2_2" >
+    <property name="enabled" >
+     <bool>true</bool>
+    </property>
+    <property name="geometry" >
+     <rect>
+      <x>20</x>
+      <y>60</y>
+      <width>80</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="font" >
+     <font/>
+    </property>
+    <property name="text" >
+     <string>Lead-in time</string>
+    </property>
+    <property name="wordWrap" >
+     <bool>false</bool>
+    </property>
+   </widget>
+   <widget class="QLabel" name="textLabel1_2" >
+    <property name="geometry" >
+     <rect>
+      <x>190</x>
+      <y>110</y>
+      <width>60</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="text" >
+     <string>Precision:</string>
+    </property>
+    <property name="wordWrap" >
+     <bool>false</bool>
+    </property>
+   </widget>
+   <widget class="QLabel" name="TextLabel2_2_2" >
+    <property name="enabled" >
+     <bool>true</bool>
+    </property>
+    <property name="geometry" >
+     <rect>
+      <x>230</x>
+      <y>60</y>
+      <width>51</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="font" >
+     <font/>
+    </property>
+    <property name="text" >
+     <string>seconds</string>
+    </property>
+    <property name="wordWrap" >
+     <bool>false</bool>
+    </property>
+   </widget>
+   <widget class="QComboBox" name="ComboBoxVinylType" >
+    <property name="enabled" >
+     <bool>true</bool>
+    </property>
+    <property name="geometry" >
+     <rect>
+      <x>120</x>
+      <y>30</y>
+      <width>210</width>
+      <height>22</height>
+     </rect>
+    </property>
+    <property name="font" >
+     <font/>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="LeadinTime" >
+    <property name="geometry" >
+     <rect>
+      <x>120</x>
+      <y>60</y>
+      <width>100</width>
+      <height>20</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QLabel" name="textLabel1" >
+    <property name="geometry" >
+     <rect>
+      <x>190</x>
+      <y>140</y>
+      <width>40</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="text" >
+     <string>Gain:</string>
+    </property>
+    <property name="wordWrap" >
+     <bool>false</bool>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="precision" >
+    <property name="geometry" >
+     <rect>
+      <x>260</x>
+      <y>110</y>
+      <width>60</width>
+      <height>22</height>
+     </rect>
+    </property>
+    <property name="readOnly" >
+     <bool>true</bool>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="gain" >
+    <property name="geometry" >
+     <rect>
+      <x>260</x>
+      <y>140</y>
+      <width>60</width>
+      <height>22</height>
+     </rect>
+    </property>
+    <property name="readOnly" >
+     <bool>true</bool>
+    </property>
+   </widget>
+   <widget class="QLabel" name="textLabel3" >
+    <property name="geometry" >
+     <rect>
+      <x>290</x>
+      <y>210</y>
+      <width>40</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="text" >
+     <string>150</string>
+    </property>
+    <property name="wordWrap" >
+     <bool>false</bool>
+    </property>
+   </widget>
+   <widget class="QSlider" name="VinylGain" >
+    <property name="geometry" >
+     <rect>
+      <x>21</x>
+      <y>190</y>
+      <width>290</width>
+      <height>24</height>
+     </rect>
+    </property>
+    <property name="minimum" >
+     <number>1</number>
+    </property>
+    <property name="maximum" >
+     <number>150</number>
+    </property>
+    <property name="orientation" >
+     <enum>Qt::Horizontal</enum>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="AutoCalibration" >
+    <property name="geometry" >
+     <rect>
+      <x>20</x>
+      <y>140</y>
+      <width>120</width>
+      <height>24</height>
+     </rect>
+    </property>
+    <property name="text" >
+     <string>Auto Calibration</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="TextLabel2" >
+    <property name="enabled" >
+     <bool>true</bool>
+    </property>
+    <property name="geometry" >
+     <rect>
+      <x>20</x>
+      <y>30</y>
+      <width>80</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="font" >
+     <font/>
+    </property>
+    <property name="text" >
+     <string>Vinyl Type</string>
+    </property>
+    <property name="wordWrap" >
+     <bool>false</bool>
+    </property>
+   </widget>
+   <widget class="QCheckBox" name="ScratchMode" >
+    <property name="geometry" >
+     <rect>
+      <x>20</x>
+      <y>110</y>
+      <width>110</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="text" >
+     <string>Scratch mode</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="textLabel2" >
+    <property name="geometry" >
+     <rect>
+      <x>20</x>
+      <y>210</y>
+      <width>50</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="text" >
+     <string>1 (Off)</string>
+    </property>
+    <property name="wordWrap" >
+     <bool>false</bool>
+    </property>
+   </widget>
+   <widget class="QLabel" name="textLabel1_3" >
+    <property name="geometry" >
+     <rect>
+      <x>10</x>
+      <y>170</y>
+      <width>180</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="text" >
+     <string>Turntable Input Preamp</string>
+    </property>
+    <property name="wordWrap" >
+     <bool>false</bool>
+    </property>
+   </widget>
+  </widget>
+  <widget class="QLabel" name="label" >
+   <property name="geometry" >
+    <rect>
+     <x>240</x>
+     <y>410</y>
+     <width>111</width>
+     <height>18</height>
+    </rect>
+   </property>
+   <property name="toolTip" >
+    <string>http://www.xwax.co.uk</string>
+   </property>
+   <property name="text" >
+    <string>Powered by xwax</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label_2" >
+   <property name="geometry" >
+    <rect>
+     <x>10</x>
+     <y>410</y>
+     <width>201</width>
+     <height>18</height>
+    </rect>
+   </property>
+   <property name="font" >
+    <font>
+     <pointsize>7</pointsize>
+    </font>
+   </property>
+   <property name="text" >
+    <string>This dialogue needs serious love.</string>
+   </property>
+  </widget>
+ </widget>
+ <layoutdefault spacing="6" margin="11" />
+ <pixmapfunction>qPixmapFromMimeSource</pixmapfunction>
+ <customwidgets>
+  <customwidget>
+   <class>Q3GroupBox</class>
+   <extends>QGroupBox</extends>
+   <header>Qt3Support/Q3GroupBox</header>
+   <container>1</container>
+  </customwidget>
+ </customwidgets>
+ <resources/>
+ <connections/>
+</ui>
