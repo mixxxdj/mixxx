@@ -19,7 +19,6 @@
 #define SOUNDDEVICE_H
 
 #include "soundmanager.h"
-#include "soundmanager_enums.h"
 
 //Forward declarations
 ///....
