@@ -32,6 +32,7 @@ class QStackedWidget;
 class MixxxApp;
 class MixxxView;
 class PlayerProxy;
+class SoundManager;
 class Track;
 class DlgPrefSound;
 class DlgPrefMidi;
@@ -40,6 +41,7 @@ class DlgPrefControls;
 class DlgPrefMixer;
 class DlgPrefRecord;
 class DlgPrefBPM;
+class DlgPrefVinyl;
 class PowerMate;
 
 /**
@@ -51,7 +53,7 @@ class DlgPreferences : public QDialog, public Ui::DlgPreferencesDlg
     Q_OBJECT
 public:
     DlgPreferences(MixxxApp *mixxx, MixxxView *view,
-                   PlayerProxy *player,
+                   SoundManager *soundman,
                    Track *track, ConfigObject<ConfigValue> *config);
     ~DlgPreferences();
     void createIcons();
@@ -72,6 +74,7 @@ private:
     DlgPrefMixer *wmixer;
     DlgPrefRecord *wrecord;
     DlgPrefBPM *wbpm;
+    DlgPrefVinyl *wvinylcontrol;
     
     ConfigObject<ConfigValue> *config;
     MixxxApp *m_pMixxx;

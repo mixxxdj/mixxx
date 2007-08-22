@@ -91,6 +91,14 @@ QStringList PlayerProxy::getInterfaces()
         return QStringList();
 }
 
+QStringList PlayerProxy::getInputInterfaces()
+{
+    if (m_pPlayer)
+        return m_pPlayer->getInputInterfaces();
+    else
+        return QStringList();
+}
+
 QStringList PlayerProxy::getSampleRates()
 {
     if (m_pPlayer)

@@ -1,4 +1,4 @@
-/***************************************************************************
+    /***************************************************************************
                           dlgpreferences.cpp  -  description
                              -------------------
     begin                : Sun Jun 30 2002
@@ -23,6 +23,10 @@
 #include "dlgprefbpm.h"
 #endif
 
+#ifdef __VINYLCONTROL__
+#include "dlgprefvinyl.h"
+#endif
+
 #include "dlgpreferences.h"
 #include "dlgprefsound.h"
 #include "dlgprefmidi.h"
@@ -41,7 +45,7 @@
 #include <QEvent>
 
 DlgPreferences::DlgPreferences(MixxxApp *mixxx, MixxxView *view,
-                               PlayerProxy *player,
+                               SoundManager* soundman,
                                Track *, ConfigObject<ConfigValue> *_config) :  QDialog(), Ui::DlgPreferencesDlg()
 {
     m_pMixxx = mixxx;
@@ -66,7 +70,7 @@ DlgPreferences::DlgPreferences(MixxxApp *mixxx, MixxxView *view,
     //contentsWidget->setCurrentRow(0);    
     
     // Construct widgets for use in tabs
-    wsound = new DlgPrefSound(this, player, config);
+    wsound = new DlgPrefSound(this, soundman, config);
     wmidi  = new DlgPrefMidi(this, config);
     wplaylist = new DlgPrefPlaylist(this, config);
     wcontrols = new DlgPrefControls(this, view, mixxx, config);
@@ -77,6 +81,10 @@ DlgPreferences::DlgPreferences(MixxxApp *mixxx, MixxxView *view,
 #ifdef __EXPERIMENTAL_RECORDING__
     wrecord = new DlgPrefRecord(this, config);
 #endif
+#ifdef __VINYLCONTROL__
+    wvinylcontrol = new DlgPrefVinyl(this, soundman, config);
+#endif
+
     //pagesWidget = new QStackedWidget;
     while (pagesWidget->count() > 0)
     {
@@ -94,7 +102,9 @@ DlgPreferences::DlgPreferences(MixxxApp *mixxx, MixxxView *view,
 #ifdef __EXPERIMENTAL_RECORDING__
     pagesWidget->addWidget(wrecord);
 #endif    
-
+#ifdef __VINYLCONTROL__
+    pagesWidget->addWidget(wvinylcontrol);
+#endif
     // Add tabs
     /*
     addTab(wsound,    "Sound output");
@@ -136,7 +146,11 @@ DlgPreferences::DlgPreferences(MixxxApp *mixxx, MixxxView *view,
 #ifdef __EXPERIMENTAL_RECORDING__
     connect(this, SIGNAL(showDlg()), wrecord,    SLOT(slotUpdate()));
 #endif
-
+#ifdef __VINYLCONTROL__
+    connect(this, SIGNAL(showDlg()), wvinylcontrol,    SLOT(slotUpdate()));
+    //connect(ComboBoxSoundApi,             SIGNAL(activated(int)),    this, SLOT(slotApplyApi()));
+    connect(wsound, SIGNAL(apiUpdated()), wvinylcontrol,    SLOT(slotUpdate())); //Update the vinyl control 
+#endif
     connect(buttonBox, SIGNAL(accepted()), wsound,    SLOT(slotApply()));
     //connect(buttonBox, SIGNAL(accepted()), wsound,    SLOT(slotApplyApi())); //TODO: Fix this
     connect(buttonBox, SIGNAL(accepted()), wmidi,     SLOT(slotApply()));
@@ -150,7 +164,9 @@ DlgPreferences::DlgPreferences(MixxxApp *mixxx, MixxxView *view,
 #ifdef __EXPERIMENTAL_RECORDING__
     connect(buttonBox, SIGNAL(accepted()), wrecord,    SLOT(slotApply()));
 #endif
-    
+#ifdef __VINYLCONTROL__
+    connect(buttonBox, SIGNAL(accepted()), wvinylcontrol,    SLOT(slotApply()));
+#endif    
     /*
     connect(this,        SIGNAL(buttonbox.accepted()),             wsound,    SLOT(slotApply()));
     connect(this,        SIGNAL(buttonbox.accepted()),             wsound,    SLOT(slotApplyApi()));
@@ -221,6 +237,13 @@ void DlgPreferences::createIcons()
     bpmdetectButton->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
 #endif
 
+#ifdef __VINYLCONTROL__
+    QListWidgetItem *vinylcontrolButton = new QListWidgetItem(contentsWidget);
+    vinylcontrolButton->setIcon(QIcon(":/images/preferences/vinyl.svg"));
+    vinylcontrolButton->setText(tr("Vinyl Control"));
+    vinylcontrolButton->setTextAlignment(Qt::AlignLeft | Qt::AlignVCenter);
+    vinylcontrolButton->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
+#endif
     connect(contentsWidget,
             SIGNAL(currentItemChanged(QListWidgetItem *, QListWidgetItem *)),
             this, SLOT(changePage(QListWidgetItem *, QListWidgetItem*)));

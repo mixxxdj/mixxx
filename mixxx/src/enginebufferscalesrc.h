@@ -35,11 +35,13 @@ public:
     void setFastMode(bool bMode);
     CSAMPLE *scale(double playpos, int buf_size, float *pBase=0, int iBaseLength=0);
     double setTempo(double dTempo);
+    void setBaseRate(double dBaseRate);
+    void clear();
 private:
     void setQuality(int);
     /** Pointer to converter objects of three different qualities, and a pointer to
       * the current active object */
-    SRC_STATE *converter2, *converter3, *converter4, *converterActive;
+    SRC_STATE *converter0, *converter1, *converter2, *converter3, *converter4, *converterActive;
     /** Current quality */
     int m_iQuality;
     SRC_DATA *data;

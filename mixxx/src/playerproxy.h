@@ -30,6 +30,7 @@ public:
     void close();
     void setDefaults();
     QStringList getInterfaces();
+    QStringList getInputInterfaces();
     QStringList getSampleRates();
     QString getSoundApiName();
     /** Return list of supported sound api's */

@@ -50,6 +50,8 @@ public:
     virtual void setDefaults() = 0;
     /** Return list of interfaces */
     virtual QStringList getInterfaces() = 0;
+    /** Return list of input interfaces */
+    virtual QStringList getInputInterfaces() = 0;    
     /** Return list of sample rates */
     virtual QStringList getSampleRates() = 0;
     /** Return name of sound api */

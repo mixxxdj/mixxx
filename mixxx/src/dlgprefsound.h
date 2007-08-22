@@ -22,7 +22,7 @@
 #include "configobject.h"
 
 class QWidget;
-class PlayerProxy;
+class SoundManager;
 class ControlObject;
 
 /**
@@ -32,7 +32,7 @@ class ControlObject;
 class DlgPrefSound : public QWidget, public Ui::DlgPrefSoundDlg  {
     Q_OBJECT
 public:
-    DlgPrefSound(QWidget *parent, PlayerProxy *_player, ConfigObject<ConfigValue> *_config);
+    DlgPrefSound(QWidget *parent, SoundManager* _soundman, ConfigObject<ConfigValue> *_config);
     ~DlgPrefSound();
 public slots:
     /** Update widget */
@@ -46,14 +46,15 @@ private slots:
     void slotLatencySliderRelease();
     void slotLatencySliderChange(int);
 signals:
-    void apply();
+    void apiUpdated();
 private:
     /** Transform a slider value to latency value in msec */
     int getSliderLatencyMsec(int);
     /** Transform latency value in msec to slider value */
     int getSliderLatencyVal(int);
     /** Pointer to player device */
-    PlayerProxy *player;
+    //PlayerProxy *player;
+    SoundManager* m_pSoundManager;
     /** Pointer to config object */
     ConfigObject<ConfigValue> *config;
     /** True if the mouse is currently dragging the latency slider */

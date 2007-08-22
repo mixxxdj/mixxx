@@ -27,6 +27,7 @@
 #include <qevent.h>
 #include <qdatetime.h>
 #include <qdom.h>
+#include <QMutex>
 //Added by qt3to4:
 #include <QDragEnterEvent>
 #include <QDropEvent>
@@ -90,6 +91,7 @@ protected:
     QColor colorBeat, colorSignal, colorHfc, colorMarker, colorFisheye, colorBack, colorCue;
 
 	bool m_painting;
+	QMutex m_paintMutex;
 };
 
 #endif

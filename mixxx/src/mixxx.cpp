@@ -46,6 +46,7 @@
 #include <qdatetime.h>
 #include <qpalette.h>
 //Added by qt3to4:
+#include <QFileDialog>
 #include <Q3Frame>
 
 #include "wknob.h"
@@ -71,6 +72,7 @@
 #include "log.h"
 
 #include "playerproxy.h"
+#include "soundmanager.h"
 
 MixxxApp::MixxxApp(QApplication *a, QStringList files, QSplashScreen *pSplash, QString qLogFileName)
 {
@@ -97,7 +99,8 @@ MixxxApp::MixxxApp(QApplication *a, QStringList files, QSplashScreen *pSplash, Q
 #endif
         
     // Reset pointer to players
-    player = 0;
+    //player = 0;
+    soundmanager = 0;
     m_pTrack = 0;
     prefDlg = 0;
 
@@ -124,15 +127,16 @@ MixxxApp::MixxxApp(QApplication *a, QStringList files, QSplashScreen *pSplash, Q
         pSplash->message("Setting up sound engine...",Qt::AlignLeft|Qt::AlignBottom);
 
     // Sample rate used by Player object
-    ControlObject *p = new ControlObject(ConfigKey("[Master]","samplerate"));
-    p->set(44100.);
+    ControlObject *sr = new ControlObject(ConfigKey("[Master]","samplerate"));
+    sr->set(44100.);
+    ControlObject *latency = new ControlObject(ConfigKey("[Master]","latency"));
 
     // Master rate
     new ControlPotmeter(ConfigKey("[Master]","rate"),-1.,1.);
 
     // Init buffers/readers
-    buffer1 = new EngineBuffer("[Channel1]");
-    buffer2 = new EngineBuffer("[Channel2]");
+    buffer1 = new EngineBuffer("[Channel1]", config);
+    buffer2 = new EngineBuffer("[Channel2]", config);
     buffer1->setOtherEngineBuffer(buffer2);
     buffer2->setOtherEngineBuffer(buffer1);
 
@@ -144,9 +148,12 @@ MixxxApp::MixxxApp(QApplication *a, QStringList files, QSplashScreen *pSplash, Q
     master = new EngineMaster(config, buffer1, buffer2, channel1, channel2, "[Master]");
 
     // Initialize player device
-    Player::setMaster(master);
-    player = new PlayerProxy(config);
-
+    //Player::setMaster(master);
+    //player = new PlayerProxy(config);
+    
+    soundmanager = new SoundManager(config, master);
+    soundmanager->queryDevices();
+    
     if (pSplash)
         pSplash->message("Loading skin...",Qt::AlignLeft|Qt::AlignBottom);
 
@@ -255,13 +262,15 @@ MixxxApp::MixxxApp(QApplication *a, QStringList files, QSplashScreen *pSplash, Q
     ControlObject::getControl(ConfigKey("[Channel2]","TrackEndMode"))->queueFromThread(config->getValueString(ConfigKey("[Controls]","TrackEndModeCh2")).toDouble());
 
     // Initialize preference dialog
-    prefDlg = new DlgPreferences(this, view, player, m_pTrack, config);
+    prefDlg = new DlgPreferences(this, view, soundmanager, m_pTrack, config);
     prefDlg->setHidden(true);
 
     // Try open player device If that fails, the preference panel is opened.
-    if (!player->open())
-        prefDlg->setHidden(false);
-
+    //if (!player->open())
+    //    prefDlg->setHidden(false);
+    
+    soundmanager->setupDevices();
+    
     //setFocusPolicy(QWidget::StrongFocus);
     //grabKeyboard();
 
@@ -332,15 +341,22 @@ MixxxApp::~MixxxApp()
     qDebug("Write track xml, %i",qTime.elapsed());
     m_pTrack->writeXML(config->getValueString(ConfigKey("[Playlist]","Listfile")));
 
-    qDebug("close player, %i",qTime.elapsed());
-    player->close();
-    qDebug("player->close() done");
+    //qDebug("close player, %i",qTime.elapsed());
+    //player->close();
+    //qDebug("player->close() done");
+    
+    qDebug() << "close soundmanager" << qTime.elapsed();
+    soundmanager->closeDevices();
+    qDebug() << "soundmanager->close() done";
+    
     // Save state of End of track controls in config database
     config->set(ConfigKey("[Controls]","TrackEndModeCh1"), ConfigValue((int)ControlObject::getControl(ConfigKey("[Channel1]","TrackEndMode"))->get()));
     config->set(ConfigKey("[Controls]","TrackEndModeCh2"), ConfigValue((int)ControlObject::getControl(ConfigKey("[Channel2]","TrackEndMode"))->get()));
 
-    qDebug("delete player, %i",qTime.elapsed());
-    delete player;
+    //qDebug("delete player, %i",qTime.elapsed());
+    //delete player;
+    qDebug("delete soundmanager, %i",qTime.elapsed());
+    delete soundmanager;
     qDebug("delete master, %i",qTime.elapsed());
     delete master;
     qDebug("delete channel1, %i",qTime.elapsed());
@@ -397,6 +413,10 @@ void MixxxApp::initActions()
     optionsPreferences = new Q3Action(tr("Preferences"), tr("&Preferences..."), Q3Accel::stringToKey(tr("Ctrl+P")), this);
     helpAboutApp = new Q3Action(tr("About"), tr("&About..."), 0, this);
 
+#ifdef __VINYLCONTROL__
+    optionsVinylControl = new Q3Action(tr("Enable Vinyl Control"), tr("&Enable Vinyl Control"), Q3Accel::stringToKey(tr("Ctrl+Y")), this, 0, true);
+#endif
+
 #ifdef __SCRIPT__
     macroStudio = new Q3Action(tr("Show Studio"), tr("&Show Studio"), 0, this);
 #endif
@@ -410,6 +430,9 @@ void MixxxApp::initActions()
     optionsFullScreen = new QAction(tr("Full Screen"), tr("&Full Screen"), Q3Accel::stringToKey(tr("Esc")), this, 0, this);
     optionsPreferences = new QAction(tr("Preferences"), tr("&Preferences..."), Q3Accel::stringToKey(tr("Ctrl+P")), this);
     helpAboutApp = new QAction(tr("About"), tr("&About..."), 0, this);
+#ifdef __VINYLCONTROL__
+    optionsVinylControl = new QAction(tr("Enable Vinyl Control"), tr("&Enable Vinyl Control"), Q3Accel::stringToKey(tr("Ctrl+Y")), this, 0, true);
+#endif
 
 #ifdef __SCRIPT__
     macroStudio = new QAction(tr("Show Studio"), tr("&Show Studio"), 0, this);
@@ -437,6 +460,17 @@ void MixxxApp::initActions()
     optionsBeatMark->setStatusTip(tr("Audio Beat Marks"));
     optionsBeatMark->setWhatsThis(tr("Audio Beat Marks\nMark beats by audio clicks"));
     connect(optionsBeatMark, SIGNAL(toggled(bool)), this, SLOT(slotOptionsBeatMark(bool)));
+    
+#ifdef __VINYLCONTROL__
+	//Either check or uncheck the vinyl control menu item depending on what it was saved as.
+	if ((bool)config->getValueString(ConfigKey("[VinylControl]","Enabled")).toInt() == true)
+		optionsVinylControl->setOn(true);
+	else
+    	optionsVinylControl->setOn(false);
+    optionsVinylControl->setStatusTip(tr("Activate Vinyl Control"));
+    optionsVinylControl->setWhatsThis(tr("Use timecoded vinyls on external turntables to control Mixxx"));
+    connect(optionsVinylControl, SIGNAL(toggled(bool)), this, SLOT(slotOptionsVinylControl(bool)));
+#endif
 
     optionsFullScreen->setOn(false);
     optionsFullScreen->setStatusTip(tr("Full Screen"));
@@ -489,6 +523,7 @@ void MixxxApp::initMenuBar()
     // menuBar entry optionsMenu
     optionsMenu->setCheckable(true);
     //  optionsBeatMark->addTo(optionsMenu);
+    optionsVinylControl->addTo(optionsMenu);
     optionsFullScreen->addTo(optionsMenu);
     optionsPreferences->addTo(optionsMenu);
 
@@ -540,17 +575,17 @@ bool MixxxApp::queryExit()
 
 void MixxxApp::slotFileOpen()
 {
+	/*
 	#ifdef QT3_SUPPORT
     QString s = Q3FileDialog::getOpenFileName(config->getValueString(ConfigKey("[Playlist]","Directory")),
                                              "Audio (*.wav *.ogg *.mp3 *.aiff)",
                                              this,
                                              "Open file");
-    #else
-    QString s = Q3FileDialog::getOpenFileName(config->getValueString(ConfigKey("[Playlist]","Directory")),
-                                             "Audio (*.wav *.ogg *.mp3 *.aiff)",
-                                             this,
-                                             "Open file");
-    #endif
+    #else*/
+    
+    QString s = QFileDialog::getOpenFileName(this, "Open file", config->getValueString(ConfigKey("[Playlist]","Directory")),
+                                             "Audio (*.wav *.ogg *.mp3 *.aiff)");
+    //#endif
 	if (!(s == QString::null)) {
 		TrackInfoObject *pTrack = m_pTrack->getTrackCollection()->getTrack(s);
 		if (pTrack)
@@ -613,6 +648,14 @@ void MixxxApp::slotOptionsPreferences()
 {
     prefDlg->setHidden(false);
 }
+
+#ifdef __VINYLCONTROL__
+void MixxxApp::slotOptionsVinylControl(bool toggle)
+{
+	//qDebug("slotOptionsVinylControl: toggle is %i", (int)toggle);
+	config->set(ConfigKey("[VinylControl]","Enabled"), ConfigValue((int)toggle));
+}
+#endif
 
 void MixxxApp::slotHelpAbout()
 {

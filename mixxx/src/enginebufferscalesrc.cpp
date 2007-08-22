@@ -15,6 +15,7 @@
  *                                                                         *
  ***************************************************************************/
 
+#include <QtDebug>
 #include "enginebufferscalesrc.h"
 #include "readerextractwave.h"
 #include "mathstuff.h"
@@ -25,6 +26,12 @@ EngineBufferScaleSRC::EngineBufferScaleSRC(ReaderExtractWave *wave) : EngineBuff
 
     // Initialize converter for three qualities and two channels
     int error;
+    converter0 = src_new(0, 2, &error);
+    if (error!=0)
+        qDebug("EngineBufferScaleSRC: %s",src_strerror(error));
+    converter1 = src_new(1, 2, &error);
+    if (error!=0)
+        qDebug("EngineBufferScaleSRC: %s",src_strerror(error));            
     converter2 = src_new(2, 2, &error);
     if (error!=0)
         qDebug("EngineBufferScaleSRC: %s",src_strerror(error));
@@ -35,7 +42,7 @@ EngineBufferScaleSRC::EngineBufferScaleSRC(ReaderExtractWave *wave) : EngineBuff
     if (error!=0)
         qDebug("EngineBufferScaleSRC: %s",src_strerror(error));
 
-    m_iQuality = 4;
+    m_iQuality = 4; //Make this the same as the index in the converter right below this.
     converterActive = converter4;
 
     // Initialize data struct. Assume that the audio file is never ending
@@ -43,6 +50,8 @@ EngineBufferScaleSRC::EngineBufferScaleSRC(ReaderExtractWave *wave) : EngineBuff
     data->end_of_input = 0; // HACK
 
     m_bBackwards = false;
+    src_set_ratio(converter0, m_dTempo);
+    src_set_ratio(converter1, m_dTempo);
     src_set_ratio(converter2, m_dTempo);
     src_set_ratio(converter3, m_dTempo);
     src_set_ratio(converter4, m_dTempo);
@@ -50,6 +59,8 @@ EngineBufferScaleSRC::EngineBufferScaleSRC(ReaderExtractWave *wave) : EngineBuff
 
 EngineBufferScaleSRC::~EngineBufferScaleSRC()
 {
+    src_delete(converter0);
+    src_delete(converter1);
     src_delete(converter2);
     src_delete(converter3);
     src_delete(converter4);
@@ -59,7 +70,7 @@ EngineBufferScaleSRC::~EngineBufferScaleSRC()
 
 void EngineBufferScaleSRC::setQuality(int q)
 {
-    if (q>4 || q<2)
+    if (q>4 || q<0)
         m_iQuality = 4;
     else
         m_iQuality = q;
@@ -68,6 +79,10 @@ void EngineBufferScaleSRC::setQuality(int q)
 
     switch (m_iQuality)
     {
+    case 0:
+        converterActive = converter0;
+    case 1:
+        converterActive = converter1;            
     case 2:
         converterActive = converter2;
     case 3:
@@ -109,11 +124,16 @@ double EngineBufferScaleSRC::setTempo(double dTempo)
     }
 
     // Force dirty interpolation if speed is above 2x
+/*    
+//Disabled by Albert because I don't think we need this anymore
+//(we're using the same interpolation all the time now...)
     if (m_dTempo<0.5 && dTempoOld>=0.5)
         setFastMode(true);
     else if (m_dTempo>=0.5 && dTempoOld<0.5)
         setFastMode(false);
 
+*/    
+    
     // Ensure valid range of rate
     if (m_dTempo==0.)
         return 0.;
@@ -121,7 +141,9 @@ double EngineBufferScaleSRC::setTempo(double dTempo)
         m_dTempo = 12.;
     else if (m_dTempo<1./12.)
         m_dTempo = 1./12.;
-    
+        
+    src_set_ratio(converter0, m_dTempo);
+    src_set_ratio(converter1, m_dTempo);
     src_set_ratio(converter2, m_dTempo);
     src_set_ratio(converter3, m_dTempo);
     src_set_ratio(converter4, m_dTempo);
@@ -191,7 +213,7 @@ CSAMPLE *EngineBufferScaleSRC::scale(double playpos, int buf_size, float *pBase,
 
         consumed += data->input_frames_used;
    }
-
+   
     // Calculate new playpos
     if (m_bBackwards)
         new_playpos = playpos - (double)consumed*2.;
@@ -200,3 +222,37 @@ CSAMPLE *EngineBufferScaleSRC::scale(double playpos, int buf_size, float *pBase,
 
     return buffer;
 }
+
+//TODO: This probably needs to be implemented properly
+//in order for seeking to do at the same rate as SoundTouch's
+//seeking...
+void EngineBufferScaleSRC::setBaseRate(double dBaseRate)
+
+{
+
+    m_dBaseRate = dBaseRate;
+
+    
+/*
+    if (m_bPitchIndpTimeStretch)
+
+        m_pSoundTouch->setRate(m_dBaseRate);
+
+    else
+
+        m_pSoundTouch->setRate(m_dBaseRate*m_dTempo);
+*/
+}
+
+
+
+void EngineBufferScaleSRC::clear()
+
+{
+
+    //m_pSoundTouch->clear();
+
+    //m_bClear = true;
+
+}
+
