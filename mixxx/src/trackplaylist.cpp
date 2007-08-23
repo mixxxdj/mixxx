@@ -40,7 +40,7 @@ TrackPlaylist::TrackPlaylist(TrackCollection *pTrackCollection, QDomNode node)
 
     // Set name of list
     m_qName = XmlParse::selectNodeQString(node, "Name");
-    qDebug("playlist name %s",m_qName.latin1());
+    qDebug() << "playlist name" << m_qName.latin1();
 
     // For each track...
     QDomNode idnode = XmlParse::selectNode(node, "List").firstChild();
@@ -102,7 +102,7 @@ void TrackPlaylist::addTrack(TrackInfoObject *pTrack)
 
 void TrackPlaylist::addTrack(QString qLocation)
 {
-    qDebug("Add track %s",qLocation);//.latin1());
+    qDebug() << "Add track" << qLocation;//.latin1());
     TrackInfoObject *pTrack = m_pTrackCollection->getTrack(qLocation);
 
     if (pTrack)
