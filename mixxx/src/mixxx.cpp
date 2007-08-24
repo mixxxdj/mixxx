@@ -164,12 +164,10 @@ MixxxApp::MixxxApp(QApplication *a, QStringList files, QSplashScreen *pSplash, Q
     QDir dir(config->getValueString(ConfigKey("[Playlist]","Directory")));
     if ((config->getValueString(ConfigKey("[Playlist]","Directory")).length()<1) || (!dir.exists()))
     {
-        Q3FileDialog* fd = new Q3FileDialog(this, "", true);
-        fd->setMode( Q3FileDialog::Directory );
-        fd->setWindowTitle(QString("Choose directory with music files"));
-        if ( fd->exec() == QDialog::Accepted )
+        QString fd = QFileDialog::getExistingDirectory(this, "Choose music library directory");
+        if (fd != "")
         {
-            config->set(ConfigKey("[Playlist]","Directory"), fd->selectedFile());
+            config->set(ConfigKey("[Playlist]","Directory"), fd);
             config->Save();
         }
     }
@@ -651,13 +649,12 @@ void MixxxApp::slotOptionsPreferences()
     prefDlg->setHidden(false);
 }
 
-#ifdef __VINYLCONTROL__
+//Note: Can't #ifdef this because MOC doesn't catch it. 
 void MixxxApp::slotOptionsVinylControl(bool toggle)
 {
 	//qDebug("slotOptionsVinylControl: toggle is %i", (int)toggle);
 	config->set(ConfigKey("[VinylControl]","Enabled"), ConfigValue((int)toggle));
 }
-#endif
 
 void MixxxApp::slotHelpAbout()
 {
