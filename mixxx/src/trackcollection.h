@@ -14,6 +14,7 @@
 
 #include <qdom.h>
 #include <q3ptrlist.h>
+#include "trackinfoobject.h"
 
 class TrackInfoObject;
 class BpmDetector;
@@ -44,7 +45,7 @@ protected:
     /** Used in binary search for an ID in the list */
     TrackInfoObject *getTrack(int id, int min, int mid, int max);
     /** List of TrackInfoObjects. This is the actual database */
-    Q3PtrList <TrackInfoObject> m_qTrackList;
+    QList <TrackInfoObject*> m_qTrackList;
     /** Counter used to assign unique id's to tracks in database */
     long int m_iCounter;
     /** Bpm detection queue being passed through for the TrackInfoObject */
