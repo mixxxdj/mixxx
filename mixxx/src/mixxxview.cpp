@@ -35,6 +35,7 @@
 #include <QPushButton>
 #include <QTableView>
 #include <qlineedit.h>
+#include <QtDebug>
 
 
 #include "wtracktable.h"
@@ -204,7 +205,7 @@ ImgSource* MixxxView::parseFilters(QDomNode filt) {
 			ret = new ImgHSVTweak(ret, hmin, hmax, smin, smax, vmin, vmax, hfact, hconst,
 				sfact, sconst, vfact, vconst);
 		} else {
-                    qDebug("Unkown image filter: %s\n", name);
+                    qDebug() << "Unkown image filter:" << name;
 		}
 		f = f.nextSibling();
 	}
