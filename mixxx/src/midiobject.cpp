@@ -97,23 +97,19 @@ QStringList *MidiObject::getConfigList(QString path)
     QDir dir(path);
     dir.setFilter(QDir::Files);
     dir.setNameFilter("*.midi.xml *.MIDI.XML");
-#ifndef QT3_SUPPORT
-    const QFileInfoList *list = dir.entryInfoList();
-    if (list!=0)
+
+    //const QFileInfoList *list = dir.entryInfoList();
+    //if (dir.entryInfoList().empty())
     {
-        QFileInfoListIterator it(*list);        // create list iterator
-        QFileInfo *fi;                          // pointer for traversing
-        while ((fi=it.current()))
+        //QFileInfoListIterator it(*list);        // create list iterator
+        QListIterator<QFileInfo> it(dir.entryInfoList());
+        QFileInfo fi;                          // pointer for traversing
+        while (it.hasNext())
         {
-            configs.append(fi->fileName());
-            ++it;   // goto next list element
+            fi = it.next();
+            configs.append(fi.fileName());
         }
     }
-#else
-    QList<QFileInfo> list = dir.entryInfoList();
-    for (int i=0; i<list.size(); ++i)
-        configs.append(list.at(i).fileName());
-#endif
 
     return &configs;
 }
