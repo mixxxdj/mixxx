@@ -224,8 +224,11 @@ void WTrackTable::slotMouseDoubleClicked(int row, int col, int button, const QPo
                 if(bpmTapDlg)
                     delete bpmTapDlg;
 
+#ifdef __EXPERIMENTAL_BPM__
+
                 bpmTapDlg = new DlgBpmTap(NULL, pTrackInfoObject);
                 bpmTapDlg->show();
+#endif
             }
         }
     }
