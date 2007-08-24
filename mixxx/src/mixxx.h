@@ -106,10 +106,8 @@ class MixxxApp : public QMainWindow
     void slotFileQuit();
     /** toggle audio beat marks */
     void slotOptionsBeatMark(bool toggle);
-#ifdef __VINYLCONTROL__
-    /** toggle vinyl control **/
+    /** toggle vinyl control - Don't #ifdef this because MOC is dumb**/
     void slotOptionsVinylControl(bool toggle);
-#endif
     /** toogle full screen mode */
     void slotOptionsFullScreen(bool toggle);
     /** Preference dialog */
