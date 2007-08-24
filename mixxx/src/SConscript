@@ -459,6 +459,7 @@ else:
 	print "Experimental recording... disabled"
 
 #LADSPA
+#TODO: Make sure we check for ladspa.h and the library...
 flags_ladspa = ARGUMENTS.get('ladspa', 0)
 if int(flags_ladspa):
 	env.Append(CXXFLAGS = '-D__LADSPA__')
