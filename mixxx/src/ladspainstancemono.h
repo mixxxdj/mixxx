@@ -21,7 +21,6 @@
 
 class LADSPAInstanceMono : public LADSPAInstance
 {
-
 public:
     LADSPAInstanceMono(const LADSPA_Descriptor * descriptor);
     ~LADSPAInstanceMono();

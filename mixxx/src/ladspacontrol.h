@@ -11,12 +11,12 @@
 #define LADSPACONTROL_H
 
 // won't be used unless LADSPAControl is instantiated before a call to setBufferSize
-#define LADSPA_MAX_BUFFER_SIZE 4096
+#define LADSPA_MAX_BUFFER_SIZE 8192
 
 #include <ladspa.h>
 
-class LADSPAControl {
-
+class LADSPAControl
+{
 public:
     LADSPAControl();
     ~LADSPAControl();

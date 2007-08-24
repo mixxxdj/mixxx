@@ -13,11 +13,24 @@
 #include "engineobject.h"
 
 #include "ladspainstance.h"
-#include "ladspaloader.h"
 #include "ladspaplugin.h"
+
+#include <Q3PtrList>
+#include <Q3PtrVector>
 
 class ControlPotmeter;
 class LADSPAControl;
+class EngineLADSPA;
+
+struct EngineLADSPAControlConnection
+{
+    ControlPotmeter * potmeter;
+    LADSPAControl * control;
+    bool remove;
+};
+
+typedef Q3PtrList<EngineLADSPAControlConnection> EngineLADSPAControlConnectionList;
+typedef Q3PtrVector<EngineLADSPAControlConnection> EngineLADSPAControlConnectionVector;
 
 class EngineLADSPA : public EngineObject 
 {
@@ -27,23 +40,19 @@ public:
 
     void process(const CSAMPLE *pIn, const CSAMPLE *pOut, const int iBufferSize);
     void addInstance(LADSPAInstance * instance);
+    EngineLADSPAControlConnection * addControl(ControlPotmeter * potmeter, LADSPAControl * control);
+
+    static EngineLADSPA * getEngine();
 
 private:
     LADSPAInstanceList m_Instances;
-    LADSPALoader * m_Loader;
+    EngineLADSPAControlConnectionList m_Connections;
     int m_bufferSize;
     int m_monoBufferSize;
     CSAMPLE * m_pBufferLeft[2];
     CSAMPLE * m_pBufferRight[2];
 
-    ControlPotmeter * m_pPot1;
-    ControlPotmeter * m_pPot2;
-    ControlPotmeter * m_pPot3;
-    ControlPotmeter * m_pPot4;
-    LADSPAControl * m_pControl1;
-    LADSPAControl * m_pControl2;
-    LADSPAControl * m_pControl3;
-    LADSPAControl * m_pControl4;
+    static EngineLADSPA * m_pEngine;
 };
 
 #endif

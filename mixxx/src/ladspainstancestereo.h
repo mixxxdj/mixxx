@@ -21,7 +21,6 @@
 
 class LADSPAInstanceStereo : public LADSPAInstance
 {
-
 public:
     LADSPAInstanceStereo(const LADSPA_Descriptor * descriptor);
     ~LADSPAInstanceStereo();

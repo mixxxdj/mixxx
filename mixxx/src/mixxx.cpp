@@ -263,6 +263,11 @@ MixxxApp::MixxxApp(QApplication *a, QStringList files, QSplashScreen *pSplash, Q
     prefDlg = new DlgPreferences(this, view, soundmanager, m_pTrack, config);
     prefDlg->setHidden(true);
 
+#ifdef __LADSPA__
+    ladspaDlg = new DlgLADSPA(this);
+    ladspaDlg->setHidden(false);
+#endif
+
     // Try open player device If that fails, the preference panel is opened.
     //if (!player->open())
     //    prefDlg->setHidden(false);

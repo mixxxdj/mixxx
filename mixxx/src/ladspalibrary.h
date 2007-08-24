@@ -18,8 +18,8 @@
 
 #include <ladspa.h>
 
-class LADSPALibrary {
-
+class LADSPALibrary
+{
 public:
     LADSPALibrary(QString file);
     ~LADSPALibrary();
@@ -27,7 +27,7 @@ public:
     const LADSPAPluginList * pluginList();
     int pluginCount();
 
-protected:
+private:
     QLibrary * m_pLibrary;
     LADSPAPluginList m_Plugins;
     QString m_qFilePath;

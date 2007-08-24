@@ -13,8 +13,8 @@
 #include <ladspaplugin.h>
 #include <ladspalibrary.h>
 
-class LADSPALoader {
-
+class LADSPALoader
+{
 public:
     LADSPALoader();
     ~LADSPALoader();
@@ -22,7 +22,7 @@ public:
     const LADSPAPlugin * getByIndex(uint index);
     LADSPAPlugin * getByLabel(const char * label);
 
-protected:
+private:
     LADSPAPluginVector m_Plugins;
     LADSPALibraryList m_Libraries;
     unsigned int m_PluginCount;

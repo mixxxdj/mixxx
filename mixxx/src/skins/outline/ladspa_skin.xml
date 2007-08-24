@@ -1,0 +1,14 @@
+<!DOCTYPE LADSPASkin>
+<LADSPASkin>
+ <Knob>
+  <Tooltip>A knob</Tooltip>
+  <NumberStates>41</NumberStates>
+  <Path>knobm%1.png</Path>
+  <Pos>1</Pos>
+  <Connection>
+    <ConfigKey>[LADSPA],None</ConfigKey>
+  </Connection>
+ </Knob>
+ <BgColor>#ffffff</BgColor>
+ <FgColor>#000000</FgColor>
+</LADSPASkin>

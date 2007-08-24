@@ -7,30 +7,24 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef LADSPAPLUGIN_H
-#define LADSPAPLUGIN_H
+#ifndef DLGLADSPA_H
+#define DLGLADSPA_H
 
-#include <q3ptrlist.h>
-#include <q3ptrvector.h>
+#include <qdialog.h>
 
-#include <ladspa.h>
+class MixxxApp;
+class LADSPAView;
 
-#include <ladspainstance.h>
-
-class LADSPAPlugin
+class DlgLADSPA : public QDialog
 {
-public:
-    LADSPAPlugin(const LADSPA_Descriptor * descriptor);
-    ~LADSPAPlugin();
+    Q_OBJECT
 
-    LADSPAInstance * instantiate();
-    const char * getLabel();
+public:
+    DlgLADSPA(MixxxApp *mixxx);
+    ~DlgLADSPA();
 
 private:
-    const LADSPA_Descriptor * m_pDescriptor;
+    LADSPAView *m_pView;
 };
-
-typedef Q3PtrList<LADSPAPlugin> LADSPAPluginList;
-typedef Q3PtrVector<LADSPAPlugin> LADSPAPluginVector;
 
 #endif

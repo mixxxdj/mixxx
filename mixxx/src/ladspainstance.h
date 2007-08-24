@@ -10,15 +10,16 @@
 #ifndef LADSPAINSTANCE_H
 #define LADSPAINSTANCE_H
 
-#include <q3ptrlist.h>
+#include <Q3PtrList>
+#include <Q3PtrVector>
 
 #include <ladspa.h>
 
 #include <defs.h>
 #include <controlobject.h>
 
-class LADSPAInstance {
-
+class LADSPAInstance
+{
 public:
     LADSPAInstance(const LADSPA_Descriptor * descriptor);
     ~LADSPAInstance();
@@ -30,11 +31,14 @@ public:
     int getSampleRate();
     bool isInplaceBroken();
 
+    bool remove;
+
 private:
     const LADSPA_Descriptor * m_pDescriptor;
     static ControlObject *m_pControlObjectSampleRate;
 };
 
 typedef Q3PtrList<LADSPAInstance> LADSPAInstanceList;
+typedef Q3PtrVector<LADSPAInstance> LADSPAInstanceVector;
 
 #endif
