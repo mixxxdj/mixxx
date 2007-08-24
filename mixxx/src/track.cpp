@@ -86,23 +86,27 @@ Track::Track(QString location, MixxxView *pView, EngineBuffer *pBuffer1, EngineB
 	m_pLibraryModel->setTrackPlaylist(m_qPlaylists.at(0));
 	m_pPlayQueueModel->setTrackPlaylist(m_qPlaylists.at(1));
 
-	m_pView->m_pTrackTableView->setSearchSource(m_pLibraryModel);
-	m_pView->m_pTrackTableView->resizeColumnsToContents();
-	m_pView->m_pTrackTableView->setTrack(this);
-	
-    // Connect mouse events from the tree view
-    //connect(m_pView->m_pTreeView, SIGNAL(activatePlaylist(QString)), this, SLOT(slotActivatePlaylist(QString)));
-    //connect(this, SIGNAL(activePlaylist(TrackPlaylist *)), m_pView->m_pTreeView, SLOT(slotHighlightPlaylist(TrackPlaylist *)));
-    
-	// Connect ComboBox events to WTrackTable
-	connect(m_pView->m_pComboBox, SIGNAL(activated(int)), this, SLOT(slotActivatePlaylist(int)));
+    if (m_pView) //Stops Mixxx from dying if a skin doesn't have the search box.
+    {
+    	m_pView->m_pTrackTableView->setSearchSource(m_pLibraryModel);
+    	m_pView->m_pTrackTableView->resizeColumnsToContents();
+    	m_pView->m_pTrackTableView->setTrack(this);
+        
+        // Connect mouse events from the tree view
+        //connect(m_pView->m_pTreeView, SIGNAL(activatePlaylist(QString)), this, SLOT(slotActivatePlaylist(QString)));
+        //connect(this, SIGNAL(activePlaylist(TrackPlaylist *)), m_pView->m_pTreeView, SLOT(slotHighlightPlaylist(TrackPlaylist *)));
+        
+    	// Connect ComboBox events to WTrackTable
+    	connect(m_pView->m_pComboBox, SIGNAL(activated(int)), this, SLOT(slotActivatePlaylist(int)));
 
-	// Connect Search to table
-	connect( m_pView->m_pLineEditSearch, SIGNAL( textChanged( const QString & )),m_pView->m_pTrackTableView->m_pSearchFilter, SLOT( setFilterFixedString( const QString & )));
+    	// Connect Search to table
+    	connect( m_pView->m_pLineEditSearch, SIGNAL( textChanged( const QString & )),m_pView->m_pTrackTableView->m_pSearchFilter, SLOT( setFilterFixedString( const QString & )));
+
+    	// Connect drop events to table
+        //connect(m_pView->m_pTrackTable, SIGNAL(dropped(QDropEvent *)), this, SLOT(slotDrop(QDropEvent *)));
+	}
 	
-	// Connect drop events to table
-    //connect(m_pView->m_pTrackTable, SIGNAL(dropped(QDropEvent *)), this, SLOT(slotDrop(QDropEvent *)));
-	
+
     // Get ControlObject for determining end of track mode, and set default value to STOP.
     m_pEndOfTrackModeCh1 = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey("[Channel1]","TrackEndMode")));
     m_pEndOfTrackModeCh2 = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey("[Channel2]","TrackEndMode")));
