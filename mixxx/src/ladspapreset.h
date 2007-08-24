@@ -7,30 +7,35 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef LADSPAPLUGIN_H
-#define LADSPAPLUGIN_H
+#ifndef LADSPAPRESET_H
+#define LADSPAPRESET_H
 
-#include <q3ptrlist.h>
-#include <q3ptrvector.h>
+#include <Q3PtrVector>
 
-#include <ladspa.h>
+#include <ladspaplugin.h>
+#include <ladspapresetknob.h>
 
-#include <ladspainstance.h>
+class QDomElement;
 
-class LADSPAPlugin
+class LADSPAPresetInstance;
+class LADSPALoader;
+
+class LADSPAPreset
 {
 public:
-    LADSPAPlugin(const LADSPA_Descriptor * descriptor);
-    ~LADSPAPlugin();
+    LADSPAPreset();
+    LADSPAPreset(QDomElement element, LADSPALoader * loader);
+    ~LADSPAPreset();
 
-    LADSPAInstance * instantiate();
-    const char * getLabel();
+    LADSPAPresetInstance * instantiate();
+    QString getName();
 
 private:
-    const LADSPA_Descriptor * m_pDescriptor;
+    QString m_qName;
+    LADSPAPluginVector m_Plugins;
+    LADSPAPresetKnobVector m_Knobs;
 };
 
-typedef Q3PtrList<LADSPAPlugin> LADSPAPluginList;
-typedef Q3PtrVector<LADSPAPlugin> LADSPAPluginVector;
+typedef Q3PtrVector<LADSPAPreset> LADSPAPresetVector;
 
 #endif

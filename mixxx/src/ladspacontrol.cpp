@@ -9,6 +9,8 @@
 
 #include <ladspacontrol.h>
 
+#include <QDebug>
+
 // static variable
 int LADSPAControl::m_bufferSize = LADSPA_MAX_BUFFER_SIZE;
 

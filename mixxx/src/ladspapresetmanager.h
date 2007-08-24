@@ -7,30 +7,25 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef LADSPAPLUGIN_H
-#define LADSPAPLUGIN_H
+#ifndef LADSPAPRESETMANAGER_H
+#define LADSPAPRESETMANAGER_H
 
-#include <q3ptrlist.h>
-#include <q3ptrvector.h>
+#include <ladspapreset.h>
 
-#include <ladspa.h>
+#define LADSPA_PRESET_PATH "ladspa_presets"
 
-#include <ladspainstance.h>
-
-class LADSPAPlugin
+class LADSPAPresetManager
 {
 public:
-    LADSPAPlugin(const LADSPA_Descriptor * descriptor);
-    ~LADSPAPlugin();
-
-    LADSPAInstance * instantiate();
-    const char * getLabel();
+    LADSPAPresetManager();
+    ~LADSPAPresetManager();
+        
+    unsigned int getPresetCount();
+    LADSPAPreset * getPreset(unsigned int i);
 
 private:
-    const LADSPA_Descriptor * m_pDescriptor;
+    LADSPAPresetVector m_Presets;
+    unsigned int m_iPresetCount;
 };
-
-typedef Q3PtrList<LADSPAPlugin> LADSPAPluginList;
-typedef Q3PtrVector<LADSPAPlugin> LADSPAPluginVector;
 
 #endif

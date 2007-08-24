@@ -62,6 +62,10 @@
 #include "script/scriptengine.h"
 #endif
 
+#ifdef __LADSPA__
+#include "dlgladspa.h"
+#endif
+
 class WVisual;
 class Track;
 class TrackInfoObject;
@@ -253,6 +257,10 @@ class MixxxApp : public QMainWindow
 
 #ifdef __SCRIPT__
     ScriptEngine *scriptEng;
+#endif
+
+#ifdef __LADSPA__
+    DlgLADSPA *ladspaDlg;
 #endif
 
     // Fullscreen patch
