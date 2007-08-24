@@ -292,9 +292,11 @@ void Reader::seek()
     seekqueuemutex.lock();
     if (!seekqueue.isEmpty())
     {
-        TSeekQueue::iterator it = seekqueue.begin();
-        new_playpos = (*it);
-        seekqueue.remove(it);
+        while (!seekqueue.isEmpty())
+        {
+            new_playpos = seekqueue.takeFirst();
+            //seekqueue.remove(new_playpos);
+        }
     }
     seekqueuemutex.unlock();
 

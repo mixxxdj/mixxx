@@ -126,7 +126,7 @@ private:
     typedef Q3PtrList<TrackQueueType> TTrackQueue;
     /** Track queue used in communication with reader from other threads */
     TTrackQueue trackqueue;
-    typedef Q3ValueList<double> TSeekQueue;
+    typedef QList<double> TSeekQueue;
     /** Seek queue used in communication with reader from other threads */
     TSeekQueue seekqueue;
     /** Current loaded track */
