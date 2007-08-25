@@ -21,6 +21,7 @@
 //Added by qt3to4:
 #include <Q3ValueList>
 #include <Q3MemArray>
+#include <QtDebug>
 #include "trackinfoobject.h"
 #include "bpmdetector.h"
 #include "bpmreceiver.h"
@@ -162,7 +163,7 @@ bool TrackInfoObject::checkFileExists()
     else
     {
         m_bExists = false;
-        qDebug("The track %s was not found", getLocation().latin1());
+        qDebug() << "The track %s was not found" << getLocation();
     }
     return m_bExists;
 }

@@ -129,11 +129,11 @@ TrackInfoObject *TrackCollection::getTrack(QString location)
     {
         cur_track = it.next();
         if (cur_track->getLocation()==location)
-            break;
+            return cur_track;
     }
-    if (cur_track && cur_track->getLocation()==location)
-        return cur_track;
-    else
+    //if (cur_track && cur_track->getLocation()==location)
+    //    return cur_track;
+    //else
     {
         // We didn't find the track in the collection, so add a new entry
         QFileInfo file(location);
