@@ -31,7 +31,7 @@ WTrackTableView::WTrackTableView(QWidget *parent) : QTableView(parent)
 	m_pTable = new WTrackTableModel(this);
 
 	//setup properties for table
-	setSelectionBehavior(QAbstractItemView::SelectRows);
+	setSelectionBehavior(SelectRows);
 	setSelectionMode(QAbstractItemView::SingleSelection);
 	viewport()->setAcceptDrops(true);
 	setDragEnabled(true);
@@ -42,7 +42,7 @@ WTrackTableView::WTrackTableView(QWidget *parent) : QTableView(parent)
 	verticalHeader()->setDefaultSectionSize(20);
 	setFrameStyle(Q3Frame::NoFrame);
 	setCornerButtonEnabled ( false );
-	setSortingEnabled ( false );
+	setSortingEnabled ( true );
 
 	createActions();
 	m_pSearchFilter = new SortFilterProxyModel(parent);
