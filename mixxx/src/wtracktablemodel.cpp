@@ -104,7 +104,7 @@ Qt::ItemFlags WTrackTableModel::flags(const QModelIndex &index) const
 		case 6: return QAbstractItemModel::flags(index) | Qt::ItemIsEditable;
 		case 7: return QAbstractItemModel::flags(index) | Qt::ItemIsEditable;
 		}
-        return Qt::ItemIsEnabled;
+        return Qt::ItemIsSelectable | Qt::ItemIsEnabled;
 }
 bool WTrackTableModel::setData(const QModelIndex &index, const QVariant &value, int role)
     {
