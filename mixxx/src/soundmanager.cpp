@@ -153,10 +153,10 @@ void SoundManager::closeDevices()
         qDebug() << "closing a device...";
         dev_it.next()->close();
     }
-    requestBufferMutex.lock();
+    //requestBufferMutex.lock();
     iNumOpenedDevices = 0;
     iNumDevicesHaveRequestedBuffer = 0;
-    requestBufferMutex.unlock();
+    //requestBufferMutex.unlock();
 
 #ifdef __VINYLCONTROL__
 //FIXME: We're going to leak memory like crazy here whenever the user switches

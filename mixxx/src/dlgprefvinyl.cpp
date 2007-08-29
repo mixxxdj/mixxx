@@ -211,7 +211,9 @@ void DlgPrefVinyl::slotApply()
 	 // Apply Soundcard options
 	 
 	//player->close();
-	m_pSoundManager->closeDevices();
+	//m_pSoundManager->closeDevices();
+	
+	//NOTE: Soundcard options (input device selection) is applied by DlgPrefSound...
 
     //Apply updates for everything else...
     EnableRIAASlotApply();
@@ -219,9 +221,9 @@ void DlgPrefVinyl::slotApply()
     AutoCalibrationSlotApply();
 	
     //if (config->getValueString(ConfigKey("[Soundcard]","SoundApi"))=="None" || !m_pSoundManager->setupDevices())
-    if (config->getValueString(ConfigKey("[Soundcard]","SoundApi"))=="None"|| (m_pSoundManager->setupDevices() != 0))
-        QMessageBox::warning(0, "Configuration error","Audio device could not be opened");
-    else
+    //if (config->getValueString(ConfigKey("[Soundcard]","SoundApi"))=="None"|| (m_pSoundManager->setupDevices() != 0))
+    //    QMessageBox::warning(0, "Configuration error","Audio device could not be opened");
+    //else
         slotUpdate();
 }
 

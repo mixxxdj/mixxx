@@ -191,9 +191,6 @@ int SoundDevicePortAudio::open()
     
     ControlObject* pControlObjectSampleRate = ControlObject::getControl(ConfigKey("[Master]","samplerate"));
     ControlObject* pControlObjectLatency = ControlObject::getControl(ConfigKey("[Master]","latency"));
-    qDebug() << "SampleRate" << pControlObjectSampleRate->get();
-    qDebug() << "Latency" << pControlObjectLatency->get();
-    
     
     //The latency ControlObject value MUST BE ZERO, otherwise the waveform view gets out of whack. 
     //Yes, this is confusing. Fortunately, the latency ControlObject is ONLY used in the waveform view

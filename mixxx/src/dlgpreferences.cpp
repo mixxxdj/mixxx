@@ -239,7 +239,9 @@ void DlgPreferences::createIcons()
 
 #ifdef __VINYLCONTROL__
     QListWidgetItem *vinylcontrolButton = new QListWidgetItem(contentsWidget);
-    vinylcontrolButton->setIcon(QIcon(":/images/preferences/vinyl.svg"));
+    //QT screws up my nice vinyl SVG for some reason, so we'll use a PNG version
+    //instead...
+    vinylcontrolButton->setIcon(QIcon(":/images/preferences/vinyl.png"));
     vinylcontrolButton->setText(tr("Vinyl Control"));
     vinylcontrolButton->setTextAlignment(Qt::AlignLeft | Qt::AlignVCenter);
     vinylcontrolButton->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
