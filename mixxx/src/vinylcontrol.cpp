@@ -43,7 +43,8 @@ VinylControl::VinylControl(ConfigObject<ConfigValue> *pConfig, const char *_grou
 void VinylControl::ToggleVinylControl(bool enable)
 {
 	bIsRunning = enable;
-	m_pConfig->set(ConfigKey("[VinylControl]","Enabled"), ConfigValue((int)enable));
+	if (m_pConfig)
+	    m_pConfig->set(ConfigKey("[VinylControl]","Enabled"), ConfigValue((int)enable));
 }
 
 VinylControl::~VinylControl()
