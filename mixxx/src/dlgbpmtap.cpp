@@ -34,12 +34,12 @@
 
 
 
-
-DlgBpmTap::DlgBpmTap(QWidget *mixxx, TrackInfoObject *tio) : QDialog(), Ui::DlgBpmTapDlg()
+DlgBpmTap::DlgBpmTap(QWidget *mixxx, TrackInfoObject *tio, TrackPlaylist *playlist) : QDialog(), Ui::DlgBpmTapDlg()
 {
     // m_pMixxx = mixxx;
     m_CurrentTrack = tio;
-
+    m_TrackPlaylist = playlist;
+    
 	// This must be called before setFocus or setEnabled.
 	setupUi(this); 
 
@@ -54,16 +54,16 @@ DlgBpmTap::DlgBpmTap(QWidget *mixxx, TrackInfoObject *tio) : QDialog(), Ui::DlgB
     progressBPMDetect->setEnabled(true);
     progressBPMDetect->setMaximum(100);
     progressBPMDetect->setMinimum(0);
-    radioBtnFast->setEnabled(false);
-    radioBtnComplete->setEnabled(false);
     btnTap->setEnabled(true);
 
-	spinBoxBPMRangeStart->setEnabled(false);
-    spinBoxBPMRangeEnd->setEnabled(false);
+	spinBoxBPMRangeStart->setEnabled(true);
+    spinBoxBPMRangeEnd->setEnabled(true);
     btnGo->setEnabled(true);
 
-    grpBoxDetection->setTitle(tio->getTitle());
-    txtBPM->setText(QString("%1").arg(tio->getBpm(), 3,'f',1));
+    //spinBoxBPMRangeStart->setValue(tio->getMinBpm());
+    //spinBoxBPMRangeEnd->setValue(tio->getMaxBpm());
+
+    loadTrackInfo();
     
 
     // Install event handler to generate closeDlg signal
@@ -75,11 +75,24 @@ DlgBpmTap::DlgBpmTap(QWidget *mixxx, TrackInfoObject *tio) : QDialog(), Ui::DlgB
     connect(btnTap,      SIGNAL(clicked()),              this,      SLOT(slotTapBPM()));
     connect(btnGo,       SIGNAL(clicked()),              this,      SLOT(slotDetectBPM()));
     connect(btnOK,       SIGNAL(clicked()),              this,      SLOT(slotOK()));
+    connect(btnNext,     SIGNAL(clicked()),              this,      SLOT(slotNext()));
+    connect(btnPrev,     SIGNAL(clicked()),              this,      SLOT(slotPrev()));
+
+    connect(txtBPM,      SIGNAL(textChanged(const QString &)),          this,      SLOT(slotBpmChanged(const QString &)));
+
+    connect(spinBoxBPMRangeStart,   SIGNAL(valueChanged(int)),   this,   SLOT(slotUpdateMinBpm(int)));
+    connect(spinBoxBPMRangeEnd,     SIGNAL(valueChanged(int)),   this,   SLOT(slotUpdateMaxBpm(int)));
 
 }
 
 DlgBpmTap::~DlgBpmTap()
 {
+}
+
+void DlgBpmTap::loadTrackInfo()
+{
+lblSong->setText(m_CurrentTrack->getTitle());
+    txtBPM->setText(QString("%1").arg(m_CurrentTrack->getBpm(), 3,'f',1));
 }
 
 bool DlgBpmTap::eventFilter(QObject *o, QEvent *e)
@@ -143,13 +156,60 @@ void DlgBpmTap::slotLoadDialog()
 
 void DlgBpmTap::slotOK()
 {
-    m_CurrentTrack->setBpm(txtBPM->text().toFloat());
+    //m_CurrentTrack->setBpm(txtBPM->text().toFloat());
     setHidden(true);
+}
+
+void DlgBpmTap::slotNext()
+{
+    if(m_TrackPlaylist)
+    {
+        TrackInfoObject *track = m_CurrentTrack->getNext(m_TrackPlaylist);
+    
+        if(track)
+        {
+            qDebug() << m_CurrentTrack->getTitle();
+            m_CurrentTrack = track;
+            loadTrackInfo();
+        }
+    }
+}
+
+void DlgBpmTap::slotPrev()
+{   
+    
+    if(m_TrackPlaylist)
+    {
+     
+        TrackInfoObject *track = m_CurrentTrack->getPrev(m_TrackPlaylist);
+        
+        if(track)
+          {
+            qDebug() << m_CurrentTrack->getTitle();
+            m_CurrentTrack = track;
+            loadTrackInfo();
+
+        }
+    }
+}
+
+void DlgBpmTap::slotUpdateMinBpm(int i)
+{
+    //m_CurrentTrack->setMinBpm((float)i);
+}
+
+void DlgBpmTap::slotUpdateMaxBpm(int i)
+{
+    //m_CurrentTrack->setMaxBpm((float)i);
+}
+
+void DlgBpmTap::slotBpmChanged(const QString & bpm)
+{
+    m_CurrentTrack->setBpm(txtBPM->text().toFloat());
 }
 
 void DlgBpmTap::slotUpdate()
 {
-//    m_pMixxx->releaseKeyboard();
 }
 
 void DlgBpmTap::slotApply()
@@ -170,6 +230,7 @@ void DlgBpmTap::setComplete(TrackInfoObject *tio, bool failed, float returnBpm)
     btnTap->setText("&Push to tap tempo");
     //btnTap->setEnabled(true);
     txtBPM->setText(QString("%1").arg(returnBpm, 3,'f',1));
+    this->update();
     
 }
 

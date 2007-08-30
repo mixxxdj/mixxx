@@ -28,7 +28,7 @@ class QDomNode;
 class QDomElement;
 class QWidget;
 class TrackInfoObject;
-class DlgBPMTap;
+class DlgBpmTap;
 //needed for QTableView
 class QTableView;
 class WTrackTableModel;
@@ -87,8 +87,6 @@ protected slots:
     void slotMouseDoubleClicked(const QModelIndex &);
     //Q3DragObject *dragObject();
 protected:
-    #ifdef __EXPERIMENTAL_BPM__
-    DlgBPMTap *bpmTapDlg;
-    #endif
+   DlgBpmTap *bpmTapDlg;
 };
 #endif

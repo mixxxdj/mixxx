@@ -417,6 +417,11 @@ void TrackInfoObject::sendToBpmQueue(BpmReceiver *pBpmReceiver)
     m_BpmDetector->enqueue(this, pBpmReceiver);
 }
 
+void TrackInfoObject::sendToBpmQueue(BpmReceiver *pBpmReceiver, int minBpm, int maxBpm)
+{
+    m_BpmDetector->enqueue(this, minBpm, maxBpm, pBpmReceiver);
+}
+
 float TrackInfoObject::getBpm()
 {
     m_qMutex.lock();

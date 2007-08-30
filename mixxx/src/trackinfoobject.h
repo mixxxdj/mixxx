@@ -71,6 +71,7 @@ public:
     /** Add this TrackInfoObject instance to the BPM detection queue */
     void sendToBpmQueue();
     void sendToBpmQueue(BpmReceiver *pBpmReceiver);
+    void sendToBpmQueue(BpmReceiver *pBpmReceiver, int minBpm, int maxBpm);
     /** Returns BPM */
     float getBpm();
     /** Set BPM */
@@ -194,6 +195,10 @@ private:
     float m_fBpm;
     /** Bpm Correction Factors */
     float* m_fBpmFactors;
+    /** Minimum BPM range. If this is 0.0, then the config min BPM will be used */
+    float m_fMinBpm;
+    /** Maximum BPM range. If this is 0.0, then the config max BPM will be used */
+    float m_fMaxBpm;
     /** True if BPM is confirmed */
     bool m_bBpmConfirm;
     /** Position of first beat in song */

@@ -54,6 +54,8 @@ class BpmDetectionPackage
     ~BpmDetectionPackage(){}
     TrackInfoObject *_TrackInfoObject;
     BpmReceiver *_BpmReceiver;
+    int _minBpm;
+    int _maxBpm;
 };
 
 class BpmDetector : public QThread
@@ -63,6 +65,7 @@ public:
     ~BpmDetector();
     /** Puts an TrackInfoObject into the queue of BPM detection. Thread safe, blocking. */
     void enqueue(TrackInfoObject *pTrackInfoObject, BpmReceiver *pBpmReceiver=NULL);
+    void enqueue(TrackInfoObject *pTrackInfoObject, int minBpm, int maxBpm, BpmReceiver *pBpmReceiver=NULL);
 
 protected:
     /** Main thread loop */

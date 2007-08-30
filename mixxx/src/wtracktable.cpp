@@ -226,7 +226,7 @@ void WTrackTable::slotMouseDoubleClicked(int row, int col, int button, const QPo
 
 #ifdef __EXPERIMENTAL_BPM__
 
-                bpmTapDlg = new DlgBpmTap(NULL, pTrackInfoObject);
+                bpmTapDlg = new DlgBpmTap(NULL, pTrackInfoObject, NULL);
                 bpmTapDlg->show();
 #endif
             }

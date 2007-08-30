@@ -173,7 +173,7 @@ sources = Split("""enginebuffercue.cpp input.cpp mixxxmenuplaylists.cpp trackpla
  readerevent.cpp rtthread.cpp windowkaiser.cpp probabilityvector.cpp reader.cpp enginevumeter.cpp peaklist.cpp rotary.cpp log.cpp
  track.cpp trackcollection.cpp trackplaylist.cpp wtracktableview.cpp wtracktablemodel.cpp proxymodel.cpp xmlparse.cpp wtreeview.cpp wtreeitem.cpp wtreeitemfile.cpp wtreeitemdir.cpp wtreeitemplaylist.cpp
  wtreeitemplaylistroot.cpp trackimporter.cpp parser.cpp parserpls.cpp parserm3u.cpp
- enginetemporal.cpp visual/visualbuffertemporal.cpp wavesummary.cpp bpmdetector.cpp bpmdetect.cpp peakfinder.cpp wavesegmentation.cpp soundsourceproxy.cpp woverview.cpp enginebeatseek.cpp
+ enginetemporal.cpp visual/visualbuffertemporal.cpp wavesummary.cpp bpmdetector.cpp bpmdetect.cpp bpmscheme.cpp  peakfinder.cpp wavesegmentation.cpp soundsourceproxy.cpp woverview.cpp enginebeatseek.cpp
  enginebufferscalereal.cpp powermate.cpp  hercules.cpp joystick.cpp mouse.cpp
  wvisualsimple.cpp wvisualwaveform.cpp visual/visualbackplane.cpp visual/texture.cpp visual/visualbox.cpp visual/visualbuffer.cpp visual/visualbuffersignal.cpp
  visual/visualbuffersignalhfc.cpp visual/visualbuffermarks.cpp visual/visualchannel.cpp visual/visualcontroller.cpp visual/visualdisplay.cpp visual/visualdisplaybuffer.cpp
