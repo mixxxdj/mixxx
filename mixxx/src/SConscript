@@ -527,6 +527,14 @@ if not platform == 'win32':
 	else:
 		print "Optimizing for this CPU... no"
 
+#Visual Studio 2005 hacks (MSVS Express Edition users shouldn't enable this)
+flags_msvshacks = ARGUMENTS.get('msvshacks', 0)
+if int(flags_msvshacks):
+	env.Append(CXXFLAGS = '-D__MSVS2005__')
+	print "MSVS 2005 hacks... enabled"
+else:
+	print "MSVS 2005 hacks... disabled"
+
 print "================\n"
 
 #Hijack scons -h and --help
@@ -540,6 +548,7 @@ opts.Add('hifieq', '(EXPERIMENTAL) Set to 1 to enable high quality EQs', 0)
 opts.Add('ladspa', '(EXPERIMENTAL) Set to 1 to enable LADSPA plugin support', 0)
 opts.Add('ffmpeg', '(EXPERIMENTAL) Set to 1 to enable FFMPEG support', 0)
 opts.Add('vinylcontrol', '(EXPERIMENTAL) Set to 1 to enable vinyl control support', 0)
+opts.Add('msvshacks', 'Set to 1 to build properly with MS Visual Studio 2005 (Express users should leave this off)', 0)
 if not platform == 'win32':
 	opts.Add('gprof', '(DEVELOPER) Set to 1 to enable profiling using gprof', 0)
 	opts.Add('tuned', '(EXPERIMENTAL) Set to 1 to optimise mixxx for this CPU', 0)
