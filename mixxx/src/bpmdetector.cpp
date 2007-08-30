@@ -68,7 +68,21 @@ void BpmDetector::enqueue(TrackInfoObject *pTrackInfoObject, BpmReceiver *pBpmRe
     BpmDetectionPackage* package = new BpmDetectionPackage();
     package->_TrackInfoObject = pTrackInfoObject;
     package->_BpmReceiver = pBpmReceiver;  	
-    qDebug() << package;
+    package->_minBpm = 0;
+    package->_maxBpm = 0;
+	m_qQueue.enqueue(package);
+	m_qMutex.unlock();
+	m_qWait.wakeAll();
+}
+
+void BpmDetector::enqueue(TrackInfoObject *pTrackInfoObject, int minBpm, int maxBpm, BpmReceiver *pBpmReceiver)
+{
+    m_qMutex.lock();
+    BpmDetectionPackage* package = new BpmDetectionPackage();
+    package->_TrackInfoObject = pTrackInfoObject;
+    package->_BpmReceiver = pBpmReceiver;  	
+    package->_minBpm = minBpm;
+    package->_maxBpm = maxBpm;
 	m_qQueue.enqueue(package);
 	m_qMutex.unlock();
 	m_qWait.wakeAll();
@@ -82,6 +96,8 @@ void BpmDetector::run()
 	{
         TrackInfoObject *pTrackInfoObject = NULL;
         BpmReceiver *pBpmReceiver = NULL;
+        int minBpm = 0;
+        int maxBpm = 0;
 
 		// Check if there is a new track to process in the queue...
        
@@ -93,6 +109,8 @@ void BpmDetector::run()
         {
             pTrackInfoObject = package->_TrackInfoObject;
             pBpmReceiver = package->_BpmReceiver;
+            minBpm = package->_minBpm;
+            maxBpm = package->_maxBpm;
             delete package;
         }
         else
@@ -108,6 +126,8 @@ void BpmDetector::run()
             {
                 pTrackInfoObject = package->_TrackInfoObject;
                 pBpmReceiver = package->_BpmReceiver;
+                minBpm = package->_minBpm;
+                maxBpm = package->_maxBpm;
                 delete package;
             }  
 			m_qMutex.unlock();
@@ -130,13 +150,19 @@ void BpmDetector::run()
         	int analyzeEntireSong = m_Config->getValueString(ConfigKey("[BPM]","AnalyzeEntireSong")).toInt();
         	m_qMutex.unlock();
 
-        	m_qMutex.lock();
-        	int minBpm = m_Config->getValueString(ConfigKey("[BPM]","BPMRangeStart")).toInt();
-        	m_qMutex.unlock();
+            if(minBpm == 0)
+            {
+        	    m_qMutex.lock();
+        	    minBpm = m_Config->getValueString(ConfigKey("[BPM]","BPMRangeStart")).toInt();
+        	    m_qMutex.unlock();
+            }
 
-        	m_qMutex.lock();
-        	int maxBpm = m_Config->getValueString(ConfigKey("[BPM]","BPMRangeEnd")).toInt();
-        	m_qMutex.unlock();
+            if(maxBpm == 0)
+            {        
+                m_qMutex.lock();
+            	maxBpm = m_Config->getValueString(ConfigKey("[BPM]","BPMRangeEnd")).toInt();
+            	m_qMutex.unlock();
+            }
         	
 
         	SoundSourceProxy *pSoundSource = new SoundSourceProxy(pTrackInfoObject);

@@ -28,6 +28,7 @@
 #include "wtracktableview.h"
 
 #include "wtreeview.h"
+#include "dlgbpmtap.h"
 #include "wnumberpos.h"
 #include <q3popupmenu.h>
 #include <qcursor.h>
@@ -88,7 +89,7 @@ Track::Track(QString location, MixxxView *pView, EngineBuffer *pBuffer1, EngineB
 
     if (m_pView) //Stops Mixxx from dying if a skin doesn't have the search box.
     {
-    	m_pView->m_pTrackTableView->setSearchSource(m_pLibraryModel);
+        m_pView->m_pTrackTableView->setSearchSource(m_pLibraryModel);
     	m_pView->m_pTrackTableView->resizeColumnsToContents();
     	m_pView->m_pTrackTableView->setTrack(this);
         
@@ -135,7 +136,7 @@ Track::Track(QString location, MixxxView *pView, EngineBuffer *pBuffer1, EngineB
     connect(m_pNextTrackCh2, SIGNAL(valueChanged(double)), this, SLOT(slotNextTrackPlayer2(double)));
     connect(m_pPrevTrackCh2, SIGNAL(valueChanged(double)), this, SLOT(slotPrevTrackPlayer2(double)));
 
-    TrackPlaylist::setTrack(this);
+    TrackPlaylist::setTrack(this); 
 }
 
 Track::~Track()

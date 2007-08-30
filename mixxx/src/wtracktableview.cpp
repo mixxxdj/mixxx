@@ -21,9 +21,8 @@
 #include <QMenu>
 
 
-#ifdef __EXPERIMENTAL_BPM__
-  #include "dlgbpmtap.h"
-#endif
+#include "dlgbpmtap.h"
+
 
 /*Constructor, sets up attributes for WTrackTableView*/
 WTrackTableView::WTrackTableView(QWidget *parent) : QTableView(parent)
@@ -52,17 +51,14 @@ WTrackTableView::WTrackTableView(QWidget *parent) : QTableView(parent)
     // Allow table reordering
     //setRowMovingEnabled(true);
 	*/
-    #ifdef __EXPERIMENTAL_BPM__
-      connect(this, SIGNAL(doubleClicked(const QModelIndex &)), this, SLOT(slotMouseDoubleClicked(const QModelIndex &)));
-      bpmTapDlg = 0;
-    #endif
+    connect(this, SIGNAL(doubleClicked(const QModelIndex &)), this, SLOT(slotMouseDoubleClicked(const QModelIndex &)));
+    bpmTapDlg = 0;
+    
 }
 WTrackTableView::~WTrackTableView()
 {
-    #ifdef __EXPERIMENTAL_BPM__
     if(bpmTapDlg)
         delete bpmTapDlg;
-    #endif
 }
 
 /*Graphically sets up playlist and library directory*/
@@ -151,29 +147,17 @@ void WTrackTableView::sortColumn(int col, bool ascending, bool)
 
 /*checks for Mouse action*/
 
-void WTrackTableView :: slotMouseDoubleClicked(const QModelIndex &)
+void WTrackTableView :: slotMouseDoubleClicked(const QModelIndex & index)
 {
-	/*
-    #ifdef __EXPERIMENTAL_BPM__
-    if(col == COL_BPM && button==Qt::LeftButton)
+    TrackInfoObject *pTrackInfoObject = m_pTable->m_pTrackPlaylist->getTrackAt(index.row());
+    if(pTrackInfoObject)
     {
-        WTrackTableItem *p = (WTrackTableItem *)item(row,col);
-    
-        if(p)
-        {
-            TrackInfoObject *pTrackInfoObject = p->getTrackInfoObject();
-            if(pTrackInfoObject)
-            {
-                if(bpmTapDlg)
-                    delete bpmTapDlg;
+        if(bpmTapDlg)
+        delete bpmTapDlg;
 
-                bpmTapDlg = new DlgBPMTap(NULL, pTrackInfoObject);
-                bpmTapDlg->show();
-            }
-        }
-    }
-    #endif*/
-}
+        bpmTapDlg = new DlgBpmTap(NULL, pTrackInfoObject, m_pTable->m_pTrackPlaylist);
+        bpmTapDlg->show();
+    }}
 
 /*enables contents to be dragable
 Q3DragObject *WTrackTableView::dragObject()

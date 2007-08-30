@@ -630,6 +630,7 @@ void MixxxView::createAllWidgets(QDomElement docElem, QWidget* parent, bool bVis
                 m_pTrackTable->installEventFilter(m_pKeyboard);
             }
 			*/
+            
 			else if (node.nodeName()=="TableView")
 			{
 				m_pTrackTableView = new WTrackTableView(this);
