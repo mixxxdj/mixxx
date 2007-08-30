@@ -21,7 +21,9 @@
 #include <QtDebug>
 
 #ifdef __WIN__
+#ifdef __MSVS2005__
 #pragma comment (lib, "atls.lib")
+#endif
 #endif
 
 MidiObjectWin::MidiObjectWin(QString device) : MidiObject(device)
