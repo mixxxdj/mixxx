@@ -51,6 +51,9 @@ public slots:
     void slotUpdateMinBpm(int i);
     void slotUpdateMaxBpm(int i);
     void slotBpmChanged(const QString & bpm);
+    void slotTitleChanged(const QString & title);
+    void slotArtistChanged(const QString & artist);
+    void slotCommentChanged();
 
 signals:
     void closeDlg();
