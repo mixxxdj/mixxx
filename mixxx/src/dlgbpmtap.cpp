@@ -64,6 +64,7 @@ DlgBpmTap::DlgBpmTap(QWidget *mixxx, TrackInfoObject *tio, TrackPlaylist *playli
     //spinBoxBPMRangeEnd->setValue(tio->getMaxBpm());
 
     loadTrackInfo();
+    toolbox->setCurrentIndex(0);
     
 
     // Install event handler to generate closeDlg signal
@@ -78,7 +79,11 @@ DlgBpmTap::DlgBpmTap(QWidget *mixxx, TrackInfoObject *tio, TrackPlaylist *playli
     connect(btnNext,     SIGNAL(clicked()),              this,      SLOT(slotNext()));
     connect(btnPrev,     SIGNAL(clicked()),              this,      SLOT(slotPrev()));
 
-    connect(txtBPM,      SIGNAL(textChanged(const QString &)),          this,      SLOT(slotBpmChanged(const QString &)));
+    connect(txtBPM,         SIGNAL(textChanged(const QString &)), this, SLOT(slotBpmChanged(const QString &)));
+    connect(txtTrackName,   SIGNAL(textChanged(const QString &)), this, SLOT(slotTitleChanged(const QString &)));
+    connect(txtArtist,      SIGNAL(textChanged(const QString &)), this, SLOT(slotArtistChanged(const QString &)));
+    connect(txtComment,     SIGNAL(textChanged()), this, SLOT(slotCommentChanged()));
+    
 
     connect(spinBoxBPMRangeStart,   SIGNAL(valueChanged(int)),   this,   SLOT(slotUpdateMinBpm(int)));
     connect(spinBoxBPMRangeEnd,     SIGNAL(valueChanged(int)),   this,   SLOT(slotUpdateMaxBpm(int)));
@@ -93,6 +98,14 @@ void DlgBpmTap::loadTrackInfo()
 {
 lblSong->setText(m_CurrentTrack->getTitle());
     txtBPM->setText(QString("%1").arg(m_CurrentTrack->getBpm(), 3,'f',1));
+
+txtTrackName->setText(m_CurrentTrack->getTitle());
+txtDuration->setText(m_CurrentTrack->getDurationStr());
+txtFilepath->setText(m_CurrentTrack->getFilename());
+txtFilepath->setCursorPosition(0);
+txtType->setText(m_CurrentTrack->getType());
+txtArtist->setText(m_CurrentTrack->getArtist());
+txtComment->setText(m_CurrentTrack->getComment());
 }
 
 bool DlgBpmTap::eventFilter(QObject *o, QEvent *e)
@@ -205,7 +218,25 @@ void DlgBpmTap::slotUpdateMaxBpm(int i)
 
 void DlgBpmTap::slotBpmChanged(const QString & bpm)
 {
-    m_CurrentTrack->setBpm(txtBPM->text().toFloat());
+    m_CurrentTrack->setBpm(bpm.toFloat());
+}
+
+void DlgBpmTap::slotTitleChanged(const QString & title)
+{
+    m_CurrentTrack->setTitle(title);
+    qDebug() << "Title Change!";
+}
+
+void DlgBpmTap::slotArtistChanged(const QString & artist)
+{
+    m_CurrentTrack->setArtist(artist);
+    qDebug() << "Artist Change!";
+}
+
+void DlgBpmTap::slotCommentChanged()
+{
+    m_CurrentTrack->setComment(txtComment->toPlainText());
+    qDebug() << "Comment Change!";
 }
 
 void DlgBpmTap::slotUpdate()
