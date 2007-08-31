@@ -409,10 +409,10 @@ void MixxxView::createAllWidgets(QDomElement docElem, QWidget* parent, bool bVis
             }
             else if (node.nodeName()=="SliderComposed")
             {
-                //WSliderComposed *p = new WSliderComposed(this);
-                //p->setup(node);
-                //p->installEventFilter(m_pKeyboard);
-                //m_qWidgetList.append(p);
+                WSliderComposed *p = new WSliderComposed(this);
+                p->setup(node);
+                p->installEventFilter(m_pKeyboard);
+                m_qWidgetList.append(p);
 
                 // If rate slider...
                 if (compareConfigKeys(node, "[Channel1],rate"))
