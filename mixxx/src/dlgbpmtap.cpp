@@ -82,7 +82,7 @@ DlgBpmTap::DlgBpmTap(QWidget *mixxx, TrackInfoObject *tio, TrackPlaylist *playli
     connect(txtBPM,         SIGNAL(textChanged(const QString &)), this, SLOT(slotBpmChanged(const QString &)));
     connect(txtTrackName,   SIGNAL(textChanged(const QString &)), this, SLOT(slotTitleChanged(const QString &)));
     connect(txtArtist,      SIGNAL(textChanged(const QString &)), this, SLOT(slotArtistChanged(const QString &)));
-    connect(txtComment,     SIGNAL(textChanged()), this, SLOT(slotCommentChanged()));
+    connect(txtComment,     SIGNAL(textChanged()),                this, SLOT(slotCommentChanged()));
     
 
     connect(spinBoxBPMRangeStart,   SIGNAL(valueChanged(int)),   this,   SLOT(slotUpdateMinBpm(int)));
@@ -163,7 +163,6 @@ void DlgBpmTap::slotDetectBPM()
 
 void DlgBpmTap::slotLoadDialog()
 {
-    qDebug(m_CurrentTrack->getBpmStr());
     txtBPM->setText(m_CurrentTrack->getBpmStr());
 }
 

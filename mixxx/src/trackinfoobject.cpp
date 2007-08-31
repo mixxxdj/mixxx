@@ -54,7 +54,7 @@ TrackInfoObject::TrackInfoObject(const QString sPath, const QString sFile, BpmDe
     m_bBpmConfirm = false;
     m_fBeatFirst = -1.;
     m_iScore = 0;
-    m_iId = 0;
+    m_iId = -1;
     m_pWave = 0;
     m_pSegmentation = 0;
     m_pControlObjectBpm = 0;
