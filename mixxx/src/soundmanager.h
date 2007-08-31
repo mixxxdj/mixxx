@@ -50,7 +50,7 @@ class SoundManager
         void clearDeviceList();
         void queryDevices();
         int setupDevices();
-        void setDefaults();
+        void setDefaults(bool api=true, bool devices=true, bool other=true);
         QList<QString> getSamplerateList();
         QList<QString> getHostAPIList();
         int setHostAPI(QString api);

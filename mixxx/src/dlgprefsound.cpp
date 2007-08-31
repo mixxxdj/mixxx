@@ -37,6 +37,15 @@ DlgPrefSound::DlgPrefSound(QWidget *parent, SoundManager *_soundman,
     //player = _player;
     m_pSoundManager = _soundman;
     config = _config;
+
+    //Check to see if the config file is empty...
+    QString selectedAPI = config->getValueString(ConfigKey("[Soundcard]","SoundApi"));
+    if (!m_pSoundManager->getHostAPIList().contains(selectedAPI))
+    {
+        m_pSoundManager->setDefaults();
+    }
+    else
+        qDebug() << "selectedAPI is: " << selectedAPI;
     
     setupUi(this);
     slotUpdate();
@@ -263,15 +272,14 @@ void DlgPrefSound::slotApplyApi()
 			config->set(ConfigKey("[Soundcard]","SoundApi"), ConfigValue("None"));
 		}
 	} else {
-		//player->setDefaults();
-		m_pSoundManager->setDefaults();
 		if (m_pSoundManager->setupDevices() != 0)
 		{
 			QMessageBox::warning(0, "Configuration error","Audio device could not be opened");
 		}
 	}
     m_pSoundManager->closeDevices();
-	emit(apiUpdated());    
+	emit(apiUpdated());
+	m_pSoundManager->setDefaults(false, true, true);
     slotUpdate();
 }
 
