@@ -121,23 +121,23 @@ void DlgPrefSound::slotUpdate()
     QList<SoundDevice*> devices = m_pSoundManager->getDeviceList(selectedAPI);
     SoundDevice* dev;
 
-    // Master left sound card info
-    ComboBoxSoundcardMasterLeft->clear();
-    ComboBoxSoundcardMasterLeft->insertItem(0, "None");
+    // Master sound card combobox
+    ComboBoxSoundcardMaster->clear();
+    ComboBoxSoundcardMaster->insertItem(0, "None");
     QListIterator<SoundDevice*> it(devices);
     //it = devices.begin();
     j = 1;
     while (it.hasNext())
     {
         dev = it.next();
-        ComboBoxSoundcardMasterLeft->insertItem(j, dev->getName());
-        if (dev->getName()==config->getValueString(ConfigKey("[Soundcard]","DeviceMasterLeft")))
-            ComboBoxSoundcardMasterLeft->setCurrentIndex(j);
+        ComboBoxSoundcardMaster->insertItem(j, dev->getName());
+        if (dev->getName()==config->getValueString(ConfigKey("[Soundcard]","DeviceMaster")))
+            ComboBoxSoundcardMaster->setCurrentIndex(j);
         ++j;
     }
 
     // Master right sound card info
-    ComboBoxSoundcardMasterRight->clear();
+/*  ComboBoxSoundcardMasterRight->clear();
     ComboBoxSoundcardMasterRight->insertItem(0, "None");
     it.toFront();
     j = 1;
@@ -149,23 +149,23 @@ void DlgPrefSound::slotUpdate()
             ComboBoxSoundcardMasterRight->setCurrentIndex(j);
         ++j;
     }
-
-    // Head left sound card info
-    ComboBoxSoundcardHeadLeft->clear();
-    ComboBoxSoundcardHeadLeft->insertItem(0, "None");
+*/
+    // Headphones sound card info
+    ComboBoxSoundcardHeadphones->clear();
+    ComboBoxSoundcardHeadphones->insertItem(0, "None");
     it.toFront();
     j = 1;
     while (it.hasNext())
     {
         dev = it.next();
-        ComboBoxSoundcardHeadLeft->insertItem(j, dev->getName());
-        if (dev->getName()==config->getValueString(ConfigKey("[Soundcard]","DeviceHeadLeft")))
-            ComboBoxSoundcardHeadLeft->setCurrentIndex(j);
+        ComboBoxSoundcardHeadphones->insertItem(j, dev->getName());
+        if (dev->getName()==config->getValueString(ConfigKey("[Soundcard]","DeviceHeadphones")))
+            ComboBoxSoundcardHeadphones->setCurrentIndex(j);
         ++j;
     }
 
     // Head right sound card info
-    ComboBoxSoundcardHeadRight->clear();
+/*    ComboBoxSoundcardHeadRight->clear();
     ComboBoxSoundcardHeadRight->insertItem(0, "None");
     it.toFront();
     j = 1;
@@ -177,7 +177,7 @@ void DlgPrefSound::slotUpdate()
             ComboBoxSoundcardHeadRight->setCurrentIndex(j);
         ++j;
     }
-
+*/
     // Sample rate
     ComboBoxSamplerates->clear();
     //QStringList srates = player->getSampleRates();
@@ -230,10 +230,10 @@ void DlgPrefSound::slotApply()
     qDebug() << "DlgPrefSound::Apply";
 
     // Update the config object with parameters from dialog
-    config->set(ConfigKey("[Soundcard]","DeviceMasterLeft"), ConfigValue(ComboBoxSoundcardMasterLeft->currentText()));
-    config->set(ConfigKey("[Soundcard]","DeviceMasterRight"), ConfigValue(ComboBoxSoundcardMasterRight->currentText()));
-    config->set(ConfigKey("[Soundcard]","DeviceHeadLeft"), ConfigValue(ComboBoxSoundcardHeadLeft->currentText()));
-    config->set(ConfigKey("[Soundcard]","DeviceHeadRight"), ConfigValue(ComboBoxSoundcardHeadRight->currentText()));
+    config->set(ConfigKey("[Soundcard]","DeviceMaster"), ConfigValue(ComboBoxSoundcardMaster->currentText()));
+    //config->set(ConfigKey("[Soundcard]","DeviceMasterRight"), ConfigValue(ComboBoxSoundcardMasterRight->currentText()));
+    config->set(ConfigKey("[Soundcard]","DeviceHeadphones"), ConfigValue(ComboBoxSoundcardHeadphones->currentText()));
+    //config->set(ConfigKey("[Soundcard]","DeviceHeadRight"), ConfigValue(ComboBoxSoundcardHeadRight->currentText()));
     config->set(ConfigKey("[Soundcard]","Samplerate"), ConfigValue(ComboBoxSamplerates->currentText()));
     config->set(ConfigKey("[Soundcard]","Latency"), ConfigValue(getSliderLatencyMsec(SliderLatency->value())));
     

@@ -261,6 +261,7 @@ void SoundManager::setDefaults(bool api, bool devices, bool other)
     if (devices)
     {
         //Set the default master device to be the first device in the list (that matches the API)
+        m_pConfig->set(ConfigKey("[Soundcard]","DeviceMaster"), ConfigValue(getDeviceList(getHostAPI()).front()->getName()));
         m_pConfig->set(ConfigKey("[Soundcard]","DeviceMasterLeft"), ConfigValue(getDeviceList(getHostAPI()).front()->getName()));
         m_pConfig->set(ConfigKey("[Soundcard]","DeviceMasterRight"), ConfigValue(getDeviceList(getHostAPI()).front()->getName()));
     }
@@ -306,6 +307,18 @@ int SoundManager::setupDevices()
         device->clearReceivers();
                 
         //Connect the mixing engine's sound output(s) to the soundcard(s).
+        
+        if (m_pConfig->getValueString(ConfigKey("[Soundcard]","DeviceMaster")) == device->getName())
+        {
+            device->addSource(SOURCE_MASTER);
+            bNeedToOpenDevice = 1;
+        }
+        if (m_pConfig->getValueString(ConfigKey("[Soundcard]","DeviceHeadphones")) == device->getName())
+        {
+            device->addSource(SOURCE_HEADPHONES);
+            bNeedToOpenDevice = 1;
+        }
+        /*
         if ((m_pConfig->getValueString(ConfigKey("[Soundcard]","DeviceMasterLeft")) == device->getName())
             && (m_pConfig->getValueString(ConfigKey("[Soundcard]","DeviceMasterRight")) == device->getName()))
         {
@@ -317,7 +330,8 @@ int SoundManager::setupDevices()
         {
             device->addSource(SOURCE_HEADPHONES);
             bNeedToOpenDevice = 1;
-        }    
+        }*/
+        
         //Connect the soundcard's inputs to the Engine.
         if (m_pConfig->getValueString(ConfigKey("[VinylControl]","DeviceInputDeck1"))  == device->getName())
         {
