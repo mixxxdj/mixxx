@@ -49,16 +49,6 @@ SoundManager::SoundManager(ConfigObject<ConfigValue> *pConfig, EngineMaster *_ma
     qDebug() << "SampleRate" << pControlObjectSampleRate->get();
     qDebug() << "Latency" << pControlObjectLatency->get();   
 
-#ifdef __LINUX__
-    setHostAPI("ALSA");
-#endif
-#ifdef __WIN32__
-    setHostAPI("WMME");
-#endif
-#ifdef __OSX__
-    setHostAPI("CoreAudio");
-#endif
-
     //Hack:
     m_samplerates.push_back("44100");
     //m_samplerates.push_back("96000"); //TODO: Figure out why 96000 doesn't work right. (plays too fast...)
@@ -130,10 +120,10 @@ QList<QString> SoundManager::getHostAPIList()
     return apiList;
 }
 
-//FIXME: Unused
 int SoundManager::setHostAPI(QString api)
 {
     m_hostAPI = api;
+    m_pConfig->set(ConfigKey("[Soundcard]","SoundApi"), ConfigValue(api));
     
     return 0;
 }
@@ -150,7 +140,7 @@ void SoundManager::closeDevices()
     QListIterator<SoundDevice*> dev_it(m_devices);
     while (dev_it.hasNext())
     {
-        qDebug() << "closing a device...";
+        //qDebug() << "closing a device...";
         dev_it.next()->close();
     }
     //requestBufferMutex.lock();
@@ -240,22 +230,47 @@ void SoundManager::queryDevices()
 }
 
 //Attempt to set up some sane default sound device settings.
-void SoundManager::setDefaults()
-{
+//The parameters control what stuff gets set to the defaults.other
+void SoundManager::setDefaults(bool api, bool devices, bool other)
+{    
+    qDebug() << "SoundManager: Setting defaults";
+    
+    QList<QString> apiList = getHostAPIList();
 
-    //TODO: Set the HostAPI configobject instead...
+    if (api)
+    {    
 #ifdef __LINUX__
-    setHostAPI("ALSA");
+    //Check for JACK and use that if it's available, otherwise use ALSA
+        if (apiList.contains("JACK Audio Connection Kit"))
+            setHostAPI("JACK Audio Connection Kit");
+        else
+            setHostAPI("ALSA");
 #endif
 #ifdef __WIN32__
-    setHostAPI("WMME");
+//TODO: Check for ASIO and use that if it's available, otherwise use DirectSound
+        if (apiList.contains("ASIO"))
+            setHostAPI("ASIO");
+        else
+            setHostAPI("Windows DirectSound");
 #endif
 #ifdef __OSX__
-    setHostAPI("CoreAudio");
+        setHostAPI("CoreAudio");
 #endif
+    }
 
-    qDebug() << "Warning: Need to finish/fix SoundManager::setDefaults())";
-
+    if (devices)
+    {
+        //Set the default master device to be the first device in the list (that matches the API)
+        m_pConfig->set(ConfigKey("[Soundcard]","DeviceMasterLeft"), ConfigValue(getDeviceList(getHostAPI()).front()->getName()));
+        m_pConfig->set(ConfigKey("[Soundcard]","DeviceMasterRight"), ConfigValue(getDeviceList(getHostAPI()).front()->getName()));
+    }
+    
+    if (other)
+    {
+        //Default samplerate, latency
+        m_pConfig->set(ConfigKey("[Soundcard]","Samplerate"), ConfigValue(44100));
+        m_pConfig->set(ConfigKey("[Soundcard]","Latency"), ConfigValue(64));
+    }
 }
 
 //Opens all the devices chosen by the user in the preferences dialog, and establishes
@@ -395,7 +410,7 @@ CSAMPLE* SoundManager::requestBuffer(QList<AudioSource> srcs, unsigned long iFra
     }
     
     qDebug() << "Warning: No sources passed to SoundManager::requestBuffer()";
-  
+    return m_pBuffer; //Default, shouldn't happen if this function was used properly.
 }
 
 //Used by SoundDevices to "push" any audio from their inputs that they have into the mixing engine.
