@@ -567,7 +567,12 @@ else:
 if 'msvc' in COMMAND_LINE_TARGETS:
 	includes = glob.glob('src/*.h')
 	includes += glob.glob('src/visual/*.h')
-	env.Append(MSVSSCONSFLAGS = ' qtdir=' + flags_qtdir)
+	#Make the project file aware of any command-line arguments that were passed...
+	cmdargs = ""
+	for k in SCons.Script.ARGUMENTS:
+		cmdargs += " " + k + "=" + SCons.Script.ARGUMENTS[k]
+	env.Append(MSVSSCONSFLAGS = cmdargs)
+	#env.Append(MSVSSCONSFLAGS = ' qtdir=' + flags_qtdir)
 	msvc = env.MSVSProject(target = 'mixxx' + env['MSVSPROJECTSUFFIX'], srcs = flatten(sources), incs = flatten(includes), variant = 'Debug', runfile = '../dist/mixxx')
 	env.Alias('msvc', msvc)
 
