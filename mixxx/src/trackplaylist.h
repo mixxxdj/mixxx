@@ -64,6 +64,8 @@ public:
 	int getSongNum();
 	TrackInfoObject *getTrackAt(int index);
 	TrackCollection *getCollection();
+
+    void dumpInfo();
     
 public slots:
     /** Decode drop event and calls addPath */

@@ -69,10 +69,12 @@ void TrackCollection::addTrack(TrackInfoObject *pTrack)
 {
     // If id is not already set in the TrackInfoObject, assign it an ID,
     // and increase the ID counter.
-    if (pTrack->getId()<=0)
+    if (pTrack->getId() < 0)
     {
-        m_iCounter++;
+        
         pTrack->setId(m_iCounter);
+        ++m_iCounter;
+       
     }
     m_qTrackList.append(pTrack);
 

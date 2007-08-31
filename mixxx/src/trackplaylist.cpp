@@ -194,6 +194,28 @@ void TrackPlaylist::slotDrop(QDropEvent *e)
         addPath(Q3UriDrag::uriToLocalFile(lst.at(i)));
 }
 
+void TrackPlaylist::dumpInfo()
+{
+
+    qDebug() << "*** Dumping Playlist Information ***";
+    qDebug() << "Name: " << getName();
+    qDebug() << "List Name: " << getListName();
+    qDebug() << "Song Count: " << getSongNum();
+    qDebug() << "Listing Songs...";
+
+    TrackCollection *tmpCollection = getCollection();
+    qDebug() << "Collection Size: " << tmpCollection->getSize();
+    for(int i = 0; i < m_qList.count(); ++i)
+    {
+        TrackInfoObject *tmpTrack = m_qList.at(i);
+
+        qDebug() << "[" << tmpTrack->getId() << "] " << tmpTrack->getTitle();
+    }    
+
+    qDebug() << "*** End Playlist Dump ***";
+    
+}
+
 void TrackPlaylist::addPath(QString qPath)
 {
 	// Is this a file or directory?
