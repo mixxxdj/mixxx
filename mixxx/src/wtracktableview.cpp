@@ -141,9 +141,7 @@ void WTrackTableView::setup(QDomNode node)
 
 /*sorts a given column*/
 void WTrackTableView::sortColumn(int col, bool ascending, bool)
-{
-    //Q3Table::sortColumn(col,ascending,true);
-}
+{}
 
 /*checks for Mouse action*/
 

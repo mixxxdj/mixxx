@@ -400,7 +400,7 @@ void Track::slotImportPlaylist()
     QString sPlsname(QString("Imported %1").arg(i));
     TrackPlaylist * pTempPlaylist = m_pTrackImporter->importPlaylist(sPlsname);
 
-    if (pTempPlaylist != 0)
+    if (pTempPlaylist != NULL)
     {
         m_qPlaylists.append(pTempPlaylist);
     }

@@ -62,6 +62,7 @@ public:
     /** Get TrackInfoObject of first track in playlist */
     TrackInfoObject *getFirstTrack();
 	int getSongNum();
+    int getIndexOf(int id);
 	TrackInfoObject *getTrackAt(int index);
 	TrackCollection *getCollection();
 
