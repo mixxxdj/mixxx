@@ -582,7 +582,7 @@ void MixxxView::createAllWidgets(QDomElement docElem, QWidget* parent, bool bVis
 				m_pComboBox = new WComboBox(parent, "ComboBox");
 				m_pComboBox->setup(node);
 				*/
-				m_pComboBox = new QComboBox( FALSE, parent, "ComboBox" );
+				m_pComboBox = new QComboBox( FALSE, this, "ComboBox" );
 				//m_pWComboBox = new WComboBox(parent,"ComboBox");
 				// Set position
                 QString pos = WWidget::selectNodeQString(node, "Pos");
@@ -604,7 +604,7 @@ void MixxxView::createAllWidgets(QDomElement docElem, QWidget* parent, bool bVis
 			
 			else if (node.nodeName()=="Search")
 			{
-				m_pLineEditSearch = new QLineEdit( parent, "lineEdit" );
+				m_pLineEditSearch = new QLineEdit( this, "lineEdit" );
 				
 				// Set position
                 QString pos = WWidget::selectNodeQString(node, "Pos");
