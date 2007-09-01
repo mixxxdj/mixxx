@@ -20,7 +20,7 @@
 
 TrackCollection::TrackCollection(BpmDetector *bpmDetector)
 {
-    m_iCounter = 0;
+    m_iCounter = -1;
     m_BpmDetector = bpmDetector;
 }
 
@@ -39,9 +39,12 @@ void TrackCollection::readXML(QDomNode node)
             TrackInfoObject *pTrack = new TrackInfoObject(tracknode, m_BpmDetector);
 			addTrack(pTrack);
 
+            
+
             // Update counter
             if (pTrack->getId()>m_iCounter)
                 m_iCounter = pTrack->getId();
+            
         }
         tracknode = tracknode.nextSibling();
     }
@@ -69,11 +72,11 @@ void TrackCollection::addTrack(TrackInfoObject *pTrack)
 {
     // If id is not already set in the TrackInfoObject, assign it an ID,
     // and increase the ID counter.
-    if (pTrack->getId() < 0)
+    if (pTrack->getId() <= -1)
     {
-        
-        pTrack->setId(m_iCounter);
         ++m_iCounter;
+        pTrack->setId(m_iCounter);
+        
        
     }
     m_qTrackList.append(pTrack);
@@ -83,7 +86,7 @@ void TrackCollection::addTrack(TrackInfoObject *pTrack)
 TrackInfoObject *TrackCollection::getTrack(int id)
 {
     // Binary search
-    return getTrack(id, 0, m_qTrackList.count()/2, m_qTrackList.count());
+    return getTrack(id, -1, m_qTrackList.count()/2, m_qTrackList.count());
 
 /*
     // Linear search through list to find the track of the given id
@@ -161,5 +164,5 @@ TrackInfoObject *TrackCollection::getTrack(QString location)
 
 int TrackCollection::getSize()
 {
-	return m_iCounter;
+	return m_iCounter + 1;
 }

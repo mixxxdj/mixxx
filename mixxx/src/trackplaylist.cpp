@@ -46,7 +46,7 @@ TrackPlaylist::TrackPlaylist(TrackCollection *pTrackCollection, QDomNode node)
     QDomNode idnode = XmlParse::selectNode(node, "List").firstChild();
     while (!idnode.isNull())
     {
-        if (idnode.isElement() && idnode.nodeName()=="ID")
+        if (idnode.isElement() && idnode.nodeName()=="Id")
         {
             int id = idnode.toElement().text().toInt();
             TrackInfoObject *pTrack = m_pTrackCollection->getTrack(id);
@@ -77,7 +77,7 @@ void TrackPlaylist::writeXML(QDomDocument &doc, QDomElement &header)
 		
 		while (it)
 		{
-			XmlParse::addElement(doc, root, "ID", QString("%1").arg(it->getId()));
+			XmlParse::addElement(doc, root, "Id", QString("%1").arg(it->getId()));
 			it = m_qList.next();
 		}
 		header.appendChild(root);
@@ -315,6 +315,17 @@ TrackInfoObject *TrackPlaylist::getFirstTrack()
 TrackCollection *TrackPlaylist::getCollection()
 {
 	return m_pTrackCollection;
+}
+
+int TrackPlaylist::getIndexOf(int id)
+{
+    for(int i = 0; i < m_qList.count(); ++i)
+    {
+        TrackInfoObject *tmpTrack = m_qList.at(i);
+    
+        if(tmpTrack->getId() == id)
+            return i;       
+    } 
 }
 
 TrackInfoObject *TrackPlaylist::getTrackAt(int index)

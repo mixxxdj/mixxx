@@ -110,7 +110,7 @@ TrackInfoObject::TrackInfoObject(const QDomNode &nodeHeader, BpmDetector *bpmDet
     m_bBpmConfirm = XmlParse::selectNodeQString(nodeHeader, "BpmConfirm").toInt();
     m_fBeatFirst = XmlParse::selectNodeQString(nodeHeader, "BeatFirst").toFloat();
     m_iScore = 0;
-    m_iId = XmlParse::selectNodeQString(nodeHeader, "ID").toInt();
+    m_iId = XmlParse::selectNodeQString(nodeHeader, "Id").toInt();
 
     m_fBpmFactors = (float*)malloc(sizeof(float) * NumBpmFactors);
     generateBpmFactors();    
@@ -826,12 +826,12 @@ void TrackInfoObject::setWaveSummary(Q3MemArray<char> *pWave, Q3ValueList<long> 
 
 TrackInfoObject *TrackInfoObject::getNext(TrackPlaylist *pPlaylist)
 {
-	return pPlaylist->getTrackAt(getId()+1);
+    return pPlaylist->getTrackAt(pPlaylist->getIndexOf(getId())+1);
 }
 
 TrackInfoObject *TrackInfoObject::getPrev(TrackPlaylist *pPlaylist)
 {
-    return pPlaylist->getTrackAt(getId()-1);
+    return pPlaylist->getTrackAt(pPlaylist->getIndexOf(getId())-1);
 }
 
 void TrackInfoObject::setOverviewWidget(WOverview *p)
