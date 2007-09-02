@@ -43,7 +43,7 @@ void WriteAudioFile::open()
 		break;
     #endif
 	    default:
-		qDebug("Corrupt record section in preference file");
+		qDebug("Corrupt record section in preference file: %d", format);
 		return;
 	}
 

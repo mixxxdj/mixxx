@@ -40,7 +40,9 @@ DlgPrefRecord::DlgPrefRecord(QWidget *parent, ConfigObject<ConfigValue> *_config
 
     //Fill up encoding list 
     comboBoxEncoding->insertItem(IDEX_WAVE, "WAVE");
+#ifdef SF_FORMAT_FLAC
     comboBoxEncoding->insertItem(IDEX_FLAC, "FLAC");
+#endif
     comboBoxEncoding->insertItem(IDEX_AIFF, "AIFF");
     //comboBoxEncoding->insertItem("OGG",  IDEX_OGG);
     //comboBoxEncoding->insertItem("MP3",  IDEX_MP3);
