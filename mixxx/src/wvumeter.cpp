@@ -95,7 +95,12 @@ void WVuMeter::paintEvent(QPaintEvent *)
 
         // Draw (part of) vu on buffer
         if (m_bHorizontal)
-            bitBlt(m_pPixmapBuffer, 0, 0, m_pPixmapVu, 0, 0, idx, m_pPixmapVu->height());
+	{
+            if(idx == 0)
+		idx = 1; //Hack to fix broken BitBlt in Qt4... This really needs to be ported soon
+			 //TODO: See QPainter::drawPixmap()... I'm too tired to do it now :)
+	    bitBlt(m_pPixmapBuffer, 0, 0, m_pPixmapVu, 0, 0, idx, m_pPixmapVu->height());
+	}
         else
             bitBlt(m_pPixmapBuffer, 0, m_iNoPos-idx, m_pPixmapVu, 0, m_iNoPos-idx, m_pPixmapVu->width(), idx);
                     
