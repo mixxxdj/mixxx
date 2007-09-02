@@ -96,12 +96,12 @@ DlgPreferences::DlgPreferences(MixxxApp *mixxx, MixxxView *view,
     pagesWidget->addWidget(wplaylist);  
     pagesWidget->addWidget(wcontrols);  
     pagesWidget->addWidget(wmixer);  
-#ifdef __EXPERIMENTAL_BPM__
-    pagesWidget->addWidget(wbpm);  
-#endif
 #ifdef __EXPERIMENTAL_RECORDING__
     pagesWidget->addWidget(wrecord);
 #endif    
+#ifdef __EXPERIMENTAL_BPM__
+    pagesWidget->addWidget(wbpm);  
+#endif
 #ifdef __VINYLCONTROL__
     pagesWidget->addWidget(wvinylcontrol);
 #endif
