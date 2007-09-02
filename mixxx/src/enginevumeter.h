@@ -20,7 +20,12 @@
 #include "engineobject.h"
 
 // Rate at which the vumeter is updated (using a sample rate of 44100 Hz):
-#define UPDATE_RATE 5
+#define UPDATE_RATE 20
+
+//SMOOTHING FACTORS
+//Must be from 0-1 the lower the factor, the more smoothing that is applied
+#define ATTACK_SMOOTHING .85
+#define DECAY_SMOOTHING .3//.16//.4
 
 class ControlPotmeter;
 
@@ -33,6 +38,7 @@ public:
 private:
     ControlPotmeter *m_ctrlVuMeter;
     FLOAT_TYPE m_fRMSvolume;
+    FLOAT_TYPE m_fRMSvolumeSum;
     FLOAT_TYPE m_iSamplesCalculated;
 };
 

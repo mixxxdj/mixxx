@@ -41,9 +41,9 @@ void EngineVuMeter::process(const CSAMPLE *pIn, const CSAMPLE *, const int iBuff
 	{
 		// Too slow to use fabs on windows	
 		if (pIn[i]>0.)
-			m_fRMSvolume += pIn[i];
+			m_fRMSvolumeSum += pIn[i];
 		else
-			m_fRMSvolume -= pIn[i];
+			m_fRMSvolumeSum -= pIn[i];
 	}
 
 
@@ -52,10 +52,16 @@ void EngineVuMeter::process(const CSAMPLE *pIn, const CSAMPLE *, const int iBuff
     // Are we ready to update the VU meter?:
     if (m_iSamplesCalculated > (44100/UPDATE_RATE) )
     {
-        m_fRMSvolume = log10(m_fRMSvolume/(m_iSamplesCalculated*1000)+1);
-        m_ctrlVuMeter->set( math_min(1.0, math_max(0.0, m_fRMSvolume)) ); 
+	FLOAT_TYPE m_fRMSvolumePrev = m_fRMSvolume;
+	FLOAT_TYPE smoothFactor;
+        
+	m_fRMSvolume = log10(m_fRMSvolumeSum/(m_iSamplesCalculated*1000)+1);
+        //Smooth the output
+	smoothFactor = (m_fRMSvolumePrev > m_fRMSvolume) ? DECAY_SMOOTHING : ATTACK_SMOOTHING;
+	m_fRMSvolume = m_fRMSvolumePrev + smoothFactor * (m_fRMSvolume - m_fRMSvolumePrev); 
+	m_ctrlVuMeter->set( math_min(1.0, math_max(0.0, m_fRMSvolume)) ); 
         // Reset calculation:
         m_iSamplesCalculated = 0;
-        m_fRMSvolume = 0;
+        m_fRMSvolumeSum = 0;
     }
 }
