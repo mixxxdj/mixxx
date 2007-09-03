@@ -19,20 +19,20 @@ class QWidget;
 
 class DlgPrefBPM : public QWidget, Ui::DlgPrefBPMDlg  {
     Q_OBJECT
-public: 
+public:
     DlgPrefBPM(QWidget *parent, ConfigObject<ConfigValue> *_config);
     ~DlgPrefBPM();
 public slots:
-    
-	void slotSetBPMDetectOnImport();
-	void slotSetWriteID3Tag();
-    void slotSetAnalyzeMode();
+
+    void slotSetBPMDetectOnImport(int);
+    void slotSetWriteID3Tag(int);
+    void slotSetAnalyzeMode(int);
     void slotSetBPMRangeStart(int);
     void slotSetBPMRangeEnd(int);
 
      /** Apply changes to widget */
     void slotApply();
-	void slotUpdate();
+    void slotUpdate();
 signals:
     void apply(const QString &);
 private:

@@ -21,13 +21,13 @@ public:
 	void setRowColor(QColor evenColor, QColor unevenColor);
 	void setBpmColor(QColor confirmColor, QColor noConfirmColor);
    	int rowCount(const QModelIndex &parent = QModelIndex()) const;
-    
+
 	bool removeRows(int row, int count, const QModelIndex & parent = QModelIndex());
 	TrackPlaylist *m_pTrackPlaylist;
 	TrackCollection *m_pTrackCollection;
 
 private:
-	
+
 	QColor backgroundColor;
 	QColor foregroundColor;
 	QColor rowEvenColor;
@@ -37,7 +37,7 @@ private:
 	QModelIndex index;
 	bool rowColors;
 
-	
+
 	int columnCount(const QModelIndex & parent = QModelIndex()) const;
 	QVariant data(const QModelIndex &index, int role) const;
 	QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const;

@@ -166,7 +166,7 @@ sources = Split("""enginebuffercue.cpp input.cpp mixxxmenuplaylists.cpp trackpla
  controlobjectthreadwidget.cpp controlobjectthreadmain.cpp controlevent.cpp controllogpotmeter.cpp controlobject.cpp controlnull.cpp controlpotmeter.cpp
  controlpushbutton.cpp controlttrotary.cpp controlbeat.cpp dlgpreferences.cpp dlgprefsound.cpp dlgprefmidi.cpp dlgprefplaylist.cpp dlgprefcontrols.cpp
  dlgprefmixer.cpp enginebuffer.cpp enginebufferscale.cpp enginebufferscalelinear.cpp engineclipping.cpp enginefilterblock.cpp enginefilteriir.cpp  enginefilter.cpp engineobject.cpp
- enginepregain.cpp enginevolume.cpp main.cpp midiobject.cpp midiobjectnull.cpp mixxx.cpp mixxxview.cpp 
+ enginepregain.cpp enginevolume.cpp main.cpp midiobject.cpp midiobjectnull.cpp mixxx.cpp mixxxview.cpp
  soundsourcemp3.cpp soundsourceoggvorbis.cpp enginechannel.cpp enginemaster.cpp wwidget.cpp wpixmapstore.cpp wlabel.cpp wnumber.cpp
  wnumberpos.cpp wnumberrate.cpp wnumberbpm.cpp wknob.cpp wdisplay.cpp wvumeter.cpp wpushbutton.cpp wslidercomposed.cpp wslider.cpp wtracktable.cpp
  wtracktableitem.cpp wstatuslight.cpp enginedelay.cpp engineflanger.cpp enginespectralfwd.cpp mathstuff.cpp readerextract.cpp readerextractwave.cpp
@@ -186,7 +186,7 @@ sources = Split("""enginebuffercue.cpp input.cpp mixxxmenuplaylists.cpp trackpla
 # trackinfoobject.cpp soundsource.cpp
 
 #Crap we don't want anymore:
-#playerportaudio.cpp player.cpp playerproxy.cpp 
+#playerportaudio.cpp player.cpp playerproxy.cpp
 
 #Compile platform specific hardware support
 if platform == 'linux':
@@ -333,7 +333,7 @@ env.Append(CXXFLAGS = ' -DQT3_SUPPORT -DQT3_SUPPORT_WARNINGS -DQT_THREAD_SUPPORT
 env.Append(CXXFLAGS = ' -I$QTDIR/include/Qt3Support -I$QTDIR/include/QtCore -I$QTDIR/include/QtGui -I$QTDIR/include/QtXml -I$QTDIR/include/QtOpenGl -I$QTDIR/include/Qt -I"$VCINSTALLDIR/include/atl"')
 
 if not platform == 'win32':
-	env.Append(CCFLAGS = Split(""" -pipe -O3 -Wall -W -g -D_REENTRANT """)) # omghax 
+	env.Append(CCFLAGS = Split(""" -pipe -O3 -Wall -W -g -D_REENTRANT """)) # omghax
 	env.Append(LINKFLAGS = Split(""" -pipe -O3 -Wall -W -g """))
 if platform == 'win32':
 	env.Append(CXXFLAGS = '-DWIN32 -D__WIN__ -DUNICODE -D_WINDOWS') #for soundtouch
@@ -485,7 +485,7 @@ else:
 flags_vinylcontrol = ARGUMENTS.get('vinylcontrol', 0)
 if int(flags_vinylcontrol):
 	env.Append(CXXFLAGS = '-D__VINYLCONTROL__')
-	sources += Split(""" vinylcontrol.cpp vinylcontrolproxy.cpp vinylcontrolscratchlib.cpp vinylcontrolxwax.cpp dlgprefvinyl.cpp 
+	sources += Split(""" vinylcontrol.cpp vinylcontrolproxy.cpp vinylcontrolscratchlib.cpp vinylcontrolxwax.cpp dlgprefvinyl.cpp
 	                     enginevinylcontrol.cpp """)
 	env.Append(CPPPATH='../../lib/xwax')
 	sources += Split("""../../lib/xwax/timecoder.c """)
@@ -515,9 +515,9 @@ if int(flags_ffmpeg):
         env.Append(LIBS = 'ogg')
         env.Append(CXXFLAGS = '-D__FFMPEGFILE__')
 	sources += Split("""soundsourceffmpeg.cpp """)
-	print "Experimental FFMPEG support... enabled"
+	print "Not working FFMPEG support... enabled"
 else:
-	print "Experimental FFMPEG support... disabled"
+	print "Not working FFMPEG support... disabled"
 
 # Profiling and Optimization
 if not platform == 'win32':

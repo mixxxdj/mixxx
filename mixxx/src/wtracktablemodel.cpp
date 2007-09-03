@@ -18,6 +18,7 @@ WTrackTableModel::WTrackTableModel(QObject *parent) : QAbstractTableModel(parent
 	setHeaderData(6,Qt::Horizontal, tr("BPM"));
 	setHeaderData(7,Qt::Horizontal, tr("Comment"));
 }
+
 WTrackTableModel::~WTrackTableModel()
 {
 }
@@ -25,16 +26,19 @@ void WTrackTableModel :: setTrackPlaylist(TrackPlaylist *pTrackPlaylist)
 {
 	m_pTrackPlaylist = pTrackPlaylist;
 }
+
 int WTrackTableModel :: rowCount(const QModelIndex &parent) const
 {
 	return m_pTrackPlaylist->getSongNum();
 }
+
 int WTrackTableModel :: columnCount(const QModelIndex &parent) const
 {
 	return 8;
 }
+
 QVariant WTrackTableModel :: data(const QModelIndex &index, int role) const
-{   
+{
 	TrackInfoObject *m_pTrackInfo = m_pTrackPlaylist->getTrackAt(index.row());
 
 	if (!index.isValid())
@@ -61,10 +65,11 @@ QVariant WTrackTableModel :: data(const QModelIndex &index, int role) const
 		case 7: return m_pTrackInfo->getComment();
 		}
 	}
-	
+
     else
         return QVariant();
 }
+
 QVariant WTrackTableModel :: headerData(int section, Qt::Orientation orientation, int role) const
 {
 	if (role != Qt::DisplayRole)
@@ -95,6 +100,7 @@ QVariant WTrackTableModel :: headerData(int section, Qt::Orientation orientation
 	else
 		return QString("%1").arg(section);
 }
+
 Qt::ItemFlags WTrackTableModel::flags(const QModelIndex &index) const
 {
         if (!index.isValid())
@@ -106,12 +112,13 @@ Qt::ItemFlags WTrackTableModel::flags(const QModelIndex &index) const
 		}
         return Qt::ItemIsSelectable | Qt::ItemIsEnabled;
 }
+
 bool WTrackTableModel::setData(const QModelIndex &index, const QVariant &value, int role)
     {
-        if (index.isValid() && role == Qt::EditRole) 
+        if (index.isValid() && role == Qt::EditRole)
 		{
 			TrackInfoObject *m_pTrackInfo = m_pTrackPlaylist->getTrackAt(index.row());
-		
+
             switch(index.column())
 			{
 			case 6: m_pTrackInfo->setBpm(value.toString().toFloat()); break;
@@ -122,34 +129,39 @@ bool WTrackTableModel::setData(const QModelIndex &index, const QVariant &value, 
         }
         return false;
     }
+
 bool WTrackTableModel::removeRows(int row, int count, const QModelIndex &parent)
 {
 	Q_UNUSED(parent);
 	TrackInfoObject *m_pTrackInfo = m_pTrackPlaylist->getTrackAt(row);
     if (count <= 0 || row < 0 || (row + count) > rowCount(parent))
 		return false;
-    
+
 	beginRemoveRows(QModelIndex(), row, row + count - 1);
 
     for (int r = 0; r < count; ++r)
 		m_pTrackPlaylist->slotRemoveTrack(m_pTrackInfo);
-	
+
 	endRemoveRows();
 	return true;
-} 
+}
+
 void WTrackTableModel::setBackgroundColor(QColor bgColor)
 {
 	backgroundColor = bgColor;
 }
+
 void WTrackTableModel::setForegroundColor(QColor fgColor)
 {
 	foregroundColor = fgColor;
 }
+
 void WTrackTableModel::setRowColor(QColor evenColor, QColor unevenColor)
 {
 	backgroundColor = evenColor;
 	rowUnevenColor = unevenColor;
 }
+
 void WTrackTableModel::setBpmColor(QColor confirmColor, QColor noConfirmColor)
 {
 	bpmNoConfirmColor = noConfirmColor;

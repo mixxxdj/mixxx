@@ -81,23 +81,23 @@ MixxxApp::MixxxApp(QApplication *a, QStringList files, QSplashScreen *pSplash, Q
 	//Next, let's set up the colour palette for Mixxx.
 	//For what color controls what, see this reference:
 	//http://doc.trolltech.com/3.3/qcolorgroup.html#ColorRole-enum
-	
+
 	/*
 	QPalette palette;
 	palette.setColor(QColorGroup::HighlightedText, QColor("darkBlue"));
 	palette.setColor(QColorGroup::Text, QColor("white"));
 	setPalette(palette);
 	*/
-    
+
     qDebug("Starting up...");
     setWindowTitle(tr("Mixxx " VERSION));
 #ifdef __MACX__
-    setWindowIcon(QIcon(":icon.svg")); 
+    setWindowIcon(QIcon(":icon.svg"));
 #else
-    setWindowIcon(QIcon(":icon.svg")); 
+    setWindowIcon(QIcon(":icon.svg"));
     //setWindowIcon(QIcon(":iconsmall.png")); //This is a smaller 16x16 icon, looks cleaner...
 #endif
-        
+
     // Reset pointer to players
     //player = 0;
     soundmanager = 0;
@@ -150,10 +150,10 @@ MixxxApp::MixxxApp(QApplication *a, QStringList files, QSplashScreen *pSplash, Q
     // Initialize player device
     //Player::setMaster(master);
     //player = new PlayerProxy(config);
-    
+
     soundmanager = new SoundManager(config, master);
     soundmanager->queryDevices();
-    
+
     if (pSplash)
         pSplash->message("Loading skin...",Qt::AlignLeft|Qt::AlignBottom);
 
@@ -239,7 +239,7 @@ MixxxApp::MixxxApp(QApplication *a, QStringList files, QSplashScreen *pSplash, Q
 
     // Initialize track object:
 	m_pTrack = new Track(config->getValueString(ConfigKey("[Playlist]","Listfile")), view, buffer1, buffer2, m_pWaveSummary, m_pBpmDetector,config->getValueString(ConfigKey("[Playlist]","Directory")));
-	
+
 	//WTreeItem::setTrack(m_pTrack);
 	// Set up drag and drop to player visuals
     if (view->m_pVisualCh1)
@@ -271,9 +271,9 @@ MixxxApp::MixxxApp(QApplication *a, QStringList files, QSplashScreen *pSplash, Q
     // Try open player device If that fails, the preference panel is opened.
     //if (!player->open())
     //    prefDlg->setHidden(false);
-    
+
     soundmanager->setupDevices();
-    
+
     //setFocusPolicy(QWidget::StrongFocus);
     //grabKeyboard();
 
@@ -347,11 +347,11 @@ MixxxApp::~MixxxApp()
     //qDebug("close player, %i",qTime.elapsed());
     //player->close();
     //qDebug("player->close() done");
-    
+
     qDebug() << "close soundmanager" << qTime.elapsed();
     soundmanager->closeDevices();
     qDebug() << "soundmanager->close() done";
-    
+
     // Save state of End of track controls in config database
     config->set(ConfigKey("[Controls]","TrackEndModeCh1"), ConfigValue((int)ControlObject::getControl(ConfigKey("[Channel1]","TrackEndMode"))->get()));
     config->set(ConfigKey("[Controls]","TrackEndModeCh2"), ConfigValue((int)ControlObject::getControl(ConfigKey("[Channel2]","TrackEndMode"))->get()));
@@ -463,7 +463,7 @@ void MixxxApp::initActions()
     optionsBeatMark->setStatusTip(tr("Audio Beat Marks"));
     optionsBeatMark->setWhatsThis(tr("Audio Beat Marks\nMark beats by audio clicks"));
     connect(optionsBeatMark, SIGNAL(toggled(bool)), this, SLOT(slotOptionsBeatMark(bool)));
-    
+
 #ifdef __VINYLCONTROL__
 	//Either check or uncheck the vinyl control menu item depending on what it was saved as.
 	if ((bool)config->getValueString(ConfigKey("[VinylControl]","Enabled")).toInt() == true)
@@ -587,7 +587,7 @@ void MixxxApp::slotFileOpen()
                                              this,
                                              "Open file");
     #else*/
-    
+
     QString s = QFileDialog::getOpenFileName(this, "Open file", config->getValueString(ConfigKey("[Playlist]","Directory")),
                                              "Audio (*.wav *.ogg *.mp3 *.aiff)");
     //#endif
@@ -654,7 +654,7 @@ void MixxxApp::slotOptionsPreferences()
     prefDlg->setHidden(false);
 }
 
-//Note: Can't #ifdef this because MOC doesn't catch it. 
+//Note: Can't #ifdef this because MOC doesn't catch it.
 void MixxxApp::slotOptionsVinylControl(bool toggle)
 {
 	//qDebug("slotOptionsVinylControl: toggle is %i", (int)toggle);
@@ -687,7 +687,7 @@ void MixxxApp::slotHelpAbout()
 			"<tr><td></td><td>Jeremie Zimmermann</td><td>Ben Wheeler</td></tr>"
 			"<tr><td></td><td>Gianluca Romanin</td><td>Tim Jackson</td></tr>"
 			"<tr><td></td><td>Jan Jockusch</td><td>Albert Santoni</td></tr>"
-			"<tr><td></td><td>Frank Willascheck</td><td></td></tr>"
+			"<tr><td></td><td>Frank Willascheck</td><td>Cedric Gestes</td></tr>"
                          "<tr><td>Special thanks to:</td><td>Adam Bellinson</td><td></td></tr>"
                          "</table><br><br>"
                          "<table cellspacing=0 cellpadding=0>"
