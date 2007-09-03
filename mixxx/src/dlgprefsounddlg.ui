@@ -14,19 +14,6 @@
   </property>
   <layout class="QVBoxLayout" >
    <item>
-    <spacer>
-     <property name="orientation" >
-      <enum>Qt::Horizontal</enum>
-     </property>
-     <property name="sizeHint" >
-      <size>
-       <width>40</width>
-       <height>20</height>
-      </size>
-     </property>
-    </spacer>
-   </item>
-   <item>
     <widget class="QGroupBox" name="audioGroupBox" >
      <property name="title" >
       <string>Audio Output</string>
