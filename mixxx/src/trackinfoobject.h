@@ -49,7 +49,7 @@ public:
     TrackInfoObject(const QDomNode &, BpmDetector *bpmDetector);
     ~TrackInfoObject();
     /** Returns true if the object contains valid information */    
-    bool isValid();
+    bool isValid() const;
     int parse();
     /** Checks if the file given in m_sFilename really exists on the disc, and
         updates the m_bExists flag accordingly. Returns true if the file
@@ -63,85 +63,87 @@ public:
 	/** Assists in clearing the table*/
 	//void clearTrackTableRow();
     /** Returns the duration in seconds */
-    int getDuration();
+    int getDuration() const;
     /** Returns the duration as a string: H:MM:SS */
-    QString getDurationStr();
+    QString getDurationStr() const;
     /** Returns the location of the file, included path */
-    QString getLocation();
+    QString getLocation() const;
     /** Add this TrackInfoObject instance to the BPM detection queue */
     void sendToBpmQueue();
     void sendToBpmQueue(BpmReceiver *pBpmReceiver);
     void sendToBpmQueue(BpmReceiver *pBpmReceiver, int minBpm, int maxBpm);
     /** Returns BPM */
-    float getBpm();
+    float getBpm() const;
     /** Set BPM */
     void setBpm(float);
     /** Set BPM Correction Factors */
     void generateBpmFactors();
     /** Get BPM Correction Factors */
-    void getBpmFactors(float*);
+    void getBpmFactors(float*) const;
     /** Returns BPM as a string */
-    QString getBpmStr();
+    QString getBpmStr() const;
     /** Retruns if BPM was confirmed (edited or verified manually) */
-    bool getBpmConfirm();
+    bool getBpmConfirm() const;
     /** Set BPM confidence */
     void setBpmConfirm(bool confirm=true);
     /** Returns the user comment */
-    QString getComment();
+    QString getComment() const;
     /** Sets the user commnet */
     void setComment(QString);
     /** Returns the file type */
-    QString getType();
+    QString getType() const;
     /** Sets the type of the string */
     void setType(QString);
     /** Returns the bitrate */
-    int getBitrate();
+    int getBitrate() const;
     /** Returns the bitrate as a string */
-    QString getBitrateStr();
+    QString getBitrateStr() const;
     /** Sets the bitrate */
     void setBitrate(int);
     /** Sets first beat pos */
     void setBeatFirst(float);
     /** Get first beat pos */
-    float getBeatFirst();
+    float getBeatFirst() const;
     /** Retruns the length of the file in bytes */
-    int getLength();
+    int getLength() const;
     /** Set sample rate */
     void setSampleRate(int iSampleRate);
     /** Get sample rate */
-    int getSampleRate();
+    int getSampleRate() const;
     /** Set number of channels */
     void setChannels(int iChannels);
     /** Get number of channels */
-    int getChannels();
+    int getChannels() const;
     /** Output a formatted string with all the info */
-    QString getInfo();
+    QString getInfo() const;
     /** Set duration in seconds */
     void setDuration(int);
     /** Return title */
-    QString getTitle();
+    QString getTitle() const;
     /** Set title */
     void setTitle(QString);
     /** Return artist */
-    QString getArtist();
+    QString getArtist() const;
     /** Set artist */
     void setArtist(QString);
     /** Return filename */
-    QString getFilename();
+    QString getFilename() const;
     /** Return true if the file exist */
-    bool exists();
+    bool exists()  const;
     /** Return number of times the track has been played */
-    int getTimesPlayed();
+    int getTimesPlayed() const;
     /** Increment times played with one */
     void incTimesPlayed();
     /** Sets the filepath */
     void setFilepath(QString);
+    /** Returns the score */
+    int getScore() const;
     /** Returns the score as string */
-    QString getScoreStr();
+    QString getScoreStr() const;
     /** Updates the score */
     void updateScore();
     /** Get id */
-    int getId();
+    int getId() const;
     /** Set id */
     void setId(int iId);
     /** Set pointer to waveform summary */
@@ -160,7 +162,7 @@ public:
     void setBpmControlObject(ControlObject *p);
     /** Set pointer to ControlObject holding duration value in engine */
     void setDurationControlObject(ControlObject *p);
-	QString getFilepath();
+	QString getFilepath() const;
 private:
     /** Method for parsing information from knowing only the file name.
         It assumes that the filename is written like: "artist - trackname.xxx" */
@@ -221,7 +223,7 @@ private:
     static int siMaxTimesPlayed;
 
     /** Mutex protecting access to object */
-    QMutex m_qMutex;
+    mutable QMutex m_qMutex;
     /** Corresponding WOverview widget */
     WOverview *m_pOverviewWidget;
     /** True if object contains valid information */

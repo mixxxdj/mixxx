@@ -45,6 +45,7 @@ public:
 	/**Graphically set up WTrackTableView**/
     void setup(QDomNode node);
     void sortColumn(int col, bool ascending, bool);
+    
 	/**Sets current model to WTrackTableView**/
 	void setSearchSource(WTrackTableModel *pSearchSourceModel);
 	/**Right click menu**/
@@ -84,6 +85,7 @@ private slots:
 	/** Remove selected track from active playlist */
     void slotRemoveFromPlaylist();
 protected slots:
+    void sortByColumn(int col);
     void slotMouseDoubleClicked(const QModelIndex &);
     //Q3DragObject *dragObject();
 protected:

@@ -37,6 +37,7 @@ WTrackTableView::WTrackTableView(QWidget *parent) : QTableView(parent)
 	setWordWrap(false);
 	setVerticalScrollBarPolicy (Qt::ScrollBarAlwaysOn);
     setShowGrid(false);
+    horizontalHeader()->setClickable(true);
 	verticalHeader()->hide();
 	verticalHeader()->setDefaultSectionSize(20);
 	setFrameStyle(Q3Frame::NoFrame);
@@ -51,7 +52,9 @@ WTrackTableView::WTrackTableView(QWidget *parent) : QTableView(parent)
     // Allow table reordering
     //setRowMovingEnabled(true);
 	*/
+
     connect(this, SIGNAL(doubleClicked(const QModelIndex &)), this, SLOT(slotMouseDoubleClicked(const QModelIndex &)));
+
     bpmTapDlg = 0;
     
 }
@@ -143,6 +146,60 @@ void WTrackTableView::setup(QDomNode node)
 void WTrackTableView::sortColumn(int col, bool ascending, bool)
 {}
 
+void WTrackTableView::sortByColumn(int col)
+{
+    if(horizontalHeader()->sortIndicatorSection() != col)
+        return QTableView::sortByColumn(col);
+
+    bool ascending = (horizontalHeader()->sortIndicatorOrder() == Qt::AscendingOrder);
+
+    
+    switch(col)
+		{
+        // Score Column
+		case 0: 
+            m_pTable->m_pTrackPlaylist->sortByScore(ascending);
+            break;
+
+        // Title
+		case 1: 
+            m_pTable->m_pTrackPlaylist->sortByTitle(ascending);
+            break;
+
+        // Artist
+		case 2:
+            m_pTable->m_pTrackPlaylist->sortByArtist(ascending);
+            break;
+
+        // Type
+		case 3: 
+            m_pTable->m_pTrackPlaylist->sortByType(ascending);
+            break;
+
+        // Duration
+		case 4: 
+            m_pTable->m_pTrackPlaylist->sortByDuration(ascending);
+            break;
+
+        // Bitrate
+		case 5: 
+            m_pTable->m_pTrackPlaylist->sortByBitrate(ascending);
+            break;
+
+        // BPM
+		case 6: 
+            m_pTable->m_pTrackPlaylist->sortByBpm(ascending);
+            break;
+
+        // Comment
+		case 7: 
+            m_pTable->m_pTrackPlaylist->sortByComment(ascending);
+            break;
+		}
+
+    return QTableView::sortByColumn(col);
+}
+
 /*checks for Mouse action*/
 
 void WTrackTableView :: slotMouseDoubleClicked(const QModelIndex & index)
@@ -225,3 +282,4 @@ void WTrackTableView :: slotRemoveFromPlaylist()
 {
 	m_pTable->removeRow(index.row(),index);
 }
+

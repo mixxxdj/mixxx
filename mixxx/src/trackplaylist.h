@@ -24,6 +24,26 @@ class TrackCollection;
 class WTrackTable;
 class Track;
 
+
+/** Sort Comparison Functions */
+bool ScoreLesser(const TrackInfoObject *tio1, const TrackInfoObject *tio2);
+bool TitleLesser(const TrackInfoObject *tio1, const TrackInfoObject *tio2);
+bool ArtistLesser(const TrackInfoObject *tio1, const TrackInfoObject *tio2);
+bool TypeLesser(const TrackInfoObject *tio1, const TrackInfoObject *tio2);
+bool DurationLesser(const TrackInfoObject *tio1, const TrackInfoObject *tio2);
+bool BitrateLesser(const TrackInfoObject *tio1, const TrackInfoObject *tio2);
+bool BpmLesser(const TrackInfoObject *tio1, const TrackInfoObject *tio2);
+bool CommentLesser(const TrackInfoObject *tio1, const TrackInfoObject *tio2);
+bool ScoreGreater(const TrackInfoObject *tio1, const TrackInfoObject *tio2);
+bool TitleGreater(const TrackInfoObject *tio1, const TrackInfoObject *tio2);
+bool ArtistGreater(const TrackInfoObject *tio1, const TrackInfoObject *tio2);
+bool TypeGreater(const TrackInfoObject *tio1, const TrackInfoObject *tio2);
+bool DurationGreater(const TrackInfoObject *tio1, const TrackInfoObject *tio2);
+bool BitrateGreater(const TrackInfoObject *tio1, const TrackInfoObject *tio2);
+bool BpmGreater(const TrackInfoObject *tio1, const TrackInfoObject *tio2);
+bool CommentGreater(const TrackInfoObject *tio1, const TrackInfoObject *tio2);
+
+
 /**
 @author Tue Haste Andersen
 */
@@ -66,6 +86,16 @@ public:
 	TrackInfoObject *getTrackAt(int index);
 	TrackCollection *getCollection();
 
+    /** Sort routines */
+    void sortByScore(bool ascending);
+    void sortByTitle(bool ascending);
+    void sortByArtist(bool ascending);
+    void sortByType(bool ascending);
+    void sortByDuration(bool ascending);
+    void sortByBitrate(bool ascending);
+    void sortByBpm(bool ascending);
+    void sortByComment(bool ascending);
+
     void dumpInfo();
     
 public slots:
@@ -76,7 +106,7 @@ public slots:
 
 private:
     /** List of pointers to TrackInfoObjects */
-    Q3PtrList<TrackInfoObject> m_qList;
+    QList<TrackInfoObject*> m_qList;
     /** Pointer to TrackCollection */
     TrackCollection *m_pTrackCollection;
 	TrackCollection *personalTrackCollection;
