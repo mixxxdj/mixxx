@@ -290,11 +290,10 @@ void TrackPlaylist::slotRemoveTrack(TrackInfoObject *pTrack)
 void TrackPlaylist::updateScores()
 {
     // Update the score column for each track
-    TrackInfoObject *it = m_qList.first();
-    while (it)
+
+    for(int i = 0; i < m_qList.size(); i++)
     {
-        it->updateScore();
-        it++;
+        m_qList.at(i)->updateScore();
     }
 }
 
