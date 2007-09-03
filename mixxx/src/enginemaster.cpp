@@ -26,6 +26,7 @@
 #include "engineflanger.h"
 #include "enginevumeter.h"
 #include "enginerecord.h"
+#include "enginevinylsoundemu.h"
 #ifdef __LADSPA__
 #include "engineladspa.h"
 #endif
@@ -93,6 +94,9 @@ EngineMaster::EngineMaster(ConfigObject<ConfigValue> *_config,
     vumeter1 = new EngineVuMeter("[Channel1]");
     vumeter2 = new EngineVuMeter("[Channel2]");
     
+    // Vinyl sound emulation 
+    vinylsound1 = new EngineVinylSoundEmu(_config, "[Channel1]");
+    vinylsound2 = new EngineVinylSoundEmu(_config, "[Channel2]");
     
     // Mute on active headphone
 //     m_pControlObjectHeadphoneMute = new ControlObject(ConfigKey(group,"HeadphoneMute"));
@@ -156,6 +160,7 @@ void EngineMaster::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBuff
     if (master1)
     {
         buffer1->process(0, m_pTemp1, iBufferSize);
+        vinylsound1->process(m_pTemp1, m_pTemp1, iBufferSize);
         channel1->process(m_pTemp1, m_pTemp1, iBufferSize);
         if (flanger1->get()==1. && flanger2->get()==0.)
             flanger->process(m_pTemp1, m_pTemp1, iBufferSize);
@@ -164,6 +169,7 @@ void EngineMaster::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBuff
     if (master2)
     {
         buffer2->process(0, m_pTemp2, iBufferSize);
+        vinylsound2->process(m_pTemp1, m_pTemp1, iBufferSize);
         channel2->process(m_pTemp2, m_pTemp2, iBufferSize);
         if (flanger1->get()==0. && flanger2->get()==1.)
             flanger->process(m_pTemp2, m_pTemp2, iBufferSize);
