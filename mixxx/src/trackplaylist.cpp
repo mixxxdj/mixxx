@@ -446,7 +446,7 @@ bool TypeLesser(const TrackInfoObject *tio1, const TrackInfoObject *tio2)
 }
 bool DurationLesser(const TrackInfoObject *tio1, const TrackInfoObject *tio2) 
 {
-    return tio1->getDuration() < tio2->getDuration();
+    return tio1->getDurationStr() < tio2->getDurationStr();
 }
 bool BitrateLesser(const TrackInfoObject *tio1, const TrackInfoObject *tio2) 
 {
@@ -478,7 +478,7 @@ bool TypeGreater(const TrackInfoObject *tio1, const TrackInfoObject *tio2)
 }
 bool DurationGreater(const TrackInfoObject *tio1, const TrackInfoObject *tio2) 
 {
-    return tio1->getDuration() > tio2->getDuration();
+    return tio1->getDurationStr() > tio2->getDurationStr();
 }
 bool BitrateGreater(const TrackInfoObject *tio1, const TrackInfoObject *tio2) 
 {
