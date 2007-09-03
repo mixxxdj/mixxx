@@ -93,15 +93,19 @@ Track::Track(QString location, MixxxView *pView, EngineBuffer *pBuffer1, EngineB
     	m_pView->m_pTrackTableView->resizeColumnsToContents();
     	m_pView->m_pTrackTableView->setTrack(this);
 
-        // Connect mouse events from the tree view
-        //connect(m_pView->m_pTreeView, SIGNAL(activatePlaylist(QString)), this, SLOT(slotActivatePlaylist(QString)));
-        //connect(this, SIGNAL(activePlaylist(TrackPlaylist *)), m_pView->m_pTreeView, SLOT(slotHighlightPlaylist(TrackPlaylist *)));
-
     	// Connect ComboBox events to WTrackTable
     	connect(m_pView->m_pComboBox, SIGNAL(activated(int)), this, SLOT(slotActivatePlaylist(int)));
 
     	// Connect Search to table
-    	connect( m_pView->m_pLineEditSearch, SIGNAL( textChanged( const QString & )),m_pView->m_pTrackTableView->m_pSearchFilter, SLOT( setFilterFixedString( const QString & )));
+    	connect( m_pView->m_pLineEditSearch,
+                 SIGNAL( textChanged( const QString & )),
+                 m_pView->m_pTrackTableView->m_pSearchFilter,
+                 SLOT( setFilterFixedString( const QString & )));
+
+    	connect( m_pView->m_pLineEditSearch,
+                 SIGNAL( textChanged( const QString & )),
+                 m_pView->m_pTrackTableView->m_pDirFilter,
+                 SLOT( setFilterFixedString( const QString & )));
 
     	// Connect drop events to table
         //connect(m_pView->m_pTrackTable, SIGNAL(dropped(QDropEvent *)), this, SLOT(slotDrop(QDropEvent *)));
@@ -190,8 +194,8 @@ void Track::readXML(QString location)
         node = node.nextSibling();
     }
     //CTAF TODO: TEMPORARY REMOVED, NEED TO BE DONE IN A THREAD
-    //if(m_qPlaylists.count() >= 2)
-    //     m_qPlaylists.at(0)->addPath(musicDir);
+    if(m_qPlaylists.count() >= 2)
+         m_qPlaylists.at(0)->addPath(musicDir);
     //ECTAF
 }
 
