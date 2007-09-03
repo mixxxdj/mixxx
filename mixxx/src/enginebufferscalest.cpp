@@ -182,9 +182,9 @@ double EngineBufferScaleST::setTempo(double dTempo)
 
     m_dTempo = fabs(dTempo);
 
-    if (m_dTempo>4.)
+    if (m_dTempo>MAX_SEEK_SPEED)
 
-        m_dTempo = 4.;
+        m_dTempo = MAX_SEEK_SPEED;
 
         
 

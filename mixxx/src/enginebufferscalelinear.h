@@ -28,11 +28,15 @@ class EngineBufferScaleLinear : public EngineBufferScale  {
 public:
     EngineBufferScaleLinear(ReaderExtractWave *wave);
     ~EngineBufferScaleLinear();
-    double setRate(double rate);
-    CSAMPLE *scale(double playpos, int buf_size);
+    CSAMPLE *scale(double playpos, int buf_size, float *pBase, int iBaseLength);
+    void setBaseRate(double dBaseRate);
+    double setTempo(double dTempo);
+    void clear();
+
 private:
     /** Holds playback direction */
-    bool backwards;
+    bool m_bBackwards;
+    bool m_bClear;
 };
 
 #endif

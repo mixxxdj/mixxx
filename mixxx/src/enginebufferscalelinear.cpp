@@ -27,28 +27,49 @@ EngineBufferScaleLinear::~EngineBufferScaleLinear()
 {
 }
 
-double EngineBufferScaleLinear::setRate(double _rate)
+double EngineBufferScaleLinear::setTempo(double _tempo)
 {
-    rate = _rate;
+    m_dTempo = _tempo;
+
+    if (m_dTempo>MAX_SEEK_SPEED)
+        m_dTempo = MAX_SEEK_SPEED;
+    else if (m_dTempo < -MAX_SEEK_SPEED)
+        m_dTempo = -MAX_SEEK_SPEED;
 
     // Determine playback direction
-    if (rate<0.)
-        backwards = true;
+    if (m_dTempo<0.)
+        m_bBackwards = true;
     else
-        backwards = false;
+        m_bBackwards = false;
 
-    return rate;
+    return m_dTempo;
 }
 
-CSAMPLE *EngineBufferScaleLinear::scale(double playpos, int buf_size)
+void EngineBufferScaleLinear::setBaseRate(double dBaseRate)
 {
-    double rate_add = 2.*rate;
+    m_dBaseRate = dBaseRate*m_dTempo;    
+
+    //TODO: Should this be something? - Albert Sept 3/07
+    //    m_pSoundTouch->setRate(m_dBaseRate*m_dTempo);
+}
+
+void EngineBufferScaleLinear::clear()
+{
+    //m_pSoundTouch->clear();
+    //TODO: Clear the buffer?!
+    
+    m_bClear = true;
+}
+
+CSAMPLE *EngineBufferScaleLinear::scale(double playpos, int buf_size, float *pBase, int iBaseLength)
+{
+    double rate_add = 2.*m_dTempo;
 
     // Determine position in read_buffer to start from
     new_playpos = playpos;
 
     // Prepare buffer
-    if (backwards)
+    if (m_bBackwards)
     {
         for (int i=0; i<buf_size; i+=2)
         {
