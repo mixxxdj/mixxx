@@ -36,6 +36,7 @@ class ControlObjectThreadMain;
 class WaveSummary;
 class BpmDetector;
 class QSortFilterProxyModel;
+class QDirModel;
 
 // This define sets the version of the tracklist. If any code is changed or
 // bugfixed, this number should be increased. If TRACK_VERSION is larger
@@ -64,7 +65,7 @@ public:
     //void updatePlaylistViews();
 	/**location of new music files*/
 	QString musicDir;
-    
+
 
 public slots:
     /** Decode playlist drops to WTrackTable, and loads corresponding playlist */
@@ -102,7 +103,7 @@ public slots:
     /** Returns pointer to active playlist */
     TrackPlaylist *getActivePlaylist();
 	/**sends track to Playqueue*/
-	void slotSendToPlayqueue(TrackInfoObject *pTrackInfoObject);  
+	void slotSendToPlayqueue(TrackInfoObject *pTrackInfoObject);
 signals:
     /** A new track has been loaded in player 1 */
     void newTrackPlayer1(TrackInfoObject *);
@@ -121,8 +122,8 @@ private:
     TrackPlaylistList m_qPlaylists;
 	/** Model for Library information*/
     WTrackTableModel *m_pLibraryModel;
-	/**Model for Playqueue information*/
-	WTrackTableModel *m_pPlayQueueModel;
+    /**Model for Playqueue information*/
+    WTrackTableModel *m_pPlayQueueModel;
     /** Pointer to playlist for which a popup menu is currently displayed */
     TrackPlaylist *m_pActivePopupPlaylist;
     /** Pointer to TrackInfoObject for which a popup menu is currently displayed */

@@ -1,7 +1,7 @@
 //
 // C++ Implementation: trackcollection
 //
-// Description: 
+// Description:
 //
 //
 // Author: Tue Haste Andersen <haste@diku.dk>, (C) 2003
@@ -37,14 +37,14 @@ void TrackCollection::readXML(QDomNode node)
         if (tracknode.isElement() && tracknode.nodeName()=="Track")
         {
             TrackInfoObject *pTrack = new TrackInfoObject(tracknode, m_BpmDetector);
-			addTrack(pTrack);
+            addTrack(pTrack);
 
-            
+
 
             // Update counter
             if (pTrack->getId()>m_iCounter)
                 m_iCounter = pTrack->getId();
-            
+
         }
         tracknode = tracknode.nextSibling();
     }
@@ -76,8 +76,8 @@ void TrackCollection::addTrack(TrackInfoObject *pTrack)
     {
         ++m_iCounter;
         pTrack->setId(m_iCounter);
-        
-       
+
+
     }
     m_qTrackList.append(pTrack);
 
@@ -114,7 +114,11 @@ TrackInfoObject *TrackCollection::getTrack(int id)
 TrackInfoObject *TrackCollection::getTrack(int id, int min, int mid, int max)
 {
     //qDebug("id %i, min %i, mid %i, max %i",id,min,mid,max);
-    int midId = m_qTrackList.at(mid)->getId();
+    int midId = 0;
+
+    if (!m_qTrackList.at(mid))
+      return 0;
+    m_qTrackList.at(mid)->getId();
     if (midId==id)
         return m_qTrackList.at(mid);
     else if (midId<id && !(mid==min && mid+(max-mid)/2==mid))

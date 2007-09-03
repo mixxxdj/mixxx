@@ -101,7 +101,7 @@ MixxxView::MixxxView(QWidget *parent, ConfigObject<ConfigValueKbd> *kbdconfig, b
     m_pOverviewCh1 = 0;
     m_pOverviewCh2 = 0;
 	m_pComboBox = 0;
-	
+
 	setupColorScheme(docElem, pConfig);
 
     // Load all widgets defined in the XML file
@@ -214,7 +214,7 @@ ImgSource* MixxxView::parseFilters(QDomNode filt) {
 }
 
 QDomElement MixxxView::openSkin(QString qSkinPath) {
-	
+
     // Path to image files
     WWidget::setPixmapPath(qSkinPath.append("/"));
 
@@ -234,7 +234,7 @@ QDomElement MixxxView::openSkin(QString qSkinPath) {
     return skin.documentElement();
 }
 void MixxxView::setupColorScheme(QDomElement docElem, ConfigObject<ConfigValue> *pConfig) {
-	
+
 	QDomNode colsch = docElem.namedItem("Schemes");
 	if (!colsch.isNull() && colsch.isElement()) {
 		QString schname = pConfig->getValueString(ConfigKey("[Config]","Scheme"));
@@ -335,26 +335,26 @@ void MixxxView::createAllWidgets(QDomElement docElem, QWidget* parent, bool bVis
                 }
             }
             else if (node.nodeName()=="NumberRate")
-            {       
+            {
                 QColor c(255,255,255);
                 if (!WWidget::selectNode(node, "BgColor").isNull()) {
                     c.setNamedColor(WWidget::selectNodeQString(node, "BgColor"));
                 }
-               
-                QPalette palette;    
-                                 
+
+                QPalette palette;
+
                 if (WWidget::selectNodeInt(node, "Channel")==1)
                 {
                     WNumberRate *p = new WNumberRate("[Channel1]", this);
                     p->setup(node);
                     p->installEventFilter(m_pKeyboard);
                     m_qWidgetList.append(p);
-                    
+
                     //palette.setBrush(QPalette::Background, WSkinColor::getCorrectColor(c));
                     palette.setBrush(QPalette::Button, Qt::NoBrush);
                     //p->setBackgroundRole(QPalette::Window);
-                    p->setPalette(palette);  
-                    p->setAutoFillBackground(true);                   
+                    p->setPalette(palette);
+                    p->setAutoFillBackground(true);
 
                 }
                 else if (WWidget::selectNodeInt(node, "Channel")==2)
@@ -376,34 +376,34 @@ void MixxxView::createAllWidgets(QDomElement docElem, QWidget* parent, bool bVis
             {
                 QString filename = WWidget::selectNodeQString(node, "Path");
                 QPixmap* background = WPixmapStore::getPixmapNoCache(WWidget::getPath(filename));
-                
+
                 QLabel* bg = new QLabel(this);
                 bg->move(0, 0);
                 bg->setPixmap(*background);
                 bg->lower();
                 m_qWidgetList.append(bg);
-                
+
                 //this->setPaletteBackgroundPixmap(*background);
                 // FWI: Begin of fullscreen patch
                 // this->setFixedSize(background.width(),background.height()+((QMainWindow *)parent)->menuBar()->height());
                 // parent->setFixedSize(background.width(),background.height()+((QMainWindow *)parent)->menuBar()->height());
                 this->setFixedSize(background->width(),background->height());
- 
+
                 parent->setMinimumSize(background->width(),background->height());
- 
+
                 // FWI: End of fullscreen patch
                 this->move(0,0);
                 QColor c(255,255,255);
                 if (!WWidget::selectNode(node, "BgColor").isNull()) {
                     c.setNamedColor(WWidget::selectNodeQString(node, "BgColor"));
                 }
-               
+
                 QPalette palette;
                 palette.setBrush(QPalette::Window, WSkinColor::getCorrectColor(c));
                 parent->setBackgroundRole(QPalette::Window);
                 //this->setBackgroundRole(QPalette::Window);
                 parent->setPalette(palette);
-                       
+
                 //parent->setEraseColor(WSkinColor::getCorrectColor(c));
                 parent->setAutoFillBackground(true);
             }
@@ -549,12 +549,12 @@ void MixxxView::createAllWidgets(QDomElement docElem, QWidget* parent, bool bVis
 				if (!WWidget::selectNode(node, "BgColor").isNull()) {
                     bgc.setNamedColor(WWidget::selectNodeQString(node, "BgColor"));
                 }
-				//p->setPaletteBackgroundColor(WSkinColor::getCorrectColor(bgc)); 
+				//p->setPaletteBackgroundColor(WSkinColor::getCorrectColor(bgc));
                 QPalette palette;
                 palette.setBrush(p->backgroundRole(), WSkinColor::getCorrectColor(bgc));
                 p->setPalette(palette);
                 p->setAutoFillBackground(true);
-                
+
                 // Foreground color
 				QColor fgc(0,0,0);
 				if (!WWidget::selectNode(node, "FgColor").isNull()) {
@@ -595,17 +595,18 @@ void MixxxView::createAllWidgets(QDomElement docElem, QWidget* parent, bool bVis
                 x = size.left(size.find(",")).toInt();
                 y = size.mid(size.find(",")+1).toInt();
                 m_pComboBox->setFixedSize(x,y);
-				
-				
-				m_pComboBox->insertItem( "Library" );
-				m_pComboBox->insertItem( "Play Queue" );
-				
+
+
+                m_pComboBox->insertItem( "Library" );
+                m_pComboBox->insertItem( "Play Queue" );
+                m_pComboBox->insertItem( "Browse" );
+
 			}
-			
+
 			else if (node.nodeName()=="Search")
 			{
 				m_pLineEditSearch = new QLineEdit( this, "lineEdit" );
-				
+
 				// Set position
                 QString pos = WWidget::selectNodeQString(node, "Pos");
                 int x = pos.left(pos.find(",")).toInt();
@@ -619,7 +620,7 @@ void MixxxView::createAllWidgets(QDomElement docElem, QWidget* parent, bool bVis
                 x = size.left(size.find(",")).toInt();
                 y = size.mid(size.find(",")+1).toInt();
                 m_pLineEditSearch->setFixedSize(x,y);
-				
+
 			}
 			/*
             else if (node.nodeName()=="TrackTable")
@@ -630,7 +631,7 @@ void MixxxView::createAllWidgets(QDomElement docElem, QWidget* parent, bool bVis
                 m_pTrackTable->installEventFilter(m_pKeyboard);
             }
 			*/
-            
+
 			else if (node.nodeName()=="TableView")
 			{
 				m_pTrackTableView = new WTrackTableView(this);
@@ -657,7 +658,7 @@ void MixxxView::rebootGUI(QWidget* parent, bool bVisualsWaveform, ConfigObject<C
 	QObject* obj;
 	// This isn't thread safe, does anything else hack on this object?
 	for (obj = m_qWidgetList.first(); obj;) {
-		if (!(obj == m_pTextCh1 || obj == m_pTextCh2 || obj == m_pVisualCh1 
+		if (!(obj == m_pTextCh1 || obj == m_pTextCh2 || obj == m_pVisualCh1
 			|| obj == m_pVisualCh2
 			|| obj == m_pNumberPosCh1
 			|| obj == m_pNumberPosCh2 || obj == m_pSliderRateCh1
@@ -768,7 +769,7 @@ void MixxxView::rebootGUI(QWidget* parent, bool bVisualsWaveform, ConfigObject<C
                 p->setup(node);
                 p->installEventFilter(m_pKeyboard);
                 p->show();
-            }            
+            }
 			else if (node.nodeName()=="Display")
             {
                 WDisplay *p = new WDisplay(this);
@@ -788,7 +789,7 @@ void MixxxView::rebootGUI(QWidget* parent, bool bVisualsWaveform, ConfigObject<C
                 bg->setPixmap(*background);
                 bg->lower();
                 m_qWidgetList.append(bg);
-             
+
 				// TODO: We leak memory at the size of the old bg pixmap (FIXME)
                 // FWI: Begin of fullscreen patch
                 // this->setFixedSize(background.width(),background.height()+((QMainWindow *)parent)->menuBar()->height());
@@ -797,7 +798,7 @@ void MixxxView::rebootGUI(QWidget* parent, bool bVisualsWaveform, ConfigObject<C
                 parent->setMinimumSize(background->width(),background->height());
                 // FWI: End of fullscreen patch
                 this->move(0,0);
-				
+
 				QColor c(255,255,255);
 				if (!WWidget::selectNode(node, "BgColor").isNull()) {
 					c.setNamedColor(WWidget::selectNodeQString(node, "BgColor"));
@@ -808,7 +809,7 @@ void MixxxView::rebootGUI(QWidget* parent, bool bVisualsWaveform, ConfigObject<C
                 parent->setBackgroundRole(QPalette::Window);
                 this->setBackgroundRole(QPalette::Window);
                 parent->setPalette(palette);
-                
+
             }
             else if (node.nodeName()=="SliderComposed")
             {
@@ -888,7 +889,7 @@ void MixxxView::rebootGUI(QWidget* parent, bool bVisualsWaveform, ConfigObject<C
 					p = new QLabel(this);
 					m_qWidgetList.append(p);
 					p->show();
-				}	
+				}
 
                 // Set position
                 QString pos = WWidget::selectNodeQString(node, "Pos");
@@ -907,7 +908,7 @@ void MixxxView::rebootGUI(QWidget* parent, bool bVisualsWaveform, ConfigObject<C
 				if (!WWidget::selectNode(node, "BgColor").isNull()) {
                     bgc.setNamedColor(WWidget::selectNodeQString(node, "BgColor"));
                 }
-				//p->setPaletteBackgroundColor(WSkinColor::getCorrectColor(bgc)); 
+				//p->setPaletteBackgroundColor(WSkinColor::getCorrectColor(bgc));
                 QPalette palette;
                 palette.setBrush(p->backgroundRole(), WSkinColor::getCorrectColor(bgc));
                 //p->setPalette(palette);
@@ -931,7 +932,7 @@ void MixxxView::rebootGUI(QWidget* parent, bool bVisualsWaveform, ConfigObject<C
             else if (node.nodeName()=="ComboBox")
 			{
 				//m_pComboBox->setup(node);
-				
+
 				 // Set position
                 QString pos = WWidget::selectNodeQString(node, "Pos");
                 int x = pos.left(pos.find(",")).toInt();
@@ -954,7 +955,7 @@ void MixxxView::rebootGUI(QWidget* parent, bool bVisualsWaveform, ConfigObject<C
 
 				//m_pLineEditSearch->setText(" ");
 				//QString temp = m_pLineEditSearch->text();
-				
+
 				// Size
                 QString size = WWidget::selectNodeQString(node, "Size");
                 x = size.left(size.find(",")).toInt();

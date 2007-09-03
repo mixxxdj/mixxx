@@ -1,3 +1,4 @@
+/* -*- mode:C++; indent-tabs-mode:t; tab-width:8; c-basic-offset:4; -*- */
 //
 // C++ Implementation: trackplaylist
 //
@@ -69,15 +70,15 @@ void TrackPlaylist::setTrack(Track *pTrack)
 
 void TrackPlaylist::writeXML(QDomDocument &doc, QDomElement &header)
 {
-	XmlParse::addElement(doc, header, "Name", m_qName);
-	QDomElement root = doc.createElement("List");
-		
+    XmlParse::addElement(doc, header, "Name", m_qName);
+    QDomElement root = doc.createElement("List");
+
     for(int i = 0; i < m_qList.size(); i++)
     {
         XmlParse::addElement(doc, root, "Id", QString("%1").arg(m_qList.at(i)->getId()));
     }
     header.appendChild(root);
-	
+
 }
 
 
@@ -131,7 +132,7 @@ void TrackPlaylist::deactivate()
 {
     if (!m_pTable)
         //return;
-        
+
     //disconnect(m_pTable, SIGNAL(dropped(QDropEvent *)), this, SLOT(slotDrop(QDropEvent *)));
     if (m_pTable)
     {
@@ -206,34 +207,35 @@ void TrackPlaylist::dumpInfo()
         TrackInfoObject *tmpTrack = m_qList.at(i);
 
         qDebug() << "[" << tmpTrack->getId() << "] " << tmpTrack->getTitle();
-    }    
+    }
 
     qDebug() << "*** End Playlist Dump ***";
-    
+
 }
 
 void TrackPlaylist::addPath(QString qPath)
 {
-	// Is this a file or directory?
-	bool bexists = false;
-	TrackCollection *tempCollection = getCollection();
+    // Is this a file or directory?
+    bool bexists = false;
+    TrackCollection *tempCollection = getCollection();
     QDir dir(qPath);
 
     if (!dir.exists())
+    {
+	for(int i = 1; i < tempCollection->getSize(); i++)
 	{
-		for(int i = 1; i < tempCollection->getSize(); i++)
+	    if (tempCollection->getTrack(i))
+		if(tempCollection->getTrack(i)->getLocation() == qPath)
 		{
-			if(tempCollection->getTrack(i)->getLocation() == qPath)
-			{
-				bexists = true;
-				break;
-			}
+		    bexists = true;
+		    break;
 		}
-		if(bexists == false)
-		{
-			addTrack(qPath);
-		}
-	 }
+	}
+	if(bexists == false)
+	{
+	    addTrack(qPath);
+	}
+    }
     else
      {
           dir.setFilter(QDir::Dirs);
@@ -241,7 +243,7 @@ void TrackPlaylist::addPath(QString qPath)
           // Check if the dir is empty
           if (dir.entryInfoList().isEmpty())
               return;
-		  
+
 		  QListIterator<QFileInfo> dir_it(dir.entryInfoList());
 		  QFileInfo d;
           while (dir_it.hasNext())
@@ -249,7 +251,7 @@ void TrackPlaylist::addPath(QString qPath)
 			  d = dir_it.next();
               if (!d.filePath().endsWith(".") && !d.filePath().endsWith(".."))
                   addPath(d.filePath());
-          } 
+          }
 
         // And then add all the files
 
@@ -264,11 +266,12 @@ void TrackPlaylist::addPath(QString qPath)
 			  for(int i = 1; i < getCollection()->getSize(); ++i)
 			  {
 				  /*qDebug("Checking: %s",tempCollection->getTrack(i)->getFilename());*/
+			      if (tempCollection->getTrack(i))
 				  if(tempCollection->getTrack(i)->getFilename() == fi.fileName())
 				  {
-					  bexists = true;
-					  break;
-				  }				  
+				      bexists = true;
+				      break;
+				  }
 			  }
 			  /*if(bexists==true)
 				  qDebug("track exists!");*/
@@ -277,7 +280,7 @@ void TrackPlaylist::addPath(QString qPath)
 				  /*qDebug("all tracks searched, file does not exist, adding...");*/
 				  addTrack(fi.filePath());
 			  }
-			  
+
           }
      }
 }
@@ -304,7 +307,7 @@ QString TrackPlaylist::getName()
 
 TrackInfoObject *TrackPlaylist::getFirstTrack()
 {
-    return m_qList.first();    
+    return m_qList.first();
 }
 
 TrackCollection *TrackPlaylist::getCollection()
@@ -317,10 +320,10 @@ int TrackPlaylist::getIndexOf(int id)
     for(int i = 0; i < m_qList.count(); ++i)
     {
         TrackInfoObject *tmpTrack = m_qList.at(i);
-    
+
         if(tmpTrack->getId() == id)
-            return i;       
-    } 
+            return i;
+    }
 }
 
 TrackInfoObject *TrackPlaylist::getTrackAt(int index)
@@ -335,7 +338,7 @@ TrackInfoObject *TrackPlaylist::getTrackAt(int index)
 }
 int TrackPlaylist::getSongNum()
 {
-	
+
 	return m_qList.count();
 }
 
@@ -428,67 +431,67 @@ void TrackPlaylist::sortByComment(bool ascending)
     }
 }
 
-bool ScoreLesser(const TrackInfoObject *tio1, const TrackInfoObject *tio2) 
+bool ScoreLesser(const TrackInfoObject *tio1, const TrackInfoObject *tio2)
 {
     return tio1->getScore() < tio2->getScore();
 }
-bool TitleLesser(const TrackInfoObject *tio1, const TrackInfoObject *tio2) 
+bool TitleLesser(const TrackInfoObject *tio1, const TrackInfoObject *tio2)
 {
     return tio1->getTitle() < tio2->getTitle();
 }
-bool ArtistLesser(const TrackInfoObject *tio1, const TrackInfoObject *tio2) 
+bool ArtistLesser(const TrackInfoObject *tio1, const TrackInfoObject *tio2)
 {
     return tio1->getArtist() < tio2->getArtist();
 }
-bool TypeLesser(const TrackInfoObject *tio1, const TrackInfoObject *tio2) 
+bool TypeLesser(const TrackInfoObject *tio1, const TrackInfoObject *tio2)
 {
     return tio1->getType() < tio2->getType();
 }
-bool DurationLesser(const TrackInfoObject *tio1, const TrackInfoObject *tio2) 
+bool DurationLesser(const TrackInfoObject *tio1, const TrackInfoObject *tio2)
 {
     return tio1->getDurationStr() < tio2->getDurationStr();
 }
-bool BitrateLesser(const TrackInfoObject *tio1, const TrackInfoObject *tio2) 
+bool BitrateLesser(const TrackInfoObject *tio1, const TrackInfoObject *tio2)
 {
     return tio1->getBitrate() < tio2->getBitrate();
 }
-bool BpmLesser(const TrackInfoObject *tio1, const TrackInfoObject *tio2) 
+bool BpmLesser(const TrackInfoObject *tio1, const TrackInfoObject *tio2)
 {
     return tio1->getBpm() < tio2->getBpm();
 }
-bool CommentLesser(const TrackInfoObject *tio1, const TrackInfoObject *tio2) 
+bool CommentLesser(const TrackInfoObject *tio1, const TrackInfoObject *tio2)
 {
     return tio1->getComment() < tio2->getComment();
 }
-bool ScoreGreater(const TrackInfoObject *tio1, const TrackInfoObject *tio2) 
+bool ScoreGreater(const TrackInfoObject *tio1, const TrackInfoObject *tio2)
 {
     return tio1->getScore() > tio2->getScore();
 }
-bool TitleGreater(const TrackInfoObject *tio1, const TrackInfoObject *tio2) 
+bool TitleGreater(const TrackInfoObject *tio1, const TrackInfoObject *tio2)
 {
     return tio1->getTitle() > tio2->getTitle();
 }
-bool ArtistGreater(const TrackInfoObject *tio1, const TrackInfoObject *tio2) 
+bool ArtistGreater(const TrackInfoObject *tio1, const TrackInfoObject *tio2)
 {
     return tio1->getArtist() > tio2->getArtist();
 }
-bool TypeGreater(const TrackInfoObject *tio1, const TrackInfoObject *tio2) 
+bool TypeGreater(const TrackInfoObject *tio1, const TrackInfoObject *tio2)
 {
     return tio1->getType() > tio2->getType();
 }
-bool DurationGreater(const TrackInfoObject *tio1, const TrackInfoObject *tio2) 
+bool DurationGreater(const TrackInfoObject *tio1, const TrackInfoObject *tio2)
 {
     return tio1->getDurationStr() > tio2->getDurationStr();
 }
-bool BitrateGreater(const TrackInfoObject *tio1, const TrackInfoObject *tio2) 
+bool BitrateGreater(const TrackInfoObject *tio1, const TrackInfoObject *tio2)
 {
     return tio1->getBitrate() > tio2->getBitrate();
 }
-bool BpmGreater(const TrackInfoObject *tio1, const TrackInfoObject *tio2) 
+bool BpmGreater(const TrackInfoObject *tio1, const TrackInfoObject *tio2)
 {
     return tio1->getBpm() > tio2->getBpm();
 }
-bool CommentGreater(const TrackInfoObject *tio1, const TrackInfoObject *tio2) 
+bool CommentGreater(const TrackInfoObject *tio1, const TrackInfoObject *tio2)
 {
     return tio1->getComment() > tio2->getComment();
 }

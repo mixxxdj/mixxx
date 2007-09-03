@@ -42,7 +42,7 @@
 #include "wavesummary.h"
 #include "bpmdetector.h"
 #include "woverview.h"
-#include <q3progressdialog.h> 
+#include <q3progressdialog.h>
 
 Track::Track(QString location, MixxxView *pView, EngineBuffer *pBuffer1, EngineBuffer *pBuffer2, WaveSummary *pWaveSummary, BpmDetector *pBpmDetector, QString musiclocation)
 {
@@ -55,13 +55,13 @@ Track::Track(QString location, MixxxView *pView, EngineBuffer *pBuffer1, EngineB
     m_pTrackPlayer2 = 0;
     m_pWaveSummary = pWaveSummary;
     m_pBpmDetector = pBpmDetector;
-	
+
 	musicDir = musiclocation;
-	
+
     m_pTrackCollection = new TrackCollection(m_pBpmDetector);
     m_pTrackImporter = new TrackImporter(m_pView,m_pTrackCollection);
-	m_pLibraryModel = new WTrackTableModel(m_pView->m_pTrackTableView);
-	m_pPlayQueueModel = new WTrackTableModel(m_pView->m_pTrackTableView);
+    m_pLibraryModel = new WTrackTableModel(m_pView->m_pTrackTableView);
+    m_pPlayQueueModel = new WTrackTableModel(m_pView->m_pTrackTableView);
 
     // Read the XML file
 	readXML(location);
@@ -71,12 +71,12 @@ Track::Track(QString location, MixxxView *pView, EngineBuffer *pBuffer1, EngineB
 	{
 		for(int i = m_qPlaylists.count(); i<2; ++i)
 		{
-			m_qPlaylists.append(new TrackPlaylist(m_pTrackCollection,(QString("Default %1").arg(i))));	
+			m_qPlaylists.append(new TrackPlaylist(m_pTrackCollection,(QString("Default %1").arg(i))));
 		}
 		m_qPlaylists.at(0)->addPath(musicDir);
 	}
-	
-	
+
+
     // Update tree view
     //updatePlaylistViews();
 
@@ -92,11 +92,11 @@ Track::Track(QString location, MixxxView *pView, EngineBuffer *pBuffer1, EngineB
         m_pView->m_pTrackTableView->setSearchSource(m_pLibraryModel);
     	m_pView->m_pTrackTableView->resizeColumnsToContents();
     	m_pView->m_pTrackTableView->setTrack(this);
-        
+
         // Connect mouse events from the tree view
         //connect(m_pView->m_pTreeView, SIGNAL(activatePlaylist(QString)), this, SLOT(slotActivatePlaylist(QString)));
         //connect(this, SIGNAL(activePlaylist(TrackPlaylist *)), m_pView->m_pTreeView, SLOT(slotHighlightPlaylist(TrackPlaylist *)));
-        
+
     	// Connect ComboBox events to WTrackTable
     	connect(m_pView->m_pComboBox, SIGNAL(activated(int)), this, SLOT(slotActivatePlaylist(int)));
 
@@ -106,7 +106,7 @@ Track::Track(QString location, MixxxView *pView, EngineBuffer *pBuffer1, EngineB
     	// Connect drop events to table
         //connect(m_pView->m_pTrackTable, SIGNAL(dropped(QDropEvent *)), this, SLOT(slotDrop(QDropEvent *)));
 	}
-	
+
 
     // Get ControlObject for determining end of track mode, and set default value to STOP.
     m_pEndOfTrackModeCh1 = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey("[Channel1]","TrackEndMode")));
@@ -125,7 +125,7 @@ Track::Track(QString location, MixxxView *pView, EngineBuffer *pBuffer1, EngineB
     // Play position for each player. Used to determine which track to load next
     m_pPlayPositionCh1 = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey("[Channel1]","playposition")));
     m_pPlayPositionCh2 = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey("[Channel2]","playposition")));
-    
+
     // Make controls for next and previous track
     m_pNextTrackCh1 = new ControlObjectThreadMain(new ControlObject(ConfigKey("[Channel1]","NextTrack")));
     m_pPrevTrackCh1 = new ControlObjectThreadMain(new ControlObject(ConfigKey("[Channel1]","PrevTrack")));
@@ -136,7 +136,7 @@ Track::Track(QString location, MixxxView *pView, EngineBuffer *pBuffer1, EngineB
     connect(m_pNextTrackCh2, SIGNAL(valueChanged(double)), this, SLOT(slotNextTrackPlayer2(double)));
     connect(m_pPrevTrackCh2, SIGNAL(valueChanged(double)), this, SLOT(slotPrevTrackPlayer2(double)));
 
-    TrackPlaylist::setTrack(this); 
+    TrackPlaylist::setTrack(this);
 }
 
 Track::~Track()
@@ -177,9 +177,9 @@ void Track::readXML(QString location)
     // Initialize track collection
     QDomNode node = XmlParse::selectNode(elementRoot, "TrackList");
     m_pTrackCollection->readXML(node);
-	
+
 	//qDebug("Break");
-	
+
     // Get all the Playlists written in the xml file:
     node = XmlParse::selectNode(elementRoot, "Playlists").firstChild();
     while (!node.isNull())
@@ -189,8 +189,10 @@ void Track::readXML(QString location)
 
         node = node.nextSibling();
     }
-	if(m_qPlaylists.count() >= 2)
-		m_qPlaylists.at(0)->addPath(musicDir);
+    //CTAF TODO: TEMPORARY REMOVED, NEED TO BE DONE IN A THREAD
+    //if(m_qPlaylists.count() >= 2)
+    //     m_qPlaylists.at(0)->addPath(musicDir);
+    //ECTAF
 }
 
 void Track::writeXML(QString location)
@@ -299,8 +301,11 @@ void Track::slotDrop(QDropEvent *e)
     slotActivatePlaylist(name);
 }
 
+
+/* CTAF: I dont think this function is used actually */
 void Track::slotActivatePlaylist(QString name)
 {
+    qDebug("playlist change\n");
     // Get pointer to requested playlist
     TrackPlaylist *pNewlist = getPlaylist(name);
 
@@ -309,17 +314,18 @@ void Track::slotActivatePlaylist(QString name)
         // Deactivate current playlist
         //if (m_pActivePlaylist)
             //m_pActivePlaylist->deactivate();
-
         // Activate new playlist
         m_pActivePlaylist = pNewlist;
-		m_pLibraryModel->setTrackPlaylist(m_pActivePlaylist);
+        m_pLibraryModel->setTrackPlaylist(m_pActivePlaylist);
         //m_pActivePlaylist->activate(m_pView->m_pTrackTable);
         emit(activePlaylist(pNewlist));
     }
 }
+
+
 void Track::slotActivatePlaylist(int index)
 {
-	switch(index)
+        switch(index)
 	{
 	case 0:
 		m_pView->m_pTrackTableView->reset();
@@ -332,11 +338,16 @@ void Track::slotActivatePlaylist(int index)
 		m_pView->m_pTrackTableView->setSearchSource(m_pPlayQueueModel);
 		m_pView->m_pTrackTableView->resizeColumnsToContents();
 		m_pView->m_pTrackTableView->setTrack(this);
-		break;	
-	}
+		break;
+        case 2:
+            m_pView->m_pTrackTableView->reset();
+            m_pView->m_pTrackTableView->setDirModel();
+            m_pView->m_pTrackTableView->resizeColumnsToContents();
+            m_pView->m_pTrackTableView->setTrack(this);
+        }
 	//if (m_pActivePlaylist)
             //m_pActivePlaylist->deactivate();
-	
+
 	// Insert playlist according to ComboBox index
     m_pActivePlaylist = m_qPlaylists.at(index);
     //m_pActivePlaylist->activate(m_pView->m_pTrackTable);
@@ -455,13 +466,13 @@ void Track::slotLoadPlayer1(TrackInfoObject *pTrackInfoObject, bool bStartFromEn
     // Set control for beat start position for use in EngineTemporal and
     // VisualTemporalBuffer. HACK.
     ControlObject *p = ControlObject::getControl(ConfigKey("[Channel1]","temporalBeatFirst"));
-    if (p) 
+    if (p)
         p->queueFromThread(m_pTrackPlayer1->getBeatFirst());
-    
+
     // Set Engine file BPM and duration ControlObjects
     m_pTrackPlayer1->setBpmControlObject(ControlObject::getControl(ConfigKey("[Channel1]","file_bpm")));
     m_pTrackPlayer1->setDurationControlObject(ControlObject::getControl(ConfigKey("[Channel1]","duration")));
-    
+
     // Set duration in playpos widget
 //    if (m_pView->m_pNumberPosCh1)
 //        m_pView->m_pNumberPosCh1->setDuration(m_pTrackPlayer1->getDuration());
@@ -492,7 +503,7 @@ void Track::slotLoadPlayer2(TrackInfoObject *pTrackInfoObject, bool bStartFromEn
     m_pBuffer2->getReader()->requestNewTrack(m_pTrackPlayer2, bStartFromEndPos);
 
     // Detect BPM if required
-    if (m_pTrackPlayer2->getBpmConfirm()== false || m_pTrackPlayer2->getBpm() == 0.)       
+    if (m_pTrackPlayer2->getBpmConfirm()== false || m_pTrackPlayer2->getBpm() == 0.)
          m_pTrackPlayer2->sendToBpmQueue();
 
     // Generate waveform summary
@@ -506,12 +517,12 @@ void Track::slotLoadPlayer2(TrackInfoObject *pTrackInfoObject, bool bStartFromEn
     // Set control for beat start position for use in EngineTemporal and
     // VisualTemporalBuffer. HACK.
     ControlObject *p = ControlObject::getControl(ConfigKey("[Channel2]","temporalBeatFirst"));
-    if (p) 
+    if (p)
         p->queueFromThread(m_pTrackPlayer2->getBeatFirst());
-    
+
     // Set Engine file BPM ControlObject
-    m_pTrackPlayer2->setBpmControlObject(ControlObject::getControl(ConfigKey("[Channel2]","file_bpm")));    
-    
+    m_pTrackPlayer2->setBpmControlObject(ControlObject::getControl(ConfigKey("[Channel2]","file_bpm")));
+
     // Set duration in playpos widget
 //    if (m_pView->m_pNumberPosCh2)
 //        m_pView->m_pNumberPosCh2->setDuration(m_pTrackPlayer2->getDuration());
@@ -545,10 +556,10 @@ TrackPlaylist *Track::getActivePlaylist()
 void Track::slotEndOfTrackPlayer1(double val)
 {
 //    qDebug("end of track %f",val);
-    
+
     if (val==0.)
-        return; 
-        
+        return;
+
     switch ((int)m_pEndOfTrackModeCh1->get())
     {
     case TRACK_END_MODE_NEXT:
@@ -556,7 +567,7 @@ void Track::slotEndOfTrackPlayer1(double val)
         {
             TrackInfoObject *pTrack;
             bool bStartFromEndPos = false;
-            
+
             if (m_pPlayPositionCh1->get()>0.5)
                 pTrack = m_pTrackPlayer1->getNext(m_pActivePlaylist);
             else
@@ -567,7 +578,7 @@ void Track::slotEndOfTrackPlayer1(double val)
 
             if (bStartFromEndPos)
                 qDebug("start from end");
-                        
+
             if (pTrack)
                 slotLoadPlayer1(pTrack, bStartFromEndPos);
             else
@@ -584,7 +595,7 @@ void Track::slotEndOfTrackPlayer1(double val)
 void Track::slotEndOfTrackPlayer2(double val)
 {
     if (val==0.)
-        return; 
+        return;
 
     switch ((int)m_pEndOfTrackModeCh2->get())
     {
@@ -593,7 +604,7 @@ void Track::slotEndOfTrackPlayer2(double val)
         {
             TrackInfoObject *pTrack;
             bool bStartFromEndPos = false;
-            
+
             if (m_pPlayPositionCh2->get()>0.5)
                 pTrack = m_pTrackPlayer2->getNext(m_pActivePlaylist);
             else
@@ -601,11 +612,11 @@ void Track::slotEndOfTrackPlayer2(double val)
                 pTrack = m_pTrackPlayer2->getPrev(m_pActivePlaylist);
                 bStartFromEndPos = true;
             }
-                
+
             if (pTrack)
                 slotLoadPlayer2(pTrack, bStartFromEndPos);
             else
-            {    
+            {
 //                 m_pPlayButtonCh2->slotSet(0.);
                 m_pEndOfTrackCh2->slotSet(0.);
             }

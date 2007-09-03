@@ -37,9 +37,9 @@ DlgPrefBPM::DlgPrefBPM(QWidget *parent, ConfigObject<ConfigValue> *_config) : QW
     setupUi(this);
 
     // Connection
-	connect(chkDetectOnImport,		SIGNAL(stateChanged(int)), this, SLOT(slotSetBPMDetectOnImport()));
-	connect(chkWriteID3,			SIGNAL(stateChanged(int)), this, SLOT(slotSetWriteID3Tag()));
-    connect(chkAnalyzeEntireSong,   SIGNAL(stateChanged(int)), this, SLOT(slotSetAnalyzeMode()));
+    connect(chkDetectOnImport,	    SIGNAL(stateChanged(int)), this, SLOT(slotSetBPMDetectOnImport(int)));
+    connect(chkWriteID3,	    SIGNAL(stateChanged(int)), this, SLOT(slotSetWriteID3Tag(int)));
+    connect(chkAnalyzeEntireSong,   SIGNAL(stateChanged(int)), this, SLOT(slotSetAnalyzeMode(int)));
     connect(spinBoxBPMRangeStart,   SIGNAL(valueChanged(int)), this, SLOT(slotSetBPMRangeStart(int)));
     connect(spinBoxBPMRangeEnd,     SIGNAL(valueChanged(int)), this, SLOT(slotSetBPMRangeEnd(int)));
 
@@ -87,7 +87,7 @@ DlgPrefBPM::~DlgPrefBPM()
 {
 }
 
-void DlgPrefBPM::slotSetBPMDetectOnImport()
+void DlgPrefBPM::slotSetBPMDetectOnImport(int)
 {
 	 if (chkDetectOnImport->isChecked())
         config->set(ConfigKey("[BPM]","DetectBPMOnImport"), ConfigValue(1));
@@ -95,7 +95,7 @@ void DlgPrefBPM::slotSetBPMDetectOnImport()
         config->set(ConfigKey("[BPM]","DetectBPMOnImport"), ConfigValue(0));
 }
 
-void DlgPrefBPM::slotSetWriteID3Tag()
+void DlgPrefBPM::slotSetWriteID3Tag(int)
 {
 	 if (chkWriteID3->isChecked())
         config->set(ConfigKey("[BPM]","WriteID3Tag"), ConfigValue(1));
@@ -103,7 +103,7 @@ void DlgPrefBPM::slotSetWriteID3Tag()
         config->set(ConfigKey("[BPM]","WriteID3Tag"), ConfigValue(0));
 }
 
-void DlgPrefBPM::slotSetAnalyzeMode()
+void DlgPrefBPM::slotSetAnalyzeMode(int)
 {
     if (chkAnalyzeEntireSong->isChecked())
         config->set(ConfigKey("[BPM]","AnalyzeEntireSong"), ConfigValue(1));
