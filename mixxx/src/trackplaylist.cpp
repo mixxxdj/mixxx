@@ -78,7 +78,7 @@ void TrackPlaylist::writeXML(QDomDocument &doc, QDomElement &header)
 		while (it)
 		{
 			XmlParse::addElement(doc, root, "Id", QString("%1").arg(it->getId()));
-			it = m_qList.next();
+			it++;
 		}
 		header.appendChild(root);
 	
@@ -88,7 +88,7 @@ void TrackPlaylist::writeXML(QDomDocument &doc, QDomElement &header)
 void TrackPlaylist::addTrack(TrackInfoObject *pTrack)
 {
     // Currently a track can only appear once in a playlist
-    if (m_qList.findRef(pTrack)!=-1)
+    if (m_qList.indexOf(pTrack)!=-1)
         return;
 
     m_qList.append(pTrack);
@@ -298,7 +298,7 @@ void TrackPlaylist::updateScores()
     while (it)
     {
         it->updateScore();
-        it = m_qList.next();
+        it++;
     }
 }
 
@@ -330,10 +330,170 @@ int TrackPlaylist::getIndexOf(int id)
 
 TrackInfoObject *TrackPlaylist::getTrackAt(int index)
 {
+    if(index < 0)
+        return NULL;
+
+    if(index >= m_qList.size())
+        return NULL;
+
 	return m_qList.at(index);
 }
 int TrackPlaylist::getSongNum()
 {
 	
 	return m_qList.count();
+}
+
+void TrackPlaylist::sortByScore(bool ascending)
+{
+    if(ascending)
+    {
+        qStableSort(m_qList.begin(), m_qList.end(), ScoreLesser);
+    }
+    else
+    {
+        qStableSort(m_qList.begin(), m_qList.end(), ScoreGreater);
+    }
+}
+void TrackPlaylist::sortByTitle(bool ascending)
+{
+    if(ascending)
+    {
+        qStableSort(m_qList.begin(), m_qList.end(), TitleLesser);
+    }
+    else
+    {
+        qStableSort(m_qList.begin(), m_qList.end(), TitleGreater);
+    }
+}
+void TrackPlaylist::sortByArtist(bool ascending)
+{
+    if(ascending)
+    {
+        qStableSort(m_qList.begin(), m_qList.end(), ArtistLesser);
+    }
+    else
+    {
+        qStableSort(m_qList.begin(), m_qList.end(), ArtistGreater);
+    }
+}
+void TrackPlaylist::sortByType(bool ascending)
+{
+    if(ascending)
+    {
+        qStableSort(m_qList.begin(), m_qList.end(), TypeLesser);
+    }
+    else
+    {
+        qStableSort(m_qList.begin(), m_qList.end(), TypeGreater);
+    }
+}
+void TrackPlaylist::sortByDuration(bool ascending)
+{
+    if(ascending)
+    {
+        qStableSort(m_qList.begin(), m_qList.end(), DurationLesser);
+    }
+    else
+    {
+        qStableSort(m_qList.begin(), m_qList.end(), DurationGreater);
+    }
+}
+void TrackPlaylist::sortByBitrate(bool ascending)
+{
+    if(ascending)
+    {
+        qStableSort(m_qList.begin(), m_qList.end(), BitrateLesser);
+    }
+    else
+    {
+        qStableSort(m_qList.begin(), m_qList.end(), BitrateGreater);
+    }
+}
+void TrackPlaylist::sortByBpm(bool ascending)
+{
+    if(ascending)
+    {
+        qStableSort(m_qList.begin(), m_qList.end(), BpmLesser);
+    }
+    else
+    {
+        qStableSort(m_qList.begin(), m_qList.end(), BpmGreater);
+    }
+}
+void TrackPlaylist::sortByComment(bool ascending)
+{
+    if(ascending)
+    {
+        qStableSort(m_qList.begin(), m_qList.end(), CommentLesser);
+    }
+    else
+    {
+        qStableSort(m_qList.begin(), m_qList.end(), CommentGreater);
+    }
+}
+
+bool ScoreLesser(const TrackInfoObject *tio1, const TrackInfoObject *tio2) 
+{
+    return tio1->getScore() < tio2->getScore();
+}
+bool TitleLesser(const TrackInfoObject *tio1, const TrackInfoObject *tio2) 
+{
+    return tio1->getTitle() < tio2->getTitle();
+}
+bool ArtistLesser(const TrackInfoObject *tio1, const TrackInfoObject *tio2) 
+{
+    return tio1->getArtist() < tio2->getArtist();
+}
+bool TypeLesser(const TrackInfoObject *tio1, const TrackInfoObject *tio2) 
+{
+    return tio1->getType() < tio2->getType();
+}
+bool DurationLesser(const TrackInfoObject *tio1, const TrackInfoObject *tio2) 
+{
+    return tio1->getDuration() < tio2->getDuration();
+}
+bool BitrateLesser(const TrackInfoObject *tio1, const TrackInfoObject *tio2) 
+{
+    return tio1->getBitrate() < tio2->getBitrate();
+}
+bool BpmLesser(const TrackInfoObject *tio1, const TrackInfoObject *tio2) 
+{
+    return tio1->getBpm() < tio2->getBpm();
+}
+bool CommentLesser(const TrackInfoObject *tio1, const TrackInfoObject *tio2) 
+{
+    return tio1->getComment() < tio2->getComment();
+}
+bool ScoreGreater(const TrackInfoObject *tio1, const TrackInfoObject *tio2) 
+{
+    return tio1->getScore() > tio2->getScore();
+}
+bool TitleGreater(const TrackInfoObject *tio1, const TrackInfoObject *tio2) 
+{
+    return tio1->getTitle() > tio2->getTitle();
+}
+bool ArtistGreater(const TrackInfoObject *tio1, const TrackInfoObject *tio2) 
+{
+    return tio1->getArtist() > tio2->getArtist();
+}
+bool TypeGreater(const TrackInfoObject *tio1, const TrackInfoObject *tio2) 
+{
+    return tio1->getType() > tio2->getType();
+}
+bool DurationGreater(const TrackInfoObject *tio1, const TrackInfoObject *tio2) 
+{
+    return tio1->getDuration() > tio2->getDuration();
+}
+bool BitrateGreater(const TrackInfoObject *tio1, const TrackInfoObject *tio2) 
+{
+    return tio1->getBitrate() > tio2->getBitrate();
+}
+bool BpmGreater(const TrackInfoObject *tio1, const TrackInfoObject *tio2) 
+{
+    return tio1->getBpm() > tio2->getBpm();
+}
+bool CommentGreater(const TrackInfoObject *tio1, const TrackInfoObject *tio2) 
+{
+    return tio1->getComment() > tio2->getComment();
 }

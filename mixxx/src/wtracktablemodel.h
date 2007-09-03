@@ -20,7 +20,8 @@ public:
 	void setForegroundColor(QColor fgColor);
 	void setRowColor(QColor evenColor, QColor unevenColor);
 	void setBpmColor(QColor confirmColor, QColor noConfirmColor);
-	int rowCount(const QModelIndex &parent = QModelIndex()) const;
+   	int rowCount(const QModelIndex &parent = QModelIndex()) const;
+    
 	bool removeRows(int row, int count, const QModelIndex & parent = QModelIndex());
 	TrackPlaylist *m_pTrackPlaylist;
 	TrackCollection *m_pTrackCollection;

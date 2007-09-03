@@ -180,7 +180,6 @@ void DlgBpmTap::slotNext()
     
         if(track)
         {
-            qDebug() << m_CurrentTrack->getTitle();
             m_CurrentTrack = track;
             loadTrackInfo();
         }
@@ -197,7 +196,6 @@ void DlgBpmTap::slotPrev()
         
         if(track)
           {
-            qDebug() << m_CurrentTrack->getTitle();
             m_CurrentTrack = track;
             loadTrackInfo();
 
@@ -223,19 +221,16 @@ void DlgBpmTap::slotBpmChanged(const QString & bpm)
 void DlgBpmTap::slotTitleChanged(const QString & title)
 {
     m_CurrentTrack->setTitle(title);
-    qDebug() << "Title Change!";
 }
 
 void DlgBpmTap::slotArtistChanged(const QString & artist)
 {
     m_CurrentTrack->setArtist(artist);
-    qDebug() << "Artist Change!";
 }
 
 void DlgBpmTap::slotCommentChanged()
 {
     m_CurrentTrack->setComment(txtComment->toPlainText());
-    qDebug() << "Comment Change!";
 }
 
 void DlgBpmTap::slotUpdate()

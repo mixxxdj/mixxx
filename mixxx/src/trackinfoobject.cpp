@@ -150,7 +150,7 @@ TrackInfoObject::~TrackInfoObject()
     delete m_fBpmFactors;
 }
 
-bool TrackInfoObject::isValid()
+bool TrackInfoObject::isValid() const
 {
     return m_bIsValid;
 }
@@ -364,7 +364,7 @@ void TrackInfoObject::parseFilename()
     m_qMutex.unlock();
 }
 
-QString TrackInfoObject::getDurationStr()
+QString TrackInfoObject::getDurationStr() const
 {
     m_qMutex.lock();
     int iDuration = m_iDuration;
@@ -399,7 +399,7 @@ QString TrackInfoObject::getDurationStr()
     }
 }
 
-QString TrackInfoObject::getLocation()
+QString TrackInfoObject::getLocation() const
 {
     m_qMutex.lock();
     QString qLocation = m_sFilepath + "/" + m_sFilename;
@@ -422,7 +422,7 @@ void TrackInfoObject::sendToBpmQueue(BpmReceiver *pBpmReceiver, int minBpm, int 
     m_BpmDetector->enqueue(this, minBpm, maxBpm, pBpmReceiver);
 }
 
-float TrackInfoObject::getBpm()
+float TrackInfoObject::getBpm() const
 {
     m_qMutex.lock();
     float fBpm = m_fBpm;
@@ -458,7 +458,7 @@ void TrackInfoObject::generateBpmFactors()
     m_qMutex.unlock();
 }
 
-void TrackInfoObject::getBpmFactors(float* f)
+void TrackInfoObject::getBpmFactors(float* f) const
 {
     m_qMutex.lock();
     if(f)
@@ -472,7 +472,7 @@ void TrackInfoObject::getBpmFactors(float* f)
     m_qMutex.unlock();
 }
 
-QString TrackInfoObject::getBpmStr()
+QString TrackInfoObject::getBpmStr() const
 {
     m_qMutex.lock();
     float fBpm = m_fBpm;
@@ -481,7 +481,7 @@ QString TrackInfoObject::getBpmStr()
     return QString("%1").arg(fBpm, 3,'f',1);
 }
 
-bool TrackInfoObject::getBpmConfirm()
+bool TrackInfoObject::getBpmConfirm()  const
 {
     m_qMutex.lock();
     bool bBpmConfirm = m_bBpmConfirm;
@@ -497,7 +497,7 @@ void TrackInfoObject::setBpmConfirm(bool confirm)
     m_qMutex.unlock();
 }
 
-QString TrackInfoObject::getInfo()
+QString TrackInfoObject::getInfo()  const
 {
     m_qMutex.lock();
     QString sInfo = m_sArtist + ", " + m_sTitle + "";
@@ -506,7 +506,7 @@ QString TrackInfoObject::getInfo()
     return sInfo;
 }
 
-int TrackInfoObject::getDuration()
+int TrackInfoObject::getDuration()  const
 {
     m_qMutex.lock();
     int iDuration = m_iDuration;
@@ -530,7 +530,7 @@ void TrackInfoObject::setDuration(int i)
     setDurationControlObject(m_pControlObjectDuration);
 }
 
-QString TrackInfoObject::getTitle()
+QString TrackInfoObject::getTitle()  const
 {
     m_qMutex.lock();
     QString sTitle = m_sTitle;
@@ -553,7 +553,7 @@ void TrackInfoObject::setTitle(QString s)
 */
 }
 
-QString TrackInfoObject::getArtist()
+QString TrackInfoObject::getArtist()  const
 {
     m_qMutex.lock();
     QString sArtist = m_sArtist;
@@ -576,7 +576,7 @@ void TrackInfoObject::setArtist(QString s)
 */
 }
 
-QString TrackInfoObject::getFilename()
+QString TrackInfoObject::getFilename()  const
 {
     m_qMutex.lock();
     QString sFilename = m_sFilename;
@@ -585,7 +585,7 @@ QString TrackInfoObject::getFilename()
     return sFilename;
 }
 
-bool TrackInfoObject::exists()
+bool TrackInfoObject::exists()  const
 {
     m_qMutex.lock();
     bool bExists = m_bExists;
@@ -594,7 +594,7 @@ bool TrackInfoObject::exists()
     return bExists;
 }
 
-int TrackInfoObject::getTimesPlayed()
+int TrackInfoObject::getTimesPlayed()  const
 {
     m_qMutex.lock();
     int iTimesPlayed = m_iTimesPlayed;
@@ -619,11 +619,13 @@ void TrackInfoObject::setFilepath(QString s)
     m_qMutex.unlock();
 }
 
-QString TrackInfoObject::getFilepath()
+QString TrackInfoObject::getFilepath() const
 {
+    m_qMutex.lock();
 	return m_sFilepath;
+    m_qMutex.unlock();
 }
-QString TrackInfoObject::getComment()
+QString TrackInfoObject::getComment() const
 {
     m_qMutex.lock();
     QString sComment = m_sComment;
@@ -646,7 +648,7 @@ void TrackInfoObject::setComment(QString s)
 */
 }
 
-QString TrackInfoObject::getType()
+QString TrackInfoObject::getType() const
 {
     m_qMutex.lock();
     QString sType = m_sType;
@@ -677,7 +679,7 @@ void TrackInfoObject::setSampleRate(int iSampleRate)
     
 }
 
-int TrackInfoObject::getSampleRate()
+int TrackInfoObject::getSampleRate() const 
 {
     m_qMutex.lock();
     int iSampleRate = m_iSampleRate;
@@ -694,7 +696,7 @@ void TrackInfoObject::setChannels(int iChannels)
     
 }
 
-int TrackInfoObject::getChannels()
+int TrackInfoObject::getChannels() const
 {
     m_qMutex.lock();
     int iChannels = m_iChannels;
@@ -703,7 +705,7 @@ int TrackInfoObject::getChannels()
     return iChannels;
 }
 
-int TrackInfoObject::getLength()
+int TrackInfoObject::getLength() const
 {
     m_qMutex.lock();
     int iLength = m_iLength;
@@ -712,7 +714,7 @@ int TrackInfoObject::getLength()
     return iLength;
 }
 
-int TrackInfoObject::getBitrate()
+int TrackInfoObject::getBitrate() const
 {
     m_qMutex.lock();
     int iBitrate = m_iBitrate;
@@ -721,7 +723,7 @@ int TrackInfoObject::getBitrate()
     return iBitrate;
 }
 
-QString TrackInfoObject::getBitrateStr()
+QString TrackInfoObject::getBitrateStr() const
 {
     return QString("%1").arg(getBitrate());
 }
@@ -747,7 +749,7 @@ void TrackInfoObject::setBeatFirst(float fBeatFirstPos)
     m_qMutex.unlock();
 }
 
-float TrackInfoObject::getBeatFirst()
+float TrackInfoObject::getBeatFirst() const
 {
     m_qMutex.lock();
     float fBeatFirst = m_fBeatFirst;
@@ -756,7 +758,16 @@ float TrackInfoObject::getBeatFirst()
     return fBeatFirst;
 }
 
-QString TrackInfoObject::getScoreStr()
+int TrackInfoObject::getScore() const
+{
+    m_qMutex.lock();
+    int iScore = m_iScore;
+    m_qMutex.unlock();
+
+    return iScore;
+}
+
+QString TrackInfoObject::getScoreStr() const
 {
     m_qMutex.lock();
     int iScore = m_iScore;
@@ -780,7 +791,7 @@ void TrackInfoObject::updateScore()
 */
 }
 
-int TrackInfoObject::getId()
+int TrackInfoObject::getId() const
 {
     m_qMutex.lock();
     int iId = m_iId;

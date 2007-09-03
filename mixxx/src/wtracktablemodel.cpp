@@ -34,7 +34,7 @@ int WTrackTableModel :: columnCount(const QModelIndex &parent) const
 	return 8;
 }
 QVariant WTrackTableModel :: data(const QModelIndex &index, int role) const
-{
+{   
 	TrackInfoObject *m_pTrackInfo = m_pTrackPlaylist->getTrackAt(index.row());
 
 	if (!index.isValid())
