@@ -69,18 +69,14 @@ void TrackPlaylist::setTrack(Track *pTrack)
 
 void TrackPlaylist::writeXML(QDomDocument &doc, QDomElement &header)
 {
-	TrackInfoObject *it = m_qList.first();
-	
-		XmlParse::addElement(doc, header, "Name", m_qName);
-
-		QDomElement root = doc.createElement("List");
+	XmlParse::addElement(doc, header, "Name", m_qName);
+	QDomElement root = doc.createElement("List");
 		
-		while (it)
-		{
-			XmlParse::addElement(doc, root, "Id", QString("%1").arg(it->getId()));
-			it++;
-		}
-		header.appendChild(root);
+    for(int i = 0; i < m_qList.size(); i++)
+    {
+        XmlParse::addElement(doc, root, "Id", QString("%1").arg(m_qList.at(i)->getId()));
+    }
+    header.appendChild(root);
 	
 }
 
