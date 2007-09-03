@@ -18,6 +18,7 @@
 #include "dlgprefsound.h"
 //#include "playerproxy.h"
 #include <qcombobox.h> 
+#include <QButtonGroup>
 #include <QtDebug>
 #include <qcheckbox.h>
 #include <qpushbutton.h>
@@ -56,19 +57,30 @@ DlgPrefSound::DlgPrefSound(QWidget *parent, SoundManager *_soundman,
     connect(SliderLatency,                SIGNAL(sliderReleased()),  this, SLOT(slotLatency()));
     connect(SliderLatency,                SIGNAL(valueChanged(int)), this, SLOT(slotLatency()));
 
+    //Set up a button group for the pitch behaviour options
+    QButtonGroup pitchMode;
+    pitchMode.addButton(radioButtonVinylEmu);
+    pitchMode.addButton(radioButtonPitchIndp);
+
     // Pitch-indp. time stretch disabled on mac
 #ifdef __MACX__
-    checkBoxPitchIndp->setChecked(false);
-    checkBoxPitchIndp->setEnabled(false);
+    radioButtonPitchIndp->setChecked(false);
+    radioButtonPitchIndp->setEnabled(false);
     textLabelSoundScaling->setEnabled(false);
 #endif
 
     // Set default value for scale mode check box
     int iPitchIndpTimeStretch = config->getValueString(ConfigKey("[Soundcard]","PitchIndpTimeStretch")).toInt();
     if (iPitchIndpTimeStretch)
-        checkBoxPitchIndp->setChecked(true);
+    {
+        radioButtonPitchIndp->setChecked(true);
+        radioButtonVinylEmu->setChecked(false);
+    }
     else
-        checkBoxPitchIndp->setChecked(false);
+    {
+        radioButtonPitchIndp->setChecked(false);
+        radioButtonVinylEmu->setChecked(true);
+    }
 
     // Apply changes whenever apply signal is emitted
     /*
@@ -237,7 +249,7 @@ void DlgPrefSound::slotApply()
     config->set(ConfigKey("[Soundcard]","Samplerate"), ConfigValue(ComboBoxSamplerates->currentText()));
     config->set(ConfigKey("[Soundcard]","Latency"), ConfigValue(getSliderLatencyMsec(SliderLatency->value())));
     
-    if (checkBoxPitchIndp->isChecked())
+    if (radioButtonPitchIndp->isChecked())
         config->set(ConfigKey("[Soundcard]","PitchIndpTimeStretch"), ConfigValue(1));
     else
         config->set(ConfigKey("[Soundcard]","PitchIndpTimeStretch"), ConfigValue(0));

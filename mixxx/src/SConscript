@@ -165,7 +165,7 @@ elif platform == 'win32':
 sources = Split("""enginebuffercue.cpp input.cpp mixxxmenuplaylists.cpp trackplaylistlist.cpp mixxxkeyboard.cpp configobject.cpp controlobjectthread.cpp
  controlobjectthreadwidget.cpp controlobjectthreadmain.cpp controlevent.cpp controllogpotmeter.cpp controlobject.cpp controlnull.cpp controlpotmeter.cpp
  controlpushbutton.cpp controlttrotary.cpp controlbeat.cpp dlgpreferences.cpp dlgprefsound.cpp dlgprefmidi.cpp dlgprefplaylist.cpp dlgprefcontrols.cpp
- dlgprefmixer.cpp enginebuffer.cpp enginebufferscale.cpp engineclipping.cpp enginefilterblock.cpp enginefilteriir.cpp  enginefilter.cpp engineobject.cpp
+ dlgprefmixer.cpp enginebuffer.cpp enginebufferscale.cpp enginebufferscalelinear.cpp engineclipping.cpp enginefilterblock.cpp enginefilteriir.cpp  enginefilter.cpp engineobject.cpp
  enginepregain.cpp enginevolume.cpp main.cpp midiobject.cpp midiobjectnull.cpp mixxx.cpp mixxxview.cpp 
  soundsourcemp3.cpp soundsourceoggvorbis.cpp enginechannel.cpp enginemaster.cpp wwidget.cpp wpixmapstore.cpp wlabel.cpp wnumber.cpp
  wnumberpos.cpp wnumberrate.cpp wnumberbpm.cpp wknob.cpp wdisplay.cpp wvumeter.cpp wpushbutton.cpp wslidercomposed.cpp wslider.cpp wtracktable.cpp
@@ -181,7 +181,8 @@ sources = Split("""enginebuffercue.cpp input.cpp mixxxmenuplaylists.cpp trackpla
  imginvert.cpp imgloader.cpp imgcolor.cpp wskincolor.cpp
  trackinfoobject.cpp soundsource.cpp
  midiledhandler.cpp
- sounddevice.cpp soundmanager.cpp sounddeviceportaudio.cpp""")
+ sounddevice.cpp soundmanager.cpp sounddeviceportaudio.cpp
+ enginevinylsoundemu.cpp """)
 # trackinfoobject.cpp soundsource.cpp
 
 #Crap we don't want anymore:
@@ -345,7 +346,6 @@ env.Uic4('dlgprefmididlg.ui')
 env.Uic4('dlgprefplaylistdlg.ui')
 env.Uic4('dlgprefcontrolsdlg.ui')
 env.Uic4('dlgprefmixerdlg.ui')
-env.Uic4('dlgprefrecorddlg.ui')
 env.Uic4('dlgprefbpmdlg.ui')
 env.Uic4('dlgbpmtapdlg.ui')
 env.Uic4('dlgprefvinyldlg.ui')
@@ -457,6 +457,19 @@ if int(flags_experimentalrecording):
 	print "Experimental recording... enabled"
 else:
 	print "Experimental recording... disabled"
+
+'''
+#Experimental Shoutcast
+flags_shoutcast = ARGUMENTS.get('shoutcast', 0)
+if int(flags_shoutcast):
+#TODO: check for libshout
+	env.Append(CXXFLAGS = '-D__SHOUTCAST__')
+	env.Uic4('dlgprefshoutcastdlg.ui')
+	sources += Split(""" dlgprefshoutcast.cpp engineshoutcast.cpp """ )
+	print "Shoutcast support... enabled"
+else:
+	print "Shoutcast support... disabled"
+'''
 
 #LADSPA
 #TODO: Make sure we check for ladspa.h and the library...
