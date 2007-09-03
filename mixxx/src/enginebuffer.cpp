@@ -294,7 +294,7 @@ void EngineBuffer::setPitchIndpTimeStretch(bool b)
     }
     else
     {
-        m_pScale = new EngineBufferScaleSRC(reader->getWavePtr());    
+        m_pScale = new EngineBufferScaleLinear(reader->getWavePtr());    
     }
 }
 

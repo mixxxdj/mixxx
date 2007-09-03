@@ -21,6 +21,8 @@
 #include "defs.h"
 #include <qobject.h>
 
+#define MAX_SEEK_SPEED 4.0f
+
 class ReaderExtractWave;
 
 /**
