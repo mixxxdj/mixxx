@@ -182,7 +182,7 @@ sources = Split("""enginebuffercue.cpp input.cpp mixxxmenuplaylists.cpp trackpla
  trackinfoobject.cpp soundsource.cpp
  midiledhandler.cpp
  sounddevice.cpp soundmanager.cpp sounddeviceportaudio.cpp
- enginevinylsoundemu.cpp """)
+ enginevinylsoundemu.cpp wtracktablefilter.cpp""")
 # trackinfoobject.cpp soundsource.cpp
 
 #Crap we don't want anymore:

@@ -12,7 +12,7 @@
 //needed for QTableView
 #include <QModelIndex>
 #include <QTableView>
-
+#include "wtracktablefilter.h"
 #include "proxymodel.h"
 
 class QWidget;
@@ -59,6 +59,9 @@ public:
     void setTrack(Track *pTrack);
     /**Used to filter items in table with a given search string**/
     SortFilterProxyModel *m_pSearchFilter;
+    /* filter files in browse mode */
+    WTrackTableFilter *m_pDirFilter;
+
     /**Current WTrackTableModel**/
     WTrackTableModel *m_pTable;
 

@@ -1,5 +1,6 @@
 /* -*- mode:C++; indent-tabs-mode:t; tab-width:8; c-basic-offset:4; -*- */
 #include "wtracktableview.h"
+#include "wtracktablefilter.h"
 #include "wtracktablemodel.h"
 #include "wwidget.h"
 #include "wskincolor.h"
@@ -28,15 +29,15 @@
 /* TODO
  * remove color attribute from tracktablemodel (not used, and not at their place)
  * move playlist model instance from track to here?
- *
+ * refresh the QDirModel
+ * search: create a custom proxy, filtering only the current branch in the hierarchie
  *
  */
+
 
 /*Constructor, sets up attributes for WTrackTableView*/
 WTrackTableView::WTrackTableView(QWidget *parent) : QTableView(parent)
 {
-    QStringList namefilter;
-
     m_pTable = new WTrackTableModel(this);
 
     //setup properties for table
@@ -67,15 +68,10 @@ WTrackTableView::WTrackTableView(QWidget *parent) : QTableView(parent)
 
     m_pDirModel = new QDirModel;
     m_pDirModel->setFilter(QDir::AllEntries);
-
-    namefilter += "*.mp3";
-    namefilter += "*.ogg";
-    namefilter += "*.aiff";
-    namefilter += "*.wav";
-    namefilter += "*.aif";
-    namefilter += "*.aif";
-    //    m_pDirModel->setNameFilters(namefilter);
     m_dirindex = m_pDirModel->index(QDir::currentPath());
+
+    m_pDirFilter = new WTrackTableFilter(m_dirindex);
+    m_pDirFilter->setSourceModel(m_pDirModel);
 
     bpmTapDlg = 0;
 
@@ -231,7 +227,8 @@ void WTrackTableView :: slotMouseDoubleClicked(const QModelIndex & index)
 {
     if (!m_pTable) {
 	setRootIndex(index);
-	m_dirindex = index;
+	m_dirindex = m_pDirFilter->mapToSource(index);
+	m_pDirFilter->setIndex(m_dirindex);
 	return;
     }
 
@@ -269,10 +266,8 @@ void WTrackTableView :: setSearchSource(WTrackTableModel *pSearchSourceModel)
 void WTrackTableView :: setDirModel()
 {
     m_pTable = NULL;
-    m_pSearchFilter->setSourceModel(m_pDirModel);
-    setModel(m_pDirModel);
-    setRootIndex(m_dirindex);
-
+    setModel(m_pDirFilter);
+    setRootIndex(m_pDirFilter->mapFromSource(m_dirindex));
 }
 
 
