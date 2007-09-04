@@ -168,9 +168,11 @@ void Reader::unlock()
 void Reader::newtrack()
 {
 // qDebug("newtrack, get pause lock");
-    
+    ControlObject* playButton = ControlObject::getControl(ConfigKey(enginebuffer->getGroup(), "play"));
+        
     // Set pause while loading new track
     pause->lock();
+
 
 // qDebug("newtrack, got pause lock");
 
@@ -220,12 +222,18 @@ void Reader::newtrack()
 		//Reset the play button (I'm not sure why this is necessary, but it is...
 		//If you don't believe me, uncomment it and notice that you'll have to click
 		//play twice to start playback when you load a new track.)
-		ControlObject* playButton = ControlObject::getControl(ConfigKey(enginebuffer->getGroup(), "play"));
 		playButton->queueFromThread(0.0);
     }
         
     // Not at track end anymore
     m_pTrackEnd->slotSet(0.);      
+
+    //Modified version of Kevin Schaper's patch to fix NEXT mode:
+    //(See: https://sourceforge.net/forum/message.php?msg_id=4386494  )
+    ControlObject* trackEndMode = ControlObject::getControl(ConfigKey(enginebuffer->getGroup(), "TrackEndMode")); 
+    //if a track just ended, and the track end mode is set to next, play the track that was just loaded 
+    if ( (trackEndMode->get() == TRACK_END_MODE_NEXT)) 
+    playButton->queueFromThread(1.0); 
     
     // Stop pausing process method
     pause->unlock();
