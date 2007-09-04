@@ -319,7 +319,8 @@ void VinylControlXwax::syncPitch(double pitch)
 {
 	//The dVinylPitch variable's range (from DAnalyse.h in scratchlib) is
 	//from 1.0 +- 00%
-	pitch += dDriftControl; //Apply the drift control to it, to keep the vinyl and Mixxx in sync.
+	if (!bScratchMode && !bRelativeMode) //Only apply drift control when we want to stay synced with the vinyl's position.
+	    pitch += dDriftControl; //Apply the drift control to it, to keep the vinyl and Mixxx in sync.
 	rateSlider->queueFromThread(pitch); //rateSlider has a range of -1.0 to 1.0
 	//qDebug("pitch: %f", pitch);
 }
