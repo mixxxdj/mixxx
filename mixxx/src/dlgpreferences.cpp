@@ -153,10 +153,10 @@ DlgPreferences::DlgPreferences(MixxxApp *mixxx, MixxxView *view,
 #endif
 
 #ifdef __VINYLCONTROL__
-    connect(buttonBox, SIGNAL(accepted()), wvinylcontrol,    SLOT(slotApply()));
+    connect(buttonBox, SIGNAL(accepted()), wvinylcontrol,    SLOT(slotApply())); //It's important for this to be before the
+                                                                                 //connect for wsound...
 #endif    
     connect(buttonBox, SIGNAL(accepted()), wsound,    SLOT(slotApply()));
-    //connect(buttonBox, SIGNAL(accepted()), wsound,    SLOT(slotApplyApi())); //TODO: Fix this
     connect(buttonBox, SIGNAL(accepted()), wmidi,     SLOT(slotApply()));
     connect(buttonBox, SIGNAL(accepted()), wplaylist, SLOT(slotApply()));
     connect(buttonBox, SIGNAL(accepted()), wcontrols, SLOT(slotApply()));
