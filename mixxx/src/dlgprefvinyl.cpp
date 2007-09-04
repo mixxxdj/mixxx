@@ -154,6 +154,10 @@ void DlgPrefVinyl::slotUpdate()
 	}
 */
 	// Set vinyl control types in the comboboxes
+	int combo_index = ComboBoxVinylType->findText(config->getValueString(ConfigKey("[VinylControl]","strVinylType")));
+	if (combo_index != -1)
+	    ComboBoxVinylType->setCurrentIndex(combo_index);
+	/*
 	if (config->getValueString(ConfigKey("[VinylControl]","strVinylType")) == "FinalScratch")
 		ComboBoxVinylType->setCurrentItem(0);
 	else if (config->getValueString(ConfigKey("[VinylControl]","strVinylType")) == "MixVibes DVS CD Version")
@@ -166,7 +170,7 @@ void DlgPrefVinyl::slotUpdate()
 		//Set up defaults
 		ComboBoxVinylType->setCurrentItem(0);		
 	}
-
+    */
 
 	// set lead-in time
 	LeadinTime->setText (config->getValueString(ConfigKey("[VinylControl]","LeadInTime")) );
