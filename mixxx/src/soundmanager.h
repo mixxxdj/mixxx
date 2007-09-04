@@ -24,9 +24,11 @@
 #ifdef __VINYLCONTROL__
 #include "vinylcontrolproxy.h"
 #endif
+#include <QTimer>
 
 class SoundDevice;
 class EngineMaster;
+
 
 enum AudioSource { 
     SOURCE_MASTER = 1,
@@ -76,7 +78,7 @@ class SoundManager : public QObject
         unsigned int iNumDevicesOpenedForInput;
         unsigned int iNumDevicesHaveRequestedBuffer;
         QMutex requestBufferMutex;
-        //QTimer m_controlObjSyncTimer;
+        QTimer m_controlObjSyncTimer;
 };
 
 #endif

@@ -17,7 +17,6 @@
 
 #include <QtDebug>
 #include <QtCore> 
-#include <QTimer>
 #include <portaudio.h>
 #include "soundmanager.h"
 #include "sounddevice.h"
@@ -44,7 +43,8 @@ SoundManager::SoundManager(ConfigObject<ConfigValue> *pConfig, EngineMaster *_ma
     //TODO: Find a better spot for this: 
     //Set up a timer to sync Mixxx's ControlObjects on...
     //(We set the timer to fire off 
-    //connect(m_controlObjSyncTimer, SIGNAL(timeout()), this, SLOT(sync()));
+    connect(&m_controlObjSyncTimer, SIGNAL(timeout()), this, SLOT(sync()));
+    m_controlObjSyncTimer.start(33);
     //m_controlObjSyncTimer->start(m_pConfig->getValueString(ConfigKey("[Soundcard]","Latency")).toInt());
     
     ControlObject* pControlObjectLatency  = ControlObject::getControl(ConfigKey("[Master]","latency"));
@@ -394,7 +394,7 @@ CSAMPLE* SoundManager::requestBuffer(QList<AudioSource> srcs, unsigned long iFra
     if (iNumDevicesHaveRequestedBuffer == 0)
     {        
         //First, sync control parameters with changes from GUI thread
-        sync();
+        //sync();
         
         //Process a block of samples for output. iFramesPerBuffer is the
         //number of samples for one channel, but the EngineObject
