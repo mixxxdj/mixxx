@@ -151,6 +151,10 @@ DlgPreferences::DlgPreferences(MixxxApp *mixxx, MixxxView *view,
     //connect(ComboBoxSoundApi,             SIGNAL(activated(int)),    this, SLOT(slotApplyApi()));
     connect(wsound, SIGNAL(apiUpdated()), wvinylcontrol,    SLOT(slotUpdate())); //Update the vinyl control 
 #endif
+
+#ifdef __VINYLCONTROL__
+    connect(buttonBox, SIGNAL(accepted()), wvinylcontrol,    SLOT(slotApply()));
+#endif    
     connect(buttonBox, SIGNAL(accepted()), wsound,    SLOT(slotApply()));
     //connect(buttonBox, SIGNAL(accepted()), wsound,    SLOT(slotApplyApi())); //TODO: Fix this
     connect(buttonBox, SIGNAL(accepted()), wmidi,     SLOT(slotApply()));
@@ -164,9 +168,7 @@ DlgPreferences::DlgPreferences(MixxxApp *mixxx, MixxxView *view,
 #ifdef __EXPERIMENTAL_RECORDING__
     connect(buttonBox, SIGNAL(accepted()), wrecord,    SLOT(slotApply()));
 #endif
-#ifdef __VINYLCONTROL__
-    connect(buttonBox, SIGNAL(accepted()), wvinylcontrol,    SLOT(slotApply()));
-#endif    
+
     /*
     connect(this,        SIGNAL(buttonbox.accepted()),             wsound,    SLOT(slotApply()));
     connect(this,        SIGNAL(buttonbox.accepted()),             wsound,    SLOT(slotApplyApi()));
