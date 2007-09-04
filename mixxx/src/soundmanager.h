@@ -39,9 +39,10 @@ enum AudioReceiver {
     RECEIVER_MICROPHONE = 5
 };
 
-class SoundManager
+class SoundManager : public QObject
 {
-   
+    Q_OBJECT
+    
     public:
         SoundManager(ConfigObject<ConfigValue> *pConfig, EngineMaster *_master);
         ~SoundManager();
@@ -57,7 +58,8 @@ class SoundManager
         QString getHostAPI();
         CSAMPLE* requestBuffer(QList<AudioSource> srcs, unsigned long iFramesPerBuffer);
         CSAMPLE* pushBuffer(QList<AudioReceiver> recvs, short *inputBuffer, unsigned long iFramesPerBuffer);
-void sync();
+    public slots:
+        void sync();
     private:
         EngineMaster *m_pMaster;
         ConfigObject<ConfigValue> *m_pConfig;
@@ -70,9 +72,11 @@ void sync();
 #ifdef __VINYLCONTROL__
         VinylControlProxy *m_VinylControl[2];
 #endif        
-        unsigned int iNumOpenedDevices;
+        unsigned int iNumDevicesOpenedForOutput;
+        unsigned int iNumDevicesOpenedForInput;
         unsigned int iNumDevicesHaveRequestedBuffer;
         QMutex requestBufferMutex;
+        //QTimer m_controlObjSyncTimer;
 };
 
 #endif

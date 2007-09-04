@@ -247,34 +247,38 @@ int SoundDevicePortAudio::callbackProcess(unsigned long framesPerBuffer, float *
     //qDebug() << "SoundDevicePortAudio::callbackProcess";
     int iFrameSize = m_audioSources.count()*2;
     int i = 0;
-    CSAMPLE* outputAudio = m_pSoundManager->requestBuffer(m_audioSources, framesPerBuffer); 
     
-    //Reset sample for each open channel
-    for (i=0; i < framesPerBuffer * iFrameSize; i++)
-        output[i] = 0.;    
-    
-    for (i=0; i < framesPerBuffer* iFrameSize; i += iFrameSize)
+    if (output)
     {
-        //TODO: Instead of having if statements here, just make a loop...
-        if (m_audioSources.count() == 1)
+        CSAMPLE* outputAudio = m_pSoundManager->requestBuffer(m_audioSources, framesPerBuffer); 
+        
+        //Reset sample for each open channel
+        for (i=0; i < framesPerBuffer * iFrameSize; i++)
+            output[i] = 0.;    
+        
+        for (i=0; i < framesPerBuffer* iFrameSize; i += iFrameSize)
         {
-            output[i] += outputAudio[i]/32768.;
-            output[i+1] += outputAudio[i+1]/32768.;
-        }
-        else if (m_audioSources.count() == 2)
-        {
-            output[i] += outputAudio[i]/32768.;
-            output[i+1] += outputAudio[i+1]/32768.;
-            output[i+2] += outputAudio[i+2]/32768.;
-            output[i+3] += outputAudio[i+3]/32768.;          
-        }
-        else
-        {
-            qDebug() << "Wierd number of audio sources in PA callback:" << m_audioSources.count();
-        }
+            //TODO: Instead of having if statements here, just make a loop...
+            if (m_audioSources.count() == 1)
+            {
+                output[i] += outputAudio[i]/32768.;
+                output[i+1] += outputAudio[i+1]/32768.;
+            }
+            else if (m_audioSources.count() == 2)
+            {
+                output[i] += outputAudio[i]/32768.;
+                output[i+1] += outputAudio[i+1]/32768.;
+                output[i+2] += outputAudio[i+2]/32768.;
+                output[i+3] += outputAudio[i+3]/32768.;          
+            }
+            else
+            {
+                qDebug() << "Wierd number of audio sources in PA callback:" << m_audioSources.count();
+            }
 
-        //TODO: Figure out why we use /32768's above, considering that we're dealing with floats...
-        //      (it sounds crazy if we don't though...)
+            //TODO: Figure out why we use /32768's above, considering that we're dealing with floats...
+            //      (it sounds crazy if we don't though...)
+        }
     }
     
     //Send audio from the soundcard's input off to the SoundManager...
