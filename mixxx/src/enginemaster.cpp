@@ -169,7 +169,7 @@ void EngineMaster::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBuff
     if (master2)
     {
         buffer2->process(0, m_pTemp2, iBufferSize);
-        vinylsound2->process(m_pTemp1, m_pTemp1, iBufferSize);
+        vinylsound2->process(m_pTemp2, m_pTemp2, iBufferSize);
         channel2->process(m_pTemp2, m_pTemp2, iBufferSize);
         if (flanger1->get()==0. && flanger2->get()==1.)
             flanger->process(m_pTemp2, m_pTemp2, iBufferSize);
