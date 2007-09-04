@@ -18,6 +18,7 @@
  ***************************************************************************/
 
 #include <QtDebug>
+#include <limits.h>
 #include "vinylcontrolxwax.h"
 
 
@@ -104,6 +105,7 @@ void VinylControlXwax::AnalyseSamples(short* samples, size_t size)
 {
 	lockSamples.lock();
 	timecoder_submit(&timecoder, samples, size);
+	fTimecodeStrength = samples[0] / SHRT_MAX;
 	lockSamples.unlock();
 
 	waitForNextInput.wakeAll();

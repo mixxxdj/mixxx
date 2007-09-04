@@ -36,9 +36,9 @@ VinylControlScratchlib::VinylControlScratchlib(ConfigObject<ConfigValue> *pConfi
 	//Create the "DAnalyse" object that interacts with scratchlib.
 	analyzer = new DAnalyse();
  
-	if (strVinylType == "FinalScratch")
+	if (strVinylType == MIXXX_VINYL_FINALSCRATCH)
 		analyzer->SetVinyl(DSCRATCH_VINYL_FINALSCRATCH);
-	else if (strVinylType == "MixVibes DVS CD Version")
+	else if (strVinylType == MIXXX_VINYL_MIXVIBESDVSCD)
 		analyzer->SetVinyl(DSCRATCH_VINYL_MIXVIBES);
 		
 	//Enable or disable RIAA correction
@@ -106,6 +106,12 @@ void VinylControlScratchlib::AnalyseSamples(short* samples, size_t size)
 		*ptr++;
 		*samples++;
 	}
+	
+	if (strVinylType == MIXXX_VINYL_FINALSCRATCH)
+		fTimecodeStrength = analyzer->GetTimecodesPerSecond() / 32;
+	else if (strVinylType == MIXXX_VINYL_MIXVIBESDVSCD)
+		fTimecodeStrength = analyzer->GetTimecodesPerSecond() / 32;
+	
 	lockSamples.unlock();
 
 	waitForNextInput.wakeAll();
@@ -160,10 +166,10 @@ void VinylControlScratchlib::run()
         */
 
 		//Set relative mode
-		bRelativeMode = (bool)m_pConfig->getValueString(ConfigKey("[VinylControl]","RelativeMode")).toInt();
+		//bRelativeMode = (bool)m_pConfig->getValueString(ConfigKey("[VinylControl]","RelativeMode")).toInt();
 		
 		//Set scratch mode
-		bScratchMode = (bool)m_pConfig->getValueString(ConfigKey("[VinylControl]","ScratchMode")).toInt();
+		//bScratchMode = (bool)m_pConfig->getValueString(ConfigKey("[VinylControl]","ScratchMode")).toInt();
 
 		// Analyse the input samples
 		analyzer->Analyse(this->m_samples, this->m_SamplesSize);

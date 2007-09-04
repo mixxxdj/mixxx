@@ -27,6 +27,7 @@ class VinylControl : public QThread
     	virtual void syncPosition() = 0; */
     	virtual void AnalyseSamples(short* samples, size_t size) = 0;  
     	virtual float getSpeed();
+    	virtual float getTimecodeStrength();
     protected:
 	    virtual void run() = 0;						// main thread loop
 	    
@@ -46,6 +47,7 @@ class VinylControl : public QThread
         double dDriftControl;           //The difference between Mixxx's position and the needle's position on the record.
                                         //... these two values naturally drift apart, so we need to keep making adjustments to the pitch
                                         //to stop it from getting bad.
+        float fTimecodeStrength;        //The signal strength of the timecode on the vinyl.
 
 	    int iSampleRate;
 	    bool bIsRunning;
