@@ -17,6 +17,7 @@
 
 #include <QtDebug>
 #include <QtCore> 
+#include <QTimer>
 #include <portaudio.h>
 #include "soundmanager.h"
 #include "sounddevice.h"
@@ -24,7 +25,7 @@
 #include "enginemaster.h"
 
 
-SoundManager::SoundManager(ConfigObject<ConfigValue> *pConfig, EngineMaster *_master)
+SoundManager::SoundManager(ConfigObject<ConfigValue> *pConfig, EngineMaster *_master) : QObject()
 {
     qDebug() << "SoundManager::SoundManager()";
     m_pConfig = pConfig;
@@ -32,14 +33,20 @@ SoundManager::SoundManager(ConfigObject<ConfigValue> *pConfig, EngineMaster *_ma
     m_pBuffer = new CSAMPLE[MAX_BUFFER_LEN];
     m_pMasterBuffer = new CSAMPLE[MAX_BUFFER_LEN];
     m_pHeadphonesBuffer = new CSAMPLE[MAX_BUFFER_LEN];
-    iNumOpenedDevices = 0;
+    iNumDevicesOpenedForOutput = 0;
+    iNumDevicesOpenedForInput = 0;
     iNumDevicesHaveRequestedBuffer = 0;
 #ifdef __VINYLCONTROL__    
     m_VinylControl[0] = 0;
     m_VinylControl[1] = 0;
 #endif    
+
+    //TODO: Find a better spot for this: 
+    //Set up a timer to sync Mixxx's ControlObjects on...
+    //(We set the timer to fire off 
+    //connect(m_controlObjSyncTimer, SIGNAL(timeout()), this, SLOT(sync()));
+    //m_controlObjSyncTimer->start(m_pConfig->getValueString(ConfigKey("[Soundcard]","Latency")).toInt());
     
-    //TODO: Find a better spot for this:
     ControlObject* pControlObjectLatency  = ControlObject::getControl(ConfigKey("[Master]","latency"));
     ControlObject* pControlObjectSampleRate = ControlObject::getControl(ConfigKey("[Master]","samplerate"));
 
@@ -144,7 +151,8 @@ void SoundManager::closeDevices()
         dev_it.next()->close();
     }
     //requestBufferMutex.lock();
-    iNumOpenedDevices = 0;
+    iNumDevicesOpenedForOutput = 0;
+    iNumDevicesOpenedForInput = 0;
     iNumDevicesHaveRequestedBuffer = 0;
     //requestBufferMutex.unlock();
 
@@ -280,7 +288,8 @@ int SoundManager::setupDevices()
 {
     qDebug() << "SoundManager::setupDevices()";
     int err = 0;
-    bool bNeedToOpenDevice = 0;
+    bool bNeedToOpenDeviceForOutput = 0;
+    bool bNeedToOpenDeviceForInput = 0;
     QListIterator<SoundDevice*> deviceIt(m_devices);
     SoundDevice* device;
     
@@ -297,7 +306,8 @@ int SoundManager::setupDevices()
     while (deviceIt.hasNext())
     {
         device = deviceIt.next();
-        bNeedToOpenDevice = 0;
+        bNeedToOpenDeviceForOutput = 0;
+        bNeedToOpenDeviceForInput = 0;
         
         //Close the device in case it was open.
         device->close();
@@ -311,12 +321,12 @@ int SoundManager::setupDevices()
         if (m_pConfig->getValueString(ConfigKey("[Soundcard]","DeviceMaster")) == device->getName())
         {
             device->addSource(SOURCE_MASTER);
-            bNeedToOpenDevice = 1;
+            bNeedToOpenDeviceForOutput = 1;
         }
         if (m_pConfig->getValueString(ConfigKey("[Soundcard]","DeviceHeadphones")) == device->getName())
         {
             device->addSource(SOURCE_HEADPHONES);
-            bNeedToOpenDevice = 1;
+            bNeedToOpenDeviceForOutput = 1;
         }
         /*
         if ((m_pConfig->getValueString(ConfigKey("[Soundcard]","DeviceMasterLeft")) == device->getName())
@@ -336,24 +346,30 @@ int SoundManager::setupDevices()
         if (m_pConfig->getValueString(ConfigKey("[VinylControl]","DeviceInputDeck1"))  == device->getName())
         {
             device->addReceiver(RECEIVER_VINYLCONTROL_ONE);
-            bNeedToOpenDevice = 1;
+            bNeedToOpenDeviceForInput = 1;
         }
         if (m_pConfig->getValueString(ConfigKey("[VinylControl]","DeviceInputDeck2")) == device->getName())      
         {
             device->addReceiver(RECEIVER_VINYLCONTROL_TWO);  
-            bNeedToOpenDevice = 1;
+            bNeedToOpenDeviceForInput = 1;
         }   
         
         //Open the device.
-        if (bNeedToOpenDevice)
+        if (bNeedToOpenDeviceForOutput || bNeedToOpenDeviceForInput)
         {
             err = device->open();
             if (err != 0)
                 return err;
             else
-                iNumOpenedDevices++;
+            {
+                iNumDevicesOpenedForOutput += (int)bNeedToOpenDeviceForOutput;
+                iNumDevicesOpenedForInput += (int)bNeedToOpenDeviceForInput;
+            }
         }    
     }
+    
+    qDebug() << "iNumDevicesOpenedForOutput:" << iNumDevicesOpenedForOutput;
+    qDebug() << "iNumDevicesOpenedForInput:" << iNumDevicesOpenedForInput;
     
     return 0;
 }
@@ -401,7 +417,7 @@ CSAMPLE* SoundManager::requestBuffer(QList<AudioSource> srcs, unsigned long iFra
     }
     iNumDevicesHaveRequestedBuffer++;
 
-    if (iNumDevicesHaveRequestedBuffer >= iNumOpenedDevices)
+    if (iNumDevicesHaveRequestedBuffer >= iNumDevicesOpenedForOutput)
         iNumDevicesHaveRequestedBuffer = 0;  
              
     requestBufferMutex.unlock();
