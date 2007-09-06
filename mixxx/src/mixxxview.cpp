@@ -32,6 +32,7 @@
 #include <QLabel>
 #include <QComboBox>
 #include <QLineEdit>
+#include <QMainWindow>
 #include <QPushButton>
 #include <QTableView>
 #include <qlineedit.h>
@@ -387,9 +388,9 @@ void MixxxView::createAllWidgets(QDomElement docElem, QWidget* parent, bool bVis
                 // FWI: Begin of fullscreen patch
                 // this->setFixedSize(background.width(),background.height()+((QMainWindow *)parent)->menuBar()->height());
                 // parent->setFixedSize(background.width(),background.height()+((QMainWindow *)parent)->menuBar()->height());
-                this->setFixedSize(background->width(),background->height());
+                this->setFixedSize(background->width(),background->height()+((QMainWindow *)parent)->menuBar()->height());
 
-                parent->setMinimumSize(background->width(),background->height());
+                parent->setMinimumSize(background->width(),background->height()+((QMainWindow *)parent)->menuBar()->height());
 
                 // FWI: End of fullscreen patch
                 this->move(0,0);
@@ -794,8 +795,8 @@ void MixxxView::rebootGUI(QWidget* parent, bool bVisualsWaveform, ConfigObject<C
                 // FWI: Begin of fullscreen patch
                 // this->setFixedSize(background.width(),background.height()+((QMainWindow *)parent)->menuBar()->height());
                 // parent->setFixedSize(background.width(),background.height()+((QMainWindow *)parent)->menuBar()->height());
-                this->setFixedSize(background->width(),background->height());
-                parent->setMinimumSize(background->width(),background->height());
+                this->setFixedSize(background->width(),background->height()+((QMainWindow *)parent)->menuBar()->height());
+                parent->setMinimumSize(background->width(),background->height()+((QMainWindow *)parent)->menuBar()->height());
                 // FWI: End of fullscreen patch
                 this->move(0,0);
 
