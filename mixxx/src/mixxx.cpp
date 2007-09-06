@@ -24,11 +24,11 @@
 #include <qdesktopwidget.h>
 #ifdef QT3_SUPPORT
 #include <q3accel.h>
-#include <Q3PopupMenu>
+#include <QMenu>
 #include <q3table.h>
 #include <q3listview.h>
 #include <q3ptrlist.h>
-#include <Q3Action>
+#include <QAction>
 #include <QPixmap>
 #include <qicon.h>
 #else
@@ -47,7 +47,7 @@
 #include <qpalette.h>
 //Added by qt3to4:
 #include <QFileDialog>
-#include <Q3Frame>
+#include <QFrame>
 
 #include "wknob.h"
 #include "wslider.h"
@@ -105,7 +105,7 @@ MixxxApp::MixxxApp(QApplication *a, QStringList files, QSplashScreen *pSplash, Q
     prefDlg = 0;
 
     // Read the config file from home directory
-    config = new ConfigObject<ConfigValue>(QDir::homeDirPath().append("/").append(SETTINGS_FILE));
+    config = new ConfigObject<ConfigValue>(QDir::homePath().append("/").append(SETTINGS_FILE));
     QString qConfigPath = config->getConfigPath();
 
     // Store the path in the config database
@@ -116,7 +116,7 @@ MixxxApp::MixxxApp(QApplication *a, QStringList files, QSplashScreen *pSplash, Q
 
 
     if (pSplash)
-        pSplash->message("Initializing control devices...",Qt::AlignLeft|Qt::AlignBottom);
+        pSplash->showMessage("Initializing control devices...",Qt::AlignLeft|Qt::AlignBottom);
 
     // Read keyboard configuration and set kdbConfig object in WWidget
     kbdconfig = new ConfigObject<ConfigValueKbd>(QString(qConfigPath).append("keyboard/").append("Standard.kbd.cfg"));
@@ -124,7 +124,7 @@ MixxxApp::MixxxApp(QApplication *a, QStringList files, QSplashScreen *pSplash, Q
 
 
     if (pSplash)
-        pSplash->message("Setting up sound engine...",Qt::AlignLeft|Qt::AlignBottom);
+        pSplash->showMessage("Setting up sound engine...",Qt::AlignLeft|Qt::AlignBottom);
 
     // Sample rate used by Player object
     ControlObject *sr = new ControlObject(ConfigKey("[Master]","samplerate"));
@@ -155,7 +155,7 @@ MixxxApp::MixxxApp(QApplication *a, QStringList files, QSplashScreen *pSplash, Q
     soundmanager->queryDevices();
 
     if (pSplash)
-        pSplash->message("Loading skin...",Qt::AlignLeft|Qt::AlignBottom);
+        pSplash->showMessage("Loading skin...",Qt::AlignLeft|Qt::AlignBottom);
 
     // Find path of skin
     QString qSkinPath = getSkinPath();
@@ -183,14 +183,11 @@ MixxxApp::MixxxApp(QApplication *a, QStringList files, QSplashScreen *pSplash, Q
     if (config->getValueString(ConfigKey("[Controls]","Visuals")).toInt()==1)
         bVisualsWaveform = false;
 
-    // FWI: Begin of fullscreen patch
     // Use frame as container for view, needed for fullscreen display
-    frame = new Q3Frame(this,"Mixxx");
-
+    frame = new QFrame(this, Qt::Window);
     setCentralWidget(frame);
-
     move(10,10);
-    // FWI: End of fullscreen patch
+    // Call inits to invoke all other construction parts
 
     view=new MixxxView(this, kbdconfig, bVisualsWaveform, qSkinPath, config);
 
@@ -224,7 +221,7 @@ MixxxApp::MixxxApp(QApplication *a, QStringList files, QSplashScreen *pSplash, Q
     QFile trackfile(config->getValueString(ConfigKey("[Playlist]","Listfile")));
     if ((config->getValueString(ConfigKey("[Playlist]","Listfile")).length()<1) || (!trackfile.exists()))
     {
-        config->set(ConfigKey("[Playlist]","Listfile"), QDir::homeDirPath().append("/").append(TRACK_FILE));
+        config->set(ConfigKey("[Playlist]","Listfile"), QDir::homePath().append("/").append(TRACK_FILE));
         config->Save();
     }
 
@@ -235,7 +232,7 @@ MixxxApp::MixxxApp(QApplication *a, QStringList files, QSplashScreen *pSplash, Q
     m_pBpmDetector = new BpmDetector(config);
 
     if (pSplash)
-        pSplash->message("Loading song database...",Qt::AlignLeft|Qt::AlignBottom);
+        pSplash->showMessage("Loading song database...",Qt::AlignLeft|Qt::AlignBottom);
 
     // Initialize track object:
 	m_pTrack = new Track(config->getValueString(ConfigKey("[Playlist]","Listfile")), view, buffer1, buffer2, m_pWaveSummary, m_pBpmDetector,config->getValueString(ConfigKey("[Playlist]","Directory")));
@@ -309,7 +306,7 @@ MixxxApp::MixxxApp(QApplication *a, QStringList files, QSplashScreen *pSplash, Q
 #ifdef __SCRIPT__
     scriptEng = new ScriptEngine(this, m_pTrack);
 #endif
-    // Call inits to invoke all other construction parts
+
     initActions();
     initMenuBar();
 
@@ -393,11 +390,7 @@ MixxxApp::~MixxxApp()
     qDebug("delete config, %i",qTime.elapsed());
     delete config;
 
-    // FWI: Begin of fullscreen patch
     delete frame;
-    // FWI: End of fullscreen patch
-    // BJW: master is already deleted above, so this was causing a segfault on exit
-    // delete master;
 #ifdef __WIN__
 	_exit(0);
 #endif
@@ -406,41 +399,41 @@ MixxxApp::~MixxxApp()
 /** initializes all QActions of the application */
 void MixxxApp::initActions()
 {
-#ifdef QT3_SUPPORT
-    fileOpen = new Q3Action(tr("Open..."), tr("&Open"), Q3Accel::stringToKey(tr("Ctrl+O")), this);
-    fileQuit = new Q3Action(tr("Exit"), tr("E&xit"), Q3Accel::stringToKey(tr("Ctrl+Q")), this);
-    playlistsNew = new Q3Action(tr("Add new playlist"), tr("&New playlist"), Q3Accel::stringToKey(tr("Ctrl+N")), this, 0, this);
-    playlistsImport = new Q3Action(tr("Import playlist"), tr("&Import playlist"), Q3Accel::stringToKey(tr("Ctrl+I")), this, 0, this);
-    optionsBeatMark = new Q3Action(tr("Audio Beat Marks"), tr("&Audio Beat Marks"), 0, this, 0, true);
-    optionsFullScreen = new Q3Action(tr("Full Screen"), tr("&Full Screen"), Q3Accel::stringToKey(tr("Esc")), this, 0, this);
-    optionsPreferences = new Q3Action(tr("Preferences"), tr("&Preferences..."), Q3Accel::stringToKey(tr("Ctrl+P")), this);
-    helpAboutApp = new Q3Action(tr("About"), tr("&About..."), 0, this);
+    fileOpen = new QAction(tr("&Open..."), this);
+    fileOpen->setShortcut(tr("Ctrl+O"));
+    fileOpen->setShortcutContext(Qt::ApplicationShortcut);
 
+    fileQuit = new QAction(tr("E&xit"), this);
+    fileQuit->setShortcut(tr("Ctrl+Q"));
+    fileQuit->setShortcutContext(Qt::ApplicationShortcut);
+
+    playlistsNew = new QAction(tr("Add &new playlist"), this);
+    playlistsNew->setShortcut(tr("Ctrl+N"));
+    playlistsNew->setShortcutContext(Qt::ApplicationShortcut);
+
+    playlistsImport = new QAction(tr("&Import playlist"), this);
+    playlistsImport->setShortcut(tr("Ctrl+I"));
+    playlistsImport->setShortcutContext(Qt::ApplicationShortcut);
+
+    optionsBeatMark = new QAction(tr("&Audio Beat Marks"), this);
+
+    optionsFullScreen = new QAction(tr("&Full Screen"), this);
+    optionsFullScreen->setShortcut(tr("Esc"));
+    optionsFullScreen->setShortcutContext(Qt::ApplicationShortcut);
+
+    optionsPreferences = new QAction(tr("&Preferences"), this);
+    optionsPreferences->setShortcut(tr("Ctrl+P"));
+    optionsPreferences->setShortcutContext(Qt::ApplicationShortcut);
+
+    helpAboutApp = new QAction(tr("&About..."), this);
 #ifdef __VINYLCONTROL__
-    optionsVinylControl = new Q3Action(tr("Enable Vinyl Control"), tr("&Enable Vinyl Control"), Q3Accel::stringToKey(tr("Ctrl+Y")), this, 0, true);
+    optionsVinylControl = new QAction(tr("&Enable Vinyl Control"), this);
+    optionsVinylControl->setShortcut(tr("Ctrl+Y"));
+    optionsVinylControl->setShortcutContext(Qt::ApplicationShortcut);
 #endif
 
 #ifdef __SCRIPT__
-    macroStudio = new Q3Action(tr("Show Studio"), tr("&Show Studio"), 0, this);
-#endif
-
-#else
-    fileOpen = new QAction(tr("Open..."), tr("&Open"), Q3Accel::stringToKey(tr("Ctrl+O")), this);
-    fileQuit = new QAction(tr("Exit"), tr("E&xit"), Q3Accel::stringToKey(tr("Ctrl+Q")), this);
-    playlistsNew = new QAction(tr("Add new playlist"), tr("&New playlist"), Q3Accel::stringToKey(tr("Ctrl+N")), this, 0, this);
-    playlistsImport = new QAction(tr("Import playlist"), tr("&Import playlist"), Q3Accel::stringToKey(tr("Ctrl+I")), this, 0, this);
-    optionsBeatMark = new QAction(tr("Audio Beat Marks"), tr("&Audio Beat Marks"), 0, this, 0, true);
-    optionsFullScreen = new QAction(tr("Full Screen"), tr("&Full Screen"), Q3Accel::stringToKey(tr("Esc")), this, 0, this);
-    optionsPreferences = new QAction(tr("Preferences"), tr("&Preferences..."), Q3Accel::stringToKey(tr("Ctrl+P")), this);
-    helpAboutApp = new QAction(tr("About"), tr("&About..."), 0, this);
-#ifdef __VINYLCONTROL__
-    optionsVinylControl = new QAction(tr("Enable Vinyl Control"), tr("&Enable Vinyl Control"), Q3Accel::stringToKey(tr("Ctrl+Y")), this, 0, true);
-#endif
-
-#ifdef __SCRIPT__
-    macroStudio = new QAction(tr("Show Studio"), tr("&Show Studio"), 0, this);
-#endif
-
+    macroStudio = new QAction(tr("Show Studio"), this);
 #endif
 
     fileOpen->setStatusTip(tr("Opens a file in player 1"));
@@ -459,23 +452,26 @@ void MixxxApp::initActions()
     playlistsImport->setWhatsThis(tr("Import playlist"));
     connect(playlistsImport, SIGNAL(activated()), m_pTrack, SLOT(slotImportPlaylist()));
 
-    optionsBeatMark->setOn(false);
+    optionsBeatMark->setCheckable(false);
+    optionsBeatMark->setChecked(false);
     optionsBeatMark->setStatusTip(tr("Audio Beat Marks"));
     optionsBeatMark->setWhatsThis(tr("Audio Beat Marks\nMark beats by audio clicks"));
     connect(optionsBeatMark, SIGNAL(toggled(bool)), this, SLOT(slotOptionsBeatMark(bool)));
 
 #ifdef __VINYLCONTROL__
 	//Either check or uncheck the vinyl control menu item depending on what it was saved as.
-	if ((bool)config->getValueString(ConfigKey("[VinylControl]","Enabled")).toInt() == true)
-		optionsVinylControl->setOn(true);
-	else
-    	optionsVinylControl->setOn(false);
+    optionsVinylControl->setCheckable(true);
+    if ((bool)config->getValueString(ConfigKey("[VinylControl]","Enabled")).toInt() == true)
+        optionsVinylControl->setChecked(true);
+    else
+        optionsVinylControl->setChecked(false);
     optionsVinylControl->setStatusTip(tr("Activate Vinyl Control"));
     optionsVinylControl->setWhatsThis(tr("Use timecoded vinyls on external turntables to control Mixxx"));
     connect(optionsVinylControl, SIGNAL(toggled(bool)), this, SLOT(slotOptionsVinylControl(bool)));
 #endif
 
-    optionsFullScreen->setOn(false);
+    optionsFullScreen->setCheckable(true);
+    optionsFullScreen->setChecked(false);
     optionsFullScreen->setStatusTip(tr("Full Screen"));
     optionsFullScreen->setWhatsThis(tr("Display Mixxx using the full screen"));
     connect(optionsFullScreen, SIGNAL(toggled(bool)), this, SLOT(slotOptionsFullScreen(bool)));
@@ -498,68 +494,54 @@ void MixxxApp::initActions()
 void MixxxApp::initMenuBar()
 {
     // MENUBAR
-
-    #ifdef QT3_SUPPORT
-    fileMenu=new Q3PopupMenu();
-    optionsMenu=new Q3PopupMenu();
-    playlistsMenu=new Q3PopupMenu();
-    viewMenu=new Q3PopupMenu();
-    helpMenu=new Q3PopupMenu();
-    	#ifdef __SCRIPT__
-    	macroMenu=new Q3PopupMenu();
-	#endif
-    #else
-    fileMenu=new Q3PopupMenu();
-    optionsMenu=new Q3PopupMenu();
-    playlistsMenu=new Q3PopupMenu();
-    viewMenu=new Q3PopupMenu();
-    helpMenu=new Q3PopupMenu();
-    	#ifdef __SCRIPT__
-    	macroMenu=new Q3PopupMenu();
-	#endif
-    #endif
+    fileMenu=new QMenu("&File");
+    optionsMenu=new QMenu("&Options");
+    playlistsMenu=new QMenu("&Playlists");
+    viewMenu=new QMenu("&View");
+    helpMenu=new QMenu("&Help");
+#ifdef __SCRIPT__
+    macroMenu=new QMenu("&Macro");
+#endif
 
     // menuBar entry fileMenu
-    fileOpen->addTo(fileMenu);
-    fileQuit->addTo(fileMenu);
+    fileMenu->addAction(fileOpen);
+    fileMenu->addAction(fileQuit);
 
     // menuBar entry optionsMenu
-    optionsMenu->setCheckable(true);
+    //optionsMenu->setCheckable(true);
     //  optionsBeatMark->addTo(optionsMenu);
 #ifdef __VINYLCONTROL__
-    optionsVinylControl->addTo(optionsMenu);
+    optionsMenu->addAction(optionsVinylControl);
 #endif
-    optionsFullScreen->addTo(optionsMenu);
-    optionsPreferences->addTo(optionsMenu);
+    optionsMenu->addAction(optionsFullScreen);
+    optionsMenu->addAction(optionsPreferences);
 
-    playlistsMenu->setCheckable(true);
-    playlistsNew->addTo(playlistsMenu);
-    playlistsImport->addTo(playlistsMenu);
-    playlistsMenu->insertSeparator();
-
-    new MixxxMenuPlaylists(playlistsMenu, m_pTrack);
-
+    //    playlistsMenu->setCheckable(true);
+    playlistsMenu->addAction(playlistsNew);
+    playlistsMenu->addAction(playlistsImport);
+    playlistsMenu->addSeparator();
     // menuBar entry viewMenu
-    viewMenu->setCheckable(true);
+    //viewMenu->setCheckable(true);
 
     // menuBar entry helpMenu
-    helpAboutApp->addTo(helpMenu);
+    helpMenu->addAction(helpAboutApp);
 
 #ifdef __SCRIPT__
-    macroStudio->addTo(macroMenu);
+    macroMenu->addAction(macroStudio);
 #endif
 
-    // MENUBAR CONFIGURATION
-    menuBar()->insertItem(tr("&File"), fileMenu);
-    //menuBar()->insertItem(tr("&Edit"), editMenu);
-    menuBar()->insertItem(tr("&Playlists"), playlistsMenu);
-    menuBar()->insertItem(tr("&Options"), optionsMenu);
-    //menuBar()->insertItem(tr("&View"), viewMenu);
+    menuBar()->addMenu(fileMenu);
+    menuBar()->addMenu(playlistsMenu);
+    menuBar()->addMenu(optionsMenu);
+
+    //    menuBar()->addMenu(viewMenu);
 #ifdef __SCRIPT__
-    menuBar()->insertItem(tr("&Macro"), macroMenu);
+    menuBar()->addMenu(macroMenu);
 #endif
-    menuBar()->insertSeparator();
-    menuBar()->insertItem(tr("&Help"), helpMenu);
+    menuBar()->addSeparator();
+    menuBar()->addMenu(helpMenu);
+    new MixxxMenuPlaylists(playlistsMenu, m_pTrack);
+
 }
 
 bool MixxxApp::queryExit()
@@ -580,22 +562,13 @@ bool MixxxApp::queryExit()
 
 void MixxxApp::slotFileOpen()
 {
-	/*
-	#ifdef QT3_SUPPORT
-    QString s = Q3FileDialog::getOpenFileName(config->getValueString(ConfigKey("[Playlist]","Directory")),
-                                             "Audio (*.wav *.ogg *.mp3 *.aiff)",
-                                             this,
-                                             "Open file");
-    #else*/
-
     QString s = QFileDialog::getOpenFileName(this, "Open file", config->getValueString(ConfigKey("[Playlist]","Directory")),
                                              "Audio (*.wav *.ogg *.mp3 *.aiff)");
-    //#endif
-	if (!(s == QString::null)) {
-		TrackInfoObject *pTrack = m_pTrack->getTrackCollection()->getTrack(s);
-		if (pTrack)
-			m_pTrack->slotLoadPlayer1(pTrack);
-	}
+    if (!(s == QString::null)) {
+        TrackInfoObject *pTrack = m_pTrack->getTrackCollection()->getTrack(s);
+        if (pTrack)
+            m_pTrack->slotLoadPlayer1(pTrack);
+    }
 }
 
 void MixxxApp::slotFileQuit()

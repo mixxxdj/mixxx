@@ -1,7 +1,7 @@
 //
 // C++ Interface: trackplaylistlist
 //
-// Description: 
+// Description:
 //
 //
 // Author: Tue Haste Andersen <haste@diku.dk>, (C) 2004
