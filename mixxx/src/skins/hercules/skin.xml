@@ -14,7 +14,7 @@
    <ConfigKey>[Channel1],volume</ConfigKey>
   </Connection>
  </Knob>
- 
+
  <Knob>
   <Tooltip>Channel pre gain</Tooltip>
   <NumberStates>41</NumberStates>
@@ -24,7 +24,7 @@
    <ConfigKey>[Channel1],pregain</ConfigKey>
   </Connection>
  </Knob>
- 
+
  <Knob>
   <Tooltip>Volume</Tooltip>
   <NumberStates>41</NumberStates>
@@ -66,7 +66,7 @@
    <ConfigKey>[Channel2],VuMeter</ConfigKey>
   </Connection>
  </VuMeter>
- 
+
  <VuMeter>
   <Tooltip>Master VuMeter</Tooltip>
   <PathVu>vumeter-small-on-.png</PathVu>
@@ -77,7 +77,7 @@
    <ConfigKey>[Master],VuMeter</ConfigKey>
   </Connection>
  </VuMeter>
-  
+
  <PushButtonx>
   <Tooltip>Flanger on/off</Tooltip>
   <NumberStates>2</NumberStates>
@@ -145,7 +145,7 @@
    <ConfigKey>[Master],headMix</ConfigKey>
   </Connection>
  </Knob>
- 
+
   <Knob>
   <Tooltip>Headphone volume</Tooltip>
   <NumberStates>41</NumberStates>
@@ -355,28 +355,9 @@
   <BgColor>#ffffff</BgColor>
  </Search>
 
- <TrackTable>
-  <Pos>5,280</Pos>
-  <FgColor>#000000</FgColor>
-  <BgColor>#ffffff</BgColor>
-  <BgColorRowEven>#ffffff</BgColorRowEven>
-  <BgColorRowUneven>#ffffff</BgColorRowUneven>
-  <BgColorBpmNoConfirm>#ffffff</BgColorBpmNoConfirm>
-  <BgColorBpmConfirm>#9EFF75</BgColorBpmConfirm>
-  <ColWidthScore>20</ColWidthScore>
-  <ColWidthTitle>190</ColWidthTitle>
-  <ColWidthArtist>180</ColWidthArtist>
-  <ColWidthComment>166</ColWidthComment>
-  <ColWidthType>30</ColWidthType>
-  <ColWidthDuration>50</ColWidthDuration>
-  <ColWidthBpm>40</ColWidthBpm>
-  <ColWidthBitrate>50</ColWidthBitrate>
-  <Size>1010,458</Size>
- </TrackTable>
-
  <TableView>
   <Pos>5,280</Pos>
-  <Size>1010,458</Size>
+  <Size>1010,433</Size>
   <FgColor>#000000</FgColor>
   <BgColor>#ffffff</BgColor>
   <BgColorRowEven>#ffffff</BgColorRowEven>
