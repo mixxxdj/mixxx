@@ -22,20 +22,21 @@
 #include <qcolor.h>
 
 class ImgSource {
-
 public:
-	virtual QImage* getImage(QString img) = 0;
-	virtual inline QColor getCorrectColor(QColor c) { return c; }
+    virtual ~ImgSource() {};
+    virtual QImage* getImage(QString img) = 0;
+    virtual inline QColor getCorrectColor(QColor c) { return c; }
 };
 
 class ImgProcessor : public ImgSource {
 
 public:
-	inline ImgProcessor(ImgSource* parent) : m_parent(parent) {}
-	virtual QColor doColorCorrection(QColor c) = 0;
-	inline QColor getCorrectColor(QColor c) {
-		return doColorCorrection(m_parent->getCorrectColor(c));
-	}
+    virtual ~ImgProcessor() {};
+    inline ImgProcessor(ImgSource* parent) : m_parent(parent) {}
+    virtual QColor doColorCorrection(QColor c) = 0;
+    inline QColor getCorrectColor(QColor c) {
+        return doColorCorrection(m_parent->getCorrectColor(c));
+    }
 
 protected:
 	ImgSource* m_parent;
@@ -44,23 +45,25 @@ protected:
 class ImgColorProcessor : public ImgProcessor {
 
 public:
-	inline ImgColorProcessor(ImgSource* parent) : ImgProcessor(parent) {}
-	inline virtual QImage* getImage(QString img) {
-		QImage* i = m_parent->getImage(img);
+    virtual ~ImgColorProcessor() {};
 
-		QColor col;
+    inline ImgColorProcessor(ImgSource* parent) : ImgProcessor(parent) {}
+    inline virtual QImage* getImage(QString img) {
+        QImage* i = m_parent->getImage(img);
 
-		for (int x = 0; x < i->width(); x++) {
-			for (int y = 0; y < i->height(); y++) {
-				QRgb pix = i->pixel(x, y);
-				col.setRgb(pix);
-				col = doColorCorrection(col);
-				i->setPixel(x, y, col.rgb());
-			}
-		}
+        QColor col;
 
-		return i;
-	}
+        for (int x = 0; x < i->width(); x++) {
+            for (int y = 0; y < i->height(); y++) {
+                QRgb pix = i->pixel(x, y);
+                col.setRgb(pix);
+                col = doColorCorrection(col);
+                i->setPixel(x, y, col.rgb());
+            }
+        }
+
+        return i;
+    }
 };
 
 #endif

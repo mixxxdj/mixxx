@@ -100,6 +100,7 @@ class MixxxApp : public QMainWindow
 
   public slots:
 
+    void slotQuitFullScreen();
     /** Opens a file in player 1 */
     void slotFileOpen();
     /** exits the application */

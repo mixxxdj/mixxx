@@ -387,8 +387,10 @@ void MixxxView::createAllWidgets(QDomElement docElem, QWidget* parent, bool bVis
                 //this->setPaletteBackgroundPixmap(*background);
                 // FWI: Begin of fullscreen patch
                 // parent->setFixedSize(background.width(),background.height()+((QMainWindow *)parent)->menuBar()->height());
-                this->setFixedSize(background->width(),background->height()+((QMainWindow *)parent)->menuBar()->height());
-                parent->setMinimumSize(background->width(),background->height()+((QMainWindow *)parent)->menuBar()->height());
+
+
+                this->setFixedSize(background->width(),background->height()+((QMainWindow *)parent->parent())->menuBar()->height());
+                parent->setMinimumSize(background->width(),background->height()+((QMainWindow *)parent->parent())->menuBar()->height());
 
                 // FWI: End of fullscreen patch
                 this->move(0,0);

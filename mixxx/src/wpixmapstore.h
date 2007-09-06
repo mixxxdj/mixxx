@@ -35,7 +35,7 @@ typedef struct
 } PixmapInfoType;
 
 class WPixmapStore {
-public: 
+public:
     WPixmapStore();
     static QPixmap *getPixmap(const QString &fileName);
 	static QPixmap *getPixmapNoCache(const QString &fileName);
