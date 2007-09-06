@@ -184,12 +184,12 @@ MixxxApp::MixxxApp(QApplication *a, QStringList files, QSplashScreen *pSplash, Q
         bVisualsWaveform = false;
 
     // Use frame as container for view, needed for fullscreen display
-    frame = new QFrame(this, Qt::Window);
+    frame = new QFrame(this);
     setCentralWidget(frame);
     move(10,10);
     // Call inits to invoke all other construction parts
 
-    view=new MixxxView(this, kbdconfig, bVisualsWaveform, qSkinPath, config);
+    view=new MixxxView(frame, kbdconfig, bVisualsWaveform, qSkinPath, config);
 
     if (bVisualsWaveform && !view->activeWaveform())
     {
@@ -420,6 +420,8 @@ void MixxxApp::initActions()
     optionsFullScreen = new QAction(tr("&Full Screen"), this);
     optionsFullScreen->setShortcut(tr("Esc"));
     optionsFullScreen->setShortcutContext(Qt::ApplicationShortcut);
+    QShortcut *shortcut = new QShortcut(QKeySequence(tr("Ctrl+F")),  this);
+    connect(shortcut, SIGNAL(activated()), this, SLOT(slotQuitFullScreen()));
 
     optionsPreferences = new QAction(tr("&Preferences"), this);
     optionsPreferences->setShortcut(tr("Ctrl+P"));
@@ -579,6 +581,10 @@ void MixxxApp::slotFileQuit()
 void MixxxApp::slotOptionsBeatMark(bool)
 {
 // BEAT MARK STUFF
+}
+
+void MixxxApp::slotQuitFullScreen() {
+    slotOptionsFullScreen(false);
 }
 
 void MixxxApp::slotOptionsFullScreen(bool toggle)
