@@ -363,7 +363,7 @@
    <ConfigKey>[Channel1],cue_gotoandstop</ConfigKey>
    <EmitOnDownPress>true</EmitOnDownPress>
    <ButtonState>RightButton</ButtonState>
-  </Connection>  
+  </Connection>
  </PushButton>
 
  <PushButton>
@@ -384,7 +384,7 @@
    <ConfigKey>[Channel2],cue_gotoandstop</ConfigKey>
    <EmitOnDownPress>true</EmitOnDownPress>
    <ButtonState>RightButton</ButtonState>
-  </Connection>  
+  </Connection>
  </PushButton>
 
  <PushButton>
@@ -722,24 +722,6 @@
   <BgColor>#ffffff</BgColor>
  </Search>
 
- <TrackTable>
-  <Pos>75,511</Pos>
-  <Size>873,233</Size>
-  <FgColor>#000000</FgColor>
-  <BgColor>#94abc2</BgColor>
-  <BgColorRowEven>#9ab2c4</BgColorRowEven>
-  <BgColorRowUneven>#94abc2</BgColorRowUneven>
-  <BgColorBpmNoConfirm>#9ab2c4</BgColorBpmNoConfirm>
-  <BgColorBpmConfirm>#9EFF75</BgColorBpmConfirm>
-  <ColWidthScore>20</ColWidthScore>
-  <ColWidthTitle>206</ColWidthTitle>
-  <ColWidthArtist>160</ColWidthArtist>
-  <ColWidthComment>146</ColWidthComment>
-  <ColWidthType>30</ColWidthType>
-  <ColWidthDuration>50</ColWidthDuration>
-  <ColWidthBpm>40</ColWidthBpm>
-  <ColWidthBitrate>50</ColWidthBitrate>
- </TrackTable>
 
  <TableView>
   <Pos>75,511</Pos>

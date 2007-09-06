@@ -14,7 +14,7 @@
 <!DOCTYPE skin>
 <skin>
 
-<!-- 
+<!--
    ****************************************
       Main background picture
    ****************************************
@@ -24,7 +24,7 @@
   <Path>main150.png</Path>
  </Background>
 
-<!-- 
+<!--
    ****************************************
       Crossfader slider
    ****************************************
@@ -42,7 +42,7 @@
   </Connection>
  </SliderComposed>
 
-<!-- 
+<!--
    ****************************************
       Pitch control sliders
    ****************************************
@@ -72,7 +72,7 @@
   </Connection>
  </SliderComposed>
 
-<!-- 
+<!--
    ****************************************
       Pitch control buttons
    ****************************************
@@ -162,7 +162,7 @@
   </Connection>
  </PushButton>
 
-<!-- 
+<!--
    ****************************************
       Pitch bend buttons
    ****************************************
@@ -292,7 +292,7 @@
   </Connection>
  </PushButton>
 
-<!-- 
+<!--
    ****************************************
       Channel volume sliders
    ****************************************
@@ -322,7 +322,7 @@
   </Connection>
  </SliderComposed>
 
-<!-- 
+<!--
    ****************************************
       Channel volume display
    ****************************************
@@ -350,7 +350,7 @@
    </Connection>
   </VuMeter>
 
-<!-- 
+<!--
    ****************************************
       Master volume display
    ****************************************
@@ -367,7 +367,7 @@
   </Connection>
  </VuMeter>
 
-<!-- 
+<!--
    ****************************************
       Master volume poti
    ****************************************
@@ -383,7 +383,7 @@
   </Connection>
  </Knob>
 
-<!-- 
+<!--
    ****************************************
       Play buttons
    ****************************************
@@ -428,10 +428,10 @@
    <ConfigKey>[Channel2],play</ConfigKey>
    <EmitOnDownPress>true</EmitOnDownPress>
    <ButtonState>LeftButton</ButtonState>
-  </Connection>  
+  </Connection>
  </PushButton>
 
-<!-- 
+<!--
    ****************************************
       Cue buttons
    ****************************************
@@ -468,9 +468,9 @@
    <ButtonState>LeftButton</ButtonState>
   </Connection>
  </PushButton>
- 
+
  <PushButton>
-  <Tooltip>Left: Jump to cue position, Right: Jump to cue position and start playing</Tooltip> 
+  <Tooltip>Left: Jump to cue position, Right: Jump to cue position and start playing</Tooltip>
   <NumberStates>1</NumberStates>
   <State>
    <Number>0</Number>
@@ -496,7 +496,7 @@
  </PushButton>
 
  <PushButton>
-  <Tooltip>Left: Jump to cue position, Right: Jump to cue position and start playing</Tooltip> 
+  <Tooltip>Left: Jump to cue position, Right: Jump to cue position and start playing</Tooltip>
   <NumberStates>1</NumberStates>
   <State>
    <Number>0</Number>
@@ -521,7 +521,7 @@
   </Connection>
  </PushButton>
 
-<!-- 
+<!--
    ****************************************
       Fast forward and rewind buttons
    ****************************************
@@ -631,7 +631,7 @@
   </Connection>
  </PushButton>
 
-<!-- 
+<!--
    ****************************************
       Beat sync buttons
    ****************************************
@@ -669,7 +669,7 @@
   </Connection>
  </PushButton>
 
-<!-- 
+<!--
    ****************************************
       Prelisten / monitoring buttons
    ****************************************
@@ -713,7 +713,7 @@
   </Connection>
  </PushButton>
 
-<!-- 
+<!--
    ****************************************
       Headphone volume and mix potis
    ****************************************
@@ -739,7 +739,7 @@
   </Connection>
  </Knob>
 
-<!-- 
+<!--
    ****************************************
       End of track mode buttons
    ****************************************
@@ -793,7 +793,7 @@
   </Connection>
  </PushButton>
 
-<!-- 
+<!--
    ****************************************
       Flanger (FX) setting potis
    ****************************************
@@ -829,14 +829,14 @@
   </Connection>
  </Knob>
 
-<!-- 
+<!--
    ****************************************
       Flanger (FX) buttons
    ****************************************
 -->
 
  <PushButton>
-  <Tooltip>Left: Apply flanger effect</Tooltip>   
+  <Tooltip>Left: Apply flanger effect</Tooltip>
   <NumberStates>2</NumberStates>
   <State>
    <Number>0</Number>
@@ -855,7 +855,7 @@
  </PushButton>
 
  <PushButton>
-  <Tooltip>Left: Apply flanger effect</Tooltip>   
+  <Tooltip>Left: Apply flanger effect</Tooltip>
   <NumberStates>2</NumberStates>
   <State>
    <Number>0</Number>
@@ -873,7 +873,7 @@
   </Connection>
  </PushButton>
 
-<!-- 
+<!--
    ****************************************
       Channel filter and gain potis
    ****************************************
@@ -888,7 +888,7 @@
    <ConfigKey>[Channel1],pregain</ConfigKey>
   </Connection>
  </Knob>
- 
+
  <Knob>
   <Tooltip>Treble filter control</Tooltip>
   <NumberStates>13</NumberStates>
@@ -959,7 +959,7 @@
   </Connection>
  </Knob>
 
-<!-- 
+<!--
    ****************************************
       Kill buttons
    ****************************************
@@ -1091,7 +1091,7 @@
    </Connection>
  </PushButton>
 
-<!-- 
+<!--
    ****************************************
       Waveform display
    ****************************************
@@ -1108,7 +1108,7 @@
   <BeatColor>#ffff00</BeatColor>
   <MarkerColor>#ffffff</MarkerColor>
   <CueColor>#ff0000</CueColor>
-  <FisheyeColor>#404040</FisheyeColor>  
+  <FisheyeColor>#404040</FisheyeColor>
  </Visual>
 
  <Visual>
@@ -1125,7 +1125,7 @@
   <FisheyeColor>#404040</FisheyeColor>
  </Visual>
 
-<!-- 
+<!--
    ****************************************
       Play position sliders
    ****************************************
@@ -1157,7 +1157,7 @@
   </Connection>
  </SliderComposed>
 
-<!-- 
+<!--
    ****************************************
       Track information display
    ****************************************
@@ -1181,9 +1181,9 @@
   <BgColor>#004000</BgColor>
  </Text>
 
-<!-- 
+<!--
    ****************************************
-      BPM number display  
+      BPM number display
    ****************************************
 -->
 
@@ -1208,7 +1208,7 @@
   <Pos>748,389</Pos>
   <Size>91,23</Size>
   <Alignment>right</Alignment>
-  <FontSize>22</FontSize>  
+  <FontSize>22</FontSize>
   <NumberOfDigits>6</NumberOfDigits>
   <FgColor>#0000ff</FgColor>
   <BgColor>#000040</BgColor>
@@ -1217,9 +1217,9 @@
   </Connection>
  </NumberBpm>
 
-<!-- 
+<!--
    ****************************************
-      Playing time display  
+      Playing time display
    ****************************************
 -->
 
@@ -1249,9 +1249,9 @@
   </Connection>
  </NumberPos>
 
-<!-- 
+<!--
    ****************************************
-      Pitch rate display  
+      Pitch rate display
    ****************************************
 -->
 
@@ -1283,7 +1283,7 @@
   </Connection>
  </NumberRate>
 
-<!-- 
+<!--
    ****************************************
       Directory and track view
    ****************************************
@@ -1300,31 +1300,9 @@
   <BgColor>#ffffff</BgColor>
  </Search>
 
- <TrackTable>
-  <Tooltip>User defined track table</Tooltip>
-  <Pos>15,460</Pos>
-  <Size>994,293</Size>
-  <BgColor>#ffffff</BgColor>
-  <FgColor>#c0c0c0</FgColor>
-  <BgColorRowEven>#ffffff</BgColorRowEven>
-  <BgColorRowUneven>#ffffff</BgColorRowUneven>
-  <!--<BgColorBpmConfidenceLow>#CC0000</BgColorBpmConfidenceLow>
-  <BgColorBpmConfidenceHigh>#0000CC</BgColorBpmConfidenceHigh>-->
-  <BgColorBpmNoConfirm>#ffffff</BgColorBpmNoConfirm>
-  <BgColorBpmConfirm>#9EFF75</BgColorBpmConfirm>
-  <ColWidthScore>0</ColWidthScore>
-  <ColWidthTitle>200</ColWidthTitle>
-  <ColWidthArtist>200</ColWidthArtist>
-  <ColWidthComment>0</ColWidthComment>
-  <ColWidthType>0</ColWidthType>
-  <ColWidthDuration>50</ColWidthDuration>
-  <ColWidthBpm>50</ColWidthBpm>
-  <ColWidthBitrate>0</ColWidthBitrate>
- </TrackTable>
- 
  <TableView>
   <Pos>15,460</Pos>
-  <Size>994,293</Size>
+  <Size>994,268</Size>
   <BgColor>#ffffff</BgColor>
   <FgColor>#c0c0c0</FgColor>
   <BgColorRowEven>#ffffff</BgColorRowEven>

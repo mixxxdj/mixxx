@@ -15,7 +15,7 @@
 				 <VFact>0.7</VFact>
 				 <HFact>0.3</HFact>
 			 </HSVTweak>
-			 
+
 			 <HSVTweak>
 				 <SMax>50</SMax>
 				 <HFact>0</HFact>
@@ -23,7 +23,7 @@
 				 <SConst>120</SConst>
 				 <VConst>-10</VConst>
 			 </HSVTweak>
-			 
+
 		 </Filters>
 	 </Scheme>
   <Scheme>
@@ -512,7 +512,7 @@
    <ConfigKey>[Channel1],cue_gotoandstop</ConfigKey>
    <EmitOnDownPress>true</EmitOnDownPress>
    <ButtonState>RightButton</ButtonState>
-  </Connection>  
+  </Connection>
  </PushButton>
 
  <PushButton>
@@ -533,7 +533,7 @@
    <ConfigKey>[Channel2],cue_gotoandstop</ConfigKey>
    <EmitOnDownPress>true</EmitOnDownPress>
    <ButtonState>RightButton</ButtonState>
-  </Connection>  
+  </Connection>
  </PushButton>
 
  <PushButton>
@@ -1086,7 +1086,7 @@
    <EmitOnDownPress>false</EmitOnDownPress>
   </Connection>
  </XSliderComposed>
- 
+
  <Overview>
 	 <Tooltip>Overview display of waveform</Tooltip>
 	 <Channel>1</Channel>
@@ -1126,28 +1126,9 @@
   <BgColor>#ffffff</BgColor>
  </Search>
 
- <TrackTable>
-  <Pos>109,309</Pos>
-  <FgColor>#000000</FgColor>
-  <BgColor>#ffffff</BgColor>
-  <BgColorRowEven>#ffffff</BgColorRowEven>
-  <BgColorRowUneven>#ffffff</BgColorRowUneven>
-  <BgColorBpmNoConfirm>#ffffff</BgColorBpmNoConfirm>
-  <BgColorBpmConfirm>#9EFF75</BgColorBpmConfirm>
-  <ColWidthScore>20</ColWidthScore>
-  <ColWidthTitle>150</ColWidthTitle>
-  <ColWidthArtist>100</ColWidthArtist>
-  <ColWidthComment>85</ColWidthComment>
-  <ColWidthType>30</ColWidthType>
-  <ColWidthDuration>55</ColWidthDuration>
-  <ColWidthBpm>35</ColWidthBpm>
-  <ColWidthBitrate>40</ColWidthBitrate>
-  <Size>582,290</Size>
- </TrackTable>
- 
  <TableView>
   <Pos>109,309</Pos>
-  <Size>582,290</Size>
+  <Size>582,265</Size>
   <FgColor>#000000</FgColor>
   <BgColor>#ffffff</BgColor>
   <BgColorRowEven>#ffffff</BgColorRowEven>

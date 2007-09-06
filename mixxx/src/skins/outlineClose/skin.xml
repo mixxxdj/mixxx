@@ -387,7 +387,7 @@
    <ConfigKey>[Channel1],cue_gotoandstop</ConfigKey>
    <EmitOnDownPress>true</EmitOnDownPress>
    <ButtonState>RightButton</ButtonState>
-  </Connection>  
+  </Connection>
  </PushButton>
 
  <PushButton>
@@ -408,7 +408,7 @@
    <ConfigKey>[Channel2],cue_gotoandstop</ConfigKey>
    <EmitOnDownPress>true</EmitOnDownPress>
    <ButtonState>RightButton</ButtonState>
-  </Connection>  
+  </Connection>
  </PushButton>
 
  <PushButton>
@@ -682,7 +682,7 @@
    <ConfigKey>[Channel2],VuMeter</ConfigKey>
   </Connection>
  </VuMeter>
- 
+
  <SliderComposed>
   <Tooltip>Channel volume</Tooltip>
   <Handle>volhandle-on-Ch1.png</Handle>
@@ -962,7 +962,7 @@
 		 <EmitOnDownPress>false</EmitOnDownPress>
 	 </Connection>
  </Overview>
- 
+
  <Overview>
 	 <Tooltip>Overview display of waveform</Tooltip>
 	 <Channel>2</Channel>
@@ -976,7 +976,7 @@
 		 <EmitOnDownPress>false</EmitOnDownPress>
 	 </Connection>
  </Overview>
- 
+
  <ComboBox>
   <Pos>0,459</Pos>
   <Size>164,25</Size>
@@ -987,25 +987,6 @@
   <Size>535,25</Size>
   <BgColor>#ffffff</BgColor>
  </Search>
-
- <TrackTable>
-  <Pos>0,489</Pos>
-  <FgColor>#000000</FgColor>
-  <BgColor>#ffffff</BgColor>
-  <BgColorRowEven>#ffffff</BgColorRowEven>
-  <BgColorRowUneven>#ffffff</BgColorRowUneven>
-  <BgColorBpmNoConfirm>#ffffff</BgColorBpmNoConfirm>
-  <BgColorBpmConfirm>#9EFF75</BgColorBpmConfirm>
-  <ColWidthScore>20</ColWidthScore>
-  <ColWidthTitle>190</ColWidthTitle>
-  <ColWidthArtist>180</ColWidthArtist>
-  <ColWidthComment>166</ColWidthComment>
-  <ColWidthType>30</ColWidthType>
-  <ColWidthDuration>50</ColWidthDuration>
-  <ColWidthBpm>40</ColWidthBpm>
-  <ColWidthBitrate>50</ColWidthBitrate>
-  <Size>750,220</Size>
- </TrackTable>
 
  <TableView>
   <Pos>0,489</Pos>
