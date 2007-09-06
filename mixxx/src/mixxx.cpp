@@ -192,7 +192,7 @@ MixxxApp::MixxxApp(QApplication *a, QStringList files, QSplashScreen *pSplash, Q
     move(10,10);
     // FWI: End of fullscreen patch
 
-    view=new MixxxView(frame, kbdconfig, bVisualsWaveform, qSkinPath, config);
+    view=new MixxxView(this, kbdconfig, bVisualsWaveform, qSkinPath, config);
 
     if (bVisualsWaveform && !view->activeWaveform())
     {
