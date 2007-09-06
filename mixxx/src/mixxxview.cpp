@@ -37,7 +37,7 @@
 #include <QTableView>
 #include <qlineedit.h>
 #include <QtDebug>
-
+#include <QMainWindow>
 
 #include "wtracktable.h"
 #include "wtracktablemodel.h"
@@ -101,12 +101,12 @@ MixxxView::MixxxView(QWidget *parent, ConfigObject<ConfigValueKbd> *kbdconfig, b
     m_bVisualWaveform = false;
     m_pOverviewCh1 = 0;
     m_pOverviewCh2 = 0;
-	m_pComboBox = 0;
+    m_pComboBox = 0;
 
-	setupColorScheme(docElem, pConfig);
+    setupColorScheme(docElem, pConfig);
 
     // Load all widgets defined in the XML file
-	createAllWidgets(docElem, parent, bVisualsWaveform, pConfig);
+    createAllWidgets(docElem, parent, bVisualsWaveform, pConfig);
 
 #ifdef __WIN__
 #ifndef QT3_SUPPORT
@@ -386,10 +386,8 @@ void MixxxView::createAllWidgets(QDomElement docElem, QWidget* parent, bool bVis
 
                 //this->setPaletteBackgroundPixmap(*background);
                 // FWI: Begin of fullscreen patch
-                // this->setFixedSize(background.width(),background.height()+((QMainWindow *)parent)->menuBar()->height());
                 // parent->setFixedSize(background.width(),background.height()+((QMainWindow *)parent)->menuBar()->height());
                 this->setFixedSize(background->width(),background->height()+((QMainWindow *)parent)->menuBar()->height());
-
                 parent->setMinimumSize(background->width(),background->height()+((QMainWindow *)parent)->menuBar()->height());
 
                 // FWI: End of fullscreen patch

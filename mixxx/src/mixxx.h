@@ -29,7 +29,7 @@
 #include <qpoint.h>
 #include <qapplication.h>
 //Added by qt3to4:
-#include <Q3Frame>
+#include <QFrame>
 #include <vector>
 #include <qstringlist.h>
 
@@ -80,11 +80,7 @@ class ScriptEngine;
   * For the main view, an instance of class MixxxView is
   * created which creates your view.
   */
-//#ifndef QT3_SUPPORT
 class MixxxApp : public QMainWindow
-//#else
-//class MixxxApp : public Q3MainWindow
-//#endif
 {
   Q_OBJECT
 
@@ -100,7 +96,7 @@ class MixxxApp : public QMainWindow
     /** overloaded for Message box on last window exit */
     bool queryExit();
 
-	void rebootMixxxView();
+    void rebootMixxxView();
 
   public slots:
 
@@ -133,9 +129,7 @@ class MixxxApp : public QMainWindow
     /** Pointer to the bpm detector */
     BpmDetector *m_pBpmDetector;
 
-    // FWI: Begin of fullscreen patch
-    Q3Frame *frame;
-    // FWI: End of fullscreen patch
+    QFrame *frame;
 
     QApplication *app;
     EngineObject *engine;
@@ -153,75 +147,26 @@ class MixxxApp : public QMainWindow
     ConfigObject<ConfigValueKbd> *kbdconfig;
     /** Pointer to track object */
     Track *m_pTrack;
-    
-    #ifdef QT3_SUPPORT
+
     /** file_menu contains all items of the menubar entry "File" */
-    Q3PopupMenu *fileMenu;
+    QMenu *fileMenu;
     /** edit_menu contains all items of the menubar entry "Edit" */
-    Q3PopupMenu *editMenu;
+    QMenu *editMenu;
     /** playlist menu */
-    Q3PopupMenu *playlistsMenu;
+    QMenu *playlistsMenu;
     /** options_menu contains all items of the menubar entry "Options" */
-    Q3PopupMenu *optionsMenu;
+    QMenu *optionsMenu;
     /** view_menu contains all items of the menubar entry "View" */
-    Q3PopupMenu *viewMenu;
+    QMenu *viewMenu;
     /** view_menu contains all items of the menubar entry "Help" */
-    Q3PopupMenu *helpMenu;
+    QMenu *helpMenu;
 
 #ifdef __SCRIPT__
-    Q3PopupMenu *macroMenu;
+    QMenu *macroMenu;
 #endif
-   #else
-   /** file_menu contains all items of the menubar entry "File" */
-   Q3PopupMenu *fileMenu;
-   /** edit_menu contains all items of the menubar entry "Edit" */
-   Q3PopupMenu *editMenu;
-   /** playlist menu */
-   Q3PopupMenu *playlistsMenu;
-   /** options_menu contains all items of the menubar entry "Options" */
-   Q3PopupMenu *optionsMenu;
-   /** view_menu contains all items of the menubar entry "View" */
-   Q3PopupMenu *viewMenu;
-   /** view_menu contains all items of the menubar entry "Help" */
-   Q3PopupMenu *helpMenu;
-#ifdef __SCRIPT__
-   Q3PopupMenu *macroMenu;
-#endif
-   #endif
 
     /** actions for the application initialized in initActions() and used to en/disable them
       * according to your needs during the program */
-
-    #ifdef QT3_SUPPORT
-    Q3Action *fileNew;
-    Q3Action *fileOpen;
-    Q3Action *fileSave;
-    Q3Action *fileSaveAs;
-    Q3Action *fileClose;
-    Q3Action *filePrint;
-    Q3Action *fileQuit;
-
-    Q3Action *editCut;
-    Q3Action *editCopy;
-    Q3Action *editPaste;
-
-    Q3Action *playlistsNew;
-    Q3Action *playlistsImport;
-    Q3Action **playlistsList;
-
-    Q3Action *optionsBeatMark;
-#ifdef __VINYLCONTROL__
-    Q3Action *optionsVinylControl;
-#endif
-    Q3Action *optionsFullScreen;
-    Q3Action *optionsPreferences;
-
-    Q3Action *helpAboutApp;
-
-#ifdef __SCRIPT__
-    Q3Action *macroStudio;
-#endif
-    #else
     QAction *fileNew;
     QAction *fileOpen;
     QAction *fileSave;
@@ -249,7 +194,6 @@ class MixxxApp : public QMainWindow
 #ifdef __SCRIPT__
     QAction *macroStudio;
 #endif
-    #endif
     int m_iNoPlaylists;
 
     /** Pointer to preference dialog */
