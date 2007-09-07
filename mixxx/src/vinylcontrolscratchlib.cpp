@@ -82,9 +82,11 @@ VinylControlScratchlib::~VinylControlScratchlib()
 	delete analyzer;
 
 	// Continue the run() function and close it
+	lockSamples.lock();
 	bShouldClose = true;
 	waitForNextInput.wakeAll();
-	terminate();
+	lockSamples.unlock();
+	wait();
 }
 
 
