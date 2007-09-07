@@ -124,6 +124,9 @@ int SoundDevicePortAudio::open()
     unsigned int iFramesPerBuffer = iLatencySamples/m_iNumberOfBuffers;
 
     //OSS is a bitch - It only likes power-of-two buffer sizes, so give it one.
+    //Update: A patch has been pushed upstream to PortAudio for this that will elimate
+    //the need for this block. However, we should keep it around until a newer version
+    //of PortAudio gets packaged in most distributions. - Albert Sept 7/07
     if (m_pConfig->getValueString(ConfigKey("[Soundcard]","SoundApi")) == "OSS")
     {
         unsigned int i;
