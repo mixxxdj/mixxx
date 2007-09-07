@@ -46,6 +46,7 @@ struct timecoder_t {
     unsigned char *mon; /* visual monitor of waveform */
     int mon_size, mon_counter, mon_scale,
         log_fd; /* optional file descriptor to log to, or -1 for none */
+    signed int *lookup; /* pointer to built lookup table */
 };
 
 
@@ -53,8 +54,8 @@ struct timecoder_t {
  * lookup tables soon, so we can use a different timecode on 
  * each timecoder, and switch between them. */
 
-int timecoder_build_lookup(char *timecode_name);
-void timecoder_free_lookup(void);
+int timecoder_build_lookup(struct timecoder_t *tc, char *timecode_name);
+void timecoder_free_lookup(struct timecoder_t *tc);
 
 int timecoder_init(struct timecoder_t *tc);
 int timecoder_clear(struct timecoder_t *tc);
