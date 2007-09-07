@@ -60,7 +60,6 @@ struct timecode_def_t {
     unsigned int seed, /* LFSR value at timecode zero */
         length, /* in cycles */
         safe; /* last 'safe' timecode number (for auto disconnect) */
-    signed int *lookup; /* pointer to built lookup table */
 };
 
 
@@ -76,7 +75,7 @@ struct timecode_def_t timecode_def[] = {
         ntaps: 9,
         length: 712000,
         safe: 707000,
-        lookup: NULL
+        //lookup: NULL
     },
     {
         name: "serato_2b",
@@ -89,7 +88,7 @@ struct timecode_def_t timecode_def[] = {
         ntaps: 9,
         length: 922000,
         safe: 917000,
-        lookup: NULL
+        //lookup: NULL
     },
     {
         name: "serato_cd",
@@ -102,7 +101,7 @@ struct timecode_def_t timecode_def[] = {
         ntaps: 9,
         length: 940000,
         safe: 930000,
-        lookup: NULL
+        //lookup: NULL
     },
     {
         name: "traktor_a",
@@ -115,7 +114,7 @@ struct timecode_def_t timecode_def[] = {
         ntaps: 3,
         length: 1500000,
         safe: 1480000,
-        lookup: NULL
+        //lookup: NULL
     },
     {
         name: "traktor_b",
@@ -128,7 +127,7 @@ struct timecode_def_t timecode_def[] = {
         ntaps: 3,
         length: 2110000,
         safe: 2090000,
-        lookup: NULL
+        //lookup: NULL
     },
     {
         name: NULL
@@ -179,7 +178,7 @@ static inline int lfsr_rev(unsigned int code)
 
 /* Setup globally, for a chosen timecode definition */
 
-int timecoder_build_lookup(char *timecode_name) {
+int timecoder_build_lookup(struct timecoder_t *tc, char *timecode_name) {
     unsigned int n, current;
 
     def = &timecode_def[0];
@@ -200,24 +199,24 @@ int timecoder_build_lookup(char *timecode_name) {
             2 << def->bits, (2 << def->bits) * sizeof(unsigned int) / 1024,
             def->bits, def->desc);
 
-    def->lookup = malloc((2 << def->bits) * sizeof(unsigned int));
-    if(!def->lookup) {
+    tc->lookup = malloc((2 << def->bits) * sizeof(unsigned int));
+    if(!tc->lookup) {
         perror("malloc");
         return 0;
     }
     
     for(n = 0; n < ((unsigned int)2 << def->bits); n++)
-        def->lookup[n] = -1;
+        tc->lookup[n] = -1;
     
     current = def->seed;
     
     for(n = 0; n < def->length; n++) {
-        if(def->lookup[current] != -1) {
+        if(tc->lookup[current] != -1) {
             fprintf(stderr, "Timecode has wrapped; finishing here.\n");
             return -1;
         }
         
-        def->lookup[current] = n;
+        tc->lookup[current] = n;
         current = (current >> 1) + (lfsr(current) << (def->bits - 1));
     }
     
@@ -227,9 +226,8 @@ int timecoder_build_lookup(char *timecode_name) {
 
 /* Free the timecoder lookup table when it is no longer needed */
 
-void timecoder_free_lookup(void) {
-    if (def->lookup)
-        free(def->lookup);
+void timecoder_free_lookup(struct timecoder_t *tc) {
+    free(tc->lookup);
 }
 
 
@@ -558,7 +556,7 @@ signed int timecoder_get_position(struct timecoder_t *tc, int *when)
     st = &tc->state[0];
 
     if(st->valid_counter > VALID_BITS) {
-        r = def->lookup[tc->state[0].bitstream];
+        r = tc->lookup[tc->state[0].bitstream];
 
         if(r >= 0) {
             if(when) 
