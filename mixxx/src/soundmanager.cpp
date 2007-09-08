@@ -157,8 +157,6 @@ void SoundManager::closeDevices()
     //requestBufferMutex.unlock();
 
 #ifdef __VINYLCONTROL__
-//FIXME: We're going to leak memory like crazy here whenever the user switches
-//       vinyl types. The xwax code isn't very thread-safe at the moment...
     if (m_VinylControl[0])
         delete m_VinylControl[0];
     if (m_VinylControl[1])
