@@ -36,10 +36,10 @@
 
 
 /*Constructor, sets up attributes for WTrackTableView*/
-WTrackTableView::WTrackTableView(QWidget *parent) : QTableView(parent)
+WTrackTableView::WTrackTableView(QWidget *parent, ConfigObject<ConfigValue> *pConfig) : QTableView(parent)
 {
     m_pTable = new WTrackTableModel(this);
-
+    m_pConfig = pConfig;
     //setup properties for table
     setSelectionBehavior(SelectRows);
     setSelectionMode(QAbstractItemView::SingleSelection);
@@ -68,7 +68,7 @@ WTrackTableView::WTrackTableView(QWidget *parent) : QTableView(parent)
 
     m_pDirModel = new QDirModel;
     m_pDirModel->setFilter(QDir::AllEntries);
-    m_dirindex = m_pDirModel->index(QDir::currentPath());
+    m_dirindex = m_pDirModel->index(m_pConfig->getValueString(ConfigKey("[Playlist]","Directory")));
 
     m_pDirFilter = new WTrackTableFilter(m_dirindex);
     m_pDirFilter->setSourceModel(m_pDirModel);

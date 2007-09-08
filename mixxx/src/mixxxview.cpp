@@ -635,7 +635,7 @@ void MixxxView::createAllWidgets(QDomElement docElem, QWidget* parent, bool bVis
 
 			else if (node.nodeName()=="TableView")
 			{
-				m_pTrackTableView = new WTrackTableView(this);
+				m_pTrackTableView = new WTrackTableView(this, pConfig);
 				m_pTrackTableView->setup(node);
 			}
         }

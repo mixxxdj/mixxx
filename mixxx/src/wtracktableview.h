@@ -14,6 +14,7 @@
 #include <QTableView>
 #include "wtracktablefilter.h"
 #include "proxymodel.h"
+#include "configobject.h"
 
 class QWidget;
 
@@ -43,7 +44,7 @@ class WTrackTableView : public QTableView
     Q_OBJECT
 
 public:
-    WTrackTableView(QWidget *parent=0);
+    WTrackTableView(QWidget *parent=0, ConfigObject<ConfigValue> *pConfig=0);
     ~WTrackTableView();
 	/**Graphically set up WTrackTableView**/
     void setup(QDomNode node);
@@ -66,6 +67,8 @@ public:
     WTrackTableModel *m_pTable;
 
 private:
+    /** Config object*/
+    ConfigObject<ConfigValue> *m_pConfig;
     /**Pointer to Track object**/
     Track *m_pTrack;
     /**Pointer to selected TrackInfoObject in model**/
