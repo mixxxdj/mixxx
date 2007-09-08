@@ -96,23 +96,23 @@ DlgPrefControls::DlgPrefControls(QWidget *parent, MixxxView *pView, MixxxApp *mi
     // Rate buttons configuration
     //
     if (m_pConfig->getValueString(ConfigKey("[Controls]","RateTempLeft")).length() == 0)
-        m_pConfig->set(ConfigKey("[Controls]","RateTempLeft"),ConfigValue(50));
+        m_pConfig->set(ConfigKey("[Controls]","RateTempLeft"),ConfigValue(400));
     if (m_pConfig->getValueString(ConfigKey("[Controls]","RateTempRight")).length() == 0)
-        m_pConfig->set(ConfigKey("[Controls]","RateTempRight"),ConfigValue(10));
+        m_pConfig->set(ConfigKey("[Controls]","RateTempRight"),ConfigValue(200));
     if (m_pConfig->getValueString(ConfigKey("[Controls]","RatePermLeft")).length() == 0)
         m_pConfig->set(ConfigKey("[Controls]","RatePermLeft"),ConfigValue(10));
     if (m_pConfig->getValueString(ConfigKey("[Controls]","RatePermRight")).length() == 0)
-        m_pConfig->set(ConfigKey("[Controls]","RatePermRight"),ConfigValue(5));
-
-    spinBoxTempRateLeft->setValue(m_pConfig->getValueString(ConfigKey("[Controls]","RateTempLeft")).toInt());
-    spinBoxTempRateRight->setValue(m_pConfig->getValueString(ConfigKey("[Controls]","RateTempRight")).toInt());
-    spinBoxPermRateLeft->setValue(m_pConfig->getValueString(ConfigKey("[Controls]","RatePermLeft")).toInt());
-    spinBoxPermRateRight->setValue(m_pConfig->getValueString(ConfigKey("[Controls]","RatePermRight")).toInt());
+        m_pConfig->set(ConfigKey("[Controls]","RatePermRight"),ConfigValue(10));
 
     connect(spinBoxTempRateLeft, SIGNAL(valueChanged(int)), this, SLOT(slotSetRateTempLeft(int)));
     connect(spinBoxTempRateRight, SIGNAL(valueChanged(int)), this, SLOT(slotSetRateTempRight(int)));
     connect(spinBoxPermRateLeft, SIGNAL(valueChanged(int)), this, SLOT(slotSetRatePermLeft(int)));
     connect(spinBoxPermRateRight, SIGNAL(valueChanged(int)), this, SLOT(slotSetRatePermRight(int)));
+
+    spinBoxTempRateLeft->setValue(m_pConfig->getValueString(ConfigKey("[Controls]","RateTempLeft")).toInt());
+    spinBoxTempRateRight->setValue(m_pConfig->getValueString(ConfigKey("[Controls]","RateTempRight")).toInt());
+    spinBoxPermRateLeft->setValue(m_pConfig->getValueString(ConfigKey("[Controls]","RatePermLeft")).toInt());
+    spinBoxPermRateRight->setValue(m_pConfig->getValueString(ConfigKey("[Controls]","RatePermRight")).toInt());
 
 
     //
@@ -239,7 +239,7 @@ void DlgPrefControls::slotUpdate()
 {
     ComboBoxRateRange->clear();
     ComboBoxRateRange->insertItem(" 8% (Technics SL1210)");
-    ComboBoxRateRange->insertItem("10% (Omnitronic 3xxx)");
+    ComboBoxRateRange->insertItem("10% ");
     ComboBoxRateRange->insertItem("20%");
     ComboBoxRateRange->insertItem("30%");
     ComboBoxRateRange->insertItem("40%");
@@ -256,8 +256,8 @@ void DlgPrefControls::slotUpdate()
     ComboBoxRateRange->setCurrentItem((int)idx);
 
     ComboBoxRateDir->clear();
-    ComboBoxRateDir->insertItem("Up increase speed");
-    ComboBoxRateDir->insertItem("Down increase speed (Technics SL1210)");
+    ComboBoxRateDir->insertItem("Up increases speed");
+    ComboBoxRateDir->insertItem("Down increases speed (Technics SL1210)");
 
     if (m_pControlRateDir1->get()==1)
         ComboBoxRateDir->setCurrentItem(0);
@@ -392,10 +392,3 @@ void DlgPrefControls::slotApply()
         m_pConfig->set(ConfigKey("[Controls]","RateDir"), ConfigValue(1));
 }
 
-
-
-
-
-
-
-    
