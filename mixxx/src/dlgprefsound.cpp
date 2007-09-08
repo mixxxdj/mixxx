@@ -39,14 +39,21 @@ DlgPrefSound::DlgPrefSound(QWidget *parent, SoundManager *_soundman,
     m_pSoundManager = _soundman;
     config = _config;
 
-    //Check to see if the config file is empty...
+    //Check to see if the config file is empty:
+    //First look at the API, and select the default soundcard and API if required.
     QString selectedAPI = config->getValueString(ConfigKey("[Soundcard]","SoundApi"));
     if (!m_pSoundManager->getHostAPIList().contains(selectedAPI))
     {
-        m_pSoundManager->setDefaults();
+        m_pSoundManager->setDefaults(true, true, false);
     }
     else
         qDebug() << "selectedAPI is: " << selectedAPI;
+    //Second, look at the latency, and set the default latency if the latency value was empty or less than zero.
+    int latency = config->getValueString(ConfigKey("[Soundcard]","Latency")).toInt();
+    if (latency <= 0)
+    {
+        m_pSoundManager->setDefaults(false, false, true);
+    }
     
     setupUi(this);
     slotUpdate();
