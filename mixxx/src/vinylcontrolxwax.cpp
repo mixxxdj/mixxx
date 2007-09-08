@@ -58,7 +58,7 @@ VinylControlXwax::VinylControlXwax(ConfigObject<ConfigValue> *pConfig, const cha
     qDebug("Building timecode lookup tables...\n");
     
     
-    if(timecoder_build_lookup(&timecoder, timecode) == -1) 
+    if(timecoder_build_lookup(timecode) == -1) 
     {
         qDebug("ERROR: Failed to build the timecode table!");
         return;
@@ -90,7 +90,7 @@ VinylControlXwax::~VinylControlXwax()
 		free(m_samples);
 
     //Cleanup xwax nicely
-    timecoder_free_lookup(&timecoder);
+    timecoder_free_lookup();
     timecoder_clear(&timecoder);
 
 	// Continue the run() function and close it
