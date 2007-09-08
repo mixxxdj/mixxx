@@ -488,7 +488,10 @@ if int(flags_vinylcontrol):
 	sources += Split(""" vinylcontrol.cpp vinylcontrolproxy.cpp vinylcontrolscratchlib.cpp vinylcontrolxwax.cpp dlgprefvinyl.cpp
 	                     enginevinylcontrol.cpp """)
 	env.Append(CPPPATH='../../lib/xwax')
-	sources += Split("""../../lib/xwax/timecoder.c """)
+	if platform == 'win32':	
+		sources += Split("""../../lib/xwax/timecoder_win32.c """)
+	else:
+		sources += Split("""../../lib/xwax/timecoder.c """)
 	env.Append(CPPPATH='../../lib/scratchlib')
 	sources += Split("""../../lib/scratchlib/DAnalyse.cpp """)
 	print "Vinyl Control... enabled"
