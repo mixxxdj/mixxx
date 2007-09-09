@@ -102,6 +102,8 @@ MixxxView::MixxxView(QWidget *parent, ConfigObject<ConfigValueKbd> *kbdconfig, b
     m_pOverviewCh1 = 0;
     m_pOverviewCh2 = 0;
     m_pComboBox = 0;
+    m_pTrackTableView = 0;
+    m_pLineEditSearch = 0;
 
     setupColorScheme(docElem, pConfig);
 
@@ -265,9 +267,12 @@ void MixxxView::setupColorScheme(QDomElement docElem, ConfigObject<ConfigValue> 
 	}
 }
 
-void MixxxView::createAllWidgets(QDomElement docElem, QWidget* parent, bool bVisualsWaveform, ConfigObject<ConfigValue> *pConfig) {
+void MixxxView::createAllWidgets(QDomElement docElem,
+                                 QWidget* parent,
+                                 bool bVisualsWaveform,
+                                 ConfigObject<ConfigValue> *pConfig) {
 
-	QDomNode node = docElem.firstChild();
+    QDomNode node = docElem.firstChild();
     while (!node.isNull())
     {
         if (node.isElement())
@@ -279,6 +284,7 @@ void MixxxView::createAllWidgets(QDomElement docElem, QWidget* parent, bool bVis
                 p->setup(node);
                 p->installEventFilter(m_pKeyboard);
                 m_qWidgetList.append(p);
+                p->show();
             }
             else if (node.nodeName()=="Knob")
             {
@@ -286,6 +292,7 @@ void MixxxView::createAllWidgets(QDomElement docElem, QWidget* parent, bool bVis
                 p->setup(node);
                 p->installEventFilter(m_pKeyboard);
                 m_qWidgetList.append(p);
+                p->show();
             }
 	    else if (node.nodeName()=="Label")
             {
@@ -293,6 +300,7 @@ void MixxxView::createAllWidgets(QDomElement docElem, QWidget* parent, bool bVis
                 p->setup(node);
 
                 m_qWidgetList.append(p);
+                p->show();
             }
             else if (node.nodeName()=="Number")
             {
@@ -300,6 +308,7 @@ void MixxxView::createAllWidgets(QDomElement docElem, QWidget* parent, bool bVis
                 p->setup(node);
                 p->installEventFilter(m_pKeyboard);
                 m_qWidgetList.append(p);
+                p->show();
             }
             else if (node.nodeName()=="NumberBpm")
             {
@@ -309,6 +318,7 @@ void MixxxView::createAllWidgets(QDomElement docElem, QWidget* parent, bool bVis
                     p->setup(node);
                     p->installEventFilter(m_pKeyboard);
                     m_qWidgetList.append(p);
+                    p->show();
                 }
                 else if (WWidget::selectNodeInt(node, "Channel")==2)
                 {
@@ -316,23 +326,31 @@ void MixxxView::createAllWidgets(QDomElement docElem, QWidget* parent, bool bVis
                     p->setup(node);
                     p->installEventFilter(m_pKeyboard);
                     m_qWidgetList.append(p);
+                    p->show();
                 }
             }
             else if (node.nodeName()=="NumberPos")
             {
-                if (WWidget::selectNodeInt(node, "Channel")==1 && m_pNumberPosCh1==0)
+                if (WWidget::selectNodeInt(node, "Channel")==1)
                 {
-                    m_pNumberPosCh1 = new WNumberPos("[Channel1]", this);
-                    m_pNumberPosCh1->setup(node);
-                    m_pNumberPosCh1->installEventFilter(m_pKeyboard);
-                    m_qWidgetList.append(m_pNumberPosCh1);
+                  if (m_pNumberPosCh1 == 0) {
+                      m_pNumberPosCh1 = new WNumberPos("[Channel1]", this);
+                      m_pNumberPosCh1->setup(node);
+                      m_pNumberPosCh1->installEventFilter(m_pKeyboard);
+                      m_qWidgetList.append(m_pNumberPosCh1);
+                  }else
+                      m_pNumberPosCh1->setup(node);
+
                 }
-                else if (WWidget::selectNodeInt(node, "Channel")==2 && m_pNumberPosCh2==0)
+                else if (WWidget::selectNodeInt(node, "Channel")==2)
                 {
-                    m_pNumberPosCh2 = new WNumberPos("[Channel2]", this);
-                    m_pNumberPosCh2->setup(node);
-                    m_pNumberPosCh2->installEventFilter(m_pKeyboard);
-                    m_qWidgetList.append(m_pNumberPosCh2);
+                  if (m_pNumberPosCh2 == 0) {
+                      m_pNumberPosCh2 = new WNumberPos("[Channel2]", this);
+                      m_pNumberPosCh2->setup(node);
+                      m_pNumberPosCh2->installEventFilter(m_pKeyboard);
+                      m_qWidgetList.append(m_pNumberPosCh2);
+                  }else
+                      m_pNumberPosCh2->setup(node);
                 }
             }
             else if (node.nodeName()=="NumberRate")
@@ -350,7 +368,7 @@ void MixxxView::createAllWidgets(QDomElement docElem, QWidget* parent, bool bVis
                     p->setup(node);
                     p->installEventFilter(m_pKeyboard);
                     m_qWidgetList.append(p);
-
+                    p->show();
                     //palette.setBrush(QPalette::Background, WSkinColor::getCorrectColor(c));
                     palette.setBrush(QPalette::Button, Qt::NoBrush);
                     //p->setBackgroundRole(QPalette::Window);
@@ -364,6 +382,11 @@ void MixxxView::createAllWidgets(QDomElement docElem, QWidget* parent, bool bVis
                     p->setup(node);
                     p->installEventFilter(m_pKeyboard);
                     m_qWidgetList.append(p);
+                    p->show();
+                    palette.setBrush(QPalette::Button, Qt::NoBrush);
+                    //p->setBackgroundRole(QPalette::Window);
+                    p->setPalette(palette);
+                    p->setAutoFillBackground(true);
                 }
             }
             else if (node.nodeName()=="Display")
@@ -372,6 +395,7 @@ void MixxxView::createAllWidgets(QDomElement docElem, QWidget* parent, bool bVis
                 p->setup(node);
                 p->installEventFilter(m_pKeyboard);
                 m_qWidgetList.append(p);
+                p->show();
             }
             else if (node.nodeName()=="Background")
             {
@@ -417,21 +441,27 @@ void MixxxView::createAllWidgets(QDomElement docElem, QWidget* parent, bool bVis
 
                 // If rate slider...
                 if (compareConfigKeys(node, "[Channel1],rate"))
-				{
-					//m_pSliderRateCh1 = p;
-                    m_pSliderRateCh1 = new WSliderComposed(this);
-					m_pSliderRateCh1->setup(node);
-					m_pSliderRateCh1->installEventFilter(m_pKeyboard);
-					m_qWidgetList.append(m_pSliderRateCh1);
-				}
+                {
+                  //m_pSliderRateCh1 = p;
+                  if (m_pSliderRateCh1 == 0) {
+                      m_pSliderRateCh1 = new WSliderComposed(this);
+                      m_pSliderRateCh1->setup(node);
+                      m_pSliderRateCh1->installEventFilter(m_pKeyboard);
+                      m_qWidgetList.append(m_pSliderRateCh1);
+                  }
+                  else
+                      m_pSliderRateCh1->setup(node);
+                }
                 else if (compareConfigKeys(node, "[Channel2],rate"))
-				{
-                    //m_pSliderRateCh2 = p;
-					m_pSliderRateCh2 = new WSliderComposed(this);
-					m_pSliderRateCh2->setup(node);
-					m_pSliderRateCh2->installEventFilter(m_pKeyboard);
-					m_qWidgetList.append(m_pSliderRateCh2);
-				}
+                {
+                    if (m_pSliderRateCh2 == 0) {
+                        m_pSliderRateCh2 = new WSliderComposed(this);
+                        m_pSliderRateCh2->setup(node);
+                        m_pSliderRateCh2->installEventFilter(m_pKeyboard);
+                        m_qWidgetList.append(m_pSliderRateCh2);
+                    } else
+                        m_pSliderRateCh2->setup(node);
+                }
             }
             else if (node.nodeName()=="VuMeter")
             {
@@ -439,6 +469,7 @@ void MixxxView::createAllWidgets(QDomElement docElem, QWidget* parent, bool bVis
                 m_qWidgetList.append(p);
                 p->setup(node);
                 p->installEventFilter(m_pKeyboard);
+                p->show();
             }
             else if (node.nodeName()=="StatusLight")
             {
@@ -449,17 +480,22 @@ void MixxxView::createAllWidgets(QDomElement docElem, QWidget* parent, bool bVis
             }
             else if (node.nodeName()=="Overview")
             {
-                if (WWidget::selectNodeInt(node, "Channel")==1 && m_pOverviewCh1==0)
+                if (WWidget::selectNodeInt(node, "Channel")==1)
                 {
+                  if (m_pOverviewCh1 == 0)
                     m_pOverviewCh1 = new WOverview(this);
                     //m_qWidgetList.append(m_pOverviewCh1);
                     m_pOverviewCh1->setup(node);
+                    m_pOverviewCh1->repaint();
                 }
-                else if (WWidget::selectNodeInt(node, "Channel")==2 && m_pOverviewCh2==0)
+                else if (WWidget::selectNodeInt(node, "Channel")==2)
                 {
+                  if (m_pOverviewCh2 == 0)
                     m_pOverviewCh2 = new WOverview(this);
                     //m_qWidgetList.append(m_pOverviewCh2);
                     m_pOverviewCh2->setup(node);
+                    m_pOverviewCh2->repaint();
+
                 }
             }
             else if (node.nodeName()=="Visual")
@@ -493,6 +529,10 @@ void MixxxView::createAllWidgets(QDomElement docElem, QWidget* parent, bool bVis
                     p->setWidget((QWidget *)m_pVisualCh1, true, Qt::LeftButton);
                     //ControlObject::setWidget((QWidget *)m_pVisualCh1, ConfigKey("[Channel1]", "wheel"), true, Qt::LeftButton);
                 }
+                else if (WWidget::selectNodeInt(node, "Channel")==1 && m_pVisualCh1!=0) {
+                  ((WVisualWaveform*)m_pVisualCh1)->setup(node);
+                  ((WVisualWaveform*)m_pVisualCh1)->resetColors();
+                }
                 else if (WWidget::selectNodeInt(node, "Channel")==2 && m_pVisualCh2==0)
                 {
                     if (bVisualsWaveform)
@@ -522,16 +562,34 @@ void MixxxView::createAllWidgets(QDomElement docElem, QWidget* parent, bool bVis
                     p->setWidget((QWidget *)m_pVisualCh2, true, Qt::LeftButton);
                     //ControlObject::setWidget((QWidget *)m_pVisualCh2, ConfigKey("[Channel2]", "wheel"), true, Qt::LeftButton);
                 }
+                else if (WWidget::selectNodeInt(node, "Channel")==2 && m_pVisualCh2!=0) {
+                  ((WVisualWaveform*)m_pVisualCh2)->setup(node);
+                  ((WVisualWaveform*)m_pVisualCh2)->resetColors();
+                }
 
                 if (!WWidget::selectNode(node, "Zoom").isNull() && WWidget::selectNodeQString(node, "Zoom")=="true")
                     m_bZoom = true;
             }
             else if (node.nodeName()=="Text")
             {
-                QLabel *p = new QLabel(this);
-                p->installEventFilter(m_pKeyboard);
+                QLabel* p = 0;
+                // Associate pointers
+                if (WWidget::selectNodeInt(node, "Channel")==1 && m_pTextCh1 != 0)
+                  p = m_pTextCh1;
+                else if (WWidget::selectNodeInt(node, "Channel")==2  && m_pTextCh2 != 0)
+                  p = m_pTextCh2;
+                else {
+                  p = new QLabel(this);
+                  p->installEventFilter(m_pKeyboard);
+                  m_qWidgetList.append(p);
+                  p->show();
+                }
 
-                m_qWidgetList.append(p);
+                // Associate pointers
+                if (WWidget::selectNodeInt(node, "Channel")==1)
+                    m_pTextCh1 = p;
+                else if (WWidget::selectNodeInt(node, "Channel")==2)
+                    m_pTextCh2 = p;
 
                 // Set position
                 QString pos = WWidget::selectNodeQString(node, "Pos");
@@ -546,102 +604,84 @@ void MixxxView::createAllWidgets(QDomElement docElem, QWidget* parent, bool bVis
                 p->setFixedSize(x,y);
 
                 // Background color
-				QColor bgc(255,255,255);
-				if (!WWidget::selectNode(node, "BgColor").isNull()) {
-                    bgc.setNamedColor(WWidget::selectNodeQString(node, "BgColor"));
+                QColor bgc(255,255,255);
+                if (!WWidget::selectNode(node, "BgColor").isNull()) {
+                  bgc.setNamedColor(WWidget::selectNodeQString(node, "BgColor"));
                 }
-				//p->setPaletteBackgroundColor(WSkinColor::getCorrectColor(bgc));
+                //p->setPaletteBackgroundColor(WSkinColor::getCorrectColor(bgc));
                 QPalette palette;
                 palette.setBrush(p->backgroundRole(), WSkinColor::getCorrectColor(bgc));
                 p->setPalette(palette);
                 p->setAutoFillBackground(true);
 
                 // Foreground color
-				QColor fgc(0,0,0);
-				if (!WWidget::selectNode(node, "FgColor").isNull()) {
-                    fgc.setNamedColor(WWidget::selectNodeQString(node, "FgColor"));
+                QColor fgc(0,0,0);
+                if (!WWidget::selectNode(node, "FgColor").isNull()) {
+                  fgc.setNamedColor(WWidget::selectNodeQString(node, "FgColor"));
                 }
-				p->setPaletteForegroundColor(WSkinColor::getCorrectColor(fgc));
+                p->setPaletteForegroundColor(WSkinColor::getCorrectColor(fgc));
                 //QPalette palette;
                 palette.setBrush(p->foregroundRole(), WSkinColor::getCorrectColor(fgc));
                 p->setPalette(palette);
 
                 // Alignment
                 if (!WWidget::selectNode(node, "Align").isNull() && WWidget::selectNodeQString(node, "Align")=="right")
-                    p->setAlignment(Qt::AlignRight);
-
-                // Associate pointers
-                if (WWidget::selectNodeInt(node, "Channel")==1)
-                    m_pTextCh1 = p;
-                else if (WWidget::selectNodeInt(node, "Channel")==2)
-                    m_pTextCh2 = p;
+                  p->setAlignment(Qt::AlignRight);
 
             }
-			else if (node.nodeName()=="ComboBox")
-			{
-				/*
-				m_pComboBox = new WComboBox(parent, "ComboBox");
-				m_pComboBox->setup(node);
-				*/
-				m_pComboBox = new QComboBox( FALSE, this, "ComboBox" );
-				//m_pWComboBox = new WComboBox(parent,"ComboBox");
-				// Set position
+            else if (node.nodeName()=="ComboBox")
+              {
+                if (m_pComboBox == 0) {
+                  m_pComboBox = new QComboBox( FALSE, this, "ComboBox" );
+                  m_pComboBox->insertItem( "Library" );
+                  m_pComboBox->insertItem( "Play Queue" );
+                  m_pComboBox->insertItem( "Browse" );
+                }
+                //m_pWComboBox = new WComboBox(parent,"ComboBox");
+                // Set position
                 QString pos = WWidget::selectNodeQString(node, "Pos");
                 int x = pos.left(pos.find(",")).toInt();
                 int y = pos.mid(pos.find(",")+1).toInt();
                 m_pComboBox->move(x,y);
 
-				// Size
+                // Size
                 QString size = WWidget::selectNodeQString(node, "Size");
                 x = size.left(size.find(",")).toInt();
                 y = size.mid(size.find(",")+1).toInt();
                 m_pComboBox->setFixedSize(x,y);
+              }
 
+            else if (node.nodeName()=="Search")
+              {
+                if (m_pLineEditSearch == 0)
+                  m_pLineEditSearch = new QLineEdit( this, "lineEdit" );
 
-                m_pComboBox->insertItem( "Library" );
-                m_pComboBox->insertItem( "Play Queue" );
-                m_pComboBox->insertItem( "Browse" );
-
-			}
-
-			else if (node.nodeName()=="Search")
-			{
-				m_pLineEditSearch = new QLineEdit( this, "lineEdit" );
-
-				// Set position
+                // Set position
                 QString pos = WWidget::selectNodeQString(node, "Pos");
                 int x = pos.left(pos.find(",")).toInt();
                 int y = pos.mid(pos.find(",")+1).toInt();
                 m_pLineEditSearch->move(x+35,y);
-				//m_pLineEditSearch->setText(" ");
-				//QString temp = m_pLineEditSearch->text();
+                //m_pLineEditSearch->setText(" ");
+                //QString temp = m_pLineEditSearch->text();
 
-				// Size
+                // Size
                 QString size = WWidget::selectNodeQString(node, "Size");
                 x = size.left(size.find(",")).toInt();
                 y = size.mid(size.find(",")+1).toInt();
                 m_pLineEditSearch->setFixedSize(x,y);
 
-			}
-			/*
-            else if (node.nodeName()=="TrackTable")
-            {
-                m_pTrackTable = new WTrackTable(this);
-                //m_qWidgetList.append(m_pTrackTable); // Do not autodelete as this crashes on Win32
-                m_pTrackTable->setup(node);
-                m_pTrackTable->installEventFilter(m_pKeyboard);
-            }
-			*/
-
-			else if (node.nodeName()=="TableView")
-			{
-				m_pTrackTableView = new WTrackTableView(this, pConfig);
-				m_pTrackTableView->setup(node);
-			}
+              }
+            else if (node.nodeName()=="TableView")
+              {
+                if (m_pTrackTableView == 0)
+                  m_pTrackTableView = new WTrackTableView(this, pConfig);
+                m_pTrackTableView->setup(node);
+              }
         }
         node = node.nextSibling();
     }
 }
+
 
 void MixxxView::rebootGUI(QWidget* parent, bool bVisualsWaveform, ConfigObject<ConfigValue> *pConfig, QString qSkinPath) {
 
@@ -651,10 +691,6 @@ void MixxxView::rebootGUI(QWidget* parent, bool bVisualsWaveform, ConfigObject<C
 	// Basically it tries to save as many components of the old skin
 	// as possible and then deletes everything else before recreating
 	// them from scratch
-
-	// TODO: Some of this code should be shared in an intelligent way
-	// between createAllWidgets and here, this is quite messy at the
-	// moment
 
 	QObject* obj;
 	// This isn't thread safe, does anything else hack on this object?
@@ -674,314 +710,9 @@ void MixxxView::rebootGUI(QWidget* parent, bool bVisualsWaveform, ConfigObject<C
 	}
 	QDomElement docElem = openSkin(qSkinPath);
 	setupColorScheme(docElem, pConfig);
-	//createAllWidgets(docElem, parent, bVisualsWaveform, pConfig);
-
-	QDomNode node = docElem.firstChild();
-	while (!node.isNull())
-    {
-        if (node.isElement())
-        {
-	//printf("node: %s\n", node.nodeName().toAscii().constData());
-            if (node.nodeName()=="PushButton")
-            {
-				WPushButton *p = new WPushButton(this);
-                p->setup(node);
-                p->installEventFilter(m_pKeyboard);
-                m_qWidgetList.append(p);
-				p->show();
-            }
-            else if (node.nodeName()=="Knob")
-            {
-				WKnob *p = new WKnob(this);
-                p->setup(node);
-                p->installEventFilter(m_pKeyboard);
-                m_qWidgetList.append(p);
-				p->show();
-            }
-			else if (node.nodeName()=="Label")
-            {
-                WLabel *p = new WLabel(this);
-                p->setup(node);
-
-                m_qWidgetList.append(p);
-				p->show();
-            }
-            else if (node.nodeName()=="Number")
-            {
-                WNumber *p = new WNumber(this);
-                p->setup(node);
-                p->installEventFilter(m_pKeyboard);
-                m_qWidgetList.append(p);
-				p->show();
-            }
-            else if (node.nodeName()=="NumberBpm")
-            {
-                if (WWidget::selectNodeInt(node, "Channel")==1)
-                {
-                    WNumberBpm *p = new WNumberBpm("[Channel1]", this);
-                    p->setup(node);
-                    p->installEventFilter(m_pKeyboard);
-                    m_qWidgetList.append(p);
-					p->show();
-                }
-                else if (WWidget::selectNodeInt(node, "Channel")==2)
-                {
-                    WNumberBpm *p = new WNumberBpm("[Channel2]", this);
-                    p->setup(node);
-                    p->installEventFilter(m_pKeyboard);
-                    m_qWidgetList.append(p);
-					p->show();
-                }
-            }
-			else if (node.nodeName()=="NumberPos")
-            {
-                if (WWidget::selectNodeInt(node, "Channel")==1)
-                {
-                    m_pNumberPosCh1->setup(node);
-                }
-                else if (WWidget::selectNodeInt(node, "Channel")==2)
-                {
-                    m_pNumberPosCh2->setup(node);
-                }
-            }
-            else if (node.nodeName()=="NumberRate")
-            {
-                if (WWidget::selectNodeInt(node, "Channel")==1)
-                {
-                    WNumberRate *p = new WNumberRate("[Channel1]", this);
-                    p->setup(node);
-                    p->installEventFilter(m_pKeyboard);
-                    m_qWidgetList.append(p);
-					p->show();
-                }
-                else if (WWidget::selectNodeInt(node, "Channel")==2)
-                {
-                    WNumberRate *p = new WNumberRate("[Channel2]", this);
-                    p->setup(node);
-                    p->installEventFilter(m_pKeyboard);
-                    m_qWidgetList.append(p);
-					p->show();
-                }
-            }
-            else if (node.nodeName()=="StatusLight")
-            {
-                WStatusLight *p = new WStatusLight(this);
-                m_qWidgetList.append(p);
-                p->setup(node);
-                p->installEventFilter(m_pKeyboard);
-                p->show();
-            }
-			else if (node.nodeName()=="Display")
-            {
-                WDisplay *p = new WDisplay(this);
-                p->setup(node);
-                p->installEventFilter(m_pKeyboard);
-                m_qWidgetList.append(p);
-				p->show();
-            }
-            else if (node.nodeName()=="Background")
-            {
-                QString filename = WWidget::selectNodeQString(node, "Path");
-				QPixmap* background = WPixmapStore::getPixmapNoCache(WWidget::getPath(filename));
-                //this->setPaletteBackgroundPixmap(*background);
-
-                QLabel* bg = new QLabel(this);
-                bg->move(0, 0);
-                bg->setPixmap(*background);
-                bg->lower();
-                m_qWidgetList.append(bg);
-
-				// TODO: We leak memory at the size of the old bg pixmap (FIXME)
-                // FWI: Begin of fullscreen patch
-                // this->setFixedSize(background.width(),background.height()+((QMainWindow *)parent)->menuBar()->height());
-                // parent->setFixedSize(background.width(),background.height()+((QMainWindow *)parent)->menuBar()->height());
-                this->setFixedSize(background->width(),background->height()+((QMainWindow *)parent)->menuBar()->height());
-                parent->setMinimumSize(background->width(),background->height()+((QMainWindow *)parent)->menuBar()->height());
-                // FWI: End of fullscreen patch
-                this->move(0,0);
-
-				QColor c(255,255,255);
-				if (!WWidget::selectNode(node, "BgColor").isNull()) {
-					c.setNamedColor(WWidget::selectNodeQString(node, "BgColor"));
-				}
-				//parent->setEraseColor(WSkinColor::getCorrectColor(c));
-                QPalette palette;
-                palette.setBrush(QPalette::Window, WSkinColor::getCorrectColor(c));
-                parent->setBackgroundRole(QPalette::Window);
-                this->setBackgroundRole(QPalette::Window);
-                parent->setPalette(palette);
-
-            }
-            else if (node.nodeName()=="SliderComposed")
-            {
-                // If rate slider...
-
-                if (compareConfigKeys(node, "[Channel1],rate"))
-				{
-					if(!m_pSliderRateCh1)
-						m_pSliderRateCh1 = new WSliderComposed(this);
-                    m_pSliderRateCh1->setup(node);
-				}
-                else if (compareConfigKeys(node, "[Channel2],rate"))
-				{
-					if(!m_pSliderRateCh2)
-						m_pSliderRateCh2 = new WSliderComposed(this);
-                    m_pSliderRateCh2->setup(node);
-				}
-				else {
-					WSliderComposed *p = new WSliderComposed(this);
-					p->setup(node);
-					p->installEventFilter(m_pKeyboard);
-					m_qWidgetList.append(p);
-					p->show();
-				}
-            }
-			else if (node.nodeName()=="VuMeter")
-            {
-                WVuMeter *p = new WVuMeter(this);
-                m_qWidgetList.append(p);
-                p->setup(node);
-                p->installEventFilter(m_pKeyboard);
-				p->show();
-            }
-            else if (node.nodeName()=="Overview")
-            {
-                if (WWidget::selectNodeInt(node, "Channel")==1)
-                {
-					if(!m_pOverviewCh1)
-					{
-						m_pOverviewCh1 = new WOverview(this);
-					}
-					m_pOverviewCh1->setup(node);
-					m_pOverviewCh1->repaint();
-                }
-                else if (WWidget::selectNodeInt(node, "Channel")==2)
-                {
-					if(!m_pOverviewCh2)
-					{
-						m_pOverviewCh2 = new WOverview(this);
-					}
-                    m_pOverviewCh2->setup(node);
-					m_pOverviewCh2->repaint();
-                }
-            }
-			else if (node.nodeName()=="Visual")
-            {
-                if (WWidget::selectNodeInt(node, "Channel")==1)
-                {
-					((WVisualWaveform*)m_pVisualCh1)->setup(node);
-					((WVisualWaveform*)m_pVisualCh1)->resetColors();
-                }
-                else if (WWidget::selectNodeInt(node, "Channel")==2)
-                {
-					((WVisualWaveform*)m_pVisualCh2)->setup(node);
-					((WVisualWaveform*)m_pVisualCh2)->resetColors();
-                }
-            }
-			else if (node.nodeName()=="Text")
-            {
-				QLabel* p = 0;
-                // Associate pointers
-                if (WWidget::selectNodeInt(node, "Channel")==1)
-                    p = m_pTextCh1;
-                else if (WWidget::selectNodeInt(node, "Channel")==2)
-					p = m_pTextCh2;
-				else {
-					p = new QLabel(this);
-					m_qWidgetList.append(p);
-					p->show();
-				}
-
-                // Set position
-                QString pos = WWidget::selectNodeQString(node, "Pos");
-                int x = pos.left(pos.find(",")).toInt();
-                int y = pos.mid(pos.find(",")+1).toInt();
-                p->move(x,y);
-
-                // Size
-                QString size = WWidget::selectNodeQString(node, "Size");
-                x = size.left(size.find(",")).toInt();
-                y = size.mid(size.find(",")+1).toInt();
-                p->setFixedSize(x,y);
-
-                // Background color
-				QColor bgc(255,255,255);
-				if (!WWidget::selectNode(node, "BgColor").isNull()) {
-                    bgc.setNamedColor(WWidget::selectNodeQString(node, "BgColor"));
-                }
-				//p->setPaletteBackgroundColor(WSkinColor::getCorrectColor(bgc));
-                QPalette palette;
-                palette.setBrush(p->backgroundRole(), WSkinColor::getCorrectColor(bgc));
-                //p->setPalette(palette);
-                p->setAutoFillBackground(true);
-
-                // Foreground color
-				QColor fgc(0,0,0);
-				if (!WWidget::selectNode(node, "FgColor").isNull()) {
-                    fgc.setNamedColor(WWidget::selectNodeQString(node, "FgColor"));
-                }
-				//p->setPaletteForegroundColor(WSkinColor::getCorrectColor(fgc));
-                //QPalette palette;
-                palette.setBrush(p->foregroundRole(), WSkinColor::getCorrectColor(fgc));
-                p->setPalette(palette);
-
-                // Alignment
-                if (!WWidget::selectNode(node, "Align").isNull() && WWidget::selectNodeQString(node, "Align")=="right")
-                    p->setAlignment(Qt::AlignRight);
-
-            }
-            else if (node.nodeName()=="ComboBox")
-			{
-				//m_pComboBox->setup(node);
-
-				 // Set position
-                QString pos = WWidget::selectNodeQString(node, "Pos");
-                int x = pos.left(pos.find(",")).toInt();
-                int y = pos.mid(pos.find(",")+1).toInt();
-                m_pComboBox->move(x,y);
-
-				// Size
-                QString size = WWidget::selectNodeQString(node, "Size");
-                x = size.left(size.find(",")).toInt();
-                y = size.mid(size.find(",")+1).toInt();
-                m_pComboBox->setFixedSize(x,y);
-			}
-			else if (node.nodeName()=="Search")
-			{
-				// Set position
-                QString pos = WWidget::selectNodeQString(node, "Pos");
-                int x = pos.left(pos.find(",")).toInt();
-                int y = pos.mid(pos.find(",")+1).toInt();
-                m_pLineEditSearch->move(x+35,y);
-
-				//m_pLineEditSearch->setText(" ");
-				//QString temp = m_pLineEditSearch->text();
-
-				// Size
-                QString size = WWidget::selectNodeQString(node, "Size");
-                x = size.left(size.find(",")).toInt();
-                y = size.mid(size.find(",")+1).toInt();
-				//m_pSearchLabel->setFixedSize(x-285,y);
-                m_pLineEditSearch->setFixedSize(x,y);
-				qDebug("checkpoint 18");
-			}/*
-            else if (node.nodeName()=="TrackTable")
-            {
-                m_pTrackTable->setup(node);
-            }*/
-			else if (node.nodeName() == "TableView")
-			{
-				m_pTrackTableView->setup(node);
-			}
-			/*
-            else if (node.nodeName()=="TreeView")
-            {
-                m_pTreeView->setup(node);
-            }*/
-		}
-		node = node.nextSibling();
-	}
+	createAllWidgets(docElem, parent, bVisualsWaveform, pConfig);
 }
+
 
 Q3ValueList<QString> MixxxView::getSchemeList(QString qSkinPath) {
 
