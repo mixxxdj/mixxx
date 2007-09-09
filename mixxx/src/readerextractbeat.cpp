@@ -4,16 +4,16 @@
     begin                : Tue Mar 18 2003
     copyright            : (C) 2003 by Tue & Ken Haste Andersen
     email                : haste@diku.dk
- ***************************************************************************/
+***************************************************************************/
 
 /***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+*                                                                         *
+*   This program is free software; you can redistribute it and/or modify  *
+*   it under the terms of the GNU General Public License as published by  *
+*   the Free Software Foundation; either version 2 of the License, or     *
+*   (at your option) any later version.                                   *
+*                                                                         *
+***************************************************************************/
 
 #include "readerextractbeat.h"
 #include "visual/visualbuffer.h"
@@ -24,11 +24,11 @@
 #include "trackinfoobject.h"
 #include "qvaluelist.h"
 #ifdef __GNUPLOT__
-    // For sleep:
+// For sleep:
     #include <unistd.h>
 #endif
 
-ReaderExtractBeat::ReaderExtractBeat(ReaderExtract *input, EngineBuffer *pEngineBuffer, int frameSize, int frameStep, int _histSize) : ReaderExtract(input, pEngineBuffer, "marks")
+ReaderExtractBeat::ReaderExtractBeat(ReaderExtract * input, EngineBuffer * pEngineBuffer, int frameSize, int frameStep, int _histSize) : ReaderExtract(input, pEngineBuffer, "marks")
 {
     frameNo = input->getBufferSize(); ///frameStep;
     framePerChunk = frameNo/READCHUNK_NO;
@@ -81,7 +81,7 @@ ReaderExtractBeat::~ReaderExtractBeat()
     delete [] bpmBuffer;
 }
 
-void ReaderExtractBeat::newSource(TrackInfoObject *pTrack)
+void ReaderExtractBeat::newSource(TrackInfoObject * pTrack)
 {
     closeSource();
 
@@ -97,11 +97,11 @@ void ReaderExtractBeat::newSource(TrackInfoObject *pTrack)
         bpmBuffer[i] = m_pTrack->getBpm();
 
     m_dBeatFirst = m_pTrack->getBeatFirst();
-    
+
     // Hack to use beat sync seek even without reliable beat info
     //if (m_dBeatFirst<0.)
     //    m_dBeatFirst = 0.;
-    
+
     if (m_dBeatFirst>=0.)
         m_dBeatInterval = 60./m_pTrack->getBpm();
     else
@@ -157,12 +157,12 @@ void ReaderExtractBeat::reset()
         QApplication::postEvent(m_pVisualBuffer, new ReaderEvent(0, getBufferSize(), getBufferSize(), getRate()));
 }
 
-void *ReaderExtractBeat::getBasePtr()
+void * ReaderExtractBeat::getBasePtr()
 {
     return (void *)beatBuffer;
 }
 
-CSAMPLE *ReaderExtractBeat::getBpmPtr()
+CSAMPLE * ReaderExtractBeat::getBpmPtr()
 {
     return bpmBuffer;
 }
@@ -182,7 +182,7 @@ int ReaderExtractBeat::getBufferSize()
     return input->getBufferSize();
 }
 
-void *ReaderExtractBeat::processChunk(const int _idx, const int start_idx, const int _end_idx, bool backwards, const long signed int filepos_start)
+void * ReaderExtractBeat::processChunk(const int _idx, const int start_idx, const int _end_idx, bool backwards, const long signed int filepos_start)
 {
 #ifdef FILEOUTPUT
     QTextStream streambpm(&textbpm);
@@ -258,8 +258,8 @@ void *ReaderExtractBeat::processChunk(const int _idx, const int start_idx, const
 
     // Peaks
     setLineType(gnuplot_hfc,"points");
-    CSAMPLE *px = new CSAMPLE[getBufferSize()];
-    CSAMPLE *py = new CSAMPLE[getBufferSize()];
+    CSAMPLE * px = new CSAMPLE[getBufferSize()];
+    CSAMPLE * py = new CSAMPLE[getBufferSize()];
     PeakList::iterator itt = peaks->begin();
     int j=0;
     while (itt!=peaks->end())
@@ -313,7 +313,7 @@ void *ReaderExtractBeat::processChunk(const int _idx, const int start_idx, const
     i= frameFrom;
 
     //qDebug("%i, %i",(*it), (peaks->begin()==peaks->end()));
-    
+
     // Check if peak list is empty (may not be necessary)
     if (peaks->count()>0)
     {
@@ -325,79 +325,79 @@ void *ReaderExtractBeat::processChunk(const int _idx, const int start_idx, const
                 //
                 // Peak
                 //
-    
+
                 //
                 // Consider distance to previous peaks (it2) in the range between histMinBPM and histMaxBPM
                 PeakList::iterator it2 = it;
                 if (it2==peaks->begin())
                     it2 = peaks->end();
                 --it2;
-    
+
                 // Interval in seconds between current peak (it) and a previous peak (it2)
                 float interval = peaks->getDistance(it2,it)/(float)input->getRate();
-    
+
                 // Interval in seconds between current peak (it) and a previous beat mark
                 float beatint = peaks->getDistance(beatBufferLastIdx, it)/(float)input->getRate();
-    
+
                 // This variable is set to true, if there exists a peak which is 1.5 times larger than the current
                 // peak from this peak and histMaxIdx back in time.
                 bool maxPeakInHistMaxInterval = false;
-    
+
                 //
                 // For each previous peak in maximum beat range, update the bpv
                 PeakList::iterator it3 = it2;
                 while(interval>0. && interval<=60.f/histMinBPM && it2!=it)
                 {
-    //                qDebug("cur(%i,%p)=%f, prev(%i,%p)=%f, interval %f",(*it).i, it, hfc[(*it).i],(*it2).i, it2, hfc[(*it2).i], interval);
-    
+                    //                qDebug("cur(%i,%p)=%f, prev(%i,%p)=%f, interval %f",(*it).i, it, hfc[(*it).i],(*it2).i, it2, hfc[(*it2).i], interval);
+
                     // Update beat probability vector
                     bpv->add(interval, hfc[(*it).i]*hfc[(*it2).i]);
-    
+
                     // Determine if (it2) is within maximum beat distance from current peak, and if it is
                     // larger than the current peak.
                     if (interval<beatint && hfc[(*it2).i]>hfc[(*it).i])
                     {
                         maxPeakInHistMaxInterval = true;
-    //                    qDebug("max in interval");
+                        //                    qDebug("max in interval");
                     }
-    
+
                     // Get next previous peak and calculate its distance (interval) to current peak
                     if (it2==peaks->begin())
                         it2 = peaks->end();
                     --it2;
-    
+
                     // Workaround for possible bug in QT or gcc. When there seems to be only one element in the
                     // list, there may be a difference between it and it2!!!
                     if (it2==it3)
                         break;
-    
+
                     // Update interval
                     interval = peaks->getDistance(it2,it)/(float)input->getRate();
                 }
-    
+
                 //
                 // Is the current peak (it) a beat?
-    //            qDebug("max in interval %i",maxPeakInHistMaxInterval);
-    
-    
-    //            qDebug("peak beatint %f, interval %f",beatint, bpv->getCurrMaxInterval());
-    
-    //            qDebug("int %f, min %f, max %f",beatint, bpv->getCurrMaxInterval()-kfBeatRange, bpv->getCurrMaxInterval()+kfBeatRange);
-    
+                //            qDebug("max in interval %i",maxPeakInHistMaxInterval);
+
+
+                //            qDebug("peak beatint %f, interval %f",beatint, bpv->getCurrMaxInterval());
+
+                //            qDebug("int %f, min %f, max %f",beatint, bpv->getCurrMaxInterval()-kfBeatRange, bpv->getCurrMaxInterval()+kfBeatRange);
+
                 if (m_dBeatFirst<=0. && !backwards && beatint>bpv->getCurrMaxInterval()-kfBeatRange && beatint<bpv->getCurrMaxInterval()+kfBeatRange)
                 {
                     if (!maxPeakInHistMaxInterval)
                     {
-    
+
                         updateConfidence((*it).i, beatBufferLastIdx);
-    
+
                         //qDebug("set beat at %i, conf %f, bpv %f, int %f",(*it).i,confidence, bpv->getCurrMaxInterval(), beatint*input->getRate());
                         markBeat((*it).i);
                         beatCorr[(*it).i] = (*it).corr;
                         beatBufferLastIdx = (*it).i;
                     }
-    //                else
-    //                    qDebug("maxPeakInHistMaxInterval");
+                    //                else
+                    //                    qDebug("maxPeakInHistMaxInterval");
                 }
                 ++it;
                 if (it==peaks->end())
@@ -408,11 +408,11 @@ void *ReaderExtractBeat::processChunk(const int _idx, const int start_idx, const
                 //
                 // No peak
                 //
-    
+
                 if (bpv->getCurrMaxInterval()>0.)
                 {
                     int idx = i%frameNo;
-    
+
                     // interval to last marked beat in seconds
                     float beatint;
                     if (beatBufferLastIdx>idx)
@@ -420,32 +420,32 @@ void *ReaderExtractBeat::processChunk(const int _idx, const int start_idx, const
                     else
                         beatint = (float)(idx-beatBufferLastIdx);
                     beatint /= input->getRate();
-        
-        //                qDebug("no peak beatint %f, interval %f",beatint, bpv->getCurrMaxInterval());
-        
-        
-        //                qDebug("beatint %i",beatint);
-        //                qDebug("idx %i, int beat: %i, hist %i", idx, beatint, histMaxIdx+(int)(histMinInterval/histInterval));
-        //                qDebug("beatint %i, histint %i",beatint,histMaxIdx+(int)(histMinInterval/histInterval));
-        
-        
+
+                    //                qDebug("no peak beatint %f, interval %f",beatint, bpv->getCurrMaxInterval());
+
+
+                    //                qDebug("beatint %i",beatint);
+                    //                qDebug("idx %i, int beat: %i, hist %i", idx, beatint, histMaxIdx+(int)(histMinInterval/histInterval));
+                    //                qDebug("beatint %i, histint %i",beatint,histMaxIdx+(int)(histMinInterval/histInterval));
+
+
                     // If distance to last marked beat is larger than the current beat interval + kfBeatRange,
                     // consider marking a beat even though no peak is around...
                     if (beatint > bpv->getCurrMaxInterval()+kfBeatRange)
                     {
                         bool beat = false;
-    
+
                         if (confidence<kfBeatConfThreshold)
                         {
                             //
                             // Confidence is low, thus we try to resync to find a valid beat mark
-    
+
                             // Search from current sample and hist interval back in time for the largest peak
                             int from = (idx-(int)(bpv->getCurrMaxInterval()*input->getRate())+frameNo)%frameNo;
                             PeakList::iterator itmax = peaks->getMaxInRange(from, (int)bpv->getCurrMaxInterval()*input->getRate());
-    
+
                             //qDebug("curr block %i-%i, search from %i-%i, max at %i",frameFrom,frameTo+frameAdd,from,idx, (*itmax).i);
-    
+
                             // If a peak, itmax, was found, ensure that there is no larger peak between itmax and the current
                             // bpv interval back in time
                             if (itmax != peaks->end())
@@ -454,12 +454,12 @@ void *ReaderExtractBeat::processChunk(const int _idx, const int start_idx, const
                                 int from = ((*itmax).i-1-(int)(bpv->getCurrMaxInterval()*input->getRate())+frameNo)%frameNo;
                                 PeakList::iterator itmax2 = peaks->getMaxInRange(from, (int)bpv->getCurrMaxInterval()*input->getRate());
                                 //qDebug("max found %i, from %i-%i, len %i",(*itmax).i,oldfrom,from, (int)(bpv->getCurrMaxInterval()*input->getRate()));
-        
-        //                            if (itmax2!=peaks->end())
-        //                                qDebug("max1(%i) %f, max2(%i) %f",(*itmax).i,hfc[(*itmax).i],(*itmax2).i,hfc[(*itmax2).i]);
-        //                            else
-        //                                qDebug("no max2");
-        
+
+                                //                            if (itmax2!=peaks->end())
+                                //                                qDebug("max1(%i) %f, max2(%i) %f",(*itmax).i,hfc[(*itmax).i],(*itmax2).i,hfc[(*itmax2).i]);
+                                //                            else
+                                //                                qDebug("no max2");
+
                                 // If it exists ensure that it's less than itmax
                                 if (itmax2==peaks->end() || hfc[(*itmax2).i] < hfc[(*itmax).i])
                                 {
@@ -467,27 +467,27 @@ void *ReaderExtractBeat::processChunk(const int _idx, const int start_idx, const
                                     markBeat((*itmax).i);
                                     beatBufferLastIdx = (*itmax).i;
                                     beatCorr[(*itmax).i] = (*itmax).corr;
-    
+
                                     //qDebug("resync at %i, cur %i, conf %f",(*itmax).i,idx,confidence);
-    
+
                                     if ((*itmax).i<updateFrom)
                                         updateFrom = (*itmax).i;
-    
+
                                     // Delete everything from resync point to frameTo+frameAdd
                                     for (int j=(*itmax).i+1; j<frameTo+frameAdd; ++j)
                                         beatBuffer[j%frameNo] = 0.;
-    
+
     #ifdef FILEOUTPUT
                                     QTextStream streamconf(&textconf);
                                     streamconf << confidence << "\n";
                                     textconf.flush();
     #endif
-        
+
                                     beat = true;
                                 }
                             }
                         }
-    
+
                         if (!beat)
                         {
                             // The confidence is either high, or the resync failed. Thus a beat mark
@@ -502,17 +502,17 @@ void *ReaderExtractBeat::processChunk(const int _idx, const int start_idx, const
                                 }
                             }
                             updateConfidence(beatidx, beatBufferLastIdx);
-    
+
                             float interval;
                             if (beatBufferLastIdx>beatidx)
                                 interval = (float)(beatidx+frameNo-beatBufferLastIdx);
                             else
                                 interval = (float)(beatidx-beatBufferLastIdx);
                             //qDebug("force peak at %i, beatint %f, conf %f, bpv %f, interval %f",beatidx,beatint,confidence,bpv->getCurrMaxInterval(), interval);
-    
+
                             markBeat(beatidx);
                             beatBufferLastIdx = beatidx;
-    
+
                             if (beatidx<updateFrom)
                                 updateFrom = beatidx;
                         }
@@ -522,12 +522,12 @@ void *ReaderExtractBeat::processChunk(const int _idx, const int start_idx, const
             else
                 // Going backwards set confidence very low
                 confidence = -1.;
-        
-        
+
+
             ++i;
         }
     }
-    
+
     // Mark beat based on beatFirst (position of first beat)
     if (m_dBeatFirst>0.)
     {
@@ -573,19 +573,19 @@ void *ReaderExtractBeat::processChunk(const int _idx, const int start_idx, const
             filepos_curr += (READBUFFERSIZE/frameNo);
         }
     }
-    
+
     // Mark beat based on beatFirst (position of first beat)
     if (m_dBeatFirst>0.)
     {
         // Delete beat markings in beat buffer covered by chunk idx
         int i;
-        
+
         for (i=frameFrom; i<frameTo+frameAdd; i++)
         {
             beatBuffer[i%frameNo] = 0.;
             beatCorr[i%frameNo] = 0.;
         }
-    
+
         // Find the filepos of frameFrom
         int len;
         if (start_idx*framePerChunk>frameFrom)
@@ -594,7 +594,7 @@ void *ReaderExtractBeat::processChunk(const int _idx, const int start_idx, const
             len = frameFrom-(start_idx*framePerChunk);
         int filepos_from = filepos_start + len*(READBUFFERSIZE/frameNo);
 //         qDebug("filepos from %i, start %i, len %i", filepos_from, filepos_start, len);
-         
+
         int filepos_curr = filepos_from;
         float beatSampleInterval = bpv->getCurrMaxInterval()*44100.*2.; // HACK WITH SAMPLE RATE
 //         qDebug("interval %f", beatSampleInterval);
@@ -606,8 +606,8 @@ void *ReaderExtractBeat::processChunk(const int _idx, const int start_idx, const
 //                 qDebug("val %i", (filepos_curr-(int)m_dBeatFirst)%(int)beatSampleInterval);
                 if ((filepos_curr-(int)m_dBeatFirst)%(int)beatSampleInterval<=(READBUFFERSIZE/frameNo))
 //                 int k = (int)(((float)filepos_curr-m_dBeatFirst)/beatSampleInterval);
-                
-//                 qDebug("frame %i, sample %i, interval %f, k %i", i, i*(READBUFFERSIZE/frameNo), beatSampleInterval, k); 
+
+//                 qDebug("frame %i, sample %i, interval %f, k %i", i, i*(READBUFFERSIZE/frameNo), beatSampleInterval, k);
 //                 qDebug("%f, %i<%i",(float)k*beatSampleInterval, abs(filepos_curr-k*beatSampleInterval),(READBUFFERSIZE/frameNo));
 //                 if (abs(filepos_curr-k*beatSampleInterval)<(READBUFFERSIZE/frameNo))
                 {
@@ -617,7 +617,7 @@ void *ReaderExtractBeat::processChunk(const int _idx, const int start_idx, const
                 }
             }
             filepos_curr += (READBUFFERSIZE/frameNo);
-        }    
+        }
     }
 
 
@@ -671,7 +671,7 @@ void *ReaderExtractBeat::processChunk(const int _idx, const int start_idx, const
             std::cout << "-";
     }
     std::cout << "\n";
-*/
+ */
     return 0;
 }
 
@@ -708,7 +708,7 @@ void ReaderExtractBeat::updateConfidence(int curBeatIdx, int lastBeatIdx)
 void ReaderExtractBeat::markBeat(int i)
 {
     i = (i+getBufferSize())%getBufferSize();
-    
+
     // Color is defined from confidence (between -0.2 and 0.3)
     float v = (0.2+math_max(-0.2,math_min(confidence,0.3)))/0.5;
 

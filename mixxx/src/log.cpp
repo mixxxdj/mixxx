@@ -1,7 +1,7 @@
 //
 // C++ Implementation: log
 //
-// Description: 
+// Description:
 //
 //
 // Author: Tue Haste Andersen <haste@diku.dk>, (C) 2004
@@ -20,49 +20,49 @@
 #include "configobject.h"
 #include "controlobjectthreadmain.h"
 
-Log::Log(QString qFilename, Track *pTrack) : m_qFile(qFilename)
+Log::Log(QString qFilename, Track * pTrack) : m_qFile(qFilename)
 {
     if (QFile::exists(qFilename))
         qCritical() << "Log file exists:" << qFilename;
-     
+
     if (!m_qFile.open(QIODevice::WriteOnly))
         qCritical() << "Could not write to file:" << qFilename;
-    
+
     qDebug() << "Logging to" << qFilename;
-            
+
     m_qTime.start();
 
     //
     // Set up what to log
     //
-    ControlObjectThreadMain *p;
-    
+    ControlObjectThreadMain * p;
+
     //p = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey("[Channel1]", "playposition")));
     //connect(p, SIGNAL(valueChanged(double)), this, SLOT(slotLogPlayPosition(double)));
-    
+
     //p = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey("[Channel1]", "virtualplayposition")));
     //connect(p, SIGNAL(valueChanged(double)), this, SLOT(slotLogVirtualPlayPosition(double)));
 
     //p = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey("[Channel1]", "rateSearch")));
     //connect(p, SIGNAL(valueChanged(double)), this, SLOT(slotLogSearchRate(double)));
-    
-    
+
+
     //p = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey("[Channel2]", "play")));
     //connect(p, SIGNAL(valueChanged(double)), this, SLOT(slotLogCuePlay(double)));
-    
+
     //p = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey("[Channel1]","NextTask")));
     //connect(p, SIGNAL(valueChanged(double)), this, SLOT(slotLogNextTask(double)));
-    
+
     //p = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey("[Channel1]","PrevTask")));
     //connect(p, SIGNAL(valueChanged(double)), this, SLOT(slotLogPrevTask(double)));
 
     // Playlist load
     //connect(pTrack, SIGNAL(activePlaylist(TrackPlaylist *)), this, SLOT(slotLogPlaylist(TrackPlaylist *)));
-    
+
     // Track change
     connect(pTrack, SIGNAL(newTrackPlayer1(TrackInfoObject *)), this, SLOT(slotLogTrack1(TrackInfoObject *)));
     connect(pTrack, SIGNAL(newTrackPlayer2(TrackInfoObject *)), this, SLOT(slotLogTrack2(TrackInfoObject *)));
-    
+
     p = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey("[Channel1]", "play")));
     connect(p, SIGNAL(valueChanged(double)), this, SLOT(slotLogPlay1(double)));
     p = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey("[Channel2]", "play")));
@@ -72,7 +72,7 @@ Log::Log(QString qFilename, Track *pTrack) : m_qFile(qFilename)
     connect(p, SIGNAL(valueChanged(double)), this, SLOT(slotLogLoop1(double)));
     p = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey("[Channel2]", "loop")));
     connect(p, SIGNAL(valueChanged(double)), this, SLOT(slotLogLoop2(double)));
-    
+
     p = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey("[Channel1]", "cue_set")));
     connect(p, SIGNAL(valueChanged(double)), this, SLOT(slotLogCueSet1(double)));
     p = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey("[Channel2]", "cue_set")));
@@ -137,7 +137,7 @@ Log::Log(QString qFilename, Track *pTrack) : m_qFile(qFilename)
     connect(p, SIGNAL(valueChanged(double)), this, SLOT(slotLogLow1(double)));
     p = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey("[Channel2]", "filterLow")));
     connect(p, SIGNAL(valueChanged(double)), this, SLOT(slotLogLow2(double)));
-    
+
     p = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey("[Channel1]", "filterMid")));
     connect(p, SIGNAL(valueChanged(double)), this, SLOT(slotLogMid1(double)));
     p = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey("[Channel2]", "filterMid")));
@@ -148,7 +148,7 @@ Log::Log(QString qFilename, Track *pTrack) : m_qFile(qFilename)
     p = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey("[Channel2]", "filterHigh")));
     connect(p, SIGNAL(valueChanged(double)), this, SLOT(slotLogHigh2(double)));
 }
-        
+
 Log::~Log()
 {
     m_qFile.close();
@@ -157,8 +157,8 @@ Log::~Log()
 void Log::slotLogEvent(QString type, QString arg)
 {
     Q3TextStream stream(&m_qFile);
-    stream << m_qTime.elapsed() << " " << type << ", " << arg << "\n";  
-//    m_qFile.flush();  
+    stream << m_qTime.elapsed() << " " << type << ", " << arg << "\n";
+//    m_qFile.flush();
 }
 
 void Log::slotLogPlayPosition(double v)
@@ -181,19 +181,19 @@ void Log::slotLogCuePlay(double v)
     slotLogEvent("cueplay", QString("%1").arg(v));
 }
 
-void Log::slotLogTrack1(TrackInfoObject *p)
+void Log::slotLogTrack1(TrackInfoObject * p)
 {
     QString title = p->getFilename();
     slotLogEvent("track1", title);
 }
 
-void Log::slotLogTrack2(TrackInfoObject *p)
+void Log::slotLogTrack2(TrackInfoObject * p)
 {
     QString title = p->getFilename();
     slotLogEvent("track2", title);
 }
 
-void Log::slotLogPlaylist(TrackPlaylist *p)
+void Log::slotLogPlaylist(TrackPlaylist * p)
 {
     QString name = p->getName();
     slotLogEvent("plist", name);
@@ -229,7 +229,7 @@ void Log::slotLogPlay2(double v)
 {
     slotLogEvent("play2", QString("%1").arg(v));
 }
-    
+
 void Log::slotLogLoop1(double v)
 {
     slotLogEvent("loop1", QString("%1").arg(v));

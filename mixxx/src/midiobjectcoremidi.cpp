@@ -4,16 +4,16 @@
     begin                : Thu Jul 4 2002
     copyright            : (C) 2002 by Tue & Ken Haste Andersen
     email                : haste@diku.dk
- ***************************************************************************/
+***************************************************************************/
 
 /***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+*                                                                         *
+*   This program is free software; you can redistribute it and/or modify  *
+*   it under the terms of the GNU General Public License as published by  *
+*   the Free Software Foundation; either version 2 of the License, or     *
+*   (at your option) any later version.                                   *
+*                                                                         *
+***************************************************************************/
 
 #include "midiobjectcoremidi.h"
 
@@ -22,7 +22,7 @@ MidiObjectCoreMidi::MidiObjectCoreMidi(QString device) : MidiObject(device)
     // Initialize CoreMidi
     MIDIClientCreate(CFSTR("Mixxx"), 0, 0, &midiClient);
     MIDIInputPortCreate(midiClient, CFSTR("Input port"), midi_read_proc, (void *)this, &midiPort);
-    
+
     currentMidiEndpoint = MIDIGetSource(0);
     MIDIPortConnectSource(midiPort, currentMidiEndpoint, 0);
 
@@ -36,12 +36,12 @@ MidiObjectCoreMidi::MidiObjectCoreMidi(QString device) : MidiObject(device)
 
     // Fill in list of available devices
     bool device_valid = false; // Is true if device is a valid device name
-    
+
     for (unsigned int i=0; i<MIDIGetNumberOfSources(); i++)
     {
         MIDIEndpointRef endpoint = MIDIGetSource(i);
         CFStringRef name;
-        
+
         MIDIObjectGetStringProperty(endpoint, kMIDIPropertyName, &name);
         devices.append(CFStringGetCStringPtr(name,0));
         if (devices.last() == device)
@@ -57,7 +57,7 @@ MidiObjectCoreMidi::MidiObjectCoreMidi(QString device) : MidiObject(device)
             qDebug("CoreMidi: No MIDI devices available.");
         else
             devOpen(devices.first());
-*/
+ */
 }
 
 MidiObjectCoreMidi::~MidiObjectCoreMidi()
@@ -75,7 +75,7 @@ void MidiObjectCoreMidi::devOpen(QString device)
     {
         MIDIEndpointRef endpoint = MIDIGetSource(i);
         CFStringRef name;
-        
+
         MIDIObjectGetStringProperty(endpoint, kMIDIPropertyName, &name);
         if (CFStringGetCStringPtr(name,0) == device)
         {
@@ -85,10 +85,10 @@ void MidiObjectCoreMidi::devOpen(QString device)
     }
     if (i==MIDIGetNumberOfSources())
         currentMidiEndpoint = MIDIGetSource(0);
-    
+
     MIDIPortConnectSource(midiPort, currentMidiEndpoint, 0);
-    
-    // Should follow selected device !!!! 
+
+    // Should follow selected device !!!!
     openDevice = device;
 }
 
@@ -107,12 +107,12 @@ void MidiObjectCoreMidi::run()
 {
 }
 
-void MidiObjectCoreMidi::handleMidi(const MIDIPacketList *packets)
+void MidiObjectCoreMidi::handleMidi(const MIDIPacketList * packets)
 {
-    const MIDIPacket *packet;
+    const MIDIPacket * packet;
     //Byte message[256];
     int messageSize = 0;
-    
+
     // Step through each packet
     packet = packets->packet;
     for (unsigned int i=0; i<packets->numPackets; i++)
@@ -131,7 +131,7 @@ void MidiObjectCoreMidi::handleMidi(const MIDIPacketList *packets)
                 send(midicategory, midichannel, midicontrol, midivalue);
                 messageSize = 0;
             }
-            
+
             // Get data into the message array
             buffer[messageSize++] = (packet->data[j]);
         }
@@ -139,21 +139,21 @@ void MidiObjectCoreMidi::handleMidi(const MIDIPacketList *packets)
     }
     if (messageSize>0)
     {
-         MidiCategory midicategory = (MidiCategory)(buffer[0] & 0xF0);
-         char midichannel = buffer[0] & 0x0F; // The channel is stored in the lower 4 bits of the status byte received
-         char midicontrol = buffer[1];
-         char midivalue = buffer[2];
+        MidiCategory midicategory = (MidiCategory)(buffer[0] & 0xF0);
+        char midichannel = buffer[0] & 0x0F;  // The channel is stored in the lower 4 bits of the status byte received
+        char midicontrol = buffer[1];
+        char midivalue = buffer[2];
 
-         send(midicategory, midichannel, midicontrol, midivalue);
+        send(midicategory, midichannel, midicontrol, midivalue);
     }
 }
 
 // C/C++ wrapper function
-static void midi_read_proc(const MIDIPacketList *packets, void *refCon, void *)
+static void midi_read_proc(const MIDIPacketList * packets, void * refCon, void *)
 {
-    MidiObjectCoreMidi *midi = (MidiObjectCoreMidi*)refCon;
+    MidiObjectCoreMidi * midi = (MidiObjectCoreMidi *)refCon;
     midi->handleMidi(packets);
 }
-    
-    
-    
+
+
+

@@ -3,21 +3,21 @@
                              -------------------
     copyright            : (C) 2002 by Tue and Ken Haste Andersen
     email                :
- ***************************************************************************/
+***************************************************************************/
 
 /***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+*                                                                         *
+*   This program is free software; you can redistribute it and/or modify  *
+*   it under the terms of the GNU General Public License as published by  *
+*   the Free Software Foundation; either version 2 of the License, or     *
+*   (at your option) any later version.                                   *
+*                                                                         *
+***************************************************************************/
 
-ConfigObject::ConfigOption *ConfigObject::set(ConfigKey *k, ConfigValue *v)
+ConfigObject::ConfigOption * ConfigObject::set(ConfigKey * k, ConfigValue * v)
 {
     // Search for key in list, and set value if found
-    ConfigObject::ConfigOption *it;
+    ConfigObject::ConfigOption * it;
     for (it = list.first(); it; it = list.next())
         if (it->key->group == k->group & it->key->control == k->control)
         {
@@ -28,7 +28,7 @@ ConfigObject::ConfigOption *ConfigObject::set(ConfigKey *k, ConfigValue *v)
         }
 
     // If key is not found, insert it into the list of config objects
-    ConfigObject::ConfigKey *key = new ConfigObject::ConfigKey(k->group, k->control);
+    ConfigObject::ConfigKey * key = new ConfigObject::ConfigKey(k->group, k->control);
     it = new ConfigObject::ConfigOption(key, new ConfigObject::ConfigValue(v->midino, v->midimask, v->midichannel));
     list.append(it);
     return it;

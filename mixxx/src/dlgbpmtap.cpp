@@ -4,16 +4,16 @@
     begin                : Sun Jun 30 2002
     copyright            : (C) 2002 by Tue & Ken Haste Andersen
     email                : haste@diku.dk
- ***************************************************************************/
+***************************************************************************/
 
 /***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+*                                                                         *
+*   This program is free software; you can redistribute it and/or modify  *
+*   it under the terms of the GNU General Public License as published by  *
+*   the Free Software Foundation; either version 2 of the License, or     *
+*   (at your option) any later version.                                   *
+*                                                                         *
+***************************************************************************/
 
 #ifdef __EXPERIMENTAL_BPM__
 #include "dlgbpmtap.h"
@@ -34,14 +34,14 @@
 
 
 
-DlgBpmTap::DlgBpmTap(QWidget *mixxx, TrackInfoObject *tio, TrackPlaylist *playlist) : QDialog(), Ui::DlgBpmTapDlg()
+DlgBpmTap::DlgBpmTap(QWidget * mixxx, TrackInfoObject * tio, TrackPlaylist * playlist) : QDialog(), Ui::DlgBpmTapDlg()
 {
     // m_pMixxx = mixxx;
     m_CurrentTrack = tio;
     m_TrackPlaylist = playlist;
-    
-	// This must be called before setFocus or setEnabled.
-	setupUi(this); 
+
+    // This must be called before setFocus or setEnabled.
+    setupUi(this);
 
     //Give focus to the tap button so that the tempo can be tapped with
     //the space bar
@@ -56,7 +56,7 @@ DlgBpmTap::DlgBpmTap(QWidget *mixxx, TrackInfoObject *tio, TrackPlaylist *playli
     progressBPMDetect->setMinimum(0);
     btnTap->setEnabled(true);
 
-	spinBoxBPMRangeStart->setEnabled(true);
+    spinBoxBPMRangeStart->setEnabled(true);
     spinBoxBPMRangeEnd->setEnabled(true);
     btnGo->setEnabled(true);
 
@@ -65,7 +65,7 @@ DlgBpmTap::DlgBpmTap(QWidget *mixxx, TrackInfoObject *tio, TrackPlaylist *playli
 
     loadTrackInfo();
     toolbox->setCurrentIndex(0);
-    
+
 
     // Install event handler to generate closeDlg signal
     installEventFilter(this);
@@ -83,7 +83,7 @@ DlgBpmTap::DlgBpmTap(QWidget *mixxx, TrackInfoObject *tio, TrackPlaylist *playli
     connect(txtTrackName,   SIGNAL(textChanged(const QString &)), this, SLOT(slotTitleChanged(const QString &)));
     connect(txtArtist,      SIGNAL(textChanged(const QString &)), this, SLOT(slotArtistChanged(const QString &)));
     connect(txtComment,     SIGNAL(textChanged()),                this, SLOT(slotCommentChanged()));
-    
+
 
     connect(spinBoxBPMRangeStart,   SIGNAL(valueChanged(int)),   this,   SLOT(slotUpdateMinBpm(int)));
     connect(spinBoxBPMRangeEnd,     SIGNAL(valueChanged(int)),   this,   SLOT(slotUpdateMaxBpm(int)));
@@ -96,29 +96,29 @@ DlgBpmTap::~DlgBpmTap()
 
 void DlgBpmTap::loadTrackInfo()
 {
-lblSong->setText(m_CurrentTrack->getTitle());
+    lblSong->setText(m_CurrentTrack->getTitle());
     txtBPM->setText(QString("%1").arg(m_CurrentTrack->getBpm(), 3,'f',1));
 
-txtTrackName->setText(m_CurrentTrack->getTitle());
-txtDuration->setText(m_CurrentTrack->getDurationStr());
-txtFilepath->setText(m_CurrentTrack->getFilename());
-txtFilepath->setCursorPosition(0);
-txtType->setText(m_CurrentTrack->getType());
-txtArtist->setText(m_CurrentTrack->getArtist());
-txtComment->setText(m_CurrentTrack->getComment());
+    txtTrackName->setText(m_CurrentTrack->getTitle());
+    txtDuration->setText(m_CurrentTrack->getDurationStr());
+    txtFilepath->setText(m_CurrentTrack->getFilename());
+    txtFilepath->setCursorPosition(0);
+    txtType->setText(m_CurrentTrack->getType());
+    txtArtist->setText(m_CurrentTrack->getArtist());
+    txtComment->setText(m_CurrentTrack->getComment());
 }
 
-bool DlgBpmTap::eventFilter(QObject *o, QEvent *e)
+bool DlgBpmTap::eventFilter(QObject * o, QEvent * e)
 {
     // Send a close signal if dialog is closing
     /*
-//FIXME: These are borked with QT4 (linker error, wtf?)
-    if (e->type() == QEvent::Hide)
+       //FIXME: These are borked with QT4 (linker error, wtf?)
+       if (e->type() == QEvent::Hide)
         emit(closeDlg());
 
-    if(e->type() == QEvent::Show)
+       if(e->type() == QEvent::Show)
         emit(aboutToShow());
-*/
+     */
     // Standard event processing
     return QWidget::eventFilter(o,e);
 }
@@ -127,12 +127,12 @@ void DlgBpmTap::slotTapBPM()
 {
     if(btnTap->text() != "Detecting BPM...")
     {
-    	if(m_Time->elapsed() > 2000)
-    	{
-    		m_TapCount = 0;
-    	}
+        if(m_Time->elapsed() > 2000)
+        {
+            m_TapCount = 0;
+        }
 
-    	if(m_TapCount <=0)
+        if(m_TapCount <=0)
         {
             m_Time->restart();
         }
@@ -176,8 +176,8 @@ void DlgBpmTap::slotNext()
 {
     if(m_TrackPlaylist)
     {
-        TrackInfoObject *track = m_CurrentTrack->getNext(m_TrackPlaylist);
-    
+        TrackInfoObject * track = m_CurrentTrack->getNext(m_TrackPlaylist);
+
         if(track)
         {
             m_CurrentTrack = track;
@@ -187,15 +187,15 @@ void DlgBpmTap::slotNext()
 }
 
 void DlgBpmTap::slotPrev()
-{   
-    
+{
+
     if(m_TrackPlaylist)
     {
-     
-        TrackInfoObject *track = m_CurrentTrack->getPrev(m_TrackPlaylist);
-        
+
+        TrackInfoObject * track = m_CurrentTrack->getPrev(m_TrackPlaylist);
+
         if(track)
-          {
+        {
             m_CurrentTrack = track;
             loadTrackInfo();
 
@@ -242,12 +242,12 @@ void DlgBpmTap::slotApply()
 //    m_pMixxx->grabKeyboard();
 }
 
-void DlgBpmTap::setProgress(TrackInfoObject *tio, int progress)
+void DlgBpmTap::setProgress(TrackInfoObject * tio, int progress)
 {
-// txtBPM->setText(QString("%1").arg(progress)); 
+// txtBPM->setText(QString("%1").arg(progress));
 }
 
-void DlgBpmTap::setComplete(TrackInfoObject *tio, bool failed, float returnBpm)
+void DlgBpmTap::setComplete(TrackInfoObject * tio, bool failed, float returnBpm)
 {
     progressBPMDetect->setMaximum(100);
     progressBPMDetect->setValue(0);
@@ -256,7 +256,7 @@ void DlgBpmTap::setComplete(TrackInfoObject *tio, bool failed, float returnBpm)
     //btnTap->setEnabled(true);
     txtBPM->setText(QString("%1").arg(returnBpm, 3,'f',1));
     this->update();
-    
+
 }
 
 

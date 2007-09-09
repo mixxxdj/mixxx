@@ -3,16 +3,16 @@
                              -------------------
     copyright            : (C) 2005 by Tue Haste Andersen
     email                :
- ***************************************************************************/
+***************************************************************************/
 
 /***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+*                                                                         *
+*   This program is free software; you can redistribute it and/or modify  *
+*   it under the terms of the GNU General Public License as published by  *
+*   the Free Software Foundation; either version 2 of the License, or     *
+*   (at your option) any later version.                                   *
+*                                                                         *
+***************************************************************************/
 
 #include "controlpushbutton.h"
 #include "controlobject.h"
@@ -21,7 +21,7 @@
 #include "player.h"
 #include "mathstuff.h"
 
-EngineBufferCue::EngineBufferCue(const char *group, EngineBuffer *pEngineBuffer)
+EngineBufferCue::EngineBufferCue(const char * group, EngineBuffer * pEngineBuffer)
 {
     m_pEngineBuffer = pEngineBuffer;
     m_bCuePreview = false;
@@ -29,7 +29,7 @@ EngineBufferCue::EngineBufferCue(const char *group, EngineBuffer *pEngineBuffer)
     // Get pointer to play button
     playButton = ControlObject::getControl(ConfigKey(group, "play"));
     connect(playButton, SIGNAL(valueChanged(double)), this, SLOT(slotControlPlay(double)));
-    
+
     // Cue set button:
     buttonCueSet = new ControlPushButton(ConfigKey(group, "cue_set"));
     connect(buttonCueSet, SIGNAL(valueChanged(double)), this, SLOT(slotControlCueSet(double)));
@@ -37,14 +37,14 @@ EngineBufferCue::EngineBufferCue(const char *group, EngineBuffer *pEngineBuffer)
     // Cue goto button:
     buttonCueGoto = new ControlPushButton(ConfigKey(group, "cue_goto"));
     connect(buttonCueGoto, SIGNAL(valueChanged(double)), this, SLOT(slotControlCueGoto(double)));
-    
+
     // Cue goto and stop button:
     buttonCueGotoAndStop = new ControlPushButton(ConfigKey(group, "cue_gotoandstop"));
-	connect(buttonCueGotoAndStop, SIGNAL(valueChanged(double)), this, SLOT(slotControlCueGotoAndStop(double)));
+    connect(buttonCueGotoAndStop, SIGNAL(valueChanged(double)), this, SLOT(slotControlCueGotoAndStop(double)));
 
-	// Cue "simple-style" button:
-	buttonCueSimple = new ControlPushButton(ConfigKey(group, "cue_simple"));
-	connect(buttonCueSimple, SIGNAL(valueChanged(double)), this, SLOT(slotControlCueSimple(double)));
+    // Cue "simple-style" button:
+    buttonCueSimple = new ControlPushButton(ConfigKey(group, "cue_simple"));
+    connect(buttonCueSimple, SIGNAL(valueChanged(double)), this, SLOT(slotControlCueSimple(double)));
 
     // Cue point
     cuePoint = new ControlObject(ConfigKey(group, "cue_point"));
@@ -68,7 +68,7 @@ EngineBufferCue::~EngineBufferCue()
 // Set the cue point at the current play position:
 void EngineBufferCue::slotControlCueSet(double v)
 {
-	//qDebug("***slotControlCueSet!!");
+    //qDebug("***slotControlCueSet!!");
     if (v)
     {
         double cue = math_max(0.,round(m_pEngineBuffer->getAbsPlaypos()));
@@ -102,11 +102,11 @@ void EngineBufferCue::slotControlCueGoto(double pos)
 // Goto the cue point and stop, regardless of playback status:
 void EngineBufferCue::slotControlCueGotoAndStop(double /* pos */)
 {
-	//Seek to the cue point...
-	m_pEngineBuffer->slotControlSeekAbs(cuePoint->get(), false);
-	
-	//... and stop.
-	playButton->set(0.);
+    //Seek to the cue point...
+    m_pEngineBuffer->slotControlSeekAbs(cuePoint->get(), false);
+
+    //... and stop.
+    playButton->set(0.);
 }
 
 void EngineBufferCue::slotControlCuePreview(double)
@@ -141,15 +141,15 @@ void EngineBufferCue::slotControlCueSimple(double v)
 {
     if (v) //Left-clicked on cue button
     {
-    	if (playButton->get() == 0.) //If playback is stopped, set a cue-point.
-    	{
-        	double cue = math_max(0.,round(m_pEngineBuffer->getAbsPlaypos()));
-        	if (!even((int)cue))
-        	    cue--;
-        	cuePoint->set(cue);
+        if (playButton->get() == 0.) //If playback is stopped, set a cue-point.
+        {
+            double cue = math_max(0.,round(m_pEngineBuffer->getAbsPlaypos()));
+            if (!even((int)cue))
+                cue--;
+            cuePoint->set(cue);
         }
-        else //If playback is ongoing, then jump to the cue-point.
-        	m_pEngineBuffer->slotControlSeekAbs(cuePoint->get(), false);
+        else  //If playback is ongoing, then jump to the cue-point.
+            m_pEngineBuffer->slotControlSeekAbs(cuePoint->get(), false);
     }
 }
 

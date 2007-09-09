@@ -4,16 +4,16 @@
     begin                : Mon Feb 18 09:48:17 CET 2002
     copyright            : (C) 2002 by Tue and Ken Haste Andersen
     email                :
- ***************************************************************************/
+***************************************************************************/
 
 /***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+*                                                                         *
+*   This program is free software; you can redistribute it and/or modify  *
+*   it under the terms of the GNU General Public License as published by  *
+*   the Free Software Foundation; either version 2 of the License, or     *
+*   (at your option) any later version.                                   *
+*                                                                         *
+***************************************************************************/
 
 #include <qpushbutton.h>
 #include <QtDebug>
@@ -74,20 +74,20 @@
 #include "playerproxy.h"
 #include "soundmanager.h"
 
-MixxxApp::MixxxApp(QApplication *a, QStringList files, QSplashScreen *pSplash, QString qLogFileName)
+MixxxApp::MixxxApp(QApplication * a, QStringList files, QSplashScreen * pSplash, QString qLogFileName)
 {
     app = a;
 
-	//Next, let's set up the colour palette for Mixxx.
-	//For what color controls what, see this reference:
-	//http://doc.trolltech.com/3.3/qcolorgroup.html#ColorRole-enum
+    //Next, let's set up the colour palette for Mixxx.
+    //For what color controls what, see this reference:
+    //http://doc.trolltech.com/3.3/qcolorgroup.html#ColorRole-enum
 
-	/*
-	QPalette palette;
-	palette.setColor(QColorGroup::HighlightedText, QColor("darkBlue"));
-	palette.setColor(QColorGroup::Text, QColor("white"));
-	setPalette(palette);
-	*/
+    /*
+       QPalette palette;
+       palette.setColor(QColorGroup::HighlightedText, QColor("darkBlue"));
+       palette.setColor(QColorGroup::Text, QColor("white"));
+       setPalette(palette);
+     */
 
     qDebug("Starting up...");
     setWindowTitle(tr("Mixxx " VERSION));
@@ -127,9 +127,9 @@ MixxxApp::MixxxApp(QApplication *a, QStringList files, QSplashScreen *pSplash, Q
         pSplash->showMessage("Setting up sound engine...",Qt::AlignLeft|Qt::AlignBottom);
 
     // Sample rate used by Player object
-    ControlObject *sr = new ControlObject(ConfigKey("[Master]","samplerate"));
+    ControlObject * sr = new ControlObject(ConfigKey("[Master]","samplerate"));
     sr->set(44100.);
-    ControlObject *latency = new ControlObject(ConfigKey("[Master]","latency"));
+    ControlObject * latency = new ControlObject(ConfigKey("[Master]","latency"));
 
     // Master rate
     new ControlPotmeter(ConfigKey("[Master]","rate"),-1.,1.);
@@ -194,7 +194,7 @@ MixxxApp::MixxxApp(QApplication *a, QStringList files, QSplashScreen *pSplash, Q
     if (bVisualsWaveform && !view->activeWaveform())
     {
         config->set(ConfigKey("[Controls]","Visuals"), ConfigValue(1));
-        QMessageBox* mb = new QMessageBox(this);
+        QMessageBox * mb = new QMessageBox(this);
         mb->setWindowTitle(QString("Wavform displays"));
         mb->setIcon(QMessageBox::Information);
         mb->setText("OpenGL cannot be initialized, which means that\nthe waveform displays won't work. A simple\nmode will be used instead where you can still\nuse the mouse to change speed.");
@@ -235,10 +235,10 @@ MixxxApp::MixxxApp(QApplication *a, QStringList files, QSplashScreen *pSplash, Q
         pSplash->showMessage("Loading song database...",Qt::AlignLeft|Qt::AlignBottom);
 
     // Initialize track object:
-	m_pTrack = new Track(config->getValueString(ConfigKey("[Playlist]","Listfile")), view, buffer1, buffer2, m_pWaveSummary, m_pBpmDetector,config->getValueString(ConfigKey("[Playlist]","Directory")));
+    m_pTrack = new Track(config->getValueString(ConfigKey("[Playlist]","Listfile")), view, buffer1, buffer2, m_pWaveSummary, m_pBpmDetector,config->getValueString(ConfigKey("[Playlist]","Directory")));
 
-	//WTreeItem::setTrack(m_pTrack);
-	// Set up drag and drop to player visuals
+    //WTreeItem::setTrack(m_pTrack);
+    // Set up drag and drop to player visuals
     if (view->m_pVisualCh1)
         connect(view->m_pVisualCh1, SIGNAL(trackDropped(QString)), m_pTrack, SLOT(slotLoadPlayer1(QString)));
     if (view->m_pVisualCh2)
@@ -315,7 +315,7 @@ MixxxApp::MixxxApp(QApplication *a, QStringList files, QSplashScreen *pSplash, Q
         view->checkDirectRendering();
 
     // Initialize the log if a log file name was given on the command line
-    Log *pLog = 0;
+    Log * pLog = 0;
     if (qLogFileName.length()>0)
         pLog = new Log(qLogFileName, m_pTrack);
 
@@ -365,9 +365,9 @@ MixxxApp::~MixxxApp()
     delete channel2;
 
     qDebug("delete buffer1, %i",qTime.elapsed());
-	delete buffer1;
-	qDebug("delete buffer2, %i",qTime.elapsed());
-	delete buffer2;
+    delete buffer1;
+    qDebug("delete buffer2, %i",qTime.elapsed());
+    delete buffer2;
 
 //    qDebug("delete prefDlg");
 //    delete m_pControlEngine;
@@ -392,7 +392,7 @@ MixxxApp::~MixxxApp()
 
     delete frame;
 #ifdef __WIN__
-	_exit(0);
+    _exit(0);
 #endif
 }
 
@@ -420,7 +420,7 @@ void MixxxApp::initActions()
     optionsFullScreen = new QAction(tr("&Full Screen"), this);
     optionsFullScreen->setShortcut(tr("Esc"));
     optionsFullScreen->setShortcutContext(Qt::ApplicationShortcut);
-    QShortcut *shortcut = new QShortcut(QKeySequence(tr("Ctrl+F")),  this);
+    QShortcut * shortcut = new QShortcut(QKeySequence(tr("Ctrl+F")),  this);
     connect(shortcut, SIGNAL(activated()), this, SLOT(slotQuitFullScreen()));
 
     optionsPreferences = new QAction(tr("&Preferences"), this);
@@ -461,7 +461,7 @@ void MixxxApp::initActions()
     connect(optionsBeatMark, SIGNAL(toggled(bool)), this, SLOT(slotOptionsBeatMark(bool)));
 
 #ifdef __VINYLCONTROL__
-	//Either check or uncheck the vinyl control menu item depending on what it was saved as.
+    //Either check or uncheck the vinyl control menu item depending on what it was saved as.
     optionsVinylControl->setCheckable(true);
     if ((bool)config->getValueString(ConfigKey("[VinylControl]","Enabled")).toInt() == true)
         optionsVinylControl->setChecked(true);
@@ -567,7 +567,7 @@ void MixxxApp::slotFileOpen()
     QString s = QFileDialog::getOpenFileName(this, "Open file", config->getValueString(ConfigKey("[Playlist]","Directory")),
                                              "Audio (*.wav *.ogg *.mp3 *.aiff)");
     if (!(s == QString::null)) {
-        TrackInfoObject *pTrack = m_pTrack->getTrackCollection()->getTrack(s);
+        TrackInfoObject * pTrack = m_pTrack->getTrackCollection()->getTrack(s);
         if (pTrack)
             m_pTrack->slotLoadPlayer1(pTrack);
     }
@@ -589,25 +589,25 @@ void MixxxApp::slotQuitFullScreen() {
 
 void MixxxApp::slotOptionsFullScreen(bool toggle)
 {
-	// Making a fullscreen window on linux and windows is harder than you could possibly imagine...
+    // Making a fullscreen window on linux and windows is harder than you could possibly imagine...
     if (toggle)
     {
 #ifdef __LINUX__
-		winpos = pos();
-		winsize = size();
-		// Can't set max to -1,-1 or 0,0 for unbounded?
-		setMaximumSize(32767,32767);
+        winpos = pos();
+        winsize = size();
+        // Can't set max to -1,-1 or 0,0 for unbounded?
+        setMaximumSize(32767,32767);
 #endif
-		showFullScreen();
+        showFullScreen();
         menuBar()->hide();
         // FWI: Begin of fullscreen patch
 #ifdef __LINUX__
-		// Crazy X window managers break this so I'm told by Qt docs
-		int deskw = app->desktop()->width();
-		int deskh = app->desktop()->height();
+        // Crazy X window managers break this so I'm told by Qt docs
+        int deskw = app->desktop()->width();
+        int deskh = app->desktop()->height();
 #else
-		int deskw = width();
-		int deskh = height();
+        int deskw = width();
+        int deskh = height();
 #endif
         view->move( (deskw-view->width())/2, (deskh-view->height())/2 );
         // FWI: End of fullscreen patch
@@ -617,11 +617,11 @@ void MixxxApp::slotOptionsFullScreen(bool toggle)
         // FWI: Begin of fullscreen patch
         view->move(0,0);
         menuBar()->show();
-		showNormal();
+        showNormal();
 
 #ifdef __LINUX__
-		setFixedSize(winsize);
-		move(winpos);
+        setFixedSize(winsize);
+        move(winpos);
 #endif
 
         // FWI: End of fullscreen patch
@@ -636,69 +636,69 @@ void MixxxApp::slotOptionsPreferences()
 //Note: Can't #ifdef this because MOC doesn't catch it.
 void MixxxApp::slotOptionsVinylControl(bool toggle)
 {
-	//qDebug("slotOptionsVinylControl: toggle is %i", (int)toggle);
-	config->set(ConfigKey("[VinylControl]","Enabled"), ConfigValue((int)toggle));
+    //qDebug("slotOptionsVinylControl: toggle is %i", (int)toggle);
+    config->set(ConfigKey("[VinylControl]","Enabled"), ConfigValue((int)toggle));
 }
 
 void MixxxApp::slotHelpAbout()
 {
     QMessageBox::about(this,tr("About..."),
-                      tr("<qt>"
-                         "<table cellspacing=0 cellpadding=0>"
-                         "<tr><td>Mixxx</td></tr>"
-                         "<tr><td>Version " VERSION "</td></tr>"
-                         "<tr><td><a href=\"http://mixxx.sourceforge.net/\">http://mixxx.sourceforge.net/</a></td></tr>"
-                         "</table><br><br>"
-                         "<table cellspacing=0 cellpadding=0>"
-                         "<tr><td>Lead developer/Maintainer:</td><td>Adam Davison</td></tr>"
-                         "<tr><td>Original developers</td><td>Tue Haste Andersen</td></tr>"
-                         "<tr><td></td><td>Ken Haste Andersen</td></tr>"
-                         "<tr><td>Skins:</td><td>Ludek Horácek (Traditional)</td></tr>"
-                         "<tr><td></td><td>Tue Haste Andersen (Outline)</td></tr>"
-                         "<tr><td>Ogg vorbis support:</td><td>Svein Magne Bang</td></tr>"
-                         "<tr><td>Beat tracking:</td><td>Tue Haste Andersen</td></tr>"
-                         "<tr><td></td><td>Kristoffer Jensen</td></tr>"
-                         "<tr><td>Playlist import & ASIO:</td><td>Ingo Kossyk</td></tr>"
-             "<tr><td>Beat phase sync:</td><td>Torben Hohn</td></tr>"
-             "<tr><td>ALSA support:</td><td>Peter Chang</td></tr>"
-             "<tr><td>SoundTouch support:</td><td>Mads Holm</td></tr>"
-			"<tr><td>Other contributions:</td><td>Lukas Zapletal</td><td>Garth Dahlstrom</td></tr>"
-			"<tr><td></td><td>Jeremie Zimmermann</td><td>Ben Wheeler</td></tr>"
-			"<tr><td></td><td>Gianluca Romanin</td><td>Tim Jackson</td></tr>"
-			"<tr><td></td><td>Jan Jockusch</td><td>Albert Santoni</td></tr>"
-			"<tr><td></td><td>Frank Willascheck</td><td>Cedric Gestes</td></tr>"
-                         "<tr><td>Special thanks to:</td><td>Adam Bellinson</td><td></td></tr>"
-                         "</table><br><br>"
-                         "<table cellspacing=0 cellpadding=0>"
-                         "<tr><td>Thanks to all DJ's and musicians giving feedback.</td></tr>"
-                         "<tr><td>Released under the GNU General Public Licence version 2.</td></tr>"
-                         "</table></qt>") );
+                       tr("<qt>"
+                          "<table cellspacing=0 cellpadding=0>"
+                          "<tr><td>Mixxx</td></tr>"
+                          "<tr><td>Version " VERSION "</td></tr>"
+                          "<tr><td><a href=\"http://mixxx.sourceforge.net/\">http://mixxx.sourceforge.net/</a></td></tr>"
+                          "</table><br><br>"
+                          "<table cellspacing=0 cellpadding=0>"
+                          "<tr><td>Lead developer/Maintainer:</td><td>Adam Davison</td></tr>"
+                          "<tr><td>Original developers</td><td>Tue Haste Andersen</td></tr>"
+                          "<tr><td></td><td>Ken Haste Andersen</td></tr>"
+                          "<tr><td>Skins:</td><td>Ludek Horácek (Traditional)</td></tr>"
+                          "<tr><td></td><td>Tue Haste Andersen (Outline)</td></tr>"
+                          "<tr><td>Ogg vorbis support:</td><td>Svein Magne Bang</td></tr>"
+                          "<tr><td>Beat tracking:</td><td>Tue Haste Andersen</td></tr>"
+                          "<tr><td></td><td>Kristoffer Jensen</td></tr>"
+                          "<tr><td>Playlist import & ASIO:</td><td>Ingo Kossyk</td></tr>"
+                          "<tr><td>Beat phase sync:</td><td>Torben Hohn</td></tr>"
+                          "<tr><td>ALSA support:</td><td>Peter Chang</td></tr>"
+                          "<tr><td>SoundTouch support:</td><td>Mads Holm</td></tr>"
+                          "<tr><td>Other contributions:</td><td>Lukas Zapletal</td><td>Garth Dahlstrom</td></tr>"
+                          "<tr><td></td><td>Jeremie Zimmermann</td><td>Ben Wheeler</td></tr>"
+                          "<tr><td></td><td>Gianluca Romanin</td><td>Tim Jackson</td></tr>"
+                          "<tr><td></td><td>Jan Jockusch</td><td>Albert Santoni</td></tr>"
+                          "<tr><td></td><td>Frank Willascheck</td><td>Cedric Gestes</td></tr>"
+                          "<tr><td>Special thanks to:</td><td>Adam Bellinson</td><td></td></tr>"
+                          "</table><br><br>"
+                          "<table cellspacing=0 cellpadding=0>"
+                          "<tr><td>Thanks to all DJ's and musicians giving feedback.</td></tr>"
+                          "<tr><td>Released under the GNU General Public Licence version 2.</td></tr>"
+                          "</table></qt>") );
 }
 
 void MixxxApp::rebootMixxxView() {
 
-	// Ok, so wierdly if you call setFixedSize with the same value twice, Qt breaks
-	// So we check and if the size hasn't changed we don't make the call
-	int oldh = view->height();
-	int oldw = view->width();
-	qDebug("Now in Rebootmixxview...");
-	bool bVisualsWaveform = true;
+    // Ok, so wierdly if you call setFixedSize with the same value twice, Qt breaks
+    // So we check and if the size hasn't changed we don't make the call
+    int oldh = view->height();
+    int oldw = view->width();
+    qDebug("Now in Rebootmixxview...");
+    bool bVisualsWaveform = true;
     if (config->getValueString(ConfigKey("[Controls]","Visuals")).toInt()==1)
         bVisualsWaveform = false;
 
-	QString qSkinPath = getSkinPath();
+    QString qSkinPath = getSkinPath();
 
-	view->rebootGUI(frame, bVisualsWaveform, config, qSkinPath);
-	qDebug("rebootgui DONE");
-	if (oldw != view->width() || oldh != view->height()) {
-		setFixedSize(view->width(), view->height());
-	}
+    view->rebootGUI(frame, bVisualsWaveform, config, qSkinPath);
+    qDebug("rebootgui DONE");
+    if (oldw != view->width() || oldh != view->height()) {
+        setFixedSize(view->width(), view->height());
+    }
 }
 
 QString MixxxApp::getSkinPath() {
-	QString qConfigPath = config->getConfigPath();
+    QString qConfigPath = config->getConfigPath();
 
-	QString qSkinPath(qConfigPath);
+    QString qSkinPath(qConfigPath);
     qSkinPath.append("skins/");
     if (QDir(qSkinPath).exists())
     {

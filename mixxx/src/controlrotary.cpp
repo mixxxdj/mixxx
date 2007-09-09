@@ -3,16 +3,16 @@
                              -------------------
     copyright            : (C) 2002 by Tue and Ken Haste Andersen
     email                :
- ***************************************************************************/
+***************************************************************************/
 
 /***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+*                                                                         *
+*   This program is free software; you can redistribute it and/or modify  *
+*   it under the terms of the GNU General Public License as published by  *
+*   the Free Software Foundation; either version 2 of the License, or     *
+*   (at your option) any later version.                                   *
+*                                                                         *
+***************************************************************************/
 
 #include "controlrotary.h"
 #include "controlengine.h"
@@ -25,7 +25,7 @@
             midino - number of the midi controller.
             midicontroller - pointer to the midi controller.
    -------- ------------------------------------------------------ */
-ControlRotary::ControlRotary(ConfigKey key, ControlPushButton *playbutton) : ControlPotmeter(key,0.,1.) // ????
+ControlRotary::ControlRotary(ConfigKey key, ControlPushButton * playbutton) : ControlPotmeter(key,0.,1.) // ????
 {
     play = playbutton;
     direction = 1; // arbitrary
@@ -47,7 +47,7 @@ void ControlRotary::setValue(int v)
             real position from the gray code.
    Input:   the gray code.
    -------- ------------------------------------------------------ */
-// This member is not properly overloading the one in controlobject. Therefore it is 
+// This member is not properly overloading the one in controlobject. Therefore it is
 // never called, and the graycode translation has been moved to slotSetPosition.
 void ControlRotary::slotSetPositionMidi(MidiCategory, int _newpos)
 {
@@ -87,10 +87,10 @@ void ControlRotary::slotSetPositionExtern(float)
             else if (deltasec*1000+deltamsec > 0)
                 value = (FLOAT_TYPE)change / (FLOAT_TYPE)(deltasec*1000+deltamsec);
 
-//            cout << "Wheel: new position " << (int)newpos << " to " <<(int)position << ", velocity " <<
-//            setw(8) << value <<"\n.";
-//            cout << "deltat " << deltasec << ", " << deltamillisec << "\n";
-//            cout << "millitime " << newtime.millitm << " old " << oldtime.millitm << "\n";
+   //            cout << "Wheel: new position " << (int)newpos << " to " <<(int)position << ", velocity " <<
+   //            setw(8) << value <<"\n.";
+   //            cout << "deltat " << deltasec << ", " << deltamillisec << "\n";
+   //            cout << "millitime " << newtime.millitm << " old " << oldtime.millitm << "\n";
 
             oldtime = newtime;
             position = newpos;
@@ -101,7 +101,7 @@ void ControlRotary::slotSetPositionExtern(float)
             emit valueChanged(value);
         }
     }
-*/
+ */
 }
 
 void ControlRotary::updatecounter(int samples, int SRATE)
@@ -125,7 +125,7 @@ void ControlRotary::slotSetValue(int newvalue)
 //        d = 100.;
 
     value = ((FLOAT_TYPE)newvalue-49.)/d;
-    emitValueChanged(value);    
+    emitValueChanged(value);
 }
 
 void ControlRotary::forceGUIUpdate()

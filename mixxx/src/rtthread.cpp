@@ -3,16 +3,16 @@
                              -------------------
     copyright            : (C) 2002 by Tue and Ken Haste Andersen
     email                :
- ***************************************************************************/
+***************************************************************************/
 
 /***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+*                                                                         *
+*   This program is free software; you can redistribute it and/or modify  *
+*   it under the terms of the GNU General Public License as published by  *
+*   the Free Software Foundation; either version 2 of the License, or     *
+*   (at your option) any later version.                                   *
+*                                                                         *
+***************************************************************************/
 
 #include "rtthread.h"
 
@@ -57,8 +57,8 @@ void rtThread()
     ttcpolicy.constraint=(get_bus_speed() / (1));
     ttcpolicy.preemptible=1;
     theError = thread_policy_set(mach_thread_self(),
-               THREAD_TIME_CONSTRAINT_POLICY, (int *)&ttcpolicy,
-               THREAD_TIME_CONSTRAINT_POLICY_COUNT);
+                                 THREAD_TIME_CONSTRAINT_POLICY, (int *)&ttcpolicy,
+                                 THREAD_TIME_CONSTRAINT_POLICY_COUNT);
     if (theError != KERN_SUCCESS)
         qDebug("Can't do thread_policy_set");
 #endif
@@ -71,10 +71,10 @@ void rtThread()
 
     // Choose a priority just one step lower than the PortAudio thread
     //schp.sched_priority = ((sched_get_priority_max(SCHED_RR) - 11)); //sched_get_priority_min(SCHED_RR)) / 2)-1;
-    
+
     // Actually, for alsa real time priority is needed, and this function is only called in Linux by PlayerALSA
     schp.sched_priority = ((sched_get_priority_max(SCHED_RR))); //sched_get_priority_min(SCHED_RR)) / 2)-1;
-    
+
     if (sched_setscheduler(0, SCHED_RR, &schp) != 0)
         qDebug("Not possible to give audio producer thread high prioriy.");
 #endif

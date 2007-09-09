@@ -4,16 +4,16 @@
     begin                : Wed Jan 5 2005
     copyright            : (C) 2003 by Tue Haste Andersen
     email                : haste@diku.dk
- ***************************************************************************/
+***************************************************************************/
 
 /***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+*                                                                         *
+*   This program is free software; you can redistribute it and/or modify  *
+*   it under the terms of the GNU General Public License as published by  *
+*   the Free Software Foundation; either version 2 of the License, or     *
+*   (at your option) any later version.                                   *
+*                                                                         *
+***************************************************************************/
 
 #include "wlabel.h"
 #include "wskincolor.h"
@@ -22,7 +22,7 @@
 //Added by qt3to4:
 #include <QLabel>
 
-WLabel::WLabel(QWidget *parent, const char *name ) : WWidget(parent,name)
+WLabel::WLabel(QWidget * parent, const char * name ) : WWidget(parent,name)
 {
     m_pLabel = new QLabel(parent);
     m_qsText = "";
@@ -39,15 +39,15 @@ void WLabel::setup(QDomNode node)
 
     // Colors
     m_qBgColor.setNamedColor(WWidget::selectNodeQString(node, "BgColor"));
-	m_pLabel->setPaletteBackgroundColor(WSkinColor::getCorrectColor(m_qBgColor));
+    m_pLabel->setPaletteBackgroundColor(WSkinColor::getCorrectColor(m_qBgColor));
     m_qFgColor.setNamedColor(WWidget::selectNodeQString(node, "FgColor"));
-	m_pLabel->setPaletteForegroundColor(WSkinColor::getCorrectColor(m_qFgColor));
+    m_pLabel->setPaletteForegroundColor(WSkinColor::getCorrectColor(m_qFgColor));
 
     // Text
     if (!selectNode(node, "Text").isNull())
         m_qsText = selectNodeQString(node, "Text");
     m_pLabel->setText(m_qsText);
-    
+
     // Size
     QString size = selectNodeQString(node, "Size");
     int x = size.left(size.find(",")).toInt();

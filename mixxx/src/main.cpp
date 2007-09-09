@@ -4,16 +4,16 @@
     begin                : Mon Feb 18 09:48:17 CET 2002
     copyright            : (C) 2002 by Tue and Ken Haste Andersen
     email                :
- ***************************************************************************/
+***************************************************************************/
 
 /***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+*                                                                         *
+*   This program is free software; you can redistribute it and/or modify  *
+*   it under the terms of the GNU General Public License as published by  *
+*   the Free Software Foundation; either version 2 of the License, or     *
+*   (at your option) any later version.                                   *
+*                                                                         *
+***************************************************************************/
 
 #include <qapplication.h>
 #include <qfont.h>
@@ -38,65 +38,65 @@
 #endif
 
 #ifdef Q_WS_WIN
-#include<io.h> // Debug Console
-#include<windows.h>
+#include <io.h> // Debug Console
+#include <windows.h>
 
 void InitDebugConsole() { // Open a Debug Console so we can printf
-	int fd;
-	FILE *fp;
+    int fd;
+    FILE * fp;
 
-        FreeConsole();
-	if (AllocConsole()) {
-          SetConsoleTitleA("Mixxx Debug Messages");
+    FreeConsole();
+    if (AllocConsole()) {
+        SetConsoleTitleA("Mixxx Debug Messages");
 
-	  fd = _open_osfhandle( (long)GetStdHandle( STD_OUTPUT_HANDLE ), 0);
-	  fp = _fdopen( fd, "w" );
+        fd = _open_osfhandle( (long)GetStdHandle( STD_OUTPUT_HANDLE ), 0);
+        fp = _fdopen( fd, "w" );
 
-	  *stdout = *fp;
-	  setvbuf( stdout, NULL, _IONBF, 0 );
+        *stdout = *fp;
+        setvbuf( stdout, NULL, _IONBF, 0 );
 
-	  fd = _open_osfhandle( (long)GetStdHandle( STD_ERROR_HANDLE ), 0);
-	  fp = _fdopen( fd, "w" );
+        fd = _open_osfhandle( (long)GetStdHandle( STD_ERROR_HANDLE ), 0);
+        fp = _fdopen( fd, "w" );
 
-	  *stderr = *fp;
-	  setvbuf( stderr, NULL, _IONBF, 0 );
-        }
+        *stderr = *fp;
+        setvbuf( stderr, NULL, _IONBF, 0 );
+    }
 }
 #endif
 
-QApplication *a;
+QApplication * a;
 
 void qInitImages_mixxx();
 
-void MessageOutput( QtMsgType type, const char *msg )
+void MessageOutput( QtMsgType type, const char * msg )
 {
-        switch ( type ) {
-            case QtDebugMsg:
+    switch ( type ) {
+    case QtDebugMsg:
 #ifdef Q_WS_WIN
-                if (strstr(msg, "doneCurrent")) {
-                        break;
-                }
+        if (strstr(msg, "doneCurrent")) {
+            break;
+        }
 #endif
-                fprintf( stderr, "Debug: %s\n", msg );
-                break;
-            case QtWarningMsg:
-                fprintf( stderr, "Warning: %s\n", msg);
-                break;
-            case QtCriticalMsg:
-                fprintf( stderr, "Critical: %s\n", msg );
-                QMessageBox::warning(0, "Mixxx", msg);
-                exit(-1);
-                break;
-            case QtFatalMsg:
-                fprintf( stderr, "Fatal: %s\n", msg );
-                QMessageBox::warning(0, "Mixxx", msg);
-                abort();
+        fprintf( stderr, "Debug: %s\n", msg );
+        break;
+    case QtWarningMsg:
+        fprintf( stderr, "Warning: %s\n", msg);
+        break;
+    case QtCriticalMsg:
+        fprintf( stderr, "Critical: %s\n", msg );
+        QMessageBox::warning(0, "Mixxx", msg);
+        exit(-1);
+        break;
+    case QtFatalMsg:
+        fprintf( stderr, "Fatal: %s\n", msg );
+        QMessageBox::warning(0, "Mixxx", msg);
+        abort();
     }
 }
 
 QFile Logfile; // global logfile variable
 
-void MessageToLogfile( QtMsgType type, const char *msg )
+void MessageToLogfile( QtMsgType type, const char * msg )
 {
     Q3TextStream Log( &Logfile );
     switch ( type ) {
@@ -123,24 +123,24 @@ void MessageToLogfile( QtMsgType type, const char *msg )
 }
 
 
-int main(int argc, char *argv[])
+int main(int argc, char * argv[])
 {
     // Check if an instance of Mixxx is already running
 
 
 #ifdef Q_WS_WIN
-  // For windows write all debug messages to a logfile:
-  Logfile.setName( "mixxx.log" );
+    // For windows write all debug messages to a logfile:
+    Logfile.setName( "mixxx.log" );
 #ifndef QT3_SUPPORT
-  Logfile.open(IO_WriteOnly | IO_Translate);
+    Logfile.open(IO_WriteOnly | IO_Translate);
 #else
-  Logfile.open(QIODevice::WriteOnly | QIODevice::Text);
+    Logfile.open(QIODevice::WriteOnly | QIODevice::Text);
 #endif
   #ifdef DEBUGCONSOLE
-  InitDebugConsole();
-  qInstallMsgHandler( MessageOutput );
-  #else 
-  qInstallMsgHandler( MessageToLogfile );
+    InitDebugConsole();
+    qInstallMsgHandler( MessageOutput );
+  #else
+    qInstallMsgHandler( MessageToLogfile );
   #endif
 #else
     // For others, write to the console:
@@ -154,14 +154,14 @@ int main(int argc, char *argv[])
 #endif
 
     // Show splash
-    QSplashScreen *pSplash = 0;
+    QSplashScreen * pSplash = 0;
     /*
-    QPixmap pixmap("splash.png");
-    pSplash = new QSplashScreen(pixmap);
-    pSplash->show();
-    pSplash->message("Loading...",Qt::AlignLeft|Qt::AlignBottom);
-    */
-    
+       QPixmap pixmap("splash.png");
+       pSplash = new QSplashScreen(pixmap);
+       pSplash->show();
+       pSplash->message("Loading...",Qt::AlignLeft|Qt::AlignBottom);
+     */
+
     QTranslator tor( 0 );
     // set the location where your .qm files are in load() below as the last parameter instead of "."
     // for development, use "/" to use the english original as
@@ -188,12 +188,12 @@ int main(int argc, char *argv[])
         else
             files += argv[i];
     }
-    
-    MixxxApp *mixxx=new MixxxApp(a, files, pSplash, qLogFileName);
+
+    MixxxApp * mixxx=new MixxxApp(a, files, pSplash, qLogFileName);
     a->setMainWidget(mixxx);
 
     mixxx->show();
-    
+
     if (pSplash)
     {
         pSplash->finish(mixxx);

@@ -4,16 +4,16 @@
     begin                : Thu Feb 6 2003
     copyright            : (C) 2003 by Tue & Ken Haste Andersen
     email                : haste@diku.dk
- ***************************************************************************/
+***************************************************************************/
 
 /***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+*                                                                         *
+*   This program is free software; you can redistribute it and/or modify  *
+*   it under the terms of the GNU General Public License as published by  *
+*   the Free Software Foundation; either version 2 of the License, or     *
+*   (at your option) any later version.                                   *
+*                                                                         *
+***************************************************************************/
 
 #include <qfileinfo.h>
 #include <QtDebug>
@@ -28,7 +28,7 @@
 #include "soundsource.h"
 #include "soundsourceproxy.h"
 
-ReaderExtractWave::ReaderExtractWave(Reader *pReader, EngineBuffer *pEngineBuffer) : ReaderExtract(0, pEngineBuffer, "signal")
+ReaderExtractWave::ReaderExtractWave(Reader * pReader, EngineBuffer * pEngineBuffer) : ReaderExtract(0, pEngineBuffer, "signal")
 {
     m_pReader = pReader;
     m_pVisualBufferMarks = 0;
@@ -74,7 +74,7 @@ ReaderExtractWave::~ReaderExtractWave()
 #endif
 }
 
-void ReaderExtractWave::newSource(TrackInfoObject *pTrack)
+void ReaderExtractWave::newSource(TrackInfoObject * pTrack)
 {
     //
     // Initialize new sound source
@@ -117,7 +117,7 @@ void ReaderExtractWave::newSource(TrackInfoObject *pTrack)
 #endif
 }
 
-void ReaderExtractWave::addVisual(VisualChannel *pVisualChannel)
+void ReaderExtractWave::addVisual(VisualChannel * pVisualChannel)
 {
     ReaderExtract::addVisual(pVisualChannel);
     m_pVisualBufferMarks = pVisualChannel->add(this, m_pEngineBuffer, "marks");
@@ -155,7 +155,7 @@ void ReaderExtractWave::reset()
         QApplication::postEvent(m_pVisualBufferMarks, new ReaderEvent(0, READBUFFERSIZE, filepos_start, bufferpos_start, getBufferSize(), getRate()));
 }
 
-void *ReaderExtractWave::getBasePtr()
+void * ReaderExtractWave::getBasePtr()
 {
     return (void *)read_buffer;
 }
@@ -187,12 +187,12 @@ int ReaderExtractWave::getBufferSize()
     return READBUFFERSIZE;
 }
 
-ReaderExtractBeat *ReaderExtractWave::getExtractBeat()
+ReaderExtractBeat * ReaderExtractWave::getExtractBeat()
 {
     return readerbeat;
 }
 
-void *ReaderExtractWave::processChunk(const int, const int, const int, bool, const long signed int)
+void * ReaderExtractWave::processChunk(const int, const int, const int, bool, const long signed int)
 {
     return 0;
 }
@@ -231,7 +231,7 @@ void ReaderExtractWave::getchunk(CSAMPLE rate)
         backwards = true;
     else if (backwards && filepos_play-filepos_start>filepos_end-filepos_play)
         backwards = false;
-*/
+ */
 
     //qDebug(":::::::::: %i ::: %i",filepos_end-filepos_play,filepos_play-(filepos_start));
     if (!backwards && filepos_end>filepos_play && filepos_end-filepos_play>(filepos_play-filepos_start))
@@ -351,7 +351,7 @@ void ReaderExtractWave::getchunk(CSAMPLE rate)
 
 #ifdef EXTRACT
     // Do pre-processing...
-    
+
 //    qDebug("curr %i, start %i, end %i",chunkCurr,chunkStart,chunkEnd);
     readerhfc->processChunk(chunkCurr, chunkStart, chunkEnd, backwards, filepos_start);
     readerbeat->processChunk(chunkCurr, chunkStart, chunkEnd, backwards, filepos_start);
@@ -366,7 +366,7 @@ void ReaderExtractWave::getchunk(CSAMPLE rate)
         CSAMPLE *p = (CSAMPLE *)readerbeat->getBasePtr();
         p[idx] = -1.;
     }
-*/
+ */
 
     m_pReader->unlock();
 //     qDebug("u1");

@@ -6,20 +6,20 @@
  ***************************************************************************/
 
 /***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+*                                                                         *
+*   This program is free software; you can redistribute it and/or modify  *
+*   it under the terms of the GNU General Public License as published by  *
+*   the Free Software Foundation; either version 2 of the License, or     *
+*   (at your option) any later version.                                   *
+*                                                                         *
+***************************************************************************/
 
 #include "soundsourceaudiofile.h"
 #include "trackinfoobject.h"
 
 SoundSourceAudioFile::SoundSourceAudioFile(QString qFilename) : SoundSource(qFilename)
 {
-    fh = afOpenFile( qFilename.latin1() ,"r",0);
+    fh = afOpenFile( qFilename.latin1(),"r",0);
     if (fh == AF_NULL_FILEHANDLE) {
         qDebug("libaudiofile: Error opening file.");
         filelength = 0;
@@ -33,7 +33,7 @@ SoundSourceAudioFile::SoundSourceAudioFile(QString qFilename) : SoundSource(qFil
         buffer = new SAMPLE[MAX_BUFFER_LEN];
     else
         buffer = 0;
-    filelength = 2*afGetFrameCount(fh,AF_DEFAULT_TRACK);
+    filelength = 2 *afGetFrameCount(fh,AF_DEFAULT_TRACK);
 
     SRATE = (int)afGetRate(fh,AF_DEFAULT_TRACK);
 }
@@ -51,7 +51,7 @@ long SoundSourceAudioFile::seek(long filepos)
     {
 //	   qDebug("seek %i, len %i, channels %i",filepos,filelength,channels);
 //        filepos = math_max(0, math_min(filepos,filelength));
-    
+
         if (afSeekFrame(fh, AF_DEFAULT_TRACK, (AFframecount) (filepos/2))<0)
             qDebug("libaudiofile: Seek ERR.");
         return filepos;
@@ -60,17 +60,17 @@ long SoundSourceAudioFile::seek(long filepos)
 }
 
 /*
-  read <size> samples into <destination>, and return the number of
-  samples actually read.
-*/
-unsigned SoundSourceAudioFile::read(unsigned long size, const SAMPLE* destination)
+   read <size> samples into <destination>, and return the number of
+   samples actually read.
+ */
+unsigned SoundSourceAudioFile::read(unsigned long size, const SAMPLE * destination)
 {
-    SAMPLE *dest = (SAMPLE *)destination;
+    SAMPLE * dest = (SAMPLE *)destination;
     if (channels==2)
-    {    
-	//qDebug("req %i, ch %i, frames %i",size,channels,size/channels);
+    {
+        //qDebug("req %i, ch %i, frames %i",size,channels,size/channels);
         int readNo = afReadFrames(fh,AF_DEFAULT_TRACK, dest, size/channels);
-	//qDebug("read  %i",readNo);
+        //qDebug("read  %i",readNo);
         return readNo*channels;
     }
     else
@@ -92,10 +92,10 @@ unsigned SoundSourceAudioFile::read(unsigned long size, const SAMPLE* destinatio
     }
 }
 
-int SoundSourceAudioFile::ParseHeader(TrackInfoObject *Track)
+int SoundSourceAudioFile::ParseHeader(TrackInfoObject * Track)
 {
     QString location = Track->getLocation();
-    AFfilehandle fh = afOpenFile(location.latin1() , "r", 0);
+    AFfilehandle fh = afOpenFile(location.latin1(), "r", 0);
     if (fh == AF_NULL_FILEHANDLE)
     {
         qDebug("libaudiofile: Error opening file.");
@@ -112,8 +112,8 @@ int SoundSourceAudioFile::ParseHeader(TrackInfoObject *Track)
 }
 
 /*
-  Return the length of the file in samples.
-*/
+   Return the length of the file in samples.
+ */
 inline long unsigned SoundSourceAudioFile::length()
 {
     return filelength;

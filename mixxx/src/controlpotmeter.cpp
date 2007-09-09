@@ -4,16 +4,16 @@
     begin                : Wed Feb 20 2002
     copyright            : (C) 2002 by Tue and Ken Haste Andersen
     email                :
- ***************************************************************************/
+***************************************************************************/
 
 /***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+*                                                                         *
+*   This program is free software; you can redistribute it and/or modify  *
+*   it under the terms of the GNU General Public License as published by  *
+*   the Free Software Foundation; either version 2 of the License, or     *
+*   (at your option) any later version.                                   *
+*                                                                         *
+***************************************************************************/
 
 #include "controlpushbutton.h"
 #include "controlpotmeter.h"
@@ -32,7 +32,7 @@ ControlPotmeter::ControlPotmeter(ConfigKey key, double dMinValue, double dMaxVal
     setRange(dMinValue,dMaxValue);
     setStep(m_dValueRange/10.f);
 
-    ControlPushButton *p;
+    ControlPushButton * p;
     p = new ControlPushButton(ConfigKey(key.group, QString(key.item)+"_up"));
     connect(p, SIGNAL(valueChanged(double)), this, SLOT(incValue(double)));
     p = new ControlPushButton(ConfigKey(key.group, QString(key.item)+"_down"));
@@ -119,7 +119,7 @@ void ControlPotmeter::incValue(double keypos)
         else
             m_dValue += m_dStep;
         emit(valueChanged(m_dValue));
-        
+
         // incValue will be activated by assosiated _up or _down ControlObject, and thus it is safe to update all proxies.
         updateProxies(0);
     }
@@ -134,7 +134,7 @@ void ControlPotmeter::decValue(double keypos)
         else
             m_dValue -= m_dStep;
         emit(valueChanged(m_dValue));
-        
+
         // incValue will be activated by assosiated _up or _down ControlObject, and thus it is safe to update all proxies.
         updateProxies(0);
     }

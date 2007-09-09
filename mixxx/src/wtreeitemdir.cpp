@@ -13,7 +13,7 @@
 #include "wtreeitemfile.h"
 #include "wtreeview.h"
 
-WTreeItemDir::WTreeItemDir(Q3ListView *parent, const QString& filename) : WTreeItem(parent), f(filename), showDirsOnly(((WTreeView*)parent)->showDirsOnly())
+WTreeItemDir::WTreeItemDir(Q3ListView * parent, const QString& filename) : WTreeItem(parent), f(filename), showDirsOnly(((WTreeView*)parent)->showDirsOnly())
 {
     folderLocked = 0;
     folderClosed = 0;
@@ -25,7 +25,7 @@ WTreeItemDir::WTreeItemDir(Q3ListView *parent, const QString& filename) : WTreeI
 //    setPixmap(new QPixmap(QString("C:\Documents and Settings\Tue\My Documents\cvs\mixxx\src\icons\unknown.png")));
 }
 
-WTreeItemDir::WTreeItemDir(WTreeItemDir *parent, const QString& filename, const QString &col2) : WTreeItem( parent, filename, col2 )
+WTreeItemDir::WTreeItemDir(WTreeItemDir * parent, const QString& filename, const QString &col2) : WTreeItem( parent, filename, col2 )
 {
     folderLocked = 0;
     folderClosed = 0;
@@ -35,7 +35,7 @@ WTreeItemDir::WTreeItemDir(WTreeItemDir *parent, const QString& filename, const 
 //    setPixmap(new QPixmap(QString("C:\Documents and Settings\Tue\My Documents\cvs\mixxx\src\icons\unknown.png")));
 }
 
-WTreeItemDir::WTreeItemDir(WTreeItemDir *parent, const QString& filename) : WTreeItem( parent ), f(filename), showDirsOnly(parent->showDirsOnly)
+WTreeItemDir::WTreeItemDir(WTreeItemDir * parent, const QString& filename) : WTreeItem( parent ), f(filename), showDirsOnly(parent->showDirsOnly)
 {
     folderLocked = 0;
     folderClosed = 0;
@@ -49,7 +49,7 @@ WTreeItemDir::WTreeItemDir(WTreeItemDir *parent, const QString& filename) : WTre
         setPixmap(folderLocked);
     else
         setPixmap(folderClosed);
-*/
+ */
 //    setPixmap(new QPixmap(QString("C:\Documents and Settings\Tue\My Documents\cvs\mixxx\src\icons\unknown.png")));
 }
 
@@ -65,7 +65,7 @@ void WTreeItemDir::setOpen(bool o)
         setPixmap( folderOpen );
     else
         setPixmap( folderClosed );
-*/
+ */
 
     if ( o && !childCount() ) {
         QString s( fullName() );
@@ -80,15 +80,15 @@ void WTreeItemDir::setOpen(bool o)
         //        const QFileInfoList * files = thisDir.entryInfoList();
 
         if (!thisDir.entryInfoList().isEmpty()) {
-          QFileInfoList list = thisDir.entryInfoList();
+            QFileInfoList list = thisDir.entryInfoList();
 
             for (int i = 0; i < list.size(); ++i) {
                 QFileInfo fi = list.at(i);
                 if ( fi.fileName() == "." || fi.fileName() == ".." )
                     ; // nothing
                 else if ( fi.isSymLink() && !showDirsOnly ) {
-                     WTreeItemFile *item = new WTreeItemFile( this, fi.fileName(),
-                                                              "Symbolic Link" );
+                    WTreeItemFile * item = new WTreeItemFile( this, fi.fileName(),
+                                                             "Symbolic Link" );
 //                    item->setPixmap( fileNormal );
                 }
                 else if ( fi.isDir() )
@@ -97,9 +97,9 @@ void WTreeItemDir::setOpen(bool o)
                          (fi.fileName().endsWith(".mp3") ||
                           fi.fileName().endsWith(".ogg") ||
                           fi.fileName().endsWith(".wav") ||
-			  fi.fileName().endsWith(".aif") ||
-			  fi.fileName().endsWith(".aiff") ||
-			  fi.fileName().endsWith(".Mp3") ||
+                          fi.fileName().endsWith(".aif") ||
+                          fi.fileName().endsWith(".aiff") ||
+                          fi.fileName().endsWith(".Mp3") ||
                           fi.fileName().endsWith(".Ogg") ||
                           fi.fileName().endsWith(".Wav") ||
                           fi.fileName().endsWith(".Aif") ||
@@ -107,11 +107,11 @@ void WTreeItemDir::setOpen(bool o)
                           fi.fileName().endsWith(".MP3") ||
                           fi.fileName().endsWith(".OGG") ||
                           fi.fileName().endsWith(".WAV") ||
-			  fi.fileName().endsWith(".AIF") ||
-			  fi.fileName().endsWith(".AIFF")))
+                          fi.fileName().endsWith(".AIF") ||
+                          fi.fileName().endsWith(".AIFF")))
                 {
-                     WTreeItemFile *item = new WTreeItemFile(this, fi.fileName(),
-                                                             fi.isFile()?"File":"Special" );
+                    WTreeItemFile * item = new WTreeItemFile(this, fi.fileName(),
+                                                             fi.isFile() ? "File" : "Special" );
 //                    item->setPixmap( fileNormal );
                 }
             }

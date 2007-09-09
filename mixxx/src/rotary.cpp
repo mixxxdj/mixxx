@@ -4,16 +4,16 @@
     begin                : Tue Sep 21 2004
     copyright            : (C) 2004 by Tue Haste Andersen
     email                : haste@diku.dk
- ***************************************************************************/
+***************************************************************************/
 
 /***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+*                                                                         *
+*   This program is free software; you can redistribute it and/or modify  *
+*   it under the terms of the GNU General Public License as published by  *
+*   the Free Software Foundation; either version 2 of the License, or     *
+*   (at your option) any later version.                                   *
+*                                                                         *
+***************************************************************************/
 
 #include "rotary.h"
 #include "mathstuff.h"
@@ -44,7 +44,7 @@ Rotary::~Rotary()
    when herculeslinux.cpp passes the filtered value off to the wheel ControlObject (or what
    have you), the ControlObject's internal value never goes back to zero properly.
    - Albert (March 13, 2007)
-*/
+ */
 double Rotary::filter(double dValue)
 {
     // Update filter buffer
@@ -57,13 +57,13 @@ double Rotary::filter(double dValue)
         dMagnitude += m_pFilter[i];
     }
     dMagnitude /= (double)m_iFilterLength;
-     //qDebug("filter in %e, out %e",dValue,dMagnitude);
-        
+    //qDebug("filter in %e, out %e",dValue,dMagnitude);
+
     if (m_dLastValue!=dMagnitude)
         return dMagnitude;
-    
+
     m_dLastValue = dMagnitude;
-    
+
     return dMagnitude;
 }
 

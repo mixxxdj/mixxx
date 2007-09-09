@@ -4,16 +4,16 @@
     begin                : Wed Jun 18 2003
     copyright            : (C) 2003 by Tue & Ken Haste Andersen
     email                : haste@diku.dk
- ***************************************************************************/
+***************************************************************************/
 
 /***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+*                                                                         *
+*   This program is free software; you can redistribute it and/or modify  *
+*   it under the terms of the GNU General Public License as published by  *
+*   the Free Software Foundation; either version 2 of the License, or     *
+*   (at your option) any later version.                                   *
+*                                                                         *
+***************************************************************************/
 
 #include <QtDebug>
 #include "wwidget.h"
@@ -25,7 +25,7 @@
 QString WWidget::m_qPath;
 ConfigObject<ConfigValueKbd> *WWidget::m_spKbdConfigObject = 0;
 
-WWidget::WWidget(QWidget *parent, const char *name, Qt::WFlags flags) : QWidget(parent,name, flags|Qt::WStaticContents|Qt::WNoAutoErase|Qt::WResizeNoErase)
+WWidget::WWidget(QWidget * parent, const char * name, Qt::WFlags flags) : QWidget(parent,name, flags|Qt::WStaticContents|Qt::WNoAutoErase|Qt::WResizeNoErase)
 {
     m_fValue = 0.;
     m_bOff = false;
@@ -41,7 +41,7 @@ WWidget::~WWidget()
 {
 }
 
-void WWidget::setKeyboardConfig(ConfigObject<ConfigValueKbd> *pKbdConfigObject)
+void WWidget::setKeyboardConfig(ConfigObject<ConfigValueKbd> * pKbdConfigObject)
 {
     m_spKbdConfigObject = pKbdConfigObject;
 }
@@ -69,7 +69,7 @@ void WWidget::setup(QDomNode node)
         configKey.item = key.mid(key.find(",")+1);
 
         // Check that the control exists
-        ControlObject *control = ControlObject::getControl(configKey);
+        ControlObject * control = ControlObject::getControl(configKey);
         if (control == NULL) {
             qWarning() << "Requested control does not exist:" << key;
             con = con.nextSibling();
@@ -142,14 +142,14 @@ void WWidget::slotReEmitValueUp(double fValue)
 
 int WWidget::selectNodeInt(const QDomNode &nodeHeader, const QString sNode)
 {
-	QString text = selectNode(nodeHeader, sNode).toElement().text();
-	bool ok;
+    QString text = selectNode(nodeHeader, sNode).toElement().text();
+    bool ok;
     int conv = text.toInt(&ok, 0);
-	if (ok) {
-		return conv;
-	} else {
-		return 0;
-	}
+    if (ok) {
+        return conv;
+    } else {
+        return 0;
+    }
 }
 
 float WWidget::selectNodeFloat(const QDomNode &nodeHeader, const QString sNode)
@@ -175,7 +175,7 @@ QDomNode WWidget::selectNode(const QDomNode &nodeHeader, const QString sNode)
     {
         if (node.nodeName() == sNode)
             return node;
-            node = node.nextSibling();
+        node = node.nextSibling();
     }
     return node;
 }
@@ -191,7 +191,7 @@ void WWidget::setPixmapPath(QString qPath)
     m_qPath = qPath;
 }
 
-QDomElement WWidget::openXMLFile(QString path, QString name) 
+QDomElement WWidget::openXMLFile(QString path, QString name)
 {
     QDomDocument doc(name);
     QFile file(path);

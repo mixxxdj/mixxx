@@ -4,16 +4,16 @@
     begin                : Sat Nov 15 2003
     copyright            : (C) 2003 by Tue Haste Andersen
     email                :
- ***************************************************************************/
+***************************************************************************/
 
 /***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+*                                                                         *
+*   This program is free software; you can redistribute it and/or modify  *
+*   it under the terms of the GNU General Public License as published by  *
+*   the Free Software Foundation; either version 2 of the License, or     *
+*   (at your option) any later version.                                   *
+*                                                                         *
+***************************************************************************/
 
 #include "playerjack.h"
 #include "controlobject.h"
@@ -22,7 +22,7 @@
 #include <qapplication.h>
 #include "controlobject.h"
 
-PlayerJack::PlayerJack(ConfigObject<ConfigValue> *config) : Player(config) //, mLibJack("libjack.so")
+PlayerJack::PlayerJack(ConfigObject<ConfigValue> * config) : Player(config) //, mLibJack("libjack.so")
 {
     ports = 0;
     m_bOpen = false;
@@ -50,7 +50,7 @@ PlayerJack::PlayerJack(ConfigObject<ConfigValue> *config) : Player(config) //, m
         jack_get_sample_rate =(jack_get_sample_rate_t) mLibJack.resolve("jack_get_sample_rate");
         jack_port_get_buffer =(jack_port_get_buffer_t) mLibJack.resolve("jack_port_get_buffer");
     }
-*/
+ */
 }
 
 PlayerJack::~PlayerJack()
@@ -78,13 +78,13 @@ bool PlayerJack::initialize()
 {
     // Verify that library is loaded, and all function pointers has been retreived
     /*
-    if (!mLibJack.isLoaded())
-    {
+       if (!mLibJack.isLoaded())
+       {
         qDebug("lib not loaded");
         return false;
-    }
-    else
-    if (!jack_set_error_function |
+       }
+       else
+       if (!jack_set_error_function |
             !jack_port_unregister |
             !jack_client_close |
             !jack_client_new |
@@ -99,11 +99,11 @@ bool PlayerJack::initialize()
             !jack_get_ports |
             !jack_get_sample_rate |
             !jack_port_get_buffer)
-    {
+       {
         qDebug("API function pointer error");
         return false;
-    }
-    */
+       }
+     */
 
     jack_set_error_function(jackError);
 
@@ -118,7 +118,7 @@ bool PlayerJack::initialize()
     output_master_right = jack_port_register(client, "Master right", JACK_DEFAULT_AUDIO_TYPE, JackPortIsOutput, 0);
     output_head_left    = jack_port_register(client, "Head left", JACK_DEFAULT_AUDIO_TYPE, JackPortIsOutput, 0);
     output_head_right   = jack_port_register(client, "Head right", JACK_DEFAULT_AUDIO_TYPE, JackPortIsOutput, 0);
-        
+
     return true;
 }
 
@@ -136,7 +136,7 @@ bool PlayerJack::open()
     // Connect to the ports
     QString name;
     m_iChannels = 0;
-    
+
     name = m_pConfig->getValueString(ConfigKey("[Soundcard]","DeviceMasterLeft"));
     if (name != "None")
     {
@@ -183,15 +183,15 @@ bool PlayerJack::open()
         if (jack_connect(client, jack_port_name(output_head_right), name.latin1()))
             m_pConfig->set(ConfigKey("[Soundcard]","DeviceHeadRight"),ConfigValue("None"));
         else
-        {    
+        {
             m_iBufferSize = jack_port_get_total_latency(client, output_head_right);
             m_iChannels++;
         }
     }
 
     qDebug("channels %i, latency %i",m_iChannels,m_iBufferSize);
-    
-    
+
+
     // Update the config database with the used sample rate
     QStringList srates = getSampleRates();
     QStringList::iterator it = srates.begin();
@@ -302,14 +302,14 @@ QString PlayerJack::getSoundApi()
 int PlayerJack::callbackProcess(int iBufferSize)
 {
 //     qDebug("buffer size %i",iBufferSize);
-    jack_default_audio_sample_t *out_ml = (jack_default_audio_sample_t *)jack_port_get_buffer(output_master_left, iBufferSize);
-    jack_default_audio_sample_t *out_mr = (jack_default_audio_sample_t *)jack_port_get_buffer(output_master_right, iBufferSize);
-    jack_default_audio_sample_t *out_hl = (jack_default_audio_sample_t *)jack_port_get_buffer(output_head_left, iBufferSize);
-    jack_default_audio_sample_t *out_hr = (jack_default_audio_sample_t *)jack_port_get_buffer(output_head_right, iBufferSize);
+    jack_default_audio_sample_t * out_ml = (jack_default_audio_sample_t *)jack_port_get_buffer(output_master_left, iBufferSize);
+    jack_default_audio_sample_t * out_mr = (jack_default_audio_sample_t *)jack_port_get_buffer(output_master_right, iBufferSize);
+    jack_default_audio_sample_t * out_hl = (jack_default_audio_sample_t *)jack_port_get_buffer(output_head_left, iBufferSize);
+    jack_default_audio_sample_t * out_hr = (jack_default_audio_sample_t *)jack_port_get_buffer(output_head_right, iBufferSize);
 
     if (m_bOpen)
     {
-        CSAMPLE *buffer = prepareBuffer(iBufferSize);
+        CSAMPLE * buffer = prepareBuffer(iBufferSize);
 
         for (int i=0; i<iBufferSize; ++i)
         {
@@ -341,30 +341,30 @@ void PlayerJack::callbackShutdown()
     qWarning("Jack connection was killed.\n\nThis could be due to a high CPU load. Try increasing the latency\nwhen starting the Jack sound server.");
 }
 
-void jackError(const char *desc)
+void jackError(const char * desc)
 {
     qDebug() << "Jack experienced an error:" << desc;
 }
 
-int jackProcess(jack_nframes_t nframes, void *arg)
+int jackProcess(jack_nframes_t nframes, void * arg)
 {
     ((PlayerJack *)arg)->callbackProcess(nframes);
     return 0;
 }
 
-int jackSrate(jack_nframes_t nframes, void *arg)
+int jackSrate(jack_nframes_t nframes, void * arg)
 {
     // Update SRATE in EngineObject
     ((PlayerJack *)arg)->callbackSetSrate(nframes);
     return 0;
 }
 
-void jackShutdown(void *arg)
+void jackShutdown(void * arg)
 {
     ((PlayerJack *)arg)->callbackShutdown();
 }
 
-void jackBufferSize(jack_nframes_t nframes, void *arg)
+void jackBufferSize(jack_nframes_t nframes, void * arg)
 {
     ((PlayerJack *)arg)->callbackSetBufferSize(nframes);
 }

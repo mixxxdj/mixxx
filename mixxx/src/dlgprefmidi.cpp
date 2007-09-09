@@ -4,16 +4,16 @@
     begin                : Thu Apr 17 2003
     copyright            : (C) 2003 by Tue & Ken Haste Andersen
     email                : haste@diku.dk
- ***************************************************************************/
+***************************************************************************/
 
 /***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+*                                                                         *
+*   This program is free software; you can redistribute it and/or modify  *
+*   it under the terms of the GNU General Public License as published by  *
+*   the Free Software Foundation; either version 2 of the License, or     *
+*   (at your option) any later version.                                   *
+*                                                                         *
+***************************************************************************/
 
 #include "dlgprefmidi.h"
 #include "midiobject.h"
@@ -77,14 +77,14 @@
 #include "joysticklinux.h"
 #endif
 
-DlgPrefMidi::DlgPrefMidi(QWidget *parent, ConfigObject<ConfigValue> *pConfig) :  QWidget(parent), Ui::DlgPrefMidiDlg()
+DlgPrefMidi::DlgPrefMidi(QWidget * parent, ConfigObject<ConfigValue> * pConfig) :  QWidget(parent), Ui::DlgPrefMidiDlg()
 {
     m_pConfig = pConfig;
     m_pProgressDialog = 0;
     m_pTimer = 0;
-    
+
     setupUi(this);
-    
+
     // Open midi
     m_pMidi = 0;
 #ifdef __ALSAMIDI__
@@ -112,42 +112,42 @@ DlgPrefMidi::DlgPrefMidi(QWidget *parent, ConfigObject<ConfigValue> *pConfig) : 
     // Get list of available midi configurations, and read the default configuration. If no default
     // is given, use the first configuration found in the config directory.
     QString qConfigPath = m_pConfig->getConfigPath();
-    QStringList *midiConfigList = m_pMidi->getConfigList(qConfigPath.append("midi/"));
+    QStringList * midiConfigList = m_pMidi->getConfigList(qConfigPath.append("midi/"));
     m_pMidiConfig = 0;
     QString mappingfile = m_pConfig->getValueString(ConfigKey("[Midi]", "File"));
     bool foundmap = false;
     for (QStringList::Iterator it = midiConfigList->begin(); it != midiConfigList->end(); ++it ) {
         if (*it == mappingfile) {
-	    foundmap = true;
-	    break;
-	}
+            foundmap = true;
+            break;
+        }
     }
-    if (! foundmap) {
-       if (midiConfigList->empty())
-       {
-           qDebug("No MIDI mapping files found");
-           m_pConfig->set(ConfigKey("[Midi]","File"), ConfigValue(""));
-	   mappingfile = "";
-       }
-       else
-       {
-           QString notfound = mappingfile;          
+    if (!foundmap) {
+        if (midiConfigList->empty())
+        {
+            qDebug("No MIDI mapping files found");
+            m_pConfig->set(ConfigKey("[Midi]","File"), ConfigValue(""));
+            mappingfile = "";
+        }
+        else
+        {
+            QString notfound = mappingfile;
 #ifndef QT3_SUPPORT
-           mappingfile = (*midiConfigList->at(0));
+            mappingfile = (*midiConfigList->at(0));
 #else
-           mappingfile = midiConfigList->at(0);
+            mappingfile = midiConfigList->at(0);
 #endif
-           qWarning() << "Requested MIDI mapping file" << notfound << "not found; defaulting to" << mappingfile;
-           m_pConfig->set(ConfigKey("[Midi]","File"), ConfigValue(mappingfile));
+            qWarning() << "Requested MIDI mapping file" << notfound << "not found; defaulting to" << mappingfile;
+            m_pConfig->set(ConfigKey("[Midi]","File"), ConfigValue(mappingfile));
 
-           // setupMappings(m_pConfig->getValueString(ConfigKey("[Config]","Path")).append("midi/").append(m_pConfig->getValueString(ConfigKey("[Midi]","File"))));
-           // m_pMidi->setMidiConfig(m_pMidiConfig);
-      }
+            // setupMappings(m_pConfig->getValueString(ConfigKey("[Config]","Path")).append("midi/").append(m_pConfig->getValueString(ConfigKey("[Midi]","File"))));
+            // m_pMidi->setMidiConfig(m_pMidiConfig);
+        }
     }
-    
+
     // Store default midi device
     m_pConfig->set(ConfigKey("[Midi]","Device"), ConfigValue(m_pMidi->getOpenDevice()));
-        
+
     // Try initializing PowerMates
     m_pPowerMate1 = 0;
     m_pPowerMate2 = 0;
@@ -179,7 +179,7 @@ DlgPrefMidi::DlgPrefMidi(QWidget *parent, ConfigObject<ConfigValue> *pConfig) : 
             m_pPowerMate2 = 0;
         }
     }
-    
+
     // Try initializing Joystick
     m_pJoystick = 0;
 #ifdef __LINUX__
@@ -193,7 +193,7 @@ DlgPrefMidi::DlgPrefMidi(QWidget *parent, ConfigObject<ConfigValue> *pConfig) : 
             m_pJoystick = 0;
         }
     }
-    
+
     // Try initializing Hercules DJ Console
     m_pHercules = 0;
 #ifdef __LINUX__
@@ -207,8 +207,8 @@ DlgPrefMidi::DlgPrefMidi(QWidget *parent, ConfigObject<ConfigValue> *pConfig) : 
             delete m_pHercules;
             m_pHercules = 0;
         }
-    }    
-    
+    }
+
     // Used in mouse calibration
     m_pProgressDialog = new Q3ProgressDialog("Calibrating mouse turntable", "Cancel", 30, this, "Progress...", TRUE );
     m_pProgressDialog->setMinimumDuration(0);
@@ -248,7 +248,7 @@ void DlgPrefMidi::slotUpdate()
 
     // Midi configurations
     ComboBoxMidiconf->clear();
-    QStringList *midiConfigList = m_pMidi->getConfigList(m_pConfig->getValueString(ConfigKey("[Config]","Path")).append("midi/"));
+    QStringList * midiConfigList = m_pMidi->getConfigList(m_pConfig->getValueString(ConfigKey("[Config]","Path")).append("midi/"));
     int j=0;
     if (midiConfigList->count()>0)
     {
@@ -265,7 +265,7 @@ void DlgPrefMidi::slotUpdate()
 
     // Midi devices
     ComboBoxMididevice->clear();
-    QStringList *midiDeviceList = m_pMidi->getDeviceList();
+    QStringList * midiDeviceList = m_pMidi->getDeviceList();
     j=0;
     QStringList::Iterator it;
     for (it = midiDeviceList->begin(); it != midiDeviceList->end(); ++it )
@@ -337,7 +337,7 @@ void DlgPrefMidi::slotUpdate()
             j++;
         }
     }
-    
+
     // Mouse
     QStringList qMouseConfigList;
     qMouseConfigList = Mouse::getMappings();
@@ -416,15 +416,15 @@ void DlgPrefMidi::slotApply()
     // Since things can go wrong during this midi code (like hangs) move it
     // into another thread so we can do something sensible if it breaks
 
-	// On Linux having the midi init in a different thread seems to fix things
-	// for a number of buggy drivers, however it causes extra problems for windows
-	// go figure...
-    
+    // On Linux having the midi init in a different thread seems to fix things
+    // for a number of buggy drivers, however it causes extra problems for windows
+    // go figure...
+
     // Close MIDI
 #ifndef __LINUX__
 #ifndef __WIN__
-	// Deadly hack attack
-	m_pMidi->devClose();
+    // Deadly hack attack
+    m_pMidi->devClose();
 #endif
     // Change MIDI configuration
     //m_pMidiConfig->clear(); // (is currently not implemented correctly)
@@ -435,15 +435,15 @@ void DlgPrefMidi::slotApply()
     MidiWorkaround mw(m_pMidi, m_pConfig, m_pMidiConfig, this);
     mw.start();
     if (mw.wait(2000)) {
-	    qDebug("Midi OK (Workaround not required)");
+        qDebug("Midi OK (Workaround not required)");
     } else {
-	    qDebug("ERROR: Midi driver not responding");
-	    // I Apologise for what happens now, I don't understand the code well enough to better (yet):
-	    delete m_pMidi;
-            m_pMidi = new MidiObjectNull(m_pConfig->getValueString(ConfigKey("[Midi]","Device")));	    
+        qDebug("ERROR: Midi driver not responding");
+        // I Apologise for what happens now, I don't understand the code well enough to better (yet):
+        delete m_pMidi;
+        m_pMidi = new MidiObjectNull(m_pConfig->getValueString(ConfigKey("[Midi]","Device")));
     }
 #endif
-    
+
     // Apply the MIDI controller mappings
     setupMappings(m_pConfig->getValueString(ConfigKey("[Config]","Path")).append("midi/").append(m_pConfig->getValueString(ConfigKey("[Midi]","File"))));
     m_pMidi->setMidiConfig(m_pMidiConfig);
@@ -457,12 +457,12 @@ void DlgPrefMidi::slotApply()
     // Hercules
     if (m_pHercules)
         m_pHercules->selectMapping(ComboBoxHercules->currentText());
-    
+
     // Mice
     Mouse::destroyAll();
     if (ComboBoxMouseDevice1->currentText()!="None")
     {
-        Mouse *p = 0;
+        Mouse * p = 0;
 #ifdef __LINUX__
         p = (Mouse *)new MouseLinux();
 #endif
@@ -478,7 +478,7 @@ void DlgPrefMidi::slotApply()
     }
     if (ComboBoxMouseDevice2->currentText()!="None")
     {
-        Mouse *p = 0;
+        Mouse * p = 0;
 #ifdef __LINUX__
         p = (Mouse *)new MouseLinux();
 #endif
@@ -532,16 +532,16 @@ void DlgPrefMidi::slotMouseCalibrate2()
 void DlgPrefMidi::slotMouseHelp()
 {
     QMessageBox::information(0, "Mouse help", "Additional mice can be used to control playback in Mixxx. You can use<br>"
-                                              "the mouse in the usual way, on a table surface, and scratch or adjust<br>"
-                                              "phase of playback. You can also use the mouse as a sensor for a<br>"
-                                              "turntable. Attach the optical mouse just above the platter of the<br>"
-                                              "turntable so that the mouse senses the platter movement on the x <br>"
-                                              "axis of the mouse. Then start the turntable at normal speed (33 RPM)<br>"
-                                              "and press calibrate. Now you can use the turntable to control playback<br>"
-                                              "in Mixxx instead of using the play button. The calibration is also<br>"
-                                              "needed when using the mouse on a table. Move the mouse at the pace you<br>"
-                                              "want to map to normal playback speed, and press calibrate. Keep moving<br>"
-                                              "the mouse at a steady pace until the calibration is finished.", "Ok");
+                             "the mouse in the usual way, on a table surface, and scratch or adjust<br>"
+                             "phase of playback. You can also use the mouse as a sensor for a<br>"
+                             "turntable. Attach the optical mouse just above the platter of the<br>"
+                             "turntable so that the mouse senses the platter movement on the x <br>"
+                             "axis of the mouse. Then start the turntable at normal speed (33 RPM)<br>"
+                             "and press calibrate. Now you can use the turntable to control playback<br>"
+                             "in Mixxx instead of using the play button. The calibration is also<br>"
+                             "needed when using the mouse on a table. Move the mouse at the pace you<br>"
+                             "want to map to normal playback speed, and press calibrate. Keep moving<br>"
+                             "the mouse at a steady pace until the calibration is finished.", "Ok");
 }
 
 void DlgPrefMidi::slotUpdateProgressBar()
@@ -566,28 +566,28 @@ void DlgPrefMidi::slotCancelCalibrate()
 }
 
 /*
-void DlgPrefMidi::setupPowerMates()
-{
-}
+   void DlgPrefMidi::setupPowerMates()
+   {
+   }
 
-void DlgPrefMidi::setupMouse()
-{
-}
+   void DlgPrefMidi::setupMouse()
+   {
+   }
 
-void DlgPrefMidi::setupJoystick()
-{
-}
+   void DlgPrefMidi::setupJoystick()
+   {
+   }
 
-void DlgPrefMidi::setupHercules()
-{
-}
-*/
+   void DlgPrefMidi::setupHercules()
+   {
+   }
+ */
 
-MidiWorkaround::MidiWorkaround(MidiObject* pMidi, \
-            ConfigObject<ConfigValue>* pConfig, \
-	    ConfigObject<ConfigValueMidi>* pMidiConfig, \
-		DlgPrefMidi* parent) {
-	
+MidiWorkaround::MidiWorkaround(MidiObject * pMidi, \
+                               ConfigObject<ConfigValue>* pConfig, \
+                               ConfigObject<ConfigValueMidi>* pMidiConfig, \
+                               DlgPrefMidi * parent) {
+
     m_pMidi = pMidi;
     m_pConfig = pConfig;
     m_pMidiConfig = pMidiConfig;
@@ -595,23 +595,23 @@ MidiWorkaround::MidiWorkaround(MidiObject* pMidi, \
 }
 
 void MidiWorkaround::run() {
-	
-     // Close MIDI
-     m_pMidi->devClose();
-     // Change MIDI configuration
-     //m_pMidiConfig->clear(); // (is currently not implemented correctly)
-     // BJW: Don't think this is necessary (or effective) here
-     // m_parent->setupMappings(m_pConfig->getValueString(ConfigKey("[Config]","Path")).append("midi/").append(m_pConfig->getValueString(ConfigKey("[Midi]","File"))));
-     // Open MIDI device
-     m_pMidi->devOpen(m_pConfig->getValueString(ConfigKey("[Midi]","Device")));
+
+    // Close MIDI
+    m_pMidi->devClose();
+    // Change MIDI configuration
+    //m_pMidiConfig->clear(); // (is currently not implemented correctly)
+    // BJW: Don't think this is necessary (or effective) here
+    // m_parent->setupMappings(m_pConfig->getValueString(ConfigKey("[Config]","Path")).append("midi/").append(m_pConfig->getValueString(ConfigKey("[Midi]","File"))));
+    // Open MIDI device
+    m_pMidi->devOpen(m_pConfig->getValueString(ConfigKey("[Midi]","Device")));
 }
 
 void DlgPrefMidi::setupMappings(QString path) {
-	qDebug() << "setupMappings(" << path << ")";
-	QDomElement doc = WWidget::openXMLFile(path, "controller");
-	m_pMidiConfig = new ConfigObject<ConfigValueMidi>(doc.namedItem("controls"));
-	MidiLedHandler::destroyHandlers();
-	MidiLedHandler::createHandlers(doc.namedItem("lights"), m_pMidi);
-	m_pMidi->setMidiConfig(m_pMidiConfig);
+    qDebug() << "setupMappings(" << path << ")";
+    QDomElement doc = WWidget::openXMLFile(path, "controller");
+    m_pMidiConfig = new ConfigObject<ConfigValueMidi>(doc.namedItem("controls"));
+    MidiLedHandler::destroyHandlers();
+    MidiLedHandler::createHandlers(doc.namedItem("lights"), m_pMidi);
+    m_pMidi->setMidiConfig(m_pMidiConfig);
 }
 

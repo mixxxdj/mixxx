@@ -4,23 +4,23 @@
     begin                : Sun Apr 13 2003
     copyright            : (C) 2003 by Tue & Ken Haste Andersen
     email                : haste@diku.dk
- ***************************************************************************/
+***************************************************************************/
 
 /***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+*                                                                         *
+*   This program is free software; you can redistribute it and/or modify  *
+*   it under the terms of the GNU General Public License as published by  *
+*   the Free Software Foundation; either version 2 of the License, or     *
+*   (at your option) any later version.                                   *
+*                                                                         *
+***************************************************************************/
 
 #include <QtDebug>
 #include "enginebufferscalesrc.h"
 #include "readerextractwave.h"
 #include "mathstuff.h"
 
-EngineBufferScaleSRC::EngineBufferScaleSRC(ReaderExtractWave *wave) : EngineBufferScale(wave)
+EngineBufferScaleSRC::EngineBufferScaleSRC(ReaderExtractWave * wave) : EngineBufferScale(wave)
 {
     buffer_back = new CSAMPLE[MAX_BUFFER_LEN];
 
@@ -31,7 +31,7 @@ EngineBufferScaleSRC::EngineBufferScaleSRC(ReaderExtractWave *wave) : EngineBuff
         qDebug("EngineBufferScaleSRC: %s",src_strerror(error));
     converter1 = src_new(1, 2, &error);
     if (error!=0)
-        qDebug("EngineBufferScaleSRC: %s",src_strerror(error));            
+        qDebug("EngineBufferScaleSRC: %s",src_strerror(error));
     converter2 = src_new(2, 2, &error);
     if (error!=0)
         qDebug("EngineBufferScaleSRC: %s",src_strerror(error));
@@ -82,7 +82,7 @@ void EngineBufferScaleSRC::setQuality(int q)
     case 0:
         converterActive = converter0;
     case 1:
-        converterActive = converter1;            
+        converterActive = converter1;
     case 2:
         converterActive = converter2;
     case 3:
@@ -124,16 +124,16 @@ double EngineBufferScaleSRC::setTempo(double dTempo)
     }
 
     // Force dirty interpolation if speed is above 2x
-/*    
-//Disabled by Albert because I don't think we need this anymore
-//(we're using the same interpolation all the time now...)
+/*
+   //Disabled by Albert because I don't think we need this anymore
+   //(we're using the same interpolation all the time now...)
     if (m_dTempo<0.5 && dTempoOld>=0.5)
         setFastMode(true);
     else if (m_dTempo>=0.5 && dTempoOld<0.5)
         setFastMode(false);
 
-*/    
-    
+ */
+
     // Ensure valid range of rate
     if (m_dTempo==0.)
         return 0.;
@@ -141,7 +141,7 @@ double EngineBufferScaleSRC::setTempo(double dTempo)
         m_dTempo = 12.;
     else if (m_dTempo<1./12.)
         m_dTempo = 1./12.;
-        
+
     src_set_ratio(converter0, m_dTempo);
     src_set_ratio(converter1, m_dTempo);
     src_set_ratio(converter2, m_dTempo);
@@ -154,7 +154,7 @@ double EngineBufferScaleSRC::setTempo(double dTempo)
         return (1./m_dTempo);
 }
 
-CSAMPLE *EngineBufferScaleSRC::scale(double playpos, int buf_size, float *pBase, int iBaseLength)
+CSAMPLE * EngineBufferScaleSRC::scale(double playpos, int buf_size, float * pBase, int iBaseLength)
 {
     if (!pBase)
     {
@@ -212,8 +212,8 @@ CSAMPLE *EngineBufferScaleSRC::scale(double playpos, int buf_size, float *pBase,
             qDebug("EngineBufferScaleSRC: %s",src_strerror(error));
 
         consumed += data->input_frames_used;
-   }
-   
+    }
+
     // Calculate new playpos
     if (m_bBackwards)
         new_playpos = playpos - (double)consumed*2.;
@@ -232,7 +232,7 @@ void EngineBufferScaleSRC::setBaseRate(double dBaseRate)
 
     m_dBaseRate = dBaseRate;
 
-    
+
 /*
     if (m_bPitchIndpTimeStretch)
 
@@ -241,7 +241,7 @@ void EngineBufferScaleSRC::setBaseRate(double dBaseRate)
     else
 
         m_pSoundTouch->setRate(m_dBaseRate*m_dTempo);
-*/
+ */
 }
 
 

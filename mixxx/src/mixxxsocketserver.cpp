@@ -12,7 +12,7 @@
 #include "mixxxsocketserver.h"
 #include "mixxxsocketclient.h"
 
-MixxxSocketServer::MixxxSocketServer(Track *pTrack, QObject *parent, const char *name) : Q3ServerSocket(QHostAddress(0x7f000001), 33033, 1, parent, name)
+MixxxSocketServer::MixxxSocketServer(Track * pTrack, QObject * parent, const char * name) : Q3ServerSocket(QHostAddress(0x7f000001), 33033, 1, parent, name)
 {
     m_pTrack = pTrack;
 

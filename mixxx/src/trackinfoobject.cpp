@@ -4,16 +4,16 @@
     begin                : 10 02 2003
     copyright            : (C) 2003 by Tue & Ken Haste Andersen
     email                : haste@diku.dk
- ***************************************************************************/
+***************************************************************************/
 
 /***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+*                                                                         *
+*   This program is free software; you can redistribute it and/or modify  *
+*   it under the terms of the GNU General Public License as published by  *
+*   the Free Software Foundation; either version 2 of the License, or     *
+*   (at your option) any later version.                                   *
+*                                                                         *
+***************************************************************************/
 
 #include "qstring.h"
 #include "qdom.h"
@@ -40,7 +40,7 @@
 
 int TrackInfoObject::siMaxTimesPlayed = 1;
 
-TrackInfoObject::TrackInfoObject(const QString sPath, const QString sFile, BpmDetector *bpmDetector) : m_sFilename(sFile), m_sFilepath(sPath)
+TrackInfoObject::TrackInfoObject(const QString sPath, const QString sFile, BpmDetector * bpmDetector) : m_sFilename(sFile), m_sFilepath(sPath)
 {
     m_sArtist = "";
     m_sTitle = "";
@@ -65,9 +65,9 @@ TrackInfoObject::TrackInfoObject(const QString sPath, const QString sFile, BpmDe
 
     m_BpmDetector = bpmDetector;
 
-    m_fBpmFactors = (float*)malloc(sizeof(float) * NumBpmFactors);
-    generateBpmFactors();   
-    
+    m_fBpmFactors = (float *)malloc(sizeof(float) * NumBpmFactors);
+    generateBpmFactors();
+
     //m_pTableItemScore = 0;
     //m_pTableItemTitle = 0;
     //m_pTableItemArtist = 0;
@@ -79,7 +79,7 @@ TrackInfoObject::TrackInfoObject(const QString sPath, const QString sFile, BpmDe
 
     //m_pTableTrack = 0;
 
-    
+
     // Check that the file exists:
     checkFileExists();
 
@@ -89,10 +89,10 @@ TrackInfoObject::TrackInfoObject(const QString sPath, const QString sFile, BpmDe
         m_bIsValid = false;
 
     installEventFilter(this);
-	iTemp = 0;
+    iTemp = 0;
 }
 
-TrackInfoObject::TrackInfoObject(const QDomNode &nodeHeader, BpmDetector *bpmDetector)
+TrackInfoObject::TrackInfoObject(const QDomNode &nodeHeader, BpmDetector * bpmDetector)
 {
     m_sFilename = XmlParse::selectNodeQString(nodeHeader, "Filename");
     m_sFilepath = XmlParse::selectNodeQString(nodeHeader, "Filepath");
@@ -112,12 +112,12 @@ TrackInfoObject::TrackInfoObject(const QDomNode &nodeHeader, BpmDetector *bpmDet
     m_iScore = 0;
     m_iId = XmlParse::selectNodeQString(nodeHeader, "Id").toInt();
 
-    m_fBpmFactors = (float*)malloc(sizeof(float) * NumBpmFactors);
-    generateBpmFactors();    
+    m_fBpmFactors = (float *)malloc(sizeof(float) * NumBpmFactors);
+    generateBpmFactors();
 
     m_BpmDetector = bpmDetector;
 
-	m_pWave = XmlParse::selectNodeHexCharArray(nodeHeader, QString("WaveSummaryHex"));
+    m_pWave = XmlParse::selectNodeHexCharArray(nodeHeader, QString("WaveSummaryHex"));
 
     m_pSegmentation = XmlParse::selectNodeLongList(nodeHeader, QString("SegmentationSummary"));
     //m_pTableTrack = 0;
@@ -132,9 +132,9 @@ TrackInfoObject::TrackInfoObject(const QDomNode &nodeHeader, BpmDetector *bpmDet
     //m_pTableItemDuration = 0;
     //m_pTableItemBpm = 0;
     //m_pTableItemBitrate = 0;
-    
+
     m_bIsValid = true;
-    
+
     if (m_iTimesPlayed>siMaxTimesPlayed)
         siMaxTimesPlayed = m_iTimesPlayed;
 
@@ -170,7 +170,7 @@ bool TrackInfoObject::checkFileExists()
 
 /*
     Writes information about the track to the xml file:
-*/
+ */
 void TrackInfoObject::writeToXML( QDomDocument &doc, QDomElement &header )
 {
     m_qMutex.lock();
@@ -191,9 +191,9 @@ void TrackInfoObject::writeToXML( QDomDocument &doc, QDomElement &header )
     XmlParse::addElement( doc, header, "BpmConfirm", QString("%1").arg(m_bBpmConfirm) );
     XmlParse::addElement( doc, header, "BeatFirst", QString("%1").arg(m_fBeatFirst) );
     XmlParse::addElement( doc, header, "Id", QString("%1").arg(m_iId) );
-	if (m_pWave) {
+    if (m_pWave) {
         XmlParse::addHexElement(doc, header, "WaveSummaryHex", m_pWave);
-	}
+    }
     if (m_pSegmentation)
         XmlParse::addElement(doc, header, "SegmentationSummary", m_pSegmentation);
 
@@ -201,8 +201,8 @@ void TrackInfoObject::writeToXML( QDomDocument &doc, QDomElement &header )
 }
 
 /*
-void TrackInfoObject::insertInTrackTableRow(WTrackTable *pTableTrack, int iRow)
-{
+   void TrackInfoObject::insertInTrackTableRow(WTrackTable *pTableTrack, int iRow)
+   {
     // Return if no WTrackTable is instantiated
     if (!pTableTrack)
         return;
@@ -228,10 +228,10 @@ void TrackInfoObject::insertInTrackTableRow(WTrackTable *pTableTrack, int iRow)
     if (!m_pTableItemDuration)
         m_pTableItemDuration = new WTrackTableItem(this, pTableTrack,Q3TableItem::Never, getDurationStr(), typeDuration);
     if (!m_pTableItemBpm)
-		        m_pTableItemBpm = new WTrackTableItem(this, pTableTrack,Q3TableItem::Never, getBpmStr(), typeNumber); // Force use of BPM tapper dialog
-		
-		//m_pTableItemBpm = new WTrackTableItem(this, pTableTrack,Q3TableItem::WhenCurrent, getBpmStr(), typeNumber); // Use old-style keyboard entry for BPM
-		
+                        m_pTableItemBpm = new WTrackTableItem(this, pTableTrack,Q3TableItem::Never, getBpmStr(), typeNumber); // Force use of BPM tapper dialog
+
+                //m_pTableItemBpm = new WTrackTableItem(this, pTableTrack,Q3TableItem::WhenCurrent, getBpmStr(), typeNumber); // Use old-style keyboard entry for BPM
+
     if (!m_pTableItemBitrate)
         m_pTableItemBitrate = new WTrackTableItem(this, pTableTrack,Q3TableItem::Never, getBitrateStr(), typeNumber);
 
@@ -249,15 +249,15 @@ void TrackInfoObject::insertInTrackTableRow(WTrackTable *pTableTrack, int iRow)
 
     m_pTableTrack = pTableTrack;
 
-}
+   }
 
-void TrackInfoObject::removeFromTrackTable()
-{
+   void TrackInfoObject::removeFromTrackTable()
+   {
     if (m_pTableTrack)
     {
         // Remove the row from the table, and delete the table items
         int row = m_pTableTrack->currentRow();
-		//qDebug("remove from row %i",row);
+                //qDebug("remove from row %i",row);
         m_pTableTrack->removeRow(m_pTableItemScore->row());
 
         // Set a new active row
@@ -278,14 +278,14 @@ void TrackInfoObject::removeFromTrackTable()
 
         m_pTableTrack = 0;
     }
-}
-void TrackInfoObject::clearTrackTableRow()
-{
-	if (m_pTableTrack)
+   }
+   void TrackInfoObject::clearTrackTableRow()
+   {
+        if (m_pTableTrack)
     {
         // Remove all contents of first row
         //int row = m_pTableTrack->currentRow();
-		//qDebug("remove from row %i",row);
+                //qDebug("remove from row %i",row);
         m_pTableTrack->removeRow(1);//m_pTableItemScore->row());
 
         // Set a new active row
@@ -305,8 +305,8 @@ void TrackInfoObject::clearTrackTableRow()
         m_pTableItemBitrate = 0;
 
         m_pTableTrack = 0;
-	}
-}*/
+        }
+   }*/
 int TrackInfoObject::parse()
 {
     // Add basic information derived from the filename:
@@ -338,11 +338,11 @@ void TrackInfoObject::parseFilename()
     while (m_sArtist.startsWith(" "))
         m_sArtist = m_sArtist.right(m_sArtist.length()-1);
     while (m_sArtist.endsWith(" "))
-            m_sArtist = m_sArtist.left(m_sArtist.length()-1);
+        m_sArtist = m_sArtist.left(m_sArtist.length()-1);
     while (m_sTitle.startsWith(" "))
-            m_sTitle = m_sTitle.right(m_sTitle.length()-1);
+        m_sTitle = m_sTitle.right(m_sTitle.length()-1);
     while (m_sTitle.endsWith(" "))
-            m_sTitle = m_sTitle.left(m_sTitle.length()-1);
+        m_sTitle = m_sTitle.left(m_sTitle.length()-1);
 
 
     // Sort out obviously wrong parsings:
@@ -392,9 +392,9 @@ QString TrackInfoObject::getDurationStr() const
             return QString("??");
 
         if (t.hour() >= 1)
-        return t.toString("h:mm:ss");
+            return t.toString("h:mm:ss");
         else
-        return t.toString("m:ss");
+            return t.toString("m:ss");
 #endif
     }
 }
@@ -412,12 +412,12 @@ void TrackInfoObject::sendToBpmQueue()
     m_BpmDetector->enqueue(this);
 }
 
-void TrackInfoObject::sendToBpmQueue(BpmReceiver *pBpmReceiver)
+void TrackInfoObject::sendToBpmQueue(BpmReceiver * pBpmReceiver)
 {
     m_BpmDetector->enqueue(this, pBpmReceiver);
 }
 
-void TrackInfoObject::sendToBpmQueue(BpmReceiver *pBpmReceiver, int minBpm, int maxBpm)
+void TrackInfoObject::sendToBpmQueue(BpmReceiver * pBpmReceiver, int minBpm, int maxBpm)
 {
     m_BpmDetector->enqueue(this, minBpm, maxBpm, pBpmReceiver);
 }
@@ -444,7 +444,7 @@ void TrackInfoObject::setBpm(float f)
         m_pTableItemBpm->setText(getBpmStr());
         m_pTableItemBpm->table()->updateCell(m_pTableItemBpm->row(), m_pTableItemBpm->col());
     }
-*/
+ */
     setBpmControlObject(m_pControlObjectBpm);
 }
 
@@ -458,7 +458,7 @@ void TrackInfoObject::generateBpmFactors()
     m_qMutex.unlock();
 }
 
-void TrackInfoObject::getBpmFactors(float* f) const
+void TrackInfoObject::getBpmFactors(float * f) const
 {
     m_qMutex.lock();
     if(f)
@@ -468,7 +468,7 @@ void TrackInfoObject::getBpmFactors(float* f) const
             f[i] = m_fBpmFactors[i];
         }
     }
-    
+
     m_qMutex.unlock();
 }
 
@@ -526,7 +526,7 @@ void TrackInfoObject::setDuration(int i)
         m_pTableItemDuration->setText(getDurationStr());
         m_pTableItemDuration->table()->updateCell(m_pTableItemDuration->row(), m_pTableItemDuration->col());
     }
-*/
+ */
     setDurationControlObject(m_pControlObjectDuration);
 }
 
@@ -550,7 +550,7 @@ void TrackInfoObject::setTitle(QString s)
         m_pTableItemTitle->setText(s);
         m_pTableItemTitle->table()->updateCell(m_pTableItemTitle->row(), m_pTableItemTitle->col());
     }
-*/
+ */
 }
 
 QString TrackInfoObject::getArtist()  const
@@ -573,7 +573,7 @@ void TrackInfoObject::setArtist(QString s)
         m_pTableItemArtist->setText(s);
         m_pTableItemArtist->table()->updateCell(m_pTableItemArtist->row(), m_pTableItemArtist->col());
     }
-*/
+ */
 }
 
 QString TrackInfoObject::getFilename()  const
@@ -622,7 +622,7 @@ void TrackInfoObject::setFilepath(QString s)
 QString TrackInfoObject::getFilepath() const
 {
     m_qMutex.lock();
-	return m_sFilepath;
+    return m_sFilepath;
     m_qMutex.unlock();
 }
 QString TrackInfoObject::getComment() const
@@ -645,7 +645,7 @@ void TrackInfoObject::setComment(QString s)
         m_pTableItemComment->setText(s);
         m_pTableItemComment->table()->updateCell(m_pTableItemComment->row(), m_pTableItemComment->col());
     }
-*/
+ */
 }
 
 QString TrackInfoObject::getType() const
@@ -668,7 +668,7 @@ void TrackInfoObject::setType(QString s)
         m_pTableItemType->setText(s);
         m_pTableItemType->table()->updateCell(m_pTableItemType->row(), m_pTableItemType->col());
     }
-*/
+ */
 }
 
 void TrackInfoObject::setSampleRate(int iSampleRate)
@@ -676,10 +676,10 @@ void TrackInfoObject::setSampleRate(int iSampleRate)
     m_qMutex.lock();
     m_iSampleRate = iSampleRate;
     m_qMutex.unlock();
-    
+
 }
 
-int TrackInfoObject::getSampleRate() const 
+int TrackInfoObject::getSampleRate() const
 {
     m_qMutex.lock();
     int iSampleRate = m_iSampleRate;
@@ -693,7 +693,7 @@ void TrackInfoObject::setChannels(int iChannels)
     m_qMutex.lock();
     m_iChannels = iChannels;
     m_qMutex.unlock();
-    
+
 }
 
 int TrackInfoObject::getChannels() const
@@ -739,7 +739,7 @@ void TrackInfoObject::setBitrate(int i)
         m_pTableItemBitrate->setText(getBitrateStr());
         m_pTableItemBitrate->table()->updateCell(m_pTableItemBitrate->row(), m_pTableItemBitrate->col());
     }
-*/
+ */
 }
 
 void TrackInfoObject::setBeatFirst(float fBeatFirstPos)
@@ -788,7 +788,7 @@ void TrackInfoObject::updateScore()
         m_pTableItemScore->setText(getScoreStr());
         m_pTableItemScore->table()->updateCell(m_pTableItemScore->row(), m_pTableItemScore->col());
     }
-*/
+ */
 }
 
 int TrackInfoObject::getId() const
@@ -807,7 +807,7 @@ void TrackInfoObject::setId(int iId)
     m_qMutex.unlock();
 }
 
-Q3MemArray<char> *TrackInfoObject::getWaveSummary()
+Q3MemArray<char> * TrackInfoObject::getWaveSummary()
 {
     m_qMutex.lock();
     Q3MemArray<char> *pWaveSummary = m_pWave;
@@ -816,7 +816,7 @@ Q3MemArray<char> *TrackInfoObject::getWaveSummary()
     return pWaveSummary;
 }
 
-Q3ValueList<long> *TrackInfoObject::getSegmentationSummary()
+Q3ValueList<long> * TrackInfoObject::getSegmentationSummary()
 {
     m_qMutex.lock();
     Q3ValueList<long> *pSegmentationSummary = m_pSegmentation;
@@ -825,7 +825,7 @@ Q3ValueList<long> *TrackInfoObject::getSegmentationSummary()
     return pSegmentationSummary;
 }
 
-void TrackInfoObject::setWaveSummary(Q3MemArray<char> *pWave, Q3ValueList<long> *pSegmentation)
+void TrackInfoObject::setWaveSummary(Q3MemArray<char> * pWave, Q3ValueList<long> * pSegmentation)
 {
     m_qMutex.lock();
     m_pWave = pWave;
@@ -835,17 +835,17 @@ void TrackInfoObject::setWaveSummary(Q3MemArray<char> *pWave, Q3ValueList<long> 
     setOverviewWidget(m_pOverviewWidget);
 }
 
-TrackInfoObject *TrackInfoObject::getNext(TrackPlaylist *pPlaylist)
+TrackInfoObject * TrackInfoObject::getNext(TrackPlaylist * pPlaylist)
 {
     return pPlaylist->getTrackAt(pPlaylist->getIndexOf(getId())+1);
 }
 
-TrackInfoObject *TrackInfoObject::getPrev(TrackPlaylist *pPlaylist)
+TrackInfoObject * TrackInfoObject::getPrev(TrackPlaylist * pPlaylist)
 {
     return pPlaylist->getTrackAt(pPlaylist->getIndexOf(getId())-1);
 }
 
-void TrackInfoObject::setOverviewWidget(WOverview *p)
+void TrackInfoObject::setOverviewWidget(WOverview * p)
 {
     m_pOverviewWidget = p;
 
@@ -853,7 +853,7 @@ void TrackInfoObject::setOverviewWidget(WOverview *p)
         p->setData(getWaveSummary(), getSegmentationSummary(), getDuration()*getSampleRate()*getChannels());
 }
 
-void TrackInfoObject::setBpmControlObject(ControlObject *p)
+void TrackInfoObject::setBpmControlObject(ControlObject * p)
 {
     m_pControlObjectBpm = p;
 
@@ -861,7 +861,7 @@ void TrackInfoObject::setBpmControlObject(ControlObject *p)
         p->queueFromThread(getBpm());
 }
 
-void TrackInfoObject::setDurationControlObject(ControlObject *p)
+void TrackInfoObject::setDurationControlObject(ControlObject * p)
 {
     m_pControlObjectDuration = p;
 

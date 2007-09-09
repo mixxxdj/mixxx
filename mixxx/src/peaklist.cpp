@@ -4,16 +4,16 @@
     begin                : Wed Jul 9 2003
     copyright            : (C) 2003 by Tue & Ken Haste Andersen
     email                : haste@diku.dk
- ***************************************************************************/
+***************************************************************************/
 
 /***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+*                                                                         *
+*   This program is free software; you can redistribute it and/or modify  *
+*   it under the terms of the GNU General Public License as published by  *
+*   the Free Software Foundation; either version 2 of the License, or     *
+*   (at your option) any later version.                                   *
+*                                                                         *
+***************************************************************************/
 
 #include "peaklist.h"
 
@@ -25,7 +25,7 @@
 //Added by qt3to4:
 #include <Q3ValueList>
 
-PeakList::PeakList(int iIdxSize, float *pBuffer) : Q3ValueList<PeakType>()
+PeakList::PeakList(int iIdxSize, float * pBuffer) : Q3ValueList<PeakType>()
 {
     m_iIdxSize = iIdxSize;
     m_pBuffer = pBuffer;
@@ -157,8 +157,8 @@ PeakList::iterator PeakList::getFirstInRange(int idx, int len, bool returnElemen
 }
 
 /*
-PeakList::iterator PeakList::getLastInRange(int idx, int len)
-{
+   PeakList::iterator PeakList::getLastInRange(int idx, int len)
+   {
     iterator it = end();
 
     // Only search further if the list is not empty...
@@ -198,7 +198,7 @@ PeakList::iterator PeakList::getLastInRange(int idx, int len)
         {
             qDebug("-0");
             found = true;
-            ++it;
+ ++it;
         }
         if (found)
         {
@@ -303,18 +303,18 @@ PeakList::iterator PeakList::getMaxInRange(int idx, int len)
             }
         }
     }
-    return itmax;    
+    return itmax;
 }
 
 void PeakList::print()
 {
-                iterator it = begin();
-                while (it!=end())
-                {
-                    std::cout << (*it).i << " ";
-                    ++it;
-                }
-                std::cout << "\n";
+    iterator it = begin();
+    while (it!=end())
+    {
+        std::cout << (*it).i << " ";
+        ++it;
+    }
+    std::cout << "\n";
 
     //qDebug("size %i",size());
     if (size()>1)

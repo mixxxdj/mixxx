@@ -1,7 +1,7 @@
 //
 // C++ Implementation: wtreeitem
 //
-// Description: 
+// Description:
 //
 //
 // Author: Tue Haste Andersen <haste@diku.dk>, (C) 2003
@@ -17,29 +17,29 @@
 #include <QPixmap>
 
 
-Track *WTreeItem::spTrack = 0;
+Track * WTreeItem::spTrack = 0;
 
-WTreeItem::WTreeItem(Q3ListView *parent) : Q3ListViewItem(parent)
+WTreeItem::WTreeItem(Q3ListView * parent) : Q3ListViewItem(parent)
 {
     pix = 0;
 }
 
-WTreeItem::WTreeItem(Q3ListView *parent, const QString &s1) : Q3ListViewItem(parent, s1)
+WTreeItem::WTreeItem(Q3ListView * parent, const QString &s1) : Q3ListViewItem(parent, s1)
 {
     pix = 0;
 }
 
-WTreeItem::WTreeItem(WTreeItem *parent) : Q3ListViewItem(parent)
+WTreeItem::WTreeItem(WTreeItem * parent) : Q3ListViewItem(parent)
 {
     pix = 0;
 }
 
-WTreeItem::WTreeItem(WTreeItem *parent, const QString &s1) : Q3ListViewItem(parent, s1)
+WTreeItem::WTreeItem(WTreeItem * parent, const QString &s1) : Q3ListViewItem(parent, s1)
 {
     pix = 0;
 }
 
-WTreeItem::WTreeItem(WTreeItem *parent, const QString &s1, const QString &s2) : Q3ListViewItem(parent, s1, s2)
+WTreeItem::WTreeItem(WTreeItem * parent, const QString &s1, const QString &s2) : Q3ListViewItem(parent, s1, s2)
 {
     pix = 0;
 }
@@ -53,12 +53,12 @@ QString WTreeItem::drag()
     return Q3UriDrag::localFileToUri(WTreeView::fullPath(this));
 }
 
-void WTreeItem::setTrack(Track *pTrack)
+void WTreeItem::setTrack(Track * pTrack)
 {
     spTrack = pTrack;
 }
 
-void WTreeItem::setPixmap(QPixmap *px)
+void WTreeItem::setPixmap(QPixmap * px)
 {
     pix = px;
     setup();
@@ -67,7 +67,7 @@ void WTreeItem::setPixmap(QPixmap *px)
     repaint();
 }
 
-const QPixmap *WTreeItem::pixmap(int i) const
+const QPixmap * WTreeItem::pixmap(int i) const
 {
     if (i)
         return 0;

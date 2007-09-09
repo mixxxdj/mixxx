@@ -15,7 +15,7 @@
 #include "controlobject.h"
 #include "controlevent.h"
 
-ControlObjectThreadWidget::ControlObjectThreadWidget(ControlObject *pControlObject) : ControlObjectThreadMain(pControlObject)
+ControlObjectThreadWidget::ControlObjectThreadWidget(ControlObject * pControlObject) : ControlObjectThreadMain(pControlObject)
 {
     // Initialize value
     m_dValue = m_pControlObject->getValueToWidget(m_pControlObject->get());
@@ -26,7 +26,7 @@ ControlObjectThreadWidget::~ControlObjectThreadWidget()
 {
 }
 
-void ControlObjectThreadWidget::setWidget(QWidget *widget, bool emitOnDownPress, Qt::ButtonState state)
+void ControlObjectThreadWidget::setWidget(QWidget * widget, bool emitOnDownPress, Qt::ButtonState state)
 {
     if (emitOnDownPress)
     {
@@ -51,7 +51,7 @@ void ControlObjectThreadWidget::setWidget(QWidget *widget, bool emitOnDownPress,
     emitValueChanged();
 }
 
-void ControlObjectThreadWidget::setWidgetOnOff(QWidget *widget)
+void ControlObjectThreadWidget::setWidgetOnOff(QWidget * widget)
 {
     QApplication::connect(this,   SIGNAL(valueChanged(double)),    widget, SLOT(setOnOff(double)));
     emit(valueChanged(m_dValue));

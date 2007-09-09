@@ -13,7 +13,7 @@
 #include "controlobject.h"
 #include "controlobjectthreadmain.h"
 
-WNumberRate::WNumberRate(const char *group, QWidget *parent, const char *name) : WNumber(parent, name)
+WNumberRate::WNumberRate(const char * group, QWidget * parent, const char * name) : WNumber(parent, name)
 {
     m_pRateRangeControl = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey(group, "rateRange")));
     m_pRateDirControl = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey(group, "rate_dir")));
@@ -28,14 +28,14 @@ WNumberRate::~WNumberRate()
 }
 
 void WNumberRate::setValue(double)
-{    
+{
     double vsign = m_pRateControl->get()*m_pRateRangeControl->get()*m_pRateDirControl->get();
 
-	char sign = '+';
-	if (vsign < -0.00000001) {
-		sign = '-';
-	}
+    char sign = '+';
+    if (vsign < -0.00000001) {
+        sign = '-';
+    }
 
-	m_pLabel->setText(QString(m_qsText).append(sign).append("%1").arg(fabs(vsign)*100., 0, 'f', 2));
+    m_pLabel->setText(QString(m_qsText).append(sign).append("%1").arg(fabs(vsign)*100., 0, 'f', 2));
 }
 

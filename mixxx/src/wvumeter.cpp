@@ -4,16 +4,16 @@
     begin                : Fri Jul 22 2003
     copyright            : (C) 2003 by Tue & Ken Haste Andersen
     email                : haste@diku.dk
- ***************************************************************************/
+***************************************************************************/
 
 /***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+*                                                                         *
+*   This program is free software; you can redistribute it and/or modify  *
+*   it under the terms of the GNU General Public License as published by  *
+*   the Free Software Foundation; either version 2 of the License, or     *
+*   (at your option) any later version.                                   *
+*                                                                         *
+***************************************************************************/
 
 #include "wvumeter.h"
 #include "wpixmapstore.h"
@@ -22,7 +22,7 @@
 #include <QtDebug>
 #include <QPixmap>
 
-WVuMeter::WVuMeter(QWidget *parent, const char *name) : WWidget(parent,name)
+WVuMeter::WVuMeter(QWidget * parent, const char * name) : WWidget(parent,name)
 {
     m_pPixmapBack = 0;
     m_pPixmapVu = 0;
@@ -69,13 +69,13 @@ void WVuMeter::setPixmaps(const QString &backFilename, const QString &vuFilename
         qDebug() << "WVuMeter: Error loading vu pixmap" << vuFilename;
 
     m_pPixmapBuffer = new QPixmap(m_pPixmapBack->size());
-        
+
     setFixedSize(m_pPixmapBack->size());
     m_bHorizontal = bHorizontal;
     if (m_bHorizontal)
         m_iNoPos = m_pPixmapVu->width();
     else
-        m_iNoPos = m_pPixmapVu->height();    
+        m_iNoPos = m_pPixmapVu->height();
 }
 
 void WVuMeter::paintEvent(QPaintEvent *)
@@ -95,16 +95,16 @@ void WVuMeter::paintEvent(QPaintEvent *)
 
         // Draw (part of) vu on buffer
         if (m_bHorizontal)
-	{
+        {
             if(idx == 0)
-		idx = 1; //Hack to fix broken BitBlt in Qt4... This really needs to be ported soon
-			 //TODO: See QPainter::drawPixmap()... I'm too tired to do it now :)
-	    bitBlt(m_pPixmapBuffer, 0, 0, m_pPixmapVu, 0, 0, idx, m_pPixmapVu->height());
-	}
+                idx = 1; //Hack to fix broken BitBlt in Qt4... This really needs to be ported soon
+                        //TODO: See QPainter::drawPixmap()... I'm too tired to do it now :)
+            bitBlt(m_pPixmapBuffer, 0, 0, m_pPixmapVu, 0, 0, idx, m_pPixmapVu->height());
+        }
         else
             bitBlt(m_pPixmapBuffer, 0, m_iNoPos-idx, m_pPixmapVu, 0, m_iNoPos-idx, m_pPixmapVu->width(), idx);
-                    
-        // Draw buffer on screen                
+
+        // Draw buffer on screen
         bitBlt(this, 0, 0, m_pPixmapBuffer);
     }
 }

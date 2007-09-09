@@ -4,16 +4,16 @@
     begin                : Thu Jul 10 2003
     copyright            : (C) 2003 by Svein Magne Bang
     email                : sveinmb@stud.ntnu.no
- ***************************************************************************/
+***************************************************************************/
 
 /***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+*                                                                         *
+*   This program is free software; you can redistribute it and/or modify  *
+*   it under the terms of the GNU General Public License as published by  *
+*   the Free Software Foundation; either version 2 of the License, or     *
+*   (at your option) any later version.                                   *
+*                                                                         *
+***************************************************************************/
 
 #include "joysticklinux.h"
 #include "controlobject.h"
@@ -76,31 +76,31 @@ void JoystickLinux::run()
         // switch to right event
         switch(joystickEvent.type & ~JS_EVENT_INIT)
         {
-            case JS_EVENT_BUTTON:
-                // alternate between NOTE_ON and NOTE_OFF on each button event
-                if (buttonvalue[joystickEvent.number] != 0)
-                {
-                    m_pControl->queueFromMidi(NOTE_OFF, 1);
-                    buttonvalue[joystickEvent.number] = 0;
-                }
-                else
-                {
-                    m_pControl->queueFromMidi(NOTE_ON, 1);
-                    buttonvalue[joystickEvent.number] = 1;
-                }
-                break;
+        case JS_EVENT_BUTTON:
+            // alternate between NOTE_ON and NOTE_OFF on each button event
+            if (buttonvalue[joystickEvent.number] != 0)
+            {
+                m_pControl->queueFromMidi(NOTE_OFF, 1);
+                buttonvalue[joystickEvent.number] = 0;
+            }
+            else
+            {
+                m_pControl->queueFromMidi(NOTE_ON, 1);
+                buttonvalue[joystickEvent.number] = 1;
+            }
+            break;
 
-            case JS_EVENT_AXIS:
-                // convert axis value into a short value
-                value = (int) (((((double) joystickEvent.value) + SHRT_MAX) / USHRT_MAX)*127.0);
+        case JS_EVENT_AXIS:
+            // convert axis value into a short value
+            value = (int) (((((double) joystickEvent.value) + SHRT_MAX) / USHRT_MAX)*127.0);
 
-                // send midi data (only if value has changed since last event)
-                if (axisvalue[joystickEvent.number] != value)
-                {
-                    axisvalue[joystickEvent.number] = value;
-                    m_pControl->queueFromMidi(CTRL_CHANGE, value);
-                }
-                break;
+            // send midi data (only if value has changed since last event)
+            if (axisvalue[joystickEvent.number] != value)
+            {
+                axisvalue[joystickEvent.number] = value;
+                m_pControl->queueFromMidi(CTRL_CHANGE, value);
+            }
+            break;
         }
     }
 }

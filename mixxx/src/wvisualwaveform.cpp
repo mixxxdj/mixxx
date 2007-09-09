@@ -4,16 +4,16 @@
     begin                : Thu Oct 9 2003
     copyright            : (C) 2002 by Tue & Ken Haste Andersen
     email                : haste@diku.dk
- ***************************************************************************/
+***************************************************************************/
 
 /***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+*                                                                         *
+*   This program is free software; you can redistribute it and/or modify  *
+*   it under the terms of the GNU General Public License as published by  *
+*   the Free Software Foundation; either version 2 of the License, or     *
+*   (at your option) any later version.                                   *
+*                                                                         *
+***************************************************************************/
 
 #include "wvisualwaveform.h"
 #include "wskincolor.h"
@@ -27,7 +27,7 @@
 #include <QEvent>
 #include <QDragEnterEvent>
 
-WVisualWaveform::WVisualWaveform(QWidget *pParent, const char *pName, const QGLWidget *pShareWidget) : QGLWidget(pParent,pName,pShareWidget)
+WVisualWaveform::WVisualWaveform(QWidget * pParent, const char * pName, const QGLWidget * pShareWidget) : QGLWidget(pParent,pName,pShareWidget)
 {
     setAcceptDrops(true);
     m_pVisualController = new VisualController();
@@ -39,7 +39,7 @@ WVisualWaveform::WVisualWaveform(QWidget *pParent, const char *pName, const QGLW
     // "correctly" on MacOS X, where it would otherwise stall the system
     // for some seconds now and then.
     //m_iTimerID = startTimer(100);
-    
+
     //The above hack makes Mixxx feel like it's running on a 386 on OS X Intel.
     //I'm going to experiment a bit with the timings - Albert:
     m_iTimerID = startTimer(30);
@@ -51,7 +51,7 @@ WVisualWaveform::WVisualWaveform(QWidget *pParent, const char *pName, const QGLW
     m_iTimerID = startTimer(30);
 #endif
 
-	m_painting = false;
+    m_painting = false;
     m_qlList.setAutoDelete(false);
 }
 
@@ -61,7 +61,7 @@ WVisualWaveform::~WVisualWaveform()
     killTimer(m_iTimerID);
 
     // Delete associated VisualChannels
-    while (m_qlList.remove());
+    while (m_qlList.remove()) ;
 
     // Finally delete the VisualController
     delete m_pVisualController;
@@ -72,12 +72,12 @@ bool WVisualWaveform::directRendering()
     return format().directRendering();
 }
 
-void WVisualWaveform::dragEnterEvent(QDragEnterEvent *event)
+void WVisualWaveform::dragEnterEvent(QDragEnterEvent * event)
 {
     event->accept(Q3UriDrag::canDecode(event));
 }
 
-void WVisualWaveform::dropEvent(QDropEvent *event)
+void WVisualWaveform::dropEvent(QDropEvent * event)
 {
     QStringList lst;
     if (!Q3UriDrag::canDecode(event))
@@ -97,20 +97,20 @@ void WVisualWaveform::setup(QDomNode node)
 {
     // Colors
     colorBack.setNamedColor(WWidget::selectNodeQString(node, "BgColor"));
-	colorBack = WSkinColor::getCorrectColor(colorBack);
-	m_pVisualController->setBackgroundColor(colorBack);
+    colorBack = WSkinColor::getCorrectColor(colorBack);
+    m_pVisualController->setBackgroundColor(colorBack);
     colorSignal.setNamedColor(WWidget::selectNodeQString(node, "SignalColor"));
-	colorSignal = WSkinColor::getCorrectColor(colorSignal);
+    colorSignal = WSkinColor::getCorrectColor(colorSignal);
     colorHfc.setNamedColor(WWidget::selectNodeQString(node, "HfcColor"));
-	colorHfc = WSkinColor::getCorrectColor(colorHfc);
+    colorHfc = WSkinColor::getCorrectColor(colorHfc);
     colorCue.setNamedColor(WWidget::selectNodeQString(node, "CueColor"));
-	colorCue = WSkinColor::getCorrectColor(colorCue);
+    colorCue = WSkinColor::getCorrectColor(colorCue);
     colorMarker.setNamedColor(WWidget::selectNodeQString(node, "MarkerColor"));
-	colorMarker = WSkinColor::getCorrectColor(colorMarker);
+    colorMarker = WSkinColor::getCorrectColor(colorMarker);
     colorBeat.setNamedColor(WWidget::selectNodeQString(node, "BeatColor"));
-	colorBeat = WSkinColor::getCorrectColor(colorBeat);
+    colorBeat = WSkinColor::getCorrectColor(colorBeat);
     colorFisheye.setNamedColor(WWidget::selectNodeQString(node, "FisheyeColor"));
-	colorFisheye = WSkinColor::getCorrectColor(colorFisheye);
+    colorFisheye = WSkinColor::getCorrectColor(colorFisheye);
 
     // Set position
     QString pos = WWidget::selectNodeQString(node, "Pos");
@@ -125,12 +125,12 @@ void WVisualWaveform::setup(QDomNode node)
     setFixedSize(x,y);
 }
 
-bool WVisualWaveform::eventFilter(QObject *o, QEvent *e)
+bool WVisualWaveform::eventFilter(QObject * o, QEvent * e)
 {
     // Handle mouse press events
     if (e->type() == QEvent::MouseButtonPress)
     {
-        QMouseEvent *m = (QMouseEvent *)e;
+        QMouseEvent * m = (QMouseEvent *)e;
 
         m_iStartPosX = -1;
         if (m->button()==Qt::LeftButton)
@@ -147,14 +147,14 @@ bool WVisualWaveform::eventFilter(QObject *o, QEvent *e)
             for (c=m_qlList.first(); c; c=m_qlList.next())
                 c->toggleFishEyeMode();
         }
-*/
+ */
     }
     else if (e->type() == QEvent::MouseMove)
     {
         // Only process mouse move if it was initiated by a left click
         if (m_iStartPosX!=-1)
         {
-            QMouseEvent *m = (QMouseEvent *)e;
+            QMouseEvent * m = (QMouseEvent *)e;
             double v = 64.+(double)(m->x()-m_iStartPosX)/10.;
             if (v<0.)
                 v = 0.;
@@ -178,14 +178,14 @@ bool WVisualWaveform::eventFilter(QObject *o, QEvent *e)
 void WVisualWaveform::slotNewTrack()
 {
     // Call each channel associated
-    VisualChannel *c;
+    VisualChannel * c;
     for (c=m_qlList.first(); c; c=m_qlList.next())
         c->setupBuffer();
 }
 
-VisualChannel *WVisualWaveform::add(const char *group)
+VisualChannel * WVisualWaveform::add(const char * group)
 {
-    VisualChannel *c = new VisualChannel(m_pVisualController, group);
+    VisualChannel * c = new VisualChannel(m_pVisualController, group);
 
     // Position coding... hack
     //if (m_qlList.isEmpty())
@@ -195,7 +195,7 @@ VisualChannel *WVisualWaveform::add(const char *group)
         c->setLength(800); //width());
         c->setHeight(50); //height());
         c->setZoomPosX(50);
-*/
+ */
         c->setColorBack((float)colorBack.red()/255., (float)colorBack.green()/255., (float)colorBack.blue()/255.);
         c->setColorSignal((float)colorSignal.red()/255., (float)colorSignal.green()/255., (float)colorSignal.blue()/255.);
         c->setColorHfc((float)colorHfc.red()/255., (float)colorHfc.green()/255., (float)colorHfc.blue()/255.);
@@ -205,10 +205,10 @@ VisualChannel *WVisualWaveform::add(const char *group)
         c->setColorFisheye((float)colorFisheye.red()/255., (float)colorFisheye.green()/255., (float)colorFisheye.blue()/255.);
     }
     /* else
-    {
+       {
         c->setPosX(50);
         c->setZoomPosX(50);
-    } */
+       } */
 
     m_qlList.append(c);
     return c;
@@ -229,7 +229,7 @@ void WVisualWaveform::paintGL()
     // Display stuff
     makeCurrent();
     m_pVisualController->display();
-	m_painting = false;
+    m_painting = false;
 }
 
 void WVisualWaveform::resizeGL(int width, int height)
@@ -237,26 +237,26 @@ void WVisualWaveform::resizeGL(int width, int height)
     m_pVisualController->resize((GLsizei)width,(GLsizei)height);
 }
 
-void WVisualWaveform::timerEvent(QTimerEvent*)
+void WVisualWaveform::timerEvent(QTimerEvent *)
 {
-	// FIXME: This should be done with a QMutex deal
-	// Update: I added the mutex, but I'm not totally sure
-	// of the consequences of having it, so I'm leaving it
-	// out for now. Someone should look at this closer.
-	// - Albert Aug 19/07
-	//m_paintMutex.lock();
-	if (!m_painting) {
-		m_painting = true;
-		updateGL();
-	}
-	//m_paintMutex.unlock();
+    // FIXME: This should be done with a QMutex deal
+    // Update: I added the mutex, but I'm not totally sure
+    // of the consequences of having it, so I'm leaving it
+    // out for now. Someone should look at this closer.
+    // - Albert Aug 19/07
+    //m_paintMutex.lock();
+    if (!m_painting) {
+        m_painting = true;
+        updateGL();
+    }
+    //m_paintMutex.unlock();
 }
 
 void WVisualWaveform::resetColors() {
 
-	VisualChannel* vc;
-	for (vc = m_qlList.first(); vc; vc = m_qlList.next()) {
-		vc->setColorBack((float)colorBack.red()/255., (float)colorBack.green()/255., (float)colorBack.blue()/255.);
+    VisualChannel * vc;
+    for (vc = m_qlList.first(); vc; vc = m_qlList.next()) {
+        vc->setColorBack((float)colorBack.red()/255., (float)colorBack.green()/255., (float)colorBack.blue()/255.);
         vc->setColorSignal((float)colorSignal.red()/255., (float)colorSignal.green()/255., (float)colorSignal.blue()/255.);
         vc->setColorHfc((float)colorHfc.red()/255., (float)colorHfc.green()/255., (float)colorHfc.blue()/255.);
         vc->setColorCue((float)colorCue.red()/255., (float)colorCue.green()/255., (float)colorCue.blue()/255.);
@@ -264,7 +264,7 @@ void WVisualWaveform::resetColors() {
         vc->setColorBeat((float)colorBeat.red()/255., (float)colorBeat.green()/255., (float)colorBeat.blue()/255.);
         vc->setColorFisheye((float)colorFisheye.red()/255., (float)colorFisheye.green()/255., (float)colorFisheye.blue()/255.);
 
-		vc->resetColors();
-	}
+        vc->resetColors();
+    }
 }
 

@@ -4,16 +4,16 @@
     begin                : Mon May 5 2003
     copyright            : (C) 2003 by Tue & Ken Haste Andersen
     email                : haste@diku.dk
- ***************************************************************************/
+***************************************************************************/
 
 /***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+*                                                                         *
+*   This program is free software; you can redistribute it and/or modify  *
+*   it under the terms of the GNU General Public License as published by  *
+*   the Free Software Foundation; either version 2 of the License, or     *
+*   (at your option) any later version.                                   *
+*                                                                         *
+***************************************************************************/
 
 #include "wtracktableitem.h"
 #include "wtracktable.h"
@@ -29,7 +29,7 @@ QColor WTrackTableItem::kqRowColor2;
 QColor WTrackTableItem::kqBpmBgColor1;
 QColor WTrackTableItem::kqBpmBgColor2;
 
-WTrackTableItem::WTrackTableItem(TrackInfoObject *pTrackInfoObject, Q3Table *table, EditType et, const QString &text, enumType eType) : Q3TableItem(table, et, text)
+WTrackTableItem::WTrackTableItem(TrackInfoObject * pTrackInfoObject, Q3Table * table, EditType et, const QString &text, enumType eType) : Q3TableItem(table, et, text)
 {
     m_eType = eType;
     m_pTrackInfoObject = pTrackInfoObject;
@@ -51,7 +51,7 @@ void WTrackTableItem::setBpmBgColors(QColor c1, QColor c2)
     kqBpmBgColor2 = c2;
 }
 
-void WTrackTableItem::paint(QPainter *p, const QColorGroup &cg, const QRect &cr, bool selected)
+void WTrackTableItem::paint(QPainter * p, const QColorGroup &cg, const QRect &cr, bool selected)
 {
     QColorGroup g( cg );
     // last row is the sum row - we want to make it more visible by
@@ -70,14 +70,14 @@ void WTrackTableItem::paint(QPainter *p, const QColorGroup &cg, const QRect &cr,
         if (m_pTrackInfoObject->getBpmConfirm())
             g.setColor(QColorGroup::Base, kqBpmBgColor2);
         else
-            g.setColor(QColorGroup::Base, kqBpmBgColor1);        
+            g.setColor(QColorGroup::Base, kqBpmBgColor1);
     }
 
     Q3TableItem::paint(p, g, cr, selected);
 }
 /*
     Returns a key which is used for sorting of the table.
-*/
+ */
 QString WTrackTableItem::key() const
 {
     static QString sResult;
@@ -94,12 +94,12 @@ QString WTrackTableItem::key() const
     return sResult;
 }
 
-TrackInfoObject *WTrackTableItem::getTrackInfoObject()
+TrackInfoObject * WTrackTableItem::getTrackInfoObject()
 {
     return m_pTrackInfoObject;
 }
 
-void WTrackTableItem::setContentFromEditor(QWidget *w)
+void WTrackTableItem::setContentFromEditor(QWidget * w)
 {
     // Update cell
     Q3TableItem::setContentFromEditor(w);
@@ -107,22 +107,22 @@ void WTrackTableItem::setContentFromEditor(QWidget *w)
     // If this is a comment column or bpm, update TrackInfoObject
     if (col()==COL_COMMENT)
         m_pTrackInfoObject->setComment(text());
-	#ifndef __EXPERIMENTAL_BPM__
+        #ifndef __EXPERIMENTAL_BPM__
     else if (col()==COL_BPM)
-        m_pTrackInfoObject->setBpm(text().toFloat());
-	#endif
+            m_pTrackInfoObject->setBpm(text().toFloat());
+        #endif
 }
 
 int WTrackTableItem::alignment() const
 {
-   static int a;
+    static int a;
     switch (m_eType) {
     case typeText:
-       a = Qt::AlignLeft;
+        a = Qt::AlignLeft;
         break;
     case typeNumber: case typeDuration:
-       a = Qt::AlignRight;
-       break;
+        a = Qt::AlignRight;
+        break;
     }
-   return a;
+    return a;
 }

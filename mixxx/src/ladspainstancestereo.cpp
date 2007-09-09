@@ -1,11 +1,11 @@
 /***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+*                                                                         *
+*   This program is free software; you can redistribute it and/or modify  *
+*   it under the terms of the GNU General Public License as published by  *
+*   the Free Software Foundation; either version 2 of the License, or     *
+*   (at your option) any later version.                                   *
+*                                                                         *
+***************************************************************************/
 
 #include <ladspainstancestereo.h>
 
@@ -68,10 +68,10 @@ LADSPAInstanceStereo::~LADSPAInstanceStereo()
 
 void LADSPAInstanceStereo::process(const CSAMPLE * pInLeft, const CSAMPLE * pInRight, const CSAMPLE * pOutLeft, const CSAMPLE * pOutRight, const int iBufferSize)
 {
-    getDescriptor()->connect_port(m_Handle, m_InputPortLeft, (LADSPA_Data*) pInLeft);
-    getDescriptor()->connect_port(m_Handle, m_OutputPortLeft, (LADSPA_Data*) pOutLeft);
-    getDescriptor()->connect_port(m_Handle, m_InputPortRight, (LADSPA_Data*) pInRight);
-    getDescriptor()->connect_port(m_Handle, m_OutputPortRight, (LADSPA_Data*) pOutRight);
+    getDescriptor()->connect_port(m_Handle, m_InputPortLeft, (LADSPA_Data *) pInLeft);
+    getDescriptor()->connect_port(m_Handle, m_OutputPortLeft, (LADSPA_Data *) pOutLeft);
+    getDescriptor()->connect_port(m_Handle, m_InputPortRight, (LADSPA_Data *) pInRight);
+    getDescriptor()->connect_port(m_Handle, m_OutputPortRight, (LADSPA_Data *) pOutRight);
     getDescriptor()->run(m_Handle, iBufferSize);
 }
 

@@ -4,7 +4,7 @@
     begin                : Sun Aug 5 2001
     copyright            : (C) 2001 by Tue Haste Andersen
     email                : haste@diku.dk
- ***************************************************************************/
+***************************************************************************/
 
 
 #include "enginespectralfwd.h"
@@ -19,7 +19,7 @@
             size  - size of FFT to perform
    Output:  -
    -------- ----------------------------------------------------------------- */
-EngineSpectralFwd::EngineSpectralFwd(bool Power, bool Phase, WindowKaiser *window)
+EngineSpectralFwd::EngineSpectralFwd(bool Power, bool Phase, WindowKaiser * window)
 {
     l  = window->getSize();
     l_half = l/2;
@@ -27,7 +27,7 @@ EngineSpectralFwd::EngineSpectralFwd(bool Power, bool Phase, WindowKaiser *windo
 
     power_calc = Power;
     phase_calc = Phase;
-    
+
     // Create plans for use in FFT calculations.
     kisscfg = kiss_fft_alloc(l, 0, 0, 0);
     tmp = new kiss_fft_cpx[l/2+1];
@@ -54,7 +54,7 @@ EngineSpectralFwd::~EngineSpectralFwd()
     // Deallocate temporary buffer
     delete [] tmp;
     delete [] spectrum;
-    delete [] spectrumOld;	
+    delete [] spectrumOld;
 }
 
 /* -------- -----------------------------------------------------------------
@@ -66,34 +66,34 @@ EngineSpectralFwd::~EngineSpectralFwd()
             phase_calc is true, a pointer to tmp is returned instead, giving
             the complex result of the fft.
    -------- ----------------------------------------------------------------- */
-void EngineSpectralFwd::process(const CSAMPLE *pIn, const CSAMPLE *, const int iBufferSize)
+void EngineSpectralFwd::process(const CSAMPLE * pIn, const CSAMPLE *, const int iBufferSize)
 {
     // kiss_fft_cpx complexInput[iBufferSize];
-	kiss_fft_cpx *complexInput;	
-	complexInput = new kiss_fft_cpx[iBufferSize];
-    
+    kiss_fft_cpx * complexInput;
+    complexInput = new kiss_fft_cpx[iBufferSize];
+
     for (int i = 0; i < iBufferSize; i++)
     {
         complexInput[i].r = pIn[i];
         complexInput[i].i = 0.0f;
     }
-    
+
     // Perform FFT
-    kiss_fft_scalar *pInput = (kiss_fft_scalar *)pIn;
+    kiss_fft_scalar * pInput = (kiss_fft_scalar *)pIn;
     kiss_fft(kisscfg, complexInput, tmp);
 
     // Shift pointers (spectrum/spectrumOld)
-    kiss_fft_scalar *temp = spectrum;
+    kiss_fft_scalar * temp = spectrum;
     spectrum = spectrumOld;
-    spectrumOld = temp;    
-    
+    spectrumOld = temp;
+
     if (power_calc)
     {
         // Calculate length and angle of each vector
         //spectrum[l_half] = tmp[l_half]*tmp[l_half]; // Nyquist freq.
         for (int i=0; i<l_half; ++i)
             spectrum[i]  = sqrt(tmp[i].r*tmp[i].r + tmp[i].i*tmp[i].i);
-        
+
 //         qDebug("spec[10]: %f", spectrum[10]);
     }
 
@@ -104,7 +104,7 @@ void EngineSpectralFwd::process(const CSAMPLE *pIn, const CSAMPLE *, const int i
         for (int i=1; i<l_half; ++i)
             spectrum[l-i] = arctan2(tmp[i].i,tmp[i].r);
     }
-	delete [] complexInput;
+    delete [] complexInput;
 }
 
 CSAMPLE EngineSpectralFwd::getHFC()
@@ -127,7 +127,7 @@ CSAMPLE EngineSpectralFwd::getHFC()
 CSAMPLE EngineSpectralFwd::getPSF()
 {
     Q_ASSERT(power_calc);
-	float w;
+    float w;
     CSAMPLE psf = 0.;
     for (int i=1; i<l_half; ++i)
     {
@@ -135,9 +135,9 @@ CSAMPLE EngineSpectralFwd::getPSF()
         //psf += w * sqrtf(spectrum[i]);
         psf += w * (spectrum[i]-spectrumOld[i]);
     }
-    if (l_half != 0) //Safety first
-    	psf /= l_half;
-    	
+    if (l_half != 0)  //Safety first
+        psf /= l_half;
+
     return psf;
 }
 

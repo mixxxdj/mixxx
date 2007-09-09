@@ -21,7 +21,7 @@
 #include <QPaintEvent>
 #include "mathstuff.h"
 
-WOverview::WOverview(QWidget *pParent, const char *pName) : WWidget(pParent, pName)
+WOverview::WOverview(QWidget * pParent, const char * pName) : WWidget(pParent, pName)
 {
     m_pWaveformSummary = 0;
     m_pSegmentation = 0;
@@ -56,24 +56,24 @@ void WOverview::setup(QDomNode node)
     m_qMarkerPos2.setY(y);
     m_qMousePos.setX(x/2);
     m_qMousePos.setY(y/2);
-*/
+ */
 
     // Background color
-	QColor c(255,255,255);
+    QColor c(255,255,255);
     if (!selectNode(node, "BgColor").isNull())
     {
         c.setNamedColor(selectNodeQString(node, "BgColor"));
     }
-	setBackgroundColor(WSkinColor::getCorrectColor(c));
+    setBackgroundColor(WSkinColor::getCorrectColor(c));
 
     // Setup screen buffer
     m_pScreenBuffer = new QPixmap(this->size());
     m_pScreenBuffer->fill(this->backgroundColor());
 
     m_qColorSignal.setNamedColor(selectNodeQString(node, "SignalColor"));
-	m_qColorSignal = WSkinColor::getCorrectColor(m_qColorSignal);
+    m_qColorSignal = WSkinColor::getCorrectColor(m_qColorSignal);
     m_qColorMarker.setNamedColor(selectNodeQString(node, "MarkerColor"));
-	m_qColorMarker = WSkinColor::getCorrectColor(m_qColorMarker);
+    m_qColorMarker = WSkinColor::getCorrectColor(m_qColorMarker);
 }
 
 void WOverview::setValue(double fValue)
@@ -96,13 +96,13 @@ void WOverview::setVirtualPos(double fValue)
     }
 }
 
-void WOverview::setData(Q3MemArray<char> *pWaveformSummary, Q3ValueList<long> *pSegmentation, long liSampleDuration)
+void WOverview::setData(Q3MemArray<char> * pWaveformSummary, Q3ValueList<long> * pSegmentation, long liSampleDuration)
 {
     m_pWaveformSummary = pWaveformSummary;
     m_pSegmentation = pSegmentation;
     m_liSampleDuration = liSampleDuration;
 
-	repaint();
+    repaint();
 }
 
 void WOverview::repaint() {
@@ -171,7 +171,7 @@ void WOverview::repaint() {
             for (int j=idxStart; j<idxEnd; j+=3)
             {
                 fMin += m_pWaveformSummary->at(j);
-            fMax += m_pWaveformSummary->at(j+1);
+                fMax += m_pWaveformSummary->at(j+1);
             }
             fMin /= ((idxEnd-idxStart)/2.);
             fMax /= ((idxEnd-idxStart)/2.);
@@ -199,13 +199,13 @@ void WOverview::repaint() {
             paint.drawLine(point, 0, point, height());
         }
     }
-*/
+ */
     paint.end();
 
     update();
 }
 
-void WOverview::mouseMoveEvent(QMouseEvent *e)
+void WOverview::mouseMoveEvent(QMouseEvent * e)
 {
     m_iPos = e->x()-m_iStartMousePos;
 
@@ -219,7 +219,7 @@ void WOverview::mouseMoveEvent(QMouseEvent *e)
     update();
 }
 
-void WOverview::mouseReleaseEvent(QMouseEvent *e)
+void WOverview::mouseReleaseEvent(QMouseEvent * e)
 {
     mouseMoveEvent(e);
 
@@ -234,7 +234,7 @@ void WOverview::mouseReleaseEvent(QMouseEvent *e)
     m_bDrag = false;
 }
 
-void WOverview::mousePressEvent(QMouseEvent *e)
+void WOverview::mousePressEvent(QMouseEvent * e)
 {
     m_iStartMousePos = 0;
     mouseMoveEvent(e);

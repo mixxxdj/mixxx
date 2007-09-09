@@ -4,16 +4,16 @@
     begin                : Thu Apr 17 2003
     copyright            : (C) 2003 by Tue & Ken Haste Andersen
     email                : haste@diku.dk
- ***************************************************************************/
+***************************************************************************/
 
 /***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+*                                                                         *
+*   This program is free software; you can redistribute it and/or modify  *
+*   it under the terms of the GNU General Public License as published by  *
+*   the Free Software Foundation; either version 2 of the License, or     *
+*   (at your option) any later version.                                   *
+*                                                                         *
+***************************************************************************/
 
 #include "dlgprefplaylist.h"
 #include <qlineedit.h>
@@ -21,7 +21,7 @@
 #include <qwidget.h>
 #include <qpushbutton.h>
 
-DlgPrefPlaylist::DlgPrefPlaylist(QWidget *parent, ConfigObject<ConfigValue> *_config) :  QWidget(parent), Ui::DlgPrefPlaylistDlg()
+DlgPrefPlaylist::DlgPrefPlaylist(QWidget * parent, ConfigObject<ConfigValue> * _config) :  QWidget(parent), Ui::DlgPrefPlaylistDlg()
 {
     config = _config;
     setupUi(this);
@@ -44,7 +44,7 @@ void DlgPrefPlaylist::slotUpdate()
 
 void DlgPrefPlaylist::slotBrowseDir()
 {
-    Q3FileDialog* fd = new Q3FileDialog(config->getValueString(ConfigKey("[Playlist]","Directory")),"", this, "", TRUE );
+    Q3FileDialog * fd = new Q3FileDialog(config->getValueString(ConfigKey("[Playlist]","Directory")),"", this, "", TRUE );
     fd->setMode( Q3FileDialog::Directory );
     fd->setCaption("Choose directory with music files");
     if ( fd->exec() == QDialog::Accepted )
