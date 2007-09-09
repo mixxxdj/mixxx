@@ -1,11 +1,11 @@
 /***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+*                                                                         *
+*   This program is free software; you can redistribute it and/or modify  *
+*   it under the terms of the GNU General Public License as published by  *
+*   the Free Software Foundation; either version 2 of the License, or     *
+*   (at your option) any later version.                                   *
+*                                                                         *
+***************************************************************************/
 
 #include "engineladspa.h"
 
@@ -17,16 +17,16 @@ EngineLADSPA * EngineLADSPA::m_pEngine = NULL;
 EngineLADSPA::EngineLADSPA()
 {
     m_pEngine = this;
-    
+
     m_bufferSize = 0;
-    m_pBufferLeft[0] = NULL;    
+    m_pBufferLeft[0] = NULL;
 }
 
 EngineLADSPA::~EngineLADSPA()
 {
 }
 
-void EngineLADSPA::process(const CSAMPLE *pIn, const CSAMPLE *pOut, const int iBufferSize)
+void EngineLADSPA::process(const CSAMPLE * pIn, const CSAMPLE * pOut, const int iBufferSize)
 {
     if (iBufferSize != m_bufferSize)
     {
@@ -34,7 +34,7 @@ void EngineLADSPA::process(const CSAMPLE *pIn, const CSAMPLE *pOut, const int iB
         m_monoBufferSize = m_bufferSize / 2;
         qDebug("LADSPA: setBufferSize: %d (%d)", m_monoBufferSize, m_bufferSize);
         LADSPAControl::setBufferSize(m_monoBufferSize);
-        
+
         if (m_pBufferLeft[0] != NULL)
         {
             delete [] m_pBufferLeft[0];
@@ -99,7 +99,7 @@ void EngineLADSPA::process(const CSAMPLE *pIn, const CSAMPLE *pOut, const int iB
         }
     }
 
-    CSAMPLE *pOutput = (CSAMPLE *)pOut;
+    CSAMPLE * pOutput = (CSAMPLE *)pOut;
     if (bufferNo == 0)
     {
         for (int i = 0; i < m_monoBufferSize; i++)

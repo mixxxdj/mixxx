@@ -4,16 +4,16 @@
     begin                : Sat Jul 5 2003
     copyright            : (C) 2003 by Tue & Ken Haste Andersen
     email                : haste@diku.dk
- ***************************************************************************/
+***************************************************************************/
 
 /***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+*                                                                         *
+*   This program is free software; you can redistribute it and/or modify  *
+*   it under the terms of the GNU General Public License as published by  *
+*   the Free Software Foundation; either version 2 of the License, or     *
+*   (at your option) any later version.                                   *
+*                                                                         *
+***************************************************************************/
 
 #include "dlgprefcontrols.h"
 #include "qcombobox.h"
@@ -31,14 +31,14 @@
 #include <qspinbox.h>
 #include <qwidget.h>
 
-DlgPrefControls::DlgPrefControls(QWidget *parent, MixxxView *pView, MixxxApp *mixxx, ConfigObject<ConfigValue> *pConfig) :  QWidget(parent), Ui::DlgPrefControlsDlg()
+DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxView * pView, MixxxApp * mixxx, ConfigObject<ConfigValue> * pConfig) :  QWidget(parent), Ui::DlgPrefControlsDlg()
 {
     m_pView = pView;
     m_pConfig = pConfig;
-	m_mixxx = mixxx;
-    
+    m_mixxx = mixxx;
+
     setupUi(this);
-        
+
     //
     // Rate slider configuration
     //
@@ -139,11 +139,11 @@ DlgPrefControls::DlgPrefControls(QWidget *parent, MixxxView *pView, MixxxApp *mi
     QDir dir(qSkinPath.append("skins/"));
     dir.setFilter(QDir::Dirs);
 #ifndef QT3_SUPPORT
-    const QFileInfoList *list = dir.entryInfoList();
+    const QFileInfoList * list = dir.entryInfoList();
     if (list!=0)
     {
-        QFileInfoListIterator it(*list);        // create list iterator
-        QFileInfo *fi;                   // pointer for traversing
+        QFileInfoListIterator it(* list);        // create list iterator
+        QFileInfo * fi;                   // pointer for traversing
         int j=0;
         while ((fi=(*it)))
         {
@@ -158,7 +158,7 @@ DlgPrefControls::DlgPrefControls(QWidget *parent, MixxxView *pView, MixxxApp *mi
         }
     }
 #else
-    QList<QFileInfo> list = dir.entryInfoList(); 
+    QList<QFileInfo> list = dir.entryInfoList();
     int j=0;
     for (int i=0; i<list.size(); ++i)
     {
@@ -174,9 +174,9 @@ DlgPrefControls::DlgPrefControls(QWidget *parent, MixxxView *pView, MixxxApp *mi
 
     connect(ComboBoxSkinconf, SIGNAL(activated(int)), this, SLOT(slotSetSkin(int)));
 
-	slotUpdateSchemes();
+    slotUpdateSchemes();
 
-	connect(ComboBoxSchemeconf, SIGNAL(activated(int)), this, SLOT(slotSetScheme(int)));
+    connect(ComboBoxSchemeconf, SIGNAL(activated(int)), this, SLOT(slotSetScheme(int)));
     //
     // Scale BPM configuration
     //
@@ -203,7 +203,7 @@ DlgPrefControls::DlgPrefControls(QWidget *parent, MixxxView *pView, MixxxApp *mi
 
     connect(ComboBoxTooltips,   SIGNAL(activated(int)), this, SLOT(slotSetTooltips(int)));
     slotSetTooltips(0);
-    
+
     slotUpdateSchemes();
     slotUpdate();
 }
@@ -214,25 +214,25 @@ DlgPrefControls::~DlgPrefControls()
 
 void DlgPrefControls::slotUpdateSchemes()
 {
-	// Since this involves opening a file we won't do this as part of regular slotUpdate
-	Q3ValueList<QString> schlist = MixxxView::getSchemeList(m_mixxx->getSkinPath());
+    // Since this involves opening a file we won't do this as part of regular slotUpdate
+    Q3ValueList<QString> schlist = MixxxView::getSchemeList(m_mixxx->getSkinPath());
 
-	ComboBoxSchemeconf->clear();
+    ComboBoxSchemeconf->clear();
 
-	if (schlist.size() == 0) {
-		ComboBoxSchemeconf->setEnabled(false);
-		ComboBoxSchemeconf->insertItem("This skin does not support schemes", 0);
-		ComboBoxSchemeconf->setCurrentItem(0);
-	} else {
-		ComboBoxSchemeconf->setEnabled(true);
-		for (unsigned int i = 0; i < schlist.size(); i++) {
-			ComboBoxSchemeconf->insertItem(schlist[i]);
+    if (schlist.size() == 0) {
+        ComboBoxSchemeconf->setEnabled(false);
+        ComboBoxSchemeconf->insertItem("This skin does not support schemes", 0);
+        ComboBoxSchemeconf->setCurrentItem(0);
+    } else {
+        ComboBoxSchemeconf->setEnabled(true);
+        for (unsigned int i = 0; i < schlist.size(); i++) {
+            ComboBoxSchemeconf->insertItem(schlist[i]);
 
-			if (schlist[i] == m_pConfig->getValueString(ConfigKey("[Config]","Scheme"))) {
-                    ComboBoxSchemeconf->setCurrentItem(i);
-			}
-		}
-	}
+            if (schlist[i] == m_pConfig->getValueString(ConfigKey("[Config]","Scheme"))) {
+                ComboBoxSchemeconf->setCurrentItem(i);
+            }
+        }
+    }
 }
 
 void DlgPrefControls::slotUpdate()
@@ -252,7 +252,7 @@ void DlgPrefControls::slotUpdate()
     float idx = 10.*m_pControlRateRange1->get();
     if (m_pControlRateRange1->get()==0.08)
         idx = 0.;
-    
+
     ComboBoxRateRange->setCurrentItem((int)idx);
 
     ComboBoxRateDir->clear();
@@ -274,7 +274,7 @@ void DlgPrefControls::slotSetRateRange(int pos)
     // Set the rate range
     m_pControlRateRange1->slotSet(range);
     m_pControlRateRange2->slotSet(range);
-    
+
     // Reset rate
     m_pControlRate1->slotSet(0.);
     m_pControlRate2->slotSet(0.);
@@ -320,16 +320,16 @@ void DlgPrefControls::slotSetTooltips(int)
 
 void DlgPrefControls::slotSetScheme(int)
 {
-	m_pConfig->set(ConfigKey("[Config]", "Scheme"), ComboBoxSchemeconf->currentText());
-	m_mixxx->rebootMixxxView();
+    m_pConfig->set(ConfigKey("[Config]", "Scheme"), ComboBoxSchemeconf->currentText());
+    m_mixxx->rebootMixxxView();
 }
 
 void DlgPrefControls::slotSetSkin(int)
 {
     m_pConfig->set(ConfigKey("[Config]","Skin"), ComboBoxSkinconf->currentText());
     //textLabel->setText("Restart Mixxx before the new skin will be loaded.");
-	m_mixxx->rebootMixxxView();
-	slotUpdateSchemes();
+    m_mixxx->rebootMixxxView();
+    slotUpdateSchemes();
 }
 
 void DlgPrefControls::slotSetPositionDisplay(int)
@@ -382,7 +382,7 @@ void DlgPrefControls::slotApply()
     float idx = 10.*m_pControlRateRange1->get();
     if (idx==0.8)
         idx = 0.;
-    
+
     m_pConfig->set(ConfigKey("[Controls]","RateRange"), ConfigValue((int)idx));
 
     // Write rate direction to config file

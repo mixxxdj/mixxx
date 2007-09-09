@@ -15,7 +15,7 @@
 #include "wtreeitemplaylistroot.h"
 #include "track.h"
 
-WTreeItemPlaylistRoot::WTreeItemPlaylistRoot(Q3ListView *parent, const QString &s1) : WTreeItem(parent, s1)
+WTreeItemPlaylistRoot::WTreeItemPlaylistRoot(Q3ListView * parent, const QString &s1) : WTreeItem(parent, s1)
 {
 }
 
@@ -25,7 +25,7 @@ WTreeItemPlaylistRoot::~WTreeItemPlaylistRoot()
 
 void WTreeItemPlaylistRoot::popupMenu()
 {
-    Q3PopupMenu *menu = new Q3PopupMenu();
+    Q3PopupMenu * menu = new Q3PopupMenu();
     menu->insertItem("New", spTrack, SLOT(slotNewPlaylist()));
     menu->insertItem("Import", spTrack, SLOT(slotImportPlaylist()));
     menu->exec(QCursor::pos());

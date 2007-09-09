@@ -3,24 +3,24 @@
                              -------------------
     copyright            : (C) 2002 by Tue and Ken Haste Andersen
     email                :
- ***************************************************************************/
+***************************************************************************/
 
 /***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+*                                                                         *
+*   This program is free software; you can redistribute it and/or modify  *
+*   it under the terms of the GNU General Public License as published by  *
+*   the Free Software Foundation; either version 2 of the License, or     *
+*   (at your option) any later version.                                   *
+*                                                                         *
+***************************************************************************/
 
 #include "enginedelay.h"
 #include "controlpotmeter.h"
 
 /*----------------------------------------------------------------
 
-  ----------------------------------------------------------------*/
-EngineDelay::EngineDelay(const char *group)
+   ----------------------------------------------------------------*/
+EngineDelay::EngineDelay(const char * group)
 {
     m_pDelayBuffer = new CSAMPLE[kiMaxDelay];
     m_iDelayPos = 0;
@@ -32,14 +32,14 @@ EngineDelay::~EngineDelay()
     delete [] m_pDelayBuffer;
 }
 
-void EngineDelay::process(const CSAMPLE *pIn, const CSAMPLE *pOut, const int iBufferSize)
+void EngineDelay::process(const CSAMPLE * pIn, const CSAMPLE * pOut, const int iBufferSize)
 {
     int iDelaySourcePos = (m_iDelayPos+kiMaxDelay-m_iDelay)%kiMaxDelay;
-    CSAMPLE *pOutput = (CSAMPLE *)pOut;
-        
+    CSAMPLE * pOutput = (CSAMPLE *)pOut;
+
     Q_ASSERT(iDelaySourcePos>=0);
     Q_ASSERT(iDelaySourcePos<=kiMaxDelay);
-        
+
     for (int i=0; i<iBufferSize; ++i)
     {
         // put sample into delay buffer:

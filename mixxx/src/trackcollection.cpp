@@ -18,7 +18,7 @@
 #include "defs.h"
 
 
-TrackCollection::TrackCollection(BpmDetector *bpmDetector)
+TrackCollection::TrackCollection(BpmDetector * bpmDetector)
 {
     m_iCounter = -1;
     m_BpmDetector = bpmDetector;
@@ -36,7 +36,7 @@ void TrackCollection::readXML(QDomNode node)
     {
         if (tracknode.isElement() && tracknode.nodeName()=="Track")
         {
-            TrackInfoObject *pTrack = new TrackInfoObject(tracknode, m_BpmDetector);
+            TrackInfoObject * pTrack = new TrackInfoObject(tracknode, m_BpmDetector);
             addTrack(pTrack);
 
 
@@ -55,8 +55,8 @@ void TrackCollection::writeXML(QDomDocument &domXML, QDomElement &root)
     //qDebug("ELEMENTS %i",m_qTrackList.count());
     QDomElement trackroot = domXML.createElement("TrackList");
 
-    QListIterator<TrackInfoObject*> it(m_qTrackList);
-    TrackInfoObject* cur_track;
+    QListIterator<TrackInfoObject *> it(m_qTrackList);
+    TrackInfoObject * cur_track;
     //TrackInfoObject *it = m_qTrackList.first();
     while (it.hasNext())
     {
@@ -68,7 +68,7 @@ void TrackCollection::writeXML(QDomDocument &domXML, QDomElement &root)
     root.appendChild(trackroot);
 }
 
-void TrackCollection::addTrack(TrackInfoObject *pTrack)
+void TrackCollection::addTrack(TrackInfoObject * pTrack)
 {
     // If id is not already set in the TrackInfoObject, assign it an ID,
     // and increase the ID counter.
@@ -83,7 +83,7 @@ void TrackCollection::addTrack(TrackInfoObject *pTrack)
 
 }
 
-TrackInfoObject *TrackCollection::getTrack(int id)
+TrackInfoObject * TrackCollection::getTrack(int id)
 {
     // Binary search
     return getTrack(id, -1, m_qTrackList.count()/2, m_qTrackList.count());
@@ -95,7 +95,7 @@ TrackInfoObject *TrackCollection::getTrack(int id)
     {
         if ((*it)->getId()==id)
             break;
-        ++it;
+ ++it;
     }
     if (it && (*it)->getId()==id)
     {
@@ -107,17 +107,17 @@ TrackInfoObject *TrackCollection::getTrack(int id)
         qDebug("not found %i",id);
         return 0;
     }
-*/
+ */
 }
 
 
-TrackInfoObject *TrackCollection::getTrack(int id, int min, int mid, int max)
+TrackInfoObject * TrackCollection::getTrack(int id, int min, int mid, int max)
 {
     //qDebug("id %i, min %i, mid %i, max %i",id,min,mid,max);
     int midId = 0;
 
     if (!m_qTrackList.at(mid))
-      return 0;
+        return 0;
     m_qTrackList.at(mid)->getId();
     if (midId==id)
         return m_qTrackList.at(mid);
@@ -129,11 +129,11 @@ TrackInfoObject *TrackCollection::getTrack(int id, int min, int mid, int max)
     return 0;
 }
 
-TrackInfoObject *TrackCollection::getTrack(QString location)
+TrackInfoObject * TrackCollection::getTrack(QString location)
 {
     // Search through list to find the track of the given filename
-    QListIterator<TrackInfoObject*> it(m_qTrackList);
-    TrackInfoObject* cur_track;
+    QListIterator<TrackInfoObject *> it(m_qTrackList);
+    TrackInfoObject * cur_track;
     while (it.hasNext())
     {
         cur_track = it.next();
@@ -148,7 +148,7 @@ TrackInfoObject *TrackCollection::getTrack(QString location)
         QFileInfo file(location);
         if (file.exists())
         {
-            TrackInfoObject *pTrack = new TrackInfoObject(file.dirPath(), file.fileName(), m_BpmDetector );
+            TrackInfoObject * pTrack = new TrackInfoObject(file.dirPath(), file.fileName(), m_BpmDetector );
             // Add track to the collection
             if (pTrack->isValid())
             {
@@ -168,5 +168,5 @@ TrackInfoObject *TrackCollection::getTrack(QString location)
 
 int TrackCollection::getSize()
 {
-	return m_iCounter + 1;
+    return m_iCounter + 1;
 }

@@ -36,7 +36,7 @@
 
 
 /*Constructor, sets up attributes for WTrackTableView*/
-WTrackTableView::WTrackTableView(QWidget *parent, ConfigObject<ConfigValue> *pConfig) : QTableView(parent)
+WTrackTableView::WTrackTableView(QWidget * parent, ConfigObject<ConfigValue> * pConfig) : QTableView(parent)
 {
     m_pTable = new WTrackTableModel(this);
     m_pConfig = pConfig;
@@ -58,11 +58,11 @@ WTrackTableView::WTrackTableView(QWidget *parent, ConfigObject<ConfigValue> *pCo
     createActions();
     m_pSearchFilter = new SortFilterProxyModel(parent);
     /*
-	//setFocusStyle(Q3Table::FollowStyle);
+        //setFocusStyle(Q3Table::FollowStyle);
 
-    // Allow table reordering
-    //setRowMovingEnabled(true);
-	*/
+       // Allow table reordering
+       //setRowMovingEnabled(true);
+     */
 
     connect(this, SIGNAL(doubleClicked(const QModelIndex &)), this, SLOT(slotMouseDoubleClicked(const QModelIndex &)));
 
@@ -85,29 +85,29 @@ WTrackTableView::~WTrackTableView()
 /*Graphically sets up playlist and library directory*/
 void WTrackTableView::setup(QDomNode node)
 {
-	// Position
+    // Position
     if (!WWidget::selectNode(node, "Pos").isNull())
     {
-	QString pos = WWidget::selectNodeQString(node, "Pos");
-	int x = pos.left(pos.find(",")).toInt();
-	int y = pos.mid(pos.find(",")+1).toInt();
-	move(x,y);
+        QString pos = WWidget::selectNodeQString(node, "Pos");
+        int x = pos.left(pos.find(",")).toInt();
+        int y = pos.mid(pos.find(",")+1).toInt();
+        move(x,y);
     }
 
     // Size
     if (!WWidget::selectNode(node, "Size").isNull())
     {
-	QString size = WWidget::selectNodeQString(node, "Size");
-	int x = size.left(size.find(",")).toInt();
-	int y = size.mid(size.find(",")+1).toInt();
-	setFixedSize(x,y);
+        QString size = WWidget::selectNodeQString(node, "Size");
+        int x = size.left(size.find(",")).toInt();
+        int y = size.mid(size.find(",")+1).toInt();
+        setFixedSize(x,y);
     }
     // Foreground color
-	QColor fgc(0,0,0);
+    QColor fgc(0,0,0);
     if (!WWidget::selectNode(node, "FgColor").isNull())
     {
         fgc.setNamedColor(WWidget::selectNodeQString(node, "FgColor"));
-	m_pTable->setForegroundColor(fgc);
+        m_pTable->setForegroundColor(fgc);
     }
 
 
@@ -118,46 +118,46 @@ void WTrackTableView::setup(QDomNode node)
         r1.setNamedColor(WWidget::selectNodeQString(node, "BgColorRowEven"));
         QColor r2;
         r2.setNamedColor(WWidget::selectNodeQString(node, "BgColorRowUneven"));
-	setAlternatingRowColors ( true );
-	QPalette Rowpalette = palette();
-	Rowpalette.setColor(QPalette::Base, r1);
-	Rowpalette.setColor(QPalette::AlternateBase, r2);
-	setPalette(Rowpalette);
+        setAlternatingRowColors ( true );
+        QPalette Rowpalette = palette();
+        Rowpalette.setColor(QPalette::Base, r1);
+        Rowpalette.setColor(QPalette::AlternateBase, r2);
+        setPalette(Rowpalette);
     }
 
 
     // BPM confidence colors
-	/*
-    if (!WWidget::selectNode(node, "BgColorBpmNoConfirm").isNull())
-    {
-        QColor c1;
-        c1.setNamedColor(WWidget::selectNodeQString(node, "BgColorBpmNoConfirm"));
-        QColor c2;
-        c2.setNamedColor(WWidget::selectNodeQString(node, "BgColorBpmConfirm"));
-		m_pTable->setBpmColor(c1,c2);
-	}*/
-	/*
-	typedef QMap<int,QString> ColMap;
-	ColMap ColumnMap;
-	ColumnMap[COL_SCORE] = "ColWidthScore";
-	ColumnMap[COL_TITLE] = "ColWidthTitle";
-	ColumnMap[COL_ARTIST] = "ColWidthArtist";
-	ColumnMap[COL_COMMENT] = "ColWidthComment";
-	ColumnMap[COL_TYPE] = "ColWidthType";
-	ColumnMap[COL_DURATION] = "ColWidthDuration";
-	ColumnMap[COL_BITRATE] = "ColWidthBitrate";
-	ColumnMap[COL_BPM] = "ColWidthBpm";
+    /*
+       if (!WWidget::selectNode(node, "BgColorBpmNoConfirm").isNull())
+       {
+       QColor c1;
+       c1.setNamedColor(WWidget::selectNodeQString(node, "BgColorBpmNoConfirm"));
+       QColor c2;
+       c2.setNamedColor(WWidget::selectNodeQString(node, "BgColorBpmConfirm"));
+            m_pTable->setBpmColor(c1,c2);
+       }*/
+    /*
+       typedef QMap<int,QString> ColMap;
+       ColMap ColumnMap;
+       ColumnMap[COL_SCORE] = "ColWidthScore";
+       ColumnMap[COL_TITLE] = "ColWidthTitle";
+       ColumnMap[COL_ARTIST] = "ColWidthArtist";
+       ColumnMap[COL_COMMENT] = "ColWidthComment";
+       ColumnMap[COL_TYPE] = "ColWidthType";
+       ColumnMap[COL_DURATION] = "ColWidthDuration";
+       ColumnMap[COL_BITRATE] = "ColWidthBitrate";
+       ColumnMap[COL_BPM] = "ColWidthBpm";
 
-	QMapIterator<int,QString> i(ColumnMap);
-	while (i.hasNext())
-	{
-		i.next();
-		if (!WWidget::selectNode(node, i.value()).isNull() && WWidget::selectNodeQString(node, i.value()).toInt() != columnWidth(i.key()))
-		{
-			qDebug("Correcting Column Width from %i to %i",columnWidth(i.key()),WWidget::selectNodeQString(node, i.value()).toInt());
-			setColumnWidth(i.key(),WWidget::selectNodeQString(node, i.value()).toInt());
-		}
-	}*/
+       QMapIterator<int,QString> i(ColumnMap);
+       while (i.hasNext())
+       {
+            i.next();
+            if (!WWidget::selectNode(node, i.value()).isNull() && WWidget::selectNodeQString(node, i.value()).toInt() != columnWidth(i.key()))
+            {
+                    qDebug("Correcting Column Width from %i to %i",columnWidth(i.key()),WWidget::selectNodeQString(node, i.value()).toInt());
+                    setColumnWidth(i.key(),WWidget::selectNodeQString(node, i.value()).toInt());
+            }
+       }*/
 }
 
 /*sorts a given column*/
@@ -174,48 +174,48 @@ void WTrackTableView::sortByColumn(int col)
 
     if (m_pTable)
     {
-	switch(col)
-	{
-	    // Score Column
-	case 0:
-	    m_pTable->m_pTrackPlaylist->sortByScore(ascending);
-	    break;
+        switch(col)
+        {
+            // Score Column
+        case 0:
+            m_pTable->m_pTrackPlaylist->sortByScore(ascending);
+            break;
 
-	    // Title
-	case 1:
-	    m_pTable->m_pTrackPlaylist->sortByTitle(ascending);
-	    break;
+            // Title
+        case 1:
+            m_pTable->m_pTrackPlaylist->sortByTitle(ascending);
+            break;
 
-	    // Artist
-	case 2:
-	    m_pTable->m_pTrackPlaylist->sortByArtist(ascending);
-	    break;
+            // Artist
+        case 2:
+            m_pTable->m_pTrackPlaylist->sortByArtist(ascending);
+            break;
 
-	    // Type
-	case 3:
-	    m_pTable->m_pTrackPlaylist->sortByType(ascending);
-	    break;
+            // Type
+        case 3:
+            m_pTable->m_pTrackPlaylist->sortByType(ascending);
+            break;
 
-	    // Duration
-	case 4:
-	    m_pTable->m_pTrackPlaylist->sortByDuration(ascending);
-	    break;
+            // Duration
+        case 4:
+            m_pTable->m_pTrackPlaylist->sortByDuration(ascending);
+            break;
 
-	    // Bitrate
-	case 5:
-	    m_pTable->m_pTrackPlaylist->sortByBitrate(ascending);
-	    break;
+            // Bitrate
+        case 5:
+            m_pTable->m_pTrackPlaylist->sortByBitrate(ascending);
+            break;
 
-	    // BPM
-	case 6:
-	    m_pTable->m_pTrackPlaylist->sortByBpm(ascending);
-	    break;
+            // BPM
+        case 6:
+            m_pTable->m_pTrackPlaylist->sortByBpm(ascending);
+            break;
 
-	    // Comment
-	case 7:
-	    m_pTable->m_pTrackPlaylist->sortByComment(ascending);
-	    break;
-	}
+            // Comment
+        case 7:
+            m_pTable->m_pTrackPlaylist->sortByComment(ascending);
+            break;
+        }
     }
 
     return QTableView::sortByColumn(col);
@@ -223,20 +223,20 @@ void WTrackTableView::sortByColumn(int col)
 
 /*checks for Mouse action*/
 
-void WTrackTableView :: slotMouseDoubleClicked(const QModelIndex & index)
+void WTrackTableView::slotMouseDoubleClicked(const QModelIndex & index)
 {
     if (!m_pTable) {
-	setRootIndex(index);
-	m_dirindex = m_pDirFilter->mapToSource(index);
-	m_pDirFilter->setIndex(m_dirindex);
-	return;
+        setRootIndex(index);
+        m_dirindex = m_pDirFilter->mapToSource(index);
+        m_pDirFilter->setIndex(m_dirindex);
+        return;
     }
 
-    TrackInfoObject *pTrackInfoObject = m_pTable->m_pTrackPlaylist->getTrackAt(index.row());
+    TrackInfoObject * pTrackInfoObject = m_pTable->m_pTrackPlaylist->getTrackAt(index.row());
     if(pTrackInfoObject)
     {
         if(bpmTapDlg)
-        delete bpmTapDlg;
+            delete bpmTapDlg;
 
         bpmTapDlg = new DlgBpmTap(NULL, pTrackInfoObject, m_pTable->m_pTrackPlaylist);
         bpmTapDlg->show();
@@ -244,8 +244,8 @@ void WTrackTableView :: slotMouseDoubleClicked(const QModelIndex & index)
 }
 
 /*enables contents to be dragable
-Q3DragObject *WTrackTableView::dragObject()
-{
+   Q3DragObject *WTrackTableView::dragObject()
+   {
 
     WTrackTableItem *p = (WTrackTableItem *)item(currentRow(),currentColumn());
     TrackInfoObject *pTrackInfoObject = p->getTrackInfoObject();
@@ -254,16 +254,16 @@ Q3DragObject *WTrackTableView::dragObject()
     ud->setFileNames(QStringList(pTrackInfoObject->getLocation()));
 
     return ud;
-}*/
+   }*/
 
-void WTrackTableView :: setSearchSource(WTrackTableModel *pSearchSourceModel)
+void WTrackTableView::setSearchSource(WTrackTableModel * pSearchSourceModel)
 {
     m_pTable = pSearchSourceModel;
     m_pSearchFilter->setSourceModel(m_pTable);
     setModel(m_pSearchFilter);
 }
 
-void WTrackTableView :: setDirModel()
+void WTrackTableView::setDirModel()
 {
     m_pTable = NULL;
     setModel(m_pDirFilter);
@@ -271,26 +271,26 @@ void WTrackTableView :: setDirModel()
 }
 
 
-void WTrackTableView :: contextMenuEvent(QContextMenuEvent * event)
+void WTrackTableView::contextMenuEvent(QContextMenuEvent * event)
 {
     index = indexAt(event->pos());
     if (!m_pTable)
-	return;
+        return;
     m_pTrackInfoObject = m_pTable->m_pTrackPlaylist->getTrackAt(index.row());
     if(index.isValid())
     {
-	QMenu menu(this);
-	menu.addAction(PlayQueueAct);
-	if (ControlObject::getControl(ConfigKey("[Channel1]","play"))->get()!=1.)
-	    menu.addAction(Player1Act);
-	if (ControlObject::getControl(ConfigKey("[Channel2]","play"))->get()!=1.)
-	    menu.addAction(Player2Act);
-	menu.addAction(RemoveAct);
-	menu.exec(event->globalPos());
+        QMenu menu(this);
+        menu.addAction(PlayQueueAct);
+        if (ControlObject::getControl(ConfigKey("[Channel1]","play"))->get()!=1.)
+            menu.addAction(Player1Act);
+        if (ControlObject::getControl(ConfigKey("[Channel2]","play"))->get()!=1.)
+            menu.addAction(Player2Act);
+        menu.addAction(RemoveAct);
+        menu.exec(event->globalPos());
     }
 }
 
-void WTrackTableView :: createActions()
+void WTrackTableView::createActions()
 {
     PlayQueueAct = new QAction(tr("Play Queue"),this);
     connect(PlayQueueAct, SIGNAL(triggered()), this, SLOT(slotSendToPlayqueue()));
@@ -305,25 +305,25 @@ void WTrackTableView :: createActions()
     connect(RemoveAct, SIGNAL(triggered()), this, SLOT(slotRemoveFromPlaylist()));
 }
 
-void WTrackTableView :: setTrack(Track *pTrack)
+void WTrackTableView::setTrack(Track * pTrack)
 {
     m_pTrack = pTrack;
 }
 
-void WTrackTableView :: slotLoadPlayer1()
+void WTrackTableView::slotLoadPlayer1()
 {
     m_pTrack->slotLoadPlayer1(m_pTrackInfoObject);
 }
-void WTrackTableView :: slotLoadPlayer2()
+void WTrackTableView::slotLoadPlayer2()
 {
     m_pTrack->slotLoadPlayer2(m_pTrackInfoObject);
 }
 
-void WTrackTableView :: slotSendToPlayqueue()
+void WTrackTableView::slotSendToPlayqueue()
 {
     m_pTrack->slotSendToPlayqueue(m_pTrackInfoObject);
 }
-void WTrackTableView :: slotRemoveFromPlaylist()
+void WTrackTableView::slotRemoveFromPlaylist()
 {
     m_pTable->removeRow(index.row(),index);
 }

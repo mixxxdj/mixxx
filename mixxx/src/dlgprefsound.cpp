@@ -4,20 +4,20 @@
     begin                : Thu Apr 17 2003
     copyright            : (C) 2003 by Tue & Ken Haste Andersen
     email                : haste@diku.dk
- ***************************************************************************/
+***************************************************************************/
 
 /***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+*                                                                         *
+*   This program is free software; you can redistribute it and/or modify  *
+*   it under the terms of the GNU General Public License as published by  *
+*   the Free Software Foundation; either version 2 of the License, or     *
+*   (at your option) any later version.                                   *
+*                                                                         *
+***************************************************************************/
 
 #include "dlgprefsound.h"
 //#include "playerproxy.h"
-#include <qcombobox.h> 
+#include <qcombobox.h>
 #include <QButtonGroup>
 #include <QtDebug>
 #include <qcheckbox.h>
@@ -31,8 +31,8 @@
 #include "soundmanager.h"
 #include <qwidget.h>
 
-DlgPrefSound::DlgPrefSound(QWidget *parent, SoundManager *_soundman,
-                           ConfigObject<ConfigValue> *_config) : QWidget(parent), Ui::DlgPrefSoundDlg()
+DlgPrefSound::DlgPrefSound(QWidget * parent, SoundManager * _soundman,
+                           ConfigObject<ConfigValue> * _config) : QWidget(parent), Ui::DlgPrefSoundDlg()
 {
     m_bLatencySliderDrag = false;
     //player = _player;
@@ -54,11 +54,11 @@ DlgPrefSound::DlgPrefSound(QWidget *parent, SoundManager *_soundman,
     {
         m_pSoundManager->setDefaults(false, false, true);
     }
-    
+
     setupUi(this);
     slotUpdate();
     slotLatency();
-    
+
     // Update of latency label, when latency slider is updated
     connect(SliderLatency,                SIGNAL(sliderMoved(int)),  this, SLOT(slotLatency()));
     connect(SliderLatency,                SIGNAL(sliderReleased()),  this, SLOT(slotLatency()));
@@ -91,21 +91,21 @@ DlgPrefSound::DlgPrefSound(QWidget *parent, SoundManager *_soundman,
 
     // Apply changes whenever apply signal is emitted
     /*
-    connect(ComboBoxSoundcardMasterLeft,  SIGNAL(activated(int)),    this, SLOT(slotApply()));
-    connect(ComboBoxSoundcardMasterRight, SIGNAL(activated(int)),    this, SLOT(slotApply()));
-    connect(ComboBoxSoundcardHeadLeft,    SIGNAL(activated(int)),    this, SLOT(slotApply()));
-    connect(ComboBoxSoundcardHeadRight,   SIGNAL(activated(int)),    this, SLOT(slotApply()));
-    connect(ComboBoxSamplerates,          SIGNAL(activated(int)),    this, SLOT(slotApply()));
-    connect(ComboBoxSoundApi,             SIGNAL(activated(int)),    this, SLOT(slotApplyApi()));
-    connect(checkBoxPitchIndp,            SIGNAL(stateChanged(int)), this, SLOT(slotApply()));
-    connect(SliderLatency,                SIGNAL(sliderPressed()),   this, SLOT(slotLatencySliderClick()));
+       connect(ComboBoxSoundcardMasterLeft,  SIGNAL(activated(int)),    this, SLOT(slotApply()));
+       connect(ComboBoxSoundcardMasterRight, SIGNAL(activated(int)),    this, SLOT(slotApply()));
+       connect(ComboBoxSoundcardHeadLeft,    SIGNAL(activated(int)),    this, SLOT(slotApply()));
+       connect(ComboBoxSoundcardHeadRight,   SIGNAL(activated(int)),    this, SLOT(slotApply()));
+       connect(ComboBoxSamplerates,          SIGNAL(activated(int)),    this, SLOT(slotApply()));
+       connect(ComboBoxSoundApi,             SIGNAL(activated(int)),    this, SLOT(slotApplyApi()));
+       connect(checkBoxPitchIndp,            SIGNAL(stateChanged(int)), this, SLOT(slotApply()));
+       connect(SliderLatency,                SIGNAL(sliderPressed()),   this, SLOT(slotLatencySliderClick()));
+       connect(SliderLatency,                SIGNAL(sliderReleased()),  this, SLOT(slotLatencySliderRelease()));
+       connect(SliderLatency,                SIGNAL(valueChanged(int)), this, SLOT(slotLatencySliderChange(int)));
+     */
+
     connect(SliderLatency,                SIGNAL(sliderReleased()),  this, SLOT(slotLatencySliderRelease()));
-    connect(SliderLatency,                SIGNAL(valueChanged(int)), this, SLOT(slotLatencySliderChange(int)));
-    */
-    
-    connect(SliderLatency,                SIGNAL(sliderReleased()),  this, SLOT(slotLatencySliderRelease()));
     connect(ComboBoxSoundApi,             SIGNAL(activated(int)),    this, SLOT(slotApplyApi()));
-    
+
 }
 
 DlgPrefSound::~DlgPrefSound()
@@ -137,13 +137,13 @@ void DlgPrefSound::slotUpdate()
     //QStringList interfaces = player->getInterfaces();
     //QStringList::iterator it;
 
-    QList<SoundDevice*> devices = m_pSoundManager->getDeviceList(selectedAPI);
-    SoundDevice* dev;
+    QList<SoundDevice *> devices = m_pSoundManager->getDeviceList(selectedAPI);
+    SoundDevice * dev;
 
     // Master sound card combobox
     ComboBoxSoundcardMaster->clear();
     ComboBoxSoundcardMaster->insertItem(0, "None");
-    QListIterator<SoundDevice*> it(devices);
+    QListIterator<SoundDevice *> it(devices);
     //it = devices.begin();
     j = 1;
     while (it.hasNext())
@@ -166,9 +166,9 @@ void DlgPrefSound::slotUpdate()
         ComboBoxSoundcardMasterRight->insertItem(j, dev->getName());
         if (dev->getName()==config->getValueString(ConfigKey("[Soundcard]","DeviceMasterRight")))
             ComboBoxSoundcardMasterRight->setCurrentIndex(j);
-        ++j;
+ ++j;
     }
-*/
+ */
     // Headphones sound card info
     ComboBoxSoundcardHeadphones->clear();
     ComboBoxSoundcardHeadphones->insertItem(0, "None");
@@ -194,9 +194,9 @@ void DlgPrefSound::slotUpdate()
         ComboBoxSoundcardHeadRight->insertItem(j, dev->getName());
         if (dev->getName()==config->getValueString(ConfigKey("[Soundcard]","DeviceHeadRight")))
             ComboBoxSoundcardHeadRight->setCurrentIndex(j);
-        ++j;
+ ++j;
     }
-*/
+ */
     // Sample rate
     ComboBoxSamplerates->clear();
     //QStringList srates = player->getSampleRates();
@@ -255,50 +255,50 @@ void DlgPrefSound::slotApply()
     //config->set(ConfigKey("[Soundcard]","DeviceHeadRight"), ConfigValue(ComboBoxSoundcardHeadRight->currentText()));
     config->set(ConfigKey("[Soundcard]","Samplerate"), ConfigValue(ComboBoxSamplerates->currentText()));
     config->set(ConfigKey("[Soundcard]","Latency"), ConfigValue(getSliderLatencyMsec(SliderLatency->value())));
-    
+
     if (radioButtonPitchIndp->isChecked())
         config->set(ConfigKey("[Soundcard]","PitchIndpTimeStretch"), ConfigValue(1));
     else
         config->set(ConfigKey("[Soundcard]","PitchIndpTimeStretch"), ConfigValue(0));
-     
+
     qDebug("request msec %i", getSliderLatencyMsec(SliderLatency->value()));
-    
+
     // Close devices, and open using config data
     //player->close();
     m_pSoundManager->closeDevices();
 
-	// Not much to do if the API is None...
-	if (config->getValueString(ConfigKey("[Soundcard]","SoundApi"))!="None") 
-	{
-		if (m_pSoundManager->setupDevices() != 0)
-	        QMessageBox::warning(0, "Configuration error","Audio device could not be opened");
-	    else
-			slotUpdate();
-	}
+    // Not much to do if the API is None...
+    if (config->getValueString(ConfigKey("[Soundcard]","SoundApi"))!="None")
+    {
+        if (m_pSoundManager->setupDevices() != 0)
+            QMessageBox::warning(0, "Configuration error","Audio device could not be opened");
+        else
+            slotUpdate();
+    }
 }
 
 void DlgPrefSound::slotApplyApi()
 {
     qDebug() << "DlgPrefSound::slotApplyApi";
-    
+
     config->set(ConfigKey("[Soundcard]","SoundApi"), ConfigValue(ComboBoxSoundApi->currentText()));
 
-	if (m_pSoundManager->setHostAPI(ComboBoxSoundApi->currentText()) != 0)
-	{
-		// Did they select the null api?
-		if (ComboBoxSoundApi->currentText() != "None") {
-			QMessageBox::warning(0, "Configuration problem","Sound API could not be initialized");
-			config->set(ConfigKey("[Soundcard]","SoundApi"), ConfigValue("None"));
-		}
-	} else {
-		if (m_pSoundManager->setupDevices() != 0)
-		{
-			QMessageBox::warning(0, "Configuration error","Audio device could not be opened");
-		}
-	}
+    if (m_pSoundManager->setHostAPI(ComboBoxSoundApi->currentText()) != 0)
+    {
+        // Did they select the null api?
+        if (ComboBoxSoundApi->currentText() != "None") {
+            QMessageBox::warning(0, "Configuration problem","Sound API could not be initialized");
+            config->set(ConfigKey("[Soundcard]","SoundApi"), ConfigValue("None"));
+        }
+    } else {
+        if (m_pSoundManager->setupDevices() != 0)
+        {
+            QMessageBox::warning(0, "Configuration error","Audio device could not be opened");
+        }
+    }
     m_pSoundManager->closeDevices();
-	emit(apiUpdated());
-	m_pSoundManager->setDefaults(false, true, true);
+    emit(apiUpdated());
+    m_pSoundManager->setDefaults(false, true, true);
     slotUpdate();
 }
 

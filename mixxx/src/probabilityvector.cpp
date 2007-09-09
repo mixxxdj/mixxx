@@ -4,16 +4,16 @@
     begin                : Fri Feb 14 2003
     copyright            : (C) 2003 by Tue & Ken Haste Andersen
     email                : haste@diku.dk
- ***************************************************************************/
+***************************************************************************/
 
 /***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+*                                                                         *
+*   This program is free software; you can redistribute it and/or modify  *
+*   it under the terms of the GNU General Public License as published by  *
+*   the Free Software Foundation; either version 2 of the License, or     *
+*   (at your option) any later version.                                   *
+*                                                                         *
+***************************************************************************/
 
 #include "qapplication.h"
 #include "probabilityvector.h"
@@ -97,7 +97,7 @@ void ProbabilityVector::add(float fInterval, float fValue)
 
 
 /*
-#ifdef __GNUPLOT__
+ #ifdef __GNUPLOT__
     //
     // Plot Histogram
     //
@@ -109,8 +109,8 @@ void ProbabilityVector::add(float fInterval, float fValue)
     replotxy(&_maxidx, &hist[histMaxIdx], 1, gnuplot_hist);
 
     //savePlot(gnuplot_hist, "hist.png", "png");
-#endif
-*/
+ #endif
+ */
 }
 
 float ProbabilityVector::getCurrMaxInterval()

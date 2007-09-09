@@ -67,7 +67,7 @@ void Mouse::selectMapping(QString mapping)
 
 void Mouse::destroyAll()
 {
-    for (Mouse *p = m_sqInstanceList.first(); p; p = m_sqInstanceList.first())
+    for (Mouse * p = m_sqInstanceList.first(); p; p = m_sqInstanceList.first())
         delete p;
 }
 

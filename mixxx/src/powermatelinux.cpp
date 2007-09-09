@@ -4,16 +4,16 @@
     begin                : Tue Apr 29 2003
     copyright            : (C) 2003 by Tue & Ken Haste Andersen
     email                : haste@diku.dk
- ***************************************************************************/
+***************************************************************************/
 
 /***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+*                                                                         *
+*   This program is free software; you can redistribute it and/or modify  *
+*   it under the terms of the GNU General Public License as published by  *
+*   the Free Software Foundation; either version 2 of the License, or     *
+*   (at your option) any later version.                                   *
+*                                                                         *
+***************************************************************************/
 
 #include "powermatelinux.h"
 #include "rotary.h"
@@ -30,7 +30,7 @@
 #include <Q3ValueList>
 
 #ifndef MSC_PULSELED
-  // this may not have made its way into the kernel headers yet ...
+// this may not have made its way into the kernel headers yet ...
   #define MSC_PULSELED 0x01
 #endif
 
@@ -44,9 +44,9 @@ PowerMateLinux::PowerMateLinux() : PowerMate()
 
 PowerMateLinux::~PowerMateLinux()
 {
-	//Turn off blue LED.
-	if (m_iFd < 0)
-		led_write(0, 0, 0, 0, 0);
+    //Turn off blue LED.
+    if (m_iFd < 0)
+        led_write(0, 0, 0, 0, 0);
 }
 
 bool PowerMateLinux::opendev()
@@ -135,14 +135,14 @@ void PowerMateLinux::getNextEvent()
     tv.tv_usec = 0;
     int v = select(m_iFd+1, &fdset, 0, 0, &tv);
     if (v>0)
-*/
+ */
     struct input_event ev;
     int iR = read(m_iFd, &ev, sizeof(struct input_event));
     static int iUnreadCount = 0;
     static double dSpeed = 0.0f;
     static int wait = 0;
-    static int led_value = 0; //The brightness of the LED. 
-    
+    static int led_value = 0; //The brightness of the LED.
+
     if (iR == sizeof(struct input_event))
     {
         switch(ev.type)
@@ -151,30 +151,30 @@ void PowerMateLinux::getNextEvent()
             if (ev.code == REL_DIAL)
             {
                 int v = ev.value;
-                
+
                 //This next line was used in the original Powermate code... Long story short: It screws up everything.
                 //double dValue = m_pRotary->filter((double)v);
-                
+
                 //qDebug("POWERMATE: v = %d, dValue = %f", v, dValue);
-                
+
                 //Scale the speed of the seeking/scratching/whatever based on how fast the Powermate is being turned.
                 if (v >= 2 || v <= -2)
-                	v *= 200;
+                    v *= 200;
                 //if (v >= 3)
                 //	v *= 20;
                 //if (v >= 4)
                 //	v *= 500;
                 //Note: If those numbers look ridiculously, it's probably because they are.
-                
-                
-		        if (m_pControlObjectButton != NULL)
-		        {
-		        	if (m_pControlObjectButton->get() == 0.0f) //Only process the rotary knob when we're paused.
-		        	{
-		        		dSpeed = (double)v;
-		        			                
-		                sendEvent(dSpeed, m_pControlObjectRotary);
-                	}
+
+
+                if (m_pControlObjectButton != NULL)
+                {
+                    if (m_pControlObjectButton->get() == 0.0f)             //Only process the rotary knob when we're paused.
+                    {
+                        dSpeed = (double)v;
+
+                        sendEvent(dSpeed, m_pControlObjectRotary);
+                    }
                 }
             }
             break;
@@ -184,18 +184,18 @@ void PowerMateLinux::getNextEvent()
                 // Send event to GUI thread
                 if (ev.value==1)
                 {
-                	m_pControlObjectRotary->queueFromThread(0.0f); //Disable the scratch/wheel/whatever
+                    m_pControlObjectRotary->queueFromThread(0.0f);     //Disable the scratch/wheel/whatever
                     sendButtonEvent(true, m_pControlObjectButton); //Start playback
                 }
                 else
-                	
+
                     sendButtonEvent(false, m_pControlObjectButton); //Stop playback
-                    m_pControlObjectRotary->queueFromThread(0.0f); //Reset the scratch/wheel/whatever
+                m_pControlObjectRotary->queueFromThread(0.0f);     //Reset the scratch/wheel/whatever
             }
             break;
-        /*default:
-       		qDebug("POWERMATE :: [type=0x%04x code=0x%04x, value=%d]", ev.type, ev.code, (int)ev.value);
-       	*/
+            /*default:
+                    qDebug("POWERMATE :: [type=0x%04x code=0x%04x, value=%d]", ev.type, ev.code, (int)ev.value);
+             */
         }
     }
     else
@@ -203,55 +203,55 @@ void PowerMateLinux::getNextEvent()
         //qDebug("unread");
         iUnreadCount++;
         if (iUnreadCount > 5)
-       	{
-       		iUnreadCount = 0;
-       		m_pControlObjectRotary->queueFromThread(0.0f);
-       	} 	
-       
-        /*if (m_pControlObjectButton != NULL)
         {
-       		sendEvent((double)0.0f, m_pControlObjectRotary);
-        }*/
-    }
-            
+            iUnreadCount = 0;
+            m_pControlObjectRotary->queueFromThread(0.0f);
+        }
 
-    
+        /*if (m_pControlObjectButton != NULL)
+           {
+                sendEvent((double)0.0f, m_pControlObjectRotary);
+           }*/
+    }
+
+
+
     if (m_ctrlVuMeter != NULL)
     {
-    	//qDebug("POWERMATE: m_ctrlVuMeter->get() is %f", m_ctrlVuMeter->get());
-    	if (wait > 5) //Save on CPU a bit...
-    	{
-    		if (m_pControlObjectButton->get() == 0.0f) //If we're paused, pulse the
-    												   //blue light on the Powermate slowly (at a constant rate)
-    		{
-				led_write(255, 255, 0, 0, 1);
-    		}
-    		else //If we're playing, pulse the blue light on the Powermate to the music :)
-     		{
-     			led_value = (int)round(((m_ctrlVuMeter->get() * 255)) - 80);
-    		    
-    		    if (led_value < 0)
-					led_value = 0;
-    			
-    			led_write(led_value, 0, 0, 0, 0);
-			}
-    		
-    		wait = 0;
-    	}
-    	else
-    		wait++;
+        //qDebug("POWERMATE: m_ctrlVuMeter->get() is %f", m_ctrlVuMeter->get());
+        if (wait > 5) //Save on CPU a bit...
+        {
+            if (m_pControlObjectButton->get() == 0.0f)     //If we're paused, pulse the
+            //blue light on the Powermate slowly (at a constant rate)
+            {
+                led_write(255, 255, 0, 0, 1);
+            }
+            else     //If we're playing, pulse the blue light on the Powermate to the music :)
+            {
+                led_value = (int)round(((m_ctrlVuMeter->get() * 255)) - 80);
+
+                if (led_value < 0)
+                    led_value = 0;
+
+                led_write(led_value, 0, 0, 0, 0);
+            }
+
+            wait = 0;
+        }
+        else
+            wait++;
     }
-    
+
     // Check if we have to turn on led
     //led();
-    
+
     //I have absolutely no idea what this does, but if you call led(), this stuff will get called. ~asantoni
     //
     // Check if led queue is empty
     //
     if (m_qRequestLed.available()==0)
     {
-    	//qDebug("POWERMATE: LED!!!!");
+        //qDebug("POWERMATE: LED!!!!");
         m_qRequestLed--;
         led_write(255, 0, 0, 0, 1);
 
@@ -264,12 +264,12 @@ void PowerMateLinux::getNextEvent()
 }
 
 /*	Useful PowerMate LED terminology:
-	brightness:  LED-brightness (0-255)
-	speed:       pulse-speed (0-510)
-	mode (table?): pule-style (0,1,2)
-	sleep:       pulse while host is off
-	awake:       pulse while host is on
-*/
+        brightness:  LED-brightness (0-255)
+        speed:       pulse-speed (0-510)
+        mode (table?): pule-style (0,1,2)
+        sleep:       pulse while host is off
+        awake:       pulse while host is on
+ */
 void PowerMateLinux::led_write(int iStaticBrightness, int iSpeed, int iTable, int iAsleep, int iAwake)
 {
     struct input_event ev;

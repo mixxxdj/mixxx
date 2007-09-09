@@ -1,11 +1,11 @@
 /***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+*                                                                         *
+*   This program is free software; you can redistribute it and/or modify  *
+*   it under the terms of the GNU General Public License as published by  *
+*   the Free Software Foundation; either version 2 of the License, or     *
+*   (at your option) any later version.                                   *
+*                                                                         *
+***************************************************************************/
 
 #include <ladspaloader.h>
 
@@ -47,7 +47,7 @@ LADSPALoader::LADSPALoader()
     // load each directory
     for (QStringList::iterator path = paths.begin(); path != paths.end(); path++)
     {
-        QDir dir(*path);
+        QDir dir(* path);
 
         // get the list of files in the directory
         QFileInfoList files = dir.entryInfoList();
@@ -59,7 +59,7 @@ LADSPALoader::LADSPALoader()
             {
                 continue;
             }
-            LADSPALibrary *library = new LADSPALibrary ((*file).absoluteFilePath());
+            LADSPALibrary * library = new LADSPALibrary ((*file).absoluteFilePath());
 
             // add the library to the list of all libraries
             m_Libraries.append (library);

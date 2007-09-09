@@ -4,16 +4,16 @@
     begin                : Tue Apr 29 2003
     copyright            : (C) 2003 by Tue & Ken Haste Andersen
     email                : haste@diku.dk
- ***************************************************************************/
+***************************************************************************/
 
 /***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+*                                                                         *
+*   This program is free software; you can redistribute it and/or modify  *
+*   it under the terms of the GNU General Public License as published by  *
+*   the Free Software Foundation; either version 2 of the License, or     *
+*   (at your option) any later version.                                   *
+*                                                                         *
+***************************************************************************/
 
 #include "powermatewin.h"
 #include "controleventmidi.h"
@@ -66,13 +66,13 @@ bool PowerMateWin::opendev()
 
 void PowerMateWin::run()
 {
-    char *pBuffer = new char[6];
+    char * pBuffer = new char[6];
     for (int i=0; i<6; i++)
         pBuffer[i] = 0;
 
     // create the timeout event
     QString qsName("PowerMate2");
-    HANDLE hEvent = CreateEvent(NULL , true, false, (const unsigned short *)qsName.latin1() );
+    HANDLE hEvent = CreateEvent(NULL, true, false, (const unsigned short *)qsName.latin1() );
 
     // Overlapped structure required for async reading
     OVERLAPPED overlapped;
@@ -154,7 +154,7 @@ void PowerMateWin::closedev()
         if (it!=sqlOpenDevs.end())
             sqlOpenDevs.remove(it);
     }
-*/
+ */
     m_hFd = NULL;
     m_iId = -1;
 }
@@ -207,24 +207,24 @@ void PowerMateWin::led_write(int iStaticBrightness, int iSpeed, int iTable, int 
                     &lBytesReturned, NULL);
 }
 
-void PowerMateWin::process_event(char *pEv)
+void PowerMateWin::process_event(char * pEv)
 {
     qDebug("process %i,%i,%i,%i,%i,%i", pEv[0],pEv[1],pEv[2],pEv[3],pEv[4],pEv[5]);
     if (pEv[1]>0 || pEv[1]<0)
-		sendRotaryEvent(pEv[1]);
+        sendRotaryEvent(pEv[1]);
     else
     {
         // Send event to GUI thread
         if (pEv[0]==1)
-			sendButtonEvent(true);
+            sendButtonEvent(true);
         else
-			sendButtonEvent(false);
+            sendButtonEvent(false);
 
 //      qDebug("PowerMate: Button was %s %i", pEv[1]? "pressed":"released",pEv[1]);
     }
 }
 
-HANDLE PowerMateWin::GetDeviceViaInterface(GUID* pGuid, DWORD instance)
+HANDLE PowerMateWin::GetDeviceViaInterface(GUID * pGuid, DWORD instance)
 {
     // Get handle to relevant device information set
     HDEVINFO info = SetupDiGetClassDevs(pGuid, NULL, NULL, DIGCF_PRESENT | DIGCF_INTERFACEDEVICE);
@@ -261,9 +261,9 @@ HANDLE PowerMateWin::GetDeviceViaInterface(GUID* pGuid, DWORD instance)
 
     // Open file
     HANDLE rv = CreateFile( ifDetail->DevicePath,
-        GENERIC_READ | GENERIC_WRITE,
-        FILE_SHARE_READ | FILE_SHARE_WRITE,
-        NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL | FILE_FLAG_OVERLAPPED, NULL);  //    FILE_ATTRIBUTE_NORMAL
+                           GENERIC_READ | GENERIC_WRITE,
+                           FILE_SHARE_READ | FILE_SHARE_WRITE,
+                           NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL | FILE_FLAG_OVERLAPPED, NULL); //    FILE_ATTRIBUTE_NORMAL
     //if( rv==INVALID_HANDLE_VALUE) rv = NULL;
 
     delete ifDetail;

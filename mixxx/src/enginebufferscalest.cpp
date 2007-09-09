@@ -10,7 +10,7 @@
 
     email                : haste@diku.dk
 
- ***************************************************************************/
+***************************************************************************/
 
 
 
@@ -51,11 +51,11 @@ using namespace soundtouch;
 
 
 
-EngineBufferScaleST::EngineBufferScaleST(ReaderExtractWave *wave) : EngineBufferScale(wave)
+EngineBufferScaleST::EngineBufferScaleST(ReaderExtractWave * wave) : EngineBufferScale(wave)
 
 {
 
-    m_pSoundTouch = new soundtouch::SoundTouch(); 
+    m_pSoundTouch = new soundtouch::SoundTouch();
 
     m_bPitchIndpTimeStretch = false;
 
@@ -69,15 +69,15 @@ EngineBufferScaleST::EngineBufferScaleST(ReaderExtractWave *wave) : EngineBuffer
 
     m_pSoundTouch->setTempo(m_dTempo);
 
-    
+
 
     slotSetSamplerate(44100.);
 
-    ControlObject *p = ControlObject::getControl(ConfigKey("[Master]","samplerate"));
+    ControlObject * p = ControlObject::getControl(ConfigKey("[Master]","samplerate"));
 
     connect(p, SIGNAL(valueChanged(double)), this, SLOT(slotSetSamplerate(double)));
 
-    
+
 
     buffer_back = new CSAMPLE[kiSoundTouchReadAheadLength*2];
 
@@ -130,7 +130,7 @@ void EngineBufferScaleST::setBaseRate(double dBaseRate)
 
     m_dBaseRate = dBaseRate;
 
-    
+
 
     if (m_bPitchIndpTimeStretch)
 
@@ -172,7 +172,7 @@ void EngineBufferScaleST::slotSetSamplerate(double dSampleRate)
 
 }
 
-    
+
 
 double EngineBufferScaleST::setTempo(double dTempo)
 
@@ -186,7 +186,7 @@ double EngineBufferScaleST::setTempo(double dTempo)
 
         m_dTempo = MAX_SEEK_SPEED;
 
-        
+
 
     if (dTempoOld != m_dTempo)
 
@@ -236,7 +236,7 @@ double EngineBufferScaleST::setTempo(double dTempo)
 
 
 
-CSAMPLE *EngineBufferScaleST::scale(double playpos, int buf_size, float *pBase, int iBaseLength)
+CSAMPLE * EngineBufferScaleST::scale(double playpos, int buf_size, float * pBase, int iBaseLength)
 
 {
 
@@ -266,7 +266,7 @@ CSAMPLE *EngineBufferScaleST::scale(double playpos, int buf_size, float *pBase, 
 
     }
 
-    
+
 
     // Invert wavebuffer is backwards playback
 
@@ -302,7 +302,7 @@ CSAMPLE *EngineBufferScaleST::scale(double playpos, int buf_size, float *pBase, 
 
         }
 
-        
+
 
     }
 
@@ -328,7 +328,7 @@ CSAMPLE *EngineBufferScaleST::scale(double playpos, int buf_size, float *pBase, 
 
     }
 
-        
+
 
     // Calculate new playpos
 
@@ -342,7 +342,7 @@ CSAMPLE *EngineBufferScaleST::scale(double playpos, int buf_size, float *pBase, 
 
         new_playpos = playpos + m_dTempo*m_dBaseRate*dFrames*2.;
 
-    
+
 
     return buffer;
 

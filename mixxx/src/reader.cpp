@@ -4,16 +4,16 @@
     begin                : Thu Mar 13 2003
     copyright            : (C) 2003 by Tue & Ken Haste Andersen
     email                : haste@diku.dk
- ***************************************************************************/
+***************************************************************************/
 
 /***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+*                                                                         *
+*   This program is free software; you can redistribute it and/or modify  *
+*   it under the terms of the GNU General Public License as published by  *
+*   the Free Software Foundation; either version 2 of the License, or     *
+*   (at your option) any later version.                                   *
+*                                                                         *
+***************************************************************************/
 
 #include "reader.h"
 
@@ -26,9 +26,9 @@
 #include "controlobject.h"
 #include "configobject.h"
 
-Reader::Reader(EngineBuffer *_enginebuffer, QMutex *_pause)
+Reader::Reader(EngineBuffer * _enginebuffer, QMutex * _pause)
 {
-	readerExiting = false;
+    readerExiting = false;
     enginebuffer = _enginebuffer;
     m_dRate = 0.;
     m_pTrack = 0;
@@ -36,7 +36,7 @@ Reader::Reader(EngineBuffer *_enginebuffer, QMutex *_pause)
     m_pVisualChannel = 0;
 
     m_iReaderAccess = 0;
-    
+
     // Allocate reader extract objects
     readerwave = new ReaderExtractWave(this, enginebuffer);
 
@@ -56,26 +56,26 @@ Reader::~Reader()
     delete m_pTrackEnd;
 }
 
-void Reader::addVisual(VisualChannel *pVisualChannel)
+void Reader::addVisual(VisualChannel * pVisualChannel)
 {
     m_pVisualChannel = pVisualChannel;
     readerwave->addVisual(m_pVisualChannel);
 }
 
-void Reader::requestNewTrack(TrackInfoObject *pTrack, bool bStartAtEndPos)
+void Reader::requestNewTrack(TrackInfoObject * pTrack, bool bStartAtEndPos)
 {
     // qDebug() << "request:" << name;
 
-    TrackQueueType *p = new TrackQueueType;
+    TrackQueueType * p = new TrackQueueType;
     p->pTrack = pTrack;
     p->bStartAtEndPos = bStartAtEndPos;
-    
+
     // Put new track request in queue
     trackqueuemutex.lock();
     trackqueue.append(p);
     trackqueuemutex.unlock();
 
-    // Ensure that the reader is not currently awake, befofe waking    
+    // Ensure that the reader is not currently awake, befofe waking
     m_qReaderMutex.lock();
     while (m_iReaderAccess>0)
     {
@@ -84,9 +84,9 @@ void Reader::requestNewTrack(TrackInfoObject *pTrack, bool bStartAtEndPos)
         m_qReaderMutex.lock();
     }
     m_qReaderMutex.unlock();
-    
+
     // Wakeup reader
-    wake();    
+    wake();
 }
 
 void Reader::requestSeek(double new_playpos)
@@ -103,12 +103,12 @@ void Reader::requestSeek(double new_playpos)
 }
 
 void Reader::wake()
-{    
+{
     // Wakeup reader
     readAhead.wakeAll();
 }
 
-CSAMPLE *Reader::getBufferWavePtr()
+CSAMPLE * Reader::getBufferWavePtr()
 {
     return (CSAMPLE *)readerwave->getBasePtr();
 }
@@ -124,7 +124,7 @@ int Reader::getFileSrate()
     return file_srate;
 }
 
-ReaderExtractWave *Reader::getWavePtr()
+ReaderExtractWave * Reader::getWavePtr()
 {
     return readerwave;
 }
@@ -168,8 +168,8 @@ void Reader::unlock()
 void Reader::newtrack()
 {
 // qDebug("newtrack, get pause lock");
-    ControlObject* playButton = ControlObject::getControl(ConfigKey(enginebuffer->getGroup(), "play"));
-        
+    ControlObject * playButton = ControlObject::getControl(ConfigKey(enginebuffer->getGroup(), "play"));
+
     // Set pause while loading new track
     pause->lock();
 
@@ -178,11 +178,11 @@ void Reader::newtrack()
 
     // Get filename
     bool bStartAtEndPos;
-    
+
     trackqueuemutex.lock();
     if (!trackqueue.isEmpty())
     {
-        TrackQueueType *p = trackqueue.first();
+        TrackQueueType * p = trackqueue.first();
         m_pTrack = p->pTrack;
         bStartAtEndPos = p->bStartAtEndPos;
         trackqueue.remove();
@@ -200,13 +200,13 @@ void Reader::newtrack()
     readerwave->newSource(m_pTrack);
 
 //     qDebug("newtrack, new source set");
-    
+
     // Initialize the new sound source
     file_srate = readerwave->getRate();
     file_length = readerwave->getLength();
 
     qDebug("file length %li",file_length);
-    
+
     // Reset playpos
     if (bStartAtEndPos)
     {
@@ -214,27 +214,27 @@ void Reader::newtrack()
         enginebuffer->setNewPlaypos(file_length);
     }
     else {
-    	enginebuffer->setNewPlaypos(0);
+        enginebuffer->setNewPlaypos(0);
 
-		//Reset the cue point to the beginning of the track:
-		ControlObject* buttonCueSet = ControlObject::getControl(ConfigKey(enginebuffer->getGroup(), "cue_set"));
-		buttonCueSet->queueFromThread(1.0);            
-		//Reset the play button (I'm not sure why this is necessary, but it is...
-		//If you don't believe me, uncomment it and notice that you'll have to click
-		//play twice to start playback when you load a new track.)
-		playButton->queueFromThread(0.0);
+        //Reset the cue point to the beginning of the track:
+        ControlObject * buttonCueSet = ControlObject::getControl(ConfigKey(enginebuffer->getGroup(), "cue_set"));
+        buttonCueSet->queueFromThread(1.0);
+        //Reset the play button (I'm not sure why this is necessary, but it is...
+        //If you don't believe me, uncomment it and notice that you'll have to click
+        //play twice to start playback when you load a new track.)
+        playButton->queueFromThread(0.0);
     }
-        
+
     // Not at track end anymore
-    m_pTrackEnd->slotSet(0.);      
+    m_pTrackEnd->slotSet(0.);
 
     //Modified version of Kevin Schaper's patch to fix NEXT mode:
     //(See: https://sourceforge.net/forum/message.php?msg_id=4386494  )
-    ControlObject* trackEndMode = ControlObject::getControl(ConfigKey(enginebuffer->getGroup(), "TrackEndMode")); 
-    //if a track just ended, and the track end mode is set to next, play the track that was just loaded 
-    if ( (trackEndMode->get() == TRACK_END_MODE_NEXT)) 
-    playButton->queueFromThread(1.0); 
-    
+    ControlObject * trackEndMode = ControlObject::getControl(ConfigKey(enginebuffer->getGroup(), "TrackEndMode"));
+    //if a track just ended, and the track end mode is set to next, play the track that was just loaded
+    if ( (trackEndMode->get() == TRACK_END_MODE_NEXT))
+        playButton->queueFromThread(1.0);
+
     // Stop pausing process method
     pause->unlock();
 }
@@ -247,11 +247,11 @@ void Reader::run()
 #endif
 
     while(!readerExiting)
-	{
+    {
         // Wait for playback if in buffer is filled.
         readAheadMutex.lock();
         readAhead.wait(&readAheadMutex);
-        
+
         m_qReaderMutex.lock();
         m_iReaderAccess++;
         m_qReaderMutex.unlock();
@@ -261,21 +261,21 @@ void Reader::run()
         trackqueuemutex.unlock();
         if (!requeststate)
             newtrack();
-            
-// qDebug("check seek");            
-            
+
+// qDebug("check seek");
+
         // Check if a seek is requested
         seekqueuemutex.lock();
         requeststate = seekqueue.isEmpty();
         seekqueuemutex.unlock();
         if (!requeststate)
             seek();
-            
+
 //  qDebug("read");
 
         // Read a new chunk:
         readerwave->getchunk(m_dRate);
-    
+
         m_qReaderMutex.lock();
         m_iReaderAccess--;
         m_qReaderMutex.unlock();
@@ -287,7 +287,7 @@ void Reader::run()
 
 void Reader::stop()
 {
-	readerExiting = true;
+    readerExiting = true;
     readAhead.wakeAll();
     wait();
 }

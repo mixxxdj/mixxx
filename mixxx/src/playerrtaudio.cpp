@@ -4,26 +4,26 @@
     begin                : Thu May 20 2004
     copyright            : (C) 2002 by Tue and Ken Haste Andersen
     email                :
- ***************************************************************************/
+***************************************************************************/
 
 /***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+*                                                                         *
+*   This program is free software; you can redistribute it and/or modify  *
+*   it under the terms of the GNU General Public License as published by  *
+*   the Free Software Foundation; either version 2 of the License, or     *
+*   (at your option) any later version.                                   *
+*                                                                         *
+***************************************************************************/
 
 #include "playerrtaudio.h"
 #include "controlobject.h"
 
 /** Maximum frame size used with RtAudio. Used to determine no of buffers
-  * when setting latency */
+ * when setting latency */
 const int kiMaxFrameSize = 64;
 
 
-PlayerRtAudio::PlayerRtAudio(ConfigObject<ConfigValue> *config) : Player(config)
+PlayerRtAudio::PlayerRtAudio(ConfigObject<ConfigValue> * config) : Player(config)
 {
     m_pRtAudio = 0;
     m_bInit = false;
@@ -261,7 +261,7 @@ void PlayerRtAudio::setDefaults()
 
         if ((*it).toInt()>=44100)
             break;
-        
+
         ++it;
     }
 
@@ -301,7 +301,7 @@ QStringList PlayerRtAudio::getInterfaces()
 }
 
 QStringList PlayerRtAudio::getSampleRates()
-{    
+{
     // Returns the list of supported sample rates of the currently opened device.
     // If no device is open, return the list of sample rates supported by the
     // default device
@@ -321,7 +321,7 @@ QStringList PlayerRtAudio::getSampleRates()
 
     // Sample rates
     QValueList<int> srlist;
-    
+
     if (info.sampleRates.size() > 0)
     {
         for (unsigned int j=0; j<info.sampleRates.size(); ++j)
@@ -336,8 +336,8 @@ QStringList PlayerRtAudio::getSampleRates()
     // Convert srlist to stringlist
     QStringList result;
     for (int i=0; i<srlist.count(); ++i)
-        result.append(QString("%1").arg((*srlist.at(i))));    
-    
+        result.append(QString("%1").arg((*srlist.at(i))));
+
     return result;
 }
 
@@ -403,12 +403,12 @@ int PlayerRtAudio::getChannelNo(QString name)
     return -1;
 }
 
-int PlayerRtAudio::callbackProcess(int iBufferSize, float *out)
+int PlayerRtAudio::callbackProcess(int iBufferSize, float * out)
 {
     //m_iBufferSize = iBufferSize*m_iNumberOfBuffers;
 
-    float *tmp = prepareBuffer(iBufferSize);
-    float *output = out;
+    float * tmp = prepareBuffer(iBufferSize);
+    float * output = out;
     int i;
 
     // Reset sample for each open channel
@@ -418,10 +418,10 @@ int PlayerRtAudio::callbackProcess(int iBufferSize, float *out)
     // Copy to output buffer
     for (i=0; i<iBufferSize; i++)
     {
-        if (m_iMasterLeftCh>=0)  output[m_iMasterLeftCh]  += tmp[(i*4)  ]/32768.;
+        if (m_iMasterLeftCh>=0) output[m_iMasterLeftCh]  += tmp[(i*4)  ]/32768.;
         if (m_iMasterRigthCh>=0) output[m_iMasterRigthCh] += tmp[(i*4)+1]/32768.;
-        if (m_iHeadLeftCh>=0)    output[m_iHeadLeftCh]    += tmp[(i*4)+2]/32768.;
-        if (m_iHeadRightCh>=0)   output[m_iHeadRightCh]   += tmp[(i*4)+3]/32768.;
+        if (m_iHeadLeftCh>=0) output[m_iHeadLeftCh]    += tmp[(i*4)+2]/32768.;
+        if (m_iHeadRightCh>=0) output[m_iHeadRightCh]   += tmp[(i*4)+3]/32768.;
 
         for (int j=0; j<m_iChannels; ++j)
             *output++;
@@ -436,7 +436,7 @@ int PlayerRtAudio::callbackProcess(int iBufferSize, float *out)
    Input:   .
    Output:  -
    -------- ------------------------------------------------------ */
-int rtCallback(char *outputBuffer, int framesPerBuffer, void *pPlayer)
+int rtCallback(char * outputBuffer, int framesPerBuffer, void * pPlayer)
 {
     return ((PlayerRtAudio *)pPlayer)->callbackProcess(framesPerBuffer, (float *)outputBuffer);
 }

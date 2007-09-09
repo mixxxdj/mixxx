@@ -3,16 +3,16 @@
                              -------------------
     copyright            : (C) 2007 by John Sully
     email                :
- ***************************************************************************/
+***************************************************************************/
 
 /***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+*                                                                         *
+*   This program is free software; you can redistribute it and/or modify  *
+*   it under the terms of the GNU General Public License as published by  *
+*   the Free Software Foundation; either version 2 of the License, or     *
+*   (at your option) any later version.                                   *
+*                                                                         *
+***************************************************************************/
 
 #include "enginerecord.h"
 #include "controllogpotmeter.h"
@@ -20,23 +20,23 @@
 #include "dlgprefrecord.h"
 
 /***************************************************************************
- *									   *
- * Notice To Future Developpers:					   *
- * 	There is code here to write the file in a seperate thread	   *
- * 	however it is unstable and has been abondoned.  Its only use	   *
- * 	was to support low priority recording, however I don't think its   *
- * 	worth the trouble.						   *
- * 									   *
- ***************************************************************************/
+*									   *
+* Notice To Future Developpers:					   *
+* 	There is code here to write the file in a seperate thread	   *
+* 	however it is unstable and has been abondoned.  Its only use	   *
+* 	was to support low priority recording, however I don't think its   *
+* 	worth the trouble.						   *
+* 									   *
+***************************************************************************/
 
 
-EngineRecord::EngineRecord(ConfigObject<ConfigValue> *_config)
+EngineRecord::EngineRecord(ConfigObject<ConfigValue> * _config)
 {
     curBuf1 = true;
     config = _config;
     recReady = new ControlObject(ConfigKey("[Master]", "Record"));
     fOut = new WriteAudioFile(_config);
-    
+
     //Allocate Buffers
     fill = new Buffer;
     fill->size = DEFAULT_BUFSIZE;
@@ -61,40 +61,40 @@ EngineRecord::~EngineRecord()
     delete fOut;
 }
 
-void EngineRecord::process(const CSAMPLE *pIn, const CSAMPLE *pOut, const int iBufferSize)
+void EngineRecord::process(const CSAMPLE * pIn, const CSAMPLE * pOut, const int iBufferSize)
 {
-    CSAMPLE *Out = (CSAMPLE*) pOut;
-    
+    CSAMPLE * Out = (CSAMPLE *) pOut;
+
     //mutexFill.lock();
     if(fill->size < iBufferSize)
     {
-	delete fill->data;
-	fill->size = iBufferSize;
-	fill->data = new CSAMPLE[ fill->size ];
+        delete fill->data;
+        fill->size = iBufferSize;
+        fill->data = new CSAMPLE[ fill->size ];
     }
     for(int i=0; i<iBufferSize; i++)
     {
-	if(pIn != pOut)
-	    Out[i] = pIn[i];
-	fill->data[i] = pIn[i];
+        if(pIn != pOut)
+            Out[i] = pIn[i];
+        fill->data[i] = pIn[i];
 
-	if(recReady->get() == RECORD_READY && pIn[i] > THRESHOLD_REC)
-	{
-	    //If we are waiting for a track to start before recording
-	    //and the audio is high enough (a track is playing)
-	    //then we can set the record flag to TRUE
-	    qDebug("Setting Record flag to: ON");
-	    recReady->queueFromThread(RECORD_ON);
-	}
+        if(recReady->get() == RECORD_READY && pIn[i] > THRESHOLD_REC)
+        {
+            //If we are waiting for a track to start before recording
+            //and the audio is high enough (a track is playing)
+            //then we can set the record flag to TRUE
+            qDebug("Setting Record flag to: ON");
+            recReady->queueFromThread(RECORD_ON);
+        }
     }
     fill->valid = iBufferSize;
 
     //High Priority Record (Record blocks playback thread)
     //if(config->getValueString(ConfigKey(PREF_KEY, "Priority")).compare("Low") != 0)
     //{
-	//write record buffer to file
-	fOut->write(fill->data, fill->valid);
-	fill->valid = 0;
+    //write record buffer to file
+    fOut->write(fill->data, fill->valid);
+    fill->valid = 0;
     //}
 
     //mutexFill.unlock();
@@ -106,22 +106,22 @@ void EngineRecord::run()
 {
     //Method will record the buffer to file
     //fOut->write(buffer1, validBuf1);
-    Buffer *temp;
+    Buffer * temp;
     while(1)
     {
-	mutexFill.lock();
-	waitCondFill.wait(&mutexFill);
-	
-	//swap buffers
-	temp = fill;
-	fill = write;
-	write = temp;
+        mutexFill.lock();
+        waitCondFill.wait(&mutexFill);
 
-	mutexFill.unlock();
-	
-	//write record buffer to file
-	fOut->write(write->data, write->valid);
-	write->valid = 0;
+        //swap buffers
+        temp = fill;
+        fill = write;
+        write = temp;
+
+        mutexFill.unlock();
+
+        //write record buffer to file
+        fOut->write(write->data, write->valid);
+        write->valid = 0;
     }
 }
 

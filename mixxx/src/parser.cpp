@@ -16,8 +16,8 @@
 #include <QtDebug>
 
 /**
-@author Ingo Kossyk (kossyki@cs.tu-berlin.de)
-**/
+   @author Ingo Kossyk (kossyki@cs.tu-berlin.de)
+ **/
 
 
 Parser::Parser()
@@ -70,7 +70,7 @@ bool Parser::isBinary(QString filename){
             return true;
         }
 
-    }else{
+    } else{
         qDebug("Parser: Could not open file: "+filename);
     }
     //qDebug(QString("Parser: textstream starting character is: %1").arg(i));

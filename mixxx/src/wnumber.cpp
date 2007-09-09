@@ -4,16 +4,16 @@
     begin                : Wed Jun 18 2003
     copyright            : (C) 2003 by Tue & Ken Haste Andersen
     email                : haste@diku.dk
- ***************************************************************************/
+***************************************************************************/
 
 /***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+*                                                                         *
+*   This program is free software; you can redistribute it and/or modify  *
+*   it under the terms of the GNU General Public License as published by  *
+*   the Free Software Foundation; either version 2 of the License, or     *
+*   (at your option) any later version.                                   *
+*                                                                         *
+***************************************************************************/
 
 #include "wnumber.h"
 #include "wskincolor.h"
@@ -22,7 +22,7 @@
 //Added by qt3to4:
 #include <QLabel>
 
-WNumber::WNumber(QWidget *parent, const char *name ) : WWidget(parent,name)
+WNumber::WNumber(QWidget * parent, const char * name ) : WWidget(parent,name)
 {
     m_pLabel = new QLabel(parent);
     m_qsText = "";
@@ -43,9 +43,9 @@ void WNumber::setup(QDomNode node)
 
     // Colors
     m_qBgColor.setNamedColor(WWidget::selectNodeQString(node, "BgColor"));
-	m_pLabel->setPaletteBackgroundColor(WSkinColor::getCorrectColor(m_qBgColor));
+    m_pLabel->setPaletteBackgroundColor(WSkinColor::getCorrectColor(m_qBgColor));
     m_qFgColor.setNamedColor(WWidget::selectNodeQString(node, "FgColor"));
-	m_pLabel->setPaletteForegroundColor(WSkinColor::getCorrectColor(m_qFgColor));
+    m_pLabel->setPaletteForegroundColor(WSkinColor::getCorrectColor(m_qFgColor));
 
     // Text
     if (!selectNode(node, "Text").isNull())
@@ -60,7 +60,7 @@ void WNumber::setup(QDomNode node)
     // FWI: Begin of font size patch                                                    // FWI
     int fontsize = 9;
     if (!selectNode(node, "FontSize").isNull())
-       fontsize = selectNodeQString(node, "FontSize").toInt();
+        fontsize = selectNodeQString(node, "FontSize").toInt();
     m_pLabel->setFont( QFont("Helvetica",fontsize,QFont::Normal) );
     // FWI: End of font size patch
 
@@ -118,7 +118,7 @@ void WNumber::setValue(double dValue)
 
 void WNumber::setAlignment(int i)
 {
-  //m_pLabel->setAlignment(i);
+    //m_pLabel->setAlignment(i);
 }
 
 void WNumber::setConstFactor(double c)

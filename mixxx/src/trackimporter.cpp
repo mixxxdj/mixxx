@@ -59,11 +59,11 @@ void TrackImporter::clearTracks()
 QString TrackImporter::showChooser()
 {
     QString sFilename = Q3FileDialog::getOpenFileName(
-                            QDir::currentDirPath(),
-                            "Winamp Playlists (*.pls *.m3u)",
-                            m_pwParent,
-                            "import playlist dialog",
-                            "Import playlist" );
+        QDir::currentDirPath(),
+        "Winamp Playlists (*.pls *.m3u)",
+        m_pwParent,
+        "import playlist dialog",
+        "Import playlist" );
 
     return sFilename;
 }
@@ -74,11 +74,11 @@ void TrackImporter::parseTracks(QString sName)
 
         m_psLocations = m_pPlsparser->parse(sName);
 
-    }else if(sName.endsWith(".m3u")){
+    } else if(sName.endsWith(".m3u")){
 
         m_psLocations = m_pM3uparser->parse(sName);
 
-    }else{
+    } else{
         qDebug( "Importer: File is not a playlist!" );
     }
 
@@ -117,8 +117,8 @@ TrackPlaylist * TrackImporter::importPlaylist(QString sName)
 
     if(m_psLocations == 0 || m_psLocations->isEmpty()){
         QMessageBox::information( m_pwParent, "Track import error",
-                                  "File did not contain any valid local filepaths.\n"
-                                  "(Format not recognized or streaming content)");
+                                 "File did not contain any valid local filepaths.\n"
+                                 "(Format not recognized or streaming content)");
         return 0; //Return zero if there were no locations parsed.
     }
     while(!m_psLocations->isEmpty())
@@ -131,7 +131,7 @@ TrackPlaylist * TrackImporter::importPlaylist(QString sName)
             pPlaylist->addTrack(pTrack);
             m_psLocations->removeFirst();
 
-        }else{
+        } else{
             qDebug("Importer: Track was NULL, maybe its file is malformed ("+(*m_psLocations->first())+")");
             m_psLocations->removeFirst();
         }

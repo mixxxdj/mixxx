@@ -3,24 +3,24 @@
                              -------------------
     begin                : Mon Feb 3 2003
     copyright            : (C) 2003 by Tue and Ken Haste Andersen
-    email                : 
- ***************************************************************************/
+    email                :
+***************************************************************************/
 
 /***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+*                                                                         *
+*   This program is free software; you can redistribute it and/or modify  *
+*   it under the terms of the GNU General Public License as published by  *
+*   the Free Software Foundation; either version 2 of the License, or     *
+*   (at your option) any later version.                                   *
+*                                                                         *
+***************************************************************************/
 
 #include "readerextractfft.h"
 #include "enginespectralfwd.h"
 #include "windowkaiser.h"
 #include "configobject.h"
 
-ReaderExtractFFT::ReaderExtractFFT(ReaderExtract *input, int _frameSize, int _frameStep) : ReaderExtract(input, "fft")
+ReaderExtractFFT::ReaderExtractFFT(ReaderExtract * input, int _frameSize, int _frameStep) : ReaderExtract(input, "fft")
 {
     // These values are relative this buffer. Input buffer can have another number of channels and thus a different
     // buffer size than this class.
@@ -28,12 +28,12 @@ ReaderExtractFFT::ReaderExtractFFT(ReaderExtract *input, int _frameSize, int _fr
     frameStep = _frameStep;
     frameNo = (input->getBufferSize()/input->getChannels())/frameStep;
     framePerChunk = frameNo/READCHUNK_NO;
-    
+
     // Allocate and calculate window
     window = new WindowKaiser(frameSize, 6.5);
     windowPtr = window->getWindowPtr();
     readbufferPtr = (CSAMPLE *)input->getBasePtr();
-    
+
     // Allocate memory for windowed portion of signal
     windowedSamples = new CSAMPLE[frameSize];
 
@@ -50,7 +50,7 @@ ReaderExtractFFT::ReaderExtractFFT(ReaderExtract *input, int _frameSize, int _fr
     textout.open( IO_WriteOnly );
     textout2.setName("fftwave.txt");
     textout2.open( IO_WriteOnly );
-*/
+ */
 }
 
 ReaderExtractFFT::~ReaderExtractFFT()
@@ -70,8 +70,8 @@ void ReaderExtractFFT::newSource(TrackInfoObject *)
 void ReaderExtractFFT::reset()
 {
 }
-    
-void *ReaderExtractFFT::getBasePtr()
+
+void * ReaderExtractFFT::getBasePtr()
 {
     return (void *)&specList;
 }
@@ -91,7 +91,7 @@ int ReaderExtractFFT::getBufferSize()
     return frameNo; //input->getBufferSize()/input->getChannels();
 }
 
-void *ReaderExtractFFT::processChunk(const int _idx, const int start_idx, const int _end_idx, bool)
+void * ReaderExtractFFT::processChunk(const int _idx, const int start_idx, const int _end_idx, bool)
 {
     int end_idx = _end_idx;
     int idx = _idx;
@@ -116,15 +116,15 @@ void *ReaderExtractFFT::processChunk(const int _idx, const int start_idx, const 
         frameTo = ((idx+1)%READCHUNK_NO)*framePerChunk;
     else
         frameTo = (((((idx+1)%READCHUNK_NO)*framePerChunk)-(frameSize/frameStep))+frameNo)%frameNo;
-        
+
 //    qDebug("no %i, from %i ,to %i",frameNo,frameFrom,frameTo);
-    
+
     if (frameTo>frameFrom)
         for (int i=frameFrom; i<=frameTo; i++)
             processFrame(i);
     else
     {
-        int i;    
+        int i;
         for (i=frameFrom; i<frameNo; i++)
             processFrame(i);
         for (i=0; i<=frameTo; i++)
@@ -157,7 +157,7 @@ void ReaderExtractFFT::processFrame(int idx)
 
 //    qDebug("windowing %i-%i",inputFramePos, (inputFramePos+inputFrameSize)%inputBufferSize);
 
-    
+
 //    // Write wave to text file
 //    for (int i=0; i<frameSize; i++)
 //        stream2 << windowedSamples[i] << " ";
@@ -170,7 +170,7 @@ void ReaderExtractFFT::processFrame(int idx)
 //    for (i=0; i<frameSize/2; i++)
 //        stream << tmp[i] << " ";
 //    stream << "\n";
-    
+
 //    textout.flush();
 //    textout2.flush();
 }

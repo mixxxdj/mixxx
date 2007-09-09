@@ -4,7 +4,7 @@
     begin                : Sun Aug 5 2001
     copyright            : (C) 2001 by Tue Haste Andersen
     email                : haste@diku.dk
- ***************************************************************************/
+***************************************************************************/
 
 
 #include "enginespectralback.h"
@@ -15,7 +15,7 @@
    Input:   size  - size of FFT to perform
    Output:  -
    -------- ----------------------------------------------------------------- */
-EngineSpectralBack::EngineSpectralBack(int Length, CSAMPLE *_window)
+EngineSpectralBack::EngineSpectralBack(int Length, CSAMPLE * _window)
 {
     l  = Length;
     l2 = Length*2;
@@ -54,9 +54,9 @@ EngineSpectralBack::~EngineSpectralBack()
    into real and imaginary parts, before the IFFT is calculated.
    Output:  Pointer to an array of CSAMPLES of length l.
    -------- ----------------------------------------------------------------- */
-void EngineSpectralBack::process(const CSAMPLE *pIn, const CSAMPLE *pOut, const int)
+void EngineSpectralBack::process(const CSAMPLE * pIn, const CSAMPLE * pOut, const int)
 {
-    fftw_real *pOutput = (fftw_real *)pOut;
+    fftw_real * pOutput = (fftw_real *)pOut;
 
     // Subtract linear phase incriment caused by window
     // for (int i=l_half; i<l; i++)

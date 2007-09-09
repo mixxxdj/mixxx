@@ -3,16 +3,16 @@
                              -------------------
     copyright            : (C) 2002 by Tue and Ken Haste Andersen
     email                :
- ***************************************************************************/
+***************************************************************************/
 
 /***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+*                                                                         *
+*   This program is free software; you can redistribute it and/or modify  *
+*   it under the terms of the GNU General Public License as published by  *
+*   the Free Software Foundation; either version 2 of the License, or     *
+*   (at your option) any later version.                                   *
+*                                                                         *
+***************************************************************************/
 
 #include "trackinfoobject.h"
 #include "soundsourcemp3.h"
@@ -31,17 +31,17 @@ SoundSourceMp3::SoundSourceMp3(QString qFilename) : SoundSource(qFilename)
     inputbuf_len = file.size();
     inputbuf = new char[inputbuf_len];
     unsigned int tmp = file.readBlock(inputbuf, inputbuf_len);
-    if (tmp != inputbuf_len) 
+    if (tmp != inputbuf_len)
         qCritical() << "MAD: ERR reading mp3-file: " << qFilename << "\nRead only " << tmp << "bytes, but wanted" << inputbuf_len << "bytes";
 
     // Transfer it to the mad stream-buffer:
     mad_stream_init(&Stream);
     mad_stream_options(&Stream, MAD_OPTION_IGNORECRC);
     mad_stream_buffer(&Stream, (unsigned char *) inputbuf, inputbuf_len);
-    
+
     /*
-      Decode all the headers, and fill in stats:
-    */
+       Decode all the headers, and fill in stats:
+     */
     mad_header Header;
     filelength = mad_timer_zero;
     bitrate = 0;
@@ -54,25 +54,25 @@ SoundSourceMp3::SoundSourceMp3(QString qFilename) : SoundSource(qFilename)
         {
             if (!MAD_RECOVERABLE (Stream.error))
                 break;
-           /* if (Stream.ERR == MAD_ERR_LOSTSYNC)
-            {
-                // ignore LOSTSYNC due to ID3 tags
-                int tagsize = id3_tag_query (Stream.this_frame,
-                                Stream.bufend - Stream.this_frame);
-                if (tagsize > 0)
-                {
-                    mad_stream_skip (&Stream, tagsize);
-                    continue;
-                }
-            }*/
+            /* if (Stream.ERR == MAD_ERR_LOSTSYNC)
+               {
+                 // ignore LOSTSYNC due to ID3 tags
+                 int tagsize = id3_tag_query (Stream.this_frame,
+                                 Stream.bufend - Stream.this_frame);
+                 if (tagsize > 0)
+                 {
+                     mad_stream_skip (&Stream, tagsize);
+                     continue;
+                 }
+               }*/
 
             //qDebug("MAD: ERR decoding header %d: %s (len=%d)", currentframe, mad_stream_ERRstr(&Stream), len);
             continue;
         }
 
         // Add frame to list of frames
-        MadSeekFrameType *p = new MadSeekFrameType;
-        p->m_pStreamPos = (unsigned char*)Stream.this_frame;
+        MadSeekFrameType * p = new MadSeekFrameType;
+        p->m_pStreamPos = (unsigned char *)Stream.this_frame;
         p->pos = length();
         m_qSeekList.append(p);
 
@@ -100,7 +100,7 @@ SoundSourceMp3::SoundSourceMp3(QString qFilename) : SoundSource(qFilename)
     qDebug("frames  = %d" , framecount);
     qDebug("bitrate = %d" , bitrate/1000);
     qDebug("Size    = %d", length());
-*/
+ */
 
     Frame = new mad_frame;
 
@@ -127,7 +127,7 @@ long SoundSourceMp3::seek(long filepos)
 
 //     qDebug("SEEK %i",filepos);
 
-    MadSeekFrameType *cur;
+    MadSeekFrameType * cur;
 
     if (filepos==0)
     {
@@ -150,14 +150,14 @@ long SoundSourceMp3::seek(long filepos)
 
         // Find the frame to seek to in the list
         /*
-        MadSeekFrameType *cur = m_qSeekList.last();
-        int k=0;
-        while (cur!=0 && cur->pos>filepos)
-        {
+           MadSeekFrameType *cur = m_qSeekList.last();
+           int k=0;
+           while (cur!=0 && cur->pos>filepos)
+           {
             cur = m_qSeekList.prev();
-            ++k;
-        }
-        */
+         ++k;
+           }
+         */
 
         int framePos = findFrame(filepos);
 
@@ -192,7 +192,7 @@ long SoundSourceMp3::seek(long filepos)
             mad_stream_init(&Stream);
             mad_stream_options(&Stream, MAD_OPTION_IGNORECRC);
 //        qDebug("mp3 restore %p",cur->m_pStreamPos);
-            mad_stream_buffer(&Stream, (const unsigned char*)cur->m_pStreamPos, inputbuf_len-(long int)(cur->m_pStreamPos-(unsigned char*)inputbuf));
+            mad_stream_buffer(&Stream, (const unsigned char *)cur->m_pStreamPos, inputbuf_len-(long int)(cur->m_pStreamPos-(unsigned char *)inputbuf));
             mad_synth_mute(&Synth);
             mad_frame_mute(Frame);
 
@@ -212,7 +212,7 @@ long SoundSourceMp3::seek(long filepos)
         }
 
         // Synthesize the the samples from the frame which should be discard to reach the requested position
-        SAMPLE *temp = new SAMPLE[READCHUNKSIZE];
+        SAMPLE * temp = new SAMPLE[READCHUNKSIZE];
         read(filepos-cur->pos, temp);
         // qDebug("try read %i,...frame pos %i, filepos %i",filepos-cur->pos,cur->pos,filepos);
         // qDebug("ok");
@@ -225,7 +225,7 @@ long SoundSourceMp3::seek(long filepos)
         // Perform seek which is can not be done precise because no frames is in the seek list
 
         int newpos = (int)(inputbuf_len * ((float)filepos/(float)length()));
-//        qDebug("Seek to %d %d %d", filepos, inputbuf_len, newpos);
+   //        qDebug("Seek to %d %d %d", filepos, inputbuf_len, newpos);
 
         // Go to an approximate position:
         mad_stream_buffer(&Stream, (unsigned char *) (inputbuf+newpos), inputbuf_len-newpos);
@@ -258,7 +258,7 @@ long SoundSourceMp3::seek(long filepos)
         m_iSeekListMaxPos = filepos;
         m_iCurFramePos = filepos;
     }
-*/
+ */
 
     // Unfortunately we don't know the exact fileposition. The returned position is thus an
     // approximation only:
@@ -268,57 +268,57 @@ long SoundSourceMp3::seek(long filepos)
 
 inline long unsigned SoundSourceMp3::length()
 {
-	enum mad_units units;
-	
-	//qDebug("SRATE: %i", SRATE);
-	switch (SRATE)
-	{
-		case 8000:
-			units = MAD_UNITS_8000_HZ;
-			break;
-		case 11025:
-			units = MAD_UNITS_11025_HZ;
-			break;
-		case 12000:
-			units = MAD_UNITS_12000_HZ;
-			break;
-		case 16000:
-			units = MAD_UNITS_16000_HZ;
-			break;
-		case 22050:
-			units = MAD_UNITS_22050_HZ;
-			break;
-		case 24000:
-			units = MAD_UNITS_24000_HZ;
-			break;
-		case 32000:
-			units = MAD_UNITS_32000_HZ;
-			break;
-		case 44100:
-			units = MAD_UNITS_44100_HZ;
-			break;
-		case 48000:
-			units = MAD_UNITS_48000_HZ;
-			break;
-		default: //By the MP3 specs, an MP3 _has_ to have one of the above samplerates...
-			units = MAD_UNITS_44100_HZ;
-	}
+    enum mad_units units;
 
-    return (long unsigned) 2*mad_timer_count(filelength, units);
+    //qDebug("SRATE: %i", SRATE);
+    switch (SRATE)
+    {
+    case 8000:
+        units = MAD_UNITS_8000_HZ;
+        break;
+    case 11025:
+        units = MAD_UNITS_11025_HZ;
+        break;
+    case 12000:
+        units = MAD_UNITS_12000_HZ;
+        break;
+    case 16000:
+        units = MAD_UNITS_16000_HZ;
+        break;
+    case 22050:
+        units = MAD_UNITS_22050_HZ;
+        break;
+    case 24000:
+        units = MAD_UNITS_24000_HZ;
+        break;
+    case 32000:
+        units = MAD_UNITS_32000_HZ;
+        break;
+    case 44100:
+        units = MAD_UNITS_44100_HZ;
+        break;
+    case 48000:
+        units = MAD_UNITS_48000_HZ;
+        break;
+    default:             //By the MP3 specs, an MP3 _has_ to have one of the above samplerates...
+        units = MAD_UNITS_44100_HZ;
+    }
+
+    return (long unsigned) 2 *mad_timer_count(filelength, units);
 }
 
 /*
-  read <size> samples into <destination>, and return the number of
-  samples actually read.
-*/
-unsigned SoundSourceMp3::read(unsigned long samples_wanted, const SAMPLE* _destination)
+   read <size> samples into <destination>, and return the number of
+   samples actually read.
+ */
+unsigned SoundSourceMp3::read(unsigned long samples_wanted, const SAMPLE * _destination)
 {
     // Ensure that we are reading an even number of samples. Otherwise this function may
     // go into an infinite loop
     Q_ASSERT(samples_wanted%2==0);
 //     qDebug("frame list %i",m_qSeekList.count());
 
-    SAMPLE *destination = (SAMPLE *)_destination;
+    SAMPLE * destination = (SAMPLE *)_destination;
     unsigned Total_samples_decoded = 0;
 
     // If samples are left from previous read, then copy them to start of destination
@@ -330,7 +330,7 @@ unsigned SoundSourceMp3::read(unsigned long samples_wanted, const SAMPLE* _desti
             *(destination++) = madScale(Synth.pcm.samples[0][i]);
 
             /* Right channel. If the decoded stream is monophonic then
-             * the right output channel is the same as the left one. */
+            * the right output channel is the same as the left one. */
             if (m_iChannels>1)
                 *(destination++) = madScale(Synth.pcm.samples[1][i]);
             else
@@ -385,7 +385,7 @@ unsigned SoundSourceMp3::read(unsigned long samples_wanted, const SAMPLE* _desti
             *(destination++) = madScale(Synth.pcm.samples[0][i]);
 
             /* Right channel. If the decoded stream is monophonic then
-             * the right output channel is the same as the left one. */
+            * the right output channel is the same as the left one. */
             if (m_iChannels==2)
                 *(destination++) = madScale(Synth.pcm.samples[1][i]);
             else
@@ -406,16 +406,16 @@ unsigned SoundSourceMp3::read(unsigned long samples_wanted, const SAMPLE* _desti
     return Total_samples_decoded;
 }
 
-int SoundSourceMp3::ParseHeader(TrackInfoObject *Track)
+int SoundSourceMp3::ParseHeader(TrackInfoObject * Track)
 {
     QString location = Track->getLocation();
 
     Track->setType("mp3");
 
-    id3_file *fh = id3_file_open(qstrdup(location.local8Bit()), ID3_FILE_MODE_READONLY);
+    id3_file * fh = id3_file_open(qstrdup(location.local8Bit()), ID3_FILE_MODE_READONLY);
     if (fh!=0)
     {
-        id3_tag *tag = id3_file_tag(fh);
+        id3_tag * tag = id3_file_tag(fh);
         if (tag!=0)
         {
             QString s;
@@ -428,12 +428,12 @@ int SoundSourceMp3::ParseHeader(TrackInfoObject *Track)
                 Track->setArtist(s);
 
             /*
-            // On some tracks this segfaults. TLEN is very seldom used anyway...
-            QString dur;
-            getField(tag,"TLEN",&dur);
-            if (dur.length()>0)
+               // On some tracks this segfaults. TLEN is very seldom used anyway...
+               QString dur;
+               getField(tag,"TLEN",&dur);
+               if (dur.length()>0)
                 Track->m_iDuration = dur.toInt();
-            */
+             */
         }
         id3_file_close(fh);
     }
@@ -458,13 +458,13 @@ int SoundSourceMp3::ParseHeader(TrackInfoObject *Track)
         qDebug() << "MAD: Open failed:" << location;
         return ERR;
     }
-    
+
     // On MP3 files that are not small (larger than 60000 bytes, seek to position 50000 to avoid
     // Meta data stored in ID3 tags
     if (file.size()>60000)
-        file.at(50000);  
-    
-    char *inputbuf = new char[READLENGTH];
+        file.at(50000);
+
+    char * inputbuf = new char[READLENGTH];
     unsigned int tmp = file.readBlock(inputbuf, READLENGTH);
     if (tmp != READLENGTH) {
         qWarning() << "MAD: ERR reading mp3-file:" << location << "\nRead only" << tmp << "bytes, but wanted" << READLENGTH << "bytes";
@@ -477,7 +477,7 @@ int SoundSourceMp3::ParseHeader(TrackInfoObject *Track)
     mad_stream_buffer(&Stream, (unsigned char *) inputbuf, READLENGTH);
 
     // Check for Xing header
-    XHEADDATA *xing = new XHEADDATA;
+    XHEADDATA * xing = new XHEADDATA;
     xing->toc = 0;
     bool foundxing = false;
     if (GetXingHeader(xing, (unsigned char *)Stream.this_frame)==1)
@@ -504,7 +504,7 @@ int SoundSourceMp3::ParseHeader(TrackInfoObject *Track)
         int frames = 0;
         while ((Stream.bufend - Stream.this_frame)>0)
         {
-            
+
             if (mad_header_decode (&Header, &Stream) == -1)
             {
                 if (!MAD_RECOVERABLE (Stream.error))
@@ -534,22 +534,22 @@ int SoundSourceMp3::ParseHeader(TrackInfoObject *Track)
 
     Track->setSampleRate(Header.samplerate);
     Track->setChannels(MAD_NCHANNELS(&Header));
-    
+
     mad_stream_finish(&Stream);
     delete [] inputbuf;
     file.close();
     return OK;
 }
 
-void SoundSourceMp3::getField(id3_tag *tag, const char *frameid, QString *str)
+void SoundSourceMp3::getField(id3_tag * tag, const char * frameid, QString * str)
 {
-    id3_frame *frame = id3_tag_findframe(tag, frameid, 0);
+    id3_frame * frame = id3_tag_findframe(tag, frameid, 0);
     if (frame)
     {
         // Unicode handling
         if (id3_field_getnstrings(&frame->fields[1])>0)
         {
-            id3_utf16_t *framestr = id3_ucs4_utf16duplicate(id3_field_getstrings(&frame->fields[1], 0));
+            id3_utf16_t * framestr = id3_ucs4_utf16duplicate(id3_field_getstrings(&frame->fields[1], 0));
             int strlen = 0; while (framestr[strlen]!=0) strlen++;
             if (strlen>0)
                 str->setUnicodeCodes((ushort *)framestr,strlen);
@@ -561,14 +561,14 @@ void SoundSourceMp3::getField(id3_tag *tag, const char *frameid, QString *str)
 int SoundSourceMp3::findFrame(int pos)
 {
     // Guess position of frame in m_qSeekList based on average frame size
-    MadSeekFrameType *temp = m_qSeekList.at(math_min(m_qSeekList.count()-1, (unsigned int)(pos/m_iAvgFrameSize)));
+    MadSeekFrameType * temp = m_qSeekList.at(math_min(m_qSeekList.count()-1, (unsigned int)(pos/m_iAvgFrameSize)));
 
 /*
     if (temp!=0)
         qDebug("find %i, got %i",pos, temp->pos);
     else
         qDebug("find %i, tried idx %i, total %i",pos, math_min(m_qSeekList.count()-1, pos/m_iAvgFrameSize),m_qSeekList.count());
-*/
+ */
 
     // Ensure that the list element is not at a greater position than pos
     while (temp!=0 && temp->pos>pos)

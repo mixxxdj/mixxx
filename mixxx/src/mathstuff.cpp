@@ -3,16 +3,16 @@
                              -------------------
     copyright            : (C) 2002 by Tue and Ken Haste Andersen
     email                :
- ***************************************************************************/
+***************************************************************************/
 
 /***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+*                                                                         *
+*   This program is free software; you can redistribute it and/or modify  *
+*   it under the terms of the GNU General Public License as published by  *
+*   the Free Software Foundation; either version 2 of the License, or     *
+*   (at your option) any later version.                                   *
+*                                                                         *
+***************************************************************************/
 
 #include "mathstuff.h"
 
@@ -28,15 +28,15 @@ CSAMPLE besseli(CSAMPLE x)
         y = x/3.75f;
         y *= y;
         ans = 1.0f+y*(3.5156229f+y*(3.0899424f+y*(1.2067492f
-                                               +y*(0.2659732f+y*(0.360768e-1+y*0.45813e-2)))));
+                                                  +y*(0.2659732f+y*(0.360768e-1+y*0.45813e-2)))));
     }
     else
     {
         y = 3.75f/ax;
         ans=(exp(ax)/sqrt(ax))*(0.39894228f+y*(0.1328592e-1
-                                              +y*(0.225319e-2+y*(-0.157565e-2+y*(0.916281e-2
-                                                                                 +y*(-0.2057706e-1+y*(0.2635537e-1+y*(-0.1647633e-1
-                                                                                                                      +y*0.392377e-2))))))));
+                                               +y*(0.225319e-2+y*(-0.157565e-2+y*(0.916281e-2
+                                                                                  +y*(-0.2057706e-1+y*(0.2635537e-1+y*(-0.1647633e-1
+                                                                                                                       +y*0.392377e-2))))))));
     }
     return ans;
 }
@@ -52,7 +52,7 @@ int sign(CSAMPLE x)
 
 // Returns the inverse of the matrix [m[0] m[1]; m[1] m[2]] (call by name). If the
 // operations is not possible -1 is returned, otherwise 0.
-int invmatrix(CSAMPLE *m)
+int invmatrix(CSAMPLE * m)
 {
     CSAMPLE k = m[0]*m[2]-m[1]*m[1];
     CSAMPLE tmp;
@@ -73,7 +73,7 @@ int invmatrix(CSAMPLE *m)
 void polcoe(CSAMPLE x[], CSAMPLE y[], int n, CSAMPLE cof[])
 {
     int k,j,i;
-    CSAMPLE phi, ff, b, *s;
+    CSAMPLE phi, ff, b, * s;
     s = new CSAMPLE[n+1];
     for (i=0; i<n; i++)
         s[i]=cof[i]=.0;
@@ -148,12 +148,12 @@ CSAMPLE arctan2(CSAMPLE y, CSAMPLE x)
     }
 
     if (y < 0)
-        return(-angle);     // negate if in quad III or IV
+        return(-angle); // negate if in quad III or IV
     else
         return(angle);
 }
 
-CSAMPLE wndKaiser(CSAMPLE *wnd, int size, CSAMPLE beta)
+CSAMPLE wndKaiser(CSAMPLE * wnd, int size, CSAMPLE beta)
 {
     int m = size-1;
     CSAMPLE AFactor = 0.;
@@ -176,14 +176,14 @@ CSAMPLE wndKaiserSample(int size, CSAMPLE beta, int i)
 
 /*
  * // Calculate the derivative of the window in kaiser_wnd.
-// The result goes in kaiser_dwnd.
-void wndDwnd(CSAMPLE *wnd, CSAMPLE *dwnd, int size)
-{
+   // The result goes in kaiser_dwnd.
+   void wndDwnd(CSAMPLE *wnd, CSAMPLE *dwnd, int size)
+   {
     dwnd[0] = (wnd[1]-wnd[0])*SRATE;
     for (int k=0; k<size-1; k++)
         dwnd[k+1] = (wnd[k+1]-wnd[k])*SRATE;
-}
-*/
+   }
+ */
 
 double qip(CSAMPLE x, unsigned int n)
 {

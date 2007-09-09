@@ -4,16 +4,16 @@
     begin                : Wed Oct 6 2004
     copyright            : (C) 2004 by Tue Haste Andersen
     email                : haste@diku.dk
- ***************************************************************************/
+***************************************************************************/
 
 /***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+*                                                                         *
+*   This program is free software; you can redistribute it and/or modify  *
+*   it under the terms of the GNU General Public License as published by  *
+*   the Free Software Foundation; either version 2 of the License, or     *
+*   (at your option) any later version.                                   *
+*                                                                         *
+***************************************************************************/
 
 #include "mouselinux.h"
 #include "rotary.h"
@@ -60,10 +60,10 @@ bool MouseLinux::opendev(QString name)
                 {
                     m_iFd = iFd;
 
-		    // QT 3.3:
+                    // QT 3.3:
                     //start(QThread::TimeCriticalPriority);
-		    
-		    start();
+
+                    start();
                     return true;
                 }
             }
@@ -81,42 +81,42 @@ void MouseLinux::closedev()
 
 void MouseLinux::getNextEvent()
 {
-        struct input_event ev;
+    struct input_event ev;
 
-        FD_ZERO(&fdset);
-        FD_SET(m_iFd, &fdset);
-        struct timespec ts;
-        ts.tv_sec = 0;
-        // Select time to wait. If we just received data, we want to wait longer for it (100ms), if the
-        // select call timed out last time, we don't want to wait so long time, because we want to have the
-        // low-pass filter in Rotary reach zero fast, if movement has stopped (10ms)
-        if (m_bSending)
-            ts.tv_nsec = 100000000;
-        else
-            ts.tv_nsec = 10000000;
+    FD_ZERO(&fdset);
+    FD_SET(m_iFd, &fdset);
+    struct timespec ts;
+    ts.tv_sec = 0;
+    // Select time to wait. If we just received data, we want to wait longer for it (100ms), if the
+    // select call timed out last time, we don't want to wait so long time, because we want to have the
+    // low-pass filter in Rotary reach zero fast, if movement has stopped (10ms)
+    if (m_bSending)
+        ts.tv_nsec = 100000000;
+    else
+        ts.tv_nsec = 10000000;
 
-        int r = pselect(m_iFd+1, &fdset, NULL, NULL, &ts, 0);
+    int r = pselect(m_iFd+1, &fdset, NULL, NULL, &ts, 0);
 //         qDebug("waited %i,%i",ts.tv_sec, ts.tv_nsec);
-        if (r>0)
+    if (r>0)
+    {
+        m_bSending = true;
+        int iR = read(m_iFd, &ev, sizeof(struct input_event));
+        if (iR == sizeof(struct input_event) && ev.type==EV_REL && ev.code==REL_X)
         {
-            m_bSending = true;
-            int iR = read(m_iFd, &ev, sizeof(struct input_event));
-            if (iR == sizeof(struct input_event) && ev.type==EV_REL && ev.code==REL_X)
-            {
-                int v = ev.value;
+            int v = ev.value;
 
 //                 qDebug("send value");
 
-                double dValue = m_pRotary->filter((double)v);
-                sendEvent(dValue, m_pControlObjectRotary);
-            }
+            double dValue = m_pRotary->filter((double)v);
+            sendEvent(dValue, m_pControlObjectRotary);
         }
-        else
-        {
+    }
+    else
+    {
 //             qDebug("timeout");
-            sendEvent(0., m_pControlObjectRotary);
-            m_bSending = false;
-        }
+        sendEvent(0., m_pControlObjectRotary);
+        m_bSending = false;
+    }
 }
 
 QStringList MouseLinux::getDeviceList()

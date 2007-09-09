@@ -4,16 +4,16 @@
     begin                : Wed Feb 20 2002
     copyright            : (C) 2002 by Tue and Ken Haste Andersen
     email                :
- ***************************************************************************/
+***************************************************************************/
 
 /***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+*                                                                         *
+*   This program is free software; you can redistribute it and/or modify  *
+*   it under the terms of the GNU General Public License as published by  *
+*   the Free Software Foundation; either version 2 of the License, or     *
+*   (at your option) any later version.                                   *
+*                                                                         *
+***************************************************************************/
 
 #include <qwidget.h>
 #include <QtDebug>
@@ -50,8 +50,8 @@ ControlObject::~ControlObject()
 bool ControlObject::connectControls(ConfigKey src, ConfigKey dest)
 {
     // Find src and dest objects
-    ControlObject *pSrc = getControl(src);
-    ControlObject *pDest = getControl(dest);
+    ControlObject * pSrc = getControl(src);
+    ControlObject * pDest = getControl(dest);
 
     if (pSrc && pDest)
     {
@@ -66,7 +66,7 @@ bool ControlObject::connectControls(ConfigKey src, ConfigKey dest)
 bool ControlObject::disconnectControl(ConfigKey key)
 {
     // Find src and dest objects
-    ControlObject *pSrc = getControl(key);
+    ControlObject * pSrc = getControl(key);
 
     if (pSrc)
     {
@@ -77,18 +77,18 @@ bool ControlObject::disconnectControl(ConfigKey key)
         return false;
 }
 
-void ControlObject::addProxy(ControlObjectThread *pControlObjectThread)
+void ControlObject::addProxy(ControlObjectThread * pControlObjectThread)
 {
     m_qProxyList.append(pControlObjectThread);
 }
 
-void ControlObject::removeProxy(ControlObjectThread *pControlObjectThread) {
-	m_qProxyList.removeRef(pControlObjectThread);
+void ControlObject::removeProxy(ControlObjectThread * pControlObjectThread) {
+    m_qProxyList.removeRef(pControlObjectThread);
 }
 
-bool ControlObject::updateProxies(ControlObjectThread *pProxyNoUpdate)
+bool ControlObject::updateProxies(ControlObjectThread * pProxyNoUpdate)
 {
-    ControlObjectThread *obj;
+    ControlObjectThread * obj;
     bool bUpdateSuccess = true;
     // qDebug() << "updateProxies: Group" << m_Key.group << "/ Item" << m_Key.item;
     for (obj = m_qProxyList.first(); obj; obj = m_qProxyList.next())
@@ -102,12 +102,12 @@ bool ControlObject::updateProxies(ControlObjectThread *pProxyNoUpdate)
     return bUpdateSuccess;
 }
 
-ControlObject *ControlObject::getControl(ConfigKey key)
+ControlObject * ControlObject::getControl(ConfigKey key)
 {
     // qDebug() << "trying to get group" << key.group << "item" << key.item;
-    
+
     // Loop through the list of ConfigObjects to find one matching key
-    ControlObject *c;
+    ControlObject * c;
     for (c=m_sqList.first(); c; c=m_sqList.next())
     {
         if (c->getKey().group == key.group && c->getKey().item == key.item)
@@ -116,9 +116,9 @@ ControlObject *ControlObject::getControl(ConfigKey key)
     return 0;
 }
 
-void ControlObject::queueFromThread(double dValue, ControlObjectThread *pControlObjectThread)
+void ControlObject::queueFromThread(double dValue, ControlObjectThread * pControlObjectThread)
 {
-    QueueObjectThread *p = new QueueObjectThread;
+    QueueObjectThread * p = new QueueObjectThread;
     p->pControlObjectThread = pControlObjectThread;
     p->pControlObject = this;
     p->value = dValue;
@@ -130,7 +130,7 @@ void ControlObject::queueFromThread(double dValue, ControlObjectThread *pControl
 
 void ControlObject::queueFromMidi(MidiCategory c, double v)
 {
-    QueueObjectMidi *p = new QueueObjectMidi;
+    QueueObjectMidi * p = new QueueObjectMidi;
     p->pControlObject = this;
     p->category = c;
     p->value = v;
@@ -212,7 +212,7 @@ void ControlObject::sync()
     // Update control objects with values recieved from threads
     if (m_sqQueueMutexThread.tryLock())
     {
-        QueueObjectThread *obj;
+        QueueObjectThread * obj;
         while(!m_sqQueueThread.isEmpty())
         {
             obj = m_sqQueueThread.dequeue();
@@ -232,23 +232,23 @@ void ControlObject::sync()
     // Update control objects with values recieved from MIDI
     if (m_sqQueueMutexMidi.tryLock())
     {
-        QueueObjectMidi *obj;
+        QueueObjectMidi * obj;
         while(!m_sqQueueMidi.isEmpty())
         {
             obj = m_sqQueueMidi.dequeue();
-	    if (obj == NULL) {
-	        qDebug("Midi sent us a bad object!");
-	    } else if (obj->pControlObject == NULL) {
-		qDebug("Midi object with null control object!");
-		delete obj;
-	    } else if (! obj->category) {
-		qDebug("Midi object with null category!");
-		delete obj;
-	    } else {
+            if (obj == NULL) {
+                qDebug("Midi sent us a bad object!");
+            } else if (obj->pControlObject == NULL) {
+                qDebug("Midi object with null control object!");
+                delete obj;
+            } else if (!obj->category) {
+                qDebug("Midi object with null category!");
+                delete obj;
+            } else {
                 obj->pControlObject->setValueFromMidi(obj->category, obj->value);
                 obj->pControlObject->updateProxies(0);
                 delete obj;
-	    }
+            }
         }
 
         //
@@ -261,18 +261,18 @@ void ControlObject::sync()
     // Update app threads (ControlObjectThread objects) with changes in the corresponding
     // ControlObjects. These updates should only occour if no changes has been in the object
     // from widgets, midi og application threads.
-    ControlObject *obj;
+    ControlObject * obj;
     if(m_sqQueueMutexChanges.tryLock())
     {
-	while(!m_sqQueueChanges.isEmpty())
-	{
-	    obj = m_sqQueueChanges.dequeue();
+        while(!m_sqQueueChanges.isEmpty())
+        {
+            obj = m_sqQueueChanges.dequeue();
 
-	    // If update is not successful, enqueue again
-	    if (!obj->updateProxies())
-		m_sqQueueChanges.enqueue(obj);
+            // If update is not successful, enqueue again
+            if (!obj->updateProxies())
+                m_sqQueueChanges.enqueue(obj);
 
-	}
-	m_sqQueueMutexChanges.unlock();
+        }
+        m_sqQueueMutexChanges.unlock();
     }
 }

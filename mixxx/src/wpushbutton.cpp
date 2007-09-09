@@ -4,16 +4,16 @@
     begin                : Fri Jun 21 2002
     copyright            : (C) 2002 by Tue & Ken Haste Andersen
     email                : haste@diku.dk
- ***************************************************************************/
+***************************************************************************/
 
 /***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+*                                                                         *
+*   This program is free software; you can redistribute it and/or modify  *
+*   it under the terms of the GNU General Public License as published by  *
+*   the Free Software Foundation; either version 2 of the License, or     *
+*   (at your option) any later version.                                   *
+*                                                                         *
+***************************************************************************/
 
 #include "wpushbutton.h"
 #include "wpixmapstore.h"
@@ -25,7 +25,7 @@
 #include <QMouseEvent>
 #include <QPaintEvent>
 
-WPushButton::WPushButton(QWidget *parent, const char *name ) : WWidget(parent,name)
+WPushButton::WPushButton(QWidget * parent, const char * name ) : WWidget(parent,name)
 {
     m_pPixmaps = 0;
     m_pPixmapBack = 0;
@@ -37,12 +37,12 @@ WPushButton::WPushButton(QWidget *parent, const char *name ) : WWidget(parent,na
 
 WPushButton::~WPushButton()
 {
-	for (int i = 0; i < 2*m_iNoStates; i++) {
-		WPixmapStore::deletePixmap(m_pPixmaps[i]);
-	}
+    for (int i = 0; i < 2*m_iNoStates; i++) {
+        WPixmapStore::deletePixmap(m_pPixmaps[i]);
+    }
 
-	WPixmapStore::deletePixmap(m_pPixmapBack);
-	WPixmapStore::deletePixmap(m_pPixmapBuffer);
+    WPixmapStore::deletePixmap(m_pPixmapBack);
+    WPixmapStore::deletePixmap(m_pPixmapBuffer);
 }
 
 void WPushButton::setup(QDomNode node)
@@ -67,44 +67,44 @@ void WPushButton::setup(QDomNode node)
         state = state.nextSibling();
     }
 
-	//--------
-	//This next big block allows each ControlPushButton to know whether or not it's
-	//a "toggle" button.
-		
+    //--------
+    //This next big block allows each ControlPushButton to know whether or not it's
+    //a "toggle" button.
+
     // For each connection
     QDomNode con = selectNode(node, "Connection");
     while (!con.isNull())
     {
-    	// Get ConfigKey
+        // Get ConfigKey
         QString key = selectNodeQString(con, "ConfigKey");
 
         ConfigKey configKey;
         configKey.group = key.left(key.find(","));
         configKey.item = key.mid(key.find(",")+1);
 
-		ControlPushButton *p = (ControlPushButton*)ControlObject::getControl(configKey);
-		
+        ControlPushButton * p = (ControlPushButton *)ControlObject::getControl(configKey);
+
         //Find out if we're a push button...
         if (node.nodeName()=="PushButton")
         {
             //qDebug(configKey.item);
             //qDebug("Number of States: %i", iStates);
-            
+
             //If we have 2 states, tell my controlpushbutton object that we're a toggle button.
             if (iNumStates == 2)
-            	p->setToggleButton(true);
-                // BJW: Removed this so that buttons that are hardcoded as toggle in the source
-                // don't get overridden if a skin fails to set them to 2-state. Buttons still
-                // default to non-toggle otherwise.
-           	// else
-           	//	p->setToggleButton(false);
+                p->setToggleButton(true);
+            // BJW: Removed this so that buttons that are hardcoded as toggle in the source
+            // don't get overridden if a skin fails to set them to 2-state. Buttons still
+            // default to non-toggle otherwise.
+            // else
+            //	p->setToggleButton(false);
         }
-            
-   	con = con.nextSibling();         
-	}
 
-	//End of toggle button stuff.
-	//--------
+        con = con.nextSibling();
+    }
+
+    //End of toggle button stuff.
+    //--------
 
 
     // Setup position
@@ -193,7 +193,7 @@ void WPushButton::paintEvent(QPaintEvent *)
     }
 }
 
-void WPushButton::mousePressEvent(QMouseEvent *e)
+void WPushButton::mousePressEvent(QMouseEvent * e)
 {
     m_bPressed = true;
 
@@ -219,7 +219,7 @@ void WPushButton::mousePressEvent(QMouseEvent *e)
     update();
 }
 
-void WPushButton::mouseReleaseEvent(QMouseEvent *e)
+void WPushButton::mouseReleaseEvent(QMouseEvent * e)
 {
     m_bPressed = false;
 

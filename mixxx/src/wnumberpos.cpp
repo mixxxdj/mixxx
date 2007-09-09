@@ -14,7 +14,7 @@
 #include "controlobject.h"
 #include "controlobjectthreadwidget.h"
 
-WNumberPos::WNumberPos(const char *group, QWidget *parent, const char *name) : WNumber(parent, name)
+WNumberPos::WNumberPos(const char * group, QWidget * parent, const char * name) : WNumber(parent, name)
 {
     m_dDuration = 0.;
     m_dOldValue = 0.;
@@ -53,7 +53,7 @@ void WNumberPos::setValue(double dValue)
         min1 = (int)(floor(v/600.))%100;
         min2 = (int)(floor(v/60.))%10;
         sec1 = (int)(floor(v/10.))%6;
-	sec2 = (int)(floor(v))%10;
+        sec2 = (int)(floor(v))%10;
         msec1 = (int)floor((v-floor(v))*10.);
         msec2 = (int)(floor((v-floor(v))*100.))%10;
     }
@@ -61,9 +61,9 @@ void WNumberPos::setValue(double dValue)
     if (v2>0.)
     {
         minv21 = (int)(floor(v2/600.))%100;
-	minv22 = (int)(floor(v2/60.))%10;
+        minv22 = (int)(floor(v2/60.))%10;
         secv21 = (int)(floor(v2/10.))%6;
-	secv22 = (int)(floor(v2))%10;
+        secv22 = (int)(floor(v2))%10;
     }
 
 /*
@@ -71,7 +71,7 @@ void WNumberPos::setValue(double dValue)
         m_pLabel->setPaletteForegroundColor(QColor(255,0,0));
     else
         m_pLabel->setPaletteForegroundColor(m_qFgColor);
-*/
+ */
 
     m_pLabel->setText(QString(m_qsText).append("%1%2:%3%4, Dur: %5%6:%7%8")
                       .arg(min1,1,10).arg(min2,1,10).arg(sec1,1,10).arg(sec2,1,10)
@@ -93,4 +93,4 @@ void WNumberPos::setRemain(bool bRemain)
 
 
 
- 	  	 
+

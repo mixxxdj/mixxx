@@ -4,22 +4,22 @@
     begin                : Mon Apr 14 2003
     copyright            : (C) 2003 by Tue & Ken Haste Andersen
     email                : haste@diku.dk
- ***************************************************************************/
+***************************************************************************/
 
 /***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+*                                                                         *
+*   This program is free software; you can redistribute it and/or modify  *
+*   it under the terms of the GNU General Public License as published by  *
+*   the Free Software Foundation; either version 2 of the License, or     *
+*   (at your option) any later version.                                   *
+*                                                                         *
+***************************************************************************/
 
 #include "enginebufferscalelinear.h"
 #include "mathstuff.h"
 #include "readerextractwave.h"
 
-EngineBufferScaleLinear::EngineBufferScaleLinear(ReaderExtractWave *wave) : EngineBufferScale(wave)
+EngineBufferScaleLinear::EngineBufferScaleLinear(ReaderExtractWave * wave) : EngineBufferScale(wave)
 {
 }
 
@@ -47,7 +47,7 @@ double EngineBufferScaleLinear::setTempo(double _tempo)
 
 void EngineBufferScaleLinear::setBaseRate(double dBaseRate)
 {
-    m_dBaseRate = dBaseRate*m_dTempo;    
+    m_dBaseRate = dBaseRate*m_dTempo;
 
     //TODO: Should this be something? - Albert Sept 3/07
     //    m_pSoundTouch->setRate(m_dBaseRate*m_dTempo);
@@ -57,11 +57,11 @@ void EngineBufferScaleLinear::clear()
 {
     //m_pSoundTouch->clear();
     //TODO: Clear the buffer?!
-    
+
     m_bClear = true;
 }
 
-CSAMPLE *EngineBufferScaleLinear::scale(double playpos, int buf_size, float *pBase, int iBaseLength)
+CSAMPLE * EngineBufferScaleLinear::scale(double playpos, int buf_size, float * pBase, int iBaseLength)
 {
     double rate_add = 2.*m_dTempo;
 

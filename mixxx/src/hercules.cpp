@@ -4,16 +4,16 @@
     begin                : Tue Feb 22 2005
     copyright            : (C) 2005 by Tue Haste Andersen
     email                : haste@diku.dk
- ***************************************************************************/
+***************************************************************************/
 
 /***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+*                                                                         *
+*   This program is free software; you can redistribute it and/or modify  *
+*   it under the terms of the GNU General Public License as published by  *
+*   the Free Software Foundation; either version 2 of the License, or     *
+*   (at your option) any later version.                                   *
+*                                                                         *
+***************************************************************************/
 
 #include "qapplication.h"
 #include "hercules.h"
@@ -39,26 +39,26 @@ Hercules::Hercules() : Input(), m_qRequestLed(5)
     m_bSyncRight = false;
     m_iLeftFxMode = 0;
     m_iLeftFxMode = 0;
-                 
-    
+
+
     m_pControlObjectLeftBtnPlay = ControlObject::getControl(ConfigKey("[Channel1]","play"));
     m_pControlObjectRightBtnPlay = ControlObject::getControl(ConfigKey("[Channel2]","play"));
     m_pControlObjectLeftBtnPlayProxy = new ControlObjectThread(ControlObject::getControl(ConfigKey("[Channel1]","play")));
     m_pControlObjectRightBtnPlayProxy = new ControlObjectThread(ControlObject::getControl(ConfigKey("[Channel2]","play")));
-    
+
     m_pControlObjectLeftBtnCue = ControlObject::getControl(ConfigKey("[Channel1]","cue_simple"));
     m_pControlObjectRightBtnCue = ControlObject::getControl(ConfigKey("[Channel2]","cue_simple"));
     m_pControlObjectLeftBtnLoopProxy = new ControlObjectThread(ControlObject::getControl(ConfigKey("[Channel1]","loop")));
     m_pControlObjectRightBtnLoopProxy = new ControlObjectThread(ControlObject::getControl(ConfigKey("[Channel2]","loop")));
-    
-    
+
+
     m_pControlObjectLeftBeatLoop = ControlObject::getControl(ConfigKey("[Channel1]","beatloop"));
     Q_ASSERT(m_pControlObjectLeftBeatLoop!=0);
     m_pControlObjectRightBeatLoop = ControlObject::getControl(ConfigKey("[Channel2]","beatloop"));
     Q_ASSERT(m_pControlObjectRightBeatLoop!=0);
-    
+
     selectMapping(kqInputMappingHerculesStandard);
-        
+
     m_pRotaryLeft = new Rotary();
     m_pRotaryRight = new Rotary();
 }
@@ -100,7 +100,7 @@ void Hercules::selectMapping(QString qMapping)
         m_pControlObjectLeftVolume = ControlObject::getControl(ConfigKey("[Channel1]","pregain"));
         m_pControlObjectRightVolume = ControlObject::getControl(ConfigKey("[Channel2]","pregain"));
         m_pControlObjectCrossfade = ControlObject::getControl(ConfigKey("[Master]","rate"));
-    
+
         changeJogMode(m_iLeftFxMode, m_iRightFxMode);
 
         m_pControlObjectLeftBeatLoop->queueFromThread(1.);
@@ -121,9 +121,9 @@ void Hercules::selectMapping(QString qMapping)
         m_pControlObjectLeftVolume = ControlObject::getControl(ConfigKey("[Channel1]","volume"));
         m_pControlObjectRightVolume = ControlObject::getControl(ConfigKey("[Channel2]","volume"));
         m_pControlObjectCrossfade = ControlObject::getControl(ConfigKey("[Master]","crossfader"));
-        
+
         changeJogMode();
-    
+
         m_pControlObjectLeftBeatLoop->queueFromThread(0.);
         m_pControlObjectRightBeatLoop->queueFromThread(0.);
     }
@@ -141,12 +141,12 @@ void Hercules::selectMapping(QString qMapping)
     m_pControlObjectRightBass = ControlObject::getControl(ConfigKey("[Channel2]","filterLow"));
     m_pControlObjectLeftBtnHeadphone = ControlObject::getControl(ConfigKey("[Channel1]","pfl"));
     m_pControlObjectRightBtnHeadphone = ControlObject::getControl(ConfigKey("[Channel2]","pfl"));
-    
+
     m_pControlObjectLeftBtn1 = new ControlObject(ConfigKey("[Channel1]","Hercules1"));
     m_pControlObjectLeftBtn2 = new ControlObject(ConfigKey("[Channel1]","Hercules2"));
     m_pControlObjectLeftBtn3 = new ControlObject(ConfigKey("[Channel1]","Hercules3"));
     m_pControlObjectLeftBtnFx = new ControlObject(ConfigKey("[Channel1]","Hercules4"));
-    
+
     m_pControlObjectRightBtn1 = new ControlObject(ConfigKey("[Channel2]","Hercules1"));
     m_pControlObjectRightBtn2 = new ControlObject(ConfigKey("[Channel2]","Hercules2"));
     m_pControlObjectRightBtn3 = new ControlObject(ConfigKey("[Channel2]","Hercules3"));
@@ -167,7 +167,7 @@ void Hercules::changeJogMode(int iLeftFxMode, int iRightFxMode)
         m_pControlObjectLeftJog = ControlObject::getControl(ConfigKey("[Channel1]","temporalPhaseRate"));
         break;
     }
-    
+
     switch (iRightFxMode)
     {
     case 0:
@@ -180,7 +180,7 @@ void Hercules::changeJogMode(int iLeftFxMode, int iRightFxMode)
         m_pControlObjectRightJog = ControlObject::getControl(ConfigKey("[Channel2]","temporalPhaseRate"));
         break;
     }
-}        
+}
 
 
 void Hercules::led()

@@ -4,16 +4,16 @@
     begin                : Thu Jul 4 2002
     copyright            : (C) 2002 by Tue & Ken Haste Andersen
     email                : haste@diku.dk
- ***************************************************************************/
+***************************************************************************/
 
 /***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+*                                                                         *
+*   This program is free software; you can redistribute it and/or modify  *
+*   it under the terms of the GNU General Public License as published by  *
+*   the Free Software Foundation; either version 2 of the License, or     *
+*   (at your option) any later version.                                   *
+*                                                                         *
+***************************************************************************/
 
 #include "midiobjectoss.h"
 #include <qdir.h>
@@ -40,9 +40,9 @@ MidiObjectOSS::MidiObjectOSS(QString device) : MidiObject(device)
         // Search for /dev/midi* devices
         dir.setFilter(QDir::System);
         dir.setNameFilter("midi*");
-        const QFileInfoList *list = dir.entryInfoList();
-        QFileInfoListIterator it(*list);        // create list iterator
-        QFileInfo *fi;                          // pointer for traversing
+        const QFileInfoList * list = dir.entryInfoList();
+        QFileInfoListIterator it(* list);        // create list iterator
+        QFileInfo * fi;                          // pointer for traversing
 
         while ((fi=it.current()))
         {
@@ -57,10 +57,10 @@ MidiObjectOSS::MidiObjectOSS(QString device) : MidiObject(device)
     if (device_valid)
         devOpen(device);
     else
-        if (devices.count()==0)
-            qDebug("MidiObjectOSS: No MIDI devices available.");
-        else
-            devOpen(devices.first());
+    if (devices.count()==0)
+        qDebug("MidiObjectOSS: No MIDI devices available.");
+    else
+        devOpen(devices.first());
 }
 
 MidiObjectOSS::~MidiObjectOSS()

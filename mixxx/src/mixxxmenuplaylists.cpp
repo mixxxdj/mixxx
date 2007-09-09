@@ -15,7 +15,7 @@
 #include "track.h"
 #include "trackplaylistlist.h"
 
-MixxxMenuPlaylists::MixxxMenuPlaylists(QMenu *pMenu, Track *pTrack)
+MixxxMenuPlaylists::MixxxMenuPlaylists(QMenu * pMenu, Track * pTrack)
 {
     m_pMenu = pMenu;
     m_pTrack = pTrack;
@@ -29,10 +29,10 @@ MixxxMenuPlaylists::~MixxxMenuPlaylists()
 {
 }
 
-void MixxxMenuPlaylists::slotUpdate(TrackPlaylistList *pPlaylists)
+void MixxxMenuPlaylists::slotUpdate(TrackPlaylistList * pPlaylists)
 {
     int i = 0;
-    menuItem_t *it;
+    menuItem_t * it;
 
     qDebug("update menu");
 
@@ -44,10 +44,10 @@ void MixxxMenuPlaylists::slotUpdate(TrackPlaylistList *pPlaylists)
     }
 
     // Add items in qPlaylists to the menu
-    TrackPlaylist *it2 = pPlaylists->first();
+    TrackPlaylist * it2 = pPlaylists->first();
     while (it2)
     {
-        menuItem_t *p = new menuItem_t;
+        menuItem_t * p = new menuItem_t;
         m_qMenuList.append(p);
         p->pTrackPlaylist = it2;
         p->id = m_pMenu->insertItem(it2->getListName());
@@ -62,18 +62,18 @@ void MixxxMenuPlaylists::slotRequestActive(int id)
     // Activate the playlist in the menu with the given id
     int i;
     QString name;
-    menuItem_t *it;
+    menuItem_t * it;
 
     for (int i = 0; i < m_qMenuList.size(); ++i) {
-      it = m_qMenuList[i];
-      if (it->id==id) {
-          m_pTrack->slotActivatePlaylist(it->pTrackPlaylist->getListName());
-          break;
-      }
+        it = m_qMenuList[i];
+        if (it->id==id) {
+            m_pTrack->slotActivatePlaylist(it->pTrackPlaylist->getListName());
+            break;
+        }
     }
 }
 
-void MixxxMenuPlaylists::slotSetActive(TrackPlaylist *pTrackPlaylist)
+void MixxxMenuPlaylists::slotSetActive(TrackPlaylist * pTrackPlaylist)
 {
     int i;
     m_pMenu->setItemChecked(m_pMenu->idAt(0), false);
@@ -81,13 +81,13 @@ void MixxxMenuPlaylists::slotSetActive(TrackPlaylist *pTrackPlaylist)
 
     //qDebug() << "set active" << pTrackPlaylist->getListName();
 
-    menuItem_t *it;
+    menuItem_t * it;
     for (int i = 0; i < m_qMenuList.size(); ++i) {
-      it = m_qMenuList[i];
-      if (it->pTrackPlaylist==pTrackPlaylist)
-          m_pMenu->setItemChecked(it->id, true);
-      else
-          m_pMenu->setItemChecked(it->id, false);
+        it = m_qMenuList[i];
+        if (it->pTrackPlaylist==pTrackPlaylist)
+            m_pMenu->setItemChecked(it->id, true);
+        else
+            m_pMenu->setItemChecked(it->id, false);
     }
 }
 

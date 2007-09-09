@@ -1,11 +1,11 @@
 /***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+*                                                                         *
+*   This program is free software; you can redistribute it and/or modify  *
+*   it under the terms of the GNU General Public License as published by  *
+*   the Free Software Foundation; either version 2 of the License, or     *
+*   (at your option) any later version.                                   *
+*                                                                         *
+***************************************************************************/
 
 #include <ladspaview.h>
 
@@ -21,7 +21,7 @@
 #include <wknob.h>
 #include <wskincolor.h>
 
-LADSPAView::LADSPAView(QWidget *parent) : QWidget(parent, "LADSPA")
+LADSPAView::LADSPAView(QWidget * parent) : QWidget(parent, "LADSPA")
 {
     m_iWidth = parent->width();
     m_iListWidth = 150;
@@ -69,12 +69,12 @@ LADSPAView::LADSPAView(QWidget *parent) : QWidget(parent, "LADSPA")
 
     if (m_qKnobSkinNode.nodeName()=="Knob")
     {
-      qDebug("LADSPA: Skin OK");
+        qDebug("LADSPA: Skin OK");
     }
     else
     {
-      qDebug("LADSPA: Invalid skin (node = %s)", m_qKnobSkinNode.nodeName().latin1());
-      return;
+        qDebug("LADSPA: Invalid skin (node = %s)", m_qKnobSkinNode.nodeName().latin1());
+        return;
     }
 
     QDomElement bgColorNode = docElem.firstChildElement(QString("BgColor"));
@@ -91,7 +91,7 @@ LADSPAView::LADSPAView(QWidget *parent) : QWidget(parent, "LADSPA")
     setPalette(palette);
     setAutoFillBackground(true);
 
-    installEventFilter(this);    
+    installEventFilter(this);
 
     connect(m_pPresetList, SIGNAL(itemSelectionChanged()), this, SLOT(slotSelect()));
 }
@@ -112,7 +112,7 @@ void LADSPAView::slotSelect()
     m_pScrollArea->show();
 }
 
-LADSPAPresetWidget::LADSPAPresetWidget(QWidget *parent, LADSPAPreset *preset, QDomNode node) : QWidget(parent)
+LADSPAPresetWidget::LADSPAPresetWidget(QWidget * parent, LADSPAPreset * preset, QDomNode node) : QWidget(parent)
 {
     m_pInstance = preset->instantiate();
     m_Knobs.resize(m_pInstance->getKnobCount());

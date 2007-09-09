@@ -3,17 +3,17 @@
                              -------------------
     begin                : Wed Apr 3 2002
     copyright            : (C) 2002 by Tue and Ken Haste Andersen
-    email                : 
- ***************************************************************************/
+    email                :
+***************************************************************************/
 
 /***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+*                                                                         *
+*   This program is free software; you can redistribute it and/or modify  *
+*   it under the terms of the GNU General Public License as published by  *
+*   the Free Software Foundation; either version 2 of the License, or     *
+*   (at your option) any later version.                                   *
+*                                                                         *
+***************************************************************************/
 
 #include "enginefilterrbj.h"
 
@@ -34,7 +34,7 @@ EngineFilterRBJ::~EngineFilterRBJ()
     delete [] buffer;
 }
 
-CSAMPLE *EngineFilterRBJ::process(const CSAMPLE *source, const int buf_size)
+CSAMPLE * EngineFilterRBJ::process(const CSAMPLE * source, const int buf_size)
 {
     for (int i=0; i<buf_size; i+=2)
     {
@@ -74,7 +74,7 @@ void EngineFilterRBJ::calc_filter_coeffs(int const type, double const frequency,
         double const tcos   = cos(omega);
 
         if(q_is_bandwidth)
-            alpha=tsin*sinh(log(2.0)/2.0*q*omega/tsin);
+            alpha=tsin *sinh(log (2.0)/2.0 * q * omega/tsin);
         else
             alpha=tsin/(2.0*q);
 
@@ -83,45 +83,45 @@ void EngineFilterRBJ::calc_filter_coeffs(int const type, double const frequency,
         // peaking
         if(type==6)
         {
-            b0=float(1.0+alpha*A);
-            b1=float(-2.0*tcos);
-            b2=float(1.0-alpha*A);
-            a0=float(1.0+alpha/A);
-            a1=float(-2.0*tcos);
-            a2=float(1.0-alpha/A);
+            b0=float (1.0+alpha*A);
+            b1=float (-2.0*tcos);
+            b2=float (1.0-alpha*A);
+            a0=float (1.0+alpha/A);
+            a1=float (-2.0*tcos);
+            a2=float (1.0-alpha/A);
         }
 
         // lowshelf
         if(type==7)
         {
-            b0=float(A*((A+1.0)-(A-1.0)*tcos+beta*tsin));
-            b1=float(2.0*A*((A-1.0)-(A+1.0)*tcos));
-            b2=float(A*((A+1.0)-(A-1.0)*tcos-beta*tsin));
-            a0=float((A+1.0)+(A-1.0)*tcos+beta*tsin);
-            a1=float(-2.0*((A-1.0)+(A+1.0)*tcos));
-            a2=float((A+1.0)+(A-1.0)*tcos-beta*tsin);
+            b0=float (A*((A+1.0)-(A-1.0)*tcos+beta*tsin));
+            b1=float (2.0*A*((A-1.0)-(A+1.0)*tcos));
+            b2=float (A*((A+1.0)-(A-1.0)*tcos-beta*tsin));
+            a0=float ((A+1.0)+(A-1.0)*tcos+beta*tsin);
+            a1=float (-2.0*((A-1.0)+(A+1.0)*tcos));
+            a2=float ((A+1.0)+(A-1.0)*tcos-beta*tsin);
         }
 
         // hishelf
         if(type==8)
         {
-            b0=float(A*((A+1.0)+(A-1.0)*tcos+beta*tsin));
-            b1=float(-2.0*A*((A-1.0)+(A+1.0)*tcos));
-            b2=float(A*((A+1.0)+(A-1.0)*tcos-beta*tsin));
-            a0=float((A+1.0)-(A-1.0)*tcos+beta*tsin);
-            a1=float(2.0*((A-1.0)-(A+1.0)*tcos));
-            a2=float((A+1.0)-(A-1.0)*tcos-beta*tsin);
+            b0=float (A*((A+1.0)+(A-1.0)*tcos+beta*tsin));
+            b1=float (-2.0*A*((A-1.0)+(A+1.0)*tcos));
+            b2=float (A*((A+1.0)+(A-1.0)*tcos-beta*tsin));
+            a0=float ((A+1.0)-(A-1.0)*tcos+beta*tsin);
+            a1=float (2.0*((A-1.0)-(A+1.0)*tcos));
+            a2=float ((A+1.0)-(A-1.0)*tcos-beta*tsin);
         }
     }
     else
     {
         // other filters
-        double const omega	=	2.0*temp_pi*frequency/sample_rate;
-        double const tsin	=	sin(omega);
-        double const tcos	=	cos(omega);
+        double const omega      =       2.0*temp_pi*frequency/sample_rate;
+        double const tsin       =       sin(omega);
+        double const tcos       =       cos(omega);
 
         if(q_is_bandwidth)
-            alpha=tsin*sinh(log(2.0)/2.0*q*omega/tsin);
+            alpha=tsin *sinh(log (2.0)/2.0 * q * omega/tsin);
         else
             alpha=tsin/(2.0*q);
 
@@ -193,11 +193,11 @@ void EngineFilterRBJ::calc_filter_coeffs(int const type, double const frequency,
     }
 
     // set filter coeffs
-    b0a0=float(b0/a0);
-    b1a0=float(b1/a0);
-    b2a0=float(b2/a0);
-    a1a0=float(a1/a0);
-    a2a0=float(a2/a0);
+    b0a0=float (b0/a0);
+    b1a0=float (b1/a0);
+    b2a0=float (b2/a0);
+    a1a0=float (a1/a0);
+    a2a0=float (a2/a0);
 
     //qDebug("coeff: %f, %f, %f, %f, %f",b0a0, b1a0, b2a0, a1a0, a2a0);
 }

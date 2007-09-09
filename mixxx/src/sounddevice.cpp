@@ -4,23 +4,23 @@
     begin                : Sun Aug 12, 2007, past my bedtime
     copyright            : (C) 2007 Albert Santoni
     email                : gamegod \a\t users.sf.net
- ***************************************************************************/
+***************************************************************************/
 
 /***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+*                                                                         *
+*   This program is free software; you can redistribute it and/or modify  *
+*   it under the terms of the GNU General Public License as published by  *
+*   the Free Software Foundation; either version 2 of the License, or     *
+*   (at your option) any later version.                                   *
+*                                                                         *
+***************************************************************************/
 
 #include <QtDebug>
-#include <QtCore> 
+#include <QtCore>
 #include "soundmanager.h"
 #include "sounddevice.h"
 
-SoundDevice::SoundDevice(ConfigObject<ConfigValue> *config, SoundManager* sm)
+SoundDevice::SoundDevice(ConfigObject<ConfigValue> * config, SoundManager * sm)
 {
     m_pConfig = config;
     m_pSoundManager = sm;
@@ -76,7 +76,7 @@ void SoundDevice::clearReceivers()
         m_audioReceivers.pop_back();
 }
 
-bool SoundDevice::operator== (SoundDevice* other)
+bool SoundDevice::operator== (SoundDevice * other)
 {
     return (this->getName() == other->getName());
 }

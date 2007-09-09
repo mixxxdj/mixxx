@@ -2,18 +2,18 @@
                           enginechannel.cpp  -  description
                              -------------------
     begin                : Sun Apr 28 2002
-    copyright            : (C) 2002 by 
-    email                : 
- ***************************************************************************/
+    copyright            : (C) 2002 by
+    email                :
+***************************************************************************/
 
 /***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+*                                                                         *
+*   This program is free software; you can redistribute it and/or modify  *
+*   it under the terms of the GNU General Public License as published by  *
+*   the Free Software Foundation; either version 2 of the License, or     *
+*   (at your option) any later version.                                   *
+*                                                                         *
+***************************************************************************/
 
 #include "controlpushbutton.h"
 #include "enginechannel.h"
@@ -25,7 +25,7 @@
 #include "enginefilteriir.h"
 #include "enginetemporal.h"
 
-EngineChannel::EngineChannel(const char *group)
+EngineChannel::EngineChannel(const char * group)
 {
     // Pregain:
     pregain = new EnginePregain(group);
@@ -54,7 +54,7 @@ EngineChannel::~EngineChannel()
     delete m_pEngineTemporal;
 }
 
-void EngineChannel::setVisual(EngineBuffer *pEngineBuffer)
+void EngineChannel::setVisual(EngineBuffer * pEngineBuffer)
 {
     Q_ASSERT(pEngineBuffer);
 #ifdef TEMPORAL
@@ -62,15 +62,15 @@ void EngineChannel::setVisual(EngineBuffer *pEngineBuffer)
 #endif
 }
 
-ControlPushButton *EngineChannel::getPFL()
+ControlPushButton * EngineChannel::getPFL()
 {
     return pfl;
 }
 
-void EngineChannel::process(const CSAMPLE *pIn, const CSAMPLE *pOut, const int iBufferSize)
+void EngineChannel::process(const CSAMPLE * pIn, const CSAMPLE * pOut, const int iBufferSize)
 {
     pregain->process(pIn, pOut, iBufferSize);
-    filter->process(pOut, pOut, iBufferSize); 
+    filter->process(pOut, pOut, iBufferSize);
     clipping->process(pOut, pOut, iBufferSize);
 
 #ifdef TEMPORAL

@@ -4,16 +4,16 @@
     begin                : Tue Jun 25 2002
     copyright            : (C) 2002 by Tue & Ken Haste Andersen
     email                : haste@diku.dk
- ***************************************************************************/
+***************************************************************************/
 
 /***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+*                                                                         *
+*   This program is free software; you can redistribute it and/or modify  *
+*   it under the terms of the GNU General Public License as published by  *
+*   the Free Software Foundation; either version 2 of the License, or     *
+*   (at your option) any later version.                                   *
+*                                                                         *
+***************************************************************************/
 
 #include "wslidercomposed.h"
 #include <qpixmap.h>
@@ -25,7 +25,7 @@
 #include "defs.h"
 #include "wpixmapstore.h"
 
-WSliderComposed::WSliderComposed(QWidget *parent, const char *name ) : WWidget(parent,name)
+WSliderComposed::WSliderComposed(QWidget * parent, const char * name ) : WWidget(parent,name)
 {
     m_pSlider = 0;
     m_pHandle = 0;
@@ -77,7 +77,7 @@ void WSliderComposed::setPixmaps(bool bHorizontal, const QString &filenameSlider
     if (!m_pHandle)
         qDebug() << "WSliderComposed: Error loading handle pixmap:" << filenameHandle;
     m_pDoubleBuffer = new QPixmap(m_pSlider->size());
-    
+
     if (m_bHorizontal)
     {
         m_iSliderLength = m_pSlider->width();
@@ -92,7 +92,7 @@ void WSliderComposed::setPixmaps(bool bHorizontal, const QString &filenameSlider
     // Set size of widget, using size of slider pixmap
     if (m_pSlider)
         setFixedSize(m_pSlider->size());
-    
+
     setValue(m_fValue);
 
     repaint();
@@ -111,7 +111,7 @@ void WSliderComposed::unsetPixmaps()
     m_pDoubleBuffer = 0;
 }
 
-void WSliderComposed::mouseMoveEvent(QMouseEvent *e)
+void WSliderComposed::mouseMoveEvent(QMouseEvent * e)
 {
     if (m_bHorizontal)
         m_iPos = e->x()-m_iHandleLength/2;
@@ -144,7 +144,7 @@ void WSliderComposed::mouseMoveEvent(QMouseEvent *e)
     update();
 }
 
-void WSliderComposed::mouseReleaseEvent(QMouseEvent *e)
+void WSliderComposed::mouseReleaseEvent(QMouseEvent * e)
 {
     if (!m_bEventWhileDrag)
     {
@@ -159,7 +159,7 @@ void WSliderComposed::mouseReleaseEvent(QMouseEvent *e)
     }
 }
 
-void WSliderComposed::mousePressEvent(QMouseEvent *e)
+void WSliderComposed::mousePressEvent(QMouseEvent * e)
 {
     if (!m_bEventWhileDrag)
     {
@@ -222,10 +222,10 @@ void WSliderComposed::setValue(double fValue)
             fValue = 127-fValue;
         m_iPos = (int)((fValue/127.)*(double)(m_iSliderLength-m_iHandleLength));
 
-	if (m_iPos>(m_iSliderLength-m_iHandleLength))
-	    m_iPos = m_iSliderLength-m_iHandleLength;
-	else if (m_iPos<0)
-	    m_iPos = 0;
+        if (m_iPos>(m_iSliderLength-m_iHandleLength))
+            m_iPos = m_iSliderLength-m_iHandleLength;
+        else if (m_iPos<0)
+            m_iPos = 0;
 
         repaint();
     }

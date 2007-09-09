@@ -3,16 +3,16 @@
                              -------------------
     copyright            : (C) 2003 by Svein Magne Bang
     email                :
- ***************************************************************************/
+***************************************************************************/
 
 /***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+*                                                                         *
+*   This program is free software; you can redistribute it and/or modify  *
+*   it under the terms of the GNU General Public License as published by  *
+*   the Free Software Foundation; either version 2 of the License, or     *
+*   (at your option) any later version.                                   *
+*                                                                         *
+***************************************************************************/
 
 #include "trackinfoobject.h"
 #include "soundsourceoggvorbis.h"
@@ -23,27 +23,27 @@
 #endif
 
 #ifdef __MACX__
-#    define OV_ENDIAN_ARG 1
+#define OV_ENDIAN_ARG 1
 #else
-#  ifdef __LINUX__
-#    include <endian.h>
-#    if __BYTE_ORDER == __LITTLE_ENDIAN
-#     define OV_ENDIAN_ARG 0
-#    else
-#     define OV_ENDIAN_ARG 1
-#    endif
-#  else
-#    define OV_ENDIAN_ARG 0
-#  endif
+#ifdef __LINUX__
+#include <endian.h>
+#if __BYTE_ORDER == __LITTLE_ENDIAN
+#define OV_ENDIAN_ARG 0
+#else
+#define OV_ENDIAN_ARG 1
+#endif
+#else
+#define OV_ENDIAN_ARG 0
+#endif
 #endif
 
 /*
-  Class for reading Ogg Vorbis 
-*/
+   Class for reading Ogg Vorbis
+ */
 
 SoundSourceOggVorbis::SoundSourceOggVorbis(QString qFilename) : SoundSource(qFilename)
 {
-  
+
     vorbisfile =  fopen(qFilename.latin1(), "r");
     if (!vorbisfile)
     {
@@ -65,18 +65,18 @@ SoundSourceOggVorbis::SoundSourceOggVorbis(QString qFilename) : SoundSource(qFil
     else
     {
 
-      // extract metadata
-      vorbis_info *vi=ov_info(&vf,-1);
+        // extract metadata
+        vorbis_info * vi=ov_info(&vf,-1);
 
-      channels = vi->channels;
-      SRATE = vi->rate;
+        channels = vi->channels;
+        SRATE = vi->rate;
 
-      if(channels > 2){
-        qDebug("oggvorbis: No support for more than 2 channels!");
-        return;
-      }
-        
-      filelength = (unsigned long) ov_pcm_total(&vf, -1) * 2;
+        if(channels > 2){
+            qDebug("oggvorbis: No support for more than 2 channels!");
+            return;
+        }
+
+        filelength = (unsigned long) ov_pcm_total(&vf, -1) * 2;
     }
 }
 
@@ -90,15 +90,15 @@ SoundSourceOggVorbis::~SoundSourceOggVorbis()
 
 
 /*
-  seek to <filepos>
-*/
+   seek to <filepos>
+ */
 
 long SoundSourceOggVorbis::seek(long filepos)
 {
     if (ov_seekable(&vf)){
         index = ov_pcm_seek(&vf, filepos/2);
         return filepos;
-    }else{
+    } else{
         qDebug("ogg vorbis: Seek ERR.");
         return 0;
     }
@@ -106,23 +106,23 @@ long SoundSourceOggVorbis::seek(long filepos)
 
 
 /*
-  read <size> samples into <destination>, and return the number of
-  samples actually read.
-*/
+   read <size> samples into <destination>, and return the number of
+   samples actually read.
+ */
 
-unsigned SoundSourceOggVorbis::read(unsigned long size, const SAMPLE* destination)
+unsigned SoundSourceOggVorbis::read(unsigned long size, const SAMPLE * destination)
 {
-    dest = (SAMPLE*) destination;
+    dest = (SAMPLE *) destination;
     index = 0;
     needed = size*channels;
-    
+
     // loop until requested number of samples has been retrieved
     while (needed > 0)
     {
         // read samples into buffer
-	ret = ov_read(&vf,(char*) dest+index,needed, OV_ENDIAN_ARG, 2, 1, &current_section);
+        ret = ov_read(&vf,(char *) dest+index,needed, OV_ENDIAN_ARG, 2, 1, &current_section);
         // if eof we fill the rest with zero
-        if (ret == 0) 
+        if (ret == 0)
         {
             while (needed > 0)
             {
@@ -138,7 +138,7 @@ unsigned SoundSourceOggVorbis::read(unsigned long size, const SAMPLE* destinatio
     // convert into stereo if file is mono
     if (channels == 1)
     {
-        for(int i=index;i>0;i--)
+        for(int i=index; i>0; i--)
         {
             dest[i*2]     = dest[i];
             dest[(i*2)+1] = dest[i];
@@ -151,15 +151,15 @@ unsigned SoundSourceOggVorbis::read(unsigned long size, const SAMPLE* destinatio
 
 /*
    Parse the the file to get metadata
-*/
+ */
 
-int SoundSourceOggVorbis::ParseHeader( TrackInfoObject *Track )
+int SoundSourceOggVorbis::ParseHeader( TrackInfoObject * Track )
 {
     QString filename = Track->getLocation();
-    vorbis_comment *comment;
+    vorbis_comment * comment;
     OggVorbis_File vf;
 
-    FILE* vorbisfile = fopen(filename, "r");
+    FILE * vorbisfile = fopen(filename, "r");
     if (!vorbisfile) {
         qDebug("oggvorbis: file cannot be opened.\n");
         return ERR;
@@ -167,7 +167,7 @@ int SoundSourceOggVorbis::ParseHeader( TrackInfoObject *Track )
 
     // Apparently this is needed to make windows happy:
     #ifdef __WIN__
-        _setmode( _fileno( vorbisfile ), _O_BINARY );
+    _setmode( _fileno( vorbisfile ), _O_BINARY );
     #endif
 
     if (ov_open(vorbisfile, &vf, NULL, 0) < 0) {
@@ -185,17 +185,17 @@ int SoundSourceOggVorbis::ParseHeader( TrackInfoObject *Track )
     Track->setDuration((int)ov_time_total(&vf, -1));
     Track->setBitrate(ov_bitrate(&vf, -1)/1000);
 
-    vorbis_info *vi=ov_info(&vf,-1);
+    vorbis_info * vi=ov_info(&vf,-1);
     Track->setSampleRate(vi->rate);
     Track->setChannels(vi->channels);
-    
+
     ov_clear(&vf);
     return OK;
 }
 
 /*
-  Return the length of the file in samples.
-*/
+   Return the length of the file in samples.
+ */
 
 inline long unsigned SoundSourceOggVorbis::length()
 {

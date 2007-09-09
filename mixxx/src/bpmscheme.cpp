@@ -1,9 +1,9 @@
 /***************************************************************************
-bpmscheme.cpp  -  Preset holding information for BPM detection
--------------------
-begin                : Sat, Aug 25., 2007
-copyright            : (C) 2007 by Micah Lee
-email                : snipexv@gmail.com
+   bpmscheme.cpp  -  Preset holding information for BPM detection
+   -------------------
+   begin                : Sat, Aug 25., 2007
+   copyright            : (C) 2007 by Micah Lee
+   email                : snipexv@gmail.com
 ***************************************************************************/
 
 /***************************************************************************

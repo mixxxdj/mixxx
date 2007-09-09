@@ -4,16 +4,16 @@
     begin                : Sun Apr 28 2002
     copyright            : (C) 2002 by
     email                :
- ***************************************************************************/
+***************************************************************************/
 
 /***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+*                                                                         *
+*   This program is free software; you can redistribute it and/or modify  *
+*   it under the terms of the GNU General Public License as published by  *
+*   the Free Software Foundation; either version 2 of the License, or     *
+*   (at your option) any later version.                                   *
+*                                                                         *
+***************************************************************************/
 
 #include "controlpushbutton.h"
 #include "configobject.h"
@@ -35,28 +35,28 @@
 #endif
 // #include "enginebuffermasterrate.h"
 
-EngineMaster::EngineMaster(ConfigObject<ConfigValue> *_config,
-			   EngineBuffer *_buffer1, EngineBuffer *_buffer2,
-                           EngineChannel *_channel1, EngineChannel *_channel2,
-                           const char *group)
+EngineMaster::EngineMaster(ConfigObject<ConfigValue> * _config,
+                           EngineBuffer * _buffer1, EngineBuffer * _buffer2,
+                           EngineChannel * _channel1, EngineChannel * _channel2,
+                           const char * group)
 {
     buffer1 = _buffer1;
     buffer2 = _buffer2;
     channel1 = _channel1;
     channel2 = _channel2;
-    
+
     // Defaults
     master1 = true;
     master2 = true;
 
-    // Flanger   
-    flanger = new EngineFlanger("[Flanger]");    
+    // Flanger
+    flanger = new EngineFlanger("[Flanger]");
 
 #ifdef __LADSPA__
     // LADSPA
     ladspa = new EngineLADSPA();
 #endif
-    
+
     // Crossfader
     crossfader = new ControlPotmeter(ConfigKey(group, "crossfader"),-1.,1.);
 
@@ -66,7 +66,7 @@ EngineMaster::EngineMaster(ConfigObject<ConfigValue> *_config,
 
     // Balance
     m_pBalance = new ControlPotmeter(ConfigKey(group, "balance"), -1., 1.);
-            
+
     // Master volume
     volume = new EngineVolume(ConfigKey(group,"volume"), 5.);
 
@@ -82,7 +82,7 @@ EngineMaster::EngineMaster(ConfigObject<ConfigValue> *_config,
     // Headphone mix (left/right)
     head_mix = new ControlPotmeter(ConfigKey(group, "headMix"),-1.,1.);
     head_mix->set(-1.);
-    
+
     // Headphone Clipping
     head_clipping = new EngineClipping("");
 
@@ -93,25 +93,25 @@ EngineMaster::EngineMaster(ConfigObject<ConfigValue> *_config,
     // Channel VU meter:
     vumeter1 = new EngineVuMeter("[Channel1]");
     vumeter2 = new EngineVuMeter("[Channel2]");
-    
-    // Vinyl sound emulation 
+
+    // Vinyl sound emulation
     vinylsound1 = new EngineVinylSoundEmu(_config, "[Channel1]");
     vinylsound2 = new EngineVinylSoundEmu(_config, "[Channel2]");
-    
+
     // Mute on active headphone
 //     m_pControlObjectHeadphoneMute = new ControlObject(ConfigKey(group,"HeadphoneMute"));
-    
+
     pfl1 = channel1->getPFL();
     pfl2 = channel2->getPFL();
 
     flanger1 = flanger->getButtonCh1();
     flanger2 = flanger->getButtonCh2();
-    
+
     Q_ASSERT(flanger1);
     Q_ASSERT(flanger2);
-    
+
 //     m_pEngineBufferMasterRate = new EngineBufferMasterRate();
-    
+
     // Allocate buffers
     m_pTemp1 = new CSAMPLE[MAX_BUFFER_LEN];
     m_pTemp2 = new CSAMPLE[MAX_BUFFER_LEN];
@@ -149,14 +149,14 @@ void EngineMaster::setPitchIndpTimeStretch(bool b)
     buffer2->setPitchIndpTimeStretch(b);
 }
 
-void EngineMaster::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBufferSize)
+void EngineMaster::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBufferSize)
 {
-    CSAMPLE *pOutput = (CSAMPLE *)pOut;
-    
+    CSAMPLE * pOutput = (CSAMPLE *)pOut;
+
     //
     // Process the buffer, the channels and the effects:
     //
-    
+
     if (master1)
     {
         buffer1->process(0, m_pTemp1, iBufferSize);
@@ -178,7 +178,7 @@ void EngineMaster::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBuff
     //
     // Output channel:
     //
-    
+
     //
     // Headphone channel:
     //
@@ -233,7 +233,7 @@ void EngineMaster::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBuff
             c1_gain = 1.-cf_val;
             c2_gain = 1.;
         }
-            
+
     }
     else
     {

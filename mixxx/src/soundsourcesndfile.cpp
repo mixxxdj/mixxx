@@ -3,16 +3,16 @@
                              -------------------
     copyright            : (C) 2002 by Tue and Ken Haste Andersen
     email                :
- ***************************************************************************/
+***************************************************************************/
 
 /***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+*                                                                         *
+*   This program is free software; you can redistribute it and/or modify  *
+*   it under the terms of the GNU General Public License as published by  *
+*   the Free Software Foundation; either version 2 of the License, or     *
+*   (at your option) any later version.                                   *
+*                                                                         *
+***************************************************************************/
 
 #include "trackinfoobject.h"
 #include "soundsourcesndfile.h"
@@ -21,8 +21,8 @@
 //Added by qt3to4:
 #include <Q3ValueList>
 /*
-  Class for reading files using libsndfile
-*/
+   Class for reading files using libsndfile
+ */
 SoundSourceSndFile::SoundSourceSndFile(QString qFilename) : SoundSource(qFilename)
 {
     info = new SF_INFO;
@@ -69,12 +69,12 @@ long SoundSourceSndFile::seek(long filepos)
 }
 
 /*
-  read <size> samples into <destination>, and return the number of
-  samples actually read.
-*/
-unsigned SoundSourceSndFile::read(unsigned long size, const SAMPLE* destination)
+   read <size> samples into <destination>, and return the number of
+   samples actually read.
+ */
+unsigned SoundSourceSndFile::read(unsigned long size, const SAMPLE * destination)
 {
-    SAMPLE *dest = (SAMPLE *)destination;
+    SAMPLE * dest = (SAMPLE *)destination;
     if (filelength > 0)
     {
         if (channels==2)
@@ -110,12 +110,12 @@ unsigned SoundSourceSndFile::read(unsigned long size, const SAMPLE* destination)
     return size;
 }
 
-int SoundSourceSndFile::ParseHeader( TrackInfoObject *Track )
+int SoundSourceSndFile::ParseHeader( TrackInfoObject * Track )
 {
     SF_INFO info;
     QString location = Track->getLocation();
-    SNDFILE *fh = sf_open( location ,SFM_READ, &info);
-	//const char* err = sf_strerror(0);
+    SNDFILE * fh = sf_open( location,SFM_READ, &info);
+    //const char* err = sf_strerror(0);
     if (fh == 0 || !sf_format_check(&info))
     {
         qDebug("libsndfile: ERR opening file.");
@@ -133,21 +133,21 @@ int SoundSourceSndFile::ParseHeader( TrackInfoObject *Track )
 }
 
 /*
-  Return the length of the file in samples.
-*/
+   Return the length of the file in samples.
+ */
 inline long unsigned SoundSourceSndFile::length()
 {
     return filelength;
 }
 
-Q3ValueList<long> *SoundSourceSndFile::getCuePoints()
+Q3ValueList<long> * SoundSourceSndFile::getCuePoints()
 {
     // Ensure that the file ends with ".wav"
     if (!m_qFilename.endsWith(".wav"))
         return 0;
-        
+
     // Open file
-    FILE *fh  = fopen(m_qFilename.latin1(),"r");
+    FILE * fh  = fopen(m_qFilename.latin1(),"r");
 
     // Check the file magic header bytes
     char str[4];
@@ -165,39 +165,39 @@ Q3ValueList<long> *SoundSourceSndFile::getCuePoints()
     {
         if (feof(fh))
             return 0;
-        
+
         fread(&str, sizeof(char), 4, fh);
         fread(&no, sizeof(long), 1, fh);
         if (strncmp(str, "cue ", 4)==0)
-            break;    
+            break;
         else if (strncmp(str, "data", 4)==0)
             return 0;
         else
             fseek(fh, no,SEEK_CUR);
-    }    
+    }
 
     // Read number of cue points
     fread(&no, sizeof(long), 1, fh);
     if (no<1)
         return 0;
-    
+
     // Allocate cue point list
-    Q3ValueList<long> *pCueList = new Q3ValueList<long>;    
-        
+    Q3ValueList<long> *pCueList = new Q3ValueList<long>;
+
     // Read each cue point
     for (int i=0; i<no; ++i)
     {
         if (feof(fh))
             return 0;
-    
+
         // Seek to actual cue point data
         fseek(fh, 5*4,SEEK_CUR);
-        
+
         long cuepoint;
         fread(&cuepoint, sizeof(long), 1, fh);
-    
+
         pCueList->append(cuepoint*channels);
     }
-        
+
     return pCueList;
 }

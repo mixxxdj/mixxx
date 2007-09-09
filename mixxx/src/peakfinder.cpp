@@ -1,8 +1,8 @@
 ////////////////////////////////////////////////////////////////////////////////
 ///
-/// Peak detection routine. 
+/// Peak detection routine.
 ///
-/// The routine detects highest value on an array of values and calculates the 
+/// The routine detects highest value on an array of values and calculates the
 /// precise peak location as a mass-center of the 'hump' around the peak value.
 ///
 /// Author        : Copyright (c) Olli Parviainen
@@ -51,9 +51,9 @@ PeakFinder::PeakFinder()
 
 
 // Finds 'ground level' of a peak hump by starting from 'peakpos' and proceeding
-// to direction defined by 'direction' until next 'hump' after minimum value will 
+// to direction defined by 'direction' until next 'hump' after minimum value will
 // begin
-int PeakFinder::findGround(const float *data, int peakpos, int direction) const
+int PeakFinder::findGround(const float * data, int peakpos, int direction) const
 {
     float refvalue;
     int lowpos;
@@ -81,7 +81,7 @@ int PeakFinder::findGround(const float *data, int peakpos, int direction) const
             // going downhill, ok
             if (climb_count)
             {
-                climb_count --;  // decrease climb count
+                climb_count--;  // decrease climb count
             }
 
             // check if new minimum found
@@ -95,8 +95,8 @@ int PeakFinder::findGround(const float *data, int peakpos, int direction) const
         else
         {
             // going uphill, increase climbing counter
-            climb_count ++;
-            if (climb_count > 5) break;    // we've been climbing too long => it's next uphill => quit
+            climb_count++;
+            if (climb_count > 5) break; // we've been climbing too long => it's next uphill => quit
         }
     }
     return lowpos;
@@ -105,7 +105,7 @@ int PeakFinder::findGround(const float *data, int peakpos, int direction) const
 
 // Find offset where the value crosses the given level, when starting from 'peakpos' and
 // proceeds to direction defined in 'direction'
-int PeakFinder::findCrossingLevel(const float *data, float level, int peakpos, int direction) const
+int PeakFinder::findCrossingLevel(const float * data, float level, int peakpos, int direction) const
 {
     float peaklevel;
     int pos;
@@ -115,7 +115,7 @@ int PeakFinder::findCrossingLevel(const float *data, float level, int peakpos, i
     pos = peakpos;
     while ((pos >= minPos) && (pos < maxPos))
     {
-        if (data[pos + direction] < level) return pos;   // crossing found
+        if (data[pos + direction] < level) return pos; // crossing found
         pos += direction;
     }
     return -1;  // not found
@@ -123,7 +123,7 @@ int PeakFinder::findCrossingLevel(const float *data, float level, int peakpos, i
 
 
 // Calculates the center of mass location of 'data' array items between 'firstPos' and 'lastPos'
-float PeakFinder::calcMassCenter(const float *data, int firstPos, int lastPos) const
+float PeakFinder::calcMassCenter(const float * data, int firstPos, int lastPos) const
 {
     int i;
     float sum;
@@ -131,7 +131,7 @@ float PeakFinder::calcMassCenter(const float *data, int firstPos, int lastPos) c
 
     sum = 0;
     wsum = 0;
-    for (i = firstPos; i <= lastPos; i ++)
+    for (i = firstPos; i <= lastPos; i++)
     {
         sum += (float)i * data[i];
         wsum += data[i];
@@ -140,7 +140,7 @@ float PeakFinder::calcMassCenter(const float *data, int firstPos, int lastPos) c
 }
 
 
-float PeakFinder::detectPeak(const float *data, int minPos, int maxPos) 
+float PeakFinder::detectPeak(const float * data, int minPos, int maxPos)
 {
     #define max(x, y) (((x) > (y)) ? (x) : (y))
 
@@ -158,23 +158,23 @@ float PeakFinder::detectPeak(const float *data, int minPos, int maxPos)
     // find absolute peak
     peakpos = minPos;
     peakLevel = data[minPos];
-    for (i = minPos + 1; i < maxPos; i ++)
+    for (i = minPos + 1; i < maxPos; i++)
     {
-        if (data[i] > peakLevel) 
+        if (data[i] > peakLevel)
         {
             peakLevel = data[i];
             peakpos = i;
         }
     }
-    
+
     // find ground positions.
     gp1 = findGround(data, peakpos, -1);
     gp2 = findGround(data, peakpos, 1);
 
     groundLevel = max(data[gp1], data[gp2]);
 
-    if (groundLevel < 1e-6) return 0;                // ground level too small => detection failed
-    if ((peakLevel / groundLevel) < 1.3) return 0;   // peak less than 30% of the ground level => no good peak detected
+    if (groundLevel < 1e-6) return 0; // ground level too small => detection failed
+    if ((peakLevel / groundLevel) < 1.3) return 0; // peak less than 30% of the ground level => no good peak detected
 
     // calculate 70%-level of the peak
     cutLevel = 0.70f * peakLevel + 0.30f * groundLevel;
@@ -182,7 +182,7 @@ float PeakFinder::detectPeak(const float *data, int minPos, int maxPos)
     crosspos1 = findCrossingLevel(data, cutLevel, peakpos, -1);
     crosspos2 = findCrossingLevel(data, cutLevel, peakpos, 1);
 
-    if ((crosspos1 < 0) || (crosspos2 < 0)) return 0;   // no crossing, no peak..
+    if ((crosspos1 < 0) || (crosspos2 < 0)) return 0; // no crossing, no peak..
 
     // calculate mass center of the peak surroundings
     return calcMassCenter(data, crosspos1, crosspos2);

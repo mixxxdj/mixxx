@@ -4,36 +4,36 @@
     begin                : Wed Feb 20 2002
     copyright            : (C) 2002 by Tue and Ken Haste Andersen
     email                :
- ***************************************************************************/
+***************************************************************************/
 
 /***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+*                                                                         *
+*   This program is free software; you can redistribute it and/or modify  *
+*   it under the terms of the GNU General Public License as published by  *
+*   the Free Software Foundation; either version 2 of the License, or     *
+*   (at your option) any later version.                                   *
+*                                                                         *
+***************************************************************************/
 
 #include "player.h"
 #include "enginemaster.h"
 #include "controlobject.h"
 
 #ifdef RECORD_OUTPUT
-  // HACK TO RECORD OUTPUT. WRITTEN TO FILE AT PROGRAM EXIT
+// HACK TO RECORD OUTPUT. WRITTEN TO FILE AT PROGRAM EXIT
   #include <audiofile.h>
   #include <q3ptrlist.h>
-  typedef struct {
-      short int *pBuffer;
-      int size;
-  } recordObject;
-  Q3PtrList<recordObject> m_qRecordList;
+typedef struct {
+    short int * pBuffer;
+    int size;
+} recordObject;
+Q3PtrList<recordObject> m_qRecordList;
 #endif
 
 //Static variable memory allocation
 short int Player::m_iBufferSize = 0;
 short int Player::m_iChannels[MAX_AUDIODEVICES];
-EngineMaster *Player::m_pMaster = 0;
+EngineMaster * Player::m_pMaster = 0;
 
 
 
@@ -42,17 +42,17 @@ EngineMaster *Player::m_pMaster = 0;
    Input:   Size of the output buffer in samples
    Output:  Pointer to internal synthesis data structure.
    -------- ------------------------------------------------------ */
-Player::Player(ConfigObject<ConfigValue> *pConfig)
+Player::Player(ConfigObject<ConfigValue> * pConfig)
 {
     m_pConfig = pConfig;
     m_pBuffer = new CSAMPLE[MAX_BUFFER_LEN];
     m_pControlObjectSampleRate = ControlObject::getControl(ConfigKey("[Master]","samplerate"));
     m_pControlObjectLatency = new ControlObject(ConfigKey("[Master]","latency"));;
-    
+
     for (int i = 0; i < MAX_AUDIODEVICES; i++)
     {
-    	m_iChannels[i] = 0;
-	}
+        m_iChannels[i] = 0;
+    }
 }
 
 /* -------- ------------------------------------------------------
@@ -63,7 +63,7 @@ Player::Player(ConfigObject<ConfigValue> *pConfig)
 Player::~Player()
 {
     delete [] m_pBuffer;
-    
+
 #ifdef RECORD_OUTPUT
     //
     // HACK: Write recorded sound
@@ -83,7 +83,7 @@ Player::~Player()
     AFfilehandle fh = afOpenFile("output.wav","w",outputSetup);
     if (!fh)
         qCritical("Could not write wave output file");
-    recordObject *r;
+    recordObject * r;
     for (r = m_qRecordList.first(); r; r=m_qRecordList.next())
     {
         afWriteFrames(fh,AF_DEFAULT_TRACK,r->pBuffer,r->size/2);
@@ -93,16 +93,16 @@ Player::~Player()
 }
 
 /*
-short int Player::getBufferSize()
-{
-//     if (m_iChannels>0)
-//         return m_iBufferSize/m_iChannels;
-//     else
+   short int Player::getBufferSize()
+   {
+   //     if (m_iChannels>0)
+   //         return m_iBufferSize/m_iChannels;
+   //     else
         return m_iBufferSize;
-}
-*/
+   }
+ */
 
-void Player::setMaster(EngineMaster *pMaster)
+void Player::setMaster(EngineMaster * pMaster)
 {
     m_pMaster = pMaster;
 }
@@ -111,7 +111,7 @@ bool Player::open()
 {
     if (m_pConfig->getValueString(ConfigKey("[Soundcard]","PitchIndpTimeStretch")).toInt())
         qDebug("pitch true");
-        
+
     // Set sound scale method
     if (m_pMaster)
         m_pMaster->setPitchIndpTimeStretch(m_pConfig->getValueString(ConfigKey("[Soundcard]","PitchIndpTimeStretch")).toInt());
@@ -125,7 +125,7 @@ bool Player::open()
    Input:   Number of samples for each channel (4 channels in all)
    Output:  pointer to resulting buffer of samples
    -------- ------------------------------------------------------ */
-CSAMPLE *Player::prepareBuffer(int iBufferSize)
+CSAMPLE * Player::prepareBuffer(int iBufferSize)
 {
     // First, sync control parameters with changes from GUI thread
     ControlObject::sync();
@@ -135,10 +135,10 @@ CSAMPLE *Player::prepareBuffer(int iBufferSize)
     // architecture expects number of samples for two channels
     // as input so...
     m_pMaster->process(0, m_pBuffer, iBufferSize*2);
-    
+
 #ifdef RECORD_OUTPUT
     // HACK: RECORD SOUND
-    recordObject *r = new recordObject;
+    recordObject * r = new recordObject;
     m_qRecordList.append(r);
     r->size = iBufferSize*2;
     r->pBuffer = new short int[r->size];

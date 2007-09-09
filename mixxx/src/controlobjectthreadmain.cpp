@@ -19,7 +19,7 @@
 #include "controlevent.h"
 
 
-ControlObjectThreadMain::ControlObjectThreadMain(ControlObject *pControlObject) : ControlObjectThread(pControlObject)
+ControlObjectThreadMain::ControlObjectThreadMain(ControlObject * pControlObject) : ControlObjectThread(pControlObject)
 {
     installEventFilter(this);
 }
@@ -28,20 +28,20 @@ ControlObjectThreadMain::~ControlObjectThreadMain()
 {
 }
 
-bool ControlObjectThreadMain::eventFilter(QObject *o, QEvent *e)
+bool ControlObjectThreadMain::eventFilter(QObject * o, QEvent * e)
 {
     // Handle events
     if (e->type() == 10000)
     {
-        ControlEvent *ce = (ControlEvent *)e;
-    
+        ControlEvent * ce = (ControlEvent *)e;
+
         m_sqMutex.lock();
         m_dValue = ce->value();
         m_sqMutex.unlock();
 
         //qDebug("ControlEvent %f",ce->value());
-        
-        emit(valueChanged(ce->value()));        
+
+        emit(valueChanged(ce->value()));
     }
     else
     {

@@ -18,7 +18,7 @@
 #include "trackcollection.h"
 #include "trackinfoobject.h"
 
-MixxxSocketClient::MixxxSocketClient(Track *pTrack, int sock, QObject *parent, const char *name) : Q3Socket(parent, name)
+MixxxSocketClient::MixxxSocketClient(Track * pTrack, int sock, QObject * parent, const char * name) : Q3Socket(parent, name)
 {
     m_pTrack = pTrack;
 
@@ -26,7 +26,7 @@ MixxxSocketClient::MixxxSocketClient(Track *pTrack, int sock, QObject *parent, c
     connect(this, SIGNAL(connectionClosed()), SLOT(deleteLater()));
     setSocket(sock);
 
-    ControlObjectThreadMain *p;
+    ControlObjectThreadMain * p;
     p = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey("[Channel1]","TrackEnd")));
     connect(p, SIGNAL(valueChanged(double)), this, SLOT(slotEndOfFileCh1(double)));
     p = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey("[Channel2]","TrackEnd")));
@@ -72,22 +72,22 @@ void MixxxSocketClient::readClient()
             {
                 if (command=="stop_on_eof")
                 {
-                    ControlObject *p = ControlObject::getControl(ConfigKey(group,"TrackEndMode"));
+                    ControlObject * p = ControlObject::getControl(ConfigKey(group,"TrackEndMode"));
                     p->queueFromThread(TRACK_END_MODE_STOP);
                 }
                 else if (command=="stop")
                 {
-                    ControlObject *p = ControlObject::getControl(ConfigKey(group,"play"));
+                    ControlObject * p = ControlObject::getControl(ConfigKey(group,"play"));
                     p->queueFromThread(0.);
                 }
                 else if (command=="start")
                 {
-                    ControlObject *p = ControlObject::getControl(ConfigKey(group,"play"));
+                    ControlObject * p = ControlObject::getControl(ConfigKey(group,"play"));
                     p->queueFromThread(1.);
                 }
                 else if (command=="load")
                 {
-                    TrackInfoObject *pTrack = m_pTrack->getTrackCollection()->getTrack(argument);
+                    TrackInfoObject * pTrack = m_pTrack->getTrackCollection()->getTrack(argument);
                     if (pTrack)
                     {
                         if (group=="[Channel1]")

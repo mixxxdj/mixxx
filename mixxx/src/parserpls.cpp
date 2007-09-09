@@ -15,14 +15,14 @@
 #include <Q3PtrList>
 
 /**
-@author Ingo Kossyk (kossyki@cs.tu-berlin.de)
-**/
+   @author Ingo Kossyk (kossyki@cs.tu-berlin.de)
+ **/
 
 /**
-ToDo:
+   ToDo:
     - parse ALL informations from the pls file if available ,
-	  not only the filepath;
-**/
+          not only the filepath;
+ **/
 
 ParserPls::ParserPls()
 {
@@ -39,9 +39,9 @@ Q3PtrList<QString> * ParserPls::parse(QString sFilename)
 {
     //long numEntries =0;
     QFile * file = new QFile(sFilename);
-	QString basepath = sFilename.section('/', 0, -2);
+    QString basepath = sFilename.section('/', 0, -2);
 
-	clearLocations();
+    clearLocations();
 
     if (file->open(QIODevice::ReadOnly) && !isBinary(sFilename) ) {
 
@@ -55,11 +55,11 @@ Q3PtrList<QString> * ParserPls::parse(QString sFilename)
 
         while(QString * psLine = new QString(getFilepath(textstream, basepath))){
 
-			if(psLine->isNull() || (*psLine) == "NULL") {
-				break;
-			} else {
+            if(psLine->isNull() || (*psLine) == "NULL") {
+                break;
+            } else {
                 m_psLocations->append(psLine);
-			}
+            }
 
             //--numEntries;
         }
@@ -69,7 +69,7 @@ Q3PtrList<QString> * ParserPls::parse(QString sFilename)
         if(m_psLocations->count() != 0)
             return m_psLocations;
         else
-            return 0;		// NULL pointer returned when no locations were found
+            return 0; // NULL pointer returned when no locations were found
     }
 
     file->close();
@@ -92,7 +92,7 @@ long ParserPls::getNumEntries(Q3TextStream * stream)
 
         return temp.toLong();
 
-    }else{
+    } else{
         qDebug( "ParserPls: pls file is not a playlist! \n" );
         return 0;
     }
@@ -108,27 +108,27 @@ QString ParserPls::getFilepath(Q3TextStream * stream, QString& basepath)
         if(textline.isNull())
             break;
 
-		if(textline.contains("File")) {
+        if(textline.contains("File")) {
             int iPos = textline.find("=",0);
             ++iPos;
 
             filename = textline.right(textline.length()-iPos);
 
-			if(isFilepath(filename)) {
-				return filename;
-			} else {
-				// Try relative to m3u dir
-				QString rel = basepath + "/" + filename;
-				if (isFilepath(rel)) {
-					return rel;
-				}
-				// We couldn't match this to a real file so ignore it
-			}
+            if(isFilepath(filename)) {
+                return filename;
+            } else {
+                // Try relative to m3u dir
+                QString rel = basepath + "/" + filename;
+                if (isFilepath(rel)) {
+                    return rel;
+                }
+                // We couldn't match this to a real file so ignore it
+            }
         }
-                textline = stream->readLine();
+        textline = stream->readLine();
     }
 
-	// Signal we reached the end
-	return 0;
+    // Signal we reached the end
+    return 0;
 
 }

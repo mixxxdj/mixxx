@@ -18,7 +18,7 @@
 #include "track.h"
 #include <qcursor.h>
 
-WTreeItemPlaylist::WTreeItemPlaylist(WTreeItem *parent, TrackPlaylist *pPlaylist) : WTreeItem(parent)
+WTreeItemPlaylist::WTreeItemPlaylist(WTreeItem * parent, TrackPlaylist * pPlaylist) : WTreeItem(parent)
 {
     setRenameEnabled(0, true);
     m_pPlaylist = pPlaylist;
@@ -36,11 +36,11 @@ WTreeItemPlaylist::WTreeItemPlaylist(WTreeItem *parent, TrackPlaylist *pPlaylist
 }
 
 /*
-WTreeItemPlaylist::WTreeItemPlaylist(WTreeItem *parent, const QString &s1) : WTreeItem(parent, s1)
-{
+   WTreeItemPlaylist::WTreeItemPlaylist(WTreeItem *parent, const QString &s1) : WTreeItem(parent, s1)
+   {
     setRenameEnabled(0, true);
-}
-*/
+   }
+ */
 
 WTreeItemPlaylist::~WTreeItemPlaylist()
 {
@@ -48,7 +48,7 @@ WTreeItemPlaylist::~WTreeItemPlaylist()
 
 void WTreeItemPlaylist::popupMenu()
 {
-    Q3PopupMenu *menu = new Q3PopupMenu();
+    Q3PopupMenu * menu = new Q3PopupMenu();
     menu->insertItem("Rename", this, SLOT(slotRename()));
     menu->insertItem("Delete", this, SLOT(slotDelete()));
     menu->exec(QCursor::pos());

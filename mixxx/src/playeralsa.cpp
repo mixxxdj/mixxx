@@ -3,17 +3,17 @@
                              -------------------
     begin                : Wed Feb 20 2002
     copyright            : (C) 2002 by Tue and Ken Haste Andersen
-    email                : 
- ***************************************************************************/
+    email                :
+***************************************************************************/
 
 /***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+*                                                                         *
+*   This program is free software; you can redistribute it and/or modify  *
+*   it under the terms of the GNU General Public License as published by  *
+*   the Free Software Foundation; either version 2 of the License, or     *
+*   (at your option) any later version.                                   *
+*                                                                         *
+***************************************************************************/
 
 #include "playeralsa.h"
 #include "controlobject.h"
@@ -33,7 +33,7 @@ const int kiMaxFrameSize = 512;
 
 
 #ifndef PLAYERTEST
-PlayerALSA::PlayerALSA(ConfigObject<ConfigValue> *config) : Player(config)
+PlayerALSA::PlayerALSA(ConfigObject<ConfigValue> * config) : Player(config)
 #else
 PlayerALSA::PlayerALSA()
 #endif
@@ -44,11 +44,11 @@ PlayerALSA::PlayerALSA()
     err = snd_pcm_hw_params_malloc(&hwparams);
     if (err < 0)
         qCritical("Couldn't allocate memory for hw params: %s\n", snd_strerror(err));
-    
+
     err = snd_pcm_sw_params_malloc(&swparams);
     if (err < 0)
         qCritical("Couldn't allocate memory for sw params: %s\n", snd_strerror(err));
-    
+
     err = snd_pcm_sw_params_malloc(&swparams);
     if (err < 0)
         qCritical("Couldn't allocate memory for sw params: %s\n", snd_strerror(err));
@@ -68,11 +68,11 @@ PlayerALSA::~PlayerALSA()
     qDebug("Alsa destroying...");
     if (hwparams)
     {
-	snd_pcm_hw_params_free(hwparams);
+        snd_pcm_hw_params_free(hwparams);
     }
     if (swparams)
     {
-	snd_pcm_sw_params_free(swparams);
+        snd_pcm_sw_params_free(swparams);
     }
     qDebug("Alsa destroyed");
 }
@@ -103,8 +103,8 @@ bool PlayerALSA::open()
             qWarning() << "can't find device name or channel number in" << name;
 
         devname = rx.cap(1);
-    } 
-    else 
+    }
+    else
     {
         setDefaults(); // initialise defaults
         return open();
@@ -116,19 +116,19 @@ bool PlayerALSA::open()
     // If no device was selected return false
     if (!devname)
         return false;
-        
+
     qDebug() << "Alsa opening pcm_open:" << devname;
 
     if ((err = snd_pcm_open(&handle, devname.ascii(),
-		    SND_PCM_STREAM_PLAYBACK, 0)) < 0) {
-	// AD: Try for default device instead
-	if ((err = snd_pcm_open(&handle, "default",
-			SND_PCM_STREAM_PLAYBACK, 0)) < 0) {
+                            SND_PCM_STREAM_PLAYBACK, 0)) < 0) {
+        // AD: Try for default device instead
+        if ((err = snd_pcm_open(&handle, "default",
+                                SND_PCM_STREAM_PLAYBACK, 0)) < 0) {
             qWarning("Playback open error: %s\n", snd_strerror(err));
             return false;
-	} else {
-	    qWarning("Using default ALSA device, you may want to set up a ~/.asoundrc to enable all the features of your sound card");
-	}
+        } else {
+            qWarning("Using default ALSA device, you may want to set up a ~/.asoundrc to enable all the features of your sound card");
+        }
     }
 
     qDebug("Alsa setting hw");
@@ -232,7 +232,7 @@ bool PlayerALSA::open()
             headright = temp - 1;
         }
     }
-    
+
     qDebug("Alsa opening...HR %d", headright);
     // Check if any of the devices in the config database needs to be set to "None"
     if (masterleft < 0)
@@ -253,7 +253,7 @@ bool PlayerALSA::open()
 
     twrite = true;
     isopen = true;
-    
+
     QThread::start();
 
     return true;
@@ -264,17 +264,17 @@ bool PlayerALSA::open()
  */
 int PlayerALSA::xrun_recovery(int err)
 {
-    if (err == -EPIPE) {	/* under-run */
+    if (err == -EPIPE) {        /* under-run */
         err = snd_pcm_prepare(handle);
         if (err < 0)
             qWarning("Can't recovery from underrun, prepare failed: %s\n", snd_strerror(err));
         return 0;
-    } 
-    else if (err == -ESTRPIPE) 
+    }
+    else if (err == -ESTRPIPE)
     {
         while ((err = snd_pcm_resume(handle)) == -EAGAIN)
-            sleep(1);   /* wait until the suspend flag is released */
-        if (err < 0) 
+            sleep(1);/* wait until the suspend flag is released */
+        if (err < 0)
         {
             err = snd_pcm_prepare(handle);
             if (err < 0)
@@ -290,7 +290,7 @@ int PlayerALSA::xrun_recovery(int err)
  */
 void PlayerALSA::run()
 {
-    CSAMPLE *sptr;
+    CSAMPLE * sptr;
     int err, ctr;
 
 #ifndef PLAYERTEST
@@ -298,7 +298,7 @@ void PlayerALSA::run()
 #endif
 
     if (isformatfloat) {
-        float *optr, *output;
+        float * optr, * output;
 
         output = new float[buffer_size * m_iChannels];
         qDebug("Alsa allocating output buffer (FLOAT) %p", output);
@@ -310,11 +310,11 @@ void PlayerALSA::run()
             for (int i = 0; i < (int) period_size; i++)
             {
                 for (int j = 0; j < m_iChannels; j++) optr[j] = 0;
-                if (masterleft >= 0)  optr[masterleft]  = *sptr / 32768.;
+                if (masterleft >= 0) optr[masterleft]  = *sptr / 32768.;
                 sptr++;
                 if (masterright >= 0) optr[masterright] = *sptr / 32768.;
                 sptr++;
-                if (headleft >= 0)  optr[headleft]  = *sptr / 32768.;
+                if (headleft >= 0) optr[headleft]  = *sptr / 32768.;
                 sptr++;
                 if (headright >= 0) optr[headright] = *sptr / 32768.;
                 sptr++;
@@ -322,27 +322,27 @@ void PlayerALSA::run()
             }
             ctr = period_size;
             optr = output;
-            while (ctr > 0) 
+            while (ctr > 0)
             {
                 err = snd_pcm_writei(handle, optr, ctr);
                 if (err == -EAGAIN) continue;
-                if (err < 0) 
+                if (err < 0)
                 {
                     if (xrun_recovery(err) < 0)
                         qCritical("Write error: %s\n", snd_strerror(err));
-                    
+
                     break;
                 }
                 optr += err*m_iChannels;
                 ctr -= err;
             }
         }
-        if (output) 
+        if (output)
             delete output;
-    } 
-    else 
+    }
+    else
     {
-        short int *optr, *output;
+        short int * optr, * output;
 
         output = new short int[buffer_size * m_iChannels];
         qDebug("Alsa allocating output buffer (S16) %p", output);
@@ -354,11 +354,11 @@ void PlayerALSA::run()
             for (int i = 0; i < (int) period_size; i++)
             {
                 for (int j = 0; j < m_iChannels; j++) optr[j] = 0;
-                if (masterleft >= 0)  optr[masterleft]  = (short int) *sptr;
+                if (masterleft >= 0) optr[masterleft]  = (short int) *sptr;
                 sptr++;
                 if (masterright >= 0) optr[masterright] = (short int) *sptr;
                 sptr++;
-                if (headleft >= 0)  optr[headleft]  = (short int) *sptr;
+                if (headleft >= 0) optr[headleft]  = (short int) *sptr;
                 sptr++;
                 if (headright >= 0) optr[headright] = (short int) *sptr;
                 sptr++;
@@ -366,13 +366,13 @@ void PlayerALSA::run()
             }
             ctr = period_size;
             optr = output;
-            while (ctr > 0) 
+            while (ctr > 0)
             {
                 err = snd_pcm_writei(handle, optr, ctr);
                 if (err == -EAGAIN) continue;
-                if (err < 0) 
+                if (err < 0)
                 {
-                    if (xrun_recovery(err) < 0) 
+                    if (xrun_recovery(err) < 0)
                         qCritical("Write error: %s\n", snd_strerror(err));
                     break;
                 }
@@ -389,23 +389,23 @@ void PlayerALSA::run()
 /**
  * generate a middle A slowly shifting across the channels
  */
-CSAMPLE *PlayerALSA::prepareBuffer(int count)
+CSAMPLE * PlayerALSA::prepareBuffer(int count)
 {
     const double freq = 440.;
     const unsigned int rate = 44100;
-    static CSAMPLE *out = 0;
+    static CSAMPLE * out = 0;
 
     static double phase = 0;
     double max_phase = 1.0 / freq;
     double step = 1.0 / (double) rate;
     double res;
-    CSAMPLE *sptr;
+    CSAMPLE * sptr;
     int chn;
     static int channel = 0;
     static int ccount = 0;
 
     if (out == 0)
-    out = new CSAMPLE[80000];
+        out = new CSAMPLE[80000];
     sptr = out;
     while (count-- > 0)
     {
@@ -413,9 +413,9 @@ CSAMPLE *PlayerALSA::prepareBuffer(int count)
         for (chn = 0; chn < alsa_channels; chn++)
         {
             if (chn == channel)
-            *sptr = res;
+                *sptr = res;
             else
-            *sptr = 0;
+                *sptr = 0;
             sptr++;
         }
         phase += step;
@@ -439,7 +439,7 @@ void PlayerALSA::close()
 {
     if (!isopen)
         return;
-        
+
     qDebug("Alsa closing");
     twrite = false;
     qDebug("Alsa waiting for thread for close");
@@ -464,7 +464,7 @@ void PlayerALSA::setDefaults()
         m_pConfig->set(ConfigKey("[Soundcard]", "DeviceMasterLeft"), ConfigValue((*it)));
     else
         m_pConfig->set(ConfigKey("[Soundcard]", "DeviceMasterLeft"), ConfigValue("None"));
-    
+
     // Set second interface to master right
     ++it;
     if (*it)
@@ -525,8 +525,8 @@ QString PlayerALSA::getSoundApi()
 int PlayerALSA::set_hwparams()
 {
     unsigned int rate, rrate;
-    unsigned int buffer_time = 500000;	/* ring buffer length in us */
-    unsigned int period_time = 100000;	/* period time in us */
+    unsigned int buffer_time = 500000;  /* ring buffer length in us */
+    unsigned int period_time = 100000;  /* period time in us */
 
     int err, dir;
 
@@ -551,7 +551,7 @@ int PlayerALSA::set_hwparams()
         qWarning("Sample format (FLOAT) not available for playback: %s\n", snd_strerror(err));
         qWarning("Falling back to S16");
         err = snd_pcm_hw_params_set_format(handle, hwparams, SND_PCM_FORMAT_S16);
-        if (err < 0) 
+        if (err < 0)
         {
             qWarning("Sample format (S16) not available for playback: %s\n", snd_strerror(err));
             return err;
@@ -610,7 +610,7 @@ int PlayerALSA::set_hwparams()
     // Update SRATE and Latency ControlObjects
     m_pControlObjectSampleRate->queueFromThread((double)rrate);
 //     m_pControlObjectLatency->queueFromThread((double)iLatencyMSec);
-// 
+//
 #endif
 
     /* set the buffer time */
@@ -621,19 +621,19 @@ int PlayerALSA::set_hwparams()
 #endif
     /* figure out size and make it even */
     buffer_size = (int) rrate*(1e-6*buffer_time) + 1;
-   
+
     snd_pcm_uframes_t max = 0;
     snd_pcm_uframes_t min = 0;
-    
+
     // FIXME: Should check return values to be on the safe side
     snd_pcm_hw_params_get_buffer_size_max(hwparams, &max);
     snd_pcm_hw_params_get_buffer_size_min(hwparams, &min);
     qDebug("Allowed buffer size range: %li -> %li", min, max);
-  
+
     // Make sure buffer size we're aiming for is really allowed
     if (buffer_size < min) { buffer_size = (int)min; }
     if (buffer_size > max) { buffer_size = (int)max; }
-    
+
     buffer_size -= (buffer_size & 1);
 
     if (buffer_size < min) { buffer_size += 2; }
@@ -666,15 +666,15 @@ int PlayerALSA::set_hwparams()
     {
         unsigned int period_time = buffer_time / period_no;
         qWarning("Period %dus (no: %d)", (int) period_time, period_no);
-        
+
         int dir = 0;
-            err = snd_pcm_hw_params_test_periods(handle, hwparams, period_no, dir);
+        err = snd_pcm_hw_params_test_periods(handle, hwparams, period_no, dir);
         if (err < 0)
         {
             qWarning("Unable to test periods %i (dir %d) for playback: %s\n", period_no, dir,
-                    snd_strerror(err));
-        } 
-        else 
+                     snd_strerror(err));
+        }
+        else
         {
             err = snd_pcm_hw_params_set_periods(handle, hwparams, period_no, dir);
             if (err < 0)
@@ -692,7 +692,7 @@ int PlayerALSA::set_hwparams()
             break;
         }
     }
-    
+
     if (period_no == 1)
         return -1;
 
@@ -704,9 +704,9 @@ int PlayerALSA::set_hwparams()
         return err;
     }
     qWarning("Rate: %d, buf %df (%dus), per %df (%dus)", rrate,
-            (int) buffer_size, (int) (buffer_size / (rrate * 1e-6)),
-            (int) period_size, (int) (period_size / (rrate * 1e-6)));
-    
+             (int) buffer_size, (int) (buffer_size / (rrate * 1e-6)),
+             (int) period_size, (int) (period_size / (rrate * 1e-6)));
+
     // Update SRATE and Latency ControlObjects
     m_pControlObjectSampleRate->queueFromThread((double)rrate);
     m_pControlObjectLatency->queueFromThread((double)buffer_time/1000.);

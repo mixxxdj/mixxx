@@ -4,16 +4,16 @@
     begin                : Fri Jun 21 2002
     copyright            : (C) 2002 by Tue & Ken Haste Andersen
     email                : haste@diku.dk
- ***************************************************************************/
+***************************************************************************/
 
 /***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+*                                                                         *
+*   This program is free software; you can redistribute it and/or modify  *
+*   it under the terms of the GNU General Public License as published by  *
+*   the Free Software Foundation; either version 2 of the License, or     *
+*   (at your option) any later version.                                   *
+*                                                                         *
+***************************************************************************/
 
 #include "wknob.h"
 #include "wpixmapstore.h"
@@ -23,7 +23,7 @@
 #include <QMouseEvent>
 #include <QPaintEvent>
 
-WKnob::WKnob(QWidget *parent, const char *name) : WWidget(parent,name)
+WKnob::WKnob(QWidget * parent, const char * name) : WWidget(parent,name)
 {
     m_pPixmaps = 0;
     m_pPixmapBack = 0;
@@ -119,7 +119,7 @@ void WKnob::setPixmapBackground(const QString &filename)
     m_pPixmapBuffer = new QPixmap(m_pPixmapBack->size());
 }
 
-void WKnob::mouseMoveEvent(QMouseEvent *e)
+void WKnob::mouseMoveEvent(QMouseEvent * e)
 {
     m_fValue += (m_dStartValue-e->y());
     m_dStartValue = e->y();
@@ -133,7 +133,7 @@ void WKnob::mouseMoveEvent(QMouseEvent *e)
     update();
 }
 
-void WKnob::mousePressEvent(QMouseEvent *e)
+void WKnob::mousePressEvent(QMouseEvent * e)
 {
     m_dStartValue = e->y();
 
@@ -141,7 +141,7 @@ void WKnob::mousePressEvent(QMouseEvent *e)
         reset();
 }
 
-void WKnob::mouseReleaseEvent(QMouseEvent *e)
+void WKnob::mouseReleaseEvent(QMouseEvent * e)
 {
     if (e->button()==Qt::LeftButton)
         emit(valueChangedLeftUp(m_fValue));

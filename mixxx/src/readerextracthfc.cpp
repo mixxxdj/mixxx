@@ -4,23 +4,23 @@
     begin                : Tue Mar 18 2003
     copyright            : (C) 2003 by Tue & Ken Haste Andersen
     email                : haste@diku.dk
- ***************************************************************************/
+***************************************************************************/
 
 /***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+*                                                                         *
+*   This program is free software; you can redistribute it and/or modify  *
+*   it under the terms of the GNU General Public License as published by  *
+*   the Free Software Foundation; either version 2 of the License, or     *
+*   (at your option) any later version.                                   *
+*                                                                         *
+***************************************************************************/
 
 #include "readerextracthfc.h"
 #include "enginespectralfwd.h"
 #include "readerevent.h"
 #include "windowkaiser.h"
 
-ReaderExtractHFC::ReaderExtractHFC(ReaderExtract *input, EngineBuffer *pEngineBuffer, int _frameSize, int _frameStep) : ReaderExtract(input, pEngineBuffer, "hfc")
+ReaderExtractHFC::ReaderExtractHFC(ReaderExtract * input, EngineBuffer * pEngineBuffer, int _frameSize, int _frameStep) : ReaderExtract(input, pEngineBuffer, "hfc")
 {
     frameSize = _frameSize;
     frameStep = _frameStep;
@@ -73,7 +73,7 @@ void ReaderExtractHFC::newSource(TrackInfoObject *)
 }
 
 
-void *ReaderExtractHFC::getBasePtr()
+void * ReaderExtractHFC::getBasePtr()
 {
     return dhfc;
 }
@@ -93,7 +93,7 @@ int ReaderExtractHFC::getBufferSize()
     return frameNo;
 }
 
-void *ReaderExtractHFC::processChunk(const int _idx, const int start_idx, const int _end_idx, bool, const long signed int)
+void * ReaderExtractHFC::processChunk(const int _idx, const int start_idx, const int _end_idx, bool, const long signed int)
 {
     int end_idx = _end_idx;
     int idx = _idx;

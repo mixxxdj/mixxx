@@ -1,11 +1,11 @@
 /***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+*                                                                         *
+*   This program is free software; you can redistribute it and/or modify  *
+*   it under the terms of the GNU General Public License as published by  *
+*   the Free Software Foundation; either version 2 of the License, or     *
+*   (at your option) any later version.                                   *
+*                                                                         *
+***************************************************************************/
 
 #include <ladspapreset.h>
 
@@ -34,7 +34,7 @@ LADSPAPreset::LADSPAPreset(QDomElement element, LADSPALoader * loader)
             continue;
         }
         LADSPAPlugin * plugin = loader->getByLabel(pluginElement.text().toAscii().constData());
-        m_Plugins.insert(i, plugin);        
+        m_Plugins.insert(i, plugin);
     }
 
     QDomNodeList knobNodeList = element.elementsByTagName(QString("Knob"));
@@ -43,7 +43,7 @@ LADSPAPreset::LADSPAPreset(QDomElement element, LADSPALoader * loader)
     {
         QDomElement knobElement = knobNodeList.item(i).toElement();
         LADSPAPresetKnob * knob = new LADSPAPresetKnob(knobElement);
-        m_Knobs.insert(i, knob);        
+        m_Knobs.insert(i, knob);
     }
 }
 
