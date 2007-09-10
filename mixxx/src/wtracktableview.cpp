@@ -226,9 +226,11 @@ void WTrackTableView::sortByColumn(int col)
 void WTrackTableView::slotMouseDoubleClicked(const QModelIndex & index)
 {
     if (!m_pTable) {
-        setRootIndex(index);
-        m_dirindex = m_pDirFilter->mapToSource(index);
-        m_pDirFilter->setIndex(m_dirindex);
+            m_dirindex = m_pDirFilter->mapToSource(index);
+        if (m_pDirModel->isDir(m_dirindex)) {
+            setRootIndex(index);
+            m_pDirFilter->setIndex(m_dirindex);
+        }
         return;
     }
 
