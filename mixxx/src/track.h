@@ -14,13 +14,9 @@
 
 #include <QtCore>
 #include <qdom.h>
-#include <q3ptrlist.h>
-#include <q3popupmenu.h>
-#include <qobject.h>
-//Added by qt3to4:
+#include <QMenu>
+#include <QObject>
 #include <QDropEvent>
-//Added by qt3to4:
-#include <Q3PopupMenu>
 #include "trackplaylist.h"
 #include "trackplaylistlist.h"
 

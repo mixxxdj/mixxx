@@ -14,7 +14,6 @@
 #include "trackplaylist.h"
 #include "trackcollection.h"
 #include "xmlparse.h"
-#include "wtracktable.h"
 #include <q3dragobject.h>
 #include <q3cstring.h>
 #include <qdir.h>
@@ -324,6 +323,7 @@ int TrackPlaylist::getIndexOf(int id)
         if(tmpTrack->getId() == id)
             return i;
     }
+    return -1;
 }
 
 TrackInfoObject * TrackPlaylist::getTrackAt(int index)

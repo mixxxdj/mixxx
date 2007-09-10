@@ -15,44 +15,21 @@
 *                                                                         *
 ***************************************************************************/
 
-#include <qpushbutton.h>
-#include <QtDebug>
-#include <qcombobox.h>
-#include <qmessagebox.h>
-#include <qlayout.h>
-#include <q3hbox.h>
-#include <qdesktopwidget.h>
-#ifdef QT3_SUPPORT
-#include <q3accel.h>
-#include <QMenu>
-#include <q3table.h>
-#include <q3listview.h>
-#include <q3ptrlist.h>
-#include <QAction>
-#include <QPixmap>
-#include <qicon.h>
-#else
-#include <q3accel.h>
-#include <q3table.h>
-#include <q3ptrlist.h>
-#endif
 
-#include <q3listview.h>
-#include <qicon.h>
-#include <qlineedit.h>
-#include <qslider.h>
-#include <qlabel.h>
-#include <qsplashscreen.h>
-#include <qdatetime.h>
-#include <qpalette.h>
-//Added by qt3to4:
-#include <QFileDialog>
-#include <QFrame>
+#include <QtDebug>
+// #include <QMessageBox>
+// #include <QLayout>
+// #include <qdesktopwidget.h>
+// #include <qicon.h>
+// #include <qsplashscreen.h>
+// #include <qdatetime.h>
+// #include <qpalette.h>
+// #include <QFileDialog>
+// #include <QFrame>
 
 #include "wknob.h"
 #include "wslider.h"
 #include "wpushbutton.h"
-#include "wtracktable.h"
 #include "woverview.h"
 #include "mixxx.h"
 #include "controlnull.h"

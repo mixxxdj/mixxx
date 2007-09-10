@@ -52,7 +52,6 @@ WVisualWaveform::WVisualWaveform(QWidget * pParent, const QGLWidget * pShareWidg
 #endif
 
     m_painting = false;
-    //    m_qlList.setAutoDelete(false);
 }
 
 WVisualWaveform::~WVisualWaveform()
