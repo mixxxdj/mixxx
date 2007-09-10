@@ -276,18 +276,30 @@ void WTrackTableView::setDirModel()
 void WTrackTableView::contextMenuEvent(QContextMenuEvent * event)
 {
     index = indexAt(event->pos());
-    if (!m_pTable)
-        return;
-    m_pTrackInfoObject = m_pTable->m_pTrackPlaylist->getTrackAt(index.row());
-    if(index.isValid())
+
+    if (index.isValid())
     {
+        //Browse mode menu (using the QDirModel)
+        if (!m_pTable) 
+        { 
+            QModelIndex temp_dirindex = m_pDirFilter->mapToSource(index);
+            if (!m_pDirModel->isDir(temp_dirindex)) {
+                m_dirTrackName = m_pDirModel->filePath(temp_dirindex);  
+            }
+        }
+        else //Regular library mode menu
+        {
+            m_pTrackInfoObject = m_pTable->m_pTrackPlaylist->getTrackAt(index.row());
+        }
+
         QMenu menu(this);
         menu.addAction(PlayQueueAct);
         if (ControlObject::getControl(ConfigKey("[Channel1]","play"))->get()!=1.)
             menu.addAction(Player1Act);
         if (ControlObject::getControl(ConfigKey("[Channel2]","play"))->get()!=1.)
             menu.addAction(Player2Act);
-        menu.addAction(RemoveAct);
+        if (m_pTable) //Only show "Remove" in Library mode
+            menu.addAction(RemoveAct);
         menu.exec(event->globalPos());
     }
 }
@@ -305,6 +317,20 @@ void WTrackTableView::createActions()
 
     RemoveAct = new QAction(tr("Remove"),this);
     connect(RemoveAct, SIGNAL(triggered()), this, SLOT(slotRemoveFromPlaylist()));
+
+/*    
+    PlayQueueActBrowse = new QAction(tr("Play Queue"),this);
+    connect(PlayQueueActBrowse, SIGNAL(triggered()), this, SLOT(slotSendToPlayqueue()));
+
+    Player1ActBrowse = new QAction(tr("Player 1"),this);
+    connect(Player1ActBrowse, SIGNAL(triggered()), this, SLOT(slotLoadPlayer1()));
+
+    Player2ActBrowse = new QAction(tr("Player 2"),this);
+    connect(Player2ActBrowse, SIGNAL(triggered()), this, SLOT(slotLoadPlayer2()));
+
+    RemoveActBrowse = new QAction(tr("Remove"),this);
+    connect(RemoveActBrowse, SIGNAL(triggered()), this, SLOT(slotRemoveFromPlaylist()));
+*/
 }
 
 void WTrackTableView::setTrack(Track * pTrack)
@@ -314,16 +340,25 @@ void WTrackTableView::setTrack(Track * pTrack)
 
 void WTrackTableView::slotLoadPlayer1()
 {
-    m_pTrack->slotLoadPlayer1(m_pTrackInfoObject);
+    if (!m_pTable) //Browse mode
+        m_pTrack->slotLoadPlayer1(m_dirTrackName);
+    else //Library mode
+        m_pTrack->slotLoadPlayer1(m_pTrackInfoObject);
 }
 void WTrackTableView::slotLoadPlayer2()
 {
-    m_pTrack->slotLoadPlayer2(m_pTrackInfoObject);
+   if (!m_pTable) //Browse mode
+        m_pTrack->slotLoadPlayer2(m_dirTrackName);
+    else //Library mode
+        m_pTrack->slotLoadPlayer2(m_pTrackInfoObject);
 }
 
 void WTrackTableView::slotSendToPlayqueue()
 {
-    m_pTrack->slotSendToPlayqueue(m_pTrackInfoObject);
+    if (!m_pTable) //Browse mode
+        m_pTrack->slotSendToPlayqueue(m_dirTrackName);
+    else //Library mode
+        m_pTrack->slotSendToPlayqueue(m_pTrackInfoObject);
 }
 void WTrackTableView::slotRemoveFromPlaylist()
 {

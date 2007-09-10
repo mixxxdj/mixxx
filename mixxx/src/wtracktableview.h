@@ -106,6 +106,7 @@ protected slots:
 protected:
     DlgBpmTap *bpmTapDlg;
     QModelIndex m_dirindex;
+    QString m_dirTrackName; //Name of the track right-clicked when in browse mode.
     /* directory model*/
     QDirModel *m_pDirModel;
 
