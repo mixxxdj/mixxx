@@ -22,7 +22,6 @@
 #include <QDropEvent>
 #include "mixxxview.h"
 #include <q3dragobject.h>
-//#include "wtracktable.h"
 
 /*used for new model/view interface*/
 #include "wtracktablemodel.h"
@@ -31,8 +30,8 @@
 //#include "wtreeview.h"
 #include "dlgbpmtap.h"
 #include "wnumberpos.h"
-#include <q3popupmenu.h>
-#include <qcursor.h>
+#include <QMenu>
+#include <QCursor>
 #include <q3cstring.h>
 #include "enginebuffer.h"
 #include "reader.h"

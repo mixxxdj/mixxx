@@ -40,7 +40,6 @@
 #include <QTabBar>
 #include <QDialog>
 #include <QtGui>
-//Added by qt3to4:
 #include <QEvent>
 
 DlgPreferences::DlgPreferences(MixxxApp * mixxx, MixxxView * view,

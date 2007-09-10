@@ -35,10 +35,8 @@
 #include <QtDebug>
 #include <QMessageBox>
 
-#include "wtracktable.h"
 #include "wtracktablemodel.h"
 #include "wtracktableview.h"
-//#include "wtreeview.h"
 #include "wwidget.h"
 #include "wknob.h"
 #include "wpushbutton.h"

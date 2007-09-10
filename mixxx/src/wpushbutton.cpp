@@ -31,7 +31,6 @@ WPushButton::WPushButton(QWidget * parent, const char * name ) : WWidget(parent,
     m_pPixmapBack = 0;
     m_pPixmapBuffer = 0;
     setStates(0);
-
     setBackgroundMode(Qt::NoBackground);
 }
 
