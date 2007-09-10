@@ -21,7 +21,7 @@
 
 class ControlLogpotmeter;
 
-class EnginePregain : public EngineObject 
+class EnginePregain : public EngineObject
 {
 public:
     EnginePregain(const char *group);
