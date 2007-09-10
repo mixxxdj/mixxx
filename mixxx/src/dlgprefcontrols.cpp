@@ -55,8 +55,8 @@ DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxView * pView, MixxxApp *
         m_pConfig->set(ConfigKey("[Controls]","RateDir"),ConfigValue(0));
 
     // Position display configuration
-    ComboBoxPosition->insertItem("Position");
-    ComboBoxPosition->insertItem("Remaining");
+    ComboBoxPosition->addItem("Position");
+    ComboBoxPosition->addItem("Remaining");
     if (m_pConfig->getValueString(ConfigKey("[Controls]","PositionDisplay")).length() == 0)
         m_pConfig->set(ConfigKey("[Controls]","PositionDisplay"),ConfigValue(0));
     if (m_pConfig->getValueString(ConfigKey("[Controls]","PositionDisplay")).toInt() == 1)
@@ -124,8 +124,8 @@ DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxView * pView, MixxxApp *
         m_pConfig->set(ConfigKey("[Controls]","Visuals"), ConfigValue(0));
 
     // Update combo box
-    ComboBoxVisuals->insertItem("Waveform");
-    ComboBoxVisuals->insertItem("Simple");
+    ComboBoxVisuals->addItem("Waveform");
+    ComboBoxVisuals->addItem("Simple");
     ComboBoxVisuals->setCurrentItem(m_pConfig->getValueString(ConfigKey("[Controls]","Visuals")).toInt());
 
     connect(ComboBoxVisuals,   SIGNAL(activated(int)), this, SLOT(slotSetVisuals(int)));
@@ -149,7 +149,7 @@ DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxView * pView, MixxxApp *
         {
             if (fi->fileName()!="." && fi->fileName()!="..")
             {
-                ComboBoxSkinconf->insertItem(fi->fileName());
+                ComboBoxSkinconf->addItem(fi->fileName());
                 if (fi->fileName() == pConfig->getValueString(ConfigKey("[Config]","Skin")))
                     ComboBoxSkinconf->setCurrentItem(j);
                 ++j;
@@ -164,7 +164,7 @@ DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxView * pView, MixxxApp *
     {
         if (list.at(i).fileName()!="." && list.at(i).fileName()!="..")
         {
-            ComboBoxSkinconf->insertItem(list.at(i).fileName());
+            ComboBoxSkinconf->addItem(list.at(i).fileName());
             if (list.at(i).fileName() == pConfig->getValueString(ConfigKey("[Config]","Skin")))
                 ComboBoxSkinconf->setCurrentItem(j);
             ++j;
@@ -221,12 +221,12 @@ void DlgPrefControls::slotUpdateSchemes()
 
     if (schlist.size() == 0) {
         ComboBoxSchemeconf->setEnabled(false);
-        ComboBoxSchemeconf->insertItem("This skin does not support schemes", 0);
+        ComboBoxSchemeconf->addItem("This skin does not support schemes", 0);
         ComboBoxSchemeconf->setCurrentItem(0);
     } else {
         ComboBoxSchemeconf->setEnabled(true);
         for (unsigned int i = 0; i < schlist.size(); i++) {
-            ComboBoxSchemeconf->insertItem(schlist[i]);
+            ComboBoxSchemeconf->addItem(schlist[i]);
 
             if (schlist[i] == m_pConfig->getValueString(ConfigKey("[Config]","Scheme"))) {
                 ComboBoxSchemeconf->setCurrentItem(i);
@@ -238,16 +238,16 @@ void DlgPrefControls::slotUpdateSchemes()
 void DlgPrefControls::slotUpdate()
 {
     ComboBoxRateRange->clear();
-    ComboBoxRateRange->insertItem(" 8% (Technics SL1210)");
-    ComboBoxRateRange->insertItem("10% ");
-    ComboBoxRateRange->insertItem("20%");
-    ComboBoxRateRange->insertItem("30%");
-    ComboBoxRateRange->insertItem("40%");
-    ComboBoxRateRange->insertItem("50%");
-    ComboBoxRateRange->insertItem("60%");
-    ComboBoxRateRange->insertItem("70%");
-    ComboBoxRateRange->insertItem("80%");
-    ComboBoxRateRange->insertItem("90%");
+    ComboBoxRateRange->addItem(" 8% (Technics SL1210)");
+    ComboBoxRateRange->addItem("10% ");
+    ComboBoxRateRange->addItem("20%");
+    ComboBoxRateRange->addItem("30%");
+    ComboBoxRateRange->addItem("40%");
+    ComboBoxRateRange->addItem("50%");
+    ComboBoxRateRange->addItem("60%");
+    ComboBoxRateRange->addItem("70%");
+    ComboBoxRateRange->addItem("80%");
+    ComboBoxRateRange->addItem("90%");
 
     float idx = 10.*m_pControlRateRange1->get();
     if (m_pControlRateRange1->get()==0.08)
@@ -256,8 +256,8 @@ void DlgPrefControls::slotUpdate()
     ComboBoxRateRange->setCurrentItem((int)idx);
 
     ComboBoxRateDir->clear();
-    ComboBoxRateDir->insertItem("Up increases speed");
-    ComboBoxRateDir->insertItem("Down increases speed (Technics SL1210)");
+    ComboBoxRateDir->addItem("Up increases speed");
+    ComboBoxRateDir->addItem("Down increases speed (Technics SL1210)");
 
     if (m_pControlRateDir1->get()==1)
         ComboBoxRateDir->setCurrentItem(0);

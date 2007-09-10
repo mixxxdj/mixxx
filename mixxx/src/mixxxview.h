@@ -26,7 +26,7 @@
 //Added by qt3to4:
 #include <Q3ValueList>
 #include "configobject.h"
-#include <q3ptrlist.h>
+#include <QList>
 #include "configobject.h"
 #include "imgsource.h"
 
@@ -78,37 +78,37 @@ public:
     WSliderComposed *m_pSliderRateCh1, *m_pSliderRateCh2;
     /** Allow dynamic zoom on visuals */
     bool m_bZoom;
-	/** Pointer to ComboBox*/
-	QComboBox *m_pComboBox;
-	//WComboBox *m_pComboBox;
-	/** Pointer to SearchBox */
-	QLabel *m_pSearchLabel;
-	QLineEdit *m_pLineEditSearch;
-	/** Pointer to Search PushButton*/
-	QPushButton *m_pPushButton;
+    /** Pointer to ComboBox*/
+    QComboBox *m_pComboBox;
+    //WComboBox *m_pComboBox;
+    /** Pointer to SearchBox */
+    QLabel *m_pSearchLabel;
+    QLineEdit *m_pLineEditSearch;
+    /** Pointer to Search PushButton*/
+    QPushButton *m_pPushButton;
     /** Pointer to overview displays */
     WOverview *m_pOverviewCh1, *m_pOverviewCh2;
-	
-	void rebootGUI(QWidget* parent, bool bVisualsWaveform, ConfigObject<ConfigValue> *pConfig, QString qSkinPath);
 
-	static Q3ValueList<QString> getSchemeList(QString qSkinPath);
+    void rebootGUI(QWidget* parent, bool bVisualsWaveform, ConfigObject<ConfigValue> *pConfig, QString qSkinPath);
+
+    static QList<QString> getSchemeList(QString qSkinPath);
 
 private:
-	void setupColorScheme(QDomElement docElem, ConfigObject<ConfigValue> *pConfig);
-	void createAllWidgets(QDomElement docElem, QWidget* parent, bool bVisualsWaveform, ConfigObject<ConfigValue> *pConfig);
-	
-	/*temp to change view*/
-	WTrackTable *m_pTmpPlaylist;
-	WTrackTable *m_pTmpPlaylist2;
+    void setupColorScheme(QDomElement docElem, ConfigObject<ConfigValue> *pConfig);
+    void createAllWidgets(QDomElement docElem, QWidget* parent, bool bVisualsWaveform, ConfigObject<ConfigValue> *pConfig);
 
-	ImgSource* parseFilters(QDomNode filt);
-	static QDomElement openSkin(QString qSkinPath);
-	/**Used for comboBox change*/
-	int view;
+    /*temp to change view*/
+    WTrackTable *m_pTmpPlaylist;
+    WTrackTable *m_pTmpPlaylist2;
+
+    ImgSource* parseFilters(QDomNode filt);
+    static QDomElement openSkin(QString qSkinPath);
+    /**Used for comboBox change*/
+    int view;
     // True if m_pVisualChX is instantiated as WVisualWaveform
     bool m_bVisualWaveform;
     bool compareConfigKeys(QDomNode node, QString key);
-    Q3PtrList<QObject> m_qWidgetList;
+    QList<QObject *> m_qWidgetList;
     /** Pointer to keyboard handler */
     MixxxKeyboard *m_pKeyboard;
 };
