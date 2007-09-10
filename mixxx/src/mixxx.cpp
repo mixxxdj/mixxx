@@ -66,7 +66,6 @@
 #include "trackinfoobject.h"
 #include "mixxxsocketserver.h"
 #include "mixxxmenuplaylists.h"
-#include "wtreeitem.h"
 #include "wavesummary.h"
 #include "bpmdetector.h"
 #include "log.h"
@@ -131,6 +130,8 @@ MixxxApp::MixxxApp(QApplication * a, QStringList files, QSplashScreen * pSplash,
     sr->set(44100.);
 
     ControlObject * latency = new ControlObject(ConfigKey("[Master]","latency"));
+    /* avoid unused warning*/
+    latency = 0;
 
     // Master rate
     new ControlPotmeter(ConfigKey("[Master]","rate"),-1.,1.);
@@ -685,6 +686,7 @@ void MixxxApp::rebootMixxxView() {
     int oldw = view->width();
     qDebug("Now in Rebootmixxview...");
     bool bVisualsWaveform = true;
+    //TODO 0 or 1?
     if (config->getValueString(ConfigKey("[Controls]","Visuals")).toInt()==1)
         bVisualsWaveform = false;
 

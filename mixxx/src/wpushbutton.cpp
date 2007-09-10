@@ -79,8 +79,8 @@ void WPushButton::setup(QDomNode node)
         QString key = selectNodeQString(con, "ConfigKey");
 
         ConfigKey configKey;
-        configKey.group = key.left(key.find(","));
-        configKey.item = key.mid(key.find(",")+1);
+        configKey.group = key.left(key.indexOf(","));
+        configKey.item = key.mid(key.indexOf(",")+1);
 
         ControlPushButton * p = (ControlPushButton *)ControlObject::getControl(configKey);
 
@@ -91,8 +91,12 @@ void WPushButton::setup(QDomNode node)
             //qDebug("Number of States: %i", iStates);
 
             //If we have 2 states, tell my controlpushbutton object that we're a toggle button.
-            if (iNumStates == 2)
-                p->setToggleButton(true);
+          if (iNumStates == 2) {
+            if (p == 0)
+              qDebug("Warning: wpushbutton p is null\n");
+            else
+              p->setToggleButton(true);
+          }
             // BJW: Removed this so that buttons that are hardcoded as toggle in the source
             // don't get overridden if a skin fails to set them to 2-state. Buttons still
             // default to non-toggle otherwise.

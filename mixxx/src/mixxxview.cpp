@@ -33,11 +33,12 @@
 #include <QTableView>
 #include <QLineEdit>
 #include <QtDebug>
+#include <QMessageBox>
 
 #include "wtracktable.h"
 #include "wtracktablemodel.h"
 #include "wtracktableview.h"
-#include "wtreeview.h"
+//#include "wtreeview.h"
 #include "wwidget.h"
 #include "wknob.h"
 #include "wpushbutton.h"
@@ -477,11 +478,17 @@ void MixxxView::createAllWidgets(QDomElement docElem,
             // persistent: m_pVisualCh1, m_pVisualCh2
             else if (node.nodeName()=="Visual")
             {
-                if (WWidget::selectNodeInt(node, "Channel")==1 && m_pVisualCh1==0)
+                if (WWidget::selectNodeInt(node, "Channel")==1 && m_pVisualCh1!=0) {
+                    ((WVisualWaveform *)m_pVisualCh1)->setup(node);
+                    ((WVisualWaveform *)m_pVisualCh1)->resetColors();
+                    ((WVisualWaveform *)m_pVisualCh1)->show();
+                    ((WVisualWaveform *)m_pVisualCh1)->repaint();
+                }
+                else if (WWidget::selectNodeInt(node, "Channel")==1 && m_pVisualCh1==0)
                 {
                     if (bVisualsWaveform)
                     {
-                        m_pVisualCh1 = new WVisualWaveform(this, 0, (QGLWidget *)m_pVisualCh2);
+                        m_pVisualCh1 = new WVisualWaveform(this, (QGLWidget *)m_pVisualCh2);
                         if (((WVisualWaveform *)m_pVisualCh1)->isValid())
                         {
                             ((WVisualWaveform *)m_pVisualCh1)->setup(node);
@@ -492,6 +499,7 @@ void MixxxView::createAllWidgets(QDomElement docElem,
                         {
                             m_bVisualWaveform = false;
                             delete m_pVisualCh1;
+			    m_pVisualCh1 = 0;
                         }
                     }
                     if (!m_bVisualWaveform)
@@ -504,18 +512,18 @@ void MixxxView::createAllWidgets(QDomElement docElem,
                     p->setWidget((QWidget *)m_pVisualCh1, true, Qt::LeftButton);
                     //ControlObject::setWidget((QWidget *)m_pVisualCh1, ConfigKey("[Channel1]", "wheel"), true, Qt::LeftButton);
                 }
-                else if (WWidget::selectNodeInt(node, "Channel")==1 && m_pVisualCh1!=0) {
-                    ((WVisualWaveform *)m_pVisualCh1)->setup(node);
-                    ((WVisualWaveform *)m_pVisualCh1)->resetColors();
-                    ((WVisualWaveform *)m_pVisualCh1)->show();
-                    ((WVisualWaveform *)m_pVisualCh1)->repaint();
-                }
 
-                if (WWidget::selectNodeInt(node, "Channel")==2 && m_pVisualCh2==0)
+                if (WWidget::selectNodeInt(node, "Channel")==2 && m_pVisualCh2!=0) {
+                    ((WVisualWaveform *)m_pVisualCh2)->setup(node);
+                    ((WVisualWaveform *)m_pVisualCh2)->resetColors();
+                    ((WVisualWaveform *)m_pVisualCh2)->show();
+                    ((WVisualWaveform *)m_pVisualCh2)->repaint();
+                }
+                else if (WWidget::selectNodeInt(node, "Channel")==2 && m_pVisualCh2==0)
                 {
                     if (bVisualsWaveform)
                     {
-                        m_pVisualCh2 = new WVisualWaveform(this, "", (QGLWidget *)m_pVisualCh1);
+                        m_pVisualCh2 = new WVisualWaveform(this, (QGLWidget *)m_pVisualCh1);
                         if (((WVisualWaveform *)m_pVisualCh2)->isValid())
                         {
                             ((WVisualWaveform *)m_pVisualCh2)->setup(node);
@@ -526,6 +534,7 @@ void MixxxView::createAllWidgets(QDomElement docElem,
                         {
                             m_bVisualWaveform = false;
                             delete m_pVisualCh2;
+			    m_pVisualCh2 = 0;
                         }
                     }
                     if (!m_bVisualWaveform)
@@ -537,12 +546,6 @@ void MixxxView::createAllWidgets(QDomElement docElem,
                     ControlObjectThreadWidget * p = new ControlObjectThreadWidget(ControlObject::getControl(ConfigKey("[Channel2]", "wheel")));
                     p->setWidget((QWidget *)m_pVisualCh2, true, Qt::LeftButton);
                     //ControlObject::setWidget((QWidget *)m_pVisualCh2, ConfigKey("[Channel2]", "wheel"), true, Qt::LeftButton);
-                }
-                else if (WWidget::selectNodeInt(node, "Channel")==2 && m_pVisualCh2!=0) {
-                    ((WVisualWaveform *)m_pVisualCh2)->setup(node);
-                    ((WVisualWaveform *)m_pVisualCh2)->resetColors();
-                    ((WVisualWaveform *)m_pVisualCh2)->show();
-                    ((WVisualWaveform *)m_pVisualCh2)->repaint();
                 }
 
                 if (!WWidget::selectNode(node, "Zoom").isNull() && WWidget::selectNodeQString(node, "Zoom")=="true")
@@ -727,6 +730,8 @@ void MixxxView::rebootGUI(QWidget * parent, bool bVisualsWaveform, ConfigObject<
 	obj = m_qWidgetList[i];
 	((QWidget *)obj)->show();
     }
+    if (m_pVisualCh1) ((QWidget *)m_pVisualCh1)->repaint();
+    if (m_pVisualCh2) ((QWidget *)m_pVisualCh2)->repaint();
 }
 
 

@@ -15,12 +15,6 @@
 *                                                                         *
 ***************************************************************************/
 
-#include "wvisualwaveform.h"
-#include "wskincolor.h"
-#include "visual/visualchannel.h"
-#include "visual/visualdisplay.h"
-#include <q3dragobject.h>
-//Added by qt3to4:
 #include <QDropEvent>
 #include <QTimerEvent>
 #include <QMouseEvent>
@@ -28,7 +22,12 @@
 #include <QDragEnterEvent>
 #include <QUrl>
 
-WVisualWaveform::WVisualWaveform(QWidget * pParent, const char * pName, const QGLWidget * pShareWidget) : QGLWidget(pParent,pName,pShareWidget)
+#include "wvisualwaveform.h"
+#include "wskincolor.h"
+#include "visual/visualchannel.h"
+#include "visual/visualdisplay.h"
+
+WVisualWaveform::WVisualWaveform(QWidget * pParent, const QGLWidget * pShareWidget) : QGLWidget(pParent, pShareWidget)
 {
     setAcceptDrops(true);
     m_pVisualController = new VisualController();
@@ -53,7 +52,7 @@ WVisualWaveform::WVisualWaveform(QWidget * pParent, const char * pName, const QG
 #endif
 
     m_painting = false;
-    m_qlList.setAutoDelete(false);
+    //    m_qlList.setAutoDelete(false);
 }
 
 WVisualWaveform::~WVisualWaveform()
@@ -62,7 +61,8 @@ WVisualWaveform::~WVisualWaveform()
     killTimer(m_iTimerID);
 
     // Delete associated VisualChannels
-    while (m_qlList.remove()) ;
+    //while (!m_qlList.isEmpty())
+    //    delete m_qlList.takeFirst();
 
     // Finally delete the VisualController
     delete m_pVisualController;
@@ -77,7 +77,6 @@ void WVisualWaveform::dragEnterEvent(QDragEnterEvent * event)
 {
   if (event->mimeData()->hasUrls())
       event->acceptProposedAction();
-  //    event->accept(Q3UriDrag::canDecode(event));
 }
 
 void WVisualWaveform::dropEvent(QDropEvent * event)
@@ -114,14 +113,14 @@ void WVisualWaveform::setup(QDomNode node)
 
     // Set position
     QString pos = WWidget::selectNodeQString(node, "Pos");
-    int x = pos.left(pos.find(",")).toInt();
-    int y = pos.mid(pos.find(",")+1).toInt();
+    int x = pos.left(pos.indexOf(",")).toInt();
+    int y = pos.mid(pos.indexOf(",")+1).toInt();
     move(x,y);
 
     // Size
     QString size = WWidget::selectNodeQString(node, "Size");
-    x = size.left(size.find(",")).toInt();
-    y = size.mid(size.find(",")+1).toInt();
+    x = size.left(size.indexOf(",")).toInt();
+    y = size.mid(size.indexOf(",")+1).toInt();
     setFixedSize(x,y);
 }
 
@@ -179,8 +178,10 @@ void WVisualWaveform::slotNewTrack()
 {
     // Call each channel associated
     VisualChannel * c;
-    for (c=m_qlList.first(); c; c=m_qlList.next())
+    for (int i = 0; i < m_qlList.size(); ++i) {
+        c = m_qlList[i];
         c->setupBuffer();
+    }
 }
 
 VisualChannel * WVisualWaveform::add(const char * group)
@@ -253,9 +254,10 @@ void WVisualWaveform::timerEvent(QTimerEvent *)
 }
 
 void WVisualWaveform::resetColors() {
-
     VisualChannel * vc;
-    for (vc = m_qlList.first(); vc; vc = m_qlList.next()) {
+
+    for (int i = 0; i < m_qlList.size(); ++i) {
+        vc = m_qlList[i];
         vc->setColorBack((float)colorBack.red()/255., (float)colorBack.green()/255., (float)colorBack.blue()/255.);
         vc->setColorSignal((float)colorSignal.red()/255., (float)colorSignal.green()/255., (float)colorSignal.blue()/255.);
         vc->setColorHfc((float)colorHfc.red()/255., (float)colorHfc.green()/255., (float)colorHfc.blue()/255.);
@@ -263,7 +265,6 @@ void WVisualWaveform::resetColors() {
         vc->setColorMarker((float)colorMarker.red()/255., (float)colorMarker.green()/255., (float)colorMarker.blue()/255.);
         vc->setColorBeat((float)colorBeat.red()/255., (float)colorBeat.green()/255., (float)colorBeat.blue()/255.);
         vc->setColorFisheye((float)colorFisheye.red()/255., (float)colorFisheye.green()/255., (float)colorFisheye.blue()/255.);
-
         vc->resetColors();
     }
 }
