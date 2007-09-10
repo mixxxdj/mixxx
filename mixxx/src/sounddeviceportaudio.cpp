@@ -203,9 +203,9 @@ int SoundDevicePortAudio::open()
     //a TODO:
     pControlObjectLatency->queueFromThread(0);
 
-    pControlObjectSampleRate->set(m_dSampleRate);
-    qDebug() << "SampleRate" << pControlObjectSampleRate->get();
-    qDebug() << "Latency" << pControlObjectLatency->get();
+    pControlObjectSampleRate->queueFromThread(m_dSampleRate);
+    //qDebug() << "SampleRate" << pControlObjectSampleRate->get();
+    //qDebug() << "Latency" << pControlObjectLatency->get();
 
     return 0;
 }

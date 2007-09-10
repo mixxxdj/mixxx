@@ -56,9 +56,10 @@ SoundManager::SoundManager(ConfigObject<ConfigValue> * pConfig, EngineMaster * _
     qDebug() << "SampleRate" << pControlObjectSampleRate->get();
     qDebug() << "Latency" << pControlObjectLatency->get();
 
-    //Hack:
+    //Hack because PortAudio samplerate enumeration is slow as hell on Linux
     m_samplerates.push_back("44100");
-    //m_samplerates.push_back("96000"); //TODO: Figure out why 96000 doesn't work right. (plays too fast...)
+    m_samplerates.push_back("48000");
+    m_samplerates.push_back("96000"); 
 
 #ifdef __PORTAUDIO__
     PaError err = Pa_Initialize();
