@@ -22,7 +22,9 @@
    ----------------------------------------------------------------*/
 EnginePregain::EnginePregain(const char * group)
 {
-    potmeterPregain = new ControlLogpotmeter(ConfigKey(group, "pregain"), 4.);
+  potmeterPregain = new ControlLogpotmeter(ConfigKey(group, "pregain"), 4.);
+  //  potmeterPregain = new ControlPotmeter(ConfigKey(group, "pregain"), -1., 1.);
+
 }
 
 EnginePregain::~EnginePregain()
