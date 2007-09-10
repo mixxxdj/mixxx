@@ -167,7 +167,7 @@ ImgSource * MixxxView::parseFilters(QDomNode filt) {
     QDomNode f = filt.firstChild();
 
     while (!f.isNull()) {
-        QString name = f.nodeName().lower();
+        QString name = f.nodeName().toLower();
         if (name == "invert") {
             ret = new ImgInvert(ret);
         } else if (name == "hueinv") {
@@ -226,11 +226,11 @@ QDomElement MixxxView::openSkin(QString qSkinPath) {
     QFile file(WWidget::getPath("skin.xml"));
     if (!file.open(QIODevice::ReadOnly))
     {
-        qFatal("Could not open skin definition file: %s",file.name().latin1());
+      qFatal("Could not open skin definition file: %s",file.name().latin1());
     }
     if (!skin.setContent(&file))
     {
-        qFatal("Error parsing skin definition file: %s",file.name().latin1());
+      qFatal("Error parsing skin definition file: %s",file.name().latin1());
     }
 
     file.close();
@@ -397,7 +397,7 @@ void MixxxView::createAllWidgets(QDomElement docElem,
 
                 bg->move(0, 0);
                 bg->setPixmap(*background);
-                bg->lower();
+                bg->text().toLower();
                 m_qWidgetList.append(bg);
 
                 this->setFixedSize(background->width(),background->height()+((QMainWindow *)parent->parent())->menuBar()->height());
@@ -575,14 +575,14 @@ void MixxxView::createAllWidgets(QDomElement docElem,
 
                 // Set position
                 QString pos = WWidget::selectNodeQString(node, "Pos");
-                int x = pos.left(pos.find(",")).toInt();
-                int y = pos.mid(pos.find(",")+1).toInt();
+                int x = pos.left(pos.indexOf(",")).toInt();
+                int y = pos.mid(pos.indexOf(",")+1).toInt();
                 p->move(x,y);
 
                 // Size
                 QString size = WWidget::selectNodeQString(node, "Size");
-                x = size.left(size.find(",")).toInt();
-                y = size.mid(size.find(",")+1).toInt();
+                x = size.left(size.indexOf(",")).toInt();
+                y = size.mid(size.indexOf(",")+1).toInt();
                 p->setFixedSize(x,y);
 
                 // Background color
@@ -622,14 +622,14 @@ void MixxxView::createAllWidgets(QDomElement docElem,
                 //m_pWComboBox = new WComboBox(parent,"ComboBox");
                 // Set position
                 QString pos = WWidget::selectNodeQString(node, "Pos");
-                int x = pos.left(pos.find(",")).toInt();
-                int y = pos.mid(pos.find(",")+1).toInt();
+                int x = pos.left(pos.indexOf(",")).toInt();
+                int y = pos.mid(pos.indexOf(",")+1).toInt();
                 m_pComboBox->move(x,y);
 
                 // Size
                 QString size = WWidget::selectNodeQString(node, "Size");
-                x = size.left(size.find(",")).toInt();
-                y = size.mid(size.find(",")+1).toInt();
+                x = size.left(size.indexOf(",")).toInt();
+                y = size.mid(size.indexOf(",")+1).toInt();
                 m_pComboBox->setFixedSize(x,y);
             }
 
@@ -640,16 +640,16 @@ void MixxxView::createAllWidgets(QDomElement docElem,
 
                 // Set position
                 QString pos = WWidget::selectNodeQString(node, "Pos");
-                int x = pos.left(pos.find(",")).toInt();
-                int y = pos.mid(pos.find(",")+1).toInt();
+                int x = pos.left(pos.indexOf(",")).toInt();
+                int y = pos.mid(pos.indexOf(",")+1).toInt();
                 m_pLineEditSearch->move(x+35,y);
                 //m_pLineEditSearch->setText(" ");
                 //QString temp = m_pLineEditSearch->text();
 
                 // Size
                 QString size = WWidget::selectNodeQString(node, "Size");
-                x = size.left(size.find(",")).toInt();
-                y = size.mid(size.find(",")+1).toInt();
+                x = size.left(size.indexOf(",")).toInt();
+                y = size.mid(size.indexOf(",")+1).toInt();
                 m_pLineEditSearch->setFixedSize(x,y);
 
             }
