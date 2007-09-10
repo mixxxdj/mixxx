@@ -38,6 +38,8 @@ class QAction;
 class QMenu;
 class QDirModel;
 class QModelIndex;
+class QDrag;
+class QMouseEvent;
 
 class WTrackTableView : public QTableView
 {
@@ -88,6 +90,8 @@ private:
     /**creates all actions and connects them to repective slots**/
     void createActions();
 
+    QDrag *getDragObject(QMouseEvent *event);
+
 private slots:
     /**sends track to Playqueue*/
     void slotSendToPlayqueue();
@@ -101,7 +105,6 @@ private slots:
 protected slots:
     void sortByColumn(int col);
     void slotMouseDoubleClicked(const QModelIndex &);
-    //Q3DragObject *dragObject();
 
 protected:
     DlgBpmTap *bpmTapDlg;

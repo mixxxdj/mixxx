@@ -25,6 +25,7 @@
 #include <QDropEvent>
 #include <QMouseEvent>
 #include <QPaintEvent>
+#include <QUrl>
 
 WVisualSimple::WVisualSimple(QWidget * pParent, const char * pName) : WWidget(pParent, pName)
 {
@@ -38,23 +39,22 @@ WVisualSimple::~WVisualSimple()
 
 void WVisualSimple::dragEnterEvent(QDragEnterEvent * event)
 {
-    event->accept(Q3UriDrag::canDecode(event));
+  if (event->mimeData()->hasUrls())
+      event->acceptProposedAction();
+  //    event->accept(Q3UriDrag::canDecode(event));
 }
 
 void WVisualSimple::dropEvent(QDropEvent * event)
 {
-    QStringList lst;
-    if (!Q3UriDrag::canDecode(event))
-    {
-        event->ignore();
-        return;
-    }
+  if (event->mimeData()->hasUrls()) {
+    QList<QUrl> urls(event->mimeData()->urls());
+    QUrl url = urls.first();
+    QString name = url.path();
 
     event->accept();
-    Q3UriDrag::decodeLocalFiles(event, lst);
-    QString name = (*lst.begin());
-
     emit(trackDropped(name));
+  } else
+    event->ignore();
 }
 
 void WVisualSimple::setup(QDomNode node)

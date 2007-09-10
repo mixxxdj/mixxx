@@ -45,6 +45,7 @@ WTrackTableView::WTrackTableView(QWidget * parent, ConfigObject<ConfigValue> * p
     setSelectionMode(QAbstractItemView::SingleSelection);
     viewport()->setAcceptDrops(true);
     setDragEnabled(true);
+    setDragDropMode(QAbstractItemView::DragDrop);
     setWordWrap(false);
     setVerticalScrollBarPolicy (Qt::ScrollBarAlwaysOn);
     setShowGrid(false);
@@ -54,7 +55,6 @@ WTrackTableView::WTrackTableView(QWidget * parent, ConfigObject<ConfigValue> * p
     setFrameStyle(Q3Frame::NoFrame);
     setCornerButtonEnabled ( false );
     setSortingEnabled ( true );
-
     createActions();
     m_pSearchFilter = new SortFilterProxyModel(parent);
     /*
@@ -244,19 +244,6 @@ void WTrackTableView::slotMouseDoubleClicked(const QModelIndex & index)
         bpmTapDlg->show();
     }
 }
-
-/*enables contents to be dragable
-   Q3DragObject *WTrackTableView::dragObject()
-   {
-
-    WTrackTableItem *p = (WTrackTableItem *)item(currentRow(),currentColumn());
-    TrackInfoObject *pTrackInfoObject = p->getTrackInfoObject();
-
-    Q3UriDrag *ud = new Q3UriDrag(this);
-    ud->setFileNames(QStringList(pTrackInfoObject->getLocation()));
-
-    return ud;
-   }*/
 
 void WTrackTableView::setSearchSource(WTrackTableModel * pSearchSourceModel)
 {
