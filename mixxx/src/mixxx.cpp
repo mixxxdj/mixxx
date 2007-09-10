@@ -421,8 +421,8 @@ void MixxxApp::initActions()
     optionsFullScreen = new QAction(tr("&Full Screen"), this);
     optionsFullScreen->setShortcut(tr("Esc"));
     optionsFullScreen->setShortcutContext(Qt::ApplicationShortcut);
-    QShortcut * shortcut = new QShortcut(QKeySequence(tr("Ctrl+F")),  this);
-    connect(shortcut, SIGNAL(activated()), this, SLOT(slotQuitFullScreen()));
+    //QShortcut * shortcut = new QShortcut(QKeySequence(tr("Esc")),  this);
+    //    connect(shortcut, SIGNAL(activated()), this, SLOT(slotQuitFullScreen()));
 
     optionsPreferences = new QAction(tr("&Preferences"), this);
     optionsPreferences->setShortcut(tr("Ctrl+P"));
@@ -584,9 +584,10 @@ void MixxxApp::slotOptionsBeatMark(bool)
 // BEAT MARK STUFF
 }
 
-void MixxxApp::slotQuitFullScreen() {
-    slotOptionsFullScreen(false);
-}
+// void MixxxApp::slotQuitFullScreen() {
+//     if (optionsFullScreen->isChecked())
+//         slotOptionsFullScreen(false);
+// }
 
 void MixxxApp::slotOptionsFullScreen(bool toggle)
 {
@@ -600,7 +601,7 @@ void MixxxApp::slotOptionsFullScreen(bool toggle)
         setMaximumSize(32767,32767);
 #endif
         showFullScreen();
-        menuBar()->hide();
+        //menuBar()->hide();
         // FWI: Begin of fullscreen patch
 #ifdef __LINUX__
         // Crazy X window managers break this so I'm told by Qt docs
