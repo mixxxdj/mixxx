@@ -40,6 +40,23 @@
 //Added by qt3to4:
 #include <Q3ValueList>
 
+//#define __HERCULES_STUB__ // Define __HERCULES_STUB__ disable Herc USB mode to be able to test Hercules in MIDI mode.
+#ifdef __HERCULES_STUB__
+/************** Stub ***********/
+HerculesLinux::HerculesLinux() : Hercules() {}
+HerculesLinux::~HerculesLinux() {}
+void HerculesLinux::closedev() {}
+void HerculesLinux::run() {}
+bool HerculesLinux::opendev(){ return 1; }
+int HerculesLinux::opendev(int iId) { return 1; }
+// void HerculesLinux::consoleEvent(int first, int second) {}
+void HerculesLinux::getNextEvent(){}
+void HerculesLinux::led_write(int iLed, bool bOn){}
+void HerculesLinux::selectMapping(QString qMapping) {}
+double HerculesLinux::PitchChange(const QString ControlSide, const int ev_value, int &m_iPitchPrevious, int &m_iPitchOffset) { return 0; }
+/************** End Stub ***********/
+#else //__HERCULES_STUB__
+
 #ifdef __LIBDJCONSOLE__
 static void console_event(void * c, int code, int value)
 {
@@ -253,9 +270,7 @@ double HerculesLinux::PitchChange(const QString ControlSide, const int ev_value,
 
 #endif
 
-
 // Below this line is the original non-libdjconsole implementation.
-
 #ifndef __LIBDJCONSOLE__
 
 #ifndef MSC_PULSELED
@@ -871,5 +886,6 @@ double HerculesLinux::PitchChange(const QString ControlSide, const int ev_value,
 //	qDebug("%s ADJUSTED m_iPitchOffset %i, m_iPitchPrevious %i, Resulting Pitch %5.3f", ControlSide.data(), m_iPitchOffset, m_iPitchPrevious, (((m_iPitchPrevious + m_iPitchOffset)-.5)/2.));
     return (((m_iPitchPrevious + m_iPitchOffset)-.5)/2.);
 }
-
 #endif
+
+#endif //__HERCULES_STUB__
