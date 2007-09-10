@@ -23,15 +23,14 @@
 #define WVISUALWAVEFORM_H
 
 #include <qgl.h>
-#include <q3ptrlist.h>
-#include <qevent.h>
-#include <qdatetime.h>
-#include <qdom.h>
+#include <QList>
+#include <QEvent>
+#include <QDateTime>
 #include <QMutex>
-//Added by qt3to4:
 #include <QDragEnterEvent>
 #include <QDropEvent>
 #include <QTimerEvent>
+
 #include "wwidget.h"
 #include "visual/visualcontroller.h"
 #include "visual/picking.h"
@@ -50,7 +49,7 @@ class WVisualWaveform : public QGLWidget
 {
     Q_OBJECT
 public:
-    WVisualWaveform(QWidget *pParent=0, const char *pName=0, const QGLWidget *pShareWidget = 0);
+    WVisualWaveform(QWidget *pParent=0, const QGLWidget *pShareWidget = 0);
     ~WVisualWaveform();
     /** Returns true if direct rendering is enabled */
     bool directRendering();
@@ -86,12 +85,12 @@ protected:
     /** Backplane */
     VisualBackplane *m_pVisualBackplane;
 
-    Q3PtrList <VisualChannel> m_qlList;
+    QList <VisualChannel*> m_qlList;
     /** Colors */
     QColor colorBeat, colorSignal, colorHfc, colorMarker, colorFisheye, colorBack, colorCue;
 
-	bool m_painting;
-	QMutex m_paintMutex;
+    bool m_painting;
+    QMutex m_paintMutex;
 };
 
 #endif

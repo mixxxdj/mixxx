@@ -22,12 +22,13 @@
 #include <QDropEvent>
 #include "mixxxview.h"
 #include <q3dragobject.h>
-#include "wtracktable.h"
+//#include "wtracktable.h"
+
 /*used for new model/view interface*/
 #include "wtracktablemodel.h"
 #include "wtracktableview.h"
 
-#include "wtreeview.h"
+//#include "wtreeview.h"
 #include "dlgbpmtap.h"
 #include "wnumberpos.h"
 #include <q3popupmenu.h>
@@ -579,7 +580,7 @@ void Track::slotEndOfTrackPlayer1(double val)
         {
             TrackInfoObject * pTrack;
             bool bStartFromEndPos = false;
-            
+
             //Load the next song...
             if (m_pPlayPositionCh1->get()>0.5)
             {
@@ -588,7 +589,7 @@ void Track::slotEndOfTrackPlayer1(double val)
                //Otherwise load from the active playlist... //FIXME
                if (!pTrack)
                     pTrack = m_pTrackPlayer1->getNext(m_pActivePlaylist);
-                
+
             }
             else
             {

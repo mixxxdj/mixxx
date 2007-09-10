@@ -35,7 +35,6 @@
 #include "dlgprefmixer.h"
 #include "mixxx.h"
 #include "track.h"
-#include "wtreeview.h"
 #include <QTabWidget>
 
 #include <QTabBar>
