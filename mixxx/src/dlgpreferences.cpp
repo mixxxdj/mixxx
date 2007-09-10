@@ -74,7 +74,7 @@ DlgPreferences::DlgPreferences(MixxxApp * mixxx, MixxxView * view,
     wmidi  = new DlgPrefMidi(this, config);
     wplaylist = new DlgPrefPlaylist(this, config);
     wcontrols = new DlgPrefControls(this, view, mixxx, config);
-    wmixer = new DlgPrefMixer(this, config);
+    //wmixer = new DlgPrefMixer(this, config);
 #ifdef __EXPERIMENTAL_BPM__
     wbpm = new DlgPrefBPM(this, config);
 #endif
@@ -95,7 +95,7 @@ DlgPreferences::DlgPreferences(MixxxApp * mixxx, MixxxView * view,
     pagesWidget->addWidget(wmidi);
     pagesWidget->addWidget(wplaylist);
     pagesWidget->addWidget(wcontrols);
-    pagesWidget->addWidget(wmixer);
+    //pagesWidget->addWidget(wmixer);
 #ifdef __EXPERIMENTAL_RECORDING__
     pagesWidget->addWidget(wrecord);
 #endif
@@ -112,13 +112,13 @@ DlgPreferences::DlgPreferences(MixxxApp * mixxx, MixxxView * view,
        addTab(wcontrols, "GUI");
        addTab(wplaylist, "Playlists");
        addTab(wmixer,    "Mixer Profile");
-     #ifdef __EXPERIMENTAL_BPM__
+#ifdef __EXPERIMENTAL_BPM__
        addTab(wbpm, "BPM");
-     #endif
+#endif
 
-     #ifdef __EXPERIMENTAL_RECORDING__
+#ifdef __EXPERIMENTAL_RECORDING__
        addTab(wrecord,   "Recording");
-     #endif
+#endif
      */
 
     // Add closebutton
@@ -139,7 +139,7 @@ DlgPreferences::DlgPreferences(MixxxApp * mixxx, MixxxView * view,
     connect(this, SIGNAL(showDlg()), wmidi,     SLOT(slotUpdate()));
     connect(this, SIGNAL(showDlg()), wplaylist, SLOT(slotUpdate()));
     connect(this, SIGNAL(showDlg()), wcontrols, SLOT(slotUpdate()));
-    connect(this, SIGNAL(showDlg()), wmixer,    SLOT(slotUpdate()));
+    //connect(this, SIGNAL(showDlg()), wmixer,    SLOT(slotUpdate()));
 #ifdef __EXPERIMENTAL_BPM__
     connect(this, SIGNAL(showDlg()), wbpm,    SLOT(slotUpdate()));
 #endif
@@ -160,7 +160,7 @@ DlgPreferences::DlgPreferences(MixxxApp * mixxx, MixxxView * view,
     connect(buttonBox, SIGNAL(accepted()), wmidi,     SLOT(slotApply()));
     connect(buttonBox, SIGNAL(accepted()), wplaylist, SLOT(slotApply()));
     connect(buttonBox, SIGNAL(accepted()), wcontrols, SLOT(slotApply()));
-    connect(buttonBox, SIGNAL(accepted()), wmixer,    SLOT(slotApply()));
+    //connect(buttonBox, SIGNAL(accepted()), wmixer,    SLOT(slotApply()));
     connect(buttonBox, SIGNAL(accepted()), this,      SLOT(slotApply()));
 #ifdef __EXPERIMENTAL_BPM__
     connect(buttonBox, SIGNAL(accepted()), wbpm,    SLOT(slotApply()));
@@ -216,13 +216,13 @@ void DlgPreferences::createIcons()
     controlsButton->setText(tr("Interface"));
     controlsButton->setTextAlignment(Qt::AlignLeft | Qt::AlignVCenter);
     controlsButton->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
-
+/*
     QListWidgetItem * mixerButton = new QListWidgetItem(contentsWidget);
     mixerButton->setIcon(QIcon(":/images/preferences/generic.svg"));
     mixerButton->setText(tr("Mixer"));
     mixerButton->setTextAlignment(Qt::AlignLeft | Qt::AlignVCenter);
     mixerButton->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
-
+*/
 #ifdef __EXPERIMENTAL_RECORDING__
     QListWidgetItem * recordingButton = new QListWidgetItem(contentsWidget);
     recordingButton->setIcon(QIcon(":/images/preferences/recording.svg"));
