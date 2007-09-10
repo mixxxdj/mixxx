@@ -89,8 +89,8 @@ void WTrackTableView::setup(QDomNode node)
     if (!WWidget::selectNode(node, "Pos").isNull())
     {
         QString pos = WWidget::selectNodeQString(node, "Pos");
-        int x = pos.left(pos.find(",")).toInt();
-        int y = pos.mid(pos.find(",")+1).toInt();
+        int x = pos.left(pos.indexOf(",")).toInt();
+        int y = pos.mid(pos.indexOf(",")+1).toInt();
         move(x,y);
     }
 
@@ -98,8 +98,8 @@ void WTrackTableView::setup(QDomNode node)
     if (!WWidget::selectNode(node, "Size").isNull())
     {
         QString size = WWidget::selectNodeQString(node, "Size");
-        int x = size.left(size.find(",")).toInt();
-        int y = size.mid(size.find(",")+1).toInt();
+        int x = size.left(size.indexOf(",")).toInt();
+        int y = size.mid(size.indexOf(",")+1).toInt();
         setFixedSize(x,y);
     }
     // Foreground color
@@ -107,7 +107,8 @@ void WTrackTableView::setup(QDomNode node)
     if (!WWidget::selectNode(node, "FgColor").isNull())
     {
         fgc.setNamedColor(WWidget::selectNodeQString(node, "FgColor"));
-        m_pTable->setForegroundColor(fgc);
+	if (m_pTable)
+	    m_pTable->setForegroundColor(fgc);
     }
 
 
@@ -268,11 +269,11 @@ void WTrackTableView::contextMenuEvent(QContextMenuEvent * event)
     if (index.isValid())
     {
         //Browse mode menu (using the QDirModel)
-        if (!m_pTable) 
-        { 
+        if (!m_pTable)
+        {
             QModelIndex temp_dirindex = m_pDirFilter->mapToSource(index);
             if (!m_pDirModel->isDir(temp_dirindex)) {
-                m_dirTrackName = m_pDirModel->filePath(temp_dirindex);  
+                m_dirTrackName = m_pDirModel->filePath(temp_dirindex);
             }
         }
         else //Regular library mode menu
@@ -306,7 +307,7 @@ void WTrackTableView::createActions()
     RemoveAct = new QAction(tr("Remove"),this);
     connect(RemoveAct, SIGNAL(triggered()), this, SLOT(slotRemoveFromPlaylist()));
 
-/*    
+/*
     PlayQueueActBrowse = new QAction(tr("Play Queue"),this);
     connect(PlayQueueActBrowse, SIGNAL(triggered()), this, SLOT(slotSendToPlayqueue()));
 

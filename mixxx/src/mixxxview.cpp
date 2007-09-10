@@ -1,3 +1,4 @@
+/* -*- mode:C++; indent-tabs-mode:t; tab-width:8; c-basic-offset:4; -*- */
 /***************************************************************************
                           mixxxview.cpp  -  description
                              -------------------
@@ -17,16 +18,11 @@
 
 #include "mixxxview.h"
 
-#include <q3table.h>
-
-#include <qdir.h>
-#include <qpixmap.h>
-#include <qtooltip.h>
-#include <qevent.h>
-#include <qsplitter.h>
-#include <qmenubar.h>
-#include <q3mainwindow.h>
-//Added by qt3to4:
+#include <QDir>
+#include <QPixmap>
+#include <QToolTip>
+#include <QEvent>
+#include <QMenuBar>
 #include <QList>
 #include <QTableView>
 #include <QLabel>
@@ -35,9 +31,8 @@
 #include <QMainWindow>
 #include <QPushButton>
 #include <QTableView>
-#include <qlineedit.h>
+#include <QLineEdit>
 #include <QtDebug>
-#include <QMainWindow>
 
 #include "wtracktable.h"
 #include "wtracktablemodel.h"
@@ -69,7 +64,7 @@
 #include "imgcolor.h"
 #include "wskincolor.h"
 
-MixxxView::MixxxView(QWidget * parent, ConfigObject<ConfigValueKbd> * kbdconfig, bool bVisualsWaveform, QString qSkinPath, ConfigObject<ConfigValue> * pConfig) : QWidget(parent, "Mixxx")
+MixxxView::MixxxView(QWidget * parent, ConfigObject<ConfigValueKbd> * kbdconfig, bool bVisualsWaveform, QString qSkinPath, ConfigObject<ConfigValue> * pConfig) : QWidget(parent)
 {
     view = 0;
     //    m_qWidgetList.setAutoDelete(true);
@@ -224,18 +219,21 @@ QDomElement MixxxView::openSkin(QString qSkinPath) {
     // Read XML file
     QDomDocument skin("skin");
     QFile file(WWidget::getPath("skin.xml"));
+    QFileInfo fi(file);
+
     if (!file.open(QIODevice::ReadOnly))
     {
-      qFatal("Could not open skin definition file: %s",file.name().latin1());
+	qFatal("Could not open skin definition file: %s", (char *)fi.fileName().constData());
     }
     if (!skin.setContent(&file))
     {
-      qFatal("Error parsing skin definition file: %s",file.name().latin1());
+	qFatal("Error parsing skin definition file: %s", (char *)fi.fileName().constData());
     }
 
     file.close();
     return skin.documentElement();
 }
+
 void MixxxView::setupColorScheme(QDomElement docElem, ConfigObject<ConfigValue> * pConfig) {
 
     QDomNode colsch = docElem.namedItem("Schemes");
@@ -277,6 +275,7 @@ void MixxxView::createAllWidgets(QDomElement docElem,
     {
         if (node.isElement())
         {
+          /*############## NOT PERSISTENT OBJECT ##############*/
             //printf("%s\n", node.nodeName());
             if (node.nodeName()=="PushButton")
             {
@@ -321,30 +320,6 @@ void MixxxView::createAllWidgets(QDomElement docElem,
                     p->setup(node);
                     p->installEventFilter(m_pKeyboard);
                     m_qWidgetList.append(p);
-                }
-            }
-            else if (node.nodeName()=="NumberPos")
-            {
-                if (WWidget::selectNodeInt(node, "Channel")==1)
-                {
-                    if (m_pNumberPosCh1 == 0) {
-                        m_pNumberPosCh1 = new WNumberPos("[Channel1]", this);
-                        m_pNumberPosCh1->setup(node);
-                        m_pNumberPosCh1->installEventFilter(m_pKeyboard);
-                        m_qWidgetList.append(m_pNumberPosCh1);
-                    } else
-                        m_pNumberPosCh1->setup(node);
-
-                }
-                else if (WWidget::selectNodeInt(node, "Channel")==2)
-                {
-                    if (m_pNumberPosCh2 == 0) {
-                        m_pNumberPosCh2 = new WNumberPos("[Channel2]", this);
-                        m_pNumberPosCh2->setup(node);
-                        m_pNumberPosCh2->installEventFilter(m_pKeyboard);
-                        m_qWidgetList.append(m_pNumberPosCh2);
-                    } else
-                        m_pNumberPosCh2->setup(node);
                 }
             }
             else if (node.nodeName()=="NumberRate")
@@ -397,11 +372,10 @@ void MixxxView::createAllWidgets(QDomElement docElem,
 
                 bg->move(0, 0);
                 bg->setPixmap(*background);
-                bg->text().toLower();
+                bg->lower();
                 m_qWidgetList.append(bg);
-
-                this->setFixedSize(background->width(),background->height()+((QMainWindow *)parent->parent())->menuBar()->height());
-                parent->setMinimumSize(background->width(),background->height()+((QMainWindow *)parent->parent())->menuBar()->height());
+                this->setFixedSize(background->width(),background->height());
+                parent->setMinimumSize(background->width(), background->height());
                 this->move(0,0);
                 if (!WWidget::selectNode(node, "BgColor").isNull()) {
                     c.setNamedColor(WWidget::selectNodeQString(node, "BgColor"));
@@ -413,38 +387,6 @@ void MixxxView::createAllWidgets(QDomElement docElem,
                 parent->setPalette(palette);
                 //parent->setEraseColor(WSkinColor::getCorrectColor(c));
                 parent->setAutoFillBackground(true);
-            }
-            else if (node.nodeName()=="SliderComposed")
-            {
-                WSliderComposed * p = new WSliderComposed(this);
-                p->setup(node);
-                p->installEventFilter(m_pKeyboard);
-                m_qWidgetList.append(p);
-
-                // If rate slider...
-                if (compareConfigKeys(node, "[Channel1],rate"))
-                {
-                    if (m_pSliderRateCh1 == 0) {
-                        m_pSliderRateCh1 = new WSliderComposed(this);
-                        m_pSliderRateCh1->setup(node);
-                        m_pSliderRateCh1->installEventFilter(m_pKeyboard);
-                        m_qWidgetList.append(m_pSliderRateCh1);
-                    }
-                    else {
-                        m_pSliderRateCh1->setup(node);
-                    }
-                }
-                else if (compareConfigKeys(node, "[Channel2],rate"))
-                {
-                    if (m_pSliderRateCh2 == 0) {
-                        m_pSliderRateCh2 = new WSliderComposed(this);
-                        m_pSliderRateCh2->setup(node);
-                        m_pSliderRateCh2->installEventFilter(m_pKeyboard);
-                        m_qWidgetList.append(m_pSliderRateCh2);
-                    } else {
-                        m_pSliderRateCh2->setup(node);
-                    }
-                }
             }
             else if (node.nodeName()=="VuMeter")
             {
@@ -460,99 +402,15 @@ void MixxxView::createAllWidgets(QDomElement docElem,
                 p->setup(node);
                 p->installEventFilter(m_pKeyboard);
             }
-            else if (node.nodeName()=="Overview")
-            {
-                if (WWidget::selectNodeInt(node, "Channel")==1)
-                {
-                    if (m_pOverviewCh1 == 0) {
-                        m_pOverviewCh1 = new WOverview(this);
-                        m_qWidgetList.append(m_pOverviewCh1);
-                    }
-                    m_pOverviewCh1->setup(node);
-                }
-                else if (WWidget::selectNodeInt(node, "Channel")==2)
-                {
-                    if (m_pOverviewCh2 == 0) {
-                        m_pOverviewCh2 = new WOverview(this);
-                        m_qWidgetList.append(m_pOverviewCh2);
-                    }
-                    m_qWidgetList.append(m_pOverviewCh2);
-                    m_pOverviewCh2->setup(node);
-                }
-            }
-            else if (node.nodeName()=="Visual")
-            {
-                if (WWidget::selectNodeInt(node, "Channel")==1 && m_pVisualCh1==0)
-                {
-                    if (bVisualsWaveform)
-                    {
-                        m_pVisualCh1 = new WVisualWaveform(this, 0, (QGLWidget *)m_pVisualCh2);
-                        if (((WVisualWaveform *)m_pVisualCh1)->isValid())
-                        {
-                            ((WVisualWaveform *)m_pVisualCh1)->setup(node);
-                            m_pVisualCh1->installEventFilter(m_pKeyboard);
-                            m_qWidgetList.append(m_pVisualCh1);
-                            m_bVisualWaveform = true;
-                        }
-                        else
-                        {
-                            m_bVisualWaveform = false;
-                            delete m_pVisualCh1;
-                        }
-                    }
-                    if (!m_bVisualWaveform)
-                    {
-                        m_pVisualCh1 = new WVisualSimple(this, 0);
-                        ((WVisualSimple *)m_pVisualCh1)->setup(node);
-                        m_pVisualCh1->installEventFilter(m_pKeyboard);
-                        m_qWidgetList.append(m_pVisualCh1);
-                    }
-                    ControlObjectThreadWidget * p = new ControlObjectThreadWidget(ControlObject::getControl(ConfigKey("[Channel1]", "wheel")));
-                    p->setWidget((QWidget *)m_pVisualCh1, true, Qt::LeftButton);
-                    //ControlObject::setWidget((QWidget *)m_pVisualCh1, ConfigKey("[Channel1]", "wheel"), true, Qt::LeftButton);
-                }
-                else if (WWidget::selectNodeInt(node, "Channel")==1 && m_pVisualCh1!=0) {
-                    ((WVisualWaveform *)m_pVisualCh1)->setup(node);
-                    ((WVisualWaveform *)m_pVisualCh1)->resetColors();
-                }
 
-                else if (WWidget::selectNodeInt(node, "Channel")==2 && m_pVisualCh2==0)
-                {
-                    if (bVisualsWaveform)
-                    {
-                        m_pVisualCh2 = new WVisualWaveform(this, "", (QGLWidget *)m_pVisualCh1);
-                        if (((WVisualWaveform *)m_pVisualCh2)->isValid())
-                        {
-                            ((WVisualWaveform *)m_pVisualCh2)->setup(node);
-                            m_pVisualCh2->installEventFilter(m_pKeyboard);
-                            m_bVisualWaveform = true;
-                            m_qWidgetList.append(m_pVisualCh2);
-                        }
-                        else
-                        {
-                            m_bVisualWaveform = false;
-                            delete m_pVisualCh2;
-                        }
-                    }
-                    if (!m_bVisualWaveform)
-                    {
-                        m_pVisualCh2 = new WVisualSimple(this, 0);
-                        ((WVisualSimple *)m_pVisualCh2)->setup(node);
-                        m_pVisualCh2->installEventFilter(m_pKeyboard);
-                        m_qWidgetList.append(m_pVisualCh2);
-                    }
-                    ControlObjectThreadWidget * p = new ControlObjectThreadWidget(ControlObject::getControl(ConfigKey("[Channel2]", "wheel")));
-                    p->setWidget((QWidget *)m_pVisualCh2, true, Qt::LeftButton);
-                    //ControlObject::setWidget((QWidget *)m_pVisualCh2, ConfigKey("[Channel2]", "wheel"), true, Qt::LeftButton);
-                }
-                else if (WWidget::selectNodeInt(node, "Channel")==2 && m_pVisualCh2!=0) {
-                    ((WVisualWaveform *)m_pVisualCh2)->setup(node);
-                    ((WVisualWaveform *)m_pVisualCh2)->resetColors();
-                }
 
-                if (!WWidget::selectNode(node, "Zoom").isNull() && WWidget::selectNodeQString(node, "Zoom")=="true")
-                    m_bZoom = true;
-            }
+
+
+
+
+
+            /*############## PERSISTENT OBJECT ##############*/
+            // persistent: m_pTextCh1, m_pTextCh2
             else if (node.nodeName()=="Text")
             {
                 QLabel * p = 0;
@@ -564,7 +422,6 @@ void MixxxView::createAllWidgets(QDomElement docElem,
                 else {
                     p = new QLabel(this);
                     p->installEventFilter(m_pKeyboard);
-                    m_qWidgetList.append(p);
                 }
 
                 // Associate pointers
@@ -572,6 +429,8 @@ void MixxxView::createAllWidgets(QDomElement docElem,
                     m_pTextCh1 = p;
                 else if (WWidget::selectNodeInt(node, "Channel")==2)
                     m_pTextCh2 = p;
+		else
+                    m_qWidgetList.append(p);
 
                 // Set position
                 QString pos = WWidget::selectNodeQString(node, "Pos");
@@ -601,7 +460,7 @@ void MixxxView::createAllWidgets(QDomElement docElem,
                 if (!WWidget::selectNode(node, "FgColor").isNull()) {
                     fgc.setNamedColor(WWidget::selectNodeQString(node, "FgColor"));
                 }
-                p->setPaletteForegroundColor(WSkinColor::getCorrectColor(fgc));
+		//                p->setPaletteForegroundColor(WSkinColor::getCorrectColor(fgc));
                 //QPalette palette;
                 palette.setBrush(p->foregroundRole(), WSkinColor::getCorrectColor(fgc));
                 p->setPalette(palette);
@@ -610,16 +469,177 @@ void MixxxView::createAllWidgets(QDomElement docElem,
                 if (!WWidget::selectNode(node, "Align").isNull() && WWidget::selectNodeQString(node, "Align")=="right")
                     p->setAlignment(Qt::AlignRight);
 
+		p->show();
             }
+
+
+
+            // persistent: m_pVisualCh1, m_pVisualCh2
+            else if (node.nodeName()=="Visual")
+            {
+                if (WWidget::selectNodeInt(node, "Channel")==1 && m_pVisualCh1==0)
+                {
+                    if (bVisualsWaveform)
+                    {
+                        m_pVisualCh1 = new WVisualWaveform(this, 0, (QGLWidget *)m_pVisualCh2);
+                        if (((WVisualWaveform *)m_pVisualCh1)->isValid())
+                        {
+                            ((WVisualWaveform *)m_pVisualCh1)->setup(node);
+                            m_pVisualCh1->installEventFilter(m_pKeyboard);
+                            m_bVisualWaveform = true;
+                        }
+                        else
+                        {
+                            m_bVisualWaveform = false;
+                            delete m_pVisualCh1;
+                        }
+                    }
+                    if (!m_bVisualWaveform)
+                    {
+                        m_pVisualCh1 = new WVisualSimple(this, 0);
+                        ((WVisualSimple *)m_pVisualCh1)->setup(node);
+                        m_pVisualCh1->installEventFilter(m_pKeyboard);
+                    }
+                    ControlObjectThreadWidget * p = new ControlObjectThreadWidget(ControlObject::getControl(ConfigKey("[Channel1]", "wheel")));
+                    p->setWidget((QWidget *)m_pVisualCh1, true, Qt::LeftButton);
+                    //ControlObject::setWidget((QWidget *)m_pVisualCh1, ConfigKey("[Channel1]", "wheel"), true, Qt::LeftButton);
+                }
+                else if (WWidget::selectNodeInt(node, "Channel")==1 && m_pVisualCh1!=0) {
+                    ((WVisualWaveform *)m_pVisualCh1)->setup(node);
+                    ((WVisualWaveform *)m_pVisualCh1)->resetColors();
+                    ((WVisualWaveform *)m_pVisualCh1)->show();
+                    ((WVisualWaveform *)m_pVisualCh1)->repaint();
+                }
+
+                if (WWidget::selectNodeInt(node, "Channel")==2 && m_pVisualCh2==0)
+                {
+                    if (bVisualsWaveform)
+                    {
+                        m_pVisualCh2 = new WVisualWaveform(this, "", (QGLWidget *)m_pVisualCh1);
+                        if (((WVisualWaveform *)m_pVisualCh2)->isValid())
+                        {
+                            ((WVisualWaveform *)m_pVisualCh2)->setup(node);
+                            m_pVisualCh2->installEventFilter(m_pKeyboard);
+                            m_bVisualWaveform = true;
+                        }
+                        else
+                        {
+                            m_bVisualWaveform = false;
+                            delete m_pVisualCh2;
+                        }
+                    }
+                    if (!m_bVisualWaveform)
+                    {
+                        m_pVisualCh2 = new WVisualSimple(this, 0);
+                        ((WVisualSimple *)m_pVisualCh2)->setup(node);
+                        m_pVisualCh2->installEventFilter(m_pKeyboard);
+                    }
+                    ControlObjectThreadWidget * p = new ControlObjectThreadWidget(ControlObject::getControl(ConfigKey("[Channel2]", "wheel")));
+                    p->setWidget((QWidget *)m_pVisualCh2, true, Qt::LeftButton);
+                    //ControlObject::setWidget((QWidget *)m_pVisualCh2, ConfigKey("[Channel2]", "wheel"), true, Qt::LeftButton);
+                }
+                else if (WWidget::selectNodeInt(node, "Channel")==2 && m_pVisualCh2!=0) {
+                    ((WVisualWaveform *)m_pVisualCh2)->setup(node);
+                    ((WVisualWaveform *)m_pVisualCh2)->resetColors();
+                    ((WVisualWaveform *)m_pVisualCh2)->show();
+                    ((WVisualWaveform *)m_pVisualCh2)->repaint();
+                }
+
+                if (!WWidget::selectNode(node, "Zoom").isNull() && WWidget::selectNodeQString(node, "Zoom")=="true")
+                    m_bZoom = true;
+            }
+
+
+
+
+            // persistent: m_pNumberPosCh1, m_pNumberPosCh2
+            else if (node.nodeName()=="NumberPos")
+            {
+                if (WWidget::selectNodeInt(node, "Channel")==1)
+                {
+                    if (m_pNumberPosCh1 == 0) {
+                        m_pNumberPosCh1 = new WNumberPos("[Channel1]", this);
+                        m_pNumberPosCh1->installEventFilter(m_pKeyboard);
+                    }
+		    m_pNumberPosCh1->setup(node);
+		    m_pNumberPosCh1->show();
+
+                }
+                else if (WWidget::selectNodeInt(node, "Channel")==2)
+                {
+                    if (m_pNumberPosCh2 == 0) {
+                        m_pNumberPosCh2 = new WNumberPos("[Channel2]", this);
+                        m_pNumberPosCh2->installEventFilter(m_pKeyboard);
+		    }
+		    m_pNumberPosCh2->setup(node);
+		    m_pNumberPosCh2->show();
+                }
+            }
+
+
+
+            // persistent: m_pSliderRateCh1, m_pSliderRateCh2
+            else if (node.nodeName()=="SliderComposed")
+            {
+                // If rate slider...
+                if (compareConfigKeys(node, "[Channel1],rate")) {
+                    if (m_pSliderRateCh1 == 0) {
+                        m_pSliderRateCh1 = new WSliderComposed(this);
+			m_pSliderRateCh1->installEventFilter(m_pKeyboard);
+                    }
+                    m_pSliderRateCh1->setup(node);
+		    m_pSliderRateCh1->show();
+                }
+                else if (compareConfigKeys(node, "[Channel2],rate")) {
+                    if (m_pSliderRateCh2 == 0) {
+                        m_pSliderRateCh2 = new WSliderComposed(this);
+                        m_pSliderRateCh2->installEventFilter(m_pKeyboard);
+                    }
+		    m_pSliderRateCh2->setup(node);
+		    m_pSliderRateCh2->show();
+                } else {
+		    WSliderComposed * p = new WSliderComposed(this);
+		    p->setup(node);
+		    p->installEventFilter(m_pKeyboard);
+		    m_qWidgetList.append(p);
+		}
+
+            }
+
+
+
+            // persistent: m_pOverviewCh1, m_pOverviewCh2
+            else if (node.nodeName()=="Overview")
+            {
+                if (WWidget::selectNodeInt(node, "Channel")==1)
+                {
+                    if (m_pOverviewCh1 == 0) {
+                        m_pOverviewCh1 = new WOverview(this);
+                        //m_qWidgetList.append(m_pOverviewCh1);
+                    }
+                    m_pOverviewCh1->setup(node);
+		    m_pOverviewCh1->show();
+                }
+                else if (WWidget::selectNodeInt(node, "Channel")==2)
+                {
+                    if (m_pOverviewCh2 == 0) {
+                        m_pOverviewCh2 = new WOverview(this);
+                        //m_qWidgetList.append(m_pOverviewCh2);
+                    }
+                    m_pOverviewCh2->setup(node);
+		    m_pOverviewCh2->show();
+                }
+            }
+
+	    // persistent: m_pComboBox
             else if (node.nodeName()=="ComboBox")
             {
                 if (m_pComboBox == 0) {
-                    m_pComboBox = new QComboBox( FALSE, this, "ComboBox" );
-                    m_pComboBox->addItem( "Library" );
-                    m_pComboBox->addItem( "Play Queue" );
-                    m_pComboBox->addItem( "Browse" );
-                }
-                //m_pWComboBox = new WComboBox(parent,"ComboBox");
+		    m_pComboBox = new QComboBox(this);
+		    m_pComboBox->addItem( "Library" );
+		    m_pComboBox->addItem( "Play Queue" );
+		    m_pComboBox->addItem( "Browse" );
+		}
                 // Set position
                 QString pos = WWidget::selectNodeQString(node, "Pos");
                 int x = pos.left(pos.indexOf(",")).toInt();
@@ -631,33 +651,38 @@ void MixxxView::createAllWidgets(QDomElement docElem,
                 x = size.left(size.indexOf(",")).toInt();
                 y = size.mid(size.indexOf(",")+1).toInt();
                 m_pComboBox->setFixedSize(x,y);
+                m_pComboBox->show();
             }
 
+	    // persistent: m_pLineEditSearch
             else if (node.nodeName()=="Search")
             {
-                if (m_pLineEditSearch == 0)
-                    m_pLineEditSearch = new QLineEdit( this, "lineEdit" );
+		if (m_pLineEditSearch == 0) {
+		    m_pLineEditSearch = new QLineEdit(this);
+		}
 
                 // Set position
                 QString pos = WWidget::selectNodeQString(node, "Pos");
                 int x = pos.left(pos.indexOf(",")).toInt();
                 int y = pos.mid(pos.indexOf(",")+1).toInt();
                 m_pLineEditSearch->move(x+35,y);
-                //m_pLineEditSearch->setText(" ");
-                //QString temp = m_pLineEditSearch->text();
 
                 // Size
                 QString size = WWidget::selectNodeQString(node, "Size");
                 x = size.left(size.indexOf(",")).toInt();
                 y = size.mid(size.indexOf(",")+1).toInt();
                 m_pLineEditSearch->setFixedSize(x,y);
-
+		m_pLineEditSearch->show();
             }
+
+	    // persistent: m_pTrackTableView
             else if (node.nodeName()=="TableView")
             {
-                if (m_pTrackTableView == 0)
-                    m_pTrackTableView = new WTrackTableView(this, pConfig);
+		if (m_pTrackTableView == 0) {
+		    m_pTrackTableView = new WTrackTableView(this, pConfig);
+		}
                 m_pTrackTableView->setup(node);
+		m_pTrackTableView->show();
             }
         }
         node = node.nextSibling();
@@ -667,39 +692,41 @@ void MixxxView::createAllWidgets(QDomElement docElem,
 
 
 void MixxxView::rebootGUI(QWidget * parent, bool bVisualsWaveform, ConfigObject<ConfigValue> * pConfig, QString qSkinPath) {
-
-    int i;
-    // This function is the really ghetto part of the skin change code
-    // It's quite fantastic in a terrible kind of way
-
-    // Basically it tries to save as many components of the old skin
-    // as possible and then deletes everything else before recreating
-    // them from scratch
-
     QObject *obj;
-    // This isn't thread safe, does anything else hack on this object?
-    //    for (obj = m_qWidgetList.first(); obj;) {
-    for (i = 0; i < m_qWidgetList.size(); ++i) {
-        obj = m_qWidgetList[i];
-        if (!(obj == m_pTextCh1 || obj == m_pTextCh2 || obj == m_pVisualCh1
-              || obj == m_pVisualCh2
-              || obj == m_pNumberPosCh1
-              || obj == m_pNumberPosCh2 || obj == m_pSliderRateCh1
-              || obj == m_pSliderRateCh2           //|| obj == m_pSplitter
-              || obj == m_pOverviewCh1 || obj == m_pOverviewCh2)) {
+    int i;
 
-            delete m_qWidgetList.takeAt(i);
-            i--;
-        }
+    // This isn't thread safe, does anything else hack on this object?
+
+    //remove all widget from the list (except permanent one)
+    while (!m_qWidgetList.isEmpty()) {
+	delete m_qWidgetList.takeFirst();
     }
+
+    //hide permanent widget
+    if (m_pTextCh1) m_pTextCh1->hide();
+    if (m_pTextCh2) m_pTextCh2->hide();
+    if (m_pVisualCh1) ((QWidget *)m_pVisualCh1)->hide();
+    if (m_pVisualCh2) ((QWidget *)m_pVisualCh2)->hide();
+    if (m_pNumberPosCh1) m_pNumberPosCh1->hide();
+    if (m_pNumberPosCh2) m_pNumberPosCh2->hide();
+    if (m_pSliderRateCh1) m_pSliderRateCh1->hide();
+    if (m_pSliderRateCh2) m_pSliderRateCh2->hide();
+    if (m_pOverviewCh1) m_pOverviewCh1->hide();
+    if (m_pOverviewCh2) m_pOverviewCh2->hide();
+    if (m_pComboBox) m_pComboBox->hide();
+    if (m_pLineEditSearch) m_pLineEditSearch->hide();
+    if (m_pTrackTableView) m_pTrackTableView->hide();
+
+    //load the skin
     QDomElement docElem = openSkin(qSkinPath);
     setupColorScheme(docElem, pConfig);
     createAllWidgets(docElem, parent, bVisualsWaveform, pConfig);
-    for (i = 0; i < m_qWidgetList.size(); ++i) {
-        obj = m_qWidgetList[i];
-        ((QWidget *)obj)->show();
-    }
+    show();
 
+    for (i = 0; i < m_qWidgetList.size(); ++i) {
+	obj = m_qWidgetList[i];
+	((QWidget *)obj)->show();
+    }
 }
 
 

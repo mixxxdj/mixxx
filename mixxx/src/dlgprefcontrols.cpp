@@ -15,21 +15,21 @@
 *                                                                         *
 ***************************************************************************/
 
+#include <QList>
+#include <QDir>
+#include <QToolTip>
+#include <QSpinBox>
+#include <QWidget>
+
 #include "dlgprefcontrols.h"
 #include "qcombobox.h"
-//Added by qt3to4:
-#include <Q3ValueList>
 #include "configobject.h"
 #include "controlobject.h"
 #include "controlobjectthreadmain.h"
 #include "mixxxview.h"
 #include "wnumberpos.h"
 #include "wnumberbpm.h"
-#include <qdir.h>
-#include <qtooltip.h>
 #include "enginebuffer.h"
-#include <qspinbox.h>
-#include <qwidget.h>
 
 DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxView * pView, MixxxApp * mixxx, ConfigObject<ConfigValue> * pConfig) :  QWidget(parent), Ui::DlgPrefControlsDlg()
 {
@@ -65,7 +65,7 @@ DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxView * pView, MixxxApp *
             pView->m_pNumberPosCh1->setRemain(true);
         if (pView->m_pNumberPosCh2)
             pView->m_pNumberPosCh2->setRemain(true);
-        ComboBoxPosition->setCurrentItem(1);
+        ComboBoxPosition->setCurrentIndex(1);
     }
     else
     {
@@ -73,7 +73,7 @@ DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxView * pView, MixxxApp *
             pView->m_pNumberPosCh1->setRemain(false);
         if (pView->m_pNumberPosCh2)
             pView->m_pNumberPosCh2->setRemain(false);
-        ComboBoxPosition->setCurrentItem(0);
+        ComboBoxPosition->setCurrentIndex(0);
     }
     connect(ComboBoxPosition,   SIGNAL(activated(int)), this, SLOT(slotSetPositionDisplay(int)));
 
@@ -126,7 +126,7 @@ DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxView * pView, MixxxApp *
     // Update combo box
     ComboBoxVisuals->addItem("Waveform");
     ComboBoxVisuals->addItem("Simple");
-    ComboBoxVisuals->setCurrentItem(m_pConfig->getValueString(ConfigKey("[Controls]","Visuals")).toInt());
+    ComboBoxVisuals->setCurrentIndex(m_pConfig->getValueString(ConfigKey("[Controls]","Visuals")).toInt());
 
     connect(ComboBoxVisuals,   SIGNAL(activated(int)), this, SLOT(slotSetVisuals(int)));
 
@@ -138,26 +138,26 @@ DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxView * pView, MixxxApp *
     QString qSkinPath(pConfig->getValueString(ConfigKey("[Config]","Path")));
     QDir dir(qSkinPath.append("skins/"));
     dir.setFilter(QDir::Dirs);
-#ifndef QT3_SUPPORT
-    const QFileInfoList * list = dir.entryInfoList();
-    if (list!=0)
-    {
-        QFileInfoListIterator it(* list);        // create list iterator
-        QFileInfo * fi;                   // pointer for traversing
-        int j=0;
-        while ((fi=(*it)))
-        {
-            if (fi->fileName()!="." && fi->fileName()!="..")
-            {
-                ComboBoxSkinconf->addItem(fi->fileName());
-                if (fi->fileName() == pConfig->getValueString(ConfigKey("[Config]","Skin")))
-                    ComboBoxSkinconf->setCurrentItem(j);
-                ++j;
-            }
-            ++it;
-        }
-    }
-#else
+// #ifndef QT3_SUPPORT
+//     const QFileInfoList * list = dir.entryInfoList();
+//     if (list!=0)
+//     {
+//         QFileInfoListIterator it(* list);        // create list iterator
+//         QFileInfo * fi;                   // pointer for traversing
+//         int j=0;
+//         while ((fi=(*it)))
+//         {
+//             if (fi->fileName()!="." && fi->fileName()!="..")
+//             {
+//                 ComboBoxSkinconf->addItem(fi->fileName());
+//                 if (fi->fileName() == pConfig->getValueString(ConfigKey("[Config]","Skin")))
+//                     ComboBoxSkinconf->setCurrentIndex(j);
+//                 ++j;
+//             }
+//             ++it;
+//         }
+//     }
+// #else
     QList<QFileInfo> list = dir.entryInfoList();
     int j=0;
     for (int i=0; i<list.size(); ++i)
@@ -166,11 +166,11 @@ DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxView * pView, MixxxApp *
         {
             ComboBoxSkinconf->addItem(list.at(i).fileName());
             if (list.at(i).fileName() == pConfig->getValueString(ConfigKey("[Config]","Skin")))
-                ComboBoxSkinconf->setCurrentItem(j);
+                ComboBoxSkinconf->setCurrentIndex(j);
             ++j;
         }
     }
-#endif
+// #endif
 
     connect(ComboBoxSkinconf, SIGNAL(activated(int)), this, SLOT(slotSetSkin(int)));
 
@@ -185,7 +185,7 @@ DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxView * pView, MixxxApp *
         m_pConfig->set(ConfigKey("[Controls]","ScaleBpm"), ConfigValue(1));
 
     // Update combo box
-    ComboBoxScaleBpm->setCurrentItem((m_pConfig->getValueString(ConfigKey("[Controls]","ScaleBpm")).toInt()+1)%2);
+    ComboBoxScaleBpm->setCurrentIndex((m_pConfig->getValueString(ConfigKey("[Controls]","ScaleBpm")).toInt()+1)%2);
 
     connect(ComboBoxScaleBpm,   SIGNAL(activated(int)), this, SLOT(slotSetScaleBpm(int)));
     slotSetScaleBpm(0);
@@ -199,7 +199,7 @@ DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxView * pView, MixxxApp *
         m_pConfig->set(ConfigKey("[Controls]","Tooltips"), ConfigValue(1));
 
     // Update combo box
-    ComboBoxTooltips->setCurrentItem((m_pConfig->getValueString(ConfigKey("[Controls]","Tooltips")).toInt()+1)%2);
+    ComboBoxTooltips->setCurrentIndex((m_pConfig->getValueString(ConfigKey("[Controls]","Tooltips")).toInt()+1)%2);
 
     connect(ComboBoxTooltips,   SIGNAL(activated(int)), this, SLOT(slotSetTooltips(int)));
     slotSetTooltips(0);
@@ -215,21 +215,21 @@ DlgPrefControls::~DlgPrefControls()
 void DlgPrefControls::slotUpdateSchemes()
 {
     // Since this involves opening a file we won't do this as part of regular slotUpdate
-    Q3ValueList<QString> schlist = MixxxView::getSchemeList(m_mixxx->getSkinPath());
+    QList<QString> schlist = MixxxView::getSchemeList(m_mixxx->getSkinPath());
 
     ComboBoxSchemeconf->clear();
 
     if (schlist.size() == 0) {
         ComboBoxSchemeconf->setEnabled(false);
         ComboBoxSchemeconf->addItem("This skin does not support schemes", 0);
-        ComboBoxSchemeconf->setCurrentItem(0);
+        ComboBoxSchemeconf->setCurrentIndex(0);
     } else {
         ComboBoxSchemeconf->setEnabled(true);
-        for (unsigned int i = 0; i < schlist.size(); i++) {
+        for (int i = 0; i < schlist.size(); i++) {
             ComboBoxSchemeconf->addItem(schlist[i]);
 
             if (schlist[i] == m_pConfig->getValueString(ConfigKey("[Config]","Scheme"))) {
-                ComboBoxSchemeconf->setCurrentItem(i);
+                ComboBoxSchemeconf->setCurrentIndex(i);
             }
         }
     }
@@ -253,16 +253,16 @@ void DlgPrefControls::slotUpdate()
     if (m_pControlRateRange1->get()==0.08)
         idx = 0.;
 
-    ComboBoxRateRange->setCurrentItem((int)idx);
+    ComboBoxRateRange->setCurrentIndex((int)idx);
 
     ComboBoxRateDir->clear();
     ComboBoxRateDir->addItem("Up increases speed");
     ComboBoxRateDir->addItem("Down increases speed (Technics SL1210)");
 
     if (m_pControlRateDir1->get()==1)
-        ComboBoxRateDir->setCurrentItem(0);
+        ComboBoxRateDir->setCurrentIndex(0);
     else
-        ComboBoxRateDir->setCurrentItem(1);
+        ComboBoxRateDir->setCurrentIndex(1);
 }
 
 void DlgPrefControls::slotSetRateRange(int pos)
@@ -283,7 +283,7 @@ void DlgPrefControls::slotSetRateRange(int pos)
 void DlgPrefControls::slotSetRateDir(int)
 {
     float dir = 1.;
-    if (ComboBoxRateDir->currentItem()==1)
+    if (ComboBoxRateDir->currentIndex()==1)
         dir = -1.;
 
     // Set rate dir
@@ -293,14 +293,14 @@ void DlgPrefControls::slotSetRateDir(int)
 
 void DlgPrefControls::slotSetVisuals(int)
 {
-    m_pConfig->set(ConfigKey("[Controls]","Visuals"), ConfigValue(ComboBoxVisuals->currentItem()));
+    m_pConfig->set(ConfigKey("[Controls]","Visuals"), ConfigValue(ComboBoxVisuals->currentIndex()));
     textLabel->setText("Restart Mixxx before the change of visuals will take effect.");
 }
 
 void DlgPrefControls::slotSetScaleBpm(int)
 {
-    m_pConfig->set(ConfigKey("[Controls]","ScaleBpm"), ConfigValue((ComboBoxScaleBpm->currentItem()+1)%2));
-    if (ComboBoxScaleBpm->currentItem()==0)
+    m_pConfig->set(ConfigKey("[Controls]","ScaleBpm"), ConfigValue((ComboBoxScaleBpm->currentIndex()+1)%2));
+    if (ComboBoxScaleBpm->currentIndex()==0)
         WNumberBpm::setScaleBpm(true);
     else
         WNumberBpm::setScaleBpm(false);
@@ -310,8 +310,8 @@ void DlgPrefControls::slotSetTooltips(int)
 {
 // setGloballyEnabled currently not implemented in QT4
 #ifndef QT3_SUPPORT
-    m_pConfig->set(ConfigKey("[Controls]","Tooltips"), ConfigValue((ComboBoxTooltips->currentItem()+1)%2));
-    if (ComboBoxTooltips->currentItem()==0)
+    m_pConfig->set(ConfigKey("[Controls]","Tooltips"), ConfigValue((ComboBoxTooltips->currentIndex()+1)%2));
+    if (ComboBoxTooltips->currentIndex()==0)
         QToolTip::setGloballyEnabled(true);
     else
         QToolTip::setGloballyEnabled(false);
@@ -334,9 +334,9 @@ void DlgPrefControls::slotSetSkin(int)
 
 void DlgPrefControls::slotSetPositionDisplay(int)
 {
-    m_pConfig->set(ConfigKey("[Controls]","PositionDisplay"), ConfigValue(ComboBoxPosition->currentItem()));
+    m_pConfig->set(ConfigKey("[Controls]","PositionDisplay"), ConfigValue(ComboBoxPosition->currentIndex()));
 
-    if (ComboBoxPosition->currentItem()==1)
+    if (ComboBoxPosition->currentIndex()==1)
     {
         if (m_pView->m_pNumberPosCh1)
             m_pView->m_pNumberPosCh1->setRemain(true);

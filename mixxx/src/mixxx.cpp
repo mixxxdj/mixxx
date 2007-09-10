@@ -129,6 +129,7 @@ MixxxApp::MixxxApp(QApplication * a, QStringList files, QSplashScreen * pSplash,
     // Sample rate used by Player object
     ControlObject * sr = new ControlObject(ConfigKey("[Master]","samplerate"));
     sr->set(44100.);
+
     ControlObject * latency = new ControlObject(ConfigKey("[Master]","latency"));
 
     // Master rate
@@ -184,7 +185,7 @@ MixxxApp::MixxxApp(QApplication * a, QStringList files, QSplashScreen * pSplash,
         bVisualsWaveform = false;
 
     // Use frame as container for view, needed for fullscreen display
-    frame = new QFrame(this);
+    frame = new QFrame;
     setCentralWidget(frame);
     move(10,10);
     // Call inits to invoke all other construction parts
@@ -320,7 +321,7 @@ MixxxApp::MixxxApp(QApplication * a, QStringList files, QSplashScreen * pSplash,
         pLog = new Log(qLogFileName, m_pTrack);
 
     // Fullscreen patch
-    setFixedSize(view->width(), view->height());
+    //setFixedSize(view->width(), view->height());
 
 }
 

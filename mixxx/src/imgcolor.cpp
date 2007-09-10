@@ -62,6 +62,7 @@ QColor ImgMax::doColorCorrection(QColor c) {
     return QColor(r, g, b);
 }
 
+
 QColor ImgHSVTweak::doColorCorrection(QColor c) {
     int h, s, v;
     c.getHsv(&h, &s, &v);
