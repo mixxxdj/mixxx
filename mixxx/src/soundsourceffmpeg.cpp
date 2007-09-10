@@ -22,6 +22,10 @@
 //#include <fcntl.h>
 //#endif
 
+// GED's notes - 2007-09-09
+// sudo aptitude install libavcodec-dev libavformat-dev liba52-dev libdts-dev
+// add '#include <QDebug> to fix qDebug' << "stuff" syntax.
+#include <QDebug>
 
 static QMutex ffmpegmutex;
 static bool ffmpeginit = false;
