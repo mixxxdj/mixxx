@@ -102,8 +102,10 @@ public slots:
     void slotPrevTrackPlayer2(double);
     /** Returns pointer to active playlist */
     TrackPlaylist *getActivePlaylist();
-	/**sends track to Playqueue*/
-	void slotSendToPlayqueue(TrackInfoObject *pTrackInfoObject);
+    /** Slot for sending track to Play Queue */
+    void slotSendToPlayqueue(TrackInfoObject *pTrackInfoObject);
+    /** Slot for sending track to Play Queue */
+    void slotSendToPlayqueue(QString filename);
 signals:
     /** A new track has been loaded in player 1 */
     void newTrackPlayer1(TrackInfoObject *);
