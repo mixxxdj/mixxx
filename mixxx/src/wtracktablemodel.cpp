@@ -1,9 +1,10 @@
 #include <qstringlist.h>
 
+#include <QUrl>
 
 #include "wtracktablemodel.h"
 #include "trackcollection.h"
-#include "trackinfoobject.h"
+#include "trackinfoobject.h"1
 #include "trackplaylist.h"
 
 WTrackTableModel::WTrackTableModel(QObject * parent) : QAbstractTableModel(parent)
@@ -103,15 +104,19 @@ QVariant WTrackTableModel::headerData(int section, Qt::Orientation orientation, 
 
 Qt::ItemFlags WTrackTableModel::flags(const QModelIndex &index) const
 {
+    Qt::ItemFlags defaultFlags = QAbstractItemModel::flags(index);
     if (!index.isValid())
-        return Qt::ItemIsEnabled;
+      return Qt::ItemIsEnabled;
+
+    defaultFlags |= Qt::ItemIsDragEnabled;
     switch(index.column())
     {
-    case 6: return QAbstractItemModel::flags(index) | Qt::ItemIsEditable;
-    case 7: return QAbstractItemModel::flags(index) | Qt::ItemIsEditable;
+      case 6: return defaultFlags | QAbstractItemModel::flags(index) | Qt::ItemIsEditable;
+      case 7: return defaultFlags | QAbstractItemModel::flags(index) | Qt::ItemIsEditable;
     }
-    return Qt::ItemIsSelectable | Qt::ItemIsEnabled;
+    return defaultFlags;
 }
+
 
 bool WTrackTableModel::setData(const QModelIndex &index, const QVariant &value, int role)
 {
@@ -144,6 +149,30 @@ bool WTrackTableModel::removeRows(int row, int count, const QModelIndex &parent)
 
     endRemoveRows();
     return true;
+}
+
+Qt::DropActions WTrackTableModel::supportedDropActions() const
+{
+    return Qt::CopyAction | Qt::MoveAction;
+}
+
+
+QMimeData *WTrackTableModel::mimeData(const QModelIndexList &indexes) const {
+    QMimeData *mimeData = new QMimeData();
+    QList<QUrl> urls;
+
+    foreach (QModelIndex index, indexes) {
+        if (index.isValid()) {
+            TrackInfoObject * m_pTrackInfo = m_pTrackPlaylist->getTrackAt(index.row());
+            QUrl url(QString(m_pTrackInfo->getLocation()));
+            if (!url.isValid())
+              qDebug("ERROR invalid url\n");
+            else
+              urls.append(url);
+        }
+    }
+    mimeData->setUrls(urls);
+    return mimeData;
 }
 
 void WTrackTableModel::setBackgroundColor(QColor bgColor)

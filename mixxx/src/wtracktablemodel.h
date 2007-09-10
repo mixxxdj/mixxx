@@ -6,6 +6,7 @@
 
 class TrackPlaylist;
 class TrackCollection;
+class DropActions;
 class QColor;
 
 class WTrackTableModel : public QAbstractTableModel
@@ -26,6 +27,10 @@ public:
 	TrackPlaylist *m_pTrackPlaylist;
 	TrackCollection *m_pTrackCollection;
 
+ protected:
+        Qt::DropActions supportedDropActions() const;
+        Qt::ItemFlags flags(const QModelIndex &index) const;
+        QMimeData *mimeData(const QModelIndexList &indexes) const;
 private:
 
 	QColor backgroundColor;
@@ -41,7 +46,6 @@ private:
 	int columnCount(const QModelIndex & parent = QModelIndex()) const;
 	QVariant data(const QModelIndex &index, int role) const;
 	QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const;
-	Qt::ItemFlags flags(const QModelIndex &index) const;
 	bool setData(const QModelIndex &index, const QVariant &value, int role = Qt::EditRole);
 };
 

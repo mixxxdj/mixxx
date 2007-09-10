@@ -26,6 +26,7 @@
 #include <QMouseEvent>
 #include <QEvent>
 #include <QDragEnterEvent>
+#include <QUrl>
 
 WVisualWaveform::WVisualWaveform(QWidget * pParent, const char * pName, const QGLWidget * pShareWidget) : QGLWidget(pParent,pName,pShareWidget)
 {
@@ -74,23 +75,22 @@ bool WVisualWaveform::directRendering()
 
 void WVisualWaveform::dragEnterEvent(QDragEnterEvent * event)
 {
-    event->accept(Q3UriDrag::canDecode(event));
+  if (event->mimeData()->hasUrls())
+      event->acceptProposedAction();
+  //    event->accept(Q3UriDrag::canDecode(event));
 }
 
 void WVisualWaveform::dropEvent(QDropEvent * event)
 {
-    QStringList lst;
-    if (!Q3UriDrag::canDecode(event))
-    {
-        event->ignore();
-        return;
-    }
+  if (event->mimeData()->hasUrls()) {
+    QList<QUrl> urls(event->mimeData()->urls());
+    QUrl url = urls.first();
+    QString name = url.path();
 
     event->accept();
-    Q3UriDrag::decodeLocalFiles(event, lst);
-    QString name = (*lst.begin());
-
     emit(trackDropped(name));
+  } else
+    event->ignore();
 }
 
 void WVisualWaveform::setup(QDomNode node)
