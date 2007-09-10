@@ -27,7 +27,7 @@
 #include <qmenubar.h>
 #include <q3mainwindow.h>
 //Added by qt3to4:
-#include <Q3ValueList>
+#include <QList>
 #include <QTableView>
 #include <QLabel>
 #include <QComboBox>
@@ -72,7 +72,7 @@
 MixxxView::MixxxView(QWidget * parent, ConfigObject<ConfigValueKbd> * kbdconfig, bool bVisualsWaveform, QString qSkinPath, ConfigObject<ConfigValue> * pConfig) : QWidget(parent, "Mixxx")
 {
     view = 0;
-    m_qWidgetList.setAutoDelete(true);
+    //    m_qWidgetList.setAutoDelete(true);
 
     m_pKeyboard = new MixxxKeyboard(kbdconfig);
     installEventFilter(m_pKeyboard);
@@ -284,7 +284,6 @@ void MixxxView::createAllWidgets(QDomElement docElem,
                 p->setup(node);
                 p->installEventFilter(m_pKeyboard);
                 m_qWidgetList.append(p);
-                p->show();
             }
             else if (node.nodeName()=="Knob")
             {
@@ -292,7 +291,6 @@ void MixxxView::createAllWidgets(QDomElement docElem,
                 p->setup(node);
                 p->installEventFilter(m_pKeyboard);
                 m_qWidgetList.append(p);
-                p->show();
             }
             else if (node.nodeName()=="Label")
             {
@@ -300,7 +298,6 @@ void MixxxView::createAllWidgets(QDomElement docElem,
                 p->setup(node);
 
                 m_qWidgetList.append(p);
-                p->show();
             }
             else if (node.nodeName()=="Number")
             {
@@ -308,7 +305,6 @@ void MixxxView::createAllWidgets(QDomElement docElem,
                 p->setup(node);
                 p->installEventFilter(m_pKeyboard);
                 m_qWidgetList.append(p);
-                p->show();
             }
             else if (node.nodeName()=="NumberBpm")
             {
@@ -318,7 +314,6 @@ void MixxxView::createAllWidgets(QDomElement docElem,
                     p->setup(node);
                     p->installEventFilter(m_pKeyboard);
                     m_qWidgetList.append(p);
-                    p->show();
                 }
                 else if (WWidget::selectNodeInt(node, "Channel")==2)
                 {
@@ -326,7 +321,6 @@ void MixxxView::createAllWidgets(QDomElement docElem,
                     p->setup(node);
                     p->installEventFilter(m_pKeyboard);
                     m_qWidgetList.append(p);
-                    p->show();
                 }
             }
             else if (node.nodeName()=="NumberPos")
@@ -361,6 +355,8 @@ void MixxxView::createAllWidgets(QDomElement docElem,
                 }
 
                 QPalette palette;
+                //palette.setBrush(QPalette::Background, WSkinColor::getCorrectColor(c));
+                palette.setBrush(QPalette::Button, Qt::NoBrush);
 
                 if (WWidget::selectNodeInt(node, "Channel")==1)
                 {
@@ -368,12 +364,10 @@ void MixxxView::createAllWidgets(QDomElement docElem,
                     p->setup(node);
                     p->installEventFilter(m_pKeyboard);
                     m_qWidgetList.append(p);
-                    p->show();
-                    //palette.setBrush(QPalette::Background, WSkinColor::getCorrectColor(c));
-                    palette.setBrush(QPalette::Button, Qt::NoBrush);
                     //p->setBackgroundRole(QPalette::Window);
                     p->setPalette(palette);
                     p->setAutoFillBackground(true);
+
 
                 }
                 else if (WWidget::selectNodeInt(node, "Channel")==2)
@@ -382,8 +376,6 @@ void MixxxView::createAllWidgets(QDomElement docElem,
                     p->setup(node);
                     p->installEventFilter(m_pKeyboard);
                     m_qWidgetList.append(p);
-                    p->show();
-                    palette.setBrush(QPalette::Button, Qt::NoBrush);
                     //p->setBackgroundRole(QPalette::Window);
                     p->setPalette(palette);
                     p->setAutoFillBackground(true);
@@ -395,30 +387,22 @@ void MixxxView::createAllWidgets(QDomElement docElem,
                 p->setup(node);
                 p->installEventFilter(m_pKeyboard);
                 m_qWidgetList.append(p);
-                p->show();
             }
             else if (node.nodeName()=="Background")
             {
                 QString filename = WWidget::selectNodeQString(node, "Path");
                 QPixmap * background = WPixmapStore::getPixmapNoCache(WWidget::getPath(filename));
-
+                QColor c(255,255,255);
                 QLabel * bg = new QLabel(this);
+
                 bg->move(0, 0);
                 bg->setPixmap(*background);
                 bg->lower();
                 m_qWidgetList.append(bg);
 
-                //this->setPaletteBackgroundPixmap(*background);
-                // FWI: Begin of fullscreen patch
-                // parent->setFixedSize(background.width(),background.height()+((QMainWindow *)parent)->menuBar()->height());
-
-
                 this->setFixedSize(background->width(),background->height()+((QMainWindow *)parent->parent())->menuBar()->height());
                 parent->setMinimumSize(background->width(),background->height()+((QMainWindow *)parent->parent())->menuBar()->height());
-
-                // FWI: End of fullscreen patch
                 this->move(0,0);
-                QColor c(255,255,255);
                 if (!WWidget::selectNode(node, "BgColor").isNull()) {
                     c.setNamedColor(WWidget::selectNodeQString(node, "BgColor"));
                 }
@@ -426,9 +410,7 @@ void MixxxView::createAllWidgets(QDomElement docElem,
                 QPalette palette;
                 palette.setBrush(QPalette::Window, WSkinColor::getCorrectColor(c));
                 parent->setBackgroundRole(QPalette::Window);
-                //this->setBackgroundRole(QPalette::Window);
                 parent->setPalette(palette);
-
                 //parent->setEraseColor(WSkinColor::getCorrectColor(c));
                 parent->setAutoFillBackground(true);
             }
@@ -448,8 +430,9 @@ void MixxxView::createAllWidgets(QDomElement docElem,
                         m_pSliderRateCh1->installEventFilter(m_pKeyboard);
                         m_qWidgetList.append(m_pSliderRateCh1);
                     }
-                    else
+                    else {
                         m_pSliderRateCh1->setup(node);
+                    }
                 }
                 else if (compareConfigKeys(node, "[Channel2],rate"))
                 {
@@ -458,8 +441,9 @@ void MixxxView::createAllWidgets(QDomElement docElem,
                         m_pSliderRateCh2->setup(node);
                         m_pSliderRateCh2->installEventFilter(m_pKeyboard);
                         m_qWidgetList.append(m_pSliderRateCh2);
-                    } else
+                    } else {
                         m_pSliderRateCh2->setup(node);
+                    }
                 }
             }
             else if (node.nodeName()=="VuMeter")
@@ -468,7 +452,6 @@ void MixxxView::createAllWidgets(QDomElement docElem,
                 m_qWidgetList.append(p);
                 p->setup(node);
                 p->installEventFilter(m_pKeyboard);
-                p->show();
             }
             else if (node.nodeName()=="StatusLight")
             {
@@ -481,20 +464,20 @@ void MixxxView::createAllWidgets(QDomElement docElem,
             {
                 if (WWidget::selectNodeInt(node, "Channel")==1)
                 {
-                    if (m_pOverviewCh1 == 0)
+                    if (m_pOverviewCh1 == 0) {
                         m_pOverviewCh1 = new WOverview(this);
-                    //m_qWidgetList.append(m_pOverviewCh1);
+                        m_qWidgetList.append(m_pOverviewCh1);
+                    }
                     m_pOverviewCh1->setup(node);
-                    m_pOverviewCh1->repaint();
                 }
                 else if (WWidget::selectNodeInt(node, "Channel")==2)
                 {
-                    if (m_pOverviewCh2 == 0)
+                    if (m_pOverviewCh2 == 0) {
                         m_pOverviewCh2 = new WOverview(this);
-                    //m_qWidgetList.append(m_pOverviewCh2);
+                        m_qWidgetList.append(m_pOverviewCh2);
+                    }
+                    m_qWidgetList.append(m_pOverviewCh2);
                     m_pOverviewCh2->setup(node);
-                    m_pOverviewCh2->repaint();
-
                 }
             }
             else if (node.nodeName()=="Visual")
@@ -582,7 +565,6 @@ void MixxxView::createAllWidgets(QDomElement docElem,
                     p = new QLabel(this);
                     p->installEventFilter(m_pKeyboard);
                     m_qWidgetList.append(p);
-                    p->show();
                 }
 
                 // Associate pointers
@@ -633,9 +615,9 @@ void MixxxView::createAllWidgets(QDomElement docElem,
             {
                 if (m_pComboBox == 0) {
                     m_pComboBox = new QComboBox( FALSE, this, "ComboBox" );
-                    m_pComboBox->insertItem( "Library" );
-                    m_pComboBox->insertItem( "Play Queue" );
-                    m_pComboBox->insertItem( "Browse" );
+                    m_pComboBox->addItem( "Library" );
+                    m_pComboBox->addItem( "Play Queue" );
+                    m_pComboBox->addItem( "Browse" );
                 }
                 //m_pWComboBox = new WComboBox(parent,"ComboBox");
                 // Set position
@@ -679,12 +661,14 @@ void MixxxView::createAllWidgets(QDomElement docElem,
             }
         }
         node = node.nextSibling();
+
     }
 }
 
 
 void MixxxView::rebootGUI(QWidget * parent, bool bVisualsWaveform, ConfigObject<ConfigValue> * pConfig, QString qSkinPath) {
 
+    int i;
     // This function is the really ghetto part of the skin change code
     // It's quite fantastic in a terrible kind of way
 
@@ -692,9 +676,11 @@ void MixxxView::rebootGUI(QWidget * parent, bool bVisualsWaveform, ConfigObject<
     // as possible and then deletes everything else before recreating
     // them from scratch
 
-    QObject * obj;
+    QObject *obj;
     // This isn't thread safe, does anything else hack on this object?
-    for (obj = m_qWidgetList.first(); obj;) {
+    //    for (obj = m_qWidgetList.first(); obj;) {
+    for (i = 0; i < m_qWidgetList.size(); ++i) {
+        obj = m_qWidgetList[i];
         if (!(obj == m_pTextCh1 || obj == m_pTextCh2 || obj == m_pVisualCh1
               || obj == m_pVisualCh2
               || obj == m_pNumberPosCh1
@@ -702,22 +688,25 @@ void MixxxView::rebootGUI(QWidget * parent, bool bVisualsWaveform, ConfigObject<
               || obj == m_pSliderRateCh2           //|| obj == m_pSplitter
               || obj == m_pOverviewCh1 || obj == m_pOverviewCh2)) {
 
-            bool ret = m_qWidgetList.remove();
-            obj = m_qWidgetList.current();
-        } else {
-            obj = m_qWidgetList.next();
+            delete m_qWidgetList.takeAt(i);
+            i--;
         }
     }
     QDomElement docElem = openSkin(qSkinPath);
     setupColorScheme(docElem, pConfig);
     createAllWidgets(docElem, parent, bVisualsWaveform, pConfig);
+    for (i = 0; i < m_qWidgetList.size(); ++i) {
+        obj = m_qWidgetList[i];
+        ((QWidget *)obj)->show();
+    }
+
 }
 
 
-Q3ValueList<QString> MixxxView::getSchemeList(QString qSkinPath) {
+QList<QString> MixxxView::getSchemeList(QString qSkinPath) {
 
     QDomElement docElem = openSkin(qSkinPath);
-    Q3ValueList<QString> schlist;
+    QList<QString> schlist;
 
     QDomNode colsch = docElem.namedItem("Schemes");
     if (!colsch.isNull() && colsch.isElement()) {
