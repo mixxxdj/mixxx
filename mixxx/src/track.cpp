@@ -438,6 +438,14 @@ void Track::slotSendToPlayqueue(TrackInfoObject * pTrackInfoObject)
 {
     m_qPlaylists.at(1)->addTrack(pTrackInfoObject);
 }
+
+void Track::slotSendToPlayqueue(QString filename)
+{
+    TrackInfoObject* pTrack = m_pTrackCollection->getTrack(filename);
+    if (pTrack)
+        m_qPlaylists.at(1)->addTrack(pTrack);
+}
+
 void Track::slotLoadPlayer1(TrackInfoObject * pTrackInfoObject, bool bStartFromEndPos)
 {
     if (m_pTrackPlayer1)
@@ -571,9 +579,17 @@ void Track::slotEndOfTrackPlayer1(double val)
         {
             TrackInfoObject * pTrack;
             bool bStartFromEndPos = false;
-
+            
+            //Load the next song...
             if (m_pPlayPositionCh1->get()>0.5)
-                pTrack = m_pTrackPlayer1->getNext(m_pActivePlaylist);
+            {
+               //If the play queue has another song in it, load that...
+               pTrack = m_pTrackPlayer1->getNext(m_qPlaylists.at(1));
+               //Otherwise load from the active playlist... //FIXME
+               if (!pTrack)
+                    pTrack = m_pTrackPlayer1->getNext(m_pActivePlaylist);
+                
+            }
             else
             {
                 pTrack = m_pTrackPlayer1->getPrev(m_pActivePlaylist);
