@@ -150,9 +150,9 @@ void VinylControlXwax::run()
         //scratch->SetAmplify( (float) prefAmp/100. + 1);
 
         //Vinyl control mode
-        iVCMode = m_pConfig->getValueString(ConfigKey("[VinylControl]","Mode")).toInt();
+        iVCMode = mode->get();
         //Check if vinyl control is enabled...
-        bIsEnabled = m_pConfig->getValueString(ConfigKey("[VinylControl]","Enabled")).toInt();
+        bIsEnabled = enabled->get();
         
         // Analyse the input samples
         int iPosition = -1;
