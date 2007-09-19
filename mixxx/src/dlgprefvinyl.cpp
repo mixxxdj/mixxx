@@ -21,6 +21,7 @@
 #include <QtCore>
 #include <QtDebug>
 #include <QList>
+#include <QButtonGroup>
 #include "dlgprefvinyl.h"
 #include "playerproxy.h"
 #include <qcombobox.h>
@@ -46,6 +47,12 @@ DlgPrefVinyl::DlgPrefVinyl(QWidget * parent, SoundManager * soundman,
     config = _config;
 
     setupUi(this);
+
+    //Set up a button group for the vinyl control behaviour options
+    QButtonGroup vinylControlMode;
+    vinylControlMode.addButton(AbsoluteMode);
+    vinylControlMode.addButton(RelativeMode);
+    vinylControlMode.addButton(ScratchMode);
 
     //Device input.
     ComboBoxDeviceDeck1->setEnabled( TRUE );
@@ -131,63 +138,27 @@ void DlgPrefVinyl::slotUpdate()
         ++j;
     }
 
-    // Get input channels of the current device
-    //ComboBoxChannelsDeck1->clear();
-    //ComboBoxChannelsDeck2->clear();
-    //ALBERT changed this (Dec 21) temporarily:
-    int channels;     //= player->getInputChannelsCount();
+    // Get input channels of the current device - FIXME
+    int channels;  
     channels = 0;
     QString channelname = "";
 
-/*
-        for (int i = 0; i < channels; i+=2)
-        {
-                channelname = QString( "%1 / %2" ).arg( i+1 ).arg( i+2 );
-
-                ComboBoxChannelsDeck1->insertItem(channelname);
-                ComboBoxChannelsDeck2->insertItem(channelname);
-
-                if (channelname == config->getValueString(ConfigKey("[VinylControl]","DeviceInputDeck1")))
-                        ComboBoxChannelsDeck1->setCurrentItem(i/2);
-                if (channelname == config->getValueString(ConfigKey("[VinylControl]","DeviceInputDeck2")))
-                        ComboBoxChannelsDeck2->setCurrentItem(i/2);
-        }
- */
     // Set vinyl control types in the comboboxes
     int combo_index = ComboBoxVinylType->findText(config->getValueString(ConfigKey("[VinylControl]","strVinylType")));
     if (combo_index != -1)
         ComboBoxVinylType->setCurrentIndex(combo_index);
-    /*
-       if (config->getValueString(ConfigKey("[VinylControl]","strVinylType")) == "FinalScratch")
-            ComboBoxVinylType->setCurrentItem(0);
-       else if (config->getValueString(ConfigKey("[VinylControl]","strVinylType")) == "MixVibes DVS CD Version")
-            ComboBoxVinylType->setCurrentItem(1);
-       else if (config->getValueString(ConfigKey("[VinylControl]","strVinylType")) == "Serato CV02 Vinyl Side A")
-            ComboBoxVinylType->setCurrentItem(2);
-       else // see the ctor for correct vinyl type names
-       {
-       //	QMessageBox::warning(this,"Scratchlib vinyl selection","Vinyl type not properly installed");
-            //Set up defaults
-            ComboBoxVinylType->setCurrentItem(0);
-       }
-     */
 
     // set lead-in time
     LeadinTime->setText (config->getValueString(ConfigKey("[VinylControl]","LeadInTime")) );
 
     // set Relative mode
-    int iRelativeMode = config->getValueString(ConfigKey("[VinylControl]","RelativeMode")).toInt();
-    if (iRelativeMode)
+    int iMode = config->getValueString(ConfigKey("[VinylControl]","Mode")).toInt();
+    if (iMode == MIXXX_VCMODE_ABSOLUTE)
+        AbsoluteMode->setChecked(true);
+    else if (iMode == MIXXX_VCMODE_RELATIVE)
         RelativeMode->setChecked(true);
-    else
-        RelativeMode->setChecked(false);
-
-    // set Scratch mode
-    int iScratchMode = config->getValueString(ConfigKey("[VinylControl]","ScratchMode")).toInt();
-    if (iScratchMode)
+    else if (iMode == MIXXX_VCMODE_SCRATCH)
         ScratchMode->setChecked(true);
-    else
-        ScratchMode->setChecked(false);
 
     //set vinyl control gain
     VinylGain->setValue( config->getValueString(ConfigKey("[VinylControl]","VinylControlGain")).toInt());
@@ -224,6 +195,13 @@ void DlgPrefVinyl::slotApply()
     VinylTypeSlotApply();
     AutoCalibrationSlotApply();
 
+    if (AbsoluteMode->isChecked())
+        ControlObject::getControl(ConfigKey("[VinylControl]", "Mode"))->set(MIXXX_VCMODE_ABSOLUTE);
+    if (RelativeMode->isChecked())
+        ControlObject::getControl(ConfigKey("[VinylControl]", "Mode"))->set(MIXXX_VCMODE_RELATIVE);        
+    if (ScratchMode->isChecked())
+        ControlObject::getControl(ConfigKey("[VinylControl]", "Mode"))->set(MIXXX_VCMODE_SCRATCH);    
+
     //if (config->getValueString(ConfigKey("[Soundcard]","SoundApi"))=="None" || !m_pSoundManager->setupDevices())
     //if (config->getValueString(ConfigKey("[Soundcard]","SoundApi"))=="None"|| (m_pSoundManager->setupDevices() != 0))
     //    QMessageBox::warning(0, "Configuration error","Audio device could not be opened");
@@ -250,33 +228,18 @@ void DlgPrefVinyl::EnableRIAASlotApply()
 
 void DlgPrefVinyl::EnableRelativeModeSlotApply()
 {
-    // Relative vinyl mode
-    if (RelativeMode->isChecked())
-        config->set(ConfigKey("[VinylControl]","RelativeMode"), ConfigValue(1));
-    else
-        config->set(ConfigKey("[VinylControl]","RelativeMode"), ConfigValue(0));
+
 }
 
 void DlgPrefVinyl::EnableScratchModeSlotApply()
 {
-    if (ScratchMode->isChecked())
-    {
-        RelativeMode->setChecked(TRUE);
-        RelativeMode->setEnabled(FALSE);
-        config->set(ConfigKey("[VinylControl]", "ScratchMode"), ConfigValue(1));
-        EnableRelativeModeSlotApply();
-    }
-    else
-    {
-        RelativeMode->setEnabled(TRUE);
-        config->set(ConfigKey("[VinylControl]", "ScratchMode"), ConfigValue(0));
-        EnableRelativeModeSlotApply();
-    }
+
 }
 
 void DlgPrefVinyl::VinylTypeSlotApply()
 {
     config->set(ConfigKey("[VinylControl]","strVinylType"), ConfigValue(ComboBoxVinylType->currentText()));
+
 }
 
 void DlgPrefVinyl::AutoCalibrationSlotApply()

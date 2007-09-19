@@ -13,6 +13,9 @@
 #define MIXXX_VINYL_TRAKTORSCRATCHSIDEA "Traktor Scratch, side A"
 #define MIXXX_VINYL_TRAKTORSCRATCHSIDEB "Traktor Scratch, side B"
 
+#define MIXXX_VCMODE_ABSOLUTE 0
+#define MIXXX_VCMODE_RELATIVE 1
+#define MIXXX_VCMODE_SCRATCH  2
 
 //TODO: Make this an EngineObject instead one day? (need to route all the input audio through the engine that way too...)
 
@@ -40,6 +43,8 @@ class VinylControl : public QThread
     	ControlObject *rateSlider;		//The ControlObject used to change the speed/pitch of the song.
     	ControlObject *reverseButton;	//The ControlObject used to reverse playback of the song. 
     	ControlObject *duration;		//The ControlObject used to get the duration of the current song.    
+    	ControlObject *mode;            //The ControlObject used to get the vinyl control mode (absolute/relative/scratch)
+    	ControlObject *enabled;         //The ControlObject used to get if the vinyl control is enabled or disabled.
         int iLeadInTime;				//The lead-in time...
     	float dVinylPitch; 			//The speed/pitch of the timecoded vinyl as read by scratchlib.
     	double dVinylPosition; 			//The position of the needle on the record as read by scratchlib.
@@ -50,10 +55,9 @@ class VinylControl : public QThread
         float fTimecodeStrength;        //The signal strength of the timecode on the vinyl.
 
 	    int iSampleRate;
-	    bool bIsRunning;
+	    bool bIsEnabled;
 	    int iRIAACorrection;
-    	bool bRelativeMode;
-    	bool bScratchMode;
+    	int iVCMode;
 	QWaitCondition waitForNextInput;
 	QMutex         lockInput;
 	QMutex		   lockSamples;

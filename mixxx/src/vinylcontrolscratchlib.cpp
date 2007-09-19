@@ -60,16 +60,6 @@ VinylControlScratchlib::VinylControlScratchlib(ConfigObject<ConfigValue> * pConf
     start();
 
     qDebug("Created new VinylControlScratchlib!\n");
-
-
-    if (bRelativeMode)
-        qDebug("Relative mode enabled!");
-    if (bScratchMode)
-    {
-        qDebug("********************");
-        qDebug("SCRATCH MODE ENABLED");
-        qDebug("********************");
-    }
 }
 
 VinylControlScratchlib::~VinylControlScratchlib()
@@ -136,10 +126,6 @@ void VinylControlScratchlib::run()
     double dTempCount = 0.0f;
 
     int when, alive, pitch_unavailable;
-
-    //This shouldn't be needed (the preferences dialog does it)
-    if (bScratchMode)
-        bRelativeMode = true;
 
     bShouldClose = false;
     while(true)
@@ -216,17 +202,18 @@ void VinylControlScratchlib::run()
         //  these fluctuations, we simply make it so that the turntable's pitch must be read as greater than
         //	1.20f before we say that it's seeking.
 
-        if (bRelativeMode)         //Relative mode
+        if (iVCMode == MIXXX_VCMODE_RELATIVE)         //Relative mode
             dVinylPitchRange = 1.0f;                    //The correct pitch range (if it's going faster than this, it's seeking.)
-        else         //Absolute mode
+        else if (iVCMode == MIXXX_VCMODE_ABSOLUTE)        //Absolute mode
             dVinylPitchRange = 1.20f;                   //A wider pitch range to account for turntables' speed fluctuations.
-
+        else
+            dVinylPitchRange = 1.0f;
 
         //Find out whether or not VinylControl is enabled.
-        bIsRunning = (bool)m_pConfig->getValueString(ConfigKey("[VinylControl]","Enabled")).toInt();
+        bIsEnabled = (bool)m_pConfig->getValueString(ConfigKey("[VinylControl]","Enabled")).toInt();
         //qDebug("VinylControl: bIsRunning=%i", bIsRunning);
 
-        if (duration != NULL && bIsRunning)
+        if (duration != NULL && bIsEnabled)
         {
             filePosition = playPos->get() * duration->get();             //Get the playback position in the file in seconds.
 
@@ -246,17 +233,17 @@ void VinylControlScratchlib::run()
                 //Useful debug message for tracking down the problem of the vinyl's position "drifting":
                 //qDebug("Ratio of vinyl's position and Mixxx's: %f", fabs(dVinylPosition/filePosition));
                 dDriftControl =  ((dVinylPosition/filePosition) - 1) * 8.0f;
-                qDebug("dDriftControl: %f", dDriftControl);
-                qDebug("Scratchlib says the time is: %f", dVinylPosition);
-                qDebug("Mixxx says the time is: %f", filePosition);
+                //qDebug("dDriftControl: %f", dDriftControl);
+                //qDebug("Scratchlib says the time is: %f", dVinylPosition);
+                //qDebug("Mixxx says the time is: %f", filePosition);
 
-                qDebug("dVinylPitch: %f", dVinylPitch);
+                //qDebug("dVinylPitch: %f", dVinylPitch);
 
                 //If it looks like the turntable is seeking... (ie. we're moving
                 //the vinyl really fast in either direction), or we're in scratch mode...
                 //(in scratch mode, we always consider the turntable to be seeking, therefore we always
                 // use the "controlScratch" control object to control playback.... we never adjust the pitch/rate.)
-                if ((dVinylPitch > dVinylPitchRange) || (dVinylPitch < -dVinylPitchRange) || (bScratchMode))
+                if ((dVinylPitch > dVinylPitchRange) || (dVinylPitch < -dVinylPitchRange) || (iVCMode == MIXXX_VCMODE_SCRATCH))
                 {
                     //qDebug("STATE: seeking");
                     bSeeking = true;
@@ -266,7 +253,7 @@ void VinylControlScratchlib::run()
                 }
                 else {                 //We're not seeking... just regular playback
                                        //qDebug("STATE: regular playback");
-                    if (bSeeking == true && !bRelativeMode  && dVinylPosition > 0.0f)                     //If we've just stopped seeking, and are playing normal again...
+                    if (bSeeking == true && (iVCMode == MIXXX_VCMODE_ABSOLUTE)  && dVinylPosition > 0.0f)                     //If we've just stopped seeking, and are playing normal again...
                         syncPosition();
                     bSeeking = false;
                     controlScratch->queueFromThread(0.0f);
@@ -275,7 +262,7 @@ void VinylControlScratchlib::run()
 
                 //If the needle just got placed on the record, or playback just resumed
                 //from a standstill...
-                if (bNeedleDown == false && bSeeking == false && !bRelativeMode)
+                if (bNeedleDown == false && bSeeking == false && (iVCMode == MIXXX_VCMODE_ABSOLUTE))
                 {
                     //qDebug("STATE: playback just started");
                     controlScratch->queueFromThread(0.0f);
@@ -309,7 +296,7 @@ void VinylControlScratchlib::run()
                 if (dTemp > 20) {                 //If the needle is actually stopped/off the record...
                     int volPeak = analyzer->GetVolumePeak();
                     //qDebug("******Needle up? with volume peak:"+QString("%1").arg(volPeak)+"\n");
-                    if (bNeedleDown == true && !bRelativeMode)
+                    if (bNeedleDown == true && (iVCMode == MIXXX_VCMODE_ABSOLUTE))
                         syncPosition();
                     controlScratch->queueFromThread(0.0f);
                     playButton->queueFromThread(0.0f);
@@ -326,7 +313,7 @@ void VinylControlScratchlib::syncPitch(double pitch)
 {
     //The dVinylPitch variable's range (from DAnalyse.h in scratchlib) is
     //from 1.0 +- 00%
-    if (!bScratchMode && !bRelativeMode)  //Only apply drift control when we want to stay synced with the vinyl's position.
+    if (iVCMode == MIXXX_VCMODE_ABSOLUTE)  //Only apply drift control when we want to stay synced with the vinyl's position.
         pitch += dDriftControl;     //Apply the drift control to it, to keep the vinyl and Mixxx in sync.
     rateSlider->queueFromThread(pitch);     //rateSlider has a range of -1.0 to 1.0
     //qDebug("pitch: %f", pitch);
@@ -343,10 +330,10 @@ void VinylControlScratchlib::syncPosition()
 
 bool VinylControlScratchlib::isEnabled()
 {
-    return bIsRunning;
+    return bIsEnabled;
 }
 
 void VinylControlScratchlib::ToggleVinylControl(bool enable)
 {
-    bIsRunning = enable;
+    bIsEnabled = enable;
 }
