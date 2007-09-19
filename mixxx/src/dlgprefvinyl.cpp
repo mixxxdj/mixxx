@@ -239,7 +239,6 @@ void DlgPrefVinyl::EnableScratchModeSlotApply()
 void DlgPrefVinyl::VinylTypeSlotApply()
 {
     config->set(ConfigKey("[VinylControl]","strVinylType"), ConfigValue(ComboBoxVinylType->currentText()));
-
 }
 
 void DlgPrefVinyl::AutoCalibrationSlotApply()
