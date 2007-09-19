@@ -209,8 +209,10 @@ void VinylControlScratchlib::run()
         else
             dVinylPitchRange = 1.0f;
 
-        //Find out whether or not VinylControl is enabled.
-        bIsEnabled = (bool)m_pConfig->getValueString(ConfigKey("[VinylControl]","Enabled")).toInt();
+        //Vinyl control mode
+        iVCMode = mode->get();
+        //Check if vinyl control is enabled...
+        bIsEnabled = enabled->get();
         //qDebug("VinylControl: bIsRunning=%i", bIsRunning);
 
         if (duration != NULL && bIsEnabled)

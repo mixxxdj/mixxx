@@ -195,12 +195,16 @@ void DlgPrefVinyl::slotApply()
     VinylTypeSlotApply();
     AutoCalibrationSlotApply();
 
+    int iMode = 0;
     if (AbsoluteMode->isChecked())
-        ControlObject::getControl(ConfigKey("[VinylControl]", "Mode"))->set(MIXXX_VCMODE_ABSOLUTE);
+        iMode = MIXXX_VCMODE_ABSOLUTE;
     if (RelativeMode->isChecked())
-        ControlObject::getControl(ConfigKey("[VinylControl]", "Mode"))->set(MIXXX_VCMODE_RELATIVE);        
+        iMode = MIXXX_VCMODE_RELATIVE;        
     if (ScratchMode->isChecked())
-        ControlObject::getControl(ConfigKey("[VinylControl]", "Mode"))->set(MIXXX_VCMODE_SCRATCH);    
+        iMode = MIXXX_VCMODE_SCRATCH;    
+
+    ControlObject::getControl(ConfigKey("[VinylControl]", "Mode"))->set(iMode);
+    config->set(ConfigKey("[VinylControl]","Mode"), ConfigValue(iMode));
 
     //if (config->getValueString(ConfigKey("[Soundcard]","SoundApi"))=="None" || !m_pSoundManager->setupDevices())
     //if (config->getValueString(ConfigKey("[Soundcard]","SoundApi"))=="None"|| (m_pSoundManager->setupDevices() != 0))
