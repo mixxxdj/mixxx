@@ -25,7 +25,8 @@
 /****** TODO *******
    Stuff to maybe implement here
    1) The smoothing thing that xwax does
-   2) ....?
+   2) Tons of cleanup
+   3) ....?
 
  ********************/
 
@@ -36,7 +37,6 @@ VinylControlXwax::VinylControlXwax(ConfigObject<ConfigValue> * pConfig, const ch
     bNeedleDown             = true;
     m_samples               = NULL;
     char * timecode  =  NULL;
-    bIsRunning      = true;
     bShouldClose    = false;
 
     if (strVinylType == MIXXX_VINYL_SERATOCV02VINYLSIDEA)
@@ -71,16 +71,6 @@ VinylControlXwax::VinylControlXwax(ConfigObject<ConfigValue> * pConfig, const ch
     start();
 
     qDebug("Created new VinylControlXwax!\n");
-
-
-    if (bRelativeMode)
-        qDebug("Relative mode enabled!");
-    if (bScratchMode)
-    {
-        qDebug("********************");
-        qDebug("SCRATCH MODE ENABLED");
-        qDebug("********************");
-    }
 }
 
 VinylControlXwax::~VinylControlXwax()
@@ -132,10 +122,6 @@ void VinylControlXwax::run()
 
     int when, alive, pitch_unavailable;
 
-    //This shouldn't be needed (the preferences dialog does it)
-    if (bScratchMode)
-        bRelativeMode = true;
-
     bShouldClose = false;
     while(true)
     {
@@ -163,12 +149,11 @@ void VinylControlXwax::run()
         //int prefAmp = m_pConfig->getValueString(ConfigKey("[VinylControl]","VinylControlGain")).toInt();
         //scratch->SetAmplify( (float) prefAmp/100. + 1);
 
-        //Set relative mode
-        bRelativeMode = (bool)m_pConfig->getValueString(ConfigKey("[VinylControl]","RelativeMode")).toInt();
-
-        //Set scratch mode
-        bScratchMode = (bool)m_pConfig->getValueString(ConfigKey("[VinylControl]","ScratchMode")).toInt();
-
+        //Vinyl control mode
+        iVCMode = m_pConfig->getValueString(ConfigKey("[VinylControl]","Mode")).toInt();
+        //Check if vinyl control is enabled...
+        bIsEnabled = m_pConfig->getValueString(ConfigKey("[VinylControl]","Enabled")).toInt();
+        
         // Analyse the input samples
         int iPosition = -1;
         iPosition = timecoder_get_position(&timecoder, &when);
@@ -211,17 +196,18 @@ void VinylControlXwax::run()
         //  these fluctuations, we simply make it so that the turntable's pitch must be read as greater than
         //	1.20f before we say that it's seeking.
 
-        if (bRelativeMode)         //Relative mode
+        if (iVCMode == MIXXX_VCMODE_RELATIVE)      //Relative mode
             dVinylPitchRange = 1.0f;                    //The correct pitch range (if it's going faster than this, it's seeking.)
-        else         //Absolute mode
+        else if (iVCMode == MIXXX_VCMODE_ABSOLUTE) //Absolute mode
             dVinylPitchRange = 1.20f;                   //A wider pitch range to account for turntables' speed fluctuations.
-
+        else 
+            dVinylPitchRange = 1.0f;
 
         //Find out whether or not VinylControl is enabled.
-        bIsRunning = (bool)m_pConfig->getValueString(ConfigKey("[VinylControl]","Enabled")).toInt();
+        bIsEnabled = (bool)m_pConfig->getValueString(ConfigKey("[VinylControl]","Enabled")).toInt();
         //qDebug("VinylControl: bIsRunning=%i", bIsRunning);
 
-        if (duration != NULL && bIsRunning)
+        if (duration != NULL && bIsEnabled)
         {
             filePosition = playPos->get() * duration->get();             //Get the playback position in the file in seconds.
 
@@ -229,8 +215,6 @@ void VinylControlXwax::run()
             //if (dVinylPosition != -1.0f)
 
             // When the Vinyl position has been changed by 0.1seconds
-            //if (fabs(dVinylPosition - dOldPos) > 0.01)
-            //if (dVinylPosition > 0.0f || bScratchMode)
             if((alive && !pitch_unavailable))
             {
                 dTemp = 0;
@@ -251,7 +235,7 @@ void VinylControlXwax::run()
 
                 //If the needle just got placed on the record, or playback just resumed
                 //from a standstill...
-                if (bNeedleDown == false  && !bRelativeMode)                 //&& bSeeking == false
+                if (bNeedleDown == false  && (iVCMode == MIXXX_VCMODE_ABSOLUTE))                 //&& bSeeking == false
                 {
                     //qDebug("STATE: playback just started");
                     controlScratch->queueFromThread(0.0f);
@@ -263,7 +247,7 @@ void VinylControlXwax::run()
                 }
 
                 //If we need a resync, and we have the timecode position, then resync (sometimes we don't get enough signal right away)
-                if (bNeedsPosSync && (dVinylPosition > 0.0f) && !bRelativeMode)
+                if (bNeedsPosSync && (dVinylPosition > 0.0f) && (iVCMode == MIXXX_VCMODE_ABSOLUTE))
                 {
                     syncPosition();     //Reposition Mixxx
                     bNeedsPosSync = false;
@@ -275,7 +259,7 @@ void VinylControlXwax::run()
                 //the vinyl really fast in either direction), or we're in scratch mode...
                 //(in scratch mode, we always consider the turntable to be seeking, therefore we always
                 // use the "controlScratch" control object to control playback.... we never adjust the pitch/rate.)
-                if ((dVinylPitch > dVinylPitchRange) || (dVinylPitch < -dVinylPitchRange) || (bScratchMode))
+                if ((dVinylPitch > dVinylPitchRange) || (dVinylPitch < -dVinylPitchRange) || (iVCMode == MIXXX_VCMODE_SCRATCH))
                 {
                     //qDebug("STATE: seeking");
                     bSeeking = true;
@@ -285,7 +269,7 @@ void VinylControlXwax::run()
                 }
                 else {                 //We're not seeking... just regular playback
                                        //qDebug("STATE: regular playback");
-                    if (bSeeking == true && !bRelativeMode  && dVinylPosition > 0.0f)                     //If we've just stopped seeking, and are playing normal again...
+                    if (bSeeking == true && (iVCMode == MIXXX_VCMODE_ABSOLUTE) && dVinylPosition > 0.0f)   //If we've just stopped seeking, and are playing normal again...
                         syncPosition();
                     bSeeking = false;
                     controlScratch->queueFromThread(0.0f);
@@ -323,7 +307,7 @@ void VinylControlXwax::syncPitch(double pitch)
 {
     //The dVinylPitch variable's range (from DAnalyse.h in scratchlib) is
     //from 1.0 +- 00%
-    if (!bScratchMode && !bRelativeMode)     //Only apply drift control when we want to stay synced with the vinyl's position.
+    if (iVCMode == MIXXX_VCMODE_ABSOLUTE)     //Only apply drift control when we want to stay synced with the vinyl's position.
         pitch += dDriftControl;     //Apply the drift control to it, to keep the vinyl and Mixxx in sync.
     rateSlider->queueFromThread(pitch);     //rateSlider has a range of -1.0 to 1.0
     //qDebug("pitch: %f", pitch);
@@ -342,10 +326,10 @@ void VinylControlXwax::syncPosition()
 
 bool VinylControlXwax::isEnabled()
 {
-    return bIsRunning;
+    return bIsEnabled;
 }
 
 void VinylControlXwax::ToggleVinylControl(bool enable)
 {
-    bIsRunning = enable;
+    bIsEnabled = enable;
 }

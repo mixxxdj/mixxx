@@ -47,16 +47,20 @@ SoundManager::SoundManager(ConfigObject<ConfigValue> * pConfig, EngineMaster * _
     //m_controlObjSyncTimer.start(33);
     //m_controlObjSyncTimer->start(m_pConfig->getValueString(ConfigKey("[Soundcard]","Latency")).toInt());
 
-    ControlObject * pControlObjectLatency  = ControlObject::getControl(ConfigKey("[Master]","latency"));
-    ControlObject * pControlObjectSampleRate = ControlObject::getControl(ConfigKey("[Master]","samplerate"));
+    ControlObject* pControlObjectLatency = ControlObject::getControl(ConfigKey("[Master]", "latency"));
+    ControlObject* pControlObjectSampleRate = ControlObject::getControl(ConfigKey("[Master]", "samplerate"));
+    ControlObject* pControlObjectVinylControlMode = new ControlObject(ConfigKey("[VinylControl]", "Mode"));
+    ControlObject* pControlObjectVinylControlEnabled = new ControlObject(ConfigKey("[VinylControl]", "Enabled"));
 
     pControlObjectLatency->set(m_pConfig->getValueString(ConfigKey("[Soundcard]","Latency")).toInt());
     pControlObjectSampleRate->set(m_pConfig->getValueString(ConfigKey("[Soundcard]","Samplerate")).toInt());
+    pControlObjectVinylControlMode->set(m_pConfig->getValueString(ConfigKey("[VinylControl]","Mode")).toInt());
+    pControlObjectVinylControlEnabled->set(m_pConfig->getValueString(ConfigKey("[VinylControl]","Enabled")).toInt());
 
     qDebug() << "SampleRate" << pControlObjectSampleRate->get();
     qDebug() << "Latency" << pControlObjectLatency->get();
 
-    //Hack because PortAudio samplerate enumeration is slow as hell on Linux
+    //Hack because PortAudio samplerate enumeration is slow as hell on Linux (ALSA dmix sucks, so we can't blame PortAudio)
     m_samplerates.push_back("44100");
     m_samplerates.push_back("48000");
     m_samplerates.push_back("96000"); 

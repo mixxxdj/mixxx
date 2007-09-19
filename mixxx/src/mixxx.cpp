@@ -618,6 +618,7 @@ void MixxxApp::slotOptionsVinylControl(bool toggle)
 {
     //qDebug("slotOptionsVinylControl: toggle is %i", (int)toggle);
     config->set(ConfigKey("[VinylControl]","Enabled"), ConfigValue((int)toggle));
+    ControlObject::getControl(ConfigKey("[VinylControl]", "Enabled"))->set((int)toggle);
 }
 
 void MixxxApp::slotHelpAbout()

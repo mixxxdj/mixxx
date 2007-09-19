@@ -160,19 +160,6 @@
    <property name="title" >
     <string>Vinyl Control</string>
    </property>
-   <widget class="QCheckBox" name="RelativeMode" >
-    <property name="geometry" >
-     <rect>
-      <x>20</x>
-      <y>90</y>
-      <width>141</width>
-      <height>20</height>
-     </rect>
-    </property>
-    <property name="text" >
-     <string>Relative mode</string>
-    </property>
-   </widget>
    <widget class="QLabel" name="TextLabel2_2" >
     <property name="enabled" >
      <bool>true</bool>
@@ -339,8 +326,8 @@
    <widget class="QPushButton" name="AutoCalibration" >
     <property name="geometry" >
      <rect>
-      <x>20</x>
-      <y>140</y>
+      <x>190</x>
+      <y>160</y>
       <width>120</width>
       <height>24</height>
      </rect>
@@ -369,19 +356,6 @@
     </property>
     <property name="wordWrap" >
      <bool>false</bool>
-    </property>
-   </widget>
-   <widget class="QCheckBox" name="ScratchMode" >
-    <property name="geometry" >
-     <rect>
-      <x>20</x>
-      <y>110</y>
-      <width>141</width>
-      <height>20</height>
-     </rect>
-    </property>
-    <property name="text" >
-     <string>Scratch mode</string>
     </property>
    </widget>
    <widget class="QLabel" name="textLabel2" >
@@ -414,6 +388,45 @@
     </property>
     <property name="wordWrap" >
      <bool>false</bool>
+    </property>
+   </widget>
+   <widget class="QRadioButton" name="RelativeMode" >
+    <property name="geometry" >
+     <rect>
+      <x>20</x>
+      <y>110</y>
+      <width>131</width>
+      <height>23</height>
+     </rect>
+    </property>
+    <property name="text" >
+     <string>Relative Mode</string>
+    </property>
+   </widget>
+   <widget class="QRadioButton" name="ScratchMode" >
+    <property name="geometry" >
+     <rect>
+      <x>20</x>
+      <y>130</y>
+      <width>141</width>
+      <height>23</height>
+     </rect>
+    </property>
+    <property name="text" >
+     <string>Scratch Mode</string>
+    </property>
+   </widget>
+   <widget class="QRadioButton" name="AbsoluteMode" >
+    <property name="geometry" >
+     <rect>
+      <x>20</x>
+      <y>90</y>
+      <width>141</width>
+      <height>23</height>
+     </rect>
+    </property>
+    <property name="text" >
+     <string>Absolute Mode</string>
     </property>
    </widget>
   </widget>

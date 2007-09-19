@@ -55,13 +55,14 @@ VinylControlProxy::~VinylControlProxy()
 
 bool VinylControlProxy::isEnabled()
 {
-    return bIsRunning;
+    return bIsEnabled;
 }
 
 void VinylControlProxy::ToggleVinylControl(bool enable)
 {
     if (m_pVinylControl)
         m_pVinylControl->ToggleVinylControl(enable);
+    enabled->queueFromThread(enable);
 }
 
 /*
