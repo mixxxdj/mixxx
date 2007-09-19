@@ -256,6 +256,16 @@ void DlgPrefSound::slotApply()
     config->set(ConfigKey("[Soundcard]","Samplerate"), ConfigValue(ComboBoxSamplerates->currentText()));
     config->set(ConfigKey("[Soundcard]","Latency"), ConfigValue(getSliderLatencyMsec(SliderLatency->value())));
 
+    //Crappy Scratchlib warning hack about the samplerate...
+    if ((config->getValueString(ConfigKey("[VinylControl]","strVinylType")) == MIXXX_VINYL_FINALSCRATCH) && 
+        (config->getValueString(ConfigKey("[Soundcard]","Samplerate")) != "44100"))
+    {
+        QMessageBox::warning( this, "Mixxx",
+                            "FinalScratch records currently only work properly with a 44100 Hz samplerate.\n"
+                            "The samplerate has been reset to 44100 Hz." );    
+        config->set(ConfigKey("[Soundcard]","Samplerate"), ConfigValue(44100));
+    }
+    
     if (radioButtonPitchIndp->isChecked())
         config->set(ConfigKey("[Soundcard]","PitchIndpTimeStretch"), ConfigValue(1));
     else
