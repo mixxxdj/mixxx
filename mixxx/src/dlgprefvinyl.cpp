@@ -63,9 +63,9 @@ DlgPrefVinyl::DlgPrefVinyl(QWidget * parent, SoundManager * soundman,
     //connect(ComboBoxDeviceDeck1,  SIGNAL(activated(int)),    this, SLOT(slotApply()));
     //connect(ComboBoxDeviceDeck2,  SIGNAL(activated(int)),    this, SLOT(slotApply()));
 
-    connect(RelativeMode,              SIGNAL(stateChanged(int)), this, SLOT(EnableRelativeModeSlotApply()));
-    connect(ScratchMode,               SIGNAL(stateChanged(int)), this, SLOT(EnableScratchModeSlotApply()));
-    connect(VinylGain,              SIGNAL(valueChanged(int)), this, SLOT(VinylGainSlotApply()));
+    //connect(RelativeMode,              SIGNAL(stateChanged(int)), this, SLOT(EnableRelativeModeSlotApply()));
+    //connect(ScratchMode,               SIGNAL(stateChanged(int)), this, SLOT(EnableScratchModeSlotApply()));
+    //connect(VinylGain,              SIGNAL(valueChanged(int)), this, SLOT(VinylGainSlotApply()));
 
     // Connect event handler
     /*
