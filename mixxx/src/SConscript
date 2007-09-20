@@ -255,7 +255,12 @@ if not env.GetOption('clean') and not SCons.Util.containsAny(os.sys.argv, ['-h',
 
 	#Platform-specific checks for Linux...
 	if platform == 'linux':
-		#Check for libdjconsole, if it was passed as a flag
+		#Check for g++ (yeah, SCONS is a bit dumb here)
+		if not os.path.exists("/usr/bin/g++"):
+			print "Did not find gcc/g++, exiting!"
+			Exit(1)
+		
+        #Check for libdjconsole, if it was passed as a flag
 		flags_djconsole = ARGUMENTS.get('djconsole', 0)
 		if int(flags_djconsole):
 			if not conf.CheckLibWithHeader('djconsole', 'libdjconsole/djconsole.h', 'C++'):
@@ -435,6 +440,7 @@ if int(flags_hifieq) == 0:
 	print "High quality EQs... disabled"
 else:
 	print "High quality EQs... enabled"
+
 
 #Experimental BPM detection
 flags_experimentalbpm = ARGUMENTS.get('experimentalbpm', 1)
@@ -657,7 +663,16 @@ if platform == 'linux' or platform == 'osx':
 		env.Alias('install', docs)
 		env.Alias('install', dotdesktop)
 		env.Alias('install', icon)
-
+		
+		#Delete the old Mixxx installation (because SCONS won't overwrite it)
+		if 'install' in COMMAND_LINE_TARGETS:
+			os.system('scons -c install')
+            #Delete(unix_bin_path + "mixxx")
+			#Delete(unix_share_path + "/mixxx/skins")
+			#Delete(unix_share_path + "/mixxx/midi")
+			#Delete(unix_share_path + "/mixxx/keyboard")
+			
+		
 if platform == 'win32':
 	skins = env.Install("../../dist/skins", skin_files)
 	midimappings = env.Install("../../dist/midi", midimappings_files)
