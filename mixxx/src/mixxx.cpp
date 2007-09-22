@@ -573,23 +573,27 @@ void MixxxApp::slotOptionsFullScreen(bool toggle)
     if (toggle)
     {
 #ifdef __LINUX__
-        winpos = pos();
-        winsize = size();
-        // Can't set max to -1,-1 or 0,0 for unbounded?
-        setMaximumSize(32767,32767);
+         winpos = pos();
+         // Can't set max to -1,-1 or 0,0 for unbounded?
+         setMaximumSize(32767,32767);
 #endif
+
         showFullScreen();
         //menuBar()->hide();
         // FWI: Begin of fullscreen patch
 #ifdef __LINUX__
         // Crazy X window managers break this so I'm told by Qt docs
-        int deskw = app->desktop()->width();
-        int deskh = app->desktop()->height();
+        //         int deskw = app->desktop()->width();
+        //         int deskh = app->desktop()->height();
+
+        //support for xinerama
+        int deskw = app->desktop()->screenGeometry(frame).width();
+        int deskh = app->desktop()->screenGeometry(frame).height();
 #else
         int deskw = width();
         int deskh = height();
 #endif
-        view->move( (deskw-view->width())/2, (deskh-view->height())/2 );
+        view->move((deskw - view->width())/2, (deskh - view->height())/2);
         // FWI: End of fullscreen patch
     }
     else
@@ -600,7 +604,10 @@ void MixxxApp::slotOptionsFullScreen(bool toggle)
         showNormal();
 
 #ifdef __LINUX__
-        setFixedSize(winsize);
+        if (size().width() != view->width() ||
+            size().height() != view->height() + menuBar()->height()) {
+          setFixedSize(view->width(), view->height() + menuBar()->height());
+        }
         move(winpos);
 #endif
 
@@ -672,8 +679,8 @@ void MixxxApp::rebootMixxxView() {
 
     view->rebootGUI(frame, bVisualsWaveform, config, qSkinPath);
     qDebug("rebootgui DONE");
-    if (oldw != view->width() || oldh != view->height()) {
-        setFixedSize(view->width(), view->height());
+    if (oldw != view->width() || oldh != view->height() + menuBar()->height()) {
+      setFixedSize(view->width(), view->height() + menuBar()->height());
     }
 }
 

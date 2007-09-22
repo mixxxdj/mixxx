@@ -210,7 +210,6 @@ class MixxxApp : public QMainWindow
 
     // Fullscreen patch
     QPoint winpos;
-    QSize winsize;
 };
 #endif
 
