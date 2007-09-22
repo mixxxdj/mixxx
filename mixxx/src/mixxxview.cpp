@@ -62,6 +62,7 @@
 #include "imginvert.h"
 #include "imgcolor.h"
 #include "wskincolor.h"
+#include "mixxx.h"
 
 MixxxView::MixxxView(QWidget * parent, ConfigObject<ConfigValueKbd> * kbdconfig, bool bVisualsWaveform, QString qSkinPath, ConfigObject<ConfigValue> * pConfig) : QWidget(parent)
 {
@@ -365,16 +366,16 @@ void MixxxView::createAllWidgets(QDomElement docElem,
             else if (node.nodeName()=="Background")
             {
                 QString filename = WWidget::selectNodeQString(node, "Path");
-                QPixmap * background = WPixmapStore::getPixmapNoCache(WWidget::getPath(filename));
+                QPixmap *background = WPixmapStore::getPixmapNoCache(WWidget::getPath(filename));
                 QColor c(255,255,255);
-                QLabel * bg = new QLabel(this);
+                QLabel *bg = new QLabel(this);
 
                 bg->move(0, 0);
                 bg->setPixmap(*background);
                 bg->lower();
                 m_qWidgetList.append(bg);
                 this->setFixedSize(background->width(),background->height());
-                parent->setMinimumSize(background->width(), background->height());
+		parent->setMinimumSize(background->width(), background->height());
                 this->move(0,0);
                 if (!WWidget::selectNode(node, "BgColor").isNull()) {
                     c.setNamedColor(WWidget::selectNodeQString(node, "BgColor"));
