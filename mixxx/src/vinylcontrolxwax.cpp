@@ -93,7 +93,7 @@ VinylControlXwax::~VinylControlXwax()
 
 
 
-void VinylControlXwax::AnalyseSamples(short * samples, size_t size)
+void VinylControlXwax::AnalyseSamples(short *samples, size_t size)
 {
     lockSamples.lock();
     timecoder_submit(&timecoder, samples, size);

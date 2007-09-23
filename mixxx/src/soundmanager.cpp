@@ -90,7 +90,7 @@ SoundManager::~SoundManager()
 //If filterAPI is the name of an audio API used by PortAudio, this function
 //will only return devices that belong to that API. Otherwise, the list will
 //contain all devices on all PortAudio-supported APIs.
-QList<SoundDevice *> SoundManager::getDeviceList(QString filterAPI)
+QList<SoundDevice*> SoundManager::getDeviceList(QString filterAPI)
 {
     qDebug() << "SoundManager::getDeviceList";
     if (m_devices.empty())
@@ -98,19 +98,22 @@ QList<SoundDevice *> SoundManager::getDeviceList(QString filterAPI)
 
     if (filterAPI == "None")
     {
-        QList<SoundDevice *> emptyList;
+        QList<SoundDevice*> emptyList;
         return emptyList;
     }
     else
     {
         //Create a list of sound devices filtered to the given API.
-        QList<SoundDevice *> filteredDeviceList;
-        QListIterator<SoundDevice *> dev_it(m_devices);
+        QList<SoundDevice*> filteredDeviceList;
+        QListIterator<SoundDevice*> dev_it(m_devices);
         while (dev_it.hasNext())
         {
-            SoundDevice * device = dev_it.next();
+            SoundDevice *device = dev_it.next();
             if (device->getHostAPI() == filterAPI)
-                filteredDeviceList.push_back(device);
+            {
+                if (device)
+                    filteredDeviceList.push_back(device);
+            }
         }
         return filteredDeviceList;
     }
@@ -125,7 +128,7 @@ QList<QString> SoundManager::getHostAPIList()
 
     for (PaHostApiIndex i = 0; i < Pa_GetHostApiCount(); i++)
     {
-        const PaHostApiInfo * api = Pa_GetHostApiInfo(i);
+        const PaHostApiInfo *api = Pa_GetHostApiInfo(i);
         apiList.push_back(api->name);
     }
 
@@ -149,7 +152,7 @@ QString SoundManager::getHostAPI()
 void SoundManager::closeDevices()
 {
     qDebug() << "SoundManager::closeDevices()";
-    QListIterator<SoundDevice *> dev_it(m_devices);
+    QListIterator<SoundDevice*> dev_it(m_devices);
     while (dev_it.hasNext())
     {
         //qDebug() << "closing a device...";
@@ -185,7 +188,7 @@ void SoundManager::clearDeviceList()
     //Empty out the list of devices we currently have.
     while (!m_devices.empty())
     {
-        SoundDevice * dev = m_devices.takeLast();
+        SoundDevice* dev = m_devices.takeLast();
         delete dev;
     }
 }
@@ -211,7 +214,7 @@ void SoundManager::queryDevices()
         return;
     }
 
-    const PaDeviceInfo * deviceInfo;
+    const PaDeviceInfo* deviceInfo;
     for (int i = 0; i < iNumDevices; i++)
     {
         deviceInfo = Pa_GetDeviceInfo(i);
@@ -231,8 +234,8 @@ void SoundManager::queryDevices()
         apiInfo = Pa_GetHostApiInfo(deviceInfo->hostApi);
         //if (apiInfo->name == m_hostAPI)
         {
-            SoundDevicePortAudio * currentDevice = new SoundDevicePortAudio(m_pConfig, this, deviceInfo, i);
-            m_devices.push_back((SoundDevice *)currentDevice);
+            SoundDevicePortAudio *currentDevice = new SoundDevicePortAudio(m_pConfig, this, deviceInfo, i);
+            m_devices.push_back((SoundDevice*)currentDevice);
         }
     }
 
