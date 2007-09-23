@@ -193,6 +193,7 @@ void DlgPrefVinyl::slotApply()
     //Apply updates for everything else...
     EnableRIAASlotApply();
     VinylTypeSlotApply();
+    VinylGainSlotApply();
     AutoCalibrationSlotApply();
 
     int iMode = 0;
@@ -252,8 +253,14 @@ void DlgPrefVinyl::AutoCalibrationSlotApply()
 
 void DlgPrefVinyl::VinylGainSlotApply()
 {
-    qDebug("in VinylGainSlotApply()");
+    qDebug() << "in VinylGainSlotApply()" << "with gain:" << VinylGain->value();
+    //Update the config key...
     config->set(ConfigKey("[VinylControl]","VinylControlGain"), ConfigValue(VinylGain->value()));
+   
+    //Update the ControlObject...
+    ControlObject* pControlObjectVinylControlGain = ControlObject::getControl(ConfigKey("[VinylControl]", "VinylControlGain"));
+    pControlObjectVinylControlGain->set(VinylGain->value());
+    
     qDebug("Setting Gain Text");
     gain->setText(config->getValueString(ConfigKey("[VinylControl]","VinylControlGain")));        //this is probably ineffecient...
 }
