@@ -249,8 +249,10 @@ int SoundDevicePortAudio::callbackProcess(unsigned long framesPerBuffer, float *
 {
     //qDebug() << "SoundDevicePortAudio::callbackProcess";
     int iFrameSize = m_audioSources.count()*2;
+    int iVCGain = 1;
     int i = 0;
-
+    static ControlObject* pControlObjectVinylControlGain = ControlObject::getControl(ConfigKey("[VinylControl]", "VinylControlGain"));
+ 
     if (output && framesPerBuffer > 0)
     {
         CSAMPLE* outputAudio = m_pSoundManager->requestBuffer(m_audioSources, framesPerBuffer);
@@ -292,8 +294,9 @@ int SoundDevicePortAudio::callbackProcess(unsigned long framesPerBuffer, float *
         //FIXME: Apply software preamp
         //Super big warning: Have to use channel_count here instead of iFrameSize because iFrameSize is
         //only for output buffers...
-        //for (i=0; i < framesPerBuffer * m_inputParams.channelCount; i++)
-        //    in[i] *= 100;
+        iVCGain = pControlObjectVinylControlGain->get();
+        for (i=0; i < framesPerBuffer * m_inputParams.channelCount; i++)
+            in[i] *= iVCGain;
 
         m_pSoundManager->pushBuffer(m_audioReceivers, in, framesPerBuffer);
     }

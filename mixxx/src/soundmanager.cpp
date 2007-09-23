@@ -51,11 +51,14 @@ SoundManager::SoundManager(ConfigObject<ConfigValue> * pConfig, EngineMaster * _
     ControlObject* pControlObjectSampleRate = ControlObject::getControl(ConfigKey("[Master]", "samplerate"));
     ControlObject* pControlObjectVinylControlMode = new ControlObject(ConfigKey("[VinylControl]", "Mode"));
     ControlObject* pControlObjectVinylControlEnabled = new ControlObject(ConfigKey("[VinylControl]", "Enabled"));
+    ControlObject* pControlObjectVinylControlGain = new ControlObject(ConfigKey("[VinylControl]", "VinylControlGain"));
 
     pControlObjectLatency->set(m_pConfig->getValueString(ConfigKey("[Soundcard]","Latency")).toInt());
     pControlObjectSampleRate->set(m_pConfig->getValueString(ConfigKey("[Soundcard]","Samplerate")).toInt());
     pControlObjectVinylControlMode->set(m_pConfig->getValueString(ConfigKey("[VinylControl]","Mode")).toInt());
     pControlObjectVinylControlEnabled->set(m_pConfig->getValueString(ConfigKey("[VinylControl]","Enabled")).toInt());
+    pControlObjectVinylControlGain->set(m_pConfig->getValueString(ConfigKey("[VinylControl]","VinylControlGain")).toInt());
+
 
     qDebug() << "SampleRate" << pControlObjectSampleRate->get();
     qDebug() << "Latency" << pControlObjectLatency->get();
