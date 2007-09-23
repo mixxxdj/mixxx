@@ -245,15 +245,17 @@ int SoundDevicePortAudio::close()
                  out of samples (ie. when it needs more sound to play)
         -------- ------------------------------------------------------
  */
-int SoundDevicePortAudio::callbackProcess(unsigned long framesPerBuffer, float * output, short * in, int devIndex)
+int SoundDevicePortAudio::callbackProcess(unsigned long framesPerBuffer, float *output, short *in, int devIndex)
 {
     //qDebug() << "SoundDevicePortAudio::callbackProcess";
     int iFrameSize = m_audioSources.count()*2;
     int i = 0;
 
-    if (output)
+    if (output && framesPerBuffer > 0)
     {
-        CSAMPLE * outputAudio = m_pSoundManager->requestBuffer(m_audioSources, framesPerBuffer);
+        CSAMPLE* outputAudio = m_pSoundManager->requestBuffer(m_audioSources, framesPerBuffer);
+
+	//qDebug() << framesPerBuffer;		
 
         //Reset sample for each open channel
         for (i=0; i < framesPerBuffer * iFrameSize; i++)
@@ -285,8 +287,14 @@ int SoundDevicePortAudio::callbackProcess(unsigned long framesPerBuffer, float *
     }
 
     //Send audio from the soundcard's input off to the SoundManager...
-    if (in)
+    if (in && framesPerBuffer > 0)
     {
+        //FIXME: Apply software preamp
+        //Super big warning: Have to use channel_count here instead of iFrameSize because iFrameSize is
+        //only for output buffers...
+        //for (i=0; i < framesPerBuffer * m_inputParams.channelCount; i++)
+        //    in[i] *= 100;
+
         m_pSoundManager->pushBuffer(m_audioReceivers, in, framesPerBuffer);
     }
 
