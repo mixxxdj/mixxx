@@ -47,7 +47,7 @@ const int WINDOWSIZE = 2048;
 const int STEPSIZE = 1024; //WINDOWSIZE/2; //WINDOWSIZE/STEPSIZE must result in an integer value 
 
 /** Maximum buffer length to each EngineObject::process call */
-const int MAX_BUFFER_LEN = 80000;
+const int MAX_BUFFER_LEN = 160000;
 
 // Various fixed constants
 // static CSAMPLE pi     = acos(-1.0); // Conflicts with macx headers
