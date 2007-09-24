@@ -256,7 +256,7 @@ if not env.GetOption('clean') and not SCons.Util.containsAny(os.sys.argv, ['-h',
 	#Platform-specific checks for Linux...
 	if platform == 'linux':
 		#Check for g++ (yeah, SCONS is a bit dumb here)
-		if not os.path.exists("/usr/bin/g++"):
+		if os.system("which g++ > /dev/null"): #Checks for non-zero return code
 			print "Did not find gcc/g++, exiting!"
 			Exit(1)
 		
@@ -665,8 +665,9 @@ if platform == 'linux' or platform == 'osx':
 		env.Alias('install', icon)
 		
 		#Delete the old Mixxx installation (because SCONS won't overwrite it)
-		if 'install' in COMMAND_LINE_TARGETS:
-			os.system('scons -c install')
+		#if 'install' in COMMAND_LINE_TARGETS:
+			#os.system('scons -c install')
+			#Copy(unix_bin_path + "mixxx", binary_files)
             #Delete(unix_bin_path + "mixxx")
 			#Delete(unix_share_path + "/mixxx/skins")
 			#Delete(unix_share_path + "/mixxx/midi")
