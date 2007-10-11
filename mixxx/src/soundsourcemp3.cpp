@@ -410,6 +410,11 @@ int SoundSourceMp3::ParseHeader(TrackInfoObject * Track)
 {
     QString location = Track->getLocation();
 
+	QFile sizetest( location );
+	if (sizetest.size() == 0) {
+		return ERR;
+	}
+
     Track->setType("mp3");
 
     id3_file * fh = id3_file_open(qstrdup(location.local8Bit()), ID3_FILE_MODE_READONLY);
