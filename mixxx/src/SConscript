@@ -50,6 +50,7 @@ import SCons
 #Start of Mixxx's real SConstruct file
 #=======================================
 
+
 #Checks for OpenGL on all three platforms
 def CheckOpenGL():
 	if not conf.CheckLib('GL') and not conf.CheckLib('opengl32') and not conf.CheckCHeader('/System/Library/Frameworks/OpenGL.framework/Versions/A/Headers/gl.h'):
@@ -710,4 +711,18 @@ if platform == 'win32':
 	#env.Alias('mixxx', icon)
 	env.Alias('mixxx', binary)
 
+def BuildChecks(target, source, env):
+	print 
+	print "==== Mixxx Post-Build Checks ===="
+	print 
+	print "You have built version ",
+	os.system('grep -m 1 VERSION src/defs.h | cut -d \' \' -f 3')
+	print
+	print "More checks here soon... :)"
+	print
+
+# Check version string built into defs.h
+versionbld = Builder(action = BuildChecks, suffix = '.foo', src_suffix = '.input')
+env.Append(BUILDERS = {'VersionGrep' : versionbld})
+env.VersionGrep('', binary_files)
 
