@@ -501,7 +501,7 @@ else:
 	print "Vinyl Control... disabled"
 
 flags_msvcdebug = ARGUMENTS.get('msvcdebug', 1)
-if int(flags_msvcdebug):
+if int(flags_msvcdebug) and platform == 'win32':
 	env.Append(LINKFLAGS = '/DEBUG')
 	env.Append(CXXFLAGS = '/ZI')
 	print "MSVC Debugging... enabled"
