@@ -711,18 +711,29 @@ if platform == 'win32':
 	#env.Alias('mixxx', icon)
 	env.Alias('mixxx', binary)
 
-def BuildChecks(target, source, env):
+def BuildRelease(target, source, env):
 	print 
 	print "==== Mixxx Post-Build Checks ===="
 	print 
 	print "You have built version ",
 	os.system('grep -m 1 VERSION src/defs.h | cut -d \' \' -f 3')
 	print
+	print "Binary has size ",
+	os.system('ls -lh dist/mixxx.exe | cut -d \' \' -f 5')
+	print
 	print "More checks here soon... :)"
 	print
 
-# Check version string built into defs.h
-versionbld = Builder(action = BuildChecks, suffix = '.foo', src_suffix = '.input')
-env.Append(BUILDERS = {'VersionGrep' : versionbld})
-env.VersionGrep('', binary_files)
+	if (raw_input("Go ahead and build installer (yes/[no])? ") == "yes"):
+		print "Now building installer..."
+		os.system('"c:/Program Files/NSIS/makensis.exe" Mixxx.nsi')
+	else:
+		print "Aborted building installer"
 
+# Do release things 
+versionbld = Builder(action = BuildRelease, suffix = '.foo', src_suffix = '.bar')
+env.Append(BUILDERS = {'BuildRelease' : versionbld})
+
+if 'makerelease' in COMMAND_LINE_TARGETS:
+	makerelease = env.BuildRelease('', binary_files)
+	env.Alias('makerelease', makerelease)
