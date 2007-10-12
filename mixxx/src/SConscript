@@ -208,7 +208,6 @@ if platform == 'win32':
 	env.Append(CPPPATH='../../../mixxx-winlib') #If you add more directories, separate them with a semicolon (;)
 	env.Append(LIBPATH='../../../mixxx-winlib')
 	env.Append(LINKFLAGS = ['/nodefaultlib:libc.lib', '/nodefaultlib:libcd.lib'])
-	env.Prepend(LINKFLAGS = ['/DEBUG','/PDB:dist/mixxx.pdb']) # Generate MS VC Program Debug Database
 
 #Check for dependencies if we're not doing a clean...
 
@@ -501,6 +500,13 @@ if int(flags_vinylcontrol):
 else:
 	print "Vinyl Control... disabled"
 
+flags_msvcdebug = ARGUMENTS.get('msvcdebug', 1)
+if int(flags_msvcdebug):
+	env.Append(LINKFLAGS = '/DEBUG')
+	env.Append(CXXFLAGS = '/ZI')
+	print "MSVC Debugging... enabled"
+else:
+	print "MSVC Debugging... disabled"
 
 #ffmpeg support
 flags_ffmpeg = ARGUMENTS.get('ffmpeg', 0)
@@ -592,7 +598,19 @@ if 'msvc' in COMMAND_LINE_TARGETS:
 		cmdargs += " " + k + "=" + SCons.Script.ARGUMENTS[k]
 	env.Append(MSVSSCONSFLAGS = cmdargs)
 	#env.Append(MSVSSCONSFLAGS = ' qtdir=' + flags_qtdir)
+
+	# This is the right way to do it but scons is stupid and doesn't copy flags in... Adam
+	# Set up environment for debug target
+	# TODO Handle lib versions ie /MDd /Md etc...
+	#debugenv = env.Clone()
+	#debugenv.Prepend(LINKFLAGS = ['/DEBUG','/PDB:dist/mixxx.pdb']) # Generate MS VC Program Debug Database
+	#debugenv.Append(CXXFLAGS = '/ZI')
+
 	msvc = env.MSVSProject(target = 'mixxx' + env['MSVSPROJECTSUFFIX'], srcs = flatten(sources), incs = flatten(includes), variant = 'Debug', runfile = '../dist/mixxx')
+
+	# Reenable this once bug in scons is fixed...
+	#msvc = env.MSVSProject(target = 'mixxx' + env['MSVSPROJECTSUFFIX'], srcs = flatten(sources), incs = flatten(includes), variant = 'Release', runfile = '../dist/mixxx')
+
 	env.Alias('msvc', msvc)
 
 #Set up the install target
