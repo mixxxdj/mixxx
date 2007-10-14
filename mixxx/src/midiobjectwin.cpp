@@ -28,24 +28,7 @@
 
 MidiObjectWin::MidiObjectWin(QString device) : MidiObject(device)
 {
-    USES_CONVERSION; // enable WCHAR to char macro conversion
-    // Fill in list of available devices
-    bool device_valid = false; // Is true if device is a valid device name
-
-    MIDIINCAPS info;
-    for (unsigned int i=0; i<midiInGetNumDevs(); i++)
-    {
-        MMRESULT res = midiInGetDevCaps(i, &info, sizeof(MIDIINCAPS));
-
-        qDebug("Midi Device '%s' found.", W2A(info.szPname));
-
-        if (strlen(W2A(info.szPname))>0)
-            devices.append(W2A(info.szPname));
-        else
-            devices.append(QString("Device %1").arg(i));
-        if (devices.last() == device)
-            device_valid = true;
-    }
+	updateDeviceList();
 
     /*
        // Don't open the device yet, it gets opened via dlgprefmidi soon
@@ -64,6 +47,26 @@ MidiObjectWin::~MidiObjectWin()
 {
     // Close device and delete buffer
     devClose();
+}
+
+void MidiObjectWin::updateDeviceList() {
+
+    USES_CONVERSION; // enable WCHAR to char macro conversion
+    // Fill in list of available devices
+	devices.clear();
+
+    MIDIINCAPS info;
+    for (unsigned int i=0; i<midiInGetNumDevs(); i++)
+    {
+        MMRESULT res = midiInGetDevCaps(i, &info, sizeof(MIDIINCAPS));
+
+        qDebug("Midi Device '%s' found.", W2A(info.szPname));
+
+        if (strlen(W2A(info.szPname))>0)
+            devices.append(W2A(info.szPname));
+        else
+            devices.append(QString("Device %1").arg(i));
+    }
 }
 
 void MidiObjectWin::devOpen(QString device)

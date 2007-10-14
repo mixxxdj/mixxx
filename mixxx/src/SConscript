@@ -159,6 +159,7 @@ if platform == 'linux' or platform == 'osx':
 elif platform == 'win32':
 	#Pull in the environment's variables for win32...
 	env = Environment(tools=['default','qt4', 'msvs'], toolpath=['../', './'], QTDIR=flags_qtdir, QT_LIB='', VCINSTALLDIR = os.getenv('VCInstallDir'), ENV = os.environ)
+#	env.Append(LIBPATH = (flags_qtdir + "/plugins/iconengines"))
 
 #env.Append(CPPPATH='.')
 
@@ -353,8 +354,12 @@ env.Uic4('dlgbpmtapdlg.ui')
 env.Uic4('dlgprefvinyldlg.ui')
 
 #Add the QRC file which compiles in some extra resources (prefs icons, etc.)
-env.Qrc(Split(""" mixxx.qrc """))
+env.Qrc('mixxx.qrc')
 sources += Split(""" qrc_mixxx.cc """)
+
+if platform == 'win32':
+	env.RES('mixxx.rc')
+	sources += Split(""" mixxx.res """)
 
 # Uic4 does not need this --> Add these uic/moc generated files to the list of stuff we need to build:
 #sources.append(Split("""uic_dlgprefsounddlg.cc 		moc_dlgprefsounddlg.cc
