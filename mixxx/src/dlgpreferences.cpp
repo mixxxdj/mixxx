@@ -192,38 +192,38 @@ DlgPreferences::~DlgPreferences()
 void DlgPreferences::createIcons()
 {
     QListWidgetItem * soundButton = new QListWidgetItem(contentsWidget);
-    soundButton->setIcon(QIcon(":/images/preferences/soundhardware.svg"));
+    soundButton->setIcon(QIcon(":/images/preferences/soundhardware.png"));
     soundButton->setText(tr("Sound Hardware"));
     soundButton->setTextAlignment(Qt::AlignLeft | Qt::AlignVCenter);
     soundButton->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
 
     QListWidgetItem * midiButton = new QListWidgetItem(contentsWidget);
-    midiButton->setIcon(QIcon(":/images/preferences/controllers.svg"));
+    midiButton->setIcon(QIcon(":/images/preferences/controllers.png"));
     midiButton->setText(tr("Input Controllers"));
     midiButton->setTextAlignment(Qt::AlignLeft | Qt::AlignVCenter);
     midiButton->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
 
     QListWidgetItem * playlistButton = new QListWidgetItem(contentsWidget);
-    playlistButton->setIcon(QIcon(":/images/preferences/library.svg"));
+    playlistButton->setIcon(QIcon(":/images/preferences/library.png"));
     playlistButton->setText(tr("Library and Playlists"));
     playlistButton->setTextAlignment(Qt::AlignLeft | Qt::AlignVCenter);
     playlistButton->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
 
     QListWidgetItem * controlsButton = new QListWidgetItem(contentsWidget);
-    controlsButton->setIcon(QIcon(":/images/preferences/interface.svg"));
+    controlsButton->setIcon(QIcon(":/images/preferences/interface.png"));
     controlsButton->setText(tr("Interface"));
     controlsButton->setTextAlignment(Qt::AlignLeft | Qt::AlignVCenter);
     controlsButton->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
 /*
     QListWidgetItem * mixerButton = new QListWidgetItem(contentsWidget);
-    mixerButton->setIcon(QIcon(":/images/preferences/generic.svg"));
+    mixerButton->setIcon(QIcon(":/images/preferences/generic.png"));
     mixerButton->setText(tr("Mixer"));
     mixerButton->setTextAlignment(Qt::AlignLeft | Qt::AlignVCenter);
     mixerButton->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
 */
 #ifdef __EXPERIMENTAL_RECORDING__
     QListWidgetItem * recordingButton = new QListWidgetItem(contentsWidget);
-    recordingButton->setIcon(QIcon(":/images/preferences/recording.svg"));
+    recordingButton->setIcon(QIcon(":/images/preferences/recording.png"));
     recordingButton->setText(tr("Recording"));
     recordingButton->setTextAlignment(Qt::AlignLeft | Qt::AlignVCenter);
     recordingButton->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
@@ -231,7 +231,7 @@ void DlgPreferences::createIcons()
 
 #ifdef __EXPERIMENTAL_BPM__
     QListWidgetItem * bpmdetectButton = new QListWidgetItem(contentsWidget);
-    bpmdetectButton->setIcon(QIcon(":/images/preferences/bpmdetect.svg"));
+    bpmdetectButton->setIcon(QIcon(":/images/preferences/bpmdetect.png"));
     bpmdetectButton->setText(tr("BPM Detection"));
     bpmdetectButton->setTextAlignment(Qt::AlignLeft | Qt::AlignVCenter);
     bpmdetectButton->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
@@ -239,7 +239,7 @@ void DlgPreferences::createIcons()
 
 #ifdef __VINYLCONTROL__
     QListWidgetItem * vinylcontrolButton = new QListWidgetItem(contentsWidget);
-    //QT screws up my nice vinyl SVG for some reason, so we'll use a PNG version
+    //QT screws up my nice vinyl svg for some reason, so we'll use a PNG version
     //instead...
     vinylcontrolButton->setIcon(QIcon(":/images/preferences/vinyl.png"));
     vinylcontrolButton->setText(tr("Vinyl Control"));

@@ -34,6 +34,7 @@ public:
     void devClose();
     void handleMidi(char channel, char midicontrol, char midivalue);
 	void sendShortMsg(unsigned int word);
+	virtual void updateDeviceList();
 protected:
     void run();
     void stop();

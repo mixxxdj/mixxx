@@ -53,11 +53,12 @@ public:
     void setMidiConfig(ConfigObject<ConfigValueMidi> *pMidiConfig);
     void reopen(QString device);
     virtual void devOpen(QString) = 0;
+	virtual void updateDeviceList() {};
     virtual void devClose() = 0;
     void add(ControlObject* c);
     void remove(ControlObject* c);
     /** Returns a list of available devices */
-    QStringList *getDeviceList();
+    virtual QStringList *getDeviceList();
     /** Returns the name of the current open device */
     QString getOpenDevice();
     /** Returns a list of available configurations. Takes as input the directory path

@@ -85,6 +85,7 @@ void MidiObject::remove(ControlObject * c)
 
 QStringList * MidiObject::getDeviceList()
 {
+	updateDeviceList();
     return &devices;
 }
 
