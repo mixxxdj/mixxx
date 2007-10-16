@@ -18,6 +18,7 @@
 *                                                                         *
 ***************************************************************************/
 
+#include <QDebug>
 #include "midiobjectalsaseq.h"
 
 MidiObjectALSASeq::MidiObjectALSASeq(QString device) : MidiObject(device)
@@ -191,7 +192,7 @@ void MidiObjectALSASeq::devOpen(QString device)
                     {
                         //qDebug("Connecting " + sPortName + " to Mixxx");
 
-                        snd_seq_connect_from(m_handle, snd_seq_port_info_get_port(pPortInfo), iAlsaClient, iAlsaPort);
+                        snd_seq_connect_from(m_handle, m_input, iAlsaClient, iAlsaPort);
                         sActivePortName = sPortName;
                     }
                     else                     //Disconnect Mixxx from any other ports (might be annoying, but let's us be safe.)
