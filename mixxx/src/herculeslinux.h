@@ -115,6 +115,14 @@ const int kiHerculesLedRightHeadphone = 13;
 const int kiHerculesLedLeftCueBtn = 14;
 const int kiHerculesLedLeftSync = 15;
 
+#define __THOMAS_HERC__
+#ifdef __THOMAS_HERC__
+const int kiHerculesHeadphoneSplit = 1;
+const int kiHerculesHeadphoneMix = 2;
+const int kiHerculesHeadphoneDeckB = 3;
+const int kiHerculesHeadphoneDeckA = 4;
+#endif
+
 class HerculesLinux : public Hercules
 {
 public:
@@ -130,6 +138,10 @@ public:
 protected:
 #ifdef __LIBDJCONSOLE__
     DJConsole *djc;
+	#ifdef __THOMAS_HERC__
+    ControlObject *m_pControlObjectLeftBtnCueAndStop, *m_pControlObjectRightBtnCueAndStop;
+    int m_iHerculesHeadphonesSelection;
+	#endif //__THOMAS_HERC__
 #endif
 
     void run();  // main thread loop

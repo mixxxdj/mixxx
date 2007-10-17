@@ -67,6 +67,15 @@ double Rotary::filter(double dValue)
     return dMagnitude;
 }
 
+double Rotary::fillBuffer(double dValue)
+{
+	for (int i=0; i<m_iFilterLength; ++i)
+	{
+		m_pFilter[i] = dValue/m_dCalibration;
+	}
+	return dValue/m_dCalibration;
+}
+
 void Rotary::calibrate(double dValue)
 {
     m_dCalibration += dValue;
@@ -94,6 +103,11 @@ void Rotary::setCalibration(double c)
     m_dCalibration = c;
 }
 
+double Rotary::getCalibration()
+{
+    return m_dCalibration;
+}
+
 void Rotary::setFilterLength(int i)
 {
     if (i>kiRotaryFilterMaxLen)
@@ -102,4 +116,9 @@ void Rotary::setFilterLength(int i)
         m_iFilterLength = 1;
     else
         m_iFilterLength = i;
+}
+
+int Rotary::getFilterLength()
+{
+    return  m_iFilterLength;
 }
