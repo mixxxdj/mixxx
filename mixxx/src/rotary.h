@@ -41,12 +41,18 @@ public:
     double calibrateEnd();
     /** Set calibration */
     void setCalibration(double c);
+    /** Get calibration */
+    double getCalibration();
     /** Low pass filtered rotary event */
     double filter(double dValue);
+    /** Hard set event value */
+    double fillBuffer(double dValue);
     /** Collect callibration data */
     void calibrate(double dValue);
     /** Set filter length */
     void setFilterLength(int i);
+    /** Get filter length */
+    int getFilterLength();
 protected:
     /** Length of filter */
     int m_iFilterLength;

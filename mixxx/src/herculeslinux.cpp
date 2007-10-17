@@ -27,6 +27,8 @@
  * - TODO: figure out how to get the LEDs working
  */
 
+#define __THOMAS_HERC__
+
 #include "herculeslinux.h"
 #include <string.h>
 #include <QtDebug>
@@ -38,7 +40,9 @@
 #include "mathstuff.h"
 #include "rotary.h"
 //Added by qt3to4:
-#include <Q3ValueList>
+#include <Q3ValueList> // used by the old herc code
+
+#include <QDebug>
 
 //#define __HERCULES_STUB__ // Define __HERCULES_STUB__ disable Herc USB mode to be able to test Hercules in MIDI mode.
 #ifdef __HERCULES_STUB__
@@ -72,23 +76,81 @@ HerculesLinux::HerculesLinux() : Hercules()
 
     qDebug("HerculesLinux: Constructor called");
 
-    m_iFd = -1;
+    // m_iFd = -1; // still needed?
     m_iId = -1;
-    m_iJogLeft = -1;
-    m_iJogRight = -1;
+    m_iJogLeft = 0.;
+    m_iJogRight = 0.;
 
-    m_dJogLeftOld = 0.;
-    m_dJogRightOld = 0.;
+    m_dJogLeftOld = -1;
+    m_dJogRightOld = -1;
 
     m_bHeadphoneLeft = false;
     m_bHeadphoneRight = false;
+
+#ifdef __THOMAS_HERC__
+    m_iHerculesHeadphonesSelection = 1;
+#endif
 }
 
 HerculesLinux::~HerculesLinux() {
 }
 void HerculesLinux::closedev() {
 }
-void HerculesLinux::run() {
+
+void HerculesLinux::run() 
+{
+#ifdef __THOMAS_HERC__
+	double l;
+	double r;
+	bool leftJogProcessing = false;
+	bool rightJogProcessing = false;
+	m_pRotaryLeft->setFilterLength(4);
+	m_pRotaryRight->setFilterLength(4);
+	m_pRotaryLeft->setCalibration(64);
+	m_pRotaryRight->setCalibration(64);
+	djc->Leds.setBit(LEFT_FX, false);
+	djc->Leds.setBit(LEFT_FX_CUE, false);
+	djc->Leds.setBit(LEFT_LOOP, true);
+	djc->Leds.setBit(RIGHT_FX, false);
+	djc->Leds.setBit(RIGHT_FX_CUE, false);
+	djc->Leds.setBit(RIGHT_LOOP, true);
+	while( 1 )
+	{
+		if (m_iJogLeft != 0)
+		{
+			l = m_pRotaryLeft->fillBuffer(m_iJogLeft);
+			m_iJogLeft = 0;
+			leftJogProcessing = true;
+		}
+		else 
+		{
+			l = m_pRotaryLeft->filter(m_iJogLeft);
+		}
+		if (m_iJogRight != 0)
+		{
+			r = m_pRotaryRight->fillBuffer(m_iJogRight);
+			m_iJogRight = 0;
+			rightJogProcessing = true;
+		}
+		else 
+		{
+			r = m_pRotaryRight->filter(m_iJogRight);
+		}
+		if ( l != 0 || leftJogProcessing)
+		{
+			//qDebug("sendEvent(%e, m_pControlObjectLeftJog)",l);
+			sendEvent(l, m_pControlObjectLeftJog);
+			if ( l == 0 ) leftJogProcessing = false;
+		}
+		if ( r != 0 || rightJogProcessing)
+		{
+			//qDebug("sendEvent(%e, m_pControlObjectRightJog)",r);
+			sendEvent(r, m_pControlObjectRightJog);
+			if ( r == 0 ) rightJogProcessing = false;
+		}
+		msleep (64);
+	}
+#endif // __THOMAS_HERC__
 }
 
 bool HerculesLinux::opendev()
@@ -103,6 +165,11 @@ bool HerculesLinux::opendev()
         }
 
         djc->loadData();
+#ifdef __THOMAS_HERC__
+        start();
+        m_pControlObjectLeftBtnCueAndStop = ControlObject::getControl(ConfigKey("[Channel1]","cue_gotoandstop"));
+        m_pControlObjectRightBtnCueAndStop = ControlObject::getControl(ConfigKey("[Channel2]","cue_gotoandstop"));
+#endif
         djc->setCallback(console_event, this);
 
         return djc->ready();
@@ -126,8 +193,11 @@ void HerculesLinux::consoleEvent(int first, int second) {
 
     //qDebug("x Button %i = %i", first, second);
     if(first != 0) {
-        bool on = (second == 0 ? false : true);
+        bool ledIsOn = (second == 0 ? false : true);
         int led = 0;
+#ifdef __THOMAS_HERC__
+	int iDiff = 0;
+#endif
         switch(first) {
         case LEFT_PLAY:
         case LEFT_CUE:
@@ -141,30 +211,60 @@ void HerculesLinux::consoleEvent(int first, int second) {
         case RIGHT_MONITOR:
             led = first;
             break;
+#ifndef __THOMAS_HERC__  // Old behaviour - LEDs only
         case LEFT_1:  led = LEFT_FX;      break;
         case LEFT_2:  led = LEFT_FX_CUE;  break;
         case LEFT_3:  led = LEFT_LOOP;    break;
         case RIGHT_1: led = RIGHT_FX;     break;
         case RIGHT_2: led = RIGHT_FX_CUE; break;
         case RIGHT_3: led = RIGHT_LOOP;   break;
-
-        default:
+#else
+		case LEFT_1:  
+			m_pRotaryLeft->setCalibration(512);
+		        djc->Leds.setBit(LEFT_FX, true);
+		        djc->Leds.setBit(LEFT_FX_CUE, false);
+		        djc->Leds.setBit(LEFT_LOOP, false);
+			break;
+		case LEFT_2:
+			m_pRotaryLeft->setCalibration(256);
+		        djc->Leds.setBit(LEFT_FX, false);
+		        djc->Leds.setBit(LEFT_FX_CUE, true);
+		        djc->Leds.setBit(LEFT_LOOP, false);
+			break;
+		case LEFT_3:  
+			m_pRotaryLeft->setCalibration(64);
+		        djc->Leds.setBit(LEFT_FX, false);
+		        djc->Leds.setBit(LEFT_FX_CUE, false);
+		        djc->Leds.setBit(LEFT_LOOP, true);
+			break;
+		case RIGHT_1: 
+			m_pRotaryRight->setCalibration(512);
+		        djc->Leds.setBit(RIGHT_FX, true);
+		        djc->Leds.setBit(RIGHT_FX_CUE, false);
+		        djc->Leds.setBit(RIGHT_LOOP, false);
+			break;
+		case RIGHT_2: 
+			m_pRotaryRight->setCalibration(256);
+		        djc->Leds.setBit(RIGHT_FX, false);
+		        djc->Leds.setBit(RIGHT_FX_CUE, true);
+		        djc->Leds.setBit(RIGHT_LOOP, false);
+			break;
+		case RIGHT_3: 	
+			m_pRotaryRight->setCalibration(64);
+		        djc->Leds.setBit(RIGHT_FX, false);
+		        djc->Leds.setBit(RIGHT_FX_CUE, false);
+		        djc->Leds.setBit(RIGHT_LOOP, true);
             break;
+#endif __THOMAS_HERC__  
+		default: break;
         }
 
-        double v = ((second+1)/(4.- ((second>((7/8.)*256))*((second-((7/8.)*256))*1/16.)))); // GED's magic formula
         switch(first) {
         case LEFT_VOL: sendEvent(second/2., m_pControlObjectLeftVolume); break;
         case RIGHT_VOL: sendEvent(second/2., m_pControlObjectRightVolume); break;
         case LEFT_PLAY: sendButtonEvent(true, m_pControlObjectLeftBtnPlay); break;
         case RIGHT_PLAY: sendButtonEvent(true, m_pControlObjectRightBtnPlay); break;
         case XFADER: sendEvent((second+1)/2., m_pControlObjectCrossfade); break;
-        case RIGHT_HIGH: sendEvent(v, m_pControlObjectRightTreble); break;
-        case RIGHT_MID: sendEvent(v, m_pControlObjectRightMiddle); break;
-        case RIGHT_BASS: sendEvent(v, m_pControlObjectRightBass); break;
-        case LEFT_HIGH: sendEvent(v, m_pControlObjectLeftTreble); break;
-        case LEFT_MID: sendEvent(v, m_pControlObjectLeftMiddle); break;
-        case LEFT_BASS: sendEvent(v, m_pControlObjectLeftBass); break;
         case LEFT_PITCH_DOWN: sendButtonEvent(true, m_pControlObjectLeftBtnPitchBendMinus); break;
         case LEFT_PITCH_UP: sendButtonEvent(true, m_pControlObjectLeftBtnPitchBendPlus); break;
         case RIGHT_PITCH_DOWN: sendButtonEvent(true, m_pControlObjectRightBtnPitchBendMinus); break;
@@ -173,6 +273,14 @@ void HerculesLinux::consoleEvent(int first, int second) {
         case LEFT_SKIP_FORWARD: sendButtonEvent(true, m_pControlObjectLeftBtnTrackNext); break;
         case RIGHT_SKIP_BACK: sendButtonEvent(true, m_pControlObjectRightBtnTrackPrev); break;
         case RIGHT_SKIP_FORWARD: sendButtonEvent(true, m_pControlObjectRightBtnTrackNext); break;
+        case RIGHT_HIGH: sendEvent(second/2, m_pControlObjectRightTreble); break;
+        case RIGHT_MID: sendEvent(second/2, m_pControlObjectRightMiddle); break;
+        case RIGHT_BASS: sendEvent(second/2, m_pControlObjectRightBass); break;
+        case LEFT_HIGH: sendEvent(second/2, m_pControlObjectLeftTreble); break;
+        case LEFT_MID: sendEvent(second/2, m_pControlObjectLeftMiddle); break;
+        case LEFT_BASS:	sendEvent(second/2, m_pControlObjectLeftBass); break;
+
+#ifndef __THOMAS_HERC__  // Old behaviour + Headphone Deck Pseudocode
         case LEFT_CUE: sendButtonEvent(true, m_pControlObjectLeftBtnCue); break;
         case RIGHT_CUE: sendButtonEvent(true, m_pControlObjectRightBtnCue); break;
         case LEFT_MASTER_TEMPO: sendEvent(0, m_pControlObjectLeftBtnMasterTempo); m_bMasterTempoLeft = !m_bMasterTempoLeft; break;
@@ -193,6 +301,7 @@ void HerculesLinux::consoleEvent(int first, int second) {
         break;
 
         case HEADPHONE_DECK_B:
+
                 qDebug("Deck B");
                 if (!m_bHeadphoneRight) {
                    sendButtonEvent(true, m_pControlObjectRightBtnHeadphone); m_bHeadphoneRight = !m_bHeadphoneRight;
@@ -213,6 +322,156 @@ void HerculesLinux::consoleEvent(int first, int second) {
                 }
         break;
  */
+#else
+		case LEFT_CUE: if (m_pControlObjectLeftBtnPlayProxy->get())
+			{
+				/* CUE do GotoAndStop */
+				sendButtonEvent(true, m_pControlObjectLeftBtnCueAndStop); 
+			}
+			else
+			{
+				sendButtonEvent(true, m_pControlObjectLeftBtnCue); 
+			}
+			break;
+		case RIGHT_CUE: 
+			if (m_pControlObjectRightBtnPlayProxy->get())
+			{
+				/* CUE do GotoAndStop */
+				sendButtonEvent(true, m_pControlObjectRightBtnCueAndStop); 
+			}
+			else
+			{
+				sendButtonEvent(true, m_pControlObjectRightBtnCue); 
+			}
+			break;
+		case LEFT_MASTER_TEMPO: 
+			sendEvent(0, m_pControlObjectLeftBtnMasterTempo); 
+			m_bMasterTempoLeft = !m_bMasterTempoLeft; 
+			break;
+		case RIGHT_MASTER_TEMPO: 
+			sendEvent(0, m_pControlObjectRightBtnMasterTempo); 
+			m_bMasterTempoRight = !m_bMasterTempoRight; 
+			break;
+		case RIGHT_MONITOR: 
+			sendButtonEvent(true, m_pControlObjectRightBtnHeadphone); 
+			m_bHeadphoneRight = !m_bHeadphoneRight; 
+			break;
+		case LEFT_MONITOR: 
+			sendButtonEvent(true, m_pControlObjectLeftBtnHeadphone); 
+			m_bHeadphoneLeft = !m_bHeadphoneLeft; 
+			break;
+		/* for the headphone select if have mesured something like this on my hercules mk2 
+		*
+		*	from state	to state	value(s)
+		*	split		mix		first=102, second=8
+		*	mix		split		first=103, second=4 most significant
+		*	mix		split		first=100, second=1
+		*	mix		split		first=101, second=2
+		*	mix		deck b		first=101, second=2
+		*	deck b		mix		first=102, second=8
+		*	deck b		deck a		first=100, second=1
+		*	deck a		deck b		first=101, second=2
+		*
+		*	you will see only one unique value: first=103,seconnd=4
+		*	so lets try what we learned about: (sorry, we realy need a var for tracking this)
+		*/
+		case 103:
+			if (second == 4)
+			{
+				m_iHerculesHeadphonesSelection = kiHerculesHeadphoneSplit;
+				qDebug("Deck SPLIT (mute both)");
+				if (m_bHeadphoneRight) 
+				{
+					sendButtonEvent(true, m_pControlObjectRightBtnHeadphone); m_bHeadphoneRight = !m_bHeadphoneRight;
+				}
+				if (m_bHeadphoneLeft) 
+				{
+					sendButtonEvent(true, m_pControlObjectLeftBtnHeadphone); m_bHeadphoneLeft = !m_bHeadphoneLeft;
+				}
+			}
+			break;
+		case 102:
+			if (second == 8)
+			{
+				m_iHerculesHeadphonesSelection = kiHerculesHeadphoneMix;
+				qDebug("Deck MIX");
+				if (!m_bHeadphoneRight) 
+				{
+					sendButtonEvent(true, m_pControlObjectRightBtnHeadphone); m_bHeadphoneRight = !m_bHeadphoneRight;
+				}
+				if (!m_bHeadphoneLeft) 
+				{
+					sendButtonEvent(true, m_pControlObjectLeftBtnHeadphone); m_bHeadphoneLeft = !m_bHeadphoneLeft;
+				}
+			}
+			break;
+		case 101:
+			if (second == 2 && ( m_iHerculesHeadphonesSelection == kiHerculesHeadphoneDeckA || m_iHerculesHeadphonesSelection == kiHerculesHeadphoneMix ) )
+			{
+				/* now we shouldn't get here if 101/2 follows straight to 103/4 */
+				m_iHerculesHeadphonesSelection = kiHerculesHeadphoneDeckB;
+				qDebug("Deck B");
+				if (!m_bHeadphoneRight) 
+				{
+					sendButtonEvent(true, m_pControlObjectRightBtnHeadphone); m_bHeadphoneRight = !m_bHeadphoneRight;
+				}
+				if (m_bHeadphoneLeft) 
+				{
+					sendButtonEvent(true, m_pControlObjectLeftBtnHeadphone); m_bHeadphoneLeft = !m_bHeadphoneLeft ;
+				}
+			}
+			break;
+		case 100:
+			if (second == 1 && m_iHerculesHeadphonesSelection == kiHerculesHeadphoneDeckB )
+			{
+				m_iHerculesHeadphonesSelection = kiHerculesHeadphoneDeckA;
+				qDebug("Deck A");
+				if (m_bHeadphoneRight) 
+				{
+					sendButtonEvent(true, m_pControlObjectRightBtnHeadphone); m_bHeadphoneRight = !m_bHeadphoneRight;
+				}
+				if (!m_bHeadphoneLeft) 
+				{
+					sendButtonEvent(true, m_pControlObjectLeftBtnHeadphone); m_bHeadphoneLeft = !m_bHeadphoneLeft;
+				}
+			}
+			break;
+		case LEFT_JOG:
+			iDiff = 0;
+			if (m_dJogLeftOld>=0)
+			{
+				iDiff = second-m_dJogLeftOld;
+			}
+			if (iDiff<-200)
+			{
+				iDiff += 256;
+			}
+			else if (iDiff>200)
+			{
+				iDiff -= 256;
+			}
+			m_dJogLeftOld = second;
+			m_iJogLeft += (double)iDiff; /* here goes the magic */
+			break;
+		case RIGHT_JOG:
+			iDiff = 0;
+			if (m_dJogRightOld>=0)
+			{
+				iDiff = second-m_dJogRightOld;
+			}
+			if (iDiff<-200)
+			{
+				iDiff += 256;
+			}
+			else if (iDiff>200)
+			{
+				iDiff -= 256;
+			}
+			m_dJogRightOld = second;
+			m_iJogRight += (double)iDiff;
+			break;
+#endif // __THOMAS_HERC__
+
         case LEFT_PITCH: sendEvent(PitchChange("Left", second, m_iPitchLeft, m_iPitchOffsetLeft), m_pControlObjectLeftPitch); break;
         case RIGHT_PITCH: sendEvent(PitchChange("Right", second, m_iPitchRight, m_iPitchOffsetRight), m_pControlObjectRightPitch); break;
 
@@ -220,12 +479,12 @@ void HerculesLinux::consoleEvent(int first, int second) {
         case RIGHT_AUTO_BEAT: sendButtonEvent(false, m_pControlObjectRightBtnAutobeat); break;
 
         default:
-            qDebug("Button %i = %i - v value: %5.3f", first, second, v);
+            qDebug("Button %i = %i", first, second);
             break;
         }
 
         if(led != 0)
-            djc->Leds.setBit(led, on);
+            djc->Leds.setBit(led, ledIsOn);
     }
 }
 
@@ -253,7 +512,11 @@ double HerculesLinux::PitchChange(const QString ControlSide, const int ev_value,
     }
     m_iPitchOffset = ev_value;
 
+#ifdef __THOMAS_HERC__
+    int pitchAdjustStep = delta; // * 3; 
+#else
     int pitchAdjustStep = delta * 3;
+#endif
 
     if ((pitchAdjustStep > 0 && m_iPitchPrevious+pitchAdjustStep < 128) || (pitchAdjustStep < 0 && m_iPitchPrevious+pitchAdjustStep > 0)) {
         m_iPitchPrevious = m_iPitchPrevious+pitchAdjustStep;
@@ -263,7 +526,7 @@ double HerculesLinux::PitchChange(const QString ControlSide, const int ev_value,
         m_iPitchPrevious = 0;
     }
 
-    qDebug("%s PitchAdjust %i -> new Pitch %i",ControlSide.data(),pitchAdjustStep, m_iPitchPrevious );
+    qDebug() << "%s PitchAdjust %i -> new Pitch %i" << ControlSide.data() << pitchAdjustStep << m_iPitchPrevious;
 
     return m_iPitchPrevious;
 }
