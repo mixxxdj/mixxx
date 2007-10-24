@@ -150,9 +150,14 @@ void VisualController::drawScene(GLenum mode)
     //ObjectsIterator it = objects.begin();
     //for(;it!=objects.end();++it)
     //    (*it)->draw(mode);
+    VisualObject* current = NULL;
     QListIterator<VisualObject*> it(objects);
     while (it.hasNext())
-        it.next()->draw(mode);
+    {
+        current = it.next();
+        if (current)
+            current->draw(mode);
+    }
 };
 
 /**

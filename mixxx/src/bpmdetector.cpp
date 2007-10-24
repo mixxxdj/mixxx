@@ -255,7 +255,14 @@ void BpmDetector::run()
                 continue;
             }
 
-            qDebug("BPM detection failed the first time. Trying old version.");
+	    //The fallback is broken and is causing crashes.  This will break us out and set the BPM to 0
+	    //Remove these lines if you get the old BPM detection working
+            
+	    //qDebug("BPM detection failed the first time. Trying old version.");
+	    qDebug("BPM detection failed, setting to 0.");
+
+	    delete pSoundSource;
+	    continue;
 
             // *********************************************************************
             // At this point the new BPM detection failed to extract a BPM. So,
