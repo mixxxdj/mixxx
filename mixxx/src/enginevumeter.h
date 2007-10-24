@@ -25,7 +25,7 @@
 //SMOOTHING FACTORS
 //Must be from 0-1 the lower the factor, the more smoothing that is applied
 #define ATTACK_SMOOTHING .85
-#define DECAY_SMOOTHING .3//.16//.4
+#define DECAY_SMOOTHING .4//.16//.4
 
 class ControlPotmeter;
 
