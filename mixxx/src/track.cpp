@@ -99,13 +99,8 @@ Track::Track(QString location, MixxxView * pView, EngineBuffer * pBuffer1, Engin
         // Connect Search to table
         connect( m_pView->m_pLineEditSearch,
                 SIGNAL( textChanged( const QString & )),
-                m_pView->m_pTrackTableView->m_pSearchFilter,
-                SLOT( setFilterFixedString( const QString & )));
-
-        connect( m_pView->m_pLineEditSearch,
-                SIGNAL( textChanged( const QString & )),
-                m_pView->m_pTrackTableView->m_pDirFilter,
-                SLOT( setFilterFixedString( const QString & )));
+		m_pView->m_pTrackTableView,
+		SLOT(slotFilter(const QString &)));
 
         // Connect drop events to table
         //connect(m_pView->m_pTrackTable, SIGNAL(dropped(QDropEvent *)), this, SLOT(slotDrop(QDropEvent *)));

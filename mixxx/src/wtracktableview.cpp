@@ -217,6 +217,7 @@ void WTrackTableView::sortByColumn(int col)
             m_pTable->m_pTrackPlaylist->sortByComment(ascending);
             break;
         }
+	slotFilter();
     }
 
     return QTableView::sortByColumn(col);
@@ -354,3 +355,14 @@ void WTrackTableView::slotRemoveFromPlaylist()
     m_pTable->removeRow(index.row(),index);
 }
 
+void WTrackTableView::slotFilter(const QString &pstr)
+{
+    m_filterString = pstr;
+    slotFilter();
+}
+
+void WTrackTableView::slotFilter()
+{
+    m_pSearchFilter->setFilterFixedString(m_filterString);
+    m_pDirFilter->setFilterFixedString(m_filterString);
+}
