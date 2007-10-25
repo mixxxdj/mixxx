@@ -50,6 +50,7 @@ public:
     ~SoundSourceMp3();
     long seek(long);
     unsigned read(unsigned long size, const SAMPLE*);
+    unsigned long discard(unsigned long size);
     /** Return the length of the file in samples. */
     inline long unsigned length();
     static int ParseHeader( TrackInfoObject * );

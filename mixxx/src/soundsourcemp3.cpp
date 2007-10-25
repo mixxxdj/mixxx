@@ -212,11 +212,7 @@ long SoundSourceMp3::seek(long filepos)
         }
 
         // Synthesize the the samples from the frame which should be discard to reach the requested position
-        SAMPLE * temp = new SAMPLE[filepos-cur->pos];
-        read(filepos-cur->pos, temp);
-        // qDebug("try read %i,...frame pos %i, filepos %i",filepos-cur->pos,cur->pos,filepos);
-        // qDebug("ok");
-        delete [] temp;
+        discard(filepos-cur->pos);
     }
 /*
     else
@@ -305,6 +301,45 @@ inline long unsigned SoundSourceMp3::length()
     }
 
     return (long unsigned) 2 *mad_timer_count(filelength, units);
+}
+
+/*
+  decode the chosen number of samples and discard
+*/
+
+unsigned long SoundSourceMp3::discard(unsigned long samples_wanted)
+{
+    unsigned long Total_samples_decoded = 0;
+    int no;
+
+    if(rest > 0)
+        Total_samples_decoded += 2*(Synth.pcm.length-rest);
+
+    while (Total_samples_decoded < samples_wanted)
+    {
+        if(mad_frame_decode(Frame,&Stream))
+        {
+            if(MAD_RECOVERABLE(Stream.error))
+            {
+                continue;
+            } else if(Stream.error==MAD_ERROR_BUFLEN) {
+                break;
+            } else {
+                break;
+            }
+        }
+	mad_synth_frame(&Synth,Frame);
+	no = math_min(Synth.pcm.length,(samples_wanted-Total_samples_decoded)/2);
+        Total_samples_decoded += 2*no;
+    }
+    
+    if (Synth.pcm.length > no)
+	rest = no;
+    else
+	rest = -1;
+
+    
+    return Total_samples_decoded;
 }
 
 /*
