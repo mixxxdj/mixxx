@@ -101,6 +101,10 @@ private slots:
     void slotLoadPlayer2();
     /** Remove selected track from active playlist */
     void slotRemoveFromPlaylist();
+public slots:
+    /** Set the search filter **/
+    void slotFilter(const QString &);
+    void slotFilter();
 
 protected slots:
     void sortByColumn(int col);
@@ -112,6 +116,6 @@ protected:
     QString m_dirTrackName; //Name of the track right-clicked when in browse mode.
     /* directory model*/
     QDirModel *m_pDirModel;
-
+    QString m_filterString;
 };
 #endif
