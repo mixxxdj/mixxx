@@ -212,7 +212,7 @@ long SoundSourceMp3::seek(long filepos)
         }
 
         // Synthesize the the samples from the frame which should be discard to reach the requested position
-        SAMPLE * temp = new SAMPLE[READCHUNKSIZE];
+        SAMPLE * temp = new SAMPLE[filepos-cur->pos];
         read(filepos-cur->pos, temp);
         // qDebug("try read %i,...frame pos %i, filepos %i",filepos-cur->pos,cur->pos,filepos);
         // qDebug("ok");
