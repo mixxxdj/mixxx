@@ -110,7 +110,7 @@ long SoundSourceOggVorbis::seek(long filepos)
    samples actually read.
  */
 
-unsigned SoundSourceOggVorbis::read(unsigned long size, const SAMPLE * destination)
+unsigned SoundSourceOggVorbis::read(volatile unsigned long size, const SAMPLE * destination)
 {
     dest = (SAMPLE *) destination;
     index = 0;
@@ -138,9 +138,9 @@ unsigned SoundSourceOggVorbis::read(unsigned long size, const SAMPLE * destinati
     // convert into stereo if file is mono
     if (channels == 1)
     {
-        for(int i=index; i>0; i--)
+	for(int i=(index/2); i>0; i--)
         {
-            dest[i*2]     = dest[i];
+	    dest[i*2]     = dest[i];
             dest[(i*2)+1] = dest[i];
         }
     }
