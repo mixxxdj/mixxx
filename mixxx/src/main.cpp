@@ -176,20 +176,24 @@ int main(int argc, char * argv[])
 //            bVisuals = false;
 
     // Construct a list of strings based on the command line arguments
-    QStringList files;
+    struct CmdlineArgs args;
     QString qLogFileName = "";
     for (int i=0; i<argc; ++i)
     {
         if (argv[i]==QString("--log"))
         {
-            qLogFileName = argv[i+1];
+            args.qLogFileName = argv[i+1];
             i++;
         }
+        if (argv[i]==QString("-f") || argv[i]==QString("--f"))
+        {
+            args.bStartInFullscreen = true;
+        }
         else
-            files += argv[i];
+            args.qlMusicFiles += argv[i];
     }
 
-    MixxxApp * mixxx=new MixxxApp(a, files, pSplash, qLogFileName);
+    MixxxApp * mixxx=new MixxxApp(a, args, pSplash);
     a->setMainWidget(mixxx);
 
     mixxx->show();

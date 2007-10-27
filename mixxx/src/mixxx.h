@@ -86,7 +86,7 @@ class MixxxApp : public QMainWindow
 
   public:
     /** Construtor. files is a list of command line arguments */
-    MixxxApp(QApplication *app, QStringList files, QSplashScreen *pSplash, QString qLogFileName);
+    MixxxApp(QApplication *app, struct CmdlineArgs args, QSplashScreen *pSplash);
     /** destructor */
     ~MixxxApp();
     /** initializes all QActions of the application */
@@ -211,5 +211,14 @@ class MixxxApp : public QMainWindow
     // Fullscreen patch
     QPoint winpos;
 };
+
+//A structure to store the parsed command-line arguments
+struct CmdlineArgs
+{
+    QList<QString> qlMusicFiles;
+    QString qLogFileName;
+    bool bStartInFullscreen;
+};
+
 #endif
 
