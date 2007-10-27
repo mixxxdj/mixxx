@@ -50,7 +50,7 @@
 #include "playerproxy.h"
 #include "soundmanager.h"
 
-MixxxApp::MixxxApp(QApplication * a, QStringList files, QSplashScreen * pSplash, QString qLogFileName)
+MixxxApp::MixxxApp(QApplication * a, struct CmdlineArgs args, QSplashScreen * pSplash)
 {
     app = a;
 
@@ -253,17 +253,17 @@ MixxxApp::MixxxApp(QApplication * a, QStringList files, QSplashScreen * pSplash,
     //setFocusPolicy(QWidget::StrongFocus);
     //grabKeyboard();
 
-    // Load tracks in files (command line arguments) into player 1 and 2:
+    // Load tracks in args.qlMusicFiles (command line arguments) into player 1 and 2:
 #ifndef QT3_SUPPORT
-    if (files.count()>1)
-        m_pTrack->slotLoadPlayer1((*files.at(1)));
-    if (files.count()>2)
-        m_pTrack->slotLoadPlayer2((*files.at(2)));
+    if (args.qlMusicFiles.count()>1)
+        m_pTrack->slotLoadPlayer1((*args.qlMusicFiles.at(1)));
+    if (args.qlMusicFiles.count()>2)
+        m_pTrack->slotLoadPlayer2((*args.qlMusicFiles.at(2)));
 #else
-    if (files.count()>1)
-        m_pTrack->slotLoadPlayer1(files.at(1));
-    if (files.count()>2)
-        m_pTrack->slotLoadPlayer2(files.at(2));
+    if (args.qlMusicFiles.count()>1)
+        m_pTrack->slotLoadPlayer1(args.qlMusicFiles.at(1));
+    if (args.qlMusicFiles.count()>2)
+        m_pTrack->slotLoadPlayer2(args.qlMusicFiles.at(2));
 #endif
 
     // Set up socket interface
@@ -294,12 +294,16 @@ MixxxApp::MixxxApp(QApplication * a, QStringList files, QSplashScreen * pSplash,
         view->checkDirectRendering();
 
     // Initialize the log if a log file name was given on the command line
-    Log * pLog = 0;
-    if (qLogFileName.length()>0)
-        pLog = new Log(qLogFileName, m_pTrack);
+    Log *pLog = 0;
+    if (args.qLogFileName.length()>0)
+        pLog = new Log(args.qLogFileName, m_pTrack);
 
     // Fullscreen patch
     //setFixedSize(view->width(), view->height());
+    
+    //If we were told to start in fullscreen mode on the command-line, then turn on fullscreen mode.
+    if (args.bStartInFullscreen)
+        slotOptionsFullScreen(true);
 
 }
 
