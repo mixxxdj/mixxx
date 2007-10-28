@@ -66,7 +66,7 @@ def CheckOpenGL():
 
 	return
 
-#Checks for OpenGL on all three platforms
+#Checks for OGG/Vorbis on all three platforms
 def CheckOggVorbis():
 	#Check for Ogg and Vorbis on Linux and Win32
 	if platform == 'linux' or platform == 'win32':
@@ -142,7 +142,7 @@ elif platform == 'win32':
 
 #Read the qtdir flag, if it was set explicitly
 flags_qtdir = ARGUMENTS.get('qtdir', default_qtdir)
-if not os.path.exists(flags_qtdir):
+if not os.path.exists(flags_qtdir) and platform != 'osx': #OS X doesn't have a qt path.
 	print "Error: QT path does not exist or QT4 is not installed."
 	print "Please specify your QT path by running 'scons qtdir=[path]'"
 	Exit(1)
@@ -184,7 +184,7 @@ sources = Split("""enginebuffercue.cpp input.cpp mixxxmenuplaylists.cpp trackpla
  enginevinylsoundemu.cpp wtracktablefilter.cpp""")
 # trackinfoobject.cpp soundsource.cpp
 
-#Crap we don't want anymore:
+#Crap we don't use anymore:
 #playerportaudio.cpp player.cpp playerproxy.cpp
 
 #Compile platform specific hardware support
@@ -276,16 +276,32 @@ if not env.GetOption('clean') and not SCons.Util.containsAny(os.sys.argv, ['-h',
 
 	#Platform-specific checks for OS X
 	if platform == 'osx':
-	    #Check for libaudiofile
-		if not conf.CheckLibWithHeader('audiofile', 'audiofile.h', 'C'):
-			print "Did not find libaudiofile or it\'s development headers, exiting!"
+	#Check for libsndfile
+		#if not conf.CheckLibWithHeader(['sndfile', 'libsndfile'], 'sndfile.h', 'C'):
+		if not conf.CheckLib(['sndfile', 'libsndfile']):
+			print "Did not find libsndfile or it\'s development headers, exiting!"
 			Exit(1)
 		else:
-			env.Append(CXXFLAGS = ' -D__AUDIOFILE__')
-			sources.append('soundsourceaudiofile.cpp')
+			env.Append(CXXFLAGS = ' -D__SNDFILE__')
+			sources.append('soundsourcesndfile.cpp') ## TODO: Convert this to a SharedLibrary, so it can be installed without having to run scons twice after a clean
+			# libsndfile = env.SharedLibrary(
+			# "libsndfile",
+			# source=["soundsourcesndfile.cpp", "trackinfoobject.cpp"])
 
+		#Check for QT4
+		if not os.path.exists('/Library/Frameworks/QtCore.framework/Versions/4/Headers/QtCore'):
+			print 'Did not find QT4 framework, exiting! (Please install it)'
+			Exit(1)
+		else:
+			env.Append(LINKFLAGS = '-framework QtCore -framework QtOpenGL -framework Qt3Support -framework QtGui -framework QtXml -framework QtNetwork -framework QtSql')
+			env.Append(CXXFLAGS = '-I/Library/Frameworks/QtCore.framework/Headers/')
+			env.Append(CXXFLAGS = '-I/Library/Frameworks/QtOpenGL.framework/Headers/')
+			env.Append(CXXFLAGS = '-I/Library/Frameworks/Qt3Support.framework/Headers/')
+			env.Append(CXXFLAGS = '-I/Library/Frameworks/QtGui.framework/Headers/')
+			env.Append(CXXFLAGS = '-I/Library/Frameworks/QtXml.framework/Headers/')
+			
 		#Check for CoreMIDI
-		if not conf.CheckCHeader('/System/Library/Frameworks/CoreMIDI.framework/Headers/CoreMIDI.h'):
+		if not conf.CheckCXXHeader('/System/Library/Frameworks/CoreMIDI.framework/Headers/CoreMIDI.h'):
 			print 'Did not find CoreMIDI framework, exiting! (Please install it)'
 			Exit(1)
 		else:
@@ -309,12 +325,12 @@ env.Append(CXXFLAGS = ' -D__PORTAUDIO__'); #Turn on PortAudio support in Mixxx
 env.Append(CPPPATH = ['.', '../', '../../']) #Fun fun fun with paths
 
 
-if not platform == 'win32':
-	env.Append(LIBS = 'Qt3Support');
-	env.Append(LIBS = 'QtXml');
-	env.Append(LIBS = 'QtGui');
-	env.Append(LIBS = 'QtCore');
-	env.Append(LIBS = 'QtOpenGL');
+#if not platform == 'win32':
+#	env.Append(LIBS = 'Qt3Support');
+#	env.Append(LIBS = 'QtXml');
+#	env.Append(LIBS = 'QtGui');
+#	env.Append(LIBS = 'QtCore');
+#	env.Append(LIBS = 'QtOpenGL');
 
 if platform == 'win32':
 	env.Append(LIBS = 'Qt3Support4'); #Win32 needs this instead of 'Qt3Support'
@@ -662,7 +678,7 @@ dll_files = glob.glob('../../../mixxx-winlib/*.dll') # TODO: Use reference to Sh
 # dll_files = libsndfile
 dll_files += Split("""$QTDIR/lib/Qt3Support4.dll $QTDIR/lib/QtCore4.dll $QTDIR/lib/QtGui4.dll $QTDIR/lib/QtNetwork4.dll $QTDIR/lib/QtOpenGL4.dll $QTDIR/lib/QtSql4.dll $QTDIR/lib/QtXml4.dll """)
 
-if platform == 'linux' or platform == 'osx':
+if platform == 'linux':
 	flags_prefix = ARGUMENTS.get('prefix', '/usr/local')
 	if not os.path.exists(flags_prefix):
 		print "Error: Prefix path does not exist!"
@@ -672,11 +688,10 @@ if platform == 'linux' or platform == 'osx':
 		unix_bin_path   = flags_prefix + "/bin"
 
 		binary = env.Install(unix_bin_path, binary_files)
-		skins = env.Install(unix_share_path + "/mixxx/skins", skin_files)
-		midimappings = env.Install(unix_share_path + "/mixxx/midi", midimappings_files)
-		keyboardmappings = env.Install(unix_share_path + "/mixxx/keyboard", keyboardmappings_files)
-		docs = env.Install(unix_share_path + "/doc/mixxx", docs_files)
-		dotdesktop = env.Install(unix_share_path + "/applications", dotdesktop_files)
+		skins = env.Install(unix_share_path + "/skins", skin_files)
+		midimappings = env.Install(unix_share_path + "/midi", midimappings_files)
+		keyboardmappings = env.Install(unix_share_path + "/keyboard", keyboardmappings_files)
+		docs = env.Install(unix_share_path + "/doc", docs_files)
 		icon = env.Install(unix_share_path + "/pixmaps", icon_files)
 
         #Makes each of those Install builders get fired off when you run "scons install" :)
@@ -696,7 +711,36 @@ if platform == 'linux' or platform == 'osx':
 			#Delete(unix_share_path + "/mixxx/skins")
 			#Delete(unix_share_path + "/mixxx/midi")
 			#Delete(unix_share_path + "/mixxx/keyboard")
-			
+
+#Build the Mixxx.app directory 
+if platform == 'osx':
+
+	#Files needed to create the OS X package
+	osx_plist_file = glob.glob('../osx/Info.plist')
+	osx_pkginfo_file = glob.glob('../osx/PkgInfo')
+	osx_icns_file = glob.glob('../osx/application.icns')
+	
+	osx_dist_path = "../../Mixxx.app"
+	osx_share_path = osx_dist_path
+	binary = env.Install(osx_dist_path + "/Contents/MacOS", binary_files)
+	skins = env.Install(osx_dist_path + "/skins", skin_files)
+	midimappings = env.Install(osx_dist_path + "/midi", midimappings_files)
+	keyboardmappings = env.Install(osx_dist_path + "/keyboard", keyboardmappings_files)
+	docs = env.Install(osx_dist_path + "/doc", docs_files)
+	osx_plist = env.Install(osx_dist_path + "/Contents", osx_plist_file)
+	osx_pkginfo = env.Install(osx_dist_path + "/Contents", osx_pkginfo_file)
+	osx_icns = env.Install(osx_dist_path + "/Contents/Resources", osx_icns_file)
+
+	
+	#Makes each of those Install builders get fired off when you run "scons install" :)
+	env.Alias('install', binary)
+	env.Alias('install', skins)
+	env.Alias('install', midimappings)
+	env.Alias('install', keyboardmappings)
+	env.Alias('install', osx_plist)
+	env.Alias('install', osx_pkginfo)
+	env.Alias('install', osx_icns)
+
 		
 if platform == 'win32':
 	skins = env.Install("../../dist/skins", skin_files)
@@ -715,6 +759,8 @@ if platform == 'win32':
 	env.Alias('mixxx', dlls)
 	#env.Alias('mixxx', icon)
 	env.Alias('mixxx', binary)
+
+
 
 def BuildRelease(target, source, env):
 	print 
