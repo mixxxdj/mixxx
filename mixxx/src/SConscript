@@ -691,6 +691,7 @@ if platform == 'linux':
 		skins = env.Install(unix_share_path + "/skins", skin_files)
 		midimappings = env.Install(unix_share_path + "/midi", midimappings_files)
 		keyboardmappings = env.Install(unix_share_path + "/keyboard", keyboardmappings_files)
+		dotdesktop = env.Install(unix_share_path + "/applications", dotdesktop_files)
 		docs = env.Install(unix_share_path + "/doc", docs_files)
 		icon = env.Install(unix_share_path + "/pixmaps", icon_files)
 
