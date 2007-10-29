@@ -316,7 +316,7 @@ if platform == 'linux':
 	env.Append(CXXFLAGS = ' -D__UNIX__ -D__LINUX__ -DSETTINGS_FILE=\\".mixxx.cfg\\" -DTRACK_FILE=\\".mixxxtrack.xml\\"')
 	env.Append(CXXFLAGS = ' -DUNIX_SHARE_PATH=\\"' + ARGUMENTS.get('prefix', '/usr/local') + '/share/mixxx\\"')
 elif platform == 'osx':
-	env.Append(CXXFLAGS = ' -D__MACX__ -DSETTINGS_FILE=\\"mixxx.cfg\\" -DTRACK_FILE=\\"mixxxtrack.xml\\"')
+	env.Append(CXXFLAGS = ' -D__MACX__ -DSETTINGS_FILE=\\".mixxx.cfg\\" -DTRACK_FILE=\\".mixxxtrack.xml\\"')
 elif platform == 'win32':
 	env.Append(CXXFLAGS = '-D__WIN32__ -DSETTINGS_FILE=\\"mixxx.cfg\\" -DTRACK_FILE=\\"mixxxtrack.xml\\"')
 
