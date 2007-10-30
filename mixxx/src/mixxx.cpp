@@ -382,9 +382,13 @@ MixxxApp::~MixxxApp()
 /** initializes all QActions of the application */
 void MixxxApp::initActions()
 {
-    fileOpen = new QAction(tr("&Open..."), this);
-    fileOpen->setShortcut(tr("Ctrl+O"));
-    fileOpen->setShortcutContext(Qt::ApplicationShortcut);
+    fileLoadSongPlayer1 = new QAction(tr("&Load Song (Player 1)..."), this);
+    fileLoadSongPlayer1->setShortcut(tr("Ctrl+O"));
+    fileLoadSongPlayer1->setShortcutContext(Qt::ApplicationShortcut);
+
+    fileLoadSongPlayer2 = new QAction(tr("&Load Song (Player 2)..."), this);
+    fileLoadSongPlayer2->setShortcut(tr("Ctrl+Shift+O"));
+    fileLoadSongPlayer2->setShortcutContext(Qt::ApplicationShortcut);
 
     fileQuit = new QAction(tr("E&xit"), this);
     fileQuit->setShortcut(tr("Ctrl+Q"));
@@ -421,9 +425,13 @@ void MixxxApp::initActions()
     macroStudio = new QAction(tr("Show Studio"), this);
 #endif
 
-    fileOpen->setStatusTip(tr("Opens a file in player 1"));
-    fileOpen->setWhatsThis(tr("Open\n\nOpens a file in player 1"));
-    connect(fileOpen, SIGNAL(activated()), this, SLOT(slotFileOpen()));
+    fileLoadSongPlayer1->setStatusTip(tr("Opens a song in player 1"));
+    fileLoadSongPlayer1->setWhatsThis(tr("Open\n\nOpens a song in player 1"));
+    connect(fileLoadSongPlayer1, SIGNAL(activated()), this, SLOT(slotFileLoadSongPlayer1()));
+
+    fileLoadSongPlayer2->setStatusTip(tr("Opens a song in player 2"));
+    fileLoadSongPlayer2->setWhatsThis(tr("Open\n\nOpens a song in player 2"));
+    connect(fileLoadSongPlayer2, SIGNAL(activated()), this, SLOT(slotFileLoadSongPlayer2()));
 
     fileQuit->setStatusTip(tr("Quits the application"));
     fileQuit->setWhatsThis(tr("Exit\n\nQuits the application"));
@@ -489,7 +497,8 @@ void MixxxApp::initMenuBar()
 #endif
 
     // menuBar entry fileMenu
-    fileMenu->addAction(fileOpen);
+    fileMenu->addAction(fileLoadSongPlayer1);
+    fileMenu->addAction(fileLoadSongPlayer2);
     fileMenu->addAction(fileQuit);
 
     // menuBar entry optionsMenu
@@ -545,14 +554,53 @@ bool MixxxApp::queryExit()
     return (exit==1);
 }
 
-void MixxxApp::slotFileOpen()
+void MixxxApp::slotFileLoadSongPlayer1()
 {
-    QString s = QFileDialog::getOpenFileName(this, "Open file", config->getValueString(ConfigKey("[Playlist]","Directory")),
-                                             "Audio (*.wav *.ogg *.mp3 *.aiff)");
+    ControlObject* play = ControlObject::getControl(ConfigKey("[Channel1]", "play"));
+    
+    if (play->get() == 1.)
+    {
+        int ret = QMessageBox::warning(this, tr("Mixxx"),
+                                        tr("Player 1 is currently playing a song.\n"
+                                          "Are you sure you want to load a new song?"),
+                                        QMessageBox::Yes | QMessageBox::No,
+                                        QMessageBox::No);
+                                        
+        if (ret != QMessageBox::Yes)
+            return;
+    }
+
+    QString s = QFileDialog::getOpenFileName(this, "Load Song into Player 1", config->getValueString(ConfigKey("[Playlist]","Directory")),
+                                             SUPPORTED_AUDIO_FILES);
     if (!(s == QString::null)) {
         TrackInfoObject * pTrack = m_pTrack->getTrackCollection()->getTrack(s);
         if (pTrack)
             m_pTrack->slotLoadPlayer1(pTrack);
+    }
+}
+
+void MixxxApp::slotFileLoadSongPlayer2()
+{
+    ControlObject* play = ControlObject::getControl(ConfigKey("[Channel2]", "play"));
+    
+    if (play->get() == 1.)
+    {
+        int ret = QMessageBox::warning(this, tr("Mixxx"),
+                                        tr("Player 2 is currently playing a song.\n"
+                                          "Are you sure you want to load a new song?"),
+                                        QMessageBox::Yes | QMessageBox::No,
+                                        QMessageBox::No);
+                                        
+        if (ret != QMessageBox::Yes)
+            return;
+    }
+    
+    QString s = QFileDialog::getOpenFileName(this, "Load Song into Player 2", config->getValueString(ConfigKey("[Playlist]","Directory")),
+                                             SUPPORTED_AUDIO_FILES);
+    if (!(s == QString::null)) {
+        TrackInfoObject * pTrack = m_pTrack->getTrackCollection()->getTrack(s);
+        if (pTrack)
+            m_pTrack->slotLoadPlayer2(pTrack);
     }
 }
 

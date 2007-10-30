@@ -74,6 +74,9 @@ class WaveSummary;
 class BpmDetector;
 class QSplashScreen;
 class ScriptEngine;
+
+const QString SUPPORTED_AUDIO_FILES = "Audio (*.wav *.ogg *.mp3 *.aiff)";
+
 /**
   * This Class is the base class for Mixxx. It sets up the main
   * window and providing a menubar.
@@ -102,7 +105,9 @@ class MixxxApp : public QMainWindow
 
     //void slotQuitFullScreen();
     /** Opens a file in player 1 */
-    void slotFileOpen();
+    void slotFileLoadSongPlayer1();
+    /** Opens a file in player 2 */
+    void slotFileLoadSongPlayer2();
     /** exits the application */
     void slotFileQuit();
     /** toggle audio beat marks */
@@ -169,7 +174,8 @@ class MixxxApp : public QMainWindow
     /** actions for the application initialized in initActions() and used to en/disable them
       * according to your needs during the program */
     QAction *fileNew;
-    QAction *fileOpen;
+    QAction *fileLoadSongPlayer1;
+    QAction *fileLoadSongPlayer2;
     QAction *fileSave;
     QAction *fileSaveAs;
     QAction *fileClose;
@@ -215,9 +221,9 @@ class MixxxApp : public QMainWindow
 //A structure to store the parsed command-line arguments
 struct CmdlineArgs
 {
-    QList<QString> qlMusicFiles;
-    QString qLogFileName;
-    bool bStartInFullscreen;
+    QList<QString> qlMusicFiles;    /* List of files to load into players at startup */
+    QString qLogFileName;           /* Log file */ 
+    bool bStartInFullscreen;        /* Start in fullscreen mode */
 };
 
 #endif
