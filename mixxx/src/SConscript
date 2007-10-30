@@ -325,12 +325,12 @@ env.Append(CXXFLAGS = ' -D__PORTAUDIO__'); #Turn on PortAudio support in Mixxx
 env.Append(CPPPATH = ['.', '../', '../../']) #Fun fun fun with paths
 
 
-#if not platform == 'win32':
-#	env.Append(LIBS = 'Qt3Support');
-#	env.Append(LIBS = 'QtXml');
-#	env.Append(LIBS = 'QtGui');
-#	env.Append(LIBS = 'QtCore');
-#	env.Append(LIBS = 'QtOpenGL');
+if platform == 'linux':
+	env.Append(LIBS = 'Qt3Support');
+	env.Append(LIBS = 'QtXml');
+	env.Append(LIBS = 'QtGui');
+	env.Append(LIBS = 'QtCore');
+	env.Append(LIBS = 'QtOpenGL');
 
 if platform == 'win32':
 	env.Append(LIBS = 'Qt3Support4'); #Win32 needs this instead of 'Qt3Support'
