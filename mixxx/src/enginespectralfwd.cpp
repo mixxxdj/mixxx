@@ -68,9 +68,9 @@ EngineSpectralFwd::~EngineSpectralFwd()
    -------- ----------------------------------------------------------------- */
 void EngineSpectralFwd::process(const CSAMPLE * pIn, const CSAMPLE *, const int iBufferSize)
 {
-    // kiss_fft_cpx complexInput[iBufferSize];
-    kiss_fft_cpx * complexInput;
-    complexInput = new kiss_fft_cpx[iBufferSize];
+    kiss_fft_cpx complexInput[iBufferSize];
+    //kiss_fft_cpx * complexInput;
+    //complexInput = new kiss_fft_cpx[iBufferSize];
 
     for (int i = 0; i < iBufferSize; i++)
     {
@@ -104,7 +104,7 @@ void EngineSpectralFwd::process(const CSAMPLE * pIn, const CSAMPLE *, const int 
         for (int i=1; i<l_half; ++i)
             spectrum[l-i] = arctan2(tmp[i].i,tmp[i].r);
     }
-    delete [] complexInput;
+    //delete [] complexInput;
 }
 
 CSAMPLE EngineSpectralFwd::getHFC()
