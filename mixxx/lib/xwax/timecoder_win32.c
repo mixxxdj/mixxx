@@ -200,9 +200,9 @@ int timecoder_build_lookup(char *timecode_name) {
     if (!def->lookup)
     {
         def->lookup = malloc((2 << def->bits) * sizeof(unsigned int));
-        fprintf(stderr, "Allocating %d slots (%zuKb) for %d bit timecode (%s)\n",
-            2 << def->bits, (2 << def->bits) * sizeof(unsigned int) / 1024,
-            def->bits, def->desc);
+        //fprintf(stderr, "Allocating %d slots (%zuKb) for %d bit timecode (%s)\n",
+        //    2 << def->bits, (2 << def->bits) * sizeof(unsigned int) / 1024,
+        //    def->bits, def->desc);
 
     }
     else
