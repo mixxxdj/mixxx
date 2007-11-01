@@ -191,6 +191,12 @@ void DlgPrefRecord::slotRecordPathChange()
     slotApply();
 }
 
+//TODO: Write this function. (Should update/refresh the contents of this dialog)
+void DlgPrefRecord::slotUpdate()
+{
+
+}
+
 void DlgPrefRecord::slotApply()
 {
 

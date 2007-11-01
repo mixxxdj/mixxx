@@ -46,6 +46,7 @@ public:
 public slots:
     /** Apply changes to widget */
     void slotApply();
+	void slotUpdate();
     void slotBrowseSave();
     void slotEncoding();
     void slotSliderQuality();
