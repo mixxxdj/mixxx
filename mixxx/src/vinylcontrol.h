@@ -5,6 +5,8 @@
 #include "configobject.h"
 #include "controlobject.h"
 
+class ControlObjectThreadMain;
+
 #define MIXXX_VINYL_FINALSCRATCH "Final Scratch (crappy)"
 #define MIXXX_VINYL_MIXVIBESDVSCD "MixVibes DVS CD"
 #define MIXXX_VINYL_SERATOCV02VINYLSIDEA "Serato CV02 Vinyl, Side A"
@@ -37,14 +39,14 @@ class VinylControl : public QThread
 	    QString strVinylType;	 
         ConfigObject<ConfigValue> *m_pConfig;	/** Pointer to config database */
         const char* group;
-    	ControlObject *playButton;		//The ControlObject used to start/stop playback of the song.
-    	ControlObject *playPos;			//The ControlObject used to change the playback position in the song.
-    	ControlObject *controlScratch;	//The ControlObject used to seek when the record is spinning fast.
-    	ControlObject *rateSlider;		//The ControlObject used to change the speed/pitch of the song.
-    	ControlObject *reverseButton;	//The ControlObject used to reverse playback of the song. 
-    	ControlObject *duration;		//The ControlObject used to get the duration of the current song.    
-    	ControlObject *mode;            //The ControlObject used to get the vinyl control mode (absolute/relative/scratch)
-    	ControlObject *enabled;         //The ControlObject used to get if the vinyl control is enabled or disabled.
+    	ControlObjectThreadMain *playButton;		//The ControlObject used to start/stop playback of the song.
+    	ControlObjectThreadMain *playPos;			//The ControlObject used to change the playback position in the song.
+    	ControlObjectThreadMain *controlScratch;	//The ControlObject used to seek when the record is spinning fast.
+    	ControlObjectThreadMain *rateSlider;		//The ControlObject used to change the speed/pitch of the song.
+    	ControlObjectThreadMain *reverseButton;	//The ControlObject used to reverse playback of the song. 
+    	ControlObjectThreadMain *duration;		//The ControlObject used to get the duration of the current song.    
+    	ControlObjectThreadMain *mode;            //The ControlObject used to get the vinyl control mode (absolute/relative/scratch)
+    	ControlObjectThreadMain *enabled;         //The ControlObject used to get if the vinyl control is enabled or disabled.
         int iLeadInTime;				//The lead-in time...
     	float dVinylPitch; 			//The speed/pitch of the timecoded vinyl as read by scratchlib.
     	double dVinylPosition; 			//The position of the needle on the record as read by scratchlib.

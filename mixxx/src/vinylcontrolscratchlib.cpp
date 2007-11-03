@@ -22,6 +22,7 @@
 #include "enginebuffer.h"
 #include "reader.h"
 #include "controlobject.h"
+#include "controlobjectthreadmain.h"
 
 
 VinylControlScratchlib::VinylControlScratchlib(ConfigObject<ConfigValue> * pConfig, const char * _group) : VinylControl(pConfig, _group)
@@ -190,7 +191,8 @@ void VinylControlScratchlib::run()
         dVinylPitch = dVinylPitch / 0.080f;         //Normalize to the pitch range. (8% = 1.0)
 
         //Re-get the duration, just in case a track hasn't been loaded yet...
-        duration = ControlObject::getControl(ConfigKey(group, "duration"));
+        //FIXME: Commented out by Albert during ControlObjectThread-ification - Nov 3/07
+        //duration = ControlObject::getControl(ConfigKey(group, "duration"));
 
         //Next we set the range that the pitch can go before we consider the turntable to be "seeking".
         //(In absolute mode, when seeking is finished the position is re-synced, which causes a jump.
@@ -249,17 +251,17 @@ void VinylControlScratchlib::run()
                 {
                     //qDebug("STATE: seeking");
                     bSeeking = true;
-                    playButton->queueFromThread(0.0f);
-                    rateSlider->queueFromThread(0.0f);
-                    controlScratch->queueFromThread(dVinylScratch);
+                    playButton->slotSet(0.0f);
+                    rateSlider->slotSet(0.0f);
+                    controlScratch->slotSet(dVinylScratch);
                 }
                 else {                 //We're not seeking... just regular playback
                                        //qDebug("STATE: regular playback");
                     if (bSeeking == true && (iVCMode == MIXXX_VCMODE_ABSOLUTE)  && dVinylPosition > 0.0f)                     //If we've just stopped seeking, and are playing normal again...
                         syncPosition();
                     bSeeking = false;
-                    controlScratch->queueFromThread(0.0f);
-                    playButton->queueFromThread(1.0f);
+                    controlScratch->slotSet(0.0f);
+                    playButton->slotSet(1.0f);
                 }
 
                 //If the needle just got placed on the record, or playback just resumed
@@ -267,8 +269,8 @@ void VinylControlScratchlib::run()
                 if (bNeedleDown == false && bSeeking == false && (iVCMode == MIXXX_VCMODE_ABSOLUTE))
                 {
                     //qDebug("STATE: playback just started");
-                    controlScratch->queueFromThread(0.0f);
-                    playButton->queueFromThread(1.0f);
+                    controlScratch->slotSet(0.0f);
+                    playButton->slotSet(1.0f);
                     syncPosition();                     //Reposition Mixxx
 
                     bNeedleDown = true;                     //The needle is now down/the record is playing.
@@ -284,8 +286,8 @@ void VinylControlScratchlib::run()
 
                 if (dVinylPosition < 0.0f)
                 {
-                    playButton->queueFromThread(0.0f);
-                    //playPos->queueFromThread(0.0f);
+                    playButton->slotSet(0.0f);
+                    //playPos->slotSet(0.0f);
                 }
 
 
@@ -300,8 +302,8 @@ void VinylControlScratchlib::run()
                     //qDebug("******Needle up? with volume peak:"+QString("%1").arg(volPeak)+"\n");
                     if (bNeedleDown == true && (iVCMode == MIXXX_VCMODE_ABSOLUTE))
                         syncPosition();
-                    controlScratch->queueFromThread(0.0f);
-                    playButton->queueFromThread(0.0f);
+                    controlScratch->slotSet(0.0f);
+                    playButton->slotSet(0.0f);
                     bNeedleDown = false;
                     dTemp = 21;                     //Make sure we don't overflow eventually..
                 }
@@ -317,7 +319,7 @@ void VinylControlScratchlib::syncPitch(double pitch)
     //from 1.0 +- 00%
     if (iVCMode == MIXXX_VCMODE_ABSOLUTE)  //Only apply drift control when we want to stay synced with the vinyl's position.
         pitch += dDriftControl;     //Apply the drift control to it, to keep the vinyl and Mixxx in sync.
-    rateSlider->queueFromThread(pitch);     //rateSlider has a range of -1.0 to 1.0
+    rateSlider->slotSet(pitch);     //rateSlider has a range of -1.0 to 1.0
     //qDebug("pitch: %f", pitch);
 }
 
@@ -326,8 +328,8 @@ void VinylControlScratchlib::syncPosition()
 {
     float filePosition = playPos->get() * duration->get();
     if (fabs(filePosition - dVinylPosition) > 5.00)
-        playPos->queueFromThread(dVinylPosition / duration->get());         //VinylPos in seconds / total length of song
-    //playPos->queueFromThread(dVinylPosition / (15.0f * 60.0f)); //VinylPos in seconds / (total length of vinyl)
+        playPos->slotSet(dVinylPosition / duration->get());         //VinylPos in seconds / total length of song
+    //playPos->slotSet(dVinylPosition / (15.0f * 60.0f)); //VinylPos in seconds / (total length of vinyl)
 }
 
 bool VinylControlScratchlib::isEnabled()
