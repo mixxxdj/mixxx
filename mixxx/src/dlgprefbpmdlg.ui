@@ -73,8 +73,8 @@
        <rect>
         <x>180</x>
         <y>140</y>
-        <width>37</width>
-        <height>22</height>
+        <width>61</width>
+        <height>23</height>
        </rect>
       </property>
       <property name="toolTip" >
@@ -90,10 +90,10 @@
      <widget class="QSpinBox" name="spinBoxBPMRangeEnd" >
       <property name="geometry" >
        <rect>
-        <x>240</x>
+        <x>270</x>
         <y>140</y>
-        <width>37</width>
-        <height>22</height>
+        <width>61</width>
+        <height>23</height>
        </rect>
       </property>
       <property name="toolTip" >
@@ -109,7 +109,7 @@
      <widget class="QLabel" name="TextLabel10" >
       <property name="geometry" >
        <rect>
-        <x>220</x>
+        <x>250</x>
         <y>140</y>
         <width>15</width>
         <height>22</height>
@@ -129,7 +129,7 @@
       <property name="geometry" >
        <rect>
         <x>10</x>
-        <y>50</y>
+        <y>40</y>
         <width>391</width>
         <height>101</height>
        </rect>
