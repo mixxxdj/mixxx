@@ -20,9 +20,7 @@
 
 #include <q3semaphore.h>
 #include <qthread.h>
-#include "configobject.h"
 #include "DAnalyse.h"
-#include "enginebuffer.h"
 #include "vinylcontrol.h"
 
 #define MIXXX_VINYLTYPE 0			//The type of timecoded vinyl used. (FinalScratch currently)

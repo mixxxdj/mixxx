@@ -1,5 +1,5 @@
 #include "vinylcontrol.h"
-
+#include "controlobjectthreadmain.h"
 
 VinylControl::VinylControl(ConfigObject<ConfigValue> * pConfig, const char * _group)
 {
@@ -10,14 +10,14 @@ VinylControl::VinylControl(ConfigObject<ConfigValue> * pConfig, const char * _gr
     iRIAACorrection = 0;
 
     // Get Control objects
-    playPos                 = ControlObject::getControl(ConfigKey(group, "playposition"));    //Range: 0.0 to 1.0
-    controlScratch  = ControlObject::getControl(ConfigKey(group, "scratch"));
-    rateSlider              = ControlObject::getControl(ConfigKey(group, "rate"));    //Range -1.0 to 1.0
-    playButton          = ControlObject::getControl(ConfigKey(group, "play"));
-    reverseButton       = ControlObject::getControl(ConfigKey(group, "reverse"));
-    duration                = ControlObject::getControl(ConfigKey(group, "duration"));
-    mode                = ControlObject::getControl(ConfigKey("[VinylControl]", "Mode"));
-    enabled             = ControlObject::getControl(ConfigKey("[VinylControl]", "Enabled"));
+    playPos                 = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey(group, "playposition")));    //Range: 0.0 to 1.0
+    controlScratch  = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey(group, "scratch")));
+    rateSlider              = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey(group, "rate")));    //Range -1.0 to 1.0
+    playButton          = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey(group, "play")));
+    reverseButton       = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey(group, "reverse")));
+    duration                = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey(group, "duration")));
+    mode                = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey("[VinylControl]", "Mode")));
+    enabled             = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey("[VinylControl]", "Enabled")));
 
     dVinylPitch = 0.0f;
     dVinylPosition = 0.0f;
@@ -48,7 +48,7 @@ void VinylControl::ToggleVinylControl(bool enable)
     if (m_pConfig)
         m_pConfig->set(ConfigKey("[VinylControl]","Enabled"), ConfigValue((int)enable));
     
-    enabled->queueFromThread(enable);
+    enabled->slotSet(enable);
 }
 
 VinylControl::~VinylControl()

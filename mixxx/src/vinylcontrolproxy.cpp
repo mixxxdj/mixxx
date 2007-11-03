@@ -4,6 +4,7 @@
 #include "vinylcontrolproxy.h"
 #include "vinylcontrolscratchlib.h"
 #include "vinylcontrolxwax.h"
+#include "controlobjectthreadmain.h"
 
 
 //IVinylControl *VinylControlProxy::m_pVinylControl = 0;
@@ -62,7 +63,7 @@ void VinylControlProxy::ToggleVinylControl(bool enable)
 {
     if (m_pVinylControl)
         m_pVinylControl->ToggleVinylControl(enable);
-    enabled->queueFromThread(enable);
+    enabled->slotSet(enable);
 }
 
 /*

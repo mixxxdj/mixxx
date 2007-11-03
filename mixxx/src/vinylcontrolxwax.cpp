@@ -20,6 +20,7 @@
 #include <QtDebug>
 #include <limits.h>
 #include "vinylcontrolxwax.h"
+#include "controlobjectthreadmain.h"
 
 
 /****** TODO *******
@@ -184,7 +185,7 @@ void VinylControlXwax::run()
         dVinylPitch = dVinylPitch / 0.080f;         //Normalize to the pitch range. (8% = 1.0)
 
         //Re-get the duration, just in case a track hasn't been loaded yet...
-        duration = ControlObject::getControl(ConfigKey(group, "duration"));
+        //duration = ControlObject::getControl(ConfigKey(group, "duration"));
 
         //Next we set the range that the pitch can go before we consider the turntable to be "seeking".
         //(In absolute mode, when seeking is finished the position is re-synced, which causes a jump.
@@ -238,8 +239,8 @@ void VinylControlXwax::run()
                 if (bNeedleDown == false  && (iVCMode == MIXXX_VCMODE_ABSOLUTE))                 //&& bSeeking == false
                 {
                     //qDebug("STATE: playback just started");
-                    controlScratch->queueFromThread(0.0f);
-                    playButton->queueFromThread(1.0f);
+                    controlScratch->slotSet(0.0f);
+                    playButton->slotSet(1.0f);
 
                     bNeedsPosSync = true;                     //Schedule a position resync, whenever we actually start getting the position signal again.
                     bNeedleDown = true;                     //The needle is now down/the record is playing.
@@ -263,17 +264,17 @@ void VinylControlXwax::run()
                 {
                     //qDebug("STATE: seeking");
                     bSeeking = true;
-                    playButton->queueFromThread(0.0f);
-                    rateSlider->queueFromThread(0.0f);
-                    controlScratch->queueFromThread(dVinylScratch);
+                    playButton->slotSet(0.0f);
+                    rateSlider->slotSet(0.0f);
+                    controlScratch->slotSet(dVinylScratch);
                 }
                 else {                 //We're not seeking... just regular playback
                                        //qDebug("STATE: regular playback");
                     if (bSeeking == true && (iVCMode == MIXXX_VCMODE_ABSOLUTE) && dVinylPosition > 0.0f)   //If we've just stopped seeking, and are playing normal again...
                         syncPosition();
                     bSeeking = false;
-                    controlScratch->queueFromThread(0.0f);
-                    playButton->queueFromThread(1.0f);
+                    controlScratch->slotSet(0.0f);
+                    playButton->slotSet(1.0f);
                 }
 
                 //If we're not seeking, sync Mixxx's pitch with the turntable's pitch.
@@ -287,8 +288,8 @@ void VinylControlXwax::run()
             else
             {
                 //qDebug("STATE: Needle up?");
-                playButton->queueFromThread(0.0f);
-                controlScratch->queueFromThread(0.0f);
+                playButton->slotSet(0.0f);
+                controlScratch->slotSet(0.0f);
                 dTemp++;
                 if (dTemp > 8)
                 {
@@ -296,7 +297,7 @@ void VinylControlXwax::run()
                     bNeedsPosSync = true;
                     dTemp = 10;                 //Don't cha be overflowin' matey, yar.
                 }
-                //playPos->queueFromThread(0.0f);
+                //playPos->slotSet(0.0f);
             }
         }
     }
@@ -309,7 +310,7 @@ void VinylControlXwax::syncPitch(double pitch)
     //from 1.0 +- 00%
     if (iVCMode == MIXXX_VCMODE_ABSOLUTE)     //Only apply drift control when we want to stay synced with the vinyl's position.
         pitch += dDriftControl;     //Apply the drift control to it, to keep the vinyl and Mixxx in sync.
-    rateSlider->queueFromThread(pitch);     //rateSlider has a range of -1.0 to 1.0
+    rateSlider->slotSet(pitch);     //rateSlider has a range of -1.0 to 1.0
     //qDebug("pitch: %f", pitch);
 }
 
@@ -319,9 +320,9 @@ void VinylControlXwax::syncPosition()
     float filePosition = playPos->get() * duration->get();
     //if (fabs(filePosition - dVinylPosition) > 5.00)
 
-    playPos->queueFromThread(dVinylPosition / duration->get());     //VinylPos in seconds / total length of song
+    playPos->slotSet(dVinylPosition / duration->get());     //VinylPos in seconds / total length of song
 
-    //playPos->queueFromThread(dVinylPosition / (15.0f * 60.0f)); //VinylPos in seconds / (total length of vinyl)
+    //playPos->slotSet(dVinylPosition / (15.0f * 60.0f)); //VinylPos in seconds / (total length of vinyl)
 }
 
 bool VinylControlXwax::isEnabled()
