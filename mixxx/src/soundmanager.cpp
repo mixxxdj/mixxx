@@ -270,13 +270,13 @@ void SoundManager::setDefaults(bool api, bool devices, bool other)
         else
             setHostAPI("Windows DirectSound");
 #endif
-#ifdef __OSX__
-        setHostAPI("CoreAudio");
+#ifdef __MACX__
+        setHostAPI("Core Audio");
 #endif
     }
 
     if (devices)
-    {
+    {    	
         //Set the default master device to be the first device in the list (that matches the API)
         m_pConfig->set(ConfigKey("[Soundcard]","DeviceMaster"), ConfigValue(getDeviceList(getHostAPI()).front()->getName()));
         m_pConfig->set(ConfigKey("[Soundcard]","DeviceMasterLeft"), ConfigValue(getDeviceList(getHostAPI()).front()->getName()));
