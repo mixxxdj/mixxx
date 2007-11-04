@@ -22,7 +22,7 @@
 //#include "readerextractbeat.h"
 #include "rtthread.h"
 #include "visual/visualchannel.h"
-#include "controlobjectthread.h"
+#include "controlobjectthreadmain.h"
 #include "controlobject.h"
 #include "configobject.h"
 
@@ -44,7 +44,9 @@ Reader::Reader(EngineBuffer * _enginebuffer, QMutex * _pause)
     file_srate = 44100;
     file_length = 0;
 
-    m_pTrackEnd = new ControlObjectThread(ControlObject::getControl(ConfigKey(enginebuffer->getGroup(),"TrackEnd")));
+    m_pTrackEnd = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey(enginebuffer->getGroup(),"TrackEnd")));
+    m_pButtonCueSet = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey(enginebuffer->getGroup(), "cue_set")));
+    m_pButtonPlay = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey(enginebuffer->getGroup(), "play")));
 }
 
 Reader::~Reader()
@@ -54,6 +56,8 @@ Reader::~Reader()
 
     delete readerwave;
     delete m_pTrackEnd;
+    delete m_pButtonCueSet;
+    delete m_pButtonPlay;
 }
 
 void Reader::addVisual(VisualChannel * pVisualChannel)
@@ -168,7 +172,6 @@ void Reader::unlock()
 void Reader::newtrack()
 {
 // qDebug("newtrack, get pause lock");
-    ControlObject * playButton = ControlObject::getControl(ConfigKey(enginebuffer->getGroup(), "play"));
 
     // Set pause while loading new track
     pause->lock();
@@ -217,12 +220,12 @@ void Reader::newtrack()
         enginebuffer->setNewPlaypos(0);
 
         //Reset the cue point to the beginning of the track:
-        ControlObject * buttonCueSet = ControlObject::getControl(ConfigKey(enginebuffer->getGroup(), "cue_set"));
-        buttonCueSet->queueFromThread(1.0);
+        
+        m_pButtonCueSet->slotSet(1.0);
         //Reset the play button (I'm not sure why this is necessary, but it is...
         //If you don't believe me, uncomment it and notice that you'll have to click
         //play twice to start playback when you load a new track.)
-        playButton->queueFromThread(0.0);
+        m_pButtonPlay->slotSet(0.0);
     }
 
     // Not at track end anymore
@@ -233,7 +236,7 @@ void Reader::newtrack()
     ControlObject * trackEndMode = ControlObject::getControl(ConfigKey(enginebuffer->getGroup(), "TrackEndMode"));
     //if a track just ended, and the track end mode is set to next, play the track that was just loaded
     if ( (trackEndMode->get() == TRACK_END_MODE_NEXT))
-        playButton->queueFromThread(1.0);
+        m_pButtonPlay->slotSet(1.0);
 
     // Stop pausing process method
     pause->unlock();

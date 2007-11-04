@@ -18,6 +18,7 @@
 #include <QtDebug>
 #include <QtCore>
 #include <portaudio.h>
+#include "controlobjectthreadmain.h"
 #include "sounddeviceportaudio.h"
 #include "soundmanager.h"
 
@@ -192,8 +193,8 @@ int SoundDevicePortAudio::open()
     //Update the samplerate and latency ControlObjects, which allow the waveform view to properly correct
     //for the latency.
 
-    ControlObject * pControlObjectSampleRate = ControlObject::getControl(ConfigKey("[Master]","samplerate"));
-    ControlObject * pControlObjectLatency = ControlObject::getControl(ConfigKey("[Master]","latency"));
+    ControlObjectThreadMain* pControlObjectSampleRate = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey("[Master]","samplerate")));
+    ControlObjectThreadMain* pControlObjectLatency = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey("[Master]","latency")));
 
     //The latency ControlObject value MUST BE ZERO, otherwise the waveform view gets out of whack.
     //Yes, this is confusing. Fortunately, the latency ControlObject is ONLY used in the waveform view
@@ -201,9 +202,9 @@ int SoundDevicePortAudio::open()
     //adjust the waveform for the latency, so it always lines up perfectly with the audio. I don't think that
     //code was ever properly finished though, which is why we need this hack. So, fixing the waveform code is
     //a TODO:
-    pControlObjectLatency->queueFromThread(0);
+    pControlObjectLatency->slotSet(0);
 
-    pControlObjectSampleRate->queueFromThread(m_dSampleRate);
+    pControlObjectSampleRate->slotSet(m_dSampleRate);
     //qDebug() << "SampleRate" << pControlObjectSampleRate->get();
     //qDebug() << "Latency" << pControlObjectLatency->get();
 
@@ -291,7 +292,7 @@ int SoundDevicePortAudio::callbackProcess(unsigned long framesPerBuffer, float *
     //Send audio from the soundcard's input off to the SoundManager...
     if (in && framesPerBuffer > 0)
     {
-        //FIXME: Apply software preamp
+        //Apply software preamp
         //Super big warning: Have to use channel_count here instead of iFrameSize because iFrameSize is
         //only for output buffers...
         iVCGain = pControlObjectVinylControlGain->get();

@@ -22,7 +22,7 @@
 #include "sounddevice.h"
 #include "sounddeviceportaudio.h"
 #include "enginemaster.h"
-
+#include "controlobjectthreadmain.h"
 
 SoundManager::SoundManager(ConfigObject<ConfigValue> * pConfig, EngineMaster * _master) : QObject()
 {
@@ -47,17 +47,17 @@ SoundManager::SoundManager(ConfigObject<ConfigValue> * pConfig, EngineMaster * _
     //m_controlObjSyncTimer.start(33);
     //m_controlObjSyncTimer->start(m_pConfig->getValueString(ConfigKey("[Soundcard]","Latency")).toInt());
 
-    ControlObject* pControlObjectLatency = ControlObject::getControl(ConfigKey("[Master]", "latency"));
-    ControlObject* pControlObjectSampleRate = ControlObject::getControl(ConfigKey("[Master]", "samplerate"));
-    ControlObject* pControlObjectVinylControlMode = new ControlObject(ConfigKey("[VinylControl]", "Mode"));
-    ControlObject* pControlObjectVinylControlEnabled = new ControlObject(ConfigKey("[VinylControl]", "Enabled"));
-    ControlObject* pControlObjectVinylControlGain = new ControlObject(ConfigKey("[VinylControl]", "VinylControlGain"));
+    ControlObjectThreadMain* pControlObjectLatency = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey("[Master]", "latency")));
+    ControlObjectThreadMain* pControlObjectSampleRate = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey("[Master]", "samplerate")));
+    ControlObjectThreadMain* pControlObjectVinylControlMode = new ControlObjectThreadMain(new ControlObject(ConfigKey("[VinylControl]", "Mode")));
+    ControlObjectThreadMain* pControlObjectVinylControlEnabled = new ControlObjectThreadMain(new ControlObject(ConfigKey("[VinylControl]", "Enabled")));
+    ControlObjectThreadMain* pControlObjectVinylControlGain = new ControlObjectThreadMain(new ControlObject(ConfigKey("[VinylControl]", "VinylControlGain")));
 
-    pControlObjectLatency->set(m_pConfig->getValueString(ConfigKey("[Soundcard]","Latency")).toInt());
-    pControlObjectSampleRate->set(m_pConfig->getValueString(ConfigKey("[Soundcard]","Samplerate")).toInt());
-    pControlObjectVinylControlMode->set(m_pConfig->getValueString(ConfigKey("[VinylControl]","Mode")).toInt());
-    pControlObjectVinylControlEnabled->set(m_pConfig->getValueString(ConfigKey("[VinylControl]","Enabled")).toInt());
-    pControlObjectVinylControlGain->set(m_pConfig->getValueString(ConfigKey("[VinylControl]","VinylControlGain")).toInt());
+    pControlObjectLatency->slotSet(m_pConfig->getValueString(ConfigKey("[Soundcard]","Latency")).toInt());
+    pControlObjectSampleRate->slotSet(m_pConfig->getValueString(ConfigKey("[Soundcard]","Samplerate")).toInt());
+    pControlObjectVinylControlMode->slotSet(m_pConfig->getValueString(ConfigKey("[VinylControl]","Mode")).toInt());
+    pControlObjectVinylControlEnabled->slotSet(m_pConfig->getValueString(ConfigKey("[VinylControl]","Enabled")).toInt());
+    pControlObjectVinylControlGain->slotSet(m_pConfig->getValueString(ConfigKey("[VinylControl]","VinylControlGain")).toInt());
 
 
     qDebug() << "SampleRate" << pControlObjectSampleRate->get();
