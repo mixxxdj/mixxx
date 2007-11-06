@@ -37,6 +37,7 @@
 #include <unistd.h>
 #include <fcntl.h>
 #include "controlobject.h"
+#include "controlobjectthread.h"
 #include "mathstuff.h"
 #include "rotary.h"
 //Added by qt3to4:

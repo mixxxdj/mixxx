@@ -19,8 +19,10 @@
 #define DLGPREFRECORD_H
 
 #include "ui_dlgprefrecorddlg.h"
-#include "controlobject.h"
 #include "configobject.h"
+
+class ControlObject;
+class ControlObjectThreadMain;
 
 #define PREF_KEY "[Recording]"
 #define IDEX_WAVE 0
@@ -61,7 +63,7 @@ private:
     
     /** Pointer to config object */
     ConfigObject<ConfigValue> *config;
-    ControlObject* recordControl;
+    ControlObjectThreadMain* recordControl;
     bool confirmOverwrite;
     QString fileTypeExtension;
 };

@@ -65,21 +65,21 @@ public:
     virtual bool opendev() = 0;
     void led(); //int iLedNo, bool bOn);
 
-    ControlObject *m_pControlObjectLeftTreble, *m_pControlObjectLeftMiddle, *m_pControlObjectLeftBass,
-                  *m_pControlObjectLeftVolume, *m_pControlObjectLeftPitch, *m_pControlObjectLeftJog,
-                  *m_pControlObjectLeftBtnHeadphone, *m_pControlObjectLeftBtnPitchBendMinus, 
-                  *m_pControlObjectLeftBtnPitchBendPlus, *m_pControlObjectLeftBtnTrackPrev,
-                  *m_pControlObjectLeftBtnTrackNext, *m_pControlObjectLeftBtnCue, *m_pControlObjectLeftBtnPlay,
-                  *m_pControlObjectLeftBtnAutobeat, *m_pControlObjectLeftBtnMasterTempo, *m_pControlObjectLeftBtn1,
-                  *m_pControlObjectLeftBtn2, *m_pControlObjectLeftBtn3, *m_pControlObjectLeftBtnFx;
-    ControlObject *m_pControlObjectRightTreble, *m_pControlObjectRightMiddle, *m_pControlObjectRightBass,
-                  *m_pControlObjectRightVolume, *m_pControlObjectRightPitch, *m_pControlObjectRightJog,
-                  *m_pControlObjectRightBtnHeadphone, *m_pControlObjectRightBtnPitchBendMinus, 
-                  *m_pControlObjectRightBtnPitchBendPlus, *m_pControlObjectRightBtnTrackPrev,
-                  *m_pControlObjectRightBtnTrackNext, *m_pControlObjectRightBtnCue, *m_pControlObjectRightBtnPlay,
-                  *m_pControlObjectRightBtnAutobeat, *m_pControlObjectRightBtnMasterTempo, *m_pControlObjectRightBtn1,
-                  *m_pControlObjectRightBtn2, *m_pControlObjectRightBtn3, *m_pControlObjectRightBtnFx;
-    ControlObject *m_pControlObjectCrossfade;   
+    ControlObjectThread *m_pControlObjectLeftTreble, *m_pControlObjectLeftMiddle, *m_pControlObjectLeftBass,
+                        *m_pControlObjectLeftVolume, *m_pControlObjectLeftPitch, *m_pControlObjectLeftJog,
+                  		*m_pControlObjectLeftBtnHeadphone, *m_pControlObjectLeftBtnPitchBendMinus, 
+                  		*m_pControlObjectLeftBtnPitchBendPlus, *m_pControlObjectLeftBtnTrackPrev,
+                  		*m_pControlObjectLeftBtnTrackNext, *m_pControlObjectLeftBtnCue, *m_pControlObjectLeftBtnPlay,
+                 		*m_pControlObjectLeftBtnAutobeat, *m_pControlObjectLeftBtnMasterTempo, *m_pControlObjectLeftBtn1,
+                  		*m_pControlObjectLeftBtn2, *m_pControlObjectLeftBtn3, *m_pControlObjectLeftBtnFx;
+    ControlObjectThread *m_pControlObjectRightTreble, *m_pControlObjectRightMiddle, *m_pControlObjectRightBass,
+                  		*m_pControlObjectRightVolume, *m_pControlObjectRightPitch, *m_pControlObjectRightJog,
+                  		*m_pControlObjectRightBtnHeadphone, *m_pControlObjectRightBtnPitchBendMinus, 
+                  		*m_pControlObjectRightBtnPitchBendPlus, *m_pControlObjectRightBtnTrackPrev,
+                  		*m_pControlObjectRightBtnTrackNext, *m_pControlObjectRightBtnCue, *m_pControlObjectRightBtnPlay,
+                  		*m_pControlObjectRightBtnAutobeat, *m_pControlObjectRightBtnMasterTempo, *m_pControlObjectRightBtn1,
+                  		*m_pControlObjectRightBtn2, *m_pControlObjectRightBtn3, *m_pControlObjectRightBtnFx;
+    ControlObjectThread *m_pControlObjectCrossfade;   
 
 
 protected:
@@ -99,7 +99,7 @@ protected:
     ControlObjectThread *m_pControlObjectLeftBtnPlayProxy, *m_pControlObjectRightBtnPlayProxy,
                         *m_pControlObjectLeftBtnLoopProxy, *m_pControlObjectRightBtnLoopProxy;
     Rotary *m_pRotaryLeft, *m_pRotaryRight; 
-    ControlObject *m_pControlObjectLeftBeatLoop, *m_pControlObjectRightBeatLoop;
+    ControlObjectThread *m_pControlObjectLeftBeatLoop, *m_pControlObjectRightBeatLoop;
 
     QString m_qMapping;
 

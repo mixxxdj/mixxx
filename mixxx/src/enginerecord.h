@@ -20,7 +20,6 @@
 #include "engineobject.h"
 #include "qthread.h"
 #include "configobject.h"
-#include "controlobject.h"
 #include "writeaudiofile.h"
 
 #define DEFAULT_BUFSIZE 512
@@ -28,6 +27,8 @@
 
 class ControlLogpotmeter;
 class ConfigKey;
+class ControlObject;
+class ControlObjectThreadMain;
 
 typedef struct
 {
@@ -50,7 +51,8 @@ private:
     QMutex mutexFill;
     WriteAudioFile *fOut;
     ConfigObject<ConfigValue> *config;
-    ControlObject* recReady;
+    ControlObjectThreadMain* recReady;
+    ControlObject* recReadyCO;
 };
 
 #endif
