@@ -32,11 +32,11 @@ EngineBufferScaleST::EngineBufferScaleST(ReaderExtractWave * wave) : EngineBuffe
     m_dBaseRate = 1.;
     m_dTempo = 1.;
 
-	m_qMutex.lock();
+    m_qMutex.lock();
     m_pSoundTouch->setChannels(2);
     m_pSoundTouch->setRate(m_dBaseRate);
     m_pSoundTouch->setTempo(m_dTempo);
-	m_qMutex.unlock();
+    m_qMutex.unlock();
 
     slotSetSamplerate(44100.);
     ControlObject * p = ControlObject::getControl(ConfigKey("[Master]","samplerate"));
@@ -56,7 +56,7 @@ EngineBufferScaleST::~EngineBufferScaleST()
 void EngineBufferScaleST::setPitchIndpTimeStretch(bool b)
 {
     m_bPitchIndpTimeStretch = b;
-	m_qMutex.lock();
+    m_qMutex.lock();
     if (m_bPitchIndpTimeStretch)
         m_pSoundTouch->setRate(1.);
     else
@@ -74,18 +74,18 @@ void EngineBufferScaleST::setBaseRate(double dBaseRate)
 {
     m_dBaseRate = dBaseRate;
 
-	m_qMutex.lock();
+    m_qMutex.lock();
     if (m_bPitchIndpTimeStretch)
         m_pSoundTouch->setRate(m_dBaseRate);
     else
         m_pSoundTouch->setRate(m_dBaseRate*m_dTempo);
-	m_qMutex.unlock();
+    m_qMutex.unlock();
 }
 
 
 void EngineBufferScaleST::clear()
 {
-	m_qMutex.lock();
+    m_qMutex.lock();
     m_pSoundTouch->clear();
     m_bClear = true;
     m_qMutex.unlock();
@@ -95,7 +95,7 @@ void EngineBufferScaleST::slotSetSamplerate(double dSampleRate)
 {
     int iSrate = (int)dSampleRate;
 
-	m_qMutex.lock();
+    m_qMutex.lock();
     if (iSrate>0)
         m_pSoundTouch->setSampleRate(iSrate);
     else
@@ -111,7 +111,7 @@ double EngineBufferScaleST::setTempo(double dTempo)
     if (m_dTempo>MAX_SEEK_SPEED)
         m_dTempo = MAX_SEEK_SPEED;
 
-	m_qMutex.lock();
+    m_qMutex.lock();
     if (dTempoOld != m_dTempo)
     {
         if (m_bPitchIndpTimeStretch)
@@ -119,7 +119,7 @@ double EngineBufferScaleST::setTempo(double dTempo)
         else
             m_pSoundTouch->setRate(m_dBaseRate*m_dTempo);
     }
-	m_qMutex.unlock();
+    m_qMutex.unlock();
 
 
     if (dTempo<0.)
@@ -170,7 +170,7 @@ CSAMPLE * EngineBufferScaleST::scale(double playpos, int buf_size, float * pBase
                 j++;
             }
 
-			m_qMutex.lock();
+            m_qMutex.lock();
             m_pSoundTouch->putSamples((const SAMPLETYPE *)buffer_back, iLen);
             m_qMutex.unlock();
             m_iReadAheadPos = (m_iReadAheadPos-iLen*2+iBaseLength)%iBaseLength;

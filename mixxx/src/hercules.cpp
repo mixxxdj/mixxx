@@ -88,8 +88,8 @@ void Hercules::selectMapping(QString qMapping)
 {
     m_qMapping = qMapping;
 
-	//FIXME: delete the ControlObjectThread objects before creating "new" ones.
-	
+    //FIXME: delete the ControlObjectThread objects before creating "new" ones.
+    
     if (qMapping==kqInputMappingHerculesInBeat)
     {
         m_pControlObjectLeftPitch = new ControlObjectThread(ControlObject::getControl(ConfigKey("[Channel1]","volume")));
@@ -160,7 +160,7 @@ void Hercules::selectMapping(QString qMapping)
 
 void Hercules::changeJogMode(int iLeftFxMode, int iRightFxMode)
 {
-	//FIXME: delete the ControlObjectThread objects before creating "new" ones.
+    //FIXME: delete the ControlObjectThread objects before creating "new" ones.
 
     switch (iLeftFxMode)
     {
