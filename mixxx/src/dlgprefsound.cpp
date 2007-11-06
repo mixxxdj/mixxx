@@ -69,13 +69,6 @@ DlgPrefSound::DlgPrefSound(QWidget * parent, SoundManager * _soundman,
     pitchMode.addButton(radioButtonVinylEmu);
     pitchMode.addButton(radioButtonPitchIndp);
 
-    // Pitch-indp. time stretch disabled on mac
-#ifdef __MACX__
-    radioButtonPitchIndp->setChecked(false);
-    radioButtonPitchIndp->setEnabled(false);
-    textLabelSoundScaling->setEnabled(false);
-#endif
-
     // Set default value for scale mode check box
     int iPitchIndpTimeStretch = config->getValueString(ConfigKey("[Soundcard]","PitchIndpTimeStretch")).toInt();
     if (iPitchIndpTimeStretch)
