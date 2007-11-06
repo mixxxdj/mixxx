@@ -18,6 +18,7 @@
 #include "qapplication.h"
 #include "hercules.h"
 #include "controlobject.h"
+#include "controlobjectthread.h"
 #include "controleventmidi.h"
 #include "midiobject.h"
 #include "mathstuff.h"
@@ -41,20 +42,20 @@ Hercules::Hercules() : Input(), m_qRequestLed(5)
     m_iLeftFxMode = 0;
 
 
-    m_pControlObjectLeftBtnPlay = ControlObject::getControl(ConfigKey("[Channel1]","play"));
-    m_pControlObjectRightBtnPlay = ControlObject::getControl(ConfigKey("[Channel2]","play"));
+    m_pControlObjectLeftBtnPlay = new ControlObjectThread(ControlObject::getControl(ConfigKey("[Channel1]","play")));
+    m_pControlObjectRightBtnPlay = new ControlObjectThread(ControlObject::getControl(ConfigKey("[Channel2]","play")));
     m_pControlObjectLeftBtnPlayProxy = new ControlObjectThread(ControlObject::getControl(ConfigKey("[Channel1]","play")));
     m_pControlObjectRightBtnPlayProxy = new ControlObjectThread(ControlObject::getControl(ConfigKey("[Channel2]","play")));
 
-    m_pControlObjectLeftBtnCue = ControlObject::getControl(ConfigKey("[Channel1]","cue_simple"));
-    m_pControlObjectRightBtnCue = ControlObject::getControl(ConfigKey("[Channel2]","cue_simple"));
+    m_pControlObjectLeftBtnCue = new ControlObjectThread(ControlObject::getControl(ConfigKey("[Channel1]","cue_simple")));
+    m_pControlObjectRightBtnCue = new ControlObjectThread(ControlObject::getControl(ConfigKey("[Channel2]","cue_simple")));
     m_pControlObjectLeftBtnLoopProxy = new ControlObjectThread(ControlObject::getControl(ConfigKey("[Channel1]","loop")));
     m_pControlObjectRightBtnLoopProxy = new ControlObjectThread(ControlObject::getControl(ConfigKey("[Channel2]","loop")));
 
 
-    m_pControlObjectLeftBeatLoop = ControlObject::getControl(ConfigKey("[Channel1]","beatloop"));
+    m_pControlObjectLeftBeatLoop = new ControlObjectThread(ControlObject::getControl(ConfigKey("[Channel1]","beatloop")));
     Q_ASSERT(m_pControlObjectLeftBeatLoop!=0);
-    m_pControlObjectRightBeatLoop = ControlObject::getControl(ConfigKey("[Channel2]","beatloop"));
+    m_pControlObjectRightBeatLoop = new ControlObjectThread(ControlObject::getControl(ConfigKey("[Channel2]","beatloop")));
     Q_ASSERT(m_pControlObjectRightBeatLoop!=0);
 
     selectMapping(kqInputMappingHerculesStandard);
@@ -72,6 +73,8 @@ Hercules::~Hercules()
     }
     delete m_pRotaryLeft;
     delete m_pRotaryRight;
+    
+    //FIXME: delete all the ControlObjectThreadMain objects!
 }
 
 QStringList Hercules::getMappings()
@@ -85,99 +88,103 @@ void Hercules::selectMapping(QString qMapping)
 {
     m_qMapping = qMapping;
 
+	//FIXME: delete the ControlObjectThread objects before creating "new" ones.
+	
     if (qMapping==kqInputMappingHerculesInBeat)
     {
-        m_pControlObjectLeftPitch = ControlObject::getControl(ConfigKey("[Channel1]","volume"));
-        m_pControlObjectRightPitch = ControlObject::getControl(ConfigKey("[Channel2]","volume"));
-        m_pControlObjectLeftBtnAutobeat = ControlObject::getControl(ConfigKey("[Channel1]","beatsync"));
-        m_pControlObjectRightBtnAutobeat = ControlObject::getControl(ConfigKey("[Channel2]","beatsync"));
+        m_pControlObjectLeftPitch = new ControlObjectThread(ControlObject::getControl(ConfigKey("[Channel1]","volume")));
+        m_pControlObjectRightPitch = new ControlObjectThread(ControlObject::getControl(ConfigKey("[Channel2]","volume")));
+        m_pControlObjectLeftBtnAutobeat = new ControlObjectThread(ControlObject::getControl(ConfigKey("[Channel1]","beatsync")));
+        m_pControlObjectRightBtnAutobeat = new ControlObjectThread(ControlObject::getControl(ConfigKey("[Channel2]","beatsync")));
         m_pControlObjectLeftBtnPitchBendMinus = 0;
         m_pControlObjectRightBtnPitchBendMinus = 0;
         m_pControlObjectLeftBtnPitchBendPlus = 0;
         m_pControlObjectRightBtnPitchBendPlus = 0;
-        m_pControlObjectLeftBtnMasterTempo = ControlObject::getControl(ConfigKey("[Channel1]","rate"));
-        m_pControlObjectRightBtnMasterTempo = ControlObject::getControl(ConfigKey("[Channel2]","rate"));
-        m_pControlObjectLeftVolume = ControlObject::getControl(ConfigKey("[Channel1]","pregain"));
-        m_pControlObjectRightVolume = ControlObject::getControl(ConfigKey("[Channel2]","pregain"));
-        m_pControlObjectCrossfade = ControlObject::getControl(ConfigKey("[Master]","rate"));
+        m_pControlObjectLeftBtnMasterTempo = new ControlObjectThread(ControlObject::getControl(ConfigKey("[Channel1]","rate")));
+        m_pControlObjectRightBtnMasterTempo = new ControlObjectThread(ControlObject::getControl(ConfigKey("[Channel2]","rate")));
+        m_pControlObjectLeftVolume = new ControlObjectThread(ControlObject::getControl(ConfigKey("[Channel1]","pregain")));
+        m_pControlObjectRightVolume = new ControlObjectThread(ControlObject::getControl(ConfigKey("[Channel2]","pregain")));
+        m_pControlObjectCrossfade = new ControlObjectThread(ControlObject::getControl(ConfigKey("[Master]","rate")));
 
         changeJogMode(m_iLeftFxMode, m_iRightFxMode);
 
-        m_pControlObjectLeftBeatLoop->queueFromThread(1.);
-        m_pControlObjectRightBeatLoop->queueFromThread(1.);
+        m_pControlObjectLeftBeatLoop->slotSet(1.);
+        m_pControlObjectRightBeatLoop->slotSet(1.);
     }
     else
     {
-        m_pControlObjectLeftPitch = ControlObject::getControl(ConfigKey("[Channel1]","rate"));
-        m_pControlObjectRightPitch = ControlObject::getControl(ConfigKey("[Channel2]","rate"));
-        m_pControlObjectLeftBtnAutobeat = ControlObject::getControl(ConfigKey("[Channel1]","beatsync"));
-        m_pControlObjectRightBtnAutobeat = ControlObject::getControl(ConfigKey("[Channel2]","beatsync"));
-        m_pControlObjectLeftBtnPitchBendMinus = ControlObject::getControl(ConfigKey("[Channel1]","rate_perm_down_small"));
-        m_pControlObjectRightBtnPitchBendMinus = ControlObject::getControl(ConfigKey("[Channel2]","rate_perm_down_small"));
-        m_pControlObjectLeftBtnPitchBendPlus = ControlObject::getControl(ConfigKey("[Channel1]","rate_perm_up_small"));
-        m_pControlObjectRightBtnPitchBendPlus = ControlObject::getControl(ConfigKey("[Channel2]","rate_perm_up_small"));
+        m_pControlObjectLeftPitch = new ControlObjectThread(ControlObject::getControl(ConfigKey("[Channel1]","rate")));
+        m_pControlObjectRightPitch = new ControlObjectThread(ControlObject::getControl(ConfigKey("[Channel2]","rate")));
+        m_pControlObjectLeftBtnAutobeat = new ControlObjectThread(ControlObject::getControl(ConfigKey("[Channel1]","beatsync")));
+        m_pControlObjectRightBtnAutobeat = new ControlObjectThread(ControlObject::getControl(ConfigKey("[Channel2]","beatsync")));
+        m_pControlObjectLeftBtnPitchBendMinus = new ControlObjectThread(ControlObject::getControl(ConfigKey("[Channel1]","rate_perm_down_small")));
+        m_pControlObjectRightBtnPitchBendMinus = new ControlObjectThread(ControlObject::getControl(ConfigKey("[Channel2]","rate_perm_down_small")));
+        m_pControlObjectLeftBtnPitchBendPlus = new ControlObjectThread(ControlObject::getControl(ConfigKey("[Channel1]","rate_perm_up_small")));
+        m_pControlObjectRightBtnPitchBendPlus = new ControlObjectThread(ControlObject::getControl(ConfigKey("[Channel2]","rate_perm_up_small")));
         m_pControlObjectLeftBtnMasterTempo = 0;
         m_pControlObjectRightBtnMasterTempo = 0;
-        m_pControlObjectLeftVolume = ControlObject::getControl(ConfigKey("[Channel1]","volume"));
-        m_pControlObjectRightVolume = ControlObject::getControl(ConfigKey("[Channel2]","volume"));
-        m_pControlObjectCrossfade = ControlObject::getControl(ConfigKey("[Master]","crossfader"));
+        m_pControlObjectLeftVolume = new ControlObjectThread(ControlObject::getControl(ConfigKey("[Channel1]","volume")));
+        m_pControlObjectRightVolume = new ControlObjectThread(ControlObject::getControl(ConfigKey("[Channel2]","volume")));
+        m_pControlObjectCrossfade = new ControlObjectThread(ControlObject::getControl(ConfigKey("[Master]","crossfader")));
 
         changeJogMode();
 
-        m_pControlObjectLeftBeatLoop->queueFromThread(0.);
-        m_pControlObjectRightBeatLoop->queueFromThread(0.);
+        m_pControlObjectLeftBeatLoop->slotSet(0.);
+        m_pControlObjectRightBeatLoop->slotSet(0.);
     }
 
     // Generic mappings
-    m_pControlObjectLeftBtnTrackPrev = ControlObject::getControl(ConfigKey("[Channel1]","PrevTrack"));
-    m_pControlObjectRightBtnTrackPrev = ControlObject::getControl(ConfigKey("[Channel2]","PrevTrack"));
-    m_pControlObjectLeftBtnTrackNext = ControlObject::getControl(ConfigKey("[Channel1]","NextTrack"));
-    m_pControlObjectRightBtnTrackNext = ControlObject::getControl(ConfigKey("[Channel2]","NextTrack"));
-    m_pControlObjectLeftTreble = ControlObject::getControl(ConfigKey("[Channel1]","filterHigh"));
-    m_pControlObjectRightTreble = ControlObject::getControl(ConfigKey("[Channel2]","filterHigh"));
-    m_pControlObjectLeftMiddle = ControlObject::getControl(ConfigKey("[Channel1]","filterMid"));
-    m_pControlObjectRightMiddle = ControlObject::getControl(ConfigKey("[Channel2]","filterMid"));
-    m_pControlObjectLeftBass = ControlObject::getControl(ConfigKey("[Channel1]","filterLow"));
-    m_pControlObjectRightBass = ControlObject::getControl(ConfigKey("[Channel2]","filterLow"));
-    m_pControlObjectLeftBtnHeadphone = ControlObject::getControl(ConfigKey("[Channel1]","pfl"));
-    m_pControlObjectRightBtnHeadphone = ControlObject::getControl(ConfigKey("[Channel2]","pfl"));
+    m_pControlObjectLeftBtnTrackPrev = new ControlObjectThread(ControlObject::getControl(ConfigKey("[Channel1]","PrevTrack")));
+    m_pControlObjectRightBtnTrackPrev = new ControlObjectThread(ControlObject::getControl(ConfigKey("[Channel2]","PrevTrack")));
+    m_pControlObjectLeftBtnTrackNext = new ControlObjectThread(ControlObject::getControl(ConfigKey("[Channel1]","NextTrack")));
+    m_pControlObjectRightBtnTrackNext = new ControlObjectThread(ControlObject::getControl(ConfigKey("[Channel2]","NextTrack")));
+    m_pControlObjectLeftTreble = new ControlObjectThread(ControlObject::getControl(ConfigKey("[Channel1]","filterHigh")));
+    m_pControlObjectRightTreble = new ControlObjectThread(ControlObject::getControl(ConfigKey("[Channel2]","filterHigh")));
+    m_pControlObjectLeftMiddle = new ControlObjectThread(ControlObject::getControl(ConfigKey("[Channel1]","filterMid")));
+    m_pControlObjectRightMiddle = new ControlObjectThread(ControlObject::getControl(ConfigKey("[Channel2]","filterMid")));
+    m_pControlObjectLeftBass = new ControlObjectThread(ControlObject::getControl(ConfigKey("[Channel1]","filterLow")));
+    m_pControlObjectRightBass = new ControlObjectThread(ControlObject::getControl(ConfigKey("[Channel2]","filterLow")));
+    m_pControlObjectLeftBtnHeadphone = new ControlObjectThread(ControlObject::getControl(ConfigKey("[Channel1]","pfl")));
+    m_pControlObjectRightBtnHeadphone = new ControlObjectThread(ControlObject::getControl(ConfigKey("[Channel2]","pfl")));
 
-    m_pControlObjectLeftBtn1 = new ControlObject(ConfigKey("[Channel1]","Hercules1"));
-    m_pControlObjectLeftBtn2 = new ControlObject(ConfigKey("[Channel1]","Hercules2"));
-    m_pControlObjectLeftBtn3 = new ControlObject(ConfigKey("[Channel1]","Hercules3"));
-    m_pControlObjectLeftBtnFx = new ControlObject(ConfigKey("[Channel1]","Hercules4"));
+    m_pControlObjectLeftBtn1 = new ControlObjectThread(new ControlObject(ConfigKey("[Channel1]","Hercules1")));
+    m_pControlObjectLeftBtn2 = new ControlObjectThread(new ControlObject(ConfigKey("[Channel1]","Hercules2")));
+    m_pControlObjectLeftBtn3 = new ControlObjectThread(new ControlObject(ConfigKey("[Channel1]","Hercules3")));
+    m_pControlObjectLeftBtnFx = new ControlObjectThread(new ControlObject(ConfigKey("[Channel1]","Hercules4")));
 
-    m_pControlObjectRightBtn1 = new ControlObject(ConfigKey("[Channel2]","Hercules1"));
-    m_pControlObjectRightBtn2 = new ControlObject(ConfigKey("[Channel2]","Hercules2"));
-    m_pControlObjectRightBtn3 = new ControlObject(ConfigKey("[Channel2]","Hercules3"));
-    m_pControlObjectRightBtnFx = new ControlObject(ConfigKey("[Channel2]","Hercules4"));
+    m_pControlObjectRightBtn1 = new ControlObjectThread(new ControlObject(ConfigKey("[Channel2]","Hercules1")));
+    m_pControlObjectRightBtn2 = new ControlObjectThread(new ControlObject(ConfigKey("[Channel2]","Hercules2")));
+    m_pControlObjectRightBtn3 = new ControlObjectThread(new ControlObject(ConfigKey("[Channel2]","Hercules3")));
+    m_pControlObjectRightBtnFx = new ControlObjectThread(new ControlObject(ConfigKey("[Channel2]","Hercules4")));
 }
 
 void Hercules::changeJogMode(int iLeftFxMode, int iRightFxMode)
 {
+	//FIXME: delete the ControlObjectThread objects before creating "new" ones.
+
     switch (iLeftFxMode)
     {
     case 0:
-        m_pControlObjectLeftJog = ControlObject::getControl(ConfigKey("[Channel1]","wheel"));
+        m_pControlObjectLeftJog = new ControlObjectThread(ControlObject::getControl(ConfigKey("[Channel1]","wheel")));
         break;
     case 1:
-        m_pControlObjectLeftJog = ControlObject::getControl(ConfigKey("[Channel1]","temporalShapeRate"));
+        m_pControlObjectLeftJog = new ControlObjectThread(ControlObject::getControl(ConfigKey("[Channel1]","temporalShapeRate")));
         break;
     case 2:
-        m_pControlObjectLeftJog = ControlObject::getControl(ConfigKey("[Channel1]","temporalPhaseRate"));
+        m_pControlObjectLeftJog = new ControlObjectThread(ControlObject::getControl(ConfigKey("[Channel1]","temporalPhaseRate")));
         break;
     }
 
     switch (iRightFxMode)
     {
     case 0:
-        m_pControlObjectRightJog = ControlObject::getControl(ConfigKey("[Channel2]","wheel"));
+        m_pControlObjectRightJog = new ControlObjectThread(ControlObject::getControl(ConfigKey("[Channel2]","wheel")));
         break;
     case 1:
-        m_pControlObjectRightJog = ControlObject::getControl(ConfigKey("[Channel2]","temporalShapeRate"));
+        m_pControlObjectRightJog = new ControlObjectThread(ControlObject::getControl(ConfigKey("[Channel2]","temporalShapeRate")));
         break;
     case 2:
-        m_pControlObjectRightJog = ControlObject::getControl(ConfigKey("[Channel2]","temporalPhaseRate"));
+        m_pControlObjectRightJog = new ControlObjectThread(ControlObject::getControl(ConfigKey("[Channel2]","temporalPhaseRate")));
         break;
     }
 }

@@ -19,6 +19,7 @@
 #include "powermate.h"
 #include "rotary.h"
 #include "controlobject.h"
+#include "controlobjectthreadmain.h"
 #include "controleventmidi.h"
 #include "midiobject.h"
 #include "mathstuff.h"
@@ -51,30 +52,30 @@ void PowerMate::selectMapping(QString mapping)
 {
     if (mapping==kqInputMappingPositionP1)
     {
-        m_pControlObjectRotary = ControlObject::getControl(ConfigKey("[Channel1]","scratch"));
-        m_pControlObjectButton = ControlObject::getControl(ConfigKey("[Channel1]","play"));
-        m_ctrlVuMeter = ControlObject::getControl(ConfigKey("[Channel1]","VuMeter"));
+        m_pControlObjectRotary = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey("[Channel1]","scratch")));
+        m_pControlObjectButton = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey("[Channel1]","play")));
+        m_ctrlVuMeter = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey("[Channel1]","VuMeter")));
         m_pRotary->setFilterLength(kiRotaryFilterMaxLen);
     }
     else if (mapping==kqInputMappingPositionP2)
     {
-        m_pControlObjectRotary = ControlObject::getControl(ConfigKey("[Channel2]","scratch"));
-        m_pControlObjectButton = ControlObject::getControl(ConfigKey("[Channel2]","play"));
-        m_ctrlVuMeter = ControlObject::getControl(ConfigKey("[Channel2]","VuMeter"));
+        m_pControlObjectRotary = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey("[Channel2]","scratch")));
+        m_pControlObjectButton = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey("[Channel2]","play")));
+        m_ctrlVuMeter = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey("[Channel2]","VuMeter")));
         m_pRotary->setFilterLength(kiRotaryFilterMaxLen);
     }
     else if (mapping==kqInputMappingSongP1)
     {
-        m_pControlObjectRotary = ControlObject::getControl(ConfigKey("[Channel1]","rateSearch"));
-        m_pControlObjectButton = ControlObject::getControl(ConfigKey("[Channel1]","play"));
-        m_ctrlVuMeter = ControlObject::getControl(ConfigKey("[Channel1]","VuMeter"));
+        m_pControlObjectRotary = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey("[Channel1]","rateSearch")));
+        m_pControlObjectButton = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey("[Channel1]","play")));
+        m_ctrlVuMeter = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey("[Channel1]","VuMeter")));
         m_pRotary->setFilterLength(kiRotaryFilterMaxLen);
     }
     else if (mapping==kqInputMappingSongP2)
     {
-        m_pControlObjectRotary = ControlObject::getControl(ConfigKey("[Channel2]","realsearch"));
-        m_pControlObjectButton = ControlObject::getControl(ConfigKey("[Channel2]","play"));
-        m_ctrlVuMeter = ControlObject::getControl(ConfigKey("[Channel2]","VuMeter"));
+        m_pControlObjectRotary = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey("[Channel2]","realsearch")));
+        m_pControlObjectButton = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey("[Channel2]","play")));
+        m_ctrlVuMeter = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey("[Channel2]","VuMeter")));
         m_pRotary->setFilterLength(kiRotaryFilterMaxLen);
     }
 }

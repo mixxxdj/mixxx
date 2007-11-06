@@ -25,6 +25,7 @@
 #include <unistd.h>
 #include <fcntl.h>
 #include "controlobject.h"
+#include "controlobjectthreadmain.h"
 #include "mathstuff.h"
 //Added by qt3to4:
 #include <Q3ValueList>
@@ -184,13 +185,14 @@ void PowerMateLinux::getNextEvent()
                 // Send event to GUI thread
                 if (ev.value==1)
                 {
-                    m_pControlObjectRotary->queueFromThread(0.0f);     //Disable the scratch/wheel/whatever
-                    sendButtonEvent(true, m_pControlObjectButton); //Start playback
+                    m_pControlObjectRotary->slotSet(0.0f);     	//Disable the scratch/wheel/whatever
+                    m_pControlObjectButton->slotSet(1.0f); 		//Start playback
                 }
                 else
-
-                    sendButtonEvent(false, m_pControlObjectButton); //Stop playback
-                m_pControlObjectRotary->queueFromThread(0.0f);     //Reset the scratch/wheel/whatever
+                {
+                	m_pControlObjectButton->slotSet(0.0f); //Stop playback
+                }
+                m_pControlObjectRotary->slotSet(0.0f);     //Reset the scratch/wheel/whatever
             }
             break;
             /*default:
@@ -205,7 +207,7 @@ void PowerMateLinux::getNextEvent()
         if (iUnreadCount > 5)
         {
             iUnreadCount = 0;
-            m_pControlObjectRotary->queueFromThread(0.0f);
+            m_pControlObjectRotary->slotSet(0.0f);
         }
 
         /*if (m_pControlObjectButton != NULL)

@@ -17,6 +17,8 @@
 #include "enginerecord.h"
 #include "controllogpotmeter.h"
 #include "configobject.h"
+#include "controlobjectthreadmain.cpp"
+#include "controlobject.h"
 #include "dlgprefrecord.h"
 
 /***************************************************************************
@@ -34,7 +36,8 @@ EngineRecord::EngineRecord(ConfigObject<ConfigValue> * _config)
 {
     curBuf1 = true;
     config = _config;
-    recReady = new ControlObject(ConfigKey("[Master]", "Record"));
+    recReadyCO = new ControlObject(ConfigKey("[Master]", "Record"));
+    recReady = new ControlObjectThreadMain(recReady);
     fOut = new WriteAudioFile(_config);
 
     //Allocate Buffers
@@ -59,6 +62,8 @@ EngineRecord::~EngineRecord()
     //QThread::terminate();
     //qDebug("rec thread terminated");
     delete fOut;
+    delete recReady;
+    delete recReadyCO;
 }
 
 void EngineRecord::process(const CSAMPLE * pIn, const CSAMPLE * pOut, const int iBufferSize)
@@ -84,7 +89,7 @@ void EngineRecord::process(const CSAMPLE * pIn, const CSAMPLE * pOut, const int 
             //and the audio is high enough (a track is playing)
             //then we can set the record flag to TRUE
             qDebug("Setting Record flag to: ON");
-            recReady->queueFromThread(RECORD_ON);
+            recReady->slotSet(RECORD_ON);
         }
     }
     fill->valid = iBufferSize;

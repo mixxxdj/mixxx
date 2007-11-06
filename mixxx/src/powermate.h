@@ -38,6 +38,7 @@
 
 class Rotary;
 class ControlObject;
+class ControlObjectThreadMain;
 
 /**
   * Virtual class for handling the PowerMate. This is implemented as a separate thread.
@@ -72,8 +73,8 @@ protected:
     /** Pointer to rotary object */
     Rotary *m_pRotary;
     /** Pointer to control objects connected to the PowerMate */
-    ControlObject *m_pControlObjectRotary, *m_pControlObjectButton;
-    ControlObject *m_ctrlVuMeter; //A pointer to a VuMeter, so we can sync the powermate's LED with the music.
+    ControlObjectThreadMain *m_pControlObjectRotary, *m_pControlObjectButton;
+    ControlObjectThreadMain *m_ctrlVuMeter; //A pointer to a VuMeter, so we can sync the powermate's LED with the music.
 };
 
 #endif

@@ -16,6 +16,8 @@
 ***************************************************************************/
 
 #include "dlgprefrecord.h"
+#include "controlobject.h"
+#include "controlobjectthreadmain.h"
 #define MIXXX
 #include <qlineedit.h>
 #include <q3filedialog.h>
@@ -36,7 +38,7 @@ DlgPrefRecord::DlgPrefRecord(QWidget * parent, ConfigObject<ConfigValue> * _conf
 
     setupUi(this);
 
-    recordControl = ControlObject::getControl(ConfigKey("[Master]", "Record")); //See RECORD_* #defines in dlgprefrecord.h
+    recordControl = ControlObjectThreadMain(ControlObject::getControl(ConfigKey("[Master]", "Record"))); //See RECORD_* #defines in dlgprefrecord.h
 
     //Fill up encoding list
     comboBoxEncoding->insertItem(IDEX_WAVE, "WAVE");
@@ -61,7 +63,7 @@ DlgPrefRecord::DlgPrefRecord(QWidget * parent, ConfigObject<ConfigValue> * _conf
 
     loadMetaData();
     slotApply();
-    recordControl->queueFromThread(RECORD_OFF); //make sure a corrupt config file won't cause us to record constantly
+    recordControl->slotSet(RECORD_OFF); //make sure a corrupt config file won't cause us to record constantly
 }
 
 void DlgPrefRecord::slotBrowseSave()
@@ -216,7 +218,7 @@ void DlgPrefRecord::slotApply()
         {
             qDebug("Setting record status: READY");
             confirmOverwrite = true;
-            recordControl->queueFromThread(RECORD_READY);
+            recordControl->slotSet(RECORD_READY);
             /*
              * Note: setting the recordControl value to RECORD_READY does not start the
              * recording.  The RECORD_READY flag signals code elsewhere that when
@@ -233,6 +235,6 @@ void DlgPrefRecord::slotApply()
     else
     {
         qDebug("Setting record status: OFF");
-        recordControl->queueFromThread(RECORD_OFF);
+        recordControl->slotSet(RECORD_OFF);
     }
 }
