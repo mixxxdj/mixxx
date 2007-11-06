@@ -19,8 +19,14 @@
 #include "input.h"
 #include "controlobject.h"
 #include "controlobjectthreadmain.h"
+#include "controlobjectthread.h"
 #include "midiobject.h"
 #include "mathstuff.h"
+
+// TODO: Investigate the use of ControlObjectThread vs. ControlObjectThreadMain
+//       (the #include "controlobjectthreadmain.h" was already here before I fixed
+//        the queueFromThread mess. I wonder if this file was unfinished when Tue
+//        left...) - Albert Nov 5, 2007
 
 Input::Input()
 {
@@ -58,6 +64,12 @@ void Input::sendEvent(double dValue, ControlObject * pControlObject)
         pControlObject->queueFromMidi(CTRL_CHANGE, dValue);
 }
 
+void Input::sendEvent(double dValue, ControlObjectThread *pControlObjThread)
+{
+    if (pControlObjThread)
+        pControlObjThread->slotSet(dValue);
+}
+
 void Input::sendButtonEvent(bool bPressed, ControlObject * pControlObject)
 {
     if (pControlObject)
@@ -66,5 +78,16 @@ void Input::sendButtonEvent(bool bPressed, ControlObject * pControlObject)
             pControlObject->queueFromMidi(NOTE_ON, 1);
         else
             pControlObject->queueFromMidi(NOTE_OFF, 1);
+    }
+}
+
+void Input::sendButtonEvent(bool bPressed, ControlObjectThread *pControlObjThread)
+{
+    if (pControlObjThread)
+    {
+        if (bPressed)
+            pControlObjThread->slotSet(1.0f);
+        else
+            pControlObjThread->slotSet(0.0f);
     }
 }

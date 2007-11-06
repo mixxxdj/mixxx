@@ -29,6 +29,7 @@
   */
 
 class ControlObject;
+class ControlObjectThread;
 
 static QString kqInputMappingPositionP1 = "Player 1, position";
 static QString kqInputMappingSongP1     = "Player 1, song selection";
@@ -57,8 +58,10 @@ protected:
     virtual void run();
     /** Send out an event */
     void sendEvent(double dValue, ControlObject *pControlObject);
+    void sendEvent(double dValue, ControlObjectThread *pControlObjThread);
     /** Send out a button event */
     void sendButtonEvent(bool bPressed, ControlObject *pControlObject);
+    void sendButtonEvent(bool bPressed, ControlObjectThread *pControlObjThread);
 };
 
 #endif

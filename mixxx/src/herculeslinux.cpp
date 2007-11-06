@@ -42,6 +42,7 @@
 #include "rotary.h"
 //Added by qt3to4:
 #include <Q3ValueList> // used by the old herc code
+#include <QTimer>
 
 #include <QDebug>
 
