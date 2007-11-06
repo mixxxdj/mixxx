@@ -45,17 +45,14 @@
 #define ENGINEBUFFERSCALEST_H
 
 
-
+#include <QMutex>
 #include "enginebufferscale.h"
 
 #include "SoundTouch.h"
 
 
 /** Number of stereo samples to read ahead */
-
 const int kiSoundTouchReadAheadLength = 100;
-
-
 
 using namespace soundtouch;
 
@@ -131,7 +128,9 @@ private:
     /** Used when clear is called */
 
     bool m_bClear;
-
+    
+    /** Used to protect SoundTouch calls */
+    QMutex m_qMutex;
 };
 
 
