@@ -174,7 +174,7 @@ void PowerMateLinux::getNextEvent()
                     {
                         dSpeed = (double)v;
 
-                        sendEvent(dSpeed, m_pControlObjectRotary);
+                        m_pControlObjectRotary->slotSet(dSpeed);
                     }
                 }
             }
@@ -212,7 +212,7 @@ void PowerMateLinux::getNextEvent()
 
         /*if (m_pControlObjectButton != NULL)
            {
-                sendEvent((double)0.0f, m_pControlObjectRotary);
+                m_pControlObjectRotary->slotSet(0.0f);
            }*/
     }
 
