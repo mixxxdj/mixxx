@@ -59,13 +59,13 @@
         <xsl:with-param name="position" select="$position" />
       </xsl:call-template>
     </xsl:attribute>
-    <img>
+    <img alt="">
     <xsl:attribute name="src"><xsl:value-of select="$src" /></xsl:attribute>
     </img>
   </div>
 </xsl:template>
 
-<xsl:template match="SliderComposed">
+<xsl:template match="SliderComposed|XSliderComposed">
   <xsl:call-template name="image">
     <xsl:with-param name="position" select="Pos" />
     <xsl:with-param name="path" select="Slider" />
@@ -77,19 +77,7 @@
   </xsl:call-template>
 </xsl:template>
 
-<xsl:template match="XSliderComposed">
-  <xsl:call-template name="image">
-    <xsl:with-param name="position" select="Pos" />
-    <xsl:with-param name="path" select="Slider" />
-  </xsl:call-template>
-
-  <xsl:call-template name="image">
-    <xsl:with-param name="position" select="Pos" />
-    <xsl:with-param name="path" select="Handle" />
-  </xsl:call-template>
-</xsl:template>
-
-<xsl:template match="Knob">
+<xsl:template match="Knob|Knobx|Display">
   <xsl:call-template name="image">
     <xsl:with-param name="position" select="Pos" />
     <xsl:with-param name="path" select="Path" />
@@ -99,7 +87,7 @@
 <xsl:template match="PushButton">
   <xsl:call-template name="image">
     <xsl:with-param name="position" select="Pos" />
-    <xsl:with-param name="path" select="State/Pressed" />
+    <xsl:with-param name="path" select="State/Unpressed" />
   </xsl:call-template>
 </xsl:template>
 
@@ -113,6 +101,18 @@
     <xsl:with-param name="position" select="Pos" />
     <xsl:with-param name="path" select="PathVu" />
   </xsl:call-template>
+</xsl:template>
+
+<xsl:template match="Overview|NumberPos|NumberRate|NumberBpm|Text|Visual">
+  <div>
+    <xsl:attribute name="style">
+      <xsl:call-template name="position">
+        <xsl:with-param name="position" select="Pos" />
+      </xsl:call-template>
+      <xsl:call-template name="size">
+        <xsl:with-param name="size" select="Size" />
+      </xsl:call-template><xsl:apply-templates /></xsl:attribute>
+  </div>
 </xsl:template>
 
 <xsl:template match="Splitter">
@@ -140,18 +140,6 @@
 </xsl:template>
 
 <xsl:template match="TrackTable"></xsl:template>
-
-<xsl:template match="Overview|NumberPos|NumberRate|NumberBpm|Text">
-  <div>
-    <xsl:attribute name="style">
-      <xsl:call-template name="position">
-        <xsl:with-param name="position" select="Pos" />
-      </xsl:call-template>
-      <xsl:call-template name="size">
-        <xsl:with-param name="size" select="Size" />
-      </xsl:call-template><xsl:apply-templates /></xsl:attribute>
-  </div>
-</xsl:template>
 
 <xsl:template match="BgColor">background: <xsl:apply-templates />;</xsl:template>
 
