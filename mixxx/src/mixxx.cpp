@@ -165,7 +165,7 @@ MixxxApp::MixxxApp(QApplication * a, struct CmdlineArgs args, QSplashScreen * pS
     // Use frame as container for view, needed for fullscreen display
     frame = new QFrame;
     setCentralWidget(frame);
-    move(10,10);
+    //move(10,10);
     // Call inits to invoke all other construction parts
 
     view=new MixxxView(frame, kbdconfig, bVisualsWaveform, qSkinPath, config);
@@ -693,7 +693,7 @@ void MixxxApp::slotHelpAbout()
                           "<tr><td>Lead developer/Maintainer:</td><td>Adam Davison</td></tr>"
                           "<tr><td>Original developers</td><td>Tue Haste Andersen</td></tr>"
                           "<tr><td></td><td>Ken Haste Andersen</td></tr>"
-                          "<tr><td>Skins:</td><td>Ludek Hor·cek (Traditional)</td></tr>"
+                          "<tr><td>Skins:</td><td>Ludek Hor√°cek (Traditional)</td></tr>"
                           "<tr><td></td><td>Tue Haste Andersen (Outline)</td></tr>"
                           "<tr><td>Ogg vorbis support:</td><td>Svein Magne Bang</td></tr>"
                           "<tr><td>Beat tracking:</td><td>Tue Haste Andersen</td></tr>"
