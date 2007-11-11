@@ -109,9 +109,8 @@ void DlgPrefVinyl::slotUpdate()
     else
         EnableRIAA->setChecked(false);
 
-    // Update device list, filtering by the current API.
-    //QStringList interfaces = player->getInputInterfaces();
-    QList<SoundDevice *> devices = m_pSoundManager->getDeviceList(config->getValueString(ConfigKey("[Soundcard]","SoundApi")));
+    // Get list of input devices, filtering by the current API.
+    QList<SoundDevice *> devices = m_pSoundManager->getDeviceList(config->getValueString(ConfigKey("[Soundcard]","SoundApi")), false, true);
     QListIterator<SoundDevice *> device_it(devices);
     SoundDevice * device;
     int j;

@@ -130,7 +130,8 @@ void DlgPrefSound::slotUpdate()
     //QStringList interfaces = player->getInterfaces();
     //QStringList::iterator it;
 
-    QList<SoundDevice *> devices = m_pSoundManager->getDeviceList(selectedAPI);
+    //Get the list of sound output devices that match the selected API.
+    QList<SoundDevice*> devices = m_pSoundManager->getDeviceList(selectedAPI, true, false);
     SoundDevice * dev;
 
     // Master sound card combobox

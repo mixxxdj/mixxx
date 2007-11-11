@@ -36,6 +36,8 @@ SoundDevicePortAudio::SoundDevicePortAudio(ConfigObject<ConfigValue> * config, S
     m_pStream = 0;
     //m_devId = -1;
     m_iNumberOfBuffers = 2;
+    m_iNumInputChannels = m_deviceInfo->maxInputChannels;
+    m_iNumOutputChannels = m_deviceInfo->maxOutputChannels;
 
 }
 
