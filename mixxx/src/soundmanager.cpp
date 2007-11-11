@@ -93,9 +93,13 @@ SoundManager::~SoundManager()
 //If filterAPI is the name of an audio API used by PortAudio, this function
 //will only return devices that belong to that API. Otherwise, the list will
 //contain all devices on all PortAudio-supported APIs.
-QList<SoundDevice*> SoundManager::getDeviceList(QString filterAPI)
+//If bOutputDevices is true, then devices supporting audio output will be listed.
+//If bInputDevices is true, then devices supporting audio input will be listed too.
+QList<SoundDevice*> SoundManager::getDeviceList(QString filterAPI, bool bOutputDevices, bool bInputDevices)
 {
     qDebug() << "SoundManager::getDeviceList";
+    bool bMatchedCriteria = true;   //Whether or not the current device matched the filtering criteria
+    
     if (m_devices.empty())
         this->queryDevices();
 
@@ -106,17 +110,28 @@ QList<SoundDevice*> SoundManager::getDeviceList(QString filterAPI)
     }
     else
     {
-        //Create a list of sound devices filtered to the given API.
+        //Create a list of sound devices filtered to match given API and input/output .
         QList<SoundDevice*> filteredDeviceList;
         QListIterator<SoundDevice*> dev_it(m_devices);
         while (dev_it.hasNext())
         {
+            bMatchedCriteria = true;                //Reset this for the next device.
             SoundDevice *device = dev_it.next();
-            if (device->getHostAPI() == filterAPI)
+            if (device->getHostAPI() != filterAPI)
+                bMatchedCriteria = false;
+            if (bOutputDevices)
             {
-                if (device)
-                    filteredDeviceList.push_back(device);
+                 if (device->getNumOutputChannels() <= 0)
+                    bMatchedCriteria = false;                    
             }
+            if (bInputDevices)
+            {
+                if (device->getNumInputChannels() <= 0)
+                    bMatchedCriteria = false;
+            }
+            
+            if (bMatchedCriteria)
+                filteredDeviceList.push_back(device);
         }
         return filteredDeviceList;
     }
@@ -277,10 +292,10 @@ void SoundManager::setDefaults(bool api, bool devices, bool other)
 
     if (devices)
     {    	
-        //Set the default master device to be the first device in the list (that matches the API)
-        m_pConfig->set(ConfigKey("[Soundcard]","DeviceMaster"), ConfigValue(getDeviceList(getHostAPI()).front()->getName()));
-        m_pConfig->set(ConfigKey("[Soundcard]","DeviceMasterLeft"), ConfigValue(getDeviceList(getHostAPI()).front()->getName()));
-        m_pConfig->set(ConfigKey("[Soundcard]","DeviceMasterRight"), ConfigValue(getDeviceList(getHostAPI()).front()->getName()));
+        //Set the default master device to be the first ouput device in the list (that matches the API)
+        m_pConfig->set(ConfigKey("[Soundcard]","DeviceMaster"), ConfigValue(getDeviceList(getHostAPI(), true, false).front()->getName()));
+        m_pConfig->set(ConfigKey("[Soundcard]","DeviceMasterLeft"), ConfigValue(getDeviceList(getHostAPI(), true, false).front()->getName()));
+        m_pConfig->set(ConfigKey("[Soundcard]","DeviceMasterRight"), ConfigValue(getDeviceList(getHostAPI(), true, false).front()->getName()));
     }
 
     if (other)
