@@ -79,6 +79,7 @@ TrackInfoObject::TrackInfoObject(const QString sPath, const QString sFile, BpmDe
 
     //m_pTableTrack = 0;
 
+    qDebug() << "new TrackInfoObject....";
 
     // Check that the file exists:
     checkFileExists();
@@ -90,6 +91,8 @@ TrackInfoObject::TrackInfoObject(const QString sPath, const QString sFile, BpmDe
 
     installEventFilter(this);
     iTemp = 0;
+    
+    qDebug() << "done constructing  TrackInfoObject....";
 }
 
 TrackInfoObject::TrackInfoObject(const QDomNode &nodeHeader, BpmDetector * bpmDetector)
@@ -159,11 +162,18 @@ bool TrackInfoObject::checkFileExists()
 {
     QFile fileTrack(getLocation());
     if (fileTrack.exists())
+    {
+        //m_qMutex.lock();
         m_bExists = true;
+        qDebug() << "Track exists...";
+        //m_qMutex.unlock();
+    }
     else
     {
+        //m_qMutex.lock();
         m_bExists = false;
         qDebug() << "The track %s was not found" << getLocation();
+        //m_qMutex.unlock();
     }
     return m_bExists;
 }
@@ -622,8 +632,10 @@ void TrackInfoObject::setFilepath(QString s)
 QString TrackInfoObject::getFilepath() const
 {
     m_qMutex.lock();
-    return m_sFilepath;
+    QString sFilepath = m_sFilepath;
     m_qMutex.unlock();
+    
+    return sFilepath;
 }
 QString TrackInfoObject::getComment() const
 {
@@ -837,12 +849,16 @@ void TrackInfoObject::setWaveSummary(Q3MemArray<char> * pWave, Q3ValueList<long>
 
 TrackInfoObject * TrackInfoObject::getNext(TrackPlaylist * pPlaylist)
 {
-    return pPlaylist->getTrackAt(pPlaylist->getIndexOf(getId())+1);
+    if (pPlaylist)
+        return pPlaylist->getTrackAt(pPlaylist->getIndexOf(getId())+1);
+    return NULL;
 }
 
 TrackInfoObject * TrackInfoObject::getPrev(TrackPlaylist * pPlaylist)
 {
-    return pPlaylist->getTrackAt(pPlaylist->getIndexOf(getId())-1);
+    if (pPlaylist)
+        return pPlaylist->getTrackAt(pPlaylist->getIndexOf(getId())-1);
+    return NULL;
 }
 
 void TrackInfoObject::setOverviewWidget(WOverview * p)

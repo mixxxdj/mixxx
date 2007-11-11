@@ -25,6 +25,7 @@
 
 /*used for new model/view interface*/
 #include "wtracktablemodel.h"
+#include "wplaylistlistmodel.h"
 #include "wtracktableview.h"
 
 //#include "wtreeview.h"
@@ -62,6 +63,7 @@ Track::Track(QString location, MixxxView * pView, EngineBuffer * pBuffer1, Engin
     m_pTrackImporter = new TrackImporter(m_pView,m_pTrackCollection);
     m_pLibraryModel = new WTrackTableModel(m_pView->m_pTrackTableView);
     m_pPlayQueueModel = new WTrackTableModel(m_pView->m_pTrackTableView);
+    m_pPlaylistListModel = new WPlaylistListModel(m_pView->m_pTrackTableView); 
 
     // Read the XML file
     readXML(location);
@@ -77,8 +79,8 @@ Track::Track(QString location, MixxxView * pView, EngineBuffer * pBuffer1, Engin
     }
 
 
-    // Update tree view
-    //updatePlaylistViews();
+    // Update anything that views the playlists
+    updatePlaylistViews();
 
     // Insert the first playlist in the list
     m_pActivePlaylist = m_qPlaylists.at(0);
@@ -86,6 +88,7 @@ Track::Track(QString location, MixxxView * pView, EngineBuffer * pBuffer1, Engin
 
     m_pLibraryModel->setTrackPlaylist(m_qPlaylists.at(0));
     m_pPlayQueueModel->setTrackPlaylist(m_qPlaylists.at(1));
+    m_pPlaylistListModel->setPlaylistList(m_qPlaylists);
 
     if (m_pView) //Stops Mixxx from dying if a skin doesn't have the search box.
     {
@@ -189,8 +192,8 @@ void Track::readXML(QString location)
         node = node.nextSibling();
     }
     //CTAF TODO: TEMPORARY REMOVED, NEED TO BE DONE IN A THREAD
-    if(m_qPlaylists.count() >= 2)
-        m_qPlaylists.at(0)->addPath(musicDir);
+    //if(m_qPlaylists.count() >= 2)
+    //    m_qPlaylists.at(0)->addPath(musicDir);
     //ECTAF
 }
 
@@ -226,17 +229,17 @@ void Track::writeXML(QString location)
     // Write playlists
     QDomElement playlistsroot = domXML.createElement("Playlists");
 
-    TrackPlaylist * it = m_qPlaylists.first();
-    while (it)
+    QListIterator<TrackPlaylist*> it(m_qPlaylists);
+    TrackPlaylist* current;
+    while (it.hasNext())
     {
+        current = it.next();
         progress.setProgress(++i);
         qApp->processEvents();
 
         QDomElement elementNew = domXML.createElement("Playlist");
-        it->writeXML(domXML, elementNew);
+        current->writeXML(domXML, elementNew);
         playlistsroot.appendChild(elementNew);
-
-        it = m_qPlaylists.next();
 
     }
     elementRoot.appendChild(playlistsroot);
@@ -312,11 +315,12 @@ void Track::slotActivatePlaylist(QString name)
     {
         // Deactivate current playlist
         //if (m_pActivePlaylist)
-        //m_pActivePlaylist->deactivate();
+        //    m_pActivePlaylist->deactivate();
         // Activate new playlist
         m_pActivePlaylist = pNewlist;
         m_pLibraryModel->setTrackPlaylist(m_pActivePlaylist);
         //m_pActivePlaylist->activate(m_pView->m_pTrackTable);
+        //m_pActivePlaylist = m_qPlaylists.at(index);
         emit(activePlaylist(pNewlist));
     }
 }
@@ -324,25 +328,52 @@ void Track::slotActivatePlaylist(QString name)
 
 void Track::slotActivatePlaylist(int index)
 {
+    //Toggled by the ComboBox - This needs to be reorganized...
     switch(index)
     {
-    case 0:
+    case 0: //Library view
         m_pView->m_pTrackTableView->reset();
         m_pView->m_pTrackTableView->setSearchSource(m_pLibraryModel);
         m_pView->m_pTrackTableView->resizeColumnsToContents();
         m_pView->m_pTrackTableView->setTrack(this);
         break;
-    case 1:
+    case 1: //Play queue view
         m_pView->m_pTrackTableView->reset();
         m_pView->m_pTrackTableView->setSearchSource(m_pPlayQueueModel);
         m_pView->m_pTrackTableView->resizeColumnsToContents();
         m_pView->m_pTrackTableView->setTrack(this);
         break;
-    case 2:
+    case 2: //Browse mode view
         m_pView->m_pTrackTableView->reset();
         m_pView->m_pTrackTableView->setDirModel();
         m_pView->m_pTrackTableView->resizeColumnsToContents();
         m_pView->m_pTrackTableView->setTrack(this);
+        break;
+    case 3: //Playlist List Model
+        m_pView->m_pTrackTableView->reset();
+        m_pView->m_pTrackTableView->setPlaylistListModel(m_pPlaylistListModel);
+        m_pView->m_pTrackTableView->resizeColumnsToContents();
+        m_pView->m_pTrackTableView->setTrack(this);
+        break;    
+    default: // ???
+        m_pView->m_pTrackTableView->reset();
+        m_pView->m_pTrackTableView->setSearchSource(m_pPlayQueueModel);
+        m_pView->m_pTrackTableView->resizeColumnsToContents();
+        m_pView->m_pTrackTableView->setTrack(this);
+        
+        int i = 0;
+        TrackInfoObject* current_track = NULL;
+        do
+        {
+            current_track = m_pActivePlaylist->getTrackAt(i);
+            if (current_track != NULL)
+                slotSendToPlayqueue(current_track);
+            i++;
+        } while (current_track != NULL);
+        
+        //TODO: If the play queue is empty, load the playlist into the play queue
+        //TODO: If the play queue isn't empty, ask the user whether to overwrite the play queue
+        //      or append the playlist to the queue.
     }
     //if (m_pActivePlaylist)
     //m_pActivePlaylist->deactivate();
@@ -364,8 +395,8 @@ void Track::slotNewPlaylist()
     // Make the new playlist active
     //slotActivatePlaylist(p->getListName());
 
-    // Update list views
-    //updatePlaylistViews();
+    // Update anything that views the playlists
+    updatePlaylistViews();
 }
 
 void Track::slotDeletePlaylist(QString qName)
@@ -397,7 +428,7 @@ void Track::slotDeletePlaylist(QString qName)
         slotActivatePlaylist(m_qPlaylists.at(0)->getListName());
     }
 
-    //updatePlaylistViews();
+    updatePlaylistViews();
 }
 
 void Track::slotImportPlaylist()
@@ -414,17 +445,18 @@ void Track::slotImportPlaylist()
     {
         m_qPlaylists.append(pTempPlaylist);
     }
-    //updatePlaylistViews();
+    updatePlaylistViews();
 }
 
 TrackPlaylist * Track::getPlaylist(QString qName)
 {
-    TrackPlaylist * it = m_qPlaylists.first();
-    while (it)
+    QListIterator<TrackPlaylist*> it(m_qPlaylists);
+    TrackPlaylist* current;
+    while (it.hasNext())
     {
-        if (it->getListName()==qName)
-            return it;
-        it = m_qPlaylists.next();
+        current = it.next();
+        if (current->getListName()==qName)
+            return current;
     }
     return 0;
 }
@@ -541,18 +573,18 @@ void Track::slotLoadPlayer2(TrackInfoObject * pTrackInfoObject, bool bStartFromE
     emit(newTrackPlayer2(m_pTrackPlayer2));
 }
 
-void Track::slotLoadPlayer1(QString filename)
+void Track::slotLoadPlayer1(QString filename, bool bStartFromEndPos)
 {
     TrackInfoObject * pTrack = m_pTrackCollection->getTrack(filename);
     if (pTrack)
-        slotLoadPlayer1(pTrack);
+        slotLoadPlayer1(pTrack, bStartFromEndPos);
 }
 
-void Track::slotLoadPlayer2(QString filename)
+void Track::slotLoadPlayer2(QString filename, bool bStartFromEndPos)
 {
     TrackInfoObject * pTrack = m_pTrackCollection->getTrack(filename);
     if (pTrack)
-        slotLoadPlayer2(pTrack);
+        slotLoadPlayer2(pTrack, bStartFromEndPos);
 }
 
 TrackPlaylist * Track::getActivePlaylist()
@@ -581,13 +613,32 @@ void Track::slotEndOfTrackPlayer1(double val)
                //If the play queue has another song in it, load that...
                pTrack = m_pTrackPlayer1->getNext(m_qPlaylists.at(1));
                //Otherwise load from the active playlist... //FIXME
-               if (!pTrack)
+               if (!pTrack && m_pActivePlaylist)
                     pTrack = m_pTrackPlayer1->getNext(m_pActivePlaylist);
-
+               
+               //Fall back on getting the next song from Browse mode.
+               if (!pTrack)
+               {
+                    //If we're in Browse mode...
+                    //qDebug() << "Browse-mode NEXT player 1";
+                    pTrack = NULL;
+                    QString qNextTrackPath = m_pView->m_pTrackTableView->getNextTrackBrowseMode(m_pTrackPlayer1);
+                    slotLoadPlayer1(qNextTrackPath);
+               }
             }
-            else
+            else //Load previous track
             {
                 pTrack = m_pTrackPlayer1->getPrev(m_pActivePlaylist);
+                
+                //Fall back on getting the prev song from Browse mode.
+                if (!pTrack)
+                {
+                    //If we're in Browse mode...
+                    pTrack = NULL;
+                    QString qPrevTrackPath = m_pView->m_pTrackTableView->getPrevTrackBrowseMode(m_pTrackPlayer1);
+                    slotLoadPlayer1(qPrevTrackPath, true);
+                }                
+                
                 bStartFromEndPos = true;
             }
 
@@ -621,10 +672,38 @@ void Track::slotEndOfTrackPlayer2(double val)
             bool bStartFromEndPos = false;
 
             if (m_pPlayPositionCh2->get()>0.5)
-                pTrack = m_pTrackPlayer2->getNext(m_pActivePlaylist);
-            else
+            {
+               //If the play queue has another song in it, load that...
+               pTrack = m_pTrackPlayer2->getNext(m_qPlaylists.at(1));
+               
+               //Otherwise load from the active playlist... //FIXME
+               if (!pTrack && m_pActivePlaylist)
+                    pTrack = m_pTrackPlayer2->getNext(m_pActivePlaylist);
+               
+               //Fall back on getting the next song from Browse mode.
+               if (!pTrack)
+               {
+                    //If we're in Browse mode...
+                    //qDebug() << "Browse-mode NEXT player 1";
+                    pTrack = NULL;
+                    QString qNextTrackPath = m_pView->m_pTrackTableView->getNextTrackBrowseMode(m_pTrackPlayer2);
+                    slotLoadPlayer2(qNextTrackPath);
+               }
+               
+            }
+            else //Load previous track
             {
                 pTrack = m_pTrackPlayer2->getPrev(m_pActivePlaylist);
+                
+                //Fall back on getting the prev song from Browse mode.
+                if (!pTrack)
+                {
+                    //If we're in Browse mode...
+                    pTrack = NULL;
+                    QString qPrevTrackPath = m_pView->m_pTrackTableView->getPrevTrackBrowseMode(m_pTrackPlayer2);
+                    slotLoadPlayer2(qPrevTrackPath, true);
+                }                         
+                
                 bStartFromEndPos = true;
             }
 
@@ -681,20 +760,21 @@ void Track::slotPrevTrackPlayer2(double v)
     }
 }
 
-/**void Track::updatePlaylistViews()
+void Track::updatePlaylistViews()
    {
     // Sort list
-    m_qPlaylists.sort();
+    qSort(m_qPlaylists);
 
     // Update tree view
-    if (m_pView->m_pTreeView)
-        m_pView->m_pTreeView->updatePlaylists(&m_qPlaylists);
-
+    //if (m_pView->m_pTreeView)
+    //    m_pView->m_pTreeView->updatePlaylists(&m_qPlaylists);
+    
+    //m_pPlayQueueModel->setTrackPlaylist(m_qPlaylists)
     // Update menu
     emit(updateMenu(&m_qPlaylists));
 
     // Set active
     if (m_pActivePlaylist)
         emit(activePlaylist(m_pActivePlaylist));
-   }*/
+   }
 

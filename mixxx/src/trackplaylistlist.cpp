@@ -20,15 +20,4 @@ TrackPlaylistList::~TrackPlaylistList()
 {
 }
 
-int TrackPlaylistList::compareItems(Q3PtrCollection::Item item1, Q3PtrCollection::Item item2)
-{
-    TrackPlaylist * p1 = (TrackPlaylist *)item1;
-    TrackPlaylist * p2 = (TrackPlaylist *)item2;
 
-    if (p1->getListName()==p2->getListName())
-        return 0;
-    else if (p1->getListName()>p2->getListName())
-        return 1;
-    else
-        return -1;
-}

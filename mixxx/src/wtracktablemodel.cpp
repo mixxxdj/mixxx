@@ -4,7 +4,7 @@
 
 #include "wtracktablemodel.h"
 #include "trackcollection.h"
-#include "trackinfoobject.h"1
+#include "trackinfoobject.h"
 #include "trackplaylist.h"
 
 WTrackTableModel::WTrackTableModel(QObject * parent) : QAbstractTableModel(parent)
