@@ -51,8 +51,11 @@ void MixxxMenuPlaylists::slotUpdate(TrackPlaylistList * pPlaylists)
         current = it2.next();
         menuItem_t *p = new menuItem_t;
         m_qMenuList.append(p);
-        p->pTrackPlaylist = current;
-        p->id = m_pMenu->insertItem(current->getListName());
+        if (current)
+        {
+            p->pTrackPlaylist = current;
+            p->id = m_pMenu->insertItem(current->getListName());
+        }
     }
 }
 

@@ -307,7 +307,7 @@ void Track::slotDrop(QDropEvent * e)
 /* CTAF: I dont think this function is used actually */
 void Track::slotActivatePlaylist(QString name)
 {
-    qDebug("playlist change\n");
+/*    qDebug("playlist change\n");
     // Get pointer to requested playlist
     TrackPlaylist * pNewlist = getPlaylist(name);
 
@@ -322,7 +322,7 @@ void Track::slotActivatePlaylist(QString name)
         //m_pActivePlaylist->activate(m_pView->m_pTrackTable);
         //m_pActivePlaylist = m_qPlaylists.at(index);
         emit(activePlaylist(pNewlist));
-    }
+    }*/
 }
 
 
@@ -348,19 +348,23 @@ void Track::slotActivatePlaylist(int index)
         m_pView->m_pTrackTableView->setDirModel();
         m_pView->m_pTrackTableView->resizeColumnsToContents();
         m_pView->m_pTrackTableView->setTrack(this);
+        return;
         break;
     case 3: //Playlist List Model
         m_pView->m_pTrackTableView->reset();
         m_pView->m_pTrackTableView->setPlaylistListModel(m_pPlaylistListModel);
         m_pView->m_pTrackTableView->resizeColumnsToContents();
         m_pView->m_pTrackTableView->setTrack(this);
-        break;    
+        break;
     default: // ???
         m_pView->m_pTrackTableView->reset();
         m_pView->m_pTrackTableView->setSearchSource(m_pPlayQueueModel);
         m_pView->m_pTrackTableView->resizeColumnsToContents();
         m_pView->m_pTrackTableView->setTrack(this);
         
+        
+        //What the hell is this snippet supposed to do?
+        /*
         int i = 0;
         TrackInfoObject* current_track = NULL;
         do
@@ -370,7 +374,8 @@ void Track::slotActivatePlaylist(int index)
                 slotSendToPlayqueue(current_track);
             i++;
         } while (current_track != NULL);
-        
+        */
+        //TODO: Revise these TODOs (they're wrong now probably) - Albert.
         //TODO: If the play queue is empty, load the playlist into the play queue
         //TODO: If the play queue isn't empty, ask the user whether to overwrite the play queue
         //      or append the playlist to the queue.
@@ -770,8 +775,9 @@ void Track::updatePlaylistViews()
     //    m_pView->m_pTreeView->updatePlaylists(&m_qPlaylists);
     
     //m_pPlayQueueModel->setTrackPlaylist(m_qPlaylists)
+    
     // Update menu
-    emit(updateMenu(&m_qPlaylists));
+    //emit(updateMenu(&m_qPlaylists));
 
     // Set active
     if (m_pActivePlaylist)
