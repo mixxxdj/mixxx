@@ -338,6 +338,7 @@ void TrackPlaylist::addPath(QString qPath)
             {
                 /*qDebug("all tracks searched, file does not exist, adding...");*/
                 addTrack(fi.filePath());
+				checkTiming(fi.filePath());
             }
 
         }
