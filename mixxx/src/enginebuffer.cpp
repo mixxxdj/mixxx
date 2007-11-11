@@ -138,7 +138,8 @@ EngineBuffer::EngineBuffer(const char * _group, ConfigObject<ConfigValue> * _con
     // Wheel to control playback position/speed
     wheel = new ControlTTRotary(ConfigKey(group, "wheel"));
 
-    // Scratch controller
+    // Scratch controller, this is an accumulator which is useful for controllers
+	// that return individiual +1 or -1s, these get added up and cleared when we read
     m_pControlScratch = new ControlTTRotary(ConfigKey(group, "scratch"));
 
     // BJW Wheel touch sensor (makes wheel act as scratch)
@@ -860,8 +861,8 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
                 rate = rate * (m_pControlScratch->get()+1.);
 
             // Apply jog
-            // FIXME: Sensitivity should be configurable
-            const double fact = 0.5;
+            // FIXME: Sensitivity should be configurable separately?
+            const double fact = m_pRateRange->get();
             double val = m_jogfilter->filter(m_pJog->get());
             rate += val * fact;
             m_pJog->set(0.);
@@ -873,8 +874,9 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
         }
         else
         {
-            // Stopped. Wheel and scratch controller both scrub through audio.
-            rate=(wheel->get()*40.+m_pControlScratch->get())*baserate; //*10.;
+            // Stopped. Wheel, jog and scratch controller all scrub through audio.
+            rate=(wheel->get()*40.+m_pControlScratch->get()+m_jogfilter->filter(m_pJog->get()))*baserate; //*10.;
+			m_pJog->set(0.);
         }
 
         // BJW: Disabled this. bpmrate was always 1. [Master],rate doesn't appear to be useable.

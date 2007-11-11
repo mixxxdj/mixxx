@@ -68,11 +68,10 @@ list.
 
 * QT *******************************************************
 On some platforms, Mixxx may come with a pre-built copy of 
-Qt, built from sources provided by the Q../Free project.
-This code is licensed under the GPL and source for this
+Qt. This code is licensed under the GPL and source for this
 library may be obtained from:
 
-    http://sourceforge.net/projects/qtwin
+    http://trolltech.com/products/qt/downloads
 
 * Microsoft Runtimes ***************************************
 On Microsoft platforms, Mixxx may come with runtime dlls
