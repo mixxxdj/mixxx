@@ -192,8 +192,8 @@ void Track::readXML(QString location)
         node = node.nextSibling();
     }
     //CTAF TODO: TEMPORARY REMOVED, NEED TO BE DONE IN A THREAD
-    //if(m_qPlaylists.count() >= 2)
-    //    m_qPlaylists.at(0)->addPath(musicDir);
+    if(m_qPlaylists.count() >= 2)
+        m_qPlaylists.at(0)->addPath(musicDir);
     //ECTAF
 }
 
