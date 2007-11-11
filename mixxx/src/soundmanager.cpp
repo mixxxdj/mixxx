@@ -258,20 +258,20 @@ void SoundManager::setDefaults(bool api, bool devices, bool other)
     {
 #ifdef __LINUX__
         //Check for JACK and use that if it's available, otherwise use ALSA
-        if (apiList.contains("JACK Audio Connection Kit"))
-            setHostAPI("JACK Audio Connection Kit");
+        if (apiList.contains(MIXXX_PORTAUDIO_JACK_STRING))
+            setHostAPI(MIXXX_PORTAUDIO_JACK_STRING);
         else
-            setHostAPI("ALSA");
+            setHostAPI(MIXXX_PORTAUDIO_ALSA_STRING);
 #endif
 #ifdef __WIN32__
 //TODO: Check for ASIO and use that if it's available, otherwise use DirectSound
-        if (apiList.contains("ASIO"))
-            setHostAPI("ASIO");
+        if (apiList.contains(MIXXX_PORTAUDIO_ASIO_STRING))
+            setHostAPI(MIXXX_PORTAUDIO_ASIO_STRING);
         else
-            setHostAPI("Windows DirectSound");
+            setHostAPI(MIXXX_PORTAUDIO_DIRECTSOUND_STRING);
 #endif
 #ifdef __MACX__
-        setHostAPI("Core Audio");
+        setHostAPI(MIXXX_PORTAUDIO_COREAUDIO_STRING);
 #endif
     }
 

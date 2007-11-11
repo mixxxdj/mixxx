@@ -29,6 +29,11 @@
 class SoundDevice;
 class EngineMaster;
 
+#define MIXXX_PORTAUDIO_JACK_STRING "JACK Audio Connection Kit"
+#define MIXXX_PORTAUDIO_ALSA_STRING "ALSA"
+#define MIXXX_PORTAUDIO_ASIO_STRING "ASIO"
+#define MIXXX_PORTAUDIO_DIRECTSOUND_STRING "Windows DirectSound"
+#define MIXXX_PORTAUDIO_COREAUDIO_STRING "Core Audio"
 
 enum AudioSource { 
     SOURCE_MASTER = 1,

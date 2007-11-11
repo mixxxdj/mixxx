@@ -37,6 +37,8 @@ class SoundDevice
         void setHostAPI(QString api);        
         virtual int open() = 0;
         virtual int close() = 0;
+        int getNumOutputChannels();     
+        int getNumInputChannels();   
         void addSource(AudioSource src);
         void addReceiver(AudioReceiver recv);
         void clearSources();
