@@ -18,14 +18,15 @@
 /**
 @author Tue Haste Andersen
 */
-class TrackPlaylistList : public Q3PtrList<TrackPlaylist>
+class TrackPlaylistList : public QList<TrackPlaylist*>
 {
 public:
     TrackPlaylistList();
     ~TrackPlaylistList();
 
 protected:
-    int compareItems(Q3PtrCollection::Item item1, Q3PtrCollection::Item item2);
+    int operator<(TrackPlaylist * p2);
+    //int compareItems(Q3PtrCollection::Item item1, Q3PtrCollection::Item item2);
 };
 
 #endif

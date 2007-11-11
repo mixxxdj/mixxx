@@ -27,6 +27,7 @@ class EngineBuffer;
 class MixxxView;
 class WTrackTable;
 class WTrackTableModel;
+class WPlaylistListModel;
 class WTreeList;
 class ControlObjectThreadMain;
 class WaveSummary;
@@ -57,8 +58,8 @@ public:
     TrackCollection *getTrackCollection();
 	/** Current active playlist */
     TrackPlaylist *m_pActivePlaylist;
-    /** Force an update of menu and tree view */
-    //void updatePlaylistViews();
+    /** Force an update of playlist menu and anything that sees the playlists*/
+    void updatePlaylistViews();
 	/**location of new music files*/
 	QString musicDir;
 
@@ -81,9 +82,9 @@ public slots:
     /** Load the given track in player 2 */
     void slotLoadPlayer2(TrackInfoObject *pTrackInfoObject, bool bStartFromEndPos = false);
     /** Load the given track in player 1 if it exists */
-    void slotLoadPlayer1(QString filename);
+    void slotLoadPlayer1(QString filename, bool bStartFromEndPos = false);
     /** Load the given track in player 2 if it exists */
-    void slotLoadPlayer2(QString filename);
+    void slotLoadPlayer2(QString filename, bool bStartFromEndPos = false);
     /** Slot used when playback reaches end of track */
     void slotEndOfTrackPlayer1(double);
     /** Slot used when playback reaches end of track */
@@ -122,6 +123,8 @@ private:
     WTrackTableModel *m_pLibraryModel;
     /**Model for Playqueue information*/
     WTrackTableModel *m_pPlayQueueModel;
+    /** Model containing the list of playlists */
+    WPlaylistListModel *m_pPlaylistListModel;
     /** Pointer to playlist for which a popup menu is currently displayed */
     TrackPlaylist *m_pActivePopupPlaylist;
     /** Pointer to TrackInfoObject for which a popup menu is currently displayed */

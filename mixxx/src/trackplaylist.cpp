@@ -558,3 +558,16 @@ bool CommentGreater(const TrackInfoObject * tio1, const TrackInfoObject * tio2)
 {
     return tio1->getComment() > tio2->getComment();
 }
+
+int TrackPlaylist::operator<(TrackPlaylist * p2)
+{
+    //TrackPlaylist * p1 = (TrackPlaylist *)item1;
+    //TrackPlaylist * p2 = (TrackPlaylist *)item2;
+
+    if (this->getListName()==p2->getListName())
+        return 0;
+    else if (this->getListName()>p2->getListName())
+        return 1;
+    else
+        return -1;
+}

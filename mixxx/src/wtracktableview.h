@@ -13,6 +13,7 @@
 #include <QModelIndex>
 #include <QTableView>
 #include "wtracktablefilter.h"
+#include "wplaylistlistmodel.h"
 #include "proxymodel.h"
 #include "configobject.h"
 
@@ -55,7 +56,15 @@ public:
     /**Sets current model to WTrackTableView**/
     void setSearchSource(WTrackTableModel *pSearchSourceModel);
     void setDirModel();
-
+    void setPlaylistListModel(WPlaylistListModel *model);
+    
+    /** Returns the QDirModel **/
+    QDirModel* getDirModel();
+    
+    /** Gets the next track from the table while in "Browse mode" */
+    QString getNextTrackBrowseMode(TrackInfoObject* current);
+    QString getPrevTrackBrowseMode(TrackInfoObject* current);
+    
     /**Right click menu**/
     void contextMenuEvent(QContextMenuEvent * event);
     /**Sets Track pointer**/
@@ -116,6 +125,7 @@ protected:
     QString m_dirTrackName; //Name of the track right-clicked when in browse mode.
     /* directory model*/
     QDirModel *m_pDirModel;
+    WPlaylistListModel *m_pPlaylistListModel;
     QString m_filterString;
 };
 #endif

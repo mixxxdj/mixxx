@@ -641,6 +641,7 @@ void MixxxView::createAllWidgets(QDomElement docElem,
 		    m_pComboBox->addItem( "Library" );
 		    m_pComboBox->addItem( "Play Queue" );
 		    m_pComboBox->addItem( "Browse" );
+		    m_pComboBox->addItem( "Playlists" );
 		}
                 // Set position
                 QString pos = WWidget::selectNodeQString(node, "Pos");

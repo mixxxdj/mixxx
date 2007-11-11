@@ -107,6 +107,10 @@ public slots:
     /** Remove a track from the playlist */
     void slotRemoveTrack(TrackInfoObject *pTrack);
 
+protected:
+    /** Sorting algorithm... */
+    int operator<(TrackPlaylist * p2);
+
 private:
     /** List of pointers to TrackInfoObjects */
     QList<TrackInfoObject*> m_qList;

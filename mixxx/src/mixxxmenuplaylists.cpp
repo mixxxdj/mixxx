@@ -22,7 +22,7 @@ MixxxMenuPlaylists::MixxxMenuPlaylists(QMenu * pMenu, Track * pTrack)
     connect(m_pTrack, SIGNAL(updateMenu(TrackPlaylistList *)), this, SLOT(slotUpdate(TrackPlaylistList *)));
     connect(m_pTrack, SIGNAL(activePlaylist(TrackPlaylist *)), this, SLOT(slotSetActive(TrackPlaylist *)));
     connect(m_pMenu, SIGNAL(activated(int)), this, SLOT(slotRequestActive(int)));
-    //m_pTrack->updatePlaylistViews();
+    m_pTrack->updatePlaylistViews();
 }
 
 MixxxMenuPlaylists::~MixxxMenuPlaylists()
@@ -44,14 +44,15 @@ void MixxxMenuPlaylists::slotUpdate(TrackPlaylistList * pPlaylists)
     }
 
     // Add items in qPlaylists to the menu
-    TrackPlaylist * it2 = pPlaylists->first();
-    while (it2)
+    QListIterator<TrackPlaylist*> it2(*pPlaylists);
+    TrackPlaylist* current;
+    while (it2.hasNext())
     {
-        menuItem_t * p = new menuItem_t;
+        current = it2.next();
+        menuItem_t *p = new menuItem_t;
         m_qMenuList.append(p);
-        p->pTrackPlaylist = it2;
-        p->id = m_pMenu->insertItem(it2->getListName());
-        it2 = pPlaylists->next();
+        p->pTrackPlaylist = current;
+        p->id = m_pMenu->insertItem(current->getListName());
     }
 }
 

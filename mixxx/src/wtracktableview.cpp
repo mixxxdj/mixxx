@@ -1,5 +1,6 @@
 /* -*- mode:C++; indent-tabs-mode:t; tab-width:8; c-basic-offset:4; -*- */
 #include "wtracktableview.h"
+#include "wplaylistlistmodel.h"
 #include "wtracktablefilter.h"
 #include "wtracktablemodel.h"
 #include "wwidget.h"
@@ -103,12 +104,12 @@ void WTrackTableView::setup(QDomNode node)
         setFixedSize(x,y);
     }
     // Foreground color
-    QColor fgc(0,0,0);
+    QColor fgc(0,255,0);
     if (!WWidget::selectNode(node, "FgColor").isNull())
     {
         fgc.setNamedColor(WWidget::selectNodeQString(node, "FgColor"));
 	if (m_pTable)
-	    m_pTable->setForegroundColor(fgc);
+	   m_pTable->setForegroundColor(fgc);
     }
 
 
@@ -262,6 +263,74 @@ void WTrackTableView::setDirModel()
     setRootIndex(m_pDirFilter->mapFromSource(m_dirindex));
 }
 
+void WTrackTableView::setPlaylistListModel(WPlaylistListModel *model)
+{
+    m_pTable = NULL;
+    m_pPlaylistListModel = model;
+    setModel(m_pPlaylistListModel);
+    //setRootIndex(m_pDirFilter->mapFromSource(m_dirindex));
+}
+
+QDirModel* WTrackTableView::getDirModel()
+{
+    return m_pDirModel;
+}
+
+/** Gets the next track from the table while in "Browse mode" */
+QString WTrackTableView::getNextTrackBrowseMode(TrackInfoObject* current)
+{
+    QString qNextTrackName;
+    QString fullpath = current->getFilepath() + "/" + current->getFilename();
+    
+    QModelIndex temp_index = m_pDirModel->index(fullpath);
+    //qDebug() << current->getFilepath();
+    //qDebug() << "index of current track" << temp_index.row();
+    
+    //Don't run this through the filter, it crashes:
+    //temp_index = m_pDirFilter->mapToSource(temp_index);
+    //qDebug() << "index of filtered current track" << temp_index.row();
+    
+    //Increment the index to get the NEXT track...
+    do {
+    	temp_index = temp_index.sibling(temp_index.row()+1, 0);
+    } while (temp_index.isValid() && m_pDirModel->isDir(temp_index));
+    
+    //If we broke out of the loop due to an invalid index, decrement to get a valid one.
+    //This happens at the end if you seek forwards in NEXT mode with the last song in a directory.
+    if (!temp_index.isValid())
+    {
+    	temp_index = temp_index.sibling(temp_index.row()-1, 0);
+    }    
+    
+    qNextTrackName = m_pDirModel->filePath(temp_index);
+
+    return qNextTrackName;
+}
+
+/** Gets the previous track from the table while in "Browse mode" */
+QString WTrackTableView::getPrevTrackBrowseMode(TrackInfoObject* current)
+{
+    QString qNextTrackName;
+    QString fullpath = current->getFilepath() + "/" + current->getFilename();
+    
+    QModelIndex temp_index = m_pDirModel->index(fullpath);
+
+    //Decrement the index to get the NEXT track...
+    do {
+    	temp_index = temp_index.sibling(temp_index.row()-1, 0);
+    } while (temp_index.isValid() && m_pDirModel->isDir(temp_index));
+    
+    //If we broke out of the loop due to an invalid index, increment to get a valid one.
+    //This happens at the end if you seek backwards in NEXT mode with the first song in a directory.
+    if (!temp_index.isValid())
+    {
+    	temp_index = temp_index.sibling(temp_index.row()+1, 0);
+    }
+    
+    qNextTrackName = m_pDirModel->filePath(temp_index);
+
+    return qNextTrackName;
+}
 
 void WTrackTableView::contextMenuEvent(QContextMenuEvent * event)
 {
