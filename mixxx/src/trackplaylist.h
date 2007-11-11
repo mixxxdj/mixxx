@@ -17,6 +17,9 @@
 #include <qdom.h>
 #include <q3ptrlist.h>
 #include <qevent.h>
+#include <QLayout>
+#include <QLabel>
+#include <qprogressbar.h>
 //Added by qt3to4:
 #include <QDropEvent>
 #include "trackinfoobject.h"
@@ -117,6 +120,19 @@ private:
     /** Static pointer to Track */
     static Track *spTrack;
 	int iCounter;
+
+	// These functions allow the displaying of a useful message of some kind if it all takes too long
+	static void startTiming();
+	static void stopTiming();
+	static void checkTiming(QString path);
+	static void setupTiming();
+
+	static QTime m_timer;
+	static int m_timeruses;
+	static QWidget* m_progress;
+	static QLabel* m_current;
+	static bool m_timersetup;
+
 };
 
 #endif

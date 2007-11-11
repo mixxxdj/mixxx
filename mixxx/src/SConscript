@@ -773,6 +773,15 @@ def BuildRelease(target, source, env):
 	print "Binary has size ",
 	os.system('ls -lh dist/mixxx.exe | cut -d \' \' -f 5')
 	print
+	print "Installer file ",
+	os.system('grep OutFile Mixxx.nsi | cut -d \' \' -f 2')
+	print
+	print "Top line of README, check version:"
+	os.system('head -n 1 README')
+	print
+	print "Top 2 lines of LICENSE, check version and copyright dates:"
+	os.system('head -n 2 LICENSE')
+	print
 	print "More checks here soon... :)"
 	print
 

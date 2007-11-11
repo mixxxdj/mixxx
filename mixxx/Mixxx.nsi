@@ -12,7 +12,7 @@
 Name "Mixxx"
 
 ; The file to write
-OutFile "mixxx-1.5.0-beta2-win.exe"
+OutFile "mixxx-1.6.0-beta1-win.exe"
 
 ; The default installation directory
 InstallDir $PROGRAMFILES\Mixxx
@@ -47,10 +47,8 @@ Section "Mixxx (required)" SecMixxx
   SetOutPath $INSTDIR
   
   ; Put binary files there
-  File "src\Release\mixxx.exe"
-  File "..\mixxx-winlib\libsndfile.dll"
-  File "..\mixxx-winlib\qt-mt3.dll"
-  File "..\mixxx-winlib\portaudio.dll"
+  File "dist\mixxx.exe"
+  File "dist\*.dll"
   File "..\mixxx-winlib\msvcm80.dll"
   File "..\mixxx-winlib\msvcp80.dll"
   File "..\mixxx-winlib\msvcr80.dll"
@@ -63,10 +61,7 @@ Section "Mixxx (required)" SecMixxx
   File "COPYING"
 
   SetOutPath $INSTDIR\midi
-  File "src\midi\Midi-Keyboard.midi.cfg"
-  File "src\midi\MidiTech-MidiControl.midi.cfg"
-  File "src\midi\Mixman DM2 for Mixxx.dm2"
-  File "src\midi\Mixman DM2.midi.cfg"
+  File "dist\midi\*.xml"
 
   SetOutPath $INSTDIR\keyboard
   File "src\keyboard\Standard.kbd.cfg"
@@ -1250,17 +1245,13 @@ Section "Uninstall"
   ; Remove files and uninstaller
   Delete $INSTDIR\mixxx.exe
   Delete $INSTDIR\mixxx.log
-  Delete $INSTDIR\libsndfile.dll
+  Delete $INSTDIR\*.dll
   Delete $INSTDIR\uninstall.exe
   Delete $INSTDIR\Mixxx-Manual.pdf
   Delete $INSTDIR\LICENSE
   Delete $INSTDIR\README
   Delete $INSTDIR\COPYING
 
-  Delete $INSTDIR\qt-mt3.dll
-  Delete $INSTDIR\msvcm80.dll
-  Delete $INSTDIR\msvcp80.dll
-  Delete $INSTDIR\msvcr80.dll
   Delete $INSTDIR\Microsoft.VC80.CRT.manifest
 
   ; Remove skins, keyboard, midi defs

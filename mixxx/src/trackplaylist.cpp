@@ -16,12 +16,20 @@
 #include "xmlparse.h"
 #include <q3dragobject.h>
 #include <q3cstring.h>
+#include <qprogressbar.h>
 #include <qdir.h>
 //Added by qt3to4:
 #include <Q3StrList>
 #include <QDropEvent>
+#include <qpushbutton.h>
 #include "trackplaylist.h"
 #include "track.h"
+
+bool TrackPlaylist::m_timersetup = false;
+QTime TrackPlaylist::m_timer;
+int TrackPlaylist::m_timeruses = 0;
+QWidget* TrackPlaylist::m_progress = 0;
+QLabel* TrackPlaylist::m_current = 0;
 
 Track * TrackPlaylist::spTrack = 0;
 
@@ -31,10 +39,21 @@ TrackPlaylist::TrackPlaylist(TrackCollection * pTrackCollection, QString qName)
     //m_pTable = 0;
     m_qName = qName;
     iCounter = 0;
+
+	if (!m_timersetup) {
+		m_timersetup = true;
+		setupTiming();
+	}
 }
 
 TrackPlaylist::TrackPlaylist(TrackCollection * pTrackCollection, QDomNode node)
 {
+
+	if (!m_timersetup) {
+		m_timersetup = true;
+		setupTiming();
+	}
+
     m_pTrackCollection = pTrackCollection;
     //m_pTable = 0;
 
@@ -60,6 +79,43 @@ TrackPlaylist::TrackPlaylist(TrackCollection * pTrackCollection, QDomNode node)
 
 TrackPlaylist::~TrackPlaylist()
 {
+}
+
+void TrackPlaylist::setupTiming() {
+	m_timeruses = 0;
+	m_progress = new QWidget();
+	QVBoxLayout* layout = new QVBoxLayout();
+	layout->addWidget(new QLabel("It's taking Mixxx a minute to scan your music library, please wait a minute..."));
+	m_current = new QLabel();
+	layout->addWidget(m_current);
+	m_progress->setLayout(layout);
+}
+
+void TrackPlaylist::startTiming() {
+	if (m_timeruses == 0) {
+		m_timer = QTime::currentTime();
+	}
+	m_timeruses++;
+}
+
+void TrackPlaylist::stopTiming() {
+	m_timeruses--;
+	if (m_timeruses == 0) {
+		m_progress->setVisible(false);
+	}
+}
+
+void TrackPlaylist::checkTiming(QString path) {
+	if (!m_progress->isVisible() && m_timer.elapsed() > 1000) {
+		m_progress->setVisible(true);
+	}
+
+	// This is a bit ghetto because we're in the startup thread, you can't really
+	// repaint the gui properly, so this may all fall over at some point...
+	if (m_progress->isVisible()) {
+		m_current->setText("Scanning: " + path);
+		m_current->repaint();
+	}
 }
 
 void TrackPlaylist::setTrack(Track * pTrack)
@@ -214,6 +270,8 @@ void TrackPlaylist::dumpInfo()
 
 void TrackPlaylist::addPath(QString qPath)
 {
+	startTiming();
+
     // Is this a file or directory?
     bool bexists = false;
     TrackCollection * tempCollection = getCollection();
@@ -233,6 +291,7 @@ void TrackPlaylist::addPath(QString qPath)
         if(bexists == false)
         {
             addTrack(qPath);
+			checkTiming(qPath);
         }
     }
     else
@@ -250,6 +309,7 @@ void TrackPlaylist::addPath(QString qPath)
             d = dir_it.next();
             if (!d.filePath().endsWith(".") && !d.filePath().endsWith(".."))
                 addPath(d.filePath());
+			checkTiming(d.filePath());
         }
 
         // And then add all the files
@@ -282,6 +342,8 @@ void TrackPlaylist::addPath(QString qPath)
 
         }
     }
+
+	stopTiming();
 }
 
 void TrackPlaylist::slotRemoveTrack(TrackInfoObject * pTrack)

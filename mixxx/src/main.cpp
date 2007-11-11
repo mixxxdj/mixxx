@@ -37,7 +37,7 @@
 #include <ladspaloader.h>
 #endif
 
-#ifdef Q_WS_WIN
+#ifdef A_THING_THAT_IS_NOT_DEFFED //Q_WS_WIN
 #include <io.h> // Debug Console
 #include <windows.h>
 
