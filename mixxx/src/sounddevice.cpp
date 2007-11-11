@@ -49,6 +49,16 @@ QString SoundDevice::getHostAPI()
     return m_hostAPI;
 }
 
+int SoundDevice::getNumInputChannels()
+{
+    return m_iNumInputChannels;
+}
+
+int SoundDevice::getNumOutputChannels()
+{
+    return m_iNumOutputChannels;
+}
+
 void SoundDevice::setHostAPI(QString api)
 {
     m_hostAPI = api;
