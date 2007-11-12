@@ -16,9 +16,58 @@ directory for a copy of the licence.
 
 
 * NEWS *****************************************************
-New since 1.5.0:
 
-<Paste the changelog from the wiki in here>
+Since Mixxx 1.5.0 was released (March 4th, 2007), the following changes have been made:
+
+* New MIDI mappings for Tascam US-428, M-Audio X-Session Pro, Evolution X-Session, FaderFox DJ2, and the M-Audio Torq Xponent
+* ALSA Sequencer MIDI support courtesy of Cedric Gestes
+* A couple of MIDI bug fixes (knobs now center properly, thanks to Sacha Berger)
+* Added support for 14-bit MIDI pitch wheel controllers (thanks to Adam Sugerman)
+* Hercules support on Linux improved (jog wheels work again)
+* New nCut skin from Frank Willascheck
+* Big stability improvements (3 bug fixes)
+* Multiple soundcards can now be used for output (master/headphones), in case you don't have a soundcard with 4 outputs on it.
+* Adam's wicked colour scheme support for skins
+* Can now change skins without restarting Mixxx (more hard work from Adam)
+* Channel VU meters are now pre-fader
+* VU meters are now much more smooth
+* Added clipping indicators (courtesy of John Sully)
+* Higher quality EQs and other sound quality improvements (also from John Sully)
+* New MIDI mapping format now in XML, supports controlling LEDs
+* Better Hercules support on Windows and Linux
+* Initial support for recording output
+* New BPM detection algorithm (Micah Lee/GSoC)
+* New media library (Nathan Prado/GSoC)
+* LADSPA effects support (Pawel Bartkiewicz/GSoC)
+* BPM Tap tempo
+* Library search function
+* Ported to QT4 (!)
+* Moved build system to SCONS
+* Redesigned preferences dialogs
+* Rewritten audio core (Albert)
+* Vinyl control support for Serato, Traktor Scratch, and FinalScratch (FS needs work, but the others are good)
+* Software preamp for vinyl control (can use turntables without a preamp)
+* Track info editor (double-click in library)
+* New library browse mode (CTAF)
+* Starts in fullscreen mode if launched with the -f flag.
+* Several MP3 decoder performance and stability improvements (John Sully)
+* Support for merengue
+* Reorganized "File" menu
+* NEXT mode now works as expected (plays the next track in the table)
+* Partial play queue
+* Lots of little OS X improvements
+* Improved consistency of fullscreen mode 
+
+* UPGRADING ************************************************
+
+We recommend deleting your old skins directory before
+installing a new version of Mixxx. SCONS may not properly
+overwrite your skins directory when you do a "scons install",
+and it might cause Mixxx to crash on launch.
+You can delete it by running:
+
+   $ sudo rm -rf /usr/share/mixxx/skins
+   $ sudo rm -rf /usr/local/share/mixxx/skins
 
 
 * INSTALL **************************************************
@@ -49,11 +98,11 @@ tell you if you're missing any of the dependencies listed above.
 It's also possible to specify a prefix path and additional
 build flags, for example:
 
-   $ scons prefix=/usr experimentalbpm=1
+   $ scons prefix=/usr vinylcontrol=1
    
 To install Mixxx after compilation, run:
 
-   $ scons install
+   $ scons prefix=/usr vinylcontrol=1 install
 
 
 * USAGE ****************************************************
