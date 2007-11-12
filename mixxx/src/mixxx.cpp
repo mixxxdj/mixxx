@@ -525,7 +525,8 @@ void MixxxApp::initMenuBar()
 #endif
 
     menuBar()->addMenu(fileMenu);
-    menuBar()->addMenu(playlistsMenu);
+    //Disabled because playlist support is broken - Albert (Nov 11/07)
+    //menuBar()->addMenu(playlistsMenu);
     menuBar()->addMenu(optionsMenu);
 
     //    menuBar()->addMenu(viewMenu);
