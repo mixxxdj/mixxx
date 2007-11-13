@@ -68,30 +68,23 @@ def CheckOpenGL():
 
 #Checks for OGG/Vorbis on all three platforms
 def CheckOggVorbis():
-	#Check for Ogg and Vorbis on Linux and Win32
-	if platform == 'linux' or platform == 'win32':
-		if not conf.CheckLib('vorbisfile'):
-			print 'Did not find libvorbisfile.a, libvorbisfile.lib, or the libvorbisfile development headers, exiting!'
-			Exit(1)
+	#Check for Ogg and Vorbis on Linux, OS X, and Win32
+	if not conf.CheckLib('vorbisfile'):
+		print 'Did not find libvorbisfile.a, libvorbisfile.lib, or the libvorbisfile development headers, exiting!'
+		Exit(1)
 
-		if not conf.CheckLib('ogg'):
-			print 'Did not find libogg.a, libogg.lib, or the libogg development headers, exiting!'
-			Exit(1)
+	if not conf.CheckLib('vorbis'):
+		print 'Did not find libvorbis.a, libvorbis.lib, or the libvorbisfile development headers, exiting!'
+		Exit(1)
 
-	elif platform == 'osx':
-		#Check for Ogg and Vorbis on OS X
-		if not conf.CheckCHeader('/Library/Frameworks/Vorbis.framework/Versions/A/Headers/vorbisfile.h'):
-			print 'Did not find Vorbis framework, exiting! (Please install it)'
-			Exit(1)
-		else:
-			env.Append(LINKFLAGS = '-framework Vorbis')
+	if not conf.CheckLib('ogg'):
+		print 'Did not find libogg.a, libogg.lib, or the libogg development headers, exiting!'
+		Exit(1)
 
-		#Check for Ogg
-		if not conf.CheckCHeader('/Library/Frameworks/Ogg.framework/Versions/A/Headers/ogg.h'):
-			print 'Did not find Ogg framework, exiting! (Please install it)'
-			Exit(1)
-		else:
-			env.Append(LINKFLAGS = '-framework Ogg')
+# This function is here for historical reasons. It used to be easiest to build
+# Mixxx on OS X using the Vorbis and OGG "frameworks", and so this function
+# used to have some OS X-specific stuff in it. If you're building on OS X now
+# though, just install libvorbis and libogg from source.
 
 	return
 
