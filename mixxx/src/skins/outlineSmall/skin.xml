@@ -3,6 +3,22 @@
 
  <Schemes>
   <Scheme>
+   <Name>11pm (Dark Mixxx)</Name>
+   <Filters>
+    <Invert/>
+	<HueInv/>
+    <Add>
+     <Amount>50</Amount>
+    </Add>
+    <ScaleWhite>
+     <Amount>1.5</Amount>
+    </ScaleWhite>
+    <Add>
+     <Amount>-50</Amount>
+    </Add>
+   </Filters>
+  </Scheme> 
+  <Scheme>
    <Name>5pm (Classic Mixxx)</Name>
    <Filters>
    </Filters>
@@ -26,22 +42,6 @@
 
 		 </Filters>
 	 </Scheme>
-  <Scheme>
-   <Name>11pm (Dark Mixxx)</Name>
-   <Filters>
-    <Invert/>
-	<HueInv/>
-    <Add>
-     <Amount>50</Amount>
-    </Add>
-    <ScaleWhite>
-     <Amount>1.5</Amount>
-    </ScaleWhite>
-    <Add>
-     <Amount>-50</Amount>
-    </Add>
-   </Filters>
-  </Scheme>
 	 <Scheme>
 		 <Name>3am (Still Awake Mixxx)</Name>
 		 <Filters>
