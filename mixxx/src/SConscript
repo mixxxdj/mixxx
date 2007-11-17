@@ -476,6 +476,15 @@ if int(flags_experimentalrecording):
 else:
 	print "Experimental recording... disabled"
 
+#Case Metrics
+flags_cmetrics = ARGUMENTS.get('cmetrics', 0)
+if int(flags_cmetrics):
+	env.Append(CXXFLAGS = '-D__C_METRICS__')
+	env.Append(LIBS = 'umetrics')
+	print "Case Metrics profiling... enabled"
+else:
+	print "Case Metrics profiling... disabled"
+
 '''
 #Experimental Shoutcast
 flags_shoutcast = ARGUMENTS.get('shoutcast', 0)

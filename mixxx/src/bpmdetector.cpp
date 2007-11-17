@@ -30,6 +30,7 @@
 #include <QtDebug>
 #include <qapplication.h>
 #include "dlgbpmtap.h"
+#include "umetrics.h"
 
 #include "bpmdetect.h"
 #include <STTypes.h>
@@ -260,7 +261,9 @@ void BpmDetector::run()
             
 	    //qDebug("BPM detection failed the first time. Trying old version.");
 	    qDebug("BPM detection failed, setting to 0.");
-
+#ifdef __C_METRICS__
+		cm_writemsg_ascii(1, "BPM detection failed, setting to 0.");
+#endif
 	    delete pSoundSource;
 	    continue;
 

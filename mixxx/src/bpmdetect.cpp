@@ -77,6 +77,7 @@
 #include "FIFOSampleBuffer.h"
 #include "peakfinder.h"
 #include "bpmdetect.h"
+#include "umetrics.h"
 
 using namespace soundtouch;
 
