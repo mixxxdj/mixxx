@@ -14,9 +14,18 @@
  *  GNU General Public License for more details.
  *
  *  You should have received a copy of the GNU General Public License
- *  along with Foobar.  If not, see <http://www.gnu.org/licenses/>.
+ *  along with Case Metrics.  If not, see <http://www.gnu.org/licenses/>.
  *
  **********************************************/
+
+/***********************************************
+ *  Notice of Use:
+ *     While the Case Metrics library is free software;
+ *     You must obtain permission to use the official
+ *     case metrics servers.  See casemetrics.com for details
+ *     on obtaining such permission.  Alternatively you may
+ *     use the library to contact your own servers.
+ ***********************************************/
 
 #ifndef __CMETRICS_H__
 #define __CMETRICS_H__
@@ -25,7 +34,9 @@
 #ifndef CC_EXPORT_PREFIX
 #ifdef _MSC_VER
 #define CC_EXPORT_PREFIX _declspec (dllexport)
-#else //_MSC_VER
+#elif __GNUC__
+#define CC_EXPORT_PREFIX export
+#else //__GNUC__
 #error "Unsupported Compiler: You must manually define CC_EXPORT_PREFIX"
 #endif
 #endif
