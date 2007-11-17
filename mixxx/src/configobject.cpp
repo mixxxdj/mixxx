@@ -20,6 +20,10 @@
 #include <QtDebug>
 #include "wwidget.h"
 
+#ifdef __C_METRICS__
+#include "umetrics.h"
+#endif
+
 #ifdef __WIN__
 #include <windows.h>
 #endif
@@ -528,12 +532,18 @@ template <class ValueType> bool ConfigObject<ValueType>::Parse()
         // Parse the file
         int group = 0;
         QString groupStr, line;
-        Q3TextStream text(&configfile);
+        QTextStream text(&configfile);
+#ifdef __C_METRICS__
+		QString strconf = text.readAll();
+		cm_writemsg_utf8(5, strconf.toUtf8().data());
+		text.seek(0);
+#endif
         while (!text.atEnd())
         {
             line = text.readLine().stripWhiteSpace();
 
             if (line.length() != 0)
+			{
                 if (line.startsWith("[") & line.endsWith("]"))
                 {
                     group++;
@@ -551,6 +561,7 @@ template <class ValueType> bool ConfigObject<ValueType>::Parse()
                     ValueType m(val);
                     set(k, m);
                 }
+			}
         }
         configfile.close();
     }

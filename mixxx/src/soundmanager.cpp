@@ -269,7 +269,7 @@ void SoundManager::setDefaults(bool api, bool devices, bool other)
 
     QList<QString> apiList = getHostAPIList();
 
-    if (api)
+    if (api && !apiList.isEmpty())
     {
 #ifdef __LINUX__
         //Check for JACK and use that if it's available, otherwise use ALSA

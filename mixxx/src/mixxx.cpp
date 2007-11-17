@@ -50,6 +50,10 @@
 #include "playerproxy.h"
 #include "soundmanager.h"
 
+#ifdef __C_METRICS__
+#include <umetrics.h>
+#endif
+
 MixxxApp::MixxxApp(QApplication * a, struct CmdlineArgs args, QSplashScreen * pSplash)
 {
     app = a;
@@ -74,7 +78,7 @@ MixxxApp::MixxxApp(QApplication * a, struct CmdlineArgs args, QSplashScreen * pS
     //setWindowIcon(QIcon(":iconsmall.png")); //This is a smaller 16x16 icon, looks cleaner...
 #endif
 
-    // Reset pointer to players
+    //Reset pointer to players
     //player = 0;
     soundmanager = 0;
     m_pTrack = 0;
@@ -83,6 +87,38 @@ MixxxApp::MixxxApp(QApplication * a, struct CmdlineArgs args, QSplashScreen * pS
     // Read the config file from home directory
     config = new ConfigObject<ConfigValue>(QDir::homePath().append("/").append(SETTINGS_FILE));
     QString qConfigPath = config->getConfigPath();
+
+#ifdef __C_METRICS__
+	//Initialize Case Metrics if User is OK with that
+	int fuserAgreeToDataCollection = false;
+	if(config->getValueString(ConfigKey("[User Experience]","AgreedToUserExperienceProgram")) == QString("yes"))
+		fuserAgreeToDataCollection = true;
+	else if(config->getValueString(ConfigKey("[User Experience]","AgreedToUserExperienceProgram")) != QString("no"))
+	{
+		while(1)
+		{
+			fuserAgreeToDataCollection = QMessageBox::question(this, "Mixxx", "Mixxx's development is driven by community feedback.  At your discretion, Mixxx can automatically send data on your user experience back to the developpers.\n\nWould you like to enable this feature?", "Yes", "No", "Privacy Policy", 0, -1);
+			if(fuserAgreeToDataCollection == 0)
+			{
+				fuserAgreeToDataCollection = true;
+				config->set(ConfigKey("[User Experience]","AgreedToUserExperienceProgram"), ConfigValue(QString("yes")));
+				break;
+			}
+			else if(fuserAgreeToDataCollection == 1)
+			{
+				fuserAgreeToDataCollection = false;
+				config->set(ConfigKey("[User Experience]","AgreedToUserExperienceProgram"), ConfigValue(QString("no")));
+				break;
+			}
+			else
+			{
+				//show privacy policy
+				QMessageBox::information(this, "Mixxx: Privacy Policy", "Mixxx's development is driven by community feedback.  In order to help improve future versions Mixxx will with your permission collect information on your hardware and usage of Mixxx.  This information will primarily be used to fix bugs, improve features, and determine the system requirements of later versions.  Additionally this information may be used in aggregate for statistical purposes.\n\nThe hardware information will include:\n\t- CPU model and features\n\t- Total/Available Amount of RAM\n\t- Available disk space\n\t- OS version\n\nYour usage information will include:\n\t- Settings/Preferences\n\t- Internal errors\n\t- Internal debugging messages\n\t- Performance statistics (average latency, CPU usage)\n\nThis information will not be used to personally identify you, contact you, advertise to you, or otherwise bother you in any way.\n");
+			}
+		}
+	}
+	cm_init(100,20, fuserAgreeToDataCollection);
+#endif
 
     // Store the path in the config database
     config->set(ConfigKey("[Config]","Path"), ConfigValue(qConfigPath));
@@ -304,7 +340,9 @@ MixxxApp::MixxxApp(QApplication * a, struct CmdlineArgs args, QSplashScreen * pS
     //If we were told to start in fullscreen mode on the command-line, then turn on fullscreen mode.
     if (args.bStartInFullscreen)
         slotOptionsFullScreen(true);
-
+#ifdef __C_METRICS__
+	cm_writemsg_ascii(0, "Mixxx constructor complete.");
+#endif
 }
 
 MixxxApp::~MixxxApp()
@@ -374,6 +412,10 @@ MixxxApp::~MixxxApp()
     delete config;
 
     delete frame;
+#ifdef __C_METRICS__
+	cm_writemsg_ascii(0, "Mixxx deconstructor complete.");
+	cm_close(10);
+#endif
 #ifdef __WIN__
     _exit(0);
 #endif
