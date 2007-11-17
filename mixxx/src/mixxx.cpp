@@ -97,7 +97,7 @@ MixxxApp::MixxxApp(QApplication * a, struct CmdlineArgs args, QSplashScreen * pS
 	{
 		while(1)
 		{
-			fuserAgreeToDataCollection = QMessageBox::question(this, "Mixxx", "Mixxx's development is driven by community feedback.  At your discretion, Mixxx can automatically send data on your user experience back to the developpers.\n\nWould you like to enable this feature?", "Yes", "No", "Privacy Policy", 0, -1);
+			fuserAgreeToDataCollection = QMessageBox::question(this, "Mixxx", "Mixxx's development is driven by community feedback.  At your discretion, Mixxx can automatically send data on your user experience back to the developers.\n\nWould you like to enable this feature?", "Yes", "No", "Privacy Policy", 0, -1);
 			if(fuserAgreeToDataCollection == 0)
 			{
 				fuserAgreeToDataCollection = true;
