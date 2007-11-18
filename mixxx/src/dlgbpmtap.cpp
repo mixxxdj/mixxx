@@ -15,7 +15,6 @@
 *                                                                         *
 ***************************************************************************/
 
-#ifdef __EXPERIMENTAL_BPM__
 #include "dlgbpmtap.h"
 
 #include <qlabel.h>
@@ -31,8 +30,6 @@
 #include <QtGui>
 #include "mixxx.h"
 #include "trackinfoobject.h"
-
-
 
 DlgBpmTap::DlgBpmTap(QWidget * mixxx, TrackInfoObject * tio, TrackPlaylist * playlist) : QDialog(), Ui::DlgBpmTapDlg()
 {
@@ -259,5 +256,3 @@ void DlgBpmTap::setComplete(TrackInfoObject * tio, bool failed, float returnBpm)
 
 }
 
-
-#endif
