@@ -159,7 +159,7 @@ elif platform == 'win32':
 #Mixxx sources to build
 sources = Split("""enginebuffercue.cpp input.cpp mixxxmenuplaylists.cpp trackplaylistlist.cpp mixxxkeyboard.cpp configobject.cpp controlobjectthread.cpp
  controlobjectthreadwidget.cpp controlobjectthreadmain.cpp controlevent.cpp controllogpotmeter.cpp controlobject.cpp controlnull.cpp controlpotmeter.cpp
- controlpushbutton.cpp controlttrotary.cpp controlbeat.cpp dlgpreferences.cpp dlgprefsound.cpp dlgprefmidi.cpp dlgprefplaylist.cpp dlgprefcontrols.cpp
+ controlpushbutton.cpp controlttrotary.cpp controlbeat.cpp dlgpreferences.cpp dlgprefsound.cpp dlgprefmidi.cpp dlgprefplaylist.cpp dlgprefcontrols.cpp dlgbpmtap.cpp dlgprefbpm.cpp 
  dlgprefmixer.cpp enginebuffer.cpp enginebufferscale.cpp enginebufferscalelinear.cpp engineclipping.cpp enginefilterblock.cpp enginefilteriir.cpp  enginefilter.cpp engineobject.cpp
  enginepregain.cpp enginevolume.cpp main.cpp midiobject.cpp midiobjectnull.cpp mixxx.cpp mixxxview.cpp
  soundsourcemp3.cpp soundsourceoggvorbis.cpp enginechannel.cpp enginemaster.cpp wwidget.cpp wpixmapstore.cpp wlabel.cpp wnumber.cpp wnumberpos.cpp wnumberrate.cpp wnumberbpm.cpp wknob.cpp wdisplay.cpp wvumeter.cpp wpushbutton.cpp wslidercomposed.cpp wslider.cpp  wstatuslight.cpp enginedelay.cpp engineflanger.cpp enginespectralfwd.cpp mathstuff.cpp readerextract.cpp readerextractwave.cpp
@@ -452,16 +452,6 @@ if int(flags_hifieq) == 0:
 else:
 	print "High quality EQs... enabled"
 
-
-#Experimental BPM detection
-flags_experimentalbpm = ARGUMENTS.get('experimentalbpm', 1)
-if int(flags_experimentalbpm):
-	env.Append(CXXFLAGS = '-D__EXPERIMENTAL_BPM__')
-	sources += Split(""" dlgbpmtap.cpp dlgprefbpm.cpp """)
-	print "Experimental BPM detection... enabled"
-else:
-	print "Experimental BPM detection... disabled"
-
 #Experimental Recording
 flags_experimentalrecording = ARGUMENTS.get('experimentalrecord', 0)
 if int(flags_experimentalrecording):
@@ -505,7 +495,7 @@ else:
 	print "LADSPA support... disabled"
 
 #Vinyl Control
-flags_vinylcontrol = ARGUMENTS.get('vinylcontrol', 0)
+flags_vinylcontrol = ARGUMENTS.get('vinylcontrol', 1)
 if int(flags_vinylcontrol):
 	env.Append(CXXFLAGS = '-D__VINYLCONTROL__')
 	sources += Split(""" vinylcontrol.cpp vinylcontrolproxy.cpp vinylcontrolscratchlib.cpp vinylcontrolxwax.cpp dlgprefvinyl.cpp
@@ -588,12 +578,11 @@ opts = Options('custom.py')
 opts.Add('prefix', 'Set to your install prefix', '/usr/local')
 opts.Add('qtdir', 'Set to your QT4 directory', '/usr/share/qt4')
 opts.Add('djconsole', 'Set to 1 to enable Hercules support through libdjconsole', 0)
-opts.Add('experimentalbpm', '(EXPERIMENTAL) Set to 1 to enable new BPM detection', 1)
 opts.Add('experimentalrecord', '(EXPERIMENTAL) Set to 1 to enable output recording feature', 0)
 opts.Add('hifieq', '(EXPERIMENTAL) Set to 1 to enable high quality EQs', 0)
 opts.Add('ladspa', '(EXPERIMENTAL) Set to 1 to enable LADSPA plugin support', 0)
 opts.Add('ffmpeg', '(EXPERIMENTAL) Set to 1 to enable FFMPEG support', 0)
-opts.Add('vinylcontrol', '(EXPERIMENTAL) Set to 1 to enable vinyl control support', 0)
+opts.Add('vinylcontrol', 'Set to 1 to enable vinyl control support', 1)
 opts.Add('msvshacks', 'Set to 1 to build properly with MS Visual Studio 2005 (Express users should leave this off)', 0)
 if not platform == 'win32':
 	opts.Add('gprof', '(DEVELOPER) Set to 1 to enable profiling using gprof', 0)
