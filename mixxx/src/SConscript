@@ -399,10 +399,6 @@ else:
 env.Append(CPPPATH=['../../lib/kissfft'])
 sources += Split("""../../lib/kissfft/kiss_fft.c""")
 
-#Xing's non-free VBR header SDK thing (we need to get rid of this!)
-env.Append(CPPPATH='../../lib/vbrheadersdk/')
-sources += Split("""../../lib/vbrheadersdk/dxhead.c""")
-
 #libsamplerate
 env.Append(CPPPATH='../../lib/libsamplerate')
 sources += Split("""enginebufferscalesrc.cpp ../../lib/libsamplerate/samplerate.c ../../lib/libsamplerate/src_linear.c ../../lib/libsamplerate/src_sinc.c ../../lib/libsamplerate/src_zoh.c""")
