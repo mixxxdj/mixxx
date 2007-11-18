@@ -17,9 +17,7 @@
 #include "trackinfoobject.h"
 #include "soundsourcemp3.h"
 #include <QtDebug>
-extern "C" {
-#include <dxhead.h>
-}
+
 
 SoundSourceMp3::SoundSourceMp3(QString qFilename) : SoundSource(qFilename)
 {
@@ -516,8 +514,17 @@ int SoundSourceMp3::ParseHeader(TrackInfoObject * Track)
     mad_stream_options(&Stream, MAD_OPTION_IGNORECRC);
     mad_stream_buffer(&Stream, (unsigned char *) inputbuf, READLENGTH);
 
+
+//The following block of code was removed because it uses Xing's non-free vbrheadersdk
+//(which was also removed from the "lib" directory.)
+//
+//This was also removed from the top of this file:
+//extern "C" {
+//#include <dxhead.h>
+//}
+//
     // Check for Xing header
-    XHEADDATA * xing = new XHEADDATA;
+/*  XHEADDATA * xing = new XHEADDATA;
     xing->toc = 0;
     bool foundxing = false;
     if (GetXingHeader(xing, (unsigned char *)Stream.this_frame)==1)
@@ -536,7 +543,7 @@ int SoundSourceMp3::ParseHeader(TrackInfoObject * Track)
     {
         Track->setDuration(dur.seconds);
     }
-    else
+    else */
     {
         // Check if file has constant bit rate by examining the rest of the buffer
         unsigned long bitrate=0;
