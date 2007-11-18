@@ -19,14 +19,11 @@
 #include "dlgprefrecord.h"
 #endif
 
-#ifdef __EXPERIMENTAL_BPM__
-#include "dlgprefbpm.h"
-#endif
-
 #ifdef __VINYLCONTROL__
 #include "dlgprefvinyl.h"
 #endif
 
+#include "dlgprefbpm.h"
 #include "dlgpreferences.h"
 #include "dlgprefsound.h"
 #include "dlgprefmidi.h"
@@ -73,9 +70,8 @@ DlgPreferences::DlgPreferences(MixxxApp * mixxx, MixxxView * view,
     wplaylist = new DlgPrefPlaylist(this, config);
     wcontrols = new DlgPrefControls(this, view, mixxx, config);
     //wmixer = new DlgPrefMixer(this, config);
-#ifdef __EXPERIMENTAL_BPM__
     wbpm = new DlgPrefBPM(this, config);
-#endif
+
 #ifdef __EXPERIMENTAL_RECORDING__
     wrecord = new DlgPrefRecord(this, config);
 #endif
@@ -97,9 +93,7 @@ DlgPreferences::DlgPreferences(MixxxApp * mixxx, MixxxView * view,
 #ifdef __EXPERIMENTAL_RECORDING__
     pagesWidget->addWidget(wrecord);
 #endif
-#ifdef __EXPERIMENTAL_BPM__
     pagesWidget->addWidget(wbpm);
-#endif
 #ifdef __VINYLCONTROL__
     pagesWidget->addWidget(wvinylcontrol);
 #endif
@@ -110,9 +104,7 @@ DlgPreferences::DlgPreferences(MixxxApp * mixxx, MixxxView * view,
        addTab(wcontrols, "GUI");
        addTab(wplaylist, "Playlists");
        addTab(wmixer,    "Mixer Profile");
-#ifdef __EXPERIMENTAL_BPM__
        addTab(wbpm, "BPM");
-#endif
 
 #ifdef __EXPERIMENTAL_RECORDING__
        addTab(wrecord,   "Recording");
@@ -138,9 +130,8 @@ DlgPreferences::DlgPreferences(MixxxApp * mixxx, MixxxView * view,
     connect(this, SIGNAL(showDlg()), wplaylist, SLOT(slotUpdate()));
     connect(this, SIGNAL(showDlg()), wcontrols, SLOT(slotUpdate()));
     //connect(this, SIGNAL(showDlg()), wmixer,    SLOT(slotUpdate()));
-#ifdef __EXPERIMENTAL_BPM__
     connect(this, SIGNAL(showDlg()), wbpm,    SLOT(slotUpdate()));
-#endif
+
 #ifdef __EXPERIMENTAL_RECORDING__
     connect(this, SIGNAL(showDlg()), wrecord,    SLOT(slotUpdate()));
 #endif
@@ -160,9 +151,8 @@ DlgPreferences::DlgPreferences(MixxxApp * mixxx, MixxxView * view,
     connect(buttonBox, SIGNAL(accepted()), wcontrols, SLOT(slotApply()));
     //connect(buttonBox, SIGNAL(accepted()), wmixer,    SLOT(slotApply()));
     connect(buttonBox, SIGNAL(accepted()), this,      SLOT(slotApply()));
-#ifdef __EXPERIMENTAL_BPM__
     connect(buttonBox, SIGNAL(accepted()), wbpm,    SLOT(slotApply()));
-#endif
+
 #ifdef __EXPERIMENTAL_RECORDING__
     connect(buttonBox, SIGNAL(accepted()), wrecord,    SLOT(slotApply()));
 #endif
@@ -229,13 +219,11 @@ void DlgPreferences::createIcons()
     recordingButton->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
 #endif
 
-#ifdef __EXPERIMENTAL_BPM__
     QListWidgetItem * bpmdetectButton = new QListWidgetItem(contentsWidget);
     bpmdetectButton->setIcon(QIcon(":/images/preferences/bpmdetect.png"));
     bpmdetectButton->setText(tr("BPM Detection"));
     bpmdetectButton->setTextAlignment(Qt::AlignLeft | Qt::AlignVCenter);
     bpmdetectButton->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
-#endif
 
 #ifdef __VINYLCONTROL__
     QListWidgetItem * vinylcontrolButton = new QListWidgetItem(contentsWidget);
