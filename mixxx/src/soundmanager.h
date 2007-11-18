@@ -73,7 +73,7 @@ class SoundManager : public QObject
         QList<SoundDevice*> m_devices;
         QList<QString> m_samplerates;
         QString m_hostAPI;
-        CSAMPLE *m_pBuffer; //Interlaced audio buffer containing all 4 channels of audio (master L/R, headpones L/R)
+        CSAMPLE *m_pInterleavedBuffer; //Interleaved audio buffer containing all 4 channels of audio (master L/R, headpones L/R)
         CSAMPLE *m_pMasterBuffer;
         CSAMPLE *m_pHeadphonesBuffer;
 #ifdef __VINYLCONTROL__
