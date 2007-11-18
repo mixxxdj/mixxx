@@ -400,7 +400,7 @@ const char * EngineBuffer::getGroup()
 
 double EngineBuffer::getRate()
 {
-    return rateSlider->get()*m_pRateRange->get();
+    return rateSlider->get()*m_pRateRange->get()*m_pRateDir->get();
 }
 
 void EngineBuffer::setTemp(double v)
@@ -587,28 +587,28 @@ void EngineBuffer::slotControlRatePermDown(double)
 {
     // Adjusts temp rate down if button pressed
     if (buttonRatePermDown->get())
-        rateSlider->sub(m_dPerm);
+        rateSlider->sub(m_dPerm * m_pRateDir->get());
 }
 
 void EngineBuffer::slotControlRatePermDownSmall(double)
 {
     // Adjusts temp rate down if button pressed
     if (buttonRatePermDownSmall->get())
-        rateSlider->sub(m_dPermSmall);
+        rateSlider->sub(m_dPermSmall * m_pRateDir->get());
 }
 
 void EngineBuffer::slotControlRatePermUp(double)
 {
     // Adjusts temp rate up if button pressed
     if (buttonRatePermUp->get())
-        rateSlider->add(m_dPerm);
+        rateSlider->add(m_dPerm * m_pRateDir->get());
 }
 
 void EngineBuffer::slotControlRatePermUpSmall(double)
 {
     // Adjusts temp rate up if button pressed
     if (buttonRatePermUpSmall->get())
-        rateSlider->add(m_dPermSmall);
+        rateSlider->add(m_dPermSmall * m_pRateDir->get());
 }
 
 void EngineBuffer::slotControlRateTempDown(double)
@@ -618,7 +618,7 @@ void EngineBuffer::slotControlRateTempDown(double)
     {
         m_bTempPress = true;
         m_dOldRate = rateSlider->get();
-        rateSlider->sub(m_dTemp);
+        rateSlider->sub(m_dTemp * m_pRateDir->get());
     }
     else if (!buttonRateTempDown->get())
     {
@@ -634,7 +634,7 @@ void EngineBuffer::slotControlRateTempDownSmall(double)
     {
         m_bTempPress = true;
         m_dOldRate = rateSlider->get();
-        rateSlider->sub(m_dTempSmall);
+        rateSlider->sub(m_dTempSmall * m_pRateDir->get());
     }
     else if (!buttonRateTempDownSmall->get())
     {
@@ -650,7 +650,7 @@ void EngineBuffer::slotControlRateTempUp(double)
     {
         m_bTempPress = true;
         m_dOldRate = rateSlider->get();
-        rateSlider->add(m_dTemp);
+        rateSlider->add(m_dTemp * m_pRateDir->get());
     }
     else if (!buttonRateTempUp->get())
     {
@@ -666,7 +666,7 @@ void EngineBuffer::slotControlRateTempUpSmall(double)
     {
         m_bTempPress = true;
         m_dOldRate = rateSlider->get();
-        rateSlider->add(m_dTempSmall);
+        rateSlider->add(m_dTempSmall * m_pRateDir->get());
     }
     else if (!buttonRateTempUpSmall->get())
     {
@@ -696,7 +696,7 @@ void EngineBuffer::slotControlBeatSync(double)
         {
             // Adjust the rate:
             fRateScale = (fRateScale-1.)/m_pRateRange->get();
-            rateSlider->set(fRateScale);
+            rateSlider->set(fRateScale * m_pRateDir->get());
 
             // Adjust phase
             adjustPhase();
