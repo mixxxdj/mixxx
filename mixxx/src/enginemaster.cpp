@@ -149,9 +149,19 @@ void EngineMaster::setPitchIndpTimeStretch(bool b)
     buffer2->setPitchIndpTimeStretch(b);
 }
 
-void EngineMaster::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBufferSize)
+const CSAMPLE* EngineMaster::getMasterBuffer()
 {
-    CSAMPLE * pOutput = (CSAMPLE *)pOut;
+    return m_pMaster;
+}
+
+const CSAMPLE* EngineMaster::getHeadphoneBuffer()
+{
+    return m_pHead;
+}
+
+void EngineMaster::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBufferSize)
+{
+    CSAMPLE **pOutput = (CSAMPLE**)pOut;
 
     //
     // Process the buffer, the channels and the effects:
@@ -289,14 +299,14 @@ void EngineMaster::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
 #ifdef __EXPERIMENTAL_RECORDING__
     rec->process(m_pMaster, m_pMaster, iBufferSize);
 #endif
+
     for (int i=0; i<iBufferSize; i+=2)
     {
-        // Interleave the output and the headphone channels, and perform balancing on main out
-        pOutput[j  ] = m_pMaster[i  ]*balleft;
-        pOutput[j+1] = m_pMaster[i+1]*balright;
-        pOutput[j+2] = m_pHead[i  ];
-        pOutput[j+3] = m_pHead[i+1];
-        j+=4;
+        //Perform balancing on main out
+        m_pMaster[i  ] = m_pMaster[i  ]*balleft;
+        m_pMaster[i+1] = m_pMaster[i+1]*balright;
     }
+    
+    //Master/headphones interleaving is now done in SoundManager::requestBuffer() - Albert Nov 18/07
 }
 

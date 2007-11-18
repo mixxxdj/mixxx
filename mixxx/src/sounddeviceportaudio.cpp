@@ -251,11 +251,18 @@ int SoundDevicePortAudio::close()
 int SoundDevicePortAudio::callbackProcess(unsigned long framesPerBuffer, float *output, short *in, int devIndex)
 {
     //qDebug() << "SoundDevicePortAudio::callbackProcess";
-    int iFrameSize = m_audioSources.count()*2;
-    int iVCGain = 1;
-    int i = 0;
+    //These variables declared static for speed (memory doesn't get realloc'ed every time)
+    static int iFrameSize;
+    static int iVCGain;
+    static int i;
     static ControlObject* pControlObjectVinylControlGain = ControlObject::getControl(ConfigKey("[VinylControl]", "VinylControlGain"));
+    static const float SHRT_CONVERSION_FACTOR = 1.0f/32768.0f;
  
+    //Initialize some variables.
+    iFrameSize = m_audioSources.count()*2;
+    iVCGain = 1;
+    i = 0;
+    
     if (output && framesPerBuffer > 0)
     {
         CSAMPLE* outputAudio = m_pSoundManager->requestBuffer(m_audioSources, framesPerBuffer);
@@ -263,23 +270,24 @@ int SoundDevicePortAudio::callbackProcess(unsigned long framesPerBuffer, float *
 	//qDebug() << framesPerBuffer;		
 
         //Reset sample for each open channel
-        for (i=0; i < framesPerBuffer * iFrameSize; i++)
-            output[i] = 0.;
+        //for (i=framesPerBuffer * iFrameSize; i != 0 ; i--)
+        //    output[i] = 0.;
+        memset(output, 0, framesPerBuffer * iFrameSize * sizeof(*output));
 
-        for (i=0; i < framesPerBuffer* iFrameSize; i += iFrameSize)
+
+        for (i=0; i < framesPerBuffer*iFrameSize; i += iFrameSize)
         {
-            //TODO: Instead of having if statements here, just make a loop...
             if (m_audioSources.count() == 1)
             {
-                output[i] += outputAudio[i]/32768.;
-                output[i+1] += outputAudio[i+1]/32768.;
+                output[i] += outputAudio[i]*SHRT_CONVERSION_FACTOR;
+                output[i+1] += outputAudio[i+1]*SHRT_CONVERSION_FACTOR;
             }
             else if (m_audioSources.count() == 2)
             {
-                output[i] += outputAudio[i]/32768.;
-                output[i+1] += outputAudio[i+1]/32768.;
-                output[i+2] += outputAudio[i+2]/32768.;
-                output[i+3] += outputAudio[i+3]/32768.;
+                output[i] += outputAudio[i]*SHRT_CONVERSION_FACTOR;
+                output[i+1] += outputAudio[i+1]*SHRT_CONVERSION_FACTOR;
+                output[i+2] += outputAudio[i+2]*SHRT_CONVERSION_FACTOR;
+                output[i+3] += outputAudio[i+3]*SHRT_CONVERSION_FACTOR;
             }
             else
             {
@@ -298,7 +306,7 @@ int SoundDevicePortAudio::callbackProcess(unsigned long framesPerBuffer, float *
         //Super big warning: Have to use channel_count here instead of iFrameSize because iFrameSize is
         //only for output buffers...
         iVCGain = pControlObjectVinylControlGain->get();
-        for (i=0; i < framesPerBuffer * m_inputParams.channelCount; i++)
+        for (i=framesPerBuffer*m_inputParams.channelCount; i != 0; i--)   //Optimized (backwards)
             in[i] *= iVCGain;
 
         m_pSoundManager->pushBuffer(m_audioReceivers, in, framesPerBuffer);

@@ -49,7 +49,9 @@ public:
     ~EngineMaster();
     /** Reconfigures the EngineBufferScaleSRC objects with the sound quality written in the config database */
     void setPitchIndpTimeStretch(bool b);
-    void process(const CSAMPLE *pIn, const CSAMPLE *pOut, const int iBufferSize);
+    const CSAMPLE* getMasterBuffer();
+    const CSAMPLE* getHeadphoneBuffer();
+    void process(const CSAMPLE *, const CSAMPLE *pOut, const int iBufferSize);
 private:
     EngineBuffer *buffer1, *buffer2;
     EngineChannel *channel1, *channel2;

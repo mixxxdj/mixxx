@@ -29,9 +29,10 @@ SoundManager::SoundManager(ConfigObject<ConfigValue> * pConfig, EngineMaster * _
     qDebug() << "SoundManager::SoundManager()";
     m_pConfig = pConfig;
     m_pMaster = _master;
-    m_pBuffer = new CSAMPLE[MAX_BUFFER_LEN];
-    m_pMasterBuffer = new CSAMPLE[MAX_BUFFER_LEN];
-    m_pHeadphonesBuffer = new CSAMPLE[MAX_BUFFER_LEN];
+    m_pInterleavedBuffer = new CSAMPLE[MAX_BUFFER_LEN];   
+    m_pMasterBuffer = (CSAMPLE*)_master->getMasterBuffer();
+    m_pHeadphonesBuffer = (CSAMPLE*)_master->getHeadphoneBuffer();
+    
     iNumDevicesOpenedForOutput = 0;
     iNumDevicesOpenedForInput = 0;
     iNumDevicesHaveRequestedBuffer = 0;
@@ -412,9 +413,10 @@ CSAMPLE * SoundManager::requestBuffer(QList<AudioSource> srcs, unsigned long iFr
 
     //qDebug() << "numOpenedDevices" << iNumOpenedDevices;
     //qDebug() << "iNumDevicesHaveRequestedBuffer" << iNumDevicesHaveRequestedBuffer;
-
+    
     //When the first device requests a buffer...
     requestBufferMutex.lock();
+
     if (iNumDevicesHaveRequestedBuffer == 0)
     {
         //First, sync control parameters with changes from GUI thread
@@ -424,20 +426,21 @@ CSAMPLE * SoundManager::requestBuffer(QList<AudioSource> srcs, unsigned long iFr
         //number of samples for one channel, but the EngineObject
         //architecture expects number of samples for two channels
         //as input (buffer size) so...
-        m_pMaster->process(0, m_pBuffer, iFramesPerBuffer*2);
+        m_pMaster->process(0, 0, iFramesPerBuffer*2);
 
-        //Ok, so now we've got our buffer of interlaced audio containing
-        //both the master output and the headphones output.
-
-        //FIXME? Peel the interlaced buffer apart into separate headphone and
-        //master buffers, for advanced routing.
-        for (int i = 0; i < MAX_BUFFER_LEN; i += 4)
+        //Ok, so now we've got separate buffers containing the master and headphone output.
+        //Let's interleave them in a separate buffer so we can pass off an interleaved buffer
+        //to PortAudio for certain configurations (ie. when you have a 4-channel soundcard setup).
+        int j = 0;
+        for (int i = 0; i < iFramesPerBuffer*2; i += 2)
         {
-            m_pMasterBuffer[i/2] = m_pBuffer[i];
-            m_pMasterBuffer[i/2 + 1] = m_pBuffer[i+1];
-            m_pHeadphonesBuffer[i/2] = m_pBuffer[i+2];
-            m_pHeadphonesBuffer[i/2 + 1] = m_pBuffer[i+3];
-        }
+            // Interleave the output and the headphone channels
+            m_pInterleavedBuffer[j  ] = m_pMasterBuffer[i  ];
+            m_pInterleavedBuffer[j+1] = m_pMasterBuffer[i+1];
+            m_pInterleavedBuffer[j+2] = m_pHeadphonesBuffer[i  ];
+            m_pInterleavedBuffer[j+3] = m_pHeadphonesBuffer[i+1];
+            j+=4;
+        }      
     }
     iNumDevicesHaveRequestedBuffer++;
 
@@ -450,7 +453,7 @@ CSAMPLE * SoundManager::requestBuffer(QList<AudioSource> srcs, unsigned long iFr
     //the SoundDevice.
     if (srcs.contains(SOURCE_MASTER) && srcs.contains(SOURCE_HEADPHONES))
     {
-        return m_pBuffer;
+        return m_pInterleavedBuffer;
     }
 
     if (srcs.contains(SOURCE_MASTER))
@@ -464,7 +467,7 @@ CSAMPLE * SoundManager::requestBuffer(QList<AudioSource> srcs, unsigned long iFr
     }
 
     qDebug() << "Warning: No sources passed to SoundManager::requestBuffer()";
-    return m_pBuffer; //Default, shouldn't happen if this function was used properly.
+    return m_pInterleavedBuffer; //Default, shouldn't happen if this function was used properly.
 }
 
 //Used by SoundDevices to "push" any audio from their inputs that they have into the mixing engine.
