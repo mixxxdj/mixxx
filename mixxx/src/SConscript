@@ -673,8 +673,17 @@ if platform == 'linux':
 		print "Error: Prefix path does not exist!"
 		Exit(1)
 	else:
-		unix_share_path = flags_prefix + "/share"
-		unix_bin_path   = flags_prefix + "/bin"
+		#install_root is used in Debian/Ubuntu packaging (check the debian/rules file in the Ubuntu package)
+		#Basically, the flags_prefix is compiled into strings in Mixxx, whereas the install_root is not. When you're
+		#building a Debian package, pbuilder wants to install Mixxx to a temporary directory, but you still need
+		#the compiled-in strings using /usr as the prefix. That's why we have install_root and flags_prefix.
+		install_root = ARGUMENTS.get('install_root', flags_prefix)
+		if install_root != flags_prefix:
+			unix_share_path = install_root + "/share"
+			unix_bin_path   = install_root + "/bin"			
+		else:
+			unix_share_path = flags_prefix + "/share"
+			unix_bin_path   = flags_prefix + "/bin"
 
 		binary = env.Install(unix_bin_path, binary_files)
 		skins = env.Install(unix_share_path + "/skins", skin_files)
