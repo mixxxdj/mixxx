@@ -748,6 +748,7 @@ void MixxxApp::slotHelpAbout()
 "Martin Sakm&#225;r<br>"
 "Dave Jarvis<br>"
 "Thomas Baag<br>"
+"Karlis Kalnins<br>"
 "Amias Channer<br>"
 "Sacha Berger<br>"
 "Stefan Langhammer<br>"
