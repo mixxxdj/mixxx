@@ -46,6 +46,7 @@
 #include "wavesummary.h"
 #include "bpmdetector.h"
 #include "log.h"
+#include "dlgabout.h"
 
 #include "playerproxy.h"
 #include "soundmanager.h"
@@ -725,37 +726,66 @@ void MixxxApp::slotOptionsVinylControl(bool toggle)
 
 void MixxxApp::slotHelpAbout()
 {
-    QMessageBox::about(this,tr("About..."),
-                       tr("<qt>"
-                          "<table cellspacing=0 cellpadding=0>"
-                          "<tr><td>Mixxx</td></tr>"
-                          "<tr><td>Version " VERSION "</td></tr>"
-                          "<tr><td><a href=\"http://mixxx.sourceforge.net/\">http://mixxx.sourceforge.net/</a></td></tr>"
-                          "</table><br><br>"
-                          "<table cellspacing=0 cellpadding=0>"
-                          "<tr><td>Lead developer/Maintainer:</td><td>Adam Davison</td></tr>"
-                          "<tr><td>Original developers</td><td>Tue Haste Andersen</td></tr>"
-                          "<tr><td></td><td>Ken Haste Andersen</td></tr>"
-                          "<tr><td>Skins:</td><td>Ludek Horácek (Traditional)</td></tr>"
-                          "<tr><td></td><td>Tue Haste Andersen (Outline)</td></tr>"
-                          "<tr><td>Ogg vorbis support:</td><td>Svein Magne Bang</td></tr>"
-                          "<tr><td>Beat tracking:</td><td>Tue Haste Andersen</td></tr>"
-                          "<tr><td></td><td>Kristoffer Jensen</td></tr>"
-                          "<tr><td>Playlist import & ASIO:</td><td>Ingo Kossyk</td></tr>"
-                          "<tr><td>Beat phase sync:</td><td>Torben Hohn</td></tr>"
-                          "<tr><td>ALSA support:</td><td>Peter Chang</td></tr>"
-                          "<tr><td>SoundTouch support:</td><td>Mads Holm</td></tr>"
-                          "<tr><td>Other contributions:</td><td>Lukas Zapletal</td><td>Garth Dahlstrom</td></tr>"
-                          "<tr><td></td><td>Jeremie Zimmermann</td><td>Ben Wheeler</td></tr>"
-                          "<tr><td></td><td>Gianluca Romanin</td><td>Tim Jackson</td></tr>"
-                          "<tr><td></td><td>Jan Jockusch</td><td>Albert Santoni</td></tr>"
-                          "<tr><td></td><td>Frank Willascheck</td><td>Cedric Gestes</td></tr>"
-                          "<tr><td>Special thanks to:</td><td>Adam Bellinson</td><td></td></tr>"
-                          "</table><br><br>"
-                          "<table cellspacing=0 cellpadding=0>"
-                          "<tr><td>Thanks to all DJ's and musicians giving feedback.</td></tr>"
-                          "<tr><td>Released under the GNU General Public Licence version 2.</td></tr>"
-                          "</table></qt>") );
+
+    DlgAbout *about = new DlgAbout(this);
+    about->version_label->setText(VERSION);
+    QString credits = 
+    "<p align=\"center\"><b>Mixxx 1.6.0 Development Team</b></p>"
+"<p align=\"center\">"
+"Adam Davison<br>"
+"Albert Santoni<br>"
+"Cedric Gestes<br>"
+"Garth Dahlstrom<br>"
+"John Sully<br>"
+"Ben Wheeler<br>"
+"Micah Lee<br>"
+"Pawel Bartkiewicz<br>"
+"Nathan Prado<br>"
+"</p>"
+"<p align=\"center\"><b>With contributions from:</b></p>"
+"<p align=\"center\">"
+"Mark Hills<br>"
+"Martin Sakm&#225;r<br>"
+"Dave Jarvis<br>"
+"Thomas Baag<br>"
+"Amias Channer<br>"
+"Sacha Berger<br>"
+"Stefan Langhammer<br>"
+"Andre Roth<br>"
+"Frank Willascheck<br>"
+"</p>"
+"<p align=\"center\"><b>And special thanks to:</b></p>"
+"<p align=\"center\">"
+"Adam Bellinson<br>"
+"Melanie Thielker<br>"
+"Julien Rosener<br>"
+"Pau Arumi<br>"
+"David Garcia<br>"
+"Seb Ruiz<br>"
+"</p>"
+
+"<p align=\"center\"><b>Past Contributors</b></p>"
+"<p align=\"center\">"
+"Tue Haste Andersen<br>"
+"Ken Haste Andersen<br>"
+"Ludek Horácek<br>"
+"Svein Magne Bang<br>"
+"Kristoffer Jensen<br>"
+"Ingo Kossyk<br>"
+"Torben Hohn<br>"
+"Peter Chang<br>"
+"Mads Holm<br>"
+"Lukas Zapletal<br>"
+"Jeremie Zimmermann<br>"
+"Gianluca Romanin<br>"
+"Tim Jackson<br>"
+"Jan Jockusch<br>"
+"</p>";
+
+
+    about->textBrowser->setHtml(credits);
+    about->show();
+
 }
 
 void MixxxApp::rebootMixxxView() {
