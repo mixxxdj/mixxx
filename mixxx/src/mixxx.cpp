@@ -768,7 +768,7 @@ void MixxxApp::slotHelpAbout()
 "<p align=\"center\">"
 "Tue Haste Andersen<br>"
 "Ken Haste Andersen<br>"
-"Ludek Horácek<br>"
+"Ludek Hor&#225;cek<br>"
 "Svein Magne Bang<br>"
 "Kristoffer Jensen<br>"
 "Ingo Kossyk<br>"
