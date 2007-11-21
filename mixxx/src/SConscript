@@ -677,7 +677,7 @@ dotdesktop_files = glob.glob('../mixxx.desktop')
 icon_files = glob.glob('../mixxx-icon.png')
 
 #Images for preferences dialog
-image_files = glob.glob('../images/preferences/*')
+image_files = glob.glob('../images/preferences/*')  # These are compiled in to the "mixxx" binary through mixxx.qrc
 
 #Windows DLLs
 dll_files = glob.glob('../../../mixxx-winlib/*.dll') # TODO: Use reference to SharedLibrary for libsndfile and others, glob only gets all files on 2+ builds after a clean.
@@ -695,6 +695,7 @@ if platform == 'linux':
 		#building a Debian package, pbuilder wants to install Mixxx to a temporary directory, but you still need
 		#the compiled-in strings using /usr as the prefix. That's why we have install_root and flags_prefix.
 		install_root = ARGUMENTS.get('install_root', flags_prefix)
+		print "Install root: " + install_root
 		if install_root != flags_prefix:
 			unix_share_path = install_root + "/share"
 			unix_bin_path   = install_root + "/bin"			
@@ -703,11 +704,11 @@ if platform == 'linux':
 			unix_bin_path   = flags_prefix + "/bin"
 
 		binary = env.Install(unix_bin_path, binary_files)
-		skins = env.Install(unix_share_path + "/skins", skin_files)
-		midimappings = env.Install(unix_share_path + "/midi", midimappings_files)
-		keyboardmappings = env.Install(unix_share_path + "/keyboard", keyboardmappings_files)
+		skins = env.Install(unix_share_path + "/mixxx/skins", skin_files)
+		midimappings = env.Install(unix_share_path + "/mixxx/midi", midimappings_files)
+		keyboardmappings = env.Install(unix_share_path + "/mixxx/keyboard", keyboardmappings_files)
 		dotdesktop = env.Install(unix_share_path + "/applications", dotdesktop_files)
-		docs = env.Install(unix_share_path + "/doc", docs_files)
+		docs = env.Install(unix_share_path + "/doc/mixxx", docs_files)
 		icon = env.Install(unix_share_path + "/pixmaps", icon_files)
 
         #Makes each of those Install builders get fired off when you run "scons install" :)
