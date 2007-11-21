@@ -90,7 +90,7 @@ Track::Track(QString location, MixxxView * pView, EngineBuffer * pBuffer1, Engin
     m_pPlayQueueModel->setTrackPlaylist(m_qPlaylists.at(1));
     m_pPlaylistListModel->setPlaylistList(m_qPlaylists);
 
-    if (m_pView) //Stops Mixxx from dying if a skin doesn't have the search box.
+    if (m_pView && m_pView->m_pTrackTableView) //Stops Mixxx from dying if a skin doesn't have the search box.
     {
         m_pView->m_pTrackTableView->setSearchSource(m_pLibraryModel);
         m_pView->m_pTrackTableView->resizeColumnsToContents();
@@ -107,6 +107,16 @@ Track::Track(QString location, MixxxView * pView, EngineBuffer * pBuffer1, Engin
 
         // Connect drop events to table
         //connect(m_pView->m_pTrackTable, SIGNAL(dropped(QDropEvent *)), this, SLOT(slotDrop(QDropEvent *)));
+    }
+    else
+    {
+        //If there was no TrackTableView specified in the skin, give a warning.
+        QMessageBox::warning(NULL, tr("Mixxx"),
+                             tr("You're using a skin that is incompatible with Mixxx " + QString(VERSION) + ", which "
+                             "will cause unexpected behaviour (eg. missing library).\nThis can happen if you're "
+                             "using a third-party skin or if you've incorrectly upgraded Mixxx."), 
+                             QMessageBox::Ok, QMessageBox::Ok);
+
     }
 
 
