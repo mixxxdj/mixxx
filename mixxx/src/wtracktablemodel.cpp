@@ -64,6 +64,9 @@ QVariant WTrackTableModel::data(const QModelIndex &index, int role) const
         case 4: return m_pTrackInfo->getBitrateStr();
         case 5: return m_pTrackInfo->getBpmStr();
         case 6: return m_pTrackInfo->getComment();
+		default: 
+			Q_ASSERT(FALSE);	//we should never get here
+			return NULL;	
         }
     }
 
@@ -96,6 +99,9 @@ QVariant WTrackTableModel::headerData(int section, Qt::Orientation orientation, 
             return QString("BPM");
         case 6:
             return QString("Comment");
+		default:
+			//this is a nasty error for the user to see, but its better than a crash and should help with debugging
+			return QString("ERROR: WTrackTableModel::headerData Invalid section parameter");	
         }
     }
     else
