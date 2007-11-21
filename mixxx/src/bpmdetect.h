@@ -122,26 +122,26 @@ protected:
     soundtouch::LONG_SAMPLETYPE decimateSum;
 
     /// Decimate sound by this coefficient to reach approx. 500 Hz.
-    int decimateBy;
+    unsigned int decimateBy;
 
     /// Auto-correlation window length
-    int windowLen;
+    unsigned int windowLen;
 
     /// Number of channels (1 = mono, 2 = stereo)
-    int channels;
+    unsigned int channels;
 
     /// sample rate
-    int sampleRate;
+    unsigned int sampleRate;
 
 	/// Maximum acceptable bpm
-	int maxBpm;
+	unsigned int maxBpm;
 
 	/// Minumum acceptable bpm
-	int minBpm;
+	unsigned int minBpm;
 
     /// Beginning of auto-correlation window: Autocorrelation isn't being updated for
     /// the first these many correlation bins.
-    int windowStart;
+    unsigned int windowStart;
  
     /// FIFO-buffer for decimated processing samples.
     soundtouch::FIFOSampleBuffer *buffer;
