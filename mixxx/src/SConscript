@@ -346,8 +346,8 @@ env.Append(CXXFLAGS = ' -DQT3_SUPPORT -DQT3_SUPPORT_WARNINGS -DQT_THREAD_SUPPORT
 env.Append(CXXFLAGS = ' -I$QTDIR/include/Qt3Support -I$QTDIR/include/QtCore -I$QTDIR/include/QtGui -I$QTDIR/include/QtXml -I$QTDIR/include/QtOpenGl -I$QTDIR/include/Qt -I"$VCINSTALLDIR/include/atl"')
 
 if not platform == 'win32':
-	env.Append(CCFLAGS = Split(""" -pipe -O3 -Wall -W -g -D_REENTRANT """)) # omghax
-	env.Append(LINKFLAGS = Split(""" -pipe -O3 -Wall -W -g """))
+	env.Append(CCFLAGS = Split(""" -pipe -Wall -W -g -D_REENTRANT """)) # omghax
+	env.Append(LINKFLAGS = Split(""" -pipe -Wall -W -g """))
 if platform == 'win32':
 	env.Append(CXXFLAGS = '-DWIN32 -D__WIN__ -DUNICODE -D_WINDOWS') #for soundtouch
 	env.Append(CCFLAGS  = '-DWIN32 -D__WIN__ -DUNICODE -D_WINDOWS') #for soundtouch
@@ -521,7 +521,10 @@ else:
 	print "MSVC Debugging... disabled"
 
 #Optimization
-flags_optimize = ARGUMENTS.get('optimize', 0)
+if platform == 'win32':
+    flags_optimize = ARGUMENTS.get('optimize', 0)   #Default to off on win32
+else:
+    flags_optimize = ARGUMENTS.get('optimize', 1)   #Default to on for Linux/OS X
 if int(flags_optimize):
 	if platform == 'win32':
 		if int(flags_msvcdebug):
@@ -532,7 +535,7 @@ if int(flags_optimize):
 			env.Append(LINKFLAGS = '/LTCG:STATUS')
 	else:
 		print "Optimizations... enabled"
-		env.Append(CXXFLAGS = '-03')
+		env.Append(CXXFLAGS = '-O3')
 else:
 	print "Optimizations... disabled"
 
@@ -570,13 +573,13 @@ if not platform == 'win32':
 	else:
 		print "gprof profiling support... disabled"
 	flags_tuned = ARGUMENTS.get('tuned', 0)
-        if int(flags_tuned):
+	if int(flags_tuned):
 		ccv = env['CCVERSION'].split('.')
 		if int(ccv[0]) >= 4 and int(ccv[1]) >= 2:
 			env.Append(CCFLAGS = '-march=native')
-                        env.Append(LINKFLAGS = '-march=native')
+			env.Append(LINKFLAGS = '-march=native')
 			print "Optimizing for this CPU... yes"
-                else:
+		else:
 			print "Optimizing for this CPU... no (requires gcc >= 4.2.0)"
 	else:
 		print "Optimizing for this CPU... no"
