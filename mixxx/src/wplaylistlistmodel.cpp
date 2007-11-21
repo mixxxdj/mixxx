@@ -61,6 +61,7 @@ QVariant WPlaylistListModel::data(const QModelIndex &index, int role) const
         case 1: return "type";
         case 2: return "duration";
         case 3: return "comment!";
+		default: return "Error: WPlaylistListModel::data invalid index";
         }
     }
 
@@ -87,6 +88,9 @@ QVariant WPlaylistListModel::headerData(int section, Qt::Orientation orientation
             return QString("Duration");
         case 3:
             return QString("Comment"); 
+		default:
+			//this is a nasty error for the user to see, but its better than a crash and should help with debugging
+			return QString("ERROR: WPlaylistListMode::headerData Invalid section parameter");	
         }
     }
     else
