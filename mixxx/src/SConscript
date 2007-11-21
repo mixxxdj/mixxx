@@ -520,6 +520,23 @@ if int(flags_msvcdebug) and platform == 'win32':
 else:
 	print "MSVC Debugging... disabled"
 
+#Optimization
+flags_optimize = ARGUMENTS.get('optimize', 0)
+if int(flags_optimize):
+	if platform == 'win32':
+		if int(flags_msvcdebug):
+			print "Optimizations... DISABLED DUE TO DEBUG"
+		else:
+			print "Optimizations... enabled"
+			env.Append(CXXFLAGS = '/O2 /GL')
+			env.Append(LINKFLAGS = '/LTCG:STATUS')
+	else:
+		print "Optimizations... enabled"
+		env.Append(CXXFLAGS = '-03')
+else:
+	print "Optimizations... disabled"
+
+
 #ffmpeg support
 flags_ffmpeg = ARGUMENTS.get('ffmpeg', 0)
 if int(flags_ffmpeg):
