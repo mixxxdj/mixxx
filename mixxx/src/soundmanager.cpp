@@ -294,9 +294,13 @@ void SoundManager::setDefaults(bool api, bool devices, bool other)
     if (devices)
     {    	
         //Set the default master device to be the first ouput device in the list (that matches the API)
-        m_pConfig->set(ConfigKey("[Soundcard]","DeviceMaster"), ConfigValue(getDeviceList(getHostAPI(), true, false).front()->getName()));
-        m_pConfig->set(ConfigKey("[Soundcard]","DeviceMasterLeft"), ConfigValue(getDeviceList(getHostAPI(), true, false).front()->getName()));
-        m_pConfig->set(ConfigKey("[Soundcard]","DeviceMasterRight"), ConfigValue(getDeviceList(getHostAPI(), true, false).front()->getName()));
+		QList<SoundDevice *> qlistAPI = getDeviceList(getHostAPI(), true, false);
+		if(! qlistAPI.isEmpty())
+		{
+			m_pConfig->set(ConfigKey("[Soundcard]","DeviceMaster"), ConfigValue(qlistAPI.front()->getName()));
+			m_pConfig->set(ConfigKey("[Soundcard]","DeviceMasterLeft"), ConfigValue(qlistAPI.front()->getName()));
+			m_pConfig->set(ConfigKey("[Soundcard]","DeviceMasterRight"), ConfigValue(qlistAPI.front()->getName()));
+		}
     }
 
     if (other)
