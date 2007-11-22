@@ -303,7 +303,7 @@ void BpmDetect::inputSamples(SAMPLETYPE * samples, int numSamples)
 }
 
 
-void BpmDetect::init(int numChannels, int sampleRate)
+void BpmDetect::init(int numChannels, unsigned int sampleRate)
 {
     this->sampleRate = sampleRate;
 

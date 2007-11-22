@@ -147,7 +147,7 @@ protected:
     soundtouch::FIFOSampleBuffer *buffer;
 
     /// Initialize the class for processing.
-    void init(int numChannels, int sampleRate);
+    void init(int numChannels, unsigned int sampleRate);
 
     /// Updates auto-correlation function for given number of decimated samples that 
     /// are read from the internal 'buffer' pipe (samples aren't removed from the pipe 
