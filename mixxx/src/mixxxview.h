@@ -111,6 +111,7 @@ private:
     QList<QObject *> m_qWidgetList;
     /** Pointer to keyboard handler */
     MixxxKeyboard *m_pKeyboard;
+    ConfigObject<ConfigValue> *m_pconfig;
 };
 
 #endif
