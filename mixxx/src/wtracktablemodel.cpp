@@ -66,7 +66,7 @@ QVariant WTrackTableModel::data(const QModelIndex &index, int role) const
         case 6: return m_pTrackInfo->getComment();
 		default: 
 			Q_ASSERT(FALSE);	//we should never get here
-			return NULL;	
+			return QVariant();	
         }
     }
 
