@@ -143,8 +143,8 @@ void DlgPrefSound::slotUpdate()
     while (it.hasNext())
     {
         dev = it.next();
-        ComboBoxSoundcardMaster->insertItem(j, dev->getName());
-        if (dev->getName()==config->getValueString(ConfigKey("[Soundcard]","DeviceMaster")))
+        ComboBoxSoundcardMaster->insertItem(j, dev->getDisplayName(), dev->getInternalName());
+        if (dev->getInternalName()==config->getValueString(ConfigKey("[Soundcard]","DeviceMaster")))
             ComboBoxSoundcardMaster->setCurrentIndex(j);
         ++j;
     }
@@ -171,8 +171,8 @@ void DlgPrefSound::slotUpdate()
     while (it.hasNext())
     {
         dev = it.next();
-        ComboBoxSoundcardHeadphones->insertItem(j, dev->getName());
-        if (dev->getName()==config->getValueString(ConfigKey("[Soundcard]","DeviceHeadphones")))
+        ComboBoxSoundcardHeadphones->insertItem(j, dev->getDisplayName(), dev->getInternalName());
+        if (dev->getInternalName()==config->getValueString(ConfigKey("[Soundcard]","DeviceHeadphones")))
             ComboBoxSoundcardHeadphones->setCurrentIndex(j);
         ++j;
     }
@@ -243,12 +243,22 @@ void DlgPrefSound::slotApply()
     qDebug() << "DlgPrefSound::Apply";
 
     // Update the config object with parameters from dialog
+
+    config->set(ConfigKey("[Soundcard]","DeviceMaster"), ConfigValue(ComboBoxSoundcardMaster->itemData(ComboBoxSoundcardMaster->currentIndex()).toString()));
+    //config->set(ConfigKey("[Soundcard]","DeviceMasterRight"), ConfigValue(ComboBoxSoundcardMasterRight->currentText()));
+    config->set(ConfigKey("[Soundcard]","DeviceHeadphones"), ConfigValue(ComboBoxSoundcardHeadphones->itemData(ComboBoxSoundcardHeadphones->currentIndex()).toString()));
+    //config->set(ConfigKey("[Soundcard]","DeviceHeadRight"), ConfigValue(ComboBoxSoundcardHeadRight->currentText()));
+    config->set(ConfigKey("[Soundcard]","Samplerate"), ConfigValue(ComboBoxSamplerates->currentText()));
+    config->set(ConfigKey("[Soundcard]","Latency"), ConfigValue(getSliderLatencyMsec(SliderLatency->value())));
+
+/*
     config->set(ConfigKey("[Soundcard]","DeviceMaster"), ConfigValue(ComboBoxSoundcardMaster->currentText()));
     //config->set(ConfigKey("[Soundcard]","DeviceMasterRight"), ConfigValue(ComboBoxSoundcardMasterRight->currentText()));
     config->set(ConfigKey("[Soundcard]","DeviceHeadphones"), ConfigValue(ComboBoxSoundcardHeadphones->currentText()));
     //config->set(ConfigKey("[Soundcard]","DeviceHeadRight"), ConfigValue(ComboBoxSoundcardHeadRight->currentText()));
     config->set(ConfigKey("[Soundcard]","Samplerate"), ConfigValue(ComboBoxSamplerates->currentText()));
     config->set(ConfigKey("[Soundcard]","Latency"), ConfigValue(getSliderLatencyMsec(SliderLatency->value())));
+*/
 
 #ifdef __VINYLCONTROL__
     //Crappy Scratchlib warning hack about the samplerate...
@@ -289,6 +299,8 @@ void DlgPrefSound::slotApplyApi()
 
     config->set(ConfigKey("[Soundcard]","SoundApi"), ConfigValue(ComboBoxSoundApi->currentText()));
 
+    m_pSoundManager->closeDevices();
+
     if (m_pSoundManager->setHostAPI(ComboBoxSoundApi->currentText()) != 0)
     {
         // Did they select the null api?
@@ -302,7 +314,6 @@ void DlgPrefSound::slotApplyApi()
             QMessageBox::warning(0, "Configuration error","Audio device could not be opened");
         }
     }
-    m_pSoundManager->closeDevices();
     emit(apiUpdated());
     m_pSoundManager->setDefaults(false, true, true);
     slotUpdate();

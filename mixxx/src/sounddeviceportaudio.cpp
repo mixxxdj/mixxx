@@ -29,9 +29,10 @@ SoundDevicePortAudio::SoundDevicePortAudio(ConfigObject<ConfigValue> * config, S
     //qDebug() << "SoundDevicePortAudio::SoundDevicePortAudio()";
     m_deviceInfo = deviceInfo;
     m_devId = devIndex;
-    m_hostAPI = Pa_GetHostApiInfo(deviceInfo->hostApi)->name    ;
+    m_hostAPI = Pa_GetHostApiInfo(deviceInfo->hostApi)->name;
     m_dSampleRate = deviceInfo->defaultSampleRate;
-    m_strName = deviceInfo->name;
+    m_strInternalName = QString("%1, %2").arg(QString::number(m_devId)).arg(deviceInfo->name);
+    m_strDisplayName = QString(deviceInfo->name);
 
     m_pStream = 0;
     //m_devId = -1;
@@ -48,7 +49,7 @@ SoundDevicePortAudio::~SoundDevicePortAudio()
 
 int SoundDevicePortAudio::open()
 {
-    qDebug() << "SoundDevicePortAudio::open()" << this->getName();
+    qDebug() << "SoundDevicePortAudio::open()" << this->getInternalName();
     PaError err;
 
     if (m_audioSources.empty() && m_audioReceivers.empty())
@@ -224,7 +225,7 @@ int SoundDevicePortAudio::close()
 
         if( err != paNoError )
         {
-            qDebug() << "PortAudio: Stop stream error:" << Pa_GetErrorText(err) << getName();
+            qDebug() << "PortAudio: Stop stream error:" << Pa_GetErrorText(err) << getInternalName();
             return 1;
         }
 
@@ -232,7 +233,7 @@ int SoundDevicePortAudio::close()
         err = Pa_CloseStream(m_pStream);
         if( err != paNoError )
         {
-            qDebug() << "PortAudio: Close stream error:" << Pa_GetErrorText(err) << getName();
+            qDebug() << "PortAudio: Close stream error:" << Pa_GetErrorText(err) << getInternalName();
             return 1;
         }
     }

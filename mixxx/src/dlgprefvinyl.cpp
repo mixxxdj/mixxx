@@ -124,13 +124,13 @@ void DlgPrefVinyl::slotUpdate()
     while (device_it.hasNext())
     {
         device = device_it.next();
-        ComboBoxDeviceDeck1->insertItem(device->getName());
-        ComboBoxDeviceDeck2->insertItem(device->getName());
-        if (device->getName() == config->getValueString(ConfigKey("[VinylControl]","DeviceInputDeck1")))
+        ComboBoxDeviceDeck1->addItem(device->getDisplayName(), device->getInternalName());
+        ComboBoxDeviceDeck2->addItem(device->getDisplayName(), device->getInternalName());
+        if (device->getInternalName() == config->getValueString(ConfigKey("[VinylControl]","DeviceInputDeck1")))
         {
             ComboBoxDeviceDeck1->setCurrentItem(j);
         }
-        if (device->getName() == config->getValueString(ConfigKey("[VinylControl]","DeviceInputDeck2")))
+        if (device->getInternalName() == config->getValueString(ConfigKey("[VinylControl]","DeviceInputDeck2")))
         {
             ComboBoxDeviceDeck2->setCurrentItem(j);
         }
@@ -170,8 +170,8 @@ void DlgPrefVinyl::slotApply()
 {
     qDebug("DlgPrefVinyl::Apply");
 
-    config->set(ConfigKey("[VinylControl]","DeviceInputDeck1"), ConfigValue(ComboBoxDeviceDeck1->currentText()));
-    config->set(ConfigKey("[VinylControl]","DeviceInputDeck2"), ConfigValue(ComboBoxDeviceDeck2->currentText()));
+    config->set(ConfigKey("[VinylControl]","DeviceInputDeck1"), ConfigValue(ComboBoxDeviceDeck1->itemData(ComboBoxDeviceDeck1->currentIndex()).toString()));
+    config->set(ConfigKey("[VinylControl]","DeviceInputDeck2"), ConfigValue(ComboBoxDeviceDeck2->itemData(ComboBoxDeviceDeck2->currentIndex()).toString()));
 
     // Lead-in time
     QString strLeadIn      = LeadinTime->text();

@@ -32,7 +32,8 @@ class SoundDevice
     public:
         SoundDevice(ConfigObject<ConfigValue> *config, SoundManager* sm);
         virtual ~SoundDevice();
-        QString getName();
+        QString getInternalName();
+        QString getDisplayName();
         QString getHostAPI();
         void setHostAPI(QString api);        
         virtual int open() = 0;
@@ -50,7 +51,8 @@ class SoundDevice
     //TODO: Cleanup unused members
         ConfigObject<ConfigValue> *m_pConfig;
         SoundManager* m_pSoundManager;      //Pointer to the SoundManager object which we'll request audio from.
-        QString m_strName;                  //The name of the soundcard
+        QString m_strInternalName;          //The name of the soundcard, used internally (may include the device ID)
+        QString m_strDisplayName;           //The name of the soundcard, as displayed to the user 
         int m_iNumOutputChannels;           //The number of output channels that the soundcard has
         int m_iNumInputChannels;            //The number of input channels that the soundcard has
         int m_iBufferSize;                  //The number of samples in a buffer.

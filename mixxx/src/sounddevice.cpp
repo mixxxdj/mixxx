@@ -24,7 +24,8 @@ SoundDevice::SoundDevice(ConfigObject<ConfigValue> * config, SoundManager * sm)
 {
     m_pConfig = config;
     m_pSoundManager = sm;
-    m_strName = "Unknown Soundcard";
+    m_strInternalName = "Unknown Soundcard";
+    m_strDisplayName = "Unknown Soundcard";
     m_iNumOutputChannels = 2;
     m_iNumInputChannels = 2;
     m_iBufferSize = 3200; //~72 milliseconds at 44100 Hz
@@ -39,9 +40,14 @@ SoundDevice::~SoundDevice()
 
 }
 
-QString SoundDevice::getName()
+QString SoundDevice::getInternalName()
 {
-    return m_strName;
+    return m_strInternalName;
+}
+
+QString SoundDevice::getDisplayName()
+{
+    return m_strDisplayName;
 }
 
 QString SoundDevice::getHostAPI()
@@ -88,11 +94,11 @@ void SoundDevice::clearReceivers()
 
 bool SoundDevice::operator== (SoundDevice * other)
 {
-    return (this->getName() == other->getName());
+    return (this->getInternalName() == other->getInternalName());
 }
 
 bool SoundDevice::operator== (QString other)
 {
-    return (this->getName() == other);
+    return (this->getInternalName() == other);
 }
 
