@@ -68,6 +68,7 @@ MixxxView::MixxxView(QWidget * parent, ConfigObject<ConfigValueKbd> * kbdconfig,
 {
     view = 0;
     //    m_qWidgetList.setAutoDelete(true);
+    m_pconfig = pConfig;
 
     m_pKeyboard = new MixxxKeyboard(kbdconfig);
     installEventFilter(m_pKeyboard);
@@ -124,8 +125,14 @@ void MixxxView::checkDirectRendering()
     // Check if DirectRendering is enabled and display warning
     if ((m_pVisualCh1 && !((WVisualWaveform *)m_pVisualCh1)->directRendering()) ||
         (m_pVisualCh2 && !((WVisualWaveform *)m_pVisualCh2)->directRendering()))
-        QMessageBox::warning(0, "OpenGL Direct Rendering",
+    {
+	if(m_pconfig->getValueString(ConfigKey("[Direct Rendering]", "Warned")) != QString("yes"))
+	{
+	    QMessageBox::warning(0, "OpenGL Direct Rendering",
                              "Direct rendering is not enabled on your machine.\n\nThis means that the waveform displays will be very\nslow and take a lot of CPU time. Either update your\nconfiguration to enable direct rendering, or disable\nthe waveform displays in the control panel by\nselecting \"Simple\" under waveform displays.\nNOTE: In case you run on NVidia hardware,\ndirect rendering may not be present, but you will\nnot experience a degradation in performance.");
+	    m_pconfig->set(ConfigKey("[Direct Rendering]", "Warned"), ConfigValue(QString("yes")));
+	}
+    }
 }
 
 bool MixxxView::activeWaveform()
