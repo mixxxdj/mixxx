@@ -285,7 +285,21 @@ MixxxApp::MixxxApp(QApplication * a, struct CmdlineArgs args, QSplashScreen * pS
     //if (!player->open())
     //    prefDlg->setHidden(false);
 
-    soundmanager->setupDevices();
+    if (!soundmanager->setupDevices())
+    {
+
+#ifdef __C_METRICS__
+	    cm_writemsg_ascii(0, "Mixxx failed to open audio device(s) on startup.");
+#endif
+        //TODO: Add cmetric hook for failing to detect audio device on FIRST startup too.
+        
+        int ret = QMessageBox::warning(this, tr("Mixxx"),
+                                        tr("Failed to open your audio device(s).\n"
+                                          "Please verify your selection in the preferences."),
+                                        QMessageBox::Ok,
+                                        QMessageBox::Ok);
+         prefDlg->show();
+    }
 
     //setFocusPolicy(QWidget::StrongFocus);
     //grabKeyboard();
