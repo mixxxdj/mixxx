@@ -247,6 +247,18 @@ void DlgPreferences::changePage(QListWidgetItem * current, QListWidgetItem * pre
     pagesWidget->setCurrentIndex(contentsWidget->row(current));
 }
 
+void DlgPreferences::showVinylControlPage()
+{
+    pagesWidget->setCurrentWidget(wvinylcontrol);
+    
+    for (int i = 0; i < contentsWidget->count(); i++)
+    {
+        if (contentsWidget->item(i)->text() == tr("Vinyl Control"))
+            contentsWidget->setCurrentRow(i);
+    }
+
+}
+
 bool DlgPreferences::eventFilter(QObject * o, QEvent * e)
 {
     // Send a close signal if dialog is closing

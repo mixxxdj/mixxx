@@ -61,6 +61,7 @@ public slots:
     void slotUpdate();
     void slotApply();
     void changePage(QListWidgetItem *current, QListWidgetItem *previous);
+    void showVinylControlPage();
 signals:
     void closeDlg();
     void showDlg();
