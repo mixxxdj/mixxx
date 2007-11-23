@@ -734,8 +734,25 @@ void MixxxApp::slotOptionsPreferences()
 void MixxxApp::slotOptionsVinylControl(bool toggle)
 {
     //qDebug("slotOptionsVinylControl: toggle is %i", (int)toggle);
-    config->set(ConfigKey("[VinylControl]","Enabled"), ConfigValue((int)toggle));
-    ControlObject::getControl(ConfigKey("[VinylControl]", "Enabled"))->set((int)toggle);
+
+    QString device1 = config->getValueString(ConfigKey("[VinylControl]","DeviceInputDeck1")); 
+    QString device2 = config->getValueString(ConfigKey("[VinylControl]","DeviceInputDeck2"));
+
+    if (device1 == "" && device2 == "")
+    {
+        int ret = QMessageBox::warning(this, tr("Mixxx"),
+                                    tr("No input device(s) select.\n"
+                                      "Please select your soundcard(s) in vinyl control preferences."),
+                                    QMessageBox::Ok,
+                                    QMessageBox::Ok);
+        prefDlg->show();
+        prefDlg->showVinylControlPage();
+    }
+    else
+    {
+        config->set(ConfigKey("[VinylControl]","Enabled"), ConfigValue((int)toggle));
+        ControlObject::getControl(ConfigKey("[VinylControl]", "Enabled"))->set((int)toggle);
+    }
 }
 
 void MixxxApp::slotHelpAbout()
