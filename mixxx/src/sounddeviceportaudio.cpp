@@ -218,10 +218,11 @@ int SoundDevicePortAudio::close()
 {
     if (m_pStream)
     {
-        //PaError err = Pa_StopStream(m_pStream);
-        PaError err = Pa_AbortStream(m_pStream); //Trying Pa_AbortStream instead, because StopStream waits until all
-                                                 //the buffer have been flushed, which can take a few (annoying) seconds
-                                                 //when you're doing soundcard input. (it flushes the input buffer, and then some)
+        PaError err = Pa_StopStream(m_pStream);
+        //PaError err = Pa_AbortStream(m_pStream); //Trying Pa_AbortStream instead, because StopStream seems to wait
+                                                   //until all the buffers have been flushed, which can take a
+                                                   //few (annoying) seconds when you're doing soundcard input. 
+                                                   //(it flushes the input buffer, and then some, or something)
 
         if( err != paNoError )
         {
