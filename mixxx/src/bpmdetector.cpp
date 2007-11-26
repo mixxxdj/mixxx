@@ -31,7 +31,7 @@
 #include <qapplication.h>
 #include "dlgbpmtap.h"
 #ifdef __C_METRICS__
-#include "umetrics.h"
+#include "cmetrics.h"
 #endif
 #include "bpmdetect.h"
 #include <STTypes.h>

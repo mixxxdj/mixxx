@@ -52,7 +52,7 @@
 #include "soundmanager.h"
 
 #ifdef __C_METRICS__
-#include <umetrics.h>
+#include <cmetrics.h>
 #endif
 
 MixxxApp::MixxxApp(QApplication * a, struct CmdlineArgs args, QSplashScreen * pSplash)
