@@ -78,7 +78,7 @@
 #include "peakfinder.h"
 #include "bpmdetect.h"
 #ifdef __C_METRICS__
-#include "umetrics.h"
+#include "cmetrics.h"
 #endif
 
 using namespace soundtouch;

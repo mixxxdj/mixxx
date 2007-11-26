@@ -467,7 +467,7 @@ else:
 flags_cmetrics = ARGUMENTS.get('cmetrics', 0)
 if int(flags_cmetrics):
 	env.Append(CXXFLAGS = '-D__C_METRICS__')
-	env.Append(LIBS = 'umetrics')
+	env.Append(LIBS = 'cmetrics')
 	print "Case Metrics profiling... enabled"
 else:
 	print "Case Metrics profiling... disabled"

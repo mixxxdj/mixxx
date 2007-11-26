@@ -21,7 +21,7 @@
 #include "wwidget.h"
 
 #ifdef __C_METRICS__
-#include "umetrics.h"
+#include "cmetrics.h"
 #endif
 
 #ifdef __WIN__
