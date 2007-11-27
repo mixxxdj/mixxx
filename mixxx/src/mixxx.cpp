@@ -285,7 +285,7 @@ MixxxApp::MixxxApp(QApplication * a, struct CmdlineArgs args, QSplashScreen * pS
     //if (!player->open())
     //    prefDlg->setHidden(false);
 
-    if (!soundmanager->setupDevices())
+    if (soundmanager->setupDevices() != 0)
     {
 
 #ifdef __C_METRICS__
