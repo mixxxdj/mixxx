@@ -68,16 +68,13 @@ Track::Track(QString location, MixxxView * pView, EngineBuffer * pBuffer1, Engin
     // Read the XML file
     readXML(location);
 
-    // Ensure that two playlists are present
-    if(m_qPlaylists.count() < 2)
+    //Create the library and play queue playlists
+    if (m_qPlaylists.count() < 2)
     {
-        for(int i = m_qPlaylists.count(); i<2; ++i)
-        {
-            m_qPlaylists.append(new TrackPlaylist(m_pTrackCollection,(QString("Default %1").arg(i))));
-        }
-        m_qPlaylists.at(0)->addPath(musicDir);
+        m_qPlaylists.append(new TrackPlaylist(m_pTrackCollection, "Library"));
+        m_qPlaylists.append(new TrackPlaylist(m_pTrackCollection, "Play Queue"));
     }
-
+    m_qPlaylists.at(0)->addPath(musicDir);
 
     // Update anything that views the playlists
     updatePlaylistViews();
@@ -158,6 +155,8 @@ Track::~Track()
 
 void Track::readXML(QString location)
 {
+    qDebug() << "Track::readXML" << location;
+    
     // Open XML file
     QFile file(location);
     QDomDocument domXML("Mixxx_Track_List");
@@ -194,10 +193,22 @@ void Track::readXML(QString location)
 
     // Get all the Playlists written in the xml file:
     node = XmlParse::selectNode(elementRoot, "Playlists").firstChild();
+    QString qPlaylistName; //Name of the current playlist
     while (!node.isNull())
     {
         if (node.isElement() && node.nodeName()=="Playlist")
-            m_qPlaylists.append(new TrackPlaylist(m_pTrackCollection, node));
+        {
+            //Create the playlists internally.
+            //If the playlist is "Library" or "Play Queue", insert it into
+            //a special spot in the list of playlists.
+            qPlaylistName = XmlParse::selectNodeQString(node, "Name");
+            if (qPlaylistName == "Library")
+                m_qPlaylists.insert(0, new TrackPlaylist(m_pTrackCollection, node));
+            else if (qPlaylistName == "Play Queue")
+                m_qPlaylists.insert(1, new TrackPlaylist(m_pTrackCollection, node));
+            else
+                m_qPlaylists.append(new TrackPlaylist(m_pTrackCollection, node));
+        }
 
         node = node.nextSibling();
     }
@@ -337,7 +348,7 @@ void Track::slotActivatePlaylist(QString name)
 
 
 void Track::slotActivatePlaylist(int index)
-{
+{   
     //Toggled by the ComboBox - This needs to be reorganized...
     switch(index)
     {
@@ -717,7 +728,7 @@ void Track::slotEndOfTrackPlayer2(double val)
                     pTrack = NULL;
                     QString qPrevTrackPath = m_pView->m_pTrackTableView->getPrevTrackBrowseMode(m_pTrackPlayer2);
                     slotLoadPlayer2(qPrevTrackPath, true);
-                }                         
+                }
                 
                 bStartFromEndPos = true;
             }
