@@ -777,6 +777,7 @@ void MixxxApp::slotHelpAbout()
 "<p align=\"center\">"
 "Mark Hills<br>"
 "Martin Sakm&#225;r<br>"
+"Alex Barker<br>"
 "Dave Jarvis<br>"
 "Thomas Baag<br>"
 "Karlis Kalnins<br>"
