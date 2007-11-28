@@ -17,6 +17,7 @@
 #ifndef ENGINERECORD_H
 #define ENGINERECORD_H
 
+#include "controlobjectthreadmain.h"
 #include "engineobject.h"
 #include "qthread.h"
 #include "configobject.h"
@@ -47,8 +48,8 @@ private:
     void resizeBuf(int buf, int size);
     Buffer *fill, *write;   //fill buffer is written to by mixxx, write is written to file
     bool curBuf1;
-    QWaitCondition waitCondFill;
-    QMutex mutexFill;
+    //QWaitCondition waitCondFill;
+    //QMutex mutexFill;
     WriteAudioFile *fOut;
     ConfigObject<ConfigValue> *config;
     ControlObjectThreadMain* recReady;

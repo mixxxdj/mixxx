@@ -38,7 +38,7 @@ DlgPrefRecord::DlgPrefRecord(QWidget * parent, ConfigObject<ConfigValue> * _conf
 
     setupUi(this);
 
-    recordControl = ControlObjectThreadMain(ControlObject::getControl(ConfigKey("[Master]", "Record"))); //See RECORD_* #defines in dlgprefrecord.h
+    recordControl = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey("[Master]", "Record"))); //See RECORD_* #defines in dlgprefrecord.h
 
     //Fill up encoding list
     comboBoxEncoding->insertItem(IDEX_WAVE, "WAVE");

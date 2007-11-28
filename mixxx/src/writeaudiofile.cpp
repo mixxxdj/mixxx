@@ -1,3 +1,5 @@
+#include "controlobjectthreadmain.h"
+#include "controlobject.h"
 #include "writeaudiofile.h"
 #include "dlgprefrecord.h"
 #include <sndfile.h>
@@ -8,20 +10,22 @@ WriteAudioFile::WriteAudioFile(ConfigObject<ConfigValue> * _config)
     ready = false;
     sf = NULL;
     config = _config;
+    ctrlRec = new ControlObject(ConfigKey("[Master]", "Record"));
 }
 
 WriteAudioFile::~WriteAudioFile()
 {
+    delete ctrlRec;
     close();
 }
 
 void WriteAudioFile::open()
 {
-    const char * path = config->getValueString(ConfigKey(PREF_KEY,"Path")).ascii();
+    const char * path = config->getValueString(ConfigKey(PREF_KEY,"Path")).latin1();
     int format = config->getValueString(ConfigKey(PREF_KEY, "Encoding")).toInt();
 
     ready = false;
-    if(ControlObject::getControl(ConfigKey("[Master]", "Record"))->get() == RECORD_ON)
+    if(ctrlRec->get() == RECORD_ON)
     {
         //if the record flag is set
 

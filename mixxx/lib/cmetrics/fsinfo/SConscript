@@ -1,0 +1,11 @@
+project = 'fsinfo'
+
+#Sources
+source = Split("""fsinfo.c""")
+
+#Import Flags
+Import('env libutf')
+
+obj = []
+obj = env.SharedObject(source)
+Return('obj')

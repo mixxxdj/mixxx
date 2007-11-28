@@ -1,0 +1,64 @@
+import os
+import sys
+import glob
+import SCons
+import shutil
+
+Import('env platform client server')
+
+
+env.Append(CXXFLAGS = '-DSERVER_HOST=\"\\"' + server + '\\"\"')
+
+
+#Set Flags
+if platform == 'linux':
+    #libname = libname + "." + versionMajor + "." + versionMinor
+    env.Append(CCFLAGS = '-DLINUX')
+    env.Append(CXXFLAGS = '-DLINUX')
+elif platform == 'win32':
+    env.Append(CCFLAGS = '-DWIN32')
+    env.Append(CXXFLAGS = '-DWIN32')
+    if arg_ltcg == '1':
+      env.Append(CCFLAGS = '/GL')
+      env.Append(CXXFLAGS = '/GL')
+      env.Append(LINKFLAGS = '/LTCG')
+
+
+env.Append(CCFLAGS = '-DLIB_CLIENT="\\"' + client + '\\""')
+env.Append(CXXFLAGS = '-DLIB_CLIENT="\\"' + client + '\\""')
+
+
+#OPTIMIZATION FLAGS
+if platform == 'linux':
+    env.Append(CCFLAGS = '-O3')
+    env.Append(CXXFLAGS = '-O3')
+elif platform == 'win32':
+    env.Append(CCFLAGS = '/O2 /GL')
+    env.Append(CXXFLAGS = '/O2 /GL')
+
+#BUILD LIB OBJECTS
+Export('env')
+libutf = []
+
+libutf = SConscript('utf/SConscript')
+
+CCFLAGS = ''
+
+#Build The Lib
+Export('env libutf CCFLAGS platform')
+obj = []
+
+obj += SConscript('utf/SConscript')
+obj += SConscript('cpuinfo/SConscript')
+obj += SConscript('meminfo/SConscript')
+obj += SConscript('protocol/SConscript')
+obj += SConscript('fsinfo/SConscript')
+obj += SConscript('osinfo/SConscript')
+
+if platform == 'win32':
+    obj += env.SharedObject("windriver.cpp")
+else:
+    obj += env.SharedObject("lindriver.cpp")
+
+bin = env.Library(obj)
+Return('bin')

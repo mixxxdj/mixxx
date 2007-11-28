@@ -1,0 +1,12 @@
+project = 'meminfo'
+
+#Sources
+source = Split("""meminfo.c""")
+
+#Import Flags
+Import('env libutf')
+
+obj = []
+
+obj = env.SharedObject(source)
+Return('obj')
