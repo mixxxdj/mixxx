@@ -1,0 +1,12 @@
+project = 'protocol'
+
+#Sources
+sources = Split("""protocol.cpp http.cpp socket.c""")
+
+#Import Flags
+Import('env libutf')
+
+obj = []
+obj = env.SharedObject(sources)
+
+Return('obj')

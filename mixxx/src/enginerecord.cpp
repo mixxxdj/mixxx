@@ -37,7 +37,7 @@ EngineRecord::EngineRecord(ConfigObject<ConfigValue> * _config)
     curBuf1 = true;
     config = _config;
     recReadyCO = new ControlObject(ConfigKey("[Master]", "Record"));
-    recReady = new ControlObjectThreadMain(recReady);
+    recReady = new ControlObjectThreadMain(recReadyCO);
     fOut = new WriteAudioFile(_config);
 
     //Allocate Buffers
@@ -109,17 +109,18 @@ void EngineRecord::process(const CSAMPLE * pIn, const CSAMPLE * pOut, const int 
 
 void EngineRecord::run()
 {
+#if 0
     //Method will record the buffer to file
     //fOut->write(buffer1, validBuf1);
     Buffer * temp;
     while(1)
     {
-        mutexFill.lock();
-        waitCondFill.wait(&mutexFill);
+        //mutexFill.lock();
+        //waitCondFill.wait(&mutexFill);
 
         //swap buffers
-        temp = fill;
-        fill = write;
+        //temp = fill;
+        //fill = write;
         write = temp;
 
         mutexFill.unlock();
@@ -128,5 +129,6 @@ void EngineRecord::run()
         fOut->write(write->data, write->valid);
         write->valid = 0;
     }
+#endif
 }
 

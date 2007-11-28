@@ -1,0 +1,13 @@
+project = 'cpuinfo'
+
+#Sources
+sources = Split("""cpuinfo.c""")
+
+#Import Flags
+Import('env libutf')
+
+sources += Split("""x86/cpuinfo.c x86/cpuid.c""")
+
+obj = []
+obj = env.SharedObject(sources)
+Return('obj')
