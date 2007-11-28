@@ -26,6 +26,7 @@
 class TrackCollection;
 class WTrackTable;
 class Track;
+class LibraryScanner;
 
 
 /** Sort Comparison Functions */
@@ -100,12 +101,19 @@ public:
     void sortByComment(bool ascending);
 
     void dumpInfo();
+
+signals:
+    void startedLoading();         //Started loading a playlist/library
+    void finishedLoading();        //Finished loading a playlist/library
+    void progressLoading(QString trackName);        
     
 public slots:
     /** Decode drop event and calls addPath */
     void slotDrop(QDropEvent *e);
     /** Remove a track from the playlist */
     void slotRemoveTrack(TrackInfoObject *pTrack);
+    /** Cancel a library scan */
+    void slotCancelLibraryScan();
 
 protected:
     /** Sorting algorithm... */
@@ -124,18 +132,8 @@ private:
     /** Static pointer to Track */
     static Track *spTrack;
 	int iCounter;
-
-	// These functions allow the displaying of a useful message of some kind if it all takes too long
-	static void startTiming();
-	static void stopTiming();
-	static void checkTiming(QString path);
-	static void setupTiming();
-
-	static QTime m_timer;
-	static int m_timeruses;
-	static QWidget* m_progress;
-	static QLabel* m_current;
-	static bool m_timersetup;
+	QMutex m_qLibScanMutex;
+	bool m_bStopLibraryScan;
 
 };
 

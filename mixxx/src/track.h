@@ -34,6 +34,8 @@ class WaveSummary;
 class BpmDetector;
 class QSortFilterProxyModel;
 class QDirModel;
+class LibraryScanner;
+class LibraryScannerDialog;
 
 // This define sets the version of the tracklist. If any code is changed or
 // bugfixed, this number should be increased. If TRACK_VERSION is larger
@@ -151,6 +153,10 @@ private:
     WaveSummary *m_pWaveSummary;
     /** Pointer to BPM detection queue */
     BpmDetector *m_pBpmDetector;
+    /** Pointer to the library scanner */
+    LibraryScanner *m_pScanner;
+    /** Pointer to the library scanning dialog */
+    LibraryScannerDialog* m_pLibScannerDlg;
 };
 
 #endif

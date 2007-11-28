@@ -1,8 +1,9 @@
 /***************************************************************************
-                          libraryscanner.h  -  scans library in a thread
+                          LibraryScannerDlg.cpp  -  shows library scanning
+                                                       progress
                              -------------------
     begin                : 11/27/2007
-    copyright            : (C) 2007 Albert Santoni
+    copyright            : (C) 2007 Albert Santoni and Adam Davison
     email                : gamegod \a\t users.sf.net
 ***************************************************************************/
 
@@ -16,31 +17,45 @@
 ***************************************************************************/
 
 
-#ifndef LIBRARYSCANNER_H
-#define LIBRARYSCANNER_H
+#ifndef LIBRARYSCANNERDLG_H
+#define LIBRARYSCANNERDLG_H
 
 #include <QThread>
 #include <QtCore>
+#include <QtGui>
 #include "trackplaylistlist.h"
-#include "libraryscannerdlg.h"
 
-class LibraryScanner : public QThread
+class LibraryScannerDlg : public QObject
 {
     Q_OBJECT
     
     public:
-        LibraryScanner();
-        LibraryScanner(TrackPlaylistList* playlists, QString libraryPath);
-        ~LibraryScanner();
-        void run();
-        void scan(QString libraryPath, TrackPlaylistList* playlists);
-        void scan();  
+        LibraryScannerDlg();
+        LibraryScannerDlg(TrackPlaylistList* playlists);
+        ~LibraryScannerDlg();
+    public slots:
+	    void slotStartTiming();
+	    void slotStopTiming();
+	    void slotCheckTiming(QString path);  
+	    void slotCancel();  
+        
     signals:
         void scanFinished();
+        void scanCancelled();
     private:
         TrackPlaylistList* m_qPlaylists;    //The list of playlists
         QString m_qLibraryPath;             //The path to the library on disk
-        LibraryScannerDlg* m_pProgress;  //The library scanning window
+        
+	    void setupTiming();        
+            
+	    static QTime m_timer;
+	    static int m_timeruses;
+	    static QWidget* m_progress;
+	    static QLabel* m_current;
+	    static QPushButton* m_cancel;
+	    static bool m_timersetup;
+	    QMutex m_qMutex;
+	    bool m_bCancelled;    
 };
 
 #endif
