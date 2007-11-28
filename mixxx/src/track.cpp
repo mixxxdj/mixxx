@@ -27,6 +27,8 @@
 #include "wtracktablemodel.h"
 #include "wplaylistlistmodel.h"
 #include "wtracktableview.h"
+#include "libraryscanner.h"
+#include "libraryscannerdlg.h"
 
 //#include "wtreeview.h"
 #include "dlgbpmtap.h"
@@ -43,6 +45,7 @@
 #include "wavesummary.h"
 #include "bpmdetector.h"
 #include "woverview.h"
+
 #include <q3progressdialog.h>
 
 Track::Track(QString location, MixxxView * pView, EngineBuffer * pBuffer1, EngineBuffer * pBuffer2, WaveSummary * pWaveSummary, BpmDetector * pBpmDetector, QString musiclocation)
@@ -65,17 +68,26 @@ Track::Track(QString location, MixxxView * pView, EngineBuffer * pBuffer1, Engin
     m_pPlayQueueModel = new WTrackTableModel(m_pView->m_pTrackTableView);
     m_pPlaylistListModel = new WPlaylistListModel(m_pView->m_pTrackTableView); 
 
+    
+    m_pScanner = new LibraryScanner(&m_qPlaylists, "");
+    //Refresh the tableview when the library is done being scanned. (FIXME: Not working)
+    connect(m_pScanner, SIGNAL(scanFinished()), m_pView->m_pTrackTableView, SLOT(reset())); 
     // Read the XML file
-    readXML(location);
-
+    readXML(location); 
+ 
     //Create the library and play queue playlists
     if (m_qPlaylists.count() < 2)
     {
         m_qPlaylists.append(new TrackPlaylist(m_pTrackCollection, "Library"));
         m_qPlaylists.append(new TrackPlaylist(m_pTrackCollection, "Play Queue"));
     }
-    m_qPlaylists.at(0)->addPath(musicDir);
-
+    
+    //Scan the music library on disk
+    qDebug() << "Starting Library Scanner...";
+    m_pScanner->scan(musicDir, &m_qPlaylists);
+    
+    //m_qPlaylists.at(0)->addPath(musicDir);
+    
     // Update anything that views the playlists
     updatePlaylistViews();
 
@@ -214,7 +226,10 @@ void Track::readXML(QString location)
     }
     //CTAF TODO: TEMPORARY REMOVED, NEED TO BE DONE IN A THREAD
     if(m_qPlaylists.count() >= 2)
-        m_qPlaylists.at(0)->addPath(musicDir);
+    {
+        //m_qPlaylists.at(0)->addPath(musicDir);
+        //m_pScanner->scan(musicDir, m_pLibScannerDlg);
+    }
     //ECTAF
 }
 

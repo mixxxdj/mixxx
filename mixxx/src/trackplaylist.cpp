@@ -24,12 +24,9 @@
 #include <qpushbutton.h>
 #include "trackplaylist.h"
 #include "track.h"
+#include "libraryscanner.h"
 
-bool TrackPlaylist::m_timersetup = false;
-QTime TrackPlaylist::m_timer;
-int TrackPlaylist::m_timeruses = 0;
-QWidget* TrackPlaylist::m_progress = 0;
-QLabel* TrackPlaylist::m_current = 0;
+
 
 Track * TrackPlaylist::spTrack = 0;
 
@@ -39,22 +36,13 @@ TrackPlaylist::TrackPlaylist(TrackCollection * pTrackCollection, QString qName)
     //m_pTable = 0;
     m_qName = qName;
     iCounter = 0;
-
-	if (!m_timersetup) {
-		m_timersetup = true;
-		setupTiming();
-	}
+    m_bStopLibraryScan = false;
 }
 
 TrackPlaylist::TrackPlaylist(TrackCollection * pTrackCollection, QDomNode node)
 {
-
-	if (!m_timersetup) {
-		m_timersetup = true;
-		setupTiming();
-	}
-
     m_pTrackCollection = pTrackCollection;
+    m_bStopLibraryScan = false;
     //m_pTable = 0;
 
     // Set name of list
@@ -79,43 +67,6 @@ TrackPlaylist::TrackPlaylist(TrackCollection * pTrackCollection, QDomNode node)
 
 TrackPlaylist::~TrackPlaylist()
 {
-}
-
-void TrackPlaylist::setupTiming() {
-	m_timeruses = 0;
-	m_progress = new QWidget();
-	QVBoxLayout* layout = new QVBoxLayout();
-	layout->addWidget(new QLabel("It's taking Mixxx a minute to scan your music library, please wait a minute..."));
-	m_current = new QLabel();
-	layout->addWidget(m_current);
-	m_progress->setLayout(layout);
-}
-
-void TrackPlaylist::startTiming() {
-	if (m_timeruses == 0) {
-		m_timer = QTime::currentTime();
-	}
-	m_timeruses++;
-}
-
-void TrackPlaylist::stopTiming() {
-	m_timeruses--;
-	if (m_timeruses == 0) {
-		m_progress->setVisible(false);
-	}
-}
-
-void TrackPlaylist::checkTiming(QString path) {
-	if (!m_progress->isVisible() && m_timer.elapsed() > 1000) {
-		m_progress->setVisible(true);
-	}
-
-	// This is a bit ghetto because we're in the startup thread, you can't really
-	// repaint the gui properly, so this may all fall over at some point...
-	if (m_progress->isVisible()) {
-		m_current->setText("Scanning: " + path);
-		m_current->repaint();
-	}
 }
 
 void TrackPlaylist::setTrack(Track * pTrack)
@@ -156,6 +107,9 @@ void TrackPlaylist::addTrack(QString qLocation)
 {
     qDebug() << "Add track" << qLocation; //.latin1());
     TrackInfoObject * pTrack = m_pTrackCollection->getTrack(qLocation);
+
+    //QFileInfo fi(qLocation);
+    //emit(progressLoading(fi.baseName()));
 
     if (pTrack)
         addTrack(pTrack);
@@ -268,15 +222,35 @@ void TrackPlaylist::dumpInfo()
 
 }
 
-void TrackPlaylist::addPath(QString qPath)
+void TrackPlaylist::slotCancelLibraryScan()
 {
-	startTiming();
+    m_qLibScanMutex.lock();
+    m_bStopLibraryScan = true;
+    m_qLibScanMutex.unlock();
+}
 
+void TrackPlaylist::addPath(QString qPath)
+{    
+    emit(startedLoading());
+    //qDebug() << "addPath";
+   
     // Is this a file or directory?
     bool bexists = false;
     TrackCollection * tempCollection = getCollection();
     QDir dir(qPath);
-
+    
+    emit(progressLoading(qPath));
+        
+    //Check if the scan has been cancelled (because this function is called recursively and we can't use
+    //terminate() to end the thread safely.)
+    m_qLibScanMutex.lock();
+    if (m_bStopLibraryScan)
+    {
+    	m_qLibScanMutex.unlock();
+    	return;
+    }
+    m_qLibScanMutex.unlock();
+	
     if (!dir.exists())
     {
         for(int i = 1; i < tempCollection->getSize(); i++)
@@ -291,7 +265,7 @@ void TrackPlaylist::addPath(QString qPath)
         if(bexists == false)
         {
             addTrack(qPath);
-			checkTiming(qPath);
+            emit(progressLoading(qPath));
         }
     }
     else
@@ -309,7 +283,7 @@ void TrackPlaylist::addPath(QString qPath)
             d = dir_it.next();
             if (!d.filePath().endsWith(".") && !d.filePath().endsWith(".."))
                 addPath(d.filePath());
-			checkTiming(d.filePath());
+           emit(progressLoading(d.filePath()));
         }
 
         // And then add all the files
@@ -322,6 +296,16 @@ void TrackPlaylist::addPath(QString qPath)
         while (it.hasNext())
         {
             fi = it.next();
+            
+            //Check if the scan has been cancelled.
+            m_qLibScanMutex.lock();
+            if (m_bStopLibraryScan)
+            {
+            	m_qLibScanMutex.unlock();
+            	return;
+            }
+            m_qLibScanMutex.unlock();
+            
             for(int i = 1; i < getCollection()->getSize(); ++i)
             {
                 /*qDebug("Checking: %s",tempCollection->getTrack(i)->getFilename());*/
@@ -329,6 +313,8 @@ void TrackPlaylist::addPath(QString qPath)
                     if(tempCollection->getTrack(i)->getFilename() == fi.fileName())
                     {
                         bexists = true;
+                        emit(progressLoading(fi.fileName())); //We're not actually reloading the library in this case, 
+                        			      //just checking if songs exist.
                         break;
                     }
             }
@@ -338,13 +324,13 @@ void TrackPlaylist::addPath(QString qPath)
             {
                 /*qDebug("all tracks searched, file does not exist, adding...");*/
                 addTrack(fi.filePath());
-				checkTiming(fi.filePath());
+		emit(progressLoading(fi.fileName()));
             }
 
         }
     }
-
-	stopTiming();
+    
+    emit(finishedLoading());
 }
 
 void TrackPlaylist::slotRemoveTrack(TrackInfoObject * pTrack)
