@@ -470,7 +470,6 @@ if int(flags_cmetrics):
 	if platform == 'win32':
 	    env.Append(LIBS = 'cmetrics')
 	else:
-	    print "Building as part of mixxx"
 	    client = 'MIXXX'
 	    server = 'casemetrics.net' #NOTE: Permission to use this server is granted only to mixxx, any other use must obtain prior permission
 	    Export('env platform client server')
