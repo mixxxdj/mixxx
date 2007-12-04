@@ -150,7 +150,10 @@ void MidiObject::send(MidiCategory category, char channel, char control, char va
         type = MIDI_EMPTY;
     }
 
-    Q_ASSERT(m_pMidiConfig);
+	if (!m_pMidiConfig) {
+		return;
+	} // Used to be this:
+    //Q_ASSERT(m_pMidiConfig);
     // qDebug("Querying action for MIDI message type=%x control=%d channel=%d", type, control, channel);
     ConfigKey * pConfigKey = m_pMidiConfig->get(ConfigValueMidi(type,control,channel));
 
@@ -190,6 +193,7 @@ void MidiObject::send(MidiCategory category, char channel, char control, char va
     if (c && p)
     {
         // qDebug("value going into ComputeValue: %f", newValue);
+		ControlObject::sync();
         newValue = ((ConfigValueMidi *)c->val)->ComputeValue(type, p->GetMidiValue(), newValue);
         // qDebug("value coming out ComputeValue: %f", newValue);
 
@@ -200,7 +204,7 @@ void MidiObject::send(MidiCategory category, char channel, char control, char va
         }
 
         // qDebug("New Control Value: %g ", newValue);
-        p->queueFromMidi(category, newValue);
+		p->queueFromMidi(category, newValue);
     }
 
 }

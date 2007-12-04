@@ -387,6 +387,8 @@ double ConfigValueMidi::ComputeValue(MidiType /* _miditype */, double _prevmidiv
     else if (midioption == MIDI_OPT_HERC_JOG)
     {
         if (_newmidivalue > 64.) { _newmidivalue -= 128.; }
+		_newmidivalue += _prevmidivalue;
+		//if (_prevmidivalue != 0.0) { qDebug() << "AAAAAAAAAAAA" << _prevmidivalue; }
     }
     else
     {
