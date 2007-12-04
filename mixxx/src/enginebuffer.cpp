@@ -37,7 +37,6 @@
 #include "player.h"
 #include "enginebuffercue.h"
 
-
 // Static default values for rate buttons
 double EngineBuffer::m_dTemp = 0.01;
 double EngineBuffer::m_dTempSmall = 0.001;
@@ -153,7 +152,7 @@ EngineBuffer::EngineBuffer(const char * _group, ConfigObject<ConfigValue> * _con
     m_pJog = new ControlObject(ConfigKey(group, "jog"));
     m_jogfilter = new Rotary();
     // FIXME: This should be dependent on sample rate/block size or something
-    m_jogfilter->setFilterLength(10);
+    m_jogfilter->setFilterLength(5);
 
     // Slider to show and change song position
     playposSlider = new ControlPotmeter(ConfigKey(group, "playposition"), 0., 1.);

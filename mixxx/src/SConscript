@@ -203,7 +203,7 @@ elif platform == 'osx':
 if platform == 'win32':
 	env.Append(CPPPATH='../../../mixxx-winlib') #If you add more directories, separate them with a semicolon (;)
 	env.Append(LIBPATH='../../../mixxx-winlib')
-	env.Append(LINKFLAGS = ['/nodefaultlib:libc.lib', '/nodefaultlib:libcd.lib'])
+	env.Append(LINKFLAGS = ['/nodefaultlib:libc.lib', '/nodefaultlib:libcd.lib', '/subsystem:windows', '/entry:mainCRTStartup'])
 
 #Check for dependencies if we're not doing a clean...
 
@@ -347,7 +347,7 @@ env.Append(CXXFLAGS = ' -I$QTDIR/include/Qt3Support -I$QTDIR/include/QtCore -I$Q
 
 if not platform == 'win32':
 	env.Append(CCFLAGS = Split(""" -pipe -Wall -W -g -D_REENTRANT """)) # omghax
-	env.Append(LINKFLAGS = Split(""" -pipe -Wall -W -g """))
+	env.Append(LINKFLAGS = Split(""" -pipe -Wall -W -g"""))
 if platform == 'win32':
 	env.Append(CXXFLAGS = '-DWIN32 -D__WIN__ -DUNICODE -D_WINDOWS') #for soundtouch
 	env.Append(CCFLAGS  = '-DWIN32 -D__WIN__ -DUNICODE -D_WINDOWS') #for soundtouch

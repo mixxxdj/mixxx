@@ -122,7 +122,7 @@ DlgPrefMidi::DlgPrefMidi(QWidget * parent, ConfigObject<ConfigValue> * pConfig) 
             break;
         }
     }
-    if (!foundmap) {
+    if (!foundmap && !mappingfile.isEmpty()) {
         if (midiConfigList->empty())
         {
             qDebug("No MIDI mapping files found");
