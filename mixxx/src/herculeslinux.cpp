@@ -57,15 +57,29 @@
 #include <math.h>
 
 //#define __HERCULES_STUB__ // Define __HERCULES_STUB__ disable Herc USB mode to be able to test Hercules in MIDI mode.
+
+#ifndef __HERCULES_STUB__
+// If DJCONSOLE=1 -> use libDJConsole implementation
+// If DJCONSOLE_LEGACY_CODE -> use legacy devfile based implementation
+// Otherwise stub-out HerculesLinux object
+ #ifndef __LIBDJCONSOLE__
+  #ifdef __DJCONSOLE_LEGACY_CODE__
+   // include devfile based djconsole legacy code
+  #else 
+   #define __HERCULES_STUB__ // stub is implied because neither libDJConsole nor Legacy code implementations are specified.
+  #endif
+ #endif
+#endif
+
 #ifdef __HERCULES_STUB__
 /************** Stub ***********/
+// Stub of HerculesLinux object.
 HerculesLinux::HerculesLinux() : Hercules() {}
 HerculesLinux::~HerculesLinux() {}
 void HerculesLinux::closedev() {}
 void HerculesLinux::run() {}
 bool HerculesLinux::opendev(){ return 1; }
 int HerculesLinux::opendev(int iId) { return 1; }
-// void HerculesLinux::consoleEvent(int first, int second) {}
 void HerculesLinux::getNextEvent(){}
 void HerculesLinux::led_write(int iLed, bool bOn){}
 void HerculesLinux::selectMapping(QString qMapping) {}
@@ -561,10 +575,6 @@ double HerculesLinux::PitchChange(const QString ControlSide, const int ev_value,
     return ((m_iPitchPrevious+1) - 64)/64.;
 }
 
-#endif
-
-// Below this line is the original non-libdjconsole implementation.
-#ifndef __LIBDJCONSOLE__
 #endif
 
 #endif //__HERCULES_STUB__
