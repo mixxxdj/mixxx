@@ -22,9 +22,10 @@
  * - Fixed control scale to be 0.0 to 4.0 on bass, mid, treb, etc
  * - Fixed pitch knob to be from -1.0 to 1.0
  * - Fixed volume sliders to be from 0.0 to 1.0 
- * - Fixed crossfader to be -127 to 127
+ * - Fixed crossfader to be -1.0 to 1.0
  * - Fixed Play buttons to send the NOT (!) value whatever the current playback status is
  * - Button LEDs light up when pressed
+ * - Thanks to Thomas' patch we have a working headphone switch on the Mk2
  *
  * - REMOVED legacy dev/file based support used in Mixxx 1.5.0 (Alberts MP3 Control won't work unless Mel can get it going with libdjconsole) 
  *	The last straw why this code has now been removed is with the recent engine changes to the meanings of all of the control values, 
