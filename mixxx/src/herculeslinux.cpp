@@ -63,7 +63,7 @@
 // If DJCONSOLE_LEGACY_CODE -> use legacy devfile based implementation
 // Otherwise stub-out HerculesLinux object
  #ifndef __LIBDJCONSOLE__
-  #ifdef __DJCONSOLE_LEGACY_CODE__
+  #ifdef __DJCONSOLE_LEGACY__
    // include devfile based djconsole legacy code
   #else 
    #define __HERCULES_STUB__ // stub is implied because neither libDJConsole nor Legacy code implementations are specified.
