@@ -35,10 +35,19 @@ class EngineMaster;
 #define MIXXX_PORTAUDIO_DIRECTSOUND_STRING "Windows DirectSound"
 #define MIXXX_PORTAUDIO_COREAUDIO_STRING "Core Audio"
 
-enum AudioSource { 
-    SOURCE_MASTER = 1,
-    SOURCE_HEADPHONES = 2
+#define MAX_AUDIOSOURCE_TYPES 4	//Keep this up to date with the enum below... I don't know how to do this automagically
+enum AudioSourceType { 
+    SOURCE_MASTER = 0,
+    SOURCE_HEADPHONES = 1,
+	SOURCE_PLAYER1 = 2,
+	SOURCE_PLAYER2 = 3
 };
+
+typedef struct _AudioSource {
+	AudioSourceType type;
+	int channelBase;	//Base channel on the audio device
+	int channels;		//total channels (e.g. 2 for stereo)
+} AudioSource;
 
 enum AudioReceiver {
     RECEIVER_VINYLCONTROL_ONE = 1,
@@ -63,7 +72,7 @@ class SoundManager : public QObject
         QList<QString> getHostAPIList();
         int setHostAPI(QString api);
         QString getHostAPI();
-        CSAMPLE* requestBuffer(QList<AudioSource> srcs, unsigned long iFramesPerBuffer);
+        CSAMPLE** requestBuffer(QList<AudioSource> srcs, unsigned long iFramesPerBuffer);
         CSAMPLE* pushBuffer(QList<AudioReceiver> recvs, short *inputBuffer, unsigned long iFramesPerBuffer);
     public slots:
         void sync();
@@ -73,9 +82,11 @@ class SoundManager : public QObject
         QList<SoundDevice*> m_devices;
         QList<QString> m_samplerates;
         QString m_hostAPI;
-        CSAMPLE *m_pInterleavedBuffer; //Interleaved audio buffer containing all 4 channels of audio (master L/R, headpones L/R)
-        CSAMPLE *m_pMasterBuffer;
-        CSAMPLE *m_pHeadphonesBuffer;
+        CSAMPLE *m_pInterleavedBuffer; //Interleaved audio buffer containing all channels of audio
+        //CSAMPLE *m_pMasterBuffer;
+        //CSAMPLE *m_pHeadphonesBuffer;
+		int m_cStreams;
+		CSAMPLE *m_pStreamBuffers[MAX_AUDIOSOURCE_TYPES];
 #ifdef __VINYLCONTROL__
         VinylControlProxy *m_VinylControl[2];
 #endif        

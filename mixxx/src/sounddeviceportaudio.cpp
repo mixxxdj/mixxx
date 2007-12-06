@@ -72,8 +72,10 @@ int SoundDevicePortAudio::open()
         QListIterator<AudioSource> srcIt(m_audioSources);
         while (srcIt.hasNext())
         {
-            m_outputParams.channelCount += 2;
-            srcIt.next();
+			AudioSource src = srcIt.next();
+			if((src.channelBase + src.channels) > m_outputParams.channelCount)
+				m_outputParams.channelCount = src.channelBase + src.channels;
+            
         }
     }
 
@@ -261,43 +263,33 @@ int SoundDevicePortAudio::callbackProcess(unsigned long framesPerBuffer, float *
     static const float SHRT_CONVERSION_FACTOR = 1.0f/32768.0f;
  
     //Initialize some variables.
-    iFrameSize = m_audioSources.count()*2;
+    iFrameSize = m_outputParams.channelCount;
     iVCGain = 1;
     i = 0;
     
     if (output && framesPerBuffer > 0)
     {
-        CSAMPLE* outputAudio = m_pSoundManager->requestBuffer(m_audioSources, framesPerBuffer);
+        CSAMPLE** outputAudio = m_pSoundManager->requestBuffer(m_audioSources, framesPerBuffer);
 
 	//qDebug() << framesPerBuffer;		
 
         //Reset sample for each open channel
-        //for (i=framesPerBuffer * iFrameSize; i != 0 ; i--)
-        //    output[i] = 0.;
         memset(output, 0, framesPerBuffer * iFrameSize * sizeof(*output));
 
-
-        for (i=0; i < framesPerBuffer*iFrameSize; i += iFrameSize)
+        for (int iFrameBase=0; iFrameBase < framesPerBuffer*iFrameSize; iFrameBase += iFrameSize)
         {
-            if (m_audioSources.count() == 1)
-            {
-                output[i] += outputAudio[i]*SHRT_CONVERSION_FACTOR;
-                output[i+1] += outputAudio[i+1]*SHRT_CONVERSION_FACTOR;
-            }
-            else if (m_audioSources.count() == 2)
-            {
-                output[i] += outputAudio[i]*SHRT_CONVERSION_FACTOR;
-                output[i+1] += outputAudio[i+1]*SHRT_CONVERSION_FACTOR;
-                output[i+2] += outputAudio[i+2]*SHRT_CONVERSION_FACTOR;
-                output[i+3] += outputAudio[i+3]*SHRT_CONVERSION_FACTOR;
-            }
-            else
-            {
-                qDebug() << "Wierd number of audio sources in PA callback:" << m_audioSources.count();
-            }
-
-            //TODO: Figure out why we use /32768's above, considering that we're dealing with floats...
-            //      (it sounds crazy if we don't though...)
+			//Interlace Audio data onto portaudio buffer
+			//We iterate through the source list to find out what goes in the buffer
+			//data is interlaced in the order of the list
+			QListIterator<AudioSource> devItr(m_audioSources);
+			int iChannel;
+			while(devItr.hasNext())
+			{
+				AudioSource src = devItr.next();
+				int iLocalFrameBase = (iFrameBase/iFrameSize) * src.channels;
+				for(iChannel = 0; iChannel < src.channels; iChannel++)	//this will make sure a sample from each channel is copied
+					output[iFrameBase + src.channelBase + iChannel] += outputAudio[src.type][iLocalFrameBase + iChannel] * SHRT_CONVERSION_FACTOR;
+			}
         }
     }
 

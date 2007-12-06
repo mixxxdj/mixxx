@@ -30,8 +30,8 @@ SoundManager::SoundManager(ConfigObject<ConfigValue> * pConfig, EngineMaster * _
     m_pConfig = pConfig;
     m_pMaster = _master;
     m_pInterleavedBuffer = new CSAMPLE[MAX_BUFFER_LEN];   
-    m_pMasterBuffer = (CSAMPLE*)_master->getMasterBuffer();
-    m_pHeadphonesBuffer = (CSAMPLE*)_master->getHeadphoneBuffer();
+    m_pStreamBuffers[SOURCE_MASTER] = (CSAMPLE*)_master->getMasterBuffer();
+    m_pStreamBuffers[SOURCE_HEADPHONES] = (CSAMPLE*)_master->getHeadphoneBuffer();
     
     iNumDevicesOpenedForOutput = 0;
     iNumDevicesOpenedForInput = 0;
@@ -303,6 +303,8 @@ void SoundManager::setDefaults(bool api, bool devices, bool other)
 			m_pConfig->set(ConfigKey("[Soundcard]","DeviceMaster"), ConfigValue(qlistAPI.front()->getInternalName()));
 			m_pConfig->set(ConfigKey("[Soundcard]","DeviceMasterLeft"), ConfigValue(qlistAPI.front()->getInternalName()));
 			m_pConfig->set(ConfigKey("[Soundcard]","DeviceMasterRight"), ConfigValue(qlistAPI.front()->getInternalName()));
+			m_pConfig->set(ConfigKey("[Soundcard]","ChannelMaster"), ConfigValue(QString::number(0)));
+			m_pConfig->set(ConfigKey("[Soundcard]","ChannelHeadphones"), ConfigValue(QString::number(2)));
 		}
     }
 
@@ -352,27 +354,24 @@ int SoundManager::setupDevices()
 
         if (m_pConfig->getValueString(ConfigKey("[Soundcard]","DeviceMaster")) == device->getInternalName())
         {
-            device->addSource(SOURCE_MASTER);
+			AudioSource src;
+			src.channelBase = m_pConfig->getValueString(ConfigKey("[Soundcard]", "ChannelMaster")).toInt();
+			src.channels = 2;	//TODO: Should we have a mono option?  Surround sound mixing might be cool...
+			src.type = SOURCE_MASTER;
+
+            device->addSource(src);
             bNeedToOpenDeviceForOutput = 1;
         }
         if (m_pConfig->getValueString(ConfigKey("[Soundcard]","DeviceHeadphones")) == device->getInternalName())
         {
-            device->addSource(SOURCE_HEADPHONES);
+            AudioSource src;
+			src.channelBase = m_pConfig->getValueString(ConfigKey("[Soundcard]", "ChannelHeadphones")).toInt();
+			src.channels = 2;
+			src.type = SOURCE_HEADPHONES;
+
+			device->addSource(src);
             bNeedToOpenDeviceForOutput = 1;
         }
-        /*
-           if ((m_pConfig->getValueString(ConfigKey("[Soundcard]","DeviceMasterLeft")) == device->getInternalName())
-            && (m_pConfig->getValueString(ConfigKey("[Soundcard]","DeviceMasterRight")) == device->getInternalName()))
-           {
-            device->addSource(SOURCE_MASTER);
-            bNeedToOpenDevice = 1;
-           }
-           if ((m_pConfig->getValueString(ConfigKey("[Soundcard]","DeviceHeadLeft")) == device->getInternalName())
-            && (m_pConfig->getValueString(ConfigKey("[Soundcard]","DeviceHeadRight")) == device->getInternalName()))
-           {
-            device->addSource(SOURCE_HEADPHONES);
-            bNeedToOpenDevice = 1;
-           }*/
 
         //Connect the soundcard's inputs to the Engine.
         if (m_pConfig->getValueString(ConfigKey("[VinylControl]","DeviceInputDeck1"))  == device->getInternalName())
@@ -414,7 +413,7 @@ void SoundManager::sync()
 }
 
 //Requests a buffer in the proper format, if we're prepared to give one.
-CSAMPLE * SoundManager::requestBuffer(QList<AudioSource> srcs, unsigned long iFramesPerBuffer)
+CSAMPLE ** SoundManager::requestBuffer(QList<AudioSource> srcs, unsigned long iFramesPerBuffer)
 {
     //qDebug() << "SoundManager::requestBuffer()";
 
@@ -435,19 +434,6 @@ CSAMPLE * SoundManager::requestBuffer(QList<AudioSource> srcs, unsigned long iFr
         //as input (buffer size) so...
         m_pMaster->process(0, 0, iFramesPerBuffer*2);
 
-        //Ok, so now we've got separate buffers containing the master and headphone output.
-        //Let's interleave them in a separate buffer so we can pass off an interleaved buffer
-        //to PortAudio for certain configurations (ie. when you have a 4-channel soundcard setup).
-        int j = 0;
-        for (int i = 0; i < iFramesPerBuffer*2; i += 2)
-        {
-            // Interleave the output and the headphone channels
-            m_pInterleavedBuffer[j  ] = m_pMasterBuffer[i  ];
-            m_pInterleavedBuffer[j+1] = m_pMasterBuffer[i+1];
-            m_pInterleavedBuffer[j+2] = m_pHeadphonesBuffer[i  ];
-            m_pInterleavedBuffer[j+3] = m_pHeadphonesBuffer[i+1];
-            j+=4;
-        }      
     }
     iNumDevicesHaveRequestedBuffer++;
 
@@ -455,26 +441,7 @@ CSAMPLE * SoundManager::requestBuffer(QList<AudioSource> srcs, unsigned long iFr
         iNumDevicesHaveRequestedBuffer = 0;
 
     requestBufferMutex.unlock();
-
-    //Depending on what sources are connected to the SoundDevice, pass back certain audio back to
-    //the SoundDevice.
-    if (srcs.contains(SOURCE_MASTER) && srcs.contains(SOURCE_HEADPHONES))
-    {
-        return m_pInterleavedBuffer;
-    }
-
-    if (srcs.contains(SOURCE_MASTER))
-    {
-        return m_pMasterBuffer;
-    }
-
-    if (srcs.contains(SOURCE_HEADPHONES))
-    {
-        return m_pHeadphonesBuffer;
-    }
-
-    qDebug() << "Warning: No sources passed to SoundManager::requestBuffer()";
-    return m_pInterleavedBuffer; //Default, shouldn't happen if this function was used properly.
+	return m_pStreamBuffers;
 }
 
 //Used by SoundDevices to "push" any audio from their inputs that they have into the mixing engine.
