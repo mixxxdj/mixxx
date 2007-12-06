@@ -323,7 +323,9 @@ void DlgPrefSound::slotApplyApi()
     emit(apiUpdated());
     m_pSoundManager->setDefaults(false, true, true);
     slotUpdate();
+
 	slotComboBoxSoundcardMasterChange();
+	slotComboBoxSoundcardHeadphonesChange();
 }
 
 void DlgPrefSound::slotLatencySliderClick()
