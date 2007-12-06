@@ -257,12 +257,16 @@ if not env.GetOption('clean') and not SCons.Util.containsAny(os.sys.argv, ['-h',
 		
         #Check for libdjconsole, if it was passed as a flag
 		flags_djconsole = ARGUMENTS.get('djconsole', 0)
+		flags_djconsole_legacy = ARGUMENTS.get('djconsole_legacy', 0)
 		if int(flags_djconsole):
 			if not conf.CheckLibWithHeader('djconsole', 'libdjconsole/djconsole.h', 'C++'):
 				print "Did not find libdjconsole or it\'s development headers, exiting!"
 				Exit(1)
 			env.ParseConfig('pkg-config libdjconsole --silence-errors --cflags --libs')
 			env.Append(CXXFLAGS = '-D__LIBDJCONSOLE__')
+		elif int(flags_djconsole_legacy):
+			# legacy support can not be enabled if libDJConsole support is enabled via djconsole=1
+			env.Append(CXXFLAGS = '-D__DJCONSOLE_LEGACY__')
 
 		#Another check for PortAudio-v19
 		env.ParseConfig('pkg-config --cflags --libs portaudio-2.0')
