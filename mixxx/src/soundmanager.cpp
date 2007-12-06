@@ -173,13 +173,16 @@ void SoundManager::closeDevices()
     qDebug() << "SoundManager::closeDevices()";
     QListIterator<SoundDevice*> dev_it(m_devices);
     
-    requestBufferMutex.lock(); //Ensures we don't kill a stream in the middle of a callback call.
+    //requestBufferMutex.lock(); //Ensures we don't kill a stream in the middle of a callback call.
+                                 //Note: if we're using Pa_StopStream() (like now), we don't need
+                                 //      to lock. PortAudio stops the threads nicely.
     while (dev_it.hasNext())
     {
         //qDebug() << "closing a device...";
         dev_it.next()->close();
     }
-    requestBufferMutex.unlock();
+    //requestBufferMutex.unlock();
+    
     //requestBufferMutex.lock();
     iNumDevicesOpenedForOutput = 0;
     iNumDevicesOpenedForInput = 0;
