@@ -472,6 +472,7 @@ void MixxxApp::initActions()
     optionsPreferences->setShortcutContext(Qt::ApplicationShortcut);
 
     helpAboutApp = new QAction(tr("&About..."), this);
+    helpSupport = new QAction(tr("&Community Support..."), this);
 #ifdef __VINYLCONTROL__
     optionsVinylControl = new QAction(tr("&Enable Vinyl Control"), this);
     optionsVinylControl->setShortcut(tr("Ctrl+Y"));
@@ -530,6 +531,10 @@ void MixxxApp::initActions()
     optionsPreferences->setWhatsThis(tr("Preferences\nPlayback and MIDI preferences"));
     connect(optionsPreferences, SIGNAL(activated()), this, SLOT(slotOptionsPreferences()));
 
+    helpSupport->setStatusTip(tr("Support..."));
+    helpSupport->setWhatsThis(tr("Support\n\nGet help with Mixxx"));
+    connect(helpSupport, SIGNAL(activated()), this, SLOT(slotHelpSupport()));
+
     helpAboutApp->setStatusTip(tr("About the application"));
     helpAboutApp->setWhatsThis(tr("About\n\nAbout the application"));
     connect(helpAboutApp, SIGNAL(activated()), this, SLOT(slotHelpAbout()));
@@ -575,7 +580,10 @@ void MixxxApp::initMenuBar()
     //viewMenu->setCheckable(true);
 
     // menuBar entry helpMenu
+    helpMenu->addAction(helpSupport);
+    helpMenu->addSeparator();
     helpMenu->addAction(helpAboutApp);
+    
 
 #ifdef __SCRIPT__
     macroMenu->addAction(macroStudio);
@@ -738,7 +746,7 @@ void MixxxApp::slotOptionsVinylControl(bool toggle)
     QString device1 = config->getValueString(ConfigKey("[VinylControl]","DeviceInputDeck1")); 
     QString device2 = config->getValueString(ConfigKey("[VinylControl]","DeviceInputDeck2"));
 
-    if (device1 == "" && device2 == "")
+    if (device1 == "" && device2 == "" && (toggle==true))
     {
         int ret = QMessageBox::warning(this, tr("Mixxx"),
                                     tr("No input device(s) select.\n"
@@ -819,6 +827,13 @@ void MixxxApp::slotHelpAbout()
     about->textBrowser->setHtml(credits);
     about->show();
 
+}
+
+void MixxxApp::slotHelpSupport()
+{
+    QUrl qSupportURL;
+    qSupportURL.setUrl(MIXXX_SUPPORT_URL);
+    QDesktopServices::openUrl(qSupportURL);
 }
 
 void MixxxApp::rebootMixxxView() {

@@ -88,6 +88,25 @@ def CheckOggVorbis():
 
 	return
 
+# Checks for pkg-config on Linux
+def CheckForPKGConfig( context, version='0.0.0' ):
+	context.Message( "Checking for pkg-config (at least version %s)... " % version )
+	ret = context.TryAction( "pkg-config --atleast-pkgconfig-version=%s" %version )[0]
+	context.Result( ret )
+	return ret
+
+# Uses pkg-config to check for a minimum version
+def CheckForPKG( context, name, version="" ):
+	if version == "":
+		context.Message( "Checking for %s... \t" % name )
+		ret = context.TryAction( "pkg-config --exists '%s'" % name )[0]
+	else:
+		context.Message( "Checking for %s (%s or higher)... \t" % (name,version) )
+		ret = context.TryAction( "pkg-config --atleast-version=%s '%s'" % (version,name) )[0]
+		context.Result( ret )
+	return ret
+	
+
 def flatten(x):
 	"""flatten(sequence) -> list
 
@@ -208,8 +227,10 @@ if platform == 'win32':
 #Check for dependencies if we're not doing a clean...
 
 if not env.GetOption('clean') and not SCons.Util.containsAny(os.sys.argv, ['-h', '--help']):
-	conf = Configure(env)
-
+	conf = Configure(env, custom_tests = { 'CheckForPKGConfig' : CheckForPKGConfig, 'CheckForPKG' : CheckForPKG })
+	
+#TODO: Add all of the other configure checks as custom_tests properly.
+	
 # On Posix default SCons.LIBPREFIX = 'lib', on Windows default SCons.LIBPREFIX = ''
 
 	if not conf.CheckLibWithHeader('portaudio', 'portaudio.h', 'C'):
@@ -254,7 +275,17 @@ if not env.GetOption('clean') and not SCons.Util.containsAny(os.sys.argv, ['-h',
 		if os.system("which g++ > /dev/null"): #Checks for non-zero return code
 			print "Did not find gcc/g++, exiting!"
 			Exit(1)
+			
+		#Check for pkg-config
+		if not conf.CheckForPKGConfig('0.15.0'):
+			print 'pkg-config >= 0.15.0 not found.'
+			Exit(1)
 		
+		#Check for QT >= 4.3	
+		if not conf.CheckForPKG('QtCore', '4.3'):
+			print 'QT >= 4.3 not found.'
+			Exit(1)
+					
         #Check for libdjconsole, if it was passed as a flag
 		flags_djconsole = ARGUMENTS.get('djconsole', 0)
 		flags_djconsole_legacy = ARGUMENTS.get('djconsole_legacy', 0)
@@ -271,7 +302,7 @@ if not env.GetOption('clean') and not SCons.Util.containsAny(os.sys.argv, ['-h',
 		#Another check for PortAudio-v19
 		env.ParseConfig('pkg-config --cflags --libs portaudio-2.0')
 		#If the above line looks like magic, it's because it really is. (Read about ParseConfig, it's nifty)
-
+		
 	#Platform-specific checks for OS X
 	if platform == 'osx':
 	#Check for libsndfile
@@ -670,24 +701,24 @@ else:
 #Mixxx binary
 binary_files = mixxx_bin;
 
-	#Skins
+#Skins
 skin_files = glob.glob('../skins/*')
 
-	#MIDI mappings
+#MIDI mappings
 midimappings_files = glob.glob('../midi/*')
 
-	#Keyboard mapping(s)
+#Keyboard mapping(s)
 keyboardmappings_files = glob.glob('../keyboard/*')
 
-	#Documentation
+#Documentation
 docs_files = glob.glob('../../LICENSE')
 docs_files += glob.glob('../../README')
 docs_files += glob.glob('../../Mixxx-Manual.pdf')
 
-	#.desktop file for KDE/GNOME menu
+#.desktop file for KDE/GNOME menu
 dotdesktop_files = glob.glob('../mixxx.desktop')
 
-	#Icon file for menu entry
+#Icon file for menu entry
 icon_files = glob.glob('../mixxx-icon.png')
 
 #Images for preferences dialog
@@ -737,9 +768,12 @@ if platform == 'linux':
 		#Delete the old Mixxx installation (because SCONS won't overwrite it)
 		#if 'install' in COMMAND_LINE_TARGETS:
 			#os.system('scons -c install')
-			#Copy(unix_bin_path + "mixxx", binary_files)
-            #Delete(unix_bin_path + "mixxx")
 			#Delete(unix_share_path + "/mixxx/skins")
+			#print "Copying skins..."
+			#env.Command(unix_share_path + "/mixxx/skins", skin_files, Copy("$TARGET", "$SOURCE"), source_scanner = DirScanner)
+			#Copy(unix_share_path + "/mixxx/skins", skin_files)
+            #Delete(unix_bin_path + "mixxx")
+			
 			#Delete(unix_share_path + "/mixxx/midi")
 			#Delete(unix_share_path + "/mixxx/keyboard")
 
