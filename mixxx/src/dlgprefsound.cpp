@@ -352,6 +352,7 @@ void DlgPrefSound::slotComboBoxSoundcardMasterChange()
 	QListIterator<SoundDevice*> devItr(devList);
 	SoundDevice *pdev;
 	ComboBoxChannelMaster->clear();
+	ComboBoxChannelMaster->setEnabled(ComboBoxSoundcardMaster->currentIndex());	        
 	while(devItr.hasNext())
 	{
 		pdev = devItr.next();
@@ -382,6 +383,7 @@ void DlgPrefSound::slotComboBoxSoundcardHeadphonesChange()
 	QListIterator<SoundDevice*> devItr(devList);
 	SoundDevice *pdev;
 	ComboBoxChannelHeadphones->clear();
+	ComboBoxChannelHeadphones->setEnabled(ComboBoxSoundcardHeadphones->currentIndex());
 	while(devItr.hasNext())
 	{
 		pdev = devItr.next();
