@@ -78,10 +78,9 @@ Mixxx has the following dependencies:
 - libogg
 - libvorbis
 - libvorbisfile
-- libaudiofile
+- libsndfile
 - PortAudio-v19
-- QT3
-- libjack (now required)
+- QT 4.3
 - scons
 
 NOTE: If you want JACK support in Mixxx, make sure you 
@@ -98,11 +97,11 @@ tell you if you're missing any of the dependencies listed above.
 It's also possible to specify a prefix path and additional
 build flags, for example:
 
-   $ scons prefix=/usr vinylcontrol=1
+   $ scons prefix=/usr djconsole=1 
    
 To install Mixxx after compilation, run:
 
-   $ scons prefix=/usr vinylcontrol=1 install
+   $ scons prefix=/usr djconsole=1 install
 
 
 * USAGE ****************************************************
