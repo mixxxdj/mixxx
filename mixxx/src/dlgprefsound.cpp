@@ -99,6 +99,12 @@ DlgPrefSound::DlgPrefSound(QWidget * parent, SoundManager * _soundman,
     connect(SliderLatency,                SIGNAL(sliderReleased()),  this, SLOT(slotLatencySliderRelease()));
     connect(ComboBoxSoundApi,             SIGNAL(activated(int)),    this, SLOT(slotApplyApi()));
 
+	connect(ComboBoxSoundcardMaster,	SIGNAL(activated(int)),		this,	SLOT(slotComboBoxSoundcardMasterChange()));
+	connect(ComboBoxSoundcardHeadphones,		SIGNAL(activated(int)),		this,	SLOT(slotComboBoxSoundcardHeadphonesChange()));
+	
+	slotComboBoxSoundcardMasterChange();
+	slotComboBoxSoundcardHeadphonesChange();
+	ComboBoxSoundcardMaster->setCurrentIndex(config->getValueString(ConfigKey("[Soundcard]","ChannelMaster")).toInt());
 }
 
 DlgPrefSound::~DlgPrefSound()
@@ -211,8 +217,7 @@ void DlgPrefSound::slotUpdate()
     disconnect(SliderLatency,                SIGNAL(valueChanged(int)), this, SLOT(slotLatencySliderChange(int)));
     SliderLatency->setValue(getSliderLatencyVal(config->getValueString(ConfigKey("[Soundcard]","Latency")).toInt()));
     connect(SliderLatency,                SIGNAL(valueChanged(int)), this, SLOT(slotLatencySliderChange(int)));
-
-
+	
 }
 
 void DlgPrefSound::slotLatency()
@@ -245,9 +250,10 @@ void DlgPrefSound::slotApply()
     // Update the config object with parameters from dialog
 
     config->set(ConfigKey("[Soundcard]","DeviceMaster"), ConfigValue(ComboBoxSoundcardMaster->itemData(ComboBoxSoundcardMaster->currentIndex()).toString()));
-    //config->set(ConfigKey("[Soundcard]","DeviceMasterRight"), ConfigValue(ComboBoxSoundcardMasterRight->currentText()));
+    config->set(ConfigKey("[Soundcard]","ChannelMaster"), ConfigValue(ComboBoxChannelMaster->itemData(ComboBoxChannelMaster->currentIndex()).toString()));
+	qDebug() << "Setting ChannelMaster in config to: " << ComboBoxChannelMaster->itemData(ComboBoxChannelMaster->currentIndex()).toString();
     config->set(ConfigKey("[Soundcard]","DeviceHeadphones"), ConfigValue(ComboBoxSoundcardHeadphones->itemData(ComboBoxSoundcardHeadphones->currentIndex()).toString()));
-    //config->set(ConfigKey("[Soundcard]","DeviceHeadRight"), ConfigValue(ComboBoxSoundcardHeadRight->currentText()));
+    config->set(ConfigKey("[Soundcard]","ChannelHeadphones"), ConfigValue(ComboBoxChannelHeadphones->itemData(ComboBoxChannelHeadphones->currentIndex()).toString()));
     config->set(ConfigKey("[Soundcard]","Samplerate"), ConfigValue(ComboBoxSamplerates->currentText()));
     config->set(ConfigKey("[Soundcard]","Latency"), ConfigValue(getSliderLatencyMsec(SliderLatency->value())));
 
@@ -317,6 +323,7 @@ void DlgPrefSound::slotApplyApi()
     emit(apiUpdated());
     m_pSoundManager->setDefaults(false, true, true);
     slotUpdate();
+	slotComboBoxSoundcardMasterChange();
 }
 
 void DlgPrefSound::slotLatencySliderClick()
@@ -336,3 +343,62 @@ void DlgPrefSound::slotLatencySliderChange(int)
     //    slotApply();
 }
 
+void DlgPrefSound::slotComboBoxSoundcardMasterChange()
+{
+	QString selectedAPI = config->getValueString(ConfigKey("[Soundcard]","SoundApi"));
+	QList<SoundDevice*> devList = m_pSoundManager->getDeviceList(selectedAPI, true, false);
+	QListIterator<SoundDevice*> devItr(devList);
+	SoundDevice *pdev;
+	ComboBoxChannelMaster->clear();
+	while(devItr.hasNext())
+	{
+		pdev = devItr.next();
+		if(pdev->getInternalName() == ComboBoxSoundcardMaster->itemData(ComboBoxSoundcardMaster->currentIndex()).toString());
+		{
+			for(int chCount=0; chCount < pdev->getNumOutputChannels(); chCount+=2)
+			{
+				QString q = QString("Channels ") + QString::number(chCount+1) + QString("-") + QString::number(chCount+2);
+				ComboBoxChannelMaster->insertItem(chCount+1, q, QString::number(chCount));
+
+				//This nasty if statement is here to set the Channel to whats in the config if we go to the sound device in the config
+				if((ComboBoxSoundcardMaster->itemData(ComboBoxSoundcardMaster->currentIndex()).toString()
+					== config->getValueString(ConfigKey("[Soundcard]","DeviceMaster")))
+					&& (QString::number(chCount) ==  config->getValueString(ConfigKey("[Soundcard]","ChannelMaster"))))
+				{
+						ComboBoxChannelMaster->setCurrentIndex(chCount/2);
+				}
+			}
+			break;
+		} 
+	}
+}
+
+void DlgPrefSound::slotComboBoxSoundcardHeadphonesChange()
+{
+	QString selectedAPI = config->getValueString(ConfigKey("[Soundcard]","SoundApi"));
+	QList<SoundDevice*> devList = m_pSoundManager->getDeviceList(selectedAPI, true, false);
+	QListIterator<SoundDevice*> devItr(devList);
+	SoundDevice *pdev;
+	ComboBoxChannelHeadphones->clear();
+	while(devItr.hasNext())
+	{
+		pdev = devItr.next();
+		if(pdev->getInternalName() == ComboBoxSoundcardHeadphones->itemData(ComboBoxSoundcardHeadphones->currentIndex()).toString());
+		{
+			for(int chCount=0; chCount < pdev->getNumOutputChannels(); chCount+=2)
+			{
+				QString q = QString("Channels ") + QString::number(chCount+1) + QString("-") + QString::number(chCount+2);
+				ComboBoxChannelHeadphones->insertItem(chCount+1, q, QString::number(chCount));
+
+				//This nasty if statement is here to set the Channel to whats in the config if we go to the sound device in the config
+				if((ComboBoxSoundcardHeadphones->itemData(ComboBoxSoundcardHeadphones->currentIndex()).toString()
+					== config->getValueString(ConfigKey("[Soundcard]","DeviceHeadphones")))
+					&& (QString::number(chCount) ==  config->getValueString(ConfigKey("[Soundcard]","ChannelHeadphones"))))
+				{
+						ComboBoxChannelHeadphones->setCurrentIndex(chCount/2);
+				}
+			}
+			break;
+		} 
+	}
+}
