@@ -320,6 +320,8 @@ void DlgPrefSound::slotApplyApi()
             QMessageBox::warning(0, "Configuration error","Audio device could not be opened");
         }
     }
+    enableValidComboBoxes();
+    
     emit(apiUpdated());
     m_pSoundManager->setDefaults(false, true, true);
     slotUpdate();
@@ -352,9 +354,7 @@ void DlgPrefSound::slotComboBoxSoundcardMasterChange()
 	QListIterator<SoundDevice*> devItr(devList);
 	SoundDevice *pdev;
 	ComboBoxChannelMaster->clear();
-	ComboBoxChannelMaster->setEnabled(ComboBoxSoundcardMaster->currentText() != "None");
-	ComboBoxSoundApi->setEnabled(ComboBoxChannelMaster->isEnabled() || ComboBoxChannelHeadphones->isEnabled());
-	ComboBoxSamplerates->setEnabled(ComboBoxChannelMaster->isEnabled() || ComboBoxChannelHeadphones->isEnabled());
+        enableValidComboBoxes();
 	
 	while(devItr.hasNext())
 	{
@@ -386,9 +386,7 @@ void DlgPrefSound::slotComboBoxSoundcardHeadphonesChange()
 	QListIterator<SoundDevice*> devItr(devList);
 	SoundDevice *pdev;
 	ComboBoxChannelHeadphones->clear();
-	ComboBoxChannelHeadphones->setEnabled(ComboBoxSoundcardHeadphones->currentText() != "None");
-	ComboBoxSoundApi->setEnabled(ComboBoxChannelMaster->isEnabled() || ComboBoxChannelHeadphones->isEnabled());
-	ComboBoxSamplerates->setEnabled(ComboBoxChannelMaster->isEnabled() || ComboBoxChannelHeadphones->isEnabled());
+	enableValidComboBoxes();
 
 	while(devItr.hasNext())
 	{
@@ -412,3 +410,16 @@ void DlgPrefSound::slotComboBoxSoundcardHeadphonesChange()
 		} 
 	}
 }
+
+void DlgPrefSound::enableValidComboBoxes()
+{
+    int validSoundApi = ComboBoxSoundApi->currentText() != "None";
+    ComboBoxSoundcardMaster->setEnabled(validSoundApi);
+    ComboBoxChannelMaster->setEnabled(validSoundApi && ComboBoxSoundcardMaster->currentText() != "None");
+
+    ComboBoxSoundcardHeadphones->setEnabled(validSoundApi);
+    ComboBoxChannelHeadphones->setEnabled(validSoundApi && ComboBoxSoundcardHeadphones->currentText() != "None");
+
+    ComboBoxSamplerates->setEnabled(validSoundApi && (ComboBoxChannelMaster->isEnabled() || ComboBoxChannelHeadphones->isEnabled()));
+}   
+
