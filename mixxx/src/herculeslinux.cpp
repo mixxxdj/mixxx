@@ -425,11 +425,11 @@ void HerculesLinux::consoleEvent(int first, int second) {
 				qDebug("Deck SPLIT (mute both)");
 				if (m_bHeadphoneRight) 
 				{
-					sendButtonEvent(true, m_pControlObjectRightBtnHeadphone); m_bHeadphoneRight = !m_bHeadphoneRight;
+					sendButtonEvent(false, m_pControlObjectRightBtnHeadphone); m_bHeadphoneRight = !m_bHeadphoneRight;
 				}
 				if (m_bHeadphoneLeft) 
 				{
-					sendButtonEvent(true, m_pControlObjectLeftBtnHeadphone); m_bHeadphoneLeft = !m_bHeadphoneLeft;
+					sendButtonEvent(false, m_pControlObjectLeftBtnHeadphone); m_bHeadphoneLeft = !m_bHeadphoneLeft;
 				}
 			}
 			break;
@@ -460,7 +460,7 @@ void HerculesLinux::consoleEvent(int first, int second) {
 				}
 				if (m_bHeadphoneLeft) 
 				{
-					sendButtonEvent(true, m_pControlObjectLeftBtnHeadphone); m_bHeadphoneLeft = !m_bHeadphoneLeft ;
+					sendButtonEvent(false, m_pControlObjectLeftBtnHeadphone); m_bHeadphoneLeft = !m_bHeadphoneLeft;
 				}
 			}
 			break;
@@ -471,7 +471,7 @@ void HerculesLinux::consoleEvent(int first, int second) {
 				qDebug("Deck A");
 				if (m_bHeadphoneRight) 
 				{
-					sendButtonEvent(true, m_pControlObjectRightBtnHeadphone); m_bHeadphoneRight = !m_bHeadphoneRight;
+					sendButtonEvent(false, m_pControlObjectRightBtnHeadphone); m_bHeadphoneRight = !m_bHeadphoneRight;
 				}
 				if (!m_bHeadphoneLeft) 
 				{
