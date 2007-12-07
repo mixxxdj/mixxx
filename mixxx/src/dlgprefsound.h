@@ -47,6 +47,7 @@ private slots:
     void slotLatencySliderChange(int);
 	void slotComboBoxSoundcardMasterChange();
 	void slotComboBoxSoundcardHeadphonesChange();
+    	void slotChannelChange();
 
 signals:
     void apiUpdated();

@@ -105,6 +105,9 @@ DlgPrefSound::DlgPrefSound(QWidget * parent, SoundManager * _soundman,
 	slotComboBoxSoundcardMasterChange();
 	slotComboBoxSoundcardHeadphonesChange();
 	ComboBoxSoundcardMaster->setCurrentIndex(config->getValueString(ConfigKey("[Soundcard]","ChannelMaster")).toInt());
+	connect(ComboBoxChannelMaster, SIGNAL(activated(int)), this, SLOT(slotChannelChange()));
+	connect(ComboBoxChannelHeadphones, SIGNAL(activated(int)), this, SLOT(slotChannelChange()));
+	slotChannelChange();
 }
 
 DlgPrefSound::~DlgPrefSound()
@@ -354,7 +357,6 @@ void DlgPrefSound::slotComboBoxSoundcardMasterChange()
 	QListIterator<SoundDevice*> devItr(devList);
 	SoundDevice *pdev;
 	ComboBoxChannelMaster->clear();
-        enableValidComboBoxes();
 	
 	while(devItr.hasNext())
 	{
@@ -377,6 +379,7 @@ void DlgPrefSound::slotComboBoxSoundcardMasterChange()
 			break;
 		} 
 	}
+        enableValidComboBoxes();
 }
 
 void DlgPrefSound::slotComboBoxSoundcardHeadphonesChange()
@@ -386,7 +389,6 @@ void DlgPrefSound::slotComboBoxSoundcardHeadphonesChange()
 	QListIterator<SoundDevice*> devItr(devList);
 	SoundDevice *pdev;
 	ComboBoxChannelHeadphones->clear();
-	enableValidComboBoxes();
 
 	while(devItr.hasNext())
 	{
@@ -409,6 +411,7 @@ void DlgPrefSound::slotComboBoxSoundcardHeadphonesChange()
 			break;
 		} 
 	}
+	enableValidComboBoxes();
 }
 
 void DlgPrefSound::enableValidComboBoxes()
@@ -421,5 +424,16 @@ void DlgPrefSound::enableValidComboBoxes()
     ComboBoxChannelHeadphones->setEnabled(validSoundApi && ComboBoxSoundcardHeadphones->currentText() != "None");
 
     ComboBoxSamplerates->setEnabled(validSoundApi && (ComboBoxChannelMaster->isEnabled() || ComboBoxChannelHeadphones->isEnabled()));
-}   
+    slotChannelChange();
+}
+
+void DlgPrefSound::slotChannelChange(){
+    if (ComboBoxSoundcardMaster->currentText() != "None" && 
+         ComboBoxSoundcardMaster->isEnabled() && ComboBoxSoundcardHeadphones->isEnabled() && 
+         ComboBoxSoundcardMaster->currentText() == ComboBoxSoundcardHeadphones->currentText() && 
+         ComboBoxChannelMaster->currentText() == ComboBoxChannelHeadphones->currentText()) {
+           QMessageBox::warning(this, "Mixxx - Master and Headphones sharing the same channels", 
+             "Having the Headphone share the same sound card output channels as Master\nwill result in Mixxx playing back at full volume irespective of the volume\ncontrols (this is because Headphone channels do not repect Master volume).\n\nThis configuration is NOT recommended because of that.\n\nIf your sound card has only two channels set the 'Headphones' channel to 'None'.");
+    }
+}
 
