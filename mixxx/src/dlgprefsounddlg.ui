@@ -203,31 +203,43 @@
      </property>
      <layout class="QVBoxLayout" >
       <item>
-       <widget class="QRadioButton" name="radioButtonVinylEmu" >
-        <property name="text" >
-         <string>Vinyl emulation</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QRadioButton" name="radioButtonPitchIndp" >
-        <property name="text" >
-         <string>Pitch independent time stretch</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QLabel" name="textLabelSoundScaling" >
-        <property name="text" >
-         <string>Stretching beyond +-10% with pitch independent time stretch is not advised, and is likely to result in bad sound quality.</string>
-        </property>
-        <property name="alignment" >
-         <set>Qt::AlignTop</set>
-        </property>
-        <property name="wordWrap" >
-         <bool>true</bool>
-        </property>
-       </widget>
+       <layout class="QHBoxLayout" >
+        <item>
+         <layout class="QVBoxLayout" >
+          <item>
+           <widget class="QRadioButton" name="radioButtonVinylEmu" >
+            <property name="text" >
+             <string>Vinyl emulation</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QRadioButton" name="radioButtonPitchIndp" >
+            <property name="text" >
+             <string>Pitch independent time stretch</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+        <item>
+         <layout class="QVBoxLayout" >
+          <item>
+           <widget class="QLabel" name="textLabelSoundScaling" >
+            <property name="text" >
+             <string>Stretching beyond +-10% with pitch independent time stretch is not advised, and is likely to result in bad sound quality.</string>
+            </property>
+            <property name="alignment" >
+             <set>Qt::AlignTop</set>
+            </property>
+            <property name="wordWrap" >
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+       </layout>
       </item>
      </layout>
     </widget>
