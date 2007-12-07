@@ -51,6 +51,8 @@ private slots:
 signals:
     void apiUpdated();
 private:
+    /** Set QComboBox objects to be enabled or disabled based on different configuration states */
+    void enableValidComboBoxes();
     /** Transform a slider value to latency value in msec */
     int getSliderLatencyMsec(int);
     /** Transform latency value in msec to slider value */
