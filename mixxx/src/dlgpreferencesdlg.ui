@@ -14,30 +14,40 @@
   </property>
   <layout class="QHBoxLayout" >
    <item>
-    <widget class="QListWidget" name="contentsWidget" >
-     <property name="sizePolicy" >
-      <sizepolicy vsizetype="Expanding" hsizetype="Fixed" >
-       <horstretch>0</horstretch>
-       <verstretch>0</verstretch>
-      </sizepolicy>
-     </property>
-     <property name="maximumSize" >
-      <size>
-       <width>180</width>
-       <height>16777215</height>
-      </size>
-     </property>
-    </widget>
-   </item>
-   <item>
     <layout class="QVBoxLayout" >
      <item>
-      <widget class="QStackedWidget" name="pagesWidget" >
-       <widget class="QWidget" name="page_2" />
+      <widget class="QListWidget" name="contentsWidget" >
+       <property name="sizePolicy" >
+        <sizepolicy vsizetype="Expanding" hsizetype="Fixed" >
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="maximumSize" >
+        <size>
+         <width>180</width>
+         <height>16777215</height>
+        </size>
+       </property>
       </widget>
      </item>
      <item>
       <widget class="QDialogButtonBox" name="buttonBox" >
+       <property name="sizePolicy" >
+        <sizepolicy vsizetype="Expanding" hsizetype="Fixed" >
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="maximumSize" >
+        <size>
+         <width>180</width>
+         <height>24</height>
+        </size>
+       </property>
+       <property name="layoutDirection" >
+        <enum>Qt::LeftToRight</enum>
+       </property>
        <property name="orientation" >
         <enum>Qt::Horizontal</enum>
        </property>
@@ -47,6 +57,11 @@
       </widget>
      </item>
     </layout>
+   </item>
+   <item>
+    <widget class="QStackedWidget" name="pagesWidget" >
+     <widget class="QWidget" name="page_2" />
+    </widget>
    </item>
   </layout>
  </widget>
