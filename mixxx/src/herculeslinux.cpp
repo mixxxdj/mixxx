@@ -292,11 +292,9 @@ void HerculesLinux::consoleEvent(int first, int second) {
 	// Albert's http://zunzun.com/ site saves the day by solving our data points to this new magical formula...
 	double magic = (0.733835252488 * tan((0.00863901501308 * second) - 4.00513109039)) + 0.887988233294; 
 
-	// double divisor = 2.;
 	double divisor = 256.;
 	double d1 = divisor-1; 
 	double d2 = (divisor/2)-1;
-	double d4 = (divisor/4)-1;
 	
 	// qDebug() << "second: " << second << "magic: " << magic << " v: " << v << " sd1:" << QString::number(second/d1) << " sd2:" << QString::number(second/d2) <<" sd4:" << QString::number(second/d4);
 
