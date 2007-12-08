@@ -14,8 +14,8 @@ WTrackTableModel::WTrackTableModel(QObject * parent) : QAbstractTableModel(paren
     setHeaderData(0,Qt::Horizontal, tr("Title"));
     setHeaderData(1,Qt::Horizontal, tr("Artist"));
     setHeaderData(2,Qt::Horizontal, tr("Type"));
-    setHeaderData(3,Qt::Horizontal, tr("Duration"));
-    setHeaderData(4,Qt::Horizontal, tr("Bitrate"));
+    setHeaderData(3,Qt::Horizontal, tr("Length"));
+    setHeaderData(4,Qt::Horizontal, tr("kbit"));
     setHeaderData(5,Qt::Horizontal, tr("BPM"));
     setHeaderData(6,Qt::Horizontal, tr("Comment"));
 }
@@ -92,9 +92,9 @@ QVariant WTrackTableModel::headerData(int section, Qt::Orientation orientation, 
         case 2:
             return QString("Type");
         case 3:
-            return QString("Duration");
+            return QString("Length");
         case 4:
-            return QString("Bitrate");
+            return QString("kbit");
         case 5:
             return QString("BPM");
         case 6:
