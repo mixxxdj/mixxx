@@ -249,6 +249,12 @@ void MixxxView::setupColorScheme(QDomElement docElem, ConfigObject<ConfigValue> 
         QDomNode sch = colsch.firstChild();
 
         bool found = false;
+
+		if (schname.isEmpty()) {
+			// If no scheme stored, accept the first one in the file
+			found = true;
+		}
+
         while (!sch.isNull() && !found) {
             QString thisname = WWidget::selectNodeQString(sch, "Name");
             if (thisname == schname) {
