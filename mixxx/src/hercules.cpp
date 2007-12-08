@@ -58,6 +58,9 @@ Hercules::Hercules() : Input(), m_qRequestLed(5)
     m_pControlObjectRightBeatLoop = new ControlObjectThread(ControlObject::getControl(ConfigKey("[Channel2]","beatloop")));
     Q_ASSERT(m_pControlObjectRightBeatLoop!=0);
 
+    m_pControlObjectLeftBtnHeadphoneProxy = new ControlObjectThread(ControlObject::getControl(ConfigKey("[Channel1]","pfl")));
+    m_pControlObjectRightBtnHeadphoneProxy = new ControlObjectThread(ControlObject::getControl(ConfigKey("[Channel2]","pfl")));
+
     selectMapping(kqInputMappingHerculesStandard);
 
     m_pRotaryLeft = new Rotary();
@@ -150,11 +153,17 @@ void Hercules::selectMapping(QString qMapping)
     m_pControlObjectLeftBtn1 = new ControlObjectThread(new ControlObject(ConfigKey("[Channel1]","Hercules1")));
     m_pControlObjectLeftBtn2 = new ControlObjectThread(new ControlObject(ConfigKey("[Channel1]","Hercules2")));
     m_pControlObjectLeftBtn3 = new ControlObjectThread(new ControlObject(ConfigKey("[Channel1]","Hercules3")));
+    m_pControlObjectLeftBtn123[0] = m_pControlObjectLeftBtn1;
+    m_pControlObjectLeftBtn123[1] = m_pControlObjectLeftBtn2;
+    m_pControlObjectLeftBtn123[2] = m_pControlObjectLeftBtn3;
     m_pControlObjectLeftBtnFx = new ControlObjectThread(new ControlObject(ConfigKey("[Channel1]","Hercules4")));
 
     m_pControlObjectRightBtn1 = new ControlObjectThread(new ControlObject(ConfigKey("[Channel2]","Hercules1")));
     m_pControlObjectRightBtn2 = new ControlObjectThread(new ControlObject(ConfigKey("[Channel2]","Hercules2")));
     m_pControlObjectRightBtn3 = new ControlObjectThread(new ControlObject(ConfigKey("[Channel2]","Hercules3")));
+    m_pControlObjectRightBtn123[0] = m_pControlObjectRightBtn1;
+    m_pControlObjectRightBtn123[1] = m_pControlObjectRightBtn2;
+    m_pControlObjectRightBtn123[2] = m_pControlObjectRightBtn3;
     m_pControlObjectRightBtnFx = new ControlObjectThread(new ControlObject(ConfigKey("[Channel2]","Hercules4")));
 }
 

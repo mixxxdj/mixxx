@@ -79,7 +79,8 @@ public:
                         *m_pControlObjectRightBtnTrackNext, *m_pControlObjectRightBtnCue, *m_pControlObjectRightBtnPlay,
                         *m_pControlObjectRightBtnAutobeat, *m_pControlObjectRightBtnMasterTempo, *m_pControlObjectRightBtn1,
                         *m_pControlObjectRightBtn2, *m_pControlObjectRightBtn3, *m_pControlObjectRightBtnFx;
-    ControlObjectThread *m_pControlObjectCrossfade;   
+    ControlObjectThread *m_pControlObjectLeftBtn123[3], *m_pControlObjectRightBtn123[3];
+    ControlObjectThread *m_pControlObjectCrossfade;
 
 
 protected:
@@ -97,7 +98,9 @@ protected:
     #endif
     
     ControlObjectThread *m_pControlObjectLeftBtnPlayProxy, *m_pControlObjectRightBtnPlayProxy,
-                        *m_pControlObjectLeftBtnLoopProxy, *m_pControlObjectRightBtnLoopProxy;
+                        *m_pControlObjectLeftBtnLoopProxy, *m_pControlObjectRightBtnLoopProxy,
+                        *m_pControlObjectLeftBtnHeadphoneProxy, *m_pControlObjectRightBtnHeadphoneProxy;
+
     Rotary *m_pRotaryLeft, *m_pRotaryRight; 
     ControlObjectThread *m_pControlObjectLeftBeatLoop, *m_pControlObjectRightBeatLoop;
 
