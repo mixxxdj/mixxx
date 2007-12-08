@@ -18,6 +18,7 @@
 #include <QtDebug>
 #include <QtCore>
 #include <portaudio.h>
+#include <assert.h>
 #include "controlobjectthreadmain.h"
 #include "sounddeviceportaudio.h"
 #include "soundmanager.h"
@@ -258,13 +259,12 @@ int SoundDevicePortAudio::close()
 int SoundDevicePortAudio::callbackProcess(unsigned long framesPerBuffer, float *output, short *in, int devIndex)
 {
     //qDebug() << "SoundDevicePortAudio::callbackProcess";
-    //These variables declared static for speed (memory doesn't get realloc'ed every time)
-    static int iFrameSize;
-    static int iVCGain;
-    static int i;
+    int iFrameSize;
+    int iVCGain;
+    int i;
     static ControlObject* pControlObjectVinylControlGain = ControlObject::getControl(ConfigKey("[VinylControl]", "VinylControlGain"));
     static const float SHRT_CONVERSION_FACTOR = 1.0f/32768.0f;
- 
+
     //Initialize some variables.
     iFrameSize = m_outputParams.channelCount;
     iVCGain = 1;
@@ -272,6 +272,7 @@ int SoundDevicePortAudio::callbackProcess(unsigned long framesPerBuffer, float *
     
     if (output && framesPerBuffer > 0)
     {
+		assert(iFrameSize > 0);
         CSAMPLE** outputAudio = m_pSoundManager->requestBuffer(m_audioSources, framesPerBuffer);
 
 	//qDebug() << framesPerBuffer;		
