@@ -34,6 +34,7 @@ class DlgPrefSound : public QWidget, public Ui::DlgPrefSoundDlg  {
 public:
     DlgPrefSound(QWidget *parent, SoundManager* _soundman, ConfigObject<ConfigValue> *_config);
     ~DlgPrefSound();
+	bool m_configError;
 public slots:
     /** Update widget */
     void slotUpdate();
@@ -51,6 +52,7 @@ private slots:
 
 signals:
     void apiUpdated();
+
 private:
     /** Set QComboBox objects to be enabled or disabled based on different configuration states */
     void enableValidComboBoxes();
@@ -65,6 +67,7 @@ private:
     ConfigObject<ConfigValue> *config;
     /** True if the mouse is currently dragging the latency slider */
     bool m_bLatencySliderDrag; 
+	QWidget *m_parent;
 };
 
 #endif

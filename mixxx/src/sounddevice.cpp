@@ -71,7 +71,17 @@ void SoundDevice::setHostAPI(QString api)
 }
 
 void SoundDevice::addSource(const AudioSource src)
-{
+{ 
+	//Check if channels are already used
+	QListIterator<AudioSource> itr(m_audioSources);
+	while(itr.hasNext())
+	{
+		AudioSource src_internal = itr.next();
+		AudioSource src_lower = (src_internal.channelBase < src.channelBase) ? src_internal : src;
+		AudioSource src_higher = (src_internal.channelBase < src.channelBase) ?  src : src_internal;
+		if((src_lower.channelBase + src_lower.channels) > src_higher.channelBase)
+			throw DUPLICATE_CHANNEL_EXCEPTION;
+	}
     m_audioSources.push_back(src);
 }
 

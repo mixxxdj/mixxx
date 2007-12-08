@@ -25,7 +25,7 @@
 class SoundDevice;
 class SoundManager;
 
-
+#define DUPLICATE_CHANNEL_EXCEPTION 0x0f00f00
 
 class SoundDevice
 {
