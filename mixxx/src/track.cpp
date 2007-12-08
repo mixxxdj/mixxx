@@ -71,7 +71,7 @@ Track::Track(QString location, MixxxView * pView, EngineBuffer * pBuffer1, Engin
     
     m_pScanner = new LibraryScanner(&m_qPlaylists, "");
     //Refresh the tableview when the library is done being scanned. (FIXME: Not working)
-    connect(m_pScanner, SIGNAL(scanFinished()), m_pView->m_pTrackTableView, SLOT(reset())); 
+    connect(m_pScanner, SIGNAL(scanFinished()), m_pView->m_pTrackTableView, SLOT(update())); 
     // Read the XML file
     readXML(location); 
  
@@ -87,7 +87,7 @@ Track::Track(QString location, MixxxView * pView, EngineBuffer * pBuffer1, Engin
     m_pScanner->scan(musicDir, &m_qPlaylists);
     
     //m_qPlaylists.at(0)->addPath(musicDir);
-    
+	m_pView->m_pTrackTableView->update();
     // Update anything that views the playlists
     updatePlaylistViews();
 
