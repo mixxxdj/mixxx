@@ -20,6 +20,7 @@
 #include <qcombobox.h>
 #include <QButtonGroup>
 #include <QtDebug>
+#include <QDialog>
 #include <qcheckbox.h>
 #include <qpushbutton.h>
 #include <qslider.h>
@@ -38,7 +39,7 @@ DlgPrefSound::DlgPrefSound(QWidget * parent, SoundManager * _soundman,
     //player = _player;
     m_pSoundManager = _soundman;
     config = _config;
-
+	m_parent = parent;
     //Check to see if the config file is empty:
     //First look at the API, and select the default soundcard and API if required.
     QString selectedAPI = config->getValueString(ConfigKey("[Soundcard]","SoundApi"));
@@ -248,6 +249,7 @@ int DlgPrefSound::getSliderLatencyVal(int val)
 
 void DlgPrefSound::slotApply()
 {
+	m_configError = false;
     qDebug() << "DlgPrefSound::Apply";
 
     // Update the config object with parameters from dialog
@@ -293,13 +295,21 @@ void DlgPrefSound::slotApply()
     m_pSoundManager->closeDevices();
 
     // Not much to do if the API is None...
-    if (config->getValueString(ConfigKey("[Soundcard]","SoundApi"))!="None")
-    {
-        if (m_pSoundManager->setupDevices() != 0)
-            QMessageBox::warning(0, "Configuration error","Audio device could not be opened");
-        else
-            slotUpdate();
-    }
+	try{
+		if (config->getValueString(ConfigKey("[Soundcard]","SoundApi"))!="None")
+		{
+			if (m_pSoundManager->setupDevices() != 0)
+				QMessageBox::warning(0, "Configuration error","Audio device could not be opened");
+			else
+				slotUpdate();
+		}
+	}
+	catch(int e)
+	{
+		QMessageBox::warning(0, "Configuration error", "You cannot send multiple outputs to a single channel");
+		m_parent->setHidden(false);
+		m_configError = true;
+	}
 }
 
 void DlgPrefSound::slotApplyApi()
@@ -321,6 +331,7 @@ void DlgPrefSound::slotApplyApi()
         if (m_pSoundManager->setupDevices() != 0)
         {
             QMessageBox::warning(0, "Configuration error","Audio device could not be opened");
+			m_parent->setHidden(false);
         }
     }
     enableValidComboBoxes();
@@ -427,13 +438,17 @@ void DlgPrefSound::enableValidComboBoxes()
     slotChannelChange();
 }
 
+
 void DlgPrefSound::slotChannelChange(){
-    if (ComboBoxSoundcardMaster->currentText() != "None" && 
+#if 0 //Warning them immediatly when this happens might be annoying.  Consider the situation of swapping headphone/master channels, they will
+		//have to click through this.  I left it in however, in case we decide on this.
+	if (ComboBoxSoundcardMaster->currentText() != "None" && 
          ComboBoxSoundcardMaster->isEnabled() && ComboBoxSoundcardHeadphones->isEnabled() && 
          ComboBoxSoundcardMaster->currentText() == ComboBoxSoundcardHeadphones->currentText() && 
          ComboBoxChannelMaster->currentText() == ComboBoxChannelHeadphones->currentText()) {
            QMessageBox::warning(this, "Mixxx - Master and Headphones sharing the same channels", 
              "Having the Headphone share the same sound card output channels as Master\nwill result in Mixxx playing back at full volume irespective of the volume\ncontrols (this is because Headphone channels do not repect Master volume).\n\nThis configuration is NOT recommended because of that.\n\nIf your sound card has only two channels set the 'Headphones' channel to 'None'.");
     }
+#endif
 }
 
