@@ -52,6 +52,8 @@ void HerculesLinux::run()
             m_bLoopRight=!m_bLoopRight;
             led_write(kiHerculesLedRightCueBtn, m_bLoopRight);
         }
+	m_bHeadphoneLeft=m_pControlObjectLeftBtnHeadphoneProxy->get();
+	m_bHeadphoneRight=m_pControlObjectRightBtnHeadphoneProxy->get();
     }
 }
 
@@ -180,8 +182,19 @@ void HerculesLinux::getNextEvent()
     int iR = read(m_iFd, &ev, sizeof(struct input_event));
     if (iR == sizeof(struct input_event))
     {
-        //double v = 127.*(double)ev.value/256.;
-        double v = ((ev.value+1)/(4.- ((ev.value>((7/8.)*256))*((ev.value-((7/8.)*256))*1/16.)))); // GED's formula, might need some work
+        if (ev.type == EV_SYN) { // avoid unnecessary calculations
+            return;
+        }
+
+        // double v = ((ev.value+1)/(4.- ((ev.value>((7/8.)*256))*((ev.value-((7/8.)*256))*1/16.)))); // GED's formula, might need some work
+        // Albert's http://zunzun.com/ site saves the day by solving our data points to this new magical formula...
+        double magic = (0.733835252488 * tan((0.00863901501308 * ev.value) - 4.00513109039)) + 0.887988233294;
+
+        double divisor = 256.;
+        double d1 = divisor-1;
+        double d2 = (divisor/2)-1;
+
+        // qDebug() << "ev.type:" << ev.type << "ev.code:" << ev.code << "ev.value:" << ev.value;
         //qDebug("type %i, code %i, value %i",ev.type,ev.code,ev.value);
         //qDebug("type %i, code %i, value %i, v is %5.3f",ev.type,ev.code,ev.value,v);
 
@@ -195,17 +208,17 @@ void HerculesLinux::getNextEvent()
             switch (ev.code)
             {
             case kiHerculesLeftTreble:
-                sendEvent(v, m_pControlObjectLeftTreble);
+                sendEvent(magic, m_pControlObjectLeftTreble);
                 break;
             case kiHerculesLeftMiddle:
-                sendEvent(v, m_pControlObjectLeftMiddle);
+                sendEvent(magic, m_pControlObjectLeftMiddle);
                 break;
             case kiHerculesLeftBass:
-                sendEvent(v, m_pControlObjectLeftBass);
+                sendEvent(magic, m_pControlObjectLeftBass);
                 break;
             case kiHerculesLeftVolume:
-                m_dLeftVolumeOld = ev.value/2.;
-                sendEvent(ev.value/2., m_pControlObjectLeftVolume);
+                m_dLeftVolumeOld = ev.value/d1;
+                sendEvent(ev.value/d1, m_pControlObjectLeftVolume);
                 break;
             case kiHerculesLeftPitch:
                 //qDebug("");
@@ -225,18 +238,18 @@ void HerculesLinux::getNextEvent()
                 sendEvent(dDiff, m_pControlObjectLeftJog);
                 break;
             case kiHerculesRightTreble:
-                sendEvent(v, m_pControlObjectRightTreble);
+                sendEvent(magic, m_pControlObjectRightTreble);
                 break;
             case kiHerculesRightMiddle:
-                sendEvent(v, m_pControlObjectRightMiddle);
+                sendEvent(magic, m_pControlObjectRightMiddle);
                 break;
             case kiHerculesRightBass:
-                sendEvent(v, m_pControlObjectRightBass);
+                sendEvent(magic, m_pControlObjectRightBass);
                 break;
             case kiHerculesRightVolume:
-                m_dRightVolumeOld = ev.value/2.;
-                //qDebug("R Volume %5.3f",ev.value/2.);
-                sendEvent(ev.value/2., m_pControlObjectRightVolume);
+                m_dRightVolumeOld = ev.value/d1;
+                //qDebug("R Volume %5.3f",ev.value/d1);
+                sendEvent(ev.value/d1, m_pControlObjectRightVolume);
                 break;
             case kiHerculesRightPitch:
                 //qDebug("");
@@ -257,7 +270,7 @@ void HerculesLinux::getNextEvent()
                 break;
             case kiHerculesCrossfade:
                 //qDebug("(ev.value+1)/2.0f: %f", (ev.value+1)/2.0f);
-                sendEvent((ev.value+1)/2.0f, m_pControlObjectCrossfade);
+                sendEvent((ev.value-d2)/d2, m_pControlObjectCrossfade);
                 break;
 //              default:
 //                  sendEvent(0., m_pControlObjectLeftJog);
@@ -265,57 +278,95 @@ void HerculesLinux::getNextEvent()
             }
             break;
         case EV_KEY:
-            if (ev.value==1)
-            {
                 switch (ev.code)
                 {
                 case kiHerculesLeftBtnPitchBendMinus:
-                    sendButtonEvent(true, m_pControlObjectLeftBtnPitchBendMinus);
+                    sendButtonEvent(!m_pControlObjectLeftBtnPitchBendMinus->get(), m_pControlObjectLeftBtnPitchBendMinus);
                     break;
+                case kiHerculesRightBtnPitchBendMinus:
+                    sendButtonEvent(true, m_pControlObjectRightBtnPitchBendMinus);
+                    break;
+
                 case kiHerculesLeftBtnPitchBendPlus:
-                    sendButtonEvent(true, m_pControlObjectLeftBtnPitchBendPlus);
+                    sendButtonEvent(!m_pControlObjectLeftBtnPitchBendPlus->get(), m_pControlObjectLeftBtnPitchBendPlus);
                     break;
+                case kiHerculesRightBtnPitchBendPlus:
+                    sendButtonEvent(true, m_pControlObjectRightBtnPitchBendPlus);
+                    break;
+
                 case kiHerculesLeftBtnTrackNext:
-                    sendButtonEvent(true, m_pControlObjectLeftBtnTrackNext);
+		    sendButtonEvent(ev.value, m_pControlObjectLeftBtnTrackNext);
                     break;
+                case kiHerculesRightBtnTrackNext:
+                    sendButtonEvent(ev.value, m_pControlObjectRightBtnTrackNext);
+                    break;
+
                 case kiHerculesLeftBtnTrackPrev:
-                    sendButtonEvent(true, m_pControlObjectLeftBtnTrackPrev);
+                    sendButtonEvent(ev.value, m_pControlObjectLeftBtnTrackPrev);
                     break;
+                case kiHerculesRightBtnTrackPrev:
+                    sendButtonEvent(ev.value, m_pControlObjectRightBtnTrackPrev);
+                    break;
+
                 case kiHerculesLeftBtnCue:
-                    sendButtonEvent(true, m_pControlObjectLeftBtnCue);
-                    //m_bCueLeft = !m_bCueLeft;
-                    //led_write(kiHerculesLedLeftCueBtn, m_bCueLeft);
+                    if (ev.value) {
+                      //m_bCueLeft = !m_bCueLeft;
+                      sendButtonEvent(true, m_pControlObjectLeftBtnCue);
+                      //led_write(kiHerculesLedLeftCueBtn, m_bCueLeft);
+                    }
                     break;
+                case kiHerculesRightBtnCue:
+                    //m_bCueRight = !m_bCueRight;
+                    sendButtonEvent(true, m_pControlObjectRightBtnCue);
+                    //led_write(kiHerculesLedRightCueBtn, m_bCueRight);
+                    break;
+
                 case kiHerculesLeftBtnPlay:
-                    sendButtonEvent(true, m_pControlObjectLeftBtnPlay);
-//                    m_bPlayLeft = !m_bPlayLeft;
+                    if (ev.value) {
+//                    m_bPlayLeft = !m_pControlObjectLeftBtnPlay->get();
+                      sendButtonEvent(!m_pControlObjectLeftBtnPlay->get(), m_pControlObjectLeftBtnPlay);
 //                    led_write(kiHerculesLedLeftPlay, m_bPlayLeft);
+                    }
                     break;
+                case kiHerculesRightBtnPlay:
+                    if (ev.value) {
+//                     m_bPlayRight = !m_pControlObjectRightBtnPlay->get();
+                      sendButtonEvent(!m_pControlObjectRightBtnPlay->get(), m_pControlObjectRightBtnPlay);
+//                     led_write(kiHerculesLedRightPlay, m_bPlayRight);
+                    }
+                    break;
+
+                case kiHerculesLeftBtnHeadphone:
+                    led_write(kiHerculesLedLeftHeadphone, !m_pControlObjectLeftBtnHeadphone->get());
+                    sendButtonEvent(!m_pControlObjectLeftBtnHeadphone->get(), m_pControlObjectLeftBtnHeadphone);
+                    break;
+                case kiHerculesRightBtnHeadphone:
+                    led_write(kiHerculesLedRightHeadphone, !m_pControlObjectRightBtnHeadphone->get());
+                    sendButtonEvent(!m_pControlObjectRightBtnHeadphone->get(), m_pControlObjectRightBtnHeadphone);
+                    break;
+
                 case kiHerculesLeftBtnAutobeat:
                     sendButtonEvent(true, m_pControlObjectLeftBtnAutobeat);
                     m_bSyncLeft = !m_bSyncLeft;
 //                     led_write(kiHerculesLedLeftSync, m_bSyncLeft);
                     break;
+                case kiHerculesRightBtnAutobeat:
+                    sendButtonEvent(true, m_pControlObjectRightBtnAutobeat);
+                    m_bSyncRight = !m_bSyncRight;
+//                     led_write(kiHerculesLedRightSync, m_bSyncRight);
+                    break;
+
                 case kiHerculesLeftBtnMasterTempo:
 //                     sendEvent(0, m_pControlObjectLeftBtnMasterTempo);
 //                     m_bMasterTempoLeft = !m_bMasterTempoLeft;
 //                     led_write(kiHerculesLedLeftMasterTempo, m_bMasterTempoLeft);
                     break;
-                case kiHerculesLeftBtn1:
-                    m_iLeftFxMode = 0;
-                    changeJogMode(m_iLeftFxMode,m_iRightFxMode);
-                    sendButtonEvent(true, m_pControlObjectLeftBtn1);
+                case kiHerculesRightBtnMasterTempo:
+//                     sendEvent(1., m_pControlObjectRightBtnMasterTempo);
+//                     m_bMasterTempoRight = !m_bMasterTempoRight;
+                    //led_write(kiHerculesLedRightMasterTempo, m_bMasterTempoRight);
                     break;
-                case kiHerculesLeftBtn2:
-                    m_iLeftFxMode = 1;
-                    changeJogMode(m_iLeftFxMode,m_iRightFxMode);
-                    sendButtonEvent(true, m_pControlObjectLeftBtn2);
-                    break;
-                case kiHerculesLeftBtn3:
-                    m_iLeftFxMode = 2;
-                    changeJogMode(m_iLeftFxMode,m_iRightFxMode);
-                    sendButtonEvent(true, m_pControlObjectLeftBtn3);
-                    break;
+
                 case kiHerculesLeftBtnFx:
                     sendButtonEvent(true, m_pControlObjectLeftBtnFx);
 /*
@@ -326,58 +377,6 @@ void HerculesLinux::getNextEvent()
                     led_write(kiHerculesLedLeftCueLamp, m_iLeftFxMode==1);
                     led_write(kiHerculesLedLeftLoop, m_iLeftFxMode==2);
  */
-                    break;
-                case kiHerculesLeftBtnHeadphone:
-                    sendButtonEvent(true, m_pControlObjectLeftBtnHeadphone);
-                    m_bHeadphoneLeft = !m_bHeadphoneLeft;
-                    led_write(kiHerculesLedLeftHeadphone, m_bHeadphoneLeft);
-                    break;
-                case kiHerculesRightBtnPitchBendMinus:
-                    sendButtonEvent(true, m_pControlObjectRightBtnPitchBendMinus);
-                    break;
-                case kiHerculesRightBtnPitchBendPlus:
-                    sendButtonEvent(true, m_pControlObjectRightBtnPitchBendPlus);
-                    break;
-                case kiHerculesRightBtnTrackNext:
-                    sendButtonEvent(true, m_pControlObjectRightBtnTrackNext);
-                    break;
-                case kiHerculesRightBtnTrackPrev:
-                    sendButtonEvent(true, m_pControlObjectRightBtnTrackPrev);
-                    break;
-                case kiHerculesRightBtnCue:
-                    sendButtonEvent(true, m_pControlObjectRightBtnCue);
-                    //m_bCueRight = !m_bCueRight;
-                    //led_write(kiHerculesLedRightCueBtn, m_bCueRight);
-                    break;
-                case kiHerculesRightBtnPlay:
-                    sendButtonEvent(true, m_pControlObjectRightBtnPlay);
-//                     m_bPlayRight = !m_bPlayRight;
-//                     led_write(kiHerculesLedRightPlay, m_bPlayRight);
-                    break;
-                case kiHerculesRightBtnAutobeat:
-                    sendButtonEvent(true, m_pControlObjectRightBtnAutobeat);
-                    m_bSyncRight = !m_bSyncRight;
-//                     led_write(kiHerculesLedRightSync, m_bSyncRight);
-                    break;
-                case kiHerculesRightBtnMasterTempo:
-//                     sendEvent(1., m_pControlObjectRightBtnMasterTempo);
-//                     m_bMasterTempoRight = !m_bMasterTempoRight;
-                    //led_write(kiHerculesLedRightMasterTempo, m_bMasterTempoRight);
-                    break;
-                case kiHerculesRightBtn1:
-                    m_iRightFxMode = 0;
-                    changeJogMode(m_iLeftFxMode,m_iRightFxMode);
-                    sendButtonEvent(true, m_pControlObjectRightBtn1);
-                    break;
-                case kiHerculesRightBtn2:
-                    m_iRightFxMode = 1;
-                    changeJogMode(m_iLeftFxMode,m_iRightFxMode);
-                    sendButtonEvent(true, m_pControlObjectRightBtn2);
-                    break;
-                case kiHerculesRightBtn3:
-                    m_iRightFxMode = 2;
-                    changeJogMode(m_iLeftFxMode,m_iRightFxMode);
-                    sendButtonEvent(true, m_pControlObjectRightBtn3);
                     break;
                 case kiHerculesRightBtnFx:
                     sendButtonEvent(true, m_pControlObjectRightBtnFx);
@@ -399,124 +398,33 @@ void HerculesLinux::getNextEvent()
                     if (m_iRightFxMode==2)
                         led_write(kiHerculesLedRightLoop, true);
  */
+                    break;
 
-                    break;
-                case kiHerculesRightBtnHeadphone:
-                    sendButtonEvent(true, m_pControlObjectRightBtnHeadphone);
-                    m_bHeadphoneRight = !m_bHeadphoneRight;
-                    //led_write(kiHerculesLedRightHeadphone, m_bHeadphoneRight);
-                    break;
-                }
-            }
-            else
-            {
-                switch (ev.code)
-                {
-                case kiHerculesLeftBtnPitchBendMinus:
-                    sendButtonEvent(false, m_pControlObjectLeftBtnPitchBendMinus);
-                    break;
-                case kiHerculesLeftBtnPitchBendPlus:
-                    sendButtonEvent(false, m_pControlObjectLeftBtnPitchBendPlus);
-                    break;
-                case kiHerculesLeftBtnTrackNext:
-                    //sendButtonEvent(false, m_pControlObjectLeftBtnTrackNext);
-                    break;
-                case kiHerculesLeftBtnTrackPrev:
-                    //sendButtonEvent(false, m_pControlObjectLeftBtnTrackPrev);
-                    break;
-                case kiHerculesLeftBtnCue:
-//                     m_bCueLeft = !m_bCueLeft;
-//                     led_write(kiHerculesLedLeftCueBtn, m_bCueLeft);
-                    sendButtonEvent(false, m_pControlObjectLeftBtnCue);
-                    break;
-                case kiHerculesLeftBtnPlay:
-                    sendButtonEvent(false, m_pControlObjectLeftBtnPlay);
-                    break;
-                case kiHerculesLeftBtnAutobeat:
-                    sendButtonEvent(false, m_pControlObjectLeftBtnAutobeat);
-                    break;
-                case kiHerculesLeftBtnMasterTempo:
-//                     sendButtonEvent(false, m_pControlObjectLeftBtnMasterTempo);
-                    break;
+
                 case kiHerculesLeftBtn1:
-                    m_iLeftFxMode = 0;
-                    changeJogMode(m_iLeftFxMode,m_iRightFxMode);
-                    sendButtonEvent(false, m_pControlObjectLeftBtn1);
-                    break;
                 case kiHerculesLeftBtn2:
-                    m_iLeftFxMode = 0;
-                    changeJogMode(m_iLeftFxMode,m_iRightFxMode);
-                    sendButtonEvent(false, m_pControlObjectLeftBtn2);
-                    break;
                 case kiHerculesLeftBtn3:
-                    m_iLeftFxMode = 0;
-                    changeJogMode(m_iLeftFxMode,m_iRightFxMode);
-                    sendButtonEvent(false, m_pControlObjectLeftBtn3);
-                    break;
-                case kiHerculesLeftBtnFx:
-                    sendButtonEvent(false, m_pControlObjectLeftBtnFx);
-                    break;
-                case kiHerculesLeftBtnHeadphone:
-                    sendButtonEvent(false, m_pControlObjectLeftBtnHeadphone);
-                case kiHerculesRightBtnPitchBendMinus:
-                    sendButtonEvent(false, m_pControlObjectRightBtnPitchBendMinus);
-                    break;
-                case kiHerculesRightBtnPitchBendPlus:
-                    sendButtonEvent(false, m_pControlObjectRightBtnPitchBendPlus);
-                    break;
-                case kiHerculesRightBtnTrackNext:
-                    //sendButtonEvent(false, m_pControlObjectRightBtnTrackNext);
-                    break;
-                case kiHerculesRightBtnTrackPrev:
-                    //sendButtonEvent(false, m_pControlObjectRightBtnTrackPrev);
-                    break;
-                case kiHerculesRightBtnCue:
-//                     m_bCueRight = !m_bCueRight;
-//                     led_write(kiHerculesLedRightCueBtn, m_bCueRight);
-                    sendButtonEvent(false, m_pControlObjectRightBtnCue);
-                    break;
-                case kiHerculesRightBtnPlay:
-                    sendButtonEvent(false, m_pControlObjectRightBtnPlay);
-                    break;
-                case kiHerculesRightBtnAutobeat:
-                    sendButtonEvent(false, m_pControlObjectRightBtnAutobeat);
-                    break;
-                case kiHerculesRightBtnMasterTempo:
-//                     sendButtonEvent(false, m_pControlObjectRightBtnMasterTempo);
+		    if (ev.value) {
+                      m_iLeftFxMode = ev.code - kiHerculesLeftBtn1;
+                      changeJogMode(m_iLeftFxMode, m_iRightFxMode);
+                      sendButtonEvent(true, m_pControlObjectLeftBtn123[m_iLeftFxMode]);
+                    }
                     break;
                 case kiHerculesRightBtn1:
-                    m_iRightFxMode = 0;
-                    changeJogMode(m_iLeftFxMode,m_iRightFxMode);
-                    sendButtonEvent(false, m_pControlObjectRightBtn1);
-                    break;
                 case kiHerculesRightBtn2:
-                    m_iRightFxMode = 0;
-                    changeJogMode(m_iLeftFxMode,m_iRightFxMode);
-                    sendButtonEvent(false, m_pControlObjectRightBtn2);
-                    break;
                 case kiHerculesRightBtn3:
-                    m_iRightFxMode = 0;
-                    changeJogMode(m_iLeftFxMode,m_iRightFxMode);
-                    sendButtonEvent(false, m_pControlObjectRightBtn3);
+		    if (ev.value) {
+                      m_iRightFxMode = ev.code - kiHerculesRightBtn1;
+                      changeJogMode(m_iLeftFxMode, m_iRightFxMode);
+                      sendButtonEvent(true, m_pControlObjectRightBtn123[m_iRightFxMode]);
+                    }
                     break;
-                case kiHerculesRightBtnFx:
-                    sendButtonEvent(false, m_pControlObjectRightBtnFx);
-                    break;
-                case kiHerculesRightBtnHeadphone:
-                    sendButtonEvent(false, m_pControlObjectRightBtnHeadphone);
+
                 }
-            }
             break;
-//         default:
-//             sendEvent(0., m_pControlObjectLeftJog);
-//             sendEvent(0., m_pControlObjectRightJog);
-        }
-    }
-    else
-    {
-//         sendEvent(0., m_pControlObjectLeftJog);
-//         sendEvent(0., m_pControlObjectRightJog);
-    }
+            }
+
+         }
 
     //
     // Check if led queue is empty
@@ -574,44 +482,41 @@ void HerculesLinux::selectMapping(QString qMapping)
     }
 }
 
-
-
 double HerculesLinux::PitchChange(const QString ControlSide, const int ev_value, int &m_iPitchPrevious, int &m_iPitchOffset) {
-    // Note: Calling this function with m_iPitchPrevious having a value of -9999 should result in
-    // resetting the pitch offset (this should be when mouse changes or resets the pitch)
-    //
-    // TODO:
-    //  i) Pitch range should be .25 to 127, as implemented currently it does -.25 to 127.25.
-    // ii) On my dev machine P3-800, it is possible to spin the pitch knob fast enough to change by 2, if this happens at
-    //	min/max or rollover, the checks may be skipped resulting in changes to the pitch way outside the allowed
-    //	range (i.e. -33.04). This could be a USB latency problem or it could be normal for the Consoles, test on a
-    //	faster PC, if it happens on a faster PC then try to figure out a fix.
-    //iii) Not sure if checks will work properly if the hardware pitch value is on 0 or 255 when mixxx is started, should test this.
-    // iv) In the future this function might be moved to hercules.cpp as it might prove useful to a Windows implementation as well (Windows MIDI signals a bit differently though).
-
-//	qDebug("%s ENTER --> ev.value %i, m_iPitchOffset %i, m_iPitchPrevious %i, last calc: %i, next calc: %i",ControlSide.data(), ev_value, m_iPitchOffset, m_iPitchPrevious, (m_iPitchPrevious + m_iPitchOffset), (ev_value + m_iPitchOffset));
-    if (m_iPitchOffset==-9999) {
-        m_iPitchOffset = 127 - ev_value;
-//		qDebug("%s PITCH OFFSET INIT/RESET ev_value %i, m_iPitchOffset %i",ControlSide.data(), ev_value, m_iPitchOffset);
+    // Handle the initial event from the Hercules and set pitch to default of 0% change
+    if (m_iPitchPrevious < 0) {
+        m_iPitchOffset = ev_value;
+        m_iPitchPrevious = 64;
+        return m_iPitchPrevious;
     }
 
-    if ((m_iPitchPrevious + m_iPitchOffset) == 255  && m_iPitchPrevious < ev_value) {
-        m_iPitchOffset = (255 - ev_value);
-//		qDebug() << "" << ControlSide << "MAX + ROLLOVER";
-    } else if (m_iPitchPrevious == 255 && ev_value == 0) {
-        m_iPitchOffset = (255 + m_iPitchOffset);
-//		qDebug() << "" << ControlSide << "MAX";
-    } else if (ev_value == 255 && m_iPitchPrevious == 0 && m_iPitchOffset >= 0) {
-        m_iPitchOffset = (m_iPitchOffset - 255);
-//		qDebug() << "" << ControlSide << "ROLL DOWN";
-    } else if (ev_value < m_iPitchPrevious && m_iPitchPrevious + m_iPitchOffset == 0) {
-        m_iPitchOffset = (-ev_value);
-//		qDebug() << "" << ControlSide << "MIN ROLLDOWN #1";
+    int delta = ev_value - m_iPitchOffset;
+    if (delta >= 240) {
+        delta = (255 - delta) * -1;
+    }
+    if (delta <= -240) {
+        delta = 255 + delta;
+    }
+    m_iPitchOffset = ev_value;
+
+#ifdef __THOMAS_HERC__
+    int pitchAdjustStep = delta; // * 3;
+#else
+    int pitchAdjustStep = delta * 3;
+#endif
+
+    if ((pitchAdjustStep > 0 && m_iPitchPrevious+pitchAdjustStep < 128) || (pitchAdjustStep < 0 && m_iPitchPrevious+pitchAdjustStep > 0)) {
+        m_iPitchPrevious = m_iPitchPrevious+pitchAdjustStep;
+    } else if (pitchAdjustStep > 0) {
+        m_iPitchPrevious = 127;
+    } else if (pitchAdjustStep < 0) {
+        m_iPitchPrevious = 0;
     }
 
-    m_iPitchPrevious = ev_value;
-//	qDebug("%s ADJUSTED m_iPitchOffset %i, m_iPitchPrevious %i, Resulting Pitch %5.3f", ControlSide.data(), m_iPitchOffset, m_iPitchPrevious, (((m_iPitchPrevious + m_iPitchOffset)-.5)/2.));
-    return (((m_iPitchPrevious + m_iPitchOffset)-.5)/2.);
+    // qDebug() << "PitchChange [" << ControlSide << "] PitchAdjust" << pitchAdjustStep <<"-> new Pitch:" << m_iPitchPrevious << " NewRangeAdjustedPitch:" <<  QString::number(((m_iPitchPrevious+1)$
+
+    // old range was 0..127
+    // new range is -1.0 to 1.0
+    return ((m_iPitchPrevious+1) - 64)/64.;
 }
-
 
