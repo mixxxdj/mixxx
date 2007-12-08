@@ -114,6 +114,7 @@ public slots:
     /** Set the search filter **/
     void slotFilter(const QString &);
     void slotFilter();
+	void repaintEverything();
 
 protected slots:
     void sortByColumn(int col);
