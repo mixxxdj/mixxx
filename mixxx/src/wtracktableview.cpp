@@ -167,8 +167,17 @@ void WTrackTableView::sortColumn(int col, bool ascending, bool)
 {
 }
 
+void WTrackTableView::repaintEverything() {
+
+	// Hack ahoy:
+	// This invalidates everything in a way i thought reset() would
+	// Why exactly it works isn't clear but i suspect it's some subtlety with the filtering
+	setSearchSource(m_pTable);
+}
+
 void WTrackTableView::sortByColumn(int col)
 {
+
     if(horizontalHeader()->sortIndicatorSection() != col)
         return QTableView::sortByColumn(col);
 
@@ -334,6 +343,7 @@ QString WTrackTableView::getPrevTrackBrowseMode(TrackInfoObject* current)
 
 void WTrackTableView::contextMenuEvent(QContextMenuEvent * event)
 {
+
     index = indexAt(event->pos());
 
     if (index.isValid())

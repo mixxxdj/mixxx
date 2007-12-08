@@ -70,8 +70,8 @@ Track::Track(QString location, MixxxView * pView, EngineBuffer * pBuffer1, Engin
 
     
     m_pScanner = new LibraryScanner(&m_qPlaylists, "");
-    //Refresh the tableview when the library is done being scanned. (FIXME: Not working)
-    connect(m_pScanner, SIGNAL(scanFinished()), m_pView->m_pTrackTableView, SLOT(update())); 
+    //Refresh the tableview when the library is done being scanned. (FIXME: Is a hack)
+    connect(m_pScanner, SIGNAL(scanFinished()), m_pView->m_pTrackTableView, SLOT(repaintEverything())); 
     // Read the XML file
     readXML(location); 
  
@@ -87,7 +87,6 @@ Track::Track(QString location, MixxxView * pView, EngineBuffer * pBuffer1, Engin
     m_pScanner->scan(musicDir, &m_qPlaylists);
     
     //m_qPlaylists.at(0)->addPath(musicDir);
-	m_pView->m_pTrackTableView->update();
     // Update anything that views the playlists
     updatePlaylistViews();
 
@@ -98,6 +97,7 @@ Track::Track(QString location, MixxxView * pView, EngineBuffer * pBuffer1, Engin
     m_pLibraryModel->setTrackPlaylist(m_qPlaylists.at(0));
     m_pPlayQueueModel->setTrackPlaylist(m_qPlaylists.at(1));
     m_pPlaylistListModel->setPlaylistList(m_qPlaylists);
+
 
     if (m_pView && m_pView->m_pTrackTableView) //Stops Mixxx from dying if a skin doesn't have the search box.
     {
@@ -158,6 +158,9 @@ Track::Track(QString location, MixxxView * pView, EngineBuffer * pBuffer1, Engin
     connect(m_pPrevTrackCh2, SIGNAL(valueChanged(double)), this, SLOT(slotPrevTrackPlayer2(double)));
 
     TrackPlaylist::setTrack(this);
+
+	m_pView->m_pTrackTableView->repaintEverything();
+
 }
 
 Track::~Track()
