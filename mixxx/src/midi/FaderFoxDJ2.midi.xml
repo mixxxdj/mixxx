@@ -29,6 +29,37 @@
       <midino>34</midino>
       <midichan>16</midichan>
     </control>
+<control>
+	<group>[Channel1]</group>
+	<key>pregain</key>
+	<miditype>Ctrl</miditype>
+	<midino>7</midino>
+	<midichan>16</midichan>
+	<options>
+		<diff/>
+	</options>
+</control>
+<control>
+	<group>[Channel1]</group>
+	<key>rate</key>
+	<miditype>Ctrl</miditype>
+    <midino>27</midino>
+    <midichan>16</midichan>
+	<options>
+		<diff/>
+	</options>
+</control>
+<control>
+    <group>[Channel1]</group>
+    <key>jog</key>
+    <miditype>Ctrl</miditype>
+    <midino>14</midino>
+    <midichan>16</midichan>
+	<options>
+		<diff/>
+	</options>
+    <sensitivity>700</sensitivity>
+</control>
     <control>
       <group>[Channel1]</group>
       <key>rate_temp_up</key>
@@ -134,6 +165,37 @@
       <midino>21</midino>
       <midichan>16</midichan>
     </control>
+<control>
+	<group>[Channel2]</group>
+	<key>pregain</key>
+	<miditype>Ctrl</miditype>
+	<midino>10</midino>
+	<midichan>16</midichan>
+	<options>
+		<diff/>
+	</options>
+</control>
+<control>
+	<group>[Channel2]</group>
+	<key>rate</key>
+	<miditype>Ctrl</miditype>
+    <midino>28</midino>
+    <midichan>16</midichan>
+	<options>
+		<diff/>
+	</options>
+</control>
+<control>
+    <group>[Channel2]</group>
+    <key>jog</key>
+    <miditype>Ctrl</miditype>
+    <midino>15</midino>
+    <midichan>16</midichan>
+    <options>
+        <diff/>
+    </options>
+    <sensitivity>700</sensitivity>
+</control>
     <control>
       <group>[Channel2]</group>
       <key>rate_temp_up</key>
