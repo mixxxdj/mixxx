@@ -348,7 +348,8 @@ void WTrackTableView::contextMenuEvent(QContextMenuEvent * event)
         }
         else //Regular library mode menu
         {
-            m_pTrackInfoObject = m_pTable->m_pTrackPlaylist->getTrackAt(index.row());
+			QModelIndex temp_sindex = m_pSearchFilter->mapToSource(index);
+            m_pTrackInfoObject = m_pTable->m_pTrackPlaylist->getTrackAt(temp_sindex.row());
         }
 
         QMenu menu(this);
