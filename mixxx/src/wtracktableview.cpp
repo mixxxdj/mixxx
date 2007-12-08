@@ -109,7 +109,7 @@ void WTrackTableView::setup(QDomNode node)
     {
         fgc.setNamedColor(WWidget::selectNodeQString(node, "FgColor"));
 	if (m_pTable)
-	   m_pTable->setForegroundColor(fgc);
+	   m_pTable->setForegroundColor(WSkinColor::getCorrectColor(fgc));
     }
 
 
@@ -122,8 +122,8 @@ void WTrackTableView::setup(QDomNode node)
         r2.setNamedColor(WWidget::selectNodeQString(node, "BgColorRowUneven"));
         setAlternatingRowColors ( true );
         QPalette Rowpalette = palette();
-        Rowpalette.setColor(QPalette::Base, r1);
-        Rowpalette.setColor(QPalette::AlternateBase, r2);
+        Rowpalette.setColor(QPalette::Base, WSkinColor::getCorrectColor(r1));
+        Rowpalette.setColor(QPalette::AlternateBase, WSkinColor::getCorrectColor(r2));
         setPalette(Rowpalette);
     }
 
