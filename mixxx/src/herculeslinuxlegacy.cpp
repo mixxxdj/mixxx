@@ -309,15 +309,13 @@ void HerculesLinux::getNextEvent()
                     break;
 
                 case kiHerculesLeftBtnCue:
-                    if (ev.value) {
                       //m_bCueLeft = !m_bCueLeft;
-                      sendButtonEvent(true, m_pControlObjectLeftBtnCue);
+                      sendButtonEvent(ev.value, m_pControlObjectLeftBtnCue);
                       //led_write(kiHerculesLedLeftCueBtn, m_bCueLeft);
-                    }
                     break;
                 case kiHerculesRightBtnCue:
                     //m_bCueRight = !m_bCueRight;
-                    sendButtonEvent(true, m_pControlObjectRightBtnCue);
+                    sendButtonEvent(ev.value, m_pControlObjectRightBtnCue);
                     //led_write(kiHerculesLedRightCueBtn, m_bCueRight);
                     break;
 
@@ -336,13 +334,17 @@ void HerculesLinux::getNextEvent()
                     }
                     break;
 
-                case kiHerculesLeftBtnHeadphone:
-                    led_write(kiHerculesLedLeftHeadphone, !m_pControlObjectLeftBtnHeadphone->get());
-                    sendButtonEvent(!m_pControlObjectLeftBtnHeadphone->get(), m_pControlObjectLeftBtnHeadphone);
+                case kiHerculesLeftBtnHeadphone: 
+                    if (ev.value) {
+                      led_write(kiHerculesLedLeftHeadphone, !m_pControlObjectLeftBtnHeadphone->get());
+                      sendButtonEvent(!m_bHeadphoneLeft, m_pControlObjectLeftBtnHeadphone);
+                    }
                     break;
                 case kiHerculesRightBtnHeadphone:
-                    led_write(kiHerculesLedRightHeadphone, !m_pControlObjectRightBtnHeadphone->get());
-                    sendButtonEvent(!m_pControlObjectRightBtnHeadphone->get(), m_pControlObjectRightBtnHeadphone);
+                    if (ev.value) {
+                      led_write(kiHerculesLedRightHeadphone, !m_pControlObjectRightBtnHeadphone->get());
+                      sendButtonEvent(!m_bHeadphoneRight, m_pControlObjectRightBtnHeadphone);
+                    }
                     break;
 
                 case kiHerculesLeftBtnAutobeat:
