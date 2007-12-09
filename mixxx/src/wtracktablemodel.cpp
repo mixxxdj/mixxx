@@ -48,11 +48,7 @@ QVariant WTrackTableModel::data(const QModelIndex &index, int role) const
     if (index.row() >= m_pTrackPlaylist->getSongNum())
         return QVariant();
 
-    if (role == Qt::ForegroundRole )
-    {
-        return foregroundColor;
-    }
-    else if (role == Qt::DisplayRole )
+    if (role == Qt::DisplayRole )
     {
         switch(index.column())
         {
