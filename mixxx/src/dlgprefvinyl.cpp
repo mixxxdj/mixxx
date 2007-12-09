@@ -102,13 +102,6 @@ void DlgPrefVinyl::slotUpdate()
 {
     qDebug() << "DlgPrefVinyl::slotUpdate()";
 
-    // Enable/Disable RIAA Correction checkbox
-    int iEnableRIAA = config->getValueString(ConfigKey("[VinylControl]","bInputRIAACorrection")).toInt();
-    if (iEnableRIAA)
-        EnableRIAA->setChecked(true);
-    else
-        EnableRIAA->setChecked(false);
-
     // Get list of input devices, filtering by the current API.
     QList<SoundDevice *> devices = m_pSoundManager->getDeviceList(config->getValueString(ConfigKey("[Soundcard]","SoundApi")), false, true);
     QListIterator<SoundDevice *> device_it(devices);
@@ -180,7 +173,7 @@ void DlgPrefVinyl::slotApply()
     if (isInteger)
         config->set(ConfigKey("[VinylControl]","LeadInTime"), strLeadIn);
     else
-        config->set(ConfigKey("[VinylControl]","LeadInTime"), 35);
+        config->set(ConfigKey("[VinylControl]","LeadInTime"), 20);
 
     // Apply Soundcard options
 
@@ -190,7 +183,6 @@ void DlgPrefVinyl::slotApply()
     //NOTE: Soundcard options (input device selection) is applied by DlgPrefSound...
 
     //Apply updates for everything else...
-    EnableRIAASlotApply();
     VinylTypeSlotApply();
     VinylGainSlotApply();
     AutoCalibrationSlotApply();
@@ -221,14 +213,6 @@ void DlgPrefVinyl::ChannelsSlotApply()
     //config->set(ConfigKey("[VinylControl]","DeviceInputChannelsDeck2"), ConfigValue(ComboBoxChannelsDeck2->currentText()));
 }
 
-void DlgPrefVinyl::EnableRIAASlotApply()
-{
-    // Input RIAA correction
-    if (EnableRIAA->isChecked())
-        config->set(ConfigKey("[VinylControl]","InputRIAACorrection"), ConfigValue(1));
-    else
-        config->set(ConfigKey("[VinylControl]","InputRIAACorrection"), ConfigValue(0));
-}
 
 void DlgPrefVinyl::EnableRelativeModeSlotApply()
 {

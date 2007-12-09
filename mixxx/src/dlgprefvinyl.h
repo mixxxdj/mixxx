@@ -44,7 +44,6 @@ public slots:
 	void ChannelsSlotApply();
 	void EnableRelativeModeSlotApply();
 	void EnableScratchModeSlotApply();
-	void EnableRIAASlotApply();
 	void VinylTypeSlotApply();
 	void AutoCalibrationSlotApply();
     void VinylGainSlotApply();
