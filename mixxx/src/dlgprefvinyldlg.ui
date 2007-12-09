@@ -17,7 +17,7 @@
     <rect>
      <x>10</x>
      <y>10</y>
-     <width>340</width>
+     <width>381</width>
      <height>150</height>
     </rect>
    </property>
@@ -33,7 +33,7 @@
       <x>20</x>
       <y>50</y>
       <width>50</width>
-      <height>19</height>
+      <height>31</height>
      </rect>
     </property>
     <property name="font" >
@@ -59,9 +59,9 @@
     <property name="geometry" >
      <rect>
       <x>20</x>
-      <y>80</y>
+      <y>90</y>
       <width>50</width>
-      <height>19</height>
+      <height>31</height>
      </rect>
     </property>
     <property name="font" >
@@ -86,8 +86,8 @@
     </property>
     <property name="geometry" >
      <rect>
-      <x>70</x>
-      <y>80</y>
+      <x>90</x>
+      <y>90</y>
       <width>251</width>
       <height>26</height>
      </rect>
@@ -96,26 +96,13 @@
      <font/>
     </property>
    </widget>
-   <widget class="QCheckBox" name="EnableRIAA" >
-    <property name="geometry" >
-     <rect>
-      <x>20</x>
-      <y>110</y>
-      <width>200</width>
-      <height>20</height>
-     </rect>
-    </property>
-    <property name="text" >
-     <string>Enable RIAA correction</string>
-    </property>
-   </widget>
    <widget class="QComboBox" name="ComboBoxDeviceDeck1" >
     <property name="enabled" >
      <bool>true</bool>
     </property>
     <property name="geometry" >
      <rect>
-      <x>70</x>
+      <x>90</x>
       <y>50</y>
       <width>251</width>
       <height>26</height>
@@ -141,10 +128,26 @@
      <font/>
     </property>
     <property name="text" >
-     <string>Select the recording devices and channels</string>
+     <string>Select your recording devices:</string>
     </property>
     <property name="wordWrap" >
      <bool>false</bool>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_2" >
+    <property name="geometry" >
+     <rect>
+      <x>20</x>
+      <y>120</y>
+      <width>321</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="text" >
+     <string>&lt;a href="http://mixxx.sourceforge.net/wiki/index.php/Vinyl_Control#Troubleshooting">Troubleshooting&lt;/a></string>
+    </property>
+    <property name="openExternalLinks" >
+     <bool>true</bool>
     </property>
    </widget>
   </widget>
@@ -153,7 +156,7 @@
     <rect>
      <x>10</x>
      <y>170</y>
-     <width>340</width>
+     <width>381</width>
      <height>231</height>
     </rect>
    </property>
@@ -167,9 +170,9 @@
     <property name="geometry" >
      <rect>
       <x>20</x>
-      <y>60</y>
+      <y>59</y>
       <width>80</width>
-      <height>20</height>
+      <height>31</height>
      </rect>
     </property>
     <property name="font" >
@@ -183,10 +186,13 @@
     </property>
    </widget>
    <widget class="QLabel" name="textLabel1_2" >
+    <property name="enabled" >
+     <bool>false</bool>
+    </property>
     <property name="geometry" >
      <rect>
-      <x>190</x>
-      <y>110</y>
+      <x>230</x>
+      <y>90</y>
       <width>71</width>
       <height>20</height>
      </rect>
@@ -204,10 +210,10 @@
     </property>
     <property name="geometry" >
      <rect>
-      <x>230</x>
+      <x>240</x>
       <y>60</y>
-      <width>101</width>
-      <height>20</height>
+      <width>81</width>
+      <height>31</height>
      </rect>
     </property>
     <property name="font" >
@@ -226,10 +232,10 @@
     </property>
     <property name="geometry" >
      <rect>
-      <x>120</x>
+      <x>130</x>
       <y>30</y>
       <width>210</width>
-      <height>22</height>
+      <height>26</height>
      </rect>
     </property>
     <property name="font" >
@@ -239,18 +245,21 @@
    <widget class="QLineEdit" name="LeadinTime" >
     <property name="geometry" >
      <rect>
-      <x>120</x>
+      <x>130</x>
       <y>60</y>
       <width>100</width>
-      <height>20</height>
+      <height>27</height>
      </rect>
     </property>
    </widget>
    <widget class="QLabel" name="textLabel1" >
+    <property name="enabled" >
+     <bool>false</bool>
+    </property>
     <property name="geometry" >
      <rect>
-      <x>190</x>
-      <y>140</y>
+      <x>230</x>
+      <y>120</y>
       <width>71</width>
       <height>20</height>
      </rect>
@@ -263,10 +272,13 @@
     </property>
    </widget>
    <widget class="QLineEdit" name="precision" >
+    <property name="enabled" >
+     <bool>false</bool>
+    </property>
     <property name="geometry" >
      <rect>
-      <x>260</x>
-      <y>110</y>
+      <x>300</x>
+      <y>90</y>
       <width>60</width>
       <height>22</height>
      </rect>
@@ -276,10 +288,13 @@
     </property>
    </widget>
    <widget class="QLineEdit" name="gain" >
+    <property name="enabled" >
+     <bool>false</bool>
+    </property>
     <property name="geometry" >
      <rect>
-      <x>260</x>
-      <y>140</y>
+      <x>300</x>
+      <y>120</y>
       <width>60</width>
       <height>22</height>
      </rect>
@@ -291,7 +306,7 @@
    <widget class="QLabel" name="textLabel3" >
     <property name="geometry" >
      <rect>
-      <x>290</x>
+      <x>340</x>
       <y>210</y>
       <width>40</width>
       <height>21</height>
@@ -309,7 +324,7 @@
      <rect>
       <x>21</x>
       <y>190</y>
-      <width>290</width>
+      <width>341</width>
       <height>24</height>
      </rect>
     </property>
@@ -324,10 +339,13 @@
     </property>
    </widget>
    <widget class="QPushButton" name="AutoCalibration" >
+    <property name="enabled" >
+     <bool>false</bool>
+    </property>
     <property name="geometry" >
      <rect>
       <x>190</x>
-      <y>160</y>
+      <y>170</y>
       <width>120</width>
       <height>24</height>
      </rect>
@@ -345,7 +363,7 @@
       <x>20</x>
       <y>30</y>
       <width>80</width>
-      <height>20</height>
+      <height>31</height>
      </rect>
     </property>
     <property name="font" >
@@ -429,22 +447,25 @@
      <string>Absolute Mode</string>
     </property>
    </widget>
-  </widget>
-  <widget class="QLabel" name="label" >
-   <property name="geometry" >
-    <rect>
-     <x>240</x>
-     <y>400</y>
-     <width>111</width>
-     <height>18</height>
-    </rect>
-   </property>
-   <property name="toolTip" >
-    <string>http://www.xwax.co.uk</string>
-   </property>
-   <property name="text" >
-    <string>Powered by xwax</string>
-   </property>
+   <widget class="QLabel" name="label" >
+    <property name="geometry" >
+     <rect>
+      <x>230</x>
+      <y>150</y>
+      <width>141</width>
+      <height>18</height>
+     </rect>
+    </property>
+    <property name="toolTip" >
+     <string>http://www.xwax.co.uk</string>
+    </property>
+    <property name="text" >
+     <string>Powered by xwax</string>
+    </property>
+    <property name="alignment" >
+     <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+    </property>
+   </widget>
   </widget>
  </widget>
  <layoutdefault spacing="6" margin="11" />
