@@ -281,17 +281,17 @@ void HerculesLinux::getNextEvent()
                 switch (ev.code)
                 {
                 case kiHerculesLeftBtnPitchBendMinus:
-                    sendButtonEvent(!m_pControlObjectLeftBtnPitchBendMinus->get(), m_pControlObjectLeftBtnPitchBendMinus);
+                    sendButtonEvent(ev.value, m_pControlObjectLeftBtnPitchBendMinus);
                     break;
                 case kiHerculesRightBtnPitchBendMinus:
-                    sendButtonEvent(true, m_pControlObjectRightBtnPitchBendMinus);
+                    sendButtonEvent(ev.value, m_pControlObjectRightBtnPitchBendMinus);
                     break;
 
                 case kiHerculesLeftBtnPitchBendPlus:
-                    sendButtonEvent(!m_pControlObjectLeftBtnPitchBendPlus->get(), m_pControlObjectLeftBtnPitchBendPlus);
+                    sendButtonEvent(ev.value, m_pControlObjectLeftBtnPitchBendPlus);
                     break;
                 case kiHerculesRightBtnPitchBendPlus:
-                    sendButtonEvent(true, m_pControlObjectRightBtnPitchBendPlus);
+                    sendButtonEvent(ev.value, m_pControlObjectRightBtnPitchBendPlus);
                     break;
 
                 case kiHerculesLeftBtnTrackNext:
@@ -348,12 +348,12 @@ void HerculesLinux::getNextEvent()
                     break;
 
                 case kiHerculesLeftBtnAutobeat:
-                    sendButtonEvent(true, m_pControlObjectLeftBtnAutobeat);
+                    sendButtonEvent(ev.value, m_pControlObjectLeftBtnAutobeat);
                     m_bSyncLeft = !m_bSyncLeft;
 //                     led_write(kiHerculesLedLeftSync, m_bSyncLeft);
                     break;
                 case kiHerculesRightBtnAutobeat:
-                    sendButtonEvent(true, m_pControlObjectRightBtnAutobeat);
+                    sendButtonEvent(ev.value, m_pControlObjectRightBtnAutobeat);
                     m_bSyncRight = !m_bSyncRight;
 //                     led_write(kiHerculesLedRightSync, m_bSyncRight);
                     break;
