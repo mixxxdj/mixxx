@@ -118,12 +118,23 @@ void WTrackTableView::setup(QDomNode node)
     {
         QColor r1;
         r1.setNamedColor(WWidget::selectNodeQString(node, "BgColorRowEven"));
+		r1 = WSkinColor::getCorrectColor(r1);
         QColor r2;
         r2.setNamedColor(WWidget::selectNodeQString(node, "BgColorRowUneven"));
+		r2 = WSkinColor::getCorrectColor(r2);
+
+		// For now make text the inverse of the background so it's readable
+		// In the future this should be configurable from the skin with this
+		// as the fallback option
+		QColor text(255 - r1.red(), 255 - r1.green(), 255 - r1.blue());
+		//QColor text(255, 255, 255);
+
         setAlternatingRowColors ( true );
         QPalette Rowpalette = palette();
-        Rowpalette.setColor(QPalette::Base, WSkinColor::getCorrectColor(r1));
-        Rowpalette.setColor(QPalette::AlternateBase, WSkinColor::getCorrectColor(r2));
+        Rowpalette.setColor(QPalette::Base, r1);
+        Rowpalette.setColor(QPalette::AlternateBase, r2);
+		Rowpalette.setColor(QPalette::Text, text);
+
         setPalette(Rowpalette);
     }
 
@@ -172,7 +183,9 @@ void WTrackTableView::repaintEverything() {
 	// Hack ahoy:
 	// This invalidates everything in a way i thought reset() would
 	// Why exactly it works isn't clear but i suspect it's some subtlety with the filtering
-	setSearchSource(m_pTable);
+	if (m_pTable) {
+		setSearchSource(m_pTable);
+	}
 }
 
 void WTrackTableView::sortByColumn(int col)
