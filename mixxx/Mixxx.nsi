@@ -49,9 +49,9 @@ Section "Mixxx (required)" SecMixxx
   ; Put binary files there
   File "dist\mixxx.exe"
   File "dist\*.dll"
-  File "..\mixxx-winlib\msvcm80.dll"
-  File "..\mixxx-winlib\msvcp80.dll"
-  File "..\mixxx-winlib\msvcr80.dll"
+;  File "..\mixxx-winlib\msvcm80.dll"
+;  File "..\mixxx-winlib\msvcp80.dll"
+;  File "..\mixxx-winlib\msvcr80.dll"
   File "..\mixxx-winlib\Microsoft.VC80.CRT.manifest"
 
   ; And documentation, licence etc.
@@ -1258,6 +1258,9 @@ Section "Uninstall"
   Delete $INSTDIR\skins\outline\*.*
   Delete $INSTDIR\skins\outlineClose\*.*
   Delete $INSTDIR\skins\outlineSmall\*.*
+  Delete $INSTDIR\skins\outlineMini\*.*
+  Delete $INSTDIR\skins\hercules\*.*
+  Delete $INSTDIR\skins\nCut\*.*
   Delete $INSTDIR\skins\traditional\*.*
   Delete $INSTDIR\skins\*.*
   Delete $INSTDIR\keyboard\*.*
@@ -1265,6 +1268,9 @@ Section "Uninstall"
   RMDir "$INSTDIR\skins\outline"
   RMDir "$INSTDIR\skins\outlineClose"
   RMDir "$INSTDIR\skins\outlineSmall"
+  RMDir "$INSTDIR\skins\outlineMini"
+  RMDir "$INSTDIR\skins\hercules"
+  RMDir "$INSTDIR\skins\nCut"
   RMDir "$INSTDIR\skins\traditional"
   RMDir "$INSTDIR\skins"
   RMDir "$INSTDIR\midi"
