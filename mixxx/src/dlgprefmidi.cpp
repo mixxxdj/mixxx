@@ -122,6 +122,12 @@ DlgPrefMidi::DlgPrefMidi(QWidget * parent, ConfigObject<ConfigValue> * pConfig) 
             break;
         }
     }
+
+	// Test for migration from 1.5 to 1.6, feel free to remove this in the distant future - Adam
+	if (mappingfile.endsWith(".cfg", Qt::CaseInsensitive)) {
+		mappingfile = "";
+	}
+
     if (!foundmap && !mappingfile.isEmpty()) {
         if (midiConfigList->empty())
         {
@@ -137,6 +143,7 @@ DlgPrefMidi::DlgPrefMidi(QWidget * parent, ConfigObject<ConfigValue> * pConfig) 
 #else
             mappingfile = midiConfigList->at(0);
 #endif
+
             qWarning() << "Requested MIDI mapping file" << notfound << "not found; defaulting to" << mappingfile;
             m_pConfig->set(ConfigKey("[Midi]","File"), ConfigValue(mappingfile));
 
