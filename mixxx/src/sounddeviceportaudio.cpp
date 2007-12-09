@@ -112,7 +112,9 @@ int SoundDevicePortAudio::open()
     qDebug() << "output channels:" << m_outputParams.channelCount << "| input channels:" << m_inputParams.channelCount;
 
     //Calculate the latency in samples
-    int iLatencySamples = (int)((float)(m_dSampleRate*m_outputParams.channelCount)/1000.f*(float)iLatencyMSec);
+    int iMaxChannels = math_max(m_outputParams.channelCount, m_inputParams.channelCount); //Max channels opened for input or output
+    int iLatencySamples = (int)((float)(m_dSampleRate*iMaxChannels)/1000.f*(float)iLatencyMSec);
+
 
     //Round to the nearest multiple of 4.
     iLatencySamples -= (iLatencySamples % 4);
