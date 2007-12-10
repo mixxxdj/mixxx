@@ -481,7 +481,7 @@ else:
 	print "libdjconsole support... enabled"
 
 #High quality EQs
-flags_hifieq = ARGUMENTS.get('hifieq', 0)
+flags_hifieq = ARGUMENTS.get('hifieq', 1)
 if int(flags_hifieq) == 0:
 	env.Append(CXXFLAGS = '-D__LOFI__ -D__NO_INTTYPES__') #Enables old crappy EQs
 	print "High quality EQs... disabled"
