@@ -29,9 +29,12 @@ EngineFilterBlock::EngineFilterBlock(const char * group)
     high = new EngineFilterIIR(bessel_highpass4_DJM800,4);
     qDebug("Using LoFi EQs");
 #else
-    low = new EngineFilter("LpBu8/250");
-    band = new EngineFilter("BpBu8/250-3000");
-    high = new EngineFilter("HpBu8/3000");
+    //low = new EngineFilter("LpBu8/250");
+    //band = new EngineFilter("BpBu8/250-3000");
+    //high = new EngineFilter("HpBu8/3000");
+	low = new EngineFilter("", PREDEF_LP);
+	band = new EngineFilter("", PREDEF_BP);
+	high = new EngineFilter("", PREDEF_HP);
 
     //EngineFilter doesn't have any denormal handling so we add a slight amount of noise
     //don't worry this will all be filtered out long before it gets to the output, and is
