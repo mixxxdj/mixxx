@@ -48,10 +48,13 @@ EngineFilter::EngineFilter(char * conf, int predefinedType)
 
 EngineFilter::~EngineFilter()
 {
-    fid_run_freebuf(fbuf2);
-    fid_run_freebuf(fbuf1);
-    fid_run_free(run);
-    free(ff);
+	if(processSample == funcp) //if we used fidlib
+	{
+		fid_run_freebuf(fbuf2);
+		fid_run_freebuf(fbuf1);
+		fid_run_free(run);
+		free(ff);
+	}
 }
 
 
