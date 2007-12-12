@@ -27,7 +27,8 @@
    Stuff to maybe implement here
    1) The smoothing thing that xwax does
    2) Tons of cleanup
-   3) ....?
+   3) Speed up needle dropping
+   4) ....?
 
  ********************/
 
@@ -65,7 +66,7 @@ VinylControlXwax::VinylControlXwax(ConfigObject<ConfigValue> * pConfig, const ch
         return;
     }
 
-    timecoder_init(&timecoder);
+    timecoder_init(&timecoder); //iSampleRate
 
 
     //This ends up calling-back the function "run()" below.
@@ -89,6 +90,8 @@ VinylControlXwax::~VinylControlXwax()
     bShouldClose = true;
     waitForNextInput.wakeAll();
     lockSamples.unlock();
+    
+    controlScratch->slotSet(0.0f);
     wait();
 }
 
@@ -99,9 +102,9 @@ void VinylControlXwax::AnalyseSamples(short *samples, size_t size)
     lockSamples.lock();
     timecoder_submit(&timecoder, samples, size);
     fTimecodeStrength = samples[0] / SHRT_MAX;
-    lockSamples.unlock();
-
+    
     waitForNextInput.wakeAll();
+    lockSamples.unlock();
 }
 
 
@@ -119,7 +122,6 @@ void VinylControlXwax::run()
     double dVinylPitchRange = 1.0f;
     double dTotalSpeed = 0.0f;
     double dTempCount = 0.0f;
-    bool bNeedsPosSync = false;
 
     int when, alive, pitch_unavailable;
 
@@ -137,23 +139,13 @@ void VinylControlXwax::run()
         //		and make that get called when any options get changed in the preferences dialog, rather than
         //		polling everytime we get a buffer.
 
-        //Enable or disable RIAA correction
-        /*
-           int iRIAACorrection =  m_pConfig->getValueString(ConfigKey("[VinylControl]","InputRIAACorrection")).toInt();
-           if (iRIAACorrection == 1)
-                scratch->EnableRIAACorrection(true);
-           else
-                scratch->EnableRIAACorrection(false);
-         */
-
-        //Set the pre-amp/amplification/input signal boost.
-        //int prefAmp = m_pConfig->getValueString(ConfigKey("[VinylControl]","VinylControlGain")).toInt();
-        //scratch->SetAmplify( (float) prefAmp/100. + 1);
-
         //Vinyl control mode
         iVCMode = mode->get();
         //Check if vinyl control is enabled...
         bIsEnabled = enabled->get();
+        
+        //Get the pitch range from the prefs.
+        fRateRange = rateRange->get();
         
         // Analyse the input samples
         int iPosition = -1;
@@ -161,143 +153,91 @@ void VinylControlXwax::run()
 
         dVinylPosition = iPosition;
         dVinylPosition = dVinylPosition / 1000.0f;
-        dVinylPosition -= iLeadInTime;  //Add the lead-in
+        //The lead-in time is added in syncPosition() in order to make the calculations
+        //in this function simpler.
+        
 
         //qDebug() << "iLeadInTime:" << iLeadInTime << "dVinylPosition" << dVinylPosition;
 
         alive = timecoder_get_alive(&timecoder);
-        dOldPitch = dVinylPitch;
+        
         pitch_unavailable = timecoder_get_pitch(&timecoder, &dVinylPitch);
 
-        if(alive && !pitch_unavailable)
-        {
-            //dVinylPitch = (dOldPitch * (XWAX_SMOOTHING - 1) + dVinylPitch) / XWAX_SMOOTHING;
-            //qDebug("dVinylPosition: %f, dVinylPitch: %f, when: %d", dVinylPosition, dVinylPitch, when);
-        }
-
-        //qDebug("original dVinylPitch: %f", dVinylPitch);
-
-        //THIS IS ONLY NEEDED for non-pitch1.0:
-        //dVinylPitch = dVinylPitch / 0.340f; //Normalize it (33 RPM = 1.0)
-
-        dVinylScratch = dVinylPitch;         //Use this value to instruct Mixxx for scratching/seeking.
-        dVinylPitch = dVinylPitch - 1.0f;         //Shift the 33 RPM value (33 RPM = 0.0)
-        dVinylPitch = dVinylPitch / 0.080f;         //Normalize to the pitch range. (8% = 1.0)
-
-        //Re-get the duration, just in case a track hasn't been loaded yet...
-        //duration = ControlObject::getControl(ConfigKey(group, "duration"));
-
-        //Next we set the range that the pitch can go before we consider the turntable to be "seeking".
-        //(In absolute mode, when seeking is finished the position is re-synced, which causes a jump.
-        // We set a more generous pitch range in absolute mode in order to avoid accidentally resyncing
-        // the position.
-        // (For example, if a turntable is at +8% pitch, it'll naturally fluctuate a bit - that is, it'll
-        //  fluctuate above +8% pitch. Now, we'll read this in as a pitch value that's greater than 1.0f,
-        //  and so our algorithm would think the turntable is seeking, when it's not. In order to work around
-        //  these fluctuations, we simply make it so that the turntable's pitch must be read as greater than
-        //	1.20f before we say that it's seeking.
-
-        if (iVCMode == MIXXX_VCMODE_RELATIVE)      //Relative mode
-            dVinylPitchRange = 1.0f;                    //The correct pitch range (if it's going faster than this, it's seeking.)
-        else if (iVCMode == MIXXX_VCMODE_ABSOLUTE) //Absolute mode
-            dVinylPitchRange = 1.20f;                   //A wider pitch range to account for turntables' speed fluctuations.
-        else 
-            dVinylPitchRange = 1.0f;
-
-        //Find out whether or not VinylControl is enabled.
-        bIsEnabled = (bool)m_pConfig->getValueString(ConfigKey("[VinylControl]","Enabled")).toInt();
-        //qDebug("VinylControl: bIsRunning=%i", bIsRunning);
 
         if (duration != NULL && bIsEnabled)
         {
             filePosition = playPos->get() * duration->get();             //Get the playback position in the file in seconds.
 
-            //qDebug("diff in positions: %f", fabs(dVinylPosition - dOldPos));
-            //if (dVinylPosition != -1.0f)
-
-            // When the Vinyl position has been changed by 0.1seconds
+            // When there's a timecode signal available
             if((alive && !pitch_unavailable))
             {
-                dTemp = 0;
-
-                dTotalSpeed += dVinylScratch;
-                dTempCount++;
-
-                //qDebug("Average speed: %f", (double)dTotalSpeed/dTempCount);
-
-                //Useful debug message for tracking down the problem of the vinyl's position "drifting":
-                //qDebug("Ratio of vinyl's position and Mixxx's: %f", fabs(dVinylPosition/filePosition));
-                dDriftControl =  ((dVinylPosition/filePosition) - 1)/100 * 4.0f;
-                //dDriftControl = 0.0f;
-                //qDebug("dDriftControl: %f", dDriftControl);
-                //qDebug("Xwax says the time is: %f", dVinylPosition);
-                //qDebug("Mixxx says the time is: %f", filePosition);
-                //qDebug("dVinylPitch: %f", dVinylPitch);
-
-                //If the needle just got placed on the record, or playback just resumed
-                //from a standstill...
-                if (bNeedleDown == false  && (iVCMode == MIXXX_VCMODE_ABSOLUTE))                 //&& bSeeking == false
+                if(alive && !pitch_unavailable)
                 {
-                    //qDebug("STATE: playback just started");
-                    controlScratch->slotSet(0.0f);
-                    playButton->slotSet(1.0f);
-
-                    bNeedsPosSync = true;                     //Schedule a position resync, whenever we actually start getting the position signal again.
-                    bNeedleDown = true;                     //The needle is now down/the record is playing.
-                    dTemp = 0;
+                    //dVinylPitch = (dOldPitch * (XWAX_SMOOTHING - 1) + dVinylPitch) / XWAX_SMOOTHING;
+                    //qDebug("dVinylPosition: %f, dVinylPitch: %f, when: %d", dVinylPosition, dVinylPitch, when);
                 }
 
-                //If we need a resync, and we have the timecode position, then resync (sometimes we don't get enough signal right away)
-                if (bNeedsPosSync && (dVinylPosition > 0.0f) && (iVCMode == MIXXX_VCMODE_ABSOLUTE))
-                {
-                    syncPosition();     //Reposition Mixxx
-                    bNeedsPosSync = false;
-                }
+                dVinylScratch = dVinylPitch;         //Use this value to instruct Mixxx for scratching/seeking.
+                dVinylPitch = dVinylPitch - 1.0f;         //Shift the 33 RPM value (33 RPM = 0.0)
+                dVinylPitch = dVinylPitch / fRateRange;   //Normalize to the pitch range. (8% = 1.0)
+                
 
-                bNeedleDown = true;
+                //Re-get the duration, just in case a track hasn't been loaded yet...
+                //duration = ControlObject::getControl(ConfigKey(group, "duration"));
 
-                //If it looks like the turntable is seeking... (ie. we're moving
-                //the vinyl really fast in either direction), or we're in scratch mode...
-                //(in scratch mode, we always consider the turntable to be seeking, therefore we always
-                // use the "controlScratch" control object to control playback.... we never adjust the pitch/rate.)
-                if ((dVinylPitch > dVinylPitchRange) || (dVinylPitch < -dVinylPitchRange) || (iVCMode == MIXXX_VCMODE_SCRATCH))
-                {
-                    //qDebug("STATE: seeking");
-                    bSeeking = true;
-                    playButton->slotSet(0.0f);
-                    rateSlider->slotSet(0.0f);
-                    controlScratch->slotSet(dVinylScratch);
-                }
-                else {                 //We're not seeking... just regular playback
-                                       //qDebug("STATE: regular playback");
-                    if (bSeeking == true && (iVCMode == MIXXX_VCMODE_ABSOLUTE) && dVinylPosition > 0.0f)   //If we've just stopped seeking, and are playing normal again...
+                //Next we set the range that the pitch can go before we consider the turntable to be "seeking".
+                //(In absolute mode, when seeking is finished the position is re-synced, which causes a jump.
+                // We set a more generous pitch range in absolute mode in order to avoid accidentally resyncing
+                // the position.
+                // (For example, if a turntable is at +8% pitch, it'll naturally fluctuate a bit - that is, it'll
+                //  fluctuate above +8% pitch. Now, we'll read this in as a pitch value that's greater than 1.0f,
+                //  and so our algorithm would think the turntable is seeking, when it's not. In order to work around
+                //  these fluctuations, we simply make it so that the turntable's pitch must be read as greater than
+                //	1.20f before we say that it's seeking.
+
+                if (iVCMode == MIXXX_VCMODE_RELATIVE)      //Relative mode
+                    dVinylPitchRange = 1.0f;                    //The correct pitch range (if it's going faster than this, it's seeking.)
+                else if (iVCMode == MIXXX_VCMODE_ABSOLUTE) //Absolute mode
+                    dVinylPitchRange = 1.20f;                   //A wider pitch range to account for turntables' speed fluctuations.
+                else 
+                    dVinylPitchRange = 1.0f;
+
+                //Initialize drift control to zero in case we don't get any position data to calculate it with.
+                dDriftControl = 0.0f;
+
+                //If xwax has given us a valid position from the timecode (will be -1.0f if invalid)
+                if (dVinylPosition > 0.0f) 
+                {   
+                    //If the position from the timecode is more than a few seconds off, resync the position.
+                    if (fabs(dVinylPosition - filePosition) > 3.0 && (iVCMode == MIXXX_VCMODE_ABSOLUTE))
+                    {
                         syncPosition();
-                    bSeeking = false;
-                    controlScratch->slotSet(0.0f);
-                    playButton->slotSet(1.0f);
+                    }
+                    //Useful debug message for tracking down the problem of the vinyl's position "drifting":
+                    //qDebug("Ratio of vinyl's position and Mixxx's: %f", fabs(dVinylPosition/filePosition));
+                    dDriftControl = ((dVinylPosition/filePosition) - 1)/100 * 4.0f;
+                    //qDebug("dDriftControl: %f", dDriftControl);
+                    //qDebug("Xwax says the time is: %f", dVinylPosition);
+                    //qDebug("Mixxx says the time is: %f", filePosition);
+                    //qDebug("dVinylPitch: %f", dVinylPitch);
+                    //qDebug() << "diff in positions:" << fabs(dVinylPosition - filePosition);                           
+                    
                 }
-
-                //If we're not seeking, sync Mixxx's pitch with the turntable's pitch.
-                if (!bSeeking) {
-                    syncPitch(dVinylPitch);
-                }
+                
+                playButton->slotSet(0.0f);
+                rateSlider->slotSet(0.0f);
+                controlScratch->slotSet(dVinylScratch);
+                //qDebug() << "dVinylScratch" << dVinylScratch;
+    
+                //Only need to use syncPitch if we want the pitch sliders to respond
+                //syncPitch(dVinylPitch);
 
                 dOldPos = dVinylPosition;
-
+                dOldPitch = dVinylPitch;
             }
-            else
+            else //No pitch data available (the needle is up/stopped.... or really crappy signal)
             {
-                //qDebug("STATE: Needle up?");
-                playButton->slotSet(0.0f);
                 controlScratch->slotSet(0.0f);
-                dTemp++;
-                if (dTemp > 8)
-                {
-                    bNeedleDown = false;
-                    bNeedsPosSync = true;
-                    dTemp = 10;                 //Don't cha be overflowin' matey, yar.
-                }
-                //playPos->slotSet(0.0f);
             }
         }
     }
@@ -306,8 +246,7 @@ void VinylControlXwax::run()
 //Synchronize the pitch of the external turntable with Mixxx's pitch.
 void VinylControlXwax::syncPitch(double pitch)
 {
-    //The dVinylPitch variable's range (from DAnalyse.h in scratchlib) is
-    //from 1.0 +- 00%
+    //The dVinylPitch variable's range is from 1.0 +- 00%
     if (iVCMode == MIXXX_VCMODE_ABSOLUTE)     //Only apply drift control when we want to stay synced with the vinyl's position.
         pitch += dDriftControl;     //Apply the drift control to it, to keep the vinyl and Mixxx in sync.
     rateSlider->slotSet(pitch);     //rateSlider has a range of -1.0 to 1.0
@@ -317,9 +256,11 @@ void VinylControlXwax::syncPitch(double pitch)
 //Synchronize the position of the timecoded vinyl with Mixxx's position.
 void VinylControlXwax::syncPosition()
 {
+    qDebug() << "syncPosition";
     float filePosition = playPos->get() * duration->get();
     //if (fabs(filePosition - dVinylPosition) > 5.00)
 
+    dVinylPosition -= iLeadInTime;  //Add the lead-in
     playPos->slotSet(dVinylPosition / duration->get());     //VinylPos in seconds / total length of song
 
     //playPos->slotSet(dVinylPosition / (15.0f * 60.0f)); //VinylPos in seconds / (total length of vinyl)

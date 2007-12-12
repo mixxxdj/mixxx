@@ -46,13 +46,9 @@ void EngineVinylSoundEmu::process(const CSAMPLE * pIn, const CSAMPLE * pOut, con
     m_fSpeed = (float)m_pRateEngine->get();
     //qDebug() << m_pRateEngine->get();
 
-    if (fabs(m_fSpeed) < 0.10f)
-    {
-        m_fGainFactor = 0.0f; //Helps kill the massive aliasing that occurs at super slow speeds
-    }
     if (fabs(m_fSpeed) < 0.50f && m_fSpeed != 0.0f) //Change the volume based on the playback speed.
     {
-        m_fGainFactor = fabs(m_fSpeed)/0.50f * 1.10f;
+        m_fGainFactor = fabs(m_fSpeed)/0.50f;
     }
     else
     {
@@ -61,7 +57,7 @@ void EngineVinylSoundEmu::process(const CSAMPLE * pIn, const CSAMPLE * pOut, con
     //qDebug() << "gf: " << m_fGainFactor;
 
     //Apply whatever gain we calculated.
-    for (int i=0; i<iBufferSize; ++i)
+    for (int i=iBufferSize; i!=0; i--)
     {
         pOutput[i] = pOutput[i] * m_fGainFactor;
     }

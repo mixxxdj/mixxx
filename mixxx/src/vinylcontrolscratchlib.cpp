@@ -16,6 +16,7 @@
 ***************************************************************************/
 
 #include <math.h>
+#include <QDebug>
 #include "vinylcontrolscratchlib.h"
 
 #include "DAnalyse.h"
@@ -54,7 +55,7 @@ VinylControlScratchlib::VinylControlScratchlib(ConfigObject<ConfigValue> * pConf
     analyzer->SetCalibration(MIXXX_CALIBRATION_VALUE);
 
     //Set the sample rate
-    qDebug("Vinyl control starting with a sample rate of: %i", iSampleRate);
+    qDebug() << "Vinyl control starting with a sample rate of:" << iSampleRate;
     analyzer->SetFrequency(iSampleRate);
 
     //(This ends up calling-back the function "run()" below.)
@@ -105,9 +106,8 @@ void VinylControlScratchlib::AnalyseSamples(short * samples, size_t size)
     else if (strVinylType == MIXXX_VINYL_MIXVIBESDVSCD)
         fTimecodeStrength = analyzer->GetTimecodesPerSecond() / 32;
 
-    lockSamples.unlock();
-
     waitForNextInput.wakeAll();
+    lockSamples.unlock();    
 }
 
 
@@ -135,8 +135,10 @@ void VinylControlScratchlib::run()
         waitForNextInput.wait(&lockSamples);
 
         if (bShouldClose)
+        {
+            lockSamples.unlock();
             return;
-
+        }
         //TODO: Move all these config object get*() calls to an "updatePrefs()" function,
         //		and make that get called when any options get changed in the preferences dialog, rather than
         //		polling everytime we get a buffer.
@@ -165,6 +167,15 @@ void VinylControlScratchlib::run()
 
         lockSamples.unlock();
 
+        //Vinyl control mode
+        iVCMode = mode->get();
+        
+        //Check if vinyl control is enabled...
+        bIsEnabled = enabled->get();
+
+        //Get the pitch range from the prefs.
+        fRateRange = rateRange->get();
+
 
         // Get Pitch and Position
 
@@ -188,7 +199,7 @@ void VinylControlScratchlib::run()
 
         dVinylScratch = dVinylPitch;         //Use this value to instruct Mixxx for scratching/seeking.
         dVinylPitch = dVinylPitch - 1.0f;         //Shift the 33 RPM value (33 RPM = 0.0)
-        dVinylPitch = dVinylPitch / 0.080f;         //Normalize to the pitch range. (8% = 1.0)
+        dVinylPitch = dVinylPitch / fRateRange;         //Normalize to the pitch range. (8% = 1.0)
 
         //Re-get the duration, just in case a track hasn't been loaded yet...
         //FIXME: Commented out by Albert during ControlObjectThread-ification - Nov 3/07
@@ -211,11 +222,7 @@ void VinylControlScratchlib::run()
         else
             dVinylPitchRange = 1.0f;
 
-        //Vinyl control mode
-        iVCMode = mode->get();
-        //Check if vinyl control is enabled...
-        bIsEnabled = enabled->get();
-        //qDebug("VinylControl: bIsRunning=%i", bIsRunning);
+
 
         if (duration != NULL && bIsEnabled)
         {
