@@ -265,12 +265,31 @@ int SoundDevicePortAudio::callbackProcess(unsigned long framesPerBuffer, float *
     int iVCGain;
     int i;
     static ControlObject* pControlObjectVinylControlGain = ControlObject::getControl(ConfigKey("[VinylControl]", "VinylControlGain"));
-    static const float SHRT_CONVERSION_FACTOR = 1.0f/32768.0f;
+    static const float SHRT_CONVERSION_FACTOR = 1.0f/SHRT_MAX;
 
     //Initialize some variables.
     iFrameSize = m_outputParams.channelCount;
     iVCGain = 1;
     i = 0;
+ 
+    //Send audio from the soundcard's input off to the SoundManager...
+    if (in && framesPerBuffer > 0)
+    {
+        //Note: Input is processed first so that any ControlObject changes made in response to input
+        //      is processed as soon as possible (that is, when m_pSoundManager->requestBuffer() is
+        //      called below.)
+        
+        //Apply software preamp
+        //Super big warning: Need to use channel_count here instead of iFrameSize because iFrameSize is
+        //only for output buffers...
+        iVCGain = pControlObjectVinylControlGain->get();
+        for (i=framesPerBuffer*m_inputParams.channelCount; i != 0; i--)   //Optimized (backwards)
+            in[i] *= iVCGain;
+            
+        //qDebug() << in[0];
+
+        m_pSoundManager->pushBuffer(m_audioReceivers, in, framesPerBuffer);
+    } 
     
     if (output && framesPerBuffer > 0)
     {
@@ -294,22 +313,14 @@ int SoundDevicePortAudio::callbackProcess(unsigned long framesPerBuffer, float *
 				AudioSource src = devItr.next();
 				int iLocalFrameBase = (iFrameBase/iFrameSize) * src.channels;
 				for(iChannel = 0; iChannel < src.channels; iChannel++)	//this will make sure a sample from each channel is copied
+				{
 					output[iFrameBase + src.channelBase + iChannel] += outputAudio[src.type][iLocalFrameBase + iChannel] * SHRT_CONVERSION_FACTOR;
+					//Input audio pass-through (useful for debugging)
+                    //if (in)
+					//    output[iFrameBase + src.channelBase + iChannel] += in[iFrameBase + src.channelBase + iChannel] * SHRT_CONVERSION_FACTOR;
+			    }
 			}
         }
-    }
-
-    //Send audio from the soundcard's input off to the SoundManager...
-    if (in && framesPerBuffer > 0)
-    {
-        //Apply software preamp
-        //Super big warning: Have to use channel_count here instead of iFrameSize because iFrameSize is
-        //only for output buffers...
-        iVCGain = pControlObjectVinylControlGain->get();
-        for (i=framesPerBuffer*m_inputParams.channelCount; i != 0; i--)   //Optimized (backwards)
-            in[i] *= iVCGain;
-
-        m_pSoundManager->pushBuffer(m_audioReceivers, in, framesPerBuffer);
     }
 
     return paContinue;
