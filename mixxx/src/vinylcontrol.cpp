@@ -6,7 +6,7 @@ VinylControl::VinylControl(ConfigObject<ConfigValue> * pConfig, const char * _gr
     m_pConfig = pConfig;
     group = _group;
 
-    iSampleRate = m_pConfig->getValueString(ConfigKey("[Soundcard]","Samplerate")).toInt();
+    iSampleRate = m_pConfig->getValueString(ConfigKey("[Soundcard]","Samplerate")).toULong();
     iRIAACorrection = 0;
 
     // Get Control objects
@@ -18,13 +18,15 @@ VinylControl::VinylControl(ConfigObject<ConfigValue> * pConfig, const char * _gr
     duration                = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey(group, "duration")));
     mode                = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey("[VinylControl]", "Mode")));
     enabled             = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey("[VinylControl]", "Enabled")));
+    rateRange           = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey(group, "rateRange")));
 
     dVinylPitch = 0.0f;
     dVinylPosition = 0.0f;
     dVinylScratch = 0.0f;
     dDriftControl   = 0.0f;
     fTimecodeStrength = 0.0f;
-
+    fRateRange = 0.0f;
+    
     //Get the vinyl type
     strVinylType = m_pConfig->getValueString(ConfigKey("[VinylControl]","strVinylType"));
 

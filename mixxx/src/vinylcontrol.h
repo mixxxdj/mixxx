@@ -47,6 +47,7 @@ class VinylControl : public QThread
     	ControlObjectThreadMain *duration;		//The ControlObject used to get the duration of the current song.    
     	ControlObjectThreadMain *mode;            //The ControlObject used to get the vinyl control mode (absolute/relative/scratch)
     	ControlObjectThreadMain *enabled;         //The ControlObject used to get if the vinyl control is enabled or disabled.
+    	ControlObjectThreadMain *rateRange;         //The ControlObject used to the get the pitch range from the prefs.
         int iLeadInTime;				//The lead-in time...
     	float dVinylPitch; 			//The speed/pitch of the timecoded vinyl as read by scratchlib.
     	double dVinylPosition; 			//The position of the needle on the record as read by scratchlib.
@@ -55,8 +56,9 @@ class VinylControl : public QThread
                                         //... these two values naturally drift apart, so we need to keep making adjustments to the pitch
                                         //to stop it from getting bad.
         float fTimecodeStrength;        //The signal strength of the timecode on the vinyl.
+        float fRateRange;               //The pitch range setting from Mixxx's preferences
 
-	    int iSampleRate;
+	    unsigned long iSampleRate;
 	    bool bIsEnabled;
 	    int iRIAACorrection;
     	int iVCMode;
