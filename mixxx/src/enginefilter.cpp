@@ -74,6 +74,7 @@ void EngineFilter::process(const CSAMPLE * pIn, const CSAMPLE * ppOut, const int
     }
 }
 
+
 //250Hz-3Khz Butterworth
 double processSampleBp(void *bufIn, const double sample)
 {
