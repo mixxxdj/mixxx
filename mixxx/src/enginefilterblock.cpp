@@ -20,6 +20,7 @@
 #include "enginefilterblock.h"
 #include "enginefilteriir.h"
 #include "enginefilter.h"
+#include "enginefilterbutterworth8.h"
 
 EngineFilterBlock::EngineFilterBlock(const char * group)
 {
@@ -32,18 +33,10 @@ EngineFilterBlock::EngineFilterBlock(const char * group)
     //low = new EngineFilter("LpBu8/250");
     //band = new EngineFilter("BpBu8/250-3000");
     //high = new EngineFilter("HpBu8/3000");
-	low = new EngineFilter("", PREDEF_LP);
-	band = new EngineFilter("", PREDEF_BP);
-	high = new EngineFilter("", PREDEF_HP);
-
-    //EngineFilter doesn't have any denormal handling so we add a slight amount of noise
-    //don't worry this will all be filtered out long before it gets to the output, and is
-    //far below the audible level.  Check enginefilterblock.h for SNR ratio.
-    for(int i=0; i < SIZE_NOISE_BUF; i++){
-        //whiteNoiseBuf[i] = (CSAMPLE) ((double) mrand48() * NOISE_FACTOR);
-        whiteNoiseBuf[i] = (CSAMPLE) ( (double) rand() / RAND_MAX) * NOISE_FACTOR;
-    }
-    noiseCount = 0;
+	
+	low = new EngineFilterButterworth8(FILTER_LOWPASS, 44100, 250);
+	band = new EngineFilterButterworth8(FILTER_BANDPASS, 44100, 250, 3000);
+	high = new EngineFilterButterworth8(FILTER_HIGHPASS, 44100, 3000);
 
 #endif
     /*
@@ -120,15 +113,6 @@ void EngineFilterBlock::process(const CSAMPLE * pIn, const CSAMPLE * pOut, const
     else
  */
 
-#ifndef __LOFI__
-    //Add white noise to kill denormals
-    CSAMPLE * buf = (CSAMPLE *) pIn;
-    for(int i=0; i<iBufferSize; i++)
-    {
-        buf[i] = buf[i] + whiteNoiseBuf[ noiseCount ];
-        noiseCount = (noiseCount + 1) % SIZE_NOISE_BUF;
-    }
-#endif
     low->process(pIn, m_pTemp1, iBufferSize);
     band->process(pIn, m_pTemp2, iBufferSize);
     high->process(pIn, m_pTemp3, iBufferSize);

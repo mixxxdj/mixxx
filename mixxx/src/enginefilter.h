@@ -23,6 +23,12 @@
 #include "../lib/fidlib-0.9.9/fidlib.h"
 #include "defs.h"
 
+enum filterType{
+	FILTER_LOWPASS,
+	FILTER_BANDPASS,
+	FILTER_HIGHPASS
+};
+
 #define PREDEF_HP 1
 #define PREDEF_BP 2
 #define PREDEF_LP 3
