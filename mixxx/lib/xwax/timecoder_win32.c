@@ -40,7 +40,7 @@
 
 #define VALID_BITS 24
 
-#define MONITOR_DECAY_EVERY (TIMECODER_RATE / 128)
+#define MONITOR_DECAY_EVERY 512 /* in samples */
 
 #define SQ(x) ((x)*(x))
 
@@ -161,7 +161,7 @@ static int lfsr(unsigned int code)
 /* Linear Feeback Shift Register in the reverse direction. New values
  * are generated at the most-significant bit. */
 
-static int lfsr_rev(unsigned int code)
+static inline int lfsr_rev(unsigned int code)
 {
     unsigned int r;
     char s, n;
@@ -245,7 +245,7 @@ void timecoder_free_lookup(void) {
 
 /* Initialise a timecode decoder */
 
-int timecoder_init(struct timecoder_t *tc)
+void timecoder_init(struct timecoder_t *tc)
 {
     int c;
     struct timecoder_channel_t *st;
@@ -254,10 +254,10 @@ int timecoder_init(struct timecoder_t *tc)
         st = &tc->state[c];
 
         st->zero = 0;
+        st->half_peak = 0;
         st->wave_peak = 0;
         st->ref_level = -1;
         st->signal_level = 0;
-
         st->positive = 0;
         st->crossings = 0;
         st->cycle_ticker = 0;
@@ -273,17 +273,14 @@ int timecoder_init(struct timecoder_t *tc)
     tc->forwards = 1;
     tc->mon = NULL;
     tc->log_fd = -1;
-    
-    return 0;
 }
 
 
 /* Clear a timecode decoder */
 
-int timecoder_clear(struct timecoder_t *tc)
+void timecoder_clear(struct timecoder_t *tc)
 {
     timecoder_monitor_clear(tc);
-    return 0;
 }
 
 
@@ -291,27 +288,24 @@ int timecoder_clear(struct timecoder_t *tc)
  * display of the incoming audio. Initialise one for the given
  * timecoder */
 
-int timecoder_monitor_init(struct timecoder_t *tc, int size, int scale)
+void timecoder_monitor_init(struct timecoder_t *tc, int size, int scale)
 {
     tc->mon_size = size;
     tc->mon_scale = scale;
     tc->mon = malloc(SQ(tc->mon_size));
     memset(tc->mon, 0, SQ(tc->mon_size));
     tc->mon_counter = 0;
-
-    return 0;
 }
 
 
 /* Clear the monitor on the given timecoder */
 
-int timecoder_monitor_clear(struct timecoder_t *tc)
+void timecoder_monitor_clear(struct timecoder_t *tc)
 {
     if(tc->mon) {
         free(tc->mon);
         tc->mon = NULL;
     }
-    return 0;
 }
 
 
@@ -502,8 +496,10 @@ int timecoder_submit(struct timecoder_t *tc, signed short *pcm, int samples)
             /* Decay the pixels already in the montior */
             
             if(++tc->mon_counter % MONITOR_DECAY_EVERY == 0) {
-                for(p = 0; p < SQ(tc->mon_size); p++)
-                    tc->mon[p] *= 0.9;
+                for(p = 0; p < SQ(tc->mon_size); p++) {
+                    if(tc->mon[p])
+                        tc->mon[p] = tc->mon[p] * 7 / 8;
+                }
             }
 
             v = pcm[s * TIMECODER_CHANNELS]; /* first channel */
@@ -521,8 +517,6 @@ int timecoder_submit(struct timecoder_t *tc, signed short *pcm, int samples)
     } /* for each sample */
 
     /* Print debugging information */
-
-
 
     return 0;
 }
@@ -557,7 +551,7 @@ int timecoder_get_pitch(struct timecoder_t *tc, float *pitch)
 
 /* Return the known position in the timecode, or -1 if not known. If
  * two few bits have been error-checked, then this also counts as
- * invalid. If 'when' is given, return the time, in input samples when
+ * invalid. If 'when' is given, return the time, in input samples since
  * this value was read. */
 
 signed int timecoder_get_position(struct timecoder_t *tc, int *when)

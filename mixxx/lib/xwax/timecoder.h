@@ -22,7 +22,7 @@
 
 //Hacked by Albert:
 #define TIMECODER_CHANNELS 2
-#define TIMECODER_RATE 44100
+#define TIMECODER_RATE 96000 //this is now timecoder_t.samplerate
 
 
 struct timecoder_channel_t {
@@ -43,9 +43,13 @@ struct timecoder_t {
     struct timecoder_channel_t state[TIMECODER_CHANNELS];
     int forwards;
 
+    unsigned long samplerate; /* sampling rate of the audio stream */ 
     unsigned char *mon; /* visual monitor of waveform */
     int mon_size, mon_counter, mon_scale,
         log_fd; /* optional file descriptor to log to, or -1 for none */
+    unsigned long zero_avg, /* ??? */
+        signal_avg, /* ??? */
+        monitor_decay_every; /* ??? */ 
 };
 
 
@@ -56,11 +60,11 @@ struct timecoder_t {
 int timecoder_build_lookup(char *timecode_name);
 void timecoder_free_lookup(void);
 
-int timecoder_init(struct timecoder_t *tc);
-int timecoder_clear(struct timecoder_t *tc);
+void timecoder_init(struct timecoder_t *tc);
+void timecoder_clear(struct timecoder_t *tc);
 
-int timecoder_monitor_init(struct timecoder_t *tc, int size, int scale);
-int timecoder_monitor_clear(struct timecoder_t *tc);
+void timecoder_monitor_init(struct timecoder_t *tc, int size, int scale);
+void timecoder_monitor_clear(struct timecoder_t *tc);
 
 int timecoder_submit(struct timecoder_t *tc, signed short *aud, int samples);
 
