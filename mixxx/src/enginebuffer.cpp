@@ -109,7 +109,6 @@ EngineBuffer::EngineBuffer(const char * _group, ConfigObject<ConfigValue> * _con
 
     // Range of rate
     m_pRateRange = new ControlObject(ConfigKey(group, "rateRange"));
-    m_pRateRange->set(0.1);
 
     // Actual rate (used in visuals, not for control)
     rateEngine = new ControlObject(ConfigKey(group, "rateEngine"));
@@ -286,6 +285,11 @@ void EngineBuffer::setPitchIndpTimeStretch(bool b)
     // Change sound scale mode
     if (m_pScale)
         delete m_pScale;
+
+    //SoundTouch's linear interpolation code doesn't sound very good.
+    //Our own EngineBufferScaleLinear sounds slightly better, but it's
+    //not working perfectly. Eventually we should have our own working
+    //better, so scratching sounds good.
 
     if (b == true)
     {
