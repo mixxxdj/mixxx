@@ -158,8 +158,8 @@ if not os.path.exists(flags_qtdir) and platform != 'osx': #OS X doesn't have a q
 	print "Error: QT path does not exist or QT4 is not installed."
 	print "Please specify your QT path by running 'scons qtdir=[path]'"
 	Exit(1)
-elif flags_qtdir.find("qt3") != -1:
-	print "Error: Mixxx now requires QT4 instead of QT3 - please use your QT4 path instead."
+elif flags_qtdir.find("qt3") != -1 or flags_qtdir.find("qt/3") != -1:
+	print "Error: Mixxx now requires QT4 instead of QT3 - please use your QT4 path with the qtdir build flag."
 	Exit(1)
 else:
 	print "QT path: " + flags_qtdir
@@ -285,7 +285,15 @@ if not env.GetOption('clean') and not SCons.Util.containsAny(os.sys.argv, ['-h',
 		if not conf.CheckForPKG('QtCore', '4.3'):
 			print 'QT >= 4.3 not found.'
 			Exit(1)
-					
+		else:
+			#Grabs the QT4 include paths
+			env.ParseConfig('pkg-config QtCore --silence-errors --cflags') 
+			env.ParseConfig('pkg-config Qt3Support --silence-errors --cflags')
+			env.ParseConfig('pkg-config QtGui --silence-errors --cflags')
+			env.ParseConfig('pkg-config QtXml --silence-errors --cflags')
+			env.ParseConfig('pkg-config QtOpenGL --silence-errors --cflags')
+			# Might be missing $QTDIR/include/Qt still...
+
         #Check for libdjconsole, if it was passed as a flag
 		flags_djconsole = ARGUMENTS.get('djconsole', 0)
 		flags_djconsole_legacy = ARGUMENTS.get('djconsole_legacy', 0)
@@ -378,7 +386,10 @@ if platform == 'win32':
 	env.Append(LIBS = 'shell32')
 
 env.Append(CXXFLAGS = ' -DQT3_SUPPORT -DQT3_SUPPORT_WARNINGS -DQT_THREAD_SUPPORT -DQT_SHARED -DQT_TABLET_SUPPORT') #Stolen from Mixxx's build output
-env.Append(CXXFLAGS = ' -I$QTDIR/include/Qt3Support -I$QTDIR/include/QtCore -I$QTDIR/include/QtGui -I$QTDIR/include/QtXml -I$QTDIR/include/QtOpenGl -I$QTDIR/include/Qt -I"$VCINSTALLDIR/include/atl"')
+
+# Manually add the include paths for win32 and OS X (we use pkg-config on Linux)
+if not platform == 'linux':
+	env.Append(CXXFLAGS = ' -I$QTDIR/include/Qt3Support -I$QTDIR/include/QtCore -I$QTDIR/include/QtGui -I$QTDIR/include/QtXml -I$QTDIR/include/QtOpenGL -I$QTDIR/include/Qt -I"$VCINSTALLDIR/include/atl"')
 
 if not platform == 'win32':
 	env.Append(CCFLAGS = Split(""" -pipe -Wall -W -g -D_REENTRANT """)) # omghax
