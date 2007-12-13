@@ -287,11 +287,11 @@ if not env.GetOption('clean') and not SCons.Util.containsAny(os.sys.argv, ['-h',
 			Exit(1)
 		else:
 			#Grabs the QT4 include paths
-			env.ParseConfig('pkg-config QtCore --silence-errors --cflags') 
-			env.ParseConfig('pkg-config Qt3Support --silence-errors --cflags')
-			env.ParseConfig('pkg-config QtGui --silence-errors --cflags')
-			env.ParseConfig('pkg-config QtXml --silence-errors --cflags')
-			env.ParseConfig('pkg-config QtOpenGL --silence-errors --cflags')
+			env.ParseConfig('pkg-config QtCore --silence-errors --cflags --libs') 
+			env.ParseConfig('pkg-config Qt3Support --silence-errors --cflags --libs')
+			env.ParseConfig('pkg-config QtGui --silence-errors --cflags --libs')
+			env.ParseConfig('pkg-config QtXml --silence-errors --cflags --libs')
+			env.ParseConfig('pkg-config QtOpenGL --silence-errors --cflags --libs')
 			# Might be missing $QTDIR/include/Qt still...
 
         #Check for libdjconsole, if it was passed as a flag
