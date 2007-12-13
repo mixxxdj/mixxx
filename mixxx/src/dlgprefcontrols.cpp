@@ -158,6 +158,8 @@ DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxView * pView, MixxxApp *
 //         }
 //     }
 // #else
+
+
     QList<QFileInfo> list = dir.entryInfoList();
     int j=0;
     for (int i=0; i<list.size(); ++i)
@@ -171,6 +173,21 @@ DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxView * pView, MixxxApp *
         }
     }
 // #endif
+
+   // Detect small display and prompt user to use small skin.
+   if (QApplication::desktop()->width() >= 800 && QApplication::desktop()->height() == 480 && pConfig->getValueString(ConfigKey("[Config]","Skin"))!= "outlineMini") {
+      int ret = QMessageBox::warning(this, tr("Mixxx Detected a WVGA Screen"), tr("Mixxx has detected that your screen has a resolution of ") +
+                   QString::number(QApplication::desktop()->width()) + " x " + QString::number(QApplication::desktop()->height()) + ".  " +
+                   tr("The only skin compatiable with this size display is OutlineMini (800x480).  Would you like to use that skin?"),
+                   QMessageBox::Yes | QMessageBox::No, QMessageBox::Yes);
+      if (ret == QMessageBox::Yes) {
+         pConfig->set(ConfigKey("[Config]","Skin"), ConfigValue("outlineMini"));
+         pConfig->Save();
+         ComboBoxSkinconf->setCurrentIndex(ComboBoxSkinconf->findText(pConfig->getValueString(ConfigKey("[Config]","Skin"))));
+         qDebug() << "Retrieved skin:" << pConfig->getValueString(ConfigKey("[Config]","Skin")) << "ComboBoxSkinconf:" << ComboBoxSkinconf->currentText();
+         slotSetSkin(1);
+      }
+    }
 
     connect(ComboBoxSkinconf, SIGNAL(activated(int)), this, SLOT(slotSetSkin(int)));
 
@@ -327,7 +344,6 @@ void DlgPrefControls::slotSetScheme(int)
 void DlgPrefControls::slotSetSkin(int)
 {
     m_pConfig->set(ConfigKey("[Config]","Skin"), ComboBoxSkinconf->currentText());
-    //textLabel->setText("Restart Mixxx before the new skin will be loaded.");
     m_mixxx->rebootMixxxView();
     slotUpdateSchemes();
 }
