@@ -163,7 +163,6 @@ void VinylControlXwax::run()
         
         pitch_unavailable = timecoder_get_pitch(&timecoder, &dVinylPitch);
 
-
         if (duration != NULL && bIsEnabled)
         {
             filePosition = playPos->get() * duration->get();             //Get the playback position in the file in seconds.
@@ -176,12 +175,11 @@ void VinylControlXwax::run()
                     //dVinylPitch = (dOldPitch * (XWAX_SMOOTHING - 1) + dVinylPitch) / XWAX_SMOOTHING;
                     //qDebug("dVinylPosition: %f, dVinylPitch: %f, when: %d", dVinylPosition, dVinylPitch, when);
                 }
-
+                
                 dVinylScratch = dVinylPitch;         //Use this value to instruct Mixxx for scratching/seeking.
                 dVinylPitch = dVinylPitch - 1.0f;         //Shift the 33 RPM value (33 RPM = 0.0)
                 dVinylPitch = dVinylPitch / fRateRange;   //Normalize to the pitch range. (8% = 1.0)
                 
-
                 //Re-get the duration, just in case a track hasn't been loaded yet...
                 //duration = ControlObject::getControl(ConfigKey(group, "duration"));
 
@@ -215,7 +213,8 @@ void VinylControlXwax::run()
                     }
                     //Useful debug message for tracking down the problem of the vinyl's position "drifting":
                     //qDebug("Ratio of vinyl's position and Mixxx's: %f", fabs(dVinylPosition/filePosition));
-                    dDriftControl = ((dVinylPosition/filePosition) - 1)/100 * 4.0f;
+                    if (filePosition != 0.0f)
+                        dDriftControl = ((dVinylPosition/filePosition) - 1)/100 * 4.0f;
                     //qDebug("dDriftControl: %f", dDriftControl);
                     //qDebug("Xwax says the time is: %f", dVinylPosition);
                     //qDebug("Mixxx says the time is: %f", filePosition);
@@ -226,8 +225,8 @@ void VinylControlXwax::run()
                 
                 playButton->slotSet(0.0f);
                 rateSlider->slotSet(0.0f);
-                controlScratch->slotSet(dVinylScratch);
-                //qDebug() << "dVinylScratch" << dVinylScratch;
+                controlScratch->slotSet(dVinylScratch + dDriftControl);
+                //qDebug() << "dVinylScratch" << dVinylScratch << "dDriftControl" << dDriftControl;
     
                 //Only need to use syncPitch if we want the pitch sliders to respond
                 //syncPitch(dVinylPitch);
