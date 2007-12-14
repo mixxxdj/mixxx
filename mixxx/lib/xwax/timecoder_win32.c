@@ -161,7 +161,7 @@ static int lfsr(unsigned int code)
 /* Linear Feeback Shift Register in the reverse direction. New values
  * are generated at the most-significant bit. */
 
-static inline int lfsr_rev(unsigned int code)
+static /* inline */ int lfsr_rev(unsigned int code) // inline causes compile failure on MSVC++ 2005 EE
 {
     unsigned int r;
     char s, n;
