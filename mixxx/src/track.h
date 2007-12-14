@@ -99,6 +99,14 @@ public slots:
     void slotNextTrackPlayer2(double);
     /** Slot for loading previous track in player 1 */
     void slotPrevTrackPlayer2(double);
+
+    /** Slots for loading the selected track into players */
+    void slotLoadSelectedTrackCh1(double);
+    void slotLoadSelectedTrackCh2(double);
+    /** Slots for moving the selection cursor in the track list */
+    void slotSelectNextTrack(double);
+    void slotSelectPrevTrack(double);
+
     /** Returns pointer to active playlist */
     TrackPlaylist *getActivePlaylist();
     /** Slot for sending track to Play Queue */
@@ -147,6 +155,8 @@ private:
     ControlObjectThreadMain *m_pPlayButtonCh1, *m_pPlayButtonCh2;
     /** Pointer to ControlObject for next/prev buttons */
     ControlObjectThreadMain *m_pNextTrackCh1, *m_pNextTrackCh2, *m_pPrevTrackCh1, *m_pPrevTrackCh2;
+    /** Pointer to ControlObject for playlist navigation/loading into Players */
+    ControlObjectThreadMain *m_pLoadSelectedTrackCh1, *m_pLoadSelectedTrackCh2, *m_pSelectNextTrack, *m_pSelectPrevTrack;
     /** Pointer to ControlObject for play position */
     ControlObjectThreadMain *m_pPlayPositionCh1, *m_pPlayPositionCh2;
     /** Pointer to waveform summary generator */

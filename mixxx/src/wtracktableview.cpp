@@ -421,6 +421,35 @@ void WTrackTableView::setTrack(Track * pTrack)
     m_pTrack = pTrack;
 }
 
+/* Move the cursor to the next track. */
+void WTrackTableView::selectNext()
+{
+    QModelIndex c = currentIndex();
+
+    // Create a row selection if none exists
+    if (c.row() == -1) {
+	selectRow(0);
+	c = currentIndex();
+    }
+    // Advance to next position
+    setCurrentIndex(c.child(c.row()+1, c.column()));
+    // Roll back to previous position if on last row
+    if (currentIndex().row() == -1) setCurrentIndex(c);
+    selectRow(currentIndex().row());
+}
+
+/* Move the cursor to the previous track. */
+void WTrackTableView::selectPrevious()
+{
+    QModelIndex c = currentIndex();
+
+    // Move to the previous row
+    setCurrentIndex(c.child(c.row()-1, c.column()));
+    // Roll back to previous position if on first row
+    if (currentIndex().row() == -1) setCurrentIndex(c);
+    selectRow(currentIndex().row());
+}
+
 void WTrackTableView::slotLoadPlayer1()
 {
     if (!m_pTable) //Browse mode

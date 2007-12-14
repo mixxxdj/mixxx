@@ -77,6 +77,10 @@ public:
     /**Current WTrackTableModel**/
     WTrackTableModel *m_pTable;
 
+    /* Helper functions to move the row selection */
+    void selectNext();
+    void selectPrevious();
+
 private:
     /** Config object*/
     ConfigObject<ConfigValue> *m_pConfig;

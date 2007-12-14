@@ -157,6 +157,16 @@ Track::Track(QString location, MixxxView * pView, EngineBuffer * pBuffer1, Engin
     connect(m_pNextTrackCh2, SIGNAL(valueChanged(double)), this, SLOT(slotNextTrackPlayer2(double)));
     connect(m_pPrevTrackCh2, SIGNAL(valueChanged(double)), this, SLOT(slotPrevTrackPlayer2(double)));
 
+    // Make controls for tracklist navigation and current track loading
+    m_pLoadSelectedTrackCh1 = new ControlObjectThreadMain(new ControlObject(ConfigKey("[Channel1]","LoadSelectedTrack")));
+    m_pLoadSelectedTrackCh2 = new ControlObjectThreadMain(new ControlObject(ConfigKey("[Channel2]","LoadSelectedTrack")));
+    m_pSelectNextTrack = new ControlObjectThreadMain(new ControlObject(ConfigKey("[Playlist]","SelectNextTrack")));
+    m_pSelectPrevTrack = new ControlObjectThreadMain(new ControlObject(ConfigKey("[Playlist]","SelectPrevTrack")));
+    connect(m_pLoadSelectedTrackCh1, SIGNAL(valueChanged(double)), this, SLOT(slotLoadSelectedTrackCh1(double)));
+    connect(m_pLoadSelectedTrackCh2, SIGNAL(valueChanged(double)), this, SLOT(slotLoadSelectedTrackCh2(double)));
+    connect(m_pSelectNextTrack, SIGNAL(valueChanged(double)), this, SLOT(slotSelectNextTrack(double)));
+    connect(m_pSelectPrevTrack, SIGNAL(valueChanged(double)), this, SLOT(slotSelectPrevTrack(double)));
+
     TrackPlaylist::setTrack(this);
 
 	m_pView->m_pTrackTableView->repaintEverything();
@@ -762,6 +772,47 @@ void Track::slotEndOfTrackPlayer2(double val)
         break;
     }
     //m_pEndOfTrackCh2->slotSet(0.);
+}
+
+void Track::slotLoadSelectedTrackCh1(double v)
+{
+    QModelIndex index;
+    TrackInfoObject *pTrack;
+    // Only load on key presses and if we're not in browse mode
+    if (v && m_pView->m_pTrackTableView->m_pTable)
+    {
+        // Fetch the currently selected track 
+        index = m_pView->m_pTrackTableView->currentIndex();
+        pTrack = m_pView->m_pTrackTableView->m_pTable->m_pTrackPlaylist->getTrackAt(index.row());
+	// If there is one, load it
+	if (pTrack) slotLoadPlayer1(pTrack);
+    }
+}
+
+void Track::slotLoadSelectedTrackCh2(double v)
+{
+    QModelIndex index;
+    TrackInfoObject *pTrack;
+    // Only load on key presses and if we're not in browse mode
+    if (v && m_pView->m_pTrackTableView->m_pTable) {
+        // Fetch the currently selected track 
+        index = m_pView->m_pTrackTableView->currentIndex();
+        pTrack = m_pView->m_pTrackTableView->m_pTable->m_pTrackPlaylist->getTrackAt(index.row());
+	// If there is one, load it
+        if (pTrack) slotLoadPlayer2(pTrack);
+    }
+}
+
+void Track::slotSelectNextTrack(double v)
+{
+    // Only move on key presses
+    if (v) m_pView->m_pTrackTableView->selectNext();
+}
+
+void Track::slotSelectPrevTrack(double v)
+{
+    // Only move on key presses
+    if (v) m_pView->m_pTrackTableView->selectPrevious();
 }
 
 void Track::slotNextTrackPlayer1(double v)
