@@ -22,7 +22,7 @@
 
 //Hacked by Albert:
 #define TIMECODER_CHANNELS 2
-#define TIMECODER_RATE 96000 //this is now timecoder_t.samplerate
+#define TIMECODER_RATE 44100 //this is now timecoder_t.samplerate
 
 
 struct timecoder_channel_t {
