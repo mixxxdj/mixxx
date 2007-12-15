@@ -88,6 +88,10 @@ void EngineFilterButterworth8::process(const CSAMPLE *pIn, const CSAMPLE *ppOut,
 		{
 			pOutput[i] = _processBandpass(m_coef, m_buf1, pIn[i]);
 			pOutput[i+1] = _processBandpass(m_coef, m_buf2, pIn[i+1]);
+			if(pOutput[i] != pOutput[i])	//Check for NaN
+				pOutput[i] = 0;
+			if(pOutput[i+1] != pOutput[i+1])	//Check for NaN
+				pOutput[i+1] = 0;
 		}
 		break;
 

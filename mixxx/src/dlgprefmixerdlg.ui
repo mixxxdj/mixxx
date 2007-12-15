@@ -1,464 +1,493 @@
-<ui version="4.0">
-  <class>DlgPrefMixerDlg</class>
-  <widget class="QWidget" name="DlgPrefMixerDlg">
-    <property name="geometry">
-      <rect>
-        <x>0</x>
-        <y>0</y>
-        <width>287</width>
-        <height>408</height>
-      </rect>
-    </property>
-    <property name="windowTitle">
-      <string>Form1</string>
-    </property>
-    <layout class="QGridLayout">
-      <item row="0" column="0">
-        <layout class="QHBoxLayout">
-          <item>
-            <widget class="QLabel" name="TextLabel1">
-              <property name="enabled">
-                <bool>true</bool>
-              </property>
-              <property name="font">
-                <font/>
-              </property>
-              <property name="text">
-                <string>Preset</string>
-              </property>
-              <property name="wordWrap">
-                <bool>false</bool>
-              </property>
-            </widget>
-          </item>
-          <item>
-            <widget class="QComboBox" name="ComboBoxSoundcardMasterLeft">
-              <property name="enabled">
-                <bool>true</bool>
-              </property>
-              <property name="minimumSize">
-                <size>
-                  <width>230</width>
-                  <height>0</height>
-                </size>
-              </property>
-              <property name="font">
-                <font/>
-              </property>
-            </widget>
-          </item>
-        </layout>
-      </item>
-      <item row="1" column="0">
-        <widget class="Q3GroupBox" name="GroupBox1_2">
-          <property name="enabled">
-            <bool>true</bool>
-          </property>
-          <property name="font">
-            <font/>
-          </property>
-          <property name="title">
-            <string>High Shelf EQ</string>
-          </property>
-          <property name="orientation">
-            <enum>Qt::Vertical</enum>
-          </property>
-          <layout class="QVBoxLayout">
-            <item>
-              <layout class="QHBoxLayout">
-                <item>
-                  <spacer>
-                    <property name="orientation">
-                      <enum>Qt::Horizontal</enum>
-                    </property>
-                    <property name="sizeHint">
-                      <size>
-                        <width>40</width>
-                        <height>20</height>
-                      </size>
-                    </property>
-                  </spacer>
-                </item>
-                <item>
-                  <widget class="QLabel" name="TextHiEQ">
-                    <property name="text">
-                      <string>textLabel1</string>
-                    </property>
-                    <property name="wordWrap">
-                      <bool>false</bool>
-                    </property>
-                  </widget>
-                </item>
-              </layout>
-            </item>
-            <item>
-              <widget class="QSlider" name="SliderHiEQ">
-                <property name="minimum">
-                  <number>20</number>
-                </property>
-                <property name="maximum">
-                  <number>22050</number>
-                </property>
-                <property name="singleStep">
-                  <number>1</number>
-                </property>
-                <property name="pageStep">
-                  <number>1</number>
-                </property>
-                <property name="value">
-                  <number>28</number>
-                </property>
-                <property name="orientation">
-                  <enum>Qt::Horizontal</enum>
-                </property>
-                <property name="tickInterval">
-                  <number>5</number>
-                </property>
-              </widget>
-            </item>
-            <item>
-              <layout class="QHBoxLayout">
-                <item>
-                  <widget class="QLabel" name="TextLabel8_3">
-                    <property name="font">
-                      <font/>
-                    </property>
-                    <property name="text">
-                      <string>20 Hz</string>
-                    </property>
-                    <property name="wordWrap">
-                      <bool>false</bool>
-                    </property>
-                  </widget>
-                </item>
-                <item>
-                  <spacer>
-                    <property name="orientation">
-                      <enum>Qt::Horizontal</enum>
-                    </property>
-                    <property name="sizeHint">
-                      <size>
-                        <width>40</width>
-                        <height>20</height>
-                      </size>
-                    </property>
-                  </spacer>
-                </item>
-                <item>
-                  <widget class="QLabel" name="TextLabel8_2_3">
-                    <property name="font">
-                      <font/>
-                    </property>
-                    <property name="text">
-                      <string>10 kHz</string>
-                    </property>
-                    <property name="wordWrap">
-                      <bool>false</bool>
-                    </property>
-                  </widget>
-                </item>
-                <item>
-                  <spacer>
-                    <property name="orientation">
-                      <enum>Qt::Horizontal</enum>
-                    </property>
-                    <property name="sizeHint">
-                      <size>
-                        <width>40</width>
-                        <height>20</height>
-                      </size>
-                    </property>
-                  </spacer>
-                </item>
-                <item>
-                  <widget class="QLabel" name="TextLabel8_2_2">
-                    <property name="font">
-                      <font/>
-                    </property>
-                    <property name="text">
-                      <string>22.05 kHz</string>
-                    </property>
-                    <property name="wordWrap">
-                      <bool>false</bool>
-                    </property>
-                  </widget>
-                </item>
-              </layout>
-            </item>
-          </layout>
-        </widget>
-      </item>
-      <item row="2" column="0">
-        <widget class="Q3GroupBox" name="GroupBox1_2_2">
-          <property name="enabled">
-            <bool>true</bool>
-          </property>
-          <property name="font">
-            <font/>
-          </property>
-          <property name="title">
-            <string>Low Shelf EQ</string>
-          </property>
-          <property name="orientation">
-            <enum>Qt::Vertical</enum>
-          </property>
-          <layout class="QVBoxLayout">
-            <item>
-              <layout class="QHBoxLayout">
-                <item>
-                  <spacer>
-                    <property name="orientation">
-                      <enum>Qt::Horizontal</enum>
-                    </property>
-                    <property name="sizeHint">
-                      <size>
-                        <width>40</width>
-                        <height>20</height>
-                      </size>
-                    </property>
-                  </spacer>
-                </item>
-                <item>
-                  <widget class="QLabel" name="TextLoEQ">
-                    <property name="text">
-                      <string>textLabel2</string>
-                    </property>
-                    <property name="wordWrap">
-                      <bool>false</bool>
-                    </property>
-                  </widget>
-                </item>
-              </layout>
-            </item>
-            <item>
-              <widget class="QSlider" name="SliderLoEQ">
-                <property name="minimum">
-                  <number>20</number>
-                </property>
-                <property name="maximum">
-                  <number>22050</number>
-                </property>
-                <property name="singleStep">
-                  <number>1</number>
-                </property>
-                <property name="pageStep">
-                  <number>1</number>
-                </property>
-                <property name="value">
-                  <number>28</number>
-                </property>
-                <property name="orientation">
-                  <enum>Qt::Horizontal</enum>
-                </property>
-                <property name="tickInterval">
-                  <number>5</number>
-                </property>
-              </widget>
-            </item>
-            <item>
-              <layout class="QHBoxLayout">
-                <item>
-                  <widget class="QLabel" name="TextLabel8_3_2">
-                    <property name="font">
-                      <font/>
-                    </property>
-                    <property name="text">
-                      <string>20Hz</string>
-                    </property>
-                    <property name="wordWrap">
-                      <bool>false</bool>
-                    </property>
-                  </widget>
-                </item>
-                <item>
-                  <spacer>
-                    <property name="orientation">
-                      <enum>Qt::Horizontal</enum>
-                    </property>
-                    <property name="sizeHint">
-                      <size>
-                        <width>40</width>
-                        <height>20</height>
-                      </size>
-                    </property>
-                  </spacer>
-                </item>
-                <item>
-                  <widget class="QLabel" name="TextLabel8_2_4">
-                    <property name="font">
-                      <font/>
-                    </property>
-                    <property name="text">
-                      <string>10 kHz</string>
-                    </property>
-                    <property name="wordWrap">
-                      <bool>false</bool>
-                    </property>
-                  </widget>
-                </item>
-                <item>
-                  <spacer>
-                    <property name="orientation">
-                      <enum>Qt::Horizontal</enum>
-                    </property>
-                    <property name="sizeHint">
-                      <size>
-                        <width>40</width>
-                        <height>20</height>
-                      </size>
-                    </property>
-                  </spacer>
-                </item>
-                <item>
-                  <widget class="QLabel" name="TextLabel8_2_2_2">
-                    <property name="font">
-                      <font/>
-                    </property>
-                    <property name="text">
-                      <string>22.05 kHz</string>
-                    </property>
-                    <property name="wordWrap">
-                      <bool>false</bool>
-                    </property>
-                  </widget>
-                </item>
-              </layout>
-            </item>
-          </layout>
-        </widget>
-      </item>
-      <item row="3" column="0">
-        <widget class="Q3GroupBox" name="GroupBox1">
-          <property name="enabled">
-            <bool>true</bool>
-          </property>
-          <property name="font">
-            <font/>
-          </property>
-          <property name="title">
-            <string>X-fader Curve</string>
-          </property>
-          <property name="orientation">
-            <enum>Qt::Vertical</enum>
-          </property>
-          <layout class="QVBoxLayout">
-            <item>
-              <widget class="QLabel" name="textLabel3">
-                <property name="text">
-                  <string>textLabel3</string>
-                </property>
-                <property name="wordWrap">
-                  <bool>false</bool>
-                </property>
-              </widget>
-            </item>
-            <item>
-              <widget class="QSlider" name="SliderXFader">
-                <property name="minimum">
-                  <number>0</number>
-                </property>
-                <property name="maximum">
-                  <number>100</number>
-                </property>
-                <property name="singleStep">
-                  <number>1</number>
-                </property>
-                <property name="pageStep">
-                  <number>1</number>
-                </property>
-                <property name="value">
-                  <number>50</number>
-                </property>
-                <property name="orientation">
-                  <enum>Qt::Horizontal</enum>
-                </property>
-                <property name="tickInterval">
-                  <number>5</number>
-                </property>
-              </widget>
-            </item>
-            <item>
-              <layout class="QHBoxLayout">
-                <item>
-                  <widget class="QLabel" name="TextLabel8">
-                    <property name="font">
-                      <font/>
-                    </property>
-                    <property name="text">
-                      <string>Linear</string>
-                    </property>
-                    <property name="wordWrap">
-                      <bool>false</bool>
-                    </property>
-                  </widget>
-                </item>
-                <item>
-                  <spacer>
-                    <property name="orientation">
-                      <enum>Qt::Horizontal</enum>
-                    </property>
-                    <property name="sizeHint">
-                      <size>
-                        <width>40</width>
-                        <height>20</height>
-                      </size>
-                    </property>
-                  </spacer>
-                </item>
-                <item>
-                  <widget class="QLabel" name="TextLabel8_2">
-                    <property name="font">
-                      <font/>
-                    </property>
-                    <property name="text">
-                      <string>Logarithmic</string>
-                    </property>
-                    <property name="wordWrap">
-                      <bool>false</bool>
-                    </property>
-                  </widget>
-                </item>
-              </layout>
-            </item>
-          </layout>
-        </widget>
-      </item>
-      <item row="4" column="0">
-        <layout class="QHBoxLayout">
-          <item>
-            <spacer>
-              <property name="orientation">
-                <enum>Qt::Horizontal</enum>
-              </property>
-              <property name="sizeHint">
-                <size>
-                  <width>40</width>
-                  <height>20</height>
-                </size>
-              </property>
-            </spacer>
-          </item>
-          <item>
-            <widget class="QPushButton" name="pushButton1">
-              <property name="text">
-                <string>Save</string>
-              </property>
-            </widget>
-          </item>
-        </layout>
-      </item>
+<ui version="4.0" >
+ <class>DlgPrefMixerDlg</class>
+ <widget class="QWidget" name="DlgPrefMixerDlg" >
+  <property name="geometry" >
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>409</width>
+    <height>413</height>
+   </rect>
+  </property>
+  <property name="windowTitle" >
+   <string>Form1</string>
+  </property>
+  <layout class="QGridLayout" >
+   <item row="0" column="0" >
+    <layout class="QHBoxLayout" >
+     <item>
+      <widget class="QCheckBox" name="CheckBoxLoFi" >
+       <property name="text" >
+        <string>Use low power EQs</string>
+       </property>
+      </widget>
+     </item>
     </layout>
-  </widget>
-  <layoutdefault spacing="6" margin="11"/>
-  <pixmapfunction>qPixmapFromMimeSource</pixmapfunction>
-  <customwidgets>
-    <customwidget>
-      <class>Q3GroupBox</class>
-      <extends>QGroupBox</extends>
-      <header>Qt3Support/Q3GroupBox</header>
-      <container>1</container>
-    </customwidget>
-  </customwidgets>
-  <resources/>
-  <connections/>
+   </item>
+   <item row="3" column="0" >
+    <widget class="Q3GroupBox" name="GroupBox1" >
+     <property name="enabled" >
+      <bool>true</bool>
+     </property>
+     <property name="font" >
+      <font/>
+     </property>
+     <property name="title" >
+      <string>X-fader Curve</string>
+     </property>
+     <layout class="QGridLayout" >
+      <item row="0" column="0" >
+       <layout class="QHBoxLayout" >
+        <item>
+         <layout class="QVBoxLayout" >
+          <item>
+           <layout class="QHBoxLayout" >
+            <item>
+             <widget class="QLabel" name="label_2" >
+              <property name="text" >
+               <string>Mixing</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <spacer>
+              <property name="orientation" >
+               <enum>Qt::Horizontal</enum>
+              </property>
+              <property name="sizeHint" >
+               <size>
+                <width>40</width>
+                <height>20</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+            <item>
+             <widget class="QLabel" name="label" >
+              <property name="text" >
+               <string>Scratching</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+          <item>
+           <widget class="QSlider" name="SliderXFader" >
+            <property name="minimum" >
+             <number>0</number>
+            </property>
+            <property name="maximum" >
+             <number>100</number>
+            </property>
+            <property name="singleStep" >
+             <number>1</number>
+            </property>
+            <property name="pageStep" >
+             <number>1</number>
+            </property>
+            <property name="value" >
+             <number>50</number>
+            </property>
+            <property name="orientation" >
+             <enum>Qt::Horizontal</enum>
+            </property>
+            <property name="tickInterval" >
+             <number>5</number>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <layout class="QHBoxLayout" >
+            <item>
+             <widget class="QLabel" name="TextLabel8" >
+              <property name="font" >
+               <font/>
+              </property>
+              <property name="text" >
+               <string>Linear</string>
+              </property>
+              <property name="wordWrap" >
+               <bool>false</bool>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <spacer>
+              <property name="orientation" >
+               <enum>Qt::Horizontal</enum>
+              </property>
+              <property name="sizeHint" >
+               <size>
+                <width>40</width>
+                <height>20</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+            <item>
+             <widget class="QLabel" name="TextLabel8_2" >
+              <property name="font" >
+               <font/>
+              </property>
+              <property name="text" >
+               <string>Logarithmic</string>
+              </property>
+              <property name="wordWrap" >
+               <bool>false</bool>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+         </layout>
+        </item>
+        <item>
+         <widget class="QGraphicsView" name="graphicsViewXfader" >
+          <property name="sizePolicy" >
+           <sizepolicy vsizetype="Preferred" hsizetype="Preferred" >
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="minimumSize" >
+           <size>
+            <width>125</width>
+            <height>70</height>
+           </size>
+          </property>
+          <property name="maximumSize" >
+           <size>
+            <width>125</width>
+            <height>80</height>
+           </size>
+          </property>
+          <property name="baseSize" >
+           <size>
+            <width>300</width>
+            <height>0</height>
+           </size>
+          </property>
+          <property name="verticalScrollBarPolicy" >
+           <enum>Qt::ScrollBarAlwaysOff</enum>
+          </property>
+          <property name="horizontalScrollBarPolicy" >
+           <enum>Qt::ScrollBarAlwaysOff</enum>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item row="4" column="0" >
+    <layout class="QHBoxLayout" >
+     <item>
+      <spacer>
+       <property name="orientation" >
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeHint" >
+        <size>
+         <width>40</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+     <item>
+      <widget class="QPushButton" name="PushButtonReset" >
+       <property name="text" >
+        <string>Reset</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item row="1" column="0" >
+    <widget class="Q3GroupBox" name="GroupBoxHiEQ" >
+     <property name="enabled" >
+      <bool>true</bool>
+     </property>
+     <property name="font" >
+      <font/>
+     </property>
+     <property name="title" >
+      <string>High Shelf EQ</string>
+     </property>
+     <layout class="QVBoxLayout" >
+      <item>
+       <layout class="QHBoxLayout" >
+        <item>
+         <spacer>
+          <property name="orientation" >
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeHint" >
+           <size>
+            <width>40</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item>
+         <widget class="QLabel" name="TextHiEQ" >
+          <property name="text" >
+           <string>textLabel1</string>
+          </property>
+          <property name="wordWrap" >
+           <bool>false</bool>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+      <item>
+       <widget class="QSlider" name="SliderHiEQ" >
+        <property name="minimum" >
+         <number>80</number>
+        </property>
+        <property name="maximum" >
+         <number>480</number>
+        </property>
+        <property name="singleStep" >
+         <number>1</number>
+        </property>
+        <property name="pageStep" >
+         <number>1</number>
+        </property>
+        <property name="value" >
+         <number>80</number>
+        </property>
+        <property name="orientation" >
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="tickInterval" >
+         <number>5</number>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <layout class="QHBoxLayout" >
+        <item>
+         <widget class="QLabel" name="TextLabel8_3" >
+          <property name="font" >
+           <font/>
+          </property>
+          <property name="text" >
+           <string>16 Hz</string>
+          </property>
+          <property name="wordWrap" >
+           <bool>false</bool>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <spacer>
+          <property name="orientation" >
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeHint" >
+           <size>
+            <width>40</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item>
+         <widget class="QLabel" name="TextLabel8_2_3" >
+          <property name="font" >
+           <font/>
+          </property>
+          <property name="text" >
+           <string>2.045 kHz</string>
+          </property>
+          <property name="wordWrap" >
+           <bool>false</bool>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <spacer>
+          <property name="orientation" >
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeHint" >
+           <size>
+            <width>40</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item>
+         <widget class="QLabel" name="TextLabel8_2_2" >
+          <property name="font" >
+           <font/>
+          </property>
+          <property name="text" >
+           <string>20.05 kHz</string>
+          </property>
+          <property name="wordWrap" >
+           <bool>false</bool>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item row="2" column="0" >
+    <widget class="Q3GroupBox" name="GroupBoxLoEQ" >
+     <property name="enabled" >
+      <bool>true</bool>
+     </property>
+     <property name="font" >
+      <font/>
+     </property>
+     <property name="title" >
+      <string>Low Shelf EQ</string>
+     </property>
+     <layout class="QVBoxLayout" >
+      <item>
+       <layout class="QHBoxLayout" >
+        <item>
+         <spacer>
+          <property name="orientation" >
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeHint" >
+           <size>
+            <width>40</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item>
+         <widget class="QLabel" name="TextLoEQ" >
+          <property name="text" >
+           <string>textLabel2</string>
+          </property>
+          <property name="wordWrap" >
+           <bool>false</bool>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+      <item>
+       <widget class="QSlider" name="SliderLoEQ" >
+        <property name="minimum" >
+         <number>80</number>
+        </property>
+        <property name="maximum" >
+         <number>480</number>
+        </property>
+        <property name="singleStep" >
+         <number>1</number>
+        </property>
+        <property name="pageStep" >
+         <number>1</number>
+        </property>
+        <property name="value" >
+         <number>80</number>
+        </property>
+        <property name="orientation" >
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="tickInterval" >
+         <number>5</number>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <layout class="QHBoxLayout" >
+        <item>
+         <widget class="QLabel" name="TextLabel8_3_2" >
+          <property name="font" >
+           <font/>
+          </property>
+          <property name="text" >
+           <string>16 Hz</string>
+          </property>
+          <property name="wordWrap" >
+           <bool>false</bool>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <spacer>
+          <property name="orientation" >
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeHint" >
+           <size>
+            <width>40</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item>
+         <widget class="QLabel" name="TextLabel8_2_4" >
+          <property name="font" >
+           <font/>
+          </property>
+          <property name="text" >
+           <string>2.045 kHz</string>
+          </property>
+          <property name="wordWrap" >
+           <bool>false</bool>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <spacer>
+          <property name="orientation" >
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeHint" >
+           <size>
+            <width>40</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item>
+         <widget class="QLabel" name="TextLabel8_2_2_2" >
+          <property name="font" >
+           <font/>
+          </property>
+          <property name="text" >
+           <string>20.05 kHz</string>
+          </property>
+          <property name="wordWrap" >
+           <bool>false</bool>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+     </layout>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <layoutdefault spacing="6" margin="11" />
+ <pixmapfunction>qPixmapFromMimeSource</pixmapfunction>
+ <customwidgets>
+  <customwidget>
+   <class>Q3GroupBox</class>
+   <extends>QGroupBox</extends>
+   <header>Qt3Support/Q3GroupBox</header>
+   <container>1</container>
+  </customwidget>
+ </customwidgets>
+ <resources/>
+ <connections/>
 </ui>

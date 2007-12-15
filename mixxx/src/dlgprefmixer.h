@@ -33,19 +33,33 @@ public:
     DlgPrefMixer(QWidget *parent, ConfigObject<ConfigValue> *_config);
     ~DlgPrefMixer();
 public slots:
+	void slotLoFiChanged();
     /** Update Hi EQ **/
     void slotUpdateHiEQ();
     /** Update Lo EQ **/
     void slotUpdateLoEQ();
+	/** Update X-Fader */
+	void slotUpdateXFader();
     /** Apply changes to widget */
     void slotApply();
 	void slotUpdate();
+	void setDefaults();
 signals:
     void apply(const QString &);
 private:
-    void setMidEQ();
+	void loadSettings();
+	void drawXfaderDisplay();
+	int getEqFreq(int);
+	int getSliderPosition(int eqFreq);
+
+	int m_lowEqFreq, m_highEqFreq;
     /** Pointer to config object */
     ConfigObject<ConfigValue> *config;
+
+	QGraphicsScene *m_pxfScene;
+
+	/** X-fader values */
+	double m_transform, m_cal;
 };
 
 #endif
