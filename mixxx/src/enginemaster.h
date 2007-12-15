@@ -53,6 +53,8 @@ public:
     const CSAMPLE* getHeadphoneBuffer();
     void process(const CSAMPLE *, const CSAMPLE *pOut, const int iBufferSize);
 private:
+	void xfadeGains(FLOAT_TYPE *gain1, FLOAT_TYPE *gain2, double xfadePosition, double transform, double calibration);
+
     EngineBuffer *buffer1, *buffer2;
     EngineChannel *channel1, *channel2;
     EngineVolume *volume, *head_volume; 
@@ -70,7 +72,7 @@ private:
 //     EngineBufferMasterRate *m_pEngineBufferMasterRate;
         
 //     ControlObject *m_pControlObjectHeadphoneMute;
-    ControlPotmeter *crossfader, *head_mix, *m_pBalance;
+    ControlPotmeter *crossfader, *head_mix, *m_pBalance, *xFaderCurve, *xFaderCalibration;
     ControlPushButton *pfl1, *pfl2, *flanger1, *flanger2, *transform1, *transform2;
     CSAMPLE *m_pMaster, *m_pHead, *m_pTemp1, *m_pTemp2;
     bool master1, master2;

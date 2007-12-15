@@ -27,6 +27,7 @@
 #include "enginevumeter.h"
 #include "enginerecord.h"
 #include "enginevinylsoundemu.h"
+#include "enginexfader.h"
 #ifdef __LADSPA__
 #include "engineladspa.h"
 #endif
@@ -120,6 +121,10 @@ EngineMaster::EngineMaster(ConfigObject<ConfigValue> * _config,
 #ifdef __EXPERIMENTAL_RECORDING__
     rec = new EngineRecord(_config);
 #endif
+
+	//X-Fader Setup
+	xFaderCurve = new ControlPotmeter(ConfigKey("[Mixer Profile]", "xFaderCurve"), 0., 2.);
+	xFaderCalibration = new ControlPotmeter(ConfigKey("[Mixer Profile]", "xFaderCalibration"), -2., 2.);
 }
 
 EngineMaster::~EngineMaster()
@@ -231,6 +236,7 @@ void EngineMaster::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBuff
 
 
     // Crossfader and Transform buttons
+	/*
     cf_val = crossfader->get();
     //qDebug("cf_val: %f", cf_val);
     FLOAT_TYPE c1_gain, c2_gain;
@@ -254,10 +260,13 @@ void EngineMaster::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBuff
             c1_gain = 1.;
             c2_gain = 1.+cf_val;
         }
-    }
+    }*/
+	//set gain levels;
+	FLOAT_TYPE c1_gain, c2_gain;
+	EngineXfader::getXfadeGains(c1_gain, c2_gain, crossfader->get(), xFaderCurve->get(), xFaderCalibration->get());
 
     for (int i=0; i<iBufferSize; ++i)
-        m_pMaster[i] = m_pTemp1[i]*c1_gain + m_pTemp2[i]*c2_gain;
+        m_pMaster[i] = (m_pTemp1[i]*c1_gain) + (m_pTemp2[i]*c2_gain);
 
 
     // Master volume
