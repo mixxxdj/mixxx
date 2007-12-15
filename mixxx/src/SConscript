@@ -588,7 +588,11 @@ if int(flags_optimize):
 			env.Append(LINKFLAGS = '/LTCG:STATUS')
 	else:
 		print "Optimizations... enabled"
-		env.Append(CXXFLAGS = '-O3')
+		if flags_optimize=='1':
+			env.Append(CXXFLAGS = '-O3')
+		elif flags_optimize=='2':
+			print "  P4 MMX/SSE optimizations enabled."
+                	env.Append(CXXFLAGS = '-O3 -march=pentium4 -mmmx -msse -mfpmath=sse -fomit-frame-pointer -ffast-math -funroll-loops')
 else:
 	print "Optimizations... disabled"
 
