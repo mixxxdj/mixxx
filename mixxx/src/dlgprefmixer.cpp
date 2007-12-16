@@ -158,13 +158,11 @@ void DlgPrefMixer::slotApply()
 #ifndef __LOFI__
 	ControlObject::getControl(ConfigKey(CONFIG_KEY, "LoEQFrequency"))->set(m_lowEqFreq);
 	ControlObject::getControl(ConfigKey(CONFIG_KEY, "HiEQFrequency"))->set(m_highEqFreq);
-
+	ControlObject::getControl(ConfigKey(CONFIG_KEY, "LoFiEQs"))->set(CheckBoxLoFi->isChecked());
 #endif
 
 	ControlObject::getControl(ConfigKey(CONFIG_KEY, "xFaderCurve"))->set(m_transform);
 	ControlObject::getControl(ConfigKey(CONFIG_KEY, "xFaderCalibration"))->set(m_cal);
-
-	ControlObject::getControl(ConfigKey(CONFIG_KEY, "LoFiEQs"))->set(CheckBoxLoFi->isChecked());
 }
 
 void DlgPrefMixer::slotUpdate()
