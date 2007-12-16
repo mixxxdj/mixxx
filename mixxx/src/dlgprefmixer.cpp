@@ -85,9 +85,8 @@ void DlgPrefMixer::loadSettings()
 		SliderHiEQ->setValue( getSliderPosition(config->getValueString(ConfigKey(CONFIG_KEY, "HiEQFrequency")).toInt()));
 		SliderLoEQ->setValue( getSliderPosition(config->getValueString(ConfigKey(CONFIG_KEY, "LoEQFrequency")).toInt()));
 
-		m_transform = 1. + ((double) SliderXFader->value() / SliderXFader->maximum());
 		double sliderTransform = config->getValueString(ConfigKey(CONFIG_KEY, "xFaderCurve")).toDouble();
-		double sliderVal = SliderXFader->maximum() * (sliderTransform - 1.);
+		double sliderVal = SliderXFader->maximum() * (sliderTransform  - 1.) / XF_STEEPNESS_FACTOR;
 		SliderXFader->setValue(sliderVal);
 
 		if(config->getValueString(ConfigKey(CONFIG_KEY, "LoFiEQs")) == QString("yes"))
@@ -267,7 +266,7 @@ void DlgPrefMixer::drawXfaderDisplay()
 
 void DlgPrefMixer::slotUpdateXFader()
 {
-	m_transform = 1. + ((double) SliderXFader->value() / SliderXFader->maximum() * 4.);
+	m_transform = 1. + ((double) SliderXFader->value() / SliderXFader->maximum() * XF_STEEPNESS_FACTOR);
 	m_cal = EngineXfader::getCalibration(m_transform);
 
 	QString QS_transform = QString::number(m_transform);

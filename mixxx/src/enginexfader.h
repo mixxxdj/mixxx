@@ -1,4 +1,7 @@
 #include "engineobject.h"
+
+#define XF_STEEPNESS_FACTOR 4.
+
 class EngineXfader{
 public:
 	static FLOAT_TYPE getCalibration(FLOAT_TYPE transform);
