@@ -51,6 +51,10 @@ void VinylControl::ToggleVinylControl(bool enable)
         m_pConfig->set(ConfigKey("[VinylControl]","Enabled"), ConfigValue((int)enable));
     
     enabled->slotSet(enable);
+    
+    //Reset the scratch control to make sure we don't get stuck moving forwards or backwards.
+    if (!enable)
+        controlScratch->slotSet(0.0f);
 }
 
 VinylControl::~VinylControl()
