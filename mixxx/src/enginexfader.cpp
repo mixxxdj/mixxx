@@ -16,13 +16,13 @@ void EngineXfader::getXfadeGains(FLOAT_TYPE &gain1, FLOAT_TYPE &gain2, FLOAT_TYP
 	if(xfadePositionLeft < 0) //on left side
 	{
 		xfadePositionLeft *= -1;
-		gain2 = 1. * (1. - (1. * pow(xfadePositionLeft, transform)));
+		gain2 = (1. - (1. * pow(xfadePositionLeft, transform)));
 	}
 	else
 		gain2 = 1.;
 	if(xfadePositionRight > 0) //right side
 	{
-		gain1 = 1. * (1. - (1. * pow(xfadePositionRight, transform)));
+		gain1 = (1. - (1. * pow(xfadePositionRight, transform)));
 	}
 	else
 		gain1 = 1.;
