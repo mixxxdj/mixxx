@@ -269,7 +269,7 @@ void DlgPrefMixer::drawXfaderDisplay()
 
 void DlgPrefMixer::slotUpdateXFader()
 {
-	m_transform = 1. + ((double) SliderXFader->value() / SliderXFader->maximum());
+	m_transform = 1. + ((double) SliderXFader->value() / SliderXFader->maximum() * 4.);
 	m_cal = EngineXfader::getCalibration(m_transform);
 
 	QString QS_transform = QString::number(m_transform);
