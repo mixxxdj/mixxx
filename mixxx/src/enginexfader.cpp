@@ -9,7 +9,8 @@ FLOAT_TYPE EngineXfader::getCalibration(float transform)
 void EngineXfader::getXfadeGains(float &gain1, float &gain2, float xfadePosition, float transform, float calibration)
 {
 	//Apply Calibration
-	xfadePosition *= calibration;
+	if(calibration != 0.)
+		xfadePosition *= calibration;
 	float xfadePositionLeft = xfadePosition - calibration;
 	float xfadePositionRight = xfadePosition + calibration;
 
