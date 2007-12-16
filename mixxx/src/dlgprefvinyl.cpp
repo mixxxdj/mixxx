@@ -173,7 +173,7 @@ void DlgPrefVinyl::slotApply()
     if (isInteger)
         config->set(ConfigKey("[VinylControl]","LeadInTime"), strLeadIn);
     else
-        config->set(ConfigKey("[VinylControl]","LeadInTime"), 20);
+        config->set(ConfigKey("[VinylControl]","LeadInTime"), MIXXX_VC_DEFAULT_LEADINTIME);
 
     // Apply Soundcard options
 
