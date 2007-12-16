@@ -155,7 +155,10 @@ void VinylControlXwax::run()
         dVinylPosition = dVinylPosition / 1000.0f;
         //The lead-in time is added in syncPosition() in order to make the calculations
         //in this function simpler.
-        
+
+
+        //Initialize drift control to zero in case we don't get any position data to calculate it with.
+        dDriftControl = 0.0f;        
 
         //qDebug() << "iLeadInTime:" << iLeadInTime << "dVinylPosition" << dVinylPosition;
 
@@ -200,9 +203,6 @@ void VinylControlXwax::run()
                 else 
                     dVinylPitchRange = 1.0f;
 
-                //Initialize drift control to zero in case we don't get any position data to calculate it with.
-                dDriftControl = 0.0f;
-
                 //If xwax has given us a valid position from the timecode (will be -1.0f if invalid)
                 if (dVinylPosition > 0.0f) 
                 {   
@@ -225,7 +225,11 @@ void VinylControlXwax::run()
                 
                 playButton->slotSet(0.0f);
                 rateSlider->slotSet(0.0f);
-                controlScratch->slotSet(dVinylScratch + dDriftControl);
+                
+                if (iVCMode == MIXXX_VCMODE_ABSOLUTE)
+                    controlScratch->slotSet(dVinylScratch + dDriftControl);
+                else
+                    controlScratch->slotSet(dVinylScratch);
                 //qDebug() << "dVinylScratch" << dVinylScratch << "dDriftControl" << dDriftControl;
     
                 //Only need to use syncPitch if we want the pitch sliders to respond
