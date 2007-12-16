@@ -18,7 +18,7 @@
      <item>
       <widget class="QCheckBox" name="CheckBoxLoFi" >
        <property name="text" >
-        <string>Use low power EQs</string>
+        <string>Static EQs (for slower CPUs)</string>
        </property>
       </widget>
      </item>
@@ -33,7 +33,7 @@
       <font/>
      </property>
      <property name="title" >
-      <string>X-fader Curve</string>
+      <string>Crossfader Curve</string>
      </property>
      <layout class="QGridLayout" >
       <item row="0" column="0" >
