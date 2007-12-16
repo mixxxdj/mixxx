@@ -29,7 +29,8 @@
 #include "dlgprefmidi.h"
 #include "dlgprefplaylist.h"
 #include "dlgprefcontrols.h"
-#include "dlgprefmixer.h"
+#include "dlgprefeq.h"
+#include "dlgprefcrossfader.h"
 #include "mixxx.h"
 #include "track.h"
 #include <QTabWidget>
@@ -69,7 +70,8 @@ DlgPreferences::DlgPreferences(MixxxApp * mixxx, MixxxView * view,
     wmidi  = new DlgPrefMidi(this, config);
     wplaylist = new DlgPrefPlaylist(this, config);
     wcontrols = new DlgPrefControls(this, view, mixxx, config);
-    wmixer = new DlgPrefMixer(this, config);
+    weq = new DlgPrefEQ(this, config);
+    wcrossfader = new DlgPrefCrossfader(this, config);
     wbpm = new DlgPrefBPM(this, config);
 
 #ifdef __EXPERIMENTAL_RECORDING__
@@ -89,7 +91,8 @@ DlgPreferences::DlgPreferences(MixxxApp * mixxx, MixxxView * view,
     pagesWidget->addWidget(wmidi);
     pagesWidget->addWidget(wplaylist);
     pagesWidget->addWidget(wcontrols);
-    pagesWidget->addWidget(wmixer);
+    pagesWidget->addWidget(weq);  
+    pagesWidget->addWidget(wcrossfader);      
 #ifdef __EXPERIMENTAL_RECORDING__
     pagesWidget->addWidget(wrecord);
 #endif
@@ -129,8 +132,9 @@ DlgPreferences::DlgPreferences(MixxxApp * mixxx, MixxxView * view,
     connect(this, SIGNAL(showDlg()), wmidi,     SLOT(slotUpdate()));
     connect(this, SIGNAL(showDlg()), wplaylist, SLOT(slotUpdate()));
     connect(this, SIGNAL(showDlg()), wcontrols, SLOT(slotUpdate()));
-    connect(this, SIGNAL(showDlg()), wmixer,    SLOT(slotUpdate()));
-    connect(this, SIGNAL(showDlg()), wbpm,    SLOT(slotUpdate()));
+    connect(this, SIGNAL(showDlg()), weq,       SLOT(slotUpdate()));
+    connect(this, SIGNAL(showDlg()),wcrossfader,SLOT(slotUpdate()));
+    connect(this, SIGNAL(showDlg()), wbpm,      SLOT(slotUpdate()));
 
 #ifdef __EXPERIMENTAL_RECORDING__
     connect(this, SIGNAL(showDlg()), wrecord,    SLOT(slotUpdate()));
@@ -149,7 +153,8 @@ DlgPreferences::DlgPreferences(MixxxApp * mixxx, MixxxView * view,
     connect(buttonBox, SIGNAL(accepted()), wmidi,     SLOT(slotApply()));
     connect(buttonBox, SIGNAL(accepted()), wplaylist, SLOT(slotApply()));
     connect(buttonBox, SIGNAL(accepted()), wcontrols, SLOT(slotApply()));
-    connect(buttonBox, SIGNAL(accepted()), wmixer,    SLOT(slotApply()));
+    connect(buttonBox, SIGNAL(accepted()), weq,       SLOT(slotApply()));
+    connect(buttonBox, SIGNAL(accepted()),wcrossfader,SLOT(slotApply()));    
     connect(buttonBox, SIGNAL(accepted()), this,      SLOT(slotApply()));
     connect(buttonBox, SIGNAL(accepted()), wbpm,    SLOT(slotApply()));
 
@@ -205,11 +210,17 @@ void DlgPreferences::createIcons()
     controlsButton->setTextAlignment(Qt::AlignLeft | Qt::AlignVCenter);
     controlsButton->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
 
-    QListWidgetItem * mixerButton = new QListWidgetItem(contentsWidget);
-    mixerButton->setIcon(QIcon(":/images/preferences/generic.png"));
-    mixerButton->setText(tr("Mixer"));
-    mixerButton->setTextAlignment(Qt::AlignLeft | Qt::AlignVCenter);
-    mixerButton->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
+    QListWidgetItem * eqButton = new QListWidgetItem(contentsWidget);
+    eqButton->setIcon(QIcon(":/images/preferences/generic.png"));
+    eqButton->setText(tr("Equalizers"));
+    eqButton->setTextAlignment(Qt::AlignLeft | Qt::AlignVCenter);
+    eqButton->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
+
+    QListWidgetItem * crossfaderButton = new QListWidgetItem(contentsWidget);
+    crossfaderButton->setIcon(QIcon(":/images/preferences/generic.png"));
+    crossfaderButton->setText(tr("Crossfader"));
+    crossfaderButton->setTextAlignment(Qt::AlignLeft | Qt::AlignVCenter);
+    crossfaderButton->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
 
 #ifdef __EXPERIMENTAL_RECORDING__
     QListWidgetItem * recordingButton = new QListWidgetItem(contentsWidget);

@@ -11,6 +11,7 @@ void EngineXfader::getXfadeGains(float &gain1, float &gain2, float xfadePosition
 	//Apply Calibration
 	if(calibration != 0.)
 		xfadePosition *= calibration;
+	 
 	float xfadePositionLeft = xfadePosition - calibration;
 	float xfadePositionRight = xfadePosition + calibration;
 
