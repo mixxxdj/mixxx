@@ -1,6 +1,6 @@
 #include "enginexfader.h"
 
-FLOAT_TYPE EngineXfader::getCalibration(float transform)
+float EngineXfader::getCalibration(float transform)
 {
 	//get the transform_root of -3db (.5)
 	return pow(.5, 1./transform);
