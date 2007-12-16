@@ -1,5 +1,5 @@
 /***************************************************************************
-                          dlgprefmixer.h  -  description
+                          dlgprefcrossfader.h  -  description
                              -------------------
     begin                : Thu Jun 7 2007
     copyright            : (C) 2007 by John Sully
@@ -15,29 +15,30 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef DLGPREFMIXER_H
-#define DLGPREFMIXER_H
+#ifndef DLGPREFCROSSFADER_H
+#define DLGPREFCROSSFADER_H
 
-#include "ui_dlgprefmixerdlg.h"
+#include "ui_dlgprefcrossfaderdlg.h"
 #include "configobject.h"
 #include "enginefilterblock.h"
+
+#define MIXXX_XFADER_SLOWFADE   "SlowFade"
+#define MIXXX_XFADER_FASTCUT    "FastCut"
+#define MIXXX_XFADER_CONSTPWR   "ConstantPower"
+
+#define MIXXX_XFADER_STEEPNESS_COEFF 8.0f
 
 class QWidget;
 /**
   *@author John Sully
   */
 
-class DlgPrefMixer : public QWidget, public Ui::DlgPrefMixerDlg  {
+class DlgPrefCrossfader : public QWidget, public Ui::DlgPrefCrossfaderDlg  {
     Q_OBJECT
 public: 
-    DlgPrefMixer(QWidget *parent, ConfigObject<ConfigValue> *_config);
-    ~DlgPrefMixer();
+    DlgPrefCrossfader(QWidget *parent, ConfigObject<ConfigValue> *_config);
+    ~DlgPrefCrossfader();
 public slots:
-	void slotLoFiChanged();
-    /** Update Hi EQ **/
-    void slotUpdateHiEQ();
-    /** Update Lo EQ **/
-    void slotUpdateLoEQ();
 	/** Update X-Fader */
 	void slotUpdateXFader();
     /** Apply changes to widget */
@@ -49,10 +50,7 @@ signals:
 private:
 	void loadSettings();
 	void drawXfaderDisplay();
-	int getEqFreq(int);
-	int getSliderPosition(int eqFreq);
-
-	int m_lowEqFreq, m_highEqFreq;
+	
     /** Pointer to config object */
     ConfigObject<ConfigValue> *config;
 
@@ -60,6 +58,9 @@ private:
 
 	/** X-fader values */
 	double m_transform, m_cal;
+	
+	/** X-fader mode*/
+	QString m_xFaderMode;
 };
 
 #endif
