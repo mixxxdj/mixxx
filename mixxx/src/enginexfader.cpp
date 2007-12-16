@@ -1,17 +1,17 @@
 #include "enginexfader.h"
 
-FLOAT_TYPE EngineXfader::getCalibration(FLOAT_TYPE transform)
+FLOAT_TYPE EngineXfader::getCalibration(float transform)
 {
 	//get the transform_root of -3db (.5)
 	return pow(.5, 1./transform);
 }
 
-void EngineXfader::getXfadeGains(FLOAT_TYPE &gain1, FLOAT_TYPE &gain2, FLOAT_TYPE xfadePosition, FLOAT_TYPE transform, FLOAT_TYPE calibration)
+void EngineXfader::getXfadeGains(float &gain1, float &gain2, float xfadePosition, float transform, float calibration)
 {
 	//Apply Calibration
 	xfadePosition *= calibration;
-	FLOAT_TYPE xfadePositionLeft = xfadePosition - calibration;
-	FLOAT_TYPE xfadePositionRight = xfadePosition + calibration;
+	float xfadePositionLeft = xfadePosition - calibration;
+	float xfadePositionRight = xfadePosition + calibration;
 
 	if(xfadePositionLeft < 0) //on left side
 	{
