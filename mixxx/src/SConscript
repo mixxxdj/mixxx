@@ -1,39 +1,8 @@
-#EXAMPLES of random stuff that might be useful later in Mixxx's SConstruct file
-#==============================================================================
-"""
-#Example: Checking for a C header
-if not conf.CheckCHeader('math.h'):
-    print 'Math.h must be installed!'
-    Exit(1)
-if conf.CheckCHeader('foo.h'):
-    conf.env.Append('-DHAS_FOO_H')
-"""
-
-"""
-#Example: Checking for a C++ header
-if not conf.CheckCXXHeader('vector.h'):
-    print 'vector.h must be installed!'
-    Exit(1)
-"""
-
-"""
-#Example: Checking for a library
-if not conf.CheckLib('m'):
-    print 'Did not find libm.a or m.lib, exiting!'
-    Exit(1)
-"""
-
-"""
-#Example: Checking for a library AND a header (probably what we want to do)
-if not conf.CheckLibWithHeader('m', 'math.h'):
-    print 'Did not find libm.a or m.lib, exiting!'
-    Exit(1)
-"""
-
 import os
 import sys
 import glob
 import SCons
+import shutil
 
 # BIG FAT WARNING:
 # Make sure you use TABS for indentation, NOT spaces! (Python doesn't like spaces, be forewarned!)
@@ -47,9 +16,10 @@ import SCons
 #  #############################################################################
 #    #########################################################################
 #
-#Start of Mixxx's real SConstruct file
-#=======================================
 
+#
+#Useful functions
+#
 
 #Checks for OpenGL on all three platforms
 def CheckOpenGL():
@@ -878,3 +848,75 @@ env.Append(BUILDERS = {'BuildRelease' : versionbld})
 if 'makerelease' in COMMAND_LINE_TARGETS:
 	makerelease = env.BuildRelease('', binary_files)
 	env.Alias('makerelease', makerelease)
+	
+#Build the Ubuntu package
+def BuildUbuntuPackage(target, source, env):
+	print 
+	print "==== Mixxx Post-Build Checks ===="
+	print 
+	print "You have built version ",
+	p = os.popen('grep -m 1 VERSION src/defs.h | cut -d \' \' -f 3 | tr -d \'\"\' | tr -d \'\n\'')
+	version = p.readline()
+	p.close()
+	print
+	print
+	print "Top line of README, check version:"
+	os.system('head -n 1 README')
+	print
+	print "Top 2 lines of LICENSE, check version and copyright dates:"
+	os.system('head -n 2 LICENSE')
+	print
+	print "More checks here soon... :)"
+	print
+
+	if (raw_input("Go ahead and build the Ubuntu package (yes/[no])? ") == "yes"):
+		print "Now building DEB package..."
+		
+		mixxx_dir = 'mixxx-' + version
+		mixxx_tarball = 'mixxx_' + version + '.orig.tar.gz' #The underscore is super important here
+															#to make the deb package work
+		
+		if not os.path.exists('ubuntu'):
+			os.mkdir('ubuntu')
+		print "Exporting source tree from HEAD" 
+		
+		os.system('svn export --force -rHEAD . ubuntu/mixxx-' + version)
+		
+		os.chdir('ubuntu')
+		
+		#Temporarily move the debian directory out of the source directory
+		#because it can't be included in the source tarball (which we create next).
+		#print "Moving debian directory"
+		#os.system('rm -f debian')
+		#os.system('mv mixxx-' + version + '/src/debian .')
+		
+		print "Tarring source directory..."
+		os.system("rm -f mixxx_" + version + ".orig.tar.gz") #Remove old tarball
+		os.system('tar --exclude=debian --exclude=debian/* -cvzf  mixxx_' + version + '.orig.tar.gz ' + mixxx_dir) 
+		 
+		#Move the debian directory into the right spot.
+		#os.system('mv debian mixxx-' + version)
+		os.system('rm -rf ' + mixxx_dir + '/debian')
+		os.system('mv ' + mixxx_dir + '/src/debian ' + mixxx_dir)
+		
+		#Run pbuilder
+		os.chdir(mixxx_dir)
+		os.system('pdebuild')
+		
+		#/var/cache/pbuilder/result
+		print
+		print "Signing the .deb changes file..."
+		os.system('sudo debsign /var/cache/pbuilder/result/*.changes')
+		
+		print "Done! Package and tarballs are in /var/cache/pbuilder/result"
+		
+	else:
+		print "Aborted building installer"
+
+#Build the Ubuntu package if "makeubuntu" was passed as an argument
+versiondebbld = Builder(action = BuildUbuntuPackage, suffix = '.foo', src_suffix = '.bar')
+env.Append(BUILDERS = {'BuildUbuntuPackage' : versiondebbld})
+
+if 'makeubuntu' in COMMAND_LINE_TARGETS:
+	makeubuntu = env.BuildUbuntuPackage('', binary_files)
+	env.Alias('makeubuntu', makeubuntu)
