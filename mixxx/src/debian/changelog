@@ -1,0 +1,50 @@
+mixxx (1.6.0beta1-0ubuntu1) gutsy; urgency=low
+
+  * New upstream release
+  * DFSG changes now upstream, tag no longer needed
+
+ -- Albert Santoni <gamegod@users.sourceforge.net>  Tue,  20 Nov 2007 23:02:00 -0500
+
+mixxx (1.5.2svn~20070807dfsg-0ubuntu1) gutsy; urgency=low
+
+  * New upstream release
+
+ -- Albert Santoni <gamegod@users.sourceforge.net>  Wed,  8 Aug 2007 20:10:00 -0500
+
+mixxx (1.5.0svn~20070130dfsg-0ubuntu1) feisty; urgency=low
+
+  * New upstream release
+  * Trimmed non-free files
+  * Mixxx now depends on libportaudio2 (PortAudio-v19 instead of -v18)
+
+ -- Albert Santoni <gamegod@users.sourceforge.net>  Sun,  28 Jan 2007 19:50:20 -0500
+
+mixxx (1.4.2-1.1ubuntu1) edgy; urgency=low
+
+  * Re-sync with Debian
+  * Drop Ubuntu GL/GLU fixes
+  * Fix .desktop file (Emmet Hikory)
+
+ -- Barry deFreese <bddebian@comcast.net>  Wed,  2 Aug 2006 12:46:20 -0400
+
+mixxx (1.4.2-1.1) unstable; urgency=high
+
+  * Non-maintainer upload.
+  * Replace unsatisfiable build-dependency on xlibmesa-glu-dev by
+    libglu1-mesa-dev; fixes FTBFS. (Closes: #374590)
+
+ -- Steinar H. Gunderson <sesse@debian.org>  Wed, 28 Jun 2006 00:23:04 +0200
+
+mixxx (1.4.2-1) unstable; urgency=low
+
+  * Initial Release (closes: #227017).
+  * Modified src/mixxx.pro to be happier on debian
+  * Added #ifdef __vbrheadersdk__ to src/soundsourcemp3.c
+  * Removed non-free files in lib/gplot and lib/vbrheadersdk
+  * Converted png to xpm to add to menu icon, added .desktop
+  * Disable directRendering check to avoid crash when Visual=Simple
+  * Prevent latency slider to try setting the latency to 0
+  * Correct a typo on 'rendering' in mixxxview.cpp
+
+ -- Paul Brossier <piem@debian.org>  Sat, 13 Aug 2005 00:14:24 +0100
+

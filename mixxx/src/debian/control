@@ -1,0 +1,35 @@
+Source: mixxx
+Section: sound
+Priority: optional
+Maintainer: Ubuntu MOTU Developers <ubuntu-motu@lists.ubuntu.com>
+XSBC-Original-Maintainer: Albert Santoni <gamegod@users.sf.net> 
+Build-Depends: debhelper (>= 4.0.0), pkg-config, docbook-to-man, xlibmesa-gl-dev, libglu1-mesa-dev, libqt4-dev (>= 4.3.0), scons, libdjconsole0, libdjconsole-dev, libjack-dev, libsamplerate-dev, portaudio19-dev, libid3tag0-dev, libmad0-dev, libogg-dev, libsndfile1-dev, libaudiofile-dev, libasound2-dev, libvorbis-dev, libexpat-dev, libsoundtouch1-dev
+Standards-Version: 3.6.2
+
+Package: mixxx
+Section: sound
+Architecture: any
+Depends: mixxx-data (= ${Source-Version}), ${shlibs:Depends}, ${misc:Depends}
+Suggests: pdf-viewer
+Description: Digital Disc Jockey Interface
+ Mixxx is a digital DJ system, where wave, ogg and mp3 files can be mixed on a
+ computer for use in live performances. Filters, crossfader, and speed control
+ are provided. Mixxx can sync the 2 streams automatically, using an algorithm
+ to detect the beat.
+ .
+ Mixxx works with Jack or OSS, can be controlled from the GUI or from external
+ controllers, including MIDI devices and joysticks, and supports skins.
+
+Package: mixxx-data
+Section: sound
+Architecture: all
+Description: Digital Disc Jockey Interface -- data files
+ This package provides images and skin configuration files required for mixxx.
+ .
+ Mixxx is a digital DJ system, where wave, ogg and mp3 files can be mixed on a
+ computer for use in live performances. Filters, crossfader, and speed control
+ are provided. Mixxx can sync the 2 streams automatically, using an algorithm
+ to detect the beat.
+ .
+ Mixxx works with Jack or OSS, can be controlled from the GUI or from external
+ controllers, including MIDI devices and joysticks, and supports skins.
