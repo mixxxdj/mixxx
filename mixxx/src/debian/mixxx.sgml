@@ -1,0 +1,132 @@
+<!doctype refentry PUBLIC "-//OASIS//DTD DocBook V4.1//EN" [
+
+<!-- Process this file with docbook-to-man to generate an nroff manual
+     page: `docbook-to-man manpage.sgml > manpage.1'.  You may view
+     the manual page with: `docbook-to-man manpage.sgml | nroff -man |
+     less'.  A typical entry in a Makefile or Makefile.am is:
+
+manpage.1: manpage.sgml
+	docbook-to-man $< > $@
+
+    
+	The docbook-to-man binary is found in the docbook-to-man package.
+	Please remember that if you create the nroff version in one of the
+	debian/rules file targets (such as build), you will need to include
+	docbook-to-man in your Build-Depends control field.
+
+  -->
+
+  <!-- Fill in your name for FIRSTNAME and SURNAME. -->
+  <!ENTITY dhfirstname "<firstname>Paul</firstname>">
+  <!ENTITY dhsurname   "<surname>Brossier</surname>">
+  <!-- Please adjust the date whenever revising the manpage. -->
+  <!ENTITY dhdate      "<date>November 26, 2004</date>">
+  <!-- SECTION should be 1-8, maybe w/ subsection other parameters are
+       allowed: see man(7), man(1). -->
+  <!ENTITY dhsection   "<manvolnum>1</manvolnum>">
+  <!ENTITY dhemail     "<email>piem@altern.org</email>">
+  <!ENTITY dhusername  "Paul Brossier">
+  <!ENTITY dhucpackage "<refentrytitle>MIXXX</refentrytitle>">
+  <!ENTITY dhpackage   "mixxx">
+
+  <!ENTITY debian      "<productname>Debian</productname>">
+  <!ENTITY gnu         "<acronym>GNU</acronym>">
+  <!ENTITY gpl         "&gnu; <acronym>GPL</acronym>">
+]>
+
+<refentry>
+  <refentryinfo>
+    <address>
+      &dhemail;
+    </address>
+    <author>
+      &dhfirstname;
+      &dhsurname;
+    </author>
+    <copyright>
+      <year>2003</year>
+      <holder>&dhusername;</holder>
+    </copyright>
+    &dhdate;
+  </refentryinfo>
+  <refmeta>
+    &dhucpackage;
+
+    &dhsection;
+  </refmeta>
+  <refnamediv>
+    <refname>&dhpackage;</refname>
+
+    <refpurpose>a Digital Disc Jockey Interface</refpurpose>
+  </refnamediv>
+  <refsynopsisdiv>
+    <cmdsynopsis>
+      <command>&dhpackage;</command>
+    </cmdsynopsis>
+  </refsynopsisdiv>
+  <refsect1>
+    <title>DESCRIPTION</title>
+
+    <para>This manual page documents briefly the <command>&dhpackage;</command> command.</para>
+
+    <para><command>&dhpackage;</command> is a digital DJ system, where wave,
+    ogg and mp3 files can be mixed on a computer for use in live performances.
+    Filters, crossfader, and speed control are provided. &dhpackage; can sync
+    the 2 streams automatically, using an algorithm to detect the beat.</para>
+    
+    <para>&dhpackage; works with Jack or OSS and can be controlled through the GUI
+    and with external controllers, including MIDI devices and joysticks. The
+    GUI supports skins.</para>
+
+    <para>This manual page was written for the &debian; distribution because
+    the original program does not have a manual page.  Instead, it has
+    documentation in the pdf format; see below.</para>
+
+  </refsect1>
+  <refsect1>
+    <title>OPTIONS</title>
+
+    <para>This program takes no command line argument.</para>
+
+  </refsect1>
+  <refsect1>
+    <title>SEE ALSO</title>
+
+    <para>/usr/share/doc/mixxx/Mixxx-Manual.pdf</para>
+
+    <para>The program is fully documented in the above pdf file.</para>
+
+  </refsect1>
+  <refsect1>
+    <title>AUTHOR</title>
+
+    <para>This manual page was written by &dhusername; (&dhemail;) for the
+    &debian; system (but may be used by others).  Permission is granted to
+    copy, distribute and/or modify this document under the terms of the &gnu;
+    General Public License, Version 2 any later version published by the Free
+    Software Foundation.</para>
+
+    <para> On Debian systems, the complete text of the GNU General Public
+    License can be found in /usr/share/common-licenses/GPL.</para>
+
+  </refsect1>
+</refentry>
+
+<!-- Keep this comment at the end of the file
+Local variables:
+mode: sgml
+sgml-omittag:t
+sgml-shorttag:t
+sgml-minimize-attributes:nil
+sgml-always-quote-attributes:t
+sgml-indent-step:2
+sgml-indent-data:t
+sgml-parent-document:nil
+sgml-default-dtd-file:nil
+sgml-exposed-tags:nil
+sgml-local-catalogs:nil
+sgml-local-ecat-files:nil
+End:
+-->
+
+

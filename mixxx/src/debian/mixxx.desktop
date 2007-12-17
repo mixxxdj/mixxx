@@ -1,0 +1,9 @@
+[Desktop Entry]
+Encoding=UTF-8
+Name=Mixxx
+Comment=Create DJ mixes
+Exec=mixxx
+Terminal=false
+Icon=mixxx
+Type=Application
+Categories=AudioVideo;Audio;

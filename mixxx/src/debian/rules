@@ -1,0 +1,120 @@
+#!/usr/bin/make -f
+# -*- makefile -*-
+# Sample debian/rules that uses debhelper.
+# This file was originally written by Joey Hess and Craig Small.
+# As a special exception, when this file is copied by dh-make into a
+# dh-make output file, you may use that output file without restriction.
+# This special exception was added by Craig Small in version 0.37 of dh-make.
+
+# Uncomment this to turn on verbose mode.
+#export DH_VERBOSE=1
+
+
+
+
+CFLAGS = -Wall -g
+MIXXX_SCONS_FLAGS = cmetrics=1 djconsole=1 prefix=/usr install_root=$(CURDIR)/debian/tmp/usr
+SCONS = scons
+
+ifneq (,$(findstring noopt,$(DEB_BUILD_OPTIONS)))
+	CFLAGS += -O0
+else
+	CFLAGS += -O2
+endif
+
+configure: configure-stamp
+configure-stamp:
+	dh_testdir
+	# Add here commands to configure the package.
+	#(cd src; QTDIR=/usr/share/qt3 ./configure --enable-jack)
+	#  still experimental
+	#  --enable-alsa
+	# hacky way to remove qmake generated -w!
+	#sed -i 's/ -w / /' src/Makefile
+
+	touch configure-stamp
+
+
+build: build-stamp
+
+build-stamp: configure-stamp 
+	dh_testdir
+
+	mkdir -p $(CURDIR)/debian/tmp/usr
+
+	# Add here commands to compile the package.
+	($(SCONS) $(MIXXX_SCONS_FLAGS))
+	docbook-to-man debian/mixxx.sgml > mixxx.1 
+
+	touch build-stamp
+
+clean:
+	dh_testdir
+	dh_testroot
+	rm -f build-stamp configure-stamp
+	rm -f mixxx.1
+
+	# Add here commands to clean up after the build process.
+	($(SCONS) -c)
+	# hand cleaning!
+	rm -rf src/.{configure.def,moc,obj,summary.log,ui} src/{mixxx,a.out,Makefile}
+	rm -f src/qt4.pyc
+	rm -f .sconsign.dblite
+	rm -rf .sconf_temp
+	
+	rm -f $(CURDIR)/debian/tmp
+
+	dh_clean 
+
+install: build
+	dh_testdir
+	dh_testroot
+	dh_clean -k 
+	dh_installdirs
+	mkdir -p $(CURDIR)/debian/tmp/usr
+	mkdir -p $(CURDIR)/debian/tmp/usr/share/mixxx
+	# Add here commands to install the package into debian/mixxx.
+	$(SCONS) $(MIXXX_SCONS_FLAGS) install
+	#the scons prefix path is in MIXXX_SCONS_FLAGS at the top of this file.
+	#(cd src; $(MAKE) install INSTALL_ROOT=$(CURDIR)/debian/tmp DESTDIR=$(CURDIR)/debian/tmp) 
+
+	dh_install -ptmp debian/mixxx.desktop usr/share/applications
+	dh_install --sourcedir=$(CURDIR)/debian/tmp
+
+# Build architecture-independent files here.
+binary-indep: build install
+# We have nothing to do by default.
+
+# Build architecture-dependent files here.
+binary-arch: build install
+	dh_testdir
+	dh_testroot
+	dh_installchangelogs 
+	dh_installdocs
+	dh_installexamples
+#	dh_install
+	dh_installmenu
+#	dh_installdebconf	
+#	dh_installlogrotate
+#	dh_installemacsen
+#	dh_installpam
+#	dh_installmime
+#	dh_installinit
+#	dh_installcron
+#	dh_installinfo
+	dh_installman mixxx.1
+	dh_link
+	dh_strip
+	dh_compress -Xpdf
+	dh_fixperms
+#	dh_perl
+#	dh_python
+#	dh_makeshlibs
+	dh_installdeb
+	dh_shlibdeps
+	dh_gencontrol
+	dh_md5sums
+	dh_builddeb
+
+binary: binary-indep binary-arch
+.PHONY: build clean binary-indep binary-arch binary install configure
