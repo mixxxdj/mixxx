@@ -41,7 +41,7 @@ DlgPrefCrossfader::DlgPrefCrossfader(QWidget * parent, ConfigObject<ConfigValue>
 	
     setupUi(this);
 
-	//connect(SliderXFader,         SIGNAL(valueChanged(int)), this, SLOT(slotUpdateXFader()));
+	connect(SliderXFader,         SIGNAL(valueChanged(int)), this, SLOT(slotUpdateXFader()));
     connect(SliderXFader,         SIGNAL(sliderMoved(int)), this,  SLOT(slotUpdateXFader()));
     connect(SliderXFader,         SIGNAL(sliderReleased()), this,  SLOT(slotUpdateXFader()));
     connect(SliderXFader,         SIGNAL(sliderReleased()), this,  SLOT(slotApply()));
@@ -99,8 +99,6 @@ void DlgPrefCrossfader::loadSettings()
 	
 	
 	slotApply();
-	//slotUpdate();
-	//slotUpdateXFader();
     drawXfaderDisplay();
 }
 
@@ -117,7 +115,6 @@ void DlgPrefCrossfader::setDefaults()
 /** Apply and save any changes made in the dialog */
 void DlgPrefCrossfader::slotApply()
 {
-    //qDebug() << "DlgPrefCrossfader: Applying......";
     config->set(ConfigKey(CONFIG_KEY, "xFaderMode"), ConfigValue(m_xFaderMode));
 	ControlObject::getControl(ConfigKey(CONFIG_KEY, "xFaderCurve"))->set(m_transform);
 	//ControlObject::getControl(ConfigKey(CONFIG_KEY, "xFaderCalibration"))->set(m_cal);
