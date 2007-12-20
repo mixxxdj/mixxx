@@ -37,12 +37,14 @@
 DlgPrefCrossfader::DlgPrefCrossfader(QWidget * parent, ConfigObject<ConfigValue> * _config) :  QWidget(parent), Ui::DlgPrefCrossfaderDlg()
 {
     config = _config;
-
+	m_pxfScene = NULL;
+	
     setupUi(this);
 
-	connect(SliderXFader,         SIGNAL(valueChanged(int)), this, SLOT(slotUpdateXFader()));
+	//connect(SliderXFader,         SIGNAL(valueChanged(int)), this, SLOT(slotUpdateXFader()));
     connect(SliderXFader,         SIGNAL(sliderMoved(int)), this,  SLOT(slotUpdateXFader()));
     connect(SliderXFader,         SIGNAL(sliderReleased()), this,  SLOT(slotUpdateXFader()));
+    connect(SliderXFader,         SIGNAL(sliderReleased()), this,  SLOT(slotApply()));
 
 	connect(PushButtonReset,	  SIGNAL(clicked(bool)), this,	SLOT(setDefaults()));
     
@@ -56,8 +58,8 @@ DlgPrefCrossfader::DlgPrefCrossfader(QWidget * parent, ConfigObject<ConfigValue>
     crossfaderModes.addButton(radioButtonFastCut);
     crossfaderModes.addButton(radioButtonConstantPower);
 
-	m_pxfScene = NULL;
 	loadSettings();
+
 }
 
 DlgPrefCrossfader::~DlgPrefCrossfader()
@@ -69,18 +71,37 @@ void DlgPrefCrossfader::loadSettings()
 {
 	m_transform = 1. + ((double) SliderXFader->value() / SliderXFader->maximum());
 	double sliderTransform = config->getValueString(ConfigKey(CONFIG_KEY, "xFaderCurve")).toDouble();
-	double sliderVal = SliderXFader->maximum() * (sliderTransform - 1.);
-	SliderXFader->setValue(sliderVal);
-	
+	double sliderVal = SliderXFader->maximum() / MIXXX_XFADER_STEEPNESS_COEFF * (sliderTransform - 1.);
+	SliderXFader->setValue((int)sliderVal);
+		
 	m_xFaderMode = config->getValueString(ConfigKey(CONFIG_KEY, "xFaderMode"));
-	if (m_xFaderMode == "")
+		
+	if (m_xFaderMode == MIXXX_XFADER_SLOWFADE)
 	{
-	    m_xFaderMode = MIXXX_XFADER_SLOWFADE;
         radioButtonSlowFade->setChecked(true);
+        SliderXFader->setEnabled(false);
     }
+    else if (m_xFaderMode == MIXXX_XFADER_FASTCUT)
+    {
+        radioButtonFastCut->setChecked(true);
+        SliderXFader->setEnabled(false);
+    }
+    else if (m_xFaderMode == MIXXX_XFADER_CONSTPWR)
+    {
+        radioButtonConstantPower->setChecked(true);
+        SliderXFader->setEnabled(true);
+    }
+    else 
+    {
+        radioButtonSlowFade->setChecked(true);
+        SliderXFader->setEnabled(false);        
+    }	
 	
-	slotUpdate();
+	
 	slotApply();
+	//slotUpdate();
+	//slotUpdateXFader();
+    drawXfaderDisplay();
 }
 
 /** Set the default values for all the widgets */
@@ -96,35 +117,41 @@ void DlgPrefCrossfader::setDefaults()
 /** Apply and save any changes made in the dialog */
 void DlgPrefCrossfader::slotApply()
 {
+    //qDebug() << "DlgPrefCrossfader: Applying......";
     config->set(ConfigKey(CONFIG_KEY, "xFaderMode"), ConfigValue(m_xFaderMode));
 	ControlObject::getControl(ConfigKey(CONFIG_KEY, "xFaderCurve"))->set(m_transform);
-	ControlObject::getControl(ConfigKey(CONFIG_KEY, "xFaderCalibration"))->set(m_cal);
+	//ControlObject::getControl(ConfigKey(CONFIG_KEY, "xFaderCalibration"))->set(m_cal);
 }
 
-/** Update the dialog after something's changed */
+/** Update the dialog when the crossfader mode is changed */
 void DlgPrefCrossfader::slotUpdate()
-{       
+{
     if (radioButtonSlowFade->isChecked())
     {
         m_xFaderMode = MIXXX_XFADER_SLOWFADE;
         SliderXFader->setEnabled(false);
+        SliderXFader->setValue(SliderXFader->minimum());
     }
     if (radioButtonFastCut->isChecked())
     {
         m_xFaderMode = MIXXX_XFADER_FASTCUT;
         SliderXFader->setEnabled(false);
+        SliderXFader->setValue(SliderXFader->maximum());
     }
     if (radioButtonConstantPower->isChecked()) 
     {
         m_xFaderMode = MIXXX_XFADER_CONSTPWR;
         SliderXFader->setEnabled(true);
-        SliderXFader->setValue(SliderXFader->minimum());
+	    double sliderTransform = config->getValueString(ConfigKey(CONFIG_KEY, "xFaderCurve")).toDouble();
+	    double sliderVal = SliderXFader->maximum() / MIXXX_XFADER_STEEPNESS_COEFF * (sliderTransform - 1.);
+	    SliderXFader->setValue((int)sliderVal);
     }
-	slotUpdateXFader();
+    
+    slotUpdateXFader();
 }    
 
 /** Draw the crossfader curve graph. Only needs to get drawn when a change has been made.*/
-void DlgPrefCrossfader::drawXfaderDisplay()
+void DlgPrefCrossfader::drawXfaderDisplay() 
 {
 #define GRID_X_LINES 4
 #define GRID_Y_LINES 6
@@ -133,7 +160,8 @@ void DlgPrefCrossfader::drawXfaderDisplay()
 	int sizeY = graphicsViewXfader->height();
 
 	//Initialize Scene
-	delete m_pxfScene;
+	if (m_pxfScene)
+	    delete m_pxfScene;
 	m_pxfScene = new QGraphicsScene();
 	m_pxfScene->setSceneRect(0,0,sizeX, sizeY);
 	m_pxfScene->setBackgroundBrush(Qt::black);
@@ -172,9 +200,9 @@ void DlgPrefCrossfader::drawXfaderDisplay()
 		pointTotalPrev = pointTotal;
 		point1Prev = point1;
 		point2Prev = point2;
-		pointTotal = QPoint(i - 2, ((1. - sum) * ((double) sizeY)));
-		point1 = QPoint(i - 2, ((1. - gain1) * ((double)sizeY)));
-		point2 = QPoint(i - 2, ((1. - gain2) * ((double)sizeY)));
+		pointTotal = QPoint(i - 2, (int)((1. - sum) * (sizeY)));
+		point1 = QPoint(i - 2, (int)((1. - gain1) * (sizeY)));
+		point2 = QPoint(i - 2, (int)((1. - gain2) * (sizeY)));
 		if(i == 0)
 		{
 			pointTotalPrev = pointTotal;
@@ -209,12 +237,13 @@ void DlgPrefCrossfader::slotUpdateXFader()
 	    SliderXFader->setValue(SliderXFader->maximum());
 	}
 	else if (m_xFaderMode == MIXXX_XFADER_CONSTPWR)
+	{
 	    m_cal = EngineXfader::getCalibration(m_transform);
+	}
 
 	QString QS_transform = QString::number(m_transform);
 	config->set(ConfigKey(CONFIG_KEY, "xFaderCurve"), ConfigValue(QS_transform));
-	config->set(ConfigKey(CONFIG_KEY, "xFaderCalibration"), ConfigValue(m_cal));
+	//config->set(ConfigKey(CONFIG_KEY, "xFaderCalibration"), ConfigValue(m_cal)); //FIXME: m_cal is a double - be forewarned
 
 	drawXfaderDisplay();
-	slotApply();
 }
