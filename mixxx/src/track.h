@@ -167,6 +167,10 @@ private:
     LibraryScanner *m_pScanner;
     /** Pointer to the library scanning dialog */
     LibraryScannerDialog* m_pLibScannerDlg;
+    /** Index of the library playlist */
+    unsigned int m_iLibraryIdx;
+    /** Index of the play queue playlist */
+    unsigned int m_iPlayqueueIdx;
 };
 
 #endif
