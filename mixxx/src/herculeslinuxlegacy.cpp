@@ -269,7 +269,7 @@ void HerculesLinux::getNextEvent()
                 sendEvent(ev.value/d1, m_pControlObjectLeftVolume);
                 break;
             case kiHerculesLeftPitch:
-                pitchValue = PitchChange("Left", ev.value, m_iPitchLeft, m_iPitchOffsetLeft);
+                pitchValue = PitchChangeOrdinal("Left", ev.value, m_iPitchLeft, m_iPitchOffsetLeft);
                 if (pitchValue > 0) {
                     for (int i=0; i<pitchValue; i++)
                         sendButtonEvent(1, m_pControlObjectLeftBtnPitchBendPlus);
@@ -308,7 +308,7 @@ void HerculesLinux::getNextEvent()
                 break;
             case kiHerculesRightPitch:
                 //qDebug("");
-                pitchValue = PitchChange("Right", ev.value, m_iPitchRight, m_iPitchOffsetRight);
+                pitchValue = PitchChangeOrdinal("Right", ev.value, m_iPitchRight, m_iPitchOffsetRight);
                 if (pitchValue > 0) {
                     for (int i=0; i<pitchValue; i++) {
                         sendButtonEvent(1, m_pControlObjectRightBtnPitchBendPlus);
@@ -589,9 +589,10 @@ void HerculesLinux::selectMapping(QString qMapping)
 
 /*
     The old version of this sets the absolute pitch, but the herc doesn't have
-    an absolute pitch slider, so this treats it like a pitch bend
+    an absolute pitch slider, so this treats it like a pitch bend. This function
+    returns the number of fake button presses that should be performed.
 */
-int HerculesLinux::PitchChange(const QString ControlSide, const int ev_value, int &m_iPitchPrevious, int &m_iPitchOffset) {
+int HerculesLinux::PitchChangeOrdinal(const QString ControlSide, const int ev_value, int &m_iPitchPrevious, int &m_iPitchOffset) {
     // We have to ignore the first value we get here, as that lets us calibrate.
     // We don't know which way they've turned it. A better option would be
     // either to query it on start, or reset the device. I don't know how to
