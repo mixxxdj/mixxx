@@ -57,7 +57,7 @@ void EngineVinylSoundEmu::process(const CSAMPLE * pIn, const CSAMPLE * pOut, con
     //qDebug() << "gf: " << m_fGainFactor;
 
     //Apply whatever gain we calculated.
-    for (int i=iBufferSize; i!=0; i--)
+    for (int i=0; i < iBufferSize; i++)
     {
         pOutput[i] = pOutput[i] * m_fGainFactor;
     }
