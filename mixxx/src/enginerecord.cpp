@@ -17,7 +17,7 @@
 #include "enginerecord.h"
 #include "controllogpotmeter.h"
 #include "configobject.h"
-#include "controlobjectthreadmain.cpp"
+#include "controlobjectthreadmain.h"
 #include "controlobject.h"
 #include "dlgprefrecord.h"
 
