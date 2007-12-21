@@ -59,17 +59,6 @@ MixxxApp::MixxxApp(QApplication * a, struct CmdlineArgs args, QSplashScreen * pS
 {
     app = a;
 
-    //Next, let's set up the colour palette for Mixxx.
-    //For what color controls what, see this reference:
-    //http://doc.trolltech.com/3.3/qcolorgroup.html#ColorRole-enum
-
-    /*
-       QPalette palette;
-       palette.setColor(QColorGroup::HighlightedText, QColor("darkBlue"));
-       palette.setColor(QColorGroup::Text, QColor("white"));
-       setPalette(palette);
-     */
-
     qDebug("Starting up...");
     setWindowTitle(tr("Mixxx " VERSION));
 #ifdef __MACX__
@@ -349,9 +338,6 @@ MixxxApp::MixxxApp(QApplication * a, struct CmdlineArgs args, QSplashScreen * pS
     if (args.qLogFileName.length()>0)
         pLog = new Log(args.qLogFileName, m_pTrack);
 
-    // Fullscreen patch
-    //setFixedSize(view->width(), view->height());
-    
     //If we were told to start in fullscreen mode on the command-line, then turn on fullscreen mode.
     if (args.bStartInFullscreen)
         slotOptionsFullScreen(true);
@@ -794,6 +780,7 @@ void MixxxApp::slotHelpAbout()
 "Stefan Langhammer<br>"
 "Andre Roth<br>"
 "Frank Willascheck<br>"
+"Robin Sheat<br>"
 "</p>"
 "<p align=\"center\"><b>And special thanks to:</b></p>"
 "<p align=\"center\">"

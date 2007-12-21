@@ -103,7 +103,7 @@ protected:
 
     Rotary *m_pRotaryLeft, *m_pRotaryRight; 
     ControlObjectThread *m_pControlObjectLeftBeatLoop, *m_pControlObjectRightBeatLoop;
-
+    ControlObjectThread *m_pControlObjectLeftVuMeter,  *m_pControlObjectRightVuMeter;
     QString m_qMapping;
 
 
@@ -114,6 +114,7 @@ protected:
          m_bSyncLeft, m_bSyncRight;
 
     double m_dLeftVolumeOld, m_dRightVolumeOld;
+    int m_iLeftVU, m_iRightVU;
 };
 
 #endif

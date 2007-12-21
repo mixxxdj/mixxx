@@ -98,22 +98,22 @@ const int kiHerculesRightBtnFx = 0x20 + 0x100; // Right FxArrow
 const int kiHerculesCrossfade = 0x28;
 
 // TODO: 1.5.0+ investigate and revise led codes
-const int kiHerculesLedRightSync = 0;
-const int kiHerculesLedLeftLoop = 1;
-const int kiHerculesLedRightLoop = 2;
-const int kiHerculesLedLeftMasterTempo = 3;
-const int kiHerculesLedRightMasterTempo = 4;
-const int kiHerculesLedLeftFx = 5;
-const int kiHerculesLedRightFx = 6;
-const int kiHerculesLedRightCueLamp = 7;
-const int kiHerculesLedRightCueBtn = 8;
-const int kiHerculesLedRightPlay = 9;
-const int kiHerculesLedLeftCueLamp = 10;
-const int kiHerculesLedLeftPlay = 11;
-const int kiHerculesLedLeftHeadphone = 12;
-const int kiHerculesLedRightHeadphone = 13;
-const int kiHerculesLedLeftCueBtn = 14;
-const int kiHerculesLedLeftSync = 15;
+const int kiHerculesLedRightSync = 0x0D;
+const int kiHerculesLedLeftLoop = 0x0E;
+const int kiHerculesLedRightLoop = 0x0F;
+const int kiHerculesLedLeftMasterTempo = 0x00;
+const int kiHerculesLedRightMasterTempo = 0x01;
+const int kiHerculesLedLeftFx = 0x02;
+const int kiHerculesLedRightFx = 0x03;
+const int kiHerculesLedRightCueLamp = 0x04;
+const int kiHerculesLedRightCueBtn = 0x05;
+//const int kiHerculesLedRightPlay = 9; // doesn't exist
+const int kiHerculesLedLeftCueLamp = 0x07;
+//const int kiHerculesLedLeftPlay = 11; // doesn't exist
+const int kiHerculesLedLeftHeadphone = 0x09;
+const int kiHerculesLedRightHeadphone = 0x0A;
+const int kiHerculesLedLeftCueBtn = 0x0B;
+const int kiHerculesLedLeftSync = 0x0C;
 
 #define __THOMAS_HERC__
 #ifdef __THOMAS_HERC__
@@ -164,7 +164,9 @@ protected:
 
     double m_dJogLeftOld, m_dJogRightOld;
 
-    double PitchChange(const QString ControlSide, const int ev_value, int &m_iPitchPrevious, int &m_iPitchOffset);
+    //double PitchChange(const QString ControlSide, const int ev_value, int &m_iPitchPrevious, int &m_iPitchOffset);
+    int PitchChange(const QString ControlSide, const int ev_value, int &m_iPitchPrevious, int &m_iPitchOffset);
+    bool m_bClearLeftPitchPlus, m_bClearLeftPitchMinus, m_bClearRightPitchPlus, m_bClearRightPitchMinus;
 };
 
 #endif

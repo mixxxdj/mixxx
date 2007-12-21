@@ -61,6 +61,11 @@ Hercules::Hercules() : Input(), m_qRequestLed(5)
     m_pControlObjectLeftBtnHeadphoneProxy = new ControlObjectThread(ControlObject::getControl(ConfigKey("[Channel1]","pfl")));
     m_pControlObjectRightBtnHeadphoneProxy = new ControlObjectThread(ControlObject::getControl(ConfigKey("[Channel2]","pfl")));
 
+    m_pControlObjectLeftVuMeter = new ControlObjectThread(ControlObject::getControl(ConfigKey("[Channel1]","VuMeter")));
+    Q_ASSERT(m_pControlObjectLeftVuMeter != 0);
+    m_pControlObjectRightVuMeter = new ControlObjectThread(ControlObject::getControl(ConfigKey("[Channel2]","VuMeter")));
+    Q_ASSERT(m_pControlObjectRightVuMeter != 0);    
+
     selectMapping(kqInputMappingHerculesStandard);
 
     m_pRotaryLeft = new Rotary();
@@ -165,6 +170,7 @@ void Hercules::selectMapping(QString qMapping)
     m_pControlObjectRightBtn123[1] = m_pControlObjectRightBtn2;
     m_pControlObjectRightBtn123[2] = m_pControlObjectRightBtn3;
     m_pControlObjectRightBtnFx = new ControlObjectThread(new ControlObject(ConfigKey("[Channel2]","Hercules4")));
+    
 }
 
 void Hercules::changeJogMode(int iLeftFxMode, int iRightFxMode)

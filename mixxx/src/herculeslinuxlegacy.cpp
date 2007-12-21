@@ -18,8 +18,12 @@ HerculesLinux::HerculesLinux() : Hercules()
     m_dJogRightOld = 0.;
     m_iPitchOffsetLeft=-9999;
     m_iPitchOffsetRight=-9999;
-    m_iPitchLeft = 127;
-    m_iPitchRight = 127;
+    m_iPitchLeft = -1;
+    m_iPitchRight = -1;
+    m_bClearLeftPitchPlus=false;
+    m_bClearLeftPitchMinus=false;
+    m_bClearRightPitchPlus=false;
+    m_bClearRightPitchMinus=false;
 }
 
 HerculesLinux::~HerculesLinux()
@@ -30,30 +34,73 @@ void HerculesLinux::run()
 {
     while (1)
     {
+    
         getNextEvent();
 
         if (m_pControlObjectLeftBtnPlayProxy->get()!=m_bPlayLeft)
         {
             m_bPlayLeft=!m_bPlayLeft;
-            led_write(kiHerculesLedLeftPlay, m_bPlayLeft);
+            led_write(kiHerculesLedLeftCueBtn, m_bPlayLeft);
         }
         if (m_pControlObjectRightBtnPlayProxy->get()!=m_bPlayRight)
         {
             m_bPlayRight=!m_bPlayRight;
-            led_write(kiHerculesLedRightPlay, m_bPlayRight);
+            led_write(kiHerculesLedRightCueBtn, m_bPlayRight);
         }
         if (m_pControlObjectLeftBtnLoopProxy->get()!=m_bLoopLeft)
         {
             m_bLoopLeft=!m_bLoopLeft;
-            led_write(kiHerculesLedLeftCueBtn, m_bLoopLeft);
+            //led_write(kiHerculesLedLeftCueBtn, m_bLoopLeft);
         }
         if (m_pControlObjectRightBtnLoopProxy->get()!=m_bLoopRight)
         {
             m_bLoopRight=!m_bLoopRight;
-            led_write(kiHerculesLedRightCueBtn, m_bLoopRight);
+            //led_write(kiHerculesLedRightCueBtn, m_bLoopRight);
         }
-	m_bHeadphoneLeft=m_pControlObjectLeftBtnHeadphoneProxy->get();
-	m_bHeadphoneRight=m_pControlObjectRightBtnHeadphoneProxy->get();
+        if (m_pControlObjectLeftBtnHeadphoneProxy->get() != m_bHeadphoneLeft) {
+	        m_bHeadphoneLeft=!m_bHeadphoneLeft;
+	        led_write(kiHerculesLedLeftHeadphone, m_bHeadphoneLeft);
+	    }
+        if (m_pControlObjectRightBtnHeadphoneProxy->get() != m_bHeadphoneRight) {
+	        m_bHeadphoneRight=!m_bHeadphoneRight;
+	        led_write(kiHerculesLedRightHeadphone, m_bHeadphoneRight);
+	    }
+	    int leftVU = (int)(m_pControlObjectLeftVuMeter->get()*4.0);
+	    if (leftVU != m_iLeftVU) {
+	        m_iLeftVU = leftVU;
+	        led_write(kiHerculesLedLeftFx, leftVU == 3);
+	        led_write(kiHerculesLedLeftCueLamp, leftVU > 1);
+	        led_write(kiHerculesLedLeftLoop, leftVU > 0);
+	    }
+	    int rightVU = (int)(m_pControlObjectRightVuMeter->get()*4.0);
+	    if (rightVU != m_iRightVU) {
+	        m_iRightVU = rightVU;
+	        led_write(kiHerculesLedRightFx, rightVU == 3);
+	        led_write(kiHerculesLedRightCueLamp, rightVU > 1);
+	        led_write(kiHerculesLedRightLoop, rightVU > 0);
+	    }
+	    // We wait as long as possible to do this, otherwise we reset too
+        // quick, and the faked press is never picked up.
+        // (note: this currently isn't used, as no matter where I put it
+        // it's too fast. A better solution would be to find/make a relative
+        // shifter interface)
+        if (m_bClearLeftPitchPlus) {
+            m_bClearLeftPitchPlus = false;
+            sendButtonEvent(0,m_pControlObjectLeftBtnPitchBendPlus);
+        }
+        if (m_bClearLeftPitchMinus) {
+            m_bClearLeftPitchMinus = false;
+            sendButtonEvent(0,m_pControlObjectLeftBtnPitchBendMinus);
+        }
+        if (m_bClearRightPitchPlus) {
+            m_bClearRightPitchPlus = false;
+            sendButtonEvent(0,m_pControlObjectRightBtnPitchBendPlus);
+        }
+        if (m_bClearRightPitchMinus) {
+            m_bClearRightPitchMinus = false;
+            sendButtonEvent(0,m_pControlObjectRightBtnPitchBendMinus);
+        }
+
     }
 }
 
@@ -78,8 +125,8 @@ bool HerculesLinux::opendev()
         // Turn off led
         led_write(kiHerculesLedLeftCueBtn, false);
         led_write(kiHerculesLedRightCueBtn, false);
-        led_write(kiHerculesLedLeftPlay, false);
-        led_write(kiHerculesLedRightPlay, false);
+//        led_write(kiHerculesLedLeftPlay, false);
+//        led_write(kiHerculesLedRightPlay, false);
         led_write(kiHerculesLedLeftSync, false);
         led_write(kiHerculesLedRightSync, false);
         led_write(kiHerculesLedLeftHeadphone, false);
@@ -204,7 +251,8 @@ void HerculesLinux::getNextEvent()
             //qDebug("code %i",ev.code);
             int iDiff;
             double dDiff;
-
+            int pitchValue;
+            
             switch (ev.code)
             {
             case kiHerculesLeftTreble:
@@ -221,8 +269,15 @@ void HerculesLinux::getNextEvent()
                 sendEvent(ev.value/d1, m_pControlObjectLeftVolume);
                 break;
             case kiHerculesLeftPitch:
-                //qDebug("");
-                sendEvent(PitchChange("Left", ev.value, m_iPitchLeft, m_iPitchOffsetLeft), m_pControlObjectLeftPitch);
+                pitchValue = PitchChange("Left", ev.value, m_iPitchLeft, m_iPitchOffsetLeft);
+                if (pitchValue > 0) {
+                    for (int i=0; i<pitchValue; i++)
+                        sendButtonEvent(1, m_pControlObjectLeftBtnPitchBendPlus);
+                } else {
+                    for (int i=0; i>pitchValue; i--)
+                        sendButtonEvent(1, m_pControlObjectLeftBtnPitchBendMinus);
+                }
+//                sendEvent(PitchChange("Left", ev.value, m_iPitchLeft, m_iPitchOffsetLeft), m_pControlObjectLeftPitch);
                 break;
             case kiHerculesLeftJog:
                 iDiff = 0;
@@ -253,7 +308,17 @@ void HerculesLinux::getNextEvent()
                 break;
             case kiHerculesRightPitch:
                 //qDebug("");
-                sendEvent(PitchChange("Right", ev.value, m_iPitchRight, m_iPitchOffsetRight), m_pControlObjectRightPitch);
+                pitchValue = PitchChange("Right", ev.value, m_iPitchRight, m_iPitchOffsetRight);
+                if (pitchValue > 0) {
+                    for (int i=0; i<pitchValue; i++) {
+                        sendButtonEvent(1, m_pControlObjectRightBtnPitchBendPlus);
+                    }
+                } else {
+                    for (int i=0; i>pitchValue; i--) {
+                        sendButtonEvent(1, m_pControlObjectRightBtnPitchBendMinus);
+                    }
+                }
+//                sendEvent(PitchChange("Right", ev.value, m_iPitchRight, m_iPitchOffsetRight), m_pControlObjectRightPitch);
                 break;
             case kiHerculesRightJog:
                 iDiff = 0;
@@ -336,13 +401,13 @@ void HerculesLinux::getNextEvent()
 
                 case kiHerculesLeftBtnHeadphone: 
                     if (ev.value) {
-                      led_write(kiHerculesLedLeftHeadphone, !m_pControlObjectLeftBtnHeadphone->get());
+                      //led_write(kiHerculesLedLeftHeadphone, !m_pControlObjectLeftBtnHeadphone->get());
                       sendButtonEvent(!m_bHeadphoneLeft, m_pControlObjectLeftBtnHeadphone);
                     }
                     break;
                 case kiHerculesRightBtnHeadphone:
                     if (ev.value) {
-                      led_write(kiHerculesLedRightHeadphone, !m_pControlObjectRightBtnHeadphone->get());
+                      //led_write(kiHerculesLedRightHeadphone, !m_pControlObjectRightBtnHeadphone->get());
                       sendButtonEvent(!m_bHeadphoneRight, m_pControlObjectRightBtnHeadphone);
                     }
                     break;
@@ -454,15 +519,15 @@ void HerculesLinux::led_write(int iLed, bool bOn)
     struct input_event ev;
     memset(&ev, 0, sizeof(struct input_event));
 
-    //ev.type = EV_LED;
-    ev.type = 0x0000;
+    ev.type = EV_LED;
+    //ev.type = 0x0000;
     ev.code = iLed;
     if (bOn)
-        ev.value = 3;
+        ev.value = 1;
     else
         ev.value = 0;
 
-    //qDebug("Hercules: led_write(iLed=%d, bOn=%d)", iLed, bOn);
+    //qDebug("Hercules: led_write(iLed=%d, value=%d)", iLed, ev.value);
 
     if (write(m_iFd, &ev, sizeof(struct input_event)) != sizeof(struct input_event))
         qDebug("Hercules: write(): %s", strerror(errno));
@@ -484,12 +549,12 @@ void HerculesLinux::selectMapping(QString qMapping)
     }
 }
 
-double HerculesLinux::PitchChange(const QString ControlSide, const int ev_value, int &m_iPitchPrevious, int &m_iPitchOffset) {
+/*double HerculesLinux::PitchChange(const QString ControlSide, const int ev_value, int &m_iPitchPrevious, int &m_iPitchOffset) {
     // Handle the initial event from the Hercules and set pitch to default of 0% change
     if (m_iPitchPrevious < 0) {
         m_iPitchOffset = ev_value;
         m_iPitchPrevious = 64;
-        return m_iPitchPrevious;
+        return ((m_iPitchPrevious+1)-64)/64.;
     }
 
     int delta = ev_value - m_iPitchOffset;
@@ -520,5 +585,27 @@ double HerculesLinux::PitchChange(const QString ControlSide, const int ev_value,
     // old range was 0..127
     // new range is -1.0 to 1.0
     return ((m_iPitchPrevious+1) - 64)/64.;
+}*/
+
+/*
+    The old version of this sets the absolute pitch, but the herc doesn't have
+    an absolute pitch slider, so this treats it like a pitch bend
+*/
+int HerculesLinux::PitchChange(const QString ControlSide, const int ev_value, int &m_iPitchPrevious, int &m_iPitchOffset) {
+    // We have to ignore the first value we get here, as that lets us calibrate.
+    // We don't know which way they've turned it. A better option would be
+    // either to query it on start, or reset the device. I don't know how to
+    // do either through the event interface.
+    if (m_iPitchPrevious < 0)
+        m_iPitchPrevious = ev_value;
+    int delta = ev_value - m_iPitchPrevious;
+    if (delta >= 240) {
+        delta = (255 - delta) * -1;
+    } else if (delta <= -240) {
+        delta = 255 + delta;
+    }
+    m_iPitchPrevious = ev_value;
+    return delta;
 }
+
 
