@@ -45,7 +45,6 @@ class LibraryScannerDlg : public QObject
     private:
         TrackPlaylistList* m_qPlaylists;    //The list of playlists
         QString m_qLibraryPath;             //The path to the library on disk
-        
 	    void setupTiming();        
             
 	    static QTime m_timer;

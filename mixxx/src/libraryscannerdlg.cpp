@@ -55,8 +55,8 @@ void LibraryScannerDlg::setupTiming() {
 	m_timeruses = 0;
 	m_progress = new QWidget();
 	QVBoxLayout* layout = new QVBoxLayout();
-	layout->addWidget(new QLabel("It's taking Mixxx a minute to scan your music library, please wait..."));
-	m_cancel = new QPushButton("Cancel", m_progress);
+	layout->addWidget(new QLabel(tr("It's taking Mixxx a minute to scan your music library, please wait...")));
+	m_cancel = new QPushButton(tr("Cancel"), m_progress);
 	layout->addWidget(m_cancel);
 	m_current = new QLabel();
 	layout->addWidget(m_current);
@@ -82,7 +82,7 @@ void LibraryScannerDlg::slotStartTiming() {
 
 void LibraryScannerDlg::slotStopTiming() {
 	m_qMutex.lock();
-	qDebug() << "slotStopTiming!";
+	//qDebug() << "slotStopTiming!";
 	
 	m_timeruses--;
 	if (m_timeruses == 0) {

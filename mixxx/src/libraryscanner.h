@@ -30,7 +30,7 @@ class LibraryScanner : public QThread
     
     public:
         LibraryScanner();
-        LibraryScanner(TrackPlaylistList* playlists, QString libraryPath);
+        LibraryScanner(TrackPlaylistList* playlists, QString libraryPath, unsigned int iLibraryIdx);
         ~LibraryScanner();
         void run();
         void scan(QString libraryPath, TrackPlaylistList* playlists);
@@ -40,7 +40,8 @@ class LibraryScanner : public QThread
     private:
         TrackPlaylistList* m_qPlaylists;    //The list of playlists
         QString m_qLibraryPath;             //The path to the library on disk
-        LibraryScannerDlg* m_pProgress;  //The library scanning window
+        LibraryScannerDlg* m_pProgress;     //The library scanning window
+        int m_iLibraryIdx;                  //The index of the library playlist in the TrackPlaylistList (...list)        
 };
 
 #endif

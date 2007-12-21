@@ -15,6 +15,7 @@
 #include "trackinfoobject.h"
 #include "bpmdetector.h"
 #include <qfileinfo.h>
+#include <QtDebug>
 #include "defs.h"
 
 
@@ -38,9 +39,9 @@ void TrackCollection::readXML(QDomNode node)
         {
             TrackInfoObject * pTrack = new TrackInfoObject(tracknode, m_BpmDetector);
             addTrack(pTrack);
-
-
-
+            
+            qDebug() << "Trying to add" << pTrack->getTitle() << "to TrackCollection";
+            
             // Update counter
             if (pTrack->getId()>m_iCounter)
                 m_iCounter = pTrack->getId();
@@ -85,8 +86,13 @@ void TrackCollection::addTrack(TrackInfoObject * pTrack)
 
 TrackInfoObject * TrackCollection::getTrack(int id)
 {
+    if (id < m_qTrackList.size())
+        return m_qTrackList.at(id);
+    else
+        return NULL;
+        
     // Binary search
-    return getTrack(id, -1, m_qTrackList.count()/2, m_qTrackList.count());
+    //return getTrack(id, -1, m_qTrackList.count()/2, m_qTrackList.count());
 
 /*
     // Linear search through list to find the track of the given id
@@ -168,5 +174,6 @@ TrackInfoObject * TrackCollection::getTrack(QString location)
 
 int TrackCollection::getSize()
 {
-    return m_iCounter + 1;
+    return m_qTrackList.count();
+    //return m_iCounter + 1;
 }
