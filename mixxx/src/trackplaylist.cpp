@@ -297,6 +297,11 @@ void TrackPlaylist::addPath(QString qPath)
         {
             fi = it.next();
             
+			QString fn = fi.fileName();
+			if (fn.contains("Eutow")) {
+				int a = 0;
+			}
+
             //Check if the scan has been cancelled.
             m_qLibScanMutex.lock();
             if (m_bStopLibraryScan)
@@ -310,8 +315,9 @@ void TrackPlaylist::addPath(QString qPath)
             {
                 /*qDebug("Checking: %s",tempCollection->getTrack(i)->getFilename());*/
                 if (tempCollection->getTrack(i))
-                    if(tempCollection->getTrack(i)->getFilename() == fi.fileName())
-                    {
+                    if(tempCollection->getTrack(i)->getFilename() == fi.fileName() &&
+						tempCollection->getTrack(i)->getFilepath() == fi.absolutePath()) {
+
                         bexists = true;
                         emit(progressLoading(fi.fileName())); //We're not actually reloading the library in this case, 
                         			      //just checking if songs exist.
