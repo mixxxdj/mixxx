@@ -297,11 +297,6 @@ void TrackPlaylist::addPath(QString qPath)
         {
             fi = it.next();
             
-			QString fn = fi.fileName();
-			if (fn.contains("Eutow")) {
-				int a = 0;
-			}
-
             //Check if the scan has been cancelled.
             m_qLibScanMutex.lock();
             if (m_bStopLibraryScan)
