@@ -135,9 +135,10 @@ else:
 	print "QT path: " + flags_qtdir
 
 #Set up our environment, tell SCONS to use it's QT tools, and set some enviroment variables for it.
-# qt4ToolLocation='.'
+#The ENV = os.environ part pulls in your existing environment variables. This is useful for awkward Linux setups
+#and on Windows where all the paths are set in the shell.
 if platform == 'linux' or platform == 'osx':
-	env = Environment(tools=['default','qt4', 'msvs'], toolpath=['../', './'], QTDIR=flags_qtdir, QT_LIB='')
+	env = Environment(tools=['default','qt4', 'msvs'], toolpath=['../', './'], QTDIR=flags_qtdir, QT_LIB='', ENV = os.environ)
 elif platform == 'win32':
 	#Pull in the environment's variables for win32...
 	env = Environment(tools=['default','qt4', 'msvs'], toolpath=['../', './'], QTDIR=flags_qtdir, QT_LIB='', VCINSTALLDIR = os.getenv('VCInstallDir'), ENV = os.environ)
@@ -869,7 +870,7 @@ def BuildUbuntuPackage(target, source, env):
 	print "More checks here soon... :)"
 	print
 
-	if (raw_input("Go ahead and build the Ubuntu package (yes/[no])? ") == "yes"):
+	if ("yes" == "yes"):
 		print "Now building DEB package..."
 		
 		mixxx_dir = 'mixxx-' + version
