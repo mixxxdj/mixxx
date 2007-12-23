@@ -297,6 +297,12 @@ void TrackPlaylist::addPath(QString qPath)
         {
             fi = it.next();
             
+			QString fn = fi.fileName();
+			qDebug() << "Made it to: " << fn;
+			if (fn.contains("Outshined")) {
+				int a = 0;
+			}
+
             //Check if the scan has been cancelled.
             m_qLibScanMutex.lock();
             if (m_bStopLibraryScan)
