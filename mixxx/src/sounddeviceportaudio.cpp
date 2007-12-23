@@ -271,7 +271,7 @@ int SoundDevicePortAudio::callbackProcess(unsigned long framesPerBuffer, float *
     iFrameSize = m_outputParams.channelCount;
     iVCGain = 1;
     i = 0;
- 
+  
     //Send audio from the soundcard's input off to the SoundManager...
     if (in && framesPerBuffer > 0)
     {
@@ -283,7 +283,7 @@ int SoundDevicePortAudio::callbackProcess(unsigned long framesPerBuffer, float *
         //Super big warning: Need to use channel_count here instead of iFrameSize because iFrameSize is
         //only for output buffers...
         iVCGain = pControlObjectVinylControlGain->get();
-        for (i=framesPerBuffer*m_inputParams.channelCount; i != 0; i--)   //Optimized (backwards)
+        for (i=0; i < framesPerBuffer*m_inputParams.channelCount; i++)
             in[i] *= iVCGain;
             
         //qDebug() << in[0];
