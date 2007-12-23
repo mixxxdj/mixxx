@@ -76,6 +76,8 @@ void DlgPrefCrossfader::loadSettings()
 		
 	m_xFaderMode = config->getValueString(ConfigKey(CONFIG_KEY, "xFaderMode"));
 		
+    qDebug() << "loadSettings:" << sliderTransform << sliderVal << m_xFaderMode;
+		
 	if (m_xFaderMode == MIXXX_XFADER_SLOWFADE)
 	{
         radioButtonSlowFade->setChecked(true);
@@ -97,7 +99,7 @@ void DlgPrefCrossfader::loadSettings()
         SliderXFader->setEnabled(false);        
     }	
 	
-	
+	slotUpdateXFader();
 	slotApply();
     drawXfaderDisplay();
 }
@@ -117,7 +119,9 @@ void DlgPrefCrossfader::slotApply()
 {
     config->set(ConfigKey(CONFIG_KEY, "xFaderMode"), ConfigValue(m_xFaderMode));
 	ControlObject::getControl(ConfigKey(CONFIG_KEY, "xFaderCurve"))->set(m_transform);
-	//ControlObject::getControl(ConfigKey(CONFIG_KEY, "xFaderCalibration"))->set(m_cal);
+	ControlObject::getControl(ConfigKey(CONFIG_KEY, "xFaderCalibration"))->set(m_cal);
+	
+	qDebug() << "slotApply crossfader:" << m_transform << m_xFaderMode;
 }
 
 /** Update the dialog when the crossfader mode is changed */
