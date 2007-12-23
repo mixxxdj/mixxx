@@ -85,6 +85,8 @@ void DlgPrefEQ::loadSettings()
 
 void DlgPrefEQ::setDefaults()
 {
+	CheckBoxLoFi->setChecked(true);
+
 	slotUpdate();
 	slotApply();
 }
