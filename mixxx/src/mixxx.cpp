@@ -781,6 +781,7 @@ void MixxxApp::slotHelpAbout()
 "Andre Roth<br>"
 "Frank Willascheck<br>"
 "Robin Sheat<br>"
+"Jeff Nelson<br>"
 "</p>"
 "<p align=\"center\"><b>And special thanks to:</b></p>"
 "<p align=\"center\">"
