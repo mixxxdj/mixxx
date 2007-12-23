@@ -34,6 +34,7 @@ WWidget::WWidget(QWidget * parent, const char * name, Qt::WFlags flags) : QWidge
     connect(this, SIGNAL(valueChangedLeftUp(double)), this, SLOT(slotReEmitValueUp(double)));
     connect(this, SIGNAL(valueChangedRightUp(double)), this, SLOT(slotReEmitValueUp(double)));
 
+	setFocusPolicy(Qt::ClickFocus);
     setBackgroundMode(Qt::NoBackground);
 }
 
