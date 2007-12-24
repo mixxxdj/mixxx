@@ -635,6 +635,7 @@ opts.Add('ffmpeg', '(EXPERIMENTAL) Set to 1 to enable FFMPEG support', 0)
 opts.Add('vinylcontrol', 'Set to 1 to enable vinyl control support', 1)
 opts.Add('msvshacks', 'Set to 1 to build properly with MS Visual Studio 2005 (Express users should leave this off)', 0)
 opts.Add('cmetrics', 'Set to 1 to enable crash reporting/usage statistics via Case Metrics (This should be disabled on development builds)', 0)
+opts.Add('optimize', 'Set to 1 to enable -O3 compiler optimizations. Set to 2 to enable Pentium 4 optimizations.', 1)
 if not platform == 'win32':
 	opts.Add('gprof', '(DEVELOPER) Set to 1 to enable profiling using gprof', 0)
 	opts.Add('tuned', '(EXPERIMENTAL) Set to 1 to optimise mixxx for this CPU', 0)
