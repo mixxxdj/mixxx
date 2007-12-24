@@ -372,7 +372,7 @@ void DlgPrefSound::slotComboBoxSoundcardMasterChange()
 	while(devItr.hasNext())
 	{
 		pdev = devItr.next();
-		if(pdev->getInternalName() == ComboBoxSoundcardMaster->itemData(ComboBoxSoundcardMaster->currentIndex()).toString());
+		if(pdev->getInternalName() == ComboBoxSoundcardMaster->itemData(ComboBoxSoundcardMaster->currentIndex()).toString())
 		{
 			for(int chCount=0; chCount < pdev->getNumOutputChannels(); chCount+=2)
 			{
@@ -404,7 +404,7 @@ void DlgPrefSound::slotComboBoxSoundcardHeadphonesChange()
 	while(devItr.hasNext())
 	{
 		pdev = devItr.next();
-		if(pdev->getInternalName() == ComboBoxSoundcardHeadphones->itemData(ComboBoxSoundcardHeadphones->currentIndex()).toString());
+		if(pdev->getInternalName() == ComboBoxSoundcardHeadphones->itemData(ComboBoxSoundcardHeadphones->currentIndex()).toString())
 		{
 			for(int chCount=0; chCount < pdev->getNumOutputChannels(); chCount+=2)
 			{
