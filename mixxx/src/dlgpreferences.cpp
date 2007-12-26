@@ -260,6 +260,7 @@ void DlgPreferences::changePage(QListWidgetItem * current, QListWidgetItem * pre
 
 void DlgPreferences::showVinylControlPage()
 {
+#ifdef __VINYLCONTROL__
     pagesWidget->setCurrentWidget(wvinylcontrol);
     
     for (int i = 0; i < contentsWidget->count(); i++)
@@ -267,7 +268,7 @@ void DlgPreferences::showVinylControlPage()
         if (contentsWidget->item(i)->text() == tr("Vinyl Control"))
             contentsWidget->setCurrentRow(i);
     }
-
+#endif
 }
 
 bool DlgPreferences::eventFilter(QObject * o, QEvent * e)
