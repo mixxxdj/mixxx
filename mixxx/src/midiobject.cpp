@@ -232,5 +232,6 @@ void MidiObject::sendShortMsg(unsigned char status, unsigned char byte1, unsigne
 }
 
 void MidiObject::sendShortMsg(unsigned int /* word */) {
-    qDebug("MIDI message sending not implemented yet on this platform");
+	// This warning comes out rather frequently now we're using LEDs with VuMeters
+    //qDebug("MIDI message sending not implemented yet on this platform");
 }
