@@ -53,6 +53,7 @@
 
 #ifdef __C_METRICS__
 #include <cmetrics.h>
+#include "defs_mixxxcmetrics.h"
 #endif
 
 MixxxApp::MixxxApp(QApplication * a, struct CmdlineArgs args, QSplashScreen * pSplash)
@@ -108,6 +109,8 @@ MixxxApp::MixxxApp(QApplication * a, struct CmdlineArgs args, QSplashScreen * pS
 		}
 	}
 	cm_init(100,20, fuserAgreeToDataCollection);
+	cm_writemsg_ascii(MIXXXCMETRICS_VERSION,
+	                  VERSION);
 #endif
 
     // Store the path in the config database
@@ -278,7 +281,8 @@ MixxxApp::MixxxApp(QApplication * a, struct CmdlineArgs args, QSplashScreen * pS
     {
 
 #ifdef __C_METRICS__
-	    cm_writemsg_ascii(0, "Mixxx failed to open audio device(s) on startup.");
+	    cm_writemsg_ascii(MIXXXCMETRICS_FAILED_TO_OPEN_SNDDEVICE_AT_STARTUP,
+	                      "Mixxx failed to open audio device(s) on startup.");
 #endif
         //TODO: Add cmetric hook for failing to detect audio device on FIRST startup too.
         
@@ -342,7 +346,7 @@ MixxxApp::MixxxApp(QApplication * a, struct CmdlineArgs args, QSplashScreen * pS
     if (args.bStartInFullscreen)
         slotOptionsFullScreen(true);
 #ifdef __C_METRICS__
-	cm_writemsg_ascii(0, "Mixxx constructor complete.");
+	cm_writemsg_ascii(MIXXXCMETRICS_MIXXX_CONSTRUCTOR_COMPLETE, "Mixxx constructor complete.");
 #endif
 }
 
@@ -414,7 +418,7 @@ MixxxApp::~MixxxApp()
 
     delete frame;
 #ifdef __C_METRICS__
-	cm_writemsg_ascii(0, "Mixxx deconstructor complete.");
+	cm_writemsg_ascii(MIXXXCMETRICS_MIXXX_DESTRUCTOR_COMPLETE, "Mixxx deconstructor complete.");
 	cm_close(10);
 #endif
 #ifdef __WIN__
