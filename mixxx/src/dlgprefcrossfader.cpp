@@ -162,8 +162,11 @@ void DlgPrefCrossfader::drawXfaderDisplay()
 
 	//Initialize Scene
 	if (m_pxfScene)
-	    delete m_pxfScene;
-	m_pxfScene = new QGraphicsScene();
+	{
+        delete m_pxfScene;
+	    m_pxfScene = NULL;
+    }
+    m_pxfScene = new QGraphicsScene();
 	m_pxfScene->setSceneRect(0,0,sizeX, sizeY);
 	m_pxfScene->setBackgroundBrush(Qt::black);
 
