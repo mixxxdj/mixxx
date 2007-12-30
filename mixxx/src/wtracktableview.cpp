@@ -258,9 +258,12 @@ void WTrackTableView::slotMouseDoubleClicked(const QModelIndex & index)
             m_pDirFilter->setIndex(m_dirindex);
         }
         return;
-    }
+	}
 
-    TrackInfoObject * pTrackInfoObject = m_pTable->m_pTrackPlaylist->getTrackAt(index.row());
+	// Know we aren't in browse mode now, so use this mapping.
+	QModelIndex temp_sindex = m_pSearchFilter->mapToSource(index);
+	TrackInfoObject* pTrackInfoObject = m_pTable->m_pTrackPlaylist->getTrackAt(temp_sindex.row());
+
     if(pTrackInfoObject)
     {
         if(bpmTapDlg)
