@@ -282,24 +282,43 @@ double EngineBuffer::getAbsStartpos()
 
 void EngineBuffer::setPitchIndpTimeStretch(bool b)
 {
+    m_qPlayposMutex.lock(); //Just to be safe - Albert
+
     // Change sound scale mode
+
     if (m_pScale)
+    {
         delete m_pScale;
+        m_pScale = NULL;
+    }
+
+    m_pScale = new EngineBufferScaleST(reader->getWavePtr());
 
     //SoundTouch's linear interpolation code doesn't sound very good.
     //Our own EngineBufferScaleLinear sounds slightly better, but it's
     //not working perfectly. Eventually we should have our own working
     //better, so scratching sounds good.
 
+    //Update Dec 30/2007
+    //If we delete the m_pScale object and recreate it, it eventually
+    //causes some weird bad pointer somewhere, which will either cause
+    //the waveform the roll in a weird way or fire an ASSERT from
+    //visualchannel.cpp or something. Need to valgrind this or something,
+    //but for now, I've just changed it back to using EngineBufferScaleST
+    //exclusively. - Albert
+
     if (b == true)
     {
-        m_pScale = new EngineBufferScaleST(reader->getWavePtr());
+        //m_pScale = new EngineBufferScaleST(reader->getWavePtr());
         ((EngineBufferScaleST *)m_pScale)->setPitchIndpTimeStretch(b);
     }
     else
     {
-        m_pScale = new EngineBufferScaleLinear(reader->getWavePtr());
+        //m_pScale = new EngineBufferScaleLinear(reader->getWavePtr());
+        ((EngineBufferScaleST *)m_pScale)->setPitchIndpTimeStretch(b);
     }
+    m_qPlayposMutex.unlock();
+
 }
 
 void EngineBuffer::setVisual(WVisualWaveform * pVisualWaveform)
@@ -1390,12 +1409,12 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
     // Force ramp in if this is the first buffer during a play
     if (m_bLastBufferPaused && !bCurBufferPaused)
     {
-        //qDebug("ramp in");
+        qDebug("ramp in");
         // Ramp from zero
-        int iLen = math_min(iBufferSize, kiRampLength);
-        float fStep = pOutput[iLen-1]/(float)iLen;
-        for (int i=0; i<iLen; ++i)
-            pOutput[i] = fStep*i;
+        //int iLen = math_min(iBufferSize, kiRampLength);
+        //float fStep = pOutput[iLen-1]/(float)iLen;
+        //for (int i=0; i<iLen; ++i)
+        //    pOutput[i] = fStep*i;
     }
 
     m_bLastBufferPaused = bCurBufferPaused;
@@ -1403,8 +1422,20 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
     m_fLastSampleValue = pOutput[iBufferSize-1];
 //    qDebug("last %f",m_fLastSampleValue);
 
+    
+    //Debugging the weird crackle that occurs when you switch directions - Albert
+/*
+    qDebug() << pOutput[0] << pOutput[1];
+    qDebug() << pOutput[2] << pOutput[3];
+
+    qDebug() << pOutput[iBufferSize-4] << pOutput[iBufferSize-3];
+    qDebug() << pOutput[iBufferSize-2] << pOutput[iBufferSize-1];
+
+    pOutput[0] = pOutput[2];
+    pOutput[1] = pOutput[3];
+*/
     //for (int i=0; i<iBufferSize; ++i)
-    //    qDebug("%f", pOutput[i]);
+    //    qDebug() << pOutput[i];
 
 }
 
@@ -1432,5 +1463,5 @@ void EngineBuffer::rampOut(const CSAMPLE * pOut, int iBufferSize)
     {
         pOutput[i]=0.;
         ++i;
-    }
+    } 
 }
