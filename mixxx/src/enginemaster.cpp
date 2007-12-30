@@ -239,7 +239,7 @@ void EngineMaster::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBuff
 	/*
     cf_val = crossfader->get();
     //qDebug("cf_val: %f", cf_val);
-    FLOAT_TYPE c1_gain, c2_gain;
+    float c1_gain, c2_gain;
     if (cf_val>0)
     {
         if (transform2->get()) {
@@ -262,7 +262,7 @@ void EngineMaster::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBuff
         }
     }*/
 	//set gain levels;
-	FLOAT_TYPE c1_gain, c2_gain;
+	float c1_gain, c2_gain;
 	EngineXfader::getXfadeGains(c1_gain, c2_gain, crossfader->get(), xFaderCurve->get(), xFaderCalibration->get());
 
     for (int i=0; i<iBufferSize; ++i)
