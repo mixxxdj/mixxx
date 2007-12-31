@@ -57,8 +57,7 @@ void TrackCollection::writeXML(QDomDocument &domXML, QDomElement &root)
     QDomElement trackroot = domXML.createElement("TrackList");
 
     QListIterator<TrackInfoObject *> it(m_qTrackList);
-    TrackInfoObject * cur_track;
-    //TrackInfoObject *it = m_qTrackList.first();
+    TrackInfoObject *cur_track;
     while (it.hasNext())
     {
         cur_track = it.next();
@@ -84,12 +83,13 @@ void TrackCollection::addTrack(TrackInfoObject * pTrack)
 
 }
 
-TrackInfoObject * TrackCollection::getTrack(int id)
+TrackInfoObject *TrackCollection::getTrack(int id)
 {
-    if (id < m_qTrackList.size())
-        return m_qTrackList.at(id);
-    else
-        return NULL;
+    Q_ASSERT(id < m_qTrackList.size());
+//    if (id < m_qTrackList.size())
+      return m_qTrackList.at(id);
+//    else
+//        return NULL;
         
     // Binary search
     //return getTrack(id, -1, m_qTrackList.count()/2, m_qTrackList.count());
@@ -154,17 +154,17 @@ TrackInfoObject * TrackCollection::getTrack(QString location)
         QFileInfo file(location);
         if (file.exists())
         {
-            TrackInfoObject * pTrack = new TrackInfoObject(file.dirPath(), file.fileName(), m_BpmDetector );
+            TrackInfoObject * pTrack = new TrackInfoObject(file.absolutePath(), file.fileName(), m_BpmDetector );
             // Add track to the collection
             if (pTrack->isValid())
             {
                 addTrack(pTrack);
-                qDebug("Found new track: %s", pTrack->getFilename().latin1());
+                qDebug() << "Found new track:" << pTrack->getFilename();
                 return pTrack;
             }
             else
             {
-                qDebug("Could not parse %s", file.fileName().latin1());
+                qDebug() << "Could not parse %s" << file.fileName();
                 delete pTrack;
             }
         }
