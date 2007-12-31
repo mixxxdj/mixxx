@@ -1,0 +1,346 @@
+<ui version="4.0" >
+ <class>DlgPrefShoutcastDlg</class>
+ <widget class="QWidget" name="DlgPrefShoutcastDlg" >
+  <property name="geometry" >
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>438</width>
+    <height>416</height>
+   </rect>
+  </property>
+  <property name="windowTitle" >
+   <string>Form3</string>
+  </property>
+  <widget class="QLabel" name="TextLabel3_2_2" >
+   <property name="enabled" >
+    <bool>true</bool>
+   </property>
+   <property name="geometry" >
+    <rect>
+     <x>10</x>
+     <y>45</y>
+     <width>128</width>
+     <height>21</height>
+    </rect>
+   </property>
+   <property name="font" >
+    <font/>
+   </property>
+   <property name="text" >
+    <string>Encoding</string>
+   </property>
+   <property name="wordWrap" >
+    <bool>false</bool>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="PushButtonBrowse" >
+   <property name="geometry" >
+    <rect>
+     <x>334</x>
+     <y>11</y>
+     <width>25</width>
+     <height>22</height>
+    </rect>
+   </property>
+   <property name="font" >
+    <font/>
+   </property>
+   <property name="text" >
+    <string>...</string>
+   </property>
+  </widget>
+  <widget class="QLineEdit" name="LineEditRecPath" >
+   <property name="geometry" >
+    <rect>
+     <x>144</x>
+     <y>11</y>
+     <width>188</width>
+     <height>22</height>
+    </rect>
+   </property>
+   <property name="font" >
+    <font/>
+   </property>
+  </widget>
+  <widget class="Q3GroupBox" name="groupBoxQuality" >
+   <property name="enabled" >
+    <bool>true</bool>
+   </property>
+   <property name="geometry" >
+    <rect>
+     <x>10</x>
+     <y>75</y>
+     <width>345</width>
+     <height>90</height>
+    </rect>
+   </property>
+   <property name="font" >
+    <font/>
+   </property>
+   <property name="title" >
+    <string>Quality</string>
+   </property>
+   <property name="orientation" >
+    <enum>Qt::Vertical</enum>
+   </property>
+   <widget class="QLabel" name="TextLabel8_3_2" >
+    <property name="geometry" >
+     <rect>
+      <x>15</x>
+      <y>65</y>
+      <width>40</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="font" >
+     <font/>
+    </property>
+    <property name="text" >
+     <string>Low</string>
+    </property>
+    <property name="wordWrap" >
+     <bool>false</bool>
+    </property>
+   </widget>
+   <widget class="QLabel" name="TextLabel8_2_2_2" >
+    <property name="geometry" >
+     <rect>
+      <x>300</x>
+      <y>60</y>
+      <width>30</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="font" >
+     <font/>
+    </property>
+    <property name="text" >
+     <string>High</string>
+    </property>
+    <property name="wordWrap" >
+     <bool>false</bool>
+    </property>
+   </widget>
+   <widget class="QSlider" name="SliderQuality" >
+    <property name="geometry" >
+     <rect>
+      <x>15</x>
+      <y>35</y>
+      <width>315</width>
+      <height>29</height>
+     </rect>
+    </property>
+    <property name="minimum" >
+     <number>1</number>
+    </property>
+    <property name="maximum" >
+     <number>10</number>
+    </property>
+    <property name="singleStep" >
+     <number>1</number>
+    </property>
+    <property name="pageStep" >
+     <number>1</number>
+    </property>
+    <property name="value" >
+     <number>9</number>
+    </property>
+    <property name="orientation" >
+     <enum>Qt::Horizontal</enum>
+    </property>
+    <property name="tickInterval" >
+     <number>5</number>
+    </property>
+   </widget>
+   <widget class="QLabel" name="TextQuality" >
+    <property name="geometry" >
+     <rect>
+      <x>220</x>
+      <y>10</y>
+      <width>110</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="text" >
+     <string>Quality</string>
+    </property>
+    <property name="alignment" >
+     <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+    </property>
+    <property name="wordWrap" >
+     <bool>false</bool>
+    </property>
+   </widget>
+  </widget>
+  <widget class="Q3GroupBox" name="groupBox1" >
+   <property name="geometry" >
+    <rect>
+     <x>10</x>
+     <y>170</y>
+     <width>345</width>
+     <height>115</height>
+    </rect>
+   </property>
+   <property name="title" >
+    <string>Tags</string>
+   </property>
+   <property name="orientation" >
+    <enum>Qt::Vertical</enum>
+   </property>
+   <widget class="QLabel" name="TextLabel3_2_3" >
+    <property name="enabled" >
+     <bool>true</bool>
+    </property>
+    <property name="geometry" >
+     <rect>
+      <x>10</x>
+      <y>20</y>
+      <width>105</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="font" >
+     <font/>
+    </property>
+    <property name="text" >
+     <string>Title</string>
+    </property>
+    <property name="wordWrap" >
+     <bool>false</bool>
+    </property>
+   </widget>
+   <widget class="QLabel" name="TextLabel3_2_3_3" >
+    <property name="enabled" >
+     <bool>true</bool>
+    </property>
+    <property name="geometry" >
+     <rect>
+      <x>10</x>
+      <y>79</y>
+      <width>105</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="font" >
+     <font/>
+    </property>
+    <property name="text" >
+     <string>Album</string>
+    </property>
+    <property name="wordWrap" >
+     <bool>false</bool>
+    </property>
+   </widget>
+   <widget class="QLabel" name="TextLabel3_2_3_2" >
+    <property name="enabled" >
+     <bool>true</bool>
+    </property>
+    <property name="geometry" >
+     <rect>
+      <x>10</x>
+      <y>49</y>
+      <width>105</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="font" >
+     <font/>
+    </property>
+    <property name="text" >
+     <string>Author</string>
+    </property>
+    <property name="wordWrap" >
+     <bool>false</bool>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="LineEditAlbum" >
+    <property name="geometry" >
+     <rect>
+      <x>120</x>
+      <y>75</y>
+      <width>211</width>
+      <height>26</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="LineEditTitle" >
+    <property name="geometry" >
+     <rect>
+      <x>120</x>
+      <y>15</y>
+      <width>211</width>
+      <height>26</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="LineEditAuthor" >
+    <property name="geometry" >
+     <rect>
+      <x>120</x>
+      <y>45</y>
+      <width>211</width>
+      <height>26</height>
+     </rect>
+    </property>
+   </widget>
+  </widget>
+  <widget class="QCheckBox" name="CheckBoxRecord" >
+   <property name="geometry" >
+    <rect>
+     <x>10</x>
+     <y>295</y>
+     <width>344</width>
+     <height>22</height>
+    </rect>
+   </property>
+   <property name="text" >
+    <string>Enable Recording (Begins when first track starts)</string>
+   </property>
+  </widget>
+  <widget class="QComboBox" name="comboBoxEncoding" >
+   <property name="geometry" >
+    <rect>
+     <x>145</x>
+     <y>40</y>
+     <width>210</width>
+     <height>26</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QLabel" name="TextLabel3_2" >
+   <property name="enabled" >
+    <bool>true</bool>
+   </property>
+   <property name="geometry" >
+    <rect>
+     <x>9</x>
+     <y>15</y>
+     <width>128</width>
+     <height>21</height>
+    </rect>
+   </property>
+   <property name="font" >
+    <font/>
+   </property>
+   <property name="text" >
+    <string>Path</string>
+   </property>
+   <property name="wordWrap" >
+    <bool>false</bool>
+   </property>
+  </widget>
+ </widget>
+ <layoutdefault spacing="6" margin="11" />
+ <pixmapfunction>qPixmapFromMimeSource</pixmapfunction>
+ <customwidgets>
+  <customwidget>
+   <class>Q3GroupBox</class>
+   <extends>QGroupBox</extends>
+   <header>Qt3Support/Q3GroupBox</header>
+   <container>1</container>
+  </customwidget>
+ </customwidgets>
+ <resources/>
+ <connections/>
+</ui>

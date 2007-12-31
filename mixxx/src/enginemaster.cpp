@@ -34,6 +34,9 @@
 #ifdef __VINYLCONTROL__
 #include "enginevinylcontrol.h"
 #endif
+#ifdef __SHOUTCAST__
+#include "engineshoutcast.h"
+#endif
 // #include "enginebuffermasterrate.h"
 
 EngineMaster::EngineMaster(ConfigObject<ConfigValue> * _config,
@@ -99,6 +102,11 @@ EngineMaster::EngineMaster(ConfigObject<ConfigValue> * _config,
     vinylsound1 = new EngineVinylSoundEmu(_config, "[Channel1]");
     vinylsound2 = new EngineVinylSoundEmu(_config, "[Channel2]");
 
+#ifdef __SHOUTCAST__
+    // Shoutcast
+    shoutcast = new EngineShoutcast(_config);
+#endif
+
     // Mute on active headphone
 //     m_pControlObjectHeadphoneMute = new ControlObject(ConfigKey(group,"HeadphoneMute"));
 
@@ -145,6 +153,9 @@ EngineMaster::~EngineMaster()
     delete [] m_pMaster;
 #ifdef __EXPERIMENTAL_RECORDING__
     delete rec;
+#endif
+#ifdef __SHOUTCAST__
+    delete shoutcast;
 #endif
 }
 
@@ -307,6 +318,9 @@ void EngineMaster::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBuff
         balright += bal;
 #ifdef __EXPERIMENTAL_RECORDING__
     rec->process(m_pMaster, m_pMaster, iBufferSize);
+#endif
+#ifdef __SHOUTCAST__
+    shoutcast->process(m_pMaster, m_pMaster, iBufferSize);
 #endif
 
     for (int i=0; i<iBufferSize; i+=2)
