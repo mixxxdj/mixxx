@@ -497,18 +497,18 @@ if int(flags_cmetrics):
 else:
 	print "Case Metrics profiling... disabled"
 
-'''
 #Experimental Shoutcast
 flags_shoutcast = ARGUMENTS.get('shoutcast', 0)
 if int(flags_shoutcast):
 #TODO: check for libshout
+	env.Append(LIBS = 'shout');
+	env.Append(LIBS = 'vorbisenc');
 	env.Append(CXXFLAGS = '-D__SHOUTCAST__')
+	sources += Split(""" dlgprefshoutcast.cpp engineshoutcast.cpp encodervorbis.cpp """ )
 	env.Uic4('dlgprefshoutcastdlg.ui')
-	sources += Split(""" dlgprefshoutcast.cpp engineshoutcast.cpp """ )
 	print "Shoutcast support... enabled"
 else:
 	print "Shoutcast support... disabled"
-'''
 
 #LADSPA
 #TODO: Make sure we check for ladspa.h and the library...

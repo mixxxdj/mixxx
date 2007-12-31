@@ -31,6 +31,7 @@
 #include "dlgprefcontrols.h"
 #include "dlgprefeq.h"
 #include "dlgprefcrossfader.h"
+#include "dlgprefshoutcast.h"
 #include "mixxx.h"
 #include "track.h"
 #include <QTabWidget>
@@ -80,6 +81,9 @@ DlgPreferences::DlgPreferences(MixxxApp * mixxx, MixxxView * view,
 #ifdef __VINYLCONTROL__
     wvinylcontrol = new DlgPrefVinyl(this, soundman, config);
 #endif
+#ifdef __SHOUTCAST__
+    wshoutcast = new DlgPrefShoutcast(this, config);
+#endif
 
     //pagesWidget = new QStackedWidget;
     while (pagesWidget->count() > 0)
@@ -99,6 +103,9 @@ DlgPreferences::DlgPreferences(MixxxApp * mixxx, MixxxView * view,
     pagesWidget->addWidget(wbpm);
 #ifdef __VINYLCONTROL__
     pagesWidget->addWidget(wvinylcontrol);
+#endif
+#ifdef __SHOUTCAST__
+    pagesWidget->addWidget(wshoutcast);
 #endif
     // Add tabs
     /*
@@ -144,6 +151,9 @@ DlgPreferences::DlgPreferences(MixxxApp * mixxx, MixxxView * view,
     //connect(ComboBoxSoundApi,             SIGNAL(activated(int)),    this, SLOT(slotApplyApi()));
     connect(wsound, SIGNAL(apiUpdated()), wvinylcontrol,    SLOT(slotUpdate())); //Update the vinyl control
 #endif
+#ifdef __SHOUTCAST__
+    connect(this, SIGNAL(showDlg()), wshoutcast,SLOT(slotUpdate()));
+#endif
 
 #ifdef __VINYLCONTROL__
     connect(buttonBox, SIGNAL(accepted()), wvinylcontrol,    SLOT(slotApply())); //It's important for this to be before the
@@ -160,6 +170,9 @@ DlgPreferences::DlgPreferences(MixxxApp * mixxx, MixxxView * view,
 
 #ifdef __EXPERIMENTAL_RECORDING__
     connect(buttonBox, SIGNAL(accepted()), wrecord,    SLOT(slotApply()));
+#endif
+#ifdef __SHOUTCAST__
+    connect(buttonBox, SIGNAL(accepted()), wshoutcast,SLOT(slotApply()));
 #endif
 
     /*
@@ -244,6 +257,14 @@ void DlgPreferences::createIcons()
     vinylcontrolButton->setText(tr("Vinyl Control"));
     vinylcontrolButton->setTextAlignment(Qt::AlignLeft | Qt::AlignVCenter);
     vinylcontrolButton->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
+#endif
+
+#ifdef __SHOUTCAST__
+    QListWidgetItem * shoutcastButton = new QListWidgetItem(contentsWidget);
+    bpmdetectButton->setIcon(QIcon(":/images/preferences/shoutcast.png"));
+    shoutcastButton->setText(tr("Shoutcast"));
+    shoutcastButton->setTextAlignment(Qt::AlignLeft | Qt::AlignVCenter);
+    shoutcastButton->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
 #endif
     connect(contentsWidget,
             SIGNAL(currentItemChanged(QListWidgetItem *, QListWidgetItem *)),

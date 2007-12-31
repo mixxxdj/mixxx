@@ -43,6 +43,7 @@ class DlgPrefCrossfader;
 class DlgPrefRecord;
 class DlgPrefBPM;
 class DlgPrefVinyl;
+class DlgPrefShoutcast;
 class PowerMate;
 
 /**
@@ -78,7 +79,8 @@ private:
     DlgPrefRecord *wrecord;
     DlgPrefBPM *wbpm;
     DlgPrefVinyl *wvinylcontrol;
-    
+    DlgPrefShoutcast *wshoutcast;
+
     ConfigObject<ConfigValue> *config;
     MixxxApp *m_pMixxx;
 };
