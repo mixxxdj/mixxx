@@ -310,14 +310,16 @@ void TrackPlaylist::addPath(QString qPath)
             {
                 /*qDebug("Checking: %s",tempCollection->getTrack(i)->getFilename());*/
                 if (tempCollection->getTrack(i))
+                {
                     if(tempCollection->getTrack(i)->getFilename() == fi.fileName() &&
-						tempCollection->getTrack(i)->getFilepath() == fi.absolutePath()) {
+                       tempCollection->getTrack(i)->getFilepath() == fi.absolutePath()) {
 
                         bexists = true;
                         emit(progressLoading(fi.fileName())); //We're not actually reloading the library in this case, 
                         			      //just checking if songs exist.
                         break;
-                    }
+                    }    
+                }
             }
             /*if(bexists==true)
                     qDebug("track exists!");*/
@@ -327,7 +329,7 @@ void TrackPlaylist::addPath(QString qPath)
                 addTrack(fi.filePath());
 		emit(progressLoading(fi.fileName()));
             }
-
+	
         }
     }
     
