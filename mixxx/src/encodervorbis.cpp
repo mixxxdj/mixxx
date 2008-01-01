@@ -1,9 +1,8 @@
-/***************************************************************************
-                          encodervorbis.h  -  description
+/****************************************************************************
+                     encodervorbis.h  -  vorbis encoder for mixxx
                              -------------------
-    copyright            : (C) 2007 by Xiph.org
-                           (C) 2007 by Wesley Stessens
-    email                : wesley at ubuntu dot com
+    copyright            : (C) 2007 by Wesley Stessens
+                           (C) 1994 by Xiph.org (encoder example)
  ***************************************************************************/
 
 /***************************************************************************
@@ -64,39 +63,13 @@ int EncoderVorbis::getSerial()
     return serial;
 }
 
-/*
-This stuff is probably real ugly and buggy.
-This is the first time I work more directly with memory.
-It's fun, but it's not all too easy for me.
-*/
-int EncoderVorbis::encodeBuffer(const CSAMPLE *samples, const int size)
+void EncoderVorbis::encodeBuffer(const CSAMPLE *samples, const int size)
 {
     float **buffer;
     int i;
     buffer = vorbis_analysis_buffer(&vdsp, size);
-/*
-No deinterleaving, just simple memcpy
-*/
 
-/*    for(i=0; i < vinfo.channels; i++)
-    {
-        memcpy(buffer[i], &samples[i], size*sizeof(CSAMPLE));
-    }*/
-
-/*
-I tried to deinterleave some stuff here..
-What I do here is not right..
-I should think about it better..
-Also: hardcoded 2 channels right now, just for testing
-*/
-/*int j;
-        for( j = 0 ; j < size ; j++ )
-        {
-            buffer[0][j]= samples[j*2+1]; //3; 5; 7; 9; 11
-            buffer[1][j]= samples[j*2+0]; //2; 4; 6; 8; 10
-//            buffer[0][j]= samples[j];
-//            buffer[1][j]= buffer[0][j];
-        }*/
+    // Deinterleave samples
     for (i = 0; i < size/2; ++i)
     {
         buffer[0][i] = samples[i*2]/32768.f; // 0; 2; 4
@@ -116,18 +89,14 @@ Also: hardcoded 2 channels right now, just for testing
             while (!eos) {
                 int result = ogg_stream_pageout(&oggs, &oggpage);
                 if (result == 0) break;
-                qDebug() << "emit pageReady()";
-//                emit pageReady(oggpage.header, oggpage.body, oggpage.header_len, oggpage.body_len);
-//                memcpy(h, oggpage.header, oggpage.header_len);
-//                memcpy(b, oggpage.body, oggpage.body_len);
-                fwrite(oggpage.header,1,oggpage.header_len,stdout);
-                fwrite(oggpage.body,1,oggpage.body_len,stdout);
+//                qDebug() << "emit pageReady()";
+                emit pageReady(oggpage.header, oggpage.body, oggpage.header_len, oggpage.body_len);
+//                fwrite(oggpage.header,1,oggpage.header_len,stdout);
+//                fwrite(oggpage.body,1,oggpage.body_len,stdout);
                 if (ogg_page_eos(&oggpage)) eos = 1;
             }
         }
     }
-//    *bodySize = oggpage.body_len;
-    return 1337;
 }
 
 /*
@@ -147,8 +116,8 @@ int EncoderVorbis::init()
         // add comment
         vorbis_comment_init(&vcomment);
         vorbis_comment_add_tag(&vcomment, "ENCODER", "mixxx");
-        vorbis_comment_add_tag(&vcomment, "ARTIST", "testArtist");
-        vorbis_comment_add_tag(&vcomment, "TITLE", "testSong");
+        vorbis_comment_add_tag(&vcomment, "ARTIST", "profoX");
+        vorbis_comment_add_tag(&vcomment, "TITLE", "Stable like a... fox :]");
 
         // set up analysis state and auxiliary encoding storage
         vorbis_analysis_init(&vdsp, &vinfo);
@@ -171,14 +140,10 @@ int EncoderVorbis::init()
         while (1) {
             result = ogg_stream_flush(&oggs, &oggpage);
             if (result==0) break;
-                qDebug() << "emit pageReady() main_header";
-//                emit pageReady(oggpage.header, oggpage.body, oggpage.header_len, oggpage.body_len);
-/*
-Instead of writing to stdout I should probably save the header+body and
-paste it in front of the first result of the call to EncodeBuffer
-*/
-                fwrite(oggpage.header,1,oggpage.header_len,stdout);
-                fwrite(oggpage.body,1,oggpage.body_len,stdout);
+//                qDebug() << "emit pageReady() main_header";
+                emit pageReady(oggpage.header, oggpage.body, oggpage.header_len, oggpage.body_len);
+//                fwrite(oggpage.header,1,oggpage.header_len,stdout);
+//                fwrite(oggpage.body,1,oggpage.body_len,stdout);
         }
     } else {
         ret = -1;
