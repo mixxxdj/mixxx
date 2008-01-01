@@ -23,6 +23,10 @@
 #include "dlgprefvinyl.h"
 #endif
 
+#ifdef __SHOUTCAST__
+#include "dlgprefshoutcast.h"
+#endif
+
 #include "dlgprefbpm.h"
 #include "dlgpreferences.h"
 #include "dlgprefsound.h"
@@ -31,7 +35,6 @@
 #include "dlgprefcontrols.h"
 #include "dlgprefeq.h"
 #include "dlgprefcrossfader.h"
-#include "dlgprefshoutcast.h"
 #include "mixxx.h"
 #include "track.h"
 #include <QTabWidget>
