@@ -1,9 +1,8 @@
 /***************************************************************************
-                          encodervorbis.h  -  description
+                     encodervorbis.h  -  vorbis encoder for mixxx
                              -------------------
-    copyright            : (C) 2007 by Xiph.org
-                           (C) 2007 by Wesley Stessens
-    email                : wesley at ubuntu dot com
+    copyright            : (C) 2007 by Wesley Stessens
+                           (C) 1994 by Xiph.org (encoder example)
  ***************************************************************************/
 
 /***************************************************************************
@@ -29,7 +28,7 @@ public:
     EncoderVorbis();
     ~EncoderVorbis();
     int init();
-    int encodeBuffer(const CSAMPLE *samples, const int size);
+    void encodeBuffer(const CSAMPLE *samples, const int size);
 signals:
     void pageReady(unsigned char *, unsigned char *, int, int);
 private:
