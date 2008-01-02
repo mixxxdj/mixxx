@@ -78,11 +78,11 @@ DlgPrefVinyl::DlgPrefVinyl(QWidget * parent, SoundManager * soundman,
 
      */
     // TODO: Enable this button; add two more text boxes for gain&precision; run the calibration test of Scratchlib
-    AutoCalibration->setEnabled( FALSE );
+    //AutoCalibration->setEnabled( FALSE );
 
     // Disable output text box
-    precision->setEnabled( FALSE );
-    gain->setEnabled( FALSE );
+    //precision->setEnabled( FALSE );
+    //gain->setEnabled( FALSE );
 
     // Add vinyl types
     ComboBoxVinylType->insertItem(MIXXX_VINYL_SERATOCV02VINYLSIDEA);
@@ -244,6 +244,6 @@ void DlgPrefVinyl::VinylGainSlotApply()
     ControlObject* pControlObjectVinylControlGain = ControlObject::getControl(ConfigKey("[VinylControl]", "VinylControlGain"));
     pControlObjectVinylControlGain->set(VinylGain->value());
     
-    qDebug("Setting Gain Text");
-    gain->setText(config->getValueString(ConfigKey("[VinylControl]","VinylControlGain")));        //this is probably ineffecient...
+    //qDebug("Setting Gain Text");
+    //gain->setText(config->getValueString(ConfigKey("[VinylControl]","VinylControlGain")));        //this is probably ineffecient...
 }
