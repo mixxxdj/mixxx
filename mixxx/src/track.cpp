@@ -205,9 +205,14 @@ void Track::readXML(QString location)
     }
 
     // Check if there is a parsing problem
-    if (!domXML.setContent(&file))
+    QString error_msg;
+    int error_line;
+    int error_column;
+    if (!domXML.setContent(&file, &error_msg, &error_line, &error_column))
     {
         qDebug() << "Track: Parse error in" << location;
+        qDebug() << "Doctype:" << domXML.doctype().name();
+        qDebug() << error_msg << "on line" << error_line << ", column" << error_column;
         file.close();
         return;
     }
@@ -391,6 +396,10 @@ void Track::slotActivatePlaylist(QString name)
     }*/
 }
 
+TrackPlaylist* Track::getPlaylistByIndex(int index)
+{
+    return m_qPlaylists.at(index);
+}
 
 void Track::slotActivatePlaylist(int index)
 {   
@@ -402,6 +411,7 @@ void Track::slotActivatePlaylist(int index)
         m_pView->m_pTrackTableView->setSearchSource(m_pLibraryModel);
         m_pView->m_pTrackTableView->resizeColumnsToContents();
         m_pView->m_pTrackTableView->setTrack(this);
+        m_pView->m_pTrackTableView->setTableMode(TABLE_MODE_LIBRARY);
         m_pActivePlaylist = m_qPlaylists.at(m_iLibraryIdx);
         break;
     case 1: //Play queue view
@@ -409,6 +419,7 @@ void Track::slotActivatePlaylist(int index)
         m_pView->m_pTrackTableView->setSearchSource(m_pPlayQueueModel);
         m_pView->m_pTrackTableView->resizeColumnsToContents();
         m_pView->m_pTrackTableView->setTrack(this);
+        m_pView->m_pTrackTableView->setTableMode(TABLE_MODE_PLAYQUEUE);
         m_pActivePlaylist = m_qPlaylists.at(m_iPlayqueueIdx);
         break;
     case 2: //Browse mode view
@@ -416,13 +427,16 @@ void Track::slotActivatePlaylist(int index)
         m_pView->m_pTrackTableView->setDirModel();
         m_pView->m_pTrackTableView->resizeColumnsToContents();
         m_pView->m_pTrackTableView->setTrack(this);
+        m_pView->m_pTrackTableView->setTableMode(TABLE_MODE_BROWSE);
         return;
         break;
     case 3: //Playlist List Model
         m_pView->m_pTrackTableView->reset();
         m_pView->m_pTrackTableView->setPlaylistListModel(m_pPlaylistListModel);
+        //m_pView->m_pTrackTableView->setSearchSource(m_pPlaylistListModel); //Doesn't work right yet
         m_pView->m_pTrackTableView->resizeColumnsToContents();
         m_pView->m_pTrackTableView->setTrack(this);
+        m_pView->m_pTrackTableView->setTableMode(TABLE_MODE_PLAYLISTS);
         //FIXME ... return here or something? - Albert
         break;
     default: // ???
@@ -430,6 +444,7 @@ void Track::slotActivatePlaylist(int index)
         m_pView->m_pTrackTableView->setSearchSource(m_pPlayQueueModel);
         m_pView->m_pTrackTableView->resizeColumnsToContents();
         m_pView->m_pTrackTableView->setTrack(this);
+        m_pView->m_pTrackTableView->setTableMode(TABLE_MODE_LIBRARY); //??
         // Insert playlist according to ComboBox index
         m_pActivePlaylist = m_qPlaylists.at(index);        
         
@@ -535,10 +550,20 @@ TrackPlaylist * Track::getPlaylist(QString qName)
     return 0;
 }
 
+/** Sends a playlist to the play queue */
+void Track::slotSendToPlayqueue(TrackPlaylist* playlist)
+{
+    for (int i = 0; i < playlist->getSongNum(); i++)
+    {
+        m_qPlaylists.at(1)->addTrack(playlist->getTrackAt(i));
+    }    
+}
+
 void Track::slotSendToPlayqueue(TrackInfoObject * pTrackInfoObject)
 {
     m_qPlaylists.at(1)->addTrack(pTrackInfoObject);
 }
+
 
 void Track::slotSendToPlayqueue(QString filename)
 {

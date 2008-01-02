@@ -400,6 +400,18 @@ void MixxxView::createAllWidgets(QDomElement docElem,
                 parent->setPalette(palette);
                 //parent->setEraseColor(WSkinColor::getCorrectColor(c));
                 parent->setAutoFillBackground(true);
+                
+    //Next, let's set up the colour palette for Mixxx's non-skinned elements
+    //(eg. search box, combobox, toolbar)
+    //For what color controls what, see this reference:
+    //http://doc.trolltech.com/4.3/qpalette.html
+	
+    //palette.setColor(QPalette::Text, QColor("white")); //combobox and search box text colour
+    //palette.setColor(QPalette::WindowText, QColor("white"));
+    //palette.setColor(QPalette::Base, WSkinColor::getCorrectColor(c)); //search box background colour
+    //palette.setColor(QPalette::Button, WSkinColor::getCorrectColor(c));
+    //parent->setPalette(palette);                
+                
             }
             else if (node.nodeName()=="VuMeter")
             {
@@ -654,7 +666,7 @@ void MixxxView::createAllWidgets(QDomElement docElem,
 		    m_pComboBox->addItem( "Library" );
 		    m_pComboBox->addItem( "Play Queue" );
 		    m_pComboBox->addItem( "Browse" );
-		    //m_pComboBox->addItem( "Playlists" );
+		    m_pComboBox->addItem( "Playlists" );
 		}
                 // Set position
                 QString pos = WWidget::selectNodeQString(node, "Pos");

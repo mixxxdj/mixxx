@@ -58,14 +58,16 @@ public:
     void writeXML(QString location);
     /** Get pointer to TrackCollection */
     TrackCollection *getTrackCollection();
-	/** Current active playlist */
-    TrackPlaylist *m_pActivePlaylist;
+    /** Get pointer to a playlist by it's index */
+    TrackPlaylist* getPlaylistByIndex(int index);   
     /** Force an update of playlist menu and anything that sees the playlists*/
     void updatePlaylistViews();
 	/**location of new music files*/
 	QString musicDir;
-
-
+	
+	/** Current active playlist */
+    TrackPlaylist *m_pActivePlaylist; //FIXME wtf public variable?
+    
 public slots:
     /** Decode playlist drops to WTrackTable, and loads corresponding playlist */
     void slotDrop(QDropEvent *e);
@@ -113,6 +115,8 @@ public slots:
     void slotSendToPlayqueue(TrackInfoObject *pTrackInfoObject);
     /** Slot for sending track to Play Queue */
     void slotSendToPlayqueue(QString filename);
+    /** Slot for sending a playlist to Play Queue */
+    void slotSendToPlayqueue(TrackPlaylist* playlist);
 signals:
     /** A new track has been loaded in player 1 */
     void newTrackPlayer1(TrackInfoObject *);

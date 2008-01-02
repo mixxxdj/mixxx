@@ -58,6 +58,8 @@ WTrackTableView::WTrackTableView(QWidget * parent, ConfigObject<ConfigValue> * p
     setSortingEnabled ( true );
     createActions();
     m_pSearchFilter = new SortFilterProxyModel(parent);
+    setTableMode(TABLE_MODE_LIBRARY);
+    
     /*
         //setFocusStyle(Q3Table::FollowStyle);
 
@@ -173,6 +175,12 @@ void WTrackTableView::setup(QDomNode node)
        }*/
 }
 
+/* Sets the table mode (library, play queue, browse, etc.) */
+void WTrackTableView::setTableMode(int table_mode)
+{
+    m_iTableMode = table_mode;
+}
+
 /*sorts a given column*/
 void WTrackTableView::sortColumn(int col, bool ascending, bool)
 {
@@ -250,7 +258,7 @@ void WTrackTableView::sortByColumn(int col)
 
 void WTrackTableView::slotMouseDoubleClicked(const QModelIndex & index)
 {
-    if (!m_pTable) {
+    if (m_iTableMode == TABLE_MODE_BROWSE) {
         QModelIndex temp_dirindex = m_pDirFilter->mapToSource(index);
         if (m_pDirModel->isDir(temp_dirindex)) {
             m_dirindex = temp_dirindex;
@@ -258,19 +266,25 @@ void WTrackTableView::slotMouseDoubleClicked(const QModelIndex & index)
             m_pDirFilter->setIndex(m_dirindex);
         }
         return;
-	}
-
-	// Know we aren't in browse mode now, so use this mapping.
-	QModelIndex temp_sindex = m_pSearchFilter->mapToSource(index);
-	TrackInfoObject* pTrackInfoObject = m_pTable->m_pTrackPlaylist->getTrackAt(temp_sindex.row());
-
-    if(pTrackInfoObject)
+    }
+    else if (m_iTableMode == TABLE_MODE_LIBRARY || m_iTableMode == TABLE_MODE_PLAYQUEUE)
     {
-        if(bpmTapDlg)
-            delete bpmTapDlg;
+        // Know we aren't in browse mode now, so use this mapping.
+        QModelIndex temp_sindex = m_pSearchFilter->mapToSource(index);
+        TrackInfoObject* pTrackInfoObject = m_pTable->m_pTrackPlaylist->getTrackAt(temp_sindex.row());
 
-        bpmTapDlg = new DlgBpmTap(NULL, pTrackInfoObject, m_pTable->m_pTrackPlaylist);
-        bpmTapDlg->show();
+        if(pTrackInfoObject)
+        {
+            if(bpmTapDlg)
+                delete bpmTapDlg;
+
+            bpmTapDlg = new DlgBpmTap(NULL, pTrackInfoObject, m_pTable->m_pTrackPlaylist);
+            bpmTapDlg->show();
+        }
+    }
+    else
+    {
+    	qDebug() << "FIXME: Unimplemented slotMouseDoubleClicked in" << __FILE__ << "at line" << __LINE__;
     }
 }
 
@@ -283,17 +297,16 @@ void WTrackTableView::setSearchSource(WTrackTableModel * pSearchSourceModel)
 
 void WTrackTableView::setDirModel()
 {
-    m_pTable = NULL;
+    m_pTable = NULL; //FIXME: Shouldn't set to NULL, should set m_iTableMode = TABLE_MODE_BROWSE instead
     setModel(m_pDirFilter);
     setRootIndex(m_pDirFilter->mapFromSource(m_dirindex));
 }
 
 void WTrackTableView::setPlaylistListModel(WPlaylistListModel *model)
 {
-    m_pTable = NULL;
     m_pPlaylistListModel = model;
     setModel(m_pPlaylistListModel);
-    //setRootIndex(m_pDirFilter->mapFromSource(m_dirindex));
+    //FIXME: Set search filter model somewhere or something?
 }
 
 QDirModel* WTrackTableView::getDirModel()
@@ -359,50 +372,73 @@ QString WTrackTableView::getPrevTrackBrowseMode(TrackInfoObject* current)
 
 void WTrackTableView::contextMenuEvent(QContextMenuEvent * event)
 {
-
     index = indexAt(event->pos());
 
     if (index.isValid())
     {
         //Browse mode menu (using the QDirModel)
-        if (!m_pTable)
+        if (m_iTableMode == TABLE_MODE_BROWSE)
         {
             QModelIndex temp_dirindex = m_pDirFilter->mapToSource(index);
             if (!m_pDirModel->isDir(temp_dirindex)) {
-                m_dirTrackName = m_pDirModel->filePath(temp_dirindex);
+                m_selectedDirTrackName = m_pDirModel->filePath(temp_dirindex);
             }
         }
-        else //Regular library mode menu
+        else if (m_iTableMode == TABLE_MODE_LIBRARY || m_iTableMode == TABLE_MODE_PLAYQUEUE) //Regular library mode menu
         {
-			QModelIndex temp_sindex = m_pSearchFilter->mapToSource(index);
+            QModelIndex temp_sindex = m_pSearchFilter->mapToSource(index);
             m_pTrackInfoObject = m_pTable->m_pTrackPlaylist->getTrackAt(temp_sindex.row());
         }
+        else if (m_iTableMode == TABLE_MODE_PLAYLISTS)
+        {           
+            //This is the code to make searching work, but m_pSearchFilter doesn't work with a WPlaylistListModel yet.
+            //QModelIndex temp_sindex = m_pSearchFilter->mapToSource(index);
+            //m_selectedPlaylist = m_pTrack->getPlaylistByIndex(temp_sindex.row());
+            
+            m_selectedPlaylist = m_pTrack->getPlaylistByIndex(index.row());
+            
+            qDebug() << "Right-clicked" << m_selectedPlaylist->getListName();
+        }
 
+        //Create the right-click menu
         QMenu menu(this);
+        
+        //Populate it with various action items depending on what mode the table is in
         menu.addAction(PlayQueueAct);
-        if (ControlObject::getControl(ConfigKey("[Channel1]","play"))->get()!=1.)
-            menu.addAction(Player1Act);
-        if (ControlObject::getControl(ConfigKey("[Channel2]","play"))->get()!=1.)
-            menu.addAction(Player2Act);
-        if (m_pTable) //Only show "Remove" in Library mode
+        
+        if (m_iTableMode == TABLE_MODE_LIBRARY || 
+            m_iTableMode == TABLE_MODE_PLAYQUEUE || 
+            m_iTableMode == TABLE_MODE_BROWSE)
+        {
+            
+            if (ControlObject::getControl(ConfigKey("[Channel1]","play"))->get()!=1.)
+                menu.addAction(Player1Act);
+            if (ControlObject::getControl(ConfigKey("[Channel2]","play"))->get()!=1.)
+                menu.addAction(Player2Act);
+        }
+        
+        //Don't show "Remove" in BROWSE mode
+        if (m_iTableMode != TABLE_MODE_BROWSE)      
+	{	
             menu.addAction(RemoveAct);
+        }
         menu.exec(event->globalPos());
     }
 }
 
 void WTrackTableView::createActions()
 {
-    PlayQueueAct = new QAction(tr("Play Queue"),this);
+    PlayQueueAct = new QAction(tr("Send to Play Queue"),this);
     connect(PlayQueueAct, SIGNAL(triggered()), this, SLOT(slotSendToPlayqueue()));
 
-    Player1Act = new QAction(tr("Player 1"),this);
+    Player1Act = new QAction(tr("Send to Player 1"),this);
     connect(Player1Act, SIGNAL(triggered()), this, SLOT(slotLoadPlayer1()));
 
-    Player2Act = new QAction(tr("Player 2"),this);
+    Player2Act = new QAction(tr("Send to Player 2"),this);
     connect(Player2Act, SIGNAL(triggered()), this, SLOT(slotLoadPlayer2()));
 
     RemoveAct = new QAction(tr("Remove"),this);
-    connect(RemoveAct, SIGNAL(triggered()), this, SLOT(slotRemoveFromPlaylist()));
+    connect(RemoveAct, SIGNAL(triggered()), this, SLOT(slotRemove()));
 
 /*
     PlayQueueActBrowse = new QAction(tr("Play Queue"),this);
@@ -415,7 +451,7 @@ void WTrackTableView::createActions()
     connect(Player2ActBrowse, SIGNAL(triggered()), this, SLOT(slotLoadPlayer2()));
 
     RemoveActBrowse = new QAction(tr("Remove"),this);
-    connect(RemoveActBrowse, SIGNAL(triggered()), this, SLOT(slotRemoveFromPlaylist()));
+    connect(RemoveActBrowse, SIGNAL(triggered()), this, SLOT(slotRemove()));
 */
 }
 
@@ -455,29 +491,42 @@ void WTrackTableView::selectPrevious()
 
 void WTrackTableView::slotLoadPlayer1()
 {
-    if (!m_pTable) //Browse mode
-        m_pTrack->slotLoadPlayer1(m_dirTrackName);
+    if (m_iTableMode == TABLE_MODE_BROWSE) //Browse mode
+        m_pTrack->slotLoadPlayer1(m_selectedDirTrackName);
     else //Library mode
         m_pTrack->slotLoadPlayer1(m_pTrackInfoObject);
 }
 void WTrackTableView::slotLoadPlayer2()
 {
-   if (!m_pTable) //Browse mode
-        m_pTrack->slotLoadPlayer2(m_dirTrackName);
+   if (m_iTableMode == TABLE_MODE_BROWSE) //Browse mode
+        m_pTrack->slotLoadPlayer2(m_selectedDirTrackName);
     else //Library mode
         m_pTrack->slotLoadPlayer2(m_pTrackInfoObject);
 }
 
 void WTrackTableView::slotSendToPlayqueue()
 {
-    if (!m_pTable) //Browse mode
-        m_pTrack->slotSendToPlayqueue(m_dirTrackName);
-    else //Library mode
+    if (m_iTableMode == TABLE_MODE_BROWSE) //Browse mode
+        m_pTrack->slotSendToPlayqueue(m_selectedDirTrackName);
+    else if (m_iTableMode == TABLE_MODE_PLAYLISTS)
+        m_pTrack->slotSendToPlayqueue(m_selectedPlaylist);
+    else //Library mode, etc.
+    {
         m_pTrack->slotSendToPlayqueue(m_pTrackInfoObject);
+    }
 }
-void WTrackTableView::slotRemoveFromPlaylist()
+void WTrackTableView::slotRemove()
 {
-    m_pTable->removeRow(index.row(),index);
+    if (m_iTableMode == TABLE_MODE_PLAYLISTS)
+    {   
+    	qDebug() << "FIXME: Removing a playlist is unimplented in" << __FILE__ << "on line" << __LINE__;
+        //Doesn't work right for some reason:
+        //m_pPlaylistListModel->removeRow(index.row());
+    }
+    else if (m_iTableMode == TABLE_MODE_BROWSE)
+    	qDebug() << "FIXME (?): Removing a song in browse mode is unimplented in" << __FILE__ << "on line" << __LINE__;
+    else //Library mode, play queue mode, etc.
+        m_pTable->removeRow(index.row(),index);
 }
 
 void WTrackTableView::slotFilter(const QString &pstr)
