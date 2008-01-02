@@ -580,8 +580,7 @@ void MixxxApp::initMenuBar()
 #endif
 
     menuBar()->addMenu(fileMenu);
-    //Disabled because playlist support is broken - Albert (Nov 11/07)
-    //menuBar()->addMenu(playlistsMenu);
+    menuBar()->addMenu(playlistsMenu);
     menuBar()->addMenu(optionsMenu);
 
     //    menuBar()->addMenu(viewMenu);
@@ -786,6 +785,7 @@ void MixxxApp::slotHelpAbout()
 "Frank Willascheck<br>"
 "Robin Sheat<br>"
 "Jeff Nelson<br>"
+"Wesley Stessens<br>"
 "</p>"
 "<p align=\"center\"><b>And special thanks to:</b></p>"
 "<p align=\"center\">"
