@@ -93,10 +93,8 @@ private:
     ConfigObject<ConfigValue> *m_pConfig;
     /**Pointer to Track object**/
     Track *m_pTrack;
-    /**Pointer to selected TrackInfoObject in model**/
-    TrackInfoObject *m_pTrackInfoObject;
-    /**Current index of selected TrackInfoObject**/
-    QModelIndex index;
+    /**Pointer to selected TrackInfoObjects in model**/
+    QList<TrackInfoObject*> m_selectedTrackInfoObjects;
 
     //Used for right-click operations
     /**Send to Play Queue Action**/
@@ -134,11 +132,12 @@ protected slots:
 protected:
     DlgBpmTap *bpmTapDlg;
     QModelIndex m_dirindex;
-    QString m_selectedDirTrackName; //Name of the track right-clicked when in browse mode.
-    TrackPlaylist* m_selectedPlaylist; //The playlist that was selected when right-clicking in playlists mode.
+    QList<QString> m_selectedDirTrackNames;        //Names of the selected tracks when in browse mode.
+    QList<TrackPlaylist*> m_selectedPlaylists;     //The playlists that were selected when right-clicking in playlists mode.
     /* directory model*/
     QDirModel *m_pDirModel;
     WPlaylistListModel *m_pPlaylistListModel;
+    QModelIndexList m_selectedIndices;
     QString m_filterString;
     int m_iTableMode;
     
