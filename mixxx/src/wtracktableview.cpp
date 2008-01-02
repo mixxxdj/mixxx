@@ -428,13 +428,13 @@ void WTrackTableView::contextMenuEvent(QContextMenuEvent * event)
 
 void WTrackTableView::createActions()
 {
-    PlayQueueAct = new QAction(tr("Send to Play Queue"),this);
+    PlayQueueAct = new QAction(tr("Play Queue"),this);
     connect(PlayQueueAct, SIGNAL(triggered()), this, SLOT(slotSendToPlayqueue()));
 
-    Player1Act = new QAction(tr("Send to Player 1"),this);
+    Player1Act = new QAction(tr("Player 1"),this);
     connect(Player1Act, SIGNAL(triggered()), this, SLOT(slotLoadPlayer1()));
 
-    Player2Act = new QAction(tr("Send to Player 2"),this);
+    Player2Act = new QAction(tr("Player 2"),this);
     connect(Player2Act, SIGNAL(triggered()), this, SLOT(slotLoadPlayer2()));
 
     RemoveAct = new QAction(tr("Remove"),this);
