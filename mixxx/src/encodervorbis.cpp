@@ -32,11 +32,16 @@ http://svn.xiph.org/trunk/vorbis/examples/encoder_example.c
 #include <time.h> // needed for random num gen
 #include <string.h> // needed for memcpy
 #include <QDebug>
-#include <stdio.h> // currently used for writing to stdout
+
+#include "engineabstractrecord.h"
 
 // Constructor
 EncoderVorbis::EncoderVorbis()
 {
+/*    encBuffer = new EncBuffer;
+    encBuffer->size = ENC_BUFFER_SIZE;
+    encBuffer->data = new CSAMPLE[encBuffer->size];
+    encBuffer->valid = 0;*/
 }
 
 // Destructor
@@ -90,7 +95,9 @@ void EncoderVorbis::encodeBuffer(const CSAMPLE *samples, const int size)
                 int result = ogg_stream_pageout(&oggs, &oggpage);
                 if (result == 0) break;
 //                qDebug() << "emit pageReady()";
-                emit pageReady(oggpage.header, oggpage.body, oggpage.header_len, oggpage.body_len);
+//                  (*writeFunc)(pObj, oggpage.header, oggpage.body, oggpage.header_len, oggpage.body_len);
+                  pEngine->writePage(oggpage.header, oggpage.body, oggpage.header_len, oggpage.body_len);
+//                emit pageReady(oggpage.header, oggpage.body, oggpage.header_len, oggpage.body_len);
 //                fwrite(oggpage.header,1,oggpage.header_len,stdout);
 //                fwrite(oggpage.body,1,oggpage.body_len,stdout);
                 if (ogg_page_eos(&oggpage)) eos = 1;
@@ -104,8 +111,10 @@ void EncoderVorbis::encodeBuffer(const CSAMPLE *samples, const int size)
   -> returns -1 on error
   -> returns 0 on success
 */
-int EncoderVorbis::init()
+int EncoderVorbis::init(EngineAbstractRecord *engine)
 {
+    pEngine = engine;
+
     int ret, result;
     vorbis_info_init(&vinfo);
 
@@ -141,7 +150,9 @@ int EncoderVorbis::init()
             result = ogg_stream_flush(&oggs, &oggpage);
             if (result==0) break;
 //                qDebug() << "emit pageReady() main_header";
-                emit pageReady(oggpage.header, oggpage.body, oggpage.header_len, oggpage.body_len);
+//                  (*writeFunc)(pObj, oggpage.header, oggpage.body, oggpage.header_len, oggpage.body_len);
+                  pEngine->writePage(oggpage.header, oggpage.body, oggpage.header_len, oggpage.body_len);
+//                emit pageReady(oggpage.header, oggpage.body, oggpage.header_len, oggpage.body_len);
 //                fwrite(oggpage.header,1,oggpage.header_len,stdout);
 //                fwrite(oggpage.body,1,oggpage.body_len,stdout);
         }

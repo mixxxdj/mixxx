@@ -22,15 +22,29 @@
 
 #include <vorbis/vorbisenc.h> // this also includes vorbis/codec.h
 
+#define ENC_BUFFER_SIZE 512
+
+/*typedef struct
+{
+    CSAMPLE *data;
+    int size;
+    int valid; //how much of the buffer is valid
+} EncBuffer;*/
+
+class EngineAbstractRecord;
+
 class EncoderVorbis : public QObject {
     Q_OBJECT
 public:
     EncoderVorbis();
     ~EncoderVorbis();
-    int init();
-    void encodeBuffer(const CSAMPLE *samples, const int size);
+    int init(EngineAbstractRecord *engine/*void *pObj, void (*writeFunc)(
+             unsigned char*, unsigned char*, int, int)*/);
+    void encodeBuffer(/*void *pObj, void (*writeFunc)(void *pObj,
+                      unsigned char*, unsigned char*, int, int),*/
+                      const CSAMPLE *samples, const int size);
 signals:
-    void pageReady(unsigned char *, unsigned char *, int, int);
+//    void pageReady(unsigned char *, unsigned char *, int, int, int);
 private:
     int getSerial();
     ogg_stream_state oggs;    /* take physical pages, weld into logical stream
@@ -41,6 +55,8 @@ private:
     vorbis_dsp_state vdsp;    /* central working space for packet-to-PCM */
     vorbis_info vinfo;        /* stores all static vorbis bitstream settings */
     vorbis_comment vcomment;  /* stores all user comments */
+//    EncBuffer *encBuffer;
+    EngineAbstractRecord *pEngine;
 };
 
 #endif
