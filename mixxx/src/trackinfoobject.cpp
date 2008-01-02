@@ -510,7 +510,8 @@ void TrackInfoObject::setBpmConfirm(bool confirm)
 QString TrackInfoObject::getInfo()  const
 {
     m_qMutex.lock();
-    QString sInfo = m_sArtist + ", " + m_sTitle + "";
+    QString artist = m_sArtist == "" ? "" : m_sArtist + ", ";
+    QString sInfo = artist + m_sTitle;
     m_qMutex.unlock();
 
     return sInfo;
