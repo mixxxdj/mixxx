@@ -92,8 +92,11 @@ void TrackPlaylist::addTrack(TrackInfoObject * pTrack)
 {
     // Currently a track can only appear once in a playlist
     if (m_qList.indexOf(pTrack)!=-1)
+    {
+    	qDebug() << "FIXME: Duplicate tracks not allowed in playlists.";
         return;
-
+    }
+    
     m_qList.append(pTrack);
     ++iCounter;
 
@@ -390,7 +393,6 @@ TrackInfoObject * TrackPlaylist::getTrackAt(int index)
 }
 int TrackPlaylist::getSongNum()
 {
-
     return m_qList.count();
 }
 

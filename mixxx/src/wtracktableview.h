@@ -17,7 +17,11 @@
 #include "proxymodel.h"
 #include "configobject.h"
 
-class QWidget;
+// Defines what mode the track table is in.
+const int TABLE_MODE_LIBRARY =      0;
+const int TABLE_MODE_PLAYQUEUE =    1;
+const int TABLE_MODE_BROWSE =       2;
+const int TABLE_MODE_PLAYLISTS =    3;
 
 /**
   *@author Tue & Ken Haste Andersen
@@ -57,6 +61,9 @@ public:
     void setSearchSource(WTrackTableModel *pSearchSourceModel);
     void setDirModel();
     void setPlaylistListModel(WPlaylistListModel *model);
+    
+    /** Sets the current mode for the WTrackTableView */
+    void setTableMode(int table_mode);
     
     /** Returns the QDirModel **/
     QDirModel* getDirModel();
@@ -112,8 +119,8 @@ private slots:
     void slotLoadPlayer1();
     /** Load the given track in player 2 */
     void slotLoadPlayer2();
-    /** Remove selected track from active playlist */
-    void slotRemoveFromPlaylist();
+    /** Remove selected track from the active playlist or whatever's in the tableview */
+    void slotRemove();
 public slots:
     /** Set the search filter **/
     void slotFilter(const QString &);
@@ -127,10 +134,13 @@ protected slots:
 protected:
     DlgBpmTap *bpmTapDlg;
     QModelIndex m_dirindex;
-    QString m_dirTrackName; //Name of the track right-clicked when in browse mode.
+    QString m_selectedDirTrackName; //Name of the track right-clicked when in browse mode.
+    TrackPlaylist* m_selectedPlaylist; //The playlist that was selected when right-clicking in playlists mode.
     /* directory model*/
     QDirModel *m_pDirModel;
     WPlaylistListModel *m_pPlaylistListModel;
     QString m_filterString;
+    int m_iTableMode;
+    
 };
 #endif
