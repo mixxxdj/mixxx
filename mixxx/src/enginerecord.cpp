@@ -31,7 +31,6 @@
 * 									   *
 ***************************************************************************/
 
-
 EngineRecord::EngineRecord(ConfigObject<ConfigValue> * _config)
 {
     curBuf1 = true;

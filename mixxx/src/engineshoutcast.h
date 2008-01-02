@@ -18,9 +18,11 @@
 #ifndef ENGINESHOUTCAST_H
 #define ENGINESHOUTCAST_H
 
-#include "engineobject.h"
+//#include "engineobject.h"
+#include "engineabstractrecord.h"
 #include "configobject.h"
 #include "controlobject.h"
+
 #include <shout/shout.h>
 
 #include <QObject>
@@ -29,21 +31,25 @@
 //class ConfigKey;
 class EncoderVorbis;
 
-class EngineShoutcast : public EngineObject {
+class EngineShoutcast : public EngineAbstractRecord {
     Q_OBJECT
 public:
     EngineShoutcast(ConfigObject<ConfigValue> *_config);
     ~EngineShoutcast();
     void process(const CSAMPLE *pIn, const CSAMPLE *pOut, const int iBufferSize);
-private slots:
     void writePage(unsigned char *header, unsigned char *body,
                    int headerLen, int bodyLen);
+//    static void wrapper2writePage();
+//private slots:
+//    void writePage(unsigned char *header, unsigned char *body,
+//                   int headerLen, int bodyLen, int count);
 private:
     shout_t *m_pShout;
     long m_iShoutStatus;
     ConfigObject<ConfigValue> *config;
     ControlObject* recReady;
     EncoderVorbis *encoder;
+//    void (*writeFn)(unsigned char *, unsigned char *, int, int);
 };
 
 #endif

@@ -22,6 +22,7 @@
 #include "encodervorbis.h"
 
 #include <QDebug>
+#include <stdio.h> // currently used for writing to stdout
 
 /***************************************************************************
  *									   *
@@ -46,6 +47,8 @@ My test Icecast2 server is configured with a 1000 timeout value instead.
 
 EngineShoutcast::EngineShoutcast(ConfigObject<ConfigValue> *_config)
 {
+//    writeFn = &EngineShoutcast::writePage;
+
     m_pShout = 0;
     m_iShoutStatus = 0;
 
@@ -116,11 +119,12 @@ But this is just for testing.
 		}
 
     // Initialize ogg vorbis encoder
-    encoder = new EncoderVorbis;
-    connect(encoder, SIGNAL(pageReady(unsigned char*, unsigned char*, int, int)),
-            this, SLOT(writePage(unsigned char*, unsigned char*, int, int)));
-    if (encoder->init() < 0) {
+    encoder = new EncoderVorbis();
+    if (encoder->init(this) < 0) {
         qDebug() << "**** Vorbis init failed";
+    } else {
+//        connect(encoder, SIGNAL(pageReady(unsigned char*, unsigned char*, int, int, int)),
+//                this, SLOT(writePage(unsigned char*, unsigned char*, int, int, int)));
     }
 }
 
@@ -136,9 +140,14 @@ EngineShoutcast::~EngineShoutcast()
 void EngineShoutcast::writePage(unsigned char *header, unsigned char *body,
                                 int headerLen, int bodyLen)
 {
-    qDebug() << "writePage() will write " << bodyLen << " data";
+//if (last+1 != count) qDebug() << "Oh oh! We've got a missed call! Expected: " << last+1 << " but got: " << count;
+//last = count;
+fwrite(header,1,headerLen,stdout);
+fwrite(body,1,bodyLen,stdout);
+//    qDebug() << "writePage() will write " << bodyLen << " data";
     int ret;
     if (m_iShoutStatus == SHOUTERR_CONNECTED) {
+//        fwrite(header,1,headerLen,stdout);
         ret = shout_send(m_pShout, header, headerLen);
         if (ret != SHOUTERR_SUCCESS) {
             qDebug() << "DEBUG: Send error: " << shout_get_error(m_pShout);
@@ -146,6 +155,7 @@ void EngineShoutcast::writePage(unsigned char *header, unsigned char *body,
         } else {
 //            qDebug() << "yea I kinda sent header";
         }
+//        fwrite(body,1,bodyLen,stdout);
         ret = shout_send(m_pShout, body, bodyLen);
         if (ret != SHOUTERR_SUCCESS) {
             qDebug() << "DEBUG: Send error: " << shout_get_error(m_pShout);
@@ -161,7 +171,15 @@ void EngineShoutcast::writePage(unsigned char *header, unsigned char *body,
     }
 }
 
+/*void EngineShoutcast::wrapper2writePage(void *pObj, unsigned char *header, unsigned char *body,
+                                        int headerLen, int bodyLen)
+{
+    EngineShoutcast* mySelf = (EngineShoutcast*)pObj;
+    pObj->writePage(header, body, headerLen, bodyLen);
+}*/
+
 void EngineShoutcast::process(const CSAMPLE *pIn, const CSAMPLE *pOut, const int iBufferSize)
 {
+//    encoder->encodeBuffer((void*) &objA, EngineShoutcast::wrapper2writePage, pOut, iBufferSize);
     if (iBufferSize > 0) encoder->encodeBuffer(pOut, iBufferSize);
 }
