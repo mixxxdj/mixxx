@@ -165,7 +165,8 @@ sources = Split("""enginebuffercue.cpp input.cpp mixxxmenuplaylists.cpp trackpla
  midiledhandler.cpp
  sounddevice.cpp soundmanager.cpp sounddeviceportaudio.cpp
  enginevinylsoundemu.cpp wtracktablefilter.cpp
- wplaylistlistmodel.cpp libraryscanner.cpp libraryscannerdlg.cpp enginefilterbutterworth8.cpp enginexfader.cpp""")
+ wplaylistlistmodel.cpp libraryscanner.cpp libraryscannerdlg.cpp enginefilterbutterworth8.cpp enginexfader.cpp
+ """)
 # trackinfoobject.cpp soundsource.cpp
 
 #Crap we don't use anymore:
@@ -544,6 +545,16 @@ if int(flags_msvcdebug) and platform == 'win32':
 	print "MSVC Debugging... enabled"
 else:
 	print "MSVC Debugging... disabled"
+
+flags_script = ARGUMENTS.get('script', 0)
+if int(flags_script) and platform == 'win32':
+	env.Append(LIBS = 'QtScript4')
+	print "SuperCoolAwesomeScript (name contest pending)... enabled"
+	sources += Split("""script/scriptengine.cpp script/scriptcontrolqueue.cpp""")
+	env.Append(CXXFLAGS = '-D__SCRIPT__')
+else:
+	flags_script = 0
+	print "SuperCoolAwesomeScript (name contest pending)... disabled"
 
 #Optimization
 if platform == 'win32':
