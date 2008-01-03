@@ -2,8 +2,9 @@
                           dlgprefshoutcast.h  -  description
                              -------------------
     begin                : Thu Jun 7 2007
-    copyright            : (C) 2007 by John Sully
-                           (C) 2007 by Albert Santoni
+    copyright            : (C) 2008 by Wesley Stessens
+                           (C) 2007 by John Sully
+                           (C) 2008 by Albert Santoni
     email                : 
  ***************************************************************************/
 
@@ -23,16 +24,8 @@
 #include "controlobject.h"
 #include "configobject.h"
 
-#define PREF_KEY "[Shoutcast]"
-#define IDEX_WAVE 0
-#define IDEX_FLAC 1
-#define IDEX_AIFF 2
-#define IDEX_OGG  3
-#define IDEX_MP3  4
-
-#define RECORD_READY 0.50f
-#define RECORD_ON 1.0f
-#define RECORD_OFF 0.0f
+#define SHOUTCAST_PREF_KEY "[Shoutcast]"
+#define SHOUTCAST_DEFAULT_PORT 8000
 
 class QWidget;
 /**
@@ -47,23 +40,14 @@ public:
 public slots:
     /** Apply changes to widget */
     void slotApply();
-/*    void slotBrowseSave();
-    void slotEncoding();
-    void slotSliderQuality();
-    void slotRecordPathChange();
-    int getSliderQualityVal();
-    void updateTextQuality();*/
+    void slotUpdate(); //Does nothing but keep convention (and DlgPreferences happy)
+
 signals:
     void apply(const QString &);
 private:
-/*    void setMetaData();
-    void loadMetaData();*/
-    
     /** Pointer to config object */
-    ConfigObject<ConfigValue> *config;
-//    ControlObject* recordControl;
-//    bool confirmOverwrite;
-//    QString fileTypeExtension;
+    ConfigObject<ConfigValue> *m_pConfig;
+
 };
 
 #endif

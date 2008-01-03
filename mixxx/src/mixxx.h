@@ -76,7 +76,6 @@ class QSplashScreen;
 class ScriptEngine;
 
 const QString SUPPORTED_AUDIO_FILES = "Audio (*.wav *.ogg *.mp3 *.aiff)";
-const QString MIXXX_SUPPORT_URL = "http://mixxx.sourceforge.net/support.php";
 
 /**
   * This Class is the base class for Mixxx. It sets up the main
