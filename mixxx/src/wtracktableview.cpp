@@ -467,14 +467,11 @@ void WTrackTableView::contextMenuEvent(QContextMenuEvent * event)
         m_iTableMode == TABLE_MODE_PLAYQUEUE || 
         m_iTableMode == TABLE_MODE_BROWSE)
     {
-        //if (ControlObject::getControl(ConfigKey("[Channel1]","play"))->get()!=1.)
-            menu.addAction(Player1Act);
-        //if (ControlObject::getControl(ConfigKey("[Channel2]","play"))->get()!=1.)
-            menu.addAction(Player2Act);  
-        
+        menu.addAction(Player1Act);
+        menu.addAction(Player2Act);  
         menu.addAction(BPMTapAct);
     }
-     
+
     //Gray out some stuff if multiple songs were selected. 
     if (m_selectedIndices.count() != 1)
     {
@@ -489,6 +486,13 @@ void WTrackTableView::contextMenuEvent(QContextMenuEvent * event)
 		BPMTapAct->setEnabled(true);  	
     }
     
+    //Gray out player 1 and/or player 2 if those players are playing.
+    if (ControlObject::getControl(ConfigKey("[Channel1]","play"))->get()==1.)
+    	Player1Act->setEnabled(false);
+    if (ControlObject::getControl(ConfigKey("[Channel2]","play"))->get()==1.)  
+    	Player2Act->setEnabled(false);  
+    	
+    menu.addSeparator();
     menu.addAction(RemoveAct);
     
     //Gray out "Remove" in BROWSE mode
@@ -517,7 +521,7 @@ void WTrackTableView::createActions()
     RemoveAct = new QAction(tr("Remove"),this);
     connect(RemoveAct, SIGNAL(triggered()), this, SLOT(slotRemove()));
 
-	BPMTapAct = new QAction(tr("God Mode"), this);
+	BPMTapAct = new QAction(tr("Properties"), this);
 	connect(BPMTapAct, SIGNAL(triggered()), this, SLOT(slotShowBPMTapDlg()));
 /*
     PlayQueueActBrowse = new QAction(tr("Play Queue"),this);
