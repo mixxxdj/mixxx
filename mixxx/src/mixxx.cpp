@@ -50,6 +50,7 @@
 
 #include "playerproxy.h"
 #include "soundmanager.h"
+#include "defs_urls.h"
 
 #ifdef __C_METRICS__
 #include <cmetrics.h>
