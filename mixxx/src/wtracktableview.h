@@ -105,10 +105,13 @@ private:
     QAction *Player2Act;
     /**Remove from Table Action**/
     QAction *RemoveAct;
+    /**Shows track editor/BPM tap**/
+    QAction *BPMTapAct;
     /**creates all actions and connects them to repective slots**/
     void createActions();
 
     QDrag *getDragObject(QMouseEvent *event);
+    
 
 private slots:
     /**sends track to Playqueue*/
@@ -119,6 +122,9 @@ private slots:
     void slotLoadPlayer2();
     /** Remove selected track from the active playlist or whatever's in the tableview */
     void slotRemove();
+    /**Show the track editor/bpm tap dialog */
+    void slotShowBPMTapDlg(TrackInfoObject* pTrackInfoObject);
+    void slotShowBPMTapDlg();    
 public slots:
     /** Set the search filter **/
     void slotFilter(const QString &);

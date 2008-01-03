@@ -260,11 +260,16 @@ void WTrackTableView::slotMouseDoubleClicked(const QModelIndex & index)
 {
     if (m_iTableMode == TABLE_MODE_BROWSE) {
         QModelIndex temp_dirindex = m_pDirFilter->mapToSource(index);
-        if (m_pDirModel->isDir(temp_dirindex)) {
+        if (m_pDirModel->isDir(temp_dirindex)) //Double-clicking on a directory in browse mode
+        {
             m_dirindex = temp_dirindex;
-            setRootIndex(index);
+            setRootIndex(index);				//Browse to that directory
             m_pDirFilter->setIndex(m_dirindex);
         }
+        else //Double-clicking on a file in browse mode
+        {
+        	
+		}
         return;
     }
     else if (m_iTableMode == TABLE_MODE_LIBRARY || m_iTableMode == TABLE_MODE_PLAYQUEUE)
@@ -272,17 +277,24 @@ void WTrackTableView::slotMouseDoubleClicked(const QModelIndex & index)
         // Know we aren't in browse mode now, so use this mapping.
         QModelIndex temp_sindex = m_pSearchFilter->mapToSource(index);
         TrackInfoObject* pTrackInfoObject = m_pTable->m_pTrackPlaylist->getTrackAt(temp_sindex.row());
+	
+		//Show the BPM tap/track editor dialog.
+		//showBPMTapDlg(pTrackInfoObject);
 
-        if(pTrackInfoObject)
-        {
-            if(bpmTapDlg)
-                delete bpmTapDlg;
 
-            bpmTapDlg = new DlgBpmTap(NULL, pTrackInfoObject, m_pTable->m_pTrackPlaylist);
-            bpmTapDlg->show();
-        }
+		while (!m_selectedTrackInfoObjects.isEmpty()) {
+		    m_selectedTrackInfoObjects.pop_back();
+		}
+
+		m_selectedTrackInfoObjects.append(pTrackInfoObject);
+		
+		if (ControlObject::getControl(ConfigKey("[Channel1]","play"))->get()!=1.)
+            this->slotLoadPlayer1();
+        else if (ControlObject::getControl(ConfigKey("[Channel2]","play"))->get()!=1.)
+            this->slotLoadPlayer2();
+
     }
-    else
+    else if (m_iTableMode == TABLE_MODE_PLAYLISTS)
     {
     	qDebug() << "FIXME: Unimplemented slotMouseDoubleClicked in" << __FILE__ << "at line" << __LINE__;
     }
@@ -312,6 +324,24 @@ void WTrackTableView::setPlaylistListModel(WPlaylistListModel *model)
 QDirModel* WTrackTableView::getDirModel()
 {
     return m_pDirModel;
+}
+
+void WTrackTableView::slotShowBPMTapDlg()
+{	
+	Q_ASSERT(m_selectedTrackInfoObjects.count() > 0);
+	slotShowBPMTapDlg(m_selectedTrackInfoObjects.at(0));
+}
+
+void WTrackTableView::slotShowBPMTapDlg(TrackInfoObject* pTrackInfoObject)
+{
+    if(pTrackInfoObject)
+    {
+        if(bpmTapDlg)
+            delete bpmTapDlg;
+
+        bpmTapDlg = new DlgBpmTap(NULL, pTrackInfoObject, m_pTable->m_pTrackPlaylist);
+        bpmTapDlg->show();
+    }
 }
 
 /** Gets the next track from the table while in "Browse mode" */
@@ -432,26 +462,43 @@ void WTrackTableView::contextMenuEvent(QContextMenuEvent * event)
         
     //Populate it with various action items depending on what mode the table is in
     menu.addAction(PlayQueueAct);
-     
-    //Only show "Player 1" and "Player 2" if one song was selected. 
-    if (m_selectedIndices.count() == 1)
+
+    if (m_iTableMode == TABLE_MODE_LIBRARY || 
+        m_iTableMode == TABLE_MODE_PLAYQUEUE || 
+        m_iTableMode == TABLE_MODE_BROWSE)
     {
-        if (m_iTableMode == TABLE_MODE_LIBRARY || 
-            m_iTableMode == TABLE_MODE_PLAYQUEUE || 
-            m_iTableMode == TABLE_MODE_BROWSE)
-        {
-            if (ControlObject::getControl(ConfigKey("[Channel1]","play"))->get()!=1.)
-                menu.addAction(Player1Act);
-            if (ControlObject::getControl(ConfigKey("[Channel2]","play"))->get()!=1.)
-                menu.addAction(Player2Act);
-        }
-    }
+        //if (ControlObject::getControl(ConfigKey("[Channel1]","play"))->get()!=1.)
+            menu.addAction(Player1Act);
+        //if (ControlObject::getControl(ConfigKey("[Channel2]","play"))->get()!=1.)
+            menu.addAction(Player2Act);  
         
-    //Don't show "Remove" in BROWSE mode
-    if (m_iTableMode != TABLE_MODE_BROWSE)      
-	{	
-        menu.addAction(RemoveAct);
+        menu.addAction(BPMTapAct);
     }
+     
+    //Gray out some stuff if multiple songs were selected. 
+    if (m_selectedIndices.count() != 1)
+    {
+		Player1Act->setEnabled(false);
+		Player2Act->setEnabled(false);
+		BPMTapAct->setEnabled(false);
+    }
+    else
+    {
+		Player1Act->setEnabled(true);
+		Player2Act->setEnabled(true);  
+		BPMTapAct->setEnabled(true);  	
+    }
+    
+    menu.addAction(RemoveAct);
+    
+    //Gray out "Remove" in BROWSE mode
+    if (m_iTableMode == TABLE_MODE_BROWSE)      
+	{	
+        RemoveAct->setEnabled(false);
+    }
+    else
+    	RemoveAct->setEnabled(true);
+    	
     
     menu.exec(event->globalPos());
 }
@@ -470,6 +517,8 @@ void WTrackTableView::createActions()
     RemoveAct = new QAction(tr("Remove"),this);
     connect(RemoveAct, SIGNAL(triggered()), this, SLOT(slotRemove()));
 
+	BPMTapAct = new QAction(tr("God Mode"), this);
+	connect(BPMTapAct, SIGNAL(triggered()), this, SLOT(slotShowBPMTapDlg()));
 /*
     PlayQueueActBrowse = new QAction(tr("Play Queue"),this);
     connect(PlayQueueActBrowse, SIGNAL(triggered()), this, SLOT(slotSendToPlayqueue()));
