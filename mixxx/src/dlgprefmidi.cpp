@@ -82,6 +82,7 @@ DlgPrefMidi::DlgPrefMidi(QWidget * parent, ConfigObject<ConfigValue> * pConfig) 
     m_pConfig = pConfig;
     m_pProgressDialog = 0;
     m_pTimer = 0;
+	m_pHercules = 0;
 
     setupUi(this);
 
@@ -202,7 +203,7 @@ DlgPrefMidi::DlgPrefMidi(QWidget * parent, ConfigObject<ConfigValue> * pConfig) 
     }
 
     // Try initializing Hercules DJ Console
-    m_pHercules = 0;
+    
 #ifdef __LINUX__
     m_pHercules = new HerculesLinux();
 #endif
