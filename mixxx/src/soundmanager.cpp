@@ -287,9 +287,11 @@ void SoundManager::setDefaults(bool api, bool devices, bool other)
 #endif
 #ifdef __WIN32__
 //TODO: Check for ASIO and use that if it's available, otherwise use DirectSound
-        if (apiList.contains(MIXXX_PORTAUDIO_ASIO_STRING))
-            setHostAPI(MIXXX_PORTAUDIO_ASIO_STRING);
-        else
+//        if (apiList.contains(MIXXX_PORTAUDIO_ASIO_STRING))
+//            setHostAPI(MIXXX_PORTAUDIO_ASIO_STRING);
+//        else
+//Existence of ASIO doesn't necessarily mean you've got ASIO devices
+//Do something more advanced one day if you like - Adam
             setHostAPI(MIXXX_PORTAUDIO_DIRECTSOUND_STRING);
 #endif
 #ifdef __MACX__
