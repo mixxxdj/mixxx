@@ -14,7 +14,7 @@
   </property>
   <layout class="QGridLayout" >
    <item row="0" column="0" colspan="2" >
-    <widget class="QCheckBox" name="checkBox_3" >
+    <widget class="QCheckBox" name="enableLiveBroadcasting" >
      <property name="text" >
       <string>Enable live broadcasting</string>
      </property>
@@ -37,7 +37,7 @@
        </widget>
       </item>
       <item row="0" column="1" >
-       <widget class="QComboBox" name="comboBox" >
+       <widget class="QComboBox" name="comboBoxServerType" >
         <property name="sizePolicy" >
          <sizepolicy vsizetype="Fixed" hsizetype="Expanding" >
           <horstretch>0</horstretch>
@@ -59,7 +59,7 @@
        </widget>
       </item>
       <item row="0" column="3" colspan="3" >
-       <widget class="QLineEdit" name="lineEdit_3" >
+       <widget class="QLineEdit" name="mountpoint" >
         <property name="text" >
          <string>/mixxx.ogg</string>
         </property>
@@ -73,7 +73,7 @@
        </widget>
       </item>
       <item row="1" column="1" colspan="3" >
-       <widget class="QLineEdit" name="lineEdit" >
+       <widget class="QLineEdit" name="host" >
         <property name="text" >
          <string>192.168.123.8</string>
         </property>
@@ -87,7 +87,7 @@
        </widget>
       </item>
       <item row="1" column="5" >
-       <widget class="QLineEdit" name="lineEdit_2" >
+       <widget class="QLineEdit" name="port" >
         <property name="sizePolicy" >
          <sizepolicy vsizetype="Fixed" hsizetype="Preferred" >
           <horstretch>0</horstretch>
@@ -107,7 +107,7 @@
        </widget>
       </item>
       <item row="2" column="1" colspan="2" >
-       <widget class="QLineEdit" name="lineEdit_4" >
+       <widget class="QLineEdit" name="login" >
         <property name="text" >
          <string>source</string>
         </property>
@@ -121,7 +121,7 @@
        </widget>
       </item>
       <item row="2" column="4" colspan="2" >
-       <widget class="QLineEdit" name="lineEdit_5" >
+       <widget class="QLineEdit" name="password" >
         <property name="text" >
          <string>test1234</string>
         </property>
@@ -153,7 +153,7 @@
        </widget>
       </item>
       <item row="0" column="1" >
-       <widget class="QLineEdit" name="lineEdit_6" >
+       <widget class="QLineEdit" name="stream_name" >
         <property name="sizePolicy" >
          <sizepolicy vsizetype="Fixed" hsizetype="Expanding" >
           <horstretch>0</horstretch>
@@ -179,7 +179,7 @@
        </widget>
       </item>
       <item row="1" column="1" >
-       <widget class="QLineEdit" name="lineEdit_7" >
+       <widget class="QLineEdit" name="stream_website" >
         <property name="sizePolicy" >
          <sizepolicy vsizetype="Fixed" hsizetype="Expanding" >
           <horstretch>0</horstretch>
@@ -205,7 +205,7 @@
        </widget>
       </item>
       <item rowspan="2" row="2" column="1" >
-       <widget class="QTextEdit" name="textEdit" >
+       <widget class="QTextEdit" name="stream_desc" >
         <property name="sizePolicy" >
          <sizepolicy vsizetype="Fixed" hsizetype="Expanding" >
           <horstretch>0</horstretch>
@@ -227,8 +227,8 @@
         <property name="html" >
          <string>&lt;html>&lt;head>&lt;meta name="qrichtext" content="1" />&lt;style type="text/css">
 p, li { white-space: pre-wrap; }
-&lt;/style>&lt;/head>&lt;body style=" font-family:'DejaVu Sans'; font-size:9pt; font-weight:400; font-style:italic;">
-&lt;p style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">This stream is on line for testing purposes!&lt;/p>&lt;/body>&lt;/html></string>
+&lt;/style>&lt;/head>&lt;body style=" font-family:'Sans Serif'; font-size:9pt; font-weight:400; font-style:normal;">
+&lt;p style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-family:'DejaVu Sans'; font-style:italic;">This stream is on line for testing purposes!&lt;/p>&lt;/body>&lt;/html></string>
         </property>
        </widget>
       </item>
@@ -259,7 +259,7 @@ p, li { white-space: pre-wrap; }
        </widget>
       </item>
       <item row="4" column="1" >
-       <widget class="QLineEdit" name="lineEdit_9" >
+       <widget class="QLineEdit" name="stream_genre" >
         <property name="sizePolicy" >
          <sizepolicy vsizetype="Fixed" hsizetype="Expanding" >
           <horstretch>0</horstretch>
@@ -272,7 +272,7 @@ p, li { white-space: pre-wrap; }
        </widget>
       </item>
       <item row="5" column="1" >
-       <widget class="QCheckBox" name="checkBox" >
+       <widget class="QCheckBox" name="stream_public" >
         <property name="sizePolicy" >
          <sizepolicy vsizetype="Fixed" hsizetype="Preferred" >
           <horstretch>0</horstretch>
@@ -309,7 +309,7 @@ p, li { white-space: pre-wrap; }
          </widget>
         </item>
         <item>
-         <widget class="QComboBox" name="comboBox_2" >
+         <widget class="QComboBox" name="comboBoxEncodingBitrate" >
           <property name="sizePolicy" >
            <sizepolicy vsizetype="Fixed" hsizetype="Preferred" >
             <horstretch>0</horstretch>
@@ -335,7 +335,7 @@ p, li { white-space: pre-wrap; }
          </widget>
         </item>
         <item>
-         <widget class="QComboBox" name="comboBox_3" >
+         <widget class="QComboBox" name="comboBoxEncodingFormat" >
           <property name="sizePolicy" >
            <sizepolicy vsizetype="Fixed" hsizetype="Preferred" >
             <horstretch>0</horstretch>
@@ -361,7 +361,7 @@ p, li { white-space: pre-wrap; }
          </widget>
         </item>
         <item>
-         <widget class="QComboBox" name="comboBox_4" >
+         <widget class="QComboBox" name="comboBoxEncodingChannels" >
           <property name="sizePolicy" >
            <sizepolicy vsizetype="Fixed" hsizetype="Preferred" >
             <horstretch>0</horstretch>
@@ -387,7 +387,7 @@ p, li { white-space: pre-wrap; }
      </property>
      <layout class="QVBoxLayout" >
       <item>
-       <widget class="QCheckBox" name="checkBox_2" >
+       <widget class="QCheckBox" name="enableCustomMetadata" >
         <property name="text" >
          <string>Enable custom metadata</string>
         </property>
@@ -406,7 +406,7 @@ p, li { white-space: pre-wrap; }
          </widget>
         </item>
         <item row="0" column="1" >
-         <widget class="QLineEdit" name="lineEdit_10" >
+         <widget class="QLineEdit" name="custom_artist" >
           <property name="text" >
            <string>%mainartist</string>
           </property>
@@ -420,7 +420,7 @@ p, li { white-space: pre-wrap; }
          </widget>
         </item>
         <item row="1" column="1" >
-         <widget class="QLineEdit" name="lineEdit_11" >
+         <widget class="QLineEdit" name="custom_title" >
           <property name="text" >
            <string>%maintitle</string>
           </property>

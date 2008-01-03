@@ -1,5 +1,5 @@
 /***************************************************************************
-                          defs_cmetrics.h  -  description
+                          defs_urls.h  -  description
                              -------------------
     copyright            : (C) 2008 by Albert santoni
     email                :
@@ -14,12 +14,10 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef DEFS_CMETRICS_H
-#define DEFS_CMETRICS_H
+#ifndef DEFS_URLS_H
+#define DEFS_URLS_H
 
-#define MIXXXCMETRICS_MIXXX_CONSTRUCTOR_COMPLETE                    3
-#define MIXXXCMETRICS_MIXXX_DESTRUCTOR_COMPLETE                     4
-#define MIXXXCMETRICS_FAILED_TO_OPEN_SNDDEVICE_AT_STARTUP           5
-#define MIXXXCMETRICS_VERSION                                       6
+#define MIXXX_WEBSITE_URL       "http://mixxx.sf.net"
+#define MIXXX_SUPPORT_URL       "http://mixxx.sourceforge.net/support.php"
 
 #endif
