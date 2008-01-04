@@ -22,31 +22,28 @@
 
 #include <vorbis/vorbisenc.h> // this also includes vorbis/codec.h
 
-#define ENC_BUFFER_SIZE 512
-
-/*typedef struct
-{
-    CSAMPLE *data;
-    int size;
-    int valid; //how much of the buffer is valid
-} EncBuffer;*/
-
 class EngineAbstractRecord;
+class TrackInfoObject;
 
 class EncoderVorbis : public QObject {
     Q_OBJECT
+
 public:
-    EncoderVorbis();
+    EncoderVorbis(EngineAbstractRecord *engine=0);
     ~EncoderVorbis();
-    int init(EngineAbstractRecord *engine/*void *pObj, void (*writeFunc)(
-             unsigned char*, unsigned char*, int, int)*/);
-    void encodeBuffer(/*void *pObj, void (*writeFunc)(void *pObj,
-                      unsigned char*, unsigned char*, int, int),*/
-                      const CSAMPLE *samples, const int size);
-signals:
-//    void pageReady(unsigned char *, unsigned char *, int, int, int);
+    int initEncoder();
+    void encodeBuffer(const CSAMPLE *samples, const int size);
+    bool metaDataHasChanged();
+
+public slots:
+    void updateMetaData(TrackInfoObject *trackInfoObj);
+
 private:
     int getSerial();
+    void flushStream();
+    void initStream();
+    void sendPackages();
+
     ogg_stream_state oggs;    /* take physical pages, weld into logical stream
                                  of packets */
     ogg_page oggpage;         /* Ogg bitstream page: contains Vorbis packets */
@@ -55,8 +52,10 @@ private:
     vorbis_dsp_state vdsp;    /* central working space for packet-to-PCM */
     vorbis_info vinfo;        /* stores all static vorbis bitstream settings */
     vorbis_comment vcomment;  /* stores all user comments */
-//    EncBuffer *encBuffer;
+
     EngineAbstractRecord *pEngine;
+    TrackInfoObject *m_pMetaData;
+    char *xTitle;
 };
 
 #endif

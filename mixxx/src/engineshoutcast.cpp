@@ -20,6 +20,8 @@
 #include "dlgprefshoutcast.h"
 
 #include "encodervorbis.h"
+#include "playerinfo.h"
+#include "trackinfoobject.h"
 
 #include <QDebug>
 #include <stdio.h> // currently used for writing to stdout
@@ -119,12 +121,9 @@ But this is just for testing.
 		}
 
     // Initialize ogg vorbis encoder
-    encoder = new EncoderVorbis();
-    if (encoder->init(this) < 0) {
+    encoder = new EncoderVorbis(this);
+    if (encoder->initEncoder() < 0) {
         qDebug() << "**** Vorbis init failed";
-    } else {
-//        connect(encoder, SIGNAL(pageReady(unsigned char*, unsigned char*, int, int, int)),
-//                this, SLOT(writePage(unsigned char*, unsigned char*, int, int, int)));
     }
 }
 
@@ -144,8 +143,10 @@ void EngineShoutcast::writePage(unsigned char *header, unsigned char *body,
 //last = count;
 fwrite(header,1,headerLen,stdout);
 fwrite(body,1,bodyLen,stdout);
-//    qDebug() << "writePage() will write " << bodyLen << " data";
+    qDebug() << "writePage() will write " << bodyLen << " data";
     int ret;
+//    usleep(100000);
+    shout_sync(m_pShout);
     if (m_iShoutStatus == SHOUTERR_CONNECTED) {
 //        fwrite(header,1,headerLen,stdout);
         ret = shout_send(m_pShout, header, headerLen);
@@ -165,7 +166,7 @@ fwrite(body,1,bodyLen,stdout);
         }
         if (shout_queuelen(m_pShout) > 0)
             printf("DEBUG: queue length: %d\n", (int)shout_queuelen(m_pShout));
-        shout_sync(m_pShout);
+//        shout_sync(m_pShout);
     } else {
         printf("Error connecting: %s\n", shout_get_error(m_pShout));
     }

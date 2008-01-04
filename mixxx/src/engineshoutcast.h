@@ -30,6 +30,7 @@
 //class ControlLogpotmeter;
 //class ConfigKey;
 class EncoderVorbis;
+class TrackInfoObject;
 
 class EngineShoutcast : public EngineAbstractRecord {
     Q_OBJECT
