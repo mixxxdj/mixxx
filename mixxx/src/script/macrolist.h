@@ -1,13 +1,13 @@
 #ifndef SCRIPT_MACROLIST_H
 #define SCRIPT_MACROLIST_H
 
-#include <qlistview.h>
+#include <q3listview.h>
 
 #include "scriptengine.h"
 
 class ScriptEngine;
 
-class MacroList : public QListView {
+class MacroList : public Q3ListView {
 	Q_OBJECT
 
 	public:

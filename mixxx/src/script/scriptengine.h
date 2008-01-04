@@ -4,6 +4,7 @@
 #include "../mixxx.h"
 #include "../track.h"
 #include "playinterface.h"
+#include "qtscriptinterface.h"
 
 #ifdef __LUA__
 	#include "lua/luainterface.h"
@@ -11,7 +12,7 @@
 
 #include "macro.h"
 #include "scriptstudio.h"
-#include <qptrlist.h>
+#include <QList>
 #include <qstring.h>
 
 class ScriptStudio;
@@ -44,10 +45,11 @@ class ScriptEngine {
 		ScriptStudio* m_studio;
 
 		PlayInterface *m_pi;
+		QtScriptInterface* m_qti;
 #ifdef __LUA__
 		LuaInterface *m_lua;
 #endif
-		QPtrList<Macro>* m_macros;
+		QList<Macro*>* m_macros;
 
 		void loadMacros();
 

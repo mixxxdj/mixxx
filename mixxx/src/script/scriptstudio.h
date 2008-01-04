@@ -9,7 +9,7 @@
 
 class MacroList;
 
-class ScriptStudio : public QMainWindow {
+class ScriptStudio : public Q3MainWindow {
 	Q_OBJECT
 	
 	public:

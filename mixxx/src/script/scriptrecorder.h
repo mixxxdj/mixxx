@@ -6,7 +6,7 @@
 #include "../track.h"
 
 #include <qstring.h>
-#include <qptrlist.h>
+#include <QLinkedList>
 
 class ScriptRecorder {
 	public:
@@ -19,7 +19,7 @@ class ScriptRecorder {
 		void reset();
 		
 	private:
-		QPtrList<SignalRecorder> *m_all;
+		QLinkedList<SignalRecorder*> *m_all;
 		SignalRecorder* m_crossfader;
 		Track* m_track;
 		

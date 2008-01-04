@@ -2,7 +2,7 @@
 #include "macrolistitem.h"
 
 MacroList::MacroList(ScriptEngine* model, QWidget* parent, 
-		const char* name) : QListView(parent, name) {
+		const char* name) : Q3ListView(parent, name) {
 	m_model = model;
 	addColumn("Macro Name");
 	repaint();

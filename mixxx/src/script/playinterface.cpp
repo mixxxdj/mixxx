@@ -118,8 +118,8 @@ void PlayInterface::doStartFade(const char* group, const char* name, \
 	}
 	m_group = group;
 	m_name = name;
-	m_times = new QValueList<int>();
-	m_values = new QValueList<double>();
+	m_times = new QLinkedList<int>();
+	m_values = new QLinkedList<double>();
 	m_time = QDateTime::currentDateTime();
 
 	m_interp = interp;
@@ -138,8 +138,8 @@ void PlayInterface::endList() { endFade(); }
 
 void PlayInterface::endFade() {
 	
-	QValueListConstIterator<int> ti = m_times->constBegin();
-	QValueListConstIterator<double> vi = m_values->constBegin();
+	QLinkedList<int>::const_iterator ti = m_times->constBegin();
+	QLinkedList<double>::const_iterator vi = m_values->constBegin();
 	
 	int last = *ti;
 	double value = *vi;

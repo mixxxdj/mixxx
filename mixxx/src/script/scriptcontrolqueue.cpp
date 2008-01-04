@@ -80,20 +80,23 @@ void ScriptControlQueue::schedule(ScriptControlEvent *event) {
 	//qDebug("----");
 	//qDebug(QDateTime::currentDateTime().toString());
 	//qDebug(newtime->toString());
-	ScriptControlEvent* ev = m_q.first();
-	while(ev != 0) {
-		const QDateTime* evtime = ev->getTime();
+	QLinkedList<ScriptControlEvent*>::iterator qit = m_q.begin();
+	
+	//Qt3 code:
+	//ScriptControlEvent* ev = m_q.first();
+	while(qit != m_q.end()) {
+		const QDateTime* evtime = (*qit)->getTime();
 		//qDebug(evtime->toString());
 		if (*newtime < *evtime) {
 			//qDebug("%s:%i < %s:%i", (const char*)newtime->toString(), newtime->time().msec(), (const char*)evtime->toString(), evtime->time().msec());
 			//if (newtime->time() < evtime->time()) {
 			//	qDebug("Yep");
 			//}
-			m_q.insert(m_q.at(), event);
+			m_q.insert(qit, event);
 			return;
 		}
 			//qDebug("%s >= %s", (const char*)newtime->toString(), (const char*)evtime->toString());
-		ev = m_q.next();
+		qit++;
 	}
 	// If we got to the end, it's last
 	m_q.append(event);
@@ -159,27 +162,28 @@ void ScriptControlQueue::interpolate(const char* group, const char* name, \
 }
 
 void ScriptControlQueue::killProcess(int process) {
-	ScriptControlEvent *ev = m_q.first();
-	while (ev != 0) {
-		if (ev->getProcess() == process) {
-			m_q.remove();
-			delete ev;
-			ev = m_q.current();
+	QLinkedList<ScriptControlEvent*>::iterator qit = m_q.begin();
+	//ScriptControlEvent *ev = m_q.first();
+	while (qit != m_q.end()) {
+		if ((*qit)->getProcess() == process) {
+			delete (*qit);
+			qit = m_q.erase(qit);
 		} else {
-			ev = m_q.next();
+			qit++;
 		}
 	}
 }
 
 void ScriptControlQueue::killTag(int process, int tag) {
-	ScriptControlEvent *ev = m_q.first();
-	while (ev != 0) {
-		if (ev->getProcess() == process && ev->getTag() == tag) {
-			m_q.remove();
-			delete ev;
-			ev = m_q.current();
+	
+	QLinkedList<ScriptControlEvent*>::iterator qit = m_q.begin();
+	//ScriptControlEvent *ev = m_q.first();
+	while (qit != m_q.end()) {
+		if ((*qit)->getProcess() == process && (*qit)->getTag() == tag) {
+			delete (*qit);
+			qit = m_q.erase(qit);
 		} else {
-			ev = m_q.next();
+			qit++;
 		}
 	}
 }

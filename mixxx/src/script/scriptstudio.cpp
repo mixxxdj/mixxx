@@ -2,8 +2,8 @@
 #include "macrolist.h"
 #include "macrolistitem.h"
 #include <qwidget.h>
-#include <qpopupmenu.h>
-#include <qdockwindow.h>
+#include <q3popupmenu.h>
+#include <q3dockwindow.h>
 #include <qlistview.h>
 #include <qmessagebox.h>
 
@@ -14,7 +14,7 @@
 #define ID_PYTHON 2001
 
 ScriptStudio::ScriptStudio(ScriptEngine* model, QWidget* parent,
-			const char* name) : QMainWindow(parent, name) {
+			const char* name) : Q3MainWindow(parent, name) {
 	m_model = model;
 	m_current = 0;
 	m_edit = new QTextEdit(this, "Editor Pane");
@@ -26,9 +26,9 @@ ScriptStudio::ScriptStudio(ScriptEngine* model, QWidget* parent,
 	setCentralWidget(m_edit);
 	resize(600,400);
 	
-	QPopupMenu* script = new QPopupMenu(this);
-	QPopupMenu* newtype = new QPopupMenu(script);
-	QPopupMenu* lang = new QPopupMenu(this);
+	Q3PopupMenu* script = new Q3PopupMenu(this);
+	Q3PopupMenu* newtype = new Q3PopupMenu(script);
+	Q3PopupMenu* lang = new Q3PopupMenu(this);
 
 	lang->setCheckable(true);
 	menuBar()->insertItem("&Macro", script);
@@ -58,10 +58,10 @@ ScriptStudio::ScriptStudio(ScriptEngine* model, QWidget* parent,
 	newtype->insertItem("&Python Macro", this, SLOT(newPythonScript()));
 #endif
 	
-	QDockWindow* left = new QDockWindow(this);
+	Q3DockWindow* left = new Q3DockWindow(this);
 	m_mlist = new MacroList(m_model, left);
 	left->setWidget(m_mlist);
-	addDockWindow(left, "Macro List Panel", Left); 
+	//addDockWindow(left, "Macro List Panel", left->Left); 
 
 	connect(m_mlist, SIGNAL(selectionChanged()), this, SLOT(changeScript()));
 	connect(m_edit, SIGNAL(textChanged()), this, SLOT(editScript()));
@@ -93,7 +93,7 @@ void ScriptStudio::changeScript() {
 	//int pos = m_mlist->itemPos(m_mlist->selectedItem());
 	//m_current = m_model->getMacro(pos);
 	m_model->saveMacros();
-	MacroListItem* item = (MacroListItem*)m_mlist->selectedItem();
+/*	MacroListItem* item = (MacroListItem*)m_mlist->selectedItem();
 	if (item == NULL) {
 		m_current = 0;
 		m_edit->setText("");
@@ -103,7 +103,7 @@ void ScriptStudio::changeScript() {
 	m_current = item->getMacro();
 	m_edit->setText(m_current->getScript());
 	m_edit->setEnabled(true);
-	updateLangMenu();
+	updateLangMenu();*/
 }
 
 void ScriptStudio::editScript() {
@@ -140,16 +140,16 @@ void ScriptStudio::stopRecord() {
 
 void ScriptStudio::playMacro() {
 	m_model->saveMacros();
-        MacroListItem* item = (MacroListItem*)m_mlist->selectedItem();
+/*        MacroListItem* item = (MacroListItem*)m_mlist->selectedItem();
         if (item == NULL) {
                 return;
         }
         m_current = item->getMacro();
-        m_model->executeMacro(m_current);
+        m_model->executeMacro(m_current);*/
 }
 
 void ScriptStudio::deleteMacro() {
-        MacroListItem* item = (MacroListItem*)m_mlist->selectedItem();
+/*        MacroListItem* item = (MacroListItem*)m_mlist->selectedItem();
         if (item == NULL) {
 	        return;
 	}
@@ -163,7 +163,7 @@ void ScriptStudio::deleteMacro() {
 	
 	m_current = item->getMacro();
 	m_model->deleteMacro(m_current);
-	m_mlist->repaint();
+	m_mlist->repaint();*/
 }
 
 void ScriptStudio::showStudio() {
