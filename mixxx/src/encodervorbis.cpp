@@ -139,9 +139,9 @@ bool EncoderVorbis::metaDataHasChanged()
                 changed = true;
             }
         }
+        delete m_pCrossfader;
         break;
     }
-    delete m_pCrossfader;
     return changed;
 }
 
