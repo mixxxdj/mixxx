@@ -55,10 +55,10 @@ EngineShoutcast::EngineShoutcast(ConfigObject<ConfigValue> *_config)
     m_iShoutStatus = 0;
 
     // Initialize libshout
-    shout_init();
+//    shout_init();
 
 // INIT STUFF
-	        if (!(m_pShout = shout_new())) {
+/*	        if (!(m_pShout = shout_new())) {
 		        qDebug() << "Could not allocate shout_t";
 		        return;
 	        }
@@ -103,14 +103,14 @@ EngineShoutcast::EngineShoutcast(ConfigObject<ConfigValue> *_config)
 
 	        m_iShoutStatus = shout_open(m_pShout);
 	        if (m_iShoutStatus == SHOUTERR_SUCCESS)
-	          m_iShoutStatus = SHOUTERR_CONNECTED;
+	          m_iShoutStatus = SHOUTERR_CONNECTED;*/
 
 /*
 Kinda dangerous this loop.
 We don't want an eternal loop if the connection stays busy.
 But this is just for testing.
 */
-	        while (m_iShoutStatus == SHOUTERR_BUSY) {
+/*	        while (m_iShoutStatus == SHOUTERR_BUSY) {
 	          qDebug() << "Connection pending. Sleeping...";
 	          sleep(1);
 //	          m_iShoutStatus = shout_get_connected(shout);
@@ -118,7 +118,7 @@ But this is just for testing.
 	        }
 		if (m_iShoutStatus == SHOUTERR_CONNECTED) {
 			qDebug() << "***********Connected to Shoutcast server...";
-		}
+		}*/
 
     // Initialize ogg vorbis encoder
     encoder = new EncoderVorbis(this);
@@ -146,7 +146,7 @@ fwrite(body,1,bodyLen,stdout);
     qDebug() << "writePage() will write " << bodyLen << " data";
     int ret;
 //    usleep(100000);
-    shout_sync(m_pShout);
+/*    shout_sync(m_pShout);
     if (m_iShoutStatus == SHOUTERR_CONNECTED) {
 //        fwrite(header,1,headerLen,stdout);
         ret = shout_send(m_pShout, header, headerLen);
@@ -169,7 +169,7 @@ fwrite(body,1,bodyLen,stdout);
 //        shout_sync(m_pShout);
     } else {
         printf("Error connecting: %s\n", shout_get_error(m_pShout));
-    }
+    }*/
 }
 
 /*void EngineShoutcast::wrapper2writePage(void *pObj, unsigned char *header, unsigned char *body,
