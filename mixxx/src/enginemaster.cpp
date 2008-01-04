@@ -28,14 +28,12 @@
 #include "enginerecord.h"
 #include "enginevinylsoundemu.h"
 #include "enginexfader.h"
+#include "enginesidechain.h"
 #ifdef __LADSPA__
 #include "engineladspa.h"
 #endif
 #ifdef __VINYLCONTROL__
 #include "enginevinylcontrol.h"
-#endif
-#ifdef __SHOUTCAST__
-#include "engineshoutcast.h"
 #endif
 // #include "enginebuffermasterrate.h"
 
@@ -102,11 +100,6 @@ EngineMaster::EngineMaster(ConfigObject<ConfigValue> * _config,
     vinylsound1 = new EngineVinylSoundEmu(_config, "[Channel1]");
     vinylsound2 = new EngineVinylSoundEmu(_config, "[Channel2]");
 
-#ifdef __SHOUTCAST__
-    // Shoutcast
-    shoutcast = new EngineShoutcast(_config);
-#endif
-
     // Mute on active headphone
 //     m_pControlObjectHeadphoneMute = new ControlObject(ConfigKey(group,"HeadphoneMute"));
 
@@ -130,6 +123,8 @@ EngineMaster::EngineMaster(ConfigObject<ConfigValue> * _config,
     rec = new EngineRecord(_config);
 #endif
 
+    sidechain = new EngineSideChain(_config);
+
 	//X-Fader Setup
 	xFaderCurve = new ControlPotmeter(ConfigKey("[Mixer Profile]", "xFaderCurve"), 0., 2.);
 	xFaderCalibration = new ControlPotmeter(ConfigKey("[Mixer Profile]", "xFaderCalibration"), -2., 2.);
@@ -145,6 +140,7 @@ EngineMaster::~EngineMaster()
     delete head_volume;
     delete clipping;
     delete head_clipping;
+    delete sidechain;
 //     delete m_pControlObjectHeadphoneMute;
 //     delete m_pEngineBufferMasterRate;
     delete [] m_pTemp1;
@@ -153,9 +149,6 @@ EngineMaster::~EngineMaster()
     delete [] m_pMaster;
 #ifdef __EXPERIMENTAL_RECORDING__
     delete rec;
-#endif
-#ifdef __SHOUTCAST__
-    delete shoutcast;
 #endif
 }
 
@@ -319,9 +312,10 @@ void EngineMaster::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBuff
 #ifdef __EXPERIMENTAL_RECORDING__
     rec->process(m_pMaster, m_pMaster, iBufferSize);
 #endif
-#ifdef __SHOUTCAST__
-    shoutcast->process(m_pMaster, m_pMaster, iBufferSize);
-#endif
+
+    //Submit samples to the side chain to do shoutcasting, recording, etc.
+    //(cpu intensive non-realtime tasks)
+    sidechain->submitSamples(m_pMaster, iBufferSize);
 
     for (int i=0; i<iBufferSize; i+=2)
     {

@@ -34,9 +34,8 @@ class ControlPushButton;
 class ControlObject;
 class EngineRecord;
 class EngineVinylSoundEmu;
-#ifdef __SHOUTCAST__
-class EngineShoutcast;
-#endif
+class EngineSideChain;
+
 // class EngineBufferMasterRate;
 
 /**
@@ -71,9 +70,7 @@ private:
     EngineVuMeter *vumeter1, *vumeter2;
     EngineVinylSoundEmu *vinylsound1, *vinylsound2;
     EngineRecord *rec;
-#ifdef __SHOUTCAST__
-    EngineShoutcast *shoutcast;
-#endif
+    EngineSideChain *sidechain;
 
 //     EngineBufferMasterRate *m_pEngineBufferMasterRate;
         
