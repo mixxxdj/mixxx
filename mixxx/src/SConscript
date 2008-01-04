@@ -737,6 +737,9 @@ dll_files = glob.glob('../../../mixxx-winlib/*.dll') # TODO: Use reference to Sh
 # dll_files = libsndfile
 dll_files += Split("""$QTDIR/lib/Qt3Support4.dll $QTDIR/lib/QtCore4.dll $QTDIR/lib/QtGui4.dll $QTDIR/lib/QtNetwork4.dll $QTDIR/lib/QtOpenGL4.dll $QTDIR/lib/QtSql4.dll $QTDIR/lib/QtXml4.dll """)
 
+if int(flags_script):
+	dll_files += Split("""$QTDIR/lib/QtScript4.dll""")
+
 if platform == 'linux':
 	flags_prefix = ARGUMENTS.get('prefix', '/usr/local')
 	if not os.path.exists(flags_prefix):
