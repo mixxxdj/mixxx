@@ -550,8 +550,16 @@ flags_script = ARGUMENTS.get('script', 0)
 if int(flags_script) and platform == 'win32':
 	env.Append(LIBS = 'QtScript4')
 	print "SuperCoolAwesomeScript (name contest pending)... enabled"
-	sources += Split("""script/scriptengine.cpp script/scriptcontrolqueue.cpp""")
+	sources += Split("""script/scriptengine.cpp script/scriptcontrolqueue.cpp
+			script/scriptstudio.cpp script/scriptrecorder.cpp
+			script/playinterface.cpp script/macro.cpp
+			script/scriptcontrolevent.cpp script/trackcontrolevent.cpp
+			script/numbercontrolevent.cpp script/numberrecorder.cpp
+			script/macrolist.cpp script/trackrecorder.cpp
+			script/sdatetime.cpp script/signalrecorder.cpp
+			script/macrolistitem.cpp script/qtscriptinterface.cpp""")
 	env.Append(CXXFLAGS = '-D__SCRIPT__')
+	env.Append(CXXFLAGS = '-I$QTDIR/include/QtScript')
 else:
 	flags_script = 0
 	print "SuperCoolAwesomeScript (name contest pending)... disabled"
