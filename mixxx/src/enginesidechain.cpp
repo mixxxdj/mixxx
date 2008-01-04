@@ -47,8 +47,8 @@ EngineSideChain::~EngineSideChain()
     m_bufferLock.lock();
     m_waitLock.lock();
     //Free up memory
-    free(m_bufferFront);
-    free(m_bufferBack);
+    delete m_bufferFront;
+    delete m_bufferBack;
     
 #ifdef __SHOUTCAST__
     delete shoutcast;
@@ -63,17 +63,28 @@ EngineSideChain::~EngineSideChain()
 void EngineSideChain::submitSamples(CSAMPLE* newBuffer, int buffer_size)
 {
     m_bufferLock.lock();
-    
+        
     //Copy samples into m_buffer.
     if (m_iBufferEnd + buffer_size < SIDECHAIN_BUFFER_SIZE)
+    {
         memcpy(&m_buffer[m_iBufferEnd], newBuffer, buffer_size * sizeof(*newBuffer));
+        m_iBufferEnd += buffer_size;
+    }
     else //If the new buffer won't fit, copy as much of it as we can over and then copy the rest after swapping.
     {
         memcpy(&m_buffer[m_iBufferEnd], newBuffer, (SIDECHAIN_BUFFER_SIZE - m_iBufferEnd)*sizeof(*newBuffer));
         //Save the number of samples written because m_iBufferEnd gets reset in swapBuffers:
         int iNumSamplesWritten = SIDECHAIN_BUFFER_SIZE - m_iBufferEnd; 
-        swapBuffers();
-        memcpy(&m_buffer[m_iBufferEnd], newBuffer, (buffer_size - iNumSamplesWritten)*sizeof(*newBuffer));
+        swapBuffers(); //Swaps buffers and resets m_iBufferEnd to zero.
+        int iNumSamplesStillToWrite = buffer_size - iNumSamplesWritten;
+        
+        //Check to see if the remaining samples will fit in the other empty buffer.
+        if (iNumSamplesStillToWrite > SIDECHAIN_BUFFER_SIZE)
+        {
+            iNumSamplesStillToWrite = SIDECHAIN_BUFFER_SIZE; //Drop samples if they won't fit.
+            qDebug() << "EngineSideChain warning: dropped samples";
+        }
+        memcpy(&m_buffer[m_iBufferEnd], newBuffer, iNumSamplesStillToWrite*sizeof(*newBuffer));
         
         //Since we swapped buffers, we now have a full buffer that needs processing.
         m_waitLock.lock();
