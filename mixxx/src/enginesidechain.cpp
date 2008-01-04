@@ -16,6 +16,7 @@
 
 #include <QtCore>
 #include <QtDebug>
+#include <stdio.h> // currently used for writing to stdout
 #include "enginesidechain.h"
 #include "enginebuffer.h"
 
@@ -65,14 +66,14 @@ void EngineSideChain::submitSamples(CSAMPLE* newBuffer, int buffer_size)
     m_bufferLock.lock();
         
     //Copy samples into m_buffer.
-    if (m_iBufferEnd + buffer_size < SIDECHAIN_BUFFER_SIZE)
+    if (m_iBufferEnd + buffer_size <= SIDECHAIN_BUFFER_SIZE)    //FIXME: is <= correct?
     {
-        memcpy(&m_buffer[m_iBufferEnd], newBuffer, buffer_size * sizeof(*newBuffer));
+        memcpy(&m_buffer[m_iBufferEnd], newBuffer, buffer_size * sizeof(CSAMPLE));
         m_iBufferEnd += buffer_size;
     }
     else //If the new buffer won't fit, copy as much of it as we can over and then copy the rest after swapping.
     {
-        memcpy(&m_buffer[m_iBufferEnd], newBuffer, (SIDECHAIN_BUFFER_SIZE - m_iBufferEnd)*sizeof(*newBuffer));
+        memcpy(&m_buffer[m_iBufferEnd], newBuffer, (SIDECHAIN_BUFFER_SIZE - m_iBufferEnd)*sizeof(CSAMPLE));
         //Save the number of samples written because m_iBufferEnd gets reset in swapBuffers:
         int iNumSamplesWritten = SIDECHAIN_BUFFER_SIZE - m_iBufferEnd; 
         swapBuffers(); //Swaps buffers and resets m_iBufferEnd to zero.
@@ -84,7 +85,7 @@ void EngineSideChain::submitSamples(CSAMPLE* newBuffer, int buffer_size)
             iNumSamplesStillToWrite = SIDECHAIN_BUFFER_SIZE; //Drop samples if they won't fit.
             qDebug() << "EngineSideChain warning: dropped samples";
         }
-        memcpy(&m_buffer[m_iBufferEnd], newBuffer, iNumSamplesStillToWrite*sizeof(*newBuffer));
+        memcpy(&m_buffer[m_iBufferEnd], newBuffer, iNumSamplesStillToWrite*sizeof(CSAMPLE));
         
         //Since we swapped buffers, we now have a full buffer that needs processing.
         m_waitLock.lock();
@@ -127,6 +128,8 @@ void EngineSideChain::run()
         //Do CPU intensive and non-realtime processing here.
     
         //Eg. Use EngineShoutcast...
+
+        //fwrite(m_filledBuffer,1,SIDECHAIN_BUFFER_SIZE,stdout);
 
 #ifdef __SHOUTCAST__
         shoutcast->process(m_filledBuffer, m_filledBuffer, SIDECHAIN_BUFFER_SIZE);
