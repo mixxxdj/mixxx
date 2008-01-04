@@ -45,6 +45,7 @@
 #include "wavesummary.h"
 #include "bpmdetector.h"
 #include "woverview.h"
+#include "playerinfo.h"
 
 #include <q3progressdialog.h>
 
@@ -620,6 +621,9 @@ void Track::slotLoadPlayer1(TrackInfoObject * pTrackInfoObject, bool bStartFromE
         m_pView->m_pTextCh1->setText(m_pTrackPlayer1->getInfo());
 
     emit(newTrackPlayer1(m_pTrackPlayer1));
+
+    // Update TrackInfoObject of the helper class
+    PlayerInfo::Instance().setTrackInfo(1, m_pTrackPlayer1);
 }
 
 void Track::slotLoadPlayer2(TrackInfoObject * pTrackInfoObject, bool bStartFromEndPos)
@@ -670,6 +674,9 @@ void Track::slotLoadPlayer2(TrackInfoObject * pTrackInfoObject, bool bStartFromE
         m_pView->m_pTextCh2->setText(m_pTrackPlayer2->getInfo());
 
     emit(newTrackPlayer2(m_pTrackPlayer2));
+
+    // Update TrackInfoObject of the helper class
+    PlayerInfo::Instance().setTrackInfo(2, m_pTrackPlayer2);
 }
 
 void Track::slotLoadPlayer1(QString filename, bool bStartFromEndPos)

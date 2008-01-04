@@ -26,6 +26,8 @@ A lot of stuff has been stolen from:
 http://svn.xiph.org/trunk/vorbis/examples/encoder_example.c
 */
 
+// TODO: MORE ERROR CHECKING EVERYWHERE (encoder and shoutcast classes)
+
 #include "encodervorbis.h"
 
 #include <stdlib.h> // needed for random num gen
@@ -34,24 +36,34 @@ http://svn.xiph.org/trunk/vorbis/examples/encoder_example.c
 #include <QDebug>
 
 #include "engineabstractrecord.h"
+#include "controlobjectthreadmain.h"
+#include "controlobject.h"
+#include "playerinfo.h"
+#include "trackinfoobject.h"
 
 // Constructor
-EncoderVorbis::EncoderVorbis()
+EncoderVorbis::EncoderVorbis(EngineAbstractRecord *engine)
 {
-/*    encBuffer = new EncBuffer;
-    encBuffer->size = ENC_BUFFER_SIZE;
-    encBuffer->data = new CSAMPLE[encBuffer->size];
-    encBuffer->valid = 0;*/
+    if (engine) pEngine = engine;
+    xTitle = "abc";
 }
 
 // Destructor
 EncoderVorbis::~EncoderVorbis()
 {
-  ogg_stream_clear(&oggs);
-  vorbis_block_clear(&vblock);
-  vorbis_dsp_clear(&vdsp);
-  vorbis_comment_clear(&vcomment);
+  flushStream();
   vorbis_info_clear(&vinfo);
+}
+
+void EncoderVorbis::flushStream()
+{
+    vorbis_analysis_wrote(&vdsp, 0);
+    sendPackages();
+
+    ogg_stream_clear(&oggs);
+    vorbis_block_clear(&vblock);
+    vorbis_dsp_clear(&vdsp);
+    vorbis_comment_clear(&vcomment);
 }
 
 /*
@@ -61,28 +73,80 @@ EncoderVorbis::~EncoderVorbis()
 int EncoderVorbis::getSerial()
 {
     static int prevSerial = 0;
-    int serial = 0;
+    int serial = rand();
     while (prevSerial == serial)
         serial = rand();
     prevSerial = serial;
+qDebug() << "RETURNING SERIAL " << serial;
     return serial;
 }
 
-void EncoderVorbis::encodeBuffer(const CSAMPLE *samples, const int size)
+// TODO: optimize this function a bit
+bool EncoderVorbis::metaDataHasChanged()
 {
-    float **buffer;
-    int i;
-    buffer = vorbis_analysis_buffer(&vdsp, size);
+    bool changed = false;
 
-    // Deinterleave samples
-    for (i = 0; i < size/2; ++i)
+    // get active tracks
+    int track = 0;
+    if (ControlObject::getControl(ConfigKey("[Channel1]","play"))->get()==1.) track+=1;
+    if (ControlObject::getControl(ConfigKey("[Channel2]","play"))->get()==1.) track+=2;
+
+    switch (track)
     {
-        buffer[0][i] = samples[i*2]/32768.f; // 0; 2; 4
-        buffer[1][i] = samples[i*2+1]/32768.f; // 1; 3; 5
+    case 0:
+        // no tracks are playing
+        break;
+    case 1:
+        // track 1 is playing
+        {
+        TrackInfoObject *newMetaData = PlayerInfo::Instance().getTrackInfo(1);
+        if (newMetaData != m_pMetaData)
+        {
+            m_pMetaData = newMetaData;
+            changed = true;
+        }
+        }
+        break;
+    case 2:
+        // track 2 is playing
+        {
+        TrackInfoObject *newMetaData = PlayerInfo::Instance().getTrackInfo(2);
+        if (newMetaData != m_pMetaData)
+        {
+            m_pMetaData = newMetaData;
+            changed = true;
+        }
+        }
+        break;
+    case 3:
+        // select most active track based on crossfader position
+        ControlObjectThreadMain* m_pCrossfader = new ControlObjectThreadMain(
+                                                     ControlObject::getControl(ConfigKey(
+                                                     "[Master]","crossfader")));
+        if (m_pCrossfader->get() <= 0)
+        {
+            TrackInfoObject *newMetaData = PlayerInfo::Instance().getTrackInfo(1);
+            if (newMetaData != m_pMetaData)
+            {
+                m_pMetaData = newMetaData;
+                changed = true;
+            }
+        } else {
+            TrackInfoObject *newMetaData = PlayerInfo::Instance().getTrackInfo(2);
+            if (newMetaData != m_pMetaData)
+            {
+                m_pMetaData = newMetaData;
+                changed = true;
+            }
+        }
+        break;
     }
+    delete m_pCrossfader;
+    return changed;
+}
 
-    vorbis_analysis_wrote(&vdsp, i);
-
+void EncoderVorbis::sendPackages()
+{
     while (vorbis_analysis_blockout(&vdsp, &vblock) == 1) {
         vorbis_analysis(&vblock, 0);
         vorbis_bitrate_addblock(&vblock);
@@ -94,40 +158,54 @@ void EncoderVorbis::encodeBuffer(const CSAMPLE *samples, const int size)
             while (!eos) {
                 int result = ogg_stream_pageout(&oggs, &oggpage);
                 if (result == 0) break;
-//                qDebug() << "emit pageReady()";
-//                  (*writeFunc)(pObj, oggpage.header, oggpage.body, oggpage.header_len, oggpage.body_len);
-                  pEngine->writePage(oggpage.header, oggpage.body, oggpage.header_len, oggpage.body_len);
-//                emit pageReady(oggpage.header, oggpage.body, oggpage.header_len, oggpage.body_len);
-//                fwrite(oggpage.header,1,oggpage.header_len,stdout);
-//                fwrite(oggpage.body,1,oggpage.body_len,stdout);
+                pEngine->writePage(oggpage.header, oggpage.body, oggpage.header_len, oggpage.body_len);
                 if (ogg_page_eos(&oggpage)) eos = 1;
             }
         }
     }
 }
 
-/*
-  Initialize the encoder
-  -> returns -1 on error
-  -> returns 0 on success
-*/
-int EncoderVorbis::init(EngineAbstractRecord *engine)
+void EncoderVorbis::encodeBuffer(const CSAMPLE *samples, const int size)
 {
-    pEngine = engine;
+    float **buffer;
+    int i;
 
-    int ret, result;
-    vorbis_info_init(&vinfo);
+    if (metaDataHasChanged())
+    {
+//        qDebug() << "Metadata has changed! New artist: " << m_pMetaData->getArtist();
+//        qDebug() << "Metadata has changed! New title: " << m_pMetaData->getTitle();
+//        qDebug() << "Metadata has changed! New album: " << m_pMetaData->getAlbum();
+        updateMetaData(m_pMetaData);
+    }
 
-    // initialize VBR quality based mode
-    ret = vorbis_encode_init_vbr(&vinfo, 2, 48000, 0.4);
+    buffer = vorbis_analysis_buffer(&vdsp, size);
 
-    if (ret == 0) {
-        // add comment
-        vorbis_comment_init(&vcomment);
-        vorbis_comment_add_tag(&vcomment, "ENCODER", "mixxx");
-        vorbis_comment_add_tag(&vcomment, "ARTIST", "profoX");
-        vorbis_comment_add_tag(&vcomment, "TITLE", "Stable like a... fox :]");
+    // Deinterleave samples
+    for (i = 0; i < size/2; ++i)
+    {
+        buffer[0][i] = samples[i*2]/32768.f; // 0; 2; 4
+        buffer[1][i] = samples[i*2+1]/32768.f; // 1; 3; 5
+    }
 
+    vorbis_analysis_wrote(&vdsp, i);
+    sendPackages();
+}
+
+void EncoderVorbis::updateMetaData(TrackInfoObject *trackInfoObj)
+{
+    // convert QStrings to char*s
+    QByteArray baArtist = m_pMetaData->getArtist().toLatin1();
+    QByteArray baTitle = m_pMetaData->getTitle().toLatin1();
+    char *cArtist = baArtist.data();
+    char *cTitle = baTitle.data();
+    xTitle = cTitle;
+
+    flushStream();
+    initStream();
+}
+
+void EncoderVorbis::initStream()
+{
         // set up analysis state and auxiliary encoding storage
         vorbis_analysis_init(&vdsp, &vinfo);
         vorbis_block_init(&vdsp, &vblock);
@@ -135,6 +213,12 @@ int EncoderVorbis::init(EngineAbstractRecord *engine)
         // set up packet-to-stream encoder; attach a random serial number
         srand(time(0));
         ogg_stream_init(&oggs, getSerial());
+
+        // add comment
+        vorbis_comment_init(&vcomment);
+        vorbis_comment_add_tag(&vcomment, "ENCODER", "mixxx");
+        vorbis_comment_add_tag(&vcomment, "ARTIST", "Mixxx Broadcast");
+        vorbis_comment_add_tag(&vcomment, "TITLE", xTitle);
 
         // set up the vorbis headers
         ogg_packet headerInit;
@@ -146,16 +230,26 @@ int EncoderVorbis::init(EngineAbstractRecord *engine)
         ogg_stream_packetin(&oggs, &headerCode);
 
         // start audio data on new page
+        int result;
         while (1) {
             result = ogg_stream_flush(&oggs, &oggpage);
             if (result==0) break;
-//                qDebug() << "emit pageReady() main_header";
-//                  (*writeFunc)(pObj, oggpage.header, oggpage.body, oggpage.header_len, oggpage.body_len);
                   pEngine->writePage(oggpage.header, oggpage.body, oggpage.header_len, oggpage.body_len);
-//                emit pageReady(oggpage.header, oggpage.body, oggpage.header_len, oggpage.body_len);
-//                fwrite(oggpage.header,1,oggpage.header_len,stdout);
-//                fwrite(oggpage.body,1,oggpage.body_len,stdout);
         }
+}
+
+// TODO: reinit encoder when samplerate or quality is updated
+
+int EncoderVorbis::initEncoder()
+{
+    int ret, result;
+    vorbis_info_init(&vinfo);
+
+    // initialize VBR quality based mode
+    ret = vorbis_encode_init_vbr(&vinfo, 2, 48000, 0.4); // TODO: set sample rate
+
+    if (ret == 0) {
+        initStream();
     } else {
         ret = -1;
     };
