@@ -4,11 +4,11 @@
 #include "scriptengine.h"
 #include "scriptrecorder.h"
 #include <qwidget.h>
-#include <qvbox.h>
+#include <q3vbox.h>
 #include <qlineedit.h>
 #include <qpushbutton.h>
 
-class ScriptTest : public QVBox {
+class ScriptTest : public Q3VBox {
 	Q_OBJECT
 	
 	public:

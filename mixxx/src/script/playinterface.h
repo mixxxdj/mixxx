@@ -2,7 +2,7 @@
 #define SCRIPT_PLAYINTERFACE_H
 
 #include "scriptcontrolqueue.h"
-#include "qvaluelist.h"
+#include <QLinkedList>
 #include "qdatetime.h"
 
 class PlayInterface {
@@ -44,8 +44,8 @@ class PlayInterface {
 		ScriptControlQueue* m_q;
 		
 		QDateTime m_time;
-		QValueList<int>* m_times;
-		QValueList<double>* m_values;
+		QLinkedList<int>* m_times;
+		QLinkedList<double>* m_values;
 		
 		const char* m_group;
 		const char* m_name;

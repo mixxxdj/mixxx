@@ -1,7 +1,7 @@
 #ifndef SCRIPT_SCRIPTCONTROLQUEUE_H
 #define SCRIPT_SCRIPTCONTROLQUEUE_H
 
-#include <qptrlist.h>
+#include <QLinkedList>
 #include <qdatetime.h>
 #include <qtimer.h>
 #include <qstring.h>
@@ -36,7 +36,7 @@ class ScriptControlQueue : public QObject {
 		void setupCallbacks();
 		QDateTime getWhen(const QDateTime* base, int offset);
 
-	    	QPtrList<ScriptControlEvent> m_q;
+		QLinkedList<ScriptControlEvent*> m_q;
 		QTimer m_timer;
 
 		ScriptEngine* m_parent;

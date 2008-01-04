@@ -1,8 +1,8 @@
 #include "trackrecorder.h"
 
 TrackRecorder::TrackRecorder(Track* track, int channel) : SignalRecorder() {
-	m_times = QValueVector<int>();
-	m_paths = QValueVector<QString>();
+	m_times = QList<int>();
+	m_paths = QList<QString>();
 	m_base = 0;
 
 	m_track = track;
@@ -10,8 +10,8 @@ TrackRecorder::TrackRecorder(Track* track, int channel) : SignalRecorder() {
 }
 
 void TrackRecorder::reset() {
-	m_times = QValueVector<int>();
-	m_paths = QValueVector<QString>();
+	m_times = QList<int>();
+	m_paths = QList<QString>();
 	stopRecord();
 }
 
@@ -48,8 +48,8 @@ void TrackRecorder::writeToScript(Recorder* rec) {
 		return;
 	}
 
-	QValueVector<int>::const_iterator tit;
-	QValueVector<QString>::const_iterator pit;
+	QList<int>::const_iterator tit;
+	QList<QString>::const_iterator pit;
 	pit = m_paths.begin();
 	for (tit = m_times.begin(); tit != m_times.end(); tit++) {
 		rec->playChannel(m_channel , *tit, *pit);

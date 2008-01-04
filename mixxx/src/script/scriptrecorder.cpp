@@ -11,7 +11,7 @@
 ScriptRecorder::ScriptRecorder(Track* track) {
 	m_track = track;
 	
-	m_all = new QPtrList<SignalRecorder>();
+	m_all = new QLinkedList<SignalRecorder*>();
 	install("[Master]", "crossfader");
 	install("[Master]", "balance");
 	install("[Master]", "volume");
@@ -78,17 +78,20 @@ ScriptRecorder::~ScriptRecorder() {
 void ScriptRecorder::startRecord() {
 	SDateTime* start = SDateTime::now();
 
-	SignalRecorder *ptr;
-	for (ptr = m_all->first(); ptr; ptr = m_all->next()) {
-		ptr->startRecord(start);
+	QLinkedList<SignalRecorder*>::iterator iter;
+
+	for (iter = m_all->begin(); iter != m_all->end(); iter++) {
+		(*iter)->startRecord(start);
 	}
 }
 
 void ScriptRecorder::stopRecord() {
-	SignalRecorder *ptr;
-        for (ptr = m_all->first(); ptr; ptr = m_all->next()) {
-                ptr->stopRecord();
-        }
+
+	QLinkedList<SignalRecorder*>::iterator iter;
+        
+	for (iter = m_all->begin(); iter != m_all->end(); iter++) {
+		(*iter)->stopRecord();
+    }
 }
 
 Macro* ScriptRecorder::getMacro() {
@@ -115,8 +118,9 @@ Macro* ScriptRecorder::getMacro() {
 }
 
 void ScriptRecorder::reset() {
-	SignalRecorder *ptr;
-	for (ptr = m_all->first(); ptr; ptr = m_all->next()) {
-		ptr->reset();
-	}
+	QLinkedList<SignalRecorder*>::iterator iter;
+        
+	for (iter = m_all->begin(); iter != m_all->end(); iter++) {
+		(*iter)->reset();
+    }
 }

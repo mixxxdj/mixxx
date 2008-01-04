@@ -13,16 +13,16 @@ NumberRecorder::NumberRecorder(const char* group, const char* name
 	m_evcount = 0;
 	m_p = 0;
 	
-	m_times = QValueVector<int>();
-	m_values = QValueVector<double>();
+	m_times = QList<int>();
+	m_values = QList<double>();
 }
 
 NumberRecorder::~NumberRecorder() {
 }
 
 void NumberRecorder::reset() {
-	m_times = QValueVector<int>();
-	m_values = QValueVector<double>();
+	m_times = QList<int>();
+	m_values = QList<double>();
 	m_evcount = 0;
 
 	stopRecord();
@@ -84,8 +84,8 @@ void NumberRecorder::writeToScript(Recorder* rec) {
 	}
 	rec->beginInterpolate(m_group, m_name, m_interp);
 
-	QValueVector<int>::const_iterator tit;
-	QValueVector<double>::const_iterator vit;
+	QList<int>::const_iterator tit;
+	QList<double>::const_iterator vit;
 
 	vit = m_values.begin();
 	for (tit = m_times.begin(); tit != m_times.end(); tit++) {
@@ -112,10 +112,10 @@ void NumberRecorder::simplify() {
 //		qDebug("End: %i->%i", i, end);
 		if (i > 200) { exit(0); }
 		if (end > i + 1) {
-			QValueVector<int>::iterator tst = m_times.begin();
-			tst = &tst[i+1];
-			QValueVector<double>::iterator vst = m_values.begin();
-			vst = &vst[i+1];
+			QList<int>::iterator tst = m_times.begin();
+			tst++;
+			QList<double>::iterator vst = m_values.begin();
+			vst++;
 //			qDebug("Erasing %i at %i", ((end - i) - 1), i);
 			for (int d = 0; d < ((end - i) - 1); d++) {
 				tst = m_times.erase(tst);

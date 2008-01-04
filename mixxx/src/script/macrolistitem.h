@@ -1,12 +1,12 @@
 #ifndef SCRIPT_MACROLISTITEM_H
 #define SCRIPT_MACROLISTITEM_H
 
-#include <qlistview.h>
+#include <q3listview.h>
 
 #include "macrolist.h"
 #include "macro.h"
 
-class MacroListItem : public QListViewItem {
+class MacroListItem : public Q3ListViewItem {
 	public:
 		MacroListItem(MacroList* parent, Macro* macro);
 		~MacroListItem();

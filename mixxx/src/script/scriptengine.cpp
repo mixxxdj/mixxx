@@ -26,14 +26,20 @@ ScriptEngine::ScriptEngine(MixxxApp* parent, Track* track) {
 #ifdef __PYTHON__
 	PythonInterface::initInterface(m_pi);	
 #endif
+
+	m_qti = new QtScriptInterface(m_pi);
 	
-	m_macros = new QPtrList<Macro>();
+	m_macros = new QList<Macro*>();
 
 	loadMacros();
 	m_rec = new ScriptRecorder(track);
 	
 	//ScriptTest* stest = new ScriptTest(this);
 	m_studio = new ScriptStudio(this);
+
+	// A handy test call:
+	//q->interpolate("[Master]", "crossfader", &QDateTime::currentDateTime(),
+	//	5000, -1.0, 15000, 1.0, 1234);
 }
 
 void ScriptEngine::playTrack(int channel, QString filename) {

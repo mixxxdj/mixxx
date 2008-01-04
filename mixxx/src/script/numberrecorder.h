@@ -6,8 +6,7 @@
 #include "signalrecorder.h"
 #include "../controlobjectthreadmain.h"
 
-#include <qvaluelist.h>
-#include <qvaluevector.h>
+#include <QList>
 #include <qobject.h>
 #include <qtimer.h>
 
@@ -35,8 +34,8 @@ class NumberRecorder : public SignalRecorder {
 	
 		const char* m_group;
 		const char* m_name;
-		QValueVector<int> m_times;
-		QValueVector<double> m_values;
+		QList<int> m_times;
+		QList<double> m_values;
 		SDateTime *m_base;
 		int m_evcount;
 

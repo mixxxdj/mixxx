@@ -5,7 +5,7 @@
 #include "recorder.h"
 #include "../track.h"
 
-#include <qvaluevector.h>
+#include <QList>
 
 class TrackRecorder : public SignalRecorder {
 	Q_OBJECT
@@ -23,8 +23,8 @@ class TrackRecorder : public SignalRecorder {
 	protected:
 		SDateTime* m_base;
 
-		QValueVector<int> m_times;
-		QValueVector<QString> m_paths;
+		QList<int> m_times;
+		QList<QString> m_paths;
 
 		Track* m_track;
 		int m_channel;

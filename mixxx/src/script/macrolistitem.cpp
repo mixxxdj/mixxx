@@ -1,7 +1,7 @@
 #include "macrolistitem.h"
 
 MacroListItem::MacroListItem(MacroList* parent, Macro* macro) :
-	QListViewItem(parent, "Dummy") {
+	Q3ListViewItem(parent, "Dummy") {
 
 	m_macro = macro;
 		
@@ -13,7 +13,7 @@ MacroListItem::~MacroListItem() {
 }
 
 void MacroListItem::okRename(int col) {
-	QListViewItem::okRename(col);
+	Q3ListViewItem::okRename(col);
 	m_macro->setName(text(0));
 }
 
