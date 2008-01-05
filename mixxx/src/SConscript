@@ -558,6 +558,7 @@ if int(flags_script) and platform == 'win32':
 			script/macrolistitem.cpp script/qtscriptinterface.cpp""")
 	env.Append(CXXFLAGS = '-D__SCRIPT__')
 	env.Append(CXXFLAGS = '-I$QTDIR/include/QtScript')
+	env.Uic4('script/scriptstudio.ui')
 else:
 	flags_script = 0
 	print "SuperCoolAwesomeScript (name contest pending)... disabled"
