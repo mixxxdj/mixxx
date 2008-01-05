@@ -45,6 +45,7 @@ public:
 //    void writePage(unsigned char *header, unsigned char *body,
 //                   int headerLen, int bodyLen, int count);
 private:
+    void serverConnect();
     shout_t *m_pShout;
     long m_iShoutStatus;
     ConfigObject<ConfigValue> *config;

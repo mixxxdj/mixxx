@@ -1,5 +1,5 @@
 /****************************************************************************
-                     encodervorbis.h  -  vorbis encoder for mixxx
+                   encodervorbis.cpp  -  vorbis encoder for mixxx
                              -------------------
     copyright            : (C) 2007 by Wesley Stessens
                            (C) 1994 by Xiph.org (encoder example)
@@ -45,7 +45,7 @@ http://svn.xiph.org/trunk/vorbis/examples/encoder_example.c
 EncoderVorbis::EncoderVorbis(ConfigObject<ConfigValue> *_config, EngineAbstractRecord *engine)
 {
     if (engine) pEngine = engine;
-    xTitle = "abc";
+    metaDataTitle = metaDataArtist = "";
     m_pConfig = _config;
 }
 
@@ -172,20 +172,15 @@ void EncoderVorbis::encodeBuffer(const CSAMPLE *samples, const int size)
     int i;
 
     if (metaDataHasChanged())
-    {
-//        qDebug() << "Metadata has changed! New artist: " << m_pMetaData->getArtist();
-//        qDebug() << "Metadata has changed! New title: " << m_pMetaData->getTitle();
-//        qDebug() << "Metadata has changed! New album: " << m_pMetaData->getAlbum();
         updateMetaData(m_pMetaData);
-    }
 
     buffer = vorbis_analysis_buffer(&vdsp, size);
 
     // Deinterleave samples
     for (i = 0; i < size/2; ++i)
     {
-        buffer[0][i] = samples[i*2]/32768.f; // 0; 2; 4
-        buffer[1][i] = samples[i*2+1]/32768.f; // 1; 3; 5
+        buffer[0][i] = samples[i*2]/32768.f;
+        buffer[1][i] = samples[i*2+1]/32768.f;
     }
 
     vorbis_analysis_wrote(&vdsp, i);
@@ -197,9 +192,8 @@ void EncoderVorbis::updateMetaData(TrackInfoObject *trackInfoObj)
     // convert QStrings to char*s
     QByteArray baArtist = m_pMetaData->getArtist().toLatin1();
     QByteArray baTitle = m_pMetaData->getTitle().toLatin1();
-    char *cArtist = baArtist.data();
-    char *cTitle = baTitle.data();
-    xTitle = cTitle;
+    metaDataArtist = baArtist.data();
+    metaDataTitle = baTitle.data();
 
     flushStream();
     initStream();
@@ -217,9 +211,9 @@ void EncoderVorbis::initStream()
 
         // add comment
         vorbis_comment_init(&vcomment);
-        vorbis_comment_add_tag(&vcomment, "ENCODER", "mixxx");
-        vorbis_comment_add_tag(&vcomment, "ARTIST", "Mixxx Broadcast");
-        vorbis_comment_add_tag(&vcomment, "TITLE", xTitle);
+        vorbis_comment_add_tag(&vcomment, "ENCODER", "mixxx/libvorbis");
+        if (metaDataArtist!="") vorbis_comment_add_tag(&vcomment, "ARTIST", metaDataArtist);
+        if (metaDataTitle!="") vorbis_comment_add_tag(&vcomment, "TITLE", metaDataTitle);
 
         // set up the vorbis headers
         ogg_packet headerInit;
