@@ -93,6 +93,8 @@ void ScriptEngine::executeMacro(Macro* macro) {
 #else
 		qDebug("Python support not available!");
 #endif
+	} else if (macro->getLang() == Macro::LANG_QTSCRIPT) {
+		m_qti->executeScript(macro->getScript(), m_pcount);
 	} else {
 		return;
 	}
@@ -101,17 +103,18 @@ void ScriptEngine::executeMacro(Macro* macro) {
 
 void ScriptEngine::executeScript(const char* script) {
 	// Don't execute a null script
-	qDebug("This function is obsolete and breaks everything!");
+	//qDebug("This function is obsolete and breaks everything!");
 	if (script == 0x0) {
 		return;
 	}
+
 	// For now just call lua, but this layer is here in anticipation of not
 	// necessarily wanting to use it
-#ifdef __LUA__
-	m_lua->executeScript(script, -1);
-#else
-	qDebug("Lua support not available!");
-#endif
+//#ifdef __LUA__
+//	m_lua->executeScript(script, -1);
+//#else
+//	qDebug("Lua support not available!");
+//#endif
 }
 
 void ScriptEngine::deleteMacro(Macro* macro) {

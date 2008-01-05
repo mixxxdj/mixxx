@@ -36,8 +36,8 @@ class PlayInterface {
 		void endFade();
 		void endList();
 
-		void playChannel1(int time, char* path);
-		void playChannel2(int time, char* path);
+		void playChannel1(int time, const char* path);
+		void playChannel2(int time, const char* path);
 
 
 	private:

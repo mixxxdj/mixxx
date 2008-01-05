@@ -14,7 +14,19 @@ QtScriptInterface::QtScriptInterface(PlayInterface* pi) : m_pi(pi),
 	globalObject.setProperty("Mixxx", m_engine.newQObject(this));
 
 	//qWarning() << "Script: " << m_engine.evaluate("var bob = new QPushButton(\"Hello, world!\", 0); bob.setText(\"Hello!\"); bob.show()").toString();
-	qWarning() << "Test: " << m_engine.evaluate("Mixxx.test()").toString();
+	//qWarning() << "Test: " << m_engine.evaluate("Mixxx.test()").toString();
+	//qWarning() << "Test2: " << m_engine.evaluate("Mixxx.getValue(\"[Master]\", \"crossfader\")").toString();
+}
+
+void QtScriptInterface::executeScript(const char* script, int process) {
+	m_pi->setProcess(process);
+	m_result = m_engine.evaluate(script).toString();
+	qWarning() << m_result;
+	m_pi->clearProcess();
+}
+
+QString QtScriptInterface::getResult() {
+	return m_result;
 }
 
 QScriptValue QtScriptInterface::newPushButton(QScriptContext *context, QScriptEngine *engine)
@@ -50,15 +62,15 @@ void QtScriptInterface::killTag(int tag) {
 	m_pi->killTag(tag);
 }
 		
-double QtScriptInterface::getValue(const char* group, const char* name) {
+double QtScriptInterface::getValue(QString group, QString name) {
 	return m_pi->getValue(group, name);
 }
 
-void QtScriptInterface::startList(const char* group, const char* name) {
+void QtScriptInterface::startList(QString group, QString name) {
 	m_pi->startList(group, name);
 }
 
-void QtScriptInterface::startFade(const char* group, const char* name) {
+void QtScriptInterface::startFade(QString group, QString name) {
 	m_pi->startFade(group, name);
 }
 
@@ -74,10 +86,10 @@ void QtScriptInterface::endList() {
 	m_pi->endList();
 }
 
-void QtScriptInterface::playChannel1(int time, char* path) {
+void QtScriptInterface::playChannel1(int time, QString path) {
 	m_pi->playChannel1(time, path);
 }
 
-void QtScriptInterface::playChannel2(int time, char* path) {
+void QtScriptInterface::playChannel2(int time, QString path) {
 	m_pi->playChannel2(time, path);
 }
