@@ -14,9 +14,18 @@
 *                                                                         *
 ***************************************************************************/
 
+/* This class provides a way to do audio processing that does not need
+ * to be executed in real-time. For example, shoutcast encoding/broadcasting
+ * and recording encoding can be done here. This class uses double-buffering
+ * to increase the amount of time the CPU has to do whatever work needs to
+ * be done, and that work is executed in a separate thread. (Threading
+ * allows the next buffer to be filled while processing a buffer that's is
+ * already full.)
+ *
+ */
+
 #include <QtCore>
 #include <QtDebug>
-#include <stdio.h> // currently used for writing to stdout
 #include "enginesidechain.h"
 #include "enginebuffer.h"
 
@@ -45,8 +54,11 @@ EngineSideChain::EngineSideChain(ConfigObject<ConfigValue> * pConfig)
 
 EngineSideChain::~EngineSideChain()
 {
-    m_bufferLock.lock();
+    m_backBufferLock.lock();
     m_waitLock.lock();
+    
+    terminate(); //FIXME: Nasty
+
     //Free up memory
     delete m_bufferFront;
     delete m_bufferBack;
@@ -54,17 +66,14 @@ EngineSideChain::~EngineSideChain()
 #ifdef __SHOUTCAST__
     delete shoutcast;
 #endif
-    terminate(); //FIXME: Nasty
 
     m_waitLock.unlock();
-    m_bufferLock.unlock();
-
+    m_backBufferLock.unlock();
 }
 
+/** Submit a buffer of samples to be processed in the sidechain*/ 
 void EngineSideChain::submitSamples(CSAMPLE* newBuffer, int buffer_size)
-{
-    m_bufferLock.lock();
-        
+{       
     //Copy samples into m_buffer.
     if (m_iBufferEnd + buffer_size <= SIDECHAIN_BUFFER_SIZE)    //FIXME: is <= correct?
     {
@@ -76,7 +85,17 @@ void EngineSideChain::submitSamples(CSAMPLE* newBuffer, int buffer_size)
         memcpy(&m_buffer[m_iBufferEnd], newBuffer, (SIDECHAIN_BUFFER_SIZE - m_iBufferEnd)*sizeof(CSAMPLE));
         //Save the number of samples written because m_iBufferEnd gets reset in swapBuffers:
         int iNumSamplesWritten = SIDECHAIN_BUFFER_SIZE - m_iBufferEnd; 
+        
+        //m_backBufferLock.lock(); //This will block the callback thread if the buffering overflows.
         swapBuffers(); //Swaps buffers and resets m_iBufferEnd to zero.
+        //m_backBufferLock.unlock();
+
+        //Since we swapped buffers, we now have a full buffer that needs processing.
+        m_waitLock.lock();
+        m_waitForFullBuffer.wakeAll(); //... so wake the thread up and get processing. :)
+        m_waitLock.unlock();  
+
+        //Calculate how many leftover samples need to be written to the other buffer.
         int iNumSamplesStillToWrite = buffer_size - iNumSamplesWritten;
         
         //Check to see if the remaining samples will fit in the other empty buffer.
@@ -85,17 +104,13 @@ void EngineSideChain::submitSamples(CSAMPLE* newBuffer, int buffer_size)
             iNumSamplesStillToWrite = SIDECHAIN_BUFFER_SIZE; //Drop samples if they won't fit.
             qDebug() << "EngineSideChain warning: dropped samples";
         }
-        memcpy(&m_buffer[m_iBufferEnd], newBuffer, iNumSamplesStillToWrite*sizeof(CSAMPLE));
-        
-        //Since we swapped buffers, we now have a full buffer that needs processing.
-        m_waitLock.lock();
-        m_waitForFullBuffer.wakeAll(); //... so wake the thread up and get processing. :)
-        m_waitLock.unlock();       
+        memcpy(&m_buffer[m_iBufferEnd], &newBuffer[iNumSamplesWritten], iNumSamplesStillToWrite*sizeof(CSAMPLE));
+        m_iBufferEnd += iNumSamplesStillToWrite;
+     
     }
-    
-    m_bufferLock.unlock();
 }
 
+/* Swaps the buffers in the double-buffering mechanism we use */ 
 void EngineSideChain::swapBuffers()
 {
     if (m_buffer == m_bufferFront)
@@ -121,19 +136,19 @@ void EngineSideChain::run()
         m_waitLock.unlock();
         
         //This portion of the code should be able to touch the buffer without having to use
-        //a mutex, because the buffers should have been swapped.
+        //the m_bufferLock mutex, because the buffers should have been swapped.
         
         //IMPORTANT: The filled buffer is "m_filledBuffer" - that's the audio we need to process here.
         
         //Do CPU intensive and non-realtime processing here.
-    
-        //Eg. Use EngineShoutcast...
 
-        //fwrite(m_filledBuffer,1,SIDECHAIN_BUFFER_SIZE,stdout);
-
+        //m_backBufferLock.lock(); //This will cause the audio/callback thread to block if the buffers overflow.
+        
 #ifdef __SHOUTCAST__
         shoutcast->process(m_filledBuffer, m_filledBuffer, SIDECHAIN_BUFFER_SIZE);
-#endif    
+#endif   
+ 
+        //m_backBufferLock.unlock();
     
     }
 
