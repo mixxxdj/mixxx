@@ -55,10 +55,10 @@ EngineShoutcast::EngineShoutcast(ConfigObject<ConfigValue> *_config)
     m_iShoutStatus = 0;
 
     // Initialize libshout
-//    shout_init();
+    shout_init();
 
 // INIT STUFF
-/*	        if (!(m_pShout = shout_new())) {
+	        if (!(m_pShout = shout_new())) {
 		        qDebug() << "Could not allocate shout_t";
 		        return;
 	        }
@@ -101,24 +101,7 @@ EngineShoutcast::EngineShoutcast(ConfigObject<ConfigValue> *_config)
 	          return;
 	        }
 
-	        m_iShoutStatus = shout_open(m_pShout);
-	        if (m_iShoutStatus == SHOUTERR_SUCCESS)
-	          m_iShoutStatus = SHOUTERR_CONNECTED;*/
-
-/*
-Kinda dangerous this loop.
-We don't want an eternal loop if the connection stays busy.
-But this is just for testing.
-*/
-/*	        while (m_iShoutStatus == SHOUTERR_BUSY) {
-	          qDebug() << "Connection pending. Sleeping...";
-	          sleep(1);
-//	          m_iShoutStatus = shout_get_connected(shout);
-		  m_iShoutStatus = shout_get_connected(m_pShout);
-	        }
-		if (m_iShoutStatus == SHOUTERR_CONNECTED) {
-			qDebug() << "***********Connected to Shoutcast server...";
-		}*/
+//    serverConnect();
 
     // Initialize ogg vorbis encoder
     encoder = new EncoderVorbis(_config, this);
@@ -136,40 +119,65 @@ EngineShoutcast::~EngineShoutcast()
     delete encoder;
 }
 
+void EngineShoutcast::serverConnect()
+{
+qDebug("in serverConnect();");
+    if (m_pShout)
+        shout_close(m_pShout);
+    m_iShoutStatus = shout_open(m_pShout);
+    if (m_iShoutStatus == SHOUTERR_SUCCESS)
+        m_iShoutStatus = SHOUTERR_CONNECTED;
+/*
+Kinda dangerous this loop.
+We don't want an eternal loop if the connection stays busy.
+But this is just for testing.
+*/
+    while (m_iShoutStatus == SHOUTERR_BUSY) {
+        qDebug() << "Connection pending. Sleeping...";
+        sleep(1);
+        m_iShoutStatus = shout_get_connected(m_pShout);
+    }
+    if (m_iShoutStatus == SHOUTERR_CONNECTED) {
+        qDebug() << "***********Connected to Shoutcast server...";
+    }
+}
+
 void EngineShoutcast::writePage(unsigned char *header, unsigned char *body,
                                 int headerLen, int bodyLen)
 {
-//if (last+1 != count) qDebug() << "Oh oh! We've got a missed call! Expected: " << last+1 << " but got: " << count;
-//last = count;
 fwrite(header,1,headerLen,stdout);
 fwrite(body,1,bodyLen,stdout);
     qDebug() << "writePage() will write " << bodyLen << " data";
     int ret;
 //    usleep(100000);
-/*    shout_sync(m_pShout);
+/*    qDebug() << "getconnected" << shout_get_connected(m_pShout);
+    m_iShoutStatus = shout_get_connected(m_pShout);
+    if (m_iShoutStatus != SHOUTERR_CONNECTED) {
+        serverConnect();
+    }*/
     if (m_iShoutStatus == SHOUTERR_CONNECTED) {
-//        fwrite(header,1,headerLen,stdout);
+////////        shout_sync(m_pShout);
         ret = shout_send(m_pShout, header, headerLen);
         if (ret != SHOUTERR_SUCCESS) {
             qDebug() << "DEBUG: Send error: " << shout_get_error(m_pShout);
             return;
         } else {
-//            qDebug() << "yea I kinda sent header";
+            qDebug() << "yea I kinda sent header";
         }
-//        fwrite(body,1,bodyLen,stdout);
+
         ret = shout_send(m_pShout, body, bodyLen);
+
         if (ret != SHOUTERR_SUCCESS) {
             qDebug() << "DEBUG: Send error: " << shout_get_error(m_pShout);
             return;
         } else {
-//            qDebug() << "yea I kinda sent footer";
+            qDebug() << "yea I kinda sent footer";
         }
         if (shout_queuelen(m_pShout) > 0)
             printf("DEBUG: queue length: %d\n", (int)shout_queuelen(m_pShout));
-//        shout_sync(m_pShout);
     } else {
         printf("Error connecting: %s\n", shout_get_error(m_pShout));
-    }*/
+    }
 }
 
 /*void EngineShoutcast::wrapper2writePage(void *pObj, unsigned char *header, unsigned char *body,

@@ -57,7 +57,8 @@ private:
 
     EngineAbstractRecord *pEngine;
     TrackInfoObject *m_pMetaData;
-    char *xTitle;
+    char *metaDataTitle;
+    char *metaDataArtist;
 };
 
 #endif
