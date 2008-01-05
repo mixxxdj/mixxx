@@ -173,12 +173,12 @@ void PlayInterface::endFade() {
 	m_name = 0;
 }
 
-void PlayInterface::playChannel1(int time, char* path) {
+void PlayInterface::playChannel1(int time, const char* path) {
 	m_q->schedule(1, path, QDateTime::currentDateTime(), time, m_process, \
 			m_tag);
 }
 
-void PlayInterface::playChannel2(int time, char* path) {
+void PlayInterface::playChannel2(int time, const char* path) {
 	m_q->schedule(2, path, QDateTime::currentDateTime(), time, m_process, \
 			m_tag);
 }

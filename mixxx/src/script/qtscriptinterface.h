@@ -12,6 +12,9 @@ class QtScriptInterface : public QObject {
 public:
 	QtScriptInterface(PlayInterface *pi);
 
+	QString getResult();
+
+	void executeScript(const char* script, int process);
 // Functions that point back to playinterface
 // Not implementing the old fader ones for now since they're bad
 public slots:
@@ -28,22 +31,23 @@ public slots:
 	void killTag(int tag);
 		
 //	double getFader();
-	double getValue(const char* group, const char* name);
+	double getValue(QString group, QString name);
 		
 //	void startFadeCrossfader();
-	void startList(const char* group, const char* name);
-	void startFade(const char* group, const char* name);
+	void startList(QString group, QString name);
+	void startFade(QString group, QString name);
 	void point(int time, double value);
 //	void fadePoint(int time, double value);
 	void endFade();
 	void endList();
 
-	void playChannel1(int time, char* path);
-	void playChannel2(int time, char* path);
+	void playChannel1(int time, QString path);
+	void playChannel2(int time, QString path);
 
 private:
 	PlayInterface* m_pi;
 	QScriptEngine m_engine;
+	QString m_result;
 
 	static QScriptValue newPushButton(QScriptContext *context, QScriptEngine *engine);
 };

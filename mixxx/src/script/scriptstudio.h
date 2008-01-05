@@ -1,42 +1,32 @@
 #ifndef SCRIPT_SCRIPTSTUDIO_H
 #define SCRIPT_SCRIPTSTUDIO_H
 
-#include <qmainwindow.h>
-#include <qtextedit.h>
-#include "macrolist.h"
+// Has to be included with wierd path so that it finds this generated in .obj
+#include "script/ui_scriptstudio.h"
+
 #include "scriptengine.h"
-#include "scriptrecorder.h"
 
-class MacroList;
+#include <QMainWindow>
+#include <QStringList>
 
-class ScriptStudio : public Q3MainWindow {
+class ScriptStudio : public QMainWindow {
+
 	Q_OBJECT
-	
-	public:
-		ScriptStudio(ScriptEngine* model, QWidget* parent = 0, const char* name = "Script Studio");
-		~ScriptStudio();
 
-	public slots:
-		void newLuaScript();
-		void newPythonScript();
-		void changeScript();
-		void editScript();
-		void recordScript();
-		void stopRecord();
-		void playMacro();
-		void deleteMacro();
+public:
+	ScriptStudio(ScriptEngine* eng);
 
-		void showStudio();
-		void setLangLua();
-		void setLangPython();
-	private:
-		ScriptEngine* m_model;
-		QTextEdit* m_edit;
-		MacroList* m_mlist;
-		Macro* m_current;
+public slots:
+	void showStudio();
+	void runPressed();
 
-		ScriptRecorder* m_rec;
+private:
+	void fillTree();
 
-		void updateLangMenu();
+	Ui::ScriptStudio ui;
+
+	ScriptEngine* m_eng;
+	QStringList m_namefilters;
 };
+
 #endif

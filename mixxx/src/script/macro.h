@@ -18,6 +18,7 @@ class Macro {
 		
 		static const int LANG_PYTHON = 1;
 		static const int LANG_LUA = 2;
+		static const int LANG_QTSCRIPT = 3;
 	private:
 		QString m_name;
 		QString m_script;
