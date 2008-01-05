@@ -545,8 +545,11 @@ else:
 	print "MSVC Debugging... disabled"
 
 flags_script = ARGUMENTS.get('script', 0)
-if int(flags_script) and platform == 'win32':
-	env.Append(LIBS = 'QtScript4')
+if int(flags_script):
+	if platform == 'win32':
+		env.Append(LIBS = 'QtScript4')
+	else:
+		env.Append(LIBS = 'QtScript')
 	print "SuperCoolAwesomeScript (name contest pending)... enabled"
 	sources += Split("""script/scriptengine.cpp script/scriptcontrolqueue.cpp
 			script/scriptstudio.cpp script/scriptrecorder.cpp
@@ -556,8 +559,9 @@ if int(flags_script) and platform == 'win32':
 			script/macrolist.cpp script/trackrecorder.cpp
 			script/sdatetime.cpp script/signalrecorder.cpp
 			script/macrolistitem.cpp script/qtscriptinterface.cpp""")
-	env.Append(CXXFLAGS = '-D__SCRIPT__')
 	env.Append(CXXFLAGS = '-I$QTDIR/include/QtScript')
+	env.Append(CXXFLAGS = '-D__SCRIPT__')
+	
 	env.Uic4('script/scriptstudio.ui')
 else:
 	flags_script = 0
