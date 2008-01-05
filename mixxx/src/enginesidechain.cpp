@@ -36,6 +36,7 @@
 EngineSideChain::EngineSideChain(ConfigObject<ConfigValue> * pConfig)
 {
     m_pConfig = pConfig;
+    m_bStopThread = false;
     
     m_bufferFront = new CSAMPLE[SIDECHAIN_BUFFER_SIZE];
     m_bufferBack  = new CSAMPLE[SIDECHAIN_BUFFER_SIZE];
@@ -55,10 +56,17 @@ EngineSideChain::EngineSideChain(ConfigObject<ConfigValue> * pConfig)
 EngineSideChain::~EngineSideChain()
 {
     m_backBufferLock.lock();
-    m_waitLock.lock();
     
-    terminate(); //FIXME: Nasty
-
+    m_stopLock.lock();
+    m_bStopThread = true;
+    m_stopLock.unlock();
+    
+    m_waitLock.lock();
+    m_waitForFullBuffer.wakeAll();
+    m_waitLock.unlock();
+    
+    wait(); //Wait until the thread has finished.
+    
     //Free up memory
     delete m_bufferFront;
     delete m_bufferBack;
@@ -67,7 +75,6 @@ EngineSideChain::~EngineSideChain()
     delete shoutcast;
 #endif
 
-    m_waitLock.unlock();
     m_backBufferLock.unlock();
 }
 
@@ -134,6 +141,16 @@ void EngineSideChain::run()
         m_waitLock.lock();
         m_waitForFullBuffer.wait(&m_waitLock);  //Sleep until the buffer has been filled.
         m_waitLock.unlock();
+        
+        //Check to see if we're supposed to exit/stop this thread.
+        m_stopLock.lock();
+        if (m_bStopThread)
+        {
+            m_stopLock.unlock();
+            return;
+        }
+        m_stopLock.unlock();
+        
         
         //This portion of the code should be able to touch the buffer without having to use
         //the m_bufferLock mutex, because the buffers should have been swapped.
