@@ -121,7 +121,7 @@ But this is just for testing.
 		}*/
 
     // Initialize ogg vorbis encoder
-    encoder = new EncoderVorbis(this);
+    encoder = new EncoderVorbis(_config, this);
     if (encoder->initEncoder() < 0) {
         qDebug() << "**** Vorbis init failed";
     }
