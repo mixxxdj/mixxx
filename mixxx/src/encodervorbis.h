@@ -19,6 +19,7 @@
 
 #include <QObject>
 #include "defs.h"
+#include "configobject.h"
 
 #include <vorbis/vorbisenc.h> // this also includes vorbis/codec.h
 
@@ -29,7 +30,7 @@ class EncoderVorbis : public QObject {
     Q_OBJECT
 
 public:
-    EncoderVorbis(EngineAbstractRecord *engine=0);
+    EncoderVorbis(ConfigObject<ConfigValue> *_config, EngineAbstractRecord *engine=0);
     ~EncoderVorbis();
     int initEncoder();
     void encodeBuffer(const CSAMPLE *samples, const int size);
@@ -44,6 +45,7 @@ private:
     void initStream();
     void sendPackages();
 
+    ConfigObject<ConfigValue> *m_pConfig; /* provides ConfigKey access */
     ogg_stream_state oggs;    /* take physical pages, weld into logical stream
                                  of packets */
     ogg_page oggpage;         /* Ogg bitstream page: contains Vorbis packets */

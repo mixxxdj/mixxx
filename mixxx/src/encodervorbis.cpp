@@ -42,10 +42,11 @@ http://svn.xiph.org/trunk/vorbis/examples/encoder_example.c
 #include "trackinfoobject.h"
 
 // Constructor
-EncoderVorbis::EncoderVorbis(EngineAbstractRecord *engine)
+EncoderVorbis::EncoderVorbis(ConfigObject<ConfigValue> *_config, EngineAbstractRecord *engine)
 {
     if (engine) pEngine = engine;
     xTitle = "abc";
+    m_pConfig = _config;
 }
 
 // Destructor
@@ -246,7 +247,8 @@ int EncoderVorbis::initEncoder()
     vorbis_info_init(&vinfo);
 
     // initialize VBR quality based mode
-    ret = vorbis_encode_init_vbr(&vinfo, 2, 48000, 0.4); // TODO: set sample rate
+    unsigned long samplerate = m_pConfig->getValueString(ConfigKey("[Soundcard]","Samplerate")).toULong();
+    ret = vorbis_encode_init_vbr(&vinfo, 2, samplerate, 0.4);
 
     if (ret == 0) {
         initStream();
