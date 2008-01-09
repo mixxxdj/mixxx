@@ -18,7 +18,7 @@
 #ifndef WKNOB_H
 #define WKNOB_H
 
-#include "wwidget.h"
+#include "wabstractcontrol.h"
 #include <qpixmap.h>
 #include <qstring.h>
 //Added by qt3to4:
@@ -29,10 +29,10 @@
   *@author Tue & Ken Haste Andersen
   */
 
-class WKnob : public WWidget  {
+class WKnob : public WAbstractControl  {
    Q_OBJECT
 public:
-    WKnob(QWidget *parent=0, const char *name=0);
+    WKnob(QWidget *parent=0, const char *name=0, float defaultValue=63.);
     ~WKnob();
     void setup(QDomNode node);
     void setPositions(int iNoPos, bool bIncludingDisabled=false);
@@ -40,8 +40,6 @@ public:
     /** Associates a background pixmap with the widget. This is only needed if the knob
       * pixmaps contains alpha channel values. */
     void setPixmapBackground(const QString &filename);
-    /** Resets the widgets value */
-    void reset();
 private:
     /** Set position number to zero and deallocate pixmaps */
     void resetPositions();
@@ -64,7 +62,6 @@ private:
     double m_dStartValue;
     /** True if disabled pixmaps is loaded */
     bool m_bDisabledLoaded;
-    
 };
 
 #endif

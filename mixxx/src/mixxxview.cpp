@@ -38,6 +38,7 @@
 #include "wtracktablemodel.h"
 #include "wtracktableview.h"
 #include "wwidget.h"
+#include "wabstractcontrol.h"
 #include "wknob.h"
 #include "wpushbutton.h"
 #include "wslider.h"
@@ -282,10 +283,11 @@ void MixxxView::createAllWidgets(QDomElement docElem,
                                  QWidget * parent,
                                  bool bVisualsWaveform,
                                  ConfigObject<ConfigValue> * pConfig) {
-
+    WAbstractControl *currentControl = 0;
     QDomNode node = docElem.firstChild();
     while (!node.isNull())
     {
+        currentControl = 0;
         if (node.isElement())
         {
           /*############## NOT PERSISTENT OBJECT ##############*/
@@ -303,6 +305,7 @@ void MixxxView::createAllWidgets(QDomElement docElem,
                 p->setup(node);
                 p->installEventFilter(m_pKeyboard);
                 m_qWidgetList.append(p);
+                currentControl = qobject_cast<WAbstractControl*>(p);
             }
             else if (node.nodeName()=="Label")
             {
@@ -629,11 +632,9 @@ void MixxxView::createAllWidgets(QDomElement docElem,
 		    p->setup(node);
 		    p->installEventFilter(m_pKeyboard);
 		    m_qWidgetList.append(p);
+		    currentControl = qobject_cast<WAbstractControl*>(p);
 		}
-
             }
-
-
 
             // persistent: m_pOverviewCh1, m_pOverviewCh2
             else if (node.nodeName()=="Overview")
@@ -712,6 +713,18 @@ void MixxxView::createAllWidgets(QDomElement docElem,
                 m_pTrackTableView->setup(node);
 		m_pTrackTableView->show();
             }
+            // set default value (only if it changes from the standard value)
+            if (currentControl) {
+                if (compareConfigKeys(node, "[Master],headMix"))
+                {
+                    currentControl->setDefaultValue(0.);
+                }
+                else if (compareConfigKeys(node, "[Channel1],volume")||
+                           compareConfigKeys(node, "[Channel2],volume"))
+                {
+                    currentControl->setDefaultValue(127.);
+                }
+            }
         }
         node = node.nextSibling();
 
@@ -727,7 +740,7 @@ void MixxxView::rebootGUI(QWidget * parent, bool bVisualsWaveform, ConfigObject<
 
     //remove all widget from the list (except permanent one)
     while (!m_qWidgetList.isEmpty()) {
-	delete m_qWidgetList.takeFirst();
+        delete m_qWidgetList.takeFirst();
     }
 
     //hide permanent widget
@@ -752,8 +765,8 @@ void MixxxView::rebootGUI(QWidget * parent, bool bVisualsWaveform, ConfigObject<
     show();
 
     for (i = 0; i < m_qWidgetList.size(); ++i) {
-	obj = m_qWidgetList[i];
-	((QWidget *)obj)->show();
+        obj = m_qWidgetList[i];
+        ((QWidget *)obj)->show();
     }
     if (m_pVisualCh1) ((QWidget *)m_pVisualCh1)->repaint();
     if (m_pVisualCh2) ((QWidget *)m_pVisualCh2)->repaint();
