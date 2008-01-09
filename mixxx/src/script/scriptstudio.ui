@@ -5,37 +5,33 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>630</width>
-    <height>442</height>
+    <width>622</width>
+    <height>403</height>
    </rect>
   </property>
   <property name="windowTitle" >
    <string>Mixxx Script Studio</string>
   </property>
   <widget class="QWidget" name="centralwidget" >
-   <widget class="QSplitter" name="splitter" >
-    <property name="geometry" >
-     <rect>
-      <x>10</x>
-      <y>10</y>
-      <width>611</width>
-      <height>391</height>
-     </rect>
-    </property>
-    <property name="orientation" >
-     <enum>Qt::Horizontal</enum>
-    </property>
-    <widget class="QTreeView" name="treeView" />
-    <widget class="QTextEdit" name="textEdit" />
-   </widget>
+   <layout class="QVBoxLayout" >
+    <item>
+     <widget class="QSplitter" name="splitter" >
+      <property name="orientation" >
+       <enum>Qt::Horizontal</enum>
+      </property>
+      <widget class="QTreeView" name="treeView" />
+      <widget class="QTextEdit" name="textEdit" />
+     </widget>
+    </item>
+   </layout>
   </widget>
   <widget class="QMenuBar" name="menubar" >
    <property name="geometry" >
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>630</width>
-     <height>21</height>
+     <width>622</width>
+     <height>25</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile" >
