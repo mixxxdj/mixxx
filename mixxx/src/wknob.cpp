@@ -23,13 +23,13 @@
 #include <QMouseEvent>
 #include <QPaintEvent>
 
-WKnob::WKnob(QWidget * parent, const char * name, float defaultValue) : WAbstractControl(parent,name)
+WKnob::WKnob(QWidget * parent, const char * name, float defaultValue)
+    : WAbstractControl(parent,name,defaultValue)
 {
     m_pPixmaps = 0;
     m_pPixmapBack = 0;
     m_pPixmapBuffer = 0;
     m_bDisabledLoaded = false;
-    m_fDefaultValue = defaultValue;
     setPositions(0);
     setBackgroundMode(Qt::NoBackground);
 }
