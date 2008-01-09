@@ -23,12 +23,13 @@
 #include <QMouseEvent>
 #include <QPaintEvent>
 
-WKnob::WKnob(QWidget * parent, const char * name) : WWidget(parent,name)
+WKnob::WKnob(QWidget * parent, const char * name, float defaultValue) : WAbstractControl(parent,name)
 {
     m_pPixmaps = 0;
     m_pPixmapBack = 0;
     m_pPixmapBuffer = 0;
     m_bDisabledLoaded = false;
+    m_fDefaultValue = defaultValue;
     setPositions(0);
     setBackgroundMode(Qt::NoBackground);
 }
@@ -52,7 +53,7 @@ void WKnob::setup(QDomNode node)
     else
         setPositions(selectNodeInt(node, "NumberStates"),false);
 
-    // Load knob  pixmaps
+    // Load knob pixmaps
     QString path = selectNodeQString(node, "Path");
     for (int i=0; i<m_iNoPos; ++i)
         setPixmap(i, getPath(path.arg(i)));
@@ -65,7 +66,6 @@ void WKnob::setup(QDomNode node)
             setPixmap(i+m_iNoPos, getPath(path.arg(i)));
         m_bDisabledLoaded = true;
     }
-
 }
 
 void WKnob::setPositions(int iNoPos, bool bIncludingDisabled)
@@ -121,16 +121,16 @@ void WKnob::setPixmapBackground(const QString &filename)
 
 void WKnob::mouseMoveEvent(QMouseEvent * e)
 {
-    m_fValue += (m_dStartValue-e->y());
-    m_dStartValue = e->y();
-    if (m_fValue>127.)
-        m_fValue = 127.;
-    else if (m_fValue<0.)
-        m_fValue = 0.;
-
-    emit(valueChangedLeftDown(m_fValue));
-
-    update();
+    if (!m_bRightButtonPressed) {
+        m_fValue += (m_dStartValue-e->y());
+        m_dStartValue = e->y();
+        if (m_fValue>127.)
+            m_fValue = 127.;
+        else if (m_fValue<0.)
+            m_fValue = 0.;
+        emit(valueChangedLeftDown(m_fValue));
+        update();
+    }
 }
 
 void WKnob::mousePressEvent(QMouseEvent * e)
@@ -138,7 +138,10 @@ void WKnob::mousePressEvent(QMouseEvent * e)
     m_dStartValue = e->y();
 
     if (e->button() == Qt::RightButton)
+    {
         reset();
+        m_bRightButtonPressed = true;
+    }
 }
 
 void WKnob::mouseReleaseEvent(QMouseEvent * e)
@@ -146,7 +149,8 @@ void WKnob::mouseReleaseEvent(QMouseEvent * e)
     if (e->button()==Qt::LeftButton)
         emit(valueChangedLeftUp(m_fValue));
     else if (e->button()==Qt::RightButton)
-        emit(valueChangedRightUp(m_fValue));
+        m_bRightButtonPressed = false;
+        //emit(valueChangedRightUp(m_fValue));
 
     update();
 }
@@ -184,11 +188,3 @@ void WKnob::paintEvent(QPaintEvent *)
             bitBlt(this, 0, 0, m_pPixmaps[idx]);
     }
 }
-
-void WKnob::reset()
-{
-    setValue(63.);
-    emit(valueChangedLeftUp(m_fValue));
-    emit(valueChangedLeftDown(m_fValue));
-}
-

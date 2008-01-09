@@ -25,7 +25,8 @@
 #include "defs.h"
 #include "wpixmapstore.h"
 
-WSliderComposed::WSliderComposed(QWidget * parent, const char * name ) : WWidget(parent,name)
+WSliderComposed::WSliderComposed(QWidget * parent, const char * name, float defaultValue)
+    : WAbstractControl(parent,name,defaultValue)
 {
     m_pSlider = 0;
     m_pHandle = 0;
@@ -38,7 +39,7 @@ WSliderComposed::WSliderComposed(QWidget * parent, const char * name ) : WWidget
     m_iSliderLength=0;
     m_iHandleLength=0;
 
-    m_fValue = 63.5; // FWI: Fixed slider default positon
+    m_fValue = defaultValue; // FWI: Fixed slider default positon
 }
 
 WSliderComposed::~WSliderComposed()
@@ -64,7 +65,6 @@ void WSliderComposed::setup(QDomNode node)
         if (selectNodeQString(node, "EventWhileDrag").contains("no"))
             m_bEventWhileDrag = false;
 }
-
 
 void WSliderComposed::setPixmaps(bool bHorizontal, const QString &filenameSlider, const QString &filenameHandle)
 {
@@ -113,35 +113,37 @@ void WSliderComposed::unsetPixmaps()
 
 void WSliderComposed::mouseMoveEvent(QMouseEvent * e)
 {
-    if (m_bHorizontal)
-        m_iPos = e->x()-m_iHandleLength/2;
-    else
-        m_iPos = e->y()-m_iHandleLength/2;
-
-    //qDebug("start %i, pos %i",m_iStartPos, m_iPos);
-    m_iPos = m_iStartHandlePos + (m_iPos-m_iStartMousePos);
-
-    if (m_iPos>(m_iSliderLength-m_iHandleLength))
-        m_iPos = m_iSliderLength-m_iHandleLength;
-    else if (m_iPos<0)
-        m_iPos = 0;
-
-    // value ranges from 0 to 127
-    m_fValue = (double)m_iPos*(127./(double)(m_iSliderLength-m_iHandleLength));
-    if (!m_bHorizontal)
-        m_fValue = 127.-m_fValue;
-
-    // Emit valueChanged signal
-    if (m_bEventWhileDrag)
-    {
-        if (e->button()==Qt::RightButton)
-            emit(valueChangedRightUp(m_fValue));
+    if (!m_bRightButtonPressed) {
+        if (m_bHorizontal)
+            m_iPos = e->x()-m_iHandleLength/2;
         else
-            emit(valueChangedLeftUp(m_fValue));
-    }
+            m_iPos = e->y()-m_iHandleLength/2;
 
-    // Update display
-    update();
+        //qDebug("start %i, pos %i",m_iStartPos, m_iPos);
+        m_iPos = m_iStartHandlePos + (m_iPos-m_iStartMousePos);
+
+        if (m_iPos>(m_iSliderLength-m_iHandleLength))
+            m_iPos = m_iSliderLength-m_iHandleLength;
+        else if (m_iPos<0)
+            m_iPos = 0;
+
+        // value ranges from 0 to 127
+        m_fValue = (double)m_iPos*(127./(double)(m_iSliderLength-m_iHandleLength));
+        if (!m_bHorizontal)
+            m_fValue = 127.-m_fValue;
+
+        // Emit valueChanged signal
+        if (m_bEventWhileDrag)
+        {
+            if (e->button()==Qt::RightButton)
+                emit(valueChangedRightUp(m_fValue));
+            else
+                emit(valueChangedLeftUp(m_fValue));
+        }
+
+        // Update display
+        update();
+    }
 }
 
 void WSliderComposed::mouseReleaseEvent(QMouseEvent * e)
@@ -157,6 +159,8 @@ void WSliderComposed::mouseReleaseEvent(QMouseEvent * e)
 
         m_bDrag = false;
     }
+    if (e->button()==Qt::RightButton)
+        m_bRightButtonPressed = false;
 }
 
 void WSliderComposed::mousePressEvent(QMouseEvent * e)
@@ -171,7 +175,10 @@ void WSliderComposed::mousePressEvent(QMouseEvent * e)
     else
     {
         if (e->button() == Qt::RightButton)
+        {
             reset();
+            m_bRightButtonPressed = true;
+        }
         else
         {
             if (m_bHorizontal)
@@ -229,12 +236,5 @@ void WSliderComposed::setValue(double fValue)
 
         repaint();
     }
-}
-
-void WSliderComposed::reset()
-{
-    setValue(63.5); // FWI: Fixed slider default Position
-    emit(valueChangedLeftUp(m_fValue));
-    emit(valueChangedLeftDown(m_fValue));
 }
 

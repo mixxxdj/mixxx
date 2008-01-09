@@ -18,7 +18,7 @@
 #ifndef WSLIDERCOMPOSED_H
 #define WSLIDERCOMPOSED_H
 
-#include "wwidget.h"
+#include "wabstractcontrol.h"
 #include <qstring.h>
 #include <qpixmap.h>
 //Added by qt3to4:
@@ -30,10 +30,10 @@
   *@author Tue & Ken Haste Andersen
   */
 
-class WSliderComposed : public WWidget  {
+class WSliderComposed : public WAbstractControl  {
     Q_OBJECT
 public:
-    WSliderComposed(QWidget *parent=0, const char *name=0);
+    WSliderComposed(QWidget *parent=0, const char *name=0, float defaultValue=63.5);
     ~WSliderComposed();
     void setup(QDomNode node);
     void setPixmaps(bool bHorizontal, const QString &filenameSlider, const QString &filenameHandle);
@@ -41,11 +41,9 @@ public:
     void mouseReleaseEvent(QMouseEvent *e);
     void mousePressEvent(QMouseEvent *e);
     void paintEvent(QPaintEvent *);
-
 public slots:
     void setValue(double);
 private:
-    void reset();
     void unsetPixmaps();
 
     /** Internal storage of slider position in pixels */
@@ -66,7 +64,6 @@ private:
     QPixmap *m_pSlider;
     /** Pointer to pixmap of the handle */
     QPixmap *m_pHandle;
-
 };
 
 #endif

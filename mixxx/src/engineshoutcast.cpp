@@ -100,8 +100,8 @@ EngineShoutcast::EngineShoutcast(ConfigObject<ConfigValue> *_config)
 	          qDebug() << "Error setting non-blocking mode:" << shout_get_error(m_pShout);
 	          return;
 	        }
-
-//    serverConnect();
+qDebug("********START SERVERCONNECT*******");
+    serverConnect();
 
     // Initialize ogg vorbis encoder
     encoder = new EncoderVorbis(_config, this);
