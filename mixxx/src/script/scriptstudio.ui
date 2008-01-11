@@ -20,7 +20,13 @@
        <enum>Qt::Horizontal</enum>
       </property>
       <widget class="QTreeView" name="treeView" />
-      <widget class="QTextEdit" name="textEdit" />
+      <widget class="QTextEdit" name="textEdit" >
+       <property name="font" >
+        <font>
+         <family>Courier New</family>
+        </font>
+       </property>
+      </widget>
      </widget>
     </item>
    </layout>
@@ -65,6 +71,9 @@
    <property name="text" >
     <string>Close</string>
    </property>
+   <property name="menuRole" >
+    <enum>QAction::QuitRole</enum>
+   </property>
   </action>
   <action name="actionImport" >
    <property name="text" >
@@ -93,5 +102,22 @@
   </action>
  </widget>
  <resources/>
- <connections/>
+ <connections>
+  <connection>
+   <sender>actionQuit</sender>
+   <signal>triggered()</signal>
+   <receiver>ScriptStudio</receiver>
+   <slot>close()</slot>
+   <hints>
+    <hint type="sourcelabel" >
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel" >
+     <x>310</x>
+     <y>201</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
 </ui>

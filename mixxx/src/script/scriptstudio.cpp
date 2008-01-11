@@ -3,12 +3,12 @@
 #include <QDir>
 #include <QDirModel>
 
-ScriptStudio::ScriptStudio(ScriptEngine *eng) : m_eng(eng) {
-	ui.setupUi(this);
+ScriptStudio::ScriptStudio(ScriptEngine *eng) : QMainWindow(), Ui::ScriptStudio(), m_eng(eng) {
+    setupUi(this);
 
-	connect(ui.actionRun_Macro, SIGNAL(activated()), this, SLOT(runPressed()));
-
-	m_namefilters << "*.mxm";
+	connect(actionRun_Macro, SIGNAL(activated()), this, SLOT(runPressed()));
+    connect(actionImport, SIGNAL(activated()), this, SLOT(importScript()));
+    connect(actionExport, SIGNAL(activated()), this, SLOT(exportScript()));
 }
 
 void ScriptStudio::showStudio() {
@@ -27,10 +27,28 @@ void ScriptStudio::fillTree() {
 	}
 	        
 	QDirModel *model = new QDirModel();
-    ui.treeView->setModel(model);
-	ui.treeView->setRootIndex(model->index(path));
+    treeView->setModel(model);
+	treeView->setRootIndex(model->index(path));
 }
 
 void ScriptStudio::runPressed() {
-	m_eng->executeMacro(new Macro(Macro::LANG_QTSCRIPT, "Macro", ui.textEdit->toPlainText()));
+	m_eng->executeMacro(new Macro(Macro::LANG_QTSCRIPT, "Macro", textEdit->toPlainText()));
 }
+
+void ScriptStudio::importScript() {
+    QString filename = QFileDialog::getOpenFileName(this, "Select a macro...", "", MIXXX_SCRIPT_NAMEFILTER);
+    QFile file(filename);
+    if (file.open(QFile::ReadWrite))
+    {
+        QTextStream stream(&file);
+        textEdit->setPlainText(stream.readAll()); //FIXME: Why doesn't this work?
+    }
+    else
+        QMessageBox::critical(this, "Script Import Error", "Failed to open the selected file.");
+}
+
+void ScriptStudio::exportScript() {
+    qDebug() << "FIXME: ScriptStudio::exportScript() unimplemented in" << __FILE__ << "on line" << __LINE__;
+}
+
+
