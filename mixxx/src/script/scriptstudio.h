@@ -9,7 +9,9 @@
 #include <QMainWindow>
 #include <QStringList>
 
-class ScriptStudio : public QMainWindow {
+#define MIXXX_SCRIPT_NAMEFILTER "*.mxm"
+
+class ScriptStudio : public QMainWindow, public Ui::ScriptStudio {
 
 	Q_OBJECT
 
@@ -19,14 +21,12 @@ public:
 public slots:
 	void showStudio();
 	void runPressed();
-
+    void importScript();
+    void exportScript();
 private:
 	void fillTree();
 
-	Ui::ScriptStudio ui;
-
 	ScriptEngine* m_eng;
-	QStringList m_namefilters;
 };
 
 #endif
