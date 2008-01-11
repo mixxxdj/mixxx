@@ -32,6 +32,7 @@ public:
     int getClientPortsList(void);
     void devOpen(QString device);
     void devClose();
+    void sendShortMsg(unsigned int word);
 protected:
     void run();
     
