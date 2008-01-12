@@ -69,17 +69,20 @@ void ControlPotmeter::setRange(double dMinValue, double dMaxValue)
 
 double ControlPotmeter::getValueToWidget(double dValue)
 {
-    return 127.*(dValue-m_dMinValue)/m_dValueRange;
+    double out = (dValue-m_dMinValue)/m_dValueRange;
+    return (out < 0.5) ? out*128. : out*126. + 1.;
 }
 
 double ControlPotmeter::GetMidiValue()
 {
-    return 127.*(m_dValue-m_dMinValue)/m_dValueRange;
+    double out = (m_dValue-m_dMinValue)/m_dValueRange;
+    return (out < 0.5) ? out*128. : out*126. + 1.;
 }
 
 double ControlPotmeter::getValueFromWidget(double dValue)
 {
-    return m_dMinValue + (dValue/127.)*m_dValueRange;
+    double out = (dValue < 64) ? dValue / 128. : (dValue-1) / 126.;
+    return m_dMinValue + out * m_dValueRange;
 }
 
 void ControlPotmeter::setValueFromThread(double dValue)
@@ -106,7 +109,8 @@ void ControlPotmeter::setValueFromEngine(double dValue)
 
 void ControlPotmeter::setValueFromMidi(MidiCategory, double v)
 {
-    m_dValue = m_dMinValue + (v/127.)*m_dValueRange;
+    double out = (v < 64) ? v / 128. : (v-1) / 126.;
+    m_dValue = m_dMinValue + out*m_dValueRange;
     emit(valueChanged(m_dValue));
 }
 

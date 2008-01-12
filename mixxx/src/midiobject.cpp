@@ -182,9 +182,9 @@ void MidiObject::send(MidiCategory category, char channel, char control, char va
         _14bit <<= 7;
         _14bit |= (unsigned char) control;
         // qDebug("-- 14 bit pitch %i", _14bit);
-        // Need to force the centre point, otherwise the conversion formula maps it very slightly off-centre
+        // Need to force the centre point, otherwise the conversion formula maps it very slightly off-centre (not any more)
         if (_14bit == 8192)
-            newValue = 63.5;
+            newValue = 64.0;
         else
             newValue = (double) _14bit * 127. / 16383.;
         // qDebug("-- converted to %f", newValue);
