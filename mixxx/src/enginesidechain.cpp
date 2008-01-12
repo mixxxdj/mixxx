@@ -41,12 +41,13 @@ EngineSideChain::EngineSideChain(ConfigObject<ConfigValue> * pConfig)
     m_bufferFront = new CSAMPLE[SIDECHAIN_BUFFER_SIZE];
     m_bufferBack  = new CSAMPLE[SIDECHAIN_BUFFER_SIZE];
     m_buffer = m_bufferFront;
-    
+
     m_iBufferEnd = 0;
     
 #ifdef __SHOUTCAST__
     // Shoutcast
-    shoutcast = new EngineShoutcast(m_pConfig);
+    shoutcast = 0;
+//    shoutcast = new EngineShoutcast(m_pConfig);
 #endif    
     
     
@@ -162,7 +163,17 @@ void EngineSideChain::run()
         //m_backBufferLock.lock(); //This will cause the audio/callback thread to block if the buffers overflow.
         
 #ifdef __SHOUTCAST__
-        shoutcast->process(m_filledBuffer, m_filledBuffer, SIDECHAIN_BUFFER_SIZE);
+        if ((bool)m_pConfig->getValueString(ConfigKey("[Shoutcast]","enabled")).toInt() != (bool)shoutcast) {
+            if (m_pConfig->getValueString(ConfigKey("[Shoutcast]","enabled")).toInt()) {
+                shoutcast = new EngineShoutcast(m_pConfig);
+            } else {
+                delete shoutcast;
+                shoutcast = 0;
+            }
+        }
+        if (shoutcast) {
+            shoutcast->process(m_filledBuffer, m_filledBuffer, SIDECHAIN_BUFFER_SIZE);
+        }
 #endif   
  
         //m_backBufferLock.unlock();

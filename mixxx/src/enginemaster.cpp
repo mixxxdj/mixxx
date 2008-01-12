@@ -309,6 +309,14 @@ void EngineMaster::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBuff
         balleft -= bal;
     else if (bal<0.)
         balright += bal;
+
+    for (int i=0; i<iBufferSize; i+=2)
+    {
+        //Perform balancing on main out
+        m_pMaster[i  ] = m_pMaster[i  ]*balleft;
+        m_pMaster[i+1] = m_pMaster[i+1]*balright;
+    }
+
 #ifdef __EXPERIMENTAL_RECORDING__
     rec->process(m_pMaster, m_pMaster, iBufferSize);
 #endif
@@ -317,13 +325,6 @@ void EngineMaster::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBuff
     //(cpu intensive non-realtime tasks)
     sidechain->submitSamples(m_pMaster, iBufferSize);
 
-    for (int i=0; i<iBufferSize; i+=2)
-    {
-        //Perform balancing on main out
-        m_pMaster[i  ] = m_pMaster[i  ]*balleft;
-        m_pMaster[i+1] = m_pMaster[i+1]*balright;
-    }
-    
     //Master/headphones interleaving is now done in SoundManager::requestBuffer() - Albert Nov 18/07
 }
 
