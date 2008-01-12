@@ -237,7 +237,7 @@ void EncoderVorbis::initStream()
 
 int EncoderVorbis::initEncoder()
 {
-    int ret, result;
+    int ret;
     vorbis_info_init(&vinfo);
 
     // initialize VBR quality based mode

@@ -49,8 +49,6 @@ My test Icecast2 server is configured with a 1000 timeout value instead.
 
 EngineShoutcast::EngineShoutcast(ConfigObject<ConfigValue> *_config)
 {
-//    writeFn = &EngineShoutcast::writePage;
-
     m_pShout = 0;
     m_iShoutStatus = 0;
 
@@ -112,11 +110,11 @@ qDebug("********START SERVERCONNECT*******");
 
 EngineShoutcast::~EngineShoutcast()
 {
+    delete encoder;
+
     if (m_pShout)
         shout_close(m_pShout);
     shout_shutdown();
-
-    delete encoder;
 }
 
 void EngineShoutcast::serverConnect()
