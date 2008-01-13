@@ -162,7 +162,14 @@ void EngineSideChain::run()
 
         //m_backBufferLock.lock(); //This will cause the audio/callback thread to block if the buffers overflow.
         
+
 #ifdef __SHOUTCAST__
+
+        //Important note: We're "allowed" to access a ConfigKey here (below) because it doesn't take place
+        //                in the callback thread. ConfigKey access is slow, but we can afford the performance
+        //                hit here.
+
+        //Check to see if Shoutcast is enabled, and pass the samples off to be broadcast if necessary. 
         if ((bool)m_pConfig->getValueString(ConfigKey("[Shoutcast]","enabled")).toInt() != (bool)shoutcast) {
             if (m_pConfig->getValueString(ConfigKey("[Shoutcast]","enabled")).toInt()) {
                 shoutcast = new EngineShoutcast(m_pConfig);
