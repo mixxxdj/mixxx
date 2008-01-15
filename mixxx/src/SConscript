@@ -264,6 +264,11 @@ if not env.GetOption('clean') and not SCons.Util.containsAny(os.sys.argv, ['-h',
 			env.ParseConfig('pkg-config QtOpenGL --silence-errors --cflags --libs')
 			# Might be missing $QTDIR/include/Qt still...
 
+		#Check for libasound (libasound2?) (needed for ALSA seq MIDI support)
+		if not conf.CheckLib('asound'):
+			print "Did not find libasound (aka. libasound2), exiting!"
+			Exit(1)
+
         #Check for libdjconsole, if it was passed as a flag
 		flags_djconsole = ARGUMENTS.get('djconsole', 0)
 		flags_djconsole_legacy = ARGUMENTS.get('djconsole_legacy', 0)
@@ -280,7 +285,7 @@ if not env.GetOption('clean') and not SCons.Util.containsAny(os.sys.argv, ['-h',
 		#Another check for PortAudio-v19
 		env.ParseConfig('pkg-config --cflags --libs portaudio-2.0')
 		#If the above line looks like magic, it's because it really is. (Read about ParseConfig, it's nifty)
-		
+
 	#Platform-specific checks for OS X
 	if platform == 'osx':
 	#Check for libsndfile
