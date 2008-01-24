@@ -423,6 +423,8 @@ void WTrackTableView::contextMenuEvent(QContextMenuEvent * event)
 {
     //index = indexAt(event->pos());
 
+	bool isFolder = false;
+
     //Get the indices of the selected rows.
     m_selectedIndices = this->selectionModel()->selectedRows();
     
@@ -457,6 +459,10 @@ void WTrackTableView::contextMenuEvent(QContextMenuEvent * event)
             if (!m_pDirModel->isDir(temp_dirindex)) {
                 m_selectedDirTrackNames.append(m_pDirModel->filePath(temp_dirindex));
             }
+			else
+			{
+				isFolder = true;
+			}
         }
         else if (m_iTableMode == TABLE_MODE_LIBRARY || m_iTableMode == TABLE_MODE_PLAYQUEUE) //Regular library mode menu
         {
@@ -491,6 +497,8 @@ void WTrackTableView::contextMenuEvent(QContextMenuEvent * event)
         menu.addAction(BPMTapAct);
     }
 
+	
+
     //Gray out some stuff if multiple songs were selected. 
     if (m_selectedIndices.count() != 1)
     {
@@ -504,7 +512,7 @@ void WTrackTableView::contextMenuEvent(QContextMenuEvent * event)
 		Player2Act->setEnabled(true);  
 		BPMTapAct->setEnabled(true);  	
     }
-    
+	  
     //Gray out player 1 and/or player 2 if those players are playing.
     if (ControlObject::getControl(ConfigKey("[Channel1]","play"))->get()==1.)
     	Player1Act->setEnabled(false);
@@ -518,6 +526,13 @@ void WTrackTableView::contextMenuEvent(QContextMenuEvent * event)
     if (m_iTableMode == TABLE_MODE_BROWSE)      
 	{	
         RemoveAct->setEnabled(false);
+		BPMTapAct->setEnabled(false);
+
+        if (isFolder)
+		{
+			Player1Act->setEnabled(false);
+			Player2Act->setEnabled(false);
+		}
     }
     else
     	RemoveAct->setEnabled(true);
