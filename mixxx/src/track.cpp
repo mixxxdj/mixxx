@@ -69,6 +69,7 @@ Track::Track(QString location, MixxxView * pView, EngineBuffer * pBuffer1, Engin
     m_pTrackImporter = new TrackImporter(m_pView,m_pTrackCollection);
     m_pLibraryModel = new WTrackTableModel(m_pView->m_pTrackTableView);
     m_pPlayQueueModel = new WTrackTableModel(m_pView->m_pTrackTableView);
+    m_pPlaylistModel = new WTrackTableModel(m_pView->m_pTrackTableView);
     m_pPlaylistListModel = new WPlaylistListModel(m_pView->m_pTrackTableView); 
 
     // Read the XML file
@@ -395,6 +396,18 @@ void Track::slotActivatePlaylist(QString name)
         //m_pActivePlaylist = m_qPlaylists.at(index);
         emit(activePlaylist(pNewlist));
     }*/
+}
+
+/** WORK IN PRORESS BY ALBERT!!! - Jan 13/08 **/
+void Track::slotShowPlaylist(TrackPlaylist* playlist)
+{
+    m_pPlaylistModel->setTrackPlaylist(playlist);
+    m_pActivePlaylist = playlist;
+    m_pView->m_pTrackTableView->setSearchSource(m_pLibraryModel);
+    
+    //We want the same behaviour out of the track table as when it's showing
+    //the play queue:
+    m_pView->m_pTrackTableView->setTableMode(TABLE_MODE_PLAYQUEUE);
 }
 
 TrackPlaylist* Track::getPlaylistByIndex(int index)

@@ -117,6 +117,9 @@ public slots:
     void slotSendToPlayqueue(QString filename);
     /** Slot for sending a playlist to Play Queue */
     void slotSendToPlayqueue(TrackPlaylist* playlist);
+    
+    /** Slot for showing a particular playlist in the track table view */
+    void slotShowPlaylist(TrackPlaylist* playlist); 
 signals:
     /** A new track has been loaded in player 1 */
     void newTrackPlayer1(TrackInfoObject *);
@@ -137,6 +140,8 @@ private:
     WTrackTableModel *m_pLibraryModel;
     /**Model for Playqueue information*/
     WTrackTableModel *m_pPlayQueueModel;
+    /**Model containing a single playlist */
+    WTrackTableModel *m_pPlaylistModel;
     /** Model containing the list of playlists */
     WPlaylistListModel *m_pPlaylistListModel;
     /** Pointer to playlist for which a popup menu is currently displayed */

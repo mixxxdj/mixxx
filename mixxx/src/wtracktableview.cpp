@@ -198,7 +198,6 @@ void WTrackTableView::repaintEverything() {
 
 void WTrackTableView::sortByColumn(int col)
 {
-
     if(horizontalHeader()->sortIndicatorSection() != col)
         return QTableView::sortByColumn(col);
 
@@ -268,7 +267,17 @@ void WTrackTableView::slotMouseDoubleClicked(const QModelIndex & index)
         }
         else //Double-clicking on a file in browse mode
         {
-        	
+        	//Send the song to the first player that's not playing.
+			while (!m_selectedDirTrackNames.isEmpty()) {
+				m_selectedDirTrackNames.pop_back();
+			}
+
+    		m_selectedDirTrackNames.append(m_pDirModel->filePath(temp_dirindex));
+			
+			if (ControlObject::getControl(ConfigKey("[Channel1]","play"))->get()!=1.)
+		        this->slotLoadPlayer1();
+		    else if (ControlObject::getControl(ConfigKey("[Channel2]","play"))->get()!=1.)
+		        this->slotLoadPlayer2();
 		}
         return;
     }
@@ -281,7 +290,7 @@ void WTrackTableView::slotMouseDoubleClicked(const QModelIndex & index)
 		//Show the BPM tap/track editor dialog.
 		//showBPMTapDlg(pTrackInfoObject);
 
-
+		//Send the song to the first player that's not playing.
 		while (!m_selectedTrackInfoObjects.isEmpty()) {
 		    m_selectedTrackInfoObjects.pop_back();
 		}
@@ -296,7 +305,17 @@ void WTrackTableView::slotMouseDoubleClicked(const QModelIndex & index)
     }
     else if (m_iTableMode == TABLE_MODE_PLAYLISTS)
     {
-    	qDebug() << "FIXME: Unimplemented slotMouseDoubleClicked in" << __FILE__ << "at line" << __LINE__;
+    	qDebug() << "FIXME: Half-assed slotMouseDoubleClicked implementation in" << __FILE__ << "at line" << __LINE__;
+        
+        //FIXME: Make m_pSearchFilter  work with a WPlaylistListModel.
+		//QModelIndex temp_sindex = m_pSearchFilter->mapToSource(index);
+		//TrackPlaylist* selectedPlaylist = m_pTrack->getPlaylistByIndex(temp_sindex.row());
+		//qDebug() << index.row() << temp_sindex.row();
+		
+		qDebug() << index.row();
+		TrackPlaylist* selectedPlaylist = m_pTrack->getPlaylistByIndex(index.row());
+		
+		m_pTrack->slotShowPlaylist(selectedPlaylist);
     }
 }
 
@@ -446,7 +465,7 @@ void WTrackTableView::contextMenuEvent(QContextMenuEvent * event)
         }
         else if (m_iTableMode == TABLE_MODE_PLAYLISTS)
         {           
-            //This is the code to make searching work, but m_pSearchFilter doesn't work with a WPlaylistListModel yet.
+            //FIXME: This is the code to make searching work, but m_pSearchFilter doesn't work with a WPlaylistListModel yet.
             //QModelIndex temp_sindex = m_pSearchFilter->mapToSource(index);
             //m_selectedPlaylist = m_pTrack->getPlaylistByIndex(temp_sindex.row());
             
