@@ -20,6 +20,7 @@
 #include "defs.h"
 #include "configobject.h"
 #include "controlobject.h"
+#include "controlobjectthreadmain.h"
 
 #ifdef __SHOUTCAST__
 class EngineShoutcast;
@@ -53,6 +54,8 @@ class EngineSideChain : public QThread
         QMutex m_stopLock;                      //Provides thread safety around bStopThread.
 #ifdef __SHOUTCAST__
         EngineShoutcast *shoutcast;
+        ControlObject* m_pShoutcastNeedUpdateFromPrefs;
+        ControlObjectThreadMain* m_pShoutcastNeedUpdateFromPrefsCOTM;
 #endif
 };
 

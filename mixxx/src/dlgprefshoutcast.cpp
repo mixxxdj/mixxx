@@ -30,7 +30,7 @@ DlgPrefShoutcast::DlgPrefShoutcast(QWidget *parent, ConfigObject<ConfigValue> *_
     QString tmp_string;
     setupUi(this);
 
-    //recordControl = ControlObject::getControl(ConfigKey("[Master]", "Shoutcast")); //See RECORD_* #defines in dlgprefrecord.h
+    m_pUpdateShoutcastFromPrefs = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey(SHOUTCAST_PREF_KEY, "update_from_prefs")));
 
     //Connections
     //connect(PushButtonBrowse, SIGNAL(clicked()),	this,	SLOT(slotBrowseSave()));
@@ -63,7 +63,7 @@ DlgPrefShoutcast::DlgPrefShoutcast(QWidget *parent, ConfigObject<ConfigValue> *_
     //Port
     tmp_string = m_pConfig->getValueString(ConfigKey(SHOUTCAST_PREF_KEY,"port"));
     if (tmp_string.isEmpty())
-        tmp_string = SHOUTCAST_DEFAULT_PORT;
+        tmp_string = QString(SHOUTCAST_DEFAULT_PORT);
     port->setText(tmp_string);
     
     //Login
@@ -156,4 +156,7 @@ void DlgPrefShoutcast::slotApply()
     m_pConfig->set(ConfigKey(SHOUTCAST_PREF_KEY,"enable_metadata"),ConfigValue(enableCustomMetadata->isChecked()));    
     m_pConfig->set(ConfigKey(SHOUTCAST_PREF_KEY, "custom_artist"), ConfigValue(custom_artist->text())); 
     m_pConfig->set(ConfigKey(SHOUTCAST_PREF_KEY, "custom_title"),  ConfigValue(custom_title->text())); 
+    
+    //Tell the EngineShoutcast object to update with these values by toggling this control object.
+    m_pUpdateShoutcastFromPrefs->slotSet(1.0f);
 }

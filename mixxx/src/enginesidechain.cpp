@@ -48,6 +48,8 @@ EngineSideChain::EngineSideChain(ConfigObject<ConfigValue> * pConfig)
     // Shoutcast
     shoutcast = 0;
 //    shoutcast = new EngineShoutcast(m_pConfig);
+    ControlObject* m_pShoutcastNeedUpdateFromPrefs = new ControlObject(ConfigKey("[Shoutcast]","update_from_prefs"));
+    m_pShoutcastNeedUpdateFromPrefsCOTM = new ControlObjectThreadMain(m_pShoutcastNeedUpdateFromPrefs);
 #endif    
     
     
@@ -179,6 +181,8 @@ void EngineSideChain::run()
             }
         }
         if (shoutcast) {
+            if (m_pShoutcastNeedUpdateFromPrefsCOTM->get() > 0.0f)
+                shoutcast->updateFromPreferences();
             shoutcast->process(m_filledBuffer, m_filledBuffer, SIDECHAIN_BUFFER_SIZE);
         }
 #endif   

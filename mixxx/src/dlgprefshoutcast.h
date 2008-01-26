@@ -23,9 +23,10 @@
 #include "ui_dlgprefshoutcastdlg.h"
 #include "controlobject.h"
 #include "configobject.h"
+#include "controlobjectthreadmain.h"
 
 #define SHOUTCAST_PREF_KEY "[Shoutcast]"
-#define SHOUTCAST_DEFAULT_PORT 8000
+#define SHOUTCAST_DEFAULT_PORT "8000"
 
 class QWidget;
 /**
@@ -47,6 +48,7 @@ signals:
 private:
     /** Pointer to config object */
     ConfigObject<ConfigValue> *m_pConfig;
+    ControlObjectThreadMain* m_pUpdateShoutcastFromPrefs; //If set to 1, EngineShoutcast will update it's settings.
 
 };
 
