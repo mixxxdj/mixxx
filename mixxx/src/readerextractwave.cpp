@@ -96,10 +96,14 @@ void ReaderExtractWave::newSource(TrackInfoObject * pTrack)
             file = new SoundSourceProxy(pTrack);
     }
     else
-        file = new SoundSourceProxy(QString("/dev/null"));
-
+        file = 0; //FIXME: Everything goes to hell when we return in the next block (ie. crash)... - Albert
+        
     if (file==0)
+    {
         qCritical() << "Error opening" << filename;
+        qDebug() << "in" << __FILE__ << "on line:" << __LINE__;
+        return;
+    }
 
     // Initialize position in read buffer
     m_pReader->lock();

@@ -80,17 +80,26 @@ void TrackCollection::addTrack(TrackInfoObject * pTrack)
 
     }
     m_qTrackList.append(pTrack);
+}
 
+/** Removes a track from the library track collection. */
+void TrackCollection::removeTrack(TrackInfoObject* pTrack)
+{
+    m_qTrackList.removeAll(pTrack);
 }
 
 TrackInfoObject *TrackCollection::getTrack(int id)
 {
-    Q_ASSERT(id < m_qTrackList.size());
-//    if (id < m_qTrackList.size())
-      return m_qTrackList.at(id);
-//    else
-//        return NULL;
-        
+    //Q_ASSERT(id < m_qTrackList.size());
+    
+    if (id < m_qTrackList.size())
+        return m_qTrackList.at(id);
+    else
+    {
+        qDebug() << "Warning - track ID > trackcollection size in" << __FILE__ << "on line:" << __LINE__;
+        return NULL;
+    }
+       
     // Binary search
     //return getTrack(id, -1, m_qTrackList.count()/2, m_qTrackList.count());
 
@@ -164,7 +173,7 @@ TrackInfoObject * TrackCollection::getTrack(QString location)
             }
             else
             {
-                qDebug() << "Could not parse %s" << file.fileName();
+                qDebug() << "Could not parse" << file.fileName();
                 delete pTrack;
             }
         }
