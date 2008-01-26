@@ -62,6 +62,10 @@ public:
     TrackPlaylist* getPlaylistByIndex(int index);   
     /** Force an update of playlist menu and anything that sees the playlists*/
     void updatePlaylistViews();
+    
+    /** Get the list of playlists*/
+    TrackPlaylistList* getPlaylists();
+    
 	/**location of new music files*/
 	QString musicDir;
 	
@@ -117,6 +121,10 @@ public slots:
     void slotSendToPlayqueue(QString filename);
     /** Slot for sending a playlist to Play Queue */
     void slotSendToPlayqueue(TrackPlaylist* playlist);
+    /** Slot for sending a track to a playlist */
+    void slotSendToPlaylist(TrackPlaylist* playlist, TrackInfoObject* pTrackInfoObject);
+    /** Slot for sending a track to a playlist */
+    void slotSendToPlaylist(TrackPlaylist* playlist, QString filename);
     
     /** Slot for showing a particular playlist in the track table view */
     void slotShowPlaylist(TrackPlaylist* playlist); 
@@ -132,10 +140,16 @@ signals:
 private:
     /** Returns pointer to playlist by the given name */
     TrackPlaylist *getPlaylist(QString qName);
+    
     /** Pointer to the Importer class */
     TrackImporter *m_pTrackImporter;
     /** List of pointers to TrackPlaylists */
     TrackPlaylistList m_qPlaylists;
+    /** The "library" playlist */
+    TrackPlaylist m_qLibraryPlaylist;
+    /** The play queue playlist */
+    TrackPlaylist m_qPlayqueuePlaylist;
+    
 	/** Model for Library information*/
     WTrackTableModel *m_pLibraryModel;
     /**Model for Playqueue information*/
@@ -144,6 +158,7 @@ private:
     WTrackTableModel *m_pPlaylistModel;
     /** Model containing the list of playlists */
     WPlaylistListModel *m_pPlaylistListModel;
+    
     /** Pointer to playlist for which a popup menu is currently displayed */
     TrackPlaylist *m_pActivePopupPlaylist;
     /** Pointer to TrackInfoObject for which a popup menu is currently displayed */

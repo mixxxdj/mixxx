@@ -76,6 +76,9 @@ public:
     void contextMenuEvent(QContextMenuEvent * event);
     /**Sets Track pointer**/
     void setTrack(Track *pTrack);
+    /**updates the list of playlists in the right-click->sendto playlist menu**/
+    void updatePlaylistActions();
+
     /**Used to filter items in table with a given search string**/
     SortFilterProxyModel *m_pSearchFilter;
     /* filter files in browse mode */
@@ -106,16 +109,21 @@ private:
     /**Remove from Table Action**/
     QAction *RemoveAct;
     /**Shows track editor/BPM tap**/
-    QAction *BPMTapAct;
+    QAction *PropertiesAct;
+    /**Send to each playlist Action**/
+    QList<QAction*> PlaylistActs;
     /**creates all actions and connects them to repective slots**/
     void createActions();
+
 
     QDrag *getDragObject(QMouseEvent *event);
     
 
 private slots:
-    /**sends track to Playqueue*/
+    /** Sends track(s) to Playqueue*/
     void slotSendToPlayqueue();
+    /** Send track(s) to a given playlist*/
+    void slotSendToPlaylist();
     /** Load the given track in player 1 */
     void slotLoadPlayer1();
     /** Load the given track in player 2 */

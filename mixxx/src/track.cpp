@@ -60,8 +60,8 @@ Track::Track(QString location, MixxxView * pView, EngineBuffer * pBuffer1, Engin
     m_pTrackPlayer2 = 0;
     m_pWaveSummary = pWaveSummary;
     m_pBpmDetector = pBpmDetector;
-    m_iLibraryIdx = 0;
-    m_iPlayqueueIdx = 0;
+    m_iLibraryIdx = 0;   //FIXME: Deprecated, can safely remove.
+    m_iPlayqueueIdx = 0; //FIXME: Deprecated, can safely remove.
 
     musicDir = musiclocation;
 
@@ -72,31 +72,40 @@ Track::Track(QString location, MixxxView * pView, EngineBuffer * pBuffer1, Engin
     m_pPlaylistModel = new WTrackTableModel(m_pView->m_pTrackTableView);
     m_pPlaylistListModel = new WPlaylistListModel(m_pView->m_pTrackTableView); 
 
+    //Pass the track collcetion along to the library and playqueue playlists.
+    m_qLibraryPlaylist.setTrackCollection(m_pTrackCollection);
+    m_qPlayqueuePlaylist.setTrackCollection(m_pTrackCollection);
+
     // Read the XML file
     readXML(location);   
 
     //Create the library and play queue playlists
+    /*
     if (m_qPlaylists.count() < 2)
     {
         m_iLibraryIdx = 0;
         m_iPlayqueueIdx = 1;
         m_qPlaylists.insert(m_iLibraryIdx, new TrackPlaylist(m_pTrackCollection, "Library"));
         m_qPlaylists.insert(m_iPlayqueueIdx, new TrackPlaylist(m_pTrackCollection, "Play Queue"));
-    }
+    }*/
 
-    m_pScanner = new LibraryScanner(&m_qPlaylists, "", m_iLibraryIdx);
+    m_pScanner = new LibraryScanner(&m_qLibraryPlaylist, "");
     //Refresh the tableview when the library is done being scanned. (FIXME: Is a hack)
     connect(m_pScanner, SIGNAL(scanFinished()), m_pView->m_pTrackTableView, SLOT(repaintEverything())); 
+    
+    //The WTrackTableView doesn't have a pointer to us yet (which it needs to retrieve the list of playlists),
+    //so give it one.
+    m_pView->m_pTrackTableView->setTrack(this);
      
     // Update anything that views the playlists
     updatePlaylistViews();
 
     // Insert the first playlist in the list
-    m_pActivePlaylist = m_qPlaylists.at(m_iLibraryIdx);
+    m_pActivePlaylist = &m_qLibraryPlaylist;
     //m_pActivePlaylist->activate(m_pView->m_pTrackTable);
 
-    m_pLibraryModel->setTrackPlaylist(m_qPlaylists.at(m_iLibraryIdx));
-    m_pPlayQueueModel->setTrackPlaylist(m_qPlaylists.at(m_iPlayqueueIdx));
+    m_pLibraryModel->setTrackPlaylist(&m_qLibraryPlaylist);
+    m_pPlayQueueModel->setTrackPlaylist(&m_qPlayqueuePlaylist);
     m_pPlaylistListModel->setPlaylistList(m_qPlaylists);
     
     qDebug() << "TrackCollection size:" << m_pTrackCollection->getSize();
@@ -104,12 +113,12 @@ Track::Track(QString location, MixxxView * pView, EngineBuffer * pBuffer1, Engin
     for (int i = 0; i < m_pTrackCollection->getSize(); i++)
     {
         qDebug() << "Trying to add:" << m_pTrackCollection->getTrack(i)->getTitle() << "to library playlist";
-        m_qPlaylists.at(m_iLibraryIdx)->addTrack(m_pTrackCollection->getTrack(i));
+        m_qLibraryPlaylist.addTrack(m_pTrackCollection->getTrack(i));
     }
   
     //Scan the music library on disk
     qDebug() << "Starting Library Scanner...";
-    m_pScanner->scan(musicDir, &m_qPlaylists);  
+    m_pScanner->scan(musicDir);  
     
     if (m_pView && m_pView->m_pTrackTableView) //Stops Mixxx from dying if a skin doesn't have the search box.
     {
@@ -246,13 +255,13 @@ void Track::readXML(QString location)
             qPlaylistName = XmlParse::selectNodeQString(node, "Name");
             if (qPlaylistName == "Library")
             {
-                m_qPlaylists.append(new TrackPlaylist(m_pTrackCollection, node));
-                m_iLibraryIdx = m_qPlaylists.size() - 1;
+                m_qLibraryPlaylist.setTrackCollection(m_pTrackCollection);
+                m_qLibraryPlaylist.loadFromXMLNode(node);
             }
             else if (qPlaylistName == "Play Queue")
             {
-                m_qPlaylists.append(new TrackPlaylist(m_pTrackCollection, node));
-                m_iPlayqueueIdx = m_qPlaylists.size() - 1;
+                m_qPlayqueuePlaylist.setTrackCollection(m_pTrackCollection);
+                m_qPlayqueuePlaylist.loadFromXMLNode(node);
             }
             else
                 m_qPlaylists.append(new TrackPlaylist(m_pTrackCollection, node));
@@ -261,13 +270,6 @@ void Track::readXML(QString location)
 
         node = node.nextSibling();
     }
-    //CTAF TODO: TEMPORARY REMOVED, NEED TO BE DONE IN A THREAD
-    if(m_qPlaylists.count() >= 2)
-    {
-        //m_qPlaylists.at(0)->addPath(musicDir);
-        //m_pScanner->scan(musicDir, m_pLibScannerDlg);
-    }
-    //ECTAF
 }
 
 void Track::writeXML(QString location)
@@ -415,6 +417,11 @@ TrackPlaylist* Track::getPlaylistByIndex(int index)
     return m_qPlaylists.at(index);
 }
 
+TrackPlaylistList* Track::getPlaylists()
+{
+    return &m_qPlaylists;
+}
+
 void Track::slotActivatePlaylist(int index)
 {   
     //Toggled by the ComboBox - This needs to be reorganized...
@@ -426,7 +433,7 @@ void Track::slotActivatePlaylist(int index)
         m_pView->m_pTrackTableView->resizeColumnsToContents();
         m_pView->m_pTrackTableView->setTrack(this);
         m_pView->m_pTrackTableView->setTableMode(TABLE_MODE_LIBRARY);
-        m_pActivePlaylist = m_qPlaylists.at(m_iLibraryIdx);
+        m_pActivePlaylist = &m_qLibraryPlaylist;
         break;
     case 1: //Play queue view
         m_pView->m_pTrackTableView->reset();
@@ -434,7 +441,7 @@ void Track::slotActivatePlaylist(int index)
         m_pView->m_pTrackTableView->resizeColumnsToContents();
         m_pView->m_pTrackTableView->setTrack(this);
         m_pView->m_pTrackTableView->setTableMode(TABLE_MODE_PLAYQUEUE);
-        m_pActivePlaylist = m_qPlaylists.at(m_iPlayqueueIdx);
+        m_pActivePlaylist = &m_qPlayqueuePlaylist;
         break;
     case 2: //Browse mode view
         m_pView->m_pTrackTableView->reset();
@@ -528,7 +535,7 @@ void Track::slotDeletePlaylist(QString qName)
         if (m_qPlaylists.count()==0)
             slotNewPlaylist();
 
-        slotActivatePlaylist(m_qPlaylists.at(0)->getListName());
+        slotActivatePlaylist(m_qLibraryPlaylist.getListName());
     }
 
     updatePlaylistViews();
@@ -569,13 +576,13 @@ void Track::slotSendToPlayqueue(TrackPlaylist* playlist)
 {
     for (int i = 0; i < playlist->getSongNum(); i++)
     {
-        m_qPlaylists.at(1)->addTrack(playlist->getTrackAt(i));
+        m_qPlayqueuePlaylist.addTrack(playlist->getTrackAt(i));
     }    
 }
 
 void Track::slotSendToPlayqueue(TrackInfoObject * pTrackInfoObject)
 {
-    m_qPlaylists.at(1)->addTrack(pTrackInfoObject);
+    m_qPlayqueuePlaylist.addTrack(pTrackInfoObject);
 }
 
 
@@ -583,11 +590,39 @@ void Track::slotSendToPlayqueue(QString filename)
 {
     TrackInfoObject* pTrack = m_pTrackCollection->getTrack(filename);
     if (pTrack)
-        m_qPlaylists.at(m_iPlayqueueIdx)->addTrack(pTrack);
+        m_qPlayqueuePlaylist.addTrack(pTrack);
+}
+
+void Track::slotSendToPlaylist(TrackPlaylist* playlist, TrackInfoObject* pTrackInfoObject)
+{
+    playlist->addTrack(pTrackInfoObject);
+}
+
+void Track::slotSendToPlaylist(TrackPlaylist* playlist, QString filename)
+{    
+    TrackInfoObject* pTrack = m_pTrackCollection->getTrack(filename);
+    if (pTrack)
+        playlist->addTrack(pTrack);
 }
 
 void Track::slotLoadPlayer1(TrackInfoObject * pTrackInfoObject, bool bStartFromEndPos)
 {
+
+    QString filename = pTrackInfoObject->getLocation();
+    if (!filename.isEmpty())
+    {
+        // Check if filename is valid
+        QFileInfo finfo(filename);
+        if (!finfo.exists())
+        {
+            qDebug() << "Song in library not found on at" << filename << "on disk.";
+            qDebug() << "Removing from library...";
+            m_pTrackCollection->removeTrack(pTrackInfoObject); //Remove the track from the library.
+            m_pView->m_pTrackTableView->repaintEverything(); //Refresh the library view.
+            return;
+        }
+    }
+
     if (m_pTrackPlayer1)
     {
         m_pTrackPlayer1->setOverviewWidget(0);
@@ -730,7 +765,7 @@ void Track::slotEndOfTrackPlayer1(double val)
             if (m_pPlayPositionCh1->get()>0.5)
             {
                //If the play queue has another song in it, load that...
-               pTrack = m_pTrackPlayer1->getNext(m_qPlaylists.at(1));
+               pTrack = m_pTrackPlayer1->getNext(&m_qPlayqueuePlaylist);
                
                
                /* Disabled because we only ever want to pull from the play queue:
@@ -801,7 +836,7 @@ void Track::slotEndOfTrackPlayer2(double val)
             if (m_pPlayPositionCh2->get()>0.5)
             {
                //If the play queue has another song in it, load that...
-               pTrack = m_pTrackPlayer2->getNext(m_qPlaylists.at(1));
+               pTrack = m_pTrackPlayer2->getNext(&m_qPlayqueuePlaylist);
                
                
                /* Disabled because we only ever want to pull from the play queue:
@@ -938,6 +973,11 @@ void Track::updatePlaylistViews()
    {
     // Sort list
     qSort(m_qPlaylists);
+    
+    //Tell the track table view to update it's right-click/send-to-playlist menu.
+    m_pView->m_pTrackTableView->updatePlaylistActions();
+
+    qDebug() << "FIXME: Need to tell the m_pPlaylistListModel to refresh in" << __FILE__ << "on line:" << __LINE__;
 
     // Update tree view
     //if (m_pView->m_pTreeView)

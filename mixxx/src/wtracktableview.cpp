@@ -41,6 +41,9 @@ WTrackTableView::WTrackTableView(QWidget * parent, ConfigObject<ConfigValue> * p
 {
     m_pTable = new WTrackTableModel(this);
     m_pConfig = pConfig;
+    m_pTrack = NULL;
+    bpmTapDlg = 0;
+       
     //setup properties for table
     setSelectionBehavior(SelectRows);
     setSelectionMode(QAbstractItemView::ExtendedSelection);
@@ -76,7 +79,7 @@ WTrackTableView::WTrackTableView(QWidget * parent, ConfigObject<ConfigValue> * p
     m_pDirFilter = new WTrackTableFilter(m_dirindex);
     m_pDirFilter->setSourceModel(m_pDirModel);
 
-    bpmTapDlg = 0;
+    
 
 }
 WTrackTableView::~WTrackTableView()
@@ -483,18 +486,32 @@ void WTrackTableView::contextMenuEvent(QContextMenuEvent * event)
     
     //Create the right-click menu
     QMenu menu(this);
-   
+    QMenu addToPlaylists(tr("Add to Playlist"));
         
     //Populate it with various action items depending on what mode the table is in
-    menu.addAction(PlayQueueAct);
-
+    menu.addAction(PlayQueueAct);  
+    
+	
     if (m_iTableMode == TABLE_MODE_LIBRARY || 
         m_iTableMode == TABLE_MODE_PLAYQUEUE || 
         m_iTableMode == TABLE_MODE_BROWSE)
     {
+    	//Add the "Player 1" action
         menu.addAction(Player1Act);
+        
+        //Add the "Player 2" action
         menu.addAction(Player2Act);  
-        menu.addAction(BPMTapAct);
+        
+        //Add the "Add to Playlist" menu.
+		menu.addMenu(&addToPlaylists);
+		
+		//Fill the "Add to... playlists" menu with the names of the playlists
+		for (int i = 0; i < PlaylistActs.size(); i++)
+		{
+			addToPlaylists.addAction(PlaylistActs.at(i));
+		}
+        
+        menu.addAction(PropertiesAct);
     }
 
 	
@@ -504,13 +521,13 @@ void WTrackTableView::contextMenuEvent(QContextMenuEvent * event)
     {
 		Player1Act->setEnabled(false);
 		Player2Act->setEnabled(false);
-		BPMTapAct->setEnabled(false);
+		PropertiesAct->setEnabled(false);
     }
     else
     {
 		Player1Act->setEnabled(true);
 		Player2Act->setEnabled(true);  
-		BPMTapAct->setEnabled(true);  	
+		PropertiesAct->setEnabled(true);  	
     }
 	  
     //Gray out player 1 and/or player 2 if those players are playing.
@@ -526,7 +543,7 @@ void WTrackTableView::contextMenuEvent(QContextMenuEvent * event)
     if (m_iTableMode == TABLE_MODE_BROWSE)      
 	{	
         RemoveAct->setEnabled(false);
-		BPMTapAct->setEnabled(false);
+		PropertiesAct->setEnabled(false);
 
         if (isFolder)
 		{
@@ -536,40 +553,87 @@ void WTrackTableView::contextMenuEvent(QContextMenuEvent * event)
     }
     else
     	RemoveAct->setEnabled(true);
-    	
     
     menu.exec(event->globalPos());
 }
 
 void WTrackTableView::createActions()
 {
-    PlayQueueAct = new QAction(tr("Play Queue"),this);
+    PlayQueueAct = new QAction(tr("Add to Play Queue"),this);
     connect(PlayQueueAct, SIGNAL(triggered()), this, SLOT(slotSendToPlayqueue()));
 
-    Player1Act = new QAction(tr("Player 1"),this);
+    Player1Act = new QAction(tr("Load in Player 1"),this);
     connect(Player1Act, SIGNAL(triggered()), this, SLOT(slotLoadPlayer1()));
 
-    Player2Act = new QAction(tr("Player 2"),this);
+    Player2Act = new QAction(tr("Load in Player 2"),this);
     connect(Player2Act, SIGNAL(triggered()), this, SLOT(slotLoadPlayer2()));
 
     RemoveAct = new QAction(tr("Remove"),this);
     connect(RemoveAct, SIGNAL(triggered()), this, SLOT(slotRemove()));
 
-	BPMTapAct = new QAction(tr("Properties"), this);
-	connect(BPMTapAct, SIGNAL(triggered()), this, SLOT(slotShowBPMTapDlg()));
-/*
-    PlayQueueActBrowse = new QAction(tr("Play Queue"),this);
-    connect(PlayQueueActBrowse, SIGNAL(triggered()), this, SLOT(slotSendToPlayqueue()));
+	PropertiesAct = new QAction(tr("Properties..."), this);
+	connect(PropertiesAct, SIGNAL(triggered()), this, SLOT(slotShowBPMTapDlg()));
+	
+	//Create all the "send to->playlist" actions.
+	if (m_pTrack)
+		updatePlaylistActions();
+	
+}
 
-    Player1ActBrowse = new QAction(tr("Player 1"),this);
-    connect(Player1ActBrowse, SIGNAL(triggered()), this, SLOT(slotLoadPlayer1()));
-
-    Player2ActBrowse = new QAction(tr("Player 2"),this);
-    connect(Player2ActBrowse, SIGNAL(triggered()), this, SLOT(slotLoadPlayer2()));
-
-    RemoveActBrowse = new QAction(tr("Remove"),this);
-    connect(RemoveActBrowse, SIGNAL(triggered()), this, SLOT(slotRemove()));
-*/
+void WTrackTableView::updatePlaylistActions()
+{
+	QAction* cur_action = NULL;
+	
+	//Clear and free any existing playlist QActions
+	while (!PlaylistActs.isEmpty())
+	{
+		cur_action = PlaylistActs.takeLast();
+		delete cur_action;
+	}
+	
+	//Get the list of playlists
+	TrackPlaylistList* playlists = m_pTrack->getPlaylists();
+		
+	//Make sure it's not NULL
+	Q_ASSERT(playlists != NULL);
+	
+	//Make sure it's not empty (QLists can be strange sometimes when they're empty)
+	if (playlists->isEmpty())
+	{
+		qDebug() << "No playlists, returning";
+		return;
+	}
+	
+	QString qPlaylistName;
+	QAction* sendToPlaylistAction;
+	
+	//Create a send-to action for each playlist.
+	for (int i = 0; i < playlists->count(); i++)
+	{
+		if (playlists->at(i) != NULL)
+		{
+			qPlaylistName = playlists->at(i)->getName();
+			qDebug() << "Iterated:" << qPlaylistName;
+		
+			//Create a new action for this playlist
+			sendToPlaylistAction = new QAction(qPlaylistName, this);
+			sendToPlaylistAction->setData(QVariant((int)playlists->at(i)));
+			PlaylistActs.append(sendToPlaylistAction);
+		
+			//Connect this action to some sendtoplaylist(name) action.
+			connect(sendToPlaylistAction, SIGNAL(triggered()), this, SLOT(slotSendToPlaylist()));
+			
+			qDebug() << "FIXME: Unfinished updatePlaylistActions in" << __FILE__ << __LINE__;
+			//   sendtoplaylist(name) in Track.cpp can use getPlaylist(name) function..
+			//
+		}
+		else
+		{
+			qDebug() << "NULL playlist detected in" << __FILE__ << "at line:" << __LINE__;
+		}
+	}
+	
+	
 }
 
 void WTrackTableView::setTrack(Track * pTrack)
@@ -642,6 +706,43 @@ void WTrackTableView::slotSendToPlayqueue()
         }
     }
 }
+
+void WTrackTableView::slotSendToPlaylist()
+{
+	TrackPlaylist* playlist;
+	int playlist_ptr;
+	
+	//This is terrible, but necessary. We look back at the sender that sent the signal, try to cast it to a QAction,
+	//then look at the QAction's "data" member to get the pointer to the playlist.
+	if (QAction *act = qobject_cast<QAction *>(sender())) {
+    	playlist_ptr = act->data().toInt();
+    	playlist = (TrackPlaylist*)playlist_ptr;
+    }
+	else
+	{
+		qDebug() << "FIXME: slotSendToPlaylist() is only implemented for QActions in" << __FILE__ "on line:" << __LINE__;
+		return;
+	}
+	
+    if (m_iTableMode == TABLE_MODE_BROWSE) //Browse mode
+    {
+        for (int i = 0; i < m_selectedDirTrackNames.count(); i++) {
+            m_pTrack->slotSendToPlaylist(playlist, m_selectedDirTrackNames.at(i));
+        }
+    }
+    else if (m_iTableMode == TABLE_MODE_PLAYLISTS)
+    {
+		qDebug() << "FIXME: Trying to send a playlist to a playlist... (did you code something incorrectly?)";
+		qDebug() << __FILE__ ":" << __LINE__;
+    }
+    else //Library mode, etc.
+    {
+    	for (int i = 0; i < m_selectedTrackInfoObjects.count(); i++) {
+        	m_pTrack->slotSendToPlaylist(playlist, m_selectedTrackInfoObjects.at(i));
+        }
+    }	
+}
+
 void WTrackTableView::slotRemove()
 {
     if (m_iTableMode == TABLE_MODE_PLAYLISTS)

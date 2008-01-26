@@ -30,12 +30,6 @@ QPushButton* LibraryScannerDlg::m_cancel = 0;
 
 LibraryScannerDlg::LibraryScannerDlg()
 {
-    LibraryScannerDlg(NULL); //Call the other constructor
-}
-
-LibraryScannerDlg::LibraryScannerDlg(TrackPlaylistList* playlists)
-{
-    m_qPlaylists = playlists;
     m_timersetup = false;
     m_timeruses = 0;
     m_bCancelled = false;
