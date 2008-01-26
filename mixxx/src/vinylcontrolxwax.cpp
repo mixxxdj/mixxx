@@ -1,5 +1,5 @@
 /***************************************************************************
-                          sounddeviceportaudio.cpp
+                          vinylcontrolxwax.cpp
                              -------------------
     begin                : Sometime in Summer 2007
     copyright            : (C) 2007 Albert Santoni
