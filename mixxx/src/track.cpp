@@ -106,7 +106,7 @@ Track::Track(QString location, MixxxView * pView, EngineBuffer * pBuffer1, Engin
 
     m_pLibraryModel->setTrackPlaylist(&m_qLibraryPlaylist);
     m_pPlayQueueModel->setTrackPlaylist(&m_qPlayqueuePlaylist);
-    m_pPlaylistListModel->setPlaylistList(m_qPlaylists);
+    m_pPlaylistListModel->setPlaylistList(&m_qPlaylists);
     
     qDebug() << "TrackCollection size:" << m_pTrackCollection->getSize();
     
@@ -400,12 +400,12 @@ void Track::slotActivatePlaylist(QString name)
     }*/
 }
 
-/** WORK IN PRORESS BY ALBERT!!! - Jan 13/08 **/
+/** Displays the track listing from a particular playlist in the tracktable view */
 void Track::slotShowPlaylist(TrackPlaylist* playlist)
 {
     m_pPlaylistModel->setTrackPlaylist(playlist);
     m_pActivePlaylist = playlist;
-    m_pView->m_pTrackTableView->setSearchSource(m_pLibraryModel);
+    m_pView->m_pTrackTableView->setSearchSource(m_pPlaylistModel);
     
     //We want the same behaviour out of the track table as when it's showing
     //the play queue:

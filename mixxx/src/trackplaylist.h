@@ -75,8 +75,12 @@ public:
     void activate(WTrackTable *pTable);
     /** Remove all tracks from the WTrackTable */
     void deactivate();
-    /** Get name of list */
+    /** Get name of playlist */
     QString getListName();
+    /** Get comment for playlist */
+    QString getComment();
+    /** Set comment for playlist */
+    void setComment(QString comment);
     /** Loads the playlist from an XML node */
     void loadFromXMLNode(QDomNode node);
     /** Sets the TrackCollection pointer */
@@ -133,6 +137,8 @@ private:
 	TrackCollection *personalTrackCollection;
     /** Name of list */
     QString m_qName;
+    /** Comment for playlist */
+    QString m_qComment;
     /** Pointer to WTrackTable. This is 0 if the playlist is not displayed in a table */
     //WTrackTable *m_pTable;
     /** Static pointer to Track */

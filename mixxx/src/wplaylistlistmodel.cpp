@@ -21,14 +21,14 @@ WPlaylistListModel::WPlaylistListModel(QObject * parent) : QAbstractTableModel(p
 WPlaylistListModel::~WPlaylistListModel()
 {
 }
-void WPlaylistListModel::setPlaylistList(TrackPlaylistList &pPlaylists)
+void WPlaylistListModel::setPlaylistList(TrackPlaylistList *pPlaylists)
 {
     m_qPlaylists = pPlaylists;
 }
 
 int WPlaylistListModel::rowCount(const QModelIndex &parent) const
 {
-    return m_qPlaylists.count();
+    return m_qPlaylists->count();
 }
 
 int WPlaylistListModel::columnCount(const QModelIndex &parent) const
@@ -39,18 +39,19 @@ int WPlaylistListModel::columnCount(const QModelIndex &parent) const
 QVariant WPlaylistListModel::data(const QModelIndex &index, int role) const
 {
     //TrackInfoObject * m_pTrackInfo = m_pTrackPlaylist->getTrackAt(index.row());
-    TrackPlaylist* m_pPlaylist = m_qPlaylists.at(index.row());
+    TrackPlaylist* m_pPlaylist = m_qPlaylists->at(index.row());
 
     if (!index.isValid()) 
         return QVariant();
 
-    if (index.row() >= m_qPlaylists.count())
+    if (index.row() >= m_qPlaylists->count())
         return QVariant();
 
+    /*
     if (role == Qt::ForegroundRole )
     {
         return foregroundColor;
-    }
+    }*/
     else if (role == Qt::DisplayRole )
     {
         switch(index.column())
@@ -60,7 +61,7 @@ QVariant WPlaylistListModel::data(const QModelIndex &index, int role) const
         case 0: return m_pPlaylist->getName();
         case 1: return "type";
         case 2: return "duration";
-        case 3: return "comment!";
+        case 3: return m_pPlaylist->getComment();
 		default: return "Error: WPlaylistListModel::data invalid index";
         }
     }
@@ -117,11 +118,11 @@ bool WPlaylistListModel::setData(const QModelIndex &index, const QVariant &value
 {
     if (index.isValid() && role == Qt::EditRole)
     {
-        TrackPlaylist* m_pPlaylist = m_qPlaylists.at(index.row());
+        TrackPlaylist* m_pPlaylist = m_qPlaylists->at(index.row());
 
         switch(index.column())
         {
-            //case 3: m_pPlaylist->setComment(value.toString()); break;
+            case 3: m_pPlaylist->setComment(value.toString()); break;
         }
         emit dataChanged(index, index);
         return true;
@@ -132,14 +133,14 @@ bool WPlaylistListModel::setData(const QModelIndex &index, const QVariant &value
 bool WPlaylistListModel::removeRows(int row, int count, const QModelIndex &parent)
 {
     Q_UNUSED(parent);
-    TrackPlaylist* m_pPlaylist = m_qPlaylists.at(index.row());
+    TrackPlaylist* m_pPlaylist = m_qPlaylists->at(index.row());
     if (count <= 0 || row < 0 || (row + count) > rowCount(parent))
         return false;
 
     beginRemoveRows(QModelIndex(), row, row + count - 1);
 
     for (int r = 0; r < count; ++r)
-        m_qPlaylists.remove(m_pPlaylist);
+        m_qPlaylists->remove(m_pPlaylist);
 
     endRemoveRows();
     return true;

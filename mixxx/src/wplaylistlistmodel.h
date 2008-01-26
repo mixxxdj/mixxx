@@ -18,7 +18,7 @@ public:
     WPlaylistListModel(QObject *parent=0);
     ~WPlaylistListModel();
 
-    void setPlaylistList(TrackPlaylistList &pPlaylists);
+    void setPlaylistList(TrackPlaylistList *pPlaylists);
 	void setBackgroundColor(QColor bgColor);
 	void setForegroundColor(QColor fgColor);
 	void setRowColor(QColor evenColor, QColor unevenColor);
@@ -27,7 +27,7 @@ public:
 
 	bool removeRows(int row, int count, const QModelIndex & parent = QModelIndex());
     /** List of pointers to TrackPlaylists */
-    TrackPlaylistList m_qPlaylists;
+    TrackPlaylistList *m_qPlaylists;
 	TrackCollection *m_pTrackCollection;
 
  protected:
