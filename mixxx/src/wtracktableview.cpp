@@ -613,7 +613,7 @@ void WTrackTableView::updatePlaylistActions()
 		if (playlists->at(i) != NULL)
 		{
 			qPlaylistName = playlists->at(i)->getName();
-			qDebug() << "Iterated:" << qPlaylistName;
+			//qDebug() << "Iterated:" << qPlaylistName;
 		
 			//Create a new action for this playlist
 			sendToPlaylistAction = new QAction(qPlaylistName, this);
@@ -622,10 +622,6 @@ void WTrackTableView::updatePlaylistActions()
 		
 			//Connect this action to some sendtoplaylist(name) action.
 			connect(sendToPlaylistAction, SIGNAL(triggered()), this, SLOT(slotSendToPlaylist()));
-			
-			qDebug() << "FIXME: Unfinished updatePlaylistActions in" << __FILE__ << __LINE__;
-			//   sendtoplaylist(name) in Track.cpp can use getPlaylist(name) function..
-			//
 		}
 		else
 		{
@@ -748,13 +744,14 @@ void WTrackTableView::slotRemove()
     if (m_iTableMode == TABLE_MODE_PLAYLISTS)
     {   
     	qDebug() << "FIXME: Removing a playlist is unimplented in" << __FILE__ << "on line" << __LINE__;
-        //Doesn't work right for some reason:
-        //m_pPlaylistListModel->removeRow(index.row());
+
         //This also probably needs to be reworked to work with multiple selections
+        /*
         for (int i = 0; i < m_selectedIndices.count(); i++)
         {
-              	
-		}
+        	QModelIndex index = m_selectedIndices.at(i);
+        	m_pPlaylistListModel->removeRow(index.row()); // - i ???              	
+		}*/
     }
     else if (m_iTableMode == TABLE_MODE_BROWSE)
     {

@@ -64,10 +64,13 @@ void TrackPlaylist::setTrackCollection(TrackCollection * pTrackCollection)
 
 void TrackPlaylist::loadFromXMLNode(QDomNode node)
 {
-    // Set name of list
+    // Set name of playlist
     m_qName = XmlParse::selectNodeQString(node, "Name");
     qDebug() << "playlist name" << m_qName.latin1();
 
+	//Set comment for playlist
+	m_qComment = XmlParse::selectNodeQString(node, "Comment");
+	
     // For each track...
     QDomNode idnode = XmlParse::selectNode(node, "List").firstChild();
     while (!idnode.isNull())
@@ -96,6 +99,7 @@ void TrackPlaylist::setTrack(Track * pTrack)
 void TrackPlaylist::writeXML(QDomDocument &doc, QDomElement &header)
 {
     XmlParse::addElement(doc, header, "Name", m_qName);
+    XmlParse::addElement(doc, header, "Comment", m_qComment);
     QDomElement root = doc.createElement("List");
 
     for(int i = 0; i < m_qList.size(); i++)
@@ -413,6 +417,15 @@ TrackInfoObject * TrackPlaylist::getTrackAt(int index)
 int TrackPlaylist::getSongNum()
 {
     return m_qList.count();
+}
+
+QString TrackPlaylist::getComment()
+{
+	return m_qComment;
+}
+void TrackPlaylist::setComment(QString comment)
+{
+	m_qComment = comment;
 }
 
 void TrackPlaylist::sortByScore(bool ascending)
