@@ -265,7 +265,7 @@ void DlgPreferences::createIcons()
 #ifdef __SHOUTCAST__
     QListWidgetItem * shoutcastButton = new QListWidgetItem(contentsWidget);
     shoutcastButton->setIcon(QIcon(":/images/preferences/broadcast.png"));
-    shoutcastButton->setText(tr("Live broadcasting"));
+    shoutcastButton->setText(tr("Live Broadcasting"));
     shoutcastButton->setTextAlignment(Qt::AlignLeft | Qt::AlignVCenter);
     shoutcastButton->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
 #endif

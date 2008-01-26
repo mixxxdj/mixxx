@@ -22,6 +22,7 @@
 #include "engineabstractrecord.h"
 #include "configobject.h"
 #include "controlobject.h"
+#include "controlobjectthreadmain.h"
 
 #include <shout/shout.h>
 
@@ -40,6 +41,9 @@ public:
     void process(const CSAMPLE *pIn, const CSAMPLE *pOut, const int iBufferSize);
     void writePage(unsigned char *header, unsigned char *body,
                    int headerLen, int bodyLen);
+public slots:    
+    /** Update the libshout struct with info from Mixxx's shoutcast preferences.*/
+    void updateFromPreferences();
 //    static void wrapper2writePage();
 //private slots:
 //    void writePage(unsigned char *header, unsigned char *body,
@@ -48,9 +52,10 @@ private:
     void serverConnect();
     shout_t *m_pShout;
     long m_iShoutStatus;
-    ConfigObject<ConfigValue> *config;
+    ConfigObject<ConfigValue> *m_pConfig;
     ControlObject* recReady;
     EncoderVorbis *encoder;
+    ControlObjectThreadMain* m_pUpdateShoutcastFromPrefs;
 //    void (*writeFn)(unsigned char *, unsigned char *, int, int);
 };
 
