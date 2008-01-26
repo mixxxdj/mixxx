@@ -1,4 +1,4 @@
-/* -*- mode:C++; indent-tabs-mode:t; tab-width:8; c-basic-offset:4; -*- */
+/* -*- mode:C++; indent-tabs-mode:s; tab-width:4; c-basic-offset:4; -*- */
 //
 // C++ Implementation: trackplaylist
 //
@@ -30,6 +30,15 @@
 
 Track * TrackPlaylist::spTrack = 0;
 
+/** Note: if you use this, you MUST manually call playlist->setTrackCollection()... */
+TrackPlaylist::TrackPlaylist()
+{
+	m_pTrackCollection = NULL;
+	iCounter = 0;
+	m_qName = "Uninitialized playlist";
+	m_bStopLibraryScan = false;
+}
+
 TrackPlaylist::TrackPlaylist(TrackCollection * pTrackCollection, QString qName)
 {
     m_pTrackCollection = pTrackCollection;
@@ -45,6 +54,16 @@ TrackPlaylist::TrackPlaylist(TrackCollection * pTrackCollection, QDomNode node)
     m_bStopLibraryScan = false;
     //m_pTable = 0;
 
+    loadFromXMLNode(node);
+
+}
+void TrackPlaylist::setTrackCollection(TrackCollection * pTrackCollection)
+{
+    m_pTrackCollection = pTrackCollection;
+}    
+
+void TrackPlaylist::loadFromXMLNode(QDomNode node)
+{
     // Set name of list
     m_qName = XmlParse::selectNodeQString(node, "Name");
     qDebug() << "playlist name" << m_qName.latin1();

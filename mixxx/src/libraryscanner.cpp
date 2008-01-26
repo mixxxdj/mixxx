@@ -23,16 +23,14 @@
 
 LibraryScanner::LibraryScanner()
 {
-    m_qPlaylists = NULL;
+    m_qLibraryPlaylist = NULL;
     m_qLibraryPath = "";
-    m_iLibraryIdx = 0;
 }
 
-LibraryScanner::LibraryScanner(TrackPlaylistList* playlists, QString libraryPath, unsigned int iLibraryIdx)
+LibraryScanner::LibraryScanner(TrackPlaylist* library_playlist, QString libraryPath)
 {
-    m_qPlaylists = playlists;
+    m_qLibraryPlaylist = library_playlist;
     m_qLibraryPath = libraryPath;
-    m_iLibraryIdx = iLibraryIdx;
     
     qDebug() << "Constructed LibraryScanner!!!";
 }
@@ -47,27 +45,29 @@ void LibraryScanner::run()
     //m_pProgress->slotStartTiming();
     
     //Start scanning the library.
-    m_qPlaylists->at(m_iLibraryIdx)->addPath(m_qLibraryPath);
+    m_qLibraryPlaylist->addPath(m_qLibraryPath);
+    
+    qDebug() << "Scan finished cleanly";
     //m_pProgress->slotStopTiming();
     
     emit(scanFinished());
 }
 
-void LibraryScanner::scan(QString libraryPath, TrackPlaylistList* playlists)
+void LibraryScanner::scan(QString libraryPath)
 {
     m_qLibraryPath = libraryPath;
-    m_pProgress = new LibraryScannerDlg(playlists);
+    m_pProgress = new LibraryScannerDlg();
 
     //The important part here is that we need to use Qt::BlockingQueuedConnection, because we're sending these signals
     //across threads. Normally you'd use regular QueuedConnections for this, but since we don't have an event loop running and
     //we need the signals to get processed immediately, we have to use BlockingQueuedConnection. (DirectConnection isn't an
     //option for sending signals across threads.)
-    connect(m_qPlaylists->at(m_iLibraryIdx), SIGNAL(startedLoading()), m_pProgress, SLOT(slotStartTiming()), Qt::BlockingQueuedConnection);
-    connect(m_qPlaylists->at(m_iLibraryIdx), SIGNAL(finishedLoading()), m_pProgress, SLOT(slotStopTiming()), Qt::BlockingQueuedConnection);  
-    connect(m_qPlaylists->at(m_iLibraryIdx), SIGNAL(progressLoading(QString)), m_pProgress, SLOT(slotCheckTiming(QString)), Qt::BlockingQueuedConnection);
+    connect(m_qLibraryPlaylist, SIGNAL(startedLoading()), m_pProgress, SLOT(slotStartTiming()), Qt::BlockingQueuedConnection);
+    connect(m_qLibraryPlaylist, SIGNAL(finishedLoading()), m_pProgress, SLOT(slotStopTiming()), Qt::BlockingQueuedConnection);  
+    connect(m_qLibraryPlaylist, SIGNAL(progressLoading(QString)), m_pProgress, SLOT(slotCheckTiming(QString)), Qt::BlockingQueuedConnection);
     
     //connect(m_pProgress, SIGNAL(scanCancelled()), this, SLOT(terminate()));  //This causes a deadlock, don't use it.
-    connect(m_pProgress, SIGNAL(scanCancelled()), m_qPlaylists->at(m_iLibraryIdx), SLOT(slotCancelLibraryScan()));
+    connect(m_pProgress, SIGNAL(scanCancelled()), m_qLibraryPlaylist, SLOT(slotCancelLibraryScan()));
     
     //connect(m_qPlaylists->at(0), SIGNAL(finishedLoading()), this, SIGNAL(scanFinished()), Qt::BlockingQueuedConnection);  
 

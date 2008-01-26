@@ -31,7 +31,6 @@ class LibraryScannerDlg : public QObject
     
     public:
         LibraryScannerDlg();
-        LibraryScannerDlg(TrackPlaylistList* playlists);
         ~LibraryScannerDlg();
     public slots:
 	    void slotStartTiming();
@@ -43,7 +42,7 @@ class LibraryScannerDlg : public QObject
         void scanFinished();
         void scanCancelled();
     private:
-        TrackPlaylistList* m_qPlaylists;    //The list of playlists
+        TrackPlaylist* m_qLibraryPlaylist;  //The list of playlists
         QString m_qLibraryPath;             //The path to the library on disk
 	    void setupTiming();        
             

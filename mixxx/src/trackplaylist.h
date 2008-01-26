@@ -56,6 +56,8 @@ class TrackPlaylist : public QObject
     Q_OBJECT
 public:
     /** Construct an empty playlist */
+    TrackPlaylist();
+    /** Construct an empty playlist */
     TrackPlaylist(TrackCollection *pTrackCollection, QString qName="Default");
     /** Construct a playlist from the definition at the dom node */
     TrackPlaylist(TrackCollection *pTrackCollectionm, QDomNode node);
@@ -75,6 +77,10 @@ public:
     void deactivate();
     /** Get name of list */
     QString getListName();
+    /** Loads the playlist from an XML node */
+    void loadFromXMLNode(QDomNode node);
+    /** Sets the TrackCollection pointer */
+    void setTrackCollection(TrackCollection * pTrackCollection);
     /** Set name of list */
     void setListName(QString name);
     /** Add recursively the tracks in path to the collection, and then to this list */
