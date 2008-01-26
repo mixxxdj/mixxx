@@ -117,8 +117,10 @@ else:
 
 
 #Figure out what the QT path is
-if platform == 'linux' or platform == 'osx':
+if platform == 'linux':
 	default_qtdir = '/usr/share/qt4'
+elif platform == 'osx':
+	default_qtdir = '/usr/local/Trolltech/Qt-4.3.2/'
 elif platform == 'win32':
 	default_qtdir = 'C:\\qt\\4.3.0'
 
@@ -300,10 +302,9 @@ if not env.GetOption('clean') and not SCons.Util.containsAny(os.sys.argv, ['-h',
 			# "libsndfile",
 			# source=["soundsourcesndfile.cpp", "trackinfoobject.cpp"])
 
-		#Check for QT4
-		if not os.path.exists('/Library/Frameworks/QtCore.framework/Versions/4/Headers/QtCore'):
-			print 'Did not find QT4 framework, exiting! (Please install it)'
-			Exit(1)
+		#Check for QT4 (framework)
+		"""if not os.path.exists('/Library/Frameworks/QtCore.framework/Versions/4/Headers/QtCore') or :
+			print 'Did not find QT4 framework, going to look for libs instead (use qtdir flag)...'
 		else:
 			env.Append(LINKFLAGS = '-framework QtCore -framework QtOpenGL -framework Qt3Support -framework QtGui -framework QtXml -framework QtNetwork -framework QtSql')
 			env.Append(CXXFLAGS = '-I/Library/Frameworks/QtCore.framework/Headers/')
@@ -311,6 +312,21 @@ if not env.GetOption('clean') and not SCons.Util.containsAny(os.sys.argv, ['-h',
 			env.Append(CXXFLAGS = '-I/Library/Frameworks/Qt3Support.framework/Headers/')
 			env.Append(CXXFLAGS = '-I/Library/Frameworks/QtGui.framework/Headers/')
 			env.Append(CXXFLAGS = '-I/Library/Frameworks/QtXml.framework/Headers/')
+"""
+		#Check for QT libs (rather than framework)
+		if not os.path.exists(flags_qtdir):
+			print 'Did not find QT4 path (qtdir: ' + flags_qtdir + ' not found), exiting!'
+		else:
+			env.Append(LIBPATH=flags_qtdir + '/lib/')
+			env.Append(CPPPATH=flags_qtdir + '/include/')
+			env.Append(LIBS = 'Qt3Support');
+			env.Append(LIBS = 'QtXml');
+			env.Append(LIBS = 'QtGui');
+			env.Append(LIBS = 'QtCore');
+			env.Append(LIBS = 'QtOpenGL');
+			env.Append(LIBS = 'QtNetwork');
+			env.Append(LIBS = 'QtSql');
+			
 			
 		#Check for CoreMIDI
 		if not conf.CheckCXXHeader('/System/Library/Frameworks/CoreMIDI.framework/Headers/CoreMIDI.h'):
@@ -591,7 +607,10 @@ if int(flags_optimize):
 			env.Append(CXXFLAGS = '-O3')
 		elif flags_optimize=='2':
 			print "  P4 MMX/SSE optimizations enabled."
-                	env.Append(CXXFLAGS = '-O3 -march=pentium4 -mmmx -msse -mfpmath=sse -fomit-frame-pointer -ffast-math -funroll-loops')
+			env.Append(CXXFLAGS = '-O3 -march=pentium4 -mmmx -msse2 -mfpmath=sse -fomit-frame-pointer -ffast-math -funroll-loops')
+		elif flags_optimize=='3':
+			print "  Intel Core 2 optimizations enabled."
+			env.Append(CXXFLAGS = '-O3 -march=prescott -mmmx -msse3 -mfpmath=sse -fomit-frame-pointer -ffast-math -funroll-loops')
 else:
 	print "Optimizations... disabled"
 
@@ -655,6 +674,7 @@ opts = Options('custom.py')
 opts.Add('prefix', 'Set to your install prefix', '/usr/local')
 opts.Add('qtdir', 'Set to your QT4 directory', '/usr/share/qt4')
 opts.Add('djconsole', 'Set to 1 to enable Hercules support through libdjconsole', 0)
+opts.Add('djconsole_legacy', 'Set to 1 to enable legacy Hercules support (for Hercules MP3 Control only, not MK2', 0)
 opts.Add('experimentalrecord', '(EXPERIMENTAL) Set to 1 to enable output recording feature', 0)
 opts.Add('hifieq', 'Set to 1 to enable high quality EQs', 1)
 opts.Add('ladspa', '(EXPERIMENTAL) Set to 1 to enable LADSPA plugin support', 0)

@@ -149,6 +149,16 @@ int main(int argc, char * argv[])
 
     a = new QApplication(argc, argv);
 
+//Hack to make QT4 find the plugins when packaging in the Mixxx.app bundle on OS X.
+//See http://doc.trolltech.com/4.3/deployment-mac.html for details.
+#ifdef __MACX__
+    QDir dir(QApplication::applicationDirPath());
+    dir.cdUp();
+    dir.cd("plugins");
+    QApplication::setLibraryPaths(QStringList(dir.absolutePath()));
+#endif
+
+
 #ifdef __LADSPA__
     //LADSPALoader ladspaloader;
 #endif
