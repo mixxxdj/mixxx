@@ -287,11 +287,11 @@ MixxxApp::MixxxApp(QApplication * a, struct CmdlineArgs args, QSplashScreen * pS
 #endif
         //TODO: Add cmetric hook for failing to detect audio device on FIRST startup too.
         
-        int ret = QMessageBox::warning(this, tr("Mixxx"),
-                                        tr("Failed to open your audio device(s).\n"
-                                          "Please verify your selection in the preferences."),
-                                        QMessageBox::Ok,
-                                        QMessageBox::Ok);
+        QMessageBox::warning(this, tr("Mixxx"),
+                                   tr("Failed to open your audio device(s).\n"
+                                      "Please verify your selection in the preferences."),
+                                   QMessageBox::Ok,
+                                   QMessageBox::Ok);
          prefDlg->show();
     }
 
@@ -626,8 +626,7 @@ void MixxxApp::slotFileLoadSongPlayer1()
             return;
     }
 
-    QString s = QFileDialog::getOpenFileName(this, "Load Song into Player 1", config->getValueString(ConfigKey("[Playlist]","Directory")),
-                                             SUPPORTED_AUDIO_FILES);
+    QString s = QFileDialog::getOpenFileName(this, tr("Load Song into Player 1"), config->getValueString(ConfigKey("[Playlist]","Directory")), SUPPORTED_AUDIO_FILES);
     if (!(s == QString::null)) {
         TrackInfoObject * pTrack = m_pTrack->getTrackCollection()->getTrack(s);
         if (pTrack)
@@ -651,8 +650,7 @@ void MixxxApp::slotFileLoadSongPlayer2()
             return;
     }
     
-    QString s = QFileDialog::getOpenFileName(this, "Load Song into Player 2", config->getValueString(ConfigKey("[Playlist]","Directory")),
-                                             SUPPORTED_AUDIO_FILES);
+    QString s = QFileDialog::getOpenFileName(this, tr("Load Song into Player 2"), config->getValueString(ConfigKey("[Playlist]","Directory")), SUPPORTED_AUDIO_FILES);
     if (!(s == QString::null)) {
         TrackInfoObject * pTrack = m_pTrack->getTrackCollection()->getTrack(s);
         if (pTrack)
@@ -669,11 +667,6 @@ void MixxxApp::slotOptionsBeatMark(bool)
 {
 // BEAT MARK STUFF
 }
-
-// void MixxxApp::slotQuitFullScreen() {
-//     if (optionsFullScreen->isChecked())
-//         slotOptionsFullScreen(false);
-// }
 
 void MixxxApp::slotOptionsFullScreen(bool toggle)
 {
@@ -738,11 +731,11 @@ void MixxxApp::slotOptionsVinylControl(bool toggle)
 
     if (device1 == "" && device2 == "" && (toggle==true))
     {
-        int ret = QMessageBox::warning(this, tr("Mixxx"),
-                                    tr("No input device(s) select.\n"
+        QMessageBox::warning(this, tr("Mixxx"),
+                                   tr("No input device(s) select.\n"
                                       "Please select your soundcard(s) in vinyl control preferences."),
-                                    QMessageBox::Ok,
-                                    QMessageBox::Ok);
+                                   QMessageBox::Ok,
+                                   QMessageBox::Ok);
         prefDlg->show();
         prefDlg->showVinylControlPage();
     }

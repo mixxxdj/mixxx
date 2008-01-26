@@ -19,6 +19,8 @@
 #include "parserm3u.h"
 //Added by qt3to4:
 #include <Q3PtrList>
+#include <QtGui>
+#include <QtCore>
 
 TrackImporter::TrackImporter(QWidget * parent,TrackCollection * pCollection)
 {
@@ -58,12 +60,9 @@ void TrackImporter::clearTracks()
 /**Displays a file chooser dialog for the user**/
 QString TrackImporter::showChooser()
 {
-    QString sFilename = Q3FileDialog::getOpenFileName(
-        QDir::currentDirPath(),
-        "Winamp Playlists (*.pls *.m3u)",
-        m_pwParent,
-        "import playlist dialog",
-        "Import playlist" );
+    QString sFilename = QFileDialog::getOpenFileName(
+        m_pwParent, "Import playlist", "",
+        "Winamp Playlists (*.pls *.m3u)");
 
     return sFilename;
 }
@@ -88,7 +87,7 @@ void TrackImporter::parseTracks(QString sName)
 QString TrackImporter::splitFilepath(QString sFilepath)
 {
 
-    QStringList lst( QStringList::split( "/", sFilepath ) );
+    QStringList lst(sFilepath.split("/"));
     QStringList::Iterator lstIt = lst.end();
 
     return((*--lstIt));
@@ -132,7 +131,7 @@ TrackPlaylist * TrackImporter::importPlaylist(QString sName)
             m_psLocations->removeFirst();
 
         } else{
-            qDebug("Importer: Track was NULL, maybe its file is malformed ("+(*m_psLocations->first())+")");
+            qDebug() << "Importer: Track was NULL, maybe its file is malformed (" << (*m_psLocations->first()) << ")";
             m_psLocations->removeFirst();
         }
 
