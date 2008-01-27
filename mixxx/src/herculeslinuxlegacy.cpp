@@ -189,8 +189,8 @@ int HerculesLinux::opendev(int iId)
 
             return iFd;
         }
-        qDebug("  %d. rgcName = [%s]",i,(const char *)rgcName);
-        qDebug("  %d. kqHerculesValidPrefix[i] = [%s]",i, kqHerculesValidPrefix[i].data());
+        qDebug() << "  " << i << ". rgcName = [" << (const char *)rgcName << "]";
+        qDebug() << "  " << i << ". kqHerculesValidPrefix[i] = [" << kqHerculesValidPrefix[i] << "]";
     }
 
     close(iFd);
