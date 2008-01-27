@@ -69,7 +69,11 @@ Q3MemArray<long> * XmlParse::selectNodeLongArray(const QDomNode &nodeHeader, con
     {
         QDomNode node2 = selectNode(node, "#cdata-section");
         if (!node2.isNull())
-            s = node2.toCDATASection().data();
+        {
+            QDomCDATASection node2cdata = node2.toCDATASection();
+            s = node2cdata.data();
+        
+        }
     }
 #ifdef QT3_SUPPORT
     Q3MemArray<long> *data = new Q3MemArray<long>(s.length()/4);
@@ -106,7 +110,10 @@ Q3MemArray<char> * XmlParse::selectNodeCharArray(const QDomNode &nodeHeader, con
     {
         QDomNode node2 = selectNode(node, "#cdata-section");
         if (!node2.isNull())
-            s = node2.toCDATASection().data();
+        {
+            QDomCDATASection node2cdata = node2.toCDATASection();
+            s = node2cdata.data();
+        }
     }
 #ifdef QT3_SUPPORT
     Q3MemArray<char> *data = new Q3MemArray<char>(s.length());
