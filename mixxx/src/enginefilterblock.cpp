@@ -124,7 +124,8 @@ void EngineFilterBlock::setFilters(bool forceSetting)
 void EngineFilterBlock::process(const CSAMPLE * pIn, const CSAMPLE * pOut, const int iBufferSize)
 {
     CSAMPLE * pOutput = (CSAMPLE *)pOut;
-    CSAMPLE fLow=0.f, fMid=0.f, fHigh=0.f;
+    float fLow=0.f, fMid=0.f, fHigh=0.f;
+
 
     if (filterKillLow->get()==0.)
         fLow = filterpotLow->get(); //*0.7;
@@ -134,7 +135,7 @@ void EngineFilterBlock::process(const CSAMPLE * pIn, const CSAMPLE * pOut, const
         fHigh = filterpotHigh->get(); //*1.2;
 
 #ifndef __LOFI__
-	setFilters();
+	setFilters(); 
 #endif
     low->process(pIn, m_pTemp1, iBufferSize);
     band->process(pIn, m_pTemp2, iBufferSize);
@@ -142,5 +143,6 @@ void EngineFilterBlock::process(const CSAMPLE * pIn, const CSAMPLE * pOut, const
 
     for (int i=0; i<iBufferSize; ++i)
         pOutput[i] = (fLow*m_pTemp1[i] + fMid*m_pTemp2[i] + fHigh*m_pTemp3[i]);
+
 }
 

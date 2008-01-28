@@ -42,8 +42,17 @@ bool WTrackTableFilter::filterAcceptsRow(int sourceRow,
     if (sourceModel()->data(index0).toString() == ".")
         return false;
 
+    //Always include "..", regardless of the search string.
+    if (sourceModel()->data(index0).toString() == "..") 
+        return true;
+
     //include all folder
-    if (((QDirModel *)sourceModel())->isDir(index0))
+    //if (((QDirModel *)sourceModel())->isDir(index0))
+    //    return true;
+
+    //If it's a directory and it matches the search string, include it.
+    if ((((QDirModel *)sourceModel())->isDir(index0)) && 
+        sourceModel()->data(index0).toString().contains(filterRegExp()))
         return true;
 
     //exclude other file than mp3, ogg, etc..

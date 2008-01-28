@@ -14,6 +14,10 @@
 *                                                                         *
 ***************************************************************************/
 
+#ifdef __WIN32__
+#pragma intrinsic(fabs)
+#endif
+
 #include "enginevumeter.h"
 #include "controlpotmeter.h"
 
@@ -39,11 +43,7 @@ void EngineVuMeter::process(const CSAMPLE * pIn, const CSAMPLE *, const int iBuf
     // Calculate the summed absolute volume
     for (int i=0; i<iBufferSize; ++i)
     {
-        // Too slow to use fabs on windows
-        if (pIn[i]>0.)
-            m_fRMSvolumeSum += pIn[i];
-        else
-            m_fRMSvolumeSum -= pIn[i];
+        m_fRMSvolumeSum += fabsf(pIn[i]);
     }
 
 
