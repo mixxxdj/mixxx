@@ -112,7 +112,6 @@ void EngineFilterIIR::process(const CSAMPLE * pIn, const CSAMPLE * pOut, const i
     }
 
 // Check for denormals
-#ifndef __MACX__
     for (i=0; i<=order; ++i)
     {
         xv1[i] = zap_denormal(xv1[i]);
@@ -120,6 +119,5 @@ void EngineFilterIIR::process(const CSAMPLE * pIn, const CSAMPLE * pOut, const i
         xv2[i] = zap_denormal(xv2[i]);
         yv2[i] = zap_denormal(yv2[i]);
     }
-#endif
 }
 
