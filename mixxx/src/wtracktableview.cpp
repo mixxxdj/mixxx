@@ -74,6 +74,7 @@ WTrackTableView::WTrackTableView(QWidget * parent, ConfigObject<ConfigValue> * p
 
     m_pDirModel = new QDirModel;
     m_pDirModel->setFilter(QDir::AllEntries);
+    m_pDirModel->setSorting(QDir::DirsFirst | QDir::IgnoreCase);
     m_dirindex = m_pDirModel->index(m_pConfig->getValueString(ConfigKey("[Playlist]","Directory")));
 
     m_pDirFilter = new WTrackTableFilter(m_dirindex);

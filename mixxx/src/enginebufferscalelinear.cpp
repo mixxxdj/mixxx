@@ -63,7 +63,7 @@ void EngineBufferScaleLinear::clear()
 
 CSAMPLE * EngineBufferScaleLinear::scale(double playpos, int buf_size, float * pBase, int iBaseLength)
 {
-    double rate_add = 2.*m_dBaseRate;
+    float rate_add = 2.*m_dBaseRate;
 
     // Determine position in read_buffer to start from
     new_playpos = playpos;
