@@ -46,7 +46,7 @@
 
 DlgPreferences::DlgPreferences(MixxxApp * mixxx, MixxxView * view,
                                SoundManager * soundman,
-                               Track *, ConfigObject<ConfigValue> * _config) :  QDialog(), Ui::DlgPreferencesDlg()
+                               Track *track, ConfigObject<ConfigValue> * _config) :  QDialog(), Ui::DlgPreferencesDlg()
 {
     m_pMixxx = mixxx;
     //QDialog* foo = new QDialog();
@@ -55,7 +55,8 @@ DlgPreferences::DlgPreferences(MixxxApp * mixxx, MixxxView * view,
 
     setWindowTitle(tr("Preferences"));
     config = _config;
-
+    m_pTrack = track;
+    
     //Heavily based on the QT4 Config Dialog Example: http://doc.trolltech.com/4.3/dialogs-configdialog.html
 
     /*contentsWidget = new QListWidget;
@@ -178,22 +179,11 @@ DlgPreferences::DlgPreferences(MixxxApp * mixxx, MixxxView * view,
     connect(buttonBox, SIGNAL(accepted()), wshoutcast,SLOT(slotApply()));
 #endif
 
-    /*
-       connect(this,        SIGNAL(buttonbox.accepted()),             wsound,    SLOT(slotApply()));
-       connect(this,        SIGNAL(buttonbox.accepted()),             wsound,    SLOT(slotApplyApi()));
-       connect(this,        SIGNAL(buttonbox.accepted()),             wmidi,     SLOT(slotApply()));
-       connect(this,        SIGNAL(buttonbox.accepted()),             wplaylist, SLOT(slotApply()));
-       connect(this,        SIGNAL(buttonbox.accepted()),             wcontrols, SLOT(slotApply()));
-       connect(this,        SIGNAL(buttonbox.accepted()),             this,      SLOT(slotApply()));
-       connect(this,        SIGNAL(buttonbox.accepted()),		     wmixer,    SLOT(slotApply()));*/
-    //Note: The above buttonbox.accepted() things used to just be closeDlg()) - Albert June 19, 2007
-
-//    if (tracklist->wTree)
-//        connect(wplaylist,   SIGNAL(apply(QString,QString)),         tracklist->wTree, SLOT(slotSetDirs(QString,QString)));
-
-    //TODO: Update the library when you change the options
-    //if (view->m_pTreeView)
-    //    connect(wplaylist,   SIGNAL(apply(const QString &)), view->m_pTreeView, SLOT(slotUpdateDir(const QString &)));
+    //Update the library when you change the options
+    if (m_pTrack && wplaylist)
+    {
+        connect(wplaylist, SIGNAL(apply()), m_pTrack, SLOT(slotScanLibrary()));
+    }
 }
 
 DlgPreferences::~DlgPreferences()

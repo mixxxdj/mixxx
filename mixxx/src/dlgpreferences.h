@@ -83,6 +83,7 @@ private:
 
     ConfigObject<ConfigValue> *config;
     MixxxApp *m_pMixxx;
+    Track* m_pTrack;
 };
 
 #endif

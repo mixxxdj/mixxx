@@ -260,7 +260,7 @@ MixxxApp::MixxxApp(QApplication * a, struct CmdlineArgs args, QSplashScreen * pS
         pSplash->showMessage("Loading song database...",Qt::AlignLeft|Qt::AlignBottom);
 
     // Initialize track object:
-    m_pTrack = new Track(config->getValueString(ConfigKey("[Playlist]","Listfile")), view, buffer1, buffer2, m_pWaveSummary, m_pBpmDetector,config->getValueString(ConfigKey("[Playlist]","Directory")));
+    m_pTrack = new Track(config->getValueString(ConfigKey("[Playlist]","Listfile")), view, config, buffer1, buffer2, m_pWaveSummary, m_pBpmDetector);
 
     //WTreeItem::setTrack(m_pTrack);
     // Set up drag and drop to player visuals
@@ -509,8 +509,8 @@ void MixxxApp::initActions()
     libraryRescan->setCheckable(false);
     connect(libraryRescan, SIGNAL(activated()), m_pTrack, SLOT(slotScanLibrary()));
 
-    playlistsNew->setStatusTip(tr("Add new playlist"));
-    playlistsNew->setWhatsThis(tr("Add a new playlist"));
+    playlistsNew->setStatusTip(tr("Create a new playlist"));
+    playlistsNew->setWhatsThis(tr("New playlist\n\nCreate a new playlist"));
     connect(playlistsNew, SIGNAL(activated()), m_pTrack, SLOT(slotNewPlaylist()));
 
     playlistsImport->setStatusTip(tr("Import playlist"));
@@ -565,7 +565,7 @@ void MixxxApp::initMenuBar()
     // MENUBAR
     fileMenu=new QMenu("&File");
     optionsMenu=new QMenu("&Options");
-    playlistsMenu=new QMenu("&Playlists");
+    libraryMenu=new QMenu("&Playlists");
     viewMenu=new QMenu("&View");
     helpMenu=new QMenu("&Help");
 #ifdef __SCRIPT__
@@ -586,11 +586,11 @@ void MixxxApp::initMenuBar()
     optionsMenu->addAction(optionsFullScreen);
     optionsMenu->addAction(optionsPreferences);
 
-    //    playlistsMenu->setCheckable(true);
-    playlistsMenu->addAction(libraryRescan);
-    playlistsMenu->addAction(playlistsNew);
-    playlistsMenu->addAction(playlistsImport);
-    playlistsMenu->addSeparator();
+    //    libraryMenu->setCheckable(true);
+    libraryMenu->addAction(libraryRescan);
+    libraryMenu->addSeparator();
+    libraryMenu->addAction(playlistsNew);
+    libraryMenu->addAction(playlistsImport);
     // menuBar entry viewMenu
     //viewMenu->setCheckable(true);
 
@@ -605,7 +605,7 @@ void MixxxApp::initMenuBar()
 #endif
 
     menuBar()->addMenu(fileMenu);
-    menuBar()->addMenu(playlistsMenu);
+    menuBar()->addMenu(libraryMenu);
     menuBar()->addMenu(optionsMenu);
 
     //    menuBar()->addMenu(viewMenu);
@@ -614,7 +614,7 @@ void MixxxApp::initMenuBar()
 #endif
     menuBar()->addSeparator();
     menuBar()->addMenu(helpMenu);
-    new MixxxMenuPlaylists(playlistsMenu, m_pTrack);
+    new MixxxMenuPlaylists(libraryMenu, m_pTrack);
 
 }
 
