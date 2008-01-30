@@ -17,6 +17,7 @@
 
 
 #include "bpmdetector.h"
+#include "bpmscheme.h"
 #include "soundsourceproxy.h"
 #include "trackinfoobject.h"
 #include "mathstuff.h"
@@ -66,25 +67,33 @@ BpmDetector::~BpmDetector()
 
 void BpmDetector::enqueue(TrackInfoObject * pTrackInfoObject, BpmReceiver * pBpmReceiver)
 {
+    int minBpm, maxBpm;
+    bool entire;
+    
     m_qMutex.lock();
     BpmDetectionPackage * package = new BpmDetectionPackage();
     package->_TrackInfoObject = pTrackInfoObject;
     package->_BpmReceiver = pBpmReceiver;
-    package->_minBpm = 0;
-    package->_maxBpm = 0;
+    
+    // Read
+    minBpm = m_Config->getValueString(ConfigKey("[BPM]","BPMRangeStart")).toInt();
+    maxBpm = m_Config->getValueString(ConfigKey("[BPM]","BPMRangeEnd")).toInt();
+    entire = (bool)m_Config->getValueString(ConfigKey("[BPM]","AnalyzeEntireSong")).toInt();
+    
+    package->_Scheme = new BpmScheme("Default", minBpm, maxBpm, entire);
+  
     m_qQueue.enqueue(package);
     m_qMutex.unlock();
     m_qWait.wakeAll();
 }
 
-void BpmDetector::enqueue(TrackInfoObject * pTrackInfoObject, int minBpm, int maxBpm, BpmReceiver * pBpmReceiver)
+void BpmDetector::enqueue(TrackInfoObject * pTrackInfoObject, BpmScheme *scheme, BpmReceiver * pBpmReceiver)
 {
     m_qMutex.lock();
     BpmDetectionPackage * package = new BpmDetectionPackage();
     package->_TrackInfoObject = pTrackInfoObject;
     package->_BpmReceiver = pBpmReceiver;
-    package->_minBpm = minBpm;
-    package->_maxBpm = maxBpm;
+    package->_Scheme = scheme;
     m_qQueue.enqueue(package);
     m_qMutex.unlock();
     m_qWait.wakeAll();
@@ -98,8 +107,7 @@ void BpmDetector::run()
     {
         TrackInfoObject * pTrackInfoObject = NULL;
         BpmReceiver * pBpmReceiver = NULL;
-        int minBpm = 0;
-        int maxBpm = 0;
+        BpmScheme * pScheme = NULL;
 
         // Check if there is a new track to process in the queue...
 
@@ -111,8 +119,7 @@ void BpmDetector::run()
         {
             pTrackInfoObject = package->_TrackInfoObject;
             pBpmReceiver = package->_BpmReceiver;
-            minBpm = package->_minBpm;
-            maxBpm = package->_maxBpm;
+            pScheme = package->_Scheme;
             delete package;
         }
         else
@@ -128,8 +135,7 @@ void BpmDetector::run()
             {
                 pTrackInfoObject = package->_TrackInfoObject;
                 pBpmReceiver = package->_BpmReceiver;
-                minBpm = package->_minBpm;
-                maxBpm = package->_maxBpm;
+                pScheme = package->_Scheme;
                 delete package;
             }
             m_qMutex.unlock();
@@ -148,25 +154,6 @@ void BpmDetector::run()
         {
             #define CHUNKSIZE 4096
 
-            m_qMutex.lock();
-            int analyzeEntireSong = m_Config->getValueString(ConfigKey("[BPM]","AnalyzeEntireSong")).toInt();
-            m_qMutex.unlock();
-
-            if(minBpm == 0)
-            {
-                m_qMutex.lock();
-                minBpm = m_Config->getValueString(ConfigKey("[BPM]","BPMRangeStart")).toInt();
-                m_qMutex.unlock();
-            }
-
-            if(maxBpm == 0)
-            {
-                m_qMutex.lock();
-                maxBpm = m_Config->getValueString(ConfigKey("[BPM]","BPMRangeEnd")).toInt();
-                m_qMutex.unlock();
-            }
-
-
             SoundSourceProxy * pSoundSource = new SoundSourceProxy(pTrackInfoObject);
             int16_t data16[ CHUNKSIZE];      // for 16 bit samples
             int8_t data8[ CHUNKSIZE ];            // for 8 bit samples
@@ -177,12 +164,13 @@ void BpmDetector::run()
 
             length = pSoundSource->length();
 
-            if(analyzeEntireSong < 1)
+            if(!pScheme->getAnalyzeEntireSong())
             {
                 length = length / 2;
                 pos = length / 2;
 
             }
+            
             if(pos %2 != 0)
             {
                 //Bug Fix: above formula allows iBeatPosStart
@@ -206,7 +194,7 @@ void BpmDetector::run()
                 bits = pTrackInfoObject->getBitrate();
             }
 
-            BpmDetect bpmd( channels, ( int ) frequency, maxBpm, minBpm );
+            BpmDetect bpmd( channels, ( int ) frequency, pScheme->getMaxBpm(), pScheme->getMinBpm() );
 
             int cprogress = 0;
             pSoundSource->seek(pos);
@@ -246,7 +234,7 @@ void BpmDetector::run()
 
             float BPM = bpmd.getBpm();
             if ( BPM != 0. ) {
-                BPM = Correct_BPM( BPM, maxBpm, minBpm );
+                BPM = Correct_BPM( BPM, pScheme->getMaxBpm(), pScheme->getMinBpm() );
                 pTrackInfoObject->setBpm(BPM);
                 pTrackInfoObject->setBpmConfirm();
                 if(pBpmReceiver){
@@ -333,7 +321,8 @@ void BpmDetector::run()
             pPeaks->update(0, iBeatBlockLength);
 
             // Initialize beat probability vector
-            ProbabilityVector * bpv = new ProbabilityVector(60.f/maxBpm, 60.f/minBpm, kiBeatBins);
+            ProbabilityVector * bpv = new ProbabilityVector(60.f/(float)pScheme->getMaxBpm(), 
+                                                            60.f/(float)pScheme->getMinBpm(), kiBeatBins);
 
             // Calculate BPM
             PeakList::iterator it1 = pPeaks->begin();
@@ -352,10 +341,10 @@ void BpmDetector::run()
                     float interval = pPeaks->getDistance(it2,it1)/((float)pSoundSource->getSrate()/float (kiBlockSize));
 
                     // Update beat probability vector
-                    if (interval<60.f/minBpm)
+                    if (interval<60.f/(float)pScheme->getMinBpm())
                         bpv->add(interval, pDPsf[(*it1).i]*pDPsf[(*it2).i]);
 
-                    if (it2==pPeaks->begin() || interval>=60.f/minBpm)
+                    if (it2==pPeaks->begin() || interval>=60.f/(float)pScheme->getMinBpm())
                         bInRange = false;
                     else
                         it2--;

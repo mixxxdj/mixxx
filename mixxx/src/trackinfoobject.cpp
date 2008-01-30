@@ -24,6 +24,7 @@
 #include <QtDebug>
 #include "trackinfoobject.h"
 #include "bpmdetector.h"
+#include "bpmscheme.h"
 #include "bpmreceiver.h"
 #include "soundsourceproxy.h"
 #include "trackplaylist.h"
@@ -427,9 +428,9 @@ void TrackInfoObject::sendToBpmQueue(BpmReceiver * pBpmReceiver)
     m_BpmDetector->enqueue(this, pBpmReceiver);
 }
 
-void TrackInfoObject::sendToBpmQueue(BpmReceiver * pBpmReceiver, int minBpm, int maxBpm)
+void TrackInfoObject::sendToBpmQueue(BpmReceiver * pBpmReceiver, BpmScheme* pScheme)
 {
-    m_BpmDetector->enqueue(this, minBpm, maxBpm, pBpmReceiver);
+    m_BpmDetector->enqueue(this, pScheme, pBpmReceiver);
 }
 
 float TrackInfoObject::getBpm() const

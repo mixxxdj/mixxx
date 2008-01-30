@@ -33,6 +33,7 @@ class WOverview;
 class ControlObject;
 class BpmDetector;
 class BpmReceiver;
+class BpmScheme;
 class TrackPlaylist;
 
 #define NumBpmFactors 4
@@ -71,7 +72,7 @@ public:
     /** Add this TrackInfoObject instance to the BPM detection queue */
     void sendToBpmQueue();
     void sendToBpmQueue(BpmReceiver *pBpmReceiver);
-    void sendToBpmQueue(BpmReceiver *pBpmReceiver, int minBpm, int maxBpm);
+    void sendToBpmQueue(BpmReceiver *pBpmReceiver, BpmScheme *pScheme);
     /** Returns BPM */
     float getBpm() const;
     /** Set BPM */

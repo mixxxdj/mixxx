@@ -15,20 +15,28 @@
 #include "ui_dlgprefbpmdlg.h"
 #include "configobject.h"
 
-class QWidget;
+#include <qlist.h>
 
-class DlgPrefBPM : public QWidget, Ui::DlgPrefBPMDlg  {
+class QWidget;
+class BpmScheme;
+
+class DlgPrefBpm : public QWidget, Ui::DlgPrefBPMDlg  {
     Q_OBJECT
 public:
-    DlgPrefBPM(QWidget *parent, ConfigObject<ConfigValue> *_config);
-    ~DlgPrefBPM();
+    DlgPrefBpm(QWidget *parent, ConfigObject<ConfigValue> *_config);
+    ~DlgPrefBpm();
 public slots:
 
-    void slotSetBPMDetectOnImport(int);
+    void slotSetBpmDetectOnImport(int);
     void slotSetWriteID3Tag(int);
-    void slotSetAnalyzeMode(int);
-    void slotSetBPMRangeStart(int);
-    void slotSetBPMRangeEnd(int);
+    void slotSetBpmEnabled(int);
+    void slotSetBpmRangeStart(int);
+    void slotSetBpmRangeEnd(int);
+   
+    void slotEditBpmScheme();
+    void slotAddBpmScheme();
+    void slotDeleteBpmScheme();
+    void slotDefaultBpmScheme();
 
      /** Apply changes to widget */
     void slotApply();
@@ -36,8 +44,23 @@ public slots:
 signals:
     void apply(const QString &);
 private:
+
+    void clearListIcons();
+
+    // Determines whether or not to gray out the preferences
+    void updateBpmEnabled();
+
+    // Private methods for loading and saving the BPM schemes
+    // to and from the file system.
+    void loadBpmSchemes();
+    void saveBpmSchemes();
+    
+    // Method for filling in the list of BPM schemes on the dialog
+    void populateBpmSchemeList();
+
       /** Pointer to config object */
     ConfigObject<ConfigValue> *config;
+    QList<BpmScheme*> m_BpmSchemes;
 };
 
 #endif

@@ -24,9 +24,11 @@
 #include "configobject.h"
 #include "bpmreceiver.h"
 #include "track.h"
+#include <qlist.h>
 
 class MixxxApp;
 class TrackInfoObject;
+class BpmScheme;
 
 /**
   *@author Micah Lee
@@ -35,7 +37,7 @@ class DlgBpmTap : public QDialog, public Ui::DlgBpmTapDlg, public BpmReceiver
 {
     Q_OBJECT
 public:
-    DlgBpmTap(QWidget *mixxx, TrackInfoObject *tio, TrackPlaylist *playlist);
+    DlgBpmTap(QWidget *, TrackInfoObject *tio, TrackPlaylist *playlist, ConfigObject<ConfigValue> *_config);
     ~DlgBpmTap();
 
 public slots:
@@ -53,6 +55,7 @@ public slots:
     void slotTitleChanged(const QString & title);
     void slotArtistChanged(const QString & artist);
     void slotCommentChanged();
+    void slotBpmSchemeChanged(int ndx);
 
 signals:
     void closeDlg();
@@ -66,6 +69,13 @@ public:
 protected:
     bool eventFilter(QObject *, QEvent *);
     void loadTrackInfo();
+    
+    // Private methods for loading and saving the BPM schemes
+    // to and from the file system.
+    void loadBpmSchemes();
+    
+    // Method for filling in the list of BPM schemes on the dialog
+    void populateBpmSchemeList();
 
 private:
     MixxxApp *m_pMixxx;
@@ -73,6 +83,11 @@ private:
     TrackPlaylist *m_TrackPlaylist;
     QTime *m_Time;
     int m_TapCount;
+    QList<BpmScheme*> m_BpmSchemes;
+    int m_DefaultScheme;
+    
+    /** Pointer to config object */
+    ConfigObject<ConfigValue> *config;
 };
 
 #endif

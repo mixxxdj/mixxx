@@ -16,6 +16,9 @@
 ***************************************************************************/
 
 #include "dlgprefbpm.h"
+#include "dlgbpmscheme.h"
+#include "bpmscheme.h"
+#include "xmlparse.h"
 //define MIXXX
 #include <qlineedit.h>
 #include <qfiledialog.h>
@@ -25,40 +28,56 @@
 #include <qlabel.h>
 #include <qstring.h>
 #include <qpushbutton.h>
+#include <QtCore>
+#include <QMessageBox>
+
 
 #define CONFIG_KEY "[BPM]"
 
 
 
-DlgPrefBPM::DlgPrefBPM(QWidget * parent, ConfigObject<ConfigValue> * _config) : QWidget(parent), Ui::DlgPrefBPMDlg()
+DlgPrefBpm::DlgPrefBpm(QWidget * parent, ConfigObject<ConfigValue> * _config) : QWidget(parent), Ui::DlgPrefBPMDlg()
 {
     config = _config;
 
     setupUi(this);
 
     // Connection
-    connect(chkDetectOnImport,      SIGNAL(stateChanged(int)), this, SLOT(slotSetBPMDetectOnImport(int)));
+    connect(chkDetectOnImport,      SIGNAL(stateChanged(int)), this, SLOT(slotSetBpmDetectOnImport(int)));
     connect(chkWriteID3,            SIGNAL(stateChanged(int)), this, SLOT(slotSetWriteID3Tag(int)));
-    connect(chkAnalyzeEntireSong,   SIGNAL(stateChanged(int)), this, SLOT(slotSetAnalyzeMode(int)));
-    connect(spinBoxBPMRangeStart,   SIGNAL(valueChanged(int)), this, SLOT(slotSetBPMRangeStart(int)));
-    connect(spinBoxBPMRangeEnd,     SIGNAL(valueChanged(int)), this, SLOT(slotSetBPMRangeEnd(int)));
+    connect(chkEnableBpmDetection,   SIGNAL(stateChanged(int)), this, SLOT(slotSetBpmEnabled(int)));
+    
+    // TODO: Move this over the the scheme dialog
+    
+    connect(btnAdd,        SIGNAL(pressed()),         this, SLOT(slotAddBpmScheme()));
+    connect(btnEdit,       SIGNAL(pressed()),         this, SLOT(slotEditBpmScheme()));
+    connect(btnDelete,     SIGNAL(pressed()),         this, SLOT(slotDeleteBpmScheme()));
+    connect(btnDefault,    SIGNAL(pressed()),         this, SLOT(slotDefaultBpmScheme()));
+   
+    
+    // Determine if the config value has already been set. If not, default to enabled
+    QString sBpmEnabled = config->getValueString(ConfigKey(CONFIG_KEY,"BPMDetectionEnabled"));
+    if(sBpmEnabled.isNull() || sBpmEnabled.isEmpty())
+    {
+        config->set(ConfigKey(CONFIG_KEY,"BPMDetectionEnabled"), ConfigValue(1));
+    }
 
     // Set default value for analyze mode check box
-    int iAnalyzeEntireSong = config->getValueString(ConfigKey("[BPM]","AnalyzeEntireSong")).toInt();
-    if (iAnalyzeEntireSong)
-        chkAnalyzeEntireSong->setChecked(true);
+    int iBpmEnabled = config->getValueString(ConfigKey(CONFIG_KEY,"BPMDetectionEnabled")).toInt();
+    if (iBpmEnabled)
+        chkEnableBpmDetection->setChecked(true);
     else
-        chkAnalyzeEntireSong->setChecked(false);
+        chkEnableBpmDetection->setChecked(false);
 
     // Set default value for detect BPM on import check box
-    int iDetectBPMOnImport = config->getValueString(ConfigKey("[BPM]","DetectBPMOnImport")).toInt();
-    if (iDetectBPMOnImport)
+    int iDetectBpmOnImport = config->getValueString(ConfigKey(CONFIG_KEY,"DetectBPMOnImport")).toInt();
+    if (iDetectBpmOnImport)
         chkDetectOnImport->setChecked(true);
     else
         chkDetectOnImport->setChecked(false);
 
     // Set default value for write ID3 tag check box
-    int iWriteID3Tag = config->getValueString(ConfigKey("[BPM]","WriteID3Tag")).toInt();
+    int iWriteID3Tag = config->getValueString(ConfigKey(CONFIG_KEY,"WriteID3Tag")).toInt();
     if (iWriteID3Tag)
         chkWriteID3->setChecked(true);
     else
@@ -66,10 +85,16 @@ DlgPrefBPM::DlgPrefBPM(QWidget * parent, ConfigObject<ConfigValue> * _config) : 
 
     chkWriteID3->setEnabled(false);
     chkDetectOnImport->setEnabled(false);
+    
+    // Load the BPM schemes
+    loadBpmSchemes();
+    populateBpmSchemeList();
+    
+    updateBpmEnabled();
 
 
     //Load BPM Range Values
-    int iRangeStart = config->getValueString(ConfigKey("[BPM]","BPMRangeStart")).toInt();
+    /*int iRangeStart = config->getValueString(ConfigKey("[BPM]","BPMRangeStart")).toInt();
     if(iRangeStart > 0 && iRangeStart <= 220)
         spinBoxBPMRangeStart->setValue(iRangeStart);
     else
@@ -79,52 +104,144 @@ DlgPrefBPM::DlgPrefBPM(QWidget * parent, ConfigObject<ConfigValue> * _config) : 
     if(iRangeEnd > 0 && iRangeEnd <=220)
         spinBoxBPMRangeEnd->setValue(iRangeEnd);
     else
-        spinBoxBPMRangeEnd->setValue(180);
+        spinBoxBPMRangeEnd->setValue(180);*/
 
 }
 
-DlgPrefBPM::~DlgPrefBPM()
+DlgPrefBpm::~DlgPrefBpm()
 {
+    saveBpmSchemes();
+    
+    while (!m_BpmSchemes.isEmpty())
+    {
+        delete m_BpmSchemes.takeFirst();
+    }
 }
 
-void DlgPrefBPM::slotSetBPMDetectOnImport(int)
+void DlgPrefBpm::slotSetBpmDetectOnImport(int)
 {
     if (chkDetectOnImport->isChecked())
-        config->set(ConfigKey("[BPM]","DetectBPMOnImport"), ConfigValue(1));
+        config->set(ConfigKey(CONFIG_KEY,"DetectBPMOnImport"), ConfigValue(1));
     else
-        config->set(ConfigKey("[BPM]","DetectBPMOnImport"), ConfigValue(0));
+        config->set(ConfigKey(CONFIG_KEY,"DetectBPMOnImport"), ConfigValue(0));
 }
 
-void DlgPrefBPM::slotSetWriteID3Tag(int)
+void DlgPrefBpm::slotSetWriteID3Tag(int)
 {
     if (chkWriteID3->isChecked())
-        config->set(ConfigKey("[BPM]","WriteID3Tag"), ConfigValue(1));
+        config->set(ConfigKey(CONFIG_KEY,"WriteID3Tag"), ConfigValue(1));
     else
-        config->set(ConfigKey("[BPM]","WriteID3Tag"), ConfigValue(0));
+        config->set(ConfigKey(CONFIG_KEY,"WriteID3Tag"), ConfigValue(0));
 }
 
-void DlgPrefBPM::slotSetAnalyzeMode(int)
+void DlgPrefBpm::slotSetBpmEnabled(int)
 {
-    if (chkAnalyzeEntireSong->isChecked())
-        config->set(ConfigKey("[BPM]","AnalyzeEntireSong"), ConfigValue(1));
+    if (chkEnableBpmDetection->isChecked())
+        config->set(ConfigKey(CONFIG_KEY,"BPMDetectionEnabled"), ConfigValue(1));
     else
-        config->set(ConfigKey("[BPM]","AnalyzeEntireSong"), ConfigValue(0));
+        config->set(ConfigKey(CONFIG_KEY,"BPMDetectionEnabled"), ConfigValue(0));
+        
+    updateBpmEnabled();
 
 }
 
-void DlgPrefBPM::slotSetBPMRangeStart(int begin)
+void DlgPrefBpm::slotSetBpmRangeStart(int begin)
 {
-    config->set(ConfigKey("[BPM]","BPMRangeStart"),ConfigValue(begin));
+    //config->set(ConfigKey("[BPM]","BPMRangeStart"),ConfigValue(begin));
 }
 
-void DlgPrefBPM::slotSetBPMRangeEnd(int end)
+void DlgPrefBpm::slotSetBpmRangeEnd(int end)
 {
-    config->set(ConfigKey("[BPM]","BPMRangeEnd"),ConfigValue(end));
+    //config->set(ConfigKey("[BPM]","BPMRangeEnd"),ConfigValue(end));
 }
 
-void DlgPrefBPM::slotApply()
+void DlgPrefBpm::slotEditBpmScheme()
 {
-    int iRangeStart = config->getValueString(ConfigKey("[BPM]","BPMRangeStart")).toInt();
+    int row = lstSchemes->currentRow();
+    
+    if(row > -1)
+    {
+        BpmScheme *schemeToEdit = m_BpmSchemes.at(row);
+        QString oldname = schemeToEdit->getName();
+        
+        // Open the BPM scheme dialog to edit
+        DlgBpmScheme* SchemeEdit = new DlgBpmScheme(schemeToEdit);
+        SchemeEdit->setModal(true);
+        SchemeEdit->exec();
+        
+        QListWidgetItem *item = lstSchemes->item(row);
+        item->setText(schemeToEdit->getName());
+        
+        if(oldname == config->getValueString(ConfigKey("[BPM]","DefaultScheme")))
+        {
+            config->set(ConfigKey("[BPM]","DefaultScheme"), schemeToEdit->getName());
+        }
+    }
+}
+
+void DlgPrefBpm::slotAddBpmScheme()
+{
+    BpmScheme *schemeToAdd = NULL;
+    
+    // Open the BPM scheme dialog to add 
+    DlgBpmScheme* SchemeEdit = new DlgBpmScheme(schemeToAdd);
+    SchemeEdit->setModal(true);
+    SchemeEdit->exec();
+    
+    if(schemeToAdd)
+    {
+        m_BpmSchemes.push_back(schemeToAdd);
+        QListWidgetItem *addScheme = new QListWidgetItem(lstSchemes);
+        addScheme->setText(schemeToAdd->getName());
+    }
+    
+    
+}
+
+void DlgPrefBpm::slotDeleteBpmScheme()
+{
+    int row = lstSchemes->currentRow();
+    
+    if(row > -1)
+    {
+        qDebug() << "Removing Bpm Scheme at position " << row;
+        delete lstSchemes->takeItem(row);
+        m_BpmSchemes.removeAt(row);
+    }
+}
+
+void DlgPrefBpm::slotDefaultBpmScheme()
+{
+    int row = lstSchemes->currentRow();
+    
+    if(row > -1)
+    {
+        BpmScheme* scheme = m_BpmSchemes.at(row);
+        
+        config->set(ConfigKey("[BPM]","BPMRangeEnd"),ConfigValue(scheme->getMaxBpm()));
+        config->set(ConfigKey("[BPM]","BPMRangeStart"),ConfigValue(scheme->getMinBpm()));
+        config->set(ConfigKey("[BPM]","AnalyzeEntireSong"),ConfigValue(scheme->getAnalyzeEntireSong()));
+        config->set(ConfigKey("[BPM]","DefaultScheme"), scheme->getName());
+        
+        clearListIcons();
+        
+        QListWidgetItem *item = lstSchemes->item(row);
+        item->setIcon(QIcon(":/images/preferences/bpmdetect.png"));
+    }
+}
+
+void DlgPrefBpm::clearListIcons()
+{
+    for(int i=0; i < lstSchemes->count(); ++i)
+    {
+        lstSchemes->item(i)->setIcon(QIcon(""));
+    }
+}
+
+void DlgPrefBpm::slotApply()
+{
+    // Temporarly saving this code for reference
+    /*int iRangeStart = config->getValueString(ConfigKey("[BPM]","BPMRangeStart")).toInt();
     int iRangeEnd = config->getValueString(ConfigKey("[BPM]","BPMRangeEnd")).toInt();
 
     if(iRangeStart > iRangeEnd)
@@ -139,10 +256,177 @@ void DlgPrefBPM::slotApply()
         }
     }
 
-    spinBoxBPMRangeEnd->setValue(iRangeEnd);
+    spinBoxBPMRangeEnd->setValue(iRangeEnd);*/
+    
+    saveBpmSchemes();
 }
 
-void DlgPrefBPM::slotUpdate()
+void DlgPrefBpm::slotUpdate()
 {
+}
+
+void DlgPrefBpm::updateBpmEnabled()
+{
+    int iBpmEnabled = config->getValueString(ConfigKey(CONFIG_KEY,"BPMDetectionEnabled")).toInt();
+    if (iBpmEnabled)
+    {
+        chkDetectOnImport->setEnabled(true);
+        chkWriteID3->setEnabled(true);
+        grpBpmSchemes->setEnabled(true);
+    }   
+    else
+    {
+        chkDetectOnImport->setEnabled(false);
+        chkWriteID3->setEnabled(false);
+        grpBpmSchemes->setEnabled(false);
+    }   
+   
+    // These are not implemented yet, so don't enable them 
+    chkDetectOnImport->setEnabled(false);
+    chkWriteID3->setEnabled(false);
+    
+}
+
+void DlgPrefBpm::loadBpmSchemes()
+{
+    // Verify path for xml track file.
+    QFile scheme(config->getValueString(ConfigKey("[BPM]","SchemeFile")));
+    if ((config->getValueString(ConfigKey("[BPM]","SchemeFile")).length()<1) || (!scheme.exists()))
+    {
+        config->set(ConfigKey("[BPM]","SchemeFile"), QDir::homePath().append("/").append(BPMSCHEME_FILE));
+        config->Save();
+    }
+    
+    QString location(config->getValueString(ConfigKey("[BPM]","SchemeFile")));
+    qDebug() << "BpmSchemes::readXML" << location;
+    
+    // Open XML file
+    QFile file(location);
+    QDomDocument domXML("Mixxx_BPM_Scheme_List");
+
+    // Check if we can open the file
+    if (!file.exists())
+    {
+        qDebug() << "BPM Scheme:" << location <<  "does not exist.";
+        file.close();
+        return;
+    }
+
+    // Check if there is a parsing problem
+    QString error_msg;
+    int error_line;
+    int error_column;
+    if (!domXML.setContent(&file, &error_msg, &error_line, &error_column))
+    {
+        qDebug() << "BPM Scheme Parse error in" << location;
+        qDebug() << "Doctype:" << domXML.doctype().name();
+        qDebug() << error_msg << "on line" << error_line << ", column" << error_column;
+        file.close();
+        return;
+    }
+
+    file.close();
+
+    // Get the root element
+    QDomElement elementRoot = domXML.documentElement();
+
+    // Get version
+    //int version = XmlParse::selectNodeInt(elementRoot, "Version");
+
+    // Get all the BPM schemes written in the xml file:
+    QDomNode node = XmlParse::selectNode(elementRoot, "Schemes").firstChild();
+    BpmScheme* bpmScheme; //Current BPM Scheme
+    while (!node.isNull())
+    {
+        if (node.isElement() && node.nodeName()=="Scheme")
+        {
+            bpmScheme = new BpmScheme();
+            //Create the playlists internally.
+            //If the playlist is "Library" or "Play Queue", insert it into
+            //a special spot in the list of playlists.
+            bpmScheme->setName(XmlParse::selectNodeQString(node, "Name"));
+            bpmScheme->setMinBpm(XmlParse::selectNodeQString(node, "MinBpm").toInt());
+            bpmScheme->setMaxBpm(XmlParse::selectNodeQString(node, "MaxBpm").toInt());
+            bpmScheme->setAnalyzeEntireSong((bool)XmlParse::selectNodeQString(node, 
+                                                        "AnalyzeEntireSong").toInt());
+            bpmScheme->setComment(XmlParse::selectNodeQString(node, "Comment"));
+            
+            m_BpmSchemes.push_back(bpmScheme);          
+        }       
+
+        node = node.nextSibling();
+    }
+    
+    if(m_BpmSchemes.size() == 0)
+    {
+        BpmScheme *scheme = new BpmScheme("Default", 70, 140, false);
+        m_BpmSchemes.push_back(scheme);
+        config->set(ConfigKey("[BPM]","DefaultScheme"), QString("Default"));
+    }
+}
+
+void DlgPrefBpm::saveBpmSchemes()
+{
+    QString location(config->getValueString(ConfigKey("[BPM]","SchemeFile")));
+
+    // Create the xml document:
+    QDomDocument domXML( "Mixxx_BPM_Scheme_List" );
+
+    // Ensure UTF16 encoding
+    domXML.appendChild(domXML.createProcessingInstruction("xml","version=\"1.0\" encoding=\"UTF-16\""));
+
+    // Set the document type
+    QDomElement elementRoot = domXML.createElement( "Mixxx_BPM_Scheme_List" );
+    domXML.appendChild(elementRoot);
+
+    // Add version information:
+    //XmlParse::addElement(domXML, elementRoot, "Version", QString("%1").arg(TRACK_VERSION));
+
+    // Write playlists
+    QDomElement schemesroot = domXML.createElement("Schemes");
+
+    QListIterator<BpmScheme*> it(m_BpmSchemes);
+    BpmScheme* current;
+    while (it.hasNext())
+    {
+        current = it.next();
+
+        QDomElement elementNew = domXML.createElement("Scheme");
+        current->writeXML(domXML, elementNew);
+        schemesroot.appendChild(elementNew);
+
+    }
+    elementRoot.appendChild(schemesroot);
+
+    // Open the file:
+    QFile opmlFile(location);
+    if (!opmlFile.open(QIODevice::WriteOnly))
+    {
+        QMessageBox::critical(0,
+                              tr("Error"),
+                              tr("Cannot open file %1").arg(location));
+        return;
+    }
+
+    // Write to the file:
+    Q3TextStream Xml(&opmlFile);
+    Xml.setEncoding(Q3TextStream::Unicode);
+    Xml << domXML.toString();
+    opmlFile.close();
+}
+    
+void DlgPrefBpm::populateBpmSchemeList()
+{
+    QString defaultscheme = config->getValueString(ConfigKey("[BPM]","DefaultScheme"));
+
+    for(int i=0; i < m_BpmSchemes.size(); ++i)
+    {
+        QListWidgetItem* scheme = new QListWidgetItem(lstSchemes);
+        scheme->setText(m_BpmSchemes.at(i)->getName());
+        if(m_BpmSchemes.at(i)->getName() == defaultscheme)
+        {
+            scheme->setIcon(QIcon(":/images/preferences/bpmdetect.png"));
+        }
+    }
 }
 
