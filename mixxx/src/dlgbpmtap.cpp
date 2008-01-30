@@ -292,70 +292,67 @@ void DlgBpmTap::loadBpmSchemes()
 {
     // Verify path for xml track file.
     QFile scheme(config->getValueString(ConfigKey("[BPM]","SchemeFile")));
-    if ((config->getValueString(ConfigKey("[BPM]","SchemeFile")).length()<1) || (!scheme.exists()))
-    {
-        config->set(ConfigKey("[BPM]","SchemeFile"), QDir::homePath().append("/").append(BPMSCHEME_FILE));
-        config->Save();
-    }
-    
-    QString location(config->getValueString(ConfigKey("[BPM]","SchemeFile")));
-    qDebug() << "BpmSchemes::readXML" << location;
-    
-    // Open XML file
-    QFile file(location);
-    QDomDocument domXML("Mixxx_BPM_Scheme_List");
+    if ((config->getValueString(ConfigKey("[BPM]","SchemeFile")).length()>0) && (scheme.exists()))
+    {   
+        QString location(config->getValueString(ConfigKey("[BPM]","SchemeFile")));
+        qDebug() << "BpmSchemes::readXML" << location;
+        
+        // Open XML file
+        QFile file(location);
+        QDomDocument domXML("Mixxx_BPM_Scheme_List");
 
-    // Check if we can open the file
-    if (!file.exists())
-    {
-        qDebug() << "BPM Scheme:" << location <<  "does not exist.";
-        file.close();
-        return;
-    }
-
-    // Check if there is a parsing problem
-    QString error_msg;
-    int error_line;
-    int error_column;
-    if (!domXML.setContent(&file, &error_msg, &error_line, &error_column))
-    {
-        qDebug() << "BPM Scheme Parse error in" << location;
-        qDebug() << "Doctype:" << domXML.doctype().name();
-        qDebug() << error_msg << "on line" << error_line << ", column" << error_column;
-        file.close();
-        return;
-    }
-
-    file.close();
-
-    // Get the root element
-    QDomElement elementRoot = domXML.documentElement();
-
-    // Get version
-    //int version = XmlParse::selectNodeInt(elementRoot, "Version");
-
-    // Get all the BPM schemes written in the xml file:
-    QDomNode node = XmlParse::selectNode(elementRoot, "Schemes").firstChild();
-    BpmScheme* bpmScheme; //Current BPM Scheme
-    while (!node.isNull())
-    {
-        if (node.isElement() && node.nodeName()=="Scheme")
+        // Check if we can open the file
+        if (!file.exists())
         {
-            bpmScheme = new BpmScheme();
-            //Create the playlists internally.
-            //If the playlist is "Library" or "Play Queue", insert it into
-            //a special spot in the list of playlists.
-            bpmScheme->setName(XmlParse::selectNodeQString(node, "Name"));
-            bpmScheme->setMinBpm(XmlParse::selectNodeQString(node, "MinBpm").toInt());
-            bpmScheme->setMaxBpm(XmlParse::selectNodeQString(node, "MaxBpm").toInt());
-            bpmScheme->setAnalyzeEntireSong((bool)XmlParse::selectNodeQString(node, 
-                                                        "AnalyzeEntireSong").toInt());
-            bpmScheme->setComment(XmlParse::selectNodeQString(node, "Comment"));
-            
-            m_BpmSchemes.push_back(bpmScheme);          
-        }       
+            qDebug() << "BPM Scheme:" << location <<  "does not exist.";
+            file.close();
+            return;
+        }
 
-        node = node.nextSibling();
+        // Check if there is a parsing problem
+        QString error_msg;
+        int error_line;
+        int error_column;
+        if (!domXML.setContent(&file, &error_msg, &error_line, &error_column))
+        {
+            qDebug() << "BPM Scheme Parse error in" << location;
+            qDebug() << "Doctype:" << domXML.doctype().name();
+            qDebug() << error_msg << "on line" << error_line << ", column" << error_column;
+            file.close();
+            return;
+        }
+
+        file.close();
+
+        // Get the root element
+        QDomElement elementRoot = domXML.documentElement();
+
+        // Get version
+        //int version = XmlParse::selectNodeInt(elementRoot, "Version");
+
+        // Get all the BPM schemes written in the xml file:
+        QDomNode node = XmlParse::selectNode(elementRoot, "Schemes").firstChild();
+        BpmScheme* bpmScheme; //Current BPM Scheme
+        while (!node.isNull())
+        {
+            if (node.isElement() && node.nodeName()=="Scheme")
+            {
+                bpmScheme = new BpmScheme();
+                //Create the playlists internally.
+                //If the playlist is "Library" or "Play Queue", insert it into
+                //a special spot in the list of playlists.
+                bpmScheme->setName(XmlParse::selectNodeQString(node, "Name"));
+                bpmScheme->setMinBpm(XmlParse::selectNodeQString(node, "MinBpm").toInt());
+                bpmScheme->setMaxBpm(XmlParse::selectNodeQString(node, "MaxBpm").toInt());
+                bpmScheme->setAnalyzeEntireSong((bool)XmlParse::selectNodeQString(node, 
+                                                            "AnalyzeEntireSong").toInt());
+                bpmScheme->setComment(XmlParse::selectNodeQString(node, "Comment"));
+                
+                m_BpmSchemes.push_back(bpmScheme);          
+            }       
+
+            node = node.nextSibling();
+        }
     }
     
     if(m_BpmSchemes.size() == 0)
