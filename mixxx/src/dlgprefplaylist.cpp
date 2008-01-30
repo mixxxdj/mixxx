@@ -16,10 +16,8 @@
 ***************************************************************************/
 
 #include "dlgprefplaylist.h"
-#include <qlineedit.h>
-#include <q3filedialog.h>
-#include <qwidget.h>
-#include <qpushbutton.h>
+#include <QtCore>
+#include <QtGui>
 
 DlgPrefPlaylist::DlgPrefPlaylist(QWidget * parent, ConfigObject<ConfigValue> * _config) :  QWidget(parent), Ui::DlgPrefPlaylistDlg()
 {
@@ -44,13 +42,12 @@ void DlgPrefPlaylist::slotUpdate()
 
 void DlgPrefPlaylist::slotBrowseDir()
 {
-    Q3FileDialog * fd = new Q3FileDialog(config->getValueString(ConfigKey("[Playlist]","Directory")),"", this, "", TRUE );
-    fd->setMode( Q3FileDialog::Directory );
-    fd->setCaption("Choose directory with music files");
-    if ( fd->exec() == QDialog::Accepted )
+    QString fd = QFileDialog::getExistingDirectory(this, "Choose music library directory", 
+                                                   config->getValueString(ConfigKey("[Playlist]","Directory")));
+    if (fd != "")
     {
-        LineEditSongfiles->setText( fd->selectedFile() );
-        slotApply();
+        LineEditSongfiles->setText(fd);
+        //slotApply();
     }
 }
 
@@ -67,7 +64,11 @@ void DlgPrefPlaylist::slotApply()
         // Save preferences
         config->Save();
 
+        qDebug() << "FIXME: Probably want to clear the TrackCollection and library playlist when you" <<
+                     "change library paths... (" << __FILE__ ", around line" << __LINE__;
+                     
+
         // Emit apply signal
-        emit(apply(LineEditSongfiles->text()));
+        emit(apply());
     }
 }

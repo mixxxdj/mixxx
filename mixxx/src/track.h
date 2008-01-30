@@ -19,6 +19,7 @@
 #include <QDropEvent>
 #include "trackplaylist.h"
 #include "trackplaylistlist.h"
+#include "configobject.h"
 
 class TrackImporter;
 class TrackInfoObject;
@@ -50,7 +51,7 @@ class Track : public QObject
 {
     Q_OBJECT
 public:
-    Track(QString location, MixxxView *pView, EngineBuffer *pBuffer1, EngineBuffer *pBuffer2, WaveSummary *pWaveSummary, BpmDetector *pBpmDetector, QString musiclocation);
+    Track(QString location, MixxxView *pView, ConfigObject<ConfigValue> *config, EngineBuffer *pBuffer1, EngineBuffer *pBuffer2, WaveSummary *pWaveSummary, BpmDetector *pBpmDetector);
     ~Track();
     /** Read xml file */
     void readXML(QString location);
@@ -196,6 +197,8 @@ private:
     unsigned int m_iLibraryIdx;
     /** Index of the play queue playlist */
     unsigned int m_iPlayqueueIdx;
+    /** Provides access to the config keys */
+    ConfigObject<ConfigValue> *m_pConfig;
 };
 
 #endif

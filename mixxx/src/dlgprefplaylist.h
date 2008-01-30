@@ -39,7 +39,7 @@ public slots:
     /** Apply changes to widget */
     void slotApply();
 signals:
-    void apply(const QString &);
+    void apply();
 private:
     /** Pointer to config object */
     ConfigObject<ConfigValue> *config;

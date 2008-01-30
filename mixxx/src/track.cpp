@@ -49,7 +49,7 @@
 
 #include <q3progressdialog.h>
 
-Track::Track(QString location, MixxxView * pView, EngineBuffer * pBuffer1, EngineBuffer * pBuffer2, WaveSummary * pWaveSummary, BpmDetector * pBpmDetector, QString musiclocation)
+Track::Track(QString location, MixxxView * pView, ConfigObject<ConfigValue> *config, EngineBuffer * pBuffer1, EngineBuffer * pBuffer2, WaveSummary * pWaveSummary, BpmDetector * pBpmDetector)
 {
     m_pView = pView;
     m_pBuffer1 = pBuffer1;
@@ -60,10 +60,9 @@ Track::Track(QString location, MixxxView * pView, EngineBuffer * pBuffer1, Engin
     m_pTrackPlayer2 = 0;
     m_pWaveSummary = pWaveSummary;
     m_pBpmDetector = pBpmDetector;
+    m_pConfig = config;
     m_iLibraryIdx = 0;   //FIXME: Deprecated, can safely remove.
     m_iPlayqueueIdx = 0; //FIXME: Deprecated, can safely remove.
-
-    musicDir = musiclocation;
 
     m_pTrackCollection = new TrackCollection(m_pBpmDetector);
     m_pTrackImporter = new TrackImporter(m_pView,m_pTrackCollection);
@@ -351,7 +350,7 @@ TrackCollection * Track::getTrackCollection()
 void Track::slotScanLibrary()
 {
     qDebug() << "Starting Library Scanner...";
-    m_pScanner->scan(musicDir);  
+    m_pScanner->scan(m_pConfig->getValueString(ConfigKey("[Playlist]","Directory")));  
 }
 
 

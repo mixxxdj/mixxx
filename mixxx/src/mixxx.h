@@ -160,8 +160,8 @@ class MixxxApp : public QMainWindow
     QMenu *fileMenu;
     /** edit_menu contains all items of the menubar entry "Edit" */
     QMenu *editMenu;
-    /** playlist menu */
-    QMenu *playlistsMenu;
+    /** library menu */
+    QMenu *libraryMenu;
     /** options_menu contains all items of the menubar entry "Options" */
     QMenu *optionsMenu;
     /** view_menu contains all items of the menubar entry "View" */
