@@ -117,9 +117,8 @@ Track::Track(QString location, MixxxView * pView, EngineBuffer * pBuffer1, Engin
     }
   
     //Scan the music library on disk
-    qDebug() << "Starting Library Scanner...";
-    m_pScanner->scan(musicDir);  
-    
+    //slotScanLibrary();
+   
     if (m_pView && m_pView->m_pTrackTableView) //Stops Mixxx from dying if a skin doesn't have the search box.
     {
         m_pView->m_pTrackTableView->setSearchSource(m_pLibraryModel);
@@ -350,6 +349,14 @@ TrackCollection * Track::getTrackCollection()
 {
     return m_pTrackCollection;
 }
+
+
+void Track::slotScanLibrary()
+{
+    qDebug() << "Starting Library Scanner...";
+    m_pScanner->scan(musicDir);  
+}
+
 
 void Track::slotDrop(QDropEvent * e)
 {
@@ -993,3 +1000,25 @@ void Track::updatePlaylistViews()
         emit(activePlaylist(m_pActivePlaylist));
    }
 
+/** Runs the BPM detection on every track in the TrackCollection that doesn't already have a BPM. */
+/*
+void Track::batchBPMDetection()
+{
+    //Iterate over each TrackInfoObject stored in m_pTrackCollection
+    TrackInfoObject* cur_track;
+    QListIterator<TrackCollection*> it(m_qPlaylists);
+    TrackPlaylist* current;
+    while (it.hasNext())
+    {
+        current = it.next();
+        if (current->getListName()==qName)
+            return current;
+    }
+
+    //Check to see if the TIO already has a non-zero BPM
+
+    //If not, run TIO->sendToBpmQueue().
+
+
+}
+*/
