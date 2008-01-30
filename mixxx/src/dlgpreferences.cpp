@@ -76,7 +76,7 @@ DlgPreferences::DlgPreferences(MixxxApp * mixxx, MixxxView * view,
     wcontrols = new DlgPrefControls(this, view, mixxx, config);
     weq = new DlgPrefEQ(this, config);
     wcrossfader = new DlgPrefCrossfader(this, config);
-    wbpm = new DlgPrefBPM(this, config);
+    wbpm = new DlgPrefBpm(this, config);
 
 #ifdef __EXPERIMENTAL_RECORDING__
     wrecord = new DlgPrefRecord(this, config);

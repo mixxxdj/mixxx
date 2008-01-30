@@ -6,7 +6,7 @@
     <x>0</x>
     <y>0</y>
     <width>385</width>
-    <height>333</height>
+    <height>336</height>
    </rect>
   </property>
   <property name="windowTitle" >
@@ -19,7 +19,7 @@
    <property name="geometry" >
     <rect>
      <x>150</x>
-     <y>290</y>
+     <y>300</y>
      <width>80</width>
      <height>27</height>
     </rect>
@@ -58,7 +58,7 @@
    <property name="geometry" >
     <rect>
      <x>290</x>
-     <y>290</y>
+     <y>300</y>
      <width>80</width>
      <height>27</height>
     </rect>
@@ -71,7 +71,7 @@
    <property name="geometry" >
     <rect>
      <x>10</x>
-     <y>290</y>
+     <y>300</y>
      <width>80</width>
      <height>27</height>
     </rect>
@@ -86,7 +86,7 @@
      <x>10</x>
      <y>30</y>
      <width>361</width>
-     <height>251</height>
+     <height>261</height>
     </rect>
    </property>
    <property name="frameShape" >
@@ -103,8 +103,8 @@
      <rect>
       <x>0</x>
       <y>0</y>
-      <width>96</width>
-      <height>26</height>
+      <width>361</width>
+      <height>199</height>
      </rect>
     </property>
     <attribute name="label" >
@@ -116,7 +116,7 @@
        <x>0</x>
        <y>10</y>
        <width>350</width>
-       <height>131</height>
+       <height>151</height>
       </rect>
      </property>
      <property name="sizePolicy" >
@@ -250,12 +250,28 @@
        <bool>false</bool>
       </property>
      </widget>
+     <widget class="QCheckBox" name="chkAnalyzeEntireSong" >
+      <property name="geometry" >
+       <rect>
+        <x>0</x>
+        <y>120</y>
+        <width>151</width>
+        <height>22</height>
+       </rect>
+      </property>
+      <property name="layoutDirection" >
+       <enum>Qt::RightToLeft</enum>
+      </property>
+      <property name="text" >
+       <string>Analyze Entire Song</string>
+      </property>
+     </widget>
     </widget>
     <widget class="QLineEdit" name="txtBPM" >
      <property name="geometry" >
       <rect>
        <x>230</x>
-       <y>150</y>
+       <y>170</y>
        <width>121</width>
        <height>27</height>
       </rect>
@@ -277,7 +293,7 @@
      <property name="geometry" >
       <rect>
        <x>190</x>
-       <y>153</y>
+       <y>173</y>
        <width>30</width>
        <height>18</height>
       </rect>
@@ -299,7 +315,7 @@
      <property name="geometry" >
       <rect>
        <x>0</x>
-       <y>150</y>
+       <y>170</y>
        <width>127</width>
        <height>27</height>
       </rect>
@@ -324,7 +340,7 @@
       <x>0</x>
       <y>0</y>
       <width>361</width>
-      <height>189</height>
+      <height>199</height>
      </rect>
     </property>
     <attribute name="label" >

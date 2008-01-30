@@ -38,11 +38,11 @@ class ControlObjectThread;
 class BpmScheme : public QObject
 {
 public:
-    BpmScheme(const QString & name, int minBpm, int maxBpm);
-    BpmScheme(const QDomNode &);
+    BpmScheme(const QString & name, int minBpm, int maxBpm, bool entire);
+    BpmScheme();
     ~BpmScheme();
     
-    void writeToXML( QDomDocument &, QDomElement & );
+    void writeXML( QDomDocument & doc, QDomElement & header);
 
     int getMinBpm();
     int getMaxBpm();

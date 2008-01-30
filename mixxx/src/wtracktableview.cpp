@@ -362,7 +362,7 @@ void WTrackTableView::slotShowBPMTapDlg(TrackInfoObject* pTrackInfoObject)
         if(bpmTapDlg)
             delete bpmTapDlg;
 
-        bpmTapDlg = new DlgBpmTap(NULL, pTrackInfoObject, m_pTable->m_pTrackPlaylist);
+        bpmTapDlg = new DlgBpmTap(NULL, pTrackInfoObject, m_pTable->m_pTrackPlaylist, m_pConfig);
         bpmTapDlg->show();
     }
 }

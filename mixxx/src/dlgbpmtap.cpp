@@ -30,12 +30,17 @@
 #include <QtGui>
 #include "mixxx.h"
 #include "trackinfoobject.h"
+#include "bpmscheme.h"
+#include "xmlparse.h"
 
-DlgBpmTap::DlgBpmTap(QWidget * mixxx, TrackInfoObject * tio, TrackPlaylist * playlist) : QDialog(), Ui::DlgBpmTapDlg()
+DlgBpmTap::DlgBpmTap(QWidget *, TrackInfoObject * tio, 
+                    TrackPlaylist * playlist, ConfigObject<ConfigValue> *_config):
+                    QDialog(), Ui::DlgBpmTapDlg()
 {
     // m_pMixxx = mixxx;
     m_CurrentTrack = tio;
     m_TrackPlaylist = playlist;
+    config = _config;
 
     // This must be called before setFocus or setEnabled.
     setupUi(this);
@@ -84,11 +89,20 @@ DlgBpmTap::DlgBpmTap(QWidget * mixxx, TrackInfoObject * tio, TrackPlaylist * pla
 
     connect(spinBoxBPMRangeStart,   SIGNAL(valueChanged(int)),   this,   SLOT(slotUpdateMinBpm(int)));
     connect(spinBoxBPMRangeEnd,     SIGNAL(valueChanged(int)),   this,   SLOT(slotUpdateMaxBpm(int)));
+    
+    connect(cboSchemes, SIGNAL(currentIndexChanged(int)), this, SLOT(slotBpmSchemeChanged(int)));
+    
+    loadBpmSchemes();
+    populateBpmSchemeList();
 
 }
 
 DlgBpmTap::~DlgBpmTap()
 {
+    while (!m_BpmSchemes.isEmpty())
+    {
+        delete m_BpmSchemes.takeFirst();
+    }
 }
 
 void DlgBpmTap::loadTrackInfo()
@@ -154,8 +168,15 @@ void DlgBpmTap::slotDetectBPM()
     progressBPMDetect->setMaximum(0);
     btnTap->setText("Detecting BPM...");
     //btnTap->setEnabled(false);
+    
+    BpmScheme *scheme = new BpmScheme();
+    
+    scheme->setMinBpm(spinBoxBPMRangeStart->value());
+    scheme->setMaxBpm(spinBoxBPMRangeEnd->value());
+    scheme->setAnalyzeEntireSong(chkAnalyzeEntireSong->isChecked());
+    
     m_CurrentTrack->setBpmConfirm(false);
-    m_CurrentTrack->sendToBpmQueue(this);
+    m_CurrentTrack->sendToBpmQueue(this, scheme);
 }
 
 void DlgBpmTap::slotLoadDialog()
@@ -230,6 +251,17 @@ void DlgBpmTap::slotCommentChanged()
     m_CurrentTrack->setComment(txtComment->toPlainText());
 }
 
+void DlgBpmTap::slotBpmSchemeChanged(int ndx)
+{
+    if(ndx < m_BpmSchemes.size() && ndx > -1)
+    {
+        BpmScheme* scheme = m_BpmSchemes.at(ndx);
+        chkAnalyzeEntireSong->setChecked(scheme->getAnalyzeEntireSong());
+        spinBoxBPMRangeStart->setValue(scheme->getMinBpm());
+        spinBoxBPMRangeEnd->setValue(scheme->getMaxBpm());
+    }
+}
+
 void DlgBpmTap::slotUpdate()
 {
 }
@@ -254,5 +286,101 @@ void DlgBpmTap::setComplete(TrackInfoObject * tio, bool failed, float returnBpm)
     txtBPM->setText(QString("%1").arg(returnBpm, 3,'f',1));
     this->update();
 
+}
+
+void DlgBpmTap::loadBpmSchemes()
+{
+    // Verify path for xml track file.
+    QFile scheme(config->getValueString(ConfigKey("[BPM]","SchemeFile")));
+    if ((config->getValueString(ConfigKey("[BPM]","SchemeFile")).length()<1) || (!scheme.exists()))
+    {
+        config->set(ConfigKey("[BPM]","SchemeFile"), QDir::homePath().append("/").append(BPMSCHEME_FILE));
+        config->Save();
+    }
+    
+    QString location(config->getValueString(ConfigKey("[BPM]","SchemeFile")));
+    qDebug() << "BpmSchemes::readXML" << location;
+    
+    // Open XML file
+    QFile file(location);
+    QDomDocument domXML("Mixxx_BPM_Scheme_List");
+
+    // Check if we can open the file
+    if (!file.exists())
+    {
+        qDebug() << "BPM Scheme:" << location <<  "does not exist.";
+        file.close();
+        return;
+    }
+
+    // Check if there is a parsing problem
+    QString error_msg;
+    int error_line;
+    int error_column;
+    if (!domXML.setContent(&file, &error_msg, &error_line, &error_column))
+    {
+        qDebug() << "BPM Scheme Parse error in" << location;
+        qDebug() << "Doctype:" << domXML.doctype().name();
+        qDebug() << error_msg << "on line" << error_line << ", column" << error_column;
+        file.close();
+        return;
+    }
+
+    file.close();
+
+    // Get the root element
+    QDomElement elementRoot = domXML.documentElement();
+
+    // Get version
+    //int version = XmlParse::selectNodeInt(elementRoot, "Version");
+
+    // Get all the BPM schemes written in the xml file:
+    QDomNode node = XmlParse::selectNode(elementRoot, "Schemes").firstChild();
+    BpmScheme* bpmScheme; //Current BPM Scheme
+    while (!node.isNull())
+    {
+        if (node.isElement() && node.nodeName()=="Scheme")
+        {
+            bpmScheme = new BpmScheme();
+            //Create the playlists internally.
+            //If the playlist is "Library" or "Play Queue", insert it into
+            //a special spot in the list of playlists.
+            bpmScheme->setName(XmlParse::selectNodeQString(node, "Name"));
+            bpmScheme->setMinBpm(XmlParse::selectNodeQString(node, "MinBpm").toInt());
+            bpmScheme->setMaxBpm(XmlParse::selectNodeQString(node, "MaxBpm").toInt());
+            bpmScheme->setAnalyzeEntireSong((bool)XmlParse::selectNodeQString(node, 
+                                                        "AnalyzeEntireSong").toInt());
+            bpmScheme->setComment(XmlParse::selectNodeQString(node, "Comment"));
+            
+            m_BpmSchemes.push_back(bpmScheme);          
+        }       
+
+        node = node.nextSibling();
+    }
+    
+    if(m_BpmSchemes.size() == 0)
+    {
+        BpmScheme *scheme = new BpmScheme("Default", 70, 140, false);
+        m_BpmSchemes.push_back(scheme);
+        config->set(ConfigKey("[BPM]","DefaultScheme"), QString("Default"));
+    }
+}
+
+void DlgBpmTap::populateBpmSchemeList()
+{
+    QString defaultscheme = config->getValueString(ConfigKey("[BPM]","DefaultScheme"));
+    m_DefaultScheme = 0;
+
+    for(int i=0; i < m_BpmSchemes.size(); ++i)
+    {
+        cboSchemes->addItem(m_BpmSchemes.at(i)->getName());
+
+        if(m_BpmSchemes.at(i)->getName() == defaultscheme)
+        {
+            m_DefaultScheme = i;
+        } 
+    }
+    
+    cboSchemes->setCurrentIndex(m_DefaultScheme);
 }
 

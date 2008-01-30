@@ -40,6 +40,7 @@ const float kfFeatureStepSize = 0.01f;
 
 class WindowKaiser;
 class EngineSpectralFwd;
+class BpmScheme;
 
 /**
   * Class for detecting the BPM for a TrackInfoObject
@@ -54,8 +55,7 @@ class BpmDetectionPackage
     ~BpmDetectionPackage(){}
     TrackInfoObject *_TrackInfoObject;
     BpmReceiver *_BpmReceiver;
-    int _minBpm;
-    int _maxBpm;
+    BpmScheme *_Scheme;
 };
 
 class BpmDetector : public QThread
@@ -65,7 +65,7 @@ public:
     ~BpmDetector();
     /** Puts an TrackInfoObject into the queue of BPM detection. Thread safe, blocking. */
     void enqueue(TrackInfoObject *pTrackInfoObject, BpmReceiver *pBpmReceiver=NULL);
-    void enqueue(TrackInfoObject *pTrackInfoObject, int minBpm, int maxBpm, BpmReceiver *pBpmReceiver=NULL);
+    void enqueue(TrackInfoObject *pTrackInfoObject, BpmScheme *scheme, BpmReceiver *pBpmReceiver=NULL);
 
 protected:
     /** Main thread loop */

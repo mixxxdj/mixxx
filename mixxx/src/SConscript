@@ -151,7 +151,7 @@ elif platform == 'win32':
 #Mixxx sources to build
 sources = Split("""enginebuffercue.cpp input.cpp mixxxmenuplaylists.cpp trackplaylistlist.cpp mixxxkeyboard.cpp configobject.cpp controlobjectthread.cpp
  controlobjectthreadwidget.cpp controlobjectthreadmain.cpp controlevent.cpp controllogpotmeter.cpp controlobject.cpp controlnull.cpp controlpotmeter.cpp
- controlpushbutton.cpp controlttrotary.cpp controlbeat.cpp dlgpreferences.cpp dlgprefsound.cpp dlgprefmidi.cpp dlgprefplaylist.cpp dlgprefcontrols.cpp dlgbpmtap.cpp dlgprefbpm.cpp dlgabout.cpp
+ controlpushbutton.cpp controlttrotary.cpp controlbeat.cpp dlgpreferences.cpp dlgprefsound.cpp dlgprefmidi.cpp dlgprefplaylist.cpp dlgprefcontrols.cpp dlgbpmtap.cpp dlgprefbpm.cpp dlgbpmscheme.cpp dlgabout.cpp
  dlgprefeq.cpp dlgprefcrossfader.cpp enginebuffer.cpp enginebufferscale.cpp enginebufferscalelinear.cpp engineclipping.cpp enginefilterblock.cpp enginefilteriir.cpp  enginefilter.cpp engineobject.cpp
  enginepregain.cpp enginevolume.cpp main.cpp midiobject.cpp midiobjectnull.cpp mixxx.cpp mixxxview.cpp
  soundsourcemp3.cpp soundsourceoggvorbis.cpp enginechannel.cpp enginemaster.cpp wwidget.cpp wpixmapstore.cpp wlabel.cpp wnumber.cpp wnumberpos.cpp wnumberrate.cpp wnumberbpm.cpp wknob.cpp wdisplay.cpp wvumeter.cpp wpushbutton.cpp wslidercomposed.cpp wslider.cpp  wstatuslight.cpp enginedelay.cpp engineflanger.cpp enginespectralfwd.cpp mathstuff.cpp readerextract.cpp readerextractwave.cpp
@@ -341,12 +341,12 @@ if not env.GetOption('clean') and not SCons.Util.containsAny(os.sys.argv, ['-h',
 
 #Declare the flags for Mixxx's config/track listing files:
 if platform == 'linux':
-	env.Append(CXXFLAGS = ' -D__UNIX__ -D__LINUX__ -DSETTINGS_FILE=\\".mixxx.cfg\\" -DTRACK_FILE=\\".mixxxtrack.xml\\"')
+	env.Append(CXXFLAGS = ' -D__UNIX__ -D__LINUX__ -DBPMSCHEME_FILE=\\".mixxxbpmscheme.xml\\" -DSETTINGS_FILE=\\".mixxx.cfg\\" -DTRACK_FILE=\\".mixxxtrack.xml\\"')
 	env.Append(CXXFLAGS = ' -DUNIX_SHARE_PATH=\\"' + ARGUMENTS.get('prefix', '/usr/local') + '/share/mixxx\\"')
 elif platform == 'osx':
-	env.Append(CXXFLAGS = ' -D__MACX__ -DSETTINGS_FILE=\\".mixxx.cfg\\" -DTRACK_FILE=\\".mixxxtrack.xml\\"')
+	env.Append(CXXFLAGS = ' -D__MACX__ -DBPMSCHEME_FILE=\\".mixxxbpmscheme.xml\\" -DSETTINGS_FILE=\\".mixxx.cfg\\" -DTRACK_FILE=\\".mixxxtrack.xml\\"')
 elif platform == 'win32':
-	env.Append(CXXFLAGS = '-D__WIN32__ -DSETTINGS_FILE=\\"mixxx.cfg\\" -DTRACK_FILE=\\"mixxxtrack.xml\\"')
+	env.Append(CXXFLAGS = '-D__WIN32__ -DBPMSCHEME_FILE=\\"mixxxbpmschemes.xml\\" -DSETTINGS_FILE=\\"mixxx.cfg\\" -DTRACK_FILE=\\"mixxxtrack.xml\\"')
 
 #... and yes, we need to double-escape those quotes
 env.Append(CXXFLAGS = ' -D__PORTAUDIO__'); #Turn on PortAudio support in Mixxx
@@ -398,6 +398,7 @@ env.Uic4('dlgprefcontrolsdlg.ui')
 env.Uic4('dlgprefeqdlg.ui')
 env.Uic4('dlgprefcrossfaderdlg.ui')
 env.Uic4('dlgprefbpmdlg.ui')
+env.Uic4('dlgbpmschemedlg.ui')
 env.Uic4('dlgbpmtapdlg.ui')
 env.Uic4('dlgprefvinyldlg.ui')
 env.Uic4('dlgaboutdlg.ui')
@@ -810,7 +811,7 @@ if platform == 'linux':
 			#Delete(unix_share_path + "/mixxx/skins")
 			#print "Copying skins..."
 			#env.Command(unix_share_path + "/mixxx/skins", skin_files, Copy("$TARGET", "$SOURCE"), source_scanner = DirScanner)
-			#Copy(unix_share_path + "/mixxx/skins", skin_files)
+			#Copy(unix_share_path + "/.ixxx/skins", skin_files)
             #Delete(unix_bin_path + "mixxx")
 			
 			#Delete(unix_share_path + "/mixxx/midi")

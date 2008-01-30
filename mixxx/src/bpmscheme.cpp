@@ -20,16 +20,27 @@
 #include "xmlparse.h"
 #include <qdom.h>
 
-BpmScheme::BpmScheme(const QString & name, int minBpm, int maxBpm)
+BpmScheme::BpmScheme(const QString & name, int minBpm, int maxBpm, bool entire)
+:m_MinBpm(minBpm), m_MaxBpm(maxBpm), m_AnalyzeEntireSong(entire), m_Name(name)
 {
 }
 
-BpmScheme::BpmScheme(const QDomNode &)
+BpmScheme::BpmScheme()
 {
 }
 
 BpmScheme::~BpmScheme()
 {
+}
+
+void BpmScheme::writeXML( QDomDocument & doc, QDomElement & header)
+{
+    XmlParse::addElement(doc, header, "Name", m_Name);
+    XmlParse::addElement(doc, header, "MinBpm", QString("%1").arg(m_MinBpm));
+    XmlParse::addElement(doc, header, "MaxBpm", QString("%1").arg(m_MaxBpm));
+    XmlParse::addElement(doc, header, "AnalyzeEntireSong", QString("%1").arg((int)m_AnalyzeEntireSong));
+    XmlParse::addElement(doc, header, "Comment", m_Comment);
+    
 }
 
 int BpmScheme::getMinBpm()
