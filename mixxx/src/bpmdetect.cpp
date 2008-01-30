@@ -312,6 +312,8 @@ void BpmDetect::init(int numChannels, unsigned int sampleRate)
     assert(decimateBy > 0);
     assert(INPUT_BLOCK_SAMPLES < decimateBy * DECIMATED_BLOCK_SAMPLES);
 
+    assert(minBpm > 0);
+    assert(maxBpm > 0);
     // Calculate window length & starting item according to desired min & max bpms
     windowLen = (60 * sampleRate) / (decimateBy * minBpm);
     windowStart = (60 * sampleRate) / (decimateBy * maxBpm);

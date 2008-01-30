@@ -222,7 +222,7 @@ void DlgPrefBpm::slotDefaultBpmScheme()
         config->set(ConfigKey("[BPM]","BPMRangeStart"),ConfigValue(scheme->getMinBpm()));
         config->set(ConfigKey("[BPM]","AnalyzeEntireSong"),ConfigValue(scheme->getAnalyzeEntireSong()));
         config->set(ConfigKey("[BPM]","DefaultScheme"), scheme->getName());
-        
+                
         clearListIcons();
         
         QListWidgetItem *item = lstSchemes->item(row);
@@ -239,25 +239,7 @@ void DlgPrefBpm::clearListIcons()
 }
 
 void DlgPrefBpm::slotApply()
-{
-    // Temporarly saving this code for reference
-    /*int iRangeStart = config->getValueString(ConfigKey("[BPM]","BPMRangeStart")).toInt();
-    int iRangeEnd = config->getValueString(ConfigKey("[BPM]","BPMRangeEnd")).toInt();
-
-    if(iRangeStart > iRangeEnd)
-    {
-        if(iRangeStart >= 200)
-        {
-            iRangeEnd = 220;
-        }
-        else
-        {
-            iRangeEnd = iRangeStart + 20;
-        }
-    }
-
-    spinBoxBPMRangeEnd->setValue(iRangeEnd);*/
-    
+{    
     saveBpmSchemes();
 }
 
@@ -362,6 +344,9 @@ void DlgPrefBpm::loadBpmSchemes()
         BpmScheme *scheme = new BpmScheme("Default", 70, 140, false);
         m_BpmSchemes.push_back(scheme);
         config->set(ConfigKey("[BPM]","DefaultScheme"), QString("Default"));
+        config->set(ConfigKey("[BPM]","BPMRangeEnd"),ConfigValue(scheme->getMaxBpm()));
+        config->set(ConfigKey("[BPM]","BPMRangeStart"),ConfigValue(scheme->getMinBpm()));
+        config->set(ConfigKey("[BPM]","AnalyzeEntireSong"),ConfigValue(scheme->getAnalyzeEntireSong()));
     }
 }
 

@@ -360,6 +360,10 @@ void DlgBpmTap::loadBpmSchemes()
         BpmScheme *scheme = new BpmScheme("Default", 70, 140, false);
         m_BpmSchemes.push_back(scheme);
         config->set(ConfigKey("[BPM]","DefaultScheme"), QString("Default"));
+        config->set(ConfigKey("[BPM]","BPMRangeEnd"),ConfigValue(scheme->getMaxBpm()));
+        config->set(ConfigKey("[BPM]","BPMRangeStart"),ConfigValue(scheme->getMinBpm()));
+        config->set(ConfigKey("[BPM]","AnalyzeEntireSong"),ConfigValue(scheme->getAnalyzeEntireSong()));
+        
     }
 }
 

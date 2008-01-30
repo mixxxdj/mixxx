@@ -237,6 +237,22 @@ MixxxApp::MixxxApp(QApplication * a, struct CmdlineArgs args, QSplashScreen * pS
     // Initialize wavefrom summary generation
     m_pWaveSummary = new WaveSummary(config);
 
+    // Intialize default BPM system values      
+    if(config->getValueString(ConfigKey("[BPM]","BPMRangeStart")).length()<1)
+    {
+        config->set(ConfigKey("[BPM]","BPMRangeStart"),ConfigValue(65));
+    }
+    
+    if(config->getValueString(ConfigKey("[BPM]","BPMRangeEnd")).length()<1)
+    {
+        config->set(ConfigKey("[BPM]","BPMRangeEnd"),ConfigValue(135));
+    }
+    
+    if(config->getValueString(ConfigKey("[BPM]","AnalyzeEntireSong")).length()<1)
+    {
+        config->set(ConfigKey("[BPM]","AnalyzeEntireSong"),ConfigValue(1));
+    }    
+
     // Initialize Bpm detection queue
     m_pBpmDetector = new BpmDetector(config);
 
