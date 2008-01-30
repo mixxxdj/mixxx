@@ -60,7 +60,6 @@
 MixxxApp::MixxxApp(QApplication * a, struct CmdlineArgs args, QSplashScreen * pSplash)
 {
     app = a;
-    bool bScanLibrary = false;
 
     qDebug("Starting up...");
     setWindowTitle(tr("Mixxx " VERSION));
@@ -179,7 +178,6 @@ MixxxApp::MixxxApp(QApplication * a, struct CmdlineArgs args, QSplashScreen * pS
         {
             config->set(ConfigKey("[Playlist]","Directory"), fd);
             config->Save();
-            bScanLibrary = true;
         }
     }
     // Needed for Search class and Simple skin
@@ -247,10 +245,6 @@ MixxxApp::MixxxApp(QApplication * a, struct CmdlineArgs args, QSplashScreen * pS
 
     // Initialize track object:
     m_pTrack = new Track(config->getValueString(ConfigKey("[Playlist]","Listfile")), view, buffer1, buffer2, m_pWaveSummary, m_pBpmDetector,config->getValueString(ConfigKey("[Playlist]","Directory")));
-
-    //Scan library if the user was prompted to pick a song directory (first run)
-    if (bScanLibrary)
-        m_pTrack->slotScanLibrary();
 
     //WTreeItem::setTrack(m_pTrack);
     // Set up drag and drop to player visuals

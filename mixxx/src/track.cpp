@@ -79,15 +79,6 @@ Track::Track(QString location, MixxxView * pView, EngineBuffer * pBuffer1, Engin
     // Read the XML file
     readXML(location);   
 
-    //Create the library and play queue playlists
-    /*
-    if (m_qPlaylists.count() < 2)
-    {
-        m_iLibraryIdx = 0;
-        m_iPlayqueueIdx = 1;
-        m_qPlaylists.insert(m_iLibraryIdx, new TrackPlaylist(m_pTrackCollection, "Library"));
-        m_qPlaylists.insert(m_iPlayqueueIdx, new TrackPlaylist(m_pTrackCollection, "Play Queue"));
-    }*/
 
     m_pScanner = new LibraryScanner(&m_qLibraryPlaylist, "");
     //Refresh the tableview when the library is done being scanned. (FIXME: Is a hack)
@@ -109,7 +100,13 @@ Track::Track(QString location, MixxxView * pView, EngineBuffer * pBuffer1, Engin
     m_pPlaylistListModel->setPlaylistList(&m_qPlaylists);
     
     qDebug() << "TrackCollection size:" << m_pTrackCollection->getSize();
-    
+   
+    //If the TrackCollection appears to be empty (could be first run), then scan the library
+    if (m_pTrackCollection->getSize() == 0)
+    {
+        slotScanLibrary();
+    }
+
     for (int i = 0; i < m_pTrackCollection->getSize(); i++)
     {
         qDebug() << "Trying to add:" << m_pTrackCollection->getTrack(i)->getTitle() << "to library playlist";
