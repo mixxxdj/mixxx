@@ -60,6 +60,7 @@
 MixxxApp::MixxxApp(QApplication * a, struct CmdlineArgs args, QSplashScreen * pSplash)
 {
     app = a;
+    bool bScanLibrary = false;
 
     qDebug("Starting up...");
     setWindowTitle(tr("Mixxx " VERSION));
@@ -178,6 +179,7 @@ MixxxApp::MixxxApp(QApplication * a, struct CmdlineArgs args, QSplashScreen * pS
         {
             config->set(ConfigKey("[Playlist]","Directory"), fd);
             config->Save();
+            bScanLibrary = true;
         }
     }
     // Needed for Search class and Simple skin
@@ -245,6 +247,10 @@ MixxxApp::MixxxApp(QApplication * a, struct CmdlineArgs args, QSplashScreen * pS
 
     // Initialize track object:
     m_pTrack = new Track(config->getValueString(ConfigKey("[Playlist]","Listfile")), view, buffer1, buffer2, m_pWaveSummary, m_pBpmDetector,config->getValueString(ConfigKey("[Playlist]","Directory")));
+
+    //Scan library if the user was prompted to pick a song directory (first run)
+    if (bScanLibrary)
+        m_pTrack->slotScanLibrary();
 
     //WTreeItem::setTrack(m_pTrack);
     // Set up drag and drop to player visuals
@@ -442,6 +448,8 @@ void MixxxApp::initActions()
     fileQuit->setShortcut(tr("Ctrl+Q"));
     fileQuit->setShortcutContext(Qt::ApplicationShortcut);
 
+    libraryRescan = new QAction(tr("&Rescan Library"), this);
+
     playlistsNew = new QAction(tr("Add &new playlist"), this);
     playlistsNew->setShortcut(tr("Ctrl+N"));
     playlistsNew->setShortcutContext(Qt::ApplicationShortcut);
@@ -485,6 +493,11 @@ void MixxxApp::initActions()
     fileQuit->setStatusTip(tr("Quits the application"));
     fileQuit->setWhatsThis(tr("Exit\n\nQuits the application"));
     connect(fileQuit, SIGNAL(activated()), this, SLOT(slotFileQuit()));
+
+    libraryRescan->setStatusTip(tr("Rescans the song library"));
+    libraryRescan->setWhatsThis(tr("Rescan library\n\nRescans the song library"));
+    libraryRescan->setCheckable(false);
+    connect(libraryRescan, SIGNAL(activated()), m_pTrack, SLOT(slotScanLibrary()));
 
     playlistsNew->setStatusTip(tr("Add new playlist"));
     playlistsNew->setWhatsThis(tr("Add a new playlist"));
@@ -564,6 +577,7 @@ void MixxxApp::initMenuBar()
     optionsMenu->addAction(optionsPreferences);
 
     //    playlistsMenu->setCheckable(true);
+    playlistsMenu->addAction(libraryRescan);
     playlistsMenu->addAction(playlistsNew);
     playlistsMenu->addAction(playlistsImport);
     playlistsMenu->addSeparator();

@@ -192,6 +192,8 @@ class MixxxApp : public QMainWindow
     QAction *playlistsImport;
     QAction **playlistsList;
 
+    QAction *libraryRescan;
+
     QAction *optionsBeatMark;
 #ifdef __VINYLCONTROL__
     QAction *optionsVinylControl;

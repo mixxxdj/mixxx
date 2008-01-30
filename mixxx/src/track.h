@@ -62,7 +62,6 @@ public:
     TrackPlaylist* getPlaylistByIndex(int index);   
     /** Force an update of playlist menu and anything that sees the playlists*/
     void updatePlaylistViews();
-    
     /** Get the list of playlists*/
     TrackPlaylistList* getPlaylists();
     
@@ -75,6 +74,8 @@ public:
 public slots:
     /** Decode playlist drops to WTrackTable, and loads corresponding playlist */
     void slotDrop(QDropEvent *e);
+    /** Scan the library (starts up in a different thread) */
+    void slotScanLibrary();
     /** Activate a playlist of the given name */
     void slotActivatePlaylist(QString name);
 	/**Activate a Playlist from ComboBox*/
