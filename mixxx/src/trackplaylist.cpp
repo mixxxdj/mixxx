@@ -131,7 +131,7 @@ void TrackPlaylist::addTrack(TrackInfoObject * pTrack)
 
 void TrackPlaylist::addTrack(QString qLocation)
 {
-    qDebug() << "Add track" << qLocation; //.latin1());
+    //qDebug() << "Add track" << qLocation;
     TrackInfoObject * pTrack = m_pTrackCollection->getTrack(qLocation);
 
     //QFileInfo fi(qLocation);

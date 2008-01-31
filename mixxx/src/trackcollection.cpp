@@ -40,7 +40,7 @@ void TrackCollection::readXML(QDomNode node)
             TrackInfoObject * pTrack = new TrackInfoObject(tracknode, m_BpmDetector);
             addTrack(pTrack);
             
-            qDebug() << "Trying to add" << pTrack->getTitle() << "to TrackCollection";
+            //qDebug() << "Trying to add" << pTrack->getTitle() << "to TrackCollection";
             
             // Update counter
             if (pTrack->getId()>m_iCounter)

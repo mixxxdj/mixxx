@@ -76,6 +76,7 @@ Track::Track(QString location, MixxxView * pView, ConfigObject<ConfigValue> *con
     m_qPlayqueuePlaylist.setTrackCollection(m_pTrackCollection);
 
     // Read the XML file
+    qDebug() << "Loading playlists and library tracks from XML...";
     readXML(location);   
 
 
@@ -97,18 +98,21 @@ Track::Track(QString location, MixxxView * pView, ConfigObject<ConfigValue> *con
     m_pLibraryModel->setTrackPlaylist(&m_qLibraryPlaylist);
     m_pPlayQueueModel->setTrackPlaylist(&m_qPlayqueuePlaylist);
     m_pPlaylistListModel->setPlaylistList(&m_qPlaylists);
-    
-    qDebug() << "TrackCollection size:" << m_pTrackCollection->getSize();
-   
+       
     //If the TrackCollection appears to be empty (could be first run), then scan the library
     if (m_pTrackCollection->getSize() == 0)
     {
         slotScanLibrary();
     }
+    else if (checkLibraryLastModified() == true) //Check to see if the library has been modified since
+                                                 //we last scanned it.
+    {
+        slotScanLibrary();
+    }
 
+    qDebug() << "Trying to add" << m_pTrackCollection->getSize() << "songs to the library playlist";
     for (int i = 0; i < m_pTrackCollection->getSize(); i++)
     {
-        qDebug() << "Trying to add:" << m_pTrackCollection->getTrack(i)->getTitle() << "to library playlist";
         m_qLibraryPlaylist.addTrack(m_pTrackCollection->getTrack(i));
     }
   
@@ -351,6 +355,13 @@ void Track::slotScanLibrary()
 {
     qDebug() << "Starting Library Scanner...";
     m_pScanner->scan(m_pConfig->getValueString(ConfigKey("[Playlist]","Directory")));  
+    
+    //Get the last modified timestamp for the library directory.
+    QFileInfo libDir(m_pConfig->getValueString(ConfigKey("[Playlist]","Directory")));
+    QString lastModified = libDir.lastModified().toString();
+    //... and save that timestamp so we can tell we can know that we need to rescan 
+    //the library when that timestamp has been changed.
+    m_pConfig->set(ConfigKey("[Playlist]","LastModified"), lastModified);
 }
 
 
@@ -996,10 +1007,39 @@ void Track::updatePlaylistViews()
         emit(activePlaylist(m_pActivePlaylist));
    }
 
-/** Runs the BPM detection on every track in the TrackCollection that doesn't already have a BPM. */
-/*
-void Track::batchBPMDetection()
+/** Checks if the library directory's "last modified" timestamp has been changed */
+/* @returns true if the library has been modified since it was last rescanned
+   @returns false if the library has not been modified since it was last rescanned 
+*/
+bool Track::checkLibraryLastModified()
 {
+    //Get some info about the library directory
+    QFileInfo libDir(m_pConfig->getValueString(ConfigKey("[Playlist]","Directory")));
+    
+    //Get the last modified timestamp for the library directory.
+    QString lastModified = libDir.lastModified().toString();
+    
+    //Compare the timestamp with our own stored timestamp, to see if the library
+    //has been modified since we last scanned it.
+    if (lastModified == m_pConfig->getValueString(ConfigKey("[Playlist]","LastModified")))
+    {
+        return false;
+    }
+    else
+    {
+        //Note: The LastModified config key gets updated in slotScanLibrary(), for consistency.
+           
+        return true;
+    }
+}
+
+/** Runs the BPM detection on every track in the TrackCollection that doesn't already have a BPM. */
+void Track::slotBatchBPMDetection()
+{
+/*
+    //Unfinished/WIP - Albert Jan 31/08 
+    //General idea should work more or less, I suppose...
+
     //Iterate over each TrackInfoObject stored in m_pTrackCollection
     TrackInfoObject* cur_track;
     QListIterator<TrackCollection*> it(m_qPlaylists);
@@ -1015,6 +1055,6 @@ void Track::batchBPMDetection()
 
     //If not, run TIO->sendToBpmQueue().
 
-
-}
 */
+}
+

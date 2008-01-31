@@ -65,9 +65,8 @@ public:
     void updatePlaylistViews();
     /** Get the list of playlists*/
     TrackPlaylistList* getPlaylists();
-    
-	/**location of new music files*/
-	QString musicDir;
+    /** Checks if the library directory's "last modified" timestamp has been changed */
+    bool checkLibraryLastModified();
 	
 	/** Current active playlist */
     TrackPlaylist *m_pActivePlaylist; //FIXME wtf public variable?
@@ -130,6 +129,9 @@ public slots:
     
     /** Slot for showing a particular playlist in the track table view */
     void slotShowPlaylist(TrackPlaylist* playlist); 
+    /** Runs the BPM detection on every track in the TrackCollection */
+    void slotBatchBPMDetection();
+    
 signals:
     /** A new track has been loaded in player 1 */
     void newTrackPlayer1(TrackInfoObject *);

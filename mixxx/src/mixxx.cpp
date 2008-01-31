@@ -17,15 +17,8 @@
 
 
 #include <QtDebug>
-// #include <QMessageBox>
-// #include <QLayout>
-// #include <qdesktopwidget.h>
-// #include <qicon.h>
-// #include <qsplashscreen.h>
-// #include <qdatetime.h>
-// #include <qpalette.h>
-// #include <QFileDialog>
-// #include <QFrame>
+#include <QtCore>
+#include <QtGui>
 
 #include "wknob.h"
 #include "wslider.h"
