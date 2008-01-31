@@ -60,7 +60,6 @@ TrackInfoObject::TrackInfoObject(const QString sPath, const QString sFile, BpmDe
     m_pSegmentation = 0;
     m_pControlObjectBpm = 0;
     m_pControlObjectDuration = 0;
-    m_fBeatFirst = -1.;
     m_iSampleRate = 0;
     m_iChannels = 0;
 
@@ -420,17 +419,26 @@ QString TrackInfoObject::getLocation() const
 
 void TrackInfoObject::sendToBpmQueue()
 {
-    m_BpmDetector->enqueue(this);
+    if(m_BpmDetector)
+    {
+        m_BpmDetector->enqueue(this);
+    }
 }
 
 void TrackInfoObject::sendToBpmQueue(BpmReceiver * pBpmReceiver)
 {
-    m_BpmDetector->enqueue(this, pBpmReceiver);
+    if(m_BpmDetector)
+    {
+        m_BpmDetector->enqueue(this, pBpmReceiver);
+    }
 }
 
 void TrackInfoObject::sendToBpmQueue(BpmReceiver * pBpmReceiver, BpmScheme* pScheme)
 {
-    m_BpmDetector->enqueue(this, pScheme, pBpmReceiver);
+    if(m_BpmDetector)
+    {
+        m_BpmDetector->enqueue(this, pScheme, pBpmReceiver);
+    }
 }
 
 float TrackInfoObject::getBpm() const
