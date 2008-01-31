@@ -166,14 +166,14 @@ bool TrackInfoObject::checkFileExists()
     {
         //m_qMutex.lock();
         m_bExists = true;
-        qDebug() << "Track exists...";
+        //qDebug() << "Track exists...";
         //m_qMutex.unlock();
     }
     else
     {
         //m_qMutex.lock();
         m_bExists = false;
-        qDebug() << "The track %s was not found" << getLocation();
+        //qDebug() << "The track %s was not found" << getLocation();
         //m_qMutex.unlock();
     }
     return m_bExists;
