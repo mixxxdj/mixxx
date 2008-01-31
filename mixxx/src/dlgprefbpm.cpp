@@ -186,13 +186,19 @@ void DlgPrefBpm::slotAddBpmScheme()
     // Open the BPM scheme dialog to add 
     DlgBpmScheme* SchemeEdit = new DlgBpmScheme(schemeToAdd);
     SchemeEdit->setModal(true);
-    SchemeEdit->exec();
     
-    if(schemeToAdd)
+    if(SchemeEdit->exec() == QDialog::Accepted)
     {
-        m_BpmSchemes.push_back(schemeToAdd);
-        QListWidgetItem *addScheme = new QListWidgetItem(lstSchemes);
-        addScheme->setText(schemeToAdd->getName());
+        if(schemeToAdd)
+        {
+            m_BpmSchemes.push_back(schemeToAdd);
+            QListWidgetItem *addScheme = new QListWidgetItem(lstSchemes);
+            addScheme->setText(schemeToAdd->getName());
+        }
+    }
+    else
+    {
+        delete schemeToAdd;
     }
     
     
