@@ -155,12 +155,26 @@ void BpmDetector::run()
             #define CHUNKSIZE 4096
 
             SoundSourceProxy * pSoundSource = new SoundSourceProxy(pTrackInfoObject);
-            int16_t data16[ CHUNKSIZE];      // for 16 bit samples
+            int16_t data16[ CHUNKSIZE*2];      // for 16 bit samples
             int8_t data8[ CHUNKSIZE ];            // for 8 bit samples
             soundtouch::SAMPLETYPE samples[ CHUNKSIZE * 2];
             unsigned int length = 0, read = 0, totalsteps = 0, pos = 0, end = 0;
             int channels = 2, bits = 16;
             float frequency = 44100;
+            
+            if(pTrackInfoObject->getSampleRate())
+            {
+                frequency = pTrackInfoObject->getSampleRate();
+            }
+            if(pTrackInfoObject->getChannels())
+            {
+                channels = pTrackInfoObject->getChannels();
+            }
+            if(pTrackInfoObject->getBitrate())
+            {
+                bits = pTrackInfoObject->getBitrate();
+            }
+
 
             length = pSoundSource->length();
 
@@ -181,19 +195,7 @@ void BpmDetector::run()
             totalsteps = ( length / CHUNKSIZE );
             end = pos + length;
 
-            if(pTrackInfoObject->getSampleRate())
-            {
-                frequency = pTrackInfoObject->getSampleRate();
-            }
-            if(pTrackInfoObject->getChannels())
-            {
-                channels = pTrackInfoObject->getChannels();
-            }
-            if(pTrackInfoObject->getBitrate())
-            {
-                bits = pTrackInfoObject->getBitrate();
-            }
-
+            
             BpmDetect bpmd( channels, ( int ) frequency, pScheme->getMaxBpm(), pScheme->getMinBpm() );
 
             int cprogress = 0;
@@ -285,7 +287,7 @@ void BpmDetector::run()
             // min and max indexes are the boundaries of that region.
             int iBeatLength = math_min(length, kiBeatBlockNo*kiBlockSize);
             int iBeatBlockLength = iBeatLength/(kiBlockSize/2);
-            int iBeatPosStart = math_max(0,length/2-iBeatLength/2);
+            int iBeatPosStart = math_max(0.0,length/2.0-iBeatLength/2.0);
 
             if(iBeatPosStart %2 != 0)
             {
