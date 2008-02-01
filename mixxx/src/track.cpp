@@ -49,6 +49,11 @@
 
 #include <q3progressdialog.h>
 
+#include <QEvent>
+#include <QObject>
+#include <QLineEdit>
+#include <QDebug>
+
 Track::Track(QString location, MixxxView * pView, ConfigObject<ConfigValue> *config, EngineBuffer * pBuffer1, EngineBuffer * pBuffer2, WaveSummary * pWaveSummary, BpmDetector * pBpmDetector)
 {
     m_pView = pView;
@@ -129,10 +134,16 @@ Track::Track(QString location, MixxxView * pView, ConfigObject<ConfigValue> *con
         connect(m_pView->m_pComboBox, SIGNAL(activated(int)), this, SLOT(slotActivatePlaylist(int)));
 
         // Connect Search to table
+/*
         connect( m_pView->m_pLineEditSearch,
                 SIGNAL( textChanged( const QString & )),
 		m_pView->m_pTrackTableView,
 		SLOT(slotFilter(const QString &)));
+*/
+        startTimer(250);   // Update the TrackTableView filter a maximum of 4 times a second.
+
+	// add EventFilter to do a selectAll text when the LineEditSearch gains focus
+	m_pView->m_pLineEditSearch-> installEventFilter(this);
 
         // Connect drop events to table
         //connect(m_pView->m_pTrackTable, SIGNAL(dropped(QDropEvent *)), this, SLOT(slotDrop(QDropEvent *)));
@@ -197,6 +208,34 @@ Track::~Track()
 {
 }
 
+void Track::timerEvent(QTimerEvent *event) {
+  if (m_pView->m_pLineEditSearch->isModified()) {        
+    m_pView->m_pTrackTableView->slotFilter(m_pView->m_pLineEditSearch->text()); // set the library filter
+    m_pView->m_pLineEditSearch->setText(m_pView->m_pLineEditSearch->text()); // reset the isModified flag
+    // qDebug() << "isModified =" << m_pView->m_pLineEditSearch->isModified();
+  }
+}
+
+bool Track::eventFilter(QObject *obj, QEvent *e) {
+  if (obj == m_pView->m_pLineEditSearch) {
+    qDebug() << "Track::eventFilter: Received event:" << e->type();
+
+    switch (e->type()) { 
+      case QEvent::MouseButtonPress:  // Drop entry events which deselect the text
+      case QEvent::MouseButtonRelease:
+        // qDebug("Drop mouse event.");
+        return true;
+        break;
+      case QEvent::FocusIn: 
+        // qDebug("QEvent::FocusIn event intercepted");
+        ((QLineEdit *)obj)->selectAll();
+        // qDebug() << "hasSelectedText? " << ((QLineEdit *)obj)->hasSelectedText();
+        // qDebug() << "So the selected text is now: " << ((QLineEdit *)obj)->selectedText();
+        break;
+    }
+  }
+  return false;
+}
 
 void Track::readXML(QString location)
 {
