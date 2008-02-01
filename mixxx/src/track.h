@@ -21,6 +21,8 @@
 #include "trackplaylistlist.h"
 #include "configobject.h"
 
+#include <QEvent>
+
 class TrackImporter;
 class TrackInfoObject;
 class TrackCollection;
@@ -68,9 +70,15 @@ public:
     /** Checks if the library directory's "last modified" timestamp has been changed */
     bool checkLibraryLastModified();
 	
-	/** Current active playlist */
+    /** Current active playlist */
     TrackPlaylist *m_pActivePlaylist; //FIXME wtf public variable?
-    
+
+    /** eventFilter to catch m_pView->m_pLineEdit focus events and selectAll for the text TODO: It has been suggested QEditLine should be subclassed with a custom FocusInEvent() method */
+    bool eventFilter(QObject *obj, QEvent *e);
+
+    /** Implement a timer which will update the filter on the tracktableview a maximum of 4 times a second, if m_pView->m_pLineEdit changes */    
+    void timerEvent(QTimerEvent *event);
+
 public slots:
     /** Decode playlist drops to WTrackTable, and loads corresponding playlist */
     void slotDrop(QDropEvent *e);
