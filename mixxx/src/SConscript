@@ -609,9 +609,12 @@ if int(flags_optimize):
 		elif flags_optimize=='2':
 			print "  P4 MMX/SSE optimizations enabled."
 			env.Append(CXXFLAGS = '-O3 -march=pentium4 -mmmx -msse2 -mfpmath=sse -fomit-frame-pointer -ffast-math -funroll-loops')
-		elif flags_optimize=='3':
-			print "  Intel Core 2 optimizations enabled."
-			env.Append(CXXFLAGS = '-O3 -march=prescott -mmmx -msse3 -mfpmath=sse -fomit-frame-pointer -ffast-math -funroll-loops')
+                elif flags_optimize=='3':
+                        print "  Intel Core Solo/Duo optimizations enabled."
+                        env.Append(CXXFLAGS = '-O3 -march=prescott -mmmx -msse3 -mfpmath=sse -fomit-frame-pointer -ffast-math -funroll-loops')
+                elif flags_optimize=='4':
+                        print "  Intel Core 2 optimizations enabled."
+                        env.Append(CXXFLAGS = '-O3 -march=nocona -mmmx -msse3 -mfpmath=sse -fomit-frame-pointer -ffast-math -funroll-loops')
 else:
 	print "Optimizations... disabled"
 
