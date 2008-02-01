@@ -218,7 +218,7 @@ void Track::timerEvent(QTimerEvent *event) {
 
 bool Track::eventFilter(QObject *obj, QEvent *e) {
   if (obj == m_pView->m_pLineEditSearch) {
-    qDebug() << "Track::eventFilter: Received event:" << e->type();
+    // qDebug() << "Track::eventFilter: Received event:" << e->type();
 
     switch (e->type()) { 
       case QEvent::MouseButtonPress:  // Drop entry events which deselect the text
