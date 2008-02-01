@@ -607,7 +607,7 @@ void MixxxApp::initMenuBar()
 #endif
     menuBar()->addSeparator();
     menuBar()->addMenu(helpMenu);
-    new MixxxMenuPlaylists(libraryMenu, m_pTrack);
+    //new MixxxMenuPlaylists(libraryMenu, m_pTrack);
 
 }
 
