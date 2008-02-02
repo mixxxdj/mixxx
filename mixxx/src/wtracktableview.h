@@ -64,6 +64,9 @@ public:
     
     /** Sets the current mode for the WTrackTableView */
     void setTableMode(int table_mode);
+
+    /** Gets the current mode for the WTrackTableView */
+    int getTableMode();
     
     /** Returns the QDirModel **/
     QDirModel* getDirModel();
@@ -90,6 +93,9 @@ public:
     /* Helper functions to move the row selection */
     void selectNext();
     void selectPrevious();
+
+    /** return the current table filter string */
+    QString getFilterString();
 
 private:
     /** Config object*/
