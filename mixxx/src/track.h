@@ -209,6 +209,8 @@ private:
     unsigned int m_iPlayqueueIdx;
     /** Provides access to the config keys */
     ConfigObject<ConfigValue> *m_pConfig;
+    
+    int savedRowPosition;    
 };
 
 #endif

@@ -185,6 +185,11 @@ void WTrackTableView::setTableMode(int table_mode)
     m_iTableMode = table_mode;
 }
 
+int WTrackTableView::getTableMode()
+{
+    return m_iTableMode;
+}
+
 /*sorts a given column*/
 void WTrackTableView::sortColumn(int col, bool ascending, bool)
 {
@@ -618,7 +623,7 @@ void WTrackTableView::updatePlaylistActions()
 		
 			//Create a new action for this playlist
 			sendToPlaylistAction = new QAction(qPlaylistName, this);
-			sendToPlaylistAction->setData(QVariant((int)playlists->at(i)));
+			sendToPlaylistAction->setData(QVariant((qlonglong)playlists->at(i)));
 			PlaylistActs.append(sendToPlaylistAction);
 		
 			//Connect this action to some sendtoplaylist(name) action.
@@ -779,4 +784,8 @@ void WTrackTableView::slotFilter()
 {
     m_pSearchFilter->setFilterFixedString(m_filterString);
     m_pDirFilter->setFilterFixedString(m_filterString);
+}
+
+QString WTrackTableView::getFilterString() {
+    return m_filterString;
 }

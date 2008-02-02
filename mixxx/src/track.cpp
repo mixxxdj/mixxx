@@ -140,6 +140,7 @@ Track::Track(QString location, MixxxView * pView, ConfigObject<ConfigValue> *con
 		m_pView->m_pTrackTableView,
 		SLOT(slotFilter(const QString &)));
 */
+        savedRowPosition = 0;
         startTimer(250);   // Update the TrackTableView filter a maximum of 4 times a second.
 
 	// add EventFilter to do a selectAll text when the LineEditSearch gains focus
@@ -209,8 +210,21 @@ Track::~Track()
 }
 
 void Track::timerEvent(QTimerEvent *event) {
-  if (m_pView->m_pLineEditSearch->isModified()) {        
-    m_pView->m_pTrackTableView->slotFilter(m_pView->m_pLineEditSearch->text()); // set the library filter
+  if (m_pView->m_pLineEditSearch->isModified()) {
+  
+    if (m_pView->m_pTrackTableView->getTableMode() == TABLE_MODE_LIBRARY && m_pView->m_pLineEditSearch->text() == "") {
+      // qDebug() << "Restore viewport to position to row:" << savedRowPosition;
+      m_pView->m_pTrackTableView->slotFilter(""); // set the library filter      
+      m_pView->m_pTrackTableView->scrollTo(m_pView->m_pTrackTableView->model()->index(savedRowPosition,0), QAbstractItemView::PositionAtTop);
+    } else if (m_pView->m_pTrackTableView->getTableMode() == TABLE_MODE_LIBRARY && m_pView->m_pTrackTableView->getFilterString() == "") {
+      // qDebug() << "save viewport position. Top row:" << m_pView->m_pTrackTableView->rowAt( 1 );
+      savedRowPosition = m_pView->m_pTrackTableView->rowAt( 1 );
+      m_pView->m_pTrackTableView->slotFilter(m_pView->m_pLineEditSearch->text()); // set the library filter
+    } else {
+      // qDebug() << "Update filter only. savedRowPosition:" << savedRowPosition;
+      m_pView->m_pTrackTableView->slotFilter(m_pView->m_pLineEditSearch->text()); // set the library filter
+    }
+    
     m_pView->m_pLineEditSearch->setText(m_pView->m_pLineEditSearch->text()); // reset the isModified flag
     // qDebug() << "isModified =" << m_pView->m_pLineEditSearch->isModified();
   }
@@ -219,7 +233,6 @@ void Track::timerEvent(QTimerEvent *event) {
 bool Track::eventFilter(QObject *obj, QEvent *e) {
   if (obj == m_pView->m_pLineEditSearch) {
     // qDebug() << "Track::eventFilter: Received event:" << e->type();
-
     switch (e->type()) { 
       case QEvent::MouseButtonPress:  // Drop entry events which deselect the text
       case QEvent::MouseButtonRelease:
@@ -232,6 +245,7 @@ bool Track::eventFilter(QObject *obj, QEvent *e) {
         // qDebug() << "hasSelectedText? " << ((QLineEdit *)obj)->hasSelectedText();
         // qDebug() << "So the selected text is now: " << ((QLineEdit *)obj)->selectedText();
         break;
+        default: break;
     }
   }
   return false;
