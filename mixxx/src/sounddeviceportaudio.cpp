@@ -136,7 +136,7 @@ int SoundDevicePortAudio::open()
     //Update: A patch has been pushed upstream to PortAudio for this that will elimate
     //the need for this block. However, we should keep it around until a newer version
     //of PortAudio gets packaged in most distributions. - Albert Sept 7/07
-    if (m_pConfig->getValueString(ConfigKey("[Soundcard]","SoundApi")) == "OSS")
+    if (m_pConfig->getValueString(ConfigKey("[Soundcard]","SoundApi")) == MIXXX_PORTAUDIO_OSS_STRING)
     {
         unsigned int i;
         iFramesPerBuffer &= INT_MAX;
@@ -144,6 +144,14 @@ int SoundDevicePortAudio::open()
         iFramesPerBuffer = i;
         qDebug() << "iFramesPerBuffer" << iFramesPerBuffer;
     }
+    
+    //PortAudio's JACK backend also only properly supports paFramesPerBufferUnspecified in non-blocking mode
+    //because the latency comes from the JACK daemon. (PA should give an error or something though, but it doesn't.)
+    else if (m_pConfig->getValueString(ConfigKey("[Soundcard]","SoundApi")) == MIXXX_PORTAUDIO_JACK_STRING)
+    {
+        iFramesPerBuffer = paFramesPerBufferUnspecified;
+    }
+
 
     //Fill out the rest of the info.
     m_outputParams.device = m_devId;
