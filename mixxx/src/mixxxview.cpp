@@ -383,7 +383,7 @@ void MixxxView::createAllWidgets(QDomElement docElem,
             {
                 QString filename = WWidget::selectNodeQString(node, "Path");
                 QPixmap *background = WPixmapStore::getPixmapNoCache(WWidget::getPath(filename));
-                QColor c(255,255,255);
+                QColor c(0,0,0); // Default background color is now black, if people want to do <invert/> filters they'll have to figure something out for this.
                 QLabel *bg = new QLabel(this);
 
                 bg->move(0, 0);
