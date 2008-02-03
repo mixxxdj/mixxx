@@ -134,7 +134,7 @@ Track::Track(QString location, MixxxView * pView, ConfigObject<ConfigValue> *con
         connect(m_pView->m_pComboBox, SIGNAL(activated(int)), this, SLOT(slotActivatePlaylist(int)));
 
         double centa = m_pView->m_pTrackTableView->size().width()/100.;
-        qDebug() << "Adjusting column widths: tracktable width =" << m_pView->m_pTrackTableView->size().width() <<" 1% of that is:"<< centa << " FIXME: this should be done when initalizing the skin."";
+        qDebug() << "Adjusting column widths: tracktable width =" << m_pView->m_pTrackTableView->size().width() <<" 1% of that is:"<< centa << " FIXME: this should be done when initalizing the skin.";
         m_pView->m_pTrackTableView->setColumnWidth(COL_ARTIST, 15 * centa);
         m_pView->m_pTrackTableView->setColumnWidth(COL_TITLE, 40 * centa);
         m_pView->m_pTrackTableView->setColumnWidth(COL_TYPE, (18/4.) * centa);
