@@ -142,6 +142,15 @@ Track::Track(QString location, MixxxView * pView, ConfigObject<ConfigValue> *con
         m_pView->m_pTrackTableView->setColumnWidth(COL_BITRATE, (18/4.) * centa);
         m_pView->m_pTrackTableView->setColumnWidth(COL_BPM, (18/4.) * centa);
         m_pView->m_pTrackTableView->setColumnWidth(COL_COMMENT, 25 * centa);
+        if ( (18/4.) * centa <= 42 ) { // If we won't get enough percentage to display length, we have to make some adjustments... 
+          qDebug() << "Shrinking Title/Comment for small screen... ";
+          m_pView->m_pTrackTableView->setColumnWidth(COL_TYPE, 35);
+          m_pView->m_pTrackTableView->setColumnWidth(COL_LENGTH, 42);
+          m_pView->m_pTrackTableView->setColumnWidth(COL_BITRATE, 33);
+          m_pView->m_pTrackTableView->setColumnWidth(COL_BPM, 36);
+          m_pView->m_pTrackTableView->setColumnWidth(COL_TITLE, (60 * centa) - (35+42+33+36));
+          m_pView->m_pTrackTableView->setColumnWidth(COL_COMMENT, 20 * centa);
+        }       
 
         // Connect Search to table
 /*
