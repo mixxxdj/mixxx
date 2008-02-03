@@ -4,6 +4,15 @@
 #include <QAbstractTableModel>
 #include <qcolor.h>
 
+const int COL_SCORE = -1;
+const int COL_ARTIST = 0;
+const int COL_TITLE = 1;
+const int COL_TYPE  = 2;
+const int COL_LENGTH = 3;
+const int COL_BITRATE = 4;
+const int COL_BPM = 5;
+const int COL_COMMENT = 6;
+
 class TrackPlaylist;
 class TrackCollection;
 class DropActions;

@@ -133,6 +133,16 @@ Track::Track(QString location, MixxxView * pView, ConfigObject<ConfigValue> *con
         // Connect ComboBox events to WTrackTable
         connect(m_pView->m_pComboBox, SIGNAL(activated(int)), this, SLOT(slotActivatePlaylist(int)));
 
+        double centa = m_pView->m_pTrackTableView->size().width()/100.;
+        qDebug() << "Adjusting column widths: tracktable width =" << m_pView->m_pTrackTableView->size().width() <<" 1% of that is:"<< centa << " FIXME: this should be done when initalizing the skin."";
+        m_pView->m_pTrackTableView->setColumnWidth(COL_ARTIST, 15 * centa);
+        m_pView->m_pTrackTableView->setColumnWidth(COL_TITLE, 40 * centa);
+        m_pView->m_pTrackTableView->setColumnWidth(COL_TYPE, (18/4.) * centa);
+        m_pView->m_pTrackTableView->setColumnWidth(COL_LENGTH, (18/4.) * centa);
+        m_pView->m_pTrackTableView->setColumnWidth(COL_BITRATE, (18/4.) * centa);
+        m_pView->m_pTrackTableView->setColumnWidth(COL_BPM, (18/4.) * centa);
+        m_pView->m_pTrackTableView->setColumnWidth(COL_COMMENT, 25 * centa);
+
         // Connect Search to table
 /*
         connect( m_pView->m_pLineEditSearch,
@@ -140,6 +150,7 @@ Track::Track(QString location, MixxxView * pView, ConfigObject<ConfigValue> *con
 		m_pView->m_pTrackTableView,
 		SLOT(slotFilter(const QString &)));
 */
+
         savedRowPosition = 0;
         startTimer(250);   // Update the TrackTableView filter a maximum of 4 times a second.
 
