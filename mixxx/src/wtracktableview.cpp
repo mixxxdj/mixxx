@@ -79,10 +79,8 @@ WTrackTableView::WTrackTableView(QWidget * parent, ConfigObject<ConfigValue> * p
 
     m_pDirFilter = new WTrackTableFilter(m_dirindex);
     m_pDirFilter->setSourceModel(m_pDirModel);
-
-    
-
 }
+
 WTrackTableView::~WTrackTableView()
 {
     if(bpmTapDlg)
