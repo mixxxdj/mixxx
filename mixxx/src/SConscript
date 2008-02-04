@@ -923,7 +923,8 @@ def BuildUbuntuPackage(target, source, env):
 	print "Top 2 lines of LICENSE, check version and copyright dates:"
 	os.system('head -n 2 LICENSE')
 	print
-	print "More checks here soon... :)"
+	print "Top line of debian/ubuntu changelog, check version:"
+	os.system('head -n 1 src/debian/changelog')
 	print
 
 	if ("yes" == "yes"):
