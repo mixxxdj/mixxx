@@ -245,6 +245,11 @@ extern "C" __attribute__ ((visibility ("default"))) void LIBCLOSE(int timeout)
     close(rx);
 }
 
+extern "C" __attribute__ ((visibility ("default"))) void cm_set_crash_dlg(void (*pcrashDlg)(void))
+{
+    //TODO
+}
+
 /* EXTERNAL INTERFACE COMMANDS */
 #include <string.h>
 

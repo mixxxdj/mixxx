@@ -54,6 +54,7 @@ extern "C"{
 #endif
 	/* Initialization Routines */
 	CC_EXPORT_PREFIX int cm_init(int maxMsgQueue, int maxDbgMsg, int fuserVerified);
+    CC_EXPORT_PREFIX void cm_set_crash_dlg(void (*pcrashDlg)(void));
 	CC_EXPORT_PREFIX void cm_close(int timeout);
 
 	/* Low Level Message Routines */
@@ -63,13 +64,15 @@ extern "C"{
 	CC_EXPORT_PREFIX void cm_writemsg_bin(int msgType, char *pb, unsigned int size);
 
 	/* Debug Routines */
-	CC_EXPORT_PREFIX void cm_writemsgDbg(const char *, ...);
-	CC_EXPORT_PREFIX void cm_writemsgDbg_utf8(const CM_UTF8 *, ...);
-	CC_EXPORT_PREFIX void cm_writemsgDbg_utf16(const CM_UTF16 *, ...);
+	CC_EXPORT_PREFIX void cm_writemsgDbg_ascii(const char *);
+	CC_EXPORT_PREFIX void cm_writemsgDbg_utf8(const CM_UTF8 *);
+	//CC_EXPORT_PREFIX void cm_writemsgDbg_utf16(const CM_UTF16 *);
+	CC_EXPORT_PREFIX void cm_sendmsgDbg();
 
-	CC_EXPORT_PREFIX void cm_writemsgWarn(const char *, ...);
+	/* Not Implemented Yet */
+	//CC_EXPORT_PREFIX void cm_writemsgWarn(const char *);
 
-	CC_EXPORT_PREFIX void cm_writemsgFail(const char *, ...);
+	//CC_EXPORT_PREFIX void cm_writemsgFail(const char *);
 #ifdef __cplusplus 
 }
 #endif
