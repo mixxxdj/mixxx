@@ -50,6 +50,11 @@
 #include "defs_mixxxcmetrics.h"
 #endif
 
+extern "C" void crashDlg()
+{
+    QMessageBox::critical(0, "Mixxx", "Mixxx has encountered a serious error and needs to close.");
+}
+
 MixxxApp::MixxxApp(QApplication * a, struct CmdlineArgs args, QSplashScreen * pSplash)
 {
     app = a;
@@ -103,6 +108,7 @@ MixxxApp::MixxxApp(QApplication * a, struct CmdlineArgs args, QSplashScreen * pS
 		}
 	}
 	cm_init(100,20, fuserAgreeToDataCollection);
+    cm_set_crash_dlg(crashDlg);
 	cm_writemsg_ascii(MIXXXCMETRICS_VERSION,
 	                  VERSION);
 #endif
