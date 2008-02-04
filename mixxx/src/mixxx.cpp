@@ -300,7 +300,6 @@ MixxxApp::MixxxApp(QApplication * a, struct CmdlineArgs args, QSplashScreen * pS
 	    cm_writemsg_ascii(MIXXXCMETRICS_FAILED_TO_OPEN_SNDDEVICE_AT_STARTUP,
 	                      "Mixxx failed to open audio device(s) on startup.");
 #endif
-        //TODO: Add cmetric hook for failing to detect audio device on FIRST startup too.
         
         QMessageBox::warning(this, tr("Mixxx"),
                                    tr("Failed to open your audio device(s).\n"
