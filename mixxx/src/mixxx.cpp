@@ -563,7 +563,7 @@ void MixxxApp::initMenuBar()
     // MENUBAR
     fileMenu=new QMenu("&File");
     optionsMenu=new QMenu("&Options");
-    libraryMenu=new QMenu("&Playlists");
+    libraryMenu=new QMenu("&Library");
     viewMenu=new QMenu("&View");
     helpMenu=new QMenu("&Help");
 #ifdef __SCRIPT__
