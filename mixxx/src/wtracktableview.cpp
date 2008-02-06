@@ -517,8 +517,12 @@ void WTrackTableView::contextMenuEvent(QContextMenuEvent * event)
         
         menu.addAction(PropertiesAct);
     }
-
 	
+	//Show the "Rename..." option for the playlists view.
+	if (m_iTableMode == TABLE_MODE_PLAYLISTS)
+	{
+		menu.addAction(RenamePlaylistAct);
+	}
 
     //Gray out some stuff if multiple songs were selected. 
     if (m_selectedIndices.count() != 1)
@@ -577,11 +581,41 @@ void WTrackTableView::createActions()
 
 	PropertiesAct = new QAction(tr("Properties..."), this);
 	connect(PropertiesAct, SIGNAL(triggered()), this, SLOT(slotShowBPMTapDlg()));
+
+	RenamePlaylistAct = new QAction(tr("Rename..."), this);
+	connect(RenamePlaylistAct, SIGNAL(triggered()), this, SLOT(slotShowPlaylistRename()));
+	
 	
 	//Create all the "send to->playlist" actions.
 	if (m_pTrack)
 		updatePlaylistActions();
 	
+}
+
+/** Shows the "Rename Playlist" input dialog */
+void WTrackTableView::slotShowPlaylistRename()
+{
+	bool ok;
+	
+	if (m_iTableMode == TABLE_MODE_PLAYLISTS)
+    {
+        for (int i = 0; i < m_selectedPlaylists.count(); i++) 
+        {
+
+     		QString text = QInputDialog::getText(this, tr("Rename Playlist"),
+                                          tr("Rename ") + m_selectedPlaylists.at(i)->getName() + " to:", 
+                                          QLineEdit::Normal,
+                                          m_selectedPlaylists.at(i)->getName(), &ok);
+     		if (ok && !text.isEmpty())
+         		m_selectedPlaylists.at(i)->setListName(text);   
+         	   	
+        	
+        	//m_pTrack->slotSendToPlayqueue(m_selectedPlaylists.at(i));
+        }
+        
+        //Update the right-click menu with the new name(s) of the playlist(s).
+        updatePlaylistActions();
+    }
 }
 
 void WTrackTableView::updatePlaylistActions()
@@ -747,15 +781,22 @@ void WTrackTableView::slotRemove()
 {
     if (m_iTableMode == TABLE_MODE_PLAYLISTS)
     {   
-    	qDebug() << "FIXME: Removing a playlist is unimplented in" << __FILE__ << "on line" << __LINE__;
+		//Get the indices of the selected rows.
+    	m_selectedIndices = this->selectionModel()->selectedRows();
 
-        //This also probably needs to be reworked to work with multiple selections
-        /*
-        for (int i = 0; i < m_selectedIndices.count(); i++)
-        {
-        	QModelIndex index = m_selectedIndices.at(i);
-        	m_pPlaylistListModel->removeRow(index.row()); // - i ???              	
-		}*/
+    	for (int i = 0; i < m_selectedIndices.count(); i++)
+    	{
+    		QModelIndex index = m_selectedIndices.at(i);
+        	m_pTrack->getPlaylists()->removeAt(index.row());
+        	
+        	//FIXME: The approach above probably won't work when sorting is fixed in the
+        	//		 playlists view.
+        	//		 Something like this may or may not work instead:
+        	//m_pTrack->getPlaylists()->removeAll(m_pTrack->getPlaylistByIndex(index.row()));
+        }
+		
+		updatePlaylistActions(); //Update the right-click menu's list of playlists.
+		repaintEverything(); //For good luck
     }
     else if (m_iTableMode == TABLE_MODE_BROWSE)
     {
@@ -782,6 +823,35 @@ void WTrackTableView::slotFilter()
 {
     m_pSearchFilter->setFilterFixedString(m_filterString);
     m_pDirFilter->setFilterFixedString(m_filterString);
+}
+
+/** Stub for drag and drop... FIXME into real drag-and-drop-to-library support - Albert Feb 6/08*/
+void WTrackTableView::dragEnterEvent(QDragEnterEvent * event)
+{
+  if (event->mimeData()->hasUrls())
+      event->acceptProposedAction();
+}
+
+/** Stub for drag and drop... FIXME into real drag-and-drop-to-library support - Albert Feb 6/08*/
+void WTrackTableView::dropEvent(QDropEvent * event)
+{
+  if (event->mimeData()->hasUrls()) {
+    QList<QUrl> urls(event->mimeData()->urls());
+    QUrl url = urls.first();
+
+    event->accept();
+    //emit(trackDropped(name));
+    
+    //Add the track(s) to the active playlist
+    m_pTrack->getActivePlaylist()->addTrack(url.path());
+    repaintEverything();
+  } else
+    event->ignore();
+}
+
+void WTrackTableView::keyPressEvent(QKeyEvent *event)
+{
+
 }
 
 QString WTrackTableView::getFilterString() {

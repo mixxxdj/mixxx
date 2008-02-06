@@ -1065,7 +1065,9 @@ void Track::updatePlaylistViews()
     m_pView->m_pTrackTableView->updatePlaylistActions();
 
     qDebug() << "FIXME: Need to tell the m_pPlaylistListModel to refresh in" << __FILE__ << "on line:" << __LINE__;
-
+    //if (m_pView && m_pView->m_pTrackTableView)
+    //    m_pView->m_pTrackTableView->repaintEverything(); //Crashy crashy at startup for some reason :(
+    
     // Update tree view
     //if (m_pView->m_pTreeView)
     //    m_pView->m_pTreeView->updatePlaylists(&m_qPlaylists);
@@ -1081,8 +1083,8 @@ void Track::updatePlaylistViews()
    }
 
 /** Checks if the library directory's "last modified" timestamp has been changed */
-/* @returns true if the library has been modified since it was last rescanned
-   @returns false if the library has not been modified since it was last rescanned 
+/* @return true if the library has been modified since it was last rescanned
+   @return false if the library has not been modified since it was last rescanned 
 */
 bool Track::checkLibraryLastModified()
 {
