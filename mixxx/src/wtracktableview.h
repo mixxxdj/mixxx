@@ -118,6 +118,8 @@ private:
     QAction *PropertiesAct;
     /**Send to each playlist Action**/
     QList<QAction*> PlaylistActs;
+    /**Rename playlist Action**/
+    QAction *RenamePlaylistAct;    
     /**creates all actions and connects them to repective slots**/
     void createActions();
 
@@ -138,7 +140,10 @@ private slots:
     void slotRemove();
     /**Show the track editor/bpm tap dialog */
     void slotShowBPMTapDlg(TrackInfoObject* pTrackInfoObject);
-    void slotShowBPMTapDlg();    
+    void slotShowBPMTapDlg(); 
+    /**Show playlist rename dialog */    
+    void slotShowPlaylistRename();
+    
 public slots:
     /** Set the search filter **/
     void slotFilter(const QString &);
@@ -150,6 +155,10 @@ protected slots:
     void slotMouseDoubleClicked(const QModelIndex &);
 
 protected:
+    void dragEnterEvent(QDragEnterEvent *event);
+    void dropEvent(QDropEvent *event);
+    void keyPressEvent(QKeyEvent *event);
+
     DlgBpmTap *bpmTapDlg;
     QModelIndex m_dirindex;
     QList<QString> m_selectedDirTrackNames;        //Names of the selected tracks when in browse mode.
