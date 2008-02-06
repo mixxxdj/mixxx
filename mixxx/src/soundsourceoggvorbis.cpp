@@ -43,8 +43,8 @@
 
 SoundSourceOggVorbis::SoundSourceOggVorbis(QString qFilename) : SoundSource(qFilename)
 {
-
-    vorbisfile =  fopen(qFilename.latin1(), "r");
+    QByteArray qBAFilename = qFilename.toUtf8();
+    vorbisfile =  fopen(qBAFilename.data(), "r");
     if (!vorbisfile)
     {
         qDebug() << "oggvorbis: cannot open" << qFilename;
@@ -156,10 +156,11 @@ unsigned SoundSourceOggVorbis::read(volatile unsigned long size, const SAMPLE * 
 int SoundSourceOggVorbis::ParseHeader( TrackInfoObject * Track )
 {
     QString filename = Track->getLocation();
+    QByteArray qBAFilename = filename.toUtf8();
     vorbis_comment * comment;
     OggVorbis_File vf;
 
-    FILE * vorbisfile = fopen(filename, "r");
+    FILE * vorbisfile = fopen(qBAFilename.data(), "r");
     if (!vorbisfile) {
         qDebug("oggvorbis: file cannot be opened.\n");
         return ERR;
