@@ -286,3 +286,10 @@ void WOverview::paintEvent(QPaintEvent *)
 }
 
 
+QColor WOverview::getMarkerColor() {
+   return m_qColorMarker;
+}
+
+QColor WOverview::getSignalColor() {
+   return m_qColorSignal;
+}
