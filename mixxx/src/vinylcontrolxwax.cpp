@@ -186,7 +186,7 @@ void VinylControlXwax::run()
                 if (dVinylPosition > 0.0f) 
                 {   
                     //If the position from the timecode is more than a few seconds off, resync the position.
-                    if (fabs(dVinylPosition - filePosition) > 3.0 && (iVCMode == MIXXX_VCMODE_ABSOLUTE))
+                    if (fabs(dVinylPosition - filePosition - iLeadInTime) > 3.0 && (iVCMode == MIXXX_VCMODE_ABSOLUTE))
                     {
                         syncPosition();
                     }
