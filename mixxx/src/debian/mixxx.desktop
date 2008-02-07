@@ -4,6 +4,6 @@ Name=Mixxx
 Comment=Create DJ mixes
 Exec=mixxx
 Terminal=false
-Icon=mixxx
+Icon=mixxx-icon
 Type=Application
 Categories=AudioVideo;Audio;
