@@ -317,12 +317,13 @@ void DlgPrefSound::slotApply()
 	}
 	
 #ifdef __C_METRICS__
-	    cm_writemsg_ascii(MIXXXCMETRICS_SOUND_API,
-	                      config->getValueString(ConfigKey("[Soundcard]","SoundApi")));
-	    cm_writemsg_ascii(MIXXXCMETRICS_SOUND_SAMPLERATE,
-	                     config->getValueString(ConfigKey("[Soundcard]","Samplerate")));
-	    cm_writemsg_ascii(MIXXXCMETRICS_SOUND_LATENCY,
-	                     config->getValueString(ConfigKey("[Soundcard]","Latency")));
+        QByteArray baAPI = config->getValueString(ConfigKey("[Soundcard]","SoundApi")).toUtf8();
+        QByteArray baSamplerate = config->getValueString(ConfigKey("[Soundcard]","Samplerate")).toUtf8();
+        QByteArray baLatency = config->getValueString(ConfigKey("[Soundcard]","Latency")).toUtf8();
+        
+	    cm_writemsg_ascii(MIXXXCMETRICS_SOUND_API, baAPI.data());
+	    cm_writemsg_ascii(MIXXXCMETRICS_SOUND_SAMPLERATE, baSamplerate.data());
+	    cm_writemsg_ascii(MIXXXCMETRICS_SOUND_LATENCY, baLatency.data());
 #endif	
 	
 }
