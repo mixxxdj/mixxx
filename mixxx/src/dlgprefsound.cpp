@@ -32,6 +32,11 @@
 #include "soundmanager.h"
 #include <qwidget.h>
 
+#ifdef __C_METRICS__
+#include <cmetrics.h>
+#include "defs_mixxxcmetrics.h"
+#endif
+
 DlgPrefSound::DlgPrefSound(QWidget * parent, SoundManager * _soundman,
                            ConfigObject<ConfigValue> * _config) : QWidget(parent), Ui::DlgPrefSoundDlg()
 {
@@ -310,6 +315,16 @@ void DlgPrefSound::slotApply()
 		m_parent->setHidden(false);
 		m_configError = true;
 	}
+	
+#ifdef __C_METRICS__
+	    cm_writemsg_ascii(MIXXXCMETRICS_SOUND_API,
+	                      config->getValueString(ConfigKey("[Soundcard]","SoundApi")));
+	    cm_writemsg_ascii(MIXXXCMETRICS_SOUND_SAMPLERATE,
+	                     config->getValueString(ConfigKey("[Soundcard]","Samplerate")));
+	    cm_writemsg_ascii(MIXXXCMETRICS_SOUND_LATENCY,
+	                     config->getValueString(ConfigKey("[Soundcard]","Latency")));
+#endif	
+	
 }
 
 void DlgPrefSound::slotApplyApi()

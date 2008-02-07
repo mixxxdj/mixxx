@@ -21,5 +21,10 @@
 #define MIXXXCMETRICS_MIXXX_DESTRUCTOR_COMPLETE                     4
 #define MIXXXCMETRICS_FAILED_TO_OPEN_SNDDEVICE_AT_STARTUP           5
 #define MIXXXCMETRICS_VERSION                                       6
+#define MIXXXCMETRICS_SOUND_API                                     7
+#define MIXXXCMETRICS_SOUND_SAMPLERATE                              8
+#define MIXXXCMETRICS_SOUND_LATENCY                                 9
+#define MIXXXCMETRICS_MIDI_DEVICE                                   10
+#define MIXXXCMETRICS_LIBRARY_SCAN_TIME                             11
 
 #endif
