@@ -60,6 +60,7 @@
 #include "wvisualwaveform.h"
 #include "woverview.h"
 //#include "wpushButton.h"
+#include "wwidget.h"
 
 #ifdef __C_METRICS__
 #include <cmetrics.h>
@@ -284,35 +285,22 @@ bool Track::eventFilter(QObject *obj, QEvent *e) {
     }
   } else {
     switch (e->type()) {
-      case QEvent::Wheel:
+      case QEvent::Wheel: {
          QWidget* targetWidget;
          targetWidget = ((QWidget *)obj)->childAt(((QWheelEvent *)e)->x(), ((QWheelEvent *)e)->y());
-         if (targetWidget == 0) { qDebug() << "Null Target Object."; return true; };
-
-         double wheelDirection; 
-         wheelDirection = ((QWheelEvent *)e)->delta() / 120;
-         qDebug() << "Mouse Wheel Event: " << wheelDirection << " Object: "<< targetWidget;
-         qDebug() << "Widget Name: " << targetWidget->metaObject()->className();
-
-         // FIXME: This is not finished, it does not know how to find out what trading engine signal to send atm.  GED 2008-02-06 
-         if (qobject_cast<WSliderComposed *>(targetWidget) != 0) {
-           qDebug() << "Manuiplate a"<<targetWidget->metaObject()->className()<<"...";
-           double newValue;
-           newValue = qobject_cast<WSliderComposed *>(targetWidget)->getValue() + (wheelDirection/1);
-           qDebug() << "Current Value: " << qobject_cast<WSliderComposed *>(targetWidget)->getValue() << " New Value: " << newValue;  
-           if (newValue < 0 || newValue > 127) { qDebug() << "New Value is out of bounds."; return true; }
-           qobject_cast<WSliderComposed *>(targetWidget)->setValue(newValue);
-         } else if (qobject_cast<WKnob *>(targetWidget) != 0) {
-           qDebug() << "Manuiplate a"<<targetWidget->metaObject()->className()<<"...";
-           // qobject_cast<WKnob *>(targetWidget)->setValue(63.0);
-         } else if (qobject_cast<WVisualWaveform *>(targetWidget) != 0) {
-           qDebug() << "Manuiplate a"<<targetWidget->metaObject()->className()<<"...";
-         } else if (qobject_cast<WOverview *>(targetWidget) != 0) {
-           qDebug() << "Manuiplate a"<<targetWidget->metaObject()->className()<<"...";
-//         } else if (qobject_cast<WPushButton *>(targetWidget) != 0) {
+         if (targetWidget == 0) { qDebug() << "Mouse Wheel Event -- Null Target Object."; return true; };
+         double wheelDirection = ((QWheelEvent *)e)->delta() / 120.;
+         if (qobject_cast<WSliderComposed *>(targetWidget) != 0 || qobject_cast<WKnob *>(targetWidget) != 0) {
+           double newValue = qobject_cast<WWidget *>(targetWidget)->getValue() + (wheelDirection);
+//           qDebug() << "Mouse Wheel Event -- Destination Object Class Type:"<<targetWidget->metaObject()->className()<<" (target control's value:" << qobject_cast<WWidget *>(targetWidget)->getValue() << " event direction: "<<wheelDirection<<")";
+           qobject_cast<WWidget *>(targetWidget)->updateValue(newValue);
+//         } else if (qobject_cast<WVisualWaveform *>(targetWidget) != 0) {
+//           qDebug() << "Manuiplate a"<<targetWidget->metaObject()->className()<<"...";
+//         } else if (qobject_cast<WOverview *>(targetWidget) != 0) {
 //           qDebug() << "Manuiplate a"<<targetWidget->metaObject()->className()<<"...";
          }
          return true;
+         }
          break;
       // default: qDebug() << "Non SearchEdit Event: " << e->type(); break;
       default: break;

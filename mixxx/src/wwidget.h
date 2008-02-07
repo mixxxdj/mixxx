@@ -51,9 +51,10 @@ public:
     /** Given a filename of a pixmap, returns its path */
     static const QString getPath(QString location);
     static QDomElement openXMLFile(QString path, QString name);
-
+    double getValue();
 public slots:
     virtual void setValue(double fValue);
+    void updateValue(double fValue);
     void setOnOff(double);
 private slots:
     void slotReEmitValueDown(double);
