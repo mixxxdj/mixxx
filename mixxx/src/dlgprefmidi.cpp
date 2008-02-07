@@ -34,6 +34,12 @@
 #include "midiobjectnull.h"
 #include "midiledhandler.h"
 #include "wwidget.h"
+
+#ifdef __C_METRICS__
+#include <cmetrics.h>
+#include "defs_mixxxcmetrics.h"
+#endif
+
 #ifdef __ALSAMIDI__
   #include "midiobjectalsa.h"
 #endif
@@ -506,6 +512,13 @@ void DlgPrefMidi::slotApply()
     m_pConfig->set(ConfigKey("[Controls]","MouseFunction1"), ConfigValue(ComboBoxMouseFunction1->currentText()));
     m_pConfig->set(ConfigKey("[Controls]","MouseDevice2"), ConfigValue(ComboBoxMouseDevice2->currentText()));
     m_pConfig->set(ConfigKey("[Controls]","MouseFunction2"), ConfigValue(ComboBoxMouseFunction2->currentText()));
+
+
+#ifdef __C_METRICS__
+	    cm_writemsg_ascii(MIXXXCMETRICS_MIDI_DEVICE,
+	                      config->getValueString(ConfigKey("[Midi]","Device")));
+#endif	
+    
 
     slotUpdate();
 }

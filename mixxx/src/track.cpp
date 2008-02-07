@@ -61,6 +61,11 @@
 #include "woverview.h"
 //#include "wpushButton.h"
 
+#ifdef __C_METRICS__
+#include <cmetrics.h>
+#include "defs_mixxxcmetrics.h"
+#endif
+
 Track::Track(QString location, MixxxView * pView, ConfigObject<ConfigValue> *config, EngineBuffer * pBuffer1, EngineBuffer * pBuffer2, WaveSummary * pWaveSummary, BpmDetector * pBpmDetector)
 {
     m_pView = pView;
@@ -472,6 +477,9 @@ TrackCollection * Track::getTrackCollection()
 void Track::slotScanLibrary()
 {
     qDebug() << "Starting Library Scanner...";
+    QTime time;
+    time.start(); //Time how long the library scan took.
+    
     m_pScanner->scan(m_pConfig->getValueString(ConfigKey("[Playlist]","Directory")));
 
     //Get the last modified timestamp for the library directory.
@@ -480,6 +488,18 @@ void Track::slotScanLibrary()
     //... and save that timestamp so we can tell we can know that we need to rescan
     //the library when that timestamp has been changed.
     m_pConfig->set(ConfigKey("[Playlist]","LastModified"), lastModified);
+
+    //Int to UTF-8 string coversion for cmetrics
+    QByteArray baElapsed = QString(time.elapsed()).toUtf8();
+    
+    #ifdef __C_METRICS__
+	
+	cm_writemsg_ascii(MIXXXCMETRICS_LIBRARY_SCAN_TIME,
+	                  baElapsed.data());
+    #endif
+    
+    
+    
 }
 
 
