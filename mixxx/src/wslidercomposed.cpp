@@ -238,3 +238,6 @@ void WSliderComposed::setValue(double fValue)
     }
 }
 
+double WSliderComposed::getValue() {
+   return m_fValue;
+}
