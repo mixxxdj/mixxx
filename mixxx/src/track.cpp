@@ -54,6 +54,13 @@
 #include <QLineEdit>
 #include <QDebug>
 
+// Include widget object types for eventFilter
+#include "wslidercomposed.h"
+#include "wknob.h"
+#include "wvisualwaveform.h"
+#include "woverview.h"
+//#include "wpushButton.h"
+
 Track::Track(QString location, MixxxView * pView, ConfigObject<ConfigValue> *config, EngineBuffer * pBuffer1, EngineBuffer * pBuffer2, WaveSummary * pWaveSummary, BpmDetector * pBpmDetector)
 {
     m_pView = pView;
@@ -74,7 +81,7 @@ Track::Track(QString location, MixxxView * pView, ConfigObject<ConfigValue> *con
     m_pLibraryModel = new WTrackTableModel(m_pView->m_pTrackTableView);
     m_pPlayQueueModel = new WTrackTableModel(m_pView->m_pTrackTableView);
     m_pPlaylistModel = new WTrackTableModel(m_pView->m_pTrackTableView);
-    m_pPlaylistListModel = new WPlaylistListModel(m_pView->m_pTrackTableView); 
+    m_pPlaylistListModel = new WPlaylistListModel(m_pView->m_pTrackTableView);
 
     //Pass the track collcetion along to the library and playqueue playlists.
     m_qLibraryPlaylist.setTrackCollection(m_pTrackCollection);
@@ -82,17 +89,17 @@ Track::Track(QString location, MixxxView * pView, ConfigObject<ConfigValue> *con
 
     // Read the XML file
     qDebug() << "Loading playlists and library tracks from XML...";
-    readXML(location);   
+    readXML(location);
 
 
     m_pScanner = new LibraryScanner(&m_qLibraryPlaylist, "");
     //Refresh the tableview when the library is done being scanned. (FIXME: Is a hack)
-    connect(m_pScanner, SIGNAL(scanFinished()), m_pView->m_pTrackTableView, SLOT(repaintEverything())); 
-    
+    connect(m_pScanner, SIGNAL(scanFinished()), m_pView->m_pTrackTableView, SLOT(repaintEverything()));
+
     //The WTrackTableView doesn't have a pointer to us yet (which it needs to retrieve the list of playlists),
     //so give it one.
     m_pView->m_pTrackTableView->setTrack(this);
-     
+
     // Update anything that views the playlists
     updatePlaylistViews();
 
@@ -103,7 +110,7 @@ Track::Track(QString location, MixxxView * pView, ConfigObject<ConfigValue> *con
     m_pLibraryModel->setTrackPlaylist(&m_qLibraryPlaylist);
     m_pPlayQueueModel->setTrackPlaylist(&m_qPlayqueuePlaylist);
     m_pPlaylistListModel->setPlaylistList(&m_qPlaylists);
-       
+
     //If the TrackCollection appears to be empty (could be first run), then scan the library
     if (m_pTrackCollection->getSize() == 0)
     {
@@ -120,19 +127,15 @@ Track::Track(QString location, MixxxView * pView, ConfigObject<ConfigValue> *con
     {
         m_qLibraryPlaylist.addTrack(m_pTrackCollection->getTrack(i));
     }
-  
+
     //Scan the music library on disk
     //slotScanLibrary();
-   
+
     if (m_pView && m_pView->m_pTrackTableView) //Stops Mixxx from dying if a skin doesn't have the search box.
     {
         m_pView->m_pTrackTableView->setSearchSource(m_pLibraryModel);
-        m_pView->m_pTrackTableView->resizeColumnsToContents();
-        m_pView->m_pTrackTableView->setTrack(this);
 
-        // Connect ComboBox events to WTrackTable
-        connect(m_pView->m_pComboBox, SIGNAL(activated(int)), this, SLOT(slotActivatePlaylist(int)));
-
+        // m_pView->m_pTrackTableView->resizeColumnsToContents();
         double centa = m_pView->m_pTrackTableView->size().width()/100.;
         qDebug() << "Adjusting column widths: tracktable width =" << m_pView->m_pTrackTableView->size().width() <<" 1% of that is:"<< centa << " FIXME: this should be done when initalizing the skin.";
         m_pView->m_pTrackTableView->setColumnWidth(COL_ARTIST, 15 * centa);
@@ -142,7 +145,7 @@ Track::Track(QString location, MixxxView * pView, ConfigObject<ConfigValue> *con
         m_pView->m_pTrackTableView->setColumnWidth(COL_BITRATE, (18/4.) * centa);
         m_pView->m_pTrackTableView->setColumnWidth(COL_BPM, (18/4.) * centa);
         m_pView->m_pTrackTableView->setColumnWidth(COL_COMMENT, 25 * centa);
-        if ( (18/4.) * centa <= 42 ) { // If we won't get enough percentage to display length, we have to make some adjustments... 
+        if ( (18/4.) * centa <= 42 ) { // If we won't get enough percentage to display length, we have to make some adjustments...
           qDebug() << "Shrinking Title/Comment for small screen... ";
           m_pView->m_pTrackTableView->setColumnWidth(COL_TYPE, 35);
           m_pView->m_pTrackTableView->setColumnWidth(COL_LENGTH, 42);
@@ -150,7 +153,12 @@ Track::Track(QString location, MixxxView * pView, ConfigObject<ConfigValue> *con
           m_pView->m_pTrackTableView->setColumnWidth(COL_BPM, 36);
           m_pView->m_pTrackTableView->setColumnWidth(COL_TITLE, (60 * centa) - (35+42+33+36));
           m_pView->m_pTrackTableView->setColumnWidth(COL_COMMENT, 20 * centa);
-        }       
+        }
+
+        m_pView->m_pTrackTableView->setTrack(this);
+
+        // Connect ComboBox events to WTrackTable
+        connect(m_pView->m_pComboBox, SIGNAL(activated(int)), this, SLOT(slotActivatePlaylist(int)));
 
         // Connect Search to table
 /*
@@ -165,6 +173,7 @@ Track::Track(QString location, MixxxView * pView, ConfigObject<ConfigValue> *con
 
 	// add EventFilter to do a selectAll text when the LineEditSearch gains focus
 	m_pView->m_pLineEditSearch-> installEventFilter(this);
+	m_pView->installEventFilter(this);
 
         // Connect drop events to table
         //connect(m_pView->m_pTrackTable, SIGNAL(dropped(QDropEvent *)), this, SLOT(slotDrop(QDropEvent *)));
@@ -175,7 +184,7 @@ Track::Track(QString location, MixxxView * pView, ConfigObject<ConfigValue> *con
         QMessageBox::warning(NULL, tr("Mixxx"),
                              tr("You're using a skin that is incompatible with Mixxx " + QString(VERSION) + ", which "
                              "will cause unexpected behaviour (eg. missing library).\nThis can happen if you're "
-                             "using a third-party skin or if you've incorrectly upgraded Mixxx."), 
+                             "using a third-party skin or if you've incorrectly upgraded Mixxx."),
                              QMessageBox::Ok, QMessageBox::Ok);
 
     }
@@ -230,11 +239,11 @@ Track::~Track()
 }
 
 void Track::timerEvent(QTimerEvent *event) {
-  if (m_pView->m_pLineEditSearch->isModified()) {
-  
-    if (m_pView->m_pTrackTableView->getTableMode() == TABLE_MODE_LIBRARY && m_pView->m_pLineEditSearch->text() == "") {
+  if (m_pView && m_pView->m_pTrackTableView && m_pView->m_pLineEditSearch->isModified()) {
+
+      if (m_pView->m_pTrackTableView->getTableMode() == TABLE_MODE_LIBRARY && m_pView->m_pLineEditSearch->text() == "") {
       // qDebug() << "Restore viewport to position to row:" << savedRowPosition;
-      m_pView->m_pTrackTableView->slotFilter(""); // set the library filter      
+      m_pView->m_pTrackTableView->slotFilter(""); // set the library filter
       m_pView->m_pTrackTableView->scrollTo(m_pView->m_pTrackTableView->model()->index(savedRowPosition,0), QAbstractItemView::PositionAtTop);
     } else if (m_pView->m_pTrackTableView->getTableMode() == TABLE_MODE_LIBRARY && m_pView->m_pTrackTableView->getFilterString() == "") {
       // qDebug() << "save viewport position. Top row:" << m_pView->m_pTrackTableView->rowAt( 1 );
@@ -244,28 +253,64 @@ void Track::timerEvent(QTimerEvent *event) {
       // qDebug() << "Update filter only. savedRowPosition:" << savedRowPosition;
       m_pView->m_pTrackTableView->slotFilter(m_pView->m_pLineEditSearch->text()); // set the library filter
     }
-    
+
     m_pView->m_pLineEditSearch->setText(m_pView->m_pLineEditSearch->text()); // reset the isModified flag
     // qDebug() << "isModified =" << m_pView->m_pLineEditSearch->isModified();
   }
+
 }
 
 bool Track::eventFilter(QObject *obj, QEvent *e) {
   if (obj == m_pView->m_pLineEditSearch) {
     // qDebug() << "Track::eventFilter: Received event:" << e->type();
-    switch (e->type()) { 
+    switch (e->type()) {
       case QEvent::MouseButtonPress:  // Drop entry events which deselect the text
       case QEvent::MouseButtonRelease:
         // qDebug("Drop mouse event.");
         return true;
         break;
-      case QEvent::FocusIn: 
+      case QEvent::FocusIn:
         // qDebug("QEvent::FocusIn event intercepted");
         ((QLineEdit *)obj)->selectAll();
         // qDebug() << "hasSelectedText? " << ((QLineEdit *)obj)->hasSelectedText();
         // qDebug() << "So the selected text is now: " << ((QLineEdit *)obj)->selectedText();
         break;
         default: break;
+    }
+  } else {
+    switch (e->type()) {
+      case QEvent::Wheel:
+         QWidget* targetWidget;
+         targetWidget = ((QWidget *)obj)->childAt(((QWheelEvent *)e)->x(), ((QWheelEvent *)e)->y());
+         if (targetWidget == 0) { qDebug() << "Null Target Object."; return true; };
+
+         double wheelDirection; 
+         wheelDirection = ((QWheelEvent *)e)->delta() / 120;
+         qDebug() << "Mouse Wheel Event: " << wheelDirection << " Object: "<< targetWidget;
+         qDebug() << "Widget Name: " << targetWidget->metaObject()->className();
+
+         // FIXME: This is not finished, it does not know how to find out what trading engine signal to send atm.  GED 2008-02-06 
+         if (qobject_cast<WSliderComposed *>(targetWidget) != 0) {
+           qDebug() << "Manuiplate a"<<targetWidget->metaObject()->className()<<"...";
+           double newValue;
+           newValue = qobject_cast<WSliderComposed *>(targetWidget)->getValue() + (wheelDirection/1);
+           qDebug() << "Current Value: " << qobject_cast<WSliderComposed *>(targetWidget)->getValue() << " New Value: " << newValue;  
+           if (newValue < 0 || newValue > 127) { qDebug() << "New Value is out of bounds."; return true; }
+           qobject_cast<WSliderComposed *>(targetWidget)->setValue(newValue);
+         } else if (qobject_cast<WKnob *>(targetWidget) != 0) {
+           qDebug() << "Manuiplate a"<<targetWidget->metaObject()->className()<<"...";
+           // qobject_cast<WKnob *>(targetWidget)->setValue(63.0);
+         } else if (qobject_cast<WVisualWaveform *>(targetWidget) != 0) {
+           qDebug() << "Manuiplate a"<<targetWidget->metaObject()->className()<<"...";
+         } else if (qobject_cast<WOverview *>(targetWidget) != 0) {
+           qDebug() << "Manuiplate a"<<targetWidget->metaObject()->className()<<"...";
+//         } else if (qobject_cast<WPushButton *>(targetWidget) != 0) {
+//           qDebug() << "Manuiplate a"<<targetWidget->metaObject()->className()<<"...";
+         }
+         return true;
+         break;
+      // default: qDebug() << "Non SearchEdit Event: " << e->type(); break;
+      default: break;
     }
   }
   return false;
@@ -274,7 +319,7 @@ bool Track::eventFilter(QObject *obj, QEvent *e) {
 void Track::readXML(QString location)
 {
     qDebug() << "Track::readXML" << location;
-    
+
     // Open XML file
     QFile file(location);
     QDomDocument domXML("Mixxx_Track_List");
@@ -338,7 +383,7 @@ void Track::readXML(QString location)
             else
                 m_qPlaylists.append(new TrackPlaylist(m_pTrackCollection, node));
         }
-        
+
 
         node = node.nextSibling();
     }
@@ -427,12 +472,12 @@ TrackCollection * Track::getTrackCollection()
 void Track::slotScanLibrary()
 {
     qDebug() << "Starting Library Scanner...";
-    m_pScanner->scan(m_pConfig->getValueString(ConfigKey("[Playlist]","Directory")));  
-    
+    m_pScanner->scan(m_pConfig->getValueString(ConfigKey("[Playlist]","Directory")));
+
     //Get the last modified timestamp for the library directory.
     QFileInfo libDir(m_pConfig->getValueString(ConfigKey("[Playlist]","Directory")));
     QString lastModified = libDir.lastModified().toString();
-    //... and save that timestamp so we can tell we can know that we need to rescan 
+    //... and save that timestamp so we can tell we can know that we need to rescan
     //the library when that timestamp has been changed.
     m_pConfig->set(ConfigKey("[Playlist]","LastModified"), lastModified);
 }
@@ -493,7 +538,7 @@ void Track::slotShowPlaylist(TrackPlaylist* playlist)
     m_pPlaylistModel->setTrackPlaylist(playlist);
     m_pActivePlaylist = playlist;
     m_pView->m_pTrackTableView->setSearchSource(m_pPlaylistModel);
-    
+
     //We want the same behaviour out of the track table as when it's showing
     //the play queue:
     m_pView->m_pTrackTableView->setTableMode(TABLE_MODE_PLAYQUEUE);
@@ -510,7 +555,7 @@ TrackPlaylistList* Track::getPlaylists()
 }
 
 void Track::slotActivatePlaylist(int index)
-{   
+{
     //Toggled by the ComboBox - This needs to be reorganized...
     switch(index)
     {
@@ -554,8 +599,8 @@ void Track::slotActivatePlaylist(int index)
         m_pView->m_pTrackTableView->setTrack(this);
         m_pView->m_pTrackTableView->setTableMode(TABLE_MODE_LIBRARY); //??
         // Insert playlist according to ComboBox index
-        m_pActivePlaylist = m_qPlaylists.at(index);        
-        
+        m_pActivePlaylist = m_qPlaylists.at(index);
+
         //What the hell is this snippet supposed to do?
         /*
         int i = 0;
@@ -664,7 +709,7 @@ void Track::slotSendToPlayqueue(TrackPlaylist* playlist)
     for (int i = 0; i < playlist->getSongNum(); i++)
     {
         m_qPlayqueuePlaylist.addTrack(playlist->getTrackAt(i));
-    }    
+    }
 }
 
 void Track::slotSendToPlayqueue(TrackInfoObject * pTrackInfoObject)
@@ -686,7 +731,7 @@ void Track::slotSendToPlaylist(TrackPlaylist* playlist, TrackInfoObject* pTrackI
 }
 
 void Track::slotSendToPlaylist(TrackPlaylist* playlist, QString filename)
-{    
+{
     TrackInfoObject* pTrack = m_pTrackCollection->getTrack(filename);
     if (pTrack)
         playlist->addTrack(pTrack);
@@ -853,14 +898,14 @@ void Track::slotEndOfTrackPlayer1(double val)
             {
                //If the play queue has another song in it, load that...
                pTrack = m_pTrackPlayer1->getNext(&m_qPlayqueuePlaylist);
-               
-               
+
+
                /* Disabled because we only ever want to pull from the play queue:
-               
+
                //Otherwise load from the active playlist...
                if (!pTrack && m_pActivePlaylist)
                     pTrack = m_pTrackPlayer1->getNext(m_pActivePlaylist);
-               
+
                //Fall back on getting the next song from Browse mode.
                if (!pTrack)
                {
@@ -875,9 +920,9 @@ void Track::slotEndOfTrackPlayer1(double val)
             else //Load previous track
             {
                 pTrack = m_pTrackPlayer1->getPrev(m_pActivePlaylist);
-                
+
                 /* Only pull from play queue instead!
-                
+
                 //Fall back on getting the prev song from Browse mode.
                 if (!pTrack)
                 {
@@ -886,8 +931,8 @@ void Track::slotEndOfTrackPlayer1(double val)
                     QString qPrevTrackPath = m_pView->m_pTrackTableView->getPrevTrackBrowseMode(m_pTrackPlayer1);
                     slotLoadPlayer1(qPrevTrackPath, true);
                 }
-                */         
-                
+                */
+
                 bStartFromEndPos = true;
             }
 
@@ -924,14 +969,14 @@ void Track::slotEndOfTrackPlayer2(double val)
             {
                //If the play queue has another song in it, load that...
                pTrack = m_pTrackPlayer2->getNext(&m_qPlayqueuePlaylist);
-               
-               
+
+
                /* Disabled because we only ever want to pull from the play queue:
-               
-               //Otherwise load from the active playlist... 
+
+               //Otherwise load from the active playlist...
                if (!pTrack && m_pActivePlaylist)
                     pTrack = m_pTrackPlayer2->getNext(m_pActivePlaylist);
-               
+
                //Fall back on getting the next song from Browse mode.
                if (!pTrack)
                {
@@ -942,14 +987,14 @@ void Track::slotEndOfTrackPlayer2(double val)
                     slotLoadPlayer2(qNextTrackPath);
                }
                */
-               
+
             }
             else //Load previous track
             {
                 pTrack = m_pTrackPlayer2->getPrev(m_pActivePlaylist);
-                
+
                 /* Only pull from play queue instead!
-                
+
                 //Fall back on getting the prev song from Browse mode.
                 if (!pTrack)
                 {
@@ -958,7 +1003,7 @@ void Track::slotEndOfTrackPlayer2(double val)
                     QString qPrevTrackPath = m_pView->m_pTrackTableView->getPrevTrackBrowseMode(m_pTrackPlayer2);
                     slotLoadPlayer2(qPrevTrackPath, true);
                 }*/
-                
+
                 bStartFromEndPos = true;
             }
 
@@ -982,7 +1027,7 @@ void Track::slotLoadSelectedTrackCh1(double v)
     // Only load on key presses and if we're not in browse mode
     if (v && m_pView->m_pTrackTableView->m_pTable)
     {
-        // Fetch the currently selected track 
+        // Fetch the currently selected track
         index = m_pView->m_pTrackTableView->currentIndex();
         pTrack = m_pView->m_pTrackTableView->m_pTable->m_pTrackPlaylist->getTrackAt(index.row());
 	// If there is one, load it
@@ -996,7 +1041,7 @@ void Track::slotLoadSelectedTrackCh2(double v)
     TrackInfoObject *pTrack;
     // Only load on key presses and if we're not in browse mode
     if (v && m_pView->m_pTrackTableView->m_pTable) {
-        // Fetch the currently selected track 
+        // Fetch the currently selected track
         index = m_pView->m_pTrackTableView->currentIndex();
         pTrack = m_pView->m_pTrackTableView->m_pTable->m_pTrackPlaylist->getTrackAt(index.row());
 	// If there is one, load it
@@ -1060,20 +1105,20 @@ void Track::updatePlaylistViews()
    {
     // Sort list
     qSort(m_qPlaylists);
-    
+
     //Tell the track table view to update it's right-click/send-to-playlist menu.
     m_pView->m_pTrackTableView->updatePlaylistActions();
 
     qDebug() << "FIXME: Need to tell the m_pPlaylistListModel to refresh in" << __FILE__ << "on line:" << __LINE__;
     //if (m_pView && m_pView->m_pTrackTableView)
     //    m_pView->m_pTrackTableView->repaintEverything(); //Crashy crashy at startup for some reason :(
-    
+
     // Update tree view
     //if (m_pView->m_pTreeView)
     //    m_pView->m_pTreeView->updatePlaylists(&m_qPlaylists);
-    
+
     //m_pPlayQueueModel->setTrackPlaylist(m_qPlaylists)
-    
+
     // Update menu
     //emit(updateMenu(&m_qPlaylists));
 
@@ -1084,16 +1129,16 @@ void Track::updatePlaylistViews()
 
 /** Checks if the library directory's "last modified" timestamp has been changed */
 /* @return true if the library has been modified since it was last rescanned
-   @return false if the library has not been modified since it was last rescanned 
+   @return false if the library has not been modified since it was last rescanned
 */
 bool Track::checkLibraryLastModified()
 {
     //Get some info about the library directory
     QFileInfo libDir(m_pConfig->getValueString(ConfigKey("[Playlist]","Directory")));
-    
+
     //Get the last modified timestamp for the library directory.
     QString lastModified = libDir.lastModified().toString();
-    
+
     //Compare the timestamp with our own stored timestamp, to see if the library
     //has been modified since we last scanned it.
     if (lastModified == m_pConfig->getValueString(ConfigKey("[Playlist]","LastModified")))
@@ -1103,7 +1148,7 @@ bool Track::checkLibraryLastModified()
     else
     {
         //Note: The LastModified config key gets updated in slotScanLibrary(), for consistency.
-           
+
         return true;
     }
 }
@@ -1112,7 +1157,7 @@ bool Track::checkLibraryLastModified()
 void Track::slotBatchBPMDetection()
 {
 /*
-    //Unfinished/WIP - Albert Jan 31/08 
+    //Unfinished/WIP - Albert Jan 31/08
     //General idea should work more or less, I suppose...
 
     //Iterate over each TrackInfoObject stored in m_pTrackCollection
