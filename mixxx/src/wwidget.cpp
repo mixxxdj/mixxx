@@ -212,4 +212,14 @@ QDomElement WWidget::openXMLFile(QString path, QString name)
     return doc.documentElement();
 }
 
+double WWidget::getValue() {
+   return m_fValue;
+}
 
+void WWidget::updateValue(double fValue)
+{
+    setValue(fValue);
+    m_fValue = fValue;
+    emit(valueChangedUp(fValue));
+    emit(valueChangedDown(fValue));
+}
