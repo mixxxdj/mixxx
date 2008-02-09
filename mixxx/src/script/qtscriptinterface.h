@@ -49,7 +49,7 @@ private:
 	QScriptEngine m_engine;
 	QString m_result;
 
-	static QScriptValue newPushButton(QScriptContext *context, QScriptEngine *engine);
+	static QScriptValue newQPushButton(QScriptContext *context, QScriptEngine *engine);
 };
 
 #endif
