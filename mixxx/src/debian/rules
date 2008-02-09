@@ -94,6 +94,7 @@ binary-arch: build install
 	dh_installexamples
 #	dh_install
 	dh_installmenu
+	dh_desktop
 #	dh_installdebconf	
 #	dh_installlogrotate
 #	dh_installemacsen

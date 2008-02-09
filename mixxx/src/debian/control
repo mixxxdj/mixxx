@@ -4,12 +4,12 @@ Priority: optional
 Maintainer: Ubuntu MOTU Developers <ubuntu-motu@lists.ubuntu.com>
 XSBC-Original-Maintainer: Albert Santoni <gamegod@users.sf.net> 
 Build-Depends: debhelper (>= 4.0.0), pkg-config, docbook-to-man, xlibmesa-gl-dev, libglu1-mesa-dev, libqt4-dev (>= 4.3.0), scons, libdjconsole0, libdjconsole-dev, libjack-dev, libsamplerate-dev, portaudio19-dev, libid3tag0-dev, libmad0-dev, libogg-dev, libsndfile1-dev, libaudiofile-dev, libasound2-dev, libvorbis-dev, libexpat-dev, libsoundtouch1-dev
-Standards-Version: 3.6.2
+Standards-Version: 3.7.3 
 
 Package: mixxx
 Section: sound
 Architecture: any
-Depends: mixxx-data (= ${Source-Version}), ${shlibs:Depends}, ${misc:Depends}
+Depends: mixxx-data (= ${source:Version}), ${shlibs:Depends}, ${misc:Depends}
 Suggests: pdf-viewer
 Description: Digital Disc Jockey Interface
  Mixxx is a digital DJ system, where wave, ogg and mp3 files can be mixed on a
