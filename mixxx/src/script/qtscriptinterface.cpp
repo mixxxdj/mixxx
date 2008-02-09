@@ -8,7 +8,7 @@ QtScriptInterface::QtScriptInterface(PlayInterface* pi) : m_pi(pi),
 	//steve->setVisible(true);
     QScriptValue globalObject = m_engine.globalObject();
 
-	QScriptValue pbfunc = m_engine.newFunction(newPushButton);
+	QScriptValue pbfunc = m_engine.newFunction(newQPushButton);
 	//fun.setProperty(QString("functionName"), engine->scriptValue("QPushButton"))
 	globalObject.setProperty("QPushButton", pbfunc);
 	globalObject.setProperty("Mixxx", m_engine.newQObject(this));
@@ -29,9 +29,10 @@ QString QtScriptInterface::getResult() {
 	return m_result;
 }
 
-QScriptValue QtScriptInterface::newPushButton(QScriptContext *context, QScriptEngine *engine)
+QScriptValue QtScriptInterface::newQPushButton(QScriptContext *context, QScriptEngine *engine)
 {
-    return engine->newQObject(new QPushButton());
+	QScriptValue nobj = engine->newQObject(new QPushButton());
+    return nobj;
 }
 
 void QtScriptInterface::test() {

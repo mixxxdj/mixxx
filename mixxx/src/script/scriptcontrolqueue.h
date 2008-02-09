@@ -25,7 +25,7 @@ class ScriptControlQueue : public QObject {
 				const QDateTime *base, int time1, double val1, \
 				int time2, double val2, int process, \
 				int tag = -1, bool addLast = TRUE, \
-				int minres = 50);
+				int minres = 15);
 
 		void killProcess(int process);
 		void killTag(int process, int tag);

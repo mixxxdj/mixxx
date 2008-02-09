@@ -554,7 +554,7 @@ void MixxxApp::initActions()
 #ifdef __SCRIPT__
     macroStudio->setStatusTip(tr("Shows the macro studio window"));
     macroStudio->setWhatsThis(tr("Show Studio\n\nMakes the macro studio visible"));
-    connect(macroStudio, SIGNAL(activated()), scriptEng->getStudio(), SLOT(showStudio()));
+     connect(macroStudio, SIGNAL(activated()), scriptEng->getStudio(), SLOT(showStudio()));
 #endif
 }
 
