@@ -122,22 +122,22 @@ void WTrackTableView::setup(QDomNode node)
     {
         QColor r1;
         r1.setNamedColor(WWidget::selectNodeQString(node, "BgColorRowEven"));
-		r1 = WSkinColor::getCorrectColor(r1);
+	r1 = WSkinColor::getCorrectColor(r1);
         QColor r2;
         r2.setNamedColor(WWidget::selectNodeQString(node, "BgColorRowUneven"));
-		r2 = WSkinColor::getCorrectColor(r2);
+	r2 = WSkinColor::getCorrectColor(r2);
 
-		// For now make text the inverse of the background so it's readable
-		// In the future this should be configurable from the skin with this
-		// as the fallback option
-		QColor text(255 - r1.red(), 255 - r1.green(), 255 - r1.blue());
-		//QColor text(255, 255, 255);
+	// For now make text the inverse of the background so it's readable
+	// In the future this should be configurable from the skin with this
+	// as the fallback option
+	QColor text(255 - r1.red(), 255 - r1.green(), 255 - r1.blue());
+	//QColor text(255, 255, 255);
 
         setAlternatingRowColors ( true );
         QPalette Rowpalette = palette();
         Rowpalette.setColor(QPalette::Base, r1);
         Rowpalette.setColor(QPalette::AlternateBase, r2);
-		Rowpalette.setColor(QPalette::Text, text);
+	Rowpalette.setColor(QPalette::Text, text);
 
         setPalette(Rowpalette);
     }
@@ -315,7 +315,7 @@ void WTrackTableView::slotMouseDoubleClicked(const QModelIndex & index)
     else if (m_iTableMode == TABLE_MODE_PLAYLISTS)
     {
     	qDebug() << "FIXME: Half-assed slotMouseDoubleClicked implementation in" << __FILE__ << "at line" << __LINE__;
-        
+
         //FIXME: Make m_pSearchFilter  work with a WPlaylistListModel.
 		//QModelIndex temp_sindex = m_pSearchFilter->mapToSource(index);
 		//TrackPlaylist* selectedPlaylist = m_pTrack->getPlaylistByIndex(temp_sindex.row());
@@ -377,27 +377,27 @@ QString WTrackTableView::getNextTrackBrowseMode(TrackInfoObject* current)
 {
     QString qNextTrackName;
     QString fullpath = current->getFilepath() + "/" + current->getFilename();
-    
+
     QModelIndex temp_index = m_pDirModel->index(fullpath);
     //qDebug() << current->getFilepath();
     //qDebug() << "index of current track" << temp_index.row();
-    
+
     //Don't run this through the filter, it crashes:
     //temp_index = m_pDirFilter->mapToSource(temp_index);
     //qDebug() << "index of filtered current track" << temp_index.row();
-    
+
     //Increment the index to get the NEXT track...
     do {
     	temp_index = temp_index.sibling(temp_index.row()+1, 0);
     } while (temp_index.isValid() && m_pDirModel->isDir(temp_index));
-    
+
     //If we broke out of the loop due to an invalid index, decrement to get a valid one.
     //This happens at the end if you seek forwards in NEXT mode with the last song in a directory.
     if (!temp_index.isValid())
     {
     	temp_index = temp_index.sibling(temp_index.row()-1, 0);
-    }    
-    
+    }
+
     qNextTrackName = m_pDirModel->filePath(temp_index);
 
     return qNextTrackName;
@@ -408,21 +408,21 @@ QString WTrackTableView::getPrevTrackBrowseMode(TrackInfoObject* current)
 {
     QString qNextTrackName;
     QString fullpath = current->getFilepath() + "/" + current->getFilename();
-    
+
     QModelIndex temp_index = m_pDirModel->index(fullpath);
 
     //Decrement the index to get the NEXT track...
     do {
     	temp_index = temp_index.sibling(temp_index.row()-1, 0);
     } while (temp_index.isValid() && m_pDirModel->isDir(temp_index));
-    
+
     //If we broke out of the loop due to an invalid index, increment to get a valid one.
     //This happens at the end if you seek backwards in NEXT mode with the first song in a directory.
     if (!temp_index.isValid())
     {
     	temp_index = temp_index.sibling(temp_index.row()+1, 0);
     }
-    
+
     qNextTrackName = m_pDirModel->filePath(temp_index);
 
     return qNextTrackName;
@@ -436,11 +436,11 @@ void WTrackTableView::contextMenuEvent(QContextMenuEvent * event)
 
     //Get the indices of the selected rows.
     m_selectedIndices = this->selectionModel()->selectedRows();
-    
+
     /*
     //Print out the selected idices using messageboxes.
     for (int i = 0; i < m_selectedIndices.count(); ++i)
-    { 
+    {
         QModelIndex index = m_selectedIndices.at(i);
         QMessageBox::information(this,"", QString::number(index.row()));
     }*/
@@ -455,12 +455,11 @@ void WTrackTableView::contextMenuEvent(QContextMenuEvent * event)
     while (!m_selectedTrackInfoObjects.isEmpty()) {
         m_selectedTrackInfoObjects.pop_back();
     }
-    
-    
+
     for (int i = 0; i < m_selectedIndices.count(); i++)
     {
     	QModelIndex index = m_selectedIndices.at(i);
-    
+
         //Browse mode menu (using the QDirModel)
         if (m_iTableMode == TABLE_MODE_BROWSE)
         {
@@ -479,35 +478,34 @@ void WTrackTableView::contextMenuEvent(QContextMenuEvent * event)
             m_selectedTrackInfoObjects.append(m_pTable->m_pTrackPlaylist->getTrackAt(temp_sindex.row()));
         }
         else if (m_iTableMode == TABLE_MODE_PLAYLISTS)
-        {           
+        {
             //FIXME: This is the code to make searching work, but m_pSearchFilter doesn't work with a WPlaylistListModel yet.
             //QModelIndex temp_sindex = m_pSearchFilter->mapToSource(index);
             //m_selectedPlaylist = m_pTrack->getPlaylistByIndex(temp_sindex.row());
-            
+
             m_selectedPlaylists.append(m_pTrack->getPlaylistByIndex(index.row()));
-            
+
             qDebug() << "Right-clicked" << m_selectedPlaylists.at(m_selectedPlaylists.count()-1)->getListName();
         }
     }
-    
+
     //Create the right-click menu
     QMenu menu(this);
     QMenu addToPlaylists(tr("Add to Playlist"));
-        
+
     //Populate it with various action items depending on what mode the table is in
-    menu.addAction(PlayQueueAct);  
-    
+    menu.addAction(PlayQueueAct);
 	
-    if (m_iTableMode == TABLE_MODE_LIBRARY || 
-        m_iTableMode == TABLE_MODE_PLAYQUEUE || 
+    if (m_iTableMode == TABLE_MODE_LIBRARY ||
+        m_iTableMode == TABLE_MODE_PLAYQUEUE ||
         m_iTableMode == TABLE_MODE_BROWSE)
     {
     	//Add the "Player 1" action
         menu.addAction(Player1Act);
-        
+
         //Add the "Player 2" action
-        menu.addAction(Player2Act);  
-        
+        menu.addAction(Player2Act);
+
         //Add the "Add to Playlist" menu.
 		menu.addMenu(&addToPlaylists);
 		
@@ -516,7 +514,7 @@ void WTrackTableView::contextMenuEvent(QContextMenuEvent * event)
 		{
 			addToPlaylists.addAction(PlaylistActs.at(i));
 		}
-        
+
         menu.addAction(PropertiesAct);
     }
 	
@@ -526,7 +524,7 @@ void WTrackTableView::contextMenuEvent(QContextMenuEvent * event)
 		menu.addAction(RenamePlaylistAct);
 	}
 
-    //Gray out some stuff if multiple songs were selected. 
+    //Gray out some stuff if multiple songs were selected.
     if (m_selectedIndices.count() != 1)
     {
 		Player1Act->setEnabled(false);
@@ -536,21 +534,21 @@ void WTrackTableView::contextMenuEvent(QContextMenuEvent * event)
     else
     {
 		Player1Act->setEnabled(true);
-		Player2Act->setEnabled(true);  
-		PropertiesAct->setEnabled(true);  	
+		Player2Act->setEnabled(true);
+		PropertiesAct->setEnabled(true);
     }
-	  
+
     //Gray out player 1 and/or player 2 if those players are playing.
     if (ControlObject::getControl(ConfigKey("[Channel1]","play"))->get()==1.)
     	Player1Act->setEnabled(false);
-    if (ControlObject::getControl(ConfigKey("[Channel2]","play"))->get()==1.)  
-    	Player2Act->setEnabled(false);  
-    	
+    if (ControlObject::getControl(ConfigKey("[Channel2]","play"))->get()==1.)
+    	Player2Act->setEnabled(false);
+
     menu.addSeparator();
     menu.addAction(RemoveAct);
-    
+
     //Gray out "Remove" in BROWSE mode
-    if (m_iTableMode == TABLE_MODE_BROWSE)      
+    if (m_iTableMode == TABLE_MODE_BROWSE)
 	{	
         RemoveAct->setEnabled(false);
 		PropertiesAct->setEnabled(false);
@@ -563,7 +561,7 @@ void WTrackTableView::contextMenuEvent(QContextMenuEvent * event)
     }
     else
     	RemoveAct->setEnabled(true);
-    
+
     menu.exec(event->globalPos());
 }
 
@@ -601,20 +599,20 @@ void WTrackTableView::slotShowPlaylistRename()
 	
 	if (m_iTableMode == TABLE_MODE_PLAYLISTS)
     {
-        for (int i = 0; i < m_selectedPlaylists.count(); i++) 
+        for (int i = 0; i < m_selectedPlaylists.count(); i++)
         {
 
      		QString text = QInputDialog::getText(this, tr("Rename Playlist"),
-                                          tr("Rename ") + m_selectedPlaylists.at(i)->getName() + " to:", 
+                                          tr("Rename ") + m_selectedPlaylists.at(i)->getName() + " to:",
                                           QLineEdit::Normal,
                                           m_selectedPlaylists.at(i)->getName(), &ok);
      		if (ok && !text.isEmpty())
-         		m_selectedPlaylists.at(i)->setListName(text);   
+         		m_selectedPlaylists.at(i)->setListName(text);
          	   	
         	
         	//m_pTrack->slotSendToPlayqueue(m_selectedPlaylists.at(i));
         }
-        
+
         //Update the right-click menu with the new name(s) of the playlist(s).
         updatePlaylistActions();
     }
@@ -782,8 +780,8 @@ void WTrackTableView::slotSendToPlaylist()
 void WTrackTableView::slotRemove()
 {
     if (m_iTableMode == TABLE_MODE_PLAYLISTS)
-    {   
-		//Get the indices of the selected rows.
+    {
+	//Get the indices of the selected rows.
     	m_selectedIndices = this->selectionModel()->selectedRows();
 
     	for (int i = 0; i < m_selectedIndices.count(); i++)
@@ -843,7 +841,7 @@ void WTrackTableView::dropEvent(QDropEvent * event)
 
     event->accept();
     //emit(trackDropped(name));
-    
+
     //Add the track(s) to the active playlist
     m_pTrack->getActivePlaylist()->addTrack(url.path());
     repaintEverything();
