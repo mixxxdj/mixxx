@@ -1,7 +1,11 @@
-mixxx (1.6.0beta2-0ubuntu1) gutsy; urgency=low
+mixxx (1.6.0beta2-0ubuntu1) hardy; urgency=low
 
   * New upstream release
-
+    * Improved ATI compatibility (LP: #93814) (LP: #116484) (LP: #124213)
+    * Various stability improvements (LP: #72549)
+    * Rewritten sound core (LP: #72610)
+    * Improved mp3 decoding safety (LP: #122476)
+ 
  -- Albert Santoni <gamegod@users.sourceforge.net>  Tue,  6 Feb 2008 15:32:00 -0500
 
 mixxx (1.6.0beta1-0ubuntu1) gutsy; urgency=low
