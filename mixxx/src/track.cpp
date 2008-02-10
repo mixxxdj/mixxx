@@ -229,8 +229,9 @@ Track::~Track()
 
 void Track::resizeColumnsForLibraryMode()
 {
-        double centa = (m_pView->m_pTrackTableView->size().width()-18)/100.;
+        double centa = m_pView->m_pTrackTableView->size().width()/100.;
         qDebug() << "Adjusting column widths: tracktable width =" << m_pView->m_pTrackTableView->size().width() <<" 1% of that is:"<< centa << " FIXME: this should be done when initalizing the skin.";
+        m_pView->m_pTrackTableView->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
         m_pView->m_pTrackTableView->setColumnWidth(COL_ARTIST, 15 * centa);
         m_pView->m_pTrackTableView->setColumnWidth(COL_TITLE, 40 * centa);
         m_pView->m_pTrackTableView->setColumnWidth(COL_TYPE, (20/4.) * centa);
@@ -245,7 +246,6 @@ void Track::resizeColumnsForLibraryMode()
           m_pView->m_pTrackTableView->setColumnWidth(COL_BITRATE, 33);
           m_pView->m_pTrackTableView->setColumnWidth(COL_BPM, 40);
           m_pView->m_pTrackTableView->setColumnWidth(COL_TITLE, (60 * centa) - (35+42+33+40));
-          m_pView->m_pTrackTableView->setColumnWidth(COL_COMMENT, 20 * centa);
         }
 }
 
@@ -569,7 +569,8 @@ void Track::slotActivatePlaylist(int index)
     //Toggled by the ComboBox - This needs to be reorganized...
     switch(index)
     {
-    case 0: //Library view
+      default:
+      case TABLE_MODE_LIBRARY: //Library view
         m_pView->m_pTrackTableView->reset();
         m_pView->m_pTrackTableView->setSearchSource(m_pLibraryModel);
         // m_pView->m_pTrackTableView->resizeColumnsToContents();
@@ -578,7 +579,7 @@ void Track::slotActivatePlaylist(int index)
         m_pView->m_pTrackTableView->setTableMode(TABLE_MODE_LIBRARY);
         m_pActivePlaylist = &m_qLibraryPlaylist;
         break;
-    case 1: //Play queue view
+      case TABLE_MODE_PLAYQUEUE: //Play queue view
         m_pView->m_pTrackTableView->reset();
         m_pView->m_pTrackTableView->setSearchSource(m_pPlayQueueModel);
         m_pView->m_pTrackTableView->resizeColumnsToContents();
@@ -586,7 +587,7 @@ void Track::slotActivatePlaylist(int index)
         m_pView->m_pTrackTableView->setTableMode(TABLE_MODE_PLAYQUEUE);
         m_pActivePlaylist = &m_qPlayqueuePlaylist;
         break;
-    case 2: //Browse mode view
+      case TABLE_MODE_BROWSE: //Browse mode view
         m_pView->m_pTrackTableView->reset();
         m_pView->m_pTrackTableView->setDirModel();
         m_pView->m_pTrackTableView->resizeColumnsToContents();
@@ -594,7 +595,7 @@ void Track::slotActivatePlaylist(int index)
         m_pView->m_pTrackTableView->setTableMode(TABLE_MODE_BROWSE);
         return;
         break;
-    case 3: //Playlist List Model
+      case TABLE_MODE_PLAYLISTS: //Playlist List Model
         m_pView->m_pTrackTableView->reset();
         m_pView->m_pTrackTableView->setPlaylistListModel(m_pPlaylistListModel);
         //m_pView->m_pTrackTableView->setSearchSource(m_pPlaylistListModel); //Doesn't work right yet
@@ -603,39 +604,9 @@ void Track::slotActivatePlaylist(int index)
         m_pView->m_pTrackTableView->setTableMode(TABLE_MODE_PLAYLISTS);
         //FIXME ... return here or something? - Albert
         break;
-    default: // ???
-        m_pView->m_pTrackTableView->reset();
-        m_pView->m_pTrackTableView->setSearchSource(m_pPlayQueueModel);
-//        m_pView->m_pTrackTableView->resizeColumnsToContents();
-        resizeColumnsForLibraryMode();
-        m_pView->m_pTrackTableView->setTrack(this);
-        m_pView->m_pTrackTableView->setTableMode(TABLE_MODE_LIBRARY); //??
-        // Insert playlist according to ComboBox index
-        m_pActivePlaylist = m_qPlaylists.at(index);
-
-        //What the hell is this snippet supposed to do?
-        /*
-        int i = 0;
-        TrackInfoObject* current_track = NULL;
-        do
-        {
-            current_track = m_pActivePlaylist->getTrackAt(i);
-            if (current_track != NULL)
-                slotSendToPlayqueue(current_track);
-            i++;
-        } while (current_track != NULL);
-        */
-        //TODO: Revise these TODOs (they're wrong now probably) - Albert.
-        //TODO: If the play queue is empty, load the playlist into the play queue
-        //TODO: If the play queue isn't empty, ask the user whether to overwrite the play queue
-        //      or append the playlist to the queue.
     }
-    //if (m_pActivePlaylist)
-    //m_pActivePlaylist->deactivate();
-
-
-    //m_pActivePlaylist->activate(m_pView->m_pTrackTable);
 }
+
 void Track::slotNewPlaylist()
 {
     // Find valid name for new playlist
