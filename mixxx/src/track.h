@@ -62,7 +62,7 @@ public:
     /** Get pointer to TrackCollection */
     TrackCollection *getTrackCollection();
     /** Get pointer to a playlist by it's index */
-    TrackPlaylist* getPlaylistByIndex(int index);   
+    TrackPlaylist* getPlaylistByIndex(int index);
     /** Force an update of playlist menu and anything that sees the playlists*/
     void updatePlaylistViews();
     /** Get the list of playlists*/
@@ -76,8 +76,10 @@ public:
     /** eventFilter to catch m_pView->m_pLineEdit focus events and selectAll for the text TODO: It has been suggested QEditLine should be subclassed with a custom FocusInEvent() method */
     bool eventFilter(QObject *obj, QEvent *e);
 
-    /** Implement a timer which will update the filter on the tracktableview a maximum of 4 times a second, if m_pView->m_pLineEdit changes */    
+    /** Implement a timer which will update the filter on the tracktableview a maximum of 4 times a second, if m_pView->m_pLineEdit changes */
     void timerEvent(QTimerEvent *event);
+
+    void resizeColumnsForLibraryMode();
 
 public slots:
     /** Decode playlist drops to WTrackTable, and loads corresponding playlist */
