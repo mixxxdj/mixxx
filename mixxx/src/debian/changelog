@@ -1,12 +1,42 @@
 mixxx (1.6.0beta2-0ubuntu1) hardy; urgency=low
 
   * New upstream release
-    * Improved ATI compatibility (LP: #93814) (LP: #116484) (LP: #124213)
-    * Various stability improvements (LP: #72549)
-    * Rewritten sound core (LP: #72610)
-    * Improved mp3 decoding safety (LP: #122476)
- 
- -- Albert Santoni <gamegod@users.sourceforge.net>  Tue,  6 Feb 2008 15:32:00 -0500
+    - Improved ATI compatibility (LP: #93814) (LP: #116484) (LP: #124213)
+    - Various stability improvements (LP: #72549)
+    - Rewritten sound core (LP: #72610)
+    - Improved mp3 decoding safety (LP: #122476)
+  * Removed mixxx.desktop from debian dir, already upstream (rules updated
+    accordingly)
+  * Dropped useless main.qbas patch (no longer use qt3)
+  * Dropped direct rendering patch (handled better in upstream now)
+  
+ -- Albert Santoni <gamegod@users.sourceforge.net>  Tue,  10 Feb 2008 15:32:00 -0500
+
+mixxx (1.6.0~beta1-1ubuntu2) hardy; urgency=low
+
+  * debian/mixxx.desktop
+    - Updated desktop file to reflect icon name change
+      (LP: #189598)
+
+ -- Joseph Jackson IV <jjacksoniv@fluxbuntu.org>  Wed, 06 Feb 2008 11:02:37 -0500
+
+mixxx (1.6.0~beta1-1ubuntu1) hardy; urgency=low
+
+  * Merge from debian unstable, remaining changes:
+    - Update desktop file.
+    - Update maintainer field as per spec.
+
+ -- Luke Yelavich <themuso@ubuntu.com>  Thu, 03 Jan 2008 23:09:53 +1100
+
+mixxx (1.6.0~beta1-1) unstable; urgency=low
+
+  * New upstream release
+  * debian/patched:
+      - dropped typos.patch (fixed upstream)
+  * debian/control:
+      - build depend on libqt4-dev and scons
+
+ -- Free Ekanayaka <freee@debian.org>  Thu, 27 Dec 2007 09:53:41 +0000
 
 mixxx (1.6.0beta1-0ubuntu1) gutsy; urgency=low
 
