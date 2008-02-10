@@ -9,6 +9,7 @@ class SortFilterProxyModel : public QSortFilterProxyModel
         SortFilterProxyModel( QObject * parent = 0 );
     protected:
         bool filterAcceptsRow( int, const QModelIndex & ) const;
+        bool lessThan( const QModelIndex &left, const QModelIndex &right ) const;
 };
 
 #endif 
