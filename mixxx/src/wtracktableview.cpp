@@ -43,7 +43,7 @@ WTrackTableView::WTrackTableView(QWidget * parent, ConfigObject<ConfigValue> * p
     m_pConfig = pConfig;
     m_pTrack = NULL;
     bpmTapDlg = 0;
-       
+
     //setup properties for table
     setSelectionBehavior(SelectRows);
     setSelectionMode(QAbstractItemView::ExtendedSelection);
@@ -62,7 +62,7 @@ WTrackTableView::WTrackTableView(QWidget * parent, ConfigObject<ConfigValue> * p
     createActions();
     m_pSearchFilter = new SortFilterProxyModel(parent);
     setTableMode(TABLE_MODE_LIBRARY);
-    
+
     /*
         //setFocusStyle(Q3Table::FollowStyle);
 
@@ -208,6 +208,8 @@ void WTrackTableView::sortByColumn(int col)
     if(horizontalHeader()->sortIndicatorSection() != col)
         return QTableView::sortByColumn(col);
 
+/*
+    // FIXME: There is no point in calling this stuff as it is not reflected in the interface anywhere.
     bool ascending = (horizontalHeader()->sortIndicatorOrder() == Qt::AscendingOrder);
 
     if (m_pTable)
@@ -215,48 +217,48 @@ void WTrackTableView::sortByColumn(int col)
         switch(col)
         {
             // Score Column
-        case 0:
+        case COL_SCORE:
             m_pTable->m_pTrackPlaylist->sortByScore(ascending);
             break;
 
             // Title
-        case 1:
+        case COL_TITLE:
             m_pTable->m_pTrackPlaylist->sortByTitle(ascending);
             break;
 
             // Artist
-        case 2:
+        case COL_ARTIST:
             m_pTable->m_pTrackPlaylist->sortByArtist(ascending);
             break;
 
             // Type
-        case 3:
+        case COL_TYPE:
             m_pTable->m_pTrackPlaylist->sortByType(ascending);
             break;
 
             // Duration
-        case 4:
+        case COL_LENGTH:
             m_pTable->m_pTrackPlaylist->sortByDuration(ascending);
             break;
 
             // Bitrate
-        case 5:
+        case COL_BITRATE:
             m_pTable->m_pTrackPlaylist->sortByBitrate(ascending);
             break;
 
             // BPM
-        case 6:
+        case COL_BPM:
             m_pTable->m_pTrackPlaylist->sortByBpm(ascending);
             break;
 
             // Comment
-        case 7:
+        case COL_COMMENT:
             m_pTable->m_pTrackPlaylist->sortByComment(ascending);
             break;
         }
 	slotFilter();
     }
-
+*/
     return QTableView::sortByColumn(col);
 }
 
