@@ -78,7 +78,6 @@ install: build
 	#the scons prefix path is in MIXXX_SCONS_FLAGS at the top of this file.
 	#(cd src; $(MAKE) install INSTALL_ROOT=$(CURDIR)/debian/tmp DESTDIR=$(CURDIR)/debian/tmp) 
 
-	dh_install -ptmp debian/mixxx.desktop usr/share/applications
 	dh_install --sourcedir=$(CURDIR)/debian/tmp
 
 # Build architecture-independent files here.
