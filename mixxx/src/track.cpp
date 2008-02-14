@@ -97,48 +97,44 @@ Track::Track(QString location, MixxxView * pView, ConfigObject<ConfigValue> *con
     qDebug() << "Loading playlists and library tracks from XML...";
     readXML(location);
 
-
-    m_pScanner = new LibraryScanner(&m_qLibraryPlaylist, "");
-    //Refresh the tableview when the library is done being scanned. (FIXME: Is a hack)
-    connect(m_pScanner, SIGNAL(scanFinished()), m_pView->m_pTrackTableView, SLOT(repaintEverything()));
-
-    //The WTrackTableView doesn't have a pointer to us yet (which it needs to retrieve the list of playlists),
-    //so give it one.
-    m_pView->m_pTrackTableView->setTrack(this);
-
-    // Update anything that views the playlists
-    updatePlaylistViews();
-
-    // Insert the first playlist in the list
-    m_pActivePlaylist = &m_qLibraryPlaylist;
-    //m_pActivePlaylist->activate(m_pView->m_pTrackTable);
-
-    m_pLibraryModel->setTrackPlaylist(&m_qLibraryPlaylist);
-    m_pPlayQueueModel->setTrackPlaylist(&m_qPlayqueuePlaylist);
-    m_pPlaylistListModel->setPlaylistList(&m_qPlaylists);
-
-    //If the TrackCollection appears to be empty (could be first run), then scan the library
-    if (m_pTrackCollection->getSize() == 0)
+    if (m_pView && m_pView->m_pTrackTableView) //Stops Mixxx from dying if a skin is from Mixxx <= 1.5.0.
     {
-        slotScanLibrary();
-    }
-    else if (checkLibraryLastModified() == true) //Check to see if the library has been modified since
-                                                 //we last scanned it.
-    {
-        slotScanLibrary();
-    }
+        m_pScanner = new LibraryScanner(&m_qLibraryPlaylist, "");
+        //Refresh the tableview when the library is done being scanned. (FIXME: Is a hack)
+        connect(m_pScanner, SIGNAL(scanFinished()), m_pView->m_pTrackTableView, SLOT(repaintEverything()));
 
-    qDebug() << "Trying to add" << m_pTrackCollection->getSize() << "songs to the library playlist";
-    for (int i = 0; i < m_pTrackCollection->getSize(); i++)
-    {
-        m_qLibraryPlaylist.addTrack(m_pTrackCollection->getTrack(i));
-    }
+        //The WTrackTableView doesn't have a pointer to us yet (which it needs to retrieve the list of playlists),
+        //so give it one.
+        m_pView->m_pTrackTableView->setTrack(this);
 
-    //Scan the music library on disk
-    //slotScanLibrary();
+        // Update anything that views the playlists
+        updatePlaylistViews();
 
-    if (m_pView && m_pView->m_pTrackTableView) //Stops Mixxx from dying if a skin doesn't have the search box.
-    {
+        // Insert the first playlist in the list
+        m_pActivePlaylist = &m_qLibraryPlaylist;
+        //m_pActivePlaylist->activate(m_pView->m_pTrackTable);
+
+        m_pLibraryModel->setTrackPlaylist(&m_qLibraryPlaylist);
+        m_pPlayQueueModel->setTrackPlaylist(&m_qPlayqueuePlaylist);
+        m_pPlaylistListModel->setPlaylistList(&m_qPlaylists);
+
+        //If the TrackCollection appears to be empty (could be first run), then scan the library
+        if (m_pTrackCollection->getSize() == 0)
+        {
+            slotScanLibrary();
+        }
+        else if (checkLibraryLastModified() == true) //Check to see if the library has been modified since
+                                                     //we last scanned it.
+        {
+            slotScanLibrary();
+        }
+
+        qDebug() << "Trying to add" << m_pTrackCollection->getSize() << "songs to the library playlist";
+        for (int i = 0; i < m_pTrackCollection->getSize(); i++)
+        {
+            m_qLibraryPlaylist.addTrack(m_pTrackCollection->getTrack(i));
+        }
+
         m_pView->m_pTrackTableView->setSearchSource(m_pLibraryModel);
 
         // m_pView->m_pTrackTableView->resizeColumnsToContents();
