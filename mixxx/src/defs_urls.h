@@ -17,7 +17,7 @@
 #ifndef DEFS_URLS_H
 #define DEFS_URLS_H
 
-#define MIXXX_WEBSITE_URL       "http://mixxx.sf.net"
-#define MIXXX_SUPPORT_URL       "http://mixxx.sourceforge.net/support.php"
+#define MIXXX_WEBSITE_URL       "http://www.mixxx.org"
+#define MIXXX_SUPPORT_URL       "http://www.mixxx.org/support.php"
 
 #endif
