@@ -21,6 +21,15 @@ import shutil
 #Useful functions
 #
 
+def getSVNRevision(): # GPL code taken from http://trac.zeitherrschaft.org/zzub/browser/trunk/SConstruct
+	# if this is a repository, take the string from svnversion
+	svnversionpath = env.WhereIs('svnversion', os.environ['PATH'])
+	if os.path.isdir('../.svn') and (svnversionpath != None):  # we always start in .obj for some reason, so we must use ../.svn
+		rev = os.popen('svnversion ..').readline().strip()
+		if rev != "" and rev != "exported":
+			return rev
+	return ""
+
 #Checks for OpenGL on all three platforms
 def CheckOpenGL():
 	if not conf.CheckLib('GL') and not conf.CheckLib('opengl32') and not conf.CheckCHeader('/System/Library/Frameworks/OpenGL.framework/Versions/A/Headers/gl.h'):
@@ -115,7 +124,6 @@ else:
 	print 'Platform: Unknown (assuming Linux-like)'
 	platform = 'linux'
 
-
 #Figure out what the QT path is
 if platform == 'linux':
 	default_qtdir = '/usr/share/qt4'
@@ -145,6 +153,10 @@ elif platform == 'win32':
 	#Pull in the environment's variables for win32...
 	env = Environment(tools=['default','qt4', 'msvs'], toolpath=['../', './'], QTDIR=flags_qtdir, QT_LIB='', VCINSTALLDIR = os.getenv('VCInstallDir'), ENV = os.environ)
 #	env.Append(LIBPATH = (flags_qtdir + "/plugins/iconengines"))
+
+build_rev = getSVNRevision();
+if build_rev != '': 
+	env.Append(CXXFLAGS = '-DBUILD_REV=\\"' + build_rev + '\\"')
 
 #env.Append(CPPPATH='.')
 
@@ -247,7 +259,7 @@ if not env.GetOption('clean') and not SCons.Util.containsAny(os.sys.argv, ['-h',
 		if os.system("which g++ > /dev/null"): #Checks for non-zero return code
 			print "Did not find gcc/g++, exiting!"
 			Exit(1)
-			
+		
 		#Check for pkg-config
 		if not conf.CheckForPKGConfig('0.15.0'):
 			print 'pkg-config >= 0.15.0 not found.'
@@ -622,6 +634,7 @@ else:
 #ffmpeg support
 flags_ffmpeg = ARGUMENTS.get('ffmpeg', 0)
 if int(flags_ffmpeg):
+        # aptitude install libavcodec-dev libavformat-dev liba52-0.7.4-dev libdts-dev
         env.Append(LIBS = 'avcodec')
         env.Append(LIBS = 'avformat')
         env.Append(LIBS = 'z')
