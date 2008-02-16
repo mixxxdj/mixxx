@@ -59,7 +59,12 @@ MixxxApp::MixxxApp(QApplication * a, struct CmdlineArgs args, QSplashScreen * pS
 {
     app = a;
 
-    qDebug("Starting up...");
+    QString buildRevision = "";
+    #ifdef BUILD_REV
+      buildRevision = BUILD_REV;
+    #endif
+    if (buildRevision.trimmed().length() > 0) buildRevision = "(svn " + buildRevision + ") ";
+    qDebug() << "Mixxx" << VERSION << QString(buildRevision + "is starting...").ascii();
     setWindowTitle(tr("Mixxx " VERSION));
 #ifdef __MACX__
     setWindowIcon(QIcon(":icon.svg"));
