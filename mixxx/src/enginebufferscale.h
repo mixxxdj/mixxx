@@ -22,6 +22,7 @@
 #include <qobject.h>
 
 #define MAX_SEEK_SPEED 4.0f
+#define MIN_SEEK_SPEED 0.0001f
 
 class ReaderExtractWave;
 
