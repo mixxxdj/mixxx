@@ -1409,12 +1409,12 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
     // Force ramp in if this is the first buffer during a play
     if (m_bLastBufferPaused && !bCurBufferPaused)
     {
-        qDebug("ramp in");
+        //qDebug("ramp in");
         // Ramp from zero
-        //int iLen = math_min(iBufferSize, kiRampLength);
-        //float fStep = pOutput[iLen-1]/(float)iLen;
-        //for (int i=0; i<iLen; ++i)
-        //    pOutput[i] = fStep*i;
+        int iLen = math_min(iBufferSize, kiRampLength);
+        float fStep = pOutput[iLen-1]/(float)iLen;
+        for (int i=0; i<iLen; ++i)
+            pOutput[i] = fStep*i;
     }
 
     m_bLastBufferPaused = bCurBufferPaused;
