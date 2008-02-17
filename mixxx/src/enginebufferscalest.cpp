@@ -110,9 +110,13 @@ double EngineBufferScaleST::setTempo(double dTempo)
 
     if (m_dTempo>MAX_SEEK_SPEED)
         m_dTempo = MAX_SEEK_SPEED;
+    else if (m_dTempo<MIN_SEEK_SPEED)
+        m_dTempo = 0.0;
 
     m_qMutex.lock();
-    if (dTempoOld != m_dTempo)
+    //It's an error to pass a rate or tempo of 0.0 to SoundTouch.
+    //Note that SoundTouch uses float internally, so we compare to zero at lower precision.
+    if (dTempoOld != m_dTempo && m_dTempo != 0.0)
     {
         if (m_bPitchIndpTimeStretch)
             m_pSoundTouch->setTempo(m_dTempo);
@@ -163,11 +167,12 @@ CSAMPLE * EngineBufferScaleST::scale(double playpos, int buf_size, float * pBase
         while (m_pSoundTouch->numSamples()<(unsigned int)(buf_size/2))
         {
             int iLen = math_min(kiSoundTouchReadAheadLength, m_iReadAheadPos/2);
-            int j=0;
-            for (int i=m_iReadAheadPos-1; i>=m_iReadAheadPos-iLen*2; --i)
+            int i = m_iReadAheadPos;
+            for(int j=0; j < (iLen * 2); j = j + 2)
             {
-                buffer_back[j] = pBase[i];
-                j++;
+            	buffer_back[j] = pBase[i]; //Left channel.
+            	buffer_back[j+1] = pBase[i+1]; //Right channel.
+            	i = i - 2;
             }
 
             m_qMutex.lock();
