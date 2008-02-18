@@ -77,7 +77,8 @@ void EngineBufferScaleST::setBaseRate(double dBaseRate)
     m_qMutex.lock();
     if (m_bPitchIndpTimeStretch)
         m_pSoundTouch->setRate(m_dBaseRate);
-    else
+    //It's an error to pass a rate or tempo smaller than MIN_SEEK_SPEED to SoundTouch.
+    else if(m_dTempo >= MIN_SEEK_SPEED)
         m_pSoundTouch->setRate(m_dBaseRate*m_dTempo);
     m_qMutex.unlock();
 }
@@ -114,8 +115,7 @@ double EngineBufferScaleST::setTempo(double dTempo)
         m_dTempo = 0.0;
 
     m_qMutex.lock();
-    //It's an error to pass a rate or tempo of 0.0 to SoundTouch.
-    //Note that SoundTouch uses float internally, so we compare to zero at lower precision.
+    //It's an error to pass a rate or tempo smaller than MIN_SEEK_SPEED to SoundTouch.
     if (dTempoOld != m_dTempo && m_dTempo != 0.0)
     {
         if (m_bPitchIndpTimeStretch)
