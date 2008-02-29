@@ -11,6 +11,8 @@
 WTrackTableModel::WTrackTableModel(QObject * parent) : QAbstractTableModel(parent)
 {
     rowColors = false;
+    m_pTrackPlaylist = NULL;
+
     //setHeaderData(COL_SCORE,Qt::Horizontal, tr("**"));
     setHeaderData(COL_TITLE,Qt::Horizontal, tr("Title"));
     setHeaderData(COL_ARTIST,Qt::Horizontal, tr("Artist"));
@@ -42,7 +44,7 @@ int WTrackTableModel::columnCount(const QModelIndex &parent) const
 QVariant WTrackTableModel::data(const QModelIndex &index, int role) const
 {
     TrackInfoObject * m_pTrackInfo = m_pTrackPlaylist->getTrackAt(index.row());
-
+   
     if (!index.isValid())
         return QVariant();
 

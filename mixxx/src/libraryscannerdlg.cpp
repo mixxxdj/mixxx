@@ -94,8 +94,6 @@ void LibraryScannerDlg::slotCheckTiming(QString path) {
 		m_progress->setVisible(true);
 	}
 
-	// This is a bit ghetto because we're in the startup thread, you can't really
-	// repaint the gui properly, so this may all fall over at some point...
 	if (m_progress->isVisible()) {
 		m_current->setText("Scanning: " + path);
 		m_current->repaint();

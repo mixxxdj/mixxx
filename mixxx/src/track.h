@@ -30,6 +30,7 @@ class EngineBuffer;
 class MixxxView;
 class WTrackTable;
 class WTrackTableModel;
+class WPromoTracksModel;
 class WPlaylistListModel;
 class WTreeList;
 class ControlObjectThreadMain;
@@ -155,6 +156,13 @@ private:
     /** Returns pointer to playlist by the given name */
     TrackPlaylist *getPlaylist(QString qName);
     
+    /** Creates the promo tracks playlist dynamically */
+    void initPromoTracks();
+    /** Load the special promo track metadata from an XML file */
+    void loadPromoTrackXMLData(QString xmlPath, QString promoDirPath);
+    /** Check if the promo track directory exists */
+    bool checkPromoDirExists();
+
     /** Pointer to the Importer class */
     TrackImporter *m_pTrackImporter;
     /** List of pointers to TrackPlaylists */
@@ -163,14 +171,18 @@ private:
     TrackPlaylist m_qLibraryPlaylist;
     /** The play queue playlist */
     TrackPlaylist m_qPlayqueuePlaylist;
+    /** The promo tracks playlist */
+    TrackPlaylist m_qPromoPlaylist;
     
-	/** Model for Library information*/
+	/** Data Model for Library */
     WTrackTableModel *m_pLibraryModel;
-    /**Model for Playqueue information*/
+    /** Data Model for Playqueue*/
     WTrackTableModel *m_pPlayQueueModel;
-    /**Model containing a single playlist */
+    /** Data Model for Promo Tracks */
+    WPromoTracksModel *m_pPromoModel;
+    /** Data Model containing a single playlist */
     WTrackTableModel *m_pPlaylistModel;
-    /** Model containing the list of playlists */
+    /** Data Model containing the list of playlists */
     WPlaylistListModel *m_pPlaylistListModel;
     
     /** Pointer to playlist for which a popup menu is currently displayed */

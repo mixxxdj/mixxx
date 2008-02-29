@@ -64,6 +64,7 @@
 #include "imgcolor.h"
 #include "wskincolor.h"
 #include "mixxx.h"
+#include "defs_promo.h"
 
 MixxxView::MixxxView(QWidget * parent, ConfigObject<ConfigValueKbd> * kbdconfig, bool bVisualsWaveform, QString qSkinPath, ConfigObject<ConfigValue> * pConfig) : QWidget(parent)
 {
@@ -663,12 +664,15 @@ void MixxxView::createAllWidgets(QDomElement docElem,
             else if (node.nodeName()=="ComboBox")
             {
                 if (m_pComboBox == 0) {
-		    m_pComboBox = new QComboBox(this);
-		    m_pComboBox->addItem( "Library" );
-		    m_pComboBox->addItem( "Play Queue" );
-		    m_pComboBox->addItem( "Browse" );
-		    m_pComboBox->addItem( "Playlists" );
-		}
+                    m_pComboBox = new QComboBox(this);
+                    m_pComboBox->addItem( "Library" );
+                    m_pComboBox->addItem( "Play Queue" );
+                    m_pComboBox->addItem( "Browse" );
+                    m_pComboBox->addItem( "Playlists" );
+                    QDir promoDir(m_pconfig->getConfigPath() + QString(MIXXX_PROMO_DIR));
+                    if (promoDir.exists())
+                        m_pComboBox->addItem( "Free Tracks" );
+                }
                 // Set position
                 QString pos = WWidget::selectNodeQString(node, "Pos");
                 int x = pos.left(pos.indexOf(",")).toInt();
@@ -791,3 +795,4 @@ QList<QString> MixxxView::getSchemeList(QString qSkinPath) {
 
     return schlist;
 }
+

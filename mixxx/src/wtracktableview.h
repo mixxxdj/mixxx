@@ -22,6 +22,7 @@ const int TABLE_MODE_LIBRARY =      0;
 const int TABLE_MODE_PLAYQUEUE =    1;
 const int TABLE_MODE_BROWSE =       2;
 const int TABLE_MODE_PLAYLISTS =    3;
+const int TABLE_MODE_PROMO =        4;
 
 /**
   *@author Tue & Ken Haste Andersen
@@ -116,6 +117,10 @@ private:
     QAction *RemoveAct;
     /**Shows track editor/BPM tap**/
     QAction *PropertiesAct;
+    /**Copies a promo track to the library**/
+    QAction *CopyToLibraryAct;
+    /**Visits the website associated with a track*/
+    QAction *VisitWebsiteAct;
     /**Send to each playlist Action**/
     QList<QAction*> PlaylistActs;
     /**Rename playlist Action**/
@@ -143,7 +148,11 @@ private slots:
     void slotShowBPMTapDlg(); 
     /**Show playlist rename dialog */    
     void slotShowPlaylistRename();
-    
+    /**Copies a (promo) track to the user's library directory*/
+    void slotCopyToLibrary();
+    /**Opens a web browser to the website associated with a track*/
+    void slotVisitWebsite();
+
 public slots:
     /** Set the search filter **/
     void slotFilter(const QString &);
