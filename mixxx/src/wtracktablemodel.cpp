@@ -1,7 +1,7 @@
 #include <qstringlist.h>
 
 #include <QUrl>
-#include <QDebug> 
+#include <QDebug>
 
 #include "wtracktablemodel.h"
 #include "trackcollection.h"
@@ -44,7 +44,7 @@ int WTrackTableModel::columnCount(const QModelIndex &parent) const
 QVariant WTrackTableModel::data(const QModelIndex &index, int role) const
 {
     TrackInfoObject * m_pTrackInfo = m_pTrackPlaylist->getTrackAt(index.row());
-   
+
     if (!index.isValid())
         return QVariant();
 
@@ -63,8 +63,8 @@ QVariant WTrackTableModel::data(const QModelIndex &index, int role) const
         case COL_BITRATE: return m_pTrackInfo->getBitrateStr();
         case COL_BPM: return m_pTrackInfo->getBpmStr();
         case COL_COMMENT: return m_pTrackInfo->getComment();
-		default: 
-			qDebug() << "index.column =" << index.column(); 
+		default:
+			qDebug() << "index.column =" << index.column();
 			Q_ASSERT(FALSE);	//we should never get here
 			return QVariant();	
         }
