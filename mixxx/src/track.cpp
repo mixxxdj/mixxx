@@ -26,6 +26,7 @@
 /*used for new model/view interface*/
 #include "wtracktablemodel.h"
 #include "wplaylistlistmodel.h"
+#include "wpromotracksmodel.h"
 #include "wtracktableview.h"
 #include "libraryscanner.h"
 #include "libraryscannerdlg.h"
@@ -46,6 +47,7 @@
 #include "bpmdetector.h"
 #include "woverview.h"
 #include "playerinfo.h"
+#include "defs_promo.h"
 
 #include <q3progressdialog.h>
 
@@ -86,17 +88,22 @@ Track::Track(QString location, MixxxView * pView, ConfigObject<ConfigValue> *con
     m_pTrackImporter = new TrackImporter(m_pView,m_pTrackCollection);
     m_pLibraryModel = new WTrackTableModel(m_pView->m_pTrackTableView);
     m_pPlayQueueModel = new WTrackTableModel(m_pView->m_pTrackTableView);
+    m_pPromoModel = new WPromoTracksModel(m_pView->m_pTrackTableView);
     m_pPlaylistModel = new WTrackTableModel(m_pView->m_pTrackTableView);
     m_pPlaylistListModel = new WPlaylistListModel(m_pView->m_pTrackTableView);
 
     //Pass the track collcetion along to the library and playqueue playlists.
     m_qLibraryPlaylist.setTrackCollection(m_pTrackCollection);
     m_qPlayqueuePlaylist.setTrackCollection(m_pTrackCollection);
+    m_qPromoPlaylist.setTrackCollection(m_pTrackCollection);
 
-    // Read the XML file
+   // Read the XML file
     qDebug() << "Loading playlists and library tracks from XML...";
     readXML(location);
 
+    //Initialize the promo tracks playlist
+    initPromoTracks();
+ 
     if (m_pView && m_pView->m_pTrackTableView) //Stops Mixxx from dying if a skin is from Mixxx <= 1.5.0.
     {
         m_pScanner = new LibraryScanner(&m_qLibraryPlaylist, "");
@@ -117,7 +124,8 @@ Track::Track(QString location, MixxxView * pView, ConfigObject<ConfigValue> *con
         m_pLibraryModel->setTrackPlaylist(&m_qLibraryPlaylist);
         m_pPlayQueueModel->setTrackPlaylist(&m_qPlayqueuePlaylist);
         m_pPlaylistListModel->setPlaylistList(&m_qPlaylists);
-
+        m_pPromoModel->setTrackPlaylist(&m_qPromoPlaylist);
+        
         //If the TrackCollection appears to be empty (could be first run), then scan the library
         if (m_pTrackCollection->getSize() == 0)
         {
@@ -309,6 +317,97 @@ bool Track::eventFilter(QObject *obj, QEvent *e) {
   }
   return false;
 }
+
+/** Load and initialize the promo tracks playlist and the special metadata */
+void Track::initPromoTracks()
+{
+    if (!checkPromoDirExists())
+    {
+        //If the promo directory doesn't exist, do nothing.
+        return;
+    }
+    QDir promoDir(m_pConfig->getConfigPath() + QString(MIXXX_PROMO_DIR));
+    
+    QStringList qPromoFilenames = promoDir.entryList(QDir::Files | QDir::NoDotAndDotDot);
+    foreach (QString filename, qPromoFilenames)
+    {
+        qDebug() << "Found promo track:" << filename; 
+        QString trackPath = promoDir.absolutePath() + QDir::separator() + filename;
+        m_qPromoPlaylist.addTrack(trackPath);
+        //NOTE: The absolutePath() in the above might be dangerous, I don't know - Albert
+    
+   }
+    qDebug() << "Promo playlist has" << m_qPromoPlaylist.getSongNum() << "songs.";
+
+    //Load the extra metadata for these tracks from an XML file.
+    loadPromoTrackXMLData(promoDir.absolutePath() + QDir::separator() + "promo.xml",
+                          promoDir.absolutePath());
+}
+
+/** Load the special promo track metadata from an XML file
+ *  @param xmlPath The path to the XML metadata file.
+ *  @param promoDirPath The path to the promo tracks directory.
+ */
+void Track::loadPromoTrackXMLData(QString xmlPath, QString promoDirPath)
+{
+	//Load settings, and set defaults for anything that we failed to find
+	QDomDocument doc("promotracks");
+	QFile file(xmlPath);
+	if (!file.open(QIODevice::ReadOnly))
+	{
+		return;
+	}
+	if (!doc.setContent(&file)) {
+		file.close();
+		return;
+	}
+	file.close();
+	
+	// print out the element names of all elements that are direct children
+	// of the outermost element.
+	QDomElement docElem = doc.documentElement();
+	
+	QDomNode n = docElem.firstChild();
+	while(!n.isNull()) {
+		QDomElement e = n.toElement(); // try to convert the node to an element.
+		if(!e.isNull()) {
+			if (e.tagName() == "track")
+			{
+				QString filename = promoDirPath + QDir::separator() + e.text();
+                float bpm = e.attribute("bpm").toFloat();
+                QString url = e.attribute("url");
+                //TODO: Load comment, but don't overwrite it if the track is already
+                //      in the track collection in case the user changed the comment.
+                //QString comment =
+
+                //Grab the track from the TrackCollection and add it's metadata... 
+                TrackInfoObject *newTrack = m_pTrackCollection->getTrack(filename);
+                if (newTrack)
+                {
+                    newTrack->setBpm(bpm);
+                    newTrack->setURL(url);
+                    //newTrack->setComment(from XML)
+                }
+            }
+				
+		}
+		n = n.nextSibling();
+	}
+}
+
+bool Track::checkPromoDirExists()
+{
+    QDir promoDir(m_pConfig->getConfigPath() + QString(MIXXX_PROMO_DIR));
+    if (!promoDir.exists())
+    {   
+        qDebug() << "Promo track directory does not exist:" << promoDir.path();
+        //Do nothing if there's no promo track directory.
+        return false;
+    }
+    else
+        return true;
+}
+
 
 void Track::readXML(QString location)
 {
@@ -511,8 +610,6 @@ void Track::slotDrop(QDropEvent * e)
 
     e->accept();
 
-    qDebug("name %s",name.latin1());
-
     slotActivatePlaylist(name);
 }
 
@@ -562,6 +659,9 @@ TrackPlaylistList* Track::getPlaylists()
 
 void Track::slotActivatePlaylist(int index)
 {
+    //FIXME: there's gotta be a better signal to use from the combobox
+    //       rather than activated(int)... this hardcoded switch is crap 
+    
     //Toggled by the ComboBox - This needs to be reorganized...
     switch(index)
     {
@@ -599,6 +699,14 @@ void Track::slotActivatePlaylist(int index)
         m_pView->m_pTrackTableView->setTrack(this);
         m_pView->m_pTrackTableView->setTableMode(TABLE_MODE_PLAYLISTS);
         //FIXME ... return here or something? - Albert
+        break;
+      case TABLE_MODE_PROMO: //Promo Tracks
+        m_pView->m_pTrackTableView->reset();
+        m_pView->m_pTrackTableView->setSearchSource(m_pPromoModel); 
+        m_pView->m_pTrackTableView->resizeColumnsToContents();
+        m_pView->m_pTrackTableView->setTrack(this);
+        m_pView->m_pTrackTableView->setTableMode(TABLE_MODE_PROMO);
+        m_pActivePlaylist = &m_qPromoPlaylist;
         break;
     }
 }
@@ -1150,6 +1258,7 @@ void Track::slotBatchBPMDetection()
             return current;
     }
 
+    //(TIO -> TrackInfoObject)
     //Check to see if the TIO already has a non-zero BPM
 
     //If not, run TIO->sendToBpmQueue().

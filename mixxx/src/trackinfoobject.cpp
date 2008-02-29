@@ -47,6 +47,7 @@ TrackInfoObject::TrackInfoObject(const QString sPath, const QString sFile, BpmDe
     m_sTitle = "";
     m_sType= "";
     m_sComment = "";
+    m_sURL = "";
     m_iDuration = 0;
     m_iLength = 0;
     m_iBitrate = 0;
@@ -893,4 +894,16 @@ void TrackInfoObject::setDurationControlObject(ControlObject * p)
 
     if (m_pControlObjectDuration)
         p->queueFromThread(getDuration());
+}
+
+/** Set URL for track*/
+void TrackInfoObject::setURL(QString url)
+{
+    m_sURL = url;
+}
+
+/** Get URL for track */
+QString TrackInfoObject::getURL()
+{
+    return m_sURL;
 }

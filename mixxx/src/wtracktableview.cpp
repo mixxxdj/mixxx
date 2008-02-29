@@ -200,6 +200,7 @@ void WTrackTableView::repaintEverything() {
 	// Why exactly it works isn't clear but i suspect it's some subtlety with the filtering
 	if (m_pTable) {
 		setSearchSource(m_pTable);
+        qDebug() << "FIXME: repaintEverything switches table model and shouldn't do that when viewing the playlist model in " << __FILE__ ": " << __LINE__;
 	}
 }
 
@@ -290,7 +291,9 @@ void WTrackTableView::slotMouseDoubleClicked(const QModelIndex & index)
 		}
         return;
     }
-    else if (m_iTableMode == TABLE_MODE_LIBRARY || m_iTableMode == TABLE_MODE_PLAYQUEUE)
+    else if (m_iTableMode == TABLE_MODE_LIBRARY || 
+             m_iTableMode == TABLE_MODE_PLAYQUEUE || 
+             m_iTableMode == TABLE_MODE_PROMO)
     {
         // Know we aren't in browse mode now, so use this mapping.
         QModelIndex temp_sindex = m_pSearchFilter->mapToSource(index);
@@ -472,7 +475,9 @@ void WTrackTableView::contextMenuEvent(QContextMenuEvent * event)
 				isFolder = true;
 			}
         }
-        else if (m_iTableMode == TABLE_MODE_LIBRARY || m_iTableMode == TABLE_MODE_PLAYQUEUE) //Regular library mode menu
+        else if (m_iTableMode == TABLE_MODE_LIBRARY || 
+                 m_iTableMode == TABLE_MODE_PLAYQUEUE ||
+                 m_iTableMode == TABLE_MODE_PROMO) //Regular library mode menu
         {
             QModelIndex temp_sindex = m_pSearchFilter->mapToSource(index);
             m_selectedTrackInfoObjects.append(m_pTable->m_pTrackPlaylist->getTrackAt(temp_sindex.row()));
@@ -498,7 +503,8 @@ void WTrackTableView::contextMenuEvent(QContextMenuEvent * event)
 	
     if (m_iTableMode == TABLE_MODE_LIBRARY ||
         m_iTableMode == TABLE_MODE_PLAYQUEUE ||
-        m_iTableMode == TABLE_MODE_BROWSE)
+        m_iTableMode == TABLE_MODE_BROWSE ||
+        m_iTableMode == TABLE_MODE_PROMO)
     {
     	//Add the "Player 1" action
         menu.addAction(Player1Act);
@@ -541,11 +547,20 @@ void WTrackTableView::contextMenuEvent(QContextMenuEvent * event)
     //Gray out player 1 and/or player 2 if those players are playing.
     if (ControlObject::getControl(ConfigKey("[Channel1]","play"))->get()==1.)
     	Player1Act->setEnabled(false);
-    if (ControlObject::getControl(ConfigKey("[Channel2]","play"))->get()==1.)
-    	Player2Act->setEnabled(false);
+    if (ControlObject::getControl(ConfigKey("[Channel2]","play"))->get()==1.)  
+    	Player2Act->setEnabled(false);  
 
-    menu.addSeparator();
-    menu.addAction(RemoveAct);
+    //For every mode but promo mode, show the "Remove" menu item
+    if (m_iTableMode != TABLE_MODE_PROMO)
+    {
+        menu.addSeparator();
+        menu.addAction(RemoveAct);
+    }
+    else //For promo mode, add the "copy to library" and "visit website" actions instead
+    {
+        menu.addAction(CopyToLibraryAct);
+        menu.addAction(VisitWebsiteAct);
+    }
 
     //Gray out "Remove" in BROWSE mode
     if (m_iTableMode == TABLE_MODE_BROWSE)
@@ -584,7 +599,12 @@ void WTrackTableView::createActions()
 
 	RenamePlaylistAct = new QAction(tr("Rename..."), this);
 	connect(RenamePlaylistAct, SIGNAL(triggered()), this, SLOT(slotShowPlaylistRename()));
-	
+
+    CopyToLibraryAct = new QAction(tr("Copy to Library"), this);
+    connect(CopyToLibraryAct, SIGNAL(triggered()), this, SLOT(slotCopyToLibrary()));
+
+    VisitWebsiteAct = new QAction(tr("Visit Website..."), this);
+    connect(VisitWebsiteAct, SIGNAL(triggered()), this, SLOT(slotVisitWebsite()));
 	
 	//Create all the "send to->playlist" actions.
 	if (m_pTrack)
@@ -857,3 +877,38 @@ void WTrackTableView::keyPressEvent(QKeyEvent *event)
 QString WTrackTableView::getFilterString() {
     return m_filterString;
 }
+
+/** Copies the selected tracks to the library */
+void WTrackTableView::slotCopyToLibrary()
+{
+    bool success = true;
+
+    //Copy each track selected to the library
+    for (int i = 0; i < m_selectedTrackInfoObjects.count(); i++) {
+        QString srcLocation = m_selectedTrackInfoObjects.at(i)->getLocation();
+        QString destLocation = m_pConfig->getValueString(ConfigKey("[Playlist]", "Directory"));
+        destLocation += QDir::separator() + m_selectedTrackInfoObjects.at(i)->getFilename(); 
+        success = QFile::copy(srcLocation, destLocation);
+        
+        qDebug() << "Copying" << srcLocation << "to" << destLocation;
+
+        if (!success)
+            break;
+    }
+
+    if (!success)
+    {
+        QMessageBox::warning(NULL, tr("Failed to copy track(s)"), tr("Warning: Failed to copy track(s) to library")); 
+    }
+
+}
+
+void WTrackTableView::slotVisitWebsite()
+{
+    for (int i = 0; i < m_selectedTrackInfoObjects.count(); i++) {
+        
+        QUrl website(m_selectedTrackInfoObjects.at(i)->getURL());
+        QDesktopServices::openUrl(website);
+    }
+}
+

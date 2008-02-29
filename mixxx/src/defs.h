@@ -18,6 +18,7 @@
 #define DEFS_H
 
 #define VERSION "1.6.0~beta2"
+#define MIXXX_PROMO_DIR "promo"
 
 #include <math.h>
 #include <iostream>

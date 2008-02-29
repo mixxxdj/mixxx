@@ -51,11 +51,12 @@ private:
 	QModelIndex index;
 	bool rowColors;
 
-
-	int columnCount(const QModelIndex & parent = QModelIndex()) const;
-	QVariant data(const QModelIndex &index, int role) const;
-	QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const;
-	bool setData(const QModelIndex &index, const QVariant &value, int role = Qt::EditRole);
+    //These are virtual so they can be overridden in classes that inherit
+    //from this (like WPromoTracksModel)
+	virtual int columnCount(const QModelIndex & parent = QModelIndex()) const;
+	virtual QVariant data(const QModelIndex &index, int role) const;
+	virtual QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const;
+	virtual bool setData(const QModelIndex &index, const QVariant &value, int role = Qt::EditRole);
 };
 
 #endif

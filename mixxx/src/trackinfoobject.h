@@ -147,6 +147,10 @@ public:
     int getId() const;
     /** Set id */
     void setId(int iId);
+    /** Get URL for track */
+    QString getURL();
+    /** Set URL for track */
+    void setURL(QString url);
     /** Set pointer to waveform summary */
     void setWaveSummary(Q3MemArray<char> *pWave, Q3ValueList<long> *pSegmentation);
     /** Returns a pointer to waveform summary */
@@ -182,6 +186,8 @@ private:
     QString m_sType;
     /** User comment */
     QString m_sComment;
+    /** URL (used in promo track) */
+    QString m_sURL;
     /** Duration of track in seconds */
     int m_iDuration;
     /** Length of track in bytes */
