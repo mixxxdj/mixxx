@@ -12,7 +12,7 @@
 Name "Mixxx"
 
 ; The file to write
-OutFile "mixxx-1.6.0-beta1-win.exe"
+OutFile "mixxx-1.6.0-beta3-win.exe"
 
 ; The default installation directory
 InstallDir $PROGRAMFILES\Mixxx
@@ -372,6 +372,8 @@ Section "Mixxx (required)" SecMixxx
   File "src\skins\outline\vumeter-on-.png"
   File "src\skins\outline\vumeter-on-Ch1.png"
   File "src\skins\outline\vumeter-on-Ch2.png"
+  File "src\skins\outline\peak-indicator-on.png"
+  File "src\skins\outline\peak-indicator-off.png"
 
   SetOutPath $INSTDIR\skins\outlineClose
   File "src\skins\outlineClose\back-off-Ch1.png"
