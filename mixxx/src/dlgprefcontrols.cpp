@@ -219,7 +219,6 @@ DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxView * pView, MixxxApp *
     ComboBoxTooltips->setCurrentIndex((m_pConfig->getValueString(ConfigKey("[Controls]","Tooltips")).toInt()+1)%2);
 
     connect(ComboBoxTooltips,   SIGNAL(activated(int)), this, SLOT(slotSetTooltips(int)));
-    slotSetTooltips(0);
 
     slotUpdateSchemes();
     slotUpdate();
@@ -244,7 +243,7 @@ void DlgPrefControls::slotUpdateSchemes()
         ComboBoxSchemeconf->setEnabled(true);
         for (int i = 0; i < schlist.size(); i++) {
             ComboBoxSchemeconf->addItem(schlist[i]);
-
+            
             if (schlist[i] == m_pConfig->getValueString(ConfigKey("[Config]","Scheme"))) {
                 ComboBoxSchemeconf->setCurrentIndex(i);
             }
@@ -311,7 +310,7 @@ void DlgPrefControls::slotSetRateDir(int)
 void DlgPrefControls::slotSetVisuals(int)
 {
     m_pConfig->set(ConfigKey("[Controls]","Visuals"), ConfigValue(ComboBoxVisuals->currentIndex()));
-    textLabel->setText("Restart Mixxx before the change of visuals will take effect.");
+    textLabel->setText(tr("Restart Mixxx before the change of visuals will take effect."));
 }
 
 void DlgPrefControls::slotSetScaleBpm(int)
@@ -326,13 +325,23 @@ void DlgPrefControls::slotSetScaleBpm(int)
 void DlgPrefControls::slotSetTooltips(int)
 {
 // setGloballyEnabled currently not implemented in QT4
-#ifndef QT3_SUPPORT
+//#ifndef QT3_SUPPORT
     m_pConfig->set(ConfigKey("[Controls]","Tooltips"), ConfigValue((ComboBoxTooltips->currentIndex()+1)%2));
-    if (ComboBoxTooltips->currentIndex()==0)
-        QToolTip::setGloballyEnabled(true);
-    else
-        QToolTip::setGloballyEnabled(false);
-#endif
+
+    //This is somewhat confusing, but to disable tooltips in QT4, you need to install an eventFilter
+    //on the QApplication object. That object is located in MixxxApp (mixxx.cpp/h), so that's where
+    //the eventFilter is. The value of the ConfigObject is cached at startup because it's too slow
+    //to refresh it during each Tooltip event (I think), which is why we require a restart.
+
+    
+    textLabel->setText(tr("Mixxx must be restarted before the changes will take effect."));
+    
+
+//    if (ComboBoxTooltips->currentIndex()==0)
+//        QToolTip::setGloballyEnabled(true);
+//    else
+//        QToolTip::setGloballyEnabled(false);
+//#endif
 }
 
 void DlgPrefControls::slotSetScheme(int)

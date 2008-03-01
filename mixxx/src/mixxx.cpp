@@ -357,6 +357,10 @@ MixxxApp::MixxxApp(QApplication * a, struct CmdlineArgs args, QSplashScreen * pS
     if (bVisualsWaveform)
         view->checkDirectRendering();
 
+    //Install an event filter to catch certain QT events, such as tooltips.
+    //This allows us to turn off tooltips.
+    app->installEventFilter(this); //The eventfilter is located in this Mixxx class as a callback.
+
     // Initialize the log if a log file name was given on the command line
     Log *pLog = 0;
     if (args.qLogFileName.length()>0)
@@ -893,4 +897,25 @@ QString MixxxApp::getSkinPath() {
         qCritical() << "Skin directory does not exist:" << qSkinPath;
 
     return qSkinPath;
+}
+
+/** Event filter to block certain events. For example, this function is used
+  * to disable tooltips if the user specifies in the preferences that they
+  * want them off. This is a callback function.
+  */
+bool MixxxApp::eventFilter(QObject *obj, QEvent *event)
+{
+    static int tooltips = config->getValueString(ConfigKey("[Controls]","Tooltips")).toInt();
+
+    if (event->type() == QEvent::ToolTip) {
+        QKeyEvent *keyEvent = static_cast<QKeyEvent *>(event);
+        if (tooltips == 1)
+            return false;
+        else
+            return true;
+    } else {
+        // standard event processing
+        return QObject::eventFilter(obj, event);
+    }
+
 }

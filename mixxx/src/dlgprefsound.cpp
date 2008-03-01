@@ -142,8 +142,6 @@ void DlgPrefSound::slotUpdate()
     //Get the currently selected API (just like we did above kinda)
     QString selectedAPI = config->getValueString(ConfigKey("[Soundcard]","SoundApi"));
 
-    //QStringList interfaces = player->getInterfaces();
-    //QStringList::iterator it;
 
     //Get the list of sound output devices that match the selected API.
     QList<SoundDevice*> devices = m_pSoundManager->getDeviceList(selectedAPI, true, false);
@@ -192,20 +190,6 @@ void DlgPrefSound::slotUpdate()
         ++j;
     }
 
-    // Head right sound card info
-/*    ComboBoxSoundcardHeadRight->clear();
-    ComboBoxSoundcardHeadRight->insertItem(0, "None");
-    it.toFront();
-    j = 1;
-    while (it.hasNext())
-    {
-        dev = it.next();
-        ComboBoxSoundcardHeadRight->insertItem(j, dev->getName());
-        if (dev->getName()==config->getValueString(ConfigKey("[Soundcard]","DeviceHeadRight")))
-            ComboBoxSoundcardHeadRight->setCurrentIndex(j);
- ++j;
-    }
- */
     // Sample rate
     ComboBoxSamplerates->clear();
     //QStringList srates = player->getSampleRates();
@@ -226,7 +210,19 @@ void DlgPrefSound::slotUpdate()
     disconnect(SliderLatency,                SIGNAL(valueChanged(int)), this, SLOT(slotLatencySliderChange(int)));
     SliderLatency->setValue(getSliderLatencyVal(config->getValueString(ConfigKey("[Soundcard]","Latency")).toInt()));
     connect(SliderLatency,                SIGNAL(valueChanged(int)), this, SLOT(slotLatencySliderChange(int)));
-	
+
+
+    //If JACK is selected as the current API, disable the latency slider
+    //(We ignore its setting anyways because the JACK daemon determines the latency.)
+    if (selectedAPI == MIXXX_PORTAUDIO_JACK_STRING)
+    {
+        SliderLatency->setEnabled(false);
+        //Set the latency slider to appear as 16 ms, just for the hell of it.
+        SliderLatency->setValue(getSliderLatencyVal(16));
+    }
+    else
+        SliderLatency->setEnabled(true);
+    
 }
 
 void DlgPrefSound::slotLatency()

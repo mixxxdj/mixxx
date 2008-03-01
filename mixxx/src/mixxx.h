@@ -125,6 +125,11 @@ class MixxxApp : public QMainWindow
     /** Change of file to play */
     //void slotChangePlay(int,int,int, const QPoint &);
 	QString getSkinPath();
+  
+  protected:
+    /** Event filter to block certain events (eg. tooltips if tooltips are disabled) */
+    bool eventFilter(QObject *obj, QEvent *event);
+  
   private:
     /** view is the main widget which represents your working area. The View
      * class should handle all events of the view widget.  It is kept empty so
