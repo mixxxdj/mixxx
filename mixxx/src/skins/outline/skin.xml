@@ -62,6 +62,7 @@
 
  <Background>
   <Path>scene.png</Path>
+  <BgColor>#ffffff</BgColor>
  </Background>
 
  <SliderComposed>
