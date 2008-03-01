@@ -19,6 +19,8 @@
 #include "wpixmapstore.h"
 //Added by qt3to4:
 #include <QPaintEvent>
+#include <QtGui>
+#include <QtCore>
 #include <QtDebug>
 #include <QPixmap>
 
@@ -27,7 +29,6 @@ WVuMeter::WVuMeter(QWidget * parent, const char * name) : WWidget(parent,name)
     m_pPixmapBack = 0;
     m_pPixmapVu = 0;
     m_pPixmapBuffer = 0;
-    setBackgroundMode(Qt::NoBackground);
 }
 
 WVuMeter::~WVuMeter()
@@ -91,21 +92,26 @@ void WVuMeter::paintEvent(QPaintEvent *)
             idx = 0;
 
         // Draw back on buffer
-        bitBlt(m_pPixmapBuffer, 0, 0, m_pPixmapBack);
+        //bitBlt(m_pPixmapBuffer, 0, 0, m_pPixmapBack); //old QT3 code
+        QPainter painter(m_pPixmapBuffer);
+        painter.drawPixmap(0, 0, *m_pPixmapBack);
 
         // Draw (part of) vu on buffer
         if (m_bHorizontal)
         {
+            //This is a hack to fix something weird with horizontal VU meters:
             if(idx == 0)
-                idx = 1; //Hack to fix broken BitBlt in Qt4... This really needs to be ported soon
-                        //TODO: See QPainter::drawPixmap()... I'm too tired to do it now :)
-            bitBlt(m_pPixmapBuffer, 0, 0, m_pPixmapVu, 0, 0, idx, m_pPixmapVu->height());
+                idx = 1; 
+            
+            painter.drawPixmap(0, 0, *m_pPixmapVu, 0, 0, idx, m_pPixmapVu->height());
+            
         }
         else
-            bitBlt(m_pPixmapBuffer, 0, m_iNoPos-idx, m_pPixmapVu, 0, m_iNoPos-idx, m_pPixmapVu->width(), idx);
+            painter.drawPixmap(0, m_iNoPos-idx, *m_pPixmapVu, 0, m_iNoPos-idx, m_pPixmapVu->width(), idx);
 
         // Draw buffer on screen
-        bitBlt(this, 0, 0, m_pPixmapBuffer);
+        QPainter widgetPainter(this);
+        widgetPainter.drawPixmap(0, 0, *m_pPixmapBuffer);
     }
 }
 
