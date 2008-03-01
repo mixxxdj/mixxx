@@ -79,7 +79,7 @@ void LibraryScannerDlg::slotStopTiming() {
 	//qDebug() << "slotStopTiming!";
 	
 	m_timeruses--;
-	if (m_timeruses == 0) {
+	if (m_timeruses <= 0) {
 		m_progress->setVisible(false);
 	}
 	m_qMutex.unlock();
