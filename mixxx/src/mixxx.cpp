@@ -44,6 +44,7 @@
 #include "playerproxy.h"
 #include "soundmanager.h"
 #include "defs_urls.h"
+#include "defs_audiofiles.h"
 
 #ifdef __C_METRICS__
 #include <cmetrics.h>
@@ -659,7 +660,7 @@ void MixxxApp::slotFileLoadSongPlayer1()
             return;
     }
 
-    QString s = QFileDialog::getOpenFileName(this, tr("Load Song into Player 1"), config->getValueString(ConfigKey("[Playlist]","Directory")), SUPPORTED_AUDIO_FILES);
+    QString s = QFileDialog::getOpenFileName(this, tr("Load Song into Player 1"), config->getValueString(ConfigKey("[Playlist]","Directory")), QString("Audio (%1)").arg(MIXXX_SUPPORTED_AUDIO_FILETYPES));
     if (!(s == QString::null)) {
         TrackInfoObject * pTrack = m_pTrack->getTrackCollection()->getTrack(s);
         if (pTrack)
@@ -683,7 +684,7 @@ void MixxxApp::slotFileLoadSongPlayer2()
             return;
     }
     
-    QString s = QFileDialog::getOpenFileName(this, tr("Load Song into Player 2"), config->getValueString(ConfigKey("[Playlist]","Directory")), SUPPORTED_AUDIO_FILES);
+    QString s = QFileDialog::getOpenFileName(this, tr("Load Song into Player 2"), config->getValueString(ConfigKey("[Playlist]","Directory")), QString("Audio (%1)").arg(MIXXX_SUPPORTED_AUDIO_FILETYPES));
     if (!(s == QString::null)) {
         TrackInfoObject * pTrack = m_pTrack->getTrackCollection()->getTrack(s);
         if (pTrack)

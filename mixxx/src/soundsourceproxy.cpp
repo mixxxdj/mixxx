@@ -110,7 +110,7 @@ int SoundSourceProxy::ParseHeader(TrackInfoObject * p)
     else if (qFilename.lower().endsWith(".ogg"))
 	return SoundSourceOggVorbis::ParseHeader(p);
     else if (qFilename.lower().endsWith(".wav") || qFilename.lower().endsWith(".aif") ||
-	     qFilename.lower().endsWith(".aiff"))
+	     qFilename.lower().endsWith(".aiff") || qFilename.lower().endsWith(".flac"))
 #ifdef __SNDFILE__
 	return SoundSourceSndFile::ParseHeader(p);
 #endif

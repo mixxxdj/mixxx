@@ -26,7 +26,8 @@
 SoundSourceSndFile::SoundSourceSndFile(QString qFilename) : SoundSource(qFilename)
 {
     info = new SF_INFO;
-    fh = sf_open( qFilename.latin1(), SFM_READ, info );
+    QByteArray qbaFilename = qFilename.toUtf8();
+    fh = sf_open( qbaFilename.data(), SFM_READ, info );
     if (fh == 0 || !sf_format_check(info))
     {
         qDebug() << "libsndfile: Error opening file" << qFilename;
@@ -61,8 +62,10 @@ long SoundSourceSndFile::seek(long filepos)
     if (filelength>0)
     {
         filepos2 = math_min(filepos2,filelength);
-        if (sf_seek(fh, (sf_count_t)filepos2/2, SEEK_SET) == -1)
-            qDebug("libsndfile: Seek ERR.");
+        sf_seek(fh, (sf_count_t)filepos2/2, SEEK_SET);
+        //Note that we don't error check sf_seek because it reports
+        //benign errors under normal usage (ie. we sometimes seek past the end
+        //of a song, and it will stop us.)
         return filepos2;
     }
     return 0;
@@ -114,7 +117,8 @@ int SoundSourceSndFile::ParseHeader( TrackInfoObject * Track )
 {
     SF_INFO info;
     QString location = Track->getLocation();
-    SNDFILE * fh = sf_open( location,SFM_READ, &info);
+    QByteArray qbaLocation = location.toUtf8();
+    SNDFILE * fh = sf_open(qbaLocation.data() ,SFM_READ, &info);
     //const char* err = sf_strerror(0);
     if (fh == 0 || !sf_format_check(&info))
     {
@@ -142,12 +146,14 @@ inline long unsigned SoundSourceSndFile::length()
 
 Q3ValueList<long> * SoundSourceSndFile::getCuePoints()
 {
+    QByteArray qbaFilename = m_qFilename.toUtf8();
+
     // Ensure that the file ends with ".wav"
     if (!m_qFilename.endsWith(".wav"))
         return 0;
 
     // Open file
-    FILE * fh  = fopen(m_qFilename.latin1(),"r");
+    FILE * fh  = fopen(qbaFilename.data(), "r");
 
     // Check the file magic header bytes
     char str[4];
