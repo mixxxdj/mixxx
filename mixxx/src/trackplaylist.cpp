@@ -25,7 +25,7 @@
 #include "trackplaylist.h"
 #include "track.h"
 #include "libraryscanner.h"
-
+#include "defs_audiofiles.h"
 
 
 Track * TrackPlaylist::spTrack = 0;
@@ -315,7 +315,7 @@ void TrackPlaylist::addPath(QString qPath)
         // And then add all the files
 
         dir.setFilter(QDir::Files);
-        dir.setNameFilter("*.wav *.Wav *.WAV *.mp3 *.Mp3 *.MP3 *.ogg *.Ogg *.OGG *.aiff *.Aiff *.AIFF *.aif *.Aif *.AIF");
+        dir.setNameFilter(MIXXX_SUPPORTED_AUDIO_FILETYPES);
         QListIterator<QFileInfo> it(dir.entryInfoList());          // create list iterator
         QFileInfo fi;   // pointer for traversing
 

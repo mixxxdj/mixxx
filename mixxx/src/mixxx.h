@@ -75,8 +75,6 @@ class BpmDetector;
 class QSplashScreen;
 class ScriptEngine;
 
-const QString SUPPORTED_AUDIO_FILES = "Audio (*.wav *.ogg *.mp3 *.aiff)";
-
 /**
   * This Class is the base class for Mixxx. It sets up the main
   * window and providing a menubar.

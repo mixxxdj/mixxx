@@ -17,13 +17,14 @@
 #include <QDirModel>
 #include <QRegExp>
 
-#include "wtracktablefilter.h"
 
+#include "wtracktablefilter.h"
+#include "defs_audiofiles.h"
 
 WTrackTableFilter::WTrackTableFilter(QModelIndex ind, QObject * parent)
     : QSortFilterProxyModel(parent),
     m_index(ind),
-    m_regexp("\\.(mp3|ogg|aiff|aif|wav)", Qt::CaseInsensitive)
+    m_regexp(MIXXX_SUPPORTED_AUDIO_FILETYPES_REGEX, Qt::CaseInsensitive)
 {
     setFilterCaseSensitivity(Qt::CaseInsensitive);
 }

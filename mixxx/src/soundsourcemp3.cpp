@@ -23,14 +23,14 @@ SoundSourceMp3::SoundSourceMp3(QString qFilename) : SoundSource(qFilename)
 {
     QFile file( qFilename );
     if (!file.open(QIODevice::ReadOnly))
-        qCritical() << "MAD: Open failed:" << qFilename;
+        qDebug() << "MAD: Open failed:" << qFilename;
 
     // Read the whole file into inputbuf:
     inputbuf_len = file.size();
     inputbuf = new char[inputbuf_len];
     unsigned int tmp = file.readBlock(inputbuf, inputbuf_len);
     if (tmp != inputbuf_len)
-        qCritical() << "MAD: ERR reading mp3-file: " << qFilename << "\nRead only " << tmp << "bytes, but wanted" << inputbuf_len << "bytes";
+        qDebug() << "MAD: ERR reading mp3-file: " << qFilename << "\nRead only " << tmp << "bytes, but wanted" << inputbuf_len << "bytes";
 
     // Transfer it to the mad stream-buffer:
     mad_stream_init(&Stream);
@@ -505,7 +505,7 @@ int SoundSourceMp3::ParseHeader(TrackInfoObject * Track)
     char * inputbuf = new char[READLENGTH];
     unsigned int tmp = file.readBlock(inputbuf, READLENGTH);
     if (tmp != READLENGTH) {
-        qWarning() << "MAD: ERR reading mp3-file:" << location << "\nRead only" << tmp << "bytes, but wanted" << READLENGTH << "bytes";
+        qDebug() << "MAD: ERR reading mp3-file:" << location << "\nRead only" << tmp << "bytes, but wanted" << READLENGTH << "bytes";
         return ERR;
     }
     mad_stream Stream;
