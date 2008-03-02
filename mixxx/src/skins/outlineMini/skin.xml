@@ -132,7 +132,8 @@
  </PushButton>
 
  <PushButton>
-  <Tooltip>Change playback rate (left/right click: large/small effect)</Tooltip>
+  <Tooltip>Change playback rate
+(left/right click: large/small effect)</Tooltip>
   <NumberStates>1</NumberStates>
   <State>
    <Number>0</Number>
@@ -153,7 +154,8 @@
  </PushButton>
 
  <PushButton>
-  <Tooltip>Change playback rate (left/right click: large/small effect)</Tooltip>
+  <Tooltip>Change playback rate 
+(left/right click: large/small effect)</Tooltip>
   <NumberStates>1</NumberStates>
   <State>
    <Number>0</Number>
@@ -174,7 +176,8 @@
  </PushButton>
 
  <PushButton>
-  <Tooltip>Change playback rate (left/right click: large/small effect)</Tooltip>
+  <Tooltip>Change playback rate 
+(left/right click: large/small effect)</Tooltip>
   <NumberStates>1</NumberStates>
   <State>
    <Number>0</Number>
@@ -195,7 +198,8 @@
  </PushButton>
 
  <PushButton>
-  <Tooltip>Change playback rate (left/right click: large/small effect)</Tooltip>
+  <Tooltip>Change playback rate 
+(left/right click: large/small effect)</Tooltip>
   <NumberStates>1</NumberStates>
   <State>
    <Number>0</Number>
@@ -216,7 +220,8 @@
  </PushButton>
 
  <PushButton>
-  <Tooltip>Temporary change playback rate (left/right click: large/small effect)</Tooltip>
+  <Tooltip>Temporary change playback rate 
+(left/right click: large/small effect)</Tooltip>
   <NumberStates>1</NumberStates>
   <State>
    <Number>0</Number>
@@ -247,7 +252,8 @@
  </PushButton>
 
  <PushButton>
-  <Tooltip>Temporary change playback rate (left/right click: large/small effect)</Tooltip>
+  <Tooltip>Temporary change playback rate 
+(left/right click: large/small effect)</Tooltip>
   <NumberStates>1</NumberStates>
   <State>
    <Number>0</Number>
@@ -278,7 +284,8 @@
  </PushButton>
 
  <PushButton>
-  <Tooltip>Temporary change playback rate (left/right click: large/small effect)</Tooltip>
+  <Tooltip>Temporary change playback rate 
+(left/right click: large/small effect)</Tooltip>
   <NumberStates>1</NumberStates>
   <State>
    <Number>0</Number>
@@ -309,7 +316,8 @@
  </PushButton>
 
  <PushButton>
-  <Tooltip>Temporary change playback rate (left/right click: large/small effect)</Tooltip>
+  <Tooltip>Temporary change playback rate 
+(left/right click: large/small effect)</Tooltip>
   <NumberStates>1</NumberStates>
   <State>
    <Number>0</Number>
@@ -443,7 +451,9 @@
  </PushButton>
 
  <PushButton>
-  <Tooltip>Left click: Pause/play, Right click: Set cue point</Tooltip>
+  <Tooltip>Left click: Pause/play,
+Right click: Set cue point
+</Tooltip>
   <NumberStates>2</NumberStates>
   <State>
    <Number>0</Number>
@@ -469,7 +479,9 @@
  </PushButton>
 
  <PushButton>
-  <Tooltip>Left click: Pause/play, Right click: Set cue point</Tooltip>
+  <Tooltip>Left click: Pause/play,
+Right click: Set cue point
+</Tooltip>
   <NumberStates>2</NumberStates>
   <State>
    <Number>0</Number>
@@ -495,7 +507,9 @@
  </PushButton>
 
  <PushButton>
-  <Tooltip>Go to and play (while playing), Set cue point (while stopped), Go to and stop (right-click)</Tooltip>
+  <Tooltip>Go to and play (while playing),
+Set cue point (while stopped), 
+Go to and stop (right-click)</Tooltip>
   <NumberStates>1</NumberStates>
   <State>
    <Number>0</Number>
@@ -516,7 +530,9 @@
  </PushButton>
 
  <PushButton>
-  <Tooltip>Go to and play (while playing), Set cue point (while stopped), Go to and stop (right-click)</Tooltip>
+  <Tooltip>Go to and play (while playing),
+Set cue point (while stopped), 
+Go to and stop (right-click)</Tooltip>
   <NumberStates>1</NumberStates>
   <State>
    <Number>0</Number>
@@ -579,7 +595,8 @@
  </PushButton>
 
  <PushButton>
-  <Tooltip>Left click: Fast forward, Right click: End of track</Tooltip>
+  <Tooltip>Left click: Fast forward, 
+Right click: End of track</Tooltip>
   <NumberStates>1</NumberStates>
   <State>
    <Number>0</Number>
@@ -605,7 +622,8 @@
  </PushButton>
 
  <PushButton>
-  <Tooltip>Left click: Fast backward, Right click: Start of track</Tooltip>
+  <Tooltip>Left click: Fast backward, 
+Right click: Start of track</Tooltip>
   <NumberStates>1</NumberStates>
   <State>
    <Number>0</Number>
@@ -631,7 +649,8 @@
  </PushButton>
 
  <PushButton>
-  <Tooltip>Left click: Fast forward, Right click: End of track</Tooltip>
+  <Tooltip>Left click: Fast forward, 
+Right click: End of track</Tooltip>
   <NumberStates>1</NumberStates>
   <State>
    <Number>0</Number>
@@ -657,7 +676,8 @@
  </PushButton>
 
  <PushButton>
-  <Tooltip>Left click: Fast backward, Right click: Start of track</Tooltip>
+  <Tooltip>Left click: Fast backward, 
+Right click: Start of track</Tooltip>
   <NumberStates>1</NumberStates>
   <State>
    <Number>0</Number>
