@@ -165,8 +165,10 @@ protected:
     double m_dJogLeftOld, m_dJogRightOld;
 
     double PitchChange(const QString ControlSide, const int ev_value, int &m_iPitchPrevious, int &m_iPitchOffset);
-    int PitchChangeOrdinal(const QString ControlSide, const int ev_value, int &m_iPitchPrevious, int &m_iPitchOffset);    
+    int PitchChangeOrdinal(const QString ControlSide, const int ev_value, int &m_iPitchPrevious, int &m_iPitchOffset);
     bool m_bClearLeftPitchPlus, m_bClearLeftPitchMinus, m_bClearRightPitchPlus, m_bClearRightPitchMinus;
+    
+    void clear_leds();
 };
 
 #endif

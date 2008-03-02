@@ -32,6 +32,7 @@ HerculesLinux::~HerculesLinux()
 
 void HerculesLinux::run()
 {
+	clear_leds();
     while (1)
     {
     
@@ -121,16 +122,6 @@ bool HerculesLinux::opendev()
         qDebug("Hercules device @ %d", m_iFd);
         // Start thread
         start();
-
-        // Turn off led
-        led_write(kiHerculesLedLeftCueBtn, false);
-        led_write(kiHerculesLedRightCueBtn, false);
-//        led_write(kiHerculesLedLeftPlay, false);
-//        led_write(kiHerculesLedRightPlay, false);
-        led_write(kiHerculesLedLeftSync, false);
-        led_write(kiHerculesLedRightSync, false);
-        led_write(kiHerculesLedLeftHeadphone, false);
-        led_write(kiHerculesLedRightHeadphone, false);
 
         return true;
     }
@@ -544,8 +535,8 @@ void HerculesLinux::selectMapping(QString qMapping)
     }
     else
     {
-        led_write(kiHerculesLedLeftSync, false);
-        led_write(kiHerculesLedRightSync, false);
+        //led_write(kiHerculesLedLeftSync, false);
+        //led_write(kiHerculesLedRightSync, false);
     }
 }
 
@@ -609,4 +600,50 @@ int HerculesLinux::PitchChangeOrdinal(const QString ControlSide, const int ev_va
     return delta;
 }
 
+/*
+ * Cutesy little LED initialisation show
+ */
+void HerculesLinux::clear_leds() {
+	const int tenth_sec = 100000;
+	led_write(kiHerculesLedRightSync, true);
+	led_write(kiHerculesLedLeftSync, true);
+	led_write(kiHerculesLedLeftLoop, true);
+	led_write(kiHerculesLedRightLoop, true);
+	led_write(kiHerculesLedLeftMasterTempo, true);
+	led_write(kiHerculesLedRightMasterTempo, true);
+	led_write(kiHerculesLedLeftFx, true);
+	led_write(kiHerculesLedRightFx, true);
+	led_write(kiHerculesLedRightCueLamp, true);
+	led_write(kiHerculesLedRightCueBtn, true);
+	led_write(kiHerculesLedLeftCueLamp, true);
+	led_write(kiHerculesLedLeftHeadphone, true);
+	led_write(kiHerculesLedRightHeadphone, true);
+	led_write(kiHerculesLedLeftCueBtn, true);
 
+	usleep(2 * tenth_sec);
+	led_write(kiHerculesLedLeftFx, false);
+	led_write(kiHerculesLedRightFx, false);
+	
+	usleep(1 * tenth_sec);
+	led_write(kiHerculesLedLeftCueLamp, false);
+	led_write(kiHerculesLedRightCueLamp, false);
+	
+	usleep(1 * tenth_sec);
+	led_write(kiHerculesLedLeftLoop, false);
+	led_write(kiHerculesLedRightLoop, false);
+	
+	usleep(1 * tenth_sec);
+	led_write(kiHerculesLedLeftMasterTempo, false);
+	led_write(kiHerculesLedRightMasterTempo, false);
+	led_write(kiHerculesLedLeftHeadphone, false);
+	led_write(kiHerculesLedRightHeadphone, false);
+
+	usleep(1 * tenth_sec);
+	led_write(kiHerculesLedLeftSync, false);
+	led_write(kiHerculesLedRightSync, false);
+
+	usleep(1 * tenth_sec);
+	led_write(kiHerculesLedLeftCueBtn, false);
+	led_write(kiHerculesLedRightCueBtn, false);
+
+}
