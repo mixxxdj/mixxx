@@ -154,11 +154,17 @@ elif platform == 'win32':
 	env = Environment(tools=['default','qt4', 'msvs'], toolpath=['../', './'], QTDIR=flags_qtdir, QT_LIB='', VCINSTALLDIR = os.getenv('VCInstallDir'), ENV = os.environ)
 #	env.Append(LIBPATH = (flags_qtdir + "/plugins/iconengines"))
 
+### embed SVN version into build
 build_rev = getSVNRevision();
-if build_rev != '': 
-	env.Append(CXXFLAGS = '-DBUILD_REV=\\"' + build_rev + '\\"')
-
-#env.Append(CPPPATH='.')
+### Old way - causes everything to be rebuilt each time the SVN ver moves. :(
+#if build_rev != '': 
+# 	env.Append(CXXFLAGS = '-DBUILD_REV=\\"' + build_rev + '\\"')
+### Put version info into a file, so it doesn't force a rebuild of everything :)
+f = open("../.mixxx_version.svn","w")
+try:
+	f.write('#define BUILD_REV "' + build_rev + '"\n')
+finally:
+	f.close()
 
 #Mixxx sources to build
 sources = Split("""enginebuffercue.cpp input.cpp mixxxmenuplaylists.cpp trackplaylistlist.cpp mixxxkeyboard.cpp configobject.cpp controlobjectthread.cpp

@@ -59,11 +59,13 @@ MixxxApp::MixxxApp(QApplication * a, struct CmdlineArgs args, QSplashScreen * pS
 {
     app = a;
 
+    #include ".mixxx_version.svn" // #define BUILD_REV = "<svn rev number>"
     QString buildRevision = "";
     #ifdef BUILD_REV
       buildRevision = BUILD_REV;
     #endif
-    if (buildRevision.trimmed().length() > 0) buildRevision = "(svn " + buildRevision + ") ";
+    if (buildRevision.trimmed().length() > 0) buildRevision = "(svn " + buildRevision + "; built on: " + __DATE__ + " @ " + __TIME__ + ") ";
+
     qDebug() << "Mixxx" << VERSION << QString(buildRevision + "is starting...").ascii();
     setWindowTitle(tr("Mixxx " VERSION));
 #ifdef __MACX__
