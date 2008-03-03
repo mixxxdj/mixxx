@@ -28,6 +28,11 @@ class SoundManager;
   * when setting latency */
 #define MIXXXPA_MAX_FRAME_SIZE 1024
 
+/** Dynamically resolved function which allows us to enable a realtime-priority callback
+    thread from ALSA/PortAudio. This must be dynamically resolved because PortAudio can't
+    tell us if ALSA is compiled into it or not. */
+typedef int (*EnableAlsaRT)(PaStream* s, int enable);
+
 class SoundDevicePortAudio;
 
 /** A struct to some stuff we need to pass along to the callback through PortAudio **/
