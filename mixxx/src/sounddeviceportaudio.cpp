@@ -40,7 +40,6 @@ SoundDevicePortAudio::SoundDevicePortAudio(ConfigObject<ConfigValue> * config, S
     m_iNumberOfBuffers = 2;
     m_iNumInputChannels = m_deviceInfo->maxInputChannels;
     m_iNumOutputChannels = m_deviceInfo->maxOutputChannels;
-
 }
 
 SoundDevicePortAudio::~SoundDevicePortAudio()
@@ -194,6 +193,20 @@ int SoundDevicePortAudio::open()
     {
         qDebug() << "Opened PortAudio stream successfully... starting";
     }
+
+    //Attempt to dynamically load and resolve stuff in the PortAudio library
+    QLibrary portaudio("libportaudio.so.2");
+    if (!portaudio.load())
+       qDebug() << "Failed to dynamically load PortAudio library";
+    else
+       qDebug() << "Dynamically load PortAudio library!";        
+    
+    EnableAlsaRT enableRealtime = (EnableAlsaRT) portaudio.resolve("PaAlsa_EnableRealtimeScheduling");
+    if (rt)
+    {
+        enableRealtime(m_pStream, 1);
+    }
+    portaudio.unload();
 
     // Start stream
     err = Pa_StartStream(m_pStream);
