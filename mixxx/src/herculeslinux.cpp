@@ -21,14 +21,14 @@
  * - Developed on Hercule DJ Console MK2 - MK1 may also work, untested
  * - Fixed control scale to be 0.0 to 4.0 on bass, mid, treb, etc
  * - Fixed pitch knob to be from -1.0 to 1.0
- * - Fixed volume sliders to be from 0.0 to 1.0 
+ * - Fixed volume sliders to be from 0.0 to 1.0
  * - Fixed crossfader to be -1.0 to 1.0
  * - Fixed Play buttons to send the NOT (!) value whatever the current playback status is
  * - Button LEDs light up when pressed
  * - Thanks to Thomas' patch we have a working headphone switch on the Mk2
  *
- * - REMOVED legacy dev/file based support used in Mixxx 1.5.0 (Alberts MP3 Control won't work unless Mel can get it going with libdjconsole) 
- *	The last straw why this code has now been removed is with the recent engine changes to the meanings of all of the control values, 
+ * - REMOVED legacy dev/file based support used in Mixxx 1.5.0 (Alberts MP3 Control won't work unless Mel can get it going with libdjconsole)
+ *	The last straw why this code has now been removed is with the recent engine changes to the meanings of all of the control values,
  *	this block of code would need a large update and a bit of testing to get everything working in the manner it used to...
  *
  * - TODO: fix the JogDials to do something like a scratch (they do a temporary pitch bend now :\)
@@ -90,11 +90,47 @@ double HerculesLinux::PitchChange(const QString ControlSide, const int ev_value,
 
 #ifdef __LIBDJCONSOLE__
 // TODO: Move const block to libDJConsole start
+// ------------ start libDJConsole block ----------------
 const int MONITOR_DECK_A = 100;
 const int MONITOR_DECK_B = 101;
 const int MONITOR_MIX = 102;
 const int MONITOR_SPLIT = 103;
-// end libDJConsole block
+
+// Stubs for Herc Rmx Controls
+const int GAIN_A = -1;
+const int GAIN_B = -1;
+const int MAIN_VOL = -1;
+
+// Stubs for Herc Rmx Buttons
+const int SCRATCH = -1;
+const int LEFT_KILL_HIGH = -1;
+const int LEFT_KILL_MID = -1;
+const int LEFT_KILL_BASS = -1;
+const int RIGHT_KILL_HIGH = -1;
+const int RIGHT_KILL_MID = -1;
+const int RIGHT_KILL_BASS = -1;
+const int LOAD_DECK_A = -1;
+const int LOAD_DECK_B = -1;
+const int LEFT_PITCH_RESET = -1;
+const int RIGHT_PITCH_RESET = -1;
+const int UP = -1;
+const int DOWN = -1;
+const int LEFT = -1;
+const int RIGHT = -1;
+// const int LEFT_CUE_SELECT = -1; // same as headphone button on Mk1?
+// const int RIGHT_CUE_SELECT = -1; // same as headphone button on Mk1?
+// const int LEFT_BEAT_LOCK = -1; // same as autobeat on Mk2?
+// const int RIGHT_BEAT_LOCK = -1; // same as autobeat on Mk2?
+
+// Check if the control is a button (used to filter out button released events)
+// FIXME: This code will have to be rewritten to use something non-QT when moved to libDJConsole.
+const QSet<int> non_button_controls = QSet<int>::QSet() << XFADER << MAIN_VOL << MONITOR_SPLIT << MONITOR_MIX \
+                                    << MONITOR_DECK_A << GAIN_A << LEFT_VOL << LEFT_JOG << LEFT_BASS << LEFT_MID << LEFT_HIGH << LEFT_PITCH \
+                                    << MONITOR_DECK_B << GAIN_B << RIGHT_VOL << RIGHT_JOG << RIGHT_BASS << RIGHT_MID << RIGHT_HIGH << RIGHT_PITCH;
+static bool isButton(const int controlId) {
+    return !non_button_controls.contains(controlId);
+}
+// -------------- end libDJConsole block ----------------
 
 static void console_event(void * c, int code, int value)
 {
@@ -131,8 +167,7 @@ HerculesLinux::~HerculesLinux() {
 void HerculesLinux::closedev() {
 }
 
-void HerculesLinux::run() 
-{
+void HerculesLinux::run() {
 #ifdef __THOMAS_HERC__
 	double l;
 	double r;
@@ -220,7 +255,7 @@ int HerculesLinux::opendev(int iId)
 }
 
 void HerculesLinux::consoleEvent(int first, int second) {
-    if (second == 0) {
+    if (second == 0 && isButton(first)) {
         djc->Leds.setBit(first, false);
         return;
     }
