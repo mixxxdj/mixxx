@@ -326,10 +326,11 @@ void MidiObjectALSASeq::sendShortMsg(unsigned int word) {
     switch ((byte1 & 0xf0)) {
     case 0x90:
         snd_seq_ev_set_noteon(&ev, byte1&0xf, byte2, byte3);
+	snd_seq_event_output_direct(m_handle, &ev);
 	break;
     case 0xb0:
 	snd_seq_ev_set_controller(&ev, byte1&0xf, byte2, byte3);
+	snd_seq_event_output_direct(m_handle, &ev);
 	break;
     }
-    snd_seq_event_output_direct(m_handle, &ev);
 }

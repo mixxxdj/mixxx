@@ -21,7 +21,7 @@ MidiLedHandler::~MidiLedHandler() {
 
 void MidiLedHandler::controlChanged(double value) {
     unsigned char m_byte2 = 0x00;
-    if (value >= m_threshold) { m_byte2 = 0x01; }
+    if (value >= m_threshold) { m_byte2 = 0x7f; }
 
     m_midi->sendShortMsg(m_status, m_byte1, m_byte2);
 }
