@@ -67,6 +67,48 @@ def CheckOggVorbis():
 
 	return
 
+#Check for FFMPEG support
+def CheckFFMPEG(conf, sources):
+	flags_ffmpeg = ARGUMENTS.get('ffmpeg', 0)
+	if int(flags_ffmpeg):
+		if platform == 'linux':
+			#Check for libavcodec, libavformat
+			#I just randomly picked version numbers lower than mine for this - Albert
+			if not conf.CheckForPKG('libavcodec', '51.20.0'):
+				print 'libavcodec not found.'
+				Exit(1)
+			if not conf.CheckForPKG('libavformat', '51.1.0'):
+				print 'libavcodec not found.'
+				Exit(1)
+			else:
+				#Grabs the libs and cflags for ffmpeg
+				env.ParseConfig('pkg-config libavcodec --silence-errors --cflags --libs') 
+				env.ParseConfig('pkg-config libavformat --silence-errors --cflags --libs') 
+				env.Append(CXXFLAGS = '-D__FFMPEGFILE__')
+		else:
+			# aptitude install libavcodec-dev libavformat-dev liba52-0.7.4-dev libdts-dev
+			env.Append(LIBS = 'avcodec')
+			env.Append(LIBS = 'avformat')
+			env.Append(LIBS = 'z')
+			env.Append(LIBS = 'a52')
+			env.Append(LIBS = 'dts')
+			env.Append(LIBS = 'gsm')
+			env.Append(LIBS = 'dc1394_control')
+			env.Append(LIBS = 'dl')
+			env.Append(LIBS = 'vorbisenc')
+			env.Append(LIBS = 'raw1394')
+			env.Append(LIBS = 'avutil')
+			env.Append(LIBS = 'vorbis')
+			env.Append(LIBS = 'm')
+			env.Append(LIBS = 'ogg')
+			env.Append(CXXFLAGS = '-D__FFMPEGFILE__')
+		sources += Split("""soundsourceffmpeg.cpp """)
+		print "Not working FFMPEG support... enabled"
+	else:
+		print "Not working FFMPEG support... disabled"
+	return	
+
+
 # Checks for pkg-config on Linux
 def CheckForPKGConfig( context, version='0.0.0' ):
 	context.Message( "Checking for pkg-config (at least version %s)... " % version )
@@ -244,6 +286,9 @@ if not env.GetOption('clean') and not SCons.Util.containsAny(os.sys.argv, ['-h',
 
 	#Check for OpenGL (it's messy to do it for all three platforms)
 	CheckOpenGL()
+	
+	#Check if FFMPEG was enabled
+	CheckFFMPEG(conf, sources)
 
 	#Platform-specific checks for Linux and Win32...
 	if platform == 'linux' or platform == 'win32':
@@ -511,8 +556,8 @@ else:
 	print "High quality EQs... enabled"
 
 #Experimental Recording
-flags_experimentalrecording = ARGUMENTS.get('experimentalrecord', 0)
-if int(flags_experimentalrecording):
+flags_recording = ARGUMENTS.get('recording', 0)
+if int(flags_recording):
 	env.Append(CXXFLAGS = '-D__EXPERIMENTAL_RECORDING__')
 	env.Uic4('dlgprefrecorddlg.ui')
 	sources += Split(""" dlgprefrecord.cpp enginerecord.cpp writeaudiofile.cpp """ )
@@ -637,29 +682,7 @@ else:
 	print "Optimizations... disabled"
 
 
-#ffmpeg support
-flags_ffmpeg = ARGUMENTS.get('ffmpeg', 0)
-if int(flags_ffmpeg):
-        # aptitude install libavcodec-dev libavformat-dev liba52-0.7.4-dev libdts-dev
-        env.Append(LIBS = 'avcodec')
-        env.Append(LIBS = 'avformat')
-        env.Append(LIBS = 'z')
-        env.Append(LIBS = 'a52')
-        env.Append(LIBS = 'dts')
-        env.Append(LIBS = 'gsm')
-        env.Append(LIBS = 'dc1394_control')
-        env.Append(LIBS = 'dl')
-        env.Append(LIBS = 'vorbisenc')
-        env.Append(LIBS = 'raw1394')
-        env.Append(LIBS = 'avutil')
-        env.Append(LIBS = 'vorbis')
-        env.Append(LIBS = 'm')
-        env.Append(LIBS = 'ogg')
-        env.Append(CXXFLAGS = '-D__FFMPEGFILE__')
-	sources += Split("""soundsourceffmpeg.cpp """)
-	print "Not working FFMPEG support... enabled"
-else:
-	print "Not working FFMPEG support... disabled"
+
 
 # Profiling and Optimization
 if not platform == 'win32':
