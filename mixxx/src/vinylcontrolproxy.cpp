@@ -47,11 +47,11 @@ VinylControlProxy::VinylControlProxy(ConfigObject<ConfigValue> * pConfig, const 
 
 VinylControlProxy::~VinylControlProxy()
 {
-
     if (m_pVinylControl)
+    {
         delete m_pVinylControl;
-
-
+        m_pVinylControl = NULL;
+    }
 }
 
 bool VinylControlProxy::isEnabled()
