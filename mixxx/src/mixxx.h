@@ -112,6 +112,8 @@ class MixxxApp : public QMainWindow
     void slotOptionsBeatMark(bool toggle);
     /** toggle vinyl control - Don't #ifdef this because MOC is dumb**/
     void slotOptionsVinylControl(bool toggle);
+    /** toggle recording - Don't #ifdef this because MOC is dumb**/
+    void slotOptionsRecord(bool toggle);
     /** toogle full screen mode */
     void slotOptionsFullScreen(bool toggle);
     /** Preference dialog */
@@ -200,6 +202,9 @@ class MixxxApp : public QMainWindow
     QAction *optionsBeatMark;
 #ifdef __VINYLCONTROL__
     QAction *optionsVinylControl;
+#endif
+#ifdef __EXPERIMENTAL_RECORDING__
+    QAction *optionsRecord;
 #endif
     QAction *optionsFullScreen;
     QAction *optionsPreferences;

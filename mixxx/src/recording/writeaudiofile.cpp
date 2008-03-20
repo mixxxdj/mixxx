@@ -11,6 +11,7 @@ WriteAudioFile::WriteAudioFile(ConfigObject<ConfigValue> * _config)
 {
     ready = false;
     sf = NULL;
+    memset(&sfInfo, 0, sizeof(sfInfo));
     config = _config;
     ctrlRec = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey("[Master]", "Record")));
 }
@@ -23,9 +24,12 @@ WriteAudioFile::~WriteAudioFile()
 
 void WriteAudioFile::open()
 {
-    QByteArray baPath = config->getValueString(ConfigKey(PREF_KEY,"Path")).toUtf8();
+    //Note: libsndfile doesn't seem to like utf8 strings unfortunately :(
+    QByteArray baPath = config->getValueString(ConfigKey(RECORDING_PREF_KEY,"Path")).toAscii();
     const char *path = baPath.data();
-    int format = config->getValueString(ConfigKey(PREF_KEY, "Encoding")).toInt();
+    QString encodingType = config->getValueString(ConfigKey(RECORDING_PREF_KEY, "Encoding"));
+
+    qDebug() << "Recording prefs:" << baPath.data() << encodingType;
 
     ready = false;
     if(ctrlRec->get() == RECORD_ON)
@@ -35,22 +39,23 @@ void WriteAudioFile::open()
         //set sfInfo
         sfInfo.samplerate = 44100;
         sfInfo.channels = 2;
-        switch(format)
-        {
-        case IDEX_WAVE:
+
+        if (encodingType == ENCODING_WAVE)
             sfInfo.format = SF_FORMAT_WAV | SF_FORMAT_PCM_16;
-            break;
-        case IDEX_AIFF:
+        else if (encodingType == ENCODING_AIFF)
             sfInfo.format = SF_FORMAT_AIFF | SF_FORMAT_PCM_16;
-            break;
             //# TODO: Fix code SF_FORMAT_FLAC block below to work on Windows
     #ifdef SF_FORMAT_FLAC
-        case IDEX_FLAC:
+        else if (encodingType == ENCODING_FLAC)
             sfInfo.format = SF_FORMAT_FLAC | SF_FORMAT_PCM_16;
-            break;
     #endif
-        default:
-            qDebug("Corrupt record section in preference file: %d", format);
+        else if (encodingType == ENCODING_OGG || encodingType == ENCODING_MP3)
+        {
+            qDebug() << "Error: OGG and MP3 decoding not handled by libsndfile!";
+        }
+        else
+        {
+            qDebug() << "Corrupt recording encoding section in preference file:" << encodingType;
             return;
         }
 
@@ -68,15 +73,15 @@ void WriteAudioFile::open()
 
             //set meta data
             int ret;
-            QByteArray baTitle = config->getValueString(ConfigKey(PREF_KEY, "Title")).toUtf8();
+            QByteArray baTitle = config->getValueString(ConfigKey(RECORDING_PREF_KEY, "Title")).toAscii();
             ret = sf_set_string(sf, SF_STR_TITLE, baTitle.data());
             if(ret != 0)
                 qDebug("libsndfile: %s", sf_error_number(ret));
-            QByteArray baAuthor = config->getValueString(ConfigKey(PREF_KEY, "Author")).toUtf8();
+            QByteArray baAuthor = config->getValueString(ConfigKey(RECORDING_PREF_KEY, "Author")).toAscii();
             ret = sf_set_string(sf, SF_STR_ARTIST, baAuthor.data());
             if(ret != 0)
                 qDebug("libsndfile: %s", sf_error_number(ret));
-            QByteArray baComment = config->getValueString(ConfigKey(PREF_KEY, "Comment")).toUtf8();
+            QByteArray baComment = config->getValueString(ConfigKey(RECORDING_PREF_KEY, "Comment")).toAscii();
             ret = sf_set_string(sf, SF_STR_COMMENT, baComment.data()); 
             if(ret != 0)
                 qDebug("libsndfile: %s", sf_error_number(ret));

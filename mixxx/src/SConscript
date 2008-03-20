@@ -560,7 +560,7 @@ flags_recording = ARGUMENTS.get('recording', 0)
 if int(flags_recording):
 	env.Append(CXXFLAGS = '-D__EXPERIMENTAL_RECORDING__')
 	env.Uic4('dlgprefrecorddlg.ui')
-	sources += Split(""" dlgprefrecord.cpp enginerecord.cpp writeaudiofile.cpp """ )
+	sources += Split(""" dlgprefrecord.cpp recording/enginerecord.cpp recording/writeaudiofile.cpp """ )
 	print "Experimental recording... enabled"
 else:
 	print "Experimental recording... disabled"
