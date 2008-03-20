@@ -25,7 +25,6 @@
 #include "engineclipping.h"
 #include "engineflanger.h"
 #include "enginevumeter.h"
-#include "enginerecord.h"
 #include "enginevinylsoundemu.h"
 #include "enginexfader.h"
 #include "enginesidechain.h"
@@ -119,9 +118,7 @@ EngineMaster::EngineMaster(ConfigObject<ConfigValue> * _config,
     m_pTemp2 = new CSAMPLE[MAX_BUFFER_LEN];
     m_pHead = new CSAMPLE[MAX_BUFFER_LEN];
     m_pMaster = new CSAMPLE[MAX_BUFFER_LEN];
-#ifdef __EXPERIMENTAL_RECORDING__
-    rec = new EngineRecord(_config);
-#endif
+
 
     sidechain = new EngineSideChain(_config);
 
@@ -147,9 +144,7 @@ EngineMaster::~EngineMaster()
     delete [] m_pTemp2;
     delete [] m_pHead;
     delete [] m_pMaster;
-#ifdef __EXPERIMENTAL_RECORDING__
-    delete rec;
-#endif
+
 }
 
 void EngineMaster::setPitchIndpTimeStretch(bool b)
@@ -316,10 +311,6 @@ void EngineMaster::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBuff
         m_pMaster[i  ] = m_pMaster[i  ]*balleft;
         m_pMaster[i+1] = m_pMaster[i+1]*balright;
     }
-
-#ifdef __EXPERIMENTAL_RECORDING__
-    rec->process(m_pMaster, m_pMaster, iBufferSize);
-#endif
 
     //Submit samples to the side chain to do shoutcasting, recording, etc.
     //(cpu intensive non-realtime tasks)
