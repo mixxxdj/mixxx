@@ -29,8 +29,6 @@ void WriteAudioFile::open()
     const char *path = baPath.data();
     QString encodingType = config->getValueString(ConfigKey(RECORDING_PREF_KEY, "Encoding"));
 
-    qDebug() << "Recording prefs:" << baPath.data() << encodingType;
-
     ready = false;
     if(ctrlRec->get() == RECORD_ON)
     {
@@ -104,7 +102,7 @@ void WriteAudioFile::write(const CSAMPLE * pIn, int iBufferSize)
         {
 //      #ifdef SF_FORMAT_FLAC
             sf_write_float(sf, pIn, iBufferSize);
-            qDebug() << "writing";
+            //qDebug() << "writing";
 //      #endif
         }
         else
