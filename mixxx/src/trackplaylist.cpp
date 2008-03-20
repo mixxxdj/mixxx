@@ -279,7 +279,7 @@ void TrackPlaylist::addPath(QString qPath)
 	
     if (!dir.exists())
     {
-        for(int i = 1; i < tempCollection->getSize(); i++)
+        for(int i = 0; i < tempCollection->getSize(); i++)
         {
             if (tempCollection->getTrack(i))
                 if(tempCollection->getTrack(i)->getLocation() == qPath)
@@ -332,7 +332,7 @@ void TrackPlaylist::addPath(QString qPath)
             }
             m_qLibScanMutex.unlock();
             
-            for(int i = 1; i < getCollection()->getSize(); ++i)
+            for(int i = 0; i < getCollection()->getSize(); ++i)
             {
                 /*qDebug("Checking: %s",tempCollection->getTrack(i)->getFilename());*/
                 if (tempCollection->getTrack(i))
