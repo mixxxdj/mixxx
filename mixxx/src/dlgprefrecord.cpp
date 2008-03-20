@@ -21,17 +21,6 @@
 #include "recording/defs_recording.h"
 #include "controlobject.h"
 #include "controlobjectthreadmain.h"
-#define MIXXX
-#include <qlineedit.h>
-#include <qwidget.h>
-#include <qslider.h>
-#include <qlabel.h>
-#include <qstring.h>
-#include <qpushbutton.h>
-#include <qmessagebox.h>
-#include <QComboBox>
-#include <q3groupbox.h>
-#include <qcheckbox.h>
 
 DlgPrefRecord::DlgPrefRecord(QWidget * parent, ConfigObject<ConfigValue> * _config) : QWidget(parent), Ui::DlgPrefRecordDlg()
 {
@@ -40,16 +29,16 @@ DlgPrefRecord::DlgPrefRecord(QWidget * parent, ConfigObject<ConfigValue> * _conf
 
     setupUi(this);
 
-    recordControl = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey("[Master]", "Record"))); //See RECORD_* #defines in dlgprefrecord.h
+    recordControl = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey("[Master]", "Record"))); //See RECORD_* #defines in defs_recording.h
 
     //Fill up encoding list
-    comboBoxEncoding->insertItem(IDEX_WAVE, "WAVE");
+    comboBoxEncoding->addItem(ENCODING_WAVE);
 #ifdef SF_FORMAT_FLAC
-    comboBoxEncoding->insertItem(IDEX_FLAC, "FLAC");
+    comboBoxEncoding->addItem(ENCODING_FLAC);
 #endif
-    comboBoxEncoding->insertItem(IDEX_AIFF, "AIFF");
-    //comboBoxEncoding->insertItem("OGG",  IDEX_OGG);
-    //comboBoxEncoding->insertItem("MP3",  IDEX_MP3);
+    comboBoxEncoding->addItem(ENCODING_AIFF);
+    //comboBoxEncoding->addItem(ENCODING_MP3);
+    //comboBoxEncoding->addItem(ENCODING_OGG);
 
 
     //Connections
@@ -59,24 +48,22 @@ DlgPrefRecord::DlgPrefRecord(QWidget * parent, ConfigObject<ConfigValue> * _conf
     connect(SliderQuality,    SIGNAL(valueChanged(int)), this,  SLOT(slotSliderQuality()));
     connect(SliderQuality,    SIGNAL(sliderMoved(int)), this,   SLOT(slotSliderQuality()));
     connect(SliderQuality,    SIGNAL(sliderReleased()), this,   SLOT(slotSliderQuality()));
-    //connect(CheckBoxRecord,   SIGNAL(stateChanged(int)),this,	SLOT(slotApply()));
-    connect(CheckBoxRecord,            SIGNAL(stateChanged(int)), this, SLOT(slotApply()));
 
-
-    loadMetaData();
     slotApply();
     recordControl->slotSet(RECORD_OFF); //make sure a corrupt config file won't cause us to record constantly
 }
 
 void DlgPrefRecord::slotBrowseSave()
 {
-    QString selectedFile = QFileDialog::getSaveFileName(NULL, "Save Recording As...", config->getValueString(ConfigKey(RECORDING_PREF_KEY,"Path")), fileTypeExtension);
-    if (selectedFile != "")
+    QString encodingType = comboBoxEncoding->currentText();    
+    QString encodingFileFilter = QString("Audio (*.%1)").arg(encodingType);
+    QString selectedFile = QFileDialog::getSaveFileName(NULL, "Save Recording As...", config->getValueString(ConfigKey(RECORDING_PREF_KEY,"Path")), encodingFileFilter);
+    if (selectedFile.toLower() != "")
     {
-        if(!selectedFile.endsWith("." + fileTypeExtension))
+        if(!selectedFile.toLower().endsWith("." + encodingType.toLower()))
         {
-            selectedFile.append("." + fileTypeExtension);
-        }
+            selectedFile.append("." + encodingType.toLower());
+        }        
         LineEditRecPath->setText( selectedFile );
     }
 }
@@ -84,36 +71,36 @@ void DlgPrefRecord::slotBrowseSave()
 void DlgPrefRecord::slotSliderQuality()
 {
     updateTextQuality();
-    switch(comboBoxEncoding->currentIndex())
+    QString encodingType = comboBoxEncoding->currentText();
+    if (encodingType == "OGG")
     {
-    case IDEX_OGG:
         config->set(ConfigKey(RECORDING_PREF_KEY, "OGG_Quality"), ConfigValue(SliderQuality->value()));
-        break;
-    case IDEX_MP3:
+    }
+    else if (encodingType == "MP3")
+    {
         config->set(ConfigKey(RECORDING_PREF_KEY, "MP3_Quality"), ConfigValue(SliderQuality->value()));
-        break;
     }
 }
 
 int DlgPrefRecord::getSliderQualityVal()
 {
-    switch(comboBoxEncoding->currentIndex())
+    QString encodingType = comboBoxEncoding->currentText();
     {
-    case IDEX_OGG:
+    if (encodingType == ENCODING_OGG)
         return SliderQuality->value();
-    case IDEX_MP3:
+    if (encodingType == ENCODING_MP3)
         switch(SliderQuality->value())
         {
-        case 1: return 16;
-        case 2: return 24;
-        case 3: return 32;
-        case 4: return 64;
-        case 5: return 128;
-        case 6: return 160;
-        case 7: return 192;
-        case 8: return 224;
-        case 9: return 256;
-        case 10: return 320;
+            case 1: return 16;
+            case 2: return 24;
+            case 3: return 32;
+            case 4: return 64;
+            case 5: return 128;
+            case 6: return 160;
+            case 7: return 192;
+            case 8: return 224;
+            case 9: return 256;
+            case 10: return 320;
         }
     }
     return 0;
@@ -122,49 +109,35 @@ int DlgPrefRecord::getSliderQualityVal()
 void DlgPrefRecord::updateTextQuality()
 {
     int quality = getSliderQualityVal();
-    switch(comboBoxEncoding->currentIndex())
-    {
-    case IDEX_MP3:
+    QString encodingType = comboBoxEncoding->currentText();
+    if (encodingType == ENCODING_MP3)
         TextQuality->setText(QString( QString::number(quality) + "kbps"));
-        break;
-    case IDEX_OGG:
+    if (encodingType == ENCODING_OGG)
         TextQuality->setText(QString( "Quality: " + QString::number(quality)));
-        break;
-    }
+    
 }
 
 void DlgPrefRecord::slotEncoding()
 {
     //set defaults
     groupBoxQuality->setEnabled(true);
-    config->set(ConfigKey(RECORDING_PREF_KEY, "Encoding"), ConfigValue(comboBoxEncoding->currentIndex()));
-    switch(comboBoxEncoding->currentIndex())
+    config->set(ConfigKey(RECORDING_PREF_KEY, "Encoding"), ConfigValue(comboBoxEncoding->currentText()));
+    if (comboBoxEncoding->currentText() == ENCODING_WAVE || 
+        comboBoxEncoding->currentText() == ENCODING_FLAC ||
+        comboBoxEncoding->currentText() == ENCODING_AIFF)
     {
-    case IDEX_WAVE:
         groupBoxQuality->setEnabled(false);
-        fileTypeExtension = QString("wav");
-        break;
-
-    case IDEX_FLAC:
-        groupBoxQuality->setEnabled(false);
-        fileTypeExtension = QString("flac");
-        break;
-
-    case IDEX_OGG:
-        SliderQuality->setValue( config->getValueString(ConfigKey(RECORDING_PREF_KEY, "OGG_Quality")).toInt());
-        fileTypeExtension = QString("ogg");
-        break;
-
-    case IDEX_MP3:
-        SliderQuality->setValue( config->getValueString(ConfigKey(RECORDING_PREF_KEY, "MP3_Quality")).toInt());
-        fileTypeExtension = QString("mp3");
-        break;
-
-    case IDEX_AIFF:
-        groupBoxQuality->setEnabled(false);
-        fileTypeExtension = QString("aiff");
-        break;
     }
+    else if (comboBoxEncoding->currentText() == ENCODING_OGG)
+    {
+        SliderQuality->setValue( config->getValueString(ConfigKey(RECORDING_PREF_KEY, "OGG_Quality")).toInt());
+    }
+    else if (comboBoxEncoding->currentText() == ENCODING_MP3)
+    {
+        SliderQuality->setValue( config->getValueString(ConfigKey(RECORDING_PREF_KEY, "MP3_Quality")).toInt());
+    }
+    else
+        qDebug() << "Invalid recording encoding type in" << __FILE__ << "on line:" << __LINE__;
 }
 
 void DlgPrefRecord::setMetaData()
@@ -188,14 +161,25 @@ DlgPrefRecord::~DlgPrefRecord()
 void DlgPrefRecord::slotRecordPathChange()
 {
     confirmOverwrite = false;
-    CheckBoxRecord->setChecked(false);
     slotApply();
 }
 
-//TODO: Write this function. (Should update/refresh the contents of this dialog)
+//This function updates/refreshes the contents of this dialog
 void DlgPrefRecord::slotUpdate()
 {
-
+    int encodingIndex = comboBoxEncoding->findText(config->getValueString(ConfigKey("[Recording]","Encoding")));
+    if (encodingIndex >= 0)
+        comboBoxEncoding->setCurrentIndex(encodingIndex);
+    else //Invalid, so set default and save
+    {
+        comboBoxEncoding->setCurrentIndex(0);
+        config->set(ConfigKey(RECORDING_PREF_KEY, "Encoding"), ConfigValue(comboBoxEncoding->currentText()));
+    }
+    
+    //Set the path from the saved value.
+    LineEditRecPath->setText(config->getValueString(ConfigKey(RECORDING_PREF_KEY,"Path")));
+    
+    loadMetaData();
 }
 
 void DlgPrefRecord::slotApply()
@@ -204,44 +188,4 @@ void DlgPrefRecord::slotApply()
     setMetaData();
 
     slotEncoding();
-
-    if(CheckBoxRecord->isChecked())
-    {
-        int result = 0;
-        if(QFile::exists(LineEditRecPath->text()) && !confirmOverwrite){
-            result = QMessageBox::warning( this, tr("Mixxx Recording", "The selected file already exists, would you like to overwrite it?\n\n\tSelecting \"No\" will abort the recording."), tr("Yes"), tr("No"), 0, 0, 1);
-        }
-        //If no file path was entered to record to, pop up the browse file dialog...
-        if (LineEditRecPath->text() == "")
-        {
-            slotBrowseSave();
-            //If the user clicked cancel in the browse dialog, then abort the recording
-            if (LineEditRecPath->text() == "")
-            {
-                result = 1;
-            }
-        }
-        if(result == 0)
-        {
-            qDebug("Setting record status: READY");
-            confirmOverwrite = true;
-            recordControl->slotSet(RECORD_READY);
-            /*
-             * Note: setting the recordControl value to RECORD_READY does not start the
-             * recording.  The RECORD_READY flag signals code elsewhere that when
-             * its condition is met (first track is played), the flag can
-             * be set to RECORD_ON
-             *
-             */
-        }
-        else
-        {
-            CheckBoxRecord->setChecked(false);
-        }
-    }
-    else
-    {
-        qDebug("Setting record status: OFF");
-        recordControl->slotSet(RECORD_OFF);
-    }
 }

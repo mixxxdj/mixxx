@@ -49,23 +49,12 @@ DlgPreferences::DlgPreferences(MixxxApp * mixxx, MixxxView * view,
                                Track *track, ConfigObject<ConfigValue> * _config) :  QDialog(), Ui::DlgPreferencesDlg()
 {
     m_pMixxx = mixxx;
-    //QDialog* foo = new QDialog();
 
     setupUi(this);
 
     setWindowTitle(tr("Preferences"));
     config = _config;
     m_pTrack = track;
-    
-    //Heavily based on the QT4 Config Dialog Example: http://doc.trolltech.com/4.3/dialogs-configdialog.html
-
-    /*contentsWidget = new QListWidget;
-       contentsWidget->setViewMode(QListView::IconMode);
-       contentsWidget->setIconSize(QSize(96, 84));
-       contentsWidget->setMovement(QListView::Static);
-       contentsWidget->setMaximumWidth(128);
-       contentsWidget->setSpacing(12);
-     */
 
     createIcons();
     //contentsWidget->setCurrentRow(0);

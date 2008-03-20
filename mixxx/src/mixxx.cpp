@@ -28,6 +28,7 @@
 #include "controlnull.h"
 #include "readerextractwave.h"
 #include "controlpotmeter.h"
+#include "controlobjectthreadmain.h"
 #include "reader.h"
 #include "enginebuffer.h"
 #include "enginevumeter.h"
@@ -51,6 +52,10 @@
 #include "defs_mixxxcmetrics.h"
 #endif
 
+#ifdef __EXPERIMENTAL_RECORDING__
+#include "recording/defs_recording.h"
+#endif
+
 extern "C" void crashDlg()
 {
     QMessageBox::critical(0, "Mixxx", "Mixxx has encountered a serious error and needs to close.");
@@ -67,7 +72,7 @@ MixxxApp::MixxxApp(QApplication * a, struct CmdlineArgs args, QSplashScreen * pS
     #endif
     if (buildRevision.trimmed().length() > 0) buildRevision = "(svn " + buildRevision + "; built on: " + __DATE__ + " @ " + __TIME__ + ") ";
 
-    qDebug() << "Mixxx" << VERSION << QString(buildRevision + "is starting...").ascii();
+    qDebug() << "Mixxx" << VERSION << buildRevision << "is starting...";
     setWindowTitle(tr("Mixxx " VERSION));
 #ifdef __MACX__
     setWindowIcon(QIcon(":icon.svg"));
@@ -498,6 +503,12 @@ void MixxxApp::initActions()
     optionsVinylControl->setShortcutContext(Qt::ApplicationShortcut);
 #endif
 
+#ifdef __EXPERIMENTAL_RECORDING__
+    optionsRecord = new QAction(tr("Enable &Recording"), this);
+    //optionsRecord->setShortcut(tr("Ctrl+R"));
+    optionsRecord->setShortcutContext(Qt::ApplicationShortcut);    
+#endif 
+
 #ifdef __SCRIPT__
     macroStudio = new QAction(tr("Show Studio"), this);
 #endif
@@ -545,6 +556,13 @@ void MixxxApp::initActions()
     connect(optionsVinylControl, SIGNAL(toggled(bool)), this, SLOT(slotOptionsVinylControl(bool)));
 #endif
 
+#ifdef __EXPERIMENTAL_RECORDING__
+    optionsRecord->setCheckable(true);
+    optionsRecord->setStatusTip(tr("Start Recording your Mix"));
+    optionsRecord->setWhatsThis(tr("Record your mix to a file"));
+    connect(optionsRecord, SIGNAL(toggled(bool)), this, SLOT(slotOptionsRecord(bool)));
+#endif
+
     optionsFullScreen->setCheckable(true);
     optionsFullScreen->setChecked(false);
     optionsFullScreen->setStatusTip(tr("Full Screen"));
@@ -585,6 +603,7 @@ void MixxxApp::initMenuBar()
     // menuBar entry fileMenu
     fileMenu->addAction(fileLoadSongPlayer1);
     fileMenu->addAction(fileLoadSongPlayer2);
+    libraryMenu->addSeparator();
     fileMenu->addAction(fileQuit);
 
     // menuBar entry optionsMenu
@@ -593,7 +612,11 @@ void MixxxApp::initMenuBar()
 #ifdef __VINYLCONTROL__
     optionsMenu->addAction(optionsVinylControl);
 #endif
+#ifdef __EXPERIMENTAL_RECORDING__
+    optionsMenu->addAction(optionsRecord);
+#endif
     optionsMenu->addAction(optionsFullScreen);
+    libraryMenu->addSeparator();
     optionsMenu->addAction(optionsPreferences);
 
     //    libraryMenu->setCheckable(true);
@@ -772,12 +795,77 @@ void MixxxApp::slotOptionsVinylControl(bool toggle)
                                    QMessageBox::Ok);
         prefDlg->show();
         prefDlg->showVinylControlPage();
+        optionsVinylControl->setChecked(false);
     }
     else
     {
         config->set(ConfigKey("[VinylControl]","Enabled"), ConfigValue((int)toggle));
         ControlObject::getControl(ConfigKey("[VinylControl]", "Enabled"))->set((int)toggle);
     }
+}
+
+//Also can't ifdef this (MOC again)
+void MixxxApp::slotOptionsRecord(bool toggle)
+{
+    ControlObjectThreadMain *recordingControl = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey("[Master]", "Record")));
+    QString recordPath = config->getValueString(ConfigKey("[Recording]","Path"));
+    QString encodingType = config->getValueString(ConfigKey("[Recording]","Encoding"));
+    QString encodingFileFilter = QString("Audio (*.%1)").arg(encodingType);
+    bool proceedWithRecording = true;
+    
+    if (toggle == true)
+    {
+        //If there was no recording path set, 
+        if (recordPath == "")
+        {
+            QString selectedFile = QFileDialog::getSaveFileName(NULL, tr("Save Recording As..."), 
+                                                                recordPath, 
+                                                                encodingFileFilter);
+            if (selectedFile.toLower() != "")
+            {
+                if(!selectedFile.toLower().endsWith("." + encodingType.toLower()))
+                {
+                    selectedFile.append("." + encodingType.toLower());
+                }
+                //Update the saved Path
+                config->set(ConfigKey(RECORDING_PREF_KEY, "Path"), selectedFile);
+            }
+            else
+                proceedWithRecording = false; //Empty filename, so don't record
+        }
+        else //If there was already a recording path set
+        {
+            //... and the file already exists, ask the user if they want to overwrite it.
+            int result;
+            if(QFile::exists(recordPath))
+            {
+                QFileInfo fi(recordPath);
+                result = QMessageBox::question(this, tr("Mixxx Recording"), tr("The file %1 already exists. Would you like to overwrite it?\nSelecting \"No\" will abort the recording.").arg(fi.fileName()), QMessageBox::Yes | QMessageBox::No);
+                if (result == QMessageBox::Yes) //If the user selected, "yes, overwrite the recording"...
+                    proceedWithRecording = true;
+                else
+                    proceedWithRecording = false;
+            }
+        }
+        
+        if (proceedWithRecording == true)
+        {
+            qDebug("Setting record status: READY");
+            recordingControl->slotSet(RECORD_READY);
+        }
+        else
+        {
+            optionsRecord->setChecked(false);
+        }
+        
+    }
+    else
+    {
+        qDebug("Setting record status: OFF");
+        recordingControl->slotSet(RECORD_OFF);
+    }
+    
+    delete recordingControl;
 }
 
 void MixxxApp::slotHelpAbout()
