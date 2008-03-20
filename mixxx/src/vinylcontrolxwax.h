@@ -35,7 +35,7 @@ private:
 	bool bNeedleDown; 				//Is the needle on the record? (used for needle dropping)
 	bool bSeeking; 					//Are we seeking through the record? (ie. is it moving really fast?)
 
-    //TODO: Comment me!
+    //Contains information that xwax's code needs internally about the timecode and how to process it.
     struct timecoder_t timecoder;
 
 	short*  m_samples;

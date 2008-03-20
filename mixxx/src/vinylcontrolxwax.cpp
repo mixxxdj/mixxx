@@ -63,7 +63,9 @@ VinylControlXwax::VinylControlXwax(ConfigObject<ConfigValue> * pConfig, const ch
     }
 
     //Initialize the timecoder structure.
-    timecoder_init(&timecoder); //iSampleRate
+    timecoder_init(&timecoder); 
+    timecoder.rate = iSampleRate;
+
 
     //Start this thread (ends up calling-back the function "run()" below)
     start();
@@ -169,16 +171,18 @@ void VinylControlXwax::run()
             // When there's a timecode signal available
             if((alive && !pitch_unavailable))
             {
-                if(alive && !pitch_unavailable)
-                {
-                    //dVinylPitch = (dOldPitch * (XWAX_SMOOTHING - 1) + dVinylPitch) / XWAX_SMOOTHING;
-                    //qDebug("dVinylPosition: %f, dVinylPitch: %f, when: %d", dVinylPosition, dVinylPitch, when);
-                }
-                
+                //dVinylPitch = (dOldPitch * (XWAX_SMOOTHING - 1) + dVinylPitch) / XWAX_SMOOTHING;
+                //qDebug("dVinylPosition: %f, dVinylPitch: %f, when: %d", dVinylPosition, dVinylPitch, when);
+ 
+                //FIXME (when Mark finished variable samplerates in timecoder)
+                //Hack to make other samplerates work with xwax:
+                //dVinylPitch *= (iSampleRate/44100);
+               
                 dVinylScratch = dVinylPitch;         //Use this value to instruct Mixxx for scratching/seeking.
                 dVinylPitch = dVinylPitch - 1.0f;         //Shift the 33 RPM value (33 RPM = 0.0)
                 dVinylPitch = dVinylPitch / fRateRange;   //Normalize to the pitch range. (8% = 1.0)
-                
+               
+
                 //Re-get the duration, just in case a track hasn't been loaded yet...
                 //duration = ControlObject::getControl(ConfigKey(group, "duration"));
 
