@@ -227,7 +227,8 @@ void BpmDetector::run()
                         if(pBpmReceiver)
                         {
                             m_qMutex.lock();
-                            pBpmReceiver->setProgress(pTrackInfoObject, cprogress/10);
+                            if (pTrackInfoObject)
+                                pBpmReceiver->setProgress(pTrackInfoObject, cprogress/10);
                             m_qMutex.unlock();
                         }
                     }
