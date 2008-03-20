@@ -32,7 +32,6 @@ class EngineVuMeter;
 class ControlPotmeter;
 class ControlPushButton;
 class ControlObject;
-class EngineRecord;
 class EngineVinylSoundEmu;
 class EngineSideChain;
 
@@ -69,7 +68,6 @@ private:
     EngineVolume *volume1, *volume2;
     EngineVuMeter *vumeter1, *vumeter2;
     EngineVinylSoundEmu *vinylsound1, *vinylsound2;
-    EngineRecord *rec;
     EngineSideChain *sidechain;
 
 //     EngineBufferMasterRate *m_pEngineBufferMasterRate;
