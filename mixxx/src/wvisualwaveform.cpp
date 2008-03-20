@@ -244,12 +244,12 @@ void WVisualWaveform::timerEvent(QTimerEvent *)
     // of the consequences of having it, so I'm leaving it
     // out for now. Someone should look at this closer.
     // - Albert Aug 19/07
-    //m_paintMutex.lock();
+    m_paintMutex.lock();
     if (!m_painting) {
         m_painting = true;
         updateGL();
     }
-    //m_paintMutex.unlock();
+    m_paintMutex.unlock();
 }
 
 void WVisualWaveform::resetColors() {
