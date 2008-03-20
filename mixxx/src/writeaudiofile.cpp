@@ -1,16 +1,18 @@
-#include "controlobjectthreadmain.h"
-#include "controlobject.h"
-#include "writeaudiofile.h"
-#include "dlgprefrecord.h"
+#include <QtCore>
 #include <sndfile.h>
-#include <QtDebug>
+#include "../controlobjectthreadmain.h"
+#include "../controlobject.h"
+#include "../dlgprefrecord.h"
+#include "writeaudiofile.h"
+#include "defs_recording.h"
+
 
 WriteAudioFile::WriteAudioFile(ConfigObject<ConfigValue> * _config)
 {
     ready = false;
     sf = NULL;
     config = _config;
-    ctrlRec = new ControlObject(ConfigKey("[Master]", "Record"));
+    ctrlRec = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey("[Master]", "Record")));
 }
 
 WriteAudioFile::~WriteAudioFile()
@@ -21,7 +23,8 @@ WriteAudioFile::~WriteAudioFile()
 
 void WriteAudioFile::open()
 {
-    const char * path = config->getValueString(ConfigKey(PREF_KEY,"Path")).latin1();
+    QByteArray baPath = config->getValueString(ConfigKey(PREF_KEY,"Path")).toUtf8();
+    const char *path = baPath.data();
     int format = config->getValueString(ConfigKey(PREF_KEY, "Encoding")).toInt();
 
     ready = false;
@@ -65,13 +68,16 @@ void WriteAudioFile::open()
 
             //set meta data
             int ret;
-            ret = sf_set_string(sf, SF_STR_TITLE, config->getValueString(ConfigKey(PREF_KEY, "Title")).ascii());
+            QByteArray baTitle = config->getValueString(ConfigKey(PREF_KEY, "Title")).toUtf8();
+            ret = sf_set_string(sf, SF_STR_TITLE, baTitle.data());
             if(ret != 0)
                 qDebug("libsndfile: %s", sf_error_number(ret));
-            ret = sf_set_string(sf, SF_STR_ARTIST, config->getValueString(ConfigKey(PREF_KEY, "Author")).ascii());
+            QByteArray baAuthor = config->getValueString(ConfigKey(PREF_KEY, "Author")).toUtf8();
+            ret = sf_set_string(sf, SF_STR_ARTIST, baAuthor.data());
             if(ret != 0)
                 qDebug("libsndfile: %s", sf_error_number(ret));
-            ret = sf_set_string(sf, SF_STR_COMMENT, config->getValueString(ConfigKey(PREF_KEY, "Comment")).ascii());
+            QByteArray baComment = config->getValueString(ConfigKey(PREF_KEY, "Comment")).toUtf8();
+            ret = sf_set_string(sf, SF_STR_COMMENT, baComment.data()); 
             if(ret != 0)
                 qDebug("libsndfile: %s", sf_error_number(ret));
 
@@ -80,6 +86,8 @@ void WriteAudioFile::open()
                 qDebug("libsndfile: %s", sf_error_number(ret));
         }
     }
+    else
+        qDebug() << "Warning: Tried to open WriteAudioFile before recording control was set to RECORD_ON";
 }
 
 void WriteAudioFile::write(const CSAMPLE * pIn, int iBufferSize)
@@ -89,9 +97,10 @@ void WriteAudioFile::write(const CSAMPLE * pIn, int iBufferSize)
     {
         if(ready == true)
         {
-      #ifdef SF_FORMAT_FLAC
+//      #ifdef SF_FORMAT_FLAC
             sf_write_float(sf, pIn, iBufferSize);
-      #endif
+            qDebug() << "writing";
+//      #endif
         }
         else
         {
@@ -107,6 +116,9 @@ void WriteAudioFile::write(const CSAMPLE * pIn, int iBufferSize)
 void WriteAudioFile::close()
 {
     if(sf != NULL)
+    {
         sf_close(sf);
+        sf = NULL;
+    }
     ready = false;
 }

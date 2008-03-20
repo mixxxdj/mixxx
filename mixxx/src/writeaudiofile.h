@@ -27,7 +27,7 @@ private:
     SNDFILE *sf;
     SF_INFO sfInfo;
     ConfigObject<ConfigValue> *config;
-    ControlObject *ctrlRec;
+    ControlObjectThreadMain *ctrlRec;
     bool ready; //if we can record this is set
 };
 

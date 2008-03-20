@@ -15,11 +15,12 @@
 ***************************************************************************/
 
 #include "enginerecord.h"
-#include "controllogpotmeter.h"
-#include "configobject.h"
-#include "controlobjectthreadmain.h"
-#include "controlobject.h"
-#include "dlgprefrecord.h"
+#include "defs_recording.h"
+#include "../controllogpotmeter.h"
+#include "../configobject.h"
+#include "../controlobjectthreadmain.h"
+#include "../controlobject.h"
+#include "../dlgprefrecord.h"
 
 /***************************************************************************
 *									   *
@@ -33,33 +34,14 @@
 
 EngineRecord::EngineRecord(ConfigObject<ConfigValue> * _config)
 {
-    curBuf1 = true;
     config = _config;
     recReadyCO = new ControlObject(ConfigKey("[Master]", "Record"));
     recReady = new ControlObjectThreadMain(recReadyCO);
     fOut = new WriteAudioFile(_config);
-
-    //Allocate Buffers
-    fill = new Buffer;
-    fill->size = DEFAULT_BUFSIZE;
-    fill->data = new CSAMPLE[fill->size];
-    fill->valid = 0;
-
-    write = new Buffer;
-    write->size = DEFAULT_BUFSIZE;
-    write->data = new CSAMPLE[fill->size];
-    write->valid = 0;
-    //QThread::start();
 }
 
 EngineRecord::~EngineRecord()
 {
-    delete fill->data;
-    delete fill;
-    delete write->data;
-    delete write;
-    //QThread::terminate();
-    //qDebug("rec thread terminated");
     delete fOut;
     delete recReady;
     delete recReadyCO;
@@ -67,20 +49,12 @@ EngineRecord::~EngineRecord()
 
 void EngineRecord::process(const CSAMPLE * pIn, const CSAMPLE * pOut, const int iBufferSize)
 {
-    CSAMPLE * Out = (CSAMPLE *) pOut;
+    CSAMPLE *Out = (CSAMPLE*) pOut;
 
-    //mutexFill.lock();
-    if(fill->size < iBufferSize)
-    {
-        delete fill->data;
-        fill->size = iBufferSize;
-        fill->data = new CSAMPLE[ fill->size ];
-    }
     for(int i=0; i<iBufferSize; i++)
     {
         if(pIn != pOut)
             Out[i] = pIn[i];
-        fill->data[i] = pIn[i];
 
         if(recReady->get() == RECORD_READY && pIn[i] > THRESHOLD_REC)
         {
@@ -89,45 +63,12 @@ void EngineRecord::process(const CSAMPLE * pIn, const CSAMPLE * pOut, const int 
             //then we can set the record flag to TRUE
             qDebug("Setting Record flag to: ON");
             recReady->slotSet(RECORD_ON);
+            fOut->open(); //FIXME: This is not a good spot for this. - Albert 
         }
     }
-    fill->valid = iBufferSize;
 
-    //High Priority Record (Record blocks playback thread)
-    //if(config->getValueString(ConfigKey(PREF_KEY, "Priority")).compare("Low") != 0)
-    //{
-    //write record buffer to file
-    fOut->write(fill->data, fill->valid);
-    fill->valid = 0;
-    //}
-
-    //mutexFill.unlock();
-    //waitCondFill.wakeAll();
+    //Write record buffer to file
+    fOut->write(pIn, iBufferSize);
 }
 
-
-void EngineRecord::run()
-{
-#if 0
-    //Method will record the buffer to file
-    //fOut->write(buffer1, validBuf1);
-    Buffer * temp;
-    while(1)
-    {
-        //mutexFill.lock();
-        //waitCondFill.wait(&mutexFill);
-
-        //swap buffers
-        //temp = fill;
-        //fill = write;
-        write = temp;
-
-        mutexFill.unlock();
-
-        //write record buffer to file
-        fOut->write(write->data, write->valid);
-        write->valid = 0;
-    }
-#endif
-}
 

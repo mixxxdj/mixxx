@@ -24,16 +24,7 @@
 class ControlObject;
 class ControlObjectThreadMain;
 
-#define PREF_KEY "[Recording]"
-#define IDEX_WAVE 0
-#define IDEX_FLAC 1
-#define IDEX_AIFF 2
-#define IDEX_OGG  3
-#define IDEX_MP3  4
 
-#define RECORD_READY 0.50f
-#define RECORD_ON 1.0f
-#define RECORD_OFF 0.0f
 
 class QWidget;
 /**
