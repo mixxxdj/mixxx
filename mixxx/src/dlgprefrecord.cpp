@@ -15,12 +15,14 @@
 *                                                                         *
 ***************************************************************************/
 
+#include <QtCore>
+#include <QtGui>
 #include "dlgprefrecord.h"
+#include "recording/defs_recording.h"
 #include "controlobject.h"
 #include "controlobjectthreadmain.h"
 #define MIXXX
 #include <qlineedit.h>
-#include <q3filedialog.h>
 #include <qwidget.h>
 #include <qslider.h>
 #include <qlabel.h>
@@ -68,12 +70,9 @@ DlgPrefRecord::DlgPrefRecord(QWidget * parent, ConfigObject<ConfigValue> * _conf
 
 void DlgPrefRecord::slotBrowseSave()
 {
-    Q3FileDialog * fd = new Q3FileDialog(config->getValueString(ConfigKey(PREF_KEY,"Path")),"", this, "Save As", TRUE );
-    fd->setMode( Q3FileDialog::AnyFile );
-    //fd->setCaption("Save As");
-    if ( fd->exec() == QDialog::Accepted )
+    QString selectedFile = QFileDialog::getSaveFileName(NULL, "Save Recording As...", config->getValueString(ConfigKey(RECORDING_PREF_KEY,"Path")), fileTypeExtension);
+    if (selectedFile != "")
     {
-        QString selectedFile = fd->selectedFile();
         if(!selectedFile.endsWith("." + fileTypeExtension))
         {
             selectedFile.append("." + fileTypeExtension);
@@ -88,10 +87,10 @@ void DlgPrefRecord::slotSliderQuality()
     switch(comboBoxEncoding->currentIndex())
     {
     case IDEX_OGG:
-        config->set(ConfigKey(PREF_KEY, "OGG_Quality"), ConfigValue(SliderQuality->value()));
+        config->set(ConfigKey(RECORDING_PREF_KEY, "OGG_Quality"), ConfigValue(SliderQuality->value()));
         break;
     case IDEX_MP3:
-        config->set(ConfigKey(PREF_KEY, "MP3_Quality"), ConfigValue(SliderQuality->value()));
+        config->set(ConfigKey(RECORDING_PREF_KEY, "MP3_Quality"), ConfigValue(SliderQuality->value()));
         break;
     }
 }
@@ -138,7 +137,7 @@ void DlgPrefRecord::slotEncoding()
 {
     //set defaults
     groupBoxQuality->setEnabled(true);
-    config->set(ConfigKey(PREF_KEY, "Encoding"), ConfigValue(comboBoxEncoding->currentIndex()));
+    config->set(ConfigKey(RECORDING_PREF_KEY, "Encoding"), ConfigValue(comboBoxEncoding->currentIndex()));
     switch(comboBoxEncoding->currentIndex())
     {
     case IDEX_WAVE:
@@ -152,12 +151,12 @@ void DlgPrefRecord::slotEncoding()
         break;
 
     case IDEX_OGG:
-        SliderQuality->setValue( config->getValueString(ConfigKey(PREF_KEY, "OGG_Quality")).toInt());
+        SliderQuality->setValue( config->getValueString(ConfigKey(RECORDING_PREF_KEY, "OGG_Quality")).toInt());
         fileTypeExtension = QString("ogg");
         break;
 
     case IDEX_MP3:
-        SliderQuality->setValue( config->getValueString(ConfigKey(PREF_KEY, "MP3_Quality")).toInt());
+        SliderQuality->setValue( config->getValueString(ConfigKey(RECORDING_PREF_KEY, "MP3_Quality")).toInt());
         fileTypeExtension = QString("mp3");
         break;
 
@@ -170,16 +169,16 @@ void DlgPrefRecord::slotEncoding()
 
 void DlgPrefRecord::setMetaData()
 {
-    config->set(ConfigKey(PREF_KEY, "Title"), ConfigValue(LineEditTitle->text()));
-    config->set(ConfigKey(PREF_KEY, "Author"), ConfigValue(LineEditTitle->text()));
-    config->set(ConfigKey(PREF_KEY, "Album"), ConfigValue(LineEditAlbum->text()));
+    config->set(ConfigKey(RECORDING_PREF_KEY, "Title"), ConfigValue(LineEditTitle->text()));
+    config->set(ConfigKey(RECORDING_PREF_KEY, "Author"), ConfigValue(LineEditTitle->text()));
+    config->set(ConfigKey(RECORDING_PREF_KEY, "Album"), ConfigValue(LineEditAlbum->text()));
 }
 
 void DlgPrefRecord::loadMetaData()
 {
-    LineEditTitle->setText( config->getValueString(ConfigKey(PREF_KEY, "Title")));
-    LineEditAuthor->setText( config->getValueString(ConfigKey(PREF_KEY, "Author")));
-    LineEditAlbum->setText( config->getValueString(ConfigKey(PREF_KEY, "Album")));
+    LineEditTitle->setText( config->getValueString(ConfigKey(RECORDING_PREF_KEY, "Title")));
+    LineEditAuthor->setText( config->getValueString(ConfigKey(RECORDING_PREF_KEY, "Author")));
+    LineEditAlbum->setText( config->getValueString(ConfigKey(RECORDING_PREF_KEY, "Album")));
 }
 
 DlgPrefRecord::~DlgPrefRecord()
@@ -201,10 +200,8 @@ void DlgPrefRecord::slotUpdate()
 
 void DlgPrefRecord::slotApply()
 {
-
-    config->set(ConfigKey(PREF_KEY, "Path"), LineEditRecPath->text());
+    config->set(ConfigKey(RECORDING_PREF_KEY, "Path"), LineEditRecPath->text());
     setMetaData();
-
 
     slotEncoding();
 
@@ -212,7 +209,17 @@ void DlgPrefRecord::slotApply()
     {
         int result = 0;
         if(QFile::exists(LineEditRecPath->text()) && !confirmOverwrite){
-            result = QMessageBox::warning( this, "Mixxx Recording", "The selected file already exists, would you like to overwrite it?\n\n\tNote: Selecting No will abort the recording", "Yes", "No", 0, 0, 1);
+            result = QMessageBox::warning( this, tr("Mixxx Recording", "The selected file already exists, would you like to overwrite it?\n\n\tSelecting \"No\" will abort the recording."), tr("Yes"), tr("No"), 0, 0, 1);
+        }
+        //If no file path was entered to record to, pop up the browse file dialog...
+        if (LineEditRecPath->text() == "")
+        {
+            slotBrowseSave();
+            //If the user clicked cancel in the browse dialog, then abort the recording
+            if (LineEditRecPath->text() == "")
+            {
+                result = 1;
+            }
         }
         if(result == 0)
         {
