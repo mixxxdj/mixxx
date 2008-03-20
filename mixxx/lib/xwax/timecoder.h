@@ -1,5 +1,5 @@
 /* 
- * Copyright (C) 2007 Mark Hills <mark@pogo.org.uk>
+ * Copyright (C) 2008 Mark Hills <mark@pogo.org.uk>
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -20,36 +20,43 @@
 #ifndef TIMECODER_H
 #define TIMECODER_H
 
-//Hacked by Albert:
 #define TIMECODER_CHANNELS 2
-#define TIMECODER_RATE 44100 //this is now timecoder_t.samplerate
+#define TIMECODER_RATE 44100 //Default rate - Albert
 
 
 struct timecoder_channel_t {
-    signed short zero, signal_level, half_peak, wave_peak, ref_level;
-
-    int positive, /* wave is in positive part of cycle */
-        crossings; /* number of zero crossings */
-
-    unsigned int bitstream, /* actual bits from the record */
-        timecode, /* corrected timecode */
-        valid_counter, /* number of successful error checks */
-        crossings_ticker, /* number of samples from which crossings counted */
-        cycle_ticker, /* samples since wave last crossed zero */
-        timecode_ticker; /* samples since valid timecode was read */
+    int positive; /* wave is in positive part of cycle */
+    signed int zero;
+    int crossing_ticker; /* samples since we last crossed zero */
 };
 
-struct timecoder_t {
-    struct timecoder_channel_t state[TIMECODER_CHANNELS];
-    int forwards;
 
-    unsigned long samplerate; /* sampling rate of the audio stream */ 
-    unsigned char *mon; /* visual monitor of waveform */
+struct timecoder_t {
+    int forwards, rate;
+
+    /* Signal levels */
+
+    signed int signal_level, half_peak, wave_peak, ref_level;
+    struct timecoder_channel_t mono, channel[TIMECODER_CHANNELS];
+
+    /* Pitch information */
+
+    int crossings, /* number of zero crossings */
+        pitch_ticker, /* number of samples from which crossings counted */
+        crossing_ticker; /* stored for incrementing pitch_ticker */
+
+    /* Numerical timecode */
+
+    unsigned int bitstream, /* actual bits from the record */
+        timecode; /* corrected timecode */
+    int valid_counter, /* number of successful error checks */
+        timecode_ticker; /* samples since valid timecode was read */
+
+    /* Feedback */
+
+    unsigned char *mon; /* x-y array */
     int mon_size, mon_counter, mon_scale,
         log_fd; /* optional file descriptor to log to, or -1 for none */
-    unsigned long zero_avg, /* ??? */
-        signal_avg, /* ??? */
-        monitor_decay_every; /* ??? */ 
 };
 
 
