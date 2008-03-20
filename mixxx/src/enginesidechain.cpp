@@ -33,6 +33,10 @@
 #include "engineshoutcast.h"
 #endif
 
+#ifdef __EXPERIMENTAL_RECORDING__
+#include "recording/enginerecord.h"
+#endif
+
 EngineSideChain::EngineSideChain(ConfigObject<ConfigValue> * pConfig)
 {
     m_pConfig = pConfig;
@@ -51,7 +55,10 @@ EngineSideChain::EngineSideChain(ConfigObject<ConfigValue> * pConfig)
     ControlObject* m_pShoutcastNeedUpdateFromPrefs = new ControlObject(ConfigKey("[Shoutcast]","update_from_prefs"));
     m_pShoutcastNeedUpdateFromPrefsCOTM = new ControlObjectThreadMain(m_pShoutcastNeedUpdateFromPrefs);
 #endif    
-    
+
+#ifdef __EXPERIMENTAL_RECORDING__
+    rec = new EngineRecord(m_pConfig);
+#endif
     
     start();    //Starts the thread and goes to the "run()" function below.
 }
@@ -76,6 +83,9 @@ EngineSideChain::~EngineSideChain()
     
 #ifdef __SHOUTCAST__
     delete shoutcast;
+#endif
+#ifdef __EXPERIMENTAL_RECORDING__
+    delete rec;
 #endif
 
     m_backBufferLock.unlock();
@@ -187,6 +197,11 @@ void EngineSideChain::run()
         }
 #endif   
  
+#ifdef __EXPERIMENTAL_RECORDING__
+        rec->process(m_filledBuffer, m_filledBuffer, SIDECHAIN_BUFFER_SIZE);
+#endif
+
+
         //m_backBufferLock.unlock();
     
     }
