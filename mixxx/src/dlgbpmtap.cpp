@@ -103,6 +103,8 @@ DlgBpmTap::~DlgBpmTap()
     {
         delete m_BpmSchemes.takeFirst();
     }
+
+    delete m_Time;
 }
 
 void DlgBpmTap::loadTrackInfo()
