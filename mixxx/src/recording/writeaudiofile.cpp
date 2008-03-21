@@ -35,7 +35,7 @@ void WriteAudioFile::open()
         //if the record flag is set
 
         //set sfInfo
-        sfInfo.samplerate = 44100;
+        sfInfo.samplerate = config->getValueString(ConfigKey("[Soundcard]","Samplerate")).toULong();
         sfInfo.channels = 2;
 
         if (encodingType == ENCODING_WAVE)
