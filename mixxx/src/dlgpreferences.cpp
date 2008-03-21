@@ -15,9 +15,6 @@
 *                                                                         *
 ***************************************************************************/
 
-#ifdef __EXPERIMENTAL_RECORDING__
-#include "dlgprefrecord.h"
-#endif
 
 #ifdef __VINYLCONTROL__
 #include "dlgprefvinyl.h"
@@ -35,6 +32,7 @@
 #include "dlgprefcontrols.h"
 #include "dlgprefeq.h"
 #include "dlgprefcrossfader.h"
+#include "dlgprefrecord.h"
 #include "mixxx.h"
 #include "track.h"
 #include <QTabWidget>
@@ -67,10 +65,7 @@ DlgPreferences::DlgPreferences(MixxxApp * mixxx, MixxxView * view,
     weq = new DlgPrefEQ(this, config);
     wcrossfader = new DlgPrefCrossfader(this, config);
     wbpm = new DlgPrefBpm(this, config);
-
-#ifdef __EXPERIMENTAL_RECORDING__
     wrecord = new DlgPrefRecord(this, config);
-#endif
 #ifdef __VINYLCONTROL__
     wvinylcontrol = new DlgPrefVinyl(this, soundman, config);
 #endif
@@ -90,9 +85,7 @@ DlgPreferences::DlgPreferences(MixxxApp * mixxx, MixxxView * view,
     pagesWidget->addWidget(wcontrols);
     pagesWidget->addWidget(weq);  
     pagesWidget->addWidget(wcrossfader);      
-#ifdef __EXPERIMENTAL_RECORDING__
     pagesWidget->addWidget(wrecord);
-#endif
     pagesWidget->addWidget(wbpm);
 #ifdef __VINYLCONTROL__
     pagesWidget->addWidget(wvinylcontrol);
@@ -100,33 +93,11 @@ DlgPreferences::DlgPreferences(MixxxApp * mixxx, MixxxView * view,
 #ifdef __SHOUTCAST__
     pagesWidget->addWidget(wshoutcast);
 #endif
-    // Add tabs
-    /*
-       addTab(wsound,    "Sound output");
-       addTab(wmidi,     "Input controllers");
-       addTab(wcontrols, "GUI");
-       addTab(wplaylist, "Playlists");
-       addTab(wmixer,    "Mixer Profile");
-       addTab(wbpm, "BPM");
-
-#ifdef __EXPERIMENTAL_RECORDING__
-       addTab(wrecord,   "Recording");
-#endif
-     */
-
-    // Add closebutton
-    //setOkButton("Close");
-
-    // Set size
-    //resize(QSize(380,520));
-
+ 
     // Install event handler to generate closeDlg signal
     installEventFilter(this);
 
-
-
     // Connections
-
     connect(this, SIGNAL(showDlg()), this,      SLOT(slotUpdate()));
     connect(this, SIGNAL(showDlg()), wsound,    SLOT(slotUpdate()));
     connect(this, SIGNAL(showDlg()), wmidi,     SLOT(slotUpdate()));
@@ -136,9 +107,7 @@ DlgPreferences::DlgPreferences(MixxxApp * mixxx, MixxxView * view,
     connect(this, SIGNAL(showDlg()),wcrossfader,SLOT(slotUpdate()));
     connect(this, SIGNAL(showDlg()), wbpm,      SLOT(slotUpdate()));
 
-#ifdef __EXPERIMENTAL_RECORDING__
     connect(this, SIGNAL(showDlg()), wrecord,    SLOT(slotUpdate()));
-#endif
 #ifdef __VINYLCONTROL__
     connect(this, SIGNAL(showDlg()), wvinylcontrol,    SLOT(slotUpdate()));
     //connect(ComboBoxSoundApi,             SIGNAL(activated(int)),    this, SLOT(slotApplyApi()));
@@ -160,10 +129,7 @@ DlgPreferences::DlgPreferences(MixxxApp * mixxx, MixxxView * view,
     connect(buttonBox, SIGNAL(accepted()),wcrossfader,SLOT(slotApply()));    
     connect(buttonBox, SIGNAL(accepted()), this,      SLOT(slotApply()));
     connect(buttonBox, SIGNAL(accepted()), wbpm,    SLOT(slotApply()));
-
-#ifdef __EXPERIMENTAL_RECORDING__
     connect(buttonBox, SIGNAL(accepted()), wrecord,    SLOT(slotApply()));
-#endif
 #ifdef __SHOUTCAST__
     connect(buttonBox, SIGNAL(accepted()), wshoutcast,SLOT(slotApply()));
 #endif
@@ -217,13 +183,11 @@ void DlgPreferences::createIcons()
     crossfaderButton->setTextAlignment(Qt::AlignLeft | Qt::AlignVCenter);
     crossfaderButton->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
 
-#ifdef __EXPERIMENTAL_RECORDING__
     QListWidgetItem * recordingButton = new QListWidgetItem(contentsWidget);
     recordingButton->setIcon(QIcon(":/images/preferences/recording.png"));
     recordingButton->setText(tr("Recording"));
     recordingButton->setTextAlignment(Qt::AlignLeft | Qt::AlignVCenter);
     recordingButton->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
-#endif
 
     QListWidgetItem * bpmdetectButton = new QListWidgetItem(contentsWidget);
     bpmdetectButton->setIcon(QIcon(":/images/preferences/bpmdetect.png"));

@@ -501,11 +501,9 @@ void MixxxApp::initActions()
     optionsVinylControl->setShortcutContext(Qt::ApplicationShortcut);
 #endif
 
-#ifdef __EXPERIMENTAL_RECORDING__
     optionsRecord = new QAction(tr("Enable &Recording"), this);
     //optionsRecord->setShortcut(tr("Ctrl+R"));
     optionsRecord->setShortcutContext(Qt::ApplicationShortcut);    
-#endif 
 
 #ifdef __SCRIPT__
     macroStudio = new QAction(tr("Show Studio"), this);
@@ -554,12 +552,10 @@ void MixxxApp::initActions()
     connect(optionsVinylControl, SIGNAL(toggled(bool)), this, SLOT(slotOptionsVinylControl(bool)));
 #endif
 
-#ifdef __EXPERIMENTAL_RECORDING__
     optionsRecord->setCheckable(true);
     optionsRecord->setStatusTip(tr("Start Recording your Mix"));
     optionsRecord->setWhatsThis(tr("Record your mix to a file"));
     connect(optionsRecord, SIGNAL(toggled(bool)), this, SLOT(slotOptionsRecord(bool)));
-#endif
 
     optionsFullScreen->setCheckable(true);
     optionsFullScreen->setChecked(false);
@@ -601,7 +597,7 @@ void MixxxApp::initMenuBar()
     // menuBar entry fileMenu
     fileMenu->addAction(fileLoadSongPlayer1);
     fileMenu->addAction(fileLoadSongPlayer2);
-    libraryMenu->addSeparator();
+    fileMenu->addSeparator();
     fileMenu->addAction(fileQuit);
 
     // menuBar entry optionsMenu
@@ -610,11 +606,9 @@ void MixxxApp::initMenuBar()
 #ifdef __VINYLCONTROL__
     optionsMenu->addAction(optionsVinylControl);
 #endif
-#ifdef __EXPERIMENTAL_RECORDING__
     optionsMenu->addAction(optionsRecord);
-#endif
     optionsMenu->addAction(optionsFullScreen);
-    libraryMenu->addSeparator();
+    optionsMenu->addSeparator();
     optionsMenu->addAction(optionsPreferences);
 
     //    libraryMenu->setCheckable(true);
