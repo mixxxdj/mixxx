@@ -46,15 +46,13 @@
 #include "soundmanager.h"
 #include "defs_urls.h"
 #include "defs_audiofiles.h"
+#include "recording/defs_recording.h"
 
 #ifdef __C_METRICS__
 #include <cmetrics.h>
 #include "defs_mixxxcmetrics.h"
 #endif
 
-#ifdef __EXPERIMENTAL_RECORDING__
-#include "recording/defs_recording.h"
-#endif
 
 extern "C" void crashDlg()
 {
