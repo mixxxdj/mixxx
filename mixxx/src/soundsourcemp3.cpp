@@ -83,7 +83,10 @@ SoundSourceMp3::SoundSourceMp3(QString qFilename) : SoundSource(qFilename)
     //qDebug("channels %i",m_iChannels);
 
     // Find average frame size
-    m_iAvgFrameSize = length()/currentframe;
+    if(currentframe)
+        m_iAvgFrameSize = length()/currentframe;
+    else
+        m_iAvgFrameSize = 0;
 
     mad_header_finish (&Header);
     if (currentframe==0)
@@ -608,7 +611,7 @@ void SoundSourceMp3::getField(id3_tag * tag, const char * frameid, QString * str
 int SoundSourceMp3::findFrame(int pos)
 {
     // Guess position of frame in m_qSeekList based on average frame size
-    MadSeekFrameType * temp = m_qSeekList.at(math_min(m_qSeekList.count()-1, (unsigned int)(pos/m_iAvgFrameSize)));
+    MadSeekFrameType * temp = m_qSeekList.at(math_min(m_qSeekList.count()-1, m_iAvgFrameSize ? (unsigned int)(pos/m_iAvgFrameSize) : 0));
 
 /*
     if (temp!=0)
