@@ -841,6 +841,7 @@ void Track::slotLoadPlayer1(TrackInfoObject * pTrackInfoObject, bool bStartFromE
             return;
         }
     }
+    else return; // empty filename
 
     if (m_pTrackPlayer1)
     {
@@ -895,6 +896,22 @@ void Track::slotLoadPlayer1(TrackInfoObject * pTrackInfoObject, bool bStartFromE
 
 void Track::slotLoadPlayer2(TrackInfoObject * pTrackInfoObject, bool bStartFromEndPos)
 {
+    QString filename = pTrackInfoObject->getLocation();
+    if (!filename.isEmpty())
+    {
+        // Check if filename is valid
+        QFileInfo finfo(filename);
+        if (!finfo.exists())
+        {
+            qDebug() << "Song in library not found on at" << filename << "on disk.";
+            qDebug() << "Removing from library...";
+            m_pTrackCollection->removeTrack(pTrackInfoObject); //Remove the track from the library.
+            m_pView->m_pTrackTableView->repaintEverything(); //Refresh the library view.
+            return;
+        }
+    }
+    else return; // empty filename
+
     if (m_pTrackPlayer2)
     {
         m_pTrackPlayer2->setOverviewWidget(0);
@@ -921,7 +938,6 @@ void Track::slotLoadPlayer2(TrackInfoObject * pTrackInfoObject, bool bStartFromE
 
     // Set waveform summary display
     m_pTrackPlayer2->setOverviewWidget(m_pView->m_pOverviewCh2);
-    m_pTrackPlayer2->setDurationControlObject(ControlObject::getControl(ConfigKey("[Channel2]","duration")));
 
     // Set control for beat start position for use in EngineTemporal and
     // VisualTemporalBuffer. HACK.
@@ -931,6 +947,7 @@ void Track::slotLoadPlayer2(TrackInfoObject * pTrackInfoObject, bool bStartFromE
 
     // Set Engine file BPM ControlObject
     m_pTrackPlayer2->setBpmControlObject(ControlObject::getControl(ConfigKey("[Channel2]","file_bpm")));
+    m_pTrackPlayer2->setDurationControlObject(ControlObject::getControl(ConfigKey("[Channel2]","duration")));
 
     // Set duration in playpos widget
 //    if (m_pView->m_pNumberPosCh2)
