@@ -26,9 +26,7 @@
 class EngineShoutcast;
 #endif
 
-#ifdef __EXPERIMENTAL_RECORDING__
 class EngineRecord;
-#endif
 
 #define SIDECHAIN_BUFFER_SIZE 16384
 
@@ -61,9 +59,7 @@ class EngineSideChain : public QThread
         ControlObject* m_pShoutcastNeedUpdateFromPrefs;
         ControlObjectThreadMain* m_pShoutcastNeedUpdateFromPrefsCOTM;
 #endif
-#ifdef __EXPERIMENTAL_RECORDING__
         EngineRecord* rec;
-#endif
 
 };
 

@@ -203,9 +203,7 @@ class MixxxApp : public QMainWindow
 #ifdef __VINYLCONTROL__
     QAction *optionsVinylControl;
 #endif
-#ifdef __EXPERIMENTAL_RECORDING__
     QAction *optionsRecord;
-#endif
     QAction *optionsFullScreen;
     QAction *optionsPreferences;
 
