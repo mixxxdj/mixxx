@@ -226,6 +226,7 @@ sources = Split("""enginebuffercue.cpp input.cpp mixxxmenuplaylists.cpp trackpla
  trackinfoobject.cpp soundsource.cpp
  midiledhandler.cpp
  sounddevice.cpp soundmanager.cpp sounddeviceportaudio.cpp
+ dlgprefrecord.cpp recording/enginerecord.cpp recording/writeaudiofile.cpp 
  enginevinylsoundemu.cpp enginesidechain.cpp wtracktablefilter.cpp
  wplaylistlistmodel.cpp libraryscanner.cpp libraryscannerdlg.cpp enginefilterbutterworth8.cpp enginexfader.cpp playerinfo.cpp wabstractcontrol.cpp""")
 
@@ -464,6 +465,7 @@ env.Uic4('dlgprefbpmdlg.ui')
 env.Uic4('dlgbpmschemedlg.ui')
 env.Uic4('dlgbpmtapdlg.ui')
 env.Uic4('dlgprefvinyldlg.ui')
+env.Uic4('dlgprefrecorddlg.ui')
 env.Uic4('dlgaboutdlg.ui')
 
 #Add the QRC file which compiles in some extra resources (prefs icons, etc.)
@@ -554,16 +556,6 @@ if int(flags_hifieq) == 0:
 	print "High quality EQs... disabled"
 else:
 	print "High quality EQs... enabled"
-
-#Experimental Recording
-flags_recording = ARGUMENTS.get('recording', 0)
-if int(flags_recording):
-	env.Append(CXXFLAGS = '-D__EXPERIMENTAL_RECORDING__')
-	env.Uic4('dlgprefrecorddlg.ui')
-	sources += Split(""" dlgprefrecord.cpp recording/enginerecord.cpp recording/writeaudiofile.cpp """ )
-	print "Experimental recording... enabled"
-else:
-	print "Experimental recording... disabled"
 
 #Case Metrics
 flags_cmetrics = ARGUMENTS.get('cmetrics', 0)
@@ -721,7 +713,6 @@ opts.Add('prefix', 'Set to your install prefix', '/usr/local')
 opts.Add('qtdir', 'Set to your QT4 directory', '/usr/share/qt4')
 opts.Add('djconsole', 'Set to 1 to enable Hercules support through libdjconsole', 0)
 opts.Add('djconsole_legacy', 'Set to 1 to enable legacy Hercules support (for Hercules MP3 Control only, not MK2', 0)
-opts.Add('experimentalrecord', '(EXPERIMENTAL) Set to 1 to enable output recording feature', 0)
 opts.Add('hifieq', 'Set to 1 to enable high quality EQs', 1)
 opts.Add('ladspa', '(EXPERIMENTAL) Set to 1 to enable LADSPA plugin support', 0)
 opts.Add('ffmpeg', '(EXPERIMENTAL) Set to 1 to enable FFMPEG support', 0)
