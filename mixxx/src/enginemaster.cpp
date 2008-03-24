@@ -314,7 +314,8 @@ void EngineMaster::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBuff
 
     //Submit samples to the side chain to do shoutcasting, recording, etc.
     //(cpu intensive non-realtime tasks)
-    sidechain->submitSamples(m_pMaster, iBufferSize);
+    //FIXME: Re-enable this when we've got the memory corruption issues under control.
+    //sidechain->submitSamples(m_pMaster, iBufferSize);
 
     //Master/headphones interleaving is now done in SoundManager::requestBuffer() - Albert Nov 18/07
 }
