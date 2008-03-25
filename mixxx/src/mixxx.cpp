@@ -247,21 +247,21 @@ MixxxApp::MixxxApp(QApplication * a, struct CmdlineArgs args, QSplashScreen * pS
     // Initialize wavefrom summary generation
     m_pWaveSummary = new WaveSummary(config);
 
-    // Intialize default BPM system values      
+    // Intialize default BPM system values
     if(config->getValueString(ConfigKey("[BPM]","BPMRangeStart")).length()<1)
     {
         config->set(ConfigKey("[BPM]","BPMRangeStart"),ConfigValue(65));
     }
-    
+
     if(config->getValueString(ConfigKey("[BPM]","BPMRangeEnd")).length()<1)
     {
         config->set(ConfigKey("[BPM]","BPMRangeEnd"),ConfigValue(135));
     }
-    
+
     if(config->getValueString(ConfigKey("[BPM]","AnalyzeEntireSong")).length()<1)
     {
         config->set(ConfigKey("[BPM]","AnalyzeEntireSong"),ConfigValue(1));
-    }    
+    }
 
     // Initialize Bpm detection queue
     m_pBpmDetector = new BpmDetector(config);
@@ -311,7 +311,7 @@ MixxxApp::MixxxApp(QApplication * a, struct CmdlineArgs args, QSplashScreen * pS
 	    cm_writemsg_ascii(MIXXXCMETRICS_FAILED_TO_OPEN_SNDDEVICE_AT_STARTUP,
 	                      "Mixxx failed to open audio device(s) on startup.");
 #endif
-        
+
         QMessageBox::warning(this, tr("Mixxx"),
                                    tr("Failed to open your audio device(s).\n"
                                       "Please verify your selection in the preferences."),
@@ -503,7 +503,7 @@ void MixxxApp::initActions()
 
     optionsRecord = new QAction(tr("Enable &Recording"), this);
     //optionsRecord->setShortcut(tr("Ctrl+R"));
-    optionsRecord->setShortcutContext(Qt::ApplicationShortcut);    
+    optionsRecord->setShortcutContext(Qt::ApplicationShortcut);
 
 #ifdef __SCRIPT__
     macroStudio = new QAction(tr("Show Studio"), this);
@@ -623,7 +623,7 @@ void MixxxApp::initMenuBar()
     helpMenu->addAction(helpSupport);
     helpMenu->addSeparator();
     helpMenu->addAction(helpAboutApp);
-    
+
 
 #ifdef __SCRIPT__
     macroMenu->addAction(macroStudio);
@@ -662,7 +662,7 @@ bool MixxxApp::queryExit()
 void MixxxApp::slotFileLoadSongPlayer1()
 {
     ControlObject* play = ControlObject::getControl(ConfigKey("[Channel1]", "play"));
-    
+
     if (play->get() == 1.)
     {
         int ret = QMessageBox::warning(this, tr("Mixxx"),
@@ -670,7 +670,7 @@ void MixxxApp::slotFileLoadSongPlayer1()
                                           "Are you sure you want to load a new song?"),
                                         QMessageBox::Yes | QMessageBox::No,
                                         QMessageBox::No);
-                                        
+
         if (ret != QMessageBox::Yes)
             return;
     }
@@ -686,7 +686,7 @@ void MixxxApp::slotFileLoadSongPlayer1()
 void MixxxApp::slotFileLoadSongPlayer2()
 {
     ControlObject* play = ControlObject::getControl(ConfigKey("[Channel2]", "play"));
-    
+
     if (play->get() == 1.)
     {
         int ret = QMessageBox::warning(this, tr("Mixxx"),
@@ -694,11 +694,11 @@ void MixxxApp::slotFileLoadSongPlayer2()
                                           "Are you sure you want to load a new song?"),
                                         QMessageBox::Yes | QMessageBox::No,
                                         QMessageBox::No);
-                                        
+
         if (ret != QMessageBox::Yes)
             return;
     }
-    
+
     QString s = QFileDialog::getOpenFileName(this, tr("Load Song into Player 2"), config->getValueString(ConfigKey("[Playlist]","Directory")), QString("Audio (%1)").arg(MIXXX_SUPPORTED_AUDIO_FILETYPES));
     if (!(s == QString::null)) {
         TrackInfoObject * pTrack = m_pTrack->getTrackCollection()->getTrack(s);
@@ -775,7 +775,7 @@ void MixxxApp::slotOptionsVinylControl(bool toggle)
 {
     //qDebug("slotOptionsVinylControl: toggle is %i", (int)toggle);
 
-    QString device1 = config->getValueString(ConfigKey("[VinylControl]","DeviceInputDeck1")); 
+    QString device1 = config->getValueString(ConfigKey("[VinylControl]","DeviceInputDeck1"));
     QString device2 = config->getValueString(ConfigKey("[VinylControl]","DeviceInputDeck2"));
 
     if (device1 == "" && device2 == "" && (toggle==true))
@@ -804,14 +804,14 @@ void MixxxApp::slotOptionsRecord(bool toggle)
     QString encodingType = config->getValueString(ConfigKey("[Recording]","Encoding"));
     QString encodingFileFilter = QString("Audio (*.%1)").arg(encodingType);
     bool proceedWithRecording = true;
-    
+
     if (toggle == true)
     {
-        //If there was no recording path set, 
+        //If there was no recording path set,
         if (recordPath == "")
         {
-            QString selectedFile = QFileDialog::getSaveFileName(NULL, tr("Save Recording As..."), 
-                                                                recordPath, 
+            QString selectedFile = QFileDialog::getSaveFileName(NULL, tr("Save Recording As..."),
+                                                                recordPath,
                                                                 encodingFileFilter);
             if (selectedFile.toLower() != "")
             {
@@ -839,7 +839,7 @@ void MixxxApp::slotOptionsRecord(bool toggle)
                     proceedWithRecording = false;
             }
         }
-        
+
         if (proceedWithRecording == true)
         {
             qDebug("Setting record status: READY");
@@ -849,14 +849,14 @@ void MixxxApp::slotOptionsRecord(bool toggle)
         {
             optionsRecord->setChecked(false);
         }
-        
+
     }
     else
     {
         qDebug("Setting record status: OFF");
         recordingControl->slotSet(RECORD_OFF);
     }
-    
+
     delete recordingControl;
 }
 
@@ -865,7 +865,7 @@ void MixxxApp::slotHelpAbout()
 
     DlgAbout *about = new DlgAbout(this);
     about->version_label->setText(VERSION);
-    QString credits = 
+    QString credits =
     "<p align=\"center\"><b>Mixxx 1.6.0 Development Team</b></p>"
 "<p align=\"center\">"
 "Adam Davison<br>"
