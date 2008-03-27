@@ -7,19 +7,15 @@
 *                                                                         *
 ***************************************************************************/
 
-#include <ladspaview.h>
+#include "ladspaview.h"
 
-#include <QListWidget>
-#include <QScrollArea>
-#include <QPushButton>
-#include <QColor>
-#include <QPalette>
-#include <QLabel>
+#include <QtCore>
+#include <QtGui>
 
-#include <ladspapresetmanager.h>
-#include <ladspapresetinstance.h>
-#include <wknob.h>
-#include <wskincolor.h>
+#include "ladspapresetmanager.h"
+#include "ladspapresetinstance.h"
+#include "wknob.h"
+#include "wskincolor.h"
 
 LADSPAView::LADSPAView(QWidget * parent) : QWidget(parent, "LADSPA")
 {

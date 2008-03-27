@@ -10,7 +10,7 @@
 #ifndef LADSPAPRESETMANAGER_H
 #define LADSPAPRESETMANAGER_H
 
-#include <ladspapreset.h>
+#include "ladspapreset.h"
 
 #define LADSPA_PRESET_PATH "ladspa_presets"
 

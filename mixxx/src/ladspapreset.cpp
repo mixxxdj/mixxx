@@ -7,12 +7,13 @@
 *                                                                         *
 ***************************************************************************/
 
-#include <ladspapreset.h>
+#include "ladspapreset.h"
+#include "ladspapresetinstance.h"
+#include "engineladspa.h"
+#include "ladspaloader.h"
 
-#include <ladspapresetinstance.h>
-#include <engineladspa.h>
-#include <ladspaloader.h>
-
+#include <QtCore>
+#include <QtXml>
 #include <QDomElement>
 #include <QDomNodeList>
 

@@ -10,8 +10,8 @@
 #ifndef LADSPALOADER_H
 #define LADSPALOADER_H
 
-#include <ladspaplugin.h>
-#include <ladspalibrary.h>
+#include "ladspaplugin.h"
+#include "ladspalibrary.h"
 
 class LADSPALoader
 {

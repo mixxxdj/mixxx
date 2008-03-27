@@ -7,12 +7,12 @@
 *                                                                         *
 ***************************************************************************/
 
-#include <ladspapresetinstance.h>
-
-#include <ladspapresetknob.h>
-#include <controlpotmeter.h>
-#include <ladspacontrol.h>
-#include <configobject.h>
+#include <QtCore>
+#include "ladspapresetinstance.h"
+#include "ladspapresetknob.h"
+#include "controlpotmeter.h"
+#include "ladspacontrol.h"
+#include "configobject.h"
 
 int LADSPAPresetInstance::m_iNextInstanceID = 0;
 

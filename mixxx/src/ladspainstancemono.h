@@ -10,14 +10,12 @@
 #ifndef LADSPAINSTANCEMONO_H
 #define LADSPAINSTANCEMONO_H
 
-#include <q3ptrlist.h>
-
+#include <QtCore>
 #include <ladspa.h>
 
-#include <defs.h>
-#include <controlobject.h>
-
-#include <ladspainstance.h>
+#include "defs.h"
+#include "controlobject.h"
+#include "ladspainstance.h"
 
 class LADSPAInstanceMono : public LADSPAInstance
 {

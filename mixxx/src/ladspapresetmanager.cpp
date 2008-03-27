@@ -7,18 +7,13 @@
 *                                                                         *
 ***************************************************************************/
 
-#include <ladspapresetmanager.h>
+#include <QtCore>
+#include <QtXml>
 
-#include <ladspaloader.h>
+#include "ladspapresetmanager.h"
+#include "ladspaloader.h"
+#include "wwidget.h"
 
-#include <wwidget.h>
-
-#include <QDomDocument>
-#include <QDomElement>
-#include <QDir>
-#include <QFile>
-#include <QFileInfo>
-#include <QIODevice>
 
 LADSPAPresetManager::LADSPAPresetManager()
 {

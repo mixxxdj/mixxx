@@ -7,7 +7,8 @@
 *                                                                         *
 ***************************************************************************/
 
-#include <ladspainstancestereo.h>
+#include <QtCore>
+#include "ladspainstancestereo.h"
 
 LADSPAInstanceStereo::LADSPAInstanceStereo(const LADSPA_Descriptor * descriptor) : LADSPAInstance(descriptor)
 {

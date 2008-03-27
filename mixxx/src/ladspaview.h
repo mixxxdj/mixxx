@@ -10,12 +10,11 @@
 #ifndef LADSPAVIEW_H
 #define LADSPAVIEW_H
 
-#include <QWidget>
-#include <Q3PtrVector>
-#include <QDomNode>
-#include <QMouseEvent>
+#include <QtCore>
+#include <Qt3Support>
+#include <QtGui>
 
-#include <configobject.h>
+#include "configobject.h"
 
 class QListWidget;
 class QScrollArea;

@@ -10,14 +10,15 @@
 #ifndef LADSPAINSTANCESTEREO_H
 #define LADSPAINSTANCESTEREO_H
 
+#include <QtCore>
 #include <q3ptrlist.h>
 
 #include <ladspa.h>
 
-#include <defs.h>
-#include <controlobject.h>
+#include "defs.h"
+#include "controlobject.h"
 
-#include <ladspainstance.h>
+#include "ladspainstance.h"
 
 class LADSPAInstanceStereo : public LADSPAInstance
 {

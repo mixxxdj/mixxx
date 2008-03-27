@@ -7,6 +7,8 @@
 *                                                                         *
 ***************************************************************************/
 
+#include <QtCore>
+
 #include "engineladspa.h"
 
 #include "controlpotmeter.h"

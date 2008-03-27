@@ -7,11 +7,8 @@
 *                                                                         *
 ***************************************************************************/
 
-#include <ladspaloader.h>
-
-#include <qstringlist.h>
-#include <qdir.h>
-#include <qfileinfo.h>
+#include <QtCore>
+#include "ladspaloader.h"
 
 LADSPALoader::LADSPALoader()
 {
