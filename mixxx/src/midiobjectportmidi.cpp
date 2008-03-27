@@ -32,7 +32,7 @@ MidiObjectPortMidi::MidiObjectPortMidi(ConfigObject<ConfigValueMidi> * c, QAppli
     {
         const PmDeviceInfo * info = Pm_GetDeviceInfo(i);
 //        QString n(info->name);
-//        qDebug("Name: %s, input: %i, output: %i",info->name,info->input,info->output);
+//        qDebug() << "Name: " << info->name << ", input: " << info->input << ", output: " << info->output;
         if (info->input>0)
         {
             devices.append(QString("%1").arg(i));
@@ -44,7 +44,7 @@ MidiObjectPortMidi::MidiObjectPortMidi(ConfigObject<ConfigValueMidi> * c, QAppli
         devOpen(device);
     else
     if (devices.count()==0)
-        qDebug("PortMidi: No MIDI devices available.");
+        qDebug() << "PortMidi: No MIDI devices available.";
     else
         devOpen(devices.first());
 }
@@ -73,7 +73,7 @@ void MidiObjectPortMidi::devOpen(QString device)
     // Open device
     PmError err = Pm_OpenInput(&midi, id, NULL, 100, NULL, NULL, NULL);
     if (err)
-        qDebug("PortMidi: Could not open midi device %s\n", Pm_GetErrorText(err));
+        qDebug() << "PortMidi: Could not open midi device " << Pm_GetErrorText(err) << "\n";
     else
     {
         openDevice = device;
@@ -114,16 +114,16 @@ void MidiObjectPortMidi::run()
                 midicontrol = Pm_MessageData1(buffer[0].message);
                 midivalue = Pm_MessageData2(buffer[0].message);
 
-//                qDebug("midi ch: %i, ctrl: %i, val: %i", midichannel, midicontrol, midivalue);
+//                qDebug() << "midi ch: " << midichannel << ", ctrl: " << midicontrol << ", val: " << midivalue;
                 send(midicategory, midichannel, midicontrol, midivalue);
             } else {
-                qDebug("Error in Pm_Read: %s\n", Pm_GetErrorText(err));
+                qDebug() << "Error in Pm_Read: " << Pm_GetErrorText(err) << "\n";
                 break;
             }
         }
         else if (err != FALSE)
         {
-            qDebug("Error in Pm_Poll: %s\n", Pm_GetErrorText(err));
+            qDebug() << "Error in Pm_Poll: " << Pm_GetErrorText(err) << "\n";
             break;
         }
     }

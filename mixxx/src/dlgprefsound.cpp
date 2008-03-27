@@ -289,7 +289,7 @@ void DlgPrefSound::slotApply()
     else
         config->set(ConfigKey("[Soundcard]","PitchIndpTimeStretch"), ConfigValue(0));
 
-    qDebug("request msec %i", getSliderLatencyMsec(SliderLatency->value()));
+    qDebug() << "request msec " << getSliderLatencyMsec(SliderLatency->value());
 
     // Close devices, and open using config data
     //player->close();

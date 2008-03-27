@@ -210,12 +210,12 @@ void ReaderExtractWave::getchunk(CSAMPLE rate)
     bool backwards;
     if (rate < 0.)
     {
-//        qDebug("rate back");
+//        qDebug() << "rate back";
         backwards = true;
     }
     else
     {
-//        qDebug("rate fwd");
+//        qDebug() << "rate fwd";
         backwards = false;
     }
 
@@ -237,30 +237,30 @@ void ReaderExtractWave::getchunk(CSAMPLE rate)
         backwards = false;
  */
 
-    //qDebug(":::::::::: %i ::: %i",filepos_end-filepos_play,filepos_play-(filepos_start));
+    //qDebug() << ":::::::::: " << filepos_end-filepos_play << " ::: " << filepos_play-(filepos_start);
     if (!backwards && filepos_end>filepos_play && filepos_end-filepos_play>(filepos_play-filepos_start))
     {
-//        qDebug("f-back");
+//        qDebug() << "f-back";
         backwards = true;
     }
     else if (backwards && filepos_start<filepos_play && (filepos_play-filepos_start)>filepos_end-filepos_play)
     {
-//        qDebug("f-fwd");
+//        qDebug() << "f-fwd";
         backwards = false;
     }
 
-//     qDebug("getchunk: pos %i, range %i-%i, back %i",filepos_play, filepos_start, filepos_end, backwards);
+//     qDebug() << "getchunk: pos " << filepos_play << ", range " << filepos_start << "-" << filepos_end << ", back " << backwards;
 
-//     qDebug("play %i, range %i-%i",filepos_play,filepos_start,filepos_end);
+//     qDebug() << "play " << filepos_play << ", range " << filepos_start << "-" << filepos_end;
 
     // Determine new start and end positions in file and buffer, start index of where read samples
     // will be placed in read buffer (bufIdx), and perform seek if reading backwards
     long int filepos_start_new, filepos_end_new;
     int bufIdx;
 
-//     qDebug("l1");
+//     qDebug() << "l1";
     m_pReader->lock();
-//     qDebug("l1enter");
+//     qDebug() << "l1enter";
 
     int chunkCurr, chunkStart, chunkEnd;
 
@@ -269,9 +269,9 @@ void ReaderExtractWave::getchunk(CSAMPLE rate)
     {
         filepos_start_new = filepos_start-READCHUNKSIZE;
         bufferpos_start = (bufferpos_start-READCHUNKSIZE+READBUFFERSIZE)%READBUFFERSIZE;
-        //qDebug("filepos %f",filepos_start_new);
+        //qDebug() << "filepos " << filepos_start_new;
         {
-//            qDebug("seek back");
+//            qDebug() << "seek back";
             file->seek((long int)math_max(0,filepos_start_new));
             seek = true;
         }
@@ -308,27 +308,27 @@ void ReaderExtractWave::getchunk(CSAMPLE rate)
     filepos_start = (long int)filepos_start_new;
     filepos_end = (long int)filepos_end_new;
 
-    //qDebug("f %i-%i, b %i-%i",filepos_start, filepos_end, bufferpos_start, bufferpos_end);
+    //qDebug() << "f " << filepos_start << "-" << filepos_end << ", b " << bufferpos_start << "-" << bufferpos_end;
 
     // Read samples (reset samples not read, but requested)
     int chunksize = READCHUNKSIZE;
     int k = 0;
     if (backwards && filepos_start<0)
     {
-        //qDebug("d1 filepos %i-%i",filepos_start,filepos_end);
+        //qDebug() << "d1 filepos " << filepos_start << "-" << filepos_end;
         int i;
         for (i=0; i<math_min((signed int)READCHUNKSIZE,-filepos_start); ++i)
             temp[i] = 0;
-        //qDebug("i %i",i);
+        //qDebug() << "i " << i;
         chunksize += filepos_start;
         k = -filepos_start;
     }
     int i = 0;
     if (chunksize>0)
     {
-        //qDebug("d2 filepos %i-%i",filepos_start,filepos_end);
+        //qDebug() << "d2 filepos " << filepos_start << "-" << filepos_end;
         i = file->read(chunksize, &temp[k]);
-        //qDebug("read %i",i);
+        //qDebug() << "read " << i;
         for (unsigned int j=i+k; j<READCHUNKSIZE; ++j)
             temp[j] = 0;
     }
@@ -337,13 +337,13 @@ void ReaderExtractWave::getchunk(CSAMPLE rate)
     // are read, if we next time are going forward.
     if (seek)
     {
-        //qDebug("seek fwd");
+        //qDebug() << "seek fwd";
         file->seek((long int)filepos_end);
     }
 
     // Copy samples to read_buffer
     i=0;
-    //qDebug("bufIdx %i",bufIdx);
+    //qDebug() << "bufIdx " << bufIdx;
     for (unsigned int j=bufIdx; j<bufIdx+READCHUNKSIZE; j++)
         read_buffer[j] = (CSAMPLE)temp[i++];
 
@@ -356,7 +356,7 @@ void ReaderExtractWave::getchunk(CSAMPLE rate)
 #ifdef EXTRACT
     // Do pre-processing...
 
-//    qDebug("curr %i, start %i, end %i",chunkCurr,chunkStart,chunkEnd);
+//    qDebug() << "curr " << chunkCurr << ", start " << chunkStart << ", end " << chunkEnd;
     readerhfc->processChunk(chunkCurr, chunkStart, chunkEnd, backwards, filepos_start);
     readerbeat->processChunk(chunkCurr, chunkStart, chunkEnd, backwards, filepos_start);
 #endif
@@ -373,7 +373,7 @@ void ReaderExtractWave::getchunk(CSAMPLE rate)
  */
 
     m_pReader->unlock();
-//     qDebug("u1");
+//     qDebug() << "u1";
 
 }
 
@@ -383,23 +383,23 @@ long int ReaderExtractWave::seek(long int new_playpos)
 
     if (file!=0)
     {
-//         qDebug("l2");
+//         qDebug() << "l2";
         m_pReader->lock();
-//         qDebug("l2enter");
+//         qDebug() << "l2enter";
 
         filepos_start = new_playpos;
         filepos_end = new_playpos;
 
         filepos_play = new_playpos;
 
-//         qDebug("try seek.. %i, length %i",(int)filepos_start, (int)file->length());
+//         qDebug() << "try seek.. " << (int)filepos_start << ", length " << (int)file->length();
 
         seekpos = file->seek((long int)filepos_start);
 
-//         qDebug("seek: %i, %i",new_playpos, seekpos);
+//         qDebug() << "seek: " << new_playpos << ", " << seekpos;
 
         m_pReader->unlock();
-//         qDebug("u2");
+//         qDebug() << "u2";
 
         bufferpos_start = 0;
         bufferpos_end = 0;

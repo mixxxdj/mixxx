@@ -171,7 +171,7 @@ void WTrackTableView::setup(QDomNode node)
             i.next();
             if (!WWidget::selectNode(node, i.value()).isNull() && WWidget::selectNodeQString(node, i.value()).toInt() != columnWidth(i.key()))
             {
-                    qDebug("Correcting Column Width from %i to %i",columnWidth(i.key()),WWidget::selectNodeQString(node, i.value()).toInt());
+                    qDebug() << "Correcting Column Width from " << columnWidth(i.key()) << " to " << WWidget::selectNodeQString(node;
                     setColumnWidth(i.key(),WWidget::selectNodeQString(node, i.value()).toInt());
             }
        }*/

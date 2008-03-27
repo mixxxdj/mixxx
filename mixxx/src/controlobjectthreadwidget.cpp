@@ -64,7 +64,7 @@ void ControlObjectThreadWidget::updateControlObject()
 
 bool ControlObjectThreadWidget::setExtern(double v)
 {
-    //qDebug("set extern widget");
+    //qDebug() << "set extern widget";
     QApplication::postEvent(this, new ControlEvent(m_pControlObject->getValueToWidget(v)));
     return true;
 }

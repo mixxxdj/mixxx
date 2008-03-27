@@ -111,7 +111,7 @@ bool HerculesLinux::opendev()
     {
         if (sqlOpenDevs.find(i)==sqlOpenDevs.end())
         {
-//            qDebug("Looking for a Hercules DJ Console on /dev/input/event%d ...", i);
+//            qDebug() << "Looking for a Hercules DJ Console on /dev/input/event" << i << " ...";
             m_iFd = opendev(i);
             if(m_iFd >= 0)
                 break;
@@ -119,14 +119,14 @@ bool HerculesLinux::opendev()
     }
     if (m_iFd>0)
     {
-        qDebug("Hercules device @ %d", m_iFd);
+        qDebug() << "Hercules device @ " << m_iFd;
         // Start thread
         start();
 
         return true;
     }
     else
-        qDebug("Hercules device (%d) not found!", m_iFd);
+        qDebug() << "Hercules device (" << m_iFd << ") not found!";
     return false;
 }
 
@@ -154,15 +154,15 @@ int HerculesLinux::opendev(int iId)
     char rgcName[255];
 
     if(iFd < 0) {
-//        qDebug("Could not open Hercules at /dev/input/event%d [%s]",iId, strerror(errno));
+//        qDebug() << "Could not open Hercules at /dev/input/event" << iId << " [" << strerror(errno) << "]";
         if (errno==13) {
-            qDebug("If you have a Hercules device plugged into USB, you'll need to either execute 'sudo chmod o+rw- /dev/input/event?' or run mixxx as root.");
+            qDebug() << "If you have a Hercules device plugged into USB, you'll need to either execute 'sudo chmod o+rw- /dev/input/event?' or run mixxx as root.";
         }
         return -1;
     }
     if(ioctl(iFd, EVIOCGNAME(sizeof(rgcName)), rgcName) < 0)
     {
-        qDebug("EVIOCGNAME got negative size at /dev/input/event%d",iId);
+        qDebug() << "EVIOCGNAME got negative size at /dev/input/event" << iId;
         close(iFd);
         return -1;
     }
@@ -176,7 +176,7 @@ int HerculesLinux::opendev(int iId)
             // Add id to list of open devices
             sqlOpenDevs.append(iId);
 
-            qDebug("pm id %i",iId);
+            qDebug() << "pm id " << iId;
 
             return iFd;
         }
@@ -214,7 +214,7 @@ void HerculesLinux::getNextEvent()
         return;
     }
 
-//     qDebug("v %i, usec %i, isset %i",v,tv.tv_usec,FD_ISSET(m_iFd, &fdset));
+//     qDebug() << "v " << v << ", usec " << tv.tv_usec << ", isset " << FD_ISSET(m_iFd;
 
     struct input_event ev;
     int iR = read(m_iFd, &ev, sizeof(struct input_event));
@@ -233,13 +233,13 @@ void HerculesLinux::getNextEvent()
         double d2 = (divisor/2)-1;
 
         // qDebug() << "ev.type:" << ev.type << "ev.code:" << ev.code << "ev.value:" << ev.value;
-        //qDebug("type %i, code %i, value %i",ev.type,ev.code,ev.value);
-        //qDebug("type %i, code %i, value %i, v is %5.3f",ev.type,ev.code,ev.value,v);
+        //qDebug() << "type " << ev.type << ", code " << ev.code << ", value " << ev.value;
+        //qDebug() << "type " << ev.type << ", code " << ev.code << ", value " << ev.value << ", v is " << v;
 
         switch(ev.type)
         {
         case EV_ABS:
-            //qDebug("code %i",ev.code);
+            //qDebug() << "code " << ev.code;
             int iDiff;
             double dDiff;
             int pitchValue;
@@ -279,7 +279,7 @@ void HerculesLinux::getNextEvent()
                 else if (iDiff>200)
                     iDiff -= 256;
                 dDiff = m_pRotaryLeft->filter((double)iDiff/16.);
-                //qDebug("Left Jog - ev.value %i, m_iJogLeft %i, idiff %i, dDiff %5.3f",ev.value, m_iJogLeft, iDiff, dDiff);
+                //qDebug() << "Left Jog - ev.value " << ev.value << ", m_iJogLeft " << m_iJogLeft << ", idiff " << iDiff << ", dDiff " << dDiff;
                 m_iJogLeft = ev.value;
                 sendEvent(dDiff, m_pControlObjectLeftJog);
                 break;
@@ -294,11 +294,11 @@ void HerculesLinux::getNextEvent()
                 break;
             case kiHerculesRightVolume:
                 m_dRightVolumeOld = ev.value/d1;
-                //qDebug("R Volume %5.3f",ev.value/d1);
+                //qDebug() << "R Volume " << ev.value/d1;
                 sendEvent(ev.value/d1, m_pControlObjectRightVolume);
                 break;
             case kiHerculesRightPitch:
-                //qDebug("");
+                //qDebug() << "";
                 pitchValue = PitchChangeOrdinal("Right", ev.value, m_iPitchRight, m_iPitchOffsetRight);
                 if (pitchValue > 0) {
                     for (int i=0; i<pitchValue; i++) {
@@ -320,12 +320,12 @@ void HerculesLinux::getNextEvent()
                 else if (iDiff>200)
                     iDiff -= 256;
                 dDiff = m_pRotaryRight->filter((double)iDiff/16.);
-//                    qDebug("Right Jog - ev.value %i, m_iJogRight %i, idiff %i, dDiff %5.3f",ev.value, m_iJogRight, iDiff, dDiff);
+//                    qDebug() << "Right Jog - ev.value " << ev.value << ", m_iJogRight " << m_iJogRight << ", idiff " << iDiff << ", dDiff " << dDiff;
                 m_iJogRight = ev.value;
                 sendEvent(dDiff, m_pControlObjectRightJog);
                 break;
             case kiHerculesCrossfade:
-                //qDebug("(ev.value+1)/2.0f: %f", (ev.value+1)/2.0f);
+                //qDebug() << "(ev.value+1)/2.0f: " << (ev.value+1)/2.0f;
                 sendEvent((ev.value-d2)/d2, m_pControlObjectCrossfade);
                 break;
 //              default:
@@ -429,7 +429,7 @@ void HerculesLinux::getNextEvent()
                     sendButtonEvent(true, m_pControlObjectLeftBtnFx);
 /*
                     m_iLeftFxMode = (m_iLeftFxMode+1)%3;
-                    qDebug("left fx %i,%i,%i",m_iLeftFxMode==0,m_iLeftFxMode==1,m_iLeftFxMode==2);
+                    qDebug() << "left fx " << m_iLeftFxMode==0 << "," << m_iLeftFxMode==1 << "," << m_iLeftFxMode==2;
                     changeJogMode(m_iLeftFxMode,m_iRightFxMode);
                     led_write(kiHerculesLedLeftFx, m_iLeftFxMode==0);
                     led_write(kiHerculesLedLeftCueLamp, m_iLeftFxMode==1);
@@ -504,8 +504,8 @@ void HerculesLinux::getNextEvent()
 
 void HerculesLinux::led_write(int iLed, bool bOn)
 {
-//     if (bOn) qDebug("true");
-//     else qDebug("false");
+//     if (bOn) qDebug() << "true";
+//     else qDebug() << "false";
 
     struct input_event ev;
     memset(&ev, 0, sizeof(struct input_event));
@@ -518,10 +518,10 @@ void HerculesLinux::led_write(int iLed, bool bOn)
     else
         ev.value = 0;
 
-    //qDebug("Hercules: led_write(iLed=%d, value=%d)", iLed, ev.value);
+    //qDebug() << "Hercules: led_write(iLed=" << iLed << ", value=" << ev.value << ")";
 
     if (write(m_iFd, &ev, sizeof(struct input_event)) != sizeof(struct input_event))
-        qDebug("Hercules: write(): %s", strerror(errno));
+        qDebug() << "Hercules: write(): " << strerror(errno);
 }
 
 void HerculesLinux::selectMapping(QString qMapping)

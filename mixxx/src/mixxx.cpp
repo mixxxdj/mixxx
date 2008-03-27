@@ -385,7 +385,7 @@ MixxxApp::~MixxxApp()
     QTime qTime;
     qTime.start();
 
-    qDebug("Destroying MixxxApp");
+    qDebug() << "Destroying MixxxApp";
 
 // Moved this up to insulate macros you've worked hard on from being lost in
 // a segfault that happens sometimes somewhere below here
@@ -394,12 +394,12 @@ MixxxApp::~MixxxApp()
     delete scriptEng;
 #endif
 
-    qDebug("Write track xml, %i",qTime.elapsed());
+    qDebug() << "Write track xml, " << qTime.elapsed();
     m_pTrack->writeXML(config->getValueString(ConfigKey("[Playlist]","Listfile")));
 
-    //qDebug("close player, %i",qTime.elapsed());
+    //qDebug() << "close player, " << qTime.elapsed();
     //player->close();
-    //qDebug("player->close() done");
+    //qDebug() << "player->close() done";
 
     qDebug() << "close soundmanager" << qTime.elapsed();
     soundmanager->closeDevices();
@@ -409,31 +409,31 @@ MixxxApp::~MixxxApp()
     config->set(ConfigKey("[Controls]","TrackEndModeCh1"), ConfigValue((int)ControlObject::getControl(ConfigKey("[Channel1]","TrackEndMode"))->get()));
     config->set(ConfigKey("[Controls]","TrackEndModeCh2"), ConfigValue((int)ControlObject::getControl(ConfigKey("[Channel2]","TrackEndMode"))->get()));
 
-    //qDebug("delete player, %i",qTime.elapsed());
+    //qDebug() << "delete player, " << qTime.elapsed();
     //delete player;
-    qDebug("delete soundmanager, %i",qTime.elapsed());
+    qDebug() << "delete soundmanager, " << qTime.elapsed();
     delete soundmanager;
-    qDebug("delete master, %i",qTime.elapsed());
+    qDebug() << "delete master, " << qTime.elapsed();
     delete master;
-    qDebug("delete channel1, %i",qTime.elapsed());
+    qDebug() << "delete channel1, " << qTime.elapsed();
     delete channel1;
-    qDebug("delete channel2, %i",qTime.elapsed());
+    qDebug() << "delete channel2, " << qTime.elapsed();
     delete channel2;
 
-    qDebug("delete buffer1, %i",qTime.elapsed());
+    qDebug() << "delete buffer1, " << qTime.elapsed();
     delete buffer1;
-    qDebug("delete buffer2, %i",qTime.elapsed());
+    qDebug() << "delete buffer2, " << qTime.elapsed();
     delete buffer2;
 
-//    qDebug("delete prefDlg");
+//    qDebug() << "delete prefDlg";
 //    delete m_pControlEngine;
-//    qDebug("delete midi");
-//    qDebug("delete midiconfig");
+//    qDebug() << "delete midi";
+//    qDebug() << "delete midiconfig";
 
-    qDebug("delete view, %i",qTime.elapsed());
+    qDebug() << "delete view, " << qTime.elapsed();
     delete view;
 
-    qDebug("delete tracks, %i",qTime.elapsed());
+    qDebug() << "delete tracks, " << qTime.elapsed();
     delete m_pTrack;
 
     delete prefDlg;
@@ -441,9 +441,9 @@ MixxxApp::~MixxxApp()
     //   delete m_pBpmDetector;
     //   delete m_pWaveSummary;
 
-    qDebug("save config, %i",qTime.elapsed());
+    qDebug() << "save config, " << qTime.elapsed();
     config->Save();
-    qDebug("delete config, %i",qTime.elapsed());
+    qDebug() << "delete config, " << qTime.elapsed();
     delete config;
 
     delete frame;
@@ -773,7 +773,7 @@ void MixxxApp::slotOptionsPreferences()
 //Note: Can't #ifdef this because MOC doesn't catch it.
 void MixxxApp::slotOptionsVinylControl(bool toggle)
 {
-    //qDebug("slotOptionsVinylControl: toggle is %i", (int)toggle);
+    //qDebug() << "slotOptionsVinylControl: toggle is " << (int)toggle;
 
     QString device1 = config->getValueString(ConfigKey("[VinylControl]","DeviceInputDeck1"));
     QString device2 = config->getValueString(ConfigKey("[VinylControl]","DeviceInputDeck2"));
@@ -842,7 +842,7 @@ void MixxxApp::slotOptionsRecord(bool toggle)
 
         if (proceedWithRecording == true)
         {
-            qDebug("Setting record status: READY");
+            qDebug() << "Setting record status: READY";
             recordingControl->slotSet(RECORD_READY);
         }
         else
@@ -853,7 +853,7 @@ void MixxxApp::slotOptionsRecord(bool toggle)
     }
     else
     {
-        qDebug("Setting record status: OFF");
+        qDebug() << "Setting record status: OFF";
         recordingControl->slotSet(RECORD_OFF);
     }
 
@@ -946,7 +946,7 @@ void MixxxApp::rebootMixxxView() {
     // So we check and if the size hasn't changed we don't make the call
     int oldh = view->height();
     int oldw = view->width();
-    qDebug("Now in Rebootmixxview...");
+    qDebug() << "Now in Rebootmixxview...";
     bool bVisualsWaveform = true;
     //TODO 0 or 1?
     if (config->getValueString(ConfigKey("[Controls]","Visuals")).toInt()==1)
@@ -955,7 +955,7 @@ void MixxxApp::rebootMixxxView() {
     QString qSkinPath = getSkinPath();
 
     view->rebootGUI(frame, bVisualsWaveform, config, qSkinPath);
-    qDebug("rebootgui DONE");
+    qDebug() << "rebootgui DONE";
     if (oldw != view->width() || oldh != view->height() + menuBar()->height()) {
       setFixedSize(view->width(), view->height() + menuBar()->height());
     }

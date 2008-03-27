@@ -18,6 +18,7 @@
 #include "rotary.h"
 #include "mathstuff.h"
 #include "controlobject.h"
+#include <QDebug>
 
 Rotary::Rotary()
 {
@@ -57,7 +58,7 @@ double Rotary::filter(double dValue)
         dMagnitude += m_pFilter[i];
     }
     dMagnitude /= (double)m_iFilterLength;
-    //qDebug("filter in %e, out %e",dValue,dMagnitude);
+    //qDebug() << "filter in " << dValue << ", out " << dMagnitude;
 
     if (m_dLastValue!=dMagnitude)
         return dMagnitude;
@@ -93,7 +94,7 @@ double Rotary::calibrateEnd()
 {
     m_dCalibration /= (double)m_iCalibrationCount;
 
-    qDebug("Calibration %f, count %i",m_dCalibration,m_iCalibrationCount);
+    qDebug() << "Calibration " << m_dCalibration << ", count " << m_iCalibrationCount;
 
     return m_dCalibration;
 }

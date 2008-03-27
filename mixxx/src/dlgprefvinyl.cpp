@@ -161,7 +161,7 @@ void DlgPrefVinyl::slotUpdate()
 // Update the config object with parameters from dialog
 void DlgPrefVinyl::slotApply()
 {
-    qDebug("DlgPrefVinyl::Apply");
+    qDebug() << "DlgPrefVinyl::Apply";
 
     config->set(ConfigKey("[VinylControl]","DeviceInputDeck1"), ConfigValue(ComboBoxDeviceDeck1->itemData(ComboBoxDeviceDeck1->currentIndex()).toString()));
     config->set(ConfigKey("[VinylControl]","DeviceInputDeck2"), ConfigValue(ComboBoxDeviceDeck2->itemData(ComboBoxDeviceDeck2->currentIndex()).toString()));
@@ -208,7 +208,7 @@ void DlgPrefVinyl::slotApply()
 void DlgPrefVinyl::ChannelsSlotApply()
 {
     // Channels
-    qDebug("DlgPrefVinyl::ChannelsSlotApply()");
+    qDebug() << "DlgPrefVinyl::ChannelsSlotApply()";
     //config->set(ConfigKey("[VinylControl]","DeviceInputChannelsDeck1"), ConfigValue(ComboBoxChannelsDeck1->currentText()));
     //config->set(ConfigKey("[VinylControl]","DeviceInputChannelsDeck2"), ConfigValue(ComboBoxChannelsDeck2->currentText()));
 }
@@ -244,6 +244,6 @@ void DlgPrefVinyl::VinylGainSlotApply()
     ControlObject* pControlObjectVinylControlGain = ControlObject::getControl(ConfigKey("[VinylControl]", "VinylControlGain"));
     pControlObjectVinylControlGain->set(VinylGain->value());
     
-    //qDebug("Setting Gain Text");
+    //qDebug() << "Setting Gain Text";
     //gain->setText(config->getValueString(ConfigKey("[VinylControl]","VinylControlGain")));        //this is probably ineffecient...
 }

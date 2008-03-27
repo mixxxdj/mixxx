@@ -25,6 +25,7 @@
 #include "controlobjectthreadmain.h"
 #include "controlobject.h"
 #include "configobject.h"
+#include <QDebug>
 
 Reader::Reader(EngineBuffer * _enginebuffer, QMutex * _pause)
 {
@@ -95,7 +96,7 @@ void Reader::requestNewTrack(TrackInfoObject * pTrack, bool bStartAtEndPos)
 
 void Reader::requestSeek(double new_playpos)
 {
-//    qDebug("req seek");
+//    qDebug() << "req seek";
 
     // Put seek request in queue
     seekqueuemutex.lock();
@@ -145,7 +146,7 @@ long int Reader::getFileposEnd()
 
 void Reader::setFileposPlay(long int pos)
 {
-    //qDebug("reader set file pos play %li",pos);
+    //qDebug() << "reader set file pos play " << pos << "i";
     readerwave->filepos_play = pos;
 }
 
@@ -171,13 +172,13 @@ void Reader::unlock()
 
 void Reader::newtrack()
 {
-// qDebug("newtrack, get pause lock");
+// qDebug() << "newtrack, get pause lock";
 
     // Set pause while loading new track
     pause->lock();
 
 
-// qDebug("newtrack, got pause lock");
+// qDebug() << "newtrack, got pause lock";
 
     // Get filename
     bool bStartAtEndPos;
@@ -202,13 +203,13 @@ void Reader::newtrack()
 
     readerwave->newSource(m_pTrack);
 
-//     qDebug("newtrack, new source set");
+//     qDebug() << "newtrack, new source set";
 
     // Initialize the new sound source
     file_srate = readerwave->getRate();
     file_length = readerwave->getLength();
 
-    qDebug("file length %li",file_length);
+    qDebug() << "file length " << file_length << "i";
 
     // Reset playpos
     if (bStartAtEndPos)
@@ -244,7 +245,7 @@ void Reader::newtrack()
 
 void Reader::run()
 {
-    //qDebug("Reader running...");
+    //qDebug() << "Reader running...";
 #ifdef __MACX__
     rtThread();
 #endif
@@ -265,7 +266,7 @@ void Reader::run()
         if (!requeststate)
             newtrack();
 
-// qDebug("check seek");
+// qDebug() << "check seek";
 
         // Check if a seek is requested
         seekqueuemutex.lock();
@@ -274,7 +275,7 @@ void Reader::run()
         if (!requeststate)
             seek();
 
-//  qDebug("read");
+//  qDebug() << "read";
 
         // Read a new chunk:
         readerwave->getchunk(m_dRate);
@@ -285,7 +286,7 @@ void Reader::run()
 
         readAheadMutex.unlock();
     }
-    //qDebug("reader stopping");
+    //qDebug() << "reader stopping";
 }
 
 void Reader::stop()
@@ -311,7 +312,7 @@ void Reader::seek()
     }
     seekqueuemutex.unlock();
 
-//    qDebug("seek %f",new_playpos);
+//    qDebug() << "seek " << new_playpos;
 
     // Return if queue was empty
     if (new_playpos==-1.)

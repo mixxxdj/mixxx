@@ -64,7 +64,7 @@ SoundSourceMp3::SoundSourceMp3(QString qFilename) : SoundSource(qFilename)
                  }
                }*/
 
-            //qDebug("MAD: ERR decoding header %d: %s (len=%d)", currentframe, mad_stream_ERRstr(&Stream), len);
+            //qDebug() << "MAD: ERR decoding header " << currentframe << ": " << mad_stream_ERRstr(&Stream) << " (len=" << len << ")";
             continue;
         }
 
@@ -80,7 +80,7 @@ SoundSourceMp3::SoundSourceMp3(QString qFilename) : SoundSource(qFilename)
         SRATE = Header.samplerate;
         m_iChannels = MAD_NCHANNELS(&Header);
     }
-    //qDebug("channels %i",m_iChannels);
+    //qDebug() << "channels " << m_iChannels;
 
     // Find average frame size
     if(currentframe)
@@ -97,10 +97,10 @@ SoundSourceMp3::SoundSourceMp3(QString qFilename) : SoundSource(qFilename)
     currentframe = 0;
 
 /*
-    qDebug("length  = %ld sec." , filelength.seconds);
-    qDebug("frames  = %d" , framecount);
-    qDebug("bitrate = %d" , bitrate/1000);
-    qDebug("Size    = %d", length());
+    qDebug() << "length  = " << filelength.seconds << "d sec.";
+    qDebug() << "frames  = " << framecount;
+    qDebug() << "bitrate = " << bitrate/1000;
+    qDebug() << "Size    = " << length();
  */
 
     Frame = new mad_frame;
@@ -126,7 +126,7 @@ long SoundSourceMp3::seek(long filepos)
     // Ensure that we are seeking to an even filepos
     Q_ASSERT(filepos%2==0);
 
-//     qDebug("SEEK %i",filepos);
+//     qDebug() << "SEEK " << filepos;
 
     MadSeekFrameType * cur;
 
@@ -146,7 +146,7 @@ long SoundSourceMp3::seek(long filepos)
     }
     else
     {
-        //qDebug("seek precise");
+        //qDebug() << "seek precise";
         // Perform precise seek accomplished by using a frame in the seek list
 
         // Find the frame to seek to in the list
@@ -162,11 +162,11 @@ long SoundSourceMp3::seek(long filepos)
 
         int framePos = findFrame(filepos);
 
-//         qDebug("list length %i",m_qSeekList.count());
+//         qDebug() << "list length " << m_qSeekList.count();
 
         if (framePos==0 || framePos>filepos || m_qSeekList.at()<5)
         {
-//             qDebug("Problem finding good seek frame (wanted %i, got %i), starting from 0",filepos,framePos);
+//             qDebug() << "Problem finding good seek frame (wanted " << filepos << ", got " << framePos << "), starting from 0";
 
             // Re-init buffer:
             mad_stream_finish(&Stream);
@@ -180,7 +180,7 @@ long SoundSourceMp3::seek(long filepos)
         }
         else
         {
-//             qDebug("frame pos %i",cur->pos);
+//             qDebug() << "frame pos " << cur->pos;
 
             // Start four frame before wanted frame to get in sync...
             m_qSeekList.prev();
@@ -192,7 +192,7 @@ long SoundSourceMp3::seek(long filepos)
             mad_stream_finish(&Stream);
             mad_stream_init(&Stream);
             mad_stream_options(&Stream, MAD_OPTION_IGNORECRC);
-//        qDebug("mp3 restore %p",cur->m_pStreamPos);
+//        qDebug() << "mp3 restore " << cur->m_pStreamPos;
             mad_stream_buffer(&Stream, (const unsigned char *)cur->m_pStreamPos, inputbuf_len-(long int)(cur->m_pStreamPos-(unsigned char *)inputbuf));
             mad_synth_mute(&Synth);
             mad_frame_mute(Frame);
@@ -201,7 +201,7 @@ long SoundSourceMp3::seek(long filepos)
             mad_frame_decode(Frame,&Stream);
             mad_frame_decode(Frame,&Stream);
             mad_frame_decode(Frame,&Stream);
-            if(mad_frame_decode(Frame,&Stream)) qDebug("MP3 decode warning");
+            if(mad_frame_decode(Frame,&Stream)) qDebug() << "MP3 decode warning";
             mad_synth_frame(&Synth, Frame);
 
             // Set current position
@@ -218,11 +218,11 @@ long SoundSourceMp3::seek(long filepos)
 /*
     else
     {
-        qDebug("seek unprecise");
+        qDebug() << "seek unprecise";
         // Perform seek which is can not be done precise because no frames is in the seek list
 
         int newpos = (int)(inputbuf_len * ((float)filepos/(float)length()));
-   //        qDebug("Seek to %d %d %d", filepos, inputbuf_len, newpos);
+   //        qDebug() << "Seek to " << filepos << " " << inputbuf_len << " " << newpos;
 
         // Go to an approximate position:
         mad_stream_buffer(&Stream, (unsigned char *) (inputbuf+newpos), inputbuf_len-newpos);
@@ -267,7 +267,7 @@ inline long unsigned SoundSourceMp3::length()
 {
     enum mad_units units;
 
-    //qDebug("SRATE: %i", SRATE);
+    //qDebug() << "SRATE: " << SRATE;
     switch (SRATE)
     {
     case 8000:
@@ -352,7 +352,7 @@ unsigned SoundSourceMp3::read(unsigned long samples_wanted, const SAMPLE * _dest
     // Ensure that we are reading an even number of samples. Otherwise this function may
     // go into an infinite loop
     Q_ASSERT(samples_wanted%2==0);
-//     qDebug("frame list %i",m_qSeekList.count());
+//     qDebug() << "frame list " << m_qSeekList.count();
 
     SAMPLE * destination = (SAMPLE *)_destination;
     unsigned Total_samples_decoded = 0;
@@ -375,23 +375,23 @@ unsigned SoundSourceMp3::read(unsigned long samples_wanted, const SAMPLE * _dest
         Total_samples_decoded += 2*(Synth.pcm.length-rest);
     }
 
-//     qDebug("Decoding");
+//     qDebug() << "Decoding";
     int no = 0;
     int frames = 0;
     while (Total_samples_decoded < samples_wanted)
     {
-        // qDebug("no %i",Total_samples_decoded);
+        // qDebug() << "no " << Total_samples_decoded;
         if(mad_frame_decode(Frame,&Stream))
         {
             if(MAD_RECOVERABLE(Stream.error))
             {
-                // qDebug("MAD: Recoverable frame level ERR (%s)",mad_stream_errorstr(&Stream));
+                // qDebug() << "MAD: Recoverable frame level ERR (" << mad_stream_errorstr(&Stream) << ")";
                 continue;
             } else if(Stream.error==MAD_ERROR_BUFLEN) {
-                // qDebug("MAD: buflen ERR");
+                // qDebug() << "MAD: buflen ERR";
                 break;
             } else {
-                // qDebug("MAD: Unrecoverable frame level ERR (%s).",mad_stream_errorstr(&Stream));
+                // qDebug() << "MAD: Unrecoverable frame level ERR (" << mad_stream_errorstr(&Stream) << ").";
                 break;
             }
         }
@@ -413,7 +413,7 @@ unsigned SoundSourceMp3::read(unsigned long samples_wanted, const SAMPLE * _dest
          */
 
 
-//         qDebug("synthlen %i, remain %i",Synth.pcm.length,(samples_wanted-Total_samples_decoded));
+//         qDebug() << "synthlen " << Synth.pcm.length << ", remain " << (samples_wanted-Total_samples_decoded);
         no = math_min(Synth.pcm.length,(samples_wanted-Total_samples_decoded)/2);
         for (int i=0; i<no; i++)
         {
@@ -429,7 +429,7 @@ unsigned SoundSourceMp3::read(unsigned long samples_wanted, const SAMPLE * _dest
         }
         Total_samples_decoded += 2*no;
 
-        // qDebug("decoded: %i, wanted: %i",Total_samples_decoded,samples_wanted);
+        // qDebug() << "decoded: " << Total_samples_decoded << ", wanted: " << samples_wanted;
     }
 
     // If samples are still left in buffer, set rest to the index of the unused samples
@@ -438,7 +438,7 @@ unsigned SoundSourceMp3::read(unsigned long samples_wanted, const SAMPLE * _dest
     else
         rest = -1;
 
-    // qDebug("decoded %i samples in %i frames, rest: %i, chan %i", Total_samples_decoded, frames, rest, m_iChannels);
+    // qDebug() << "decoded " << Total_samples_decoded << " samples in " << frames << " frames, rest: " << rest << ", chan " << m_iChannels;
     return Total_samples_decoded;
 }
 
@@ -579,7 +579,7 @@ int SoundSourceMp3::ParseHeader(TrackInfoObject * Track)
             Track->setBitrate(Header.bitrate/1000);
         }
 //        else
-//            qDebug("MAD: Count frames to get file duration!");
+//            qDebug() << "MAD: Count frames to get file duration!";
     }
 
     Track->setSampleRate(Header.samplerate);
@@ -615,16 +615,16 @@ int SoundSourceMp3::findFrame(int pos)
 
 /*
     if (temp!=0)
-        qDebug("find %i, got %i",pos, temp->pos);
+        qDebug() << "find " << pos << ", got " << temp->pos;
     else
-        qDebug("find %i, tried idx %i, total %i",pos, math_min(m_qSeekList.count()-1, pos/m_iAvgFrameSize),m_qSeekList.count());
+        qDebug() << "find " << pos << ", tried idx " << math_min(m_qSeekList.count()-1 << ", total " << pos/m_iAvgFrameSize);
  */
 
     // Ensure that the list element is not at a greater position than pos
     while (temp!=0 && temp->pos>pos)
     {
         temp = m_qSeekList.prev();
-//        if (temp!=0) qDebug("backing %i, got %i",pos,temp->pos);
+//        if (temp!=0) qDebug() << "backing " << pos << ", got " << temp->pos;
     }
 
     // Ensure that the following position is also not smaller than pos
@@ -634,7 +634,7 @@ int SoundSourceMp3::findFrame(int pos)
         while (temp!=0 && temp->pos<pos)
         {
             temp = m_qSeekList.next();
-//            if (temp!=0) qDebug("fwd'ing %i, got %i",pos,temp->pos);
+//            if (temp!=0) qDebug() << "fwd'ing " << pos << ", got " << temp->pos;
         }
 
         if (temp==0)
@@ -645,12 +645,12 @@ int SoundSourceMp3::findFrame(int pos)
 
     if (temp>0)
     {
-//        qDebug("ended at %i, got %i",pos,temp->pos);
+//        qDebug() << "ended at " << pos << ", got " << temp->pos;
         return temp->pos;
     }
     else
     {
-//        qDebug("ended at 0");
+//        qDebug() << "ended at 0";
         return 0;
     }
 }

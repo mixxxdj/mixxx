@@ -67,7 +67,7 @@ void PeakList::update(int idx, int len)
 
 
 
-    //qDebug("from %i, len %i, START %i, no %i",idx,len,(*it).i,getNoInRange(idx,len));
+    //qDebug() << "from " << idx << ", len " << len << ", START " << (*it).i << ", no " << getNoInRange(idx;
 
     //
     // Add new peaks to the peak list
@@ -98,10 +98,10 @@ void PeakList::update(int idx, int len)
 
 PeakList::iterator PeakList::insertIfPeak(int idx, PeakList::iterator it)
 {
-//    qDebug("check idx %i",idx);
+//    qDebug() << "check idx " << idx;
     if (m_pBuffer[idx]>m_pBuffer[(idx-1+m_iIdxSize)%m_iIdxSize] && m_pBuffer[idx]>m_pBuffer[(idx+1)%m_iIdxSize])
     {
-//        qDebug("peak");
+//        qDebug() << "peak";
         PeakType p;
         p.i = idx;
 
@@ -189,27 +189,27 @@ PeakList::iterator PeakList::getFirstInRange(int idx, int len, bool returnElemen
     }
     else
     {
-        qDebug("--");
+        qDebug() << "--";
 
         // The range is wrapped
         it = begin();
         bool found = false;
         while (it!=end() && (*it).i<(idx+len)%m_iIdxSize)
         {
-            qDebug("-0");
+            qDebug() << "-0";
             found = true;
  ++it;
         }
         if (found)
         {
-            qDebug("-1");
+            qDebug() << "-1";
             return --it;
         }
 
         it = --end();
         if (!((*it).i<idx+len && (*it).i>=idx))
         {
-            qDebug("-2");
+            qDebug() << "-2";
         }
     }
     return it;*/
@@ -284,7 +284,7 @@ PeakList::iterator PeakList::getMaxInRange(int idx, int len)
     {
         while (it!=end() && (*it).i<idx+len)
         {
-            //qDebug("it1 %i",(*it).i);
+            //qDebug() << "it1 " << (*it).i;
             if (m_pBuffer[(*it).i]>m_pBuffer[(*itmax).i])
                 itmax =it;
             ++it;
@@ -296,7 +296,7 @@ PeakList::iterator PeakList::getMaxInRange(int idx, int len)
             it = begin();
             while (it!=end() && (*it).i<(idx+len)%m_iIdxSize)
             {
-                //qDebug("it2 %i",(*it).i);
+                //qDebug() << "it2 " << (*it).i;
                 if (m_pBuffer[(*it).i]>m_pBuffer[(*itmax).i])
                     itmax =it;
                 ++it;
@@ -316,7 +316,7 @@ void PeakList::print()
     }
     std::cout << "\n";
 
-    //qDebug("size %i",size());
+    //qDebug() << "size " << size();
     if (size()>1)
     {
         iterator it2 = begin();
@@ -327,12 +327,12 @@ void PeakList::print()
             --itback;
             if ((*itback).i>(*it2).i)
             {
-                qDebug("************error");
+                qDebug() << "************error";
             }
             ++it2;
         }
     }
-    qDebug("---");
+    qDebug() << "---";
 }
 
 

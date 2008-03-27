@@ -42,7 +42,7 @@ static bool ffmpeginit = false;
 static void FFmpegInit()
 {
     if (!ffmpeginit) {
-        qDebug("Initialising avcodec/avformat");
+        qDebug() << "Initialising avcodec/avformat";
         av_register_all();
         ffmpeginit = true;
     }
@@ -84,7 +84,7 @@ SoundSourceFFmpeg::SoundSourceFFmpeg(QString qFilename) : SoundSource(qFilename)
     //debug only
     dump_format(pFormatCtx, 0, fname.constData(), false);
 
-    qDebug("ffmpeg: using the first audio stream available");
+    qDebug() << "ffmpeg: using the first audio stream available";
     // Find the first video stream
     audioStream=-1;
     for(i=0; i<pFormatCtx->nb_streams; i++)
@@ -106,7 +106,7 @@ SoundSourceFFmpeg::SoundSourceFFmpeg(QString qFilename) : SoundSource(qFilename)
         return;
     }
 
-    qDebug("ffmpeg: opening the audio codec");
+    qDebug() << "ffmpeg: opening the audio codec";
     //avcodec_open is not thread safe
     lock();
     if(avcodec_open(pCodecCtx, pCodec)<0) {
@@ -119,14 +119,14 @@ SoundSourceFFmpeg::SoundSourceFFmpeg(QString qFilename) : SoundSource(qFilename)
     channels = pCodecCtx->channels;
     SRATE = pCodecCtx->sample_rate;
 
-    qDebug("Samplerate: %d, Channels: %d\n", SRATE, channels);
+    qDebug() << "Samplerate: " << SRATE << ", Channels: " << channels << "\n";
     if(channels > 2){
-        qDebug("ffmpeg: No support for more than 2 channels!");
+        qDebug() << "ffmpeg: No support for more than 2 channels!";
         return;
     }
     filelength = (long int) ((double)pFormatCtx->duration * 2 / AV_TIME_BASE * SRATE);
 
-    qDebug("ffmpeg: filelength: %ld -|- duration: %lld -- starttime: %lld -- %d %lld", filelength, pFormatCtx->duration, pFormatCtx->streams[audioStream]->start_time, AV_TIME_BASE, pFormatCtx->streams[audioStream]->codec_info_duration);
+    qDebug() << "ffmpeg: filelength: " << filelength << "d -|- duration: " << pFormatCtx->duration << "ld -- starttime: " << pFormatCtx->streams[audioStream]->start_time << "ld -- " << AV_TIME_BASE << " " << pFormatCtx->streams[audioStream]->codec_info_duration << "ld";
 }
 
 SoundSourceFFmpeg::~SoundSourceFFmpeg()
@@ -142,16 +142,16 @@ SoundSourceFFmpeg::~SoundSourceFFmpeg()
 
 void SoundSourceFFmpeg::lock()
 {
-    //  qDebug("ffmpeg: Before lock");
+    //  qDebug() << "ffmpeg: Before lock";
     ffmpegmutex.lock();
-    //qDebug("ffmpeg: After lock");
+    //qDebug() << "ffmpeg: After lock";
 }
 
 void SoundSourceFFmpeg::unlock()
 {
-    //qDebug("ffmpeg: Before unlock");
+    //qDebug() << "ffmpeg: Before unlock";
     ffmpegmutex.unlock();
-    //qDebug("ffmpeg: After unlock");
+    //qDebug() << "ffmpeg: After unlock";
 }
 
 long SoundSourceFFmpeg::ffmpeg2mixxx(long pos, const AVRational &time_base) {
@@ -212,11 +212,11 @@ long SoundSourceFFmpeg::mixxx2ffmpeg(long pos, const AVRational &time_base) {
 /*for (fspos = 0; fspos < 602890000; fspos++){
    ret = av_seek_frame(pFormatCtx, -1, fspos, 0);
    if (ret){
-   qDebug("ffmpeg: Seek ERRORRRRRRRRr ret(%d) filepos(%ld).", ret, fspos);
+   qDebug() << "ffmpeg: Seek ERRORRRRRRRRr ret(" << ret << ") filepos(" << fspos << "d).";
    fspos--;
    ret = av_seek_frame(pFormatCtx, audioStream, fspos, 0);
    readInput();
-   qDebug("ffmpeg: seek2EROR %d %d %lld", bufferOffset, bufferSize, packet.pos);
+   qDebug() << "ffmpeg: seek2EROR " << bufferOffset << " " << bufferSize << " " << packet.pos << "ld";
    return 0;
    }
    }*/
@@ -235,25 +235,24 @@ long SoundSourceFFmpeg::seek(long filepos)
     lock();
 
     fspos = mixxx2ffmpeg(filepos, time_base);
-    //  qDebug("ffmpeg: seek0.5 %lld -- %d -- %lld",  packet.pos, packet.duration, pFormatCtx->streams[audioStream]->cur_dts);
-    qDebug("ffmpeg: seek (ffpos %ld) (mixxxpos %ld)", fspos, filepos);
+    //  qDebug() << "ffmpeg: seek0.5 " << packet.pos << "ld -- " << packet.duration << " -- " << pFormatCtx->streams[audioStream]->cur_dts << "ld";
+    qDebug() << "ffmpeg: seek (ffpos " << fspos << "d) (mixxxpos " << filepos << "d)";
 
     ret = av_seek_frame(pFormatCtx, audioStream, fspos, AVSEEK_FLAG_BACKWARD /*AVSEEK_FLAG_ANY*/);
 
     if (ret){
-        qDebug("ffmpeg: Seek ERROR ret(%d) filepos(%ld).", ret, filepos);
+        qDebug() << "ffmpeg: Seek ERROR ret(" << ret << ") filepos(" << filepos << "d).";
         unlock();
         return 0;
     }
 
     readInput();
     diff = ffmpeg2mixxx(fspos - pFormatCtx->streams[audioStream]->cur_dts, time_base);
-    qDebug("ffmpeg: seeked (dts %ld) (diff %ld) (diff %lld)", pFormatCtx->streams[audioStream]->cur_dts, diff,
-           fspos - pFormatCtx->streams[audioStream]->cur_dts);
+    qDebug() << "ffmpeg: seeked (dts " << pFormatCtx->streams[audioStream]->cur_dts << ") (diff " << diff << ") (diff " << fspos - pFormatCtx->streams[audioStream]->cur_dts << ")";
 
     bufferOffset = 0; //diff;
     if (bufferOffset > bufferSize) {
-        qDebug("ffmpeg: ERROR BAD OFFFFFFSET, buffsize: %d offset: %d", bufferSize, bufferOffset);
+        qDebug() << "ffmpeg: ERROR BAD OFFFFFFSET, buffsize: " << bufferSize << " offset: " << bufferOffset;
         bufferOffset = 0;
     }
     unlock();
@@ -280,20 +279,20 @@ bool SoundSourceFFmpeg::readInput(){
             src = packet.data;
             inputsize = 0;
             readsize = 0;
-            //qDebug("ffmpeg: before avcodec_decode_audio packet.size(%d)", packet.size);
+            //qDebug() << "ffmpeg: before avcodec_decode_audio packet.size(" << packet.size << ")";
             tries = 0;
             do {
                 ret = avcodec_decode_audio(pCodecCtx, (int16_t *)dst, &readsize, src, packet.size - inputsize);
                 if (readsize == 0)
                 {
                     tries++;
-                    //qDebug("ffmpeg: skip frame, decoded readsize = 0");
+                    //qDebug() << "ffmpeg: skip frame, decoded readsize = 0";
                     break;
                 }
                 if (ret <= 0)
                 {
                     tries++;
-                    //qDebug("ffmpeg: skip frame, decoded ret = 0");
+                    //qDebug() << "ffmpeg: skip frame, decoded ret = 0";
                     if (tries > 3) break;
                     continue;
                 }
@@ -301,9 +300,9 @@ bool SoundSourceFFmpeg::readInput(){
                 bufferSize += readsize;
                 src += ret;
                 inputsize += ret;
-                //qDebug("ffmpeg: loop buffersize(%d), readsize(%d) ret(%d) psize(%d)", bufferSize, readsize, ret, packet.size);
+                //qDebug() << "ffmpeg: loop buffersize(" << bufferSize << "), readsize(" << readsize << ") ret(" << ret << ") psize(" << packet.size << ")";
             } while (inputsize < packet.size);
-            //qDebug("ffmpeg: after avcodec_decode_audio outsize(%d) - ret(%d)", bufferSize, ret);
+            //qDebug() << "ffmpeg: after avcodec_decode_audio outsize(" << bufferSize << ") - ret(" << ret << ")";
             if (bufferSize != 0)
                 return true;
 
@@ -327,14 +326,14 @@ unsigned SoundSourceFFmpeg::read(unsigned long size, const SAMPLE * destination)
     int needed = size*2; //*channels;
 
     lock();
-    qDebug("ffmpeg: read, requested:(%d)  dts:%lld buffoffset:%d buffsize: %d\n", needed / 2,  pFormatCtx->streams[audioStream]->cur_dts, bufferOffset, bufferSize);
+    qDebug() << "ffmpeg: read, requested:(" << needed / 2 << ")  dts:" << pFormatCtx->streams[audioStream]->cur_dts << "ld buffoffset:" << bufferOffset << " buffsize: " << bufferSize << "\n";
     //copy previous buffer
     src = (char *)buffer;
     src += bufferOffset;
     while (needed > 0) {
         if (bufferOffset < bufferSize) {
             index = bufferSize - bufferOffset > needed ? needed : bufferSize - bufferOffset;
-            //qDebug("ffmpeg: copy(%d) needed(%d)", index, needed);
+            //qDebug() << "ffmpeg: copy(" << index << ") needed(" << needed << ")";
             memcpy((char *)dest, (char *)(src), index);
             src += index;
             dest += index; //(SAMPLE *)((char *)(dest) + index);

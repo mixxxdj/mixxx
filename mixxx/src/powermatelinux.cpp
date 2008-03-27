@@ -116,7 +116,7 @@ int PowerMateLinux::opendev(int iId)
             // Add id to list of open devices
             sqlOpenDevs.append(iId);
 
-//             qDebug("pm id %i",iId);
+//             qDebug() << "pm id " << iId;
 
             return iFd;
         }
@@ -156,7 +156,7 @@ void PowerMateLinux::getNextEvent()
                 //This next line was used in the original Powermate code... Long story short: It screws up everything.
                 //double dValue = m_pRotary->filter((double)v);
 
-                //qDebug("POWERMATE: v = %d, dValue = %f", v, dValue);
+                //qDebug() << "POWERMATE: v = " << v << ", dValue = " << dValue;
 
                 //Scale the speed of the seeking/scratching/whatever based on how fast the Powermate is being turned.
                 if (v >= 2 || v <= -2)
@@ -196,13 +196,13 @@ void PowerMateLinux::getNextEvent()
             }
             break;
             /*default:
-                    qDebug("POWERMATE :: [type=0x%04x code=0x%04x, value=%d]", ev.type, ev.code, (int)ev.value);
+                    qDebug() << "POWERMATE :: [type=0x" << ev.type << " code=0x" << ev.code << ", value=" << (int)ev.value << "]";
              */
         }
     }
     else
     {
-        //qDebug("unread");
+        //qDebug() << "unread";
         iUnreadCount++;
         if (iUnreadCount > 5)
         {
@@ -220,7 +220,7 @@ void PowerMateLinux::getNextEvent()
 
     if (m_ctrlVuMeter != NULL)
     {
-        //qDebug("POWERMATE: m_ctrlVuMeter->get() is %f", m_ctrlVuMeter->get());
+        //qDebug() << "POWERMATE: m_ctrlVuMeter->get() is " << m_ctrlVuMeter->get();
         if (wait > 5) //Save on CPU a bit...
         {
             if (m_pControlObjectButton->get() == 0.0f)     //If we're paused, pulse the
@@ -253,7 +253,7 @@ void PowerMateLinux::getNextEvent()
     //
     if (m_qRequestLed.available()==0)
     {
-        //qDebug("POWERMATE: LED!!!!");
+        //qDebug() << "POWERMATE: LED!!!!";
         m_qRequestLed--;
         led_write(255, 0, 0, 0, 1);
 
@@ -295,5 +295,5 @@ void PowerMateLinux::led_write(int iStaticBrightness, int iSpeed, int iTable, in
     ev.value = iStaticBrightness | (iSpeed << 8) | (iTable << 17) | (iAsleep << 19) | (iAwake << 20);
 
     if(write(m_iFd, &ev, sizeof(struct input_event)) != sizeof(struct input_event))
-        qDebug("PowerMate: write(): %s", strerror(errno));
+        qDebug() << "PowerMate: write(): " << strerror(errno);
 }

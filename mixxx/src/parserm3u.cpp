@@ -54,7 +54,7 @@ Q3PtrList<QString> * ParserM3u::parse(QString sFilename)
     QString basepath = sFilename.section('/', 0, -2);
 
     clearLocations();
-    //qDebug("ParserM3u: Starting to parse.");
+    //qDebug() << "ParserM3u: Starting to parse.";
     if (file->open(QIODevice::ReadOnly) && !isBinary(sFilename)) {
 
         Q3TextStream * textstream = new Q3TextStream( file );
@@ -66,7 +66,7 @@ Q3PtrList<QString> * ParserM3u::parse(QString sFilename)
             if(psLine->isNull() || (*psLine) == "NULL")
                 break;
 
-            //qDebug("ParserM3u: parsed: "+(*psLine));
+            //qDebug) << ("ParserM3u: parsed: " << (*psLine);
             m_psLocations->append(psLine);
 
         }

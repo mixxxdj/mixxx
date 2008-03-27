@@ -246,7 +246,7 @@ void TrackInfoObject::writeToXML( QDomDocument &doc, QDomElement &header )
     if (!m_pTableItemBitrate)
         m_pTableItemBitrate = new WTrackTableItem(this, pTableTrack,Q3TableItem::Never, getBitrateStr(), typeNumber);
 
-    //qDebug("inserting.. %p",pTableTrack->item(iRow, COL_SCORE));
+    //qDebug() << "inserting.. " << pTableTrack->item(iRow;
 
     // Insert the elements into the table
     pTableTrack->setItem(iRow, COL_SCORE, m_pTableItemScore);
@@ -268,7 +268,7 @@ void TrackInfoObject::writeToXML( QDomDocument &doc, QDomElement &header )
     {
         // Remove the row from the table, and delete the table items
         int row = m_pTableTrack->currentRow();
-                //qDebug("remove from row %i",row);
+                //qDebug() << "remove from row " << row;
         m_pTableTrack->removeRow(m_pTableItemScore->row());
 
         // Set a new active row
@@ -296,7 +296,7 @@ void TrackInfoObject::writeToXML( QDomDocument &doc, QDomElement &header )
     {
         // Remove all contents of first row
         //int row = m_pTableTrack->currentRow();
-                //qDebug("remove from row %i",row);
+                //qDebug() << "remove from row " << row;
         m_pTableTrack->removeRow(1);//m_pTableItemScore->row());
 
         // Set a new active row

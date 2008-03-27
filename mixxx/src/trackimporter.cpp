@@ -78,7 +78,7 @@ void TrackImporter::parseTracks(QString sName)
         m_psLocations = m_pM3uparser->parse(sName);
 
     } else{
-        qDebug( "Importer: File is not a playlist!" );
+        qDebug() << "Importer: File is not a playlist!";
     }
 
 }
@@ -122,7 +122,7 @@ TrackPlaylist * TrackImporter::importPlaylist(QString sName)
     }
     while(!m_psLocations->isEmpty())
     {
-        //qDebug("Importer: Working on: "+(*m_psLocations->first()));
+        //qDebug() << "Importer: Working on: " << (*m_psLocations->first());
         pTrack = m_pCollection->getTrack((*m_psLocations->first()));
 
         if(pTrack){

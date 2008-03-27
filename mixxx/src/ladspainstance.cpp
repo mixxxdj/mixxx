@@ -22,7 +22,7 @@ LADSPAInstance::LADSPAInstance(const LADSPA_Descriptor * descriptor)
 
     if (LADSPA_IS_INPLACE_BROKEN(m_pDescriptor->Properties))
     {
-        qDebug("LADSPA: Inplace broken!");
+        qDebug() << "LADSPA: Inplace broken!";
     }
 
     remove = 0;

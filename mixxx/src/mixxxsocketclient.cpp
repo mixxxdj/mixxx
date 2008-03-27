@@ -107,7 +107,7 @@ void MixxxSocketClient::readClient()
 
 void MixxxSocketClient::slotEndOfFileCh1(double)
 {
-    qDebug("finsih");
+    qDebug() << "finsih";
     ts << "player1 finished" << endl;
 }
 

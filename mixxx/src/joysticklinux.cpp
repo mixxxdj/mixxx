@@ -18,7 +18,7 @@
 #include "joysticklinux.h"
 #include "controlobject.h"
 #include "controleventmidi.h"
-
+#include <QDebug>
 
 JoystickLinux::JoystickLinux() : Joystick()
 {
@@ -48,7 +48,7 @@ int JoystickLinux::opendev()
     ioctl(joystickDevice, JSIOCGBUTTONS, &joystick.buttons);
     ioctl(joystickDevice, JSIOCGNAME(255), joystick.name);
 
-    qDebug("Joystick: Using device %s (%s), %i axes, %i buttons.\n", joydevice, joystick.name, joystick.axes, joystick.buttons);
+    qDebug() << "Joystick: Using device " << joydevice << " (" << joystick.name << "), " << joystick.axes << " axes, " << joystick.buttons << " buttons.\n";
 
 
     start();
@@ -69,7 +69,7 @@ void JoystickLinux::run()
         // read eventdata from joystick
         if (read(joystickDevice, &joystickEvent, sizeof(struct js_event)) != sizeof(struct js_event))
         {
-            qDebug("Joystick: error reading from joystick device");
+            qDebug() << "Joystick: error reading from joystick device";
             return;
         }
 

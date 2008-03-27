@@ -31,7 +31,7 @@ double ControlTTRotary::getValueFromWidget(double dValue)
     if ((dValue-64.)<0)
         temp = -temp;
 
-    //qDebug("tt rotary in %f, out %f",dValue,temp);
+    //qDebug() << "tt rotary in " << dValue << ", out " << temp;
 
     return temp; //dValue-64.;
 }

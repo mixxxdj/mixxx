@@ -68,7 +68,7 @@ EngineBufferCue::~EngineBufferCue()
 // Set the cue point at the current play position:
 void EngineBufferCue::slotControlCueSet(double v)
 {
-    //qDebug("***slotControlCueSet!!");
+    //qDebug() << "***slotControlCueSet!!";
     if (v)
     {
         double cue = math_max(0.,round(m_pEngineBuffer->getAbsPlaypos()));

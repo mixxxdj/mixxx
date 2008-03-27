@@ -47,13 +47,13 @@ bool PowerMateWin::opendev()
     m_hFd = GetDeviceViaInterface((LPGUID)&POWERMATE_GUID,siInstCount);
     if(m_hFd == INVALID_HANDLE_VALUE)
     {
-        qDebug("No powermate");
+        qDebug() << "No powermate";
         return false;
     }
     m_iInstNo = siInstCount;
     siInstCount++;
 
-    qDebug("found powermate %i",m_iInstNo);
+    qDebug() << "found powermate " << m_iInstNo;
 
     // Start thread
     start();
@@ -97,14 +97,14 @@ void PowerMateWin::run()
 
         if (!bRead)
         {
-            //qDebug("r");
+            //qDebug() << "r";
             success = ReadFile(m_hFd, pBuffer, 6, &lBytesRead, &overlapped);
             bRead = true;
         }
 
         if (bRead) // && GetLastError()==ERROR_IO_PENDING)
         {
-            //qDebug("o");
+            //qDebug() << "o";
             // asynchronous i/o is still in progress
             // wait for completion or interupt
             //WaitForSingleObject(hEvent, 5);
@@ -113,12 +113,12 @@ void PowerMateWin::run()
             success = GetOverlappedResult(m_hFd, &overlapped, &lBytesRead, false);
 
 //          if (!success)
-//              qDebug("overlap error: %i",GetLastError());
+//              qDebug() << "overlap error: " << GetLastError();
 
             //ResetEvent(hEvent);
         }
 
-        //qDebug("success %i, read %i",success,lBytesRead);
+        //qDebug() << "success " << success << ", read " << lBytesRead;
 
         // if there was a problem, or the async operation's still pending
         if (success)
@@ -209,7 +209,7 @@ void PowerMateWin::led_write(int iStaticBrightness, int iSpeed, int iTable, int 
 
 void PowerMateWin::process_event(char * pEv)
 {
-    qDebug("process %i,%i,%i,%i,%i,%i", pEv[0],pEv[1],pEv[2],pEv[3],pEv[4],pEv[5]);
+    qDebug() << "process " << pEv[0] << "," << pEv[1] << "," << pEv[2] << "," << pEv[3] << "," << pEv[4] << "," << pEv[5];
     if (pEv[1]>0 || pEv[1]<0)
         sendRotaryEvent(pEv[1]);
     else
@@ -220,7 +220,7 @@ void PowerMateWin::process_event(char * pEv)
         else
             sendButtonEvent(false);
 
-//      qDebug("PowerMate: Button was %s %i", pEv[1]? "pressed":"released",pEv[1]);
+//      qDebug() << "PowerMate: Button was " << pEv[1] << " " << "", pEv[1]? "pressed":"released";
     }
 }
 

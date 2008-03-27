@@ -21,7 +21,7 @@ SoundSourceAudioFile::SoundSourceAudioFile(QString qFilename) : SoundSource(qFil
 {
     fh = afOpenFile( qFilename.latin1(),"r",0);
     if (fh == AF_NULL_FILEHANDLE) {
-        qDebug("libaudiofile: Error opening file.");
+        qDebug() << "libaudiofile: Error opening file.";
         filelength = 0;
         channels = 2;
     }
@@ -49,11 +49,11 @@ long SoundSourceAudioFile::seek(long filepos)
 {
 //    if (filelength>0)
     {
-//	   qDebug("seek %i, len %i, channels %i",filepos,filelength,channels);
+//	   qDebug() << "seek " << filepos << ", len " << filelength << ", channels " << channels;
 //        filepos = math_max(0, math_min(filepos,filelength));
 
         if (afSeekFrame(fh, AF_DEFAULT_TRACK, (AFframecount) (filepos/2))<0)
-            qDebug("libaudiofile: Seek ERR.");
+            qDebug() << "libaudiofile: Seek ERR.";
         return filepos;
     }
 //    return 0;
@@ -68,9 +68,9 @@ unsigned SoundSourceAudioFile::read(unsigned long size, const SAMPLE * destinati
     SAMPLE * dest = (SAMPLE *)destination;
     if (channels==2)
     {
-        //qDebug("req %i, ch %i, frames %i",size,channels,size/channels);
+        //qDebug() << "req " << size << ", ch " << channels << ", frames " << size/channels;
         int readNo = afReadFrames(fh,AF_DEFAULT_TRACK, dest, size/channels);
-        //qDebug("read  %i",readNo);
+        //qDebug() << "read  " << readNo;
         return readNo*channels;
     }
     else
@@ -98,7 +98,7 @@ int SoundSourceAudioFile::ParseHeader(TrackInfoObject * Track)
     AFfilehandle fh = afOpenFile(location.latin1(), "r", 0);
     if (fh == AF_NULL_FILEHANDLE)
     {
-        qDebug("libaudiofile: Error opening file.");
+        qDebug() << "libaudiofile: Error opening file.";
         return(ERR);
     }
 

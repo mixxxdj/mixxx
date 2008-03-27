@@ -145,7 +145,7 @@ HerculesLinux::HerculesLinux() : Hercules()
     m_iPitchLeft = -1;
     m_iPitchRight = -1;
 
-    qDebug("HerculesLinux: Constructor called");
+    qDebug() << "HerculesLinux: Constructor called";
 
     // m_iFd = -1; // still needed?
     m_iId = -1;
@@ -208,13 +208,13 @@ void HerculesLinux::run() {
 		}
 		if ( l != 0 || leftJogProcessing)
 		{
-			//qDebug("sendEvent(%e, m_pControlObjectLeftJog)",l);
+			//qDebug() << "sendEvent(" << l << ", m_pControlObjectLeftJog)";
 			sendEvent(l, m_pControlObjectLeftJog);
 			if ( l == 0 ) leftJogProcessing = false;
 		}
 		if ( r != 0 || rightJogProcessing)
 		{
-			//qDebug("sendEvent(%e, m_pControlObjectRightJog)",r);
+			//qDebug() << "sendEvent(" << r << ", m_pControlObjectRightJog)";
 			sendEvent(r, m_pControlObjectRightJog);
 			if ( r == 0 ) rightJogProcessing = false;
 		}
@@ -225,13 +225,13 @@ void HerculesLinux::run() {
 
 bool HerculesLinux::opendev()
 {
-    qDebug("Starting Hercules DJ Console detection");
+    qDebug() << "Starting Hercules DJ Console detection";
     if (djc == 0) {
         djc = new DJConsole();
         if(djc && djc->detected()) {
-            qDebug("A Hercules DJ Console was detected.");
+            qDebug() << "A Hercules DJ Console was detected.";
         } else {
-            qDebug("Sorry, no love.");
+            qDebug() << "Sorry, no love.";
         }
 
         djc->loadData();
@@ -245,7 +245,7 @@ bool HerculesLinux::opendev()
         return djc->ready();
 
     } else {
-        qDebug("Already completed detection.");
+        qDebug() << "Already completed detection.";
         return 1;
     }
 }
@@ -261,7 +261,7 @@ void HerculesLinux::consoleEvent(int first, int second) {
         return;
     }
 
-    qDebug("x Button %i = %i", first, second);
+    //qDebug() << "x Button " << first << " = " << second;
     if(first != 0) {
         bool ledIsOn = (second == 0 ? false : true);
         int led = 0;
@@ -391,7 +391,7 @@ void HerculesLinux::consoleEvent(int first, int second) {
 
 /*
         case HEADPHONE_DECK_A:
-                qDebug("Deck A");
+                qDebug() << "Deck A";
                 if (m_bHeadphoneRight) {
                    sendButtonEvent(true, m_pControlObjectRightBtnHeadphone); m_bHeadphoneRight = !m_bHeadphoneRight;
                 }
@@ -402,7 +402,7 @@ void HerculesLinux::consoleEvent(int first, int second) {
 
         case HEADPHONE_DECK_B:
 
-                qDebug("Deck B");
+                qDebug() << "Deck B";
                 if (!m_bHeadphoneRight) {
                    sendButtonEvent(true, m_pControlObjectRightBtnHeadphone); m_bHeadphoneRight = !m_bHeadphoneRight;
                 }
@@ -413,7 +413,7 @@ void HerculesLinux::consoleEvent(int first, int second) {
         break;
 
         case HEADPHONE_MIX:
-                qDebug("Deck MIX");
+                qDebug() << "Deck MIX";
                 if (!m_bHeadphoneRight) {
                    sendButtonEvent(true, m_pControlObjectRightBtnHeadphone); m_bHeadphoneRight = !m_bHeadphoneRight;
                 }
@@ -479,7 +479,7 @@ void HerculesLinux::consoleEvent(int first, int second) {
 			if (second == 4)
 			{
 				m_iHerculesHeadphonesSelection = kiHerculesHeadphoneSplit;
-				qDebug("Deck SPLIT (mute both)");
+				qDebug() << "Deck SPLIT (mute both)";
 				if (m_bHeadphoneRight)
 				{
 					sendButtonEvent(false, m_pControlObjectRightBtnHeadphone); m_bHeadphoneRight = !m_bHeadphoneRight;
@@ -494,7 +494,7 @@ void HerculesLinux::consoleEvent(int first, int second) {
 			if (second == 8)
 			{
 				m_iHerculesHeadphonesSelection = kiHerculesHeadphoneMix;
-				qDebug("Deck MIX");
+				qDebug() << "Deck MIX";
 				if (!m_bHeadphoneRight)
 				{
 					sendButtonEvent(true, m_pControlObjectRightBtnHeadphone); m_bHeadphoneRight = !m_bHeadphoneRight;
@@ -510,7 +510,7 @@ void HerculesLinux::consoleEvent(int first, int second) {
 			{
 				/* now we shouldn't get here if 101/2 follows straight to 103/4 */
 				m_iHerculesHeadphonesSelection = kiHerculesHeadphoneDeckB;
-				qDebug("Deck B");
+				qDebug() << "Deck B";
 				if (!m_bHeadphoneRight)
 				{
 					sendButtonEvent(true, m_pControlObjectRightBtnHeadphone); m_bHeadphoneRight = !m_bHeadphoneRight;
@@ -525,7 +525,7 @@ void HerculesLinux::consoleEvent(int first, int second) {
 			if (second == 1 && m_iHerculesHeadphonesSelection == kiHerculesHeadphoneDeckB )
 			{
 				m_iHerculesHeadphonesSelection = kiHerculesHeadphoneDeckA;
-				qDebug("Deck A");
+				qDebug() << "Deck A";
 				if (m_bHeadphoneRight)
 				{
 					sendButtonEvent(false, m_pControlObjectRightBtnHeadphone); m_bHeadphoneRight = !m_bHeadphoneRight;
@@ -579,7 +579,7 @@ void HerculesLinux::consoleEvent(int first, int second) {
         case RIGHT_AUTO_BEAT: sendButtonEvent(false, m_pControlObjectRightBtnAutobeat); break;
 
         default:
-            qDebug("Button %i = %i", first, second);
+            qDebug() << "Button " << first << " = " << second;
             break;
         }
 

@@ -172,7 +172,7 @@ QMimeData *WTrackTableModel::mimeData(const QModelIndexList &indexes) const {
             TrackInfoObject * m_pTrackInfo = m_pTrackPlaylist->getTrackAt(index.row());
             QUrl url(QString(m_pTrackInfo->getLocation()));
             if (!url.isValid())
-              qDebug("ERROR invalid url\n");
+              qDebug() << "ERROR invalid url\n";
             else
               urls.append(url);
         }

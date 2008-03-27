@@ -32,7 +32,7 @@ void EngineLADSPA::process(const CSAMPLE * pIn, const CSAMPLE * pOut, const int 
     {
         m_bufferSize = iBufferSize;
         m_monoBufferSize = m_bufferSize / 2;
-        qDebug("LADSPA: setBufferSize: %d (%d)", m_monoBufferSize, m_bufferSize);
+        qDebug() << "LADSPA: setBufferSize: " << m_monoBufferSize << " (" << m_bufferSize << ")";
         LADSPAControl::setBufferSize(m_monoBufferSize);
 
         if (m_pBufferLeft[0] != NULL)

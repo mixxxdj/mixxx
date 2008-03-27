@@ -39,7 +39,7 @@ bool MixxxKeyboard::eventFilter(QObject *, QEvent * e)
     {
         QKeyEvent * ke = (QKeyEvent *)e;
 
-        //qDebug("press");
+        //qDebug() << "press";
 
         if (!kbdPress(getKeySeq(ke), false))
             ke->ignore();
@@ -65,17 +65,17 @@ bool MixxxKeyboard::eventFilter(QObject *, QEvent * e)
         {
             if ((*it) == ke->key())
             {
-                //qDebug("release");
+                //qDebug() << "release";
 
                 if (!ke->isAutoRepeat())
                 {
                     if (!kbdPress(getKeySeq(ke), true)) {
                         ke->ignore();
-                        //qDebug("release autorepeat");
+                        //qDebug() << "release autorepeat";
                     }
                     else
                     {
-                        //qDebug("release else");
+                        //qDebug() << "release else";
                         m_qActiveKeyList.remove(it);
                         return true;
                     }
@@ -101,12 +101,12 @@ bool MixxxKeyboard::kbdPress(QKeySequence k, bool release)
         if (pConfigKey)
         {
             if (release) {
-                //qDebug("Sending MIDI NOTE_OFF");
+                //qDebug() << "Sending MIDI NOTE_OFF";
                 ControlObject::getControl(*pConfigKey)->queueFromMidi(NOTE_OFF, 1);
             }
             else
             {
-                //qDebug("Sending MIDI NOTE_ON");
+                //qDebug() << "Sending MIDI NOTE_ON";
                 ControlObject::getControl(*pConfigKey)->queueFromMidi(NOTE_ON, 1);
             }
 

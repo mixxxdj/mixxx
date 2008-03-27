@@ -119,7 +119,7 @@ void WSliderComposed::mouseMoveEvent(QMouseEvent * e)
         else
             m_iPos = e->y()-m_iHandleLength/2;
 
-        //qDebug("start %i, pos %i",m_iStartPos, m_iPos);
+        //qDebug() << "start " << m_iStartPos << ", pos " << m_iPos;
         m_iPos = m_iStartHandlePos + (m_iPos-m_iStartMousePos);
 
         if (m_iPos>(m_iSliderLength-m_iHandleLength))
