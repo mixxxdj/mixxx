@@ -13,6 +13,7 @@
 #include "parserpls.h"
 //Added by qt3to4:
 #include <Q3PtrList>
+#include <QDebug>
 
 /**
    @author Ingo Kossyk (kossyki@cs.tu-berlin.de)
@@ -93,7 +94,7 @@ long ParserPls::getNumEntries(Q3TextStream * stream)
         return temp.toLong();
 
     } else{
-        qDebug( "ParserPls: pls file is not a playlist! \n" );
+        qDebug() << "ParserPls: pls file is not a playlist! \n";
         return 0;
     }
 

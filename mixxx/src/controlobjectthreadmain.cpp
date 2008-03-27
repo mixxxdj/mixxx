@@ -39,7 +39,7 @@ bool ControlObjectThreadMain::eventFilter(QObject * o, QEvent * e)
         m_dValue = ce->value();
         m_sqMutex.unlock();
 
-        //qDebug("ControlEvent %f",ce->value());
+        //qDebug() << "ControlEvent " << ce->value();
 
         emit(valueChanged(ce->value()));
     }
@@ -53,7 +53,7 @@ bool ControlObjectThreadMain::eventFilter(QObject * o, QEvent * e)
 
 bool ControlObjectThreadMain::setExtern(double v)
 {
-    //qDebug("set extern main");
+    //qDebug() << "set extern main";
     QApplication::postEvent(this, new ControlEvent(v));
     return true;
 }

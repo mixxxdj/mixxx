@@ -28,7 +28,7 @@ EngineFilterBlock::EngineFilterBlock(const char * group)
     low = new EngineFilterIIR(bessel_lowpass4_DJM800,4);
     band = new EngineFilterIIR(bessel_bandpass8_DJM800,8);
     high = new EngineFilterIIR(bessel_highpass4_DJM800,4);
-    qDebug("Using LoFi EQs");
+    qDebug() << "Using LoFi EQs";
 #else
 	
 	//Setup Filter Controls

@@ -58,7 +58,7 @@ SoundSourceOggVorbis::SoundSourceOggVorbis(QString qFilename) : SoundSource(qFil
 
     if(ov_open(vorbisfile, &vf, NULL, 0) < 0)
     {
-        qDebug("oggvorbis: Input does not appear to be an Ogg bitstream.");
+        qDebug() << "oggvorbis: Input does not appear to be an Ogg bitstream.";
         filelength = 0;
         return;
     }
@@ -72,7 +72,7 @@ SoundSourceOggVorbis::SoundSourceOggVorbis(QString qFilename) : SoundSource(qFil
         SRATE = vi->rate;
 
         if(channels > 2){
-            qDebug("oggvorbis: No support for more than 2 channels!");
+            qDebug() << "oggvorbis: No support for more than 2 channels!";
             return;
         }
 
@@ -99,7 +99,7 @@ long SoundSourceOggVorbis::seek(long filepos)
         index = ov_pcm_seek(&vf, filepos/2);
         return filepos;
     } else{
-        qDebug("ogg vorbis: Seek ERR.");
+        qDebug() << "ogg vorbis: Seek ERR.";
         return 0;
     }
 }
@@ -162,7 +162,7 @@ int SoundSourceOggVorbis::ParseHeader( TrackInfoObject * Track )
 
     FILE * vorbisfile = fopen(qBAFilename.data(), "r");
     if (!vorbisfile) {
-        qDebug("oggvorbis: file cannot be opened.\n");
+        qDebug() << "oggvorbis: file cannot be opened.\n";
         return ERR;
     }
 
@@ -172,7 +172,7 @@ int SoundSourceOggVorbis::ParseHeader( TrackInfoObject * Track )
     #endif
 
     if (ov_open(vorbisfile, &vf, NULL, 0) < 0) {
-        qDebug("oggvorbis: Input does not appear to be an Ogg bitstream.\n");
+        qDebug() << "oggvorbis: Input does not appear to be an Ogg bitstream.\n";
         return ERR;
     }
 

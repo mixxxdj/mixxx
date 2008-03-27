@@ -49,11 +49,11 @@ LADSPAInstance * LADSPAPlugin::instantiate()
         }
         else if (outputs == 1)
         {
-            qDebug("LADSPA: 2 inputs + 1 output not supported yet!");
+            qDebug() << "LADSPA: 2 inputs + 1 output not supported yet!";
         }
         else
         {
-            qDebug("LADSPA: unsupported number of outputs (%d)!", outputs);
+            qDebug() << "LADSPA: unsupported number of outputs (" << outputs << ")!";
         }
     }
     else if (inputs == 1)
@@ -64,16 +64,16 @@ LADSPAInstance * LADSPAPlugin::instantiate()
         }
         else if (outputs == 2)
         {
-            qDebug("LADSPA: 1 input + 2 outputs not supported yet!");
+            qDebug() << "LADSPA: 1 input + 2 outputs not supported yet!";
         }
         else
         {
-            qDebug("LADSPA: unsupported number of outputs (%d)!", outputs);
+            qDebug() << "LADSPA: unsupported number of outputs (" << outputs << ")!";
         }
     }
     else
     {
-        qDebug("LADSPA: unsupported number of inputs (%d)!", inputs);
+        qDebug() << "LADSPA: unsupported number of inputs (" << inputs << ")!";
     }
 
     return NULL;

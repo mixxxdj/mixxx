@@ -281,11 +281,11 @@ bool Track::eventFilter(QObject *obj, QEvent *e) {
     switch (e->type()) {
       case QEvent::MouseButtonPress:  // Drop entry events which deselect the text
       case QEvent::MouseButtonRelease:
-        // qDebug("Drop mouse event.");
+        // qDebug() << "Drop mouse event.";
         return true;
         break;
       case QEvent::FocusIn:
-        // qDebug("QEvent::FocusIn event intercepted");
+        // qDebug() << "QEvent::FocusIn event intercepted";
         ((QLineEdit *)obj)->selectAll();
         // qDebug() << "hasSelectedText? " << ((QLineEdit *)obj)->hasSelectedText();
         // qDebug() << "So the selected text is now: " << ((QLineEdit *)obj)->selectedText();
@@ -450,7 +450,7 @@ void Track::readXML(QString location)
     QDomNode node = XmlParse::selectNode(elementRoot, "TrackList");
     m_pTrackCollection->readXML(node);
 
-    qDebug("Break");
+    qDebug() << "Break";
 
     // Get all the Playlists written in the xml file:
     node = XmlParse::selectNode(elementRoot, "Playlists").firstChild();
@@ -590,7 +590,7 @@ void Track::slotScanLibrary()
 
 void Track::slotDrop(QDropEvent * e)
 {
-    qDebug("track drop");
+    qDebug() << "track drop";
 
     QString name;
 #ifndef QT3_SUPPORT
@@ -617,7 +617,7 @@ void Track::slotDrop(QDropEvent * e)
 /* CTAF: I dont think this function is used actually */
 void Track::slotActivatePlaylist(QString name)
 {
-/*    qDebug("playlist change\n");
+/*    qDebug() << "playlist change\n";
     // Get pointer to requested playlist
     TrackPlaylist * pNewlist = getPlaylist(name);
 
@@ -984,7 +984,7 @@ TrackPlaylist * Track::getActivePlaylist()
 
 void Track::slotEndOfTrackPlayer1(double val)
 {
-//    qDebug("end of track %f",val);
+//    qDebug() << "end of track " << val;
 
     if (val==0.)
         return;
@@ -1041,7 +1041,7 @@ void Track::slotEndOfTrackPlayer1(double val)
             }
 
             if (bStartFromEndPos)
-                qDebug("start from end");
+                qDebug() << "start from end";
 
             if (pTrack)
                 slotLoadPlayer1(pTrack, bStartFromEndPos);

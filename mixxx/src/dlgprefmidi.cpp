@@ -138,7 +138,7 @@ DlgPrefMidi::DlgPrefMidi(QWidget * parent, ConfigObject<ConfigValue> * pConfig) 
     if (!foundmap && !mappingfile.isEmpty()) {
         if (midiConfigList->empty())
         {
-            qDebug("No MIDI mapping files found");
+            qDebug() << "No MIDI mapping files found";
             m_pConfig->set(ConfigKey("[Midi]","File"), ConfigValue(""));
             mappingfile = "";
         }
@@ -213,7 +213,7 @@ DlgPrefMidi::DlgPrefMidi(QWidget * parent, ConfigObject<ConfigValue> * pConfig) 
 #ifdef __LINUX__
     m_pHercules = new HerculesLinux();
 #endif
-    qDebug("m_pHercules init: %p",m_pHercules);
+    qDebug() << "m_pHercules init: " << m_pHercules;
     if (m_pHercules)
     {
         if (!m_pHercules->opendev())
@@ -258,7 +258,7 @@ DlgPrefMidi::~DlgPrefMidi()
 
 void DlgPrefMidi::slotUpdate()
 {
-//    qDebug("upd");
+//    qDebug() << "upd";
 
     // Midi configurations
     ComboBoxMidiconf->clear();
@@ -367,7 +367,7 @@ void DlgPrefMidi::slotUpdate()
         j++;
     }
     ComboBoxMouseFunction1->clear();
-//    qDebug("cur item %i", ComboBoxMouseDevice1->currentItem());
+//    qDebug() << "cur item " << ComboBoxMouseDevice1->currentItem();
     if (ComboBoxMouseDevice1->currentItem()>0)
     {
         ComboBoxMouseFunction1->setEnabled(true);
@@ -419,7 +419,7 @@ void DlgPrefMidi::slotUpdate()
 
 void DlgPrefMidi::slotApply()
 {
-//    qDebug("apply");
+//    qDebug() << "apply";
 
     m_pConfig->set(ConfigKey("[Midi]","File"), ConfigValue(ComboBoxMidiconf->currentText().append(".midi.xml")));
     m_pConfig->set(ConfigKey("[Midi]","Device"), ConfigValue(ComboBoxMididevice->currentText()));
@@ -449,9 +449,9 @@ void DlgPrefMidi::slotApply()
     MidiWorkaround mw(m_pMidi, m_pConfig, m_pMidiConfig, this);
     mw.start();
     if (mw.wait(2000)) {
-        qDebug("Midi OK (Workaround not required)");
+        qDebug() << "Midi OK (Workaround not required)";
     } else {
-        qDebug("ERROR: Midi driver not responding");
+        qDebug() << "ERROR: Midi driver not responding";
         // I Apologise for what happens now, I don't understand the code well enough to better (yet):
         delete m_pMidi;
         m_pMidi = new MidiObjectNull(m_pConfig->getValueString(ConfigKey("[Midi]","Device")));

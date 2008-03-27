@@ -89,7 +89,7 @@ void ProbabilityVector::add(float fInterval, float fValue)
                         m_fBestBpmValue = 60./m_fCurrMaxInterval;
                     }
 
-//                    qDebug("hist idx %i, int %f, corr %f, bpm %f",m_iCurrMaxBin, m_fCurrMaxInterval,fCorr, 60./m_fCurrMaxInterval);
+//                    qDebug() << "hist idx " << m_iCurrMaxBin << ", int " << m_fCurrMaxInterval << ", corr " << fCorr << ", bpm " << 60./m_fCurrMaxInterval;
                 }
             }
         }

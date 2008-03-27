@@ -24,14 +24,14 @@ MidiObjectALSA::MidiObjectALSA(QApplication * a) : MidiObject(a)
     int device = snd_defaults_rawmidi_device();
     int err;
     if ((err = snd_rawmidi_open(&handle, card, device, SND_RAWMIDI_OPEN_INPUT)) != 0)
-        qDebug("Open of midi failed: %s.", snd_strerror(err));
+        qDebug() << "Open of midi failed: " << snd_strerror(err) << ".";
     else
     {
         // Allocate buffer
         buffer = new char[4096];
         if (buffer == 0)
         {
-            qDebug("Midi: Error allocating buffer");
+            qDebug() << "Midi: Error allocating buffer";
             return;
         }
 
@@ -65,7 +65,7 @@ void MidiObjectALSA::run()
         {
             int no = snd_rawmidi_read(handle,&buffer[0],1);
             if (no != 1)
-                qDebug("Warning: midiobject recieved %i bytes.", no);
+                qDebug() << "Warning: midiobject recieved " << no << " bytes.";
         } while ((buffer[0] & 128) != 128);
 
         // and then get the following 2 bytes:
@@ -76,7 +76,7 @@ void MidiObjectALSA::run()
         {
             int no = snd_rawmidi_read(handle,&buffer[i],1);
             if (no != 1)
-                qDebug("Warning: midiobject recieved %i bytes.", no);
+                qDebug() << "Warning: midiobject recieved " << no << " bytes.";
         }
         channel = buffer[0] & 15;
         midicontrol = buffer[1];

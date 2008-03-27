@@ -80,7 +80,7 @@ void MidiObject::remove(ControlObject * c)
         no--;
     }
     else
-        qDebug("MidiObject: Control which is requested for removal does not exist.");
+        qDebug() << "MidiObject: Control which is requested for removal does not exist.";
 }
 
 QStringList * MidiObject::getDeviceList()
@@ -129,7 +129,7 @@ void MidiObject::send(MidiCategory category, char channel, char control, char va
 {
     // BJW: From this point onwards, use human (1-based) channel numbers
     channel++;
-    // qDebug("MidiObject::send() miditype: %d ch: %d, ctrl: %d, val: %d",category, channel, control, value);
+    // qDebug() << "MidiObject::send() miditype: " << category << " ch: " << channel << ", ctrl: " << control << ", val: " << value;
 
     MidiType type = MIDI_EMPTY;
     switch (category) {
@@ -154,7 +154,7 @@ void MidiObject::send(MidiCategory category, char channel, char control, char va
 		return;
 	} // Used to be this:
     //Q_ASSERT(m_pMidiConfig);
-    // qDebug("Querying action for MIDI message type=%x control=%d channel=%d", type, control, channel);
+    // qDebug() << "Querying action for MIDI message type=" << type << " control=" << control << " channel=" << channel;
     ConfigKey * pConfigKey = m_pMidiConfig->get(ConfigValueMidi(type,control,channel));
 
     if (!pConfigKey) return; // No configuration was retrieved for this input event, eject.
@@ -181,29 +181,29 @@ void MidiObject::send(MidiCategory category, char channel, char control, char va
         _14bit = value;
         _14bit <<= 7;
         _14bit |= (unsigned char) control;
-        // qDebug("-- 14 bit pitch %i", _14bit);
+        // qDebug() << "-- 14 bit pitch " << _14bit;
         // Need to force the centre point, otherwise the conversion formula maps it very slightly off-centre (not any more)
         if (_14bit == 8192)
             newValue = 64.0;
         else
             newValue = (double) _14bit * 127. / 16383.;
-        // qDebug("-- converted to %f", newValue);
+        // qDebug() << "-- converted to " << newValue;
     }
 
     if (c && p)
     {
-        // qDebug("value going into ComputeValue: %f", newValue);
+        // qDebug() << "value going into ComputeValue: " << newValue;
 		ControlObject::sync();
         newValue = ((ConfigValueMidi *)c->val)->ComputeValue(type, p->GetMidiValue(), newValue);
-        // qDebug("value coming out ComputeValue: %f", newValue);
+        // qDebug() << "value coming out ComputeValue: " << newValue;
 
         if (((ConfigValueMidi *)c->val)->midioption == MIDI_OPT_BUTTON || ((ConfigValueMidi *)c->val)->midioption == MIDI_OPT_SWITCH) {
             p->set(newValue);
-            // qDebug("New Control Value: %g (skipping queueFromMidi call)", newValue);
+            // qDebug() << "New Control Value: " << newValue << " (skipping queueFromMidi call)";
             return;
         }
 
-        // qDebug("New Control Value: %g ", newValue);
+        // qDebug() << "New Control Value: " << newValue << " ";
 		p->queueFromMidi(category, newValue);
     }
 
@@ -233,5 +233,5 @@ void MidiObject::sendShortMsg(unsigned char status, unsigned char byte1, unsigne
 
 void MidiObject::sendShortMsg(unsigned int /* word */) {
 	// This warning comes out rather frequently now we're using LEDs with VuMeters
-    //qDebug("MIDI message sending not implemented yet on this platform");
+    //qDebug() << "MIDI message sending not implemented yet on this platform";
 }

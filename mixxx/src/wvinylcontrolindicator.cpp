@@ -78,12 +78,12 @@ void WVinylControlIndicator::setPixmaps(const QString &backFilename, const QStri
 {
     m_pPixmapBack = WPixmapStore::getPixmap(backFilename);
     if (!m_pPixmapBack || m_pPixmapBack->size()==QSize(0,0))
-        qDebug("WVinylControlIndicator: Error loading back pixmap %s",backFilename.latin1());
+        qDebug() << "WVinylControlIndicator: Error loading back pixmap " << backFilename.latin1();
 
     /*
        m_pPixmapVu = WPixmapStore::getPixmap(vuFilename);
        if (!m_pPixmapVu || m_pPixmapVu->size()==QSize(0,0))
-        qDebug("WVinylControlIndicator: Error loading vu pixmap %s",vuFilename.latin1());
+        qDebug() << "WVinylControlIndicator: Error loading vu pixmap " << vuFilename.latin1();
      */
 
     m_pPixmapBuffer = new QPixmap(m_pPixmapBack->size());
@@ -115,7 +115,7 @@ void WVinylControlIndicator::paintEvent()
         // Draw back on buffer
         bitBlt(m_pPixmapBuffer, 0, 0, m_pPixmapBack);
 
-        //qDebug("PAINTING WVinylControlIndicator!");
+        //qDebug() << "PAINTING WVinylControlIndicator!";
         QPen tip(black, 4);
         QPen tail(black, 1);
 

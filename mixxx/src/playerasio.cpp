@@ -58,7 +58,7 @@ PlayerAsio::PlayerAsio(ConfigObject<ConfigValue> * config) : Player(config)
         driverList[i] =static_cast<char *>(malloc(32));
 
         /* check memory */
-        if(!driverList[i]) qDebug("ERROR: Could not allocate Memory!");
+        if(!driverList[i]) qDebug() << "ERROR: Could not allocate Memory!";
     }
 
 
@@ -277,7 +277,7 @@ long PlayerAsio::init_asio_static_data (DriverInfo * asioDriverInfo)
                     if(ASIOSetSampleRate(sampleRate) == ASE_OK)
                     {
                         if(ASIOGetSampleRate(&asioDriverInfo->sampleRate) == ASE_OK)
-                            qDebug("Asio State : SAMPLERATE CHANGED");
+                            qDebug() << "Asio State : SAMPLERATE CHANGED";
                         else
                             return -6;
                     }
@@ -289,7 +289,7 @@ long PlayerAsio::init_asio_static_data (DriverInfo * asioDriverInfo)
                     if(ASIOSetSampleRate(sampleRate) == ASE_OK)
                     {
                         if(ASIOGetSampleRate(&asioDriverInfo->sampleRate) == ASE_OK)
-                            qDebug("Asio State : SAMPLERATE CHANGED");
+                            qDebug() << "Asio State : SAMPLERATE CHANGED";
                         else
                             return -6;
                     }
@@ -305,7 +305,7 @@ long PlayerAsio::init_asio_static_data (DriverInfo * asioDriverInfo)
                 m_pControlObjectSampleRate->queueFromThread(static_cast<double>(sampleRate));
                 m_pControlObjectLatency->queueFromThread(static_cast<double>(iLatencyMSec));
                 m_pConfig->set(ConfigKey("[Soundcard]","Latency"), iLatencyMSec);
-                qDebug("Asio State: SAMPLERATE SET");
+                qDebug() << "Asio State: SAMPLERATE SET";
 
                 // check wether the driver requires the ASIOOutputReady() optimization
                 // (can be used by the driver to reduce output latency by one block)
@@ -386,7 +386,7 @@ ASIOError PlayerAsio::create_asio_buffers (DriverInfo * asioDriverInfo)
             result = ASIOGetChannelInfo(&asioDriverInfo->channelInfos[i]);
 
             if (result != ASE_OK){
-                qDebug("ERROR: Buffer init failed !");
+                qDebug() << "ERROR: Buffer init failed !";
                 break;
             }
         }
@@ -424,9 +424,9 @@ bool PlayerAsio::open()
 
     if (loadAsioDriver(driverName))
     {
-        qDebug("Asio State: DRIVER LOADED");
+        qDebug() << "Asio State: DRIVER LOADED";
         if(initDriver()){
-            qDebug("Asio State: DRIVER INITIALIZED");
+            qDebug() << "Asio State: DRIVER INITIALIZED";
             init_asio_static_data (&asioDriverInfo);
             asioCallbacks.bufferSwitch = bufferSwitch;
             asioCallbacks.sampleRateDidChange = sampleRateChanged;
@@ -445,7 +445,7 @@ void PlayerAsio::startAsio()
     if (ASIOStart() == ASE_OK)
     {
         driverIsLoaded = true;
-        qDebug("Asio streaming started");
+        qDebug() << "Asio streaming started";
     }
 }
 
@@ -454,12 +454,12 @@ void PlayerAsio::close()
     if(ASIOStop() == ASE_OK)
     {
         driverIsLoaded = false;
-        qDebug("Asio streaming stopped");
+        qDebug() << "Asio streaming stopped";
     }
 
     if(ASIOExit() == ASE_OK)
     {
-        qDebug("Asio exited");
+        qDebug() << "Asio exited";
     }
 }
 
@@ -593,12 +593,12 @@ void PlayerAsio::processCallback(long bufferIndex) {
 
             m_reenter++;
             if (m_reenter > 1) {
-                qDebug("ASIO : reentered callback ???!!!");
+                qDebug() << "ASIO : reentered callback ???!!!";
                 return;
             }
 
             if (!driverIsLoaded) {
-                qDebug("ASIO : callback and not started ???!!!");
+                qDebug() << "ASIO : callback and not started ???!!!";
             }
 
 

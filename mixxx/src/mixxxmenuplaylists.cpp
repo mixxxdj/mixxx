@@ -34,7 +34,7 @@ void MixxxMenuPlaylists::slotUpdate(TrackPlaylistList * pPlaylists)
     int i = 0;
     menuItem_t * it;
 
-    qDebug("update menu");
+    qDebug() << "update menu";
 
     // Delete all items currently in the menu
     for (int i = 0; i < m_qMenuList.size(); ++i) {
@@ -61,7 +61,7 @@ void MixxxMenuPlaylists::slotUpdate(TrackPlaylistList * pPlaylists)
 
 void MixxxMenuPlaylists::slotRequestActive(int id)
 {
-    //qDebug("request active %i",id);
+    //qDebug() << "request active " << id;
 
     // Activate the playlist in the menu with the given id
     int i;

@@ -76,7 +76,7 @@ CSAMPLE * EngineBufferScaleReal::scale(double playpos, int buf_size, float * pBa
     // Copy samples to fragment buffer if necessary
     int iWantedFragmentLength = (int)(m_pControlObjectSampleRate->get()*kfRealSearchFragmentLength)*2;
 
-    //qDebug("len %i, want %i, pos %i, tempo %f", m_iFragmentLength, iWantedFragmentLength, m_iFragmentPlaypos, m_dTempo);
+    //qDebug() << "len " << m_iFragmentLength << ", want " << iWantedFragmentLength << ", pos " << m_iFragmentPlaypos << ", tempo " << m_dTempo;
 
     if (m_iFragmentLength<iWantedFragmentLength)
     {

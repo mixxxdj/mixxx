@@ -30,7 +30,7 @@ MidiObjectCoreMidi::MidiObjectCoreMidi(QString device) : MidiObject(device)
     buffer = new char[4096];
     if (buffer == 0)
     {
-        qDebug("Error allocating MIDI buffer");
+        qDebug() << "Error allocating MIDI buffer";
         return;
     }
 
@@ -54,7 +54,7 @@ MidiObjectCoreMidi::MidiObjectCoreMidi(QString device) : MidiObject(device)
         devOpen(device);
     else
         if (devices.count()==0)
-            qDebug("CoreMidi: No MIDI devices available.");
+            qDebug() << "CoreMidi: No MIDI devices available.";
         else
             devOpen(devices.first());
  */

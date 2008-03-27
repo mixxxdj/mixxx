@@ -64,7 +64,7 @@ void ControlPotmeter::setRange(double dMinValue, double dMaxValue)
     m_dMaxValue = dMaxValue;
     m_dValueRange = m_dMaxValue-m_dMinValue;
     m_dValue = m_dMinValue + 0.5*m_dValueRange;
-    //qDebug("%p, min %f, max %f, range %f, val %f",this, m_dMinValue, m_dMaxValue, m_dValueRange, m_dValue);
+    //qDebug() << "" << this << ", min " << m_dMinValue << ", max " << m_dMaxValue << ", range " << m_dValueRange << ", val " << m_dValue;
 }
 
 double ControlPotmeter::getValueToWidget(double dValue)

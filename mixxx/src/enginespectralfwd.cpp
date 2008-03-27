@@ -94,7 +94,7 @@ void EngineSpectralFwd::process(const CSAMPLE * pIn, const CSAMPLE *, const int 
         for (int i=0; i<l_half; ++i)
             spectrum[i]  = sqrt(tmp[i].r*tmp[i].r + tmp[i].i*tmp[i].i);
 
-//         qDebug("spec[10]: %f", spectrum[10]);
+//         qDebug() << "spec[10]: " << spectrum[10];
     }
 
     if (phase_calc)
@@ -119,7 +119,7 @@ CSAMPLE EngineSpectralFwd::getHFC()
         CSAMPLE fr = (CSAMPLE)i/(CSAMPLE)l;
         hfc += wndNorm*spectrum[i]*(fr*fr)/(0.5*0.5); //(l_half*l_half);
     }
-//     qDebug("hfc %f",hfc);
+//     qDebug() << "hfc " << hfc;
     //hfc *= (two_pi/l_half)*wndNorm;
     return hfc;
 }

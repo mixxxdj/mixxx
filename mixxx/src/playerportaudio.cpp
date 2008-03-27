@@ -71,7 +71,7 @@ bool PlayerPortAudio::initialize()
     PaError err = Pa_Initialize();
     if (err!=paNoError)
     {
-        qDebug("PortAudio error: %s", Pa_GetErrorText(err));
+        qDebug() << "PortAudio error: " << Pa_GetErrorText(err);
         m_bInit = false;
     }
     else
@@ -219,7 +219,7 @@ bool PlayerPortAudio::open()
     iLatencySamples -= (iLatencySamples % 4);
     iLatencySamples += 4;
 
-    qDebug("iLatencySamples: %i", iLatencySamples);
+    qDebug() << "iLatencySamples: " << iLatencySamples;
 
     // Apply simple rule to determine number of buffers
     if (iLatencySamples/kiMaxFrameSize<2)
@@ -245,12 +245,12 @@ bool PlayerPortAudio::open()
 
     // Callback function to use
     PaStreamCallback * callback = paV19Callback;
-    qDebug("PortAudio: kiMaxFrameSize: %i, iLatencyMSec: %i", kiMaxFrameSize, iLatencyMSec);
-    qDebug("PortAudio: id[0] %i, sr %i, ch[0] %i, bufsize %i, bufno %i, req. latency %i msec", id[0], iSrate, iChannels[0], iFramesPerBuffer, m_iNumberOfBuffers, iLatencyMSec);
-    qDebug("PortAudio: id[1] %i, sr %i, ch[1] %i, bufsize %i, bufno %i, req. latency %i msec", id[1], iSrate, iChannels[1], iFramesPerBuffer, m_iNumberOfBuffers, iLatencyMSec);
+    qDebug() << "PortAudio: kiMaxFrameSize: " << kiMaxFrameSize << ", iLatencyMSec: " << iLatencyMSec;
+    qDebug() << "PortAudio: id[0] " << id[0] << ", sr " << iSrate << ", ch[0] " << iChannels[0] << ", bufsize " << iFramesPerBuffer << ", bufno " << m_iNumberOfBuffers << ", req. latency " << iLatencyMSec << " msec";
+    qDebug() << "PortAudio: id[1] " << id[1] << ", sr " << iSrate << ", ch[1] " << iChannels[1] << ", bufsize " << iFramesPerBuffer << ", bufno " << m_iNumberOfBuffers << ", req. latency " << iLatencyMSec << " msec";
 
-    qDebug("Device 1 indices (id[0]: %i, id_input[0]: %i)", id[0], id_input[0]);
-    qDebug("Device 2 indices (id[1]: %i, id_input[1]: %i)", id[1], id_input[1]);
+    qDebug() << "Device 1 indices (id[0]: " << id[0] << ", id_input[0]: " << id_input[0] << ")";
+    qDebug() << "Device 2 indices (id[1]: " << id[1] << ", id_input[1]: " << id_input[1] << ")";
 
 
     //If all devices are set to "None", then just return.
@@ -277,7 +277,7 @@ bool PlayerPortAudio::open()
         }
         if (((id[i] != -1) && !bDeviceAlreadyOpened) || (id_input[i] != -1))         //Make sure we're supposed to open this device...
         {
-            qDebug("PortAudio: Trying to open device id %i, with channels %i at samplerate %i", id[i], iChannels[i], iSrate);
+            qDebug() << "PortAudio: Trying to open device id " << id[i] << ", with channels " << iChannels[i] << " at samplerate " << iSrate;
             PaStreamParameters * p_outputParams;
             outputParams[i].device = id[i];
             outputParams[i].channelCount = iChannels[i];
@@ -383,8 +383,8 @@ bool PlayerPortAudio::open()
 
             if( err != paNoError )         //Make sure we opened the soundcard successfully.
             {
-                qDebug("PortAudio: Open stream error: %s", Pa_GetErrorText(err));
-                qDebug("PortAudio: More error info: %s", Pa_GetLastHostErrorInfo()->errorText);
+                qDebug() << "PortAudio: Open stream error: " << Pa_GetErrorText(err);
+                qDebug() << "PortAudio: More error info: " << Pa_GetLastHostErrorInfo()->errorText;
 
                 m_devId[i] = -1;
                 m_inputDevId[i] = -1;
@@ -404,11 +404,11 @@ bool PlayerPortAudio::open()
             err = Pa_StartStream(m_pStream[i]);
             if (err != paNoError)
             {
-                qDebug("PortAudio: Start stream %i error: %s", i, Pa_GetErrorText(err));
+                qDebug() << "PortAudio: Start stream " << i << " error: " << Pa_GetErrorText(err);
                 m_pStream[i] = 0;
             }
             else
-                qDebug("PortAudio: Started stream %i successfully", i);
+                qDebug() << "PortAudio: Started stream " << i << " successfully";
 
             //If the Master and Headphone devices are the same, or the Headphone device is set to "None",
             //then we can just break out of this loop:
@@ -422,15 +422,15 @@ bool PlayerPortAudio::open()
 
     /*
        //Print out all the information about the soundcards and their channels.
-       qDebug("PortAudio: ==Soundcard Summary==");
-       qDebug("Device 1 index: %i", m_devId[0]);
-       qDebug("Device 2 index: %i", m_devId[1]);
-       qDebug("Channels for device 1: %i", m_iChannels[0]);
-       qDebug("Channels for device 2: %i", m_iChannels[1]);
-       qDebug("m_iMasterLeftCh: %i",m_iMasterLeftCh);
-       qDebug("m_iMasterRightCh: %i",m_iMasterRigthCh);
-       qDebug("m_iHeadLeftCh: %i",m_iHeadLeftCh);
-       qDebug("m_iHeadRightCh: %i",m_iHeadRightCh);
+       qDebug() << "PortAudio: ==Soundcard Summary==";
+       qDebug() << "Device 1 index: " << m_devId[0];
+       qDebug() << "Device 2 index: " << m_devId[1];
+       qDebug() << "Channels for device 1: " << m_iChannels[0];
+       qDebug() << "Channels for device 2: " << m_iChannels[1];
+       qDebug() << "m_iMasterLeftCh: " << m_iMasterLeftCh;
+       qDebug() << "m_iMasterRightCh: " << m_iMasterRigthCh;
+       qDebug() << "m_iHeadLeftCh: " << m_iHeadLeftCh;
+       qDebug() << "m_iHeadRightCh: " << m_iHeadRightCh;
      */
 
     calculateNumActiveDevices();
@@ -464,12 +464,12 @@ void PlayerPortAudio::close()
         {
             PaError err = Pa_StopStream(m_pStream[i]);
             if( err != paNoError )
-                qDebug("PortAudio: Stop stream %i error: %s,", i, Pa_GetErrorText(err));
+                qDebug() << "PortAudio: Stop stream " << i << " error: " << Pa_GetErrorText(err) << ",";
 
             // Close streams
             err = Pa_CloseStream(m_pStream[i]);
             if( err != paNoError )
-                qDebug("PortAudio: Close stream %i error: %s", i, Pa_GetErrorText(err));
+                qDebug() << "PortAudio: Close stream " << i << " error: " << Pa_GetErrorText(err);
         }
 
         m_pStream[i] = 0;
@@ -531,7 +531,7 @@ void PlayerPortAudio::setDefaults()
 
 QStringList PlayerPortAudio::getInterfaces()
 {
-    //qDebug("PortAudio: getInterfaces()");
+    //qDebug() << "PortAudio: getInterfaces()";
 
     QStringList result;
     const PaHostApiInfo * apiInfo = NULL;
@@ -553,21 +553,21 @@ QStringList PlayerPortAudio::getInterfaces()
         {
             apiInfo = Pa_GetHostApiInfo(devInfo->hostApi);
             //api = apiInfo->name;
-            //qDebug("Api name: %s", apiInfo->name);
-            qDebug(devInfo->name);
-            //qDebug("m_HostAPI: " + m_HostAPI + "devInfo->hostApi: " + new QString(devInfo->hostApi));
+            //qDebug() << "Api name: " << apiInfo->name;
+            qDebug() << devInfo->name;
+            //qDebug() << "m_HostAPI: " << m_HostAPI << "devInfo->hostApi: " << new QString(devInfo->hostApi);
 
             //... and make sure the interface matches the API we've selected.
             if (m_HostAPI == apiInfo->name)
             {
-                //qDebug("name %s, API %i, maxOutputChannels: %i", devInfo->name, devInfo->hostApi, devInfo->maxOutputChannels);
+                //qDebug() << "name " << devInfo->name << ", API " << devInfo->hostApi << ", maxOutputChannels: " << devInfo->maxOutputChannels;
 
                 for (int j=1; j <= devInfo->maxOutputChannels; ++j)
                     result.append(QString("%1 (channel %2)").arg(devInfo->name).arg(j));
             }
         }
     }
-    //qDebug("PortAudio: getInterfaces() end");
+    //qDebug() << "PortAudio: getInterfaces() end";
     return result;
 }
 
@@ -576,7 +576,7 @@ QStringList PlayerPortAudio::getInterfaces()
  */
 QStringList PlayerPortAudio::getInputInterfaces()
 {
-    qDebug("PortAudio: getInputInterfaces()");
+    qDebug() << "PortAudio: getInputInterfaces()";
 
     QStringList result;
     const PaHostApiInfo * apiInfo = NULL;
@@ -598,14 +598,14 @@ QStringList PlayerPortAudio::getInputInterfaces()
         {
             apiInfo = Pa_GetHostApiInfo(devInfo->hostApi);
             //api = apiInfo->name;
-            qDebug("Api name: %s", apiInfo->name);
+            qDebug() << "Api name: " << apiInfo->name;
             qDebug(devInfo->name);
-            //qDebug("m_HostAPI: " + m_HostAPI + "devInfo->hostApi: " + new QString(devInfo->hostApi));
+            //qDebug() << "m_HostAPI: " << m_HostAPI << "devInfo->hostApi: " << new QString(devInfo->hostApi);
 
             //... and make sure the interface matches the API we've selected.
             if (m_HostAPI == apiInfo->name )
             {
-                qDebug("name %s, API %i, maxInputChannels: %i", devInfo->name, devInfo->hostApi, devInfo->maxInputChannels);
+                qDebug() << "name " << devInfo->name << ", API " << devInfo->hostApi << ", maxInputChannels: " << devInfo->maxInputChannels;
 
                 result.append(QString("%1").arg(devInfo->name));
 
@@ -614,7 +614,7 @@ QStringList PlayerPortAudio::getInputInterfaces()
             }
         }
     }
-    qDebug("PortAudio: getInputInterfaces() end");
+    qDebug() << "PortAudio: getInputInterfaces() end";
     return result;
 }
 
@@ -624,7 +624,7 @@ QStringList PlayerPortAudio::getSampleRates()
     // Returns a sorted list of supported sample rates of the currently opened device.
     // If no device is open, return the list of sample rates supported by the
     // default device
-    qDebug("PortAudio: getSampleRates()");
+    qDebug() << "PortAudio: getSampleRates()";
 
     PaError err;
     PaDeviceIndex id = m_devId[0];              //TODO: This is a hack to pick the samplerates from the first soundcard....
@@ -635,7 +635,7 @@ QStringList PlayerPortAudio::getSampleRates()
     //ALSA takes ages for some reason, and polling both soundcards here would
     //double this 5 second freeze that Mixxx experiences because of Pa_IsFormatSupported
     //(buggily) blocking.
-    //qDebug("m_devId[0]: %d", m_devId[0]);
+    //qDebug() << "m_devId[0]: " << m_devId[0];
     if (id<0)
         id = Pa_GetDefaultOutputDevice();
 
@@ -665,16 +665,16 @@ QStringList PlayerPortAudio::getSampleRates()
         for (unsigned int j=0; j < desiredSampleRates.count(); j++)
         {
             //Check if each sample rate is supported, if so, add them to the list of supported sample rates.
-            qDebug("PortAudio: checking if sample rate is supported...");
+            qDebug() << "PortAudio: checking if sample rate is supported...";
             err = Pa_IsFormatSupported(NULL, &outputParams, desiredSampleRates[j]);
             if (err == paFormatIsSupported)     //The format IS supported.
             {
                 validSampleRates.append(desiredSampleRates[j]);
-                qDebug("Supported...");
+                qDebug() << "Supported...";
             }
             else
             {
-                qDebug("PortAudio error: %s, id was: %d", Pa_GetErrorText(err), id);
+                qDebug() << "PortAudio error: " << Pa_GetErrorText(err) << ", id was: " << id;
             }
         }
     }
@@ -698,7 +698,7 @@ QStringList PlayerPortAudio::getSampleRates()
     for (unsigned int i = 0; i < validSampleRates.count(); ++i)
         result.append(QString("%1").arg((*validSampleRates.at(i))));
 
-    qDebug("PortAudio: getSampleRates() end");
+    qDebug() << "PortAudio: getSampleRates() end";
 
     return result;
 }
@@ -726,13 +726,13 @@ QStringList PlayerPortAudio::getSoundApiList()
         for (int i = 0; i < Pa_GetHostApiCount(); i++)
         {
             apiInfo = Pa_GetHostApiInfo(i);
-            //qDebug("Api name: %s", apiInfo->name);
+            //qDebug() << "Api name: " << apiInfo->name;
             apiList.append(apiInfo->name);
         }
 //		Pa_Terminate();
     }
     else
-        qDebug("PortAudio error: %s", Pa_GetErrorText(err));
+        qDebug() << "PortAudio error: " << Pa_GetErrorText(err);
 
     return apiList;
 
@@ -753,7 +753,7 @@ QStringList PlayerPortAudio::getSoundApiList()
 
 PaDeviceIndex PlayerPortAudio::getDeviceID(QString name)
 {
-    //qDebug("PortAudio: getDeviceID(" + name + ")");
+    //qDebug() << "PortAudio: getDeviceID(" + name + ")";
     PaDeviceIndex no = Pa_GetDeviceCount();
     for (int i=0; i<no; i++)
     {
@@ -765,7 +765,7 @@ PaDeviceIndex PlayerPortAudio::getDeviceID(QString name)
             for (int j = 1; j <= devInfo->maxOutputChannels; ++j)
                 if (QString("%1 (channel %2)").arg(devInfo->name).arg(j) == name)
                 {
-                    //qDebug("PortAudio: getDeviceID(" + name + "), returning device id %i", i);
+                    //qDebug() << "PortAudio: getDeviceID(" + name + "), returning device id " << i;
                     return i;
                 }
         }
@@ -776,7 +776,7 @@ PaDeviceIndex PlayerPortAudio::getDeviceID(QString name)
 
 PaDeviceIndex PlayerPortAudio::getInputDeviceID(QString name)
 {
-    qDebug("PortAudio: getInputDeviceID(" + name + ")");
+    qDebug() << "PortAudio: getInputDeviceID(" + name + ")";
     PaDeviceIndex no = Pa_GetDeviceCount();
     for (int i=0; i<no; i++)
     {
@@ -787,17 +787,17 @@ PaDeviceIndex PlayerPortAudio::getInputDeviceID(QString name)
         {
             for (int j = 1; j <= devInfo->maxInputChannels; ++j)
             {
-                //qDebug("Comparing: " + QString("%1").arg(devInfo->name));
-                //qDebug("and: " + name);
+                //qDebug() << "Comparing: " << QString("%1").arg(devInfo->name);
+                //qDebug() << "and: " << name;
                 if (QString("%1").arg(devInfo->name) == name)
                 {
-                    qDebug("PortAudio: getInputDeviceID(" + name + "), returning device id %i", i);
+                    qDebug() << "PortAudio: getInputDeviceID(" + name + "), returning device id " << i;
                     return i;
                 }
             }
         }
     }
-    qDebug("PortAudio: getInputDeviceID(" + name + "), returning device id -1");
+    qDebug() << "PortAudio: getInputDeviceID(" + name + "), returning device id -1";
     return -1;
 }
 
@@ -886,7 +886,7 @@ int PlayerPortAudio::callbackProcess(unsigned long framesPerBuffer, float * out,
             //qDebug() << "m_iHeadLeftCh:" << m_iHeadLeftCh << "devIndex: " << devIndex << "tmp[blah]" << tmp[(i*4)+2]/32768.;
             if (m_iHeadLeftCh>=0    && m_iChannels[devIndex]>=1) output[m_iHeadLeftCh]    += tmp[(i*4)+2]/32768.;
             if (m_iHeadRightCh>=0   && m_iChannels[devIndex]>=2) output[m_iHeadRightCh]   += tmp[(i*4)+3]/32768.;
-            //qDebug("headphones!");
+            //qDebug() << "headphones!";
         }
         for (int j=0; j < m_iChannels[devIndex]; ++j)
             *output++;

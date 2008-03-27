@@ -53,7 +53,7 @@ void TrackCollection::readXML(QDomNode node)
 
 void TrackCollection::writeXML(QDomDocument &domXML, QDomElement &root)
 {
-    //qDebug("ELEMENTS %i",m_qTrackList.count());
+    //qDebug() << "ELEMENTS " << m_qTrackList.count();
     QDomElement trackroot = domXML.createElement("TrackList");
 
     QListIterator<TrackInfoObject *> it(m_qTrackList);
@@ -114,12 +114,12 @@ TrackInfoObject *TrackCollection::getTrack(int id)
     }
     if (it && (*it)->getId()==id)
     {
-        qDebug("found %i",id);
+        qDebug() << "found " << id;
         return (*it);
     }
     else
     {
-        qDebug("not found %i",id);
+        qDebug() << "not found " << id;
         return 0;
     }
  */
@@ -128,7 +128,7 @@ TrackInfoObject *TrackCollection::getTrack(int id)
 
 TrackInfoObject * TrackCollection::getTrack(int id, int min, int mid, int max)
 {
-    //qDebug("id %i, min %i, mid %i, max %i",id,min,mid,max);
+    //qDebug() << "id " << id << ", min " << min << ", mid " << mid << ", max " << max;
     int midId = 0;
 
     if (!m_qTrackList.at(mid))

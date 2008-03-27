@@ -172,7 +172,7 @@ void VinylControlXwax::run()
             if((alive && !pitch_unavailable))
             {
                 //dVinylPitch = (dOldPitch * (XWAX_SMOOTHING - 1) + dVinylPitch) / XWAX_SMOOTHING;
-                //qDebug("dVinylPosition: %f, dVinylPitch: %f, when: %d", dVinylPosition, dVinylPitch, when);
+                //qDebug() << "dVinylPosition: " << dVinylPosition << ", dVinylPitch: " << dVinylPitch << ", when: " << when;
  
                 //FIXME (when Mark finished variable samplerates in timecoder)
                 //Hack to make other samplerates work with xwax:
@@ -195,17 +195,17 @@ void VinylControlXwax::run()
                         syncPosition();
                     }
                     //Useful debug message for tracking down the problem of the vinyl's position "drifting":
-                    //qDebug("Ratio of vinyl's position and Mixxx's: %f", fabs(dVinylPosition/filePosition));
+                    //qDebug() << "Ratio of vinyl's position and Mixxx's: " << fabs(dVinylPosition/filePosition);
                     
                     //Calculate how much the vinyl's position has drifted from it's timecode.
                     //(This is caused by the manufacturing process of the vinyl.) 
                     if (filePosition != 0.0f)
                         dDriftControl = ((dVinylPosition/filePosition) - 1)/100 * 4.0f;
                         
-                    //qDebug("dDriftControl: %f", dDriftControl);
-                    //qDebug("Xwax says the time is: %f", dVinylPosition);
-                    //qDebug("Mixxx says the time is: %f", filePosition);
-                    //qDebug("dVinylPitch: %f", dVinylPitch);
+                    //qDebug() << "dDriftControl: " << dDriftControl;
+                    //qDebug() << "Xwax says the time is: " << dVinylPosition;
+                    //qDebug() << "Mixxx says the time is: " << filePosition;
+                    //qDebug() << "dVinylPitch: " << dVinylPitch;
                     //qDebug() << "diff in positions:" << fabs(dVinylPosition - filePosition);                           
                     
                 }
@@ -237,7 +237,7 @@ void VinylControlXwax::syncPitch(double pitch)
     if (iVCMode == MIXXX_VCMODE_ABSOLUTE)     //Only apply drift control when we want to stay synced with the vinyl's position.
         pitch += dDriftControl;     //Apply the drift control to it, to keep the vinyl and Mixxx in sync.
     rateSlider->slotSet(pitch);     //rateSlider has a range of -1.0 to 1.0
-    //qDebug("pitch: %f", pitch);
+    //qDebug() << "pitch: " << pitch;
 }
 
 //Synchronize the position of the timecoded vinyl with Mixxx's position.

@@ -12,7 +12,7 @@
 LADSPAInstanceMono::LADSPAInstanceMono(const LADSPA_Descriptor * descriptor) : LADSPAInstance(descriptor)
 {
     int sampleRate = getSampleRate();
-    qDebug("LADSPA: Sample rate: %d", sampleRate);
+    qDebug() << "LADSPA: Sample rate: " << sampleRate;
 
     m_HandleLeft = descriptor->instantiate(descriptor, sampleRate);
     m_HandleRight = descriptor->instantiate(descriptor, sampleRate);
@@ -27,7 +27,7 @@ LADSPAInstanceMono::LADSPAInstanceMono(const LADSPA_Descriptor * descriptor) : L
     m_OutputPort = descriptor->PortCount;
     for (unsigned long port = 0; port < descriptor->PortCount; port++)
     {
-        qDebug("LADSPA: Port %lu: %s", port, descriptor->PortNames[port]);
+        qDebug() << "LADSPA: Port " << port << "u: " << descriptor->PortNames[port];
         if (LADSPA_IS_PORT_AUDIO(descriptor->PortDescriptors [port]))
         {
             if (LADSPA_IS_PORT_INPUT(descriptor->PortDescriptors [port]))
@@ -40,8 +40,8 @@ LADSPAInstanceMono::LADSPAInstanceMono(const LADSPA_Descriptor * descriptor) : L
             }
         }
     }
-    qDebug("LADSPA: Input: %lu", m_InputPort);
-    qDebug("LADSPA: Output: %lu", m_OutputPort);
+    qDebug() << "LADSPA: Input: " << m_InputPort << "u";
+    qDebug() << "LADSPA: Output: " << m_OutputPort << "u";
 }
 
 LADSPAInstanceMono::~LADSPAInstanceMono()

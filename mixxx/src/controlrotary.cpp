@@ -51,7 +51,7 @@ void ControlRotary::setValue(int v)
 // never called, and the graycode translation has been moved to slotSetPosition.
 void ControlRotary::slotSetPositionMidi(MidiCategory, int _newpos)
 {
-    qDebug("rot");
+    qDebug() << "rot";
     //int newpos = graycodetable[(int)(unsigned char)_newpos];
     slotSetPositionExtern(_newpos);
     //emit updateGUI(newpos);

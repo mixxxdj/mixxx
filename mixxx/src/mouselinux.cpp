@@ -96,7 +96,7 @@ void MouseLinux::getNextEvent()
         ts.tv_nsec = 10000000;
 
     int r = pselect(m_iFd+1, &fdset, NULL, NULL, &ts, 0);
-//         qDebug("waited %i,%i",ts.tv_sec, ts.tv_nsec);
+//         qDebug() << "waited " << ts.tv_sec << "," << ts.tv_nsec;
     if (r>0)
     {
         m_bSending = true;
@@ -105,7 +105,7 @@ void MouseLinux::getNextEvent()
         {
             int v = ev.value;
 
-//                 qDebug("send value");
+//                 qDebug() << "send value";
 
             double dValue = m_pRotary->filter((double)v);
             sendEvent(dValue, m_pControlObjectRotary);
@@ -113,7 +113,7 @@ void MouseLinux::getNextEvent()
     }
     else
     {
-//             qDebug("timeout");
+//             qDebug() << "timeout";
         sendEvent(0., m_pControlObjectRotary);
         m_bSending = false;
     }

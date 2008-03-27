@@ -131,7 +131,7 @@ void * ReaderExtractHFC::processChunk(const int _idx, const int start_idx, const
         frameToDHFC = (frameTo-1+frameNo)%frameNo;
     }
 
-//    qDebug("hfc %i-%i",frameFrom,frameTo);
+//    qDebug() << "hfc " << frameFrom << "-" << frameTo;
 
     // Get HFC
     if (frameTo>frameFrom)
@@ -141,7 +141,7 @@ void * ReaderExtractHFC::processChunk(const int _idx, const int start_idx, const
             processFftFrame(i);
             hfc[i] = m_pEngineSpectralFwd->getPSF();
         }
-//        qDebug("HFC vals 1 : %i",j);
+//        qDebug() << "HFC vals 1 : " << j;
     }
     else
     {
@@ -156,10 +156,10 @@ void * ReaderExtractHFC::processChunk(const int _idx, const int start_idx, const
             processFftFrame(i);
             hfc[i] = m_pEngineSpectralFwd->getPSF();
         }
-//        qDebug("HFC vals 2 : %i",j);
+//        qDebug() << "HFC vals 2 : " << j;
     }
 
-//     qDebug("hfc %i: %f", frameFrom, hfc[frameFrom]);
+//     qDebug() << "hfc " << frameFrom << ": " << hfc[frameFrom];
 
     // Get DHFC, first derivative and HFC, rectified
     //dhfc[(idx*framePerChunk)%frameNo] = hfc[(idx*framePerChunk)%frameNo];
@@ -181,7 +181,7 @@ void ReaderExtractHFC::processFftFrame(int idx)
 {
 //    QTextStream stream( &textout );
 //    QTextStream stream2( &textout2 );
-//    qDebug("fft %i",idx);
+//    qDebug() << "fft " << idx;
     //
     // Window samples
     //

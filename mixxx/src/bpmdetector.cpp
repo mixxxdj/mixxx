@@ -249,7 +249,7 @@ void BpmDetector::run()
             }
             else
             {            
-                qDebug("BPM detection failed, setting to 0.");
+                qDebug() << "BPM detection failed, setting to 0.";
                 
 #ifdef __C_METRICS__
 		        cm_writemsg_ascii(1, "BPM detection failed, setting to 0.");
@@ -268,7 +268,7 @@ void BpmDetector::run()
 	    //The fallback is broken and is causing crashes.  This will break us out and set the BPM to 0
 	    //Remove these lines if you get the old BPM detection working
             
-	    //qDebug("BPM detection failed the first time. Trying old version.");
+	    //qDebug() << "BPM detection failed the first time. Trying old version.";
 	    
 
             // *********************************************************************
@@ -322,7 +322,7 @@ void BpmDetector::run()
                 // Read a new block of samples
                 liPos += pSoundSource->read(kiBlockSize, pBuffer);
 
-                //qDebug("liPos, iBeatPosEnd: %i, %i", liPos, iBeatPosEnd);
+                //qDebug() << "liPos, iBeatPosEnd: " << liPos << ", " << iBeatPosEnd;
             }
 
             int i;

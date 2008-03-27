@@ -122,7 +122,7 @@ int SoundSourceSndFile::ParseHeader( TrackInfoObject * Track )
     //const char* err = sf_strerror(0);
     if (fh == 0 || !sf_format_check(&info))
     {
-        qDebug("libsndfile: ERR opening file.");
+        qDebug() << "libsndfile: ERR opening file.";
         return ERR;
     }
 

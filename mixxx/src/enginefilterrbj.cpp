@@ -199,6 +199,6 @@ void EngineFilterRBJ::calc_filter_coeffs(int const type, double const frequency,
     a1a0=float (a1/a0);
     a2a0=float (a2/a0);
 
-    //qDebug("coeff: %f, %f, %f, %f, %f",b0a0, b1a0, b2a0, a1a0, a2a0);
+    //qDebug() << "coeff: " << b0a0 << ", " << b1a0 << ", " << b2a0 << ", " << a1a0 << ", " << a2a0;
 }
 

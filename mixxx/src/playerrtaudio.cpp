@@ -163,7 +163,7 @@ bool PlayerRtAudio::open()
     // Frame size...
     int iFramesPerBuffer = iLatencySamples/m_iNumberOfBuffers;
 
-    qDebug("RtAudio: id %i, sr %i, ch %i, bufsize %i, bufno %i", id, iSrate, iChannels, iFramesPerBuffer, m_iNumberOfBuffers);
+    qDebug() << "RtAudio: id " << id << ", sr " << iSrate << ", ch " << iChannels << ", bufsize " << iFramesPerBuffer << ", bufno " << m_iNumberOfBuffers;
 
     if (id<1)
     {
@@ -213,7 +213,7 @@ void PlayerRtAudio::close()
 
     if (m_devId>0)
     {
-        qDebug("close");
+        qDebug() << "close";
         try
         {
             m_pRtAudio->stopStream();
@@ -291,7 +291,7 @@ QStringList PlayerRtAudio::getInterfaces()
         // Add the device if it is an output device:
         if (bGotInfo && info.outputChannels > 0)
         {
-            qDebug("name %s",info.name.c_str());
+            qDebug() << "name " << info.name.c_str();
             for (int j=1; j<=info.outputChannels; ++j)
                 result.append(QString("%1 (channel %2)").arg(info.name.c_str()).arg(j));
         }

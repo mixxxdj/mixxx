@@ -69,7 +69,7 @@ Player::~Player()
     // HACK: Write recorded sound
     //
 
-    qDebug("Writing output to file... please wait!");
+    qDebug() << "Writing output to file... please wait!";
 
     // Setup file format
     AFfilesetup outputSetup = afNewFileSetup();
@@ -110,7 +110,7 @@ void Player::setMaster(EngineMaster * pMaster)
 bool Player::open()
 {
     if (m_pConfig->getValueString(ConfigKey("[Soundcard]","PitchIndpTimeStretch")).toInt())
-        qDebug("pitch true");
+        qDebug() << "pitch true";
 
     // Set sound scale method
     if (m_pMaster)

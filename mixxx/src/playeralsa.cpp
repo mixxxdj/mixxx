@@ -58,14 +58,14 @@ PlayerALSA::PlayerALSA()
     headleft = headright = -1;
     twrite = false;
     m_iChannels = alsa_channels;
-    qDebug("Alsa constructed");
+    qDebug() << "Alsa constructed";
 }
 
 PlayerALSA::~PlayerALSA()
 {
     if (isopen) close();
 
-    qDebug("Alsa destroying...");
+    qDebug() << "Alsa destroying...";
     if (hwparams)
     {
         snd_pcm_hw_params_free(hwparams);
@@ -74,12 +74,12 @@ PlayerALSA::~PlayerALSA()
     {
         snd_pcm_sw_params_free(swparams);
     }
-    qDebug("Alsa destroyed");
+    qDebug() << "Alsa destroyed";
 }
 
 bool PlayerALSA::initialize()
 {
-    qDebug("Alsa initialized");
+    qDebug() << "Alsa initialized";
 
     return true;
 }
@@ -131,7 +131,7 @@ bool PlayerALSA::open()
         }
     }
 
-    qDebug("Alsa setting hw");
+    qDebug() << "Alsa setting hw";
     if ((err = set_hwparams()) < 0)
     {
         qWarning("Setting of hwparams failed: %s\n", snd_strerror(err));
@@ -139,7 +139,7 @@ bool PlayerALSA::open()
         return false;
     }
 
-    qDebug("Alsa setting sw");
+    qDebug() << "Alsa setting sw";
     if ((err = set_swparams()) < 0)
     {
         qWarning("Setting of swparams failed: %s\n", snd_strerror(err));
@@ -169,7 +169,7 @@ bool PlayerALSA::open()
             masterleft = temp - 1;
         }
     }
-    qDebug("Alsa opening...ML %d", masterleft);
+    qDebug() << "Alsa opening...ML " << masterleft;
 
     // master right
     name = m_pConfig->getValueString(ConfigKey("[Soundcard]", "DeviceMasterRight"));
@@ -190,7 +190,7 @@ bool PlayerALSA::open()
             masterright = temp - 1;
         }
     }
-    qDebug("Alsa opening...MR %d", masterright);
+    qDebug() << "Alsa opening...MR " << masterright;
 
     // head left
     name = m_pConfig->getValueString(ConfigKey("[Soundcard]", "DeviceHeadLeft"));
@@ -211,7 +211,7 @@ bool PlayerALSA::open()
             headleft = temp - 1;
         }
     }
-    qDebug("Alsa opening...HL %d", headleft);
+    qDebug() << "Alsa opening...HL " << headleft;
 
     // head right
     name = m_pConfig->getValueString(ConfigKey("[Soundcard]", "DeviceHeadRight"));
@@ -233,7 +233,7 @@ bool PlayerALSA::open()
         }
     }
 
-    qDebug("Alsa opening...HR %d", headright);
+    qDebug() << "Alsa opening...HR " << headright;
     // Check if any of the devices in the config database needs to be set to "None"
     if (masterleft < 0)
         m_pConfig->set(ConfigKey("[Soundcard]", "DeviceMasterLeft"), ConfigValue("None"));
@@ -301,7 +301,7 @@ void PlayerALSA::run()
         float * optr, * output;
 
         output = new float[buffer_size * m_iChannels];
-        qDebug("Alsa allocating output buffer (FLOAT) %p", output);
+        qDebug() << "Alsa allocating output buffer (FLOAT) " << output;
 
         while (twrite)
         {
@@ -345,7 +345,7 @@ void PlayerALSA::run()
         short int * optr, * output;
 
         output = new short int[buffer_size * m_iChannels];
-        qDebug("Alsa allocating output buffer (S16) %p", output);
+        qDebug() << "Alsa allocating output buffer (S16) " << output;
 
         while (twrite)
         {
@@ -382,7 +382,7 @@ void PlayerALSA::run()
         }
         if (output) delete output;
     }
-    qDebug("Alsa leaving thread");
+    qDebug() << "Alsa leaving thread";
 }
 
 #ifdef PLAYERTEST
@@ -440,9 +440,9 @@ void PlayerALSA::close()
     if (!isopen)
         return;
 
-    qDebug("Alsa closing");
+    qDebug() << "Alsa closing";
     twrite = false;
-    qDebug("Alsa waiting for thread for close");
+    qDebug() << "Alsa waiting for thread for close";
     QThread::wait();
 
     snd_pcm_drop(handle);
@@ -453,7 +453,7 @@ void PlayerALSA::close()
 
 void PlayerALSA::setDefaults()
 {
-    qDebug("Alsa setdefs");
+    qDebug() << "Alsa setdefs";
 #ifndef PLAYERTEST
     // Get list of interfaces
     QStringList interfaces = getInterfaces();
@@ -494,7 +494,7 @@ void PlayerALSA::setDefaults()
 
 QStringList PlayerALSA::getInterfaces()
 {
-    qDebug("Alsa getinter");
+    qDebug() << "Alsa getinter";
     QStringList result;
 
     result.append("mixxx (ch 1)");
@@ -507,7 +507,7 @@ QStringList PlayerALSA::getInterfaces()
 
 QStringList PlayerALSA::getSampleRates()
 {
-    qDebug("Alsa getsample");
+    qDebug() << "Alsa getsample";
     QStringList result;
     result.append("11025");
     result.append("22050");
@@ -518,7 +518,7 @@ QStringList PlayerALSA::getSampleRates()
 
 QString PlayerALSA::getSoundApi()
 {
-    qDebug("Alsa getapi");
+    qDebug() << "Alsa getapi";
     return QString("Alsa");
 }
 
@@ -567,15 +567,15 @@ int PlayerALSA::set_hwparams()
     {
         qWarning("Channels count (%i) not available for playbacks: %s\n", rate, snd_strerror(err));
     }
-    qDebug("Channels min %d", rate);
+    qDebug() << "Channels min " << rate;
     err = snd_pcm_hw_params_get_channels_max(hwparams, &rate);
     if (err < 0)
     {
         qWarning("Channels count (%i) not available for playbacks: %s\n", rate, snd_strerror(err));
     }
-    qDebug("Channels max %d", rate);
+    qDebug() << "Channels max " << rate;
     m_iChannels = math_min(rate, alsa_channels);
-    qDebug("Set channels = %d", m_iChannels);
+    qDebug() << "Set channels = " << m_iChannels;
 
     /* set the count of channels */
     err = snd_pcm_hw_params_set_channels(handle, hwparams, m_iChannels);
@@ -628,7 +628,7 @@ int PlayerALSA::set_hwparams()
     // FIXME: Should check return values to be on the safe side
     snd_pcm_hw_params_get_buffer_size_max(hwparams, &max);
     snd_pcm_hw_params_get_buffer_size_min(hwparams, &min);
-    qDebug("Allowed buffer size range: %li -> %li", min, max);
+    qDebug() << "Allowed buffer size range: " << min << "i -> " << max << "i";
 
     // Make sure buffer size we're aiming for is really allowed
     if (buffer_size < min) { buffer_size = (int)min; }

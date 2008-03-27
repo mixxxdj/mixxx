@@ -73,7 +73,7 @@ double ControlLogpotmeter::getValueFromWidget(double dValue)
             dResult = pow(10., m_fB2*(dValue - middlePosition));
     }
 
-    //qDebug("Midi: %f ValueFromWidget : %f", dValue, m_dValue);
+    //qDebug() << "Midi: " << dValue << " ValueFromWidget : " << m_dValue;
     return dResult;
 }
 
@@ -92,7 +92,7 @@ double ControlLogpotmeter::getValueToWidget(double dValue)
         else
             pos = log10(dValue+1)/m_fB1;
     }
-    //qDebug("GetValueToWidget : %f", pos);
+    //qDebug() << "GetValueToWidget : " << pos;
     return pos;
 }
 
@@ -102,14 +102,14 @@ double ControlLogpotmeter::GetMidiValue()
 
     midival = getValueToWidget(m_dValue);
     //    midival = 127.*(midival-m_dMinValue)/m_dValueRange
-    //qDebug("GetMidiValue : %f", midival);
+    //qDebug() << "GetMidiValue : " << midival;
     return midival;
 }
 
 void ControlLogpotmeter::setValueFromMidi(MidiCategory, double v) {
   //    m_dValue = m_dMinValue + (v/127.)*m_dValueRange;
     m_dValue = getValueFromWidget(v);
-    //    qDebug("SetValueFromMidiValue : %f", m_dValue);
+    //    qDebug() << "SetValueFromMidiValue : " << m_dValue;
     emit(valueChanged(m_dValue));
 }
 

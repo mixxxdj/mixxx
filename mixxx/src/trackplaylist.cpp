@@ -152,7 +152,7 @@ void TrackPlaylist::addTrack(QString qLocation)
     TrackInfoObject *it = m_qList.first();
     while (it)
     {
-        //qDebug("inserting in row %i",i);
+        //qDebug() << "inserting in row " << i;
         it->insertInTrackTableRow(m_pTable, i);
 
         it = m_qList.next();
@@ -177,7 +177,7 @@ void TrackPlaylist::addTrack(QString qLocation)
         while (it)
         {
             it->clearTrackTableRow();
-                        qDebug("removing: %s",it->getFilename());
+                        qDebug() << "removing: " << it->getFilename();
             it = m_qList.next();
         }
     }
@@ -334,7 +334,7 @@ void TrackPlaylist::addPath(QString qPath)
             
             for(int i = 0; i < getCollection()->getSize(); ++i)
             {
-                /*qDebug("Checking: %s",tempCollection->getTrack(i)->getFilename());*/
+                /*qDebug() << "Checking: " << tempCollection->getTrack(i)->getFilename();*/
                 if (tempCollection->getTrack(i))
                 {
                     if(tempCollection->getTrack(i)->getFilename() == fi.fileName() &&
@@ -348,10 +348,10 @@ void TrackPlaylist::addPath(QString qPath)
                 }
             }
             /*if(bexists==true)
-                    qDebug("track exists!");*/
+                    qDebug() << "track exists!";*/
             if(bexists == false)
             {
-                /*qDebug("all tracks searched, file does not exist, adding...");*/
+                /*qDebug() << "all tracks searched, file does not exist, adding...";*/
                 addTrack(fi.filePath());
 		emit(progressLoading(fi.fileName()));
             }

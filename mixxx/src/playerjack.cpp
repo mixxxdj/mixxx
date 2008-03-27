@@ -80,7 +80,7 @@ bool PlayerJack::initialize()
     /*
        if (!mLibJack.isLoaded())
        {
-        qDebug("lib not loaded");
+        qDebug() << "lib not loaded";
         return false;
        }
        else
@@ -100,7 +100,7 @@ bool PlayerJack::initialize()
             !jack_get_sample_rate |
             !jack_port_get_buffer)
        {
-        qDebug("API function pointer error");
+        qDebug() << "API function pointer error";
         return false;
        }
      */
@@ -129,7 +129,7 @@ bool PlayerJack::open()
     /* tell the JACK server that we are ready to roll */
     if (jack_activate(client))
     {
-        qDebug("Jack: Cannot activate client");
+        qDebug() << "Jack: Cannot activate client";
         return false;
     }
 
@@ -189,7 +189,7 @@ bool PlayerJack::open()
         }
     }
 
-    qDebug("channels %i, latency %i",m_iChannels,m_iBufferSize);
+    qDebug() << "channels " << m_iChannels << ", latency " << m_iBufferSize;
 
 
     // Update the config database with the used sample rate
@@ -265,12 +265,12 @@ QStringList PlayerJack::getInterfaces()
 
     if (!client && !initialize())
     {
-        qDebug("Jack: Failed to reinitialize the connection to Jack");
+        qDebug() << "Jack: Failed to reinitialize the connection to Jack";
         return result;
     }
 
     if ((ports = jack_get_ports (client, 0, 0, JackPortIsPhysical|JackPortIsInput)) == 0)
-        qDebug("Jack: Cannot find any physical playback ports");
+        qDebug() << "Jack: Cannot find any physical playback ports";
     else
     {
         int i=0;
@@ -301,7 +301,7 @@ QString PlayerJack::getSoundApi()
 
 int PlayerJack::callbackProcess(int iBufferSize)
 {
-//     qDebug("buffer size %i",iBufferSize);
+//     qDebug() << "buffer size " << iBufferSize;
     jack_default_audio_sample_t * out_ml = (jack_default_audio_sample_t *)jack_port_get_buffer(output_master_left, iBufferSize);
     jack_default_audio_sample_t * out_mr = (jack_default_audio_sample_t *)jack_port_get_buffer(output_master_right, iBufferSize);
     jack_default_audio_sample_t * out_hl = (jack_default_audio_sample_t *)jack_port_get_buffer(output_head_left, iBufferSize);

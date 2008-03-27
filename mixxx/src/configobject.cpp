@@ -100,7 +100,7 @@ ConfigValueMidi::ConfigValueMidi(QDomNode node) {
                         qWarning("MIDI Map: Illegal values in <translations><single>");
                     } else {
                         translateMidiValues[(char) from] = (char) newval;
-                        qDebug("MIDI Map: Value Translation: Single value %d -> %d", from, newval);
+                        qDebug() << "MIDI Map: Value Translation: Single value " << from << " -> " << newval;
                     }
                 }
             } else if (translation.nodeName() == "range") {
@@ -116,7 +116,7 @@ ConfigValueMidi::ConfigValueMidi(QDomNode node) {
                         for (char c = lower; c <= upper; c++) {
                             translateMidiValues[c] = (char) newval;
                         }
-                        qDebug("MIDI Map: Value Translation: Range of values %d-%d -> %d", lower, upper, newval);
+                        qDebug() << "MIDI Map: Value Translation: Range of values " << lower << "-" << upper << " -> " << newval;
                     }
                 }
             } else {
@@ -184,7 +184,7 @@ ConfigValueMidi::ConfigValueMidi(QDomNode node) {
             midioption = MIDI_OPT_NORMAL;
         }
 
-        qDebug("Option: %d", midioption);
+        qDebug() << "Option: " << midioption;
     } else {
         midioption = MIDI_OPT_NORMAL;
     }
@@ -195,7 +195,7 @@ ConfigValueMidi::ConfigValueMidi(QDomNode node) {
 
 ConfigValueMidi::ConfigValueMidi(QString _value)
 {
-    qDebug("ConfigValueMidi(QString)");
+    qDebug() << "ConfigValueMidi(QString)";
     QString channelMark;
     QString type;
     QString option;
@@ -249,7 +249,7 @@ ConfigValueMidi::ConfigValueMidi(QString _value)
 
 ConfigValueMidi::ConfigValueMidi(MidiType _miditype, int _midino, int _midichannel)
 {
-    //qDebug("--2");
+    //qDebug() << "--2";
     miditype = _miditype;
     midino = _midino;
     midichannel = _midichannel;
@@ -267,7 +267,7 @@ ConfigValueMidi::ConfigValueMidi(MidiType _miditype, int _midino, int _midichann
 
 void ConfigValueMidi::valCopy(const ConfigValueMidi v)
 {
-    //qDebug("--1, midino: %i, midimask: %i, midichannel: %i",midino,midimask,midichannel);
+    //qDebug() << "--1, midino: " << midino << ", midimask: " << midimask << ", midichannel: " << midichannel;
     miditype = v.miditype;
     midino = v.midino;
     midichannel = v.midichannel;
@@ -295,7 +295,7 @@ void ConfigValueMidi::valCopy(const ConfigValueMidi v)
         value.append(" Spread64");
 
     qDebug() << "Config value:" << value;
-    //qDebug("--1, midino: %i, midimask: %i, midichannel: %i",midino,midimask,midichannel);
+    //qDebug() << "--1, midino: " << midino << ", midimask: " << midimask << ", midichannel: " << midichannel;
 }
 
 
@@ -307,7 +307,7 @@ char ConfigValueMidi::translateValue(char value)
     if (!translateMidiValues.isEmpty()) {
         MidiValueMap::Iterator it;
         if ((it = translateMidiValues.find(value)) != translateMidiValues.end()) {
-            // qDebug("MIDI value %d translated to %d", value, it.data());
+            // qDebug() << "MIDI value " << value << " translated to " << it.data();
             return it.data();
         }
     }
@@ -323,7 +323,7 @@ double ConfigValueMidi::ComputeValue(MidiType /* _miditype */, double _prevmidiv
     double tempval = 0.;
     double diff = 0.;
 
-    // qDebug("ComputeValue: option %d, MIDI value %f, current control value %f", midioption, _newmidivalue, _prevmidivalue);
+    // qDebug() << "ComputeValue: option " << midioption << ", MIDI value " << _newmidivalue << ", current control value " << _prevmidivalue;
     if (midioption == MIDI_OPT_NORMAL) {
         return _newmidivalue;
     }
@@ -382,7 +382,7 @@ double ConfigValueMidi::ComputeValue(MidiType /* _miditype */, double _prevmidiv
         _newmidivalue = distance * distance * sensitivity / 50000.;
         if (distance < 0.)
             _newmidivalue = -_newmidivalue;
-        // qDebug("Spread64: in %f  out %f", distance, _newmidivalue);
+        // qDebug() << "Spread64: in " << distance << "  out " << _newmidivalue;
     }
     else if (midioption == MIDI_OPT_HERC_JOG)
     {
@@ -459,9 +459,9 @@ ConfigOption<ValueType> *ConfigObject<ValueType>::set(ConfigKey k, ValueType v)
         {
             //qDebug() << "set found." << group << "," << item;
             //cout << "1: " << v.value << "\n";
-            //qDebug("configobject %p",it->val);
+            //qDebug() << "configobject " << it->val;
             it->val->valCopy(v); // Should be done smarter using object copying
-            //qDebug("configobject %p",it->val);
+            //qDebug() << "configobject " << it->val;
             //cout << "2: " << it->val->value << "\n";
             return it;
         }
@@ -469,7 +469,7 @@ ConfigOption<ValueType> *ConfigObject<ValueType>::set(ConfigKey k, ValueType v)
     // If key is not found, insert it into the list of config objects
     ConfigKey * key = new ConfigKey(k.group, k.item);
     it = new ConfigOption<ValueType>(key, new ValueType(v));
-    //qDebug("new configobject %p",it->val);
+    //qDebug() << "new configobject " << it->val;
     list.append(it);
     return it;
 }
@@ -621,7 +621,7 @@ template <class ValueType> void ConfigObject<ValueType>::Save()
         }
         file.close();
         if (file.status()!=IO_Ok)
-            qDebug("Error while writing configuration file.");
+            qDebug() << "Error while writing configuration file.";
     }
 }
 

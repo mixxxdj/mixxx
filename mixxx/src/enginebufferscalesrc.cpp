@@ -28,19 +28,19 @@ EngineBufferScaleSRC::EngineBufferScaleSRC(ReaderExtractWave * wave) : EngineBuf
     int error;
     converter0 = src_new(0, 2, &error);
     if (error!=0)
-        qDebug("EngineBufferScaleSRC: %s",src_strerror(error));
+        qDebug() << "EngineBufferScaleSRC: " << src_strerror(error);
     converter1 = src_new(1, 2, &error);
     if (error!=0)
-        qDebug("EngineBufferScaleSRC: %s",src_strerror(error));
+        qDebug() << "EngineBufferScaleSRC: " << src_strerror(error);
     converter2 = src_new(2, 2, &error);
     if (error!=0)
-        qDebug("EngineBufferScaleSRC: %s",src_strerror(error));
+        qDebug() << "EngineBufferScaleSRC: " << src_strerror(error);
     converter3 = src_new(3, 2, &error);
     if (error!=0)
-        qDebug("EngineBufferScaleSRC: %s",src_strerror(error));
+        qDebug() << "EngineBufferScaleSRC: " << src_strerror(error);
     converter4 = src_new(4, 2, &error);
     if (error!=0)
-        qDebug("EngineBufferScaleSRC: %s",src_strerror(error));
+        qDebug() << "EngineBufferScaleSRC: " << src_strerror(error);
 
     m_iQuality = 4; //Make this the same as the index in the converter right below this.
     converterActive = converter4;
@@ -75,7 +75,7 @@ void EngineBufferScaleSRC::setQuality(int q)
     else
         m_iQuality = q;
 
-    //qDebug("quality %i", m_iQuality);
+    //qDebug() << "quality " << m_iQuality;
 
     switch (m_iQuality)
     {
@@ -96,12 +96,12 @@ void EngineBufferScaleSRC::setFastMode(bool bMode)
 {
     if (bMode)
     {
-        //qDebug("fast");
+        //qDebug() << "fast";
         converterActive = converter4;
     }
     else
     {
-        //qDebug("slow");
+        //qDebug() << "slow";
         setQuality(m_iQuality);
     }
 }
@@ -209,7 +209,7 @@ CSAMPLE * EngineBufferScaleSRC::scale(double playpos, int buf_size, float * pBas
         // Perform conversion
         int error = src_process(converterActive, data);
         if (error!=0)
-            qDebug("EngineBufferScaleSRC: %s",src_strerror(error));
+            qDebug() << "EngineBufferScaleSRC: " << src_strerror(error);
 
         consumed += data->input_frames_used;
     }

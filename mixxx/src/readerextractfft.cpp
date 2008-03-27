@@ -97,7 +97,7 @@ void * ReaderExtractFFT::processChunk(const int _idx, const int start_idx, const
     int idx = _idx;
     int frameFrom, frameTo;
 
-//    qDebug("start %i, end %i, curr %i",start_idx, end_idx, idx);
+//    qDebug() << "start " << start_idx << ", end " << end_idx << ", curr " << idx;
 
     // Adjust range (circular buffer)
     if (start_idx>=_end_idx)
@@ -117,7 +117,7 @@ void * ReaderExtractFFT::processChunk(const int _idx, const int start_idx, const
     else
         frameTo = (((((idx+1)%READCHUNK_NO)*framePerChunk)-(frameSize/frameStep))+frameNo)%frameNo;
 
-//    qDebug("no %i, from %i ,to %i",frameNo,frameFrom,frameTo);
+//    qDebug() << "no " << frameNo << ", from " << frameFrom << " ,to " << frameTo;
 
     if (frameTo>frameFrom)
         for (int i=frameFrom; i<=frameTo; i++)
@@ -138,7 +138,7 @@ void ReaderExtractFFT::processFrame(int idx)
 {
 //    QTextStream stream( &textout );
 //    QTextStream stream2( &textout2 );
-//    qDebug("fft %i",idx);
+//    qDebug() << "fft " << idx;
     //
     // Window samples
     //
@@ -155,7 +155,7 @@ void ReaderExtractFFT::processFrame(int idx)
             windowedSamples[i] = ((readbufferPtr[(inputFramePos+(i*2))%inputBufferSize] +
                                    readbufferPtr[(inputFramePos+(i*2)+1)%inputBufferSize])/2.)*windowPtr[i]; // To optimize put % outside loop
 
-//    qDebug("windowing %i-%i",inputFramePos, (inputFramePos+inputFrameSize)%inputBufferSize);
+//    qDebug() << "windowing " << inputFramePos << "-" << (inputFramePos+inputFrameSize)%inputBufferSize;
 
 
 //    // Write wave to text file
@@ -165,7 +165,7 @@ void ReaderExtractFFT::processFrame(int idx)
 
     // Perform FFT
     specList.at(idx%frameNo)->process(windowedSamples, 0, 0);
-//    qDebug("frame %i",idx%frameNo);
+//    qDebug() << "frame " << idx%frameNo;
 //    // Write FFT to text file
 //    for (i=0; i<frameSize/2; i++)
 //        stream << tmp[i] << " ";

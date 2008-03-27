@@ -177,13 +177,13 @@ void WOverview::repaint() {
             fMax /= ((idxEnd-idxStart)/2.);
 
             float hfc = (m_pWaveformSummary->at(idxStart+2)+128.)/hfcMax;
-            //qDebug("hfc %f",hfc);
+            //qDebug() << "hfc " << hfc;
             int r = kqDarkColor.red()  + (int)((kqLightColor.red()-kqDarkColor.red())*hfc);
             int g = kqDarkColor.green()+ (int)((kqLightColor.green()-kqDarkColor.green())*hfc);
             int b = kqDarkColor.blue() + (int)((kqLightColor.blue()-kqDarkColor.blue())*hfc);
             paint.setPen(QColor(r,g,b));
         }
-//         qDebug("min %f, max %f", fMin, fMax);
+//         qDebug() << "min " << fMin << ", max " << fMax;
         paint.drawLine(i, height()/2-(int)(fMin*yscale), i, height()/2-(int)(fMax*yscale));
     }
 
@@ -195,7 +195,7 @@ void WOverview::repaint() {
         for (unsigned int i=0; i<m_pSegmentation->size(); ++i)
         {
             int point = (int)((double)width()*((double)(*m_pSegmentation->at(i))/(double)m_liSampleDuration));
-            qDebug("i %i, seg %li, dur %li, point %i, width %i", i, (*m_pSegmentation->at(i)), m_liSampleDuration, point,width());
+            qDebug() << "i " << i << ", seg " << (*m_pSegmentation->at(i)) << "i, dur " << m_liSampleDuration << "i, point " << point << ", width " << width();
             paint.drawLine(point, 0, point, height());
         }
     }
@@ -263,7 +263,7 @@ void WOverview::paintEvent(QPaintEvent *)
         if (m_iVirtualPos>=0)
         {
             int dist = math_min(10,abs(m_iVirtualPos-m_iPos));
-            //qDebug("dist %i",dist);
+            //qDebug() << "dist " << dist;
             paint.drawLine(m_iPos, height()/2,   m_iVirtualPos, height()/2);
             paint.drawLine(m_iPos, height()/2+1, m_iVirtualPos, height()/2+1);
 

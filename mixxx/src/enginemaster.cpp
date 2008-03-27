@@ -35,6 +35,7 @@
 #include "enginevinylcontrol.h"
 #endif
 // #include "enginebuffermasterrate.h"
+#include <QDebug>
 
 EngineMaster::EngineMaster(ConfigObject<ConfigValue> * _config,
                            EngineBuffer * _buffer1, EngineBuffer * _buffer2,
@@ -129,7 +130,7 @@ EngineMaster::EngineMaster(ConfigObject<ConfigValue> * _config,
 
 EngineMaster::~EngineMaster()
 {
-    qDebug("in ~EngineMaster()");
+    qDebug() << "in ~EngineMaster()";
     delete crossfader;
     delete m_pBalance;
     delete head_mix;
@@ -200,29 +201,29 @@ void EngineMaster::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBuff
     float cf_val = head_mix->get();
     float chead_gain = 0.5*(-cf_val+1.);
     float cmaster_gain = 0.5*(cf_val+1.);
-    //qDebug("head val %f, head %f, master %f",cf_val,chead_gain,cmaster_gain);
+    //qDebug() << "head val " << cf_val << ", head " << chead_gain << ", master " << cmaster_gain;
 
     if (master1 && pfl1->get()==1. && master2 && pfl2->get()==1.)
     {
-        //qDebug("both");
+        //qDebug() << "both";
         for (int i=0; i<iBufferSize; i++)
             m_pHead[i] = m_pTemp1[i]*chead_gain + m_pTemp2[i]*chead_gain;
     }
     else if (master1 && pfl1->get()==1.)
     {
-        //qDebug("ch 1");
+        //qDebug() << "ch 1";
         for (int i=0; i<iBufferSize; i++)
             m_pHead[i] = m_pTemp1[i]*chead_gain;
     }
     else if (master2 && pfl2->get()==1.)
     {
-        //qDebug("ch 2");
+        //qDebug() << "ch 2";
         for (int i=0; i<iBufferSize; i++)
             m_pHead[i] = m_pTemp2[i]*chead_gain;
     }
     else
     {
-        //qDebug("none");
+        //qDebug() << "none";
         for (int i=0; i<iBufferSize; i++)
             m_pHead[i] = 0.;
     }
@@ -237,7 +238,7 @@ void EngineMaster::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBuff
     // Crossfader and Transform buttons
 	/*
     cf_val = crossfader->get();
-    //qDebug("cf_val: %f", cf_val);
+    //qDebug() << "cf_val: " << cf_val;
     float c1_gain, c2_gain;
     if (cf_val>0)
     {

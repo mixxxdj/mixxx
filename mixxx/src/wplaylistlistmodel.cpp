@@ -164,7 +164,7 @@ QMimeData *WPlaylistListModel::mimeData(const QModelIndexList &indexes) const {
             TrackPlaylist* m_pPlaylist = m_qPlaylists->at(index.row());
             QUrl url(QString(m_pTrackInfo->getLocation()));
             if (!url.isValid())
-              qDebug("ERROR invalid url\n");
+              qDebug() << "ERROR invalid url\n";
             else
               urls.append(url);
         }

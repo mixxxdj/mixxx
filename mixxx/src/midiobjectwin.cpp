@@ -38,7 +38,7 @@ MidiObjectWin::MidiObjectWin(QString device) : MidiObject(device)
        devOpen(device);
        else
        if (devices.count()==0)
-        qDebug("MIDI: No MIDI devices available.");
+        qDebug() << "MIDI: No MIDI devices available.";
        else
         devOpen(devices.first());*/
 }
@@ -60,7 +60,7 @@ void MidiObjectWin::updateDeviceList() {
     {
         MMRESULT res = midiInGetDevCaps(i, &info, sizeof(MIDIINCAPS));
 
-        qDebug("Midi Device '%s' found.", W2A(info.szPname));
+        qDebug() << "Midi Device '" << W2A(info.szPname) << "' found.";
 
         if (strlen(W2A(info.szPname))>0)
             devices.append(W2A(info.szPname));
@@ -80,7 +80,7 @@ void MidiObjectWin::devOpen(QString device)
         MMRESULT res = midiInGetDevCaps(i, &info, sizeof(MIDIINCAPS));
         if (strlen(W2A(info.szPname))>0 && ((QString(W2A(info.szPname)) == device) || (QString("Device %1").arg(i) == device)))
         {
-            qDebug("Using Midi Device #%i: %s", i, W2A(info.szPname));
+            qDebug() << "Using Midi Device #" << i << ": " << W2A(info.szPname);
             break;
         }
     }
@@ -93,17 +93,17 @@ void MidiObjectWin::devOpen(QString device)
         // Should follow selected device !!!!
         openDevice = device;
     } else {
-        qDebug("Error opening midi device");
+        qDebug() << "Error opening midi device";
         return;
     }
 
     res = midiOutOpen(&outhandle, i, NULL, NULL, CALLBACK_NULL);
     if (res != MMSYSERR_NOERROR)
-        qDebug("Error opening midi output for light control");        // Not so important
+        qDebug() << "Error opening midi output for light control";
 
     res = midiInStart(handle);
     if (res != MMSYSERR_NOERROR)
-        qDebug("Error starting midi.");
+        qDebug() << "Error starting midi.";
 }
 
 void MidiObjectWin::devClose()
@@ -124,7 +124,7 @@ void MidiObjectWin::run()
 
 void MidiObjectWin::handleMidi(char channel, char midicontrol, char midivalue)
 {
-    qDebug("midi miditype: %X ch: %X, ctrl: %X, val: %X",(channel& 240),channel&15,midicontrol,midivalue);
+    qDebug() << "midi miditype: " << (channel& 240) << " ch: " << channel&15 << ", ctrl: " << midicontrol << ", val: " << midivalue;
     send((MidiCategory)(channel & 240), channel&15, midicontrol, midivalue);
 }
 
@@ -134,11 +134,11 @@ void CALLBACK MidiInProc(HMIDIIN hMidiIn, UINT wMsg, DWORD dwInstance, DWORD dwP
     MidiObjectWin * midi = (MidiObjectWin *)dwInstance;
     switch (wMsg) {
     case MIM_DATA:
-        qDebug("MIM_DATA");
+        qDebug() << "MIM_DATA";
         midi->handleMidi(dwParam1&0x000000ff, (dwParam1&0x0000ff00)>>8, (dwParam1&0x00ff0000)>>16);
         break;
     case MIM_LONGDATA:
-        qDebug("MIM_LONGDATA");
+        qDebug() << "MIM_LONGDATA";
         // for a MIM_LONGDATA implementation example refer to "void CALLBACK MidiInProc" @ http://www.csee.umbc.edu/help/sound/TiMidity++-2.13.2/interface/rtsyn_winmm.c
         break;
     }

@@ -57,11 +57,11 @@ LADSPAView::LADSPAView(QWidget * parent) : QWidget(parent, "LADSPA")
     QFile file(WWidget::getPath("ladspa_skin.xml"));
     if (!file.open(IO_ReadOnly))
     {
-        qDebug("Could not open skin definition file: %s", file.name().latin1());
+        qDebug() << "Could not open skin definition file: " << file.name().latin1();
     }
     if (!skin.setContent(&file))
     {
-        qDebug("Error parsing skin definition file: %s", file.name().latin1());
+        qDebug() << "Error parsing skin definition file: " << file.name().latin1();
     }
     file.close();
     QDomElement docElem = skin.documentElement();
@@ -69,11 +69,11 @@ LADSPAView::LADSPAView(QWidget * parent) : QWidget(parent, "LADSPA")
 
     if (m_qKnobSkinNode.nodeName()=="Knob")
     {
-        qDebug("LADSPA: Skin OK");
+        qDebug() << "LADSPA: Skin OK";
     }
     else
     {
-        qDebug("LADSPA: Invalid skin (node = %s)", m_qKnobSkinNode.nodeName().latin1());
+        qDebug() << "LADSPA: Invalid skin (node = " << m_qKnobSkinNode.nodeName().latin1() << ")";
         return;
     }
 

@@ -21,6 +21,7 @@
 #endif
 #include <string.h>
 #include <qobject.h>
+#include <QDebug>
 
 #ifdef __MACX__
 int get_bus_speed()
@@ -60,7 +61,7 @@ void rtThread()
                                  THREAD_TIME_CONSTRAINT_POLICY, (int *)&ttcpolicy,
                                  THREAD_TIME_CONSTRAINT_POLICY_COUNT);
     if (theError != KERN_SUCCESS)
-        qDebug("Can't do thread_policy_set");
+        qDebug() << "Can't do thread_policy_set";
 #endif
 #ifdef __UNIX__
 #ifndef __MACX__
@@ -76,7 +77,7 @@ void rtThread()
     schp.sched_priority = ((sched_get_priority_max(SCHED_RR))); //sched_get_priority_min(SCHED_RR)) / 2)-1;
 
     if (sched_setscheduler(0, SCHED_RR, &schp) != 0)
-        qDebug("Not possible to give audio producer thread high prioriy.");
+        qDebug() << "Not possible to give audio producer thread high prioriy.";
 #endif
 #endif
 #ifdef __WIN__

@@ -87,12 +87,12 @@ void WPushButton::setup(QDomNode node)
         if (node.nodeName()=="PushButton")
         {
             //qDebug(configKey.item);
-            //qDebug("Number of States: %i", iStates);
+            //qDebug() << "Number of States: " << iStates;
 
             //If we have 2 states, tell my controlpushbutton object that we're a toggle button.
           if (iNumStates == 2) {
             if (p == 0)
-              qDebug("Warning: wpushbutton p is null\n");
+              qDebug() << "Warning: wpushbutton p is null\n";
             else
               p->setToggleButton(true);
           }
