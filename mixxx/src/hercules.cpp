@@ -64,7 +64,7 @@ Hercules::Hercules() : Input(), m_qRequestLed(5)
     m_pControlObjectLeftVuMeter = new ControlObjectThread(ControlObject::getControl(ConfigKey("[Channel1]","VuMeter")));
     Q_ASSERT(m_pControlObjectLeftVuMeter != 0);
     m_pControlObjectRightVuMeter = new ControlObjectThread(ControlObject::getControl(ConfigKey("[Channel2]","VuMeter")));
-    Q_ASSERT(m_pControlObjectRightVuMeter != 0);    
+    Q_ASSERT(m_pControlObjectRightVuMeter != 0);
 
     selectMapping(kqInputMappingHerculesStandard);
 
@@ -81,7 +81,7 @@ Hercules::~Hercules()
     }
     delete m_pRotaryLeft;
     delete m_pRotaryRight;
-    
+
     //FIXME: delete all the ControlObjectThreadMain objects!
 }
 
@@ -97,7 +97,7 @@ void Hercules::selectMapping(QString qMapping)
     m_qMapping = qMapping;
 
     //FIXME: delete the ControlObjectThread objects before creating "new" ones.
-    
+
     if (qMapping==kqInputMappingHerculesInBeat)
     {
         m_pControlObjectLeftPitch = new ControlObjectThread(ControlObject::getControl(ConfigKey("[Channel1]","volume")));
@@ -113,7 +113,6 @@ void Hercules::selectMapping(QString qMapping)
         m_pControlObjectLeftVolume = new ControlObjectThread(ControlObject::getControl(ConfigKey("[Channel1]","pregain")));
         m_pControlObjectRightVolume = new ControlObjectThread(ControlObject::getControl(ConfigKey("[Channel2]","pregain")));
         m_pControlObjectCrossfade = new ControlObjectThread(ControlObject::getControl(ConfigKey("[Master]","rate")));
-
         changeJogMode(m_iLeftFxMode, m_iRightFxMode);
 
         m_pControlObjectLeftBeatLoop->slotSet(1.);
@@ -170,7 +169,23 @@ void Hercules::selectMapping(QString qMapping)
     m_pControlObjectRightBtn123[1] = m_pControlObjectRightBtn2;
     m_pControlObjectRightBtn123[2] = m_pControlObjectRightBtn3;
     m_pControlObjectRightBtnFx = new ControlObjectThread(new ControlObject(ConfigKey("[Channel2]","Hercules4")));
-    
+
+    m_pControlObjectMainVolume = new ControlObjectThread(ControlObject::getControl(ConfigKey("[Master]","volume")));
+    m_pControlObjectBalance = new ControlObjectThread(ControlObject::getControl(ConfigKey("[Master]","balance")));
+    m_pControlObjectGainA = new ControlObjectThread(ControlObject::getControl(ConfigKey("[Channel1]","pregain")));
+
+
+    m_pControlObjectUp = new ControlObjectThread(ControlObject::getControl(ConfigKey("[Playlist]","SelectPrevTrack")));
+    m_pControlObjectDown = new ControlObjectThread(ControlObject::getControl(ConfigKey("[Playlist]","SelectNextTrack")));
+    m_pControlObjectLoadDeckA = new ControlObjectThread(ControlObject::getControl(ConfigKey("[Channel1]","LoadSelectedTrack")));
+    m_pControlObjectLoadDeckB = new ControlObjectThread(ControlObject::getControl(ConfigKey("[Channel2]","LoadSelectedTrack")));
+
+    m_pControlObjectLeftKillHigh = new ControlObjectThread(ControlObject::getControl(ConfigKey("[Channel1]","filterHighKill")));
+    m_pControlObjectRightKillHigh = new ControlObjectThread(ControlObject::getControl(ConfigKey("[Channel2]","filterHighKill")));
+    m_pControlObjectLeftKillMid = new ControlObjectThread(ControlObject::getControl(ConfigKey("[Channel1]","filterMidKill")));
+    m_pControlObjectRightKillMid = new ControlObjectThread(ControlObject::getControl(ConfigKey("[Channel2]","filterMidKill")));
+    m_pControlObjectLeftKillBass = new ControlObjectThread(ControlObject::getControl(ConfigKey("[Channel1]","filterLowKill")));
+    m_pControlObjectRightKillBass = new ControlObjectThread(ControlObject::getControl(ConfigKey("[Channel2]","filterLowKill")));
 }
 
 void Hercules::changeJogMode(int iLeftFxMode, int iRightFxMode)
