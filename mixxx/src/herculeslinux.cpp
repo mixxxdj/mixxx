@@ -52,7 +52,7 @@
 #include <Q3ValueList> // used by the old herc code
 #include <QTimer>
 
-#include <QDebug>
+// # // include <QDebug>
 
 #include <math.h>
 
@@ -97,26 +97,27 @@ const int MONITOR_MIX = 102;
 const int MONITOR_SPLIT = 103;
 
 // Stubs for Herc Rmx Controls
-const int GAIN_A = -1;
-const int GAIN_B = -1;
-const int MAIN_VOL = -1;
+const int GAIN_A = 902;
+const int GAIN_B = 903;
+const int MAIN_VOL = 900;
+const int BALANCE = 901;
 
 // Stubs for Herc Rmx Buttons
 const int SCRATCH = -1;
-const int LEFT_KILL_HIGH = -1;
-const int LEFT_KILL_MID = -1;
-const int LEFT_KILL_BASS = -1;
-const int RIGHT_KILL_HIGH = -1;
-const int RIGHT_KILL_MID = -1;
-const int RIGHT_KILL_BASS = -1;
-const int LOAD_DECK_A = -1;
-const int LOAD_DECK_B = -1;
+const int LEFT_KILL_HIGH = 1032;
+const int LEFT_KILL_MID = 1064;
+const int LEFT_KILL_BASS = 1128;
+const int RIGHT_KILL_HIGH = 2032;
+const int RIGHT_KILL_MID = 2064;
+const int RIGHT_KILL_BASS = 2128;
+const int LOAD_DECK_A = 302;
+const int LOAD_DECK_B = 332;
 const int LEFT_PITCH_RESET = -1;
 const int RIGHT_PITCH_RESET = -1;
-const int UP = -1;
-const int DOWN = -1;
-const int LEFT = -1;
-const int RIGHT = -1;
+const int UP = 602;
+const int DOWN = 604;
+const int LEFT = 608;
+const int RIGHT = 616;
 // const int LEFT_CUE_SELECT = -1; // same as headphone button on Mk1?
 // const int RIGHT_CUE_SELECT = -1; // same as headphone button on Mk1?
 // const int LEFT_BEAT_LOCK = -1; // same as autobeat on Mk2?
@@ -124,7 +125,7 @@ const int RIGHT = -1;
 
 // Check if the control is a button (used to filter out button released events)
 // FIXME: This code will have to be rewritten to use something non-QT when moved to libDJConsole.
-const QSet<int> non_button_controls = QSet<int>::QSet() << XFADER << MAIN_VOL << MONITOR_SPLIT << MONITOR_MIX \
+const QSet<int> non_button_controls = QSet<int>::QSet() << XFADER << BALANCE << MAIN_VOL << MONITOR_SPLIT << MONITOR_MIX \
                                     << MONITOR_DECK_A << GAIN_A << LEFT_VOL << LEFT_JOG << LEFT_BASS << LEFT_MID << LEFT_HIGH << LEFT_PITCH \
                                     << MONITOR_DECK_B << GAIN_B << RIGHT_VOL << RIGHT_JOG << RIGHT_BASS << RIGHT_MID << RIGHT_HIGH << RIGHT_PITCH;
 static bool isButton(const int controlId) {
@@ -260,7 +261,7 @@ void HerculesLinux::consoleEvent(int first, int second) {
         return;
     }
 
-    //qDebug("x Button %i = %i", first, second);
+    qDebug("x Button %i = %i", first, second);
     if(first != 0) {
         bool ledIsOn = (second == 0 ? false : true);
         int led = 0;
@@ -329,10 +330,10 @@ void HerculesLinux::consoleEvent(int first, int second) {
         }
 
 	// GED's magic formula -- no longer used.
-	// double v = ((second+1)/(4.- ((second>((7/8.)*256))*((second-((7/8.)*256))*1/16.)))); 
+	// double v = ((second+1)/(4.- ((second>((7/8.)*256))*((second-((7/8.)*256))*1/16.))));
 
 	// Albert's http://zunzun.com/ site saves the day by solving our data points to this new magical formula...
-	double magic = (0.733835252488 * tan((0.00863901501308 * second) - 4.00513109039)) + 0.887988233294; 
+	double magic = (0.733835252488 * tan((0.00863901501308 * second) - 4.00513109039)) + 0.887988233294;
 
 	double divisor = 256.;
 	double d1 = divisor-1;
@@ -343,6 +344,22 @@ void HerculesLinux::consoleEvent(int first, int second) {
 	// qDebug() << "m_pControlObjectLeftPitch:" << QString::number(m_pControlObjectLeftPitch->get()) << "m_pControlObjectRightPitch:" << QString::number(m_pControlObjectRightPitch->get());
 
         switch(first) {
+        case BALANCE: sendEvent((second-d2)/d2, m_pControlObjectBalance); break;
+        case GAIN_A: sendEvent(magic, m_pControlObjectGainA); break;
+        case GAIN_B: sendEvent(magic, m_pControlObjectGainB); break;
+        case MAIN_VOL: sendEvent(magic, m_pControlObjectMainVolume); break;
+        case LEFT_KILL_HIGH: sendButtonEvent(!m_pControlObjectLeftKillHigh->get(),m_pControlObjectLeftKillHigh); break;
+        case RIGHT_KILL_HIGH: sendButtonEvent(!m_pControlObjectRightKillHigh->get(),m_pControlObjectRightKillHigh); break;
+        case LEFT_KILL_MID: sendButtonEvent(!m_pControlObjectLeftKillMid->get(),m_pControlObjectLeftKillMid); break;
+        case RIGHT_KILL_MID: sendButtonEvent(!m_pControlObjectRightKillMid->get(),m_pControlObjectRightKillMid); break;
+        case LEFT_KILL_BASS: sendButtonEvent(!m_pControlObjectLeftKillBass->get(),m_pControlObjectLeftKillBass); break;
+        case RIGHT_KILL_BASS: sendButtonEvent(!m_pControlObjectRightKillBass->get(),m_pControlObjectRightKillBass); break;
+	case UP: sendButtonEvent(true, m_pControlObjectUp); break;
+	case DOWN: sendButtonEvent(true, m_pControlObjectDown); break;
+//	case LEFT: ; break;
+//	case RIGHT: ; break;
+	case LOAD_DECK_A: sendButtonEvent(true, m_pControlObjectLoadDeckA); break;
+	case LOAD_DECK_B: sendButtonEvent(true, m_pControlObjectLoadDeckB); break;
         case LEFT_VOL: sendEvent(second/d1, m_pControlObjectLeftVolume); break;
         case RIGHT_VOL: sendEvent(second/d1, m_pControlObjectRightVolume); break;
         case LEFT_PLAY: sendButtonEvent(!m_pControlObjectLeftBtnPlay->get(), m_pControlObjectLeftBtnPlay); break;

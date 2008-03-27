@@ -47,9 +47,10 @@
   *  - Applied Hercules Control codes originally mapped out by Eric J. Shattow <shadow@serverart.org> & Oliver M. Bolzer <oliver@fakeroot.net> in their DJConsole-mod.rb ruby script
   */
 
-const int kiHerculesNumValidPrefixes = 3;
+const int kiHerculesNumValidPrefixes = 4;
 static QString kqHerculesValidPrefix[kiHerculesNumValidPrefixes] =
 {
+    "Hercules Hercules DJ Console RMX",
     "Hercules Hercules DJ Console Mk2",
     "Hercules Hercules DJ Console",
     "Hercules Hercules DJ Control MP3" // Not sure about this one

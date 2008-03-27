@@ -67,21 +67,27 @@ public:
 
     ControlObjectThread *m_pControlObjectLeftTreble, *m_pControlObjectLeftMiddle, *m_pControlObjectLeftBass,
                         *m_pControlObjectLeftVolume, *m_pControlObjectLeftPitch, *m_pControlObjectLeftJog,
-                        *m_pControlObjectLeftBtnHeadphone, *m_pControlObjectLeftBtnPitchBendMinus, 
+                        *m_pControlObjectLeftBtnHeadphone, *m_pControlObjectLeftBtnPitchBendMinus,
                         *m_pControlObjectLeftBtnPitchBendPlus, *m_pControlObjectLeftBtnTrackPrev,
                         *m_pControlObjectLeftBtnTrackNext, *m_pControlObjectLeftBtnCue, *m_pControlObjectLeftBtnPlay,
                         *m_pControlObjectLeftBtnAutobeat, *m_pControlObjectLeftBtnMasterTempo, *m_pControlObjectLeftBtn1,
                         *m_pControlObjectLeftBtn2, *m_pControlObjectLeftBtn3, *m_pControlObjectLeftBtnFx;
     ControlObjectThread *m_pControlObjectRightTreble, *m_pControlObjectRightMiddle, *m_pControlObjectRightBass,
                         *m_pControlObjectRightVolume, *m_pControlObjectRightPitch, *m_pControlObjectRightJog,
-                        *m_pControlObjectRightBtnHeadphone, *m_pControlObjectRightBtnPitchBendMinus, 
+                        *m_pControlObjectRightBtnHeadphone, *m_pControlObjectRightBtnPitchBendMinus,
                         *m_pControlObjectRightBtnPitchBendPlus, *m_pControlObjectRightBtnTrackPrev,
                         *m_pControlObjectRightBtnTrackNext, *m_pControlObjectRightBtnCue, *m_pControlObjectRightBtnPlay,
                         *m_pControlObjectRightBtnAutobeat, *m_pControlObjectRightBtnMasterTempo, *m_pControlObjectRightBtn1,
                         *m_pControlObjectRightBtn2, *m_pControlObjectRightBtn3, *m_pControlObjectRightBtnFx;
     ControlObjectThread *m_pControlObjectLeftBtn123[3], *m_pControlObjectRightBtn123[3];
-    ControlObjectThread *m_pControlObjectCrossfade;
+    ControlObjectThread *m_pControlObjectCrossfade, *m_pControlObjectMainVolume, *m_pControlObjectBalance;
+    ControlObjectThread *m_pControlObjectGainA, *m_pControlObjectGainB;
+    ControlObjectThread *m_pControlObjectLeftKillHigh, *m_pControlObjectRightKillHigh;
+    ControlObjectThread *m_pControlObjectLeftKillMid, *m_pControlObjectRightKillMid;
+    ControlObjectThread *m_pControlObjectLeftKillBass, *m_pControlObjectRightKillBass;
 
+    ControlObjectThread *m_pControlObjectUp, *m_pControlObjectDown;
+    ControlObjectThread *m_pControlObjectLoadDeckA, *m_pControlObjectLoadDeckB;
 
 protected:
     /** Change jog mode */
@@ -96,12 +102,12 @@ protected:
     #else
     QSemaphore m_qRequestLed;
     #endif
-    
+
     ControlObjectThread *m_pControlObjectLeftBtnPlayProxy, *m_pControlObjectRightBtnPlayProxy,
                         *m_pControlObjectLeftBtnLoopProxy, *m_pControlObjectRightBtnLoopProxy,
                         *m_pControlObjectLeftBtnHeadphoneProxy, *m_pControlObjectRightBtnHeadphoneProxy;
 
-    Rotary *m_pRotaryLeft, *m_pRotaryRight; 
+    Rotary *m_pRotaryLeft, *m_pRotaryRight;
     ControlObjectThread *m_pControlObjectLeftBeatLoop, *m_pControlObjectRightBeatLoop;
     ControlObjectThread *m_pControlObjectLeftVuMeter,  *m_pControlObjectRightVuMeter;
     QString m_qMapping;
@@ -109,7 +115,7 @@ protected:
 
     // Various states maintained locally in this object:
     int m_iLeftFxMode, m_iRightFxMode;
-    bool m_bPlayLeft, m_bPlayRight, m_bCueLeft, m_bCueRight, m_bLoopLeft, m_bLoopRight, 
+    bool m_bPlayLeft, m_bPlayRight, m_bCueLeft, m_bCueRight, m_bLoopLeft, m_bLoopRight,
          m_bMasterTempoLeft, m_bMasterTempoRight, m_bHeadphoneLeft, m_bHeadphoneRight,
          m_bSyncLeft, m_bSyncRight;
 
