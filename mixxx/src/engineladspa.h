@@ -15,8 +15,7 @@
 #include "ladspainstance.h"
 #include "ladspaplugin.h"
 
-#include <Q3PtrList>
-#include <Q3PtrVector>
+#include <Qt3Support>
 
 class ControlPotmeter;
 class LADSPAControl;

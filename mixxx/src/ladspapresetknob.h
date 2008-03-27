@@ -10,9 +10,8 @@
 #ifndef LADSPAPRESETKNOB_H
 #define LADSPAPRESETKNOB_H
 
+#include <QtCore>
 #include <Q3PtrVector>
-#include <Q3ValueVector>
-#include <QString>
 
 #include <ladspa.h>
 
@@ -23,7 +22,7 @@ struct LADSPAPortConnection
     unsigned long plugin, port;
 };
 
-typedef Q3ValueVector<LADSPAPortConnection> LADSPAPortConnectionVector;
+typedef QVector<LADSPAPortConnection> LADSPAPortConnectionVector;
 
 class LADSPAPresetKnob
 {

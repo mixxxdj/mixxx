@@ -10,13 +10,14 @@
 #ifndef LADSPALIBRARY_H
 #define LADSPALIBRARY_H
 
-#include <ladspaplugin.h>
 
+
+#include <QtCore>
 #include <qlibrary.h>
 #include <q3ptrlist.h>
-#include <qstring.h>
-
 #include <ladspa.h>
+
+#include "ladspaplugin.h"
 
 class LADSPALibrary
 {

@@ -7,7 +7,8 @@
 *                                                                         *
 ***************************************************************************/
 
-#include <ladspainstance.h>
+#include <QtCore>
+#include "ladspainstance.h"
 
 ControlObject * LADSPAInstance::m_pControlObjectSampleRate = NULL;
 

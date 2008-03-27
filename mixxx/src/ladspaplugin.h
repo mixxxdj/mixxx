@@ -10,12 +10,13 @@
 #ifndef LADSPAPLUGIN_H
 #define LADSPAPLUGIN_H
 
+#include <QtCore>
 #include <q3ptrlist.h>
 #include <q3ptrvector.h>
 
 #include <ladspa.h>
 
-#include <ladspainstance.h>
+#include "ladspainstance.h"
 
 class LADSPAPlugin
 {

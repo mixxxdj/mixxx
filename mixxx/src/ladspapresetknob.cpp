@@ -7,10 +7,10 @@
 *                                                                         *
 ***************************************************************************/
 
-#include <ladspapresetknob.h>
+#include "ladspapresetknob.h"
 
-#include <QDomElement>
-#include <QDomNodeList>
+#include <QtCore>
+#include <QtXml>
 
 LADSPAPresetKnob::LADSPAPresetKnob()
 {

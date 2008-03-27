@@ -10,9 +10,9 @@
 #ifndef LADSPAPRESETINSTANCE_H
 #define LADSPAPRESETINSTANCE_H
 
-#include <engineladspa.h>
-#include <ladspaplugin.h>
-#include <ladspainstance.h>
+#include "engineladspa.h"
+#include "ladspaplugin.h"
+#include "ladspainstance.h"
 
 #include <Q3PtrVector>
 

@@ -10,6 +10,7 @@
 #ifndef LADSPAINSTANCE_H
 #define LADSPAINSTANCE_H
 
+#include <QtCore>
 #include <Q3PtrList>
 #include <Q3PtrVector>
 

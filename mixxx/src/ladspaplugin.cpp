@@ -7,10 +7,10 @@
 *                                                                         *
 ***************************************************************************/
 
-#include <ladspaplugin.h>
-
-#include <ladspainstancestereo.h>
-#include <ladspainstancemono.h>
+#include <QtCore>
+#include "ladspaplugin.h"
+#include "ladspainstancestereo.h"
+#include "ladspainstancemono.h"
 
 LADSPAPlugin::LADSPAPlugin(const LADSPA_Descriptor * descriptor)
 {

@@ -12,8 +12,8 @@
 
 #include <Q3PtrVector>
 
-#include <ladspaplugin.h>
-#include <ladspapresetknob.h>
+#include "ladspaplugin.h"
+#include "ladspapresetknob.h"
 
 class QDomElement;
 
