@@ -1129,10 +1129,9 @@ void Track::slotLoadSelectedTrackCh1(double v)
     QModelIndex index;
     TrackInfoObject *pTrack;
     // Only load on key presses and if we're not in browse mode
-    if (v && m_pView->m_pTrackTableView->m_pTable)
-    {
+    if (v && m_pView->m_pTrackTableView->m_pTable) {
         // Fetch the currently selected track
-        index = m_pView->m_pTrackTableView->currentIndex();
+        index = m_pView->m_pTrackTableView->m_pSearchFilter->mapToSource(m_pView->m_pTrackTableView->currentIndex());
         pTrack = m_pView->m_pTrackTableView->m_pTable->m_pTrackPlaylist->getTrackAt(index.row());
 	// If there is one, load it
 	if (pTrack) slotLoadPlayer1(pTrack);
@@ -1146,7 +1145,7 @@ void Track::slotLoadSelectedTrackCh2(double v)
     // Only load on key presses and if we're not in browse mode
     if (v && m_pView->m_pTrackTableView->m_pTable) {
         // Fetch the currently selected track
-        index = m_pView->m_pTrackTableView->currentIndex();
+        index = m_pView->m_pTrackTableView->m_pSearchFilter->mapToSource(m_pView->m_pTrackTableView->currentIndex());
         pTrack = m_pView->m_pTrackTableView->m_pTable->m_pTrackPlaylist->getTrackAt(index.row());
 	// If there is one, load it
         if (pTrack) slotLoadPlayer2(pTrack);
