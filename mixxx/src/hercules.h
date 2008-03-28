@@ -88,6 +88,7 @@ public:
 
     ControlObjectThread *m_pControlObjectUp, *m_pControlObjectDown;
     ControlObjectThread *m_pControlObjectLoadDeckA, *m_pControlObjectLoadDeckB;
+    ControlObjectThread *m_pControlObjectScratch;
 
 protected:
     /** Change jog mode */
