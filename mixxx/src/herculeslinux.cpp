@@ -348,6 +348,7 @@ void HerculesLinux::consoleEvent(int first, int second) {
         case GAIN_A: sendEvent(magic, m_pControlObjectGainA); break;
         case GAIN_B: sendEvent(magic, m_pControlObjectGainB); break;
         case MAIN_VOL: sendEvent(magic, m_pControlObjectMainVolume); break;
+	case SCRATCH: sendEvent(true, m_pControlObjectScratch); break;
         case LEFT_KILL_HIGH: sendButtonEvent(!m_pControlObjectLeftKillHigh->get(),m_pControlObjectLeftKillHigh); break;
         case RIGHT_KILL_HIGH: sendButtonEvent(!m_pControlObjectRightKillHigh->get(),m_pControlObjectRightKillHigh); break;
         case LEFT_KILL_MID: sendButtonEvent(!m_pControlObjectLeftKillMid->get(),m_pControlObjectLeftKillMid); break;
