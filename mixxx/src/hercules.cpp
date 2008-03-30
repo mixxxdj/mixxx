@@ -186,7 +186,6 @@ void Hercules::selectMapping(QString qMapping)
     m_pControlObjectRightKillMid = new ControlObjectThread(ControlObject::getControl(ConfigKey("[Channel2]","filterMidKill")));
     m_pControlObjectLeftKillBass = new ControlObjectThread(ControlObject::getControl(ConfigKey("[Channel1]","filterLowKill")));
     m_pControlObjectRightKillBass = new ControlObjectThread(ControlObject::getControl(ConfigKey("[Channel2]","filterLowKill")));
-    m_pControlObjectScratch = new ControlObjectThread(ControlObject::getControl(ConfigKey("[Master]","scratch")));
 }
 
 void Hercules::changeJogMode(int iLeftFxMode, int iRightFxMode)
