@@ -68,7 +68,14 @@ MixxxApp::MixxxApp(QApplication * a, struct CmdlineArgs args, QSplashScreen * pS
     #ifdef BUILD_REV
       buildRevision = BUILD_REV;
     #endif
-    if (buildRevision.trimmed().length() > 0) buildRevision = "(svn " + buildRevision + "; built on: " + __DATE__ + " @ " + __TIME__ + ") ";
+    #include ".mixxx_flags.svn" // #define BUILD_FLAGS = "<flags>"
+    QString buildFlags = "";
+    #ifdef BUILD_FLAGS
+      buildFlags = BUILD_FLAGS;
+    #endif
+    if (buildRevision.trimmed().length() > 0)
+        if (buildFlags.trimmed().length() > 0) buildRevision = "(svn " + buildRevision + "; built on: " + __DATE__ + " @ " + __TIME__ + "; flags: " + buildFlags.trimmed() + ") ";
+        else buildRevision = "(svn " + buildRevision + "; built on: " + __DATE__ + " @ " + __TIME__ + ") ";
 
     qDebug() << "Mixxx" << VERSION << buildRevision << "is starting...";
     setWindowTitle(tr("Mixxx " VERSION));

@@ -522,6 +522,7 @@ elif platform == 'win32':
 
 #Parse command-line build flags
 
+build_flags = ""
 
 print "\nFeatures Summary:\n================"
 
@@ -548,6 +549,7 @@ if int(flags_djconsole) == 0:
 	print "libdjconsole support... disabled"
 else:
 	print "libdjconsole support... enabled"
+	build_flags += 'djconsole '
 
 #High quality EQs
 flags_hifieq = ARGUMENTS.get('hifieq', 1)
@@ -556,6 +558,7 @@ if int(flags_hifieq) == 0:
 	print "High quality EQs... disabled"
 else:
 	print "High quality EQs... enabled"
+	build_flags += 'hifieq '
 
 #Case Metrics
 flags_cmetrics = ARGUMENTS.get('cmetrics', 0)
@@ -570,6 +573,7 @@ if int(flags_cmetrics):
 	    env.Append(CPPPATH='../../lib/cmetrics')
 	    sources += SConscript('../../lib/cmetrics/SConscript')
 	print "Case Metrics profiling... enabled"
+	build_flags += 'cmetrics '
 else:
 	print "Case Metrics profiling... disabled"
 
@@ -583,6 +587,7 @@ if int(flags_shoutcast):
 	sources += Split(""" dlgprefshoutcast.cpp engineshoutcast.cpp encodervorbis.cpp """ )
 	env.Uic4('dlgprefshoutcastdlg.ui')
 	print "Shoutcast support... enabled"
+	build_flags += 'shoutcast '
 else:
 	print "Shoutcast support... disabled"
 
@@ -593,6 +598,7 @@ if int(flags_ladspa):
 	env.Append(CXXFLAGS = '-D__LADSPA__')
 	sources += Split("""engineladspa.cpp ladspaloader.cpp ladspalibrary.cpp ladspaplugin.cpp ladspainstance.cpp ladspacontrol.cpp ladspainstancestereo.cpp ladspainstancemono.cpp ladspaview.cpp ladspapreset.cpp ladspapresetmanager.cpp ladspapresetknob.cpp ladspapresetinstance.cpp dlgladspa.cpp""")
 	print "LADSPA support... enabled"
+	build_flags += 'ladspa '
 else:
 	print "LADSPA support... disabled"
 
@@ -610,6 +616,7 @@ if int(flags_vinylcontrol):
 	env.Append(CPPPATH='../../lib/scratchlib')
 	sources += Split("""../../lib/scratchlib/DAnalyse.cpp """)
 	print "Vinyl Control... enabled"
+	build_flags += 'vinylcontrol '
 else:
 	print "Vinyl Control... disabled"
 
@@ -618,6 +625,7 @@ if int(flags_msvcdebug) and platform == 'win32':
 	env.Append(LINKFLAGS = '/DEBUG')
 	env.Append(CXXFLAGS = '/ZI')
 	print "MSVC Debugging... enabled"
+	build_flags += 'msvcdebug '
 else:
 	print "MSVC Debugging... disabled"
 
@@ -628,6 +636,7 @@ if int(flags_script):
 	else:
 		env.Append(LIBS = 'QtScript')
 	print "SuperCoolAwesomeScript (name contest pending)... enabled"
+	build_flags += 'script '
 	sources += Split("""script/scriptengine.cpp script/scriptcontrolqueue.cpp
 			script/scriptstudio.cpp script/scriptrecorder.cpp
 			script/playinterface.cpp script/macro.cpp
@@ -659,6 +668,7 @@ if int(flags_optimize):
 			env.Append(LINKFLAGS = '/LTCG:STATUS')
 	else:
 		print "Optimizations... enabled"
+		build_flags += 'optimize=' + str(flags_optimize) + ' '
 		if flags_optimize=='1':
 			env.Append(CXXFLAGS = '-O3')
 		elif flags_optimize=='2':
@@ -683,6 +693,7 @@ if not platform == 'win32':
 		env.Append(CCFLAGS = '-pg')
 		env.Append(LINKFLAGS = '-pg')
 		print "gprof profiling support... enabled"
+		build_flags += 'gprof '
 	else:
 		print "gprof profiling support... disabled"
 	flags_tuned = ARGUMENTS.get('tuned', 0)
@@ -692,6 +703,7 @@ if not platform == 'win32':
 			env.Append(CCFLAGS = '-march=native')
 			env.Append(LINKFLAGS = '-march=native')
 			print "Optimizing for this CPU... yes"
+			build_flags += 'tuned '
 		else:
 			print "Optimizing for this CPU... no (requires gcc >= 4.2.0)"
 	else:
@@ -702,10 +714,19 @@ flags_msvshacks = ARGUMENTS.get('msvshacks', 0)
 if int(flags_msvshacks):
 	env.Append(CXXFLAGS = '-D__MSVS2005__')
 	print "MSVS 2005 hacks... enabled"
+	build_flags += 'msvshacks '
 else:
 	print "MSVS 2005 hacks... disabled"
 
 print "================\n"
+
+### Put flags info into a file
+f = open("../.mixxx_flags.svn","w")
+try:
+	f.write('#define BUILD_FLAGS "' + build_flags + '"\n')
+finally:
+	f.close()
+
 
 #Hijack scons -h and --help
 opts = Options('custom.py')
