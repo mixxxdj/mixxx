@@ -103,7 +103,7 @@ const int MAIN_VOL = 900;
 const int BALANCE = 901;
 
 // Stubs for Herc Rmx Buttons
-const int SCRATCH = -1;
+const int SCRATCH = 601;
 const int LEFT_KILL_HIGH = 1032;
 const int LEFT_KILL_MID = 1064;
 const int LEFT_KILL_BASS = 1128;
@@ -209,13 +209,21 @@ void HerculesLinux::run() {
 		if ( l != 0 || leftJogProcessing)
 		{
 			//qDebug() << "sendEvent(" << l << ", m_pControlObjectLeftJog)";
-			sendEvent(l, m_pControlObjectLeftJog);
+			if (scratchMode) {
+				sendEvent(l, m_pControlObjectLeftScratch);
+			} else {
+				sendEvent(l, m_pControlObjectLeftJog);
+			}
 			if ( l == 0 ) leftJogProcessing = false;
 		}
 		if ( r != 0 || rightJogProcessing)
 		{
 			//qDebug() << "sendEvent(" << r << ", m_pControlObjectRightJog)";
-			sendEvent(r, m_pControlObjectRightJog);
+			if (scratchMode) {
+				sendEvent(r, m_pControlObjectRightScratch);
+			} else {
+				sendEvent(r, m_pControlObjectRightJog);
+			}
 			if ( r == 0 ) rightJogProcessing = false;
 		}
 		msleep (64);
@@ -262,6 +270,8 @@ void HerculesLinux::consoleEvent(int first, int second) {
     }
 
     //qDebug() << "x Button " << first << " = " << second;
+    // qDebug() << first << "     " << second << "    "<< ((first * 100) + second);
+
     if(first != 0) {
         bool ledIsOn = (second == 0 ? false : true);
         int led = 0;
@@ -348,7 +358,7 @@ void HerculesLinux::consoleEvent(int first, int second) {
         case GAIN_A: sendEvent(magic, m_pControlObjectGainA); break;
         case GAIN_B: sendEvent(magic, m_pControlObjectGainB); break;
         case MAIN_VOL: sendEvent(magic, m_pControlObjectMainVolume); break;
-	case SCRATCH: break; // TODO
+	case SCRATCH: scratchMode = !scratchMode; qDebug() << "scratchMode = " << scratchMode;  break;
         case LEFT_KILL_HIGH: sendButtonEvent(!m_pControlObjectLeftKillHigh->get(),m_pControlObjectLeftKillHigh); break;
         case RIGHT_KILL_HIGH: sendButtonEvent(!m_pControlObjectRightKillHigh->get(),m_pControlObjectRightKillHigh); break;
         case LEFT_KILL_MID: sendButtonEvent(!m_pControlObjectLeftKillMid->get(),m_pControlObjectLeftKillMid); break;
