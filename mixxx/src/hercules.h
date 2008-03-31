@@ -22,7 +22,7 @@
 #ifndef _MSC_VER
 /* Not MSVC, one of these:
    __MINGW32__
-   __CYGWIN__ 
+   __CYGWIN__
 */
 #include <windows.h>
 #endif
@@ -89,6 +89,8 @@ public:
     ControlObjectThread *m_pControlObjectUp, *m_pControlObjectDown;
     ControlObjectThread *m_pControlObjectLoadDeckA, *m_pControlObjectLoadDeckB;
 
+    ControlObjectThread *m_pControlObjectLeftScratch, *m_pControlObjectRightScratch;
+
 protected:
     /** Change jog mode */
     void changeJogMode(int iLeftFxMode=0, int iRightFxMode=0);
@@ -118,6 +120,8 @@ protected:
     bool m_bPlayLeft, m_bPlayRight, m_bCueLeft, m_bCueRight, m_bLoopLeft, m_bLoopRight,
          m_bMasterTempoLeft, m_bMasterTempoRight, m_bHeadphoneLeft, m_bHeadphoneRight,
          m_bSyncLeft, m_bSyncRight;
+
+    bool scratchMode;
 
     double m_dLeftVolumeOld, m_dRightVolumeOld;
     int m_iLeftVU, m_iRightVU;

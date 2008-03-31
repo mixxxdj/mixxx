@@ -41,7 +41,6 @@ Hercules::Hercules() : Input(), m_qRequestLed(5)
     m_iLeftFxMode = 0;
     m_iLeftFxMode = 0;
 
-
     m_pControlObjectLeftBtnPlay = new ControlObjectThread(ControlObject::getControl(ConfigKey("[Channel1]","play")));
     m_pControlObjectRightBtnPlay = new ControlObjectThread(ControlObject::getControl(ConfigKey("[Channel2]","play")));
     m_pControlObjectLeftBtnPlayProxy = new ControlObjectThread(ControlObject::getControl(ConfigKey("[Channel1]","play")));
@@ -70,6 +69,7 @@ Hercules::Hercules() : Input(), m_qRequestLed(5)
 
     m_pRotaryLeft = new Rotary();
     m_pRotaryRight = new Rotary();
+
 }
 
 Hercules::~Hercules()
@@ -186,6 +186,10 @@ void Hercules::selectMapping(QString qMapping)
     m_pControlObjectRightKillMid = new ControlObjectThread(ControlObject::getControl(ConfigKey("[Channel2]","filterMidKill")));
     m_pControlObjectLeftKillBass = new ControlObjectThread(ControlObject::getControl(ConfigKey("[Channel1]","filterLowKill")));
     m_pControlObjectRightKillBass = new ControlObjectThread(ControlObject::getControl(ConfigKey("[Channel2]","filterLowKill")));
+
+    scratchMode = false;
+    m_pControlObjectLeftScratch = new ControlObjectThread(ControlObject::getControl(ConfigKey("[Channel1]","scratch")));
+    m_pControlObjectRightScratch = new ControlObjectThread(ControlObject::getControl(ConfigKey("[Channel2]","scratch")));
 }
 
 void Hercules::changeJogMode(int iLeftFxMode, int iRightFxMode)
