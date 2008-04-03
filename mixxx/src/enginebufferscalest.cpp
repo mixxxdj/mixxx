@@ -27,12 +27,12 @@ using namespace soundtouch;
 
 EngineBufferScaleST::EngineBufferScaleST(ReaderExtractWave * wave) : EngineBufferScale(wave)
 {
+    m_qMutex.lock();
     m_pSoundTouch = new soundtouch::SoundTouch();
     m_bPitchIndpTimeStretch = false;
     m_dBaseRate = 1.;
     m_dTempo = 1.;
 
-    m_qMutex.lock();
     m_pSoundTouch->setChannels(2);
     m_pSoundTouch->setRate(m_dBaseRate);
     m_pSoundTouch->setTempo(m_dTempo);
@@ -164,6 +164,7 @@ CSAMPLE * EngineBufferScaleST::scale(double playpos, int buf_size, float * pBase
     // Invert wavebuffer is backwards playback
     if (m_bBackwards)
     {
+        m_qMutex.lock();
         while (m_pSoundTouch->numSamples()<(unsigned int)(buf_size/2))
         {
             int iLen = math_min(kiSoundTouchReadAheadLength, m_iReadAheadPos/2);
@@ -174,28 +175,26 @@ CSAMPLE * EngineBufferScaleST::scale(double playpos, int buf_size, float * pBase
             	buffer_back[j+1] = pBase[i+1]; //Right channel.
             	i = i - 2;
             }
-
-            m_qMutex.lock();
             m_pSoundTouch->putSamples((const SAMPLETYPE *)buffer_back, iLen);
-            m_qMutex.unlock();
             m_iReadAheadPos = (m_iReadAheadPos-iLen*2+iBaseLength)%iBaseLength;
             if (m_iReadAheadPos==0)
                 m_iReadAheadPos = iBaseLength;
         }
+        m_qMutex.unlock();
     }
 
     else
     {
+        m_qMutex.lock();
         while (m_pSoundTouch->numSamples()<(unsigned int)(buf_size/2))
         {
             int iLen = math_min(kiSoundTouchReadAheadLength,(iBaseLength-m_iReadAheadPos)/2);
-            m_qMutex.lock();
             m_pSoundTouch->putSamples((const SAMPLETYPE *)&pBase[m_iReadAheadPos], iLen);
-            m_qMutex.unlock();
             m_iReadAheadPos = (m_iReadAheadPos+iLen*2)%iBaseLength;
             if (m_iReadAheadPos==iBaseLength)
                 m_iReadAheadPos = 0;
         }
+        m_qMutex.unlock();       
     }
 
     // Calculate new playpos
