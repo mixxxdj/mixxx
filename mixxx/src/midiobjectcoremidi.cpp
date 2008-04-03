@@ -15,6 +15,7 @@
 *                                                                         *
 ***************************************************************************/
 
+#include <QtCore>
 #include "midiobjectcoremidi.h"
 
 MidiObjectCoreMidi::MidiObjectCoreMidi(QString device) : MidiObject(device)
