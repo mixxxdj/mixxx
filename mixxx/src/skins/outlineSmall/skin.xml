@@ -505,8 +505,13 @@
   </State>
   <Pos>56,50</Pos>
   <Connection>
-   <ConfigKey>[Channel1],cue_simple</ConfigKey>
+   <ConfigKey>[Channel1],cue_default</ConfigKey>
    <EmitOnDownPress>true</EmitOnDownPress>
+   <ButtonState>LeftButton</ButtonState>
+  </Connection>
+  <Connection>
+   <ConfigKey>[Channel1],cue_default</ConfigKey>
+   <EmitOnDownPress>false</EmitOnDownPress>
    <ButtonState>LeftButton</ButtonState>
   </Connection>
   <Connection>
@@ -526,8 +531,13 @@
   </State>
   <Pos>749,49</Pos>
   <Connection>
-   <ConfigKey>[Channel2],cue_simple</ConfigKey>
+   <ConfigKey>[Channel2],cue_default</ConfigKey>
    <EmitOnDownPress>true</EmitOnDownPress>
+   <ButtonState>LeftButton</ButtonState>
+  </Connection>
+  <Connection>
+   <ConfigKey>[Channel2],cue_default</ConfigKey>
+   <EmitOnDownPress>false</EmitOnDownPress>
    <ButtonState>LeftButton</ButtonState>
   </Connection>
   <Connection>

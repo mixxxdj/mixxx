@@ -138,6 +138,28 @@ DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxView * pView, MixxxApp *
     QString qSkinPath(pConfig->getValueString(ConfigKey("[Config]","Path")));
     QDir dir(qSkinPath.append("skins/"));
     dir.setFilter(QDir::Dirs);
+    
+    //
+    // Default Cue Behavior
+    //
+    
+    m_pControlCueDefault1 = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey("[Channel1]","cue_simple")));
+    m_pControlCueDefault2 = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey("[Channel2]","cue_simple")));
+    
+    // Set default value in config file and control objects, if not present
+    if (m_pConfig->getValueString(ConfigKey("[Controls]","CueDefault")).length() == 0) {
+        m_pConfig->set(ConfigKey("[Controls]","CueDefault"), ConfigValue(0));
+        m_pControlCueDefault1->slotSet(0);
+        m_pControlCueDefault1->slotSet(0);
+    }
+    
+    // Update combo box
+    ComboBoxCueDefault->addItem("CDJ Mode");
+    ComboBoxCueDefault->addItem("Simple");
+    ComboBoxCueDefault->setCurrentIndex(m_pConfig->getValueString(ConfigKey("[Controls]","CueDefault")).toInt());
+    
+    connect(ComboBoxCueDefault,   SIGNAL(activated(int)), this, SLOT(slotSetCueDefault(int)));
+    
 // #ifndef QT3_SUPPORT
 //     const QFileInfoList * list = dir.entryInfoList();
 //     if (list!=0)
@@ -311,6 +333,13 @@ void DlgPrefControls::slotSetVisuals(int)
 {
     m_pConfig->set(ConfigKey("[Controls]","Visuals"), ConfigValue(ComboBoxVisuals->currentIndex()));
     textLabel->setText(tr("Restart Mixxx before the change of visuals will take effect."));
+}
+
+void DlgPrefControls::slotSetCueDefault(int)
+{
+    m_pConfig->set(ConfigKey("[Controls]","CueDefault"), ConfigValue(ComboBoxCueDefault->currentIndex()));
+    m_pControlCueDefault1->slotSet(ComboBoxCueDefault->currentIndex());
+    m_pControlCueDefault2->slotSet(ComboBoxCueDefault->currentIndex());
 }
 
 void DlgPrefControls::slotSetScaleBpm(int)

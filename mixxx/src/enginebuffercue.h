@@ -18,8 +18,10 @@
 #define ENGINEBUFFERCUE_H
 
 #include "engineobject.h"
+#include "controlobjectthreadmain.h"
 
 class ControlObject;
+class ControlObjectThreadMain;
 class ControlPushButton;
 class EngineBuffer;
 
@@ -38,12 +40,18 @@ public slots:
     void slotControlCuePreview(double);
     void slotControlCueSimple(double);
     void slotControlPlay(double);
+    void slotControlCueDefault(double v);
+    void slotControlCueCDJ(double v);
 
 private:
     /** Controls used to manipulate the cue point */
-    ControlPushButton *buttonCueSet, *buttonCueGoto, *buttonCueGotoAndStop, *buttonCuePreview;
+    ControlPushButton *buttonCueSet, *buttonCueGoto, *buttonCueGotoAndStop, *buttonCuePreview, *buttonCueCDJ;
     /** A single control to manipulate the cue point (suggested by Thread) */
     ControlPushButton *buttonCueSimple;
+    /** Default cue control */
+    ControlPushButton *buttonCueDefault;
+    /** Cue behavior preference */
+    ControlObjectThreadMain *m_pControlCueDefault;
     /** Pointer to play button */
     ControlObject *playButton;
     /** Storage of cue point */

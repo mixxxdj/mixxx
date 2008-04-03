@@ -53,6 +53,16 @@ EngineBufferCue::EngineBufferCue(const char * group, EngineBuffer * pEngineBuffe
     buttonCuePreview = new ControlPushButton(ConfigKey(group, "cue_preview"));
     connect(buttonCuePreview, SIGNAL(valueChanged(double)), this, SLOT(slotControlCuePreview(double)));
 
+    // Cue button CDJ style
+    buttonCueCDJ = new ControlPushButton(ConfigKey(group, "cue_cdj"));
+    connect(buttonCueCDJ, SIGNAL(valueChanged(double)), this, SLOT(slotControlCueCDJ(double)));
+    
+    // Cue button generic handler
+    buttonCueDefault = new ControlPushButton(ConfigKey(group, "cue_default"));
+    connect(buttonCueDefault, SIGNAL(valueChanged(double)), this, SLOT(slotControlCueDefault(double)));
+    
+    // Cue behavior setting
+    m_pControlCueDefault = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey(group,"cue_simple")));
 }
 
 EngineBufferCue::~EngineBufferCue()
@@ -62,6 +72,9 @@ EngineBufferCue::~EngineBufferCue()
     delete buttonCueGotoAndStop;
     delete buttonCuePreview;
     delete buttonCueSimple;
+    delete buttonCueDefault;
+    delete buttonCueCDJ;
+    delete m_pControlCueDefault;
     delete cuePoint;
 }
 
@@ -159,6 +172,50 @@ void EngineBufferCue::slotControlPlay(double v)
         slotControlCueSet();
 }
 
+void EngineBufferCue::slotControlCueCDJ(double v) {
+    /* This is how CDJ cue buttons work:
+     * If pressed while playing, stop playback at go to cue.
+     * If pressed while stopped and at cue, play while pressed.
+     * If pressed while stopped and not at cue, set new cue point.
+     * TODO: If play is pressed while holding cue, the deck is now playing.
+     */
+    
+    if ((v==0. && playButton->get()==1.) || playButton->get()==1.)
+    // If we are previewing on button release, or the track is currently playing
+    // and cue is pressed
+    {
+        // Stop playing (set playbutton to stopped) and seek to cue point
+        playButton->set(0.);
+        m_pEngineBuffer->slotControlSeekAbs(cuePoint->get(), false);
+    }
+    else if (v!=0. && playButton->get()==0.)
+    // On button press, If the track is not playing and we are not previewing
+    {
+        // Get current cue for comparison
+        double cue = math_max(0.,round(m_pEngineBuffer->getAbsPlaypos()));
+        if (!even((int)cue)) cue--;
+        
+        if (cue == cuePoint->get()) {
+            // If at cue point, start playing
+            playButton->set(1.);
+        } else {
+            // Set new cue point
+            cuePoint->set(cue);
+        }
+    }
+}
+
+void EngineBufferCue::slotControlCueDefault(double v)
+{
+    // Deicde which cue implementation to call based on the user preference
+    if (m_pControlCueDefault->get() == 0) {
+        // CDJ Mode
+        slotControlCueCDJ(v);
+    } else {
+        // Simple Mode
+        slotControlCueSimple(v);
+    }
+}
 
 void EngineBufferCue::process(const CSAMPLE *, const CSAMPLE *, const int)
 {
