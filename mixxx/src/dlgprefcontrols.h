@@ -51,6 +51,7 @@ public slots:
 	void slotSetScheme(int);
 	void slotUpdateSchemes();
     void slotSetPositionDisplay(int);
+    void slotSetCueDefault(int);
     void slotApply();
 private:
     /** Pointer to ConfigObject */
@@ -59,6 +60,8 @@ private:
     ControlObjectThreadMain *m_pControlRate1, *m_pControlRate2, *m_pControlRateRange1, *m_pControlRateRange2;
     /** Pointer to ControlObjects for controlling direction of rate sliders */
     ControlObjectThreadMain *m_pControlRateDir1, *m_pControlRateDir2;
+    /** Pointer to ControlObjects for cue behavior */
+    ControlObjectThreadMain *m_pControlCueDefault1, *m_pControlCueDefault2;
     /** Pointer to MixxxView */
     MixxxView *m_pView;
 	MixxxApp *m_mixxx;
