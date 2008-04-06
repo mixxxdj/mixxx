@@ -355,7 +355,7 @@
   </State>
   <Pos>137,267</Pos>
   <Connection>
-   <ConfigKey>[Channel1],cue_simple</ConfigKey>
+   <ConfigKey>[Channel1],cue_default</ConfigKey>
    <EmitOnDownPress>true</EmitOnDownPress>
    <ButtonState>LeftButton</ButtonState>
   </Connection>
@@ -376,7 +376,7 @@
   </State>
   <Pos>832,267</Pos>
   <Connection>
-   <ConfigKey>[Channel2],cue_simple</ConfigKey>
+   <ConfigKey>[Channel2],cue_default</ConfigKey>
    <EmitOnDownPress>true</EmitOnDownPress>
    <ButtonState>LeftButton</ButtonState>
   </Connection>
