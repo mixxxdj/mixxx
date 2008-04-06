@@ -46,8 +46,8 @@ Hercules::Hercules() : Input(), m_qRequestLed(5)
     m_pControlObjectLeftBtnPlayProxy = new ControlObjectThread(ControlObject::getControl(ConfigKey("[Channel1]","play")));
     m_pControlObjectRightBtnPlayProxy = new ControlObjectThread(ControlObject::getControl(ConfigKey("[Channel2]","play")));
 
-    m_pControlObjectLeftBtnCue = new ControlObjectThread(ControlObject::getControl(ConfigKey("[Channel1]","cue_simple")));
-    m_pControlObjectRightBtnCue = new ControlObjectThread(ControlObject::getControl(ConfigKey("[Channel2]","cue_simple")));
+    m_pControlObjectLeftBtnCue = new ControlObjectThread(ControlObject::getControl(ConfigKey("[Channel1]","cue_cdj")));
+    m_pControlObjectRightBtnCue = new ControlObjectThread(ControlObject::getControl(ConfigKey("[Channel2]","cue_cdj")));
     m_pControlObjectLeftBtnLoopProxy = new ControlObjectThread(ControlObject::getControl(ConfigKey("[Channel1]","loop")));
     m_pControlObjectRightBtnLoopProxy = new ControlObjectThread(ControlObject::getControl(ConfigKey("[Channel2]","loop")));
 
@@ -173,7 +173,7 @@ void Hercules::selectMapping(QString qMapping)
     m_pControlObjectMainVolume = new ControlObjectThread(ControlObject::getControl(ConfigKey("[Master]","volume")));
     m_pControlObjectBalance = new ControlObjectThread(ControlObject::getControl(ConfigKey("[Master]","balance")));
     m_pControlObjectGainA = new ControlObjectThread(ControlObject::getControl(ConfigKey("[Channel1]","pregain")));
-
+    m_pControlObjectGainB = new ControlObjectThread(ControlObject::getControl(ConfigKey("[Channel2]","pregain")));
 
     m_pControlObjectUp = new ControlObjectThread(ControlObject::getControl(ConfigKey("[Playlist]","SelectPrevTrack")));
     m_pControlObjectDown = new ControlObjectThread(ControlObject::getControl(ConfigKey("[Playlist]","SelectNextTrack")));

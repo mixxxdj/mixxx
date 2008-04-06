@@ -39,7 +39,7 @@ class ControlObject;
 class ControlObjectThread : public QObject
 {
     Q_OBJECT
-public: 
+public:
     ControlObjectThread(ControlObject *pControlObject);
     virtual ~ControlObjectThread();
     /** Returns the value of the object */
@@ -59,6 +59,11 @@ public:
     static bool update();
     /** Called from update(); */
     void emitValueChanged();
+
+
+    // FIXME: Dangerous GED hack
+    ControlObject* getControlObject();
+
 public slots:
     /** The value is changed by the engine, and the corresponding ControlObject is updated.
       * Thread safe, blocking. */
@@ -67,7 +72,7 @@ public slots:
 	// The danger signal! This is for safety in wierd shutdown scenarios where the
 	// ControlObject dies to avoid segfaults.
 	void slotParentDead();
-    
+
 signals:
     void valueChanged(double);
 
@@ -78,11 +83,11 @@ protected:
     static QMutex m_sqMutex;
     /** Pointer to corresponding ControlObject */
     ControlObject *m_pControlObject;
-    
+
 private:
     /** Update corresponding ControlObject */
     virtual void updateControlObject();
-    
+
     /** Wait condition, used to wait for changes */
     static QWaitCondition m_sqWait;
     /** Queue used to keep changes */
