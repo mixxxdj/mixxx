@@ -320,7 +320,7 @@
   </light>
   <light>
     <group>[Channel1]</group>
-    <key>cue_simple</key>
+    <key>cue_default</key>
     <status>0xB0</status>
     <midino>0x11</midino>
     <threshold>0.5</threshold>
@@ -362,7 +362,7 @@
   </light>
   <light>
     <group>[Channel2]</group>
-    <key>cue_simple</key>
+    <key>cue_default</key>
     <status>0xB0</status>
     <midino>0x9</midino>
     <threshold>0.5</threshold>
