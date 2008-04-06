@@ -61,7 +61,7 @@
 		</control>
 		<control>
 			<group>[Channel1]</group>
-			<key>cue_simple</key>
+			<key>cue_default</key>
 			<miditype>Ctrl</miditype>
 			<midino>0x09</midino>
 			<options>
@@ -143,7 +143,7 @@
 		</control>
 		<control>
 			<group>[Channel2]</group>
-			<key>cue_simple</key>
+			<key>cue_default</key>
 			<miditype>Ctrl</miditype>
 			<midino>0x03</midino>
 			<options>

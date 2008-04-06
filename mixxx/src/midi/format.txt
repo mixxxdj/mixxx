@@ -1,1 +1,1 @@
-See http://mixxx.sourceforge.net/wiki/index.php/MidiMapping for the latest docs on the controller file format.
+See http://www.mixxx.org/wiki/doku.php/midi_controller_mapping_file_format for the latest docs on the controller file format.
