@@ -127,3 +127,6 @@ void ControlObjectThread::slotParentDead() {
     m_pControlObject = 0;
 }
 
+ControlObject* ControlObjectThread::getControlObject() {
+   return m_pControlObject;
+}
