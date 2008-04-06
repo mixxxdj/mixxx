@@ -518,7 +518,7 @@ Go to and stop (right-click)</Tooltip>
   </State>
   <Pos>51,2</Pos>
   <Connection>
-   <ConfigKey>[Channel1],cue_simple</ConfigKey>
+   <ConfigKey>[Channel1],cue_default</ConfigKey>
    <EmitOnDownPress>true</EmitOnDownPress>
    <ButtonState>LeftButton</ButtonState>
   </Connection>
@@ -541,7 +541,7 @@ Go to and stop (right-click)</Tooltip>
   </State>
   <Pos>738,2</Pos>
   <Connection>
-   <ConfigKey>[Channel2],cue_simple</ConfigKey>
+   <ConfigKey>[Channel2],cue_default</ConfigKey>
    <EmitOnDownPress>true</EmitOnDownPress>
    <ButtonState>LeftButton</ButtonState>
   </Connection>
