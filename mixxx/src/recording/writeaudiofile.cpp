@@ -96,12 +96,13 @@ void WriteAudioFile::open()
 void WriteAudioFile::write(const CSAMPLE * pIn, int iBufferSize)
 {
     Q_ASSERT(iBufferSize % 2 == 0);
+    CSAMPLE *pSamples = (CSAMPLE*) pIn;
     if(ControlObject::getControl(ConfigKey("[Master]", "Record"))->get() == RECORD_ON)
     {
         if(ready == true)
         {
 //      #ifdef SF_FORMAT_FLAC
-            sf_write_float(sf, pIn, iBufferSize);
+            sf_write_float(sf, pSamples, iBufferSize);
             //qDebug() << "writing";
 //      #endif
         }
