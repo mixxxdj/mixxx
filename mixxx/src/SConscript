@@ -272,10 +272,6 @@ if not env.GetOption('clean') and not SCons.Util.containsAny(os.sys.argv, ['-h',
 		print 'Did not find libportaudio.a, portaudio.lib, or the PortAudio-v19 development header files - exiting!'
 		Exit(1)
 
-# 	if not conf.CheckLib(['$QTDIR/lib/qt-mt','$QTDIR/lib/qt-mt3']):
-# 		print 'Did not find libqt-mt.a or libqt-mt.lib, exiting!'
-# 		Exit(1)
-
 	if not conf.CheckLib(['mad','libmad']):
 		print 'Did not find libmad.a, libmad.lib, or the libmad development header files - exiting!'
 		Exit(1)
@@ -477,19 +473,6 @@ sources += Split(""" qrc_mixxx.cc """)
 if platform == 'win32':
 	env.RES('mixxx.rc')
 	sources += Split(""" mixxx.res """)
-
-# Uic4 does not need this --> Add these uic/moc generated files to the list of stuff we need to build:
-#sources.append(Split("""uic_dlgprefsounddlg.cc 		moc_dlgprefsounddlg.cc
-#						uic_dlgprefcontrolsdlg.cc	moc_dlgprefcontrolsdlg.cc
-#						uic_dlgprefmididlg.cc		moc_dlgprefmididlg.cc
-#						uic_dlgprefplaylistdlg.cc	moc_dlgprefplaylistdlg.cc
-#						uic_dlgprefmixerdlg.cc	    moc_dlgprefmixerdlg.cc
-#						uic_dlgprefrecorddlg.cc	    moc_dlgprefrecorddlg.cc
-#					  	"""))
-
-#More complicated way of doing Uic (gives us control over the filenames, but doesn't really matter...)
-#env.Uic(target = Split('dlgprefcontrolsdlg.h .ui/dlgprefcontrolsdlg.cpp .moc/dlgprefcontrolsdlg.cpp'),
-#        source = 'dlgprefcontrolsdlg.ui')
 
 #Tell SCons to build libraries that are bundled with Mixxx
 #===================================================
@@ -738,11 +721,11 @@ opts.Add('djconsole', 'Set to 1 to enable Hercules support through libdjconsole'
 opts.Add('djconsole_legacy', 'Set to 1 to enable legacy Hercules support (for Hercules MP3 Control only, not MK2', 0)
 opts.Add('hifieq', 'Set to 1 to enable high quality EQs', 1)
 opts.Add('ladspa', '(EXPERIMENTAL) Set to 1 to enable LADSPA plugin support', 0)
-opts.Add('ffmpeg', '(EXPERIMENTAL) Set to 1 to enable FFMPEG support', 0)
+opts.Add('ffmpeg', '(BROKEN) Set to 1 to enable FFMPEG support', 0)
 opts.Add('vinylcontrol', 'Set to 1 to enable vinyl control support', 1)
 opts.Add('msvshacks', 'Set to 1 to build properly with MS Visual Studio 2005 (Express users should leave this off)', 0)
 opts.Add('cmetrics', 'Set to 1 to enable crash reporting/usage statistics via Case Metrics (This should be disabled on development builds)', 0)
-opts.Add('optimize', 'Set to 1 to enable -O3 compiler optimizations. Set to 2 to enable Pentium 4 optimizations.', 1)
+opts.Add('optimize', 'Set to 1 to enable -O3 compiler optimizations. Set to 2 to enable Pentium 4 optimizations. Set to 3 to enable Intel Core optimizations, and set to 4 to enable Intel Core 2 optimizations.', 1)
 if not platform == 'win32':
 	opts.Add('gprof', '(DEVELOPER) Set to 1 to enable profiling using gprof', 0)
 	opts.Add('tuned', '(EXPERIMENTAL) Set to 1 to optimise mixxx for this CPU', 0)
