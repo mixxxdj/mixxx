@@ -124,7 +124,7 @@ void MidiObjectWin::run()
 
 void MidiObjectWin::handleMidi(char channel, char midicontrol, char midivalue)
 {
-    qDebug() << "midi miditype: " << (channel& 240) << " ch: " << channel&15 << ", ctrl: " << midicontrol << ", val: " << midivalue;
+    qDebug() << QString("midi miditype: ") << QString(channel& 240) << QString(" ch: ") << QString(channel&15) << QString(", ctrl: ") << QString(midicontrol) << QString(", val: ") << QString(midivalue);
     send((MidiCategory)(channel & 240), channel&15, midicontrol, midivalue);
 }
 
