@@ -186,11 +186,13 @@ elif flags_qtdir.find("qt3") != -1 or flags_qtdir.find("qt/3") != -1:
 else:
 	print "QT path: " + flags_qtdir
 
+
 #Set up our environment, tell SCONS to use it's QT tools, and set some enviroment variables for it.
 #The ENV = os.environ part pulls in your existing environment variables. This is useful for awkward Linux setups
 #and on Windows where all the paths are set in the shell.
 if platform == 'linux' or platform == 'osx':
 	env = Environment(tools=['default','qt4', 'msvs'], toolpath=['../', './'], QTDIR=flags_qtdir, QT_LIB='', ENV = os.environ)
+ 	os.environ['PKG_CONFIG_PATH']=flags_qtdir+'lib/pkgconfig'  #Set the PKG_CONFIG_PATH explicitly, handles multiple QT 4.x installations 
 elif platform == 'win32':
 	#Pull in the environment's variables for win32...
 	env = Environment(tools=['default','qt4', 'msvs'], toolpath=['../', './'], QTDIR=flags_qtdir, QT_LIB='', VCINSTALLDIR = os.getenv('VCInstallDir'), ENV = os.environ)
