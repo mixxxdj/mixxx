@@ -36,8 +36,8 @@ EngineFlanger::EngineFlanger(const char * group)
 
     // Init. potmeters
     potmeterDepth = new ControlPotmeter(ConfigKey(group, "lfoDepth"), 0., 1.);
-    potmeterDelay = new ControlPotmeter(ConfigKey(group, "lfoDelay"), 50., 1000.);
-    potmeterLFOperiod = new ControlPotmeter(ConfigKey(group, "lfoPeriod"), 5000., 80000.);
+    potmeterDelay = new ControlPotmeter(ConfigKey(group, "lfoDelay"), 50., 10000.);
+    potmeterLFOperiod = new ControlPotmeter(ConfigKey(group, "lfoPeriod"), 50000., 2000000.);
 
     // Init. channel selects:
     pushbuttonFlangerCh1 =  new ControlPushButton(ConfigKey("[Channel1]", "flanger"), true);
