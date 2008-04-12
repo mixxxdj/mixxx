@@ -41,7 +41,7 @@ LADSPAPresetInstance::~LADSPAPresetInstance()
 void LADSPAPresetInstance::addPlugin(int i, LADSPAPlugin * plugin, EngineLADSPA * engine)
 {
     LADSPAInstance * instance = plugin->instantiate();
-    m_Instances.insert(i, instance);
+    m_Instances [i] = instance;
     engine->addInstance(instance);
 }
 
@@ -52,8 +52,8 @@ void LADSPAPresetInstance::addControl(int i, LADSPAPresetKnob * knob, EngineLADS
     LADSPAControl * control = new LADSPAControl;
     control->setValue(knob->getDefault());
     potmeter->set(knob->getDefault());
-    m_Keys.insert(i, key);
-    m_Connections.insert(i, engine->addControl(potmeter, control));
+    m_Keys[i] = key;
+    m_Connections[i] = engine->addControl(potmeter, control);
     LADSPAPortConnectionVector * portConnections = knob->getConnections();
     for (LADSPAPortConnectionVector::iterator connection = portConnections->begin(); connection != portConnections->end(); connection++)
     {

@@ -59,8 +59,9 @@ void EngineLADSPA::process(const CSAMPLE * pIn, const CSAMPLE * pOut, const int 
             delete con->control;
             delete con->potmeter;
             con->control = NULL;
-            m_Connections.remove(con);
-            delete con;
+	    int i = m_Connections.indexOf(con);
+	    if (i != -1)
+	      delete m_Connections.takeAt(i);
         }
         else
         {
@@ -83,8 +84,9 @@ void EngineLADSPA::process(const CSAMPLE * pIn, const CSAMPLE * pOut, const int 
         {
             LADSPAInstance * inst = *instance;
             instance++;
-            m_Instances.remove(inst);
-            delete inst;
+	    int i = m_Instances.indexOf(inst);
+	    if (i != -1)
+	      delete m_Instances.takeAt(i);
         }
         else
         {

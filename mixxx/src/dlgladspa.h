@@ -10,7 +10,7 @@
 #ifndef DLGLADSPA_H
 #define DLGLADSPA_H
 
-#include <qdialog.h>
+#include <QtGui>
 
 class MixxxApp;
 class LADSPAView;

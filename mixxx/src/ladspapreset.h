@@ -10,7 +10,8 @@
 #ifndef LADSPAPRESET_H
 #define LADSPAPRESET_H
 
-#include <Q3PtrVector>
+#include <QtCore>
+#include <QtXml>
 
 #include "ladspaplugin.h"
 #include "ladspapresetknob.h"
@@ -36,6 +37,6 @@ private:
     LADSPAPresetKnobVector m_Knobs;
 };
 
-typedef Q3PtrVector<LADSPAPreset> LADSPAPresetVector;
+typedef QVector<LADSPAPreset *> LADSPAPresetVector;
 
 #endif

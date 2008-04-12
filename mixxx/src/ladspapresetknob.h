@@ -11,7 +11,7 @@
 #define LADSPAPRESETKNOB_H
 
 #include <QtCore>
-#include <Q3PtrVector>
+#include <QtXml>
 
 #include <ladspa.h>
 
@@ -43,6 +43,6 @@ private:
     LADSPA_Data m_fMin, m_fMax, m_fDefault;
 };
 
-typedef Q3PtrVector<LADSPAPresetKnob> LADSPAPresetKnobVector;
+typedef QVector<LADSPAPresetKnob *> LADSPAPresetKnobVector;
 
 #endif

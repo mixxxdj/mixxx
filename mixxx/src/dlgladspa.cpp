@@ -13,7 +13,7 @@
 
 DlgLADSPA::DlgLADSPA(MixxxApp * mixxx) : QDialog(mixxx, "")
 {
-    setCaption("LADSPA");
+    setWindowTitle("LADSPA");
     resize(580, 280);
 
     m_pView = new LADSPAView(this);
