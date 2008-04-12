@@ -153,6 +153,8 @@ HerculesLinux::HerculesLinux() : Hercules() {
     m_dJogLeftOld = -1;
     m_dJogRightOld = -1;
 
+    jogLibraryScrolling = false;
+
     m_bHeadphoneLeft = false;
     m_bHeadphoneRight = false;
 
@@ -231,6 +233,17 @@ void HerculesLinux::run() {
         } else {
             r = m_pRotaryRight->filter(m_iJogRight);
         }
+
+        if (jogLibraryScrolling && (l != 0 || r != 0)) {
+            if (l+r > 0) {
+               sendButtonEvent(1, m_pControlObjectDown);      
+            } else if (l+r < 0) {
+               sendButtonEvent(1, m_pControlObjectUp);
+            }
+            l = 0; r = 0;
+            leftJogProcessing = false; rightJogProcessing = false;
+        }
+
         if ( l != 0 || leftJogProcessing) {
             //qDebug() << "sendEvent(" << l << ", m_pControlObjectLeftJog)";
             if (scratchMode) {
@@ -315,6 +328,10 @@ void HerculesLinux::consoleEvent(int first, int second) {
         // Buttons - Special Cases
         if (buttonPressed) {
             switch(first) {
+                case UP:
+                case DOWN:
+                case LEFT:
+                case RIGHT: jogLibraryScrolling = true; break;
                 case SCRATCH:                     //TODO: move this into "Master" controlObject
                     scratchMode = !scratchMode;
                     qDebug() << "scratchMode = " << scratchMode;
@@ -329,6 +346,13 @@ void HerculesLinux::consoleEvent(int first, int second) {
                 case RIGHT_3: m_pRotaryRight->setCalibration(64); break;
                 //                case RIGHT_MONITOR: sendButtonEvent(m_bHeadphoneLeft = false, m_pControlObjectLeftBtnHeadphone); break; // m_bHeadphoneRight = !m_bHeadphoneRight; break;
                 //                case LEFT_MONITOR: sendButtonEvent(m_bHeadphoneRight = false, m_pControlObjectRightBtnHeadphone); break; // m_bHeadphoneLeft = !m_bHeadphoneLeft; break;
+            }
+        } else {
+            switch(first) {
+                case UP:
+                case DOWN:
+                case LEFT:
+                case RIGHT: jogLibraryScrolling = false; break;
             }
         }
     } else { // Not a button

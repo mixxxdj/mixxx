@@ -162,6 +162,7 @@ protected:
     int m_iPitchOffsetLeft, m_iPitchOffsetRight;
     int m_iPitchLeft, m_iPitchRight;
 
+    bool jogLibraryScrolling;
 
     double m_dJogLeftOld, m_dJogRightOld;
 
