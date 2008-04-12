@@ -11,8 +11,6 @@
 #define LADSPAPLUGIN_H
 
 #include <QtCore>
-#include <q3ptrlist.h>
-#include <q3ptrvector.h>
 
 #include <ladspa.h>
 
@@ -31,7 +29,7 @@ private:
     const LADSPA_Descriptor * m_pDescriptor;
 };
 
-typedef Q3PtrList<LADSPAPlugin> LADSPAPluginList;
-typedef Q3PtrVector<LADSPAPlugin> LADSPAPluginVector;
+typedef QList<LADSPAPlugin *> LADSPAPluginList;
+typedef QVector<LADSPAPlugin *> LADSPAPluginVector;
 
 #endif

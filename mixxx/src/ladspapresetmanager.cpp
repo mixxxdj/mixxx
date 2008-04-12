@@ -40,7 +40,7 @@ LADSPAPresetManager::LADSPAPresetManager()
         file.close();
 
         LADSPAPreset * preset = new LADSPAPreset(document.documentElement(), loader);
-        m_Presets.insert(m_iPresetCount, preset);
+        m_Presets [m_iPresetCount] = preset;
         m_iPresetCount++;
     }
 }

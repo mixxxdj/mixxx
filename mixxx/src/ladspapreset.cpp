@@ -14,8 +14,6 @@
 
 #include <QtCore>
 #include <QtXml>
-#include <QDomElement>
-#include <QDomNodeList>
 
 LADSPAPreset::LADSPAPreset()
 {
@@ -27,6 +25,7 @@ LADSPAPreset::LADSPAPreset(QDomElement element, LADSPALoader * loader)
 
     QDomNodeList pluginNodeList = element.elementsByTagName(QString("Plugin"));
     m_Plugins.resize(pluginNodeList.count());
+    int j = 0;
     for (int i = 0; i < pluginNodeList.count(); i++)
     {
         QDomElement pluginElement = pluginNodeList.item(i).toElement();
@@ -35,8 +34,10 @@ LADSPAPreset::LADSPAPreset(QDomElement element, LADSPALoader * loader)
             continue;
         }
         LADSPAPlugin * plugin = loader->getByLabel(pluginElement.text().toAscii().constData());
-        m_Plugins.insert(i, plugin);
+        m_Plugins[j] = plugin;
+	j++;
     }
+    m_Plugins.resize(j);
 
     QDomNodeList knobNodeList = element.elementsByTagName(QString("Knob"));
     m_Knobs.resize(knobNodeList.count());
@@ -44,7 +45,7 @@ LADSPAPreset::LADSPAPreset(QDomElement element, LADSPALoader * loader)
     {
         QDomElement knobElement = knobNodeList.item(i).toElement();
         LADSPAPresetKnob * knob = new LADSPAPresetKnob(knobElement);
-        m_Knobs.insert(i, knob);
+        m_Knobs[i] = knob;
     }
 }
 
@@ -58,12 +59,12 @@ LADSPAPresetInstance * LADSPAPreset::instantiate()
 
     EngineLADSPA * engine = EngineLADSPA::getEngine();
 
-    for (unsigned int i = 0; i < m_Plugins.count(); i++)
+    for (int i = 0; i < m_Plugins.count(); i++)
     {
         instance->addPlugin(i, m_Plugins[i], engine);
     }
 
-    for (unsigned int i = 0; i < m_Knobs.count(); i++)
+    for (int i = 0; i < m_Knobs.count(); i++)
     {
         instance->addControl(i, m_Knobs[i], engine);
     }

@@ -11,7 +11,6 @@
 #define LADSPAVIEW_H
 
 #include <QtCore>
-#include <Qt3Support>
 #include <QtGui>
 
 #include "configobject.h"
@@ -25,7 +24,7 @@ class LADSPAPresetManager;
 class LADSPAPreset;
 class LADSPAPresetInstance;
 
-typedef Q3PtrVector<WKnob> WKnobVector;
+typedef QVector<WKnob *> WKnobVector;
 
 class LADSPAPresetWidget : public QWidget
 {
@@ -42,7 +41,7 @@ private:
     WKnobVector m_Knobs;
 };
 
-typedef Q3PtrVector<LADSPAPresetWidget> LADSPAPresetWidgetVector;
+typedef QVector<LADSPAPresetWidget *> LADSPAPresetWidgetVector;
 
 class LADSPAView : public QWidget
 {

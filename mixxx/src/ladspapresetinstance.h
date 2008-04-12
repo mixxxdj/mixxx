@@ -14,12 +14,10 @@
 #include "ladspaplugin.h"
 #include "ladspainstance.h"
 
-#include <Q3PtrVector>
-
 class ControlPotmeter;
 class LADSPAPresetKnob;
 
-typedef Q3PtrVector<ConfigKey> ConfigKeyVector;
+typedef QVector<ConfigKey *> ConfigKeyVector;
 
 class LADSPAPresetInstance
 {

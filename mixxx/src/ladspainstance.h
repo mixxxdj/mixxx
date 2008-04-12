@@ -11,8 +11,6 @@
 #define LADSPAINSTANCE_H
 
 #include <QtCore>
-#include <Q3PtrList>
-#include <Q3PtrVector>
 
 #include <ladspa.h>
 
@@ -39,7 +37,7 @@ private:
     static ControlObject *m_pControlObjectSampleRate;
 };
 
-typedef Q3PtrList<LADSPAInstance> LADSPAInstanceList;
-typedef Q3PtrVector<LADSPAInstance> LADSPAInstanceVector;
+typedef QList<LADSPAInstance *> LADSPAInstanceList;
+typedef QVector<LADSPAInstance *> LADSPAInstanceVector;
 
 #endif

@@ -11,7 +11,6 @@
 #define LADSPAINSTANCESTEREO_H
 
 #include <QtCore>
-#include <q3ptrlist.h>
 
 #include <ladspa.h>
 

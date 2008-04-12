@@ -15,8 +15,6 @@
 #include "ladspainstance.h"
 #include "ladspaplugin.h"
 
-#include <Qt3Support>
-
 class ControlPotmeter;
 class LADSPAControl;
 class EngineLADSPA;
@@ -28,8 +26,8 @@ struct EngineLADSPAControlConnection
     bool remove;
 };
 
-typedef Q3PtrList<EngineLADSPAControlConnection> EngineLADSPAControlConnectionList;
-typedef Q3PtrVector<EngineLADSPAControlConnection> EngineLADSPAControlConnectionVector;
+typedef QList<EngineLADSPAControlConnection *> EngineLADSPAControlConnectionList;
+typedef QVector<EngineLADSPAControlConnection *> EngineLADSPAControlConnectionVector;
 
 class EngineLADSPA : public EngineObject 
 {

@@ -66,10 +66,10 @@ LADSPALoader::LADSPALoader()
             m_Plugins.resize(m_PluginCount + library->pluginCount());
 
             // add each plugin in the library to the vector of all plugins
-            for (LADSPAPluginList::iterator plugin = plugins->begin(); plugin != plugins->end(); plugin++)
+            for (LADSPAPluginList::const_iterator plugin = plugins->begin(); plugin != plugins->end(); plugin++)
             {
                 m_PluginCount++;
-                m_Plugins.insert(m_PluginCount - 1, *plugin);
+                m_Plugins[m_PluginCount - 1] = *plugin;
             }
         }
     }
