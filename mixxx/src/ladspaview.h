@@ -24,25 +24,6 @@ class LADSPAPresetManager;
 class LADSPAPreset;
 class LADSPAPresetInstance;
 
-typedef QVector<WKnob *> WKnobVector;
-
-class LADSPAPresetWidget : public QWidget
-{
-    Q_OBJECT
-
-public:
-    LADSPAPresetWidget(QWidget *parent, LADSPAPreset *preset, QDomNode node);
-    ~LADSPAPresetWidget();
-
-    void addKnob(int i, ConfigKey key, QDomNode node);
-
-private:
-    LADSPAPresetInstance * m_pInstance;
-    WKnobVector m_Knobs;
-};
-
-typedef QVector<LADSPAPresetWidget *> LADSPAPresetWidgetVector;
-
 class LADSPAView : public QWidget
 {
     Q_OBJECT
@@ -51,20 +32,10 @@ public:
     LADSPAView(QWidget *parent);
     ~LADSPAView();
 
-public slots:
-    void slotSelect();
-
 private:
     QListWidget * m_pPresetList;
-    int m_iHeight;
-    int m_iWidth;
-    int m_iListWidth;
-    int m_iScrollAreaWidth;
     LADSPAPresetManager * m_pPresetManager;
-    LADSPAPresetWidget * m_pWidget;
-    QDomNode m_qKnobSkinNode;
-    QScrollArea * m_pScrollArea;
-    QWidget * m_pScrollAreaWidget;
+    QWidget * m_pSlotTable;
 };
 
 #endif

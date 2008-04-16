@@ -26,7 +26,7 @@ LADSPAPresetManager::LADSPAPresetManager()
     m_Presets.resize(files.count());
     for (QFileInfoList::iterator fileIter = files.begin(); fileIter != files.end(); fileIter++)
     {
-        qDebug() << "LADSPA: file " << (*fileIter).filePath().toAscii().constData();
+        qDebug() << "LADSPA: file " << (*fileIter).filePath();
         if ((*fileIter).isDir())
         {
             continue;

@@ -26,7 +26,7 @@ struct EngineLADSPAControlConnection
     bool remove;
 };
 
-typedef QList<EngineLADSPAControlConnection *> EngineLADSPAControlConnectionList;
+typedef QLinkedList<EngineLADSPAControlConnection *> EngineLADSPAControlConnectionLinkedList;
 typedef QVector<EngineLADSPAControlConnection *> EngineLADSPAControlConnectionVector;
 
 class EngineLADSPA : public EngineObject 
@@ -42,8 +42,8 @@ public:
     static EngineLADSPA * getEngine();
 
 private:
-    LADSPAInstanceList m_Instances;
-    EngineLADSPAControlConnectionList m_Connections;
+    LADSPAInstanceLinkedList m_Instances;
+    EngineLADSPAControlConnectionLinkedList m_Connections;
     int m_bufferSize;
     int m_monoBufferSize;
     CSAMPLE * m_pBufferLeft[2];

@@ -33,7 +33,7 @@ LADSPAPreset::LADSPAPreset(QDomElement element, LADSPALoader * loader)
         {
             continue;
         }
-        LADSPAPlugin * plugin = loader->getByLabel(pluginElement.text().toAscii().constData());
+        LADSPAPlugin * plugin = loader->getByLabel(pluginElement.text());
         m_Plugins[j] = plugin;
 	j++;
     }

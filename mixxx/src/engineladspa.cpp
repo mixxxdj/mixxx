@@ -50,23 +50,21 @@ void EngineLADSPA::process(const CSAMPLE * pIn, const CSAMPLE * pOut, const int 
         m_pBufferRight[1] = new CSAMPLE[m_monoBufferSize];
     }
 
-    for (EngineLADSPAControlConnectionList::iterator connection = m_Connections.begin(); connection != m_Connections.end();)
+    EngineLADSPAControlConnectionLinkedList::iterator connection = m_Connections.begin();
+    while (connection != m_Connections.end())
     {
         if ((*connection)->remove)
         {
-            EngineLADSPAControlConnection * con = *connection;
-            connection++;
+            EngineLADSPAControlConnection *con = *connection;
             delete con->control;
             delete con->potmeter;
             con->control = NULL;
-	    int i = m_Connections.indexOf(con);
-	    if (i != -1)
-	      delete m_Connections.takeAt(i);
+	    connection = m_Connections.erase(connection);
         }
         else
         {
             (*connection)->control->setValue((*connection)->potmeter->get());
-            connection++;
+            ++connection;
         }
     }
 
@@ -78,18 +76,13 @@ void EngineLADSPA::process(const CSAMPLE * pIn, const CSAMPLE * pOut, const int 
 
     int bufferNo = 0;
 
-    for (LADSPAInstanceList::iterator instance = m_Instances.begin(); instance != m_Instances.end();)
+    LADSPAInstanceLinkedList::iterator instance = m_Instances.begin();
+    while (instance != m_Instances.end())
     {
-        if ((*instance)->remove)
-        {
-            LADSPAInstance * inst = *instance;
-            instance++;
-	    int i = m_Instances.indexOf(inst);
-	    if (i != -1)
-	      delete m_Instances.takeAt(i);
-        }
-        else
-        {
+	if ((*instance)->remove)
+	    instance = m_Instances.erase(instance);
+	else
+	{
             if ((*instance)->isInplaceBroken())
             {
                 (*instance)->process(m_pBufferLeft[bufferNo], m_pBufferRight[bufferNo], m_pBufferLeft[1 - bufferNo], m_pBufferRight[1 - bufferNo], m_monoBufferSize);
@@ -99,7 +92,7 @@ void EngineLADSPA::process(const CSAMPLE * pIn, const CSAMPLE * pOut, const int 
             {
                 (*instance)->process(m_pBufferLeft[bufferNo], m_pBufferRight[bufferNo], m_pBufferLeft[bufferNo], m_pBufferRight[bufferNo], m_monoBufferSize);
             }
-            instance++;
+            ++instance;
         }
     }
 
