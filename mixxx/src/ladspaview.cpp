@@ -45,6 +45,23 @@ LADSPAView::LADSPAView(QWidget * parent) : QWidget(parent, "LADSPA")
     this->setFixedSize(background->width(), background->height());
     parent->setMinimumSize(background->width(), background->height());
     
+    QDomElement bgColorNode = docElement.firstChildElement("BgColor");
+    QDomElement fgColorNode = docElement.firstChildElement("FgColor");
+
+    QPalette palette;
+    QColor c(0,0,0);
+    c.setNamedColor(bgColorNode.text());
+    palette.setBrush(QPalette::Window, WSkinColor::getCorrectColor(c));
+    QColor c2(255,255,255);
+    c2.setNamedColor(fgColorNode.text());
+    palette.setBrush(foregroundRole(), WSkinColor::getCorrectColor(c2));
+    setBackgroundRole(QPalette::Window);
+    setPalette(palette);
+    setAutoFillBackground(true);
+
+    palette.setColor(QPalette::Base, WSkinColor::getCorrectColor(c));
+    palette.setColor(QPalette::Text, WSkinColor::getCorrectColor(c2));
+
     m_pPresetList = new QListWidget(this);
     m_pPresetList->setDragEnabled(true);
 
@@ -125,26 +142,10 @@ LADSPAView::LADSPAView(QWidget * parent) : QWidget(parent, "LADSPA")
     QDomElement slotElement = slotTableElement.firstChildElement("Slot");
     for (int i = 0; i < numberOfSlots; i++)
     {
-	LADSPAPresetSlot *p = new LADSPAPresetSlot(m_pSlotTable, slotElement, i, m_pPresetManager);
+	LADSPAPresetSlot *p = new LADSPAPresetSlot(m_pSlotTable, slotElement, i, m_pPresetManager, palette);
 	p->show();
     }
 
-    QDomElement bgColorNode = docElement.firstChildElement("BgColor");
-    QDomElement fgColorNode = docElement.firstChildElement("FgColor");
-
-    QPalette palette;
-    QColor c(0,0,0);
-    c.setNamedColor(bgColorNode.text());
-    palette.setBrush(QPalette::Window, WSkinColor::getCorrectColor(c));
-    QColor c2(255,255,255);
-    c2.setNamedColor(fgColorNode.text());
-    palette.setBrush(foregroundRole(), WSkinColor::getCorrectColor(c2));
-    setBackgroundRole(QPalette::Window);
-    setPalette(palette);
-    setAutoFillBackground(true);
-
-    palette.setColor(QPalette::Base, WSkinColor::getCorrectColor(c));
-    palette.setColor(QPalette::Text, WSkinColor::getCorrectColor(c2));
     m_pPresetList->setBackgroundRole(QPalette::Window);
     m_pPresetList->setPalette(palette);
     m_pPresetList->setAutoFillBackground(true);
