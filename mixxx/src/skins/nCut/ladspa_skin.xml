@@ -55,13 +55,14 @@
 
    <Label>
     <Pos>10,10</Pos>
+    <Width>250</Width>
    </Label>
 
    <Knob>
     <Tooltip>A knob</Tooltip>
     <NumberStates>13</NumberStates>
     <Path>poti_%1.png</Path>
-    <Pos>10,30</Pos>
+    <Pos>20,30</Pos>
     <Spacing>20,0</Spacing>
     <Connection>
      <ConfigKey>[LADSPA],None</ConfigKey>
