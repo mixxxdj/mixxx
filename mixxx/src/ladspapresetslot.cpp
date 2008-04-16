@@ -22,9 +22,10 @@
 #include "configobject.h"
 #include "controlpushbutton.h"
 
-LADSPAPresetSlot::LADSPAPresetSlot(QWidget *parent, QDomElement element, int slot, LADSPAPresetManager *presetManager) : QWidget(parent)
+LADSPAPresetSlot::LADSPAPresetSlot(QWidget *parent, QDomElement element, int slot, LADSPAPresetManager *presetManager, QPalette palette) : QWidget(parent)
 {
     m_pPresetManager = presetManager;
+    m_qPalette = palette;
 
     setAcceptDrops(true);
 
@@ -110,6 +111,8 @@ LADSPAPresetSlot::LADSPAPresetSlot(QWidget *parent, QDomElement element, int slo
     }
     m_pLabel->move(x, y);
 
+    m_pLabel->setPalette(palette);
+
     m_qKnobElement = element.firstChildElement("Knob");
     m_pPresetInstance = NULL;
 
@@ -125,7 +128,10 @@ LADSPAPresetSlot::~LADSPAPresetSlot()
 void LADSPAPresetSlot::dragEnterEvent(QDragEnterEvent *event)
 {
     if (event->mimeData()->hasFormat("application/x-qabstractitemmodeldatalist"))
-	event->acceptProposedAction();
+    {
+	event->setDropAction(Qt::CopyAction);
+	event->accept();
+    }
 }
 
 void LADSPAPresetSlot::dropEvent(QDropEvent * event)
@@ -139,7 +145,8 @@ void LADSPAPresetSlot::dropEvent(QDropEvent * event)
 	setPreset(m_pPresetManager->getPreset(row));
     }
 
-    event->acceptProposedAction();
+    event->setDropAction(Qt::CopyAction);
+    event->accept();
 }
 
 void LADSPAPresetSlot::setPreset(LADSPAPreset *preset)
@@ -219,8 +226,8 @@ void LADSPAPresetSlot::addKnob(int i)
     QLabel * label = new QLabel(labelString, this);
     m_Labels.insert(i, label);
     label->show();
-
     label->move(x + i * (knob->width() + spacingWidth), y + i * spacingHeight + knob->height());
+    label->setPalette(m_qPalette);
 }
 
 void LADSPAPresetSlot::slotRemove()

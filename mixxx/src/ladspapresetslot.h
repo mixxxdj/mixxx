@@ -30,7 +30,7 @@ class LADSPAPresetSlot : public QWidget
     Q_OBJECT
 
 public:
-    LADSPAPresetSlot(QWidget *parent, QDomElement element, int slot, LADSPAPresetManager *presetManager);
+    LADSPAPresetSlot(QWidget *parent, QDomElement element, int slot, LADSPAPresetManager *presetManager, QPalette m_qPalette);
     ~LADSPAPresetSlot();
 
     void dragEnterEvent(QDragEnterEvent *event);
@@ -49,6 +49,7 @@ private:
     WKnobVector m_Knobs;
     QLabelVector m_Labels;
     int m_iKnobCount;
+    QPalette m_qPalette;
 
     void setPreset(LADSPAPreset *preset);
     void unsetPreset();
