@@ -96,7 +96,8 @@ LADSPAPresetSlot::LADSPAPresetSlot(QWidget *parent, QDomElement element, int slo
 
     QDomElement labelElement = element.firstChildElement("Label");
     m_pLabel = new QLabel(this);
-    m_pLabel->setText("Drag a preset from the list and drop it here");
+    m_pLabel->setText("Drag a preset from the list & drop it here");
+
     posElement = labelElement.firstChildElement("Pos");
     pos = posElement.text();
     x = pos.left(pos.indexOf(",")).toInt();
@@ -110,6 +111,13 @@ LADSPAPresetSlot::LADSPAPresetSlot(QWidget *parent, QDomElement element, int slo
 	y = this->height() + y;
     }
     m_pLabel->move(x, y);
+
+    QDomElement widthElement = labelElement.firstChildElement("Width");
+    if (!(widthElement.isNull()))
+    {
+	width = widthElement.text().toInt();
+	m_pLabel->setMaximumWidth(width);
+    }
 
     m_pLabel->setPalette(palette);
 
@@ -170,7 +178,7 @@ void LADSPAPresetSlot::setPreset(LADSPAPreset *preset)
 
 void LADSPAPresetSlot::unsetPreset()
 {
-    m_pLabel->setText("Drag a preset from the list and drop it here");
+    m_pLabel->setText("Drag a preset from the list & drop it here");
     m_pRemoveButton->hide();
 
     delete m_pPresetInstance;
@@ -213,20 +221,24 @@ void LADSPAPresetSlot::addKnob(int i)
     int spacingHeight = spacing.mid(spacing.indexOf(",") + 1).toInt();    
     knob->move(x + i * (knob->width() + spacingWidth), y + i * spacingHeight);
 
-    QString labelString;
-    if (key.item.length() > 9)
-    {
-        labelString = key.item.left(7);
-        labelString.append("...");
-    }
-    else
-    {
-        labelString = key.item;
-    }
-    QLabel * label = new QLabel(labelString, this);
-    m_Labels.insert(i, label);
+    int length = key.item.length();
+    QLabel * label = new QLabel(key.item, this);
+    label->setMaximumWidth(spacingWidth + knob->width() - 4);
     label->show();
-    label->move(x + i * (knob->width() + spacingWidth), y + i * spacingHeight + knob->height());
+    /*while (label->width() >= spacingWidth + knob->width() - 5)
+    {
+	qDebug() << label->width() << ", " << length << ", " << spacingWidth << ", " << knob->width(); 
+	if (length > 10)
+	    length = 10;
+	length -= 2;
+	if (length <= 1)
+	    break;
+	label->setText(key.item.left(length) + "...");
+	label->updateGeometry();
+    }*/
+    m_Labels.insert(i, label);
+    x += knob->width() / 2 - label->width() / 2;
+    label->move(x + i * (knob->width() + spacingWidth), y + i * spacingHeight + knob->height() + 1);
     label->setPalette(m_qPalette);
 }
 
