@@ -38,6 +38,7 @@ private:
 };
 
 typedef QList<LADSPAInstance *> LADSPAInstanceList;
+typedef QLinkedList<LADSPAInstance *> LADSPAInstanceLinkedList;
 typedef QVector<LADSPAInstance *> LADSPAInstanceVector;
 
 #endif

@@ -14,142 +14,143 @@
 
 #include "ladspapresetmanager.h"
 #include "ladspapresetinstance.h"
+#include "ladspapresetslot.h"
 #include "wknob.h"
 #include "wskincolor.h"
+#include "wpixmapstore.h"
 
 LADSPAView::LADSPAView(QWidget * parent) : QWidget(parent, "LADSPA")
 {
-    m_iWidth = parent->width();
-    m_iListWidth = 150;
-    m_iScrollAreaWidth = m_iWidth - m_iListWidth;
-    m_iHeight = parent->height();
+    QDomDocument skin("LADSPASkin");
+    QFile file(WWidget::getPath("ladspa_skin.xml"));
+    if (!file.open(IO_ReadOnly))
+    {
+        qDebug() << "Could not open skin definition file: " << file.fileName();
+    }
+    if (!skin.setContent(&file))
+    {
+        qDebug() << "Error parsing skin definition file: " << file.fileName();
+    }
+    file.close();
+    QDomElement docElement = skin.documentElement();
 
-    resize(m_iWidth, m_iHeight);
+    QDomElement bgElement = docElement.firstChildElement("Background");
+    QString filename = bgElement.firstChildElement("Path").text();
+    QPixmap *background = WPixmapStore::getPixmapNoCache(WWidget::getPath(filename));
+    QLabel *bg = new QLabel(this);
 
+    bg->move(0, 0);
+    bg->setPixmap(*background);
+    bg->lower();
+    this->setFixedSize(background->width(), background->height());
+    parent->setMinimumSize(background->width(), background->height());
+    
     m_pPresetList = new QListWidget(this);
-    m_pPresetList->resize(m_iListWidth, m_iHeight);
+    m_pPresetList->setDragEnabled(true);
 
-    m_pScrollArea = new QScrollArea(this);
-    m_pScrollArea->resize(m_iScrollAreaWidth, m_iHeight);
-    m_pScrollArea->move(m_iListWidth, 0);
+    QDomElement presetListElement = docElement.firstChildElement("PresetList");
 
-    m_pScrollAreaWidget = new QWidget(m_pScrollArea);
-    m_pScrollArea->setWidget(m_pScrollAreaWidget);
+    QDomElement posElement = presetListElement.firstChildElement("Pos");
+    QString pos = posElement.text();
+    int x = pos.left(pos.indexOf(",")).toInt();
+    int y = pos.mid(pos.indexOf(",") + 1).toInt();
+    if (x < 0)
+    {
+        x = this->width() + x;
+    }
+    if (y < 0)
+    {
+	y = this->height() + y;
+    }
+    m_pPresetList->move(x, y);
 
-    m_pScrollAreaWidget->setMinimumSize(m_iScrollAreaWidth - 10, m_iHeight - 10);
-    m_pScrollAreaWidget->show();
-    m_pScrollArea->show();
+    QDomElement sizeElement = presetListElement.firstChildElement("Size");
+    QString size = sizeElement.text();
+    int width = size.left(size.indexOf(",")).toInt();
+    int height = size.mid(size.indexOf(",") + 1).toInt();
+    if (width <= 0)
+    {
+	width = this->width() + width;
+    }
+    if (height <= 0)
+    {
+	height = this->height() + height;
+    }    
+    m_pPresetList->resize(width, height);
 
     m_pPresetManager = new LADSPAPresetManager();
-
-    m_pWidget = NULL;
 
     for (unsigned int i = 0; i < m_pPresetManager->getPresetCount(); i++)
     {
         m_pPresetList->addItem(m_pPresetManager->getPreset(i)->getName());
     }
 
-    QDomDocument skin("LADSPASkin");
-    QFile file(WWidget::getPath("ladspa_skin.xml"));
-    if (!file.open(IO_ReadOnly))
-    {
-        qDebug() << "Could not open skin definition file: " << file.fileName().toLatin1().constData();
-    }
-    if (!skin.setContent(&file))
-    {
-        qDebug() << "Error parsing skin definition file: " << file.fileName().toLatin1().constData();
-    }
-    file.close();
-    QDomElement docElem = skin.documentElement();
-    m_qKnobSkinNode = docElem.firstChildElement(QString("Knob"));
+    m_pSlotTable = new QWidget(this);
 
-    if (m_qKnobSkinNode.nodeName()=="Knob")
+    QDomElement slotTableElement = docElement.firstChildElement("SlotTable");
+
+    posElement = slotTableElement.firstChildElement("Pos");
+    pos = posElement.text();
+    x = pos.left(pos.indexOf(",")).toInt();
+    y = pos.mid(pos.indexOf(",") + 1).toInt();
+    if (x < 0)
     {
-        qDebug() << "LADSPA: Skin OK";
+        x = this->width() + x;
     }
-    else
+    if (y < 0)
     {
-        qDebug() << "LADSPA: Invalid skin (node = " << m_qKnobSkinNode.nodeName().toLatin1().constData() << ")";
-        return;
+	y = this->height() + y;
+    }
+    m_pSlotTable->move(x, y);
+
+    sizeElement = slotTableElement.firstChildElement("Size");
+    size = sizeElement.text();
+    width = size.left(size.indexOf(",")).toInt();
+    height = size.mid(size.indexOf(",") + 1).toInt();
+    if (width <= 0)
+    {
+	width = this->width() + width;
+    }
+    if (height <= 0)
+    {
+	height = this->height() + height;
+    }    
+    m_pSlotTable->resize(width, height);
+
+    m_pSlotTable->show();
+
+    QDomElement slotsElement = slotTableElement.firstChildElement("Slots");
+    int numberOfSlots = slotsElement.text().toInt();
+
+    QDomElement slotElement = slotTableElement.firstChildElement("Slot");
+    for (int i = 0; i < numberOfSlots; i++)
+    {
+	LADSPAPresetSlot *p = new LADSPAPresetSlot(m_pSlotTable, slotElement, i, m_pPresetManager);
+	p->show();
     }
 
-    QDomElement bgColorNode = docElem.firstChildElement(QString("BgColor"));
-    QDomElement fgColorNode = docElem.firstChildElement(QString("FgColor"));
+    QDomElement bgColorNode = docElement.firstChildElement("BgColor");
+    QDomElement fgColorNode = docElement.firstChildElement("FgColor");
 
     QPalette palette;
-    QColor c(255,255,255);
+    QColor c(0,0,0);
     c.setNamedColor(bgColorNode.text());
     palette.setBrush(QPalette::Window, WSkinColor::getCorrectColor(c));
-    QColor c2(0,0,0);
+    QColor c2(255,255,255);
     c2.setNamedColor(fgColorNode.text());
     palette.setBrush(foregroundRole(), WSkinColor::getCorrectColor(c2));
     setBackgroundRole(QPalette::Window);
     setPalette(palette);
     setAutoFillBackground(true);
 
-    installEventFilter(this);
-
-    connect(m_pPresetList, SIGNAL(itemSelectionChanged()), this, SLOT(slotSelect()));
+    palette.setColor(QPalette::Base, WSkinColor::getCorrectColor(c));
+    palette.setColor(QPalette::Text, WSkinColor::getCorrectColor(c2));
+    m_pPresetList->setBackgroundRole(QPalette::Window);
+    m_pPresetList->setPalette(palette);
+    m_pPresetList->setAutoFillBackground(true);
+    parent->setPalette(palette);
 }
 
 LADSPAView::~LADSPAView()
 {
-}
-
-void LADSPAView::slotSelect()
-{
-    if (m_pWidget != NULL)
-    {
-        delete m_pWidget;
-    }
-    m_pWidget = new LADSPAPresetWidget(m_pScrollAreaWidget, m_pPresetManager->getPreset(m_pPresetList->currentRow()), m_qKnobSkinNode);
-    m_pWidget->show();
-    m_pScrollAreaWidget->show();
-    m_pScrollArea->show();
-}
-
-LADSPAPresetWidget::LADSPAPresetWidget(QWidget * parent, LADSPAPreset * preset, QDomNode node) : QWidget(parent)
-{
-    m_pInstance = preset->instantiate();
-    m_Knobs.resize(m_pInstance->getKnobCount());
-    for (int i = 0; i < m_pInstance->getKnobCount(); i++)
-    {
-        addKnob(i, m_pInstance->getKey(i), node);
-    }
-}
-
-LADSPAPresetWidget::~LADSPAPresetWidget()
-{
-    delete m_pInstance;
-    for (int i = 0; i < m_Knobs.count(); i++)
-    {
-        delete m_Knobs[i];
-    }
-}
-
-void LADSPAPresetWidget::addKnob(int i, ConfigKey key, QDomNode node)
-{
-    WKnob * knob = new WKnob(this);
-    m_Knobs.insert(i, knob);
-    QString keyString = key.group;
-    keyString.append(",");
-    keyString.append(key.item);
-    node.firstChildElement(QString("Connection")).firstChildElement(QString("ConfigKey")).firstChild().setNodeValue(keyString);
-    node.firstChildElement(QString("Tooltip")).firstChild().setNodeValue(key.item);
-    knob->setup(node);
-    knob->show();
-    knob->move(i * 50 + 20, 20);
-    QString labelString;
-    if (key.item.length() > 9)
-    {
-        labelString = key.item.left(7);
-        labelString.append("...");
-    }
-    else
-    {
-        labelString = key.item;
-    }
-    QLabel * label = new QLabel(labelString, this);
-    label->show();
-    label->move(i * 50 + 20, 25 + knob->height());
 }

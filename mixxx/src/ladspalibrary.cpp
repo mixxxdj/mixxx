@@ -14,9 +14,9 @@
 LADSPALibrary::LADSPALibrary(QString file)
 {
 #ifdef __LINUX__
-    //qDebug() << "LADSPA: Loading library \e[91m" << file.toAscii().constData() << "\e[0m:";
+    //qDebug() << "LADSPA: Loading library \e[91m" << file << "\e[0m:";
 #else
-    //qDebug() << "LADSPA: Loading library " << file.toAscii().constData() << ":";
+    //qDebug() << "LADSPA: Loading library " << file << ":";
 #endif
     m_pLibrary = new QLibrary(file);
     m_qFilePath = file;
