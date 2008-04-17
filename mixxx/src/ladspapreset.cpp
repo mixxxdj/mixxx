@@ -34,6 +34,12 @@ LADSPAPreset::LADSPAPreset(QDomElement element, LADSPALoader * loader)
             continue;
         }
         LADSPAPlugin * plugin = loader->getByLabel(pluginElement.text());
+	if (plugin == NULL)
+	{
+	    m_bValid = false;
+	    qWarning() << "LADSPA: Plugin " << pluginElement.text() << " not found (required by preset " << m_qName << ")";
+	    return; // ?
+	}
         m_Plugins[j] = plugin;
 	j++;
     }
@@ -47,6 +53,8 @@ LADSPAPreset::LADSPAPreset(QDomElement element, LADSPALoader * loader)
         LADSPAPresetKnob * knob = new LADSPAPresetKnob(knobElement);
         m_Knobs[i] = knob;
     }
+
+    m_bValid = true;
 }
 
 LADSPAPreset::~LADSPAPreset()
@@ -75,4 +83,9 @@ LADSPAPresetInstance * LADSPAPreset::instantiate()
 QString LADSPAPreset::getName()
 {
     return m_qName;
+}
+
+bool LADSPAPreset::isValid()
+{
+    return m_bValid;
 }

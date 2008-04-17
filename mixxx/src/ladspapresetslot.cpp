@@ -162,6 +162,12 @@ void LADSPAPresetSlot::setPreset(LADSPAPreset *preset)
     if (m_pPresetInstance != NULL)
 	unsetPreset();
 
+    if (!preset->isValid())
+    {
+	QMessageBox::warning(0, "LADSPA error", "One or more plugins required by preset '" + preset->getName() + "' are not installed.");
+	return;
+    }
+
     m_pLabel->setText(preset->getName());
     m_pRemoveButton->show();
 
