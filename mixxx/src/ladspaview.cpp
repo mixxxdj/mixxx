@@ -99,7 +99,11 @@ LADSPAView::LADSPAView(QWidget * parent) : QWidget(parent, "LADSPA")
 
     for (unsigned int i = 0; i < m_pPresetManager->getPresetCount(); i++)
     {
-        m_pPresetList->addItem(m_pPresetManager->getPreset(i)->getName());
+	LADSPAPreset *preset = m_pPresetManager->getPreset(i);
+	if (preset->isValid())
+	    m_pPresetList->addItem(preset->getName());
+	else
+	    m_pPresetList->addItem("-" + preset->getName());	    
     }
 
     m_pSlotTable = new QWidget(this);

@@ -31,10 +31,13 @@ public:
     LADSPAPresetInstance * instantiate();
     QString getName();
 
+    bool isValid();
+
 private:
     QString m_qName;
     LADSPAPluginVector m_Plugins;
     LADSPAPresetKnobVector m_Knobs;
+    bool m_bValid;
 };
 
 typedef QVector<LADSPAPreset *> LADSPAPresetVector;
