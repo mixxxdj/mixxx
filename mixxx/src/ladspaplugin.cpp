@@ -22,7 +22,7 @@ LADSPAPlugin::~LADSPAPlugin()
     // TODO
 }
 
-LADSPAInstance * LADSPAPlugin::instantiate()
+LADSPAInstance * LADSPAPlugin::instantiate(int slot)
 {
     int inputs = 0;
     int outputs = 0;
@@ -45,7 +45,7 @@ LADSPAInstance * LADSPAPlugin::instantiate()
     {
         if (outputs == 2)
         {
-            return new LADSPAInstanceStereo(m_pDescriptor);
+            return new LADSPAInstanceStereo(m_pDescriptor, slot);
         }
         else if (outputs == 1)
         {
@@ -60,7 +60,7 @@ LADSPAInstance * LADSPAPlugin::instantiate()
     {
         if (outputs == 1)
         {
-            return new LADSPAInstanceMono(m_pDescriptor);
+            return new LADSPAInstanceMono(m_pDescriptor, slot);
         }
         else if (outputs == 2)
         {

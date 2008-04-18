@@ -9,10 +9,11 @@
 
 #include <QtCore>
 #include "ladspainstance.h"
+#include "controlpushbutton.h"
 
 ControlObjectThreadMain *LADSPAInstance::m_pControlObjectSampleRate = NULL;
 
-LADSPAInstance::LADSPAInstance(const LADSPA_Descriptor * descriptor)
+LADSPAInstance::LADSPAInstance(const LADSPA_Descriptor * descriptor, int slot)
 {
     m_pDescriptor = descriptor;
 
@@ -27,6 +28,11 @@ LADSPAInstance::LADSPAInstance(const LADSPA_Descriptor * descriptor)
     }
 
     remove = 0;
+
+    QString slotString;
+    slotString.setNum(slot);
+    ConfigKey * key = new ConfigKey("[LADSPA]", "EnableEffect" + slotString);
+    m_pControlObjectEnable = new ControlObjectThreadMain(ControlObject::getControl(*key));
 }
 
 const LADSPA_Descriptor * LADSPAInstance::getDescriptor()
@@ -46,4 +52,9 @@ LADSPAInstance::~LADSPAInstance()
 bool LADSPAInstance::isInplaceBroken()
 {
     return LADSPA_IS_INPLACE_BROKEN(getDescriptor()->Properties);
+}
+
+bool LADSPAInstance::isEnabled()
+{
+    return m_pControlObjectEnable->get() > 0.0;
 }

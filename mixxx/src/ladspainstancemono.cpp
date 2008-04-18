@@ -10,7 +10,7 @@
 #include <QtCore>
 #include "ladspainstancemono.h"
 
-LADSPAInstanceMono::LADSPAInstanceMono(const LADSPA_Descriptor * descriptor) : LADSPAInstance(descriptor)
+LADSPAInstanceMono::LADSPAInstanceMono(const LADSPA_Descriptor * descriptor, int slot) : LADSPAInstance(descriptor, slot)
 {
     int sampleRate = getSampleRate();
     qDebug() << "LADSPA: Sample rate: " << sampleRate;

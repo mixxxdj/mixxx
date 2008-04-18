@@ -22,7 +22,7 @@ typedef QVector<ConfigKey *> ConfigKeyVector;
 class LADSPAPresetInstance
 {
 public:
-    LADSPAPresetInstance(int pluginCount, int controlCount);
+    LADSPAPresetInstance(int pluginCount, int controlCount, int slot);
     ~LADSPAPresetInstance();
 
     void addPlugin(int i, LADSPAPlugin * plugin, EngineLADSPA * engine);
@@ -36,6 +36,7 @@ private:
     LADSPAInstanceVector m_Instances;
     EngineLADSPAControlConnectionVector m_Connections;
     ConfigKeyVector m_Keys;
+    int m_iSlotNumber;
 };
 
 #endif

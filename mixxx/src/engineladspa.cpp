@@ -83,15 +83,18 @@ void EngineLADSPA::process(const CSAMPLE * pIn, const CSAMPLE * pOut, const int 
 	    instance = m_Instances.erase(instance);
 	else
 	{
-            if ((*instance)->isInplaceBroken())
-            {
-                (*instance)->process(m_pBufferLeft[bufferNo], m_pBufferRight[bufferNo], m_pBufferLeft[1 - bufferNo], m_pBufferRight[1 - bufferNo], m_monoBufferSize);
-                bufferNo = 1 - bufferNo;
-            }
-            else
-            {
-                (*instance)->process(m_pBufferLeft[bufferNo], m_pBufferRight[bufferNo], m_pBufferLeft[bufferNo], m_pBufferRight[bufferNo], m_monoBufferSize);
-            }
+	    if ((*instance)->isEnabled())
+	    {
+		if ((*instance)->isInplaceBroken())
+		{
+		    (*instance)->process(m_pBufferLeft[bufferNo], m_pBufferRight[bufferNo], m_pBufferLeft[1 - bufferNo], m_pBufferRight[1 - bufferNo], m_monoBufferSize);
+		    bufferNo = 1 - bufferNo;
+		}
+		else
+		{
+		    (*instance)->process(m_pBufferLeft[bufferNo], m_pBufferRight[bufferNo], m_pBufferLeft[bufferNo], m_pBufferRight[bufferNo], m_monoBufferSize);
+		}
+	    }
             ++instance;
         }
     }

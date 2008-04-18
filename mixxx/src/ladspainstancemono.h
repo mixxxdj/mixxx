@@ -20,7 +20,7 @@
 class LADSPAInstanceMono : public LADSPAInstance
 {
 public:
-    LADSPAInstanceMono(const LADSPA_Descriptor * descriptor);
+    LADSPAInstanceMono(const LADSPA_Descriptor * descriptor, int slot);
     ~LADSPAInstanceMono();
 
     void process(const CSAMPLE * pInLeft, const CSAMPLE * pInRight, const CSAMPLE * pOutLeft, const CSAMPLE * pOutRight, const int iBufferSize);

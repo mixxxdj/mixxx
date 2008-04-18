@@ -61,9 +61,9 @@ LADSPAPreset::~LADSPAPreset()
 {
 }
 
-LADSPAPresetInstance * LADSPAPreset::instantiate()
+LADSPAPresetInstance * LADSPAPreset::instantiate(int slot)
 {
-    LADSPAPresetInstance * instance = new LADSPAPresetInstance(m_Plugins.count(), m_Knobs.count());
+    LADSPAPresetInstance * instance = new LADSPAPresetInstance(m_Plugins.count(), m_Knobs.count(), slot);
 
     EngineLADSPA * engine = EngineLADSPA::getEngine();
 

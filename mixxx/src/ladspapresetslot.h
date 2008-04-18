@@ -50,6 +50,7 @@ private:
     QLabelVector m_Labels;
     int m_iKnobCount;
     QPalette m_qPalette;
+    int m_iSlotNumber;
 
     void setPreset(LADSPAPreset *preset);
     void unsetPreset();
