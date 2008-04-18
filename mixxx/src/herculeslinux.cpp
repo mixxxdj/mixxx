@@ -85,6 +85,8 @@ double HerculesLinux::PitchChange(const QString ControlSide, const int ev_value,
 #else //__HERCULES_STUB__
 
 #ifdef __LIBDJCONSOLE__
+
+#ifndef MAIN_VOL
 // TODO: Move const block to libDJConsole start
 // ------------ start libDJConsole block ----------------
 const int MONITOR_DECK_A = 100;
@@ -108,14 +110,14 @@ const int RIGHT_KILL_MID = 2064;
 const int RIGHT_KILL_BASS = 2128;
 const int LOAD_DECK_A = 302;
 const int LOAD_DECK_B = 332;
-const int LEFT_PITCH_RESET = -1; // TODO: Implement Left Pitch Reset
-const int RIGHT_PITCH_RESET = -1; // TODO: Implement Right Pitch Reset
-// const int LEFT_BEAT_LOCK = -1; // same as autobeat on Mk2? // TODO: Implement Left AutoBeat
-// const int RIGHT_BEAT_LOCK = -1; // same as autobeat on Mk2? // TODO: Implement Right AutoBeat
+const int LEFT_PITCH_RESET = 301; // TODO: Implement Left Pitch Reset
+const int RIGHT_PITCH_RESET = 4128; // TODO: Implement Right Pitch Reset
+
 const int UP = 602;
 const int DOWN = 604;
 const int LEFT = 608;
 const int RIGHT = 616;
+#endif
 
 QHash<long, ControlObjectThread *> buttonMapping;
 QHash<long, ControlObjectThread *> nonMIDIbuttonMapping;
@@ -444,7 +446,7 @@ void HerculesLinux::consoleEvent(int first, int second) {
                 } 
                 break;
             case MONITOR_DECK_B:
-                if (second != 0) {
+                if (second != 0 && m_iHerculesHeadphonesSelection != kiHerculesHeadphoneSplit) {
                   qDebug() << "Deck B";
                   m_iHerculesHeadphonesSelection = kiHerculesHeadphoneDeckB;
                   sendButtonEvent(m_bHeadphoneRight = true, m_pControlObjectRightBtnHeadphone);
@@ -452,7 +454,7 @@ void HerculesLinux::consoleEvent(int first, int second) {
                 }
                 break;
             case MONITOR_DECK_A:
-                if (second != 0) {
+                if (second != 0 && m_iHerculesHeadphonesSelection == kiHerculesHeadphoneDeckB) {
                   qDebug() << "Deck A";
                   m_iHerculesHeadphonesSelection = kiHerculesHeadphoneDeckA;
                   sendButtonEvent(m_bHeadphoneRight = false, m_pControlObjectRightBtnHeadphone);
