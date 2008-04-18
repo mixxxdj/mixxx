@@ -10,7 +10,7 @@
 #include <QtCore>
 #include "ladspainstance.h"
 
-ControlObject * LADSPAInstance::m_pControlObjectSampleRate = NULL;
+ControlObjectThreadMain *LADSPAInstance::m_pControlObjectSampleRate = NULL;
 
 LADSPAInstance::LADSPAInstance(const LADSPA_Descriptor * descriptor)
 {
@@ -18,7 +18,7 @@ LADSPAInstance::LADSPAInstance(const LADSPA_Descriptor * descriptor)
 
     if (m_pControlObjectSampleRate == NULL)
     {
-        m_pControlObjectSampleRate = ControlObject::getControl(ConfigKey("[Master]", "samplerate"));
+        m_pControlObjectSampleRate = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey("[Master]", "samplerate")));
     }
 
     if (LADSPA_IS_INPLACE_BROKEN(m_pDescriptor->Properties))

@@ -21,7 +21,7 @@ class EngineLADSPA;
 
 struct EngineLADSPAControlConnection
 {
-    ControlPotmeter * potmeter;
+    ControlObjectThreadMain * potmeter;
     LADSPAControl * control;
     bool remove;
 };
@@ -37,7 +37,7 @@ public:
 
     void process(const CSAMPLE *pIn, const CSAMPLE *pOut, const int iBufferSize);
     void addInstance(LADSPAInstance * instance);
-    EngineLADSPAControlConnection * addControl(ControlPotmeter * potmeter, LADSPAControl * control);
+    EngineLADSPAControlConnection * addControl(ControlObjectThreadMain * potmeter, LADSPAControl * control);
 
     static EngineLADSPA * getEngine();
 
