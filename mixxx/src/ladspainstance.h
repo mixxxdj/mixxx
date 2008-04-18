@@ -16,6 +16,7 @@
 
 #include <defs.h>
 #include <controlobject.h>
+#include <controlobjectthreadmain.h>
 
 class LADSPAInstance
 {
@@ -34,7 +35,7 @@ public:
 
 private:
     const LADSPA_Descriptor * m_pDescriptor;
-    static ControlObject *m_pControlObjectSampleRate;
+    static ControlObjectThreadMain *m_pControlObjectSampleRate;
 };
 
 typedef QList<LADSPAInstance *> LADSPAInstanceList;
