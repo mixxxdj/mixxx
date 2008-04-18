@@ -317,9 +317,9 @@ void DlgPrefSound::slotApply()
         QByteArray baSamplerate = config->getValueString(ConfigKey("[Soundcard]","Samplerate")).toUtf8();
         QByteArray baLatency = config->getValueString(ConfigKey("[Soundcard]","Latency")).toUtf8();
         
-	    cm_writemsg_ascii(MIXXXCMETRICS_SOUND_API, baAPI.data());
-	    cm_writemsg_ascii(MIXXXCMETRICS_SOUND_SAMPLERATE, baSamplerate.data());
-	    cm_writemsg_ascii(MIXXXCMETRICS_SOUND_LATENCY, baLatency.data());
+	    cm_writemsg_utf8(MIXXXCMETRICS_SOUND_API, baAPI.data());
+	    cm_writemsg_utf8(MIXXXCMETRICS_SOUND_SAMPLERATE, baSamplerate.data());
+	    cm_writemsg_utf8(MIXXXCMETRICS_SOUND_LATENCY, baLatency.data());
 #endif	
 	
 }

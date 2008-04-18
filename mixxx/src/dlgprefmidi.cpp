@@ -516,7 +516,7 @@ void DlgPrefMidi::slotApply()
 
 #ifdef __C_METRICS__
         QByteArray baMIDIDevice = m_pConfig->getValueString(ConfigKey("[Midi]","Device")).toUtf8();
-	    cm_writemsg_ascii(MIXXXCMETRICS_MIDI_DEVICE, baMIDIDevice.data());
+	    cm_writemsg_utf8(MIXXXCMETRICS_MIDI_DEVICE, baMIDIDevice.data());
 #endif	
     
 
