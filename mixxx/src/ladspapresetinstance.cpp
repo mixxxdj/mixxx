@@ -16,7 +16,7 @@
 
 int LADSPAPresetInstance::m_iNextInstanceID = 0;
 
-LADSPAPresetInstance::LADSPAPresetInstance(int pluginCount, int controlCount)
+LADSPAPresetInstance::LADSPAPresetInstance(int pluginCount, int controlCount, int slot)
 {
     m_iInstanceID = m_iNextInstanceID;
     m_iNextInstanceID++;
@@ -24,6 +24,8 @@ LADSPAPresetInstance::LADSPAPresetInstance(int pluginCount, int controlCount)
     m_Instances.resize(pluginCount);
     m_Connections.resize(controlCount);
     m_Keys.resize(controlCount);
+
+    m_iSlotNumber = slot;
 }
 
 LADSPAPresetInstance::~LADSPAPresetInstance()
@@ -40,7 +42,7 @@ LADSPAPresetInstance::~LADSPAPresetInstance()
 
 void LADSPAPresetInstance::addPlugin(int i, LADSPAPlugin * plugin, EngineLADSPA * engine)
 {
-    LADSPAInstance * instance = plugin->instantiate();
+    LADSPAInstance * instance = plugin->instantiate(m_iSlotNumber);
     m_Instances [i] = instance;
     engine->addInstance(instance);
 }

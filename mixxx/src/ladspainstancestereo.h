@@ -22,7 +22,7 @@
 class LADSPAInstanceStereo : public LADSPAInstance
 {
 public:
-    LADSPAInstanceStereo(const LADSPA_Descriptor * descriptor);
+    LADSPAInstanceStereo(const LADSPA_Descriptor * descriptor, int slot);
     ~LADSPAInstanceStereo();
 
     void process(const CSAMPLE * pInLeft, const CSAMPLE * pInRight, const CSAMPLE * pOutLeft, const CSAMPLE * pOutRight, const int iBufferSize);

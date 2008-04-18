@@ -28,7 +28,7 @@ public:
     LADSPAPreset(QDomElement element, LADSPALoader * loader);
     ~LADSPAPreset();
 
-    LADSPAPresetInstance * instantiate();
+    LADSPAPresetInstance * instantiate(int slot);
     QString getName();
 
     bool isValid();

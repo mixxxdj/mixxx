@@ -21,7 +21,7 @@
 class LADSPAInstance
 {
 public:
-    LADSPAInstance(const LADSPA_Descriptor * descriptor);
+    LADSPAInstance(const LADSPA_Descriptor * descriptor, int slot);
     ~LADSPAInstance();
 
     virtual void process(const CSAMPLE * pInLeft, const CSAMPLE * pInRight, const CSAMPLE * pOutLeft, const CSAMPLE * pOutRight, const int iBufferSize) = 0;
@@ -30,12 +30,14 @@ public:
     const LADSPA_Descriptor * getDescriptor();
     int getSampleRate();
     bool isInplaceBroken();
+    bool isEnabled();
 
     bool remove;
 
 private:
     const LADSPA_Descriptor * m_pDescriptor;
     static ControlObjectThreadMain *m_pControlObjectSampleRate;
+    ControlObjectThreadMain *m_pControlObjectEnable;
 };
 
 typedef QList<LADSPAInstance *> LADSPAInstanceList;

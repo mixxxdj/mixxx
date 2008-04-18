@@ -26,6 +26,7 @@ LADSPAPresetSlot::LADSPAPresetSlot(QWidget *parent, QDomElement element, int slo
 {
     m_pPresetManager = presetManager;
     m_qPalette = palette;
+    m_iSlotNumber = slot;
 
     setAcceptDrops(true);
 
@@ -83,7 +84,7 @@ LADSPAPresetSlot::LADSPAPresetSlot(QWidget *parent, QDomElement element, int slo
 	{
 	    QString keyString = QString("EnableEffect") + slotString;
 	    ConfigKey *key = new ConfigKey("[LADSPA]", keyString);
-	    ControlPushButton *control = new ControlPushButton(*key, false);
+	    ControlObjectThreadMain *control = new ControlObjectThreadMain(new ControlPushButton(*key, false));
 	    m_pEnableButton = new WPushButton(this);
 	    buttonElement.firstChildElement("Connection").firstChildElement("ConfigKey").firstChild().setNodeValue("[LADSPA]," + keyString);
 	    m_pEnableButton->setup(buttonElement);
@@ -171,7 +172,7 @@ void LADSPAPresetSlot::setPreset(LADSPAPreset *preset)
     m_pLabel->setText(preset->getName());
     m_pRemoveButton->show();
 
-    m_pPresetInstance = preset->instantiate();
+    m_pPresetInstance = preset->instantiate(m_iSlotNumber);
 
     m_iKnobCount = m_pPresetInstance->getKnobCount();
     m_Knobs.resize(m_iKnobCount);

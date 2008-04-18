@@ -10,7 +10,7 @@
 #include <QtCore>
 #include "ladspainstancestereo.h"
 
-LADSPAInstanceStereo::LADSPAInstanceStereo(const LADSPA_Descriptor * descriptor) : LADSPAInstance(descriptor)
+LADSPAInstanceStereo::LADSPAInstanceStereo(const LADSPA_Descriptor * descriptor, int slot) : LADSPAInstance(descriptor, slot)
 {
     int sampleRate = getSampleRate();
     qDebug() << "LADSPA: Sample rate: " << sampleRate;
