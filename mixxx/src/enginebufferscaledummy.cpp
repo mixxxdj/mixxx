@@ -34,6 +34,12 @@ void EngineBufferScaleDummy::clear()
 {
 }
 
+/**
+ * @param playpos The play position in the EngineBuffer (in samples)
+ * @param buf_size The size of the audio buffer to scale (in samples)
+ * @param pBase
+ ,* @param iBaseLength (same units as playpos)
+ */
 CSAMPLE *EngineBufferScaleDummy::scale(double playpos, int buf_size, float *pBase, int iBaseLength)
 {
 	//Guessing at this for now...
@@ -48,14 +54,17 @@ CSAMPLE *EngineBufferScaleDummy::scale(double playpos, int buf_size, float *pBas
 	//(That could be a bad thing though)
 	
 	long numBytesToCopy = buf_size * sizeof(CSAMPLE); //Convert the buffer size to bytes from samples
-	if ((playpos + numBytesToCopy) > iBaseLength) 	  //At the end of a buffer, only copy as much as we can fit
-		numBytesToCopy = (iBaseLength - playpos) * sizeof(CSAMPLE); //Remembering to convert to samples
+	if ((playpos + buf_size) > iBaseLength) 	  //At the end of a buffer, only copy as much as we can fit
+		numBytesToCopy = (iBaseLength - (long)playpos)* sizeof(CSAMPLE); //Remembering to convert to samples
 		
-	memcpy(buffer, &pBase[(long)playpos], numBytesToCopy);
+	memcpy(buffer, &pBase[(long)playpos], numBytesToCopy );
 
 	//Update the "play position"
 	long numSamplesCopied = numBytesToCopy / sizeof(CSAMPLE); //Number of samples we scaled...
 	new_playpos = ((long)(playpos + numSamplesCopied*m_dBaseRate*m_dTempo));
+
+	if (new_playpos == iBaseLength)
+		new_playpos = 0;
 
     //Whoa, you can do cool looping if you mess with new_playpos (like mod (%) it with READBUFFER_SIZE)...
 
