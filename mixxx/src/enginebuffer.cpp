@@ -31,6 +31,7 @@
 #include "enginebufferscalelinear.h"
 #include "enginebufferscalereal.h"
 #include "enginebufferscalesrc.h"
+#include "enginebufferscaledummy.h"
 #include "wvisualwaveform.h"
 #include "visual/visualchannel.h"
 #include "mathstuff.h"
@@ -292,7 +293,8 @@ void EngineBuffer::setPitchIndpTimeStretch(bool b)
         m_pScale = NULL;
     }
 
-    m_pScale = new EngineBufferScaleST(reader->getWavePtr());
+    //m_pScale = new EngineBufferScaleST(reader->getWavePtr());
+	m_pScale = new EngineBufferScaleDummy(reader->getWavePtr());
 
     //SoundTouch's linear interpolation code doesn't sound very good.
     //Our own EngineBufferScaleLinear sounds slightly better, but it's
@@ -310,12 +312,12 @@ void EngineBuffer::setPitchIndpTimeStretch(bool b)
     if (b == true)
     {
         //m_pScale = new EngineBufferScaleST(reader->getWavePtr());
-        ((EngineBufferScaleST *)m_pScale)->setPitchIndpTimeStretch(b);
+        //((EngineBufferScaleST *)m_pScale)->setPitchIndpTimeStretch(b);
     }
     else
     {
         //m_pScale = new EngineBufferScaleLinear(reader->getWavePtr());
-        ((EngineBufferScaleST *)m_pScale)->setPitchIndpTimeStretch(b);
+        //((EngineBufferScaleST *)m_pScale)->setPitchIndpTimeStretch(b);
     }
     m_qPlayposMutex.unlock();
 
