@@ -46,7 +46,12 @@ CSAMPLE *EngineBufferScaleDummy::scale(double playpos, int buf_size, float *pBas
 	
 	//I figured out what this memcpy should be based on looking at EngineBufferScaleSRC...
 	//(That could be a bad thing though)
-	memcpy(buffer, &pBase[(long)playpos], buf_size * sizeof(CSAMPLE)); 
+	
+	long numBytesToCopy = buf_size * sizeof(CSAMPLE);
+	if ((playpos + numBytesToCopy) > iBaseLength)
+		numBytesToCopy = iBaseLength - playpos;
+		
+	memcpy(buffer, &pBase[(long)playpos], numBytesToCopy); 
 
 	//Update the "play position"
 	new_playpos = ((long)(playpos + buf_size*m_dBaseRate*m_dTempo));
@@ -78,7 +83,7 @@ CSAMPLE *EngineBufferScaleDummy::scale(double playpos, int buf_size, float *pBas
         }
 */
 
-	qDebug() << iBaseLength << playpos << new_playpos << buf_size;
+	qDebug() << iBaseLength << playpos << new_playpos << buf_size << numBytesToCopy;
 
 	return buffer;
 }
