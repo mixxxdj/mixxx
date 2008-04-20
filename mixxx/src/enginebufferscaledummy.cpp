@@ -47,14 +47,15 @@ CSAMPLE *EngineBufferScaleDummy::scale(double playpos, int buf_size, float *pBas
 	//I figured out what this memcpy should be based on looking at EngineBufferScaleSRC...
 	//(That could be a bad thing though)
 	
-	long numBytesToCopy = buf_size * sizeof(CSAMPLE);
-	if ((playpos + numBytesToCopy) > iBaseLength)
-		numBytesToCopy = iBaseLength - playpos;
+	long numBytesToCopy = buf_size * sizeof(CSAMPLE); //Convert the buffer size to bytes from samples
+	if ((playpos + numBytesToCopy) > iBaseLength) 	  //At the end of a buffer, only copy as much as we can fit
+		numBytesToCopy = (iBaseLength - playpos) * sizeof(CSAMPLE); //Remembering to convert to samples
 		
-	memcpy(buffer, &pBase[(long)playpos], numBytesToCopy); 
+	memcpy(buffer, &pBase[(long)playpos], numBytesToCopy);
 
 	//Update the "play position"
-	new_playpos = ((long)(playpos + buf_size*m_dBaseRate*m_dTempo));
+	long numSamplesCopied = numBytesToCopy / sizeof(CSAMPLE); //Number of samples we scaled...
+	new_playpos = ((long)(playpos + numSamplesCopied*m_dBaseRate*m_dTempo));
 
     //Whoa, you can do cool looping if you mess with new_playpos (like mod (%) it with READBUFFER_SIZE)...
 
