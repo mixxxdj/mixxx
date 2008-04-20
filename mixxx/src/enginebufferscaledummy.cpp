@@ -53,18 +53,22 @@ CSAMPLE *EngineBufferScaleDummy::scale(double playpos, int buf_size, float *pBas
 	//I figured out what this memcpy should be based on looking at EngineBufferScaleSRC...
 	//(That could be a bad thing though)
 	
-	long numBytesToCopy = buf_size * sizeof(CSAMPLE); //Convert the buffer size to bytes from samples
-	if ((playpos + buf_size) > iBaseLength) 	  //At the end of a buffer, only copy as much as we can fit
-		numBytesToCopy = (iBaseLength - (long)playpos)* sizeof(CSAMPLE); //Remembering to convert to samples
+	long baseplaypos = ((long)playpos) % iBaseLength; // Playpos wraps within the base buffer
+													  // This is the position within base
+
+	long numSamplesToCopy = buf_size; // If we can copy a whole chunk
+	if ((baseplaypos + buf_size) > iBaseLength) 	  // At the end of a buffer, only copy as much as we can fit
+		numSamplesToCopy = (iBaseLength - baseplaypos); // Copy however many samples are left
 		
-	memcpy(buffer, &pBase[(long)playpos], numBytesToCopy );
+	// Write to the modded position inside the base
+    // also remember to convert to bytes from samples
+	memcpy(buffer, &pBase[baseplaypos], numSamplesToCopy * sizeof(CSAMPLE));
 
 	//Update the "play position"
-	long numSamplesCopied = numBytesToCopy / sizeof(CSAMPLE); //Number of samples we scaled...
-	new_playpos = ((long)(playpos + numSamplesCopied*m_dBaseRate*m_dTempo));
+	new_playpos = ((long)(playpos + numSamplesToCopy*m_dBaseRate*m_dTempo));
 
-	if (new_playpos == iBaseLength)
-		new_playpos = 0;
+	/*if (new_playpos == iBaseLength)
+		new_playpos = 0;*/
 
     //Whoa, you can do cool looping if you mess with new_playpos (like mod (%) it with READBUFFER_SIZE)...
 
@@ -93,7 +97,7 @@ CSAMPLE *EngineBufferScaleDummy::scale(double playpos, int buf_size, float *pBas
         }
 */
 
-	qDebug() << iBaseLength << playpos << new_playpos << buf_size << numBytesToCopy;
+	qDebug() << iBaseLength << playpos << new_playpos << buf_size << numSamplesToCopy;
 
 	return buffer;
 }
