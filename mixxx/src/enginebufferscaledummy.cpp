@@ -64,6 +64,13 @@ CSAMPLE *EngineBufferScaleDummy::scale(double playpos, int buf_size, float *pBas
     // also remember to convert to bytes from samples
 	memcpy(buffer, &pBase[baseplaypos], numSamplesToCopy * sizeof(CSAMPLE));
 
+	if (numSamplesToCopy < buf_size)
+	{
+	    qDebug() << "Filling the rest of the buffer: " << numSamplesToCopy << buf_size - numSamplesToCopy;
+	    memcpy(&buffer[numSamplesToCopy], &pBase[0], (buf_size - numSamplesToCopy) * sizeof(CSAMPLE));
+	    numSamplesToCopy = buf_size;
+	}
+
 	//Update the "play position"
 	new_playpos = ((long)(playpos + numSamplesToCopy*m_dBaseRate*m_dTempo));
 
