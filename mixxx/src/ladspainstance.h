@@ -31,6 +31,7 @@ public:
     int getSampleRate();
     bool isInplaceBroken();
     bool isEnabled();
+    float getWet();
 
     bool remove;
 
@@ -38,6 +39,7 @@ private:
     const LADSPA_Descriptor * m_pDescriptor;
     static ControlObjectThreadMain *m_pControlObjectSampleRate;
     ControlObject *m_pControlObjectEnable;
+    ControlObject *m_pControlObjectDryWet;
 };
 
 typedef QList<LADSPAInstance *> LADSPAInstanceList;

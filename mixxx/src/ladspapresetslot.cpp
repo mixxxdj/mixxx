@@ -21,6 +21,7 @@
 #include "wlabel.h"
 #include "configobject.h"
 #include "controlpushbutton.h"
+#include "controlpotmeter.h"
 
 LADSPAPresetSlot::LADSPAPresetSlot(QWidget *parent, QDomElement element, int slot, LADSPAPresetManager *presetManager, QPalette palette) : QWidget(parent)
 {
@@ -125,6 +126,37 @@ LADSPAPresetSlot::LADSPAPresetSlot(QWidget *parent, QDomElement element, int slo
     m_qKnobElement = element.firstChildElement("Knob");
     m_pPresetInstance = NULL;
 
+    
+    ConfigKey *key = new ConfigKey("[LADSPA]", "DryWet" + slotString);
+    ControlPotmeter *control = new ControlPotmeter(*key, 0.0, 1.0);
+    m_pDryWetKnob = new WKnob(this);
+    QString keyString = QString("[LADSPA],DryWet") + slotString;
+    m_qKnobElement.firstChildElement(QString("Connection")).firstChildElement(QString("ConfigKey")).firstChild().setNodeValue(keyString);
+    m_qKnobElement.firstChildElement(QString("Tooltip")).firstChild().setNodeValue("Dry/wet");
+    m_pDryWetKnob->setup(m_qKnobElement);
+    m_pDryWetKnob->show();
+
+    posElement = m_qKnobElement.firstChildElement("Pos");
+    pos = posElement.text();
+    x = pos.left(pos.indexOf(",")).toInt();
+    y = pos.mid(pos.indexOf(",") + 1).toInt();
+    if (x < 0)
+    {
+        x = this->width() + x;
+    }
+    if (y < 0)
+    {
+	y = this->height() + y;
+    }
+    m_pDryWetKnob->move(x, y);
+
+    m_pDryWetLabel = new QLabel("Dry/wet", this);
+    m_pDryWetLabel->setMaximumWidth(m_pDryWetKnob->width() - 4);
+    m_pDryWetLabel->show();
+    x += m_pDryWetKnob->width() / 2 - m_pDryWetLabel->width() / 2;
+    m_pDryWetLabel->move(x, y + m_pDryWetKnob->height() + 1);
+    m_pDryWetLabel->setPalette(m_qPalette);
+
     connect(m_pRemoveButton, SIGNAL(valueChangedLeftUp(double)), this, SLOT(slotRemove()));
 }
 
@@ -226,7 +258,7 @@ void LADSPAPresetSlot::addKnob(int i)
     QString spacing = spacingElement.text();
     int spacingWidth = spacing.left(spacing.indexOf(",")).toInt();
     int spacingHeight = spacing.mid(spacing.indexOf(",") + 1).toInt();    
-    knob->move(x + i * (knob->width() + spacingWidth), y + i * spacingHeight);
+    knob->move(x + (i + 1) * (knob->width() + spacingWidth), y + (i + 1) * spacingHeight);
 
     int length = key.item.length();
     QLabel * label = new QLabel(key.item, this);
@@ -245,7 +277,7 @@ void LADSPAPresetSlot::addKnob(int i)
     }*/
     m_Labels.insert(i, label);
     x += knob->width() / 2 - label->width() / 2;
-    label->move(x + i * (knob->width() + spacingWidth), y + i * spacingHeight + knob->height() + 1);
+    label->move(x + (i + 1) * (knob->width() + spacingWidth), y + (i + 1) * spacingHeight + knob->height() + 1);
     label->setPalette(m_qPalette);
 }
 
