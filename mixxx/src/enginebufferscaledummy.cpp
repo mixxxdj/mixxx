@@ -64,6 +64,7 @@ CSAMPLE *EngineBufferScaleDummy::scale(double playpos, int buf_size, float *pBas
     // also remember to convert to bytes from samples
 	memcpy(buffer, &pBase[baseplaypos], numSamplesToCopy * sizeof(CSAMPLE));
 
+	// pBase is a circular buffer and we need exactly buf_size samples so we take some from the beggining
 	if (numSamplesToCopy < buf_size)
 	{
 	    qDebug() << "Filling the rest of the buffer: " << numSamplesToCopy << buf_size - numSamplesToCopy;
@@ -104,7 +105,7 @@ CSAMPLE *EngineBufferScaleDummy::scale(double playpos, int buf_size, float *pBas
         }
 */
 
-	qDebug() << iBaseLength << playpos << new_playpos << buf_size << numSamplesToCopy;
+	//qDebug() << iBaseLength << playpos << new_playpos << buf_size << numSamplesToCopy;
 
 	return buffer;
 }
