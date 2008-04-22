@@ -123,7 +123,7 @@ void EngineLADSPA::addInstance(LADSPAInstance * instance)
     m_Instances.append(instance);
 }
 
-EngineLADSPAControlConnection * EngineLADSPA::addControl(ControlObjectThreadMain * potmeter, LADSPAControl * control)
+EngineLADSPAControlConnection * EngineLADSPA::addControl(ControlObject * potmeter, LADSPAControl * control)
 {
     EngineLADSPAControlConnection * connection = new EngineLADSPAControlConnection;
     connection->potmeter = potmeter;

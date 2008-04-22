@@ -32,7 +32,7 @@ LADSPAInstance::LADSPAInstance(const LADSPA_Descriptor * descriptor, int slot)
     QString slotString;
     slotString.setNum(slot);
     ConfigKey * key = new ConfigKey("[LADSPA]", "EnableEffect" + slotString);
-    m_pControlObjectEnable = new ControlObjectThreadMain(ControlObject::getControl(*key));
+    m_pControlObjectEnable = ControlObject::getControl(*key);
 }
 
 const LADSPA_Descriptor * LADSPAInstance::getDescriptor()

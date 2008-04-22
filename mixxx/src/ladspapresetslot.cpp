@@ -84,7 +84,7 @@ LADSPAPresetSlot::LADSPAPresetSlot(QWidget *parent, QDomElement element, int slo
 	{
 	    QString keyString = QString("EnableEffect") + slotString;
 	    ConfigKey *key = new ConfigKey("[LADSPA]", keyString);
-	    ControlObjectThreadMain *control = new ControlObjectThreadMain(new ControlPushButton(*key, false));
+	    ControlObject *control = new ControlPushButton(*key, false);
 	    m_pEnableButton = new WPushButton(this);
 	    buttonElement.firstChildElement("Connection").firstChildElement("ConfigKey").firstChild().setNodeValue("[LADSPA]," + keyString);
 	    m_pEnableButton->setup(buttonElement);
