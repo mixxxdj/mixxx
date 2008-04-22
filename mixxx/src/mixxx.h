@@ -122,6 +122,8 @@ class MixxxApp : public QMainWindow
     void slotHelpAbout();
     /** visits support section of website*/
     void slotHelpSupport();    
+    /** shows the LADSPA window */
+    void slotLadspa();
     /** Change of file to play */
     //void slotChangePlay(int,int,int, const QPoint &);
 	QString getSkinPath();
@@ -177,6 +179,9 @@ class MixxxApp : public QMainWindow
 #ifdef __SCRIPT__
     QMenu *macroMenu;
 #endif
+#ifdef __LADSPA__
+    QMenu *ladspaMenu;
+#endif
 
     /** actions for the application initialized in initActions() and used to en/disable them
       * according to your needs during the program */
@@ -211,6 +216,9 @@ class MixxxApp : public QMainWindow
     QAction *helpSupport;
 #ifdef __SCRIPT__
     QAction *macroStudio;
+#endif
+#ifdef __LADSPA__
+    QAction *ladspaShow;
 #endif
     int m_iNoPlaylists;
 

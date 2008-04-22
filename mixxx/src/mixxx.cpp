@@ -304,7 +304,7 @@ MixxxApp::MixxxApp(QApplication * a, struct CmdlineArgs args, QSplashScreen * pS
 
 #ifdef __LADSPA__
     ladspaDlg = new DlgLADSPA(this);
-    ladspaDlg->setHidden(false);
+    ladspaDlg->setHidden(true);
 #endif
 
     // Try open player device If that fails, the preference panel is opened.
@@ -515,6 +515,9 @@ void MixxxApp::initActions()
 #ifdef __SCRIPT__
     macroStudio = new QAction(tr("Show Studio"), this);
 #endif
+#ifdef __LADSPA__
+    ladspaShow = new QAction(tr("Show LADSPA window"), this);
+#endif
 
     fileLoadSongPlayer1->setStatusTip(tr("Opens a song in player 1"));
     fileLoadSongPlayer1->setWhatsThis(tr("Open\n\nOpens a song in player 1"));
@@ -587,6 +590,11 @@ void MixxxApp::initActions()
     macroStudio->setWhatsThis(tr("Show Studio\n\nMakes the macro studio visible"));
      connect(macroStudio, SIGNAL(activated()), scriptEng->getStudio(), SLOT(showStudio()));
 #endif
+#ifdef __LADSPA__
+    ladspaShow->setStatusTip(tr("Shows the LADSPA window"));
+    ladspaShow->setWhatsThis(tr("Show LADSPA window\n\nMakes the LADSPA window visible"));
+    connect(ladspaShow, SIGNAL(activated()), this, SLOT(slotLadspa()));
+#endif
 }
 
 void MixxxApp::initMenuBar()
@@ -599,6 +607,9 @@ void MixxxApp::initMenuBar()
     helpMenu=new QMenu("&Help");
 #ifdef __SCRIPT__
     macroMenu=new QMenu("&Macro");
+#endif
+#ifdef __LADSPA__
+    ladspaMenu=new QMenu("LADSPA");
 #endif
 
     // menuBar entry fileMenu
@@ -635,14 +646,20 @@ void MixxxApp::initMenuBar()
 #ifdef __SCRIPT__
     macroMenu->addAction(macroStudio);
 #endif
+#ifdef __LADSPA__
+    ladspaMenu->addAction(ladspaShow);
+#endif
 
     menuBar()->addMenu(fileMenu);
     menuBar()->addMenu(libraryMenu);
     menuBar()->addMenu(optionsMenu);
-
+    
     //    menuBar()->addMenu(viewMenu);
 #ifdef __SCRIPT__
     menuBar()->addMenu(macroMenu);
+#endif
+#ifdef __LADSPA__
+    menuBar()->addMenu(ladspaMenu);
 #endif
     menuBar()->addSeparator();
     menuBar()->addMenu(helpMenu);
@@ -1010,4 +1027,11 @@ bool MixxxApp::eventFilter(QObject *obj, QEvent *event)
         return QObject::eventFilter(obj, event);
     }
 
+}
+
+void MixxxApp::slotLadspa()
+{
+#ifdef __LADSPA__
+    ladspaDlg->setHidden(false);
+#endif
 }
