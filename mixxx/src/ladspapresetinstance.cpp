@@ -50,17 +50,18 @@ void LADSPAPresetInstance::addPlugin(int i, LADSPAPlugin * plugin, EngineLADSPA 
 void LADSPAPresetInstance::addControl(int i, LADSPAPresetKnob * knob, EngineLADSPA * engine)
 {
     ConfigKey * key = new ConfigKey("[LADSPA]", knob->getLabel());
-    ControlObjectThreadMain * potmeter = new ControlObjectThreadMain(new ControlPotmeter(*key, knob->getMin(), knob->getMax()));
+    ControlObject * potmeter = new ControlPotmeter(*key, knob->getMin(), knob->getMax());
+    ControlObjectThreadMain * potmeterThreadMain = new ControlObjectThreadMain(potmeter);
     LADSPAControl * control = new LADSPAControl;
     control->setValue(knob->getDefault());
-    potmeter->slotSet(knob->getDefault());
+    potmeterThreadMain->slotSet(knob->getDefault());
     m_Keys[i] = key;
-    m_Connections[i] = engine->addControl(potmeter, control);
     LADSPAPortConnectionVector * portConnections = knob->getConnections();
     for (LADSPAPortConnectionVector::iterator connection = portConnections->begin(); connection != portConnections->end(); connection++)
     {
         m_Instances[(*connection).plugin]->connect((*connection).port, control->getBuffer());
     }
+    m_Connections[i] = engine->addControl(potmeter, control);
 }
 
 int LADSPAPresetInstance::getKnobCount()

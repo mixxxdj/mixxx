@@ -37,7 +37,7 @@ public:
 private:
     const LADSPA_Descriptor * m_pDescriptor;
     static ControlObjectThreadMain *m_pControlObjectSampleRate;
-    ControlObjectThreadMain *m_pControlObjectEnable;
+    ControlObject *m_pControlObjectEnable;
 };
 
 typedef QList<LADSPAInstance *> LADSPAInstanceList;
