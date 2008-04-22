@@ -42,7 +42,9 @@ public slots:
 private:
     WPushButton *m_pRemoveButton;
     WPushButton *m_pEnableButton;
+    WKnob *m_pDryWetKnob;
     QLabel *m_pLabel;
+    QLabel *m_pDryWetLabel;
     QDomElement m_qKnobElement;
     LADSPAPresetManager *m_pPresetManager;
     LADSPAPresetInstance *m_pPresetInstance;

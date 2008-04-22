@@ -33,6 +33,8 @@ LADSPAInstance::LADSPAInstance(const LADSPA_Descriptor * descriptor, int slot)
     slotString.setNum(slot);
     ConfigKey * key = new ConfigKey("[LADSPA]", "EnableEffect" + slotString);
     m_pControlObjectEnable = ControlObject::getControl(*key);
+    key = new ConfigKey("[LADSPA]", "DryWet" + slotString);
+    m_pControlObjectDryWet = ControlObject::getControl(*key);
 }
 
 const LADSPA_Descriptor * LADSPAInstance::getDescriptor()
@@ -57,4 +59,9 @@ bool LADSPAInstance::isInplaceBroken()
 bool LADSPAInstance::isEnabled()
 {
     return m_pControlObjectEnable->get() > 0.0;
+}
+
+float LADSPAInstance::getWet()
+{
+    return m_pControlObjectDryWet->get();
 }

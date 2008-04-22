@@ -74,8 +74,6 @@ void EngineLADSPA::process(const CSAMPLE * pIn, const CSAMPLE * pOut, const int 
         m_pBufferRight[0][i] = pIn[2 * i + 1];
     }
 
-    int bufferNo = 0;
-
     LADSPAInstanceLinkedList::iterator instance = m_Instances.begin();
     while (instance != m_Instances.end())
     {
@@ -85,14 +83,21 @@ void EngineLADSPA::process(const CSAMPLE * pIn, const CSAMPLE * pOut, const int 
 	{
 	    if ((*instance)->isEnabled())
 	    {
-		if ((*instance)->isInplaceBroken())
+		CSAMPLE wet = (CSAMPLE)(*instance)->getWet();
+		if ((*instance)->isInplaceBroken() || wet < 1.0)
 		{
-		    (*instance)->process(m_pBufferLeft[bufferNo], m_pBufferRight[bufferNo], m_pBufferLeft[1 - bufferNo], m_pBufferRight[1 - bufferNo], m_monoBufferSize);
-		    bufferNo = 1 - bufferNo;
+		    CSAMPLE dry = 1.0 - wet;
+		    (*instance)->process(m_pBufferLeft[0], m_pBufferRight[0], m_pBufferLeft[1], m_pBufferRight[1], m_monoBufferSize);
+		    // TODO: Use run_adding() if possible
+		    for (int i = 0; i < m_monoBufferSize; i++)
+		    {
+			m_pBufferLeft [0][i] = m_pBufferLeft [0][i] * dry + m_pBufferLeft [1][i] * wet;
+			m_pBufferRight[0][i] = m_pBufferRight[0][i] * dry + m_pBufferRight[1][i] * wet;
+		    }
 		}
 		else
 		{
-		    (*instance)->process(m_pBufferLeft[bufferNo], m_pBufferRight[bufferNo], m_pBufferLeft[bufferNo], m_pBufferRight[bufferNo], m_monoBufferSize);
+		    (*instance)->process(m_pBufferLeft[0], m_pBufferRight[0], m_pBufferLeft[0], m_pBufferRight[0], m_monoBufferSize);
 		}
 	    }
             ++instance;
@@ -100,21 +105,10 @@ void EngineLADSPA::process(const CSAMPLE * pIn, const CSAMPLE * pOut, const int 
     }
 
     CSAMPLE * pOutput = (CSAMPLE *)pOut;
-    if (bufferNo == 0)
+    for (int i = 0; i < m_monoBufferSize; i++)
     {
-        for (int i = 0; i < m_monoBufferSize; i++)
-        {
-            pOutput[2 * i] = m_pBufferLeft[0][i];
-            pOutput[2 * i + 1] = m_pBufferRight[0][i];
-        }
-    }
-    else
-    {
-        for (int i = 0; i < m_monoBufferSize; i++)
-        {
-            pOutput[2 * i] = m_pBufferLeft[1][i];
-            pOutput[2 * i + 1] = m_pBufferRight[1][i];
-        }
+	pOutput[2 * i]     = m_pBufferLeft [0][i];
+	pOutput[2 * i + 1] = m_pBufferRight[0][i];
     }
 }
 
