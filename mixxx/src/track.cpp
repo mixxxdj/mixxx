@@ -216,10 +216,17 @@ Track::Track(QString location, MixxxView * pView, ConfigObject<ConfigValue> *con
     m_pLoadSelectedTrackCh2 = new ControlObjectThreadMain(new ControlObject(ConfigKey("[Channel2]","LoadSelectedTrack")));
     m_pSelectNextTrack = new ControlObjectThreadMain(new ControlObject(ConfigKey("[Playlist]","SelectNextTrack")));
     m_pSelectPrevTrack = new ControlObjectThreadMain(new ControlObject(ConfigKey("[Playlist]","SelectPrevTrack")));
+
+    m_pSelectNextPlaylist = new ControlObjectThreadMain(new ControlObject(ConfigKey("[Playlist]","SelectNextPlaylist")));
+    m_pSelectPrevPlaylist = new ControlObjectThreadMain(new ControlObject(ConfigKey("[Playlist]","SelectPrevPlaylist")));
+
     connect(m_pLoadSelectedTrackCh1, SIGNAL(valueChanged(double)), this, SLOT(slotLoadSelectedTrackCh1(double)));
     connect(m_pLoadSelectedTrackCh2, SIGNAL(valueChanged(double)), this, SLOT(slotLoadSelectedTrackCh2(double)));
     connect(m_pSelectNextTrack, SIGNAL(valueChanged(double)), this, SLOT(slotSelectNextTrack(double)));
     connect(m_pSelectPrevTrack, SIGNAL(valueChanged(double)), this, SLOT(slotSelectPrevTrack(double)));
+
+    connect(m_pSelectNextPlaylist, SIGNAL(valueChanged(double)), this, SLOT(slotSelectNextPlaylist(double)));
+    connect(m_pSelectPrevPlaylist, SIGNAL(valueChanged(double)), this, SLOT(slotSelectPrevPlaylist(double)));
 
     TrackPlaylist::setTrack(this);
 
@@ -657,11 +664,31 @@ TrackPlaylistList* Track::getPlaylists()
     return &m_qPlaylists;
 }
 
+void Track::slotSelectPrevPlaylist(double buttonPressed) {
+  if (!buttonPressed) return;
+  int index = m_pView->m_pComboBox->currentIndex() - 1;
+//  qDebug() << "slotSelectPrevPlaylist index = " << index;
+  if (index < 0) return; // Do not allow wrap around -1 -> max
+  // if (index < 0) index = m_pView->m_pComboBox->count() - 1;
+  m_pView->m_pComboBox->setCurrentIndex(index);
+  slotActivatePlaylist(index);
+}
+
+void Track::slotSelectNextPlaylist(double buttonPressed) {
+  if (!buttonPressed) return;
+  int index = m_pView->m_pComboBox->currentIndex() + 1;
+//  qDebug() << "slotSelectNextPlaylist index = " << index;
+  if (index == m_pView->m_pComboBox->count()) return; // Do not allow wrap around max -> 0
+  // if (index == m_pView->m_pComboBox->count()) index = 0;
+  m_pView->m_pComboBox->setCurrentIndex(index);
+  slotActivatePlaylist(index);
+}
+
 void Track::slotActivatePlaylist(int index)
 {
     //FIXME: there's gotta be a better signal to use from the combobox
-    //       rather than activated(int)... this hardcoded switch is crap 
-    
+    //       rather than activated(int)... this hardcoded switch is crap
+
     //Toggled by the ComboBox - This needs to be reorganized...
     switch(index)
     {
@@ -702,7 +729,7 @@ void Track::slotActivatePlaylist(int index)
         break;
       case TABLE_MODE_PROMO: //Promo Tracks
         m_pView->m_pTrackTableView->reset();
-        m_pView->m_pTrackTableView->setSearchSource(m_pPromoModel); 
+        m_pView->m_pTrackTableView->setSearchSource(m_pPromoModel);
         m_pView->m_pTrackTableView->resizeColumnsToContents();
         m_pView->m_pTrackTableView->setTrack(this);
         m_pView->m_pTrackTableView->setTableMode(TABLE_MODE_PROMO);

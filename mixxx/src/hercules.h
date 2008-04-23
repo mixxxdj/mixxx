@@ -87,6 +87,8 @@ public:
     ControlObjectThread *m_pControlObjectLeftKillBass, *m_pControlObjectRightKillBass;
 
     ControlObjectThread *m_pControlObjectUp, *m_pControlObjectDown;
+    ControlObjectThread *m_pControlObjectLeft, *m_pControlObjectRight;
+
     ControlObjectThread *m_pControlObjectLoadDeckA, *m_pControlObjectLoadDeckB;
 
     ControlObjectThread *m_pControlObjectLeftScratch, *m_pControlObjectRightScratch;

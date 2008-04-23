@@ -23,6 +23,7 @@
 #include "midiobject.h"
 #include "mathstuff.h"
 #include "rotary.h"
+#include <QtCore>
 
 Hercules::Hercules() : Input(), m_qRequestLed(5)
 {
@@ -177,6 +178,10 @@ void Hercules::selectMapping(QString qMapping)
 
     m_pControlObjectUp = new ControlObjectThread(ControlObject::getControl(ConfigKey("[Playlist]","SelectPrevTrack")));
     m_pControlObjectDown = new ControlObjectThread(ControlObject::getControl(ConfigKey("[Playlist]","SelectNextTrack")));
+
+    m_pControlObjectLeft = new ControlObjectThread(ControlObject::getControl(ConfigKey("[Playlist]","SelectPrevPlaylist")));
+    m_pControlObjectRight = new ControlObjectThread(ControlObject::getControl(ConfigKey("[Playlist]","SelectNextPlaylist")));
+
     m_pControlObjectLoadDeckA = new ControlObjectThread(ControlObject::getControl(ConfigKey("[Channel1]","LoadSelectedTrack")));
     m_pControlObjectLoadDeckB = new ControlObjectThread(ControlObject::getControl(ConfigKey("[Channel2]","LoadSelectedTrack")));
 
@@ -190,6 +195,7 @@ void Hercules::selectMapping(QString qMapping)
     scratchMode = false;
     m_pControlObjectLeftScratch = new ControlObjectThread(ControlObject::getControl(ConfigKey("[Channel1]","scratch")));
     m_pControlObjectRightScratch = new ControlObjectThread(ControlObject::getControl(ConfigKey("[Channel2]","scratch")));
+
 }
 
 void Hercules::changeJogMode(int iLeftFxMode, int iRightFxMode)
