@@ -89,10 +89,10 @@ double HerculesLinux::PitchChange(const QString ControlSide, const int ev_value,
 #ifndef MAIN_VOL
 // TODO: Move const block to libDJConsole start
 // ------------ start libDJConsole block ----------------
-const int MONITOR_DECK_A = 100;
-const int MONITOR_DECK_B = 101;
-const int MONITOR_MIX = 102;
-const int MONITOR_SPLIT = 103;
+const int MONITOR_DECK_A = 51;
+const int MONITOR_DECK_B = 52;
+const int MONITOR_MIX = 58;
+const int MONITOR_SPLIT = 54;
 
 // Stubs for Herc Rmx Controls
 const int GAIN_A = 902;
@@ -191,8 +191,9 @@ HerculesLinux::HerculesLinux() : Hercules() {
 
     nonMIDIbuttonMapping[UP] = m_pControlObjectUp;
     nonMIDIbuttonMapping[DOWN] = m_pControlObjectDown;
-    //nonMIDIbuttonMapping[LEFT] = m_pControlObjectLeft;
-    //nonMIDIbuttonMapping[RIGHT] = m_pControlObjectRight;
+    nonMIDIbuttonMapping[LEFT] = m_pControlObjectLeft;
+    nonMIDIbuttonMapping[RIGHT] = m_pControlObjectRight;
+
     nonMIDIbuttonMapping[LOAD_DECK_A] = m_pControlObjectLoadDeckA;
     nonMIDIbuttonMapping[LOAD_DECK_B] = m_pControlObjectLoadDeckB;
 }
@@ -331,9 +332,7 @@ void HerculesLinux::consoleEvent(int first, int second) {
         if (buttonPressed) {
             switch(first) {
                 case UP:
-                case DOWN:
-                case LEFT:
-                case RIGHT: jogLibraryScrolling = true; break;
+                case DOWN: jogLibraryScrolling = true; break;
                 case SCRATCH:                     //TODO: move this into "Master" controlObject
                     scratchMode = !scratchMode;
                     qDebug() << "scratchMode = " << scratchMode;
