@@ -48,21 +48,23 @@ double EngineBufferScaleLinear::setTempo(double _tempo)
 void EngineBufferScaleLinear::setBaseRate(double dBaseRate)
 {
     m_dBaseRate = dBaseRate*m_dTempo;
-
-    //TODO: Should this be something? - Albert Sept 3/07
-    //    m_pSoundTouch->setRate(m_dBaseRate*m_dTempo);
 }
 
 void EngineBufferScaleLinear::clear()
 {
-    //m_pSoundTouch->clear();
-    //TODO: Clear the buffer?!
-
     m_bClear = true;
 }
 
 CSAMPLE * EngineBufferScaleLinear::scale(double playpos, int buf_size, float * pBase, int iBaseLength)
 {
+    if (!pBase)
+    {
+        pBase = wavebuffer;				//The "base" buffer is really 
+        								//the EngineBuffer's circular 
+        								//audio buffer.
+        iBaseLength = READBUFFERSIZE;	//Length of the base buffer
+    }
+    
     float rate_add = 2.*m_dBaseRate;
 
     // Determine position in read_buffer to start from
