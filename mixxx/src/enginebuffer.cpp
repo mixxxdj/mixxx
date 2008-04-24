@@ -32,6 +32,7 @@
 #include "enginebufferscalereal.h"
 #include "enginebufferscalesrc.h"
 #include "enginebufferscaledummy.h"
+//#include "enginebufferscalerubberband.h"
 #include "wvisualwaveform.h"
 #include "visual/visualchannel.h"
 #include "mathstuff.h"
@@ -230,7 +231,11 @@ EngineBuffer::EngineBuffer(const char * _group, ConfigObject<ConfigValue> * _con
 
     m_pWaveBuffer = (float *)reader->getWavePtr()->getBasePtr();
 
-    // Construct scaling object
+    // Construct scaling objects
+    m_pScaleLinear = new EngineBufferScaleLinear(reader->getWavePtr());
+    m_pScaleST = new EngineBufferScaleST(reader->getWavePtr());
+    //m_pScaleRubberBand = new EngineBufferScaleRubberBand(reader->getWavePtr());
+    //Figure out which one to use (setPitchIndpTimeStretch does this)
     int iPitchIndpTimeStretch = _config->getValueString(ConfigKey("[Soundcard]","PitchIndpTimeStretch")).toInt();
     this->setPitchIndpTimeStretch(iPitchIndpTimeStretch);
 
@@ -251,7 +256,9 @@ EngineBuffer::~EngineBuffer()
     delete m_pControlScratch;
     delete m_pControlObjectBeatLoop;
     delete rateSlider;
-    delete m_pScale;
+    delete m_pScaleLinear;
+    delete m_pScaleST;
+    //delete m_pScaleRubberBand;
     delete m_pTrackEnd;
     delete reader;
 }
@@ -287,15 +294,6 @@ void EngineBuffer::setPitchIndpTimeStretch(bool b)
 
     // Change sound scale mode
 
-    if (m_pScale)
-    {
-        delete m_pScale;
-        m_pScale = NULL;
-    }
-
-    //m_pScale = new EngineBufferScaleST(reader->getWavePtr());
-	m_pScale = new EngineBufferScaleDummy(reader->getWavePtr());
-
     //SoundTouch's linear interpolation code doesn't sound very good.
     //Our own EngineBufferScaleLinear sounds slightly better, but it's
     //not working perfectly. Eventually we should have our own working
@@ -311,13 +309,14 @@ void EngineBuffer::setPitchIndpTimeStretch(bool b)
 
     if (b == true)
     {
-        //m_pScale = new EngineBufferScaleST(reader->getWavePtr());
+        //m_pScale = m_pScaleST;
         //((EngineBufferScaleST *)m_pScale)->setPitchIndpTimeStretch(b);
+        //m_pScale = m_pScaleRubberBand;
+        m_pScale = m_pScaleLinear;
     }
     else
     {
-        //m_pScale = new EngineBufferScaleLinear(reader->getWavePtr());
-        //((EngineBufferScaleST *)m_pScale)->setPitchIndpTimeStretch(b);
+        m_pScale = m_pScaleLinear;
     }
     m_qPlayposMutex.unlock();
 
