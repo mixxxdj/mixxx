@@ -193,8 +193,10 @@ int SoundDevicePortAudio::open()
     {
         qDebug() << "Opened PortAudio stream successfully... starting";
     }
-
+    
+#ifdef __LINUX__
     //Attempt to dynamically load and resolve stuff in the PortAudio library
+    //in order to enable RT priority with ALSA.
     QLibrary portaudio("libportaudio.so.2");
     if (!portaudio.load())
        qDebug() << "Failed to dynamically load PortAudio library";
@@ -207,6 +209,7 @@ int SoundDevicePortAudio::open()
         enableRealtime(m_pStream, 1);
     }
     portaudio.unload();
+#endif
 
     // Start stream
     err = Pa_StartStream(m_pStream);
