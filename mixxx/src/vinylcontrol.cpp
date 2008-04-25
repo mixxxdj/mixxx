@@ -10,15 +10,15 @@ VinylControl::VinylControl(ConfigObject<ConfigValue> * pConfig, const char * _gr
     iRIAACorrection = 0;
 
     // Get Control objects
-    playPos                 = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey(group, "playposition")));    //Range: 0.0 to 1.0
-    controlScratch  = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey(group, "scratch")));
-    rateSlider              = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey(group, "rate")));    //Range -1.0 to 1.0
-    playButton          = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey(group, "play")));
-    reverseButton       = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey(group, "reverse")));
-    duration                = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey(group, "duration")));
-    mode                = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey("[VinylControl]", "Mode")));
-    enabled             = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey("[VinylControl]", "Enabled")));
-    rateRange           = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey(group, "rateRange")));
+    playPos             = new ControlObjectThread(ControlObject::getControl(ConfigKey(group, "playposition")));    //Range: 0.0 to 1.0
+    controlScratch      = new ControlObjectThread(ControlObject::getControl(ConfigKey(group, "scratch")));
+    rateSlider          = new ControlObjectThread(ControlObject::getControl(ConfigKey(group, "rate")));    //Range -1.0 to 1.0
+    playButton          = new ControlObjectThread(ControlObject::getControl(ConfigKey(group, "play")));
+    reverseButton       = new ControlObjectThread(ControlObject::getControl(ConfigKey(group, "reverse")));
+    duration            = new ControlObjectThread(ControlObject::getControl(ConfigKey(group, "duration")));
+    mode                = new ControlObjectThread(ControlObject::getControl(ConfigKey("[VinylControl]", "Mode")));
+    enabled             = new ControlObjectThread(ControlObject::getControl(ConfigKey("[VinylControl]", "Enabled")));
+    rateRange           = new ControlObjectThread(ControlObject::getControl(ConfigKey(group, "rateRange")));
 
     dVinylPitch = 0.0f;
     dVinylPosition = 0.0f;

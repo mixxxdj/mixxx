@@ -22,7 +22,7 @@
 //#include "readerextractbeat.h"
 #include "rtthread.h"
 #include "visual/visualchannel.h"
-#include "controlobjectthreadmain.h"
+#include "controlobjectthread.h"
 #include "controlobject.h"
 #include "configobject.h"
 #include <QDebug>
@@ -45,9 +45,9 @@ Reader::Reader(EngineBuffer * _enginebuffer, QMutex * _pause)
     file_srate = 44100;
     file_length = 0;
 
-    m_pTrackEnd = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey(enginebuffer->getGroup(),"TrackEnd")));
-    m_pButtonCueSet = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey(enginebuffer->getGroup(), "cue_set")));
-    m_pButtonPlay = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey(enginebuffer->getGroup(), "play")));
+    m_pTrackEnd = new ControlObjectThread(ControlObject::getControl(ConfigKey(enginebuffer->getGroup(),"TrackEnd")));
+    m_pButtonCueSet = new ControlObjectThread(ControlObject::getControl(ConfigKey(enginebuffer->getGroup(), "cue_set")));
+    m_pButtonPlay = new ControlObjectThread(ControlObject::getControl(ConfigKey(enginebuffer->getGroup(), "play")));
 }
 
 Reader::~Reader()
@@ -234,10 +234,11 @@ void Reader::newtrack()
 
     //Modified version of Kevin Schaper's patch to fix NEXT mode:
     //(See: https://sourceforge.net/forum/message.php?msg_id=4386494  )
-    ControlObject * trackEndMode = ControlObject::getControl(ConfigKey(enginebuffer->getGroup(), "TrackEndMode"));
+    ControlObjectThread * trackEndMode = new ControlObjectThread(ControlObject::getControl(ConfigKey(enginebuffer->getGroup(), "TrackEndMode")));
     //if a track just ended, and the track end mode is set to next, play the track that was just loaded
     if ( (trackEndMode->get() == TRACK_END_MODE_NEXT))
         m_pButtonPlay->slotSet(1.0);
+    delete trackEndMode;
 
     // Stop pausing process method
     pause->unlock();

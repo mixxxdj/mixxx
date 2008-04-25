@@ -32,7 +32,6 @@ class ReaderExtractBeat;
 class EngineBuffer;
 class VisualChannel;
 class ControlObjectThread;
-class ControlObjectThreadMain;
 
 /**
   * The Reader class is a thread taking care of reading and buffering waveform data from external sources.
@@ -117,10 +116,11 @@ private:
     /** Variable used with readerMutex to sync thread. Must only be modified when holding readerMutex */
     int m_iReaderAccess;
     /** Lets us reset the cue point when a new track loads */
-    ControlObjectThreadMain* m_pButtonCueSet;
+    ControlObjectThread* m_pButtonCueSet;
     /** Lets us start playing a new track in NEXT mode */
-    ControlObjectThreadMain* m_pButtonPlay;
-    
+    ControlObjectThread* m_pButtonPlay;
+    /** Lets us do something at the end of a track */ 
+    ControlObjectThread *m_pTrackEnd;
     /** Wait condition to make thread sleep when not needed */
     QWaitCondition readAhead;
     QMutex readAheadMutex;
@@ -144,7 +144,6 @@ private:
     long int file_length;
     /** Pointer to VisualChannel */
     VisualChannel *m_pVisualChannel;
-    ControlObjectThreadMain *m_pTrackEnd;
 };
 
 #endif
