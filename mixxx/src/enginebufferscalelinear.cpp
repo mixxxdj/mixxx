@@ -55,7 +55,7 @@ void EngineBufferScaleLinear::clear()
     m_bClear = true;
 }
 
-CSAMPLE * EngineBufferScaleLinear::scale(double playpos, int buf_size, float * pBase, int iBaseLength)
+CSAMPLE * EngineBufferScaleLinear::scale(double playpos, unsigned long buf_size, float * pBase, unsigned long iBaseLength)
 {
     if (!pBase)
     {
@@ -73,7 +73,7 @@ CSAMPLE * EngineBufferScaleLinear::scale(double playpos, int buf_size, float * p
     // Prepare buffer
     if (m_bBackwards)
     {
-        for (int i=0; i<buf_size; i+=2)
+        for (unsigned long i=0; i<buf_size; i+=2)
         {
             long prev = (long)(floor(new_playpos)+READBUFFERSIZE)%READBUFFERSIZE;
             if (!even(prev)) prev--;
@@ -88,8 +88,7 @@ CSAMPLE * EngineBufferScaleLinear::scale(double playpos, int buf_size, float * p
     }
     else
     {
-        int i;
-        for (i=0; i<buf_size; i+=2)
+        for (unsigned long i=0; i<buf_size; i+=2)
         {
             long prev = (long)floor(new_playpos)%READBUFFERSIZE;
             if (!even(prev)) prev--;

@@ -51,8 +51,8 @@
 #include "SoundTouch.h"
 
 
-/** Number of stereo samples to read ahead */
-const int kiSoundTouchReadAheadLength = 100;
+/** Number of samples to read ahead */
+const int kiSoundTouchReadAheadLength = 200;
 
 using namespace soundtouch;
 
@@ -85,7 +85,7 @@ public:
 
     /** Scale buffer */
 
-    CSAMPLE *scale(double playpos, int buf_size, float *pBase=0, int iBaseLength=0);
+    CSAMPLE *scale(double playpos, unsigned long buf_size, float *pBase=0, unsigned long iBaseLength=0);
 
     /** Set tempo */
 
@@ -123,7 +123,7 @@ private:
 
     bool m_bPitchIndpTimeStretch;
 
-    int m_iReadAheadPos;
+    unsigned long m_iReadAheadPos;
 
     /** Used when clear is called */
 

@@ -32,7 +32,6 @@
 #include "enginebufferscalereal.h"
 #include "enginebufferscalesrc.h"
 #include "enginebufferscaledummy.h"
-//#include "enginebufferscalerubberband.h"
 #include "wvisualwaveform.h"
 #include "visual/visualchannel.h"
 #include "mathstuff.h"
@@ -234,7 +233,6 @@ EngineBuffer::EngineBuffer(const char * _group, ConfigObject<ConfigValue> * _con
     // Construct scaling objects
     m_pScaleLinear = new EngineBufferScaleLinear(reader->getWavePtr());
     m_pScaleST = new EngineBufferScaleST(reader->getWavePtr());
-    //m_pScaleRubberBand = new EngineBufferScaleRubberBand(reader->getWavePtr());
     //Figure out which one to use (setPitchIndpTimeStretch does this)
     int iPitchIndpTimeStretch = _config->getValueString(ConfigKey("[Soundcard]","PitchIndpTimeStretch")).toInt();
     this->setPitchIndpTimeStretch(iPitchIndpTimeStretch);
@@ -258,7 +256,6 @@ EngineBuffer::~EngineBuffer()
     delete rateSlider;
     delete m_pScaleLinear;
     delete m_pScaleST;
-    //delete m_pScaleRubberBand;
     delete m_pTrackEnd;
     delete reader;
 }
@@ -309,10 +306,9 @@ void EngineBuffer::setPitchIndpTimeStretch(bool b)
 
     if (b == true)
     {
-        //m_pScale = m_pScaleST;
-        //((EngineBufferScaleST *)m_pScale)->setPitchIndpTimeStretch(b);
-        //m_pScale = m_pScaleRubberBand;
-        m_pScale = m_pScaleLinear;
+        m_pScale = m_pScaleST;
+        ((EngineBufferScaleST *)m_pScale)->setPitchIndpTimeStretch(b);
+        //m_pScale = m_pScaleLinear;
     }
     else
     {

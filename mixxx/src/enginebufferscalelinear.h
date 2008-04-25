@@ -28,7 +28,7 @@ class EngineBufferScaleLinear : public EngineBufferScale  {
 public:
     EngineBufferScaleLinear(ReaderExtractWave *wave);
     ~EngineBufferScaleLinear();
-    CSAMPLE *scale(double playpos, int buf_size, float *pBase, int iBaseLength);
+    CSAMPLE *scale(double playpos, unsigned long buf_size, float *pBase, unsigned long iBaseLength);
     void setBaseRate(double dBaseRate);
     double setTempo(double dTempo);
     void clear();

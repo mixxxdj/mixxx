@@ -38,9 +38,9 @@ void EngineBufferScaleDummy::clear()
  * @param playpos The play position in the EngineBuffer (in samples)
  * @param buf_size The size of the audio buffer to scale (in samples)
  * @param pBase
- ,* @param iBaseLength (same units as playpos)
+ * @param iBaseLength (same units as playpos)
  */
-CSAMPLE *EngineBufferScaleDummy::scale(double playpos, int buf_size, float *pBase, int iBaseLength)
+CSAMPLE *EngineBufferScaleDummy::scale(double playpos, unsigned long buf_size, float *pBase, unsigned long iBaseLength)
 {
     if (!pBase)
     {

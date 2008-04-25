@@ -35,7 +35,6 @@ class Reader;
 class EngineBufferScale;
 class EngineBufferScaleLinear;
 class EngineBufferScaleST;
-//class EngineBufferScaleRubberBand;
 class WVisualWaveform;
 class VisualChannel;
 class EngineBufferCue;
@@ -218,8 +217,6 @@ private:
     EngineBufferScaleLinear *m_pScaleLinear;
     /** Object used for pitch-indep time stretch (key lock) scaling of the audio */
     EngineBufferScaleST *m_pScaleST;
-    /** Object used for pitch-indep time stretch (key lock) scaling of the audio */   
-    //EngineBufferScaleRubberBand *m_pScaleRubberBand;
     /** Number of samples left in audio beat mark from last call to process */
     int m_iBeatMarkSamplesLeft;
     /** Holds the last sample value of the previous buffer. This is used when ramping to
