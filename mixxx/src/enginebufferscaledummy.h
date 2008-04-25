@@ -39,7 +39,7 @@ public:
     /** Called from EngineBuffer when seeking, to ensure the buffers are flushed */
     void clear();
     /** Scale buffer */
-    CSAMPLE *scale(double playpos, int buf_size, float *pBase=0, int iBaseLength=0);
+    CSAMPLE *scale(double playpos, unsigned long buf_size, float *pBase=0, unsigned long iBaseLength=0);
     
 protected:
 

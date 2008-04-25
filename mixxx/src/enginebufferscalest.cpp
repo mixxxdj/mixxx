@@ -15,7 +15,7 @@
 *                                                                         *
 ***************************************************************************/
 
-#include <QMutex>
+#include <QtCore>
 #include "readerextractwave.h"
 #include "mathstuff.h"
 #include "engineobject.h"
@@ -89,6 +89,7 @@ void EngineBufferScaleST::clear()
     m_qMutex.lock();
     m_pSoundTouch->clear();
     m_bClear = true;
+    qDebug() << __FILE__ << " - clear";
     m_qMutex.unlock();
 }
 
@@ -125,7 +126,6 @@ double EngineBufferScaleST::setTempo(double dTempo)
     }
     m_qMutex.unlock();
 
-
     if (dTempo<0.)
     {
         if (!m_bBackwards)
@@ -134,7 +134,6 @@ double EngineBufferScaleST::setTempo(double dTempo)
         m_bBackwards = true;
         return -m_dTempo;
     }
-
     else
     {
         if (m_bBackwards)
@@ -145,66 +144,91 @@ double EngineBufferScaleST::setTempo(double dTempo)
     }
 }
 
-CSAMPLE * EngineBufferScaleST::scale(double playpos, int buf_size, float * pBase, int iBaseLength)
+/**
+ * @param playpos The play position in the EngineBuffer (in samples)
+ * @param buf_size The size of the audio buffer to scale (in samples)
+ * @param pBase Pointer to an EngineBuffer's ringbuffer.
+ * @param iBaseLength (same units as playpos)
+ */
+CSAMPLE * EngineBufferScaleST::scale(double playpos, unsigned long buf_size, float * pBase, unsigned long iBaseLength)
 {
+    m_qMutex.lock();
     if (!pBase)
     {
         pBase = wavebuffer;
         iBaseLength = READBUFFERSIZE;
     }
 
+    //If we've just cleared SoundTouch's FIFO of unprocessed samples,
+    //then reset our "read ahead position" because we probably need
+    //to read backwards instead of forwards or something like that.
     if (m_bClear)
     {
-        m_iReadAheadPos = (int)playpos;
+        m_iReadAheadPos = (unsigned long)playpos;
         if (!even(m_iReadAheadPos))
             m_iReadAheadPos = (m_iReadAheadPos+1)%iBaseLength;
         m_bClear = false;
     }
 
-    // Invert wavebuffer is backwards playback
+    // Invert wavebuffer for backwards playback
     if (m_bBackwards)
     {
-        m_qMutex.lock();
-        while (m_pSoundTouch->numSamples()<(unsigned int)(buf_size/2))
+        while (m_pSoundTouch->numSamples() < buf_size/2)
         {
-            int iLen = math_min(kiSoundTouchReadAheadLength, m_iReadAheadPos/2);
+            int iLenFrames = math_min(kiSoundTouchReadAheadLength, m_iReadAheadPos/2);
             int i = m_iReadAheadPos;
-            for(int j=0; j < (iLen * 2); j = j + 2)
+            for(unsigned long j=0; j < (iLenFrames * 2); j+=2)
             {
+            	Q_ASSERT(i > 0);
             	buffer_back[j] = pBase[i]; //Left channel.
             	buffer_back[j+1] = pBase[i+1]; //Right channel.
             	i = i - 2;
             }
-            m_pSoundTouch->putSamples((const SAMPLETYPE *)buffer_back, iLen);
-            m_iReadAheadPos = (m_iReadAheadPos-iLen*2+iBaseLength)%iBaseLength;
+            m_pSoundTouch->putSamples((const SAMPLETYPE *)buffer_back, iLenFrames);
+            m_iReadAheadPos = (m_iReadAheadPos-(iLenFrames*2)+iBaseLength)%iBaseLength;
             if (m_iReadAheadPos==0)
                 m_iReadAheadPos = iBaseLength;
         }
-        m_qMutex.unlock();
     }
 
     else
     {
-        m_qMutex.lock();
-        while (m_pSoundTouch->numSamples()<(unsigned int)(buf_size/2))
+        //Feed more samples into SoundTouch until it has processed enough to
+        //fill the audio buffer that we need to fill. 
+        //SoundTouch::numSamples() returns the number of _FRAMES_ that
+        //are in its FIFO audio buffer...
+        while (m_pSoundTouch->numSamples() < buf_size/2)
         {
-            int iLen = math_min(kiSoundTouchReadAheadLength,(iBaseLength-m_iReadAheadPos)/2);
-            m_pSoundTouch->putSamples((const SAMPLETYPE *)&pBase[m_iReadAheadPos], iLen);
-            m_iReadAheadPos = (m_iReadAheadPos+iLen*2)%iBaseLength;
+            unsigned long iLenFrames = math_min(kiSoundTouchReadAheadLength,(iBaseLength-m_iReadAheadPos)/2);
+            m_pSoundTouch->putSamples(&pBase[m_iReadAheadPos], iLenFrames);
+            m_iReadAheadPos = (m_iReadAheadPos+iLenFrames*2)%iBaseLength;
             if (m_iReadAheadPos==iBaseLength)
                 m_iReadAheadPos = 0;
         }
-        m_qMutex.unlock();       
+   
     }
 
+    //qDebug() << "readahead:" << m_iReadAheadPos << "playpos" << playpos;
+
     // Calculate new playpos
-    m_qMutex.lock();
-    double dFrames = (double)m_pSoundTouch->receiveSamples((SAMPLETYPE *)buffer,(unsigned int)(buf_size/2));
-    m_qMutex.unlock();
+
+    //Get the stretched _frames_ (not Samples, as the function call erroroneously implies)
+    long receivedFrames = m_pSoundTouch->receiveSamples((SAMPLETYPE*)buffer, buf_size/2);
+
+    if (receivedFrames != buf_size/2)
+    {
+        qDebug() << __FILE__ << "- only wrote" << receivedFrames << "frames instead of requested" << buf_size;
+    }
+    
+    //for (unsigned long i = 0; i < buf_size; i++)
+    //    qDebug() << buffer[i];
+
     if (m_bBackwards)
-        new_playpos = playpos - m_dTempo*m_dBaseRate*dFrames*2.;
+        new_playpos = playpos - m_dTempo*m_dBaseRate*receivedFrames*2;
     else
-        new_playpos = playpos + m_dTempo*m_dBaseRate*dFrames*2.;
+        new_playpos = playpos + m_dTempo*m_dBaseRate*receivedFrames*2;
+
+    m_qMutex.unlock();
 
     return buffer;
 

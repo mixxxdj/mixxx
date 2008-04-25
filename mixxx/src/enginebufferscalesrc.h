@@ -33,7 +33,7 @@ public:
     /** Set fast mode on or off. In fast mode the lowest quality is selected.
       * When set to off, ie. normal mode, the previous selected quality is used */
     void setFastMode(bool bMode);
-    CSAMPLE *scale(double playpos, int buf_size, float *pBase=0, int iBaseLength=0);
+    CSAMPLE *scale(double playpos, unsigned long buf_size, float *pBase=0, unsigned long iBaseLength=0);
     double setTempo(double dTempo);
     void setBaseRate(double dBaseRate);
     void clear();

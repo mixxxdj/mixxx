@@ -154,7 +154,7 @@ double EngineBufferScaleSRC::setTempo(double dTempo)
         return (1./m_dTempo);
 }
 
-CSAMPLE * EngineBufferScaleSRC::scale(double playpos, int buf_size, float * pBase, int iBaseLength)
+CSAMPLE * EngineBufferScaleSRC::scale(double playpos, unsigned long buf_size, float * pBase, unsigned long iBaseLength)
 {
     if (!pBase)
     {
