@@ -97,12 +97,14 @@ VinylControlXwax::~VinylControlXwax()
 
 void VinylControlXwax::AnalyseSamples(short *samples, size_t size)
 {
-    lockSamples.lock();
-    timecoder_submit(&timecoder, samples, size);
-    fTimecodeStrength = samples[0] / SHRT_MAX;
+    if (lockSamples.tryLock())
+    {
+        timecoder_submit(&timecoder, samples, size);
+        fTimecodeStrength = samples[0] / SHRT_MAX;
     
-    waitForNextInput.wakeAll();
-    lockSamples.unlock();
+        waitForNextInput.wakeAll();
+        lockSamples.unlock();
+    }
 }
 
 
@@ -128,7 +130,7 @@ void VinylControlXwax::run()
     {
         lockSamples.lock();
         waitForNextInput.wait(&lockSamples);
-        lockSamples.unlock();         //Is this correct?
+        lockSamples.unlock(); 
 
         if (bShouldClose)
             return;
