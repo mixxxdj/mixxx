@@ -80,7 +80,7 @@ TrackInfoObject::TrackInfoObject(const QString sPath, const QString sFile, BpmDe
 
     //m_pTableTrack = 0;
 
-    qDebug() << "new TrackInfoObject....";
+    //qDebug() << "new TrackInfoObject....";
 
     // Check that the file exists:
     checkFileExists();
@@ -93,7 +93,7 @@ TrackInfoObject::TrackInfoObject(const QString sPath, const QString sFile, BpmDe
     installEventFilter(this);
     iTemp = 0;
     
-    qDebug() << "done constructing  TrackInfoObject....";
+    //qDebug() << "done constructing  TrackInfoObject....";
 }
 
 TrackInfoObject::TrackInfoObject(const QDomNode &nodeHeader, BpmDetector * bpmDetector)

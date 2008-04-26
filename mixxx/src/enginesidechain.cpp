@@ -166,8 +166,9 @@ void EngineSideChain::run()
         
         //Do CPU intensive and non-realtime processing here.
 
-        //m_backBufferLock.lock(); //This will cause the audio/callback thread to block if the buffers overflow.
-        
+        //m_backBufferLock.lock(); //This will cause the audio/callback thread to block if the buffers overflow,
+                                   //so don't even think about enabling this. (I'm leaving it here as a
+                                   //warning to anyone who wants to work on this code in the future.) - Albert
 
 #ifdef __SHOUTCAST__
 

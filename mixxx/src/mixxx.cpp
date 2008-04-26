@@ -503,12 +503,12 @@ void MixxxApp::initActions()
     helpAboutApp = new QAction(tr("&About..."), this);
     helpSupport = new QAction(tr("&Community Support..."), this);
 #ifdef __VINYLCONTROL__
-    optionsVinylControl = new QAction(tr("&Enable Vinyl Control"), this);
+    optionsVinylControl = new QAction(tr("Enable &Vinyl Control"), this);
     optionsVinylControl->setShortcut(tr("Ctrl+Y"));
     optionsVinylControl->setShortcutContext(Qt::ApplicationShortcut);
 #endif
 
-    optionsRecord = new QAction(tr("Enable &Recording"), this);
+    optionsRecord = new QAction(tr("&Record Mix"), this);
     //optionsRecord->setShortcut(tr("Ctrl+R"));
     optionsRecord->setShortcutContext(Qt::ApplicationShortcut);
 
