@@ -5,8 +5,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>458</width>
-    <height>406</height>
+    <width>427</width>
+    <height>411</height>
    </rect>
   </property>
   <property name="windowTitle" >
@@ -36,75 +36,109 @@
      <property name="title" >
       <string>BPM Detection</string>
      </property>
-     <widget class="QCheckBox" name="chkEnableBpmDetection" >
-      <property name="geometry" >
-       <rect>
-        <x>10</x>
-        <y>20</y>
-        <width>161</width>
-        <height>20</height>
-       </rect>
-      </property>
-      <property name="text" >
-       <string>Enable BPM Detection</string>
-      </property>
-     </widget>
-     <widget class="Line" name="line1" >
-      <property name="geometry" >
-       <rect>
-        <x>10</x>
-        <y>50</y>
-        <width>391</width>
-        <height>18</height>
-       </rect>
-      </property>
-      <property name="frameShape" >
-       <enum>QFrame::HLine</enum>
-      </property>
-      <property name="frameShadow" >
-       <enum>QFrame::Sunken</enum>
-      </property>
-     </widget>
-     <widget class="QCheckBox" name="chkDetectOnImport" >
-      <property name="geometry" >
-       <rect>
-        <x>10</x>
-        <y>80</y>
-        <width>281</width>
-        <height>20</height>
-       </rect>
-      </property>
-      <property name="text" >
-       <string>Detect Song BPM on Import</string>
-      </property>
-     </widget>
-     <widget class="QCheckBox" name="chkWriteID3" >
-      <property name="geometry" >
-       <rect>
-        <x>10</x>
-        <y>110</y>
-        <width>281</width>
-        <height>20</height>
-       </rect>
-      </property>
-      <property name="text" >
-       <string>Write BPM to ID3 Tag</string>
-      </property>
-     </widget>
+     <layout class="QGridLayout" >
+      <item row="0" column="0" >
+       <widget class="QCheckBox" name="chkEnableBpmDetection" >
+        <property name="text" >
+         <string>Enable BPM Detection</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="0" >
+       <widget class="Line" name="line1" >
+        <property name="frameShape" >
+         <enum>QFrame::HLine</enum>
+        </property>
+        <property name="frameShadow" >
+         <enum>QFrame::Sunken</enum>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="0" >
+       <widget class="QCheckBox" name="chkDetectOnImport" >
+        <property name="text" >
+         <string>Detect Song BPM on Import</string>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="0" >
+       <widget class="QCheckBox" name="chkWriteID3" >
+        <property name="text" >
+         <string>Write BPM to ID3 Tag</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
     </widget>
    </item>
-   <item row="0" column="1" >
-    <spacer>
-     <property name="orientation" >
-      <enum>Qt::Horizontal</enum>
-     </property>
-     <property name="sizeHint" >
+   <item row="1" column="0" >
+    <widget class="QGroupBox" name="grpBpmSchemes" >
+     <property name="minimumSize" >
       <size>
-       <width>40</width>
-       <height>20</height>
+       <width>409</width>
+       <height>200</height>
       </size>
      </property>
-    </spacer>
+     <property name="title" >
+      <string>BPM Schemes</string>
+     </property>
+     <layout class="QGridLayout" >
+      <item rowspan="5" row="0" column="0" >
+       <widget class="QListWidget" name="lstSchemes" >
+        <property name="showDropIndicator" stdset="0" >
+         <bool>false</bool>
+        </property>
+        <property name="dragDropMode" >
+         <enum>QAbstractItemView::NoDragDrop</enum>
+        </property>
+        <property name="modelColumn" >
+         <number>0</number>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="1" >
+       <widget class="QPushButton" name="btnAdd" >
+        <property name="text" >
+         <string>Add</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="1" >
+       <widget class="QPushButton" name="btnEdit" >
+        <property name="text" >
+         <string>Edit</string>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="1" >
+       <widget class="QPushButton" name="btnDelete" >
+        <property name="text" >
+         <string>Delete</string>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="1" >
+       <widget class="QPushButton" name="btnDefault" >
+        <property name="text" >
+         <string>Default</string>
+        </property>
+       </widget>
+      </item>
+      <item row="4" column="1" >
+       <spacer>
+        <property name="orientation" >
+         <enum>Qt::Vertical</enum>
+        </property>
+        <property name="sizeHint" >
+         <size>
+          <width>20</width>
+          <height>40</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+     </layout>
+    </widget>
    </item>
    <item row="2" column="0" >
     <spacer>
@@ -118,90 +152,6 @@
       </size>
      </property>
     </spacer>
-   </item>
-   <item row="1" column="0" >
-    <widget class="QGroupBox" name="grpBpmSchemes" >
-     <property name="minimumSize" >
-      <size>
-       <width>409</width>
-       <height>200</height>
-      </size>
-     </property>
-     <property name="title" >
-      <string>BPM Schemes</string>
-     </property>
-     <widget class="QListWidget" name="lstSchemes" >
-      <property name="geometry" >
-       <rect>
-        <x>10</x>
-        <y>20</y>
-        <width>301</width>
-        <height>171</height>
-       </rect>
-      </property>
-      <property name="showDropIndicator" stdset="0" >
-       <bool>false</bool>
-      </property>
-      <property name="dragDropMode" >
-       <enum>QAbstractItemView::NoDragDrop</enum>
-      </property>
-      <property name="modelColumn" >
-       <number>0</number>
-      </property>
-     </widget>
-     <widget class="QPushButton" name="btnAdd" >
-      <property name="geometry" >
-       <rect>
-        <x>320</x>
-        <y>20</y>
-        <width>83</width>
-        <height>27</height>
-       </rect>
-      </property>
-      <property name="text" >
-       <string>Add</string>
-      </property>
-     </widget>
-     <widget class="QPushButton" name="btnEdit" >
-      <property name="geometry" >
-       <rect>
-        <x>320</x>
-        <y>50</y>
-        <width>83</width>
-        <height>27</height>
-       </rect>
-      </property>
-      <property name="text" >
-       <string>Edit</string>
-      </property>
-     </widget>
-     <widget class="QPushButton" name="btnDelete" >
-      <property name="geometry" >
-       <rect>
-        <x>320</x>
-        <y>80</y>
-        <width>83</width>
-        <height>27</height>
-       </rect>
-      </property>
-      <property name="text" >
-       <string>Delete</string>
-      </property>
-     </widget>
-     <widget class="QPushButton" name="btnDefault" >
-      <property name="geometry" >
-       <rect>
-        <x>320</x>
-        <y>110</y>
-        <width>83</width>
-        <height>27</height>
-       </rect>
-      </property>
-      <property name="text" >
-       <string>Default</string>
-      </property>
-     </widget>
-    </widget>
    </item>
   </layout>
  </widget>
