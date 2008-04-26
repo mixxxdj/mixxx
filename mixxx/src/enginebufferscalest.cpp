@@ -89,7 +89,7 @@ void EngineBufferScaleST::clear()
     m_qMutex.lock();
     m_pSoundTouch->clear();
     m_bClear = true;
-    qDebug() << __FILE__ << " - clear";
+    //qDebug() << __FILE__ << " - clear";
     m_qMutex.unlock();
 }
 

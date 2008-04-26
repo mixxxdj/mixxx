@@ -168,7 +168,7 @@ TrackInfoObject * TrackCollection::getTrack(QString location)
             if (pTrack->isValid())
             {
                 addTrack(pTrack);
-                qDebug() << "Found new track:" << pTrack->getFilename();
+                //qDebug() << "Found new track:" << pTrack->getFilename();
                 return pTrack;
             }
             else

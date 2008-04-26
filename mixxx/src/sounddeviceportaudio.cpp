@@ -201,7 +201,7 @@ int SoundDevicePortAudio::open()
     if (!portaudio.load())
        qDebug() << "Failed to dynamically load PortAudio library";
     else
-       qDebug() << "Dynamically load PortAudio library!";        
+       qDebug() << "Dynamically loaded PortAudio library!";        
     
     EnableAlsaRT enableRealtime = (EnableAlsaRT) portaudio.resolve("PaAlsa_EnableRealtimeScheduling");
     if (enableRealtime)
