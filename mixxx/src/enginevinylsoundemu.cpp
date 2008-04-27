@@ -55,7 +55,7 @@ void EngineVinylSoundEmu::process(const CSAMPLE * pIn, const CSAMPLE * pOut, con
         //    which gives a gain of 1
         //m_fGainFactor = log10(1 + m_fAbsSpeed/0.50f * 9);
         m_fGainFactor = m_fAbsSpeed/0.50f;
-        qDebug() << m_fGainFactor << m_fAbsSpeed;
+        //qDebug() << m_fGainFactor << m_fAbsSpeed;
     }
     else if (m_fAbsSpeed == 0.0f)
         m_fGainFactor = 0.0f; //Log blows up at 0 :)
