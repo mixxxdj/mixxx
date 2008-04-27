@@ -31,7 +31,7 @@ EngineVinylSoundEmu::EngineVinylSoundEmu(ConfigObject<ConfigValue> * pConfig, co
 {
     m_pConfig = pConfig;
     m_pRateEngine = ControlObject::getControl(ConfigKey(group, "rateEngine"));
-    m_fSpeed = 0.0f;
+    m_fAbsSpeed = 0.0f;
     m_fGainFactor = 1.0f;
 }
 
@@ -43,18 +43,26 @@ EngineVinylSoundEmu::~EngineVinylSoundEmu()
 void EngineVinylSoundEmu::process(const CSAMPLE * pIn, const CSAMPLE * pOut, const int iBufferSize)
 {
     CSAMPLE * pOutput = (CSAMPLE *)pOut;
-    m_fSpeed = (float)m_pRateEngine->get();
+    m_fAbsSpeed = fabs((float)m_pRateEngine->get());
     //qDebug() << m_pRateEngine->get();
 
-    if (fabs(m_fSpeed) < 0.50f && m_fSpeed != 0.0f) //Change the volume based on the playback speed.
+    if (m_fAbsSpeed < 0.50f && m_fAbsSpeed > 0.0f) //Change the volume based on the playback speed.
     {
-        m_fGainFactor = fabs(m_fSpeed)/0.50f;
+        //The numbers in this formula are important:
+        //  - The "1 + ..." makes the minimum value of the parameter of log10
+        //    be 1, which makes the gain 0.
+        //  - The "* 9" makes the maximum value of the log10 become 10 (9 + 1 = 10)
+        //    which gives a gain of 1
+        //m_fGainFactor = log10(1 + m_fAbsSpeed/0.50f * 9);
+        m_fGainFactor = m_fAbsSpeed/0.50f;
+        qDebug() << m_fGainFactor << m_fAbsSpeed;
     }
+    else if (m_fAbsSpeed == 0.0f)
+        m_fGainFactor = 0.0f; //Log blows up at 0 :)
     else
     {
         m_fGainFactor = 1.0f;
     }
-    //qDebug() << "gf: " << m_fGainFactor;
 
     //Apply whatever gain we calculated.
     for (int i=0; i < iBufferSize; i++)
