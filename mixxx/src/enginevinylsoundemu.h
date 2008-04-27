@@ -28,7 +28,7 @@ public:
 private:
     ConfigObject<ConfigValue> *m_pConfig;
     ControlObject *m_pRateEngine;
-    float m_fSpeed;
+    float m_fAbsSpeed;
     float m_fGainFactor;
 };
 
