@@ -15,12 +15,19 @@
 *                                                                         *
 ***************************************************************************/
 
+#include <QtCore>
 #include "enginebufferscalelinear.h"
 #include "mathstuff.h"
 #include "readerextractwave.h"
 
+#define RATE_LERP_LENGTH 200
+
 EngineBufferScaleLinear::EngineBufferScaleLinear(ReaderExtractWave * wave) : EngineBufferScale(wave)
 {
+    m_dBaseRate = 0.0f;
+    m_dTempo = 0.0f;
+    m_fOldTempo = 0.0f;
+    m_fOldBaseRate = 0.0f;
 }
 
 EngineBufferScaleLinear::~EngineBufferScaleLinear()
@@ -29,6 +36,9 @@ EngineBufferScaleLinear::~EngineBufferScaleLinear()
 
 double EngineBufferScaleLinear::setTempo(double _tempo)
 {
+//    if (m_fOldTempo != m_dTempo)
+        m_fOldTempo = m_dTempo; //Save the old tempo when the tempo changes
+
     m_dTempo = _tempo;
 
     if (m_dTempo>MAX_SEEK_SPEED)
@@ -47,12 +57,27 @@ double EngineBufferScaleLinear::setTempo(double _tempo)
 
 void EngineBufferScaleLinear::setBaseRate(double dBaseRate)
 {
+//    if (m_fOldBaseRate != m_dBaseRate)
+        m_fOldBaseRate = m_dBaseRate; //Save the old baserate when it changes
+
     m_dBaseRate = dBaseRate*m_dTempo;
 }
 
 void EngineBufferScaleLinear::clear()
 {
     m_bClear = true;
+}
+
+
+// laurent de soras
+inline float hermite4(float frac_pos, float xm1, float x0, float x1, float x2)
+{
+    const float c = (x1 - xm1) * 0.5f;
+    const float v = x0 - x1;
+    const float w = c + v;
+    const float a = w + v + (x2 - x0) * 0.5f;
+    const float b_neg = w + a;
+    return ((((a * frac_pos) - b_neg) * frac_pos + c) * frac_pos + x0);
 }
 
 CSAMPLE * EngineBufferScaleLinear::scale(double playpos, unsigned long buf_size, float * pBase, unsigned long iBaseLength)
@@ -65,7 +90,9 @@ CSAMPLE * EngineBufferScaleLinear::scale(double playpos, unsigned long buf_size,
         iBaseLength = READBUFFERSIZE;	//Length of the base buffer
     }
     
-    float rate_add = 2.*m_dBaseRate;
+    float rate_add_new = 2.*m_dBaseRate;
+    float rate_add_old = 2.*m_fOldBaseRate; //Smoothly interpolate to new playback rate
+    float rate_add = rate_add_new; 
 
     // Determine position in read_buffer to start from
     new_playpos = playpos;
@@ -79,7 +106,23 @@ CSAMPLE * EngineBufferScaleLinear::scale(double playpos, unsigned long buf_size,
             if (!even(prev)) prev--;
             long next = (prev-2+READBUFFERSIZE)%READBUFFERSIZE;
 
+            //Smooth any changes in the playback rate over RATE_LERP_LENGTH samples. This
+            //prevents the change from being discontinuous and helps improve sound
+            //quality.
+            if (i < RATE_LERP_LENGTH)
+            {
+                rate_add = (rate_add_new-rate_add_old)/RATE_LERP_LENGTH*i + rate_add_old;
+            }
+            else
+                rate_add = rate_add_new;
+            
             CSAMPLE frac = new_playpos-floor(new_playpos);
+            
+            //Hermite interpolation, see the comments in the "else" block below.
+            //buffer[i  ] = hermite4(frac, wavebuffer[math_min(prev-2, 0)], wavebuffer[prev], wavebuffer[next], wavebuffer[(next+2)%READBUFFERSIZE]); 
+            //buffer[i+1] = hermite4(frac, wavebuffer[math_min(prev-1, 1)], wavebuffer[prev+1], wavebuffer[(next+1)%READBUFFERSIZE], wavebuffer[(next+3)%READBUFFERSIZE]); 
+            
+            //Perform linear interpolation
             buffer[i  ] = wavebuffer[prev  ] + frac*(wavebuffer[next  ]-wavebuffer[prev  ]);
             buffer[i+1] = wavebuffer[prev+1] + frac*(wavebuffer[next+1]-wavebuffer[prev+1]);
 
@@ -92,10 +135,30 @@ CSAMPLE * EngineBufferScaleLinear::scale(double playpos, unsigned long buf_size,
         {
             long prev = (long)floor(new_playpos)%READBUFFERSIZE;
             if (!even(prev)) prev--;
-
             long next = (prev+2)%READBUFFERSIZE;
+          
+            //Smooth any changes in the playback rate over RATE_LERP_LENGTH samples. This
+            //prevents the change from being discontinuous and helps improve sound
+            //quality.
+            if (i < RATE_LERP_LENGTH)
+            {
+                rate_add = (rate_add_new-rate_add_old)/RATE_LERP_LENGTH*i + rate_add_old;
+            }
+            else
+                rate_add = rate_add_new;
 
-            CSAMPLE frac = new_playpos - floor(new_playpos);
+            CSAMPLE frac = (new_playpos - floor(new_playpos))/2;
+            
+            /* //Hermite interpolation - experimented with this to see if there was any noticeable increase
+             *                           in sound quality, but I couldn't hear any (the literature generally
+             *                           agrees that that is the case too) - Albert 04/27/08
+            buffer[i  ] = hermite4(frac, wavebuffer[math_min(prev-2, 0)], 
+                                   wavebuffer[prev], wavebuffer[next], wavebuffer[(next+2)%READBUFFERSIZE]); 
+            buffer[i+1] = hermite4(frac, wavebuffer[math_min(prev-1, 1)], 
+                                   wavebuffer[prev+1], wavebuffer[(next+1)%READBUFFERSIZE], wavebuffer[(next+3)%READBUFFERSIZE]); 
+            */
+            
+            //Perform linear interpolation
             buffer[i  ] = wavebuffer[prev  ] + frac*(wavebuffer[next  ]-wavebuffer[prev  ]);
             buffer[i+1] = wavebuffer[prev+1] + frac*(wavebuffer[next+1]-wavebuffer[prev+1]);
 
