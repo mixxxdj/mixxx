@@ -304,7 +304,11 @@ bool Track::eventFilter(QObject *obj, QEvent *e) {
       case QEvent::Wheel: {
          QWidget* targetWidget;
          targetWidget = ((QWidget *)obj)->childAt(((QWheelEvent *)e)->x(), ((QWheelEvent *)e)->y());
-         if (targetWidget == 0) { qDebug() << "Mouse Wheel Event -- Null Target Object."; return true; };
+         if (targetWidget == 0) 
+         { 
+            //qDebug() << "Mouse Wheel Event -- Null Target Object."; 
+            return true; 
+         };
          double wheelDirection = ((QWheelEvent *)e)->delta() / 120.;
          if (qobject_cast<WSliderComposed *>(targetWidget) != 0 || qobject_cast<WKnob *>(targetWidget) != 0) {
            double newValue = qobject_cast<WWidget *>(targetWidget)->getValue() + (wheelDirection);
