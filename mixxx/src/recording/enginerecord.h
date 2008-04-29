@@ -17,7 +17,7 @@
 #ifndef ENGINERECORD_H
 #define ENGINERECORD_H
 
-#include "../controlobjectthreadmain.h"
+#include "../controlobjectthread.h"
 #include "../configobject.h"
 #include "../engineobject.h"
 #include "writeaudiofile.h"
@@ -27,7 +27,6 @@
 class ControlLogpotmeter;
 class ConfigKey;
 class ControlObject;
-class ControlObjectThreadMain;
 
 class EngineRecord : public EngineObject {
 public:
@@ -37,7 +36,7 @@ public:
 private:
     WriteAudioFile *fOut;
     ConfigObject<ConfigValue> *config;
-    ControlObjectThreadMain* recReady;
+    ControlObjectThread* recReady;
     ControlObject* recReadyCO;
 };
 

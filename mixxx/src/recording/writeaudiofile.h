@@ -9,7 +9,7 @@
 #ifndef WRITEAUDIOFILE_H
 #define WRITEAUDIOFILE_H
 
-#include "controlobjectthreadmain.h"
+#include "controlobjectthread.h"
 #include "configobject.h"
 #include "controlobject.h"
 #include "defs.h"
@@ -27,7 +27,7 @@ private:
     SNDFILE *sf;
     SF_INFO sfInfo;
     ConfigObject<ConfigValue> *config;
-    ControlObjectThreadMain *ctrlRec;
+    ControlObjectThread *ctrlRec;
     bool ready; //if we can record this is set
 };
 
