@@ -41,7 +41,7 @@ class SoundDevice
         int getNumOutputChannels();     
         int getNumInputChannels();   
         void addSource(AudioSource src);
-        void addReceiver(AudioReceiver recv);
+        void addReceiver(AudioReceiverType recv);
         void clearSources();
         void clearReceivers();
         bool operator== (SoundDevice* other);
@@ -60,7 +60,7 @@ class SoundDevice
         QString m_hostAPI;                  //The name of the audio API used by this device.
         //int m_iLatency;                       //The latency of the soundcard in milliseconds (TODO: Use bufferSize instead?)
         QList<AudioSource> m_audioSources;          //A list containing all the sources that we're going to receive/request audio from.
-        QList<AudioReceiver> m_audioReceivers;      //A list containing all the "receivers" that we're going to send audio to.
+        QList<AudioReceiverType> m_audioReceivers;      //A list containing all the "receivers" that we're going to send audio to.
         //QList<int> m_listActiveOutputChannels;    //A list containing the output channels which are currently active on the soundcard.
         //QList<int> m_listActiveInputChannels;     //A list containing the input channels which are currently active on the soundcard.
 

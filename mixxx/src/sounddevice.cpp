@@ -91,7 +91,7 @@ void SoundDevice::clearSources()
         m_audioSources.pop_back();
 }
 
-void SoundDevice::addReceiver(const AudioReceiver recv)
+void SoundDevice::addReceiver(const AudioReceiverType recv)
 {
     m_audioReceivers.push_back(recv);
 }

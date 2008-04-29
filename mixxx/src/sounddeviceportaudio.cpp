@@ -87,7 +87,7 @@ int SoundDevicePortAudio::open()
     }
     else
     {
-        QListIterator<AudioReceiver> recvIt(m_audioReceivers);
+        QListIterator<AudioReceiverType> recvIt(m_audioReceivers);
         while (recvIt.hasNext())
         {
             m_inputParams.channelCount += 2;

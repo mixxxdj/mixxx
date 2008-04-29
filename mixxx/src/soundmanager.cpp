@@ -450,7 +450,7 @@ CSAMPLE ** SoundManager::requestBuffer(QList<AudioSource> srcs, unsigned long iF
 }
 
 //Used by SoundDevices to "push" any audio from their inputs that they have into the mixing engine.
-CSAMPLE * SoundManager::pushBuffer(QList<AudioReceiver> recvs, short * inputBuffer, unsigned long iFramesPerBuffer)
+CSAMPLE * SoundManager::pushBuffer(QList<AudioReceiverType> recvs, short * inputBuffer, unsigned long iFramesPerBuffer)
 {
 
     if (inputBuffer)
