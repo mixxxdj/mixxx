@@ -134,6 +134,8 @@ void DlgPrefVinyl::slotUpdate()
     int channels;  
     channels = 0;
     QString channelname = "";
+    ComboBoxChannelDeck1->setEnabled(false);
+    ComboBoxChannelDeck2->setEnabled(false);
 
     // Set vinyl control types in the comboboxes
     int combo_index = ComboBoxVinylType->findText(config->getValueString(ConfigKey("[VinylControl]","strVinylType")));
@@ -209,8 +211,40 @@ void DlgPrefVinyl::ChannelsSlotApply()
 {
     // Channels
     qDebug() << "DlgPrefVinyl::ChannelsSlotApply()";
-    //config->set(ConfigKey("[VinylControl]","DeviceInputChannelsDeck1"), ConfigValue(ComboBoxChannelsDeck1->currentText()));
-    //config->set(ConfigKey("[VinylControl]","DeviceInputChannelsDeck2"), ConfigValue(ComboBoxChannelsDeck2->currentText()));
+/*	
+	QString selectedAPI = config->getValueString(ConfigKey("[Soundcard]","SoundApi"));
+	QList<SoundDevice*> devList = m_pSoundManager->getDeviceList(selectedAPI, true, false);
+	QListIterator<SoundDevice*> devItr(devList);
+	SoundDevice *pdev;
+	ComboBoxChannelMaster->clear();
+	
+	while(devItr.hasNext())
+	{
+		pdev = devItr.next();
+		if(pdev->getInternalName() == ComboBoxDeviceDeck1->itemData(ComboBoxDeviceDeck1->currentIndex()).toString())
+		{
+			for(int chCount=0; chCount < pdev->getNumInputChannels(); chCount+=2)
+			{
+				QString q = QString("Channels ") + QString::number(chCount+1) + QString("-") + QString::number(chCount+2);
+				ComboBoxChannelDeck1->insertItem(chCount+1, q, QString::number(chCount));
+
+				//This nasty if statement is here to set the Channel to whats in the config if we go to the sound device in the config
+				if((ComboBoxDeviceDeck1->itemData(ComboBoxDeviceDeck1->currentIndex()).toString()
+					== config->getValueString(ConfigKey("[Soundcard]","DeviceMaster")))
+					&& (QString::number(chCount) ==  config->getValueString(ConfigKey("[Soundcard]","ChannelMaster"))))
+				{
+						ComboBoxChannelDeck1->setCurrentIndex(chCount/2);
+				}
+			}
+			break;
+		} 
+	}
+	//enableValidComboBoxes();	//TODO: probably need something like this - Albert ( see dlgprefsound.cpp )
+	
+    config->set(ConfigKey("[VinylControl]","DeviceInputChannelsDeck1"), ConfigValue(ComboBoxChannelDeck1->itemData(ComboBoxChannelDeck1->currentIndex()).toString()));
+    config->set(ConfigKey("[VinylControl]","DeviceInputChannelsDeck2"), ConfigValue(ComboBoxChannelDeck2->itemData(ComboBoxChannelDeck2->currentIndex()).toString()));
+	qDebug() << "Setting deck1 channel input to:" << ComboBoxChannelDeck1->itemData(ComboBoxChannelDeck1->currentIndex()).toString();
+*/
 }
 
 
