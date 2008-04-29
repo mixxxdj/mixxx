@@ -13,7 +13,7 @@ WriteAudioFile::WriteAudioFile(ConfigObject<ConfigValue> * _config)
     sf = NULL;
     memset(&sfInfo, 0, sizeof(sfInfo));
     config = _config;
-    ctrlRec = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey("[Master]", "Record")));
+    ctrlRec = new ControlObjectThread(ControlObject::getControl(ConfigKey("[Master]", "Record")));
 }
 
 WriteAudioFile::~WriteAudioFile()
@@ -97,7 +97,8 @@ void WriteAudioFile::write(const CSAMPLE * pIn, int iBufferSize)
 {
     Q_ASSERT(iBufferSize % 2 == 0);
     CSAMPLE *pSamples = (CSAMPLE*) pIn;
-    if(ControlObject::getControl(ConfigKey("[Master]", "Record"))->get() == RECORD_ON)
+    
+    if(ctrlRec->get() == RECORD_ON)
     {
         if(ready == true)
         {
