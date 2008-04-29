@@ -1,6 +1,6 @@
 #include <QtCore>
 #include <sndfile.h>
-#include "../controlobjectthreadmain.h"
+#include "../controlobjectthread.h"
 #include "../controlobject.h"
 #include "../dlgprefrecord.h"
 #include "writeaudiofile.h"

@@ -18,7 +18,7 @@
 #include "defs_recording.h"
 #include "../controllogpotmeter.h"
 #include "../configobject.h"
-#include "../controlobjectthreadmain.h"
+#include "../controlobjectthread.h"
 #include "../controlobject.h"
 #include "../dlgprefrecord.h"
 
@@ -36,7 +36,7 @@ EngineRecord::EngineRecord(ConfigObject<ConfigValue> * _config)
 {
     config = _config;
     recReadyCO = new ControlObject(ConfigKey("[Master]", "Record"));
-    recReady = new ControlObjectThreadMain(recReadyCO);
+    recReady = new ControlObjectThread(recReadyCO);
     fOut = new WriteAudioFile(_config);
 }
 
