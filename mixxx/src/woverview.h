@@ -47,6 +47,8 @@ public slots:
     void setVirtualPos(double);
 protected:
 
+    bool waveformChanged;
+
     /** Pointer to array containing waveform summary */
     Q3MemArray<char> *m_pWaveformSummary;
     /** Pointer to list of segmentation points */

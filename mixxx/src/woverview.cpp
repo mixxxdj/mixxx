@@ -20,6 +20,7 @@
 #include <Q3ValueList>
 #include <QPaintEvent>
 #include "mathstuff.h"
+#include <qapplication.h>
 
 WOverview::WOverview(QWidget * pParent, const char * pName) : WWidget(pParent, pName)
 {
@@ -31,6 +32,8 @@ WOverview::WOverview(QWidget * pParent, const char * pName) : WWidget(pParent, p
     m_bDrag = false;
     m_pScreenBuffer = 0;
     setBackgroundMode(Qt::NoBackground);
+
+    waveformChanged = false;
 }
 
 WOverview::~WOverview()
@@ -102,7 +105,8 @@ void WOverview::setData(Q3MemArray<char> * pWaveformSummary, Q3ValueList<long> *
     m_pSegmentation = pSegmentation;
     m_liSampleDuration = liSampleDuration;
 
-    repaint();
+    // repaint(); // FIXME: Don't do repaints from non-UI threads, else you will cause XLib errors!!!!
+    waveformChanged = true;
 }
 
 void WOverview::repaint() {
@@ -243,6 +247,11 @@ void WOverview::mousePressEvent(QMouseEvent * e)
 
 void WOverview::paintEvent(QPaintEvent *)
 {
+    if (waveformChanged) {
+      repaint();
+      waveformChanged = false;
+    }
+
     QPixmap pm(size());
 
     // Draw waveform, then playpos to buffer
