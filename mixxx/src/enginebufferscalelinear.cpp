@@ -26,8 +26,8 @@ EngineBufferScaleLinear::EngineBufferScaleLinear(ReaderExtractWave * wave) : Eng
 {
     m_dBaseRate = 0.0f;
     m_dTempo = 0.0f;
-    m_fOldTempo = 0.0f;
-    m_fOldBaseRate = 0.0f;
+    m_fOldTempo = 1.0f;
+    m_fOldBaseRate = 1.0f;
 }
 
 EngineBufferScaleLinear::~EngineBufferScaleLinear()
@@ -69,7 +69,7 @@ void EngineBufferScaleLinear::clear()
 }
 
 
-// laurent de soras
+// laurent de soras - punked from musicdsp.org (mad props)
 inline float hermite4(float frac_pos, float xm1, float x0, float x1, float x2)
 {
     const float c = (x1 - xm1) * 0.5f;
@@ -80,6 +80,7 @@ inline float hermite4(float frac_pos, float xm1, float x0, float x1, float x2)
     return ((((a * frac_pos) - b_neg) * frac_pos + c) * frac_pos + x0);
 }
 
+/** Stretch a buffer worth of audio using linear interpolation */
 CSAMPLE * EngineBufferScaleLinear::scale(double playpos, unsigned long buf_size, float * pBase, unsigned long iBaseLength)
 {
     if (!pBase)
@@ -93,6 +94,9 @@ CSAMPLE * EngineBufferScaleLinear::scale(double playpos, unsigned long buf_size,
     float rate_add_new = 2.*m_dBaseRate;
     float rate_add_old = 2.*m_fOldBaseRate; //Smoothly interpolate to new playback rate
     float rate_add = rate_add_new; 
+
+    m_fOldBaseRate = m_dBaseRate;           //Update the old base rate because we only need to
+                                            //interpolate/ramp up the pitch changes once.
 
     // Determine position in read_buffer to start from
     new_playpos = playpos;
