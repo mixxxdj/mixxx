@@ -20,8 +20,9 @@
 #include <portaudio.h>
 #include <assert.h>
 #include "controlobjectthreadmain.h"
-#include "sounddeviceportaudio.h"
 #include "soundmanager.h"
+#include "sounddevice.h"
+#include "sounddeviceportaudio.h"
 
 SoundDevicePortAudio::SoundDevicePortAudio(ConfigObject<ConfigValue> * config, SoundManager * sm, const PaDeviceInfo * deviceInfo,
                                            unsigned int devIndex)
@@ -87,11 +88,12 @@ int SoundDevicePortAudio::open()
     }
     else
     {
-        QListIterator<AudioReceiverType> recvIt(m_audioReceivers);
+        QListIterator<AudioReceiver> recvIt(m_audioReceivers);
         while (recvIt.hasNext())
         {
-            m_inputParams.channelCount += 2;
-            recvIt.next();
+			AudioReceiver recv = recvIt.next();
+			if((recv.channelBase + recv.channels) > m_inputParams.channelCount)
+				m_inputParams.channelCount = recv.channelBase + recv.channels;            
         }
     }
 
@@ -312,7 +314,7 @@ int SoundDevicePortAudio::callbackProcess(unsigned long framesPerBuffer, float *
             
         //qDebug() << in[0];
 
-        m_pSoundManager->pushBuffer(m_audioReceivers, in, framesPerBuffer);
+        m_pSoundManager->pushBuffer(m_audioReceivers, in, framesPerBuffer, m_inputParams.channelCount);
     } 
     
     if (output && framesPerBuffer > 0)
@@ -325,7 +327,7 @@ int SoundDevicePortAudio::callbackProcess(unsigned long framesPerBuffer, float *
         //Reset sample for each open channel
         memset(output, 0, framesPerBuffer * iFrameSize * sizeof(*output));
 
-        for (int iFrameBase=0; iFrameBase < framesPerBuffer*iFrameSize; iFrameBase += iFrameSize)
+        for (unsigned int iFrameBase=0; iFrameBase < framesPerBuffer*iFrameSize; iFrameBase += iFrameSize)
         {
 			//Interlace Audio data onto portaudio buffer
 			//We iterate through the source list to find out what goes in the buffer
