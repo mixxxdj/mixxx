@@ -381,12 +381,22 @@ int SoundManager::setupDevices()
         //Connect the soundcard's inputs to the Engine.
         if (m_pConfig->getValueString(ConfigKey("[VinylControl]","DeviceInputDeck1"))  == device->getInternalName())
         {
-            device->addReceiver(RECEIVER_VINYLCONTROL_ONE);
+            AudioReceiver recv;
+			recv.channelBase = m_pConfig->getValueString(ConfigKey("[VinylControl]", "ChannelInputDeck1")).toInt();
+			recv.channels = 2;
+			recv.type = RECEIVER_VINYLCONTROL_ONE;
+			
+            device->addReceiver(recv);
             bNeedToOpenDeviceForInput = 1;
         }
         if (m_pConfig->getValueString(ConfigKey("[VinylControl]","DeviceInputDeck2")) == device->getInternalName())
         {
-            device->addReceiver(RECEIVER_VINYLCONTROL_TWO);
+            AudioReceiver recv;
+			recv.channelBase = m_pConfig->getValueString(ConfigKey("[VinylControl]", "ChannelInputDeck2")).toInt();
+			recv.channels = 2;
+			recv.type = RECEIVER_VINYLCONTROL_TWO;
+			
+            device->addReceiver(recv);
             bNeedToOpenDeviceForInput = 1;
         }
 
@@ -450,21 +460,47 @@ CSAMPLE ** SoundManager::requestBuffer(QList<AudioSource> srcs, unsigned long iF
 }
 
 //Used by SoundDevices to "push" any audio from their inputs that they have into the mixing engine.
-CSAMPLE * SoundManager::pushBuffer(QList<AudioReceiverType> recvs, short * inputBuffer, unsigned long iFramesPerBuffer)
+CSAMPLE * SoundManager::pushBuffer(QList<AudioReceiver> recvs, short * inputBuffer, 
+                                   unsigned long iFramesPerBuffer, unsigned int iFrameSize)
 {
+    short vinylControlBuffer1[iFramesPerBuffer * 2];
+    short vinylControlBuffer2[iFramesPerBuffer * 2];
+
+    //memset(vinylControlBuffer1, 0, iFramesPerBuffer * iFrameSize * sizeof(*vinylControlBuffer1));
+
+
+    //Two stereo streams interlaced as one, so break them up into two separate interlaced streams
+    if (iFrameSize == 4)
+    {
+        for (int i = 0; i < iFramesPerBuffer; i++) //For each frame of audio
+        {
+            vinylControlBuffer1[i*2    ] = inputBuffer[i*iFrameSize    ];
+            vinylControlBuffer1[i*2 + 1] = inputBuffer[i*iFrameSize + 1];
+            vinylControlBuffer2[i*2    ] = inputBuffer[i*iFrameSize + 2];
+            vinylControlBuffer2[i*2 + 1] = inputBuffer[i*iFrameSize + 3];
+        }
+    }
 
     if (inputBuffer)
     {
 #ifdef __VINYLCONTROL__
-        if (recvs.contains(RECEIVER_VINYLCONTROL_ONE))
+        QListIterator<AudioReceiver> devItr(recvs);
+        while(devItr.hasNext())
         {
-            if (m_VinylControl[0])
-                m_VinylControl[0]->AnalyseSamples(inputBuffer, iFramesPerBuffer);
-        }
-        if (recvs.contains(RECEIVER_VINYLCONTROL_TWO))
-        {
-            if (m_VinylControl[1])
-                m_VinylControl[1]->AnalyseSamples(inputBuffer, iFramesPerBuffer);
+            AudioReceiver recv = devItr.next();
+            if (recv.type == RECEIVER_VINYLCONTROL_ONE)
+            {
+                //recv.channelBase
+                Q_ASSERT(recv.channels == 2); //Stereo data is needed for vinyl control
+                if (m_VinylControl[0])
+                    m_VinylControl[0]->AnalyseSamples(vinylControlBuffer1, iFramesPerBuffer);
+            }
+            if (recv.type == RECEIVER_VINYLCONTROL_TWO)
+            {
+                Q_ASSERT(recv.channels == 2); //Stereo data is needed for vinyl control
+                if (m_VinylControl[1])
+                    m_VinylControl[1]->AnalyseSamples(vinylControlBuffer2, iFramesPerBuffer);
+            }
         }
 #endif
     }

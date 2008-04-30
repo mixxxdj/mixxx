@@ -56,11 +56,11 @@ enum AudioReceiverType {
     RECEIVER_MICROPHONE = 5
 };
 
-typedef struct _AudioReceiever {
-	AudioSourceType type;
+typedef struct _AudioReceiver {
+	AudioReceiverType type;
 	int channelBase;	//Base channel on the audio device
 	int channels;		//total channels (e.g. 2 for stereo)
-} AudioReceiever;
+} AudioReceiver;
 
 class SoundManager : public QObject
 {
@@ -80,7 +80,8 @@ class SoundManager : public QObject
         int setHostAPI(QString api);
         QString getHostAPI();
         CSAMPLE** requestBuffer(QList<AudioSource> srcs, unsigned long iFramesPerBuffer);
-        CSAMPLE* pushBuffer(QList<AudioReceiverType> recvs, short *inputBuffer, unsigned long iFramesPerBuffer);
+        CSAMPLE* pushBuffer(QList<AudioReceiver> recvs, short *inputBuffer, 
+                            unsigned long iFramesPerBuffer, unsigned int iFrameSize);
     public slots:
         void sync();
     private:

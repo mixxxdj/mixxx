@@ -42,11 +42,14 @@ public slots:
     void slotUpdate();
     void slotApply();
 	void ChannelsSlotApply();
+    void slotComboBoxDeviceDeck1Change();
+    void slotComboBoxDeviceDeck2Change();
 	void EnableRelativeModeSlotApply();
 	void EnableScratchModeSlotApply();
 	void VinylTypeSlotApply();
 	void AutoCalibrationSlotApply();
     void VinylGainSlotApply();
+    void enableValidComboBoxes();
 
 signals:
     void apply();

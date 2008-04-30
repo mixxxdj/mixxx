@@ -307,7 +307,10 @@ void DlgPrefSound::slotApply()
 	}
 	catch(int e)
 	{
-		QMessageBox::warning(0, "Configuration error", "You cannot send multiple outputs to a single channel");
+		if (e == MIXXX_DUPLICATE_OUTPUT_CHANNEL_EXCEPTION)
+		    QMessageBox::warning(0, "Configuration error", "You cannot send multiple outputs to a single channel");
+		if (e == MIXXX_DUPLICATE_INPUT_CHANNEL_EXCEPTION)
+		    QMessageBox::warning(0, "Configuration error", "You cannot use a single pair of channels for both decks");		
 		m_parent->setHidden(false);
 		m_configError = true;
 	}

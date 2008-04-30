@@ -25,7 +25,8 @@
 class SoundDevice;
 class SoundManager;
 
-#define DUPLICATE_CHANNEL_EXCEPTION 0x0f00f00
+#define MIXXX_DUPLICATE_OUTPUT_CHANNEL_EXCEPTION 0x0f00f00
+#define MIXXX_DUPLICATE_INPUT_CHANNEL_EXCEPTION  0x0100100
 
 class SoundDevice
 {
@@ -41,7 +42,7 @@ class SoundDevice
         int getNumOutputChannels();     
         int getNumInputChannels();   
         void addSource(AudioSource src);
-        void addReceiver(AudioReceiverType recv);
+        void addReceiver(AudioReceiver recv);
         void clearSources();
         void clearReceivers();
         bool operator== (SoundDevice* other);
@@ -59,8 +60,8 @@ class SoundDevice
         double m_dSampleRate;               //The current samplerate for the sound device.
         QString m_hostAPI;                  //The name of the audio API used by this device.
         //int m_iLatency;                       //The latency of the soundcard in milliseconds (TODO: Use bufferSize instead?)
-        QList<AudioSource> m_audioSources;          //A list containing all the sources that we're going to receive/request audio from.
-        QList<AudioReceiverType> m_audioReceivers;      //A list containing all the "receivers" that we're going to send audio to.
+        QList<AudioSource> m_audioSources;          //A list containing all the sources (devices) that we're going to receive/request audio from.
+        QList<AudioReceiver> m_audioReceivers;      //A list containing all the "receivers" that we're going to send audio to.
         //QList<int> m_listActiveOutputChannels;    //A list containing the output channels which are currently active on the soundcard.
         //QList<int> m_listActiveInputChannels;     //A list containing the input channels which are currently active on the soundcard.
 

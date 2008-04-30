@@ -55,8 +55,8 @@ DlgPrefVinyl::DlgPrefVinyl(QWidget * parent, SoundManager * soundman,
     vinylControlMode.addButton(ScratchMode);
 
     //Device input.
-    ComboBoxDeviceDeck1->setEnabled( TRUE );
-    ComboBoxDeviceDeck2->setEnabled( TRUE );
+    ComboBoxDeviceDeck1->setEnabled(true);
+    ComboBoxDeviceDeck2->setEnabled(true);
 
     // Disabled Input Device selection (see note at the top)
 
@@ -66,6 +66,10 @@ DlgPrefVinyl::DlgPrefVinyl(QWidget * parent, SoundManager * soundman,
     //connect(RelativeMode,              SIGNAL(stateChanged(int)), this, SLOT(EnableRelativeModeSlotApply()));
     //connect(ScratchMode,               SIGNAL(stateChanged(int)), this, SLOT(EnableScratchModeSlotApply()));
     //connect(VinylGain,              SIGNAL(valueChanged(int)), this, SLOT(VinylGainSlotApply()));
+
+	connect(ComboBoxDeviceDeck1,	SIGNAL(activated(int)),		this,	SLOT(slotComboBoxDeviceDeck1Change()));
+	connect(ComboBoxDeviceDeck2,	SIGNAL(activated(int)),		this,	SLOT(slotComboBoxDeviceDeck2Change()));
+	
 
     // Connect event handler
     /*
@@ -134,8 +138,6 @@ void DlgPrefVinyl::slotUpdate()
     int channels;  
     channels = 0;
     QString channelname = "";
-    ComboBoxChannelDeck1->setEnabled(false);
-    ComboBoxChannelDeck2->setEnabled(false);
 
     // Set vinyl control types in the comboboxes
     int combo_index = ComboBoxVinylType->findText(config->getValueString(ConfigKey("[VinylControl]","strVinylType")));
@@ -159,6 +161,70 @@ void DlgPrefVinyl::slotUpdate()
 
 }
 
+/** Called when the first deck device combobox changes */
+void DlgPrefVinyl::slotComboBoxDeviceDeck1Change()
+{
+	QString selectedAPI = config->getValueString(ConfigKey("[Soundcard]","SoundApi"));
+	QList<SoundDevice*> devList = m_pSoundManager->getDeviceList(selectedAPI, true, false);
+	QListIterator<SoundDevice*> devItr(devList);
+	SoundDevice *pdev;
+	ComboBoxChannelDeck1->clear();
+	
+	while(devItr.hasNext())
+	{
+		pdev = devItr.next();
+		if(pdev->getInternalName() == ComboBoxDeviceDeck1->itemData(ComboBoxDeviceDeck1->currentIndex()).toString())
+		{
+			for(int chCount=0; chCount < pdev->getNumInputChannels(); chCount+=2)
+			{
+				QString q = QString("Channels ") + QString::number(chCount+1) + QString("-") + QString::number(chCount+2);
+				ComboBoxChannelDeck1->insertItem(chCount+1, q, QString::number(chCount));
+
+				//This nasty if statement is here to set the Channel to whats in the config if we go to the sound device in the config
+				if((ComboBoxDeviceDeck1->itemData(ComboBoxDeviceDeck1->currentIndex()).toString()
+					== config->getValueString(ConfigKey("[VinylControl]","DeviceInputDeck1")))
+					&& (QString::number(chCount) ==  config->getValueString(ConfigKey("[VinylControl]","ChannelInputDeck1"))))
+				{
+						ComboBoxChannelDeck1->setCurrentIndex(chCount/2);
+				}
+			}
+			break;
+		} 
+	}
+    enableValidComboBoxes();
+}
+
+void DlgPrefVinyl::slotComboBoxDeviceDeck2Change()
+{
+	QString selectedAPI = config->getValueString(ConfigKey("[Soundcard]","SoundApi"));
+	QList<SoundDevice*> devList = m_pSoundManager->getDeviceList(selectedAPI, true, false);
+	QListIterator<SoundDevice*> devItr(devList);
+	SoundDevice *pdev;
+	ComboBoxChannelDeck2->clear();
+
+	while(devItr.hasNext())
+	{
+		pdev = devItr.next();
+		if(pdev->getInternalName() == ComboBoxDeviceDeck2->itemData(ComboBoxDeviceDeck2->currentIndex()).toString())
+		{
+			for(int chCount=0; chCount < pdev->getNumInputChannels(); chCount+=2)
+			{
+				QString q = QString("Channels ") + QString::number(chCount+1) + QString("-") + QString::number(chCount+2);
+				ComboBoxChannelDeck2->insertItem(chCount+1, q, QString::number(chCount));
+
+				//This nasty if statement is here to set the Channel to whats in the config if we go to the sound device in the config
+				if((ComboBoxDeviceDeck2->itemData(ComboBoxDeviceDeck2->currentIndex()).toString()
+					== config->getValueString(ConfigKey("[VinylControl]","DeviceInputDeck2")))
+					&& (QString::number(chCount) ==  config->getValueString(ConfigKey("[VinylControl]","ChannelInputDeck2"))))
+				{
+						ComboBoxChannelDeck2->setCurrentIndex(chCount/2);
+				}
+			}
+			break;
+		} 
+	}
+	enableValidComboBoxes();
+}
 
 // Update the config object with parameters from dialog
 void DlgPrefVinyl::slotApply()
@@ -167,6 +233,8 @@ void DlgPrefVinyl::slotApply()
 
     config->set(ConfigKey("[VinylControl]","DeviceInputDeck1"), ConfigValue(ComboBoxDeviceDeck1->itemData(ComboBoxDeviceDeck1->currentIndex()).toString()));
     config->set(ConfigKey("[VinylControl]","DeviceInputDeck2"), ConfigValue(ComboBoxDeviceDeck2->itemData(ComboBoxDeviceDeck2->currentIndex()).toString()));
+    config->set(ConfigKey("[VinylControl]","ChannelInputDeck1"), ConfigValue(ComboBoxChannelDeck1->itemData(ComboBoxChannelDeck1->currentIndex()).toString()));
+    config->set(ConfigKey("[VinylControl]","ChannelInputDeck2"), ConfigValue(ComboBoxChannelDeck2->itemData(ComboBoxChannelDeck2->currentIndex()).toString()));
 
     // Lead-in time
     QString strLeadIn      = LeadinTime->text();
@@ -246,6 +314,23 @@ void DlgPrefVinyl::ChannelsSlotApply()
 	qDebug() << "Setting deck1 channel input to:" << ComboBoxChannelDeck1->itemData(ComboBoxChannelDeck1->currentIndex()).toString();
 */
 }
+
+void DlgPrefVinyl::enableValidComboBoxes()
+{
+    //int validSoundApi = ComboBoxSoundApi->currentText() != "None";
+    
+    /*
+    ComboBoxSoundcardMaster->setEnabled(validSoundApi);
+    ComboBoxChannelMaster->setEnabled(validSoundApi && ComboBoxSoundcardMaster->currentText() != "None");
+
+    ComboBoxSoundcardHeadphones->setEnabled(validSoundApi);
+    ComboBoxChannelHeadphones->setEnabled(validSoundApi && ComboBoxSoundcardHeadphones->currentText() != "None");
+
+    ComboBoxSamplerates->setEnabled(validSoundApi && (ComboBoxChannelMaster->isEnabled() || ComboBoxChannelHeadphones->isEnabled()));
+    slotChannelChange();
+    */
+}
+
 
 
 void DlgPrefVinyl::EnableRelativeModeSlotApply()
