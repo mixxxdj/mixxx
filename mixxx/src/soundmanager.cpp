@@ -463,8 +463,8 @@ CSAMPLE ** SoundManager::requestBuffer(QList<AudioSource> srcs, unsigned long iF
 CSAMPLE * SoundManager::pushBuffer(QList<AudioReceiver> recvs, short * inputBuffer, 
                                    unsigned long iFramesPerBuffer, unsigned int iFrameSize)
 {
-    short vinylControlBuffer1[iFramesPerBuffer * 2];
-    short vinylControlBuffer2[iFramesPerBuffer * 2];
+    short *vinylControlBuffer1 = (short*) alloca(iFramesPerBuffer * 2 * sizeof(short));
+    short *vinylControlBuffer2 = (short*) alloca(iFramesPerBuffer * 2 * sizeof(short));
 
     //memset(vinylControlBuffer1, 0, iFramesPerBuffer * iFrameSize * sizeof(*vinylControlBuffer1));
 
