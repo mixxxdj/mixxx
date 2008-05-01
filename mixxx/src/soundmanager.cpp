@@ -463,13 +463,16 @@ CSAMPLE ** SoundManager::requestBuffer(QList<AudioSource> srcs, unsigned long iF
 CSAMPLE * SoundManager::pushBuffer(QList<AudioReceiver> recvs, short * inputBuffer, 
                                    unsigned long iFramesPerBuffer, unsigned int iFrameSize)
 {
-    short *vinylControlBuffer1 = (short*) alloca(iFramesPerBuffer * 2 * sizeof(short));
-    short *vinylControlBuffer2 = (short*) alloca(iFramesPerBuffer * 2 * sizeof(short));
+    //short vinylControlBuffer1[iFramesPerBuffer * 2];
+    //short vinylControlBuffer2[iFramesPerBuffer * 2];
+    //short *vinylControlBuffer1 = (short*) alloca(iFramesPerBuffer * 2 * sizeof(short));
+    //short *vinylControlBuffer2 = (short*) alloca(iFramesPerBuffer * 2 * sizeof(short));
 
     //memset(vinylControlBuffer1, 0, iFramesPerBuffer * iFrameSize * sizeof(*vinylControlBuffer1));
 
 
     //Two stereo streams interlaced as one, so break them up into two separate interlaced streams
+    /*
     if (iFrameSize == 4)
     {
         for (int i = 0; i < iFramesPerBuffer; i++) //For each frame of audio
@@ -479,7 +482,7 @@ CSAMPLE * SoundManager::pushBuffer(QList<AudioReceiver> recvs, short * inputBuff
             vinylControlBuffer2[i*2    ] = inputBuffer[i*iFrameSize + 2];
             vinylControlBuffer2[i*2 + 1] = inputBuffer[i*iFrameSize + 3];
         }
-    }
+    } */
 
     if (inputBuffer)
     {
@@ -493,13 +496,13 @@ CSAMPLE * SoundManager::pushBuffer(QList<AudioReceiver> recvs, short * inputBuff
                 //recv.channelBase
                 Q_ASSERT(recv.channels == 2); //Stereo data is needed for vinyl control
                 if (m_VinylControl[0])
-                    m_VinylControl[0]->AnalyseSamples(vinylControlBuffer1, iFramesPerBuffer);
+                    m_VinylControl[0]->AnalyseSamples(inputBuffer, iFramesPerBuffer);
             }
             if (recv.type == RECEIVER_VINYLCONTROL_TWO)
             {
                 Q_ASSERT(recv.channels == 2); //Stereo data is needed for vinyl control
                 if (m_VinylControl[1])
-                    m_VinylControl[1]->AnalyseSamples(vinylControlBuffer2, iFramesPerBuffer);
+                    m_VinylControl[1]->AnalyseSamples(inputBuffer, iFramesPerBuffer);
             }
         }
 #endif
