@@ -53,9 +53,12 @@ typedef unsigned short CM_UTF16;
 extern "C"{
 #endif
 	/* Initialization Routines */
-	CC_EXPORT_PREFIX int cm_init(int maxMsgQueue, int maxDbgMsg, int fuserVerified);
+	CC_EXPORT_PREFIX int cm_init(int maxMsgQueue, int maxDbgMsg, int fuserVerified, const char *pstzReleaseID, const char *pstzUserID);
     CC_EXPORT_PREFIX void cm_set_crash_dlg(void (*pcrashDlg)(void));
 	CC_EXPORT_PREFIX void cm_close(int timeout);
+
+    /* ID Generator Routines */
+    CC_EXPORT_PREFIX char *cm_generate_userid();
 
 	/* Low Level Message Routines */
 	CC_EXPORT_PREFIX void cm_writemsg_ascii(int msgType, char *pstz);
