@@ -125,7 +125,31 @@ MixxxApp::MixxxApp(QApplication * a, struct CmdlineArgs args, QSplashScreen * pS
 			}
 		}
 	}
-	cm_init(100,20, fuserAgreeToDataCollection);
+    //If the user agrees, attempt to load the user ID from the config file
+    const char *pstzUID;
+    bool fFreePstzUID = false;
+    if(fuserAgreeToDataCollection)
+    {
+        if(config->getValueString(ConfigKey("[User Experience]", "UID")) == QString(""))
+        {
+            pstzUID = cm_generate_userid();
+            fFreePstzUID = true;
+            if(pstzUID != NULL)
+            {
+                config->set(ConfigKey("[User Experience]", "UID"), ConfigValue(QString(pstzUID)));
+            }
+        }
+        else
+        {
+            pstzUID = config->getValueString(ConfigKey("[User Experience]", "UID")).ascii();
+        }
+    }
+
+	cm_init(100,20, fuserAgreeToDataCollection, MIXXCMETRICS_RELEASE_ID, pstzUID);
+    
+    if(fFreePstzUID)
+        free((void*)pstzUID);
+
     cm_set_crash_dlg(crashDlg);
 	cm_writemsg_ascii(MIXXXCMETRICS_VERSION,
 	                  VERSION);
