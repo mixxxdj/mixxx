@@ -535,12 +535,7 @@ template <class ValueType> bool ConfigObject<ValueType>::Parse()
         int group = 0;
         QString groupStr, line;
         QTextStream text(&configfile);
-#ifdef __C_METRICS__
-		QString strconf = text.readAll();
-		QByteArray ba_strconf = strconf.toUtf8();
-        cm_writemsg_utf8(5, ba_strconf.data());
-		text.seek(0);
-#endif
+
         while (!text.atEnd())
         {
             line = text.readLine().stripWhiteSpace();
