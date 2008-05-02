@@ -50,10 +50,11 @@ typedef struct _AudioSource {
 	int channels;		//total channels (e.g. 2 for stereo)
 } AudioSource;
 
+#define MAX_AUDIORECEIVER_TYPES 3	//Keep this up to date with the enum below... I don't know how to do this automagically
 enum AudioReceiverType {
-    RECEIVER_VINYLCONTROL_ONE = 1,
-    RECEIVER_VINYLCONTROL_TWO = 2,
-    RECEIVER_MICROPHONE = 5
+    RECEIVER_VINYLCONTROL_ONE = 0,
+    RECEIVER_VINYLCONTROL_TWO = 1,
+    RECEIVER_MICROPHONE = 2
 };
 
 typedef struct _AudioReceiver {
@@ -93,8 +94,8 @@ class SoundManager : public QObject
         CSAMPLE *m_pInterleavedBuffer; //Interleaved audio buffer containing all channels of audio
         //CSAMPLE *m_pMasterBuffer;
         //CSAMPLE *m_pHeadphonesBuffer;
-		int m_cStreams;
 		CSAMPLE *m_pStreamBuffers[MAX_AUDIOSOURCE_TYPES];
+		short *m_pReceiverBuffers[MAX_AUDIORECEIVER_TYPES]; /** Audio received from input */
 #ifdef __VINYLCONTROL__
         VinylControlProxy *m_VinylControl[2];
 #endif        
