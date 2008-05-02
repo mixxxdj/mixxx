@@ -33,6 +33,11 @@ SoundManager::SoundManager(ConfigObject<ConfigValue> * pConfig, EngineMaster * _
     m_pStreamBuffers[SOURCE_MASTER] = (CSAMPLE*)_master->getMasterBuffer();
     m_pStreamBuffers[SOURCE_HEADPHONES] = (CSAMPLE*)_master->getHeadphoneBuffer();
     
+    //Note that we deal with input as shorts instead of CSAMPLEs
+    m_pReceiverBuffers[RECEIVER_VINYLCONTROL_ONE] = new short[MAX_BUFFER_LEN];
+    m_pReceiverBuffers[RECEIVER_VINYLCONTROL_TWO] = new short[MAX_BUFFER_LEN];
+    m_pReceiverBuffers[RECEIVER_MICROPHONE] = new short[MAX_BUFFER_LEN];
+   
     iNumDevicesOpenedForOutput = 0;
     iNumDevicesOpenedForInput = 0;
     iNumDevicesHaveRequestedBuffer = 0;
@@ -88,6 +93,10 @@ SoundManager::~SoundManager()
     clearDeviceList();
 
     Pa_Terminate();
+    
+    delete m_pReceiverBuffers[RECEIVER_VINYLCONTROL_ONE];
+    delete m_pReceiverBuffers[RECEIVER_VINYLCONTROL_TWO];
+    delete m_pReceiverBuffers[RECEIVER_MICROPHONE];
 }
 
 //Returns a list of all the devices we've enumerated through PortAudio.
@@ -463,6 +472,11 @@ CSAMPLE ** SoundManager::requestBuffer(QList<AudioSource> srcs, unsigned long iF
 CSAMPLE * SoundManager::pushBuffer(QList<AudioReceiver> recvs, short * inputBuffer, 
                                    unsigned long iFramesPerBuffer, unsigned int iFrameSize)
 {
+    short* vinylControlBuffer1 = NULL; /** Pointer to the buffer containing the vinyl control audio for deck 1*/
+    short* vinylControlBuffer2 = NULL; /** Pointer to the buffer containing the vinyl control audio for deck 1*/
+    
+//    m_pReceiverBuffers[RECEIVER_VINYLCONTROL_ONE]
+    
     //short vinylControlBuffer1[iFramesPerBuffer * 2];
     //short vinylControlBuffer2[iFramesPerBuffer * 2];
     //short *vinylControlBuffer1 = (short*) alloca(iFramesPerBuffer * 2 * sizeof(short));
@@ -470,19 +484,30 @@ CSAMPLE * SoundManager::pushBuffer(QList<AudioReceiver> recvs, short * inputBuff
 
     //memset(vinylControlBuffer1, 0, iFramesPerBuffer * iFrameSize * sizeof(*vinylControlBuffer1));
 
+    /** If the framesize is only 2, then we only have one pair of input channels
+     *  That means we don't have to do any deinterlacing, and we can pass
+     *  the audio on to its intended destination. */
+    if (iFrameSize == 2)
+    {
+        vinylControlBuffer1 = inputBuffer;
+        vinylControlBuffer2 = inputBuffer;
+    }
 
-    //Two stereo streams interlaced as one, so break them up into two separate interlaced streams
-    /*
+    //If we have two stereo input streams (interlaced as one), then
+    //break them up into two separate interlaced streams
     if (iFrameSize == 4)
     {
         for (int i = 0; i < iFramesPerBuffer; i++) //For each frame of audio
         {
-            vinylControlBuffer1[i*2    ] = inputBuffer[i*iFrameSize    ];
-            vinylControlBuffer1[i*2 + 1] = inputBuffer[i*iFrameSize + 1];
-            vinylControlBuffer2[i*2    ] = inputBuffer[i*iFrameSize + 2];
-            vinylControlBuffer2[i*2 + 1] = inputBuffer[i*iFrameSize + 3];
+            m_pReceiverBuffers[RECEIVER_VINYLCONTROL_ONE][i*2    ] = inputBuffer[i*iFrameSize    ];
+            m_pReceiverBuffers[RECEIVER_VINYLCONTROL_ONE][i*2 + 1] = inputBuffer[i*iFrameSize + 1];
+            m_pReceiverBuffers[RECEIVER_VINYLCONTROL_TWO][i*2    ] = inputBuffer[i*iFrameSize + 2];
+            m_pReceiverBuffers[RECEIVER_VINYLCONTROL_TWO][i*2 + 1] = inputBuffer[i*iFrameSize + 3];
         }
-    } */
+        //Set the pointers to point to the de-interlaced input audio
+        vinylControlBuffer1 = m_pReceiverBuffers[RECEIVER_VINYLCONTROL_ONE];
+        vinylControlBuffer2 = m_pReceiverBuffers[RECEIVER_VINYLCONTROL_TWO];
+    }
 
     if (inputBuffer)
     {
@@ -496,13 +521,13 @@ CSAMPLE * SoundManager::pushBuffer(QList<AudioReceiver> recvs, short * inputBuff
                 //recv.channelBase
                 Q_ASSERT(recv.channels == 2); //Stereo data is needed for vinyl control
                 if (m_VinylControl[0])
-                    m_VinylControl[0]->AnalyseSamples(inputBuffer, iFramesPerBuffer);
+                    m_VinylControl[0]->AnalyseSamples(vinylControlBuffer1, iFramesPerBuffer);
             }
             if (recv.type == RECEIVER_VINYLCONTROL_TWO)
             {
                 Q_ASSERT(recv.channels == 2); //Stereo data is needed for vinyl control
                 if (m_VinylControl[1])
-                    m_VinylControl[1]->AnalyseSamples(inputBuffer, iFramesPerBuffer);
+                    m_VinylControl[1]->AnalyseSamples(vinylControlBuffer2, iFramesPerBuffer);
             }
         }
 #endif
