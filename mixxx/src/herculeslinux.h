@@ -139,10 +139,7 @@ public:
 protected:
 #ifdef __LIBDJCONSOLE__
     DJConsole *djc;
-	#ifdef __THOMAS_HERC__
-    ControlObject *m_pControlObjectLeftBtnCueAndStop, *m_pControlObjectRightBtnCueAndStop;
     int m_iHerculesHeadphonesSelection;
-	#endif //__THOMAS_HERC__
 #endif
 
     void run();  // main thread loop
@@ -163,6 +160,7 @@ protected:
     int m_iPitchLeft, m_iPitchRight;
 
     bool jogLibraryScrolling;
+    bool isRMX;
 
     double m_dJogLeftOld, m_dJogRightOld;
 
