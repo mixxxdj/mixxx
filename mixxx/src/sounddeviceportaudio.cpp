@@ -327,6 +327,8 @@ int SoundDevicePortAudio::callbackProcess(unsigned long framesPerBuffer, float *
         //Reset sample for each open channel
         memset(output, 0, framesPerBuffer * iFrameSize * sizeof(*output));
 
+        //iFrameBase is the "base sample" in a frame (ie. the first sample in a frame)
+        
         for (unsigned int iFrameBase=0; iFrameBase < framesPerBuffer*iFrameSize; iFrameBase += iFrameSize)
         {
 			//Interlace Audio data onto portaudio buffer

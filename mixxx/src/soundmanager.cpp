@@ -24,6 +24,10 @@
 #include "enginemaster.h"
 #include "controlobjectthreadmain.h"
 
+/** Initializes Mixxx's audio core
+ *  @param pConfig The config key table
+ *  @param _master A pointer to the audio engine's mastering class.
+ */
 SoundManager::SoundManager(ConfigObject<ConfigValue> * pConfig, EngineMaster * _master) : QObject()
 {
     qDebug() << "SoundManager::SoundManager()";
@@ -53,6 +57,8 @@ SoundManager::SoundManager(ConfigObject<ConfigValue> * pConfig, EngineMaster * _
     //m_controlObjSyncTimer.start(33);
     //m_controlObjSyncTimer->start(m_pConfig->getValueString(ConfigKey("[Soundcard]","Latency")).toInt());
 
+    //These are ControlObjectThreadMains because all the code that
+    //uses them is called from the GUI thread (stuff like opening soundcards).
     ControlObjectThreadMain* pControlObjectLatency = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey("[Master]", "latency")));
     ControlObjectThreadMain* pControlObjectSampleRate = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey("[Master]", "samplerate")));
     ControlObjectThreadMain* pControlObjectVinylControlMode = new ControlObjectThreadMain(new ControlObject(ConfigKey("[VinylControl]", "Mode")));
@@ -83,8 +89,8 @@ SoundManager::SoundManager(ConfigObject<ConfigValue> * pConfig, EngineMaster * _
 #endif
 }
 
-//Destructor for the SoundManager class. Closes all the devices, cleans up their pointers
-//and terminates PortAudio.
+/** Destructor for the SoundManager class. Closes all the devices, cleans up their pointers
+  and terminates PortAudio. */
 SoundManager::~SoundManager()
 {
     //TODO: Should only call Pa_Terminate() if Pa_Inititialize() was successful.
@@ -99,12 +105,16 @@ SoundManager::~SoundManager()
     delete m_pReceiverBuffers[RECEIVER_MICROPHONE];
 }
 
-//Returns a list of all the devices we've enumerated through PortAudio.
-//If filterAPI is the name of an audio API used by PortAudio, this function
-//will only return devices that belong to that API. Otherwise, the list will
-//contain all devices on all PortAudio-supported APIs.
-//If bOutputDevices is true, then devices supporting audio output will be listed.
-//If bInputDevices is true, then devices supporting audio input will be listed too.
+/** Returns a list of all the devices we've enumerated through PortAudio.
+  *
+  * @param filterAPI If filterAPI is the name of an audio API used by PortAudio, this function
+  * will only return devices that belong to that API. Otherwise, the list will
+  * contain all devices on all PortAudio-supported APIs.
+  * @param bOutputDevices If bOutputDevices is true, then devices
+  *                       supporting audio output will be listed.
+  * @param bInputDevices If bInputDevices is true, then devices supporting
+  *                      audio input will be listed too.
+  */
 QList<SoundDevice*> SoundManager::getDeviceList(QString filterAPI, bool bOutputDevices, bool bInputDevices)
 {
     qDebug() << "SoundManager::getDeviceList";
@@ -149,7 +159,9 @@ QList<SoundDevice*> SoundManager::getDeviceList(QString filterAPI, bool bOutputD
     return m_devices;
 }
 
-//Returns a list of host APIs supported by PortAudio.
+/** Get a list of host APIs supported by PortAudio. 
+ *  @return The list of audio APIs supported on the current computer.
+ */
 QList<QString> SoundManager::getHostAPIList()
 {
     QList<QString> apiList;
@@ -163,6 +175,10 @@ QList<QString> SoundManager::getHostAPIList()
     return apiList;
 }
 
+/** Set which host API Mixxx should use.
+ *  @param api The host API that you want Mixxx to use.
+ *  @return 0 on success, non-zero otherwise.
+ */
 int SoundManager::setHostAPI(QString api)
 {
     m_hostAPI = api;
@@ -176,7 +192,13 @@ QString SoundManager::getHostAPI()
     return m_hostAPI;
 }
 
-//Closes all the open sound devices.
+/** Closes all the open sound devices. 
+ * 
+ *  Because multiple soundcards might be open, this member function
+ *  simply runs through the list of all known soundcards (from PortAudio)
+ *  and attempts to close them all. Closing a soundcard that isn't open
+ *  is safe.
+ */
 void SoundManager::closeDevices()
 {
     qDebug() << "SoundManager::closeDevices()";
@@ -211,7 +233,7 @@ void SoundManager::closeDevices()
 #endif
 }
 
-//Closes all the devices and empties the list of devices we have.
+/** Closes all the devices and empties the list of devices we have. */
 void SoundManager::clearDeviceList()
 {
     qDebug() << "SoundManager::clearDeviceList()";
@@ -227,7 +249,9 @@ void SoundManager::clearDeviceList()
     }
 }
 
-//Returns a list of samplerates we will attempt to support.
+/** Returns a list of samplerates we will attempt to support.
+ *  @return The list of available samplerates.
+ */ 
 QList<QString> SoundManager::getSamplerateList()
 {
     return m_samplerates;
@@ -508,6 +532,31 @@ CSAMPLE * SoundManager::pushBuffer(QList<AudioReceiver> recvs, short * inputBuff
         vinylControlBuffer1 = m_pReceiverBuffers[RECEIVER_VINYLCONTROL_ONE];
         vinylControlBuffer2 = m_pReceiverBuffers[RECEIVER_VINYLCONTROL_TWO];
     }
+
+/*
+        //iFrameBase is the "base sample" in a frame (ie. the first sample in a frame)
+        
+        for (unsigned int iFrameBase=0; iFrameBase < iFramesPerBuffer*iFrameSize; iFrameBase += iFrameSize)
+        {
+			//Deinterlace the input audio data from the portaudio buffer
+			//We iterate through the receiver list to find out what goes into each buffer.
+			//Data is deinterlaced in the order of the list
+			QListIterator<AudioReceiver> devItr(recvs);
+			int iChannel;
+			while(devItr.hasNext())
+			{
+				AudioReceiver recv = devItr.next();
+				int iLocalFrameBase = (iFrameBase/iFrameSize) * recv.channels;
+				for(iChannel = 0; iChannel < recv.channels; iChannel++)	//this will make sure a sample from each channel is copied
+				{
+					//output[iFrameBase + src.channelBase + iChannel] += outputAudio[src.type][iLocalFrameBase + iChannel] * SHRT_CONVERSION_FACTOR;
+			        m_pReceiverBuffers[type][iLocalFrameBase + iChannel] = inputBuffer[iFrameBase + recv.channelBase + iChannel];
+                }
+			}
+        }
+
+*/
+
 
     if (inputBuffer)
     {
