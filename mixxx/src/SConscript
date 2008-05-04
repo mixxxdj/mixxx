@@ -283,7 +283,7 @@ sources = Split("""enginebuffercue.cpp input.cpp mixxxmenuplaylists.cpp trackpla
  dlgprefrecord.cpp recording/enginerecord.cpp recording/writeaudiofile.cpp 
  enginevinylsoundemu.cpp enginesidechain.cpp wtracktablefilter.cpp
  wplaylistlistmodel.cpp libraryscanner.cpp libraryscannerdlg.cpp enginefilterbutterworth8.cpp enginexfader.cpp playerinfo.cpp wabstractcontrol.cpp
- enginebufferscaledummy.cpp""")
+ enginebufferscaledummy.cpp """)
 
 #Crap we don't use anymore:
 #playerportaudio.cpp player.cpp playerproxy.cpp
@@ -544,6 +544,20 @@ if platform == 'win32':
 	sources += Split("""../../lib/soundtouch/cpu_detect_x86_win.cpp ../../lib/soundtouch/mmx_win.cpp ../../lib/soundtouch/sse_win.cpp ../../lib/soundtouch/3dnow_win.cpp""")
 else:
 	sources += Split("""../../lib/soundtouch/cpu_detect_x86_gcc.cpp""")
+
+#RubberBand for time stretching
+
+#env.Append(CPPPATH=['../../lib/rubberband/src']) #Needed two ../../'s because we're compiling from "src/.obj"
+#env.Append(CPPPATH=['../../lib/rubberband/rubberband']) #Needed two ../../'s because we're compiling from "src/.obj"
+#env.Append(CXXFLAGS=['-DFFTW_DOUBLE_ONLY'])
+#sources += Split("""enginebufferscalerubberband.cpp 
+#					../../lib/rubberband/src/AudioCurve.cpp ../../lib/rubberband/src/ConstantAudioCurve.cpp 
+#					../../lib/rubberband/src/FFT.cpp ../../lib/rubberband/src/PercussiveAudioCurve.cpp 
+#					../../lib/rubberband/src/HighFrequencyAudioCurve.cpp ../../lib/rubberband/src/Resampler.cpp 
+#					../../lib/rubberband/src/RubberBandStretcher.cpp ../../lib/rubberband/src/SpectralDifferenceAudioCurve.cpp 
+#					../../lib/rubberband/src/StretchCalculator.cpp ../../lib/rubberband/src/StretcherChannelData.cpp 
+#					../../lib/rubberband/src/StretcherImpl.cpp ../../lib/rubberband/src/StretcherProcess.cpp
+#					../../lib/rubberband/src/sysutils.cpp ../../lib/rubberband/src/Thread.cpp""")
 
 #KissFFT
 env.Append(CPPPATH=['../../lib/kissfft'])
@@ -837,6 +851,9 @@ midimappings_files = glob.glob('../midi/*')
 #Keyboard mapping(s)
 keyboardmappings_files = glob.glob('../keyboard/*')
 
+#Promo tracks
+promotracks_files = glob.glob('../../promo/*')
+
 #Documentation
 docs_files = glob.glob('../../LICENSE')
 docs_files += glob.glob('../../README')
@@ -885,6 +902,7 @@ if platform == 'linux':
 		dotdesktop = env.Install(unix_share_path + "/applications", dotdesktop_files)
 		docs = env.Install(unix_share_path + "/doc/mixxx", docs_files)
 		icon = env.Install(unix_share_path + "/pixmaps", icon_files)
+		promotracks = env.Install(unix_share_path + "/mixxx/promo", promotracks_files)
 
         #Makes each of those Install builders get fired off when you run "scons install" :)
 		env.Alias('install', binary)
@@ -894,6 +912,7 @@ if platform == 'linux':
 		env.Alias('install', docs)
 		env.Alias('install', dotdesktop)
 		env.Alias('install', icon)
+		env.Alias('install', promotracks)
 		
 		#Delete the old Mixxx installation (because SCONS won't overwrite it)
 		#if 'install' in COMMAND_LINE_TARGETS:
@@ -922,6 +941,7 @@ if platform == 'osx':
 	midimappings = env.Install(osx_dist_path + "/midi", midimappings_files)
 	keyboardmappings = env.Install(osx_dist_path + "/keyboard", keyboardmappings_files)
 	docs = env.Install(osx_dist_path + "/doc", docs_files)
+	promotracks = env.Install(osx_dist_path + "/promo", promotracks_files)
 	osx_plist = env.Install(osx_dist_path + "/Contents", osx_plist_file)
 	osx_pkginfo = env.Install(osx_dist_path + "/Contents", osx_pkginfo_file)
 	osx_icns = env.Install(osx_dist_path + "/Contents/Resources", osx_icns_file)
@@ -932,6 +952,7 @@ if platform == 'osx':
 	env.Alias('install', skins)
 	env.Alias('install', midimappings)
 	env.Alias('install', keyboardmappings)
+	env.Alias('install', promotracks)
 	env.Alias('install', osx_plist)
 	env.Alias('install', osx_pkginfo)
 	env.Alias('install', osx_icns)
@@ -942,6 +963,7 @@ if platform == 'win32':
 	midimappings = env.Install("../../dist/midi", midimappings_files)
 	keyboardmappings = env.Install("../../dist/keyboard", keyboardmappings_files)
 	docs = env.Install("../../dist/doc/", docs_files)
+	promotracks = env.Install("../../dist/promo/", promotracks_files)
 	#icon = env.Install("../../dist", icon_files)
 	dlls = env.Install("../../dist/", dll_files)
 	binary = env.Install("../../dist/", binary_files)
@@ -950,6 +972,7 @@ if platform == 'win32':
 	env.Alias('mixxx', skins)
 	env.Alias('mixxx', midimappings)
 	env.Alias('mixxx', keyboardmappings)
+	env.Alias('mixxx', promotracks)
 	env.Alias('mixxx', docs)
 	env.Alias('mixxx', dlls)
 	#env.Alias('mixxx', icon)
