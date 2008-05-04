@@ -117,6 +117,15 @@ const int UP = 602;
 const int DOWN = 604;
 const int LEFT = 608;
 const int RIGHT = 616;
+
+const int LEFT_STOP = 216;
+const int RIGHT_STOP = 516;
+const int LEFT_4 = 108;
+const int LEFT_5 = 116;
+const int LEFT_6 = 132;
+const int RIGHT_4 = 408;
+const int RIGHT_5 = 416;
+const int RIGHT_6 = 432;
 #endif
 
 QHash<long, ControlObjectThread *> buttonMapping;
@@ -176,10 +185,6 @@ HerculesLinux::HerculesLinux() : Hercules() {
     buttonMapping[LEFT_PITCH_UP] = m_pControlObjectLeftBtnPitchBendPlus;
     buttonMapping[RIGHT_PITCH_DOWN] = m_pControlObjectRightBtnPitchBendMinus;
     buttonMapping[RIGHT_PITCH_UP] = m_pControlObjectRightBtnPitchBendPlus;
-    buttonMapping[LEFT_SKIP_BACK] = m_pControlObjectLeftBtnTrackPrev;
-    buttonMapping[LEFT_SKIP_FORWARD] = m_pControlObjectLeftBtnTrackNext;
-    buttonMapping[RIGHT_SKIP_BACK] = m_pControlObjectRightBtnTrackPrev;
-    buttonMapping[RIGHT_SKIP_FORWARD] = m_pControlObjectRightBtnTrackNext;
     buttonMapping[LEFT_AUTO_BEAT] = m_pControlObjectLeftBtnAutobeat;
     buttonMapping[RIGHT_AUTO_BEAT] = m_pControlObjectRightBtnAutobeat;
 
@@ -196,6 +201,11 @@ HerculesLinux::HerculesLinux() : Hercules() {
 
     nonMIDIbuttonMapping[LOAD_DECK_A] = m_pControlObjectLoadDeckA;
     nonMIDIbuttonMapping[LOAD_DECK_B] = m_pControlObjectLoadDeckB;
+    nonMIDIbuttonMapping[LEFT_SKIP_BACK] = m_pControlObjectLeftBtnTrackPrev;
+    nonMIDIbuttonMapping[LEFT_SKIP_FORWARD] = m_pControlObjectLeftBtnTrackNext;
+    nonMIDIbuttonMapping[RIGHT_SKIP_BACK] = m_pControlObjectRightBtnTrackPrev;
+    nonMIDIbuttonMapping[RIGHT_SKIP_FORWARD] = m_pControlObjectRightBtnTrackNext;
+
 }
 
 
@@ -282,11 +292,13 @@ bool HerculesLinux::opendev() {
         }
 
         djc->loadData();
-        #ifdef __THOMAS_HERC__
+
+        // All non-RMX controllers do scratching by default.
+        isRMX = djc->product() >= 0xb101;
+        scratchMode = (isRMX? scratchMode : true); 
+        qDebug() << "isRMX = " << isRMX;
+
         start();
-        m_pControlObjectLeftBtnCueAndStop = ControlObject::getControl(ConfigKey("[Channel1]","cue_gotoandstop"));
-        m_pControlObjectRightBtnCueAndStop = ControlObject::getControl(ConfigKey("[Channel2]","cue_gotoandstop"));
-        #endif
         djc->setCallback(console_event, this);
 
         return djc->ready();
@@ -333,18 +345,20 @@ void HerculesLinux::consoleEvent(int first, int second) {
             switch(first) {
                 case UP:
                 case DOWN: jogLibraryScrolling = true; break;
-                case SCRATCH:                     //TODO: move this into "Master" controlObject
+                case SCRATCH: //TODO: move this into "Master" controlObject
                     scratchMode = !scratchMode;
                     qDebug() << "scratchMode = " << scratchMode;
                     break;
                     //	case LEFT: ; break;
                     //	case RIGHT: ; break;
-                case LEFT_1: m_pRotaryLeft->setCalibration(512); break;
-                case LEFT_2: m_pRotaryLeft->setCalibration(256); break;
-                case LEFT_3: m_pRotaryLeft->setCalibration(64); break;
-                case RIGHT_1: m_pRotaryRight->setCalibration(512);
-                case RIGHT_2: m_pRotaryRight->setCalibration(256); break;
-                case RIGHT_3: m_pRotaryRight->setCalibration(64); break;
+		case LEFT_STOP: if (buttonStateLookup(1, buttonMapping[LEFT_PLAY]->getControlObject()->getKey().item)) sendButtonEvent(buttonPressed, buttonMapping[LEFT_PLAY]->getControlObject()); break;
+		case RIGHT_STOP: if (buttonStateLookup(2, buttonMapping[RIGHT_PLAY]->getControlObject()->getKey().item)) sendButtonEvent(buttonPressed, buttonMapping[RIGHT_PLAY]->getControlObject()); break;
+                case LEFT_1: if (!isRMX) m_pRotaryLeft->setCalibration(512); break;
+                case LEFT_2: if (!isRMX) m_pRotaryLeft->setCalibration(256); break;
+                case LEFT_3: if (!isRMX) m_pRotaryLeft->setCalibration(64); break;
+                case RIGHT_1: if (!isRMX) m_pRotaryRight->setCalibration(512);
+                case RIGHT_2: if (!isRMX) m_pRotaryRight->setCalibration(256); break;
+                case RIGHT_3: if (!isRMX) m_pRotaryRight->setCalibration(64); break;
                 //                case RIGHT_MONITOR: sendButtonEvent(m_bHeadphoneLeft = false, m_pControlObjectLeftBtnHeadphone); break; // m_bHeadphoneRight = !m_bHeadphoneRight; break;
                 //                case LEFT_MONITOR: sendButtonEvent(m_bHeadphoneRight = false, m_pControlObjectRightBtnHeadphone); break; // m_bHeadphoneLeft = !m_bHeadphoneLeft; break;
             }
