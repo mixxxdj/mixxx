@@ -78,11 +78,15 @@ SoundSourceMp3::SoundSourceMp3(QString qFilename) : SoundSource(qFilename)
         mad_timer_add (&filelength, Header.duration);
         bitrate += Header.bitrate;
         SRATE = Header.samplerate;
+        
+        /**
+        //Albert's attempt at fixing Garth's mp3-file-that's-really-an-html-file crash - May 4/08
         if (SRATE <= 0)
         {
             qDebug() << "Warning: MP3 with corrupt samplerate in header, defaulting to 44100";
             SRATE = 44100;
-        }
+        }**/
+        
         m_iChannels = MAD_NCHANNELS(&Header);
     }
     //qDebug() << "channels " << m_iChannels;
