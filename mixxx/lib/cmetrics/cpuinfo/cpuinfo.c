@@ -1,5 +1,5 @@
 /**********************************************
- * Cmetrics.h - Case Metrics Interface
+ * cpuinfo.c - Case Metrics Interface
  *  Copyright 2007 John Sully.
  *
  *  This file is part of Case Metrics.
@@ -18,7 +18,7 @@
  *
  **********************************************/
 
-#include "../globaldefs.h"
+
 #include "cpuinfo.h"
 #include <stdlib.h>
 

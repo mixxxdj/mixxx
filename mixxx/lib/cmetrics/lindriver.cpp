@@ -1,5 +1,5 @@
 /**********************************************
- * Cmetrics.h - Case Metrics Interface
+ * lindriver.cpp - Case Metrics Interface
  *  Copyright 2007 John Sully.
  *
  *  This file is part of Case Metrics.
@@ -17,6 +17,7 @@
  *  along with Case Metrics.  If not, see <http://www.gnu.org/licenses/>.
  *
  **********************************************/
+
 
 /**********************************************************************
  * lindriver.cpp: Responsible for implementing the IPC communication
@@ -37,13 +38,16 @@ extern "C"{
 #include <stdlib.h>
 #include <unistd.h>
 #include <sys/wait.h>
+#include <sys/fcntl.h>
 #include <assert.h>
+#include <string.h>
 
 //#ifdef DEBUG
 #include <stdio.h>
 //#endif
 
 //Global State Vars
+static int fuserVerified = FALSE;
 static int childPid;
 static int tx;
 static int rx;
@@ -68,11 +72,33 @@ static const int SEND_MSG_DBG = 8;
  * Return: TRUE on success
  *         FAIL on failure
  *****************************/
-extern "C" __attribute__ ((visibility ("default"))) int LIBINIT(int maxMsgQueue, int maxDbgMsgs)
+extern "C" __attribute__ ((visibility ("default"))) int LIBINIT(int maxMsgQueue, int maxDbgMsgs, int finUserVerified, const char *pstzInReleaseID, const char *pstzInUserID)
 {
     int dbgCount = 0;
     int fdAppToLib[2];
     int fdLibToApp[2];
+    char *pstzUserID;
+    char *pstzReleaseID;
+
+    //Verify Input
+    if(pstzInReleaseID == NULL || *pstzInReleaseID == '\0')
+	return FALSE;
+    if(pstzInUserID == NULL)
+	pstzInUserID = "\0";
+
+    fuserVerified = finUserVerified;
+    if(!fuserVerified)
+    {
+	//REFACTOR: I don't like this, /dev/null is not guranteed to be available
+	tx = open("/dev/null", O_NONBLOCK);
+	return FALSE;
+    }
+
+    //Duplicate any external memory references to CMetrics memory space
+    pstzReleaseID = (char*) malloc(strlen(pstzInReleaseID) + 1);
+    strcpy(pstzReleaseID, pstzInReleaseID);
+    pstzUserID = (char*) malloc(strlen(pstzInUserID) + 1);
+    strcpy(pstzUserID, pstzInUserID);
 
     //Make the IPC pipe
     if(pipe(fdAppToLib) != 0)
@@ -97,6 +123,7 @@ extern "C" __attribute__ ((visibility ("default"))) int LIBINIT(int maxMsgQueue,
 
     if(childPid != 0)
     {
+	/* Parent */
 #ifdef DEBUG
         fprintf(stderr, "Child forked: %d\n", childPid);
 #endif
@@ -106,6 +133,8 @@ extern "C" __attribute__ ((visibility ("default"))) int LIBINIT(int maxMsgQueue,
     }
     else
     {
+	/* Child */
+
         //Protocol Process
 	tx = fdLibToApp[1];
 	rx = fdAppToLib[0];
@@ -114,7 +143,7 @@ extern "C" __attribute__ ((visibility ("default"))) int LIBINIT(int maxMsgQueue,
         while(pprotocol == NULL)    //loop until new succeeds
                                     //this is a criticle alloc
         {
-            pprotocol = new Protocol(maxMsgQueue, maxDbgMsgs);
+            pprotocol = new Protocol(maxMsgQueue, maxDbgMsgs, pstzReleaseID, pstzUserID);
             if(pprotocol == NULL)
                 sleep(1);
         }
@@ -245,11 +274,6 @@ extern "C" __attribute__ ((visibility ("default"))) void LIBCLOSE(int timeout)
     close(rx);
 }
 
-extern "C" __attribute__ ((visibility ("default"))) void cm_set_crash_dlg(void (*pcrashDlg)(void))
-{
-    //TODO
-}
-
 /* EXTERNAL INTERFACE COMMANDS */
 #include <string.h>
 
@@ -305,11 +329,44 @@ extern "C" __attribute__ ((visibility ("default"))) void SENDMSG_DBG()
     write(tx, &SEND_MSG_DBG, sizeof(SEND_MSG_DBG));
 }
 
+extern "C" __attribute__ ((visibility ("default"))) void SETCRASHDLG(void (*pcrashDlg)(void))
+{
+	return;
+}
+
+extern "C" __attribute__ ((visibility ("default"))) char *GEN_USERID()
+{
+#ifdef __TRUE_UUID__
+#error "True UUIDs Not Implemented"
+#else
+    /* On the windows version we use true UUIDs from the convenient API
+     * call.  lacking such call in in linux we will instead use /dev/urandom
+     */
+    int fd = open("/dev/urandom", O_RDONLY);
+    int buf[4];	//16-byte buffer
+    char *pstzUID = NULL;
+
+    if(fd < 0)
+	return NULL;
+    
+    //read 16-byte random number
+    read(fd, (char*)buf, 16);
+    //convert to 32 char HEX string
+    pstzUID = (char*)malloc(33);
+    snprintf(pstzUID, 33, "%X%X%X%X", buf[0], buf[1], buf[2], buf[3]);
+    pstzUID[32] = '\0';
+#ifdef DEBUG
+    fprintf(stderr, "GEN_USERID: UID=%s\n", pstzUID);
+#endif
+
+    return pstzUID;
+#endif
+}
+
 #ifdef TEST
 int __attribute__ ((visibility ("default"))) main()
 {
-    fprintf(stderr, "Server Host: %s\n", SERVER_HOST);
-    if(!LIBINIT(50, 2))
+    if(!LIBINIT(50, 2, TRUE, "928EE211148513A6568C5335CE9381D8", GEN_USERID()))
 	return -1;
 
     WRITEMSG_DBG_UTF8("Debug MSG 1");

@@ -1,5 +1,5 @@
 /**********************************************
- * Cmetrics.h - Case Metrics Interface
+ *
  *  Copyright 2007 John Sully.
  *
  *  This file is part of Case Metrics.
@@ -53,6 +53,15 @@ int _istrncpy(char *dest, const char *src, int max)
 	dest[max - 1] = '\0';
 
     return c;
+}
+
+int _ibufncpy(char *dst, const char *src, int cch, int max)
+{
+	int c;
+	int maxCpy = (cch < max) ? cch : max;
+	for(c=0; c < maxCpy; c++)
+		dst[c] = src[c];
+	return c;
 }
 
 Http::Http(char *host)
@@ -405,7 +414,7 @@ WRITE_PACKET:
     //TAIL
     append(HTTP_HEADER_TAIL);
     //BODY
-    append(m_data);
+	written += _ibufncpy(m_packet + written, m_data, m_dataUsed, m_packetSize - written); if(written == m_packetSize) goto DOUBLE_BUFFER;
     //TRAILING NULLS
     append(HTTP_HEADER_TAIL);
 
@@ -507,6 +516,11 @@ RESTART:
 
     //Recieve HTTP status
     sockSend(&st, m_packet, m_packetUsed);
+#ifdef DEBUG
+#ifdef WIN32
+	MessageBox(NULL, m_packet, "Transmitted", NULL);
+#endif
+#endif
     pheaderStart = pheader = recvHTTPHeader(&st);
 
     //Parse Response Code
@@ -536,10 +550,10 @@ RESTART:
 	//case 300:
 	case 301:	//Permanent Redirect
 	    sockClose(&st);
-	    free(pheader);
 	    cHTTPRetry++;
 	    if(_parseHTTPLocation(pheaderStart, bufURL, MAX_URL_SIZE) == 0)
 		return ERR_FATAL;
+		free(pheader);
 	    _setHostFromURL(bufURL);
 	    _writePacket();
 #ifdef DEBUG
@@ -594,8 +608,18 @@ RESTART:
     printf("RESPONSE CODE: %d\n", responseCode);
     printf("RESPONSE LENGTH: %d\n", contentLength);
     printf("===================\n");
+#ifdef WIN32
+    MessageBox(NULL, m_rxpacket, "Response", NULL);
 #endif
-
+#endif
     return OK;
 }
 
+#ifdef TEST_HTTP
+int main(void)
+{
+    Http http("www.rockymedia.ca");
+    http.appendPostData("This is a test of the post data", 32);
+    http.send();
+}
+#endif //TEST

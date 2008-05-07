@@ -1,7 +1,7 @@
 project = 'osinfo'
 
 #Import Flags
-Import('env libutf platform')
+Import('env flags_unittest libutf platform')
 
 #Sources
 if platform == 'win32':
@@ -10,5 +10,9 @@ elif platform == 'linux':
 	source = Split("""linux.c""")
 
 obj = []
-obj = env.SharedObject(source)
+if flags_unittest == '1':
+    source += libutf
+    obj = env.Program(source)
+else:    
+    obj = env.SharedObject(source)
 Return('obj')

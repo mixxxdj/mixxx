@@ -1,6 +1,6 @@
 /**********************************************
- * Cmetrics.h - Case Metrics Interface
- *  Copyright 2007 John Sully, Phillip Mendonça-Vieira.
+ * fsinfo.c - Case Metrics Interface
+ *  Copyright 2007 John Sully, Phillip MendonÃ§a-Vieira.
  *
  *  This file is part of Case Metrics.
  *
@@ -17,6 +17,7 @@
  *  along with Case Metrics.  If not, see <http://www.gnu.org/licenses/>.
  *
  **********************************************/
+
 
 //TODO: Update for win NT.  This will fail for non DOS namespace volumes
 
@@ -47,6 +48,17 @@ struct stzlist
     XCHAR *pstzStatfs;
 } typedef _LIST;
 
+
+#ifdef WIN32
+int isRejectedDriveType(int driveType)
+{
+	int i;
+	for(i=0; i < CREJECTED_DRIVETYPES; i++)
+		if(REJECTED_DRIVETYPES[i] == driveType)
+			return TRUE;
+	return FALSE;
+}
+#endif
 
 // returns the size_t of the written XCHAR string successful (byte count), 
 //-1 if unsuccesful and leaves errno to whatever the syscallstatfs 
@@ -88,6 +100,16 @@ int getStatfs(char *pstzPath, XCHAR **ppstz)
 	unsigned int64 totalBytes;
 	char pfsName[MAX_PATH + 1];
 
+	//Check Type Before doing anything
+	driveType = GetDriveType(pstzPath);
+	if(isRejectedDriveType(driveType))
+	{
+#ifdef DEBUG
+		printf("INFO: Rejecting drive %s", pstzPath);
+#endif
+		goto ERROR_HANDLER;
+	}
+
 	if(! GetVolumeInformation(pstzPath,
 					pvolumeName,
 					(MAX_PATH + 1),
@@ -112,7 +134,6 @@ int getStatfs(char *pstzPath, XCHAR **ppstz)
 #endif
 		goto ERROR_HANDLER;
 	}
-	driveType = GetDriveType(pstzPath);
 
 	userFreeBytes = uliUserFreeBytes.QuadPart;
 	totalFreeBytes = uliTotalFreeBytes.QuadPart;
@@ -195,7 +216,9 @@ _LIST *getPaths()
             tokenLen = strlen(pstzToken) + 1;
             plistcur->pstzPath = malloc(sizeof(char) * tokenLen);
             strncpy(plistcur->pstzPath, pstzToken, tokenLen);
-            plistcur->pstzPath[tokenLen - 1] = '\0'; // strncpy doesn't always null strings, especially if it fails
+            plistcur->pstzPath[tokenLen - 1] = '\0'; 
+            // strncpy doesn't always null strings, especially if it fails
+            // John sez: easier to null end instead of checking
         }
         //fprintf(stderr, "leaving while\n");
     }

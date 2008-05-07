@@ -1,5 +1,5 @@
 /**********************************************
- * Cmetrics.h - Case Metrics Interface
+ *
  *  Copyright 2007 John Sully.
  *
  *  This file is part of Case Metrics.
@@ -33,6 +33,14 @@ const int PROTOMSGTYPE_CPUINFO = 0x080000000;
 const int PROTOMSGTYPE_MEMINFO = 0x080000001;
 const int PROTOMSGTYPE_FSINFO = 0x080000002;
 const int PROTOMSGTYPE_OSINFO = 0x080000003;
+const int PROTOMSGTYPE_RELEASE_ID = 0x080000004;
+const int PROTOMSGTYPE_USER_ID = 0x080000005;
+
+/* Crash Report PROTOMSG TYPES */
+const char* PROTOMSG_CRASHREPORT_EXCEPTIONTYPE = "Exception Type\0";
+const char* PROTOMSG_CRASHREPORT_CRASHADDR = "Exception Address\0";
+const char* PROTOMSG_CRASHREPORT_STATE = "State\0";
+const char* PROTOMSG_CRASHREPORT_BACKTRACE = "Back Trace\0";
 
 /* PROTOCOL TOKENS */
 const char TOK_DELIM = ':'; //NOTE: escaping code assumes this is a valid 7-bit ASCII char
@@ -41,7 +49,17 @@ const char TOK_ESCAPE = '\\';
 const char *PROTOCOL_SYSINFO_HEADER = "SYSINFO\0";
 const char *PROTOCOL_DBG_HEADER = "DEBUG\0";
 const char *PROTOCOL_STD_HEADER = "STANDARD\0";
+const char *PROTOCOL_CRASHREPORT_HEADER = "CRASH\0";
+const char *PROTOCOL_CRASHDUMP_HEADER = "CRASHDUMP\0";
+
+const char *PROTOCOL_SENDDUMP_BASIC = "DumpBasic\0";
+const char *PROTOCOL_SENDDUMP_DATA = "DumpWithData\0";
+const char *PROTOCOL_SENDDUMP_ALL = "DumpAll\0";
+
 #endif //__PROTOCOL_C__
+
+#ifndef __PROTOCOL_H__
+#define __PROTOCOL_H__
 
 typedef struct _PROTOMSG{
     int type;
@@ -53,10 +71,22 @@ typedef struct _PROTOMSG{
     struct _PROTOMSG *pnext;
 } PROTOMSG;
 
+typedef struct _DBGSTACKINFO{
+	void *PC;
+	const char *symbol;
+} DBGSTACKINFO;
+
+enum CrashActions{
+	DUMPNOTHING,
+	DUMPBASIC,
+	DUMPWITHDATA,
+	DUMPALL
+};
+
 class Protocol
 {
 public:
-    Protocol(unsigned int msgMax, unsigned int msgDbgMax);
+    Protocol(unsigned int msgMax, unsigned int msgDbgMax, const char *pstzReleaseID, const char *pstzUserID);
     ~Protocol();
     int flushBuff();    //send datapacket
 
@@ -69,6 +99,9 @@ public:
 //    BOOL writeMsgDbgUTF8(const char *data);
     BOOL sendMsgDbg();
 
+	static CrashActions writeCrashData(const char *pstzSessionID, long exceptionType, void *pcrashAddress, DBGSTACKINFO *pstackInfo, int cStackInfo, BYTE *pstate, int stateLen);
+	static BOOL writeCrashDump(const char *pstzSessionID, void *pcrashData, int size);
+	inline const char *getSessionID() { return (m_psessionID) ? m_psessionID : "N/A"; };
 private:
     unsigned int m_packetCount;
     char *m_psessionID;
@@ -79,7 +112,7 @@ private:
     BOOL _queueMsgDebug(PROTOMSG *pmsg);
 
 	BOOL _writeMsg(int type, char *pstz, int msgScope);
-    BOOL _sendSystemInfo();
+    BOOL _sendSystemInfo(const char *pstzReleaseID, const char *pstzUserID);
     BOOL _escapeDelims(char **ppstz);
     int _flushBuff(Http *http, PROTOMSG **ppmsgTop);
 
@@ -100,3 +133,6 @@ private:
 
     BOOL m_fFatalError;
 };
+
+#endif //__PROTOCOL_H__
+

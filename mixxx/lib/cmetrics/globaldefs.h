@@ -1,5 +1,5 @@
 /**********************************************
- * Cmetrics.h - Case Metrics Interface
+ * globaldefs.h - Case Metrics Interface
  *  Copyright 2007 John Sully.
  *
  *  This file is part of Case Metrics.
@@ -18,13 +18,14 @@
  *
  **********************************************/
 
+
 #ifndef __UMETRICS_GLOBALDEFS__
 #define __UMETRICS_GLOBALDEFS__
 
 #define _CRT_SECURE_NO_DEPRECATE
 
 #define LIB_NAME "CMETRICS"
-#define LIB_VERSION "0.3 GPL"
+#define LIB_VERSION "1.0 beta 2"
 
 /* ATTEMPT AUTO-DETECTION OF 64-bit */
 #ifdef __X86__
@@ -42,11 +43,13 @@
 #endif
 #endif
 
+
 /* Set LIB_OS String */
 #ifdef LINUX
 #define LIB_OS "LINUX"
 #elif WIN32
 #define LIB_OS "WIN32"
+#define _WIN32_WINNT 0x0500
 #else
 #error "OS Not Supported"
 #endif
@@ -61,7 +64,10 @@
 #endif //LIB_CLIENT
 
 /* SERVER SPECIFIC FIELDS */
-#define SERVER_CGI_DIR "/transact.php"
+#define SERVER_HOST "casemetrics.net"
+//#define SERVER_CGI_DIR "/log.php"
+//#define SERVER_HOST "192.168.1.22"
+#define SERVER_CGI_DIR "/transact1.php"
 #define SERVER_HTTP_PORT 80
 #define SERVER_RETRY_T 2000    //msecs
 #define MAX_CONNECT_ATTEMP 10
@@ -89,7 +95,7 @@ typedef unsigned char BYTE;
 #else //WIN32
 #define int64 __int64
 typedef unsigned char BYTE;
-#define _WIN32_WINNT 0x0500
+
 #endif //WIN32
 
 typedef unsigned short XCHAR;   //16-bit for UTF-16
@@ -101,7 +107,6 @@ typedef unsigned int BOOL;
 /* GENERIC DEFINES */
 #define TRUE 1
 #define FALSE 0
-
 
 //String Representation Sizes (excludes NULL)
 #define INT_DEC_SIZE 11 //Maximum size a string representation of a decimal int
@@ -124,11 +129,15 @@ typedef unsigned int BOOL;
 
 /* EXTERNAL INTERFACE */
 #define LIBINIT cm_init
+#define SETCRASHDLG cm_set_crash_dlg
 #define LIBCLOSE cm_close
 #define WRITEMSG_ASCII cm_writemsg_ascii
 #define WRITEMSG_UTF8 cm_writemsg_utf8
 #define WRITEMSG_UTF16 cm_writemsg_utf16
 #define WRITEMSG_BIN cm_writemsg_bin
-#define WRITEMSG_DBG_UTF8 _cm_write_debugMsg_utf8
+#define WRITEMSG_DBG_ASCII cm_writemsgDbg_ascii
+#define WRITEMSG_DBG_UTF8 cm_writemsgDbg_utf8
+#define SENDMSG_DBG cm_sendmsgDbg
+#define GEN_USERID cm_generate_userid
 
 #endif //__UMETRICS_GLOBALDEFS__

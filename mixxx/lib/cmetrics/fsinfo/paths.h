@@ -1,6 +1,6 @@
 /**********************************************
- * Cmetrics.h - Case Metrics Interface
- *  Copyright 2007 John Sully.
+ * paths.h - Case Metrics Interface
+ *  Copyright 2007 John Sully, Phillip Mendonça-Vieira.
  *
  *  This file is part of Case Metrics.
  *
@@ -17,6 +17,7 @@
  *  along with Case Metrics.  If not, see <http://www.gnu.org/licenses/>.
  *
  **********************************************/
+
 
 static const char *POSIX_COMMON_MOUNT_POINTS[] =  { 
     "/", 

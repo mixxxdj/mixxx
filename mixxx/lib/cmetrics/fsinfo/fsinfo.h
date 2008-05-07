@@ -1,6 +1,6 @@
 /**********************************************
- * Cmetrics.h - Case Metrics Interface
- *  Copyright 2007 John Sully.
+ * fsinfo.h - Case Metrics Interface
+ *  Copyright 2007 John Sully, Phillip Mendonça-Vieira.
  *
  *  This file is part of Case Metrics.
  *
@@ -18,6 +18,7 @@
  *
  **********************************************/
 
+
 /************************************************
  * FSINFO.H - (posix) platform fsinfo contract
  *
@@ -29,6 +30,11 @@
 
 #define FSINFO_VERSION 1
 #define FSINFO_RECORD_DELIM ';'
+
+#ifdef WIN32
+const int CREJECTED_DRIVETYPES = 3;
+const long REJECTED_DRIVETYPES[] = {DRIVE_REMOVABLE, DRIVE_NO_ROOT_DIR, DRIVE_CDROM};
+#endif //WIN32
 
 // the essential bit. Version 2 or etc ought to include a struct.
 // and cross platformness, too
