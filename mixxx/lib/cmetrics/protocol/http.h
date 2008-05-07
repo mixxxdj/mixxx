@@ -1,5 +1,5 @@
 /**********************************************
- * Cmetrics.h - Case Metrics Interface
+ *
  *  Copyright 2007 John Sully.
  *
  *  This file is part of Case Metrics.
@@ -41,7 +41,7 @@ static const char *HTTP_HEADER_HTTP = " HTTP/1.1\0";
 static const char *HTTP_HEADER_HOST = "\nHost: \0";
 static const char *HTTP_HEADER_USER = "\nUser-Agent: \0";
 static const char *HTTP_HEADER_CLENGTH = "\nContent-Length: \0";
-static const char *HTTP_HEADER_CTYPE = "\nContent-Type: application/text; charset=UTF-8\0";
+static const char *HTTP_HEADER_CTYPE = "\nContent-Type: application/octet-stream\0";
 static const char *HTTP_HEADER_TAIL = "\n\n\0";
 #endif
 

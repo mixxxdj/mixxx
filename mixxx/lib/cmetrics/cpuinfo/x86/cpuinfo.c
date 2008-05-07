@@ -1,5 +1,5 @@
 /**********************************************
- * Cmetrics.h - Case Metrics Interface
+ *
  *  Copyright 2007 John Sully.
  *
  *  This file is part of Case Metrics.
@@ -22,10 +22,10 @@
 #include <string.h>
 #include <errno.h>
 #include <assert.h>
-#include "../../globaldefs.h"
 #include "cpuid.h"
 #include "cpuinfo.h"
 #include "../arch_id.h"
+#include "../../globaldefs.h"
 #include "../../utf/utstr.h"
 
 int cpuinfoGetType()

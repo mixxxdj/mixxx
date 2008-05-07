@@ -1,5 +1,5 @@
 /**********************************************
- * Cmetrics.h - Case Metrics Interface
+ *
  *  Copyright 2007 John Sully.
  *
  *  This file is part of Case Metrics.
@@ -99,3 +99,17 @@ void sockClose(SOCKET_STATE *st)
 #endif
 }
 
+#ifdef TEST_SOCKET
+int main(int argc, char *argv)
+{
+    SOCKET_STATE st;
+    char buf[0x0ffff];
+
+    sockConnect(&st, "www.rockymedia.ca", 22);
+    sockRecv(&st, buf, 0x0ffff);
+
+    printf("%s\n", buf);
+
+    sockClose(&st);
+}
+#endif

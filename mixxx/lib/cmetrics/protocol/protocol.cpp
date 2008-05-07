@@ -1,5 +1,5 @@
 /**********************************************
- * Cmetrics.h - Case Metrics Interface
+ *
  *  Copyright 2007 John Sully.
  *
  *  This file is part of Case Metrics.
@@ -40,7 +40,22 @@ extern "C"{
 #include "../osinfo/osinfo.h"
 }
 
-Protocol::Protocol(unsigned int msgMax, unsigned int msgDbgMax)
+/* Returns TRUE if one string is a substring of the other */
+inline int fsubStr(const char *pstz1, const char *pstz2)
+{
+    int i=0;
+    while(pstz1[i] != '\0' && pstz2[i] != '\0')
+    {
+	if(pstz1[i] != pstz2[i])
+	    return FALSE;
+	i++;
+    }
+    return TRUE;
+}
+
+
+
+Protocol::Protocol(unsigned int msgMax, unsigned int msgDbgMax, const char *pstzReleaseID, const char *pstzUserID)
 {
     m_fFatalError = false;
 
@@ -57,8 +72,8 @@ Protocol::Protocol(unsigned int msgMax, unsigned int msgDbgMax)
     m_cmsgDbgMax = msgDbgMax;
     m_pmsgDbg = NULL;
     
-    if( _sendSystemInfo() != OK)
-	m_fFatalError = true;
+    if( _sendSystemInfo(pstzReleaseID, pstzUserID) != OK)
+        m_fFatalError = true;
 }
 
 Protocol::~Protocol()
@@ -68,7 +83,7 @@ Protocol::~Protocol()
     free(m_psessionID);
 }
 
-BOOL Protocol::_sendSystemInfo()
+BOOL Protocol::_sendSystemInfo(const char *pstzReleaseID, const char *pstzUserID)
 {    
     Http http(SERVER_HOST);
     XCHAR *pstz;
@@ -82,6 +97,11 @@ BOOL Protocol::_sendSystemInfo()
     writeMsg(PROTOMSGTYPE_LIBARCH, LIB_ARCH);
     writeMsg(PROTOMSGTYPE_LIBBUILDDATE, __DATE__);
     writeMsg(PROTOMSGTYPE_LIBCLIENT, LIB_CLIENT);
+
+    //Send Release/User IDs
+    writeMsg(PROTOMSGTYPE_RELEASE_ID, pstzReleaseID);
+    if(strlen(pstzUserID) > 0)
+        writeMsg(PROTOMSGTYPE_USER_ID, pstzUserID);
 
     //Send Module Data
     pstz = cpuInfoStz();
@@ -132,7 +152,105 @@ BOOL Protocol::_sendSystemInfo()
     return retVal;
 }
 
+BOOL  Protocol::writeCrashDump(const char *pstzSessionID, void *pcrashData, int size)
+{
+	Http http(SERVER_HOST);
 
+	
+	//Write Header Stuff
+	http.appendPostData(PROTOCOL_CRASHDUMP_HEADER, strlen(PROTOCOL_CRASHDUMP_HEADER));
+	http.appendPostData((BYTE*) &TOK_DELIM, sizeof(TOK_DELIM));
+	http.appendPostData((BYTE*) pstzSessionID, strlen(pstzSessionID));
+	http.appendPostData((BYTE*) &TOK_DELIM, sizeof(TOK_DELIM));
+
+	http.appendPostData((BYTE*) pcrashData, size);
+
+	return http.send();
+}
+
+/* Crash Data Reporting */
+/* We Implement this as static so it can be called without a Protocol object */
+/* We want execution of this to remain on the stack as we can't trust the heap */
+CrashActions Protocol::writeCrashData(const char *pstzSessionID, long exceptionType, void *pcrashAddress, DBGSTACKINFO *pStackInfo, int cStackInfo, BYTE *pstate, int stateLen)
+{
+#define MAX_BUFSIZE 1024
+	char buf[MAX_BUFSIZE];
+	int bufOffset = 0;
+	/* Send Crash Data */
+	Http http(SERVER_HOST);
+
+	//Write Header Stuff
+	http.appendPostData(PROTOCOL_CRASHREPORT_HEADER, strlen(PROTOCOL_CRASHREPORT_HEADER));
+	http.appendPostData((BYTE*) &TOK_DELIM, sizeof(TOK_DELIM));
+	http.appendPostData((BYTE*) pstzSessionID, strlen(pstzSessionID));
+
+	//Write Lib Data
+#define appendMsg(type, pstz) http.appendPostData((BYTE*) &TOK_DELIM, sizeof(TOK_DELIM)); \
+							snprintf(buf, MAX_BUFSIZE, "%X", type); \
+							http.appendPostData((BYTE*) buf, strlen(buf)); \
+							http.appendPostData((BYTE*) &TOK_DELIM, sizeof(TOK_DELIM)); \
+							http.appendPostData((BYTE*) pstz, strlen(pstz));
+	appendMsg(PROTOMSGTYPE_LIBNAME, LIB_NAME);
+    appendMsg(PROTOMSGTYPE_LIBVERSION, LIB_VERSION);
+    appendMsg(PROTOMSGTYPE_LIBOS, LIB_OS);
+    appendMsg(PROTOMSGTYPE_LIBARCH, LIB_ARCH);
+    appendMsg(PROTOMSGTYPE_LIBBUILDDATE, __DATE__);
+    appendMsg(PROTOMSGTYPE_LIBCLIENT, LIB_CLIENT);
+#undef appendMsg
+
+	//Write Exception Type
+	http.appendPostData((BYTE*) &TOK_DELIM, sizeof(TOK_DELIM));
+	http.appendPostData((BYTE*) PROTOMSG_CRASHREPORT_EXCEPTIONTYPE, strlen(PROTOMSG_CRASHREPORT_EXCEPTIONTYPE));
+	http.appendPostData((BYTE*) &TOK_DELIM, sizeof(TOK_DELIM));
+	snprintf(buf, MAX_BUFSIZE, "0x0%lX", exceptionType);
+	http.appendPostData((BYTE*) buf, strlen(buf));
+
+	//Write Crash Address
+	http.appendPostData((BYTE*) &TOK_DELIM, sizeof(TOK_DELIM));
+	http.appendPostData((BYTE*) PROTOMSG_CRASHREPORT_CRASHADDR, strlen(PROTOMSG_CRASHREPORT_CRASHADDR));
+	http.appendPostData((BYTE*) &TOK_DELIM, sizeof(TOK_DELIM));
+	snprintf(buf, MAX_BUFSIZE, "0x0%llX", (long long) pcrashAddress);
+	http.appendPostData((BYTE*) buf, strlen(buf));
+
+	//Write Crash State
+#if 0
+	http.appendPostData((BYTE*) &TOK_DELIM, sizeof(TOK_DELIM));
+	http.appendPostData((BYTE*) PROTOMSG_CRASHREPORT_STATE, strlen(PROTOMSG_CRASHREPORT_STATE));
+	http.appendPostData((BYTE*) &TOK_DELIM, sizeof(TOK_DELIM));
+	http.appendPostData((BYTE*) pstate, stateLen);
+#endif
+
+	//Write Back Trace
+	bufOffset = 0;
+	http.appendPostData((BYTE*) &TOK_DELIM, sizeof(TOK_DELIM));
+	http.appendPostData((BYTE*) PROTOMSG_CRASHREPORT_BACKTRACE, strlen(PROTOMSG_CRASHREPORT_BACKTRACE));
+	http.appendPostData((BYTE*) &TOK_DELIM, sizeof(TOK_DELIM));
+	for(int i=0; i < cStackInfo; i++)
+	{
+		snprintf(buf, MAX_BUFSIZE, "0x0%llX [%s]\n", (long long) pStackInfo[i].PC, pStackInfo[i].symbol);
+		buf[MAX_BUFSIZE - 1] = '\0';
+		http.appendPostData((BYTE*) buf, strlen(buf));
+	}
+
+	//Determine Results
+	int retVal = http.send();
+	if(retVal != OK)
+	{
+		return DUMPNOTHING;
+	}
+	int offset  = 0;	//this is a hack to handle extra line feed on beginning
+	if(http.m_rxpacket[0] == 0x0A)
+		offset = 1;
+	if(fsubStr(http.m_rxpacket + offset, PROTOCOL_SENDDUMP_BASIC))
+		return DUMPBASIC;
+	if(fsubStr(http.m_rxpacket + offset, PROTOCOL_SENDDUMP_DATA))
+		return DUMPWITHDATA;
+	if(fsubStr(http.m_rxpacket + offset, PROTOCOL_SENDDUMP_ALL))
+		return DUMPALL;
+
+	return DUMPNOTHING;
+#undef MAX_BUFSIZE
+}
 BOOL Protocol::sendMsgDbg()
 {
     if(m_pmsgDbg != NULL)

@@ -1,5 +1,5 @@
 /**********************************************
- * Cmetrics.h - Case Metrics Interface
+ * arch_id.h - Case Metrics Interface
  *  Copyright 2007 John Sully.
  *
  *  This file is part of Case Metrics.
@@ -17,6 +17,7 @@
  *  along with Case Metrics.  If not, see <http://www.gnu.org/licenses/>.
  *
  **********************************************/
+
 
 /************************************************
  * ARCH_ID.H - defines a numeric type id for each supported architecture

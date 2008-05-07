@@ -4,9 +4,14 @@ project = 'protocol'
 sources = Split("""protocol.cpp http.cpp socket.c""")
 
 #Import Flags
-Import('env libutf')
+Import('env flags_unittest libutf')
 
 obj = []
+#if flags_unittest == '1':
+#    sources += libutf
+#    obj = env.Program(sources)
+#else:
+#    obj = env.SharedObject(sources, CCFLAGS = [CCFLAGS] + env['CCFLAGS'] )
 obj = env.SharedObject(sources)
 
 Return('obj')

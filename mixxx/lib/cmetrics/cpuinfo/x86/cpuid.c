@@ -1,5 +1,5 @@
 /**********************************************
- * Cmetrics.h - Case Metrics Interface
+ * cpuid.c - Case Metrics Interface
  *  Copyright 2007 John Sully.
  *
  *  This file is part of Case Metrics.
@@ -21,7 +21,6 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
-#include "../../globaldefs.h"
 #include "cpuid.h"
 
 #ifdef LINUX

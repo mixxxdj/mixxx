@@ -1,5 +1,5 @@
 /**********************************************
- * Cmetrics.h - Case Metrics Interface
+ * cpuinfo.h - Case Metrics Interface
  *  Copyright 2007 John Sully.
  *
  *  This file is part of Case Metrics.
@@ -17,6 +17,7 @@
  *  along with Case Metrics.  If not, see <http://www.gnu.org/licenses/>.
  *
  **********************************************/
+
 
 /*****************************************************
  * CPUINFO.H - cross platform cpuinfo struct contract
