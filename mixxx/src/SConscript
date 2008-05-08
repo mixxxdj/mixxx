@@ -242,6 +242,7 @@ opts.Add('optimize', 'Set to 1 to enable -O3 compiler optimizations. Set to 2 to
 if not platform == 'win32':
 	opts.Add('gprof', '(DEVELOPER) Set to 1 to enable profiling using gprof', 0)
 	opts.Add('tuned', '(EXPERIMENTAL) Set to 1 to optimise mixxx for this CPU', 0)
+	opts.Add('force32', 'Set to 1 to force GCC to compile a 32-bit binary with the -m32 flag', 0)
 #env = Environment(options = opts)
 opts.Update(env)
 Help(opts.GenerateHelpText(env))
@@ -249,6 +250,9 @@ Help(opts.GenerateHelpText(env))
 # user-defined CXXFLAGS
 if os.environ.has_key('CXXFLAGS'):
 	env.Append(CXXFLAGS = SCons.Util.CLVar( os.environ['CXXFLAGS'] ))
+# user-defined CCFLAGS
+if os.environ.has_key('CCFLAGS'):
+	env.Append(CCFLAGS = SCons.Util.CLVar(os.environ['CCFLAGS']))
 
 ### embed SVN version into build
 build_rev = getSVNRevision()
@@ -775,6 +779,14 @@ if int(flags_msvshacks):
 else:
 	print "MSVS 2005 hacks... disabled"
 
+#force 32-bit compile on GCC
+flags_force32 = getFlags(env, 'force32', 0)
+if int(flags_force32):
+	env.Append(CCFLAGS = '-m32')
+	env.Append(CXXFLAGS = '-m32')
+	print "Force 32-bit compile... enabled"
+else:
+	print "Force 32-bit compile... disabled"
 
 
 ### Put flags info into a file
