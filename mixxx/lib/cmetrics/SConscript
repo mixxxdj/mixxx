@@ -10,15 +10,15 @@ def CheckX86(context):
 def CheckX64(context):
 	return context.TryCompile("#ifndef __amd64__\n#error\n#endif\nint main(){}", '.c')
 
-Import('env platform client server')
+Import('env flags_force32 platform client server')
 
 
 #DETECT ARCHITECTURE
 conf = Configure(env)
-if CheckX86(conf):
+if int(flags_force32) or CheckX86(conf):
 	print 'cpu: X86'
-	env.Append(CXXFLAGS = ['-D__X86__', '-DLIB_ARCH=X86'])
-	env.Append(CCFLAGS = ['-D__X86__', '-DLIB_ARCH=X86'])
+	env.Append(CXXFLAGS = ['-D__X86__', '-DLIB_ARCH=\"\\"X86\\"\"'])
+	env.Append(CCFLAGS = ['-D__X86__', '-DLIB_ARCH=\"\\"X86\\"\"'])
 	arch='X86'
 elif CheckX64(conf):
 	print 'cpu: X64'
@@ -27,7 +27,7 @@ elif CheckX64(conf):
 	arch='X64'
 else:
 	print 'cpu: Unknown'
-
+	exit(-1)
 env.Append(CXXFLAGS = '-DSERVER_HOST=\"\\"' + server + '\\"\"')
 
 

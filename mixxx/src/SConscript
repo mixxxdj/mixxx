@@ -622,23 +622,6 @@ else:
 	print "High quality EQs... enabled"
 	build_flags += 'hifieq '
 
-#Case Metrics
-flags_cmetrics = getFlags(env, 'cmetrics', 0)
-if int(flags_cmetrics):
-	env.Append(CXXFLAGS = '-D__C_METRICS__')
-	if platform == 'win32':
-	    env.Append(LIBS = 'cmetrics')
-	else:
-	    client = 'MIXXX'
-	    server = 'casemetrics.net' #NOTE: Permission to use this server is granted only to mixxx, any other use must obtain prior permission
-	    Export('env platform client server')
-	    env.Append(CPPPATH='../../lib/cmetrics')
-	    sources += SConscript('../../lib/cmetrics/SConscript')
-	print "Case Metrics profiling... enabled"
-	build_flags += 'cmetrics '
-else:
-	print "Case Metrics profiling... disabled"
-
 #Experimental Shoutcast
 flags_shoutcast = getFlags(env, 'shoutcast', 0)
 if int(flags_shoutcast):
@@ -788,6 +771,23 @@ if int(flags_force32):
 else:
 	print "Force 32-bit compile... disabled"
 
+
+#Case Metrics
+flags_cmetrics = getFlags(env, 'cmetrics', 0)
+if int(flags_cmetrics):
+	env.Append(CXXFLAGS = '-D__C_METRICS__')
+	if platform == 'win32':
+	    env.Append(LIBS = 'cmetrics')
+	else:
+	    client = 'MIXXX'
+	    server = 'casemetrics.net' #NOTE: Permission to use this server is granted only to mixxx, any other use must obtain prior permission
+	    Export('env platform client server flags_force32')
+	    env.Append(CPPPATH='../../lib/cmetrics')
+	    sources += SConscript('../../lib/cmetrics/SConscript')
+	print "Case Metrics profiling... enabled"
+	build_flags += 'cmetrics '
+else:
+	print "Case Metrics profiling... disabled"
 
 ### Put flags info into a file
 f = open("../.mixxx_flags.svn","w")
