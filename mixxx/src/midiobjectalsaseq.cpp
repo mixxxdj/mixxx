@@ -89,7 +89,7 @@ int MidiObjectALSASeq::getClientPortsList(void)
 
     //Look for input ports only.
     uiAlsaFlags = SND_SEQ_PORT_CAP_READ  | SND_SEQ_PORT_CAP_SUBS_READ;
-
+    
     //qDebug() << "****MIDI: Listing ALSA Sequencer clients:";
 
     //Clear the list of devices:
@@ -100,13 +100,12 @@ int MidiObjectALSASeq::getClientPortsList(void)
     snd_seq_port_info_t * pPortInfo;
 
     {
-	// Use temporary variables to avoid misleading warnings
+        // Use temporary variables to avoid misleading warnings
         // from the _alloca macros
-	snd_seq_client_info_t ** ppCI = &pClientInfo;
-	snd_seq_port_info_t ** ppPI = &pPortInfo;
-
-	snd_seq_client_info_alloca(ppCI);
-	snd_seq_port_info_alloca(ppPI);
+        snd_seq_client_info_t ** ppCI = &pClientInfo;
+        snd_seq_port_info_t ** ppPI = &pPortInfo;
+        snd_seq_client_info_alloca(ppCI);
+        snd_seq_port_info_alloca(ppPI);
     }
     snd_seq_client_info_set_client(pClientInfo, -1);
 
@@ -129,12 +128,20 @@ int MidiObjectALSASeq::getClientPortsList(void)
                     //qDebug() << sPortName;
                     //qDebug() << "active port: " << sActivePortName;
 
-                    if (sPortName == sActivePortName)                     //Make the port we're currently connected to be the first choice
-                        //in the combobox in the MIDI preferences dialog.
-                        devices.prepend(sPortName);
-                    else
-                        devices.append(sPortName);
-                    iDirtyCount++;
+                    //Blacklist the "Midi Through" and "Mixxx" output devices
+                    //in order to avoid MIDI feedback loops (say, so the MIDI
+                    //LED handlers don't fire MIDI messages back to Mixxx 
+                    //itself).
+                    if (!sPortName.toLower().contains("midi through") &&
+                        !sPortName.toLower().contains("mixxx"))
+                    {
+                        if (sPortName == sActivePortName) //Make the port we're currently connected to be the first choice
+                                                          //in the combobox in the MIDI preferences dialog.
+                            devices.prepend(sPortName);
+                        else
+                            devices.append(sPortName);
+                        iDirtyCount++;
+                    }
                 }
             }
         }
@@ -318,7 +325,7 @@ void MidiObjectALSASeq::sendShortMsg(unsigned int word) {
     byte1 = word & 0xff;
     byte2 = (word>>8) & 0xff;
     byte3 = (word>>16) & 0xff;
-    // qDebug() << "MIDI message send via alsa seq: " << byte1 << " " << byte2 << " " << byte3;
+    //qDebug() << "MIDI message send via alsa seq: " << byte1 << " " << byte2 << " " << byte3;
 
     // Initialize the event structure
     snd_seq_ev_set_direct(&ev);
@@ -331,11 +338,11 @@ void MidiObjectALSASeq::sendShortMsg(unsigned int word) {
     switch ((byte1 & 0xf0)) {
     case 0x90:
         snd_seq_ev_set_noteon(&ev, byte1&0xf, byte2, byte3);
-	snd_seq_event_output_direct(m_handle, &ev);
-	break;
+	    snd_seq_event_output_direct(m_handle, &ev);
+	    break;
     case 0xb0:
-	snd_seq_ev_set_controller(&ev, byte1&0xf, byte2, byte3);
-	snd_seq_event_output_direct(m_handle, &ev);
-	break;
+	    snd_seq_ev_set_controller(&ev, byte1&0xf, byte2, byte3);
+	    snd_seq_event_output_direct(m_handle, &ev);
+	    break;
     }
 }
