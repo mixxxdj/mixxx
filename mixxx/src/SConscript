@@ -82,8 +82,8 @@ def CheckFFMPEG(conf, sources):
 				Exit(1)
 			else:
 				#Grabs the libs and cflags for ffmpeg
-				env.ParseConfig('pkg-config libavcodec --silence-errors --cflags --libs') 
-				env.ParseConfig('pkg-config libavformat --silence-errors --cflags --libs') 
+				env.ParseConfig('pkg-config libavcodec --silence-errors --cflags --libs')
+				env.ParseConfig('pkg-config libavformat --silence-errors --cflags --libs')
 				env.Append(CXXFLAGS = '-D__FFMPEGFILE__')
 		else:
 			# aptitude install libavcodec-dev libavformat-dev liba52-0.7.4-dev libdts-dev
@@ -208,7 +208,7 @@ else:
 #and on Windows where all the paths are set in the shell.
 if platform == 'linux' or platform == 'osx':
 	env = Environment(tools=['default','qt4', 'msvs'], toolpath=['../', './'], QTDIR=flags_qtdir, QT_LIB='', ENV = os.environ)
- 	os.environ['PKG_CONFIG_PATH']=flags_qtdir+'lib/pkgconfig'  #Set the PKG_CONFIG_PATH explicitly, handles multiple QT 4.x installations 
+ 	os.environ['PKG_CONFIG_PATH']=flags_qtdir+'lib/pkgconfig'  #Set the PKG_CONFIG_PATH explicitly, handles multiple QT 4.x installations
 elif platform == 'win32':
 	#Pull in the environment's variables for win32...
 	env = Environment(tools=['default','qt4', 'msvs'], toolpath=['../', './'], QTDIR=flags_qtdir, QT_LIB='', VCINSTALLDIR = os.getenv('VCInstallDir'), ENV = os.environ)
@@ -257,7 +257,7 @@ if os.environ.has_key('CCFLAGS'):
 ### embed SVN version into build
 build_rev = getSVNRevision()
 ### Old way - causes everything to be rebuilt each time the SVN ver moves. :(
-#if build_rev != '': 
+#if build_rev != '':
 # 	env.Append(CXXFLAGS = '-DBUILD_REV=\\"' + build_rev + '\\"')
 ### Put version info into a file, so it doesn't force a rebuild of everything :)
 f = open("../.mixxx_version.svn","w")
@@ -284,7 +284,7 @@ sources = Split("""enginebuffercue.cpp input.cpp mixxxmenuplaylists.cpp trackpla
  trackinfoobject.cpp soundsource.cpp
  midiledhandler.cpp
  sounddevice.cpp soundmanager.cpp sounddeviceportaudio.cpp
- dlgprefrecord.cpp recording/enginerecord.cpp recording/writeaudiofile.cpp 
+ dlgprefrecord.cpp recording/enginerecord.cpp recording/writeaudiofile.cpp
  enginevinylsoundemu.cpp enginesidechain.cpp wtracktablefilter.cpp
  wplaylistlistmodel.cpp libraryscanner.cpp libraryscannerdlg.cpp enginefilterbutterworth8.cpp enginexfader.cpp playerinfo.cpp wabstractcontrol.cpp
  enginebufferscaledummy.cpp """)
@@ -385,7 +385,7 @@ if not env.GetOption('clean') and not SCons.Util.containsAny(os.sys.argv, ['-h',
 			Exit(1)
 		else:
 			#Grabs the QT4 include paths
-			env.ParseConfig('pkg-config QtCore --silence-errors --cflags --libs') 
+			env.ParseConfig('pkg-config QtCore --silence-errors --cflags --libs')
 			env.ParseConfig('pkg-config Qt3Support --silence-errors --cflags') #QT3 support breaks the build
 			env.ParseConfig('pkg-config QtGui --silence-errors --cflags --libs')
 			env.ParseConfig('pkg-config QtXml --silence-errors --cflags --libs')
@@ -554,12 +554,12 @@ else:
 #env.Append(CPPPATH=['../../lib/rubberband/src']) #Needed two ../../'s because we're compiling from "src/.obj"
 #env.Append(CPPPATH=['../../lib/rubberband/rubberband']) #Needed two ../../'s because we're compiling from "src/.obj"
 #env.Append(CXXFLAGS=['-DFFTW_DOUBLE_ONLY'])
-#sources += Split("""enginebufferscalerubberband.cpp 
-#					../../lib/rubberband/src/AudioCurve.cpp ../../lib/rubberband/src/ConstantAudioCurve.cpp 
-#					../../lib/rubberband/src/FFT.cpp ../../lib/rubberband/src/PercussiveAudioCurve.cpp 
-#					../../lib/rubberband/src/HighFrequencyAudioCurve.cpp ../../lib/rubberband/src/Resampler.cpp 
-#					../../lib/rubberband/src/RubberBandStretcher.cpp ../../lib/rubberband/src/SpectralDifferenceAudioCurve.cpp 
-#					../../lib/rubberband/src/StretchCalculator.cpp ../../lib/rubberband/src/StretcherChannelData.cpp 
+#sources += Split("""enginebufferscalerubberband.cpp
+#					../../lib/rubberband/src/AudioCurve.cpp ../../lib/rubberband/src/ConstantAudioCurve.cpp
+#					../../lib/rubberband/src/FFT.cpp ../../lib/rubberband/src/PercussiveAudioCurve.cpp
+#					../../lib/rubberband/src/HighFrequencyAudioCurve.cpp ../../lib/rubberband/src/Resampler.cpp
+#					../../lib/rubberband/src/RubberBandStretcher.cpp ../../lib/rubberband/src/SpectralDifferenceAudioCurve.cpp
+#					../../lib/rubberband/src/StretchCalculator.cpp ../../lib/rubberband/src/StretcherChannelData.cpp
 #					../../lib/rubberband/src/StretcherImpl.cpp ../../lib/rubberband/src/StretcherProcess.cpp
 #					../../lib/rubberband/src/sysutils.cpp ../../lib/rubberband/src/Thread.cpp""")
 
@@ -937,7 +937,7 @@ if platform == 'linux':
 			#Delete(unix_share_path + "/mixxx/midi")
 			#Delete(unix_share_path + "/mixxx/keyboard")
 
-#Build the Mixxx.app directory 
+#Build the Mixxx.app directory
 if platform == 'osx':
 
 	#Files needed to create the OS X package
@@ -992,9 +992,9 @@ if platform == 'win32':
 
 
 def BuildRelease(target, source, env):
-	print 
+	print
 	print "==== Mixxx Post-Build Checks ===="
-	print 
+	print
 	print "You have built version ",
 	os.system('grep -m 1 VERSION src/defs.h | cut -d \' \' -f 3')
 	print
@@ -1019,7 +1019,7 @@ def BuildRelease(target, source, env):
 	else:
 		print "Aborted building installer"
 
-# Do release things 
+# Do release things
 versionbld = Builder(action = BuildRelease, suffix = '.foo', src_suffix = '.bar')
 env.Append(BUILDERS = {'BuildRelease' : versionbld})
 
@@ -1029,9 +1029,9 @@ if 'makerelease' in COMMAND_LINE_TARGETS:
 	
 #Build the Ubuntu package
 def BuildUbuntuPackage(target, source, env):
-	print 
+	print
 	print "==== Mixxx Post-Build Checks ===="
-	print 
+	print
 	print "You have built version ",
 	p = os.popen('grep -m 1 VERSION src/defs.h | cut -d \' \' -f 3 | tr -d \'\"\' | tr -d \'\n\'')
 	version = p.readline()
@@ -1057,7 +1057,7 @@ def BuildUbuntuPackage(target, source, env):
 		
 		if not os.path.exists('ubuntu'):
 			os.mkdir('ubuntu')
-		print "Exporting source tree from HEAD" 
+		print "Exporting source tree from HEAD"
 		
 		os.system('svn export --force -rHEAD . ubuntu/mixxx-' + version)
 		
@@ -1071,8 +1071,8 @@ def BuildUbuntuPackage(target, source, env):
 		
 		print "Tarring source directory..."
 		os.system("rm -f mixxx_" + version + ".orig.tar.gz") #Remove old tarball
-		os.system('tar --exclude=debian --exclude=debian/* -cvzf  mixxx_' + version + '.orig.tar.gz ' + mixxx_dir) 
-		 
+		os.system('tar --exclude=debian --exclude=debian/* -cvzf  mixxx_' + version + '.orig.tar.gz ' + mixxx_dir)
+		
 		#Move the debian directory into the right spot.
 		#os.system('mv debian mixxx-' + version)
 		os.system('rm -rf ' + mixxx_dir + '/debian')
