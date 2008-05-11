@@ -28,7 +28,7 @@ class EngineShoutcast;
 
 class EngineRecord;
 
-#define SIDECHAIN_BUFFER_SIZE 16384
+#define SIDECHAIN_BUFFER_SIZE 65536 
 
 
 class EngineSideChain : public QThread
