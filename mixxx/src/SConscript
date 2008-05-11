@@ -361,7 +361,7 @@ if not env.GetOption('clean') and not SCons.Util.containsAny(os.sys.argv, ['-h',
 			print "Did not find libsndfile or it\'s development headers, exiting!"
 			Exit(1)
 		else:
-			env.Append(CXXFLAGS = ' -D__SNDFILE__')
+			env.Append(CXXFLAGS = '-D__SNDFILE__')
 			sources.append('soundsourcesndfile.cpp') ## TODO: Convert this to a SharedLibrary, so it can be installed without having to run scons twice after a clean
 			# libsndfile = env.SharedLibrary(
 			# "libsndfile",
@@ -393,7 +393,7 @@ if not env.GetOption('clean') and not SCons.Util.containsAny(os.sys.argv, ['-h',
 			# Might be missing $QTDIR/include/Qt still...
 
 		#Check for libasound (libasound2?) (needed for ALSA seq MIDI support)
-		if not conf.CheckLib(['asound', 'asound2']):
+		if not conf.CheckLib('asound'):
 			print "Did not find libasound (aka. libasound2), exiting!"
 			Exit(1)
 
@@ -422,7 +422,7 @@ if not env.GetOption('clean') and not SCons.Util.containsAny(os.sys.argv, ['-h',
 			print "Did not find libsndfile or it\'s development headers, exiting!"
 			Exit(1)
 		else:
-			env.Append(CXXFLAGS = ' -D__SNDFILE__')
+			env.Append(CXXFLAGS = '-D__SNDFILE__')
 			sources.append('soundsourcesndfile.cpp') ## TODO: Convert this to a SharedLibrary, so it can be installed without having to run scons twice after a clean
 			# libsndfile = env.SharedLibrary(
 			# "libsndfile",
@@ -467,15 +467,15 @@ if not env.GetOption('clean') and not SCons.Util.containsAny(os.sys.argv, ['-h',
 
 #Declare the flags for Mixxx's config/track listing files:
 if platform == 'linux':
-	env.Append(CXXFLAGS = ' -D__UNIX__ -D__LINUX__ -DBPMSCHEME_FILE=\\".mixxxbpmscheme.xml\\" -DSETTINGS_FILE=\\".mixxx.cfg\\" -DTRACK_FILE=\\".mixxxtrack.xml\\"')
-	env.Append(CXXFLAGS = ' -DUNIX_SHARE_PATH=\\"' + ARGUMENTS.get('prefix', '/usr/local') + '/share/mixxx\\"')
+	env.Append(CXXFLAGS = '-D__UNIX__ -D__LINUX__ -DBPMSCHEME_FILE=\\".mixxxbpmscheme.xml\\" -DSETTINGS_FILE=\\".mixxx.cfg\\" -DTRACK_FILE=\\".mixxxtrack.xml\\"')
+	env.Append(CXXFLAGS = '-DUNIX_SHARE_PATH=\\"' + ARGUMENTS.get('prefix', '/usr/local') + '/share/mixxx\\"')
 elif platform == 'osx':
-	env.Append(CXXFLAGS = ' -D__MACX__ -DBPMSCHEME_FILE=\\".mixxxbpmscheme.xml\\" -DSETTINGS_FILE=\\".mixxx.cfg\\" -DTRACK_FILE=\\".mixxxtrack.xml\\"')
+	env.Append(CXXFLAGS = '-D__MACX__ -DBPMSCHEME_FILE=\\".mixxxbpmscheme.xml\\" -DSETTINGS_FILE=\\".mixxx.cfg\\" -DTRACK_FILE=\\".mixxxtrack.xml\\"')
 elif platform == 'win32':
 	env.Append(CXXFLAGS = '-D__WIN32__ -DBPMSCHEME_FILE=\\"mixxxbpmschemes.xml\\" -DSETTINGS_FILE=\\"mixxx.cfg\\" -DTRACK_FILE=\\"mixxxtrack.xml\\"')
 
 #... and yes, we need to double-escape those quotes
-env.Append(CXXFLAGS = ' -D__PORTAUDIO__'); #Turn on PortAudio support in Mixxx
+env.Append(CXXFLAGS = '-D__PORTAUDIO__'); #Turn on PortAudio support in Mixxx
 env.Append(CPPPATH = ['.', '../', '../../']) #Fun fun fun with paths
 
 
@@ -502,11 +502,11 @@ if platform == 'win32':
 	env.Append(LIBS = 'winspool')
 	env.Append(LIBS = 'shell32')
 
-env.Append(CXXFLAGS = ' -DQT3_SUPPORT -DQT3_SUPPORT_WARNINGS -DQT_THREAD_SUPPORT -DQT_SHARED -DQT_TABLET_SUPPORT') #Stolen from Mixxx's build output
+env.Append(CXXFLAGS = '-DQT3_SUPPORT -DQT3_SUPPORT_WARNINGS -DQT_THREAD_SUPPORT -DQT_SHARED -DQT_TABLET_SUPPORT') #Stolen from Mixxx's build output
 
 # Manually add the include paths for win32 and OS X (we use pkg-config on Linux)
 if not platform == 'linux':
-	env.Append(CXXFLAGS = ' -I$QTDIR/include/Qt3Support -I$QTDIR/include/QtCore -I$QTDIR/include/QtGui -I$QTDIR/include/QtXml -I$QTDIR/include/QtOpenGL -I$QTDIR/include/Qt -I"$VCINSTALLDIR/include/atl"')
+	env.Append(CXXFLAGS = '-I$QTDIR/include/Qt3Support -I$QTDIR/include/QtCore -I$QTDIR/include/QtGui -I$QTDIR/include/QtXml -I$QTDIR/include/QtOpenGL -I$QTDIR/include/Qt -I"$VCINSTALLDIR/include/atl"')
 
 if not platform == 'win32':
 	env.Append(CCFLAGS = Split(""" -pipe -Wall -W -g -D_REENTRANT """)) # omghax
