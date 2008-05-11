@@ -32,7 +32,7 @@ def getSVNRevision(): # GPL code taken from http://trac.zeitherrschaft.org/zzub/
 
 #Checks for OpenGL on all three platforms
 def CheckOpenGL():
-	if not conf.CheckLib('GL') and not conf.CheckLib('opengl32') and not conf.CheckCHeader('/System/Library/Frameworks/OpenGL.framework/Versions/A/Headers/gl.h'):
+	if not conf.CheckLib('GL') and not conf.CheckLib('opengl32') and not conf.CheckCHeader('/System/Library/Frameworks/OpenGL.framework/Versions/A/Headers/gl.h') and not conf.CheckCHeader('GL/gl.h'):
 		print 'Did not find OpenGL development files, exiting!'
 		Exit(1)
 
