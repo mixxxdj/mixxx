@@ -23,6 +23,11 @@
 
 MidiObjectALSASeq::MidiObjectALSASeq(QString device) : MidiObject(device)
 {
+    m_handle = NULL;
+    pinfo = NULL;
+    m_client = 0;
+    m_input = 0;
+    m_queue = 0;
     int err;
 
     err = snd_seq_open(&m_handle,  "default", SND_SEQ_OPEN_DUPLEX, SND_SEQ_NONBLOCK);
