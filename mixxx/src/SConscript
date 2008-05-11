@@ -165,7 +165,7 @@ def getFlags(env, argflag, default=0):
 			flags = default
 	env[argflag] = flags
 	return flags
-1
+
 ###### MAIN LINE ######
 #######################
 #Get the platform/OS that we're building on:
