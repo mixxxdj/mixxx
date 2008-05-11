@@ -133,13 +133,13 @@ def flatten(x):
 
 	Returns a single, flat list which contains all elements retrieved
 	from the sequence and all recursively contained sub-sequences
-    (iterables).
+	(iterables).
 
-    Examples:
-    >>> [1, 2, [3,4], (5,6)]
-    [1, 2, [3, 4], (5, 6)]
-    >>> flatten([[[1,2,3], (42,None)], [4,5], [6], 7, MyVector(8,9,10)])
-    [1, 2, 3, 42, None, 4, 5, 6, 7, 8, 9, 10]"""
+	Examples:
+	>>> [1, 2, [3,4], (5,6)]
+	[1, 2, [3, 4], (5, 6)]
+	>>> flatten([[[1,2,3], (42,None)], [4,5], [6], 7, MyVector(8,9,10)])
+	[1, 2, 3, 42, None, 4, 5, 6, 7, 8, 9, 10]"""
 
 	result = []
 	for el in x:
@@ -303,7 +303,7 @@ if platform == 'linux':
 	sources += Split("""midiobjectalsaseq.cpp """)  #ALSA Sequencer MIDI support for Linux
 	env.Append(CXXFLAGS = '-D__ALSASEQMIDI__')
 elif platform == 'win32':
-	sources += Split("""midiobjectwin.cpp """)      #Windows MIDI support
+	sources += Split("""midiobjectwin.cpp """)	  #Windows MIDI support
 	env.Append(CXXFLAGS = '-D__WINMIDI__')
 elif platform == 'osx':
 	sources += Split("""midiobjectcoremidi.cpp """) #CoreMidi support for OS X
@@ -355,7 +355,7 @@ if not env.GetOption('clean') and not SCons.Util.containsAny(os.sys.argv, ['-h',
 
 	#Platform-specific checks for Linux and Win32...
 	if platform == 'linux' or platform == 'win32':
-	    #Check for libsndfile
+		#Check for libsndfile
 		#if not conf.CheckLibWithHeader(['sndfile', 'libsndfile'], 'sndfile.h', 'C'):
 		if not conf.CheckLib(['sndfile', 'libsndfile']):
 			print "Did not find libsndfile or it\'s development headers, exiting!"
@@ -393,11 +393,11 @@ if not env.GetOption('clean') and not SCons.Util.containsAny(os.sys.argv, ['-h',
 			# Might be missing $QTDIR/include/Qt still...
 
 		#Check for libasound (libasound2?) (needed for ALSA seq MIDI support)
-		if not conf.CheckLib('asound'):
+		if not conf.CheckLib(['asound', 'asound2']):
 			print "Did not find libasound (aka. libasound2), exiting!"
 			Exit(1)
 
-        #Check for libdjconsole, if it was passed as a flag
+		#Check for libdjconsole, if it was passed as a flag
 		flags_djconsole = getFlags(env, 'djconsole', 0)
 		flags_djconsole_legacy = getFlags(env, 'djconsole_legacy', 0)
 		if int(flags_djconsole):
@@ -650,8 +650,7 @@ else:
 flags_vinylcontrol = getFlags(env, 'vinylcontrol', 1)
 if int(flags_vinylcontrol):
 	env.Append(CXXFLAGS = '-D__VINYLCONTROL__')
-	sources += Split(""" vinylcontrol.cpp vinylcontrolproxy.cpp vinylcontrolscratchlib.cpp vinylcontrolxwax.cpp dlgprefvinyl.cpp
-	                     enginevinylcontrol.cpp """)
+	sources += Split(""" vinylcontrol.cpp vinylcontrolproxy.cpp vinylcontrolscratchlib.cpp vinylcontrolxwax.cpp dlgprefvinyl.cpp enginevinylcontrol.cpp """)
 	env.Append(CPPPATH='../../lib/xwax')
 	if platform == 'win32':
 		sources += Split("""../../lib/xwax/timecoder_win32.c """)
@@ -699,9 +698,9 @@ else:
 
 #Optimization
 if platform == 'win32':
-    flags_optimize = getFlags(env, 'optimize', 0)   #Default to off on win32
+	flags_optimize = getFlags(env, 'optimize', 0)   #Default to off on win32
 else:
-    flags_optimize = getFlags(env, 'optimize', 1)   #Default to on for Linux/OS X
+	flags_optimize = getFlags(env, 'optimize', 1)   #Default to on for Linux/OS X
 if int(flags_optimize):
 	if platform == 'win32':
 		if int(flags_msvcdebug):
@@ -718,12 +717,12 @@ if int(flags_optimize):
 		elif flags_optimize=='2':
 			print "  P4 MMX/SSE optimizations enabled."
 			env.Append(CXXFLAGS = '-O3 -march=pentium4 -mmmx -msse2 -mfpmath=sse -fomit-frame-pointer -ffast-math -funroll-loops')
-                elif flags_optimize=='3':
-                        print "  Intel Core Solo/Duo optimizations enabled."
-                        env.Append(CXXFLAGS = '-O3 -march=prescott -mmmx -msse3 -mfpmath=sse -fomit-frame-pointer -ffast-math -funroll-loops')
-                elif flags_optimize=='4':
-                        print "  Intel Core 2 optimizations enabled."
-                        env.Append(CXXFLAGS = '-O3 -march=nocona -mmmx -msse3 -mfpmath=sse -fomit-frame-pointer -ffast-math -funroll-loops')
+		elif flags_optimize=='3':
+			print "  Intel Core Solo/Duo optimizations enabled."
+			env.Append(CXXFLAGS = '-O3 -march=prescott -mmmx -msse3 -mfpmath=sse -fomit-frame-pointer -ffast-math -funroll-loops')
+		elif flags_optimize=='4':
+			print "  Intel Core 2 optimizations enabled."
+			env.Append(CXXFLAGS = '-O3 -march=nocona -mmmx -msse3 -mfpmath=sse -fomit-frame-pointer -ffast-math -funroll-loops')
 else:
 	print "Optimizations... disabled"
 
@@ -777,13 +776,13 @@ flags_cmetrics = getFlags(env, 'cmetrics', 0)
 if int(flags_cmetrics):
 	env.Append(CXXFLAGS = '-D__C_METRICS__')
 	if platform == 'win32':
-	    env.Append(LIBS = 'cmetrics')
+		env.Append(LIBS = 'cmetrics')
 	else:
-	    client = 'MIXXX'
-	    server = 'casemetrics.net' #NOTE: Permission to use this server is granted only to mixxx, any other use must obtain prior permission
-	    Export('env platform client server flags_force32')
-	    env.Append(CPPPATH='../../lib/cmetrics')
-	    sources += SConscript('../../lib/cmetrics/SConscript')
+		client = 'MIXXX'
+		server = 'casemetrics.net' #NOTE: Permission to use this server is granted only to mixxx, any other use must obtain prior permission
+		Export('env platform client server flags_force32')
+		env.Append(CPPPATH='../../lib/cmetrics')
+		sources += SConscript('../../lib/cmetrics/SConscript')
 	print "Case Metrics profiling... enabled"
 	build_flags += 'cmetrics '
 else:
@@ -916,7 +915,7 @@ if platform == 'linux':
 		icon = env.Install(unix_share_path + "/pixmaps", icon_files)
 		promotracks = env.Install(unix_share_path + "/mixxx/promo", promotracks_files)
 
-        #Makes each of those Install builders get fired off when you run "scons install" :)
+		#Makes each of those Install builders get fired off when you run "scons install" :)
 		env.Alias('install', binary)
 		env.Alias('install', skins)
 		env.Alias('install', midimappings)
@@ -933,7 +932,7 @@ if platform == 'linux':
 			#print "Copying skins..."
 			#env.Command(unix_share_path + "/mixxx/skins", skin_files, Copy("$TARGET", "$SOURCE"), source_scanner = DirScanner)
 			#Copy(unix_share_path + "/.ixxx/skins", skin_files)
-            #Delete(unix_bin_path + "mixxx")
+			#Delete(unix_bin_path + "mixxx")
 			
 			#Delete(unix_share_path + "/mixxx/midi")
 			#Delete(unix_share_path + "/mixxx/keyboard")
