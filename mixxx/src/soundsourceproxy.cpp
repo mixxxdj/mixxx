@@ -40,9 +40,9 @@ SoundSourceProxy::SoundSourceProxy(QString qFilename) : SoundSource(qFilename)
     m_pSoundSource = new SoundSourceFFmpeg(qFilename);
     return;
 #endif
-    if (qFilename.lower().endsWith(".mp3"))
+    if (qFilename.toLower().endsWith(".mp3"))
         m_pSoundSource = new SoundSourceMp3(qFilename);
-    else if (qFilename.lower().endsWith(".ogg"))
+    else if (qFilename.toLower().endsWith(".ogg"))
         m_pSoundSource = new SoundSourceOggVorbis(qFilename);
     else
 #ifdef __SNDFILE__
@@ -62,9 +62,9 @@ SoundSourceProxy::SoundSourceProxy(TrackInfoObject * pTrack) : SoundSource(pTrac
     return;
 #endif
 
-    if (qFilename.lower().endsWith(".mp3"))
+    if (qFilename.toLower().endsWith(".mp3"))
 	m_pSoundSource = new SoundSourceMp3(qFilename);
-    else if (qFilename.lower().endsWith(".ogg"))
+    else if (qFilename.toLower().endsWith(".ogg"))
 	m_pSoundSource = new SoundSourceOggVorbis(qFilename);
     else
     {
@@ -76,7 +76,8 @@ SoundSourceProxy::SoundSourceProxy(TrackInfoObject * pTrack) : SoundSource(pTrac
 #endif
     }
 
-    pTrack->setDuration(length()/(2*getSrate()));
+    if(getSrate()) pTrack->setDuration(length()/(2*getSrate()));
+    else pTrack->setDuration(0);
 }
 
 SoundSourceProxy::~SoundSourceProxy()
@@ -103,14 +104,14 @@ int SoundSourceProxy::ParseHeader(TrackInfoObject * p)
 {
     QString qFilename = p->getFilename();
 #ifdef __FFMPEGFILE__
-    return SoundSourceFFmpeg::ParseHeader(p);;
+    return SoundSourceFFmpeg::ParseHeader(p);
 #endif
-    if (qFilename.lower().endsWith(".mp3"))
+    if (qFilename.toLower().endsWith(".mp3"))
 	return SoundSourceMp3::ParseHeader(p);
-    else if (qFilename.lower().endsWith(".ogg"))
+    else if (qFilename.toLower().endsWith(".ogg"))
 	return SoundSourceOggVorbis::ParseHeader(p);
-    else if (qFilename.lower().endsWith(".wav") || qFilename.lower().endsWith(".aif") ||
-	     qFilename.lower().endsWith(".aiff") || qFilename.lower().endsWith(".flac"))
+    else if (qFilename.toLower().endsWith(".wav") || qFilename.toLower().endsWith(".aif") ||
+	     qFilename.toLower().endsWith(".aiff") || qFilename.toLower().endsWith(".flac"))
 #ifdef __SNDFILE__
 	return SoundSourceSndFile::ParseHeader(p);
 #endif

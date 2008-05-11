@@ -87,6 +87,8 @@ public:
     bool getBpmConfirm() const;
     /** Set BPM confidence */
     void setBpmConfirm(bool confirm=true);
+    bool getHeaderParsed() const;
+    void setHeaderParsed(bool parsed = true);
     /** Returns the user comment */
     QString getComment() const;
     /** Sets the user commnet */
@@ -210,6 +212,8 @@ private:
     float m_fMaxBpm;
     /** True if BPM is confirmed */
     bool m_bBpmConfirm;
+    /** True if header was parsed */
+    bool m_bHeaderParsed;
     /** Position of first beat in song */
     float m_fBeatFirst;
     /** Score. Reflects the relative number of times the track has been played */
@@ -239,7 +243,7 @@ private:
     ControlObject *m_pControlObjectBpm;
     /** Pointer to ControlObject of duration value (only set when the track is loaded in a player) */
     ControlObject *m_pControlObjectDuration;
-	int iTemp;
+    int iTemp;
 
     /** Bpm Detection Queue */
     BpmDetector *m_BpmDetector;

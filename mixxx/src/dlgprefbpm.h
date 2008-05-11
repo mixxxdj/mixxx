@@ -32,6 +32,7 @@ public slots:
     void slotSetBpmEnabled(int);
     void slotSetBpmRangeStart(int);
     void slotSetBpmRangeEnd(int);
+    void slotSetAboveRange(int);
    
     void slotEditBpmScheme();
     void slotAddBpmScheme();

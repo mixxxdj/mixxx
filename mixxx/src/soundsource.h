@@ -39,6 +39,7 @@ public:
     virtual long seek(long) = 0;
     virtual unsigned read(unsigned long size, const SAMPLE*) = 0;
     virtual long unsigned length() = 0;
+    static float str2bpm( QString sBpm );
     static int ParseHeader(TrackInfoObject *);
     virtual int getSrate();
     /** Return a list of cue points stored in the file */

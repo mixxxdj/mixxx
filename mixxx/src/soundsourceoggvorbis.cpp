@@ -182,6 +182,15 @@ int SoundSourceOggVorbis::ParseHeader( TrackInfoObject * Track )
         Track->setTitle(vorbis_comment_query(comment, "title", 0));
     if (QString(vorbis_comment_query(comment, "artist", 0)).length()!=0)
         Track->setArtist(vorbis_comment_query(comment, "artist", 0));
+    if (QString(vorbis_comment_query(comment, "TBPM", 0)).length()!=0) {
+        float bpm = str2bpm(vorbis_comment_query(comment, "TBPM", 0));
+        if(bpm > 0) {
+            Track->setBpm(bpm);
+            Track->setBpmConfirm(true);
+        }
+    }
+    Track->setHeaderParsed(true);
+
     Track->setType("ogg");
     Track->setDuration((int)ov_time_total(&vf, -1));
     Track->setBitrate(ov_bitrate(&vf, -1)/1000);

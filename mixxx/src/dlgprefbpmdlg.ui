@@ -6,7 +6,7 @@
     <x>0</x>
     <y>0</y>
     <width>427</width>
-    <height>411</height>
+    <height>395</height>
    </rect>
   </property>
   <property name="windowTitle" >
@@ -65,6 +65,16 @@
        <widget class="QCheckBox" name="chkWriteID3" >
         <property name="text" >
          <string>Write BPM to ID3 Tag</string>
+        </property>
+       </widget>
+      </item>
+      <item row="4" column="0" >
+       <widget class="QCheckBox" name="chkAboveRange" >
+        <property name="toolTip" >
+         <string>If BPM can be detected but not within specified range</string>
+        </property>
+        <property name="text" >
+         <string>Allow BPM above the range</string>
         </property>
        </widget>
       </item>
@@ -139,19 +149,6 @@
       </item>
      </layout>
     </widget>
-   </item>
-   <item row="2" column="0" >
-    <spacer>
-     <property name="orientation" >
-      <enum>Qt::Vertical</enum>
-     </property>
-     <property name="sizeHint" >
-      <size>
-       <width>20</width>
-       <height>20</height>
-      </size>
-     </property>
-    </spacer>
    </item>
   </layout>
  </widget>
