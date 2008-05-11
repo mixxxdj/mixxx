@@ -48,6 +48,7 @@
 #include "woverview.h"
 #include "playerinfo.h"
 #include "defs_promo.h"
+#include "soundsourceproxy.h"
 
 #include <q3progressdialog.h>
 
@@ -859,6 +860,7 @@ void Track::slotLoadPlayer1(TrackInfoObject * pTrackInfoObject, bool bStartFromE
 {
 
     QString filename = pTrackInfoObject->getLocation();
+    qDebug() << "Load to player1:" << filename;
     if (!filename.isEmpty())
     {
         // Check if filename is valid
@@ -890,6 +892,9 @@ void Track::slotLoadPlayer1(TrackInfoObject * pTrackInfoObject, bool bStartFromE
     // Request a new track from the reader:
     m_pBuffer1->getReader()->requestNewTrack(m_pTrackPlayer1, bStartFromEndPos);
 
+    // Read the tags if required
+    if(!m_pTrackPlayer1->getHeaderParsed())
+        SoundSourceProxy::ParseHeader(m_pTrackPlayer1);
     // Detect BPM if required
     if (m_pTrackPlayer1->getBpmConfirm()== false || m_pTrackPlayer1->getBpm() == 0.)
         m_pTrackPlayer1->sendToBpmQueue();
@@ -928,6 +933,7 @@ void Track::slotLoadPlayer1(TrackInfoObject * pTrackInfoObject, bool bStartFromE
 void Track::slotLoadPlayer2(TrackInfoObject * pTrackInfoObject, bool bStartFromEndPos)
 {
     QString filename = pTrackInfoObject->getLocation();
+    qDebug() << "Load to player2:" << filename;
     if (!filename.isEmpty())
     {
         // Check if filename is valid
@@ -959,6 +965,9 @@ void Track::slotLoadPlayer2(TrackInfoObject * pTrackInfoObject, bool bStartFromE
     // Request a new track from the reader:
     m_pBuffer2->getReader()->requestNewTrack(m_pTrackPlayer2, bStartFromEndPos);
 
+    // Read the tags if required
+    if(!m_pTrackPlayer2->getHeaderParsed())
+        SoundSourceProxy::ParseHeader(m_pTrackPlayer2);
     // Detect BPM if required
     if (m_pTrackPlayer2->getBpmConfirm()== false || m_pTrackPlayer2->getBpm() == 0.)
         m_pTrackPlayer2->sendToBpmQueue();

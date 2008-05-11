@@ -45,7 +45,8 @@ DlgPrefBpm::DlgPrefBpm(QWidget * parent, ConfigObject<ConfigValue> * _config) : 
     // Connection
     connect(chkDetectOnImport,      SIGNAL(stateChanged(int)), this, SLOT(slotSetBpmDetectOnImport(int)));
     connect(chkWriteID3,            SIGNAL(stateChanged(int)), this, SLOT(slotSetWriteID3Tag(int)));
-    connect(chkEnableBpmDetection,   SIGNAL(stateChanged(int)), this, SLOT(slotSetBpmEnabled(int)));
+    connect(chkEnableBpmDetection,  SIGNAL(stateChanged(int)), this, SLOT(slotSetBpmEnabled(int)));
+    connect(chkAboveRange,          SIGNAL(stateChanged(int)), this, SLOT(slotSetAboveRange(int)));
     
     // TODO: Move this over the the scheme dialog
     
@@ -68,6 +69,12 @@ DlgPrefBpm::DlgPrefBpm(QWidget * parent, ConfigObject<ConfigValue> * _config) : 
         chkEnableBpmDetection->setChecked(true);
     else
         chkEnableBpmDetection->setChecked(false);
+
+    int iBpmAboveRange = config->getValueString(ConfigKey(CONFIG_KEY,"BPMAboveRangeEnabled")).toInt();
+    if (iBpmAboveRange)
+        chkAboveRange->setChecked(true);
+    else
+        chkAboveRange->setChecked(false);
 
     // Set default value for detect BPM on import check box
     int iDetectBpmOnImport = config->getValueString(ConfigKey(CONFIG_KEY,"DetectBPMOnImport")).toInt();
@@ -143,6 +150,13 @@ void DlgPrefBpm::slotSetBpmEnabled(int)
         
     updateBpmEnabled();
 
+}
+
+void DlgPrefBpm::slotSetAboveRange(int) {
+    if (chkAboveRange->isChecked())
+        config->set(ConfigKey(CONFIG_KEY,"BPMAboveRangeEnabled"), ConfigValue(1));
+    else
+        config->set(ConfigKey(CONFIG_KEY,"BPMAboveRangeEnabled"), ConfigValue(0));
 }
 
 void DlgPrefBpm::slotSetBpmRangeStart(int begin)
@@ -260,12 +274,14 @@ void DlgPrefBpm::updateBpmEnabled()
     {
         chkDetectOnImport->setEnabled(true);
         chkWriteID3->setEnabled(true);
+        chkAboveRange->setEnabled(true);
         grpBpmSchemes->setEnabled(true);
-    }   
+    }
     else
     {
         chkDetectOnImport->setEnabled(false);
         chkWriteID3->setEnabled(false);
+        chkAboveRange->setEnabled(false);
         grpBpmSchemes->setEnabled(false);
     }   
    

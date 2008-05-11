@@ -457,10 +457,10 @@ int SoundSourceMp3::ParseHeader(TrackInfoObject * Track)
 {
     QString location = Track->getLocation();
 
-	QFile sizetest( location );
-	if (sizetest.size() == 0) {
-		return ERR;
-	}
+    QFile sizetest( location );
+    if (sizetest.size() == 0) {
+        return ERR;
+    }
 
     Track->setType("mp3");
 
@@ -478,6 +478,15 @@ int SoundSourceMp3::ParseHeader(TrackInfoObject * Track)
             getField(tag,"TPE1",&s);
             if (s.length()>2)
                 Track->setArtist(s);
+            s="";
+            getField(tag,"TBPM",&s);
+            float bpm = 0;
+            if (s.length()>1) bpm = str2bpm(s);
+            if(bpm > 0) {
+                Track->setBpm(bpm);
+                Track->setBpmConfirm(true);
+            }
+            Track->setHeaderParsed(true);
 
             /*
                // On some tracks this segfaults. TLEN is very seldom used anyway...

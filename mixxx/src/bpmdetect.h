@@ -94,14 +94,6 @@ typedef unsigned long long uint64_t;
 /// Maximum allowed BPM rate. Used to restrict accepted result below a reasonable limit.
 #define MAX_BPM 170
 
-/**
- * @brief Correct BPM
- * if value is lower than MINIMUM_BPM or higher than MAXIMUM_BPM
- * @param BPM BPM to correct
- * @return corrected BPM
- */
-float Correct_BPM( float BPM, int max, int min );
-
 /// Class for calculating BPM rate for audio data.
 class BpmDetect
 {
@@ -171,14 +163,21 @@ protected:
 
 public:
     /// Constructor.
-    BpmDetect(int numChannels,  ///< Number of channels in sample data.
-              int sampleRate,   ///< Sample rate in Hz.
-              int _maxBpm,
-			  int _minBpm
-			  );
+    /// @note _maxBpm should be at least 2 * _minBpm, otherwise BPM won't always be detected
+    BpmDetect(int numChannels,          ///< Number of channels in sample data.
+              int sampleRate,           ///< Sample rate in Hz.
+              int _minBpm = MIN_BPM,    ///< Minimum acceptable BPM
+              int _maxBpm = MAX_BPM     ///< Maximum acceptable BPM
+    );
 
     /// Destructor.
     virtual ~BpmDetect();
+
+    /**
+     * Multiplying or dividing BPM by 2 if value is lower than min or greater than max
+     * @return corrected BPM (can be greater than max)
+     */
+    static float correctBPM( float BPM, int min, int max );
 
     /// Inputs a block of samples for analyzing: Envelopes the samples and then
     /// updates the autocorrelation estimation. When whole song data has been input

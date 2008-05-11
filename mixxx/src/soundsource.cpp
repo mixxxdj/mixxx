@@ -55,3 +55,10 @@ QString SoundSource::getFilename()
 {
     return m_qFilename;
 }
+
+float SoundSource::str2bpm( QString sBpm ) {
+  float bpm = sBpm.toFloat();
+  if(bpm < 60) bpm = 0;
+  while( bpm > 300 ) bpm = bpm / 10.;
+  return bpm;
+}

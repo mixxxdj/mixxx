@@ -101,8 +101,6 @@ void BpmDetector::enqueue(TrackInfoObject * pTrackInfoObject, BpmScheme *scheme,
 
 void BpmDetector::run()
 {
-    int i = 0;
-
     while (1)
     {
         TrackInfoObject * pTrackInfoObject = NULL;
@@ -152,16 +150,15 @@ void BpmDetector::run()
         // Check if BPM has been detected in the meantime
         if (pTrackInfoObject->getBpmConfirm() == false || pTrackInfoObject->getBpm() == 0.)
         {
-            #define CHUNKSIZE 4096
+            const int numSamples = 8192;
 
             SoundSourceProxy * pSoundSource = new SoundSourceProxy(pTrackInfoObject);
-            int16_t data16[ CHUNKSIZE*2];      // for 16 bit samples
-            int8_t data8[ CHUNKSIZE ];            // for 8 bit samples
-            soundtouch::SAMPLETYPE samples[ CHUNKSIZE * 2];
+            int16_t data16[numSamples];      // for 16 bit samples
+            soundtouch::SAMPLETYPE samples[ numSamples ];
             unsigned int length = 0, read = 0, totalsteps = 0, pos = 0, end = 0;
-            int channels = 2, bits = 16;
+            int channels = 2;
             float frequency = 44100;
-            
+
             if(pTrackInfoObject->getSampleRate())
             {
                 frequency = pTrackInfoObject->getSampleRate();
@@ -170,11 +167,6 @@ void BpmDetector::run()
             {
                 channels = pTrackInfoObject->getChannels();
             }
-            if(pTrackInfoObject->getBitrate())
-            {
-                bits = pTrackInfoObject->getBitrate();
-            }
-
 
             length = pSoundSource->length();
 
@@ -184,7 +176,7 @@ void BpmDetector::run()
                 pos = length / 2;
 
             }
-            
+
             if(pos %2 != 0)
             {
                 //Bug Fix: above formula allows iBeatPosStart
@@ -192,35 +184,26 @@ void BpmDetector::run()
                 pos--;
             }
 
-            totalsteps = ( length / CHUNKSIZE );
+            totalsteps = ( length / numSamples );
             end = pos + length;
 
-            
-            BpmDetect bpmd( channels, ( int ) frequency, pScheme->getMaxBpm(), pScheme->getMinBpm() );
+            // Use default minBpm and maxBpm values?
+            int defaultrange = m_Config->getValueString(ConfigKey("[BPM]","BPMAboveRangeEnabled")).toInt();
+            BpmDetect bpmd( channels, ( int ) frequency, defaultrange ? MIN_BPM : pScheme->getMinBpm(),
+                                                         defaultrange ? MAX_BPM : pScheme->getMaxBpm() );
 
             int cprogress = 0;
             pSoundSource->seek(pos);
             do {
-                read = pSoundSource->read(CHUNKSIZE, data16);
+                read = pSoundSource->read(numSamples, data16);
 
                 if(read >= 2)
                 {
                     pos += read;
-
-                    //****************************************************
-                    // Replace:
-                    //result = FMOD_Sound_ReadData( sound, data16, CHUNKSIZE, &read );
-
-                    //****************************************************
                     for ( unsigned int i = 0; i < read ; i++ ) {
-                        int16_t test = data16[i];
-                        if(test > 0)
-                        {
-                            test = 0;
-                        }
                         samples[ i ] = ( float ) data16[ i ] / 32768;
                     }
-                    bpmd.inputSamples( samples, read / ( channels ) );
+                    bpmd.inputSamples( samples, read / channels );
 
                     cprogress++;
                     if ( cprogress % 250 == 0 ) {
@@ -233,24 +216,25 @@ void BpmDetector::run()
                         }
                     }
                 }
-            } while (read == CHUNKSIZE && pos <= length);
+            } while (read == numSamples && pos <= end);
 
             float BPM = bpmd.getBpm();
-            if ( BPM != 0. ) {
-                BPM = Correct_BPM( BPM, pScheme->getMaxBpm(), pScheme->getMinBpm() );
+            if ( BPM != 0 ) {
+                BPM = BpmDetect::correctBPM(BPM, pScheme->getMinBpm(), pScheme->getMaxBpm());
                 pTrackInfoObject->setBpm(BPM);
                 pTrackInfoObject->setBpmConfirm();
                 if(pBpmReceiver){
                     pBpmReceiver->setComplete(pTrackInfoObject, false, BPM);
                 }
                 qDebug() << "BPM detection successful for" << pTrackInfoObject->getFilename();
+                qDebug() << "BPM" << BPM;
                 delete pSoundSource;
                 continue;
             }
             else
-            {            
+            {
                 qDebug() << "BPM detection failed, setting to 0.";
-                
+
 #ifdef __C_METRICS__
 		        cm_writemsg_ascii(1, "BPM detection failed, setting to 0.");
 #endif

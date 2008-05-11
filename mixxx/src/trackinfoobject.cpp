@@ -54,6 +54,7 @@ TrackInfoObject::TrackInfoObject(const QString sPath, const QString sFile, BpmDe
     m_iTimesPlayed = 0;
     m_fBpm = 0.;
     m_bBpmConfirm = false;
+    m_bHeaderParsed = false;
     m_fBeatFirst = -1.;
     m_iScore = 0;
     m_iId = -1;
@@ -113,6 +114,7 @@ TrackInfoObject::TrackInfoObject(const QDomNode &nodeHeader, BpmDetector * bpmDe
     m_fBpm = XmlParse::selectNodeQString(nodeHeader, "Bpm").toFloat();
     m_bBpmConfirm = XmlParse::selectNodeQString(nodeHeader, "BpmConfirm").toInt();
     m_fBeatFirst = XmlParse::selectNodeQString(nodeHeader, "BeatFirst").toFloat();
+    m_bHeaderParsed = false;
     m_iScore = 0;
     m_iId = XmlParse::selectNodeQString(nodeHeader, "Id").toInt();
 
@@ -514,6 +516,22 @@ void TrackInfoObject::setBpmConfirm(bool confirm)
 {
     m_qMutex.lock();
     m_bBpmConfirm = confirm;
+    m_qMutex.unlock();
+}
+
+bool TrackInfoObject::getHeaderParsed()  const
+{
+    m_qMutex.lock();
+    bool bParsed = m_bHeaderParsed;
+    m_qMutex.unlock();
+
+    return bParsed;
+}
+
+void TrackInfoObject::setHeaderParsed(bool parsed)
+{
+    m_qMutex.lock();
+    m_bHeaderParsed = parsed;
     m_qMutex.unlock();
 }
 

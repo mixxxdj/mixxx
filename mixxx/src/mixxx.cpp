@@ -821,6 +821,7 @@ void MixxxApp::slotOptionsPreferences()
 //Note: Can't #ifdef this because MOC doesn't catch it.
 void MixxxApp::slotOptionsVinylControl(bool toggle)
 {
+#ifdef __VINYLCONTROL__
     //qDebug() << "slotOptionsVinylControl: toggle is " << (int)toggle;
 
     QString device1 = config->getValueString(ConfigKey("[VinylControl]","DeviceInputDeck1"));
@@ -842,6 +843,7 @@ void MixxxApp::slotOptionsVinylControl(bool toggle)
         config->set(ConfigKey("[VinylControl]","Enabled"), ConfigValue((int)toggle));
         ControlObject::getControl(ConfigKey("[VinylControl]", "Enabled"))->set((int)toggle);
     }
+#endif
 }
 
 //Also can't ifdef this (MOC again)
