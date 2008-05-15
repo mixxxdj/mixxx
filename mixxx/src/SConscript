@@ -221,8 +221,12 @@ if not env.has_key('CACHEDIR'):
 if not os.path.isdir(env['CACHEDIR']):
   os.mkdir(env['CACHEDIR'])
 
-## Avoid spreading .sconsign files everywhere - keep this line
-env.SConsignFile(env['CACHEDIR']+'/scons_signatures')
+## Avoid spreading .sconsign files everywhere
+#env.SConsignFile(env['CACHEDIR']+'/scons_signatures')
+## WARNING - We found that the above line causes SCons to randomly not find
+##           dependencies for some reason. It might not happen right away, but
+##           a good number of users found that it caused weird problems - Albert (May 15/08)
+
 
 #Hijack scons -h and --help
 cachefile = env['CACHEDIR'] + 'custom.py'
