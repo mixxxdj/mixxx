@@ -80,9 +80,9 @@ void Reader::requestNewTrack(TrackInfoObject * pTrack, bool bStartAtEndPos)
     trackqueue.append(p);
     trackqueuemutex.unlock();
 
-    // Ensure that the reader is not currently awake, befofe waking
+    // Ensure that the reader is not currently awake, before waking
     m_qReaderMutex.lock();
-    while (m_iReaderAccess>0)
+    while (m_iReaderAccess>0) //FIXME: I think this may deadlock with FFMPEG sometimes - GED
     {
         m_qReaderMutex.unlock();
         sleep(1);
@@ -221,7 +221,7 @@ void Reader::newtrack()
         enginebuffer->setNewPlaypos(0);
 
         //Reset the cue point to the beginning of the track:
-        
+
         m_pButtonCueSet->slotSet(1.0);
         //Reset the play button (I'm not sure why this is necessary, but it is...
         //If you don't believe me, uncomment it and notice that you'll have to click
