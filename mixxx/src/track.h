@@ -31,6 +31,9 @@ class MixxxView;
 class WTrackTable;
 class WTrackTableModel;
 class WPromoTracksModel;
+#ifdef __IPOD__
+class WIPodTracksModel;
+#endif
 class WPlaylistListModel;
 class WTreeList;
 class ControlObjectThreadMain;
@@ -64,6 +67,12 @@ public:
     TrackCollection *getTrackCollection();
     /** Get pointer to a playlist by it's index */
     TrackPlaylist* getPlaylistByIndex(int index);
+
+#ifdef __IPOD__
+    /** The promo tracks playlist */
+    TrackPlaylist m_qIPodPlaylist;
+#endif
+
     /** Force an update of playlist menu and anything that sees the playlists*/
     void updatePlaylistViews();
     /** Get the list of playlists*/
@@ -89,8 +98,8 @@ public slots:
     void slotScanLibrary();
     /** Activate a playlist of the given name */
     void slotActivatePlaylist(QString name);
-	/**Activate a Playlist from ComboBox*/
-	void slotActivatePlaylist(int index);
+    /**Activate a Playlist from ComboBox*/
+    void slotActivatePlaylist(int index);
     /** Add a new playlist */
     void slotNewPlaylist();
     /** Delete a playlist */
@@ -178,12 +187,16 @@ private:
     /** The promo tracks playlist */
     TrackPlaylist m_qPromoPlaylist;
     
-	/** Data Model for Library */
+    /** Data Model for Library */
     WTrackTableModel *m_pLibraryModel;
     /** Data Model for Playqueue*/
     WTrackTableModel *m_pPlayQueueModel;
     /** Data Model for Promo Tracks */
     WPromoTracksModel *m_pPromoModel;
+#ifdef __IPOD__
+    /** Data Model for Promo Tracks */
+    WIPodTracksModel *m_pIPodModel;
+#endif
     /** Data Model containing a single playlist */
     WTrackTableModel *m_pPlaylistModel;
     /** Data Model containing the list of playlists */

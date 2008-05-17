@@ -29,11 +29,13 @@ DlgPrefPlaylist::DlgPrefPlaylist(QWidget * parent, ConfigObject<ConfigValue> * _
     connect(PushButtonBrowsePlaylist, SIGNAL(clicked()),       this,      SLOT(slotBrowseDir()));
     connect(LineEditSongfiles,        SIGNAL(returnPressed()), this,      SLOT(slotApply()));
 
+#ifdef __IPOD__
     // iPod related stuff
     connect(PushButtonDetectiPodMountPoint, SIGNAL(clicked()),  this,      SLOT(slotDetectiPodMountPoint()));
     connect(PushButtonBrowseiPodMountPoint, SIGNAL(clicked()), this,      SLOT(slotBrowseiPodMountPoint()));
     connect(LineEditiPodMountPoint,   SIGNAL(returnPressed()), this,      SLOT(slotApply()));
-    // groupBoxiPod->setVisible(true);
+    groupBoxiPod->setVisible(true);
+#endif
 }
 
 DlgPrefPlaylist::~DlgPrefPlaylist()
