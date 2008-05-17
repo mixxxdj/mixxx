@@ -636,7 +636,8 @@ if int(flags_ipod):
 	env.ParseConfig('pkg-config glib-2.0 --silence-errors --cflags --libs')
 	sources += Split("""wipodtracksmodel.cpp """) #IPOD
 	print "iPod support... enabled"
-else:        
+	build_flags += 'ipod '
+else:
 	print "iPod support... disabled"
 
 #Experimental Shoutcast

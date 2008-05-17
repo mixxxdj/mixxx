@@ -35,6 +35,10 @@ public:
     void addTrack(TrackInfoObject *pTrack);
     /** Removes a track from the library track collection. */
     void removeTrack(TrackInfoObject* pTrack);
+
+    /** clears the track collection. */
+    void clear(); // FIXME: check that this does not cause a memory leak...
+
     /** Get a track from the database, identified by id. Returns 0 if the track was
       * not found */
     TrackInfoObject *getTrack(int id);

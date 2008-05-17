@@ -742,10 +742,8 @@ void MixxxApp::slotiPodToggle(bool toggle) {
        Itdb_Track *song;
        song = (Itdb_Track *)it->data;
 
-       if (song->movie_flag) { qDebug() << "Movies/Videos not supported." << song->title << song->ipod_path; continue; }
-       if (song->unk220) { qDebug() << "Protected media not supported." << song->title << song->ipod_path; continue; }
-
-//       m_pTrack->m_qIPodPlaylist.addTrack(filePath); // FIXME: replace with pTrack objects constructed from iTunes DB data
+       if (song->movie_flag) { qDebug() << "Movies/Videos not supported." << song->title << QString(song->ipod_path).replace(':','/'); continue; }
+       if (song->unk220) { qDebug() << "Protected media not supported." << song->title << QString(song->ipod_path).replace(':','/'); continue; }
 
        QFileInfo file(iPodMountPoint + QString(song->ipod_path).replace(':','/'));
        TrackInfoObject* pTrack = new TrackInfoObject(file.absolutePath(), file.fileName(), m_pBpmDetector );
@@ -753,17 +751,15 @@ void MixxxApp::slotiPodToggle(bool toggle) {
        pTrack->setBpmConfirm(song->BPM != 0);  //    void setBeatFirst(float); ??
 //       pTrack->setHeaderParsed(true);
        pTrack->setComment(song->comment);
-       pTrack->setType(song->filetype);
+       pTrack->setType(file.suffix());
        pTrack->setBitrate(song->bitrate);
        pTrack->setSampleRate(song->samplerate);
        pTrack->setDuration(song->tracklen/1000);
        pTrack->setTitle(song->title);
        pTrack->setArtist(song->artist);
-       // song->rating
+       // song->rating // user rating
        // song->volume and song->soundcheck -- track level normalization / gain info as determined by iTunes
-
-       m_pTrack->m_qIPodPlaylist.addTrack(pTrack); 
-
+       m_pTrack->m_qIPodPlaylist.addTrack(pTrack);
     }
     itdb_free (itdb);
 
@@ -771,10 +767,16 @@ void MixxxApp::slotiPodToggle(bool toggle) {
 
     view->m_pComboBox->setCurrentIndex( view->m_pComboBox->findData(TABLE_MODE_IPOD) );
     m_pTrack->slotActivatePlaylist( view->m_pComboBox->findData(TABLE_MODE_IPOD) );
+    m_pTrack->resizeColumnsForLibraryMode();
 
   } else if (view->m_pComboBox->findData(TABLE_MODE_IPOD) != -1 ) {
+    view->m_pComboBox->setCurrentIndex( view->m_pComboBox->findData(TABLE_MODE_LIBRARY) );
+    m_pTrack->slotActivatePlaylist( view->m_pComboBox->findData(TABLE_MODE_LIBRARY) );
+
     view->m_pComboBox->removeItem( view->m_pComboBox->findData(TABLE_MODE_IPOD) );
     // Empty iPod model m_qIPodPlaylist
+    m_pTrack->m_qIPodPlaylist.clear();
+
   }
 #endif
 }

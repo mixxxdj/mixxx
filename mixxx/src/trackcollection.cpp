@@ -88,6 +88,12 @@ void TrackCollection::removeTrack(TrackInfoObject* pTrack)
     m_qTrackList.removeAll(pTrack);
 }
 
+/** clear the track collection. */
+void TrackCollection::clear()
+{
+    m_qTrackList.clear();
+}
+
 TrackInfoObject *TrackCollection::getTrack(int id)
 {
     //Q_ASSERT(id < m_qTrackList.size());
