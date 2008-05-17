@@ -23,6 +23,7 @@ const int TABLE_MODE_PLAYQUEUE =    1;
 const int TABLE_MODE_BROWSE =       2;
 const int TABLE_MODE_PLAYLISTS =    3;
 const int TABLE_MODE_PROMO =        4;
+const int TABLE_MODE_IPOD =         5;
 
 /**
   *@author Tue & Ken Haste Andersen
@@ -62,20 +63,20 @@ public:
     void setSearchSource(WTrackTableModel *pSearchSourceModel);
     void setDirModel();
     void setPlaylistListModel(WPlaylistListModel *model);
-    
+
     /** Sets the current mode for the WTrackTableView */
     void setTableMode(int table_mode);
 
     /** Gets the current mode for the WTrackTableView */
     int getTableMode();
-    
+
     /** Returns the QDirModel **/
     QDirModel* getDirModel();
-    
+
     /** Gets the next track from the table while in "Browse mode" */
     QString getNextTrackBrowseMode(TrackInfoObject* current);
     QString getPrevTrackBrowseMode(TrackInfoObject* current);
-    
+
     /**Right click menu**/
     void contextMenuEvent(QContextMenuEvent * event);
     /**Sets Track pointer**/
@@ -124,13 +125,11 @@ private:
     /**Send to each playlist Action**/
     QList<QAction*> PlaylistActs;
     /**Rename playlist Action**/
-    QAction *RenamePlaylistAct;    
+    QAction *RenamePlaylistAct;
     /**creates all actions and connects them to repective slots**/
     void createActions();
 
-
     QDrag *getDragObject(QMouseEvent *event);
-    
 
 private slots:
     /** Sends track(s) to Playqueue*/
@@ -145,8 +144,8 @@ private slots:
     void slotRemove();
     /**Show the track editor/bpm tap dialog */
     void slotShowBPMTapDlg(TrackInfoObject* pTrackInfoObject);
-    void slotShowBPMTapDlg(); 
-    /**Show playlist rename dialog */    
+    void slotShowBPMTapDlg();
+    /**Show playlist rename dialog */
     void slotShowPlaylistRename();
     /**Copies a (promo) track to the user's library directory*/
     void slotCopyToLibrary();
@@ -178,6 +177,6 @@ protected:
     QModelIndexList m_selectedIndices;
     QString m_filterString;
     int m_iTableMode;
-    
+
 };
 #endif

@@ -694,6 +694,10 @@ void Track::slotActivatePlaylist(int index)
     //FIXME: there's gotta be a better signal to use from the combobox
     //       rather than activated(int)... this hardcoded switch is crap
 
+    if ( m_pView->m_pComboBox->itemData(index).canConvert<int>() ){
+       index = m_pView->m_pComboBox->itemData(index).value<int>();
+    } else { index = TABLE_MODE_LIBRARY; }
+
     //Toggled by the ComboBox - This needs to be reorganized...
     switch(index)
     {
@@ -739,6 +743,14 @@ void Track::slotActivatePlaylist(int index)
         m_pView->m_pTrackTableView->setTrack(this);
         m_pView->m_pTrackTableView->setTableMode(TABLE_MODE_PROMO);
         m_pActivePlaylist = &m_qPromoPlaylist;
+        break;
+      case TABLE_MODE_IPOD: // Ipod
+        m_pView->m_pTrackTableView->reset();
+//        m_pView->m_pTrackTableView->setSearchSource(m_pIPodModel);
+        m_pView->m_pTrackTableView->resizeColumnsToContents();
+        m_pView->m_pTrackTableView->setTrack(this);
+        m_pView->m_pTrackTableView->setTableMode(TABLE_MODE_IPOD);
+//        m_pActivePlaylist = &m_qIPodPlaylist;
         break;
     }
 }

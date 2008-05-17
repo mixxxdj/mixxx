@@ -127,6 +127,8 @@ class MixxxApp : public QMainWindow
     /** Change of file to play */
     //void slotChangePlay(int,int,int, const QPoint &);
 	QString getSkinPath();
+
+    void slotlibraryMenuAboutToShow();
   
   protected:
     /** Event filter to block certain events (eg. tooltips if tooltips are disabled) */
@@ -201,6 +203,8 @@ class MixxxApp : public QMainWindow
     QAction *playlistsNew;
     QAction *playlistsImport;
     QAction **playlistsList;
+
+    QAction *iPodToggle;
 
     QAction *libraryRescan;
 

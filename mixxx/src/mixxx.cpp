@@ -15,6 +15,7 @@
 *                                                                         *
 ***************************************************************************/
 
+// #define __IPOD__
 
 #include <QtDebug>
 #include <QtCore>
@@ -47,6 +48,10 @@
 #include "defs_urls.h"
 #include "defs_audiofiles.h"
 #include "recording/defs_recording.h"
+
+#ifdef __IPOD__
+#include "wtracktableview.h"
+#endif
 
 #ifdef __C_METRICS__
 #include <cmetrics.h>
@@ -146,7 +151,7 @@ MixxxApp::MixxxApp(QApplication * a, struct CmdlineArgs args, QSplashScreen * pS
     }
 
 	cm_init(100,20, fuserAgreeToDataCollection, MIXXCMETRICS_RELEASE_ID, pstzUID);
-    
+
     if(fFreePstzUID)
         free((void*)pstzUID);
 
@@ -512,6 +517,14 @@ void MixxxApp::initActions()
     playlistsImport->setShortcut(tr("Ctrl+I"));
     playlistsImport->setShortcutContext(Qt::ApplicationShortcut);
 
+#ifdef __IPOD__
+    iPodToggle = new QAction(tr("iPod &Active"), this);
+    iPodToggle->setShortcut(tr("Ctrl+A"));
+    iPodToggle->setShortcutContext(Qt::ApplicationShortcut);
+    iPodToggle->setCheckable(true);
+    connect(iPodToggle, SIGNAL(toggled(bool)), this, SLOT(slotiPodToggle(bool)));
+#endif
+
     optionsBeatMark = new QAction(tr("&Audio Beat Marks"), this);
 
     optionsFullScreen = new QAction(tr("&Full Screen"), this);
@@ -542,6 +555,7 @@ void MixxxApp::initActions()
 #ifdef __LADSPA__
     ladspaShow = new QAction(tr("Show LADSPA window"), this);
 #endif
+
 
     fileLoadSongPlayer1->setStatusTip(tr("Opens a song in player 1"));
     fileLoadSongPlayer1->setWhatsThis(tr("Open\n\nOpens a song in player 1"));
@@ -658,6 +672,13 @@ void MixxxApp::initMenuBar()
     libraryMenu->addSeparator();
     libraryMenu->addAction(playlistsNew);
     libraryMenu->addAction(playlistsImport);
+
+#ifdef __IPOD__
+    libraryMenu->addSeparator();
+    libraryMenu->addAction(iPodToggle);
+    connect(libraryMenu, SIGNAL(aboutToShow()), this, SLOT(slotlibraryMenuAboutToShow()));
+#endif
+
     // menuBar entry viewMenu
     //viewMenu->setCheckable(true);
 
@@ -677,7 +698,7 @@ void MixxxApp::initMenuBar()
     menuBar()->addMenu(fileMenu);
     menuBar()->addMenu(libraryMenu);
     menuBar()->addMenu(optionsMenu);
-    
+
     //    menuBar()->addMenu(viewMenu);
 #ifdef __SCRIPT__
     menuBar()->addMenu(macroMenu);
@@ -688,6 +709,26 @@ void MixxxApp::initMenuBar()
     menuBar()->addSeparator();
     menuBar()->addMenu(helpMenu);
     //new MixxxMenuPlaylists(libraryMenu, m_pTrack);
+
+}
+
+void MixxxApp::slotlibraryMenuAboutToShow(){
+
+#ifdef __IPOD__
+// iPod stuff
+  bool iPodAvailable = !QString(config->getValueString(ConfigKey("[iPod]","MountPoint"))).isEmpty() &&
+                       QDir(config->getValueString(ConfigKey("[iPod]","MountPoint")) + "/iPod_Control").exists();
+  bool iPodActivated = iPodAvailable && iPodToggle->isChecked();
+
+  if (iPodAvailable && iPodActivated && view->m_pComboBox->findData(TABLE_MODE_IPOD) == -1 ) {
+    view->m_pComboBox->addItem( "iPod", TABLE_MODE_IPOD );
+    // Activate IPod model
+  } else if (view->m_pComboBox->findData(TABLE_MODE_IPOD) != -1 ) {
+    view->m_pComboBox->removeItem( view->m_pComboBox->findData(TABLE_MODE_IPOD) );
+  }
+  iPodToggle->setEnabled(iPodAvailable);
+  iPodToggle->setChecked(iPodActivated);
+#endif
 
 }
 
@@ -920,8 +961,8 @@ void MixxxApp::slotHelpAbout()
 "<p align=\"center\">"
 "Adam Davison<br>"
 "Albert Santoni<br>"
-"Cedric Gestes<br>"
 "Garth Dahlstrom<br>"
+"Cedric Gestes<br>"
 "John Sully<br>"
 "Ben Wheeler<br>"
 "Micah Lee<br>"
