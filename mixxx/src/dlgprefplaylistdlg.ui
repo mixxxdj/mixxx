@@ -146,12 +146,12 @@
 
    </item>
    <item row="0" column="3">
-    <widget class="QPushButton" name="PushButtonGuessiPodMountPoint" >
+    <widget class="QPushButton" name="PushButtonDetectiPodMountPoint" >
      <property name="font" >
       <font/>
      </property>
      <property name="text" >
-      <string>Guess</string>
+      <string>Detect</string>
      </property>
     </widget>
   </item>

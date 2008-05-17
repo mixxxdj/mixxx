@@ -28,7 +28,7 @@ class QWidget;
 
 class DlgPrefPlaylist : public QWidget, public Ui::DlgPrefPlaylistDlg  {
     Q_OBJECT
-public: 
+public:
     DlgPrefPlaylist(QWidget *parent, ConfigObject<ConfigValue> *_config);
     ~DlgPrefPlaylist();
 public slots:
@@ -38,6 +38,13 @@ public slots:
     void slotBrowseDir();
     /** Apply changes to widget */
     void slotApply();
+
+    /** Dialog to browse for iPod mount point */
+    void slotBrowseiPodMountPoint();
+
+    /** Attempt to guess the iPod's mount point */
+    void slotDetectiPodMountPoint();
+
 signals:
     void apply();
 private:
