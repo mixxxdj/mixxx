@@ -108,6 +108,10 @@ class MixxxApp : public QMainWindow
     void slotFileLoadSongPlayer2();
     /** exits the application */
     void slotFileQuit();
+
+    /** toogle ipod active - Don't #ifdef this because MOC is dumb**/
+    void slotiPodToggle(bool toggle);
+
     /** toggle audio beat marks */
     void slotOptionsBeatMark(bool toggle);
     /** toggle vinyl control - Don't #ifdef this because MOC is dumb**/

@@ -15,8 +15,6 @@
 *                                                                         *
 ***************************************************************************/
 
-// #define __IPOD__
-
 #include <QtDebug>
 #include <QtCore>
 #include <QtGui>
@@ -51,6 +49,8 @@
 
 #ifdef __IPOD__
 #include "wtracktableview.h"
+#include "gpod/itdb.h"
+#include "track.h"
 #endif
 
 #ifdef __C_METRICS__
@@ -712,24 +712,67 @@ void MixxxApp::initMenuBar()
 
 }
 
-void MixxxApp::slotlibraryMenuAboutToShow(){
 
+void MixxxApp::slotiPodToggle(bool toggle) {
 #ifdef __IPOD__
 // iPod stuff
-  bool iPodAvailable = !QString(config->getValueString(ConfigKey("[iPod]","MountPoint"))).isEmpty() &&
-                       QDir(config->getValueString(ConfigKey("[iPod]","MountPoint")) + "/iPod_Control").exists();
-  bool iPodActivated = iPodAvailable && iPodToggle->isChecked();
+  QString iPodMountPoint = config->getValueString(ConfigKey("[iPod]","MountPoint"));
+  bool iPodAvailable = !iPodMountPoint.isEmpty() &&
+                       QDir( iPodMountPoint + "/iPod_Control").exists();
+  bool iPodActivated = iPodAvailable && toggle;
+
+  iPodToggle->setEnabled(iPodAvailable);
 
   if (iPodAvailable && iPodActivated && view->m_pComboBox->findData(TABLE_MODE_IPOD) == -1 ) {
     view->m_pComboBox->addItem( "iPod", TABLE_MODE_IPOD );
     // Activate IPod model
+
+    Itdb_iTunesDB *itdb;
+    itdb = itdb_parse (iPodMountPoint, NULL);
+    if (itdb == NULL) {
+      qDebug() << "Error reading iPod database\n";
+      return;
+    }
+    GList *it;
+    int count = 0;
+    //m_pTrack->m_qIPodPlaylist.clear();
+
+    for (it = itdb->tracks; it != NULL; it = it->next) {
+       count++;
+       Itdb_Track *song;
+       song = (Itdb_Track *)it->data;
+
+       if (song->movie_flag) { qDebug() << "Movies/Videos not supported." << song->title << song->ipod_path; continue; }
+       if (song->unk220) { qDebug() << "Protected media not supported." << song->title << song->ipod_path; continue; }
+
+       // TrackInfoObject * pTrack = new TrackInfoObject(file.absolutePath(), file.fileName(), m_BpmDetector );
+       m_pTrack->m_qIPodPlaylist.addTrack(iPodMountPoint + QString(song->ipod_path).replace(':','/')); // FIXME: replace with pTrack objects constructed from iTunes DB data
+       // qDebug() << "Track" << count++ << "-- artist:" << song->artist << "-- title:" << song->title << "-- path:" << QString(song->ipod_path).replace(':','/');
+
+    }
+    itdb_free (itdb);
+
+    qDebug() << "iPod playlist has" << m_pTrack->m_qIPodPlaylist.getSongNum() << "of"<< count <<" songs on the iPod.";
+
+    m_pTrack->slotActivatePlaylist( view->m_pComboBox->findData(TABLE_MODE_IPOD) );
+
   } else if (view->m_pComboBox->findData(TABLE_MODE_IPOD) != -1 ) {
     view->m_pComboBox->removeItem( view->m_pComboBox->findData(TABLE_MODE_IPOD) );
+    // Empty iPod model m_qIPodPlaylist
   }
-  iPodToggle->setEnabled(iPodAvailable);
-  iPodToggle->setChecked(iPodActivated);
 #endif
+}
 
+
+void MixxxApp::slotlibraryMenuAboutToShow(){
+
+#ifdef __IPOD__
+  QString iPodMountPoint = config->getValueString(ConfigKey("[iPod]","MountPoint"));
+  bool iPodAvailable = !iPodMountPoint.isEmpty() &&
+                       QDir( iPodMountPoint + "/iPod_Control").exists();
+  iPodToggle->setEnabled(iPodAvailable);
+
+#endif
 }
 
 bool MixxxApp::queryExit()

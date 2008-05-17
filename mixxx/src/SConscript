@@ -296,6 +296,15 @@ sources = Split("""enginebuffercue.cpp input.cpp mixxxmenuplaylists.cpp trackpla
 #Crap we don't use anymore:
 #playerportaudio.cpp player.cpp playerproxy.cpp
 
+
+# IPOD
+env.Append(CXXFLAGS = '-D__IPOD__')
+env.ParseConfig('pkg-config libgpod-1.0 --silence-errors --cflags --libs')
+env.ParseConfig('pkg-config glib-2.0 --silence-errors --cflags --libs')
+# env.Append(LIBS = 'libgpod-1.0')
+# env.Append(LIBS = 'glib-2.0')
+sources += Split("""wipodtracksmodel.cpp """) #IPOD
+
 #Compile platform specific hardware support
 if platform == 'linux':
 	sources += Split("""powermatelinux.cpp herculeslinux.cpp joysticklinux.cpp mouselinux.cpp """)

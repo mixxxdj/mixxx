@@ -27,6 +27,11 @@
 #include "wtracktablemodel.h"
 #include "wplaylistlistmodel.h"
 #include "wpromotracksmodel.h"
+
+#ifdef __IPOD__
+#include "wipodtracksmodel.h"
+#endif
+
 #include "wtracktableview.h"
 #include "libraryscanner.h"
 #include "libraryscannerdlg.h"
@@ -90,6 +95,9 @@ Track::Track(QString location, MixxxView * pView, ConfigObject<ConfigValue> *con
     m_pLibraryModel = new WTrackTableModel(m_pView->m_pTrackTableView);
     m_pPlayQueueModel = new WTrackTableModel(m_pView->m_pTrackTableView);
     m_pPromoModel = new WPromoTracksModel(m_pView->m_pTrackTableView);
+#ifdef __IPOD__
+    m_pIPodModel = new WIPodTracksModel(m_pView->m_pTrackTableView);
+#endif
     m_pPlaylistModel = new WTrackTableModel(m_pView->m_pTrackTableView);
     m_pPlaylistListModel = new WPlaylistListModel(m_pView->m_pTrackTableView);
 
@@ -97,6 +105,10 @@ Track::Track(QString location, MixxxView * pView, ConfigObject<ConfigValue> *con
     m_qLibraryPlaylist.setTrackCollection(m_pTrackCollection);
     m_qPlayqueuePlaylist.setTrackCollection(m_pTrackCollection);
     m_qPromoPlaylist.setTrackCollection(m_pTrackCollection);
+
+#ifdef __IPOD__
+    m_qIPodPlaylist.setTrackCollection(m_pTrackCollection);
+#endif
 
    // Read the XML file
     qDebug() << "Loading playlists and library tracks from XML...";
@@ -126,6 +138,10 @@ Track::Track(QString location, MixxxView * pView, ConfigObject<ConfigValue> *con
         m_pPlayQueueModel->setTrackPlaylist(&m_qPlayqueuePlaylist);
         m_pPlaylistListModel->setPlaylistList(&m_qPlaylists);
         m_pPromoModel->setTrackPlaylist(&m_qPromoPlaylist);
+
+#ifdef __IPOD__
+         m_pIPodModel->setTrackPlaylist(&m_qIPodPlaylist);
+#endif
         
         //If the TrackCollection appears to be empty (could be first run), then scan the library
         if (m_pTrackCollection->getSize() == 0)
@@ -746,11 +762,11 @@ void Track::slotActivatePlaylist(int index)
         break;
       case TABLE_MODE_IPOD: // Ipod
         m_pView->m_pTrackTableView->reset();
-//        m_pView->m_pTrackTableView->setSearchSource(m_pIPodModel);
+        m_pView->m_pTrackTableView->setSearchSource(m_pIPodModel);
         m_pView->m_pTrackTableView->resizeColumnsToContents();
         m_pView->m_pTrackTableView->setTrack(this);
         m_pView->m_pTrackTableView->setTableMode(TABLE_MODE_IPOD);
-//        m_pActivePlaylist = &m_qIPodPlaylist;
+        m_pActivePlaylist = &m_qIPodPlaylist;
         break;
     }
 }
