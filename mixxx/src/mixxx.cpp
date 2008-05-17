@@ -745,15 +745,31 @@ void MixxxApp::slotiPodToggle(bool toggle) {
        if (song->movie_flag) { qDebug() << "Movies/Videos not supported." << song->title << song->ipod_path; continue; }
        if (song->unk220) { qDebug() << "Protected media not supported." << song->title << song->ipod_path; continue; }
 
-       // TrackInfoObject * pTrack = new TrackInfoObject(file.absolutePath(), file.fileName(), m_BpmDetector );
-       m_pTrack->m_qIPodPlaylist.addTrack(iPodMountPoint + QString(song->ipod_path).replace(':','/')); // FIXME: replace with pTrack objects constructed from iTunes DB data
-       // qDebug() << "Track" << count++ << "-- artist:" << song->artist << "-- title:" << song->title << "-- path:" << QString(song->ipod_path).replace(':','/');
+//       m_pTrack->m_qIPodPlaylist.addTrack(filePath); // FIXME: replace with pTrack objects constructed from iTunes DB data
+
+       QFileInfo file(iPodMountPoint + QString(song->ipod_path).replace(':','/'));
+       TrackInfoObject* pTrack = new TrackInfoObject(file.absolutePath(), file.fileName(), m_pBpmDetector );
+       pTrack->setBpm(song->BPM);
+       pTrack->setBpmConfirm(song->BPM != 0);  //    void setBeatFirst(float); ??
+//       pTrack->setHeaderParsed(true);
+       pTrack->setComment(song->comment);
+       pTrack->setType(song->filetype);
+       pTrack->setBitrate(song->bitrate);
+       pTrack->setSampleRate(song->samplerate);
+       pTrack->setDuration(song->tracklen/1000);
+       pTrack->setTitle(song->title);
+       pTrack->setArtist(song->artist);
+       // song->rating
+       // song->volume and song->soundcheck -- track level normalization / gain info as determined by iTunes
+
+       m_pTrack->m_qIPodPlaylist.addTrack(pTrack); 
 
     }
     itdb_free (itdb);
 
-    qDebug() << "iPod playlist has" << m_pTrack->m_qIPodPlaylist.getSongNum() << "of"<< count <<" songs on the iPod.";
+    qDebug() << "iPod playlist has" << m_pTrack->m_qIPodPlaylist.getSongNum() << "of"<< count <<"songs on the iPod.";
 
+    view->m_pComboBox->setCurrentIndex( view->m_pComboBox->findData(TABLE_MODE_IPOD) );
     m_pTrack->slotActivatePlaylist( view->m_pComboBox->findData(TABLE_MODE_IPOD) );
 
   } else if (view->m_pComboBox->findData(TABLE_MODE_IPOD) != -1 ) {

@@ -236,6 +236,7 @@ opts.Add('qtdir', 'Set to your QT4 directory', '/usr/share/qt4')
 opts.Add('djconsole', 'Set to 1 to enable Hercules support through libdjconsole', 0)
 opts.Add('djconsole_legacy', 'Set to 1 to enable legacy Hercules support (for Hercules MP3 Control only, not MK2', 0)
 opts.Add('hifieq', 'Set to 1 to enable high quality EQs', 1)
+opts.Add('ipod', 'Set to 1 to enable iPod support through libgpod', 0)
 opts.Add('ladspa', '(EXPERIMENTAL) Set to 1 to enable LADSPA plugin support', 0)
 opts.Add('ffmpeg', '(EXPERIMENTAL) Set to 1 to enable FFMPEG support', 0)
 opts.Add('vinylcontrol', 'Set to 1 to enable vinyl control support', 1)
@@ -295,15 +296,6 @@ sources = Split("""enginebuffercue.cpp input.cpp mixxxmenuplaylists.cpp trackpla
 
 #Crap we don't use anymore:
 #playerportaudio.cpp player.cpp playerproxy.cpp
-
-
-# IPOD
-env.Append(CXXFLAGS = '-D__IPOD__')
-env.ParseConfig('pkg-config libgpod-1.0 --silence-errors --cflags --libs')
-env.ParseConfig('pkg-config glib-2.0 --silence-errors --cflags --libs')
-# env.Append(LIBS = 'libgpod-1.0')
-# env.Append(LIBS = 'glib-2.0')
-sources += Split("""wipodtracksmodel.cpp """) #IPOD
 
 #Compile platform specific hardware support
 if platform == 'linux':
@@ -615,7 +607,6 @@ print "\nFeatures Summary:\n================"
 #	print "Python and Lua scripting... disabled"
  #TODO: FINISH THIS!
 
-
 #Hercules support through libdjconsole on Linux
 #(handled somewhere else above this in the file...
 # just printing the summary here)
@@ -634,6 +625,19 @@ if int(flags_hifieq) == 0:
 else:
 	print "High quality EQs... enabled"
 	build_flags += 'hifieq '
+
+#Experimental IPOD support
+flags_ipod = getFlags(env, 'ipod', 0)
+if int(flags_ipod):
+	env.Append(CXXFLAGS = '-D__IPOD__')
+	# env.Append(LIBS = 'libgpod-1.0')
+	# env.Append(LIBS = 'glib-2.0')
+	env.ParseConfig('pkg-config libgpod-1.0 --silence-errors --cflags --libs')
+	env.ParseConfig('pkg-config glib-2.0 --silence-errors --cflags --libs')
+	sources += Split("""wipodtracksmodel.cpp """) #IPOD
+	print "iPod support... enabled"
+else:        
+	print "iPod support... disabled"
 
 #Experimental Shoutcast
 flags_shoutcast = getFlags(env, 'shoutcast', 0)
