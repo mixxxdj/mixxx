@@ -321,10 +321,10 @@ bool Track::eventFilter(QObject *obj, QEvent *e) {
       case QEvent::Wheel: {
          QWidget* targetWidget;
          targetWidget = ((QWidget *)obj)->childAt(((QWheelEvent *)e)->x(), ((QWheelEvent *)e)->y());
-         if (targetWidget == 0) 
-         { 
-            //qDebug() << "Mouse Wheel Event -- Null Target Object."; 
-            return true; 
+         if (targetWidget == 0)
+         {
+            //qDebug() << "Mouse Wheel Event -- Null Target Object.";
+            return true;
          };
          double wheelDirection = ((QWheelEvent *)e)->delta() / 120.;
          if (qobject_cast<WSliderComposed *>(targetWidget) != 0 || qobject_cast<WKnob *>(targetWidget) != 0) {
@@ -355,15 +355,14 @@ void Track::initPromoTracks()
         return;
     }
     QDir promoDir(m_pConfig->getConfigPath() + QString(MIXXX_PROMO_DIR));
-    
+
     QStringList qPromoFilenames = promoDir.entryList(QDir::Files | QDir::NoDotAndDotDot);
     foreach (QString filename, qPromoFilenames)
     {
-        qDebug() << "Found promo track:" << filename; 
+        qDebug() << "Found promo track:" << filename;
         QString trackPath = promoDir.absolutePath() + QDir::separator() + filename;
         m_qPromoPlaylist.addTrack(trackPath);
         //NOTE: The absolutePath() in the above might be dangerous, I don't know - Albert
-    
    }
     qDebug() << "Promo playlist has" << m_qPromoPlaylist.getSongNum() << "songs.";
 
@@ -408,7 +407,7 @@ void Track::loadPromoTrackXMLData(QString xmlPath, QString promoDirPath)
                 //      in the track collection in case the user changed the comment.
                 //QString comment =
 
-                //Grab the track from the TrackCollection and add it's metadata... 
+                //Grab the track from the TrackCollection and add it's metadata...
                 TrackInfoObject *newTrack = m_pTrackCollection->getTrack(filename);
                 if (newTrack)
                 {
@@ -427,7 +426,7 @@ bool Track::checkPromoDirExists()
 {
     QDir promoDir(m_pConfig->getConfigPath() + QString(MIXXX_PROMO_DIR));
     if (!promoDir.exists())
-    {   
+    {
         qDebug() << "Promo track directory does not exist:" << promoDir.path();
         //Do nothing if there's no promo track directory.
         return false;

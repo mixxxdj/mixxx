@@ -75,6 +75,8 @@ public:
     void activate(WTrackTable *pTable);
     /** Remove all tracks from the WTrackTable */
     void deactivate();
+    /** empty the playlist */
+    void clear();
     /** Get name of playlist */
     QString getListName();
     /** Get comment for playlist */
@@ -115,8 +117,8 @@ public:
 signals:
     void startedLoading();         //Started loading a playlist/library
     void finishedLoading();        //Finished loading a playlist/library
-    void progressLoading(QString trackName);        
-    
+    void progressLoading(QString trackName);
+
 public slots:
     /** Decode drop event and calls addPath */
     void slotDrop(QDropEvent *e);

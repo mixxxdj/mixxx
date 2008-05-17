@@ -60,7 +60,7 @@ TrackPlaylist::TrackPlaylist(TrackCollection * pTrackCollection, QDomNode node)
 void TrackPlaylist::setTrackCollection(TrackCollection * pTrackCollection)
 {
     m_pTrackCollection = pTrackCollection;
-}    
+}
 
 void TrackPlaylist::loadFromXMLNode(QDomNode node)
 {
@@ -119,7 +119,7 @@ void TrackPlaylist::addTrack(TrackInfoObject * pTrack)
     	qDebug() << "FIXME: Duplicate tracks not allowed in playlists.";
         return;
     }
-    
+
     m_qList.append(pTrack);
     ++iCounter;
 
@@ -256,17 +256,17 @@ void TrackPlaylist::slotCancelLibraryScan()
 }
 
 void TrackPlaylist::addPath(QString qPath)
-{    
+{
     emit(startedLoading());
     //qDebug() << "addPath";
-   
+
     // Is this a file or directory?
     bool bexists = false;
     TrackCollection * tempCollection = getCollection();
     QDir dir(qPath);
-    
+
     emit(progressLoading(qPath));
-        
+
     //Check if the scan has been cancelled (because this function is called recursively and we can't use
     //terminate() to end the thread safely.)
     m_qLibScanMutex.lock();
@@ -322,7 +322,7 @@ void TrackPlaylist::addPath(QString qPath)
         while (it.hasNext())
         {
             fi = it.next();
-            
+
             //Check if the scan has been cancelled.
             m_qLibScanMutex.lock();
             if (m_bStopLibraryScan)
@@ -331,7 +331,7 @@ void TrackPlaylist::addPath(QString qPath)
             	return;
             }
             m_qLibScanMutex.unlock();
-            
+
             for(int i = 0; i < getCollection()->getSize(); ++i)
             {
                 /*qDebug() << "Checking: " << tempCollection->getTrack(i)->getFilename();*/
@@ -341,10 +341,10 @@ void TrackPlaylist::addPath(QString qPath)
                        tempCollection->getTrack(i)->getFilepath() == fi.absolutePath()) {
 
                         bexists = true;
-                        emit(progressLoading(fi.fileName())); //We're not actually reloading the library in this case, 
+                        emit(progressLoading(fi.fileName())); //We're not actually reloading the library in this case,
                         			      //just checking if songs exist.
                         break;
-                    }    
+                    }
                 }
             }
             /*if(bexists==true)
@@ -358,7 +358,7 @@ void TrackPlaylist::addPath(QString qPath)
 	
         }
     }
-    
+
     emit(finishedLoading());
 }
 
@@ -366,6 +366,13 @@ void TrackPlaylist::slotRemoveTrack(TrackInfoObject * pTrack)
 {
     m_qList.remove(pTrack);
 }
+
+void TrackPlaylist::clear()
+{
+    m_qList.clear();
+    m_pTrackCollection->clear();
+}
+
 
 void TrackPlaylist::updateScores()
 {

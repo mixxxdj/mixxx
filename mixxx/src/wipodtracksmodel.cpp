@@ -1,7 +1,7 @@
 #include <qstringlist.h>
 
 #include <QUrl>
-#include <QDebug> 
+#include <QDebug>
 
 #include "wtracktablemodel.h"
 #include "wipodtracksmodel.h"
@@ -9,21 +9,25 @@
 #include "trackinfoobject.h"
 #include "trackplaylist.h"
 
-#define MIXXX_IPOD_COL_ARTIST 0
-#define MIXXX_IPOD_COL_TITLE  1
-#define MIXXX_IPOD_COL_LENGTH 2
-#define MIXXX_IPOD_COL_BPM    3
-#define MIXXX_IPOD_COL_COMMENT    4
+#define MIXXX_IPOD_COL_ARTIST  0
+#define MIXXX_IPOD_COL_TITLE   1
+#define MIXXX_IPOD_COL_TYPE    2
+#define MIXXX_IPOD_COL_LENGTH  3
+#define MIXXX_IPOD_COL_BITRATE 4
+#define MIXXX_IPOD_COL_BPM     5
+#define MIXXX_IPOD_COL_COMMENT 6
 
 WIPodTracksModel::WIPodTracksModel(QObject * parent) : WTrackTableModel(parent)
 {
    //FIXME This causes terrible things, don't know why
-    
+
     setHeaderData(MIXXX_IPOD_COL_ARTIST ,Qt::Horizontal, tr("Artist"));
     setHeaderData(MIXXX_IPOD_COL_TITLE, Qt::Horizontal, tr("Title"));
+    setHeaderData(MIXXX_IPOD_COL_TYPE, Qt::Horizontal, tr("Type"));
     setHeaderData(MIXXX_IPOD_COL_LENGTH, Qt::Horizontal, tr("Length"));
+    setHeaderData(MIXXX_IPOD_COL_BITRATE, Qt::Horizontal, tr("kbit"));
     setHeaderData(MIXXX_IPOD_COL_BPM, Qt::Horizontal, tr("BPM"));
-    setHeaderData(MIXXX_IPOD_COL_COMMENT, Qt::Horizontal, tr("COMMENT"));
+    setHeaderData(MIXXX_IPOD_COL_COMMENT, Qt::Horizontal, tr("Comment"));
 
 }
 
@@ -33,7 +37,7 @@ WIPodTracksModel::~WIPodTracksModel()
 
 int WIPodTracksModel::columnCount(const QModelIndex &parent) const
 {
-    return 5;
+    return 7;
 }
 
 QVariant WIPodTracksModel::data(const QModelIndex &index, int role) const
@@ -52,13 +56,13 @@ QVariant WIPodTracksModel::data(const QModelIndex &index, int role) const
         {
         case MIXXX_IPOD_COL_TITLE: return m_pTrackInfo->getTitle();
         case MIXXX_IPOD_COL_ARTIST: return m_pTrackInfo->getArtist();
+        case MIXXX_IPOD_COL_TYPE: return m_pTrackInfo->getType();
         case MIXXX_IPOD_COL_LENGTH: return m_pTrackInfo->getDurationStr();
-        //case COL_BITRATE: return m_pTrackInfo->getBitrateStr();
+        case MIXXX_IPOD_COL_BITRATE: return m_pTrackInfo->getBitrateStr();
         case MIXXX_IPOD_COL_BPM: return m_pTrackInfo->getBpmStr();
         case MIXXX_IPOD_COL_COMMENT: return m_pTrackInfo->getComment();
-        //case COL_COMMENT: return m_pTrackInfo->getComment();
-	default: 
-          qDebug() << "index.column =" << index.column(); 
+	default:
+          qDebug() << "index.column =" << index.column();
           Q_ASSERT(FALSE);    //we should never get here
           return QVariant();	
         }
@@ -82,12 +86,12 @@ QVariant WIPodTracksModel::headerData(int section, Qt::Orientation orientation, 
             return QString("Title");
         case MIXXX_IPOD_COL_ARTIST:
             return QString("Artist");
-        //case COL_TYPE:
-        //    return QString("Type");
+        case MIXXX_IPOD_COL_TYPE:
+            return QString("Type");
         case MIXXX_IPOD_COL_LENGTH:
             return QString("Length");
-        //case MIXXX_IPOD_COL_BITRATE:
-        //    return QString("kbit");
+        case MIXXX_IPOD_COL_BITRATE:
+            return QString("kbit");
         case MIXXX_IPOD_COL_BPM:
             return QString("BPM");
         case MIXXX_IPOD_COL_COMMENT:
@@ -117,7 +121,6 @@ bool WIPodTracksModel::setData(const QModelIndex &index, const QVariant &value, 
         emit dataChanged(index, index);
         return true;
     }
-    
     return false;
 }
 
