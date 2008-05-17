@@ -760,6 +760,7 @@ void Track::slotActivatePlaylist(int index)
         m_pView->m_pTrackTableView->setTableMode(TABLE_MODE_PROMO);
         m_pActivePlaylist = &m_qPromoPlaylist;
         break;
+#ifdef __IPOD__
       case TABLE_MODE_IPOD: // Ipod
         m_pView->m_pTrackTableView->reset();
         m_pView->m_pTrackTableView->setSearchSource(m_pIPodModel);
@@ -768,6 +769,7 @@ void Track::slotActivatePlaylist(int index)
         m_pView->m_pTrackTableView->setTableMode(TABLE_MODE_IPOD);
         m_pActivePlaylist = &m_qIPodPlaylist;
         break;
+#endif
     }
 }
 
