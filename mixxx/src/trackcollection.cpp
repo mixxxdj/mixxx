@@ -39,9 +39,9 @@ void TrackCollection::readXML(QDomNode node)
         {
             TrackInfoObject * pTrack = new TrackInfoObject(tracknode, m_BpmDetector);
             addTrack(pTrack);
-            
+
             //qDebug() << "Trying to add" << pTrack->getTitle() << "to TrackCollection";
-            
+
             // Update counter
             if (pTrack->getId()>m_iCounter)
                 m_iCounter = pTrack->getId();
@@ -91,7 +91,7 @@ void TrackCollection::removeTrack(TrackInfoObject* pTrack)
 TrackInfoObject *TrackCollection::getTrack(int id)
 {
     //Q_ASSERT(id < m_qTrackList.size());
-    
+
     if (id < m_qTrackList.size())
         return m_qTrackList.at(id);
     else
@@ -99,7 +99,7 @@ TrackInfoObject *TrackCollection::getTrack(int id)
         qDebug() << "Warning - track ID > trackcollection size in" << __FILE__ << "on line:" << __LINE__;
         return NULL;
     }
-       
+
     // Binary search
     //return getTrack(id, -1, m_qTrackList.count()/2, m_qTrackList.count());
 

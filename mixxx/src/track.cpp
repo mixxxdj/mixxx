@@ -116,7 +116,7 @@ Track::Track(QString location, MixxxView * pView, ConfigObject<ConfigValue> *con
 
     //Initialize the promo tracks playlist
     initPromoTracks();
- 
+
     if (m_pView && m_pView->m_pTrackTableView) //Stops Mixxx from dying if a skin is from Mixxx <= 1.5.0.
     {
         m_pScanner = new LibraryScanner(&m_qLibraryPlaylist, "");
