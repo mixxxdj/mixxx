@@ -33,7 +33,7 @@ DlgPrefPlaylist::DlgPrefPlaylist(QWidget * parent, ConfigObject<ConfigValue> * _
     connect(PushButtonDetectiPodMountPoint, SIGNAL(clicked()),  this,      SLOT(slotDetectiPodMountPoint()));
     connect(PushButtonBrowseiPodMountPoint, SIGNAL(clicked()), this,      SLOT(slotBrowseiPodMountPoint()));
     connect(LineEditiPodMountPoint,   SIGNAL(returnPressed()), this,      SLOT(slotApply()));
-    //groupBoxiPod->setVisible(true);
+    // groupBoxiPod->setVisible(true);
 }
 
 DlgPrefPlaylist::~DlgPrefPlaylist()
@@ -61,20 +61,20 @@ void DlgPrefPlaylist::slotBrowseDir()
 void DlgPrefPlaylist::slotDetectiPodMountPoint()
 {
 QString iPodMountPoint;
-QFileInfoList roots;
+QFileInfoList mountpoints;
 #ifdef __WINDOWS__
   // Windows iPod Detection
-  roots = QDir::drives();
+  mountpoints = QDir::drives();
 #elif __LINUX__
   // Linux
-  roots = QDir("/media").entryInfoList();
-  roots += QDir("/mnt").entryInfoList();
+  mountpoints = QDir("/media").entryInfoList();
+  mountpoints += QDir("/mnt").entryInfoList();
 #elif __OSX__
   // Mac OSX
-  roots = QDir("/Volumes").entryInfoList();
+  mountpoints = QDir("/Volumes").entryInfoList();
 #endif
 
-QListIterator<QFileInfo> i(roots);
+QListIterator<QFileInfo> i(mountpoints);
 QFileInfo mp;
 while (i.hasNext()) {
     mp = (QFileInfo) i.next();
