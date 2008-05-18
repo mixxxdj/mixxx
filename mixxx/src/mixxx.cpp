@@ -430,6 +430,13 @@ MixxxApp::~MixxxApp()
     delete scriptEng;
 #endif
 
+#ifdef __IPOD__
+    if (m_pTrack->m_qIPodPlaylist.getSongNum()) {
+      qDebug() << "Dispose of iPod track collection";
+      m_pTrack->m_qIPodPlaylist.clear();
+    }
+#endif
+
     qDebug() << "Write track xml, " << qTime.elapsed();
     m_pTrack->writeXML(config->getValueString(ConfigKey("[Playlist]","Listfile")));
 
@@ -735,7 +742,7 @@ void MixxxApp::slotiPodToggle(bool toggle) {
     }
     GList *it;
     int count = 0;
-    //m_pTrack->m_qIPodPlaylist.clear();
+    m_pTrack->m_qIPodPlaylist.clear();
 
     for (it = itdb->tracks; it != NULL; it = it->next) {
        count++;
