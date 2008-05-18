@@ -370,7 +370,7 @@ void TrackPlaylist::slotRemoveTrack(TrackInfoObject * pTrack)
 void TrackPlaylist::clear()
 {
     m_qList.clear();
-    m_pTrackCollection->clear();
+//    m_pTrackCollection->clear();
 }
 
 

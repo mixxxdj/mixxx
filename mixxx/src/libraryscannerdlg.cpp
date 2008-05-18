@@ -33,11 +33,11 @@ LibraryScannerDlg::LibraryScannerDlg()
     m_timersetup = false;
     m_timeruses = 0;
     m_bCancelled = false;
-    
+
     if (!m_timersetup) {
         m_timersetup = true;
 	    setupTiming();
-    }    
+    }
 }
 
 LibraryScannerDlg::~LibraryScannerDlg()
@@ -53,10 +53,12 @@ void LibraryScannerDlg::setupTiming() {
 	m_cancel = new QPushButton(tr("Cancel"), m_progress);
 	layout->addWidget(m_cancel);
 	m_current = new QLabel();
+        m_current->setMaximumWidth(600);
+        m_current->setWordWrap(true);
 	layout->addWidget(m_current);
 	m_progress->setLayout(layout);
 	
-	connect(m_cancel, SIGNAL(clicked()), this, SLOT(slotCancel())); 
+	connect(m_cancel, SIGNAL(clicked()), this, SLOT(slotCancel()));
 }
 
 void LibraryScannerDlg::slotStartTiming() {
@@ -109,9 +111,8 @@ void LibraryScannerDlg::slotCancel()
     qDebug() << "Cancelling library scan...";
     m_bCancelled = true;
     m_qMutex.unlock();
-     
+
     emit(scanCancelled());
-    
+
     m_progress->setVisible(false);
 }
-
