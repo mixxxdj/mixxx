@@ -790,7 +790,10 @@ else:
 
 
 #Case Metrics
-flags_cmetrics = getFlags(env, 'cmetrics', 0)
+if platform == 'win32' or platform == 'linux':
+	flags_cmetrics = getFlags(env, 'cmetrics', 1)
+else:
+	flags_cmetrics = getFlags(env, 'cmetrics', 0) # Off on OS X for now...
 if int(flags_cmetrics):
 	env.Append(CXXFLAGS = '-D__C_METRICS__')
 	if platform == 'win32':
