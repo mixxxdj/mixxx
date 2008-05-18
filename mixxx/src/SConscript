@@ -1082,8 +1082,8 @@ def BuildUbuntuPackage(target, source, env):
 		
 		os.system('svn export --force -rHEAD . ubuntu/mixxx-' + version)
 		
-        print "Copying promo tracks dir"
-        os.system('cp -r promo ubuntu/mixxx-' + version)
+		print "Copying promo tracks dir"
+		os.system('cp -r promo ubuntu/mixxx-' + version)
 		
 		os.chdir('ubuntu')
 		
