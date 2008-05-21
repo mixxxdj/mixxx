@@ -28,7 +28,7 @@ class EngineShoutcast;
 
 class EngineRecord;
 
-#define SIDECHAIN_BUFFER_SIZE 65536 
+#define SIDECHAIN_BUFFER_SIZE 65536
 
 
 class EngineSideChain : public QThread
@@ -40,8 +40,8 @@ class EngineSideChain : public QThread
 
     private:
         void swapBuffers();
-        void run(); 
-        
+        void run();
+
         ConfigObject<ConfigValue> * m_pConfig;
         const char* m_group;
         bool m_bStopThread;                     //Indicates that the thread should exit.

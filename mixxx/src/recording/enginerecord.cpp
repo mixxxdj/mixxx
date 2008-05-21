@@ -53,9 +53,9 @@ void EngineRecord::process(const CSAMPLE * pIn, const CSAMPLE * pOut, const int 
 
     //We don't need to do silence detection or anything fancy
     //if recording isn't ON or READY
-    if (recReady->get() != RECORD_READY && recReady->get() != RECORD_ON) 
+    if (recReady->get() != RECORD_READY && recReady->get() != RECORD_ON)
         return;
-    
+
     for (int i=0; i < iBufferSize; i+=2)
     {
         //if(pIn != pOut)
@@ -68,10 +68,10 @@ void EngineRecord::process(const CSAMPLE * pIn, const CSAMPLE * pOut, const int 
             //then we can set the record flag to TRUE
             qDebug("Setting Record flag to: ON");
             recReady->slotSet(RECORD_ON);
-            fOut->open(); //FIXME: This is not a good spot for this. - Albert 
+            fOut->open(); //FIXME: This is not a good spot for this. - Albert
         }
     }
-    
+
     //Write record buffer to file
     if (recReady->get() == RECORD_ON)
         fOut->write(pIn, iBufferSize);
