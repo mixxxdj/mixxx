@@ -249,7 +249,7 @@ void HerculesLinux::run() {
 
         if (jogLibraryScrolling && (l != 0 || r != 0)) {
             if (l+r > 0) {
-               sendButtonEvent(1, m_pControlObjectDown);      
+               sendButtonEvent(1, m_pControlObjectDown);
             } else if (l+r < 0) {
                sendButtonEvent(1, m_pControlObjectUp);
             }
@@ -285,17 +285,18 @@ bool HerculesLinux::opendev() {
     qDebug() << "Starting Hercules DJ Console detection";
     if (djc == 0) {
         djc = new DJConsole();
-        if(djc && djc->detected()) {
-            qDebug() << "A Hercules DJ Console was detected.";
-        } else {
+        if (djc == 0 || !djc->detected()) {
             qDebug() << "Sorry, no love.";
+            return 0;
         }
+
+        qDebug() << "A Hercules DJ Console was detected.";
 
         djc->loadData();
 
         // All non-RMX controllers do scratching by default.
         isRMX = djc->product() >= 0xb101;
-        scratchMode = (isRMX? scratchMode : true); 
+        scratchMode = (isRMX? scratchMode : true);
         qDebug() << "isRMX = " << isRMX;
 
         start();
@@ -447,7 +448,7 @@ void HerculesLinux::consoleEvent(int first, int second) {
                   qDebug() << "Deck Split (mute both)";
                   m_iHerculesHeadphonesSelection = kiHerculesHeadphoneSplit;
                   sendButtonEvent(m_bHeadphoneRight = false, m_pControlObjectRightBtnHeadphone);
-                  sendButtonEvent(m_bHeadphoneLeft = false, m_pControlObjectLeftBtnHeadphone); 
+                  sendButtonEvent(m_bHeadphoneLeft = false, m_pControlObjectLeftBtnHeadphone);
                 }
                 break;
             case MONITOR_MIX:
@@ -455,7 +456,7 @@ void HerculesLinux::consoleEvent(int first, int second) {
                   qDebug() << "Deck MIX";
                   m_iHerculesHeadphonesSelection = kiHerculesHeadphoneMix;
                   sendButtonEvent(m_bHeadphoneRight = true, m_pControlObjectRightBtnHeadphone);
-                  sendButtonEvent(m_bHeadphoneLeft = true, m_pControlObjectLeftBtnHeadphone); 
+                  sendButtonEvent(m_bHeadphoneLeft = true, m_pControlObjectLeftBtnHeadphone);
                 } 
                 break;
             case MONITOR_DECK_B:
