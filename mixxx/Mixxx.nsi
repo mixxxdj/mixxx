@@ -63,9 +63,18 @@ Section "Mixxx (required)" SecMixxx
   SetOutPath $INSTDIR\midi
   File "dist\midi\*.xml"
 
+  SetOutPath $INSTDIR\promo
+  File "dist\promo\*"
+
   SetOutPath $INSTDIR\keyboard
   File "src\keyboard\Standard.kbd.cfg"
   File "src\keyboard\Old.kbd.cfg"
+
+  SetOutPath "$INSTDIR\skins\Collusion (1280)"
+  File "src\skins\Collusion (1280)\*"
+
+  SetOutPath "$INSTDIR\skins\Collusion (1280-WS)"
+  File "src\skins\Collusion (1280-WS)\*"
 
   SetOutPath $INSTDIR\skins\outline
   File "src\skins\outline\back-off-Ch1.png"
