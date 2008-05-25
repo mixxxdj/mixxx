@@ -33,6 +33,7 @@ cp /usr/local/lib/libvorbisfile.3.dylib .
 cp /usr/local/lib/libvorbis.0.dylib .
 cp /usr/local/lib/libogg.0.dylib .
 cp /usr/local/lib/libsndfile.1.dylib .
+cp /usr/local/lib/libFLAC.7.dylib .
 
 echo "Changing library ids..."
 install_name_tool -id @executable_path/../Frameworks/libQtGui.4.dylib libQtGui.4.dylib
@@ -49,6 +50,7 @@ install_name_tool -id @executable_path/../Frameworks/libvorbisfile.3.dylib libvo
 install_name_tool -id @executable_path/../Frameworks/libvorbis.0.dylib libvorbis.0.dylib
 install_name_tool -id @executable_path/../Frameworks/libogg.0.dylib libogg.0.dylib
 install_name_tool -id @executable_path/../Frameworks/libsndfile.1.dylib libsndfile.1.dylib
+install_name_tool -id @executable_path/../Frameworks/libFLAC.7.dylib libFLAC.7.dylib
 
 echo "Changing library ids in the Mixxx binary..."
 install_name_tool -change $QT4_PATH/lib/libQtGui.4.dylib @executable_path/../Frameworks/libQtGui.4.dylib $MIXXX_PATH
@@ -65,6 +67,7 @@ install_name_tool -change /usr/local/lib/libvorbisfile.3.dylib @executable_path/
 install_name_tool -change /usr/local/lib/libvorbis.0.dylib @executable_path/../Frameworks/libvorbis.0.dylib $MIXXX_PATH
 install_name_tool -change /usr/local/lib/libogg.0.dylib @executable_path/../Frameworks/libogg.0.dylib $MIXXX_PATH
 install_name_tool -change /usr/local/lib/libsndfile.1.dylib @executable_path/../Frameworks/libsndfile.1.dylib $MIXXX_PATH
+install_name_tool -change /usr/local/lib/libFLAC.7.dylib @executable_path/../Frameworks/libFLAC.7.dylib $MIXXX_PATH
 
 echo "Changing library ids within the QT4 libs"
 # These are intra-QT4 dependencies
@@ -87,6 +90,8 @@ install_name_tool -change /opt/local/lib/libogg.0.dylib @executable_path/../Fram
 install_name_tool -change /opt/local/lib/libogg.0.dylib @executable_path/../Frameworks/libogg.0.dylib libvorbisfile.3.dylib
 install_name_tool -change /usr/local/lib/libvorbis.0.dylib @executable_path/../Frameworks/libvorbis.0.dylib libvorbisfile.3.dylib # /usr for this one and /opt for the libogg ones... careful... (libogg is from MacPorts?)
 
+echo "Changing library ids within libsndfile"
+install_name_tool -change /usr/local/lib/libFLAC.7.dylib @executable_path/../Frameworks/libFLAC.7.dylib libsndfile.1.dylib
 
 echo "Stripping debugging symbols in libraries"
 for lib in `ls`;
