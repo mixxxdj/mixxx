@@ -360,14 +360,14 @@ void Track::initPromoTracks()
     foreach (QString filename, qPromoFilenames)
     {
         qDebug() << "Found promo track:" << filename;
-        QString trackPath = promoDir.absolutePath() + QDir::separator() + filename;
+        QString trackPath = promoDir.absolutePath() + "/" + filename;
         m_qPromoPlaylist.addTrack(trackPath);
         //NOTE: The absolutePath() in the above might be dangerous, I don't know - Albert
    }
     qDebug() << "Promo playlist has" << m_qPromoPlaylist.getSongNum() << "songs.";
 
     //Load the extra metadata for these tracks from an XML file.
-    loadPromoTrackXMLData(promoDir.absolutePath() + QDir::separator() + "promo.xml",
+    loadPromoTrackXMLData(promoDir.absolutePath() + "/" + "promo.xml",
                           promoDir.absolutePath());
 }
 
@@ -400,7 +400,7 @@ void Track::loadPromoTrackXMLData(QString xmlPath, QString promoDirPath)
 		if(!e.isNull()) {
 			if (e.tagName() == "track")
 			{
-				QString filename = promoDirPath + QDir::separator() + e.text();
+				QString filename = promoDirPath + "/" + e.text();
                 float bpm = e.attribute("bpm").toFloat();
                 QString url = e.attribute("url");
                 //TODO: Load comment, but don't overwrite it if the track is already

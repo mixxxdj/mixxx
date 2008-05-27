@@ -892,7 +892,7 @@ void WTrackTableView::slotCopyToLibrary()
     for (int i = 0; i < m_selectedTrackInfoObjects.count(); i++) {
         QString srcLocation = m_selectedTrackInfoObjects.at(i)->getLocation();
         QString destLocation = m_pConfig->getValueString(ConfigKey("[Playlist]", "Directory"));
-        destLocation += QDir::separator() + m_selectedTrackInfoObjects.at(i)->getFilename();
+        destLocation += "/" + m_selectedTrackInfoObjects.at(i)->getFilename();
         success = QFile::copy(srcLocation, destLocation);
 
         qDebug() << "Copying" << srcLocation << "to" << destLocation;
