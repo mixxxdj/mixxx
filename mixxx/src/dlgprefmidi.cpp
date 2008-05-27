@@ -122,6 +122,12 @@ DlgPrefMidi::DlgPrefMidi(QWidget * parent, ConfigObject<ConfigValue> * pConfig) 
     QStringList * midiConfigList = m_pMidi->getConfigList(qConfigPath.append("midi/"));
     m_pMidiConfig = 0;
     QString mappingfile = m_pConfig->getValueString(ConfigKey("[Midi]", "File"));
+
+#ifdef __C_METRICS__
+    QByteArray baMIDIMapping = m_pConfig->getValueString(ConfigKey("[Midi]","File")).toUtf8();
+    cm_writemsg_utf8(MIXXXCMETRICS_MIDI_MAPPING, baMIDIMapping.data());
+#endif
+
     bool foundmap = false;
     for (QStringList::Iterator it = midiConfigList->begin(); it != midiConfigList->end(); ++it ) {
         if (*it == mappingfile) {

@@ -29,5 +29,6 @@
 #define MIXXXCMETRICS_SOUND_LATENCY                                 9
 #define MIXXXCMETRICS_MIDI_DEVICE                                   10
 #define MIXXXCMETRICS_LIBRARY_SCAN_TIME                             11
+#define MIXXXCMETRICS_MIDI_MAPPING                                  12
 
 #endif
