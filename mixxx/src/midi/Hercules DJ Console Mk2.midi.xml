@@ -65,7 +65,7 @@
 			<miditype>Ctrl</miditype>
 			<midino>0x09</midino>
 			<options>
-				<button/>
+				<switch/>
 			</options>
 		</control>
 		<control>
@@ -88,6 +88,54 @@
 			<key>NextTrack</key>
 			<miditype>Ctrl</miditype>
 			<midino>0x0C</midino>
+		</control>
+		<control>
+			<group>[Channel1]</group>
+			<key>beatsync</key>
+			<miditype>Ctrl</miditype>
+			<midino>0x0A</midino>
+		</control>
+		<control>
+			<group>[Channel1]</group>
+			<key>rate_temp_up</key>
+			<miditype>Ctrl</miditype>
+			<midino>0x13</midino>
+			<options>
+				<switch/>
+			</options>
+		</control>
+		<control>
+			<group>[Channel1]</group>
+			<key>rate_temp_down</key>
+			<miditype>Ctrl</miditype>
+			<midino>0x14</midino>
+			<options>
+				<switch/>
+			</options>
+		</control>
+		<control>
+			<group>[Channel1]</group>
+			<key>LoadSelectedTrack</key>
+			<miditype>Ctrl</miditype>
+			<midino>0x1B</midino>
+		</control>
+		<control>
+			<group>[Channel1]</group>
+			<key>reverse</key>
+			<miditype>Ctrl</miditype>
+			<midino>0x07</midino>
+			<options>
+				<switch/>
+			</options>
+		</control>
+		<control>
+			<group>[Channel1]</group>
+			<key>flanger</key>
+			<miditype>Ctrl</miditype>
+			<midino>0x0F</midino>
+			<options>
+				<button/>
+			</options>
 		</control>
 		
 		<control>
@@ -147,7 +195,7 @@
 			<miditype>Ctrl</miditype>
 			<midino>0x03</midino>
 			<options>
-				<button/>
+				<switch/>
 			</options>
 		</control>
 		<control>
@@ -171,15 +219,64 @@
 			<miditype>Ctrl</miditype>
 			<midino>0x06</midino>
 		</control>
+		<control>
+			<group>[Channel2]</group>
+			<key>beatsync</key>
+			<miditype>Ctrl</miditype>
+			<midino>0x04</midino>
+		</control>
+		<control>
+			<group>[Channel2]</group>
+			<key>rate_temp_up</key>
+			<miditype>Ctrl</miditype>
+			<midino>0x17</midino>
+			<options>
+				<switch/>
+			</options>
+		</control>
+		<control>
+			<group>[Channel2]</group>
+			<key>rate_temp_down</key>
+			<miditype>Ctrl</miditype>
+			<midino>0x18</midino>
+			<options>
+				<switch/>
+			</options>
+		</control>
+		<control>
+			<group>[Channel2]</group>
+			<key>LoadSelectedTrack</key>
+			<miditype>Ctrl</miditype>
+			<midino>0x1C</midino>
+		</control>
+		<control>
+			<group>[Channel2]</group>
+			<key>reverse</key>
+			<miditype>Ctrl</miditype>
+			<midino>0x01</midino>
+			<options>
+				<switch/>
+			</options>
+		</control>
+		<control>
+			<group>[Channel2]</group>
+			<key>flanger</key>
+			<miditype>Ctrl</miditype>
+			<midino>0x10</midino>
+			<options>
+				<button/>
+			</options>
+		</control>
+
 	</controls>
 
 	<lights>
 		<light>
 			<group>[Channel1]</group>
 			<key>play</key>
-			<status>0xB0</status>
+			<status>0x7F</status>
 			<midino>0x08</midino>
-			<threshold>0.5</threshold>
+			<threshold>0.1</threshold>
 		</light>
 		<light>
 			<group>[Channel2]</group>
@@ -262,3 +359,4 @@
 		</light>
 	</lights>
 </controller>
+
