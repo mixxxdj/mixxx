@@ -1,5 +1,5 @@
 #include "vinylcontrol.h"
-#include "controlobjectthreadmain.h"
+#include "controlobjectthread.h"
 
 VinylControl::VinylControl(ConfigObject<ConfigValue> * pConfig, const char * _group)
 {
@@ -19,12 +19,12 @@ VinylControl::VinylControl(ConfigObject<ConfigValue> * pConfig, const char * _gr
     mode                = new ControlObjectThread(ControlObject::getControl(ConfigKey("[VinylControl]", "Mode")));
     enabled             = new ControlObjectThread(ControlObject::getControl(ConfigKey("[VinylControl]", "Enabled")));
     rateRange           = new ControlObjectThread(ControlObject::getControl(ConfigKey(group, "rateRange")));
+    timecodeStrength    = new ControlObjectThread(ControlObject::getControl(ConfigKey(group, "VinylControlStrength"))); 
 
     dVinylPitch = 0.0f;
     dVinylPosition = 0.0f;
     dVinylScratch = 0.0f;
     dDriftControl   = 0.0f;
-    fTimecodeStrength = 0.0f;
     fRateRange = 0.0f;
     
     //Get the vinyl type
@@ -69,7 +69,9 @@ float VinylControl::getSpeed()
 
 //Returns some sort of indication of the vinyl's signal strength.
 //Range of fTimecodeStrength should be 0.0 to 1.0
+/*
 float VinylControl::getTimecodeStrength()
 {
     return fTimecodeStrength;
 }
+*/

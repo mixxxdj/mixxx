@@ -102,9 +102,9 @@ void VinylControlScratchlib::AnalyseSamples(short * samples, size_t size)
     }
 
     if (strVinylType == MIXXX_VINYL_FINALSCRATCH)
-        fTimecodeStrength = analyzer->GetTimecodesPerSecond() / 32;
+        timecodeStrength->slotSet(analyzer->GetTimecodesPerSecond() / 32);
     else if (strVinylType == MIXXX_VINYL_MIXVIBESDVSCD)
-        fTimecodeStrength = analyzer->GetTimecodesPerSecond() / 32;
+        timecodeStrength->slotSet(analyzer->GetTimecodesPerSecond() / 32);
 
     waitForNextInput.wakeAll();
     lockSamples.unlock();    
