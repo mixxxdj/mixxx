@@ -203,7 +203,7 @@
 
       <group>[Channel1]</group>
 
-      <key>cue_simple</key>
+      <key>cue_default</key>
 
       <miditype>Key</miditype>
 
@@ -412,7 +412,7 @@
 
       <group>[Channel2]</group>
 
-      <key>cue_simple</key>
+      <key>cue_default</key>
 
       <miditype>Key</miditype>
 
