@@ -99,8 +99,11 @@ void VinylControlXwax::AnalyseSamples(short *samples, size_t size)
 {
     if (lockSamples.tryLock())
     {
+        //Submit the samples to the xwax timecode processor
         timecoder_submit(&timecoder, samples, size);
-        fTimecodeStrength = samples[0] / SHRT_MAX;
+
+        //Update the input signal strength
+        timecodeStrength->slotSet(samples[0] / SHRT_MAX);
     
         waitForNextInput.wakeAll();
         lockSamples.unlock();
@@ -189,27 +192,39 @@ void VinylControlXwax::run()
                 //duration = ControlObject::getControl(ConfigKey(group, "duration"));
 
                 //If xwax has given us a valid position from the timecode (will be -1.0f if invalid)
-                if (dVinylPosition > 0.0f) 
+                if ((dVinylPosition - iLeadInTime) > 0.0f) 
                 {   
                     //If the position from the timecode is more than a few seconds off, resync the position.
                     if (fabs(dVinylPosition - filePosition - iLeadInTime) > 3.0 && (iVCMode == MIXXX_VCMODE_ABSOLUTE))
                     {
                         syncPosition();
                     }
-                    //Useful debug message for tracking down the problem of the vinyl's position "drifting":
-                    //qDebug() << "Ratio of vinyl's position and Mixxx's: " << fabs(dVinylPosition/filePosition);
-                    
+                    //else if (fabs(dVinylPosition - iLeadInTime) < 0.3) //Force resync at start 
+                    //    syncPosition(); 
+                        
+                        
                     //Calculate how much the vinyl's position has drifted from it's timecode.
                     //(This is caused by the manufacturing process of the vinyl.) 
                     if (filePosition != 0.0f)
-                        dDriftControl = ((dVinylPosition/filePosition) - 1)/100 * 4.0f;
-                        
+                        dDriftControl = (((dVinylPosition-iLeadInTime)/filePosition) - 1)/100 * 4.0f;
+                    
+                    //Useful debug message for tracking down the problem of the vinyl's position "drifting":
+                    //qDebug() << "Ratio of vinyl's position and Mixxx's: " << fabs(dVinylPosition/filePosition);
+                                            
                     //qDebug() << "dDriftControl: " << dDriftControl;
                     //qDebug() << "Xwax says the time is: " << dVinylPosition;
                     //qDebug() << "Mixxx says the time is: " << filePosition;
                     //qDebug() << "dVinylPitch: " << dVinylPitch;
                     //qDebug() << "diff in positions:" << fabs(dVinylPosition - filePosition);                           
-                    
+                }
+                else if (dVinylPosition > 0.0f) //Valid timecode, but we're in the timecode before the lead-in time...
+                {
+                    //Move to the start of the song...
+                    dVinylPosition = iLeadInTime;
+                    syncPosition();
+                    //From here, Mixxx should appear to wait at the start of the song until the
+                    //timecode passes the lead-in time mark. After that, this code should enter
+                    //the "if" statement above this instead of falling into this "else".
                 }
                 
                 playButton->slotSet(0.0f);
