@@ -1057,6 +1057,7 @@ void MixxxApp::slotHelpAbout()
 "J&aacute;n Jockusch<br>"
 "Alex Markley<br>"
 "Oriol Puigb&oacute;<br>"
+"Ulrich Heske<br>"
 "</p>"
 "<p align=\"center\"><b>And special thanks to:</b></p>"
 "<p align=\"center\">"
@@ -1066,6 +1067,7 @@ void MixxxApp::slotHelpAbout()
 "Pau Arum&iacute;<br>"
 "David Garcia<br>"
 "Seb Ruiz<br>"
+"Echo Digital Audio<br>"
 "</p>"
 
 "<p align=\"center\"><b>Past Contributors</b></p>"
