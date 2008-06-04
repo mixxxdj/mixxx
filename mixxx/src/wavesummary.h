@@ -43,9 +43,6 @@ const float kfFeatureStepSize = 0.01f;
 #define WAVESUMMARYCONSTANTS
 #endif
 
-class WindowKaiser;
-class EngineSpectralFwd;
-
 class WaveSummary : public QThread
 {
 public:
@@ -66,13 +63,6 @@ protected:
     /** Wait condition */
     QWaitCondition m_qWait;
     QMutex m_qWaitMutex;
-    /** Pointer to window and windowed samples of signal */
-    WindowKaiser *window;
-    /** Pointer to samples containing one windowed frame of samples */
-    CSAMPLE *windowedSamples;
-    /** Pointer to array containing window */
-    CSAMPLE *windowPtr;
-    EngineSpectralFwd *m_pEngineSpectralFwd;	
 	/** Pointer to config object **/
 	ConfigObject<ConfigValue> *m_Config;
 };
