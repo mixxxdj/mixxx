@@ -18,13 +18,7 @@
 #include "wavesummary.h"
 #include "soundsourceproxy.h"
 #include "trackinfoobject.h"
-#include "mathstuff.h"
-#include "enginespectralfwd.h"
-#include "peaklist.h"
-#include "probabilityvector.h"
-#include "windowkaiser.h"
-#include "wavesegmentation.h"
-#include "readerextractbeat.h"
+
 #include <q3memarray.h>
 #include <QtDebug>
 #include <qapplication.h>
@@ -32,16 +26,6 @@
 
 WaveSummary::WaveSummary(ConfigObject<ConfigValue> * _config)
 {
-    // Allocate and calculate window
-    window = new WindowKaiser(kiBlockSize, 6.5);
-    windowPtr = window->getWindowPtr();
-
-    // Allocate memory for windowed portion of signal
-    windowedSamples = new CSAMPLE[kiBlockSize];
-
-    // Allocate FFT object
-    m_pEngineSpectralFwd = new EngineSpectralFwd(true, false, window);
-
     // Store config object
     m_Config = _config;
 
@@ -51,8 +35,6 @@ WaveSummary::WaveSummary(ConfigObject<ConfigValue> * _config)
 WaveSummary::~WaveSummary()
 {
     terminate();
-    delete windowedSamples;
-    delete m_pEngineSpectralFwd;
 }
 
 void WaveSummary::enqueue(TrackInfoObject * pTrackInfoObject)
@@ -161,22 +143,3 @@ void WaveSummary::run()
         }
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
