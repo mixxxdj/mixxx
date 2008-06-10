@@ -18,12 +18,16 @@
 #include "configobject.h"
 
 // Defines what mode the track table is in.
-const int TABLE_MODE_LIBRARY =      0;
-const int TABLE_MODE_PLAYQUEUE =    1;
-const int TABLE_MODE_BROWSE =       2;
-const int TABLE_MODE_PLAYLISTS =    3;
-const int TABLE_MODE_PROMO =        4;
-const int TABLE_MODE_IPOD =         5;
+enum table_mode_t
+{
+    TABLE_MODE_LIBRARY =      0,
+    TABLE_MODE_PLAYQUEUE,
+    TABLE_MODE_BROWSE,
+    TABLE_MODE_PLAYLISTS,
+    TABLE_MODE_PROMO,
+    TABLE_MODE_IPOD
+};
+
 
 /**
   *@author Tue & Ken Haste Andersen
@@ -65,10 +69,10 @@ public:
     void setPlaylistListModel(WPlaylistListModel *model);
 
     /** Sets the current mode for the WTrackTableView */
-    void setTableMode(int table_mode);
+    void setTableMode(table_mode_t table_mode);
 
     /** Gets the current mode for the WTrackTableView */
-    int getTableMode();
+    table_mode_t getTableMode();
 
     /** Returns the QDirModel **/
     QDirModel* getDirModel();
@@ -166,6 +170,7 @@ protected:
     void dragEnterEvent(QDragEnterEvent *event);
     void dropEvent(QDropEvent *event);
     void keyPressEvent(QKeyEvent *event);
+    void dragMoveEvent(QDragMoveEvent * event);
 
     DlgBpmTap *bpmTapDlg;
     QModelIndex m_dirindex;
@@ -176,7 +181,8 @@ protected:
     WPlaylistListModel *m_pPlaylistListModel;
     QModelIndexList m_selectedIndices;
     QString m_filterString;
-    int m_iTableMode;
+    QList<table_mode_t> m_dndTableModeBlacklist;
+    table_mode_t m_iTableMode;                      /** Determines what "mode" the table view is in */
 
 };
 #endif
