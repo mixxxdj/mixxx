@@ -50,6 +50,9 @@ class LibraryScannerDialog;
 // re-parsed.
 const int TRACK_VERSION = 10;
 
+const QString PLAYLIST_NAME_IPOD  = "ipod";
+const QString PLAYLIST_NAME_PROMO = "promo";
+
 /**
 @author Tue Haste Andersen
 */

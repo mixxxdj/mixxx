@@ -108,6 +108,7 @@ Track::Track(QString location, MixxxView * pView, ConfigObject<ConfigValue> *con
 
 #ifdef __IPOD__
     m_qIPodPlaylist.setTrackCollection(m_pTrackCollection);
+    m_qIPodPlaylist.setListName(PLAYLIST_NAME_IPOD);
 #endif
 
    // Read the XML file
@@ -349,6 +350,7 @@ bool Track::eventFilter(QObject *obj, QEvent *e) {
 /** Load and initialize the promo tracks playlist and the special metadata */
 void Track::initPromoTracks()
 {
+    m_qPromoPlaylist.setListName(PLAYLIST_NAME_PROMO);
     if (!checkPromoDirExists())
     {
         //If the promo directory doesn't exist, do nothing.

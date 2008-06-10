@@ -16,6 +16,8 @@
 #include <q3dragobject.h>
 #include <qstring.h>
 #include <qmime.h>
+#include <QtGui>
+#include <QtCore>
 
 //Added by qt3to4:
 #include <Q3Frame>
@@ -48,8 +50,19 @@ WTrackTableView::WTrackTableView(QWidget * parent, ConfigObject<ConfigValue> * p
     setSelectionBehavior(SelectRows);
     setSelectionMode(QAbstractItemView::ExtendedSelection);
     viewport()->setAcceptDrops(true);
+  
+    //Drag and drop setup
     setDragEnabled(true);
     setDragDropMode(QAbstractItemView::DragDrop);
+    setDropIndicatorShown(true);
+    setAcceptDrops(true);
+    
+    //Blacklist whatever table modes we don't want to allow drag-and-drop to:
+    m_dndTableModeBlacklist.append(TABLE_MODE_PROMO);
+    m_dndTableModeBlacklist.append(TABLE_MODE_IPOD);
+    m_dndTableModeBlacklist.append(TABLE_MODE_PLAYLISTS);
+    m_dndTableModeBlacklist.append(TABLE_MODE_BROWSE);
+    
     setWordWrap(false);
     setVerticalScrollBarPolicy (Qt::ScrollBarAlwaysOn);
     setShowGrid(false);
@@ -178,12 +191,12 @@ void WTrackTableView::setup(QDomNode node)
 }
 
 /* Sets the table mode (library, play queue, browse, etc.) */
-void WTrackTableView::setTableMode(int table_mode)
+void WTrackTableView::setTableMode(table_mode_t table_mode)
 {
     m_iTableMode = table_mode;
 }
 
-int WTrackTableView::getTableMode()
+table_mode_t WTrackTableView::getTableMode()
 {
     return m_iTableMode;
 }
@@ -850,28 +863,63 @@ void WTrackTableView::slotFilter()
     m_pDirFilter->setFilterFixedString(m_filterString);
 }
 
-/** Stub for drag and drop... FIXME into real drag-and-drop-to-library support - Albert Feb 6/08*/
+/** Drag enter event, happens when a dragged item hovers over the track table view*/
 void WTrackTableView::dragEnterEvent(QDragEnterEvent * event)
 {
-  if (event->mimeData()->hasUrls())
-      event->acceptProposedAction();
+    //qDebug() << "DragEnterEvent" << event->mimeData()->formats();
+    if (event->mimeData()->hasUrls())
+    {
+        event->acceptProposedAction();
+    }   
 }
 
-/** Stub for drag and drop... FIXME into real drag-and-drop-to-library support - Albert Feb 6/08*/
+/** Drag move event, happens when a dragged item hovers over the track table view...
+ *  Why we need this is a little vague, but without it, drag-and-drop just doesn't work.
+ *  -- Albert June 8/08
+ */
+void WTrackTableView::dragMoveEvent(QDragMoveEvent * event)
+{
+    //qDebug() << "dragMoveEvent" << event->mimeData()->formats();
+    if (event->mimeData()->hasUrls())
+    {
+        event->acceptProposedAction();
+    }
+}
+
+/** Drag-and-drop "drop" event. Occurs when something is dropped onto the track table view */
 void WTrackTableView::dropEvent(QDropEvent * event)
 {
-  if (event->mimeData()->hasUrls()) {
-    QList<QUrl> urls(event->mimeData()->urls());
-    QUrl url = urls.first();
+    if (event->mimeData()->hasUrls()) {
+		QList<QUrl> urls(event->mimeData()->urls());
+		QUrl url = urls.first();
+        
+        //Drag and drop within this widget (track reordering)
+        if (event->source() == this && event->possibleActions() & Qt::MoveAction)
+        {
+            qDebug() << "FIXME: Do track reordering in" << __FILE__ << " line" << __LINE__;
+            
+            //These are lines of code that might be helpful in order to accomplish this.
+            //QModelIndex index = m_selectedIndices.at(this->rowAt(event->pos().y()));
+            //TrackInfoObject * pTrack = m_pTrackCollection->getTrack(url.path());
+            //m_pTrack->getActivePlaylist()->remove(pTrack);
+            //m_pTrack->getActivePlaylist()->insertAt(index.row(), pTrack);
 
-    event->accept();
-    //emit(trackDropped(name));
-
-    //Add the track(s) to the active playlist
-    m_pTrack->getActivePlaylist()->addTrack(url.path());
-    repaintEverything();
-  } else
-    event->ignore();
+            //m_pTrack->getPlaylists()->removeAt(index.row());
+                       
+            return;
+        }
+		
+        event->acceptProposedAction();
+		//emit(trackDropped(name));
+		
+		//Add the track(s) to the active playlist, unless it's a weird
+        //playlist like the promo tracks or ipod one.
+        if (!m_dndTableModeBlacklist.contains(getTableMode()))
+            m_pTrack->getActivePlaylist()->addTrack(url.path());
+		
+        repaintEverything();
+    } else
+        event->ignore();
 }
 
 void WTrackTableView::keyPressEvent(QKeyEvent *event)
