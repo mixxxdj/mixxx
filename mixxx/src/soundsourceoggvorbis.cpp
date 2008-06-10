@@ -41,7 +41,10 @@
    Class for reading Ogg Vorbis
  */
 
-SoundSourceOggVorbis::SoundSourceOggVorbis(QString qFilename) : SoundSource(qFilename)
+SoundSourceOggVorbis::SoundSourceOggVorbis(QString qFilename) 
+: SoundSource(qFilename)
+, dest (0)
+, pRead(0)
 {
     QByteArray qBAFilename = qFilename.toUtf8();
     vorbisfile =  fopen(qBAFilename.data(), "r");
@@ -112,27 +115,31 @@ long SoundSourceOggVorbis::seek(long filepos)
 
 unsigned SoundSourceOggVorbis::read(volatile unsigned long size, const SAMPLE * destination)
 {
-    dest = (SAMPLE *) destination;
-    index = 0;
+    pRead  = (char*) destination;
+    dest   = (SAMPLE*) destination;
+    
+    index  = ret = 0;
     needed = size*channels;
 
     // loop until requested number of samples has been retrieved
     while (needed > 0)
     {
+        index  += ret;
+        needed -= ret;
+
         // read samples into buffer
-        ret = ov_read(&vf,(char *) dest+index,needed, OV_ENDIAN_ARG, 2, 1, &current_section);
-        // if eof we fill the rest with zero
-        if (ret == 0)
+        ret = ov_read(&vf, pRead+index, needed, OV_ENDIAN_ARG, 2, 1, &current_section);
+        
+        // if eof (ret==0) or error(ret<0) we fill the rest with zero
+        if (ret <= 0)
         {
             while (needed > 0)
             {
-                dest[index] = 0;
+                pRead[index] = 0;
                 index++;
                 needed--;
             }
         }
-        index += ret;
-        needed -= ret;
     }
 
     // convert into stereo if file is mono

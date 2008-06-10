@@ -41,6 +41,7 @@ class SoundSourceOggVorbis : public SoundSource {
   int current_section;
   unsigned long ret, needed, index;
   SAMPLE* dest;
+  char* pRead;
 };
 
 #endif
