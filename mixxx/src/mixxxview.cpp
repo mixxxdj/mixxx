@@ -507,10 +507,16 @@ void MixxxView::createAllWidgets(QDomElement docElem,
             else if (node.nodeName()=="Visual")
             {
                 if (WWidget::selectNodeInt(node, "Channel")==1 && m_pVisualCh1!=0) {
-                    ((WVisualWaveform *)m_pVisualCh1)->setup(node);
-                    ((WVisualWaveform *)m_pVisualCh1)->resetColors();
-                    ((WVisualWaveform *)m_pVisualCh1)->show();
-                    ((WVisualWaveform *)m_pVisualCh1)->repaint();
+		    if(m_bVisualWaveform) {
+			((WVisualWaveform *)m_pVisualCh1)->setup(node);
+			((WVisualWaveform *)m_pVisualCh1)->resetColors();
+			((WVisualWaveform *)m_pVisualCh1)->show();
+			((WVisualWaveform *)m_pVisualCh1)->repaint();
+		    } else {
+			((WVisualSimple *)m_pVisualCh1)->setup(node);
+			((WVisualSimple *)m_pVisualCh1)->show();
+			((WVisualSimple *)m_pVisualCh1)->repaint();
+		    }
                 }
                 else if (WWidget::selectNodeInt(node, "Channel")==1 && m_pVisualCh1==0)
                 {
@@ -542,10 +548,16 @@ void MixxxView::createAllWidgets(QDomElement docElem,
                 }
 
                 if (WWidget::selectNodeInt(node, "Channel")==2 && m_pVisualCh2!=0) {
-                    ((WVisualWaveform *)m_pVisualCh2)->setup(node);
-                    ((WVisualWaveform *)m_pVisualCh2)->resetColors();
-                    ((WVisualWaveform *)m_pVisualCh2)->show();
-                    ((WVisualWaveform *)m_pVisualCh2)->repaint();
+		    if(m_bVisualWaveform) {
+			((WVisualWaveform *)m_pVisualCh2)->setup(node);
+			((WVisualWaveform *)m_pVisualCh2)->resetColors();
+			((WVisualWaveform *)m_pVisualCh2)->show();
+			((WVisualWaveform *)m_pVisualCh2)->repaint();
+		    } else {
+			((WVisualSimple *)m_pVisualCh2)->setup(node);
+			((WVisualSimple *)m_pVisualCh2)->show();
+			((WVisualSimple *)m_pVisualCh2)->repaint();
+		    }
                 }
                 else if (WWidget::selectNodeInt(node, "Channel")==2 && m_pVisualCh2==0)
                 {
