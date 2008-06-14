@@ -891,32 +891,35 @@ void WTrackTableView::dropEvent(QDropEvent * event)
 {
     if (event->mimeData()->hasUrls()) {
 		QList<QUrl> urls(event->mimeData()->urls());
-		QUrl url = urls.first();
+		QUrl url;
         
-        //Drag and drop within this widget (track reordering)
-        if (event->source() == this && event->possibleActions() & Qt::MoveAction)
+        foreach (url, urls)
         {
-            qDebug() << "FIXME: Do track reordering in" << __FILE__ << " line" << __LINE__;
-            
-            //These are lines of code that might be helpful in order to accomplish this.
-            //QModelIndex index = m_selectedIndices.at(this->rowAt(event->pos().y()));
-            //TrackInfoObject * pTrack = m_pTrackCollection->getTrack(url.path());
-            //m_pTrack->getActivePlaylist()->remove(pTrack);
-            //m_pTrack->getActivePlaylist()->insertAt(index.row(), pTrack);
-
-            //m_pTrack->getPlaylists()->removeAt(index.row());
-                       
-            return;
+            //Drag and drop within this widget (track reordering)
+            if (event->source() == this && event->possibleActions() & Qt::MoveAction)
+            {
+                qDebug() << "FIXME: Do track reordering in" << __FILE__ << " line" << __LINE__;
+                
+                //These are lines of code that might be helpful in order to accomplish this.
+                //QModelIndex index = m_selectedIndices.at(this->rowAt(event->pos().y()));
+                //TrackInfoObject * pTrack = m_pTrackCollection->getTrack(url.path());
+                //m_pTrack->getActivePlaylist()->remove(pTrack);
+                //m_pTrack->getActivePlaylist()->insertAt(index.row(), pTrack);
+    
+                //m_pTrack->getPlaylists()->removeAt(index.row());
+                           
+                return;
+            }
+    
+            //Add the track(s) to the active playlist, unless it's a weird
+            //playlist like the promo tracks or ipod one.
+            if (!m_dndTableModeBlacklist.contains(getTableMode()))
+                m_pTrack->getActivePlaylist()->addTrack(url.path());        
         }
-		
+	
         event->acceptProposedAction();
-		//emit(trackDropped(name));
-		
-		//Add the track(s) to the active playlist, unless it's a weird
-        //playlist like the promo tracks or ipod one.
-        if (!m_dndTableModeBlacklist.contains(getTableMode()))
-            m_pTrack->getActivePlaylist()->addTrack(url.path());
-		
+        //emit(trackDropped(name));    
+    	
         repaintEverything();
     } else
         event->ignore();
