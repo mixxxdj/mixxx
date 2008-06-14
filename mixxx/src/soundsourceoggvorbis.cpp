@@ -49,7 +49,6 @@ SoundSourceOggVorbis::SoundSourceOggVorbis(QString qFilename)
 : SoundSource(qFilename)
 , dest (0)
 , pRead(0)
-, m_seekable(true)
 {
     QByteArray qBAFilename = qFilename.toUtf8();
     vorbisfile =  fopen(qBAFilename.data(), "r");
@@ -87,7 +86,7 @@ SoundSourceOggVorbis::SoundSourceOggVorbis(QString qFilename)
         filelength = (unsigned long) ov_pcm_total(&vf, -1) * 2;
         if (filelength == OV_EINVAL)
         {
-            m_seekable = false;
+            //The file is not seekable. Not sure if any action is needed.
         }
     }
 }
