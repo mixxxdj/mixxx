@@ -70,7 +70,13 @@ public:
 protected:
     /** Main thread loop */
     void run();
-
+    /** Calculate the BPM using the SoundTouch algorithm */
+    void calculateBPMSoundTouch(TrackInfoObject *pTrackInfoObject, BpmReceiver * pBpmReceiver,
+                                BpmScheme * pScheme);
+    /** Calculate the BPM of a track using Tue/Ken's original algorithm (we think that's what this is),
+      *  which was used in Mixxx < 1.5.0. */
+    void calculateBPMTue(TrackInfoObject *pTrackInfoObject, BpmReceiver * pBpmReceiver,
+                         BpmScheme * pScheme);
     /** Queue holding files to generate a summary for */
     Q3PtrQueue<BpmDetectionPackage> m_qQueue;
     /** Mutex controlling access to m_qQueue */
