@@ -72,7 +72,7 @@ public:
     TrackPlaylist* getPlaylistByIndex(int index);
 
 #ifdef __IPOD__
-    /** The promo tracks playlist */
+    /** The ipod tracks playlist */
     TrackPlaylist m_qIPodPlaylist;
 #endif
 
