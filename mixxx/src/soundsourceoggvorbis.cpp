@@ -49,6 +49,7 @@ SoundSourceOggVorbis::SoundSourceOggVorbis(QString qFilename)
 : SoundSource(qFilename)
 , dest (0)
 , pRead(0)
+, m_seekable(true)
 {
     QByteArray qBAFilename = qFilename.toUtf8();
     vorbisfile =  fopen(qBAFilename.data(), "r");
@@ -84,6 +85,10 @@ SoundSourceOggVorbis::SoundSourceOggVorbis(QString qFilename)
         }
 
         filelength = (unsigned long) ov_pcm_total(&vf, -1) * 2;
+        if (filelength == OV_EINVAL)
+        {
+            m_seekable = false;
+        }
     }
 }
 
@@ -168,7 +173,7 @@ int SoundSourceOggVorbis::ParseHeader( TrackInfoObject * Track )
 {
     QString filename = Track->getLocation();
     QByteArray qBAFilename = filename.toUtf8();
-    vorbis_comment * comment;
+    vorbis_comment *comment = NULL;
     OggVorbis_File vf;
 
     FILE * vorbisfile = fopen(qBAFilename.data(), "r");
@@ -188,6 +193,8 @@ int SoundSourceOggVorbis::ParseHeader( TrackInfoObject * Track )
     }
 
     comment = ov_comment(&vf, -1);
+    if (comment == NULL)
+        return ERR;
 
     if (QString(vorbis_comment_query(comment, "title", 0)).length()!=0)
         Track->setTitle(vorbis_comment_query(comment, "title", 0));
@@ -195,7 +202,7 @@ int SoundSourceOggVorbis::ParseHeader( TrackInfoObject * Track )
         Track->setArtist(vorbis_comment_query(comment, "artist", 0));
     if (QString(vorbis_comment_query(comment, "TBPM", 0)).length()!=0) {
         float bpm = str2bpm(vorbis_comment_query(comment, "TBPM", 0));
-        if(bpm > 0) {
+        if(bpm > 0.0f) {
             Track->setBpm(bpm);
             Track->setBpmConfirm(true);
         }
@@ -203,13 +210,24 @@ int SoundSourceOggVorbis::ParseHeader( TrackInfoObject * Track )
     Track->setHeaderParsed(true);
 
     Track->setType("ogg");
-    Track->setDuration((int)ov_time_total(&vf, -1));
+    int duration = (int)ov_time_total(&vf, -1);
+    if (duration == OV_EINVAL)
+        return ERR;
+    Track->setDuration(duration);
     Track->setBitrate(ov_bitrate(&vf, -1)/1000);
 
-    vorbis_info * vi=ov_info(&vf,-1);
-    Track->setSampleRate(vi->rate);
-    Track->setChannels(vi->channels);
-
+    vorbis_info *vi=ov_info(&vf,-1);
+    if (vi)
+    {
+        Track->setSampleRate(vi->rate);
+        Track->setChannels(vi->channels);
+    }
+    else
+    {
+        ov_clear(&vf);
+        return ERR;
+    }
+    
     ov_clear(&vf);
     return OK;
 }
