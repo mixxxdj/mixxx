@@ -368,7 +368,7 @@ void BpmDetector::run()
                 pScheme = package->_Scheme;
                 delete package;
             }
-            m_qMutex.unlock();
+            m_qMutex.unlock(); 
 
 
 
