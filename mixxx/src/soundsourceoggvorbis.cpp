@@ -23,8 +23,14 @@
 #endif
 
 #ifdef __MACX__
-#define OV_ENDIAN_ARG 1
+#include <endian.h>
+#if __BYTE_ORDER == __LITTLE_ENDIAN
+#define OV_ENDIAN_ARG 0
 #else
+#define OV_ENDIAN_ARG 1
+#endif
+#endif
+
 #ifdef __LINUX__
 #include <endian.h>
 #if __BYTE_ORDER == __LITTLE_ENDIAN
