@@ -222,7 +222,8 @@ long SoundSourceMp3::seek(long filepos)
         }
 
         // Synthesize the the samples from the frame which should be discard to reach the requested position
-        discard(filepos-cur->pos);
+        if (cur) //the "if" prevents crashes on bad files.
+            discard(filepos-cur->pos);
     }
 /*
     else
