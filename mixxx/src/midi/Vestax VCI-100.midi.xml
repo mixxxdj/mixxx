@@ -88,8 +88,7 @@
     <midino>16</midino>                                                                 
     <options><spread64/></options>                                                                      
     <sensitivity>50</sensitivity>                                                                       
-    <translations><range lower="63" upper="65">64</range></ 
-translations>                                                                   
+    <translations><range lower="63" upper="65">64</range></translations>
 </control>
                                                                 
 <control>                                                                       
@@ -226,8 +225,7 @@ translations>
     <midino>17</midino>                                                                 
     <options><spread64/></options>                                                                      
     <sensitivity>50</sensitivity>                                                                       
-    <translations><range lower="63" upper="65">64</range></ 
-translations>                                                                   
+    <translations><range lower="63" upper="65">64</range></translations>
 </control>
                                                                 
 <control>                                                                       
