@@ -1,7 +1,7 @@
 #include <qstringlist.h>
 
 #include <QUrl>
-#include <QDebug> 
+#include <QDebug>
 
 #include "wtracktablemodel.h"
 #include "wpromotracksmodel.h"
@@ -18,7 +18,7 @@
 WPromoTracksModel::WPromoTracksModel(QObject * parent) : WTrackTableModel(parent)
 {
    //FIXME This causes terrible things, don't know why
-    
+
     setHeaderData(MIXXX_PROMO_COL_ARTIST ,Qt::Horizontal, tr("Artist"));
     setHeaderData(MIXXX_PROMO_COL_TITLE, Qt::Horizontal, tr("Title"));
     setHeaderData(MIXXX_PROMO_COL_LENGTH, Qt::Horizontal, tr("Length"));
@@ -38,7 +38,7 @@ int WPromoTracksModel::columnCount(const QModelIndex &parent) const
 
 QVariant WPromoTracksModel::data(const QModelIndex &index, int role) const
 {
-    TrackInfoObject *m_pTrackInfo = m_pTrackPlaylist->getTrackAt(index.row());
+    TrackInfoObject *m_pTrackInfo = m_pTrackPlaylist->at(index.row());
 
     if (!index.isValid())
         return QVariant();
@@ -57,10 +57,10 @@ QVariant WPromoTracksModel::data(const QModelIndex &index, int role) const
         case MIXXX_PROMO_COL_BPM: return m_pTrackInfo->getBpmStr();
         case MIXXX_PROMO_COL_URL: return m_pTrackInfo->getURL();
         //case COL_COMMENT: return m_pTrackInfo->getComment();
-		default: 
-			qDebug() << "index.column =" << index.column(); 
+		default:
+			qDebug() << "index.column =" << index.column();
 			Q_ASSERT(FALSE);	//we should never get here
-			return QVariant();	
+			return QVariant();
         }
     }
     else
@@ -96,7 +96,7 @@ QVariant WPromoTracksModel::headerData(int section, Qt::Orientation orientation,
         //    return QString("Comment");
 		default:
 			//this is a nasty error for the user to see, but its better than a crash and should help with debugging
-            return QString("ERROR: WPromoTracksModel::headerData Invalid section parameter");	
+            return QString("ERROR: WPromoTracksModel::headerData Invalid section parameter");
         }
     }
     else
@@ -109,7 +109,7 @@ bool WPromoTracksModel::setData(const QModelIndex &index, const QVariant &value,
 {
     if (index.isValid() && role == Qt::EditRole)
     {
-        TrackInfoObject * m_pTrackInfo = m_pTrackPlaylist->getTrackAt(index.row());
+        TrackInfoObject * m_pTrackInfo = m_pTrackPlaylist->at(index.row());
 
         switch(index.column())
         {
@@ -119,7 +119,7 @@ bool WPromoTracksModel::setData(const QModelIndex &index, const QVariant &value,
         emit dataChanged(index, index);
         return true;
     }
-    
+
     return false;
 }
 

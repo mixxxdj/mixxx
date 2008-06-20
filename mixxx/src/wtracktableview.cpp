@@ -29,7 +29,7 @@
 
 #include "dlgbpmtap.h"
 
-/* TODO
+/* CTAF's TODO list
  * remove color attribute from tracktablemodel (not used, and not at their place)
  * move playlist model instance from track to here?
  * refresh the QDirModel
@@ -50,19 +50,19 @@ WTrackTableView::WTrackTableView(QWidget * parent, ConfigObject<ConfigValue> * p
     setSelectionBehavior(SelectRows);
     setSelectionMode(QAbstractItemView::ExtendedSelection);
     viewport()->setAcceptDrops(true);
-  
+
     //Drag and drop setup
     setDragEnabled(true);
     setDragDropMode(QAbstractItemView::DragDrop);
     setDropIndicatorShown(true);
     setAcceptDrops(true);
-    
+
     //Blacklist whatever table modes we don't want to allow drag-and-drop to:
     m_dndTableModeBlacklist.append(TABLE_MODE_PROMO);
     m_dndTableModeBlacklist.append(TABLE_MODE_IPOD);
     m_dndTableModeBlacklist.append(TABLE_MODE_PLAYLISTS);
     m_dndTableModeBlacklist.append(TABLE_MODE_BROWSE);
-    
+
     setWordWrap(false);
     setVerticalScrollBarPolicy (Qt::ScrollBarAlwaysOn);
     setShowGrid(false);
@@ -296,7 +296,7 @@ void WTrackTableView::slotMouseDoubleClicked(const QModelIndex & index)
 			}
 
     		m_selectedDirTrackNames.append(m_pDirModel->filePath(temp_dirindex));
-			
+
 			if (ControlObject::getControl(ConfigKey("[Channel1]","play"))->get()!=1.)
 		        this->slotLoadPlayer1();
 		    else if (ControlObject::getControl(ConfigKey("[Channel2]","play"))->get()!=1.)
@@ -311,8 +311,8 @@ void WTrackTableView::slotMouseDoubleClicked(const QModelIndex & index)
     {
         // Know we aren't in browse mode now, so use this mapping.
         QModelIndex temp_sindex = m_pSearchFilter->mapToSource(index);
-        TrackInfoObject* pTrackInfoObject = m_pTable->m_pTrackPlaylist->getTrackAt(temp_sindex.row());
-	
+        TrackInfoObject* pTrackInfoObject = m_pTable->m_pTrackPlaylist->at(temp_sindex.row());
+
 		//Show the BPM tap/track editor dialog.
 		//showBPMTapDlg(pTrackInfoObject);
 
@@ -322,7 +322,7 @@ void WTrackTableView::slotMouseDoubleClicked(const QModelIndex & index)
 		}
 
 		m_selectedTrackInfoObjects.append(pTrackInfoObject);
-		
+
 		if (ControlObject::getControl(ConfigKey("[Channel1]","play"))->get()!=1.)
             this->slotLoadPlayer1();
         else if (ControlObject::getControl(ConfigKey("[Channel2]","play"))->get()!=1.)
@@ -337,10 +337,10 @@ void WTrackTableView::slotMouseDoubleClicked(const QModelIndex & index)
 		//QModelIndex temp_sindex = m_pSearchFilter->mapToSource(index);
 		//TrackPlaylist* selectedPlaylist = m_pTrack->getPlaylistByIndex(temp_sindex.row());
 		//qDebug() << index.row() << temp_sindex.row();
-		
+
 		qDebug() << index.row();
 		TrackPlaylist* selectedPlaylist = m_pTrack->getPlaylistByIndex(index.row());
-		
+
 		m_pTrack->slotShowPlaylist(selectedPlaylist);
     }
 }
@@ -372,7 +372,7 @@ QDirModel* WTrackTableView::getDirModel()
 }
 
 void WTrackTableView::slotShowBPMTapDlg()
-{	
+{
 	Q_ASSERT(m_selectedTrackInfoObjects.count() > 0);
 	slotShowBPMTapDlg(m_selectedTrackInfoObjects.at(0));
 }
@@ -495,7 +495,7 @@ void WTrackTableView::contextMenuEvent(QContextMenuEvent * event)
                  m_iTableMode == TABLE_MODE_IPOD) //Regular library mode menu
         {
             QModelIndex temp_sindex = m_pSearchFilter->mapToSource(index);
-            m_selectedTrackInfoObjects.append(m_pTable->m_pTrackPlaylist->getTrackAt(temp_sindex.row()));
+            m_selectedTrackInfoObjects.append(m_pTable->m_pTrackPlaylist->at(temp_sindex.row()));
         }
         else if (m_iTableMode == TABLE_MODE_PLAYLISTS)
         {
@@ -515,7 +515,7 @@ void WTrackTableView::contextMenuEvent(QContextMenuEvent * event)
 
     //Populate it with various action items depending on what mode the table is in
     menu.addAction(PlayQueueAct);
-	
+
     if (m_iTableMode == TABLE_MODE_LIBRARY ||
         m_iTableMode == TABLE_MODE_PLAYQUEUE ||
         m_iTableMode == TABLE_MODE_BROWSE ||
@@ -530,7 +530,7 @@ void WTrackTableView::contextMenuEvent(QContextMenuEvent * event)
 
         //Add the "Add to Playlist" menu.
 		menu.addMenu(&addToPlaylists);
-		
+
 		//Fill the "Add to... playlists" menu with the names of the playlists
 		for (int i = 0; i < PlaylistActs.size(); i++)
 		{
@@ -539,7 +539,7 @@ void WTrackTableView::contextMenuEvent(QContextMenuEvent * event)
 
         menu.addAction(PropertiesAct);
     }
-	
+
 	//Show the "Rename..." option for the playlists view.
 	if (m_iTableMode == TABLE_MODE_PLAYLISTS)
 	{
@@ -582,7 +582,7 @@ void WTrackTableView::contextMenuEvent(QContextMenuEvent * event)
 
     //Gray out "Remove" in BROWSE mode
     if (m_iTableMode == TABLE_MODE_BROWSE)
-	{	
+	{
         RemoveAct->setEnabled(false);
 		PropertiesAct->setEnabled(false);
 
@@ -623,18 +623,18 @@ void WTrackTableView::createActions()
 
     VisitWebsiteAct = new QAction(tr("Visit Website..."), this);
     connect(VisitWebsiteAct, SIGNAL(triggered()), this, SLOT(slotVisitWebsite()));
-	
+
 	//Create all the "send to->playlist" actions.
 	if (m_pTrack)
 		updatePlaylistActions();
-	
+
 }
 
 /** Shows the "Rename Playlist" input dialog */
 void WTrackTableView::slotShowPlaylistRename()
 {
 	bool ok;
-	
+
 	if (m_iTableMode == TABLE_MODE_PLAYLISTS)
     {
         for (int i = 0; i < m_selectedPlaylists.count(); i++)
@@ -646,8 +646,8 @@ void WTrackTableView::slotShowPlaylistRename()
                                           m_selectedPlaylists.at(i)->getName(), &ok);
      		if (ok && !text.isEmpty())
          		m_selectedPlaylists.at(i)->setListName(text);
-         	   	
-        	
+
+
         	//m_pTrack->slotSendToPlayqueue(m_selectedPlaylists.at(i));
         }
 
@@ -659,30 +659,30 @@ void WTrackTableView::slotShowPlaylistRename()
 void WTrackTableView::updatePlaylistActions()
 {
 	QAction* cur_action = NULL;
-	
+
 	//Clear and free any existing playlist QActions
 	while (!PlaylistActs.isEmpty())
 	{
 		cur_action = PlaylistActs.takeLast();
 		delete cur_action;
 	}
-	
+
 	//Get the list of playlists
 	TrackPlaylistList* playlists = m_pTrack->getPlaylists();
-		
+
 	//Make sure it's not NULL
 	Q_ASSERT(playlists != NULL);
-	
+
 	//Make sure it's not empty (QLists can be strange sometimes when they're empty)
 	if (playlists->isEmpty())
 	{
 		qDebug() << "No playlists, returning";
 		return;
 	}
-	
+
 	QString qPlaylistName;
 	QAction* sendToPlaylistAction;
-	
+
 	//Create a send-to action for each playlist.
 	for (int i = 0; i < playlists->count(); i++)
 	{
@@ -690,12 +690,12 @@ void WTrackTableView::updatePlaylistActions()
 		{
 			qPlaylistName = playlists->at(i)->getName();
 			//qDebug() << "Iterated:" << qPlaylistName;
-		
+
 			//Create a new action for this playlist
 			sendToPlaylistAction = new QAction(qPlaylistName, this);
 			sendToPlaylistAction->setData(QVariant((qlonglong)playlists->at(i)));
 			PlaylistActs.append(sendToPlaylistAction);
-		
+
 			//Connect this action to some sendtoplaylist(name) action.
 			connect(sendToPlaylistAction, SIGNAL(triggered()), this, SLOT(slotSendToPlaylist()));
 		}
@@ -704,8 +704,8 @@ void WTrackTableView::updatePlaylistActions()
 			qDebug() << "NULL playlist detected in" << __FILE__ << "at line:" << __LINE__;
 		}
 	}
-	
-	
+
+
 }
 
 void WTrackTableView::setTrack(Track * pTrack)
@@ -783,7 +783,7 @@ void WTrackTableView::slotSendToPlaylist()
 {
 	TrackPlaylist* playlist;
 	int playlist_ptr;
-	
+
 	//This is terrible, but necessary. We look back at the sender that sent the signal, try to cast it to a QAction,
 	//then look at the QAction's "data" member to get the pointer to the playlist.
 	if (QAction *act = qobject_cast<QAction *>(sender())) {
@@ -795,7 +795,7 @@ void WTrackTableView::slotSendToPlaylist()
 		qDebug() << "FIXME: slotSendToPlaylist() is only implemented for QActions in" << __FILE__ "on line:" << __LINE__;
 		return;
 	}
-	
+
     if (m_iTableMode == TABLE_MODE_BROWSE) //Browse mode
     {
         for (int i = 0; i < m_selectedDirTrackNames.count(); i++) {
@@ -812,27 +812,27 @@ void WTrackTableView::slotSendToPlaylist()
     	for (int i = 0; i < m_selectedTrackInfoObjects.count(); i++) {
         	m_pTrack->slotSendToPlaylist(playlist, m_selectedTrackInfoObjects.at(i));
         }
-    }	
+    }
 }
 
 void WTrackTableView::slotRemove()
 {
+    //Get the indices of the selected rows.
+    m_selectedIndices = this->selectionModel()->selectedRows();
+
     if (m_iTableMode == TABLE_MODE_PLAYLISTS)
     {
-	//Get the indices of the selected rows.
-    	m_selectedIndices = this->selectionModel()->selectedRows();
-
     	for (int i = 0; i < m_selectedIndices.count(); i++)
     	{
     		QModelIndex index = m_selectedIndices.at(i);
         	m_pTrack->getPlaylists()->removeAt(index.row());
-        	
+
         	//FIXME: The approach above probably won't work when sorting is fixed in the
         	//		 playlists view.
         	//		 Something like this may or may not work instead:
         	//m_pTrack->getPlaylists()->removeAll(m_pTrack->getPlaylistByIndex(index.row()));
         }
-		
+
 		updatePlaylistActions(); //Update the right-click menu's list of playlists.
 		repaintEverything(); //For good luck
     }
@@ -842,10 +842,13 @@ void WTrackTableView::slotRemove()
     }
     else //Library mode, play queue mode, etc.
     {
-        for (int i = 0; i < m_selectedIndices.count(); i++)
+        //Iterate backwards to make sure we remove the bottom rows first. This
+        //prevents the model indices from changing as we remove rows.
+        for (int i = m_selectedIndices.count() - 1; i >= 0 ; i--)
         {
         	QModelIndex index = m_selectedIndices.at(i);
-        	m_pTable->removeRow(index.row() - i );
+            QModelIndex filteredIndex = m_pSearchFilter->mapToSource(index);
+        	m_pTable->removeRow(filteredIndex.row());
         	//qDebug() << "Removed row" << index.row() - i;
         }
     }
@@ -870,7 +873,7 @@ void WTrackTableView::dragEnterEvent(QDragEnterEvent * event)
     if (event->mimeData()->hasUrls())
     {
         event->acceptProposedAction();
-    }   
+    }
 }
 
 /** Drag move event, happens when a dragged item hovers over the track table view...
@@ -892,35 +895,94 @@ void WTrackTableView::dropEvent(QDropEvent * event)
     if (event->mimeData()->hasUrls()) {
 		QList<QUrl> urls(event->mimeData()->urls());
 		QUrl url;
-        
-        foreach (url, urls)
+
+        //Handle drag-and-drop unless we're on a weird
+        //playlist like the promo tracks or ipod one.
+        if (m_dndTableModeBlacklist.contains(getTableMode()))
         {
-            //Drag and drop within this widget (track reordering)
-            if (event->source() == this && event->possibleActions() & Qt::MoveAction)
-            {
-                qDebug() << "FIXME: Do track reordering in" << __FILE__ << " line" << __LINE__;
-                
-                //These are lines of code that might be helpful in order to accomplish this.
-                //QModelIndex index = m_selectedIndices.at(this->rowAt(event->pos().y()));
-                //TrackInfoObject * pTrack = m_pTrackCollection->getTrack(url.path());
-                //m_pTrack->getActivePlaylist()->remove(pTrack);
-                //m_pTrack->getActivePlaylist()->insertAt(index.row(), pTrack);
-    
-                //m_pTrack->getPlaylists()->removeAt(index.row());
-                           
-                return;
-            }
-    
-            //Add the track(s) to the active playlist, unless it's a weird
-            //playlist like the promo tracks or ipod one.
-            if (!m_dndTableModeBlacklist.contains(getTableMode()))
-                m_pTrack->getActivePlaylist()->addTrack(url.path());        
+            event->ignore();
+            return;
         }
-	
+
+        //Drag and drop within this widget (track reordering)
+        if (event->source() == this && event->possibleActions() & Qt::MoveAction)
+        {
+            m_selectedIndices = this->selectionModel()->selectedRows();
+
+            QList<TrackInfoObject*> selectedTracks;
+
+            //The model indices are sorted so that we remove the tracks from the table
+            //in ascending order. This is necessary because if track A is above track B in
+            //the table, and you remove track A, the model index for track B will change.
+            //Sorting the indices first means we don't have to worry about this.
+            qSort(m_selectedIndices);
+
+            //Going through the model indices in descending order (see above comment for explanation).
+            for (int i = m_selectedIndices.count() - 1; i >= 0 ; i--)
+            {
+                //All the funky "+/- i" math in the next block of code is because when you
+                //remove a row, you move the rows below it up. Similarly, when you insert a row,
+                //you move the rows below it down.
+                QModelIndex srcIndex = m_selectedIndices.at(i);
+                QModelIndex filteredSrcIndex = m_pSearchFilter->mapToSource(srcIndex);
+                TrackInfoObject *pTrack = m_pTrack->getActivePlaylist()->at(srcIndex.row());
+                if (m_pTable->removeRow(srcIndex.row()))
+                {
+                    selectedTracks.append(pTrack);
+                }
+            }
+
+            //Reset the indices which are selected (ie. temporarily say that no tracks are selected)
+            m_selectedIndices.clear();
+            this->selectionModel()->clear();
+
+            for (int i = 0; i < selectedTracks.count(); i++)
+            {
+                QModelIndex destIndex = this->indexAt(event->pos());
+                QModelIndex filteredDestIndex = m_pSearchFilter->mapToSource(destIndex);
+                //Insert the row into the new spot
+                if (m_pTable->insertRow(filteredDestIndex.row(), selectedTracks.at(i)))
+                {
+                    this->selectionModel()->select(filteredDestIndex, QItemSelectionModel::Select |
+                                                                      QItemSelectionModel::Rows);
+                }
+                else
+                {
+                    //If we failed to insert the row, put it back to where it was before??
+                    //m_pTable->insertRow(srcIndex.row(), selectedTracks.at(i));
+                    qDebug() << "failed to insert at row" << filteredDestIndex.row();
+                }
+            }
+        }
+        else
+        {
+            //Reset the selected tracks (if you had any tracks highlighted, it clears them)
+            this->selectionModel()->clear();
+
+            //Drag-and-drop from an external application
+            //eg. dragging a track from Windows Explorer onto the track table.
+            foreach (url, urls)
+            {
+                QModelIndex destIndex = this->indexAt(event->pos());
+                //FIXME: Use search filter here? I'm not sure what the correct behaviour
+                //       should be when a track is dropped onto the table and there's an
+                //       active search filter.
+                TrackInfoObject* draggedTrack = m_pTrack->getTrackCollection()->getTrack(url.path());
+                if (draggedTrack) //Make sure the track was valid
+                {
+                    if (m_pTable->insertRow(destIndex.row(), draggedTrack))
+                    {
+                        this->selectionModel()->select(destIndex, QItemSelectionModel::Select |
+                                                                  QItemSelectionModel::Rows);
+                    }
+                }
+            }
+        }
+
         event->acceptProposedAction();
-        //emit(trackDropped(name));    
-    	
-        repaintEverything();
+        //emit(trackDropped(name));
+
+        //repaintEverything();
     } else
         event->ignore();
 }

@@ -42,7 +42,7 @@ int WIPodTracksModel::columnCount(const QModelIndex &parent) const
 
 QVariant WIPodTracksModel::data(const QModelIndex &index, int role) const
 {
-    TrackInfoObject *m_pTrackInfo = m_pTrackPlaylist->getTrackAt(index.row());
+    TrackInfoObject *m_pTrackInfo = m_pTrackPlaylist->at(index.row());
 
     if (!index.isValid())
         return QVariant();
@@ -64,7 +64,7 @@ QVariant WIPodTracksModel::data(const QModelIndex &index, int role) const
 	default:
           qDebug() << "index.column =" << index.column();
           Q_ASSERT(FALSE);    //we should never get here
-          return QVariant();	
+          return QVariant();
         }
     }
     else
@@ -98,7 +98,7 @@ QVariant WIPodTracksModel::headerData(int section, Qt::Orientation orientation, 
             return QString("Comment");
         default:
 	//this is a nasty error for the user to see, but its better than a crash and should help with debugging
-            return QString("ERROR: WIPodTracksModel::headerData Invalid section parameter");	
+            return QString("ERROR: WIPodTracksModel::headerData Invalid section parameter");
         }
     }
     else
@@ -111,7 +111,7 @@ bool WIPodTracksModel::setData(const QModelIndex &index, const QVariant &value, 
 {
     if (index.isValid() && role == Qt::EditRole)
     {
-        TrackInfoObject * m_pTrackInfo = m_pTrackPlaylist->getTrackAt(index.row());
+        TrackInfoObject * m_pTrackInfo = m_pTrackPlaylist->at(index.row());
 
         switch(index.column())
         {

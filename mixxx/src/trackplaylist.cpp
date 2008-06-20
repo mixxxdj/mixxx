@@ -31,24 +31,22 @@
 Track * TrackPlaylist::spTrack = 0;
 
 /** Note: if you use this, you MUST manually call playlist->setTrackCollection()... */
-TrackPlaylist::TrackPlaylist()
+TrackPlaylist::TrackPlaylist() : QObject(), QList<TrackInfoObject*>()
 {
 	m_pTrackCollection = NULL;
-	iCounter = 0;
 	m_qName = "Uninitialized playlist";
 	m_bStopLibraryScan = false;
 }
 
-TrackPlaylist::TrackPlaylist(TrackCollection * pTrackCollection, QString qName)
+TrackPlaylist::TrackPlaylist(TrackCollection * pTrackCollection, QString qName) : QObject(), QList<TrackInfoObject*>()
 {
     m_pTrackCollection = pTrackCollection;
     //m_pTable = 0;
     m_qName = qName;
-    iCounter = 0;
     m_bStopLibraryScan = false;
 }
 
-TrackPlaylist::TrackPlaylist(TrackCollection * pTrackCollection, QDomNode node)
+TrackPlaylist::TrackPlaylist(TrackCollection * pTrackCollection, QDomNode node): QObject(), QList<TrackInfoObject*>()
 {
     m_pTrackCollection = pTrackCollection;
     m_bStopLibraryScan = false;
@@ -70,7 +68,7 @@ void TrackPlaylist::loadFromXMLNode(QDomNode node)
 
 	//Set comment for playlist
 	m_qComment = XmlParse::selectNodeQString(node, "Comment");
-	
+
     // For each track...
     QDomNode idnode = XmlParse::selectNode(node, "List").firstChild();
     while (!idnode.isNull())
@@ -102,9 +100,9 @@ void TrackPlaylist::writeXML(QDomDocument &doc, QDomElement &header)
     XmlParse::addElement(doc, header, "Comment", m_qComment);
     QDomElement root = doc.createElement("List");
 
-    for(int i = 0; i < m_qList.size(); i++)
+    for(int i = 0; i < this->size(); i++)
     {
-        XmlParse::addElement(doc, root, "Id", QString("%1").arg(m_qList.at(i)->getId()));
+        XmlParse::addElement(doc, root, "Id", QString("%1").arg(this->at(i)->getId()));
     }
     header.appendChild(root);
 
@@ -114,14 +112,13 @@ void TrackPlaylist::writeXML(QDomDocument &doc, QDomElement &header)
 void TrackPlaylist::addTrack(TrackInfoObject * pTrack)
 {
     // Currently a track can only appear once in a playlist
-    if (m_qList.indexOf(pTrack)!=-1)
+    if (this->indexOf(pTrack)!=-1)
     {
     	qDebug() << "FIXME: Duplicate tracks not allowed in playlists.";
         return;
     }
 
-    m_qList.append(pTrack);
-    ++iCounter;
+    this->append(pTrack);
 
     // If this playlist is active, update WTableTrack
     //if (m_pTable)
@@ -146,16 +143,16 @@ void TrackPlaylist::addTrack(QString qLocation)
    {
     m_pTable = pTable;
 
-    m_pTable->setNumRows(m_qList.count());
+    m_pTable->setNumRows(this->count());
 
     int i=0;
-    TrackInfoObject *it = m_qList.first();
+    TrackInfoObject *it = this->first();
     while (it)
     {
         //qDebug() << "inserting in row " << i;
         it->insertInTrackTableRow(m_pTable, i);
 
-        it = m_qList.next();
+        it = this->next();
  ++i;
     }
 
@@ -173,12 +170,12 @@ void TrackPlaylist::addTrack(QString qLocation)
     {
         m_pTable->setNumRows(0);
 
-        TrackInfoObject *it = m_qList.first();
+        TrackInfoObject *it = this->first();
         while (it)
         {
             it->clearTrackTableRow();
                         qDebug() << "removing: " << it->getFilename();
-            it = m_qList.next();
+            it = this->next();
         }
     }
 
@@ -235,15 +232,18 @@ void TrackPlaylist::dumpInfo()
     qDebug() << "Song Count: " << getSongNum();
     qDebug() << "Listing Songs...";
 
+
+
+/*
     TrackCollection * tmpCollection = getCollection();
     qDebug() << "Collection Size: " << tmpCollection->getSize();
-    for(int i = 0; i < m_qList.count(); ++i)
+    for(int i = 0; i < this->count(); ++i)
     {
-        TrackInfoObject * tmpTrack = m_qList.at(i);
+        TrackInfoObject * tmpTrack = this->at(i);
 
         qDebug() << "[" << tmpTrack->getId() << "] " << tmpTrack->getTitle();
     }
-
+*/
     qDebug() << "*** End Playlist Dump ***";
 
 }
@@ -276,7 +276,7 @@ void TrackPlaylist::addPath(QString qPath)
     	return;
     }
     m_qLibScanMutex.unlock();
-	
+
     if (!dir.exists())
     {
         for(int i = 0; i < tempCollection->getSize(); i++)
@@ -353,34 +353,22 @@ void TrackPlaylist::addPath(QString qPath)
             {
                 /*qDebug() << "all tracks searched, file does not exist, adding...";*/
                 addTrack(fi.filePath());
-		emit(progressLoading(fi.fileName()));
+                emit(progressLoading(fi.fileName()));
             }
-	
+
         }
     }
 
     emit(finishedLoading());
 }
 
-void TrackPlaylist::slotRemoveTrack(TrackInfoObject * pTrack)
-{
-    m_qList.remove(pTrack);
-}
-
-void TrackPlaylist::clear()
-{
-    m_qList.clear();
-//    m_pTrackCollection->clear();
-}
-
-
 void TrackPlaylist::updateScores()
 {
     // Update the score column for each track
 
-    for(int i = 0; i < m_qList.size(); i++)
+    for(int i = 0; i < this->size(); i++)
     {
-        m_qList.at(i)->updateScore();
+        this->at(i)->updateScore();
     }
 }
 
@@ -391,7 +379,7 @@ QString TrackPlaylist::getName()
 
 TrackInfoObject * TrackPlaylist::getFirstTrack()
 {
-    return m_qList.first();
+    return this->first();
 }
 
 TrackCollection * TrackPlaylist::getCollection()
@@ -399,11 +387,14 @@ TrackCollection * TrackPlaylist::getCollection()
     return m_pTrackCollection;
 }
 
+/**
+ * FIXME: No longer needed?
+ */
 int TrackPlaylist::getIndexOf(int id)
 {
-    for(int i = 0; i < m_qList.count(); ++i)
+    for(int i = 0; i < this->count(); ++i)
     {
-        TrackInfoObject * tmpTrack = m_qList.at(i);
+        TrackInfoObject * tmpTrack = this->at(i);
 
         if(tmpTrack->getId() == id)
             return i;
@@ -411,19 +402,9 @@ int TrackPlaylist::getIndexOf(int id)
     return -1;
 }
 
-TrackInfoObject * TrackPlaylist::getTrackAt(int index)
-{
-    if(index < 0)
-        return NULL;
-
-    if(index >= m_qList.size())
-        return NULL;
-
-    return m_qList.at(index);
-}
 int TrackPlaylist::getSongNum()
 {
-    return m_qList.count();
+    return this->count();
 }
 
 QString TrackPlaylist::getComment()
@@ -439,88 +420,88 @@ void TrackPlaylist::sortByScore(bool ascending)
 {
     if(ascending)
     {
-        qStableSort(m_qList.begin(), m_qList.end(), ScoreLesser);
+        qStableSort(this->begin(), this->end(), ScoreLesser);
     }
     else
     {
-        qStableSort(m_qList.begin(), m_qList.end(), ScoreGreater);
+        qStableSort(this->begin(), this->end(), ScoreGreater);
     }
 }
 void TrackPlaylist::sortByTitle(bool ascending)
 {
     if(ascending)
     {
-        qStableSort(m_qList.begin(), m_qList.end(), TitleLesser);
+        qStableSort(this->begin(), this->end(), TitleLesser);
     }
     else
     {
-        qStableSort(m_qList.begin(), m_qList.end(), TitleGreater);
+        qStableSort(this->begin(), this->end(), TitleGreater);
     }
 }
 void TrackPlaylist::sortByArtist(bool ascending)
 {
     if(ascending)
     {
-        qStableSort(m_qList.begin(), m_qList.end(), ArtistLesser);
+        qStableSort(this->begin(), this->end(), ArtistLesser);
     }
     else
     {
-        qStableSort(m_qList.begin(), m_qList.end(), ArtistGreater);
+        qStableSort(this->begin(), this->end(), ArtistGreater);
     }
 }
 void TrackPlaylist::sortByType(bool ascending)
 {
     if(ascending)
     {
-        qStableSort(m_qList.begin(), m_qList.end(), TypeLesser);
+        qStableSort(this->begin(), this->end(), TypeLesser);
     }
     else
     {
-        qStableSort(m_qList.begin(), m_qList.end(), TypeGreater);
+        qStableSort(this->begin(), this->end(), TypeGreater);
     }
 }
 void TrackPlaylist::sortByDuration(bool ascending)
 {
     if(ascending)
     {
-        qStableSort(m_qList.begin(), m_qList.end(), DurationLesser);
+        qStableSort(this->begin(), this->end(), DurationLesser);
     }
     else
     {
-        qStableSort(m_qList.begin(), m_qList.end(), DurationGreater);
+        qStableSort(this->begin(), this->end(), DurationGreater);
     }
 }
 void TrackPlaylist::sortByBitrate(bool ascending)
 {
     if(ascending)
     {
-        qStableSort(m_qList.begin(), m_qList.end(), BitrateLesser);
+        qStableSort(this->begin(), this->end(), BitrateLesser);
     }
     else
     {
-        qStableSort(m_qList.begin(), m_qList.end(), BitrateGreater);
+        qStableSort(this->begin(), this->end(), BitrateGreater);
     }
 }
 void TrackPlaylist::sortByBpm(bool ascending)
 {
     if(ascending)
     {
-        qStableSort(m_qList.begin(), m_qList.end(), BpmLesser);
+        qStableSort(this->begin(), this->end(), BpmLesser);
     }
     else
     {
-        qStableSort(m_qList.begin(), m_qList.end(), BpmGreater);
+        qStableSort(this->begin(), this->end(), BpmGreater);
     }
 }
 void TrackPlaylist::sortByComment(bool ascending)
 {
     if(ascending)
     {
-        qStableSort(m_qList.begin(), m_qList.end(), CommentLesser);
+        qStableSort(this->begin(), this->end(), CommentLesser);
     }
     else
     {
-        qStableSort(m_qList.begin(), m_qList.end(), CommentGreater);
+        qStableSort(this->begin(), this->end(), CommentGreater);
     }
 }
 

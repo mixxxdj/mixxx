@@ -17,6 +17,7 @@ class TrackPlaylist;
 class TrackCollection;
 class DropActions;
 class QColor;
+class TrackInfoObject;
 
 class WTrackTableModel : public QAbstractTableModel
 {
@@ -33,6 +34,7 @@ public:
    	int rowCount(const QModelIndex &parent = QModelIndex()) const;
 
 	bool removeRows(int row, int count, const QModelIndex & parent = QModelIndex());
+	bool insertRow(int row, TrackInfoObject *m_pTrackInfo, const QModelIndex &parent = QModelIndex());
 	TrackPlaylist *m_pTrackPlaylist;
 	TrackCollection *m_pTrackCollection;
 

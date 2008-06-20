@@ -143,7 +143,7 @@ Track::Track(QString location, MixxxView * pView, ConfigObject<ConfigValue> *con
 #ifdef __IPOD__
          m_pIPodModel->setTrackPlaylist(&m_qIPodPlaylist);
 #endif
-        
+
         //If the TrackCollection appears to be empty (could be first run), then scan the library
         if (m_pTrackCollection->getSize() == 0)
         {
@@ -391,11 +391,11 @@ void Track::loadPromoTrackXMLData(QString xmlPath, QString promoDirPath)
 		return;
 	}
 	file.close();
-	
+
 	// print out the element names of all elements that are direct children
 	// of the outermost element.
 	QDomElement docElem = doc.documentElement();
-	
+
 	QDomNode n = docElem.firstChild();
 	while(!n.isNull()) {
 		QDomElement e = n.toElement(); // try to convert the node to an element.
@@ -418,7 +418,7 @@ void Track::loadPromoTrackXMLData(QString xmlPath, QString promoDirPath)
                     //newTrack->setComment(from XML)
                 }
             }
-				
+
 		}
 		n = n.nextSibling();
 	}
@@ -610,7 +610,7 @@ void Track::slotScanLibrary()
     QByteArray baElapsed = QString(time.elapsed()).toUtf8();
 
     #ifdef __C_METRICS__
-	
+
 	cm_writemsg_ascii(MIXXXCMETRICS_LIBRARY_SCAN_TIME,
 	                  baElapsed.data());
     #endif
@@ -858,7 +858,7 @@ void Track::slotSendToPlayqueue(TrackPlaylist* playlist)
 {
     for (int i = 0; i < playlist->getSongNum(); i++)
     {
-        m_qPlayqueuePlaylist.addTrack(playlist->getTrackAt(i));
+        m_qPlayqueuePlaylist.addTrack(playlist->at(i));
     }
 }
 
@@ -1203,7 +1203,7 @@ void Track::slotLoadSelectedTrackCh1(double v)
     if (v && m_pView->m_pTrackTableView->m_pTable) {
         // Fetch the currently selected track
         index = m_pView->m_pTrackTableView->m_pSearchFilter->mapToSource(m_pView->m_pTrackTableView->currentIndex());
-        pTrack = m_pView->m_pTrackTableView->m_pTable->m_pTrackPlaylist->getTrackAt(index.row());
+        pTrack = m_pView->m_pTrackTableView->m_pTable->m_pTrackPlaylist->at(index.row());
 	// If there is one, load it
 	if (pTrack) slotLoadPlayer1(pTrack);
     }
@@ -1217,7 +1217,7 @@ void Track::slotLoadSelectedTrackCh2(double v)
     if (v && m_pView->m_pTrackTableView->m_pTable) {
         // Fetch the currently selected track
         index = m_pView->m_pTrackTableView->m_pSearchFilter->mapToSource(m_pView->m_pTrackTableView->currentIndex());
-        pTrack = m_pView->m_pTrackTableView->m_pTable->m_pTrackPlaylist->getTrackAt(index.row());
+        pTrack = m_pView->m_pTrackTableView->m_pTable->m_pTrackPlaylist->at(index.row());
 	// If there is one, load it
         if (pTrack) slotLoadPlayer2(pTrack);
     }

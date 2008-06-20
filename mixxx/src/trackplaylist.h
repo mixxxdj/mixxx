@@ -51,7 +51,7 @@ bool CommentGreater(const TrackInfoObject *tio1, const TrackInfoObject *tio2);
 /**
 @author Tue Haste Andersen
 */
-class TrackPlaylist : public QObject
+class TrackPlaylist : public QObject, public QList<TrackInfoObject*>
 {
     Q_OBJECT
 public:
@@ -75,8 +75,6 @@ public:
     void activate(WTrackTable *pTable);
     /** Remove all tracks from the WTrackTable */
     void deactivate();
-    /** empty the playlist */
-    void clear();
     /** Get name of playlist */
     QString getListName();
     /** Get comment for playlist */
@@ -99,7 +97,6 @@ public:
     TrackInfoObject *getFirstTrack();
 	int getSongNum();
     int getIndexOf(int id);
-	TrackInfoObject *getTrackAt(int index);
 	TrackCollection *getCollection();
 
     /** Sort routines */
@@ -122,8 +119,6 @@ signals:
 public slots:
     /** Decode drop event and calls addPath */
     void slotDrop(QDropEvent *e);
-    /** Remove a track from the playlist */
-    void slotRemoveTrack(TrackInfoObject *pTrack);
     /** Cancel a library scan */
     void slotCancelLibraryScan();
 
@@ -132,20 +127,14 @@ protected:
     int operator<(TrackPlaylist * p2);
 
 private:
-    /** List of pointers to TrackInfoObjects */
-    QList<TrackInfoObject*> m_qList;
     /** Pointer to TrackCollection */
     TrackCollection *m_pTrackCollection;
-	TrackCollection *personalTrackCollection;
     /** Name of list */
     QString m_qName;
     /** Comment for playlist */
     QString m_qComment;
-    /** Pointer to WTrackTable. This is 0 if the playlist is not displayed in a table */
-    //WTrackTable *m_pTable;
     /** Static pointer to Track */
     static Track *spTrack;
-	int iCounter;
 	QMutex m_qLibScanMutex;
 	bool m_bStopLibraryScan;
 

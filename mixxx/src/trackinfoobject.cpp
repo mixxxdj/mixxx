@@ -93,7 +93,7 @@ TrackInfoObject::TrackInfoObject(const QString sPath, const QString sFile, BpmDe
 
     installEventFilter(this);
     iTemp = 0;
-    
+
     //qDebug() << "done constructing  TrackInfoObject....";
 }
 
@@ -663,7 +663,7 @@ QString TrackInfoObject::getFilepath() const
     m_qMutex.lock();
     QString sFilepath = m_sFilepath;
     m_qMutex.unlock();
-    
+
     return sFilepath;
 }
 QString TrackInfoObject::getComment() const
@@ -879,14 +879,14 @@ void TrackInfoObject::setWaveSummary(Q3MemArray<char> * pWave, Q3ValueList<long>
 TrackInfoObject * TrackInfoObject::getNext(TrackPlaylist * pPlaylist)
 {
     if (pPlaylist)
-        return pPlaylist->getTrackAt(pPlaylist->getIndexOf(getId())+1);
+        return pPlaylist->at(pPlaylist->getIndexOf(getId())+1);
     return NULL;
 }
 
 TrackInfoObject * TrackInfoObject::getPrev(TrackPlaylist * pPlaylist)
 {
     if (pPlaylist)
-        return pPlaylist->getTrackAt(pPlaylist->getIndexOf(getId())-1);
+        return pPlaylist->at(pPlaylist->getIndexOf(getId())-1);
     return NULL;
 }
 

@@ -43,7 +43,7 @@ int WTrackTableModel::columnCount(const QModelIndex &parent) const
 
 QVariant WTrackTableModel::data(const QModelIndex &index, int role) const
 {
-    TrackInfoObject * m_pTrackInfo = m_pTrackPlaylist->getTrackAt(index.row());
+    TrackInfoObject * m_pTrackInfo = m_pTrackPlaylist->at(index.row());
 
     if (!index.isValid())
         return QVariant();
@@ -66,7 +66,7 @@ QVariant WTrackTableModel::data(const QModelIndex &index, int role) const
 		default:
 			qDebug() << "index.column =" << index.column();
 			Q_ASSERT(FALSE);	//we should never get here
-			return QVariant();	
+			return QVariant();
         }
     }
 
@@ -101,7 +101,7 @@ QVariant WTrackTableModel::headerData(int section, Qt::Orientation orientation, 
             return QString("Comment");
 		default:
 			//this is a nasty error for the user to see, but its better than a crash and should help with debugging
-			return QString("ERROR: WTrackTableModel::headerData Invalid section parameter");	
+			return QString("ERROR: WTrackTableModel::headerData Invalid section parameter");
         }
     }
     else
@@ -128,7 +128,7 @@ bool WTrackTableModel::setData(const QModelIndex &index, const QVariant &value, 
 {
     if (index.isValid() && role == Qt::EditRole)
     {
-        TrackInfoObject * m_pTrackInfo = m_pTrackPlaylist->getTrackAt(index.row());
+        TrackInfoObject * m_pTrackInfo = m_pTrackPlaylist->at(index.row());
 
         switch(index.column())
         {
@@ -144,16 +144,34 @@ bool WTrackTableModel::setData(const QModelIndex &index, const QVariant &value, 
 bool WTrackTableModel::removeRows(int row, int count, const QModelIndex &parent)
 {
     Q_UNUSED(parent);
-    TrackInfoObject * m_pTrackInfo = m_pTrackPlaylist->getTrackAt(row);
+    //TrackInfoObject * pTrackInfo = m_pTrackPlaylist->at(row);
+
+    //Check bounds
     if (count <= 0 || row < 0 || (row + count) > rowCount(parent))
         return false;
 
     beginRemoveRows(QModelIndex(), row, row + count - 1);
 
     for (int r = 0; r < count; ++r)
-        m_pTrackPlaylist->slotRemoveTrack(m_pTrackInfo);
+        m_pTrackPlaylist->removeAt(row);
 
     endRemoveRows();
+    return true;
+}
+
+bool WTrackTableModel::insertRow(int row, TrackInfoObject *pTrackInfo, const QModelIndex &parent)
+{
+    Q_UNUSED(parent);
+
+    //Check bounds
+    if (row < 0 || row > rowCount(parent))
+        row = rowCount(parent);
+
+    beginInsertRows(QModelIndex(), row, row);
+
+    m_pTrackPlaylist->insert(row, pTrackInfo);
+
+    endInsertRows();
     return true;
 }
 
@@ -169,7 +187,7 @@ QMimeData *WTrackTableModel::mimeData(const QModelIndexList &indexes) const {
 
     foreach (QModelIndex index, indexes) {
         if (index.isValid()) {
-            TrackInfoObject * m_pTrackInfo = m_pTrackPlaylist->getTrackAt(index.row());
+            TrackInfoObject * m_pTrackInfo = m_pTrackPlaylist->at(index.row());
             QUrl url(QString(m_pTrackInfo->getLocation()));
             if (!url.isValid())
               qDebug() << "ERROR invalid url\n";
