@@ -52,6 +52,7 @@ class QModelIndex;
 class QDrag;
 class QMouseEvent;
 
+
 class WTrackTableView : public QTableView
 {
     Q_OBJECT
