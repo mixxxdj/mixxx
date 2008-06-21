@@ -78,7 +78,7 @@ SoundSourceMp3::SoundSourceMp3(QString qFilename) : SoundSource(qFilename)
         mad_timer_add (&filelength, Header.duration);
         bitrate += Header.bitrate;
         SRATE = Header.samplerate;
-        
+
         /**
         //Albert's attempt at fixing Garth's mp3-file-that's-really-an-html-file crash - May 4/08
         if (SRATE <= 0)
@@ -86,7 +86,7 @@ SoundSourceMp3::SoundSourceMp3(QString qFilename) : SoundSource(qFilename)
             qDebug() << "Warning: MP3 with corrupt samplerate in header, defaulting to 44100";
             SRATE = 44100;
         }**/
-        
+
         m_iChannels = MAD_NCHANNELS(&Header);
     }
     //qDebug() << "channels " << m_iChannels;
@@ -309,7 +309,9 @@ inline long unsigned SoundSourceMp3::length()
         break;
     default:             //By the MP3 specs, an MP3 _has_ to have one of the above samplerates...
         units = MAD_UNITS_44100_HZ;
-        qDebug() << "Warning: MP3 with corrupt samplerate, defaulting to 44100";
+        //qDebug() << "Warning: MP3 with corrupt samplerate, defaulting to 44100";
+        //FIXME: There's something funky going on here. This default case gets called always for some
+        //       reason, and I don't know why. -- Albert June 2008
         SRATE = 44100; //Prevents division by zero errors.
     }
 
@@ -345,13 +347,13 @@ unsigned long SoundSourceMp3::discard(unsigned long samples_wanted)
 	no = math_min(Synth.pcm.length,(samples_wanted-Total_samples_decoded)/2);
         Total_samples_decoded += 2*no;
     }
-    
+
     if (Synth.pcm.length > no)
 	rest = no;
     else
 	rest = -1;
 
-    
+
     return Total_samples_decoded;
 }
 
