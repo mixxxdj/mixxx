@@ -357,23 +357,13 @@ void Track::initPromoTracks()
         return;
     }
     QDir promoDir(m_pConfig->getConfigPath() + QString(MIXXX_PROMO_DIR));
-
-    QStringList qPromoFilenames = promoDir.entryList(QDir::Files | QDir::NoDotAndDotDot);
-    foreach (QString filename, qPromoFilenames)
-    {
-        qDebug() << "Found promo track:" << filename;
-        QString trackPath = promoDir.absolutePath() + "/" + filename;
-        m_qPromoPlaylist.addTrack(trackPath);
-        //NOTE: The absolutePath() in the above might be dangerous, I don't know - Albert
-   }
-    qDebug() << "Promo playlist has" << m_qPromoPlaylist.getSongNum() << "songs.";
-
-    //Load the extra metadata for these tracks from an XML file.
+	
+    //Load the extra metadata for these tracks from an XML file and import the promo tracks into the library.
     loadPromoTrackXMLData(promoDir.absolutePath() + "/" + "promo.xml",
                           promoDir.absolutePath());
 }
 
-/** Load the special promo track metadata from an XML file
+/** Load the special promo track metadata from an XML file. This function also imports these tracks.
  *  @param xmlPath The path to the XML metadata file.
  *  @param promoDirPath The path to the promo tracks directory.
  */
@@ -410,18 +400,23 @@ void Track::loadPromoTrackXMLData(QString xmlPath, QString promoDirPath)
                 //QString comment =
 
                 //Grab the track from the TrackCollection and add it's metadata...
-                TrackInfoObject *newTrack = m_pTrackCollection->getTrack(filename);
+                
+				TrackInfoObject *newTrack = m_pTrackCollection->getTrack(filename);
                 if (newTrack)
                 {
                     newTrack->setBpm(bpm);
                     newTrack->setURL(url);
                     //newTrack->setComment(from XML)
+					 m_qPromoPlaylist.append(newTrack);
                 }
             }
 
 		}
 		n = n.nextSibling();
 	}
+	
+	qDebug() << "Promo playlist has" << m_qPromoPlaylist.getSongNum() << "songs.";
+
 }
 
 bool Track::checkPromoDirExists()
@@ -517,7 +512,7 @@ void Track::writeXML(QString location)
                               0, "progress", TRUE );
     progress.show();
     int i = 0;
-
+	
     // Create the xml document:
     QDomDocument domXML( "Mixxx_Track_List" );
 
