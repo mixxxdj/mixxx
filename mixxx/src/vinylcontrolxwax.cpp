@@ -177,7 +177,7 @@ void VinylControlXwax::run()
             if((alive && !pitch_unavailable))
             {
                 //dVinylPitch = (dOldPitch * (XWAX_SMOOTHING - 1) + dVinylPitch) / XWAX_SMOOTHING;
-                qDebug() << "dVinylPosition: " << dVinylPosition << ", dVinylPitch: " << dVinylPitch << ", when: " << when;
+                //qDebug() << "dVinylPosition: " << dVinylPosition << ", dVinylPitch: " << dVinylPitch << ", when: " << when;
  
                 //FIXME (when Mark finished variable samplerates in timecoder)
                 //Hack to make other samplerates work with xwax:
@@ -210,12 +210,14 @@ void VinylControlXwax::run()
                     
                     //Useful debug message for tracking down the problem of the vinyl's position "drifting":
                     //qDebug() << "Ratio of vinyl's position and Mixxx's: " << fabs(dVinylPosition/filePosition);
-                                            
+                    
+                    /*
                     qDebug() << "dDriftControl: " << dDriftControl;
                     qDebug() << "Xwax says the time is: " << dVinylPosition;
                     qDebug() << "Mixxx says the time is: " << filePosition;
                     qDebug() << "dVinylPitch: " << dVinylPitch;
                     //qDebug() << "diff in positions:" << fabs(dVinylPosition - filePosition);                           
+                    */
                 }
                 else if (dVinylPosition > 0.0f) //Valid timecode, but we're in the timecode before the lead-in time...
                 {
