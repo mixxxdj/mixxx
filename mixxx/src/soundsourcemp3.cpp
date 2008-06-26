@@ -370,11 +370,14 @@ unsigned SoundSourceMp3::read(unsigned long samples_wanted, const SAMPLE * _dest
 
     SAMPLE * destination = (SAMPLE *)_destination;
     unsigned Total_samples_decoded = 0;
+    int i;
 
     // If samples are left from previous read, then copy them to start of destination
+    // Make sure to take into account the case where there are more samples left over 
+    // from the previous read than the client requested.
     if (rest > 0)
     {
-        for (int i=rest; i<Synth.pcm.length; i++)
+        for (i=rest; i<Synth.pcm.length && Total_samples_decoded < samples_wanted; i++)
         {
             // Left channel
             *(destination++) = madScale(Synth.pcm.samples[0][i]);
@@ -385,8 +388,17 @@ unsigned SoundSourceMp3::read(unsigned long samples_wanted, const SAMPLE * _dest
                 *(destination++) = madScale(Synth.pcm.samples[1][i]);
             else
                 *(destination++) = madScale(Synth.pcm.samples[0][i]);
+            // This is safe because we have Q_ASSERTed that samples_wanted is even.
+            Total_samples_decoded += 2; 
         }
-        Total_samples_decoded += 2*(Synth.pcm.length-rest);
+        if(Total_samples_decoded >= samples_wanted) {
+            if(i < Synth.pcm.length)
+                rest = i;
+            else 
+                rest = -1;
+            return Total_samples_decoded;
+        }
+
     }
 
 //     qDebug() << "Decoding";
@@ -429,7 +441,7 @@ unsigned SoundSourceMp3::read(unsigned long samples_wanted, const SAMPLE * _dest
 
 //         qDebug() << "synthlen " << Synth.pcm.length << ", remain " << (samples_wanted-Total_samples_decoded);
         no = math_min(Synth.pcm.length,(samples_wanted-Total_samples_decoded)/2);
-        for (int i=0; i<no; i++)
+        for (i=0; i<no; i++)
         {
             // Left channel
             *(destination++) = madScale(Synth.pcm.samples[0][i]);
