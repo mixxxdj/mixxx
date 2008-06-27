@@ -79,8 +79,10 @@ signals:
 protected:
     /** The actual value of the object */
     double m_dValue;
-    /** Mutex controlling access to value*/
+    /** Mutex controlling access to static members*/
     static QMutex m_sqMutex;
+    /** Mutex controlling access to non-static members*/
+    QMutex m_dataMutex;
     /** Pointer to corresponding ControlObject */
     ControlObject *m_pControlObject;
 

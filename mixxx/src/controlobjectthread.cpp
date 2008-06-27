@@ -25,9 +25,9 @@ QMutex ControlObjectThread::m_sqMutex;
 Q3PtrQueue<ControlObjectThread> ControlObjectThread::m_sqQueue;
 
 ControlObjectThread::ControlObjectThread(ControlObject * pControlObject)
+: m_dValue          (0.0)
+, m_pControlObject  (pControlObject)
 {
-    m_pControlObject = pControlObject;
-
     // Update associated ControlObject
     Q_ASSERT(m_pControlObject);
     m_pControlObject->addProxy(this);
@@ -41,7 +41,8 @@ ControlObjectThread::ControlObjectThread(ControlObject * pControlObject)
 
 ControlObjectThread::~ControlObjectThread()
 {
-    if (m_pControlObject) {
+    if (m_pControlObject) 
+    {
         // Our parent is still around, make sure it doesn't send us any more events
         m_pControlObject->removeProxy(this);
     }
@@ -49,47 +50,62 @@ ControlObjectThread::~ControlObjectThread()
 
 double ControlObjectThread::get()
 {
-    double v;
-    m_sqMutex.lock();
-    v = m_dValue;
-    m_sqMutex.unlock();
+    m_dataMutex.lock();
+    double v = m_dValue;
+    m_dataMutex.unlock();
+
     return v;
 }
 
 void ControlObjectThread::slotSet(double v)
 {
-    m_sqMutex.lock();
+    m_dataMutex.lock();
     m_dValue = v;
-    m_sqMutex.unlock();
+    m_dataMutex.unlock();
+
     updateControlObject();
 }
 
 bool ControlObjectThread::setExtern(double v)
 {
-    if (m_sqMutex.tryLock())
+    bool result = false;
+
+    if ( m_sqMutex.tryLock() )
     {
-        m_sqQueue.enqueue(this);
-        m_dValue = v;
-        m_sqMutex.unlock();
-        return true;
+        if( m_dataMutex.tryLock() )
+        {
+            m_sqQueue.enqueue(this);
+            m_dValue = v;
+            
+            m_dataMutex.unlock();
+            m_sqMutex.unlock();
+            
+            result = true;
+        }
+        else
+        {
+            m_sqMutex.unlock();
+        }
     }
-    return false;
+
+    return result;
 }
 
 bool ControlObjectThread::update()
 {
-    ControlObjectThread * p;
-    m_sqMutex.lock();
-    p = m_sqQueue.dequeue();
-    m_sqMutex.unlock();
+    bool result = false;
 
+    m_sqMutex.lock();
+    ControlObjectThread* p = m_sqQueue.dequeue();
+    m_sqMutex.unlock();
+    
     if (p)
     {
         p->emitValueChanged();
-        return true;
+        result = true;
     }
-    else
-        return false;
+    
+    return result;
 }
 
 void ControlObjectThread::emitValueChanged()
@@ -99,18 +115,18 @@ void ControlObjectThread::emitValueChanged()
 
 void ControlObjectThread::add(double v)
 {
-    m_sqMutex.lock();
+    m_dataMutex.lock();
     m_dValue += v;
-    m_sqMutex.unlock();
+    m_dataMutex.unlock();
 
     updateControlObject();
 }
 
 void ControlObjectThread::sub(double v)
 {
-    m_sqMutex.lock();
+    m_dataMutex.lock();
     m_dValue -= v;
-    m_sqMutex.unlock();
+    m_dataMutex.unlock();
 
     updateControlObject();
 }
@@ -120,13 +136,14 @@ void ControlObjectThread::updateControlObject()
     m_pControlObject->queueFromThread(get(), this);
 }
 
-void ControlObjectThread::slotParentDead() {
-
+void ControlObjectThread::slotParentDead() 
+{
     // Now we've got a chance of avoiding segfaults with judicious
     // use of if(m_pControlObject)
     m_pControlObject = 0;
 }
 
-ControlObject* ControlObjectThread::getControlObject() {
+ControlObject* ControlObjectThread::getControlObject() 
+{
    return m_pControlObject;
 }
