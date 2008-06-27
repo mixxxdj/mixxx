@@ -18,9 +18,9 @@
 #include "controlobject.h"
 #include "controlevent.h"
 
-
 ControlObjectThreadMain::ControlObjectThreadMain(ControlObject * pControlObject) : ControlObjectThread(pControlObject)
 {
+    setObjectName("ControlObjectThreadMain");
     installEventFilter(this);
 }
 
@@ -35,12 +35,11 @@ bool ControlObjectThreadMain::eventFilter(QObject * o, QEvent * e)
     {
         ControlEvent * ce = (ControlEvent *)e;
 
-        m_sqMutex.lock();
+        m_dataMutex.lock();
         m_dValue = ce->value();
-        m_sqMutex.unlock();
+        m_dataMutex.unlock();
 
         //qDebug() << "ControlEvent " << ce->value();
-
         emit(valueChanged(ce->value()));
     }
     else
