@@ -49,5 +49,6 @@ protected:
 };
 
 static void midi_read_proc(const MIDIPacketList *packets, void *refCon, void *connRefCon);
+static CFStringRef EndpointName(MIDIEndpointRef endpoint, bool isExternal);
 
 #endif
