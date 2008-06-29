@@ -752,13 +752,24 @@ void MixxxApp::slotiPodToggle(bool toggle) {
        if (song->movie_flag) { qDebug() << "Movies/Videos not supported." << song->title << QString(song->ipod_path).replace(':','/'); continue; }
        if (song->unk220) { qDebug() << "Protected media not supported." << song->title << QString(song->ipod_path).replace(':','/'); continue; }
 
-       QFileInfo file(iPodMountPoint + QString(song->ipod_path).replace(':','/'));
-       TrackInfoObject* pTrack = new TrackInfoObject(file.absolutePath(), file.fileName(), m_pBpmDetector );
+//     DON'T USE QFileInfo, it does a disk i/o stat on every file introducing a VERY long delay in loading from the iPod
+//       QFileInfo file(iPodMountPoint + QString(song->ipod_path).replace(':','/'));
+//       TrackInfoObject* pTrack = new TrackInfoObject(file.absolutePath(), file.fileName(), m_pBpmDetector );
+
+       QString fullFilePath = iPodMountPoint + QString(song->ipod_path).mid(1).replace(':','/');
+       QString filePath = fullFilePath.left(fullFilePath.lastIndexOf('/')+1);
+       QString fileName = fullFilePath.mid(fullFilePath.lastIndexOf('/')+1);
+       QString fileSuffix = fullFilePath.mid(fullFilePath.lastIndexOf('.')+1);
+
+//       qDebug() << "iPod file" << filePath << "--"<< fileName << "--" << fileSuffix;
+
+       TrackInfoObject* pTrack = new TrackInfoObject(filePath, fileName, m_pBpmDetector );
        pTrack->setBpm(song->BPM);
        pTrack->setBpmConfirm(song->BPM != 0);  //    void setBeatFirst(float); ??
 //       pTrack->setHeaderParsed(true);
        pTrack->setComment(song->comment);
-       pTrack->setType(file.suffix());
+//       pTrack->setType(file.suffix());
+       pTrack->setType(fileSuffix);
        pTrack->setBitrate(song->bitrate);
        pTrack->setSampleRate(song->samplerate);
        pTrack->setDuration(song->tracklen/1000);
