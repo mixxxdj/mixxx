@@ -757,7 +757,7 @@ void MixxxApp::slotiPodToggle(bool toggle) {
 //       TrackInfoObject* pTrack = new TrackInfoObject(file.absolutePath(), file.fileName(), m_pBpmDetector );
 
        QString fullFilePath = iPodMountPoint + QString(song->ipod_path).mid(1).replace(':','/');
-       QString filePath = fullFilePath.left(fullFilePath.lastIndexOf('/')+1);
+       QString filePath = fullFilePath.left(fullFilePath.lastIndexOf('/'));
        QString fileName = fullFilePath.mid(fullFilePath.lastIndexOf('/')+1);
        QString fileSuffix = fullFilePath.mid(fullFilePath.lastIndexOf('.')+1);
 
