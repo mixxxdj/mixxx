@@ -761,6 +761,11 @@ void MixxxApp::slotiPodToggle(bool toggle) {
        QString fileName = fullFilePath.mid(fullFilePath.lastIndexOf('/')+1);
        QString fileSuffix = fullFilePath.mid(fullFilePath.lastIndexOf('.')+1);
 
+#ifndef __FFMPEGFILE__
+       if (fileSuffix == "m4a") { qDebug() << "m4a media support (via FFMPEG) is not compiled into this build of Mixxx. :( " << song->title << QString(song->ipod_path).replace(':','/'); continue; }
+#endif // __FFMPEGFILE__
+
+
 //       qDebug() << "iPod file" << filePath << "--"<< fileName << "--" << fileSuffix;
 
        TrackInfoObject* pTrack = new TrackInfoObject(filePath, fileName, m_pBpmDetector );
