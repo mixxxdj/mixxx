@@ -749,9 +749,6 @@ void MixxxApp::slotiPodToggle(bool toggle) {
        Itdb_Track *song;
        song = (Itdb_Track *)it->data;
 
-       if (song->movie_flag) { qDebug() << "Movies/Videos not supported." << song->title << QString(song->ipod_path).replace(':','/'); continue; }
-       if (song->unk220) { qDebug() << "Protected media not supported." << song->title << QString(song->ipod_path).replace(':','/'); continue; }
-
 //     DON'T USE QFileInfo, it does a disk i/o stat on every file introducing a VERY long delay in loading from the iPod
 //       QFileInfo file(iPodMountPoint + QString(song->ipod_path).replace(':','/'));
 //       TrackInfoObject* pTrack = new TrackInfoObject(file.absolutePath(), file.fileName(), m_pBpmDetector );
@@ -761,8 +758,10 @@ void MixxxApp::slotiPodToggle(bool toggle) {
        QString fileName = fullFilePath.mid(fullFilePath.lastIndexOf('/')+1);
        QString fileSuffix = fullFilePath.mid(fullFilePath.lastIndexOf('.')+1);
 
+       if (song->movie_flag) { qDebug() << "Movies/Videos not supported." << song->title << fullFilePath; continue; }
+       if (song->unk220 && fileSuffix == "m4p") { qDebug() << "Protected media not supported." << song->title << fullFilePath; continue; }
 #ifndef __FFMPEGFILE__
-       if (fileSuffix == "m4a") { qDebug() << "m4a media support (via FFMPEG) is not compiled into this build of Mixxx. :( " << song->title << QString(song->ipod_path).replace(':','/'); continue; }
+       if (fileSuffix == "m4a") { qDebug() << "m4a media support (via FFMPEG) is not compiled into this build of Mixxx. :( " << song->title << fullFilePath; continue; }
 #endif // __FFMPEGFILE__
 
 
