@@ -11,6 +11,9 @@
 ; The name of the installer
 Name "Mixxx"
 
+; Disable the Nullsoft Installer branding text at the bottom.
+BrandingText " "
+
 ; The file to write
 OutFile "mixxx-1.6.0-beta3-win.exe"
 
@@ -1270,8 +1273,8 @@ Section "Uninstall"
   Delete $INSTDIR\skins\outlineClose\*.*
   Delete $INSTDIR\skins\outlineSmall\*.*
   Delete $INSTDIR\skins\outlineMini\*.*
-  Delete $INSTDIR\skins\Collusion (1280)\*.*
-  Delete $INSTDIR\skins\Collusion (1280-WS)\*.*
+  Delete "$INSTDIR\skins\Collusion (1280)\*.*"
+  Delete "$INSTDIR\skins\Collusion (1280-WS)\*.*"
   Delete $INSTDIR\skins\hercules\*.*
   Delete $INSTDIR\skins\nCut\*.*
   Delete $INSTDIR\skins\traditional\*.*
