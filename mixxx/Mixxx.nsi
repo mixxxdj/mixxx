@@ -1270,22 +1270,29 @@ Section "Uninstall"
   Delete $INSTDIR\skins\outlineClose\*.*
   Delete $INSTDIR\skins\outlineSmall\*.*
   Delete $INSTDIR\skins\outlineMini\*.*
+  Delete $INSTDIR\skins\Collusion (1280)\*.*
+  Delete $INSTDIR\skins\Collusion (1280-WS)\*.*
   Delete $INSTDIR\skins\hercules\*.*
   Delete $INSTDIR\skins\nCut\*.*
   Delete $INSTDIR\skins\traditional\*.*
   Delete $INSTDIR\skins\*.*
   Delete $INSTDIR\keyboard\*.*
   Delete $INSTDIR\midi\*.*
+  Delete $INSTDIR\promo\*.*
   RMDir "$INSTDIR\skins\outline"
   RMDir "$INSTDIR\skins\outlineClose"
   RMDir "$INSTDIR\skins\outlineSmall"
   RMDir "$INSTDIR\skins\outlineMini"
+  RMDir "$INSTDIR\skins\Collusion (1280)"
+  RMDir "$INSTDIR\skins\Collusion (1280-WS)"
   RMDir "$INSTDIR\skins\hercules"
   RMDir "$INSTDIR\skins\nCut"
   RMDir "$INSTDIR\skins\traditional"
   RMDir "$INSTDIR\skins"
   RMDir "$INSTDIR\midi"
   RMDir "$INSTDIR\keyboard"
+  RMDir "$INSTDIR\promo"
+
 
   ; Remove shortcuts, if any
   Delete "$SMPROGRAMS\Mixxx\*.*"
