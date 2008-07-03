@@ -11,7 +11,9 @@ MidiLedHandler::MidiLedHandler(QString group, QString name, MidiObject * midi, d
 
     m_cobj = ControlObject::getControl(\
         ConfigKey(group, name));
-
+    
+    //m_cobj should never be null, so Q_ASSERT here to make sure that we hear about it if it is null.
+    Q_ASSERT(m_cobj);
     connect(m_cobj, SIGNAL(valueChangedFromEngine(double)), this, SLOT(controlChanged(double)));
     connect(m_cobj, SIGNAL(valueChanged(double)), this, SLOT(controlChanged(double)));
 }
