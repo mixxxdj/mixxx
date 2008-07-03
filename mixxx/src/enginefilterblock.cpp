@@ -15,6 +15,7 @@
 *                                                                         *
 ***************************************************************************/
 
+#include <QtDebug>
 #include "controlpushbutton.h"
 #include "controllogpotmeter.h"
 #include "enginefilterblock.h"
@@ -137,12 +138,14 @@ void EngineFilterBlock::process(const CSAMPLE * pIn, const CSAMPLE * pOut, const
 #ifndef __LOFI__
 	setFilters(); 
 #endif
+/* Disabled for Indamixx hardware
     low->process(pIn, m_pTemp1, iBufferSize);
     band->process(pIn, m_pTemp2, iBufferSize);
     high->process(pIn, m_pTemp3, iBufferSize);
-
+*/
     for (int i=0; i<iBufferSize; ++i)
-        pOutput[i] = (fLow*m_pTemp1[i] + fMid*m_pTemp2[i] + fHigh*m_pTemp3[i]);
+        pOutput[i] = pIn[i];
+        //pOutput[i] = (fLow*m_pTemp1[i] + fMid*m_pTemp2[i] + fHigh*m_pTemp3[i]);
 
 }
 
