@@ -22,6 +22,7 @@
 //Added by qt3to4:
 #include <QMouseEvent>
 #include <QPaintEvent>
+#include <QPainter>
 #include "defs.h"
 #include "wpixmapstore.h"
 
@@ -30,7 +31,6 @@ WSliderComposed::WSliderComposed(QWidget * parent, const char * name, float defa
 {
     m_pSlider = 0;
     m_pHandle = 0;
-    m_pDoubleBuffer = 0;
     m_bHorizontal = false;
     m_bEventWhileDrag = true;
     m_bDrag = false;
@@ -76,7 +76,6 @@ void WSliderComposed::setPixmaps(bool bHorizontal, const QString &filenameSlider
     m_pHandle = WPixmapStore::getPixmap(filenameHandle);
     if (!m_pHandle)
         qDebug() << "WSliderComposed: Error loading handle pixmap:" << filenameHandle;
-    m_pDoubleBuffer = new QPixmap(m_pSlider->size());
 
     if (m_bHorizontal)
     {
@@ -104,11 +103,8 @@ void WSliderComposed::unsetPixmaps()
         WPixmapStore::deletePixmap(m_pSlider);
     if (m_pHandle)
         WPixmapStore::deletePixmap(m_pHandle);
-    if (m_pDoubleBuffer)
-        WPixmapStore::deletePixmap(m_pDoubleBuffer);
     m_pSlider = 0;
     m_pHandle = 0;
-    m_pDoubleBuffer = 0;
 }
 
 void WSliderComposed::mouseMoveEvent(QMouseEvent * e)
@@ -195,6 +191,7 @@ void WSliderComposed::paintEvent(QPaintEvent *)
 {
     if (m_pSlider && m_pHandle)
     {
+        QPainter p(this);
         int posx;
         int posy;
         if (m_bHorizontal)
@@ -208,12 +205,9 @@ void WSliderComposed::paintEvent(QPaintEvent *)
             posy = m_iPos;
         }
 
-        // Draw slider followed by handle to double buffer
-        bitBlt(m_pDoubleBuffer, 0, 0, m_pSlider);
-        bitBlt(m_pDoubleBuffer, posx, posy, m_pHandle);
-
-        // Draw double buffer to screen
-        bitBlt(this, 0, 0, m_pDoubleBuffer);
+        // Draw slider followed by handle
+        p.drawPixmap(0, 0, *m_pSlider);
+        p.drawPixmap(posx, posy, *m_pHandle);
     }
 }
 

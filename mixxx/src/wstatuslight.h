@@ -48,7 +48,7 @@ private:
     /** Number of positions associated with this knob */
     int m_iNoPos;
     /** Associated pixmaps */
-    QPixmap *m_pPixmapBack, *m_pPixmapSL, *m_pPixmapBuffer;
+    QPixmap *m_pPixmapBack, *m_pPixmapSL;
     /** True if it's a horizontal vu meter */
     bool m_bHorizontal;
 };

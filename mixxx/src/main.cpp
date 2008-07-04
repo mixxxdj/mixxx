@@ -188,7 +188,7 @@ int main(int argc, char * argv[])
     // Construct a list of strings based on the command line arguments
     struct CmdlineArgs args;
     args.bStartInFullscreen = false; //Initialize vars
-     
+
     QString qLogFileName = "";
     for (int i=0; i<argc; ++i)
     {

@@ -35,7 +35,6 @@ public:
     void move(int, int);
     void setFixedSize(int, int);
     void setNumDigits(int);
-    void setAlignment(int);
     void setConstFactor(double);
 
 public slots:

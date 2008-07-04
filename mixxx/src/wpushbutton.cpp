@@ -29,7 +29,6 @@ WPushButton::WPushButton(QWidget * parent, const char * name ) : WWidget(parent,
 {
     m_pPixmaps = 0;
     m_pPixmapBack = 0;
-    m_pPixmapBuffer = 0;
     setStates(0);
     setBackgroundMode(Qt::NoBackground);
 }
@@ -41,7 +40,6 @@ WPushButton::~WPushButton()
     }
 
     WPixmapStore::deletePixmap(m_pPixmapBack);
-    WPixmapStore::deletePixmap(m_pPixmapBuffer);
 }
 
 void WPushButton::setup(QDomNode node)
@@ -149,9 +147,6 @@ void WPushButton::setPixmapBackground(const QString &filename)
     m_pPixmapBack = WPixmapStore::getPixmap(filename);
     if (!m_pPixmapBack)
         qDebug() << "WPushButton: Error loading background pixmap:" << filename;
-
-    // Construct corresponding double buffer
-    m_pPixmapBuffer = new QPixmap(m_pPixmapBack->size());
 }
 
 void WPushButton::setValue(double v)
@@ -176,22 +171,9 @@ void WPushButton::paintEvent(QPaintEvent *)
         int idx = (((int)m_fValue%m_iNoStates)*2)+m_bPressed;
         if (m_pPixmaps[idx])
         {
-
-            // If m_pPixmapBuffer is defined, use double buffering when painting,
-            // otherwise paint the button directly to the screen.
-            if (m_pPixmapBuffer!=0)
-            {
-                // Paint background on buffer
-                bitBlt(m_pPixmapBuffer, 0, 0, m_pPixmapBack);
-
-                // Paint button on buffer
-                bitBlt(m_pPixmapBuffer, 0, 0, m_pPixmaps[idx]);
-
-                // Paint buffer to screen
-                bitBlt(this, 0, 0, m_pPixmapBuffer);
-            }
-            else
-                bitBlt(this, 0, 0, m_pPixmaps[idx]);
+            QPainter p(this);
+            if(m_pPixmapBack) p.drawPixmap(0, 0, *m_pPixmapBack);
+            p.drawPixmap(0, 0, *m_pPixmaps[idx]);
         }
     }
 }

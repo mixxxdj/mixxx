@@ -17,7 +17,8 @@
 
 #include "wdisplay.h"
 #include "wpixmapstore.h"
-//Added by qt3to4:
+
+#include <QPainter>
 #include <QPaintEvent>
 #include <QtDebug>
 #include <QPixmap>
@@ -26,7 +27,6 @@ WDisplay::WDisplay(QWidget * parent, const char * name) : WWidget(parent,name)
 {
     m_pPixmaps = 0;
     setPositions(0);
-    setBackgroundMode(Qt::NoBackground);
 }
 
 WDisplay::~WDisplay()
@@ -96,8 +96,10 @@ void WDisplay::paintEvent(QPaintEvent *)
             idx = m_iNoPos-1;
         else if (idx<0)
             idx = 0;
-        if (m_pPixmaps[idx])
-            bitBlt(this, 0, 0, m_pPixmaps[idx]);
+        if (m_pPixmaps[idx]) {
+            QPainter p(this);
+            p.drawPixmap(0, 0, *m_pPixmaps[idx]);
+        }
     }
 }
 

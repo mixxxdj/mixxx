@@ -356,11 +356,7 @@ void MixxxView::createAllWidgets(QDomElement docElem,
                     p->setup(node);
                     p->installEventFilter(m_pKeyboard);
                     m_qWidgetList.append(p);
-                    //p->setBackgroundRole(QPalette::Window);
                     p->setPalette(palette);
-                    p->setAutoFillBackground(true);
-
-
                 }
                 else if (WWidget::selectNodeInt(node, "Channel")==2)
                 {
@@ -368,9 +364,7 @@ void MixxxView::createAllWidgets(QDomElement docElem,
                     p->setup(node);
                     p->installEventFilter(m_pKeyboard);
                     m_qWidgetList.append(p);
-                    //p->setBackgroundRole(QPalette::Window);
                     p->setPalette(palette);
-                    p->setAutoFillBackground(true);
                 }
             }
             else if (node.nodeName()=="Display")
@@ -477,12 +471,12 @@ void MixxxView::createAllWidgets(QDomElement docElem,
                 QColor bgc(255,255,255);
                 if (!WWidget::selectNode(node, "BgColor").isNull()) {
                     bgc.setNamedColor(WWidget::selectNodeQString(node, "BgColor"));
+                    p->setAutoFillBackground(true);
                 }
                 //p->setPaletteBackgroundColor(WSkinColor::getCorrectColor(bgc));
                 QPalette palette;
                 palette.setBrush(p->backgroundRole(), WSkinColor::getCorrectColor(bgc));
                 p->setPalette(palette);
-                p->setAutoFillBackground(true);
 
                 // Foreground color
                 QColor fgc(0,0,0);
@@ -685,6 +679,7 @@ void MixxxView::createAllWidgets(QDomElement docElem,
                     if (promoDir.exists())
                         m_pComboBox->addItem( "Free Tracks", TABLE_MODE_PROMO );
                     // m_pComboBox->addItem( "iPod", TABLE_MODE_IPOD );
+                    m_pComboBox->installEventFilter(m_pKeyboard);
                 }
                 // Set position
                 QString pos = WWidget::selectNodeQString(node, "Pos");
@@ -700,12 +695,12 @@ void MixxxView::createAllWidgets(QDomElement docElem,
                 m_pComboBox->show();
             }
 
-	    // persistent: m_pLineEditSearch
+            // persistent: m_pLineEditSearch
             else if (node.nodeName()=="Search")
             {
-		if (m_pLineEditSearch == 0) {
-		    m_pLineEditSearch = new QLineEdit(this);
-		}
+                if (m_pLineEditSearch == 0) {
+                    m_pLineEditSearch = new QLineEdit(this);
+                }
 
                 // Set position
                 QString pos = WWidget::selectNodeQString(node, "Pos");
@@ -718,17 +713,18 @@ void MixxxView::createAllWidgets(QDomElement docElem,
                 x = size.left(size.indexOf(",")).toInt();
                 y = size.mid(size.indexOf(",")+1).toInt();
                 m_pLineEditSearch->setFixedSize(x,y);
-		m_pLineEditSearch->show();
+                m_pLineEditSearch->show();
             }
 
 	    // persistent: m_pTrackTableView
             else if (node.nodeName()=="TableView")
             {
-		if (m_pTrackTableView == 0) {
-		    m_pTrackTableView = new WTrackTableView(this, pConfig);
-		}
+                if (m_pTrackTableView == 0) {
+                    m_pTrackTableView = new WTrackTableView(this, pConfig);
+                }
                 m_pTrackTableView->setup(node);
-		m_pTrackTableView->show();
+                m_pTrackTableView->installEventFilter(m_pKeyboard);
+                m_pTrackTableView->show();
             }
             // set default value (only if it changes from the standard value)
             if (currentControl) {

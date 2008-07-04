@@ -23,6 +23,7 @@
 #include <qstring.h>
 //Added by qt3to4:
 #include <QPaintEvent>
+#include <QTimer>
 
 /**
   *@author Tue & Ken Haste Andersen
@@ -35,20 +36,33 @@ public:
     ~WVuMeter();
     void setup(QDomNode node);
     void setPixmaps(const QString &backFilename, const QString &vuFilename, bool bHorizontal=false);
-    
+    void setValue(double fValue);
+
+protected slots:
+    void slotUpdatePeak();
+
 private:
     /** Set position number to zero and deallocate pixmaps */
     void resetPositions();
     void paintEvent(QPaintEvent *);
+    void setPeak(int pos);
 
     /** Current position */
     int m_iPos;
     /** Number of positions associated with this knob */
     int m_iNoPos;
     /** Associated pixmaps */
-    QPixmap *m_pPixmapBack, *m_pPixmapVu, *m_pPixmapBuffer;
+    QPixmap *m_pPixmapBack, *m_pPixmapVu;
     /** True if it's a horizontal vu meter */
     bool m_bHorizontal;
+
+    int m_iPeakHoldSize;
+    int m_iPeakFallStep;
+    int m_iPeakHoldTime;
+    int m_iPeakFallTime;
+    int m_iPeakPos;
+
+    QTimer m_qTimer;
 };
 
 #endif
