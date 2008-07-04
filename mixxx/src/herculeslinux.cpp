@@ -346,6 +346,8 @@ void HerculesLinux::consoleEvent(int first, int second) {
             switch(first) {
                 case UP:
                 case DOWN: jogLibraryScrolling = true; break;
+		case LEFT_FX_SELECT:
+		case RIGHT_FX_SELECT:
                 case SCRATCH: //TODO: move this into "Master" controlObject
                     scratchMode = !scratchMode;
                     qDebug() << "scratchMode = " << scratchMode;
@@ -354,14 +356,12 @@ void HerculesLinux::consoleEvent(int first, int second) {
                     //	case RIGHT: ; break;
 		case LEFT_STOP: if (buttonStateLookup(1, buttonMapping[LEFT_PLAY]->getControlObject()->getKey().item)) sendButtonEvent(buttonPressed, buttonMapping[LEFT_PLAY]->getControlObject()); break;
 		case RIGHT_STOP: if (buttonStateLookup(2, buttonMapping[RIGHT_PLAY]->getControlObject()->getKey().item)) sendButtonEvent(buttonPressed, buttonMapping[RIGHT_PLAY]->getControlObject()); break;
-                case LEFT_1: if (!isRMX) m_pRotaryLeft->setCalibration(512); break;
-                case LEFT_2: if (!isRMX) m_pRotaryLeft->setCalibration(256); break;
-                case LEFT_3: if (!isRMX) m_pRotaryLeft->setCalibration(64); break;
-                case RIGHT_1: if (!isRMX) m_pRotaryRight->setCalibration(512);
-                case RIGHT_2: if (!isRMX) m_pRotaryRight->setCalibration(256); break;
-                case RIGHT_3: if (!isRMX) m_pRotaryRight->setCalibration(64); break;
-                //                case RIGHT_MONITOR: sendButtonEvent(m_bHeadphoneLeft = false, m_pControlObjectLeftBtnHeadphone); break; // m_bHeadphoneRight = !m_bHeadphoneRight; break;
-                //                case LEFT_MONITOR: sendButtonEvent(m_bHeadphoneRight = false, m_pControlObjectRightBtnHeadphone); break; // m_bHeadphoneLeft = !m_bHeadphoneLeft; break;
+                case LEFT_1: if (!scratchMode) m_pRotaryLeft->setCalibration(512); break;
+                case LEFT_2: if (!scratchMode) m_pRotaryLeft->setCalibration(256); break;
+                case LEFT_3: if (!scratchMode) m_pRotaryLeft->setCalibration(64); break;
+                case RIGHT_1: if (!scratchMode) m_pRotaryRight->setCalibration(512); break;
+                case RIGHT_2: if (!scratchMode) m_pRotaryRight->setCalibration(256); break;
+                case RIGHT_3: if (!scratchMode) m_pRotaryRight->setCalibration(64); break;
             }
         } else {
             switch(first) {
@@ -497,12 +497,12 @@ void HerculesLinux::consoleEvent(int first, int second) {
     leds[LEFT_MASTER_TEMPO] = false;              // TODO: LEFT BEATLOCK LEDs ... buttonStateLookup(1, "master_tempo");
     leds[RIGHT_MASTER_TEMPO] = false;             // TODO: RIGHT BEATLOCK LEDs ...  buttonStateLookup(1, "master_tempo");
 
-    leds[LEFT_FX] = m_pRotaryLeft->getCalibration() == 512;
-    leds[LEFT_FX_CUE] = m_pRotaryLeft->getCalibration() == 256;
-    leds[LEFT_LOOP] = m_pRotaryLeft->getCalibration() == 64;
-    leds[RIGHT_FX] = m_pRotaryRight->getCalibration() == 512;
-    leds[RIGHT_FX_CUE] = m_pRotaryRight->getCalibration() == 256;
-    leds[RIGHT_LOOP] = m_pRotaryRight->getCalibration() == 64;
+    leds[LEFT_FX] = scratchMode || m_pRotaryLeft->getCalibration() == 512;
+    leds[LEFT_FX_CUE] = scratchMode || m_pRotaryLeft->getCalibration() == 256;
+    leds[LEFT_LOOP] = scratchMode || m_pRotaryLeft->getCalibration() == 64;
+    leds[RIGHT_FX] = scratchMode || m_pRotaryRight->getCalibration() == 512;
+    leds[RIGHT_FX_CUE] = scratchMode || m_pRotaryRight->getCalibration() == 256;
+    leds[RIGHT_LOOP] = scratchMode || m_pRotaryRight->getCalibration() == 64;
 
     QHashIterator<long, bool> led(leds);
     while (led.hasNext()) {
