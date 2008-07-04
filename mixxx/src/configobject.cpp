@@ -179,6 +179,8 @@ ConfigValueMidi::ConfigValueMidi(QDomNode node) {
             midioption = MIDI_OPT_HERC_JOG;
         else if (optname == "spread64")
             midioption = MIDI_OPT_SPREAD64;
+        else if (optname == "selectknob")
+        	midioption = MIDI_OPT_SELECTKNOB;
         else {
             qWarning() << "Unknown option:" << optname;
             midioption = MIDI_OPT_NORMAL;
@@ -240,6 +242,8 @@ ConfigValueMidi::ConfigValueMidi(QString _value)
         midioption = MIDI_OPT_HERC_JOG;
     else if (option.contains("Spread64", false))
         midioption = MIDI_OPT_SPREAD64;
+    else if (option.contains("SelectKnob", false))
+        midioption = MIDI_OPT_SELECTKNOB;
     else
         midioption = MIDI_OPT_NORMAL;
     // Store string with corrected config value
@@ -293,6 +297,8 @@ void ConfigValueMidi::valCopy(const ConfigValueMidi v)
         value.append(" Diff");
     else if (midioption == MIDI_OPT_SPREAD64)
         value.append(" Spread64");
+    else if (midioption == MIDI_OPT_SELECTKNOB)
+        value.append(" SelectKnob");
 
     qDebug() << "Config value:" << value;
     //qDebug() << "--1, midino: " << midino << ", midimask: " << midimask << ", midichannel: " << midichannel;
@@ -363,6 +369,17 @@ double ConfigValueMidi::ComputeValue(MidiType /* _miditype */, double _prevmidiv
             _newmidivalue = _newmidivalue * ((double)sensitivity / 50.);
         //Apply new value to current value.
         _newmidivalue = _prevmidivalue + _newmidivalue;
+    }
+    else if (midioption == MIDI_OPT_SELECTKNOB)
+    {
+        //Interpret 7-bit signed value using two's compliment.
+        if (_newmidivalue >= 64.)
+            _newmidivalue = _newmidivalue - 128.;
+        //Apply sensitivity to signed value.
+        if(sensitivity > 0)
+            _newmidivalue = _newmidivalue * ((double)sensitivity / 50.);
+        //Since this is a selection knob, we do not want to inherit previous values.
+        return _newmidivalue;
     }
     else if (midioption == MIDI_OPT_BUTTON)
     {
