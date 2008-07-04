@@ -355,11 +355,14 @@ double ConfigValueMidi::ComputeValue(MidiType /* _miditype */, double _prevmidiv
     }
     else if (midioption == MIDI_OPT_DIFF)
     {
-        if (_newmidivalue > 64.) {
-            _newmidivalue = _prevmidivalue - 128. + _newmidivalue;
-        } else {
-            _newmidivalue = _prevmidivalue + _newmidivalue;
-        }
+        //Interpret 7-bit signed value using two's compliment.
+        if (_newmidivalue >= 64.)
+            _newmidivalue = _newmidivalue - 128.;
+        //Apply sensitivity to signed value.
+        if(sensitivity > 0)
+            _newmidivalue = _newmidivalue * ((double)sensitivity / 50.);
+        //Apply new value to current value.
+        _newmidivalue = _prevmidivalue + _newmidivalue;
     }
     else if (midioption == MIDI_OPT_BUTTON)
     {
