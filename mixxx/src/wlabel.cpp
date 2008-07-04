@@ -38,8 +38,11 @@ void WLabel::setup(QDomNode node)
     WWidget::setup(node);
 
     // Colors
-    m_qBgColor.setNamedColor(WWidget::selectNodeQString(node, "BgColor"));
-    m_pLabel->setPaletteBackgroundColor(WSkinColor::getCorrectColor(m_qBgColor));
+    if(!WWidget::selectNode(node, "BgColor").isNull()) {
+        m_qBgColor.setNamedColor(WWidget::selectNodeQString(node, "BgColor"));
+        m_pLabel->setPaletteBackgroundColor(WSkinColor::getCorrectColor(m_qBgColor));
+        m_pLabel->setAutoFillBackground(true);
+    }
     m_qFgColor.setNamedColor(WWidget::selectNodeQString(node, "FgColor"));
     m_pLabel->setPaletteForegroundColor(WSkinColor::getCorrectColor(m_qFgColor));
 

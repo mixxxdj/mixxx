@@ -18,12 +18,12 @@
 
 #include "wvinylcontrolindicator.h"
 #include "wpixmapstore.h"
+#include <QPainter>
 
 WVinylControlIndicator::WVinylControlIndicator(QWidget * parent, const char * name) : WWidget(parent,name)
 {
     m_pPixmapBack = 0;
     //m_pPixmapVu = 0;
-    m_pPixmapBuffer = 0;
     iWidth = 30;
     iHeight = 40;
     iRadius = 10;
@@ -69,8 +69,6 @@ void WVinylControlIndicator::resetPositions()
         m_pPixmapBack = 0;
         //WPixmapStore::deletePixmap(m_pPixmapVu);
         //m_pPixmapVu = 0;
-        WPixmapStore::deletePixmap(m_pPixmapBuffer);
-        m_pPixmapBuffer = 0;
     }
 }
 
@@ -85,8 +83,6 @@ void WVinylControlIndicator::setPixmaps(const QString &backFilename, const QStri
        if (!m_pPixmapVu || m_pPixmapVu->size()==QSize(0,0))
         qDebug() << "WVinylControlIndicator: Error loading vu pixmap " << vuFilename.latin1();
      */
-
-    m_pPixmapBuffer = new QPixmap(m_pPixmapBack->size());
 
     setFixedSize(m_pPixmapBack->size());
     //m_bHorizontal = bHorizontal;
@@ -112,14 +108,15 @@ void WVinylControlIndicator::paintEvent()
                  idx = 0;
          */
 
+        QPainter p(this);
+
         // Draw back on buffer
-        bitBlt(m_pPixmapBuffer, 0, 0, m_pPixmapBack);
+        paint.drawPixmap(0, 0, m_pPixmapBack);
 
         //qDebug() << "PAINTING WVinylControlIndicator!";
         QPen tip(black, 4);
         QPen tail(black, 1);
 
-        QPainter p(m_pPixmapBuffer);
         p.setBrush(Qt::black);
         p.setPen(tip);
         //for (int i = 0; i < iWidth; i++)
@@ -130,16 +127,6 @@ void WVinylControlIndicator::paintEvent()
         p.end();
 
         phase++; if (phase > 360) phase = 0;
-
-
-        // Draw (part of) vu on buffer
-        /*if (m_bHorizontal)
-            bitBlt(m_pPixmapBuffer, 0, 0, m_pPixmapVu, 0, 0, idx, m_pPixmapVu->height());
-           else*/
-        //bitBlt(m_pPixmapBuffer, 0, m_iNoPos-idx, m_pPixmapVu, 0, m_iNoPos-idx, m_pPixmapVu->width(), idx);
-
-        // Draw buffer on screen
-        bitBlt(this, 0, 0, m_pPixmapBuffer);
     }
 }
 

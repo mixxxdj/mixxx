@@ -17,10 +17,11 @@
 
 #include "wknob.h"
 #include "wpixmapstore.h"
-//Added by qt3to4:
+
 #include <QPixmap>
 #include <QtDebug>
 #include <QMouseEvent>
+#include <QPainter>
 #include <QPaintEvent>
 
 WKnob::WKnob(QWidget * parent, const char * name, float defaultValue)
@@ -28,10 +29,8 @@ WKnob::WKnob(QWidget * parent, const char * name, float defaultValue)
 {
     m_pPixmaps = 0;
     m_pPixmapBack = 0;
-    m_pPixmapBuffer = 0;
     m_bDisabledLoaded = false;
     setPositions(0);
-    setBackgroundMode(Qt::NoBackground);
 }
 
 WKnob::~WKnob()
@@ -114,9 +113,6 @@ void WKnob::setPixmapBackground(const QString &filename)
     m_pPixmapBack = WPixmapStore::getPixmap(filename);
     if (!m_pPixmapBack)
         qDebug() << "WKnob: Error loading background pixmap:" << filename;
-
-    // Construct corresponding double buffer
-    m_pPixmapBuffer = new QPixmap(m_pPixmapBack->size());
 }
 
 void WKnob::mouseMoveEvent(QMouseEvent * e)
@@ -171,20 +167,10 @@ void WKnob::paintEvent(QPaintEvent *)
         if (m_bOff && m_bDisabledLoaded)
             idx += m_iNoPos;
 
-        // If m_pPixmapBuffer is defined, use double buffering when painting,
-        // otherwise paint the button directly to the screen.
-        if (m_pPixmapBuffer!=0)
-        {
-            // Paint background on buffer
-            bitBlt(m_pPixmapBuffer, 0, 0, m_pPixmapBack);
-
-            // Paint button on buffer
-            bitBlt(m_pPixmapBuffer, 0, 0, m_pPixmaps[idx]);
-
-            // Paint buffer to screen
-            bitBlt(this, 0, 0, m_pPixmapBuffer);
-        }
-        else
-            bitBlt(this, 0, 0, m_pPixmaps[idx]);
+        QPainter p(this);
+        // Paint background
+        //p.drawPixmap(0, 0, m_pPixmapBack);
+        // Paint button
+        p.drawPixmap(0, 0, *m_pPixmaps[idx]);
     }
 }

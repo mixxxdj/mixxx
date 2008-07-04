@@ -42,8 +42,11 @@ void WNumber::setup(QDomNode node)
     setNumDigits(selectNodeInt(node, "NumberOfDigits"));
 
     // Colors
-    m_qBgColor.setNamedColor(WWidget::selectNodeQString(node, "BgColor"));
-    m_pLabel->setPaletteBackgroundColor(WSkinColor::getCorrectColor(m_qBgColor));
+    if(!WWidget::selectNode(node, "BgColor").isNull()) {
+        m_qBgColor.setNamedColor(WWidget::selectNodeQString(node, "BgColor"));
+        m_pLabel->setPaletteBackgroundColor(WSkinColor::getCorrectColor(m_qBgColor));
+        m_pLabel->setAutoFillBackground(true);
+    }
     m_qFgColor.setNamedColor(WWidget::selectNodeQString(node, "FgColor"));
     m_pLabel->setPaletteForegroundColor(WSkinColor::getCorrectColor(m_qFgColor));
 
@@ -86,7 +89,6 @@ void WNumber::setup(QDomNode node)
     int px = pos.left(pos.find(",")).toInt();
     int py = pos.mid(pos.find(",")+1).toInt();
     move(px,py);
-    m_pLabel->setAutoFillBackground(true);
     m_pLabel->show();
 }
 
@@ -114,11 +116,6 @@ void WNumber::setValue(double dValue)
     int d2 = (int)floor((v-floor(v))*100.)%10;
 
     m_pLabel->setText(QString(m_qsText).append("%1.%2%3").arg((int)v,3,10).arg(d1,1,10).arg(d2,1,10));
-}
-
-void WNumber::setAlignment(int i)
-{
-    //m_pLabel->setAlignment(i);
 }
 
 void WNumber::setConstFactor(double c)

@@ -18,8 +18,9 @@
 
 #include "wstatuslight.h"
 #include "wpixmapstore.h"
-//Added by qt3to4:
+
 #include <QPaintEvent>
+#include <QPainter>
 #include <QtDebug>
 #include <QPixmap>
 
@@ -27,8 +28,6 @@ WStatusLight::WStatusLight(QWidget * parent, const char * name) : WWidget(parent
 {
     m_pPixmapBack = 0;
     m_pPixmapSL = 0;
-    m_pPixmapBuffer = 0;
-    setBackgroundMode(Qt::NoBackground);
 }
 
 WStatusLight::~WStatusLight()
@@ -55,8 +54,6 @@ void WStatusLight::resetPositions()
         m_pPixmapBack = 0;
         WPixmapStore::deletePixmap(m_pPixmapSL);
         m_pPixmapSL = 0;
-        WPixmapStore::deletePixmap(m_pPixmapBuffer);
-        m_pPixmapBuffer = 0;
     }
 }
 
@@ -69,8 +66,6 @@ void WStatusLight::setPixmaps(const QString &backFilename, const QString &vuFile
     if (!m_pPixmapSL || m_pPixmapSL->size()==QSize(0,0))
         qDebug() << "WStatusLight: Error loading statuslight pixmap" << vuFilename;
 
-    m_pPixmapBuffer = new QPixmap(m_pPixmapBack->size());
-
     setFixedSize(m_pPixmapBack->size());
     m_bHorizontal = bHorizontal;
 }
@@ -79,19 +74,11 @@ void WStatusLight::paintEvent(QPaintEvent *)
 {
     if (m_pPixmapBack!=0 && m_pPixmapSL!=0)
     {
+        QPainter p(this);
 
-        // Draw back on buffer
         if(m_fValue == 0)
-            bitBlt(m_pPixmapBuffer, 0, 0, m_pPixmapBack);
+            p.drawPixmap(0, 0, *m_pPixmapBack);
         else
-            bitBlt(m_pPixmapBuffer, 0, 0, m_pPixmapSL);
-        // Draw light on buffer
-        //bitBlt(m_pPixmapBuffer, 0, 0, m_pPixmapSL, 0, 0, m_pPixmapSL->width(), m_pPixmapSL->height());
-
-        // Draw buffer on screen
-        bitBlt(this, 0, 0, m_pPixmapBuffer);
+            p.drawPixmap(0, 0, *m_pPixmapSL);
     }
 }
-
-
-

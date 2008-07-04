@@ -24,11 +24,16 @@
 #include <QtDebug>
 #include <QPixmap>
 
+#define DEFAULT_FALLTIME 10
+#define DEFAULT_HOLDTIME 300
+
+
 WVuMeter::WVuMeter(QWidget * parent, const char * name) : WWidget(parent,name)
 {
     m_pPixmapBack = 0;
     m_pPixmapVu = 0;
-    m_pPixmapBuffer = 0;
+    m_iPeakHoldSize = m_iPeakPos = 0;
+    connect(&m_qTimer, SIGNAL(timeout()), this, SLOT(slotUpdatePeak()));
 }
 
 WVuMeter::~WVuMeter()
@@ -39,12 +44,21 @@ WVuMeter::~WVuMeter()
 void WVuMeter::setup(QDomNode node)
 {
     WWidget::setup(node);
-
+    m_qTimer.stop();
     // Set pixmaps
     bool bHorizontal = false;
     if (!selectNode(node, "Horizontal").isNull() && selectNodeQString(node, "Horizontal")=="true")
         bHorizontal = true;
     setPixmaps(getPath(selectNodeQString(node, "PathBack")), getPath(selectNodeQString(node, "PathVu")), bHorizontal);
+    m_iPeakHoldSize = selectNodeInt(node, "PeakHoldSize");
+    if(m_iPeakHoldSize < 0 || m_iPeakHoldSize > 100) m_iPeakHoldSize = 0;
+    m_iPeakFallStep = selectNodeInt(node, "PeakFallStep");
+    if(m_iPeakFallStep < 1 || m_iPeakFallStep > 1000) m_iPeakFallStep = 1;
+    m_iPeakHoldTime = selectNodeInt(node, "PeakHoldTime");
+    if(m_iPeakHoldTime < 1 || m_iPeakHoldTime > 3000) m_iPeakHoldTime = DEFAULT_HOLDTIME;
+    m_iPeakFallTime = selectNodeInt(node, "PeakFallTime");
+    if(m_iPeakFallTime < 1 || m_iPeakFallTime > 1000) m_iPeakFallTime = DEFAULT_FALLTIME;
+    if(m_iPeakHoldSize > 0) m_qTimer.start(m_iPeakFallTime);
 }
 
 void WVuMeter::resetPositions()
@@ -55,8 +69,6 @@ void WVuMeter::resetPositions()
         m_pPixmapBack = 0;
         WPixmapStore::deletePixmap(m_pPixmapVu);
         m_pPixmapVu = 0;
-        WPixmapStore::deletePixmap(m_pPixmapBuffer);
-        m_pPixmapBuffer = 0;
     }
 }
 
@@ -69,14 +81,41 @@ void WVuMeter::setPixmaps(const QString &backFilename, const QString &vuFilename
     if (!m_pPixmapVu || m_pPixmapVu->size()==QSize(0,0))
         qDebug() << "WVuMeter: Error loading vu pixmap" << vuFilename;
 
-    m_pPixmapBuffer = new QPixmap(m_pPixmapBack->size());
-
     setFixedSize(m_pPixmapBack->size());
     m_bHorizontal = bHorizontal;
     if (m_bHorizontal)
         m_iNoPos = m_pPixmapVu->width();
     else
         m_iNoPos = m_pPixmapVu->height();
+}
+
+void WVuMeter::setValue(double fValue)
+{
+    int idx = (int)(m_fValue*(float)(m_iNoPos)/128.);
+    // Range check
+    if (idx>m_iNoPos)
+        idx = m_iNoPos;
+    else if (idx<0)
+        idx = 0;
+
+    setPeak(idx);
+    WWidget::setValue(fValue);
+}
+
+void WVuMeter::setPeak(int pos)
+{
+    if(pos > m_iPeakPos)
+    {
+        m_iPeakPos = pos;
+        m_qTimer.start(m_iPeakHoldTime);
+    }
+}
+
+void WVuMeter::slotUpdatePeak()
+{
+    if(m_iPeakPos > 0) m_iPeakPos -= m_iPeakFallStep;
+
+    m_qTimer.setInterval(m_iPeakFallTime);
 }
 
 void WVuMeter::paintEvent(QPaintEvent *)
@@ -91,27 +130,32 @@ void WVuMeter::paintEvent(QPaintEvent *)
         else if (idx<0)
             idx = 0;
 
-        // Draw back on buffer
-        //bitBlt(m_pPixmapBuffer, 0, 0, m_pPixmapBack); //old QT3 code
-        QPainter painter(m_pPixmapBuffer);
+        QPainter painter(this);
+        // Draw back
         painter.drawPixmap(0, 0, *m_pPixmapBack);
 
-        // Draw (part of) vu on buffer
+        // Draw (part of) vu
         if (m_bHorizontal)
         {
             //This is a hack to fix something weird with horizontal VU meters:
             if(idx == 0)
                 idx = 1; 
-            
             painter.drawPixmap(0, 0, *m_pPixmapVu, 0, 0, idx, m_pPixmapVu->height());
-            
+            if(m_iPeakHoldSize > 0 && m_iPeakPos > 0)
+            {
+                painter.drawPixmap(m_iPeakPos-m_iPeakHoldSize, 0, *m_pPixmapVu,
+                    m_iPeakPos-m_iPeakHoldSize, 0, m_iPeakHoldSize, m_pPixmapVu->height());
+            }
         }
         else
+        {
             painter.drawPixmap(0, m_iNoPos-idx, *m_pPixmapVu, 0, m_iNoPos-idx, m_pPixmapVu->width(), idx);
-
-        // Draw buffer on screen
-        QPainter widgetPainter(this);
-        widgetPainter.drawPixmap(0, 0, *m_pPixmapBuffer);
+            if(m_iPeakHoldSize > 0 && m_iPeakPos > 0)
+            {
+                painter.drawPixmap(0, m_pPixmapVu->height()-m_iPeakPos, *m_pPixmapVu,
+                    0, m_pPixmapVu->height()-m_iPeakPos, m_pPixmapVu->width(), m_iPeakHoldSize);
+            }
+        }
     }
 }
 

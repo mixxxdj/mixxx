@@ -37,8 +37,12 @@ public:
 
 private:
     ControlPotmeter *m_ctrlVuMeter;
-    FLOAT_TYPE m_fRMSvolume;
-    FLOAT_TYPE m_fRMSvolumeSum;
+    ControlPotmeter *m_ctrlVuMeterL;
+    ControlPotmeter *m_ctrlVuMeterR;
+    FLOAT_TYPE m_fRMSvolumeL;
+    FLOAT_TYPE m_fRMSvolumeSumL;
+    FLOAT_TYPE m_fRMSvolumeR;
+    FLOAT_TYPE m_fRMSvolumeSumR;
     FLOAT_TYPE m_iSamplesCalculated;
 };
 

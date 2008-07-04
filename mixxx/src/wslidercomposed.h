@@ -58,8 +58,6 @@ private:
     bool m_bEventWhileDrag;
     /** True if slider is dragged. Only used when m_bEventWhileDrag is false */
     bool m_bDrag;
-    /** Pointer to double buffer */
-    QPixmap *m_pDoubleBuffer;
     /** Pointer to pixmap of the slider */
     QPixmap *m_pSlider;
     /** Pointer to pixmap of the handle */

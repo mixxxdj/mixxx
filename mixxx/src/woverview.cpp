@@ -31,7 +31,6 @@ WOverview::WOverview(QWidget * pParent, const char * pName) : WWidget(pParent, p
     m_iVirtualPos = -1;
     m_bDrag = false;
     m_pScreenBuffer = 0;
-    setBackgroundMode(Qt::NoBackground);
 
     waveformChanged = false;
 }
@@ -110,14 +109,13 @@ void WOverview::setData(Q3MemArray<char> * pWaveformSummary, Q3ValueList<long> *
 }
 
 void WOverview::repaint() {
+    // Erase background
+    m_pScreenBuffer->fill(this->backgroundColor());
+
     if (!m_pWaveformSummary || !m_pWaveformSummary->size())
         return;
 
-    QPainter paint;
-    paint.begin(m_pScreenBuffer, this);
-
-    // Erase background
-    paint.eraseRect(rect());
+    QPainter paint(m_pScreenBuffer);
 
     float yscale = (((float)(height()-2)/2.)/128.); //32768.;
     float xscale = (float)m_pWaveformSummary->size()/width();
@@ -205,7 +203,6 @@ void WOverview::repaint() {
     }
  */
     paint.end();
-
     update();
 }
 
@@ -252,13 +249,9 @@ void WOverview::paintEvent(QPaintEvent *)
       waveformChanged = false;
     }
 
-    QPixmap pm(size());
-
-    // Draw waveform, then playpos to buffer
-    bitBlt(&pm, 0, 0, m_pScreenBuffer);
-
-    QPainter paint;
-    paint.begin(&pm, this);
+    QPainter paint(this);
+    // Draw waveform, then playpos
+    paint.drawPixmap(0, 0, *m_pScreenBuffer);
 
     if (m_pWaveformSummary)
     {
@@ -288,10 +281,7 @@ void WOverview::paintEvent(QPaintEvent *)
             }
         }
     }
-
     paint.end();
-
-    bitBlt(this, 0, 0, &pm);
 }
 
 

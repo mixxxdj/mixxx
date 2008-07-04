@@ -130,12 +130,7 @@ void WVisualSimple::mouseReleaseEvent(QMouseEvent *)
 
 void WVisualSimple::paintEvent(QPaintEvent *)
 {
-    QPixmap pm(size());
-    QPainter paint;
-    paint.begin(&pm, this);
-
-    // Erase background
-    paint.eraseRect(rect());
+    QPainter paint(this);
 
     // Draw vertical red bar in center
     paint.setPen(colorMarker);
@@ -150,7 +145,4 @@ void WVisualSimple::paintEvent(QPaintEvent *)
         paint.drawLine(m_qMarkerPos1, p1);
         paint.drawLine(m_qMarkerPos2, p2);
     }
-
-    paint.end();
-    bitBlt(this, 0, 0, &pm);
 }
