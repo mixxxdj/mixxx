@@ -234,7 +234,8 @@ Track::Track(QString location, MixxxView * pView, ConfigObject<ConfigValue> *con
     m_pLoadSelectedTrackCh2 = new ControlObjectThreadMain(new ControlObject(ConfigKey("[Channel2]","LoadSelectedTrack")));
     m_pSelectNextTrack = new ControlObjectThreadMain(new ControlObject(ConfigKey("[Playlist]","SelectNextTrack")));
     m_pSelectPrevTrack = new ControlObjectThreadMain(new ControlObject(ConfigKey("[Playlist]","SelectPrevTrack")));
-
+    m_pLoadSelectedIntoFirstStopped = new ControlObjectThreadMain(new ControlObject(ConfigKey("[Playlist]","LoadSelectedIntoFirstStopped")));
+    m_pSelectTrackKnob = new ControlObjectThreadMain(new ControlObject(ConfigKey("[Playlist]","SelectTrackKnob")));
     m_pSelectNextPlaylist = new ControlObjectThreadMain(new ControlObject(ConfigKey("[Playlist]","SelectNextPlaylist")));
     m_pSelectPrevPlaylist = new ControlObjectThreadMain(new ControlObject(ConfigKey("[Playlist]","SelectPrevPlaylist")));
 
@@ -245,6 +246,10 @@ Track::Track(QString location, MixxxView * pView, ConfigObject<ConfigValue> *con
 
     connect(m_pSelectNextPlaylist, SIGNAL(valueChanged(double)), this, SLOT(slotSelectNextPlaylist(double)));
     connect(m_pSelectPrevPlaylist, SIGNAL(valueChanged(double)), this, SLOT(slotSelectPrevPlaylist(double)));
+
+     connect(m_pLoadSelectedIntoFirstStopped, SIGNAL(valueChanged(double)), this, SLOT(slotLoadSelectedIntoFirstStopped(double)));
+     connect(m_pSelectTrackKnob, SIGNAL(valueChanged(double)), this, SLOT(slotSelectTrackKnob(double)));
+  
 
     TrackPlaylist::setTrack(this);
 
@@ -1199,7 +1204,7 @@ void Track::slotLoadSelectedTrackCh1(double v)
         // Fetch the currently selected track
         index = m_pView->m_pTrackTableView->m_pSearchFilter->mapToSource(m_pView->m_pTrackTableView->currentIndex());
         pTrack = m_pView->m_pTrackTableView->m_pTable->m_pTrackPlaylist->at(index.row());
-	// If there is one, load it
+	    // If there is one, load it
 	if (pTrack) slotLoadPlayer1(pTrack);
     }
 }
@@ -1213,8 +1218,19 @@ void Track::slotLoadSelectedTrackCh2(double v)
         // Fetch the currently selected track
         index = m_pView->m_pTrackTableView->m_pSearchFilter->mapToSource(m_pView->m_pTrackTableView->currentIndex());
         pTrack = m_pView->m_pTrackTableView->m_pTable->m_pTrackPlaylist->at(index.row());
-	// If there is one, load it
+	    // If there is one, load it
         if (pTrack) slotLoadPlayer2(pTrack);
+    }
+}
+
+void Track::slotLoadSelectedIntoFirstStopped(double v)
+{
+    if (v)
+    {
+        if (ControlObject::getControl(ConfigKey("[Channel1]","play"))->get()!=1.)
+            this->slotLoadSelectedTrackCh1(v);
+        else if (ControlObject::getControl(ConfigKey("[Channel2]","play"))->get()!=1.)
+            this->slotLoadSelectedTrackCh2(v);
     }
 }
 
@@ -1228,6 +1244,24 @@ void Track::slotSelectPrevTrack(double v)
 {
     // Only move on key presses
     if (v) m_pView->m_pTrackTableView->selectPrevious();
+}
+
+void Track::slotSelectTrackKnob(double v)
+{
+    int i = (int)v;
+    while(i != 0)
+    {
+        if(i > 0)
+        {
+            m_pView->m_pTrackTableView->selectNext();
+            i--;
+        }
+        else
+        {
+            m_pView->m_pTrackTableView->selectPrevious();
+            i++;
+        }
+    }
 }
 
 void Track::slotNextTrackPlayer1(double v)
