@@ -457,7 +457,7 @@ void HerculesLinux::consoleEvent(int first, int second) {
                   m_iHerculesHeadphonesSelection = kiHerculesHeadphoneMix;
                   sendButtonEvent(m_bHeadphoneRight = true, m_pControlObjectRightBtnHeadphone);
                   sendButtonEvent(m_bHeadphoneLeft = true, m_pControlObjectLeftBtnHeadphone);
-                } 
+                }
                 break;
             case MONITOR_DECK_B:
                 if (second != 0 && m_iHerculesHeadphonesSelection != kiHerculesHeadphoneSplit) {
