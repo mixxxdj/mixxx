@@ -209,7 +209,19 @@ HerculesLinux::HerculesLinux() : Hercules() {
 }
 
 
-HerculesLinux::~HerculesLinux() {}
+HerculesLinux::~HerculesLinux() {
+// Clear device LEDs
+  if (djc != 0 && djc->ready()) {
+    qDebug() << "Closing Hercules device, clearing down leds...";
+    const QSet<int> leds = QSet<int>::QSet() << SCRATCH << LEFT_CUE << RIGHT_CUE << LEFT_PLAY << RIGHT_PLAY \
+      << LEFT_MONITOR << RIGHT_MONITOR << LEFT_MASTER_TEMPO << RIGHT_MASTER_TEMPO << LEFT_FX << LEFT_FX_CUE \
+      << LEFT_LOOP << RIGHT_FX << RIGHT_FX_CUE << RIGHT_LOOP;
+      QSetIterator<int> led(leds);
+      while (led.hasNext()) {
+        led_write(led.next(), false);
+      }
+  }
+}
 
 
 void HerculesLinux::closedev() {}
