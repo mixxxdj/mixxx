@@ -219,6 +219,7 @@ void DlgPrefSound::slotUpdate()
         SliderLatency->setEnabled(false);
         //Set the latency slider to appear as 16 ms, just for the hell of it.
         SliderLatency->setValue(getSliderLatencyVal(16));
+        TextLabelLatency->setText("JACK");
     }
     else
         SliderLatency->setEnabled(true);
