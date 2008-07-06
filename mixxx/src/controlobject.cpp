@@ -17,13 +17,14 @@
 
 #include <qwidget.h>
 #include <QtDebug>
-//Added by qt3to4:
-#include <Q3PtrList>
+#include <QHash>
 #include "controlobject.h"
 #include "controlevent.h"
 
 // Static member variable definition
-Q3PtrList<ControlObject> ControlObject::m_sqList;
+QHash<ConfigKey,ControlObject*> ControlObject::m_sqCOHash;
+QMutex ControlObject::m_sqCOHashMutex;
+
 QMutex ControlObject::m_sqQueueMutexMidi;
 QMutex ControlObject::m_sqQueueMutexThread;
 QMutex ControlObject::m_sqQueueMutexChanges;
@@ -39,12 +40,16 @@ ControlObject::ControlObject(ConfigKey key)
 {
     m_dValue = 0.;
     m_Key = key;
-    m_sqList.append(this);
+    m_sqCOHashMutex.lock();
+    m_sqCOHash.insert(key,this);
+    m_sqCOHashMutex.unlock();
 }
 
 ControlObject::~ControlObject()
 {
-    m_sqList.remove(this);
+    m_sqCOHashMutex.lock();
+    m_sqCOHash.remove(m_Key);
+    m_sqCOHashMutex.unlock();
 }
 
 bool ControlObject::connectControls(ConfigKey src, ConfigKey dest)
@@ -104,16 +109,17 @@ bool ControlObject::updateProxies(ControlObjectThread * pProxyNoUpdate)
 
 ControlObject * ControlObject::getControl(ConfigKey key)
 {
-    // qDebug() << "trying to get group" << key.group << "item" << key.item;
-
-    // Loop through the list of ConfigObjects to find one matching key
-    ControlObject * c;
-    for (c=m_sqList.first(); c; c=m_sqList.next())
-    {
-        if (c->getKey().group == key.group && c->getKey().item == key.item)
-            return c;
+    //qDebug() << "ControlObject::getControl for (" << key.group << "," << key.item << ")";
+    m_sqCOHashMutex.lock();
+    if(m_sqCOHash.contains(key)) {
+        ControlObject *co = m_sqCOHash[key];
+        m_sqCOHashMutex.unlock();
+        return co;
     }
-    return 0;
+    m_sqCOHashMutex.unlock();
+
+    qDebug() << "ControlObject::getControl returning NULL for (" << key.group << "," << key.item << ")";
+    return NULL;
 }
 
 void ControlObject::queueFromThread(double dValue, ControlObjectThread * pControlObjectThread)
