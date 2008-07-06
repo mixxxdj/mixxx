@@ -876,6 +876,8 @@ void TrackInfoObject::setWaveSummary(Q3MemArray<char> * pWave, Q3ValueList<long>
     setOverviewWidget(m_pOverviewWidget);
 }
 
+//TODO: Get rid of these crappy methods. getNext() and getPrev() are terrible for modularity
+//      and should be removed the next time I work on the library. -- Albert
 TrackInfoObject * TrackInfoObject::getNext(TrackPlaylist * pPlaylist)
 {
     if (pPlaylist)
@@ -883,6 +885,8 @@ TrackInfoObject * TrackInfoObject::getNext(TrackPlaylist * pPlaylist)
     return NULL;
 }
 
+//TODO: Get rid of these crappy methods. getNext() and getPrev() are terrible for modularity
+//      and should be removed the next time I work on the library. -- Albert
 TrackInfoObject * TrackInfoObject::getPrev(TrackPlaylist * pPlaylist)
 {
     if (pPlaylist)
