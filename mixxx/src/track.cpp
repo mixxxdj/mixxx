@@ -249,7 +249,7 @@ Track::Track(QString location, MixxxView * pView, ConfigObject<ConfigValue> *con
 
      connect(m_pLoadSelectedIntoFirstStopped, SIGNAL(valueChanged(double)), this, SLOT(slotLoadSelectedIntoFirstStopped(double)));
      connect(m_pSelectTrackKnob, SIGNAL(valueChanged(double)), this, SLOT(slotSelectTrackKnob(double)));
-  
+
 
     TrackPlaylist::setTrack(this);
 
@@ -362,7 +362,7 @@ void Track::initPromoTracks()
         return;
     }
     QDir promoDir(m_pConfig->getConfigPath() + QString(MIXXX_PROMO_DIR));
-	
+
     //Load the extra metadata for these tracks from an XML file and import the promo tracks into the library.
     loadPromoTrackXMLData(promoDir.absolutePath() + "/" + "promo.xml",
                           promoDir.absolutePath());
@@ -405,7 +405,7 @@ void Track::loadPromoTrackXMLData(QString xmlPath, QString promoDirPath)
                 //QString comment =
 
                 //Grab the track from the TrackCollection and add it's metadata...
-                
+
 				TrackInfoObject *newTrack = m_pTrackCollection->getTrack(filename);
                 if (newTrack)
                 {
@@ -419,7 +419,7 @@ void Track::loadPromoTrackXMLData(QString xmlPath, QString promoDirPath)
 		}
 		n = n.nextSibling();
 	}
-	
+
 	qDebug() << "Promo playlist has" << m_qPromoPlaylist.getSongNum() << "songs.";
 
 }
@@ -517,7 +517,7 @@ void Track::writeXML(QString location)
                               0, "progress", TRUE );
     progress.show();
     int i = 0;
-	
+
     // Create the xml document:
     QDomDocument domXML( "Mixxx_Track_List" );
 
@@ -1065,48 +1065,32 @@ void Track::slotEndOfTrackPlayer1(double val)
     case TRACK_END_MODE_NEXT:
         if (m_pTrackPlayer1)
         {
-            TrackInfoObject * pTrack;
+            TrackInfoObject *pTrack = NULL;
             bool bStartFromEndPos = false;
 
             //Load the next song...
             if (m_pPlayPositionCh1->get()>0.5)
             {
                //If the play queue has another song in it, load that...
-               pTrack = m_pTrackPlayer1->getNext(&m_qPlayqueuePlaylist);
-
-
-               /* Disabled because we only ever want to pull from the play queue:
-
-               //Otherwise load from the active playlist...
-               if (!pTrack && m_pActivePlaylist)
-                    pTrack = m_pTrackPlayer1->getNext(m_pActivePlaylist);
-
-               //Fall back on getting the next song from Browse mode.
-               if (!pTrack)
+               int idx = m_qPlayqueuePlaylist.indexOf(m_pTrackPlayer1);
+               if (idx + 1 < m_qPlayqueuePlaylist.count())
                {
-                    //If we're in Browse mode...
-                    //qDebug() << "Browse-mode NEXT player 1";
-                    pTrack = NULL;
-                    QString qNextTrackPath = m_pView->m_pTrackTableView->getNextTrackBrowseMode(m_pTrackPlayer1);
-                    slotLoadPlayer1(qNextTrackPath);
+                   pTrack = m_qPlayqueuePlaylist.at(idx + 1);
                }
-               */
+               else
+               {
+                   //Stop playback at the end of the play queue.
+                   m_pPlayButtonCh1->slotSet(0.);
+               }
             }
             else //Load previous track
             {
-                pTrack = m_pTrackPlayer1->getPrev(m_pActivePlaylist);
-
-                /* Only pull from play queue instead!
-
-                //Fall back on getting the prev song from Browse mode.
-                if (!pTrack)
+                //If the play queue has a previous song in it, load that...
+                int idx = m_qPlayqueuePlaylist.indexOf(m_pTrackPlayer1);
+                if (idx - 1 >= 0)
                 {
-                    //If we're in Browse mode...
-                    pTrack = NULL;
-                    QString qPrevTrackPath = m_pView->m_pTrackTableView->getPrevTrackBrowseMode(m_pTrackPlayer1);
-                    slotLoadPlayer1(qPrevTrackPath, true);
+                    pTrack = m_qPlayqueuePlaylist.at(idx - 1);
                 }
-                */
 
                 bStartFromEndPos = true;
             }
@@ -1137,47 +1121,32 @@ void Track::slotEndOfTrackPlayer2(double val)
     case TRACK_END_MODE_NEXT:
         if (m_pTrackPlayer2)
         {
-            TrackInfoObject * pTrack;
+            TrackInfoObject *pTrack = NULL;
             bool bStartFromEndPos = false;
 
+            //Load the next song...
             if (m_pPlayPositionCh2->get()>0.5)
             {
                //If the play queue has another song in it, load that...
-               pTrack = m_pTrackPlayer2->getNext(&m_qPlayqueuePlaylist);
-
-
-               /* Disabled because we only ever want to pull from the play queue:
-
-               //Otherwise load from the active playlist...
-               if (!pTrack && m_pActivePlaylist)
-                    pTrack = m_pTrackPlayer2->getNext(m_pActivePlaylist);
-
-               //Fall back on getting the next song from Browse mode.
-               if (!pTrack)
+               int idx = m_qPlayqueuePlaylist.indexOf(m_pTrackPlayer2);
+               if (idx + 1 < m_qPlayqueuePlaylist.count())
                {
-                    //If we're in Browse mode...
-                    //qDebug() << "Browse-mode NEXT player 1";
-                    pTrack = NULL;
-                    QString qNextTrackPath = m_pView->m_pTrackTableView->getNextTrackBrowseMode(m_pTrackPlayer2);
-                    slotLoadPlayer2(qNextTrackPath);
+                   pTrack = m_qPlayqueuePlaylist.at(idx + 1);
                }
-               */
-
+               else
+               {
+                   //Stop playback at the end of the play queue.
+                   m_pPlayButtonCh2->slotSet(0.);
+               }
             }
             else //Load previous track
             {
-                pTrack = m_pTrackPlayer2->getPrev(m_pActivePlaylist);
-
-                /* Only pull from play queue instead!
-
-                //Fall back on getting the prev song from Browse mode.
-                if (!pTrack)
+                //If the play queue has a previous song in it, load that...
+                int idx = m_qPlayqueuePlaylist.indexOf(m_pTrackPlayer2);
+                if (idx - 1 >= 0)
                 {
-                    //If we're in Browse mode...
-                    pTrack = NULL;
-                    QString qPrevTrackPath = m_pView->m_pTrackTableView->getPrevTrackBrowseMode(m_pTrackPlayer2);
-                    slotLoadPlayer2(qPrevTrackPath, true);
-                }*/
+                    pTrack = m_qPlayqueuePlaylist.at(idx - 1);
+                }
 
                 bStartFromEndPos = true;
             }
