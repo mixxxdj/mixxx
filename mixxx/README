@@ -1,11 +1,11 @@
-Mixxx - version 1.6.0
+Mixxx 1.6.0
 
 * HOMEPAGE *************************************************
 http://www.mixxx.org
 
 
 * ABOUT ****************************************************
-Mixxx is software created for DJ'ing. You can use MP3s, 
+Mixxx is open source software for DJ'ing. You can use MP3s, 
 Ogg Vorbis files, and other formats as audio input. Mixxx
 can be controlled through the GUI and with external 
 controllers including MIDI devices, and more.
@@ -80,7 +80,7 @@ Mixxx has the following dependencies:
 - libvorbisfile
 - libsndfile
 - PortAudio-v19
-- QT 4.3
+- QT 4.3+
 - scons
 
 NOTE: If you want JACK support in Mixxx, make sure you 
@@ -119,9 +119,24 @@ by running:
 
 and building with make. 
 
+* REINSTALLING MIXXX ***************************************
+
+Linux users may need to manually remove their Mixxx
+installation directory if they need to reinstall. (This does
+not apply when reinstalling from a DEB package.) Mixxx's
+share directory can be removed by running:
+
+   $ sudo rm -rf /usr/local/share/mixxx/
+   
+or
+
+   $ sudo rm -rf /usr/share/mixxx/
+
 * USAGE ****************************************************
-Please see manual, included in this directory, 
-Mixxx-Manual.pdf.
+Please see the manual, included in this directory, 
+Mixxx-Manual.pdf or at: 
+    
+    http://www.mixxx.org/manual
 
 * CONTACT **************************************************
 To contact the lead developer, send an email to 
