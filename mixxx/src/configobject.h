@@ -26,6 +26,7 @@
 #include <qkeysequence.h>
 #include <qdom.h>
 #include <qmap.h>
+#include <QHash>
 
 typedef enum {
     MIDI_EMPTY            = 0,
@@ -59,9 +60,19 @@ class ConfigKey
 public:
     ConfigKey();
     ConfigKey(QString g, QString i);
-
+   
     QString group, item;
 };
+
+/* comparison function for ConfigKeys. Used by a QHash in ControlObject */
+inline bool operator==(const ConfigKey &c1, const ConfigKey &c2) {
+    return c1.group == c2.group && c1.item == c2.item;
+}
+
+/* QHash hash function for ConfigKey objects. */
+inline uint qHash(const ConfigKey &key) {
+    return qHash(key.group) ^ qHash(key.item);
+}
 
 /*
   The value corresponding to a key. The basic value is a string, but can be

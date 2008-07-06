@@ -124,8 +124,10 @@ protected:
 private:
     /** List of associated proxy objects */
     Q3PtrList<ControlObjectThread> m_qProxyList;
-    /** List of ControlObject instantiations */
-    static Q3PtrList<ControlObject> m_sqList;
+    /** Hash of ControlObject instantiations */
+    static QHash<ConfigKey,ControlObject*> m_sqCOHash;
+    /** Mutex guarding access to the ControlObject hash **/
+    static QMutex m_sqCOHashMutex;
     /** Mutex protecting access to the queues */
     static QMutex m_sqQueueMutexMidi, m_sqQueueMutexThread, m_sqQueueMutexChanges;
     /** Queue holding control changes from MIDI */
