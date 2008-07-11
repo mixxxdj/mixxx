@@ -5,7 +5,7 @@
 <Schemes>
   <Scheme>
     <Name>Cyan</Name>
-  </Scheme> 
+  </Scheme>
   <Scheme>
     <Name>Orange-Red</Name>
     <Filters>
@@ -95,6 +95,8 @@
   <PathVu>vol-main-a.png</PathVu>
   <PathBack>vol-main-i.png</PathBack>
   <Pos>1093,162</Pos>
+  <PeakHoldSize>5</PeakHoldSize>
+  <PeakHoldTime>400</PeakHoldTime>
   <Horizontal>true</Horizontal>
   <Connection>
    <ConfigKey>[Master],VuMeter</ConfigKey>
@@ -106,6 +108,8 @@
   <PathVu>vol-l-a.png</PathVu>
   <PathBack>vol-l-i.png</PathBack>
   <Pos>230,113</Pos>
+  <PeakHoldSize>5</PeakHoldSize>
+  <PeakHoldTime>400</PeakHoldTime>
   <Connection>
    <ConfigKey>[Channel1],VuMeter</ConfigKey>
   </Connection>
@@ -116,6 +120,8 @@
   <PathVu>vol-r-a.png</PathVu>
   <PathBack>vol-r-i.png</PathBack>
   <Pos>1041,113</Pos>
+  <PeakHoldSize>5</PeakHoldSize>
+  <PeakHoldTime>400</PeakHoldTime>
   <Connection>
    <ConfigKey>[Channel2],VuMeter</ConfigKey>
   </Connection>
@@ -1276,8 +1282,6 @@
   </Connection>
  </StatusLight>
 
+</skin>
 
-
-  </skin>
-  
 
