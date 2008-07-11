@@ -1089,7 +1089,7 @@ void MixxxApp::slotHelpAbout()
 "David Garcia<br>"
 "Seb Ruiz<br>"
 "Echo Digital Audio<br>"
-"n080dy @ Free Radio <a href="\http://freeteam.nl/patapoe/\">Patapoe</href><br>"
+"n080dy @ Free Radio <a href=\"http://freeteam.nl/patapoe/\">Patapoe</href><br>"
 "</p>"
 
 "<p align=\"center\"><b>Past Contributors</b></p>"
