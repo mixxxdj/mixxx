@@ -1058,8 +1058,9 @@ void MixxxApp::slotHelpAbout()
 "</p>"
 "<p align=\"center\"><b>With contributions from:</b></p>"
 "<p align=\"center\">"
-"Mark Hills<br>"
 "Martin Sakm&#225;r<br>"
+"Ilian Persson<br>"
+"Mark Hills<br>"
 "Alex Barker<br>"
 "Dave Jarvis<br>"
 "Thomas Baag<br>"
@@ -1088,6 +1089,7 @@ void MixxxApp::slotHelpAbout()
 "David Garcia<br>"
 "Seb Ruiz<br>"
 "Echo Digital Audio<br>"
+"n080dy @ Free Radio <a href="\http://freeteam.nl/patapoe/\">Patapoe</href><br>"
 "</p>"
 
 "<p align=\"center\"><b>Past Contributors</b></p>"
