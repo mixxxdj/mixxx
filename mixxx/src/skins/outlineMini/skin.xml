@@ -377,7 +377,7 @@
   <PathBack>vumeter-off-.png</PathBack>
   <Pos>305,126</Pos>
   <PeakHoldSize>5</PeakHoldSize>
-  <PeakHoldTime>400</PeakHoldTime>      
+  <PeakHoldTime>400</PeakHoldTime>
   <Horizontal>true</Horizontal>
   <Connection>
    <ConfigKey>[Master],VuMeter</ConfigKey>
@@ -390,7 +390,7 @@
   <PathBack>vumeter-off-Ch1.png</PathBack>
   <Pos>79,227</Pos>
   <PeakHoldSize>5</PeakHoldSize>
-  <PeakHoldTime>400</PeakHoldTime>  
+  <PeakHoldTime>400</PeakHoldTime>
   <Connection>
    <ConfigKey>[Channel1],VuMeter</ConfigKey>
   </Connection>
@@ -402,7 +402,7 @@
   <PathBack>vumeter-off-Ch2.png</PathBack>
   <Pos>766,224</Pos>
   <PeakHoldSize>5</PeakHoldSize>
-  <PeakHoldTime>400</PeakHoldTime>      
+  <PeakHoldTime>400</PeakHoldTime>
   <Connection>
    <ConfigKey>[Channel2],VuMeter</ConfigKey>
   </Connection>
@@ -532,7 +532,7 @@ Go to and stop (right-click)</Tooltip>
    <ConfigKey>[Channel1],cue_gotoandstop</ConfigKey>
    <EmitOnDownPress>true</EmitOnDownPress>
    <ButtonState>RightButton</ButtonState>
-  </Connection>  
+  </Connection>
  </PushButton>
 
  <PushButton>
@@ -555,7 +555,7 @@ Go to and stop (right-click)</Tooltip>
    <ConfigKey>[Channel2],cue_gotoandstop</ConfigKey>
    <EmitOnDownPress>true</EmitOnDownPress>
    <ButtonState>RightButton</ButtonState>
-  </Connection>  
+  </Connection>
  </PushButton>
 
  <PushButton>
@@ -1115,7 +1115,7 @@ Right click: Start of track</Tooltip>
    <EmitOnDownPress>false</EmitOnDownPress>
   </Connection>
  </XSliderComposed>
- 
+
  <Overview>
 	 <Tooltip>Overview display of waveform</Tooltip>
 	 <Channel>1</Channel>
