@@ -73,6 +73,9 @@ Section "Mixxx (required)" SecMixxx
   File "src\keyboard\Standard.kbd.cfg"
   File "src\keyboard\Old.kbd.cfg"
 
+  SetOutPath "$INSTDIR\skins\Natt"
+  File "src\skins\Natt\*"
+
   SetOutPath "$INSTDIR\skins\Collusion (1280)"
   File "src\skins\Collusion (1280)\*"
 
@@ -1273,6 +1276,7 @@ Section "Uninstall"
   Delete $INSTDIR\skins\outlineClose\*.*
   Delete $INSTDIR\skins\outlineSmall\*.*
   Delete $INSTDIR\skins\outlineMini\*.*
+  Delete "$INSTDIR\skins\Natt\*.*"
   Delete "$INSTDIR\skins\Collusion (1280)\*.*"
   Delete "$INSTDIR\skins\Collusion (1280-WS)\*.*"
   Delete $INSTDIR\skins\hercules\*.*
@@ -1286,6 +1290,7 @@ Section "Uninstall"
   RMDir "$INSTDIR\skins\outlineClose"
   RMDir "$INSTDIR\skins\outlineSmall"
   RMDir "$INSTDIR\skins\outlineMini"
+  RMDir "$INSTDIR\skins\Natt"
   RMDir "$INSTDIR\skins\Collusion (1280)"
   RMDir "$INSTDIR\skins\Collusion (1280-WS)"
   RMDir "$INSTDIR\skins\hercules"
